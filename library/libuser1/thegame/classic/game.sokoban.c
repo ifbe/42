@@ -59,13 +59,15 @@ static void sokoban_cwrite()
 {
 }
 static void sokoban_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void sokoban_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void sokoban_delete(struct actor* act)

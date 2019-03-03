@@ -347,11 +347,17 @@ static int corner_swrite(
 	}
 	return 0;
 }
-static int corner_stop(struct arena* c, void* cf, struct arena* r, void* rf)
+static int corner_stop(
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
 {
 	return 0;
 }
-static int corner_start(struct arena* c, void* cf, struct arena* r, void* rf)
+static int corner_start(
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
 {
 	return 0;
 }

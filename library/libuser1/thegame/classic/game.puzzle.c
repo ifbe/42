@@ -25,13 +25,15 @@ static void puzzle_post()
 {
 }
 static void puzzle_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void puzzle_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void puzzle_delete(struct actor* act)

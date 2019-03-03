@@ -434,13 +434,15 @@ static void camera_cwrite(
 {
 }
 static void camera_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void camera_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
     say("@camera_start\n");
 }

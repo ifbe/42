@@ -158,19 +158,21 @@ int actor_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 	return 0;
 }
 int actorstop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
 {
-	if(0 == act)return 0;
-	act->onstop(win, sty, act, pin);
+	if(0 == leaf)return 0;
+	leaf->onstop(leaf, lf, twig, tf, root, rf);
 	return 0;
 }
 int actorstart(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
 {
-	if(0 == act)return 0;
-	act->onstart(win, sty, act, pin);
+	if(0 == leaf)return 0;
+	leaf->onstart(leaf, lf, twig, tf, root, rf);
 	return 0;
 }
 int actordelete(struct actor* act)

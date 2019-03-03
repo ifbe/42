@@ -230,13 +230,15 @@ static void bintree_post()
 {
 }
 static void bintree_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void bintree_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void bintree_delete(struct actor* act)

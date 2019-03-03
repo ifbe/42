@@ -38,7 +38,7 @@ static void isrc_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void isrc_read(
+static void isrc_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -54,30 +54,33 @@ static void isrc_read(
 	}
 	else isrc_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-static void isrc_write(
+static void isrc_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void isrc_post(u8* buf, int len)
+static void isrc_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void isrc_get(u8* buf, int len)
+static void isrc_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void isrc_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void isrc_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void isrc_delete(struct actor* act, u8* buf)
@@ -99,8 +102,8 @@ void isrc_register(struct actor* p)
 	p->ondelete = (void*)isrc_delete;
 	p->onstart  = (void*)isrc_start;
 	p->onstop   = (void*)isrc_stop;
-	p->onget    = (void*)isrc_get;
-	p->onpost   = (void*)isrc_post;
-	p->onread   = (void*)isrc_read;
-	p->onwrite  = (void*)isrc_write;
+	p->onget    = (void*)isrc_cread;
+	p->onpost   = (void*)isrc_cwrite;
+	p->onread   = (void*)isrc_sread;
+	p->onwrite  = (void*)isrc_swrite;
 }

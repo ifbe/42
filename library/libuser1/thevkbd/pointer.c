@@ -98,11 +98,17 @@ static int pointer_cwrite(struct arena* win, struct style* stack, struct event* 
 {
 	return 0;
 }
-static int pointer_stop(struct arena* c, void* cf, struct arena* r, void* rf)
+static int pointer_stop(
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
 {
 	return 0;
 }
-static int pointer_start(struct arena* c, void* cf, struct arena* r, void* rf)
+static int pointer_start(
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
 {
 	return 0;
 }

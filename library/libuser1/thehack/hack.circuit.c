@@ -184,16 +184,18 @@ static void circuit_post()
 {
 }
 static void circuit_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void circuit_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 	int x,y,z,w;
-	u8 (*data)[HEIGHT][WIDTH] = act->buf;
+	u8 (*data)[HEIGHT][WIDTH] = leaf->buf;
 
 	for(z=0;z<LAYER;z++)
 	{

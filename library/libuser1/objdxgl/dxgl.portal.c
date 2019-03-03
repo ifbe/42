@@ -200,29 +200,29 @@ static void portal_post()
 {
 }
 static void portal_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void portal_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 	struct glsrc* src;
-	if(0 == pin)return;
+	if(0 == lf)return;
 
 	//
-	src = alloc_winobj(win);
-
-	//shader
+	src = alloc_winobj(root);
 	src->vs = portal_glsl_v;
 	src->fs = portal_glsl_f;
 
 	//texture
-	src->tex[0] = act->buf;
+	src->tex[0] = leaf->buf;
 	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_w[0] = act->width;
-	src->tex_h[0] = act->height;
+	src->tex_w[0] = leaf->width;
+	src->tex_h[0] = leaf->height;
 
 	//vertex
 	src->vbuf = memorycreate(4*6*6);
@@ -238,7 +238,7 @@ static void portal_start(
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
 
-	pin->foot[0] = (u64)src;
+	lf->foot[0] = (u64)src;
 }
 static void portal_delete(struct actor* act)
 {

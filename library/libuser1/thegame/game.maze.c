@@ -503,15 +503,17 @@ static void maze_post()
 {
 }
 static void maze_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void maze_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
-	u8* buf = act->buf;
+	u8* buf = leaf->buf;
 	maze_generate(buf, WIDTH, HEIGHT);
 	maze_solve(buf, WIDTH, HEIGHT);
 }

@@ -224,7 +224,7 @@ static void rectify_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void rectify_read(
+static void rectify_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -240,30 +240,33 @@ static void rectify_read(
 	}
 	else rectify_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-static void rectify_write(
+static void rectify_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void rectify_post(u8* buf, int len)
+static void rectify_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void rectify_get(u8* buf, int len)
+static void rectify_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void rectify_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void rectify_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void rectify_delete(struct actor* act, u8* buf)
@@ -285,8 +288,8 @@ void rectify_register(struct actor* p)
 	p->ondelete = (void*)rectify_delete;
 	p->onstart  = (void*)rectify_start;
 	p->onstop   = (void*)rectify_stop;
-	p->onget    = (void*)rectify_get;
-	p->onpost   = (void*)rectify_post;
-	p->onread   = (void*)rectify_read;
-	p->onwrite  = (void*)rectify_write;
+	p->onget    = (void*)rectify_cread;
+	p->onpost   = (void*)rectify_cwrite;
+	p->onread   = (void*)rectify_sread;
+	p->onwrite  = (void*)rectify_swrite;
 }

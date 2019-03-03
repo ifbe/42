@@ -40,11 +40,17 @@ static int vkbd_cwrite(struct arena* win, struct style* stack, struct event* ev)
 {
 	return 0;
 }
-static int vkbd_stop(struct arena* c, void* cf, struct arena* r, void* rf)
+static int vkbd_stop(
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
 {
 	return 0;
 }
-static int vkbd_start(struct arena* c, void* cf, struct arena* r, void* rf)
+static int vkbd_start(
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
 {
 	return 0;
 }

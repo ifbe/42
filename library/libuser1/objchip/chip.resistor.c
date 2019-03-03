@@ -38,7 +38,7 @@ static void resistor_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void resistor_read(
+static void resistor_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -54,30 +54,33 @@ static void resistor_read(
 	}
 	else resistor_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-static void resistor_write(
+static void resistor_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void resistor_post(u8* buf, int len)
+static void resistor_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void resistor_get(u8* buf, int len)
+static void resistor_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void resistor_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void resistor_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void resistor_delete(struct actor* act, u8* buf)
@@ -99,8 +102,8 @@ void resistor_register(struct actor* p)
 	p->ondelete = (void*)resistor_delete;
 	p->onstart  = (void*)resistor_start;
 	p->onstop   = (void*)resistor_stop;
-	p->onget    = (void*)resistor_get;
-	p->onpost   = (void*)resistor_post;
-	p->onread   = (void*)resistor_read;
-	p->onwrite  = (void*)resistor_write;
+	p->onget    = (void*)resistor_cread;
+	p->onpost   = (void*)resistor_cwrite;
+	p->onread   = (void*)resistor_sread;
+	p->onwrite  = (void*)resistor_swrite;
 }

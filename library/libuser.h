@@ -693,11 +693,11 @@ struct actor
 		char padding1[8];
 	};
 	union{
-		int (*onstart)(void* dc,void* df,void* sc,void* sf);
+		int (*onstart)(void* leaf, void* lf, void* twig, void* tf, void* root,void* rf);
 		char padding2[8];
 	};
 	union{
-		int (*onstop)(void* dc,void* df,void* sc,void* sf);
+		int (*onstop)(void* leaf, void* lf, void* twig, void* tf, void* root,void* rf);
 		char padding3[8];
 	};
 	union{

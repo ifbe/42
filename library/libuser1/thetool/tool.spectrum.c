@@ -92,13 +92,47 @@ static void spectrum_read_pixel(
 	}
 	drawdecimal(win, 0xffffff, cx, cy, that);
 }
-static void spectrum_read_vbo(
+static void spectrum_read_vbo2d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 	int x;
 	float a,c,s;
-	vec3 tc, tr, tf, tu, f;
+	vec3 tc, tr, tf, tu;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+
+	struct perframe* frame = act->buf;
+	float* real = frame[cur].real;
+	float* imag = frame[cur].imag;
+	float* amp = frame[cur].amp;
+
+	for(x=0;x<512;x++)
+	{
+		a = x*tau/512;
+		c = cosine(a);
+		s = sine(a);
+
+		tc[0] = vc[0] + vr[0] * (x-256) / 256;
+		tc[1] = vc[1] + vr[1] * (x-256) / 256;
+		tc[2] = vc[2] + vr[2] * (x-256) / 256;
+		tr[0] = tc[0] + amp[x]*vf[0];
+		tr[1] = tc[1] + amp[x]*vf[1];
+		tr[2] = tc[2] + amp[x]*vf[2];
+		carveline2d(win, 0xffffff, tc, tr);
+	}
+}
+static void spectrum_read_vbo3d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x;
+	float a,c,s;
+	vec3 tc, tr, tf, tu;
 	struct perframe* frame = act->buf;
 	float* real = frame[cur].real;
 	float* imag = frame[cur].imag;
@@ -117,10 +151,10 @@ static void spectrum_read_vbo(
 		tc[0] = vc[0] + vr[0]*c + vf[0]*s;
 		tc[1] = vc[1] + vr[1]*c + vf[1]*s;
 		tc[2] = vc[2] + vr[2]*c + vf[2]*s;
-		tr[0] = tc[0] + vu[0]*amp[x]/16;
-		tr[1] = tc[1] + vu[1]*amp[x]/16;
-		tr[2] = tc[2] + vu[2]*amp[x]/16;
-		carveline(win, (255-x/2)+(x<<15), tc, tr);
+		tr[0] = tc[0] + vu[0]*amp[x];
+		tr[1] = tc[1] + vu[1]*amp[x];
+		tr[2] = tc[2] + vu[2]*amp[x];
+		carveline(win, 0xffffff, tc, tr);
 	}
 }
 static void spectrum_read_json(
@@ -182,7 +216,11 @@ static void spectrum_read(
 	else if(fmt == _tui_)spectrum_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)spectrum_read_html(win, sty, act, pin);
 	else if(fmt == _json_)spectrum_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)spectrum_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)spectrum_read_vbo2d(win, sty, act, pin);
+		else spectrum_read_vbo3d(win, sty, act, pin);
+	}
 	else spectrum_read_pixel(win, sty, act, pin);
 }
 static void spectrum_write(
@@ -248,13 +286,15 @@ static void spectrum_post()
 {
 }
 static void spectrum_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void spectrum_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void spectrum_delete(struct actor* act)

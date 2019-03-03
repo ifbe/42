@@ -1,4 +1,5 @@
 #include "libuser.h"
+int actorstart(void*, void*, void*, void*, void*, void*);
 void drawborder2d(struct arena* win, struct style* sty, void* name);
 void carveborder2d(struct arena* win, struct style* sty, void* name);
 
@@ -59,11 +60,36 @@ int fg2d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sta
 	}
 	return 0;
 }
+int fg2d_stop(struct arena* twig, void* tf, struct arena* root, void* rf)
+{
+	return 0;
+}
+int fg2d_start(struct arena* twig, void* tf, struct arena* root, void* rf)
+{
+	struct relation* rel;
+	struct style* sty;
+	struct actor* act;
+	struct pinid* pin;
 
+	rel = twig->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
 
+		if(_act_ == rel->dsttype)
+		{
+			sty = (void*)(rel->srcfoot);
 
+			act = (void*)(rel->dstchip);
+			pin = (void*)(rel->dstfoot);
+			actorstart(act, pin, twig, sty, root, rf);
+		}
 
-int fg2d_start(struct arena* c, void* cf, struct arena* r, void* rf)
+		rel = samesrcnextdst(rel);
+	}
+	return 0;
+}
+int fg2d_delete(struct arena* win)
 {
 	return 0;
 }

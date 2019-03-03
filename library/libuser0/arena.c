@@ -246,20 +246,20 @@ int arenastop()
 {
 	return 0;
 }
-int arenastart(struct arena* c, void* cf, struct arena* r, void* rf)
+int arenastart(struct arena* twig, void* tf, struct arena* root, void* rf)
 {
 	int ret;
-	if(0 == c)return 0;
+	if(0 == twig)return 0;
 
-	//try root
-	switch(c->fmt)
+	//try default
+	switch(twig->fmt)
 	{
-		case _pin_ :ppin_start(c, 0, r, 0);return 1;
-		case _chip_:pchip_start(c, 0, r, 0);return 1;
+		case _pin_ :ppin_start(twig, tf, root, rf);return 1;
+		case _chip_:pchip_start(twig, tf, root, rf);return 1;
 	}
 
 	//try twig-gles
-	ret = vbonode_start(c, cf, r, rf);
+	ret = vbonode_start(twig, tf, root, rf);
 	if(ret)return 1;
 
 	//try twig-?

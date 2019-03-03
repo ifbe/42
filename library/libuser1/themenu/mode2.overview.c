@@ -1,8 +1,8 @@
 #include "libuser.h"
 void* allocstyle();
 void* allocpinid();
-void* actorstart(void*, void*, void*, void*);
-void* actorstop(void*, void*, void*, void*);
+void* actorstart(void*, void*, void*, void*, void*, void*);
+void* actorstop(void*, void*, void*, void*, void*, void*);
 void draw8bit_rect(
 	struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1);
@@ -129,7 +129,7 @@ int arenaactor(struct arena* ccc, struct actor* act)
 	}
 
 	actorcreate(0, act);
-	actorstart(win, sty, act, pin);
+	actorstart(act, pin, ccc, sty, win, 0);
 
 	relationcreate(act, pin, _act_, ccc, sty, _win_);
 	return 0;
@@ -1374,13 +1374,15 @@ static void overview_cwrite(
 {
 }
 static void overview_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void overview_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
     say("@overview_start\n");
 }

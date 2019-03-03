@@ -4,14 +4,14 @@
 
 
 
-int ppin_start(struct arena* c, void* cf, struct arena* r, void* rf)
+int ppin_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 {
     struct relation* rel;
     struct actor* act;
-    if(0 == c)return 0;
+    if(0 == twig)return 0;
 
 say("@ppin_start{\n");
-    rel = c->orel0;
+    rel = twig->orel0;
     while(1)
     {
         if(0 == rel)break;

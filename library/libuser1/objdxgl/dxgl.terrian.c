@@ -160,35 +160,36 @@ static void terrian_post()
 {
 }
 static void terrian_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void terrian_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	if(0 == pin)return;
+	if(0 == lf)return;
 
-	//
-	pair = alloc_winobj(win);
+	pair = alloc_winobj(root);
 	src = &pair->src;
 	dst = &pair->dst;
-	sty->foot[0] = (u64)dst;
-	pin->foot[0] = (u64)src;
+	lf->foot[0] = (u64)src;
+	tf->foot[0] = (u64)dst;
 
 	//shader
 	src->vs = terrian_glsl_v;
 	src->fs = terrian_glsl_f;
 
 	//texture
-	src->tex[0] = act->buf;
+	src->tex[0] = leaf->buf;
 	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_w[0] = act->width;
-	src->tex_h[0] = act->height;
+	src->tex_w[0] = leaf->width;
+	src->tex_h[0] = leaf->height;
 
 	//vertex
 	src->vbuf = memorycreate(4*6 * 6*81);

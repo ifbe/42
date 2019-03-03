@@ -374,15 +374,17 @@ static void the2048_cwrite(
 {
 }
 static void the2048_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void the2048_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
-	void* buf = act->buf;
+	void* buf = leaf->buf;
 	new2048(buf);
 }
 static void the2048_delete(struct actor* act, u8* buf)

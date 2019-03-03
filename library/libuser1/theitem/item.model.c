@@ -295,21 +295,21 @@ static void model_post()
 {
 }
 static void model_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void model_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 	struct glsrc* src;
-	if(0 == pin)return;
+	if(0 == lf)return;
 
 	//
-	src = alloc_winobj(win);
-
-	//shader
+	src = alloc_winobj(root);
 	src->vs = model_glsl_v;
 	src->fs = model_glsl_f;
 
@@ -318,10 +318,10 @@ static void model_start(
 	src->arg_data[0] = (u64)memorycreate(4*4*4);
 
 	//vertex
-	src->vbuf = act->buf;
 	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = act->width;
-	src->vbuf_h = act->height;
+	src->vbuf = leaf->buf;
+	src->vbuf_w = leaf->width;
+	src->vbuf_h = leaf->height;
 	src->method = 'v';
 
 	//send!
@@ -330,7 +330,7 @@ static void model_start(
 	src->tex_enq[0] = 0;
 	src->vbuf_enq = 42;
 	src->ibuf_enq = 0;
-	pin->foot[0] = (u64)src;
+	lf->foot[0] = (u64)src;
 }
 static void model_delete(struct actor* act)
 {

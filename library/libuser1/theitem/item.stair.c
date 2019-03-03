@@ -8,7 +8,33 @@ static void stair_read_pixel(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void stair_read_vbo(
+static void stair_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int j;
+	vec3 tc, tr, tf, tu;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	carveline2d_rect(win, 0xffffff, vc, vr, vf);
+
+	tr[0] = vr[0]/8;
+	tr[1] = vr[1]/8;
+	tr[2] = vr[2]/8;
+	tf[0] = vf[0]/8;
+	tf[1] = vf[1]/8;
+	tf[2] = vf[2]/8;
+	for(j=-7;j<8;j+=2)
+	{
+		tc[0] = vc[0] + vr[0]*j/8 + vf[0]*j/8;
+		tc[1] = vc[1] + vr[1]*j/8 + vf[1]*j/8;
+		tc[2] = vc[2] + vr[2]*j/8 + vf[2]*j/8;
+		carvesolid2d_rect(win, 0x808080, tc, tr, tf);
+	}
+}
+static void stair_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -74,7 +100,11 @@ static void stair_sread(
 	else if(fmt == _tui_)stair_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)stair_read_html(win, sty, act, pin);
 	else if(fmt == _json_)stair_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)stair_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)stair_read_vbo2d(win, sty, act, pin);
+		else stair_read_vbo3d(win, sty, act, pin);
+	}
 	else stair_read_pixel(win, sty, act, pin);
 }
 static void stair_swrite(
@@ -90,13 +120,15 @@ static void stair_cwrite()
 {
 }
 static void stair_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void stair_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void stair_delete(struct actor* act)

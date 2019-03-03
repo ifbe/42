@@ -10,6 +10,16 @@ void* arenacreate(u64, void*);
 
 
 //opengl shader
+char* video_glsl2d_v =
+	GLSL_VERSION
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec2 texuvw;\n"
+	"out mediump vec2 uv;\n"
+	"void main()\n"
+	"{\n"
+		"uv = texuvw;\n"
+		"gl_Position = vec4(vertex, 1.0);\n"
+	"}\n";
 char* video_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
@@ -83,7 +93,88 @@ void video_read_pixel(
 		  dst, 0,   w,   h, cx-ww, cy-hh, cx+ww, cy+hh
 	);
 }
-void video_read_vbo(
+void video_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x,y;
+	u8* dst;
+	u8* src;
+	float (*vbuf)[6];
+	struct glsrc* data;
+	if(0 == act->idx)return;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+
+	data = (void*)(pin->foot[0]);
+	vbuf = data->vbuf;
+
+	vbuf[0][0] = vc[0] - vr[0] - vf[0];
+	vbuf[0][1] = vc[1] - vr[1] - vf[1];
+	vbuf[0][2] = vc[2] - vr[2] - vf[2];
+	vbuf[0][3] = 0.0;
+	vbuf[0][4] = 480/1024.0;//1.0;
+	vbuf[0][5] = 0.0;
+
+	vbuf[1][0] = vc[0] + vr[0] + vf[0];
+	vbuf[1][1] = vc[1] + vr[1] + vf[1];
+	vbuf[1][2] = vc[2] + vr[2] + vf[2];
+	vbuf[1][3] = 640/1024.0;//0.0;
+	vbuf[1][4] = 0.0;
+	vbuf[1][5] = 0.0;
+
+	vbuf[2][0] = vc[0] - vr[0] + vf[0];
+	vbuf[2][1] = vc[1] - vr[1] + vf[1];
+	vbuf[2][2] = vc[2] - vr[2] + vf[2];
+	vbuf[2][3] = 0.0;
+	vbuf[2][4] = 0.0;
+	vbuf[2][5] = 0.0;
+
+	vbuf[3][0] = vc[0] + vr[0] + vf[0];
+	vbuf[3][1] = vc[1] + vr[1] + vf[1];
+	vbuf[3][2] = vc[2] + vr[2] + vf[2];
+	vbuf[3][3] = 640/1024.0;//0.0;
+	vbuf[3][4] = 0.0;
+	vbuf[3][5] = 0.0;
+
+	vbuf[4][0] = vc[0] - vr[0] - vf[0];
+	vbuf[4][1] = vc[1] - vr[1] - vf[1];
+	vbuf[4][2] = vc[2] - vr[2] - vf[2];
+	vbuf[4][3] = 0.0;
+	vbuf[4][4] = 480/1024.0;//1.0;
+	vbuf[4][5] = 0.0;
+
+	vbuf[5][0] = vc[0] + vr[0] - vf[0];
+	vbuf[5][1] = vc[1] + vr[1] - vf[1];
+	vbuf[5][2] = vc[2] + vr[2] - vf[2];
+	vbuf[5][3] = 640/1024.0;//1.0;
+	vbuf[5][4] = 480/1024.0;//1.0;
+	vbuf[5][5] = 0.0;
+
+	data->tex[0] = act->buf;
+	for(y=0;y<480;y++)
+	{
+		dst = (act->buf) + (y*1024*4);
+		src = (act->idx) + (y*320*4);
+		for(x=0;x<320;x++)
+		{
+			dst[8*x + 0] = src[4*x + 0];
+			dst[8*x + 1] = src[4*x + 1];
+			dst[8*x + 2] = src[4*x + 3];
+
+			dst[8*x + 4] = src[4*x + 2];
+			dst[8*x + 5] = src[4*x + 1];
+			dst[8*x + 6] = src[4*x + 3];
+		}
+	}
+
+	data->vbuf_enq += 1;
+	data->tex_enq[0] += 1;
+}
+void video_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -200,7 +291,11 @@ static void video_read(
 	else if(fmt == _tui_)video_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)video_read_html(win, sty, act, pin);
 	else if(fmt == _json_)video_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)video_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)video_read_vbo2d(win, sty, act, pin);
+		else video_read_vbo3d(win, sty, act, pin);
+	}
 	else video_read_pixel(win, sty, act, pin);
 }
 static void video_write(
@@ -219,13 +314,14 @@ static void video_post()
 {
 }
 static void video_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 	struct glsrc* src;
-	if(0 == pin)return;
+	if(0 == lf)return;
 
-	src = (void*)(pin->foot[0]);
+	src = (void*)(lf->foot[0]);
 	if(src->vbuf)
 	{
 		memorydelete(src->vbuf);
@@ -233,22 +329,35 @@ static void video_stop(
 	}
 }
 static void video_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
 {
+	struct datapair* pair;
 	struct glsrc* src;
-	if(0 == sty)return;
-	if(0 == pin)return;
-	if(_vbo_ != win->fmt)return;
+	struct gldst* dst;
+	if(0 == lf)return;
+	if(0 == tf)return;
+	if(_vbo_ != root->fmt)return;
 
-	//sender
-	src = alloc_winobj(win);
+	//
+	pair = alloc_winobj(root);
+	src = &pair->src;
+	dst = &pair->dst;
+	lf->foot[0] = (u64)src;
+	tf->foot[0] = (u64)dst;
+
+	//shader
 	src->vs = video_glsl_v;
 	src->fs = video_glsl_f;
+	if(twig)
+	{
+		if(_fg2d_ == twig->fmt)src->vs = video_glsl2d_v;
+	}
 
 	//texture
-	src->tex[0] = act->buf;
 	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex[0] = leaf->buf;
 	src->tex_w[0] = 1024;
 	src->tex_h[0] = 1024;
 
@@ -264,7 +373,6 @@ static void video_start(
 	src->tex_enq[0] = 0;
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
-	pin->foot[0] = (u64)src;
 }
 static void video_delete(struct actor* act)
 {

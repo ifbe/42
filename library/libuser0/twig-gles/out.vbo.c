@@ -131,19 +131,19 @@ int vbonode_stop(struct arena* win, struct style* sty)
 {
 	return 0;
 }
-int vbonode_start(struct arena* c, void* cf, struct arena* r, void* rf)
+int vbonode_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 {
-	if(0 == c)return 0;
-	switch(c->fmt)
+	if(0 == twig)return 0;
+	switch(twig->fmt)
 	{
-		case _bg3d_:bg3d_start(c, 0, r, 0);return 1;
-		case _fg3d_:fg3d_start(c, 0, r, 0);return 1;
-		case _ev3d_:ev3d_start(c, 0, r, 0);return 1;
-		case _ui3d_:ui3d_start(c, 0, r, 0);return 1;
-		case _bg2d_:bg2d_start(c, 0, r, 0);return 1;
-		case _fg2d_:fg2d_start(c, 0, r, 0);return 1;
-		case _ev2d_:ev2d_start(c, 0, r, 0);return 1;
-		case _ui2d_:ui2d_start(c, 0, r, 0);return 1;
+		case _bg3d_:bg3d_start(twig, tf, root, rf);return 1;
+		case _fg3d_:fg3d_start(twig, tf, root, rf);return 1;
+		case _ev3d_:ev3d_start(twig, tf, root, rf);return 1;
+		case _ui3d_:ui3d_start(twig, tf, root, rf);return 1;
+		case _bg2d_:bg2d_start(twig, tf, root, rf);return 1;
+		case _fg2d_:fg2d_start(twig, tf, root, rf);return 1;
+		case _ev2d_:ev2d_start(twig, tf, root, rf);return 1;
+		case _ui2d_:ui2d_start(twig, tf, root, rf);return 1;
 	}
 	return 0;
 }

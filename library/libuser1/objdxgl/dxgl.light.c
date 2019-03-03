@@ -143,20 +143,12 @@ static void light_read(
 	else if(fmt == _vbo_)light_read_vbo(win, sty, act, pin);
 	else light_read_pixel(win, sty, act, pin);
 }
-
-
-
-
 static void light_write(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-
-
-
-
 static void light_get()
 {
 }
@@ -164,29 +156,29 @@ static void light_post()
 {
 }
 static void light_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void light_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 	struct glsrc* src;
-	if(0 == pin)return;
+	if(0 == lf)return;
 
 	//
-	src = alloc_winobj(win);
-
-	//shader
+	src = alloc_winobj(root);
 	src->vs = light_glsl_v;
 	src->fs = light_glsl_f;
 
 	//texture
-	src->tex[0] = act->buf;
+	src->tex[0] = leaf->buf;
 	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_w[0] = act->width;
-	src->tex_h[0] = act->height;
+	src->tex_w[0] = leaf->width;
+	src->tex_h[0] = leaf->height;
 
 #define accx 16
 #define accy 15
@@ -208,7 +200,7 @@ static void light_start(
 	src->ibuf_enq = 0;
 
 	//send!
-	pin->foot[0] = (u64)src;
+	lf->foot[0] = (u64)src;
 }
 static void light_delete(struct actor* act)
 {

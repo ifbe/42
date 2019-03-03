@@ -110,7 +110,7 @@ static void finfet_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void finfet_read(
+static void finfet_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -126,30 +126,33 @@ static void finfet_read(
 	}
 	else finfet_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-static void finfet_write(
+static void finfet_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void finfet_post(u8* buf, int len)
+static void finfet_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void finfet_get(u8* buf, int len)
+static void finfet_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void finfet_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void finfet_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
 {
 }
 static void finfet_delete(struct actor* act, u8* buf)
@@ -171,8 +174,8 @@ void finfet_register(struct actor* p)
 	p->ondelete = (void*)finfet_delete;
 	p->onstart  = (void*)finfet_start;
 	p->onstop   = (void*)finfet_stop;
-	p->onget    = (void*)finfet_get;
-	p->onpost   = (void*)finfet_post;
-	p->onread   = (void*)finfet_read;
-	p->onwrite  = (void*)finfet_write;
+	p->onget    = (void*)finfet_cread;
+	p->onpost   = (void*)finfet_cwrite;
+	p->onread   = (void*)finfet_sread;
+	p->onwrite  = (void*)finfet_swrite;
 }
