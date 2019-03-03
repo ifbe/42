@@ -1360,7 +1360,7 @@ static int overview_swrite(
 			return 1;
 		}
 	}
-	return 0;
+	return 1;
 }
 static void overview_cread(
 	struct arena* win, struct style* sty,
