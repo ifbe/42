@@ -336,7 +336,7 @@ void* actorcommand(u8* buf, int len)
 
 
 int actorread_all(struct arena* win)
-{
+{/*
 	struct relation* orel;
 	struct actor* act;
 	struct style* sty;
@@ -374,7 +374,7 @@ int actorread_all(struct arena* win)
 
 	//fg
 	postprocess(win);
-
+*/
 	return 0;
 }
 void* actorlist(u8* buf, int len)

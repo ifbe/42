@@ -14,7 +14,7 @@ static u64 want[COUNT] = {
 
 
 
-int ev3d_read(struct arena* cc, void* cf, struct arena* win, struct style* st)
+int ev3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* st)
 {
 	struct relation* orel;
 	struct actor* act;
@@ -39,7 +39,7 @@ int ev3d_read(struct arena* cc, void* cf, struct arena* win, struct style* st)
 	}
 	return 1;
 }
-int ev3d_write(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
+int ev3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
 {
 	struct relation* rel;
 	struct actor* act;

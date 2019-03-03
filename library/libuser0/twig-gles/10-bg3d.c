@@ -14,7 +14,7 @@ static u64 want[2] = {
 
 
 
-int bg3d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack)
+int bg3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stack)
 {
 	struct relation* rel;
 	struct actor* act;
@@ -36,7 +36,7 @@ int bg3d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack
 	}
 	return 0;
 }
-int bg3d_write(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
+int bg3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
 {
 	return 0;
 }

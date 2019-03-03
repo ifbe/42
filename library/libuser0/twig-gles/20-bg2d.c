@@ -7,7 +7,7 @@ int actorstart(void*, void*, void*, void*);
 
 
 
-int bg2d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack)
+int bg2d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stack)
 {
 	int j;
 	struct relation* rel;
@@ -30,7 +30,7 @@ int bg2d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack
 	}
 	return 0;
 }
-int bg2d_write(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
+int bg2d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
 {
 	//say("@bg2d_write\n");
 	return 0;

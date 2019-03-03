@@ -18,7 +18,7 @@ static u64 want[COUNT] = {
 
 
 
-int ui2d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack)
+int ui2d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stack)
 {
 	struct relation* rel;
 	struct actor* act;
@@ -33,17 +33,19 @@ int ui2d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack
 
 		if(_act_ == rel->dsttype)
 		{
-			act = (void*)(rel->dstchip);
 			sty = (void*)(rel->srcfoot);
+			if(sty){if('#' == sty->wc)goto next;}
+
+			act = (void*)(rel->dstchip);
 			pin = (void*)(rel->dstfoot);
 			act->onread(win, sty, act, pin);
 		}
-
+next:
 		rel = samesrcnextdst(rel);
 	}
 	return 0;
 }
-int ui2d_write(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
+int ui2d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
 {
 	int ret;
 	struct relation* rel;
@@ -59,22 +61,55 @@ int ui2d_write(struct arena* cc, void* cf, struct arena* win, struct style* stac
 
 		if(_act_ == rel->dsttype)
 		{
-			act = (void*)(rel->dstchip);
 			sty = (void*)(rel->srcfoot);
+			if(sty){if('#' == sty->wc)goto next;}
+
+			act = (void*)(rel->dstchip);
 			pin = (void*)(rel->dstfoot);
 			ret = act->onwrite(act, pin, win, 0, ev, 0);
 			if(ret)break;
 		}
-
+next:
 		rel = samesrcprevdst(rel);
 	}
 
 	return ret;
 }
+int ui2d_cread(struct arena* win, struct style* stack, struct actor* sc, struct pinid* sf)
+{
+	return 0;
+}
+int ui2d_cwrite(struct arena* win, struct style* stack, struct actor* sc, struct pinid* sf, int flag)
+{
+	struct relation* rel;
+	struct style* sty;
+	struct actor* act;
+	//say("ui2d_cwrite\n");
 
+	rel = win->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+//say("%llx\n", rel->dsttype);
+		if(_act_ == rel->dsttype)
+		{
+			act = (void*)(rel->dstchip);
+//say("%x\n", act);
+			if(sc == act)goto next;
 
-
-
+			sty = (void*)(rel->srcfoot);
+//say("%x\n", sty->wc);
+			if(sty){sty->wc = flag;}
+		}
+next:
+		rel = samesrcnextdst(rel);
+	}
+	return 0;
+}
+int ui2d_stop(struct arena* c, void* cf, struct arena* r, void* rf)
+{
+	return 0;
+}
 int ui2d_start(struct arena* c, void* cf, struct arena* r, void* rf)
 {
 	struct relation* rel;
@@ -87,13 +122,21 @@ int ui2d_start(struct arena* c, void* cf, struct arena* r, void* rf)
 	{
 		if(0 == rel)break;
 
-		sty = (void*)(rel->srcfoot);
-		act = (void*)(rel->dstchip);
-		pin = (void*)(rel->dstfoot);
-		actorstart(r, sty, act, pin);
+		if(_act_ == rel->dsttype)
+		{
+			sty = (void*)(rel->srcfoot);
+
+			act = (void*)(rel->dstchip);
+			pin = (void*)(rel->dstfoot);
+			actorstart(r, sty, act, pin);
+		}
 
 		rel = samesrcnextdst(rel);
 	}
+	return 0;
+}
+int ui2d_delete(struct arena* win)
+{
 	return 0;
 }
 int ui2d_create(struct arena* win, void* str)

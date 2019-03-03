@@ -3,11 +3,11 @@
 
 
 
-int ui3d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack)
+int ui3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stack)
 {
 	return 0;
 }
-int ui3d_write(struct arena* cc, void* cf, struct arena* win, struct style* sty, struct event* ev)
+int ui3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sty, struct event* ev)
 {
 	//say("@ui3d_write\n");
 	return 0;

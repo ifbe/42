@@ -1,4 +1,5 @@
 #include "libuser.h"
+int ui2d_cwrite(struct arena* win, struct style* sty, struct actor* sc, struct pinid* sf, int flag);
 
 
 
@@ -261,6 +262,8 @@ static int corner_swrite(
 {
 	int j,k,x,y;
 	int w,h,id,ret;
+	struct relation* rel;
+	struct arena* tmp;
 	u64 why = ev->why;
 	u64 what = ev->what;
 
@@ -297,6 +300,27 @@ static int corner_swrite(
 					return 1;
 				}
 			}
+			if(y < ret)
+			{
+				if(x < ret)
+				{
+					rel = act->irel0;
+					if(rel)
+					{
+						tmp = (void*)(rel->srcchip);
+						if(tmp)
+						{
+							ui2d_cwrite(tmp, sty, act, pin, '#');
+						}
+					}
+					return 1;
+				}
+				if(x+ret > w)
+				{
+					return 1;
+				}
+			}
+/*
 			if(k+ret > h)
 			{
 				if(j+ret > w)
@@ -318,6 +342,7 @@ static int corner_swrite(
 					return 1;
 				}
 			}
+*/
 		}
 	}
 	return 0;

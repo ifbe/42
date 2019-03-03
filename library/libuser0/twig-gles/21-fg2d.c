@@ -5,7 +5,7 @@ void carveborder2d(struct arena* win, struct style* sty, void* name);
 
 
 
-int fg2d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack)
+int fg2d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stack)
 {
 	int j;
 	struct relation* rel;
@@ -34,7 +34,7 @@ int fg2d_read(struct arena* cc, void* cf, struct arena* win, struct style* stack
 	}
 	return 0;
 }
-int fg2d_write(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
+int fg2d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
 {
 	struct relation* rel;
 	struct actor* act;

@@ -303,14 +303,22 @@ struct datapair
 struct style
 {
 	//[00, 7f]
-	vec4 vl;	//[00,0f]: left
-	vec4 vr;	//[10,1f]: right
-	vec4 vn;	//[20,2f]: near
-	vec4 vf;	//[30,3f]: far
-	vec4 vb;	//[40,4f]: bottom
-	vec4 vu;	//[50,5f]: upper
-	vec4 vv;	//[60,6f]: info
-	vec4 vc;	//[70,7f]: center
+	vec3 vl;	//[00,0f]: left
+	u32 wl;
+	vec3 vr;	//[10,1f]: right
+	u32 wr;
+	vec3 vn;	//[20,2f]: near
+	u32 wn;
+	vec3 vf;	//[30,3f]: far
+	u32 wf;
+	vec3 vb;	//[40,4f]: bottom
+	u32 wb;
+	vec3 vu;	//[50,5f]: upper
+	u32 wu;
+	vec3 vv;	//[60,6f]: info
+	u32 wv;
+	vec3 vc;	//[70,7f]: center
+	u32 wc;
 
 	//[80, ...]
 	u64 foot[0];

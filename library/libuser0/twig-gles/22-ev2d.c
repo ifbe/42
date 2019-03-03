@@ -3,7 +3,7 @@
 
 
 
-int ev2d_read(struct arena* cc, void* cf, struct arena* win, struct style* st)
+int ev2d_sread(struct arena* cc, void* cf, struct arena* win, struct style* st)
 {
 	struct relation* orel;
 	struct actor* act;
@@ -28,7 +28,7 @@ int ev2d_read(struct arena* cc, void* cf, struct arena* win, struct style* st)
 	}
 	return 1;
 }
-int ev2d_write(struct arena* cc, void* cf, struct arena* win, struct style* sty, struct event* ev)
+int ev2d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sty, struct event* ev)
 {
 	//say("@ev2d_write\n");
 	return 0;

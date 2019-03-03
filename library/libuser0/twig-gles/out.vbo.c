@@ -6,43 +6,43 @@ int actorinput_touch(struct arena* win, struct event* ev);
 //
 int bg3d_create(void*, void*);
 int bg3d_start(void*, void*, void*, void*);
-int bg3d_read(void*, void*, void*, void*);
-int bg3d_write(void*, void*, void*, void*, void*);
+int bg3d_sread(void*, void*, void*, void*);
+int bg3d_swrite(void*, void*, void*, void*, void*);
 //
 int fg3d_create(void*, void*);
 int fg3d_start(void*, void*, void*, void*);
-int fg3d_read(void*, void*, void*, void*);
-int fg3d_write(void*, void*, void*, void*, void*);
+int fg3d_sread(void*, void*, void*, void*);
+int fg3d_swrite(void*, void*, void*, void*, void*);
 //
 int ev3d_create(void*, void*);
 int ev3d_start(void*, void*, void*, void*);
-int ev3d_read(void*, void*, void*, void*);
-int ev3d_write(void*, void*, void*, void*, void*);
+int ev3d_sread(void*, void*, void*, void*);
+int ev3d_swrite(void*, void*, void*, void*, void*);
 //
 int ui3d_create(void*, void*);
 int ui3d_start(void*, void*, void*, void*);
-int ui3d_read(void*, void*, void*, void*);
-int ui3d_write(void*, void*, void*, void*, void*);
+int ui3d_sread(void*, void*, void*, void*);
+int ui3d_swrite(void*, void*, void*, void*, void*);
 //
 int bg2d_create(void*, void*);
 int bg2d_start(void*, void*, void*, void*);
-int bg2d_read(void*, void*, void*, void*);
-int bg2d_write(void*, void*, void*, void*, void*);
+int bg2d_sread(void*, void*, void*, void*);
+int bg2d_swrite(void*, void*, void*, void*, void*);
 //
 int fg2d_create(void*, void*);
 int fg2d_start(void*, void*, void*, void*);
-int fg2d_read(void*, void*, void*, void*);
-int fg2d_write(void*, void*, void*, void*, void*);
+int fg2d_sread(void*, void*, void*, void*);
+int fg2d_swrite(void*, void*, void*, void*, void*);
 //
 int ev2d_create(void*, void*);
 int ev2d_start(void*, void*, void*, void*);
-int ev2d_read(void*, void*, void*, void*);
-int ev2d_write(void*, void*, void*, void*, void*);
+int ev2d_sread(void*, void*, void*, void*);
+int ev2d_swrite(void*, void*, void*, void*, void*);
 //
 int ui2d_create(void*, void*);
 int ui2d_start(void*, void*, void*, void*);
-int ui2d_read(void*, void*, void*, void*);
-int ui2d_write(void*, void*, void*, void*, void*);
+int ui2d_sread(void*, void*, void*, void*);
+int ui2d_swrite(void*, void*, void*, void*, void*);
 
 
 
@@ -67,14 +67,14 @@ int vbonode_sread(struct arena* win, struct style* stack)
 			tmp = (void*)(rel->dstchip);
 			switch(tmp->fmt)
 			{
-				case _bg3d_:bg3d_read(tmp, pin, win, sty);break;
-				case _fg3d_:fg3d_read(tmp, pin, win, sty);break;
-				case _ev3d_:ev3d_read(tmp, pin, win, sty);break;
-				case _ui3d_:ui3d_read(tmp, pin, win, sty);break;
-				case _bg2d_:bg2d_read(tmp, pin, win, sty);break;
-				case _fg2d_:fg2d_read(tmp, pin, win, sty);break;
-				case _ev2d_:ev2d_read(tmp, pin, win, sty);break;
-				case _ui2d_:ui2d_read(tmp, pin, win, sty);break;
+				case _bg3d_:bg3d_sread(tmp, pin, win, sty);break;
+				case _fg3d_:fg3d_sread(tmp, pin, win, sty);break;
+				case _ev3d_:ev3d_sread(tmp, pin, win, sty);break;
+				case _ui3d_:ui3d_sread(tmp, pin, win, sty);break;
+				case _bg2d_:bg2d_sread(tmp, pin, win, sty);break;
+				case _fg2d_:fg2d_sread(tmp, pin, win, sty);break;
+				case _ev2d_:ev2d_sread(tmp, pin, win, sty);break;
+				case _ui2d_:ui2d_sread(tmp, pin, win, sty);break;
 			}
 		}
 
@@ -105,14 +105,14 @@ int vbonode_swrite(struct arena* win, struct style* stack, struct event* ev)
 			tmp = (void*)(rel->dstchip);
 			switch(tmp->fmt)
 			{
-				case _bg3d_:ret = bg3d_write(tmp, pin, win, sty, ev);break;
-				case _fg3d_:ret = fg3d_write(tmp, pin, win, sty, ev);break;
-				case _ev3d_:ret = ev3d_write(tmp, pin, win, sty, ev);break;
-				case _ui3d_:ret = ui3d_write(tmp, pin, win, sty, ev);break;
-				case _bg2d_:ret = bg2d_write(tmp, pin, win, sty, ev);break;
-				case _fg2d_:ret = fg2d_write(tmp, pin, win, sty, ev);break;
-				case _ev2d_:ret = ev2d_write(tmp, pin, win, sty, ev);break;
-				case _ui2d_:ret = ui2d_write(tmp, pin, win, sty, ev);break;
+				case _bg3d_:ret = bg3d_swrite(tmp, pin, win, sty, ev);break;
+				case _fg3d_:ret = fg3d_swrite(tmp, pin, win, sty, ev);break;
+				case _ev3d_:ret = ev3d_swrite(tmp, pin, win, sty, ev);break;
+				case _ui3d_:ret = ui3d_swrite(tmp, pin, win, sty, ev);break;
+				case _bg2d_:ret = bg2d_swrite(tmp, pin, win, sty, ev);break;
+				case _fg2d_:ret = fg2d_swrite(tmp, pin, win, sty, ev);break;
+				case _ev2d_:ret = ev2d_swrite(tmp, pin, win, sty, ev);break;
+				case _ui2d_:ret = ui2d_swrite(tmp, pin, win, sty, ev);break;
 			}
 			if(ret)break;
 		}
