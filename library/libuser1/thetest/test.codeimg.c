@@ -369,7 +369,7 @@ static void codeimg_write(
 	int rr,gg,bb;
 	u32* img;
 	struct glsrc* src;
-say("@codeimg_write:%x,%x\n",ev->why,ev->what);
+	//say("@codeimg_write:%x,%x\n",ev->why,ev->what);
 
 	img = act->buf;
 	if(0 == img)return;
@@ -489,10 +489,7 @@ static void codeimg_start(
 	//shader
 	src->vs = codeimg_glsl_v;
 	src->fs = codeimg_glsl_f;
-	if(twig)
-	{
-		if(_fg2d_ == twig->fmt)src->vs = codeimg_glsl2d_v;
-	}
+	if(twig){if(_fg2d_ == twig->fmt)src->vs = codeimg_glsl2d_v;}
 
 	//texture
 	src->tex_fmt[0] = hex32('r','g','b','a');

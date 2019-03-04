@@ -52,7 +52,6 @@ void house_register(void*);
 void human_register(void*);
 void model_register(void*);
 void motor_register(void*);
-void ocean_register(void*);
 void piano_register(void*);
 void picture_register(void*);
 void rccar_register(void*);
@@ -209,9 +208,6 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	motor_register(tmp);
-	tmp += sizeof(struct actor);
-
-	ocean_register(tmp);
 	tmp += sizeof(struct actor);
 
 	piano_register(tmp);

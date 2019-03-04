@@ -11,12 +11,11 @@ char* model_glsl_v =
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec3 normal;\n"
 	"uniform mat4 objmat;\n"
-	"uniform mat4 cammvp;\n"
 	"out mediump vec3 vcolor;\n"
 	"void main()\n"
 	"{\n"
 		"vcolor = normal;\n"
-		"gl_Position = cammvp * objmat * vec4(vertex, 1.0);\n"
+		"gl_Position = objmat * vec4(vertex, 1.0);\n"
 	"}\n";
 char* model_glsl_f =
 	GLSL_VERSION
@@ -204,7 +203,19 @@ static void model_read_pixel(
 	}
 */
 }
-static void model_read_vbo(
+static void model_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	struct glsrc* src;
+	if(act->buf == 0)return;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+	src = (void*)(pin->foot[0]);
+	sty_sty_mat(&act->target, sty, (void*)src->arg_data[0]); 
+	src->arg_enq[0] += 1;
+}
+static void model_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -246,7 +257,11 @@ static void model_read(
 	else if(fmt == _tui_)model_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)model_read_html(win, sty, act, pin);
 	else if(fmt == _json_)model_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)model_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)model_read_vbo2d(win, sty, act, pin);
+		else model_read_vbo3d(win, sty, act, pin);
+	}
 	else model_read_pixel(win, sty, act, pin);
 }
 
@@ -305,15 +320,23 @@ static void model_start(
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
+	struct datapair* pair;
 	struct glsrc* src;
+	struct gldst* dst;
 	if(0 == lf)return;
 
-	//
-	src = alloc_winobj(root);
+	//alloc
+	pair = alloc_winobj(root);
+	src = &pair->src;
+	dst = &pair->dst;
+	lf->foot[0] = (u64)src;
+	tf->foot[0] = (u64)dst;
+
+	//shader
 	src->vs = model_glsl_v;
 	src->fs = model_glsl_f;
 
-	//
+	//argument
 	src->arg[0] = "objmat";
 	src->arg_data[0] = (u64)memorycreate(4*4*4);
 
@@ -330,7 +353,6 @@ static void model_start(
 	src->tex_enq[0] = 0;
 	src->vbuf_enq = 42;
 	src->ibuf_enq = 0;
-	lf->foot[0] = (u64)src;
 }
 static void model_delete(struct actor* act)
 {

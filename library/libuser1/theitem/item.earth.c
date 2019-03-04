@@ -5,6 +5,16 @@ void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
 
 
+char* earth_glsl2d_v =
+	GLSL_VERSION
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec2 texuvw;\n"
+	"out mediump vec2 uvw;\n"
+	"void main()\n"
+	"{\n"
+		"uvw = texuvw;\n"
+		"gl_Position = vec4(vertex, 1.0);\n"
+	"}\n";
 char* earth_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
@@ -79,7 +89,29 @@ static void earth_read_pixel(
 		}
 	}
 }
-static void earth_read_vbo(
+static void earth_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	void* vbuf;
+	void* ibuf;
+	struct glsrc* src;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	if(0 == act->buf)return;
+
+	src = (void*)(pin->foot[0]);
+	vbuf = (void*)(src->vbuf);
+	ibuf = (void*)(src->ibuf);
+	carveplanet(vbuf, ibuf, vc, vr, vf, vu);
+	src->vbuf_enq += 1;
+	src->ibuf_enq += 1;
+}
+static void earth_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -140,7 +172,11 @@ static void earth_read(
 	else if(fmt == _tui_)earth_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)earth_read_html(win, sty, act, pin);
 	else if(fmt == _json_)earth_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)earth_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)earth_read_vbo2d(win, sty, act, pin);
+		else earth_read_vbo3d(win, sty, act, pin);
+	}
 	else earth_read_pixel(win, sty, act, pin);
 }
 
@@ -174,13 +210,21 @@ static void earth_start(
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
+	struct datapair* pair;
 	struct glsrc* src;
+	struct gldst* dst;
 	if(0 == leaf)return;
 
-	//
-	src = alloc_winobj(root);
+	pair = alloc_winobj(root);
+	src = &pair->src;
+	dst = &pair->dst;
+	lf->foot[0] = (u64)src;
+	tf->foot[0] = (u64)dst;
+
+	//shader
 	src->vs = earth_glsl_v;
 	src->fs = earth_glsl_f;
+	if(twig){if(_fg2d_ == twig->fmt)src->vs = earth_glsl2d_v;}
 
 	//texture
 	src->tex_fmt[0] = hex32('r','g','b','a');
@@ -207,8 +251,6 @@ static void earth_start(
 	src->tex_enq[0] = 42;
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
-
-	lf->foot[0] = (u64)src;
 }
 static void earth_delete(struct actor* act)
 {

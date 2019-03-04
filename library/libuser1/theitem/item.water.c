@@ -5,6 +5,16 @@ void actorcreatefromfile(struct actor* act, char* name);
 
 
 
+char* water_glsl2d_v =
+	GLSL_VERSION
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec2 texuvw;\n"
+	"out mediump vec2 uvw;\n"
+	"void main()\n"
+	"{\n"
+		"uvw = texuvw;\n"
+		"gl_Position = vec4(vertex, 1.0);\n"
+	"}\n";
 char* water_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
@@ -49,7 +59,68 @@ static void water_read_pixel(
 		hh = win->height/2;
 	}
 }
-static void water_read_vbo(
+static void water_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	float (*vbuf)[6];
+	struct glsrc* src;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	if(0 == act->buf)return;
+
+	src = (void*)(pin->foot[0]);
+	vbuf = (void*)(src->vbuf);
+
+	vbuf[0][0] = vc[0] - vr[0] - vf[0];
+	vbuf[0][1] = vc[1] - vr[1] - vf[1];
+	vbuf[0][2] = vc[2] - vr[2] - vf[2];
+	vbuf[0][3] = 0.0;
+	vbuf[0][4] = 1.0;
+	vbuf[0][5] = 0.0;
+
+	vbuf[1][0] = vc[0] + vr[0] + vf[0];
+	vbuf[1][1] = vc[1] + vr[1] + vf[1];
+	vbuf[1][2] = vc[2] + vr[2] + vf[2];
+	vbuf[1][3] = 1.0;
+	vbuf[1][4] = 0.0;
+	vbuf[1][5] = 0.0;
+
+	vbuf[2][0] = vc[0] - vr[0] + vf[0];
+	vbuf[2][1] = vc[1] - vr[1] + vf[1];
+	vbuf[2][2] = vc[2] - vr[2] + vf[2];
+	vbuf[2][3] = 0.0;
+	vbuf[2][4] = 0.0;
+	vbuf[2][5] = 0.0;
+
+	vbuf[3][0] = vc[0] + vr[0] + vf[0];
+	vbuf[3][1] = vc[1] + vr[1] + vf[1];
+	vbuf[3][2] = vc[2] + vr[2] + vf[2];
+	vbuf[3][3] = 1.0;
+	vbuf[3][4] = 0.0;
+	vbuf[3][5] = 0.0;
+
+	vbuf[4][0] = vc[0] - vr[0] - vf[0];
+	vbuf[4][1] = vc[1] - vr[1] - vf[1];
+	vbuf[4][2] = vc[2] - vr[2] - vf[2];
+	vbuf[4][3] = 0.0;
+	vbuf[4][4] = 1.0;
+	vbuf[4][5] = 0.0;
+
+	vbuf[5][0] = vc[0] + vr[0] - vf[0];
+	vbuf[5][1] = vc[1] + vr[1] - vf[1];
+	vbuf[5][2] = vc[2] + vr[2] - vf[2];
+	vbuf[5][3] = 1.0;
+	vbuf[5][4] = 1.0;
+	vbuf[5][5] = 0.0;
+
+	src->vbuf_enq += 1;
+}
+static void water_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -137,7 +208,11 @@ static void water_read(
 	else if(fmt == _tui_)water_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)water_read_html(win, sty, act, pin);
 	else if(fmt == _json_)water_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)water_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)water_read_vbo2d(win, sty, act, pin);
+		else water_read_vbo3d(win, sty, act, pin);
+	}
 	else water_read_pixel(win, sty, act, pin);
 }
 static void water_write(
@@ -163,17 +238,25 @@ static void water_start(
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
+	struct datapair* pair;
 	struct glsrc* src;
+	struct gldst* dst;
 	if(0 == lf)return;
 
-	//
-	src = alloc_winobj(root);
+	pair = alloc_winobj(root);
+	src = &pair->src;
+	dst = &pair->dst;
+	lf->foot[0] = (u64)src;
+	tf->foot[0] = (u64)dst;
+
+	//shader
 	src->vs = water_glsl_v;
 	src->fs = water_glsl_f;
+	if(twig){if(_fg2d_ == twig->fmt)src->vs = water_glsl2d_v;}
 
 	//texture
-	src->tex[0] = leaf->buf;
 	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex[0] = leaf->buf;
 	src->tex_w[0] = leaf->width;
 	src->tex_h[0] = leaf->height;
 
@@ -190,7 +273,6 @@ static void water_start(
 	src->tex_enq[0] = 42;
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
-	lf->foot[0] = (u64)src;
 }
 static void water_delete(struct actor* act)
 {
