@@ -170,17 +170,17 @@ int ui2d_create(struct arena* win, void* str)
 		sty->vc[1] = 0;
 		sty->vc[2] = 0;
 
-		sty->vr[0] = 1000*1000;
+		sty->vr[0] = 1.0;
 		sty->vr[1] = 0;
 		sty->vr[2] = 0;
 
 		sty->vf[0] = 0;
-		sty->vf[1] = 1000*1000;
+		sty->vf[1] = 1.0;
 		sty->vf[2] = 0;
 
 		sty->vu[0] = 0;
 		sty->vu[1] = 0;
-		sty->vu[2] = 1000*1000;
+		sty->vu[2] = 1.0;
 	}
 	return 0;
 }
