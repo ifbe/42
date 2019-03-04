@@ -50,8 +50,8 @@ int fg2d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sta
 
 		if(_act_ == rel->dsttype)
 		{
-			act = (void*)(rel->dstchip);
 			sty = (void*)(rel->srcfoot);
+			act = (void*)(rel->dstchip);
 			pin = (void*)(rel->dstfoot);
 			act->onwrite(act, pin, win, sty, ev, 0);
 		}

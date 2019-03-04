@@ -84,24 +84,17 @@ int ui2d_cwrite(struct arena* win, struct style* stack, struct actor* sc, struct
 	struct relation* rel;
 	struct style* sty;
 	struct actor* act;
-	//say("ui2d_cwrite\n");
 
 	rel = win->orel0;
 	while(1)
 	{
 		if(0 == rel)break;
-//say("%llx\n", rel->dsttype);
 		if(_act_ == rel->dsttype)
 		{
-			act = (void*)(rel->dstchip);
-//say("%x\n", act);
-			if(sc == act)goto next;
-
 			sty = (void*)(rel->srcfoot);
-//say("%x\n", sty->wc);
-			if(sty){sty->wc = flag;}
+			if(sty){sty->wc = 0;}
 		}
-next:
+
 		rel = samesrcnextdst(rel);
 	}
 	return 0;

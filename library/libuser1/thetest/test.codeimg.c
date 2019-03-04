@@ -22,6 +22,16 @@ static float vbuf[6][5] = {
 
 
 
+char* codeimg_glsl2d_v =
+	GLSL_VERSION
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec2 texuvw;\n"
+	"out mediump vec2 uvw;\n"
+	"void main()\n"
+	"{\n"
+		"uvw = texuvw;\n"
+		"gl_Position = vec4(vertex, 1.0);\n"
+	"}\n";
 char* codeimg_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
@@ -193,7 +203,68 @@ static void codeimg_read_pixel(
 		stride, height, cx-ww, cy-hh, cx+ww, cy+hh
 	);
 }
-static void codeimg_read_vbo(
+static void codeimg_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	float (*vbuf)[6];
+	struct glsrc* src;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	if(0 == act->buf)return;
+
+	src = (void*)(pin->foot[0]);
+	vbuf = src->vbuf;
+
+	vbuf[0][0] = vc[0] - vr[0] - vf[0];
+	vbuf[0][1] = vc[1] - vr[1] - vf[1];
+	vbuf[0][2] = vc[2] - vr[2] - vf[2];
+	vbuf[0][3] = 0.0;
+	vbuf[0][4] = 1.0;
+	vbuf[0][5] = 0.0;
+
+	vbuf[1][0] = vc[0] + vr[0] + vf[0];
+	vbuf[1][1] = vc[1] + vr[1] + vf[1];
+	vbuf[1][2] = vc[2] + vr[2] + vf[2];
+	vbuf[1][3] = 1.0;
+	vbuf[1][4] = 0.0;
+	vbuf[1][5] = 0.0;
+
+	vbuf[2][0] = vc[0] - vr[0] + vf[0];
+	vbuf[2][1] = vc[1] - vr[1] + vf[1];
+	vbuf[2][2] = vc[2] - vr[2] + vf[2];
+	vbuf[2][3] = 0.0;
+	vbuf[2][4] = 0.0;
+	vbuf[2][5] = 0.0;
+
+	vbuf[3][0] = vc[0] + vr[0] + vf[0];
+	vbuf[3][1] = vc[1] + vr[1] + vf[1];
+	vbuf[3][2] = vc[2] + vr[2] + vf[2];
+	vbuf[3][3] = 1.0;
+	vbuf[3][4] = 0.0;
+	vbuf[3][5] = 0.0;
+
+	vbuf[4][0] = vc[0] - vr[0] - vf[0];
+	vbuf[4][1] = vc[1] - vr[1] - vf[1];
+	vbuf[4][2] = vc[2] - vr[2] - vf[2];
+	vbuf[4][3] = 0.0;
+	vbuf[4][4] = 1.0;
+	vbuf[4][5] = 0.0;
+
+	vbuf[5][0] = vc[0] + vr[0] - vf[0];
+	vbuf[5][1] = vc[1] + vr[1] - vf[1];
+	vbuf[5][2] = vc[2] + vr[2] - vf[2];
+	vbuf[5][3] = 1.0;
+	vbuf[5][4] = 1.0;
+	vbuf[5][5] = 0.0;
+
+	src->vbuf_enq += 1;
+}
+static void codeimg_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -282,7 +353,11 @@ static void codeimg_read(
 	else if(fmt == _tui_)codeimg_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)codeimg_read_html(win, sty, act, pin);
 	else if(fmt == _json_)codeimg_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)codeimg_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)codeimg_read_vbo2d(win, sty, act, pin);
+		else codeimg_read_vbo3d(win, sty, act, pin);
+	}
 	else codeimg_read_pixel(win, sty, act, pin);
 }
 static void codeimg_write(
@@ -290,6 +365,97 @@ static void codeimg_write(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
+	int x,y;
+	int rr,gg,bb;
+	u32* img;
+	struct glsrc* src;
+say("@codeimg_write:%x,%x\n",ev->why,ev->what);
+
+	img = act->buf;
+	if(0 == img)return;
+
+	src = (void*)(pin->foot[0]);
+	if(_char_ == ev->what)
+	{
+		switch(ev->why)
+		{
+			case '1':
+			{
+				for(y=0;y<1024;y++)
+				{
+					for(x=0;x<1024;x++)
+					{
+						rr = RED1(x,y);
+						gg = GREEN1(x,y);
+						bb = BLUE1(x,y);
+						img[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
+					}
+				}
+				src->tex_enq[0] += 1;
+				break;
+			}
+			case '2':
+			{
+				for(y=0;y<1024;y++)
+				{
+					for(x=0;x<1024;x++)
+					{
+						rr = RED2(x,y);
+						gg = GREEN2(x,y);
+						bb = BLUE2(x,y);
+						img[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
+					}
+				}
+				src->tex_enq[0] += 1;
+				break;
+			}
+			case '3':
+			{
+				for(y=0;y<1024;y++)
+				{
+					for(x=0;x<1024;x++)
+					{
+						rr = RED3(x,y);
+						gg = GREEN3(x,y);
+						bb = BLUE3(x,y);
+						img[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
+					}
+				}
+				src->tex_enq[0] += 1;
+				break;
+			}
+			case '4':
+			{
+				for(y=0;y<1024;y++)
+				{
+					for(x=0;x<1024;x++)
+					{
+						rr = RED4(x,y);
+						gg = GREEN4(x,y);
+						bb = BLUE4(x,y);
+						img[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
+					}
+				}
+				src->tex_enq[0] += 1;
+				break;
+			}
+			case '6':
+			{
+				for(y=0;y<1024;y++)
+				{
+					for(x=0;x<1024;x++)
+					{
+						rr = RED6(x,y);
+						gg = GREEN6(x,y);
+						bb = BLUE6(x,y);
+						img[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
+					}
+				}
+				src->tex_enq[0] += 1;
+				break;
+			}
+		}
+	}
 }
 static void codeimg_get()
 {
@@ -308,13 +474,25 @@ static void codeimg_start(
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
+	struct datapair* pair;
 	struct glsrc* src;
+	struct gldst* dst;
 	if(0 == lf)return;
 
-	//
-	src = alloc_winobj(root);
+	//alloc
+	pair = alloc_winobj(root);
+	src = &pair->src;
+	dst = &pair->dst;
+	lf->foot[0] = (u64)src;
+	tf->foot[0] = (u64)dst;
+
+	//shader
 	src->vs = codeimg_glsl_v;
 	src->fs = codeimg_glsl_f;
+	if(twig)
+	{
+		if(_fg2d_ == twig->fmt)src->vs = codeimg_glsl2d_v;
+	}
 
 	//texture
 	src->tex_fmt[0] = hex32('r','g','b','a');
@@ -335,7 +513,6 @@ static void codeimg_start(
 	src->tex_enq[0] = 42;
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
-	lf->foot[0] = (u64)src;
 }
 static void codeimg_delete(struct actor* act)
 {
@@ -345,8 +522,8 @@ static void codeimg_delete(struct actor* act)
 }
 static void codeimg_create(struct actor* act)
 {
-	int rr,gg,bb;
 	int x,y;
+	int rr,gg,bb;
 	u32* src;
 	if(0 == act)return;
 
@@ -354,17 +531,6 @@ static void codeimg_create(struct actor* act)
 	act->buf = src;
 	act->width = 1024;
 	act->height = 1024;
-
-	for(y=0;y<1024;y++)
-	{
-		for(x=0;x<1024;x++)
-		{
-			rr = RED4(x,y);
-			gg = GREEN4(x,y);
-			bb = BLUE4(x,y);
-			src[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
-		}
-	}
 }
 
 

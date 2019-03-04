@@ -57,6 +57,7 @@ void piano_register(void*);
 void picture_register(void*);
 void rccar_register(void*);
 void stair_register(void*);
+void tardis_register(void*);
 void tree_register(void*);
 void water_register(void*);
 //test
@@ -226,6 +227,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	stair_register(tmp);
+	tmp += sizeof(struct actor);
+
+	tardis_register(tmp);
 	tmp += sizeof(struct actor);
 
 	skydome_register(tmp);

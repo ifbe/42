@@ -304,6 +304,7 @@ static void video_write(
 	u8* buf, int len)
 {
 	if(0 == win)return;
+	if(0 == len)return;		//event
 
 	act->idx = buf;
 }

@@ -83,16 +83,16 @@ void tabbar_read_vbo(
 	float* vu = sty->vu;
     //carvesolid2d_rect(win, 0xff0000, vc, vr, vf);
 
-    tc[0] = vc[0] - vf[0]*13/16;
-    tc[1] = vc[1] - vf[1]*13/16;
-    tc[2] = vc[2] - vf[2]*13/16 - 0.1;
+    tc[0] = vc[0] - vf[0]*15/16;
+    tc[1] = vc[1] - vf[1]*15/16;
+    tc[2] = vc[2] - vf[2]*15/16 - 0.1;
     tr[0] = vr[0] / 2;
     tr[1] = vr[1] / 2;
     tr[2] = vr[2] / 2;
     tf[0] = vf[0] / 16;
     tf[1] = vf[1] / 16;
     tf[2] = vf[2] / 16;
-	carveline2d_rect(win, 0x808080, tc, tr, tf);
+	carveline2d_rect(win, 0x0000ff, tc, tr, tf);
 
     rel = act->irel0;
     if(0 == rel)return;
@@ -108,13 +108,13 @@ void tabbar_read_vbo(
 
         if(_act_ == rel->dsttype)
         {
-            tc[0] = vc[0] + vr[0]*(2*j-7)/16 - vf[0]*13/16;
-            tc[1] = vc[1] + vr[1]*(2*j-7)/16 - vf[1]*13/16;
-            tc[2] = vc[2] + vr[2]*(2*j-7)/16 - vf[2]*13/16;
-            tr[0] = vr[0] / 2 / 9;
-            tr[1] = vr[1] / 2 / 9;
-            tr[2] = vr[2] / 2 / 9;
-            carvesolid2d_rect(win, 0x404040, tc, tr, tf);
+            tc[0] = vc[0] + vr[0]*(2*j-7)/16 - vf[0]*15/16;
+            tc[1] = vc[1] + vr[1]*(2*j-7)/16 - vf[1]*15/16;
+            tc[2] = vc[2] + vr[2]*(2*j-7)/16 - vf[2]*15/16;
+            tr[0] = vr[0] / 2 / 8.1;
+            tr[1] = vr[1] / 2 / 8.1;
+            tr[2] = vr[2] / 2 / 8.1;
+            carvesolid2d_rect(win, 0x800000, tc, tr, tf);
 
             ac = (void*)(rel->dstchip);
             st = (void*)(rel->srcfoot);
@@ -199,7 +199,7 @@ static int tabbar_swrite(
         x = x*16/w;
         y = ((ev->why)>>16)&0xffff;
         y = y*16/h;
-        if((y == 14) && (x >= 4) && (x < 12))
+        if((y == 15) && (x >= 4) && (x < 12))
         {
             say("x=%x\n",x);
 

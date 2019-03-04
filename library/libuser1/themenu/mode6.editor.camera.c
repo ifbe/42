@@ -399,20 +399,8 @@ static void camera_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	vec3 tc,tr,tf,tu;
-	tc[0] = win->target.vc[0];
-	tc[1] = win->target.vc[1];
-	tc[2] = win->target.vc[2];
-	tr[0] = 10.0;
-	tr[1] = 0.0;
-	tr[2] = 0.0;
-	tf[0] = 0.0;
-	tf[1] = 10.0;
-	tf[2] = 0.0;
-	tu[0] = 0.0;
-	tu[1] = 0.0;
-	tu[2] = 10.0;
-	carvesolid_sphere(win, 0xff0000, tc, tr, tf, tu);
+	float* vc = win->target.vc;
+	carvepoint(win, 0xff0000, vc);
 }
 static void camera_swrite(
 	struct actor* act, struct pinid* pin,

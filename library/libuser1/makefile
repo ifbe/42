@@ -158,6 +158,7 @@ theitem/item.picture.c \
 theitem/item.planet.c \
 theitem/item.rccar.c \
 theitem/item.stair.c \
+theitem/item.tardis.c \
 theitem/item.tree.c \
 theitem/item.water.c \
 themenu/mode0.testland.c \
