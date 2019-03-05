@@ -184,6 +184,42 @@ static void texball_swrite(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
+	struct glsrc* src = (void*)(pin->foot[0]);
+
+	if(_char_ == ev->what)
+	{
+		switch(ev->why)
+		{
+			case '1':
+			{
+				actorcreatefromfile(act, "jpg/universe.jpg");
+				src->tex[0] = act->buf;
+				src->tex_enq[0] += 1;
+				break;
+			}
+			case '2':
+			{
+				actorcreatefromfile(act, "jpg/skysphere.jpg");
+				src->tex[0] = act->buf;
+				src->tex_enq[0] += 1;
+				break;
+			}
+			case '3':
+			{
+				actorcreatefromfile(act, "jpg/thesun.jpg");
+				src->tex[0] = act->buf;
+				src->tex_enq[0] += 1;
+				break;
+			}
+			case '4':
+			{
+				actorcreatefromfile(act, "jpg/earth.jpg");
+				src->tex[0] = act->buf;
+				src->tex_enq[0] += 1;
+				break;
+			}
+		}
+	}
 }
 static void texball_cread()
 {

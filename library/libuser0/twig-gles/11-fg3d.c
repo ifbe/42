@@ -268,39 +268,29 @@ int fg3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* st)
 	}*/
 	return 1;
 }
-int fg3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sty, struct event* ev)
-{/*
-	int ret;
-	if(_coop_ == win->type)return actorinput_editor_camera(win, ev);
-
-	ret = win->forew;
-	if(ret > 0xff)say("ret=%x\n",ret);
-	else if(ret >= 0x20)actorinput_navmenu(win, 0, ev);
-	else if(ret >= 0x10)actorinput_tabbar(win, 0, ev);
-	else if(0 == ret)actorinput_void(win, 0, ev);
-	else if(1 == ret)actorinput_console(win, 0, ev);
-	else if(2 == ret)actorinput_overview(win, 0, ev);
-	else if(3 == ret)actorinput_detail(win, 0, ev);
-	else if(4 == ret)actorinput_win(win, 0, ev);
-	else if(5 == ret)actorinput_2d(win, 0, ev);
-	else if(6 == ret)actorinput_cad(win, 0, ev);
-	else if(7 == ret)actorinput_3d(win, 0, ev);
-
+int fg3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
+{
+	struct relation* rel;
 	struct actor* act;
+	struct style* sty;
 	struct pinid* pin;
-	struct relation* orel;
-    if(	('p' == (ev->what&0xff)) |
-		(joy_event == (ev->what&joy_mask)) )
+	//say("@fg3d_write\n");
+
+	rel = cc->oreln;
+	while(1)
 	{
-		return actorinput_editor_camera(win, ev);
+		if(0 == rel)break;
+
+		if(_act_ == rel->dsttype)
+		{
+			sty = (void*)(rel->srcfoot);
+			act = (void*)(rel->dstchip);
+			pin = (void*)(rel->dstfoot);
+			act->onwrite(act, pin, win, sty, ev, 0);
+		}
+
+		rel = samesrcprevdst(rel);
 	}
-
-	orel = win->oreln;
-	if(0 == orel)return 0;
-
-	act = (void*)(orel->dstchip);
-	pin = (void*)(orel->dstfoot);
-	return act->onwrite(act, pin, 0, 0, ev, 0);*/
 	return 1;
 }
 
