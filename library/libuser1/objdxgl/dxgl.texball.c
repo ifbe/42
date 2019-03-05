@@ -5,7 +5,7 @@ void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
 
 
-char* earth_glsl2d_v =
+char* texball_glsl2d_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec2 texuvw;\n"
@@ -15,7 +15,7 @@ char* earth_glsl2d_v =
 		"uvw = texuvw;\n"
 		"gl_Position = vec4(vertex, 1.0);\n"
 	"}\n";
-char* earth_glsl_v =
+char* texball_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec2 texuvw;\n"
@@ -26,9 +26,9 @@ char* earth_glsl_v =
 		"uvw = texuvw;\n"
 		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
 	"}\n";
-char* earth_glsl_t = 0;
-char* earth_glsl_g = 0;
-char* earth_glsl_f = 
+char* texball_glsl_t = 0;
+char* texball_glsl_g = 0;
+char* texball_glsl_f = 
 	GLSL_VERSION
 	"uniform sampler2D tex0;\n"
 	"in mediump vec2 uvw;\n"
@@ -40,7 +40,7 @@ char* earth_glsl_f =
 
 
 
-static void earth_read_pixel(
+static void texball_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -89,7 +89,7 @@ static void earth_read_pixel(
 		}
 	}
 }
-static void earth_read_vbo2d(
+static void texball_read_vbo2d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -111,7 +111,7 @@ static void earth_read_vbo2d(
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
 }
-static void earth_read_vbo3d(
+static void texball_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -131,12 +131,12 @@ static void earth_read_vbo3d(
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
 }
-static void earth_read_json(
+static void texball_read_json(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 }
-static void earth_read_html(
+static void texball_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -145,67 +145,59 @@ static void earth_read_html(
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
-		"<div id=\"earth\" style=\"width:50%%;height:100px;float:left;background-color:#3368a9;\">"
+		"<div id=\"texball\" style=\"width:50%%;height:100px;float:left;background-color:#3368a9;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
 	win->len = len;
 }
-static void earth_read_tui(
+static void texball_read_tui(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 }
-static void earth_read_cli(
+static void texball_read_cli(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	say("earth(%x,%x,%x)\n",win,act,sty);
+	say("texball(%x,%x,%x)\n",win,act,sty);
 }
-static void earth_read(
+static void texball_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)earth_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)earth_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)earth_read_html(win, sty, act, pin);
-	else if(fmt == _json_)earth_read_json(win, sty, act, pin);
+	if(fmt == _cli_)texball_read_cli(win, sty, act, pin);
+	else if(fmt == _tui_)texball_read_tui(win, sty, act, pin);
+	else if(fmt == _html_)texball_read_html(win, sty, act, pin);
+	else if(fmt == _json_)texball_read_json(win, sty, act, pin);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)earth_read_vbo2d(win, sty, act, pin);
-		else earth_read_vbo3d(win, sty, act, pin);
+		if(_2d_ == win->vfmt)texball_read_vbo2d(win, sty, act, pin);
+		else texball_read_vbo3d(win, sty, act, pin);
 	}
-	else earth_read_pixel(win, sty, act, pin);
+	else texball_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-static void earth_write(
+static void texball_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-
-
-
-
-static void earth_get()
+static void texball_cread()
 {
 }
-static void earth_post()
+static void texball_cwrite()
 {
 }
-static void earth_stop(
+static void texball_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
 }
-static void earth_start(
+static void texball_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
@@ -213,8 +205,9 @@ static void earth_start(
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	if(0 == leaf)return;
+	if(0 == lf)return;
 
+	//
 	pair = alloc_winobj(root);
 	src = &pair->src;
 	dst = &pair->dst;
@@ -222,9 +215,9 @@ static void earth_start(
 	tf->foot[0] = (u64)dst;
 
 	//shader
-	src->vs = earth_glsl_v;
-	src->fs = earth_glsl_f;
-	if(twig){if(_fg2d_ == twig->fmt)src->vs = earth_glsl2d_v;}
+	src->vs = texball_glsl_v;
+	src->fs = texball_glsl_f;
+	if(twig){if(_fg2d_ == twig->fmt)src->vs = texball_glsl2d_v;}
 
 	//texture
 	src->tex_fmt[0] = hex32('r','g','b','a');
@@ -232,8 +225,8 @@ static void earth_start(
 	src->tex_w[0] = leaf->width;
 	src->tex_h[0] = leaf->height;
 
-#define accx 16
-#define accy 15
+#define accx 64
+#define accy 63
 	//vertex
 	src->vbuf = memorycreate(4*6*(accx*accy+(accx-1)*2));
 	src->vbuf_fmt = vbuffmt_33;
@@ -252,32 +245,33 @@ static void earth_start(
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
 }
-static void earth_delete(struct actor* act)
+static void texball_delete(struct actor* act)
 {
 	if(0 == act)return;
 	memorydelete(act->buf);
 	act->buf = 0;
 }
-static void earth_create(struct actor* act)
+static void texball_create(struct actor* act, char* arg)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "jpg/earth.jpg");
+	if(0 == arg)arg = "jpg/earth.jpg";
+	actorcreatefromfile(act, arg);
 }
 
 
 
 
-void earth_register(struct actor* p)
+void texball_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('e', 'a', 'r', 't', 'h', 0, 0, 0);
+	p->name = hex64('t', 'e', 'x', 'b', 'a', 'l', 'l', 0);
 
-	p->oncreate = (void*)earth_create;
-	p->ondelete = (void*)earth_delete;
-	p->onstart  = (void*)earth_start;
-	p->onstop   = (void*)earth_stop;
-	p->onget    = (void*)earth_get;
-	p->onpost   = (void*)earth_post;
-	p->onread   = (void*)earth_read;
-	p->onwrite  = (void*)earth_write;
+	p->oncreate = (void*)texball_create;
+	p->ondelete = (void*)texball_delete;
+	p->onstart  = (void*)texball_start;
+	p->onstop   = (void*)texball_stop;
+	p->onget    = (void*)texball_cread;
+	p->onpost   = (void*)texball_cwrite;
+	p->onread   = (void*)texball_sread;
+	p->onwrite  = (void*)texball_swrite;
 }

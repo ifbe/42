@@ -7,12 +7,11 @@ void finfet_register(void*);
 void hbridge_register(void*);
 void rectify_register(void*);
 //dxgl
-void light_register(void*);
 void mirror_register(void*);
 void portal_register(void*);
 void skydome_register(void*);
-void skysphere_register(void*);
 void terrian_register(void*);
+void texball_register(void*);
 //geom
 void cube_register(void*);
 void cylinder_register(void*);
@@ -47,7 +46,6 @@ void switch_register(void*);
 void clock_register(void*);
 void control_register(void*);
 void drone_register(void*);
-void earth_register(void*);
 void house_register(void*);
 void human_register(void*);
 void model_register(void*);
@@ -94,6 +92,22 @@ void content_delete()
 void content_create(void* addr)
 {
 	void* tmp = addr + 0x100000;
+
+
+
+
+//----------------------dxgl-----------------------
+	mirror_register(tmp);
+	tmp += sizeof(struct actor);
+
+	skydome_register(tmp);
+	tmp += sizeof(struct actor);
+
+	terrian_register(tmp);
+	tmp += sizeof(struct actor);
+
+	texball_register(tmp);
+	tmp += sizeof(struct actor);
 
 
 
@@ -189,19 +203,10 @@ void content_create(void* addr)
 	drone_register(tmp);
 	tmp += sizeof(struct actor);
 
-	earth_register(tmp);
-	tmp += sizeof(struct actor);
-
 	house_register(tmp);
 	tmp += sizeof(struct actor);
 
 	human_register(tmp);
-	tmp += sizeof(struct actor);
-
-	light_register(tmp);
-	tmp += sizeof(struct actor);
-
-	mirror_register(tmp);
 	tmp += sizeof(struct actor);
 
 	model_register(tmp);
@@ -226,15 +231,6 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	tardis_register(tmp);
-	tmp += sizeof(struct actor);
-
-	skydome_register(tmp);
-	tmp += sizeof(struct actor);
-
-	skysphere_register(tmp);
-	tmp += sizeof(struct actor);
-
-	terrian_register(tmp);
 	tmp += sizeof(struct actor);
 
 	tree_register(tmp);

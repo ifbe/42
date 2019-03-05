@@ -307,8 +307,8 @@ void carveskydome(float vbuf[][6], u16* ibuf,
 void carveplanet(float vbuf[][6], u16* ibuf,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
-#define accx 16
-#define accy 15
+#define accx 64
+#define accy 63
 	int a,b,j,k;
 	float c,s;
 	vec3 tc, tr, tf;

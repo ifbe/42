@@ -73,12 +73,11 @@ objcode/code.for.c \
 objcode/code.if.c \
 objcode/code.jump.c \
 objdxgl/dxgl.glass.c \
-objdxgl/dxgl.light.c \
 objdxgl/dxgl.mirror.c \
 objdxgl/dxgl.portal.c \
 objdxgl/dxgl.skydome.c \
-objdxgl/dxgl.skysphere.c \
 objdxgl/dxgl.terrian.c \
+objdxgl/dxgl.texball.c \
 objfile/file.binary.c \
 objfile/file.folder.c \
 objfile/file.text.c \
@@ -147,7 +146,6 @@ thehack/hack.wireshark.c \
 theitem/item.clock.c \
 theitem/item.control.c \
 theitem/item.drone.c \
-theitem/item.earth.c \
 theitem/item.house.c \
 theitem/item.human.c \
 theitem/item.model.c \

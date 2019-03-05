@@ -92,7 +92,7 @@ void tabbar_read_vbo(
     tf[0] = vf[0] / 16;
     tf[1] = vf[1] / 16;
     tf[2] = vf[2] / 16;
-	carveline2d_rect(win, 0x0000ff, tc, tr, tf);
+	carveline2d_rect(win, 0xff0000, tc, tr, tf);
 
     rel = act->irel0;
     if(0 == rel)return;
@@ -114,7 +114,7 @@ void tabbar_read_vbo(
             tr[0] = vr[0] / 2 / 8.1;
             tr[1] = vr[1] / 2 / 8.1;
             tr[2] = vr[2] / 2 / 8.1;
-            carvesolid2d_rect(win, 0x800000, tc, tr, tf);
+            carvesolid2d_rect(win, 0x000080, tc, tr, tf);
 
             ac = (void*)(rel->dstchip);
             st = (void*)(rel->srcfoot);
