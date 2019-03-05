@@ -85,7 +85,7 @@ int bg3d_create(struct arena* win, u8* str)
 	struct pinid* pin;
 	struct relation* rel;
 
-	for(j=0;j<2;j++)
+	for(j=0;j<1;j++)
 	{
 		act = actorcreate(want[j], args[j]);
 		if(0 == act)continue;
