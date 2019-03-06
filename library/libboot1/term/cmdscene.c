@@ -105,6 +105,7 @@ void exportarena(struct arena* win)
 {
 	struct relation* rel;
 	struct arena* tmp;
+	struct style* sty;
 	struct actor* act;
 	say("/%.8s/%.8s/%.8s/%.8s{\n", &win->tier, &win->type, &win->fmt, &win->vfmt);
 
@@ -114,6 +115,15 @@ void exportarena(struct arena* win)
 		if(0 == rel)break;
 		if(_act_ == rel->dsttype)
 		{
+			sty = (void*)(rel->srcfoot);
+			if(sty)
+			{
+				say("%f,%f,%f,%x\n",sty->vc[0],sty->vc[1],sty->vc[2],sty->wc);
+				say("%f,%f,%f,%x\n",sty->vr[0],sty->vr[1],sty->vr[2],sty->wr);
+				say("%f,%f,%f,%x\n",sty->vf[0],sty->vf[1],sty->vf[2],sty->wf);
+				say("%f,%f,%f,%x\n",sty->vu[0],sty->vu[1],sty->vu[2],sty->wu);
+			}
+
 			act = (void*)(rel->dstchip);
 			exportactor(act);
 		}

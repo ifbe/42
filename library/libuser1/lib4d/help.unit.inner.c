@@ -45,6 +45,7 @@ void switch_register(void*);
 //item
 void clock_register(void*);
 void control_register(void*);
+void dna_register(void*);
 void drone_register(void*);
 void house_register(void*);
 void human_register(void*);
@@ -77,6 +78,7 @@ void video_register(void*);
 //
 void camera_register(void*);
 //
+void login_register(void*);
 void overview_register(void*);
 void tabbar_register(void*);
 void vkbd_register(void*);
@@ -198,6 +200,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	control_register(tmp);
+	tmp += sizeof(struct actor);
+
+	dna_register(tmp);
 	tmp += sizeof(struct actor);
 
 	drone_register(tmp);
@@ -325,6 +330,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	//-------------------menu------------------
+	login_register(tmp);
+	tmp += sizeof(struct actor);
+
 	overview_register(tmp);
 	tmp += sizeof(struct actor);
 

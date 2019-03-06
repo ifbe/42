@@ -145,6 +145,7 @@ thehack/hack.switcher.c \
 thehack/hack.wireshark.c \
 theitem/item.clock.c \
 theitem/item.control.c \
+theitem/item.dna.c \
 theitem/item.drone.c \
 theitem/item.house.c \
 theitem/item.human.c \
@@ -168,6 +169,7 @@ themenu/mode6.editor.c \
 themenu/mode6.editor.camera.c \
 themenu/mode6.editor.target.c \
 themenu/mode7.player.c \
+themenu/menu.login.c \
 themenu/menu.list.c \
 themenu/menu.nav.c \
 themenu/menu.tab.c \
