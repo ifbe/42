@@ -34,6 +34,11 @@ int hackclient_create(struct element* ele, void* url);
 int hackclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int hackserver_create(struct element* ele, void* url);
 int hackserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+//udp.dns
+int dnsclient_create(struct element* ele, void* url);
+int dnsclient_rootwrite( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int dnsserver_create(struct element* ele, void* url);
+int dnsserver_rootwrite( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //udp.tftp
 int tftpclient_create(struct element* ele, void* url);
 int tftpclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
@@ -149,6 +154,9 @@ int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 
 		case _HACK_:hackserver_write(dc, df, sc, sf, buf, len);break;
 		case _hack_:hackclient_write(dc, df, sc, sf, buf, len);break;
+
+		case _Dns_:dnsserver_rootwrite(dc, df, sc, sf, buf, len);break;
+		case _dns_:dnsclient_rootwrite(dc, df, sc, sf, buf, len);break;
 
 		case _QUIC_:quicmaster_write(dc, df, sc, sf, buf, len);break;
 		case _Quic_:quicserver_write(dc, df, sc, sf, buf, len);break;
@@ -357,6 +365,26 @@ void* arterycreate(u64 type, void* argstr)
 
 		e->type = _hack_;
 		if(url)hackclient_create(e, url);
+		return e;
+	}
+
+	//dns
+	if(_Dns_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _Dns_;
+		if(url)dnsserver_create(e, url);
+		return e;
+	}
+	if(_dns_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _dns_;
+		if(url)dnsclient_create(e, url);
 		return e;
 	}
 

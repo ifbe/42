@@ -93,12 +93,54 @@ void scene_export_file(u8* str, int len)
 		}
 	}
 }
+
+
+
+
+void exportactor(struct actor* act)
+{
+	say("/%.8s/%.8s/%.8s/%.8s\n", &act->tier, &act->type, &act->fmt, &act->name);
+}
+void exportarena(struct arena* win)
+{
+	struct relation* rel;
+	struct arena* tmp;
+	struct actor* act;
+	say("/%.8s/%.8s/%.8s/%.8s{\n", &win->tier, &win->type, &win->fmt, &win->vfmt);
+
+	rel = win->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+		if(_act_ == rel->dsttype)
+		{
+			act = (void*)(rel->dstchip);
+			exportactor(act);
+		}
+		if(_win_ == rel->dsttype)
+		{
+			tmp = (void*)(rel->dstchip);
+			exportarena(tmp);
+		}
+		rel = samesrcnextdst(rel);
+	}
+
+	say("}\n");
+}
 void scene_export_stdio()
 {
 	int j;
 	struct arena* win;
-	struct actor* act;
 	say("exporting\n");
+
+	for(j=0;j<16;j++)
+	{
+		win = &arena[j];
+		if(_win_ == win->type)exportarena(win);
+	}
+/*	int j;
+	struct arena* win;
+	struct actor* act;
 
 	//arena
 	say("<arena>\n");
@@ -122,7 +164,7 @@ void scene_export_stdio()
 		say("        haha\n");
 		say("    </act>\n");
 	}
-	say("</actor>\n");
+	say("</actor>\n");*/
 }
 
 

@@ -65,7 +65,7 @@ int writesocket(int fd, void* tmp, void* buf, int len)
 	if(buf == 0)return 0;
 
 	type = obj[fd].type;
-	if((_UDP_ == type)|(_udp_ == type))
+	if(_UDP_ == type)
 	{
 		ret = sendto(
 			fd, buf, len, 0,
@@ -85,7 +85,7 @@ int readsocket(int fd, void* tmp, void* buf, int len)
 	if(buf == 0)return 0;
 
 	type = obj[fd].type;
-	if((_UDP_ == type)|(_udp_ == type))
+	if(_UDP_ == type)
 	{
 		ret = sizeof(struct sockaddr_in);
 		ret = recvfrom(
@@ -273,26 +273,20 @@ int startsocket(char* addr, int port, int type)
 			return 0;
 		}
 
-		//self
-		self = (void*)obj[fd].self;
-		memset(self, 0, sizeof(struct sockaddr_in));
-		self->sin_family = AF_INET;
-		self->sin_port = htons(2222);
-		self->sin_addr.s_addr = htons(INADDR_ANY);
-		ret = bind(fd, (void*)self, sizeof(struct sockaddr_in));
-		if(ret == -1)
-		{
-			printf("error@bind\n");
-			close(fd);
-			return 0;
-		}
-
 		//peer
 		peer = (void*)obj[fd].peer;
 		memset(peer, 0, sizeof(struct sockaddr_in));
 		peer->sin_family = AF_INET;
 		peer->sin_port = htons(port);
 		peer->sin_addr.s_addr = inet_addr(addr);
+
+		//
+		ret = connect(fd, (void*)peer, sizeof(struct sockaddr_in));
+		if(ret < 0)
+		{
+			printf("connect error\n");
+			return 0;
+		}
 
 		//done
 		epoll_add(fd);

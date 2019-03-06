@@ -70,7 +70,7 @@ int readsocket(int fd, void* tmp, void* buf, int len)
 
 	//peer
 	j = obj[fd].type;
-	if((_UDP_ == j) | (_udp_ == j))
+	if(_UDP_ == j)
 	{
 		dst = tmp;
 		src = obj[fd].peer;
@@ -88,7 +88,7 @@ int writesocket(int fd, void* tmp, void* buf, int len)
 	WSABUF wbuf;
 
 	ret = obj[fd].type;
-	if((_UDP_ == ret) | (_udp_ == ret))
+	if(_UDP_ == ret)
 	{
 		wbuf.buf = buf;
 		wbuf.len = len;
@@ -246,7 +246,7 @@ u64 startsocket(char* addr, int port, int type)
 		memset(&server, 0, sizeof(struct sockaddr_in));
 		server.sin_family = AF_INET;
 		server.sin_addr.s_addr = inet_addr(addr);
-		server.sin_port = htons(port);
+		server.sin_port = htons(0);
 
 		//
 		ret = connect(fd, (struct sockaddr*)&server, sizeof(server));
