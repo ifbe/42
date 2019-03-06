@@ -245,8 +245,8 @@ u64 startsocket(char* addr, int port, int type)
 		struct sockaddr_in server;
 		memset(&server, 0, sizeof(struct sockaddr_in));
 		server.sin_family = AF_INET;
+		server.sin_port = htons(port);
 		server.sin_addr.s_addr = inet_addr(addr);
-		server.sin_port = htons(0);
 
 		//
 		ret = connect(fd, (struct sockaddr*)&server, sizeof(server));
