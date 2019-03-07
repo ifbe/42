@@ -92,7 +92,7 @@ static void palette_read_cli(
 	say("palette(%x,%x,%x)\n",win,act,sty);
 	say("r=%02x,g=%02x,b=%02x\n",red,green,blue);
 }
-static void palette_read(
+static void palette_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -104,7 +104,7 @@ static void palette_read(
 	else if(fmt == _vbo_)palette_read_vbo(win, sty, act, pin);
 	else palette_read_pixel(win, sty, act, pin);
 }
-static void palette_write(
+static void palette_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -164,10 +164,15 @@ static void palette_write(
 		}
 	}
 }
-static void palette_get()
+static void palette_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void palette_post()
+static void palette_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void palette_stop(
@@ -206,8 +211,8 @@ void palette_register(struct actor* p)
 	p->ondelete = (void*)palette_delete;
 	p->onstart  = (void*)palette_start;
 	p->onstop   = (void*)palette_stop;
-	p->onget    = (void*)palette_get;
-	p->onpost   = (void*)palette_post;
-	p->onread   = (void*)palette_read;
-	p->onwrite  = (void*)palette_write;
+	p->onget    = (void*)palette_cread;
+	p->onpost   = (void*)palette_cwrite;
+	p->onread   = (void*)palette_sread;
+	p->onwrite  = (void*)palette_swrite;
 }

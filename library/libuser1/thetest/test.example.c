@@ -110,7 +110,7 @@ static void example_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void example_read(
+static void example_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -122,16 +122,21 @@ static void example_read(
 	else if(fmt == _vbo_)example_read_vbo(win, sty, act, pin);
 	else example_read_pixel(win, sty, act, pin);
 }
-static void example_write(
+static void example_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void example_get()
+static void example_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void example_post()
+static void example_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void example_stop(
@@ -167,8 +172,8 @@ void example_register(struct actor* p)
 	p->ondelete = (void*)example_delete;
 	p->onstart  = (void*)example_start;
 	p->onstop   = (void*)example_stop;
-	p->onget    = (void*)example_get;
-	p->onpost   = (void*)example_post;
-	p->onread   = (void*)example_read;
-	p->onwrite  = (void*)example_write;
+	p->onget    = (void*)example_cread;
+	p->onpost   = (void*)example_cread;
+	p->onread   = (void*)example_sread;
+	p->onwrite  = (void*)example_swrite;
 }

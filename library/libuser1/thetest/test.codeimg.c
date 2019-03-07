@@ -344,7 +344,7 @@ static void codeimg_read_cli(
 {
 	say("codeimg(%x,%x,%x)\n",win,act,sty);
 }
-static void codeimg_read(
+static void codeimg_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -360,7 +360,7 @@ static void codeimg_read(
 	}
 	else codeimg_read_pixel(win, sty, act, pin);
 }
-static void codeimg_write(
+static void codeimg_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -457,10 +457,15 @@ static void codeimg_write(
 		}
 	}
 }
-static void codeimg_get()
+static void codeimg_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void codeimg_post()
+static void codeimg_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void codeimg_stop(
@@ -542,8 +547,8 @@ void codeimg_register(struct actor* p)
 	p->ondelete = (void*)codeimg_delete;
 	p->onstart  = (void*)codeimg_start;
 	p->onstop   = (void*)codeimg_stop;
-	p->onget    = (void*)codeimg_get;
-	p->onpost   = (void*)codeimg_post;
-	p->onread   = (void*)codeimg_read;
-	p->onwrite  = (void*)codeimg_write;
+	p->onget    = (void*)codeimg_cread;
+	p->onpost   = (void*)codeimg_cwrite;
+	p->onread   = (void*)codeimg_sread;
+	p->onwrite  = (void*)codeimg_swrite;
 }
