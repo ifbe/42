@@ -33,7 +33,7 @@ char* fractal_glsl_v =
 		"uvw = texuvw;\n"
 		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
 	"}\n";
-char* fractal_glsl_f =
+char* glsl_manderbrot =
 	GLSL_VERSION
 	"uniform sampler2D tex0;\n"
 	"in mediump vec2 uvw;\n"
@@ -48,7 +48,7 @@ char* fractal_glsl_f =
 		"{\n"
 			"tx = fx*fx - fy*fy + uvw.x;\n"
 			"ty = 2*fx*fy + uvw.y;\n"
-			"if(tx*tx + ty*ty > 4)break;\n"
+			"if(tx*tx + ty*ty > 2)break;\n"
 			"fx = tx;\n"
 			"fy = ty;\n"
 		"}\n"
@@ -56,11 +56,32 @@ char* fractal_glsl_f =
 		//"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
 		//"FragColor = vec4(uvw, 1.0, 1.0);\n"
 	"}\n";
+char* glsl_julia =
+	GLSL_VERSION
+	"uniform sampler2D tex0;\n"
+	"in mediump vec2 uvw;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"int j;"
+		"mediump float tx,ty;\n"
+		"mediump float fx = uvw.x;\n"
+		"mediump float fy = uvw.y;\n"
+		"for(j=0;j<256;j++)\n"
+		"{\n"
+			"tx = fx*fx - fy*fy - 0.8;\n"
+			"ty = 2*fx*fy + 0.156;\n"
+			"if(tx*tx + ty*ty > 2)break;\n"
+			"fx = tx;\n"
+			"fy = ty;\n"
+		"}\n"
+		"FragColor = vec4(vec3(1.0,1.0,1.0)*j/256, 1.0);\n"
+	"}\n";
 
 
 
 
-int fractal_check(double x, double y)
+int manderbrot_check(double x, double y)
 {
 	int j;
 	double tx,ty;
@@ -105,7 +126,7 @@ static void fractal_read_pixel(
 	{
 		for(x=1-ww;x<ww;x++)
 		{
-			c = fractal_check(
+			c = manderbrot_check(
 				centerx + 2.0*x*width/ww,
 				centery + 2.0*y*height/hh
 			);
@@ -340,7 +361,7 @@ static void fractal_start(
 
 	//shader
 	src->vs = fractal_glsl_v;
-	src->fs = fractal_glsl_f;
+	src->fs = glsl_julia;
 	if(twig){if(_fg2d_ == twig->fmt)src->vs = fractal_glsl2d_v;}
 
 	//texture
