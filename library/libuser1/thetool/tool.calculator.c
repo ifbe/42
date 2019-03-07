@@ -70,10 +70,86 @@ static void calculator_read_pixel(
 		}
 	}
 }
-static void calculator_read_vbo(
+static void calculator_read_vbo2d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int x,y,rgb;
+	vec3 tc,tr,tf;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+
+	tf[0] = vf[0] / 2;
+	tf[1] = vf[1] / 2;
+	tf[2] = vf[2] / 2;
+	tc[0] = vc[0] + vf[0]/2;
+	tc[1] = vc[1] + vf[1]/2;
+	tc[2] = vc[2] + vf[2]/2;
+	carvesolid2d_rect(win, 0x000020, tc, vr, tf);
+	tc[0] = vc[0] - vf[0]/2;
+	tc[1] = vc[1] - vf[1]/2;
+	tc[2] = vc[2] - vf[2]/2;
+	carvesolid2d_rect(win, 0x200000, tc, vr, tf);
+
+	//display
+	tr[0] = vr[0] / 8;
+	tr[1] = vr[1] / 8;
+	tr[2] = vr[2] / 8;
+	tf[0] = vf[0] / 8;
+	tf[1] = vf[1] / 8;
+	tf[2] = vf[2] / 8;
+	tc[0] = vc[0] + vf[0]*7/8;
+	tc[1] = vc[1] + vf[1]*7/8;
+	tc[2] = vc[2] + vf[2]*7/8 - 0.1;
+	carvestring2d_center(win, 0xffffff, tc, tr, tf, buffer, 0);
+	tc[0] = vc[0] + vf[0]*5/8;
+	tc[1] = vc[1] + vf[1]*5/8;
+	tc[2] = vc[2] + vf[2]*5/8 - 0.1;
+	carvestring2d_center(win, 0xffffff, tc, tr, tf, infix, 0);
+	tc[0] = vc[0] + vf[0]*3/8;
+	tc[1] = vc[1] + vf[1]*3/8;
+	tc[2] = vc[2] + vf[2]*3/8 - 0.1;
+	carvestring2d_center(win, 0xffffff, tc, tr, tf, postfix, 0);
+	tc[0] = vc[0] + vf[0]*1/8;
+	tc[1] = vc[1] + vf[1]*1/8;
+	tc[2] = vc[2] + vf[2]*1/8 - 0.1;
+	carvestring2d_center(win, 0xffffff, tc, tr, tf, result, 0);
+
+	//keypad
+	tr[0] = vr[0] / 8;
+	tr[1] = vr[1] / 8;
+	tr[2] = vr[2] / 8;
+	tf[0] = vf[0] / 8;
+	tf[1] = vf[1] / 8;
+	tf[2] = vf[2] / 8;
+	for(y=0;y<4;y++)
+	{
+		for(x=0;x<8;x++)
+		{
+			rgb = 0x444444;
+			if(x<4)rgb += (y<<4) + (x<<20);
+			else rgb += (x<<4) + (y<<20);
+
+			tc[0] = vc[0] + vr[0]*(2*x-7)/8 + vf[0]*(7-2*y)/8;
+			tc[1] = vc[1] + vr[1]*(2*x-7)/8 + vf[1]*(7-2*y)/8;
+			tc[2] = vc[2] + vr[2]*(2*x-7)/8 + vf[2]*(7-2*y)/8 - 0.1;
+			carvesolid2d_rect(win, rgb, tc, tr, tf);
+			tc[2] -= 0.1;
+			carve2d_ascii(win, 0xffffff, tc, tr, tf, table[y][x]);
+		}
+	}
+}
+static void calculator_read_vbo3d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
 }
 static void calculator_read_json(
 	struct arena* win, struct style* sty,
@@ -109,7 +185,7 @@ static void calculator_read_cli(
 	say("postfix:%s\n", postfix);
 	say("result:%s\n", result);
 }
-static void calculator_read(
+static void calculator_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -119,10 +195,14 @@ static void calculator_read(
 	else if(fmt == _tui_)calculator_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)calculator_read_html(win, sty, act, pin);
 	else if(fmt == _json_)calculator_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)calculator_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)calculator_read_vbo2d(win, sty, act, pin);
+		else calculator_read_vbo3d(win, sty, act, pin);
+	}
 	else calculator_read_pixel(win, sty, act, pin);
 }
-static void calculator_write(
+static void calculator_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -170,10 +250,15 @@ static void calculator_write(
 		}
 	}
 }
-static void calculator_get()
+static void calculator_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void calculator_post()
+static void calculator_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void calculator_stop(
@@ -218,8 +303,8 @@ void calculator_register(struct actor* p)
 	p->ondelete = (void*)calculator_delete;
 	p->onstart  = (void*)calculator_start;
 	p->onstop   = (void*)calculator_stop;
-	p->onget    = (void*)calculator_get;
-	p->onpost   = (void*)calculator_post;
-	p->onread   = (void*)calculator_read;
-	p->onwrite  = (void*)calculator_write;
+	p->onget    = (void*)calculator_cread;
+	p->onpost   = (void*)calculator_cwrite;
+	p->onread   = (void*)calculator_sread;
+	p->onwrite  = (void*)calculator_swrite;
 }

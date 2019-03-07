@@ -3,15 +3,6 @@
 
 
 
-static u8 buffer[16];
-static double centerx = 0.0;
-static double centery = 0.0;
-static double width = 1.0;
-static double height = 1.0;
-
-
-
-
 char* fractal_glsl2d_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
@@ -127,8 +118,8 @@ static void fractal_read_pixel(
 		for(x=1-ww;x<ww;x++)
 		{
 			c = manderbrot_check(
-				centerx + 2.0*x*width/ww,
-				centery + 2.0*y*height/hh
+				(act->target.vc[0]) + 2.0*x*(act->target.vr[0])/ww,
+				(act->target.vc[0]) + 2.0*y*(act->target.vf[1])/hh
 			);
 			buf[w*(cy+y) + cx+x] = 0xff000000 | (c*0x010101);
 		}
@@ -144,50 +135,52 @@ static void fractal_read_vbo2d(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-
+	float* tc = act->target.vc;
+	float* tr = act->target.vr;
+	float* tf = act->target.vf;
 	struct glsrc* src = (void*)(pin->foot[0]);
 	float (*vbuf)[6] = src->vbuf;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
 	vbuf[0][2] = vc[2] - vr[2] - vf[2];
-	vbuf[0][3] = -1.0;
-	vbuf[0][4] = -1.0;
+	vbuf[0][3] = tc[0] - tr[0];
+	vbuf[0][4] = tc[1] - tf[1];
 	vbuf[0][5] = 0.0;
 
 	vbuf[1][0] = vc[0] + vr[0] + vf[0];
 	vbuf[1][1] = vc[1] + vr[1] + vf[1];
 	vbuf[1][2] = vc[2] + vr[2] + vf[2];
-	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 1.0;
+	vbuf[1][3] = tc[0] + tr[0];
+	vbuf[1][4] = tc[1] + tf[1];
 	vbuf[1][5] = 0.0;
 
 	vbuf[2][0] = vc[0] - vr[0] + vf[0];
 	vbuf[2][1] = vc[1] - vr[1] + vf[1];
 	vbuf[2][2] = vc[2] - vr[2] + vf[2];
-	vbuf[2][3] = -1.0;
-	vbuf[2][4] = 1.0;
+	vbuf[2][3] = tc[0] - tr[0];
+	vbuf[2][4] = tc[1] + tf[1];
 	vbuf[2][5] = 0.0;
 
 	vbuf[3][0] = vc[0] + vr[0] + vf[0];
 	vbuf[3][1] = vc[1] + vr[1] + vf[1];
 	vbuf[3][2] = vc[2] + vr[2] + vf[2];
-	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 1.0;
+	vbuf[3][3] = tc[0] + tr[0];
+	vbuf[3][4] = tc[1] + tf[1];
 	vbuf[3][5] = 0.0;
 
 	vbuf[4][0] = vc[0] - vr[0] - vf[0];
 	vbuf[4][1] = vc[1] - vr[1] - vf[1];
 	vbuf[4][2] = vc[2] - vr[2] - vf[2];
-	vbuf[4][3] = -1.0;
-	vbuf[4][4] = -1.0;
+	vbuf[4][3] = tc[0] - tr[0];
+	vbuf[4][4] = tc[1] - tf[1];
 	vbuf[4][5] = 0.0;
 
 	vbuf[5][0] = vc[0] + vr[0] - vf[0];
 	vbuf[5][1] = vc[1] + vr[1] - vf[1];
 	vbuf[5][2] = vc[2] + vr[2] - vf[2];
-	vbuf[5][3] = 1.0;
-	vbuf[5][4] = -1.0;
+	vbuf[5][3] = tc[0] + tr[0];
+	vbuf[5][4] = tc[1] - tf[1];
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
@@ -200,7 +193,6 @@ static void fractal_read_vbo3d(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-
 	struct glsrc* src = (void*)(pin->foot[0]);
 	float (*vbuf)[6] = src->vbuf;
 
@@ -257,16 +249,6 @@ static void fractal_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int len = win->len;
-	u8* buf = win->buf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"fractal\" style=\"width:50%%;height:100px;float:left;background-color:#9728a7;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->len = len;
 }
 static void fractal_read_tui(
 	struct arena* win, struct style* sty,
@@ -308,21 +290,21 @@ static void fractal_swrite(
 		why >>= 48;
 		if('f' == why)
 		{
-			width *= 0.9;
-			height *= 0.9;
+			act->target.vr[0] *= 0.9;
+			act->target.vf[1] *= 0.9;
 		}
 		else if('b' == why)
 		{
-			width *= 1.1;
-			height *= 1.1;
+			act->target.vr[0] *= 1.1;
+			act->target.vf[1] *= 1.1;
 		}
 	}
 	if(_kbd_ == what)
 	{
-		if(why == 0x48)centery -= height*0.1;
-		else if(why == 0x4b)centerx -= width*0.1;
-		else if(why == 0x4d)centerx += width*0.1;
-		else if(why == 0x50)centery += height*0.1;
+		if(why == 0x48)act->target.vc[1] += act->target.vf[1]*0.1;
+		else if(why == 0x4b)act->target.vc[0] -= act->target.vr[0]*0.1;
+		else if(why == 0x4d)act->target.vc[0] += act->target.vr[0]*0.1;
+		else if(why == 0x50)act->target.vc[1] -= act->target.vf[1]*0.1;
 	}
 }
 static void fractal_cread(
@@ -364,12 +346,6 @@ static void fractal_start(
 	src->fs = glsl_julia;
 	if(twig){if(_fg2d_ == twig->fmt)src->vs = fractal_glsl2d_v;}
 
-	//texture
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex[0] = leaf->buf;
-	src->tex_w[0] = leaf->width;
-	src->tex_h[0] = leaf->height;
-
 	//vertex
 	src->vbuf = memorycreate(4*6*6);
 	src->vbuf_fmt = vbuffmt_33;
@@ -380,7 +356,6 @@ static void fractal_start(
 	//send!
 	src->shader_enq[0] = 42;
 	src->arg_enq[0] = 0;
-	src->tex_enq[0] = 42;
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
 }
@@ -392,8 +367,12 @@ static void fractal_delete(struct actor* act)
 static void fractal_create(struct actor* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = buffer;
-	if(_copy_ == act->type)act->buf = memorycreate(16);
+	act->buf = memorycreate(16);
+
+	act->target.vc[0] = 0;
+	act->target.vc[1] = 0;
+	act->target.vr[0] = 1.0;
+	act->target.vf[1] = 1.0;
 }
 
 

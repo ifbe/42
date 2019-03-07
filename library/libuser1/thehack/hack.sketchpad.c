@@ -238,7 +238,12 @@ skipthese:
 	drawstring(win, 0xcccccc, cx-ww, cy-hh+32, postfix, 0);
 	drawstring(win, 0xcccccc, cx-ww, cy-hh+48, result, 0);
 }
-static void sketchpad_read_vbo(
+static void sketchpad_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void sketchpad_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -325,7 +330,7 @@ static void sketchpad_read_cli(
 {
 	say("sketchpad(%x,%x,%x)\n",win,act,sty);
 }
-static void sketchpad_read(
+static void sketchpad_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -335,14 +340,18 @@ static void sketchpad_read(
 	else if(fmt == _tui_)sketchpad_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)sketchpad_read_html(win, sty, act, pin);
 	else if(fmt == _json_)sketchpad_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)sketchpad_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)sketchpad_read_vbo2d(win, sty, act, pin);
+		else sketchpad_read_vbo3d(win, sty, act, pin);
+	}
 	else sketchpad_read_pixel(win, sty, act, pin);
 }
 
 
 
 
-static void sketchpad_write(
+static void sketchpad_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -439,10 +448,15 @@ static void sketchpad_write(
 		int y = (key>>16)&0xffff;
 	}
 }
-static void sketchpad_get()
+static void sketchpad_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void sketchpad_post()
+static void sketchpad_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void sketchpad_stop(
@@ -483,8 +497,8 @@ void sketchpad_register(struct actor* p)
 	p->ondelete = (void*)sketchpad_delete;
 	p->onstart  = (void*)sketchpad_start;
 	p->onstop   = (void*)sketchpad_stop;
-	p->onget    = (void*)sketchpad_get;
-	p->onpost   = (void*)sketchpad_post;
-	p->onread   = (void*)sketchpad_read;
-	p->onwrite  = (void*)sketchpad_write;
+	p->onget    = (void*)sketchpad_cread;
+	p->onpost   = (void*)sketchpad_cwrite;
+	p->onread   = (void*)sketchpad_sread;
+	p->onwrite  = (void*)sketchpad_swrite;
 }
