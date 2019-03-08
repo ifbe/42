@@ -39,6 +39,43 @@ static double scale = 0.0;
 
 
 
+char* sketchpad_glsl2d_v =
+	GLSL_VERSION
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec2 texuvw;\n"
+	"out mediump vec2 uvw;\n"
+	"void main()\n"
+	"{\n"
+		"uvw = texuvw;\n"
+		"gl_Position = vec4(vertex, 1.0);\n"
+	"}\n";
+char* sketchpad_glsl_v =
+	GLSL_VERSION
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec2 texuvw;\n"
+	"uniform mat4 cammvp;\n"
+	"out mediump vec2 uvw;\n"
+	"void main()\n"
+	"{\n"
+		"uvw = texuvw;\n"
+		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+	"}\n";
+char* sketchpad_glsl_f =
+	GLSL_VERSION
+	"in mediump vec2 uvw;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"mediump float x=uvw.x;\n"
+		"mediump float y=uvw.y;\n"
+		"if(abs(x*x-y) > 0.001)FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
+		"else FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
+		//"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
+	"}\n";
+
+
+
+
 /*
 static void wangge(struct arena* win)
 {
@@ -242,6 +279,60 @@ static void sketchpad_read_vbo2d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	if(0 == sty)sty = defaultstyle_vbo2d();
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	float* tc = act->target.vc;
+	float* tr = act->target.vr;
+	float* tf = act->target.vf;
+	struct glsrc* src = (void*)(pin->foot[0]);
+	float (*vbuf)[6] = src->vbuf;
+
+	vbuf[0][0] = vc[0] - vr[0] - vf[0];
+	vbuf[0][1] = vc[1] - vr[1] - vf[1];
+	vbuf[0][2] = vc[2] - vr[2] - vf[2];
+	vbuf[0][3] = tc[0] - tr[0];
+	vbuf[0][4] = tc[1] - tf[1];
+	vbuf[0][5] = 0.0;
+
+	vbuf[1][0] = vc[0] + vr[0] + vf[0];
+	vbuf[1][1] = vc[1] + vr[1] + vf[1];
+	vbuf[1][2] = vc[2] + vr[2] + vf[2];
+	vbuf[1][3] = tc[0] + tr[0];
+	vbuf[1][4] = tc[1] + tf[1];
+	vbuf[1][5] = 0.0;
+
+	vbuf[2][0] = vc[0] - vr[0] + vf[0];
+	vbuf[2][1] = vc[1] - vr[1] + vf[1];
+	vbuf[2][2] = vc[2] - vr[2] + vf[2];
+	vbuf[2][3] = tc[0] - tr[0];
+	vbuf[2][4] = tc[1] + tf[1];
+	vbuf[2][5] = 0.0;
+
+	vbuf[3][0] = vc[0] + vr[0] + vf[0];
+	vbuf[3][1] = vc[1] + vr[1] + vf[1];
+	vbuf[3][2] = vc[2] + vr[2] + vf[2];
+	vbuf[3][3] = tc[0] + tr[0];
+	vbuf[3][4] = tc[1] + tf[1];
+	vbuf[3][5] = 0.0;
+
+	vbuf[4][0] = vc[0] - vr[0] - vf[0];
+	vbuf[4][1] = vc[1] - vr[1] - vf[1];
+	vbuf[4][2] = vc[2] - vr[2] - vf[2];
+	vbuf[4][3] = tc[0] - tr[0];
+	vbuf[4][4] = tc[1] - tf[1];
+	vbuf[4][5] = 0.0;
+
+	vbuf[5][0] = vc[0] + vr[0] - vf[0];
+	vbuf[5][1] = vc[1] + vr[1] - vf[1];
+	vbuf[5][2] = vc[2] + vr[2] - vf[2];
+	vbuf[5][3] = tc[0] + tr[0];
+	vbuf[5][4] = tc[1] - tf[1];
+	vbuf[5][5] = 0.0;
+
+	src->vbuf_enq += 1;
 }
 static void sketchpad_read_vbo3d(
 	struct arena* win, struct style* sty,
@@ -429,12 +520,18 @@ static void sketchpad_swrite(
 			centerx += scale * x * (1-1/1.2);
 			centery += scale * y * (1-1/1.2);
 			scale /= 1.2;
+
+			act->target.vr[0] *= 1.1;
+			act->target.vf[1] *= 1.1;
 		}
 		else if(k == 'b')	//back
 		{
 			centerx += scale * x * (-0.2);
 			centery += scale * y * (-0.2);
 			scale *= 1.2;
+
+			act->target.vr[0] *= 0.9;
+			act->target.vf[1] *= 0.9;
 		}
 	}
 	else if(type==0x4070)		//p@
@@ -470,6 +567,44 @@ static void sketchpad_start(
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
+	struct datapair* pair;
+	struct glsrc* src;
+	struct gldst* dst;
+	if(0 == lf)return;
+
+	//alloc
+	pair = alloc_winobj(root);
+	src = &pair->src;
+	dst = &pair->dst;
+	lf->foot[0] = (u64)src;
+	tf->foot[0] = (u64)dst;
+
+	//shader
+	src->vs = sketchpad_glsl_v;
+	src->fs = sketchpad_glsl_f;
+	if(twig){if(_fg2d_ == twig->fmt)src->vs = sketchpad_glsl2d_v;}
+
+	//vertex
+	src->vbuf = memorycreate(4*6*6);
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->method = 'v';
+
+	//send!
+	src->shader_enq[0] = 42;
+	src->arg_enq[0] = 0;
+	src->tex_enq[0] = 42;
+	src->vbuf_enq = 0;
+	src->ibuf_enq = 0;
+
+	//
+	leaf->target.vc[0] = 0.0;
+	leaf->target.vc[1] = 0.0;
+	leaf->target.vr[0] = 1.0;
+	leaf->target.vf[1] = 1.0;
+
+	//
 	centerx = 0.00;
 	centery = 0.00;
 	scale = 1.00;
