@@ -236,16 +236,13 @@ static void xiangqi_read_vbo2d(
 			tf[1] = vf[1] / 9.1;
 			tf[2] = vf[2] / 9.1;
 			carvesolid2d_circle(win, 0xf9d65b, tc, tr, tf);
-
-			tc[0] += tu[0] + vu[0]*0.01;
-			tc[1] += tu[1] + vu[1]*0.01;
-			tc[2] += tu[2] + vu[2]*0.01;
+			tc[2] -= 0.1;
 			tr[0] = vr[0] / 18;
 			tr[1] = vr[1] / 18;
 			tr[2] = vr[2] / 18;
-			tf[0] = vf[0] / 20;
-			tf[1] = vf[1] / 20;
-			tf[2] = vf[2] / 20;
+			tf[0] = vf[0] / 18;
+			tf[1] = vf[1] / 18;
+			tf[2] = vf[2] / 18;
 			carve2d_utf8(win, fontcolor, tc, tr, tf,
 				(u8*)char2hanzi(data[y][x]), 0);
 		}
