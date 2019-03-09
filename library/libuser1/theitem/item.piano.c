@@ -71,7 +71,65 @@ static void piano_read_pixel(
 		);
 	}
 }
-static void piano_read_vbo(
+static void piano_read_vbo2d(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	int x;
+	vec3 tc,tr,tf,tu;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+
+	tr[0] = vr[0] / 7 / 11;
+	tr[1] = vr[1] / 7 / 11;
+	tr[2] = vr[2] / 7 / 11;
+	tf[0] = vf[0]/4;
+	tf[1] = vf[1]/4;
+	tf[2] = vf[2]/4;
+	for(x=0;x<7*10;x++)
+	{
+		tc[0] = vc[0] + vr[0]*(x-34.5)/35 - vf[0]/4;
+		tc[1] = vc[1] + vr[1]*(x-34.5)/35 - vf[1]/4;
+		tc[2] = vc[2] + vr[2]*(x-34.5)/35 - vf[2]/4;
+		carvesolid2d_rect(win, 0xfffffff, tc, tr, tf);
+	}
+
+	tr[0] = vr[0] / 7 / 20;
+	tr[1] = vr[1] / 7 / 20;
+	tr[2] = vr[2] / 7 / 20;
+	tf[0] = vf[0]/8;
+	tf[1] = vf[1]/8;
+	tf[2] = vf[2]/8;
+	for(x=0;x<7*10;x++)
+	{
+		if((x%7) == 0)continue;
+		if((x%7) == 3)continue;
+		tc[0] = vc[0] + vr[0]*(x-35)/35 - vf[0]/8;
+		tc[1] = vc[1] + vr[1]*(x-35)/35 - vf[1]/8;
+		tc[2] = vc[2] + vr[2]*(x-35)/35 - vf[2]/8 - 0.1;
+		carvesolid2d_rect(win, 0x202020, tc, tr, tf);
+	}
+
+	tc[0] = vc[0] + vr[0]*3/35 - vf[0]/4;
+	tc[1] = vc[1] + vr[1]*3/35 - vf[1]/4;
+	tc[2] = vc[2] + vr[2]*3/35 - vf[2]/4 - 0.1;
+	tr[0] = vr[0] * 2*52 / 7 / 20;
+	tr[1] = vr[1] * 2*52 / 7 / 20;
+	tr[2] = vr[2] * 2*52 / 7 / 20;
+	tf[0] = vf[0] / 4;
+	tf[1] = vf[1] / 4;
+	tf[2] = vf[2] / 4;
+	carveline2d_rect(win, 0xff00ff, tc, tr, tf);
+
+	tr[0] = vc[0] + vf[0]/2;
+	tr[1] = vc[1] + vf[1]/2;
+	tr[2] = vc[2] + vf[2]/2;
+	carveline2d(win, 0xff00ff, vc, tr);
+}
+static void piano_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -153,7 +211,7 @@ static void piano_read_cli(
 {
 	say("piano(%x,%x,%x)\n",win,act,sty);
 }
-static void piano_read(
+static void piano_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -163,10 +221,14 @@ static void piano_read(
 	else if(fmt == _tui_)piano_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)piano_read_html(win, sty, act, pin);
 	else if(fmt == _json_)piano_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)piano_read_vbo(win, sty, act, pin);
+	else if(fmt == _vbo_)
+	{
+		if(_2d_ == win->vfmt)piano_read_vbo2d(win, sty, act, pin);
+		else piano_read_vbo3d(win, sty, act, pin);
+	}
 	else piano_read_pixel(win, sty, act, pin);
 }
-static void piano_write(
+static void piano_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -177,11 +239,13 @@ static void piano_write(
 	float* imag;
 	float* amp;
 	u16* pcmout;
-	if(0 != win)return;
+//say("@piano_write\n");
 
 	if(_char_ == ev->what)
 	{
 		k = ev->why;
+		say("%d\n", k);
+
 		if('c' == k)f = cccc;
 		else if('d' == k)f = dddd;
 		else if('e' == k)f = eeee;
@@ -223,10 +287,15 @@ static void piano_write(
 		soundwrite(0, 0, pcmout, 4096*2);
 	}
 }
-static void piano_get()
+static void piano_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void piano_post()
+static void piano_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void piano_stop(
@@ -265,8 +334,8 @@ void piano_register(struct actor* p)
 	p->ondelete = (void*)piano_delete;
 	p->onstart  = (void*)piano_start;
 	p->onstop   = (void*)piano_stop;
-	p->onget    = (void*)piano_get;
-	p->onpost   = (void*)piano_post;
-	p->onread   = (void*)piano_read;
-	p->onwrite  = (void*)piano_write;
+	p->onget    = (void*)piano_cread;
+	p->onpost   = (void*)piano_cwrite;
+	p->onread   = (void*)piano_sread;
+	p->onwrite  = (void*)piano_swrite;
 }

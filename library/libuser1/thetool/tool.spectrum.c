@@ -107,11 +107,11 @@ static void spectrum_read_vbo2d(
 	float* vu = sty->vu;
 
 	short* pcmbuf = (act->buf)+0x80000;
-	for(x=0;x<8192;x++)
+	for(x=0;x<1024*16;x++)
 	{
-		tc[0] = vc[0] + vr[0] * (x/4096.0 - 1.0);
-		tc[1] = vc[1] + vr[1] * (x/4096.0 - 1.0);
-		tc[2] = vc[2] + vr[2] * (x/4096.0 - 1.0);
+		tc[0] = vc[0] + vr[0] * (x/8192.0 - 1.0);
+		tc[1] = vc[1] + vr[1] * (x/8192.0 - 1.0);
+		tc[2] = vc[2] + vr[2] * (x/8192.0 - 1.0);
 		tr[0] = tc[0] + vf[0]*pcmbuf[x]/16384.0;
 		tr[1] = tc[1] + vf[1]*pcmbuf[x]/16384.0;
 		tr[2] = tc[2] + vf[2]*pcmbuf[x]/16384.0;
@@ -216,7 +216,7 @@ static void spectrum_read_cli(
 {
 	say("spectrum(%x,%x,%x)\n",win,act,sty);
 }
-static void spectrum_read(
+static void spectrum_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -234,7 +234,7 @@ static void spectrum_read(
 	}
 	else spectrum_read_pixel(win, sty, act, pin);
 }
-static void spectrum_write(
+static void spectrum_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
@@ -245,13 +245,25 @@ static void spectrum_write(
 	float* imag;
 	float* amp;
 	struct perframe* frame = act->buf;
-	short* pcmbuf = (act->buf)+0x80000+((cur/4)*1024*2);
+	short* pcmbuf = (act->buf)+0x80000+(cur*1024*2);
 	short* pcmin = (void*)buf;
 
-	if(0 == len)return;
+	if(0 == len)
+	{
+		struct event* ev = (void*)buf;
+		if(_char_ == ev->what)
+		{
+			k = ev->why;
+			if((k>='0')&&(k<='9'))haha=k;
+		}
+		return;
+	}
+
 	if(0 != win)
 	{
-		cur = (cur+1)%32;
+		//soundwrite(0,0,buf,1024*2);
+say("%llx, %x\n", buf, len);
+		cur = (cur+1) % 16;
 		real = frame[cur].real;
 		imag = frame[cur].imag;
 		amp = frame[cur].amp;
@@ -283,18 +295,16 @@ static void spectrum_write(
 		that = k*44100/1024;
 		return;
 	}
-
-	struct event* ev = (void*)buf;
-	if(_char_ == ev->what)
-	{
-		k = ev->why;
-		if((k>='0')&&(k<='9'))haha=k;
-	}
 }
-static void spectrum_get()
+static void spectrum_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void spectrum_post()
+static void spectrum_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void spectrum_stop(
@@ -341,8 +351,8 @@ void spectrum_register(struct actor* p)
 	p->ondelete = (void*)spectrum_delete;
 	p->onstart  = (void*)spectrum_start;
 	p->onstop   = (void*)spectrum_stop;
-	p->onget    = (void*)spectrum_get;
-	p->onpost   = (void*)spectrum_post;
-	p->onread   = (void*)spectrum_read;
-	p->onwrite  = (void*)spectrum_write;
+	p->onget    = (void*)spectrum_cread;
+	p->onpost   = (void*)spectrum_cwrite;
+	p->onread   = (void*)spectrum_sread;
+	p->onwrite  = (void*)spectrum_swrite;
 }

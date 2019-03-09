@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <windows.h>
 #include "libuser.h"
-#define _mic_ hex32('m','i','c',0)
 
 
 
@@ -11,25 +10,27 @@ static WAVEFORMATEX fmt;
 static int alive = 0;
 //
 static HWAVEIN wavein;
-static WAVEHDR headin[8];
+static WAVEHDR headin[16];
 static u8* ibuf = 0;
 static int icur = 0;
 //
 static HWAVEOUT waveout;
-static WAVEHDR headout[8];
+static WAVEHDR headout[16];
 static u8* obuf = 0;
 static int ocur = 0;
 static int olen = 0;
 
 
 
-
+void soundwrite(int dev, int time, u8* buf, int len);
 static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1, DWORD dw2)
 {
 	//printf("@icb\n");
 	if(WIM_DATA == uMsg)
 	{
+		//soundwrite(0, 0, ibuf + (1024*2*icur), 2048);
 		//printf("WIM_DATA:%d\n", icur);
+
 		struct relation* orel = (struct relation*)(working->orel0);
 		while(1)
 		{
@@ -46,7 +47,7 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 		}
 
 		waveInAddBuffer(wavein, &headin[icur], sizeof (WAVEHDR));
-		icur = (icur+1)%8;
+		icur = (icur+1)%16;
 	}
 	else if(WIM_OPEN == uMsg)
 	{
@@ -98,6 +99,7 @@ void soundwrite(int dev, int time, u8* buf, int len)
 	if(olen+len >= 0x100000)olen = 0;
 	for(j=0;j<len;j++)obuf[olen+j] = buf[j];
 
+	ZeroMemory(&headout[ocur], sizeof(WAVEHDR));
 	headout[ocur].lpData = obuf+olen;
 	headout[ocur].dwBufferLength = len;
 	headout[ocur].dwFlags = 0L;
@@ -105,6 +107,7 @@ void soundwrite(int dev, int time, u8* buf, int len)
 	waveOutPrepareHeader(waveout, &headout[ocur], sizeof(WAVEHDR));
 	waveOutWrite(waveout, &headout[ocur], sizeof(WAVEHDR));
 
+	ocur = (ocur+1) % 16;
 	olen = olen+len;
 }
 void soundstop()
@@ -121,10 +124,9 @@ void sounddelete(struct arena* win)
 }
 void soundcreate(struct arena* win)
 {
-	int j;
+	int j,ret;
 	working = win;
 
-	//both
 	fmt.wFormatTag = WAVE_FORMAT_PCM;
 	fmt.nAvgBytesPerSec = 44100*2;
 	fmt.nSamplesPerSec = 44100;
@@ -132,22 +134,30 @@ void soundcreate(struct arena* win)
 	fmt.nChannels = 1;
 	fmt.nBlockAlign = 2;
 	fmt.cbSize = 0;
-
-	//in
-	waveInOpen(
-		&wavein, WAVE_MAPPER,
-		&fmt, (DWORD_PTR)icb,
-		0L, CALLBACK_FUNCTION
-	);
-	waveOutOpen(
+	ret = waveOutOpen(
 		&waveout, WAVE_MAPPER,
 		&fmt, (DWORD_PTR)ocb,
 		0L, CALLBACK_FUNCTION
 	);
+	say("@waveOutOpen:%d\n", ret);
+
+	fmt.wFormatTag = WAVE_FORMAT_PCM;
+	fmt.nAvgBytesPerSec = 8000*2;
+	fmt.nSamplesPerSec = 8000;
+	fmt.wBitsPerSample = 16;
+	fmt.nChannels = 1;
+	fmt.nBlockAlign = 2;
+	fmt.cbSize = 0;
+	ret = waveInOpen(
+		&wavein, WAVE_MAPPER,
+		&fmt, (DWORD_PTR)icb,
+		0L, CALLBACK_FUNCTION
+	);
+	say("@waveInOpen:%d\n", ret);
 
 	icur = 0;
-	ibuf = malloc(1024*2*8);
-	for(j=0;j<8;j++)
+	ibuf = malloc(1024*2*16);
+	for(j=0;j<16;j++)
 	{
 		headin[j].lpData = ibuf + (1024*2*j);
 		headin[j].dwBufferLength = 1024*2;

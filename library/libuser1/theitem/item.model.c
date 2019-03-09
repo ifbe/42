@@ -232,11 +232,10 @@ static void model_read_vbo2d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	struct glsrc* src;
 	if(act->buf == 0)return;
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
-	src = (void*)(pin->foot[0]);
+	struct glsrc* src = (void*)(pin->foot[0]);
 	sty_sty_mat(&act->target, sty, (void*)src->arg_data[0]); 
 	src->arg_enq[0] += 1;
 }
@@ -244,10 +243,9 @@ static void model_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	struct glsrc* src;
 	if(act->buf == 0)return;
 
-	src = (void*)(pin->foot[0]);
+	struct glsrc* src = (void*)(pin->foot[0]);
 	sty_sty_mat(&act->target, sty, (void*)src->arg_data[0]); 
 	src->arg_enq[0] += 1;
 }
