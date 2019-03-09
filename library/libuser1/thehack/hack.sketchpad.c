@@ -42,8 +42,8 @@ static double scale = 0.0;
 char* sketchpad_glsl2d_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"out mediump vec2 uvw;\n"
+	"layout(location = 1)in mediump vec3 texuvw;\n"
+	"out mediump vec3 uvw;\n"
 	"void main()\n"
 	"{\n"
 		"uvw = texuvw;\n"
@@ -52,9 +52,9 @@ char* sketchpad_glsl2d_v =
 char* sketchpad_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
+	"layout(location = 1)in mediump vec3 texuvw;\n"
 	"uniform mat4 cammvp;\n"
-	"out mediump vec2 uvw;\n"
+	"out mediump vec3 uvw;\n"
 	"void main()\n"
 	"{\n"
 		"uvw = texuvw;\n"
@@ -62,14 +62,18 @@ char* sketchpad_glsl_v =
 	"}\n";
 char* sketchpad_glsl_f =
 	GLSL_VERSION
-	"in mediump vec2 uvw;\n"
+	"in mediump vec3 uvw;\n"
 	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"mediump float x=uvw.x;\n"
-		"mediump float y=uvw.y;\n"
-		"if(abs(x*x-y) > 0.001)FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
-		"else FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
+	"float fun(float x, float y){\n"
+		"return x*x-y;\n"
+	"}\n"
+	"void main(){\n"
+		"mediump float dx=uvw.z;\n"
+		"mediump float dy=uvw.z;\n"
+		"mediump float xx = fun(uvw.x-dx,uvw.y) * fun(uvw.x+dx,uvw.y);\n"
+		"mediump float yy = fun(uvw.x,uvw.y-dy) * fun(uvw.x,uvw.y+dy);\n"
+		"if(xx<0||yy<0)FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
+		"else FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
 		//"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
 	"}\n";
 
@@ -295,42 +299,42 @@ static void sketchpad_read_vbo2d(
 	vbuf[0][2] = vc[2] - vr[2] - vf[2];
 	vbuf[0][3] = tc[0] - tr[0];
 	vbuf[0][4] = tc[1] - tf[1];
-	vbuf[0][5] = 0.0;
+	vbuf[0][5] = 2*tr[0] / (win->width);
 
 	vbuf[1][0] = vc[0] + vr[0] + vf[0];
 	vbuf[1][1] = vc[1] + vr[1] + vf[1];
 	vbuf[1][2] = vc[2] + vr[2] + vf[2];
 	vbuf[1][3] = tc[0] + tr[0];
 	vbuf[1][4] = tc[1] + tf[1];
-	vbuf[1][5] = 0.0;
+	vbuf[1][5] = 2*tr[0] / (win->width);
 
 	vbuf[2][0] = vc[0] - vr[0] + vf[0];
 	vbuf[2][1] = vc[1] - vr[1] + vf[1];
 	vbuf[2][2] = vc[2] - vr[2] + vf[2];
 	vbuf[2][3] = tc[0] - tr[0];
 	vbuf[2][4] = tc[1] + tf[1];
-	vbuf[2][5] = 0.0;
+	vbuf[2][5] = 2*tr[0] / (win->width);
 
 	vbuf[3][0] = vc[0] + vr[0] + vf[0];
 	vbuf[3][1] = vc[1] + vr[1] + vf[1];
 	vbuf[3][2] = vc[2] + vr[2] + vf[2];
 	vbuf[3][3] = tc[0] + tr[0];
 	vbuf[3][4] = tc[1] + tf[1];
-	vbuf[3][5] = 0.0;
+	vbuf[3][5] = 2*tr[0] / (win->width);
 
 	vbuf[4][0] = vc[0] - vr[0] - vf[0];
 	vbuf[4][1] = vc[1] - vr[1] - vf[1];
 	vbuf[4][2] = vc[2] - vr[2] - vf[2];
 	vbuf[4][3] = tc[0] - tr[0];
 	vbuf[4][4] = tc[1] - tf[1];
-	vbuf[4][5] = 0.0;
+	vbuf[4][5] = 2*tr[0] / (win->width);
 
 	vbuf[5][0] = vc[0] + vr[0] - vf[0];
 	vbuf[5][1] = vc[1] + vr[1] - vf[1];
 	vbuf[5][2] = vc[2] + vr[2] - vf[2];
 	vbuf[5][3] = tc[0] + tr[0];
 	vbuf[5][4] = tc[1] - tf[1];
-	vbuf[5][5] = 0.0;
+	vbuf[5][5] = 2*tr[0] / (win->width);
 
 	src->vbuf_enq += 1;
 }

@@ -113,21 +113,59 @@ static void piano_read_vbo2d(
 		carvesolid2d_rect(win, 0x202020, tc, tr, tf);
 	}
 
-	tc[0] = vc[0] + vr[0]*3/35 - vf[0]/4;
-	tc[1] = vc[1] + vr[1]*3/35 - vf[1]/4;
-	tc[2] = vc[2] + vr[2]*3/35 - vf[2]/4 - 0.1;
+	tc[0] = vc[0] + vr[0]*3/35 + vf[0]/4;
+	tc[1] = vc[1] + vr[1]*3/35 + vf[1]/4;
+	tc[2] = vc[2] + vr[2]*3/35 + vf[2]/4;
 	tr[0] = vr[0] * 2*52 / 7 / 20;
 	tr[1] = vr[1] * 2*52 / 7 / 20;
 	tr[2] = vr[2] * 2*52 / 7 / 20;
 	tf[0] = vf[0] / 4;
 	tf[1] = vf[1] / 4;
 	tf[2] = vf[2] / 4;
-	carveline2d_rect(win, 0xff00ff, tc, tr, tf);
+	carvesolid2d_rect(win, 0x404040, tc, tr, tf);
 
-	tr[0] = vc[0] + vf[0]/2;
-	tr[1] = vc[1] + vf[1]/2;
-	tr[2] = vc[2] + vf[2]/2;
-	carveline2d(win, 0xff00ff, vc, tr);
+	tr[0] = vr[0] / 64;
+	tr[1] = vr[1] / 64;
+	tr[2] = vr[2] / 64;
+	tf[0] = vf[0] / 64;
+	tf[1] = vf[1] / 64;
+	tf[2] = vf[2] / 64;
+	tc[0] = vc[0] - vr[0]*16/20 + vf[0]/64;
+	tc[1] = vc[1] - vr[1]*16/20 + vf[1]/64;
+	tc[2] = vc[2] - vr[2]*16/20 + vf[2]/64 - 0.01;
+	carve2d_string(win, 0xffffff, tc, tr, tf, (u8*)"27.5", 4);
+	tc[0] = vc[0] - vr[0]*12/20 + vf[0]/64;
+	tc[1] = vc[1] - vr[1]*12/20 + vf[1]/64;
+	tc[2] = vc[2] - vr[2]*12/20 + vf[2]/64 - 0.01;
+	carve2d_string(win, 0xffffff, tc, tr, tf, (u8*)"55", 2);
+	tc[0] = vc[0] - vr[0]*8/20 + vf[0]/64;
+	tc[1] = vc[1] - vr[1]*8/20 + vf[1]/64;
+	tc[2] = vc[2] - vr[2]*8/20 + vf[2]/64 - 0.01;
+	carve2d_string(win, 0xffffff, tc, tr, tf, (u8*)"110", 3);
+	tc[0] = vc[0] - vr[0]*4/20 + vf[0]/64;
+	tc[1] = vc[1] - vr[1]*4/20 + vf[1]/64;
+	tc[2] = vc[2] - vr[2]*4/20 + vf[2]/64 - 0.01;
+	carve2d_string(win, 0xffffff, tc, tr, tf, (u8*)"220", 3);
+	tc[0] = vc[0] + vf[0]/64;
+	tc[1] = vc[1] + vf[1]/64;
+	tc[2] = vc[2] + vf[2]/64 - 0.01;
+	carve2d_string(win, 0xffffff, tc, tr, tf, (u8*)"440", 3);
+	tc[0] = vc[0] + vr[0]*4/20 + vf[0]/64;
+	tc[1] = vc[1] + vr[1]*4/20 + vf[1]/64;
+	tc[2] = vc[2] + vr[2]*4/20 + vf[2]/64 - 0.01;
+	carve2d_string(win, 0xffffff, tc, tr, tf, (u8*)"880", 3);
+	tc[0] = vc[0] + vr[0]*8/20 + vf[0]/64;
+	tc[1] = vc[1] + vr[1]*8/20 + vf[1]/64;
+	tc[2] = vc[2] + vr[2]*8/20 + vf[2]/64 - 0.01;
+	carve2d_string(win, 0xffffff, tc, tr, tf, (u8*)"1760", 4);
+	tc[0] = vc[0] + vr[0]*12/20 + vf[0]/64;
+	tc[1] = vc[1] + vr[1]*12/20 + vf[1]/64;
+	tc[2] = vc[2] + vr[2]*12/20 + vf[2]/64 - 0.01;
+	carve2d_string(win, 0xffffff, tc, tr, tf, (u8*)"3520", 4);
+	tc[0] = vc[0] + vr[0]*16/20 + vf[0]/64;
+	tc[1] = vc[1] + vr[1]*16/20 + vf[1]/64;
+	tc[2] = vc[2] + vr[2]*16/20 + vf[2]/64 - 0.01;
+	carve2d_string(win, 0xffffff, tc, tr, tf, (u8*)"7040", 4);
 }
 static void piano_read_vbo3d(
 	struct arena* win, struct style* sty,
