@@ -6,7 +6,7 @@ void actorcreatefromfile(struct actor* act, char* name);
 
 
 
-char* model_glsl_v =
+char* model_glsl2d_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec3 normal;\n"
@@ -16,6 +16,31 @@ char* model_glsl_v =
 	"{\n"
 		"vcolor = normal;\n"
 		"gl_Position = objmat * vec4(vertex, 1.0);\n"
+	"}\n";
+char* model_glsl_v =
+	GLSL_VERSION
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec3 normal;\n"
+	"uniform mediump vec3 eyepos;\n"
+	"uniform mat4 cammvp;\n"
+	"uniform mat4 objmat;\n"
+	"mediump vec3 ambient = vec3(0.25, 0.25, 0.25);\n"
+	"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
+	"mediump vec3 lightposition = vec3(0.0, 0.0, 1000.0);\n"
+	"out mediump vec3 vcolor;\n"
+	"void main()\n"
+	"{\n"
+		"mediump vec3 N = normalize(normal);\n"
+		"mediump vec3 L = normalize(vec3(lightposition - vertex));\n"
+		"mediump vec3 E = normalize(eyepos-vertex);\n"
+		"mediump vec3 R = reflect(-L, N);\n"
+		"mediump float SN = max(dot(N, L), 0.0);\n"
+		"mediump float RV = max(dot(R, E), 0.0);\n"
+		"mediump vec3 diffuse = lightcolor * SN;\n"
+		"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
+		"if(SN>0.0)specular = lightcolor * pow(RV, 4.0);\n"
+		"vcolor = ambient + diffuse + specular;\n"
+		"gl_Position = cammvp * objmat * vec4(vertex, 1.0);\n"
 	"}\n";
 char* model_glsl_f =
 	GLSL_VERSION
@@ -335,6 +360,7 @@ static void model_start(
 	//shader
 	src->vs = model_glsl_v;
 	src->fs = model_glsl_f;
+	if(twig){if(_fg2d_ == twig->fmt)src->vs = model_glsl2d_v;}
 
 	//argument
 	src->arg[0] = "objmat";

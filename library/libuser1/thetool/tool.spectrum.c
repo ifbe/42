@@ -106,11 +106,22 @@ static void spectrum_read_vbo2d(
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 
+	short* pcmbuf = (act->buf)+0x80000;
+	for(x=0;x<8192;x++)
+	{
+		tc[0] = vc[0] + vr[0] * (x/4096.0 - 1.0);
+		tc[1] = vc[1] + vr[1] * (x/4096.0 - 1.0);
+		tc[2] = vc[2] + vr[2] * (x/4096.0 - 1.0);
+		tr[0] = tc[0] + vf[0]*pcmbuf[x]/16384.0;
+		tr[1] = tc[1] + vf[1]*pcmbuf[x]/16384.0;
+		tr[2] = tc[2] + vf[2]*pcmbuf[x]/16384.0;
+		carveline2d(win, 0xffffff, tc, tr);
+	}
+
 	struct perframe* frame = act->buf;
 	float* real = frame[cur].real;
 	float* imag = frame[cur].imag;
 	float* amp = frame[cur].amp;
-
 	for(x=0;x<512;x++)
 	{
 		a = x*tau/512;
@@ -120,10 +131,10 @@ static void spectrum_read_vbo2d(
 		tc[0] = vc[0] + vr[0] * (x-256) / 256;
 		tc[1] = vc[1] + vr[1] * (x-256) / 256;
 		tc[2] = vc[2] + vr[2] * (x-256) / 256;
-		tr[0] = tc[0] + amp[x]*vf[0];
-		tr[1] = tc[1] + amp[x]*vf[1];
-		tr[2] = tc[2] + amp[x]*vf[2];
-		carveline2d(win, 0xffffff, tc, tr);
+		tr[0] = tc[0] + vf[0]*amp[x]*10;
+		tr[1] = tc[1] + vf[1]*amp[x]*10;
+		tr[2] = tc[2] + vf[2]*amp[x]*10;
+		carveline2d(win, 0xff0000, tc, tr);
 	}
 }
 static void spectrum_read_vbo3d(
@@ -237,6 +248,7 @@ static void spectrum_write(
 	short* pcmbuf = (act->buf)+0x80000+((cur/4)*1024*2);
 	short* pcmin = (void*)buf;
 
+	if(0 == len)return;
 	if(0 != win)
 	{
 		cur = (cur+1)%32;

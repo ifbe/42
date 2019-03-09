@@ -12,6 +12,7 @@ void portal_register(void*);
 void skydome_register(void*);
 void terrian_register(void*);
 void texball_register(void*);
+void weather_register(void*);
 //geom
 void cube_register(void*);
 void cylinder_register(void*);
@@ -102,6 +103,9 @@ void content_create(void* addr)
 	mirror_register(tmp);
 	tmp += sizeof(struct actor);
 
+	portal_register(tmp);
+	tmp += sizeof(struct actor);
+
 	skydome_register(tmp);
 	tmp += sizeof(struct actor);
 
@@ -109,6 +113,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	texball_register(tmp);
+	tmp += sizeof(struct actor);
+
+	weather_register(tmp);
 	tmp += sizeof(struct actor);
 
 
@@ -224,9 +231,6 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	picture_register(tmp);
-	tmp += sizeof(struct actor);
-
-	portal_register(tmp);
 	tmp += sizeof(struct actor);
 
 	rccar_register(tmp);
