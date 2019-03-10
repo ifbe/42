@@ -42,7 +42,7 @@ void* soundlistener(struct arena* win)
 			printf("error@pa_simple_get_latency:%s\n", pa_strerror(err));
 			goto finish;
 		}
- 		fprintf(stderr, "In: %0.0f usec\n", (float)latency);
+ 		//fprintf(stderr, "In: %0.0f usec\n", (float)latency);
 
 		ret = pa_simple_read(s_in, ibuf+(1024*2*icur), 2048, &err);
 		if(err < 0)

@@ -1,32 +1,34 @@
 #include "libuser.h"
 #define _mic_ hex32('m','i','c',0)
-#define cccc 444.0
-#define c__d 470.40161389552713
-#define dddd 498.3731494493616
-#define d__e 528.0079590612081
-#define eeee 559.4049461533237
-#define ffff 592.6688952514953
-#define f__g 627.9108216936543
-#define gggg 665.2483421332466
-#define g__a 704.8060670738805
-#define aaaa 746.7160167452985
-#define a__b 791.1180617086213
-#define bbbb 838.1603896613437
-void fft(float* real, float* imag, int k);
-void ifft(float* real, float* imag, int k);
+#define cccc 440.000
+#define c__d 466.164
+#define dddd 493.883
+#define d__e 523.251
+#define eeee 554.365
+#define ffff 587.330
+#define f__g 622.254
+#define gggg 659.255
+#define g__a 698.456
+#define aaaa 739.989
+#define a__b 783.991
+#define bbbb 830.609
 int soundread(int dev, int time, void* buf, int len);
 int soundwrite(int dev, int time, void* buf, int len);
 
 
 
-
-struct perframe
+void piano_gen(short* pcm, float f)
 {
-	float real[4096];
-	float imag[4096];
-	float amp[4096];
-	float phase[4096];
-};
+	int j;
+	for(j=0;j<16384;j++)
+	{
+		pcm[j] = 16384*sine(j*2*PI*f*1/44100)
+				+ 8192*sine(j*2*PI*f*2/44100)
+				+ 1024*sine(j*2*PI*f*3/44100)
+				+ 4096*sine(j*2*PI*f*4/44100)
+				+ 1024*sine(j*2*PI*f*5/44100);
+	}
+}
 
 
 
@@ -272,60 +274,73 @@ static void piano_swrite(
 {
 	int j,k;
 	float f;
-	float* real;
-	float* imag;
-	float* amp;
-	u16* pcmout;
-	struct perframe* frame;
-//say("@piano_write\n");
 
 	if(0 == len){
 	if(_char_ == ev->what)
 	{
-		k = ev->why;
-		say("%d\n", k);
-
-		if('c' == k)f = cccc;
-		else if('d' == k)f = dddd;
-		else if('e' == k)f = eeee;
-		else if('f' == k)f = ffff;
-		else if('g' == k)f = gggg;
-		else if('a' == k)f = aaaa;
-		else if('b' == k)f = bbbb;
-		else if('1' == k)f = cccc;
-		else if('2' == k)f = c__d;
-		else if('3' == k)f = dddd;
-		else if('4' == k)f = d__e;
-		else if('5' == k)f = eeee;
-		else if('6' == k)f = ffff;
-		else if('7' == k)f = f__g;
-		else if('8' == k)f = gggg;
-		else if('9' == k)f = g__a;
-		else if('0' == k)f = aaaa;
-		else if('-' == k)f = a__b;
-		else if('=' == k)f = bbbb;
-
-		frame = act->buf;
-		real = frame[0].real;
-		imag = frame[0].imag;
-		for(j=0;j<4096;j++)
+		switch(ev->why)
 		{
-			real[j] = 0.0;
-			imag[j] = 0.0;
+			case 'c':f = cccc;break;
+			case 'd':f = dddd;break;
+			case 'e':f = eeee;break;
+			case 'f':f = ffff;break;
+			case 'g':f = gggg;break;
+			case 'a':f = aaaa;break;
+			case 'b':f = bbbb;break;
+			case '1':f = cccc;break;
+			case '2':f = c__d;break;
+			case '3':f = dddd;break;
+			case '4':f = d__e;break;
+			case '5':f = eeee;break;
+			case '6':f = ffff;break;
+			case '7':f = f__g;break;
+			case '8':f = gggg;break;
+			case '9':f = g__a;break;
+			case '0':f = aaaa;break;
+			case '-':f = a__b;break;
+			case '=':f = bbbb;break;
 		}
 
-		j = (f*4096)/44100;
-		real[j] = 4096.0;
-		real[4096-j] = 4096.0;
-
-		ifft(real, imag, 12);
-		pcmout = (act->buf)+0x80000;
-		for(j=0;j<4096;j++)
-		{
-			pcmout[j] = (int)(real[j]*65535.0);
-		}
-		soundwrite(0, 0, pcmout, 4096*2);
+		piano_gen(act->buf, f);
+		soundwrite(0, 0, act->buf, 16384*2);
 	}//if(_char_)
+
+	if(0x2d70 == ev->what){
+		j = (ev->why)&0xffff;
+		j = j*70/(win->width);
+		say("j=%d\n",j);
+
+		k = j%7;
+		j = j/7;
+		switch(k)
+		{
+			case 0:f = cccc;break;
+			case 1:f = dddd;break;
+			case 2:f = eeee;break;
+			case 3:f = ffff;break;
+			case 4:f = gggg;break;
+			case 5:f = aaaa;break;
+			case 6:f = bbbb;break;
+		}
+		switch(j)
+		{
+			case 0:f /= 32;break;
+			case 1:f /= 16;break;
+			case 2:f /= 8;break;
+			case 3:f /= 4;break;
+			case 4:f /= 2;break;
+			case 5:break;
+			case 6:f *= 2;break;
+			case 7:f *= 4;break;
+			case 8:f *= 8;break;
+			case 9:f *= 16;break;
+		}
+		say("f=%f\n",f);
+
+		piano_gen(act->buf, f);
+		soundwrite(0, 0, act->buf, 16384*2);
+	}//if(mouseup)
+
 	}//if(0==len)
 }
 static void piano_cread(
