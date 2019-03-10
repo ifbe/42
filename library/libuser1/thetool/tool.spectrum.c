@@ -333,7 +333,6 @@ static void spectrum_create(struct actor* act)
 	if(0 == act->buf)return;
 
 	win = arenacreate(_mic_, "0");
-	say("win=%llx\n",win);
 	if(0 == win)return;
 
 	relationcreate(act, 0, _act_, win, 0, _win_);

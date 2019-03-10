@@ -27,7 +27,6 @@ struct perframe
 	float amp[4096];
 	float phase[4096];
 };
-static struct perframe* frame;
 
 
 
@@ -277,8 +276,10 @@ static void piano_swrite(
 	float* imag;
 	float* amp;
 	u16* pcmout;
+	struct perframe* frame;
 //say("@piano_write\n");
 
+	if(0 == len){
 	if(_char_ == ev->what)
 	{
 		k = ev->why;
@@ -304,6 +305,7 @@ static void piano_swrite(
 		else if('-' == k)f = a__b;
 		else if('=' == k)f = bbbb;
 
+		frame = act->buf;
 		real = frame[0].real;
 		imag = frame[0].imag;
 		for(j=0;j<4096;j++)
@@ -323,7 +325,8 @@ static void piano_swrite(
 			pcmout[j] = (int)(real[j]*65535.0);
 		}
 		soundwrite(0, 0, pcmout, 4096*2);
-	}
+	}//if(_char_)
+	}//if(0==len)
 }
 static void piano_cread(
 	struct arena* win, struct style* sty,
@@ -355,9 +358,16 @@ static void piano_delete(struct actor* act)
 }
 static void piano_create(struct actor* act)
 {
+	struct arena* win;
 	if(0 == act)return;
+
 	act->buf = memorycreate(0x100000);
-	frame = act->buf;
+	if(0 == act->buf)return;
+
+	win = arenacreate(_mic_, "0");
+	if(0 == win)return;
+
+	relationcreate(win, 0, _win_, act, 0, _act_);
 }
 
 
