@@ -9,6 +9,36 @@ void rubikscube_solve(void*, int);
 //left, right, near, far, bottom, upper
 u32 rubikcolor[6] = {0x00ff00,0x0000ff,0xff0000,0xfa8010,0xffff00,0xffffff};
 static u8 buffer[6][4][4];
+int rubikscube_import(char* file, u8* buf)
+{
+	int x,y,j;
+	u8 tmp[0x100];
+	j = openreadclose(file, 0, tmp, 0x100);
+	//printmemory(tmp, 0x100);
+	if(j<=0)return 0;
+
+	x = y = 0;
+	for(j=0;j<0x100;j++)
+	{
+		if(0xd == tmp[j])continue;
+		if(0xa == tmp[j]){
+			x = 0;y += 1;
+			if(y >= 6)break;
+			continue;
+		}
+		if(x<16)
+		{
+			if((tmp[j] >= 0x30)&&(tmp[j] <= 0x35))
+			{
+				buffer[y][x/4][x%4] = tmp[j] - 0x30;
+				x++;
+			}
+		}
+	}
+
+	//printmemory(buf, 81);
+	return 1;
+}
 
 
 
@@ -111,7 +141,7 @@ static void rubikscube_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int x,y;
+	int x,y,rgb;
 	vec3 f;
 	vec3 tc, tr, tf, tu;
 	float* vc = sty->vc;
@@ -136,7 +166,8 @@ static void rubikscube_read_vbo(
 			tf[0] = vu[0] / (level+0.5);
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
-			carvesolid_rect(win, 0xff00, tc, tr, tf);
+			rgb = rubikcolor[(buffer[0][y][x])%6];
+			carvesolid_rect(win, rgb, tc, tr, tf);
 
 			//right
 			f[0] = 1.0;
@@ -151,7 +182,8 @@ static void rubikscube_read_vbo(
 			tf[0] = vu[0] / (level+0.5);
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
-			carvesolid_rect(win, 0xff00, tc, tr, tf);
+			rgb = rubikcolor[(buffer[1][y][x])%6];
+			carvesolid_rect(win, rgb, tc, tr, tf);
 		}
 	}
 
@@ -172,7 +204,8 @@ static void rubikscube_read_vbo(
 			tf[0] = vu[0] / (level+0.5);
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
-			carvesolid_rect(win, 0xff0000, tc, tr, tf);
+			rgb = rubikcolor[(buffer[2][y][x])%6];
+			carvesolid_rect(win, rgb, tc, tr, tf);
 
 			//far
 			f[0] = (2.0*x+1.0)/level - 1.0;
@@ -187,7 +220,8 @@ static void rubikscube_read_vbo(
 			tf[0] = vu[0] / (level+0.5);
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
-			carvesolid_rect(win, 0xfa8010, tc, tr, tf);
+			rgb = rubikcolor[(buffer[3][y][x])%6];
+			carvesolid_rect(win, rgb, tc, tr, tf);
 		}
 	}
 
@@ -208,7 +242,8 @@ static void rubikscube_read_vbo(
 			tf[0] = -vf[0] / (level+0.5);
 			tf[1] = -vf[1] / (level+0.5);
 			tf[2] = -vf[2] / (level+0.5);
-			carvesolid_rect(win, 0xffff00, tc, tr, tf);
+			rgb = rubikcolor[(buffer[4][y][x])%6];
+			carvesolid_rect(win, rgb, tc, tr, tf);
 
 			//upper
 			f[0] = (2.0*x+1.0)/level - 1.0;
@@ -223,7 +258,8 @@ static void rubikscube_read_vbo(
 			tf[0] = vf[0] / (level+0.5);
 			tf[1] = vf[1] / (level+0.5);
 			tf[2] = vf[2] / (level+0.5);
-			carvesolid_rect(win, 0xffffff, tc, tr, tf);
+			rgb = rubikcolor[(buffer[5][y][x])%6];
+			carvesolid_rect(win, rgb, tc, tr, tf);
 		}
 	}
 }
@@ -298,18 +334,28 @@ static void rubikscube_start(
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
-	rubikscube_generate(buffer, level);
 }
 static void rubikscube_delete(struct actor* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void rubikscube_create(struct actor* act)
+static void rubikscube_create(struct actor* act, void* str)
 {
+	int ret;
+	void* buf;
 	if(0 == act)return;
+
+	//malloc
 	if(_orig_ == act->type)act->buf = buffer;
 	if(_copy_ == act->type)act->buf = memorycreate(6*4*4);
+
+	//read
+	ret = 0;
+	if(str)ret = rubikscube_import(str, buf);
+	if((0==str)|(ret<=0))rubikscube_generate(buffer, level);
+
+	for(ret=0;ret<6;ret++)printmemory((void*)buffer+16*ret, 4*4);
 }
 
 

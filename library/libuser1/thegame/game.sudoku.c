@@ -7,7 +7,7 @@ void sudoku_solve(void*);
 
 //
 static int px,py;
-int sudoku_load(char* file, u8* buf)
+int sudoku_import(char* file, u8* buf)
 {
 	int x,y,j;
 	u8 tmp[0x100];
@@ -363,9 +363,10 @@ static void sudoku_create(struct actor* act, void* str)
 
 	//read
 	ret = 0;
-	if(str)ret = sudoku_load(str, buf);
+	if(str)ret = sudoku_import(str, buf);
 	if((0==str)|(ret<=0))sudoku_generate(buf);
 
+	//solve
 	sudoku_solve(buf);
 	for(ret=0;ret<81;ret+=9)printmemory(buf+ret, 9);
 
