@@ -7,7 +7,34 @@ void sudoku_solve(void*);
 
 //
 static int px,py;
-static u8 data[9][9];
+int sudoku_load(char* file, u8* buf)
+{
+	int x,y,j;
+	u8 tmp[0x100];
+	j = openreadclose(file, 0, tmp, 0x100);
+	//printmemory(tmp, 0x100);
+	if(j<=0)return 0;
+
+	x = y = 0;
+	for(j=0;j<0x100;j++)
+	{
+		if(0xd == tmp[j])continue;
+		if(0xa == tmp[j]){
+			x = 0;y += 1;
+			if(y >= 9)break;
+			continue;
+		}
+		if(x<9)
+		{
+			if((tmp[j] >= 0x30)&&(tmp[j] <= 0x39))buf[y*9+x] = tmp[j] - 0x30;
+			else buf[y*9+x] = 0;
+			x++;
+		}
+	}
+
+	//printmemory(buf, 81);
+	return 1;
+}
 
 
 
@@ -34,6 +61,7 @@ static void sudoku_read_pixel(
 		hh = win->height/2;
 	}
 
+	u8* data = act->buf;
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
@@ -45,12 +73,12 @@ static void sudoku_read_pixel(
 			drawsolid_rect(win, 0xcccccc, t1, t2, t3, t4);
 			drawline_rect(win, 0x222222, t1, t2, t3, t4);
 
-			if(data[y][x] != 0)
+			if(data[y*9+x] != 0)
 			{
 				drawdecimal(win, 0,
 					(cx-ww-4)+(2*x+1)*ww/9,
 					(cy-hh-8)+(2*y+1)*hh/9,
-					data[y][x]
+					data[y*9+x]
 				);
 			}
 		}
@@ -69,6 +97,8 @@ static void sudoku_read_vbo2d(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
+
+	u8* data = act->buf;
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
@@ -81,7 +111,7 @@ static void sudoku_read_vbo2d(
 			else rgb = 0x888888;
 
 			f[0] = (x+x+1)/9.0 - 1.0;
-			f[1] = (y+y+1)/9.0 - 1.0;
+			f[1] = 1.0 - (y+y+1)/9.0;
 			f[2] = 1.0/36;
 			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
 			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
@@ -93,7 +123,7 @@ static void sudoku_read_vbo2d(
 			tf[1] = vf[1] / 10;
 			tf[2] = vf[2] / 10;
 			carvesolid2d_rect(win, rgb, tc, tr, tf);
-			if(data[y][x] != 0)
+			if(data[y*9+x] != 0)
 			{
 				tc[2] -= 0.1;
 				tr[0] = vr[0] / 18;
@@ -102,7 +132,7 @@ static void sudoku_read_vbo2d(
 				tf[0] = vf[0] / 18;
 				tf[1] = vf[1] / 18;
 				tf[2] = vf[2] / 18;
-				carve2d_ascii(win, ~rgb, tc, tr, tf, 0x30+data[y][x]);
+				carve2d_ascii(win, ~rgb, tc, tr, tf, 0x30+data[y*9+x]);
 			}
 		}
 	}
@@ -118,6 +148,8 @@ static void sudoku_read_vbo3d(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
+
+	u8* data = act->buf;
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
@@ -145,7 +177,7 @@ static void sudoku_read_vbo3d(
 			tu[1] = vu[1] * f[2];
 			tu[2] = vu[2] * f[2];
 			carvesolid_prism4(win, rgb, tc, tr, tf, tu);
-			if(data[y][x] != 0)
+			if(data[y*9+x] != 0)
 			{
 				tc[0] += tu[0] + vu[0]*0.01;
 				tc[1] += tu[1] + vu[1]*0.01;
@@ -156,7 +188,7 @@ static void sudoku_read_vbo3d(
 				tf[0] = vf[0] / 18;
 				tf[1] = vf[1] / 18;
 				tf[2] = vf[2] / 18;
-				carveascii(win, ~rgb, tc, tr, tf, 0x30+data[y][x]);
+				carveascii(win, ~rgb, tc, tr, tf, 0x30+data[y*9+x]);
 			}
 		}
 	}
@@ -171,6 +203,7 @@ static void sudoku_read_html(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
+	u8* data = act->buf;
 
 	//<head>
 	htmlprintf(win, 1,
@@ -186,7 +219,7 @@ static void sudoku_read_html(
 		{
 			htmlprintf(win, 2,
 				"<div class=\"sudokufg\">%c</div>\n",
-				0x30+data[y][x]
+				0x30+data[y*9+x]
 			);
 		}//forx
 	}//fory
@@ -200,11 +233,12 @@ static void sudoku_read_tui(
 	int stride = win->stride;
 	char* p = (char*)(win->buf);
 
+	u8* data = act->buf;
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
 		{
-			if(data[y][x] == 0)continue;
+			if(data[y*9+x] == 0)continue;
 
 			//position
 			ret = (3*y+1)*stride + 6*x + 2;
@@ -218,7 +252,7 @@ static void sudoku_read_tui(
 			gentui_rect(win, color, x*6, y*3, x*6+5, y*3+2);
 
 			//data
-			p[ret] = data[y][x] + 0x30;
+			p[ret] = data[y*9+x] + 0x30;
 		}
 	}
 }
@@ -227,14 +261,14 @@ static void sudoku_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
-	say("sudoku(%x,%x,%x)\n",win,act,sty);
+	u8* data = act->buf;
 
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
 		{
-			if(data[y][x] == 0)continue;
-			say("%d	",data[y][x]);
+			if(data[y*9+x] == 0)continue;
+			say("%d	",data[y*9+x]);
 		}
 		say("\n");
 	}
@@ -315,35 +349,27 @@ static void sudoku_start(
 static void sudoku_delete(struct actor* act, u8* buf)
 {
 	if(0 == act)return;
-	if(_COPY_ == act->type)memorydelete(act->buf);
+	memorydelete(act->buf);
 }
-static void sudoku_create(struct actor* act, u8* buf)
+static void sudoku_create(struct actor* act, void* str)
 {
-	u8* p;
-	int j,k;
+	int ret;
+	void* buf;
 	if(0 == act)return;
 
-	if(_orig_ == act->type)p = (void*)data;
-	else if(_copy_ == act->type)p = memorycreate(81);
-	if(0 == p)return;
-
-	act->buf = p;
-	sudoku_generate(p);
-/*
+	//malloc
+	buf = memorycreate(81);
 	if(0 == buf)return;
-	k = 0;
-	for(j=0;j<0x100;j++)
-	{
-		if((buf[j]>=0x30)&&(buf[j]<=0x39))
-		{
-			//say("%c", buf[j]);
-			p[k] = buf[j]-0x30;
-			k++;
-		}
-		if(k >= 81)break;
-	}
-	//say("\n");
-*/
+
+	//read
+	ret = 0;
+	if(str)ret = sudoku_load(str, buf);
+	if((0==str)|(ret<=0))sudoku_generate(buf);
+
+	sudoku_solve(buf);
+	for(ret=0;ret<81;ret+=9)printmemory(buf+ret, 9);
+
+	act->buf = buf;
 }
 
 

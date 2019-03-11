@@ -10,13 +10,14 @@ void* arterycommand(void*, int);
 void* arenalist(void*, int);
 void* arenacommand(void*, int);
 void* actorlist(void*, int);
-void* actorcommand(void*, int);
+void* actorcommand(int argc, void* argv);
 //
 int event(void*, int);
 int node(void*, int);
 int relation(void*, int);
 int role(void*, int);
 int scene(void*, int);
+int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max);
 //
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
@@ -65,13 +66,15 @@ void term_prompt()
 int termwrite(u8* buf, int len)
 {
 	int j;
+	u8* argv[8];
+	u8 tmp[0x1000];
 	if(0 == buf)goto finish;
 	if(buf[0] <= 0x20)goto finish;
 
 	if(('q' == buf[0])&&(buf[1] <= 0x20))goto byebye;
 	if(0 == ncmp(buf, "exit", 4))goto byebye;
 
-	//
+	j = str2arg(buf, len, tmp, 0x1000, argv, 8);
 	if(0 == ncmp(buf, "ls", 2))
 	{
 		term_ls(buf, len);
@@ -101,7 +104,10 @@ int termwrite(u8* buf, int len)
 	else if(0 == ncmp(buf, "system", 6))systemcommand(buf+7, 0);
 	else if(0 == ncmp(buf, "artery", 6))arterycommand(buf+7, 0);
 	else if(0 == ncmp(buf, "arena", 5))arenacommand(buf+6, 0);
-	else if(0 == ncmp(buf, "actor", 5))actorcommand(buf+6, 0);
+	else if(0 == ncmp(buf, "actor", 5))
+	{
+		actorcommand(j, argv);
+	}
 
 finish:
 	term_prompt();

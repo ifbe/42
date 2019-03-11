@@ -288,49 +288,24 @@ theend:
 	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
 */	return 0;
 }
-void* actorcommand(u8* buf, int len)
+void* actorcommand(int argc, char** argv)
 {
-/*
-	//say("%.*s\n", len, buf);
-	int j;
-	struct actor* act = 0;
-	u64 name = 0;
-	int id = 0;
-	u8* data = 0;
-	int dl = 0;
-
-	parsexml_detail(buf, len, &name, &id, &data, &dl);
-	//say("%.*s\n", len, buf);
-	//say("%llx, %x\n", name, id);
-	//say("%.*s\n", dl, data);
-
-	act = 0;
-	for(j=0;j<0x100;j++)
-	{
-		if(0 == actor[j].name)break;
-		if(0 > id)break;
-
-		if(name == actor[j].name)
-		{
-			if(0 == id)
-			{
-				act = &actor[j];
-				actorcreate(0, act);
-				break;
-			}
-		}
-	}
-*/
 	int j;
 	u64 name = 0;
 	u8* tmp = (u8*)&name;
-	for(j=0;j<8;j++)
+	if(argc < 2)return 0;
+//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+	if(0 == ncmp(argv[1], "create", 6))
 	{
-		if(buf[j] <= 0x20)break;
-		tmp[j] = buf[j];
+		for(j=0;j<8;j++)
+		{
+			if(argv[2][j] <= 0x20)break;
+			tmp[j] = argv[2][j];
+		}
+		say("%llx,%llx\n",name, argv[3]);
+		actorcreate(name, argv[3]);
 	}
 
-	actorcreate(name, 0);
 	return 0;
 }
 
