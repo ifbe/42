@@ -197,7 +197,7 @@ static void tree_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void tree_read(
+static void tree_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -213,16 +213,21 @@ static void tree_read(
 	}
 	else tree_read_pixel(win, sty, act, pin);
 }
-static void tree_write(
+static void tree_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void tree_get()
+static void tree_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void tree_post()
+static void tree_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void tree_stop(
@@ -261,8 +266,8 @@ void tree_register(struct actor* p)
 	p->ondelete = (void*)tree_delete;
 	p->onstart  = (void*)tree_start;
 	p->onstop   = (void*)tree_stop;
-	p->onget    = (void*)tree_get;
-	p->onpost   = (void*)tree_post;
-	p->onread   = (void*)tree_read;
-	p->onwrite  = (void*)tree_write;
+	p->onget    = (void*)tree_cread;
+	p->onpost   = (void*)tree_cwrite;
+	p->onread   = (void*)tree_sread;
+	p->onwrite  = (void*)tree_swrite;
 }

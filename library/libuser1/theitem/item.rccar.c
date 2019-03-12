@@ -130,7 +130,7 @@ static void rccar_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void rccar_read(
+static void rccar_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -146,7 +146,7 @@ static void rccar_read(
 	}
 	else rccar_read_pixel(win, sty, act, pin);
 }
-static void rccar_write(
+static void rccar_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -209,10 +209,15 @@ static void rccar_write(
 		}
 	}
 }
-static void rccar_get()
+static void rccar_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void rccar_post()
+static void rccar_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void rccar_stop(
@@ -253,8 +258,8 @@ void rccar_register(struct actor* p)
 	p->ondelete = (void*)rccar_delete;
 	p->onstart  = (void*)rccar_start;
 	p->onstop   = (void*)rccar_stop;
-	p->onget    = (void*)rccar_get;
-	p->onpost   = (void*)rccar_post;
-	p->onread   = (void*)rccar_read;
-	p->onwrite  = (void*)rccar_write;
+	p->onget    = (void*)rccar_cread;
+	p->onpost   = (void*)rccar_cwrite;
+	p->onread   = (void*)rccar_sread;
+	p->onwrite  = (void*)rccar_swrite;
 }

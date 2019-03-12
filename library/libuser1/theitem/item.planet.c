@@ -187,7 +187,7 @@ static void planet_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void planet_read(
+static void planet_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -203,16 +203,21 @@ static void planet_read(
 	}
 	else planet_read_pixel(win, sty, act, pin);
 }
-static void planet_write(
+static void planet_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void planet_get()
+static void planet_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void planet_post()
+static void planet_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void planet_stop(
@@ -248,8 +253,8 @@ void planet_register(struct actor* p)
 	p->ondelete = (void*)planet_delete;
 	p->onstart  = (void*)planet_start;
 	p->onstop   = (void*)planet_stop;
-	p->onget    = (void*)planet_get;
-	p->onpost   = (void*)planet_post;
-	p->onread   = (void*)planet_read;
-	p->onwrite  = (void*)planet_write;
+	p->onget    = (void*)planet_cread;
+	p->onpost   = (void*)planet_cwrite;
+	p->onread   = (void*)planet_sread;
+	p->onwrite  = (void*)planet_swrite;
 }

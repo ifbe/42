@@ -63,16 +63,16 @@ void actorcreatefromfile(struct actor* act, char* name)
 	int j,len;
 	u8* tmp;
 	u8* buf;
-	u8 str[256];
+	//u8 str[256];
 	if(0 == act)return;
 
 	tmp = getsuffix(name);
 	if(0 == tmp)return;
 
-	mysnprintf(str, 256, "%s/%s", "datafile", name);
+	//mysnprintf(str, 256, "%s/%s", "datafile", name);
 
 	buf = memorycreate(0x800000);
-	len = openreadclose(str, 0, buf, 0x800000);
+	len = openreadclose(name, 0, buf, 0x800000);
 	if(len <= 0)
 	{
 		say("len=%d\n", len);

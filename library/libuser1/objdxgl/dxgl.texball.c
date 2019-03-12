@@ -287,11 +287,11 @@ static void texball_delete(struct actor* act)
 	memorydelete(act->buf);
 	act->buf = 0;
 }
-static void texball_create(struct actor* act, char* arg)
+static void texball_create(struct actor* act, void* str)
 {
 	if(0 == act)return;
-	if(0 == arg)arg = "jpg/earth.jpg";
-	actorcreatefromfile(act, arg);
+	if(0 == str)str = "datafile/jpg/earth.jpg";
+	actorcreatefromfile(act, str);
 }
 
 

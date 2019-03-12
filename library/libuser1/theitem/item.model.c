@@ -270,7 +270,7 @@ static void model_read_cli(
 {
 	say("model(%x,%x,%x)\n",win,act,sty);
 }
-static void model_read(
+static void model_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -287,11 +287,7 @@ static void model_read(
 	}
 	else model_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-static void model_write(
+static void model_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -322,14 +318,15 @@ static void model_write(
 		actorcreatefromfile(act, buffer);
 	}
 }
-
-
-
-
-static void model_get()
+static void model_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void model_post()
+static void model_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void model_stop(
@@ -384,10 +381,10 @@ static void model_delete(struct actor* act)
 	memorydelete(act->buf);
 	act->buf = 0;
 }
-static void model_create(struct actor* act)
+static void model_create(struct actor* act, void* str)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "42.stl");
+	if(str)actorcreatefromfile(act, str);
 }
 
 
@@ -402,8 +399,8 @@ void model_register(struct actor* p)
 	p->ondelete = (void*)model_delete;
 	p->onstart  = (void*)model_start;
 	p->onstop   = (void*)model_stop;
-	p->onget    = (void*)model_get;
-	p->onpost   = (void*)model_post;
-	p->onread   = (void*)model_read;
-	p->onwrite  = (void*)model_write;
+	p->onget    = (void*)model_cread;
+	p->onpost   = (void*)model_cwrite;
+	p->onread   = (void*)model_sread;
+	p->onwrite  = (void*)model_swrite;
 }

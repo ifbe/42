@@ -11,7 +11,7 @@ static u64 want[2] = {
 	hex64('t','e','r','r','i','a','n', 0)
 };
 static char* args[2] = {
-	"jpg/skysphere.jpg",
+	"datafile/jpg/skysphere.jpg",
 	0
 };
 

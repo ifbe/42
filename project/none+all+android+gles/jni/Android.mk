@@ -397,6 +397,7 @@ library/libuser1/objdxgl/dxgl.portal.c \
 library/libuser1/objdxgl/dxgl.skydome.c \
 library/libuser1/objdxgl/dxgl.terrian.c \
 library/libuser1/objdxgl/dxgl.texball.c \
+library/libuser1/objdxgl/dxgl.weather.c \
 library/libuser1/objfile/file.binary.c \
 library/libuser1/objfile/file.folder.c \
 library/libuser1/objfile/file.text.c \
