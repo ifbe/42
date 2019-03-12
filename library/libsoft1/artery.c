@@ -651,24 +651,22 @@ int arteryevent(struct event* ev)
 {
 	return 0;
 }
-void* arterycommand(u8* buf, int len)
+void* arterycommand(int argc, char** argv)
 {
 	int j;
-	u8 data[0x1000];
-	if(0 == len)
+	u64 name = 0;
+	u8* tmp = (u8*)&name;
+	if(argc < 2)return 0;
+//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+	if(0 == ncmp(argv[1], "create", 6))
 	{
-		arterycreate(0, buf);
-	}
-	else
-	{
-		for(j=0;j<len;j++)
+		for(j=0;j<8;j++)
 		{
-			if(0 == buf[j])break;
-			data[j] = buf[j];
+			if(argv[2][j] <= 0x20)break;
+			tmp[j] = argv[2][j];
 		}
-		data[j] = 0;
-
-		arterycreate(0, data);
+		say("%llx,%llx\n",name, argv[3]);
+		arterycreate(name, argv[3]);
 	}
 	return 0;
 }

@@ -1,37 +1,10 @@
 #include "libhard.h"
+int ncmp(void*, void*, int);
+
+
+
 static struct device* dev;
 static struct driver* dri;
-
-
-
-
-int driverevent(void* ev)
-{
-	return 0;
-}
-void* drivercommand(void* buf, int len)
-{
-	say("@driver: %s\n", buf);
-	return 0;
-}
-
-
-
-
-int driverread_all()
-{
-	return 0;
-}
-void* driverlist(u8* buf, int len)
-{
-	int j;
-	for(j=0;j<64;j++)
-	{
-		if(0 == dri[j].type)continue;
-		say("[%03x]: %.8s\n", j, &dri[j].type);
-	}
-	return 0;
-}
 
 
 
@@ -81,6 +54,43 @@ void* drivercreate(u64 type, void* name)
 
 
 
+int driverevent(void* ev)
+{
+	return 0;
+}
+void* drivercommand(int argc, char** argv)
+{
+	int j;
+	u64 name = 0;
+	u8* tmp = (u8*)&name;
+	if(argc < 2)return 0;
+//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+	if(0 == ncmp(argv[1], "create", 6))
+	{
+		for(j=0;j<8;j++)
+		{
+			if(argv[2][j] <= 0x20)break;
+			tmp[j] = argv[2][j];
+		}
+		say("%llx,%llx\n",name, argv[3]);
+		drivercreate(name, argv[3]);
+	}
+	return 0;
+}
+int driverread_all()
+{
+	return 0;
+}
+void* driverlist(u8* buf, int len)
+{
+	int j;
+	for(j=0;j<64;j++)
+	{
+		if(0 == dri[j].type)continue;
+		say("[%03x]: %.8s\n", j, &dri[j].type);
+	}
+	return 0;
+}
 void freedriver()
 {
 	//say("[4,8):freeing driver\n");

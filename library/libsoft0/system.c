@@ -114,79 +114,6 @@ int systemwrite_in(struct object* chip, u8* foot, u8* buf, int len)
 
 	return 42;
 }
-int systemevent(struct event* ev)
-{
-	int ret;
-	u64 why = ev->why;
-	u64 what = ev->what;
-	u64 where = ev->where;
-	u8 tmp[0x40];
-	//say("%llx,%llx,%llx\n",why,what,where);
-
-	if(why == '+')
-	{
-		say("come:%x(from:%x)\n", where, obj[where].thatfd);
-		return 0;
-	}
-	else if(why == '-')
-	{
-		say("gone:%x\n", where);
-		return 0;
-	}
-
-	ret = readsocket(where, tmp, ppp, 0x100000);
-	if(ret <= 0)return 0;
-
-	return systemwrite_in(&obj[where], tmp, ppp, ret);
-}
-void* systemcommand(u8* buf, int len)
-{
-	int j;
-	u8* src;
-	u8 data[0x1000];
-	if(0 == len)
-	{
-		systemcreate(0, buf);
-	}
-	else
-	{
-		src = buf;
-		for(j=0;j<len;j++)
-		{
-			if(0 == src[j])break;
-			data[j] = src[j];
-		}
-		data[j] = 0;
-
-		systemcreate(0, data);
-	}
-	return 0;
-}
-
-
-
-
-int systemread_all()
-{
-	return 0;
-}
-void* systemlist(u8* buf, int len)
-{
-	int j,k=0;
-	struct object* tmp;
-	for(j=0;j<0x1000;j++)
-	{
-		tmp = &obj[j];
-		if(0 == tmp->type)continue;
-
-		k++;
-		say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-			&tmp->tier, &tmp->type, &tmp->fmt, &tmp->name);
-	}
-
-	if(0 == k)say("empth system\n");
-	return 0;
-}
 
 
 
@@ -226,7 +153,6 @@ int system_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 }
 int system_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	if(0 == sc)return systemread_all();
 	return 0;
 }
 int systemstop()
@@ -407,6 +333,75 @@ success:
 
 
 
+int systemevent(struct event* ev)
+{
+	int ret;
+	u64 why = ev->why;
+	u64 what = ev->what;
+	u64 where = ev->where;
+	u8 tmp[0x40];
+	//say("%llx,%llx,%llx\n",why,what,where);
+
+	if(why == '+')
+	{
+		say("come:%x(from:%x)\n", where, obj[where].thatfd);
+		return 0;
+	}
+	else if(why == '-')
+	{
+		say("gone:%x\n", where);
+		return 0;
+	}
+
+	ret = readsocket(where, tmp, ppp, 0x100000);
+	if(ret <= 0)return 0;
+
+	return systemwrite_in(&obj[where], tmp, ppp, ret);
+}
+void* systemcommand(int argc, char** argv)
+{
+	int j;
+	u64 name = 0;
+	u8* tmp = (u8*)&name;
+	if(argc < 2)return 0;
+//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+	if(0 == ncmp(argv[1], "create", 6))
+	{
+		for(j=0;j<8;j++)
+		{
+			if(argv[2][j] <= 0x20)break;
+			tmp[j] = argv[2][j];
+		}
+		say("%llx,%llx\n",name, argv[3]);
+		arterycreate(name, argv[3]);
+	}
+	return 0;
+}
+
+
+
+
+int systemread_all()
+{
+	return 0;
+}
+void* systemlist(u8* buf, int len)
+{
+	int j,k=0;
+	struct object* tmp;
+	for(j=0;j<0x1000;j++)
+	{
+		tmp = &obj[j];
+		if(0 == tmp->type)continue;
+
+		k++;
+		say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
+			&tmp->tier, &tmp->type, &tmp->fmt, &tmp->name);
+	}
+
+	if(0 == k)say("empth system\n");
+	return 0;
+}
 void freesystem()
 {
 	//say("[8,c):freeing system\n");

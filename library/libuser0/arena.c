@@ -581,40 +581,24 @@ int arenaevent(struct event* e)
 */
 	return 0;
 }
-void* arenacommand(u8* buf, int len)
+void* arenacommand(int argc, char** argv)
 {
-/*
-	u64 name = 0;
-	int id = 0;
-	u8* data = 0;
-	int dl = 0;
-
-	parsexml_detail(buf, len, &name, &id, &data, &dl);
-	say("%.*s\n", len, buf);
-	say("%llx, %x\n", name, id);
-	say("%.*s\n", dl, data);
-
-	if(_win_ == name)
-	{
-		if((id>0)&&(id<0x1000))
-		{
-			if(0 == arena[id].type)
-			{
-				arenacreate(_win_, 0);
-			}
-		}
-	}
-*/
 	int j;
-	u64 type = 0;
-	u8* tmp = (u8*)&type;
-	for(j=0;j<8;j++)
+	u64 name = 0;
+	u8* tmp = (u8*)&name;
+	if(argc < 2)return 0;
+//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+	if(0 == ncmp(argv[1], "create", 6))
 	{
-		if(buf[j] <= 0x20)break;
-		tmp[j] = buf[j];
+		for(j=0;j<8;j++)
+		{
+			if(argv[2][j] <= 0x20)break;
+			tmp[j] = argv[2][j];
+		}
+		say("%llx,%llx\n",name, argv[3]);
+		arenacreate(name, argv[3]);
 	}
 
-	arenacreate(type, 0);
 	return 0;
 }
 

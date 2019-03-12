@@ -1,15 +1,15 @@
 #include "libboot.h"
 void* devicelist(void*, int);
-void* devicecommand(void*, int);
 void* driverlist(void*, int);
-void* drivercommand(void*, int);
 void* systemlist(void*, int);
-void* systemcommand(void*, int);
 void* arterylist(void*, int);
-void* arterycommand(void*, int);
 void* arenalist(void*, int);
-void* arenacommand(void*, int);
 void* actorlist(void*, int);
+void* devicecommand(int argc, void* argv);
+void* drivercommand(int argc, void* argv);
+void* systemcommand(int argc, void* argv);
+void* arterycommand(int argc, void* argv);
+void* arenacommand(int argc, void* argv);
 void* actorcommand(int argc, void* argv);
 //
 int event(void*, int);
@@ -99,15 +99,12 @@ int termwrite(u8* buf, int len)
 	{
 		scene(buf, len);
 	}
-	else if(0 == ncmp(buf, "device", 6))devicecommand(buf+7, 0);
-	else if(0 == ncmp(buf, "driver", 6))drivercommand(buf+7, 0);
-	else if(0 == ncmp(buf, "system", 6))systemcommand(buf+7, 0);
-	else if(0 == ncmp(buf, "artery", 6))arterycommand(buf+7, 0);
-	else if(0 == ncmp(buf, "arena", 5))arenacommand(buf+6, 0);
-	else if(0 == ncmp(buf, "actor", 5))
-	{
-		actorcommand(j, argv);
-	}
+	else if(0 == ncmp(buf, "device", 6))devicecommand(j, argv);
+	else if(0 == ncmp(buf, "driver", 6))drivercommand(j, argv);
+	else if(0 == ncmp(buf, "system", 6))systemcommand(j, argv);
+	else if(0 == ncmp(buf, "artery", 6))arterycommand(j, argv);
+	else if(0 == ncmp(buf, "arena", 5))arenacommand(j, argv);
+	else if(0 == ncmp(buf, "actor", 5))actorcommand(j, argv);
 
 finish:
 	term_prompt();
