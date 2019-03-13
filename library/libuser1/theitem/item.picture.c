@@ -93,16 +93,14 @@ static void picture_read_vbo2d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	float (*vbuf)[6];
-	struct glsrc* src;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 	if(0 == act->buf)return;
 
-	src = (void*)(pin->foot[0]);
-	vbuf = (void*)(src->vbuf);
+	struct glsrc* src = (void*)(pin->foot[0]);
+	float (*vbuf)[6] = (void*)(src->vbuf);
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -152,16 +150,14 @@ static void picture_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	float (*vbuf)[6];
-	struct glsrc* src;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 	if(0 == act->buf)return;
 
-	src = (void*)(pin->foot[0]);
-	vbuf = (void*)(src->vbuf);
+	struct glsrc* src = (void*)(pin->foot[0]);
+	float (*vbuf)[6] = (void*)(src->vbuf);
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];

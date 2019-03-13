@@ -398,6 +398,19 @@ void* arenacreate(u64 type, void* addr)
 
 		return win;
 	}
+	else if(_fbo_ == type)
+	{
+		win = allocarena();
+		if(win)
+		{
+			win->type = _win_;
+			win->fmt = _fbo_;
+			windowcreate(win);
+
+			arenavertex(win);
+		}
+		return win;
+	}
 
 	//pcbdoc
 	else if(_sch_ == type)

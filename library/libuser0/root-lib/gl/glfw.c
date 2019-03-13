@@ -260,10 +260,6 @@ static void callback_joystick(int id, int ev)
 
 
 
-void windowclose(struct arena* w)
-{
-	glfwTerminate();
-}
 void windowopen(struct arena* r, struct arena* w)
 {
 	int x,y,j;
@@ -320,92 +316,32 @@ void windowopen(struct arena* r, struct arena* w)
 
 
 
-/*
+
 void windowread(struct arena* w)
 {
 	GLFWwindow* fw;
-	struct arena* c;
-	struct relation* rel;
-//u64 oldtime,newtime;
-//oldtime = timeread();
-
-
-
-
-	//read world
-	actorread_all(w);
-//newtime = timeread();
-//say("actorread:%d\n", newtime-oldtime);
-//oldtime = newtime;
-
-
-
-
-	//draw master
-	fw = w->win;
-	glfwMakeContextCurrent(fw);
-	callback_update(w);
-	callback_display(w, 0);
-	glfwSwapBuffers(fw);
-	if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
-//newtime = timeread();
-//say("drawmaster:%d\n", newtime-oldtime);
-//oldtime = newtime;
-
-
-
-
-	//draw slave
-	rel = w->irel0;
-	while(1)
-	{
-		if(0 == rel)break;
-
-		if(_win_ == rel->srctype)
-		{
-			c = (void*)(rel->srcchip);
-			fw = c->win;
-			if(0 == fw)windowopen(w, c);
-
-			if(fw)
-			{
-				glfwMakeContextCurrent(fw);
-				callback_display(w, c);
-				glfwSwapBuffers(fw);
-				if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
-			}
-		}
-
-		rel = samedstnextsrc(rel);
-	}
-//newtime = timeread();
-//say("drawslave:%d\n", newtime-oldtime);
-//oldtime = newtime;
-
-
-
-
-	//cleanup events
-	glfwPollEvents();
-//newtime = timeread();
-//say("pollevents:%d\n", newtime-oldtime);
-//oldtime = newtime;
-}*/
-void windowread(struct arena* w)
-{
-	GLFWwindow* fw;
-	arena_rootread(w, 0, 0, 0, 0, 0);
 
 	//
-	fw = w->win;
-	glfwMakeContextCurrent(fw);
-	callback_update(w);
-	callback_display(w, 0);
-	glfwSwapBuffers(fw);
-	if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
+	if(_fbo_ == w->fmt)
+	{
+		//say("@windowread fbo\n");
+		callback_display(w, 0);
+	}
+	else
+	{
+		arena_rootread(w, 0, 0, 0, 0, 0);
 
-	//cleanup events
-	glfwPollEvents();
+		fw = w->win;
+		glfwMakeContextCurrent(fw);
+		callback_update(w);
+		callback_display(w, 0);
+		glfwSwapBuffers(fw);
+
+		//cleanup events
+		if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
+		glfwPollEvents();
+	}
+
 }
 void windowwrite(struct arena* w)
 {
@@ -424,18 +360,61 @@ void windowstart(struct arena* w)
 }
 void windowdelete(struct arena* w)
 {
-	glfwTerminate();
+	glfwDestroyWindow(w->win);
 }
 void windowcreate(struct arena* w)
 {
-	struct arena* c;
-	w->width = 512;
-	w->height = 512;
-	w->depth = 512;
-	w->stride = 512;
+	if(_fbo_ == w->fmt)
+	{
+		w->width = 1024;
+		w->height = 1024;
+		w->depth = 1024;
+		w->stride = 1024;
 
-	w->fmt = _vbo_;
-	if(_win_ == w->type)windowopen(0, w);
+
+		glGenFramebuffers(1, &w->fbo);
+		glBindFramebuffer(GL_FRAMEBUFFER, w->fbo);
+
+
+		//depth buffer
+		glGenRenderbuffers(1, &w->tex_depth);
+		glBindRenderbuffer(GL_RENDERBUFFER, w->tex_depth);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, w->tex_depth);
+
+
+		//color buffer
+		glGenTextures(1, &w->tex_rgb);
+		glBindTexture(GL_TEXTURE_2D, w->tex_rgb);
+		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 1024, 1024, 0,GL_RGB, GL_UNSIGNED_BYTE, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+
+
+
+		// Set "renderedTexture" as our colour attachement #0
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, w->tex_rgb, 0);
+
+		// Set the list of draw buffers.
+		GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+		glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
+
+
+		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		{
+			say("error@framebuffer!!!\n");
+		}
+	}
+	else
+	{
+		w->width = 512;
+		w->height = 512;
+		w->depth = 512;
+		w->stride = 512;
+
+		w->fmt = _vbo_;
+		if(_win_ == w->type)windowopen(0, w);
+	}
 }
 
 
@@ -443,6 +422,7 @@ void windowcreate(struct arena* w)
 
 void freewindow()
 {
+	glfwTerminate();
 }
 void initwindow()
 {

@@ -5,6 +5,16 @@ void actorcreatefromfile(struct actor* act, char* name);
 
 
 
+char* mirror_glsl2d_v =
+	GLSL_VERSION
+	"layout(location = 0)in mediump vec3 vertex;\n"
+	"layout(location = 1)in mediump vec2 texuvw;\n"
+	"out mediump vec2 uvw;\n"
+	"void main()\n"
+	"{\n"
+		"uvw = texuvw;\n"
+		"gl_Position = vec4(vertex, 1.0);\n"
+	"}\n";
 char* mirror_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
@@ -23,7 +33,7 @@ char* mirror_glsl_f =
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
-		"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
+		"FragColor = vec4(vec3(0.1, 0.1, 0.1) + texture(tex0, uvw).bgr, 1.0);\n"
 	"}\n";
 
 
@@ -53,16 +63,14 @@ static void mirror_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	float (*vbuf)[6];
-	struct glsrc* src;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	if(0 == act->buf)return;
 
-	src = (void*)(pin->foot[0]);
-	vbuf = (void*)(src->vbuf);
+	struct glsrc* src = (void*)(pin->foot[0]);
+	float (*vbuf)[6] = (void*)(src->vbuf);
+	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -128,7 +136,7 @@ static void mirror_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void mirror_read(
+static void mirror_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -140,16 +148,21 @@ static void mirror_read(
 	else if(fmt == _vbo_)mirror_read_vbo(win, sty, act, pin);
 	else mirror_read_pixel(win, sty, act, pin);
 }
-static void mirror_write(
+static void mirror_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void mirror_get()
+static void mirror_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void mirror_post()
+static void mirror_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void mirror_stop(
@@ -163,19 +176,25 @@ static void mirror_start(
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
+	struct relation* rel;
+	struct arena* tmp;
+
+	struct datapair* pair;
 	struct glsrc* src;
+	struct gldst* dst;
 	if(0 == lf)return;
 
 	//
-	src = alloc_winobj(root);
+	pair = alloc_winobj(root);
+	src = &pair->src;
+	dst = &pair->dst;
+	lf->foot[0] = (u64)src;
+	tf->foot[0] = (u64)dst;
+
+	//
 	src->vs = mirror_glsl_v;
 	src->fs = mirror_glsl_f;
-
-	//texture
-	src->tex[0] = leaf->buf;
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_w[0] = leaf->width;
-	src->tex_h[0] = leaf->height;
+	if(twig){if(_fg2d_ == twig->fmt)src->vs = mirror_glsl2d_v;}
 
 	//vertex
 	src->vbuf = memorycreate(4*6*6);
@@ -187,10 +206,20 @@ static void mirror_start(
 	//send!
 	src->shader_enq[0] = 42;
 	src->arg_enq[0] = 0;
-	src->tex_enq[0] = 42;
+	src->tex_enq[0] = 0;
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
-	lf->foot[0] = (u64)src;
+
+	//special
+	rel = leaf->orel0;
+	if(0 == rel)return;
+
+	tmp = (void*)(rel->dstchip);
+	if(0 == tmp)return;
+	if(_fbo_ != tmp->fmt)return;
+
+	say("tex_rgb=%x\n", tmp->tex_rgb);
+	dst->tex[0] = tmp->tex_rgb;
 }
 static void mirror_delete(struct actor* act)
 {
@@ -198,10 +227,15 @@ static void mirror_delete(struct actor* act)
 	memorydelete(act->buf);
 	act->buf = 0;
 }
-static void mirror_create(struct actor* act)
+static void mirror_create(struct actor* act, void* str)
 {
+	void* win;
 	if(0 == act)return;
-	actorcreatefromfile(act, "jpg/mirror.jpg");
+
+	win = arenacreate(_fbo_, 0);
+	if(0 == win)return;
+
+	relationcreate(win, 0, _win_, act, 0, _act_);
 }
 
 
@@ -216,8 +250,8 @@ void mirror_register(struct actor* p)
 	p->ondelete = (void*)mirror_delete;
 	p->onstart  = (void*)mirror_start;
 	p->onstop   = (void*)mirror_stop;
-	p->onget    = (void*)mirror_get;
-	p->onpost   = (void*)mirror_post;
-	p->onread   = (void*)mirror_read;
-	p->onwrite  = (void*)mirror_write;
+	p->onget    = (void*)mirror_cread;
+	p->onpost   = (void*)mirror_cwrite;
+	p->onread   = (void*)mirror_sread;
+	p->onwrite  = (void*)mirror_swrite;
 }

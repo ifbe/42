@@ -215,6 +215,21 @@ void callback_display(struct arena* win, struct arena* coop)
 	struct datapair* mod;
 	GLfloat cammvp[4*4];
 
+	//fbo
+	if(_fbo_ == win->fmt)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, win->fbo);
+		glClearColor(1.0f, 0.0f, 1.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+		return;
+	}
+
+	//prepare
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glEnable(GL_DEPTH_TEST);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
 	//matrix
 	if(0 == coop)
 	{
@@ -227,11 +242,6 @@ void callback_display(struct arena* win, struct arena* coop)
 		glViewport(0, 0, coop->fbwidth, coop->fbheight);
 	}
 	mat4_transpose((void*)cammvp);
-
-	//prepare
-	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
 	//geom
 	mod = win->mod;

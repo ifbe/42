@@ -61,6 +61,7 @@ typedef float mat4[4][4];
 #define _sch_  hex32('s','c','h',0)
 #define _xml_  hex32('x','m','l',0)
 #define _vbo_ hex32('v','b','o',0)
+#define _fbo_ hex32('f','b','o',0)
 #define _8bit_ hex32('8','b','i','t')
 //
 #define _std_ hex32('s','t','d', 0)
@@ -514,16 +515,19 @@ struct arena
 
 	//[40,5f]: data
 	union{
+		u64 padd0;
 		u64 fd;
 		void* win;
 	};
 	union{
+		u64 padd1;
 		u64 dc;
 		u64 gc;
 		void* er;
 		void* map;
 	};
 	union{
+		u64 padd2;
 		u64 len;
 		void* ctx;
 		void* mod;
@@ -531,95 +535,74 @@ struct arena
 		void* texture;
 	};
 	union{
+		u64 padd3;
 		u64 addr;
 		void* buf;
 	};
-
-	//[60,7f]
-	u64 backdata;
-	u64 foredata;
-	u64 tempdata;
-	u64 vkbddata;
+	union{
+		u64 padd4;
+		u32 fbo;
+	};
+	union{
+		u64 padd5;
+		u32 tex_rgb;
+	};
+	union{
+		u64 padd6;
+		u32 tex_depth;
+	};
+	union{
+		u64 padd7;
+		u32 tex_stencil;
+	};
 
 	//[80,8f]: win geom
-	short x0;
-	short y0;
-	short z0;
-	short w0;
-	short width;
-	short height;
-	short depth;
-	short stride;
+	int width;
+	int height;
+	int depth;
+	int stride;
 
 	//[90,9f]: fb geom
-	short x1;
-	short y1;
-	short z1;
-	short w1;
-	short fbwidth;
-	short fbheight;
-	short fbdepth;
-	short fbstride;
+	int fbwidth;
+	int fbheight;
+	int fbdepth;
+	int fbstride;
 
 	//[a0,af]: near plane
-	short x2;
-	short y2;
-	short z2;
-	short w2;
-	short nearwidth;
-	short nearheight;
-	short neardepth;
-	short nearstride;
+	int nearwidth;
+	int nearheight;
+	int neardepth;
+	int nearstride;
 
 	//[b0,bf]: far plane
-	short x3;
-	short y3;
-	short z3;
-	short w3;
-	short farwidth;
-	short farheight;
-	short fardepth;
-	short farstride;
+	int farwidth;
+	int farheight;
+	int fardepth;
+	int farstride;
 
 	//[c0,cf]: layer0: background
-	short x4;
-	short y4;
-	short z4;
-	short w4;
-	short backx;
-	short backy;
-	short backz;
-	short backw;
+	int backx;
+	int backy;
+	int backz;
+	int backw;
 
 	//[d0,df]: layer1: foreground
-	short x5;
-	short y5;
-	short z5;
-	short w5;
-	short forex;
-	short forey;
-	short forez;
-	short forew;
+	int forex;
+	int forey;
+	int forez;
+	int forew;
 
 	//[e0,ef]: layer2: popup
-	short x6;
-	short y6;
-	short z6;
-	short w6;
-	short tempx;
-	short tempy;
-	short tempz;
-	short tempw;
+	int tempx;
+	int tempy;
+	int tempz;
+	int tempw;
 
 	//[f0,ff]: layer3: vkbd
-	short x7;
-	short y7;
-	short z7;
-	short w7;
-	short vkbdx;
-	short vkbdy;
-	short vkbdz;
-	short vkbdw;
+	int vkbdx;
+	int vkbdy;
+	int vkbdz;
+	int vkbdw;
 
 	//[100,1ff]
 	struct style target;
