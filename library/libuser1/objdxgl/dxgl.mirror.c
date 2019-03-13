@@ -33,7 +33,7 @@ char* mirror_glsl_f =
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
-		"FragColor = vec4(vec3(0.1, 0.1, 0.1) + texture(tex0, uvw).bgr, 1.0);\n"
+		"FragColor = vec4(vec3(0.1, 0.1, 0.1) + texture(tex0, uvw).rgb, 1.0);\n"
 	"}\n";
 
 
@@ -76,42 +76,42 @@ static void mirror_read_vbo(
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
 	vbuf[0][2] = vc[2] - vr[2] - vf[2];
 	vbuf[0][3] = 0.0;
-	vbuf[0][4] = 1.0;
+	vbuf[0][4] = 0.0;
 	vbuf[0][5] = 0.0;
 
 	vbuf[1][0] = vc[0] + vr[0] + vf[0];
 	vbuf[1][1] = vc[1] + vr[1] + vf[1];
 	vbuf[1][2] = vc[2] + vr[2] + vf[2];
 	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 0.0;
+	vbuf[1][4] = 1.0;
 	vbuf[1][5] = 0.0;
 
 	vbuf[2][0] = vc[0] - vr[0] + vf[0];
 	vbuf[2][1] = vc[1] - vr[1] + vf[1];
 	vbuf[2][2] = vc[2] - vr[2] + vf[2];
 	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 0.0;
+	vbuf[2][4] = 1.0;
 	vbuf[2][5] = 0.0;
 
 	vbuf[3][0] = vc[0] + vr[0] + vf[0];
 	vbuf[3][1] = vc[1] + vr[1] + vf[1];
 	vbuf[3][2] = vc[2] + vr[2] + vf[2];
 	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 0.0;
+	vbuf[3][4] = 1.0;
 	vbuf[3][5] = 0.0;
 
 	vbuf[4][0] = vc[0] - vr[0] - vf[0];
 	vbuf[4][1] = vc[1] - vr[1] - vf[1];
 	vbuf[4][2] = vc[2] - vr[2] - vf[2];
 	vbuf[4][3] = 0.0;
-	vbuf[4][4] = 1.0;
+	vbuf[4][4] = 0.0;
 	vbuf[4][5] = 0.0;
 
 	vbuf[5][0] = vc[0] + vr[0] - vf[0];
 	vbuf[5][1] = vc[1] + vr[1] - vf[1];
 	vbuf[5][2] = vc[2] + vr[2] - vf[2];
 	vbuf[5][3] = 1.0;
-	vbuf[5][4] = 1.0;
+	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;

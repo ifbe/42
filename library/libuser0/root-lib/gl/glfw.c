@@ -366,10 +366,10 @@ void windowcreate(struct arena* w)
 {
 	if(_fbo_ == w->fmt)
 	{
-		w->width = 1024;
-		w->height = 1024;
-		w->depth = 1024;
-		w->stride = 1024;
+		w->fbwidth = w->width = 1024;
+		w->fbheight = w->height = 1024;
+		w->fbdepth = w->depth = 1024;
+		w->fbstride = w->stride = 1024;
 
 
 		glGenFramebuffers(1, &w->fbo);

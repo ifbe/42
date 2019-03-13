@@ -207,28 +207,26 @@ void display_eachpass(
 		else if(2 == src->geometry)glDrawArrays(GL_LINES, 0, src->vbuf_h);
 		else glDrawArrays(GL_TRIANGLES, 0, src->vbuf_h);
 	}
-	
 }
-void callback_display(struct arena* win, struct arena* coop)
+static struct arena* saved;
+void callback_display(struct arena* this, struct arena* coop)
 {
 	int j;
+	struct arena* win;
 	struct datapair* mod;
 	GLfloat cammvp[4*4];
 
 	//fbo
-	if(_fbo_ == win->fmt)
+	if(_fbo_ == this->fmt)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, win->fbo);
-		glClearColor(1.0f, 0.0f, 1.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-		return;
+		glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
+		win = saved;
 	}
-
-	//prepare
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+	else
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		saved = win = this;
+	}
 
 	//matrix
 	if(0 == coop)
@@ -243,9 +241,22 @@ void callback_display(struct arena* win, struct arena* coop)
 	}
 	mat4_transpose((void*)cammvp);
 
-	//geom
+	//prepare
+	glEnable(GL_DEPTH_TEST);
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
+
+	//else
 	mod = win->mod;
-	for(j=8;j<64;j++)
+	for(j=16;j<64;j++)
+	{
+		if(0 == mod[j].src.vbuf)continue;
+		display_eachpass(win, coop, &mod[j].dst, &mod[j].src, cammvp);
+	}
+	if(_fbo_ == this->fmt)return;
+
+	//geom
+	for(j=8;j<16;j++)
 	{
 		if(0 == mod[j].src.vbuf)continue;
 		display_eachpass(win, coop, &mod[j].dst, &mod[j].src, cammvp);
@@ -255,7 +266,11 @@ void callback_display(struct arena* win, struct arena* coop)
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	for(j=0;j<8;j++)display_eachpass(win, coop, &mod[j].dst, &mod[j].src, cammvp);
+	for(j=0;j<8;j++)
+	{
+		if(0 == mod[j].src.vbuf)continue;
+		display_eachpass(win, coop, &mod[j].dst, &mod[j].src, cammvp);
+	}
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 }
