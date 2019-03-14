@@ -30,11 +30,10 @@ static void tardis_read_vbo3d(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	carvesolid_prism4(win, 0xff, vc, vr ,vf, vu);
 
-	tc[0] = vc[0] - vu[0]/2;
-	tc[1] = vc[1] - vu[1]/2;
-	tc[2] = vc[2] - vu[2]/2;
+	tc[0] = vc[0] + vu[0]/2;
+	tc[1] = vc[1] + vu[1]/2;
+	tc[2] = vc[2] + vu[2]/2;
 	tr[0] = vr[0]/2;
 	tr[1] = vr[1]/2;
 	tr[2] = vr[2]/2;
@@ -44,15 +43,7 @@ static void tardis_read_vbo3d(
 	tu[0] = vu[0]/2;
 	tu[1] = vu[1]/2;
 	tu[2] = vu[2]/2;
-	carvesolid_prism4(win, 0xffffff, tc, tr, tf, tu);
-
-	tr[0] = vr[0]/4;
-	tr[1] = vr[1]/4;
-	tr[2] = vr[2]/4;
-	tf[0] = vf[0]/4;
-	tf[1] = vf[1]/4;
-	tf[2] = vf[2]/4;
-	carvesolid_cylinder(win, 0, vc, tr, tf, vu);
+	carvesolid_prism4(win, 0x0000ff, tc, tr, tf, tu);
 }
 static void tardis_read_json(
 	struct arena* win, struct style* sty,

@@ -101,12 +101,12 @@ static void tree_read_vbo3d(
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 	//carvesolid_rect(win, 0x6a4b23, vc, vr, vf);
-
+/*
 	tc[0] = vc[0]-vu[0];
 	tc[1] = vc[1]-vu[1];
 	tc[2] = vc[2]-vu[2];
 	carvesolid_cone(win, 0x6a4b23, tc, vr, vu);
-
+*/
 	tc[0] = vc[0]+vu[0]/4;
 	tc[1] = vc[1]+vu[1]/4;
 	tc[2] = vc[2]+vu[2]/4;

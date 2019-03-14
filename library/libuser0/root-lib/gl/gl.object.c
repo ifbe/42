@@ -216,28 +216,21 @@ void callback_display(struct arena* this, struct arena* coop)
 	struct datapair* mod;
 	GLfloat cammvp[4*4];
 
-	//fbo
 	if(_fbo_ == this->fmt)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
 		win = saved;
+
+		glViewport(0, 0, 1024, 1024);
+		fixmatrix(cammvp, this);
 	}
 	else
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		saved = win = this;
-	}
 
-	//matrix
-	if(0 == coop)
-	{
-		fixmatrix(cammvp, win);
 		glViewport(0, 0, win->fbwidth, win->fbheight);
-	}
-	else
-	{
-		fixmatrix(cammvp, coop);
-		glViewport(0, 0, coop->fbwidth, coop->fbheight);
+		fixmatrix(cammvp, win);
 	}
 	mat4_transpose((void*)cammvp);
 
