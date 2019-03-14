@@ -27,6 +27,8 @@ void piano_gen(short* pcm, float f)
 				+ 1024*sine(j*2*PI*f*3/44100)
 				+ 4096*sine(j*2*PI*f*4/44100)
 				+ 1024*sine(j*2*PI*f*5/44100);
+
+		pcm[j] *= 1.0 - j/16384.0;
 	}
 }
 

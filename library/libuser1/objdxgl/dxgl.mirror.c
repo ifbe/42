@@ -33,8 +33,23 @@ char* mirror_glsl_f =
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
-		"FragColor = vec4(vec3(0.1, 0.1, 0.1) + texture(tex0, uvw).rgb, 1.0);\n"
+		"FragColor = vec4(texture(tex0, uvw).rgb, 1.0);\n"
 	"}\n";
+/*
+char* mirror_glsl_f =
+	GLSL_VERSION
+	"uniform sampler2D tex0;\n"
+	"in mediump vec2 uvw;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"mediump float n = 1.0;"
+		"mediump float f = 1000.0;"
+		"mediump float d = texture(tex0, uvw).r;"
+		"mediump float c = (2.0 * n) / (f + n - d * (f - n));"
+		"FragColor = vec4(c, c, c, 1.0);\n"
+	"}\n";
+*/
 
 
 
@@ -218,8 +233,8 @@ static void mirror_start(
 	if(0 == tmp)return;
 	if(_fbo_ != tmp->fmt)return;
 
-	say("tex_rgb=%x\n", tmp->tex_rgb);
-	dst->tex[0] = tmp->tex_rgb;
+	say("tex_rgb=%x\n", tmp->tex_color);
+	dst->tex[0] = tmp->tex_color;
 }
 static void mirror_delete(struct actor* act)
 {

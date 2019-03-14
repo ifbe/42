@@ -545,7 +545,7 @@ struct arena
 	};
 	union{
 		u64 padd5;
-		u32 tex_rgb;
+		u32 rbo;
 	};
 	union{
 		u64 padd6;
@@ -553,7 +553,7 @@ struct arena
 	};
 	union{
 		u64 padd7;
-		u32 tex_stencil;
+		u32 tex_color;
 	};
 
 	//[80,8f]: win geom

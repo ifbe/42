@@ -360,7 +360,15 @@ void windowstart(struct arena* w)
 }
 void windowdelete(struct arena* w)
 {
-	glfwDestroyWindow(w->win);
+	if(_fbo_ == w->fmt)
+	{
+		glDeleteRenderbuffers(1, &w->rbo);
+		glDeleteFramebuffers(1, &w->fbo);
+	}
+	else
+	{
+		glfwDestroyWindow(w->win);
+	}
 }
 void windowcreate(struct arena* w)
 {
@@ -372,28 +380,38 @@ void windowcreate(struct arena* w)
 		w->fbstride = w->stride = 1024;
 
 
+		//frame buffer
 		glGenFramebuffers(1, &w->fbo);
 		glBindFramebuffer(GL_FRAMEBUFFER, w->fbo);
 
+/*
+		//render buffer?
+		glGenRenderbuffers(1, &w->rbo);
+		glBindRenderbuffer(GL_RENDERBUFFER, w->rbo);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, w->rbo);
+*/
 
 		//depth buffer
-		glGenRenderbuffers(1, &w->tex_depth);
-		glBindRenderbuffer(GL_RENDERBUFFER, w->tex_depth);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, w->tex_depth);
+		glGenTextures(1, &w->tex_depth);
+		glBindTexture(GL_TEXTURE_2D, w->tex_depth);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, w->tex_depth, 0);
 
 
 		//color buffer
-		glGenTextures(1, &w->tex_rgb);
-		glBindTexture(GL_TEXTURE_2D, w->tex_rgb);
-		glTexImage2D(GL_TEXTURE_2D, 0,GL_RGB, 1024, 1024, 0,GL_RGB, GL_UNSIGNED_BYTE, 0);
+		glGenTextures(1, &w->tex_color);
+		glBindTexture(GL_TEXTURE_2D, w->tex_color);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-
-
-
-		// Set "renderedTexture" as our colour attachement #0
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, w->tex_rgb, 0);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, w->tex_color, 0);
 
 		// Set the list of draw buffers.
 		GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};

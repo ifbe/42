@@ -253,7 +253,11 @@ void callback_display(struct arena* this, struct arena* coop)
 		if(0 == mod[j].src.vbuf)continue;
 		display_eachpass(win, coop, &mod[j].dst, &mod[j].src, cammvp);
 	}
-	if(_fbo_ == this->fmt)return;
+	if(_fbo_ == this->fmt)
+	{
+		display_eachpass(win, coop, &mod[trigon3d].dst, &mod[trigon3d].src, cammvp);
+		return;
+	}
 
 	//geom
 	for(j=8;j<16;j++)
