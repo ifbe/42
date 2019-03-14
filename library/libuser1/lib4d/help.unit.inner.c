@@ -7,6 +7,7 @@ void finfet_register(void*);
 void hbridge_register(void*);
 void rectify_register(void*);
 //dxgl
+void light_register(void*);
 void mirror_register(void*);
 void portal_register(void*);
 void skydome_register(void*);
@@ -100,6 +101,9 @@ void content_create(void* addr)
 
 
 //----------------------dxgl-----------------------
+	light_register(tmp);
+	tmp += sizeof(struct actor);
+
 	mirror_register(tmp);
 	tmp += sizeof(struct actor);
 

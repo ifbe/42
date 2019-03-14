@@ -106,10 +106,27 @@ static void weather_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int x,y,z;
+	vec3 tc;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
+
+	for(z=-16;z<=16;z++)
+	{
+		for(y=-16;y<=16;y++)
+		{
+			for(x=-16;x<=16;x++)
+			{
+				tc[0] = vc[0] + vr[0]*x/16 + vf[0]*y/16 + vu[0]*z/16;
+				tc[1] = vc[1] + vr[1]*x/16 + vf[1]*y/16 + vu[1]*z/16;
+				tc[2] = vc[2] + vr[2]*x/16 + vf[2]*y/16 + vu[2]*z/16;
+				carvepoint(win, 0xffffff, tc);
+			}
+		}
+	}
+/*
 	struct glsrc* src = (void*)(pin->foot[0]);
 	float (*vbuf)[6] = src->vbuf;
 
@@ -156,6 +173,7 @@ static void weather_read_vbo3d(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
+*/
 }
 static void weather_read_json(
 	struct arena* win, struct style* sty,
@@ -226,6 +244,7 @@ static void weather_start(
 	struct glsrc* src;
 	struct gldst* dst;
 	if(0 == lf)return;
+	if(_fg3d_ == twig->fmt)return;
 
 	//alloc
 	pair = alloc_winobj(root);

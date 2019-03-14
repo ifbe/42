@@ -215,6 +215,57 @@ void carvesolid_cone(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
+	int vlen = trigon3d_vars(win, trigon3d, &vbuf, &ibuf, acc + 1, acc);
+
+	for(j=0;j<acc;j++)
+	{
+		r[0] = vr[0];
+		r[1] = vr[1];
+		r[2] = vr[2];
+		quaternion_operation(r, vu, j*tau/acc);
+
+		a = j*9;
+		vbuf[a+0] = vc[0] + r[0];
+		vbuf[a+1] = vc[1] + r[1];
+		vbuf[a+2] = vc[2] + r[2];
+		vbuf[a+3] = rr;
+		vbuf[a+4] = gg;
+		vbuf[a+5] = bb;
+		vbuf[a+6] = vbuf[a+0] - vc[0] + vu[0];
+		vbuf[a+7] = vbuf[a+1] - vc[1] + vu[1];
+		vbuf[a+8] = vbuf[a+2] - vc[2] + vu[2];
+
+		b = j*3;
+		ibuf[b+0] = vlen+acc;
+		ibuf[b+1] = vlen+j;
+		ibuf[b+2] = vlen+(j+1)%acc;
+	}
+
+	a = acc*9;
+	vbuf[a+ 0] = vc[0]+vu[0];
+	vbuf[a+ 1] = vc[1]+vu[1];
+	vbuf[a+ 2] = vc[2]+vu[2];
+	vbuf[a+ 3] = rr;
+	vbuf[a+ 4] = gg;
+	vbuf[a+ 5] = bb;
+	vbuf[a+ 6] = vu[0];
+	vbuf[a+ 7] = vu[1];
+	vbuf[a+ 8] = vu[2];
+}
+/*
+void carvesolid_cone(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vu)
+{
+	int a,b,j;
+	float s,t;
+	float r[4];
+
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
+
+	float* vbuf;
+	u16* ibuf;
 	int vlen = trigon3d_vars(win, trigon3d, &vbuf, &ibuf, acc + 2, acc * 2);
 
 	for(j=0;j<acc;j++)
@@ -233,9 +284,9 @@ void carvesolid_cone(struct arena* win, u32 rgb,
 		vbuf[a+3] = rr;
 		vbuf[a+4] = gg;
 		vbuf[a+5] = bb;
-		vbuf[a+6] = vbuf[a+0] - vc[0];
-		vbuf[a+7] = vbuf[a+1] - vc[1];
-		vbuf[a+8] = vbuf[a+2] - vc[2];
+		vbuf[a+6] = vbuf[a+0] - vc[0] + vu[0];
+		vbuf[a+7] = vbuf[a+1] - vc[1] + vu[1];
+		vbuf[a+8] = vbuf[a+2] - vc[2] + vu[2];
 
 		//bottom
 		ibuf[b+0] = vlen+acc;
@@ -269,7 +320,7 @@ void carvesolid_cone(struct arena* win, u32 rgb,
 	vbuf[a+15] = vu[0];
 	vbuf[a+16] = vu[1];
 	vbuf[a+18] = vu[2];
-}
+}*/
 
 
 

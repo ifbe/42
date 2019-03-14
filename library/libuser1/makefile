@@ -73,6 +73,7 @@ objcode/code.for.c \
 objcode/code.if.c \
 objcode/code.jump.c \
 objdxgl/dxgl.glass.c \
+objdxgl/dxgl.light.c \
 objdxgl/dxgl.mirror.c \
 objdxgl/dxgl.portal.c \
 objdxgl/dxgl.skydome.c \
