@@ -90,8 +90,8 @@ static void planet_read_vbo2d(
 		tf[2] = vf[2]*l;
 		carveline2d_circle(win, 0x404040, vc, tr, tf);
 
-		r = data[j].diameter/data[8].distance;
-		if(j>0)r *= 1024;
+		r = data[j].diameter/data[8].distance/2;
+		//if(j>0)r *= 1024;
 		tr[0] = vr[0]*r;
 		tr[1] = vr[1]*r;
 		tr[2] = vr[2]*r;
@@ -136,8 +136,8 @@ static void planet_read_vbo3d(
 		tf[2] = vf[2]*l;
 		carveline_circle(win, 0x404040, vc, tr, tf);
 
-		r = data[j].diameter/data[8].distance;
-		if(j>0)r *= 1024;
+		r = data[j].diameter/data[8].distance/2;
+		//if(j>0)r *= 1024;
 		tr[0] = vr[0]*r;
 		tr[1] = vr[1]*r;
 		tr[2] = vr[2]*r;

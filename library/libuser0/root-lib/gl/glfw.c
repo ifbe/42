@@ -207,7 +207,7 @@ static void callback_scroll(GLFWwindow* fw, double x, double y)
 {
 	struct event e;
 	struct arena* win = glfwGetWindowUserPointer(fw);
-	printf("%llx: %f,%f\n", (u64)win, x, y);
+	//printf("%llx: %f,%f\n", (u64)win, x, y);
 
 	e.where = (u64)win;
 	e.what = 0x2b70;

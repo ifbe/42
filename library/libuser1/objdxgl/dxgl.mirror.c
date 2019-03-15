@@ -39,6 +39,46 @@ char* mirror_glsl_f =
 
 
 
+void mirrorcamera(
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
+{
+	struct relation* rel;
+	struct arena* tmp;
+	struct glsrc* src = (void*)(lf->foot[0]);
+	struct gldst* dst = (void*)(tf->foot[0]);
+
+	rel = leaf->orel0;
+	if(0 == rel)return;
+
+	tmp = (void*)(rel->dstchip);
+	if(0 == tmp)return;
+	if(_fbo_ != tmp->fmt)return;
+
+	say("tex_rgb=%x\n", tmp->tex_color);
+	dst->tex[0] = tmp->tex_color;
+
+	tmp->target.vc[0] = root->target.vc[0];
+	tmp->target.vc[1] = root->target.vc[1];
+	tmp->target.vc[2] = root->target.vc[2];
+
+	tmp->camera.vc[0] = root->camera.vc[0];
+	tmp->camera.vc[1] = root->camera.vc[1];
+	tmp->camera.vc[2] =-root->camera.vc[2];
+
+	tmp->camera.vf[0] = (tmp->target.vc[0])-(tmp->camera.vc[0]);
+	tmp->camera.vf[1] = (tmp->target.vc[1])-(tmp->camera.vc[1]);
+	tmp->camera.vf[2] = (tmp->target.vc[2])-(tmp->camera.vc[2]);
+
+	tmp->camera.vu[0] = 0.0;
+	tmp->camera.vu[1] = 0.0;
+	tmp->camera.vu[2] = 1.0;
+}
+
+
+
+
 static void mirror_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -115,6 +155,7 @@ static void mirror_read_vbo(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
+	mirrorcamera(act, pin, 0, sty, win, 0);
 }
 static void mirror_read_json(
 	struct arena* win, struct style* sty,
@@ -176,9 +217,6 @@ static void mirror_start(
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
-	struct relation* rel;
-	struct arena* tmp;
-
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
@@ -209,33 +247,6 @@ static void mirror_start(
 	src->tex_enq[0] = 0;
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
-
-	//special
-	rel = leaf->orel0;
-	if(0 == rel)return;
-
-	tmp = (void*)(rel->dstchip);
-	if(0 == tmp)return;
-	if(_fbo_ != tmp->fmt)return;
-
-	say("tex_rgb=%x\n", tmp->tex_color);
-	dst->tex[0] = tmp->tex_color;
-
-	tmp->target.vc[0] = 0.0;
-	tmp->target.vc[1] = 0.0;
-	tmp->target.vc[2] = 0.0;
-
-	tmp->camera.vc[0] = 0.0;
-	tmp->camera.vc[1] = -1024.0;
-	tmp->camera.vc[2] = -1024.0;
-
-	tmp->camera.vf[0] = (tmp->target.vc[0])-(tmp->camera.vc[0]);
-	tmp->camera.vf[1] = (tmp->target.vc[1])-(tmp->camera.vc[1]);
-	tmp->camera.vf[2] = (tmp->target.vc[2])-(tmp->camera.vc[2]);
-
-	tmp->camera.vu[0] = 0.0;
-	tmp->camera.vu[1] = 0.0;
-	tmp->camera.vu[2] = 1.0;
 }
 static void mirror_delete(struct actor* act)
 {

@@ -67,54 +67,66 @@ static void light_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	vec3 tr,tf,tu;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 	carvesolid_cone(win, 0xffff00, vc, vr, vu);
 
+	tr[0] = vr[0]/2;
+	tr[1] = vr[1]/2;
+	tr[2] = vr[2]/2;
+	tf[0] = vf[0]/2;
+	tf[1] = vf[1]/2;
+	tf[2] = vf[2]/2;
+	tu[0] = vu[0]/2;
+	tu[1] = vu[1]/2;
+	tu[2] = vu[2]/2;
+	carvesolid_sphere(win, 0xffff00, vc, tr, tf, tu);
+
 	struct glsrc* src = (void*)(pin->foot[0]);
 	float (*vbuf)[6] = (void*)(src->vbuf);
 	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
 
-	vbuf[0][0] = vc[0] - vr[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2];
+	vbuf[0][0] = vc[0] - vr[0] - vf[0] + vu[0];
+	vbuf[0][1] = vc[1] - vr[1] - vf[1] + vu[1];
+	vbuf[0][2] = vc[2] - vr[2] - vf[2] + vu[2];
 	vbuf[0][3] = 0.0;
 	vbuf[0][4] = 0.0;
 	vbuf[0][5] = 0.0;
 
-	vbuf[1][0] = vc[0] + vr[0] + vf[0];
-	vbuf[1][1] = vc[1] + vr[1] + vf[1];
-	vbuf[1][2] = vc[2] + vr[2] + vf[2];
+	vbuf[1][0] = vc[0] + vr[0] + vf[0] + vu[0];
+	vbuf[1][1] = vc[1] + vr[1] + vf[1] + vu[1];
+	vbuf[1][2] = vc[2] + vr[2] + vf[2] + vu[2];
 	vbuf[1][3] = 1.0;
 	vbuf[1][4] = 1.0;
 	vbuf[1][5] = 0.0;
 
-	vbuf[2][0] = vc[0] - vr[0] + vf[0];
-	vbuf[2][1] = vc[1] - vr[1] + vf[1];
-	vbuf[2][2] = vc[2] - vr[2] + vf[2];
+	vbuf[2][0] = vc[0] - vr[0] + vf[0] + vu[0];
+	vbuf[2][1] = vc[1] - vr[1] + vf[1] + vu[1];
+	vbuf[2][2] = vc[2] - vr[2] + vf[2] + vu[2];
 	vbuf[2][3] = 0.0;
 	vbuf[2][4] = 1.0;
 	vbuf[2][5] = 0.0;
 
-	vbuf[3][0] = vc[0] + vr[0] + vf[0];
-	vbuf[3][1] = vc[1] + vr[1] + vf[1];
-	vbuf[3][2] = vc[2] + vr[2] + vf[2];
+	vbuf[3][0] = vc[0] + vr[0] + vf[0] + vu[0];
+	vbuf[3][1] = vc[1] + vr[1] + vf[1] + vu[1];
+	vbuf[3][2] = vc[2] + vr[2] + vf[2] + vu[2];
 	vbuf[3][3] = 1.0;
 	vbuf[3][4] = 1.0;
 	vbuf[3][5] = 0.0;
 
-	vbuf[4][0] = vc[0] - vr[0] - vf[0];
-	vbuf[4][1] = vc[1] - vr[1] - vf[1];
-	vbuf[4][2] = vc[2] - vr[2] - vf[2];
+	vbuf[4][0] = vc[0] - vr[0] - vf[0] + vu[0];
+	vbuf[4][1] = vc[1] - vr[1] - vf[1] + vu[1];
+	vbuf[4][2] = vc[2] - vr[2] - vf[2] + vu[2];
 	vbuf[4][3] = 0.0;
 	vbuf[4][4] = 0.0;
 	vbuf[4][5] = 0.0;
 
-	vbuf[5][0] = vc[0] + vr[0] - vf[0];
-	vbuf[5][1] = vc[1] + vr[1] - vf[1];
-	vbuf[5][2] = vc[2] + vr[2] - vf[2];
+	vbuf[5][0] = vc[0] + vr[0] - vf[0] + vu[0];
+	vbuf[5][1] = vc[1] + vr[1] - vf[1] + vu[1];
+	vbuf[5][2] = vc[2] + vr[2] - vf[2] + vu[2];
 	vbuf[5][3] = 1.0;
 	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;

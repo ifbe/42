@@ -36,6 +36,20 @@ char* picture_glsl_f =
 	"{\n"
 		"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
 	"}\n";
+/*
+char* picture_glsl_f =
+	GLSL_VERSION
+	"uniform sampler2D tex0;\n"
+	"in mediump vec2 uvw;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"mediump vec4 tmp = texture(tex0, uvw);"
+		"if(tmp.a < 0.01)discard;"
+		"FragColor = tmp.bgra;\n"
+	"}\n";
+*/
+
 
 
 

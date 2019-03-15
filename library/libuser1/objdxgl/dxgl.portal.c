@@ -33,9 +33,7 @@ char* portal_glsl_f =
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
-		"mediump vec4 tmp = texture(tex0, uvw);"
-		"if(tmp.a < 0.1)discard;"
-		"FragColor = tmp.bgra;\n"
+		"FragColor = vec4(texture(tex0, uvw).rgb, 1.0);\n"
 	"}\n";
 
 
@@ -45,10 +43,6 @@ static void portal_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	u32 tmp;
-	u32* dst;
-	u32* src;
-	int x,y,xmax,ymax,stride;
 	int cx, cy, ww, hh;
 	if(sty)
 	{
@@ -64,165 +58,80 @@ static void portal_read_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	if(0 == act->buf)return;
-
-	xmax = act->width;
-	if(xmax >= ww*2)xmax = ww*2;
-	ymax = act->height;
-	if(ymax >= hh*2)ymax = hh*2;
-	stride = win->stride;
-	for(y=0;y<ymax;y++)
-	{
-		dst = (win->buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
-		src = (act->buf) + 4*y*(act->width);
-		//say("y=%d,%llx,%llx\n",y,dst,src);
-		if('b' == ((win->fmt)&0xff))
-		{
-			for(x=0;x<xmax;x++)
-			{
-				tmp = src[x];
-				if(tmp < 0x10)continue;
-				dst[x] = tmp;
-			}
-		}
-		else
-		{
-			for(x=0;x<xmax;x++)
-			{
-				tmp = src[x];
-				if(tmp < 0x10)continue;
-				dst[x] = 0xff000000 | (tmp&0xff00) | ((tmp>>16)&0xff) | ((tmp&0xff)<<16);
-			}
-		}
-	}
 }
-static void portal_read_vbo2d(
+static void portal_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int j;
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
+	vec3 tc,tr,tf,tu;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	if(0 == act->buf)return;
+	//carveline_prism4(win, 0xffffff, vc, vr, vf, vu);
+
+	tc[0] = vc[0] - vu[0];
+	tc[1] = vc[1] - vu[1];
+	tc[2] = vc[2] - vu[2];
+	carvesolid_rect(win, 0xffffff, tc, vr, vf);
+	tc[0] = vc[0] + vu[0];
+	tc[1] = vc[1] + vu[1];
+	tc[2] = vc[2] + vu[2];
+	carvesolid_rect(win, 0xffffff, tc, vr, vf);
+	tc[0] = vc[0] - vr[0];
+	tc[1] = vc[1] - vr[1];
+	tc[2] = vc[2] - vr[2];
+	carvesolid_rect(win, 0xffffff, tc, vf, vu);
+	tc[0] = vc[0] + vr[0];
+	tc[1] = vc[1] + vr[1];
+	tc[2] = vc[2] + vr[2];
+	carvesolid_rect(win, 0xffffff, tc, vf, vu);
 
 	struct glsrc* src = (void*)(pin->foot[0]);
 	float (*vbuf)[6] = (void*)(src->vbuf);
 
-	vbuf[0][0] = vc[0] - vr[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2];
+	vbuf[0][0] = vc[0] - vr[0] - vu[0];
+	vbuf[0][1] = vc[1] - vr[1] - vu[1];
+	vbuf[0][2] = vc[2] - vr[2] - vu[2];
 	vbuf[0][3] = 0.0;
-	vbuf[0][4] = 1.0;
+	vbuf[0][4] = 0.0;
 	vbuf[0][5] = 0.0;
 
-	vbuf[1][0] = vc[0] + vr[0] + vf[0];
-	vbuf[1][1] = vc[1] + vr[1] + vf[1];
-	vbuf[1][2] = vc[2] + vr[2] + vf[2];
+	vbuf[1][0] = vc[0] + vr[0] + vu[0];
+	vbuf[1][1] = vc[1] + vr[1] + vu[1];
+	vbuf[1][2] = vc[2] + vr[2] + vu[2];
 	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 0.0;
+	vbuf[1][4] = 1.0;
 	vbuf[1][5] = 0.0;
 
-	vbuf[2][0] = vc[0] - vr[0] + vf[0];
-	vbuf[2][1] = vc[1] - vr[1] + vf[1];
-	vbuf[2][2] = vc[2] - vr[2] + vf[2];
+	vbuf[2][0] = vc[0] - vr[0] + vu[0];
+	vbuf[2][1] = vc[1] - vr[1] + vu[1];
+	vbuf[2][2] = vc[2] - vr[2] + vu[2];
 	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 0.0;
+	vbuf[2][4] = 1.0;
 	vbuf[2][5] = 0.0;
 
-	vbuf[3][0] = vc[0] + vr[0] + vf[0];
-	vbuf[3][1] = vc[1] + vr[1] + vf[1];
-	vbuf[3][2] = vc[2] + vr[2] + vf[2];
+	vbuf[3][0] = vc[0] + vr[0] + vu[0];
+	vbuf[3][1] = vc[1] + vr[1] + vu[1];
+	vbuf[3][2] = vc[2] + vr[2] + vu[2];
 	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 0.0;
+	vbuf[3][4] = 1.0;
 	vbuf[3][5] = 0.0;
 
-	vbuf[4][0] = vc[0] - vr[0] - vf[0];
-	vbuf[4][1] = vc[1] - vr[1] - vf[1];
-	vbuf[4][2] = vc[2] - vr[2] - vf[2];
+	vbuf[4][0] = vc[0] - vr[0] - vu[0];
+	vbuf[4][1] = vc[1] - vr[1] - vu[1];
+	vbuf[4][2] = vc[2] - vr[2] - vu[2];
 	vbuf[4][3] = 0.0;
-	vbuf[4][4] = 1.0;
+	vbuf[4][4] = 0.0;
 	vbuf[4][5] = 0.0;
 
-	vbuf[5][0] = vc[0] + vr[0] - vf[0];
-	vbuf[5][1] = vc[1] + vr[1] - vf[1];
-	vbuf[5][2] = vc[2] + vr[2] - vf[2];
+	vbuf[5][0] = vc[0] + vr[0] - vu[0];
+	vbuf[5][1] = vc[1] + vr[1] - vu[1];
+	vbuf[5][2] = vc[2] + vr[2] - vu[2];
 	vbuf[5][3] = 1.0;
-	vbuf[5][4] = 1.0;
+	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
 
-	src->vbuf_enq += 1;
-}
-static void portal_read_vbo3d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-	int j;
-	float (*vbuf)[6];
-	struct glsrc* src;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
-	if(0 == act->buf)return;
-
-	src = (void*)(pin->foot[0]);
-	vbuf = (void*)(src->vbuf);
-
-	vbuf[0][0] = vc[0] - vr[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2];
-	vbuf[0][3] = 0.0;
-	vbuf[0][4] = 1.0;
-	vbuf[0][5] = 0.0;
-
-	vbuf[1][0] = vc[0] + vr[0] + vf[0];
-	vbuf[1][1] = vc[1] + vr[1] + vf[1];
-	vbuf[1][2] = vc[2] + vr[2] + vf[2];
-	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 0.0;
-	vbuf[1][5] = 0.0;
-
-	vbuf[2][0] = vc[0] - vr[0] + vf[0];
-	vbuf[2][1] = vc[1] - vr[1] + vf[1];
-	vbuf[2][2] = vc[2] - vr[2] + vf[2];
-	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 0.0;
-	vbuf[2][5] = 0.0;
-
-	vbuf[3][0] = vc[0] + vr[0] + vf[0];
-	vbuf[3][1] = vc[1] + vr[1] + vf[1];
-	vbuf[3][2] = vc[2] + vr[2] + vf[2];
-	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 0.0;
-	vbuf[3][5] = 0.0;
-
-	vbuf[4][0] = vc[0] - vr[0] - vf[0];
-	vbuf[4][1] = vc[1] - vr[1] - vf[1];
-	vbuf[4][2] = vc[2] - vr[2] - vf[2];
-	vbuf[4][3] = 0.0;
-	vbuf[4][4] = 1.0;
-	vbuf[4][5] = 0.0;
-
-	vbuf[5][0] = vc[0] + vr[0] - vf[0];
-	vbuf[5][1] = vc[1] + vr[1] - vf[1];
-	vbuf[5][2] = vc[2] + vr[2] - vf[2];
-	vbuf[5][3] = 1.0;
-	vbuf[5][4] = 1.0;
-	vbuf[5][5] = 0.0;
-
-	for(j=0;j<6;j++)
-	{
-		vbuf[6+j][0] = vbuf[j][0] + vu[0]*2;
-		vbuf[6+j][1] = vbuf[j][1] + vu[1]*2;
-		vbuf[6+j][2] = vbuf[j][2] + vu[2]*2;
-		vbuf[6+j][3] = vbuf[j][3];
-		vbuf[6+j][4] = vbuf[j][4];
-		vbuf[6+j][5] = vbuf[j][5];
-	}
 	src->vbuf_enq += 1;
 }
 static void portal_read_json(
@@ -245,7 +154,7 @@ static void portal_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void portal_read(
+static void portal_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -254,23 +163,24 @@ static void portal_read(
 	else if(fmt == _tui_)portal_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)portal_read_html(win, sty, act, pin);
 	else if(fmt == _json_)portal_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)
-	{
-		if(_2d_ == win->vfmt)portal_read_vbo2d(win, sty, act, pin);
-		else portal_read_vbo3d(win, sty, act, pin);
-	}
+	else if(fmt == _vbo_)portal_read_vbo(win, sty, act, pin);
 	else portal_read_pixel(win, sty, act, pin);
 }
-static void portal_write(
+static void portal_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void portal_get()
+static void portal_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void portal_post()
+static void portal_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void portal_stop(
@@ -284,53 +194,66 @@ static void portal_start(
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
+	struct relation* rel;
+	struct arena* tmp;
+
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
 	if(0 == lf)return;
 
-	//alloc
+	//
 	pair = alloc_winobj(root);
 	src = &pair->src;
 	dst = &pair->dst;
 	lf->foot[0] = (u64)src;
 	tf->foot[0] = (u64)dst;
 
-	//shader
+	//
 	src->vs = portal_glsl_v;
 	src->fs = portal_glsl_f;
-
-	//texture
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex[0] = leaf->buf;
-	src->tex_w[0] = leaf->width;
-	src->tex_h[0] = leaf->height;
+	if(twig){if(_fg2d_ == twig->fmt)src->vs = portal_glsl2d_v;}
 
 	//vertex
 	src->vbuf = memorycreate(4*6*6);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
-	src->vbuf_h = 12;
+	src->vbuf_h = 6;
 	src->method = 'v';
-
-	if(twig)
-	{
-		if(_fg2d_ == twig->fmt)
-		{
-			src->vs = portal_glsl2d_v;
-
-			src->vbuf_h = 12;
-		}
-	}
 
 	//send!
 	src->shader_enq[0] = 42;
 	src->arg_enq[0] = 0;
-	src->tex_enq[0] = 42;
+	src->tex_enq[0] = 0;
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
 
-	lf->foot[0] = (u64)src;
+	//special
+	rel = leaf->orel0;
+	if(0 == rel)return;
+
+	tmp = (void*)(rel->dstchip);
+	if(0 == tmp)return;
+	if(_fbo_ != tmp->fmt)return;
+
+	say("tex_rgb=%x\n", tmp->tex_color);
+	dst->tex[0] = tmp->tex_color;
+
+	tmp->target.vc[0] = 0.0;
+	tmp->target.vc[1] = 0.0;
+	tmp->target.vc[2] = 0.0;
+
+	tmp->camera.vc[0] = 0.0;
+	tmp->camera.vc[1] = -512.0;
+	tmp->camera.vc[2] = 512.0;
+
+	tmp->camera.vf[0] = (tmp->target.vc[0])-(tmp->camera.vc[0]);
+	tmp->camera.vf[1] = (tmp->target.vc[1])-(tmp->camera.vc[1]);
+	tmp->camera.vf[2] = (tmp->target.vc[2])-(tmp->camera.vc[2]);
+
+	tmp->camera.vu[0] = 0.0;
+	tmp->camera.vu[1] = 0.0;
+	tmp->camera.vu[2] = 1.0;
 }
 static void portal_delete(struct actor* act)
 {
@@ -338,10 +261,15 @@ static void portal_delete(struct actor* act)
 	memorydelete(act->buf);
 	act->buf = 0;
 }
-static void portal_create(struct actor* act)
+static void portal_create(struct actor* act, void* str)
 {
+	void* win;
 	if(0 == act)return;
-	actorcreatefromfile(act, "png/portal.png");
+
+	win = arenacreate(_fbo_, 0);
+	if(0 == win)return;
+
+	relationcreate(win, 0, _win_, act, 0, _act_);
 }
 
 
@@ -356,8 +284,8 @@ void portal_register(struct actor* p)
 	p->ondelete = (void*)portal_delete;
 	p->onstart  = (void*)portal_start;
 	p->onstop   = (void*)portal_stop;
-	p->onget    = (void*)portal_get;
-	p->onpost   = (void*)portal_post;
-	p->onread   = (void*)portal_read;
-	p->onwrite  = (void*)portal_write;
+	p->onget    = (void*)portal_cread;
+	p->onpost   = (void*)portal_cwrite;
+	p->onread   = (void*)portal_sread;
+	p->onwrite  = (void*)portal_swrite;
 }
