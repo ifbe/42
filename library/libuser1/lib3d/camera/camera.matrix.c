@@ -32,9 +32,12 @@ void fixview(mat4 viewmatrix, struct arena* win)
 	nz /= norm;
 
 	//uvn.u = right = cross(front,(0,0,1))
-	float ux = ny*1 - nz*0;
-	float uy = nz*0 - nx*1;
-	float uz = nx*0 - ny*0;
+	float tx = win->camera.vu[0];
+	float ty = win->camera.vu[1];
+	float tz = win->camera.vu[2];
+	float ux = ny*tz - nz*ty;
+	float uy = nz*tx - nx*tz;
+	float uz = nx*ty - ny*tx;
 	norm = squareroot(ux*ux + uy*uy + uz*uz);
 	ux /= norm;
 	uy /= norm;
@@ -70,8 +73,8 @@ void fixview(mat4 viewmatrix, struct arena* win)
 	viewmatrix[3][3] = 1.0f;
 	//mat4_print(viewmatrix);
 }
-void fixproj(mat4 projmatrix, struct arena* win)
-{
+void fixproj(mat4 proj, struct arena* win)
+{/*
 	float n = (float)(win->neardepth) / 1000.0;
 	float t = (float)(win->nearstride) / 1000.0;
 	float w = (float)(win->width);
@@ -98,6 +101,42 @@ void fixproj(mat4 projmatrix, struct arena* win)
 	projmatrix[3][1] = 0.0;
 	projmatrix[3][2] = -1.0;
 	projmatrix[3][3] = 0.0;
+*/
+	float l = win->nearl;
+	float r = win->nearr;
+	float b = win->nearb;
+	float t = win->neart;
+	float n = win->nearn;
+	float f = 1e16;
+
+	float w = (float)(win->width);
+	float h = (float)(win->height);
+	l *= w/h;
+	r *= w/h;
+
+	proj[0][0] = 2 * n / (r-l);
+	proj[0][1] = 0.0;
+	proj[0][2] = (r+l) / (r-l);
+	proj[0][3] = 0.0;
+
+	proj[1][0] = 0.0;
+	proj[1][1] = 2 * n / (t-b);
+	proj[1][2] = (t+b) / (t-b);
+	proj[1][3] = 0.0;
+
+	proj[2][0] = 0.0;
+	proj[2][1] = 0.0;
+	proj[2][2] = (n+f) / (n-f);
+	proj[2][3] = 2 * f * n / (n-f);
+
+	proj[3][0] = 0.0;
+	proj[3][1] = 0.0;
+	proj[3][2] = -1.0;
+	proj[3][3] = 0.0;
+
+	if(_fbo_ == win->fmt)
+	{
+	}
 }
 void fixmatrix(mat4 mvp, struct arena* win)
 {
@@ -112,8 +151,8 @@ void fixmatrix(mat4 mvp, struct arena* win)
 
 
 
-void invproj(mat4 projmatrix, struct arena* win)
-{
+void invproj(mat4 proj, struct arena* win)
+{/*
 	float n = (float)(win->neardepth) / 1000.0;
 	float t = (float)(win->nearstride) / 1000.0;
 	float w = (float)(win->width);
@@ -136,8 +175,40 @@ void invproj(mat4 projmatrix, struct arena* win)
 
 	projmatrix[3][0] = 0.0;
 	projmatrix[3][1] = 0.0;
-	projmatrix[3][2] = -0.5/n;
-	projmatrix[3][3] = 0.5/n;
+	projmatrix[3][2] = -0.5/n;		//(n-f) / 2.0 / n / f;
+	projmatrix[3][3] = 0.5/n;		//(n+f) / 2.0 / n / f;
+*/
+	float l = win->nearl;
+	float r = win->nearr;
+	float b = win->nearb;
+	float t = win->neart;
+	float n = win->nearn;
+	float f = 1e16;
+
+	float w = (float)(win->width);
+	float h = (float)(win->height);
+	l *= w/h;
+	r *= w/h;
+
+	proj[0][0] = (r-l) / 2.0 / n;
+	proj[0][1] = 0.0;
+	proj[0][2] = 0.0;
+	proj[0][3] = (r+l) / 2.0 / n;
+
+	proj[1][0] = 0.0;
+	proj[1][1] = (t-b) / 2.0 / n;
+	proj[1][2] = 0.0;
+	proj[1][3] = (t+b) / 2.0 / n;
+
+	proj[2][0] = 0.0;
+	proj[2][1] = 0.0;
+	proj[2][2] = 0.0;
+	proj[2][3] = -1.0;
+
+	proj[3][0] = 0.0;
+	proj[3][1] = 0.0;
+	proj[3][2] = (n-f) / 2.0 / n / f;
+	proj[3][3] = (n+f) / 2.0 / n / f;
 }
 void invview(mat4 viewmatrix, struct arena* win)
 {
@@ -157,9 +228,12 @@ void invview(mat4 viewmatrix, struct arena* win)
 	nz /= norm;
 
 	//uvn.u = right = cross(front,(0,0,1))
-	float ux = ny*1 - nz*0;
-	float uy = nz*0 - nx*1;
-	float uz = nx*0 - ny*0;
+	float tx = win->camera.vu[0];
+	float ty = win->camera.vu[1];
+	float tz = win->camera.vu[2];
+	float ux = ny*tz - nz*ty;
+	float uy = nz*tx - nx*tz;
+	float uz = nx*ty - ny*tx;
 	norm = squareroot(ux*ux + uy*uy + uz*uz);
 	ux /= norm;
 	uy /= norm;

@@ -229,6 +229,7 @@ int actorinput_cameraevent_gamepad(struct arena* win, struct event* ev)
 	if(joy_right == (ev->what & joy_mask))
 	{
 		t = (void*)ev;
+/*
 		if(t[3] & joyr_left)		//x-
 		{
 			if(win->nearstride > 1)win->nearstride--;
@@ -261,6 +262,7 @@ int actorinput_cameraevent_gamepad(struct arena* win, struct event* ev)
 			say("%f,%f,fov=%f\n", x, z, arctan2(x, z)*180/PI);
 			return 0;
 		}
+*/
 		if(t[3] & joyr_trigger)		//z-
 		{
 			camera_zoom(win, 0.1);

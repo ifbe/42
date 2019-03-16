@@ -569,16 +569,16 @@ struct arena
 	int fbstride;
 
 	//[a0,af]: near plane
-	int nearwidth;
-	int nearheight;
-	int neardepth;
-	int nearstride;
+	float nearl;
+	float nearr;
+	float nearb;
+	float neart;
 
 	//[b0,bf]: far plane
-	int farwidth;
-	int farheight;
-	int fardepth;
-	int farstride;
+	float nearn;
+	float nearf;
+	float nearp;
+	float nearq;
 
 	//[c0,cf]: layer0: background
 	int backx;
@@ -903,7 +903,9 @@ float vec2_dot(vec2, vec2);
 float vec2_cosine(vec2, vec2);
 //
 void vec3_normalize(vec3 v);
+void vec3_normalizeto(vec3 src, vec3 dst);
 void vec3_cross(vec3 d, vec3 s);
+float vec3_len(vec3 v);
 float vec3_dot(vec3, vec3);
 float vec3_cosine(vec3, vec3);
 //

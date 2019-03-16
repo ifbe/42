@@ -31,6 +31,10 @@ float vec2_cosine(vec2 v, vec2 x)
 
 
 
+float vec3_len(vec3 v)
+{
+	return squareroot(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+}
 void vec3_normalize(vec3 v)
 {
 	float norm = squareroot(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
@@ -38,13 +42,12 @@ void vec3_normalize(vec3 v)
 	v[1] /= norm;
 	v[2] /= norm;
 }
-void vec3_cross(vec3 v, vec3 x)
+void vec3_normalizeto(vec3 v, vec3 to)
 {
-	//a × b= [a2b3-a3b2,a3b1-a1b3, a1b2-a2b1]
-	float t[3] = {v[0], v[1], v[2]};
-	v[0] = t[1]*x[2] - t[2]*x[1];
-	v[1] = t[2]*x[0] - t[0]*x[2];
-	v[2] = t[0]*x[1] - t[1]*x[0];
+	float norm = squareroot(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+	to[0] = v[0] / norm;
+	to[1] = v[1] / norm;
+	to[2] = v[2] / norm;
 }
 float vec3_dot(vec3 v, vec3 x)
 {
@@ -57,4 +60,12 @@ float vec3_cosine(vec3 v, vec3 x)
 	vec3_normalize(a);
 	vec3_normalize(b);
 	return vec3_dot(a, b);
+}
+void vec3_cross(vec3 v, vec3 x)
+{
+	//a × b= [a2b3-a3b2,a3b1-a1b3, a1b2-a2b1]
+	float t[3] = {v[0], v[1], v[2]};
+	v[0] = t[1]*x[2] - t[2]*x[1];
+	v[1] = t[2]*x[0] - t[0]*x[2];
+	v[2] = t[0]*x[1] - t[1]*x[0];
 }

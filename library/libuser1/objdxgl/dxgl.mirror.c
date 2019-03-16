@@ -56,12 +56,13 @@ void mirrorcamera(
 	if(0 == tmp)return;
 	if(_fbo_ != tmp->fmt)return;
 
-	say("tex_rgb=%x\n", tmp->tex_color);
+	//say("tex_rgb=%x\n", tmp->tex_color);
 	dst->tex[0] = tmp->tex_color;
 
-	tmp->target.vc[0] = root->target.vc[0];
-	tmp->target.vc[1] = root->target.vc[1];
-	tmp->target.vc[2] = root->target.vc[2];
+
+	tmp->target.vc[0] = root->camera.vc[0];
+	tmp->target.vc[1] = root->camera.vc[1];
+	tmp->target.vc[2] = root->camera.vc[2];
 
 	tmp->camera.vc[0] = root->camera.vc[0];
 	tmp->camera.vc[1] = root->camera.vc[1];
@@ -72,8 +73,18 @@ void mirrorcamera(
 	tmp->camera.vf[2] = (tmp->target.vc[2])-(tmp->camera.vc[2]);
 
 	tmp->camera.vu[0] = 0.0;
-	tmp->camera.vu[1] = 0.0;
-	tmp->camera.vu[2] = 1.0;
+	tmp->camera.vu[1] = 1.0;
+	tmp->camera.vu[2] = 0.0;
+
+	tmp->nearn = root->camera.vc[2] + 1.0;
+	//tmp->nearl = -tmp->nearn;
+	//tmp->nearr = tmp->nearn;
+	//tmp->nearb = -tmp->nearn;
+	//tmp->neart = tmp->nearn;
+	tmp->nearl = -tf->vr[0] - tmp->camera.vc[0];
+	tmp->nearr = tf->vr[0] - tmp->camera.vc[0];
+	tmp->nearb = tf->vf[1] - tmp->camera.vc[1];
+	tmp->neart = -tf->vf[1] - tmp->camera.vc[1];
 }
 
 
