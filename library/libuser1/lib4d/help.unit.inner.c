@@ -7,6 +7,7 @@ void finfet_register(void*);
 void hbridge_register(void*);
 void rectify_register(void*);
 //dxgl
+void camera_register(void*);
 void light_register(void*);
 void mirror_register(void*);
 void portal_register(void*);
@@ -78,8 +79,6 @@ void spectrum_register(void*);
 void terminal_register(void*);
 void video_register(void*);
 //
-void camera_register(void*);
-//
 void login_register(void*);
 void overview_register(void*);
 void tabbar_register(void*);
@@ -101,6 +100,9 @@ void content_create(void* addr)
 
 
 //----------------------dxgl-----------------------
+	camera_register(tmp);
+	tmp += sizeof(struct actor);
+
 	light_register(tmp);
 	tmp += sizeof(struct actor);
 
@@ -331,10 +333,6 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	sphere_register(tmp);
-	tmp += sizeof(struct actor);
-
-	//-------------------????------------------
-	camera_register(tmp);
 	tmp += sizeof(struct actor);
 
 	//-------------------menu------------------

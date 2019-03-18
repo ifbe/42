@@ -626,7 +626,7 @@ int arenaread_all()
 	int j;
 	struct arena* win;
 
-	for(j=0;j<16;j++)
+	for(j=31;j>=0;j--)
 	{
 		win = &arena[j];
 		if(0 == win->type)continue;

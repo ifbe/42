@@ -33,7 +33,8 @@ char* mirror_glsl_f =
 	"out mediump vec4 FragColor;\n"
 	"void main()\n"
 	"{\n"
-		"FragColor = vec4(texture(tex0, uvw).rgb, 1.0);\n"
+		"vec3 c = 0.8*texture(tex0, uvw).rgb + vec3(0.2, 0.2, 0.2);\n"
+		"FragColor = vec4(c, 1.0);\n"
 	"}\n";
 
 
@@ -81,10 +82,10 @@ void mirrorcamera(
 	//tmp->nearr = tmp->nearn;
 	//tmp->nearb = -tmp->nearn;
 	//tmp->neart = tmp->nearn;
-	tmp->nearl = -tf->vr[0] - tmp->camera.vc[0];
-	tmp->nearr = tf->vr[0] - tmp->camera.vc[0];
-	tmp->nearb = tf->vf[1] - tmp->camera.vc[1];
-	tmp->neart = -tf->vf[1] - tmp->camera.vc[1];
+	tmp->nearl = tf->vc[0] + tf->vr[0] + tmp->camera.vc[0];
+	tmp->nearr = tf->vc[0] - tf->vr[0] + tmp->camera.vc[0];
+	tmp->nearb = tf->vc[1] + tf->vf[1] - tmp->camera.vc[1];
+	tmp->neart = tf->vc[1] - tf->vf[1] - tmp->camera.vc[1];
 }
 
 

@@ -72,6 +72,7 @@ objcode/code.call.c \
 objcode/code.for.c \
 objcode/code.if.c \
 objcode/code.jump.c \
+objdxgl/dxgl.camera.c \
 objdxgl/dxgl.glass.c \
 objdxgl/dxgl.light.c \
 objdxgl/dxgl.mirror.c \
@@ -168,7 +169,6 @@ themenu/mode3.detail.c \
 themenu/mode4.win.c \
 themenu/mode5.rts.c \
 themenu/mode6.editor.c \
-themenu/mode6.editor.camera.c \
 themenu/mode6.editor.target.c \
 themenu/mode7.player.c \
 themenu/menu.login.c \

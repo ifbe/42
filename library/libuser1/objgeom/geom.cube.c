@@ -22,11 +22,26 @@ static void cube_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	vec3 tc,tr,tf,tu;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	carvesolid_prism4(win, 0xc0c0c0, vc, vr, vf, vu);
+	carveline_rect(win, 0xffffff, vc, vr, vf);
+
+	tc[0] = vc[0] + vu[0]/2;
+	tc[1] = vc[1] + vu[1]/2;
+	tc[2] = vc[2] + vu[2]/2;
+	tr[0] = vr[0]/2;
+	tr[1] = vr[1]/2;
+	tr[2] = vr[2]/2;
+	tf[0] = vf[0]/2;
+	tf[1] = vf[1]/2;
+	tf[2] = vf[2]/2;
+	tu[0] = vu[0]/2;
+	tu[1] = vu[1]/2;
+	tu[2] = vu[2]/2;
+	carvesolid_prism4(win, 0xc0c0c0, tc, tr, tf, tu);
 }
 static void cube_read_json(
 	struct arena* win, struct style* sty,

@@ -39,6 +39,57 @@ char* portal_glsl_f =
 
 
 
+void portalcamera(
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
+{
+	struct relation* rel;
+	struct arena* tmp;
+	struct glsrc* src = (void*)(lf->foot[0]);
+	struct gldst* dst = (void*)(tf->foot[0]);
+
+	rel = leaf->orel0;
+	if(0 == rel)return;
+
+	tmp = (void*)(rel->dstchip);
+	if(0 == tmp)return;
+	if(_fbo_ != tmp->fmt)return;
+
+	//say("tex_rgb=%x\n", tmp->tex_color);
+	dst->tex[0] = tmp->tex_color;
+
+
+	tmp->target.vc[0] = root->camera.vc[0];
+	tmp->target.vc[1] = root->camera.vc[1];
+	tmp->target.vc[2] = root->camera.vc[2];
+
+	tmp->camera.vc[0] = root->camera.vc[0];
+	tmp->camera.vc[1] = root->camera.vc[1];
+	tmp->camera.vc[2] =-root->camera.vc[2];
+
+	tmp->camera.vf[0] = (tmp->target.vc[0])-(tmp->camera.vc[0]);
+	tmp->camera.vf[1] = (tmp->target.vc[1])-(tmp->camera.vc[1]);
+	tmp->camera.vf[2] = (tmp->target.vc[2])-(tmp->camera.vc[2]);
+
+	tmp->camera.vu[0] = 0.0;
+	tmp->camera.vu[1] = 1.0;
+	tmp->camera.vu[2] = 0.0;
+
+	tmp->nearn = root->camera.vc[2] + 1.0;
+	//tmp->nearl = -tmp->nearn;
+	//tmp->nearr = tmp->nearn;
+	//tmp->nearb = -tmp->nearn;
+	//tmp->neart = tmp->nearn;
+	tmp->nearl = tf->vc[0] + tf->vr[0] + tmp->camera.vc[0];
+	tmp->nearr = tf->vc[0] - tf->vr[0] + tmp->camera.vc[0];
+	tmp->nearb = tf->vc[1] + tf->vf[1] - tmp->camera.vc[1];
+	tmp->neart = tf->vc[1] - tf->vf[1] - tmp->camera.vc[1];
+}
+
+
+
+
 static void portal_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -69,23 +120,6 @@ static void portal_read_vbo(
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 	//carveline_prism4(win, 0xffffff, vc, vr, vf, vu);
-
-	tc[0] = vc[0] - vu[0];
-	tc[1] = vc[1] - vu[1];
-	tc[2] = vc[2] - vu[2];
-	carvesolid_rect(win, 0xffffff, tc, vr, vf);
-	tc[0] = vc[0] + vu[0];
-	tc[1] = vc[1] + vu[1];
-	tc[2] = vc[2] + vu[2];
-	carvesolid_rect(win, 0xffffff, tc, vr, vf);
-	tc[0] = vc[0] - vr[0];
-	tc[1] = vc[1] - vr[1];
-	tc[2] = vc[2] - vr[2];
-	carvesolid_rect(win, 0xffffff, tc, vf, vu);
-	tc[0] = vc[0] + vr[0];
-	tc[1] = vc[1] + vr[1];
-	tc[2] = vc[2] + vr[2];
-	carvesolid_rect(win, 0xffffff, tc, vf, vu);
 
 	struct glsrc* src = (void*)(pin->foot[0]);
 	float (*vbuf)[6] = (void*)(src->vbuf);
@@ -133,6 +167,7 @@ static void portal_read_vbo(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
+	portalcamera(act, pin, 0, sty, win, 0);
 }
 static void portal_read_json(
 	struct arena* win, struct style* sty,
