@@ -40,6 +40,45 @@ char* mirror_glsl_f =
 
 
 
+void mat4_vector(mat4 m, float* v);
+void fixview(mat4 viewmatrix, struct arena* win);
+void mirrorfrustum(struct arena* win, struct style* mir, struct style* cam)
+{
+	mat4 view;
+	vec3 v0,v1,v2,v3;
+	float* vc = mir->vc;
+	float* vr = mir->vr;
+	float* vf = mir->vf;
+
+	win->nearn = cam->vc[2] + 1.0;
+	win->nearl = - (vc[0] - vr[0] - win->camera.vc[0]);
+	win->nearr = - (vc[0] + vr[0] - win->camera.vc[0]);
+	win->nearb = vc[1] + vf[1] - win->camera.vc[1];
+	win->neart = vc[1] - vf[1] - win->camera.vc[1];
+
+	fixview(view, win);
+	v0[0] = vc[0] - vr[0] - vf[0];
+	v0[1] = vc[1] - vr[1] - vf[1];
+	v0[2] = vc[2] - vr[2] - vf[2];
+	mat4_vector(view, v0);
+	v1[0] = vc[0] + vr[0] - vf[0];
+	v1[1] = vc[1] + vr[1] - vf[1];
+	v1[2] = vc[2] + vr[2] - vf[2];
+	mat4_vector(view, v1);
+	v2[0] = vc[0] - vr[0] + vf[0];
+	v2[1] = vc[1] - vr[1] + vf[1];
+	v2[2] = vc[2] - vr[2] + vf[2];
+	mat4_vector(view, v2);
+	v3[0] = vc[0] + vr[0] + vf[0];
+	v3[1] = vc[1] + vr[1] + vf[1];
+	v3[2] = vc[2] + vr[2] + vf[2];
+	mat4_vector(view, v3);
+	say("%f,%f,%f\n", v0[0], v0[1], v0[2]);
+	say("%f,%f,%f\n", v1[0], v1[1], v1[2]);
+	say("%f,%f,%f\n", v2[0], v2[1], v2[2]);
+	say("%f,%f,%f\n", v3[0], v3[1], v3[2]);
+	say("\n");
+}
 void mirrorcamera(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
@@ -77,15 +116,7 @@ void mirrorcamera(
 	tmp->camera.vu[1] = 1.0;
 	tmp->camera.vu[2] = 0.0;
 
-	tmp->nearn = root->camera.vc[2] + 1.0;
-	//tmp->nearl = -tmp->nearn;
-	//tmp->nearr = tmp->nearn;
-	//tmp->nearb = -tmp->nearn;
-	//tmp->neart = tmp->nearn;
-	tmp->nearl = tf->vc[0] + tf->vr[0] + tmp->camera.vc[0];
-	tmp->nearr = tf->vc[0] - tf->vr[0] + tmp->camera.vc[0];
-	tmp->nearb = tf->vc[1] + tf->vf[1] - tmp->camera.vc[1];
-	tmp->neart = tf->vc[1] - tf->vf[1] - tmp->camera.vc[1];
+	mirrorfrustum(tmp, tf, &root->camera);
 }
 
 

@@ -107,6 +107,18 @@ float mat3_det(mat3 m)
 
 
 
+void mat4_vector(mat4 m, float* v)
+{
+	vec4 t;
+	t[0] = v[0];
+	t[1] = v[1];
+	t[2] = v[2];
+	t[3] = 1.0;
+
+	v[0] = m[0][0]*t[0] + m[0][1]*t[1] + m[0][2]*t[2] +m[0][3]*t[3];
+	v[1] = m[1][0]*t[0] + m[1][1]*t[1] + m[1][2]*t[2] +m[1][3]*t[3];
+	v[2] = m[2][0]*t[0] + m[2][1]*t[1] + m[2][2]*t[2] +m[2][3]*t[3];
+}
 void mat4_multiply(float* u, float* v)
 {
 	int j;

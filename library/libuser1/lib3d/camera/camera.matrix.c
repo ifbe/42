@@ -133,10 +133,6 @@ void fixproj(mat4 proj, struct arena* win)
 	proj[3][1] = 0.0;
 	proj[3][2] = -1.0;
 	proj[3][3] = 0.0;
-
-	if(_fbo_ == win->fmt)
-	{
-	}
 }
 void fixmatrix(mat4 mvp, struct arena* win)
 {
