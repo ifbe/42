@@ -39,11 +39,44 @@ char* portal_glsl_f =
 
 
 
+void mat4_vector(mat4 m, float* v);
+void fixview(mat4 viewmatrix, struct arena* win);
+void portalfrustum(struct arena* win, struct style* por)
+{
+	mat4 view;
+	vec3 lb,rt;
+	float* vc = por->vc;
+	float* vr = por->vr;
+	float* vf = por->vf;
+
+	fixview(view, win);
+	lb[0] = vc[0] - vr[0] - vf[0];
+	lb[1] = vc[1] - vr[1] - vf[1];
+	lb[2] = vc[2] - vr[2] - vf[2];
+	mat4_vector(view, lb);
+	rt[0] = vc[0] + vr[0] + vf[0];
+	rt[1] = vc[1] + vr[1] + vf[1];
+	rt[2] = vc[2] + vr[2] + vf[2];
+	mat4_vector(view, rt);
+
+	say("\n");
+	say("%f,%f,%f\n", lb[0], lb[1], lb[2]);
+	say("%f,%f,%f\n", rt[0], rt[1], rt[2]);
+
+	win->nearn = - rt[2] + 1.0;
+	win->nearl = lb[0];
+	win->nearr = rt[0];
+	win->nearb = lb[1];
+	win->neart = rt[1];
+	say("%f,%f,%f,%f\n", win->nearl, win->nearr, win->nearb, win->neart);
+}
 void portalcamera(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
 {
+	vec3 p,q;
+	struct style sty;
 	struct relation* rel;
 	struct arena* tmp;
 	struct glsrc* src = (void*)(lf->foot[0]);
@@ -60,31 +93,62 @@ void portalcamera(
 	dst->tex[0] = tmp->tex_color;
 
 
-	tmp->target.vc[0] = root->camera.vc[0];
-	tmp->target.vc[1] = root->camera.vc[1];
-	tmp->target.vc[2] = root->camera.vc[2];
+	tmp->camera.vc[0] =-1000.0;
+	tmp->camera.vc[1] = 0.0;
+	tmp->camera.vc[2] = 1000.0;
 
-	tmp->camera.vc[0] = root->camera.vc[0];
-	tmp->camera.vc[1] = root->camera.vc[1];
-	tmp->camera.vc[2] =-root->camera.vc[2];
-
-	tmp->camera.vf[0] = (tmp->target.vc[0])-(tmp->camera.vc[0]);
-	tmp->camera.vf[1] = (tmp->target.vc[1])-(tmp->camera.vc[1]);
-	tmp->camera.vf[2] = (tmp->target.vc[2])-(tmp->camera.vc[2]);
+	tmp->camera.vf[0] = 1.0;
+	tmp->camera.vf[1] = 0.0;
+	tmp->camera.vf[2] = 0.0;
 
 	tmp->camera.vu[0] = 0.0;
-	tmp->camera.vu[1] = 1.0;
-	tmp->camera.vu[2] = 0.0;
+	tmp->camera.vu[1] = 0.0;
+	tmp->camera.vu[2] = 1.0;
 
-	tmp->nearn = root->camera.vc[2] + 1.0;
-	//tmp->nearl = -tmp->nearn;
-	//tmp->nearr = tmp->nearn;
-	//tmp->nearb = -tmp->nearn;
-	//tmp->neart = tmp->nearn;
-	tmp->nearl = tf->vc[0] + tf->vr[0] + tmp->camera.vc[0];
-	tmp->nearr = tf->vc[0] - tf->vr[0] + tmp->camera.vc[0];
-	tmp->nearb = tf->vc[1] + tf->vf[1] - tmp->camera.vc[1];
-	tmp->neart = tf->vc[1] - tf->vf[1] - tmp->camera.vc[1];
+	tmp->target.vc[0] = tmp->camera.vc[0] + 1.0;
+	tmp->target.vc[1] = tmp->camera.vc[1];
+	tmp->target.vc[2] = tmp->camera.vc[2];
+
+	sty.vc[0] = -250.0;
+	sty.vc[1] = 0.0;
+	sty.vc[2] = 250.0;
+	sty.vr[0] = 0.0;
+	sty.vr[1] = -250.0;
+	sty.vr[2] = 0.0;
+	sty.vf[0] = 0.0;
+	sty.vf[1] = 0.0;
+	sty.vf[2] = 250.0;
+	portalfrustum(tmp, &sty);
+
+	carveline_rect(root, 0xffffff, sty.vc, sty.vr, sty.vf);
+	p[0] = sty.vc[0] - sty.vr[0] - sty.vf[0];
+	p[1] = sty.vc[1] - sty.vr[1] - sty.vf[1];
+	p[2] = sty.vc[2] - sty.vr[2] - sty.vf[2];
+	q[0] = 2*p[0] - tmp->camera.vc[0];
+	q[1] = 2*p[1] - tmp->camera.vc[1];
+	q[2] = 2*p[2] - tmp->camera.vc[2];
+	carveline(root, 0xffffff, tmp->camera.vc, q);
+	p[0] = sty.vc[0] + sty.vr[0] - sty.vf[0];
+	p[1] = sty.vc[1] + sty.vr[1] - sty.vf[1];
+	p[2] = sty.vc[2] + sty.vr[2] - sty.vf[2];
+	q[0] = 2*p[0] - tmp->camera.vc[0];
+	q[1] = 2*p[1] - tmp->camera.vc[1];
+	q[2] = 2*p[2] - tmp->camera.vc[2];
+	carveline(root, 0xffffff, tmp->camera.vc, q);
+	p[0] = sty.vc[0] - sty.vr[0] + sty.vf[0];
+	p[1] = sty.vc[1] - sty.vr[1] + sty.vf[1];
+	p[2] = sty.vc[2] - sty.vr[2] + sty.vf[2];
+	q[0] = 2*p[0] - tmp->camera.vc[0];
+	q[1] = 2*p[1] - tmp->camera.vc[1];
+	q[2] = 2*p[2] - tmp->camera.vc[2];
+	carveline(root, 0xffffff, tmp->camera.vc, q);
+	p[0] = sty.vc[0] + sty.vr[0] + sty.vf[0];
+	p[1] = sty.vc[1] + sty.vr[1] + sty.vf[1];
+	p[2] = sty.vc[2] + sty.vr[2] + sty.vf[2];
+	q[0] = 2*p[0] - tmp->camera.vc[0];
+	q[1] = 2*p[1] - tmp->camera.vc[1];
+	q[2] = 2*p[2] - tmp->camera.vc[2];
+	carveline(root, 0xffffff, tmp->camera.vc, q);
 }
 
 

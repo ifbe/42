@@ -42,48 +42,41 @@ char* mirror_glsl_f =
 
 void mat4_vector(mat4 m, float* v);
 void fixview(mat4 viewmatrix, struct arena* win);
-void mirrorfrustum(struct arena* win, struct style* mir, struct style* cam)
+void mirrorfrustum(struct arena* win, struct style* mir)
 {
 	mat4 view;
-	vec3 v0,v1,v2,v3;
+	vec3 lb,rt;
 	float* vc = mir->vc;
 	float* vr = mir->vr;
 	float* vf = mir->vf;
 
-	win->nearn = cam->vc[2] + 1.0;
-	win->nearl = - (vc[0] - vr[0] - win->camera.vc[0]);
-	win->nearr = - (vc[0] + vr[0] - win->camera.vc[0]);
-	win->nearb = vc[1] + vf[1] - win->camera.vc[1];
-	win->neart = vc[1] - vf[1] - win->camera.vc[1];
-
 	fixview(view, win);
-	v0[0] = vc[0] - vr[0] - vf[0];
-	v0[1] = vc[1] - vr[1] - vf[1];
-	v0[2] = vc[2] - vr[2] - vf[2];
-	mat4_vector(view, v0);
-	v1[0] = vc[0] + vr[0] - vf[0];
-	v1[1] = vc[1] + vr[1] - vf[1];
-	v1[2] = vc[2] + vr[2] - vf[2];
-	mat4_vector(view, v1);
-	v2[0] = vc[0] - vr[0] + vf[0];
-	v2[1] = vc[1] - vr[1] + vf[1];
-	v2[2] = vc[2] - vr[2] + vf[2];
-	mat4_vector(view, v2);
-	v3[0] = vc[0] + vr[0] + vf[0];
-	v3[1] = vc[1] + vr[1] + vf[1];
-	v3[2] = vc[2] + vr[2] + vf[2];
-	mat4_vector(view, v3);
-	say("%f,%f,%f\n", v0[0], v0[1], v0[2]);
-	say("%f,%f,%f\n", v1[0], v1[1], v1[2]);
-	say("%f,%f,%f\n", v2[0], v2[1], v2[2]);
-	say("%f,%f,%f\n", v3[0], v3[1], v3[2]);
+	lb[0] = vc[0] - vr[0] - vf[0];
+	lb[1] = vc[1] - vr[1] - vf[1];
+	lb[2] = vc[2] - vr[2] - vf[2];
+	mat4_vector(view, lb);
+	rt[0] = vc[0] + vr[0] + vf[0];
+	rt[1] = vc[1] + vr[1] + vf[1];
+	rt[2] = vc[2] + vr[2] + vf[2];
+	mat4_vector(view, rt);
+
 	say("\n");
+	say("%f,%f,%f\n", lb[0], lb[1], lb[2]);
+	say("%f,%f,%f\n", rt[0], rt[1], rt[2]);
+
+	win->nearn = - rt[2] + 1.0;
+	win->nearl = lb[0];
+	win->nearr = rt[0];
+	win->nearb = rt[1];
+	win->neart = lb[1];
+	say("%f,%f,%f,%f\n", win->nearl, win->nearr, win->nearb, win->neart);
 }
 void mirrorcamera(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
 {
+	vec3 p,q;
 	struct relation* rel;
 	struct arena* tmp;
 	struct glsrc* src = (void*)(lf->foot[0]);
@@ -116,7 +109,37 @@ void mirrorcamera(
 	tmp->camera.vu[1] = 1.0;
 	tmp->camera.vu[2] = 0.0;
 
-	mirrorfrustum(tmp, tf, &root->camera);
+	mirrorfrustum(tmp, tf);
+
+	carveline_rect(root, 0xffffff, tf->vc, tf->vr, tf->vf);
+	p[0] = tf->vc[0] - tf->vr[0] - tf->vf[0];
+	p[1] = tf->vc[1] - tf->vr[1] - tf->vf[1];
+	p[2] = tf->vc[2] - tf->vr[2] - tf->vf[2];
+	q[0] = 2*p[0] - tmp->camera.vc[0];
+	q[1] = 2*p[1] - tmp->camera.vc[1];
+	q[2] = 2*p[2] - tmp->camera.vc[2];
+	carveline(root, 0xffffff, tmp->camera.vc, q);
+	p[0] = tf->vc[0] + tf->vr[0] - tf->vf[0];
+	p[1] = tf->vc[1] + tf->vr[1] - tf->vf[1];
+	p[2] = tf->vc[2] + tf->vr[2] - tf->vf[2];
+	q[0] = 2*p[0] - tmp->camera.vc[0];
+	q[1] = 2*p[1] - tmp->camera.vc[1];
+	q[2] = 2*p[2] - tmp->camera.vc[2];
+	carveline(root, 0xffffff, tmp->camera.vc, q);
+	p[0] = tf->vc[0] - tf->vr[0] + tf->vf[0];
+	p[1] = tf->vc[1] - tf->vr[1] + tf->vf[1];
+	p[2] = tf->vc[2] - tf->vr[2] + tf->vf[2];
+	q[0] = 2*p[0] - tmp->camera.vc[0];
+	q[1] = 2*p[1] - tmp->camera.vc[1];
+	q[2] = 2*p[2] - tmp->camera.vc[2];
+	carveline(root, 0xffffff, tmp->camera.vc, q);
+	p[0] = tf->vc[0] + tf->vr[0] + tf->vf[0];
+	p[1] = tf->vc[1] + tf->vr[1] + tf->vf[1];
+	p[2] = tf->vc[2] + tf->vr[2] + tf->vf[2];
+	q[0] = 2*p[0] - tmp->camera.vc[0];
+	q[1] = 2*p[1] - tmp->camera.vc[1];
+	q[2] = 2*p[2] - tmp->camera.vc[2];
+	carveline(root, 0xffffff, tmp->camera.vc, q);
 }
 
 
