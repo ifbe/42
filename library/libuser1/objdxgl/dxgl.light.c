@@ -1,26 +1,59 @@
 #include "libuser.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
 void actorcreatefromfile(struct actor* act, char* name);
+void fixmatrix(mat4 mvp, struct arena* win);
 
 
 
 
-char* light_glsl2d_v =
+char* light_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"out mediump vec2 uvw;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = vec4(vertex, 1.0);\n"
+	"layout(location = 1)in mediump vec3 normal;\n"
+	"out mediump vec3 vcolor;\n"
+	"out mediump vec3 uvw;\n"
+	"uniform mat4 mapmvp;\n"
+	"uniform mat4 cammvp;\n"
+	"mediump vec3 eyepos = vec3(0.0, -1000.0, 1000.0);\n"
+	"mediump vec3 ambient = vec3(0.25, 0.25, 0.25);\n"
+	"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
+	"mediump vec3 lightposition = vec3(500.0, 250.0, 1000.0);\n"
+	"void main(){\n"
+		"mediump vec3 N = normalize(normal);\n"
+		"mediump vec3 L = normalize(vec3(lightposition - vertex));\n"
+		"mediump vec3 E = normalize(eyepos-vertex);\n"
+		"mediump vec3 R = reflect(-L, N);\n"
+		"mediump float SN = max(dot(N, L), 0.0);\n"
+		"mediump float RV = max(dot(R, E), 0.0);\n"
+		"mediump vec3 diffuse = lightcolor * SN;\n"
+		"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
+		"if(SN>0.0)specular = lightcolor * pow(RV, 4.0);\n"
+		"vcolor = ambient + diffuse + specular;\n"
+
+		"mediump vec4 tmp = mapmvp * vec4(vertex, 1.0);\n"
+		"tmp /= tmp.w;\n"
+		"tmp = (tmp+1.0)*0.5;\n"
+		"uvw = vec3(tmp.x, tmp.y, tmp.z);\n"
+		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
 	"}\n";
+char* light_glsl_f =
+	GLSL_VERSION
+	"in mediump vec3 uvw;\n"
+	"in mediump vec3 vcolor;\n"
+	"out mediump vec4 FragColor;\n"
+	"uniform sampler2D tex0;\n"
+	"void main(){\n"
+		"mediump float shadow = 1.0;\n"
+		"if(uvw.z - texture(tex0, uvw.xy).r > 0.000001)shadow = 0.1;\n"
+		"FragColor = vec4(vcolor*shadow, 1.0);\n"
+	"}\n";
+/*
 char* light_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"uniform mat4 cammvp;\n"
 	"out mediump vec2 uvw;\n"
+	"uniform mat4 cammvp;\n"
 	"void main()\n"
 	"{\n"
 		"uvw = texuvw;\n"
@@ -39,6 +72,7 @@ char* light_glsl_f =
 		"mediump float c = (2.0 * n) / (f + n - d * (f - n));"
 		"FragColor = vec4(c, c, c, 1.0);\n"
 	"}\n";
+*/
 
 
 
@@ -72,6 +106,7 @@ static void light_read_vbo(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
+/*
 	carvesolid_cone(win, 0xffff00, vc, vr, vu);
 
 	tr[0] = vr[0]/2;
@@ -84,52 +119,94 @@ static void light_read_vbo(
 	tu[1] = vu[1]/2;
 	tu[2] = vu[2]/2;
 	carvesolid_sphere(win, 0xffff00, vc, tr, tf, tu);
-
+*/
 	struct glsrc* src = (void*)(pin->foot[0]);
 	float (*vbuf)[6] = (void*)(src->vbuf);
 	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
 
-	vbuf[0][0] = vc[0] - vr[0] - vf[0] + vu[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1] + vu[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2] + vu[2];
+	vbuf[0][0] = vc[0] - vr[0] - vf[0];
+	vbuf[0][1] = vc[1] - vr[1] - vf[1];
+	vbuf[0][2] = vc[2] - vr[2] - vf[2];
 	vbuf[0][3] = 0.0;
 	vbuf[0][4] = 0.0;
-	vbuf[0][5] = 0.0;
+	vbuf[0][5] = 1.0;
 
-	vbuf[1][0] = vc[0] + vr[0] + vf[0] + vu[0];
-	vbuf[1][1] = vc[1] + vr[1] + vf[1] + vu[1];
-	vbuf[1][2] = vc[2] + vr[2] + vf[2] + vu[2];
-	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 1.0;
-	vbuf[1][5] = 0.0;
+	vbuf[1][0] = vc[0] + vr[0] + vf[0];
+	vbuf[1][1] = vc[1] + vr[1] + vf[1];
+	vbuf[1][2] = vc[2] + vr[2] + vf[2];
+	vbuf[1][3] = 0.0;	//1.0;
+	vbuf[1][4] = 0.0;	//1.0;
+	vbuf[1][5] = 1.0;
 
-	vbuf[2][0] = vc[0] - vr[0] + vf[0] + vu[0];
-	vbuf[2][1] = vc[1] - vr[1] + vf[1] + vu[1];
-	vbuf[2][2] = vc[2] - vr[2] + vf[2] + vu[2];
+	vbuf[2][0] = vc[0] - vr[0] + vf[0];
+	vbuf[2][1] = vc[1] - vr[1] + vf[1];
+	vbuf[2][2] = vc[2] - vr[2] + vf[2];
 	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 1.0;
-	vbuf[2][5] = 0.0;
+	vbuf[2][4] = 0.0;	//1.0;
+	vbuf[2][5] = 1.0;
 
-	vbuf[3][0] = vc[0] + vr[0] + vf[0] + vu[0];
-	vbuf[3][1] = vc[1] + vr[1] + vf[1] + vu[1];
-	vbuf[3][2] = vc[2] + vr[2] + vf[2] + vu[2];
-	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 1.0;
-	vbuf[3][5] = 0.0;
+	vbuf[3][0] = vc[0] + vr[0] + vf[0];
+	vbuf[3][1] = vc[1] + vr[1] + vf[1];
+	vbuf[3][2] = vc[2] + vr[2] + vf[2];
+	vbuf[3][3] = 0.0;	//1.0;
+	vbuf[3][4] = 0.0;	//1.0;
+	vbuf[3][5] = 1.0;
 
-	vbuf[4][0] = vc[0] - vr[0] - vf[0] + vu[0];
-	vbuf[4][1] = vc[1] - vr[1] - vf[1] + vu[1];
-	vbuf[4][2] = vc[2] - vr[2] - vf[2] + vu[2];
+	vbuf[4][0] = vc[0] - vr[0] - vf[0];
+	vbuf[4][1] = vc[1] - vr[1] - vf[1];
+	vbuf[4][2] = vc[2] - vr[2] - vf[2];
 	vbuf[4][3] = 0.0;
 	vbuf[4][4] = 0.0;
-	vbuf[4][5] = 0.0;
+	vbuf[4][5] = 1.0;
 
-	vbuf[5][0] = vc[0] + vr[0] - vf[0] + vu[0];
-	vbuf[5][1] = vc[1] + vr[1] - vf[1] + vu[1];
-	vbuf[5][2] = vc[2] + vr[2] - vf[2] + vu[2];
-	vbuf[5][3] = 1.0;
+	vbuf[5][0] = vc[0] + vr[0] - vf[0];
+	vbuf[5][1] = vc[1] + vr[1] - vf[1];
+	vbuf[5][2] = vc[2] + vr[2] - vf[2];
+	vbuf[5][3] = 0.0;	//1.0;
 	vbuf[5][4] = 0.0;
-	vbuf[5][5] = 0.0;
+	vbuf[5][5] = 1.0;
+
+	vbuf[6][0] = vc[0] + vu[0];
+	vbuf[6][1] = vc[1] + vu[1];
+	vbuf[6][2] = vc[2] + vu[2];
+	vbuf[6][3] = 1.0;
+	vbuf[6][4] = 1.0;
+	vbuf[6][5] = 1.0;
+
+	vbuf[7][0] = vc[0] + vr[0]/2 + vu[0] / 3.0;
+	vbuf[7][1] = vc[1] + vr[1]/2 + vu[1] / 3.0;
+	vbuf[7][2] = vc[2] + vr[2]/2 + vu[2] / 3.0;
+	vbuf[7][3] = 1.0;
+	vbuf[7][4] = 1.0;
+	vbuf[7][5] = 1.0;
+
+	vbuf[8][0] = vc[0] + vf[0]/2 + vu[0] / 3.0;
+	vbuf[8][1] = vc[1] + vf[1]/2 + vu[1] / 3.0;
+	vbuf[8][2] = vc[2] + vf[2]/2 + vu[2] / 3.0;
+	vbuf[8][3] = 1.0;
+	vbuf[8][4] = 1.0;
+	vbuf[8][5] = 1.0;
+
+	vbuf[9][0] = vc[0];
+	vbuf[9][1] = vc[1];
+	vbuf[9][2] = vc[2];
+	vbuf[9][3] = 0.0;
+	vbuf[9][4] = 0.0;
+	vbuf[9][5] = 1.0;
+
+	vbuf[10][0] = vc[0] - vr[0]/2 + vu[0] * 2.0 / 3.0;
+	vbuf[10][1] = vc[1] - vr[1]/2 + vu[1] * 2.0 / 3.0;
+	vbuf[10][2] = vc[2] - vr[2]/2 + vu[2] * 2.0 / 3.0;
+	vbuf[10][3] = 0.0;
+	vbuf[10][4] = 0.0;
+	vbuf[10][5] = 1.0;
+
+	vbuf[11][0] = vc[0] - vf[0]/2 + vu[0] * 2.0 / 3.0;
+	vbuf[11][1] = vc[1] - vf[1]/2 + vu[1] * 2.0 / 3.0;
+	vbuf[11][2] = vc[2] - vf[2]/2 + vu[2] * 2.0 / 3.0;
+	vbuf[11][3] = 0.0;
+	vbuf[11][4] = 0.0;
+	vbuf[11][5] = 1.0;
 
 	src->vbuf_enq += 1;
 }
@@ -193,6 +270,7 @@ static void light_start(
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
+	void* mvp;
 	struct relation* rel;
 	struct arena* tmp;
 
@@ -211,21 +289,17 @@ static void light_start(
 	//
 	src->vs = light_glsl_v;
 	src->fs = light_glsl_f;
-	if(twig){if(_fg2d_ == twig->fmt)src->vs = light_glsl2d_v;}
+
+	mvp = memorycreate(4*4*4);
+	src->arg[0] = "mapmvp";
+	src->arg_data[0] = (u64)mvp;
 
 	//vertex
-	src->vbuf = memorycreate(4*6*6);
+	src->vbuf = memorycreate(4*6*12);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
+	src->vbuf_h = 12;
 	src->method = 'v';
-
-	//send!
-	src->shader_enq[0] = 42;
-	src->arg_enq[0] = 0;
-	src->tex_enq[0] = 0;
-	src->vbuf_enq = 0;
-	src->ibuf_enq = 0;
 
 	//special
 	rel = leaf->orel0;
@@ -235,16 +309,16 @@ static void light_start(
 	if(0 == tmp)return;
 	if(_fbo_ != tmp->fmt)return;
 
-	say("tex_rgb=%x\n", tmp->tex_depth);
+	say("tex=%x\n", tmp->tex_depth);
 	dst->tex[0] = tmp->tex_depth;
 
 	tmp->target.vc[0] = 0.0;
 	tmp->target.vc[1] = 0.0;
 	tmp->target.vc[2] = 0.0;
 
-	tmp->camera.vc[0] = 0.0;
-	tmp->camera.vc[1] = -512.0;
-	tmp->camera.vc[2] = 512.0;
+	tmp->camera.vc[0] = 500.0;
+	tmp->camera.vc[1] = 250.0;
+	tmp->camera.vc[2] = 1000.0;
 
 	tmp->camera.vf[0] = (tmp->target.vc[0])-(tmp->camera.vc[0]);
 	tmp->camera.vf[1] = (tmp->target.vc[1])-(tmp->camera.vc[1]);
@@ -253,6 +327,22 @@ static void light_start(
 	tmp->camera.vu[0] = 0.0;
 	tmp->camera.vu[1] = 0.0;
 	tmp->camera.vu[2] = 1.0;
+
+	tmp->nearn = 1.0;
+	tmp->nearl = -1.0;
+	tmp->nearr = 1.0;
+	tmp->nearb = -1.0;
+	tmp->neart = 1.0;
+
+	fixmatrix(mvp, tmp);
+	mat4_transpose(mvp);
+
+	//send!
+	src->shader_enq[0] = 42;
+	src->arg_enq[0] = 42;
+	src->tex_enq[0] = 0;
+	src->vbuf_enq = 0;
+	src->ibuf_enq = 0;
 }
 static void light_delete(struct actor* act)
 {

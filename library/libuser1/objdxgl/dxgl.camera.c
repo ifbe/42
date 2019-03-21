@@ -411,6 +411,49 @@ static void camera_swrite(
 {
 	//say("%llx,%llx\n", ev->why, ev->what);
 	actorinput_cameraevent(win, ev);
+/*
+	int id;
+	int x0,y0,x1,y1;
+	if(_kbd_ == ev->what)
+	{
+		if(0x4b == ev->why)win->camera.vc[0] -= 10;
+		else if(0x4d == ev->why)win->camera.vc[0] += 10;
+		else if(0x50 == ev->why)win->camera.vc[2] -= 10;
+		else if(0x48 == ev->why)win->camera.vc[2] += 10;
+	}
+	else if(0x2b70 == ev->what)
+	{
+		id = (ev->why)>>48;
+		if('f' == id)win->camera.vc[1] += 10;
+		if('b' == id)win->camera.vc[1] -= 10;
+	}
+	else if(0x4070 == ev->what)
+	{
+		id = (ev->why)>>48;
+		if('l' == id)id = 10;
+		else if('r' == id)id = 11;
+		else if(id > 10)return;
+		if(0 == win->input[id].z0)return;
+
+		x0 = win->input[id].xn;
+		y0 = win->input[id].yn;
+		x1 = (ev->why)&0xffff;
+		y1 = ((ev->why)>>16)&0xffff;
+
+		win->camera.vc[0] += x1-x0;
+		win->camera.vc[2] += y1-y0;
+	}
+say("%f,%f,%f\n",win->camera.vc[0], win->camera.vc[1], win->camera.vc[2]);
+	win->target.vc[0] = win->camera.vc[0];
+	win->target.vc[1] = win->camera.vc[1] - 1.0;
+	win->target.vc[2] = win->camera.vc[2];
+
+	win->nearn = -1000 - win->camera.vc[1];
+	win->nearl = -1000 - win->camera.vc[0];
+	win->nearr = 1000 - win->camera.vc[0];
+	win->nearb = 0 - win->camera.vc[2];
+	win->neart = 1000 - win->camera.vc[2];
+*/
 }
 static void camera_cread(
 	struct arena* win, struct style* sty,
