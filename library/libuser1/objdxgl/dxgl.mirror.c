@@ -105,9 +105,9 @@ void mirrorcamera(
 	tmp->camera.vf[1] = (tmp->target.vc[1])-(tmp->camera.vc[1]);
 	tmp->camera.vf[2] = (tmp->target.vc[2])-(tmp->camera.vc[2]);
 
-	tmp->camera.vu[0] = 0.0;
-	tmp->camera.vu[1] = 1.0;
-	tmp->camera.vu[2] = 0.0;
+	tmp->camera.vu[0] = tf->vf[0];
+	tmp->camera.vu[1] = tf->vf[1];
+	tmp->camera.vu[2] = tf->vf[2];
 
 	mirrorfrustum(tmp, tf);
 

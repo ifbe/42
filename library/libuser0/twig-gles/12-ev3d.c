@@ -7,9 +7,7 @@ int actorstart(void*, void*, void*, void*, void*, void*);
 
 
 #define COUNT 1
-static u64 want[COUNT] = {
-	hex64('c','a','m','e','r','a', 0, 0)
-};
+static u64 want[COUNT];
 
 
 
@@ -104,7 +102,7 @@ int ev3d_create(struct arena* win, void* str)
 	struct actor* act;
 	struct pinid* pin;
 	struct relation* rel;
-
+return 0;
 	for(j=0;j<COUNT;j++)
 	{
 		act = actorcreate(want[j], 0);

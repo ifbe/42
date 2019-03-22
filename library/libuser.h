@@ -803,8 +803,9 @@ void carve2d_hexadecimal(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 
 void carve2d_unicode(        struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
 void carve2d_utf8(           struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
 void carve2d_string(         struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carvestring2d_center(   struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void carve2d_double(         struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, double data);
 
+void carvestring2d_center(   struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 void carvetext2d(            struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 void carvetext2d_reverse(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 
@@ -861,6 +862,7 @@ void carveunicode(           struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 
 void carveutf8(              struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
 void carvestring(            struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 void carvestring_center(     struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void carvedouble(            struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, double data);
 
 void* alloc_winobj(struct arena*);
 

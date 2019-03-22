@@ -263,3 +263,10 @@ void carvestring_center(struct arena* win, u32 rgb,
 		carveascii(win, rgb, tc, tr, vf, buf[j]);
 	}
 }
+void carvedouble(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, double data)
+{
+	u8 mystr[100];
+	double2decstr(data, mystr);
+	carvestring(win, rgb, vc, vr, vf, mystr, 0);
+}

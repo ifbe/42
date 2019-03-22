@@ -7,7 +7,6 @@ void finfet_register(void*);
 void hbridge_register(void*);
 void rectify_register(void*);
 //dxgl
-void camera_register(void*);
 void light_register(void*);
 void mirror_register(void*);
 void portal_register(void*);
@@ -70,7 +69,6 @@ void palette_register(void*);
 void planet_register(void*);
 //tool
 void calculator_register(void*);
-void camera_register(void*);
 void font_register(void*);
 void hex_register(void*);
 void qrcode_register(void*);
@@ -78,7 +76,11 @@ void sketchpad_register(void*);
 void spectrum_register(void*);
 void terminal_register(void*);
 void video_register(void*);
-//
+//ui3d
+void picker_register(void*);
+void surround_register(void*);
+void vrglass_register(void*);
+//ui2d
 void login_register(void*);
 void overview_register(void*);
 void tabbar_register(void*);
@@ -100,9 +102,6 @@ void content_create(void* addr)
 
 
 //----------------------dxgl-----------------------
-	camera_register(tmp);
-	tmp += sizeof(struct actor);
-
 	light_register(tmp);
 	tmp += sizeof(struct actor);
 
@@ -335,7 +334,14 @@ void content_create(void* addr)
 	sphere_register(tmp);
 	tmp += sizeof(struct actor);
 
-	//-------------------menu------------------
+	//-------------------ui3d------------------
+	surround_register(tmp);
+	tmp += sizeof(struct actor);
+
+	vrglass_register(tmp);
+	tmp += sizeof(struct actor);
+
+	//-------------------ui2d------------------
 	login_register(tmp);
 	tmp += sizeof(struct actor);
 

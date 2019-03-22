@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "libuser.h"
-int lowlevel_input();
+int arenaevent(struct event* ev);
 //
 void initobject(void*);
 void initshader(void*);
@@ -30,15 +30,11 @@ static u8 uppercase[] = {
 
 
 
-void glfw_joystick(void* p)
-{
-	eventwrite(*(u64*)(p+0), joy_left, 0, 0);
-	eventwrite(*(u64*)(p+8), joy_right, 0, 0);
-}
 static void thread_joystick(struct arena* win)
 {
 	int j, k;
 	int c1, c2;
+	void* p;
 	const float* f;
 	const unsigned char* u;
 	struct xyzwpair pair;
@@ -65,6 +61,11 @@ static void thread_joystick(struct arena* win)
 			pair.y0 = (int)(-32767*f[1]);
 			pair.z0 = (int)(127*(1.0+f[4]));
 			pair.w0 = 0;
+			pair.xn = (int)( 32767*f[2]);
+			pair.yn = (int)(-32767*f[3]);
+			pair.zn = (int)(127*(1.0+f[5]));
+			pair.wn = 0;
+/*
 			switch(u[10] | (u[11]<<1) | (u[12]<<2) | (u[13]<<3))
 			{
 				case  9:pair.w0 |= joyl_left;break;
@@ -76,25 +77,48 @@ static void thread_joystick(struct arena* win)
 				case  2:pair.w0 |= joyl_up|joyl_right;break;
 				case  0:pair.w0 |= joyl_up|joyl_left;break;
 			}
-			if(u[4])pair.w0 |= joyl_bumper;
-			if(f[4]>0.0)pair.w0 |= joyl_trigger;
-			if(u[8])pair.w0 |= joyl_stick;
-			if(u[6])pair.w0 |= joyl_select;
-
-			pair.xn = (int)( 32767*f[2]);
-			pair.yn = (int)(-32767*f[3]);
-			pair.zn = (int)(127*(1.0+f[5]));
-			pair.wn = 0;
 			if(u[0])pair.wn |= joyr_down;
 			if(u[1])pair.wn |= joyr_right;
 			if(u[2])pair.wn |= joyr_left;
 			if(u[3])pair.wn |= joyr_up;
+			if(u[4])pair.w0 |= joyl_bumper;
 			if(u[5])pair.wn |= joyr_bumper;
-			if(f[5]>0.0)pair.wn |= joyr_trigger;
-			if(u[9])pair.wn |= joyr_stick;
+			if(u[6])pair.w0 |= joyl_select;
 			if(u[7])pair.wn |= joyr_start;
+			if(u[8])pair.w0 |= joyl_stick;
+			if(u[9])pair.wn |= joyr_stick;
+			if(f[4]>0.0)pair.w0 |= joyl_trigger;
+			if(f[5]>0.0)pair.wn |= joyr_trigger;
+*/
+			if(u[ 0])pair.wn |= joyr_left;
+			if(u[ 1])pair.wn |= joyr_down;
+			if(u[ 2])pair.wn |= joyr_right;
+			if(u[ 3])pair.wn |= joyr_up;
+			if(u[ 4])pair.w0 |= joyl_bumper;
+			if(u[ 5])pair.wn |= joyr_bumper;
+			if(u[ 6])pair.w0 |= joyl_trigger;
+			if(u[ 7])pair.wn |= joyr_trigger;
+			if(u[ 8])pair.w0 |= joyl_select;
+			if(u[ 9])pair.wn |= joyr_start;
+			if(u[10])pair.w0 |= joyl_stick;
+			if(u[11])pair.wn |= joyr_stick;
+			//if(u[12])pair.w0 |= joyl_bumper;
+			//if(u[13])pair.wn |= joyr_bumper;
+			if(u[14])pair.w0 |= joyl_up;
+			if(u[15])pair.w0 |= joyl_right;
+			if(u[16])pair.w0 |= joyl_down;
+			if(u[17])pair.w0 |= joyl_left;
 
-			glfw_joystick(&pair);
+			//printmemory(&pair, 16);
+			p = &pair;
+
+			ev.why = *(u64*)(p+0);
+			ev.what = joy_left;
+			arenaevent(&ev);
+
+			ev.why = *(u64*)(p+8);
+			ev.what = joy_right;
+			arenaevent(&ev);
 		}
 		sleep_us(10000);
 	}

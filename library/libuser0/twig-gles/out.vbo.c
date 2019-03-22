@@ -91,6 +91,7 @@ int vbonode_swrite(struct arena* win, struct style* stack, struct event* ev)
 	struct pinid* pin;
 	struct arena* tmp;
 	struct relation* rel;
+	//printmemory(ev, 16);
 
 	ret = 0;
 	rel = win->oreln;

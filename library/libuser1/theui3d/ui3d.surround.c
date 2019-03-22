@@ -3,11 +3,11 @@
 
 
 
-void camera_deltax(struct arena* win, float delta)
+void surround_deltax(struct arena* win, float delta)
 {
 	float c,s;
 	float tx,ty,tz;		//target
-	float cx,cy,cz;		//camera
+	float cx,cy,cz;		//surround
 	float vx,vy,vz;		//vector(tar to cam)(origin)
 	float px,py,pz;		//vector(tar to cam)(rotate)
 
@@ -16,7 +16,7 @@ void camera_deltax(struct arena* win, float delta)
 	ty = win->target.vc[1];
 	tz = win->target.vc[2];
 
-	//camera
+	//surround
 	cx = win->camera.vc[0];
 	cy = win->camera.vc[1];
 	cz = win->camera.vc[2];
@@ -34,7 +34,7 @@ void camera_deltax(struct arena* win, float delta)
 	py = -vx*s + vy*c;
 	pz = vz;
 
-	//camera = target+vector
+	//surround = target+vector
 	win->camera.vc[0] = tx+px;
 	win->camera.vc[1] = ty+py;
 	win->camera.vc[2] = tz+pz;
@@ -44,19 +44,19 @@ void camera_deltax(struct arena* win, float delta)
 	win->camera.vf[1] = -py;
 	win->camera.vf[2] = -pz;
 }
-void camera_deltay(struct arena* win, float delta)
+void surround_deltay(struct arena* win, float delta)
 {
 	float v[4];
 	float q[4];
 	float tx,ty,tz;		//target
-	float cx,cy,cz;		//camera
+	float cx,cy,cz;		//surround
 
 	//target
 	tx = win->target.vc[0];
 	ty = win->target.vc[1];
 	tz = win->target.vc[2];
 
-	//camera
+	//surround
 	cx = win->camera.vc[0];
 	cy = win->camera.vc[1];
 	cz = win->camera.vc[2];
@@ -81,7 +81,7 @@ void camera_deltay(struct arena* win, float delta)
 	q[2] = v[0]*0 - v[1]*0;
 	quaternion_operation(v, q, delta);
 
-	//camera = target+vector
+	//surround = target+vector
 	win->camera.vc[0] = tx+v[0];
 	win->camera.vc[1] = ty+v[1];
 	win->camera.vc[2] = tz+v[2];
@@ -91,7 +91,7 @@ void camera_deltay(struct arena* win, float delta)
 	win->camera.vf[1] = -v[1];
 	win->camera.vf[2] = -v[2];
 }
-void camera_deltaxy(struct arena* win, int dx, int dy)
+void surround_deltaxy(struct arena* win, int dx, int dy)
 {
 	float delta;
 
@@ -99,16 +99,16 @@ void camera_deltaxy(struct arena* win, int dx, int dy)
 	{
 		if(dx < 0)delta = -0.05;
 		else if(dx > 0)delta = 0.05;
-		camera_deltax(win, delta);
+		surround_deltax(win, delta);
 	}
 	if(0 != dy)
 	{
 		if(dy < 0)delta = -0.02;
 		else if(dy > 0)delta = 0.02;
-		camera_deltay(win, delta);
+		surround_deltay(win, delta);
 	}
 }
-void camera_zoom(struct arena* win, float delta)
+void surround_zoom(struct arena* win, float delta)
 {
 	float x = delta*(win->camera.vf[0]);
 	float y = delta*(win->camera.vf[1]);
@@ -122,16 +122,11 @@ void camera_zoom(struct arena* win, float delta)
 	win->camera.vf[1] -= y;
 	win->camera.vf[2] -= z;
 }
-void target_deltaxyz(struct arena* win, int x, int y, int z)
+void target_deltaxyz(struct arena* win, float x, float y, float z)
 {
 	float norm;
 	float tx, ty;
 	float dx, dy, dz;
-
-	if(x < 0)x = -1;
-	else if(x > 0)x = 1;
-	if(y < 0)y = -1;
-	else if(y > 0)y = 1;
 
 	tx = win->camera.vf[0];
 	ty = win->camera.vf[1];
@@ -139,10 +134,8 @@ void target_deltaxyz(struct arena* win, int x, int y, int z)
 	tx /= norm;
 	ty /= norm;
 
-	dx = 10.0*x*ty;
-	dx += 10.0*y*tx;
-	dy = -10.0*x*tx;
-	dy += 10.0*y*ty;
+	dx = x*ty + y*tx;
+	dy = y*ty - x*tx;
 	dz = 10*z;
 
 	win->target.vc[0] += dx;
@@ -157,7 +150,7 @@ void target_deltaxyz(struct arena* win, int x, int y, int z)
 
 
 
-int actorinput_cameraevent_gamepad(struct arena* win, struct event* ev)
+int actorinput_surroundevent_gamepad(struct arena* win, struct event* ev)
 {
 	short* t;
 	float x,y,z,w;
@@ -168,45 +161,40 @@ int actorinput_cameraevent_gamepad(struct arena* win, struct event* ev)
 	if(joy_left == (ev->what & joy_mask))
 	{
 		t = (void*)ev;
+		//printmemory(t, 16);
+		//say("%d,%d\n", t[0], t[1]);
 		if(t[3] & joyl_left)		//x-
 		{
 			win->target.vc[0] -= 10;
 			win->camera.vc[0] -= 10;
-			return 0;
 		}
 		if(t[3] & joyl_right)		//x+
 		{
 			win->target.vc[0] += 10;
 			win->camera.vc[0] += 10;
-			return 0;
 		}
 		if(t[3] & joyl_down)		//y-
 		{
 			win->target.vc[1] -= sign*10;
 			win->camera.vc[1] -= sign*10;
-			return 0;
 		}
 		if(t[3] & joyl_up)			//y+
 		{
 			win->target.vc[1] += sign*10;
 			win->camera.vc[1] += sign*10;
-			return 0;
 		}
 		if(t[3] & joyl_trigger)		//z-
 		{
 			target_deltaxyz(win, 0, 0, -1);
-			return 0;
 		}
 		if(t[3] & joyl_bumper)		//z+
 		{
 			target_deltaxyz(win, 0, 0, 1);
-			return 0;
 		}
 		if(t[3] & joyl_stick)		//w-
 		{
 			win->camera.vc[2] -= win->target.vc[2];
 			win->target.vc[2] = 0;
-			return 0;
 		}
 		if(t[3] & joyl_select)		//w+
 		{
@@ -214,16 +202,10 @@ int actorinput_cameraevent_gamepad(struct arena* win, struct event* ev)
 		}
 
 		x0 = t[0];
-		if(x0 < -8192)x0 = -1;
-		else if(x0 > 8192)x0 = 1;
-		else x0 = 0;
-
 		y0 = t[1];
-		if(y0 < -8192)y0 = -1;
-		else if(y0 > 8192)y0 = 1;
-		else y0 = 0;
+		if((x0 > -4096) && (x0 < 4096) && (y0 > -4096) && (y0 < 4096))return 0;
 
-		target_deltaxyz(win, x0, sign*y0, 0);
+		target_deltaxyz(win, x0/1000.0, sign*y0/1000.0, 0);
 		return 0;
 	}
 	if(joy_right == (ev->what & joy_mask))
@@ -265,12 +247,12 @@ int actorinput_cameraevent_gamepad(struct arena* win, struct event* ev)
 */
 		if(t[3] & joyr_trigger)		//z-
 		{
-			camera_zoom(win, 0.1);
+			surround_zoom(win, 0.1);
 			return 0;
 		}
 		if(t[3] & joyr_bumper)		//z+
 		{
-			camera_zoom(win, -0.1);
+			surround_zoom(win, -0.1);
 			return 0;
 		}
 		if(t[3] & joyr_stick)		//w-
@@ -304,11 +286,11 @@ int actorinput_cameraevent_gamepad(struct arena* win, struct event* ev)
 		else if(y0 > 8192)y0 = 1;
 		else y0 = 0;
 
-		camera_deltaxy(win, x0, -y0);
+		surround_deltaxy(win, x0, -y0);
 	}
 	return 0;
 }
-int actorinput_cameraevent(struct arena* win, struct event* ev)
+int actorinput_surroundevent(struct arena* win, struct event* ev)
 {
 	int x0,y0,x1,y1,id,sign;
 
@@ -343,7 +325,7 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 	}
 	else if(joy_event == (ev->what & 0xff))
 	{
-		actorinput_cameraevent_gamepad(win, ev);
+		actorinput_surroundevent_gamepad(win, ev);
 	}
 	else if(0x4070 == ev->what)
 	{
@@ -372,8 +354,8 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 			x0 = (win->input[0].xn) - (win->input[1].xn);
 			y0 = (win->input[0].yn) - (win->input[1].yn);
 
-			if((x0*x0+y0*y0) < (x1*x1+y1*y1))camera_zoom(win, 0.05);
-			else camera_zoom(win, -0.05);
+			if((x0*x0+y0*y0) < (x1*x1+y1*y1))surround_zoom(win, 0.05);
+			else surround_zoom(win, -0.05);
 		}
 		else
 		{
@@ -382,14 +364,14 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 			x1 = (ev->why)&0xffff;
 			y1 = ((ev->why)>>16)&0xffff;
 
-			camera_deltaxy(win, x1-x0, y1-y0);
+			surround_deltaxy(win, x1-x0, y1-y0);
 		}
 	}
 	else if(0x2b70 == ev->what)
 	{
 		id = (ev->why)>>48;
-		if('f' == id)camera_zoom(win, 0.1);
-		if('b' == id)camera_zoom(win, -0.1);
+		if('f' == id)surround_zoom(win, 0.1);
+		if('b' == id)surround_zoom(win, -0.1);
 	}
 	return 0;
 }
@@ -397,110 +379,104 @@ int actorinput_cameraevent(struct arena* win, struct event* ev)
 
 
 
-static void camera_sread(
+static void surround_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	vec3 tc,tr,tf;
 	float* vc = win->target.vc;
-	carvepoint(win, 0xff0000, vc);
+	//carvepoint(win, 0xff0000, vc);
+
+	tc[0] = vc[0] + 100.0;
+	tc[1] = vc[1];
+	tc[2] = vc[2];
+	carveline(win, 0x0000ff, vc, tc);
+	tr[0] = 1.0;
+	tr[1] = 0.0;
+	tr[2] = 0.0;
+	tf[0] = 0.0;
+	tf[1] = 1.0;
+	tf[2] = 0.0;
+	carvedouble(win, 0x0000ff, vc, tr, tf, vc[0]);
+
+	tc[0] = vc[0];
+	tc[1] = vc[1] + 100.0;
+	tc[2] = vc[2];
+	carveline(win, 0x00ff00, vc, tc);
+	tr[0] = 0.0;
+	tr[1] = 1.0;
+	tr[2] = 0.0;
+	tf[0] = 0.0;
+	tf[1] = 0.0;
+	tf[2] = 1.0;
+	carvedouble(win, 0x00ff00, vc, tr, tf, vc[1]);
+
+	tc[0] = vc[0];
+	tc[1] = vc[1];
+	tc[2] = vc[2] + 100.0;
+	carveline(win, 0xff0000, vc, tc);
+	tr[0] = 0.0;
+	tr[1] = 0.0;
+	tr[2] = 1.0;
+	tf[0] = -1.0;
+	tf[1] = 0.0;
+	tf[2] = 0.0;
+	carvedouble(win, 0xff0000, vc, tr, tf, vc[2]);
 }
-static void camera_swrite(
+static void surround_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 	//say("%llx,%llx\n", ev->why, ev->what);
-	actorinput_cameraevent(win, ev);
-/*
-	int id;
-	int x0,y0,x1,y1;
-	if(_kbd_ == ev->what)
-	{
-		if(0x4b == ev->why)win->camera.vc[0] -= 10;
-		else if(0x4d == ev->why)win->camera.vc[0] += 10;
-		else if(0x50 == ev->why)win->camera.vc[2] -= 10;
-		else if(0x48 == ev->why)win->camera.vc[2] += 10;
-	}
-	else if(0x2b70 == ev->what)
-	{
-		id = (ev->why)>>48;
-		if('f' == id)win->camera.vc[1] += 10;
-		if('b' == id)win->camera.vc[1] -= 10;
-	}
-	else if(0x4070 == ev->what)
-	{
-		id = (ev->why)>>48;
-		if('l' == id)id = 10;
-		else if('r' == id)id = 11;
-		else if(id > 10)return;
-		if(0 == win->input[id].z0)return;
-
-		x0 = win->input[id].xn;
-		y0 = win->input[id].yn;
-		x1 = (ev->why)&0xffff;
-		y1 = ((ev->why)>>16)&0xffff;
-
-		win->camera.vc[0] += x1-x0;
-		win->camera.vc[2] += y1-y0;
-	}
-say("%f,%f,%f\n",win->camera.vc[0], win->camera.vc[1], win->camera.vc[2]);
-	win->target.vc[0] = win->camera.vc[0];
-	win->target.vc[1] = win->camera.vc[1] - 1.0;
-	win->target.vc[2] = win->camera.vc[2];
-
-	win->nearn = -1000 - win->camera.vc[1];
-	win->nearl = -1000 - win->camera.vc[0];
-	win->nearr = 1000 - win->camera.vc[0];
-	win->nearb = 0 - win->camera.vc[2];
-	win->neart = 1000 - win->camera.vc[2];
-*/
+	actorinput_surroundevent(win, ev);
 }
-static void camera_cread(
+static void surround_cread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 }
-static void camera_cwrite(
+static void surround_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void camera_stop(
+static void surround_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
 }
-static void camera_start(
+static void surround_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
-    say("@camera_start\n");
+    say("@surround_start\n");
 }
-static void camera_delete()
+static void surround_delete()
 {
 }
-static void camera_create(void* addr)
+static void surround_create(void* addr)
 {
-    say("@camera_create\n");
+    say("@surround_create\n");
 }
 
 
 
 
-void camera_register(struct actor* p)
+void surround_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('c', 'a', 'm', 'e', 'r', 'a', 0, 0);
+	p->name = hex64('s', 'u', 'r', 'r', 'o', 'u', 'n', 'd');
 
-	p->oncreate = (void*)camera_create;
-	p->ondelete = (void*)camera_delete;
-	p->onstart  = (void*)camera_start;
-	p->onstop   = (void*)camera_stop;
-	p->onget    = (void*)camera_cread;
-	p->onpost   = (void*)camera_cwrite;
-	p->onread   = (void*)camera_sread;
-	p->onwrite  = (void*)camera_swrite;
+	p->oncreate = (void*)surround_create;
+	p->ondelete = (void*)surround_delete;
+	p->onstart  = (void*)surround_start;
+	p->onstop   = (void*)surround_stop;
+	p->onget    = (void*)surround_cread;
+	p->onpost   = (void*)surround_cwrite;
+	p->onread   = (void*)surround_sread;
+	p->onwrite  = (void*)surround_swrite;
 }
