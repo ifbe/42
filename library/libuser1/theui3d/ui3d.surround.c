@@ -379,7 +379,7 @@ int actorinput_surroundevent(struct arena* win, struct event* ev)
 
 
 
-static void surround_sread(
+static int surround_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -422,8 +422,10 @@ static void surround_sread(
 	tf[1] = 0.0;
 	tf[2] = 0.0;
 	carvedouble(win, 0xff0000, vc, tr, tf, vc[2]);
+
+	return 0;
 }
-static void surround_swrite(
+static int surround_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -435,6 +437,7 @@ static void surround_swrite(
 	float h = win->height;
 	win->nearl = win->nearb * w/h;
 	win->nearr = win->neart * w/h;
+	return 1;
 }
 static void surround_cread(
 	struct arena* win, struct style* sty,

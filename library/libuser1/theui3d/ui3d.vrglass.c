@@ -3,7 +3,7 @@
 
 
 
-static void vrglass_sread(
+static int vrglass_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -31,8 +31,9 @@ static void vrglass_sread(
 		tc[2] = 0.0;
 		carveline_rect(win, 0xff0000, tc, tr, tu);
 	}
+	return 0;
 }
-static void vrglass_swrite(
+static int vrglass_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -59,8 +60,8 @@ static void vrglass_swrite(
 		id = (ev->why)>>48;
 		if('l' == id)id = 10;
 		else if('r' == id)id = 11;
-		else if(id > 10)return;
-		if(0 == win->input[id].z0)return;
+		else if(id > 10)return 0;
+		if(0 == win->input[id].z0)return 0;
 
 		x0 = win->input[id].xn;
 		y0 = win->input[id].yn;
@@ -130,6 +131,7 @@ say("%f,%f,%f\n",win->camera.vc[0], win->camera.vc[1], win->camera.vc[2]);
 	win->nearr = win->width/2 - win->camera.vc[0];
 	win->nearb =-win->height/2 - win->camera.vc[2];
 	win->neart = win->height/2 - win->camera.vc[2];
+	return 1;
 }
 static void vrglass_cread(
 	struct arena* win, struct style* sty,

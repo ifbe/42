@@ -8,6 +8,7 @@ int actorstart(void*, void*, void*, void*, void*, void*);
 
 #define COUNT 1
 static u64 want[COUNT] = {
+	//hex64('p','i','c','k','e','r', 0, 0)
 	hex64('r','t','s','g','a','m','e', 0)
 	//hex64('s','u','r','r','o','u','n','d')
 	//hex64('v','r','g','l','a','s','s', 0)
@@ -43,6 +44,7 @@ int ui3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stac
 }
 int ui3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
 {
+	int ret;
 	struct relation* rel;
 	struct actor* act;
 	struct style* sty;
@@ -59,7 +61,8 @@ int ui3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sta
 			act = (void*)(rel->dstchip);
 			sty = (void*)(rel->srcfoot);
 			pin = (void*)(rel->dstfoot);
-			act->onwrite(act, pin, win, sty, ev, 0);
+			ret = act->onwrite(act, pin, win, sty, ev, 0);
+			if(ret)break;
 		}
 
 		rel = samesrcprevdst(rel);

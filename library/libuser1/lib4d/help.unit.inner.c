@@ -343,6 +343,9 @@ void content_create(void* addr)
 
 
 	//-------------------ui3d------------------
+	picker_register(tmp);
+	tmp += sizeof(struct actor);
+
 	rtsgame_register(tmp);
 	tmp += sizeof(struct actor);
 

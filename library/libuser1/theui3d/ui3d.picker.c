@@ -486,3 +486,69 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 	}
 	return 1;
 }
+
+
+
+
+static int picker_sread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	return 0;
+}
+static int picker_swrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
+{
+	return 0;
+}
+static void picker_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+static void picker_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
+{
+}
+static void picker_stop(
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
+{
+}
+static void picker_start(
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+    struct arena* root, struct style* rf)
+{
+    say("@picker_start\n");
+}
+static void picker_delete()
+{
+}
+static void picker_create(void* addr)
+{
+    say("@picker_create\n");
+}
+
+
+
+
+void picker_register(struct actor* p)
+{
+	p->type = _orig_;
+	p->name = hex64('p', 'i', 'c', 'k', 'e', 'r', 0, 0);
+
+	p->oncreate = (void*)picker_create;
+	p->ondelete = (void*)picker_delete;
+	p->onstart  = (void*)picker_start;
+	p->onstop   = (void*)picker_stop;
+	p->onget    = (void*)picker_cread;
+	p->onpost   = (void*)picker_cwrite;
+	p->onread   = (void*)picker_sread;
+	p->onwrite  = (void*)picker_swrite;
+}

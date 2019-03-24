@@ -3,12 +3,13 @@
 
 
 
-static void rtsgame_sread(
+static int rtsgame_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	return 0;
 }
-static void rtsgame_swrite(
+static int rtsgame_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -35,7 +36,7 @@ static void rtsgame_swrite(
 		id = (ev->why)>>48;
 		if('l' == id)id = 10;
 		else if('r' == id)id = 11;
-		else if(id > 10)return;
+		else if(id > 10)return 0;
 		//if(0 == win->input[id].z0)return;
 
 		//x0 = win->input[id].xn;
@@ -65,6 +66,7 @@ static void rtsgame_swrite(
 	win->nearr = w/h;
 	win->nearb =-1;
 	win->neart = 1;
+	return 1;
 }
 static void rtsgame_cread(
 	struct arena* win, struct style* sty,
