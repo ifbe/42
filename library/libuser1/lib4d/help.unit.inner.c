@@ -78,6 +78,7 @@ void terminal_register(void*);
 void video_register(void*);
 //ui3d
 void picker_register(void*);
+void rtsgame_register(void*);
 void surround_register(void*);
 void vrglass_register(void*);
 //ui2d
@@ -305,6 +306,7 @@ void content_create(void* addr)
 
 
 
+
 	//-------------------chip-----------------
 	chippin_register(tmp);
 	tmp += sizeof(struct actor);
@@ -324,6 +326,9 @@ void content_create(void* addr)
 	rectify_register(tmp);
 	tmp += sizeof(struct actor);
 
+
+
+
 	//-------------------geom------------------
 	cube_register(tmp);
 	tmp += sizeof(struct actor);
@@ -334,12 +339,21 @@ void content_create(void* addr)
 	sphere_register(tmp);
 	tmp += sizeof(struct actor);
 
+
+
+
 	//-------------------ui3d------------------
+	rtsgame_register(tmp);
+	tmp += sizeof(struct actor);
+
 	surround_register(tmp);
 	tmp += sizeof(struct actor);
 
 	vrglass_register(tmp);
 	tmp += sizeof(struct actor);
+
+
+
 
 	//-------------------ui2d------------------
 	login_register(tmp);

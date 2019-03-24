@@ -162,6 +162,7 @@ theitem/item.tardis.c \
 theitem/item.tree.c \
 theitem/item.water.c \
 theui3d/ui3d.picker.c \
+theui3d/ui3d.rtsgame.c \
 theui3d/ui3d.surround.c \
 theui3d/ui3d.vrglass.c \
 theui2d/mode0.testland.c \
