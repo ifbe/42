@@ -40,6 +40,7 @@ static void vrglass_swrite(
 	//say("%llx,%llx\n", ev->why, ev->what);
 	int id;
 	int x0,y0,x1,y1;
+	short* t;
 	if(_kbd_ == ev->what)
 	{
 		if(0x4b == ev->why)win->camera.vc[0] -= 10;
@@ -66,8 +67,55 @@ static void vrglass_swrite(
 		x1 = (ev->why)&0xffff;
 		y1 = ((ev->why)>>16)&0xffff;
 
-		win->camera.vc[0] -= x1-x0;
-		win->camera.vc[2] += y1-y0;
+		win->camera.vc[0] += x1-x0;
+		win->camera.vc[2] -= y1-y0;
+	}
+	else if(joy_left == (ev->what & joy_mask))
+	{
+		t = (void*)ev;
+		//printmemory(t, 16);
+		//say("%d,%d\n", t[0], t[1]);
+		if(t[3] & joyl_left)		//x-
+		{
+			win->camera.vc[0] -= 10;
+		}
+		if(t[3] & joyl_right)		//x+
+		{
+			win->camera.vc[0] += 10;
+		}
+		if(t[3] & joyl_down)		//y-
+		{
+			win->camera.vc[2] -= 10;
+		}
+		if(t[3] & joyl_up)			//y+
+		{
+			win->camera.vc[2] += 10;
+		}
+		if(t[3] & joyl_trigger)		//z-
+		{
+			win->camera.vc[1] -= 10.0;
+		}
+		if(t[3] & joyl_bumper)		//z+
+		{
+			win->camera.vc[1] += 10.0;
+		}
+		if(t[3] & joyl_stick)		//w-
+		{
+			win->camera.vc[0] = 0.0;
+			win->camera.vc[1] = -2000.0;
+			win->camera.vc[2] = 0.0;
+		}
+		if(t[3] & joyl_select)		//w+
+		{
+		}
+
+		x0 = t[0];
+		y0 = t[1];
+		if((x0 < -4096) | (x0 > 4096) | (y0 < -4096) | (y0 > 4096))
+		{
+			win->camera.vc[0] += x0/1000.0;
+			win->camera.vc[2] += y0/1000.0;
+		}
 	}
 say("%f,%f,%f\n",win->camera.vc[0], win->camera.vc[1], win->camera.vc[2]);
 	win->target.vc[0] = win->camera.vc[0];

@@ -430,6 +430,11 @@ static void surround_swrite(
 {
 	//say("%llx,%llx\n", ev->why, ev->what);
 	actorinput_surroundevent(win, ev);
+
+	float w = win->width;
+	float h = win->height;
+	win->nearl = win->nearb * w/h;
+	win->nearr = win->neart * w/h;
 }
 static void surround_cread(
 	struct arena* win, struct style* sty,
