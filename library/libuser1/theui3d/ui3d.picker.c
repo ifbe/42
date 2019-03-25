@@ -286,48 +286,6 @@ int keyboard2style(struct arena* win, struct style* sty, short* tmp)
 	}
 	return 0;
 }
-
-
-
-
-int playwith3d_pick(struct arena* win, int x, int y)
-{
-	int ret;
-	vec3 ray[2];
-	vec3 out[2];
-	struct style* sty;
-	struct relation* rel;
-
-	ray[0][0] = win->camera.vc[0];
-	ray[0][1] = win->camera.vc[1];
-	ray[0][2] = win->camera.vc[2];
-	ray[1][0] = (float)(x*2) / (win->width) - 1.0;
-	ray[1][1] = 1.0 - (float)(y*2) / (win->height);
-	ray[1][2] = 0.0;
-
-	invmvp(ray[1], win);
-	ray[1][0] -= ray[0][0];
-	ray[1][1] -= ray[0][1];
-	ray[1][2] -= ray[0][2];
-
-	rel = win->oreln;
-	while(1)
-	{
-		if(0 == rel)break;
-
-		if(_act_ == rel->dsttype)
-		{
-			sty = (void*)(rel->srcfoot);
-			ret = obb_ray(sty, ray, out);
-			say("rel=%llx, ret=%d\n", rel, ret);
-			if(ret > 0)break;
-		}
-
-		rel = samesrcprevdst(rel);
-	}
-	if(rel)relation_choose(win, rel);
-	return 0;
-}
 int actorinput_editor_target(struct arena* win, struct event* ev)
 {
 	float c,s,tx,ty,norm;
@@ -401,7 +359,7 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 	}
 	if(hex32('p','+',0,0) == ev->what)
 	{
-		playwith3d_pick(win, x, y);
+		//playwith3d_pick(win, x, y);
 		return 0;
 	}
 	if(hex32('p','@',0,0) == ev->what)
@@ -490,10 +448,161 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 
 
 
+int playwith3d_pick(struct arena* root, struct arena* twig, int x, int y)
+{
+	int ret;
+	vec3 ray[2];
+	vec3 out[2];
+	struct style* sty;
+	struct relation* rel;
+
+	float w = root->width;
+	float h = root->height;
+	float fx = (float)x * 2.0;
+	float fy = (float)y * 2.0;
+
+	ray[0][0] = root->camera.vc[0];
+	ray[0][1] = root->camera.vc[1];
+	ray[0][2] = root->camera.vc[2];
+	ray[1][0] = fx / w - 1.0;
+	ray[1][1] = 1.0 - fy / h;
+	ray[1][2] = 0.0;
+
+	invmvp(ray[1], root);
+	ray[1][0] -= ray[0][0];
+	ray[1][1] -= ray[0][1];
+	ray[1][2] -= ray[0][2];
+	say("(%f,%f,%f) -> (%f,%f,%f)\n",
+		ray[0][0], ray[0][1], ray[0][2],
+		ray[1][0], ray[1][1], ray[1][2]
+	);
+
+	rel = twig->oreln;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(_act_ == rel->dsttype)
+		{
+			sty = (void*)(rel->srcfoot);
+			ret = obb_ray(sty, ray, out);
+			say("rel=%llx, ret=%d\n", rel, ret);
+			if(ret > 0)break;
+		}
+
+		rel = samesrcprevdst(rel);
+	}
+	if(rel)relation_choose(twig, rel);
+	return 0;
+}
+int playwith3d_move(struct arena* root, struct arena* twig, int x0, int y0, int xn, int yn)
+{
+	int ret;
+	float dx, dy;
+	vec3 ray0[2];
+	vec3 rayn[2];
+	vec3 out[2];
+	struct style* sty;
+	struct relation* rel;
+
+	float w = root->width;
+	float h = root->height;
+	float fx0 = (float)x0 * 2.0;
+	float fy0 = (float)y0 * 2.0;
+	float fxn = (float)xn * 2.0;
+	float fyn = (float)yn * 2.0;
+
+	ray0[0][0] = root->camera.vc[0];
+	ray0[0][1] = root->camera.vc[1];
+	ray0[0][2] = root->camera.vc[2];
+	ray0[1][0] = fx0 / w - 1.0;
+	ray0[1][1] = 1.0 - fy0 / h;
+	ray0[1][2] = 0.0;
+	invmvp(ray0[1], root);
+	ray0[1][0] -= ray0[0][0];
+	ray0[1][1] -= ray0[0][1];
+	ray0[1][2] -= ray0[0][2];
+
+	rayn[0][0] = root->camera.vc[0];
+	rayn[0][1] = root->camera.vc[1];
+	rayn[0][2] = root->camera.vc[2];
+	rayn[1][0] = fxn / w - 1.0;
+	rayn[1][1] = 1.0 - fyn / h;
+	rayn[1][2] = 0.0;
+	invmvp(rayn[1], root);
+	rayn[1][0] -= rayn[0][0];
+	rayn[1][1] -= rayn[0][1];
+	rayn[1][2] -= rayn[0][2];
+
+	//x = x0 - x1*z0/z1
+	dx = (ray0[0][0] - ray0[1][0]*ray0[0][2]/ray0[1][2])
+	   - (rayn[0][0] - rayn[1][0]*rayn[0][2]/rayn[1][2]);
+	dy = (ray0[0][1] - ray0[1][1]*ray0[0][2]/ray0[1][2])
+	   - (rayn[0][1] - rayn[1][1]*rayn[0][2]/rayn[1][2]);
+	say("%f,%f\n", dx, dy);
+
+	rel = twig->oreln;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(_act_ == rel->dsttype)
+		{
+			sty = (void*)(rel->srcfoot);
+			goto found;
+		}
+
+		rel = samesrcprevdst(rel);
+	}
+	return 0;
+
+found:
+	sty->vc[0] += dx;
+	sty->vc[1] += dy;
+	return 0;
+}
+
+
+
+
 static int picker_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	struct relation* rel;
+	struct arena* www;
+	struct style* sss;
+
+	www = 0;
+	rel = win->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(_win_ == rel->dsttype)
+		{
+			www = (void*)(rel->dstchip);
+			if(_fg3d_ == www->fmt)goto found;
+		}
+
+		rel = samesrcnextdst(rel);
+	}
+	return 0;
+
+found:
+	rel = www->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(_act_ == rel->dsttype)
+		{
+			sss = (void*)(rel->srcfoot);
+			carveline_prism4(win, 0xffffff, sss->vc, sss->vr, sss->vf, sss->vu);
+		}
+
+		rel = samesrcnextdst(rel);
+	}
 	return 0;
 }
 static int picker_swrite(
@@ -501,6 +610,45 @@ static int picker_swrite(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
+	float w = win->width;
+	float h = win->height;
+	win->nearl = win->nearb * w/h;
+	win->nearr = win->neart * w/h;
+
+	int x,y,z;
+	struct arena* www = 0;
+	struct relation* rel = win->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(_win_ == rel->dsttype)
+		{
+			www = (void*)(rel->dstchip);
+			if(_fg3d_ == www->fmt)goto found;
+		}
+
+		rel = samesrcnextdst(rel);
+	}
+	return 0;
+
+found:
+	if(hex32('p','+',0,0) == ev->what)
+	{
+		x = ev->why & 0xffff;
+		y = (ev->why >> 16) & 0xffff;
+		playwith3d_pick(win, www, x, y);
+	}
+	if(hex32('p','@',0,0) == ev->what)
+	{
+		z = win->input[10].z0;
+		if(z)
+		{
+			x = ev->why & 0xffff;
+			y = (ev->why >> 16) & 0xffff;
+			playwith3d_move(win, www, x, y, win->input[10].xn, win->input[10].yn);
+		}
+	}
 	return 0;
 }
 static void picker_cread(

@@ -19,15 +19,11 @@ int obb_point(struct style* obb, vec3 xyz, vec3 out[])
 int obb_ray(struct style* obb, vec3 ray[], vec3 out[])
 {
 	int ret;
-	vec3 c;
 	vec3 rect[4];
 	float* u = obb->vu;
 	float* f = obb->vf;
 	float* r = obb->vr;
-	float* t = obb->vc;
-	c[0] = t[0] + u[0];
-	c[1] = t[1] + u[1];
-	c[2] = t[2] + u[2];
+	float* c = obb->vc;
 
 
 	//left,right

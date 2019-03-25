@@ -180,12 +180,12 @@ void invproj(mat4 proj, struct arena* win)
 	float t = win->neart;
 	float n = win->nearn;
 	float f = 1e16;
-
+/*
 	float w = (float)(win->width);
 	float h = (float)(win->height);
 	l *= w/h;
 	r *= w/h;
-
+*/
 	proj[0][0] = (r-l) / 2.0 / n;
 	proj[0][1] = 0.0;
 	proj[0][2] = 0.0;
