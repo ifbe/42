@@ -8,7 +8,7 @@ int actorstart(void*, void*, void*, void*, void*, void*);
 
 static u64 want[2] = {
 	hex64('t','e','x','b','a','l','l', 0),
-	hex64('t','e','r','r','i','a','n', 0)
+	hex64('t','e','r','r','a','i','n', 0)
 };
 static char* args[2] = {
 	"datafile/jpg/skysphere.jpg",
@@ -85,7 +85,7 @@ int bg3d_create(struct arena* win, u8* str)
 	struct pinid* pin;
 	struct relation* rel;
 
-	for(j=0;j<1;j++)
+	for(j=0;j<2;j++)
 	{
 		act = actorcreate(want[j], args[j]);
 		if(0 == act)continue;

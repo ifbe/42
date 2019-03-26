@@ -77,7 +77,7 @@ objdxgl/dxgl.light.c \
 objdxgl/dxgl.mirror.c \
 objdxgl/dxgl.portal.c \
 objdxgl/dxgl.skydome.c \
-objdxgl/dxgl.terrian.c \
+objdxgl/dxgl.terrain.c \
 objdxgl/dxgl.texball.c \
 objdxgl/dxgl.weather.c \
 objfile/file.binary.c \

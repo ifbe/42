@@ -11,7 +11,7 @@ void light_register(void*);
 void mirror_register(void*);
 void portal_register(void*);
 void skydome_register(void*);
-void terrian_register(void*);
+void terrain_register(void*);
 void texball_register(void*);
 void weather_register(void*);
 //geom
@@ -115,7 +115,7 @@ void content_create(void* addr)
 	skydome_register(tmp);
 	tmp += sizeof(struct actor);
 
-	terrian_register(tmp);
+	terrain_register(tmp);
 	tmp += sizeof(struct actor);
 
 	texball_register(tmp);

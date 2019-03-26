@@ -5,7 +5,7 @@ void actorcreatefromfile(struct actor* act, char* name);
 
 
 
-char* terrian_glsl_v =
+char* terrain_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec2 texuvw;\n"
@@ -13,10 +13,11 @@ char* terrian_glsl_v =
 	"out mediump vec2 uvw;\n"
 	"void main()\n"
 	"{\n"
+		//"uvw = vec2(mod(texuvw.x, 1.0), mod(texuvw.y, 1.0));\n"
 		"uvw = texuvw;\n"
 		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
 	"}\n";
-char* terrian_glsl_f =
+char* terrain_glsl_f =
 	GLSL_VERSION
 	"uniform sampler2D tex0;\n"
 	"in mediump vec2 uvw;\n"
@@ -29,7 +30,7 @@ char* terrian_glsl_f =
 
 
 
-static void terrian_read_pixel(
+static void terrain_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -49,23 +50,63 @@ static void terrian_read_pixel(
 		hh = win->height/2;
 	}
 }
-static void terrian_read_vbo(
+static void terrain_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	int x,y,t;
-	float (*vbuf)[6];
-	struct glsrc* src;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 	if(0 == act->buf)return;
 
-	src = (void*)(pin->foot[0]);
-	vbuf = (void*)(src->vbuf);
-	src->vbuf_enq += 1;
+	struct glsrc* src = (void*)(pin->foot[0]);
+	float (*vbuf)[6] = (void*)(src->vbuf);
 
+	vbuf[0][0] = vc[0] - vr[0] - vf[0];
+	vbuf[0][1] = vc[1] - vr[1] - vf[1];
+	vbuf[0][2] = vc[2] - vr[2] - vf[2] - 1.0;
+	vbuf[0][3] =-vr[0] / 1000.0;
+	vbuf[0][4] =-vf[1] / 1000.0;
+	vbuf[0][5] = vr[0];
+
+	vbuf[1][0] = vc[0] + vr[0] - vf[0];
+	vbuf[1][1] = vc[1] + vr[1] - vf[1];
+	vbuf[1][2] = vc[2] + vr[2] - vf[2] - 1.0;
+	vbuf[1][3] = vr[0] / 1000.0;
+	vbuf[1][4] =-vf[1] / 1000.0;
+	vbuf[1][5] = vr[0];
+
+	vbuf[2][0] = vc[0] + vr[0] + vf[0];
+	vbuf[2][1] = vc[1] + vr[1] + vf[1];
+	vbuf[2][2] = vc[2] + vr[2] + vf[2] - 1.0;
+	vbuf[2][3] = vr[0] / 1000.0;
+	vbuf[2][4] = vf[1] / 1000.0;
+	vbuf[2][5] = vr[0];
+
+	vbuf[3][0] = vc[0] - vr[0] - vf[0];
+	vbuf[3][1] = vc[1] - vr[1] - vf[1];
+	vbuf[3][2] = vc[2] - vr[2] - vf[2] - 1.0;
+	vbuf[3][3] =-vr[0] / 1000.0;
+	vbuf[3][4] =-vf[1] / 1000.0;
+	vbuf[3][5] = vr[0];
+
+	vbuf[4][0] = vc[0] - vr[0] + vf[0];
+	vbuf[4][1] = vc[1] - vr[1] + vf[1];
+	vbuf[4][2] = vc[2] - vr[2] + vf[2] - 1.0;
+	vbuf[4][3] =-vr[0] / 1000.0;
+	vbuf[4][4] = vf[1] / 1000.0;
+	vbuf[4][5] = vr[0];
+
+	vbuf[5][0] = vc[0] + vr[0] + vf[0];
+	vbuf[5][1] = vc[1] + vr[1] + vf[1];
+	vbuf[5][2] = vc[2] + vr[2] + vf[2] - 1.0;
+	vbuf[5][3] = vr[0] / 1000.0;
+	vbuf[5][4] = vf[1] / 1000.0;
+	vbuf[5][5] = vr[0];
+
+	src->vbuf_enq += 1;
+/*
 	for(y=-4;y<=4;y++)
 	{
 		for(x=-4;x<=4;x++)
@@ -114,58 +155,59 @@ static void terrian_read_vbo(
 			vbuf[t+5][5] = 0.0;
 		}
 	}
+*/
 }
-static void terrian_read_json(
+static void terrain_read_json(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 }
-static void terrian_read_html(
+static void terrain_read_html(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 }
-static void terrian_read_tui(
+static void terrain_read_tui(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 }
-static void terrian_read_cli(
+static void terrain_read_cli(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 }
-static void terrian_read(
+static void terrain_read(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)terrian_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)terrian_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)terrian_read_html(win, sty, act, pin);
-	else if(fmt == _json_)terrian_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)terrian_read_vbo(win, sty, act, pin);
-	else terrian_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)terrain_read_cli(win, sty, act, pin);
+	else if(fmt == _tui_)terrain_read_tui(win, sty, act, pin);
+	else if(fmt == _html_)terrain_read_html(win, sty, act, pin);
+	else if(fmt == _json_)terrain_read_json(win, sty, act, pin);
+	else if(fmt == _vbo_)terrain_read_vbo(win, sty, act, pin);
+	else terrain_read_pixel(win, sty, act, pin);
 }
-static void terrian_write(
+static void terrain_write(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void terrian_get()
+static void terrain_get()
 {
 }
-static void terrian_post()
+static void terrain_post()
 {
 }
-static void terrian_stop(
+static void terrain_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
 }
-static void terrian_start(
+static void terrain_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
@@ -182,8 +224,8 @@ static void terrian_start(
 	tf->foot[0] = (u64)dst;
 
 	//shader
-	src->vs = terrian_glsl_v;
-	src->fs = terrian_glsl_f;
+	src->vs = terrain_glsl_v;
+	src->fs = terrain_glsl_f;
 
 	//texture
 	src->tex[0] = leaf->buf;
@@ -192,10 +234,10 @@ static void terrian_start(
 	src->tex_h[0] = leaf->height;
 
 	//vertex
-	src->vbuf = memorycreate(4*6 * 6*81);
 	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf = memorycreate(4*6 * 6);
 	src->vbuf_w = 6*4;		//sizeof(float) * 6info
-	src->vbuf_h = 6*81;		//6vert * 81blocks
+	src->vbuf_h = 6;		//6vert * 81blocks
 	src->method = 'v';
 
 	//send!
@@ -205,32 +247,32 @@ static void terrian_start(
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
 }
-static void terrian_delete(struct actor* act)
+static void terrain_delete(struct actor* act)
 {
 	if(0 == act)return;
 	memorydelete(act->buf);
 	act->buf = 0;
 }
-static void terrian_create(struct actor* act)
+static void terrain_create(struct actor* act)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "jpg/terrian.jpg");
+	actorcreatefromfile(act, "datafile/jpg/terrain.jpg");
 }
 
 
 
 
-void terrian_register(struct actor* p)
+void terrain_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('t', 'e', 'r', 'r', 'i', 'a', 'n', 0);
+	p->name = hex64('t', 'e', 'r', 'r', 'a', 'i', 'n', 0);
 
-	p->oncreate = (void*)terrian_create;
-	p->ondelete = (void*)terrian_delete;
-	p->onstart  = (void*)terrian_start;
-	p->onstop   = (void*)terrian_stop;
-	p->onget    = (void*)terrian_get;
-	p->onpost   = (void*)terrian_post;
-	p->onread   = (void*)terrian_read;
-	p->onwrite  = (void*)terrian_write;
+	p->oncreate = (void*)terrain_create;
+	p->ondelete = (void*)terrain_delete;
+	p->onstart  = (void*)terrain_start;
+	p->onstop   = (void*)terrain_stop;
+	p->onget    = (void*)terrain_get;
+	p->onpost   = (void*)terrain_post;
+	p->onread   = (void*)terrain_read;
+	p->onwrite  = (void*)terrain_write;
 }

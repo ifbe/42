@@ -573,6 +573,8 @@ static int picker_sread(
 	struct arena* www;
 	struct style* sss;
 
+	carveline_prism4(win, 0xff00ff, win->target.vc, win->target.vr, win->target.vf, win->target.vu);
+
 	www = 0;
 	rel = win->orel0;
 	while(1)
