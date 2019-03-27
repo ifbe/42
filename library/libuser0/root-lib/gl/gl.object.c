@@ -170,7 +170,9 @@ void display_eachpass(
 
 	//1.argument
 	glUniformMatrix4fv(glGetUniformLocation(dst->shader, "cammvp"), 1, GL_FALSE, cammvp);
-	glUniform3fv(glGetUniformLocation(dst->shader, "eyepos"  ), 1, win->camera.vc);
+	glUniform3fv(glGetUniformLocation(dst->shader, "camxyz"  ), 1, win->camera.vc);
+	//glUniformMatrix4fv(glGetUniformLocation(dst->shader, "sunmvp"), 1, GL_FALSE, cammvp);
+	//glUniform3fv(glGetUniformLocation(dst->shader, "sunxyz"  ), 1, win->camera.vc);
 	if(dst->arg_deq[0] != src->arg_enq[0])
 	{
 		glUniformMatrix4fv(glGetUniformLocation(dst->shader, src->arg[0]), 1, GL_FALSE, (void*)src->arg_data[0]);
