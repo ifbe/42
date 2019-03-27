@@ -12,7 +12,7 @@ void vkbd_joystick_read_pixel(struct arena* win, struct style* sty)
 	int x,y,m,n;
 	int w = win->width;
 	int h = win->height;
-	if(win->vkbdw < 0)return;
+	//if(win->vkbdw < 0)return;
 
 	drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
 
@@ -46,8 +46,8 @@ void vkbd_joystick_read_vbo(struct arena* win, struct style* sty)
 	int x,y,c,rgb;
 	int w = win->width;
 	int h = win->height;
+/*
 	if(win->vkbdw < 0)return;
-
 	c = win->vkbdw;
 	if(('j' == c)|('k' == c))
 	{
@@ -62,7 +62,7 @@ void vkbd_joystick_read_vbo(struct arena* win, struct style* sty)
 		vf[2] = 0.0;
 		carvesolid2d_rect(win, 0x202020, vc, vr, vf);
 	}
-
+*/
 	y = h*3/16;
 	j = (float)y / (float)w;
 	k = (float)y / (float)h;
@@ -135,7 +135,7 @@ int vkbd_joystick_write(struct arena* win, struct event* ev)
 	short tmp[4];
 	int x,y,w,h,ret;
     //say("vkbd_joystick_write\n");
-	if(win->vkbdw <= 0)return 0;
+	//if(win->vkbdw <= 0)return 0;
 
 	w = win->width;
 	h = win->height;
@@ -188,8 +188,8 @@ int vkbd_joystick_write(struct arena* win, struct event* ev)
 			}
 		}
 
-		win->vkbdz = ret;
-		win->vkbdw = 'j';
+		//win->vkbdz = ret;
+		//win->vkbdw = 'j';
 	}
 
 byebye:

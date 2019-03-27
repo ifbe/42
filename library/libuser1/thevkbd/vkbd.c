@@ -8,12 +8,12 @@ int vkbd_keyboard_write(struct arena* win,struct event* ev);
 
 
 static int vkbd_sread(struct arena* win, struct style* sty, struct arena* cc, struct style* cf)
-{
+{/*
 	switch(win->vkbdw)
 	{
 		case 'j':vkbd_joystick_read(0, 0, win, sty);break;
 		case 'k':vkbd_keyboard_read(0, 0, win, sty);break;
-	}
+	}*/
 	return 0;
 }
 static int vkbd_swrite(
@@ -22,15 +22,16 @@ static int vkbd_swrite(
 	struct event* ev, int len)
 {
 	int ret;
+/*
 	if(0 == win->vkbdw)return 0;
-
 	ret = 0;
 	switch(win->vkbdw)
 	{
 		case 'j':ret = vkbd_joystick_write(win, ev);break;
 		case 'k':ret = vkbd_keyboard_write(win, ev);break;
 	}
-	return ret;
+*/
+	return 0;
 }
 static int vkbd_cread(struct arena* cc, struct style* cf, struct arena* win, struct style* sty)
 {

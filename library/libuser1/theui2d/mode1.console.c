@@ -107,12 +107,7 @@ void actorinput_console(struct arena* win, struct style* sty, struct event* ev)
 	int len;
 	u8* buf;
 
-	if('p' == (ev->what&0xff))
-	{
-		win->forex = (ev->why)&0xffff;
-		win->forey = ((ev->why)>>16)&0xffff;
-	}
-	else if(_char_ == ev->what)
+	if(_char_ == ev->what)
 	{
 		buf = (void*)ev;
 		for(len=0;len<4;len++)

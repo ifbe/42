@@ -137,7 +137,7 @@ int arenaactor(struct arena* ccc, struct actor* act)
 
 
 
-
+/*
 int arenalogin(struct arena* win)
 {
 	struct actor* act;
@@ -160,12 +160,14 @@ int arenanext(struct arena* win)
 	int j = win->forez + 1;
 	if(0 != actor[j].type)win->forez += 1;
 	return 0;
-}
+}*/
 
 
 
 
-void overview_read_pixel(struct arena* win, struct style* sty)
+void overview_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	struct relation* rel;
 	u32 c,cursor;
@@ -185,7 +187,7 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	cursor = (win->forex) + (win->forey)*8;
+	cursor = (act->x) + (act->y)*8;
 /*
 	drawline(win, 0x0000ff, 0, h*1/4, w-1, h*1/4);
 	drawline(win, 0x00ff00, 0, h*2/4, w-1, h*2/4);
@@ -495,7 +497,9 @@ void overview_read_pixel(struct arena* win, struct style* sty)
 		}
 	}
 }
-void overview_read_vbo(struct arena* win, struct style* sty)
+void overview_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	u32 bg,fg,cursor;
 	float r,f;
@@ -524,7 +528,7 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 	vc = sty->vc;
 	vr = sty->vr;
 	vf = sty->vf;
-	cursor = (win->forex) + (win->forey)*16;
+	cursor = (act->x) + (act->y)*16;
 /*
 	tc[0] = -1.0;
 	tc[1] = 0.5;
@@ -1060,7 +1064,9 @@ void overview_read_vbo(struct arena* win, struct style* sty)
 		}
 	}
 }
-void overview_read_8bit(struct arena* win, struct style* sty)
+void overview_read_8bit(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {/*
 	int x,y;
 	int j,c;
@@ -1079,10 +1085,14 @@ void overview_read_8bit(struct arena* win, struct style* sty)
 	}
 */
 }
-void overview_read_html(struct arena* win, struct style* sty)
+void overview_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-void overview_read_tui(struct arena* win, struct style* sty)
+void overview_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 	int j,k,x,y;
 	int ww = ((win->stride)/2)&0xfffc;
@@ -1107,19 +1117,21 @@ void overview_read_tui(struct arena* win, struct style* sty)
 	}
 */
 }
-void overview_read_cli(struct arena* win, struct style* sty)
+void overview_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
 static void overview_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	if(win->fmt == _cli_)overview_read_cli(win, 0);
-	else if(win->fmt == _tui_)overview_read_tui(win, 0);
-	else if(win->fmt == _vbo_)overview_read_vbo(win, 0);
-	else if(win->fmt == _html_)overview_read_html(win, 0);
-	else if(win->fmt == _8bit_)overview_read_8bit(win, 0);
-	else overview_read_pixel(win, 0);
+	if(win->fmt == _cli_)overview_read_cli(win, 0, act, pin);
+	else if(win->fmt == _tui_)overview_read_tui(win, 0, act, pin);
+	else if(win->fmt == _vbo_)overview_read_vbo(win, 0, act, pin);
+	else if(win->fmt == _html_)overview_read_html(win, 0, act, pin);
+	else if(win->fmt == _8bit_)overview_read_8bit(win, 0, act, pin);
+	else overview_read_pixel(win, 0, act, pin);
 }
 
 
@@ -1283,8 +1295,8 @@ static int overview_swrite(
 			x = 4 + 4 * (x - (sty->vc[0])) / (sty->vr[0]);
 			y = 16 + 16 * (y - (sty->vc[1])) / (sty->vf[1]);
 		}
-		win->forex = x;
-		win->forey = y;
+		act->x = x;
+		act->y = y;
 
 		if('-' == k)
 		{
@@ -1310,7 +1322,7 @@ static int overview_swrite(
 			overview_drag(win, j, k, x, y);
 			return 1;
 		}
-	}
+	}/*
 	else if(_char_ == ev->what)
 	{
 		if((0xd == ev->why)|(0xa == ev->why))
@@ -1359,7 +1371,7 @@ static int overview_swrite(
 			arenalogin(win);
 			return 1;
 		}
-	}
+	}*/
 	return 1;
 }
 static void overview_cread(

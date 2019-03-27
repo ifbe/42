@@ -580,6 +580,8 @@ struct arena
 	float nearp;
 	float nearq;
 
+	u8 haha[0x40];
+/*
 	//[c0,cf]: layer0: background
 	int backx;
 	int backy;
@@ -603,7 +605,7 @@ struct arena
 	int vkbdy;
 	int vkbdz;
 	int vkbdw;
-
+*/
 	//[100,1ff]
 	struct style target;
 	struct style camera;
@@ -701,10 +703,10 @@ struct actor
 	};
 
 	//[c0,ff]
-	u64 onfunc0;
-	u64 onfunc1;
-	u64 onfunc2;
-	u64 onfunc3;
+	u64 x;
+	u64 y;
+	u64 z;
+	u64 w;
 	u64 onfunc4;
 	u64 onfunc5;
 	u64 onfunc6;

@@ -123,7 +123,7 @@ void actoroutput_editor_vbo(struct arena* win, struct style* st)
 		vf[1] = 1.0/64;
 		carve2d_string(win, 0xffffff, vc, vr, vf, (u8*)str_left[j], 0);
 	}
-
+/*
 	//selected
 	if((0 == win->forex)|(7 == win->forex))
 	{
@@ -152,7 +152,7 @@ void actoroutput_editor_vbo(struct arena* win, struct style* st)
 		vc[2] = -0.9;
 		if(7 == win->forey)vc[1] = -vc[1];
 		carvesolid2d_rect(win, 0xffffff, vc, vr, vf);
-	}
+	}*/
 }
 void actoroutput_editor_pixel(struct arena* win, struct style* st)
 {
@@ -185,7 +185,7 @@ void actoroutput_editor_pixel(struct arena* win, struct style* st)
 	//bottom
 	drawsolid_rect(win, 0x004040, w/8, h*31/32, w*7/8, h);
 	for(x=1;x<8;x++)drawline(win, 0xffffff, x*w/8, h*31/32, x*w/8, h);
-
+/*
 	//selected
 	if((0 == win->forex)|(7 == win->forex))
 	{
@@ -200,7 +200,7 @@ void actoroutput_editor_pixel(struct arena* win, struct style* st)
 		if(0 == win->forey)y = 0;
 		else y = h*31/32;
 		drawsolid_rect(win, 0xffffff, x, y, x+(w/8), y+(h/32));
-	}
+	}*/
 }
 int actoroutput_cad(struct arena* win, struct style* stack)
 {
@@ -240,7 +240,7 @@ int actoroutput_cad(struct arena* win, struct style* stack)
 
 
 int actorinput_cad(struct arena* win, struct style* sty, struct event* ev)
-{
+{/*
 	int x,y,w,h;
 	if(0x2d70 == ev->what)
 	{
@@ -259,6 +259,6 @@ int actorinput_cad(struct arena* win, struct style* sty, struct event* ev)
 	if(0 == win->forex)
 	{
 		actorinput_editor_target(win, ev);
-	}
+	}*/
     return 0;
 }

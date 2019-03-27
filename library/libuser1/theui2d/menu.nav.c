@@ -45,7 +45,7 @@ void actoroutput_navmenu_vbo(struct arena* win)
 	int rgb,tmp;
 	int w = win->width;
 	int s = w*2/3;
-
+/*
 	j = win->forex;
 	k = j;
 	if(k < -s)k = -s;
@@ -137,6 +137,7 @@ void actoroutput_navmenu_vbo(struct arena* win)
 	carveline2d_rect(win, 0xffffff, vc, vr, vf);
 	vr[0] /= 4.0;
 	carvestring2d_center(win, 0xffffff, vc, vr, vf, nametab[tmp], 0);
+*/
 }
 void actoroutput_navmenu_pixel(struct arena* win)
 {
@@ -148,7 +149,7 @@ void actoroutput_navmenu_pixel(struct arena* win)
 	int w = win->width;
 	int h = win->height;
 	int s = w*2/3;
-
+/*
 	j = win->forex;
 	k = j;
 	if(k < -s)k = -s;
@@ -224,6 +225,7 @@ void actoroutput_navmenu_pixel(struct arena* win)
 
 	drawline_rect(win, 0xffffff, w/4, h/16, w*3/4, h/8);
 	drawstring_fit(win, 0xffffff, w/4, h/16, w*3/4, h/8, nametab[tmp], 0);
+*/
 }
 void actoroutput_navmenu(struct arena* win, struct style* sty)
 {
@@ -242,7 +244,7 @@ int actorinput_navmenu(struct arena* win, struct style* sty, struct event* ev)
 	int pb[2];
 	int x, y, ret;
 	ret = ev->what;
-
+/*
 	if('p' == (ret&0xff))
 	{
 		pb[0] = (ev->why)&0xffff;
@@ -330,6 +332,6 @@ int actorinput_navmenu(struct arena* win, struct style* sty, struct event* ev)
 		y = win->forew & 0xf0;
 		win->forew = y | x;
 		return 0;
-	}
+	}*/
 	return 0;
 }

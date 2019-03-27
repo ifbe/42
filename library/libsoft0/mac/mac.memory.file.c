@@ -77,14 +77,18 @@ int startfile(char* path, int flag)
 	if(0 == path[0])ret = -0xffe;
 	if(ret < 0)goto fail;
 
-	flag = O_RDWR;
-	if('w' == flag)flag |= O_CREAT;
-
-	ret = open(path, flag, S_IRWXU|S_IRWXG|S_IRWXO);
+	if('w' == flag)
+	{
+		ret = open(path, O_RDWR | O_CREAT, S_IRWXU | S_IRWXG | S_IRWXO);
+	}
+	else
+	{
+		ret = open(path, O_RDONLY);
+	}
 	if(ret > 0)return ret;
 
 fail:
-	if(ret <= 0)printf("%d@open\n",ret);
+	printf("%d,%d@open:%s\n", ret, errno, path);
 	return ret;
 }
 void deletefile()

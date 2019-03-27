@@ -10,7 +10,7 @@ void vkbd_keyboard_read_pixel(struct arena* win, struct style* sty)
 	int x,y,m,n;
 	int w = win->width;
 	int h = win->height;
-	if(win->vkbdw < 0)return;
+	//if(win->vkbdw < 0)return;
 
     drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
 
@@ -20,8 +20,8 @@ void vkbd_keyboard_read_pixel(struct arena* win, struct style* sty)
         {
             l = 2;
             c = x+(y<<4);
-            if(c == (win->vkbdz))rgb = 0xffff00ff;
-            else rgb = 0x20808080;
+            //if(c == (win->vkbdz))rgb = 0xffff00ff;
+            //else rgb = 0x20808080;
 
             //joystick area
             if((y>8)&&(y<15))
@@ -75,8 +75,8 @@ void vkbd_keyboard_read_vbo(struct arena* win, struct style* sty)
 	int x,y,c,rgb;
 	int w = win->width;
 	int h = win->height;
+/*
 	if(win->vkbdw < 0)return;
-
 	c = win->vkbdw;
 	if(('j' == c)|('k' == c))
 	{
@@ -91,7 +91,7 @@ void vkbd_keyboard_read_vbo(struct arena* win, struct style* sty)
 		vf[2] = 0.0;
 		carvesolid2d_rect(win, 0x202020, vc, vr, vf);
 	}
-
+*/
     if(w<h)x = w/17;
     else x = h/17;
     j = (float)x / (float)w;
@@ -102,8 +102,9 @@ void vkbd_keyboard_read_vbo(struct arena* win, struct style* sty)
         for(x=0;x<16;x++)
         {
             c = x+(y<<4);
-            if(c == (win->vkbdz))rgb = 0xff00ff;
-            else rgb = 0x808080;
+            //if(c == (win->vkbdz))rgb = 0xff00ff;
+            //else rgb = 0x808080;
+			rgb = 0x808080;
 
             vc[0] = (x-7.5)/8.0;
             vc[1] = (y-15.5)/16.0;
@@ -167,7 +168,7 @@ int vkbd_keyboard_write(struct arena* win, struct event* ev)
 	short tmp[4];
 	int x,y,w,h,ret;
     //say("vkbd_keyboard_write\n");
-	if(win->vkbdw <= 0)return 0;
+	//if(win->vkbdw <= 0)return 0;
 
 	w = win->width;
 	h = win->height;
@@ -177,15 +178,15 @@ int vkbd_keyboard_write(struct arena* win, struct event* ev)
 
 	if(hex32('p','-',0,0) == ev->what)
 	{
-		ret = win->vkbdw;
+		//ret = win->vkbdw;
 		if('k' == ret)
 		{
 			x = x*16/w;
 			y = 31 - (y*32/h);
 			ret = x + (y*16);
 
-			win->vkbdz = ret;
-			win->vkbdw = 'k';
+			//win->vkbdz = ret;
+			//win->vkbdw = 'k';
 			eventwrite(ret, _char_, (u64)win, 0);
 		}
 		else if('j' == ret)
@@ -233,8 +234,8 @@ int vkbd_keyboard_write(struct arena* win, struct event* ev)
 				}
 			}
 
-			win->vkbdz = ret;
-			win->vkbdw = 'j';
+			//win->vkbdz = ret;
+			//win->vkbdw = 'j';
 		}
 	}
 

@@ -157,7 +157,7 @@ void tabbar_read_pixel(
         sty->vf[2] = 0.0;
     }
     tabbar_actors(win, sty);
-
+/*
     sel = (win->forew)&0x7;
     for(j=0;j<8;j++)
     {
@@ -166,7 +166,7 @@ void tabbar_read_pixel(
         drawsolid_rect(win, c, j*w/8+2, h*19/20, (j+1)*w/8-2, h);
         drawline_rect(win, 0xffffff, j*w/8+2, h*19/20, (j+1)*w/8-2, h);
         drawstring_fit(win, 0xffffff, j*w/8, h*19/20, (j+1)*w/8, h, nametab[j], 0);
-    }
+    }*/
 }
 static void tabbar_sread(
 	struct arena* win, struct style* sty,

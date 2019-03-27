@@ -28,8 +28,8 @@ void actoroutput_void_pixel(struct arena* win, struct style* sty)
 	drawsolid_rect(win, 0xff00ff, cx-16, cy-16, cx+16, cy+16);
 
 	//heng shu
-	x = win->forex;
-	y = win->forey;
+	x = win->input[10].xn;
+	y = win->input[10].yn;
 	drawline(win, 0xffffff, cx-ww, y, cx+ww, y);
 	drawline(win, 0xffffff, x, cy-hh, x, cy+hh);
 }
@@ -76,9 +76,9 @@ void actoroutput_void_vbo(struct arena* win, struct style* sty)
 	carvesolid2d_rect(win, 0xff00ff, tc, tr, tf);
 
 	//heng shu
-	x = (float)(win->forex);
+	x = (float)(win->input[10].xn);
 	x = 2*x/(win->width) - 1.0;
-	y = (float)(win->forey);
+	y = (float)(win->input[10].yn);
 	y = 1.0 - 2*y/(win->height);
 
 	tc[0] = -1.0;
@@ -138,11 +138,6 @@ void actorinput_void(struct arena* win, struct style* sty, struct event* ev)
 			(y < (win->height/2)+16) )
 		{
 			eventwrite(0,0,0,0);
-		}
-		else
-		{
-			win->forex = x;
-			win->forey = y;
 		}
 	}
 }

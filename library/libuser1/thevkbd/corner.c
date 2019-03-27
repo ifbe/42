@@ -285,6 +285,7 @@ static int corner_swrite(
 			//open or close vkbd
 			x = why&0xffff;
 			y = (why>>16)&0xffff;
+/*
 			if(y+ret > h)
 			{
 				if(x+ret > w)
@@ -300,6 +301,7 @@ static int corner_swrite(
 					return 1;
 				}
 			}
+*/
 			if(y < ret)
 			{
 				if(x < ret)

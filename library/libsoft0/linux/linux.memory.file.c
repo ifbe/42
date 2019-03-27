@@ -152,8 +152,9 @@ int stopfile(int fd)
 int startfile(char* path, int flag)
 {
 	int ret;
-	if(0 == path)return -0xfff;
-	if(0 == path[0])return -0xffe;
+	if(0 == path)ret = -0xfff;
+	if(0 == path[0])ret = -0xffe;
+	if(ret < 0)goto fail;
 
 	if('w' == flag)
 	{
@@ -165,6 +166,7 @@ int startfile(char* path, int flag)
 	}
 	if(ret > 0)return ret;
 
+fail:
 	say("%d,%d@open:%s\n", ret, errno, path);
 	return ret;
 }
