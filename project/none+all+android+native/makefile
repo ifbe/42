@@ -1,11 +1,11 @@
 linuxbuild:
 	ndk-build
-	android update project --path . --target android-23
+	android update project --path . --target android-21
 	ant debug
 	cp bin/NativeActivity-debug.apk 42.apk
 windowsbuild:
 	cmd "/C ndk-build"
-	cmd "/C android update project --path . --target android-23"
+	cmd "/C android update project --path . --target android-21"
 	ant debug
 	cp bin/NativeActivity-debug.apk 42.apk
 install:

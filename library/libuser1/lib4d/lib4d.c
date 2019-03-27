@@ -75,7 +75,7 @@ void actorcreatefromfile(struct actor* act, char* name)
 	len = openreadclose(name, 0, buf, 0x800000);
 	if(len <= 0)
 	{
-		say("len=%d\n", len);
+		say("len=%d, %s\n", len, name);
 		return;
 	}
 
