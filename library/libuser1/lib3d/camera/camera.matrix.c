@@ -107,7 +107,7 @@ void fixproj(mat4 proj, struct arena* win)
 	float b = win->nearb;
 	float t = win->neart;
 	float n = win->nearn;
-	float f = 1e16;
+	float f = 1e20;
 
 	//float w = (float)(win->width);
 	//float h = (float)(win->height);
@@ -179,7 +179,7 @@ void invproj(mat4 proj, struct arena* win)
 	float b = win->nearb;
 	float t = win->neart;
 	float n = win->nearn;
-	float f = 1e16;
+	float f = 1e20;
 /*
 	float w = (float)(win->width);
 	float h = (float)(win->height);

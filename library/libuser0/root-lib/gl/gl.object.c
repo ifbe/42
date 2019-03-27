@@ -220,6 +220,7 @@ void callback_display(struct arena* this, struct arena* coop)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
 		win = saved;
+		if(0 == win)return;
 
 		glViewport(0, 0, 1024, 1024);
 		fixmatrix(cammvp, this);

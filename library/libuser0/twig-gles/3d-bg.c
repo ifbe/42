@@ -6,13 +6,12 @@ int actorstart(void*, void*, void*, void*, void*, void*);
 
 
 
-static u64 want[2] = {
-	hex64('t','e','x','b','a','l','l', 0),
-	hex64('t','e','r','r','a','i','n', 0)
+#define COUNT 1
+static u64 want[COUNT] = {
+	hex64('t','e','x','b','a','l','l', 0)
 };
-static char* args[2] = {
-	"datafile/jpg/skysphere.jpg",
-	0
+static char* args[COUNT] = {
+	"datafile/jpg/skysphere.jpg"
 };
 
 
@@ -31,10 +30,14 @@ int bg3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stac
 	{
 		if(0 == rel)break;
 
-		act = (void*)(rel->dstchip);
-		sty = (void*)(rel->srcfoot);
-		pin = (void*)(rel->dstfoot);
-		act->onread(win, sty, act, pin);
+		if(_act_ == rel->dsttype)
+		{
+			act = (void*)(rel->dstchip);
+			pin = (void*)(rel->dstfoot);
+
+			sty = (void*)(rel->srcfoot);
+			act->onread(win, sty, act, pin);
+		}
 
 		rel = samesrcnextdst(rel);
 	}
@@ -85,7 +88,7 @@ int bg3d_create(struct arena* win, u8* str)
 	struct pinid* pin;
 	struct relation* rel;
 
-	for(j=0;j<2;j++)
+	for(j=0;j<COUNT;j++)
 	{
 		act = actorcreate(want[j], args[j]);
 		if(0 == act)continue;
@@ -108,17 +111,17 @@ int bg3d_create(struct arena* win, u8* str)
 		sty->vc[1] = 0;
 		sty->vc[2] = 0;
 
-		sty->vr[0] = 1000*1000;
+		sty->vr[0] = 1000*1000*10;
 		sty->vr[1] = 0;
 		sty->vr[2] = 0;
 
 		sty->vf[0] = 0;
-		sty->vf[1] = 1000*1000;
+		sty->vf[1] = 1000*1000*10;
 		sty->vf[2] = 0;
 
 		sty->vu[0] = 0;
 		sty->vu[1] = 0;
-		sty->vu[2] = 1000*1000;
+		sty->vu[2] = 1000*1000*10;
 	}
 	return 0;
 }

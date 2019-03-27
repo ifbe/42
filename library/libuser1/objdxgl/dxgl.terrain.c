@@ -8,7 +8,8 @@ void actorcreatefromfile(struct actor* act, char* name);
 char* terrain_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
+	"layout(location = 1)in mediump vec2 normal;\n"
+	"layout(location = 2)in mediump vec2 texuvw;\n"
 	"uniform mat4 cammvp;\n"
 	"out mediump vec2 uvw;\n"
 	"void main()\n"
@@ -26,6 +27,53 @@ char* terrain_glsl_f =
 	"{\n"
 		"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
 	"}\n";
+void terrain_generate(float (*vbuf)[9], u16* ibuf, float w, float h)
+{
+	int x,y,j;
+	for(y=0;y<255;y++)
+	{
+		for(x=0;x<255;x++)
+		{
+			//vertex
+			vbuf[y*256+x][0] = x*w/127.0 - w;
+			vbuf[y*256+x][1] = y*h/127.0 - h;
+			vbuf[y*256+x][2] = (float)(getrandom()%16384) - 8192.0;		//8848?
+//say("%f\n",vbuf[y*256+x][2]);
+			//uv
+			vbuf[y*256+x][6] = x*1.0;
+			vbuf[y*256+x][7] = y*1.0;
+			vbuf[y*256+x][8] = 0.0;
+		}
+	}
+
+	for(y=1;y<254;y++)
+	{
+		for(x=1;x<254;x++)
+		{
+			//normal
+			vbuf[y*256+x][3] = 0.0;
+			vbuf[y*256+x][4] = 0.0;
+			vbuf[y*256+x][5] = 1.0;
+		}
+	}
+
+	j = 0;
+	for(y=0;y<254;y++)
+	{
+		for(x=0;x<254;x++)
+		{
+			ibuf[j] = y*256+x;
+			ibuf[j+1] = y*256+x+1;
+			ibuf[j+2] = y*256+x+256;
+
+			ibuf[j+3] = y*256+x+1;
+			ibuf[j+4] = y*256+x+256;
+			ibuf[j+5] = y*256+x+257;
+
+			j += 6;
+		}
+	}
+}
 
 
 
@@ -58,104 +106,7 @@ static void terrain_read_vbo(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	if(0 == act->buf)return;
-
-	struct glsrc* src = (void*)(pin->foot[0]);
-	float (*vbuf)[6] = (void*)(src->vbuf);
-
-	vbuf[0][0] = vc[0] - vr[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2] - 1.0;
-	vbuf[0][3] =-vr[0] / 1000.0;
-	vbuf[0][4] =-vf[1] / 1000.0;
-	vbuf[0][5] = vr[0];
-
-	vbuf[1][0] = vc[0] + vr[0] - vf[0];
-	vbuf[1][1] = vc[1] + vr[1] - vf[1];
-	vbuf[1][2] = vc[2] + vr[2] - vf[2] - 1.0;
-	vbuf[1][3] = vr[0] / 1000.0;
-	vbuf[1][4] =-vf[1] / 1000.0;
-	vbuf[1][5] = vr[0];
-
-	vbuf[2][0] = vc[0] + vr[0] + vf[0];
-	vbuf[2][1] = vc[1] + vr[1] + vf[1];
-	vbuf[2][2] = vc[2] + vr[2] + vf[2] - 1.0;
-	vbuf[2][3] = vr[0] / 1000.0;
-	vbuf[2][4] = vf[1] / 1000.0;
-	vbuf[2][5] = vr[0];
-
-	vbuf[3][0] = vc[0] - vr[0] - vf[0];
-	vbuf[3][1] = vc[1] - vr[1] - vf[1];
-	vbuf[3][2] = vc[2] - vr[2] - vf[2] - 1.0;
-	vbuf[3][3] =-vr[0] / 1000.0;
-	vbuf[3][4] =-vf[1] / 1000.0;
-	vbuf[3][5] = vr[0];
-
-	vbuf[4][0] = vc[0] - vr[0] + vf[0];
-	vbuf[4][1] = vc[1] - vr[1] + vf[1];
-	vbuf[4][2] = vc[2] - vr[2] + vf[2] - 1.0;
-	vbuf[4][3] =-vr[0] / 1000.0;
-	vbuf[4][4] = vf[1] / 1000.0;
-	vbuf[4][5] = vr[0];
-
-	vbuf[5][0] = vc[0] + vr[0] + vf[0];
-	vbuf[5][1] = vc[1] + vr[1] + vf[1];
-	vbuf[5][2] = vc[2] + vr[2] + vf[2] - 1.0;
-	vbuf[5][3] = vr[0] / 1000.0;
-	vbuf[5][4] = vf[1] / 1000.0;
-	vbuf[5][5] = vr[0];
-
-	src->vbuf_enq += 1;
-/*
-	for(y=-4;y<=4;y++)
-	{
-		for(x=-4;x<=4;x++)
-		{
-			t = 9*(y+4)*6 + (x+4)*6;
-			vbuf[t+0][0] = 1000*x - 500;
-			vbuf[t+0][1] = 1000*y - 500;
-			vbuf[t+0][2] = 0;
-			vbuf[t+0][3] = 0.0;
-			vbuf[t+0][4] = 1.0;
-			vbuf[t+0][5] = 0.0;
-
-			vbuf[t+1][0] = 1000*x + 500;
-			vbuf[t+1][1] = 1000*y + 500;
-			vbuf[t+1][2] = 0;
-			vbuf[t+1][3] = 1.0;
-			vbuf[t+1][4] = 0.0;
-			vbuf[t+1][5] = 0.0;
-
-			vbuf[t+2][0] = 1000*x - 500;
-			vbuf[t+2][1] = 1000*y + 500;
-			vbuf[t+2][2] = 0;
-			vbuf[t+2][3] = 0.0;
-			vbuf[t+2][4] = 0.0;
-			vbuf[t+2][5] = 0.0;
-
-			vbuf[t+3][0] = 1000*x + 500;
-			vbuf[t+3][1] = 1000*y + 500;
-			vbuf[t+3][2] = 0;
-			vbuf[t+3][3] = 1.0;
-			vbuf[t+3][4] = 0.0;
-			vbuf[t+3][5] = 0.0;
-
-			vbuf[t+4][0] = 1000*x - 500;
-			vbuf[t+4][1] = 1000*y - 500;
-			vbuf[t+4][2] = 0;
-			vbuf[t+4][3] = 0.0;
-			vbuf[t+4][4] = 1.0;
-			vbuf[t+4][5] = 0.0;
-
-			vbuf[t+5][0] = 1000*x + 500;
-			vbuf[t+5][1] = 1000*y - 500;
-			vbuf[t+5][2] = 0;
-			vbuf[t+5][3] = 1.0;
-			vbuf[t+5][4] = 1.0;
-			vbuf[t+5][5] = 0.0;
-		}
-	}
-*/
+	//if(0 == act->buf)return;
 }
 static void terrain_read_json(
 	struct arena* win, struct style* sty,
@@ -177,7 +128,7 @@ static void terrain_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void terrain_read(
+static void terrain_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -189,16 +140,21 @@ static void terrain_read(
 	else if(fmt == _vbo_)terrain_read_vbo(win, sty, act, pin);
 	else terrain_read_pixel(win, sty, act, pin);
 }
-static void terrain_write(
+static void terrain_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void terrain_get()
+static void terrain_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void terrain_post()
+static void terrain_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void terrain_stop(
@@ -212,6 +168,8 @@ static void terrain_start(
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
+	void* vbuf;
+	void* ibuf;
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
@@ -234,18 +192,26 @@ static void terrain_start(
 	src->tex_h[0] = leaf->height;
 
 	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf = memorycreate(4*6 * 6);
-	src->vbuf_w = 6*4;		//sizeof(float) * 6info
-	src->vbuf_h = 6;		//6vert * 81blocks
-	src->method = 'v';
+	vbuf = memorycreate(4*9 * 256*255);
+	ibuf = memorycreate(2*3 * 256*256*2);
+	terrain_generate(vbuf, ibuf, tf->vr[0], tf->vf[1]);
+	src->method = 'i';
+
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf = vbuf;
+	src->vbuf_w = 4*9;
+	src->vbuf_h = 256*255;
+	src->ibuf_fmt = 0x222;
+	src->ibuf = ibuf;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 254*254*2;
 
 	//send!
 	src->shader_enq[0] = 42;
 	src->arg_enq[0] = 0;
 	src->tex_enq[0] = 42;
-	src->vbuf_enq = 0;
-	src->ibuf_enq = 0;
+	src->vbuf_enq = 42;
+	src->ibuf_enq = 42;
 }
 static void terrain_delete(struct actor* act)
 {
@@ -271,8 +237,8 @@ void terrain_register(struct actor* p)
 	p->ondelete = (void*)terrain_delete;
 	p->onstart  = (void*)terrain_start;
 	p->onstop   = (void*)terrain_stop;
-	p->onget    = (void*)terrain_get;
-	p->onpost   = (void*)terrain_post;
-	p->onread   = (void*)terrain_read;
-	p->onwrite  = (void*)terrain_write;
+	p->onget    = (void*)terrain_cread;
+	p->onpost   = (void*)terrain_cwrite;
+	p->onread   = (void*)terrain_sread;
+	p->onwrite  = (void*)terrain_swrite;
 }

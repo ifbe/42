@@ -31,7 +31,7 @@ static void rccar_read_vbo2d(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
-    vec3 tc,tr,tf,tu;
+	vec3 tc,tr,tf,tu;
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
 	float* vc = sty->vc;
@@ -39,13 +39,13 @@ static void rccar_read_vbo2d(
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 
-    tr[0] = vr[0] * 3 / 4;
-    tr[1] = vr[1] * 3 / 4;
-    tr[2] = vr[2] * 3 / 4;
-    tf[0] = vf[0] * 3 / 4;
-    tf[1] = vf[1] * 3 / 4;
-    tf[2] = vf[2] * 3 / 4;
-    carvesolid2d_rect(win, 0x808080, vc, tr, tf);
+	tr[0] = vr[0] * 3 / 4;
+	tr[1] = vr[1] * 3 / 4;
+	tr[2] = vr[2] * 3 / 4;
+	tf[0] = vf[0] * 3 / 4;
+	tf[1] = vf[1] * 3 / 4;
+	tf[2] = vf[2] * 3 / 4;
+	carvesolid2d_rect(win, 0x808080, vc, tr, tf);
 
 	tr[0] = vr[0] / 4;
 	tr[1] = vr[1] / 4;
@@ -69,25 +69,53 @@ static void rccar_read_vbo(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
-    vec3 tc,tr,tf,tu;
+	vec3 tc,tr,tf,tu;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 
-    tr[0] = vr[0] * 3 / 4;
-    tr[1] = vr[1] * 3 / 4;
-    tr[2] = vr[2] * 3 / 4;
-    tf[0] = vf[0] * 3 / 4;
-    tf[1] = vf[1] * 3 / 4;
-    tf[2] = vf[2] * 3 / 4;
+	tr[0] = vr[0] * 3 / 4;
+	tr[1] = vr[1] * 3 / 4;
+	tr[2] = vr[2] * 3 / 4;
+	tf[0] = vf[0] * 3 / 4;
+	tf[1] = vf[1] * 3 / 4;
+	tf[2] = vf[2] * 3 / 4;
 	tu[0] = vu[0] / 8;
 	tu[1] = vu[1] / 8;
 	tu[2] = vu[2] / 8;
 	tc[0] = vc[0] + vu[0]/4;
 	tc[1] = vc[1] + vu[1]/4;
 	tc[2] = vc[2] + vu[2]/4;
-    carvesolid_prism4(win, 0x808080, tc, tr, tf, tu);
+	carvesolid_prism4(win, 0x808080, tc, tr, tf, tu);
+
+	tr[0] = vr[0] / 4;
+	tr[1] = vr[1] / 4;
+	tr[2] = vr[2] / 4;
+	tf[0] = vf[0] / 4;
+	tf[1] = vf[1] / 4;
+	tf[2] = vf[2] / 4;
+	tu[0] = vu[0] / 4;
+	tu[1] = vu[1] / 4;
+	tu[2] = vu[2] / 4;
+	tc[0] = vc[0] + vu[0]*0.75;
+	tc[1] = vc[1] + vu[1]*0.75;
+	tc[2] = vc[2] + vu[2]*0.75;
+	carvesolid_prism4(win, 0xc0c0c0, tc, tr, tf, tu);
+
+	tr[0] = vr[0] / 16;
+	tr[1] = vr[1] / 16;
+	tr[2] = vr[2] / 16;
+	tf[0] = vf[0] / 2;
+	tf[1] = vf[1] / 2;
+	tf[2] = vf[2] / 2;
+	tu[0] = vu[0] / 16;
+	tu[1] = vu[1] / 16;
+	tu[2] = vu[2] / 16;
+	tc[0] = vc[0] + vf[0]/2 + vu[0]*0.75;
+	tc[1] = vc[1] + vf[1]/2 + vu[1]*0.75;
+	tc[2] = vc[2] + vf[2]/2 + vu[2]*0.75;
+	carvesolid_cask(win, 0xffffff, tc, tr, tu, tf);
 
 	tr[0] = vf[0] / 4;
 	tr[1] = vf[1] / 4;
@@ -223,13 +251,13 @@ static void rccar_cwrite(
 static void rccar_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void rccar_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void rccar_delete(struct actor* act)
