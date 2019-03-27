@@ -26,23 +26,15 @@ twig-xml/out.xml.c \
 twig-sch/out.sch.c \
 twig-sch/sch.pin.c \
 twig-sch/sch.chip.c \
-twig-gles/out.vbo.c \
-twig-gles/00-light.c \
-twig-gles/01-mirror.c \
-twig-gles/02-glass.c \
-twig-gles/03-portal.c \
-twig-gles/10-bg3d.c \
-twig-gles/11-fg3d.c \
-twig-gles/12-ev3d.c \
-twig-gles/13-ui3d.c \
-twig-gles/20-bg2d.c \
-twig-gles/21-fg2d.c \
-twig-gles/22-ev2d.c \
-twig-gles/23-ui2d.c \
-twig-gles/30-blur.c \
-twig-gles/31-rgb.c \
-twig-gles/32-rain.c \
-twig-gles/33-snow.c
+twig-gles/3d-bg.c \
+twig-gles/3d-fg.c \
+twig-gles/3d-ev.c \
+twig-gles/3d-ui.c \
+twig-gles/2d-bg.c \
+twig-gles/2d-fg.c \
+twig-gles/2d-ev.c \
+twig-gles/2d-ui.c \
+twig-gles/out.vbo.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 target: $(OBJ)

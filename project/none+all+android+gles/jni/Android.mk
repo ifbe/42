@@ -302,22 +302,14 @@ library/libuser0/twig-sch/out.sch.c \
 library/libuser0/twig-sch/sch.pin.c \
 library/libuser0/twig-sch/sch.chip.c \
 library/libuser0/twig-gles/out.vbo.c \
-library/libuser0/twig-gles/00-light.c \
-library/libuser0/twig-gles/01-mirror.c \
-library/libuser0/twig-gles/02-glass.c \
-library/libuser0/twig-gles/03-portal.c \
-library/libuser0/twig-gles/10-bg3d.c \
-library/libuser0/twig-gles/11-fg3d.c \
-library/libuser0/twig-gles/12-ev3d.c \
-library/libuser0/twig-gles/13-ui3d.c \
-library/libuser0/twig-gles/20-bg2d.c \
-library/libuser0/twig-gles/21-fg2d.c \
-library/libuser0/twig-gles/22-ev2d.c \
-library/libuser0/twig-gles/23-ui2d.c \
-library/libuser0/twig-gles/30-blur.c \
-library/libuser0/twig-gles/31-rgb.c \
-library/libuser0/twig-gles/32-rain.c \
-library/libuser0/twig-gles/33-snow.c \
+library/libuser0/twig-gles/3d-bg.c \
+library/libuser0/twig-gles/3d-fg.c \
+library/libuser0/twig-gles/3d-ev.c \
+library/libuser0/twig-gles/3d-ui.c \
+library/libuser0/twig-gles/2d-bg.c \
+library/libuser0/twig-gles/2d-fg.c \
+library/libuser0/twig-gles/2d-ev.c \
+library/libuser0/twig-gles/2d-ui.c \
 library/libuser0/arena.c
 
 #libuser1
@@ -395,7 +387,7 @@ library/libuser1/objdxgl/dxgl.glass.c \
 library/libuser1/objdxgl/dxgl.mirror.c \
 library/libuser1/objdxgl/dxgl.portal.c \
 library/libuser1/objdxgl/dxgl.skydome.c \
-library/libuser1/objdxgl/dxgl.terrian.c \
+library/libuser1/objdxgl/dxgl.terrain.c \
 library/libuser1/objdxgl/dxgl.texball.c \
 library/libuser1/objdxgl/dxgl.weather.c \
 library/libuser1/objfile/file.binary.c \
