@@ -568,6 +568,8 @@ struct arena
 	int fbdepth;
 	int fbstride;
 
+	u8 haha[0x60];
+/*
 	//[a0,af]: near plane
 	float nearl;
 	float nearr;
@@ -580,8 +582,6 @@ struct arena
 	float nearp;
 	float nearq;
 
-	u8 haha[0x40];
-/*
 	//[c0,cf]: layer0: background
 	int backx;
 	int backy;

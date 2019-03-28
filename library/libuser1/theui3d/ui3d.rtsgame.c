@@ -25,12 +25,6 @@ static int rtsgame_swrite(
 		else if(0x50 == ev->why)win->camera.vc[1] -= 10;
 		else if(0x48 == ev->why)win->camera.vc[1] += 10;
 	}
-	else if(0x2b70 == ev->what)
-	{
-		id = (ev->why)>>48;
-		if('f' == id)win->camera.vc[2] += 10;
-		if('b' == id)win->camera.vc[2] -= 10;
-	}
 	else if(0x4070 == ev->what)
 	{
 		id = (ev->why)>>48;
@@ -52,13 +46,7 @@ static int rtsgame_swrite(
 		if(y1 > win->width-16)win->camera.vc[1] -= 10;
 	}
 
-	win->target.vc[0] = win->camera.vc[0];
-	win->target.vc[1] = win->camera.vc[1] + 1.0;
-	win->target.vc[2] = win->camera.vc[2] - 1.0;
-	win->camera.vf[0] = 0.0;
-	win->camera.vf[1] = 1.0;
-	win->camera.vf[2] = -1.0;
-
+/*
 	float w = win->width;
 	float h = win->height;
 	win->nearn = 1;
@@ -66,6 +54,7 @@ static int rtsgame_swrite(
 	win->nearr = w/h;
 	win->nearb =-1;
 	win->neart = 1;
+*/
 	return 1;
 }
 static void rtsgame_cread(

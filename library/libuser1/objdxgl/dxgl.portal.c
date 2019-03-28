@@ -62,13 +62,14 @@ void portalfrustum(struct arena* win, struct style* por)
 	say("\n");
 	say("%f,%f,%f\n", lb[0], lb[1], lb[2]);
 	say("%f,%f,%f\n", rt[0], rt[1], rt[2]);
-
+/*
 	win->nearn = - rt[2] + 1.0;
 	win->nearl = lb[0];
 	win->nearr = rt[0];
 	win->nearb = lb[1];
 	win->neart = rt[1];
 	say("%f,%f,%f,%f\n", win->nearl, win->nearr, win->nearb, win->neart);
+*/
 }
 void portalcamera(
 	struct actor* leaf, struct pinid* lf,

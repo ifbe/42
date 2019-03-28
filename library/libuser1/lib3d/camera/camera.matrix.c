@@ -14,39 +14,36 @@ void mat4_print(mat4 m)
 		say("%f,%f,%f,%f\n",m[y][0], m[y][1], m[y][2], m[y][3]);
 	}
 }
-void fixview(mat4 viewmatrix, struct arena* win)
+void fixview(mat4 viewmatrix, struct style* sty)
 {
 	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
 	float norm;
-	float cx = win->camera.vc[0];
-	float cy = win->camera.vc[1];
-	float cz = win->camera.vc[2];
+	float cx = sty->vc[0];
+	float cy = sty->vc[1];
+	float cz = sty->vc[2];
 
 	//uvn.n = front
-	float nx = win->camera.vf[0];
-	float ny = win->camera.vf[1];
-	float nz = win->camera.vf[2];
+	float nx = sty->vn[0];
+	float ny = sty->vn[1];
+	float nz = sty->vn[2];
 	norm = squareroot(nx*nx + ny*ny + nz*nz);
 	nx /= norm;
 	ny /= norm;
 	nz /= norm;
 
 	//uvn.u = right = cross(front,(0,0,1))
-	float tx = win->camera.vu[0];
-	float ty = win->camera.vu[1];
-	float tz = win->camera.vu[2];
-	float ux = ny*tz - nz*ty;
-	float uy = nz*tx - nx*tz;
-	float uz = nx*ty - ny*tx;
+	float ux = sty->vr[0];
+	float uy = sty->vr[1];
+	float uz = sty->vr[2];
 	norm = squareroot(ux*ux + uy*uy + uz*uz);
 	ux /= norm;
 	uy /= norm;
 	uz /= norm;
 
 	//uvn.v = above = cross(right, front)
-	float vx = uy*nz - uz*ny;
-	float vy = uz*nx - ux*nz;
-	float vz = ux*ny - uy*nx;
+	float vx = sty->vu[0];
+	float vy = sty->vu[1];
+	float vz = sty->vu[2];
 	norm = squareroot(vx*vx + vy*vy + vz*vz);
 	vx /= norm;
 	vy /= norm;
@@ -73,46 +70,26 @@ void fixview(mat4 viewmatrix, struct arena* win)
 	viewmatrix[3][3] = 1.0f;
 	//mat4_print(viewmatrix);
 }
-void fixproj(mat4 proj, struct arena* win)
-{/*
-	float n = (float)(win->neardepth) / 1000.0;
-	float t = (float)(win->nearstride) / 1000.0;
-	float w = (float)(win->width);
-	float h = (float)(win->height);
-
-	t = 1.0 / t;
-
-	projmatrix[0][0] = t * h / w;
-	projmatrix[0][1] = 0.0;
-	projmatrix[0][2] = 0.0;
-	projmatrix[0][3] = 0.0;
-
-	projmatrix[1][0] = 0.0;
-	projmatrix[1][1] = t;
-	projmatrix[1][2] = 0.0;
-	projmatrix[1][3] = 0.0;
-
-	projmatrix[2][0] = 0.0;
-	projmatrix[2][1] = 0.0;
-	projmatrix[2][2] = -1.0;	//	(n+f) / (n-f);
-	projmatrix[2][3] = -2*n;	//	2*n*f / (n-f);
-
-	projmatrix[3][0] = 0.0;
-	projmatrix[3][1] = 0.0;
-	projmatrix[3][2] = -1.0;
-	projmatrix[3][3] = 0.0;
-*/
-	float l = win->nearl;
-	float r = win->nearr;
-	float b = win->nearb;
-	float t = win->neart;
-	float n = win->nearn;
+void fixproj(mat4 proj, struct style* sty)
+{
+	float l = vec3_len(sty->vl);
+	float r = vec3_len(sty->vr);
+	float b = vec3_len(sty->vb);
+	float t = vec3_len(sty->vu);
+	float n = vec3_len(sty->vn);
 	float f = 1e20;
 
-	//float w = (float)(win->width);
-	//float h = (float)(win->height);
-	//l *= w/h;
-	//r *= w/h;
+	vec3 lr, bt;
+	lr[0] = sty->vr[0] - sty->vl[0];
+	lr[1] = sty->vr[1] - sty->vl[1];
+	lr[2] = sty->vr[2] - sty->vl[2];
+	bt[0] = sty->vu[0] - sty->vb[0];
+	bt[1] = sty->vu[1] - sty->vb[1];
+	bt[2] = sty->vu[2] - sty->vb[2];
+	if(sty->vl[0]*lr[0] + sty->vl[1]*lr[1] + sty->vl[2]*lr[2] < 0)l = -l;
+	if(sty->vr[0]*lr[0] + sty->vr[1]*lr[1] + sty->vr[2]*lr[2] < 0)r = -r;
+	if(sty->vb[0]*bt[0] + sty->vb[1]*bt[1] + sty->vb[2]*bt[2] < 0)b = -b;
+	if(sty->vu[0]*bt[0] + sty->vu[1]*bt[1] + sty->vu[2]*bt[2] < 0)t = -t;
 
 	proj[0][0] = 2 * n / (r-l);
 	proj[0][1] = 0.0;
@@ -134,58 +111,40 @@ void fixproj(mat4 proj, struct arena* win)
 	proj[3][2] = -1.0;
 	proj[3][3] = 0.0;
 }
-void fixmatrix(mat4 mvp, struct arena* win)
+void fixmatrix(mat4 m, struct arena* win)
 {
 	int x;
-	mat4 m;
+	mat4 t;
 
-	fixproj(mvp, win);
-	fixview(m, win);
-	mat4_multiply(mvp, m);
+	fixproj(m, &win->camera);
+	fixview(t, &win->camera);
+	mat4_multiply(m, t);
 }
 
 
 
 
-void invproj(mat4 proj, struct arena* win)
-{/*
-	float n = (float)(win->neardepth) / 1000.0;
-	float t = (float)(win->nearstride) / 1000.0;
-	float w = (float)(win->width);
-	float h = (float)(win->height);
-
-	projmatrix[0][0] = t * w / h;
-	projmatrix[0][1] = 0.0;
-	projmatrix[0][2] = 0.0;
-	projmatrix[0][3] = 0.0;
-
-	projmatrix[1][0] = 0.0;
-	projmatrix[1][1] = t;
-	projmatrix[1][2] = 0.0;
-	projmatrix[1][3] = 0.0;
-
-	projmatrix[2][0] = 0.0;
-	projmatrix[2][1] = 0.0;
-	projmatrix[2][2] = 0.0;
-	projmatrix[2][3] = -1.0;
-
-	projmatrix[3][0] = 0.0;
-	projmatrix[3][1] = 0.0;
-	projmatrix[3][2] = -0.5/n;		//(n-f) / 2.0 / n / f;
-	projmatrix[3][3] = 0.5/n;		//(n+f) / 2.0 / n / f;
-*/
-	float l = win->nearl;
-	float r = win->nearr;
-	float b = win->nearb;
-	float t = win->neart;
-	float n = win->nearn;
+void invproj(mat4 proj, struct style* sty)
+{
+	float l = vec3_len(sty->vl);
+	float r = vec3_len(sty->vr);
+	float b = vec3_len(sty->vb);
+	float t = vec3_len(sty->vu);
+	float n = vec3_len(sty->vn);
 	float f = 1e20;
-/*
-	float w = (float)(win->width);
-	float h = (float)(win->height);
-	l *= w/h;
-	r *= w/h;
-*/
+
+	vec3 lr, bt;
+	lr[0] = sty->vr[0] - sty->vl[0];
+	lr[1] = sty->vr[1] - sty->vl[1];
+	lr[2] = sty->vr[2] - sty->vl[2];
+	bt[0] = sty->vu[0] - sty->vb[0];
+	bt[1] = sty->vu[1] - sty->vb[1];
+	bt[2] = sty->vu[2] - sty->vb[2];
+	if(sty->vl[0]*lr[0] + sty->vl[1]*lr[1] + sty->vl[2]*lr[2] < 0)l = -l;
+	if(sty->vr[0]*lr[0] + sty->vr[1]*lr[1] + sty->vr[2]*lr[2] < 0)r = -r;
+	if(sty->vb[0]*bt[0] + sty->vb[1]*bt[1] + sty->vb[2]*bt[2] < 0)b = -b;
+	if(sty->vu[0]*bt[0] + sty->vu[1]*bt[1] + sty->vu[2]*bt[2] < 0)t = -t;
+
 	proj[0][0] = (r-l) / 2.0 / n;
 	proj[0][1] = 0.0;
 	proj[0][2] = 0.0;
@@ -206,39 +165,36 @@ void invproj(mat4 proj, struct arena* win)
 	proj[3][2] = (n-f) / 2.0 / n / f;
 	proj[3][3] = (n+f) / 2.0 / n / f;
 }
-void invview(mat4 viewmatrix, struct arena* win)
+void invview(mat4 viewmatrix, struct style* sty)
 {
 	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
 	float norm;
-	float cx = win->camera.vc[0];
-	float cy = win->camera.vc[1];
-	float cz = win->camera.vc[2];
+	float cx = sty->vc[0];
+	float cy = sty->vc[1];
+	float cz = sty->vc[2];
 
 	//uvn.n = front
-	float nx = win->camera.vf[0];
-	float ny = win->camera.vf[1];
-	float nz = win->camera.vf[2];
+	float nx = sty->vn[0];
+	float ny = sty->vn[1];
+	float nz = sty->vn[2];
 	norm = squareroot(nx*nx + ny*ny + nz*nz);
 	nx /= norm;
 	ny /= norm;
 	nz /= norm;
 
 	//uvn.u = right = cross(front,(0,0,1))
-	float tx = win->camera.vu[0];
-	float ty = win->camera.vu[1];
-	float tz = win->camera.vu[2];
-	float ux = ny*tz - nz*ty;
-	float uy = nz*tx - nx*tz;
-	float uz = nx*ty - ny*tx;
+	float ux = sty->vr[0];
+	float uy = sty->vr[1];
+	float uz = sty->vr[2];
 	norm = squareroot(ux*ux + uy*uy + uz*uz);
 	ux /= norm;
 	uy /= norm;
 	uz /= norm;
 
 	//uvn.v = above cross(right, front)
-	float vx = uy*nz - uz*ny;
-	float vy = uz*nx - ux*nz;
-	float vz = ux*ny - uy*nx;
+	float vx = sty->vu[0];
+	float vy = sty->vu[1];
+	float vz = sty->vu[2];
 	norm = squareroot(vx*vx + vy*vy + vz*vz);
 	vx /= norm;
 	vy /= norm;
@@ -271,8 +227,8 @@ void invmvp(vec3 v, struct arena* win)
 	mat4 q;
 	vec4 t = {v[0], v[1], v[2], 1.0};
 
-	invview(p, win);
-	invproj(q, win);
+	invview(p, &win->camera);
+	invproj(q, &win->camera);
 	mat4_multiply(p, q);
 
 	f = p[3][0]*t[0] + p[3][1]*t[1] + p[3][2]*t[2] + p[3][3]*t[3];

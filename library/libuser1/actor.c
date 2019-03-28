@@ -90,7 +90,7 @@ int actorinput_special(struct arena* win, struct style* sty, struct event* ev)
 
 	if(('l' == val)|('r' == val))
 	{
-		win->forew = 0x80;
+		//win->forew = 0x80;
 		return 1;
 	}
 	return 0;

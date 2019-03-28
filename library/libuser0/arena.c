@@ -146,14 +146,14 @@ void* allocstyle()
 	return buf;
 }
 void arenavertex(struct arena* win)
-{
+{/*
 	//fov
 	win->nearl = -1.0;
 	win->nearr = 1.0;
 	win->nearb = -1.0;
 	win->neart = 1.0;
 	win->nearn = 1.0;
-
+*/
 	//target
 	win->target.vc[0] = 0.0;
 	win->target.vc[1] = 0.0;
@@ -172,17 +172,37 @@ void arenavertex(struct arena* win)
 	win->target.vu[2] = 256.0;
 
 	//camera
+	win->camera.vl[0] = -1.0;
+	win->camera.vl[1] = 0.0;
+	win->camera.vl[2] = 0.0;
+
+	win->camera.vr[0] = 1.0;
+	win->camera.vr[1] = 0.0;
+	win->camera.vr[2] = 0.0;
+
+	win->camera.vb[0] = 0.0;
+	win->camera.vb[1] =-0.70710678118655;
+	win->camera.vb[2] =-0.70710678118655;
+
+	win->camera.vu[0] = 0.0;
+	win->camera.vu[1] = 0.70710678118655;
+	win->camera.vu[2] = 0.70710678118655;
+
+	win->camera.vn[0] = 0.0;
+	win->camera.vn[1] = 0.70710678118655;
+	win->camera.vn[2] =-0.70710678118655;
+/*
+	win->camera.vf[0] = 0.0;
+	win->camera.vf[1] = 0.0;
+	win->camera.vf[2] = 0.0;
+
+	win->camera.vq[0] = 0.0;
+	win->camera.vq[1] = 0.0;
+	win->camera.vq[2] = 0.0;
+*/
 	win->camera.vc[0] = 0.0;
 	win->camera.vc[1] = -1024.0;
 	win->camera.vc[2] = 1024.0;
-
-	win->camera.vf[0] = (win->target.vc[0])-(win->camera.vc[0]);
-	win->camera.vf[1] = (win->target.vc[1])-(win->camera.vc[1]);
-	win->camera.vf[2] = (win->target.vc[2])-(win->camera.vc[2]);
-
-	win->camera.vu[0] = 0.0;
-	win->camera.vu[1] = 0.0;
-	win->camera.vu[2] = 1.0;
 }
 
 
@@ -389,11 +409,6 @@ void* arenacreate(u64 type, void* addr)
 			win->type = _win_;
 			win->fmt = hex64('b','g','r','a','8','8','8','8');
 			windowcreate(win);
-
-			win->backw = 0;
-			win->forew = 0x10;
-			win->tempw = 0;
-			win->vkbdw = 0;
 			arenavertex(win);
 
 			if(_vbo_ == win->fmt)vbonode_create(_vbo_, win);
@@ -409,7 +424,6 @@ void* arenacreate(u64 type, void* addr)
 			win->type = _win_;
 			win->fmt = _fbo_;
 			windowcreate(win);
-
 			arenavertex(win);
 		}
 		return win;

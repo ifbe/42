@@ -125,12 +125,13 @@ say("%f,%f,%f\n",win->camera.vc[0], win->camera.vc[1], win->camera.vc[2]);
 	win->camera.vf[0] = 0.0;
 	win->camera.vf[1] = 1.0;
 	win->camera.vf[2] = 0.0;
-
+/*
 	win->nearn = -1000 - win->camera.vc[1];
 	win->nearl =-win->width/2 - win->camera.vc[0];
 	win->nearr = win->width/2 - win->camera.vc[0];
 	win->nearb =-win->height/2 - win->camera.vc[2];
 	win->neart = win->height/2 - win->camera.vc[2];
+*/
 	return 1;
 }
 static void vrglass_cread(

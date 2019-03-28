@@ -327,13 +327,13 @@ static void light_start(
 	tmp->camera.vu[0] = 0.0;
 	tmp->camera.vu[1] = 0.0;
 	tmp->camera.vu[2] = 1.0;
-
+/*
 	tmp->nearn = 1.0;
 	tmp->nearl = -1.0;
 	tmp->nearr = 1.0;
 	tmp->nearb = -1.0;
 	tmp->neart = 1.0;
-
+*/
 	fixmatrix(mvp, tmp);
 	mat4_transpose(mvp);
 

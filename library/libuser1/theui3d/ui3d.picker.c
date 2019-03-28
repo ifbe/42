@@ -614,9 +614,10 @@ static int picker_swrite(
 {
 	float w = win->width;
 	float h = win->height;
+/*
 	win->nearl = win->nearb * w/h;
 	win->nearr = win->neart * w/h;
-
+*/
 	int x,y,z;
 	struct arena* www = 0;
 	struct relation* rel = win->orel0;

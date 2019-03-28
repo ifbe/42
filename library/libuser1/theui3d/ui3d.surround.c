@@ -110,17 +110,17 @@ void surround_deltaxy(struct arena* win, int dx, int dy)
 }
 void surround_zoom(struct arena* win, float delta)
 {
-	float x = delta*(win->camera.vf[0]);
-	float y = delta*(win->camera.vf[1]);
-	float z = delta*(win->camera.vf[2]);
+	float nx = win->camera.vn[0];
+	float ny = win->camera.vn[1];
+	float nz = win->camera.vn[2];
+	float norm = squareroot(nx*nx + ny*ny + nz*nz);
+	nx /= norm;
+	ny /= norm;
+	nz /= norm;
 
-	win->camera.vc[0] += x;
-	win->camera.vc[1] += y;
-	win->camera.vc[2] += z;
-
-	win->camera.vf[0] -= x;
-	win->camera.vf[1] -= y;
-	win->camera.vf[2] -= z;
+	win->camera.vc[0] += delta * nx;
+	win->camera.vc[1] += delta * ny;
+	win->camera.vc[2] += delta * nz;
 }
 void target_deltaxyz(struct arena* win, float x, float y, float z)
 {
@@ -247,12 +247,12 @@ int actorinput_surroundevent_gamepad(struct arena* win, struct event* ev)
 */
 		if(t[3] & joyr_trigger)		//z-
 		{
-			surround_zoom(win, 0.1);
+			surround_zoom(win, 100.0);
 			return 0;
 		}
 		if(t[3] & joyr_bumper)		//z+
 		{
-			surround_zoom(win, -0.1);
+			surround_zoom(win, -100.0);
 			return 0;
 		}
 		if(t[3] & joyr_stick)		//w-
@@ -300,26 +300,22 @@ int actorinput_surroundevent(struct arena* win, struct event* ev)
 		if(_vbo_ == win->fmt)sign = 1;
 		if(0x4b == ev->why)
 		{
-			win->target.vc[0] -= 10;
-			win->camera.vc[0] -= 10;
+			win->camera.vc[0] -= 100;
 			return 0;
 		}
 		else if(0x4d == ev->why)
 		{
-			win->target.vc[0] += 10;
-			win->camera.vc[0] += 10;
+			win->camera.vc[0] += 100;
 			return 0;
 		}
 		else if(0x50 == ev->why)
 		{
-			win->target.vc[1] -= sign*10;
-			win->camera.vc[1] -= sign*10;
+			win->camera.vc[1] -= sign*100;
 			return 0;
 		}
 		else if(0x48 == ev->why)
 		{
-			win->target.vc[1] += sign*10;
-			win->camera.vc[1] += sign*10;
+			win->camera.vc[1] += sign*100;
 			return 0;
 		}
 	}
@@ -354,8 +350,8 @@ int actorinput_surroundevent(struct arena* win, struct event* ev)
 			x0 = (win->input[0].xn) - (win->input[1].xn);
 			y0 = (win->input[0].yn) - (win->input[1].yn);
 
-			if((x0*x0+y0*y0) < (x1*x1+y1*y1))surround_zoom(win, 0.05);
-			else surround_zoom(win, -0.05);
+			if((x0*x0+y0*y0) < (x1*x1+y1*y1))surround_zoom(win, 10.0);
+			else surround_zoom(win, -10.0);
 		}
 		else
 		{
@@ -370,8 +366,8 @@ int actorinput_surroundevent(struct arena* win, struct event* ev)
 	else if(0x2b70 == ev->what)
 	{
 		id = (ev->why)>>48;
-		if('f' == id)surround_zoom(win, 0.1);
-		if('b' == id)surround_zoom(win, -0.1);
+		if('f' == id)surround_zoom(win, 100.0);
+		if('b' == id)surround_zoom(win,-100.0);
 	}
 	return 0;
 }
@@ -432,11 +428,12 @@ static int surround_swrite(
 {
 	//say("%llx,%llx\n", ev->why, ev->what);
 	actorinput_surroundevent(win, ev);
-
+/*
 	float w = win->width;
 	float h = win->height;
 	win->nearl = win->nearb * w/h;
 	win->nearr = win->neart * w/h;
+*/
 	return 1;
 }
 static void surround_cread(
