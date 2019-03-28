@@ -15,7 +15,6 @@ char* light_glsl_v =
 	"uniform mat4 mapmvp;\n"
 	"uniform mat4 cammvp;\n"
 	"mediump vec3 camxyz = vec3(0.0, -1000.0, 1000.0);\n"
-	"mediump vec3 ambient = vec3(0.25, 0.25, 0.25);\n"
 	"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
 	"mediump vec3 lightposition = vec3(500.0, 250.0, 1000.0);\n"
 	"void main(){\n"
@@ -28,7 +27,7 @@ char* light_glsl_v =
 		"mediump vec3 diffuse = lightcolor * SN;\n"
 		"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
 		"if(SN>0.0)specular = lightcolor * pow(RV, 4.0);\n"
-		"vcolor = ambient + diffuse + specular;\n"
+		"vcolor = diffuse + specular;\n"
 
 		"mediump vec4 tmp = mapmvp * vec4(vertex, 1.0);\n"
 		"tmp /= tmp.w;\n"
@@ -42,10 +41,11 @@ char* light_glsl_f =
 	"in mediump vec3 vcolor;\n"
 	"out mediump vec4 FragColor;\n"
 	"uniform sampler2D tex0;\n"
+	"mediump vec3 ambient = vec3(0.25, 0.25, 0.25);\n"
 	"void main(){\n"
 		"mediump float shadow = 1.0;\n"
 		"if(uvw.z - texture(tex0, uvw.xy).r > 0.000001)shadow = 0.1;\n"
-		"FragColor = vec4(vcolor*shadow, 1.0);\n"
+		"FragColor = vec4(ambient + vcolor*shadow, 1.0);\n"
 	"}\n";
 /*
 char* light_glsl_v =

@@ -13,6 +13,140 @@ int tlsserver_write(void*, void*, void*, void*, void* buf, int len);
 
 
 
+void httpserver_sendback(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len)
+{
+	int ret;
+	printmemory(buf, len);
+
+	//response
+	ret = mysnprintf(buf+len, 0x1000,
+		"HTTP/1.1 200 OK\r\n"
+		"Content-type: text/plain\r\n"
+		"Content-Length: %d\r\n"
+		"\r\n",
+		len
+	);
+
+	//send head, send ctx
+	system_leafwrite(obj, pin, ele, sty, buf+len, ret);
+	system_leafwrite(obj, pin, ele, sty, buf, len);
+}
+int httpserver_nullpost(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len,
+	u8* POST)
+{
+	return 0;
+}
+int httpserver_nullget(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len,
+	u8* GET)
+{
+	int ctxlen, tmplen, ret;
+	void* ctxbuf;
+	void* tmpbuf;
+	printmemory(buf, len);
+	if(0 == ncmp(GET, "/favicon.ico", 12))return 1;
+
+	//write ctx
+	ctxbuf = buf+len+1;
+	if(0 == ncmp(GET, "/ ", 2)){
+		ctxlen = mysnprintf(ctxbuf, 0x1000, "<center>root</center><hr>");
+	}
+	else if(0 == ncmp(GET, "/arena ", 7)){
+		ctxlen = mysnprintf(ctxbuf, 0x1000, "<center>arena</center><hr>");
+	}
+	else if(0 == ncmp(GET, "/actor ", 7)){
+		ctxlen = mysnprintf(ctxbuf, 0x1000, "<center>actor</center><hr>");
+	}
+	else{
+		ret = 0;
+		while(GET[ret] > 0x20)ret++;
+
+		ctxbuf = GET;
+		ctxlen = ret;
+	}
+
+	//write head
+	tmpbuf = ctxbuf+ctxlen+1;
+	tmplen = mysnprintf(tmpbuf, 0x1000,
+		"HTTP/1.1 200 OK\r\n"
+		"Content-type: text/html\r\n"
+		"Content-Length: %d\r\n"
+		"\r\n",
+		ctxlen
+	);
+
+	//send head, send ctx
+	system_leafwrite(obj, pin, ele, sty, tmpbuf, tmplen);
+	system_leafwrite(obj, pin, ele, sty, ctxbuf, ctxlen);
+	return 1;
+}
+int httpserver_orelpost(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len,
+	u8* POST)
+{
+	return 0;
+}
+int httpserver_orelget(
+	struct element* ele, void* sty,
+	struct object* obj, void* pin,
+	u8* buf, int len,
+	u8* GET)
+{
+	int ctxlen, tmplen, ret;
+	void* ctxbuf;
+	void* tmpbuf;
+	struct relation* rel;
+
+	printmemory(buf, len);
+	if(0 == ncmp(GET, "/favicon.ico", 12))return 1;
+
+	//write ctx
+	rel = ele->orel0;
+	ctxbuf = buf+len+1;
+	ctxlen = mysnprintf(ctxbuf, 0x1000, "<html><body><center>");
+	while(1)
+	{
+		if(0 == rel)break;
+
+		ctxlen += mysnprintf(ctxbuf+ctxlen, 0x1000,
+			"%llx,%llx,%.8s->%llx,%llx,%.8s<br>",
+			rel->srcchip, rel->srcfoot, &rel->srctype,
+			rel->dstchip, rel->dstfoot, &rel->dsttype
+		);
+
+		rel = samesrcnextdst(rel);
+	}
+	ctxlen += mysnprintf(ctxbuf+ctxlen, 0x1000, "</center></body></html>");
+
+	//write head
+	tmpbuf = ctxbuf+ctxlen+1;
+	tmplen = mysnprintf(tmpbuf, 0x1000,
+		"HTTP/1.1 200 OK\r\n"
+		"Content-type: text/html\r\n"
+		"Content-Length: %d\r\n"
+		"\r\n",
+		ctxlen
+	);
+
+	//send head, send ctx
+	system_leafwrite(obj, pin, ele, sty, tmpbuf, tmplen);
+	system_leafwrite(obj, pin, ele, sty, ctxbuf, ctxlen);
+	return 0;
+}
+
+
+
+
 int httpclient_write(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
@@ -114,28 +248,6 @@ int httpclient_create(struct element* ele, u8* url)
 
 
 
-void httpserver_post(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len,
-	u8* POST)
-{
-	say("%.*s\n", len, buf);
-}
-void httpserver_get(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len,
-	u8* GET)
-{
-	int ret;
-	if(0 == ncmp(GET, "/favicon.ico", 12))return;
-
-	//read data
-	ele->obj = obj;
-	len = nodetree_rootread(ele, sty, buf, len);
-	if(len <= 0)return;
-}
 int httpserver_leafwrite(
 	struct element* ele, void* sty,
 	struct object* sc, void* sf,
@@ -243,28 +355,27 @@ int httpmaster_write(
 		return 0;
 	}
 
-	if((0 == ele->orel0) | ((0 == GET)&&(0 == POST)))
+	//no orel, root=none
+	if(0 == ele->orel0)
 	{
-		//debug
-		printmemory(buf, len);
+		ret = 0;
+		if(GET)ret = httpserver_nullget(ele, sty, obj, pin, buf, len, GET);
+		else if(POST)ret = httpserver_nullpost(ele, sty, obj, pin, buf, len, POST);
 
-		//response
-		ret = mysnprintf(buf+len, 0x1000,
-			"HTTP/1.1 200 OK\r\n"
-			"Content-type: text/plain\r\n"
-			"Content-Length: %d\r\n"
-			"\r\n",
-			len
-		);
-
-		//send response
-		system_leafwrite(obj, pin, ele, sty, buf+len, ret);
-
-		//send context
-		system_leafwrite(obj, pin, ele, sty, buf, len);
+		//something wrong
+		if(ret <= 0)httpserver_sendback(ele, sty, obj, pin, buf, len);
 	}
-	else if(GET)httpserver_get(ele,sty, obj,pin, buf+len,0, GET);
-	else if(POST)httpserver_post(ele,sty, obj,pin, buf+len,0, POST);
+
+	//have orel, root=this
+	else
+	{
+		ret = 0;
+		if(GET)ret = httpserver_orelget(ele, sty, obj, pin, buf, len, GET);
+		else if(POST)ret = httpserver_orelpost(ele, sty, obj, pin, buf, len, POST);
+
+		//something wrong
+		if(ret <= 0)httpserver_sendback(ele, sty, obj, pin, buf, len);
+	}
 
 	//close or not
 	if(0 != Connection)

@@ -57,7 +57,6 @@ char glsl2dvert[] = {
 	"layout(location = 1)in mediump vec3 colour;\n"
 	"mediump vec3 normal = vec3(0.0, 0.0, -1.0);\n"
 	"mediump vec3 camxyz = vec3(0.0, 0.0, -1.0);\n"
-	"mediump vec3 ambient = vec3(0.25, 0.25, 0.25);\n"
 	"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
 	"mediump vec3 lightposition = vec3(1.0, 1.0, -2.0);\n"
 	"out mediump vec3 vcolor;\n"
@@ -72,7 +71,7 @@ char glsl2dvert[] = {
 		"mediump vec3 diffuse = lightcolor * SN;\n"
 		"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
 		"if(SN>0.0)specular = lightcolor * pow(RV, 8.0);\n"
-		"vcolor = colour*(ambient + diffuse + specular);\n"
+		"vcolor = colour*(diffuse + specular);\n"
 		"gl_Position = vec4(vertex,1.0);\n"
 	"}\n"
 };
@@ -80,9 +79,10 @@ char glsl2dfrag[] = {
 	GLSL_VERSION
 	"in mediump vec3 vcolor;\n"
 	"out mediump vec4 FragColor;\n"
+	"mediump vec3 ambient = vec3(0.2, 0.2, 0.2);\n"
 	"void main()\n"
 	"{\n"
-		"FragColor = vec4(vcolor,1.0);\n"
+		"FragColor = vec4(ambient + vcolor, 1.0);\n"
 	"}\n"
 };
 char simplevert[] = {
@@ -111,7 +111,6 @@ char prettyvert[] = {
 	"layout(location = 0)in mediump vec3 vertex;\n"
 	"layout(location = 1)in mediump vec3 colour;\n"
 	"layout(location = 2)in mediump vec3 normal;\n"
-	"mediump vec3 ambient = vec3(0.25, 0.25, 0.25);\n"
 	"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
 	"mediump vec3 lightposition = vec3(0.0, 0.0, 1000.0);\n"
 	"uniform mat4 cammvp;\n"
@@ -128,7 +127,7 @@ char prettyvert[] = {
 		"mediump vec3 diffuse = lightcolor * SN;\n"
 		"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
 		"if(SN>0.0)specular = lightcolor * pow(RV, 4.0);\n"
-		"vcolor = colour*(ambient + diffuse + specular);\n"
+		"vcolor = colour*(diffuse + specular);\n"
 		"gl_Position = cammvp * vec4(vertex,1.0);\n"
 	"}\n"
 };
@@ -136,9 +135,10 @@ char prettyfrag[] = {
 	GLSL_VERSION
 	"in mediump vec3 vcolor;\n"
 	"out mediump vec4 FragColor;\n"
+	"mediump vec3 ambient = vec3(0.2, 0.2, 0.2);\n"
 	"void main()\n"
 	"{\n"
-		"FragColor = vec4(vcolor,1.0);\n"
+		"FragColor = vec4(ambient + vcolor, 1.0);\n"
 	"}\n"
 };
 char font3dvert[] = {
