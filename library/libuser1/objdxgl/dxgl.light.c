@@ -7,72 +7,125 @@ void fixmatrix(mat4 mvp, struct arena* win);
 
 
 char* light_glsl_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 normal;\n"
-	"out mediump vec3 vcolor;\n"
-	"out mediump vec3 uvw;\n"
-	"uniform mat4 mapmvp;\n"
-	"uniform mat4 cammvp;\n"
-	"mediump vec3 camxyz = vec3(0.0, -1000.0, 1000.0);\n"
-	"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
-	"mediump vec3 lightposition = vec3(500.0, 250.0, 1000.0);\n"
-	"void main(){\n"
-		"mediump vec3 N = normalize(normal);\n"
-		"mediump vec3 L = normalize(vec3(lightposition - vertex));\n"
-		"mediump vec3 E = normalize(camxyz-vertex);\n"
-		"mediump vec3 R = reflect(-L, N);\n"
-		"mediump float SN = max(dot(N, L), 0.0);\n"
-		"mediump float RV = max(dot(R, E), 0.0);\n"
-		"mediump vec3 diffuse = lightcolor * SN;\n"
-		"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
-		"if(SN>0.0)specular = lightcolor * pow(RV, 4.0);\n"
-		"vcolor = diffuse + specular;\n"
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec3 normal;\n"
+"out mediump vec3 vcolor;\n"
+"out mediump vec3 uvw;\n"
+"uniform mat4 mapmvp;\n"
+"uniform mat4 cammvp;\n"
+"mediump vec3 camxyz = vec3(0.0, -1000.0, 1000.0);\n"
+"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
+"mediump vec3 lightposition = vec3(500.0, 250.0, 1000.0);\n"
+"void main(){\n"
+	"mediump vec3 N = normalize(normal);\n"
+	"mediump vec3 L = normalize(vec3(lightposition - vertex));\n"
+	"mediump vec3 E = normalize(camxyz-vertex);\n"
+	"mediump vec3 R = reflect(-L, N);\n"
+	"mediump float SN = max(dot(N, L), 0.0);\n"
+	"mediump float RV = max(dot(R, E), 0.0);\n"
+	"mediump vec3 diffuse = lightcolor * SN;\n"
+	"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
+	"if(SN>0.0)specular = lightcolor * pow(RV, 4.0);\n"
+	"vcolor = diffuse + specular;\n"
 
-		"mediump vec4 tmp = mapmvp * vec4(vertex, 1.0);\n"
-		"tmp /= tmp.w;\n"
-		"tmp = (tmp+1.0)*0.5;\n"
-		"uvw = vec3(tmp.x, tmp.y, tmp.z);\n"
-		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
-	"}\n";
+	"mediump vec4 tmp = mapmvp * vec4(vertex, 1.0);\n"
+	"tmp /= tmp.w;\n"
+	"tmp = (tmp+1.0)*0.5;\n"
+	"uvw = vec3(tmp.x, tmp.y, tmp.z);\n"
+	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+"}\n";
+
 char* light_glsl_f =
-	GLSL_VERSION
-	"in mediump vec3 uvw;\n"
-	"in mediump vec3 vcolor;\n"
-	"out mediump vec4 FragColor;\n"
-	"uniform sampler2D tex0;\n"
-	"mediump vec3 ambient = vec3(0.25, 0.25, 0.25);\n"
-	"void main(){\n"
-		"mediump float shadow = 1.0;\n"
-		"if(uvw.z - texture(tex0, uvw.xy).r > 0.000001)shadow = 0.1;\n"
-		"FragColor = vec4(ambient + vcolor*shadow, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"in mediump vec3 uvw;\n"
+"in mediump vec3 vcolor;\n"
+"out mediump vec4 FragColor;\n"
+"uniform sampler2D tex0;\n"
+"mediump vec3 ambient = vec3(0.25, 0.25, 0.25);\n"
+"void main(){\n"
+	"mediump float shadow = 1.0;\n"
+	"if(uvw.z - texture(tex0, uvw.xy).r > 0.000001)shadow = 0.1;\n"
+	"FragColor = vec4(ambient + vcolor*shadow, 1.0);\n"
+"}\n";
 /*
 char* light_glsl_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"out mediump vec2 uvw;\n"
-	"uniform mat4 cammvp;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec2 texuvw;\n"
+"out mediump vec2 uvw;\n"
+"uniform mat4 cammvp;\n"
+"void main()\n"
+"{\n"
+	"uvw = texuvw;\n"
+	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+"}\n";
+
 char* light_glsl_f =
-	GLSL_VERSION
-	"uniform sampler2D tex0;\n"
-	"in mediump vec2 uvw;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"mediump float n = 1.0;"
-		"mediump float f = 1000.0;"
-		"mediump float d = texture(tex0, uvw).r;"
-		"mediump float c = (2.0 * n) / (f + n - d * (f - n));"
-		"FragColor = vec4(c, c, c, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"uniform sampler2D tex0;\n"
+"in mediump vec2 uvw;\n"
+"out mediump vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+	"mediump float n = 1.0;"
+	"mediump float f = 1000.0;"
+	"mediump float d = texture(tex0, uvw).r;"
+	"mediump float c = (2.0 * n) / (f + n - d * (f - n));"
+	"FragColor = vec4(c, c, c, 1.0);\n"
+"}\n";
 */
+
+
+
+
+void fixfbo(struct style* cam, struct style* tar)
+{
+	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
+	float x,y,z,norm;
+
+	//near
+	x = tar->vc[0] - cam->vc[0];
+	y = tar->vc[1] - cam->vc[1];
+	z = tar->vc[2] - cam->vc[2];
+	norm = squareroot(x*x + y*y + z*z);
+	x /= norm;
+	y /= norm;
+	z /= norm;
+	cam->vn[0] = x;
+	cam->vn[1] = y;
+	cam->vn[2] = z;
+
+	//right = cross(near, (0,0,1))
+	x = cam->vn[1]*1 - cam->vn[2]*0;
+	y = cam->vn[2]*0 - cam->vn[0]*1;
+	z = cam->vn[0]*0 - cam->vn[1]*0;
+	norm = squareroot(x*x + y*y + z*z);
+	x /= norm;
+	y /= norm;
+	z /= norm;
+	cam->vr[0] = x;
+	cam->vr[1] = y;
+	cam->vr[2] = z;
+	cam->vl[0] = -x;
+	cam->vl[1] = -y;
+	cam->vl[2] = -z;
+
+	//upper = cross(right, near)
+	x = cam->vr[1]*cam->vn[2] - cam->vr[2]*cam->vn[1];
+	y = cam->vr[2]*cam->vn[0] - cam->vr[0]*cam->vn[2];
+	z = cam->vr[0]*cam->vn[1] - cam->vr[1]*cam->vn[0];
+	norm = squareroot(x*x + y*y + z*z);
+	x /= norm;
+	y /= norm;
+	z /= norm;
+	cam->vu[0] = x;
+	cam->vu[1] = y;
+	cam->vu[2] = z;
+	cam->vb[0] = -x;
+	cam->vb[1] = -y;
+	cam->vb[2] = -z;
+}
 
 
 
@@ -106,20 +159,11 @@ static void light_read_vbo(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-/*
-	carvesolid_cone(win, 0xffff00, vc, vr, vu);
 
-	tr[0] = vr[0]/2;
-	tr[1] = vr[1]/2;
-	tr[2] = vr[2]/2;
-	tf[0] = vf[0]/2;
-	tf[1] = vf[1]/2;
-	tf[2] = vf[2]/2;
-	tu[0] = vu[0]/2;
-	tu[1] = vu[1]/2;
-	tu[2] = vu[2]/2;
-	carvesolid_sphere(win, 0xffff00, vc, tr, tf, tu);
-*/
+	float a,c,s;
+	void* mvp;
+	struct relation* rel;
+	struct arena* tmp;
 	struct glsrc* src = (void*)(pin->foot[0]);
 	float (*vbuf)[6] = (void*)(src->vbuf);
 	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
@@ -209,6 +253,31 @@ static void light_read_vbo(
 	vbuf[11][5] = 1.0;
 
 	src->vbuf_enq += 1;
+
+
+
+
+	rel = act->orel0;
+	if(0 == rel)return;
+
+	tmp = (void*)(rel->dstchip);
+	if(0 == tmp)return;
+	if(_fbo_ != tmp->fmt)return;
+
+	a = tau * timeread() / 10000000.0;
+	c = cosine(a);
+	s = sine(a);
+
+	tmp->camera.vc[0] = 1000.0 * c;
+	tmp->camera.vc[1] = 1000.0 * s;
+	tmp->camera.vc[2] = 1000.0;
+	fixfbo(&tmp->camera, sty);
+
+	mvp = (void*)(src->arg_data[0]);
+	fixmatrix(mvp, tmp);
+	mat4_transpose(mvp);
+
+	src->arg_enq[0] += 1;
 }
 static void light_read_json(
 	struct arena* win, struct style* sty,
@@ -312,34 +381,9 @@ static void light_start(
 	say("tex=%x\n", tmp->tex_depth);
 	dst->tex[0] = tmp->tex_depth;
 
-	tmp->target.vc[0] = 0.0;
-	tmp->target.vc[1] = 0.0;
-	tmp->target.vc[2] = 0.0;
-
-	tmp->camera.vc[0] = 500.0;
-	tmp->camera.vc[1] = 250.0;
-	tmp->camera.vc[2] = 1000.0;
-
-	tmp->camera.vf[0] = (tmp->target.vc[0])-(tmp->camera.vc[0]);
-	tmp->camera.vf[1] = (tmp->target.vc[1])-(tmp->camera.vc[1]);
-	tmp->camera.vf[2] = (tmp->target.vc[2])-(tmp->camera.vc[2]);
-
-	tmp->camera.vu[0] = 0.0;
-	tmp->camera.vu[1] = 0.0;
-	tmp->camera.vu[2] = 1.0;
-/*
-	tmp->nearn = 1.0;
-	tmp->nearl = -1.0;
-	tmp->nearr = 1.0;
-	tmp->nearb = -1.0;
-	tmp->neart = 1.0;
-*/
-	fixmatrix(mvp, tmp);
-	mat4_transpose(mvp);
-
 	//send!
 	src->shader_enq[0] = 42;
-	src->arg_enq[0] = 42;
+	src->arg_enq[0] = 0;
 	src->tex_enq[0] = 0;
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;

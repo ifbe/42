@@ -6,39 +6,43 @@ void actorcreatefromfile(struct actor* act, char* name);
 
 
 char* portal_glsl2d_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"out mediump vec2 uvw;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = vec4(vertex, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec2 texuvw;\n"
+"out mediump vec2 uvw;\n"
+"void main(){\n"
+	"uvw = texuvw;\n"
+	"gl_Position = vec4(vertex, 1.0);\n"
+"}\n";
+
 char* portal_glsl_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"uniform mat4 cammvp;\n"
-	"out mediump vec2 uvw;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec2 texuvw;\n"
+"uniform mat4 cammvp;\n"
+"out mediump vec2 uvw;\n"
+"void main(){\n"
+	"uvw = texuvw;\n"
+	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+"}\n";
+
 char* portal_glsl_f =
-	GLSL_VERSION
-	"uniform sampler2D tex0;\n"
-	"in mediump vec2 uvw;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(texture(tex0, uvw).rgb, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"uniform sampler2D tex0;\n"
+"in mediump vec2 uvw;\n"
+"out mediump vec4 FragColor;\n"
+"void main(){\n"
+	"float t = 4.0*(uvw.x-0.5)*(uvw.x-0.5) + 4.0*(uvw.y-0.5)*(uvw.y-0.5);\n"
+	"vec3 c = texture(tex0, uvw).rgb;\n"
+	"if(t > 1.0)discard;\n"
+	"if(t > 0.8)c += 25.0*(t-0.8)*(t-0.8)*vec3(1.0, 1.0, 1.0);\n"
+	"FragColor = vec4(c, 1.0);\n"
+"}\n";
 
 
 
 
+/*
 void mat4_vector(mat4 m, float* v);
 void fixview(mat4 viewmatrix, struct arena* win);
 void portalfrustum(struct arena* win, struct style* por)
@@ -62,22 +66,15 @@ void portalfrustum(struct arena* win, struct style* por)
 	say("\n");
 	say("%f,%f,%f\n", lb[0], lb[1], lb[2]);
 	say("%f,%f,%f\n", rt[0], rt[1], rt[2]);
-/*
-	win->nearn = - rt[2] + 1.0;
-	win->nearl = lb[0];
-	win->nearr = rt[0];
-	win->nearb = lb[1];
-	win->neart = rt[1];
-	say("%f,%f,%f,%f\n", win->nearl, win->nearr, win->nearb, win->neart);
-*/
-}
+}*/
 void portalcamera(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
 {
+	float x,y,z,t;
+	float r,u,n;
 	vec3 p,q;
-	struct style sty;
 	struct relation* rel;
 	struct arena* tmp;
 	struct glsrc* src = (void*)(lf->foot[0]);
@@ -94,62 +91,112 @@ void portalcamera(
 	dst->tex[0] = tmp->tex_color;
 
 
-	tmp->camera.vc[0] =-1000.0;
-	tmp->camera.vc[1] = 0.0;
-	tmp->camera.vc[2] = 1000.0;
 
-	tmp->camera.vf[0] = 1.0;
-	tmp->camera.vf[1] = 0.0;
-	tmp->camera.vf[2] = 0.0;
 
-	tmp->camera.vu[0] = 0.0;
-	tmp->camera.vu[1] = 0.0;
-	tmp->camera.vu[2] = 1.0;
+	//q = from center to camera
+	q[0] = root->camera.vc[0] - tf->vc[0];
+	q[1] = root->camera.vc[1] - tf->vc[1];
+	q[2] = root->camera.vc[2] - tf->vc[2];
 
-	tmp->target.vc[0] = tmp->camera.vc[0] + 1.0;
-	tmp->target.vc[1] = tmp->camera.vc[1];
-	tmp->target.vc[2] = tmp->camera.vc[2];
+	//portal.n
+	x = -tf->vf[0];
+	y = -tf->vf[1];
+	z = -tf->vf[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+	n = x * q[0] + y * q[1] + z * q[1];
 
-	sty.vc[0] = -250.0;
-	sty.vc[1] = 0.0;
-	sty.vc[2] = 250.0;
-	sty.vr[0] = 0.0;
-	sty.vr[1] = -250.0;
-	sty.vr[2] = 0.0;
-	sty.vf[0] = 0.0;
-	sty.vf[1] = 0.0;
-	sty.vf[2] = 250.0;
-	portalfrustum(tmp, &sty);
+	//portal.r
+	x = tf->vr[0];
+	y = tf->vr[1];
+	z = tf->vr[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+	r = x * q[0] + y * q[1] + z * q[2];
 
-	carveline_rect(root, 0xffffff, sty.vc, sty.vr, sty.vf);
-	p[0] = sty.vc[0] - sty.vr[0] - sty.vf[0];
-	p[1] = sty.vc[1] - sty.vr[1] - sty.vf[1];
-	p[2] = sty.vc[2] - sty.vr[2] - sty.vf[2];
-	q[0] = 2*p[0] - tmp->camera.vc[0];
-	q[1] = 2*p[1] - tmp->camera.vc[1];
-	q[2] = 2*p[2] - tmp->camera.vc[2];
-	carveline(root, 0xffffff, tmp->camera.vc, q);
-	p[0] = sty.vc[0] + sty.vr[0] - sty.vf[0];
-	p[1] = sty.vc[1] + sty.vr[1] - sty.vf[1];
-	p[2] = sty.vc[2] + sty.vr[2] - sty.vf[2];
-	q[0] = 2*p[0] - tmp->camera.vc[0];
-	q[1] = 2*p[1] - tmp->camera.vc[1];
-	q[2] = 2*p[2] - tmp->camera.vc[2];
-	carveline(root, 0xffffff, tmp->camera.vc, q);
-	p[0] = sty.vc[0] - sty.vr[0] + sty.vf[0];
-	p[1] = sty.vc[1] - sty.vr[1] + sty.vf[1];
-	p[2] = sty.vc[2] - sty.vr[2] + sty.vf[2];
-	q[0] = 2*p[0] - tmp->camera.vc[0];
-	q[1] = 2*p[1] - tmp->camera.vc[1];
-	q[2] = 2*p[2] - tmp->camera.vc[2];
-	carveline(root, 0xffffff, tmp->camera.vc, q);
-	p[0] = sty.vc[0] + sty.vr[0] + sty.vf[0];
-	p[1] = sty.vc[1] + sty.vr[1] + sty.vf[1];
-	p[2] = sty.vc[2] + sty.vr[2] + sty.vf[2];
-	q[0] = 2*p[0] - tmp->camera.vc[0];
-	q[1] = 2*p[1] - tmp->camera.vc[1];
-	q[2] = 2*p[2] - tmp->camera.vc[2];
-	carveline(root, 0xffffff, tmp->camera.vc, q);
+	//portal.t
+	x = tf->vu[0];
+	y = tf->vu[1];
+	z = tf->vu[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+	u = x * q[0] + y * q[1] + z * q[2];
+
+
+
+
+	//camera position
+	tmp->camera.vc[0] = leaf->target.vc[0];
+	tmp->camera.vc[1] = leaf->target.vc[1];
+	tmp->camera.vc[2] = leaf->target.vc[2];
+	//say("1:%f,%f,%f\n",tmp->camera.vc[0], tmp->camera.vc[1], tmp->camera.vc[2]);
+
+	//target.f
+	x = -leaf->target.vf[0];
+	y = -leaf->target.vf[1];
+	z = -leaf->target.vf[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+	tmp->camera.vc[0] += x * n;
+	tmp->camera.vc[1] += y * n;
+	tmp->camera.vc[2] += z * n;
+	tmp->camera.vn[0] = -x * n;
+	tmp->camera.vn[1] = -y * n;
+	tmp->camera.vn[2] = -z * n;
+
+	//target.r
+	x = leaf->target.vr[0];
+	y = leaf->target.vr[1];
+	z = leaf->target.vr[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+	tmp->camera.vc[0] += x * r;
+	tmp->camera.vc[1] += y * r;
+	tmp->camera.vc[2] += z * r;
+	tmp->camera.vl[0] = - leaf->target.vr[0] - r*x;
+	tmp->camera.vl[1] = - leaf->target.vr[1] - r*y;
+	tmp->camera.vl[2] = - leaf->target.vr[2] - r*z;
+	tmp->camera.vr[0] = leaf->target.vr[0] - r*x;
+	tmp->camera.vr[1] = leaf->target.vr[1] - r*y;
+	tmp->camera.vr[2] = leaf->target.vr[2] - r*z;
+
+	//target.u
+	x = leaf->target.vu[0];
+	y = leaf->target.vu[1];
+	z = leaf->target.vu[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+	tmp->camera.vc[0] += x * u;
+	tmp->camera.vc[1] += y * u;
+	tmp->camera.vc[2] += z * u;
+	tmp->camera.vb[0] = - leaf->target.vu[0] - u*x;
+	tmp->camera.vb[1] = - leaf->target.vu[1] - u*y;
+	tmp->camera.vb[2] = - leaf->target.vu[2] - u*z;
+	tmp->camera.vu[0] = leaf->target.vu[0] - u*x;
+	tmp->camera.vu[1] = leaf->target.vu[1] - u*y;
+	tmp->camera.vu[2] = leaf->target.vu[2] - u*z;
+
+	say("%f,%f,%f\n",root->camera.vc[0], root->camera.vc[1], root->camera.vc[2]);
+	say("%f,%f,%f\n",tmp->camera.vc[0], tmp->camera.vc[1], tmp->camera.vc[2]);
+	say("%f,%f,%f\n",tmp->camera.vn[0], tmp->camera.vn[1], tmp->camera.vn[2]);
+	say("%f,%f,%f\n",tmp->camera.vl[0], tmp->camera.vl[1], tmp->camera.vl[2]);
+	say("%f,%f,%f\n",tmp->camera.vr[0], tmp->camera.vr[1], tmp->camera.vr[2]);
+	say("%f,%f,%f\n",tmp->camera.vb[0], tmp->camera.vb[1], tmp->camera.vb[2]);
+	say("%f,%f,%f\n",tmp->camera.vu[0], tmp->camera.vu[1], tmp->camera.vu[2]);
+	say("\n");
+
 }
 
 
@@ -184,7 +231,7 @@ static void portal_read_vbo(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	//carveline_prism4(win, 0xffffff, vc, vr, vf, vu);
+	carveline_rect(win, 0xffffff, act->target.vc, act->target.vr, act->target.vu);
 
 	struct glsrc* src = (void*)(pin->foot[0]);
 	float (*vbuf)[6] = (void*)(src->vbuf);
@@ -339,21 +386,22 @@ static void portal_start(
 	say("tex_rgb=%x\n", tmp->tex_color);
 	dst->tex[0] = tmp->tex_color;
 
-	tmp->target.vc[0] = 0.0;
-	tmp->target.vc[1] = 0.0;
-	tmp->target.vc[2] = 0.0;
+	//tar
+	leaf->target.vc[0] = -1000;
+	leaf->target.vc[1] = 0;
+	leaf->target.vc[2] = 0;
 
-	tmp->camera.vc[0] = 0.0;
-	tmp->camera.vc[1] = -512.0;
-	tmp->camera.vc[2] = 512.0;
+	leaf->target.vr[0] = 0;
+	leaf->target.vr[1] = -250;
+	leaf->target.vr[2] = 0.0;
 
-	tmp->camera.vf[0] = (tmp->target.vc[0])-(tmp->camera.vc[0]);
-	tmp->camera.vf[1] = (tmp->target.vc[1])-(tmp->camera.vc[1]);
-	tmp->camera.vf[2] = (tmp->target.vc[2])-(tmp->camera.vc[2]);
+	leaf->target.vf[0] = 250.0;
+	leaf->target.vf[1] = 0;
+	leaf->target.vf[2] = 0;
 
-	tmp->camera.vu[0] = 0.0;
-	tmp->camera.vu[1] = 0.0;
-	tmp->camera.vu[2] = 1.0;
+	leaf->target.vu[0] = 0;
+	leaf->target.vu[1] = 0;
+	leaf->target.vu[2] = 250;
 }
 static void portal_delete(struct actor* act)
 {

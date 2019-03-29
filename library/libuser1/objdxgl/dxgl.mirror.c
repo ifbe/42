@@ -6,40 +6,42 @@ void actorcreatefromfile(struct actor* act, char* name);
 
 
 char* mirror_glsl2d_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"out mediump vec2 uvw;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = vec4(vertex, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec2 texuvw;\n"
+"out mediump vec2 uvw;\n"
+"void main()\n"
+"{\n"
+	"uvw = texuvw;\n"
+	"gl_Position = vec4(vertex, 1.0);\n"
+"}\n";
+
 char* mirror_glsl_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"uniform mat4 cammvp;\n"
-	"out mediump vec2 uvw;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec2 texuvw;\n"
+"uniform mat4 cammvp;\n"
+"out mediump vec2 uvw;\n"
+"void main()\n"
+"{\n"
+	"uvw = texuvw;\n"
+	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+"}\n";
+
 char* mirror_glsl_f =
-	GLSL_VERSION
-	"uniform sampler2D tex0;\n"
-	"in mediump vec2 uvw;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"vec3 c = 0.8*texture(tex0, uvw).rgb + vec3(0.2, 0.2, 0.2);\n"
-		"FragColor = vec4(c, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"uniform sampler2D tex0;\n"
+"in mediump vec2 uvw;\n"
+"out mediump vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+	"vec3 c = 0.8*texture(tex0, uvw).rgb + vec3(0.2, 0.2, 0.2);\n"
+	"FragColor = vec4(c, 1.0);\n"
+"}\n";
 
 
 
-
+/*
 void mat4_vector(mat4 m, float* v);
 void fixview(mat4 viewmatrix, struct arena* win);
 void mirrorfrustum(struct arena* win, struct style* mir)
@@ -63,20 +65,13 @@ void mirrorfrustum(struct arena* win, struct style* mir)
 	say("\n");
 	say("%f,%f,%f\n", lb[0], lb[1], lb[2]);
 	say("%f,%f,%f\n", rt[0], rt[1], rt[2]);
-/*
-	win->nearn = - rt[2] + 1.0;
-	win->nearl = lb[0];
-	win->nearr = rt[0];
-	win->nearb = rt[1];
-	win->neart = lb[1];
-	say("%f,%f,%f,%f\n", win->nearl, win->nearr, win->nearb, win->neart);
-*/
-}
+}*/
 void mirrorcamera(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
 {
+	float x,y,z,t;
 	vec3 p,q;
 	struct relation* rel;
 	struct arena* tmp;
@@ -94,23 +89,80 @@ void mirrorcamera(
 	dst->tex[0] = tmp->tex_color;
 
 
-	tmp->target.vc[0] = root->camera.vc[0];
-	tmp->target.vc[1] = root->camera.vc[1];
-	tmp->target.vc[2] = root->camera.vc[2];
+	//mirror.n
+	x = tf->vu[0];
+	y = tf->vu[1];
+	z = tf->vu[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
 
-	tmp->camera.vc[0] = root->camera.vc[0];
-	tmp->camera.vc[1] = root->camera.vc[1];
-	tmp->camera.vc[2] =-root->camera.vc[2];
+	//t = op * mirror.n
+	t = (root->camera.vc[0] - tf->vc[0])*x
+	  + (root->camera.vc[1] - tf->vc[1])*y
+	  + (root->camera.vc[2] - tf->vc[2])*z;
 
-	tmp->camera.vf[0] = (tmp->target.vc[0])-(tmp->camera.vc[0]);
-	tmp->camera.vf[1] = (tmp->target.vc[1])-(tmp->camera.vc[1]);
-	tmp->camera.vf[2] = (tmp->target.vc[2])-(tmp->camera.vc[2]);
+	//p' = p - 2*t*mirror.n
+	tmp->camera.vc[0] = root->camera.vc[0] - 2*t*x;
+	tmp->camera.vc[1] = root->camera.vc[1] - 2*t*y;
+	tmp->camera.vc[2] = root->camera.vc[2] - 2*t*z;
 
-	tmp->camera.vu[0] = tf->vf[0];
-	tmp->camera.vu[1] = tf->vf[1];
-	tmp->camera.vu[2] = tf->vf[2];
+	//camera.n = t*mirror.n
+	tmp->camera.vn[0] = x*t;
+	tmp->camera.vn[1] = y*t;
+	tmp->camera.vn[2] = z*t;
 
-	mirrorfrustum(tmp, tf);
+	//mirror.r
+	x = tf->vr[0];
+	y = tf->vr[1];
+	z = tf->vr[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+
+	//camera.l = mirror.r * (l-q)
+	tmp->camera.vl[0] = x * ((tf->vc[0] - tf->vr[0]) - (tmp->camera.vc[0] + tmp->camera.vn[0]));
+	tmp->camera.vl[1] = y * ((tf->vc[1] - tf->vr[1]) - (tmp->camera.vc[1] + tmp->camera.vn[1]));
+	tmp->camera.vl[2] = z * ((tf->vc[2] - tf->vr[2]) - (tmp->camera.vc[2] + tmp->camera.vn[2]));
+
+	//camera.r = mirror.r * (r-q)
+	tmp->camera.vr[0] = x * ((tf->vc[0] + tf->vr[0]) - (tmp->camera.vc[0] + tmp->camera.vn[0]));
+	tmp->camera.vr[1] = y * ((tf->vc[1] + tf->vr[1]) - (tmp->camera.vc[1] + tmp->camera.vn[1]));
+	tmp->camera.vr[2] = z * ((tf->vc[2] + tf->vr[2]) - (tmp->camera.vc[2] + tmp->camera.vn[2]));
+
+	//mirror.t
+	x = tf->vf[0];
+	y = tf->vf[1];
+	z = tf->vf[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+
+	//camera.b = mirror.t * (b-q)
+	tmp->camera.vb[0] = x * ((tf->vc[0] - tf->vf[0]) - (tmp->camera.vc[0] + tmp->camera.vn[0]));
+	tmp->camera.vb[1] = y * ((tf->vc[1] - tf->vf[1]) - (tmp->camera.vc[1] + tmp->camera.vn[1]));
+	tmp->camera.vb[2] = z * ((tf->vc[2] - tf->vf[2]) - (tmp->camera.vc[2] + tmp->camera.vn[2]));
+
+	//camera.u = mirror.t * (u-q)
+	tmp->camera.vu[0] = x * ((tf->vc[0] + tf->vf[0]) - (tmp->camera.vc[0] + tmp->camera.vn[0]));
+	tmp->camera.vu[1] = y * ((tf->vc[1] + tf->vf[1]) - (tmp->camera.vc[1] + tmp->camera.vn[1]));
+	tmp->camera.vu[2] = z * ((tf->vc[2] + tf->vf[2]) - (tmp->camera.vc[2] + tmp->camera.vn[2]));
+
+	tmp->camera.vn[0] *= 1.001;
+	tmp->camera.vn[1] *= 1.001;
+	tmp->camera.vn[2] *= 1.001;
+
+	say("%f,%f,%f\n",root->camera.vc[0], root->camera.vc[1], root->camera.vc[2]);
+	say("%f,%f,%f\n",tmp->camera.vc[0], tmp->camera.vc[1], tmp->camera.vc[2]);
+	say("%f,%f,%f\n",tmp->camera.vn[0], tmp->camera.vn[1], tmp->camera.vn[2]);
+	say("%f,%f,%f\n",tmp->camera.vl[0], tmp->camera.vl[1], tmp->camera.vl[2]);
+	say("%f,%f,%f\n",tmp->camera.vr[0], tmp->camera.vr[1], tmp->camera.vr[2]);
+	say("%f,%f,%f\n",tmp->camera.vb[0], tmp->camera.vb[1], tmp->camera.vb[2]);
+	say("%f,%f,%f\n",tmp->camera.vu[0], tmp->camera.vu[1], tmp->camera.vu[2]);
+	say("\n");
 
 	carveline_rect(root, 0xffffff, tf->vc, tf->vr, tf->vf);
 	p[0] = tf->vc[0] - tf->vr[0] - tf->vf[0];
@@ -183,42 +235,42 @@ static void mirror_read_vbo(
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
 	vbuf[0][2] = vc[2] - vr[2] - vf[2];
 	vbuf[0][3] = 0.0;
-	vbuf[0][4] = 1.0;
+	vbuf[0][4] = 0.0;
 	vbuf[0][5] = 0.0;
 
 	vbuf[1][0] = vc[0] + vr[0] + vf[0];
 	vbuf[1][1] = vc[1] + vr[1] + vf[1];
 	vbuf[1][2] = vc[2] + vr[2] + vf[2];
 	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 0.0;
+	vbuf[1][4] = 1.0;
 	vbuf[1][5] = 0.0;
 
 	vbuf[2][0] = vc[0] - vr[0] + vf[0];
 	vbuf[2][1] = vc[1] - vr[1] + vf[1];
 	vbuf[2][2] = vc[2] - vr[2] + vf[2];
 	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 0.0;
+	vbuf[2][4] = 1.0;
 	vbuf[2][5] = 0.0;
 
 	vbuf[3][0] = vc[0] + vr[0] + vf[0];
 	vbuf[3][1] = vc[1] + vr[1] + vf[1];
 	vbuf[3][2] = vc[2] + vr[2] + vf[2];
 	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 0.0;
+	vbuf[3][4] = 1.0;
 	vbuf[3][5] = 0.0;
 
 	vbuf[4][0] = vc[0] - vr[0] - vf[0];
 	vbuf[4][1] = vc[1] - vr[1] - vf[1];
 	vbuf[4][2] = vc[2] - vr[2] - vf[2];
 	vbuf[4][3] = 0.0;
-	vbuf[4][4] = 1.0;
+	vbuf[4][4] = 0.0;
 	vbuf[4][5] = 0.0;
 
 	vbuf[5][0] = vc[0] + vr[0] - vf[0];
 	vbuf[5][1] = vc[1] + vr[1] - vf[1];
 	vbuf[5][2] = vc[2] + vr[2] - vf[2];
 	vbuf[5][3] = 1.0;
-	vbuf[5][4] = 1.0;
+	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;

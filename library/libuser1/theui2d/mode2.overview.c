@@ -56,10 +56,6 @@ void defaultstyle_2in3(struct style* sty)
 }
 void defaultstyle_3d(struct style* sty, struct style* tar)
 {
-	sty->vc[0] = tar->vc[0];
-	sty->vc[1] = tar->vc[1];
-	sty->vc[2] = tar->vc[2];
-
 	sty->vr[0] = tar->vr[0];
 	sty->vr[1] = tar->vr[1];
 	sty->vr[2] = tar->vr[2];
@@ -71,6 +67,10 @@ void defaultstyle_3d(struct style* sty, struct style* tar)
 	sty->vu[0] = tar->vu[0];
 	sty->vu[1] = tar->vu[1];
 	sty->vu[2] = tar->vu[2];
+
+	sty->vc[0] = tar->vc[0] + tar->vr[0] + tar->vf[0];
+	sty->vc[1] = tar->vc[1] + tar->vr[1] + tar->vf[1];
+	sty->vc[2] = tar->vc[2] + tar->vr[2] + tar->vf[2];
 }
 int arenaactor(struct arena* ccc, struct actor* act)
 {
