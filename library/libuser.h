@@ -513,7 +513,41 @@ struct arena
 	u64 fmt;
 	u64 vfmt;
 
-	//[40,5f]: data
+	//[40,7f]: func
+	union{
+		int (*oncreate)(void* actor, void* buf);
+		char padding0[8];
+	};
+	union{
+		int (*ondelete)(void* actor);
+		char padding1[8];
+	};
+	union{
+		int (*onstart)(void* leaf, void* lf, void* twig, void* tf, void* root,void* rf);
+		char padding2[8];
+	};
+	union{
+		int (*onstop)(void* leaf, void* lf, void* twig, void* tf, void* root,void* rf);
+		char padding3[8];
+	};
+	union{
+		int (*onget)(void* actor, void* pinid, void* buf, int len);
+		char padding4[8];
+	};
+	union{
+		int (*onpost)(void* actor, void* pinid, void* buf, int len);
+		char padding5[8];
+	};
+	union{
+		int (*onread)(void* dc,void* df,void* sc,void* sf);
+		char padding6[8];
+	};
+	union{
+		int (*onwrite)(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+		char padding7[8];
+	};
+
+	//[80,bf]: data
 	union{
 		u64 padd0;
 		u64 fd;
@@ -556,56 +590,30 @@ struct arena
 		u32 tex_color;
 	};
 
-	//[80,8f]: win geom
+	//[c0,cf]
 	int width;
 	int height;
 	int depth;
 	int stride;
 
-	//[90,9f]: fb geom
+	//[d0,df]
 	int fbwidth;
 	int fbheight;
 	int fbdepth;
 	int fbstride;
 
-	u8 haha[0x60];
-/*
-	//[a0,af]: near plane
-	float nearl;
-	float nearr;
-	float nearb;
-	float neart;
+	//[e0,ef]
+	int x0;
+	int y0;
+	int z0;
+	int w0;
 
-	//[b0,bf]: far plane
-	float nearn;
-	float nearf;
-	float nearp;
-	float nearq;
+	//[f0,ff]
+	int xn;
+	int yn;
+	int zn;
+	int wn;
 
-	//[c0,cf]: layer0: background
-	int backx;
-	int backy;
-	int backz;
-	int backw;
-
-	//[d0,df]: layer1: foreground
-	int forex;
-	int forey;
-	int forez;
-	int forew;
-
-	//[e0,ef]: layer2: popup
-	int tempx;
-	int tempy;
-	int tempz;
-	int tempw;
-
-	//[f0,ff]: layer3: vkbd
-	int vkbdx;
-	int vkbdy;
-	int vkbdz;
-	int vkbdw;
-*/
 	//[100,1ff]
 	struct style target;
 	struct style camera;
@@ -639,36 +647,7 @@ struct actor
 	u64 fmt;
 	u64 name;
 
-	//[40,5f]: data
-	union{
-		u64 fd;
-		void* win;
-	};
-	union{
-		u64 dc;
-		u64 gc;
-		void* er;
-	};
-	union{
-		u64 len;
-		void* idx;
-	};
-	union{
-		u64 addr;
-		void* buf;
-	};
-
-	//[60,7f]: prop
-	int width;
-	int height;
-	int depth;
-	int stride;
-	int fbwidth;
-	int fbheight;
-	int fbdepth;
-	int fbstride;
-
-	//[80,bf]vec
+	//[40,7f]: func
 	union{
 		int (*oncreate)(void* actor, void* buf);
 		char padding0[8];
@@ -702,15 +681,52 @@ struct actor
 		char padding7[8];
 	};
 
-	//[c0,ff]
-	u64 x;
-	u64 y;
-	u64 z;
-	u64 w;
-	u64 onfunc4;
-	u64 onfunc5;
-	u64 onfunc6;
-	u64 onfunc7;
+	//[80,bf]: data
+	union{
+		u64 fd;
+		void* win;
+	};
+	union{
+		u64 dc;
+		u64 gc;
+		void* er;
+	};
+	union{
+		u64 len;
+		void* idx;
+	};
+	union{
+		u64 addr;
+		void* buf;
+	};
+	u64 data0;
+	u64 data1;
+	u64 data2;
+	u64 data3;
+
+	//[c0,cf]
+	int width;
+	int height;
+	int depth;
+	int stride;
+
+	//[d0,df]
+	int fbwidth;
+	int fbheight;
+	int fbdepth;
+	int fbstride;
+
+	//[e0,ef]
+	int x0;
+	int y0;
+	int z0;
+	int w0;
+
+	//[f0,ff]
+	int xn;
+	int yn;
+	int zn;
+	int wn;
 
 	//[100,1ff]
 	struct style target;

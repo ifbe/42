@@ -119,19 +119,26 @@ static int vrglass_swrite(
 		}
 	}
 say("%f,%f,%f\n",win->camera.vc[0], win->camera.vc[1], win->camera.vc[2]);
-	win->target.vc[0] = win->camera.vc[0];
-	win->target.vc[1] = win->camera.vc[1] + 1.0;
-	win->target.vc[2] = win->camera.vc[2];
-	win->camera.vf[0] = 0.0;
-	win->camera.vf[1] = 1.0;
-	win->camera.vf[2] = 0.0;
-/*
-	win->nearn = -1000 - win->camera.vc[1];
-	win->nearl =-win->width/2 - win->camera.vc[0];
-	win->nearr = win->width/2 - win->camera.vc[0];
-	win->nearb =-win->height/2 - win->camera.vc[2];
-	win->neart = win->height/2 - win->camera.vc[2];
-*/
+
+	win->camera.vn[0] = 0.0;
+	win->camera.vn[1] = -1000.0 - win->camera.vc[1];
+	win->camera.vn[2] = 0.0;
+
+	win->camera.vl[0] = -win->width/2 - win->camera.vc[0];
+	win->camera.vl[1] = 0.0;
+	win->camera.vl[2] = 0.0;
+
+	win->camera.vr[0] = win->width/2 - win->camera.vc[0];
+	win->camera.vr[1] = 0.0;
+	win->camera.vr[2] = 0.0;
+
+	win->camera.vb[0] = 0.0;
+	win->camera.vb[1] = 0.0;
+	win->camera.vb[2] = -win->height/2 - win->camera.vc[2];
+
+	win->camera.vu[0] = 0.0;
+	win->camera.vu[1] = 0.0;
+	win->camera.vu[2] = win->height/2 - win->camera.vc[2];
 	return 1;
 }
 static void vrglass_cread(

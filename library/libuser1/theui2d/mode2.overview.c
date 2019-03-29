@@ -187,7 +187,7 @@ void overview_read_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	cursor = (act->x) + (act->y)*8;
+	cursor = (act->x0) + (act->y0)*8;
 /*
 	drawline(win, 0x0000ff, 0, h*1/4, w-1, h*1/4);
 	drawline(win, 0x00ff00, 0, h*2/4, w-1, h*2/4);
@@ -528,7 +528,7 @@ void overview_read_vbo(
 	vc = sty->vc;
 	vr = sty->vr;
 	vf = sty->vf;
-	cursor = (act->x) + (act->y)*16;
+	cursor = (act->x0) + (act->y0)*16;
 /*
 	tc[0] = -1.0;
 	tc[1] = 0.5;
@@ -1295,8 +1295,8 @@ static int overview_swrite(
 			x = 4 + 4 * (x - (sty->vc[0])) / (sty->vr[0]);
 			y = 16 + 16 * (y - (sty->vc[1])) / (sty->vf[1]);
 		}
-		act->x = x;
-		act->y = y;
+		act->x0 = x;
+		act->y0 = y;
 
 		if('-' == k)
 		{

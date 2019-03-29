@@ -32,18 +32,18 @@ void fixview(mat4 viewmatrix, struct style* sty)
 	nz /= norm;
 
 	//uvn.u = right = cross(front,(0,0,1))
-	float ux = sty->vr[0];
-	float uy = sty->vr[1];
-	float uz = sty->vr[2];
+	float ux = sty->vr[0] - sty->vl[0];
+	float uy = sty->vr[1] - sty->vl[1];
+	float uz = sty->vr[2] - sty->vl[2];
 	norm = squareroot(ux*ux + uy*uy + uz*uz);
 	ux /= norm;
 	uy /= norm;
 	uz /= norm;
 
 	//uvn.v = above = cross(right, front)
-	float vx = sty->vu[0];
-	float vy = sty->vu[1];
-	float vz = sty->vu[2];
+	float vx = sty->vu[0] - sty->vb[0];
+	float vy = sty->vu[1] - sty->vb[1];
+	float vz = sty->vu[2] - sty->vb[2];
 	norm = squareroot(vx*vx + vy*vy + vz*vz);
 	vx /= norm;
 	vy /= norm;
@@ -90,6 +90,7 @@ void fixproj(mat4 proj, struct style* sty)
 	if(sty->vr[0]*lr[0] + sty->vr[1]*lr[1] + sty->vr[2]*lr[2] < 0)r = -r;
 	if(sty->vb[0]*bt[0] + sty->vb[1]*bt[1] + sty->vb[2]*bt[2] < 0)b = -b;
 	if(sty->vu[0]*bt[0] + sty->vu[1]*bt[1] + sty->vu[2]*bt[2] < 0)t = -t;
+say("%f,%f,%f,%f,%f\n",l,r,b,t,n);
 
 	proj[0][0] = 2 * n / (r-l);
 	proj[0][1] = 0.0;
@@ -183,18 +184,18 @@ void invview(mat4 viewmatrix, struct style* sty)
 	nz /= norm;
 
 	//uvn.u = right = cross(front,(0,0,1))
-	float ux = sty->vr[0];
-	float uy = sty->vr[1];
-	float uz = sty->vr[2];
+	float ux = sty->vr[0] - sty->vl[0];
+	float uy = sty->vr[1] - sty->vl[1];
+	float uz = sty->vr[2] - sty->vl[2];
 	norm = squareroot(ux*ux + uy*uy + uz*uz);
 	ux /= norm;
 	uy /= norm;
 	uz /= norm;
 
 	//uvn.v = above cross(right, front)
-	float vx = sty->vu[0];
-	float vy = sty->vu[1];
-	float vz = sty->vu[2];
+	float vx = sty->vu[0] - sty->vb[0];
+	float vy = sty->vu[1] - sty->vb[1];
+	float vz = sty->vu[2] - sty->vb[2];
 	norm = squareroot(vx*vx + vy*vy + vz*vz);
 	vx /= norm;
 	vy /= norm;
