@@ -14,6 +14,7 @@ void portal_register(void*);
 void skydome_register(void*);
 void terrain_register(void*);
 void texball_register(void*);
+void water_register(void*);
 void weather_register(void*);
 //geom
 void cube_register(void*);
@@ -60,7 +61,6 @@ void rccar_register(void*);
 void stair_register(void*);
 void tardis_register(void*);
 void tree_register(void*);
-void water_register(void*);
 //test
 void codeimg_register(void*);
 void doodle_register(void*);
@@ -123,6 +123,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	texball_register(tmp);
+	tmp += sizeof(struct actor);
+
+	water_register(tmp);
 	tmp += sizeof(struct actor);
 
 	weather_register(tmp);
@@ -253,9 +256,6 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	tree_register(tmp);
-	tmp += sizeof(struct actor);
-
-	water_register(tmp);
 	tmp += sizeof(struct actor);
 
 

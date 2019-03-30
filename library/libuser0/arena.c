@@ -146,30 +146,23 @@ void* allocstyle()
 	return buf;
 }
 void arenavertex(struct arena* win)
-{/*
-	//fov
-	win->nearl = -1.0;
-	win->nearr = 1.0;
-	win->nearb = -1.0;
-	win->neart = 1.0;
-	win->nearn = 1.0;
-*/
+{
 	//target
 	win->target.vc[0] = 0.0;
 	win->target.vc[1] = 0.0;
 	win->target.vc[2] = 0.0;
 
-	win->target.vr[0] = 256.0;
+	win->target.vr[0] = 500.0;
 	win->target.vr[1] = 0.0;
 	win->target.vr[2] = 0.0;
 
 	win->target.vf[0] = 0.0;
-	win->target.vf[1] = 256.0;
+	win->target.vf[1] = 500.0;
 	win->target.vf[2] = 0.0;
 
 	win->target.vu[0] = 0.0;
 	win->target.vu[1] = 0.0;
-	win->target.vu[2] = 256.0;
+	win->target.vu[2] = 500.0;
 
 	//camera
 	win->camera.vl[0] = -1.0;
@@ -201,8 +194,8 @@ void arenavertex(struct arena* win)
 	win->camera.vq[2] = 0.0;
 */
 	win->camera.vc[0] = 0.0;
-	win->camera.vc[1] = -1024.0;
-	win->camera.vc[2] = 1024.0;
+	win->camera.vc[1] = -1000.0;
+	win->camera.vc[2] = 1000.0;
 }
 
 

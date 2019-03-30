@@ -41,31 +41,7 @@ GLSL_VERSION
 
 
 
-/*
-void mat4_vector(mat4 m, float* v);
-void fixview(mat4 viewmatrix, struct arena* win);
-void glassfrustum(struct arena* win, struct style* mir)
-{
-	mat4 view;
-	vec3 lb,rt;
-	float* vc = mir->vc;
-	float* vr = mir->vr;
-	float* vf = mir->vf;
 
-	fixview(view, win);
-	lb[0] = vc[0] - vr[0] - vf[0];
-	lb[1] = vc[1] - vr[1] - vf[1];
-	lb[2] = vc[2] - vr[2] - vf[2];
-	mat4_vector(view, lb);
-	rt[0] = vc[0] + vr[0] + vf[0];
-	rt[1] = vc[1] + vr[1] + vf[1];
-	rt[2] = vc[2] + vr[2] + vf[2];
-	mat4_vector(view, rt);
-
-	say("\n");
-	say("%f,%f,%f\n", lb[0], lb[1], lb[2]);
-	say("%f,%f,%f\n", rt[0], rt[1], rt[2]);
-}*/
 void glasscamera(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,

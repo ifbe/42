@@ -79,6 +79,7 @@ objdxgl/dxgl.portal.c \
 objdxgl/dxgl.skydome.c \
 objdxgl/dxgl.terrain.c \
 objdxgl/dxgl.texball.c \
+objdxgl/dxgl.water.c \
 objdxgl/dxgl.weather.c \
 objfile/file.binary.c \
 objfile/file.folder.c \
@@ -160,7 +161,6 @@ theitem/item.rccar.c \
 theitem/item.stair.c \
 theitem/item.tardis.c \
 theitem/item.tree.c \
-theitem/item.water.c \
 theui3d/ui3d.picker.c \
 theui3d/ui3d.rtsgame.c \
 theui3d/ui3d.surround.c \

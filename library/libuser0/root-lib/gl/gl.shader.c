@@ -117,7 +117,7 @@ GLSL_VERSION
 "out mediump vec3 normal;\n"
 "void main(){\n"
 	"vertex = v;\n"
-	"colour = c*0.9;\n"
+	"colour = c*0.8;\n"
 	"normal = vec3(0.0, 0.0, -1.0);\n"
 	"gl_Position = vec4(vertex,1.0);\n"
 "}\n";
@@ -142,7 +142,7 @@ GLSL_VERSION
 	"mediump vec3 diffuse = lightcolor * SN;\n"
 	"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
 	"if(SN>0.0)specular = lightcolor * pow(RV, 16.0);\n"
-	"return (diffuse + specular)*0.1;\n"
+	"return (diffuse + specular)*0.2;\n"
 "}\n"
 "void main(){\n"
 	"FragColor = vec4(colour + ambient + phong(), 1.0);\n"
@@ -163,7 +163,7 @@ GLSL_VERSION
 "void main(){\n"
 	"vertex = v;\n"
 	"normal = n;\n"
-	"colour = c*0.9;\n"
+	"colour = c*0.8;\n"
 	"gl_Position = cammvp * vec4(vertex,1.0);\n"
 "}\n";
 
@@ -187,7 +187,7 @@ GLSL_VERSION
 	"mediump vec3 diffuse = lightcolor * SN;\n"
 	"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
 	"if(SN>0.0)specular = lightcolor * pow(RV, 16.0);\n"
-	"return (diffuse + specular)*0.1;\n"
+	"return (diffuse + specular)*0.2;\n"
 "}\n"
 //"float shadow(){\n"
 	//"if(uvw.z - texture(tex0, uvw.xy).r > 0.000001)return 0.1;\n"
