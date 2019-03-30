@@ -204,7 +204,7 @@ void carve2d_string(struct arena* win, u32 rgb,
 	vec3 tr;
 
 	if(0 == buf)return;
-	if(0 == len){while(buf[len] > 0x20)len++;}
+	if(0 == len){while(buf[len] >= 0x20)len++;}
 	else
 	{
 		for(j=0;j<len;j++)
@@ -260,6 +260,30 @@ void carve2d_double(struct arena* win, u32 rgb,
 	u8 mystr[100];
 	double2decstr(data, mystr);
 	carve2d_string(win, rgb, vc, vr, vf, mystr, 0);
+}
+void carve2d_vec4(struct arena* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, vec4 v)
+{
+	int ret;
+	u8 str[100];
+
+	ret = double2decstr(v[0], str);
+	str[ret+0] = ',';
+	str[ret+1] = ' ';
+	ret += 2;
+
+	ret += double2decstr(v[1], str+ret);
+	str[ret+0] = ',';
+	str[ret+1] = ' ';
+	ret += 2;
+
+	ret += double2decstr(v[2], str+ret);
+	str[ret+0] = ',';
+	str[ret+1] = ' ';
+	ret += 2;
+
+	ret += double2decstr(v[3], str+ret);
+	carve2d_string(win, rgb, vc, vr, vf, str, 0);
 }
 
 

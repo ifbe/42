@@ -3,6 +3,59 @@
 
 
 
+void surround_fixcam(struct arena* win)
+{
+	float w,h,t;
+	float x,y,z,norm;
+
+	//near
+	x = win->target.vc[0] - win->camera.vc[0];
+	y = win->target.vc[1] - win->camera.vc[1];
+	z = win->target.vc[2] - win->camera.vc[2];
+	norm = squareroot(x*x + y*y + z*z);
+	x /= norm;
+	y /= norm;
+	z /= norm;
+	win->camera.vn[0] = x;
+	win->camera.vn[1] = y;
+	win->camera.vn[2] = z;
+
+	//right = cross(near, (0,0,1))
+	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
+	x = win->camera.vn[1]*1 - win->camera.vn[2]*0;
+	y = win->camera.vn[2]*0 - win->camera.vn[0]*1;
+	z = win->camera.vn[0]*0 - win->camera.vn[1]*0;
+	norm = squareroot(x*x + y*y + z*z);
+	x /= norm;
+	y /= norm;
+	z /= norm;
+	win->camera.vr[0] = x;
+	win->camera.vr[1] = y;
+	win->camera.vr[2] = z;
+	win->camera.vl[0] = -x;
+	win->camera.vl[1] = -y;
+	win->camera.vl[2] = -z;
+
+	//
+	w = win->width;
+	h = win->height;
+	t = h / w;
+
+	//upper = cross(right, near)
+	x = win->camera.vr[1]*win->camera.vn[2] - win->camera.vr[2]*win->camera.vn[1];
+	y = win->camera.vr[2]*win->camera.vn[0] - win->camera.vr[0]*win->camera.vn[2];
+	z = win->camera.vr[0]*win->camera.vn[1] - win->camera.vr[1]*win->camera.vn[0];
+	norm = squareroot(x*x + y*y + z*z);
+	x /= norm;
+	y /= norm;
+	z /= norm;
+	win->camera.vu[0] = x * t;
+	win->camera.vu[1] = y * t;
+	win->camera.vu[2] = z * t;
+	win->camera.vb[0] = -x * t;
+	win->camera.vb[1] = -y * t;
+	win->camera.vb[2] = -z * t;
+}
 void surround_rotatex(struct arena* win, float delta)
 {
 	float c,s;
@@ -83,8 +136,7 @@ void surround_deltay(struct arena* win, float delta)
 }
 void surround_rotatexy(struct arena* win, int dx, int dy)
 {
-	float w,h,delta;
-	float x,y,z,norm;
+	float delta;
 
 	if(0 != dx)
 	{
@@ -98,54 +150,6 @@ void surround_rotatexy(struct arena* win, int dx, int dy)
 		else if(dy > 0)delta = 0.02;
 		surround_deltay(win, delta);
 	}
-
-	//near
-	x = win->target.vc[0] - win->camera.vc[0];
-	y = win->target.vc[1] - win->camera.vc[1];
-	z = win->target.vc[2] - win->camera.vc[2];
-	norm = squareroot(x*x + y*y + z*z);
-	x /= norm;
-	y /= norm;
-	z /= norm;
-	win->camera.vn[0] = x;
-	win->camera.vn[1] = y;
-	win->camera.vn[2] = z;
-
-	//right = cross(near, (0,0,1))
-	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
-	x = win->camera.vn[1]*1 - win->camera.vn[2]*0;
-	y = win->camera.vn[2]*0 - win->camera.vn[0]*1;
-	z = win->camera.vn[0]*0 - win->camera.vn[1]*0;
-	norm = squareroot(x*x + y*y + z*z);
-	x /= norm;
-	y /= norm;
-	z /= norm;
-	win->camera.vr[0] = x;
-	win->camera.vr[1] = y;
-	win->camera.vr[2] = z;
-	win->camera.vl[0] = -x;
-	win->camera.vl[1] = -y;
-	win->camera.vl[2] = -z;
-
-	//
-	w = win->width;
-	h = win->height;
-	delta = h / w;
-
-	//upper = cross(right, near)
-	x = win->camera.vr[1]*win->camera.vn[2] - win->camera.vr[2]*win->camera.vn[1];
-	y = win->camera.vr[2]*win->camera.vn[0] - win->camera.vr[0]*win->camera.vn[2];
-	z = win->camera.vr[0]*win->camera.vn[1] - win->camera.vr[1]*win->camera.vn[0];
-	norm = squareroot(x*x + y*y + z*z);
-	x /= norm;
-	y /= norm;
-	z /= norm;
-	win->camera.vu[0] = x * delta;
-	win->camera.vu[1] = y * delta;
-	win->camera.vu[2] = z * delta;
-	win->camera.vb[0] = -x * delta;
-	win->camera.vb[1] = -y * delta;
-	win->camera.vb[2] = -z * delta;
 }
 void target_deltaxyz(struct arena* win, float x, float y, float z)
 {
@@ -201,37 +205,110 @@ static int surround_sread(
 	tc[1] = vc[1];
 	tc[2] = vc[2];
 	carveline(win, 0x0000ff, vc, tc);
-	tr[0] = 1.0;
-	tr[1] = 0.0;
-	tr[2] = 0.0;
-	tf[0] = 0.0;
-	tf[1] = 1.0;
-	tf[2] = 0.0;
-	carvedouble(win, 0x0000ff, vc, tr, tf, vc[0]);
-
 	tc[0] = vc[0];
 	tc[1] = vc[1] + 100.0;
 	tc[2] = vc[2];
 	carveline(win, 0x00ff00, vc, tc);
-	tr[0] = 0.0;
-	tr[1] = 1.0;
-	tr[2] = 0.0;
-	tf[0] = 0.0;
-	tf[1] = 0.0;
-	tf[2] = 1.0;
-	carvedouble(win, 0x00ff00, vc, tr, tf, vc[1]);
-
 	tc[0] = vc[0];
 	tc[1] = vc[1];
 	tc[2] = vc[2] + 100.0;
 	carveline(win, 0xff0000, vc, tc);
-	tr[0] = 0.0;
+
+
+	tr[0] = 0.025;
 	tr[1] = 0.0;
-	tr[2] = 1.0;
-	tf[0] = -1.0;
-	tf[1] = 0.0;
+	tr[2] = 0.0;
+	tf[0] = 0.0;
+	tf[1] = 0.025;
 	tf[2] = 0.0;
-	carvedouble(win, 0xff0000, vc, tr, tf, vc[2]);
+
+
+	//target
+	tc[0] = -1.0;
+	tc[1] = 0.2 - 0.025;
+	tc[2] = 0.0;
+	carve2d_string(win, 0x0000ff, tc, tr, tf, "vr: ", 4);
+	tc[0] += 0.05;
+	carve2d_vec4(win, 0x0000ff, tc, tr, tf, win->target.vr);
+
+	tc[0] = -1.0;
+	tc[1] = 0.15 - 0.025;
+	tc[2] = 0.0;
+	carve2d_string(win, 0x00ff00, tc, tr, tf, "vf: ", 4);
+	tc[0] += 0.05;
+	carve2d_vec4(win, 0x00ff00, tc, tr, tf, win->target.vf);
+
+	tc[0] = -1.0;
+	tc[1] = 0.1 - 0.025;
+	tc[2] = 0.0;
+	carve2d_string(win, 0xff0000, tc, tr, tf, "vu: ", 4);
+	tc[0] += 0.05;
+	carve2d_vec4(win, 0xff0000, tc, tr, tf, win->target.vu);
+
+	tc[0] = -1.0;
+	tc[1] = 0.05 - 0.025;
+	tc[2] = 0.0;
+	carve2d_string(win, 0xffffff, tc, tr, tf, "vc: ", 4);
+	tc[0] += 0.05;
+	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->target.vc);
+
+
+	//camera
+	tc[0] = -1.0;
+	tc[1] = -0.05 + 0.025;
+	tc[2] = 0.0;
+	carve2d_string(win, 0x0000ff, tc, tr, tf, "vl: ", 4);
+	tc[0] += 0.05;
+	carve2d_vec4(win, 0x0000ff, tc, tr, tf, win->camera.vl);
+
+	tc[0] = -1.0;
+	tc[1] = -0.1 + 0.025;
+	tc[2] = 0.0;
+	carve2d_string(win, 0x0000ff, tc, tr, tf, "vr: ", 4);
+	tc[0] += 0.05;
+	carve2d_vec4(win, 0x0000ff, tc, tr, tf, win->camera.vr);
+
+	tc[0] = -1.0;
+	tc[1] = -0.15 + 0.025;
+	tc[2] = 0.0;
+	carve2d_string(win, 0x00ff00, tc, tr, tf, "vb: ", 4);
+	tc[0] += 0.05;
+	carve2d_vec4(win, 0x00ff00, tc, tr, tf, win->camera.vb);
+
+	tc[0] = -1.0;
+	tc[1] = -0.2 + 0.025;
+	tc[2] = 0.0;
+	carve2d_string(win, 0x00ff00, tc, tr, tf, "vu: ", 4);
+	tc[0] += 0.05;
+	carve2d_vec4(win, 0x00ff00, tc, tr, tf, win->camera.vu);
+
+	tc[0] = -1.0;
+	tc[1] = -0.25 + 0.025;
+	tc[2] = 0.0;
+	carve2d_string(win, 0xff0000, tc, tr, tf, "vn: ", 4);
+	tc[0] += 0.05;
+	carve2d_vec4(win, 0xff0000, tc, tr, tf, win->camera.vn);
+
+	tc[0] = -1.0;
+	tc[1] = -0.3 + 0.025;
+	tc[2] = 0.0;
+	carve2d_string(win, 0xff0000, tc, tr, tf, "vf: ", 4);
+	tc[0] += 0.05;
+	carve2d_vec4(win, 0xff0000, tc, tr, tf, win->camera.vf);
+
+	tc[0] = -1.0;
+	tc[1] = -0.35 + 0.025;
+	tc[2] = 0.0;
+	carve2d_string(win, 0xffffff, tc, tr, tf, "vq: ", 4);
+	tc[0] += 0.05;
+	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->camera.vv);
+
+	tc[0] = -1.0;
+	tc[1] = -0.4 + 0.025;
+	tc[2] = 0.0;
+	carve2d_string(win, 0xffffff, tc, tr, tf, "vc: ", 4);
+	tc[0] += 0.05;
+	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->camera.vc);
 
 	return 0;
 }
@@ -251,18 +328,42 @@ static int surround_swrite(
 	{
 		switch(ev->why)
 		{
-			case 0x4b:{win->camera.vc[0] -= 100;break;}
-			case 0x4d:{win->camera.vc[0] += 100;break;}
-			case 0x50:{win->camera.vc[1] -= sign*100;break;}
-			case 0x48:{win->camera.vc[1] += sign*100;break;}
+			case 0x4b:{
+				win->target.vc[0] -= 100;
+				win->camera.vc[0] -= 100;
+				break;
+			}
+			case 0x4d:{
+				win->target.vc[0] += 100;
+				win->camera.vc[0] += 100;
+				break;
+			}
+			case 0x50:{
+				win->target.vc[1] -= sign*100;
+				win->camera.vc[1] -= sign*100;
+				break;
+			}
+			case 0x48:{
+				win->target.vc[1] += sign*100;
+				win->camera.vc[1] += sign*100;
+				break;
+			}
 		}
 	}
-	if(_char_ == ev->what)
+	else if(_char_ == ev->what)
 	{
 		switch(ev->why)
 		{
-			case '-':{win->camera.vc[2] -= 100;break;}
-			case '=':{win->camera.vc[2] += 100;break;}
+			case '-':{
+				win->target.vc[2] -= 100;
+				win->camera.vc[2] -= 100;
+				break;
+			}
+			case '=':{
+				win->target.vc[2] += 100;
+				win->camera.vc[2] += 100;
+				break;
+			}
 		}
 	}
 	else if(0x2b70 == ev->what)
@@ -356,10 +457,10 @@ static int surround_swrite(
 
 		x0 = t[0];
 		y0 = t[1];
-		if((x0 > -4096) && (x0 < 4096) && (y0 > -4096) && (y0 < 4096))return 0;
-
-		target_deltaxyz(win, x0/1000.0, sign*y0/1000.0, 0);
-		return 0;
+		if((x0 < -4096) | (x0 > 4096) | (y0 < -4096) | (y0 > 4096))
+		{
+			target_deltaxyz(win, x0/1000.0, sign*y0/1000.0, 0);
+		}
 	}
 	else if(joy_right == (ev->what & joy_mask))
 	{
@@ -405,7 +506,6 @@ static int surround_swrite(
 			win->camera.vc[0] = win->target.vc[0];
 			win->camera.vc[1] = win->target.vc[1] - win->camera.vf[1];
 			win->camera.vc[2] = win->target.vc[2] - win->camera.vf[2];
-			return 0;
 		}
 		if(t[3] & joyr_start)		//w+
 		{
@@ -413,17 +513,23 @@ static int surround_swrite(
 		}
 
 		x0 = t[0];
-		if(x0 < -8192)x0 = -1;
-		else if(x0 > 8192)x0 = 1;
-		else x0 = 0;
-
 		y0 = t[1];
-		if(y0 < -8192)y0 = -1;
-		else if(y0 > 8192)y0 = 1;
-		else y0 = 0;
+		if((x0 < -4096) | (x0 > 4096) | (y0 < -4096) | (y0 > 4096))
+		{
+			if(x0 < -8192)x0 = -1;
+			else if(x0 > 8192)x0 = 1;
+			else x0 = 0;
 
-		surround_rotatexy(win, x0, -y0);
+			if(y0 < -8192)y0 = -1;
+			else if(y0 > 8192)y0 = 1;
+			else y0 = 0;
+
+			surround_rotatexy(win, x0, -y0);
+		}
 	}
+
+	//fix it!
+	surround_fixcam(win);
 	return 1;
 }
 static void surround_cread(

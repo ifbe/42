@@ -90,7 +90,7 @@ void fixproj(mat4 proj, struct style* sty)
 	if(sty->vr[0]*lr[0] + sty->vr[1]*lr[1] + sty->vr[2]*lr[2] < 0)r = -r;
 	if(sty->vb[0]*bt[0] + sty->vb[1]*bt[1] + sty->vb[2]*bt[2] < 0)b = -b;
 	if(sty->vu[0]*bt[0] + sty->vu[1]*bt[1] + sty->vu[2]*bt[2] < 0)t = -t;
-say("%f,%f,%f,%f,%f\n",l,r,b,t,n);
+//say("%f,%f,%f,%f,%f\n",l,r,b,t,n);
 
 	proj[0][0] = 2 * n / (r-l);
 	proj[0][1] = 0.0;
