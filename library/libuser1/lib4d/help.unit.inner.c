@@ -8,6 +8,7 @@ void hbridge_register(void*);
 void rectify_register(void*);
 //dxgl
 void glass_register(void*);
+void ground_register(void*);
 void light_register(void*);
 void mirror_register(void*);
 void portal_register(void*);
@@ -105,6 +106,9 @@ void content_create(void* addr)
 
 //----------------------dxgl-----------------------
 	glass_register(tmp);
+	tmp += sizeof(struct actor);
+
+	ground_register(tmp);
 	tmp += sizeof(struct actor);
 
 	light_register(tmp);

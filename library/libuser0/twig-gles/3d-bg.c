@@ -6,12 +6,14 @@ int actorstart(void*, void*, void*, void*, void*, void*);
 
 
 
-#define COUNT 1
+#define COUNT 2
 static u64 want[COUNT] = {
-	hex64('t','e','x','b','a','l','l', 0)
+	hex64('t','e','x','b','a','l','l', 0),
+	hex64('g','r','o','u','n','d', 0, 0)
 };
 static char* args[COUNT] = {
-	"datafile/jpg/skysphere.jpg"
+	"datafile/jpg/skysphere.jpg",
+	0
 };
 
 
