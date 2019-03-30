@@ -113,6 +113,7 @@ void initvertex(struct arena* win)
 
 	src->method = 'i';
 	src->geometry = 3;
+	src->opaque = 1;
 
 	src->vbuf_enq = 1;
 	src->ibuf_enq = 1;
@@ -134,6 +135,7 @@ void initvertex(struct arena* win)
 
 	src->method = 'i';
 	src->geometry = 3;
+	src->opaque = 1;
 
 	src->vbuf_enq = 1;
 	src->ibuf_enq = 1;
@@ -155,6 +157,7 @@ void initvertex(struct arena* win)
 
 	src->method = 'i';
 	src->geometry = 3;
+	src->opaque = 1;
 
 	src->vbuf_enq = 1;
 	src->ibuf_enq = 1;
@@ -176,6 +179,7 @@ void initvertex(struct arena* win)
 
 	src->method = 'i';
 	src->geometry = 3;
+	src->opaque = 1;
 
 	src->vbuf_enq = 1;
 	src->ibuf_enq = 1;
@@ -198,6 +202,7 @@ void initvertex(struct arena* win)
 
 	src->method = 'i';
 	src->geometry = 3;
+	src->opaque = 1;
 
 	src->vbuf_enq = 1;
 	src->ibuf_enq = 1;
@@ -219,6 +224,7 @@ void initvertex(struct arena* win)
 
 	src->method = 'i';
 	src->geometry = 3;
+	src->opaque = 1;
 
 	src->vbuf_enq = 1;
 	src->ibuf_enq = 1;
@@ -240,6 +246,7 @@ void initvertex(struct arena* win)
 
 	src->method = 'i';
 	src->geometry = 3;
+	src->opaque = 1;
 
 	src->vbuf_enq = 1;
 	src->ibuf_enq = 1;
@@ -261,6 +268,7 @@ void initvertex(struct arena* win)
 
 	src->method = 'i';
 	src->geometry = 3;
+	src->opaque = 1;
 
 	src->vbuf_enq = 1;
 	src->ibuf_enq = 1;
@@ -325,8 +333,8 @@ void initvertex(struct arena* win)
 	uploadvertex(&mod[trigon3d].dst, src);
 
 
-	//light3d
-	src = &mod[light3d].src;
+	//opaque3d
+	src = &mod[opaque3d].src;
 
 	src->vbuf = malloc(0x1000000);
 	src->vbuf_fmt = vbuffmt_333;
@@ -392,8 +400,8 @@ void initvertex(struct arena* win)
 	uploadvertex(&mod[trigon2d].dst, src);
 
 
-	//light2d
-	src = &mod[light2d].src;
+	//opaque2d
+	src = &mod[opaque2d].src;
 
 	src->vbuf = malloc(0x100000);
 	src->vbuf_fmt = vbuffmt_33;

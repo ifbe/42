@@ -147,12 +147,12 @@ typedef float mat4[4][4];
 #define point3d  8
 #define line3d   9
 #define trigon3d 10
-#define light3d  11
+#define opaque3d  11
 
 #define point2d  12
 #define line2d   13
 #define trigon2d 14
-#define light2d  15
+#define opaque2d  15
 
 
 

@@ -165,6 +165,13 @@ void display_eachpass(
 	if(0 == dst->shader)return;
 	if(0 == dst->vao)return;
 
+	if(src->opaque)
+	{
+		glDepthMask(GL_FALSE);
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+
 	//0.shader
 	glUseProgram(dst->shader);
 
@@ -208,6 +215,12 @@ void display_eachpass(
 		if(1 == src->geometry)glDrawArrays(GL_POINTS, 0, src->vbuf_h);
 		else if(2 == src->geometry)glDrawArrays(GL_LINES, 0, src->vbuf_h);
 		else glDrawArrays(GL_TRIANGLES, 0, src->vbuf_h);
+	}
+
+	if(src->opaque)
+	{
+		glDisable(GL_BLEND);
+		glDepthMask(GL_TRUE);
 	}
 }
 static struct arena* saved;
@@ -263,14 +276,9 @@ void callback_display(struct arena* this, struct arena* coop)
 	}
 
 	//font
-	glDepthMask(GL_FALSE);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	for(j=0;j<8;j++)
 	{
 		if(0 == mod[j].src.vbuf)continue;
 		display_eachpass(win, coop, &mod[j].dst, &mod[j].src, cammvp);
 	}
-	glDisable(GL_BLEND);
-	glDepthMask(GL_TRUE);
 }
