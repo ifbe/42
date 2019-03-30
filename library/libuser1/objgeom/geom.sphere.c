@@ -17,6 +17,7 @@ static void sphere_read_vbo2d(
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 	carvesolid2d_sphere(win, 0xc0c0c0, vc, vr, vf, vu);
+	//carveopaque2d_sphere(win, 0xc0c0c0, vc, vr, vf, vu);
 }
 static void sphere_read_vbo3d(
 	struct arena* win, struct style* sty,
@@ -42,6 +43,7 @@ static void sphere_read_vbo3d(
 	tu[1] = vu[1]/2;
 	tu[2] = vu[2]/2;
 	carvesolid_sphere(win, 0xc0c0c0, tc, tr, tf, tu);
+	//carveopaque_sphere(win, 0xc0c0c0, tc, tr, tf, tu);
 }
 static void sphere_read_json(
 	struct arena* win, struct style* sty,

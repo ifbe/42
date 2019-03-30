@@ -13,45 +13,102 @@
 	#include <android_native_app_glue.h>
 	char fontfrag[] = {
 		GLSL_VERSION
-		"in mediump vec3 origcolor;\n"
-		"in mediump vec2 texuv;\n"
-		"uniform sampler2D tex0;\n"
+		"in mediump vec3 colour;\n"
+		"in mediump vec2 texuvw;\n"
 		"out mediump vec4 FragColor;\n"
-		"void main()\n"
-		"{\n"
-			"FragColor = vec4(origcolor,1.0)*texture(tex0, texuv).aaaa;\n"
+		"uniform sampler2D tex0;\n"
+		"void main(){\n"
+			"FragColor = vec4(colour, 1.0)*texture(tex0, texuvw).aaaa;\n"
 		"}\n"
 	};
 #else
 	#include <GL/glew.h>
 	char fontfrag[] = {
 		GLSL_VERSION
-		"in mediump vec3 origcolor;\n"
-		"in mediump vec2 texuv;\n"
-		"uniform sampler2D tex0;\n"
+		"in mediump vec3 colour;\n"
+		"in mediump vec2 texuvw;\n"
 		"out mediump vec4 FragColor;\n"
-		"void main()\n"
-		"{\n"
-			"FragColor = vec4(origcolor,1.0)*texture(tex0, texuv).rrrr;\n"
+		"uniform sampler2D tex0;\n"
+		"void main(){\n"
+			"FragColor = vec4(colour, 1.0)*texture(tex0, texuvw).rrrr;\n"
 		"}\n"
 	};
 #endif
 
+char font3dvert[] =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 c;\n"
+"layout(location = 2)in mediump vec2 t;\n"
+"out mediump vec3 colour;\n"
+"out mediump vec2 texuvw;\n"
+"uniform mat4 cammvp;\n"
+"void main(){\n"
+	"colour = c;\n"
+	"texuvw = t;\n"
+	"gl_Position = cammvp * vec4(v, 1.0);\n"
+"}\n";
+
+char font2dvert[] =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 c;\n"
+"layout(location = 2)in mediump vec2 t;\n"
+"out mediump vec3 colour;\n"
+"out mediump vec2 texuvw;\n"
+"void main(){\n"
+	"colour = c;\n"
+	"texuvw = t;\n"
+	"gl_Position = vec4(v, 1.0);\n"
+"}\n";
 
 
-/*
-char glsl2dvert[] = {
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 colour;\n"
-	"out mediump vec3 vcolor;\n"
-	"void main()\n"
-	"{\n"
-		"vcolor = colour;\n"
-		"gl_Position = vec4(vertex, 1.0);\n"
-	"}\n"
-};*/
-char glsl2dvert[] =
+
+
+char easy2d_vert[] =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 c;\n"
+"out mediump vec3 colour;\n"
+"void main(){\n"
+	"colour = c;\n"
+	"gl_Position = vec4(v, 1.0);\n"
+"}\n";
+
+char easy2d_frag[] =
+GLSL_VERSION
+"in mediump vec3 colour;\n"
+"out mediump vec4 FragColor;\n"
+"void main(){\n"
+	"FragColor = vec4(colour, 1.0);\n"
+"}\n";
+
+
+
+
+char simplevert[] =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 c;\n"
+"out mediump vec3 colour;\n"
+"uniform mat4 cammvp;\n"
+"void main(){\n"
+	"colour = c;\n"
+	"gl_Position = cammvp * vec4(v, 1.0);\n"
+"}\n";
+
+char simplefrag[] =
+GLSL_VERSION
+"in mediump vec3 colour;\n"
+"out mediump vec4 FragColor;\n"
+"void main(){\n"
+	"FragColor = vec4(colour, 1.0);\n"
+"}\n";
+
+
+
+
+char glsl2d_vert[] =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
 "layout(location = 1)in mediump vec3 c;\n"
@@ -65,7 +122,7 @@ GLSL_VERSION
 	"gl_Position = vec4(vertex,1.0);\n"
 "}\n";
 
-char glsl2dfrag[] =
+char glsl2d_frag[] =
 GLSL_VERSION
 "in mediump vec3 vertex;\n"
 "in mediump vec3 normal;\n"
@@ -91,26 +148,8 @@ GLSL_VERSION
 	"FragColor = vec4(colour + ambient + phong(), 1.0);\n"
 "}\n";
 
-char simplevert[] =
-GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec3 colour;\n"
-"uniform mat4 cammvp;\n"
-"out mediump vec3 vcolor;\n"
-"void main()\n"
-"{\n"
-	"vcolor = colour;\n"
-	"gl_Position = cammvp * vec4(vertex,1.0);\n"
-"}\n";
 
-char simplefrag[] =
-GLSL_VERSION
-"in mediump vec3 vcolor;\n"
-"out mediump vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-	"FragColor = vec4(vcolor,1.0);\n"
-"}\n";
+
 
 char prettyvert[] =
 GLSL_VERSION
@@ -159,59 +198,48 @@ GLSL_VERSION
 	"FragColor = vec4(colour + ambient + phong(), 1.0);\n"
 "}\n";
 
-char font3dvert[] =
+
+
+
+char opaque2d_vert[] =
 GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec3 colour;\n"
-"layout(location = 2)in mediump vec2 texcoo;\n"
-"uniform mat4 cammvp;\n"
-"out mediump vec3 origcolor;\n"
-"out mediump vec2 texuv;\n"
-"void main()\n"
-"{\n"
-	"gl_Position = cammvp * vec4(vertex,1.0);\n"
-	"origcolor = colour;\n"
-	"texuv = texcoo;\n"
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 c;\n"
+"out mediump vec3 colour;\n"
+"void main(){\n"
+	"colour = c;\n"
+	"gl_Position = vec4(v, 1.0);\n"
 "}\n";
 
-char font2dvert[] =
+char opaque2d_frag[] =
 GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec3 colour;\n"
-"layout(location = 2)in mediump vec2 texcoo;\n"
-"out mediump vec3 origcolor;\n"
-"out mediump vec2 texuv;\n"
-"void main()\n"
-"{\n"
-	"gl_Position = vec4(vertex,1.0);\n"
-	"origcolor = colour;\n"
-	"texuv = texcoo;\n"
-"}\n";
-
-char directvert[] =
-GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec3 colour;\n"
-"layout(location = 2)in mediump vec2 texcoo;\n"
-"uniform mat4 cammvp;\n"
-"out mediump vec3 origcolor;\n"
-"out mediump vec2 texuv;\n"
-"void main()\n"
-"{\n"
-	"gl_Position = cammvp * vec4(vertex,1.0);\n"
-	"origcolor = colour;\n"
-	"texuv = texcoo;\n"
-"}\n";
-
-char directfrag[] =
-GLSL_VERSION
-"in mediump vec3 origcolor;\n"
-"in mediump vec2 texuv;\n"
-"uniform sampler2D tex0;\n"
+"in mediump vec3 colour;\n"
 "out mediump vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-	"FragColor = vec4(origcolor,1.0)*texture(tex0, texuv);\n"
+"void main(){\n"
+	"FragColor = vec4(colour, 0.5);\n"
+"}\n";
+
+
+
+
+char opaquevert[] =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 c;\n"
+"layout(location = 2)in mediump vec3 n;\n"
+"out mediump vec3 colour;\n"
+"uniform mat4 cammvp;\n"
+"void main(){\n"
+	"colour = c;\n"
+	"gl_Position = cammvp * vec4(v, 1.0);\n"
+"}\n";
+
+char opaquefrag[] =
+GLSL_VERSION
+"in mediump vec3 colour;\n"
+"out mediump vec4 FragColor;\n"
+"void main(){\n"
+	"FragColor = vec4(colour, 0.5);\n"
 "}\n";
 
 
@@ -302,6 +330,9 @@ void initshader(struct arena* win)
 	printf("GLSL Version: %s\n", glslVersion);
 	printf("GL Version (integer): %x.%x\n", major, minor);
 
+
+
+
 	tmp = shaderprogram(font3dvert, fontfrag);
 	mod[font3d0].dst.shader = tmp;
 	mod[font3d1].dst.shader = tmp;
@@ -314,6 +345,9 @@ void initshader(struct arena* win)
 	mod[font2d2].dst.shader = tmp;
 	mod[font2d3].dst.shader = tmp;
 
+
+
+
 	tmp = shaderprogram(simplevert, simplefrag);
 	mod[point3d].dst.shader = tmp;
 	mod[line3d].dst.shader = tmp;
@@ -321,8 +355,19 @@ void initshader(struct arena* win)
 	tmp = shaderprogram(prettyvert, prettyfrag);
 	mod[trigon3d].dst.shader = tmp;
 
-	tmp = shaderprogram(glsl2dvert, glsl2dfrag);
+	tmp = shaderprogram(opaquevert, opaquefrag);
+	mod[opaque3d].dst.shader = tmp;
+
+
+
+
+	tmp = shaderprogram(easy2d_vert, easy2d_frag);
 	mod[point2d].dst.shader = tmp;
 	mod[line2d].dst.shader = tmp;
+
+	tmp = shaderprogram(glsl2d_vert, glsl2d_frag);
 	mod[trigon2d].dst.shader = tmp;
+
+	tmp = shaderprogram(opaque2d_vert, opaque2d_frag);
+	mod[opaque2d].dst.shader = tmp;
 }

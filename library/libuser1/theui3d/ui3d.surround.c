@@ -227,28 +227,28 @@ static int surround_sread(
 	tc[0] = -1.0;
 	tc[1] = 0.2 - 0.025;
 	tc[2] = 0.0;
-	carve2d_string(win, 0x0000ff, tc, tr, tf, "vr: ", 4);
+	carve2d_string(win, 0x0000ff, tc, tr, tf, (void*)"vr: ", 4);
 	tc[0] += 0.05;
 	carve2d_vec4(win, 0x0000ff, tc, tr, tf, win->target.vr);
 
 	tc[0] = -1.0;
 	tc[1] = 0.15 - 0.025;
 	tc[2] = 0.0;
-	carve2d_string(win, 0x00ff00, tc, tr, tf, "vf: ", 4);
+	carve2d_string(win, 0x00ff00, tc, tr, tf, (void*)"vf: ", 4);
 	tc[0] += 0.05;
 	carve2d_vec4(win, 0x00ff00, tc, tr, tf, win->target.vf);
 
 	tc[0] = -1.0;
 	tc[1] = 0.1 - 0.025;
 	tc[2] = 0.0;
-	carve2d_string(win, 0xff0000, tc, tr, tf, "vu: ", 4);
+	carve2d_string(win, 0xff0000, tc, tr, tf, (void*)"vu: ", 4);
 	tc[0] += 0.05;
 	carve2d_vec4(win, 0xff0000, tc, tr, tf, win->target.vu);
 
 	tc[0] = -1.0;
 	tc[1] = 0.05 - 0.025;
 	tc[2] = 0.0;
-	carve2d_string(win, 0xffffff, tc, tr, tf, "vc: ", 4);
+	carve2d_string(win, 0xffffff, tc, tr, tf, (void*)"vc: ", 4);
 	tc[0] += 0.05;
 	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->target.vc);
 
@@ -257,56 +257,56 @@ static int surround_sread(
 	tc[0] = -1.0;
 	tc[1] = -0.05 + 0.025;
 	tc[2] = 0.0;
-	carve2d_string(win, 0x0000ff, tc, tr, tf, "vl: ", 4);
+	carve2d_string(win, 0x0000ff, tc, tr, tf, (void*)"vl: ", 4);
 	tc[0] += 0.05;
 	carve2d_vec4(win, 0x0000ff, tc, tr, tf, win->camera.vl);
 
 	tc[0] = -1.0;
 	tc[1] = -0.1 + 0.025;
 	tc[2] = 0.0;
-	carve2d_string(win, 0x0000ff, tc, tr, tf, "vr: ", 4);
+	carve2d_string(win, 0x0000ff, tc, tr, tf, (void*)"vr: ", 4);
 	tc[0] += 0.05;
 	carve2d_vec4(win, 0x0000ff, tc, tr, tf, win->camera.vr);
 
 	tc[0] = -1.0;
 	tc[1] = -0.15 + 0.025;
 	tc[2] = 0.0;
-	carve2d_string(win, 0x00ff00, tc, tr, tf, "vb: ", 4);
+	carve2d_string(win, 0x00ff00, tc, tr, tf, (void*)"vb: ", 4);
 	tc[0] += 0.05;
 	carve2d_vec4(win, 0x00ff00, tc, tr, tf, win->camera.vb);
 
 	tc[0] = -1.0;
 	tc[1] = -0.2 + 0.025;
 	tc[2] = 0.0;
-	carve2d_string(win, 0x00ff00, tc, tr, tf, "vu: ", 4);
+	carve2d_string(win, 0x00ff00, tc, tr, tf, (void*)"vu: ", 4);
 	tc[0] += 0.05;
 	carve2d_vec4(win, 0x00ff00, tc, tr, tf, win->camera.vu);
 
 	tc[0] = -1.0;
 	tc[1] = -0.25 + 0.025;
 	tc[2] = 0.0;
-	carve2d_string(win, 0xff0000, tc, tr, tf, "vn: ", 4);
+	carve2d_string(win, 0xff0000, tc, tr, tf, (void*)"vn: ", 4);
 	tc[0] += 0.05;
 	carve2d_vec4(win, 0xff0000, tc, tr, tf, win->camera.vn);
 
 	tc[0] = -1.0;
 	tc[1] = -0.3 + 0.025;
 	tc[2] = 0.0;
-	carve2d_string(win, 0xff0000, tc, tr, tf, "vf: ", 4);
+	carve2d_string(win, 0xff0000, tc, tr, tf, (void*)"vf: ", 4);
 	tc[0] += 0.05;
 	carve2d_vec4(win, 0xff0000, tc, tr, tf, win->camera.vf);
 
 	tc[0] = -1.0;
 	tc[1] = -0.35 + 0.025;
 	tc[2] = 0.0;
-	carve2d_string(win, 0xffffff, tc, tr, tf, "vq: ", 4);
+	carve2d_string(win, 0xffffff, tc, tr, tf, (void*)"vq: ", 4);
 	tc[0] += 0.05;
 	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->camera.vv);
 
 	tc[0] = -1.0;
 	tc[1] = -0.4 + 0.025;
 	tc[2] = 0.0;
-	carve2d_string(win, 0xffffff, tc, tr, tf, "vc: ", 4);
+	carve2d_string(win, 0xffffff, tc, tr, tf, (void*)"vc: ", 4);
 	tc[0] += 0.05;
 	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->camera.vc);
 

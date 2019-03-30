@@ -341,6 +341,19 @@ void initvertex(struct arena* win)
 	src->vbuf_w = 4*3*3;
 	src->vbuf_h = 0x100000/36;
 
+	src->ibuf = malloc(0x100000);
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 0x100000/6;
+
+	src->method = 'i';
+	src->geometry = 3;
+	src->opaque = 1;
+
+	src->vbuf_enq = 1;
+	src->ibuf_enq = 1;
+	uploadvertex(&mod[opaque3d].dst, src);
+
 
 //----------------------2d--------------------
 	//drawarray.point2d
@@ -407,306 +420,17 @@ void initvertex(struct arena* win)
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 4*3*2;
 	src->vbuf_h = 0x100000/24;
+
+	src->ibuf = malloc(0x100000);
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 0x100000/6;
+
+	src->method = 'i';
+	src->geometry = 3;
+	src->opaque = 1;
+
+	src->vbuf_enq = 1;
+	src->ibuf_enq = 1;
+	uploadvertex(&mod[opaque2d].dst, src);
 }
-/*
-void initvertex(struct arena* win)
-{
-	struct texandobj* mod = win->mod;
-
-//---------------------font3d0--------------------------
-	//vao
-	glGenVertexArrays(1, &mod[font3d0].vao);
-	glBindVertexArray(mod[font3d0].vao);
-
-	//ibo
-	glGenBuffers(1, &mod[font3d0].ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d0].ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[font3d0].ibuf, GL_STATIC_DRAW);
-
-	//vbo
-	glGenBuffers(1, &mod[font3d0].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[font3d0].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x200000, mod[font3d0].vbuf, GL_STATIC_DRAW);
-
-	//attr
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
-
-
-//----------------------font3d1--------------------------
-	//vao
-	glGenVertexArrays(1, &mod[font3d1].vao);
-	glBindVertexArray(mod[font3d1].vao);
-
-	//ibo
-	glGenBuffers(1, &mod[font3d1].ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d1].ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[font3d1].ibuf, GL_STATIC_DRAW);
-
-	//vbo
-	glGenBuffers(1, &mod[font3d1].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[font3d1].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x200000, mod[font3d1].vbuf, GL_STATIC_DRAW);
-
-	//attr
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
-
-
-//-----------------------font3d2--------------------------
-	//vao
-	glGenVertexArrays(1, &mod[font3d2].vao);
-	glBindVertexArray(mod[font3d2].vao);
-
-	//ibo
-	glGenBuffers(1, &mod[font3d2].ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d2].ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[font3d2].ibuf, GL_STATIC_DRAW);
-
-	//vbo
-	glGenBuffers(1, &mod[font3d2].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[font3d2].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x200000, mod[font3d2].vbuf, GL_STATIC_DRAW);
-
-	//attr
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
-
-
-//-------------------------font3d3--------------------------
-	//vao
-	glGenVertexArrays(1, &mod[font3d3].vao);
-	glBindVertexArray(mod[font3d3].vao);
-
-	//ibo
-	glGenBuffers(1, &mod[font3d3].ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font3d3].ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[font3d3].ibuf, GL_STATIC_DRAW);
-
-	//vbo
-	glGenBuffers(1, &mod[font3d3].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[font3d3].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x200000, mod[font3d3].vbuf, GL_STATIC_DRAW);
-
-	//attr
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
-
-
-//---------------------font2d0--------------------------
-	//vao
-	glGenVertexArrays(1, &mod[font2d0].vao);
-	glBindVertexArray(mod[font2d0].vao);
-
-	//ibo
-	glGenBuffers(1, &mod[font2d0].ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d0].ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[font2d0].ibuf, GL_STATIC_DRAW);
-
-	//vbo
-	glGenBuffers(1, &mod[font2d0].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[font2d0].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x200000, mod[font2d0].vbuf, GL_STATIC_DRAW);
-
-	//attr
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
-
-
-//----------------------font2d1--------------------------
-	//vao
-	glGenVertexArrays(1, &mod[font2d1].vao);
-	glBindVertexArray(mod[font2d1].vao);
-
-	//ibo
-	glGenBuffers(1, &mod[font2d1].ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d1].ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[font2d1].ibuf, GL_STATIC_DRAW);
-
-	//vbo
-	glGenBuffers(1, &mod[font2d1].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[font2d1].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x200000, mod[font2d1].vbuf, GL_STATIC_DRAW);
-
-	//attr
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
-
-
-//-----------------------font2d2--------------------------
-	//vao
-	glGenVertexArrays(1, &mod[font2d2].vao);
-	glBindVertexArray(mod[font2d2].vao);
-
-	//ibo
-	glGenBuffers(1, &mod[font2d2].ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d2].ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[font2d2].ibuf, GL_STATIC_DRAW);
-
-	//vbo
-	glGenBuffers(1, &mod[font2d2].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[font2d2].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x200000, mod[font2d2].vbuf, GL_STATIC_DRAW);
-
-	//attr
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
-
-
-//-------------------------font2d3--------------------------
-	//vao
-	glGenVertexArrays(1, &mod[font2d3].vao);
-	glBindVertexArray(mod[font2d3].vao);
-
-	//ibo
-	glGenBuffers(1, &mod[font2d3].ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[font2d3].ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[font2d3].ibuf, GL_STATIC_DRAW);
-
-	//vbo
-	glGenBuffers(1, &mod[font2d3].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[font2d3].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x200000, mod[font2d3].vbuf, GL_STATIC_DRAW);
-
-	//attr
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
-
-
-//-------------------------vert3da--------------------------
-//drawarray.point(vertex,colour)
-	glGenVertexArrays(1, &mod[vert3da].vao);
-	glBindVertexArray(mod[vert3da].vao);
-
-	glGenBuffers(1, &mod[vert3da].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[vert3da].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, mod[vert3da].vbuf, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
-	glEnableVertexAttribArray(1);
-
-
-//-------------------------vert3db--------------------------
-	//drawelement.line(vertex,colour)
-	glGenVertexArrays(1, &mod[vert3db].vao);
-	glBindVertexArray(mod[vert3db].vao);
-
-	glGenBuffers(1, &mod[vert3db].ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert3db].ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[vert3db].ibuf, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &mod[vert3db].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[vert3db].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, mod[vert3db].vbuf, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
-	glEnableVertexAttribArray(1);
-
-
-//-------------------------vert3dc---------------------------
-	//drawelement.trigon(vertex,colour,normal)
-	glGenVertexArrays(1, &mod[vert3dc].vao);
-	glBindVertexArray(mod[vert3dc].vao);
-
-	glGenBuffers(1, &mod[vert3dc].ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert3dc].ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[vert3dc].ibuf, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &mod[vert3dc].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[vert3dc].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x1000000, mod[vert3dc].vbuf, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 36, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 36, (void*)12);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 36, (void*)24);
-	glEnableVertexAttribArray(2);
-
-
-//------------------------vert2da--------------------------
-	glGenVertexArrays(1, &mod[vert2da].vao);
-	glBindVertexArray(mod[vert2da].vao);
-
-	glGenBuffers(1, &mod[vert2da].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[vert2da].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, mod[vert2da].vbuf, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
-	glEnableVertexAttribArray(1);
-
-
-//------------------------vert2db-------------------------
-	glGenVertexArrays(1, &mod[vert2db].vao);
-	glBindVertexArray(mod[vert2db].vao);
-
-	glGenBuffers(1, &mod[vert2db].ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert2db].ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[vert2db].ibuf, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &mod[vert2db].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[vert2db].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, mod[vert2db].vbuf, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
-	glEnableVertexAttribArray(1);
-
-
-//------------------------vert2dc-------------------------
-	glGenVertexArrays(1, &mod[vert2dc].vao);
-	glBindVertexArray(mod[vert2dc].vao);
-
-	glGenBuffers(1, &mod[vert2dc].ibo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mod[vert2dc].ibo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 0x100000, mod[vert2dc].ibuf, GL_STATIC_DRAW);
-
-	glGenBuffers(1, &mod[vert2dc].vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, mod[vert2dc].vbo);
-	glBufferData(GL_ARRAY_BUFFER, 0x100000, mod[vert2dc].vbuf, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
-	glEnableVertexAttribArray(1);
-}
-*/

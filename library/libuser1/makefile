@@ -27,7 +27,7 @@ lib3d/lib3d.c \
 lib3d/carve2d/carve2d.basic.point.c \
 lib3d/carve2d/carve2d.basic.line.c \
 lib3d/carve2d/carve2d.basic.trigon.c \
-lib3d/carve2d/carve2d.basic.trigon.c \
+lib3d/carve2d/carve2d.basic.opaque.c \
 lib3d/carve2d/carve2d.texed.ascii.c \
 lib3d/carve2d/carve2d.texed.craft.c \
 lib3d/carve2d/carve2d.other.group.c \
@@ -37,7 +37,7 @@ lib3d/carve3d/carve3d.texed.ascii.c \
 lib3d/carve3d/carve3d.basic.point.c \
 lib3d/carve3d/carve3d.basic.line.c \
 lib3d/carve3d/carve3d.basic.trigon.c \
-lib3d/carve3d/carve3d.basic.trigon.c \
+lib3d/carve3d/carve3d.basic.opaque.c \
 lib3d/carve3d/carve3d.other.group.c \
 lib3d/carve3d/carve3d.other.helper.c \
 lib3d/camera/camera.matrix.c \

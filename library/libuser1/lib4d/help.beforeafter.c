@@ -86,22 +86,8 @@ void foreground_pixel(struct arena* win)
 void foreground_vbo(struct arena* win)
 {
 	int j;
-	struct arena* coop;
 	struct relation* rel;
 	struct datapair* mod;
-
-	rel = win->irel0;
-	while(1)
-	{
-		if(0 == rel)break;
-		coop = (void*)(rel->srcchip);
-		if(_win_ == rel->srctype)
-		{
-			carvecamera(win, coop);
-			carvesnowman(win, 0xffffff, coop->target.vc);
-		}
-		rel = samedstnextsrc(rel);
-	}
 
 	mod = win->mod;
 	for(j=0;j<16;j++)
