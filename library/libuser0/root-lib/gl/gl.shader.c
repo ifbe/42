@@ -51,151 +51,168 @@ char glsl2dvert[] = {
 		"gl_Position = vec4(vertex, 1.0);\n"
 	"}\n"
 };*/
-char glsl2dvert[] = {
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 colour;\n"
-	"mediump vec3 normal = vec3(0.0, 0.0, -1.0);\n"
-	"mediump vec3 camxyz = vec3(0.0, 0.0, -1.0);\n"
-	"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
-	"mediump vec3 lightposition = vec3(1.0, 1.0, -2.0);\n"
-	"out mediump vec3 vcolor;\n"
-	"void main()\n"
-	"{\n"
-		"mediump vec3 N = normalize(normal);\n"
-		"mediump vec3 L = normalize(vec3(lightposition - vertex));\n"
-		"mediump vec3 E = normalize(camxyz-vertex);\n"
-		"mediump vec3 R = reflect(-L, N);\n"
-		"mediump float SN = max(dot(N, L), 0.0);\n"
-		"mediump float RV = max(dot(R, E), 0.0);\n"
-		"mediump vec3 diffuse = lightcolor * SN;\n"
-		"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
-		"if(SN>0.0)specular = lightcolor * pow(RV, 8.0);\n"
-		"vcolor = colour*(diffuse + specular);\n"
-		"gl_Position = vec4(vertex,1.0);\n"
-	"}\n"
-};
-char glsl2dfrag[] = {
-	GLSL_VERSION
-	"in mediump vec3 vcolor;\n"
-	"out mediump vec4 FragColor;\n"
-	"mediump vec3 ambient = vec3(0.2, 0.2, 0.2);\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(ambient + vcolor, 1.0);\n"
-	"}\n"
-};
-char simplevert[] = {
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 colour;\n"
-	"uniform mat4 cammvp;\n"
-	"out mediump vec3 vcolor;\n"
-	"void main()\n"
-	"{\n"
-		"vcolor = colour;\n"
-		"gl_Position = cammvp * vec4(vertex,1.0);\n"
-	"}\n"
-};
-char simplefrag[] = {
-	GLSL_VERSION
-	"in mediump vec3 vcolor;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(vcolor,1.0);\n"
-	"}\n"
-};
-char prettyvert[] = {
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 colour;\n"
-	"layout(location = 2)in mediump vec3 normal;\n"
-	"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
-	"mediump vec3 lightposition = vec3(0.0, 0.0, 1000.0);\n"
-	"uniform mat4 cammvp;\n"
-	"uniform mediump vec3 camxyz;\n"
-	"out mediump vec3 vcolor;\n"
-	"void main()\n"
-	"{\n"
-		"mediump vec3 N = normalize(normal);\n"
-		"mediump vec3 L = normalize(vec3(lightposition - vertex));\n"
-		"mediump vec3 E = normalize(camxyz-vertex);\n"
-		"mediump vec3 R = reflect(-L, N);\n"
-		"mediump float SN = max(dot(N, L), 0.0);\n"
-		"mediump float RV = max(dot(R, E), 0.0);\n"
-		"mediump vec3 diffuse = lightcolor * SN;\n"
-		"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
-		"if(SN>0.0)specular = lightcolor * pow(RV, 4.0);\n"
-		"vcolor = colour*(diffuse + specular);\n"
-		"gl_Position = cammvp * vec4(vertex,1.0);\n"
-	"}\n"
-};
-char prettyfrag[] = {
-	GLSL_VERSION
-	"in mediump vec3 vcolor;\n"
-	"out mediump vec4 FragColor;\n"
-	"mediump vec3 ambient = vec3(0.2, 0.2, 0.2);\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(ambient + vcolor, 1.0);\n"
-	"}\n"
-};
-char font3dvert[] = {
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 colour;\n"
-	"layout(location = 2)in mediump vec2 texcoo;\n"
-	"uniform mat4 cammvp;\n"
-	"out mediump vec3 origcolor;\n"
-	"out mediump vec2 texuv;\n"
-	"void main()\n"
-	"{\n"
-		"gl_Position = cammvp * vec4(vertex,1.0);\n"
-		"origcolor = colour;\n"
-		"texuv = texcoo;\n"
-	"}\n"
-};
-char font2dvert[] = {
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 colour;\n"
-	"layout(location = 2)in mediump vec2 texcoo;\n"
-	"out mediump vec3 origcolor;\n"
-	"out mediump vec2 texuv;\n"
-	"void main()\n"
-	"{\n"
-		"gl_Position = vec4(vertex,1.0);\n"
-		"origcolor = colour;\n"
-		"texuv = texcoo;\n"
-	"}\n"
-};
-char directvert[] = {
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 colour;\n"
-	"layout(location = 2)in mediump vec2 texcoo;\n"
-	"uniform mat4 cammvp;\n"
-	"out mediump vec3 origcolor;\n"
-	"out mediump vec2 texuv;\n"
-	"void main()\n"
-	"{\n"
-		"gl_Position = cammvp * vec4(vertex,1.0);\n"
-		"origcolor = colour;\n"
-		"texuv = texcoo;\n"
-	"}\n"
-};
-char directfrag[] = {
-	GLSL_VERSION
-	"in mediump vec3 origcolor;\n"
-	"in mediump vec2 texuv;\n"
-	"uniform sampler2D tex0;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(origcolor,1.0)*texture(tex0, texuv);\n"
-	"}\n"
-};
+char glsl2dvert[] =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 c;\n"
+"out mediump vec3 colour;\n"
+"out mediump vec3 vertex;\n"
+"out mediump vec3 normal;\n"
+"void main(){\n"
+	"vertex = v;\n"
+	"colour = c*0.9;\n"
+	"normal = vec3(0.0, 0.0, -1.0);\n"
+	"gl_Position = vec4(vertex,1.0);\n"
+"}\n";
+
+char glsl2dfrag[] =
+GLSL_VERSION
+"in mediump vec3 vertex;\n"
+"in mediump vec3 normal;\n"
+"in mediump vec3 colour;\n"
+"out mediump vec4 FragColor;\n"
+"mediump vec3 camxyz = vec3(0.0, 0.0, -1.0);\n"
+"mediump vec3 ambient = vec3(0.1, 0.1, 0.1);\n"
+"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
+"mediump vec3 lightposition = vec3(1.0, 1.0, -2.0);\n"
+"vec3 phong(){\n"
+	"mediump vec3 N = normalize(normal);\n"
+	"mediump vec3 L = normalize(vec3(lightposition - vertex));\n"
+	"mediump vec3 E = normalize(camxyz - vertex);\n"
+	"mediump vec3 R = reflect(-L, N);\n"
+	"mediump float SN = max(dot(N, L), 0.0);\n"
+	"mediump float RV = max(dot(R, E), 0.0);\n"
+	"mediump vec3 diffuse = lightcolor * SN;\n"
+	"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
+	"if(SN>0.0)specular = lightcolor * pow(RV, 16.0);\n"
+	"return (diffuse + specular)*0.1;\n"
+"}\n"
+"void main(){\n"
+	"FragColor = vec4(colour + ambient + phong(), 1.0);\n"
+"}\n";
+
+char simplevert[] =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec3 colour;\n"
+"uniform mat4 cammvp;\n"
+"out mediump vec3 vcolor;\n"
+"void main()\n"
+"{\n"
+	"vcolor = colour;\n"
+	"gl_Position = cammvp * vec4(vertex,1.0);\n"
+"}\n";
+
+char simplefrag[] =
+GLSL_VERSION
+"in mediump vec3 vcolor;\n"
+"out mediump vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+	"FragColor = vec4(vcolor,1.0);\n"
+"}\n";
+
+char prettyvert[] =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 c;\n"
+"layout(location = 2)in mediump vec3 n;\n"
+"out mediump vec3 normal;\n"
+"out mediump vec3 vertex;\n"
+"out mediump vec3 colour;\n"
+"uniform mat4 cammvp;\n"
+"void main(){\n"
+	"vertex = v;\n"
+	"normal = n;\n"
+	"colour = c*0.9;\n"
+	"gl_Position = cammvp * vec4(vertex,1.0);\n"
+"}\n";
+
+char prettyfrag[] =
+GLSL_VERSION
+"in mediump vec3 vertex;\n"
+"in mediump vec3 normal;\n"
+"in mediump vec3 colour;\n"
+"out mediump vec4 FragColor;\n"
+"uniform mediump vec3 camxyz;\n"
+"mediump vec3 ambient = vec3(0.1, 0.1, 0.1);\n"
+"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
+"mediump vec3 lightposition = vec3(0.0, 0.0, 1000.0);\n"
+"vec3 phong(){\n"
+	"mediump vec3 N = normalize(normal);\n"
+	"mediump vec3 L = normalize(vec3(lightposition - vertex));\n"
+	"mediump vec3 E = normalize(camxyz - vertex);\n"
+	"mediump vec3 R = reflect(-L, N);\n"
+	"mediump float SN = max(dot(N, L), 0.0);\n"
+	"mediump float RV = max(dot(R, E), 0.0);\n"
+	"mediump vec3 diffuse = lightcolor * SN;\n"
+	"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
+	"if(SN>0.0)specular = lightcolor * pow(RV, 16.0);\n"
+	"return (diffuse + specular)*0.1;\n"
+"}\n"
+//"float shadow(){\n"
+	//"if(uvw.z - texture(tex0, uvw.xy).r > 0.000001)return 0.1;\n"
+	//"return 1.0;\n"
+//"}\n"
+"void main(){\n"
+	//"FragColor = vec4(ambient + phong()*shadow(), 1.0);\n"
+	"FragColor = vec4(colour + ambient + phong(), 1.0);\n"
+"}\n";
+
+char font3dvert[] =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec3 colour;\n"
+"layout(location = 2)in mediump vec2 texcoo;\n"
+"uniform mat4 cammvp;\n"
+"out mediump vec3 origcolor;\n"
+"out mediump vec2 texuv;\n"
+"void main()\n"
+"{\n"
+	"gl_Position = cammvp * vec4(vertex,1.0);\n"
+	"origcolor = colour;\n"
+	"texuv = texcoo;\n"
+"}\n";
+
+char font2dvert[] =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec3 colour;\n"
+"layout(location = 2)in mediump vec2 texcoo;\n"
+"out mediump vec3 origcolor;\n"
+"out mediump vec2 texuv;\n"
+"void main()\n"
+"{\n"
+	"gl_Position = vec4(vertex,1.0);\n"
+	"origcolor = colour;\n"
+	"texuv = texcoo;\n"
+"}\n";
+
+char directvert[] =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec3 colour;\n"
+"layout(location = 2)in mediump vec2 texcoo;\n"
+"uniform mat4 cammvp;\n"
+"out mediump vec3 origcolor;\n"
+"out mediump vec2 texuv;\n"
+"void main()\n"
+"{\n"
+	"gl_Position = cammvp * vec4(vertex,1.0);\n"
+	"origcolor = colour;\n"
+	"texuv = texcoo;\n"
+"}\n";
+
+char directfrag[] =
+GLSL_VERSION
+"in mediump vec3 origcolor;\n"
+"in mediump vec2 texuv;\n"
+"uniform sampler2D tex0;\n"
+"out mediump vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+	"FragColor = vec4(origcolor,1.0)*texture(tex0, texuv);\n"
+"}\n";
 
 
 
