@@ -100,9 +100,9 @@ void fixfbo(struct style* cam, struct style* tar)
 	x /= norm;
 	y /= norm;
 	z /= norm;
-	cam->vn[0] = x;
-	cam->vn[1] = y;
-	cam->vn[2] = z;
+	cam->vn[0] = x*25.0;
+	cam->vn[1] = y*25.0;
+	cam->vn[2] = z*25.0;
 
 	//right = cross(near, (0,0,1))
 	x = cam->vn[1]*1 - cam->vn[2]*0;
@@ -112,12 +112,12 @@ void fixfbo(struct style* cam, struct style* tar)
 	x /= norm;
 	y /= norm;
 	z /= norm;
-	cam->vr[0] = x;
-	cam->vr[1] = y;
-	cam->vr[2] = z;
-	cam->vl[0] = -x;
-	cam->vl[1] = -y;
-	cam->vl[2] = -z;
+	cam->vr[0] = x*25.0;
+	cam->vr[1] = y*25.0;
+	cam->vr[2] = z*25.0;
+	cam->vl[0] = -x*25.0;
+	cam->vl[1] = -y*25.0;
+	cam->vl[2] = -z*25.0;
 
 	//upper = cross(right, near)
 	x = cam->vr[1]*cam->vn[2] - cam->vr[2]*cam->vn[1];
@@ -127,12 +127,12 @@ void fixfbo(struct style* cam, struct style* tar)
 	x /= norm;
 	y /= norm;
 	z /= norm;
-	cam->vu[0] = x;
-	cam->vu[1] = y;
-	cam->vu[2] = z;
-	cam->vb[0] = -x;
-	cam->vb[1] = -y;
-	cam->vb[2] = -z;
+	cam->vu[0] = x*25.0;
+	cam->vu[1] = y*25.0;
+	cam->vu[2] = z*25.0;
+	cam->vb[0] = -x*25.0;
+	cam->vb[1] = -y*25.0;
+	cam->vb[2] = -z*25.0;
 }
 
 
@@ -276,9 +276,9 @@ static void light_read_vbo(
 	c = cosine(a);
 	s = sine(a);
 
-	tmp->camera.vc[0] = 1000.0 * c;
-	tmp->camera.vc[1] = 1000.0 * s;
-	tmp->camera.vc[2] = 1000.0;
+	tmp->camera.vc[0] = sty->vc[0] + 1000.0 * c;
+	tmp->camera.vc[1] = sty->vc[1] + 1000.0 * s;
+	tmp->camera.vc[2] = sty->vc[2] + 1000.0;
 	fixfbo(&tmp->camera, sty);
 
 	mvp = (void*)(src->arg_data[0]);
@@ -286,6 +286,23 @@ static void light_read_vbo(
 	mat4_transpose(mvp);
 
 	src->arg_enq[0] += 1;
+
+
+
+
+	tr[0] = 20.0;
+	tr[1] = 0.0;
+	tr[2] = 0.0;
+
+	tf[0] = 0.0;
+	tf[1] = 20.0;
+	tf[2] = 0.0;
+
+	tu[0] = 0.0;
+	tu[1] = 0.0;
+	tu[2] = 20.0;
+
+	carvesolid_sphere(win, 0xffff00, tmp->camera.vc, tr, tf, tu);
 }
 static void light_read_json(
 	struct arena* win, struct style* sty,
