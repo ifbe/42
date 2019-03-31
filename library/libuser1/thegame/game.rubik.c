@@ -1,17 +1,22 @@
 #include "libuser.h"
-#define level 3
+#define level 4
 void rubikscube_generate(void*, int);
 void rubikscube_solve(void*, int);
 
 
 
 
-//left, right, near, far, bottom, upper
+//green, blue, red, orange, yellow, white
 u32 rubikcolor[6] = {0x00ff00,0x0000ff,0xff0000,0xfa8010,0xffff00,0xffffff};
-static u8 buffer[6][4][4];
-int rubikscube_import(char* file, u8* buf)
+
+
+
+
+//left, right, near, far, bottom, upper
+int rubikscube_import(char* file, u8 (*buf)[4][4])
 {
-	int x,y,j;
+	int x,y;
+	int j,t;
 	u8 tmp[0x100];
 	j = openreadclose(file, 0, tmp, 0x100);
 	//printmemory(tmp, 0x100);
@@ -28,9 +33,19 @@ int rubikscube_import(char* file, u8* buf)
 		}
 		if(x<16)
 		{
-			if((tmp[j] >= 0x30)&&(tmp[j] <= 0x35))
+			t = tmp[j];
+			switch(t)
 			{
-				buffer[y][x/4][x%4] = tmp[j] - 0x30;
+				case 'g':t = 0x30;break;
+				case 'b':t = 0x31;break;
+				case 'r':t = 0x32;break;
+				case 'o':t = 0x33;break;
+				case 'y':t = 0x34;break;
+				case 'w':t = 0x35;break;
+			}
+			if((t >= 0x30)&&(t <= 0x35))
+			{
+				buf[y][x/4][x%4] = t - 0x30;
 				x++;
 			}
 		}
@@ -65,12 +80,15 @@ static void rubikscube_read_pixel(
 	}
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 
+	u8 (*buf)[4][4] = act->buf;
+	if(0 == buf)return;
+
 	for(y=0;y<level;y++)
 	{
 		for(x=0;x<level;x++)
 		{
 			//left
-			bg = rubikcolor[0];
+			bg = rubikcolor[(buf[0][y][x])%6];
 			drawsolid_rect(win, bg,
 				(cx-ww+1) + (2*x+0)*ww/4/level,
 				(cy-hh+1) + (2*y+0+2*level)*hh/4/level,
@@ -79,7 +97,7 @@ static void rubikscube_read_pixel(
 			);
 
 			//right
-			bg = rubikcolor[1];
+			bg = rubikcolor[(buf[1][y][x])%6];
 			drawsolid_rect(win, bg,
 				(cx-ww+1) + (2*x+0+4*level)*ww/4/level,
 				(cy-hh+1) + (2*y+0+2*level)*hh/4/level,
@@ -94,7 +112,7 @@ static void rubikscube_read_pixel(
 		for(x=0;x<level;x++)
 		{
 			//near
-			bg = rubikcolor[2];
+			bg = rubikcolor[(buf[2][y][x])%6];
 			drawsolid_rect(win, bg,
 				(cx-ww+1) + (2*x+0+2*level)*ww/4/level,
 				(cy-hh+1) + (2*y+0+2*level)*hh/4/level,
@@ -103,7 +121,7 @@ static void rubikscube_read_pixel(
 			);
 
 			//far
-			bg = rubikcolor[3];
+			bg = rubikcolor[(buf[3][y][x])%6];
 			drawsolid_rect(win, bg,
 				(cx-ww+1) + (2*x+0+6*level)*ww/4/level,
 				(cy-hh+1) + (2*y+0+2*level)*hh/4/level,
@@ -118,7 +136,7 @@ static void rubikscube_read_pixel(
 		for(x=0;x<level;x++)
 		{
 			//bottom
-			bg = rubikcolor[4];
+			bg = rubikcolor[(buf[4][y][x])%6];
 			drawsolid_rect(win, bg,
 				(cx-ww+1) + (2*x+0+2*level)*ww/4/level,
 				(cy-hh+1) + (2*y+0+4*level)*hh/4/level,
@@ -127,7 +145,7 @@ static void rubikscube_read_pixel(
 			);
 
 			//upper
-			bg = rubikcolor[5];
+			bg = rubikcolor[(buf[5][y][x])%6];
 			drawsolid_rect(win, bg,
 				(cx-ww+1) + (2*x+0+2*level)*ww/4/level,
 				(cy-hh+1) + (2*y+0)*hh/4/level,
@@ -149,13 +167,16 @@ static void rubikscube_read_vbo(
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 
+	u8 (*buf)[4][4] = act->buf;
+	if(0 == buf)return;
+
 	for(y=0;y<level;y++)
 	{
 		for(x=0;x<level;x++)
 		{
 			//left
 			f[0] = -1.0;
-			f[1] = (2.0*x+1.0)/level - 1.0;
+			f[1] = 1.0 - (2.0*x+1.0)/level;
 			f[2] = (2.0*y+1.0)/level - 1.0;
 			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
 			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
@@ -166,7 +187,7 @@ static void rubikscube_read_vbo(
 			tf[0] = vu[0] / (level+0.5);
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
-			rgb = rubikcolor[(buffer[0][y][x])%6];
+			rgb = rubikcolor[(buf[0][y][x])%6];
 			carvesolid_rect(win, rgb, tc, tr, tf);
 
 			//right
@@ -182,7 +203,7 @@ static void rubikscube_read_vbo(
 			tf[0] = vu[0] / (level+0.5);
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
-			rgb = rubikcolor[(buffer[1][y][x])%6];
+			rgb = rubikcolor[(buf[1][y][x])%6];
 			carvesolid_rect(win, rgb, tc, tr, tf);
 		}
 	}
@@ -204,11 +225,11 @@ static void rubikscube_read_vbo(
 			tf[0] = vu[0] / (level+0.5);
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
-			rgb = rubikcolor[(buffer[2][y][x])%6];
+			rgb = rubikcolor[(buf[2][y][x])%6];
 			carvesolid_rect(win, rgb, tc, tr, tf);
 
 			//far
-			f[0] = (2.0*x+1.0)/level - 1.0;
+			f[0] = 1.0 - (2.0*x+1.0)/level;
 			f[1] = 1.0;
 			f[2] = (2.0*y+1.0)/level - 1.0;
 			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
@@ -220,7 +241,7 @@ static void rubikscube_read_vbo(
 			tf[0] = vu[0] / (level+0.5);
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
-			rgb = rubikcolor[(buffer[3][y][x])%6];
+			rgb = rubikcolor[(buf[3][y][x])%6];
 			carvesolid_rect(win, rgb, tc, tr, tf);
 		}
 	}
@@ -242,7 +263,7 @@ static void rubikscube_read_vbo(
 			tf[0] = -vf[0] / (level+0.5);
 			tf[1] = -vf[1] / (level+0.5);
 			tf[2] = -vf[2] / (level+0.5);
-			rgb = rubikcolor[(buffer[4][y][x])%6];
+			rgb = rubikcolor[(buf[4][y][x])%6];
 			carvesolid_rect(win, rgb, tc, tr, tf);
 
 			//upper
@@ -258,7 +279,7 @@ static void rubikscube_read_vbo(
 			tf[0] = vf[0] / (level+0.5);
 			tf[1] = vf[1] / (level+0.5);
 			tf[2] = vf[2] / (level+0.5);
-			rgb = rubikcolor[(buffer[5][y][x])%6];
+			rgb = rubikcolor[(buf[5][y][x])%6];
 			carvesolid_rect(win, rgb, tc, tr, tf);
 		}
 	}
@@ -293,7 +314,7 @@ static void rubikscube_read_cli(
 {
 	say("rubik(%x,%x,%x)\n",win,act,sty);
 }
-static void rubikscube_read(
+static void rubikscube_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -305,7 +326,7 @@ static void rubikscube_read(
 	else if(fmt == _vbo_)rubikscube_read_vbo(win, sty, act, pin);
 	else rubikscube_read_pixel(win, sty, act, pin);
 }
-static void rubikscube_write(
+static void rubikscube_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -317,10 +338,15 @@ static void rubikscube_write(
 	{
 	}
 }
-static void rubikscube_get()
+static void rubikscube_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void rubikscube_post()
+static void rubikscube_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void rubikscube_stop(
@@ -338,24 +364,32 @@ static void rubikscube_start(
 static void rubikscube_delete(struct actor* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(act->buf)
+	{
+		memorydelete(act->buf);
+		act->buf = 0;
+	}
 }
 static void rubikscube_create(struct actor* act, void* str)
 {
 	int ret;
 	void* buf;
 	if(0 == act)return;
+	if(act->buf)return;
+//printmemory(str,4);
 
 	//malloc
-	if(_orig_ == act->type)act->buf = buffer;
-	if(_copy_ == act->type)act->buf = memorycreate(6*4*4);
+	buf = memorycreate(6 * level * level);
+	if(0 == buf)return;
 
 	//read
 	ret = 0;
 	if(str)ret = rubikscube_import(str, buf);
-	if((0==str)|(ret<=0))rubikscube_generate(buffer, level);
+	if((0==str)|(ret<=0))rubikscube_generate(buf, level);
 
-	for(ret=0;ret<6;ret++)printmemory((void*)buffer+16*ret, 4*4);
+	//
+	for(ret=0;ret<6;ret++)printmemory(buf + level*level*ret, level*level);
+	act->buf = buf;
 }
 
 
@@ -370,8 +404,8 @@ void rubikscube_register(struct actor* p)
 	p->ondelete = (void*)rubikscube_delete;
 	p->onstart  = (void*)rubikscube_start;
 	p->onstop   = (void*)rubikscube_stop;
-	p->onget    = (void*)rubikscube_get;
-	p->onpost   = (void*)rubikscube_post;
-	p->onread   = (void*)rubikscube_read;
-	p->onwrite  = (void*)rubikscube_write;
+	p->onget    = (void*)rubikscube_cread;
+	p->onpost   = (void*)rubikscube_cwrite;
+	p->onread   = (void*)rubikscube_sread;
+	p->onwrite  = (void*)rubikscube_swrite;
 }

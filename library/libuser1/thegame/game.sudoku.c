@@ -5,8 +5,6 @@ void sudoku_solve(void*);
 
 
 
-//
-static int px,py;
 int sudoku_import(char* file, u8* buf)
 {
 	int x,y,j;
@@ -245,7 +243,7 @@ static void sudoku_read_tui(
 			ret <<= 2;
 
 			//color
-			if( (px == x)&&(py == y) )color = 1;
+			if( (act->x0 == x)&&(act->x0 == y) )color = 1;
 			else if( ((x>2)&&(x<6)) && ((y<3)|(y>5)) )color = 2;
 			else if( ((y>2)&&(y<6)) && ((x<3)|(x>5)) )color = 2;
 			else color = 4;
@@ -301,25 +299,25 @@ static void sudoku_swrite(
 	{
 		if(key == 0x48)	//up
 		{
-			if(py<1)return;
-			py--;
+			if(act->y0 < 1)return;
+			act->y0--;
 		}
 		else if(key == 0x4b)	//left
 		{
-			if(px<1)return;
-			px--;
+			if(act->x0 < 1)return;
+			act->x0--;
 		}
 		else if(key == 0x4d)	//right
 		{
-			if(px<0)return;
-			if(px>=8)return;
-			px++;
+			if(act->x0 < 0)return;
+			if(act->x0 >= 8)return;
+			act->x0++;
 		}
 		else if(key == 0x50)	//down
 		{
-			if(py<0)return;
-			if(py>=8)return;
-			py++;
+			if(act->y0 < 0)return;
+			if(act->y0 >= 8)return;
+			act->y0++;
 		}
 	}
 }

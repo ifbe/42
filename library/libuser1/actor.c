@@ -197,9 +197,10 @@ void* actorcreate(u64 type, void* buf)
 	{
 		act = buf;
 		if(0 == act)return 0;
-
 		if(_ORIG_ == act->type)return 0;
 		if(_COPY_ == act->type)return 0;
+
+		act->oncreate(act, 0);
 	}
 	else
 	{
@@ -242,9 +243,10 @@ void* actorcreate(u64 type, void* buf)
 			//act->fmt
 			//act->name
 		}
+
+		act->oncreate(act, buf);
 	}
 
-	act->oncreate(act, buf);
 	if(_orig_ == act->type)act->type = _ORIG_;
 	else if(_copy_ == act->type)act->type = _COPY_;
 	return act;
