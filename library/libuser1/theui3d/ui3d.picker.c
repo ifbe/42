@@ -569,10 +569,10 @@ static int picker_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int flag;
 	struct relation* rel;
 	struct arena* www;
 	struct style* sss;
-
 	carveline_prism4(win, 0xff00ff, win->target.vc, win->target.vr, win->target.vf, win->target.vu);
 
 	www = 0;
@@ -592,6 +592,7 @@ static int picker_sread(
 	return 0;
 
 found:
+	flag = 0;
 	rel = www->orel0;
 	while(1)
 	{
@@ -600,7 +601,11 @@ found:
 		if(_act_ == rel->dsttype)
 		{
 			sss = (void*)(rel->srcfoot);
-			carveline_prism4(win, 0xffffff, sss->vc, sss->vr, sss->vf, sss->vu);
+
+			if(0 == flag)carveline_prism4(win, 0xffffff, sss->vc, sss->vr, sss->vf, sss->vu);
+			else carveopaque_prism4(win, 0xffffff, sss->vc, sss->vr, sss->vf, sss->vu);
+
+			flag ++;
 		}
 
 		rel = samesrcnextdst(rel);
