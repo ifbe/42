@@ -33,7 +33,7 @@ GLSL_VERSION
 	"mediump vec3 c;\n"
 	"mediump float x = mod(vertex.x, 200.0) - 100.0;\n"
 	"mediump float y = mod(vertex.y, 200.0) - 100.0;\n"
-	"if(x * y > 0)c = vec3(0.5, 0.5, 0.5);\n"
+	"if(x * y > 0.0)c = vec3(0.5, 0.5, 0.5);\n"
 	"else c = vec3(0.75, 0.75, 0.75);\n"
 	"FragColor = vec4(c, 1.0);\n"
 "}\n";
