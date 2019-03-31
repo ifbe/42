@@ -134,23 +134,23 @@ static void rectify_read_vbo3d(
 	{
 		for(y=-1;y<2;y++)
 		{
-			//+
+			//-
 			tc[0] = vc[0] + z*vr[0]/16 + y*vf[0]/2 + z*vu[0]/2;
 			tc[1] = vc[1] + z*vr[1]/16 + y*vf[1]/2 + z*vu[1]/2;
 			tc[2] = vc[2] + z*vr[2]/16 + y*vf[2]/2 + z*vu[2]/2;
-			tu[0] = vr[0]/4;
-			tu[1] = vr[1]/4;
-			tu[2] = vr[2]/4;
-			carvesolid_cylinder(win, 0xe0e0e0, tc, tr, tf, tu);
+			tu[0] = vr[0] / 32;
+			tu[1] = vr[1] / 32;
+			tu[2] = vr[2] / 32;
+			carvesolid_cylinder(win, 0x808080, tc, tr, tf, tu);
 
-			//-
+			//+
 			tc[0] -= z*vr[0]/3.6;
 			tc[1] -= z*vr[1]/3.6;
 			tc[2] -= z*vr[2]/3.6;
-			tu[0] = vr[0]/32;
-			tu[1] = vr[1]/32;
-			tu[2] = vr[2]/32;
-			carvesolid_cylinder(win, 0x202020, tc, tr, tf, tu);
+			tu[0] = vr[0] / 4;
+			tu[1] = vr[1] / 4;
+			tu[2] = vr[2] / 4;
+			carvesolid_cylinder(win, 0x404040, tc, tr, tf, tu);
 
 			a = s[y+1];
 			rgb = 0xffffff;

@@ -12,6 +12,31 @@ static void cylinder_read_vbo2d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	vec3 tr,tf;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	float n = (win->height) * vf[1] / (win->width) / vr[0];
+	if(n < 1.0)
+	{
+		tr[0] = vr[0] * n;
+		tr[1] = vr[1] * n;
+		tr[2] = vr[2] * n;
+		tf[0] = vf[0];
+		tf[1] = vf[1];
+		tf[2] = vf[2];
+	}
+	else
+	{
+		tr[0] = vr[0];
+		tr[1] = vr[1];
+		tr[2] = vr[2];
+		tf[0] = vf[0] / n;
+		tf[1] = vf[1] / n;
+		tf[2] = vf[2] / n;
+	}
+	carveopaque2d_rect(win, 0xffffff, vc, tr, tf);
 }
 static void cylinder_read_vbo3d(
 	struct arena* win, struct style* sty,
@@ -22,7 +47,8 @@ static void cylinder_read_vbo3d(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	carveline_rect(win, 0xffffff, vc, vr, vf);
+	//carveline_rect(win, 0xffffff, vc, vr, vf);
+	carveopaque_cylinder(win, 0xffffff, vc, vr, vf, vu);
 
 	tc[0] = vc[0] + vu[0]/2;
 	tc[1] = vc[1] + vu[1]/2;

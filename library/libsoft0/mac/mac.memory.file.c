@@ -72,10 +72,9 @@ int stopfile(int fd)
 }
 int startfile(char* path, int flag)
 {
-	int ret = 0;
-	if(0 == path)ret = -0xfff;
-	if(0 == path[0])ret = -0xffe;
-	if(ret < 0)goto fail;
+	int ret;
+	if(0 == path){ret = -0xfff;goto fail;}
+	if(0 == path[0]){ret = -0xffe;goto fail;}
 
 	if('w' == flag)
 	{

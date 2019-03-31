@@ -62,5 +62,5 @@ u64 timeread()
 {
 	struct timeval t;
 	gettimeofday(&t,0);
-	return (t.tv_sec)*1000*1000 + (t.tv_usec);
+	return (t.tv_sec%1000)*1000*1000 + (t.tv_usec);
 }
