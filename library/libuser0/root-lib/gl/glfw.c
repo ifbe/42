@@ -5,11 +5,14 @@
 #include <GLFW/glfw3.h>
 #include "libuser.h"
 int arenaevent(struct event* ev);
+int fbodelete(struct arena* win);
+int fbocreate(struct arena* win, char* arg);
 //
 void initobject(void*);
 void initshader(void*);
 void inittexture(void*);
 void initvertex(void*);
+//
 void callback_update(void*);
 void callback_display(void*, void*);
 static u8 uppercase[] = {
@@ -386,8 +389,7 @@ void windowdelete(struct arena* w)
 {
 	if(_fbo_ == w->fmt)
 	{
-		glDeleteRenderbuffers(1, &w->rbo);
-		glDeleteFramebuffers(1, &w->fbo);
+		fbodelete(w);
 	}
 	else
 	{
@@ -398,54 +400,7 @@ void windowcreate(struct arena* w)
 {
 	if(_fbo_ == w->fmt)
 	{
-		w->fbwidth = w->width = 1024;
-		w->fbheight = w->height = 1024;
-		w->fbdepth = w->depth = 1024;
-		w->fbstride = w->stride = 1024;
-
-
-		//frame buffer
-		glGenFramebuffers(1, &w->fbo);
-		glBindFramebuffer(GL_FRAMEBUFFER, w->fbo);
-
-/*
-		//render buffer?
-		glGenRenderbuffers(1, &w->rbo);
-		glBindRenderbuffer(GL_RENDERBUFFER, w->rbo);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, w->rbo);
-*/
-
-		//depth buffer
-		glGenTextures(1, &w->tex_depth);
-		glBindTexture(GL_TEXTURE_2D, w->tex_depth);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, w->tex_depth, 0);
-
-
-		//color buffer
-		glGenTextures(1, &w->tex_color);
-		glBindTexture(GL_TEXTURE_2D, w->tex_color);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, w->tex_color, 0);
-
-		// Set the list of draw buffers.
-		GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-		glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
-
-
-		if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		{
-			say("error@framebuffer!!!\n");
-		}
+		fbocreate(w, 0);
 	}
 	else
 	{
@@ -475,8 +430,8 @@ void initwindow()
 	}
 
 	glfwWindowHint(GLFW_SAMPLES, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 

@@ -566,8 +566,8 @@ void overview_read_vbo(
 		else
 		{
 			bg = 0x404040;
-			if((k >= 'a')&&(k <= 'z'))fg = 0x808080;
-			else fg = 0xffffff;
+			if((k >= 'a')&&(k <= 'z'))fg = 0xc0c0c0;
+			else fg = 0x00ffff;
 		}
 
 		x = j % 16;

@@ -92,9 +92,9 @@ static void motor_read_vbo(
 	v3[2] = vc[2] - (vr[2]*1.732/4 + vf[2]*0.25)*s;
 	carveline(win, 0xff0000, vc, v3);
 
-	tc[0] = v1[0] + v2[0] + v3[0];
-	tc[1] = v1[1] + v2[1] + v3[1];
-	tc[2] = v1[2] + v2[2] + v3[2];
+	tc[0] = v1[0] + v2[0] + v3[0] - vc[0]*2;
+	tc[1] = v1[1] + v2[1] + v3[1] - vc[1]*2;
+	tc[2] = v1[2] + v2[2] + v3[2] - vc[2]*2;
 	carveline(win, 0xffffff, vc, tc);
 
 }

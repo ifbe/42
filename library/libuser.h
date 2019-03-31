@@ -24,8 +24,7 @@ typedef float mat4[4][4];
 #ifdef __ANDROID__
 	#define GLSL_VERSION "#version 300 es\n"
 #else
-	#define GLSL_VERSION "#version 330 core\n"
-	#define HLSL_VERSION "#version 330 core\n"
+	#define GLSL_VERSION "#version 410 core\n"
 #endif
 //
 #define _orig_ hex32('o','r','i','g')
