@@ -8,53 +8,42 @@ void fixmatrix(mat4 mvp, struct arena* win);
 
 char* light_glsl_v =
 GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec3 normal;\n"
-"out mediump vec3 norm;\n"
-"out mediump vec3 vert;\n"
-"out mediump vec3 uvw;\n"
-"uniform mat4 mapmvp;\n"
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 t;\n"
+"out mediump vec3 xyz;\n"
+"out mediump vec3 rgb;\n"
 "uniform mat4 cammvp;\n"
 "void main(){\n"
-	"vert = vertex;\n"
-	"norm = normal;\n"
-
-	"mediump vec4 tmp = mapmvp * vec4(vertex, 1.0);\n"
-	"tmp /= tmp.w;\n"
-	"tmp = (tmp+1.0)*0.5;\n"
-	"uvw = vec3(tmp.x, tmp.y, tmp.z);\n"
-	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+	"xyz = v;\n"
+	"rgb = t;\n"
+	"gl_Position = cammvp * vec4(v, 1.0);\n"
 "}\n";
 
 char* light_glsl_f =
 GLSL_VERSION
-"in mediump vec3 vert;\n"
-"in mediump vec3 norm;\n"
-"in mediump vec3 uvw;\n"
+"in mediump vec3 xyz;\n"
+"in mediump vec3 rgb;\n"
 "out mediump vec4 FragColor;\n"
 "uniform sampler2D tex0;\n"
-"mediump vec3 camxyz = vec3(0.0, -1000.0, 1000.0);\n"
-"mediump vec3 ambient = vec3(0.25, 0.25, 0.25);\n"
-"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
-"mediump vec3 lightposition = vec3(500.0, 250.0, 1000.0);\n"
-"vec3 phong(){\n"
-	"mediump vec3 N = normalize(norm);\n"
-	"mediump vec3 L = normalize(vec3(lightposition - vert));\n"
-	"mediump vec3 E = normalize(camxyz - vert);\n"
-	"mediump vec3 R = reflect(-L, N);\n"
-	"mediump float SN = max(dot(N, L), 0.0);\n"
-	"mediump float RV = max(dot(R, E), 0.0);\n"
-	"mediump vec3 diffuse = lightcolor * SN;\n"
-	"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
-	"if(SN>0.0)specular = lightcolor * pow(RV, 16.0);\n"
-	"return diffuse + specular;\n"
-"}\n"
+"uniform mat4 mapmvp;\n"
 "float shadow(){\n"
-	"if(uvw.z - texture(tex0, uvw.xy).r > 0.000001)return 0.1;\n"
+	"mediump vec4 tmp = mapmvp * vec4(xyz, 1.0);\n"
+	"tmp /= tmp.w;\n"
+	"tmp = (tmp+1.0)*0.5;\n"
+	"if(tmp.z - texture(tex0, tmp.xy).r > 0.001)return 0.5;\n"
 	"return 1.0;\n"
 "}\n"
+"float colour(){"
+	"mediump float n = 1.0;"
+	"mediump float f = 100.0;"
+	"mediump float d = texture(tex0, rgb.xy).r;"
+	"mediump float c = (2.0 * n) / (f + n - d * (f - n));"
+	"return c;\n"
+"}\n"
 "void main(){\n"
-	"FragColor = vec4(ambient + phong()*shadow(), 1.0);\n"
+	"mediump float t = shadow();\n"
+	"mediump float c = colour();\n"
+	"FragColor = vec4(vec3(c)*vec3(t), 1.0);\n"
 "}\n";
 /*
 char* light_glsl_v =
@@ -169,6 +158,7 @@ static void light_read_vbo(
 	float* vu = sty->vu;
 
 	float a,c,s;
+	float x,y,z,n;
 	void* mvp;
 	struct relation* rel;
 	struct arena* tmp;
@@ -186,22 +176,22 @@ static void light_read_vbo(
 	vbuf[1][0] = vc[0] + vr[0] + vf[0];
 	vbuf[1][1] = vc[1] + vr[1] + vf[1];
 	vbuf[1][2] = vc[2] + vr[2] + vf[2];
-	vbuf[1][3] = 0.0;	//1.0;
-	vbuf[1][4] = 0.0;	//1.0;
+	vbuf[1][3] = 1.0;
+	vbuf[1][4] = 1.0;
 	vbuf[1][5] = 1.0;
 
 	vbuf[2][0] = vc[0] - vr[0] + vf[0];
 	vbuf[2][1] = vc[1] - vr[1] + vf[1];
 	vbuf[2][2] = vc[2] - vr[2] + vf[2];
 	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 0.0;	//1.0;
+	vbuf[2][4] = 1.0;
 	vbuf[2][5] = 1.0;
 
 	vbuf[3][0] = vc[0] + vr[0] + vf[0];
 	vbuf[3][1] = vc[1] + vr[1] + vf[1];
 	vbuf[3][2] = vc[2] + vr[2] + vf[2];
-	vbuf[3][3] = 0.0;	//1.0;
-	vbuf[3][4] = 0.0;	//1.0;
+	vbuf[3][3] = 1.0;
+	vbuf[3][4] = 1.0;
 	vbuf[3][5] = 1.0;
 
 	vbuf[4][0] = vc[0] - vr[0] - vf[0];
@@ -214,51 +204,54 @@ static void light_read_vbo(
 	vbuf[5][0] = vc[0] + vr[0] - vf[0];
 	vbuf[5][1] = vc[1] + vr[1] - vf[1];
 	vbuf[5][2] = vc[2] + vr[2] - vf[2];
-	vbuf[5][3] = 0.0;	//1.0;
+	vbuf[5][3] = 1.0;
 	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 1.0;
+
+
+
 
 	vbuf[6][0] = vc[0] + vu[0];
 	vbuf[6][1] = vc[1] + vu[1];
 	vbuf[6][2] = vc[2] + vu[2];
-	vbuf[6][3] = 1.0;
-	vbuf[6][4] = 1.0;
-	vbuf[6][5] = 1.0;
+	vbuf[6][3] = 0.0;
+	vbuf[6][4] = 0.0;
+	vbuf[6][5] = 0.0;
 
-	vbuf[7][0] = vc[0] + vr[0]/2 + vu[0] / 3.0;
-	vbuf[7][1] = vc[1] + vr[1]/2 + vu[1] / 3.0;
-	vbuf[7][2] = vc[2] + vr[2]/2 + vu[2] / 3.0;
-	vbuf[7][3] = 1.0;
-	vbuf[7][4] = 1.0;
-	vbuf[7][5] = 1.0;
+	vbuf[7][0] = vc[0] + vr[0];
+	vbuf[7][1] = vc[1] + vr[1];
+	vbuf[7][2] = vc[2] + vr[2];
+	vbuf[7][3] = 0.0;
+	vbuf[7][4] = 0.0;
+	vbuf[7][5] = 0.0;
 
-	vbuf[8][0] = vc[0] + vf[0]/2 + vu[0] / 3.0;
-	vbuf[8][1] = vc[1] + vf[1]/2 + vu[1] / 3.0;
-	vbuf[8][2] = vc[2] + vf[2]/2 + vu[2] / 3.0;
-	vbuf[8][3] = 1.0;
-	vbuf[8][4] = 1.0;
-	vbuf[8][5] = 1.0;
+	vbuf[8][0] = vc[0] + vf[0];
+	vbuf[8][1] = vc[1] + vf[1];
+	vbuf[8][2] = vc[2] + vf[2];
+	vbuf[8][3] = 0.0;
+	vbuf[8][4] = 0.0;
+	vbuf[8][5] = 0.0;
 
-	vbuf[9][0] = vc[0];
-	vbuf[9][1] = vc[1];
-	vbuf[9][2] = vc[2];
+	vbuf[9][0] = vc[0] + vu[0]/2;
+	vbuf[9][1] = vc[1] + vu[1]/2;
+	vbuf[9][2] = vc[2] + vu[2]/2;
 	vbuf[9][3] = 0.0;
 	vbuf[9][4] = 0.0;
-	vbuf[9][5] = 1.0;
+	vbuf[9][5] = 0.0;
 
-	vbuf[10][0] = vc[0] - vr[0]/2 + vu[0] * 2.0 / 3.0;
-	vbuf[10][1] = vc[1] - vr[1]/2 + vu[1] * 2.0 / 3.0;
-	vbuf[10][2] = vc[2] - vr[2]/2 + vu[2] * 2.0 / 3.0;
+	vbuf[10][0] = vc[0] - vr[0] + vu[0]/2;
+	vbuf[10][1] = vc[1] - vr[1] + vu[1]/2;
+	vbuf[10][2] = vc[2] - vr[2] + vu[2]/2;
 	vbuf[10][3] = 0.0;
 	vbuf[10][4] = 0.0;
-	vbuf[10][5] = 1.0;
+	vbuf[10][5] = 0.0;
 
-	vbuf[11][0] = vc[0] - vf[0]/2 + vu[0] * 2.0 / 3.0;
-	vbuf[11][1] = vc[1] - vf[1]/2 + vu[1] * 2.0 / 3.0;
-	vbuf[11][2] = vc[2] - vf[2]/2 + vu[2] * 2.0 / 3.0;
+	vbuf[11][0] = vc[0] - vf[0] + vu[0]/2;
+	vbuf[11][1] = vc[1] - vf[1] + vu[1]/2;
+	vbuf[11][2] = vc[2] - vf[2] + vu[2]/2;
 	vbuf[11][3] = 0.0;
 	vbuf[11][4] = 0.0;
-	vbuf[11][5] = 1.0;
+	vbuf[11][5] = 0.0;
 
 	src->vbuf_enq += 1;
 
@@ -272,13 +265,13 @@ static void light_read_vbo(
 	if(0 == tmp)return;
 	if(_fbo_ != tmp->fmt)return;
 
-	a = tau * timeread() / 10000000.0;
+	a = tau * timeread() / 100000000.0;
 	c = cosine(a);
 	s = sine(a);
 
-	tmp->camera.vc[0] = sty->vc[0] + 1000.0 * c;
-	tmp->camera.vc[1] = sty->vc[1] + 1000.0 * s;
-	tmp->camera.vc[2] = sty->vc[2] + 1000.0;
+	tmp->camera.vc[0] = sty->vc[0] + sty->vr[0]*c + sty->vf[0]*s + sty->vu[0]*2;
+	tmp->camera.vc[1] = sty->vc[1] + sty->vr[1]*c + sty->vf[1]*s + sty->vu[1]*2;
+	tmp->camera.vc[2] = sty->vc[2] + sty->vr[2]*c + sty->vf[2]*s + sty->vu[2]*2;
 	fixfbo(&tmp->camera, sty);
 
 	mvp = (void*)(src->arg_data[0]);

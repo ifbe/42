@@ -164,6 +164,29 @@ static void vrglass_start(
     struct arena* root, struct style* rf)
 {
     say("@vrglass_start\n");
+	root->camera.vc[0] = 0.0;
+	root->camera.vc[1] = -2000.0;
+	root->camera.vc[2] = 200.0;
+
+	root->camera.vn[0] = 0.0;
+	root->camera.vn[1] = -1000.0 - root->camera.vc[1];
+	root->camera.vn[2] = 0.0;
+
+	root->camera.vl[0] = -root->width/2 - root->camera.vc[0];
+	root->camera.vl[1] = 0.0;
+	root->camera.vl[2] = 0.0;
+
+	root->camera.vr[0] = root->width/2 - root->camera.vc[0];
+	root->camera.vr[1] = 0.0;
+	root->camera.vr[2] = 0.0;
+
+	root->camera.vb[0] = 0.0;
+	root->camera.vb[1] = 0.0;
+	root->camera.vb[2] = -root->height/2 - root->camera.vc[2];
+
+	root->camera.vu[0] = 0.0;
+	root->camera.vu[1] = 0.0;
+	root->camera.vu[2] = root->height/2 - root->camera.vc[2];
 }
 static void vrglass_delete()
 {
