@@ -149,11 +149,11 @@ linuxglfw:target
 	$(compiler) $(cflag) os-linux/linux.0.tray.c
 	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
 	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
-	$(compiler) $(cflag) root-lib/gl/glfw.c
-	$(compiler) $(cflag) root-lib/gl/gl.object.c
-	$(compiler) $(cflag) root-lib/gl/gl.shader.c
-	$(compiler) $(cflag) root-lib/gl/gl.texture.c
-	$(compiler) $(cflag) root-lib/gl/gl.vertex.c
+	$(compiler) $(cflag) root-gl/glfw.c
+	$(compiler) $(cflag) root-gl/gl.object.c
+	$(compiler) $(cflag) root-gl/gl.shader.c
+	$(compiler) $(cflag) root-gl/gl.texture.c
+	$(compiler) $(cflag) root-gl/gl.vertex.c
 
 .PHONY:linuxglut
 linuxglut:target
@@ -163,7 +163,7 @@ linuxglut:target
 	$(compiler) $(cflag) os-linux/linux.0.tray.c
 	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
 	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
-	$(compiler) $(cflag) root-lib/gl/glut.c
+	$(compiler) $(cflag) root-gl/glut.c
 
 .PHONY:linuxsdl
 linuxsdl:target
@@ -228,11 +228,11 @@ macglfw:target
 	$(compiler) $(cflag) os-mac/mac.0.tray.c
 	$(compiler) $(cflag) os-mac/mac.2.mic.c
 	$(compiler) $(cflag) os-mac/mac.3.cam.c
-	$(compiler) $(cflag) root-lib/gl/glfw.c
-	$(compiler) $(cflag) root-lib/gl/gl.object.c
-	$(compiler) $(cflag) root-lib/gl/gl.shader.c
-	$(compiler) $(cflag) root-lib/gl/gl.texture.c
-	$(compiler) $(cflag) root-lib/gl/gl.vertex.c
+	$(compiler) $(cflag) root-gl/glfw.c
+	$(compiler) $(cflag) root-gl/gl.object.c
+	$(compiler) $(cflag) root-gl/gl.shader.c
+	$(compiler) $(cflag) root-gl/gl.texture.c
+	$(compiler) $(cflag) root-gl/gl.vertex.c
 
 .PHONY:macglut
 macglut:target
@@ -242,7 +242,7 @@ macglut:target
 	$(compiler) $(cflag) os-mac/mac.0.tray.c
 	$(compiler) $(cflag) os-mac/mac.2.mic.c
 	$(compiler) $(cflag) os-mac/mac.3.cam.c
-	$(compiler) $(cflag) root-lib/gl/glut.c
+	$(compiler) $(cflag) root-gl/glut.c
 
 .PHONY:macsdl
 macsdl:target
@@ -305,11 +305,11 @@ winglfw:target
 	$(compiler) $(cflag) os-win/win.0.joy.c
 	$(compiler) $(cflag) os-win/win.0.std.c
 	$(compiler) $(cflag) os-win/win.0.tray.c
-	$(compiler) $(cflag) root-lib/gl/glfw.c
-	$(compiler) $(cflag) root-lib/gl/gl.object.c
-	$(compiler) $(cflag) root-lib/gl/gl.shader.c
-	$(compiler) $(cflag) root-lib/gl/gl.texture.c
-	$(compiler) $(cflag) root-lib/gl/gl.vertex.c
+	$(compiler) $(cflag) root-gl/glfw.c
+	$(compiler) $(cflag) root-gl/gl.object.c
+	$(compiler) $(cflag) root-gl/gl.shader.c
+	$(compiler) $(cflag) root-gl/gl.texture.c
+	$(compiler) $(cflag) root-gl/gl.vertex.c
 	$(compiler) $(cflag) os-win/win.2.waveio.c
 	g++ $(cflag) -fno-rtti os-win/win.3.dshow.cpp
 
@@ -319,7 +319,7 @@ winglut:target
 	$(compiler) $(cflag) os-win/win.0.joy.c
 	$(compiler) $(cflag) os-win/win.0.std.c
 	$(compiler) $(cflag) os-win/win.0.tray.c
-	$(compiler) $(cflag) root-lib/gl/glut.c
+	$(compiler) $(cflag) root-gl/glut.c
 	$(compiler) $(cflag) os-win/win.waveio.c
 	g++ $(cflag) -fno-rtti os-win/win.dshow.cpp
 

@@ -274,10 +274,10 @@ library/libuser0/os-android/android.0.tray.c \
 library/libuser0/os-android/android.1.gles.c \
 library/libuser0/os-android/android.2.mic.c \
 library/libuser0/os-android/android.3.cam.c \
-library/libuser0/root-lib/gl/gl.object.c \
-library/libuser0/root-lib/gl/gl.shader.c \
-library/libuser0/root-lib/gl/gl.texture.c \
-library/libuser0/root-lib/gl/gl.vertex.c \
+library/libuser0/root-gl/gl.object.c \
+library/libuser0/root-gl/gl.shader.c \
+library/libuser0/root-gl/gl.texture.c \
+library/libuser0/root-gl/gl.vertex.c \
 library/libuser0/root-robot/3d-printer.c \
 library/libuser0/root-robot/3d-router.c \
 library/libuser0/root-robot/car-bldc.c \
