@@ -298,9 +298,9 @@ library/libuser0/twig-pcb/out.pcb.c \
 library/libuser0/twig-rgba/out.rgba.c \
 library/libuser0/twig-tui/out.tui.c \
 library/libuser0/twig-xml/out.xml.c \
-library/libuser0/twig-sch/out.sch.c \
+library/libuser0/twig-sch/sch.bus.c \
 library/libuser0/twig-sch/sch.pin.c \
-library/libuser0/twig-sch/sch.chip.c \
+library/libuser0/twig-sch/out.sch.c \
 library/libuser0/twig-gles/out.vbo.c \
 library/libuser0/twig-gles/3d-bg.c \
 library/libuser0/twig-gles/3d-fg.c \

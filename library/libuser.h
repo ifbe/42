@@ -57,7 +57,6 @@ typedef float mat4[4][4];
 #define _json_ hex32('j','s','o','n')
 #define _rgba_ hex32('r','g','b','a')
 #define _pcb_  hex32('p','c','b',0)
-#define _sch_  hex32('s','c','h',0)
 #define _xml_  hex32('x','m','l',0)
 #define _vbo_ hex32('v','b','o',0)
 #define _fbo_ hex32('f','b','o',0)
@@ -68,6 +67,10 @@ typedef float mat4[4][4];
 #define _mic_  hex32('m','i','c',0)
 #define _cam_  hex32('c','a','m',0)
 //
+#define _bus_  hex32('b','u','s',0)
+#define _pin_  hex32('p','i','n',0)
+#define _sch_  hex32('s','c','h',0)
+//
 #define _bg3d_ hex32('b','g','3','d')
 #define _fg3d_ hex32('f','g','3','d')
 #define _ev3d_ hex32('e','v','3','d')
@@ -77,9 +80,6 @@ typedef float mat4[4][4];
 #define _fg2d_ hex32('f','g','2','d')
 #define _ev2d_ hex32('e','v','2','d')
 #define _ui2d_ hex32('u','i','2','d')
-//
-#define _light_ hex32('l','i','g','h')
-#define _mirror_ hex32('m','i','r','r')
 //
 #define _TCP_ hex32('T','C','P',0)
 #define _tcp_ hex32('t','c','p',0)

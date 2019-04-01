@@ -3,13 +3,13 @@
 
 
 
-int schpin_start(struct arena* twig, void* tf, struct arena* root, void* rf)
+int schbus_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 {
     struct relation* rel;
     struct actor* act;
     if(0 == twig)return 0;
 
-say("@schpin_start{\n");
+say("@schbus_start{\n");
     rel = twig->orel0;
     while(1)
     {
@@ -25,12 +25,9 @@ say("@schpin_start{\n");
     }
 say("}\n");
     return 0;
+    return 0;
 }
-int schpin_create(struct arena* win, u8* str)
+int schbus_create(struct arena* win, u8* str)
 {
-#define _vsrc_ hex32('v','s','r','c')
-	struct actor* vsrc = actorcreate(_vsrc_, 0);
-    if(vsrc)relationcreate(vsrc, 0, _act_, win, 0, _win_);
-
     return 0;
 }

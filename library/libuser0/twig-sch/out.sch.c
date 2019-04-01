@@ -1,4 +1,17 @@
 #include "libuser.h"
+void* allocarena();
+//
+int schpin_create(void*, void*);
+int schpin_start(void*, void*, void*, void*);
+int schpin_read(void*, void*, void*, void*);
+//
+int schbus_create(void*, void*);
+int schbus_start(void*, void*, void*, void*);
+int schbus_read(void*, void*, void*, void*);
+
+
+
+
 void scene_import_schematic(struct arena* win, u8* str)
 {
 	int len;
@@ -30,13 +43,51 @@ int schnode_rootread(struct arena* win, void* wf, void* sc, void* sf, void* buf,
 {
 	return 0;
 }
+
+
+
+
+int schnode_stop(struct arena* win, struct style* sty)
+{
+	return 0;
+}
+int schnode_start(struct arena* twig, void* tf, struct arena* root, void* rf)
+{
+	return 0;
+}
 int schnode_delete(struct arena* win)
 {
 	return 0;
 }
-int schnode_create(struct arena* win, void* str)
+void* schnode_create(u64 type, void* addr)
 {
-	win->buf = memorycreate(1000*1000);
-	if(str)scene_import_schematic(win, str);
+	struct arena* win;
+	struct arena* tmp;
+
+	if(_pin_ == type)
+	{
+		win = allocarena();
+		if(win)
+		{
+			win->type = _twig_;
+			win->fmt = _pin_;
+			schpin_create(win, addr);
+		}
+		return win;
+	}
+
+	if(_sch_ == type)
+	{
+		win = addr;
+
+		tmp = schnode_create(_pin_, 0);
+		if(tmp)
+		{
+			relationcreate(tmp, 0, _win_, win, 0, _win_);
+			schnode_start(tmp, 0, win, 0);
+		}
+		return win;
+	}
+
 	return 0;
 }

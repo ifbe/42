@@ -23,9 +23,9 @@ twig-pcb/out.pcb.c \
 twig-rgba/out.rgba.c \
 twig-tui/out.tui.c \
 twig-xml/out.xml.c \
-twig-sch/out.sch.c \
+twig-sch/sch.bus.c \
 twig-sch/sch.pin.c \
-twig-sch/sch.chip.c \
+twig-sch/out.sch.c \
 twig-gles/3d-bg.c \
 twig-gles/3d-fg.c \
 twig-gles/3d-ev.c \

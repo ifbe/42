@@ -88,20 +88,16 @@ int vbonode_stop(void*, void*);
 int vbonode_sread(struct arena* win, struct style* sty);
 int vbonode_swrite(struct arena* win, struct style* sty, struct event* ev);
 //
+int schnode_create(u64, void*);
+int schnode_delete(void*);
+int schnode_start(void*, void*, void*, void*);
+int schnode_stop(void*, void*);
+//
 int pcbnode_create(void*, void*);
 int pcbnode_delete(void*);
 //
 int xmlnode_create(void*, void*);
 int xmlnode_delete(void*);
-//pcb
-int schnode_create(void*, void*);
-int schnode_delete(void*);
-int ppin_create(void*, void*);
-int ppin_start(void*, void*, void*, void*);
-int ppin_read(void*, void*, void*, void*);
-int pchip_create(void*, void*);
-int pchip_start(void*, void*, void*, void*);
-int pchip_read(void*, void*, void*, void*);
 //
 int actorevent(struct event* ev);
 int input(void*, int);
@@ -267,15 +263,12 @@ int arenastart(struct arena* twig, void* tf, struct arena* root, void* rf)
 	int ret;
 	if(0 == twig)return 0;
 
-	//try default
-	switch(twig->fmt)
-	{
-		case _pin_ :ppin_start(twig, tf, root, rf);return 1;
-		case _chip_:pchip_start(twig, tf, root, rf);return 1;
-	}
-
 	//try twig-gles
 	ret = vbonode_start(twig, tf, root, rf);
+	if(ret)return 1;
+
+	//try twig-sch
+	ret = schnode_start(twig, tf, root, rf);
 	if(ret)return 1;
 
 	//try twig-?
@@ -430,43 +423,7 @@ void* arenacreate(u64 type, void* addr)
 		{
 			win->type = _node_;
 			win->fmt = _sch_;
-			schnode_create(win, addr);
-
-			sub = arenacreate(_pin_, 0);
-			if(sub)
-			{
-				relationcreate(sub, 0, _win_, win, 0, _win_);
-				arenastart(sub, 0, win, 0);
-			}
-
-			sub = arenacreate(_chip_, 0);
-			if(sub)
-			{
-				relationcreate(sub, 0, _win_, win, 0, _win_);
-				arenastart(sub, 0, win, 0);
-			}
-		}
-		return win;
-	}
-	else if(_pin_ == type)
-	{
-		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _pin_;
-			ppin_create(win, addr);
-		}
-		return win;
-	}
-	else if(_chip_ == type)
-	{
-		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _chip_;
-			pchip_create(win, addr);
+			schnode_create(_sch_, win);
 		}
 		return win;
 	}

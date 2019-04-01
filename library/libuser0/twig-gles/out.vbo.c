@@ -1,7 +1,8 @@
 #include "libuser.h"
+void* allocarena();
+//
 int preprocess(void*);
 int postprocess(void*);
-void* allocarena();
 int actorinput_touch(struct arena* win, struct event* ev);
 //
 int bg3d_create(void*, void*);
@@ -160,28 +161,6 @@ void* vbonode_create(u64 type, void* addr)
 {
 	struct arena* win;
 	struct arena* tmp;
-
-	if(_light_ == type)
-	{
-		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _light_;
-		}
-		return win;
-	}
-
-	if(_mirror_ == type)
-	{
-		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _mirror_;
-		}
-		return win;
-	}
 
 	if(_bg3d_ == type)
 	{

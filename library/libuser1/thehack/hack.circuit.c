@@ -232,6 +232,9 @@ static void circuit_create(struct actor* act)
 {
 	if(0 == act)return;
 	act->buf = memorycreate(WIDTH*HEIGHT*LAYER);
+
+	void* win = arenacreate(_sch_, 0);
+	if(win)relationcreate(win, 0, _win_, act, 0, _act_);
 }
 
 

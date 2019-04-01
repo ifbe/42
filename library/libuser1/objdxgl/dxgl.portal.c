@@ -415,9 +415,7 @@ static void portal_create(struct actor* act, void* str)
 	if(0 == act)return;
 
 	win = arenacreate(_fbo_, 0);
-	if(0 == win)return;
-
-	relationcreate(win, 0, _win_, act, 0, _act_);
+	if(win)relationcreate(win, 0, _win_, act, 0, _act_);
 }
 
 
