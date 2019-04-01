@@ -17,6 +17,8 @@ void initobject(void*);
 void initshader(void*);
 void inittexture(void*);
 void initvertex(void*);
+int fbodelete(struct arena* win);
+int fbocreate(struct arena* win, char* arg);
 void callback_update(void*);
 void callback_display(void*,void*);
 void* getapp();
@@ -243,18 +245,26 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 void windowread(struct arena* win)
 {
-	if(status)
+	if(_fbo_ == win->fmt)
 	{
-		arena_rootread(win, 0, 0, 0, 0, 0);
-
-		callback_update(win);
+		//say("@windowread fbo\n");
 		callback_display(win, 0);
-
-		eglSwapBuffers(display, surface);
 	}
+	else
+	{
+		if(status)
+		{
+			arena_rootread(win, 0, 0, 0, 0, 0);
 
-	//events
-	pollenv();
+			callback_update(win);
+			callback_display(win, 0);
+
+			eglSwapBuffers(display, surface);
+		}
+
+		//events
+		pollenv();
+	}
 }
 void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
@@ -267,19 +277,33 @@ void windowstart()
 }
 void windowdelete(struct arena* win)
 {
+	if(_fbo_ == win->fmt)
+	{
+		fbodelete(win);
+	}
+	else
+	{
+	}
 }
 void windowcreate(struct arena* win)
 {
-	thewin = win;
-	win->fmt = _vbo_;
+	if(_fbo_ == win->fmt)
+	{
+		fbocreate(win, 0);
+	}
+	else
+	{
+		thewin = win;
+		win->fmt = _vbo_;
 
-	win->width  = win->fbwidth  = 1024;
-	win->stride = win->fbstride = 1024;
-	win->height = win->fbheight = 1024;
-	win->depth  = win->fbdepth  = 1024;
+		win->width  = win->fbwidth  = 1024;
+		win->stride = win->fbstride = 1024;
+		win->height = win->fbheight = 1024;
+		win->depth  = win->fbdepth  = 1024;
 
-	say("@windowcreate\n");
-	while(!status)pollenv();
+		say("@windowcreate\n");
+		while(!status)pollenv();
+	}
 }
 
 

@@ -3,6 +3,7 @@ fedora:
 	make gcc \
 	libX11-devel \
 	freeglut-devel \
+	glfw-devel glew-devel \
 	SDL-devel SDL2-devel \
 	pulseaudio-libs-devel #alsa-lib-devel
 ubuntu:

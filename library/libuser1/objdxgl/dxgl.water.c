@@ -138,7 +138,7 @@ void watercamera(
 	tmp->camera.vn[0] *= 1.001;
 	tmp->camera.vn[1] *= 1.001;
 	tmp->camera.vn[2] *= 1.001;
-
+/*
 	say("%f,%f,%f\n",root->camera.vc[0], root->camera.vc[1], root->camera.vc[2]);
 	say("%f,%f,%f\n",tmp->camera.vc[0], tmp->camera.vc[1], tmp->camera.vc[2]);
 	say("%f,%f,%f\n",tmp->camera.vn[0], tmp->camera.vn[1], tmp->camera.vn[2]);
@@ -147,7 +147,7 @@ void watercamera(
 	say("%f,%f,%f\n",tmp->camera.vb[0], tmp->camera.vb[1], tmp->camera.vb[2]);
 	say("%f,%f,%f\n",tmp->camera.vu[0], tmp->camera.vu[1], tmp->camera.vu[2]);
 	say("\n");
-
+*/
 	carveline_rect(root, 0xffffff, tf->vc, tf->vr, tf->vf);
 	p[0] = tf->vc[0] - tf->vr[0] - tf->vf[0];
 	p[1] = tf->vc[1] - tf->vr[1] - tf->vf[1];
