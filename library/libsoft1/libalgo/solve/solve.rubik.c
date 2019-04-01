@@ -5,6 +5,34 @@
 
 
 
+
+//l2, r2, f, b, u ,d
+void rubikscube_group1(u8* buf, int level)
+{
+}
+
+//l2, r2, f2, b2, u, d
+void rubikscube_group2(u8* buf, int level)
+{
+}
+
+//l2, r2, f2, b2, u2, d2
+void rubikscube_group3(u8* buf, int level)
+{
+}
+
+//finish it
+void rubikscube_finalize(u8* buf, int level)
+{
+}
+
+void rubikscube_solve(u8* buf, int level)
+{
+}
+
+
+
+
 //left, right, near, far, bottom, upper
 void rubikscube_generate(u8* buf, int level)
 {
@@ -21,7 +49,4 @@ void rubikscube_generate(u8* buf, int level)
 			}
 		}
 	}
-}
-void rubikscube_solve(u8* buf, int level)
-{
 }

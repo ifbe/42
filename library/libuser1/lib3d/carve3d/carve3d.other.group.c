@@ -403,9 +403,7 @@ void carvesolid_bodypart(struct arena* win, u32 rgb, vec3 t0, vec3 t1)
 	tu[0] = t0[0] - tc[0];
 	tu[1] = t0[1] - tc[1];
 	tu[2] = t0[2] - tc[2];
-
-	n = tu[0]*tu[0] + tu[1]*tu[1] + tu[2]*tu[2];
-	n = squareroot(n);
+	n = squareroot(tu[0]*tu[0] + tu[1]*tu[1] + tu[2]*tu[2]);
 
 	if(tu[2] < 0.9*n)
 	{
@@ -419,16 +417,18 @@ void carvesolid_bodypart(struct arena* win, u32 rgb, vec3 t0, vec3 t1)
 		tr[1] = tu[2]*1.0 - tu[0]*0.0;
 		tr[2] = tu[0]*0.0 - tu[1]*1.0;
 	}
-	tr[0] /= 3;
-	tr[1] /= 3;
-	tr[2] /= 3;
+	n = 25.0 / squareroot(tr[0]*tr[0] + tr[1]*tr[1] + tr[2]*tr[2]);
+	tr[0] *= n;
+	tr[1] *= n;
+	tr[2] *= n;
 
 	tf[0] = tu[1]*tr[2] - tu[2]*tr[1];
 	tf[1] = tu[2]*tr[0] - tu[0]*tr[2];
 	tf[2] = tu[0]*tr[1] - tu[1]*tr[0];
-	tf[0] /= n;
-	tf[1] /= n;
-	tf[2] /= n;
+	n = 25.0 / squareroot(tf[0]*tf[0] + tf[1]*tf[1] + tf[2]*tf[2]);
+	tf[0] *= n;
+	tf[1] *= n;
+	tf[2] *= n;
 
-	carvesolid_sphere(win, 0xffffff, tc, tr, tf, tu);
+	carvesolid_cylinder(win, 0xffffff, tc, tr, tf, tu);
 }

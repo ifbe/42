@@ -49,7 +49,7 @@ static void sphere_read_vbo3d(
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 	//carveline_rect(win, 0xffffff, vc, vr, vf);
-	carveopaque_sphere(win, 0xffffff, vc, vr, vf, vu);
+	//carveopaque_sphere(win, 0xffffff, vc, vr, vf, vu);
 
 	tc[0] = vc[0] + vu[0]/2;
 	tc[1] = vc[1] + vu[1]/2;
