@@ -157,8 +157,8 @@ void target_deltaxyz(struct arena* win, float x, float y, float z)
 	float tx, ty;
 	float dx, dy, dz;
 
-	tx = win->camera.vf[0];
-	ty = win->camera.vf[1];
+	tx = win->camera.vn[0];
+	ty = win->camera.vn[1];
 	norm = squareroot(tx*tx+ty*ty);
 	tx /= norm;
 	ty /= norm;
@@ -447,8 +447,9 @@ static int surround_swrite(
 		}
 		if(t[3] & joyl_stick)		//w-
 		{
-			win->camera.vc[2] -= win->target.vc[2];
-			win->target.vc[2] = 0;
+			win->target.vc[0] = 0.0;
+			win->target.vc[1] = 0.0;
+			win->target.vc[2] = 0.0;
 		}
 		if(t[3] & joyl_select)		//w+
 		{
@@ -468,29 +469,27 @@ static int surround_swrite(
 
 		if(t[3] & joyr_left)		//x-
 		{
-			return 0;
+			surround_rotatexy(win, -1.0, 0.0);
 		}
 		if(t[3] & joyr_right)		//x+
 		{
-			return 0;
+			surround_rotatexy(win, 1.0, 0.0);
 		}
 		if(t[3] & joyr_down)		//y-
 		{
-			return 0;
+			surround_rotatexy(win, 0.0, 1.0);
 		}
 		if(t[3] & joyr_up)			//y+
 		{
-			return 0;
+			surround_rotatexy(win, 0.0, -1.0);
 		}
 		if(t[3] & joyr_trigger)		//z-
 		{
 			surround_zoom(win, 100.0);
-			return 0;
 		}
 		if(t[3] & joyr_bumper)		//z+
 		{
 			surround_zoom(win, -100.0);
-			return 0;
 		}
 		if(t[3] & joyr_stick)		//w-
 		{
@@ -499,13 +498,13 @@ static int surround_swrite(
 			z = win->camera.vc[2] - win->target.vc[2];
 			w = squareroot(x*x + y*y + z*z);
 
-			win->camera.vf[0] = 0.0;
-			win->camera.vf[1] = w*0.7071067811865476;
-			win->camera.vf[2] = -w*0.7071067811865476;
+			win->camera.vn[0] = 0.0;
+			win->camera.vn[1] = w*0.7071067811865476;
+			win->camera.vn[2] = -w*0.7071067811865476;
 
-			win->camera.vc[0] = win->target.vc[0];
-			win->camera.vc[1] = win->target.vc[1] - win->camera.vf[1];
-			win->camera.vc[2] = win->target.vc[2] - win->camera.vf[2];
+			win->camera.vc[0] = win->target.vc[0] - win->camera.vn[0];
+			win->camera.vc[1] = win->target.vc[1] - win->camera.vn[1];
+			win->camera.vc[2] = win->target.vc[2] - win->camera.vn[2];
 		}
 		if(t[3] & joyr_start)		//w+
 		{
@@ -516,14 +515,7 @@ static int surround_swrite(
 		y0 = t[1];
 		if((x0 < -4096) | (x0 > 4096) | (y0 < -4096) | (y0 > 4096))
 		{
-			if(x0 < -8192)x0 = -1;
-			else if(x0 > 8192)x0 = 1;
-			else x0 = 0;
-
-			if(y0 < -8192)y0 = -1;
-			else if(y0 > 8192)y0 = 1;
-			else y0 = 0;
-
+			say("%d,%d\n",x0,y0);
 			surround_rotatexy(win, x0, -y0);
 		}
 	}
