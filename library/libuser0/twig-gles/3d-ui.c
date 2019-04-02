@@ -62,7 +62,7 @@ int ui3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sta
 			sty = (void*)(rel->srcfoot);
 			pin = (void*)(rel->dstfoot);
 			ret = act->onwrite(act, pin, win, sty, ev, 0);
-			if(ret)break;
+			if(ret)return 1;
 		}
 
 		rel = samesrcprevdst(rel);

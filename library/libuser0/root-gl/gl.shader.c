@@ -117,7 +117,7 @@ GLSL_VERSION
 "out mediump vec3 normal;\n"
 "void main(){\n"
 	"vertex = v;\n"
-	"colour = c*0.5;\n"
+	"colour = c;\n"
 	"normal = vec3(0.0, 0.0, -1.0);\n"
 	"gl_Position = vec4(vertex,1.0);\n"
 "}\n";
@@ -128,24 +128,35 @@ GLSL_VERSION
 "in mediump vec3 normal;\n"
 "in mediump vec3 colour;\n"
 "out mediump vec4 FragColor;\n"
-"mediump vec3 campos = vec3(0.0, 0.0, -1.0);\n"
 "mediump vec3 sunpos = vec3(1.0, 1.0, -2.0);\n"
+"mediump vec3 campos = vec3(0.0, 0.0, -1.0);\n"
 "mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
-"mediump vec3 kambi = vec3(0.231250, 0.231250, 0.231250);\n"
+//"mediump vec3 kambi = vec3(0.231250, 0.231250, 0.231250);\n"
 "mediump vec3 kdiff = vec3(0.277500, 0.277500, 0.277500);\n"
 "mediump vec3 kspec = vec3(0.773911, 0.773911, 0.773911);\n"
 "vec3 phong(){\n"
 	"mediump vec3 N = normalize(normal);\n"
 	"mediump vec3 L = normalize(sunpos - vertex);\n"
-	"mediump vec3 E = normalize(campos - vertex);\n"
-	"mediump vec3 R = reflect(-L, N);\n"
 	"mediump float SN = max(dot(N, L), 0.0);\n"
-	"mediump float RV = max(dot(R, E), 0.0);\n"
-	"if(SN<0.0)return lightcolor * (kambi + kdiff*SN);\n"
-	"return lightcolor * (kambi + kdiff*SN + kspec*pow(RV, 89.6));\n"
+	"mediump vec3 ret = colour + kdiff*SN;\n"
+	"if(SN<0.0)return lightcolor*ret;\n"
+
+	//phong
+	//"mediump vec3 E = normalize(campos - vertex);\n"
+	//"mediump vec3 R = reflect(-L, N);\n"
+	//"mediump float RV = max(dot(R, E), 0.0);\n"
+	//"ret += kspec*pow(RV, 89.6);\n"
+
+	//blinn phong
+	"mediump vec3 E = normalize(campos - vertex);\n"
+	"mediump vec3 H = normalize(E + L);\n"
+	"mediump float NH = max(dot(N, H), 0.0);\n"
+	"ret += kspec*pow(NH, 89.6);\n"
+
+	"return lightcolor * ret;\n"
 "}\n"
 "void main(){\n"
-	"FragColor = vec4(colour + 0.5*phong(), 1.0);\n"
+	"FragColor = vec4(phong(), 1.0);\n"
 "}\n";
 
 
@@ -163,7 +174,7 @@ GLSL_VERSION
 "void main(){\n"
 	"vertex = v;\n"
 	"normal = n;\n"
-	"colour = c*0.5;\n"
+	"colour = c;\n"
 	"gl_Position = cammvp * vec4(vertex,1.0);\n"
 "}\n";
 
@@ -175,27 +186,38 @@ GLSL_VERSION
 "out mediump vec4 FragColor;\n"
 "uniform mediump vec3 camxyz;\n"
 "mediump vec3 sunxyz = vec3(0.0, 0.0, 1000.0);\n"
-"mediump vec3 ambient = vec3(0.1, 0.1, 0.1);\n"
 "mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
+//"mediump vec3 kambi = vec3(0.231250, 0.231250, 0.231250);\n"
+"mediump vec3 kdiff = vec3(0.277500, 0.277500, 0.277500);\n"
+"mediump vec3 kspec = vec3(0.773911, 0.773911, 0.773911);\n"
 "vec3 phong(){\n"
 	"mediump vec3 N = normalize(normal);\n"
 	"mediump vec3 L = normalize(sunxyz - vertex);\n"
-	"mediump vec3 E = normalize(camxyz - vertex);\n"
-	"mediump vec3 R = reflect(-L, N);\n"
 	"mediump float SN = max(dot(N, L), 0.0);\n"
-	"mediump float RV = max(dot(R, E), 0.0);\n"
-	"mediump vec3 diffuse = lightcolor * SN;\n"
-	"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
-	"if(SN>0.0)specular = lightcolor * pow(RV, 8.0);\n"
-	"return (diffuse + specular)*0.4;\n"
+	"mediump vec3 ret = colour + kdiff*SN;\n"
+	"if(SN<0.0)return lightcolor*ret;\n"
+
+	//phong
+	//"mediump vec3 E = normalize(camxyz - vertex);\n"
+	//"mediump vec3 R = reflect(-L, N);\n"
+	//"mediump float RV = max(dot(R, E), 0.0);\n"
+	//"ret += kspec*pow(RV, 89.6);\n"
+
+	//blinn phong
+	"mediump vec3 E = normalize(camxyz - vertex);\n"
+	"mediump vec3 H = normalize(E + L);\n"
+	"mediump float NH = max(dot(N, H), 0.0);\n"
+	"ret += kspec*pow(NH, 89.6);\n"
+
+	"return lightcolor * ret;\n"
 "}\n"
 //"float shadow(){\n"
 	//"if(uvw.z - texture(tex0, uvw.xy).r > 0.000001)return 0.1;\n"
 	//"return 1.0;\n"
 //"}\n"
 "void main(){\n"
-	//"FragColor = vec4(ambient + phong()*shadow(), 1.0);\n"
-	"FragColor = vec4(colour + ambient + phong(), 1.0);\n"
+	//"FragColor = vec4(phong()*shadow(), 1.0);\n"
+	"FragColor = vec4(phong(), 1.0);\n"
 "}\n";
 
 

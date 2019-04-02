@@ -162,6 +162,7 @@ static void light_read_vbo(
 	void* mvp;
 	struct relation* rel;
 	struct arena* tmp;
+	struct gldst* dst = (void*)(sty->foot[0]);
 	struct glsrc* src = (void*)(pin->foot[0]);
 	float (*vbuf)[6] = (void*)(src->vbuf);
 	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
@@ -264,6 +265,9 @@ static void light_read_vbo(
 	tmp = (void*)(rel->dstchip);
 	if(0 == tmp)return;
 	if(_fbo_ != tmp->fmt)return;
+
+	//say("tex=%x\n", tmp->tex_depth);
+	dst->tex[0] = tmp->tex_depth;
 
 	a = tau * timeread() / 100000000.0;
 	c = cosine(a);
@@ -387,17 +391,6 @@ static void light_start(
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 12;
 	src->method = 'v';
-
-	//special
-	rel = leaf->orel0;
-	if(0 == rel)return;
-
-	tmp = (void*)(rel->dstchip);
-	if(0 == tmp)return;
-	if(_fbo_ != tmp->fmt)return;
-
-	say("tex=%x\n", tmp->tex_depth);
-	dst->tex[0] = tmp->tex_depth;
 
 	//send!
 	src->shader_enq[0] = 42;

@@ -60,7 +60,7 @@ int ev3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sta
 
 		rel = samesrcprevdst(rel);
 	}
-	return 0;
+	return 1;
 }
 
 
