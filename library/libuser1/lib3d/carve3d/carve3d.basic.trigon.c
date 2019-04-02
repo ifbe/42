@@ -1,5 +1,5 @@
 #include "libuser.h"
-#define acc 32
+#define acc 16
 int trigon3d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	struct datapair* mod = win->mod;

@@ -237,7 +237,7 @@ static void weiqi_read_vbo(
 			carvesolid_sphere(win, rgb, tc, tr, tf, tu);
 
 			k++;
-			if(k>20)return;
+			//if(k>50)return;
 		}
 	}
 }

@@ -7,42 +7,35 @@ void xiangqi_move(char (*data)[9], int* turn, int px, int py, int x, int y);
 
 static char data[10][9];
 static int px, py, qx, qy;
-void xiangqi_import(u8* p, u8* buf)
+int xiangqi_import(u8* buf, u8* str)
 {
-	int j, k = 0;
-	for(j=0;j<16;j++)p[j] = 0;
+	int x,y,j;
+	u8 tmp[0x100];
+	j = openreadclose(str, 0, tmp, 0x100);
+	printmemory(tmp, 0x100);
+	if(j<=0)return 0;
+
+	x = y = 0;
 	for(j=0;j<0x100;j++)
 	{
-		if(buf[j] >= 0x80)
-		{
-			//say("%.3s", buf+j);
-			if(0 == ncmp(buf+j, "车", 3))p[k] = 'a';
-			else if(0 == ncmp(buf+j, "马", 3))p[k] = 'b';
-			else if(0 == ncmp(buf+j, "象", 3))p[k] = 'c';
-			else if(0 == ncmp(buf+j, "士", 3))p[k] = 'd';
-			else if(0 == ncmp(buf+j, "将", 3))p[k] = 'e';
-			else if(0 == ncmp(buf+j, "卒", 3))p[k] = 's';
-			else if(0 == ncmp(buf+j, "炮", 3))p[k] = 'z';
-			else if(0 == ncmp(buf+j, "车", 3))p[k] = 'A';
-			else if(0 == ncmp(buf+j, "马", 3))p[k] = 'B';
-			else if(0 == ncmp(buf+j, "相", 3))p[k] = 'C';
-			else if(0 == ncmp(buf+j, "仕", 3))p[k] = 'D';
-			else if(0 == ncmp(buf+j, "帅", 3))p[k] = 'E';
-			else if(0 == ncmp(buf+j, "兵", 3))p[k] = 'S';
-			else if(0 == ncmp(buf+j, "炮", 3))p[k] = 'Z';
-
-			j += 2;
-			k++;
+		if(0xd == tmp[j])continue;
+		if(0xa == tmp[j]){
+			x = 0;y += 1;
+			if(y >= 10)break;
+			continue;
 		}
-		else if(buf[j] >= 0x30)
+		if(x<9)
 		{
-			//say("%c", buf[j]);
-			p[k] = 0;
-			k++;
+			if(	((tmp[j] >= 'A')&&(tmp[j] <= 'Z')) |
+				((tmp[j] >= 'a')&&(tmp[j] <= 'z')) )
+			{
+				buf[y*9+x] = tmp[j];
+			}
+			else buf[y*9+x] = 0;
+			x++;
 		}
-		if(k >= 90)break;
 	}
-	//say("\n");
+	return 1;
 }
 
 
@@ -52,22 +45,23 @@ void* char2hanzi(int val)
 {
 	switch(val)
 	{
-		case 'a':return "车";
-		case 'b':return "马";
-		case 'c':return "象";
-		case 'd':return "士";
-		case 'e':return "将";
-		case 's':return "卒";
-		case 'z':return "炮";
-
-		case 'A':return "车";
-		case 'B':return "马";
-		case 'C':return "相";
-		case 'D':return "仕";
-		case 'E':return "帅";
-		case 'S':return "兵";
+		//black
+		case 'A':return "車";
+		case 'B':return "馬";
+		case 'C':return "象";
+		case 'D':return "士";
+		case 'E':return "将";
+		case 'S':return "卒";
 		case 'Z':return "炮";
 
+		//red
+		case 'a':return "車";
+		case 'b':return "馬";
+		case 'c':return "相";
+		case 'd':return "仕";
+		case 'e':return "帥";
+		case 's':return "兵";
+		case 'z':return "炮";
 	}
 	return "";
 }
@@ -263,9 +257,9 @@ static void xiangqi_read_vbo2d(
 			f[0] = (x+x-8)/9.0;
 			f[1] = (y+y-9)/10.0;
 			f[2] = 1.0/20;
-			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
-			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
-			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2]-0.1;
+			tc[0] = vc[0] + f[0]*vr[0] - f[1]*vf[0];
+			tc[1] = vc[1] + f[0]*vr[1] - f[1]*vf[1];
+			tc[2] = vc[2] + f[0]*vr[2] - f[1]*vf[2]-0.1;
 			tr[0] = vr[0] / 9.1;
 			tr[1] = vr[1] / 9.1;
 			tr[2] = vr[2] / 9.1;
@@ -352,9 +346,9 @@ static void xiangqi_read_vbo(
 			f[0] = (x+x-8)/9.0;
 			f[1] = (y+y-9)/10.0;
 			f[2] = 1.0/20;
-			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
-			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
-			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			tc[0] = vc[0] + f[0]*vr[0] - f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] - f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] - f[1]*vf[2] + f[2]*vu[2];
 			tr[0] = vr[0] / 9.1;
 			tr[1] = vr[1] / 9.1;
 			tr[2] = vr[2] / 9.1;
@@ -466,7 +460,7 @@ static void xiangqi_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void xiangqi_read(
+static void xiangqi_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -513,7 +507,7 @@ int xiangqi_pickup(int x, int y, int turn)
 
 	return 0;
 }
-void xiangqi_write(
+void xiangqi_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -609,10 +603,15 @@ void xiangqi_write(
 		px = py = -1;
 	}
 }
-static void xiangqi_get()
+static void xiangqi_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void xiangqi_post()
+static void xiangqi_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void xiangqi_stop(
@@ -638,16 +637,22 @@ static void xiangqi_delete(struct actor* act, u8* buf)
 }
 static void xiangqi_create(struct actor* act, void* str)
 {
+	int ret;
+	void* buf;
 	if(0 == act)return;
-	else if(_orig_ == act->type)act->buf = data;
-	else if(_copy_ == act->type)act->buf = memorycreate(10*9);
 
-	if(str)xiangqi_import(act->buf, str);
-	else xiangqi_generate(data);
+	else if(_orig_ == act->type)buf = data;
+	else if(_copy_ == act->type)buf = memorycreate(10*9);
+
+	if(str)ret = xiangqi_import(buf, str);
+	if((0==str)|(ret<=0))xiangqi_generate(data);
+
+	for(ret=0;ret<90;ret+=9)printmemory(buf+ret, 9);
 
 	act->x0 = act->y0 = -1;
 	act->xn = act->yn = 0;
 	act->w0 = 0;
+	act->buf = buf;
 }
 
 
@@ -662,8 +667,8 @@ void xiangqi_register(struct actor* p)
 	p->ondelete = (void*)xiangqi_delete;
 	p->onstart  = (void*)xiangqi_start;
 	p->onstop   = (void*)xiangqi_stop;
-	p->onget    = (void*)xiangqi_get;
-	p->onpost   = (void*)xiangqi_post;
-	p->onread   = (void*)xiangqi_read;
-	p->onwrite  = (void*)xiangqi_write;
+	p->onget    = (void*)xiangqi_cread;
+	p->onpost   = (void*)xiangqi_cwrite;
+	p->onread   = (void*)xiangqi_sread;
+	p->onwrite  = (void*)xiangqi_swrite;
 }
