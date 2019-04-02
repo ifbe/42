@@ -6,7 +6,44 @@ void xiangqi_move(char (*data)[9], int* turn, int px, int py, int x, int y);
 
 
 static char data[10][9];
-static int px, py, qx, qy, turn;
+static int px, py, qx, qy;
+void xiangqi_import(u8* p, u8* buf)
+{
+	int j, k = 0;
+	for(j=0;j<16;j++)p[j] = 0;
+	for(j=0;j<0x100;j++)
+	{
+		if(buf[j] >= 0x80)
+		{
+			//say("%.3s", buf+j);
+			if(0 == ncmp(buf+j, "车", 3))p[k] = 'a';
+			else if(0 == ncmp(buf+j, "马", 3))p[k] = 'b';
+			else if(0 == ncmp(buf+j, "象", 3))p[k] = 'c';
+			else if(0 == ncmp(buf+j, "士", 3))p[k] = 'd';
+			else if(0 == ncmp(buf+j, "将", 3))p[k] = 'e';
+			else if(0 == ncmp(buf+j, "卒", 3))p[k] = 's';
+			else if(0 == ncmp(buf+j, "炮", 3))p[k] = 'z';
+			else if(0 == ncmp(buf+j, "车", 3))p[k] = 'A';
+			else if(0 == ncmp(buf+j, "马", 3))p[k] = 'B';
+			else if(0 == ncmp(buf+j, "相", 3))p[k] = 'C';
+			else if(0 == ncmp(buf+j, "仕", 3))p[k] = 'D';
+			else if(0 == ncmp(buf+j, "帅", 3))p[k] = 'E';
+			else if(0 == ncmp(buf+j, "兵", 3))p[k] = 'S';
+			else if(0 == ncmp(buf+j, "炮", 3))p[k] = 'Z';
+
+			j += 2;
+			k++;
+		}
+		else if(buf[j] >= 0x30)
+		{
+			//say("%c", buf[j]);
+			p[k] = 0;
+			k++;
+		}
+		if(k >= 90)break;
+	}
+	//say("\n");
+}
 
 
 
@@ -450,7 +487,7 @@ static void xiangqi_read(
 
 
 
-int xiangqi_pickup(int x, int y)
+int xiangqi_pickup(int x, int y, int turn)
 {
 	if( (x==px) && (y==py) )
 	{
@@ -515,11 +552,11 @@ void xiangqi_write(
 	{
 		if(key == 0x20)
 		{
-			ret = xiangqi_pickup(qx, qy);
+			ret = xiangqi_pickup(qx, qy, act->w0);
 			if(ret > 0)return;
 
 			//move?
-			xiangqi_move(data, &turn, px, py, qx, qy);
+			xiangqi_move(data, &act->w0, px, py, qx, qy);
 		}
 		else if(key == 0x415b1b)
 		{
@@ -564,11 +601,11 @@ void xiangqi_write(
 		if(y > 9)return;
 
 		//pick?
-		ret = xiangqi_pickup(x, y);
+		ret = xiangqi_pickup(x, y, act->w0);
 		if(ret > 0)return;
 
 		//move?
-		xiangqi_move(data, &turn, px, py, x, y);
+		xiangqi_move(data, &act->w0, px, py, x, y);
 		px = py = -1;
 	}
 }
@@ -589,18 +626,6 @@ static void xiangqi_start(
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
-	int j;
-	char* p = (char*)data;
-
-	px = py = -1;
-	qx = qy = 0;
-	turn = 0;
-
-	for(j=0;j<90;j++)
-	{
-		if(0 != p[j])break;
-	}
-	if(j >= 90)xiangqi_generate(data);
 }
 static void xiangqi_delete(struct actor* act, u8* buf)
 {
@@ -611,50 +636,18 @@ static void xiangqi_delete(struct actor* act, u8* buf)
 	}
 	act->buf = 0;
 }
-static void xiangqi_create(struct actor* act, u8* buf)
+static void xiangqi_create(struct actor* act, void* str)
 {
-	u8* p;
-	int j,k;
 	if(0 == act)return;
 	else if(_orig_ == act->type)act->buf = data;
 	else if(_copy_ == act->type)act->buf = memorycreate(10*9);
 
-	if(0 == buf)return;
-	p = act->buf;
-	k = 0;
-	for(j=0;j<16;j++)p[j] = 0;
-	for(j=0;j<0x100;j++)
-	{
-		if(buf[j] >= 0x80)
-		{
-			//say("%.3s", buf+j);
-			if(0 == ncmp(buf+j, "车", 3))p[k] = 'a';
-			else if(0 == ncmp(buf+j, "马", 3))p[k] = 'b';
-			else if(0 == ncmp(buf+j, "象", 3))p[k] = 'c';
-			else if(0 == ncmp(buf+j, "士", 3))p[k] = 'd';
-			else if(0 == ncmp(buf+j, "将", 3))p[k] = 'e';
-			else if(0 == ncmp(buf+j, "卒", 3))p[k] = 's';
-			else if(0 == ncmp(buf+j, "炮", 3))p[k] = 'z';
-			else if(0 == ncmp(buf+j, "车", 3))p[k] = 'A';
-			else if(0 == ncmp(buf+j, "马", 3))p[k] = 'B';
-			else if(0 == ncmp(buf+j, "相", 3))p[k] = 'C';
-			else if(0 == ncmp(buf+j, "仕", 3))p[k] = 'D';
-			else if(0 == ncmp(buf+j, "帅", 3))p[k] = 'E';
-			else if(0 == ncmp(buf+j, "兵", 3))p[k] = 'S';
-			else if(0 == ncmp(buf+j, "炮", 3))p[k] = 'Z';
+	if(str)xiangqi_import(act->buf, str);
+	else xiangqi_generate(data);
 
-			j += 2;
-			k++;
-		}
-		else if(buf[j] >= 0x30)
-		{
-			//say("%c", buf[j]);
-			p[k] = 0;
-			k++;
-		}
-		if(k >= 90)break;
-	}
-	say("\n");
+	act->x0 = act->y0 = -1;
+	act->xn = act->yn = 0;
+	act->w0 = 0;
 }
 
 

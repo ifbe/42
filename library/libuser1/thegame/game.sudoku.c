@@ -152,7 +152,8 @@ static void sudoku_read_vbo3d(
 	{
 		for(x=0;x<9;x++)
 		{
-			if((x>2)&&(x<6)&&(y>2)&&(y<6))rgb = 0xcccccc;
+			if((act->x0 == x)&&(act->y0 == y))rgb = 0xff0000;
+			else if((x>2)&&(x<6)&&(y>2)&&(y<6))rgb = 0xcccccc;
 			else if((x<3)&&(y<3))rgb = 0x444444;
 			else if((x<3)&&(y>5))rgb = 0x444444;
 			else if((x>5)&&(y<3))rgb = 0x444444;
@@ -369,6 +370,8 @@ static void sudoku_create(struct actor* act, void* str)
 	for(ret=0;ret<81;ret+=9)printmemory(buf+ret, 9);
 
 	act->buf = buf;
+	act->x0 = 0;
+	act->y0 = 0;
 }
 
 
