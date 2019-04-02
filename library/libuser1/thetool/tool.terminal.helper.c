@@ -590,3 +590,43 @@ void terminal_serverinput(struct uartterm* term, u8* buf, int len)
 		}
 	}
 }
+void terminal_clientinput(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev)
+{
+	int j;
+	u64 why;
+	void* dc;
+	void* df;
+	struct relation* irel;
+
+	why = ev->why;
+	if(ev->what == _kbd_)
+	{
+		j = 3;
+		if(why == 0x1b)j = 1;
+		else if(why == 0x25)why = 0x445b1b;
+		else if(why == 0x26)why = 0x415b1b;
+		else if(why == 0x27)why = 0x435b1b;
+		else if(why == 0x28)why = 0x425b1b;
+		else return;
+	}
+	else if(ev->what == _char_)j = 1;
+	else return;
+
+	irel = act->irel0;
+	while(1)
+	{
+		if(0 == irel)break;
+
+		dc = (void*)(irel->srcchip);
+		df = (void*)(irel->srcfoot);
+		if(_fd_ == irel->srctype)
+		{
+			system_leafwrite(dc, df, act, pin, &why, j);
+		}
+
+		irel = samedstnextsrc(irel);
+	}
+}

@@ -115,7 +115,7 @@ void vkbd_keyboard_read_vbo(struct arena* win, struct style* sty)
             vf[0] = 0.0;
             vf[1] = 0.5/17;
             vf[2] = 0.0;
-            carvesolid2d_rect(win, rgb, vc, vr, vf);
+            carveopaque2d_rect(win, rgb, vc, vr, vf);
 
             vc[2] = -0.91;
             vr[0] = j;

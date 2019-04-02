@@ -128,10 +128,18 @@ typedef float mat4[4][4];
 #define joyr_stick   0x0040
 #define joyr_start   0x0080
 //
-#define vbuffmt_33 0x33
-#define vbuffmt_333 0x333
-#define pcm2 0x2
-#define pcm22 0x22
+#define vbuffmt_3      0x3
+#define vbuffmt_33     0x33
+#define vbuffmt_333    0x333
+#define vbuffmt_3333   0x3333
+#define vbuffmt_33333  0x33333
+#define vbuffmt_333333 0x333333
+#define pcm2      0x2
+#define pcm22     0x22
+#define pcm222    0x222
+#define pcm2222   0x2222
+#define pcm22222  0x22222
+#define pcm222222 0x222222
 //
 #define font3d0 0
 #define font3d1 1

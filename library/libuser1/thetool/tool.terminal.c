@@ -29,6 +29,13 @@ int writeshell(int fd, int off, char* buf, int len);
 //
 void drawterm(struct arena* win, void* term, int x0, int y0, int x1, int y1);
 void terminal_serverinput(struct uartterm* term, u8* buf, int len);
+void terminal_clientinput(struct actor* act, struct pinid* pin, struct arena* win, struct style* sty, struct event* ev);
+//
+void* getstdin();
+int getcurin();
+void* getstdout();
+int getcurout();
+void input(u8* buf, int len);
 
 
 
@@ -58,13 +65,58 @@ static void terminal_read_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	drawhyaline_rect(win, 0x111111, cx-ww, cy-hh, cx+ww, cy+hh);
-	drawterm(win, act->idx, cx-ww, cy-hh, cx+ww, cy+hh);
+
+	if(act->orel0)
+	{
+		drawhyaline_rect(win, 0x111111, cx-ww, cy-hh, cx+ww, cy+hh);
+		drawterm(win, act->idx, cx-ww, cy-hh, cx+ww, cy+hh);
+	}
+	else
+	{
+		void* obuf = getstdout();
+		int ocur = getcurout();
+		drawsolid_rect(win, 0x202020, cx-ww, cy-hh, cx+ww, cy+hh);
+		drawsolid_rect(win, 0xe0e0e0, cx+ww-16, cy-hh, cx+ww, cy+hh);
+		drawtext_reverse(win, 0xffffff, cx-ww, cy-hh, cx+ww-16, cy+hh, obuf, ocur);
+	}
 }
 static void terminal_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int ocur;
+	void* obuf;
+	float* vc;
+	float* vr;
+	float* vf;
+	vec3 tc, tr, tf;
+	struct style tmp;
+	if(0 == sty)
+	{
+		sty = &tmp;
+		sty->vc[0] = 0.0;
+		sty->vc[1] = 0.0;
+		sty->vc[2] = -0.9;
+		sty->vr[0] = 1.0;
+		sty->vr[1] = 0.0;
+		sty->vr[2] = 0.0;
+		sty->vf[0] = 0.0;
+		sty->vf[1] = 1.0;
+		sty->vf[2] = 0.0;
+	}
+	vc = sty->vc;
+	vr = sty->vr;
+	vf = sty->vf;
+
+	tc[0] = vc[0];
+	tc[1] = vc[1];
+	tc[2] = -0.5;
+	carveopaque2d_rect(win, 0x404040, tc, vr, vf);
+
+	tc[2] = -0.8;
+	obuf = getstdout();
+	ocur = getcurout();
+	carvetext2d_reverse(win, 0xffffff, tc, vr, vf, obuf, ocur);
 }
 static void terminal_read_json(
 	struct arena* win, struct style* sty,
@@ -120,7 +172,7 @@ static void terminal_read_cli(
 	int enq, deq;
 	//say("terminal(%x,%x,%x)\n",win,act,sty);
 }
-static void terminal_read(
+static void terminal_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -132,76 +184,44 @@ static void terminal_read(
 	else if(fmt == _vbo_)terminal_read_vbo(win, sty, act, pin);
 	else terminal_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-static void terminal_write_event(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev)
-{
-	int j;
-	u64 why;
-	void* dc;
-	void* df;
-	struct relation* irel;
-
-	why = ev->why;
-	if(ev->what == _kbd_)
-	{
-		j = 3;
-		if(why == 0x1b)j = 1;
-		else if(why == 0x25)why = 0x445b1b;
-		else if(why == 0x26)why = 0x415b1b;
-		else if(why == 0x27)why = 0x435b1b;
-		else if(why == 0x28)why = 0x425b1b;
-		else return;
-	}
-	else if(ev->what == _char_)j = 1;
-	else return;
-
-	irel = act->irel0;
-	if(0 == irel)return;
-
-	while(1)
-	{
-		if(0 == irel)break;
-
-		dc = (void*)(irel->srcchip);
-		df = (void*)(irel->srcfoot);
-		if(_fd_ == irel->srctype)
-		{
-			system_leafwrite(dc, df, act, pin, &why, j);
-		}
-
-		irel = samedstnextsrc(irel);
-	}
-}
-static void terminal_write_data(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
-{
-	printmemory(buf,len);
-	terminal_serverinput(act->idx, buf, len);
-}
-static void terminal_write(
+static void terminal_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	void* buf, int len)
 {
-	if(0 == win)terminal_write_event(act, pin, win, sty, buf);
-	else terminal_write_data(act, pin, win, sty, buf, len);
+	int j;
+	struct event* ev;
+	if(0 == act->orel0)
+	{
+		ev = buf;
+		if(_char_ == ev->what)
+		{
+			for(j=0;j<4;j++)
+			{
+				if(*(u8*)(buf+j) < 0x8)break;
+			}
+			input(buf, j);
+		}
+	}
+	else if(0 == win)
+	{
+		terminal_clientinput(act, pin, win, sty, buf);
+	}
+	else
+	{
+		printmemory(buf,len);
+		terminal_serverinput(act->idx, buf, len);
+	}
 }
-
-
-
-
-static void terminal_get()
+static void terminal_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void terminal_post()
+static void terminal_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	void* buf, int len)
 {
 }
 static void terminal_stop(
@@ -219,31 +239,35 @@ static void terminal_start(
 static void terminal_delete(struct actor* act)
 {
 	if(0 == act)return;
-	memorydelete(act->buf);
+	if(0 == act->buf)memorydelete(act->buf);
 }
-static void terminal_create(struct actor* act)
+static void terminal_create(struct actor* act, void* arg)
 {
 	struct uartterm* term;
 	if(0 == act)return;
 
-	act->idx = memorycreate(sizeof(struct uartterm));
-	act->buf = memorycreate(0x100000);
+	if(0 == arg)return;
+	else
+	{
+		act->idx = memorycreate(sizeof(struct uartterm));
+		act->buf = memorycreate(0x100000);
 
-	term = act->idx;
-	term->curx = 0;
-	term->cury = 0;
-	term->left = 0;
-	term->right = 0;
-	term->top = 0;
-	term->bottom = 0;
-	term->vimw = 128;
-	term->vimh = 24;
-	term->width = 128;
-	term->height = 24;
-	term->bg = 0;
-	term->fg = 7;
-	term->len = 0x100000;
-	term->buf = act->buf;
+		term = act->idx;
+		term->curx = 0;
+		term->cury = 0;
+		term->left = 0;
+		term->right = 0;
+		term->top = 0;
+		term->bottom = 0;
+		term->vimw = 128;
+		term->vimh = 24;
+		term->width = 128;
+		term->height = 24;
+		term->bg = 0;
+		term->fg = 7;
+		term->len = 0x100000;
+		term->buf = act->buf;
+	}
 }
 
 
@@ -258,8 +282,8 @@ void terminal_register(struct actor* p)
 	p->ondelete = (void*)terminal_delete;
 	p->onstart  = (void*)terminal_start;
 	p->onstop   = (void*)terminal_stop;
-	p->onget    = (void*)terminal_get;
-	p->onpost   = (void*)terminal_post;
-	p->onread   = (void*)terminal_read;
-	p->onwrite  = (void*)terminal_write;
+	p->onget    = (void*)terminal_cread;
+	p->onpost   = (void*)terminal_cwrite;
+	p->onread   = (void*)terminal_sread;
+	p->onwrite  = (void*)terminal_swrite;
 }

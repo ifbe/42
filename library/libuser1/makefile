@@ -166,14 +166,8 @@ theui3d/ui3d.picker.c \
 theui3d/ui3d.rtsgame.c \
 theui3d/ui3d.surround.c \
 theui3d/ui3d.vrglass.c \
-theui2d/mode0.testland.c \
-theui2d/mode1.console.c \
-theui2d/mode2.overview.c \
-theui2d/mode3.detail.c \
-theui2d/mode4.win.c \
-theui2d/mode5.rts.c \
-theui2d/mode6.editor.c \
-theui2d/mode7.player.c \
+theui2d/menu.overview.c \
+theui2d/menu.detail.c \
 theui2d/menu.login.c \
 theui2d/menu.list.c \
 theui2d/menu.nav.c \
@@ -190,8 +184,7 @@ thetool/tool.hex.c \
 thetool/tool.qrcode.c \
 thetool/tool.spectrum.c \
 thetool/tool.terminal.c \
-thetool/tool.terminal.ci.c \
-thetool/tool.terminal.si.c \
+thetool/tool.terminal.helper.c \
 thetool/tool.video.c \
 thevkbd/pointer.c \
 thevkbd/corner.c \
