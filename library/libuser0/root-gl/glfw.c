@@ -60,11 +60,11 @@ static void thread_joystick(struct arena* win)
 			//linux: 012, 345
 			pair.x0 = (short)( 32767*f[0]);
 			pair.y0 = (short)(-32767*f[1]);
-			pair.z0 = (short)(127*(1.0+f[2]));
+			pair.z0 = (short)(127*(1.0+f[3]));
 			pair.w0 = 0;
-			pair.xn = (short)( 32767*f[3]);
-			pair.yn = (short)(-32767*f[4]);
-			pair.zn = (short)(127*(1.0+f[5]));
+			pair.xn = (short)( 32767*f[2]);
+			pair.yn = (short)(-32767*f[5]);
+			pair.zn = (short)(127*(1.0+f[4]));
 			pair.wn = 0;
 
 
@@ -73,7 +73,7 @@ static void thread_joystick(struct arena* win)
 			u = glfwGetJoystickButtons(GLFW_JOYSTICK_1 + j, &c2);
 			if(0 == u)continue;
 			if(0 == c2)continue;
-			for(k=0;k<c2;k++)say("b%d:%x\n", k, u[k]);
+			//for(k=0;k<c2;k++)say("b%d:%x\n", k, u[k]);
 /*
 			switch(u[10] | (u[11]<<1) | (u[12]<<2) | (u[13]<<3))
 			{

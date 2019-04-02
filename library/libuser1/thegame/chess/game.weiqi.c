@@ -4,7 +4,38 @@
 
 
 static int px, py, turn;
+
+
+
+
 static u8 data[19][19];
+int weiqi_import(char* file, u8* buf)
+{
+	int x,y,j;
+	u8 tmp[0x200];
+	j = openreadclose(file, 0, tmp, 0x200);
+	//printmemory(tmp, 0x100);
+	if(j<=0)return 0;
+
+	x = y = 0;
+	for(j=0;j<0x200;j++)
+	{
+		if(0xd == tmp[j])continue;
+		if(0xa == tmp[j]){
+			x = 0;y += 1;
+			if(y >= 19)break;
+			continue;
+		}
+		if(x<19)
+		{
+			buf[y*19+x] = tmp[j];
+			x++;
+		}
+	}
+
+	//printmemory(buf, 81);
+	return 1;
+}
 
 
 
@@ -80,7 +111,7 @@ static void weiqi_read_vbo2d(
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
-	float m,n;
+	int j,rgb;
 	vec3 tc, tr, tf, tu, f;
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
@@ -116,13 +147,36 @@ static void weiqi_read_vbo2d(
 		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
 		carveline2d(win, 0x222222, tc, tr);
 	}
+
+	u8* data = act->buf;
+	tr[0] = vr[0]/19;
+	tr[1] = vr[1]/19;
+	tr[2] = vr[2]/19;
+	tf[0] = vf[0]/19;
+	tf[1] = vf[1]/19;
+	tf[2] = vf[2]/19;
+	for(y=-9;y<10;y++)
+	{
+		for(x=-9;x<10;x++)
+		{
+			j = data[19*(y+9) + x+9];
+			if('w' == j)rgb = 0xc0c0c0;
+			else if('b' == j)rgb = 0x404040;
+			else continue;
+
+			tc[0] = vc[0] + tr[0]*x*2 - tf[0]*y*2;
+			tc[1] = vc[1] + tr[1]*x*2 - tf[1]*y*2;
+			tc[2] = vc[2] + tr[2]*x*2 - tf[2]*y*2 - 0.1;
+			carvesolid2d_circle(win, rgb, tc, tr, tf);
+		}
+	}
 }
 static void weiqi_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 	int x,y;
-	float m,n;
+	int j,k,rgb;
 	vec3 tc, tr, tf, tu, f;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -156,20 +210,36 @@ static void weiqi_read_vbo(
 		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
 		carveline(win, 0x222222, tc, tr);
 	}
-/*
-	for(n=cy-hh*12/19;n<=cy+hh*12/19;n+=hh*12/19)
+
+	u8* data = act->buf;
+	k = 0;
+	tr[0] = vr[0]/19;
+	tr[1] = vr[1]/19;
+	tr[2] = vr[2]/19;
+	tf[0] = vf[0]/19;
+	tf[1] = vf[1]/19;
+	tf[2] = vf[2]/19;
+	tu[0] = vu[0]/19/2;
+	tu[1] = vu[1]/19/2;
+	tu[2] = vu[2]/19/2;
+	for(y=-9;y<10;y++)
 	{
-		for(m=cx-ww*12/19;m<=cx+ww*12/19;m+=ww*12/19)
+		for(x=-9;x<10;x++)
 		{
-			carvesolid_circle(
-				win, 0x0,
-				m, n, ww/19/4,
-				ww/19/4, 0.0, 0.0,
-				0.0, hh/19/4, 0.0
-			);
+			j = data[19*(y+9) + x+9];
+			if('w' == j)rgb = 0xc0c0c0;
+			else if('b' == j)rgb = 0x404040;
+			else continue;
+
+			tc[0] = vc[0] + tr[0]*x*2 - tf[0]*y*2 + tu[0];
+			tc[1] = vc[1] + tr[1]*x*2 - tf[1]*y*2 + tu[1];
+			tc[2] = vc[2] + tr[2]*x*2 - tf[2]*y*2 + tu[2];
+			carvesolid_sphere(win, rgb, tc, tr, tf, tu);
+
+			k++;
+			if(k>20)return;
 		}
 	}
-*/
 }
 static void weiqi_read_json(
 	struct arena* win, struct style* sty,
@@ -338,26 +408,33 @@ static void weiqi_start(
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
-	int x,y;
-
-	turn=0;
-	px=py=0;
-
-	for(y=0;y<19;y++)
-	{
-		for(x=0;x<19;x++)data[y][x] = 0;
-	}
+	turn = 0;
+	px = py = 0;
 }
 static void weiqi_delete(struct actor* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void weiqi_create(struct actor* act)
+static void weiqi_create(struct actor* act, void* str)
 {
+	int ret;
+	u8* buf;
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = data;
-	if(_copy_ == act->type)act->buf = memorycreate(19*19);
+
+	if(_orig_ == act->type)buf = (void*)data;
+	if(_copy_ == act->type)buf = memorycreate(19*19);
+
+	//read
+	ret = 0;
+	if(str)ret = weiqi_import(str, buf);
+	if((0==str)|(ret<=0)){for(ret=0;ret<19*19;ret++)buf[ret] = 0;}
+
+	//print
+	for(ret=0;ret<19*19;ret+=19)printmemory(buf+ret, 19);
+
+	//success
+	act->buf = buf;
 }
 
 
