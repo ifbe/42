@@ -76,7 +76,7 @@ GLSL_VERSION
 
 
 
-void fixfbo(struct style* cam, struct style* tar)
+void fixcam(struct style* cam, struct style* tar)
 {
 	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
 	float x,y,z,norm;
@@ -266,39 +266,44 @@ static void light_read_vbo(
 	if(0 == tmp)return;
 	if(_fbo_ != tmp->fmt)return;
 
-	//say("tex=%x\n", tmp->tex_depth);
-	dst->tex[0] = tmp->tex_depth;
-
-	a = tau * timeread() / 100000000.0;
+	//light camera
+	a = tau * timeread() / 10000000.0;
 	c = cosine(a);
 	s = sine(a);
-
 	tmp->camera.vc[0] = sty->vc[0] + sty->vr[0]*c + sty->vf[0]*s + sty->vu[0]*2;
 	tmp->camera.vc[1] = sty->vc[1] + sty->vr[1]*c + sty->vf[1]*s + sty->vu[1]*2;
 	tmp->camera.vc[2] = sty->vc[2] + sty->vr[2]*c + sty->vf[2]*s + sty->vu[2]*2;
-	fixfbo(&tmp->camera, sty);
+	fixcam(&tmp->camera, sty);
 
+
+	//viewer camera
+	c = cosine(a + PI/2);
+	s = sine(a + PI/2);
+	act->camera.vc[0] = sty->vc[0] + sty->vr[0]*c + sty->vf[0]*s + sty->vu[0]*2;
+	act->camera.vc[1] = sty->vc[1] + sty->vr[1]*c + sty->vf[1]*s + sty->vu[1]*2;
+	act->camera.vc[2] = sty->vc[2] + sty->vr[2]*c + sty->vf[2]*s + sty->vu[2]*2;
+	fixcam(&act->camera, sty);
+
+
+	//calc matrix
 	mvp = (void*)(src->arg_data[0]);
 	fixmatrix(mvp, tmp);
 	mat4_transpose(mvp);
 
 	src->arg_enq[0] += 1;
+	dst->tex[0] = tmp->tex_depth;
 
 
-
-
+	//display light
 	tr[0] = 20.0;
 	tr[1] = 0.0;
 	tr[2] = 0.0;
-
 	tf[0] = 0.0;
 	tf[1] = 20.0;
 	tf[2] = 0.0;
-
 	tu[0] = 0.0;
 	tu[1] = 0.0;
 	tu[2] = 20.0;
-
 	carvesolid_sphere(win, 0xffff00, tmp->camera.vc, tr, tf, tu);
 }
 static void light_read_json(

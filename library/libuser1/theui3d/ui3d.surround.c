@@ -92,7 +92,7 @@ void surround_rotatex(struct arena* win, float delta)
 	win->camera.vc[1] = ty+py;
 	win->camera.vc[2] = tz+pz;
 }
-void surround_deltay(struct arena* win, float delta)
+void surround_rotatey(struct arena* win, float delta)
 {
 	float v[4];
 	float q[4];
@@ -136,20 +136,8 @@ void surround_deltay(struct arena* win, float delta)
 }
 void surround_rotatexy(struct arena* win, int dx, int dy)
 {
-	float delta;
-
-	if(0 != dx)
-	{
-		if(dx < 0)delta = -0.05;
-		else if(dx > 0)delta = 0.05;
-		surround_rotatex(win, delta);
-	}
-	if(0 != dy)
-	{
-		if(dy < 0)delta = -0.02;
-		else if(dy > 0)delta = 0.02;
-		surround_deltay(win, delta);
-	}
+	if(0 != dx)surround_rotatex(win, dx / 100.0);
+	if(0 != dy)surround_rotatey(win, dy / 100.0);
 }
 void target_deltaxyz(struct arena* win, float x, float y, float z)
 {
@@ -512,12 +500,16 @@ static int surround_swrite(
 		}
 
 		x0 = t[0];
+		if(x0 <-4096)x1 = x0 + 4096;
+		else if(x0 > 4096)x1 = x0 - 4096;
+		else x1 = 0;
+
 		y0 = t[1];
-		if((x0 < -4096) | (x0 > 4096) | (y0 < -4096) | (y0 > 4096))
-		{
-			say("%d,%d\n",x0,y0);
-			surround_rotatexy(win, x0, -y0);
-		}
+		if(y0 <-4096)y1 = y0 + 4096;
+		else if(y0 > 4096)y1 = y0 - 4096;
+		else y1 = 0;
+
+		if((0 != x1) | (0 != y1))surround_rotatexy(win, x1/4096.0, -y1/4096.0);
 	}
 
 	//fix it!

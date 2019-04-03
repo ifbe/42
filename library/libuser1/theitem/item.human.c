@@ -69,7 +69,7 @@ static void human_read_vbo(
 {
 	int j,k;
 	vec3 t0, t1;
-	float x,y,z;
+	float x,y,z,n;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
@@ -93,8 +93,48 @@ static void human_read_vbo(
 		t1[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
 		t1[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
 
-		carvesolid_bodypart(win, 0xffffff, t0, t1);
+		carvesolid_bodypart(win, 0xc0c0c0, t0, t1);
 	}
+
+	x = bonenode[0][0];
+	y = bonenode[0][1];
+	z = bonenode[0][2];
+	act->camera.vc[0] = vc[0] + vr[0]*x + vf[0]*y + vu[0]*z;
+	act->camera.vc[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
+	act->camera.vc[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
+
+	x = vf[0];
+	y = vf[1];
+	z = vf[2];
+	n = squareroot(x*x + y*y + z*z);
+	act->camera.vn[0] = 100*x/n;
+	act->camera.vn[1] = 100*y/n;
+	act->camera.vn[2] = 100*z/n;
+
+	x = bonenode[0][0] - bonenode[1][0];
+	y = bonenode[0][1] - bonenode[1][1];
+	z = bonenode[0][2] - bonenode[1][2];
+	n = squareroot(x*x + y*y + z*z);
+	act->camera.vu[0] = 100*x/n;
+	act->camera.vu[1] = 100*y/n;
+	act->camera.vu[2] = 100*z/n;
+	act->camera.vb[0] = -100*x/n;
+	act->camera.vb[1] = -100*y/n;
+	act->camera.vb[2] = -100*z/n;
+
+	//right = cross(near, up)
+	vf = act->camera.vn;
+	vu = act->camera.vu;
+	x = vf[1] * vu[2] - vf[2] * vu[1];
+	y = vf[2] * vu[0] - vf[0] * vu[2];
+	z = vf[0] * vu[1] - vf[1] * vu[0];
+	n = squareroot(x*x + y*y + z*z);
+	act->camera.vr[0] = 100*x/n;
+	act->camera.vr[1] = 100*y/n;
+	act->camera.vr[2] = 100*z/n;
+	act->camera.vl[0] = -100*x/n;
+	act->camera.vl[1] = -100*y/n;
+	act->camera.vl[2] = -100*z/n;
 }
 static void human_read_json(
 	struct arena* win, struct style* sty,
@@ -133,8 +173,33 @@ static void human_write(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
-	float a,c,s;
-	float sec = (timeread() % 2000000) / 2000000.0;
+	float x,y,z,n;
+	float sec,a,c,s;
+
+	if(_char_ == ev->what)
+	{
+		switch(ev->why)
+		{
+			case 'w':sty->vc[1] += 10;break;
+			case 's':sty->vc[1] -= 10;break;
+			case 'a':sty->vc[0] -= 10;break;
+			case 'd':sty->vc[0] += 10;break;
+		}
+
+		sec = timeread() / 1000000.0;
+
+		x = bonenode[0][0] - bonenode[1][0];
+		y = bonenode[0][1] - bonenode[1][1];
+		z = bonenode[0][2] - bonenode[1][2];
+		n = squareroot(x*x + y*y + z*z);
+
+		a = PI/24*sine(2.0*PI*sec);
+		c = cosine(a);
+		s = sine(a);
+		bonenode[0][0] = bonenode[1][0] + n*s;
+		bonenode[0][1] = 0.0;
+		bonenode[0][2] = bonenode[1][2] + n*c;
+	}
 /*
 	//arm
 	a = PI/3*sine(2.0*PI*sec);
