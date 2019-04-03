@@ -61,25 +61,25 @@ static void thread_joystick(struct arena* win)
 			//for(k=0;k<c2;k++)say("b%d:%x\n", k, u[k]);
 
 if(0){
-			pair.x0 = (short)( 32767*f[0]);
-			pair.y0 = (short)(-32767*f[1]);
+			pair.x0 = (short)(32767*f[0]);
+			pair.y0 = (short)(32767*f[1]);
 			pair.z0 = (short)(127*(1.0+f[4]));
 			pair.w0 = 0;
-			pair.xn = (short)( 32767*f[2]);
-			pair.yn = (short)(-32767*f[3]);
+			pair.xn = (short)(32767*f[2]);
+			pair.yn = (short)(32767*f[3]);
 			pair.zn = (short)(127*(1.0+f[5]));
 			pair.wn = 0;
 
 			switch(u[10] | (u[11]<<1) | (u[12]<<2) | (u[13]<<3))
 			{
-				case  9:pair.w0 |= joyl_left;break;
-				case  6:pair.w0 |= joyl_right;break;
-				case 12:pair.w0 |= joyl_down;break;
-				case  3:pair.w0 |= joyl_up;break;
-				case  8:pair.w0 |= joyl_down|joyl_left;break;
-				case  4:pair.w0 |= joyl_down|joyl_right;break;
-				case  2:pair.w0 |= joyl_up|joyl_right;break;
-				case  0:pair.w0 |= joyl_up|joyl_left;break;
+				case  8:pair.w0 |= joyl_left;break;
+				case  2:pair.w0 |= joyl_right;break;
+				case  4:pair.w0 |= joyl_down;break;
+				case  1:pair.w0 |= joyl_up;break;
+				case 12:pair.w0 |= joyl_down|joyl_left;break;
+				case  6:pair.w0 |= joyl_down|joyl_right;break;
+				case  3:pair.w0 |= joyl_up|joyl_right;break;
+				case  9:pair.w0 |= joyl_up|joyl_left;break;
 			}
 			if(u[0])pair.wn |= joyr_down;
 			if(u[1])pair.wn |= joyr_right;
@@ -93,9 +93,9 @@ if(0){
 			if(u[9])pair.wn |= joyr_stick;
 			if(f[4]>0.0)pair.w0 |= joyl_trigger;
 			if(f[5]>0.0)pair.wn |= joyr_trigger;
-}//8bitdo
+}//win, 8bitdo
 
-if(1){
+if(0){
 			//  mac,xbox: 01?, 23?
 			//  win,xbox:
 			//linux,xbox:
@@ -136,17 +136,17 @@ if(1){
 			if(u[14])pair.wn |= joyr_stick;
 }//xbox
 
-if(0){
+if(1){
 			//  mac, ds4: 014, 235
 			//  win, ds4: 013, 254
 			//linux, ds4: 012, 345
 			pair.x0 = (short)( 32767*f[0]);
 			pair.y0 = (short)(-32767*f[1]);
-			pair.z0 = (short)(127*(1.0+f[4]));
+			pair.z0 = (short)(127*(1.0+f[3]));
 			pair.w0 = 0;
 			pair.xn = (short)( 32767*f[2]);
-			pair.yn = (short)(-32767*f[3]);
-			pair.zn = (short)(127*(1.0+f[5]));
+			pair.yn = (short)(-32767*f[5]);
+			pair.zn = (short)(127*(1.0+f[4]));
 			pair.wn = 0;
 
 			if(u[ 0])pair.wn |= joyr_left;
