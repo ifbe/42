@@ -79,7 +79,8 @@ void spectrum_register(void*);
 void terminal_register(void*);
 void video_register(void*);
 //ui3d
-void fpscam_register(void*);
+void firstperson_register(void*);
+void thirdperson_register(void*);
 void picker_register(void*);
 void rtsgame_register(void*);
 void surround_register(void*);
@@ -352,7 +353,10 @@ void content_create(void* addr)
 
 
 	//-------------------ui3d------------------
-	fpscam_register(tmp);
+	firstperson_register(tmp);
+	tmp += sizeof(struct actor);
+
+	thirdperson_register(tmp);
 	tmp += sizeof(struct actor);
 
 	picker_register(tmp);

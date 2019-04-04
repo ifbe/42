@@ -3,7 +3,7 @@
 
 
 
-static int fpscam_sread(
+static int firstperson_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -48,7 +48,7 @@ found:
 	}
 	return 0;
 }
-static int fpscam_swrite(
+static int firstperson_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -56,52 +56,52 @@ static int fpscam_swrite(
 	//do nothing, pass all to role
 	return 0;
 }
-static void fpscam_cread(
+static void firstperson_cread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 }
-static void fpscam_cwrite(
+static void firstperson_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void fpscam_stop(
+static void firstperson_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
 }
-static void fpscam_start(
+static void firstperson_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
-    say("@fpscam_start\n");
+    say("@firstperson_start\n");
 }
-static void fpscam_delete()
+static void firstperson_delete()
 {
 }
-static void fpscam_create(void* addr)
+static void firstperson_create(void* addr)
 {
-    say("@fpscam_create\n");
+    say("@firstperson_create\n");
 }
 
 
 
 
-void fpscam_register(struct actor* p)
+void firstperson_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('f', 'p', 's', 'c', 'a', 'm', 0, 0);
+	p->name = hex64('1', 'r', 'd', 'c', 'a', 'm', 0, 0);
 
-	p->oncreate = (void*)fpscam_create;
-	p->ondelete = (void*)fpscam_delete;
-	p->onstart  = (void*)fpscam_start;
-	p->onstop   = (void*)fpscam_stop;
-	p->onget    = (void*)fpscam_cread;
-	p->onpost   = (void*)fpscam_cwrite;
-	p->onread   = (void*)fpscam_sread;
-	p->onwrite  = (void*)fpscam_swrite;
+	p->oncreate = (void*)firstperson_create;
+	p->ondelete = (void*)firstperson_delete;
+	p->onstart  = (void*)firstperson_start;
+	p->onstop   = (void*)firstperson_stop;
+	p->onget    = (void*)firstperson_cread;
+	p->onpost   = (void*)firstperson_cwrite;
+	p->onread   = (void*)firstperson_sread;
+	p->onwrite  = (void*)firstperson_swrite;
 }

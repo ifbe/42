@@ -162,7 +162,8 @@ theitem/item.rccar.c \
 theitem/item.stair.c \
 theitem/item.tardis.c \
 theitem/item.tree.c \
-theui3d/ui3d.fpscam.c \
+theui3d/ui3d.1rdcam.c \
+theui3d/ui3d.3rdcam.c \
 theui3d/ui3d.picker.c \
 theui3d/ui3d.rtsgame.c \
 theui3d/ui3d.surround.c \

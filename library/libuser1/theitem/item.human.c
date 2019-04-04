@@ -69,6 +69,7 @@ static void human_read_vbo(
 {
 	int j,k;
 	vec3 t0, t1;
+	float w,h;
 	float x,y,z,n;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -111,16 +112,19 @@ static void human_read_vbo(
 	act->camera.vn[1] = 100*y/n;
 	act->camera.vn[2] = 100*z/n;
 
+	//
+	w = win->width;
+	h = win->height;
 	x = bonenode[0][0] - bonenode[1][0];
 	y = bonenode[0][1] - bonenode[1][1];
 	z = bonenode[0][2] - bonenode[1][2];
-	n = squareroot(x*x + y*y + z*z);
-	act->camera.vu[0] = 100*x/n;
-	act->camera.vu[1] = 100*y/n;
-	act->camera.vu[2] = 100*z/n;
-	act->camera.vb[0] = -100*x/n;
-	act->camera.vb[1] = -100*y/n;
-	act->camera.vb[2] = -100*z/n;
+	n = h/w*173.0 / squareroot(x*x + y*y + z*z);
+	act->camera.vu[0] = x*n;
+	act->camera.vu[1] = y*n;
+	act->camera.vu[2] = z*n;
+	act->camera.vb[0] =-x*n;
+	act->camera.vb[1] =-y*n;
+	act->camera.vb[2] =-z*n;
 
 	//right = cross(near, up)
 	vf = act->camera.vn;
@@ -128,13 +132,13 @@ static void human_read_vbo(
 	x = vf[1] * vu[2] - vf[2] * vu[1];
 	y = vf[2] * vu[0] - vf[0] * vu[2];
 	z = vf[0] * vu[1] - vf[1] * vu[0];
-	n = squareroot(x*x + y*y + z*z);
-	act->camera.vr[0] = 100*x/n;
-	act->camera.vr[1] = 100*y/n;
-	act->camera.vr[2] = 100*z/n;
-	act->camera.vl[0] = -100*x/n;
-	act->camera.vl[1] = -100*y/n;
-	act->camera.vl[2] = -100*z/n;
+	n = 173.0 / squareroot(x*x + y*y + z*z);
+	act->camera.vr[0] = x*n;
+	act->camera.vr[1] = y*n;
+	act->camera.vr[2] = z*n;
+	act->camera.vl[0] =-x*n;
+	act->camera.vl[1] =-y*n;
+	act->camera.vl[2] =-z*n;
 }
 static void human_read_json(
 	struct arena* win, struct style* sty,
@@ -193,7 +197,7 @@ static void human_write(
 		z = bonenode[0][2] - bonenode[1][2];
 		n = squareroot(x*x + y*y + z*z);
 
-		a = PI/24*sine(2.0*PI*sec);
+		a = PI/90*sine(2.0*PI*sec);
 		c = cosine(a);
 		s = sine(a);
 		bonenode[0][0] = bonenode[1][0] + n*s;
