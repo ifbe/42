@@ -153,6 +153,7 @@ theitem/item.dna.c \
 theitem/item.drone.c \
 theitem/item.house.c \
 theitem/item.human.c \
+theitem/item.mobius.c \
 theitem/item.model.c \
 theitem/item.motor.c \
 theitem/item.piano.c \

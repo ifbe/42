@@ -82,9 +82,9 @@ found:
 			tmpsty = (void*)(rel->srcfoot);
 
 			//camera.xyz = target.top + act.vector
-			win->camera.vc[0] = tmpsty->vc[0] + tmpsty->vu[0] + act->camera.vc[0];
-			win->camera.vc[1] = tmpsty->vc[1] + tmpsty->vu[1] + act->camera.vc[1];
-			win->camera.vc[2] = tmpsty->vc[2] + tmpsty->vu[2] + act->camera.vc[2];
+			win->camera.vc[0] = tmpsty->vc[0] + tmpsty->vr[0] + tmpsty->vf[0] + tmpsty->vu[0] + act->camera.vc[0];
+			win->camera.vc[1] = tmpsty->vc[1] + tmpsty->vr[1] + tmpsty->vf[1] + tmpsty->vu[1] + act->camera.vc[1];
+			win->camera.vc[2] = tmpsty->vc[2] + tmpsty->vr[2] + tmpsty->vf[2] + tmpsty->vu[2] + act->camera.vc[2];
 			thridperson_fixcam(win, act->camera.vc);
 			goto print;
 		}
@@ -219,8 +219,8 @@ static void thirdperson_create(struct actor* act, void* str)
 {
 	if(0 == act)return;
 	act->camera.vc[0] = 0.0;
-	act->camera.vc[1] =-1000.0;
-	act->camera.vc[2] = 1000.0;
+	act->camera.vc[1] =-2000.0;
+	act->camera.vc[2] = 500.0;
 }
 
 

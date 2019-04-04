@@ -75,7 +75,7 @@ static void human_read_vbo(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	//carvesolid_rect(win, 0x808080, vc, vr, vf);
+	carveline_circle(win, 0xff00ff, vc, vr, vf);
 
 	for(j=0;j<16;j++)
 	{
@@ -94,7 +94,7 @@ static void human_read_vbo(
 		t1[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
 		t1[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
 
-		carvesolid_bodypart(win, 0xc0c0c0, t0, t1);
+		carvesolid_bodypart(win, 0x808080, t0, t1);
 	}
 
 	x = bonenode[0][0];
@@ -203,48 +203,47 @@ static void human_write(
 		bonenode[0][0] = bonenode[1][0] + n*s;
 		bonenode[0][1] = 0.0;
 		bonenode[0][2] = bonenode[1][2] + n*c;
-	}
-/*
-	//arm
-	a = PI/3*sine(2.0*PI*sec);
-	c = cosine(a);
-	s = sine(a);
-	bonenode[5][1] = -s * 0.3;
-	bonenode[5][2] = 0.6 - c * 0.3;
-	bonenode[6][1] = s * 0.3;
-	bonenode[6][2] = 0.6 - c * 0.3;
 
-	a = PI/3*sine(2.0*PI*sec);
-	c = cosine(a);
-	s = sine(a);
-	bonenode[7][1] = bonenode[5][1] - s * 0.3;
-	bonenode[7][2] = bonenode[5][2] - c * 0.3;
-	bonenode[8][1] = bonenode[6][1] + s * 0.3;
-	bonenode[8][2] = bonenode[6][2] - c * 0.3;
+		//arm
+		a = PI/3*sine(2.0*PI*sec);
+		c = cosine(a);
+		s = sine(a);
+		bonenode[5][1] = -s * 0.3;
+		bonenode[5][2] = 0.6 - c * 0.3;
+		bonenode[6][1] = s * 0.3;
+		bonenode[6][2] = 0.6 - c * 0.3;
 
-	//leg
-	a = PI/3*sine(2.0*PI*sec);
-	c = cosine(a);
-	s = sine(a);
-	if(a > 0.0)
-	{
-		bonenode[11][1] =  s * 0.5;
-		bonenode[11][2] = -c * 0.5;
-		bonenode[12][1] = 0.0;
-		bonenode[12][2] = -0.5;
+		a = PI/3*sine(2.0*PI*sec);
+		c = cosine(a);
+		s = sine(a);
+		bonenode[7][1] = bonenode[5][1] - s * 0.3;
+		bonenode[7][2] = bonenode[5][2] - c * 0.3;
+		bonenode[8][1] = bonenode[6][1] + s * 0.3;
+		bonenode[8][2] = bonenode[6][2] - c * 0.3;
+
+		//leg
+		a = PI/3*sine(2.0*PI*sec);
+		c = cosine(a);
+		s = sine(a);
+		if(a > 0.0)
+		{
+			bonenode[11][1] =  s * 0.5;
+			bonenode[11][2] = -c * 0.5;
+			bonenode[12][1] = 0.0;
+			bonenode[12][2] = -0.5;
+		}
+		else
+		{
+			bonenode[11][1] = 0.0;
+			bonenode[11][2] = -0.5;
+			bonenode[12][1] = -s * 0.5;
+			bonenode[12][2] = -c * 0.5;
+		}
+		bonenode[13][1] = bonenode[11][1];
+		bonenode[13][2] = bonenode[11][2] - 0.5;
+		bonenode[14][1] = bonenode[12][1];
+		bonenode[14][2] = bonenode[12][2] - 0.5;
 	}
-	else
-	{
-		bonenode[11][1] = 0.0;
-		bonenode[11][2] = -0.5;
-		bonenode[12][1] = -s * 0.5;
-		bonenode[12][2] = -c * 0.5;
-	}
-	bonenode[13][1] = bonenode[11][1];
-	bonenode[13][2] = bonenode[11][2] - 0.5;
-	bonenode[14][1] = bonenode[12][1];
-	bonenode[14][2] = bonenode[12][2] - 0.5;
-*/
 }
 static void human_get()
 {

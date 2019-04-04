@@ -54,6 +54,7 @@ void dna_register(void*);
 void drone_register(void*);
 void house_register(void*);
 void human_register(void*);
+void mobius_register(void*);
 void model_register(void*);
 void motor_register(void*);
 void piano_register(void*);
@@ -238,6 +239,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	human_register(tmp);
+	tmp += sizeof(struct actor);
+
+	mobius_register(tmp);
 	tmp += sizeof(struct actor);
 
 	model_register(tmp);
