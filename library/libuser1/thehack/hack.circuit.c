@@ -243,7 +243,7 @@ static void circuit_create(struct actor* act)
 void circuit_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('c', 'i', 'r', 'c', 'u', 'i', 't', 0);
+	p->fmt = hex64('c', 'i', 'r', 'c', 'u', 'i', 't', 0);
 
 	p->oncreate = (void*)circuit_create;
 	p->ondelete = (void*)circuit_delete;

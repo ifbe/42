@@ -87,7 +87,7 @@ static void sokoban_create(struct actor* act)
 void sokoban_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('s', 'o', 'k', 'o', 'b', 'a', 'n', 0);
+	p->fmt = hex64('s', 'o', 'k', 'o', 'b', 'a', 'n', 0);
 
 	p->oncreate = (void*)sokoban_create;
 	p->ondelete = (void*)sokoban_delete;

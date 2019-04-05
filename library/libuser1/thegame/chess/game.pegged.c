@@ -196,7 +196,7 @@ static void pegged_create(struct actor* act)
 void pegged_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('p', 'e', 'g', 'g', 'e', 'd', 0, 0);
+	p->fmt = hex64('p', 'e', 'g', 'g', 'e', 'd', 0, 0);
 
 	p->oncreate = (void*)pegged_create;
 	p->ondelete = (void*)pegged_delete;

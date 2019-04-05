@@ -96,7 +96,7 @@ static void vsrc_create(struct actor* act, u8* buf)
 void vsrc_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('v','s','r','c');
+	p->fmt = hex32('v','s','r','c');
 
 	p->oncreate = (void*)vsrc_create;
 	p->ondelete = (void*)vsrc_delete;

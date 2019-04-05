@@ -208,7 +208,7 @@ static void house_create(struct actor* act)
 void house_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('h', 'o', 'u', 's', 'e', 0, 0, 0);
+	p->fmt = hex64('h', 'o', 'u', 's', 'e', 0, 0, 0);
 
 	p->oncreate = (void*)house_create;
 	p->ondelete = (void*)house_delete;

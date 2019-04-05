@@ -152,7 +152,7 @@ static void fs_create(struct actor* act)
 void fs_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('f', 's', 0, 0);
+	p->fmt = hex32('f', 's', 0, 0);
 
 	p->oncreate = (void*)fs_create;
 	p->ondelete = (void*)fs_delete;

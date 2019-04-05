@@ -300,7 +300,7 @@ static void texball_create(struct actor* act, void* str)
 void texball_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('t', 'e', 'x', 'b', 'a', 'l', 'l', 0);
+	p->fmt = hex64('t', 'e', 'x', 'b', 'a', 'l', 'l', 0);
 
 	p->oncreate = (void*)texball_create;
 	p->ondelete = (void*)texball_delete;

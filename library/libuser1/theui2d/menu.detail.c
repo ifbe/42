@@ -142,7 +142,7 @@ int actoroutput_detail_vbo(struct arena* win, struct style* sty)
 		if(_act_ == rel->srctype)
 		{
 			act = (void*)(rel->srcchip);
-			carvestring2d_center(win, 0, tc, tr, tf, (void*)(&act->name), 0);
+			carvestring2d_center(win, 0, tc, tr, tf, (void*)(&act->fmt), 0);
 		}
 
 		//arrow
@@ -197,7 +197,7 @@ int actoroutput_detail_vbo(struct arena* win, struct style* sty)
 		if(_act_ == rel->dsttype)
 		{
 			act = (void*)(rel->dstchip);
-			carvestring2d_center(win, 0, tc, tr, tf, (void*)(&act->name), 0);
+			carvestring2d_center(win, 0, tc, tr, tf, (void*)(&act->fmt), 0);
 		}
 
 		//arrow
@@ -267,7 +267,7 @@ int actoroutput_detail_pixel(struct arena* win, struct style* sty)
 		if(_act_ == rel->srctype)
 		{
 			act = (void*)(rel->srcchip);
-			drawstring_fit(win, 0x000000, cx-ww, cy+hh*(j-4)/8, cx-ww*3/4, cy+hh*(j-3)/8, (void*)(&act->name), 0);
+			drawstring_fit(win, 0x000000, cx-ww, cy+hh*(j-4)/8, cx-ww*3/4, cy+hh*(j-3)/8, (void*)(&act->fmt), 0);
 		}
 
 		//ofoot, ifoot
@@ -292,7 +292,7 @@ int actoroutput_detail_pixel(struct arena* win, struct style* sty)
 		if(_act_ == rel->dsttype)
 		{
 			act = (void*)(rel->dstchip);
-			drawstring_fit(win, 0x000000, cx+ww*3/4, cy+hh*(j-4)/8, cx+ww, cy+hh*(j-3)/8, (void*)(&act->name), 0);
+			drawstring_fit(win, 0x000000, cx+ww*3/4, cy+hh*(j-4)/8, cx+ww, cy+hh*(j-3)/8, (void*)(&act->fmt), 0);
 		}
 
 		//ofoot, ifoot

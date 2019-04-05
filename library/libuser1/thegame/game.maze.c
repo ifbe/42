@@ -538,7 +538,7 @@ static void maze_create(struct actor* act)
 void maze_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('m', 'a', 'z', 'e');
+	p->fmt = hex32('m', 'a', 'z', 'e');
 
 	p->oncreate = (void*)maze_create;
 	p->ondelete = (void*)maze_delete;

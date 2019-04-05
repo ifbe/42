@@ -196,7 +196,7 @@ static void snake_create(struct actor* act)
 void snake_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('s', 'n', 'a', 'k', 'e', 0, 0, 0);
+	p->fmt = hex64('s', 'n', 'a', 'k', 'e', 0, 0, 0);
 
 	p->oncreate = (void*)snake_create;
 	p->ondelete = (void*)snake_delete;

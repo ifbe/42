@@ -123,7 +123,7 @@ static void tardis_create(struct actor* act)
 void tardis_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('t', 'a', 'r', 'd', 'i', 's', 0, 0);
+	p->fmt = hex64('t', 'a', 'r', 'd', 'i', 's', 0, 0);
 
 	p->oncreate = (void*)tardis_create;
 	p->ondelete = (void*)tardis_delete;

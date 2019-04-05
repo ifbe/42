@@ -127,7 +127,7 @@ static int pointer_create(struct arena* win, u8* str)
 void pointer_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('p', 'o', 'i', 'n', 't', 'e', 'r', 0);
+	p->fmt = hex64('p', 'o', 'i', 'n', 't', 'e', 'r', 0);
 
 	p->oncreate = (void*)pointer_create;
 	p->ondelete = (void*)pointer_delete;

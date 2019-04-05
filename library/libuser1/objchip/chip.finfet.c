@@ -168,7 +168,7 @@ static void finfet_create(struct actor* act, u8* buf)
 void finfet_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('f','i','n','f','e','t', 0, 0);
+	p->fmt = hex64('f','i','n','f','e','t', 0, 0);
 
 	p->oncreate = (void*)finfet_create;
 	p->ondelete = (void*)finfet_delete;

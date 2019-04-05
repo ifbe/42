@@ -255,7 +255,7 @@ static void font_create(struct actor* act)
 void font_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('f', 'o', 'n', 't');
+	p->fmt = hex32('f', 'o', 'n', 't');
 
 	p->oncreate = (void*)font_create;
 	p->ondelete = (void*)font_delete;

@@ -403,7 +403,7 @@ static void video_create(struct actor* act)
 void video_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('v', 'i', 'd', 'e', 'o', 0, 0, 0);
+	p->fmt = hex64('v', 'i', 'd', 'e', 'o', 0, 0, 0);
 
 	p->oncreate = (void*)video_create;
 	p->ondelete = (void*)video_delete;

@@ -149,7 +149,7 @@ static void stair_create(struct actor* act)
 void stair_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('s', 't', 'a', 'i', 'r', 0, 0, 0);
+	p->fmt = hex64('s', 't', 'a', 'i', 'r', 0, 0, 0);
 
 	p->oncreate = (void*)stair_create;
 	p->ondelete = (void*)stair_delete;

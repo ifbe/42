@@ -235,7 +235,7 @@ static void ooxx_create(struct actor* act)
 void ooxx_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('o', 'o', 'x', 'x');
+	p->fmt = hex32('o', 'o', 'x', 'x');
 
 	p->oncreate = (void*)ooxx_create;
 	p->ondelete = (void*)ooxx_delete;

@@ -222,7 +222,7 @@ static void ground_create(struct actor* act, void* str)
 void ground_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('g', 'r', 'o', 'u', 'n', 'd', 0, 0);
+	p->fmt = hex64('g', 'r', 'o', 'u', 'n', 'd', 0, 0);
 
 	p->oncreate = (void*)ground_create;
 	p->ondelete = (void*)ground_delete;

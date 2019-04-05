@@ -225,7 +225,7 @@ static void skydome_create(struct actor* act)
 void skydome_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('s', 'k', 'y', 'd', 'o', 'm', 'e', 0);
+	p->fmt = hex64('s', 'k', 'y', 'd', 'o', 'm', 'e', 0);
 
 	p->oncreate = (void*)skydome_create;
 	p->ondelete = (void*)skydome_delete;

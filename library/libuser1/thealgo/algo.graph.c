@@ -1,84 +1,39 @@
 #include "libuser.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
-void* samedstnextsrc(void*);
 void forcedirected_2d(void*, int, void*, int, void*, int);
 void forcedirected_3d(void*, int, void*, int, void*, int);
 
 
 
 
-struct origin
+struct node
 {
 	u64 type;
 	void* addr;
+	u8 padd[8-sizeof(void*)];
 };
-struct pairof
+struct pair
 {
 	u16 parent;
 	u16 child;
 };
-static struct origin orig[16];
-static struct pairof pair[16];
+/*
+static struct node orig[16];
+static struct pair pair[16];
 static vec3 vbuf[16];
 static vec3 obuf[16];
 static int olen = 0;
 static int plen = 0;
 static int vlen = 0;
 static int redo = 1;
+*/
 
 
 
 
-int graph_add(u64 type, void* addr)
-{
-	int j;
-	for(j=0;j<vlen;j++)
-	{
-		if(	(orig[j].type == type) &&
-			(orig[j].addr == addr) )
-		{return j;}
-	}
 
-	j = vlen;
-	vlen++;
-	olen++;
 
-	orig[j].type = type;
-	orig[j].addr = addr;
-
-	vbuf[j][0] = (getrandom() & 0xffff) / 65536.0;
-	vbuf[j][1] = (getrandom() & 0xffff) / 65536.0;
-	vbuf[j][2] = (getrandom() & 0xffff) / 65536.0;
-	return j;
-}
-void graph_pair(int parent, int child)
-{
-	pair[plen].parent = parent;
-	pair[plen].child = child;
-	plen += 1;
-}
-static void graph_traverse(struct arena* this)
-{
-	u32 color;
-	int j, k;
-	struct arena* child;
-	struct relation* rel;
-
-	j = graph_add(_win_, this);
-	rel = this->irel0;
-	while(1)
-	{
-		if(rel == 0)return;
-
-		child = (void*)(rel->srcchip);
-		k = graph_add(_win_, child);
-
-		if(rel->srctype == _win_)graph_traverse(child);
-		graph_pair(j, k);
-
-		rel = samedstnextsrc(rel);
-	}
-}
+/*
 void butane()
 {
 	int j;
@@ -109,10 +64,6 @@ void butane()
 	}
 	plen = 13;
 }
-
-
-
-
 static void starry_read_pixel_r(struct arena* win, struct arena* haha,
 	int cx, int cy, int ww, int hh, float sa, float da)
 {
@@ -199,7 +150,7 @@ static void starry_read_pixel(
 		ww/2, hh/2,
 		-PI, PI
 	);
-}
+}*/
 
 
 
@@ -207,7 +158,7 @@ static void starry_read_pixel(
 static void graph_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
-{
+{/*
 	struct arena* aa;
 	struct actor* bb;
 	void* p;
@@ -258,32 +209,71 @@ static void graph_read_pixel(
 			j+16, k+12,
 			p, 8
 		);
-	}
+	}*/
 }
 static void graph_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	float n;
+	u8 buf[0x1000];
+	vec3 tc, tr, tf, tu;
 	int i,j,k;
-	vec3 vr, vf, vu;
+	struct arena* tmp;
+	struct node* node = act->nbuf;
+	struct pair* wire = act->wbuf;
+	float* vbuf = act->vbuf;
+	float* ibuf = act->ibuf;
+	carveline_prism4(win, 0x00ff00, sty->vc, sty->vr, sty->vf, sty->vu);
 
-	forcedirected_3d(obuf, vlen, vbuf, vlen, pair, plen);
-	vbuf[0][0] = vbuf[0][1] = vbuf[0][2] = 0.0;
-
-	for(i=0;i<plen;i++)
+	if(vbuf)
 	{
-		j = pair[i].parent;
-		k = pair[i].child;
-		carveline(win, 0xff00, vbuf[j], vbuf[k]);
+		for(j=0;j<100;j++)
+		{
+			forcedirected_3d(buf, act->vlen, act->vbuf, act->vlen, act->wbuf, act->wlen);
+			vbuf[0] = sty->vc[0];
+			vbuf[1] = sty->vc[1];
+			vbuf[2] = sty->vc[2];
+		}
+/*
+		for(j=0;j<act->vlen;j++)
+		{
+			say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
+		}
+		say("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
+*/
 	}
 
-	vr[0] = vf[1] = vu[2] = 0.01;
-	vr[1] = vr[2] = 0.0;
-	vf[0] = vr[2] = 0.0;
-	vu[0] = vu[1] = 0.0;
-	for(j=0;j<vlen;j++)
+
+	for(i=0;i<act->wlen;i++)
 	{
-		carvesolid_prism4(win, 0xffffff, vbuf[j], vr, vf, vu);
+		j = wire[i].parent;
+		k = wire[i].child;
+
+		carveline(win, 0xffffff, &vbuf[j*3], &vbuf[k*3]);
+	}
+
+	tr[0] = win->camera.vr[0];
+	tr[1] = win->camera.vr[1];
+	tr[2] = win->camera.vr[2];
+	n = 10.0 / squareroot(tr[0]*tr[0] + tr[1]*tr[1] + tr[2]*tr[2]);
+	tr[0] *= n;
+	tr[1] *= n;
+	tr[2] *= n;
+
+	tf[0] = win->camera.vu[0];
+	tf[1] = win->camera.vu[1];
+	tf[2] = win->camera.vu[2];
+	n = 10.0 / squareroot(tf[0]*tf[0] + tf[1]*tf[1] + tf[2]*tf[2]);
+	tf[0] *= n;
+	tf[1] *= n;
+	tf[2] *= n;
+
+	//billboard
+	for(j=0;j<act->vlen;j++)
+	{
+		tmp = node[j].addr;
+		carvestring_center(win, 0xff0000, &vbuf[j*3], tr, tf, (void*)&tmp->fmt, 8);
 	}
 }
 static void graph_read_json(
@@ -316,22 +306,11 @@ static void graph_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void graph_read(
+static void graph_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
 	u64 fmt = win->fmt;
-	if(redo == 1)
-	{
-		redo = vlen = plen = 0;
-		graph_traverse(win);
-	}
-	else if(redo == '1')
-	{
-		redo = vlen = plen = 0;
-		butane();
-	}
-
 	if(fmt == _cli_)graph_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)graph_read_tui(win, sty, act, pin);
 	else if(fmt == _html_)graph_read_html(win, sty, act, pin);
@@ -339,21 +318,146 @@ static void graph_read(
 	else if(fmt == _vbo_)graph_read_vbo(win, sty, act, pin);
 	else graph_read_pixel(win, sty, act, pin);
 }
-static void graph_write(
+
+
+
+
+int graph_addnode(struct actor* act, u64 type, void* addr)
+{
+	int j;
+	struct node* node = act->nbuf;
+
+	for(j=0;j<act->nlen;j++)
+	{
+		if(	(node[j].type == type) &&
+			(node[j].addr == addr) )
+		{
+			return j;
+		}
+	}
+
+	j = act->nlen;
+	act->nlen += 1;
+
+	node[j].type = type;
+	node[j].addr = addr;
+	return j;
+}
+void graph_addpair(struct actor* act, int parent, int child)
+{
+	int wlen = act->wlen;
+	struct pair* wire = act->wbuf;
+
+	wire[wlen].parent = parent;
+	wire[wlen].child = child;
+
+	act->wlen += 1;
+}
+static void graph_traverse(struct actor* act, struct arena* this)
+{
+	int j,k,ret;
+	int nlen0, nlenx;
+	int wlen0, wlenx;
+	struct relation* orel;
+	struct node* node = act->nbuf;
+	struct pair* wire = act->wbuf;
+
+	//first node
+	nlen0 = act->nlen = 0;
+	wlen0 = act->wlen = 0;
+	graph_addnode(act, _win_, this);
+
+	//start traverse
+	for(j=0;j<3;j++)
+	{
+		//this.tail = 
+		nlenx = act->nlen;
+		wlenx = act->wlen;
+
+		//for each
+		for(k=nlen0;k<nlenx;k++)
+		{
+			this = node[k].addr;
+
+			orel = this->orel0;
+			while(1)
+			{
+				if(0 == orel)break;
+
+				ret = graph_addnode(act, orel->dsttype, (void*)(orel->dstchip));
+				if(ret >= 0)graph_addpair(act, k, ret);
+
+				orel = samesrcnextdst(orel);
+			}
+		}
+
+		//next.start = this.tail
+		nlen0 = nlenx;
+		wlen0 = wlenx;
+	}
+
+/*	int j, k;
+	struct arena* child;
+	struct relation* rel;
+
+	j = graph_add(_win_, this);
+	rel = this->orel0;
+	while(1)
+	{
+		if(rel == 0)return;
+
+		child = (void*)(rel->dstchip);
+		k = graph_add(rel->dsttype, child);
+
+		graph_traverse(act, child);
+		graph_pair(j, k);
+
+		rel = samesrcnextdst(rel);
+	}*/
+}
+static void graph_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
-	if(ev->what == _char_)
+	int j;
+	float* vbuf = act->vbuf;
+	float* wbuf = act->wbuf;
+
+	if(_char_ == ev->what)
 	{
-		if(ev->why == 0xd)redo = 1;
-		if(ev->why == '1')redo = '1';
+		if('g' == ev->why)
+		{
+			//generate node, wire
+			graph_traverse(act, win);
+
+			//generate vbuf, ibuf;
+			act->vlen = act->nlen;
+			act->ilen = act->wlen;
+			for(j=0;j<act->vlen;j++)
+			{
+				vbuf[j*3 + 0] = sty->vc[0] + (getrandom() & 0xffff) / 16.0;
+				vbuf[j*3 + 1] = sty->vc[1] + (getrandom() & 0xffff) / 16.0;
+				vbuf[j*3 + 2] = sty->vc[2] + (getrandom() & 0xffff) / 16.0;
+				say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
+			}
+say("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
+		}
 	}
 }
-static void graph_get()
+
+
+
+
+static void graph_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void graph_post()
+static void graph_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void graph_stop(
@@ -367,17 +471,60 @@ static void graph_start(
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
+	int j;
+	float* vbuf = leaf->vbuf;
+	float* wbuf = leaf->wbuf;
+
+	//generate node, wire
+	graph_traverse(leaf, root);
+
+	//generate vbuf, ibuf;
+	leaf->vlen = leaf->nlen;
+	leaf->ilen = leaf->wlen;
+	for(j=0;j<leaf->vlen;j++)
+	{
+		vbuf[j*3 + 0] = tf->vc[0] + (getrandom() & 0xffff) / 16.0;
+		vbuf[j*3 + 1] = tf->vc[1] + (getrandom() & 0xffff) / 16.0;
+		vbuf[j*3 + 2] = tf->vc[2] + (getrandom() & 0xffff) / 16.0;
+		say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
+	}
+	say("%d,%d,%d,%d\n", leaf->nlen, leaf->wlen, leaf->vlen, leaf->ilen);
 }
 static void graph_delete(struct actor* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+
+	//geom
+	if(act->ibuf){
+		memorydelete(act->ibuf);
+		act->ibuf = 0;
+	}
+	if(act->vbuf){
+		memorydelete(act->vbuf);
+		act->vbuf = 0;
+	}
+
+	//node
+	if(act->ibuf){
+		memorydelete(act->ibuf);
+		act->ibuf = 0;
+	}
+	if(act->nbuf){
+		memorydelete(act->nbuf);
+		act->nbuf = 0;
+	}
 }
-static void graph_create(struct actor* act)
+static void graph_create(struct actor* act, void* str)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = orig;
-	if(_copy_ == act->type)act->buf = memorycreate(0x1000);
+
+	//node
+	act->nbuf = memorycreate(0x1000);
+	act->wbuf = memorycreate(0x1000);
+
+	//geom
+	act->vbuf = memorycreate(0x1000);
+	act->ibuf = memorycreate(0x1000);
 }
 
 
@@ -386,14 +533,14 @@ static void graph_create(struct actor* act)
 void graph_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('g', 'r', 'a', 'p', 'h', 0, 0, 0);
+	p->fmt = hex64('g', 'r', 'a', 'p', 'h', 0, 0, 0);
 
 	p->oncreate = (void*)graph_create;
 	p->ondelete = (void*)graph_delete;
 	p->onstart  = (void*)graph_start;
 	p->onstop   = (void*)graph_stop;
-	p->onget    = (void*)graph_get;
-	p->onpost   = (void*)graph_post;
-	p->onread   = (void*)graph_read;
-	p->onwrite  = (void*)graph_write;
+	p->onget    = (void*)graph_cread;
+	p->onpost   = (void*)graph_cwrite;
+	p->onread   = (void*)graph_sread;
+	p->onwrite  = (void*)graph_swrite;
 }

@@ -344,7 +344,7 @@ static void spectrum_create(struct actor* act)
 void spectrum_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('s', 'p', 'e', 'c', 't', 'r', 'u', 'm');
+	p->fmt = hex64('s', 'p', 'e', 'c', 't', 'r', 'u', 'm');
 
 	p->oncreate = (void*)spectrum_create;
 	p->ondelete = (void*)spectrum_delete;

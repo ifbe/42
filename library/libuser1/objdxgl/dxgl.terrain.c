@@ -233,7 +233,7 @@ static void terrain_create(struct actor* act)
 void terrain_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('t', 'e', 'r', 'r', 'a', 'i', 'n', 0);
+	p->fmt = hex64('t', 'e', 'r', 'r', 'a', 'i', 'n', 0);
 
 	p->oncreate = (void*)terrain_create;
 	p->ondelete = (void*)terrain_delete;

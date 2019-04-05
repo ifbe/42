@@ -281,7 +281,7 @@ static void chess_create(struct actor* act)
 void chess_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('c', 'h', 'e', 's', 's', 0, 0, 0);
+	p->fmt = hex64('c', 'h', 'e', 's', 's', 0, 0, 0);
 
 	p->oncreate = (void*)chess_create;
 	p->ondelete = (void*)chess_delete;

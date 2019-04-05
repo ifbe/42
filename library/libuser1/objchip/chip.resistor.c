@@ -96,7 +96,7 @@ static void resistor_create(struct actor* act, u8* buf)
 void resistor_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('r','e','s','i','s','t','o','r');
+	p->fmt = hex64('r','e','s','i','s','t','o','r');
 
 	p->oncreate = (void*)resistor_create;
 	p->ondelete = (void*)resistor_delete;

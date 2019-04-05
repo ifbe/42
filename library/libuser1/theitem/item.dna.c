@@ -165,7 +165,7 @@ static void dna_create(struct actor* act)
 void dna_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('d', 'n', 'a', 0);
+	p->fmt = hex32('d', 'n', 'a', 0);
 
 	p->oncreate = (void*)dna_create;
 	p->ondelete = (void*)dna_delete;

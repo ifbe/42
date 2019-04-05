@@ -554,7 +554,7 @@ static void surround_create(void* addr)
 void surround_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('s', 'u', 'r', 'r', 'o', 'u', 'n', 'd');
+	p->fmt = hex64('s', 'u', 'r', 'r', 'o', 'u', 'n', 'd');
 
 	p->oncreate = (void*)surround_create;
 	p->ondelete = (void*)surround_delete;

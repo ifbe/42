@@ -142,7 +142,7 @@ static void cube_create(struct actor* act, u8* buf)
 void cube_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('c','u','b','e');
+	p->fmt = hex32('c','u','b','e');
 
 	p->oncreate = (void*)cube_create;
 	p->ondelete = (void*)cube_delete;

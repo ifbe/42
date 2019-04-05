@@ -260,7 +260,7 @@ static void tree_create(struct actor* act)
 void tree_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('t', 'r', 'e', 'e');
+	p->fmt = hex32('t', 'r', 'e', 'e');
 
 	p->oncreate = (void*)tree_create;
 	p->ondelete = (void*)tree_delete;

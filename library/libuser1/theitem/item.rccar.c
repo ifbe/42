@@ -280,7 +280,7 @@ static void rccar_create(struct actor* act)
 void rccar_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('r', 'c', 'c', 'a', 'r', 0, 0, 0);
+	p->fmt = hex64('r', 'c', 'c', 'a', 'r', 0, 0, 0);
 
 	p->oncreate = (void*)rccar_create;
 	p->ondelete = (void*)rccar_delete;

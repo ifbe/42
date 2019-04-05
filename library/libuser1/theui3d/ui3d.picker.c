@@ -692,7 +692,7 @@ static void picker_create(void* addr)
 void picker_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('p', 'i', 'c', 'k', 'e', 'r', 0, 0);
+	p->fmt = hex64('p', 'i', 'c', 'k', 'e', 'r', 0, 0);
 
 	p->oncreate = (void*)picker_create;
 	p->ondelete = (void*)picker_delete;

@@ -96,7 +96,7 @@ static void isrc_create(struct actor* act, u8* buf)
 void isrc_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('i','s','r','c');
+	p->fmt = hex32('i','s','r','c');
 
 	p->oncreate = (void*)isrc_create;
 	p->ondelete = (void*)isrc_delete;

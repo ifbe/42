@@ -393,7 +393,7 @@ static void model_create(struct actor* act, void* str)
 void model_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('m', 'o', 'd', 'e', 'l', 0, 0, 0);
+	p->fmt = hex64('m', 'o', 'd', 'e', 'l', 0, 0, 0);
 
 	p->oncreate = (void*)model_create;
 	p->ondelete = (void*)model_delete;

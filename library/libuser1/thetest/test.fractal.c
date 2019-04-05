@@ -383,7 +383,7 @@ static void fractal_create(struct actor* act)
 void fractal_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('f', 'r', 'a', 'c', 't', 'a', 'l', 0);
+	p->fmt = hex64('f', 'r', 'a', 'c', 't', 'a', 'l', 0);
 
 	p->oncreate = (void*)fractal_create;
 	p->ondelete = (void*)fractal_delete;

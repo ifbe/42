@@ -247,7 +247,7 @@ static void planet_create(struct actor* act)
 void planet_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('p', 'l', 'a', 'n', 'e', 't', 0, 0);
+	p->fmt = hex64('p', 'l', 'a', 'n', 'e', 't', 0, 0);
 
 	p->oncreate = (void*)planet_create;
 	p->ondelete = (void*)planet_delete;

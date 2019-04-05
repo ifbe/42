@@ -393,7 +393,7 @@ static void piano_create(struct actor* act)
 void piano_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('p', 'i', 'a', 'n', 'o', 0, 0, 0);
+	p->fmt = hex64('p', 'i', 'a', 'n', 'o', 0, 0, 0);
 
 	p->oncreate = (void*)piano_create;
 	p->ondelete = (void*)piano_delete;

@@ -338,7 +338,7 @@ static void picture_create(struct actor* act, void* str)
 void picture_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('p', 'i', 'c', 't', 'u', 'r', 'e', 0);
+	p->fmt = hex64('p', 'i', 'c', 't', 'u', 'r', 'e', 0);
 
 	p->oncreate = (void*)picture_create;
 	p->ondelete = (void*)picture_delete;

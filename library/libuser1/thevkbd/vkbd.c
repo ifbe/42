@@ -75,7 +75,7 @@ static int vkbd_create(struct arena* win, u8* str)
 void vkbd_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('v', 'k', 'b', 'd');
+	p->fmt = hex32('v', 'k', 'b', 'd');
 
 	p->oncreate = (void*)vkbd_create;
 	p->ondelete = (void*)vkbd_delete;

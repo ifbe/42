@@ -209,7 +209,7 @@ static void hex_create(struct actor* act)
 void hex_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('h', 'e', 'x', 0);
+	p->fmt = hex32('h', 'e', 'x', 0);
 
 	p->oncreate = (void*)hex_create;
 	p->ondelete = (void*)hex_delete;

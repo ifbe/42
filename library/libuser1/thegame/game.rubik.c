@@ -398,7 +398,7 @@ static void rubikscube_create(struct actor* act, void* str)
 void rubikscube_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('r', 'u', 'b', 'i', 'k', 0, 0, 0);
+	p->fmt = hex64('r', 'u', 'b', 'i', 'k', 0, 0, 0);
 
 	p->oncreate = (void*)rubikscube_create;
 	p->ondelete = (void*)rubikscube_delete;

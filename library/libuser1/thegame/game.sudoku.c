@@ -380,7 +380,7 @@ static void sudoku_create(struct actor* act, void* str)
 void sudoku_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('s', 'u', 'd', 'o', 'k', 'u', 0, 0);
+	p->fmt = hex64('s', 'u', 'd', 'o', 'k', 'u', 0, 0);
 
 	p->oncreate = (void*)sudoku_create;
 	p->ondelete = (void*)sudoku_delete;

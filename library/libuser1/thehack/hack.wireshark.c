@@ -140,7 +140,7 @@ static void rawdump_create(struct actor* act, u8* buf)
 void rawdump_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('r','a','w','d','u','m','p',0);
+	p->fmt = hex64('r','a','w','d','u','m','p',0);
 
 	p->oncreate = (void*)rawdump_create;
 	p->ondelete = (void*)rawdump_delete;

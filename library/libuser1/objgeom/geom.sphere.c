@@ -143,7 +143,7 @@ static void sphere_create(struct actor* act, u8* buf)
 void sphere_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('s','p','h','e','r','e', 0, 0);
+	p->fmt = hex64('s','p','h','e','r','e', 0, 0);
 
 	p->oncreate = (void*)sphere_create;
 	p->ondelete = (void*)sphere_delete;

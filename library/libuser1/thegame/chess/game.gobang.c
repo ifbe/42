@@ -54,7 +54,7 @@ static void gobang_create(struct actor* act)
 void gobang_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('g', 'o', 'b', 'a', 'n', 'g', 0, 0);
+	p->fmt = hex64('g', 'o', 'b', 'a', 'n', 'g', 0, 0);
 
 	p->oncreate = (void*)gobang_create;
 	p->ondelete = (void*)gobang_delete;

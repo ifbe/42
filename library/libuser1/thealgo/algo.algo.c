@@ -174,7 +174,7 @@ static void algorithm_create(struct actor* act)
 void algorithm_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('a', 'l', 'g', 'o');
+	p->fmt = hex32('a', 'l', 'g', 'o');
 
 	p->oncreate = (void*)algorithm_create;
 	p->ondelete = (void*)algorithm_delete;

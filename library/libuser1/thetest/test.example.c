@@ -166,7 +166,7 @@ static void example_create(struct actor* act)
 void example_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('e', 'x', 'a', 'm', 'p', 'l', 'e', 0);
+	p->fmt = hex64('e', 'x', 'a', 'm', 'p', 'l', 'e', 0);
 
 	p->oncreate = (void*)example_create;
 	p->ondelete = (void*)example_delete;

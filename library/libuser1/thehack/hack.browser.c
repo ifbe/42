@@ -244,7 +244,7 @@ static void browser_create(struct actor* act)
 void browser_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('b', 'r', 'o', 'w', 's', 'e', 'r', 0);
+	p->fmt = hex64('b', 'r', 'o', 'w', 's', 'e', 'r', 0);
 
 	p->oncreate = (void*)browser_create;
 	p->ondelete = (void*)browser_delete;

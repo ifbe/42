@@ -425,7 +425,7 @@ static void light_create(struct actor* act, void* str)
 void light_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('l', 'i', 'g', 'h', 't', 0, 0, 0);
+	p->fmt = hex64('l', 'i', 'g', 'h', 't', 0, 0, 0);
 
 	p->oncreate = (void*)light_create;
 	p->ondelete = (void*)light_delete;

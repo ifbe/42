@@ -378,7 +378,7 @@ static int corner_create(struct arena* win, u8* str)
 void corner_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('c', 'o', 'r', 'n', 'e', 'r', 0, 0);
+	p->fmt = hex64('c', 'o', 'r', 'n', 'e', 'r', 0, 0);
 
 	p->oncreate = (void*)corner_create;
 	p->ondelete = (void*)corner_delete;

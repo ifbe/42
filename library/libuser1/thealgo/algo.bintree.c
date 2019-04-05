@@ -259,7 +259,7 @@ static void bintree_create(struct actor* act)
 void bintree_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('b', 'i', 'n', 't', 'r', 'e', 'e', 0);
+	p->fmt = hex64('b', 'i', 'n', 't', 'r', 'e', 'e', 0);
 
 	p->oncreate = (void*)bintree_create;
 	p->ondelete = (void*)bintree_delete;

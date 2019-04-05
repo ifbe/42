@@ -538,7 +538,7 @@ static void codeimg_create(struct actor* act)
 void codeimg_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('c', 'o', 'd', 'e', 'i', 'm', 'g', 0);
+	p->fmt = hex64('c', 'o', 'd', 'e', 'i', 'm', 'g', 0);
 
 	p->oncreate = (void*)codeimg_create;
 	p->ondelete = (void*)codeimg_delete;

@@ -222,7 +222,7 @@ static void mobius_create(struct actor* act)
 void mobius_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('m', 'o', 'b', 'i', 'u', 's', 0, 0);
+	p->fmt = hex64('m', 'o', 'b', 'i', 'u', 's', 0, 0);
 
 	p->oncreate = (void*)mobius_create;
 	p->ondelete = (void*)mobius_delete;

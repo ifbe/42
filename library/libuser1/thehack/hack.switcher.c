@@ -145,7 +145,7 @@ static void switch_create(struct actor* act, u8* buf)
 void switch_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('s','w','i','t','c','h',0,0);
+	p->fmt = hex64('s','w','i','t','c','h',0,0);
 
 	p->oncreate = (void*)switch_create;
 	p->ondelete = (void*)switch_delete;

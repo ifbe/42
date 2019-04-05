@@ -96,7 +96,7 @@ static void chippin_create(struct actor* act, u8* buf)
 void chippin_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('p','i','n',0);
+	p->fmt = hex32('p','i','n',0);
 
 	p->oncreate = (void*)chippin_create;
 	p->ondelete = (void*)chippin_delete;

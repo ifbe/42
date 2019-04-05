@@ -229,7 +229,7 @@ static void thirdperson_create(struct actor* act, void* str)
 void thirdperson_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('3', 'r', 'd', 'c', 'a', 'm', 0, 0);
+	p->fmt = hex64('3', 'r', 'd', 'c', 'a', 'm', 0, 0);
 
 	p->oncreate = (void*)thirdperson_create;
 	p->ondelete = (void*)thirdperson_delete;

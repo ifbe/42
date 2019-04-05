@@ -140,7 +140,7 @@ static void poker_create(struct actor* act)
 void poker_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('p', 'o', 'k', 'e', 'r', 0, 0, 0);
+	p->fmt = hex64('p', 'o', 'k', 'e', 'r', 0, 0, 0);
 
 	p->oncreate = (void*)poker_create;
 	p->ondelete = (void*)poker_delete;

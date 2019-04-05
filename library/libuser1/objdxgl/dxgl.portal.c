@@ -424,7 +424,7 @@ static void portal_create(struct actor* act, void* str)
 void portal_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('p', 'o', 'r', 't', 'a', 'l', 0, 0);
+	p->fmt = hex64('p', 'o', 'r', 't', 'a', 'l', 0, 0);
 
 	p->oncreate = (void*)portal_create;
 	p->ondelete = (void*)portal_delete;

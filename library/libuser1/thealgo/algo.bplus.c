@@ -226,7 +226,7 @@ static void bplus_create(struct actor* act)
 void bplus_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('b', 'p', 'l', 'u', 's', 0, 0, 0);
+	p->fmt = hex64('b', 'p', 'l', 'u', 's', 0, 0, 0);
 
 	p->oncreate = (void*)bplus_create;
 	p->ondelete = (void*)bplus_delete;

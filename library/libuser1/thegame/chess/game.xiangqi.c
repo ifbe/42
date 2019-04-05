@@ -661,7 +661,7 @@ static void xiangqi_create(struct actor* act, void* str)
 void xiangqi_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('x', 'i', 'a', 'n', 'g', 'q', 'i', 0);
+	p->fmt = hex64('x', 'i', 'a', 'n', 'g', 'q', 'i', 0);
 
 	p->oncreate = (void*)xiangqi_create;
 	p->ondelete = (void*)xiangqi_delete;

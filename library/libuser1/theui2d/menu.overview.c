@@ -208,7 +208,7 @@ void overview_read_pixel(
 		drawicon_1(win, c,
 			(cx+1)+(x-4)*ww/4, (cy+1)+(y-16)*hh/16,
 			(cx-1)+(x-3)*ww/4, (cy-1)+(y-15)*hh/16,
-			(u8*)&actor[j].name, 8
+			(u8*)&actor[j].fmt, 8
 		);
 	}
 
@@ -267,7 +267,7 @@ void overview_read_pixel(
 	//actor.irel
 	for(j=0;j<64;j++)
 	{
-		if(0 == actor[j].name)continue;
+		if(0 == actor[j].fmt)continue;
 
 		rel = actor[j].irel0;
 		while(1)
@@ -592,7 +592,7 @@ void overview_read_vbo(
 		tf[0] = vf[0] / 32;
 		tf[1] = vf[1] / 32;
 		tf[2] = vf[2] / 32;
-		carvestring2d_center(win, fg, tc, tr, tf, (u8*)&actor[j].name, 8);
+		carvestring2d_center(win, fg, tc, tr, tf, (u8*)&actor[j].fmt, 8);
 	}
 
 	//arena
@@ -720,7 +720,7 @@ void overview_read_vbo(
 	//actor.irel
 	for(j=0;j<128;j++)
 	{
-		if(0 == actor[j].name)continue;
+		if(0 == actor[j].fmt)continue;
 
 		rel = actor[j].irel0;
 		while(1)
@@ -1102,7 +1102,7 @@ void overview_read_tui(
 /*
 	for(j=0;j<64;j++)
 	{
-		if(0 == actor[j].name)break;
+		if(0 == actor[j].fmt)break;
 
 		if(j == win->forez)k=1;
 		else k=2;
@@ -1113,7 +1113,7 @@ void overview_read_tui(
 		y = hh + (y-4);
 
 		gentui_rect(win, k, x, y, x+7, y);
-		gentui_str(win, 0, x, y, (u8*)&actor[j].name, 8);
+		gentui_str(win, 0, x, y, (u8*)&actor[j].fmt, 8);
 	}
 */
 }
@@ -1163,8 +1163,8 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		{
 			act_d = &actor[x1+(y1*16)];
 			if((act_d->type) && (act_s->type))relationcreate(act_d, 0, _act_, act_s, 0, _act_);
-			else if(0 == act_s->type)actorcreate(act_d->name, 0);
-			else if(0 == act_d->type)actorcreate(act_s->name, 0);
+			else if(0 == act_s->type)actorcreate(act_d->fmt, 0);
+			else if(0 == act_d->type)actorcreate(act_s->fmt, 0);
 		}
 		else if(y1 < 16)
 		{
@@ -1412,7 +1412,7 @@ void overview_create(void* addr)
 void overview_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('o', 'v', 'e', 'r', 'v', 'i', 'e', 'w');
+	p->fmt = hex64('o', 'v', 'e', 'r', 'v', 'i', 'e', 'w');
 
 	p->oncreate = (void*)overview_create;
 	p->ondelete = (void*)overview_delete;

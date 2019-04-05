@@ -410,7 +410,7 @@ static void the2048_create(struct actor* act, u8* buf)
 void the2048_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('2','0','4','8');
+	p->fmt = hex32('2','0','4','8');
 
 	p->oncreate = (void*)the2048_create;
 	p->ondelete = (void*)the2048_delete;

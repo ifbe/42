@@ -141,7 +141,7 @@ static void cylinder_create(struct actor* act, u8* buf)
 void cylinder_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('c','y','l','i','n','d','e','r');
+	p->fmt = hex64('c','y','l','i','n','d','e','r');
 
 	p->oncreate = (void*)cylinder_create;
 	p->ondelete = (void*)cylinder_delete;

@@ -180,7 +180,7 @@ static void drone_create(struct actor* act)
 void drone_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('d', 'r', 'o', 'n', 'e', 0, 0, 0);
+	p->fmt = hex64('d', 'r', 'o', 'n', 'e', 0, 0, 0);
 
 	p->oncreate = (void*)drone_create;
 	p->ondelete = (void*)drone_delete;

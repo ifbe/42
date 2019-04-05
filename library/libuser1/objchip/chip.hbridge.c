@@ -201,7 +201,7 @@ static void hbridge_create(struct actor* act, u8* buf)
 void hbridge_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('h','b','r','i','d','g','e',0);
+	p->fmt = hex64('h','b','r','i','d','g','e',0);
 
 	p->oncreate = (void*)hbridge_create;
 	p->ondelete = (void*)hbridge_delete;

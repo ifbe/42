@@ -222,7 +222,7 @@ static void control_create(struct actor* act)
 void control_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('c', 'o', 'n', 't', 'r', 'o', 'l', 0);
+	p->fmt = hex64('c', 'o', 'n', 't', 'r', 'o', 'l', 0);
 
 	p->oncreate = (void*)control_create;
 	p->ondelete = (void*)control_delete;

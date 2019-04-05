@@ -267,7 +267,7 @@ static void vrglass_create(void* addr)
 void vrglass_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('v', 'r', 'g', 'l', 'a', 's', 's', 0);
+	p->fmt = hex64('v', 'r', 'g', 'l', 'a', 's', 's', 0);
 
 	p->oncreate = (void*)vrglass_create;
 	p->ondelete = (void*)vrglass_delete;

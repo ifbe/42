@@ -212,7 +212,7 @@ void* actorcreate(u64 type, void* buf)
 				if(0 == k)return 0;
 				break;
 			}
-			if(type == actor[j].name)
+			if(type == actor[j].fmt)
 			{
 				k = j;
 				if(_orig_ == actor[j].type)
@@ -241,7 +241,6 @@ void* actorcreate(u64 type, void* buf)
 			//act->tier
 			act->type = _copy_;
 			//act->fmt
-			//act->name
 		}
 
 		act->oncreate(act, buf);
@@ -366,9 +365,9 @@ void* actorlist(u8* buf, int len)
 		for(j=0;j<0x100;j++)
 		{
 			act = &actor[j];
-			if(0 == act->name)break;
+			if(0 == act->fmt)break;
 			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-				&act->tier, &act->type, &act->fmt, &act->name);
+				&act->tier, &act->type, &act->fmt, &act->fmt);
 		}
 		if(0 == j)say("empty actor\n");
 	}
@@ -376,8 +375,8 @@ void* actorlist(u8* buf, int len)
 	{
 		for(j=0;j<0x100;j++)
 		{
-			if(0 == actor[j].name)break;
-			p = (void*)(&actor[j].name);
+			if(0 == actor[j].fmt)break;
+			p = (void*)(&actor[j].fmt);
 
 			for(k=0;k<8;k++)
 			{

@@ -276,7 +276,7 @@ static void terminal_create(struct actor* act, void* arg)
 void terminal_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('t', 'e', 'r', 'm');
+	p->fmt = hex32('t', 'e', 'r', 'm');
 
 	p->oncreate = (void*)terminal_create;
 	p->ondelete = (void*)terminal_delete;

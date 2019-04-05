@@ -172,7 +172,7 @@ static void motor_create(struct actor* act)
 void motor_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('m', 'o', 't', 'o', 'r', 0, 0, 0);
+	p->fmt = hex64('m', 'o', 't', 'o', 'r', 0, 0, 0);
 
 	p->oncreate = (void*)motor_create;
 	p->ondelete = (void*)motor_delete;

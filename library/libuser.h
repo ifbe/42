@@ -652,7 +652,7 @@ struct actor
 	u64 tier;
 	u64 type;
 	u64 fmt;
-	u64 name;
+	u64 name0;
 
 	//[40,7f]: func
 	union{
@@ -688,28 +688,46 @@ struct actor
 		char padding7[8];
 	};
 
-	//[80,bf]: data
+	//[80,bf]: buf
 	union{
 		u64 fd;
 		void* win;
+		void* ibuf;		//indx buf
 	};
 	union{
 		u64 dc;
 		u64 gc;
 		void* er;
+		void* vbuf;		//vert buf
 	};
 	union{
 		u64 len;
 		void* idx;
+		void* wbuf;		//wire list
 	};
 	union{
 		u64 addr;
 		void* buf;
+		void* nbuf;		//node list
 	};
-	u64 data0;
-	u64 data1;
-	u64 data2;
-	u64 data3;
+
+	//[c0,ff]: len
+	union{
+		u64 data0;
+		int ilen;
+	};
+	union{
+		u64 data1;
+		int vlen;
+	};
+	union{
+		u64 data2;
+		int wlen;
+	};
+	union{
+		u64 data3;
+		int nlen;
+	};
 
 	//[c0,cf]
 	int width;

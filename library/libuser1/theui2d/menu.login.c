@@ -165,7 +165,7 @@ static void login_create(struct actor* act)
 void login_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('l', 'o', 'g', 'i', 'n', 0, 0, 0);
+	p->fmt = hex64('l', 'o', 'g', 'i', 'n', 0, 0, 0);
 
 	p->oncreate = (void*)login_create;
 	p->ondelete = (void*)login_delete;

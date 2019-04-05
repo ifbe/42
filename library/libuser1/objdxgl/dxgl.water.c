@@ -374,7 +374,7 @@ static void water_create(struct actor* act, void* str)
 void water_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('w', 'a', 't', 'e', 'r', 0, 0, 0);
+	p->fmt = hex64('w', 'a', 't', 'e', 'r', 0, 0, 0);
 
 	p->oncreate = (void*)water_create;
 	p->ondelete = (void*)water_delete;

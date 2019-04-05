@@ -125,7 +125,7 @@ void tabbar_read_vbo(
             tr[0] = vr[0] / 2 / 16;
             tr[1] = vr[1] / 2 / 16;
             tr[2] = vr[2] / 2 / 16;
-            carvestring2d_center(win, rgb, tc, tr, tf, (void*)(&ac->name), 8);
+            carvestring2d_center(win, rgb, tc, tr, tf, (void*)(&ac->fmt), 8);
 
             j++;
             if(j == 8)break;
@@ -270,7 +270,7 @@ static void tabbar_create(void* addr)
 void tabbar_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('t', 'a', 'b', 'b', 'a', 'r', 0, 0);
+	p->fmt = hex64('t', 'a', 'b', 'b', 'a', 'r', 0, 0);
 
 	p->oncreate = (void*)tabbar_create;
 	p->ondelete = (void*)tabbar_delete;

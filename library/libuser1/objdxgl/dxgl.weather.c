@@ -293,7 +293,7 @@ static void weather_create(struct actor* act)
 void weather_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('w', 'e', 'a', 't', 'h', 'e', 'r', 0);
+	p->fmt = hex64('w', 'e', 'a', 't', 'h', 'e', 'r', 0);
 
 	p->oncreate = (void*)weather_create;
 	p->ondelete = (void*)weather_delete;

@@ -297,7 +297,7 @@ static void calculator_create(struct actor* act)
 void calculator_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex32('c', 'a', 'l', 'c');
+	p->fmt = hex32('c', 'a', 'l', 'c');
 
 	p->oncreate = (void*)calculator_create;
 	p->ondelete = (void*)calculator_delete;

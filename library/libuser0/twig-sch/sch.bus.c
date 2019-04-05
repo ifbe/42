@@ -18,7 +18,7 @@ say("@schbus_start{\n");
         if(_act_ == rel->dsttype)
         {
             act = (void*)(rel->dstchip);
-            say("%llx:%.8s\n", act, &act->name);
+            say("%llx:%.8s\n", act, &act->fmt);
         }
 
         rel = samesrcnextdst(rel);

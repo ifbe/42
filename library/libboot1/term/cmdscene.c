@@ -99,7 +99,7 @@ void scene_export_file(u8* str, int len)
 
 void exportactor(struct actor* act)
 {
-	say("/%.8s/%.8s/%.8s/%.8s\n", &act->tier, &act->type, &act->fmt, &act->name);
+	say("/%.8s/%.8s/%.8s\n", &act->tier, &act->type, &act->fmt);
 }
 void exportarena(struct arena* win)
 {

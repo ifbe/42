@@ -280,7 +280,7 @@ static void tetris_create(struct actor* act)
 void tetris_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('t', 'e', 't', 'r', 'i', 's', 0, 0);
+	p->fmt = hex64('t', 'e', 't', 'r', 'i', 's', 0, 0);
 
 	p->oncreate = (void*)tetris_create;
 	p->ondelete = (void*)tetris_delete;

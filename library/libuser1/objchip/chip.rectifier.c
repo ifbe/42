@@ -282,7 +282,7 @@ static void rectify_create(struct actor* act, u8* buf)
 void rectify_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->name = hex64('r','e','c','t','i','f','y',0);
+	p->fmt = hex64('r','e','c','t','i','f','y',0);
 
 	p->oncreate = (void*)rectify_create;
 	p->ondelete = (void*)rectify_delete;
