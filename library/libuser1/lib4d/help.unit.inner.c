@@ -11,6 +11,7 @@ void glass_register(void*);
 void ground_register(void*);
 void light_register(void*);
 void mirror_register(void*);
+void particle_register(void*);
 void portal_register(void*);
 void skydome_register(void*);
 void terrain_register(void*);
@@ -118,6 +119,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	mirror_register(tmp);
+	tmp += sizeof(struct actor);
+
+	particle_register(tmp);
 	tmp += sizeof(struct actor);
 
 	portal_register(tmp);

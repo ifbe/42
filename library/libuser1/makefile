@@ -76,6 +76,7 @@ objdxgl/dxgl.glass.c \
 objdxgl/dxgl.ground.c \
 objdxgl/dxgl.light.c \
 objdxgl/dxgl.mirror.c \
+objdxgl/dxgl.particle.c \
 objdxgl/dxgl.portal.c \
 objdxgl/dxgl.skydome.c \
 objdxgl/dxgl.terrain.c \
