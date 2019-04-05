@@ -218,8 +218,10 @@ static void graph_read_vbo(
 	float n;
 	u8 buf[0x1000];
 	vec3 tc, tr, tf, tu;
+	int rgb;
 	int i,j,k;
 	struct arena* tmp;
+	void* str;
 	struct node* node = act->nbuf;
 	struct pair* wire = act->wbuf;
 	float* vbuf = act->vbuf;
@@ -273,7 +275,15 @@ static void graph_read_vbo(
 	for(j=0;j<act->vlen;j++)
 	{
 		tmp = node[j].addr;
-		carvestring_center(win, 0xff0000, &vbuf[j*3], tr, tf, (void*)&tmp->fmt, 8);
+		switch(tmp->tier)
+		{
+			case  _fd_:rgb = 0x0000ff;str = (void*)&tmp->type;break;
+			case _art_:rgb = 0xff0000;str = (void*)&tmp->type;break;
+			case _win_:rgb = 0xffff00;str = (void*)&tmp->fmt;break;
+			case _act_:rgb = 0x00ffff;str = (void*)&tmp->fmt;break;
+			default:rgb = 0xff00ff;str = (void*)"????????";
+		}
+		carvestring_center(win, rgb, &vbuf[j*3], tr, tf, str, 8);
 	}
 }
 static void graph_read_json(
@@ -358,6 +368,7 @@ static void graph_traverse(struct actor* act, struct arena* this)
 	int j,k,ret;
 	int nlen0, nlenx;
 	int wlen0, wlenx;
+	struct relation* irel;
 	struct relation* orel;
 	struct node* node = act->nbuf;
 	struct pair* wire = act->wbuf;
@@ -378,6 +389,17 @@ static void graph_traverse(struct actor* act, struct arena* this)
 		for(k=nlen0;k<nlenx;k++)
 		{
 			this = node[k].addr;
+
+			irel = this->irel0;
+			while(1)
+			{
+				if(0 == irel)break;
+
+				ret = graph_addnode(act, irel->srctype, (void*)(irel->srcchip));
+				if(ret >= 0)graph_addpair(act, k, ret);
+
+				irel = samedstnextsrc(irel);
+			}
 
 			orel = this->orel0;
 			while(1)
