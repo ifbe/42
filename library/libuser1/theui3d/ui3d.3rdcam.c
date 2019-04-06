@@ -82,9 +82,9 @@ found:
 			tmpsty = (void*)(rel->srcfoot);
 
 			//camera.xyz = target.top + act.vector
-			win->camera.vc[0] = tmpsty->vc[0] + tmpsty->vr[0] + tmpsty->vf[0] + tmpsty->vu[0] + act->camera.vc[0];
-			win->camera.vc[1] = tmpsty->vc[1] + tmpsty->vr[1] + tmpsty->vf[1] + tmpsty->vu[1] + act->camera.vc[1];
-			win->camera.vc[2] = tmpsty->vc[2] + tmpsty->vr[2] + tmpsty->vf[2] + tmpsty->vu[2] + act->camera.vc[2];
+			win->camera.vc[0] = tmpsty->vc[0] + tmpsty->vu[0] + act->camera.vc[0];
+			win->camera.vc[1] = tmpsty->vc[1] + tmpsty->vu[1] + act->camera.vc[1];
+			win->camera.vc[2] = tmpsty->vc[2] + tmpsty->vu[2] + act->camera.vc[2];
 			thridperson_fixcam(win, act->camera.vc);
 			goto print;
 		}
@@ -165,10 +165,11 @@ static int thirdperson_swrite(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
-	//only hook mouse wheel
-	int id;
+	int x0,y0,x1,y1,id;
+	vec3 v;
 	if(0 == act)return 0;
 
+	//only hook mouse event
 	if(0x2b70 == ev->what)
 	{
 		id = (ev->why)>>48;
@@ -186,6 +187,25 @@ static int thirdperson_swrite(
 			act->camera.vc[2] *= 1.01;
 			return 1;
 		}
+	}
+	else if(0x4070 == ev->what)
+	{
+		id = (ev->why)>>48;
+		if('l' == id)id = 10;
+		else if('r' == id)id = 11;
+		else if(id > 10)return 0;
+		if(0 == win->input[id].z0)return 0;
+
+		x0 = win->input[id].xn;
+		y0 = win->input[id].yn;
+		x1 = (ev->why)&0xffff;
+		y1 = ((ev->why)>>16)&0xffff;
+
+		v[0] = v[1] = 0.0;
+		v[2] = 1.0;
+		quaternion_operation(act->camera.vc, v, (x1-x0)/100.0);
+
+		return 1;
 	}
 	return 0;
 }

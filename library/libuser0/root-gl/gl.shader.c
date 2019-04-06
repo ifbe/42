@@ -294,13 +294,38 @@ GLuint compileShader(GLenum type, const char* source)
 	}
 	return 0;
 }
-GLuint shaderprogram(void* v, void* f)
+GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* cs)
 {
 	GLuint vShader = compileShader(GL_VERTEX_SHADER, v);
-	if (!vShader)return 0;
+	if(!vShader)return 0;
 
 	GLuint fShader = compileShader(GL_FRAGMENT_SHADER, f);
-	if (!fShader)return 0;
+	if(!fShader)return 0;
+
+	GLuint gShader = 0;
+	if(g){
+		gShader = compileShader(GL_GEOMETRY_SHADER, g);
+		if(!gShader)say("fail@compileShader: geometry shader\n");
+	}
+/*
+	GLuint tcShader = 0;
+	if(g){
+		compileShader(GL_TESS_CONTROL_SHADER, g);
+		if(!tcShader)say("fail@compileShader: geometry shader\n");
+	}
+
+	GLuint teShader = 0;
+	if(g){
+		compileShader(GL_TESS_EVALUATION_SHADER, g);
+		if(!teShader)say("fail@compileShader: geometry shader\n");
+	}
+
+	GLuint cShader = 0;
+	if(g){
+		compileShader(GL_TESS_EVALUATION_SHADER, g);
+		if(!cShader)say("fail@compileShader: geometry shader\n");
+	}
+*/
 
 	//3.glsl program
 	GLuint prog = glCreateProgram();
@@ -312,6 +337,9 @@ GLuint shaderprogram(void* v, void* f)
 
 	glAttachShader(prog, vShader);
 	glAttachShader(prog, fShader);
+	if(gShader)glAttachShader(prog, gShader);
+	//if(tcShader)glAttachShader(prog, tcShader);
+	//if(teShader)glAttachShader(prog, teShader);
 	glLinkProgram(prog);
 
 	GLint linkStatus;
@@ -355,13 +383,13 @@ void initshader(struct arena* win)
 
 
 
-	tmp = shaderprogram(font3dvert, fontfrag);
+	tmp = shaderprogram(font3dvert, fontfrag, 0, 0, 0, 0);
 	mod[font3d0].dst.shader = tmp;
 	mod[font3d1].dst.shader = tmp;
 	mod[font3d2].dst.shader = tmp;
 	mod[font3d3].dst.shader = tmp;
 
-	tmp = shaderprogram(font2dvert, fontfrag);
+	tmp = shaderprogram(font2dvert, fontfrag, 0, 0, 0, 0);
 	mod[font2d0].dst.shader = tmp;
 	mod[font2d1].dst.shader = tmp;
 	mod[font2d2].dst.shader = tmp;
@@ -370,26 +398,26 @@ void initshader(struct arena* win)
 
 
 
-	tmp = shaderprogram(simplevert, simplefrag);
+	tmp = shaderprogram(simplevert, simplefrag, 0, 0, 0, 0);
 	mod[point3d].dst.shader = tmp;
 	mod[line3d].dst.shader = tmp;
 
-	tmp = shaderprogram(prettyvert, prettyfrag);
+	tmp = shaderprogram(prettyvert, prettyfrag, 0, 0, 0, 0);
 	mod[trigon3d].dst.shader = tmp;
 
-	tmp = shaderprogram(opaquevert, opaquefrag);
+	tmp = shaderprogram(opaquevert, opaquefrag, 0, 0, 0, 0);
 	mod[opaque3d].dst.shader = tmp;
 
 
 
 
-	tmp = shaderprogram(easy2d_vert, easy2d_frag);
+	tmp = shaderprogram(easy2d_vert, easy2d_frag, 0, 0, 0, 0);
 	mod[point2d].dst.shader = tmp;
 	mod[line2d].dst.shader = tmp;
 
-	tmp = shaderprogram(glsl2d_vert, glsl2d_frag);
+	tmp = shaderprogram(glsl2d_vert, glsl2d_frag, 0, 0, 0, 0);
 	mod[trigon2d].dst.shader = tmp;
 
-	tmp = shaderprogram(opaque2d_vert, opaque2d_frag);
+	tmp = shaderprogram(opaque2d_vert, opaque2d_frag, 0, 0, 0, 0);
 	mod[opaque2d].dst.shader = tmp;
 }

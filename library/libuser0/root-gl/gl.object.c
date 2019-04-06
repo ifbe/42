@@ -17,7 +17,7 @@
 #endif
 
 void fixmatrix(float*, void*);
-GLuint shaderprogram(void* v, void* f);
+GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c);
 GLuint uploadtexture(void* i, void* o, void* buf, int fmt, int w, int h);
 GLuint uploadvertex(void* i, void* o);
 
@@ -117,6 +117,7 @@ void update_eachpass(struct gldst* dst, struct glsrc* src)
 	int w,h,fmt;
 	void* buf0;
 	void* buf1;
+	void* buf2;
 	//say("%llx,%llx\n", dst, src);
 
 	//0: shader
@@ -125,9 +126,10 @@ void update_eachpass(struct gldst* dst, struct glsrc* src)
 		//say("@1\n");
 		buf0 = (void*)(src->vs);
 		buf1 = (void*)(src->fs);
+		buf2 = (void*)(src->gs);
 		if((0 != buf0)&&(0 != buf1))
 		{
-			fd = shaderprogram(buf0, buf1);
+			fd = shaderprogram(buf0, buf1, buf2, 0, 0, 0);
 
 			dst->shader = fd;
 			say("(%llx,%llx)->%x\n", buf0, buf1, fd);

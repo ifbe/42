@@ -6,32 +6,93 @@ void actorcreatefromfile(struct actor* act, char* name);
 
 
 char* terrain_glsl_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 v;\n"
-	"layout(location = 1)in mediump vec3 n;\n"
-	"layout(location = 2)in mediump vec2 t;\n"
-	"out mediump vec2 texuvw;\n"
-	"out mediump vec3 normal;\n"
-	"uniform mat4 cammvp;\n"
-	"void main()\n"
-	"{\n"
-		"texuvw = t;\n"
-		"normal = n;\n"
-		"gl_Position = cammvp * vec4(v, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 n;\n"
+"layout(location = 2)in mediump vec3 t;\n"
+"out mediump vec3 uvw;\n"
+"out mediump vec3 xyz;\n"
+"uniform mat4 cammvp;\n"
+"void main(){\n"
+	"uvw = t;\n"
+	"xyz = v;\n"
+	"gl_Position = cammvp * vec4(v, 1.0);\n"
+"}\n";
+
+char* terrain_glsl_g =
+GLSL_VERSION
+"layout(triangles) in;\n"
+//"layout(line_strip, max_vertices = 6) out;\n"
+"layout(triangle_strip, max_vertices = 6) out;\n"
+"in mediump vec3 uvw[];\n"
+"in mediump vec3 xyz[];\n"
+"out mediump vec3 vertex;\n"
+"out mediump vec3 texuvw;\n"
+"out mediump vec3 normal;\n"
+"void main(){\n"
+	"vec3 a = vec3(gl_in[1].gl_Position) - vec3(gl_in[0].gl_Position);\n"
+	"vec3 b = vec3(gl_in[2].gl_Position) - vec3(gl_in[0].gl_Position);\n"
+	"vec3 n = 1000*normalize(cross(a, b));\n"
+	"gl_Position = gl_in[0].gl_Position;\n"
+	"vertex = xyz[0];\n"
+	"texuvw = uvw[0];\n"
+	"normal = n;\n"
+	"EmitVertex();\n"
+	"gl_Position = gl_in[1].gl_Position;\n"
+	"vertex = xyz[1];\n"
+	"texuvw = uvw[1];\n"
+	"normal = n;\n"
+	"EmitVertex();\n"
+	"gl_Position = gl_in[2].gl_Position;\n"
+	"vertex = xyz[2];\n"
+	"texuvw = uvw[2];\n"
+	"normal = n;\n"
+	"EmitVertex();\n"
+	"EndPrimitive();\n"
+"}\n";
+
 char* terrain_glsl_f =
-	GLSL_VERSION
-	"in mediump vec2 texuvw;\n"
-	"in mediump vec3 normal;\n"
-	"out mediump vec4 FragColor;\n"
-	"uniform sampler2D tex0;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(texture(tex0, texuvw).bgr, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"in mediump vec3 vertex;\n"
+"in mediump vec3 texuvw;\n"
+"in mediump vec3 normal;\n"
+"out mediump vec4 FragColor;\n"
+"uniform sampler2D tex0;\n"
+"uniform mediump vec3 camxyz;\n"
+"mediump vec3 sunxyz = vec3(0.0, 0.0, 1000.0);\n"
+"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
+"mediump vec3 kambi = vec3(0.231250, 0.231250, 0.231250);\n"
+"mediump vec3 kdiff = vec3(0.277500, 0.277500, 0.277500);\n"
+"mediump vec3 kspec = vec3(0.773911, 0.773911, 0.773911);\n"
+"vec3 phong(){\n"
+	"mediump vec3 N = normalize(normal);\n"
+	"mediump vec3 L = normalize(sunxyz - vertex);\n"
+	"mediump float SN = max(dot(N, L), 0.0);\n"
+	"mediump vec3 ret = kambi + kdiff*SN;\n"
+	"if(SN<0.0)return lightcolor*ret;\n"
+
+	//blinn phong
+	"mediump vec3 E = normalize(camxyz - vertex);\n"
+	"mediump vec3 H = normalize(E + L);\n"
+	"mediump float NH = max(dot(N, H), 0.0);\n"
+	"ret += kspec*pow(NH, 89.6);\n"
+
+	"return lightcolor * ret;\n"
+"}\n"
+"void main(){\n"
+	//"FragColor = vec4(normal, 1.0);\n"
+	"FragColor = vec4(phong() * texture(tex0, texuvw.xy).bgr, 1.0);\n"
+"}\n";
+
+
+
+
 void terrain_generate(float (*vbuf)[9], u16* ibuf, float w, float h)
 {
 	int x,y,j;
+	w /= 100.0;
+	h /= 100.0;
+
 	for(y=0;y<255;y++)
 	{
 		for(x=0;x<255;x++)
@@ -39,7 +100,7 @@ void terrain_generate(float (*vbuf)[9], u16* ibuf, float w, float h)
 			//vertex
 			vbuf[y*256+x][0] = x*w/127.0 - w;
 			vbuf[y*256+x][1] = y*h/127.0 - h;
-			vbuf[y*256+x][2] = (float)(getrandom()%16384) - 8192.0;		//8848?
+			vbuf[y*256+x][2] = ((getrandom()%16384) - 8192.0)*0.025;
 //say("%f\n",vbuf[y*256+x][2]);
 			//uv
 			vbuf[y*256+x][6] = x*1.0;
@@ -64,13 +125,13 @@ void terrain_generate(float (*vbuf)[9], u16* ibuf, float w, float h)
 	{
 		for(x=0;x<254;x++)
 		{
-			ibuf[j] = y*256+x;
+			ibuf[j+0] = y*256+x;
 			ibuf[j+1] = y*256+x+1;
 			ibuf[j+2] = y*256+x+256;
 
 			ibuf[j+3] = y*256+x+1;
-			ibuf[j+4] = y*256+x+256;
-			ibuf[j+5] = y*256+x+257;
+			ibuf[j+4] = y*256+x+257;
+			ibuf[j+5] = y*256+x+256;
 
 			j += 6;
 		}
@@ -185,6 +246,7 @@ static void terrain_start(
 
 	//shader
 	src->vs = terrain_glsl_v;
+	src->gs = terrain_glsl_g;
 	src->fs = terrain_glsl_f;
 
 	//texture
