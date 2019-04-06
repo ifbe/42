@@ -83,15 +83,15 @@ void tabbar_read_vbo(
 	float* vu = sty->vu;
     //carvesolid2d_rect(win, 0xff0000, vc, vr, vf);
 
-    tc[0] = vc[0] - vf[0]*15/16;
-    tc[1] = vc[1] - vf[1]*15/16;
-    tc[2] = vc[2] - vf[2]*15/16 - 0.5;
+    tc[0] = vc[0] - vf[0]*31/32;
+    tc[1] = vc[1] - vf[1]*31/32;
+    tc[2] = vc[2] - vf[2]*31/32 - 0.5;
     tr[0] = vr[0] / 2;
     tr[1] = vr[1] / 2;
     tr[2] = vr[2] / 2;
-    tf[0] = vf[0] / 16;
-    tf[1] = vf[1] / 16;
-    tf[2] = vf[2] / 16;
+    tf[0] = vf[0] / 32;
+    tf[1] = vf[1] / 32;
+    tf[2] = vf[2] / 32;
 	carveline2d_rect(win, 0xff0000, tc, tr, tf);
 
     rel = act->irel0;
@@ -108,9 +108,9 @@ void tabbar_read_vbo(
 
         if(_act_ == rel->dsttype)
         {
-            tc[0] = vc[0] + vr[0]*(2*j-7)/16 - vf[0]*15/16;
-            tc[1] = vc[1] + vr[1]*(2*j-7)/16 - vf[1]*15/16;
-            tc[2] = vc[2] + vr[2]*(2*j-7)/16 - vf[2]*15/16 - 0.5;
+            tc[0] = vc[0] + vr[0]*(2*j-7)/16 - vf[0]*31/32;
+            tc[1] = vc[1] + vr[1]*(2*j-7)/16 - vf[1]*31/32;
+            tc[2] = vc[2] + vr[2]*(2*j-7)/16 - vf[2]*31/32 - 0.5;
             tr[0] = vr[0] / 2 / 8.1;
             tr[1] = vr[1] / 2 / 8.1;
             tr[2] = vr[2] / 2 / 8.1;
@@ -118,7 +118,7 @@ void tabbar_read_vbo(
 
             ac = (void*)(rel->dstchip);
             st = (void*)(rel->srcfoot);
-            if('#' == st->wc)rgb = 0x111111;
+            if('#' == st->uc[3])rgb = 0x111111;
             else rgb = 0xffffff;
 
             tc[2] -= 0.1;
@@ -198,8 +198,8 @@ static int tabbar_swrite(
         x = (ev->why)&0xffff;
         x = x*16/w;
         y = ((ev->why)>>16)&0xffff;
-        y = y*16/h;
-        if((y == 15) && (x >= 4) && (x < 12))
+        y = y*32/h;
+        if((y == 31) && (x >= 4) && (x < 12))
         {
             say("x=%x\n",x);
 
@@ -220,8 +220,8 @@ static int tabbar_swrite(
                     if(0 == x)
                     {
                         st = (void*)(rel->srcfoot);
-                        if('#' == st->wc)st->wc = 0;
-                        else st->wc = '#';
+                        if('#' == st->uc[3])st->uc[3] = 0;
+                        else st->uc[3] = '#';
                     }
                     x--;
                 }

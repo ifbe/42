@@ -1,4 +1,5 @@
 #include "libuser.h"
+#define halfsqrt3 0.8660254037844386
 #define acc 32
 int line3d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
@@ -45,6 +46,72 @@ void carveline(struct arena* win, u32 rgb,
 
 	ibuf[0] = vlen;
 	ibuf[1] = vlen+1;
+}
+void carveline_arrow(struct arena* win, u32 rgb,
+	vec3 va, vec3 vb)
+{
+	float x0,y0,z0,n0;
+	float x1,y1,z1,n1;
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
+
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, 4, 3);
+
+	vbuf[ 0] = va[0];
+	vbuf[ 1] = va[1];
+	vbuf[ 2] = va[2];
+	vbuf[ 3] = rr;
+	vbuf[ 4] = gg;
+	vbuf[ 5] = bb;
+
+	vbuf[ 6] = vb[0];
+	vbuf[ 7] = vb[1];
+	vbuf[ 8] = vb[2];
+	vbuf[ 9] = rr;
+	vbuf[10] = gg;
+	vbuf[11] = bb;
+
+	//n1 = va - vb
+	x0 = va[0] - vb[0];
+	y0 = va[1] - vb[1];
+	z0 = va[2] - vb[2];
+	n0 = 16.0 / squareroot(x0*x0 + y0*y0 + z0*z0);
+	x0 *= n0;
+	y0 *= n0;
+	z0 *= n0;
+
+	//n2 = cross(cam.vn, n1)
+	x1 = win->camera.vn[1]*z0 - win->camera.vn[2]*y0;
+	y1 = win->camera.vn[2]*x0 - win->camera.vn[0]*z0;
+	z1 = win->camera.vn[0]*y0 - win->camera.vn[1]*x0;
+	n1 = 16.0 / squareroot(x1*x1 + y1*y1 + z1*z1);
+	x1 *= n1;
+	y1 *= n1;
+	z1 *= n1;
+
+	vbuf[12] = vb[0] + halfsqrt3 * x0 + 0.5 * x1;
+	vbuf[13] = vb[1] + halfsqrt3 * y0 + 0.5 * y1;
+	vbuf[14] = vb[2] + halfsqrt3 * z0 + 0.5 * z1;
+	vbuf[15] = rr;
+	vbuf[16] = gg;
+	vbuf[17] = bb;
+
+	vbuf[18] = vb[0] + halfsqrt3 * x0 - 0.5 * x1;
+	vbuf[19] = vb[1] + halfsqrt3 * y0 - 0.5 * y1;
+	vbuf[20] = vb[2] + halfsqrt3 * z0 - 0.5 * z1;
+	vbuf[21] = rr;
+	vbuf[22] = gg;
+	vbuf[23] = bb;
+
+	ibuf[0] = vlen;
+	ibuf[1] = vlen+1;
+	ibuf[2] = vlen+1;
+	ibuf[3] = vlen+2;
+	ibuf[4] = vlen+1;
+	ibuf[5] = vlen+3;
 }
 void carveline_bezier(struct arena* win, u32 rgb,
 	vec3 va, vec3 vb, vec3 vt)

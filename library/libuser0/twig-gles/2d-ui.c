@@ -34,7 +34,7 @@ int ui2d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stac
 		if(_act_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
-			if(sty){if('#' == sty->wc)goto next;}
+			if(sty){if('#' == sty->uc[3])goto next;}
 
 			act = (void*)(rel->dstchip);
 			pin = (void*)(rel->dstfoot);
@@ -62,7 +62,7 @@ int ui2d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sta
 		if(_act_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
-			if(sty){if('#' == sty->wc)goto next;}
+			if(sty){if('#' == sty->uc[3])goto next;}
 
 			act = (void*)(rel->dstchip);
 			pin = (void*)(rel->dstfoot);
@@ -92,7 +92,7 @@ int ui2d_cwrite(struct arena* win, struct style* stack, struct actor* sc, struct
 		if(_act_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
-			if(sty){sty->wc = 0;}
+			if(sty){sty->uc[3] = 0;}
 		}
 
 		rel = samesrcnextdst(rel);

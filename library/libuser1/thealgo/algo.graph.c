@@ -226,7 +226,7 @@ static void graph_read_vbo(
 	struct pair* wire = act->wbuf;
 	float* vbuf = act->vbuf;
 	float* ibuf = act->ibuf;
-	carveline_prism4(win, 0x00ff00, sty->vc, sty->vr, sty->vf, sty->vu);
+	//carveline_prism4(win, 0x00ff00, sty->vc, sty->vr, sty->vf, sty->vu);
 
 	if(vbuf)
 	{
@@ -252,7 +252,7 @@ static void graph_read_vbo(
 		j = wire[i].parent;
 		k = wire[i].child;
 
-		carveline(win, 0xffffff, &vbuf[j*3], &vbuf[k*3]);
+		carveline_arrow(win, 0xffffff, &vbuf[j*3], &vbuf[k*3]);
 	}
 
 	tr[0] = win->camera.vr[0];
@@ -353,15 +353,26 @@ int graph_addnode(struct actor* act, u64 type, void* addr)
 	node[j].addr = addr;
 	return j;
 }
-void graph_addpair(struct actor* act, int parent, int child)
+int graph_addpair(struct actor* act, int parent, int child)
 {
-	int wlen = act->wlen;
+	int j;
 	struct pair* wire = act->wbuf;
 
-	wire[wlen].parent = parent;
-	wire[wlen].child = child;
+	for(j=0;j<act->wlen;j++)
+	{
+		if(	(wire[j].parent == parent) &&
+			(wire[j].child == child) )
+		{
+			return j;
+		}
+	}
 
+	j = act->wlen;
 	act->wlen += 1;
+
+	wire[j].parent = parent;
+	wire[j].child = child;
+	return j;
 }
 static void graph_traverse(struct actor* act, struct arena* this)
 {
@@ -396,7 +407,7 @@ static void graph_traverse(struct actor* act, struct arena* this)
 				if(0 == irel)break;
 
 				ret = graph_addnode(act, irel->srctype, (void*)(irel->srcchip));
-				if(ret >= 0)graph_addpair(act, k, ret);
+				if(ret >= 0)graph_addpair(act, ret, k);
 
 				irel = samedstnextsrc(irel);
 			}

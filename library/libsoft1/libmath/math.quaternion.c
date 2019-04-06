@@ -69,28 +69,44 @@ void quaternion2axis(float* q, float* av)
 //out:	pitch,yaw,roll
 void quaternion2eulerian(float* q, float* eulerian)
 {
-	eulerian[0] = arctan2( (q[3]*q[1]+q[2]*q[0])*2 , 1-(q[1]*q[1]+q[2]*q[2])*2 );
+	//atan2(2(xw+yz), 1-2(xx+yy))
+	eulerian[0] = arctan2( (q[0]*q[3]+q[1]*q[2])*2 , 1-(q[0]*q[0]+q[1]*q[1])*2 );
 	eulerian[0] *= 180.0/PI;
-	eulerian[1] = arctan2( (q[3]*q[0]+q[1]*q[2])*2 , 1-(q[2]*q[2]+q[0]*q[0])*2 );
+
+	//asin(2(yw-xz))
+	eulerian[1] = arcsin(  (q[1]*q[3]-q[0]*q[2])*2 );
 	eulerian[1] *= 180.0/PI;
-	eulerian[2] = arcsin(  (q[3]*q[2]-q[1]*q[0])*2 );
+
+	//atan2(2(zw+xy), 1-2(yy+zz))
+	eulerian[2] = arctan2( (q[2]*q[3]+q[0]*q[1])*2 , 1-(q[1]*q[1]+q[2]*q[2])*2 );
 	eulerian[2] *= 180.0/PI;
 }
 //in:	qx,qy,qz,qw
 //out:	matrix
-void quaternion2matrix(float* q, float* matrix)
+void quaternion2matrix(float* q, float* m)
 {
-	matrix[0] = (q[3]*q[3] + q[1]*q[1] - q[2]*q[2] - q[0]*q[0]);
-	matrix[1] = (q[1]*q[2] - q[3]*q[0])*2;
-	matrix[2] = (q[3]*q[2] + q[1]*q[0])*2;
+	//1-2*(y*y+z*z), 2*(x*y-z*w), 2*(x*z+y*w)
+        //2*(x*y+z*w), 1-2*(x*x+z*z), 2*(y*z-x*w)
+        //2*(x*z-y*w), 2*(y*z+x*w), 1-2*(x*x+y*y)
+	m[ 0] = 1.0 - 2.0*(q[1]*q[1] + q[2]*q[2]);
+	m[ 1] = 2.0*(q[0]*q[1] - q[2]*q[3]);
+	m[ 2] = 2.0*(q[0]*q[2] + q[1]*q[3]);
+	m[ 3] = 0.0;
 
-	matrix[3] = (q[3]*q[0] + q[1]*q[2])*2;
-	matrix[4] = (q[3]*q[3] - q[1]*q[1] + q[2]*q[2] - q[0]*q[0]);
-	matrix[5] = (q[2]*q[0] - q[3]*q[1])*2;
+	m[ 4] = 2.0*(q[0]*q[1] + q[2]*q[3]);
+	m[ 5] = 1.0 - 2.0*(q[0]*q[0] + q[2]*q[2]);
+	m[ 6] = 2.0*(q[1]*q[2] - q[0]*q[3]);
+	m[ 7] = 0.0;
 
-	matrix[6] = (q[1]*q[0] - q[3]*q[2])*2;
-	matrix[7] = (q[3]*q[1] + q[2]*q[0])*2;
-	matrix[8] = (q[3]*q[3] - q[1]*q[1] - q[2]*q[2] + q[0]*q[3]);
+	m[ 8] = 2.0*(q[0]*q[2] - q[1]*q[3]);
+	m[ 9] = 2.0*(q[1]*q[2] + q[0]*q[3]);
+	m[10] = 1.0 - 2.0*(q[0]*q[0] + q[1]*q[1]);
+	m[11] = 0.0;
+
+	m[12] = 0.0;
+	m[13] = 0.0;
+	m[14] = 0.0;
+	m[15] = 1.0;
 }
 
 
@@ -103,6 +119,21 @@ void quaternion_normalize(float* p)
 	p[1] /= norm;
 	p[2] /= norm;
 	p[3] /= norm;
+}
+void quaternion_conjugate(float* s, float* d)
+{
+	d[0] = -s[0];
+	d[1] = -s[1];
+	d[2] = -s[2];
+	d[3] = s[3];
+}
+void quaternion_inverse(float* s, float* d)
+{
+	float n2 = s[0]*s[0] + s[1]*s[1] + s[2]*s[2] + s[3]*s[3];
+	d[0] = -s[0] / n2;
+	d[1] = -s[1] / n2;
+	d[2] = -s[2] / n2;
+	d[3] = s[3] / n2;
 }
 //in:	left, right
 //out:	left = left*right

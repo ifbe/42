@@ -149,7 +149,7 @@ print:
 	tc[2] = 0.0;
 	carve2d_string(win, 0xffffff, tc, tr, tf, (void*)"vq: ", 4);
 	tc[0] += 0.05;
-	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->camera.vv);
+	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->camera.vq);
 
 	tc[0] = -1.0;
 	tc[1] = -0.4 + 0.025;

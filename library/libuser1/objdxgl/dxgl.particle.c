@@ -59,6 +59,7 @@ static void particle_read_vbo3d(
 	float* dbuf = (src->vbuf) + (24*vlen);
 	src->vbuf_h += 30000;
 
+	carveline_prism4(win, 0xffffff, vc, vr, vf, vu);
 	for(j=0;j<30000;j++)
 	{
 		x = sbuf[9*j + 0] + sbuf[9*j + 3];
@@ -160,9 +161,9 @@ static void particle_start(
 		vbuf[9*j + 2] = (getrandom()%8192)/4096.0 - 1.0;
 
 		//speed
-		vbuf[9*j + 3] = (getrandom()%8191 - 4095)/4096000.0;
-		vbuf[9*j + 4] = (getrandom()%8191 - 4095)/4096000.0;
-		vbuf[9*j + 5] = (getrandom()%8191 - 4095)/4096000.0;
+		vbuf[9*j + 3] = (getrandom()%8191 - 4095)/409600.0;
+		vbuf[9*j + 4] = (getrandom()%8191 - 4095)/409600.0;
+		vbuf[9*j + 5] = (getrandom()%8191 - 4095)/409600.0;
 
 		//colour
 		vbuf[9*j + 6] = (getrandom()%8192)/8192.0;

@@ -18,7 +18,7 @@ void actorcreatefromstl(struct actor* act, u8* buf, int len)
 	float* vf = act->target.vf;	//far
 	float* vb = act->target.vb;	//bot
 	float* vu = act->target.vu;	//top
-	float* vv = act->target.vv;	//info
+	float* vq = act->target.vq;	//info
 	float* vc = act->target.vc;	//center
 
 	vl[0] = 100000.0;
@@ -72,9 +72,9 @@ void actorcreatefromstl(struct actor* act, u8* buf, int len)
 		//say("%f,%f,%f,%f,%f,%f\n",dst[0],dst[1],dst[2],dst[3],dst[4],dst[5]);
 	}
 
-	vv[0] = vr[0] - vl[0];
-	vv[1] = vf[1] - vn[1];
-	vv[2] = vu[2] - vb[2];
+	vq[0] = vr[0] - vl[0];
+	vq[1] = vf[1] - vn[1];
+	vq[2] = vu[2] - vb[2];
 	vc[0] = (vl[0] + vr[0])/2;
 	vc[1] = (vn[1] + vf[1])/2;
 	vc[2] = (vb[2] + vu[2])/2;
@@ -87,7 +87,7 @@ void actorcreatefromstl(struct actor* act, u8* buf, int len)
 	);
 	say(
 		"w=%f, h=%f, d=%f, x=%f, y=%f, z=%f\n",
-		vv[0], vv[1], vv[2], vc[0], vc[1], vc[2]
+		vq[0], vq[1], vq[2], vc[0], vc[1], vc[2]
 	);
 
 	act->width = 4*6;

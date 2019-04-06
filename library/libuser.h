@@ -311,22 +311,29 @@ struct datapair
 struct style
 {
 	//[00, 7f]
-	vec3 vl;	//[00,0f]: left
-	u32 wl;
-	vec3 vr;	//[10,1f]: right
-	u32 wr;
-	vec3 vn;	//[20,2f]: near
-	u32 wn;
-	vec3 vf;	//[30,3f]: far
-	u32 wf;
-	vec3 vb;	//[40,4f]: bottom
-	u32 wb;
-	vec3 vu;	//[50,5f]: upper
-	u32 wu;
-	vec3 vv;	//[60,6f]: info
-	u32 wv;
-	vec3 vc;	//[70,7f]: center
-	u32 wc;
+	union{
+		struct{
+			vec4 vl;	//[00,0f]: left
+			vec4 vr;	//[10,1f]: right
+			vec4 vn;	//[20,2f]: near
+			vec4 vf;	//[30,3f]: far
+			vec4 vb;	//[40,4f]: bottom
+			vec4 vu;	//[50,5f]: upper
+			vec4 vq;	//[60,6f]: info
+			vec4 vc;	//[70,7f]: center
+		};
+
+		struct{
+			u32 ul[4];
+			u32 ur[4];
+			u32 un[4];
+			u32 uf[4];
+			u32 ub[4];
+			u32 ut[4];
+			u32 uq[4];
+			u32 uc[4];
+		};
+	};
 
 	//[80, ...]
 	u64 foot[0];
@@ -880,6 +887,7 @@ void carvepoint_icosahedron(  struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3
 void carvepoint_sphere(       struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
 void carveline(               struct arena* win, u32 rgb, vec3 va, vec3 vb);
+void carveline_arrow(         struct arena* win, u32 rgb, vec3 va, vec3 vb);
 void carveline_bezier(        struct arena* win, u32 rgb, vec3 va, vec3 vb, vec3 vt);
 void carveline_special(       struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vu, float sa, float da);
 void carveline_yshape(        struct arena* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);

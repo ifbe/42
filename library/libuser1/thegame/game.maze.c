@@ -179,7 +179,7 @@ static void maze_read_vbo2d(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid2d_rect(win, 0x808080, tc, tr, tf);
+				carvesolid2d_rect(win, 0xff0000, tc, tr, tf);
 			}
 
 			if((w&2) == 2)	//right
@@ -208,7 +208,7 @@ static void maze_read_vbo2d(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid_rect(win, 0x808080, tc, tr, tf);
+				carvesolid_rect(win, 0xff0000, tc, tr, tf);
 			}
 
 			if((w&4) == 4)	//down	//careful,different
@@ -237,7 +237,7 @@ static void maze_read_vbo2d(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid_rect(win, 0x808080, tc, tr, tf);
+				carvesolid_rect(win, 0xff0000, tc, tr, tf);
 			}
 
 			if((w&8) == 8)	//up	//careful,different
@@ -266,7 +266,7 @@ static void maze_read_vbo2d(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid2d_rect(win, 0x808080, tc, tr, tf);
+				carvesolid2d_rect(win, 0xff0000, tc, tr, tf);
 			}
 		}
 	}
@@ -283,6 +283,7 @@ static void maze_read_vbo3d(
 	float* vu = sty->vu;
 	u8* buf = act->buf;
 
+	carvesolid_rect(win, 0, vc, vr, vf);
 	for(y=0;y<HEIGHT;y++)
 	{
 		for(x=0;x<WIDTH;x++)
@@ -317,7 +318,7 @@ static void maze_read_vbo3d(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid_rect(win, 0x808080, tc, tr, tf);
+				carvesolid_rect(win, 0xff0000, tc, tr, tf);
 			}
 
 			if((w&2) == 2)	//right
@@ -349,7 +350,7 @@ static void maze_read_vbo3d(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid_rect(win, 0x808080, tc, tr, tf);
+				carvesolid_rect(win, 0xff0000, tc, tr, tf);
 			}
 
 			if((w&4) == 4)	//down	//careful,different
@@ -381,7 +382,7 @@ static void maze_read_vbo3d(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid_rect(win, 0x808080, tc, tr, tf);
+				carvesolid_rect(win, 0xff0000, tc, tr, tf);
 			}
 
 			if((w&8) == 8)	//up	//careful,different
@@ -413,10 +414,36 @@ static void maze_read_vbo3d(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid_rect(win, 0x808080, tc, tr, tf);
+				carvesolid_rect(win, 0xff0000, tc, tr, tf);
 			}
 		}
 	}
+
+
+	x = act->x0;
+	y = act->y0;
+
+	act->camera.vc[0] = vc[0] + vr[0]*x/32 + vf[0]*y/32;
+	act->camera.vc[1] = vc[1] + vr[1]*x/32 + vf[1]*y/32;
+	act->camera.vc[2] = vc[2] + vr[2]*x/32 + vf[2]*y/32 + 10.0;
+	act->camera.vn[0] = 0.0;
+	act->camera.vn[1] = 1.0;
+	act->camera.vn[2] = 0.0;
+
+	act->camera.vl[0] =-1.0;
+	act->camera.vl[1] = 0.0;
+	act->camera.vl[2] = 0.0;
+	act->camera.vr[0] = 1.0;
+	act->camera.vr[1] = 0.0;
+	act->camera.vr[2] = 0.0;
+
+	act->camera.vb[0] = 0.0;
+	act->camera.vb[1] = 0.0;
+	act->camera.vb[2] =-1.0;
+	act->camera.vu[0] = 0.0;
+	act->camera.vu[1] = 0.0;
+	act->camera.vu[2] = 1.0;
+
 }
 static void maze_read_json(
 	struct arena* win, struct style* sty,
@@ -474,7 +501,7 @@ static void maze_read_cli(
 	}
 	say("\n\n\n\n");
 }
-static void maze_read(
+static void maze_sread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
@@ -490,16 +517,31 @@ static void maze_read(
 	}
 	else maze_read_pixel(win, sty, act, pin);
 }
-static void maze_write(
+static void maze_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
+	if(_char_ == ev->what)
+	{
+		switch(ev->why)
+		{
+			case 'a':act->x0 -= 1;break;
+			case 'd':act->x0 += 1;break;
+			case 's':act->y0 -= 1;break;
+			case 'w':act->y0 += 1;break;
+		}
+	}
 }
-static void maze_get()
+static void maze_cread(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
 {
 }
-static void maze_post()
+static void maze_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 }
 static void maze_stop(
@@ -530,6 +572,9 @@ static void maze_create(struct actor* act)
 {
 	if(0 == act)return;
 	act->buf = memorycreate(WIDTH*HEIGHT);
+
+	act->x0 = 31;
+	act->y0 = -31;
 }
 
 
@@ -544,8 +589,8 @@ void maze_register(struct actor* p)
 	p->ondelete = (void*)maze_delete;
 	p->onstart  = (void*)maze_start;
 	p->onstop   = (void*)maze_stop;
-	p->onget    = (void*)maze_get;
-	p->onpost   = (void*)maze_post;
-	p->onread   = (void*)maze_read;
-	p->onwrite  = (void*)maze_write;
+	p->onget    = (void*)maze_cread;
+	p->onpost   = (void*)maze_cwrite;
+	p->onread   = (void*)maze_sread;
+	p->onwrite  = (void*)maze_swrite;
 }
