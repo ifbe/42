@@ -8,8 +8,7 @@ void actorcreatefromfile(struct actor* act, char* name);
 char* terrain_glsl_v =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
-"layout(location = 1)in mediump vec3 n;\n"
-"layout(location = 2)in mediump vec3 t;\n"
+"layout(location = 1)in mediump vec3 t;\n"
 "out mediump vec3 uvw;\n"
 "out mediump vec3 xyz;\n"
 "uniform mat4 objmat;\n"
@@ -118,7 +117,7 @@ GLSL_VERSION
 
 
 
-void terrain_generate(float (*vbuf)[9], u16* ibuf, struct actor* act)
+void terrain_generate(float (*vbuf)[6], u16* ibuf, struct actor* act)
 {
 	int x,y,x1,y1,j;
 	int w = act->width;
@@ -139,20 +138,9 @@ void terrain_generate(float (*vbuf)[9], u16* ibuf, struct actor* act)
 			vbuf[y*256+x][2] = rgba[(w*y1 + x1) * 4] / 256.0;
 //say("%f\n",vbuf[y*256+x][2]);
 			//uv
-			vbuf[y*256+x][6] = x*1.0;
-			vbuf[y*256+x][7] = y*1.0;
-			vbuf[y*256+x][8] = 0.0;
-		}
-	}
-
-	for(y=1;y<254;y++)
-	{
-		for(x=1;x<254;x++)
-		{
-			//normal
-			vbuf[y*256+x][3] = 0.0;
-			vbuf[y*256+x][4] = 0.0;
-			vbuf[y*256+x][5] = 1.0;
+			vbuf[y*256+x][3] = x*1.0;
+			vbuf[y*256+x][4] = y*1.0;
+			vbuf[y*256+x][5] = 0.0;
 		}
 	}
 
@@ -313,14 +301,14 @@ static void terrain_start(
 	src->tex_h[0] = leaf->height;
 */
 	//vertex
-	vbuf = memorycreate(4*9 * 256*255);
+	vbuf = memorycreate(4*6 * 256*255);
 	ibuf = memorycreate(2*3 * 256*256*2);
 	terrain_generate(vbuf, ibuf, leaf);
 	src->method = 'i';
 
-	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf = vbuf;
-	src->vbuf_w = 4*9;
+	src->vbuf_w = 4*6;
 	src->vbuf_h = 256*255;
 	src->ibuf_fmt = 0x222;
 	src->ibuf = ibuf;

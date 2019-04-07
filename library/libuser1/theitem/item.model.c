@@ -7,49 +7,99 @@ void actorcreatefromfile(struct actor* act, char* name);
 
 
 char* model_glsl2d_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 normal;\n"
-	"uniform mat4 objmat;\n"
-	"out mediump vec3 vcolor;\n"
-	"void main()\n"
-	"{\n"
-		"vcolor = normal;\n"
-		"gl_Position = objmat * vec4(vertex, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec3 normal;\n"
+"uniform mat4 objmat;\n"
+"out mediump vec3 vcolor;\n"
+"void main()\n"
+"{\n"
+	"vcolor = normal;\n"
+	"gl_Position = objmat * vec4(vertex, 1.0);\n"
+"}\n";
+
 char* model_glsl_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 normal;\n"
-	"out mediump vec3 vcolor;\n"
-	"uniform mat4 objmat;\n"
-	"uniform mat4 cammvp;\n"
-	"uniform mediump vec3 camxyz;\n"
-	"mediump vec3 ambient = vec3(0.25, 0.25, 0.25);\n"
-	"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
-	"mediump vec3 lightposition = vec3(100.0, 0.0, 1000.0);\n"
-	"void main()\n"
-	"{\n"
-		"mediump vec3 N = normalize(normal);\n"
-		"mediump vec3 L = normalize(vec3(lightposition - vertex));\n"
-		"mediump vec3 E = normalize(camxyz-vertex);\n"
-		"mediump vec3 R = reflect(-L, N);\n"
-		"mediump float SN = max(dot(N, L), 0.0);\n"
-		"mediump float RV = max(dot(R, E), 0.0);\n"
-		"mediump vec3 diffuse = lightcolor * SN;\n"
-		"mediump vec3 specular = vec3(0.0, 0.0, 0.0);\n"
-		"if(SN>0.0)specular = lightcolor * pow(RV, 4.0);\n"
-		"vcolor = ambient + diffuse + specular;\n"
-		"gl_Position = cammvp * objmat * vec4(vertex, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 n;\n"
+"out mediump vec3 vertex;\n"
+"out mediump vec3 normal;\n"
+"uniform mat4 objmat;\n"
+"uniform mat4 cammvp;\n"
+"void main()\n"
+"{\n"
+	"vertex = v;\n"
+	"normal = n;\n"
+	"gl_Position = cammvp * objmat * vec4(vertex, 1.0);\n"
+"}\n";
+
 char* model_glsl_f =
 	GLSL_VERSION
-	"in mediump vec3 vcolor;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(vcolor, 1.0);\n"
-	"}\n";
+"in mediump vec3 vertex;\n"
+"in mediump vec3 normal;\n"
+"out mediump vec4 FragColor;\n"
+"uniform mediump vec3 camxyz;\n"
+"mediump vec3 dirsun0 = vec3(-1.0, 0.0, 1.0);\n"
+"mediump vec3 dirsun1 = vec3(0.0, -1.0, 1.0);\n"
+"mediump vec3 sunxyz = vec3(1000000.0, 1000000.0, 1000000.0);\n"
+"mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
+"mediump vec3 kambi = vec3(0.231250, 0.231250, 0.231250);\n"
+"mediump vec3 kdiff = vec3(0.277500, 0.277500, 0.277500);\n"
+"mediump vec3 kspec = vec3(0.773911, 0.773911, 0.773911);\n"
+"vec3 blinnphong(){\n"
+	"mediump vec3 N = normalize(normal);\n"
+	"mediump vec3 L = normalize(sunxyz - vertex);\n"
+	"mediump float SN = max(dot(N, L), 0.0);\n"
+	"mediump vec3 ret = kambi + kdiff*SN;\n"
+	"if(SN<0.0)return lightcolor*ret;\n"
+
+	"mediump vec3 E = normalize(camxyz - vertex);\n"
+	"mediump vec3 H = normalize(E + L);\n"
+	"mediump float NH = max(dot(N, H), 0.0);\n"
+	"ret += kspec*pow(NH, 25.0);\n"
+
+	"return 0.3*lightcolor * ret;\n"
+"}\n"
+"vec3 sun0(){\n"
+	"mediump vec3 N = normalize(normal);\n"
+	"mediump vec3 L = normalize(dirsun0);\n"
+	"mediump float SN = max(dot(N, L), 0.0);\n"
+	"mediump vec3 ret = kambi + kdiff*SN;\n"
+	"if(SN<0.0)return lightcolor*ret;\n"
+
+	"mediump vec3 E = normalize(camxyz - vertex);\n"
+	"mediump vec3 H = normalize(E + L);\n"
+	"mediump float NH = max(dot(N, H), 0.0);\n"
+	"ret += kspec*pow(NH, 25.0);\n"
+
+	"return 0.3*lightcolor * ret;\n"
+"}\n"
+"vec3 sun1(){\n"
+	"mediump vec3 N = normalize(normal);\n"
+	"mediump vec3 L = normalize(dirsun1);\n"
+	"mediump float SN = max(dot(N, L), 0.0);\n"
+	"mediump vec3 ret = kambi + kdiff*SN;\n"
+	"if(SN<0.0)return lightcolor*ret;\n"
+
+	"mediump vec3 E = normalize(camxyz - vertex);\n"
+	"mediump vec3 H = normalize(E + L);\n"
+	"mediump float NH = max(dot(N, H), 0.0);\n"
+	"ret += kspec*pow(NH, 25.0);\n"
+
+	"return 0.3*lightcolor * ret;\n"
+"}\n"
+//"float shadow(){\n"
+	//"if(uvw.z - texture(tex0, uvw.xy).r > 0.000001)return 0.1;\n"
+	//"return 1.0;\n"
+//"}\n"
+"void main(){\n"
+	//"FragColor = vec4(phong()*shadow(), 1.0);\n"
+	"FragColor = vec4(blinnphong() + sun0() + sun1(), 1.0);\n"
+"}\n";
+
+
+
+
 void sty_sty_mat(struct style* src, struct style* dst, mat4 mat)
 {
 	float x,y,z,max;
@@ -384,7 +434,10 @@ static void model_delete(struct actor* act)
 static void model_create(struct actor* act, void* str)
 {
 	if(0 == act)return;
-	if(str)actorcreatefromfile(act, str);
+
+	if(0 == act->buf)act->buf = memorycreate(0x1000000);
+	if(0 == str)str = "datafile/stl/bunny-lowpoly.stl";
+	actorcreatefromfile(act, str);
 }
 
 

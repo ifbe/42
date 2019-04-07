@@ -43,7 +43,6 @@
 *.out
 *.apk
 
-*.stl
 compiler/win/bin
 compiler/win/mingw64
 project/none+all+android+anative/bin
