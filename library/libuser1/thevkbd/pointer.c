@@ -69,7 +69,6 @@ void pointer_read_pixel(struct arena* win, struct style* sty)
 		x1 = win->input[j].xn;
 		y1 = win->input[j].yn;
 		drawline_arrow(win, 0xff00ff, x0, y0, x1, y1);
-		drawline_rect(win, 0x00ff00, x0, y0, x1, y1);
 	}
 }
 static int pointer_sread(struct arena* win, struct style* sty, struct arena* cc, struct style* cf)

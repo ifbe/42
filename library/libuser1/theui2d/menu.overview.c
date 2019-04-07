@@ -72,13 +72,12 @@ void defaultstyle_3d(struct style* sty, struct style* tar)
 	sty->vc[1] = tar->vc[1];
 	sty->vc[2] = tar->vc[2];
 }
-int arenaactor(struct arena* ccc, struct actor* act)
+int arenaactor(struct arena* win, struct arena* ccc, struct actor* act, struct actor* tmp)
 {
 	int w,h;
 	struct style* sty;
 	struct pinid* pin;
-	struct arena* win;
-	struct relation* rel;
+	if(0 == win)return 0;
 
 	sty = allocstyle();
 	if(0 == sty)return 0;
@@ -86,7 +85,6 @@ int arenaactor(struct arena* ccc, struct actor* act)
 	pin = allocpinid();
 	if(0 == pin)return 0;
 
-	win = ccc;
 	switch(ccc->fmt)
 	{
 		case _bg3d_:
@@ -94,12 +92,12 @@ int arenaactor(struct arena* ccc, struct actor* act)
 		case _ev3d_:
 		case _ui3d_:
 		{
-			rel = ccc->irel0;
-			if(0 == rel)return 0;
-
-			win = (void*)(rel->srcchip);
-			defaultstyle_3d(sty, &win->target);
-
+			if(_vbo_ == win->fmt)defaultstyle_3d(sty, &win->target);
+			else{
+				w = win->width;
+				h = win->height;
+				defaultstyle_2d(sty, w, h, (w+h)/2);
+			}
 			break;
 		}
 		case _bg2d_:
@@ -107,24 +105,13 @@ int arenaactor(struct arena* ccc, struct actor* act)
 		case _ev2d_:
 		case _ui2d_:
 		{
-			rel = ccc->irel0;
-			if(0 == rel)return 0;
-
-			win = (void*)(rel->srcchip);
-			defaultstyle_2in3(sty);
-
+			if(_vbo_ == win->fmt)defaultstyle_2in3(sty);
+			else{
+				w = win->width;
+				h = win->height;
+				defaultstyle_2d(sty, w, h, (w+h)/2);
+			}
 			break;
-		}
-		case _vbo_:
-		{
-			defaultstyle_3d(sty, &win->target);
-			break;
-		}
-		default:
-		{
-			w = win->width;
-			h = win->height;
-			defaultstyle_2d(sty, w, h, (w+h)/2);
 		}
 	}
 
@@ -134,33 +121,6 @@ int arenaactor(struct arena* ccc, struct actor* act)
 	relationcreate(act, pin, _act_, ccc, sty, _win_);
 	return 0;
 }
-
-
-
-/*
-int arenalogin(struct arena* win)
-{
-	struct actor* act;
-	int j = win->forez;
-	if(j<0)return 0;
-
-	act = &actor[j];
-	if(0 == act->type)return 0;
-
-	arenaactor(win, act);
-	return 0;
-}
-int arenaprev(struct arena* win)
-{
-	if(win->forez > 0)win->forez -= 1;
-	return 0;
-}
-int arenanext(struct arena* win)
-{
-	int j = win->forez + 1;
-	if(0 != actor[j].type)win->forez += 1;
-	return 0;
-}*/
 
 
 
@@ -187,14 +147,14 @@ void overview_read_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	cursor = (act->x0) + (act->y0)*8;
+	cursor = (act->x0) + (act->y0)*16;
 /*
 	drawline(win, 0x0000ff, 0, h*1/4, w-1, h*1/4);
 	drawline(win, 0x00ff00, 0, h*2/4, w-1, h*2/4);
 	drawline(win, 0xff0000, 0, h*3/4, w-1, h*3/4);
 */
 	//actor
-	for(j=0;j<64;j++)
+	for(j=0;j<128;j++)
 	{
 		c = actor[j].type & 0xff;
 		if(0 == c)break;
@@ -203,46 +163,46 @@ void overview_read_pixel(
 		else if((c >= 'a')&&(c <= 'z'))c = 0x40808080;
 		else c = 0x80ffffff;
 
-		x = j%8;
-		y = j/8;
+		x = j%16;
+		y = j/16;
 		drawicon_1(win, c,
-			(cx+1)+(x-4)*ww/4, (cy+1)+(y-16)*hh/16,
-			(cx-1)+(x-3)*ww/4, (cy-1)+(y-15)*hh/16,
+			(cx+1)+(x-8)*ww/8, (cy+1)+(y-16)*hh/16,
+			(cx-1)+(x-7)*ww/8, (cy-1)+(y-15)*hh/16,
 			(u8*)&actor[j].fmt, 8
 		);
 	}
 
 	//arena
-	for(j=0;j<64;j++)
+	for(j=0;j<128;j++)
 	{
 		if(0 == arena[j].type)break;
 
-		if(j+64 == cursor)c = 0xffff00ff;
+		if(j+128 == cursor)c = 0xffff00ff;
 		else if(win == &arena[j])c = 0xff808080;
 		else c = 0x80ffffff;
 
-		x = j%8;
-		y = j/8;
+		x = j%16;
+		y = j/16;
 		drawicon_1(win, c,
-			(cx+1)+(x-4)*ww/4, (cy+1)+(y-8)*hh/16,
-			(cx-1)+(x-3)*ww/4, (cy-1)+(y-7)*hh/16,
+			(cx+1)+(x-8)*ww/8, (cy+1)+(y-8)*hh/16,
+			(cx-1)+(x-7)*ww/8, (cy-1)+(y-7)*hh/16,
 			(u8*)&arena[j].fmt, 8
 		);
 	}
 
 	//artery
-	for(j=0;j<64;j++)
+	for(j=0;j<128;j++)
 	{
 		if(0 == ele[j].type)continue;
 
-		if(j+128 == cursor)c = 0xffff00ff;
+		if(j+256 == cursor)c = 0xffff00ff;
 		else c = 0x80ffffff;
 
 		x = j%8;
 		y = j/8;
 		drawicon_1(win, c,
-			(cx+1)+(x-4)*ww/4, (cy+1)+(y+0)*hh/16,
-			(cx-1)+(x-3)*ww/4, (cy-1)+(y+1)*hh/16,
+			(cx+1)+(x-8)*ww/8, (cy+1)+(y+0)*hh/16,
+			(cx-1)+(x-7)*ww/8, (cy-1)+(y+1)*hh/16,
 			(u8*)&ele[j].type, 8
 		);
 	}
@@ -252,20 +212,20 @@ void overview_read_pixel(
 	{
 		if(0 == obj[j].type)continue;
 
-		if((j%64)+192 == cursor)c = 0xffff00ff;
+		if((j%128)+384 == cursor)c = 0xffff00ff;
 		else c = 0x80ffffff;
 
-		x = (j%64)%8;
-		y = (j%64)/8;
+		x = (j%128)%16;
+		y = (j%128)/16;
 		drawicon_1(win, c,
-			(cx+1)+(x-4)*ww/4, (cy+1)+(y+8)*hh/16,
-			(cx-1)+(x-3)*ww/4, (cy-1)+(y+9)*hh/16,
+			(cx+1)+(x-8)*ww/8, (cy+1)+(y+8)*hh/16,
+			(cx-1)+(x-7)*ww/8, (cy-1)+(y+9)*hh/16,
 			(u8*)&obj[j].type, 8
 		);
 	}
 
 	//actor.irel
-	for(j=0;j<64;j++)
+	for(j=0;j<128;j++)
 	{
 		if(0 == actor[j].fmt)continue;
 
@@ -277,12 +237,10 @@ void overview_read_pixel(
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
-				k %= 64;
+				k %= 128;
 				drawline_arrow(win, 0xc0ffc0,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)+17)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)-31)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+17)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-31)*hh/32
 				);
 			}
 			else if(_art_ == rel->srctype)
@@ -290,10 +248,8 @@ void overview_read_pixel(
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
 				drawline_arrow(win, 0xc0ffc0,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)+ 1)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)-31)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+ 1)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-31)*hh/32
 				);
 			}
 			else if(_win_ == rel->srctype)
@@ -301,10 +257,8 @@ void overview_read_pixel(
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
 				drawline_arrow(win, 0xc0ffc0,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)-15)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)-31)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-15)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-31)*hh/32
 				);
 			}
 			else if(_act_ == rel->srctype)
@@ -312,10 +266,8 @@ void overview_read_pixel(
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
 				drawline_arrow(win, 0xffffff,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)-31)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)-31)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-31)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-31)*hh/32
 				);
 			}
 			rel = samedstnextsrc(rel);
@@ -323,7 +275,7 @@ void overview_read_pixel(
 	}
 
 	//arena.irel
-	for(j=0;j<64;j++)
+	for(j=0;j<128;j++)
 	{
 		if(0 == arena[j].type)break;
 
@@ -335,12 +287,10 @@ void overview_read_pixel(
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
-				k %= 64;
+				k %= 128;
 				drawline_arrow(win, 0xc0ffc0,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)+17)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)-15)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+17)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-15)*hh/32
 				);
 			}
 			else if(_art_ == rel->srctype)
@@ -348,10 +298,8 @@ void overview_read_pixel(
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
 				drawline_arrow(win, 0xc0ffc0,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)+ 1)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)-15)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+ 1)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-15)*hh/32
 				);
 			}
 			else if(_win_ == rel->srctype)
@@ -359,10 +307,8 @@ void overview_read_pixel(
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
 				drawline_arrow(win, 0xffffff,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)-15)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)-15)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-15)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-15)*hh/32
 				);
 			}
 			else if(_act_ == rel->srctype)
@@ -370,10 +316,8 @@ void overview_read_pixel(
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
 				drawline_arrow(win, 0xffc0ff,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)-31)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)-15)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-31)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-15)*hh/32
 				);
 			}
 
@@ -382,7 +326,7 @@ void overview_read_pixel(
 	}
 
 	//element.irel
-	for(j=0;j<64;j++)
+	for(j=0;j<128;j++)
 	{
 		if(0 == ele[j].type)break;
 
@@ -394,12 +338,10 @@ void overview_read_pixel(
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
-				k %= 64;
+				k %= 128;
 				drawline_arrow(win, 0xc0ffc0,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)+17)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)+ 1)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+17)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+ 1)*hh/32
 				);
 			}
 			else if(_art_ == rel->srctype)
@@ -407,10 +349,8 @@ void overview_read_pixel(
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
 				drawline_arrow(win, 0xc0ffc0,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)+ 1)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)+ 1)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+ 1)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+ 1)*hh/32
 				);
 			}
 			else if(_win_ == rel->srctype)
@@ -418,10 +358,8 @@ void overview_read_pixel(
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
 				drawline_arrow(win, 0xffffff,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)-15)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)+ 1)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-15)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+ 1)*hh/32
 				);
 			}
 			else if(_act_ == rel->srctype)
@@ -429,10 +367,8 @@ void overview_read_pixel(
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
 				drawline_arrow(win, 0xffc0ff,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)-31)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)+ 1)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-31)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+ 1)*hh/32
 				);
 			}
 			rel = samedstnextsrc(rel);
@@ -452,12 +388,10 @@ void overview_read_pixel(
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
-				k %= 64;
+				k %= 128;
 				drawline_arrow(win, 0xc0ffc0,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)+17)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)+17)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+17)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+17)*hh/32
 				);
 			}
 			else if(_art_ == rel->srctype)
@@ -465,10 +399,8 @@ void overview_read_pixel(
 				k = (void*)(rel->srcchip) - (void*)ele;
 				k = k / sizeof(struct element);
 				drawline_arrow(win, 0xc0ffc0,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)+ 1)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)+17)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+ 1)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+17)*hh/32
 				);
 			}
 			else if(_win_ == rel->srctype)
@@ -476,10 +408,8 @@ void overview_read_pixel(
 				k = (void*)(rel->srcchip) - (void*)arena;
 				k = k / sizeof(struct arena);
 				drawline_arrow(win, 0xffffff,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)-15)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)+17)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-15)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+17)*hh/32
 				);
 			}
 			else if(_act_ == rel->srctype)
@@ -487,10 +417,8 @@ void overview_read_pixel(
 				k = (void*)(rel->srcchip) - (void*)actor;
 				k = k / sizeof(struct actor);
 				drawline_arrow(win, 0xffc0ff,
-					cx+(4*(k%8)-13)*ww/16,
-					cy+(2*(k/8)-31)*hh/32,
-					cx+(4*(j%8)-15)*ww/16,
-					cy+(2*(j/8)+17)*hh/32
+					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-31)*hh/32,
+					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+17)*hh/32
 				);
 			}
 			rel = samedstnextsrc(rel);
@@ -1191,7 +1119,7 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 			act_d = &actor[x1 + (y1*16)];
 			if(0 == act_d->type)return;
 
-			arenaactor(win_s, act_d);
+			arenaactor(win, win_s, act_d, 0);
 		}
 		else if(y1 < 16)
 		{

@@ -1,46 +1,4 @@
 #include "libuser.h"
-int actorinput_void(     struct arena* win, struct style* sty, struct event* ev);
-int actoroutput_void(    struct arena* win, struct style* sty);
-int actorinput_console(  struct arena* win, struct style* sty, struct event* ev);
-int actoroutput_console( struct arena* win, struct style* sty);
-int actorinput_overview( struct arena* win, struct style* sty, struct event* ev);
-int actoroutput_overview(struct arena* win, struct style* sty);
-int actorinput_detail(   struct arena* win, struct style* sty, struct event* ev);
-int actoroutput_detail(  struct arena* win, struct style* sty);
-int actorinput_win(      struct arena* win, struct style* sty, struct event* ev);
-int actoroutput_win(     struct arena* win, struct style* sty);
-int actorinput_2d(       struct arena* win, struct style* sty, struct event* ev);
-int actoroutput_2d(      struct arena* win, struct style* sty);
-int actorinput_cad(      struct arena* win, struct style* sty, struct event* ev);
-int actoroutput_cad(     struct arena* win, struct style* sty);
-int actorinput_3d(       struct arena* win, struct style* sty, struct event* ev);
-int actoroutput_3d(      struct arena* win, struct style* sty);
-
-
-
-
-static void* nametab[8] = {
-	"test",
-	"term",
-	"wire",
-	"node",
-	"win ",
-	" 2d ",
-	"cad ",
-	" 3d "
-};
-void tabbar_actors(struct arena* win, struct style* sty)
-{/*
-    int sel = (win->forew)&0x7;
-    if(0 == sel)actoroutput_void(win, sty);
-    else if(1 == sel)actoroutput_console(win, sty);
-    else if(2 == sel)actoroutput_overview(win, sty);
-    else if(3 == sel)actoroutput_detail(win, sty);
-    else if(4 == sel)actoroutput_win(win, sty);
-    else if(5 == sel)actoroutput_2d(win, sty);
-    else if(6 == sel)actoroutput_cad(win, sty);
-    else if(7 == sel)actoroutput_3d(win, sty);*/
-}
 
 
 
@@ -138,35 +96,44 @@ void tabbar_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-    int w,h;
-    int j,c,sel;
-    struct style tmp;
-    w = win->width;
-    h = win->height;
-    if(0 == sty)
+    int j,rgb;
+    struct relation* rel;
+    struct arena* tmp;
+    struct style* st;
+    struct actor* ac;
+    int w = win->width;
+    int h = win->height;
+	drawline_rect(win, 0xff0000, w/4, h*31/32, w*3/4, h);
+
+    rel = act->irel0;
+    if(0 == rel)return;
+
+    tmp = (void*)(rel->srcchip);
+    if(0 == tmp)return;
+
+    j = 0;
+    rel = tmp->orel0;
+    while(1)
     {
-        sty = &tmp;
-        sty->vc[0] = w/2;
-        sty->vc[1] = h*19/40;
-        sty->vc[2] = 0.0;
-        sty->vr[0] = w/2;
-        sty->vr[1] = 0.0;
-        sty->vr[2] = 0.0;
-        sty->vf[0] = 0.0;
-        sty->vf[1] = h*19/40;
-        sty->vf[2] = 0.0;
+        if(0 == rel)break;
+
+        if(_act_ == rel->dsttype)
+        {
+            drawsolid_rect(win, 0x000080, w*(j+4)/16, h*31/32, w*(j+5)/16, h);
+
+            ac = (void*)(rel->dstchip);
+            st = (void*)(rel->srcfoot);
+            if('#' == st->uc[3])rgb = 0x111111;
+            else rgb = 0xffffff;
+
+            drawstring_fit(win, rgb, w*(j+4)/16, h*31/32, w*(j+5)/16, h, (void*)(&ac->fmt), 8);
+
+            j++;
+            if(j == 8)break;
+        }
+
+        rel = samesrcnextdst(rel);
     }
-    tabbar_actors(win, sty);
-/*
-    sel = (win->forew)&0x7;
-    for(j=0;j<8;j++)
-    {
-        c = 0x404040;
-        if(j == sel)c = 0xc0c0c0;
-        drawsolid_rect(win, c, j*w/8+2, h*19/20, (j+1)*w/8-2, h);
-        drawline_rect(win, 0xffffff, j*w/8+2, h*19/20, (j+1)*w/8-2, h);
-        drawstring_fit(win, 0xffffff, j*w/8, h*19/20, (j+1)*w/8, h, nametab[j], 0);
-    }*/
 }
 static void tabbar_sread(
 	struct arena* win, struct style* sty,

@@ -4,7 +4,7 @@
 #define _step_ hex32('s','t','e','p')
 void* arenalist(void*, int);
 void* actorlist(void*, int);
-int arenaactor(struct arena* win, struct actor* act);
+int arenaactor(struct arena* root, struct arena* twig, struct actor* leaf, struct actor* temp);
 int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max);
 
 
@@ -94,7 +94,7 @@ void role_uarthelp(int argc, u8** argv)
 	if(win)relationcreate(act, 0, _act_, win, 0, _win_);
 
 	win = arenacreate(_win_, 0);
-	if(win)arenaactor(win, act);
+	if(win)arenaactor(win, 0, act, 0);
 }
 void role(u8* buf, int len)
 {

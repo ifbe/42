@@ -11,10 +11,20 @@ void corner_read_pixel(struct arena* win, struct style* sty)
 	if(w<h)c = w>>6;
 	else c = h>>6;
 
-	drawsolid_circle(win, 0x0000ff, c, h-c, c);
-	drawsolid_circle(win, 0xff0000, w-c, h-c, c);
+	x = win->input[10].x0;
+	y = win->input[10].y0;
+	m = win->input[10].xn;
+	n = win->input[10].yn;
 
-	c *= 2;
+	if((m   < c)&&(n+c > h))drawsolid_circle(win, 0x0000ff, 0, h, c*4);
+	else drawsolid_circle(win, 0x0000ff, 0, h, c);
+	if((m+c > w)&&(n+c > h))drawsolid_circle(win, 0xff0000, w, h, c*4);
+	else drawsolid_circle(win, 0xff0000, w, h, c);
+	if((m   < c)&&(n   < c))drawsolid_circle(win, 0x00ffff, 0, 0, c*4);
+	else drawsolid_circle(win, 0x00ffff, 0, 0, c);
+	if((m+c > w)&&(n   < c))drawsolid_circle(win, 0xffff00, w, 0, c*4);
+	else drawsolid_circle(win, 0xffff00, w, 0, c);
+
 	if(win->input[0].z0)
 	{
 		m = win->input[0].x0;
@@ -33,7 +43,12 @@ void corner_read_pixel(struct arena* win, struct style* sty)
 
 	if(n < h)
 	{
-
+		if(m < c)
+		{
+		}
+		else if(m+c > w)
+		{
+		}
 	}
 	else if(n+c > h)
 	{

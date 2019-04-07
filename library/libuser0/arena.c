@@ -65,28 +65,19 @@ int windowwrite(void*);
 int windowlist();
 int windowchoose();
 //
-int funcnode_create(void*, void*);
-int funcnode_delete(void*);
-//
-int htmlnode_create(void*, void*);
-int htmlnode_delete(void*);
-int htmlnode_rootread(void*,void*,void*,void*,void*,int);
-int htmlnode_rootwrite(void*,void*,void*,void*,void*,int);
-//
-int jsonnode_create(void*, void*);
-int jsonnode_delete(void*);
-int jsonnode_rootread(void*,void*,void*,void*,void*,int);
-int jsonnode_rootwrite(void*,void*,void*,void*,void*,int);
-//
-int rgbanode_create(void*, void*);
-int rgbanode_delete(void*);
-//
 void* vbonode_create(u64, void*);
 int vbonode_delete(void*);
 int vbonode_start(void*, void*, void*, void*);
 int vbonode_stop(void*, void*);
 int vbonode_sread(struct arena* win, struct style* sty);
 int vbonode_swrite(struct arena* win, struct style* sty, struct event* ev);
+//
+void* rgbanode_create(u64, void*);
+int rgbanode_delete(void*);
+int rgbanode_start(void*, void*, void*, void*);
+int rgbanode_stop(void*, void*);
+int rgbanode_sread(struct arena* win, struct style* sty);
+int rgbanode_swrite(struct arena* win, struct style* sty, struct event* ev);
 //
 int schnode_create(u64, void*);
 int schnode_delete(void*);
@@ -96,8 +87,20 @@ int schnode_stop(void*, void*);
 int pcbnode_create(void*, void*);
 int pcbnode_delete(void*);
 //
+int htmlnode_create(void*, void*);
+int htmlnode_delete(void*);
+int htmlnode_rootread(void*,void*,void*,void*,void*,int);
+int htmlnode_rootwrite(void*,void*,void*,void*,void*,int);
+int jsonnode_create(void*, void*);
+int jsonnode_delete(void*);
+int jsonnode_rootread(void*,void*,void*,void*,void*,int);
+int jsonnode_rootwrite(void*,void*,void*,void*,void*,int);
+//
 int xmlnode_create(void*, void*);
 int xmlnode_delete(void*);
+//
+int funcnode_create(void*, void*);
+int funcnode_delete(void*);
 //
 int actorevent(struct event* ev);
 int input(void*, int);
@@ -225,6 +228,7 @@ int arena_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 		case _html_:htmlnode_rootread(dc, df, sc, sf, buf, len);break;
 		case _json_:jsonnode_rootread(dc, df, sc, sf, buf, len);break;
 		case  _vbo_:vbonode_sread(win, 0);break;
+		default:rgbanode_sread(win, 0);break;
 	}
 	return 0;
 }
@@ -395,9 +399,10 @@ void* arenacreate(u64 type, void* addr)
 			win->type = _win_;
 			win->fmt = hex64('b','g','r','a','8','8','8','8');
 			windowcreate(win);
-			arenavertex(win);
 
+			arenavertex(win);
 			if(_vbo_ == win->fmt)vbonode_create(_vbo_, win);
+			else rgbanode_create(_rgba_, win);
 		}
 
 		return win;
@@ -424,6 +429,17 @@ void* arenacreate(u64 type, void* addr)
 			win->type = _node_;
 			win->fmt = _sch_;
 			schnode_create(_sch_, win);
+		}
+		return win;
+	}
+	else if(_pcb_ == type)
+	{
+		win = allocarena();
+		if(win)
+		{
+			win->type = _node_;
+			win->fmt = _pcb_;
+			pcbnode_create(win, addr);
 		}
 		return win;
 	}
@@ -459,28 +475,6 @@ void* arenacreate(u64 type, void* addr)
 			win->type = _node_;
 			win->fmt = _json_;
 			jsonnode_create(win, addr);
-		}
-		return win;
-	}
-	else if(_rgba_ == type)
-	{
-		win = allocarena();
-		if(win)
-		{
-			win->type = _node_;
-			win->fmt = _rgba_;
-			rgbanode_create(win, addr);
-		}
-		return win;
-	}
-	else if(_pcb_ == type)
-	{
-		win = allocarena();
-		if(win)
-		{
-			win->type = _node_;
-			win->fmt = _pcb_;
-			pcbnode_create(win, addr);
 		}
 		return win;
 	}
@@ -535,30 +529,10 @@ int arenaevent(struct event* e)
 	}
 
 	win = (void*)(ev.where);
-	if(win)
-	{
-		if(_vbo_ == win->fmt)vbonode_swrite(win, 0, &ev);
-	}
-/*
-	if(_win_ == what)
-	{
-		return 42;
-	}
-	else if(hex32('w','+',0,0) == what)
-	{
-		ret = arenacreate(why, where);
-		if(ret == 0)
-		{
-			say("error@w+\n");
-			return 0;
-		}
-	}
-	else if(hex32('w','-',0,0) == what)
-	{
-		ret = (void*)where;
-		arenadelete(ret);
-	}
-*/
+	if(0 == win)return 0;
+
+	if(_vbo_ == win->fmt)vbonode_swrite(win, 0, &ev);
+	else rgbanode_swrite(win, 0, &ev);
 	return 0;
 }
 void* arenacommand(int argc, char** argv)

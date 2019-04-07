@@ -1,7 +1,7 @@
 #include "libboot.h"
 void* arenalist(u8* buf, int len);
 void* actorlist(u8* buf, int len);
-int arenaactor(void*, void*);
+int arenaactor(void* root, void* twig, void* leaf, void* temp);
 //
 int ncmp(void*, void*, int);
 int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max);
@@ -28,7 +28,7 @@ void relation(u8* buf, int len)
 	{
 		win = arenalist(argv[2], 0);
 		act = actorlist(argv[3], 0);
-		arenaactor(win, act);
+		arenaactor(win, 0, act, 0);
 		return;
 	}
 

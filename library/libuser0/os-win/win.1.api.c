@@ -35,7 +35,7 @@ int windowread(struct arena* win)
 	BITMAPINFO info;
 	int w = win->width;
 	int h = win->height;
-	actorread_all(win);
+	arena_rootread(win, 0, 0, 0, 0, 0);
 
 	//draw frame
 	info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
@@ -223,7 +223,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = val;
 			ev.what = 0x64626b;
 			ev.where = addr;
-			actorevent(&ev);
+			arenaevent(&ev);
 			return 0;
 		}
 
@@ -236,7 +236,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				ev.why = 0x1b;
 				ev.what = 0x64626b;
 				ev.where = addr;
-				actorevent(&ev);
+				arenaevent(&ev);
 			}
 			else
 			{
@@ -244,7 +244,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				ev.why = wparam;
 				ev.what = 0x72616863;
 				ev.where = addr;
-				actorevent(&ev);
+				arenaevent(&ev);
 			}
 			return 0;
 		}
@@ -311,7 +311,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2b70;
 			ev.where = addr;
-			actorevent(&ev);
+			arenaevent(&ev);
 			return 0;
 		}
 		case WM_POINTERUP:
@@ -338,7 +338,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2d70;
 			ev.where = addr;
-			actorevent(&ev);
+			arenaevent(&ev);
 			return 0;
 		}
 		case WM_POINTERUPDATE:
@@ -361,7 +361,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x4070;
 			ev.where = addr;
-			actorevent(&ev);
+			arenaevent(&ev);
 			return 0;
 		}
 
@@ -381,7 +381,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2b70;
 			ev.where = addr;
-			actorevent(&ev);
+			arenaevent(&ev);
 			return 0;
 		}
 
@@ -409,7 +409,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x4070;
 			ev.where = addr;
-			actorevent(&ev);
+			arenaevent(&ev);
 			return 0;
 		}
 
@@ -426,7 +426,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2d70;
 			ev.where = addr;
-			actorevent(&ev);
+			arenaevent(&ev);
 			return 0;
 		}
 
@@ -443,7 +443,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2d70;
 			ev.where = addr;
-			actorevent(&ev);
+			arenaevent(&ev);
 			return 0;
 		}
 
@@ -468,7 +468,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2b70;
 			ev.where = addr;
-			actorevent(&ev);
+			arenaevent(&ev);
 			return 0;
 		}
 
@@ -493,7 +493,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2b70;
 			ev.where = addr;
-			actorevent(&ev);
+			arenaevent(&ev);
 			return 0;
 		}
 
@@ -520,7 +520,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = (u64)buf;
 			ev.what = _drag_;
 			ev.where = addr;
-			actorevent(&ev);
+			arenaevent(&ev);
 			return 0;
 		}
 
