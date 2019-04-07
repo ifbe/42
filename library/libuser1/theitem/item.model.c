@@ -8,14 +8,16 @@ void actorcreatefromfile(struct actor* act, char* name);
 
 char* model_glsl2d_v =
 GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec3 normal;\n"
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 n;\n"
+"out mediump vec3 vertex;\n"
+"out mediump vec3 normal;\n"
 "uniform mat4 objmat;\n"
-"out mediump vec3 vcolor;\n"
 "void main()\n"
 "{\n"
-	"vcolor = normal;\n"
-	"gl_Position = objmat * vec4(vertex, 1.0);\n"
+	"normal = n;\n"
+	"vertex = vec3(objmat * vec4(v, 1.0));\n"
+	"gl_Position = objmat * vec4(v, 1.0);\n"
 "}\n";
 
 char* model_glsl_v =
@@ -28,13 +30,13 @@ GLSL_VERSION
 "uniform mat4 cammvp;\n"
 "void main()\n"
 "{\n"
-	"vertex = v;\n"
 	"normal = n;\n"
-	"gl_Position = cammvp * objmat * vec4(vertex, 1.0);\n"
+	"vertex = vec3(objmat * vec4(v, 1.0));\n"
+	"gl_Position = cammvp * objmat * vec4(v, 1.0);\n"
 "}\n";
 
 char* model_glsl_f =
-	GLSL_VERSION
+GLSL_VERSION
 "in mediump vec3 vertex;\n"
 "in mediump vec3 normal;\n"
 "out mediump vec4 FragColor;\n"
