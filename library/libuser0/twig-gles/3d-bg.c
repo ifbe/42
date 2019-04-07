@@ -14,7 +14,7 @@ static u64 want[COUNT] = {
 };
 static char* args[COUNT] = {
 	"datafile/jpg/skysphere.jpg",
-	0
+	"datafile/jpg/terrain.jpg"
 };
 
 

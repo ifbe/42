@@ -283,10 +283,11 @@ static void terrain_delete(struct actor* act)
 	memorydelete(act->buf);
 	act->buf = 0;
 }
-static void terrain_create(struct actor* act)
+static void terrain_create(struct actor* act, void* str)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "datafile/jpg/terrain.jpg");
+	if(0 == str)str = "datafile/jpg/terrain.jpg";
+	actorcreatefromfile(act, str);
 }
 
 

@@ -1,31 +1,55 @@
 #include "libuser.h"
-
+#define COUNT (0x100000/36)
 
 
 
 char* particle_glsl_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"uniform mat4 cammvp;\n"
-	"out mediump vec2 uvw;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 s;\n"
+"layout(location = 2)in mediump vec3 c;\n"
+"out mediump vec3 rgb;\n"
+"uniform mat4 objmat;\n"
+"uniform mat4 cammvp;\n"
+"void main(){\n"
+	"rgb = c;\n"
+	"gl_Position = cammvp * objmat * vec4(v, 1.0);\n"
+"}\n";
+
+char* particle_glsl_g =
+GLSL_VERSION
+"layout(points) in;\n"
+//"layout(points, max_vertices = 6) out;\n"
+//"layout(line_strip, max_vertices = 6) out;\n"
+"layout(triangle_strip, max_vertices = 6) out;\n"
+"in mediump vec3 rgb[];\n"
+"out mediump vec3 colour;\n"
+"void build_house(vec4 position){\n"    
+	"gl_Position = position + vec4(-5.0, 0.0, 0.0, 0.0);\n"
+	"colour = rgb[0];\n"
+	"EmitVertex();\n"
+	"gl_Position = position + vec4( 0.0, -5.0, 0.0, 0.0);\n"
+	"colour = rgb[0];\n"
+	"EmitVertex();\n"
+	"gl_Position = position + vec4( 0.0,  5.0, 0.0, 0.0);\n"
+	"colour = rgb[0];\n"
+	"EmitVertex();\n"
+	"gl_Position = position + vec4( 5.0,  0.0, 0.0, 0.0);\n"
+	"colour = rgb[0];\n"
+	"EmitVertex();\n"
+"}\n"
+"void main(){\n"
+	"build_house(gl_in[0].gl_Position);\n"
+	"EndPrimitive();\n"
+"}\n";
+
 char* particle_glsl_f =
-	GLSL_VERSION
-	"uniform sampler2D tex0;\n"
-	"in mediump vec2 uvw;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"mediump float k = uvw.x*uvw.x+uvw.y*uvw.y;\n"
-		"FragColor = vec4(vec3(1.0,1.0,1.0)*k, 1.0);\n"
-		//"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
-		//"FragColor = vec4(uvw, 1.0, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"in mediump vec3 colour;\n"
+"out mediump vec4 FragColor;\n"
+"void main(){\n"
+	"FragColor = vec4(colour, 1.0);\n"
+"}\n";
 
 
 
@@ -50,17 +74,34 @@ static void particle_read_vbo3d(
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-
-	struct datapair* mod = win->mod;
-	struct glsrc* src = &mod[point3d].src;
-	int vlen = src->vbuf_h;
-
 	float* sbuf = act->buf;
-	float* dbuf = (src->vbuf) + (24*vlen);
-	src->vbuf_h += 30000;
+	struct glsrc* src = (void*)(pin->foot[0]);
+	float* mat = (void*)src->arg_data[0];
+
+	mat[ 0] = sty->vr[0];
+	mat[ 1] = sty->vr[1];
+	mat[ 2] = sty->vr[2];
+	mat[ 3] = 0.0;
+	mat[ 4] = sty->vf[0];
+	mat[ 5] = sty->vf[1];
+	mat[ 6] = sty->vf[2];
+	mat[ 7] = 0.0;
+	mat[ 8] = sty->vu[0];
+	mat[ 9] = sty->vu[1];
+	mat[10] = sty->vu[2];
+	mat[11] = 0.0;
+	mat[12] = sty->vc[0];
+	mat[13] = sty->vc[1];
+	mat[14] = sty->vc[2];
+	mat[15] = 1.0;
+
+//for(j=0;j<16;j++)mat[j] = 0.0;
+//mat[0] = mat[5] = mat[10] = mat[15] = 1000.0;
+//mat[15] = 1.0;
+	src->arg_enq[0] += 1;
 
 	carveline_prism4(win, 0xffffff, vc, vr, vf, vu);
-	for(j=0;j<30000;j++)
+	for(j=0;j<COUNT;j++)
 	{
 		x = sbuf[9*j + 0] + sbuf[9*j + 3];
 		if((x < -1.0) | (x > 1.0))sbuf[9*j + 3] = - sbuf[9*j + 3];
@@ -73,18 +114,8 @@ static void particle_read_vbo3d(
 		z = sbuf[9*j + 2] + sbuf[9*j + 5];
 		if((z < -1.0) | (z > 1.0))sbuf[9*j + 5] = - sbuf[9*j + 5];
 		sbuf[9*j + 2] += sbuf[9*j + 5];
-
-		x = sbuf[9*j + 0];
-		y = sbuf[9*j + 1];
-		z = sbuf[9*j + 2];
-		dbuf[6*j + 0] = vc[0] + x*vr[0] + y*vf[0] + z*vu[0];
-		dbuf[6*j + 1] = vc[1] + x*vr[1] + y*vf[1] + z*vu[1];
-		dbuf[6*j + 2] = vc[2] + x*vr[2] + y*vf[2] + z*vu[2];
-
-		dbuf[6*j + 3] = sbuf[9*j + 6];
-		dbuf[6*j + 4] = sbuf[9*j + 7];
-		dbuf[6*j + 5] = sbuf[9*j + 8];
 	}
+	src->vbuf_enq += 1;
 }
 static void particle_read_json(
 	struct arena* win, struct style* sty,
@@ -151,9 +182,60 @@ static void particle_start(
 	struct arena* twig, struct style* tf,
     struct arena* root, struct style* rf)
 {
+	void* vbuf;
+	void* ibuf;
+	struct datapair* pair;
+	struct glsrc* src;
+	struct gldst* dst;
+	if(0 == lf)return;
+
+	pair = alloc_winobj(root);
+	src = &pair->src;
+	dst = &pair->dst;
+	lf->foot[0] = (u64)src;
+	tf->foot[0] = (u64)dst;
+
+	//shader
+	src->vs = particle_glsl_v;
+	src->gs = particle_glsl_g;
+	src->fs = particle_glsl_f;
+
+	//argument
+	src->arg[0] = "objmat";
+	src->arg_data[0] = (u64)memorycreate(4*4*4);
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf = leaf->buf;
+	src->vbuf_w = 4*9;
+	src->vbuf_h = COUNT;
+
+	src->geometry = 1;
+	src->method = 'v';
+
+	//send!
+	src->shader_enq[0] = 42;
+	src->arg_enq[0] = 0;
+	src->vbuf_enq = 42;
+}
+static void particle_delete(struct actor* act)
+{
+	if(0 == act)return;
+	if(act->buf)
+	{
+		memorydelete(act->buf);
+		act->buf = 0;
+	}
+}
+static void particle_create(struct actor* act)
+{
 	int j;
-	float* vbuf = leaf->buf;
-	for(j=0;j<30000;j++)
+	if(0 == act)return;
+
+	act->buf = memorycreate(4*9 * COUNT);
+	float* vbuf = act->buf;
+
+	for(j=0;j<COUNT;j++)
 	{
 		//vertex
 		vbuf[9*j + 0] = (getrandom()%8192)/4096.0 - 1.0;
@@ -170,20 +252,6 @@ static void particle_start(
 		vbuf[9*j + 7] = (getrandom()%8192)/8192.0;
 		vbuf[9*j + 8] = (getrandom()%8192)/8192.0;
 	}
-}
-static void particle_delete(struct actor* act)
-{
-	if(0 == act)return;
-	if(act->buf)
-	{
-		memorydelete(act->buf);
-		act->buf = 0;
-	}
-}
-static void particle_create(struct actor* act)
-{
-	if(0 == act)return;
-	act->buf = memorycreate(4*9 * 30000);
 }
 
 
