@@ -287,7 +287,6 @@ static void the2048_sread(
 	struct actor* act, struct pinid* pin)
 {
 	u64 fmt = win->fmt;
-	say("@2048\n");
 
 	if(fmt == _cli_)the2048_read_cli(win, sty, act, pin);
 	else if(fmt == _tui_)the2048_read_tui(win, sty, act, pin);

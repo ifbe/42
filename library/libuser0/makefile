@@ -1,8 +1,8 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC -I.
-SRC = arena.c \
-root-hw/1602.c \
-root-hw/12864.c \
+SRC = \
+root-hw/hw.1602.c \
+root-hw/hw.12864.c \
 root-robot/3d-printer.c \
 root-robot/3d-router.c \
 root-robot/car-bldc.c \
@@ -15,26 +15,35 @@ root-robot/robot-arm.c \
 root-robot/robot-dog.c \
 root-robot/robot-man.c \
 root-robot/robot-snake.c \
-twig-cli/out.cli.c \
-twig-func/out.func.c \
-twig-html/out.html.c \
-twig-json/out.json.c \
-twig-pcb/out.pcb.c \
-twig-rgba/out.rgba.c \
-twig-tui/out.tui.c \
-twig-xml/out.xml.c \
+twig-cli/cli.base.c \
+twig-cli/cli.tool.c \
+twig-tui/tui.base.c \
+twig-tui/tui.tool.c \
+twig-func/func.base.c \
+twig-func/func.tool.c \
+twig-html/html.base.c \
+twig-html/html.tool.c \
+twig-json/json.base.c \
+twig-json/json.tool.c \
+twig-xml/xml.base.c \
+twig-xml/xml.tool.c \
+twig-sch/sch.base.c \
+twig-sch/sch.tool.c \
 twig-sch/sch.bus.c \
 twig-sch/sch.pin.c \
-twig-sch/out.sch.c \
-twig-gles/3d-bg.c \
-twig-gles/3d-fg.c \
-twig-gles/3d-ev.c \
-twig-gles/3d-ui.c \
-twig-gles/2d-bg.c \
-twig-gles/2d-fg.c \
-twig-gles/2d-ev.c \
-twig-gles/2d-ui.c \
-twig-gles/out.vbo.c
+twig-vbo/vbo.base.c \
+twig-vbo/vbo.tool.c \
+twig-vbo/3d-bg.c \
+twig-vbo/3d-fg.c \
+twig-vbo/3d-ev.c \
+twig-vbo/3d-ui.c \
+twig-rgba/rgba.base.c \
+twig-rgba/rgba.tool.c \
+twig-rgba/2d-bg.c \
+twig-rgba/2d-fg.c \
+twig-rgba/2d-ev.c \
+twig-rgba/2d-ui.c \
+arena.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 target: $(OBJ)
@@ -173,7 +182,7 @@ linuxsdl:target
 	$(compiler) $(cflag) os-linux/linux.0.tray.c
 	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
 	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
-	$(compiler) $(cflag) root-lib/sdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
+	$(compiler) $(cflag) root-sdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
 #########################################################
 
 
@@ -252,7 +261,7 @@ macsdl:target
 	$(compiler) $(cflag) os-mac/mac.0.tray.c
 	$(compiler) $(cflag) os-mac/mac.2.mic.c
 	$(compiler) $(cflag) os-mac/mac.3.cam.c
-	$(compiler) $(cflag) root-lib/sdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
+	$(compiler) $(cflag) root-sdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
 #########################################################
 
 

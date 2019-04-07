@@ -160,8 +160,8 @@ void overview_read_pixel(
 		if(0 == c)break;
 
 		if(j == cursor)c = 0xffff00ff;
-		else if((c >= 'a')&&(c <= 'z'))c = 0x40808080;
-		else c = 0x80ffffff;
+		else if((c >= 'a')&&(c <= 'z'))c = 0xc0808080;
+		else c = 0xc0ffffff;
 
 		x = j%16;
 		y = j/16;

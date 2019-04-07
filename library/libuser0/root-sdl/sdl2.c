@@ -28,7 +28,7 @@ void windowread(struct arena* w)
 	SDL_Keysym key;
 	u64 why;
 	u64 where = (u64)w;
-	actorread_all(w);
+	arena_rootread(w, 0, 0, 0, 0, 0);
 
 	SDL_UpdateTexture(w->texture, NULL, w->buf, (w->width)*4);
 	SDL_RenderClear(w->er);
@@ -175,7 +175,7 @@ void windowcreate(struct arena* w)
 	w->fbwidth= w->fbstride = 512;
 	w->fbheight = 512;
 
-	w->buf = malloc(2048*1024*4);
+	w->buf = malloc(2048*2048*4);
 
 
 
