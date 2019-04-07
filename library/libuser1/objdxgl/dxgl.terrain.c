@@ -12,11 +12,12 @@ GLSL_VERSION
 "layout(location = 2)in mediump vec3 t;\n"
 "out mediump vec3 uvw;\n"
 "out mediump vec3 xyz;\n"
+"uniform mat4 objmat;\n"
 "uniform mat4 cammvp;\n"
 "void main(){\n"
 	"uvw = t;\n"
-	"xyz = v;\n"
-	"gl_Position = cammvp * vec4(v, 1.0);\n"
+	"xyz = vec3(objmat * vec4(v, 1.0));\n"
+	"gl_Position = cammvp * objmat * vec4(v, 1.0);\n"
 "}\n";
 
 char* terrain_glsl_g =
@@ -59,12 +60,14 @@ GLSL_VERSION
 "out mediump vec4 FragColor;\n"
 "uniform sampler2D tex0;\n"
 "uniform mediump vec3 camxyz;\n"
-"mediump vec3 sunxyz = vec3(0.0, 0.0, 1000.0);\n"
+"mediump vec3 dirsun0 = vec3(-1.0, 0.0, 1.0);\n"
+"mediump vec3 dirsun1 = vec3(0.0, -1.0, 1.0);\n"
+"mediump vec3 sunxyz = vec3(1000000.0, 1000000.0, 1000000.0);\n"
 "mediump vec3 lightcolor = vec3(1.0, 1.0, 1.0);\n"
 "mediump vec3 kambi = vec3(0.231250, 0.231250, 0.231250);\n"
 "mediump vec3 kdiff = vec3(0.277500, 0.277500, 0.277500);\n"
 "mediump vec3 kspec = vec3(0.773911, 0.773911, 0.773911);\n"
-"vec3 phong(){\n"
+"vec3 blinnphong(){\n"
 	"mediump vec3 N = normalize(normal);\n"
 	"mediump vec3 L = normalize(sunxyz - vertex);\n"
 	"mediump float SN = max(dot(N, L), 0.0);\n"
@@ -75,32 +78,65 @@ GLSL_VERSION
 	"mediump vec3 E = normalize(camxyz - vertex);\n"
 	"mediump vec3 H = normalize(E + L);\n"
 	"mediump float NH = max(dot(N, H), 0.0);\n"
-	"ret += kspec*pow(NH, 89.6);\n"
+	"ret += kspec*pow(NH, 25.0);\n"
 
-	"return lightcolor * ret;\n"
+	"return 0.3*lightcolor * ret;\n"
+"}\n"
+"vec3 sun0(){\n"
+	"mediump vec3 N = normalize(normal);\n"
+	"mediump vec3 L = normalize(dirsun0);\n"
+	"mediump float SN = max(dot(N, L), 0.0);\n"
+	"mediump vec3 ret = kambi + kdiff*SN;\n"
+	"if(SN<0.0)return lightcolor*ret;\n"
+
+	"mediump vec3 E = normalize(camxyz - vertex);\n"
+	"mediump vec3 H = normalize(E + L);\n"
+	"mediump float NH = max(dot(N, H), 0.0);\n"
+	"ret += kspec*pow(NH, 25.0);\n"
+
+	"return 0.3*lightcolor * ret;\n"
+"}\n"
+"vec3 sun1(){\n"
+	"mediump vec3 N = normalize(normal);\n"
+	"mediump vec3 L = normalize(dirsun1);\n"
+	"mediump float SN = max(dot(N, L), 0.0);\n"
+	"mediump vec3 ret = kambi + kdiff*SN;\n"
+	"if(SN<0.0)return lightcolor*ret;\n"
+
+	"mediump vec3 E = normalize(camxyz - vertex);\n"
+	"mediump vec3 H = normalize(E + L);\n"
+	"mediump float NH = max(dot(N, H), 0.0);\n"
+	"ret += kspec*pow(NH, 25.0);\n"
+
+	"return 0.3*lightcolor * ret;\n"
 "}\n"
 "void main(){\n"
 	//"FragColor = vec4(normal, 1.0);\n"
-	"FragColor = vec4(phong() * texture(tex0, texuvw.xy).bgr, 1.0);\n"
+	"FragColor = vec4(blinnphong() + sun0() + sun1(), 1.0);\n"
 "}\n";
 
 
 
 
-void terrain_generate(float (*vbuf)[9], u16* ibuf, float w, float h)
+void terrain_generate(float (*vbuf)[9], u16* ibuf, struct actor* act)
 {
-	int x,y,j;
-	w /= 100.0;
-	h /= 100.0;
+	int x,y,x1,y1,j;
+	int w = act->width;
+	int h = act->height;
+	u8* rgba = act->buf;
 
 	for(y=0;y<255;y++)
 	{
 		for(x=0;x<255;x++)
 		{
 			//vertex
-			vbuf[y*256+x][0] = x*w/127.0 - w;
-			vbuf[y*256+x][1] = y*h/127.0 - h;
-			vbuf[y*256+x][2] = ((getrandom()%16384) - 8192.0)*0.025;
+			vbuf[y*256+x][0] = x/127.0 - 1.0;
+			vbuf[y*256+x][1] = y/127.0 - 1.0;
+			x1 = x*w/256;
+			y1 = (255-y)*h/256;
+			//x1 = x+256;
+			//y1 = y+512;
+			vbuf[y*256+x][2] = rgba[(w*y1 + x1) * 4] / 256.0;
 //say("%f\n",vbuf[y*256+x][2]);
 			//uv
 			vbuf[y*256+x][6] = x*1.0;
@@ -249,16 +285,37 @@ static void terrain_start(
 	src->gs = terrain_glsl_g;
 	src->fs = terrain_glsl_f;
 
+	//argument
+	float* mat = memorycreate(4*4*4);
+	mat[ 0] = 200.0*1000.0;
+	mat[ 1] = 0.0;
+	mat[ 2] = 0.0;
+	mat[ 3] = 0.0;
+	mat[ 4] = 0.0;
+	mat[ 5] = 200.0*1000.0;
+	mat[ 6] = 0.0;
+	mat[ 7] = 0.0;
+	mat[ 8] = 0.0;
+	mat[ 9] = 0.0;
+	mat[10] = 8000.0;
+	mat[11] = 0.0;
+	mat[12] = tf->vc[0];
+	mat[13] = tf->vc[1];
+	mat[14] = tf->vc[2];
+	mat[15] = 1.0;
+	src->arg_data[0] = (u64)mat;
+	src->arg[0] = "objmat";
+/*
 	//texture
 	src->tex[0] = leaf->buf;
 	src->tex_fmt[0] = hex32('r','g','b','a');
 	src->tex_w[0] = leaf->width;
 	src->tex_h[0] = leaf->height;
-
+*/
 	//vertex
 	vbuf = memorycreate(4*9 * 256*255);
 	ibuf = memorycreate(2*3 * 256*256*2);
-	terrain_generate(vbuf, ibuf, tf->vr[0], tf->vf[1]);
+	terrain_generate(vbuf, ibuf, leaf);
 	src->method = 'i';
 
 	src->vbuf_fmt = vbuffmt_333;
@@ -272,22 +329,46 @@ static void terrain_start(
 
 	//send!
 	src->shader_enq[0] = 42;
-	src->arg_enq[0] = 0;
-	src->tex_enq[0] = 42;
+	src->arg_enq[0] = 42;
+	//src->tex_enq[0] = 42;
 	src->vbuf_enq = 42;
 	src->ibuf_enq = 42;
 }
 static void terrain_delete(struct actor* act)
 {
 	if(0 == act)return;
-	memorydelete(act->buf);
-	act->buf = 0;
+	if(0 == act->buf){
+		memorydelete(act->buf);
+		act->buf = 0;
+	}
 }
 static void terrain_create(struct actor* act, void* str)
 {
+	int x,y,c;
+	u32* rgba;
 	if(0 == act)return;
+
+	//max=16MB
+	if(0 == act->buf)act->buf = memorycreate(2048*2048*4);
+
+	//try file
 	if(0 == str)str = "datafile/jpg/terrain.jpg";
 	actorcreatefromfile(act, str);
+
+	//gen terr
+	rgba = act->buf;
+	if((0 == act->width) | (0 == act->height))
+	{
+		act->width = 2048;
+		act->height = 2048;
+		for(y=0;y<2048;y++)
+		{
+			for(x=0;x<2048;x++)
+			{
+				rgba[y*2048 + x] = getrandom();
+			}
+		}
+	}
 }
 
 

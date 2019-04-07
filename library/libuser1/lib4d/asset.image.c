@@ -82,15 +82,19 @@ void actorcreatefrompng(struct actor* act, u8* buf, int len)
 	dst = buf;
 	for(j=0;j<w*h;j++)
 	{
+		if(1 == d)
+		{
+			dst[j*4 + 0] = dst[j*4 + 1] = dst[j*4 + 2] = src[j];
+			dst[j*4 + 3] = 255;
+			continue;
+		}
 		if(d >= 3)
 		{
 			dst[j*4 + 0] = src[j*d + 2];
 			dst[j*4 + 1] = src[j*d + 1];
 			dst[j*4 + 2] = src[j*d + 0];
-		}
-		if(d == 4)
-		{
-			dst[j*4 + 3] = src[j*d + 3];
+			if(3 == d)dst[j*4 + 3] = 255;
+			else dst[j*4 + 3] = src[j*d + 3];
 		}
 	}
 

@@ -68,9 +68,9 @@ void defaultstyle_3d(struct style* sty, struct style* tar)
 	sty->vu[1] = tar->vu[1];
 	sty->vu[2] = tar->vu[2];
 
-	sty->vc[0] = tar->vc[0] + tar->vr[0] + tar->vf[0];
-	sty->vc[1] = tar->vc[1] + tar->vr[1] + tar->vf[1];
-	sty->vc[2] = tar->vc[2] + tar->vr[2] + tar->vf[2];
+	sty->vc[0] = tar->vc[0];
+	sty->vc[1] = tar->vc[1];
+	sty->vc[2] = tar->vc[2];
 }
 int arenaactor(struct arena* ccc, struct actor* act)
 {

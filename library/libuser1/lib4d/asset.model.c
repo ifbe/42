@@ -44,7 +44,7 @@ void actorcreatefromstl(struct actor* act, u8* buf, int len)
 
 	ret = *(u32*)(buf+80);
 	say("len=%x, count=%x\n", len, ret);
-	ret = ret%(0x800000/72);
+	ret = ret%(0x1000000/72);
 
 	for(j=0;j<250;j++)tmp[j] = buf[84+j];
 	for(j=ret*3-1;j>=0;j--)

@@ -71,8 +71,10 @@ void actorcreatefromfile(struct actor* act, char* name)
 
 	//mysnprintf(str, 256, "%s/%s", "datafile", name);
 
-	buf = memorycreate(0x800000);
-	len = openreadclose(name, 0, buf, 0x800000);
+	buf = act->buf;
+	if(0 == buf)buf = memorycreate(0x1000000);
+
+	len = openreadclose(name, 0, buf, 0x1000000);
 	if(len <= 0)
 	{
 		say("len=%d, %s\n", len, name);
