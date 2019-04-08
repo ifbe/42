@@ -344,14 +344,16 @@ static void callback_joystick(int id, int ev)
 
 
 
-void windowopen(struct arena* r, struct arena* w)
+void windowopen_root(struct arena* w, struct arena* r)
 {
 	int x,y,j;
-	GLFWwindow* rw = 0;
+	GLFWwindow* parent = 0;
+	if(r)parent = r->win;
 
 	//1.glfw
-	if(r)rw = r->win;
-	GLFWwindow* fw = glfwCreateWindow(512, 512, "42", NULL, rw);
+	x = w->width;
+	y = w->height;
+	GLFWwindow* fw = glfwCreateWindow(x, y, "42", NULL, parent);
 	if(0 == fw)
 	{
 		printf("error@glfwCreateWindow\n");
@@ -374,58 +376,97 @@ void windowopen(struct arena* r, struct arena* w)
 	glfwSetMouseButtonCallback(fw, callback_mouse);
 	glfwSetFramebufferSizeCallback(fw, callback_reshape);
 
-	if(0 == r)
+	//2.glew
+	glfwMakeContextCurrent(fw);
+	glewExperimental = 1;
+	if(glewInit() != GLEW_OK)
 	{
-		//2.glew
-		glfwMakeContextCurrent(fw);
-		glewExperimental = 1;
-		if(glewInit() != GLEW_OK)
-		{
-			printf("error@glewInit\n");
-			return;
-		}
+		printf("error@glewInit\n");
+		return;
+	}
 
-		//3.init
-		initobject(w);
-		initshader(w);
-		inittexture(w);
-		initvertex(w);
-	}
-	else	//_coop_
+	//3.init
+	initobject(w);
+	initshader(w);
+	inittexture(w);
+	initvertex(w);
+}
+void windowopen_coop(struct arena* w, struct arena* r)
+{
+	int x,y,j;
+	GLFWwindow* parent = 0;
+	if(r)parent = r->win;
+
+	//1.glfw
+	x = w->width;
+	y = w->height;
+	GLFWwindow* fw = glfwCreateWindow(x, y, "coop", NULL, parent);
+	if(0 == fw)
 	{
-		w->map = malloc(0x100000);
-		memset(w->map, 0, 0x100000);
+		printf("error@glfwCreateWindow\n");
+		return;
 	}
+
+	//2.setup
+	glfwSetWindowUserPointer(fw, w);
+	w->win = fw;
+	w->map = 0;
+	glfwGetFramebufferSize(fw, &x, &y);
+	w->fbwidth = w->fbstride = x;
+	w->fbheight = y;
+
+	//3.callback
+	glfwSetDropCallback(fw, callback_drop);
+	glfwSetKeyCallback(fw, callback_keyboard);
+	glfwSetScrollCallback(fw, callback_scroll);
+	glfwSetCursorPosCallback(fw, callback_move);
+	glfwSetMouseButtonCallback(fw, callback_mouse);
+	glfwSetFramebufferSizeCallback(fw, callback_reshape);
+
+	//vao mapping
+	w->map = malloc(0x100000);
+	memset(w->map, 0, 0x100000);
 }
 
 
 
 
-void windowread(struct arena* w)
+void windowread(struct arena* win)
 {
 	GLFWwindow* fw;
+	//say("%.8s\n", &w->fmt);
 
 	//
-	if(_fbo_ == w->fmt)
+	if(_fbo_ == win->fmt)
 	{
 		//say("@windowread fbo\n");
-		callback_display(w, 0);
+		callback_display(win, 0);
 	}
-	else
+	else if(_coop_ == win->fmt)
 	{
-		arena_rootread(w, 0, 0, 0, 0, 0);
-
-		fw = w->win;
+		fw = win->win;
 		glfwMakeContextCurrent(fw);
-		callback_update(w);
-		callback_display(w, 0);
+		callback_display(win, 0);
 		glfwSwapBuffers(fw);
 
 		//cleanup events
 		if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
 		glfwPollEvents();
 	}
+	else
+	{
+		arena_rootread(win, 0, 0, 0, 0, 0);
 
+		fw = win->win;
+		glfwMakeContextCurrent(fw);
+		callback_update(win);
+		callback_display(win, 0);
+		glfwSwapBuffers(fw);
+
+		//cleanup events
+		if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
+		glfwPollEvents();
+	}
 }
 void windowwrite(struct arena* w)
 {
@@ -442,32 +483,49 @@ void windowstop(struct arena* w)
 void windowstart(struct arena* w)
 {
 }
-void windowdelete(struct arena* w)
+void windowdelete(struct arena* win)
 {
-	if(_fbo_ == w->fmt)
+	if(_fbo_ == win->fmt)
 	{
-		fbodelete(w);
+		fbodelete(win);
+	}
+	else if(_coop_ == win->fmt)
+	{
+		glfwDestroyWindow(win->win);
 	}
 	else
 	{
-		glfwDestroyWindow(w->win);
+		glfwDestroyWindow(win->win);
 	}
 }
-void windowcreate(struct arena* w)
+void windowcreate(struct arena* win)
 {
-	if(_fbo_ == w->fmt)
+	if(_fbo_ == win->fmt)
 	{
-		fbocreate(w, 0);
+		win->fbwidth = win->width = 1024;
+		win->fbheight = win->height = 1024;
+		win->fbdepth = win->depth = 1024;
+		win->fbstride = win->stride = 1024;
+		fbocreate(win, 0);
+		win->fmt = _fbo_;
+	}
+	else if(_coop_ == win->fmt)
+	{
+		win->width = 512;
+		win->height = 512;
+		win->depth = 512;
+		win->stride = 512;
+		windowopen_coop(win, 0);
+		win->fmt = _coop_;
 	}
 	else
 	{
-		w->width = 512;
-		w->height = 512;
-		w->depth = 512;
-		w->stride = 512;
-
-		w->fmt = _vbo_;
-		if(_win_ == w->type)windowopen(0, w);
+		win->width = 512;
+		win->height = 512;
+		win->depth = 512;
+		win->stride = 512;
+		windowopen_root(win, 0);
+		win->fmt = _vbo_;
 	}
 }
 

@@ -407,6 +407,18 @@ void* arenacreate(u64 type, void* addr)
 
 		return win;
 	}
+	else if(_coop_ == type)
+	{
+		win = allocarena();
+		if(win)
+		{
+			win->type = _win_;
+			win->fmt = _coop_;
+			windowcreate(win);
+			arenavertex(win);
+		}
+		return win;
+	}
 	else if(_fbo_ == type)
 	{
 		win = allocarena();

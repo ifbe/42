@@ -92,345 +92,61 @@ void uploadvertex(struct gldst* dst, struct glsrc* src)
 }
 void initvertex(struct arena* win)
 {
-	struct datapair* mod;
-	struct glsrc* src;
-	mod = win->mod;
+	struct datapair* mod = win->mod;
 
 
 //--------------------font3d-------------------
 	//[0000,3fff]
-	src = &mod[font3d0].src;
-
-	src->vbuf = malloc(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = malloc(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-	uploadvertex(&mod[font3d0].dst, src);
-
+	uploadvertex(&mod[font3d0].dst, &mod[font3d0].src);
 
 	//[4000,7fff]
-	src = &mod[font3d1].src;
-
-	src->vbuf = malloc(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = malloc(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-	uploadvertex(&mod[font3d1].dst, src);
-
+	uploadvertex(&mod[font3d1].dst, &mod[font3d1].src);
 
 	//[8000,bfff]
-	src = &mod[font3d2].src;
-
-	src->vbuf = malloc(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = malloc(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-	uploadvertex(&mod[font3d2].dst, src);
-
+	uploadvertex(&mod[font3d2].dst, &mod[font3d2].src);
 
 	//[c000,ffff]
-	src = &mod[font3d3].src;
-
-	src->vbuf = malloc(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = malloc(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-	uploadvertex(&mod[font3d3].dst, src);
+	uploadvertex(&mod[font3d3].dst, &mod[font3d3].src);
 
 
 //--------------------font2d-------------------
 	//[0000,3fff]
-	src = &mod[font2d0].src;
-
-	src->vbuf = malloc(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = malloc(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-	uploadvertex(&mod[font2d0].dst, src);
-
+	uploadvertex(&mod[font2d0].dst, &mod[font2d0].src);
 
 	//[4000,7fff]
-	src = &mod[font2d1].src;
-
-	src->vbuf = malloc(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = malloc(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-	uploadvertex(&mod[font2d1].dst, src);
-
+	uploadvertex(&mod[font2d1].dst, &mod[font2d1].src);
 
 	//[8000,bfff]
-	src = &mod[font2d2].src;
-
-	src->vbuf = malloc(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = malloc(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-	uploadvertex(&mod[font2d2].dst, src);
-
+	uploadvertex(&mod[font2d2].dst, &mod[font2d2].src);
 
 	//[c000,ffff]
-	src = &mod[font2d3].src;
-
-	src->vbuf = malloc(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = malloc(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-	uploadvertex(&mod[font2d3].dst, src);
+	uploadvertex(&mod[font2d3].dst, &mod[font2d3].src);
 
 
 //--------------------3d-------------------
 	//drawarray.point3d
-	src = &mod[point3d].src;
-
-	src->vbuf = malloc(0x100000);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*3*2;
-	src->vbuf_h = 0x100000/24;
-
-	src->method = 'v';
-	src->geometry = 1;
-
-	src->vbuf_enq = 1;
-	uploadvertex(&mod[point3d].dst, src);
-
+	uploadvertex(&mod[point3d].dst, &mod[point3d].src);
 
 	//drawelement.line3d
-	src = &mod[line3d].src;
-
-	src->vbuf = malloc(0x100000);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*3*2;
-	src->vbuf_h = 0x100000/24;
-
-	src->ibuf = malloc(0x100000);
-	src->ibuf_fmt = 0x22;
-	src->ibuf_w = 2*2;
-	src->ibuf_h = 0x100000/4;
-
-	src->method = 'i';
-	src->geometry = 2;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-	uploadvertex(&mod[line3d].dst, src);
-
+	uploadvertex(&mod[line3d].dst, &mod[line3d].src);
 
 	//drawelement.trigon3d
-	src = &mod[trigon3d].src;
-
-	src->vbuf = malloc(0x1000000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x100000/36;
-
-	src->ibuf = malloc(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-	uploadvertex(&mod[trigon3d].dst, src);
-
+	uploadvertex(&mod[trigon3d].dst, &mod[trigon3d].src);
 
 	//opaque3d
-	src = &mod[opaque3d].src;
-
-	src->vbuf = malloc(0x1000000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x100000/36;
-
-	src->ibuf = malloc(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-	uploadvertex(&mod[opaque3d].dst, src);
+	uploadvertex(&mod[opaque3d].dst, &mod[opaque3d].src);
 
 
 //----------------------2d--------------------
 	//drawarray.point2d
-	src = &mod[point2d].src;
-
-	src->vbuf = malloc(0x100000);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*3*2;
-	src->vbuf_h = 0x100000/24;
-
-	src->method = 'v';
-	src->geometry = 1;
-
-	src->vbuf_enq = 1;
-	uploadvertex(&mod[point2d].dst, src);
-
+	uploadvertex(&mod[point2d].dst, &mod[point2d].src);
 
 	//drawelement.line2d
-	src = &mod[line2d].src;
-
-	src->vbuf = malloc(0x100000);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*3*2;
-	src->vbuf_h = 0x100000/24;
-
-	src->ibuf = malloc(0x100000);
-	src->ibuf_fmt = 0x22;
-	src->ibuf_w = 2*2;
-	src->ibuf_h = 0x100000/4;
-
-	src->method = 'i';
-	src->geometry = 2;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-	uploadvertex(&mod[line2d].dst, src);
-
+	uploadvertex(&mod[line2d].dst, &mod[line2d].src);
 
 	//drawelement.trigon2d
-	src = &mod[trigon2d].src;
-
-	src->vbuf = malloc(0x100000);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*3*2;
-	src->vbuf_h = 0x100000/24;
-
-	src->ibuf = malloc(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-	uploadvertex(&mod[trigon2d].dst, src);
-
+	uploadvertex(&mod[trigon2d].dst, &mod[trigon2d].src);
 
 	//opaque2d
-	src = &mod[opaque2d].src;
-
-	src->vbuf = malloc(0x100000);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*3*2;
-	src->vbuf_h = 0x100000/24;
-
-	src->ibuf = malloc(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-	uploadvertex(&mod[opaque2d].dst, src);
+	uploadvertex(&mod[opaque2d].dst, &mod[opaque2d].src);
 }

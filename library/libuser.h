@@ -311,8 +311,8 @@ struct datapair
 
 struct style
 {
-	//[00, 7f]
 	union{
+		//[00, 7f]: float
 		struct{
 			vec4 vl;	//[00,0f]: left
 			vec4 vr;	//[10,1f]: right
@@ -324,15 +324,16 @@ struct style
 			vec4 vc;	//[70,7f]: center
 		};
 
+		//[00, 7f]: integer
 		struct{
-			u32 ul[4];
-			u32 ur[4];
-			u32 un[4];
-			u32 uf[4];
-			u32 ub[4];
-			u32 ut[4];
-			u32 uq[4];
-			u32 uc[4];
+			int ul[4];
+			int ur[4];
+			int un[4];
+			int uf[4];
+			int ub[4];
+			int ut[4];
+			int uq[4];
+			int uc[4];
 		};
 	};
 

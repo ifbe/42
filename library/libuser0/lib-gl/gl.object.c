@@ -24,18 +24,6 @@ GLuint uploadvertex(void* i, void* o);
 
 
 
-void initobject(struct arena* win)
-{
-	int j;
-	u8* buf = malloc(0x10000);
-
-	for(j=0;j<0x10000;j++)buf[j] = 0;
-	win->mod = buf;
-}
-
-
-
-
 int fbodelete(struct arena* win)
 {
 	if(win->tex_color)glDeleteTextures(1, &win->tex_color);
@@ -46,12 +34,6 @@ int fbodelete(struct arena* win)
 }
 int fbocreate(struct arena* win, char* arg)
 {
-	win->fbwidth = win->width = 1024;
-	win->fbheight = win->height = 1024;
-	win->fbdepth = win->depth = 1024;
-	win->fbstride = win->stride = 1024;
-
-
 	//frame buffer
 	glGenFramebuffers(1, &win->fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, win->fbo);
@@ -315,6 +297,15 @@ void callback_display(struct arena* this, struct arena* coop)
 		if(0 == win)return;
 
 		glViewport(0, 0, 1024, 1024);
+		fixmatrix(cammvp, this);
+	}
+	else if(_coop_ == this->fmt)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		win = saved;
+		if(0 == win)return;
+
+		glViewport(0, 0, this->fbwidth, this->fbheight);
 		fixmatrix(cammvp, this);
 	}
 	else
