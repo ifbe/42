@@ -1,48 +1,48 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC -I.
 SRC = \
-root-hw/hw.1602.c \
-root-hw/hw.12864.c \
-root-robot/3d-printer.c \
-root-robot/3d-router.c \
-root-robot/car-bldc.c \
-root-robot/car-step.c \
-root-robot/car-toy.c \
-root-robot/copter-hexa.c \
-root-robot/copter-octo.c \
-root-robot/copter-quad.c \
-root-robot/robot-arm.c \
-root-robot/robot-dog.c \
-root-robot/robot-man.c \
-root-robot/robot-snake.c \
-twig-cli/cli.base.c \
-twig-cli/cli.tool.c \
-twig-tui/tui.base.c \
-twig-tui/tui.tool.c \
-twig-func/func.base.c \
-twig-func/func.tool.c \
-twig-html/html.base.c \
-twig-html/html.tool.c \
-twig-json/json.base.c \
-twig-json/json.tool.c \
-twig-xml/xml.base.c \
-twig-xml/xml.tool.c \
-twig-sch/sch.base.c \
-twig-sch/sch.tool.c \
-twig-sch/sch.bus.c \
-twig-sch/sch.pin.c \
-twig-vbo/vbo.base.c \
-twig-vbo/vbo.tool.c \
-twig-vbo/3d-bg.c \
-twig-vbo/3d-fg.c \
-twig-vbo/3d-ev.c \
-twig-vbo/3d-ui.c \
-twig-rgba/rgba.base.c \
-twig-rgba/rgba.tool.c \
-twig-rgba/2d-bg.c \
-twig-rgba/2d-fg.c \
-twig-rgba/2d-ev.c \
-twig-rgba/2d-ui.c \
+lib-hw/hw.1602.c \
+lib-hw/hw.12864.c \
+lib-robot/3d-printer.c \
+lib-robot/3d-router.c \
+lib-robot/car-bldc.c \
+lib-robot/car-step.c \
+lib-robot/car-toy.c \
+lib-robot/copter-hexa.c \
+lib-robot/copter-octo.c \
+lib-robot/copter-quad.c \
+lib-robot/robot-arm.c \
+lib-robot/robot-dog.c \
+lib-robot/robot-man.c \
+lib-robot/robot-snake.c \
+root-cli/cli.base.c \
+root-cli/cli.tool.c \
+root-tui/tui.base.c \
+root-tui/tui.tool.c \
+root-func/func.base.c \
+root-func/func.tool.c \
+root-html/html.base.c \
+root-html/html.tool.c \
+root-json/json.base.c \
+root-json/json.tool.c \
+root-xml/xml.base.c \
+root-xml/xml.tool.c \
+root-sch/sch.base.c \
+root-sch/sch.tool.c \
+root-vbo/vbo.base.c \
+root-vbo/vbo.tool.c \
+root-rgba/rgba.base.c \
+root-rgba/rgba.tool.c \
+trunk-3d/3d-bg.c \
+trunk-3d/3d-fg.c \
+trunk-3d/3d-ev.c \
+trunk-3d/3d-ui.c \
+trunk-2d/2d-bg.c \
+trunk-2d/2d-fg.c \
+trunk-2d/2d-ev.c \
+trunk-2d/2d-ui.c \
+trunk-sch/sch.bus.c \
+trunk-sch/sch.pin.c \
 arena.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
@@ -158,11 +158,11 @@ linuxglfw:target
 	$(compiler) $(cflag) os-linux/linux.0.tray.c
 	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
 	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
-	$(compiler) $(cflag) root-gl/glfw.c
-	$(compiler) $(cflag) root-gl/gl.object.c
-	$(compiler) $(cflag) root-gl/gl.shader.c
-	$(compiler) $(cflag) root-gl/gl.texture.c
-	$(compiler) $(cflag) root-gl/gl.vertex.c
+	$(compiler) $(cflag) lib-gl/glfw.c
+	$(compiler) $(cflag) lib-gl/gl.object.c
+	$(compiler) $(cflag) lib-gl/gl.shader.c
+	$(compiler) $(cflag) lib-gl/gl.texture.c
+	$(compiler) $(cflag) lib-gl/gl.vertex.c
 
 .PHONY:linuxglut
 linuxglut:target
@@ -172,7 +172,7 @@ linuxglut:target
 	$(compiler) $(cflag) os-linux/linux.0.tray.c
 	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
 	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
-	$(compiler) $(cflag) root-gl/glut.c
+	$(compiler) $(cflag) lib-gl/glut.c
 
 .PHONY:linuxsdl
 linuxsdl:target
@@ -182,7 +182,7 @@ linuxsdl:target
 	$(compiler) $(cflag) os-linux/linux.0.tray.c
 	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
 	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
-	$(compiler) $(cflag) root-sdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
+	$(compiler) $(cflag) lib-sdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
 #########################################################
 
 
@@ -237,11 +237,11 @@ macglfw:target
 	$(compiler) $(cflag) os-mac/mac.0.tray.c
 	$(compiler) $(cflag) os-mac/mac.2.mic.c
 	$(compiler) $(cflag) os-mac/mac.3.cam.c
-	$(compiler) $(cflag) root-gl/glfw.c
-	$(compiler) $(cflag) root-gl/gl.object.c
-	$(compiler) $(cflag) root-gl/gl.shader.c
-	$(compiler) $(cflag) root-gl/gl.texture.c
-	$(compiler) $(cflag) root-gl/gl.vertex.c
+	$(compiler) $(cflag) lib-gl/glfw.c
+	$(compiler) $(cflag) lib-gl/gl.object.c
+	$(compiler) $(cflag) lib-gl/gl.shader.c
+	$(compiler) $(cflag) lib-gl/gl.texture.c
+	$(compiler) $(cflag) lib-gl/gl.vertex.c
 
 .PHONY:macglut
 macglut:target
@@ -251,7 +251,7 @@ macglut:target
 	$(compiler) $(cflag) os-mac/mac.0.tray.c
 	$(compiler) $(cflag) os-mac/mac.2.mic.c
 	$(compiler) $(cflag) os-mac/mac.3.cam.c
-	$(compiler) $(cflag) root-gl/glut.c
+	$(compiler) $(cflag) lib-gl/glut.c
 
 .PHONY:macsdl
 macsdl:target
@@ -261,7 +261,7 @@ macsdl:target
 	$(compiler) $(cflag) os-mac/mac.0.tray.c
 	$(compiler) $(cflag) os-mac/mac.2.mic.c
 	$(compiler) $(cflag) os-mac/mac.3.cam.c
-	$(compiler) $(cflag) root-sdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
+	$(compiler) $(cflag) lib-sdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
 #########################################################
 
 
@@ -314,11 +314,11 @@ winglfw:target
 	$(compiler) $(cflag) os-win/win.0.joy.c
 	$(compiler) $(cflag) os-win/win.0.std.c
 	$(compiler) $(cflag) os-win/win.0.tray.c
-	$(compiler) $(cflag) root-gl/glfw.c
-	$(compiler) $(cflag) root-gl/gl.object.c
-	$(compiler) $(cflag) root-gl/gl.shader.c
-	$(compiler) $(cflag) root-gl/gl.texture.c
-	$(compiler) $(cflag) root-gl/gl.vertex.c
+	$(compiler) $(cflag) lib-gl/glfw.c
+	$(compiler) $(cflag) lib-gl/gl.object.c
+	$(compiler) $(cflag) lib-gl/gl.shader.c
+	$(compiler) $(cflag) lib-gl/gl.texture.c
+	$(compiler) $(cflag) lib-gl/gl.vertex.c
 	$(compiler) $(cflag) os-win/win.2.waveio.c
 	g++ $(cflag) -fno-rtti os-win/win.3.dshow.cpp
 
@@ -328,7 +328,7 @@ winglut:target
 	$(compiler) $(cflag) os-win/win.0.joy.c
 	$(compiler) $(cflag) os-win/win.0.std.c
 	$(compiler) $(cflag) os-win/win.0.tray.c
-	$(compiler) $(cflag) root-gl/glut.c
+	$(compiler) $(cflag) lib-gl/glut.c
 	$(compiler) $(cflag) os-win/win.waveio.c
 	g++ $(cflag) -fno-rtti os-win/win.dshow.cpp
 
@@ -338,7 +338,7 @@ winsdl:target
 	$(compiler) $(cflag) os-win/win.0.joy.c
 	$(compiler) $(cflag) os-win/win.0.std.c
 	$(compiler) $(cflag) os-win/win.0.tray.c
-	$(compiler) $(cflag) root-lib/sdl/sdl2.c
+	$(compiler) $(cflag) lib-sdl/sdl2.c
 	$(compiler) $(cflag) os-win/win.2.waveio.c
 	g++ $(cflag) -fno-rtti os-win/win.3.dshow.cpp
 ##########################################################
