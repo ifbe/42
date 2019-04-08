@@ -7,6 +7,13 @@ static void cylinder_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int cx = sty->vc[0];
+	int cy = sty->vc[1];
+	int ww = sty->vr[0];
+	int hh = sty->vf[1];
+	if(ww > hh)ww = hh;
+	if(hh > ww)hh = ww;
+	drawsolid_rect(win, 0x808080, cx-ww, cy-hh, cx+ww, cy+hh);
 }
 static void cylinder_read_vbo2d(
 	struct arena* win, struct style* sty,

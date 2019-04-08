@@ -7,6 +7,12 @@ static void sphere_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	int cx = sty->vc[0];
+	int cy = sty->vc[1];
+	int ww = sty->vr[0];
+	int hh = sty->vf[1];
+	if(ww > hh)ww = hh;
+	drawsolid_circle(win, 0x808080, cx, cy, ww);
 }
 static void sphere_read_vbo2d(
 	struct arena* win, struct style* sty,

@@ -103,7 +103,7 @@ void tabbar_read_pixel(
     struct actor* ac;
     int w = win->width;
     int h = win->height;
-	drawline_rect(win, 0xff0000, w/4, h*31/32, w*3/4, h);
+	drawline_rect(win, 0xff0000, w/4, h*31/32, w*3/4, h-1);
 
     rel = act->irel0;
     if(0 == rel)return;
@@ -119,7 +119,7 @@ void tabbar_read_pixel(
 
         if(_act_ == rel->dsttype)
         {
-            drawsolid_rect(win, 0x000080, w*(j+4)/16, h*31/32, w*(j+5)/16, h);
+            drawsolid_rect(win, 0x000080, w*(j+4)/16+2, h*31/32+2, w*(j+5)/16-2, h-2);
 
             ac = (void*)(rel->dstchip);
             st = (void*)(rel->srcfoot);
