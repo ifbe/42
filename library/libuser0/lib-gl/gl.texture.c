@@ -186,43 +186,4 @@ void inittexture(struct arena* win)
 
 	mod[font3d3].dst.tex[0] = tex;
 	mod[font2d3].dst.tex[0] = tex;
-
-/*
-//------------------2d screen--------------------
-	glGenTextures(1, &(mod[4].tex));
-	glBindTexture(GL_TEXTURE_2D, mod[4].tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);	//GL_REPEAT);
-	glTexImage2D(GL_TEXTURE_2D, 0,
-		GL_RGBA, 1024, 1024, 0,
-		GL_RGBA, GL_UNSIGNED_BYTE, buf
-	);
-*/
-	/*
-	glGenFramebuffers(1, &shadowfb);
-	glBindFramebuffer(GL_FRAMEBUFFER, shadowfb);
-
-	glGenTextures(1, &shadowtexture);
-	glBindTexture(GL_TEXTURE_2D, shadowtexture);
-	glTexImage2D(GL_TEXTURE_2D, 0,
-		GL_DEPTH_COMPONENT, 1024, 1024, 0,
-		GL_DEPTH_COMPONENT, GL_FLOAT, NULL
-	);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glFramebufferTexture(
-		GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-		shadowtexture, 0
-	);
-	glDrawBuffer(GL_NONE);
-
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		printf("error@fbo\n");
-	}
-*/
 }

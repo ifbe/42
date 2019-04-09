@@ -89,7 +89,6 @@ int arenaactor(struct arena* win, struct arena* ccc, struct actor* act, struct a
 	{
 		case _bg3d_:
 		case _fg3d_:
-		case _ev3d_:
 		case _ui3d_:
 		{
 			if(_vbo_ == win->fmt)defaultstyle_3d(sty, &win->target);
@@ -102,7 +101,6 @@ int arenaactor(struct arena* win, struct arena* ccc, struct actor* act, struct a
 		}
 		case _bg2d_:
 		case _fg2d_:
-		case _ev2d_:
 		case _ui2d_:
 		{
 			if(_vbo_ == win->fmt)defaultstyle_2in3(sty);
@@ -1124,9 +1122,15 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		else if(y1 < 16)
 		{
 			win_d = &arena[x1 + (y1-8)*16];
-			if((win_d->type) && (win_s->type))relationcreate(win_d, 0, _win_, win_s, 0, _win_);
-			else if(win_d->type)win_d = arenacreate(_coop_, 0);
-			else if(win_s->type)win_s = arenacreate(_coop_, 0);
+			if((win_d->type) && (win_s->type)){
+				relationcreate(win_d, 0, _win_, win_s, 0, _win_);
+			}
+			else if(win_s->type){
+				if(_win_ == win_s->type)win_d = arenacreate(_coop_, win_s);
+			}
+			else if(win_d->type){
+				if(_win_ == win_s->type)win_s = arenacreate(_coop_, win_d);
+			}
 		}
 		else if(y1 < 24)
 		{

@@ -573,6 +573,7 @@ static int picker_sread(
 	struct relation* rel;
 	struct arena* www;
 	struct style* sss;
+	carvefrustum(win, &win->camera);
 	carveline_prism4(win, 0xff00ff, win->target.vc, win->target.vr, win->target.vf, win->target.vu);
 
 	www = 0;

@@ -166,7 +166,7 @@ void callback_update(struct arena* win)
 
 
 
-
+/*
 u32 fixvao(struct arena* win, u32 fmt, u32 vao, u32 vbo)
 {
 	int j;
@@ -211,7 +211,7 @@ u32 fixvao(struct arena* win, u32 fmt, u32 vao, u32 vbo)
 		glEnableVertexAttribArray(1);
 	}
 	return vao;
-}
+}*/
 void display_eachpass(
 	struct arena* win, struct arena* coop, 
 	struct gldst* dst, struct glsrc* src,
@@ -258,7 +258,7 @@ void display_eachpass(
 	fmt = src->vbuf_fmt;
 	vbo = dst->vbo;
 	vao = dst->vao;
-	vao = fixvao(coop, fmt, vao, vbo);
+	//vao = fixvao(coop, fmt, vao, vbo);
 	glBindVertexArray(vao);
 //say("%d,%d,%d,%d,%d,%d\n", dst->shader, dst->tex[0], vao, vbo, src->ibuf_h, src->vbuf_h);
 

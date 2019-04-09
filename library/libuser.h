@@ -74,12 +74,10 @@ typedef float mat4[4][4];
 //
 #define _bg3d_ hex32('b','g','3','d')
 #define _fg3d_ hex32('f','g','3','d')
-#define _ev3d_ hex32('e','v','3','d')
 #define _ui3d_ hex32('u','i','3','d')
 //
 #define _bg2d_ hex32('b','g','2','d')
 #define _fg2d_ hex32('f','g','2','d')
-#define _ev2d_ hex32('e','v','2','d')
 #define _ui2d_ hex32('u','i','2','d')
 //
 #define _TCP_ hex32('T','C','P',0)
@@ -873,7 +871,7 @@ void carvetext2d_reverse(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 
 
 //-----------------------------3d--------------------------
 void carveaxis(               struct arena* win);
-void carvecamera(             struct arena* win, struct arena* w);
+void carvefrustum(            struct arena* win, struct style* sty);
 void select_3d(               struct arena* win, u32 rgb, struct style* sty, u32 flag);
 
 void carvepoint(              struct arena* win, u32 rgb, vec3 vc);

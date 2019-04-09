@@ -53,31 +53,23 @@ static int thirdperson_sread(
 	int j;
 	vec3 tc,tr,tf;
 	struct relation* rel;
-	struct arena* tmpwin;
+	struct actor* tar;
 	struct style* tmpsty;
 
-	rel = win->orel0;
+	//3rdcam's target
+	rel = act->orel0;
+	if(0 == rel)return 0;
+
+	tar = (void*)(rel->dstchip);
+	if(0 == tar)return 0;
+
+	//target's world
+	rel = tar->irel0;
 	while(1)
 	{
 		if(0 == rel)return 0;
 
-		if(_win_ == rel->dsttype)
-		{
-			tmpwin = (void*)(rel->dstchip);
-			if(_ev3d_ == tmpwin->fmt)goto found;
-		}
-
-		rel = samesrcnextdst(rel);
-	}
-	return 0;
-
-found:
-	rel = tmpwin->orel0;
-	while(1)
-	{
-		if(0 == rel)return 0;
-
-		if(_act_ == rel->dsttype)
+		if(_win_ == rel->srctype)
 		{
 			tmpsty = (void*)(rel->srcfoot);
 
@@ -89,11 +81,13 @@ found:
 			goto print;
 		}
 
-		rel = samesrcnextdst(rel);
+		rel = samedstnextsrc(rel);
 	}
 	return 0;
 
 print:
+	carvefrustum(win, &win->camera);
+
 	tr[0] = 0.025;
 	tr[1] = 0.0;
 	tr[2] = 0.0;

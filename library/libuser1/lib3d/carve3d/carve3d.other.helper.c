@@ -37,6 +37,58 @@ void carveaxis(struct arena* win)
 	vb[2] = 10000.0;
 	carveline(win, 0x0000ff, va, vb);
 }
+void carvefrustum(struct arena* win, struct style* sty)
+{
+	vec3 tc, tr, tf;
+	float* vc = sty->vc;
+	float* vn = sty->vn;
+	float* vl = sty->vl;
+	float* vr = sty->vr;
+	float* vb = sty->vb;
+	float* vu = sty->vu;
+
+	tc[0] = vc[0] + vn[0]*0.99 + (vl[0] + vr[0])/2 + (vb[0] + vu[0])/2;
+	tc[1] = vc[1] + vn[1]*0.99 + (vl[1] + vr[1])/2 + (vb[1] + vu[1])/2;
+	tc[2] = vc[2] + vn[2]*0.99 + (vl[2] + vr[2])/2 + (vb[2] + vu[2])/2;
+	tr[0] = (vr[0] - vl[0])/2;
+	tr[1] = (vr[1] - vl[1])/2;
+	tr[2] = (vr[2] - vl[2])/2;
+	tf[0] = (vu[0] - vb[0])/2;
+	tf[1] = (vu[1] - vb[1])/2;
+	tf[2] = (vu[2] - vb[2])/2;
+	carvesolid_rect(win, 0xffffff, tc, tr, tf);
+
+	tc[0] = vc[0] + (vn[0] + (vl[0] + vr[0])/2 + (vb[0] + vu[0])/2)*1000;
+	tc[1] = vc[1] + (vn[1] + (vl[1] + vr[1])/2 + (vb[1] + vu[1])/2)*1000;
+	tc[2] = vc[2] + (vn[2] + (vl[2] + vr[2])/2 + (vb[2] + vu[2])/2)*1000;
+	tr[0] = (vr[0] - vl[0])*500;
+	tr[1] = (vr[1] - vl[1])*500;
+	tr[2] = (vr[2] - vl[2])*500;
+	tf[0] = (vu[0] - vb[0])*500;
+	tf[1] = (vu[1] - vb[1])*500;
+	tf[2] = (vu[2] - vb[2])*500;
+	carveline_rect(win, 0xffffff, tc, tr, tf);
+
+	tc[0] = vc[0] + (vn[0] + vl[0] + vb[0])*1000.0;
+	tc[1] = vc[1] + (vn[1] + vl[1] + vb[1])*1000.0;
+	tc[2] = vc[2] + (vn[2] + vl[2] + vb[2])*1000.0;
+	carveline(win, 0xffffff, vc, tc);
+
+	tc[0] = vc[0] + (vn[0] + vr[0] + vb[0])*1000.0;
+	tc[1] = vc[1] + (vn[1] + vr[1] + vb[1])*1000.0;
+	tc[2] = vc[2] + (vn[2] + vr[2] + vb[2])*1000.0;
+	carveline(win, 0xffffff, vc, tc);
+
+	tc[0] = vc[0] + (vn[0] + vl[0] + vu[0])*1000.0;
+	tc[1] = vc[1] + (vn[1] + vl[1] + vu[1])*1000.0;
+	tc[2] = vc[2] + (vn[2] + vl[2] + vu[2])*1000.0;
+	carveline(win, 0xffffff, vc, tc);
+
+	tc[0] = vc[0] + (vn[0] + vr[0] + vu[0])*1000.0;
+	tc[1] = vc[1] + (vn[1] + vr[1] + vu[1])*1000.0;
+	tc[2] = vc[2] + (vn[2] + vr[2] + vu[2])*1000.0;
+	carveline(win, 0xffffff, vc, tc);
+}/*
 void carvecamera(struct arena* win, struct arena* w)
 {
 	vec3 va0,vb0,vc0,vd0;
@@ -140,4 +192,4 @@ void carvecamera(struct arena* win, struct arena* w)
 
 	//ray
 	carveline(win, 0xffffff, va, vv);
-}
+}*/

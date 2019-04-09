@@ -9,43 +9,21 @@ static int firstperson_sread(
 {
 	int j;
 	struct relation* rel;
-	struct arena* tmpwin;
-	struct actor* tmpact;
+	struct actor* tar;
 	u8* src;
 	u8* dst;
 
-	rel = win->orel0;
-	while(1)
-	{
-		if(0 == rel)return 0;
+	rel = act->orel0;
+	if(0 == rel)return 0;
 
-		if(_win_ == rel->dsttype)
-		{
-			tmpwin = (void*)(rel->dstchip);
-			if(_ev3d_ == tmpwin->fmt)goto found;
-		}
+	tar = (void*)(rel->dstchip);
+	if(0 == tar)return 0;
 
-		rel = samesrcnextdst(rel);
-	}
-	return 0;
+	src = (void*)(&tar->camera);
+	dst = (void*)(   &win->camera);
+	for(j=0;j<sizeof(struct style);j++)dst[j] = src[j];
 
-found:
-	rel = tmpwin->orel0;
-	while(1)
-	{
-		if(0 == rel)return 0;
-
-		if(_act_ == rel->dsttype)
-		{
-			tmpact = (void*)(rel->dstchip);
-			src = (void*)(&tmpact->camera);
-			dst = (void*)(   &win->camera);
-			for(j=0;j<sizeof(struct style);j++)dst[j] = src[j];
-			return 0;
-		}
-
-		rel = samesrcnextdst(rel);
-	}
+	carvefrustum(win, &win->camera);
 	return 0;
 }
 static int firstperson_swrite(

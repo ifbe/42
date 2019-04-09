@@ -15,11 +15,6 @@ int fg2d_start(void*, void*, void*, void*);
 int fg2d_sread(void*, void*, void*, void*);
 int fg2d_swrite(void*, void*, void*, void*, void*);
 //
-int ev2d_create(void*, void*);
-int ev2d_start(void*, void*, void*, void*);
-int ev2d_sread(void*, void*, void*, void*);
-int ev2d_swrite(void*, void*, void*, void*, void*);
-//
 int ui2d_create(void*, void*);
 int ui2d_start(void*, void*, void*, void*);
 int ui2d_sread(void*, void*, void*, void*);
@@ -50,7 +45,6 @@ int rgbanode_sread(struct arena* win, struct style* stack)
 			{
 				case _bg2d_:bg2d_sread(tmp, pin, win, sty);break;
 				case _fg2d_:fg2d_sread(tmp, pin, win, sty);break;
-				case _ev2d_:ev2d_sread(tmp, pin, win, sty);break;
 				case _ui2d_:ui2d_sread(tmp, pin, win, sty);break;
 			}
 		}
@@ -85,7 +79,6 @@ int rgbanode_swrite(struct arena* win, struct style* stack, struct event* ev)
 			{
 				case _bg2d_:ret = bg2d_swrite(tmp, pin, win, sty, ev);break;
 				case _fg2d_:ret = fg2d_swrite(tmp, pin, win, sty, ev);break;
-				case _ev2d_:ret = ev2d_swrite(tmp, pin, win, sty, ev);break;
 				case _ui2d_:ret = ui2d_swrite(tmp, pin, win, sty, ev);break;
 			}
 			if(ret)break;
@@ -112,7 +105,6 @@ int rgbanode_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 	{
 		case _bg2d_:bg2d_start(twig, tf, root, rf);return 1;
 		case _fg2d_:fg2d_start(twig, tf, root, rf);return 1;
-		case _ev2d_:ev2d_start(twig, tf, root, rf);return 1;
 		case _ui2d_:ui2d_start(twig, tf, root, rf);return 1;
 	}
 	return 0;
@@ -154,18 +146,6 @@ void* rgbanode_create(u64 type, void* addr)
 		return win;
 	}
 
-	if(_ev2d_ == type)
-	{
-		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _ev2d_;
-			ev2d_create(win, 0);
-		}
-		return win;
-	}
-
 	if(_ui2d_ == type)
 	{
 		win = allocarena();
@@ -193,14 +173,6 @@ void* rgbanode_create(u64 type, void* addr)
 
 			//fg2d
 			tmp = rgbanode_create(_fg2d_, 0);
-			if(tmp)
-			{
-				relationcreate(tmp, 0, _win_, win, 0, _win_);
-				rgbanode_start(tmp, 0, win, 0);
-			}
-
-			//ev2d
-			tmp = rgbanode_create(_ev2d_, 0);
 			if(tmp)
 			{
 				relationcreate(tmp, 0, _win_, win, 0, _win_);

@@ -347,13 +347,11 @@ static void callback_joystick(int id, int ev)
 void windowopen_root(struct arena* w, struct arena* r)
 {
 	int x,y,j;
-	GLFWwindow* parent = 0;
-	if(r)parent = r->win;
 
 	//1.glfw
 	x = w->width;
 	y = w->height;
-	GLFWwindow* fw = glfwCreateWindow(x, y, "42", NULL, parent);
+	GLFWwindow* fw = glfwCreateWindow(x, y, "42", NULL, NULL);
 	if(0 == fw)
 	{
 		printf("error@glfwCreateWindow\n");
@@ -424,8 +422,8 @@ void windowopen_coop(struct arena* w, struct arena* r)
 	glfwSetFramebufferSizeCallback(fw, callback_reshape);
 
 	//vao mapping
-	w->map = malloc(0x100000);
-	memset(w->map, 0, 0x100000);
+	//w->map = malloc(0x100000);
+	//memset(w->map, 0, 0x100000);
 }
 
 
@@ -500,6 +498,9 @@ void windowdelete(struct arena* win)
 }
 void windowcreate(struct arena* win)
 {
+	struct relation* rel = 0;
+	struct arena* share = 0;
+
 	if(_fbo_ == win->fmt)
 	{
 		win->fbwidth = win->width = 1024;
@@ -511,11 +512,14 @@ void windowcreate(struct arena* win)
 	}
 	else if(_coop_ == win->fmt)
 	{
+		rel = win->orel0;
+		if(rel)share = (void*)(rel->dstchip);
+
 		win->width = 512;
 		win->height = 512;
 		win->depth = 512;
 		win->stride = 512;
-		windowopen_coop(win, 0);
+		windowopen_coop(win, share);
 		win->fmt = _coop_;
 	}
 	else

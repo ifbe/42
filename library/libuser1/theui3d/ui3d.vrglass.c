@@ -23,6 +23,7 @@ static int vrglass_sread(
 	tf[1] = 1000.0;
 	tf[2] = 0.0;
 	carveline_prism4(win, 0xff0000, tc, tr, tf, tu);
+	carvefrustum(win, &win->camera);
 
 	for(y=-1000.0;y<1001.0;y+=500.0)
 	{

@@ -1,8 +1,6 @@
 #include "libuser.h"
 #define _bdc_  hex32('b','d','c',0)
 #define _step_ hex32('s','t','e','p')
-#define _pin_  hex32('p','i','n',0)
-#define _chip_ hex32('c','h','i','p')
 
 
 
@@ -412,6 +410,8 @@ void* arenacreate(u64 type, void* addr)
 		win = allocarena();
 		if(win)
 		{
+			if(addr)relationcreate(addr, 0, _win_, win, 0, _win_);
+
 			win->type = _win_;
 			win->fmt = _coop_;
 			windowcreate(win);
@@ -468,6 +468,8 @@ void* arenacreate(u64 type, void* addr)
 		}
 		return win;
 	}
+
+	//
 	else if(_html_ == type)
 	{
 		win = allocarena();
@@ -543,8 +545,12 @@ int arenaevent(struct event* e)
 	win = (void*)(ev.where);
 	if(0 == win)return 0;
 
-	if(_vbo_ == win->fmt)vbonode_swrite(win, 0, &ev);
-	else rgbanode_swrite(win, 0, &ev);
+	switch(win->fmt)
+	{
+		case _vbo_:vbonode_swrite(win, 0, &ev);break;
+		case _coop_:vbonode_swrite(win, 0, &ev);break;
+		default:rgbanode_swrite(win, 0, &ev);
+	}
 	return 0;
 }
 void* arenacommand(int argc, char** argv)

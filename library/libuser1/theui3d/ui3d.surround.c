@@ -187,19 +187,19 @@ static int surround_sread(
 {
 	vec3 tc,tr,tf;
 	float* vc = win->target.vc;
-	//carvepoint(win, 0xff0000, vc);
+	carvefrustum(win, &win->camera);
 
-	tc[0] = vc[0] + 100.0;
+	tc[0] = vc[0] + 1000.0;
 	tc[1] = vc[1];
 	tc[2] = vc[2];
 	carveline(win, 0x0000ff, vc, tc);
 	tc[0] = vc[0];
-	tc[1] = vc[1] + 100.0;
+	tc[1] = vc[1] + 1000.0;
 	tc[2] = vc[2];
 	carveline(win, 0x00ff00, vc, tc);
 	tc[0] = vc[0];
 	tc[1] = vc[1];
-	tc[2] = vc[2] + 100.0;
+	tc[2] = vc[2] + 1000.0;
 	carveline(win, 0xff0000, vc, tc);
 
 

@@ -35,11 +35,9 @@ root-rgba/rgba.base.c \
 root-rgba/rgba.tool.c \
 trunk-3d/3d-bg.c \
 trunk-3d/3d-fg.c \
-trunk-3d/3d-ev.c \
 trunk-3d/3d-ui.c \
 trunk-2d/2d-bg.c \
 trunk-2d/2d-fg.c \
-trunk-2d/2d-ev.c \
 trunk-2d/2d-ui.c \
 trunk-sch/sch.bus.c \
 trunk-sch/sch.pin.c \
