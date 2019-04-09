@@ -197,6 +197,7 @@ void portalcamera(
 	say("%f,%f,%f\n",tmp->camera.vu[0], tmp->camera.vu[1], tmp->camera.vu[2]);
 	say("\n");
 
+	carvefrustum(root, &tmp->camera);
 }
 
 

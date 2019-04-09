@@ -440,7 +440,7 @@ void windowopen_coop(struct arena* w, struct arena* r)
 
 
 
-
+static GLFWwindow* thisfw;
 void windowread(struct arena* win)
 {
 	GLFWwindow* fw;
@@ -450,6 +450,7 @@ void windowread(struct arena* win)
 	if(_fbo_ == win->fmt)
 	{
 		//say("@windowread fbo\n");
+		glfwMakeContextCurrent(thisfw);
 		hostctx_render(win);
 	}
 	else if(_coop_ == win->fmt)
@@ -469,6 +470,7 @@ void windowread(struct arena* win)
 		arena_rootread(win, 0, 0, 0, 0, 0);
 
 		fw = win->win;
+		thisfw = fw;
 		glfwMakeContextCurrent(fw);
 		hostctx_update(win);
 		hostctx_render(win);

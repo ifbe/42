@@ -19,8 +19,9 @@ void inittexture(void*);
 void initvertex(void*);
 int fbodelete(struct arena* win);
 int fbocreate(struct arena* win, char* arg);
-void callback_update(void*);
-void callback_display(void*,void*);
+void hostctx_create(void*);
+void hostctx_update(void*);
+void hostctx_render(void*);
 void* getapp();
 void* pollenv();
 
@@ -143,7 +144,7 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 
 		windowprepare(thewin);
 
-		initobject(thewin);
+		hostctx_create(thewin);
 		initshader(thewin);
 		inittexture(thewin);
 		initvertex(thewin);
@@ -248,7 +249,7 @@ void windowread(struct arena* win)
 	if(_fbo_ == win->fmt)
 	{
 		//say("@windowread fbo\n");
-		callback_display(win, 0);
+		hostctx_render(win);
 	}
 	else
 	{
@@ -256,8 +257,8 @@ void windowread(struct arena* win)
 		{
 			arena_rootread(win, 0, 0, 0, 0, 0);
 
-			callback_update(win);
-			callback_display(win, 0);
+			hostctx_update(win);
+			hostctx_render(win);
 
 			eglSwapBuffers(display, surface);
 		}

@@ -129,7 +129,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 					why[1] = 0x4070;
 					why[2] = (u64)thewin;
-					actorevent((void*)why);
+					arenaevent((void*)why);
 				}
 			}
 			else
@@ -143,7 +143,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 				why[0] = x+(y<<16)+(why[0]<<48);
 				why[1] = a;
 				why[2] = (u64)thewin;
-				actorevent((void*)why);
+				arenaevent((void*)why);
 			}
 		}
 		else if(AINPUT_SOURCE_TRACKBALL == source)
@@ -175,7 +175,7 @@ void windowread(struct arena* win)
 		thewin->stride = buffer.stride;
 
 		//read data
-		actorread_all(thewin);
+		arena_rootread(thewin, 0, 0, 0, 0, 0);
 
 		//write screen
 		ANativeWindow_unlockAndPost(native);
