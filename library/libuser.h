@@ -268,6 +268,7 @@ struct gldst
 {
 	//shader
 	u32 shader;
+	u32 vao;
 
 	//argument
 	u32 arg[4];
@@ -281,10 +282,6 @@ struct gldst
 	u32 vbo_len;
 	u32 ibo;
 	u32 ibo_len;
-
-	//
-	u32 vao;
-	u32 fbo;
 
 	//deq
 	u8 shader_deq;

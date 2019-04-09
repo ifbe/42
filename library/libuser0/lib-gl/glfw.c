@@ -13,8 +13,12 @@ void initshader(void*);
 void inittexture(void*);
 void initvertex(void*);
 //
-void callback_update(void*);
-void callback_display(void*, void*);
+void coopctx_create(void*);
+void coopctx_update(void*);
+//
+void hostctx_create(void*);
+void hostctx_update(void*);
+void hostctx_render(void*);
 static u8 uppercase[] = {
 	' ', '!','\"', '#', '$', '%', '&','\"',		//20,27
 	'(', ')', '*', '+', '<', '_', '>', '?',		//28,2f
@@ -384,7 +388,7 @@ void windowopen_root(struct arena* w, struct arena* r)
 	}
 
 	//3.init
-	initobject(w);
+	hostctx_create(w);
 	initshader(w);
 	inittexture(w);
 	initvertex(w);
@@ -421,9 +425,17 @@ void windowopen_coop(struct arena* w, struct arena* r)
 	glfwSetMouseButtonCallback(fw, callback_mouse);
 	glfwSetFramebufferSizeCallback(fw, callback_reshape);
 
+	//2.glew
+	glfwMakeContextCurrent(fw);
+	glewExperimental = 1;
+	if(glewInit() != GLEW_OK)
+	{
+		printf("error@glewInit\n");
+		return;
+	}
+
 	//vao mapping
-	//w->map = malloc(0x100000);
-	//memset(w->map, 0, 0x100000);
+	coopctx_create(w);
 }
 
 
@@ -438,13 +450,14 @@ void windowread(struct arena* win)
 	if(_fbo_ == win->fmt)
 	{
 		//say("@windowread fbo\n");
-		callback_display(win, 0);
+		hostctx_render(win);
 	}
 	else if(_coop_ == win->fmt)
 	{
 		fw = win->win;
 		glfwMakeContextCurrent(fw);
-		callback_display(win, 0);
+		coopctx_update(win);
+		hostctx_render(win);
 		glfwSwapBuffers(fw);
 
 		//cleanup events
@@ -457,8 +470,8 @@ void windowread(struct arena* win)
 
 		fw = win->win;
 		glfwMakeContextCurrent(fw);
-		callback_update(win);
-		callback_display(win, 0);
+		hostctx_update(win);
+		hostctx_render(win);
 		glfwSwapBuffers(fw);
 
 		//cleanup events
