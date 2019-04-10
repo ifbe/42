@@ -139,19 +139,14 @@ GLSL_VERSION
 	"mediump vec3 L = normalize(sunpos - vertex);\n"
 	"mediump float SN = max(dot(N, L), 0.0);\n"
 	"mediump vec3 ret = colour + kdiff*SN;\n"
-	"if(SN<0.0)return lightcolor*ret;\n"
-
-	//phong
-	//"mediump vec3 E = normalize(campos - vertex);\n"
-	//"mediump vec3 R = reflect(-L, N);\n"
-	//"mediump float RV = max(dot(R, E), 0.0);\n"
-	//"ret += kspec*pow(RV, 89.6);\n"
 
 	//blinn phong
+	"if(SN > 0.0){"
 	"mediump vec3 E = normalize(campos - vertex);\n"
 	"mediump vec3 H = normalize(E + L);\n"
 	"mediump float NH = max(dot(N, H), 0.0);\n"
 	"ret += kspec*pow(NH, 89.6);\n"
+	"}\n"
 
 	"return lightcolor * ret;\n"
 "}\n"
@@ -197,12 +192,13 @@ GLSL_VERSION
 	"mediump vec3 L = normalize(sunxyz - vertex);\n"
 	"mediump float SN = max(dot(N, L), 0.0);\n"
 	"mediump vec3 ret = colour + kdiff*SN;\n"
-	"if(SN<0.0)return 0.3*lightcolor*ret;\n"
 
+	"if(SN > 0.0){"
 	"mediump vec3 E = normalize(camxyz - vertex);\n"
 	"mediump vec3 H = normalize(E + L);\n"
 	"mediump float NH = max(dot(N, H), 0.0);\n"
 	"ret += kspec*pow(NH, 25.0);\n"
+	"}\n"
 
 	"return 0.3*lightcolor * ret;\n"
 "}\n"
@@ -211,12 +207,13 @@ GLSL_VERSION
 	"mediump vec3 L = normalize(dirsun0);\n"
 	"mediump float SN = max(dot(N, L), 0.0);\n"
 	"mediump vec3 ret = colour + kdiff*SN;\n"
-	"if(SN<0.0)return 0.3*lightcolor*ret;\n"
 
+	"if(SN > 0.0){"
 	"mediump vec3 E = normalize(camxyz - vertex);\n"
 	"mediump vec3 H = normalize(E + L);\n"
 	"mediump float NH = max(dot(N, H), 0.0);\n"
 	"ret += kspec*pow(NH, 25.0);\n"
+	"}\n"
 
 	"return 0.3*lightcolor * ret;\n"
 "}\n"
@@ -225,12 +222,13 @@ GLSL_VERSION
 	"mediump vec3 L = normalize(dirsun1);\n"
 	"mediump float SN = max(dot(N, L), 0.0);\n"
 	"mediump vec3 ret = colour + kdiff*SN;\n"
-	"if(SN<0.0)return 0.3*lightcolor*ret;\n"
 
+	"if(SN > 0.0){"
 	"mediump vec3 E = normalize(camxyz - vertex);\n"
 	"mediump vec3 H = normalize(E + L);\n"
 	"mediump float NH = max(dot(N, H), 0.0);\n"
 	"ret += kspec*pow(NH, 25.0);\n"
+	"}\n"
 
 	"return 0.3*lightcolor * ret;\n"
 "}\n"

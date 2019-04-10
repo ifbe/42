@@ -192,7 +192,7 @@ static void human_swrite(
 			case 'a':sty->vc[0] -= 100;break;
 			case 'd':sty->vc[0] += 100;break;
 		}
-
+/*
 		sec = timeread() / 1000000.0;
 
 		x = bonenode[0][0] - bonenode[1][0];
@@ -246,7 +246,7 @@ static void human_swrite(
 		bonenode[13][2] = bonenode[11][2] - 0.5;
 		bonenode[14][1] = bonenode[12][1];
 		bonenode[14][2] = bonenode[12][2] - 0.5;
-
+*/
 		//
 		rel = act->irel0;
 		while(1)

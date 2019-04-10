@@ -22,7 +22,7 @@ typedef float mat4[4][4];
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 //
 #ifdef __ANDROID__
-	#define GLSL_VERSION "#version 300 es\n"
+	#define GLSL_VERSION "#version 320 es\n"
 #else
 	#define GLSL_VERSION "#version 410 core\n"
 #endif
