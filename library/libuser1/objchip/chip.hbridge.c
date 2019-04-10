@@ -144,8 +144,8 @@ static void hbridge_read_cli(
 {
 }
 static void hbridge_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)hbridge_read_cli(win, sty, act, pin);
@@ -166,26 +166,27 @@ static void hbridge_swrite(
 {
 }
 static void hbridge_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void hbridge_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void hbridge_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void hbridge_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void hbridge_delete(struct actor* act, u8* buf)
@@ -207,8 +208,8 @@ void hbridge_register(struct actor* p)
 	p->ondelete = (void*)hbridge_delete;
 	p->onstart  = (void*)hbridge_start;
 	p->onstop   = (void*)hbridge_stop;
-	p->onget    = (void*)hbridge_cread;
-	p->onpost   = (void*)hbridge_cwrite;
-	p->onread   = (void*)hbridge_sread;
-	p->onwrite  = (void*)hbridge_swrite;
+	p->oncread  = (void*)hbridge_cread;
+	p->oncwrite = (void*)hbridge_cwrite;
+	p->onsread  = (void*)hbridge_sread;
+	p->onswrite = (void*)hbridge_swrite;
 }

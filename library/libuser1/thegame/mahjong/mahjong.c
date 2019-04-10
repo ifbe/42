@@ -7,33 +7,39 @@ static u8 data[144];
 
 
 
-static void mahjong_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void mahjong_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void mahjong_write(
+static void mahjong_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void mahjong_get()
+static void mahjong_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void mahjong_post()
+static void mahjong_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void mahjong_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void mahjong_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void mahjong_delete(struct actor* act)
@@ -60,8 +66,8 @@ void mahjong_register(struct actor* p)
 	p->ondelete = (void*)mahjong_delete;
 	p->onstart  = (void*)mahjong_start;
 	p->onstop   = (void*)mahjong_stop;
-	p->onget    = (void*)mahjong_get;
-	p->onpost   = (void*)mahjong_post;
-	p->onread   = (void*)mahjong_read;
-	p->onwrite  = (void*)mahjong_write;
+	p->oncread  = (void*)mahjong_cread;
+	p->oncwrite = (void*)mahjong_cwrite;
+	p->onsread  = (void*)mahjong_sread;
+	p->onswrite = (void*)mahjong_swrite;
 }

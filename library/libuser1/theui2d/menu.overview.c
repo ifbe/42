@@ -669,7 +669,7 @@ void overview_read_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
-				carveline2d_arrow(win, 0xc0ffc0, tc, tr);
+				carveline2d_arrow(win, 0x0000ff, tc, tr);
 			}
 			else if(_art_ == rel->srctype)
 			{
@@ -687,7 +687,7 @@ void overview_read_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
-				carveline2d_arrow(win, 0xc0ffc0, tc, tr);
+				carveline2d_arrow(win, 0x00ffff, tc, tr);
 			}
 			else if(_win_ == rel->srctype)
 			{
@@ -705,7 +705,7 @@ void overview_read_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
-				carveline2d_arrow(win, 0xc0ffc0, tc, tr);
+				carveline2d_arrow(win, 0xffff00, tc, tr);
 			}
 			else if(_act_ == rel->srctype)
 			{
@@ -723,7 +723,7 @@ void overview_read_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
-				carveline2d_arrow(win, 0xffffff, tc, tr);
+				carveline2d_arrow(win, 0xff0000, tc, tr);
 			}
 			rel = samedstnextsrc(rel);
 		}
@@ -755,7 +755,7 @@ void overview_read_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
-				carveline2d_arrow(win, 0xc0ffc0, tc, tr);
+				carveline2d_arrow(win, 0x4040ff, tc, tr);
 			}
 			else if(_art_ == rel->srctype)
 			{
@@ -773,7 +773,7 @@ void overview_read_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
-				carveline2d_arrow(win, 0xc0ffc0, tc, tr);
+				carveline2d_arrow(win, 0x40ffff, tc, tr);
 			}
 			else if(_win_ == rel->srctype)
 			{
@@ -791,7 +791,7 @@ void overview_read_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
-				carveline2d_arrow(win, 0xffffff, tc, tr);
+				carveline2d_arrow(win, 0xffff40, tc, tr);
 			}
 			else if(_act_ == rel->srctype)
 			{
@@ -809,7 +809,7 @@ void overview_read_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f - 0.01;
-				carveline2d_arrow(win, 0xffc0ff, tc, tr);
+				carveline2d_arrow(win, 0xff4040, tc, tr);
 			}
 
 			rel = samedstnextsrc(rel);
@@ -1049,8 +1049,8 @@ void overview_read_cli(
 {
 }
 static void overview_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	if(win->fmt == _cli_)overview_read_cli(win, 0, act, pin);
 	else if(win->fmt == _tui_)overview_read_tui(win, 0, act, pin);
@@ -1307,33 +1307,34 @@ static int overview_swrite(
 	return 1;
 }
 static void overview_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void overview_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void overview_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void overview_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
     say("@overview_start\n");
 }
-void overview_delete()
+void overview_delete(struct actor* act)
 {
 }
-void overview_create(void* addr)
+void overview_create(struct actor* act, void* str)
 {
     say("@overview_create\n");
 }
@@ -1350,10 +1351,10 @@ void overview_register(struct actor* p)
 	p->ondelete = (void*)overview_delete;
 	p->onstart  = (void*)overview_start;
 	p->onstop   = (void*)overview_stop;
-	p->onget    = (void*)overview_cread;
-	p->onpost   = (void*)overview_cwrite;
-	p->onread   = (void*)overview_sread;
-	p->onwrite  = (void*)overview_swrite;
+	p->oncread  = (void*)overview_cread;
+	p->oncwrite = (void*)overview_cwrite;
+	p->onsread  = (void*)overview_sread;
+	p->onswrite = (void*)overview_swrite;
 }
 void overview_init(void* addr)
 {

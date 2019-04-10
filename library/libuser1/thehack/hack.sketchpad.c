@@ -426,8 +426,8 @@ static void sketchpad_read_cli(
 	say("sketchpad(%x,%x,%x)\n",win,act,sty);
 }
 static void sketchpad_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -442,10 +442,6 @@ static void sketchpad_sread(
 	}
 	else sketchpad_read_pixel(win, sty, act, pin);
 }
-
-
-
-
 static void sketchpad_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
@@ -550,26 +546,27 @@ static void sketchpad_swrite(
 	}
 }
 static void sketchpad_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void sketchpad_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void sketchpad_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void sketchpad_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	struct datapair* pair;
 	struct glsrc* src;
@@ -636,8 +633,8 @@ void sketchpad_register(struct actor* p)
 	p->ondelete = (void*)sketchpad_delete;
 	p->onstart  = (void*)sketchpad_start;
 	p->onstop   = (void*)sketchpad_stop;
-	p->onget    = (void*)sketchpad_cread;
-	p->onpost   = (void*)sketchpad_cwrite;
-	p->onread   = (void*)sketchpad_sread;
-	p->onwrite  = (void*)sketchpad_swrite;
+	p->oncread  = (void*)sketchpad_cread;
+	p->oncwrite = (void*)sketchpad_cwrite;
+	p->onsread  = (void*)sketchpad_sread;
+	p->onswrite = (void*)sketchpad_swrite;
 }

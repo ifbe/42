@@ -39,8 +39,8 @@ static void vsrc_read_cli(
 {
 }
 static void vsrc_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)vsrc_read_cli(win, sty, act, pin);
@@ -61,26 +61,27 @@ static void vsrc_swrite(
 {
 }
 static void vsrc_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void vsrc_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void vsrc_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void vsrc_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void vsrc_delete(struct actor* act, u8* buf)
@@ -102,8 +103,8 @@ void vsrc_register(struct actor* p)
 	p->ondelete = (void*)vsrc_delete;
 	p->onstart  = (void*)vsrc_start;
 	p->onstop   = (void*)vsrc_stop;
-	p->onget    = (void*)vsrc_cread;
-	p->onpost   = (void*)vsrc_cwrite;
-	p->onread   = (void*)vsrc_sread;
-	p->onwrite  = (void*)vsrc_swrite;
+	p->oncread  = (void*)vsrc_cread;
+	p->oncwrite = (void*)vsrc_cwrite;
+	p->onsread  = (void*)vsrc_sread;
+	p->onswrite = (void*)vsrc_swrite;
 }

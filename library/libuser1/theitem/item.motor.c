@@ -118,9 +118,9 @@ static void motor_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void motor_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void motor_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)motor_read_cli(win, sty, act, pin);
@@ -130,28 +130,34 @@ static void motor_read(
 	else if(fmt == _vbo_)motor_read_vbo(win, sty, act, pin);
 	else motor_read_pixel(win, sty, act, pin);
 }
-static void motor_write(
+static void motor_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void motor_get()
+static void motor_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void motor_post()
+static void motor_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void motor_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void motor_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void motor_delete(struct actor* act)
@@ -178,8 +184,8 @@ void motor_register(struct actor* p)
 	p->ondelete = (void*)motor_delete;
 	p->onstart  = (void*)motor_start;
 	p->onstop   = (void*)motor_stop;
-	p->onget    = (void*)motor_get;
-	p->onpost   = (void*)motor_post;
-	p->onread   = (void*)motor_read;
-	p->onwrite  = (void*)motor_write;
+	p->oncread  = (void*)motor_cread;
+	p->oncwrite = (void*)motor_cwrite;
+	p->onsread  = (void*)motor_sread;
+	p->onswrite = (void*)motor_swrite;
 }

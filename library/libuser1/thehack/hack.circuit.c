@@ -158,9 +158,9 @@ static void circuit_read_cli(
 {
 	say("circuit(%x,%x,%x)\n",win,act,sty);
 }
-static void circuit_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void circuit_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -171,28 +171,34 @@ static void circuit_read(
 	else if(fmt == _vbo_)circuit_read_vbo(win, sty, act, pin);
 	else circuit_read_pixel(win, sty, act, pin);
 }
-static void circuit_write(
+static void circuit_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
 {
 }
-static void circuit_get()
+static void circuit_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void circuit_post()
+static void circuit_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void circuit_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void circuit_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	int x,y,z,w;
 	u8 (*data)[HEIGHT][WIDTH] = leaf->buf;
@@ -249,8 +255,8 @@ void circuit_register(struct actor* p)
 	p->ondelete = (void*)circuit_delete;
 	p->onstart  = (void*)circuit_start;
 	p->onstop   = (void*)circuit_stop;
-	p->onget    = (void*)circuit_get;
-	p->onpost   = (void*)circuit_post;
-	p->onread   = (void*)circuit_read;
-	p->onwrite  = (void*)circuit_write;
+	p->oncread  = (void*)circuit_cread;
+	p->oncwrite = (void*)circuit_cwrite;
+	p->onsread  = (void*)circuit_sread;
+	p->onswrite = (void*)circuit_swrite;
 }

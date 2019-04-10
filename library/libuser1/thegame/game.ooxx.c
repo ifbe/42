@@ -144,8 +144,8 @@ static void ooxx_read_cli(
 	}
 }
 static void ooxx_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)ooxx_read_cli(win, sty, act, pin);
@@ -192,22 +192,28 @@ say("%d,%d\n",x,y);
 		turn++;
 	}
 }
-static void ooxx_cread()
+static void ooxx_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void ooxx_cwrite()
+static void ooxx_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void ooxx_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void ooxx_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	int x,y;
 
@@ -241,8 +247,8 @@ void ooxx_register(struct actor* p)
 	p->ondelete = (void*)ooxx_delete;
 	p->onstart  = (void*)ooxx_start;
 	p->onstop   = (void*)ooxx_stop;
-	p->onget    = (void*)ooxx_cread;
-	p->onpost   = (void*)ooxx_cwrite;
-	p->onread   = (void*)ooxx_sread;
-	p->onwrite  = (void*)ooxx_swrite;
+	p->oncread  = (void*)ooxx_cread;
+	p->oncwrite = (void*)ooxx_cwrite;
+	p->onsread  = (void*)ooxx_sread;
+	p->onswrite = (void*)ooxx_swrite;
 }

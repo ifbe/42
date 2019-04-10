@@ -106,9 +106,9 @@ static void klotski_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void klotski_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void klotski_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)klotski_read_cli(win, sty, act, pin);
@@ -118,32 +118,34 @@ static void klotski_read(
 	else if(fmt == _vbo_)klotski_read_vbo(win, sty, act, pin);
 	else klotski_read_pixel(win, sty, act, pin);
 }
-static void klotski_write(
+static void klotski_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-
-
-
-
-static void klotski_get()
+static void klotski_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void klotski_post()
+static void klotski_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void klotski_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void klotski_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	data[0][1] = data[0][2] = data[1][1] = data[1][2] = caocao;
 	data[0][0] = data[1][0] = machao;
@@ -181,8 +183,8 @@ void klotski_register(struct actor* p)
 	p->ondelete = (void*)klotski_delete;
 	p->onstart  = (void*)klotski_start;
 	p->onstop   = (void*)klotski_stop;
-	p->onget    = (void*)klotski_get;
-	p->onpost   = (void*)klotski_post;
-	p->onread   = (void*)klotski_read;
-	p->onwrite  = (void*)klotski_write;
+	p->oncread  = (void*)klotski_cread;
+	p->oncwrite = (void*)klotski_cwrite;
+	p->onsread  = (void*)klotski_sread;
+	p->onswrite = (void*)klotski_swrite;
 }

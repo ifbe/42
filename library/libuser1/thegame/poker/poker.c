@@ -88,9 +88,9 @@ static void poker_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void poker_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void poker_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)poker_read_cli(win, sty, act, pin);
@@ -100,26 +100,34 @@ static void poker_read(
 	else if(fmt == _vbo_)poker_read_vbo(win, sty, act, pin);
 	else poker_read_pixel(win, sty, act, pin);
 }
-static void poker_write(
+static void poker_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void poker_get()
+static void poker_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void poker_post()
+static void poker_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void poker_stop(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
 {
 }
 static void poker_start(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
 {
 }
 static void poker_delete(struct actor* act)
@@ -146,8 +154,8 @@ void poker_register(struct actor* p)
 	p->ondelete = (void*)poker_delete;
 	p->onstart  = (void*)poker_start;
 	p->onstop   = (void*)poker_stop;
-	p->onget    = (void*)poker_get;
-	p->onpost   = (void*)poker_post;
-	p->onread   = (void*)poker_read;
-	p->onwrite  = (void*)poker_write;
+	p->oncread  = (void*)poker_cread;
+	p->oncwrite = (void*)poker_cwrite;
+	p->onsread  = (void*)poker_sread;
+	p->onswrite = (void*)poker_swrite;
 }

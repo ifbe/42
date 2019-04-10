@@ -92,8 +92,8 @@ static void stair_read_cli(
 {
 }
 static void stair_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)stair_read_cli(win, sty, act, pin);
@@ -113,22 +113,28 @@ static void stair_swrite(
 	struct event* ev, int len)
 {
 }
-static void stair_cread()
+static void stair_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void stair_cwrite()
+static void stair_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void stair_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void stair_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void stair_delete(struct actor* act)
@@ -155,8 +161,8 @@ void stair_register(struct actor* p)
 	p->ondelete = (void*)stair_delete;
 	p->onstart  = (void*)stair_start;
 	p->onstop   = (void*)stair_stop;
-	p->onget    = (void*)stair_cread;
-	p->onpost   = (void*)stair_cwrite;
-	p->onread   = (void*)stair_sread;
-	p->onwrite  = (void*)stair_swrite;
+	p->oncread  = (void*)stair_cread;
+	p->oncwrite = (void*)stair_cwrite;
+	p->onsread  = (void*)stair_sread;
+	p->onswrite = (void*)stair_swrite;
 }

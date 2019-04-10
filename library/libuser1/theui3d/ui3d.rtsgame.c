@@ -4,8 +4,8 @@
 
 
 static int rtsgame_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	return 0;
 }
@@ -58,26 +58,27 @@ static int rtsgame_swrite(
 	return 1;
 }
 static void rtsgame_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void rtsgame_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void rtsgame_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void rtsgame_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
     say("@rtsgame_start\n");
 }
@@ -101,8 +102,8 @@ void rtsgame_register(struct actor* p)
 	p->ondelete = (void*)rtsgame_delete;
 	p->onstart  = (void*)rtsgame_start;
 	p->onstop   = (void*)rtsgame_stop;
-	p->onget    = (void*)rtsgame_cread;
-	p->onpost   = (void*)rtsgame_cwrite;
-	p->onread   = (void*)rtsgame_sread;
-	p->onwrite  = (void*)rtsgame_swrite;
+	p->oncread  = (void*)rtsgame_cread;
+	p->oncwrite = (void*)rtsgame_cwrite;
+	p->onsread  = (void*)rtsgame_sread;
+	p->onswrite = (void*)rtsgame_swrite;
 }

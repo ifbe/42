@@ -163,8 +163,8 @@ static void texball_read_cli(
 	say("texball(%x,%x,%x)\n",win,act,sty);
 }
 static void texball_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -221,22 +221,28 @@ static void texball_swrite(
 		}
 	}
 }
-static void texball_cread()
+static void texball_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void texball_cwrite()
+static void texball_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void texball_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void texball_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	struct datapair* pair;
 	struct glsrc* src;
@@ -306,8 +312,8 @@ void texball_register(struct actor* p)
 	p->ondelete = (void*)texball_delete;
 	p->onstart  = (void*)texball_start;
 	p->onstop   = (void*)texball_stop;
-	p->onget    = (void*)texball_cread;
-	p->onpost   = (void*)texball_cwrite;
-	p->onread   = (void*)texball_sread;
-	p->onwrite  = (void*)texball_swrite;
+	p->oncread  = (void*)texball_cread;
+	p->oncwrite = (void*)texball_cwrite;
+	p->onsread  = (void*)texball_sread;
+	p->onswrite = (void*)texball_swrite;
 }

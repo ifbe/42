@@ -108,8 +108,8 @@ static void dna_read_cli(
 {
 }
 static void dna_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)dna_read_cli(win, sty, act, pin);
@@ -129,22 +129,28 @@ static void dna_swrite(
 	struct event* ev, int len)
 {
 }
-static void dna_cread()
+static void dna_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void dna_cwrite()
+static void dna_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void dna_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void dna_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void dna_delete(struct actor* act)
@@ -171,8 +177,8 @@ void dna_register(struct actor* p)
 	p->ondelete = (void*)dna_delete;
 	p->onstart  = (void*)dna_start;
 	p->onstop   = (void*)dna_stop;
-	p->onget    = (void*)dna_cread;
-	p->onpost   = (void*)dna_cwrite;
-	p->onread   = (void*)dna_sread;
-	p->onwrite  = (void*)dna_swrite;
+	p->oncread  = (void*)dna_cread;
+	p->oncwrite = (void*)dna_cwrite;
+	p->onsread  = (void*)dna_sread;
+	p->onswrite = (void*)dna_swrite;
 }

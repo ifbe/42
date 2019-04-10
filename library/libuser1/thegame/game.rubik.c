@@ -315,8 +315,8 @@ static void rubikscube_read_cli(
 	say("rubik(%x,%x,%x)\n",win,act,sty);
 }
 static void rubikscube_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)rubikscube_read_cli(win, sty, act, pin);
@@ -339,26 +339,27 @@ static void rubikscube_swrite(
 	}
 }
 static void rubikscube_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void rubikscube_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void rubikscube_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void rubikscube_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void rubikscube_delete(struct actor* act)
@@ -404,8 +405,8 @@ void rubikscube_register(struct actor* p)
 	p->ondelete = (void*)rubikscube_delete;
 	p->onstart  = (void*)rubikscube_start;
 	p->onstop   = (void*)rubikscube_stop;
-	p->onget    = (void*)rubikscube_cread;
-	p->onpost   = (void*)rubikscube_cwrite;
-	p->onread   = (void*)rubikscube_sread;
-	p->onwrite  = (void*)rubikscube_swrite;
+	p->oncread  = (void*)rubikscube_cread;
+	p->oncwrite = (void*)rubikscube_cwrite;
+	p->onsread  = (void*)rubikscube_sread;
+	p->onswrite = (void*)rubikscube_swrite;
 }

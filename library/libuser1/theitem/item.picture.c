@@ -239,8 +239,8 @@ static void picture_read_cli(
 	say("picture(%x,%x,%x)\n",win,act,sty);
 }
 static void picture_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -262,26 +262,27 @@ static void picture_swrite(
 {
 }
 static void picture_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void picture_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void picture_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void picture_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	struct datapair* pair;
 	struct glsrc* src;
@@ -344,8 +345,8 @@ void picture_register(struct actor* p)
 	p->ondelete = (void*)picture_delete;
 	p->onstart  = (void*)picture_start;
 	p->onstop   = (void*)picture_stop;
-	p->onget    = (void*)picture_cread;
-	p->onpost   = (void*)picture_cwrite;
-	p->onread   = (void*)picture_sread;
-	p->onwrite  = (void*)picture_swrite;
+	p->oncread  = (void*)picture_cread;
+	p->oncwrite = (void*)picture_cwrite;
+	p->onsread  = (void*)picture_sread;
+	p->onswrite = (void*)picture_swrite;
 }

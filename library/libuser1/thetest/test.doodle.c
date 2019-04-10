@@ -153,8 +153,8 @@ static void doodle_read_cli(
 	say("doodle(%x,%x,%x)\n", win, sty, act, pin);
 }
 static void doodle_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)doodle_read_cli(win, sty, act, pin);
@@ -178,26 +178,27 @@ static void doodle_swrite(
 	}
 }
 static void doodle_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void doodle_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void doodle_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void doodle_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void doodle_delete(struct actor* act)
@@ -221,8 +222,8 @@ void doodle_register(struct actor* p)
 	p->ondelete = (void*)doodle_delete;
 	p->onstart  = (void*)doodle_start;
 	p->onstop   = (void*)doodle_stop;
-	p->onget    = (void*)doodle_cread;
-	p->onpost   = (void*)doodle_cwrite;
-	p->onread   = (void*)doodle_sread;
-	p->onwrite  = (void*)doodle_swrite;
+	p->oncread  = (void*)doodle_cread;
+	p->oncwrite = (void*)doodle_cwrite;
+	p->onsread  = (void*)doodle_sread;
+	p->onswrite = (void*)doodle_swrite;
 }

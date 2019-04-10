@@ -34,8 +34,8 @@ static void sokoban_read_cli(
 {
 }
 static void sokoban_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -52,22 +52,28 @@ static void sokoban_swrite(
 	struct event* ev, int len)
 {
 }
-static void sokoban_cread()
+static void sokoban_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void sokoban_cwrite()
+static void sokoban_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void sokoban_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void sokoban_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void sokoban_delete(struct actor* act)
@@ -93,8 +99,8 @@ void sokoban_register(struct actor* p)
 	p->ondelete = (void*)sokoban_delete;
 	p->onstart  = (void*)sokoban_start;
 	p->onstop   = (void*)sokoban_stop;
-	p->onget    = (void*)sokoban_cread;
-	p->onpost   = (void*)sokoban_cwrite;
-	p->onread   = (void*)sokoban_sread;
-	p->onwrite  = (void*)sokoban_swrite;
+	p->oncread  = (void*)sokoban_cread;
+	p->oncwrite = (void*)sokoban_cwrite;
+	p->onsread  = (void*)sokoban_sread;
+	p->onswrite = (void*)sokoban_swrite;
 }

@@ -99,9 +99,9 @@ static void pwmtool_read_cli(
 {
 	say("pwmtool(%x,%x,%x)\n",win,act,sty);
 }
-static void pwmtool_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void pwmtool_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -112,28 +112,34 @@ static void pwmtool_read(
 	else if(fmt == _vbo_)pwmtool_read_vbo(win, sty, act, pin);
 	else pwmtool_read_pixel(win, sty, act, pin);
 }
-static void pwmtool_write(
+static void pwmtool_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
 {
 }
-static void pwmtool_get()
+static void pwmtool_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void pwmtool_post()
+static void pwmtool_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void pwmtool_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void pwmtool_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void pwmtool_delete(struct actor* act)
@@ -163,8 +169,8 @@ void pwmtool_register(struct actor* p)
 	p->ondelete = (void*)pwmtool_delete;
 	p->onstart  = (void*)pwmtool_start;
 	p->onstop   = (void*)pwmtool_stop;
-	p->onget    = (void*)pwmtool_get;
-	p->onpost   = (void*)pwmtool_post;
-	p->onread   = (void*)pwmtool_read;
-	p->onwrite  = (void*)pwmtool_write;
+	p->oncread  = (void*)pwmtool_cread;
+	p->oncwrite = (void*)pwmtool_cwrite;
+	p->onsread  = (void*)pwmtool_sread;
+	p->onswrite = (void*)pwmtool_swrite;
 }

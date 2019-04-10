@@ -186,8 +186,8 @@ static void clock_read_cli(
 		p[6],p[5],p[4],p[3],p[2],p[1],p[0]);
 }
 static void clock_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)clock_read_cli(win, sty, act, pin);
@@ -207,22 +207,28 @@ static void clock_swrite(
 	struct event* ev, int len)
 {
 }
-static void clock_cread()
+static void clock_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void clock_cwrite()
+static void clock_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void clock_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void clock_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void clock_delete(struct actor* act)
@@ -249,8 +255,8 @@ void clock_register(struct actor* p)
 	p->ondelete = (void*)clock_delete;
 	p->onstart  = (void*)clock_start;
 	p->onstop   = (void*)clock_stop;
-	p->onget    = (void*)clock_cread;
-	p->onpost   = (void*)clock_cwrite;
-	p->onread   = (void*)clock_sread;
-	p->onwrite  = (void*)clock_swrite;
+	p->oncread  = (void*)clock_cread;
+	p->oncwrite = (void*)clock_cwrite;
+	p->onsread  = (void*)clock_sread;
+	p->onswrite = (void*)clock_swrite;
 }

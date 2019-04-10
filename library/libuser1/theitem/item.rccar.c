@@ -159,8 +159,8 @@ static void rccar_read_cli(
 {
 }
 static void rccar_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)rccar_read_cli(win, sty, act, pin);
@@ -238,14 +238,15 @@ static void rccar_swrite(
 	}
 }
 static void rccar_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void rccar_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void rccar_stop(
@@ -286,8 +287,8 @@ void rccar_register(struct actor* p)
 	p->ondelete = (void*)rccar_delete;
 	p->onstart  = (void*)rccar_start;
 	p->onstop   = (void*)rccar_stop;
-	p->onget    = (void*)rccar_cread;
-	p->onpost   = (void*)rccar_cwrite;
-	p->onread   = (void*)rccar_sread;
-	p->onwrite  = (void*)rccar_swrite;
+	p->oncread  = (void*)rccar_cread;
+	p->oncwrite = (void*)rccar_cwrite;
+	p->onsread  = (void*)rccar_sread;
+	p->onswrite = (void*)rccar_swrite;
 }

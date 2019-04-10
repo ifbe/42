@@ -183,8 +183,8 @@ static void chess_read_cli(
 	}
 }
 static void chess_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)chess_read_cli(win, sty, act, pin);
@@ -206,26 +206,27 @@ static void chess_swrite(
 	//say("@chess:%x,%x\n", ev->why, ev->what);
 }
 static void chess_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void chess_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void chess_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void chess_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	int j,k;
 	for(k=0;k<8;k++)
@@ -287,8 +288,8 @@ void chess_register(struct actor* p)
 	p->ondelete = (void*)chess_delete;
 	p->onstart  = (void*)chess_start;
 	p->onstop   = (void*)chess_stop;
-	p->onget    = (void*)chess_cread;
-	p->onpost   = (void*)chess_cwrite;
-	p->onread   = (void*)chess_sread;
-	p->onwrite  = (void*)chess_swrite;
+	p->oncread  = (void*)chess_cread;
+	p->oncwrite = (void*)chess_cwrite;
+	p->onsread  = (void*)chess_sread;
+	p->onswrite = (void*)chess_swrite;
 }

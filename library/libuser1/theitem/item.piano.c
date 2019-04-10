@@ -253,8 +253,8 @@ static void piano_read_cli(
 	say("piano(%x,%x,%x)\n",win,act,sty);
 }
 static void piano_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -346,26 +346,27 @@ static void piano_swrite(
 	}//if(0==len)
 }
 static void piano_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void piano_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void piano_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void piano_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void piano_delete(struct actor* act)
@@ -399,8 +400,8 @@ void piano_register(struct actor* p)
 	p->ondelete = (void*)piano_delete;
 	p->onstart  = (void*)piano_start;
 	p->onstop   = (void*)piano_stop;
-	p->onget    = (void*)piano_cread;
-	p->onpost   = (void*)piano_cwrite;
-	p->onread   = (void*)piano_sread;
-	p->onwrite  = (void*)piano_swrite;
+	p->oncread  = (void*)piano_cread;
+	p->oncwrite = (void*)piano_cwrite;
+	p->onsread  = (void*)piano_sread;
+	p->onswrite = (void*)piano_swrite;
 }

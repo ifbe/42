@@ -139,8 +139,8 @@ static void ground_read_cli(
 {
 }
 static void ground_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)ground_read_cli(win, sty, act, pin);
@@ -157,26 +157,27 @@ static void ground_swrite(
 {
 }
 static void ground_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void ground_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void ground_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void ground_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	struct datapair* pair;
 	struct glsrc* src;
@@ -228,8 +229,8 @@ void ground_register(struct actor* p)
 	p->ondelete = (void*)ground_delete;
 	p->onstart  = (void*)ground_start;
 	p->onstop   = (void*)ground_stop;
-	p->onget    = (void*)ground_cread;
-	p->onpost   = (void*)ground_cwrite;
-	p->onread   = (void*)ground_sread;
-	p->onwrite  = (void*)ground_swrite;
+	p->oncread  = (void*)ground_cread;
+	p->oncwrite = (void*)ground_cwrite;
+	p->onsread  = (void*)ground_sread;
+	p->onswrite = (void*)ground_swrite;
 }

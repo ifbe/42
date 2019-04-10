@@ -163,6 +163,18 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct actor* act)
 		}
 	}
 }
+void terrain_locate(vec4 v, struct actor* act)
+{
+	int x,y;
+	int w = act->width;
+	int h = act->height;
+	u8* rgba = act->buf;
+
+	x = w * (200000.0 + v[0]) / 400000.0;
+	y = h * (200000.0 - v[1]) / 400000.0;
+	if( (x<0) | (x>=w) | (y<0) | (y>=h) )v[2] = 0.0;
+	else v[2] = rgba[(w*y + x) * 4] * 8000.0 / 256.0;
+}
 
 
 
@@ -218,8 +230,8 @@ static void terrain_read_cli(
 {
 }
 static void terrain_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)terrain_read_cli(win, sty, act, pin);
@@ -236,26 +248,31 @@ static void terrain_swrite(
 {
 }
 static void terrain_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
+	float* v = (void*)buf;
+	terrain_locate(v, act);
+	say("%f,%f,%f\n", v[0], v[1], v[2]);
 }
 static void terrain_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
+	say("@terrain_cwrite\n");
 }
 static void terrain_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void terrain_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	void* vbuf;
 	void* ibuf;
@@ -373,8 +390,8 @@ void terrain_register(struct actor* p)
 	p->ondelete = (void*)terrain_delete;
 	p->onstart  = (void*)terrain_start;
 	p->onstop   = (void*)terrain_stop;
-	p->onget    = (void*)terrain_cread;
-	p->onpost   = (void*)terrain_cwrite;
-	p->onread   = (void*)terrain_sread;
-	p->onwrite  = (void*)terrain_swrite;
+	p->oncread  = (void*)terrain_cread;
+	p->oncwrite = (void*)terrain_cwrite;
+	p->onsread  = (void*)terrain_sread;
+	p->onswrite = (void*)terrain_swrite;
 }

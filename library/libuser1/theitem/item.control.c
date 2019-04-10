@@ -142,9 +142,9 @@ static void control_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void control_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void control_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)control_read_cli(win, sty, act, pin);
@@ -154,7 +154,7 @@ static void control_read(
 	else if(fmt == _vbo_)control_read_vbo(win, sty, act, pin);
 	else control_read_pixel(win, sty, act, pin);
 }
-static void control_write(
+static void control_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -180,22 +180,28 @@ static void control_write(
 		irel = samedstnextsrc(irel);
 	}
 }
-static void control_get()
+static void control_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void control_post()
+static void control_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void control_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void control_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void control_delete(struct actor* act)
@@ -228,8 +234,8 @@ void control_register(struct actor* p)
 	p->ondelete = (void*)control_delete;
 	p->onstart  = (void*)control_start;
 	p->onstop   = (void*)control_stop;
-	p->onget    = (void*)control_get;
-	p->onpost   = (void*)control_post;
-	p->onread   = (void*)control_read;
-	p->onwrite  = (void*)control_write;
+	p->oncread  = (void*)control_cread;
+	p->oncwrite = (void*)control_cwrite;
+	p->onsread  = (void*)control_sread;
+	p->onswrite = (void*)control_swrite;
 }

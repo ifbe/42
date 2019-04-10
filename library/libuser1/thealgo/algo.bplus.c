@@ -162,9 +162,9 @@ static void bplus_read_cli(
 {
 	say("tree(%x,%x,%x)\n",win,act,sty);
 }
-static void bplus_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void bplus_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -175,7 +175,7 @@ static void bplus_read(
 	else if(fmt == _vbo_)bplus_read_vbo(win, sty, act, pin);
 	else bplus_read_pixel(win, sty, act, pin);
 }
-static void bplus_write(
+static void bplus_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -190,22 +190,28 @@ static void bplus_write(
 		bplus_debug(node);
 	}
 }
-static void bplus_get()
+static void bplus_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void bplus_post()
+static void bplus_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void bplus_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void bplus_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void bplus_delete(struct actor* act)
@@ -232,8 +238,8 @@ void bplus_register(struct actor* p)
 	p->ondelete = (void*)bplus_delete;
 	p->onstart  = (void*)bplus_start;
 	p->onstop   = (void*)bplus_stop;
-	p->onget   = (void*)bplus_get;
-	p->onpost   = (void*)bplus_post;
-	p->onread   = (void*)bplus_read;
-	p->onwrite  = (void*)bplus_write;
+	p->oncread  = (void*)bplus_cread;
+	p->oncwrite = (void*)bplus_cwrite;
+	p->onsread  = (void*)bplus_sread;
+	p->onswrite = (void*)bplus_swrite;
 }

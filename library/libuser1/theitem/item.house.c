@@ -154,9 +154,9 @@ static void house_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void house_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void house_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)house_read_cli(win, sty, act, pin);
@@ -166,28 +166,34 @@ static void house_read(
 	else if(fmt == _vbo_)house_read_vbo(win, sty, act, pin);
 	else house_read_pixel(win, sty, act, pin);
 }
-static void house_write(
+static void house_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void house_get()
+static void house_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void house_post()
+static void house_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void house_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void house_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void house_delete(struct actor* act)
@@ -214,8 +220,8 @@ void house_register(struct actor* p)
 	p->ondelete = (void*)house_delete;
 	p->onstart  = (void*)house_start;
 	p->onstop   = (void*)house_stop;
-	p->onget    = (void*)house_get;
-	p->onpost   = (void*)house_post;
-	p->onread   = (void*)house_read;
-	p->onwrite  = (void*)house_write;
+	p->oncread  = (void*)house_cread;
+	p->oncwrite = (void*)house_cwrite;
+	p->onsread  = (void*)house_sread;
+	p->onswrite = (void*)house_swrite;
 }

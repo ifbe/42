@@ -327,8 +327,8 @@ static void light_read_cli(
 {
 }
 static void light_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)light_read_cli(win, sty, act, pin);
@@ -345,26 +345,27 @@ static void light_swrite(
 {
 }
 static void light_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void light_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void light_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void light_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	void* mvp;
 	struct relation* rel;
@@ -431,8 +432,8 @@ void light_register(struct actor* p)
 	p->ondelete = (void*)light_delete;
 	p->onstart  = (void*)light_start;
 	p->onstop   = (void*)light_stop;
-	p->onget    = (void*)light_cread;
-	p->onpost   = (void*)light_cwrite;
-	p->onread   = (void*)light_sread;
-	p->onwrite  = (void*)light_swrite;
+	p->oncread  = (void*)light_cread;
+	p->oncwrite = (void*)light_cwrite;
+	p->onsread  = (void*)light_sread;
+	p->onswrite = (void*)light_swrite;
 }

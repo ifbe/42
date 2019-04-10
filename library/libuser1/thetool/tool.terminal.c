@@ -173,8 +173,8 @@ static void terminal_read_cli(
 	//say("terminal(%x,%x,%x)\n",win,act,sty);
 }
 static void terminal_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)terminal_read_cli(win, sty, act, pin);
@@ -214,26 +214,27 @@ static void terminal_swrite(
 	}
 }
 static void terminal_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void terminal_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	void* buf, int len)
+	u8* buf, int len)
 {
 }
 static void terminal_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void terminal_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void terminal_delete(struct actor* act)
@@ -282,8 +283,8 @@ void terminal_register(struct actor* p)
 	p->ondelete = (void*)terminal_delete;
 	p->onstart  = (void*)terminal_start;
 	p->onstop   = (void*)terminal_stop;
-	p->onget    = (void*)terminal_cread;
-	p->onpost   = (void*)terminal_cwrite;
-	p->onread   = (void*)terminal_sread;
-	p->onwrite  = (void*)terminal_swrite;
+	p->oncread  = (void*)terminal_cread;
+	p->oncwrite = (void*)terminal_cwrite;
+	p->onsread  = (void*)terminal_sread;
+	p->onswrite = (void*)terminal_swrite;
 }

@@ -120,9 +120,9 @@ void snake_read_cli(
 {
 	say("snake(%x,%x,%x)\n",win,act,sty);
 }
-void snake_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void snake_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)snake_read_cli(win, sty, act, pin);
@@ -132,11 +132,7 @@ void snake_read(
 	else if(fmt == _vbo_)snake_read_vbo(win, sty, act, pin);
 	else snake_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-void snake_write(
+void snake_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -159,22 +155,28 @@ void snake_write(
 		else if(key == 0x50)snake_down(buf, WIDTH, HEIGHT);
 	}
 }
-static void snake_get()
+static void snake_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void snake_post()
+static void snake_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void snake_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void snake_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	snake_generate(buf, WIDTH, HEIGHT);
 }
@@ -202,8 +204,8 @@ void snake_register(struct actor* p)
 	p->ondelete = (void*)snake_delete;
 	p->onstart  = (void*)snake_start;
 	p->onstop   = (void*)snake_stop;
-	p->onget    = (void*)snake_get;
-	p->onpost   = (void*)snake_post;
-	p->onread   = (void*)snake_read;
-	p->onwrite  = (void*)snake_write;
+	p->oncread  = (void*)snake_cread;
+	p->oncwrite = (void*)snake_cwrite;
+	p->onsread  = (void*)snake_sread;
+	p->onswrite = (void*)snake_swrite;
 }

@@ -308,9 +308,9 @@ static void weiqi_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void weiqi_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void weiqi_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -325,11 +325,7 @@ static void weiqi_read(
 	}
 	else weiqi_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-void weiqi_write(
+static void weiqi_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -391,22 +387,28 @@ void weiqi_write(
 		turn++;
 	}
 }
-static void weiqi_get()
+static void weiqi_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void weiqi_post()
+static void weiqi_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void weiqi_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void weiqi_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	turn = 0;
 	px = py = 0;
@@ -449,8 +451,8 @@ void weiqi_register(struct actor* p)
 	p->ondelete = (void*)weiqi_delete;
 	p->onstart  = (void*)weiqi_start;
 	p->onstop   = (void*)weiqi_stop;
-	p->onget    = (void*)weiqi_get;
-	p->onpost   = (void*)weiqi_post;
-	p->onread   = (void*)weiqi_read;
-	p->onwrite  = (void*)weiqi_write;
+	p->oncread  = (void*)weiqi_cread;
+	p->oncwrite = (void*)weiqi_cwrite;
+	p->onsread  = (void*)weiqi_sread;
+	p->onswrite = (void*)weiqi_swrite;
 }

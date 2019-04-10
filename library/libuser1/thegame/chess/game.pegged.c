@@ -132,9 +132,9 @@ static void pegged_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void pegged_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void pegged_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)pegged_read_cli(win, sty, act, pin);
@@ -144,28 +144,34 @@ static void pegged_read(
 	else if(fmt == _vbo_)pegged_read_vbo(win, sty, act, pin);
 	else pegged_read_pixel(win, sty, act, pin);
 }
-static void pegged_write(
+static void pegged_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void pegged_get()
+static void pegged_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void pegged_post()
+static void pegged_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void pegged_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void pegged_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	int x,y;
 	for(y=0;y<7;y++)
@@ -202,8 +208,8 @@ void pegged_register(struct actor* p)
 	p->ondelete = (void*)pegged_delete;
 	p->onstart  = (void*)pegged_start;
 	p->onstop   = (void*)pegged_stop;
-	p->onget    = (void*)pegged_get;
-	p->onpost   = (void*)pegged_post;
-	p->onread   = (void*)pegged_read;
-	p->onwrite  = (void*)pegged_write;
+	p->oncread  = (void*)pegged_cread;
+	p->oncwrite = (void*)pegged_cwrite;
+	p->onsread  = (void*)pegged_sread;
+	p->onswrite = (void*)pegged_swrite;
 }

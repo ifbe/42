@@ -91,9 +91,9 @@ static void cylinder_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void cylinder_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void cylinder_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)cylinder_read_cli(win, sty, act, pin);
@@ -107,32 +107,34 @@ static void cylinder_read(
 	}
 	else cylinder_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-static void cylinder_write(
+static void cylinder_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void cylinder_post(u8* buf, int len)
+static void cylinder_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void cylinder_get(u8* buf, int len)
+static void cylinder_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void cylinder_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void cylinder_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void cylinder_delete(struct actor* act, u8* buf)
@@ -154,8 +156,8 @@ void cylinder_register(struct actor* p)
 	p->ondelete = (void*)cylinder_delete;
 	p->onstart  = (void*)cylinder_start;
 	p->onstop   = (void*)cylinder_stop;
-	p->onget    = (void*)cylinder_get;
-	p->onpost   = (void*)cylinder_post;
-	p->onread   = (void*)cylinder_read;
-	p->onwrite  = (void*)cylinder_write;
+	p->oncread  = (void*)cylinder_cread;
+	p->oncwrite = (void*)cylinder_cwrite;
+	p->onsread  = (void*)cylinder_sread;
+	p->onswrite = (void*)cylinder_swrite;
 }

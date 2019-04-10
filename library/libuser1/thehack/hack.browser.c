@@ -98,9 +98,9 @@ static void browser_read_cli(
 {
 	say("browser(%x,%x,%x)\n",win,act,sty);
 }
-static void browser_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void browser_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -188,7 +188,7 @@ static void browser_write_data(
 
 	printhtmlbody(dat->buf, dat->len);
 }
-static void browser_write(
+static void browser_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	void* buf, int len)
@@ -196,26 +196,28 @@ static void browser_write(
 	if(0 == win)browser_write_event(act, pin, win, sty, buf);
 	else browser_write_data(act, pin, win, sty, buf, len);
 }
-
-
-
-
-static void browser_get()
+static void browser_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void browser_post()
+static void browser_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void browser_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void browser_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void browser_delete(struct actor* act)
@@ -250,8 +252,8 @@ void browser_register(struct actor* p)
 	p->ondelete = (void*)browser_delete;
 	p->onstart  = (void*)browser_start;
 	p->onstop   = (void*)browser_stop;
-	p->onget    = (void*)browser_get;
-	p->onpost   = (void*)browser_post;
-	p->onread   = (void*)browser_read;
-	p->onwrite  = (void*)browser_write;
+	p->oncread  = (void*)browser_cread;
+	p->oncwrite = (void*)browser_cwrite;
+	p->onsread  = (void*)browser_sread;
+	p->onswrite = (void*)browser_swrite;
 }

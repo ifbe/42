@@ -281,9 +281,9 @@ void video_read_cli(
 	u8* src = act->idx;
 	say("src@%llx\n", src);
 }
-static void video_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void video_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -298,7 +298,7 @@ static void video_read(
 	}
 	else video_read_pixel(win, sty, act, pin);
 }
-static void video_write(
+static void video_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
@@ -308,16 +308,22 @@ static void video_write(
 
 	act->idx = buf;
 }
-static void video_get()
+static void video_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void video_post()
+static void video_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void video_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	struct glsrc* src;
 	if(0 == lf)return;
@@ -409,8 +415,8 @@ void video_register(struct actor* p)
 	p->ondelete = (void*)video_delete;
 	p->onstart  = (void*)video_start;
 	p->onstop   = (void*)video_stop;
-	p->onget    = (void*)video_get;
-	p->onpost   = (void*)video_post;
-	p->onread   = (void*)video_read;
-	p->onwrite  = (void*)video_write;
+	p->oncread  = (void*)video_cread;
+	p->oncwrite = (void*)video_cwrite;
+	p->onsread  = (void*)video_sread;
+	p->onswrite = (void*)video_swrite;
 }

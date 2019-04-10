@@ -148,9 +148,9 @@ static void qrcode_read_cli(
 {
 	say("qrcode(%x,%x,%x)\n",win,act,sty);
 }
-static void qrcode_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void qrcode_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -165,28 +165,34 @@ static void qrcode_read(
 	}
 	else qrcode_read_pixel(win, sty, act, pin);
 }
-static void qrcode_write(
+static void qrcode_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void qrcode_get()
+static void qrcode_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void qrcode_post()
+static void qrcode_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void qrcode_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void qrcode_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	slen=49;
 	qrcode_generate("haha",databuf,slen);
@@ -215,8 +221,8 @@ void qrcode_register(struct actor* p)
 	p->ondelete = (void*)qrcode_delete;
 	p->onstart  = (void*)qrcode_start;
 	p->onstop   = (void*)qrcode_stop;
-	p->onget    = (void*)qrcode_get;
-	p->onpost   = (void*)qrcode_post;
-	p->onread   = (void*)qrcode_read;
-	p->onwrite  = (void*)qrcode_write;
+	p->oncread  = (void*)qrcode_cread;
+	p->oncwrite = (void*)qrcode_cwrite;
+	p->onsread  = (void*)qrcode_sread;
+	p->onswrite = (void*)qrcode_swrite;
 }

@@ -566,8 +566,8 @@ found:
 
 
 static int picker_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int flag;
 	struct relation* rel;
@@ -656,26 +656,27 @@ found:
 	return 1;
 }
 static void picker_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void picker_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void picker_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void picker_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
     say("@picker_start\n");
 }
@@ -699,8 +700,8 @@ void picker_register(struct actor* p)
 	p->ondelete = (void*)picker_delete;
 	p->onstart  = (void*)picker_start;
 	p->onstop   = (void*)picker_stop;
-	p->onget    = (void*)picker_cread;
-	p->onpost   = (void*)picker_cwrite;
-	p->onread   = (void*)picker_sread;
-	p->onwrite  = (void*)picker_swrite;
+	p->oncread  = (void*)picker_cread;
+	p->oncwrite = (void*)picker_cwrite;
+	p->onsread  = (void*)picker_sread;
+	p->onswrite = (void*)picker_swrite;
 }

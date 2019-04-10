@@ -317,36 +317,42 @@ GLuint compileShader(GLenum type, const char* source)
 	}
 	return 0;
 }
-GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* cs)
+GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c)
 {
 	GLuint vShader = compileShader(GL_VERTEX_SHADER, v);
-	if(!vShader)return 0;
+	if(!vShader){
+		say("fail@compileShader: %s\n", v);
+		return 0;
+	}
 
 	GLuint fShader = compileShader(GL_FRAGMENT_SHADER, f);
-	if(!fShader)return 0;
+	if(!fShader){
+		say("fail@compileShader: %s\n", f);
+		return 0;
+	}
 
 	GLuint gShader = 0;
 	if(g){
 		gShader = compileShader(GL_GEOMETRY_SHADER, g);
-		if(!gShader)say("fail@compileShader: geometry shader\n");
+		if(!gShader)say("fail@compileShader: %s\n", g);
 	}
 /*
 	GLuint tcShader = 0;
-	if(g){
-		compileShader(GL_TESS_CONTROL_SHADER, g);
-		if(!tcShader)say("fail@compileShader: geometry shader\n");
+	if(tc){
+		compileShader(GL_TESS_CONTROL_SHADER, tc);
+		if(!tcShader)say("fail@compileShader: %s\n", tc);
 	}
 
 	GLuint teShader = 0;
-	if(g){
-		compileShader(GL_TESS_EVALUATION_SHADER, g);
-		if(!teShader)say("fail@compileShader: geometry shader\n");
+	if(te){
+		compileShader(GL_TESS_EVALUATION_SHADER, te);
+		if(!teShader)say("fail@compileShader: %s\n", te);
 	}
 
 	GLuint cShader = 0;
-	if(g){
-		compileShader(GL_TESS_EVALUATION_SHADER, g);
-		if(!cShader)say("fail@compileShader: geometry shader\n");
+	if(c){
+		compileShader(GL_COMPUTE_SHADER, c);
+		if(!cShader)say("fail@compileShader: %s\n", c);
 	}
 */
 
@@ -363,6 +369,7 @@ GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* cs)
 	if(gShader)glAttachShader(prog, gShader);
 	//if(tcShader)glAttachShader(prog, tcShader);
 	//if(teShader)glAttachShader(prog, teShader);
+	//if( cShader)glAttachShader(prog,  cShader);
 	glLinkProgram(prog);
 
 	GLint linkStatus;

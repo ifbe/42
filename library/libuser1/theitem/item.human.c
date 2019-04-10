@@ -160,9 +160,9 @@ static void human_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void human_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void human_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)human_read_cli(win, sty, act, pin);
@@ -172,22 +172,25 @@ static void human_read(
 	else if(fmt == _vbo_)human_read_vbo(win, sty, act, pin);
 	else human_read_pixel(win, sty, act, pin);
 }
-static void human_write(
+static void human_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 	float x,y,z,n;
 	float sec,a,c,s;
+	struct relation* rel;
+	struct actor* map;
+	vec4 tmp;
 
 	if(_char_ == ev->what)
 	{
 		switch(ev->why)
 		{
-			case 'w':sty->vc[1] += 10;break;
-			case 's':sty->vc[1] -= 10;break;
-			case 'a':sty->vc[0] -= 10;break;
-			case 'd':sty->vc[0] += 10;break;
+			case 'w':sty->vc[1] += 100;break;
+			case 's':sty->vc[1] -= 100;break;
+			case 'a':sty->vc[0] -= 100;break;
+			case 'd':sty->vc[0] += 100;break;
 		}
 
 		sec = timeread() / 1000000.0;
@@ -243,24 +246,50 @@ static void human_write(
 		bonenode[13][2] = bonenode[11][2] - 0.5;
 		bonenode[14][1] = bonenode[12][1];
 		bonenode[14][2] = bonenode[12][2] - 0.5;
+
+		//
+		rel = act->irel0;
+		while(1)
+		{
+			if(0 == rel)break;
+			if(_act_ == rel->srctype)
+			{
+				tmp[0] = sty->vc[0];
+				tmp[1] = sty->vc[1];
+				tmp[2] = 0.0;
+
+				map = (void*)(rel->srcchip);
+				actor_leafread(map, 0, act, 0, tmp, 0);
+
+				sty->vc[2] = tmp[2];
+				break;
+			}
+			rel = samedstnextsrc(rel);
+		}
 	}
 }
-static void human_get()
+static void human_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void human_post()
+static void human_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void human_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void human_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void human_delete(struct actor* act)
@@ -287,8 +316,8 @@ void human_register(struct actor* p)
 	p->ondelete = (void*)human_delete;
 	p->onstart  = (void*)human_start;
 	p->onstop   = (void*)human_stop;
-	p->onget    = (void*)human_get;
-	p->onpost   = (void*)human_post;
-	p->onread   = (void*)human_read;
-	p->onwrite  = (void*)human_write;
+	p->oncread  = (void*)human_cread;
+	p->oncwrite = (void*)human_cwrite;
+	p->onsread  = (void*)human_sread;
+	p->onswrite = (void*)human_swrite;
 }

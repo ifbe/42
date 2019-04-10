@@ -136,8 +136,8 @@ void tabbar_read_pixel(
     }
 }
 static void tabbar_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -200,26 +200,27 @@ static int tabbar_swrite(
     return 0;
 }
 static void tabbar_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void tabbar_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void tabbar_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void tabbar_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
     say("@tabbar_start\n");
 }
@@ -243,8 +244,8 @@ void tabbar_register(struct actor* p)
 	p->ondelete = (void*)tabbar_delete;
 	p->onstart  = (void*)tabbar_start;
 	p->onstop   = (void*)tabbar_stop;
-	p->onget    = (void*)tabbar_cread;
-	p->onpost   = (void*)tabbar_cwrite;
-	p->onread   = (void*)tabbar_sread;
-	p->onwrite  = (void*)tabbar_swrite;
+	p->oncread  = (void*)tabbar_cread;
+	p->oncwrite = (void*)tabbar_cwrite;
+	p->onsread  = (void*)tabbar_sread;
+	p->onswrite = (void*)tabbar_swrite;
 }

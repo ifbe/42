@@ -4,8 +4,8 @@
 
 
 static int vrglass_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	float y;
 	vec3 tc,tr,tf,tu;
@@ -208,26 +208,27 @@ static int vrglass_swrite(
 	return 1;
 }
 static void vrglass_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void vrglass_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void vrglass_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void vrglass_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
     say("@vrglass_start\n");
 	root->camera.vc[0] = 0.0;
@@ -274,8 +275,8 @@ void vrglass_register(struct actor* p)
 	p->ondelete = (void*)vrglass_delete;
 	p->onstart  = (void*)vrglass_start;
 	p->onstop   = (void*)vrglass_stop;
-	p->onget    = (void*)vrglass_cread;
-	p->onpost   = (void*)vrglass_cwrite;
-	p->onread   = (void*)vrglass_sread;
-	p->onwrite  = (void*)vrglass_swrite;
+	p->oncread  = (void*)vrglass_cread;
+	p->oncwrite = (void*)vrglass_cwrite;
+	p->onsread  = (void*)vrglass_sread;
+	p->onswrite = (void*)vrglass_swrite;
 }

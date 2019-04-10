@@ -283,8 +283,8 @@ static void the2048_read_cli(
 	);
 }
 static void the2048_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -364,26 +364,27 @@ static void the2048_swrite(
 	}
 }
 static void the2048_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void the2048_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void the2048_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void the2048_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	void* buf = leaf->buf;
 	new2048(buf);
@@ -417,8 +418,8 @@ void the2048_register(struct actor* p)
 	p->ondelete = (void*)the2048_delete;
 	p->onstart  = (void*)the2048_start;
 	p->onstop   = (void*)the2048_stop;
-	p->onget    = (void*)the2048_cread;
-	p->onpost   = (void*)the2048_cwrite;
-	p->onread   = (void*)the2048_sread;
-	p->onwrite  = (void*)the2048_swrite;
+	p->oncread  = (void*)the2048_cread;
+	p->oncwrite = (void*)the2048_cwrite;
+	p->onsread  = (void*)the2048_sread;
+	p->onswrite = (void*)the2048_swrite;
 }

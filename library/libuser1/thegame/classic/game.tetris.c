@@ -199,9 +199,9 @@ static void tetris_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void tetris_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void tetris_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -212,7 +212,7 @@ static void tetris_read(
 	else if(fmt == _vbo_)tetris_read_vbo(win, sty, act, pin);
 	else tetris_read_pixel(win, sty, act, pin);
 }
-static void tetris_write(
+static void tetris_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -243,22 +243,28 @@ static void tetris_write(
 		}
 	}
 }
-static void tetris_get()
+static void tetris_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void tetris_post()
+static void tetris_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void tetris_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void tetris_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	tetris_generate(data, WIDTH, HEIGHT);
 }
@@ -286,8 +292,8 @@ void tetris_register(struct actor* p)
 	p->ondelete = (void*)tetris_delete;
 	p->onstart  = (void*)tetris_start;
 	p->onstop   = (void*)tetris_stop;
-	p->onget    = (void*)tetris_get;
-	p->onpost   = (void*)tetris_post;
-	p->onread   = (void*)tetris_read;
-	p->onwrite  = (void*)tetris_write;
+	p->oncread  = (void*)tetris_cread;
+	p->oncwrite = (void*)tetris_cwrite;
+	p->onsread  = (void*)tetris_sread;
+	p->onswrite = (void*)tetris_swrite;
 }

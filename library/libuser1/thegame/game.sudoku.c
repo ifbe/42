@@ -273,8 +273,8 @@ static void sudoku_read_cli(
 	}
 }
 static void sudoku_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -323,26 +323,27 @@ static void sudoku_swrite(
 	}
 }
 static void sudoku_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void sudoku_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void sudoku_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void sudoku_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void sudoku_delete(struct actor* act, u8* buf)
@@ -386,8 +387,8 @@ void sudoku_register(struct actor* p)
 	p->ondelete = (void*)sudoku_delete;
 	p->onstart  = (void*)sudoku_start;
 	p->onstop   = (void*)sudoku_stop;
-	p->onget    = (void*)sudoku_cread;
-	p->onpost   = (void*)sudoku_cwrite;
-	p->onread   = (void*)sudoku_sread;
-	p->onwrite  = (void*)sudoku_swrite;
+	p->oncread  = (void*)sudoku_cread;
+	p->oncwrite = (void*)sudoku_cwrite;
+	p->onsread  = (void*)sudoku_sread;
+	p->onswrite = (void*)sudoku_swrite;
 }

@@ -92,8 +92,8 @@ static void cube_read_cli(
 {
 }
 static void cube_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)cube_read_cli(win, sty, act, pin);
@@ -114,26 +114,27 @@ static void cube_swrite(
 {
 }
 static void cube_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void cube_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void cube_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void cube_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void cube_delete(struct actor* act, u8* buf)
@@ -155,8 +156,8 @@ void cube_register(struct actor* p)
 	p->ondelete = (void*)cube_delete;
 	p->onstart  = (void*)cube_start;
 	p->onstop   = (void*)cube_stop;
-	p->onget    = (void*)cube_cread;
-	p->onpost   = (void*)cube_cwrite;
-	p->onread   = (void*)cube_sread;
-	p->onwrite  = (void*)cube_swrite;
+	p->oncread  = (void*)cube_cread;
+	p->oncwrite = (void*)cube_cwrite;
+	p->onsread  = (void*)cube_sread;
+	p->onswrite = (void*)cube_swrite;
 }

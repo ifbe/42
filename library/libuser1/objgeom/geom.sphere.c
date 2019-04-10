@@ -92,9 +92,9 @@ static void sphere_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void sphere_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void sphere_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)sphere_read_cli(win, sty, act, pin);
@@ -108,32 +108,34 @@ static void sphere_read(
 	}
 	else sphere_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-static void sphere_write(
+static void sphere_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void sphere_post(u8* buf, int len)
+static void sphere_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void sphere_get(u8* buf, int len)
+static void sphere_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void sphere_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void sphere_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void sphere_delete(struct actor* act, u8* buf)
@@ -155,8 +157,8 @@ void sphere_register(struct actor* p)
 	p->ondelete = (void*)sphere_delete;
 	p->onstart  = (void*)sphere_start;
 	p->onstop   = (void*)sphere_stop;
-	p->onget    = (void*)sphere_get;
-	p->onpost   = (void*)sphere_post;
-	p->onread   = (void*)sphere_read;
-	p->onwrite  = (void*)sphere_write;
+	p->oncread  = (void*)sphere_cread;
+	p->oncwrite = (void*)sphere_cwrite;
+	p->onsread  = (void*)sphere_sread;
+	p->onswrite = (void*)sphere_swrite;
 }

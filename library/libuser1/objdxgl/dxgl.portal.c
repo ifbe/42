@@ -303,8 +303,8 @@ static void portal_read_cli(
 {
 }
 static void portal_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)portal_read_cli(win, sty, act, pin);
@@ -321,26 +321,27 @@ static void portal_swrite(
 {
 }
 static void portal_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void portal_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void portal_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void portal_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	struct relation* rel;
 	struct arena* tmp;
@@ -431,8 +432,8 @@ void portal_register(struct actor* p)
 	p->ondelete = (void*)portal_delete;
 	p->onstart  = (void*)portal_start;
 	p->onstop   = (void*)portal_stop;
-	p->onget    = (void*)portal_cread;
-	p->onpost   = (void*)portal_cwrite;
-	p->onread   = (void*)portal_sread;
-	p->onwrite  = (void*)portal_swrite;
+	p->oncread  = (void*)portal_cread;
+	p->oncwrite = (void*)portal_cwrite;
+	p->onsread  = (void*)portal_sread;
+	p->onswrite = (void*)portal_swrite;
 }

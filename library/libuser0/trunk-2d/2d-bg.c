@@ -21,11 +21,15 @@ int bg2d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stac
 	{
 		if(0 == rel)break;
 
-		act = (void*)(rel->dstchip);
-		sty = (void*)(rel->srcfoot);
-		pin = (void*)(rel->dstfoot);
-		act->onread(win, sty, act, pin);
+		if(_act_ == rel->dsttype)
+		{
+			sty = (void*)(rel->srcfoot);
+			//if(sty){if('#' == sty->uc[3])goto next;}
 
+			act = (void*)(rel->dstchip);
+			pin = (void*)(rel->dstfoot);
+			actor_rootread(act, pin, win, sty, 0, 0);
+		}
 		rel = samesrcnextdst(rel);
 	}
 	return 0;

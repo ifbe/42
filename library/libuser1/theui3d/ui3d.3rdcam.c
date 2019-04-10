@@ -47,8 +47,8 @@ void thridperson_fixcam(struct arena* win, float* v)
 
 
 static int thirdperson_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int j;
 	vec3 tc,tr,tf;
@@ -57,12 +57,23 @@ static int thirdperson_sread(
 	struct style* tmpsty;
 
 	//3rdcam's target
-	rel = act->orel0;
-	if(0 == rel)return 0;
+	rel = act->irel0;
+	while(1)
+	{
+		if(0 == rel)return 0;
 
-	tar = (void*)(rel->dstchip);
-	if(0 == tar)return 0;
+		if(_act_ == rel->srctype)
+		{
+			tar = (void*)(rel->srcchip);
+			if(0 == tar)return 0;
+			else goto found;
+		}
 
+		rel = samedstnextsrc(rel);
+	}
+	return 0;
+
+found:
 	//target's world
 	rel = tar->irel0;
 	while(1)
@@ -204,26 +215,27 @@ static int thirdperson_swrite(
 	return 0;
 }
 static void thirdperson_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void thirdperson_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void thirdperson_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void thirdperson_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void thirdperson_delete(struct actor* act)
@@ -249,8 +261,8 @@ void thirdperson_register(struct actor* p)
 	p->ondelete = (void*)thirdperson_delete;
 	p->onstart  = (void*)thirdperson_start;
 	p->onstop   = (void*)thirdperson_stop;
-	p->onget    = (void*)thirdperson_cread;
-	p->onpost   = (void*)thirdperson_cwrite;
-	p->onread   = (void*)thirdperson_sread;
-	p->onwrite  = (void*)thirdperson_swrite;
+	p->oncread  = (void*)thirdperson_cread;
+	p->oncwrite = (void*)thirdperson_cwrite;
+	p->onsread  = (void*)thirdperson_sread;
+	p->onswrite = (void*)thirdperson_swrite;
 }

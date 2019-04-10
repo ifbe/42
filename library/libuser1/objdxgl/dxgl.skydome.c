@@ -130,9 +130,9 @@ static void skydome_read_cli(
 {
 	say("skydome(%x,%x,%x)\n",win,act,sty);
 }
-static void skydome_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void skydome_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -143,36 +143,34 @@ static void skydome_read(
 	else if(fmt == _vbo_)skydome_read_vbo(win, sty, act, pin);
 	else skydome_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-static void skydome_write(
+static void skydome_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-
-
-
-
-static void skydome_get()
+static void skydome_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void skydome_post()
+static void skydome_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void skydome_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void skydome_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	struct glsrc* src;
 	if(0 == lf)return;
@@ -231,8 +229,8 @@ void skydome_register(struct actor* p)
 	p->ondelete = (void*)skydome_delete;
 	p->onstart  = (void*)skydome_start;
 	p->onstop   = (void*)skydome_stop;
-	p->onget    = (void*)skydome_get;
-	p->onpost   = (void*)skydome_post;
-	p->onread   = (void*)skydome_read;
-	p->onwrite  = (void*)skydome_write;
+	p->oncread  = (void*)skydome_cread;
+	p->oncwrite = (void*)skydome_cwrite;
+	p->onsread  = (void*)skydome_sread;
+	p->onswrite = (void*)skydome_swrite;
 }

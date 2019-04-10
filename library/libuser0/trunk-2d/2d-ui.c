@@ -38,7 +38,7 @@ int ui2d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stac
 
 			act = (void*)(rel->dstchip);
 			pin = (void*)(rel->dstfoot);
-			act->onread(win, sty, act, pin);
+			actor_rootread(act, pin, win, sty, 0, 0);
 		}
 next:
 		rel = samesrcnextdst(rel);
@@ -66,7 +66,7 @@ int ui2d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sta
 
 			act = (void*)(rel->dstchip);
 			pin = (void*)(rel->dstfoot);
-			ret = act->onwrite(act, pin, win, 0, ev, 0);
+			ret = actor_rootwrite(act, pin, win, 0, ev, 0);
 			if(ret)break;
 		}
 next:

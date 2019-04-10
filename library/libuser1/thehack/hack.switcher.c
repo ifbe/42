@@ -59,9 +59,9 @@ static void switch_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void switch_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void switch_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)switch_read_cli(win, sty, act, pin);
@@ -71,11 +71,7 @@ static void switch_read(
 	else if(fmt == _vbo_)switch_read_vbo(win, sty, act, pin);
 	else switch_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-static void switch_write(
+static void switch_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
@@ -103,22 +99,28 @@ static void switch_write(
 		orel = samesrcnextdst(orel);
 	}
 }
-static void switch_get(u8* buf, int len)
+static void switch_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void switch_post(u8* buf, int len)
+static void switch_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void switch_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void switch_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void switch_delete(struct actor* act, u8* buf)
@@ -151,8 +153,8 @@ void switch_register(struct actor* p)
 	p->ondelete = (void*)switch_delete;
 	p->onstart  = (void*)switch_start;
 	p->onstop   = (void*)switch_stop;
-	p->onget    = (void*)switch_get;
-	p->onpost   = (void*)switch_post;
-	p->onread   = (void*)switch_read;
-	p->onwrite  = (void*)switch_write;
+	p->oncread  = (void*)switch_cread;
+	p->oncwrite = (void*)switch_cwrite;
+	p->onsread  = (void*)switch_sread;
+	p->onswrite = (void*)switch_swrite;
 }

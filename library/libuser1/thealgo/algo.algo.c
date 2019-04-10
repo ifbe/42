@@ -90,9 +90,9 @@ static void algorithm_read_cli(
 {
 	say("algorithm(%x,%x,%x)\n",win,act,sty);
 }
-static void algorithm_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void algorithm_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -103,7 +103,7 @@ static void algorithm_read(
 	else if(fmt == _vbo_)algorithm_read_vbo(win, sty, act, pin);
 	else algorithm_read_pixel(win, sty, act, pin);
 }
-static void algorithm_write(
+static void algorithm_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -138,22 +138,28 @@ static void algorithm_write(
 */
 	}
 }
-static void algorithm_get()
+static void algorithm_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void algorithm_post()
+static void algorithm_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void algorithm_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void algorithm_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void algorithm_delete(struct actor* act)
@@ -180,8 +186,8 @@ void algorithm_register(struct actor* p)
 	p->ondelete = (void*)algorithm_delete;
 	p->onstart  = (void*)algorithm_start;
 	p->onstop   = (void*)algorithm_stop;
-	p->onget    = (void*)algorithm_get;
-	p->onpost   = (void*)algorithm_post;
-	p->onread   = (void*)algorithm_read;
-	p->onwrite  = (void*)algorithm_write;
+	p->oncread  = (void*)algorithm_cread;
+	p->oncwrite = (void*)algorithm_cwrite;
+	p->onsread  = (void*)algorithm_sread;
+	p->onswrite = (void*)algorithm_swrite;
 }

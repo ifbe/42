@@ -281,8 +281,8 @@ static void water_read_cli(
 {
 }
 static void water_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)water_read_cli(win, sty, act, pin);
@@ -299,26 +299,27 @@ static void water_swrite(
 {
 }
 static void water_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void water_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void water_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void water_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	struct datapair* pair;
 	struct glsrc* src;
@@ -344,7 +345,7 @@ static void water_start(
 	src->vbuf_h = 6;
 
 	src->method = 'v';
-    src->opaque = 1;
+	src->opaque = 1;
 
 	//send!
 	src->shader_enq[0] = 42;
@@ -380,8 +381,8 @@ void water_register(struct actor* p)
 	p->ondelete = (void*)water_delete;
 	p->onstart  = (void*)water_start;
 	p->onstop   = (void*)water_stop;
-	p->onget    = (void*)water_cread;
-	p->onpost   = (void*)water_cwrite;
-	p->onread   = (void*)water_sread;
-	p->onwrite  = (void*)water_swrite;
+	p->oncread  = (void*)water_cread;
+	p->oncwrite = (void*)water_cwrite;
+	p->onsread  = (void*)water_sread;
+	p->onswrite = (void*)water_swrite;
 }

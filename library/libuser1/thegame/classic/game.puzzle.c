@@ -7,33 +7,39 @@ static u8 buffer[16];
 
 
 
-static void puzzle_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void puzzle_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void puzzle_write(
+static void puzzle_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void puzzle_get()
+static void puzzle_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void puzzle_post()
+static void puzzle_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void puzzle_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void puzzle_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void puzzle_delete(struct actor* act)
@@ -60,8 +66,8 @@ void puzzle_register(struct actor* p)
 	p->ondelete = (void*)puzzle_delete;
 	p->onstart  = (void*)puzzle_start;
 	p->onstop   = (void*)puzzle_stop;
-	p->onget    = (void*)puzzle_get;
-	p->onpost   = (void*)puzzle_post;
-	p->onread   = (void*)puzzle_read;
-	p->onwrite  = (void*)puzzle_write;
+	p->oncread  = (void*)puzzle_cread;
+	p->oncwrite = (void*)puzzle_cwrite;
+	p->onsread  = (void*)puzzle_sread;
+	p->onswrite = (void*)puzzle_swrite;
 }

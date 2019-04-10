@@ -48,9 +48,9 @@ static void editor_read_cli(
 {
 	say("editor(%x,%x,%x)\n",win,act,sty);
 }
-static void editor_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void editor_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -61,28 +61,34 @@ static void editor_read(
 	else if(fmt == _vbo_)editor_read_vbo(win, sty, act, pin);
 	else editor_read_pixel(win, sty, act, pin);
 }
-static void editor_write(
+static void editor_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
 {
 }
-static void editor_get()
+static void editor_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void editor_post()
+static void editor_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void editor_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void editor_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void editor_delete(struct actor* act)
@@ -109,8 +115,8 @@ void editor_register(struct actor* p)
 	p->ondelete = (void*)editor_delete;
 	p->onstart  = (void*)editor_start;
 	p->onstop   = (void*)editor_stop;
-	p->onget    = (void*)editor_get;
-	p->onpost   = (void*)editor_post;
-	p->onread   = (void*)editor_read;
-	p->onwrite  = (void*)editor_write;
+	p->oncread  = (void*)editor_cread;
+	p->oncwrite = (void*)editor_cwrite;
+	p->onsread  = (void*)editor_sread;
+	p->onswrite = (void*)editor_swrite;
 }

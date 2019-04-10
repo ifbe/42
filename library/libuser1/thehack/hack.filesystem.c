@@ -80,9 +80,9 @@ static void fs_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void fs_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void fs_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -93,7 +93,7 @@ static void fs_read(
 	else if(fmt == _vbo_)fs_read_vbo(win, sty, act, pin);
 	else fs_read_pixel(win, sty, act, pin);
 }
-static void fs_write(
+static void fs_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -116,22 +116,28 @@ static void fs_write(
 		fs_prep(buffer);
 	}
 }
-static void fs_get()
+static void fs_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void fs_post()
+static void fs_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void fs_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void fs_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void fs_delete(struct actor* act)
@@ -158,8 +164,8 @@ void fs_register(struct actor* p)
 	p->ondelete = (void*)fs_delete;
 	p->onstart  = (void*)fs_start;
 	p->onstop   = (void*)fs_stop;
-	p->onget    = (void*)fs_get;
-	p->onpost   = (void*)fs_post;
-	p->onread   = (void*)fs_read;
-	p->onwrite  = (void*)fs_write;
+	p->oncread  = (void*)fs_cread;
+	p->oncwrite = (void*)fs_cwrite;
+	p->onsread  = (void*)fs_sread;
+	p->onswrite = (void*)fs_swrite;
 }

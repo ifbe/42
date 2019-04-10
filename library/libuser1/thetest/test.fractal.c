@@ -264,8 +264,8 @@ static void fractal_read_cli(
 	say("fractal(%x,%x,%x)\n",win,act,sty);
 }
 static void fractal_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)fractal_read_cli(win, sty, act, pin);
@@ -310,26 +310,27 @@ static void fractal_swrite(
 	}
 }
 static void fractal_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void fractal_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void fractal_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void fractal_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	struct datapair* pair;
 	struct glsrc* src;
@@ -389,8 +390,8 @@ void fractal_register(struct actor* p)
 	p->ondelete = (void*)fractal_delete;
 	p->onstart  = (void*)fractal_start;
 	p->onstop   = (void*)fractal_stop;
-	p->onget    = (void*)fractal_cread;
-	p->onpost   = (void*)fractal_cwrite;
-	p->onread   = (void*)fractal_sread;
-	p->onwrite  = (void*)fractal_swrite;
+	p->oncread  = (void*)fractal_cread;
+	p->oncwrite = (void*)fractal_cwrite;
+	p->onsread  = (void*)fractal_sread;
+	p->onswrite = (void*)fractal_swrite;
 }

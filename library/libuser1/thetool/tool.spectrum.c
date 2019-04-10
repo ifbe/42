@@ -217,8 +217,8 @@ static void spectrum_read_cli(
 	say("spectrum(%x,%x,%x)\n",win,act,sty);
 }
 static void spectrum_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(0 == act->buf)return;
@@ -297,26 +297,27 @@ say("%llx, %x\n", buf, len);
 	}
 }
 static void spectrum_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void spectrum_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void spectrum_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void spectrum_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void spectrum_delete(struct actor* act)
@@ -350,8 +351,8 @@ void spectrum_register(struct actor* p)
 	p->ondelete = (void*)spectrum_delete;
 	p->onstart  = (void*)spectrum_start;
 	p->onstop   = (void*)spectrum_stop;
-	p->onget    = (void*)spectrum_cread;
-	p->onpost   = (void*)spectrum_cwrite;
-	p->onread   = (void*)spectrum_sread;
-	p->onwrite  = (void*)spectrum_swrite;
+	p->oncread  = (void*)spectrum_cread;
+	p->oncwrite = (void*)spectrum_cwrite;
+	p->onsread  = (void*)spectrum_sread;
+	p->onswrite = (void*)spectrum_swrite;
 }

@@ -198,8 +198,8 @@ static void tree_read_cli(
 {
 }
 static void tree_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)tree_read_cli(win, sty, act, pin);
@@ -220,26 +220,27 @@ static void tree_swrite(
 {
 }
 static void tree_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void tree_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void tree_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void tree_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void tree_delete(struct actor* act)
@@ -266,8 +267,8 @@ void tree_register(struct actor* p)
 	p->ondelete = (void*)tree_delete;
 	p->onstart  = (void*)tree_start;
 	p->onstop   = (void*)tree_stop;
-	p->onget    = (void*)tree_cread;
-	p->onpost   = (void*)tree_cwrite;
-	p->onread   = (void*)tree_sread;
-	p->onwrite  = (void*)tree_swrite;
+	p->oncread  = (void*)tree_cread;
+	p->oncwrite = (void*)tree_cwrite;
+	p->onsread  = (void*)tree_sread;
+	p->onswrite = (void*)tree_swrite;
 }

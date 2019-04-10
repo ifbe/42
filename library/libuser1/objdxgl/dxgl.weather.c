@@ -197,8 +197,8 @@ static void weather_read_cli(
 	say("weather(%x,%x,%x)\n",win,act,sty);
 }
 static void weather_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)weather_read_cli(win, sty, act, pin);
@@ -219,26 +219,27 @@ static void weather_swrite(
 {
 }
 static void weather_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void weather_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void weather_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void weather_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	struct datapair* pair;
 	struct glsrc* src;
@@ -299,8 +300,8 @@ void weather_register(struct actor* p)
 	p->ondelete = (void*)weather_delete;
 	p->onstart  = (void*)weather_start;
 	p->onstop   = (void*)weather_stop;
-	p->onget    = (void*)weather_cread;
-	p->onpost   = (void*)weather_cwrite;
-	p->onread   = (void*)weather_sread;
-	p->onwrite  = (void*)weather_swrite;
+	p->oncread  = (void*)weather_cread;
+	p->oncwrite = (void*)weather_cwrite;
+	p->onsread  = (void*)weather_sread;
+	p->onswrite = (void*)weather_swrite;
 }

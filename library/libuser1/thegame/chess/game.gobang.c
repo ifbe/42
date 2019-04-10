@@ -7,33 +7,39 @@ static u8 buffer[16];
 
 
 
-static void gobang_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void gobang_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void gobang_write(
+static void gobang_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void gobang_get()
+static void gobang_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void gobang_post()
+static void gobang_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void gobang_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void gobang_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void gobang_delete(struct actor* act)
@@ -60,8 +66,8 @@ void gobang_register(struct actor* p)
 	p->ondelete = (void*)gobang_delete;
 	p->onstart  = (void*)gobang_start;
 	p->onstop   = (void*)gobang_stop;
-	p->onget    = (void*)gobang_get;
-	p->onpost   = (void*)gobang_post;
-	p->onread   = (void*)gobang_read;
-	p->onwrite  = (void*)gobang_write;
+	p->oncread  = (void*)gobang_cread;
+	p->oncwrite = (void*)gobang_cwrite;
+	p->onsread  = (void*)gobang_sread;
+	p->onswrite = (void*)gobang_swrite;
 }

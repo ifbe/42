@@ -249,13 +249,12 @@ int fg3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* st)
 
 		if(_act_ == orel->dsttype)
 		{
+			sty = (void*)(orel->srcfoot);
+			//if(sty){if('#' == sty->uc[3])goto next;}
+
 			act = (void*)(orel->dstchip);
 			pin = (void*)(orel->dstfoot);
-			//say("%x,%x,%x,%x\n", win, act, sty, pin);
-			//say("%x\n", rel);
-
-			sty = (void*)(orel->srcfoot);
-			act->onread(win, sty, act, pin);
+			actor_rootread(act, pin, win, sty, 0, 0);
 		}
 
 		orel = samesrcnextdst(orel);
@@ -279,9 +278,11 @@ int fg3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sta
 		if(_act_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
+			//if(sty){if('#' == sty->uc[3])goto next;}
+
 			act = (void*)(rel->dstchip);
 			pin = (void*)(rel->dstfoot);
-			act->onwrite(act, pin, win, sty, ev, 0);
+			actor_rootwrite(act, pin, win, sty, ev, 0);
 		}
 
 		rel = samesrcprevdst(rel);

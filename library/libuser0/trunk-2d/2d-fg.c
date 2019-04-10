@@ -22,10 +22,12 @@ int fg2d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stac
 
 		if(_act_ == rel->dsttype)
 		{
-			act = (void*)(rel->dstchip);
 			sty = (void*)(rel->srcfoot);
+			//if(sty){if('#' == sty->uc[3])goto next;}
+
+			act = (void*)(rel->dstchip);
 			pin = (void*)(rel->dstfoot);
-			act->onread(win, sty, act, pin);
+			actor_rootread(act, pin, win, sty, 0, 0);
 
 			//if(_vbo_ == win->fmt)carveborder2d(win, sty, &act->name);
 			//else drawborder2d(win, sty, &act->name);
@@ -51,9 +53,11 @@ int fg2d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sta
 		if(_act_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
+			//if(sty){if('#' == sty->uc[3])goto next;}
+
 			act = (void*)(rel->dstchip);
 			pin = (void*)(rel->dstfoot);
-			act->onwrite(act, pin, win, sty, ev, 0);
+			actor_rootwrite(act, pin, win, sty, ev, 0);
 		}
 
 		rel = samesrcprevdst(rel);

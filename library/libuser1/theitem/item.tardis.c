@@ -66,8 +66,8 @@ static void tardis_read_cli(
 {
 }
 static void tardis_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)tardis_read_cli(win, sty, act, pin);
@@ -87,22 +87,28 @@ static void tardis_swrite(
 	struct event* ev, int len)
 {
 }
-static void tardis_cread()
+static void tardis_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void tardis_cwrite()
+static void tardis_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void tardis_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void tardis_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void tardis_delete(struct actor* act)
@@ -129,8 +135,8 @@ void tardis_register(struct actor* p)
 	p->ondelete = (void*)tardis_delete;
 	p->onstart  = (void*)tardis_start;
 	p->onstop   = (void*)tardis_stop;
-	p->onget    = (void*)tardis_cread;
-	p->onpost   = (void*)tardis_cwrite;
-	p->onread   = (void*)tardis_sread;
-	p->onwrite  = (void*)tardis_swrite;
+	p->oncread  = (void*)tardis_cread;
+	p->oncwrite = (void*)tardis_cwrite;
+	p->onsread  = (void*)tardis_sread;
+	p->onswrite = (void*)tardis_swrite;
 }

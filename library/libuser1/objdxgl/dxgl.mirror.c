@@ -297,8 +297,8 @@ static void mirror_read_cli(
 {
 }
 static void mirror_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)mirror_read_cli(win, sty, act, pin);
@@ -315,26 +315,27 @@ static void mirror_swrite(
 {
 }
 static void mirror_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void mirror_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void mirror_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void mirror_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	struct datapair* pair;
 	struct glsrc* src;
@@ -394,8 +395,8 @@ void mirror_register(struct actor* p)
 	p->ondelete = (void*)mirror_delete;
 	p->onstart  = (void*)mirror_start;
 	p->onstop   = (void*)mirror_stop;
-	p->onget    = (void*)mirror_cread;
-	p->onpost   = (void*)mirror_cwrite;
-	p->onread   = (void*)mirror_sread;
-	p->onwrite  = (void*)mirror_swrite;
+	p->oncread  = (void*)mirror_cread;
+	p->oncwrite = (void*)mirror_cwrite;
+	p->onsread  = (void*)mirror_sread;
+	p->onswrite = (void*)mirror_swrite;
 }

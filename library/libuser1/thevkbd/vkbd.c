@@ -8,8 +8,8 @@ int vkbd_keyboard_write(struct arena* win,struct event* ev);
 
 
 static int vkbd_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 
 /*	switch(act->w0)
@@ -38,11 +38,17 @@ static int vkbd_swrite(
 	//ret = vkbd_keyboard_write(win, ev);
 	return 0;
 }
-static int vkbd_cread(struct arena* cc, struct style* cf, struct arena* win, struct style* sty)
+static int vkbd_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 	return 0;
 }
-static int vkbd_cwrite(struct arena* win, struct style* stack, struct event* ev)
+static int vkbd_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 	return 0;
 }
@@ -81,8 +87,8 @@ void vkbd_register(struct actor* p)
 	p->ondelete = (void*)vkbd_delete;
 	p->onstart  = (void*)vkbd_start;
 	p->onstop   = (void*)vkbd_stop;
-	p->onget    = (void*)vkbd_cread;
-	p->onpost   = (void*)vkbd_cwrite;
-	p->onread   = (void*)vkbd_sread;
-	p->onwrite  = (void*)vkbd_swrite;
+	p->oncread  = (void*)vkbd_cread;
+	p->oncwrite = (void*)vkbd_cwrite;
+	p->onsread  = (void*)vkbd_sread;
+	p->onswrite = (void*)vkbd_swrite;
 }

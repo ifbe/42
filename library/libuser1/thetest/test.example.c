@@ -111,8 +111,8 @@ static void example_read_cli(
 {
 }
 static void example_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)example_read_cli(win, sty, act, pin);
@@ -129,26 +129,27 @@ static void example_swrite(
 {
 }
 static void example_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void example_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void example_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void example_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void example_delete(struct actor* act)
@@ -172,8 +173,8 @@ void example_register(struct actor* p)
 	p->ondelete = (void*)example_delete;
 	p->onstart  = (void*)example_start;
 	p->onstop   = (void*)example_stop;
-	p->onget    = (void*)example_cread;
-	p->onpost   = (void*)example_cread;
-	p->onread   = (void*)example_sread;
-	p->onwrite  = (void*)example_swrite;
+	p->oncread  = (void*)example_cread;
+	p->oncwrite = (void*)example_cread;
+	p->onsread  = (void*)example_sread;
+	p->onswrite = (void*)example_swrite;
 }

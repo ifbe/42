@@ -170,9 +170,9 @@ static void bintree_read_cli(
 {
 	say("tree(%x,%x,%x)\n",win,act,sty);
 }
-static void bintree_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void bintree_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -183,7 +183,7 @@ static void bintree_read(
 	else if(fmt == _vbo_)bintree_read_vbo(win, sty, act, pin);
 	else bintree_read_pixel(win, sty, act, pin);
 }
-static void bintree_write(
+static void bintree_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -223,22 +223,28 @@ static void bintree_write(
 		}
 	}//'char'
 }
-static void bintree_get()
+static void bintree_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void bintree_post()
+static void bintree_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void bintree_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void bintree_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void bintree_delete(struct actor* act)
@@ -265,8 +271,8 @@ void bintree_register(struct actor* p)
 	p->ondelete = (void*)bintree_delete;
 	p->onstart  = (void*)bintree_start;
 	p->onstop   = (void*)bintree_stop;
-	p->onget    = (void*)bintree_get;
-	p->onpost   = (void*)bintree_post;
-	p->onread   = (void*)bintree_read;
-	p->onwrite  = (void*)bintree_write;
+	p->oncread  = (void*)bintree_cread;
+	p->oncwrite = (void*)bintree_cwrite;
+	p->onsread  = (void*)bintree_sread;
+	p->onswrite = (void*)bintree_swrite;
 }

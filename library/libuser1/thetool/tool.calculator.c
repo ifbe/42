@@ -186,8 +186,8 @@ static void calculator_read_cli(
 	say("result:%s\n", result);
 }
 static void calculator_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -251,26 +251,27 @@ static void calculator_swrite(
 	}
 }
 static void calculator_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void calculator_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void calculator_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void calculator_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	int j;
 	buffer[0] = '1';
@@ -303,8 +304,8 @@ void calculator_register(struct actor* p)
 	p->ondelete = (void*)calculator_delete;
 	p->onstart  = (void*)calculator_start;
 	p->onstop   = (void*)calculator_stop;
-	p->onget    = (void*)calculator_cread;
-	p->onpost   = (void*)calculator_cwrite;
-	p->onread   = (void*)calculator_sread;
-	p->onwrite  = (void*)calculator_swrite;
+	p->oncread  = (void*)calculator_cread;
+	p->oncwrite = (void*)calculator_cwrite;
+	p->onsread  = (void*)calculator_sread;
+	p->onswrite = (void*)calculator_swrite;
 }

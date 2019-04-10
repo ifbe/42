@@ -130,9 +130,9 @@ static void hex_read_cli(
 {
 	say("hex(%x,%x,%x)\n",win,act,sty);
 }
-static void hex_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void hex_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -143,7 +143,7 @@ static void hex_read(
 	else if(fmt == _vbo_)hex_read_vbo(win, sty, act, pin);
 	else hex_read_pixel(win, sty, act, pin);
 }
-static void hex_write(
+static void hex_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -173,22 +173,28 @@ static void hex_write(
 		if('	' == key)printmethod ^= 1;
 	}
 }
-static void hex_get()
+static void hex_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void hex_post()
+static void hex_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void hex_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void hex_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void hex_delete(struct actor* act)
@@ -215,8 +221,8 @@ void hex_register(struct actor* p)
 	p->ondelete = (void*)hex_delete;
 	p->onstart  = (void*)hex_start;
 	p->onstop   = (void*)hex_stop;
-	p->onget    = (void*)hex_get;
-	p->onpost   = (void*)hex_post;
-	p->onread   = (void*)hex_read;
-	p->onwrite  = (void*)hex_write;
+	p->oncread  = (void*)hex_cread;
+	p->oncwrite = (void*)hex_cwrite;
+	p->onsread  = (void*)hex_sread;
+	p->onswrite = (void*)hex_swrite;
 }

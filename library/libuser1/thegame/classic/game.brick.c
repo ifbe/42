@@ -7,33 +7,39 @@ static u8 buffer[16];
 
 
 
-static void brick_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void brick_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void brick_write(
+static void brick_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void brick_get()
+static void brick_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void brick_post()
+static void brick_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void brick_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void brick_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void brick_delete(struct actor* act)
@@ -60,8 +66,8 @@ void brick_register(struct actor* p)
 	p->ondelete = (void*)brick_delete;
 	p->onstart  = (void*)brick_start;
 	p->onstop   = (void*)brick_stop;
-	p->onget    = (void*)brick_get;
-	p->onpost   = (void*)brick_post;
-	p->onread   = (void*)brick_read;
-	p->onwrite  = (void*)brick_write;
+	p->oncread  = (void*)brick_cread;
+	p->oncwrite = (void*)brick_cwrite;
+	p->onsread  = (void*)brick_sread;
+	p->onswrite = (void*)brick_swrite;
 }

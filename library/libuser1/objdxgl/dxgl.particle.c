@@ -139,8 +139,8 @@ static void particle_read_cli(
 	say("particle(%x,%x,%x)\n",win,act,sty);
 }
 static void particle_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)particle_read_cli(win, sty, act, pin);
@@ -161,26 +161,27 @@ static void particle_swrite(
 {
 }
 static void particle_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void particle_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void particle_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void particle_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	void* vbuf;
 	void* ibuf;
@@ -266,8 +267,8 @@ void particle_register(struct actor* p)
 	p->ondelete = (void*)particle_delete;
 	p->onstart  = (void*)particle_start;
 	p->onstop   = (void*)particle_stop;
-	p->onget    = (void*)particle_cread;
-	p->onpost   = (void*)particle_cwrite;
-	p->onread   = (void*)particle_sread;
-	p->onwrite  = (void*)particle_swrite;
+	p->oncread  = (void*)particle_cread;
+	p->oncwrite = (void*)particle_cwrite;
+	p->onsread  = (void*)particle_sread;
+	p->onswrite = (void*)particle_swrite;
 }

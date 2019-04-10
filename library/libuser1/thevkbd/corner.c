@@ -249,19 +249,9 @@ void corner_read_vbo(struct arena* win, struct style* sty)
 		}
 	}
 }
-
-
-
-
-static int corner_cread(struct arena* cc, struct style* cf, struct arena* win, struct style* sty)
-{
-	return 0;
-}
-static int corner_cwrite(struct arena* win, struct style* stack, struct event* ev)
-{
-	return 0;
-}
-static int corner_sread(struct arena* win, struct style* sty, struct arena* cc, struct style* cf)
+static int corner_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	switch(win->fmt)
 	{
@@ -364,6 +354,20 @@ static int corner_swrite(
 	}
 	return 0;
 }
+static int corner_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
+{
+	return 0;
+}
+static int corner_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
+{
+	return 0;
+}
 static int corner_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
@@ -399,8 +403,8 @@ void corner_register(struct actor* p)
 	p->ondelete = (void*)corner_delete;
 	p->onstart  = (void*)corner_start;
 	p->onstop   = (void*)corner_stop;
-	p->onget    = (void*)corner_cread;
-	p->onpost   = (void*)corner_cwrite;
-	p->onread   = (void*)corner_sread;
-	p->onwrite  = (void*)corner_swrite;
+	p->oncread  = (void*)corner_cread;
+	p->oncwrite = (void*)corner_cwrite;
+	p->onsread  = (void*)corner_sread;
+	p->onswrite = (void*)corner_swrite;
 }

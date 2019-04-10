@@ -39,8 +39,8 @@ static void chippin_read_cli(
 {
 }
 static void chippin_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)chippin_read_cli(win, sty, act, pin);
@@ -61,26 +61,27 @@ static void chippin_swrite(
 {
 }
 static void chippin_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void chippin_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void chippin_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void chippin_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void chippin_delete(struct actor* act, u8* buf)
@@ -102,8 +103,8 @@ void chippin_register(struct actor* p)
 	p->ondelete = (void*)chippin_delete;
 	p->onstart  = (void*)chippin_start;
 	p->onstop   = (void*)chippin_stop;
-	p->onget    = (void*)chippin_cread;
-	p->onpost   = (void*)chippin_cread;
-	p->onread   = (void*)chippin_sread;
-	p->onwrite  = (void*)chippin_swrite;
+	p->oncread  = (void*)chippin_cread;
+	p->oncwrite = (void*)chippin_cread;
+	p->onsread  = (void*)chippin_sread;
+	p->onswrite = (void*)chippin_swrite;
 }

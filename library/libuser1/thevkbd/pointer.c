@@ -71,7 +71,9 @@ void pointer_read_pixel(struct arena* win, struct style* sty)
 		drawline_arrow(win, 0xff00ff, x0, y0, x1, y1);
 	}
 }
-static int pointer_sread(struct arena* win, struct style* sty, struct arena* cc, struct style* cf)
+static int pointer_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)pointer_read_cli(win, sty);
@@ -89,11 +91,17 @@ static int pointer_swrite(
 {
 	return 0;
 }
-static int pointer_cread(struct arena* cc, struct style* cf, struct arena* win, struct style* sty)
+static int pointer_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 	return 0;
 }
-static int pointer_cwrite(struct arena* win, struct style* stack, struct event* ev)
+static int pointer_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 	return 0;
 }
@@ -132,8 +140,8 @@ void pointer_register(struct actor* p)
 	p->ondelete = (void*)pointer_delete;
 	p->onstart  = (void*)pointer_start;
 	p->onstop   = (void*)pointer_stop;
-	p->onget    = (void*)pointer_cread;
-	p->onpost   = (void*)pointer_cwrite;
-	p->onread   = (void*)pointer_sread;
-	p->onwrite  = (void*)pointer_swrite;
+	p->oncread  = (void*)pointer_cread;
+	p->oncwrite = (void*)pointer_cwrite;
+	p->onsread  = (void*)pointer_sread;
+	p->onswrite = (void*)pointer_swrite;
 }

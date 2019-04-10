@@ -188,8 +188,8 @@ static void planet_read_cli(
 {
 }
 static void planet_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)planet_read_cli(win, sty, act, pin);
@@ -211,25 +211,26 @@ static void planet_swrite(
 }
 static void planet_cread(
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	u8* buf, int len)
 {
 }
 static void planet_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void planet_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void planet_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void planet_delete(struct actor* act)
@@ -253,8 +254,8 @@ void planet_register(struct actor* p)
 	p->ondelete = (void*)planet_delete;
 	p->onstart  = (void*)planet_start;
 	p->onstop   = (void*)planet_stop;
-	p->onget    = (void*)planet_cread;
-	p->onpost   = (void*)planet_cwrite;
-	p->onread   = (void*)planet_sread;
-	p->onwrite  = (void*)planet_swrite;
+	p->oncread  = (void*)planet_cread;
+	p->oncwrite = (void*)planet_cwrite;
+	p->onsread  = (void*)planet_sread;
+	p->onswrite = (void*)planet_swrite;
 }

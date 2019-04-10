@@ -165,8 +165,8 @@ static void mobius_read_cli(
 {
 }
 static void mobius_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)mobius_read_cli(win, sty, act, pin);
@@ -186,22 +186,28 @@ static void mobius_swrite(
 	struct event* ev, int len)
 {
 }
-static void mobius_cread()
+static void mobius_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void mobius_cwrite()
+static void mobius_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void mobius_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void mobius_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void mobius_delete(struct actor* act)
@@ -228,8 +234,8 @@ void mobius_register(struct actor* p)
 	p->ondelete = (void*)mobius_delete;
 	p->onstart  = (void*)mobius_start;
 	p->onstop   = (void*)mobius_stop;
-	p->onget    = (void*)mobius_cread;
-	p->onpost   = (void*)mobius_cwrite;
-	p->onread   = (void*)mobius_sread;
-	p->onwrite  = (void*)mobius_swrite;
+	p->oncread  = (void*)mobius_cread;
+	p->oncwrite = (void*)mobius_cwrite;
+	p->onsread  = (void*)mobius_sread;
+	p->onswrite = (void*)mobius_swrite;
 }

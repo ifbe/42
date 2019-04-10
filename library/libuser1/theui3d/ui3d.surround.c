@@ -182,8 +182,8 @@ void surround_zoom(struct arena* win, float delta)
 
 
 static int surround_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	vec3 tc,tr,tf;
 	float* vc = win->target.vc;
@@ -517,26 +517,27 @@ static int surround_swrite(
 	return 1;
 }
 static void surround_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void surround_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void surround_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void surround_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
     say("@surround_start\n");
 }
@@ -560,8 +561,8 @@ void surround_register(struct actor* p)
 	p->ondelete = (void*)surround_delete;
 	p->onstart  = (void*)surround_start;
 	p->onstop   = (void*)surround_stop;
-	p->onget    = (void*)surround_cread;
-	p->onpost   = (void*)surround_cwrite;
-	p->onread   = (void*)surround_sread;
-	p->onwrite  = (void*)surround_swrite;
+	p->oncread  = (void*)surround_cread;
+	p->oncwrite = (void*)surround_cwrite;
+	p->onsread  = (void*)surround_sread;
+	p->onswrite = (void*)surround_swrite;
 }

@@ -461,8 +461,8 @@ static void xiangqi_read_cli(
 {
 }
 static void xiangqi_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -604,26 +604,27 @@ void xiangqi_swrite(
 	}
 }
 static void xiangqi_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void xiangqi_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void xiangqi_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void xiangqi_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void xiangqi_delete(struct actor* act, u8* buf)
@@ -667,8 +668,8 @@ void xiangqi_register(struct actor* p)
 	p->ondelete = (void*)xiangqi_delete;
 	p->onstart  = (void*)xiangqi_start;
 	p->onstop   = (void*)xiangqi_stop;
-	p->onget    = (void*)xiangqi_cread;
-	p->onpost   = (void*)xiangqi_cwrite;
-	p->onread   = (void*)xiangqi_sread;
-	p->onwrite  = (void*)xiangqi_swrite;
+	p->oncread  = (void*)xiangqi_cread;
+	p->oncwrite = (void*)xiangqi_cwrite;
+	p->onsread  = (void*)xiangqi_sread;
+	p->onswrite = (void*)xiangqi_swrite;
 }

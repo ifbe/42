@@ -179,9 +179,9 @@ static void font_read_cli(
 		say("\n");
 	}
 }
-static void font_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void font_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -192,7 +192,7 @@ static void font_read(
 	else if(fmt == _vbo_)font_read_vbo(win, sty, act, pin);
 	else font_read_pixel(win, sty, act, pin);
 }
-static void font_write(
+static void font_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -219,22 +219,28 @@ static void font_write(
 		}
 	}
 }
-static void font_get()
+static void font_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void font_post()
+static void font_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void font_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void font_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void font_delete(struct actor* act)
@@ -261,8 +267,8 @@ void font_register(struct actor* p)
 	p->ondelete = (void*)font_delete;
 	p->onstart  = (void*)font_start;
 	p->onstop   = (void*)font_stop;
-	p->onget    = (void*)font_get;
-	p->onpost   = (void*)font_post;
-	p->onread   = (void*)font_read;
-	p->onwrite  = (void*)font_write;
+	p->oncread  = (void*)font_cread;
+	p->oncwrite = (void*)font_cwrite;
+	p->onsread  = (void*)font_sread;
+	p->onswrite = (void*)font_swrite;
 }

@@ -32,10 +32,12 @@ int ui3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stac
 
 		if(_act_ == orel->dsttype)
 		{
+			sty = (void*)(orel->srcfoot);
+			//if(sty){if('#' == sty->uc[3])goto next;}
+
 			act = (void*)(orel->dstchip);
 			pin = (void*)(orel->dstfoot);
-			sty = (void*)(orel->srcfoot);
-			act->onread(win, sty, act, pin);
+			actor_rootread(act, pin, win, sty, 0, 0);
 		}
 
 		orel = samesrcnextdst(orel);
@@ -58,10 +60,12 @@ int ui3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sta
 
 		if(_act_ == rel->dsttype)
 		{
-			act = (void*)(rel->dstchip);
 			sty = (void*)(rel->srcfoot);
+			//if(sty){if('#' == sty->uc[3])goto next;}
+
+			act = (void*)(rel->dstchip);
 			pin = (void*)(rel->dstfoot);
-			ret = act->onwrite(act, pin, win, sty, ev, 0);
+			ret = actor_rootwrite(act, pin, win, sty, ev, 0);
 			if(ret)return 1;
 		}
 

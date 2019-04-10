@@ -108,8 +108,8 @@ static void login_read_cli(
 {
 }
 static void login_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)login_read_cli(win, sty, act, pin);
@@ -129,22 +129,28 @@ static void login_swrite(
 	struct event* ev, int len)
 {
 }
-static void login_cread()
+static void login_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void login_cwrite()
+static void login_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void login_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void login_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void login_delete(struct actor* act)
@@ -171,8 +177,8 @@ void login_register(struct actor* p)
 	p->ondelete = (void*)login_delete;
 	p->onstart  = (void*)login_start;
 	p->onstop   = (void*)login_stop;
-	p->onget    = (void*)login_cread;
-	p->onpost   = (void*)login_cwrite;
-	p->onread   = (void*)login_sread;
-	p->onwrite  = (void*)login_swrite;
+	p->oncread  = (void*)login_cread;
+	p->oncwrite = (void*)login_cwrite;
+	p->onsread  = (void*)login_sread;
+	p->onswrite = (void*)login_swrite;
 }

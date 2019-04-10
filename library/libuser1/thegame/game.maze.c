@@ -502,8 +502,8 @@ static void maze_read_cli(
 	say("\n\n\n\n");
 }
 static void maze_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)maze_read_cli(win, sty, act, pin);
@@ -534,26 +534,27 @@ static void maze_swrite(
 	}
 }
 static void maze_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void maze_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void maze_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void maze_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	u8* buf = leaf->buf;
 	maze_generate(buf, WIDTH, HEIGHT);
@@ -589,8 +590,8 @@ void maze_register(struct actor* p)
 	p->ondelete = (void*)maze_delete;
 	p->onstart  = (void*)maze_start;
 	p->onstop   = (void*)maze_stop;
-	p->onget    = (void*)maze_cread;
-	p->onpost   = (void*)maze_cwrite;
-	p->onread   = (void*)maze_sread;
-	p->onwrite  = (void*)maze_swrite;
+	p->oncread  = (void*)maze_cread;
+	p->oncwrite = (void*)maze_cwrite;
+	p->onsread  = (void*)maze_sread;
+	p->onswrite = (void*)maze_swrite;
 }

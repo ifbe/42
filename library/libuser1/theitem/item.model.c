@@ -323,8 +323,8 @@ static void model_read_cli(
 	say("model(%x,%x,%x)\n",win,act,sty);
 }
 static void model_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -371,26 +371,27 @@ static void model_swrite(
 	}
 }
 static void model_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void model_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void model_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void model_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	struct datapair* pair;
 	struct glsrc* src;
@@ -454,8 +455,8 @@ void model_register(struct actor* p)
 	p->ondelete = (void*)model_delete;
 	p->onstart  = (void*)model_start;
 	p->onstop   = (void*)model_stop;
-	p->onget    = (void*)model_cread;
-	p->onpost   = (void*)model_cwrite;
-	p->onread   = (void*)model_sread;
-	p->onwrite  = (void*)model_swrite;
+	p->oncread  = (void*)model_cread;
+	p->oncwrite = (void*)model_cwrite;
+	p->onsread  = (void*)model_sread;
+	p->onswrite = (void*)model_swrite;
 }

@@ -317,8 +317,8 @@ static void graph_read_cli(
 {
 }
 static void graph_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)graph_read_cli(win, sty, act, pin);
@@ -483,26 +483,27 @@ say("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
 
 
 static void graph_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void graph_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void graph_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void graph_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	int j;
 	float* vbuf = leaf->vbuf;
@@ -572,8 +573,8 @@ void graph_register(struct actor* p)
 	p->ondelete = (void*)graph_delete;
 	p->onstart  = (void*)graph_start;
 	p->onstop   = (void*)graph_stop;
-	p->onget    = (void*)graph_cread;
-	p->onpost   = (void*)graph_cwrite;
-	p->onread   = (void*)graph_sread;
-	p->onwrite  = (void*)graph_swrite;
+	p->oncread  = (void*)graph_cread;
+	p->oncwrite = (void*)graph_cwrite;
+	p->onsread  = (void*)graph_sread;
+	p->onswrite = (void*)graph_swrite;
 }

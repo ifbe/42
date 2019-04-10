@@ -273,8 +273,8 @@ static void glass_read_cli(
 {
 }
 static void glass_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)glass_read_cli(win, sty, act, pin);
@@ -291,26 +291,27 @@ static void glass_swrite(
 {
 }
 static void glass_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void glass_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void glass_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void glass_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 	struct datapair* pair;
 	struct glsrc* src;
@@ -336,7 +337,7 @@ static void glass_start(
 	src->vbuf_h = 6;
 
 	src->method = 'v';
-    src->opaque = 1;
+	src->opaque = 1;
 
 	//send!
 	src->shader_enq[0] = 42;
@@ -372,8 +373,8 @@ void glass_register(struct actor* p)
 	p->ondelete = (void*)glass_delete;
 	p->onstart  = (void*)glass_start;
 	p->onstop   = (void*)glass_stop;
-	p->onget    = (void*)glass_cread;
-	p->onpost   = (void*)glass_cwrite;
-	p->onread   = (void*)glass_sread;
-	p->onwrite  = (void*)glass_swrite;
+	p->oncread  = (void*)glass_cread;
+	p->oncwrite = (void*)glass_cwrite;
+	p->onsread  = (void*)glass_sread;
+	p->onswrite = (void*)glass_swrite;
 }

@@ -6,6 +6,15 @@ void* systemcreate(u64, void*);
 
 
 
+void queuepacket(u8* dst, int* idx, u8* buf, int len)
+{
+	int j;
+	for(j=0;j<len;j++)dst[j] = buf[j];
+}
+
+
+
+
 static void rawdump_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -63,9 +72,9 @@ static void rawdump_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void rawdump_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void rawdump_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)rawdump_read_cli(win, sty, act, pin);
@@ -75,16 +84,7 @@ static void rawdump_read(
 	else if(fmt == _vbo_)rawdump_read_vbo(win, sty, act, pin);
 	else rawdump_read_pixel(win, sty, act, pin);
 }
-
-
-
-
-void queuepacket(u8* dst, int* idx, u8* buf, int len)
-{
-	int j;
-	for(j=0;j<len;j++)dst[j] = buf[j];
-}
-static void rawdump_write(
+static void rawdump_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
@@ -97,22 +97,28 @@ static void rawdump_write(
 	//writefile();
 	queuepacket(act->buf, act->idx, buf, len);
 }
-static void rawdump_get(u8* buf)
+static void rawdump_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void rawdump_post(u8* buf)
+static void rawdump_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void rawdump_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void rawdump_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void rawdump_delete(struct actor* act, u8* buf)
@@ -146,8 +152,8 @@ void rawdump_register(struct actor* p)
 	p->ondelete = (void*)rawdump_delete;
 	p->onstart  = (void*)rawdump_start;
 	p->onstop   = (void*)rawdump_stop;
-	p->onget    = (void*)rawdump_get;
-	p->onpost   = (void*)rawdump_post;
-	p->onread   = (void*)rawdump_read;
-	p->onwrite  = (void*)rawdump_write;
+	p->oncread  = (void*)rawdump_cread;
+	p->oncwrite = (void*)rawdump_cwrite;
+	p->onsread  = (void*)rawdump_sread;
+	p->onswrite = (void*)rawdump_swrite;
 }

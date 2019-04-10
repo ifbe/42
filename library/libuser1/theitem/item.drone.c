@@ -126,9 +126,9 @@ static void drone_read_cli(
 	struct actor* act, struct pinid* pin)
 {
 }
-static void drone_read(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void drone_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)drone_read_cli(win, sty, act, pin);
@@ -138,28 +138,34 @@ static void drone_read(
 	else if(fmt == _vbo_)drone_read_vbo(win, sty, act, pin);
 	else drone_read_pixel(win, sty, act, pin);
 }
-static void drone_write(
+static void drone_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
-static void drone_get()
+static void drone_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
-static void drone_post()
+static void drone_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
 {
 }
 static void drone_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void drone_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void drone_delete(struct actor* act)
@@ -186,8 +192,8 @@ void drone_register(struct actor* p)
 	p->ondelete = (void*)drone_delete;
 	p->onstart  = (void*)drone_start;
 	p->onstop   = (void*)drone_stop;
-	p->onget    = (void*)drone_get;
-	p->onpost   = (void*)drone_post;
-	p->onread   = (void*)drone_read;
-	p->onwrite  = (void*)drone_write;
+	p->oncread  = (void*)drone_cread;
+	p->oncwrite = (void*)drone_cwrite;
+	p->onsread  = (void*)drone_sread;
+	p->onswrite = (void*)drone_swrite;
 }

@@ -131,31 +131,23 @@ void actorinput_touch(struct arena* win, struct event* ev)
 
 int actor_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	struct relation* rel;
-	struct actor* act;
-	struct arena* win;
-//say("actorwrite@{\n");
-
-	act = dc;
-	act->onwrite(dc, df, sc, sf, buf, len);
-
-//say("}@actorwrite\n");
-	return 0;
+	struct actor* act = dc;
+	return act->onswrite(dc, df, sc, sf, buf, len);
 }
 int actor_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	struct actor* act = dc;
-	act->onread(sc, sf, dc, df);
-	return 0;
+	return act->onsread(dc, df, sc, sf, buf, len);
 }
 int actor_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	return 0;
+	struct actor* act = dc;
+	return act->oncwrite(dc, df, sc, sf, buf, len);
 }
 int actor_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
-	actorread_all(dc);
-	return 0;
+	struct actor* act = dc;
+	return act->oncread(dc, df, sc, sf, buf, len);
 }
 int actorstop(
 	struct actor* leaf, struct pinid* lf,

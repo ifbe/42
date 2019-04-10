@@ -676,19 +676,19 @@ struct actor
 		char padding3[8];
 	};
 	union{
-		int (*onget)(void* actor, void* pinid, void* buf, int len);
+		int (*oncread)(void* actor, void* df, void* sc, void* sf, void* buf, int len);
 		char padding4[8];
 	};
 	union{
-		int (*onpost)(void* actor, void* pinid, void* buf, int len);
+		int (*oncwrite)(void* actor, void* df, void* sc, void* sf, void* buf, int len);
 		char padding5[8];
 	};
 	union{
-		int (*onread)(void* dc,void* df,void* sc,void* sf);
+		int (*onsread)(void* actor, void* df, void* sc, void* sf, void* buf, int len);
 		char padding6[8];
 	};
 	union{
-		int (*onwrite)(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+		int (*onswrite)(void* actor, void* df, void* sc, void* sf, void* buf, int len);
 		char padding7[8];
 	};
 

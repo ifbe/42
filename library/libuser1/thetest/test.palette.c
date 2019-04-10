@@ -93,8 +93,8 @@ static void palette_read_cli(
 	say("r=%02x,g=%02x,b=%02x\n",red,green,blue);
 }
 static void palette_sread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)palette_read_cli(win, sty, act, pin);
@@ -165,26 +165,27 @@ static void palette_swrite(
 	}
 }
 static void palette_cread(
+	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	u8* buf, int len)
 {
 }
 static void palette_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	u8* buf, int len)
 {
 }
 static void palette_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void palette_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
-    struct arena* root, struct style* rf)
+	struct arena* root, struct style* rf)
 {
 }
 static void palette_delete(struct actor* act)
@@ -211,8 +212,8 @@ void palette_register(struct actor* p)
 	p->ondelete = (void*)palette_delete;
 	p->onstart  = (void*)palette_start;
 	p->onstop   = (void*)palette_stop;
-	p->onget    = (void*)palette_cread;
-	p->onpost   = (void*)palette_cwrite;
-	p->onread   = (void*)palette_sread;
-	p->onwrite  = (void*)palette_swrite;
+	p->oncread  = (void*)palette_cread;
+	p->oncwrite = (void*)palette_cwrite;
+	p->onsread  = (void*)palette_sread;
+	p->onswrite = (void*)palette_swrite;
 }
