@@ -66,7 +66,7 @@ GLSL_VERSION
 "mediump vec3 kdiff = vec3(0.277500, 0.277500, 0.277500);\n"
 "mediump vec3 kspec = vec3(0.773911, 0.773911, 0.773911);\n"
 "vec3 blinnphong(){\n"
-	"mediump vec3 lightcolor = 0.3*vec3(0.9, 0.9, 1.0);\n"
+	"mediump vec3 lightcolor = 0.1*vec3(0.9, 0.9, 1.0);\n"
 	"mediump vec3 N = normalize(normal);\n"
 	"mediump vec3 L = normalize(sunxyz - vertex);\n"
 	"mediump float SN = max(dot(N, L), 0.0);\n"
@@ -83,7 +83,7 @@ GLSL_VERSION
 	"return lightcolor * ret;\n"
 "}\n"
 "vec3 sun0(){\n"
-	"mediump vec3 lightcolor = 0.3*vec3(0.9, 0.9, 1.0);\n"
+	"mediump vec3 lightcolor = 0.1*vec3(0.9, 0.9, 1.0);\n"
 	"mediump vec3 N = normalize(normal);\n"
 	"mediump vec3 L = normalize(dirsun0);\n"
 	"mediump float SN = max(dot(N, L), 0.0);\n"
@@ -99,7 +99,7 @@ GLSL_VERSION
 	"return lightcolor * ret;\n"
 "}\n"
 "vec3 sun1(){\n"
-	"mediump vec3 lightcolor = 0.3*vec3(0.9, 0.9, 1.0);\n"
+	"mediump vec3 lightcolor = 0.1*vec3(0.9, 0.9, 1.0);\n"
 	"mediump vec3 N = normalize(normal);\n"
 	"mediump vec3 L = normalize(dirsun1);\n"
 	"mediump float SN = max(dot(N, L), 0.0);\n"
@@ -116,7 +116,7 @@ GLSL_VERSION
 "}\n"
 "void main(){\n"
 	//"FragColor = vec4(normal, 1.0);\n"
-	"FragColor = vec4(blinnphong() + sun0() + sun1(), 1.0);\n"
+	"FragColor = vec4(texture(tex0, texuvw.xy).bgr + blinnphong() + sun0() + sun1(), 1.0);\n"
 "}\n";
 
 
@@ -136,15 +136,15 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct actor* act)
 			//vertex
 			vbuf[y*256+x][0] = x/127.0 - 1.0;
 			vbuf[y*256+x][1] = y/127.0 - 1.0;
-			x1 = x*w/256;
-			y1 = (255-y)*h/256;
-			//x1 = x+256;
-			//y1 = y+512;
+			//x1 = x*w/256;
+			//y1 = (255-y)*h/256;
+			x1 = x+256;
+			y1 = y+512;
 			vbuf[y*256+x][2] = rgba[(w*y1 + x1) * 4] / 256.0;
 //say("%f\n",vbuf[y*256+x][2]);
 			//uv
-			vbuf[y*256+x][3] = x*1.0;
-			vbuf[y*256+x][4] = y*1.0;
+			vbuf[y*256+x][3] = x1 / (float)w;
+			vbuf[y*256+x][4] = y1 / (float)h;
 			vbuf[y*256+x][5] = 0.0;
 		}
 	}
@@ -173,8 +173,10 @@ void terrain_locate(vec4 v, struct actor* act)
 	int h = act->height;
 	u8* rgba = act->buf;
 
-	x = w * (200000.0 + v[0]) / 400000.0;
-	y = h * (200000.0 - v[1]) / 400000.0;
+	x = w * (500000.0 + v[0]) / 1000.0 / 1000.0;
+	y = h * (500000.0 - v[1]) / 1000.0 / 1000.0;
+	x += 256;
+	y += 512;
 	if( (x<0) | (x>=w) | (y<0) | (y>=h) )v[2] = 0.0;
 	else v[2] = rgba[(w*y + x) * 4] * 8000.0 / 256.0;
 }
@@ -294,15 +296,16 @@ static void terrain_start(
 	src->vs = terrain_glsl_v;
 	src->gs = terrain_glsl_g;
 	src->fs = terrain_glsl_f;
+	src->shader_enq[0] = 42;
 
 	//argument
 	float* mat = memorycreate(4*4*4);
-	mat[ 0] = 200.0*1000.0;
+	mat[ 0] = 500.0*1000.0;
 	mat[ 1] = 0.0;
 	mat[ 2] = 0.0;
 	mat[ 3] = 0.0;
 	mat[ 4] = 0.0;
-	mat[ 5] = 200.0*1000.0;
+	mat[ 5] = 500.0*1000.0;
 	mat[ 6] = 0.0;
 	mat[ 7] = 0.0;
 	mat[ 8] = 0.0;
@@ -315,13 +318,15 @@ static void terrain_start(
 	mat[15] = 1.0;
 	src->arg_data[0] = (u64)mat;
 	src->arg[0] = "objmat";
-/*
+	src->arg_enq[0] = 42;
+
 	//texture
-	src->tex[0] = leaf->buf;
 	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex[0] = leaf->buf;
 	src->tex_w[0] = leaf->width;
 	src->tex_h[0] = leaf->height;
-*/
+	src->tex_enq[0] = 42;
+
 	//vertex
 	vbuf = memorycreate(4*6 * 256*255);
 	ibuf = memorycreate(2*3 * 256*256*2);
@@ -332,16 +337,12 @@ static void terrain_start(
 	src->vbuf = vbuf;
 	src->vbuf_w = 4*6;
 	src->vbuf_h = 256*255;
+	src->vbuf_enq = 42;
+
 	src->ibuf_fmt = 0x222;
 	src->ibuf = ibuf;
 	src->ibuf_w = 2*3;
 	src->ibuf_h = 254*254*2;
-
-	//send!
-	src->shader_enq[0] = 42;
-	src->arg_enq[0] = 42;
-	//src->tex_enq[0] = 42;
-	src->vbuf_enq = 42;
 	src->ibuf_enq = 42;
 }
 static void terrain_delete(struct actor* act)
@@ -355,7 +356,7 @@ static void terrain_delete(struct actor* act)
 static void terrain_create(struct actor* act, void* str)
 {
 	int x,y,c;
-	u32* rgba;
+	u8* rgba;
 	if(0 == act)return;
 
 	//max=16MB
@@ -375,7 +376,9 @@ static void terrain_create(struct actor* act, void* str)
 		{
 			for(x=0;x<2048;x++)
 			{
-				rgba[y*2048 + x] = getrandom();
+				rgba[4*(y*2048 + x)+0] = getrandom()%256;
+				rgba[4*(y*2048 + x)+1] = getrandom()%256;
+				rgba[4*(y*2048 + x)+2] = getrandom()%256;
 			}
 		}
 	}

@@ -56,7 +56,7 @@ void carvefrustum(struct arena* win, struct style* sty)
 	tf[0] = (vu[0] - vb[0])/2;
 	tf[1] = (vu[1] - vb[1])/2;
 	tf[2] = (vu[2] - vb[2])/2;
-	carvesolid_rect(win, 0xffffff, tc, tr, tf);
+	carveline_rect(win, 0xff0000, tc, tr, tf);
 
 	tc[0] = vc[0] + (vn[0] + (vl[0] + vr[0])/2 + (vb[0] + vu[0])/2)*1000;
 	tc[1] = vc[1] + (vn[1] + (vl[1] + vr[1])/2 + (vb[1] + vu[1])/2)*1000;
