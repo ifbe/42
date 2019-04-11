@@ -208,8 +208,12 @@ static int thirdperson_swrite(
 
 		v[0] = v[1] = 0.0;
 		v[2] = 1.0;
-		quaternion_operation(act->camera.vc, v, (x1-x0)/100.0);
+		quaternion_operation(act->camera.vc, v, (x0-x1)/100.0);
 
+		v[0] =-act->camera.vc[1];
+		v[1] = act->camera.vc[0];
+		v[2] = 0.0;
+		quaternion_operation(act->camera.vc, v, (y0-y1)/100.0);
 		return 1;
 	}
 	return 0;
