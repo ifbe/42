@@ -124,27 +124,46 @@ GLSL_VERSION
 
 void terrain_generate(float (*vbuf)[6], u16* ibuf, struct actor* act)
 {
-	int x,y,x1,y1,j;
+	float f;
+	int x1,y1;
+	int x,y,j;
+	u8* rgba = act->buf;
 	int w = act->width;
 	int h = act->height;
-	u8* rgba = act->buf;
+	float cx = (w-1) / 2.0;
+	float cy = (h-1) / 2.0;
 
-	for(y=0;y<255;y++)
+	for(y=0;y<256;y++)
 	{
-		for(x=0;x<255;x++)
+		for(x=0;x<256;x++)
 		{
-			//vertex
-			vbuf[y*256+x][0] = x/127.0 - 1.0;
-			vbuf[y*256+x][1] = y/127.0 - 1.0;
-			//x1 = x*w/256;
-			//y1 = (255-y)*h/256;
-			x1 = x+256;
-			y1 = y+512;
-			vbuf[y*256+x][2] = rgba[(w*y1 + x1) * 4] / 256.0;
-//say("%f\n",vbuf[y*256+x][2]);
-			//uv
-			vbuf[y*256+x][3] = x1 / (float)w;
-			vbuf[y*256+x][4] = y1 / (float)h;
+			//pixel ->  local xyz (->     world xyz)
+			//    0 ->       -1.0 (-> -127.5*1000.0)
+			//  127 -> -0.5/127.5 (->   -0.5*1000.0)
+			//  128 ->  0.5/127.5 (->    0.5*1000.0)
+			//  255 ->        1.0 (->  127.5*1000.0)
+			vbuf[y*256+x][0] = x/127.5 - 1.0;
+			vbuf[y*256+x][1] = y/127.5 - 1.0;
+
+			//local ->        world ->               uv
+			//    0 ->   0-127.5+cx -> (cx-127.5)/(w-1)
+			//  127 -> 127-127.5+cx -> (cx  -0.5)/(w-1)
+			//  128 -> 128-127.5+cx -> (cx  +0.5)/(w-1)
+			//  255 -> 255-127.5+cx -> (cx+127.5)/(w-1)
+			x1 = x - 128 + w/2;
+			y1 = y - 128 + h/2;
+			y1 = h-1 - y1;
+			if((x1 < 0) | (x1 >= w) | (y1 < 0) | (y1 >= h))f = 0.0;
+			else f = rgba[(w*y1 + x1) * 4] / 256.0;
+			vbuf[y*256+x][2] = f;
+
+			//local ->        world ->               uv
+			//    0 ->   0-127.5+cx -> (cx-127.5)/(w-1)
+			//  127 -> 127-127.5+cx -> (cx  -0.5)/(w-1)
+			//  128 -> 128-127.5+cx -> (cx  +0.5)/(w-1)
+			//  255 -> 255-127.5+cx -> (cx+127.5)/(w-1)
+			vbuf[y*256+x][3] =       (x-127.5+cx) / (w-1);
+			vbuf[y*256+x][4] = 1.0 - (y-127.5+cy) / (h-1);
 			vbuf[y*256+x][5] = 0.0;
 		}
 	}
@@ -168,17 +187,48 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct actor* act)
 }
 void terrain_locate(vec4 v, struct actor* act)
 {
-	int x,y;
+	//geometry
 	int w = act->width;
 	int h = act->height;
-	u8* rgba = act->buf;
 
-	x = w * (500000.0 + v[0]) / 1000.0 / 1000.0;
-	y = h * (500000.0 - v[1]) / 1000.0 / 1000.0;
-	x += 256;
-	y += 512;
-	if( (x<0) | (x>=w) | (y<0) | (y>=h) )v[2] = 0.0;
-	else v[2] = rgba[(w*y + x) * 4] * 8000.0 / 256.0;
+	//center
+	float sx = (w-1) / 2.0;
+	float sy = (h-1) / 2.0;
+
+	//position
+	float fx = sx + v[0] / 1000.0;
+	float fy = sy - v[1] / 1000.0;
+
+	//
+	int x0;
+	int x1;
+	if(fx > 0){x0 = (int)fx;x1 = x0 + 1;}
+	else{x1 = -(int)(-fx);x0 = x1 - 1;}
+
+	//
+	int y0;
+	int y1;
+	if(fx > 0){y0 = (int)fy;y1 = y0 + 1;}
+	else{y1 = -(int)(-fy);y0 = y1 - 1;}
+
+	//
+	say("%d,%d,%d,%d\n",x0,x1,y0,y1);
+	if(x0 < 0)goto edge;
+	if(x1 >= w)goto edge;
+	if(y0 < 0)goto edge;
+	if(y1 >= h)goto edge;
+
+	//
+	u8* rgba = act->buf;
+	v[2] = rgba[(w*y0 + x0)*4]
+		 + rgba[(w*y0 + x1)*4]
+		 + rgba[(w*y1 + x0)*4]
+		 + rgba[(w*y1 + x1)*4];
+	v[2] = v[2] * 10000.0 / 1024;
+	return;
+
+edge:
+	v[2] = 0.0;
 }
 
 
@@ -300,17 +350,17 @@ static void terrain_start(
 
 	//argument
 	float* mat = memorycreate(4*4*4);
-	mat[ 0] = 500.0*1000.0;
+	mat[ 0] = 127.5*1000.0;
 	mat[ 1] = 0.0;
 	mat[ 2] = 0.0;
 	mat[ 3] = 0.0;
 	mat[ 4] = 0.0;
-	mat[ 5] = 500.0*1000.0;
+	mat[ 5] = 127.5*1000.0;
 	mat[ 6] = 0.0;
 	mat[ 7] = 0.0;
 	mat[ 8] = 0.0;
 	mat[ 9] = 0.0;
-	mat[10] = 8000.0;
+	mat[10] = 10.0*1000.0;
 	mat[11] = 0.0;
 	mat[12] = tf->vc[0];
 	mat[13] = tf->vc[1];
