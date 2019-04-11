@@ -56,88 +56,51 @@ void surround_fixcam(struct arena* win)
 	win->camera.vb[1] = -y * t;
 	win->camera.vb[2] = -z * t;
 }
-void surround_rotatex(struct arena* win, float delta)
-{
-	float c,s;
-	float tx,ty,tz;		//target
-	float cx,cy,cz;		//surround
-	float vx,vy,vz;		//vector(tar to cam)(origin)
-	float px,py,pz;		//vector(tar to cam)(rotate)
-
-	//target
-	tx = win->target.vc[0];
-	ty = win->target.vc[1];
-	tz = win->target.vc[2];
-
-	//surround
-	cx = win->camera.vc[0];
-	cy = win->camera.vc[1];
-	cz = win->camera.vc[2];
-
-	//vector = -front
-	vx = cx-tx;
-	vy = cy-ty;
-	vz = cz-tz;
-
-	c = cosine(delta);
-	s = sine(delta);
-
-	//rotate
-	px = vx*c + vy*s;
-	py = -vx*s + vy*c;
-	pz = vz;
-
-	//surround = target+vector
-	win->camera.vc[0] = tx+px;
-	win->camera.vc[1] = ty+py;
-	win->camera.vc[2] = tz+pz;
-}
 void surround_rotatey(struct arena* win, float delta)
 {
-	float v[4];
 	float q[4];
-	float tx,ty,tz;		//target
-	float cx,cy,cz;		//surround
-
-	//target
-	tx = win->target.vc[0];
-	ty = win->target.vc[1];
-	tz = win->target.vc[2];
-
-	//surround
-	cx = win->camera.vc[0];
-	cy = win->camera.vc[1];
-	cz = win->camera.vc[2];
+	float va[4];
+	float vb[4];
 
 	//vector = -front
-	v[0] = cx-tx;
-	v[1] = cy-ty;
-	v[2] = cz-tz;
+	va[0] = win->camera.vc[0] - win->target.vc[0];
+	va[1] = win->camera.vc[1] - win->target.vc[1];
+	va[2] = win->camera.vc[2] - win->target.vc[2];
+	vb[0] = va[0];
+	vb[1] = va[1];
+	vb[2] = va[2];
 
-	//cos=dot(v1,v2) / (|v1|*|v2|)
-	q[0] = cosine(delta)*cosine(delta);
-	q[1] = (v[2]*v[2]) / (v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);
-	if(q[0] < q[1])
-	{
-		//(v[2]>0&&delta>0) or (v[2]<0&&delta<0)
-		if(v[2]*delta > 0)return;
-	}
+	//right = (-y, x)
+	q[0] =-va[1];
+	q[1] = va[0];
+	q[2] = 0.0;
+	quaternion_operation(vb, q, delta);
 
-	//right = cross(front, (0,0,1))
-	q[0] = v[1]*1 - v[2]*0;
-	q[1] = v[2]*0 - v[0]*1;
-	q[2] = v[0]*0 - v[1]*0;
-	quaternion_operation(v, q, delta);
+	//if(dot(cross(va,n), cross(vb,n)) < 0)return;
+	if(va[1]*vb[1] + va[0]*vb[0] < 0)return;
 
 	//surround = target+vector
-	win->camera.vc[0] = tx+v[0];
-	win->camera.vc[1] = ty+v[1];
-	win->camera.vc[2] = tz+v[2];
+	win->camera.vc[0] = win->target.vc[0] + vb[0];
+	win->camera.vc[1] = win->target.vc[1] + vb[1];
+	win->camera.vc[2] = win->target.vc[2] + vb[2];
+}
+void surround_rotatex(struct arena* win, float delta)
+{
+	float c = cosine(delta);
+	float s = sine(delta);
+
+	//vector = target -> camera
+	float vx = win->camera.vc[0] - win->target.vc[0];
+	float vy = win->camera.vc[1] - win->target.vc[1];
+
+	//camera = target + vector * r
+	win->camera.vc[0] = win->target.vc[0] + vx*c + vy*s;
+	win->camera.vc[1] = win->target.vc[1] - vx*s + vy*c;
 }
 void surround_rotatexy(struct arena* win, int dx, int dy)
 {
-	if(0 != dx)surround_rotatex(win, dx / 100.0);
 	if(0 != dy)surround_rotatey(win, dy / 100.0);
+	if(0 != dx)surround_rotatex(win, dx / 100.0);
 }
 void target_deltaxyz(struct arena* win, float x, float y, float z)
 {
@@ -165,6 +128,10 @@ void target_deltaxyz(struct arena* win, float x, float y, float z)
 }
 void surround_zoom(struct arena* win, float delta)
 {
+	float va[4];
+	float vb[4];
+
+	//normalize
 	float nx = win->camera.vn[0];
 	float ny = win->camera.vn[1];
 	float nz = win->camera.vn[2];
@@ -172,6 +139,15 @@ void surround_zoom(struct arena* win, float delta)
 	nx /= norm;
 	ny /= norm;
 	nz /= norm;
+
+	//checker
+	va[0] = win->camera.vc[0] - win->target.vc[0];
+	va[1] = win->camera.vc[1] - win->target.vc[1];
+	va[2] = win->camera.vc[2] - win->target.vc[2];
+	vb[0] = va[0] + delta * nx;
+	vb[1] = va[1] + delta * ny;
+	vb[2] = va[2] + delta * nz;
+	if(va[0]*vb[0] + va[1]*vb[1] + va[2]*vb[2] < 0)return;
 
 	win->camera.vc[0] += delta * nx;
 	win->camera.vc[1] += delta * ny;
@@ -397,7 +373,7 @@ static int surround_swrite(
 			x1 = (ev->why)&0xffff;
 			y1 = ((ev->why)>>16)&0xffff;
 
-			surround_rotatexy(win, x1-x0, y1-y0);
+			surround_rotatexy(win, x1-x0, y0-y1);
 		}
 	}
 	else if(joy_left == (ev->what & joy_mask))
@@ -465,11 +441,11 @@ static int surround_swrite(
 		}
 		if(t[3] & joyr_down)		//y-
 		{
-			surround_rotatexy(win, 0.0, 1.0);
+			surround_rotatexy(win, 0.0, -1.0);
 		}
 		if(t[3] & joyr_up)			//y+
 		{
-			surround_rotatexy(win, 0.0, -1.0);
+			surround_rotatexy(win, 0.0, 1.0);
 		}
 		if(t[3] & joyr_trigger)		//z-
 		{
@@ -509,7 +485,7 @@ static int surround_swrite(
 		else if(y0 > 4096)y1 = y0 - 4096;
 		else y1 = 0;
 
-		if((0 != x1) | (0 != y1))surround_rotatexy(win, x1/4096.0, -y1/4096.0);
+		if((0 != x1) | (0 != y1))surround_rotatexy(win, x1/4096.0, y1/4096.0);
 	}
 
 	//fix it!

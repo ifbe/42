@@ -170,8 +170,10 @@ static int thirdperson_swrite(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
+	vec4 q;
+	vec4 v;
+	float a,c,s;
 	int x0,y0,x1,y1,id;
-	vec3 v;
 	if(0 == act)return 0;
 
 	//only hook mouse event
@@ -206,14 +208,30 @@ static int thirdperson_swrite(
 		x1 = (ev->why)&0xffff;
 		y1 = ((ev->why)>>16)&0xffff;
 
-		v[0] = v[1] = 0.0;
-		v[2] = 1.0;
-		quaternion_operation(act->camera.vc, v, (x0-x1)/100.0);
+		//rotate y
+		v[0] = act->camera.vc[0];
+		v[1] = act->camera.vc[1];
+		v[2] = act->camera.vc[2];
+		q[0] =-v[1];
+		q[1] = v[0];
+		q[2] = 0.0;
+		quaternion_operation(v, q, (y0-y1)/100.0);
 
-		v[0] =-act->camera.vc[1];
-		v[1] = act->camera.vc[0];
-		v[2] = 0.0;
-		quaternion_operation(act->camera.vc, v, (y0-y1)/100.0);
+		//dot(cross(va,n), cross(vb,n))
+		if(v[0]*act->camera.vc[0] + v[1]*act->camera.vc[1] > 0){
+			act->camera.vc[0] = v[0];
+			act->camera.vc[1] = v[1];
+			act->camera.vc[2] = v[2];
+		}
+
+		//rotate x
+		a = (x0-x1)/100.0;
+		s = sine(a);
+		c = cosine(a);
+		v[0] = act->camera.vc[0];
+		v[1] = act->camera.vc[1];
+		act->camera.vc[0] = v[0]*c - v[1]*s;
+		act->camera.vc[1] = v[0]*s + v[1]*c;
 		return 1;
 	}
 	return 0;
