@@ -430,5 +430,5 @@ void carvesolid_bodypart(struct arena* win, u32 rgb, vec3 t0, vec3 t1)
 	tf[1] *= n;
 	tf[2] *= n;
 
-	carvesolid_cylinder(win, 0xffffff, tc, tr, tf, tu);
+	carvesolid_cylinder(win, rgb, tc, tr, tf, tu);
 }

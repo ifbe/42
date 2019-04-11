@@ -125,8 +125,8 @@ GLSL_VERSION
 void terrain_generate(float (*vbuf)[6], u16* ibuf, struct actor* act)
 {
 	float f;
-	int x1,y1;
 	int x,y,j;
+	int x0,y0,x1,y1;
 	u8* rgba = act->buf;
 	int w = act->width;
 	int h = act->height;
@@ -137,6 +137,9 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct actor* act)
 	{
 		for(x=0;x<256;x++)
 		{
+			x0 = x + act->x0;
+			y0 = y + act->y0;
+
 			//pixel ->  local xyz (->     world xyz)
 			//    0 ->       -1.0 (-> -127.5*1000.0)
 			//  127 -> -0.5/127.5 (->   -0.5*1000.0)
@@ -150,8 +153,8 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct actor* act)
 			//  127 -> 127-127.5+cx -> (cx  -0.5)/(w-1)
 			//  128 -> 128-127.5+cx -> (cx  +0.5)/(w-1)
 			//  255 -> 255-127.5+cx -> (cx+127.5)/(w-1)
-			x1 = x - 128 + w/2;
-			y1 = y - 128 + h/2;
+			x1 = x0 - 128 + w/2;
+			y1 = y0 - 128 + h/2;
 			y1 = h-1 - y1;
 			if((x1 < 0) | (x1 >= w) | (y1 < 0) | (y1 >= h))f = 0.0;
 			else f = rgba[(w*y1 + x1) * 4] / 256.0;
@@ -162,8 +165,8 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct actor* act)
 			//  127 -> 127-127.5+cx -> (cx  -0.5)/(w-1)
 			//  128 -> 128-127.5+cx -> (cx  +0.5)/(w-1)
 			//  255 -> 255-127.5+cx -> (cx+127.5)/(w-1)
-			vbuf[y*256+x][3] =       (x-127.5+cx) / (w-1);
-			vbuf[y*256+x][4] = 1.0 - (y-127.5+cy) / (h-1);
+			vbuf[y*256+x][3] =       (x0-127.5+cx) / (w-1);
+			vbuf[y*256+x][4] = 1.0 - (y0-127.5+cy) / (h-1);
 			vbuf[y*256+x][5] = 0.0;
 		}
 	}
@@ -212,19 +215,24 @@ void terrain_locate(vec4 v, struct actor* act)
 	else{y1 = -(int)(-fy);y0 = y1 - 1;}
 
 	//
-	say("%d,%d,%d,%d\n",x0,x1,y0,y1);
+	//say("%d,%d,%d,%d\n",x0,x1,y0,y1);
 	if(x0 < 0)goto edge;
 	if(x1 >= w)goto edge;
 	if(y0 < 0)goto edge;
 	if(y1 >= h)goto edge;
 
 	//
+	float val;
+	float max;
 	u8* rgba = act->buf;
-	v[2] = rgba[(w*y0 + x0)*4]
-		 + rgba[(w*y0 + x1)*4]
-		 + rgba[(w*y1 + x0)*4]
-		 + rgba[(w*y1 + x1)*4];
-	v[2] = v[2] * 10000.0 / 1024;
+	max = rgba[(w*y0 + x0)*4];
+	val = rgba[(w*y0 + x1)*4];
+	if(val > max)max = val;
+	val = rgba[(w*y1 + x0)*4];
+	if(val > max)max = val;
+	val = rgba[(w*y1 + x1)*4];
+	if(val > max)max = val;
+	v[2] = max * 10000.0 / 256;
 	return;
 
 edge:
@@ -257,12 +265,42 @@ static void terrain_read_pixel(
 static void terrain_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
-{
+{/*
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	//if(0 == act->buf)return;
+*/
+	struct glsrc* src = (void*)(pin->foot[0]);
+	if(0 == src)return;
+
+	void* vbuf = src->vbuf;
+	void* ibuf = src->ibuf;
+	float* mat = src->arg_data[0];
+	if(0 == act->w0){
+		act->w0 = 42;
+
+		terrain_generate(vbuf, ibuf, act);
+		src->vbuf_enq += 1;
+
+		mat[ 0] = 127.5*1000.0;
+		mat[ 1] = 0.0;
+		mat[ 2] = 0.0;
+		mat[ 3] = 0.0;
+		mat[ 4] = 0.0;
+		mat[ 5] = 127.5*1000.0;
+		mat[ 6] = 0.0;
+		mat[ 7] = 0.0;
+		mat[ 8] = 0.0;
+		mat[ 9] = 0.0;
+		mat[10] = 10.0*1000.0;
+		mat[11] = 0.0;
+		mat[12] = act->x0 * 1000.0;
+		mat[13] = act->y0 * 1000.0;
+		mat[14] = 0.0;
+		mat[15] = 1.0;
+		src->arg_enq[0] += 1;
+	}
 }
 static void terrain_read_json(
 	struct arena* win, struct style* sty,
@@ -307,9 +345,37 @@ static void terrain_cread(
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
 {
+	float x,y;
+	int w = act->width;
+	int h = act->height;
 	float* v = (void*)buf;
+
 	terrain_locate(v, act);
 	say("%f,%f,%f\n", v[0], v[1], v[2]);
+
+	x = v[0] / 1000.0;
+	act->xn = (int)x;
+	while(act->xn <= act->x0-64){
+		act->x0 -= 64;
+		act->w0 = 0;
+	}
+	while(act->xn >= act->x0+64){
+		act->x0 += 64;
+		act->w0 = 0;
+	}
+
+	y = v[1] / 1000.0;
+	act->yn = (int)y;
+	while(act->yn <= act->y0-64){
+		act->y0 -= 64;
+		act->w0 = 0;
+	}
+	while(act->yn >= act->y0+64){
+		act->y0 += 64;
+		act->w0 = 0;
+	}
+
+	say("%d,%d,%d,%d\n", act->x0, act->y0, act->xn, act->yn);
 }
 static void terrain_cwrite(
 	struct actor* act, struct pinid* pin,
@@ -329,8 +395,6 @@ static void terrain_start(
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
 {
-	void* vbuf;
-	void* ibuf;
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
@@ -349,26 +413,9 @@ static void terrain_start(
 	src->shader_enq[0] = 42;
 
 	//argument
-	float* mat = memorycreate(4*4*4);
-	mat[ 0] = 127.5*1000.0;
-	mat[ 1] = 0.0;
-	mat[ 2] = 0.0;
-	mat[ 3] = 0.0;
-	mat[ 4] = 0.0;
-	mat[ 5] = 127.5*1000.0;
-	mat[ 6] = 0.0;
-	mat[ 7] = 0.0;
-	mat[ 8] = 0.0;
-	mat[ 9] = 0.0;
-	mat[10] = 10.0*1000.0;
-	mat[11] = 0.0;
-	mat[12] = tf->vc[0];
-	mat[13] = tf->vc[1];
-	mat[14] = tf->vc[2];
-	mat[15] = 1.0;
-	src->arg_data[0] = (u64)mat;
+	src->arg_data[0] = memorycreate(4*4*4);
 	src->arg[0] = "objmat";
-	src->arg_enq[0] = 42;
+	src->arg_enq[0] = 0;
 
 	//texture
 	src->tex_fmt[0] = hex32('r','g','b','a');
@@ -378,22 +425,23 @@ static void terrain_start(
 	src->tex_enq[0] = 42;
 
 	//vertex
-	vbuf = memorycreate(4*6 * 256*255);
-	ibuf = memorycreate(2*3 * 256*256*2);
-	terrain_generate(vbuf, ibuf, leaf);
-	src->method = 'i';
-
+	src->vbuf = memorycreate(4*6 * 256*255);
 	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf = vbuf;
 	src->vbuf_w = 4*6;
 	src->vbuf_h = 256*255;
 	src->vbuf_enq = 42;
 
+	//index
+	src->ibuf = memorycreate(2*3 * 256*256*2);
 	src->ibuf_fmt = 0x222;
-	src->ibuf = ibuf;
 	src->ibuf_w = 2*3;
 	src->ibuf_h = 254*254*2;
 	src->ibuf_enq = 42;
+
+	//
+	src->method = 'i';
+	src->geometry = 3;
+	src->opaque = 0;
 }
 static void terrain_delete(struct actor* act)
 {
@@ -432,6 +480,10 @@ static void terrain_create(struct actor* act, void* str)
 			}
 		}
 	}
+
+	act->x0 = 0;
+	act->y0 = 0;
+	act->w0 = 0;
 }
 
 

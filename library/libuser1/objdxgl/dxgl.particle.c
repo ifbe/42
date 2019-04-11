@@ -203,7 +203,7 @@ static void particle_start(
 
 	//argument
 	src->arg[0] = "objmat";
-	src->arg_data[0] = (u64)memorycreate(4*4*4);
+	src->arg_data[0] = memorycreate(4*4*4);
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_333;

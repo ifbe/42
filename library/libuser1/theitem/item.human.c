@@ -94,7 +94,7 @@ static void human_read_vbo(
 		t1[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
 		t1[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
 
-		carvesolid_bodypart(win, 0x808080, t0, t1);
+		carvesolid_bodypart(win, 0x008080, t0, t1);
 	}
 
 	x = bonenode[0][0];
@@ -187,10 +187,10 @@ static void human_swrite(
 	{
 		switch(ev->why)
 		{
-			case 'w':sty->vc[1] += 100;break;
-			case 's':sty->vc[1] -= 100;break;
-			case 'a':sty->vc[0] -= 100;break;
-			case 'd':sty->vc[0] += 100;break;
+			case 'w':sty->vc[1] += 1000;break;
+			case 's':sty->vc[1] -= 1000;break;
+			case 'a':sty->vc[0] -= 1000;break;
+			case 'd':sty->vc[0] += 1000;break;
 		}
 /*
 		sec = timeread() / 1000000.0;

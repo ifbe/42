@@ -367,7 +367,6 @@ static void light_start(
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
 {
-	void* mvp;
 	struct relation* rel;
 	struct arena* tmp;
 
@@ -387,9 +386,8 @@ static void light_start(
 	src->vs = light_glsl_v;
 	src->fs = light_glsl_f;
 
-	mvp = memorycreate(4*4*4);
 	src->arg[0] = "mapmvp";
-	src->arg_data[0] = (u64)mvp;
+	src->arg_data[0] = memorycreate(4*4*4);
 
 	//vertex
 	src->vbuf = memorycreate(4*6*12);

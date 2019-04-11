@@ -232,8 +232,7 @@ struct glsrc
 
 	//[20,6f]argument
 	void* arg[4];
-	u32 arg_fmt[4];
-	u64 arg_data[4];
+	void* arg_data[4];
 
 	//[70,bf]texture
 	void* tex[4];
