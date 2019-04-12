@@ -390,7 +390,7 @@ static void graph_traverse(struct actor* act, struct arena* this)
 	graph_addnode(act, _win_, this);
 
 	//start traverse
-	for(j=0;j<3;j++)
+	for(j=0;j<6;j++)
 	{
 		//this.tail = 
 		nlenx = act->nlen;

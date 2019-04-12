@@ -28,9 +28,5 @@ say("}\n");
 }
 int schpin_create(struct arena* win, u8* str)
 {
-#define _vsrc_ hex32('v','s','r','c')
-	struct actor* vsrc = actorcreate(_vsrc_, 0);
-    if(vsrc)relationcreate(vsrc, 0, _act_, win, 0, _win_);
-
     return 0;
 }
