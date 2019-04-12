@@ -177,6 +177,7 @@ static void human_swrite(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
+	short* t;
 	float x,y,z,n;
 	float sec,a,c,s;
 	struct relation* rel;
@@ -192,8 +193,40 @@ static void human_swrite(
 			case 'a':sty->vc[0] -= 1000;break;
 			case 'd':sty->vc[0] += 1000;break;
 		}
-/*
-		sec = timeread() / 1000000.0;
+	}
+	else if(joy_left == (ev->what & joy_mask))
+	{
+		t = (void*)ev;
+		if(t[3] & joyl_left   )sty->vc[0] -= 10;
+		if(t[3] & joyl_right  )sty->vc[0] += 10;
+		if(t[3] & joyl_down   )sty->vc[1] -= 10;
+		if(t[3] & joyl_up     )sty->vc[1] += 10;
+		if(t[3] & joyl_trigger)act->z0 = 0;
+		if(t[3] & joyl_bumper )act->z0 += 10;
+	}
+	else return;
+
+	//read terrain, fix z
+	rel = act->irel0;
+	while(1)
+	{
+		if(0 == rel)break;
+		if(_act_ == rel->srctype)
+		{
+			tmp[0] = sty->vc[0];
+			tmp[1] = sty->vc[1];
+			tmp[2] = 0.0;
+
+			map = (void*)(rel->srcchip);
+			actor_leafread(map, 0, act, 0, tmp, 0);
+
+			sty->vc[2] = tmp[2] + act->z0;
+			break;
+		}
+		rel = samedstnextsrc(rel);
+	}
+
+/*		sec = timeread() / 1000000.0;
 
 		x = bonenode[0][0] - bonenode[1][0];
 		y = bonenode[0][1] - bonenode[1][1];
@@ -247,26 +280,6 @@ static void human_swrite(
 		bonenode[14][1] = bonenode[12][1];
 		bonenode[14][2] = bonenode[12][2] - 0.5;
 */
-		//
-		rel = act->irel0;
-		while(1)
-		{
-			if(0 == rel)break;
-			if(_act_ == rel->srctype)
-			{
-				tmp[0] = sty->vc[0];
-				tmp[1] = sty->vc[1];
-				tmp[2] = 0.0;
-
-				map = (void*)(rel->srcchip);
-				actor_leafread(map, 0, act, 0, tmp, 0);
-
-				sty->vc[2] = tmp[2];
-				break;
-			}
-			rel = samedstnextsrc(rel);
-		}
-	}
 }
 static void human_cread(
 	struct actor* act, struct pinid* pin,
@@ -300,8 +313,7 @@ static void human_delete(struct actor* act)
 static void human_create(struct actor* act)
 {
 	if(0 == act)return;
-	//if(_orig_ == act->type)act->buf = buffer;
-	//if(_copy_ == act->type)act->buf = memorycreate(256);
+	act->z0 = 0;
 }
 
 

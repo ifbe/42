@@ -170,8 +170,8 @@ static int thirdperson_swrite(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
-	vec4 q;
-	vec4 v;
+	short* t;
+	vec4 v,q;
 	float a,c,s;
 	int x0,y0,x1,y1,id;
 	if(0 == act)return 0;

@@ -146,11 +146,11 @@ if(1){
 			//linux, ds4: 012, 345
 			pair.x0 = (short)( 32767*f[0]);
 			pair.y0 = (short)(-32767*f[1]);
-			pair.z0 = (short)(127*(1.0+f[4]));
+			pair.z0 = (short)(127*(1.0+f[3]));
 			pair.w0 = 0;
 			pair.xn = (short)( 32767*f[2]);
-			pair.yn = (short)(-32767*f[3]);
-			pair.zn = (short)(127*(1.0+f[5]));
+			pair.yn = (short)(-32767*f[5]);
+			pair.zn = (short)(127*(1.0+f[4]));
 			pair.wn = 0;
 
 			if(u[ 0])pair.wn |= joyr_left;

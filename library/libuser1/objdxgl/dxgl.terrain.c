@@ -274,9 +274,14 @@ static void terrain_read_vbo(
 	struct glsrc* src = (void*)(pin->foot[0]);
 	if(0 == src)return;
 
+	float* mat = src->arg_data[0];
+	if(0 == mat)return;
+
 	void* vbuf = src->vbuf;
 	void* ibuf = src->ibuf;
-	float* mat = src->arg_data[0];
+	if(0 == vbuf)return;
+	if(0 == ibuf)return;
+
 	if(0 == act->w0){
 		act->w0 = 42;
 
@@ -425,7 +430,7 @@ static void terrain_start(
 	src->tex_enq[0] = 42;
 
 	//vertex
-	src->vbuf = memorycreate(4*6 * 256*255);
+	src->vbuf = memorycreate(4*6 * 256*256);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 4*6;
 	src->vbuf_h = 256*255;

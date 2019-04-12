@@ -30,12 +30,14 @@ GLSL_VERSION
 "out mediump vec4 FragColor;\n"
 "uniform sampler2D tex0;\n"
 "void main(){\n"
-	"mediump vec3 c;\n"
 	"mediump float x = mod(vertex.x, 200.0) - 100.0;\n"
 	"mediump float y = mod(vertex.y, 200.0) - 100.0;\n"
-	"if(x * y > 0.0)c = vec3(0.5, 0.5, 0.5);\n"
-	"else c = vec3(0.75, 0.75, 0.75);\n"
-	"FragColor = vec4(c, 1.0);\n"
+	"if(x>-99.0 && x<99.0 && y>-99.0 && y<99.0)discard;\n"
+	"FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
+	//"mediump vec3 c;\n"
+	//"if(x * y > 0.0)c = vec3(0.5, 0.5, 0.5);\n"
+	//"else c = vec3(0.75, 0.75, 0.75);\n"
+	//"FragColor = vec4(c, 1.0);\n"
 "}\n";
 
 
