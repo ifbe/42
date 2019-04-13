@@ -49,28 +49,17 @@ static void sphere_read_vbo3d(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-	vec3 tc,tr,tf,tu;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-	//carveline_rect(win, 0xffffff, vc, vr, vf);
-	//carveopaque_sphere(win, 0xffffff, vc, vr, vf, vu);
 
-	tc[0] = vc[0] + vu[0]/2;
-	tc[1] = vc[1] + vu[1]/2;
-	tc[2] = vc[2] + vu[2]/2;
-	tr[0] = vr[0]/2;
-	tr[1] = vr[1]/2;
-	tr[2] = vr[2]/2;
-	tf[0] = vf[0]/2;
-	tf[1] = vf[1]/2;
-	tf[2] = vf[2]/2;
-	tu[0] = vu[0]/2;
-	tu[1] = vu[1]/2;
-	tu[2] = vu[2]/2;
-	carvesolid_sphere(win, 0xc0c0c0, tc, tr, tf, tu);
-	//carveopaque_sphere(win, 0xc0c0c0, tc, tr, tf, tu);
+	switch(act->w0){
+		case 1:carvepoint_sphere( win, 0xffffff, vc, vr, vf, vu);break;
+		case 2:carveline_sphere(  win, 0xffffff, vc, vr, vf, vu);break;
+		case 3:carvesolid_sphere( win, 0xffffff, vc, vr, vf, vu);break;
+		case 4:carveopaque_sphere(win, 0xffffff, vc, vr, vf, vu);break;
+	}
 }
 static void sphere_read_json(
 	struct arena* win, struct style* sty,
@@ -113,6 +102,15 @@ static void sphere_swrite(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
+	if(_char_ == ev->what)
+	{
+		switch(ev->why){
+			case '1':act->w0 = 1;break;
+			case '2':act->w0 = 2;break;
+			case '3':act->w0 = 3;break;
+			case '4':act->w0 = 4;break;
+		}
+	}
 }
 static void sphere_cread(
 	struct actor* act, struct pinid* pin,
@@ -143,6 +141,16 @@ static void sphere_delete(struct actor* act, u8* buf)
 }
 static void sphere_create(struct actor* act, u8* buf)
 {
+	int t = 3;
+	if(buf){
+		switch(buf[0]){
+			case '1':t = 1;break;
+			case '2':t = 2;break;
+			case '3':t = 3;break;
+			case '4':t = 4;break;
+		}
+	}
+	act->w0 = t;
 }
 
 
