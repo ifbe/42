@@ -841,55 +841,55 @@ void carveopaque_icosahedron(struct arena* win, u32 rgb,
 	int vlen = opaque3d_vars(win, opaque3d, &vbuf, &ibuf, 12, 20);
 
 	//(+-m, 0, +-n)
-	vbuf[ 0] = vc[0] - m;
-	vbuf[ 1] = vc[1];
-	vbuf[ 2] = vc[2] - n;
+	vbuf[ 0] = vc[0] - m*vr[0] - n*vu[0];
+	vbuf[ 1] = vc[1] - m*vr[1] - n*vu[1];
+	vbuf[ 2] = vc[2] - m*vr[2] - n*vu[2];
 
-	vbuf[ 9] = vc[0] + m;
-	vbuf[10] = vc[1];
-	vbuf[11] = vc[2] - n;
+	vbuf[ 9] = vc[0] + m*vr[0] - n*vu[0];
+	vbuf[10] = vc[1] + m*vr[1] - n*vu[1];
+	vbuf[11] = vc[2] + m*vr[2] - n*vu[2];
 
-	vbuf[18] = vc[0] - m;
-	vbuf[19] = vc[1];
-	vbuf[20] = vc[2] + n;
+	vbuf[18] = vc[0] - m*vr[0] + n*vu[0];
+	vbuf[19] = vc[1] - m*vr[1] + n*vu[1];
+	vbuf[20] = vc[2] - m*vr[2] + n*vu[2];
 
-	vbuf[27] = vc[0] + m;
-	vbuf[28] = vc[1];
-	vbuf[29] = vc[2] + n;
+	vbuf[27] = vc[0] + m*vr[0] + n*vu[0];
+	vbuf[28] = vc[1] + m*vr[1] + n*vu[1];
+	vbuf[29] = vc[2] + m*vr[2] + n*vu[2];
 
 	//(0, +-n, +-m)
-	vbuf[36] = vc[0];
-	vbuf[37] = vc[1] - n;
-	vbuf[38] = vc[2] - m;
+	vbuf[36] = vc[0] - n*vf[0] - m*vu[0];
+	vbuf[37] = vc[1] - n*vf[1] - m*vu[1];
+	vbuf[38] = vc[2] - n*vf[2] - m*vu[2];
 
-	vbuf[45] = vc[0];
-	vbuf[46] = vc[1] + n;
-	vbuf[47] = vc[2] - m;
+	vbuf[45] = vc[0] + n*vf[0] - m*vu[0];
+	vbuf[46] = vc[1] + n*vf[1] - m*vu[1];
+	vbuf[47] = vc[2] + n*vf[2] - m*vu[2];
 
-	vbuf[54] = vc[0];
-	vbuf[55] = vc[1] - n;
-	vbuf[56] = vc[2] + m;
+	vbuf[54] = vc[0] - n*vf[0] + m*vu[0];
+	vbuf[55] = vc[1] - n*vf[1] + m*vu[1];
+	vbuf[56] = vc[2] - n*vf[2] + m*vu[2];
 
-	vbuf[63] = vc[0];
-	vbuf[64] = vc[1] + n;
-	vbuf[65] = vc[2] + m;
+	vbuf[63] = vc[0] + n*vf[0] + m*vu[0];
+	vbuf[64] = vc[1] + n*vf[1] + m*vu[1];
+	vbuf[65] = vc[2] + n*vf[2] + m*vu[2];
 
 	//(+-n, +-m, 0)
-	vbuf[72] = vc[0] - n;
-	vbuf[73] = vc[1] - m;
-	vbuf[74] = vc[2];
+	vbuf[72] = vc[0] - n*vr[0] - m*vf[0];
+	vbuf[73] = vc[1] - n*vr[1] - m*vf[1];
+	vbuf[74] = vc[2] - n*vr[2] - m*vf[2];
 
-	vbuf[81] = vc[0] + n;
-	vbuf[82] = vc[1] - m;
-	vbuf[83] = vc[2];
+	vbuf[81] = vc[0] + n*vr[0] - m*vf[0];
+	vbuf[82] = vc[1] + n*vr[1] - m*vf[1];
+	vbuf[83] = vc[2] + n*vr[2] - m*vf[2];
 
-	vbuf[90] = vc[0] - n;
-	vbuf[91] = vc[1] + m;
-	vbuf[92] = vc[2];
+	vbuf[90] = vc[0] - n*vr[0] + m*vf[0];
+	vbuf[91] = vc[1] - n*vr[1] + m*vf[1];
+	vbuf[92] = vc[2] - n*vr[2] + m*vf[2];
 
-	vbuf[99] = vc[0] + n;
-	vbuf[100] = vc[1] + m;
-	vbuf[101] = vc[2];
+	vbuf[ 99] = vc[0] + n*vr[0] + m*vf[0];
+	vbuf[100] = vc[1] + n*vr[1] + m*vf[1];
+	vbuf[101] = vc[2] + n*vr[2] + m*vf[2];
 
 	for(j=0;j<12*9;j+=9)
 	{

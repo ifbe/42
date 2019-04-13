@@ -356,55 +356,55 @@ void carvepoint_icosahedron(struct arena* win, u32 rgb,
 	}
 
 	//(+-m, 0, +-n)
-	vbuf[ 0] = vc[0] - m;
-	vbuf[ 1] = vc[1];
-	vbuf[ 2] = vc[2] - n;
+	vbuf[ 0] = vc[0] - m*vr[0] - n*vu[0];
+	vbuf[ 1] = vc[1] - m*vr[1] - n*vu[1];
+	vbuf[ 2] = vc[2] - m*vr[2] - n*vu[2];
 
-	vbuf[ 6] = vc[0] + m;
-	vbuf[ 7] = vc[1];
-	vbuf[ 8] = vc[2] - n;
+	vbuf[ 6] = vc[0] + m*vr[0] - n*vu[0];
+	vbuf[ 7] = vc[1] + m*vr[1] - n*vu[1];
+	vbuf[ 8] = vc[2] + m*vr[2] - n*vu[2];
 
-	vbuf[12] = vc[0] - m;
-	vbuf[13] = vc[1];
-	vbuf[14] = vc[2] + n;
+	vbuf[12] = vc[0] - m*vr[0] + n*vu[0];
+	vbuf[13] = vc[1] - m*vr[1] + n*vu[1];
+	vbuf[14] = vc[2] - m*vr[2] + n*vu[2];
 
-	vbuf[18] = vc[0] + m;
-	vbuf[19] = vc[1];
-	vbuf[20] = vc[2] + n;
+	vbuf[18] = vc[0] + m*vr[0] + n*vu[0];
+	vbuf[19] = vc[1] + m*vr[1] + n*vu[1];
+	vbuf[20] = vc[2] + m*vr[2] + n*vu[2];
 
 	//(0, +-n, +-m)
-	vbuf[24] = vc[0];
-	vbuf[25] = vc[1] - n;
-	vbuf[26] = vc[2] - m;
+	vbuf[24] = vc[0] - n*vf[0] - m*vu[0];
+	vbuf[25] = vc[1] - n*vf[1] - m*vu[1];
+	vbuf[26] = vc[2] - n*vf[2] - m*vu[2];
 
-	vbuf[30] = vc[0];
-	vbuf[31] = vc[1] + n;
-	vbuf[32] = vc[2] - m;
+	vbuf[30] = vc[0] + n*vf[0] - m*vu[0];
+	vbuf[31] = vc[1] + n*vf[1] - m*vu[1];
+	vbuf[32] = vc[2] + n*vf[2] - m*vu[2];
 
-	vbuf[36] = vc[0];
-	vbuf[37] = vc[1] - n;
-	vbuf[38] = vc[2] + m;
+	vbuf[36] = vc[0] - n*vf[0] + m*vu[0];
+	vbuf[37] = vc[1] - n*vf[1] + m*vu[1];
+	vbuf[38] = vc[2] - n*vf[2] + m*vu[2];
 
-	vbuf[42] = vc[0];
-	vbuf[43] = vc[1] + n;
-	vbuf[44] = vc[2] + m;
+	vbuf[42] = vc[0] + n*vf[0] + m*vu[0];
+	vbuf[43] = vc[1] + n*vf[1] + m*vu[1];
+	vbuf[44] = vc[2] + n*vf[2] + m*vu[2];
 
 	//(+-n, +-m, 0)
-	vbuf[48] = vc[0] - n;
-	vbuf[49] = vc[1] - m;
-	vbuf[50] = vc[2];
+	vbuf[48] = vc[0] - n*vr[0] - m*vf[0];
+	vbuf[49] = vc[1] - n*vr[1] - m*vf[1];
+	vbuf[50] = vc[2] - n*vr[2] - m*vf[2];
 
-	vbuf[54] = vc[0] + n;
-	vbuf[55] = vc[1] - m;
-	vbuf[56] = vc[2];
+	vbuf[54] = vc[0] + n*vr[0] - m*vf[0];
+	vbuf[55] = vc[1] + n*vr[1] - m*vf[1];
+	vbuf[56] = vc[2] + n*vr[2] - m*vf[2];
 
-	vbuf[60] = vc[0] - n;
-	vbuf[61] = vc[1] + m;
-	vbuf[62] = vc[2];
+	vbuf[60] = vc[0] - n*vr[0] + m*vf[0];
+	vbuf[61] = vc[1] - n*vr[1] + m*vf[1];
+	vbuf[62] = vc[2] - n*vr[2] + m*vf[2];
 
-	vbuf[66] = vc[0] + n;
-	vbuf[67] = vc[1] + m;
-	vbuf[68] = vc[2];
+	vbuf[66] = vc[0] + n*vr[0] + m*vf[0];
+	vbuf[67] = vc[1] + n*vr[1] + m*vf[1];
+	vbuf[68] = vc[2] + n*vr[2] + m*vf[2];
 }
 void carvepoint_sphere(struct arena* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)

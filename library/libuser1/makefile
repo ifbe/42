@@ -86,13 +86,6 @@ objdxgl/dxgl.weather.c \
 objfile/file.binary.c \
 objfile/file.folder.c \
 objfile/file.text.c \
-objgeom/geom.point.c \
-objgeom/geom.line.c \
-objgeom/geom.trigon.c \
-objgeom/geom.rect.c \
-objgeom/geom.cube.c \
-objgeom/geom.cylinder.c \
-objgeom/geom.sphere.c \
 objhtml/html.a.c \
 objhtml/html.audio.c \
 objhtml/html.button.c \
@@ -152,6 +145,7 @@ theitem/item.clock.c \
 theitem/item.control.c \
 theitem/item.dna.c \
 theitem/item.drone.c \
+theitem/item.geometry.c \
 theitem/item.house.c \
 theitem/item.human.c \
 theitem/item.mobius.c \

@@ -18,10 +18,6 @@ void terrain_register(void*);
 void texball_register(void*);
 void water_register(void*);
 void weather_register(void*);
-//geom
-void cube_register(void*);
-void cylinder_register(void*);
-void sphere_register(void*);
 //algo
 void algorithm_register(void*);
 void bintree_register(void*);
@@ -53,6 +49,7 @@ void clock_register(void*);
 void control_register(void*);
 void dna_register(void*);
 void drone_register(void*);
+void geometry_register(void*);
 void house_register(void*);
 void human_register(void*);
 void mobius_register(void*);
@@ -239,6 +236,9 @@ void content_create(void* addr)
 	drone_register(tmp);
 	tmp += sizeof(struct actor);
 
+	geometry_register(tmp);
+	tmp += sizeof(struct actor);
+
 	house_register(tmp);
 	tmp += sizeof(struct actor);
 
@@ -342,19 +342,6 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	rectify_register(tmp);
-	tmp += sizeof(struct actor);
-
-
-
-
-	//-------------------geom------------------
-	cube_register(tmp);
-	tmp += sizeof(struct actor);
-
-	cylinder_register(tmp);
-	tmp += sizeof(struct actor);
-
-	sphere_register(tmp);
 	tmp += sizeof(struct actor);
 
 
