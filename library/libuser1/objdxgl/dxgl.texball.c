@@ -193,28 +193,36 @@ static void texball_swrite(
 			case '1':
 			{
 				actorcreatefromfile(act, "jpg/universe.jpg");
-				src->tex[0] = act->buf;
+				src->tex_data[0] = act->buf;
+				src->tex_w[0] = act->width;
+				src->tex_h[0] = act->height;
 				src->tex_enq[0] += 1;
 				break;
 			}
 			case '2':
 			{
 				actorcreatefromfile(act, "jpg/skysphere.jpg");
-				src->tex[0] = act->buf;
+				src->tex_data[0] = act->buf;
+				src->tex_w[0] = act->width;
+				src->tex_h[0] = act->height;
 				src->tex_enq[0] += 1;
 				break;
 			}
 			case '3':
 			{
 				actorcreatefromfile(act, "jpg/thesun.jpg");
-				src->tex[0] = act->buf;
+				src->tex_data[0] = act->buf;
+				src->tex_w[0] = act->width;
+				src->tex_h[0] = act->height;
 				src->tex_enq[0] += 1;
 				break;
 			}
 			case '4':
 			{
 				actorcreatefromfile(act, "jpg/earth.jpg");
-				src->tex[0] = act->buf;
+				src->tex_data[0] = act->buf;
+				src->tex_w[0] = act->width;
+				src->tex_h[0] = act->height;
 				src->tex_enq[0] += 1;
 				break;
 			}
@@ -256,16 +264,15 @@ static void texball_start(
 	lf->foot[0] = (u64)src;
 	tf->foot[0] = (u64)dst;
 
+	//
+	src->geometry = 3;
+	src->method = 'i';
+
 	//shader
 	src->vs = texball_glsl_v;
 	src->fs = texball_glsl_f;
 	if(twig){if(_fg2d_ == twig->fmt)src->vs = texball_glsl2d_v;}
-
-	//texture
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex[0] = leaf->buf;
-	src->tex_w[0] = leaf->width;
-	src->tex_h[0] = leaf->height;
+	src->shader_enq[0] = 42;
 
 #define accx 64
 #define accy 63
@@ -274,28 +281,37 @@ static void texball_start(
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 4*6;
 	src->vbuf_h = accx*accy+(accx-1)*2;
+	src->vbuf_enq = 0;
+
 	src->ibuf = memorycreate(2*3*accy*(accx-1)*2);
 	src->ibuf_fmt = 0x222;
 	src->ibuf_w = 2*3;
 	src->ibuf_h = accy*(accx-1)*2;
-	src->method = 'i';
-
-	//send!
-	src->shader_enq[0] = 42;
-	src->arg_enq[0] = 0;
-	src->tex_enq[0] = 42;
-	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
+
+	//texture
+	src->tex_name[0] = "tex0";
+	src->tex_data[0] = leaf->buf;
+	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex_w[0] = leaf->width;
+	src->tex_h[0] = leaf->height;
+	src->tex_enq[0] = 42;
 }
 static void texball_delete(struct actor* act)
 {
 	if(0 == act)return;
-	memorydelete(act->buf);
-	act->buf = 0;
+	if(0 == act->buf){
+		memorydelete(act->buf);
+		act->buf = 0;
+	}
 }
 static void texball_create(struct actor* act, void* str)
 {
 	if(0 == act)return;
+
+	//max=16MB
+	if(0 == act->buf)act->buf = memorycreate(2048*2048*4);
+
 	if(0 == str)str = "datafile/jpg/earth.jpg";
 	actorcreatefromfile(act, str);
 }

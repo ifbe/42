@@ -50,26 +50,38 @@ void scene_export_pix(struct arena* win)
 }
 void scene_export_vbo(struct arena* win)
 {
-	int j;
+	int j,k;
 	struct datapair* mod = win->mod;
 	struct glsrc* src;
 	for(j=0;j<32;j++)
 	{
 		src = &mod[j].src;
 		if(0 == src->vbuf)continue;
-		say(
-			"%d{\n"
-			"	vs:%llx,fs:%llx\n"
-			"	tex0=%llx,tfmt=%x,tw=%x,th=%x\n"
+
+		say("%d{\n"
+			"	vs:%llx, gs:%llx, fs:%llx\n"
 			"	vbuf=%llx,vfmt=%x,vw=%x,vh=%x\n"
-			"	ibuf=%llx,ifmt=%x,iw=%x,ih=%x\n"
-			"}\n",
+			"	ibuf=%llx,ifmt=%x,iw=%x,ih=%x\n",
 			j,
-			src->vs, src->fs,
-			src->tex[0], src->tex_fmt[0], src->tex_w[0], src->tex_h[0],
+			src->vs, src->gs, src->fs,
 			src->vbuf, src->vbuf_fmt, src->vbuf_w, src->vbuf_h,
 			src->ibuf, src->ibuf_fmt, src->ibuf_w, src->ibuf_h
 		);
+
+		for(k=0;k<4;k++){
+			say("%s: data=%llx, fmt=%x\n",
+				src->arg_name[k], src->arg_data[k], src->arg_fmt[k]
+			);
+		}
+
+		for(k=0;k<4;k++){
+			say("%s: data=%llx, fmt=%x, w=%x, h=%x\n",
+				src->tex_name[k], src->tex_data[k], src->tex_fmt[k],
+				src->tex_w[k], src->tex_h[k]
+			);
+		}
+
+		say("}\n");
 	}
 }
 void scene_export_file(u8* str, int len)

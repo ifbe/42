@@ -254,23 +254,22 @@ static void weather_start(
 	lf->foot[0] = (u64)src;
 	tf->foot[0] = (u64)dst;
 
+	//
+	src->geometry = 3;
+	src->method = 'v';
+
 	//shader
 	src->vs = weather_glsl_v;
 	src->fs = weather_glsl_f;
 	if(twig){if(_fg2d_ == twig->fmt)src->vs = weather_glsl2d_v;}
+	src->shader_enq[0] = 42;
 
 	//vertex
 	src->vbuf = memorycreate(4*6*6);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
-	src->method = 'v';
-
-	//send!
-	src->shader_enq[0] = 42;
-	src->arg_enq[0] = 0;
 	src->vbuf_enq = 0;
-	src->ibuf_enq = 0;
 }
 static void weather_delete(struct actor* act)
 {

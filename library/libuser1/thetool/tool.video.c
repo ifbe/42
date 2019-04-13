@@ -154,7 +154,7 @@ void video_read_vbo2d(
 	vbuf[5][4] = 480/1024.0;//1.0;
 	vbuf[5][5] = 0.0;
 
-	data->tex[0] = act->buf;
+	data->tex_data[0] = act->buf;
 	for(y=0;y<480;y++)
 	{
 		dst = (act->buf) + (y*1024*4);
@@ -234,7 +234,7 @@ void video_read_vbo3d(
 	vbuf[5][4] = 1.0;
 	vbuf[5][5] = 0.0;
 
-	data->tex[0] = act->buf;
+	data->tex_data[0] = act->buf;
 	for(y=0;y<480;y++)
 	{
 		dst = (act->buf) + (y*1024*4);
@@ -363,8 +363,9 @@ static void video_start(
 	}
 
 	//texture
+	src->tex_name[0] = "tex0";
+	src->tex_data[0] = leaf->buf;
 	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex[0] = leaf->buf;
 	src->tex_w[0] = 1024;
 	src->tex_h[0] = 1024;
 

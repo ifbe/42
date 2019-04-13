@@ -495,8 +495,9 @@ static void codeimg_start(
 	if(twig){if(_fg2d_ == twig->fmt)src->vs = codeimg_glsl2d_v;}
 
 	//texture
+	src->tex_name[0] = "tex0";
+	src->tex_data[0] = leaf->buf;
 	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex[0] = leaf->buf;
 	src->tex_w[0] = leaf->width;
 	src->tex_h[0] = leaf->height;
 

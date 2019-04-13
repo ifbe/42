@@ -28,8 +28,8 @@ void coopctx_copy(struct datapair* s, struct datapair* d)
 	struct gldst* coop = &d->dst;
 	for(j=0;j<sizeof(struct glsrc);j++)dd[j] = ss[j];
 
+	//shader
 	coop->shader = host->shader;
-	//coop->vao = host->vao;	//never !!!!!!
 
 	//arg
 	for(j=0;j<4;j++){
@@ -38,15 +38,12 @@ void coopctx_copy(struct datapair* s, struct datapair* d)
 
 	//texture
 	for(j=0;j<4;j++){
-		coop->tex_len[j] = host->tex_len[j];
 		coop->tex[j] = host->tex[j];
 	}
 
 	//vertex
 	coop->vbo     = host->vbo;
-	coop->vbo_len = host->vbo_len;
 	coop->ibo     = host->ibo;
-	coop->ibo_len = host->ibo_len;
 }
 void coopctx_update(struct arena* win)
 {

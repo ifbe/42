@@ -224,31 +224,40 @@ struct xyzwpair
 
 struct glsrc
 {
-	//[00,1f]shader
+	//[00,24)shader
 	void* vs;
-	void* ts;
+	void* tc;
+	void* te;
 	void* gs;
 	void* fs;
+	u8 shader_enq[4];
 
-	//[20,6f]argument
-	void* arg[4];
+	//[24,88)argument
+	char* arg_name[4];
 	void* arg_data[4];
+	u32 arg_fmt[4];
+	u8 arg_enq[4];
 
-	//[70,bf]texture
-	void* tex[4];
-	u32 tex_fmt[4];
+	//[88,fc)texture
+	char* tex_name[4];
+	void* tex_data[4];
 	u32 tex_w[4];
 	u32 tex_h[4];
+	u32 tex_fmt[4];
+	u8 tex_enq[4];
 
 	//[c0,e7]vertex
 	void* vbuf;
 	u32 vbuf_fmt;
 	u32 vbuf_w;
 	u32 vbuf_h;
+	u8 vbuf_enq;
+
 	void* ibuf;
 	u32 ibuf_fmt;
 	u32 ibuf_w;
 	u32 ibuf_h;
+	u8 ibuf_enq;
 
 	//[e8,eb]
 	u8 method;		//'v'=glDrawArrays, 'i'=glDrawElements
@@ -257,47 +266,37 @@ struct glsrc
 	u8 target;		//0=rtt, 1=background, 2=geometry, 3=alphatest, 4=transparent, 5=overlay
 
 	//[ec,fa]enq
-	u8 shader_enq[4];
-	u8 arg_enq[4];
-	u8 tex_enq[4];
-	u8 ibuf_enq;
-	u8 vbuf_enq;
 };
 struct gldst
 {
 	//shader
 	u32 shader;
-	u32 vao;
+	u8 shader_deq;
 
 	//argument
 	u32 arg[4];
+	u8 arg_deq[4];
 
 	//texture
-	u32 tex_len[4];
 	u32 tex[4];
+	u8 tex_deq[4];
 
 	//vertex
 	u32 vbo;
-	u32 vbo_len;
-	u32 ibo;
-	u32 ibo_len;
-
-	//deq
-	u8 shader_deq;
-	u8 arg_deq[4];
-	u8 tex_deq[4];
 	u8 vbo_deq;
+	u32 ibo;
 	u8 ibo_deq;
+	u32 vao;
 };
 struct datapair
 {
 	//[000,0ff]
 	struct glsrc src;
-	u8 ipadd[0x100 - sizeof(struct glsrc)];
+	u8 ipadd[0x180 - sizeof(struct glsrc)];
 
 	//[100,1ff]
 	struct gldst dst;
-	u8 opadd[0x100 - sizeof(struct gldst)];
+	u8 opadd[0x80 - sizeof(struct gldst)];
 };
 
 

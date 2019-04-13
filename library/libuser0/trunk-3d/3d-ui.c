@@ -110,7 +110,7 @@ int ui3d_create(struct arena* win, void* str)
 	struct pinid* pin;
 	struct relation* rel;
 
-	for(j=0;j<0;j++)
+	for(j=0;j<COUNT;j++)
 	{
 		act = actorcreate(want[j], 0);
 		if(0 == act)continue;

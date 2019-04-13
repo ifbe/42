@@ -411,23 +411,16 @@ static void terrain_start(
 	lf->foot[0] = (u64)src;
 	tf->foot[0] = (u64)dst;
 
+	//
+	src->method = 'i';
+	src->geometry = 3;
+	src->opaque = 0;
+
 	//shader
 	src->vs = terrain_glsl_v;
 	src->gs = terrain_glsl_g;
 	src->fs = terrain_glsl_f;
 	src->shader_enq[0] = 42;
-
-	//argument
-	src->arg_data[0] = memorycreate(4*4*4);
-	src->arg[0] = "objmat";
-	src->arg_enq[0] = 0;
-
-	//texture
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex[0] = leaf->buf;
-	src->tex_w[0] = leaf->width;
-	src->tex_h[0] = leaf->height;
-	src->tex_enq[0] = 42;
 
 	//vertex
 	src->vbuf = memorycreate(4*6 * 256*256);
@@ -443,10 +436,19 @@ static void terrain_start(
 	src->ibuf_h = 254*254*2;
 	src->ibuf_enq = 42;
 
-	//
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 0;
+	//argument
+	src->arg_name[0] = "objmat";
+	src->arg_data[0] = memorycreate(4*4*4);
+	src->arg_fmt[0] = 'm';
+	src->arg_enq[0] = 0;
+
+	//texture
+	src->tex_name[0] = "tex0";
+	src->tex_data[0] = leaf->buf;
+	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex_w[0] = leaf->width;
+	src->tex_h[0] = leaf->height;
+	src->tex_enq[0] = 42;
 }
 static void terrain_delete(struct actor* act)
 {

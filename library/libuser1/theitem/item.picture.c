@@ -1,41 +1,42 @@
 #include "libuser.h"
-void actorcreatefromfile(struct actor* act, char* name);
+void readimagefromjpg(u8* buf, int len, int* width, int* height, int* depth, int* stride);
+void readimagefrompng(u8* buf, int len, int* width, int* height, int* depth, int* stride);
 
 
 
 
 char* picture_glsl2d_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"out mediump vec2 uvw;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = vec4(vertex, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec2 texuvw;\n"
+"out mediump vec2 uvw;\n"
+"void main(){\n"
+	"uvw = texuvw;\n"
+	"gl_Position = vec4(vertex, 1.0);\n"
+"}\n";
+
 char* picture_glsl_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"uniform mat4 cammvp;\n"
-	"out mediump vec2 uvw;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
-	"}\n";
-char* picture_glsl_t = 0;
-char* picture_glsl_g = 0;
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec2 texuvw;\n"
+"out mediump vec2 uvw;\n"
+"uniform mat4 cammvp;\n"
+"void main(){\n"
+	"uvw = texuvw;\n"
+	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+"}\n";
+
 char* picture_glsl_f =
-	GLSL_VERSION
-	"uniform sampler2D tex0;\n"
-	"in mediump vec2 uvw;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"in mediump vec2 uvw;\n"
+"out mediump vec4 FragColor;\n"
+"uniform sampler2D tex0;\n"
+"uniform sampler2D tex1;\n"
+"void main(){\n"
+	"mediump vec3 c0 = texture(tex0, uvw).bgr;\n"
+	"mediump vec3 c1 = texture(tex1, uvw).bgr;\n"
+	"FragColor = vec4((c0+c1)*0.5, 1.0);\n"
+"}\n";
 /*
 char* picture_glsl_f =
 	GLSL_VERSION
@@ -296,30 +297,38 @@ static void picture_start(
 	lf->foot[0] = (u64)src;
 	tf->foot[0] = (u64)dst;
 
+	//
+	src->geometry = 3;
+	src->method = 'v';
+
 	//shader
 	src->vs = picture_glsl_v;
 	src->fs = picture_glsl_f;
 	if(twig){if(_fg2d_ == twig->fmt)src->vs = picture_glsl2d_v;}
-
-	//texture
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex[0] = leaf->buf;
-	src->tex_w[0] = leaf->width;
-	src->tex_h[0] = leaf->height;
+	src->shader_enq[0] = 42;
 
 	//vertex
 	src->vbuf = memorycreate(4*6*6);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
-	src->method = 'v';
-
-	//send!
-	src->shader_enq[0] = 42;
-	src->arg_enq[0] = 0;
-	src->tex_enq[0] = 42;
 	src->vbuf_enq = 42;
-	src->ibuf_enq = 0;
+
+	//texture0
+	src->tex_name[0] = "tex0";
+	src->tex_data[0] = leaf->nbuf;
+	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex_w[0] = leaf->x0;
+	src->tex_h[0] = leaf->y0;
+	src->tex_enq[0] = 42;
+
+	//texture1
+	src->tex_name[1] = "tex1";
+	src->tex_data[1] = leaf->wbuf;
+	src->tex_fmt[1] = hex32('r','g','b','a');
+	src->tex_w[1] = leaf->xn;
+	src->tex_h[1] = leaf->yn;
+	src->tex_enq[1] = 42;
 }
 static void picture_delete(struct actor* act)
 {
@@ -329,8 +338,21 @@ static void picture_delete(struct actor* act)
 }
 static void picture_create(struct actor* act, void* str)
 {
+	void* buf;
 	if(0 == act)return;
-	if(str)actorcreatefromfile(act, str);
+#define len 0x1000000
+
+	//texture0
+	buf = memorycreate(len);
+	openreadclose("datafile/jpg/test.jpg", 0, buf, len);
+	readimagefromjpg(buf, len, &act->x0, &act->y0, &act->z0, &act->w0);
+	act->nbuf = buf;
+
+	//texture1
+	buf = memorycreate(len);
+	openreadclose("datafile/jpg/cartoon.jpg", 0, buf, len);
+	readimagefromjpg(buf, len, &act->xn, &act->yn, &act->zn, &act->wn);
+	act->wbuf = buf;
 }
 
 

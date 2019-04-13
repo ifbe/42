@@ -18,7 +18,7 @@
 
 void fixmatrix(float*, void*);
 GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c);
-GLuint uploadtexture(void* i, void* o, void* buf, int fmt, int w, int h);
+GLuint uploadtexture(void* i, u32 t, void* buf, int fmt, int w, int h);
 GLuint uploadvertex(void* i, void* o);
 
 
@@ -50,17 +50,35 @@ void display_eachpass(
 	glUniform3fv(glGetUniformLocation(dst->shader, "camxyz"  ), 1, win->camera.vc);
 	//glUniformMatrix4fv(glGetUniformLocation(dst->shader, "sunmvp"), 1, GL_FALSE, cammvp);
 	//glUniform3fv(glGetUniformLocation(dst->shader, "sunxyz"  ), 1, win->camera.vc);
-	if(dst->arg_deq[0] != src->arg_enq[0])
-	{
-		glUniformMatrix4fv(glGetUniformLocation(dst->shader, src->arg[0]), 1, GL_FALSE, (void*)src->arg_data[0]);
-	}
+	for(j=0;j<4;j++){
+		if(0 == src->arg_name[j])continue;
+		if(0 == src->arg_data[j])continue;
+
+		switch(src->arg_fmt[j]){
+			case 'm':{
+				glUniformMatrix4fv(glGetUniformLocation(
+					dst->shader,
+					src->arg_name[j]),
+					1,
+					GL_FALSE,
+					src->arg_data[j]
+				);
+				break;
+			}//mat4
+
+			case 'v':{
+				break;
+			}
+		}//switch
+	}//for
 
 	//2.texture
-	for(j=0;j<1;j++)
+	for(j=0;j<4;j++)
 	{
 		if(0 == dst->tex[j])continue;
-		//say("tex:%d\n", dst->tex[j]);
-		glUniform1i(glGetUniformLocation(dst->shader, "tex0"), j);
+		if(0 == src->tex_name[j])continue;
+
+		glUniform1i(glGetUniformLocation(dst->shader, src->tex_name[j]), j);
 		glActiveTexture(GL_TEXTURE0 + j);
 		glBindTexture(GL_TEXTURE_2D, dst->tex[j]);
 	}
@@ -160,6 +178,7 @@ void hostctx_render(struct arena* this)
 
 void update_eachpass(struct gldst* dst, struct glsrc* src)
 {
+	int j;
 	u32 fd;
 	int w,h,fmt;
 	void* buf0;
@@ -186,22 +205,22 @@ void update_eachpass(struct gldst* dst, struct glsrc* src)
 	}
 
 	//2: texture
-	if(dst->tex_deq[0] != src->tex_enq[0])
-	{
-		//say("@3\n");
-		buf0 = (void*)(src->tex[0]);
+	for(j=0;j<4;j++){
+		if(0 == src->tex_enq[j])continue;
+
+		buf0 = (void*)(src->tex_data[j]);
 		if(0 != buf0)
 		{
-			fmt = src->tex_fmt[0];
-			w = src->tex_w[0];
-			h = src->tex_h[0];
-			fd = uploadtexture(dst, src, buf0, fmt, w, h);
+			fmt = src->tex_fmt[j];
+			w = src->tex_w[j];
+			h = src->tex_h[j];
+			fd = uploadtexture(dst, dst->tex[j], buf0, fmt, w, h);
 
-			dst->tex[0] = fd;
-			say("(%llx,%x,%x,%x)->%x\n", buf0, fmt, w, h, fd);
+			dst->tex[j] = fd;
+			//say("(%llx,%x,%x,%x)->%x\n", buf0, fmt, w, h, fd);
 		}
 
-		dst->tex_deq[0] = src->tex_enq[0];
+		dst->tex_deq[j] = src->tex_enq[j];
 	}
 
 	//3: vertex

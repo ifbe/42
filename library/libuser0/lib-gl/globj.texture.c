@@ -29,12 +29,12 @@ int ispowerof2(int x)
 {
 	return (x & (x-1)) == 0;
 }
-GLuint uploadtexture(struct gldst* dst, struct glsrc* src,
+GLuint uploadtexture(struct gldst* dst, GLuint tex,
 	void* buf, int fmt, int w, int h)
 {
-	if(dst->tex[0])
+	if(tex)
 	{
-		glBindTexture(GL_TEXTURE_2D, dst->tex[0]);
+		glBindTexture(GL_TEXTURE_2D, tex);
 
 		glTexSubImage2D(GL_TEXTURE_2D, 0,
 			0, 0, w, h,
@@ -43,8 +43,8 @@ GLuint uploadtexture(struct gldst* dst, struct glsrc* src,
 	}
 	else
 	{
-		glGenTextures(1, &dst->tex[0]);
-		glBindTexture(GL_TEXTURE_2D, dst->tex[0]);
+		glGenTextures(1, &tex);
+		glBindTexture(GL_TEXTURE_2D, tex);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_BORDER);
@@ -73,7 +73,7 @@ GLuint uploadtexture(struct gldst* dst, struct glsrc* src,
 		}
 	}
 
-	return dst->tex[0];
+	return tex;
 }
 void inittexture(struct arena* win)  
 {

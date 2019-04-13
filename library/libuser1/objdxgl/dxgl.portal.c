@@ -370,12 +370,18 @@ static void portal_start(
 	src->vbuf_h = 6;
 	src->method = 'v';
 
+	//texture
+	src->tex_name[0] = "tex0";
+
 	//send!
 	src->shader_enq[0] = 42;
 	src->arg_enq[0] = 0;
 	src->tex_enq[0] = 0;
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;
+
+
+
 
 	//special
 	rel = leaf->orel0;

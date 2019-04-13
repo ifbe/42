@@ -196,27 +196,27 @@ static void particle_start(
 	lf->foot[0] = (u64)src;
 	tf->foot[0] = (u64)dst;
 
+	//
+	src->geometry = 1;
+	src->method = 'v';
+
 	//shader
 	src->vs = particle_glsl_v;
 	src->gs = particle_glsl_g;
 	src->fs = particle_glsl_f;
+	src->shader_enq[0] = 42;
 
 	//argument
-	src->arg[0] = "objmat";
+	src->arg_name[0] = "objmat";
 	src->arg_data[0] = memorycreate(4*4*4);
+	src->arg_fmt[0] = 'm';
+	src->arg_enq[0] = 0;
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_333;
 	src->vbuf = leaf->buf;
 	src->vbuf_w = 4*9;
 	src->vbuf_h = COUNT;
-
-	src->geometry = 1;
-	src->method = 'v';
-
-	//send!
-	src->shader_enq[0] = 42;
-	src->arg_enq[0] = 0;
 	src->vbuf_enq = 42;
 }
 static void particle_delete(struct actor* act)

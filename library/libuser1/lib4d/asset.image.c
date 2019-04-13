@@ -21,7 +21,7 @@ unsigned char* njGetImage(void);
 
 
 
-void actorcreatefromjpg(struct actor* act, u8* buf, int len)
+void readimagefromjpg(u8* buf, int len, int* width, int* height, int* depth, int* stride)
 {
 	int ret;
 	u8* rgb;
@@ -44,12 +44,24 @@ void actorcreatefromjpg(struct actor* act, u8* buf, int len)
 		buf[ret*4+3] = 0;
 	}
 
-	act->width = njGetWidth();
-	act->height = njGetHeight();
-	act->buf = buf;
+	*width = njGetWidth();
+	*height = njGetHeight();
+	*depth = 3;
 	njDone();
 }
-void actorcreatefrompng(struct actor* act, u8* buf, int len)
+void actorcreatefromjpg(struct actor* act, u8* buf, int len)
+{
+	readimagefromjpg(
+		buf, len,
+		&act->width, &act->height,
+		&act->depth, &act->stride
+	);
+}
+
+
+
+
+void readimagefrompng(u8* buf, int len, int* width, int* height, int* depth, int* stride)
 {
 	int w,h,d;
 	int j,ret;
@@ -73,11 +85,15 @@ void actorcreatefrompng(struct actor* act, u8* buf, int len)
 		return;
 	}
 
-	w = upng_get_width(upng);
-	h = upng_get_height(upng);
-	d = upng_get_bpp(upng) / 8;
+	*width = upng_get_width(upng);
+	*height = upng_get_height(upng);
+	*depth = upng_get_bpp(upng) / 8;
 	say("%d,%d,%d\n",w,h,d);
 
+
+	w = *width;
+	h = *height;
+	d = *depth;
 	src = upng_get_buffer(upng);
 	dst = buf;
 	for(j=0;j<w*h;j++)
@@ -98,8 +114,13 @@ void actorcreatefrompng(struct actor* act, u8* buf, int len)
 		}
 	}
 
-	act->width = w;
-	act->height = h;
-	act->buf = buf;
 	upng_free(upng);
+}
+void actorcreatefrompng(struct actor* act, u8* buf, int len)
+{
+	readimagefrompng(
+		buf, len,
+		&act->width, &act->height,
+		&act->depth, &act->stride
+	);
 }

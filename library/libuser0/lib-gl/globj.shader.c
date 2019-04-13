@@ -390,6 +390,7 @@ GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c)
 }
 void initshader(struct arena* win)  
 {
+	int j;
 	GLuint tmp;
 	struct datapair* mod = win->mod;
 
@@ -448,4 +449,9 @@ void initshader(struct arena* win)
 
 	tmp = shaderprogram(opaque2d_vert, opaque2d_frag, 0, 0, 0, 0);
 	mod[opaque2d].dst.shader = tmp;
+
+	for(j=0;j<16;j++)
+	{
+		mod[j].src.tex_name[0] = "tex0";
+	}
 }

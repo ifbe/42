@@ -383,25 +383,28 @@ static void light_start(
 	tf->foot[0] = (u64)dst;
 
 	//
+	src->geometry = 3;
+	src->method = 'v';
+
+	//
 	src->vs = light_glsl_v;
 	src->fs = light_glsl_f;
+	src->shader_enq[0] = 42;
 
-	src->arg[0] = "mapmvp";
+	src->arg_name[0] = "mapmvp";
 	src->arg_data[0] = memorycreate(4*4*4);
+	src->arg_fmt[0] = 'm';
 
 	//vertex
 	src->vbuf = memorycreate(4*6*12);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 12;
-	src->method = 'v';
-
-	//send!
-	src->shader_enq[0] = 42;
-	src->arg_enq[0] = 0;
-	src->tex_enq[0] = 0;
 	src->vbuf_enq = 0;
-	src->ibuf_enq = 0;
+
+	//texture
+	src->tex_name[0] = "tex0";
+	src->tex_enq[0] = 0;
 }
 static void light_delete(struct actor* act)
 {

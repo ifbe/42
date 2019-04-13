@@ -411,8 +411,9 @@ static void model_start(
 	if(twig){if(_fg2d_ == twig->fmt)src->vs = model_glsl2d_v;}
 
 	//argument
-	src->arg[0] = "objmat";
+	src->arg_name[0] = "objmat";
 	src->arg_data[0] = memorycreate(4*4*4);
+	src->arg_fmt[0] = 'm';
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_33;

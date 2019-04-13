@@ -344,6 +344,10 @@ static void water_start(
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
 
+	//texture
+	src->tex_name[0] = "tex0";
+
+	//
 	src->method = 'v';
 	src->opaque = 1;
 
