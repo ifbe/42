@@ -39,11 +39,20 @@ GLSL_VERSION
 "in mediump vec2 texuvw;\n"
 "in mediump vec3 angle0;\n"
 "out mediump vec4 FragColor;\n"
-"uniform sampler2D tex0;\n"
+"uniform mediump float time;\n"
+"uniform sampler2D dudvmap;\n"
+"uniform sampler2D reflect;\n"
 "void main(){\n"
+	"mediump vec2 du = texture(dudvmap, vec2(texuvw.x+time, texuvw.y)).rg;\n"
+	"du = (2.0*du - vec2(1.0, 1.0)) / 64.0;\n"
+	"mediump vec2 dv = texture(dudvmap, vec2(texuvw.x-time, texuvw.y+du.y)).rg;\n"
+	"dv = (2.0*dv - vec2(1.0, 1.0)) / 64.0;\n"
+	"mediump vec2 uv = texuvw + du + dv;\n"
+	"uv = vec2(clamp(uv.x, 0.001, 0.999), clamp(uv.y, 0.001, 0.999));\n"
+
 	"mediump vec3 N = normalize(normal);\n"
 	"mediump vec3 A = normalize(angle0);\n"
-	"mediump vec3 c = texture(tex0, texuvw).rgb;\n"
+	"mediump vec3 c = texture(reflect, uv).rgb;\n"
 	"FragColor = vec4(c, 1.0 - abs(dot(N, A)));\n"
 "}\n";
 
@@ -70,7 +79,7 @@ void watercamera(
 	if(_fbo_ != tmp->fmt)return;
 
 	//say("tex_rgb=%x\n", tmp->tex_color);
-	dst->tex[0] = tmp->tex_color;
+	dst->tex[1] = tmp->tex_color;
 
 
 	//water.n
@@ -215,6 +224,9 @@ static void water_read_vbo(
 	float (*vbuf)[6] = (void*)(src->vbuf);
 	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
 
+	act->target.vq[0] = (timeread()%10000000)/10000000.0;
+	src->arg_enq[0] += 1;
+
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
 	vbuf[0][2] = vc[2] - vr[2] - vf[2];
@@ -334,29 +346,37 @@ static void water_start(
 	tf->foot[0] = (u64)dst;
 
 	//
+	src->method = 'v';
+	src->opaque = 1;
+
+	//
 	src->vs = water_glsl_v;
 	src->fs = water_glsl_f;
 	if(twig){if(_fg2d_ == twig->fmt)src->vs = water_glsl2d_v;}
+	src->shader_enq[0] = 42;
 
 	//vertex
 	src->vbuf = memorycreate(4*6*6);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
-
-	//texture
-	src->tex_name[0] = "tex0";
-
-	//
-	src->method = 'v';
-	src->opaque = 1;
-
-	//send!
-	src->shader_enq[0] = 42;
-	src->arg_enq[0] = 0;
-	src->tex_enq[0] = 0;
 	src->vbuf_enq = 0;
-	src->ibuf_enq = 0;
+
+	//argument
+	src->arg_name[0] = "time";
+	src->arg_data[0] = &leaf->target.vq[0];
+	src->arg_fmt[0] = 'f';
+
+	//texture0
+	src->tex_name[0] = "dudvmap";
+	src->tex_data[0] = leaf->buf;
+	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex_w[0] = leaf->width;
+	src->tex_h[0] = leaf->height;
+	src->tex_enq[0] = 42;
+
+	//texture1
+	src->tex_name[1] = "reflect";
 }
 static void water_delete(struct actor* act)
 {
@@ -368,6 +388,9 @@ static void water_create(struct actor* act, void* str)
 {
 	void* win;
 	if(0 == act)return;
+
+	act->buf = memorycreate(0x1000000);
+	actorcreatefromfile(act, "datafile/jpg/dudvmap.jpg");
 
 	win = arenacreate(_fbo_, 0);
 	if(win)relationcreate(win, 0, _win_, act, 0, _act_);

@@ -29,6 +29,7 @@ void display_eachpass(
 	struct arena* win, float* cammvp)
 {
 	int j;
+	u32 tmp;
 	u32 fmt;
 	u32 vbo;
 	u32 vao;
@@ -54,19 +55,15 @@ void display_eachpass(
 		if(0 == src->arg_name[j])continue;
 		if(0 == src->arg_data[j])continue;
 
+		tmp = glGetUniformLocation(dst->shader, src->arg_name[j]);
 		switch(src->arg_fmt[j]){
 			case 'm':{
-				glUniformMatrix4fv(glGetUniformLocation(
-					dst->shader,
-					src->arg_name[j]),
-					1,
-					GL_FALSE,
-					src->arg_data[j]
-				);
+				glUniformMatrix4fv(tmp, 1, GL_FALSE, src->arg_data[j]);
 				break;
 			}//mat4
 
-			case 'v':{
+			case 'f':{
+				glUniform1fv(tmp, 1, src->arg_data[j]);
 				break;
 			}
 		}//switch
