@@ -194,12 +194,15 @@ static int thirdperson_swrite(
 			act->camera.vc[2] *= 1.01;
 			return 1;
 		}
+		if('r' == id)
+		{
+			return 0;
+		}
 	}
 	else if(0x4070 == ev->what)
 	{
 		id = (ev->why)>>48;
-		if('l' == id)id = 10;
-		else if('r' == id)id = 11;
+		if('r' == id)id = 11;
 		else if(id > 10)return 0;
 		if(0 == win->input[id].z0)return 0;
 

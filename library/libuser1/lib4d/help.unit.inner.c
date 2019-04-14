@@ -1,28 +1,39 @@
 #include "libuser.h"
 //chip
-void chippin_register(void*);
 void vsrc_register(void*);
 void resistor_register(void*);
 void finfet_register(void*);
 void hbridge_register(void*);
 void rectify_register(void*);
+
 //dxgl
+//.cam
+void firstperson_register(void*);
+void thirdperson_register(void*);
+void rtsgame_register(void*);
+void surround_register(void*);
+void vrglass_register(void*);
+//.fbo
 void glass_register(void*);
-void ground_register(void*);
-void light_register(void*);
 void mirror_register(void*);
-void particle_register(void*);
 void portal_register(void*);
+void water_register(void*);
+//.light
+void light_register(void*);
+//.else
+void ground_register(void*);
+void particle_register(void*);
 void skydome_register(void*);
 void terrain_register(void*);
 void texball_register(void*);
-void water_register(void*);
 void weather_register(void*);
+
 //algo
 void algorithm_register(void*);
 void bintree_register(void*);
 void bplus_register(void*);
 void graph_register(void*);
+
 //game
 void the2048_register(void*);
 void chess_register(void*);
@@ -37,6 +48,7 @@ void sudoku_register(void*);
 void tetris_register(void*);
 void weiqi_register(void*);
 void xiangqi_register(void*);
+
 //hack
 void browser_register(void*);
 void circuit_register(void*);
@@ -44,6 +56,7 @@ void fs_register(void*);
 void pwmtool_register(void*);
 void rawdump_register(void*);
 void switch_register(void*);
+
 //item
 void clock_register(void*);
 void control_register(void*);
@@ -61,6 +74,7 @@ void rccar_register(void*);
 void stair_register(void*);
 void tardis_register(void*);
 void tree_register(void*);
+
 //test
 void codeimg_register(void*);
 void doodle_register(void*);
@@ -68,6 +82,7 @@ void example_register(void*);
 void fractal_register(void*);
 void palette_register(void*);
 void planet_register(void*);
+
 //tool
 void calculator_register(void*);
 void font_register(void*);
@@ -77,20 +92,21 @@ void sketchpad_register(void*);
 void spectrum_register(void*);
 void terminal_register(void*);
 void video_register(void*);
-//ui3d
-void firstperson_register(void*);
-void thirdperson_register(void*);
-void picker_register(void*);
-void rtsgame_register(void*);
-void surround_register(void*);
-void vrglass_register(void*);
-//ui2d
-void login_register(void*);
-void overview_register(void*);
-void tabbar_register(void*);
-void vkbd_register(void*);
+
+//menu
+//.2d
 void corner_register(void*);
 void pointer_register(void*);
+//.3d
+void eventmap_register(void*);
+void picker_register(void*);
+//.body
+void tabbar_register(void*);
+//.vkbd
+void vkbd_register(void*);
+//.else
+void login_register(void*);
+void overview_register(void*);
 
 
 
@@ -105,23 +121,64 @@ void content_create(void* addr)
 
 
 
+//-------------------chip-----------------
+	vsrc_register(tmp);
+	tmp += sizeof(struct actor);
+
+	resistor_register(tmp);
+	tmp += sizeof(struct actor);
+
+	finfet_register(tmp);
+	tmp += sizeof(struct actor);
+
+	hbridge_register(tmp);
+	tmp += sizeof(struct actor);
+
+	rectify_register(tmp);
+	tmp += sizeof(struct actor);
+
+
+
+
 //----------------------dxgl-----------------------
+//.cam
+	firstperson_register(tmp);
+	tmp += sizeof(struct actor);
+
+	thirdperson_register(tmp);
+	tmp += sizeof(struct actor);
+
+	rtsgame_register(tmp);
+	tmp += sizeof(struct actor);
+
+	surround_register(tmp);
+	tmp += sizeof(struct actor);
+
+	vrglass_register(tmp);
+	tmp += sizeof(struct actor);
+
+//.fbo
 	glass_register(tmp);
-	tmp += sizeof(struct actor);
-
-	ground_register(tmp);
-	tmp += sizeof(struct actor);
-
-	light_register(tmp);
 	tmp += sizeof(struct actor);
 
 	mirror_register(tmp);
 	tmp += sizeof(struct actor);
 
-	particle_register(tmp);
+	portal_register(tmp);
 	tmp += sizeof(struct actor);
 
-	portal_register(tmp);
+	water_register(tmp);
+	tmp += sizeof(struct actor);
+
+//.light
+	light_register(tmp);
+	tmp += sizeof(struct actor);
+
+//.else
+	ground_register(tmp);
+	tmp += sizeof(struct actor);
+
+	particle_register(tmp);
 	tmp += sizeof(struct actor);
 
 	skydome_register(tmp);
@@ -131,9 +188,6 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	texball_register(tmp);
-	tmp += sizeof(struct actor);
-
-	water_register(tmp);
 	tmp += sizeof(struct actor);
 
 	weather_register(tmp);
@@ -325,66 +379,33 @@ void content_create(void* addr)
 
 
 
-	//-------------------chip-----------------
-	chippin_register(tmp);
+//-------------------menu------------------
+//.2d
+	corner_register(tmp);
 	tmp += sizeof(struct actor);
 
-	vsrc_register(tmp);
+	pointer_register(tmp);
 	tmp += sizeof(struct actor);
 
-	resistor_register(tmp);
-	tmp += sizeof(struct actor);
-
-	finfet_register(tmp);
-	tmp += sizeof(struct actor);
-
-	hbridge_register(tmp);
-	tmp += sizeof(struct actor);
-
-	rectify_register(tmp);
-	tmp += sizeof(struct actor);
-
-
-
-
-	//-------------------ui3d------------------
-	firstperson_register(tmp);
-	tmp += sizeof(struct actor);
-
-	thirdperson_register(tmp);
+//.3d
+	eventmap_register(tmp);
 	tmp += sizeof(struct actor);
 
 	picker_register(tmp);
 	tmp += sizeof(struct actor);
 
-	rtsgame_register(tmp);
+//.body
+	tabbar_register(tmp);
 	tmp += sizeof(struct actor);
 
-	surround_register(tmp);
+//.vkbd
+	vkbd_register(tmp);
 	tmp += sizeof(struct actor);
 
-	vrglass_register(tmp);
-	tmp += sizeof(struct actor);
-
-
-
-
-	//-------------------ui2d------------------
+//.else
 	login_register(tmp);
 	tmp += sizeof(struct actor);
 
 	overview_register(tmp);
-	tmp += sizeof(struct actor);
-
-	tabbar_register(tmp);
-	tmp += sizeof(struct actor);
-
-	vkbd_register(tmp);
-	tmp += sizeof(struct actor);
-
-	corner_register(tmp);
-	tmp += sizeof(struct actor);
-
-	pointer_register(tmp);
 	tmp += sizeof(struct actor);
 }

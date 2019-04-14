@@ -333,14 +333,17 @@ static int surround_swrite(
 	else if(0x2b70 == ev->what)
 	{
 		id = (ev->why)>>48;
-		if('f' == id)surround_zoom(win, 100.0);
-		if('b' == id)surround_zoom(win,-100.0);
+		switch(id){
+			case 'f':surround_zoom(win, 100.0);break;
+			case 'b':surround_zoom(win,-100.0);break;
+			case 'r':return 1;
+			default:return 0;
+		}
 	}
 	else if(0x4070 == ev->what)
 	{
 		id = (ev->why)>>48;
-		if('l' == id)id = 10;
-		else if('r' == id)id = 11;
+		if('r' == id)id = 11;
 		else if(id > 10)return 0;
 		if(0 == win->input[id].z0)return 0;
 

@@ -639,7 +639,7 @@ static int picker_swrite(
 
 		rel = samesrcnextdst(rel);
 	}
-	return 1;
+	return 0;
 
 found:
 	x = ev->why & 0xffff;
@@ -647,13 +647,15 @@ found:
 	if(hex32('p','+',0,0) == ev->what)
 	{
 		playwith3d_pick(win, www, x, y);
+		return 1;
 	}
 	if(hex32('p','@',0,0) == ev->what)
 	{
 		if(win->input[10].z0)playwith3d_move(win, www, x, y, win->input[10].xn, win->input[10].yn);
-		else if(win->input[0].z0)playwith3d_move(win, www, x, y, win->input[0].xn, win->input[0].yn);
+		if(win->input[ 0].z0)playwith3d_move(win, www, x, y, win->input[ 0].xn, win->input[ 0].yn);
+		return 1;
 	}
-	return 1;
+	return 0;
 }
 static void picker_cread(
 	struct actor* act, struct pinid* pin,
