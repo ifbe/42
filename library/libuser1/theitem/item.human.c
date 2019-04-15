@@ -4,23 +4,6 @@ void carvesolid_bodypart(struct arena*, u32, vec3, vec3);
 
 
 
-static vec3 bonenode[15] = {
-	{ 0.0, 0.0, 1.0},	//00.head
-	{ 0.0, 0.0, 0.8},	//01.neck
-	{ 0.0, 0.0, 0.5},	//02.center
-	{-0.2, 0.0, 0.8},	//03.scapula l
-	{ 0.2, 0.0, 0.8},	//04.scapula r
-	{-0.3, 0.1, 0.6},	//05.elbow l
-	{ 0.3,-0.1, 0.6},	//06.elbow r
-	{-0.3, 0.3, 0.5},	//07.hand l
-	{ 0.3,-0.3, 0.5},	//08.hand r
-	{-0.2, 0.0, 0.5},	//09.hipbone l
-	{ 0.2, 0.0, 0.5},	//10.hipbone r
-	{-0.2,-0.1, 0.3},	//11.knee l
-	{ 0.2, 0.1, 0.3},	//12.knee r
-	{-0.2,-0.3, 0.0},	//13.foot l
-	{ 0.2, 0.3, 0.0}	//14.foot r
-};
 static u8 bonepair[16][2] = {
 	{ 0,  1},	//00.neck
 	{ 1,  2},	//01.body
@@ -38,6 +21,57 @@ static u8 bonepair[16][2] = {
 	{11, 13},	//13.l shank
 	{10, 12},	//14.r thigh
 	{12, 14}	//15.r shank
+};
+static vec3 boneverta[15] = {
+	{ 0.0, 0.0, 1.0},	//00.head
+	{ 0.0, 0.0, 0.8},	//01.neck
+	{ 0.0, 0.0, 0.5},	//02.center
+	{-0.2, 0.0, 0.8},	//03.scapula l
+	{ 0.2, 0.0, 0.8},	//04.scapula r
+	{-0.3, 0.1, 0.6},	//05.elbow l
+	{ 0.3,-0.1, 0.6},	//06.elbow r
+	{-0.3, 0.3, 0.5},	//07.hand l
+	{ 0.3,-0.3, 0.5},	//08.hand r
+	{-0.2, 0.0, 0.5},	//09.hipbone l
+	{ 0.2, 0.0, 0.5},	//10.hipbone r
+	{-0.2,-0.1, 0.3},	//11.knee l
+	{ 0.2, 0.1, 0.3},	//12.knee r
+	{-0.2,-0.3, 0.0},	//13.foot l
+	{ 0.2, 0.3, 0.0}	//14.foot r
+};
+static vec3 bonevertb[15] = {
+	{ 0.0, 0.0, 1.0},	//00.head
+	{ 0.0, 0.0, 0.8},	//01.neck
+	{ 0.0, 0.0, 0.5},	//02.center
+	{-0.2, 0.0, 0.8},	//03.scapula l
+	{ 0.2, 0.0, 0.8},	//04.scapula r
+	{-0.3,-0.1, 0.6},	//05.elbow l
+	{ 0.3, 0.1, 0.6},	//06.elbow r
+	{-0.3,-0.3, 0.5},	//07.hand l
+	{ 0.3, 0.3, 0.5},	//08.hand r
+	{-0.2, 0.0, 0.5},	//09.hipbone l
+	{ 0.2, 0.0, 0.5},	//10.hipbone r
+	{-0.2, 0.1, 0.3},	//11.knee l
+	{ 0.2,-0.1, 0.3},	//12.knee r
+	{-0.2, 0.3, 0.0},	//13.foot l
+	{ 0.2,-0.3, 0.0}	//14.foot r
+};
+static vec3 bonevertc[15] = {
+	{ 0.0, 0.0, 1.0},	//00.head
+	{ 0.0, 0.0, 0.8},	//01.neck
+	{ 0.0, 0.0, 0.5},	//02.center
+	{-0.2, 0.0, 0.8},	//03.scapula l
+	{ 0.2, 0.0, 0.8},	//04.scapula r
+	{-0.3, 0.0, 0.6},	//05.elbow l
+	{ 0.3, 0.0, 0.6},	//06.elbow r
+	{-0.3, 0.0, 0.5},	//07.hand l
+	{ 0.3, 0.0, 0.5},	//08.hand r
+	{-0.2, 0.0, 0.5},	//09.hipbone l
+	{ 0.2, 0.0, 0.5},	//10.hipbone r
+	{-0.2, 0.0, 0.3},	//11.knee l
+	{ 0.2, 0.0, 0.3},	//12.knee r
+	{-0.2, 0.0, 0.0},	//13.foot l
+	{ 0.2, 0.0, 0.0}	//14.foot r
 };
 
 
@@ -71,25 +105,40 @@ static void human_read_vbo(
 	vec3 t0, t1;
 	float w,h;
 	float x,y,z,n;
+	vec3* bonevert;
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 	carveline_circle(win, 0xff00ff, vc, vr, vf);
 
+	j = (timeread()%1000000);
+	if(j < 250*1000){
+		bonevert = boneverta;
+	}
+	else if(j < 500*1000){
+		bonevert = bonevertc;
+	}
+	else if(j < 750*1000){
+		bonevert = bonevertb;
+	}
+	else{
+		bonevert = bonevertc;
+	}
+
 	for(j=0;j<16;j++)
 	{
 		k = bonepair[j][0];
-		x = bonenode[k][0];
-		y = bonenode[k][1];
-		z = bonenode[k][2];
+		x = bonevert[k][0];
+		y = bonevert[k][1];
+		z = bonevert[k][2];
 		t0[0] = vc[0] + vr[0]*x + vf[0]*y + vu[0]*z;
 		t0[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
 		t0[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
 		k = bonepair[j][1];
-		x = bonenode[k][0];
-		y = bonenode[k][1];
-		z = bonenode[k][2];
+		x = bonevert[k][0];
+		y = bonevert[k][1];
+		z = bonevert[k][2];
 		t1[0] = vc[0] + vr[0]*x + vf[0]*y + vu[0]*z;
 		t1[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
 		t1[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
@@ -97,9 +146,9 @@ static void human_read_vbo(
 		carvesolid_bodypart(win, 0x008080, t0, t1);
 	}
 
-	x = bonenode[0][0];
-	y = bonenode[0][1];
-	z = bonenode[0][2];
+	x = bonevert[0][0];
+	y = bonevert[0][1];
+	z = bonevert[0][2];
 	act->camera.vc[0] = vc[0] + vr[0]*x + vf[0]*y + vu[0]*z;
 	act->camera.vc[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
 	act->camera.vc[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
@@ -115,9 +164,9 @@ static void human_read_vbo(
 	//
 	w = win->width;
 	h = win->height;
-	x = bonenode[0][0] - bonenode[1][0];
-	y = bonenode[0][1] - bonenode[1][1];
-	z = bonenode[0][2] - bonenode[1][2];
+	x = bonevert[0][0] - bonevert[1][0];
+	y = bonevert[0][1] - bonevert[1][1];
+	z = bonevert[0][2] - bonevert[1][2];
 	n = h/w*173.0 / squareroot(x*x + y*y + z*z);
 	act->camera.vu[0] = x*n;
 	act->camera.vu[1] = y*n;
@@ -229,34 +278,34 @@ static void human_swrite(
 
 /*		sec = timeread() / 1000000.0;
 
-		x = bonenode[0][0] - bonenode[1][0];
-		y = bonenode[0][1] - bonenode[1][1];
-		z = bonenode[0][2] - bonenode[1][2];
+		x = boneverta[0][0] - boneverta[1][0];
+		y = boneverta[0][1] - boneverta[1][1];
+		z = boneverta[0][2] - boneverta[1][2];
 		n = squareroot(x*x + y*y + z*z);
 
 		a = PI/90*sine(2.0*PI*sec);
 		c = cosine(a);
 		s = sine(a);
-		bonenode[0][0] = bonenode[1][0] + n*s;
-		bonenode[0][1] = 0.0;
-		bonenode[0][2] = bonenode[1][2] + n*c;
+		boneverta[0][0] = boneverta[1][0] + n*s;
+		boneverta[0][1] = 0.0;
+		boneverta[0][2] = boneverta[1][2] + n*c;
 
 		//arm
 		a = PI/3*sine(2.0*PI*sec);
 		c = cosine(a);
 		s = sine(a);
-		bonenode[5][1] = -s * 0.3;
-		bonenode[5][2] = 0.6 - c * 0.3;
-		bonenode[6][1] = s * 0.3;
-		bonenode[6][2] = 0.6 - c * 0.3;
+		boneverta[5][1] = -s * 0.3;
+		boneverta[5][2] = 0.6 - c * 0.3;
+		boneverta[6][1] = s * 0.3;
+		boneverta[6][2] = 0.6 - c * 0.3;
 
 		a = PI/3*sine(2.0*PI*sec);
 		c = cosine(a);
 		s = sine(a);
-		bonenode[7][1] = bonenode[5][1] - s * 0.3;
-		bonenode[7][2] = bonenode[5][2] - c * 0.3;
-		bonenode[8][1] = bonenode[6][1] + s * 0.3;
-		bonenode[8][2] = bonenode[6][2] - c * 0.3;
+		boneverta[7][1] = boneverta[5][1] - s * 0.3;
+		boneverta[7][2] = boneverta[5][2] - c * 0.3;
+		boneverta[8][1] = boneverta[6][1] + s * 0.3;
+		boneverta[8][2] = boneverta[6][2] - c * 0.3;
 
 		//leg
 		a = PI/3*sine(2.0*PI*sec);
@@ -264,22 +313,22 @@ static void human_swrite(
 		s = sine(a);
 		if(a > 0.0)
 		{
-			bonenode[11][1] =  s * 0.5;
-			bonenode[11][2] = -c * 0.5;
-			bonenode[12][1] = 0.0;
-			bonenode[12][2] = -0.5;
+			boneverta[11][1] =  s * 0.5;
+			boneverta[11][2] = -c * 0.5;
+			boneverta[12][1] = 0.0;
+			boneverta[12][2] = -0.5;
 		}
 		else
 		{
-			bonenode[11][1] = 0.0;
-			bonenode[11][2] = -0.5;
-			bonenode[12][1] = -s * 0.5;
-			bonenode[12][2] = -c * 0.5;
+			boneverta[11][1] = 0.0;
+			boneverta[11][2] = -0.5;
+			boneverta[12][1] = -s * 0.5;
+			boneverta[12][2] = -c * 0.5;
 		}
-		bonenode[13][1] = bonenode[11][1];
-		bonenode[13][2] = bonenode[11][2] - 0.5;
-		bonenode[14][1] = bonenode[12][1];
-		bonenode[14][2] = bonenode[12][2] - 0.5;
+		boneverta[13][1] = boneverta[11][1];
+		boneverta[13][2] = boneverta[11][2] - 0.5;
+		boneverta[14][1] = boneverta[12][1];
+		boneverta[14][2] = boneverta[12][2] - 0.5;
 */
 }
 static void human_cread(

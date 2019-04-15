@@ -628,13 +628,7 @@ static int picker_swrite(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
-	float w = win->width;
-	float h = win->height;
-/*
-	win->nearl = win->nearb * w/h;
-	win->nearr = win->neart * w/h;
-*/
-	int x,y,z;
+	short* t;
 	struct arena* www = 0;
 	struct relation* rel = win->orel0;
 	while(1)
@@ -652,17 +646,18 @@ static int picker_swrite(
 	return 0;
 
 found:
-	x = ev->why & 0xffff;
-	y = (ev->why >> 16) & 0xffff;
+	t = (void*)ev;
+	if('l' != t[3])return 0;
+
 	if(hex32('p','+',0,0) == ev->what)
 	{
-		playwith3d_pick(win, www, act, x, y);
+		playwith3d_pick(win, www, act, t[0], t[1]);
 		return 1;
 	}
 	if(hex32('p','@',0,0) == ev->what)
 	{
-		if(win->input[10].z0)playwith3d_move(win, www, x, y, win->input[10].xn, win->input[10].yn);
-		if(win->input[ 0].z0)playwith3d_move(win, www, x, y, win->input[ 0].xn, win->input[ 0].yn);
+		if(win->input[10].z0)playwith3d_move(win, www, t[0], t[1], win->input[10].xn, win->input[10].yn);
+		if(win->input[ 0].z0)playwith3d_move(win, www, t[0], t[1], win->input[ 0].xn, win->input[ 0].yn);
 		return 1;
 	}
 	return 0;
