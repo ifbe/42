@@ -98,11 +98,12 @@ void video_register(void*);
 void corner_register(void*);
 void pointer_register(void*);
 //.3d
-void eventmap_register(void*);
+void eventhub_register(void*);
 void picker_register(void*);
 //.body
 void tabbar_register(void*);
 //.vkbd
+void vjoy_register(void*);
 void vkbd_register(void*);
 //.else
 void login_register(void*);
@@ -388,7 +389,7 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 //.3d
-	eventmap_register(tmp);
+	eventhub_register(tmp);
 	tmp += sizeof(struct actor);
 
 	picker_register(tmp);
@@ -399,6 +400,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 //.vkbd
+	vjoy_register(tmp);
+	tmp += sizeof(struct actor);
+
 	vkbd_register(tmp);
 	tmp += sizeof(struct actor);
 

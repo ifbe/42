@@ -149,7 +149,9 @@ void vkbd_keyboard_read_tui(struct arena* win, struct style* sty)
 void vkbd_keyboard_read_cli(struct arena* win, struct style* sty)
 {
 }
-void vkbd_keyboard_read(struct arena* cc, void* cf, struct arena* win, struct style* sty)
+static void vkbd_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -159,11 +161,10 @@ void vkbd_keyboard_read(struct arena* cc, void* cf, struct arena* win, struct st
 	else if(fmt == _vbo_)vkbd_keyboard_read_vbo(win, sty);
 	else vkbd_keyboard_read_pixel(win, sty);
 }
-
-
-
-
-int vkbd_keyboard_write(struct arena* win, struct event* ev)
+static int vkbd_swrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 	short tmp[4];
 	int x,y,w,h,ret;
@@ -178,67 +179,64 @@ int vkbd_keyboard_write(struct arena* win, struct event* ev)
 
 	if(hex32('p','-',0,0) == ev->what)
 	{
-		//ret = win->vkbdw;
-		if('k' == ret)
-		{
-			x = x*16/w;
-			y = 31 - (y*32/h);
-			ret = x + (y*16);
-
-			//win->vkbdz = ret;
-			//win->vkbdw = 'k';
-			eventwrite(ret, _char_, (u64)win, 0);
-		}
-		else if('j' == ret)
-		{
-			y = (h-y)*16/h;
-			if(x*2 < w)
-			{
-				x = x*16/h;
-				if((0==x)&&(1==y))ret = joyl_left;
-				else if((2==x)&&(1==y))ret = joyl_right;
-				else if((1==x)&&(0==y))ret = joyl_down;
-				else if((1==x)&&(2==y))ret = joyl_up;
-				else if((0==x)&&(3==y))ret = joyl_trigger;
-				else if((2==x)&&(3==y))ret = joyl_bumper;
-				else if((1==x)&&(1==y))ret = joyl_stick;
-				else if((3==x)&&(2==y))ret = joyl_select;
-				else ret = 0;
-
-				if(ret)
-				{
-					tmp[0] = tmp[1] = tmp[2] = 0;
-					tmp[3] = ret;
-					eventwrite(*(u64*)tmp, joy_left, 0, 0);
-				}
-			}
-			else
-			{
-				x = w-x;
-				x = x*16/h;
-				if((2==x)&&(y==1))ret = joyr_left;
-				else if((0==x)&&(1==y))ret = joyr_right;
-				else if((1==x)&&(y==0))ret = joyr_down;
-				else if((1==x)&&(y==2))ret = joyr_up;
-				else if((2==x)&&(y==3))ret = joyr_trigger;
-				else if((0==x)&&(y==3))ret = joyr_bumper;
-				else if((1==x)&&(y==1))ret = joyr_stick;
-				else if((3==x)&&(y==2))ret = joyr_start;
-				else ret = 0;
-
-				if(ret)
-				{
-					tmp[0] = tmp[1] = tmp[2] = 0;
-					tmp[3] = ret;
-					eventwrite(*(u64*)tmp, joy_right, 0, 0);
-				}
-			}
-
-			//win->vkbdz = ret;
-			//win->vkbdw = 'j';
-		}
+		x = 16*x/w;
+		y = 31 - 32*y/h;
+		//say("x=%d,y=%d\n",x,y);
+		eventwrite(x+(y*16), _char_, (u64)win, 0);
 	}
-
-byebye:
 	return 1;
+}
+static int vkbd_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
+{
+	return 0;
+}
+static int vkbd_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
+{
+	return 0;
+}
+static int vkbd_stop(
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
+{
+	return 0;
+}
+static int vkbd_start(
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
+{
+	return 0;
+}
+static int vkbd_delete(struct arena* win)
+{
+	return 0;
+}
+static int vkbd_create(struct arena* win, u8* str)
+{
+	return 0;
+}
+
+
+
+
+void vkbd_register(struct actor* p)
+{
+	p->type = _orig_;
+	p->fmt = hex32('v', 'k', 'b', 'd');
+
+	p->oncreate = (void*)vkbd_create;
+	p->ondelete = (void*)vkbd_delete;
+	p->onstart  = (void*)vkbd_start;
+	p->onstop   = (void*)vkbd_stop;
+	p->oncread  = (void*)vkbd_cread;
+	p->oncwrite = (void*)vkbd_cwrite;
+	p->onsread  = (void*)vkbd_sread;
+	p->onswrite = (void*)vkbd_swrite;
 }

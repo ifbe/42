@@ -32,7 +32,7 @@ static int vrglass_sread(
 		tc[2] = 0.0;
 		carveline_rect(win, 0xff0000, tc, tr, tu);
 	}
-
+/*
 	//camera
 	tr[0] = 0.025;
 	tr[1] = 0.0;
@@ -96,7 +96,7 @@ static int vrglass_sread(
 	carve2d_string(win, 0xffffff, tc, tr, tf, (void*)"vc: ", 4);
 	tc[0] += 0.05;
 	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->camera.vc);
-
+*/
 	return 0;
 }
 static int vrglass_swrite(
@@ -104,22 +104,23 @@ static int vrglass_swrite(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
-	//say("%llx,%llx\n", ev->why, ev->what);
 	int id;
 	int x0,y0,x1,y1;
 	short* t;
+	float* vc = act->camera.vc;
+
 	if(_kbd_ == ev->what)
 	{
-		if(0x4b == ev->why)win->camera.vc[0] -= 10;
-		else if(0x4d == ev->why)win->camera.vc[0] += 10;
-		else if(0x50 == ev->why)win->camera.vc[2] -= 10;
-		else if(0x48 == ev->why)win->camera.vc[2] += 10;
+		if(0x4b == ev->why)vc[0] -= 10;
+		else if(0x4d == ev->why)vc[0] += 10;
+		else if(0x50 == ev->why)vc[2] -= 10;
+		else if(0x48 == ev->why)vc[2] += 10;
 	}
 	else if(0x2b70 == ev->what)
 	{
 		id = (ev->why)>>48;
-		if('f' == id)win->camera.vc[1] += 10;
-		if('b' == id)win->camera.vc[1] -= 10;
+		if('f' == id)vc[1] += 10;
+		if('b' == id)vc[1] -= 10;
 	}
 	else if(0x4070 == ev->what)
 	{
@@ -134,8 +135,8 @@ static int vrglass_swrite(
 		x1 = (ev->why)&0xffff;
 		y1 = ((ev->why)>>16)&0xffff;
 
-		win->camera.vc[0] += x1-x0;
-		win->camera.vc[2] -= y1-y0;
+		vc[0] += x1-x0;
+		vc[2] -= y1-y0;
 	}
 	else if(joy_left == (ev->what & joy_mask))
 	{
@@ -144,33 +145,33 @@ static int vrglass_swrite(
 		//say("%d,%d\n", t[0], t[1]);
 		if(t[3] & joyl_left)		//x-
 		{
-			win->camera.vc[0] -= 10;
+			vc[0] -= 10;
 		}
 		if(t[3] & joyl_right)		//x+
 		{
-			win->camera.vc[0] += 10;
+			vc[0] += 10;
 		}
 		if(t[3] & joyl_down)		//y-
 		{
-			win->camera.vc[2] -= 10;
+			vc[2] -= 10;
 		}
 		if(t[3] & joyl_up)			//y+
 		{
-			win->camera.vc[2] += 10;
+			vc[2] += 10;
 		}
 		if(t[3] & joyl_trigger)		//z-
 		{
-			win->camera.vc[1] -= 10.0;
+			vc[1] -= 10.0;
 		}
 		if(t[3] & joyl_bumper)		//z+
 		{
-			win->camera.vc[1] += 10.0;
+			vc[1] += 10.0;
 		}
 		if(t[3] & joyl_stick)		//w-
 		{
-			win->camera.vc[0] = 0.0;
-			win->camera.vc[1] = -2000.0;
-			win->camera.vc[2] = 0.0;
+			vc[0] = 0.0;
+			vc[1] = -2000.0;
+			vc[2] = 0.0;
 		}
 		if(t[3] & joyl_select)		//w+
 		{
@@ -180,11 +181,15 @@ static int vrglass_swrite(
 		y0 = t[1];
 		if((x0 < -4096) | (x0 > 4096) | (y0 < -4096) | (y0 > 4096))
 		{
-			win->camera.vc[0] += x0/1000.0;
-			win->camera.vc[2] += y0/1000.0;
+			vc[0] += x0/1000.0;
+			vc[2] += y0/1000.0;
 		}
 	}
-	//say("%f,%f,%f\n",win->camera.vc[0], win->camera.vc[1], win->camera.vc[2]);
+	//say("%f,%f,%f\n",vc[0], vc[1], vc[2]);
+
+	win->camera.vc[0] = vc[0];
+	win->camera.vc[1] = vc[1];
+	win->camera.vc[2] = vc[2];
 
 	win->camera.vn[0] = 0.0;
 	win->camera.vn[1] = -1000.0 - win->camera.vc[1];
@@ -230,37 +235,22 @@ static void vrglass_start(
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
 {
-    say("@vrglass_start\n");
-	root->camera.vc[0] = 0.0;
-	root->camera.vc[1] = -2000.0;
-	root->camera.vc[2] = 200.0;
-
-	root->camera.vn[0] = 0.0;
-	root->camera.vn[1] = -1000.0 - root->camera.vc[1];
-	root->camera.vn[2] = 0.0;
-
-	root->camera.vl[0] = -root->width/2 - root->camera.vc[0];
-	root->camera.vl[1] = 0.0;
-	root->camera.vl[2] = 0.0;
-
-	root->camera.vr[0] = root->width/2 - root->camera.vc[0];
-	root->camera.vr[1] = 0.0;
-	root->camera.vr[2] = 0.0;
-
-	root->camera.vb[0] = 0.0;
-	root->camera.vb[1] = 0.0;
-	root->camera.vb[2] = -root->height/2 - root->camera.vc[2];
-
-	root->camera.vu[0] = 0.0;
-	root->camera.vu[1] = 0.0;
-	root->camera.vu[2] = root->height/2 - root->camera.vc[2];
 }
 static void vrglass_delete()
 {
 }
-static void vrglass_create(void* addr)
+static void vrglass_create(struct actor* act, void* str)
 {
-    say("@vrglass_create\n");
+	float* vc = act->camera.vc;
+	float* vn = act->camera.vn;
+
+	vc[0] = 0.0;
+	vc[1] = -2000.0;
+	vc[2] = 200.0;
+
+	vn[0] = 0.0;
+	vn[1] = -1000.0 - vc[1];
+	vn[2] = 0.0;
 }
 
 

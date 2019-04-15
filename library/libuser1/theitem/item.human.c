@@ -197,6 +197,7 @@ static void human_swrite(
 	else if(joy_left == (ev->what & joy_mask))
 	{
 		t = (void*)ev;
+		say("@human_swrite:%x\n", t[2]);
 		if(t[3] & joyl_left   )sty->vc[0] -= 10;
 		if(t[3] & joyl_right  )sty->vc[0] += 10;
 		if(t[3] & joyl_down   )sty->vc[1] -= 10;

@@ -448,7 +448,7 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 
 
 
-int playwith3d_pick(struct arena* root, struct arena* twig, int x, int y)
+int playwith3d_pick(struct arena* root, struct arena* twig, struct actor* act, int x, int y)
 {
 	int ret;
 	vec3 ray[2];
@@ -458,24 +458,28 @@ int playwith3d_pick(struct arena* root, struct arena* twig, int x, int y)
 
 	float w = root->width;
 	float h = root->height;
-	float fx = (float)x * 2.0;
-	float fy = (float)y * 2.0;
+	float fx = (float)x / w;
+	float fy = (float)y / h;
 
 	ray[0][0] = root->camera.vc[0];
 	ray[0][1] = root->camera.vc[1];
 	ray[0][2] = root->camera.vc[2];
-	ray[1][0] = fx / w - 1.0;
-	ray[1][1] = 1.0 - fy / h;
+	ray[1][0] = 2.0 * fx - 1.0;
+	ray[1][1] = 1.0 - 2.0 * fy;
 	ray[1][2] = 0.0;
 
 	invmvp(ray[1], root);
-	ray[1][0] -= ray[0][0];
-	ray[1][1] -= ray[0][1];
-	ray[1][2] -= ray[0][2];
 	say("(%f,%f,%f) -> (%f,%f,%f)\n",
 		ray[0][0], ray[0][1], ray[0][2],
 		ray[1][0], ray[1][1], ray[1][2]
 	);
+
+	ray[1][0] -= ray[0][0];
+	ray[1][1] -= ray[0][1];
+	ray[1][2] -= ray[0][2];
+	act->target.vc[0] = ray[0][0] - ray[1][0]*ray[0][2]/ray[1][2];
+	act->target.vc[1] = ray[0][1] - ray[1][1]*ray[0][2]/ray[1][2];
+	act->target.vc[2] = 0.0;
 
 	rel = twig->oreln;
 	while(1)
@@ -570,11 +574,17 @@ static int picker_sread(
 	struct arena* win, struct style* sty)
 {
 	int flag;
+	vec3 tc;
 	struct relation* rel;
 	struct arena* www;
 	struct style* sss;
 	carvefrustum(win, &win->camera);
-	carveline_prism4(win, 0xff00ff, win->target.vc, win->target.vr, win->target.vf, win->target.vu);
+	//carveline_prism4(win, 0xff00ff, win->target.vc, win->target.vr, win->target.vf, win->target.vu);
+
+	tc[0] = act->target.vc[0];
+	tc[1] = act->target.vc[1];
+	tc[2] = act->target.vc[2] + 1000.0;
+	carveline(win, 0xff00ff, act->target.vc, tc);
 
 	www = 0;
 	rel = win->orel0;
@@ -646,7 +656,7 @@ found:
 	y = (ev->why >> 16) & 0xffff;
 	if(hex32('p','+',0,0) == ev->what)
 	{
-		playwith3d_pick(win, www, x, y);
+		playwith3d_pick(win, www, act, x, y);
 		return 1;
 	}
 	if(hex32('p','@',0,0) == ev->what)

@@ -167,13 +167,12 @@ theitem/item.tardis.c \
 theitem/item.tree.c \
 themenu/2d/pointer.c \
 themenu/2d/corner.c \
-themenu/3d/ui3d.eventmap.c \
+themenu/3d/ui3d.eventhub.c \
 themenu/3d/ui3d.picker.c \
 themenu/body/menu.list.c \
 themenu/body/menu.nav.c \
 themenu/body/menu.tab.c \
 themenu/body/menu.tag.c \
-themenu/vkbd/vkbd.c \
 themenu/vkbd/vkbd.joystick.c \
 themenu/vkbd/vkbd.keyboard.c \
 themenu/menu.overview.c \

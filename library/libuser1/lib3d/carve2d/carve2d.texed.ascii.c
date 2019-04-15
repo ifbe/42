@@ -262,28 +262,22 @@ void carve2d_double(struct arena* win, u32 rgb,
 	carve2d_string(win, rgb, vc, vr, vf, mystr, 0);
 }
 void carve2d_vec4(struct arena* win, u32 rgb,
-	vec3 vc, vec3 vr, vec3 vf, vec4 v)
+	vec3 vc, vec3 vr, vec3 vf,
+	char* s, vec4 v)
 {
 	int ret;
 	u8 str[100];
+	ret = mysnprintf(str, 100, "%s: %f, %f, %f\n", s, v[0], v[1], v[2]);
+	carve2d_string(win, rgb, vc, vr, vf, str, ret);
 
-	ret = double2decstr(v[0], str);
-	str[ret+0] = ',';
-	str[ret+1] = ' ';
-	ret += 2;
-
-	ret += double2decstr(v[1], str+ret);
-	str[ret+0] = ',';
-	str[ret+1] = ' ';
-	ret += 2;
-
-	ret += double2decstr(v[2], str+ret);
-	str[ret+0] = ',';
-	str[ret+1] = ' ';
-	ret += 2;
-
-	ret += double2decstr(v[3], str+ret);
-	carve2d_string(win, rgb, vc, vr, vf, str, 0);
+	vec3 tc,tr;
+	tr[0] = vr[0] * (ret/2.0 - 1.0);
+	tr[1] = vr[1] * (ret/2.0 - 1.0);
+	tr[2] = vr[2] * (ret/2.0 - 1.0);
+	tc[0] = vc[0] + vr[0];
+	tc[1] = vc[1] + vr[1];
+	tc[2] = vc[2] + vr[2];
+	carveopaque2d_rect(win, 0xffffff, tc, tr, vf);
 }
 
 

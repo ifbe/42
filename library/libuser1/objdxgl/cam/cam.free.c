@@ -161,119 +161,16 @@ static int surround_sread(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
-	vec3 tc,tr,tf;
-	float* vc = win->target.vc;
-	carvefrustum(win, &win->camera);
-
-	tc[0] = vc[0] + 1000.0;
-	tc[1] = vc[1];
-	tc[2] = vc[2];
-	carveline(win, 0x0000ff, vc, tc);
-	tc[0] = vc[0];
-	tc[1] = vc[1] + 1000.0;
-	tc[2] = vc[2];
-	carveline(win, 0x00ff00, vc, tc);
-	tc[0] = vc[0];
-	tc[1] = vc[1];
-	tc[2] = vc[2] + 1000.0;
-	carveline(win, 0xff0000, vc, tc);
-
-
-	tr[0] = 0.025;
-	tr[1] = 0.0;
-	tr[2] = 0.0;
-	tf[0] = 0.0;
-	tf[1] = 0.025;
-	tf[2] = 0.0;
-
-
-	//target
-	tc[0] = -1.0;
-	tc[1] = 0.2 - 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0x0000ff, tc, tr, tf, (void*)"vr: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0x0000ff, tc, tr, tf, win->target.vr);
-
-	tc[0] = -1.0;
-	tc[1] = 0.15 - 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0x00ff00, tc, tr, tf, (void*)"vf: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0x00ff00, tc, tr, tf, win->target.vf);
-
-	tc[0] = -1.0;
-	tc[1] = 0.1 - 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0xff0000, tc, tr, tf, (void*)"vu: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0xff0000, tc, tr, tf, win->target.vu);
-
-	tc[0] = -1.0;
-	tc[1] = 0.05 - 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0xffffff, tc, tr, tf, (void*)"vc: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->target.vc);
-
-
-	//camera
-	tc[0] = -1.0;
-	tc[1] = -0.05 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0x0000ff, tc, tr, tf, (void*)"vl: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0x0000ff, tc, tr, tf, win->camera.vl);
-
-	tc[0] = -1.0;
-	tc[1] = -0.1 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0x0000ff, tc, tr, tf, (void*)"vr: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0x0000ff, tc, tr, tf, win->camera.vr);
-
-	tc[0] = -1.0;
-	tc[1] = -0.15 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0x00ff00, tc, tr, tf, (void*)"vb: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0x00ff00, tc, tr, tf, win->camera.vb);
-
-	tc[0] = -1.0;
-	tc[1] = -0.2 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0x00ff00, tc, tr, tf, (void*)"vu: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0x00ff00, tc, tr, tf, win->camera.vu);
-
-	tc[0] = -1.0;
-	tc[1] = -0.25 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0xff0000, tc, tr, tf, (void*)"vn: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0xff0000, tc, tr, tf, win->camera.vn);
-
-	tc[0] = -1.0;
-	tc[1] = -0.3 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0xff0000, tc, tr, tf, (void*)"vf: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0xff0000, tc, tr, tf, win->camera.vf);
-
-	tc[0] = -1.0;
-	tc[1] = -0.35 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0xffffff, tc, tr, tf, (void*)"vq: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->camera.vq);
-
-	tc[0] = -1.0;
-	tc[1] = -0.4 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0xffffff, tc, tr, tf, (void*)"vc: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->camera.vc);
-
+	sty->vn[0] = sty->vf[0];
+	sty->vn[1] = sty->vf[1];
+	sty->vn[2] = sty->vf[2];
+	sty->vl[0] = -sty->vr[0];
+	sty->vl[1] = -sty->vr[1];
+	sty->vl[2] = -sty->vr[2];
+	sty->vb[0] = -sty->vu[0];
+	sty->vb[1] = -sty->vu[1];
+	sty->vb[2] = -sty->vu[2];
+	carvefrustum(win, sty);
 	return 0;
 }
 static int surround_swrite(

@@ -191,8 +191,8 @@ void arenavertex(struct arena* win)
 	win->camera.vq[2] = 0.0;
 */
 	win->camera.vc[0] = 0.0;
-	win->camera.vc[1] = -1000.0;
-	win->camera.vc[2] = 1000.0;
+	win->camera.vc[1] = -2000.0;
+	win->camera.vc[2] = 2000.0;
 }
 
 

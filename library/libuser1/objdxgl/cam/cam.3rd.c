@@ -98,7 +98,7 @@ found:
 
 print:
 	carvefrustum(win, &win->camera);
-
+/*
 	tr[0] = 0.025;
 	tr[1] = 0.0;
 	tr[2] = 0.0;
@@ -162,7 +162,7 @@ print:
 	carve2d_string(win, 0xffffff, tc, tr, tf, (void*)"vc: ", 4);
 	tc[0] += 0.05;
 	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->camera.vc);
-
+*/
 	return 0;
 }
 static int thirdperson_swrite(
