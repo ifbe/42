@@ -72,7 +72,7 @@ void eventhub_list(
 		if(_win_ == rel->dsttype)
 		{
 			twig = (void*)(rel->dstchip);
-			if(_fg3d_ == twig->fmt)goto found;
+			if(_sb3d_ == twig->fmt)goto found;
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -142,8 +142,19 @@ static int eventhub_swrite(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
-	//if(joy_event == (ev->what & 0xff))return 1;
-	//say("%llx,%llx\n", ev->what, ev->why);
+	int x,y,z,w;
+	short* t = (void*)ev;
+
+	if(0x2b70 == ev->what){
+		x = t[0] * 8 / (win->width);
+		y = t[1] * 4 / (win->height);
+		//say("x=%d,y=%d\n",x,y);
+
+		if((y >= 1) && (y <= 2)){
+			if(x <= 0)return 1;
+			if(x >= 7)return 1;
+		}
+	}
 	return 0;
 }
 static void eventhub_cread(

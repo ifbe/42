@@ -74,6 +74,7 @@ typedef float mat4[4][4];
 //
 #define _bg3d_ hex32('b','g','3','d')
 #define _fg3d_ hex32('f','g','3','d')
+#define _sb3d_ hex32('s','b','3','d')
 #define _ui3d_ hex32('u','i','3','d')
 //
 #define _bg2d_ hex32('b','g','2','d')
