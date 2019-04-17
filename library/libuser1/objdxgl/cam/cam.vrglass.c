@@ -167,7 +167,7 @@ static int vrglass_swrite(
 		{
 			vc[1] += 10.0;
 		}
-		if(t[3] & joyl_stick)		//w-
+		if(t[3] & joyl_thumb)		//w-
 		{
 			vc[0] = 0.0;
 			vc[1] = -2000.0;

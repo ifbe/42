@@ -6,10 +6,11 @@ int actorstart(void*, void*, void*, void*, void*, void*);
 
 
 
-#define COUNT 2
+#define COUNT 3
 static u64 want[COUNT] = {
-	hex64('s','u','r','r','o','u','n','d'),
-	hex64('3','r','d','c','a','m', 0 , 0 )
+	hex64('1','r','d','c','a','m', 0 , 0 ),
+	hex64('3','r','d','c','a','m', 0 , 0 ),
+	hex64('s','u','r','r','o','u','n','d')
 };
 static char* args[COUNT] = {
 	0,

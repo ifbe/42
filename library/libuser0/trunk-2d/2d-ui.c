@@ -15,6 +15,14 @@ static u64 want[COUNT] = {
 	hex64('c','o','r','n','e','r', 0, 0),
 	hex64('p','o','i','n','t','e','r', 0)
 };
+static u8 flag[COUNT] = {
+	0,
+	'#',
+	'#',
+	0,
+	0,
+	0
+};
 
 
 
@@ -163,6 +171,7 @@ int ui2d_create(struct arena* win, void* str)
 		sty->vc[0] = 0;
 		sty->vc[1] = 0;
 		sty->vc[2] = 0;
+		sty->uc[3] = flag[j];
 
 		sty->vr[0] = 1.0;
 		sty->vr[1] = 0;

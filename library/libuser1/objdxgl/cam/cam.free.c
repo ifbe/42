@@ -309,7 +309,7 @@ static int surround_swrite(
 		{
 			target_deltaxyz(win, 0, 0, 1);
 		}
-		if(t[3] & joyl_stick)		//w-
+		if(t[3] & joyl_thumb)		//w-
 		{
 			win->target.vc[0] = 0.0;
 			win->target.vc[1] = 0.0;
@@ -355,7 +355,7 @@ static int surround_swrite(
 		{
 			surround_zoom(win, -100.0);
 		}
-		if(t[3] & joyr_stick)		//w-
+		if(t[3] & joyr_thumb)		//w-
 		{
 			x = win->camera.vc[0] - win->target.vc[0];
 			y = win->camera.vc[1] - win->target.vc[1];

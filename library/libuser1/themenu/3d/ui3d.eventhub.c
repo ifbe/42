@@ -55,11 +55,15 @@ void eventhub_debug(
 	tc[2] = 0.0;
 	carve2d_vec4(win, 0xffffff, tc, tr, tf, "vc", win->camera.vc);
 }
+
+
+
+
 void eventhub_list(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
-	int y;
+	int y, rgb;
 	vec3 tc, tr, tf;
 	struct relation* rel;
 	struct arena* twig;
@@ -97,16 +101,65 @@ found:
 			tc[0] = 1.0 - 0.25;
 			tc[1] = (15 - 2*y) / 32.0;
 			tc[2] = 0.0;
+
+			if(y == act->y0)rgb = 0xff00ff;
+			else rgb = 0xffffff;
 			y += 1;
 
 			leaf = (void*)(rel->dstchip);
-
-			carve2d_string(win, 0xff00ff, tc, tr, tf, (void*)&leaf->fmt, 8);
+			carve2d_string(win, rgb, tc, tr, tf, (void*)&leaf->fmt, 8);
 		}
 
 		rel = samesrcnextdst(rel);
 	}
 }
+void eventhub_send(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
+{
+	int y;
+	struct relation* rel;
+	struct arena* twig;
+	struct actor* leaf;
+
+	rel = win->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+		if(_win_ == rel->dsttype)
+		{
+			twig = (void*)(rel->dstchip);
+			if(_sb3d_ == twig->fmt)goto found;
+		}
+		rel = samesrcnextdst(rel);
+	}
+	return;
+
+found:
+	y = 0;
+	rel = twig->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(_act_ == rel->dsttype)
+		{
+			if(y == act->y0){
+				leaf = (void*)(rel->dstchip);
+				leaf->onswrite(act, pin, win, sty, ev, 0);
+				return;
+			}
+			y += 1;
+		}
+
+		rel = samesrcnextdst(rel);
+	}
+}
+
+
+
+
 static int eventhub_sread(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
@@ -147,15 +200,20 @@ static int eventhub_swrite(
 
 	if(0x2b70 == ev->what){
 		x = t[0] * 8 / (win->width);
-		y = t[1] * 4 / (win->height);
-		//say("x=%d,y=%d\n",x,y);
+		y = t[1] * 32 / (win->height);
+		say("x=%d,y=%d\n",x,y);
 
-		if((y >= 1) && (y <= 2)){
+		if((y >= 8) && (y <= 23)){
 			if(x <= 0)return 1;
-			if(x >= 7)return 1;
+			if(x >= 7){
+				act->y0 = y-8;
+				return 1;
+			}
 		}
 	}
-	return 0;
+
+	eventhub_send(act, pin, win, sty, ev, 0);
+	return 1;
 }
 static void eventhub_cread(
 	struct actor* act, struct pinid* pin,

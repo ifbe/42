@@ -156,7 +156,7 @@ int vjoy_swrite(
 			else if((1==x)&&(2==y))ret = joyl_up;
 			else if((0==x)&&(3==y))ret = joyl_trigger;
 			else if((2==x)&&(3==y))ret = joyl_bumper;
-			else if((1==x)&&(1==y))ret = joyl_stick;
+			else if((1==x)&&(1==y))ret = joyl_thumb;
 			else if((3==x)&&(2==y))ret = joyl_select;
 			else ret = 0;
 			if(ret)
@@ -177,7 +177,7 @@ int vjoy_swrite(
 			else if((1==x)&&(y==2))ret = joyr_up;
 			else if((2==x)&&(y==3))ret = joyr_trigger;
 			else if((0==x)&&(y==3))ret = joyr_bumper;
-			else if((1==x)&&(y==1))ret = joyr_stick;
+			else if((1==x)&&(y==1))ret = joyr_thumb;
 			else if((3==x)&&(y==2))ret = joyr_start;
 			else ret = 0;
 

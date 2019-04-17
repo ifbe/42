@@ -116,7 +116,7 @@ typedef float mat4[4][4];
 #define joyl_up      0x0008
 #define joyl_trigger 0x0010
 #define joyl_bumper  0x0020
-#define joyl_stick   0x0040
+#define joyl_thumb   0x0040
 #define joyl_select  0x0080
 //
 #define joyr_left    0x0001
@@ -125,7 +125,7 @@ typedef float mat4[4][4];
 #define joyr_up      0x0008
 #define joyr_trigger 0x0010
 #define joyr_bumper  0x0020
-#define joyr_stick   0x0040
+#define joyr_thumb   0x0040
 #define joyr_start   0x0080
 //
 #define vbuffmt_3      0x3
