@@ -3,7 +3,7 @@
 
 
 
-void eventhub_debug(
+void camman_debug(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -59,7 +59,7 @@ void eventhub_debug(
 
 
 
-void eventhub_list(
+void camman_listcamera(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -76,7 +76,7 @@ void eventhub_list(
 		if(_win_ == rel->dsttype)
 		{
 			twig = (void*)(rel->dstchip);
-			if(_sb3d_ == twig->fmt)goto found;
+			if(_cam3d_ == twig->fmt)goto found;
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -113,7 +113,7 @@ found:
 		rel = samesrcnextdst(rel);
 	}
 }
-void eventhub_send(
+void camman_sendcamera(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -130,7 +130,7 @@ void eventhub_send(
 		if(_win_ == rel->dsttype)
 		{
 			twig = (void*)(rel->dstchip);
-			if(_sb3d_ == twig->fmt)goto found;
+			if(_cam3d_ == twig->fmt)goto found;
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -160,7 +160,65 @@ found:
 
 
 
-static int eventhub_sread(
+void camman_listlight(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
+{
+	int y, rgb;
+	vec3 tc, tr, tf;
+	struct relation* rel;
+	struct arena* twig;
+	struct actor* leaf;
+
+	rel = win->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+		if(_win_ == rel->dsttype)
+		{
+			twig = (void*)(rel->dstchip);
+			if(_lit3d_ == twig->fmt)goto found;
+		}
+		rel = samesrcnextdst(rel);
+	}
+	return;
+
+found:
+	tr[0] = 1.0 / 32;
+	tr[1] = 0.0;
+	tr[2] = 0.0;
+	tf[0] = 0.0;
+	tf[1] = 1.0 / 32;
+	tf[2] = 0.0;
+
+	y = 0;
+	rel = twig->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(_act_ == rel->dsttype)
+		{
+			tc[0] = 1.0 - 0.25;
+			tc[1] = (-1 - 2*y) / 32.0;
+			tc[2] = 0.0;
+
+			if(y == act->y0)rgb = 0xff00ff;
+			else rgb = 0xffffff;
+			y += 1;
+
+			leaf = (void*)(rel->dstchip);
+			carve2d_string(win, rgb, tc, tr, tf, (void*)&leaf->fmt, 8);
+		}
+
+		rel = samesrcnextdst(rel);
+	}
+}
+
+
+
+
+static int camman_sread(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -184,13 +242,17 @@ static int eventhub_sread(
 	carveopaque2d_rect(win, 0xffffff, tc, tr, tf);
 
 	//
-	eventhub_debug(act, pin, win, sty);
+	camman_debug(act, pin, win, sty);
 
 	//
-	eventhub_list(act, pin, win, sty);
+	camman_listcamera(act, pin, win, sty);
+
+	//
+	camman_listlight(act, pin, win, sty);
+
 	return 0;
 }
-static int eventhub_swrite(
+static int camman_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -212,54 +274,54 @@ static int eventhub_swrite(
 		}
 	}
 
-	eventhub_send(act, pin, win, sty, ev, 0);
+	camman_sendcamera(act, pin, win, sty, ev, 0);
 	return 1;
 }
-static void eventhub_cread(
+static void camman_cread(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
 {
 }
-static void eventhub_cwrite(
+static void camman_cwrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
 {
 }
-static void eventhub_stop(
+static void camman_stop(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
 {
 }
-static void eventhub_start(
+static void camman_start(
 	struct actor* leaf, struct pinid* lf,
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
 {
 }
-static void eventhub_delete()
+static void camman_delete()
 {
 }
-static void eventhub_create(void* addr)
+static void camman_create(void* addr)
 {
 }
 
 
 
 
-void eventhub_register(struct actor* p)
+void camman_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('e', 'v', 'e', 'n', 't', 'h', 'u', 'b');
+	p->fmt = hex64('c', 'a', 'm', 'm', 'a', 'n', 0, 0);
 
-	p->oncreate = (void*)eventhub_create;
-	p->ondelete = (void*)eventhub_delete;
-	p->onstart  = (void*)eventhub_start;
-	p->onstop   = (void*)eventhub_stop;
-	p->oncread  = (void*)eventhub_cread;
-	p->oncwrite = (void*)eventhub_cwrite;
-	p->onsread  = (void*)eventhub_sread;
-	p->onswrite = (void*)eventhub_swrite;
+	p->oncreate = (void*)camman_create;
+	p->ondelete = (void*)camman_delete;
+	p->onstart  = (void*)camman_start;
+	p->onstop   = (void*)camman_stop;
+	p->oncread  = (void*)camman_cread;
+	p->oncwrite = (void*)camman_cwrite;
+	p->onsread  = (void*)camman_sread;
+	p->onswrite = (void*)camman_swrite;
 }

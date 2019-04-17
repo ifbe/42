@@ -19,7 +19,8 @@ void mirror_register(void*);
 void portal_register(void*);
 void water_register(void*);
 //.light
-void light_register(void*);
+void dirlight_register(void*);
+void spotlight_register(void*);
 //.else
 void ground_register(void*);
 void particle_register(void*);
@@ -98,7 +99,7 @@ void video_register(void*);
 void corner_register(void*);
 void pointer_register(void*);
 //.3d
-void eventhub_register(void*);
+void camman_register(void*);
 void picker_register(void*);
 //.body
 void tabbar_register(void*);
@@ -172,7 +173,10 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 //.light
-	light_register(tmp);
+	dirlight_register(tmp);
+	tmp += sizeof(struct actor);
+
+	spotlight_register(tmp);
 	tmp += sizeof(struct actor);
 
 //.else
@@ -389,7 +393,7 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 //.3d
-	eventhub_register(tmp);
+	camman_register(tmp);
 	tmp += sizeof(struct actor);
 
 	picker_register(tmp);

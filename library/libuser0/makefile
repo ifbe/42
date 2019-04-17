@@ -35,7 +35,8 @@ root-rgba/rgba.base.c \
 root-rgba/rgba.tool.c \
 trunk-3d/3d-bg.c \
 trunk-3d/3d-fg.c \
-trunk-3d/3d-sb.c \
+trunk-3d/3d-cam.c \
+trunk-3d/3d-lit.c \
 trunk-3d/3d-ui.c \
 trunk-2d/2d-bg.c \
 trunk-2d/2d-fg.c \

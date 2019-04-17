@@ -6,17 +6,20 @@ int actorstart(void*, void*, void*, void*, void*, void*);
 
 
 
-#define COUNT 3
+#define COUNT 2
 static u64 want[COUNT] = {
-	hex64('p','i','c','k','e','r', 0 , 0 ),
-	hex64('l','i','g','h','t','e','r', 0 ),
-	hex64('c','a','m','m','a','n', 0,  0 )
+	hex64('d','i','r','l','i','t', 0 , 0),
+	hex64('s','p','o','t','l','i','t', 0)
+};
+static char* args[COUNT] = {
+	0,
+	0
 };
 
 
 
 
-int ui3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stack)
+int lit3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* st)
 {
 	struct relation* orel;
 	struct actor* act;
@@ -41,16 +44,16 @@ int ui3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stac
 
 		orel = samesrcnextdst(orel);
 	}
-	return 0;
+
+	return 1;
 }
-int ui3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
+int lit3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
 {
-	int ret;
 	struct relation* rel;
 	struct actor* act;
 	struct style* sty;
 	struct pinid* pin;
-	//say("@ui3d_write\n");
+	//say("@lit3d_write\n");
 
 	rel = cc->oreln;
 	while(1)
@@ -64,19 +67,22 @@ int ui3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sta
 
 			act = (void*)(rel->dstchip);
 			pin = (void*)(rel->dstfoot);
-			ret = actor_rootwrite(act, pin, win, sty, ev, 0);
-			if(ret)return 1;
+			actor_rootwrite(act, pin, win, sty, ev, 0);
 		}
 
 		rel = samesrcprevdst(rel);
 	}
+	return 1;
+}
+
+
+
+
+int lit3d_stop(struct arena* twig, void* tf, struct arena* root, void* rf)
+{
 	return 0;
 }
-int ui3d_stop(struct arena* twig, void* tf, struct arena* root, void* rf)
-{
-    return 0;
-}
-int ui3d_start(struct arena* twig, void* tf, struct arena* root, void* rf)
+int lit3d_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 {
 	struct relation* rel;
 	struct style* sty;
@@ -97,11 +103,11 @@ int ui3d_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 	}
 	return 0;
 }
-int ui3d_delete(struct arena* win)
+int lit3d_delete(struct arena* win)
 {
-    return 0;
+	return 0;
 }
-int ui3d_create(struct arena* win, void* str)
+int lit3d_create(struct arena* win, u8* str)
 {
 	int j,k;
 	struct style* sty;
@@ -111,7 +117,7 @@ int ui3d_create(struct arena* win, void* str)
 
 	for(j=0;j<COUNT;j++)
 	{
-		act = actorcreate(want[j], 0);
+		act = actorcreate(want[j], args[j]);
 		if(0 == act)continue;
 
 		relationcreate(act, 0, _act_, win, 0, _win_);
@@ -132,17 +138,17 @@ int ui3d_create(struct arena* win, void* str)
 		sty->vc[1] = 0;
 		sty->vc[2] = 0;
 
-		sty->vr[0] = 100;
+		sty->vr[0] = 1000;
 		sty->vr[1] = 0;
 		sty->vr[2] = 0;
 
 		sty->vf[0] = 0;
-		sty->vf[1] = 100;
+		sty->vf[1] = 1000;
 		sty->vf[2] = 0;
 
 		sty->vu[0] = 0;
 		sty->vu[1] = 0;
-		sty->vu[2] = 100;
+		sty->vu[2] = 1000;
 	}
 	return 0;
 }

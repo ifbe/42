@@ -6,15 +6,13 @@ int actorstart(void*, void*, void*, void*, void*, void*);
 
 
 
-#define COUNT 4
+#define COUNT 3
 static u64 want[COUNT] = {
 	hex64('1','r','d','c','a','m', 0 , 0 ),
 	hex64('3','r','d','c','a','m', 0 , 0 ),
-	hex64('s','u','r','r','o','u','n','d'),
-	hex64('p','i','c','k','e','r', 0 , 0 )
+	hex64('s','u','r','r','o','u','n','d')
 };
 static char* args[COUNT] = {
-	0,
 	0,
 	0,
 	0
@@ -23,7 +21,7 @@ static char* args[COUNT] = {
 
 
 
-int sb3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* st)
+int cam3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* st)
 {
 	struct relation* orel;
 	struct actor* act;
@@ -51,13 +49,13 @@ int sb3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* st)
 
 	return 1;
 }
-int sb3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
+int cam3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
 {
 	struct relation* rel;
 	struct actor* act;
 	struct style* sty;
 	struct pinid* pin;
-	//say("@sb3d_write\n");
+	//say("@cam3d_write\n");
 
 	rel = cc->oreln;
 	while(1)
@@ -82,11 +80,11 @@ int sb3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sta
 
 
 
-int sb3d_stop(struct arena* twig, void* tf, struct arena* root, void* rf)
+int cam3d_stop(struct arena* twig, void* tf, struct arena* root, void* rf)
 {
 	return 0;
 }
-int sb3d_start(struct arena* twig, void* tf, struct arena* root, void* rf)
+int cam3d_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 {
 	struct relation* rel;
 	struct style* sty;
@@ -107,11 +105,11 @@ int sb3d_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 	}
 	return 0;
 }
-int sb3d_delete(struct arena* win)
+int cam3d_delete(struct arena* win)
 {
 	return 0;
 }
-int sb3d_create(struct arena* win, u8* str)
+int cam3d_create(struct arena* win, u8* str)
 {
 	int j,k;
 	struct style* sty;

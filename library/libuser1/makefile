@@ -86,6 +86,7 @@ objdxgl/light/light.point.c \
 objdxgl/light/light.spot.c \
 objdxgl/dxgl.ground.c \
 objdxgl/dxgl.particle.c \
+objdxgl/dxgl.shadowmap.c \
 objdxgl/dxgl.skydome.c \
 objdxgl/dxgl.terrain.c \
 objdxgl/dxgl.texball.c \
@@ -167,7 +168,8 @@ theitem/item.tardis.c \
 theitem/item.tree.c \
 themenu/2d/pointer.c \
 themenu/2d/corner.c \
-themenu/3d/ui3d.eventhub.c \
+themenu/3d/ui3d.camman.c \
+themenu/3d/ui3d.lighter.c \
 themenu/3d/ui3d.picker.c \
 themenu/body/menu.list.c \
 themenu/body/menu.nav.c \
