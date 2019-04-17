@@ -82,7 +82,7 @@ static void joystick_gamepad(struct xyzwpair* pair, int j)
 		(state.buttons[GLFW_GAMEPAD_BUTTON_RIGHT_THUMB]  << 6) +
 		(state.buttons[GLFW_GAMEPAD_BUTTON_START]        << 7);
 
-	printmemory(pair, 16);
+	//printmemory(pair, 16);
 }
 static void joystick_8bitdo(struct xyzwpair* pair, const float* f, const u8* u)
 {
@@ -335,7 +335,7 @@ static void callback_move(GLFWwindow* fw, double xpos, double ypos)
 	struct event e;
 	struct arena* win = glfwGetWindowUserPointer(fw);
 
-	if(0 != glfwGetMouseButton(fw, 1))temp = 'r';
+	if(GLFW_PRESS == glfwGetMouseButton(fw, GLFW_MOUSE_BUTTON_LEFT))temp = 'l';
 	else temp = 'l';
 
 	x = ((int)xpos)&0xffff;

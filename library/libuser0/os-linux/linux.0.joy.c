@@ -212,12 +212,12 @@ void joystickthread(struct arena* win)
 			else if(10== ev.number)
 			{
 				str = "ls";
-				pair.w0 |= joyl_stick;
+				pair.w0 |= joyl_thumb;
 			}
 			else if(11== ev.number)
 			{
 				str = "rs";
-				pair.wn |= joyr_stick;
+				pair.wn |= joyr_thumb;
 			}
 			else if(12== ev.number)str = "!";
 			else str = "?";

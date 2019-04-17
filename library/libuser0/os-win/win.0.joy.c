@@ -46,7 +46,7 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 	if(g.wButtons & 0x0001)s[3] |= joyl_up;
 	if(s[2] > 9)           s[3] |= joyl_trigger;
 	if(g.wButtons & 0x0100)s[3] |= joyl_bumper;
-	if(g.wButtons & 0x0040)s[3] |= joyl_stick;
+	if(g.wButtons & 0x0040)s[3] |= joyl_thumb;
 	if(g.wButtons & 0x0020)s[3] |= joyl_select;
 	if(	(s[3] != 0) |
 		(s[1] < -2048) | (s[1] > 2048) |
@@ -70,7 +70,7 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 	if(g.wButtons & 0x8000)s[3] |= joyr_up;
 	if(s[2] > 9)           s[3] |= joyr_trigger;
 	if(g.wButtons & 0x0200)s[3] |= joyr_bumper;
-	if(g.wButtons & 0x0080)s[3] |= joyr_stick;
+	if(g.wButtons & 0x0080)s[3] |= joyr_thumb;
 	if(g.wButtons & 0x0010)s[3] |= joyr_start;
 	if(	(s[3] != 0) |
 		(s[1] < -2048) | (s[1] > 2048) |
