@@ -147,7 +147,7 @@ found:
 		{
 			if(y == act->y0){
 				leaf = (void*)(rel->dstchip);
-				leaf->onswrite(act, pin, win, sty, ev, 0);
+				leaf->onswrite(leaf, pin, win, sty, ev, 0);
 				return;
 			}
 			y += 1;

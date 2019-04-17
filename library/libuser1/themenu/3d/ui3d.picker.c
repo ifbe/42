@@ -511,16 +511,16 @@ int playwith3d_move(struct arena* root, struct arena* twig, int x0, int y0, int 
 
 	float w = root->width;
 	float h = root->height;
-	float fx0 = (float)x0 * 2.0;
-	float fy0 = (float)y0 * 2.0;
-	float fxn = (float)xn * 2.0;
-	float fyn = (float)yn * 2.0;
+	float fx0 = (float)x0 / w;
+	float fy0 = (float)y0 / h;
+	float fxn = (float)xn / w;
+	float fyn = (float)yn / h;
 
 	ray0[0][0] = root->camera.vc[0];
 	ray0[0][1] = root->camera.vc[1];
 	ray0[0][2] = root->camera.vc[2];
-	ray0[1][0] = fx0 / w - 1.0;
-	ray0[1][1] = 1.0 - fy0 / h;
+	ray0[1][0] = 2.0*fx0 - 1.0;
+	ray0[1][1] = 1.0 - 2.0*fy0;
 	ray0[1][2] = 0.0;
 	invmvp(ray0[1], root);
 	ray0[1][0] -= ray0[0][0];
@@ -530,8 +530,8 @@ int playwith3d_move(struct arena* root, struct arena* twig, int x0, int y0, int 
 	rayn[0][0] = root->camera.vc[0];
 	rayn[0][1] = root->camera.vc[1];
 	rayn[0][2] = root->camera.vc[2];
-	rayn[1][0] = fxn / w - 1.0;
-	rayn[1][1] = 1.0 - fyn / h;
+	rayn[1][0] = 2.0*fxn - 1.0;
+	rayn[1][1] = 1.0 - 2.0*fyn;
 	rayn[1][2] = 0.0;
 	invmvp(rayn[1], root);
 	rayn[1][0] -= rayn[0][0];
@@ -583,8 +583,9 @@ static int picker_sread(
 
 	tc[0] = act->target.vc[0];
 	tc[1] = act->target.vc[1];
-	tc[2] = act->target.vc[2] + 1000.0;
+	tc[2] = act->target.vc[2] + 1000.0*1000.0;
 	carveline(win, 0xff00ff, act->target.vc, tc);
+//say(">>>>>%f,%f,%f\n", tc[0], tc[1], tc[2]);
 
 	www = 0;
 	rel = win->orel0;
@@ -631,6 +632,8 @@ static int picker_swrite(
 	short* t;
 	struct arena* www = 0;
 	struct relation* rel = win->orel0;
+	//say("@picker_swrite:%llx,%llx\n", ev->what, ev->why);
+
 	while(1)
 	{
 		if(0 == rel)break;
