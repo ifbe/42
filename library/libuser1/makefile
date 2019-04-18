@@ -166,20 +166,6 @@ theitem/item.rccar.c \
 theitem/item.stair.c \
 theitem/item.tardis.c \
 theitem/item.tree.c \
-themenu/2d/pointer.c \
-themenu/2d/corner.c \
-themenu/3d/ui3d.camman.c \
-themenu/3d/ui3d.lighter.c \
-themenu/3d/ui3d.picker.c \
-themenu/body/menu.list.c \
-themenu/body/menu.nav.c \
-themenu/body/menu.tab.c \
-themenu/body/menu.tag.c \
-themenu/vkbd/vkbd.joystick.c \
-themenu/vkbd/vkbd.keyboard.c \
-themenu/menu.overview.c \
-themenu/menu.detail.c \
-themenu/menu.login.c \
 thetest/test.codeimg.c \
 thetest/test.doodle.c \
 thetest/test.example.c \
@@ -193,6 +179,19 @@ thetool/tool.spectrum.c \
 thetool/tool.terminal.c \
 thetool/tool.terminal.helper.c \
 thetool/tool.video.c \
+theuiux/2d/pointer.c \
+theuiux/2d/corner.c \
+theuiux/3d/ui3d.cameraer.c \
+theuiux/3d/ui3d.layouter.c \
+theuiux/body/menu.list.c \
+theuiux/body/menu.nav.c \
+theuiux/body/menu.tab.c \
+theuiux/body/menu.tag.c \
+theuiux/vkbd/vkbd.joystick.c \
+theuiux/vkbd/vkbd.keyboard.c \
+theuiux/menu.overview.c \
+theuiux/menu.detail.c \
+theuiux/menu.login.c \
 actor.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 

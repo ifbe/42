@@ -96,7 +96,7 @@ static void rtsgame_create(void* addr)
 void rtsgame_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('r', 't', 's', 'g', 'a', 'm', 'e', 0);
+	p->fmt = hex64('r', 't', 's', 'c', 'a', 'm', 0, 0);
 
 	p->oncreate = (void*)rtsgame_create;
 	p->ondelete = (void*)rtsgame_delete;

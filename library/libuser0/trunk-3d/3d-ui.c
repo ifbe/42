@@ -9,8 +9,8 @@ int actorstart(void*, void*, void*, void*, void*, void*);
 #define COUNT 3
 static u64 want[COUNT] = {
 	hex64('p','i','c','k','e','r', 0 , 0 ),
-	hex64('l','i','g','h','t','e','r', 0 ),
-	hex64('c','a','m','m','a','n', 0,  0 )
+	hex64('c','a','m','m','a','n', 0,  0 ),
+	hex64('o','v','e','r','v','i','e','w')
 };
 
 
@@ -32,13 +32,13 @@ int ui3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stac
 		if(_act_ == orel->dsttype)
 		{
 			sty = (void*)(orel->srcfoot);
-			//if(sty){if('#' == sty->uc[3])goto next;}
+			if(sty){if('#' == sty->uc[3])goto next;}
 
 			act = (void*)(orel->dstchip);
 			pin = (void*)(orel->dstfoot);
 			actor_rootread(act, pin, win, sty, 0, 0);
 		}
-
+next:
 		orel = samesrcnextdst(orel);
 	}
 	return 0;
@@ -60,14 +60,14 @@ int ui3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* sta
 		if(_act_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
-			//if(sty){if('#' == sty->uc[3])goto next;}
+			if(sty){if('#' == sty->uc[3])goto next;}
 
 			act = (void*)(rel->dstchip);
 			pin = (void*)(rel->dstfoot);
-			ret = actor_rootwrite(act, pin, win, sty, ev, 0);
+			ret = actor_rootwrite(act, pin, win, 0, ev, 0);
 			if(ret)return 1;
 		}
-
+next:
 		rel = samesrcprevdst(rel);
 	}
 	return 0;
@@ -132,17 +132,17 @@ int ui3d_create(struct arena* win, void* str)
 		sty->vc[1] = 0;
 		sty->vc[2] = 0;
 
-		sty->vr[0] = 100;
+		sty->vr[0] = 1.0;
 		sty->vr[1] = 0;
 		sty->vr[2] = 0;
 
 		sty->vf[0] = 0;
-		sty->vf[1] = 100;
+		sty->vf[1] = 1.0;
 		sty->vf[2] = 0;
 
 		sty->vu[0] = 0;
 		sty->vu[1] = 0;
-		sty->vu[2] = 100;
+		sty->vu[2] = 1.0;
 	}
 	return 0;
 }

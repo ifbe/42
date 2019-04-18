@@ -10,7 +10,7 @@ int actorstart(void*, void*, void*, void*, void*, void*);
 static u64 want[COUNT] = {
 	hex64('1','r','d','c','a','m', 0 , 0 ),
 	hex64('3','r','d','c','a','m', 0 , 0 ),
-	hex64('s','u','r','r','o','u','n','d')
+	hex64('f','r','e','e','c','a','m', 0 )
 };
 static char* args[COUNT] = {
 	0,
@@ -140,17 +140,17 @@ int cam3d_create(struct arena* win, u8* str)
 		sty->vc[1] = 0;
 		sty->vc[2] = 0;
 
-		sty->vr[0] = 1000;
+		sty->vr[0] = 100;
 		sty->vr[1] = 0;
 		sty->vr[2] = 0;
 
 		sty->vf[0] = 0;
-		sty->vf[1] = 1000;
+		sty->vf[1] = 100;
 		sty->vf[2] = 0;
 
 		sty->vu[0] = 0;
 		sty->vu[1] = 0;
-		sty->vu[2] = 1000;
+		sty->vu[2] = 100;
 	}
 	return 0;
 }

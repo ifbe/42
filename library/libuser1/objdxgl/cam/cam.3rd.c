@@ -46,12 +46,11 @@ void thridperson_fixcam(struct arena* win, float* v)
 
 
 
-static int thirdperson_sread(
+static int thirdperson_sread000(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	int j;
-	vec3 tc,tr,tf;
 	struct relation* rel;
 	struct actor* tar;
 	struct style* tmpsty;
@@ -98,71 +97,27 @@ found:
 
 print:
 	carvefrustum(win, &win->camera);
-/*
-	tr[0] = 0.025;
-	tr[1] = 0.0;
-	tr[2] = 0.0;
-	tf[0] = 0.0;
-	tf[1] = 0.025;
-	tf[2] = 0.0;
+	return 0;
+}
+static int thirdperson_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
+{
+	vec3 tc,tr,tf;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	tc[0] = vc[0] - vf[0]/2;
+	tc[1] = vc[1] - vf[1]/2;
+	tc[2] = vc[2] - vf[2]/2;
+	tf[0] = vf[0] / 2;
+	tf[1] = vf[1] / 2;
+	tf[2] = vf[2] / 2;
+	carvesolid_prism4(win, 0x008000, tc, vr, vu, tf);
 
-	//camera
-	tc[0] = -1.0;
-	tc[1] = -0.05 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0x0000ff, tc, tr, tf, (void*)"vl: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0x0000ff, tc, tr, tf, win->camera.vl);
-
-	tc[0] = -1.0;
-	tc[1] = -0.1 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0x0000ff, tc, tr, tf, (void*)"vr: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0x0000ff, tc, tr, tf, win->camera.vr);
-
-	tc[0] = -1.0;
-	tc[1] = -0.15 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0x00ff00, tc, tr, tf, (void*)"vb: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0x00ff00, tc, tr, tf, win->camera.vb);
-
-	tc[0] = -1.0;
-	tc[1] = -0.2 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0x00ff00, tc, tr, tf, (void*)"vu: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0x00ff00, tc, tr, tf, win->camera.vu);
-
-	tc[0] = -1.0;
-	tc[1] = -0.25 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0xff0000, tc, tr, tf, (void*)"vn: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0xff0000, tc, tr, tf, win->camera.vn);
-
-	tc[0] = -1.0;
-	tc[1] = -0.3 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0xff0000, tc, tr, tf, (void*)"vf: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0xff0000, tc, tr, tf, win->camera.vf);
-
-	tc[0] = -1.0;
-	tc[1] = -0.35 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0xffffff, tc, tr, tf, (void*)"vq: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->camera.vq);
-
-	tc[0] = -1.0;
-	tc[1] = -0.4 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0xffffff, tc, tr, tf, (void*)"vc: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->camera.vc);
-*/
+	//
+	thirdperson_sread000(act, pin, win, sty);
 	return 0;
 }
 static int thirdperson_swrite(

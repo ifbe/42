@@ -161,6 +161,19 @@ static int surround_sread(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
+	vec3 tc,tf;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	tc[0] = vc[0] - vf[0]/2;
+	tc[1] = vc[1] - vf[1]/2;
+	tc[2] = vc[2] - vf[2]/2;
+	tf[0] = vf[0] / 2;
+	tf[1] = vf[1] / 2;
+	tf[2] = vf[2] / 2;
+	carvesolid_prism4(win, 0x800000, tc, vr, vu, tf);
+
 	sty->vn[0] = sty->vf[0];
 	sty->vn[1] = sty->vf[1];
 	sty->vn[2] = sty->vf[2];
@@ -432,7 +445,7 @@ static void surround_create(void* addr)
 void surround_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s', 'u', 'r', 'r', 'o', 'u', 'n', 'd');
+	p->fmt = hex64('f', 'r', 'e', 'e', 'c', 'a', 'm', 0);
 
 	p->oncreate = (void*)surround_create;
 	p->ondelete = (void*)surround_delete;

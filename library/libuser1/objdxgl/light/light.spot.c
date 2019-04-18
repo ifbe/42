@@ -12,6 +12,16 @@ static void spotlight_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	vec3 tt;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+
+	tt[0] = - vf[0];
+	tt[1] = - vf[1];
+	tt[2] = - vf[2];
+	carvesolid_cone(win, 0xffff00, vc, vr, tt);
 }
 static void spotlight_read_json(
 	struct arena* win, struct style* sty,

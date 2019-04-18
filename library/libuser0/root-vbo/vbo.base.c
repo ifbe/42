@@ -30,20 +30,10 @@ int ui3d_start(void*, void*, void*, void*);
 int ui3d_sread(void*, void*, void*, void*);
 int ui3d_swrite(void*, void*, void*, void*, void*);
 //
-int bg2d_create(void*, void*);
-int bg2d_start(void*, void*, void*, void*);
-int bg2d_sread(void*, void*, void*, void*);
-int bg2d_swrite(void*, void*, void*, void*, void*);
-//
-int fg2d_create(void*, void*);
-int fg2d_start(void*, void*, void*, void*);
-int fg2d_sread(void*, void*, void*, void*);
-int fg2d_swrite(void*, void*, void*, void*, void*);
-//
-int ui2d_create(void*, void*);
-int ui2d_start(void*, void*, void*, void*);
-int ui2d_sread(void*, void*, void*, void*);
-int ui2d_swrite(void*, void*, void*, void*, void*);
+int xx3d_create(void*, void*);
+int xx3d_start(void*, void*, void*, void*);
+int xx3d_sread(void*, void*, void*, void*);
+int xx3d_swrite(void*, void*, void*, void*, void*);
 
 
 
@@ -73,9 +63,7 @@ int vbonode_sread(struct arena* win, struct style* stack)
 				case _cam3d_:cam3d_sread(tmp, pin, win, sty);break;
 				case _lit3d_:lit3d_sread(tmp, pin, win, sty);break;
 				case _ui3d_:ui3d_sread(tmp, pin, win, sty);break;
-				case _bg2d_:bg2d_sread(tmp, pin, win, sty);break;
-				case _fg2d_:fg2d_sread(tmp, pin, win, sty);break;
-				case _ui2d_:ui2d_sread(tmp, pin, win, sty);break;
+				case _xx3d_:xx3d_sread(tmp, pin, win, sty);break;
 			}
 		}
 
@@ -120,9 +108,7 @@ int vbonode_swrite(struct arena* win, struct style* stack, struct event* ev)
 				case _cam3d_:ret = cam3d_swrite(tmp, pin, win, sty, ev);break;
 				case _lit3d_:ret = lit3d_swrite(tmp, pin, win, sty, ev);break;
 				case _ui3d_:ret = ui3d_swrite(tmp, pin, win, sty, ev);break;
-				case _bg2d_:ret = bg2d_swrite(tmp, pin, win, sty, ev);break;
-				case _fg2d_:ret = fg2d_swrite(tmp, pin, win, sty, ev);break;
-				case _ui2d_:ret = ui2d_swrite(tmp, pin, win, sty, ev);break;
+				case _xx3d_:ret = xx3d_swrite(tmp, pin, win, sty, ev);break;
 			}
 			if(ret)break;
 		}
@@ -151,9 +137,7 @@ int vbonode_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 		case _cam3d_:cam3d_start(twig, tf, root, rf);return 1;
 		case _lit3d_:lit3d_start(twig, tf, root, rf);return 1;
 		case _ui3d_:ui3d_start(twig, tf, root, rf);return 1;
-		case _bg2d_:bg2d_start(twig, tf, root, rf);return 1;
-		case _fg2d_:fg2d_start(twig, tf, root, rf);return 1;
-		case _ui2d_:ui2d_start(twig, tf, root, rf);return 1;
+		case _xx3d_:xx3d_start(twig, tf, root, rf);return 1;
 	}
 	return 0;
 }
@@ -230,38 +214,14 @@ void* vbonode_create(u64 type, void* addr)
 		return win;
 	}
 
-	if(_bg2d_ == type)
+	if(_xx3d_ == type)
 	{
 		win = allocarena();
 		if(win)
 		{
 			win->type = _twig_;
-			win->fmt = _bg2d_;
-			bg2d_create(win, 0);
-		}
-		return win;
-	}
-
-	if(_fg2d_ == type)
-	{
-		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _fg2d_;
-			fg2d_create(win, 0);
-		}
-		return win;
-	}
-
-	if(_ui2d_ == type)
-	{
-		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _ui2d_;
-			ui2d_create(win, 0);
+			win->fmt = _xx3d_;
+			xx3d_create(win, 0);
 		}
 		return win;
 	}
@@ -311,24 +271,8 @@ void* vbonode_create(u64 type, void* addr)
 				vbonode_start(tmp, 0, win, 0);
 			}
 
-			//bg2d
-			tmp = vbonode_create(_bg2d_, 0);
-			if(tmp)
-			{
-				relationcreate(tmp, 0, _win_, win, 0, _win_);
-				vbonode_start(tmp, 0, win, 0);
-			}
-
-			//fg2d
-			tmp = vbonode_create(_fg2d_, 0);
-			if(tmp)
-			{
-				relationcreate(tmp, 0, _win_, win, 0, _win_);
-				vbonode_start(tmp, 0, win, 0);
-			}
-
-			//ui2d
-			tmp = vbonode_create(_ui2d_, 0);
+			//xx3d
+			tmp = vbonode_create(_xx3d_, 0);
 			if(tmp)
 			{
 				relationcreate(tmp, 0, _win_, win, 0, _win_);

@@ -1206,7 +1206,7 @@ static int overview_swrite(
 	int x, y, id;
 	int width = win->width;
 	int height = win->height;
-
+say("@overview_write:%llx,%llx\n", ev->what, ev->why);
 	j = (ev->what)&0xff;
 	k = ((ev->what)>>8)&0xff;
 

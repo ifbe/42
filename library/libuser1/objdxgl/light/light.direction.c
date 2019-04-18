@@ -12,6 +12,25 @@ static void dirlight_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
+	float x,y;
+	vec3 ta, tb;
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+	for(y=-1.0;y<1.01;y+=0.1)
+	{
+		for(x=-1.0;x<1.01;x+=0.1)
+		{
+			ta[0] = vc[0] + x*vr[0] + y*vu[0];
+			ta[1] = vc[1] + x*vr[1] + y*vu[1];
+			ta[2] = vc[2] + x*vr[2] + y*vu[2];
+			tb[0] = ta[0] - vf[0];
+			tb[1] = ta[1] - vf[1];
+			tb[2] = ta[2] - vf[2];
+			carveline(win, 0xffff00, ta, tb);
+		}
+	}
 }
 static void dirlight_read_json(
 	struct arena* win, struct style* sty,

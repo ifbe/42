@@ -38,9 +38,11 @@ trunk-3d/3d-fg.c \
 trunk-3d/3d-cam.c \
 trunk-3d/3d-lit.c \
 trunk-3d/3d-ui.c \
+trunk-3d/3d-xx.c \
 trunk-2d/2d-bg.c \
 trunk-2d/2d-fg.c \
 trunk-2d/2d-ui.c \
+trunk-2d/2d-xx.c \
 trunk-sch/sch.bus.c \
 trunk-sch/sch.pin.c \
 arena.c

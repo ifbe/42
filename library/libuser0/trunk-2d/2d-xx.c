@@ -6,24 +6,32 @@ int actorstart(void*, void*, void*, void*, void*, void*);
 
 
 
-#define COUNT 1
+#define COUNT 5
 static u64 want[COUNT] = {
-	hex64('o','v','e','r','v','i','e','w')
+	hex32('v','j','o','y'),
+	hex32('v','k','b','d'),
+	hex64('t','a','b','b','a','r', 0, 0),
+	hex64('c','o','r','n','e','r', 0, 0),
+	hex64('p','o','i','n','t','e','r', 0)
 };
 static u8 flag[COUNT] = {
+	'#',
+	'#',
 	0,
+	0,
+	0
 };
 
 
 
 
-int ui2d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stack)
+int xx2d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stack)
 {
 	struct relation* rel;
 	struct actor* act;
 	struct style* sty;
 	struct pinid* pin;
-	win->vfmt = _ui2d_;
+	win->vfmt = _xx2d_;
 
 	rel = cc->orel0;
 	while(1)
@@ -44,7 +52,7 @@ next:
 	}
 	return 0;
 }
-int ui2d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
+int xx2d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* stack, struct event* ev)
 {
 	int ret;
 	struct relation* rel;
@@ -74,11 +82,11 @@ next:
 
 	return ret;
 }
-int ui2d_cread(struct arena* win, struct style* stack, struct actor* sc, struct pinid* sf)
+int xx2d_cread(struct arena* win, struct style* stack, struct actor* sc, struct pinid* sf)
 {
 	return 0;
 }
-int ui2d_cwrite(struct arena* win, struct style* stack, struct actor* sc, struct pinid* sf, int flag)
+int xx2d_cwrite(struct arena* win, struct style* stack, struct actor* sc, struct pinid* sf, int flag)
 {
 	struct relation* rel;
 	struct style* sty;
@@ -98,11 +106,11 @@ int ui2d_cwrite(struct arena* win, struct style* stack, struct actor* sc, struct
 	}
 	return 0;
 }
-int ui2d_stop(struct arena* twig, void* tf, struct arena* root, void* rf)
+int xx2d_stop(struct arena* twig, void* tf, struct arena* root, void* rf)
 {
 	return 0;
 }
-int ui2d_start(struct arena* twig, void* tf, struct arena* root, void* rf)
+int xx2d_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 {
 	struct relation* rel;
 	struct style* sty;
@@ -127,11 +135,11 @@ int ui2d_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 	}
 	return 0;
 }
-int ui2d_delete(struct arena* win)
+int xx2d_delete(struct arena* win)
 {
 	return 0;
 }
-int ui2d_create(struct arena* win, void* str)
+int xx2d_create(struct arena* win, void* str)
 {
 	int j,k;
 	struct style* sty;
