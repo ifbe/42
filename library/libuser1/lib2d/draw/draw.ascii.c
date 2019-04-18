@@ -398,15 +398,20 @@ void drawascii_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u
 void drawstring_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len)
 {
 	int j,scale;
-	if(buf == 0)return;
-	if(len == 0)
-	{
-		for(;len<256;len++)if(buf[len] == 0)break;
+	if(0 == buf)return;
+	if(0 == len)len = 256;
+
+	for(j=0;j<len;j++){
+		if(buf[j] < 0x20){
+			len = j;
+			break;
+		}
 	}
 
 	if((y1-y0)*len < (x1-x0)*2)scale = (y1-y0)/16;
 	else scale = (x1-x0)/len/8;
 	if(scale <= 0)scale = 1;
+
 	x0 = (x0+x1)/2 - scale*4*(len-1);
 	y0 = (y0+y1)/2;
 	for(j=0;j<len;j++)

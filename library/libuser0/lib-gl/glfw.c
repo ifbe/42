@@ -585,19 +585,19 @@ void windowcreate(struct arena* win)
 		rel = win->orel0;
 		if(rel)share = (void*)(rel->dstchip);
 
-		win->width = 512;
-		win->height = 512;
-		win->depth = 512;
-		win->stride = 512;
+		win->width = 1024;
+		win->height = 768;
+		win->depth = 1024;
+		win->stride = 1024;
 		windowopen_coop(win, share);
 		win->fmt = _coop_;
 	}
 	else
 	{
-		win->width = 512;
-		win->height = 512;
-		win->depth = 512;
-		win->stride = 512;
+		win->width = 1024;
+		win->height = 768;
+		win->depth = 1024;
+		win->stride = 1024;
 		windowopen_root(win, 0);
 		win->fmt = _vbo_;
 	}

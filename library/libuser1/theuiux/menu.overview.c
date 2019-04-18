@@ -130,6 +130,7 @@ void overview_read_pixel(
 	struct relation* rel;
 	u32 c,cursor;
 	int x,y,j,k;
+	int x0,y0,x1,y1;
 	int cx,cy,ww,hh;
 	if(sty)
 	{
@@ -163,11 +164,12 @@ void overview_read_pixel(
 
 		x = j%16;
 		y = j/16;
-		drawicon_1(win, c,
-			(cx+1)+(x-8)*ww/8, (cy+1)+(y-16)*hh/16,
-			(cx-1)+(x-7)*ww/8, (cy-1)+(y-15)*hh/16,
-			(u8*)&actor[j].fmt, 8
-		);
+		x0 = (cx+1)+(x-8)*ww/8;
+		y0 = (cy+1)+(y-16)*hh/16;
+		x1 = (cx-1)+(x-7)*ww/8;
+		y1 = (cy-1)+(y-15)*hh/16;
+		drawhyaline_rect(win, c, x0, y0, x1, y1);
+		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&actor[j].fmt, 8);
 	}
 
 	//arena
@@ -181,11 +183,12 @@ void overview_read_pixel(
 
 		x = j%16;
 		y = j/16;
-		drawicon_1(win, c,
-			(cx+1)+(x-8)*ww/8, (cy+1)+(y-8)*hh/16,
-			(cx-1)+(x-7)*ww/8, (cy-1)+(y-7)*hh/16,
-			(u8*)&arena[j].fmt, 8
-		);
+		x0 = (cx+1)+(x-8)*ww/8;
+		y0 = (cy+1)+(y-8)*hh/16;
+		x1 = (cx-1)+(x-7)*ww/8;
+		y1 = (cy-1)+(y-7)*hh/16;
+		drawhyaline_rect(win, c, x0, y0, x1, y1);
+		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&arena[j].fmt, 8);
 	}
 
 	//artery
@@ -198,11 +201,12 @@ void overview_read_pixel(
 
 		x = j%8;
 		y = j/8;
-		drawicon_1(win, c,
-			(cx+1)+(x-8)*ww/8, (cy+1)+(y+0)*hh/16,
-			(cx-1)+(x-7)*ww/8, (cy-1)+(y+1)*hh/16,
-			(u8*)&ele[j].type, 8
-		);
+		x0 = (cx+1)+(x-8)*ww/8;
+		y0 = (cy+1)+(y+0)*hh/16;
+		x1 = (cx-1)+(x-7)*ww/8;
+		y1 = (cy-1)+(y+1)*hh/16;
+		drawhyaline_rect(win, c, x0, y0, x1, y1);
+		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&ele[j].type, 8);
 	}
 
 	//system
@@ -215,11 +219,12 @@ void overview_read_pixel(
 
 		x = (j%128)%16;
 		y = (j%128)/16;
-		drawicon_1(win, c,
-			(cx+1)+(x-8)*ww/8, (cy+1)+(y+8)*hh/16,
-			(cx-1)+(x-7)*ww/8, (cy-1)+(y+9)*hh/16,
-			(u8*)&obj[j].type, 8
-		);
+		x0 = (cx+1)+(x-8)*ww/8;
+		y0 = (cy+1)+(y+8)*hh/16;
+		x1 = (cx-1)+(x-7)*ww/8;
+		y1 = (cy-1)+(y+9)*hh/16;
+		drawhyaline_rect(win, c, x0, y0, x1, y1);
+		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&obj[j].type, 8);
 	}
 
 	//actor.irel
@@ -1206,7 +1211,7 @@ static int overview_swrite(
 	int x, y, id;
 	int width = win->width;
 	int height = win->height;
-say("@overview_write:%llx,%llx\n", ev->what, ev->why);
+
 	j = (ev->what)&0xff;
 	k = ((ev->what)>>8)&0xff;
 

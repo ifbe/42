@@ -19,6 +19,11 @@ int ui2d_create(void*, void*);
 int ui2d_start(void*, void*, void*, void*);
 int ui2d_sread(void*, void*, void*, void*);
 int ui2d_swrite(void*, void*, void*, void*, void*);
+//
+int xx2d_create(void*, void*);
+int xx2d_start(void*, void*, void*, void*);
+int xx2d_sread(void*, void*, void*, void*);
+int xx2d_swrite(void*, void*, void*, void*, void*);
 
 
 
@@ -46,6 +51,7 @@ int rgbanode_sread(struct arena* win, struct style* stack)
 				case _bg2d_:bg2d_sread(tmp, pin, win, sty);break;
 				case _fg2d_:fg2d_sread(tmp, pin, win, sty);break;
 				case _ui2d_:ui2d_sread(tmp, pin, win, sty);break;
+				case _xx2d_:xx2d_sread(tmp, pin, win, sty);break;
 			}
 		}
 
@@ -80,6 +86,7 @@ int rgbanode_swrite(struct arena* win, struct style* stack, struct event* ev)
 				case _bg2d_:ret = bg2d_swrite(tmp, pin, win, sty, ev);break;
 				case _fg2d_:ret = fg2d_swrite(tmp, pin, win, sty, ev);break;
 				case _ui2d_:ret = ui2d_swrite(tmp, pin, win, sty, ev);break;
+				case _xx2d_:ret = xx2d_swrite(tmp, pin, win, sty, ev);break;
 			}
 			if(ret)break;
 		}
@@ -106,6 +113,7 @@ int rgbanode_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 		case _bg2d_:bg2d_start(twig, tf, root, rf);return 1;
 		case _fg2d_:fg2d_start(twig, tf, root, rf);return 1;
 		case _ui2d_:ui2d_start(twig, tf, root, rf);return 1;
+		case _xx2d_:xx2d_start(twig, tf, root, rf);return 1;
 	}
 	return 0;
 }
@@ -158,6 +166,18 @@ void* rgbanode_create(u64 type, void* addr)
 		return win;
 	}
 
+	if(_xx2d_ == type)
+	{
+		win = allocarena();
+		if(win)
+		{
+			win->type = _twig_;
+			win->fmt = _xx2d_;
+			xx2d_create(win, 0);
+		}
+		return win;
+	}
+
 	if(_rgba_ == type)
 	{
 		win = addr;
@@ -181,6 +201,14 @@ void* rgbanode_create(u64 type, void* addr)
 
 			//ui2d
 			tmp = rgbanode_create(_ui2d_, 0);
+			if(tmp)
+			{
+				relationcreate(tmp, 0, _win_, win, 0, _win_);
+				rgbanode_start(tmp, 0, win, 0);
+			}
+
+			//xx2d
+			tmp = rgbanode_create(_xx2d_, 0);
 			if(tmp)
 			{
 				relationcreate(tmp, 0, _win_, win, 0, _win_);

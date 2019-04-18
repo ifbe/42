@@ -55,15 +55,16 @@ static void printnode(struct arena* win, struct bplushead* this, int x, int y,
 	int cx, int cy, int ww, int hh)
 {
 	int j,k,len;
+	int x0, y0, x1, y1;
 	struct bplushead* child;
 	struct bplusleaf* leaf;
 	struct bplusindex* index;
 
-	drawicon_1(win, 0x00ff00,
-		x-36, cy-hh+y*64-16,
-		x+36, cy-hh+y*64+16,
-		(void*)"", 0
-	);
+	x0 = x-36;
+	y0 = cy-hh+y*64-16;
+	x1 = x+36;
+	y1 = cy-hh+y*64+16;
+	drawicon_1(win, 0x00ff00, x0, y0, x1, y1);
 
 	len = this->len;
 	if(this->type == '!')

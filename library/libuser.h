@@ -798,6 +798,7 @@ void drawsolid_circle(  struct arena* win, u32 rgb, int cx, int cy, int r);
 void drawsolid_oval(    struct arena* win, u32 rgb, int cx, int cy, int rx, int ry, int fx, int fy);
 void drawsolid_sector(  struct arena* win, u32 rgb, int cx, int cy, int radius, int start, int end);
 
+void drawicon_1(        struct arena* win, u32 rgb, int x0, int y0, int x1, int y1);
 void drawhyaline_rect(  struct arena* win, u32 rgb, int x1, int y1, int x2, int y2);
 void drawhyaline_circle(struct arena* win, u32 rgb, int cx, int cy, int r);
 
@@ -820,7 +821,6 @@ void drawhex_fit(       struct arena* win, u32 rgb, int x0, int y0, int x1, int 
 void drawtext(          struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
 void drawtext_reverse(  struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
 void drawvt100(         struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-void drawicon_1(        struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
 
 
 

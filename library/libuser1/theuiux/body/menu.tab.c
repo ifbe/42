@@ -3,47 +3,23 @@
 
 
 
-void tabbar_read_cli(
+void tabbar_vboctx(
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
-void tabbar_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
-void tabbar_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
-void tabbar_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
-void tabbar_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+    struct arena* tmp, int y)
 {
     int j,rgb;
     vec3 tc,tr,tf;
-    struct arena* tmp;
+    struct relation* rel;
     struct style* st;
     struct actor* ac;
-    struct relation* rel;
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
-    //carvesolid2d_rect(win, 0xff0000, vc, vr, vf);
 
-    tc[0] = vc[0] - vf[0]*31/32;
-    tc[1] = vc[1] - vf[1]*31/32;
-    tc[2] = vc[2] - vf[2]*31/32 - 0.5;
+    tc[0] = vc[0] - vf[0]*y/32;
+    tc[1] = vc[1] - vf[1]*y/32;
+    tc[2] = vc[2] - vf[2]*y/32 - 0.5;
     tr[0] = vr[0] / 2;
     tr[1] = vr[1] / 2;
     tr[2] = vr[2] / 2;
@@ -51,12 +27,6 @@ void tabbar_read_vbo(
     tf[1] = vf[1] / 32;
     tf[2] = vf[2] / 32;
 	carveline2d_rect(win, 0xff0000, tc, tr, tf);
-
-    rel = act->irel0;
-    if(0 == rel)return;
-
-    tmp = (void*)(rel->srcchip);
-    if(0 == tmp)return;
 
     j = 0;
     rel = tmp->orel0;
@@ -66,9 +36,9 @@ void tabbar_read_vbo(
 
         if(_act_ == rel->dsttype)
         {
-            tc[0] = vc[0] + vr[0]*(2*j-7)/16 - vf[0]*31/32;
-            tc[1] = vc[1] + vr[1]*(2*j-7)/16 - vf[1]*31/32;
-            tc[2] = vc[2] + vr[2]*(2*j-7)/16 - vf[2]*31/32 - 0.5;
+            tc[0] = vc[0] + vr[0]*(2*j-7)/16 - vf[0]*y/32;
+            tc[1] = vc[1] + vr[1]*(2*j-7)/16 - vf[1]*y/32;
+            tc[2] = vc[2] + vr[2]*(2*j-7)/16 - vf[2]*y/32 - 0.5;
             tr[0] = vr[0] / 2 / 8.1;
             tr[1] = vr[1] / 2 / 8.1;
             tr[2] = vr[2] / 2 / 8.1;
@@ -87,6 +57,32 @@ void tabbar_read_vbo(
 
             j++;
             if(j == 8)break;
+        }
+
+        rel = samesrcnextdst(rel);
+    }
+}
+void tabbar_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+    int j,rgb;
+    struct arena* tmp;
+    struct relation* rel;
+	if(0 == sty)sty = defaultstyle_vbo2d();
+
+    rel = win->orel0;
+    while(1)
+    {
+        if(0 == rel)break;
+
+        if(_win_ == rel->dsttype){
+            tmp = (void*)(rel->dstchip);
+
+            switch(tmp->fmt){
+                case _ui3d_:tabbar_vboctx(win, sty, tmp, 29);break;
+                case _xx3d_:tabbar_vboctx(win, sty, tmp, 31);break;
+            }
         }
 
         rel = samesrcnextdst(rel);
@@ -135,6 +131,26 @@ void tabbar_read_pixel(
         rel = samesrcnextdst(rel);
     }
 }
+void tabbar_read_cli(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+void tabbar_read_tui(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+void tabbar_read_html(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
+void tabbar_read_json(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+}
 static void tabbar_sread(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
@@ -148,15 +164,46 @@ static void tabbar_sread(
 	else if(_vbo_ == fmt)tabbar_read_vbo(win, sty, act, pin);
 	else tabbar_read_pixel(win, sty, act, pin);
 }
+
+
+
+
+void tabbar_input(
+	struct arena* win, struct style* sty,
+    struct arena* tmp, int x)
+{
+    struct relation* rel;
+    struct style* st;
+
+    rel = tmp->orel0;
+    while(1)
+    {
+        if(0 == rel)break;
+
+        if(_act_ == rel->dsttype)
+        {
+            if(0 == x)
+            {
+                st = (void*)(rel->srcfoot);
+                if('#' == st->uc[3])st->uc[3] = 0;
+                else st->uc[3] = '#';
+
+                return;
+            }
+            x--;
+        }
+
+        rel = samesrcnextdst(rel);
+    }
+}
 static int tabbar_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
-    int x,y;
     struct relation* rel;
     struct arena* tmp;
-    struct style* st;
+    int x,y;
     int w = win->width;
     int h = win->height;
 
@@ -166,35 +213,23 @@ static int tabbar_swrite(
         x = x*16/w;
         y = ((ev->why)>>16)&0xffff;
         y = y*32/h;
-        if((y == 31) && (x >= 4) && (x < 12))
+        if((y >= 30) && (x >= 4) && (x < 12))
         {
-            say("x=%x\n",x);
-
-            rel = act->irel0;
-            if(0 == rel)return 1;
-
-            tmp = (void*)(rel->srcchip);
-            if(0 == tmp)return 1;
-
-            x -= 4;
-            rel = tmp->orel0;
+            rel = win->orel0;
             while(1)
             {
                 if(0 == rel)break;
 
-                if(_act_ == rel->dsttype)
-                {
-                    if(0 == x)
-                    {
-                        st = (void*)(rel->srcfoot);
-                        if('#' == st->uc[3])st->uc[3] = 0;
-                        else st->uc[3] = '#';
-                    }
-                    x--;
+                if(_win_ == rel->dsttype){
+                    tmp = (void*)(rel->dstchip);
+
+                    if((_ui3d_ == tmp->fmt)&&(30 == y))tabbar_input(win, sty, tmp, x-4);
+                    if((_xx3d_ == tmp->fmt)&&(31 == y))tabbar_input(win, sty, tmp, x-4);
                 }
 
                 rel = samesrcnextdst(rel);
             }
+            return 1;
         }
     }
     return 0;

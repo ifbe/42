@@ -14,7 +14,7 @@ void vjoy_joystick_read_pixel(struct arena* win, struct style* sty)
 	int h = win->height;
 	//if(win->vjoyw < 0)return;
 
-	drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
+	//drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
 
 	ch[0] = 'l';
 	ch[1] = 'r';

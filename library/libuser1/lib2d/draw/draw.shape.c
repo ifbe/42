@@ -19,8 +19,9 @@ void draw8bit_rect(struct arena* win, u8 rgb, int x0, int y0, int x1, int y1)
 
 
 
+
 void drawicon_1(struct arena* win, u32 rgb,
-	int x0, int y0, int x1, int y1, u8* buf, int len)
+	int x0, int y0, int x1, int y1)
 {
 	u32 r,g,b,a;
 	int x,y,m,n;
@@ -37,12 +38,7 @@ void drawicon_1(struct arena* win, u32 rgb,
 		{
 			if(x < 0)continue;
 			if(x >= width)continue;
-/*
-			if(x-x0+y-y0 < 4)continue;
-			else if(x-x0+y1-y < 4)continue;
-			else if(x1-x+y-y0 < 4)continue;
-			else if(x1-x+y1-y < 4)continue;
-*/
+
 			m = fb[y*stride+x];
 			a = (rgb>>24)&0xff;
 
@@ -59,22 +55,6 @@ void drawicon_1(struct arena* win, u32 rgb,
 			fb[y*stride+x] = m;
 		}
 	}
-
-	if(buf == 0)return;
-	if(len == 0)
-	{
-		while(buf[len] > 0x20)len++;
-	}
-	else
-	{
-		for(x=0;x<len;x++)
-		{
-			if(buf[x] < 0x20){len = x;break;}
-		}
-	}
-	if(len == 0)return;
-
-	drawstring_fit(win, rgb, x0, y0, x1, y1, buf, len);
 }
 void drawicon_normal(struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1, u8* buf, int len)

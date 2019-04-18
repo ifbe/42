@@ -7,12 +7,12 @@ void vkbd_keyboard_read_pixel(struct arena* win, struct style* sty)
 {
 	u8 ch[8];
 	int c,l,rgb;
-	int x,y,m,n;
+	int x,y,x0,y0,x1,y1;
 	int w = win->width;
 	int h = win->height;
 	//if(win->vkbdw < 0)return;
 
-    drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
+    //drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
 
     for(y=0;y<8;y++)
     {
@@ -56,12 +56,12 @@ void vkbd_keyboard_read_pixel(struct arena* win, struct style* sty)
             }
             else l = 1;
 
-            drawicon_1(
-                win, rgb,
-                (x*w/16)+1, h+1-((y+1)*h/32)+1,
-                ((x+1)*w/16)-1, h-1-(y*h/32),
-                (u8*)&c, l
-            );
+            x0 = (x*w/16)+1;
+            y0 = h+1-((y+1)*h/32)+1;
+            x1 = ((x+1)*w/16)-1;
+            y1 = h-1-(y*h/32);
+            drawhyaline_rect(win, 0x7fffffff, x0, y0, x1, y1);
+	        drawstring_fit(win, rgb, x0, y0, x1, y1, (u8*)&c, l);
         }
     }
 }

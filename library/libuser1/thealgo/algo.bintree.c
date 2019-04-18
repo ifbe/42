@@ -32,6 +32,7 @@ static void printnode(struct arena* win, struct bintree* this, int x, int y,
 	int cx, int cy, int ww, int hh)
 {
 	int j,k;
+	int x0, y0, x1, y1;
 	struct bintree* left;
 	struct bintree* right;
 	u8 data[32];
@@ -39,22 +40,24 @@ static void printnode(struct arena* win, struct bintree* this, int x, int y,
 	//0,1,2,3...
 	if(this->type == '0')
 	{
+		x0 = x-32;
+		y0 = cy-hh+y*64-16;
+		x1 = x+32;
+		y1 = cy-hh+y*64+16;
 		j = double2decstr(this->floatpoint, data);
-		drawicon_1(win, 0x0000ff,
-			x-32, cy-hh+y*64-16,
-			x+32, cy-hh+y*64+16,
-			data, j
-		);
+		drawicon_1(win, 0x7fffffff, x0, y0, x1, y1);
+		drawstring_fit(win, 0x0000ff, x0, y0, x1, y1, data, j);
 	}
 
 	//+, -, *, /, x, y, z
 	else
 	{
-		drawicon_1(win, 0xff0000,
-			x-32, cy-hh+y*64-16,
-			x+32, cy-hh+y*64+16,
-			(u8*)&(this->type), 1
-		);
+		x0 = x-32;
+		y0 = cy-hh+y*64-16;
+		x1 = x+32;
+		y1 = cy-hh+y*64+16;
+		drawicon_1(win, 0x7fffffff, x0, y0, x1, y1);
+		drawstring_fit(win, 0xff0000, x0, y0, x1, y1, (u8*)&(this->type), 1);
 	}
 
 	k = ww;
