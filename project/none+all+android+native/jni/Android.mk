@@ -312,11 +312,14 @@ library/libuser0/root-rgba/rgba.base.c \
 library/libuser0/root-rgba/rgba.tool.c \
 library/libuser0/trunk-3d/3d-bg.c \
 library/libuser0/trunk-3d/3d-fg.c \
-library/libuser0/trunk-3d/3d-sb.c \
+library/libuser0/trunk-3d/3d-cam.c \
+library/libuser0/trunk-3d/3d-lit.c \
 library/libuser0/trunk-3d/3d-ui.c \
+library/libuser0/trunk-3d/3d-xx.c \
 library/libuser0/trunk-2d/2d-bg.c \
 library/libuser0/trunk-2d/2d-fg.c \
 library/libuser0/trunk-2d/2d-ui.c \
+library/libuser0/trunk-2d/2d-xx.c \
 library/libuser0/trunk-sch/sch.bus.c \
 library/libuser0/trunk-sch/sch.pin.c \
 library/libuser0/arena.c
@@ -485,19 +488,6 @@ library/libuser1/theitem/item.rccar.c \
 library/libuser1/theitem/item.stair.c \
 library/libuser1/theitem/item.tardis.c \
 library/libuser1/theitem/item.tree.c \
-library/libuser1/themenu/2d/pointer.c \
-library/libuser1/themenu/2d/corner.c \
-library/libuser1/themenu/3d/ui3d.eventhub.c \
-library/libuser1/themenu/3d/ui3d.picker.c \
-library/libuser1/themenu/body/menu.list.c \
-library/libuser1/themenu/body/menu.nav.c \
-library/libuser1/themenu/body/menu.tab.c \
-library/libuser1/themenu/body/menu.tag.c \
-library/libuser1/themenu/vkbd/vkbd.joystick.c \
-library/libuser1/themenu/vkbd/vkbd.keyboard.c \
-library/libuser1/themenu/menu.overview.c \
-library/libuser1/themenu/menu.detail.c \
-library/libuser1/themenu/menu.login.c \
 library/libuser1/thetest/test.codeimg.c \
 library/libuser1/thetest/test.doodle.c \
 library/libuser1/thetest/test.example.c \
@@ -511,6 +501,19 @@ library/libuser1/thetool/tool.spectrum.c \
 library/libuser1/thetool/tool.terminal.c \
 library/libuser1/thetool/tool.terminal.helper.c \
 library/libuser1/thetool/tool.video.c \
+library/libuser1/theuiux/2d/pointer.c \
+library/libuser1/theuiux/2d/corner.c \
+library/libuser1/theuiux/3d/ui3d.cameraer.c \
+library/libuser1/theuiux/3d/ui3d.layouter.c \
+library/libuser1/theuiux/body/menu.list.c \
+library/libuser1/theuiux/body/menu.nav.c \
+library/libuser1/theuiux/body/menu.tab.c \
+library/libuser1/theuiux/body/menu.tag.c \
+library/libuser1/theuiux/vkbd/vkbd.joystick.c \
+library/libuser1/theuiux/vkbd/vkbd.keyboard.c \
+library/libuser1/theuiux/menu.overview.c \
+library/libuser1/theuiux/menu.detail.c \
+library/libuser1/theuiux/menu.login.c \
 library/libuser1/actor.c
 
 

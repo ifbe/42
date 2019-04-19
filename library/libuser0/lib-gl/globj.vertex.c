@@ -22,7 +22,7 @@
 void uploadvertex(struct gldst* dst, struct glsrc* src)
 {
 	void* buf;
-	u32 w,h,fmt;
+	u32 w,h;
 
 	//vao
 	if(0 == dst->vao)glGenVertexArrays(1, &dst->vao);
@@ -65,22 +65,56 @@ void uploadvertex(struct gldst* dst, struct glsrc* src)
 			glBindBuffer(GL_ARRAY_BUFFER, dst->vbo);
 			glBufferData(GL_ARRAY_BUFFER, w*h, buf, GL_STATIC_DRAW);
 
-			fmt = src->vbuf_fmt;
-			if(vbuffmt_33 == fmt)
+			switch(src->vbuf_fmt)
 			{
-				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, w, (void*)0);
-				glEnableVertexAttribArray(0);
-				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, w, (void*)12);
-				glEnableVertexAttribArray(1);
-			}
-			else if(vbuffmt_333 == fmt)
-			{
-				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, w, (void*)0);
-				glEnableVertexAttribArray(0);
-				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, w, (void*)12);
-				glEnableVertexAttribArray(1);
-				glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, w, (void*)24);
-				glEnableVertexAttribArray(2);
+				case vbuffmt_3:
+				{
+					glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, w, (void*)0);
+					glEnableVertexAttribArray(0);
+					break;
+				}
+				case vbuffmt_33:
+				{
+					glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, w, (void*)0);
+					glEnableVertexAttribArray(0);
+					glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, w, (void*)12);
+					glEnableVertexAttribArray(1);
+					break;
+				}
+				case vbuffmt_333:
+				{
+					glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, w, (void*)0);
+					glEnableVertexAttribArray(0);
+					glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, w, (void*)12);
+					glEnableVertexAttribArray(1);
+					glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, w, (void*)24);
+					glEnableVertexAttribArray(2);
+					break;
+				}
+				case vbuffmt_4:
+				{
+					glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, w, (void*)0);
+					glEnableVertexAttribArray(0);
+					break;
+				}
+				case vbuffmt_44:
+				{
+					glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, w, (void*)0);
+					glEnableVertexAttribArray(0);
+					glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, w, (void*)16);
+					glEnableVertexAttribArray(1);
+					break;
+				}
+				case vbuffmt_444:
+				{
+					glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, w, (void*)0);
+					glEnableVertexAttribArray(0);
+					glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, w, (void*)16);
+					glEnableVertexAttribArray(1);
+					glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, w, (void*)32);
+					glEnableVertexAttribArray(2);
+					break;
+				}
 			}
 		}
 		else

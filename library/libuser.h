@@ -137,6 +137,12 @@ typedef float mat4[4][4];
 #define vbuffmt_3333   0x3333
 #define vbuffmt_33333  0x33333
 #define vbuffmt_333333 0x333333
+#define vbuffmt_4      0x4
+#define vbuffmt_44     0x44
+#define vbuffmt_444    0x444
+#define vbuffmt_4444   0x4444
+#define vbuffmt_44444  0x44444
+#define vbuffmt_444444 0x444444
 #define pcm2      0x2
 #define pcm22     0x22
 #define pcm222    0x222

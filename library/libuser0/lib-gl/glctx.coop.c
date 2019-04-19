@@ -113,6 +113,30 @@ void coopctx_update(struct arena* win)
 				glEnableVertexAttribArray(2);
 				break;
 			}
+			case vbuffmt_4:
+			{
+				glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 16, (void*)0);
+				glEnableVertexAttribArray(0);
+				break;
+			}
+			case vbuffmt_44:
+			{
+				glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 32, (void*)0);
+				glEnableVertexAttribArray(0);
+				glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 32, (void*)16);
+				glEnableVertexAttribArray(1);
+				break;
+			}
+			case vbuffmt_444:
+			{
+				glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 48, (void*)0);
+				glEnableVertexAttribArray(0);
+				glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 48, (void*)16);
+				glEnableVertexAttribArray(1);
+				glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 48, (void*)32);
+				glEnableVertexAttribArray(2);
+				break;
+			}
 		}
 	}
 }
