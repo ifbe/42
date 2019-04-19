@@ -8,7 +8,7 @@ void camman_debug(
 	struct arena* win, struct style* sty)
 {
 	vec3 tc,tr,tf;
-	tr[0] = 1.0 / 32;
+	tr[0] = 1.0 / 64;
 	tr[1] = 0.0;
 	tr[2] = 0.0;
 	tf[0] = 0.0;

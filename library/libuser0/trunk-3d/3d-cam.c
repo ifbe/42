@@ -37,13 +37,13 @@ int cam3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* st)
 		if(_act_ == orel->dsttype)
 		{
 			sty = (void*)(orel->srcfoot);
-			//if(sty){if('#' == sty->uc[3])goto next;}
+			if(sty){if('#' == sty->uc[3])goto next;}
 
 			act = (void*)(orel->dstchip);
 			pin = (void*)(orel->dstfoot);
 			actor_rootread(act, pin, win, sty, 0, 0);
 		}
-
+next:
 		orel = samesrcnextdst(orel);
 	}
 
@@ -65,13 +65,13 @@ int cam3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* st
 		if(_act_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
-			//if(sty){if('#' == sty->uc[3])goto next;}
+			if(sty){if('#' == sty->uc[3])goto next;}
 
 			act = (void*)(rel->dstchip);
 			pin = (void*)(rel->dstfoot);
 			actor_rootwrite(act, pin, win, sty, ev, 0);
 		}
-
+next:
 		rel = samesrcprevdst(rel);
 	}
 	return 1;
