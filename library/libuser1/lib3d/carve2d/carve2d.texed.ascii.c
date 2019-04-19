@@ -277,7 +277,7 @@ void carve2d_vec4(struct arena* win, u32 rgb,
 	tc[0] = vc[0] + tr[0];
 	tc[1] = vc[1] + tr[1];
 	tc[2] = vc[2] + tr[2];
-	carveopaque2d_rect(win, 0xffffff, tc, tr, vf);
+	carveopaque2d_rect(win, 0xbfffffff, tc, tr, vf);
 }
 
 

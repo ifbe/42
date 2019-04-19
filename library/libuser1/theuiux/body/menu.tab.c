@@ -54,7 +54,7 @@ void tabbar_vbo_listtwig(struct arena* win, struct style* sty, struct arena* tmp
             y = j/8;
             tc[0] = (2*x-7)/16.0;
             tc[1] = (7-2*y)/16.0;
-            carveopaque2d_rect(win, 0xffffff, tc, tr, tf);
+            carveopaque2d_rect(win, 0x7fffffff, tc, tr, tf);
 
             ac = (void*)(rel->dstchip);
             st = (void*)(rel->srcfoot);

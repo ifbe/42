@@ -566,9 +566,9 @@ void hostctx_create(struct arena* win)
 	src = &mod[opaque2d].src;
 
 	src->vbuf = memorycreate(0x100000);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*3*2;
-	src->vbuf_h = 0x100000/24;
+	src->vbuf_fmt = vbuffmt_44;
+	src->vbuf_w = 4*4*2;
+	src->vbuf_h = 0x100000/32;
 
 	src->ibuf = memorycreate(0x100000);
 	src->ibuf_fmt = 0x222;
