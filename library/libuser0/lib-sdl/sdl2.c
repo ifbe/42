@@ -169,11 +169,11 @@ void windowcreate(struct arena* w)
 	//data
 	w->fmt = hex64('r','g','b','a','8','8','8','8');
 
-	w->width= w->stride = 512;
-	w->height = 512;
+	w->width= w->stride = 1024;
+	w->height = 768;
 
-	w->fbwidth= w->fbstride = 512;
-	w->fbheight = 512;
+	w->fbwidth= w->fbstride = 1024;
+	w->fbheight = 768;
 
 	w->buf = malloc(2048*2048*4);
 

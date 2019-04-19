@@ -3,7 +3,7 @@
 
 
 
-void tabbar_listtwig(struct arena* win, struct style* sty, struct arena* tmp, int t)
+void tabbar_vbo_listtwig(struct arena* win, struct style* sty, struct arena* tmp, int t)
 {
     int x,y,j,rgb;
     vec3 rr;
@@ -68,7 +68,7 @@ void tabbar_listtwig(struct arena* win, struct style* sty, struct arena* tmp, in
         rel = samesrcnextdst(rel);
     }
 }
-void tabbar_listroot(
+void tabbar_vbo_listroot(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -117,7 +117,7 @@ void tabbar_listroot(
             aa = (void*)(rel->dstchip);
             carvestring2d_center(win, 0xffffff, tc, tr, tf, (void*)(&aa->fmt), 8);
 
-            if(j == act->x0)tabbar_listtwig(win, sty, aa, j);
+            if(j == act->x0)tabbar_vbo_listtwig(win, sty, aa, j);
 
             j++;
             if(j == 8)break;
@@ -130,49 +130,89 @@ void tabbar_read_vbo(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
 {
-    int j,k;
-    struct arena* tmp;
-    struct relation* rel;
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
     //root
-    tabbar_listroot(act, pin,win, sty);
+    tabbar_vbo_listroot(act, pin, win, sty);
 }
-void tabbar_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+
+
+
+
+void tabbar_pixel_listtwig(struct arena* win, struct style* sty, struct arena* tmp, int t)
 {
-    int j,rgb;
+    int x,y,j,rgb;
     struct relation* rel;
-    struct arena* tmp;
-    struct style* st;
     struct actor* ac;
+    struct style* st;
     int w = win->width;
     int h = win->height;
-	drawline_rect(win, 0xff0000, w/4, h*31/32, w*3/4, h-1);
 
-    rel = act->irel0;
-    if(0 == rel)return;
-
-    tmp = (void*)(rel->srcchip);
-    if(0 == tmp)return;
+    drawsolid_rect(win, 0x808080, (t+4)*w/16, h*3/4, (t+5)*w/16, h*31/32);
+    drawsolid_rect(win, 0x808080, w/4, h/4, w*3/4, h*3/4);
 
     j = 0;
     rel = tmp->orel0;
+    while(1){
+        if(0 == rel)break;
+        if(_act_ == rel->dsttype){
+            x = j%8;
+            y = j/8;
+            drawsolid_rect(
+                win, 0xffffff,
+                (x+4)*w/16, (y+4)*h/16,
+                (x+5)*w/16, (y+5)*h/16
+            );
+
+            ac = (void*)(rel->dstchip);
+            st = (void*)(rel->srcfoot);
+            if('#' == st->uc[3])rgb = 0x404040;
+            else rgb = 0xff00ff;
+            drawstring_fit(
+                win, rgb,
+                (x+4)*w/16+2, (y+4)*h/16+2,
+                (x+5)*w/16-2, (y+5)*h/16-2,
+                (void*)&ac->fmt, 8
+            );
+
+            j++;
+            if(j >= 64)break;
+        }
+        rel = samesrcnextdst(rel);
+    }
+}
+void tabbar_pixel_listroot(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
+{
+    int j,rgb;
+    struct relation* rel;
+    struct style* st;
+    struct arena* aa;
+    int w = win->width;
+    int h = win->height;
+
+    j = 0;
+    rel = win->orel0;
     while(1)
     {
         if(0 == rel)break;
 
-        if(_act_ == rel->dsttype)
-        {
-            drawsolid_rect(win, 0x000080, w*(j+4)/16+2, h*31/32+2, w*(j+5)/16-2, h-2);
+        if(_win_ == rel->dsttype){
+            drawsolid_rect(
+                win, 0x000080,
+                (j+4)*w/16, h*31/32,
+                (j+5)*w/16, h-1
+            );
 
-            ac = (void*)(rel->dstchip);
-            st = (void*)(rel->srcfoot);
-            if('#' == st->uc[3])rgb = 0x111111;
-            else rgb = 0xffffff;
+            aa = (void*)(rel->dstchip);
+            drawstring_fit(
+                win, 0xffffff,
+                (j+4)*w/16, h*31/32,
+                (j+5)*w/16, h-1,
+                (void*)(&aa->fmt), 8);
 
-            drawstring_fit(win, rgb, w*(j+4)/16, h*31/32, w*(j+5)/16, h, (void*)(&ac->fmt), 8);
+            if(j == act->x0)tabbar_pixel_listtwig(win, sty, aa, j);
 
             j++;
             if(j == 8)break;
@@ -181,6 +221,16 @@ void tabbar_read_pixel(
         rel = samesrcnextdst(rel);
     }
 }
+void tabbar_read_pixel(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+    tabbar_pixel_listroot(act, pin, win, sty);
+}
+
+
+
+
 void tabbar_read_cli(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)

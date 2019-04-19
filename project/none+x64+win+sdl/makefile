@@ -66,7 +66,7 @@ program:
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
 	-Wl,--no-undefined -static -static-libgcc \
-	-lmingw32 -lSDL2main -lSDL2 \
+	-lmingw32 -lSDL2main -lSDL2 -lsetupapi -lhid \
 	-lm -ldinput8 -ldxguid -ldxerr8 \
 	-luser32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 \
 	-lshell32 -lversion -luuid -lws2_32 -lstrmiids -lxinput

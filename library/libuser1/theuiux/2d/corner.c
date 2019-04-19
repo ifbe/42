@@ -296,64 +296,75 @@ void corner_read_pixel(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
-	int x,y,m,n,c;
-	int w = win->width;
-	int h = win->height;
+	int x0,y0,xn,yn;
+	int w,h,c,t;
+
+	w = win->width;
+	h = win->height;
 	if(w<h)c = w>>6;
 	else c = h>>6;
 
-	x = win->input[10].x0;
-	y = win->input[10].y0;
-	m = win->input[10].xn;
-	n = win->input[10].yn;
 
-	if((m   < c)&&(n+c > h))drawsolid_circle(win, 0x0000ff, 0, h, c*4);
-	else drawsolid_circle(win, 0x0000ff, 0, h, c);
-	if((m+c > w)&&(n+c > h))drawsolid_circle(win, 0xff0000, w, h, c*4);
-	else drawsolid_circle(win, 0xff0000, w, h, c);
-	if((m   < c)&&(n   < c))drawsolid_circle(win, 0x00ffff, 0, 0, c*4);
-	else drawsolid_circle(win, 0x00ffff, 0, 0, c);
-	if((m+c > w)&&(n   < c))drawsolid_circle(win, 0xffff00, w, 0, c*4);
-	else drawsolid_circle(win, 0xffff00, w, 0, c);
+//---------hover
+	x0 = win->input[10].x0;
+	y0 = win->input[10].y0;
+	xn = win->input[10].xn;
+	yn = win->input[10].yn;
 
-	if(win->input[0].z0)
-	{
-		m = win->input[0].x0;
-		n = win->input[0].y0;
-		x = win->input[0].xn;
-		y = win->input[0].yn;
-	}
-	else if(win->input[10].z0)
-	{
-		m = win->input[10].x0;
-		n = win->input[10].y0;
-		x = win->input[10].xn;
-		y = win->input[10].yn;
-	}
+	if((xn < c)&&(yn+c > h))t = 4;
+	else t = 1;
+	drawsolid_circle(win, 0x0000ff, 0, h, c*t);
+
+	if((xn+c > w)&&(yn+c > h))t = 4;
+	else t = 1;
+	drawsolid_circle(win, 0xff0000, w, h, c*t);
+
+	if((xn < c)&&(yn < c))t = 4;
+	else t = 1;
+	drawsolid_circle(win, 0x00ffff, 0, 0, c*t);
+
+	if((xn+c > w)&&(yn < c))t = 4;
+	else t = 1;
+	drawsolid_circle(win, 0xffff00, w, 0, c*t);
+
+
+//--------------drag
+	if(win->input[10].z0)t = 10;
+	else if(win->input[0].z0)t = 0;
 	else return;
 
-	if(n < h)
+	x0 = win->input[t].x0;
+	y0 = win->input[t].y0;
+	xn = win->input[t].xn;
+	yn = win->input[t].yn;
+
+	if(y0 < c)
 	{
-		if(m < c)
+		if(x0 < c)
 		{
+			drawsolid_rect(win, 0x404040, 0, 0, xn, yn);
 		}
-		else if(m+c > w)
+		else if(x0+c > w)
 		{
+			drawsolid_triangle(win, 0x0000ff, xn, yn, 0, h-1, w-1, h-1);
+			drawsolid_triangle(win, 0x00ffff, xn, yn, 0, h-1,   0,   0);
+			drawsolid_triangle(win, 0xff0000, xn, yn, 0,   0, w-1,   0);
+			drawsolid_triangle(win, 0xffff00, xn, yn, w-1, 0, w-1, h-1);
 		}
 	}
-	else if(n+c > h)
+	else if(y0+c > h)
 	{
-		if(m < c)
+		if(x0 < c)
 		{
-			drawsolid_rect(win, 0x404040, 0, 0, x, h);
-			drawsolid_rect(win, 0x404040, 0, y, w, h);
+			drawsolid_rect(win, 0x404040, 0, 0, xn, h);
+			drawsolid_rect(win, 0x404040, 0, yn, w, h);
 		}
-		else if(m+c > w)
+		else if(x0+c > w)
 		{
-			m = ((h-y)*(h-y)/(x-w) + (w+x)) / 2;
-			n = ((x-w)*(x-w)/(y-h) + (y+h)) / 2;
-			drawsolid_triangle(win, 0x808080, m, h, w, n, x, y);
-			drawsolid_triangle(win, 0x000000, m, h, w, n, w, h);
+			x0 = ((h-yn)*(h-yn)/(xn-w) + (w+xn)) / 2;
+			y0 = ((xn-w)*(xn-w)/(yn-h) + (yn+h)) / 2;
+			drawsolid_triangle(win, 0x808080, x0, h, w, y0, xn, yn);
+			drawsolid_triangle(win, 0x000000, x0, h, w, y0, w, h);
 		}
 	}
 }

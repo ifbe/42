@@ -400,7 +400,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			}
 			else if(rightdown>0)k = 'r';
 			else if(leftdown>0)k = 'l';
-			else k = '?';
+			else k = 'l';
 
 			y = GET_Y_LPARAM(lparam);
 			x = GET_X_LPARAM(lparam);

@@ -269,8 +269,8 @@ void windowcreate(struct arena* win)
 	win->type = hex32('w', 'i', 'n', 0);
 	win->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
 
-	win->width = win->stride = 512;
-	win->height = 512;
+	win->width = win->stride = 1024;
+	win->height = 768;
 
 	for(j=0;j<16;j++)
 	{
