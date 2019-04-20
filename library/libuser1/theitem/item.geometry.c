@@ -43,7 +43,7 @@ static void geometry_read_vbo2d(
 		tf[1] = vf[1] / n;
 		tf[2] = vf[2] / n;
 	}
-	carveopaque2d_rect(win, 0xffffff, vc, tr, tf);
+	carveopaque2d_rect(win, 0x7fffffff, vc, tr, tf);
 }
 static void geometry_read_vbo3d(
 	struct arena* win, struct style* sty,
@@ -85,20 +85,20 @@ static void geometry_read_vbo3d(
 		t2[1] = vc[1] + vf[1];
 		t2[2] = vc[2] + vf[2];
 		switch(dimen){
-			case '1':carvepoint_triangle( win, 0xffffff, vc, t1, t2);break;
-			case '2':carveline_triangle(  win, 0xffffff, vc, t1, t2);break;
-			case '3':carvesolid_triangle( win, 0xffffff, vc, t1, t2);break;
-			case '4':carveopaque_triangle(win, 0xffffff, vc, t1, t2);break;
+			case '1':carvepoint_triangle( win, 0x00ffffff, vc, t1, t2);break;
+			case '2':carveline_triangle(  win, 0x00ffffff, vc, t1, t2);break;
+			case '3':carvesolid_triangle( win, 0x00ffffff, vc, t1, t2);break;
+			case '4':carveopaque_triangle(win, 0x7fffffff, vc, t1, t2);break;
 		}
 		return;
 	}
 
 	if('r' == shape){
 		switch(dimen){
-			case '1':carvepoint_rect( win, 0xffffff, vc, vr, vf);break;
-			case '2':carveline_rect(  win, 0xffffff, vc, vr, vf);break;
-			case '3':carvesolid_rect( win, 0xffffff, vc, vr, vf);break;
-			case '4':carveopaque_rect(win, 0xffffff, vc, vr, vf);break;
+			case '1':carvepoint_rect( win, 0x00ffffff, vc, vr, vf);break;
+			case '2':carveline_rect(  win, 0x00ffffff, vc, vr, vf);break;
+			case '3':carvesolid_rect( win, 0x00ffffff, vc, vr, vf);break;
+			case '4':carveopaque_rect(win, 0x7fffffff, vc, vr, vf);break;
 		}
 		return;
 	}
@@ -106,29 +106,29 @@ static void geometry_read_vbo3d(
 	if('p' == shape){
 		switch(dimen){
 			//case '1':carvepoint_prism4( win, 0xffffff, vc, vr, vf, vu);break;
-			case '2':carveline_prism4(  win, 0xffffff, vc, vr, vf, vu);break;
-			case '3':carvesolid_prism4( win, 0xffffff, vc, vr, vf, vu);break;
-			case '4':carveopaque_prism4(win, 0xffffff, vc, vr, vf, vu);break;
+			case '2':carveline_prism4(  win, 0x00ffffff, vc, vr, vf, vu);break;
+			case '3':carvesolid_prism4( win, 0x00ffffff, vc, vr, vf, vu);break;
+			case '4':carveopaque_prism4(win, 0x7fffffff, vc, vr, vf, vu);break;
 		}
 		return;
 	}
 
 	if('d' == shape){
 		switch(dimen){
-			case '1':carvepoint_dodecahedron( win, 0xffffff, vc, vr, vf, vu);break;
-			case '2':carveline_dodecahedron(  win, 0xffffff, vc, vr, vf, vu);break;
-			case '3':carvesolid_dodecahedron( win, 0xffffff, vc, vr, vf, vu);break;
-			case '4':carveopaque_dodecahedron(win, 0xffffff, vc, vr, vf, vu);break;
+			case '1':carvepoint_dodecahedron( win, 0x00ffffff, vc, vr, vf, vu);break;
+			case '2':carveline_dodecahedron(  win, 0x00ffffff, vc, vr, vf, vu);break;
+			case '3':carvesolid_dodecahedron( win, 0x00ffffff, vc, vr, vf, vu);break;
+			case '4':carveopaque_dodecahedron(win, 0x7fffffff, vc, vr, vf, vu);break;
 		}
 		return;
 	}
 
 	if('i' == shape){
 		switch(dimen){
-			case '1':carvepoint_icosahedron( win, 0xffffff, vc, vr, vf, vu);break;
-			case '2':carveline_icosahedron(  win, 0xffffff, vc, vr, vf, vu);break;
-			case '3':carvesolid_icosahedron( win, 0xffffff, vc, vr, vf, vu);break;
-			case '4':carveopaque_icosahedron(win, 0xffffff, vc, vr, vf, vu);break;
+			case '1':carvepoint_icosahedron( win, 0x00ffffff, vc, vr, vf, vu);break;
+			case '2':carveline_icosahedron(  win, 0x00ffffff, vc, vr, vf, vu);break;
+			case '3':carvesolid_icosahedron( win, 0x00ffffff, vc, vr, vf, vu);break;
+			case '4':carveopaque_icosahedron(win, 0x7fffffff, vc, vr, vf, vu);break;
 		}
 		return;
 	}
@@ -137,18 +137,18 @@ static void geometry_read_vbo3d(
 		switch(dimen){
 			//case '1':carvepoint_cylinder( win, 0xffffff, vc, vr, vf, vu);break;
 			//case '2':carveline_cylinder(  win, 0xffffff, vc, vr, vf, vu);break;
-			case '3':carvesolid_cylinder( win, 0xffffff, vc, vr, vf, vu);break;
-			case '4':carveopaque_cylinder(win, 0xffffff, vc, vr, vf, vu);break;
+			case '3':carvesolid_cylinder( win, 0x00ffffff, vc, vr, vf, vu);break;
+			case '4':carveopaque_cylinder(win, 0x7fffffff, vc, vr, vf, vu);break;
 		}
 		return;
 	}
 
 	if('s' == shape){
 		switch(dimen){
-			case '1':carvepoint_sphere( win, 0xffffff, vc, vr, vf, vu);break;
-			case '2':carveline_sphere(  win, 0xffffff, vc, vr, vf, vu);break;
-			case '3':carvesolid_sphere( win, 0xffffff, vc, vr, vf, vu);break;
-			case '4':carveopaque_sphere(win, 0xffffff, vc, vr, vf, vu);break;
+			case '1':carvepoint_sphere( win, 0x00ffffff, vc, vr, vf, vu);break;
+			case '2':carveline_sphere(  win, 0x00ffffff, vc, vr, vf, vu);break;
+			case '3':carvesolid_sphere( win, 0x00ffffff, vc, vr, vf, vu);break;
+			case '4':carveopaque_sphere(win, 0x7fffffff, vc, vr, vf, vu);break;
 		}
 		return;
 	}

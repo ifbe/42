@@ -206,7 +206,7 @@ void carvesolid_cone(struct arena* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	int a,b,j;
-	float s,t;
+	float f;
 	float r[4];
 
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -223,6 +223,7 @@ void carvesolid_cone(struct arena* win, u32 rgb,
 		r[1] = vr[1];
 		r[2] = vr[2];
 		quaternion_operation(r, vu, j*tau/acc);
+		f = (r[0]*r[0] + r[1]*r[1] + r[2]*r[2]) / (vu[0]*vu[0] + vu[1]*vu[1] + vu[2]*vu[2]);
 
 		a = j*9;
 		vbuf[a+0] = vc[0] + r[0];
@@ -231,9 +232,9 @@ void carvesolid_cone(struct arena* win, u32 rgb,
 		vbuf[a+3] = rr;
 		vbuf[a+4] = gg;
 		vbuf[a+5] = bb;
-		vbuf[a+6] = vbuf[a+0] - vc[0] + vu[0];
-		vbuf[a+7] = vbuf[a+1] - vc[1] + vu[1];
-		vbuf[a+8] = vbuf[a+2] - vc[2] + vu[2];
+		vbuf[a+6] = r[0] + vu[0]*f;
+		vbuf[a+7] = r[1] + vu[1]*f;
+		vbuf[a+8] = r[2] + vu[2]*f;
 
 		b = j*3;
 		ibuf[b+0] = vlen+acc;

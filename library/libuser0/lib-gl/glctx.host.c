@@ -472,7 +472,7 @@ void hostctx_create(struct arena* win)
 	src->vbuf = memorycreate(0x1000000);
 	src->vbuf_fmt = vbuffmt_333;
 	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x100000/36;
+	src->vbuf_h = 0x1000000/36;
 
 	src->ibuf = memorycreate(0x100000);
 	src->ibuf_fmt = 0x222;
@@ -490,9 +490,9 @@ void hostctx_create(struct arena* win)
 	src = &mod[opaque3d].src;
 
 	src->vbuf = memorycreate(0x1000000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x100000/36;
+	src->vbuf_fmt = vbuffmt_444;
+	src->vbuf_w = 4*4*3;
+	src->vbuf_h = 0x1000000/48;
 
 	src->ibuf = memorycreate(0x100000);
 	src->ibuf_fmt = 0x222;

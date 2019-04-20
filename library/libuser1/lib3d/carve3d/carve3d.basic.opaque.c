@@ -7,7 +7,7 @@ int opaque3d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt,
 	int vlen = src->vbuf_h;
 	int ilen = src->ibuf_h;
 
-	*vbuf = (src->vbuf) + (36*vlen);
+	*vbuf = (src->vbuf) + (48*vlen);
 	*ibuf = (src->ibuf) + (6*ilen);
 	src->vbuf_h += vcnt;
 	src->ibuf_h += icnt;
@@ -39,32 +39,41 @@ void carveopaque_triangle(struct arena* win, u32 rgba,
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
 	vbuf[ 2] = v0[2];
-	vbuf[ 3] = rr;
-	vbuf[ 4] = gg;
-	vbuf[ 5] = bb;
-	vbuf[ 6] = n[0];
-	vbuf[ 7] = n[1];
-	vbuf[ 8] = n[2];
+	vbuf[ 3] = 1.0;
+	vbuf[ 4] = n[0];
+	vbuf[ 5] = n[1];
+	vbuf[ 6] = n[2];
+	vbuf[ 7] = 1.0;
+	vbuf[ 8] = rr;
+	vbuf[ 9] = gg;
+	vbuf[10] = bb;
+	vbuf[11] = aa;
 
-	vbuf[ 9] = v1[0];
-	vbuf[10] = v1[1];
-	vbuf[11] = v1[2];
-	vbuf[12] = rr;
-	vbuf[13] = gg;
-	vbuf[14] = bb;
-	vbuf[15] = n[0];
-	vbuf[16] = n[1];
-	vbuf[17] = n[2];
+	vbuf[12] = v1[0];
+	vbuf[13] = v1[1];
+	vbuf[14] = v1[2];
+	vbuf[15] = 1.0;
+	vbuf[16] = n[0];
+	vbuf[17] = n[1];
+	vbuf[18] = n[2];
+	vbuf[19] = 1.0;
+	vbuf[20] = rr;
+	vbuf[21] = gg;
+	vbuf[22] = bb;
+	vbuf[23] = aa;
 
-	vbuf[18] = v2[0];
-	vbuf[19] = v2[1];
-	vbuf[20] = v2[2];
-	vbuf[21] = rr;
-	vbuf[22] = gg;
-	vbuf[23] = bb;
-	vbuf[24] = n[0];
-	vbuf[25] = n[1];
-	vbuf[26] = n[2];
+	vbuf[24] = v2[0];
+	vbuf[25] = v2[1];
+	vbuf[26] = v2[2];
+	vbuf[27] = 1.0;
+	vbuf[28] = n[0];
+	vbuf[29] = n[1];
+	vbuf[30] = n[2];
+	vbuf[31] = 1.0;
+	vbuf[32] = rr;
+	vbuf[33] = gg;
+	vbuf[34] = bb;
+	vbuf[35] = aa;
 
 	ibuf[0] = vlen + 0;
 	ibuf[1] = vlen + 1;
@@ -91,42 +100,54 @@ void carveopaque_rect(struct arena* win, u32 rgba,
 	vbuf[ 0] = vc[0] - vr[0] - vf[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1];
 	vbuf[ 2] = vc[2] - vr[2] - vf[2];
-	vbuf[ 3] = rr;
-	vbuf[ 4] = gg;
-	vbuf[ 5] = bb;
-	vbuf[ 6] = n[0];
-	vbuf[ 7] = n[1];
-	vbuf[ 8] = n[2];
+	vbuf[ 3] = 1.0;
+	vbuf[ 4] = n[0];
+	vbuf[ 5] = n[1];
+	vbuf[ 6] = n[2];
+	vbuf[ 7] = 1.0;
+	vbuf[ 8] = rr;
+	vbuf[ 9] = gg;
+	vbuf[10] = bb;
+	vbuf[11] = aa;
 
-	vbuf[ 9] = vc[0] + vr[0] - vf[0];
-	vbuf[10] = vc[1] + vr[1] - vf[1];
-	vbuf[11] = vc[2] + vr[2] - vf[2];
-	vbuf[12] = rr;
-	vbuf[13] = gg;
-	vbuf[14] = bb;
-	vbuf[15] = n[0];
-	vbuf[16] = n[1];
-	vbuf[17] = n[2];
+	vbuf[12] = vc[0] + vr[0] - vf[0];
+	vbuf[13] = vc[1] + vr[1] - vf[1];
+	vbuf[14] = vc[2] + vr[2] - vf[2];
+	vbuf[15] = 1.0;
+	vbuf[16] = n[0];
+	vbuf[17] = n[1];
+	vbuf[18] = n[2];
+	vbuf[19] = 1.0;
+	vbuf[20] = rr;
+	vbuf[21] = gg;
+	vbuf[22] = bb;
+	vbuf[23] = aa;
 
-	vbuf[18] = vc[0] - vr[0] + vf[0];
-	vbuf[19] = vc[1] - vr[1] + vf[1];
-	vbuf[20] = vc[2] - vr[2] + vf[2];
-	vbuf[21] = rr;
-	vbuf[22] = gg;
-	vbuf[23] = bb;
-	vbuf[24] = n[0];
-	vbuf[25] = n[1];
-	vbuf[26] = n[2];
+	vbuf[24] = vc[0] - vr[0] + vf[0];
+	vbuf[25] = vc[1] - vr[1] + vf[1];
+	vbuf[26] = vc[2] - vr[2] + vf[2];
+	vbuf[27] = 1.0;
+	vbuf[28] = n[0];
+	vbuf[29] = n[1];
+	vbuf[30] = n[2];
+	vbuf[31] = 1.0;
+	vbuf[32] = rr;
+	vbuf[33] = gg;
+	vbuf[34] = bb;
+	vbuf[35] = aa;
 
-	vbuf[27] = vc[0] + vr[0] + vf[0];
-	vbuf[28] = vc[1] + vr[1] + vf[1];
-	vbuf[29] = vc[2] + vr[2] + vf[2];
-	vbuf[30] = rr;
-	vbuf[31] = gg;
-	vbuf[32] = bb;
-	vbuf[33] = n[0];
-	vbuf[34] = n[1];
-	vbuf[35] = n[2];
+	vbuf[36] = vc[0] + vr[0] + vf[0];
+	vbuf[37] = vc[1] + vr[1] + vf[1];
+	vbuf[38] = vc[2] + vr[2] + vf[2];
+	vbuf[39] = 1.0;
+	vbuf[40] = n[0];
+	vbuf[41] = n[1];
+	vbuf[42] = n[2];
+	vbuf[43] = 1.0;
+	vbuf[44] = rr;
+	vbuf[45] = gg;
+	vbuf[46] = bb;
+	vbuf[47] = aa;
 
 	//index
 	ibuf[0] = vlen + 0;
@@ -149,17 +170,17 @@ void carveopaque_circle(struct arena* win, u32 rgba,
 #define circieacc (acc*2)
 	int a,b,j;
 	float c,s;
-	vec3 vu;
 	float* vbuf;
 	u16* ibuf;
 	int vlen = opaque3d_vars(win, opaque3d, &vbuf, &ibuf, circieacc+1, circieacc);
 
-	vu[0] = vr[1]*vf[2] - vr[2]*vf[1];
-	vu[1] = vr[2]*vf[0] - vr[0]*vf[2];
-	vu[2] = vr[0]*vf[1] - vr[1]*vf[0];
+	vec3 n;
+	n[0] = vr[1]*vf[2] - vr[2]*vf[1];
+	n[1] = vr[2]*vf[0] - vr[0]*vf[2];
+	n[2] = vr[0]*vf[1] - vr[1]*vf[0];
 	for(j=0;j<circieacc;j++)
 	{
-		a = j*9;
+		a = j*12;
 		b = j*3;
 
 		c = cosine(j*tau/circieacc);
@@ -167,30 +188,36 @@ void carveopaque_circle(struct arena* win, u32 rgba,
 		vbuf[a+0] = vc[0] + vr[0]*c + vf[0]*s;
 		vbuf[a+1] = vc[1] + vr[1]*c + vf[1]*s;
 		vbuf[a+2] = vc[2] + vr[2]*c + vf[2]*s;
+		vbuf[a+3] = 1.0;
 
-		vbuf[a+3] = rr;
-		vbuf[a+4] = gg;
-		vbuf[a+5] = bb;
+		vbuf[a+4] = n[0];
+		vbuf[a+5] = n[1];
+		vbuf[a+6] = n[2];
+		vbuf[a+7] = 1.0;
 
-		vbuf[a+6] = vu[0];
-		vbuf[a+7] = vu[1];
-		vbuf[a+8] = vu[2];
+		vbuf[a+ 8] = rr;
+		vbuf[a+ 9] = gg;
+		vbuf[a+10] = bb;
+		vbuf[a+11] = aa;
 
 		ibuf[b+0] = vlen + circieacc;
 		ibuf[b+1] = vlen + j;
 		ibuf[b+2] = vlen + (j+1)%circieacc;
 	}
 
-	a = circieacc*9;
-	vbuf[a+0] = vc[0];
-	vbuf[a+1] = vc[1];
-	vbuf[a+2] = vc[2];
-	vbuf[a+3] = rr;
-	vbuf[a+4] = gg;
-	vbuf[a+5] = bb;
-	vbuf[a+6] = vu[0];
-	vbuf[a+7] = vu[1];
-	vbuf[a+8] = vu[2];
+	a = circieacc*12;
+	vbuf[a+ 0] = vc[0];
+	vbuf[a+ 1] = vc[1];
+	vbuf[a+ 2] = vc[2];
+	vbuf[a+ 3] = 1.0;
+	vbuf[a+ 4] = n[0];
+	vbuf[a+ 5] = n[1];
+	vbuf[a+ 6] = n[2];
+	vbuf[a+ 7] = 1.0;
+	vbuf[a+ 8] = rr;
+	vbuf[a+ 9] = gg;
+	vbuf[a+10] = bb;
+	vbuf[a+11] = aa;
 }
 
 
@@ -218,6 +245,7 @@ void carveopaque_cone(struct arena* win, u32 rgba,
 	float aa = (float)t[3] / 255.0;
 
 	int a,b,j;
+	float f;
 	float r[4];
 
 	float* vbuf;
@@ -230,17 +258,21 @@ void carveopaque_cone(struct arena* win, u32 rgba,
 		r[1] = vr[1];
 		r[2] = vr[2];
 		quaternion_operation(r, vu, j*tau/acc);
+		f = (r[0]*r[0] + r[1]*r[1] + r[2]*r[2]) / (vu[0]*vu[0] + vu[1]*vu[1] + vu[2]*vu[2]);
 
-		a = j*9;
-		vbuf[a+0] = vc[0] + r[0];
-		vbuf[a+1] = vc[1] + r[1];
-		vbuf[a+2] = vc[2] + r[2];
-		vbuf[a+3] = rr;
-		vbuf[a+4] = gg;
-		vbuf[a+5] = bb;
-		vbuf[a+6] = vbuf[a+0] - vc[0] + vu[0];
-		vbuf[a+7] = vbuf[a+1] - vc[1] + vu[1];
-		vbuf[a+8] = vbuf[a+2] - vc[2] + vu[2];
+		a = j*12;
+		vbuf[a+ 0] = vc[0] + r[0];
+		vbuf[a+ 1] = vc[1] + r[1];
+		vbuf[a+ 2] = vc[2] + r[2];
+		vbuf[a+ 3] = 1.0;
+		vbuf[a+ 4] = r[0] + vu[0]*f;
+		vbuf[a+ 5] = r[1] + vu[1]*f;
+		vbuf[a+ 6] = r[2] + vu[2]*f;
+		vbuf[a+ 7] = 1.0;
+		vbuf[a+ 8] = rr;
+		vbuf[a+ 9] = gg;
+		vbuf[a+10] = bb;
+		vbuf[a+11] = aa;
 
 		b = j*3;
 		ibuf[b+0] = vlen+acc;
@@ -248,16 +280,19 @@ void carveopaque_cone(struct arena* win, u32 rgba,
 		ibuf[b+2] = vlen+(j+1)%acc;
 	}
 
-	a = acc*9;
+	a = acc*12;
 	vbuf[a+ 0] = vc[0]+vu[0];
 	vbuf[a+ 1] = vc[1]+vu[1];
 	vbuf[a+ 2] = vc[2]+vu[2];
-	vbuf[a+ 3] = rr;
-	vbuf[a+ 4] = gg;
-	vbuf[a+ 5] = bb;
-	vbuf[a+ 6] = vu[0];
-	vbuf[a+ 7] = vu[1];
-	vbuf[a+ 8] = vu[2];
+	vbuf[a+ 3] = 1.0;
+	vbuf[a+ 4] = vu[0];
+	vbuf[a+ 5] = vu[1];
+	vbuf[a+ 6] = vu[2];
+	vbuf[a+ 7] = 1.0;
+	vbuf[a+ 8] = rr;
+	vbuf[a+ 9] = gg;
+	vbuf[a+10] = bb;
+	vbuf[a+11] = aa;
 }
 
 
@@ -280,116 +315,117 @@ void carveopaque_prism4(struct arena* win, u32 rgba,
 	u16* ibuf;
 	int vlen = opaque3d_vars(win, opaque3d, &vbuf, &ibuf, 24, 12);
 
-	for(j=0;j<24*9;j+=9)
+	for(j=0;j<24*12;j+=12)
 	{
-		vbuf[j+3] = rr;
-		vbuf[j+4] = gg;
-		vbuf[j+5] = bb;
+		vbuf[j+ 8] = rr;
+		vbuf[j+ 9] = gg;
+		vbuf[j+10] = bb;
+		vbuf[j+11] = aa;
 	}
 
-	vbuf[2*9+0] = vbuf[1*9+0] = vbuf[0*9+0] = vc[0] - vr[0] - vf[0] - vu[0];
-	vbuf[2*9+1] = vbuf[1*9+1] = vbuf[0*9+1] = vc[1] - vr[1] - vf[1] - vu[1];
-	vbuf[2*9+2] = vbuf[1*9+2] = vbuf[0*9+2] = vc[2] - vr[2] - vf[2] - vu[2];
-	vbuf[0*9+6] = -vu[0];
-	vbuf[0*9+7] = -vu[1];
-	vbuf[0*9+8] = -vu[2];
-	vbuf[1*9+6] = -vf[0];
-	vbuf[1*9+7] = -vf[1];
-	vbuf[1*9+8] = -vf[2];
-	vbuf[2*9+6] = -vr[0];
-	vbuf[2*9+7] = -vr[1];
-	vbuf[2*9+8] = -vr[2];
+	vbuf[2*12+0] = vbuf[1*12+0] = vbuf[0*12+0] = vc[0] - vr[0] - vf[0] - vu[0];
+	vbuf[2*12+1] = vbuf[1*12+1] = vbuf[0*12+1] = vc[1] - vr[1] - vf[1] - vu[1];
+	vbuf[2*12+2] = vbuf[1*12+2] = vbuf[0*12+2] = vc[2] - vr[2] - vf[2] - vu[2];
+	vbuf[0*12+4] = -vu[0];
+	vbuf[0*12+5] = -vu[1];
+	vbuf[0*12+6] = -vu[2];
+	vbuf[1*12+4] = -vf[0];
+	vbuf[1*12+5] = -vf[1];
+	vbuf[1*12+6] = -vf[2];
+	vbuf[2*12+4] = -vr[0];
+	vbuf[2*12+5] = -vr[1];
+	vbuf[2*12+6] = -vr[2];
 
-	vbuf[5*9+0] = vbuf[4*9+0] = vbuf[3*9+0] = vc[0] + vr[0] - vf[0] - vu[0];
-	vbuf[5*9+1] = vbuf[4*9+1] = vbuf[3*9+1] = vc[1] + vr[1] - vf[1] - vu[1];
-	vbuf[5*9+2] = vbuf[4*9+2] = vbuf[3*9+2] = vc[2] + vr[2] - vf[2] - vu[2];
-	vbuf[3*9+6] = -vu[0];
-	vbuf[3*9+7] = -vu[1];
-	vbuf[3*9+8] = -vu[2];
-	vbuf[4*9+6] = -vf[0];
-	vbuf[4*9+7] = -vf[1];
-	vbuf[4*9+8] = -vf[2];
-	vbuf[5*9+6] = vr[0];
-	vbuf[5*9+7] = vr[1];
-	vbuf[5*9+8] = vr[2];
+	vbuf[5*12+0] = vbuf[4*12+0] = vbuf[3*12+0] = vc[0] + vr[0] - vf[0] - vu[0];
+	vbuf[5*12+1] = vbuf[4*12+1] = vbuf[3*12+1] = vc[1] + vr[1] - vf[1] - vu[1];
+	vbuf[5*12+2] = vbuf[4*12+2] = vbuf[3*12+2] = vc[2] + vr[2] - vf[2] - vu[2];
+	vbuf[3*12+4] = -vu[0];
+	vbuf[3*12+5] = -vu[1];
+	vbuf[3*12+6] = -vu[2];
+	vbuf[4*12+4] = -vf[0];
+	vbuf[4*12+5] = -vf[1];
+	vbuf[4*12+6] = -vf[2];
+	vbuf[5*12+4] = vr[0];
+	vbuf[5*12+5] = vr[1];
+	vbuf[5*12+6] = vr[2];
 
-	vbuf[8*9+0] = vbuf[7*9+0] = vbuf[6*9+0] = vc[0] - vr[0] + vf[0] - vu[0];
-	vbuf[8*9+1] = vbuf[7*9+1] = vbuf[6*9+1] = vc[1] - vr[1] + vf[1] - vu[1];
-	vbuf[8*9+2] = vbuf[7*9+2] = vbuf[6*9+2] = vc[2] - vr[2] + vf[2] - vu[2];
-	vbuf[6*9+6] = -vu[0];
-	vbuf[6*9+7] = -vu[1];
-	vbuf[6*9+8] = -vu[2];
-	vbuf[7*9+6] = vf[0];
-	vbuf[7*9+7] = vf[1];
-	vbuf[7*9+8] = vf[2];
-	vbuf[8*9+6] = -vr[0];
-	vbuf[8*9+7] = -vr[1];
-	vbuf[8*9+8] = -vr[2];
+	vbuf[8*12+0] = vbuf[7*12+0] = vbuf[6*12+0] = vc[0] - vr[0] + vf[0] - vu[0];
+	vbuf[8*12+1] = vbuf[7*12+1] = vbuf[6*12+1] = vc[1] - vr[1] + vf[1] - vu[1];
+	vbuf[8*12+2] = vbuf[7*12+2] = vbuf[6*12+2] = vc[2] - vr[2] + vf[2] - vu[2];
+	vbuf[6*12+4] = -vu[0];
+	vbuf[6*12+5] = -vu[1];
+	vbuf[6*12+6] = -vu[2];
+	vbuf[7*12+4] = vf[0];
+	vbuf[7*12+5] = vf[1];
+	vbuf[7*12+6] = vf[2];
+	vbuf[8*12+4] = -vr[0];
+	vbuf[8*12+5] = -vr[1];
+	vbuf[8*12+6] = -vr[2];
 
-	vbuf[11*9+0] = vbuf[10*9+0] = vbuf[9*9+0] = vc[0] + vr[0] + vf[0] - vu[0];
-	vbuf[11*9+1] = vbuf[10*9+1] = vbuf[9*9+1] = vc[1] + vr[1] + vf[1] - vu[1];
-	vbuf[11*9+2] = vbuf[10*9+2] = vbuf[9*9+2] = vc[2] + vr[2] + vf[2] - vu[2];
-	vbuf[ 9*9+6] = -vu[0];
-	vbuf[ 9*9+7] = -vu[1];
-	vbuf[ 9*9+8] = -vu[2];
-	vbuf[10*9+6] = vf[0];
-	vbuf[10*9+7] = vf[1];
-	vbuf[10*9+8] = vf[2];
-	vbuf[11*9+6] = vr[0];
-	vbuf[11*9+7] = vr[1];
-	vbuf[11*9+8] = vr[2];
+	vbuf[11*12+0] = vbuf[10*12+0] = vbuf[9*12+0] = vc[0] + vr[0] + vf[0] - vu[0];
+	vbuf[11*12+1] = vbuf[10*12+1] = vbuf[9*12+1] = vc[1] + vr[1] + vf[1] - vu[1];
+	vbuf[11*12+2] = vbuf[10*12+2] = vbuf[9*12+2] = vc[2] + vr[2] + vf[2] - vu[2];
+	vbuf[ 9*12+4] = -vu[0];
+	vbuf[ 9*12+5] = -vu[1];
+	vbuf[ 9*12+6] = -vu[2];
+	vbuf[10*12+4] = vf[0];
+	vbuf[10*12+5] = vf[1];
+	vbuf[10*12+6] = vf[2];
+	vbuf[11*12+4] = vr[0];
+	vbuf[11*12+5] = vr[1];
+	vbuf[11*12+6] = vr[2];
 
-	vbuf[14*9+0] = vbuf[13*9+0] = vbuf[12*9+0] = vc[0] - vr[0] - vf[0] + vu[0];
-	vbuf[14*9+1] = vbuf[13*9+1] = vbuf[12*9+1] = vc[1] - vr[1] - vf[1] + vu[1];
-	vbuf[14*9+2] = vbuf[13*9+2] = vbuf[12*9+2] = vc[2] - vr[2] - vf[2] + vu[2];
-	vbuf[12*9+6] = vu[0];
-	vbuf[12*9+7] = vu[1];
-	vbuf[12*9+8] = vu[2];
-	vbuf[13*9+6] = -vf[0];
-	vbuf[13*9+7] = -vf[1];
-	vbuf[13*9+8] = -vf[2];
-	vbuf[14*9+6] = -vr[0];
-	vbuf[14*9+7] = -vr[1];
-	vbuf[14*9+8] = -vr[2];
+	vbuf[14*12+0] = vbuf[13*12+0] = vbuf[12*12+0] = vc[0] - vr[0] - vf[0] + vu[0];
+	vbuf[14*12+1] = vbuf[13*12+1] = vbuf[12*12+1] = vc[1] - vr[1] - vf[1] + vu[1];
+	vbuf[14*12+2] = vbuf[13*12+2] = vbuf[12*12+2] = vc[2] - vr[2] - vf[2] + vu[2];
+	vbuf[12*12+4] = vu[0];
+	vbuf[12*12+5] = vu[1];
+	vbuf[12*12+6] = vu[2];
+	vbuf[13*12+4] = -vf[0];
+	vbuf[13*12+5] = -vf[1];
+	vbuf[13*12+6] = -vf[2];
+	vbuf[14*12+4] = -vr[0];
+	vbuf[14*12+5] = -vr[1];
+	vbuf[14*12+6] = -vr[2];
 
-	vbuf[17*9+0] = vbuf[16*9+0] = vbuf[15*9+0] = vc[0] + vr[0] - vf[0] + vu[0];
-	vbuf[17*9+1] = vbuf[16*9+1] = vbuf[15*9+1] = vc[1] + vr[1] - vf[1] + vu[1];
-	vbuf[17*9+2] = vbuf[16*9+2] = vbuf[15*9+2] = vc[2] + vr[2] - vf[2] + vu[2];
-	vbuf[15*9+6] = vu[0];
-	vbuf[15*9+7] = vu[1];
-	vbuf[15*9+8] = vu[2];
-	vbuf[16*9+6] = -vf[0];
-	vbuf[16*9+7] = -vf[1];
-	vbuf[16*9+8] = -vf[2];
-	vbuf[17*9+6] = vr[0];
-	vbuf[17*9+7] = vr[1];
-	vbuf[17*9+8] = vr[2];
+	vbuf[17*12+0] = vbuf[16*12+0] = vbuf[15*12+0] = vc[0] + vr[0] - vf[0] + vu[0];
+	vbuf[17*12+1] = vbuf[16*12+1] = vbuf[15*12+1] = vc[1] + vr[1] - vf[1] + vu[1];
+	vbuf[17*12+2] = vbuf[16*12+2] = vbuf[15*12+2] = vc[2] + vr[2] - vf[2] + vu[2];
+	vbuf[15*12+4] = vu[0];
+	vbuf[15*12+5] = vu[1];
+	vbuf[15*12+6] = vu[2];
+	vbuf[16*12+4] = -vf[0];
+	vbuf[16*12+5] = -vf[1];
+	vbuf[16*12+6] = -vf[2];
+	vbuf[17*12+4] = vr[0];
+	vbuf[17*12+5] = vr[1];
+	vbuf[17*12+6] = vr[2];
 
-	vbuf[20*9+0] = vbuf[19*9+0] = vbuf[18*9+0] = vc[0] - vr[0] + vf[0] + vu[0];
-	vbuf[20*9+1] = vbuf[19*9+1] = vbuf[18*9+1] = vc[1] - vr[1] + vf[1] + vu[1];
-	vbuf[20*9+2] = vbuf[19*9+2] = vbuf[18*9+2] = vc[2] - vr[2] + vf[2] + vu[2];
-	vbuf[18*9+6] = vu[0];
-	vbuf[18*9+7] = vu[1];
-	vbuf[18*9+8] = vu[2];
-	vbuf[19*9+6] = vf[0];
-	vbuf[19*9+7] = vf[1];
-	vbuf[19*9+8] = vf[2];
-	vbuf[20*9+6] = -vr[0];
-	vbuf[20*9+7] = -vr[1];
-	vbuf[20*9+8] = -vr[2];
+	vbuf[20*12+0] = vbuf[19*12+0] = vbuf[18*12+0] = vc[0] - vr[0] + vf[0] + vu[0];
+	vbuf[20*12+1] = vbuf[19*12+1] = vbuf[18*12+1] = vc[1] - vr[1] + vf[1] + vu[1];
+	vbuf[20*12+2] = vbuf[19*12+2] = vbuf[18*12+2] = vc[2] - vr[2] + vf[2] + vu[2];
+	vbuf[18*12+4] = vu[0];
+	vbuf[18*12+5] = vu[1];
+	vbuf[18*12+6] = vu[2];
+	vbuf[19*12+4] = vf[0];
+	vbuf[19*12+5] = vf[1];
+	vbuf[19*12+6] = vf[2];
+	vbuf[20*12+4] = -vr[0];
+	vbuf[20*12+5] = -vr[1];
+	vbuf[20*12+6] = -vr[2];
 
-	vbuf[23*9+0] = vbuf[22*9+0] = vbuf[21*9+0] = vc[0] + vr[0] + vf[0] + vu[0];
-	vbuf[23*9+1] = vbuf[22*9+1] = vbuf[21*9+1] = vc[1] + vr[1] + vf[1] + vu[1];
-	vbuf[23*9+2] = vbuf[22*9+2] = vbuf[21*9+2] = vc[2] + vr[2] + vf[2] + vu[2];
-	vbuf[21*9+6] = vu[0];
-	vbuf[21*9+7] = vu[1];
-	vbuf[21*9+8] = vu[2];
-	vbuf[22*9+6] = vf[0];
-	vbuf[22*9+7] = vf[1];
-	vbuf[22*9+8] = vf[2];
-	vbuf[23*9+6] = vr[0];
-	vbuf[23*9+7] = vr[1];
-	vbuf[23*9+8] = vr[2];
+	vbuf[23*12+0] = vbuf[22*12+0] = vbuf[21*12+0] = vc[0] + vr[0] + vf[0] + vu[0];
+	vbuf[23*12+1] = vbuf[22*12+1] = vbuf[21*12+1] = vc[1] + vr[1] + vf[1] + vu[1];
+	vbuf[23*12+2] = vbuf[22*12+2] = vbuf[21*12+2] = vc[2] + vr[2] + vf[2] + vu[2];
+	vbuf[21*12+4] = vu[0];
+	vbuf[21*12+5] = vu[1];
+	vbuf[21*12+6] = vu[2];
+	vbuf[22*12+4] = vf[0];
+	vbuf[22*12+5] = vf[1];
+	vbuf[22*12+6] = vf[2];
+	vbuf[23*12+4] = vr[0];
+	vbuf[23*12+5] = vr[1];
+	vbuf[23*12+6] = vr[2];
 
 	//bottom
 	ibuf[ 0] = vlen + 0 + 0;
@@ -464,7 +500,7 @@ void carveopaque_cask(struct arena* win, u32 rgba,
 
 	for(j=0;j<acc;j++)
 	{
-		a = j*18;
+		a = j*12*2;
 		b = j*6;
 		c = cosine(j*tau/acc);
 		s = sine(j*tau/acc);
@@ -473,25 +509,31 @@ void carveopaque_cask(struct arena* win, u32 rgba,
 		vv[1] = c*vr[1] - s*vf[1];
 		vv[2] = c*vr[2] - s*vf[2];
 
-		vbuf[a+0] = vc[0] - vu[0] + vv[0];
-		vbuf[a+1] = vc[1] - vu[1] + vv[1];
-		vbuf[a+2] = vc[2] - vu[2] + vv[2];
-		vbuf[a+3] = rr;
-		vbuf[a+4] = gg;
-		vbuf[a+5] = bb;
-		vbuf[a+6] = vbuf[a+0] - vc[0];
-		vbuf[a+7] = vbuf[a+1] - vc[1];
-		vbuf[a+8] = vbuf[a+2] - vc[2];
+		vbuf[a+ 0] = vc[0] - vu[0] + vv[0];
+		vbuf[a+ 1] = vc[1] - vu[1] + vv[1];
+		vbuf[a+ 2] = vc[2] - vu[2] + vv[2];
+		vbuf[a+ 3] = 1.0;
+		vbuf[a+ 4] = vbuf[a+0] - vc[0];
+		vbuf[a+ 5] = vbuf[a+1] - vc[1];
+		vbuf[a+ 6] = vbuf[a+2] - vc[2];
+		vbuf[a+ 7] = 1.0;
+		vbuf[a+ 8] = rr;
+		vbuf[a+ 9] = gg;
+		vbuf[a+10] = bb;
+		vbuf[a+11] = aa;
 
-		vbuf[a+ 9] = vc[0] + vu[0] + vv[0];
-		vbuf[a+10] = vc[1] + vu[1] + vv[1];
-		vbuf[a+11] = vc[2] + vu[2] + vv[2];
-		vbuf[a+12] = rr;
-		vbuf[a+13] = gg;
-		vbuf[a+14] = bb;
-		vbuf[a+15] = vbuf[a+ 9] - vc[0];
-		vbuf[a+16] = vbuf[a+10] - vc[1];
-		vbuf[a+17] = vbuf[a+11] - vc[2];
+		vbuf[a+12] = vc[0] + vu[0] + vv[0];
+		vbuf[a+13] = vc[1] + vu[1] + vv[1];
+		vbuf[a+14] = vc[2] + vu[2] + vv[2];
+		vbuf[a+15] = 1.0;
+		vbuf[a+16] = vbuf[a+12] - vc[0];
+		vbuf[a+17] = vbuf[a+13] - vc[1];
+		vbuf[a+18] = vbuf[a+14] - vc[2];
+		vbuf[a+19] = 1.0;
+		vbuf[a+20] = rr;
+		vbuf[a+21] = gg;
+		vbuf[a+22] = bb;
+		vbuf[a+23] = aa;
 
 		ibuf[b+0] = vlen + j*2;
 		ibuf[b+1] = vlen + ((j+1)%acc)*2;
@@ -550,97 +592,99 @@ void carveopaque_dodecahedron(struct arena* win, u32 rgba,
 	int vlen = opaque3d_vars(win, opaque3d, &vbuf, &ibuf, 20, 36);
 
 	//(+-1, +-1, +-1)
-	vbuf[ 0] = vc[0]-vr[0]-vf[0]-vu[0];
-	vbuf[ 1] = vc[1]-vr[1]-vf[1]-vu[1];
-	vbuf[ 2] = vc[2]-vr[2]-vf[2]-vu[2];
+	vbuf[0*12 + 0] = vc[0]-vr[0]-vf[0]-vu[0];
+	vbuf[0*12 + 1] = vc[1]-vr[1]-vf[1]-vu[1];
+	vbuf[0*12 + 2] = vc[2]-vr[2]-vf[2]-vu[2];
 
-	vbuf[ 9] = vc[0]+vr[0]-vf[0]-vu[0];
-	vbuf[10] = vc[1]+vr[1]-vf[1]-vu[1];
-	vbuf[11] = vc[2]+vr[2]-vf[2]-vu[2];
+	vbuf[1*12 + 0] = vc[0]+vr[0]-vf[0]-vu[0];
+	vbuf[1*12 + 1] = vc[1]+vr[1]-vf[1]-vu[1];
+	vbuf[1*12 + 2] = vc[2]+vr[2]-vf[2]-vu[2];
 
-	vbuf[18] = vc[0]-vr[0]+vf[0]-vu[0];
-	vbuf[19] = vc[1]-vr[1]+vf[1]-vu[1];
-	vbuf[20] = vc[2]-vr[2]+vf[2]-vu[2];
+	vbuf[2*12 + 0] = vc[0]-vr[0]+vf[0]-vu[0];
+	vbuf[2*12 + 1] = vc[1]-vr[1]+vf[1]-vu[1];
+	vbuf[2*12 + 2] = vc[2]-vr[2]+vf[2]-vu[2];
 
-	vbuf[27] = vc[0]+vr[0]+vf[0]-vu[0];
-	vbuf[28] = vc[1]+vr[1]+vf[1]-vu[1];
-	vbuf[29] = vc[2]+vr[2]+vf[2]-vu[2];
+	vbuf[3*12 + 0] = vc[0]+vr[0]+vf[0]-vu[0];
+	vbuf[3*12 + 1] = vc[1]+vr[1]+vf[1]-vu[1];
+	vbuf[3*12 + 2] = vc[2]+vr[2]+vf[2]-vu[2];
 
-	vbuf[36] = vc[0]-vr[0]-vf[0]+vu[0];
-	vbuf[37] = vc[1]-vr[1]-vf[1]+vu[1];
-	vbuf[38] = vc[2]-vr[2]-vf[2]+vu[2];
+	vbuf[4*12 + 0] = vc[0]-vr[0]-vf[0]+vu[0];
+	vbuf[4*12 + 1] = vc[1]-vr[1]-vf[1]+vu[1];
+	vbuf[4*12 + 2] = vc[2]-vr[2]-vf[2]+vu[2];
 
-	vbuf[45] = vc[0]+vr[0]-vf[0]+vu[0];
-	vbuf[46] = vc[1]+vr[1]-vf[1]+vu[1];
-	vbuf[47] = vc[2]+vr[2]-vf[2]+vu[2];
+	vbuf[5*12 + 0] = vc[0]+vr[0]-vf[0]+vu[0];
+	vbuf[5*12 + 1] = vc[1]+vr[1]-vf[1]+vu[1];
+	vbuf[5*12 + 2] = vc[2]+vr[2]-vf[2]+vu[2];
 
-	vbuf[54] = vc[0]-vr[0]+vf[0]+vu[0];
-	vbuf[55] = vc[1]-vr[1]+vf[1]+vu[1];
-	vbuf[56] = vc[2]-vr[2]+vf[2]+vu[2];
+	vbuf[6*12 + 0] = vc[0]-vr[0]+vf[0]+vu[0];
+	vbuf[6*12 + 1] = vc[1]-vr[1]+vf[1]+vu[1];
+	vbuf[6*12 + 2] = vc[2]-vr[2]+vf[2]+vu[2];
 
-	vbuf[63] = vc[0]+vr[0]+vf[0]+vu[0];
-	vbuf[64] = vc[1]+vr[1]+vf[1]+vu[1];
-	vbuf[65] = vc[2]+vr[2]+vf[2]+vu[2];
+	vbuf[7*12 + 0] = vc[0]+vr[0]+vf[0]+vu[0];
+	vbuf[7*12 + 1] = vc[1]+vr[1]+vf[1]+vu[1];
+	vbuf[7*12 + 2] = vc[2]+vr[2]+vf[2]+vu[2];
 
 	//(0, +-a, +-b)
-	vbuf[72] = vc[0] - a*vf[0] - b*vu[0];
-	vbuf[73] = vc[1] - a*vf[1] - b*vu[1];
-	vbuf[74] = vc[2] - a*vf[2] - b*vu[2];
+	vbuf[8*12 + 0] = vc[0] - a*vf[0] - b*vu[0];
+	vbuf[8*12 + 1] = vc[1] - a*vf[1] - b*vu[1];
+	vbuf[8*12 + 2] = vc[2] - a*vf[2] - b*vu[2];
 
-	vbuf[81] = vc[0] + a*vf[0] - b*vu[0];
-	vbuf[82] = vc[1] + a*vf[1] - b*vu[1];
-	vbuf[83] = vc[2] + a*vf[2] - b*vu[2];
+	vbuf[9*12 + 0] = vc[0] + a*vf[0] - b*vu[0];
+	vbuf[9*12 + 1] = vc[1] + a*vf[1] - b*vu[1];
+	vbuf[9*12 + 2] = vc[2] + a*vf[2] - b*vu[2];
 
-	vbuf[90] = vc[0] - a*vf[0] + b*vu[0];
-	vbuf[91] = vc[1] - a*vf[1] + b*vu[1];
-	vbuf[92] = vc[2] - a*vf[2] + b*vu[2];
+	vbuf[10*12 + 0] = vc[0] - a*vf[0] + b*vu[0];
+	vbuf[10*12 + 1] = vc[1] - a*vf[1] + b*vu[1];
+	vbuf[10*12 + 2] = vc[2] - a*vf[2] + b*vu[2];
 
-	vbuf[ 99] = vc[0] + a*vf[0] + b*vu[0];
-	vbuf[100] = vc[1] + a*vf[1] + b*vu[1];
-	vbuf[101] = vc[2] + a*vf[2] + b*vu[2];
+	vbuf[11*12 + 0] = vc[0] + a*vf[0] + b*vu[0];
+	vbuf[11*12 + 1] = vc[1] + a*vf[1] + b*vu[1];
+	vbuf[11*12 + 2] = vc[2] + a*vf[2] + b*vu[2];
 
 	//(+-b, 0, +-a)
-	vbuf[108] = vc[0] - b*vr[0] - a*vu[0];
-	vbuf[109] = vc[1] - b*vr[1] - a*vu[1];
-	vbuf[110] = vc[2] - b*vr[2] - a*vu[2];
+	vbuf[12*12 + 0] = vc[0] - b*vr[0] - a*vu[0];
+	vbuf[12*12 + 1] = vc[1] - b*vr[1] - a*vu[1];
+	vbuf[12*12 + 2] = vc[2] - b*vr[2] - a*vu[2];
 
-	vbuf[117] = vc[0] + b*vr[0] - a*vu[0];
-	vbuf[118] = vc[1] + b*vr[1] - a*vu[1];
-	vbuf[119] = vc[2] + b*vr[2] - a*vu[2];
+	vbuf[13*12 + 0] = vc[0] + b*vr[0] - a*vu[0];
+	vbuf[13*12 + 1] = vc[1] + b*vr[1] - a*vu[1];
+	vbuf[13*12 + 2] = vc[2] + b*vr[2] - a*vu[2];
 
-	vbuf[126] = vc[0] - b*vr[0] + a*vu[0];
-	vbuf[127] = vc[1] - b*vr[1] + a*vu[1];
-	vbuf[128] = vc[2] - b*vr[2] + a*vu[2];
+	vbuf[14*12 + 0] = vc[0] - b*vr[0] + a*vu[0];
+	vbuf[14*12 + 1] = vc[1] - b*vr[1] + a*vu[1];
+	vbuf[14*12 + 2] = vc[2] - b*vr[2] + a*vu[2];
 
-	vbuf[135] = vc[0] + b*vr[0] + a*vu[0];
-	vbuf[136] = vc[1] + b*vr[1] + a*vu[1];
-	vbuf[137] = vc[2] + b*vr[2] + a*vu[2];
+	vbuf[15*12 + 0] = vc[0] + b*vr[0] + a*vu[0];
+	vbuf[15*12 + 1] = vc[1] + b*vr[1] + a*vu[1];
+	vbuf[15*12 + 2] = vc[2] + b*vr[2] + a*vu[2];
 
 	//(+-a, +-b, 0)
-	vbuf[144] = vc[0] - a*vr[0] - b*vf[0];
-	vbuf[145] = vc[1] - a*vr[1] - b*vf[1];
-	vbuf[146] = vc[2] - a*vr[2] - b*vf[2];
+	vbuf[16*12 + 0] = vc[0] - a*vr[0] - b*vf[0];
+	vbuf[16*12 + 1] = vc[1] - a*vr[1] - b*vf[1];
+	vbuf[16*12 + 2] = vc[2] - a*vr[2] - b*vf[2];
 
-	vbuf[153] = vc[0] + a*vr[0] - b*vf[0];
-	vbuf[154] = vc[1] + a*vr[1] - b*vf[1];
-	vbuf[155] = vc[2] + a*vr[2] - b*vf[2];
+	vbuf[17*12 + 0] = vc[0] + a*vr[0] - b*vf[0];
+	vbuf[17*12 + 1] = vc[1] + a*vr[1] - b*vf[1];
+	vbuf[17*12 + 2] = vc[2] + a*vr[2] - b*vf[2];
 
-	vbuf[162] = vc[0] - a*vr[0] + b*vf[0];
-	vbuf[163] = vc[1] - a*vr[1] + b*vf[1];
-	vbuf[164] = vc[2] - a*vr[2] + b*vf[2];
+	vbuf[18*12 + 0] = vc[0] - a*vr[0] + b*vf[0];
+	vbuf[18*12 + 1] = vc[1] - a*vr[1] + b*vf[1];
+	vbuf[18*12 + 2] = vc[2] - a*vr[2] + b*vf[2];
 
-	vbuf[171] = vc[0] + a*vr[0] + b*vf[0];
-	vbuf[172] = vc[1] + a*vr[1] + b*vf[1];
-	vbuf[173] = vc[2] + a*vr[2] + b*vf[2];
+	vbuf[19*12 + 0] = vc[0] + a*vr[0] + b*vf[0];
+	vbuf[19*12 + 1] = vc[1] + a*vr[1] + b*vf[1];
+	vbuf[19*12 + 2] = vc[2] + a*vr[2] + b*vf[2];
 
-	for(j=0;j<20*9;j+=9)
+	for(j=0;j<20*12;j+=12)
 	{
-		vbuf[j + 3] = rr;
-		vbuf[j + 4] = gg;
-		vbuf[j + 5] = bb;
-		vbuf[j + 6] = vbuf[j + 0] - vc[0];
-		vbuf[j + 7] = vbuf[j + 1] - vc[1];
-		vbuf[j + 8] = vbuf[j + 2] - vc[2];
+		vbuf[j+ 4] = vbuf[j + 0] - vc[0];
+		vbuf[j+ 5] = vbuf[j + 1] - vc[1];
+		vbuf[j+ 6] = vbuf[j + 2] - vc[2];
+		vbuf[j+ 7] = 1.0;
+		vbuf[j+ 8] = rr;
+		vbuf[j+ 9] = gg;
+		vbuf[j+10] = bb;
+		vbuf[j+11] = aa;
 	}
 
 	//front
@@ -787,64 +831,65 @@ void carveopaque_icosahedron(struct arena* win, u32 rgba,
 	int vlen = opaque3d_vars(win, opaque3d, &vbuf, &ibuf, 12, 20);
 
 	//(+-m, 0, +-n)
-	vbuf[ 0] = vc[0] - m*vr[0] - n*vu[0];
-	vbuf[ 1] = vc[1] - m*vr[1] - n*vu[1];
-	vbuf[ 2] = vc[2] - m*vr[2] - n*vu[2];
+	vbuf[0*12 + 0] = vc[0] - m*vr[0] - n*vu[0];
+	vbuf[0*12 + 1] = vc[1] - m*vr[1] - n*vu[1];
+	vbuf[0*12 + 2] = vc[2] - m*vr[2] - n*vu[2];
 
-	vbuf[ 9] = vc[0] + m*vr[0] - n*vu[0];
-	vbuf[10] = vc[1] + m*vr[1] - n*vu[1];
-	vbuf[11] = vc[2] + m*vr[2] - n*vu[2];
+	vbuf[1*12 + 0] = vc[0] + m*vr[0] - n*vu[0];
+	vbuf[1*12 + 1] = vc[1] + m*vr[1] - n*vu[1];
+	vbuf[1*12 + 2] = vc[2] + m*vr[2] - n*vu[2];
 
-	vbuf[18] = vc[0] - m*vr[0] + n*vu[0];
-	vbuf[19] = vc[1] - m*vr[1] + n*vu[1];
-	vbuf[20] = vc[2] - m*vr[2] + n*vu[2];
+	vbuf[2*12 + 0] = vc[0] - m*vr[0] + n*vu[0];
+	vbuf[2*12 + 1] = vc[1] - m*vr[1] + n*vu[1];
+	vbuf[2*12 + 2] = vc[2] - m*vr[2] + n*vu[2];
 
-	vbuf[27] = vc[0] + m*vr[0] + n*vu[0];
-	vbuf[28] = vc[1] + m*vr[1] + n*vu[1];
-	vbuf[29] = vc[2] + m*vr[2] + n*vu[2];
+	vbuf[3*12 + 0] = vc[0] + m*vr[0] + n*vu[0];
+	vbuf[3*12 + 1] = vc[1] + m*vr[1] + n*vu[1];
+	vbuf[3*12 + 2] = vc[2] + m*vr[2] + n*vu[2];
 
 	//(0, +-n, +-m)
-	vbuf[36] = vc[0] - n*vf[0] - m*vu[0];
-	vbuf[37] = vc[1] - n*vf[1] - m*vu[1];
-	vbuf[38] = vc[2] - n*vf[2] - m*vu[2];
+	vbuf[4*12 + 0] = vc[0] - n*vf[0] - m*vu[0];
+	vbuf[4*12 + 1] = vc[1] - n*vf[1] - m*vu[1];
+	vbuf[4*12 + 2] = vc[2] - n*vf[2] - m*vu[2];
 
-	vbuf[45] = vc[0] + n*vf[0] - m*vu[0];
-	vbuf[46] = vc[1] + n*vf[1] - m*vu[1];
-	vbuf[47] = vc[2] + n*vf[2] - m*vu[2];
+	vbuf[5*12 + 0] = vc[0] + n*vf[0] - m*vu[0];
+	vbuf[5*12 + 1] = vc[1] + n*vf[1] - m*vu[1];
+	vbuf[5*12 + 2] = vc[2] + n*vf[2] - m*vu[2];
 
-	vbuf[54] = vc[0] - n*vf[0] + m*vu[0];
-	vbuf[55] = vc[1] - n*vf[1] + m*vu[1];
-	vbuf[56] = vc[2] - n*vf[2] + m*vu[2];
+	vbuf[6*12 + 0] = vc[0] - n*vf[0] + m*vu[0];
+	vbuf[6*12 + 1] = vc[1] - n*vf[1] + m*vu[1];
+	vbuf[6*12 + 2] = vc[2] - n*vf[2] + m*vu[2];
 
-	vbuf[63] = vc[0] + n*vf[0] + m*vu[0];
-	vbuf[64] = vc[1] + n*vf[1] + m*vu[1];
-	vbuf[65] = vc[2] + n*vf[2] + m*vu[2];
+	vbuf[7*12 + 0] = vc[0] + n*vf[0] + m*vu[0];
+	vbuf[7*12 + 1] = vc[1] + n*vf[1] + m*vu[1];
+	vbuf[7*12 + 2] = vc[2] + n*vf[2] + m*vu[2];
 
 	//(+-n, +-m, 0)
-	vbuf[72] = vc[0] - n*vr[0] - m*vf[0];
-	vbuf[73] = vc[1] - n*vr[1] - m*vf[1];
-	vbuf[74] = vc[2] - n*vr[2] - m*vf[2];
+	vbuf[8*12 + 0] = vc[0] - n*vr[0] - m*vf[0];
+	vbuf[8*12 + 1] = vc[1] - n*vr[1] - m*vf[1];
+	vbuf[8*12 + 2] = vc[2] - n*vr[2] - m*vf[2];
 
-	vbuf[81] = vc[0] + n*vr[0] - m*vf[0];
-	vbuf[82] = vc[1] + n*vr[1] - m*vf[1];
-	vbuf[83] = vc[2] + n*vr[2] - m*vf[2];
+	vbuf[9*12 + 0] = vc[0] + n*vr[0] - m*vf[0];
+	vbuf[9*12 + 1] = vc[1] + n*vr[1] - m*vf[1];
+	vbuf[9*12 + 2] = vc[2] + n*vr[2] - m*vf[2];
 
-	vbuf[90] = vc[0] - n*vr[0] + m*vf[0];
-	vbuf[91] = vc[1] - n*vr[1] + m*vf[1];
-	vbuf[92] = vc[2] - n*vr[2] + m*vf[2];
+	vbuf[10*12 + 0] = vc[0] - n*vr[0] + m*vf[0];
+	vbuf[10*12 + 1] = vc[1] - n*vr[1] + m*vf[1];
+	vbuf[10*12 + 2] = vc[2] - n*vr[2] + m*vf[2];
 
-	vbuf[ 99] = vc[0] + n*vr[0] + m*vf[0];
-	vbuf[100] = vc[1] + n*vr[1] + m*vf[1];
-	vbuf[101] = vc[2] + n*vr[2] + m*vf[2];
+	vbuf[11*12 + 0] = vc[0] + n*vr[0] + m*vf[0];
+	vbuf[11*12 + 1] = vc[1] + n*vr[1] + m*vf[1];
+	vbuf[11*12 + 2] = vc[2] + n*vr[2] + m*vf[2];
 
-	for(j=0;j<12*9;j+=9)
+	for(j=0;j<12*12;j+=12)
 	{
-		vbuf[j + 3] = rr;
-		vbuf[j + 4] = gg;
-		vbuf[j + 5] = bb;
-		vbuf[j + 6] = vbuf[j + 0] - vc[0];
-		vbuf[j + 7] = vbuf[j + 1] - vc[1];
-		vbuf[j + 8] = vbuf[j + 2] - vc[2];
+		vbuf[j+ 4] = vbuf[j + 0] - vc[0];
+		vbuf[j+ 5] = vbuf[j + 1] - vc[1];
+		vbuf[j+ 6] = vbuf[j + 2] - vc[2];
+		vbuf[j+ 8] = rr;
+		vbuf[j+ 9] = gg;
+		vbuf[j+10] = bb;
+		vbuf[j+11] = aa;
 	}
 
 	ibuf[ 0] = vlen+0;
@@ -968,16 +1013,17 @@ void carveopaque_sphere(struct arena* win, u32 rgba,
 			c = cosine(s);
 			s = sine(s);
 
-			a = (k*accx + j)*9;
-			vbuf[a+0] = tc[0] + tr[0]*c + tf[0]*s;
-			vbuf[a+1] = tc[1] + tr[1]*c + tf[1]*s;
-			vbuf[a+2] = tc[2] + tr[2]*c + tf[2]*s;
-			vbuf[a+3] = rr;
-			vbuf[a+4] = gg;
-			vbuf[a+5] = bb;
-			vbuf[a+6] = vbuf[a+0] - vc[0];
-			vbuf[a+7] = vbuf[a+1] - vc[1];
-			vbuf[a+8] = vbuf[a+2] - vc[2];
+			a = (k*accx + j)*12;
+			vbuf[a+ 0] = tc[0] + tr[0]*c + tf[0]*s;
+			vbuf[a+ 1] = tc[1] + tr[1]*c + tf[1]*s;
+			vbuf[a+ 2] = tc[2] + tr[2]*c + tf[2]*s;
+			vbuf[a+ 4] = vbuf[a+0] - vc[0];
+			vbuf[a+ 5] = vbuf[a+1] - vc[1];
+			vbuf[a+ 6] = vbuf[a+2] - vc[2];
+			vbuf[a+ 8] = rr;
+			vbuf[a+ 9] = gg;
+			vbuf[a+10] = bb;
+			vbuf[a+11] = aa;
 
 			if(k >= accy-1)continue;
 			b = k*accx*6;
@@ -990,27 +1036,33 @@ void carveopaque_sphere(struct arena* win, u32 rgba,
 		}
 	}
 
-	a = accx*accy*9;
+	a = accx*accy*12;
 
 	vbuf[a+ 0] = vc[0]-vu[0];
 	vbuf[a+ 1] = vc[1]-vu[1];
 	vbuf[a+ 2] = vc[2]-vu[2];
-	vbuf[a+ 3] = rr;
-	vbuf[a+ 4] = gg;
-	vbuf[a+ 5] = bb;
-	vbuf[a+ 6] = -vu[0];
-	vbuf[a+ 7] = -vu[1];
-	vbuf[a+ 8] = -vu[2];
+	vbuf[a+ 3] = 1.0;
+	vbuf[a+ 4] = -vu[0];
+	vbuf[a+ 5] = -vu[1];
+	vbuf[a+ 6] = -vu[2];
+	vbuf[a+ 7] = 1.0;
+	vbuf[a+ 8] = rr;
+	vbuf[a+ 9] = gg;
+	vbuf[a+10] = bb;
+	vbuf[a+11] = aa;
 
-	vbuf[a+ 9] = vc[0]+vu[0];
-	vbuf[a+10] = vc[1]+vu[1];
-	vbuf[a+11] = vc[2]+vu[2];
-	vbuf[a+12] = rr;
-	vbuf[a+13] = gg;
-	vbuf[a+14] = bb;
-	vbuf[a+15] = vu[0];
-	vbuf[a+16] = vu[1];
-	vbuf[a+17] = vu[2];
+	vbuf[a+12] = vc[0]+vu[0];
+	vbuf[a+13] = vc[1]+vu[1];
+	vbuf[a+14] = vc[2]+vu[2];
+	vbuf[a+15] = 1.0;
+	vbuf[a+16] = vu[0];
+	vbuf[a+17] = vu[1];
+	vbuf[a+18] = vu[2];
+	vbuf[a+19] = 1.0;
+	vbuf[a+20] = rr;
+	vbuf[a+21] = gg;
+	vbuf[a+22] = bb;
+	vbuf[a+23] = aa;
 
 	b = (accy-1)*accx*6;
 	for(j=0;j<accx;j++)

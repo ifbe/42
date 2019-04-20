@@ -268,9 +268,9 @@ GLSL_VERSION
 char opaquevert[] =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
-"layout(location = 1)in mediump vec3 c;\n"
-"layout(location = 2)in mediump vec3 n;\n"
-"out mediump vec3 colour;\n"
+"layout(location = 1)in mediump vec3 n;\n"
+"layout(location = 2)in mediump vec4 c;\n"
+"out mediump vec4 colour;\n"
 "uniform mat4 cammvp;\n"
 "void main(){\n"
 	"colour = c;\n"
@@ -279,10 +279,10 @@ GLSL_VERSION
 
 char opaquefrag[] =
 GLSL_VERSION
-"in mediump vec3 colour;\n"
+"in mediump vec4 colour;\n"
 "out mediump vec4 FragColor;\n"
 "void main(){\n"
-	"FragColor = vec4(colour, 0.5);\n"
+	"FragColor = colour;\n"
 "}\n";
 
 
