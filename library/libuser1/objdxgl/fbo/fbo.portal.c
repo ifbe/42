@@ -375,7 +375,6 @@ static void portal_start(
 
 	//send!
 	src->shader_enq[0] = 42;
-	src->arg_enq[0] = 0;
 	src->tex_enq[0] = 0;
 	src->vbuf_enq = 0;
 	src->ibuf_enq = 0;

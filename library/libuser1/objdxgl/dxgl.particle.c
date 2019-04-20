@@ -98,7 +98,6 @@ static void particle_read_vbo3d(
 //for(j=0;j<16;j++)mat[j] = 0.0;
 //mat[0] = mat[5] = mat[10] = mat[15] = 1000.0;
 //mat[15] = 1.0;
-	src->arg_enq[0] += 1;
 
 	carveline_prism4(win, 0xffffff, vc, vr, vf, vu);
 	for(j=0;j<COUNT;j++)
@@ -210,7 +209,6 @@ static void particle_start(
 	src->arg_name[0] = "objmat";
 	src->arg_data[0] = memorycreate(4*4*4);
 	src->arg_fmt[0] = 'm';
-	src->arg_enq[0] = 0;
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_333;

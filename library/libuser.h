@@ -243,10 +243,9 @@ struct glsrc
 	u8 shader_enq[4];
 
 	//[24,88)argument
-	char* arg_name[4];
-	void* arg_data[4];
-	u32 arg_fmt[4];
-	u8 arg_enq[4];
+	char* arg_name[8];
+	void* arg_data[8];
+	u32 arg_fmt[8];
 
 	//[88,fc)texture
 	char* tex_name[4];
@@ -274,18 +273,12 @@ struct glsrc
 	u8 geometry;	//1=point, 2=line, *=trigon
 	u8 opaque;		//0=nothing, 1=blend
 	u8 target;		//0=rtt, 1=background, 2=geometry, 3=alphatest, 4=transparent, 5=overlay
-
-	//[ec,fa]enq
 };
 struct gldst
 {
 	//shader
 	u32 shader;
 	u8 shader_deq;
-
-	//argument
-	u32 arg[4];
-	u8 arg_deq[4];
 
 	//texture
 	u32 tex[4];
@@ -302,11 +295,11 @@ struct datapair
 {
 	//[000,0ff]
 	struct glsrc src;
-	u8 ipadd[0x180 - sizeof(struct glsrc)];
+	u8 ipadd[0x1c0 - sizeof(struct glsrc)];
 
 	//[100,1ff]
 	struct gldst dst;
-	u8 opadd[0x80 - sizeof(struct gldst)];
+	u8 opadd[0x40 - sizeof(struct gldst)];
 };
 
 

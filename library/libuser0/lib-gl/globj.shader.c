@@ -182,8 +182,8 @@ GLSL_VERSION
 "uniform mediump vec3 camxyz;\n"
 
 "mediump vec3 sunxyz = vec3(1000000.0, 1000000.0, 1000000.0);\n"
-"mediump vec3 dirsun0 = vec3(-1.0, 0.0, 1.0);\n"
-"mediump vec3 dirsun1 = vec3(0.0, -1.0, 1.0);\n"
+"mediump vec3 dirsun0 = vec3(-1.0, 0.0, 0.0);\n"
+"mediump vec3 dirsun1 = vec3(0.0, -1.0, 0.0);\n"
 
 "mediump vec3 LA = vec3(1.0, 1.0, 1.0);\n"
 "mediump vec3 LD = vec3(1.0, 1.0, 1.0);\n"

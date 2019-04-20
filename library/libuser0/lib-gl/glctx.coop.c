@@ -31,19 +31,14 @@ void coopctx_copy(struct datapair* s, struct datapair* d)
 	//shader
 	coop->shader = host->shader;
 
-	//arg
-	for(j=0;j<4;j++){
-		coop->arg[j] = host->arg[j];
-	}
-
 	//texture
 	for(j=0;j<4;j++){
 		coop->tex[j] = host->tex[j];
 	}
 
 	//vertex
-	coop->vbo     = host->vbo;
-	coop->ibo     = host->ibo;
+	coop->vbo = host->vbo;
+	coop->ibo = host->ibo;
 }
 void coopctx_update(struct arena* win)
 {

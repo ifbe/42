@@ -43,8 +43,8 @@ GLSL_VERSION
 "uniform mediump vec3 camxyz;\n"
 
 "mediump vec3 sunxyz = vec3(1000000.0, 1000000.0, 1000000.0);\n"
-"mediump vec3 dirsun0 = vec3(-1.0, 0.0, 1.0);\n"
-"mediump vec3 dirsun1 = vec3(0.0, -1.0, 1.0);\n"
+"mediump vec3 dirsun0 = vec3(-1.0, 0.0, 0.0);\n"
+"mediump vec3 dirsun1 = vec3(0.0, -1.0, 0.0);\n"
 
 "mediump vec3 LA = vec3(1.0, 1.0, 1.0);\n"
 "mediump vec3 LD = vec3(1.0, 1.0, 1.0);\n"
@@ -303,8 +303,7 @@ static void model_read_vbo2d(
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
 	struct glsrc* src = (void*)(pin->foot[0]);
-	sty_sty_mat(&act->target, sty, (void*)src->arg_data[0]); 
-	src->arg_enq[0] += 1;
+	sty_sty_mat(&act->target, sty, (void*)src->arg_data[0]);
 }
 static void model_read_vbo3d(
 	struct arena* win, struct style* sty,
@@ -313,8 +312,7 @@ static void model_read_vbo3d(
 	if(act->buf == 0)return;
 
 	struct glsrc* src = (void*)(pin->foot[0]);
-	sty_sty_mat(&act->target, sty, (void*)src->arg_data[0]); 
-	src->arg_enq[0] += 1;
+	sty_sty_mat(&act->target, sty, (void*)src->arg_data[0]);
 }
 static void model_read_json(
 	struct arena* win, struct style* sty,
@@ -439,7 +437,6 @@ static void model_start(
 
 	//send!
 	src->shader_enq[0] = 42;
-	src->arg_enq[0] = 0;
 	src->tex_enq[0] = 0;
 	src->vbuf_enq = 42;
 	src->ibuf_enq = 0;

@@ -61,8 +61,8 @@ GLSL_VERSION
 "uniform mediump vec3 camxyz;\n"
 
 "mediump vec3 sunxyz = vec3(1000000.0, 1000000.0, 1000000.0);\n"
-"mediump vec3 dirsun0 = vec3(-1.0, 0.0, 1.0);\n"
-"mediump vec3 dirsun1 = vec3(0.0, -1.0, 1.0);\n"
+"mediump vec3 dirsun0 = vec3(-1.0, 0.0, 0.0);\n"
+"mediump vec3 dirsun1 = vec3(0.0, -1.0, 0.0);\n"
 
 "mediump vec3 LA = vec3(1.0, 1.0, 1.0);\n"
 "mediump vec3 LD = vec3(1.0, 1.0, 1.0);\n"
@@ -310,7 +310,6 @@ static void terrain_read_vbo(
 		mat[13] = act->y0 * 1000.0;
 		mat[14] = 0.0;
 		mat[15] = 1.0;
-		src->arg_enq[0] += 1;
 	}
 }
 static void terrain_read_json(
@@ -446,7 +445,6 @@ static void terrain_start(
 	src->arg_name[0] = "objmat";
 	src->arg_data[0] = memorycreate(4*4*4);
 	src->arg_fmt[0] = 'm';
-	src->arg_enq[0] = 0;
 
 	//texture
 	src->tex_name[0] = "tex0";

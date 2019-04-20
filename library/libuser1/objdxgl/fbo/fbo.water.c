@@ -225,7 +225,7 @@ static void water_read_vbo(
 	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
 
 	act->target.vq[0] = (timeread()%10000000)/10000000.0;
-	src->arg_enq[0] += 1;
+	watercamera(act, pin, 0, sty, win, 0);
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -270,7 +270,6 @@ static void water_read_vbo(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
-	watercamera(act, pin, 0, sty, win, 0);
 }
 static void water_read_json(
 	struct arena* win, struct style* sty,

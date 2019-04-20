@@ -266,6 +266,8 @@ static void shadowmap_read_vbo(
 	if(0 == tmp)return;
 	if(_fbo_ != tmp->fmt)return;
 
+	dst->tex[0] = tmp->tex_depth;
+
 	//light camera
 	a = tau * timeread() / 10000000.0;
 	c = cosine(a);
@@ -289,9 +291,6 @@ static void shadowmap_read_vbo(
 	mvp = (void*)(src->arg_data[0]);
 	fixmatrix(mvp, tmp);
 	mat4_transpose(mvp);
-
-	src->arg_enq[0] += 1;
-	dst->tex[0] = tmp->tex_depth;
 
 
 	//display light
