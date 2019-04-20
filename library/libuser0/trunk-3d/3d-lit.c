@@ -72,7 +72,7 @@ int lit3d_swrite(struct arena* cc, void* cf, struct arena* win, struct style* st
 next:
 		rel = samesrcprevdst(rel);
 	}
-	return 1;
+	return 0;
 }
 
 
