@@ -134,11 +134,13 @@ GLSL_VERSION
 "mediump vec3 LA = vec3(1.0, 1.0, 1.0);\n"
 "mediump vec3 LD = vec3(1.0, 1.0, 1.0);\n"
 "mediump vec3 LS = vec3(1.0, 1.0, 1.0);\n"
-"mediump vec3 KA = vec3(0.231250, 0.231250, 0.231250);\n"
-"mediump vec3 KD = vec3(0.277500, 0.277500, 0.277500);\n"
+//"mediump vec3 KA = vec3(0.231250, 0.231250, 0.231250);\n"
+//"mediump vec3 KD = vec3(0.277500, 0.277500, 0.277500);\n"
 "mediump vec3 KS = vec3(0.773911, 0.773911, 0.773911);\n"
 
 "vec3 blinnphong(){\n"
+	"mediump vec3 KD = colour;\n"
+
 	"mediump vec3 N = normalize(normal);\n"
 	"mediump vec3 L = normalize(sunpos - vertex);\n"
 	"mediump float SN = dot(N, L);\n"
@@ -151,9 +153,10 @@ GLSL_VERSION
 	"return ret + LS*KS*pow(NH, 89.6);\n"
 "}\n"
 "void main(){\n"
+	"mediump vec3 KA = colour;\n"
 	"mediump vec3 c = LA*KA + blinnphong();\n"
 	"c = vec3(clamp(c.x, 0.0, 1.0), clamp(c.y, 0.0, 1.0), clamp(c.z, 0.0, 1.0));\n"
-	"FragColor = vec4(0.8*colour + 0.2*c, 1.0);\n"
+	"FragColor = vec4(c, 1.0);\n"
 "}\n";
 
 
@@ -190,11 +193,13 @@ GLSL_VERSION
 "mediump vec3 LA = vec3(1.0, 1.0, 1.0);\n"
 "mediump vec3 LD = vec3(1.0, 1.0, 1.0);\n"
 "mediump vec3 LS = vec3(1.0, 1.0, 1.0);\n"
-"mediump vec3 KA = vec3(0.231250, 0.231250, 0.231250);\n"
-"mediump vec3 KD = vec3(0.277500, 0.277500, 0.277500);\n"
+//"mediump vec3 KA = vec3(0.231250, 0.231250, 0.231250);\n"
+//"mediump vec3 KD = vec3(0.277500, 0.277500, 0.277500);\n"
 "mediump vec3 KS = vec3(0.773911, 0.773911, 0.773911);\n"
 
 "vec3 blinnphong(){\n"
+	"mediump vec3 KD = colour;\n"
+
 	"mediump vec3 N = normalize(normal);\n"
 	"mediump vec3 L = normalize(sunxyz - vertex);\n"
 	"mediump float SN = dot(N, L);\n"
@@ -204,9 +209,11 @@ GLSL_VERSION
 	"mediump vec3 E = normalize(camxyz - vertex);\n"
 	"mediump vec3 H = normalize(E + L);\n"
 	"mediump float NH = max(dot(N, H), 0.0);\n"
-	"return ret + LS*KS*pow(NH, 25.0);\n"
+	"return ret + LS*KS*pow(NH, 89.6);\n"
 "}\n"
 "vec3 sun0(){\n"
+	"mediump vec3 KD = colour;\n"
+
 	"mediump vec3 N = normalize(normal);\n"
 	"mediump vec3 L = normalize(dirsun0);\n"
 	"mediump float SN = dot(N, L);\n"
@@ -216,9 +223,11 @@ GLSL_VERSION
 	"mediump vec3 E = normalize(camxyz - vertex);\n"
 	"mediump vec3 H = normalize(E + L);\n"
 	"mediump float NH = max(dot(N, H), 0.0);\n"
-	"return ret + LS*KS*pow(NH, 25.0);\n"
+	"return ret + LS*KS*pow(NH, 89.6);\n"
 "}\n"
 "vec3 sun1(){\n"
+	"mediump vec3 KD = colour;\n"
+
 	"mediump vec3 N = normalize(normal);\n"
 	"mediump vec3 L = normalize(dirsun1);\n"
 	"mediump float SN = dot(N, L);\n"
@@ -228,19 +237,20 @@ GLSL_VERSION
 	"mediump vec3 E = normalize(camxyz - vertex);\n"
 	"mediump vec3 H = normalize(E + L);\n"
 	"mediump float NH = max(dot(N, H), 0.0);\n"
-	"return ret + LS*KS*pow(NH, 25.0);\n"
+	"return ret + LS*KS*pow(NH, 89.6);\n"
 "}\n"
 //"float shadow(){\n"
 	//"if(uvw.z - texture(tex0, uvw.xy).r > 0.000001)return 0.1;\n"
 	//"return 1.0;\n"
 //"}\n"
 "void main(){\n"
+	"mediump vec3 KA = colour;\n"
 	"mediump vec3 light = LA*KA;\n"
 	"light += blinnphong() / 3.0;\n"
 	"light += sun0() / 3.0;\n"
 	"light += sun1() / 3.0;\n"
 	"light = vec3(clamp(light.x, 0.0, 1.0), clamp(light.y, 0.0, 1.0), clamp(light.z, 0.0, 1.0));\n"
-	"FragColor = vec4(colour * light, 1.0);\n"
+	"FragColor = vec4(light, 1.0);\n"
 "}\n";
 
 
