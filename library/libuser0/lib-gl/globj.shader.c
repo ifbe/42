@@ -128,8 +128,9 @@ GLSL_VERSION
 "in mediump vec3 normal;\n"
 "in mediump vec3 colour;\n"
 "out mediump vec4 FragColor;\n"
-"mediump vec3 sunpos = vec3(1.0, 1.0, -2.0);\n"
+
 "mediump vec3 campos = vec3(0.0, 0.0, -1.0);\n"
+"mediump vec3 dirsun0 = vec3(1.0, 1.0, 1.0);\n"
 
 "mediump vec3 LA = vec3(1.0, 1.0, 1.0);\n"
 "mediump vec3 LD = vec3(1.0, 1.0, 1.0);\n"
@@ -140,7 +141,7 @@ GLSL_VERSION
 
 "vec3 blinnphong(){\n"
 	"mediump vec3 N = normalize(normal);\n"
-	"mediump vec3 L = normalize(sunpos - vertex);\n"
+	"mediump vec3 L = normalize(dirsun0);\n"
 	"mediump float SN = dot(N, L);\n"
 	"mediump vec3 ret = LD*KD*max(SN, 0.0);\n"
 	"if(SN < 0.0)return ret;\n"
@@ -183,9 +184,8 @@ GLSL_VERSION
 "out mediump vec4 FragColor;\n"
 "uniform mediump vec3 camxyz;\n"
 
-"mediump vec3 sunxyz = vec3(1000000.0, 1000000.0, 1000000.0);\n"
-"mediump vec3 dirsun0 = vec3(-1.0, 0.0, 0.0);\n"
-"mediump vec3 dirsun1 = vec3(0.0, -1.0, 0.0);\n"
+"mediump vec3 dirsun0 = vec3(1.0, 1.0, 1.0);\n"
+"mediump vec3 dirsun1 = vec3(-1.0, 0.0, 0.0);\n"
 
 "mediump vec3 LA = vec3(1.0, 1.0, 1.0);\n"
 "mediump vec3 LD = vec3(1.0, 1.0, 1.0);\n"
@@ -194,18 +194,6 @@ GLSL_VERSION
 "mediump vec3 KD = vec3(0.277500, 0.277500, 0.277500);\n"
 "mediump vec3 KS = vec3(0.773911, 0.773911, 0.773911);\n"
 
-"vec3 blinnphong(){\n"
-	"mediump vec3 N = normalize(normal);\n"
-	"mediump vec3 L = normalize(sunxyz - vertex);\n"
-	"mediump float SN = dot(N, L);\n"
-	"mediump vec3 ret = LD*KD*max(SN, 0.0);\n"
-	"if(SN < 0.0)return ret;\n"
-
-	"mediump vec3 E = normalize(camxyz - vertex);\n"
-	"mediump vec3 H = normalize(E + L);\n"
-	"mediump float NH = max(dot(N, H), 0.0);\n"
-	"return ret + LS*KS*pow(NH, 89.6);\n"
-"}\n"
 "vec3 sun0(){\n"
 	"mediump vec3 N = normalize(normal);\n"
 	"mediump vec3 L = normalize(dirsun0);\n"
@@ -236,9 +224,8 @@ GLSL_VERSION
 //"}\n"
 "void main(){\n"
 	"mediump vec3 c = colour;\n"
-	"c += blinnphong() / 6.0;\n"
-	"c += sun0() / 6.0;\n"
-	"c += sun1() / 6.0;\n"
+	"c += sun0() / 2.0;\n"
+	"c += sun1() / 2.0;\n"
 	"c = vec3(clamp(c.x, 0.0, 1.0), clamp(c.y, 0.0, 1.0), clamp(c.z, 0.0, 1.0));\n"
 	"FragColor = vec4(c, 1.0);\n"
 "}\n";

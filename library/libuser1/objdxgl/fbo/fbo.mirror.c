@@ -35,7 +35,7 @@ GLSL_VERSION
 "out mediump vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-	"vec3 c = 0.8*texture(tex0, uvw).rgb + vec3(0.2, 0.2, 0.2);\n"
+	"mediump vec3 c = 0.8*texture(tex0, uvw).rgb + vec3(0.2, 0.2, 0.2);\n"
 	"FragColor = vec4(c, 1.0);\n"
 "}\n";
 
@@ -85,7 +85,7 @@ void mirrorcamera(
 	if(0 == tmp)return;
 	if(_fbo_ != tmp->fmt)return;
 
-	//say("tex_rgb=%x\n", tmp->tex_color);
+	say("tex_rgb=%x\n", tmp->tex_color);
 	dst->tex[0] = tmp->tex_color;
 
 

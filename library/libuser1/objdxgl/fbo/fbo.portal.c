@@ -19,8 +19,8 @@ char* portal_glsl_v =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 vertex;\n"
 "layout(location = 1)in mediump vec2 texuvw;\n"
-"uniform mat4 cammvp;\n"
 "out mediump vec2 uvw;\n"
+"uniform mat4 cammvp;\n"
 "void main(){\n"
 	"uvw = texuvw;\n"
 	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
@@ -28,12 +28,12 @@ GLSL_VERSION
 
 char* portal_glsl_f =
 GLSL_VERSION
-"uniform sampler2D tex0;\n"
 "in mediump vec2 uvw;\n"
 "out mediump vec4 FragColor;\n"
+"uniform sampler2D tex0;\n"
 "void main(){\n"
-	"float t = 4.0*(uvw.x-0.5)*(uvw.x-0.5) + 4.0*(uvw.y-0.5)*(uvw.y-0.5);\n"
-	"vec3 c = texture(tex0, uvw).rgb;\n"
+	"mediump float t = 4.0*(uvw.x-0.5)*(uvw.x-0.5) + 4.0*(uvw.y-0.5)*(uvw.y-0.5);\n"
+	"mediump vec3 c = texture(tex0, uvw).rgb;\n"
 	"if(t > 1.0)discard;\n"
 	"if(t > 0.8)c += 25.0*(t-0.8)*(t-0.8)*vec3(1.0, 1.0, 1.0);\n"
 	"FragColor = vec4(c, 1.0);\n"
@@ -187,7 +187,7 @@ void portalcamera(
 	tmp->camera.vu[0] = leaf->target.vu[0] - u*x;
 	tmp->camera.vu[1] = leaf->target.vu[1] - u*y;
 	tmp->camera.vu[2] = leaf->target.vu[2] - u*z;
-
+/*
 	say("%f,%f,%f\n",root->camera.vc[0], root->camera.vc[1], root->camera.vc[2]);
 	say("%f,%f,%f\n",tmp->camera.vc[0], tmp->camera.vc[1], tmp->camera.vc[2]);
 	say("%f,%f,%f\n",tmp->camera.vn[0], tmp->camera.vn[1], tmp->camera.vn[2]);
@@ -196,7 +196,7 @@ void portalcamera(
 	say("%f,%f,%f\n",tmp->camera.vb[0], tmp->camera.vb[1], tmp->camera.vb[2]);
 	say("%f,%f,%f\n",tmp->camera.vu[0], tmp->camera.vu[1], tmp->camera.vu[2]);
 	say("\n");
-
+*/
 	carvefrustum(root, &tmp->camera);
 }
 
@@ -236,6 +236,8 @@ static void portal_read_vbo(
 
 	struct glsrc* src = (void*)(pin->foot[0]);
 	float (*vbuf)[6] = (void*)(src->vbuf);
+
+	portalcamera(act, pin, 0, sty, win, 0);
 
 	vbuf[0][0] = vc[0] - vr[0] - vu[0];
 	vbuf[0][1] = vc[1] - vr[1] - vu[1];
@@ -280,7 +282,6 @@ static void portal_read_vbo(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
-	portalcamera(act, pin, 0, sty, win, 0);
 }
 static void portal_read_json(
 	struct arena* win, struct style* sty,

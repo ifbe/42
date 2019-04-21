@@ -35,7 +35,7 @@ GLSL_VERSION
 "out mediump vec4 FragColor;\n"
 "void main()\n"
 "{\n"
-	"vec3 c = texture(tex0, uvw).rgb;\n"
+	"mediump vec3 c = texture(tex0, uvw).rgb;\n"
 	"FragColor = vec4(c, 0.5);\n"
 "}\n";
 

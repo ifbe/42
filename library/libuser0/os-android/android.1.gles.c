@@ -246,7 +246,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 void windowread(struct arena* win)
 {
-	fmt = win->fmt;
+	u64 fmt = win->fmt;
 	if(status)
 	{
 		if(_fbo_ == fmt)
