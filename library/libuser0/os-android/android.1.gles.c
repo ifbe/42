@@ -246,14 +246,15 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 void windowread(struct arena* win)
 {
-	if(_fbo_ == win->fmt)
+	fmt = win->fmt;
+	if(status)
 	{
-		//say("@windowread fbo\n");
-		hostctx_render(win);
-	}
-	else
-	{
-		if(status)
+		if(_fbo_ == fmt)
+		{
+			//say("@windowread fbo\n");
+			hostctx_render(win);
+		}
+		else
 		{
 			arena_rootread(win, 0, 0, 0, 0, 0);
 
@@ -262,10 +263,9 @@ void windowread(struct arena* win)
 
 			eglSwapBuffers(display, surface);
 		}
-
-		//events
-		pollenv();
 	}
+
+	if(_fbo_ != fmt)pollenv();
 }
 void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
@@ -290,7 +290,12 @@ void windowcreate(struct arena* win)
 {
 	if(_fbo_ == win->fmt)
 	{
+		win->width  = win->fbwidth  = 1024;
+		win->stride = win->fbstride = 1024;
+		win->height = win->fbheight = 1024;
+		win->depth  = win->fbdepth  = 1024;
 		fbocreate(win, 0);
+		win->fmt = _fbo_;
 	}
 	else
 	{
