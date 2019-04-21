@@ -230,12 +230,12 @@ static int camman_sread(
 	tf[0] = 0.0;
 	tf[1] = 0.5;
 	tf[2] = 0.0;
-
+/*
 	tc[0] = 0.125 - 1.0;
 	tc[1] = 0.0;
 	tc[2] = 0.0;
 	carveopaque2d_rect(win, 0x3fffffff, tc, tr, tf);
-
+*/
 	tc[0] = 1.0 - 0.125;
 	tc[1] = 0.0;
 	tc[2] = 0.0;

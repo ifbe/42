@@ -241,10 +241,13 @@ void corner_vbo_popup(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
-	int j;
+	int j,rgb;
 	vec3 tc,tr,tf;
 	struct relation* rel;
 	struct style* st;
+
+	struct arena* ar;
+	struct actor* ac;
 
 	rel = act->orel0;
 	if(0 == rel)return;
@@ -253,29 +256,53 @@ void corner_vbo_popup(
 	if(0 == st)return;
 	if('#' == st->uc[3])return;
 
-	tr[0] = 0.25;
-	tr[1] = 0.0;
-	tr[2] = 0.0;
-	tf[0] = 0.0;
-	tf[1] = 0.5;
-	tf[2] = 0.0;
-	tc[0] = -0.75;
-	tc[1] = -0.5;
-	tc[2] = -0.9;
-	carveopaque2d_rect(win, 0xffffff, tc, tr, tf);
+	rel = win->orel0;
+	while(1){
+		if(0 == rel)break;
+		if(_win_ == rel->dsttype){
+			ar = (void*)(rel->dstchip);
+			if(_ui3d_ == ar->fmt)goto found;
+			if(_ui2d_ == ar->fmt)goto found;
+		}
+		rel = samesrcnextdst(rel);
+	}
+	return;
 
-	tr[0] = 0.24;
+found:
+	tr[0] = 0.0;
 	tr[1] = 0.0;
 	tr[2] = 0.0;
 	tf[0] = 0.0;
-	tf[1] = 1.0/18;
+	tf[1] = 1.0/33;
 	tf[2] = 0.0;
+	tc[0] = 0.0;
+	tc[1] = 0.0;
 	tc[2] = -0.9;
-	for(j=0;j<8;j++){
-		tc[0] = -0.75;
-		tc[1] = (-1-j*2)/16.0;
-		carveopaque2d_rect(win, 0x000080, tc, tr, tf);
-		carvestring2d_center(win, 0xffffff, tc, tr, tf, (void*)"haha", 0);
+
+	j = 0;
+	rel = ar->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		if(_act_ == rel->dsttype){
+			ac = (void*)(rel->dstchip);
+			st = (void*)(rel->srcfoot);
+			if('#' == st->uc[3])rgb = 0x404040;
+			else rgb = 0xffffff;
+
+			tc[0] = -7.0/8;
+			tc[1] = (-31+j*2)/32.0;
+			tr[0] = 1.0/8;
+			carveopaque2d_rect(win, 0x7f000080, tc, tr, tf);
+
+			tr[0] = 1.0/32;
+			carvestring2d_center(win, rgb, tc, tr, tf, (void*)&ac->fmt, 8);
+
+			j += 1;
+			if(j >= 16)break;
+		}
+
+		rel = samesrcnextdst(rel);
 	}
 }
 
@@ -383,80 +410,148 @@ static int corner_sread(
 
 
 
+static int corner_swrite_twig(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
+{
+	struct relation* rel;
+	struct arena* ar;
+	struct style* st;
+	int x,y,j;
+
+	rel = act->orel0;
+	if(0 == rel)return 0;
+
+	st = (void*)(rel->srcfoot);
+	if(0 == st)return 0;
+
+	int w = win->width;
+	int h = win->height;
+
+	short* t = (void*)ev;
+	if(t[0] > w/8)return 0;
+	if(t[1] < h/2)return 0;
+
+	rel = win->orel0;
+	while(1){
+		if(0 == rel)break;
+		if(_win_ == rel->dsttype){
+			ar = (void*)(rel->dstchip);
+			if(_ui3d_ == ar->fmt)goto found;
+			if(_ui2d_ == ar->fmt)goto found;
+		}
+		rel = samesrcnextdst(rel);
+	}
+
+found:
+	x = 0;
+	y = (h-t[1])*32/h;
+	rel = ar->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		if(_act_ == rel->dsttype){
+			if(x == y){
+				st = (void*)(rel->srcfoot);
+
+				j = st->uc[3];
+				if('#' == j)j = 0;
+				else j = '#';
+				st->uc[3] = j;
+
+				break;
+			}
+
+			x += 1;
+			if(x >= 16)break;
+		}
+
+		rel = samesrcnextdst(rel);
+	}
+	return 1;
+}
+
+
+
+
+static int corner_onoff(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
+{
+	struct relation* rel;
+	struct style* st;
+	int j;
+
+	rel = act->orel0;
+	if(0 == rel)return 0;
+
+	st = (void*)(rel->srcfoot);
+	if(0 == st)return 0;
+
+	j = st->uc[3];
+	if('#' == j)j = 0;
+	else j = '#';
+	st->uc[3] = j;
+
+	return 1;
+}
+static int corner_swrite_root(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
+{
+	short* t;
+	int w,h,ret;
+	int x,y;
+
+	t = (void*)ev;
+	x = t[0];
+	y = t[1];
+
+	w = win->width;
+	h = win->height;
+	if(w<h)ret = w>>4;
+	else ret = h>>4;
+
+	if(y+ret > h)
+	{
+		if(x < ret)
+		{
+			corner_onoff(act, pin, win, sty);
+			return 1;
+		}
+		if(x+ret > w)
+		{
+			return 1;
+		}
+	}
+	if(y < ret)
+	{
+		if(x < ret)
+		{
+			return 1;
+		}
+		if(x+ret > w)
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
 static int corner_swrite(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
-	int j,k,x,y;
-	int w,h,id,ret;
-	struct relation* rel;
-	struct arena* tmp;
-	struct style* st;
-	u64 why = ev->why;
-	u64 what = ev->what;
-
-	if('p' == (what&0xff))
+	int j;
+	if(0x2d70 == ev->what)
 	{
-		w = win->width;
-		h = win->height;
-		if(w<h)ret = w>>4;
-		else ret = h>>4;
+		j = corner_swrite_root(act, pin, win, sty, ev, len);
+		if(j)return 1;
 
-		id = (why>>48)&0xffff;
-		if('l' == id)id = 10;
-		if((0 != id)&&(10 != id))return 0;
-		j = win->input[id].x0;
-		k = win->input[id].y0;
-
-		if(0x2d70 == what)
-		{
-			//open or close vkbd
-			x = why&0xffff;
-			y = (why>>16)&0xffff;
-
-			if(y+ret > h)
-			{
-				if(x < ret)
-				{
-					rel = act->orel0;
-					if(rel){
-						st = (void*)(rel->srcfoot);
-						if(st){
-							j = st->uc[3];
-							if('#' == j)j = 0;
-							else j = '#';
-							st->uc[3] = j;
-						}
-					}
-					return 1;
-				}
-				if(x+ret > w)
-				{
-					return 1;
-				}
-			}
-			if(y < ret)
-			{
-				if(x < ret)
-				{
-					rel = act->irel0;
-					if(rel)
-					{
-						tmp = (void*)(rel->srcchip);
-						if(tmp)
-						{
-							ui2d_cwrite(tmp, sty, act, pin, '#');
-						}
-					}
-					return 1;
-				}
-				if(x+ret > w)
-				{
-					return 1;
-				}
-			}
-		}
+		j = corner_swrite_twig(act, pin, win, sty, ev, len);
+		if(j)return 1;
 	}
 	return 0;
 }
@@ -496,7 +591,7 @@ static int corner_create(struct actor* act, u8* str)
 {
 	struct actor* ac = allocactor();
 	struct style* sty = allocstyle();
-	sty->uc[3] = '#';
+	sty->uc[3] = 0;
 	relationcreate(ac, 0, _act_, act, sty, _act_);
 	return 0;
 }

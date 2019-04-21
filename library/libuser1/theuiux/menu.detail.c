@@ -305,17 +305,72 @@ int actoroutput_detail_pixel(struct arena* win, struct style* sty)
 	}
 	return 0;
 }
-int actoroutput_detail(struct arena* win, struct style* sty)
+
+
+
+
+static int detail_sread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	if(_vbo_ == win->fmt)actoroutput_detail_vbo(win, sty);
 	else actoroutput_detail_pixel(win, sty);
 	return 0;
 }
-
-
-
-
-int actorinput_detail(struct arena* win, struct style* sty, struct event* ev)
+static int detail_swrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
 {
 	return 0;
+}
+static void detail_cread(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
+{
+}
+static void detail_cwrite(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
+{
+}
+static void detail_stop(
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
+{
+}
+static void detail_start(
+	struct actor* leaf, struct pinid* lf,
+	struct arena* twig, struct style* tf,
+	struct arena* root, struct style* rf)
+{
+    say("@detail_start\n");
+}
+void detail_delete(struct actor* act)
+{
+}
+void detail_create(struct actor* act, void* str)
+{
+    say("@detail_create\n");
+}
+
+
+
+
+void detail_register(struct actor* p)
+{
+	p->type = _orig_;
+	p->fmt = hex64('d', 'e', 't', 'a', 'i', 'l', 0, 0);
+
+	p->oncreate = (void*)detail_create;
+	p->ondelete = (void*)detail_delete;
+	p->onstart  = (void*)detail_start;
+	p->onstop   = (void*)detail_stop;
+	p->oncread  = (void*)detail_cread;
+	p->oncwrite = (void*)detail_cwrite;
+	p->onsread  = (void*)detail_sread;
+	p->onswrite = (void*)detail_swrite;
 }

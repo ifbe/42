@@ -108,12 +108,12 @@ GLSL_VERSION
 	"return ret + LS*KS*pow(NH, 25.0);\n"
 "}\n"
 "void main(){\n"
-	"mediump vec3 light = LA*KA;\n"
-	"light += blinnphong() / 3.0;\n"
-	"light += sun0() / 3.0;\n"
-	"light += sun1() / 3.0;\n"
-	"light = vec3(clamp(light.x, 0.0, 1.0), clamp(light.y, 0.0, 1.0), clamp(light.z, 0.0, 1.0));\n"
-	"FragColor = vec4(0.8*texture(tex0, texuvw.xy).bgr + 0.2*light, 1.0);\n"
+	"mediump vec3 c = texture(tex0, texuvw.xy).bgr;\n"
+	"c += blinnphong() / 6.0;\n"
+	"c += sun0() / 6.0;\n"
+	"c += sun1() / 6.0;\n"
+	"c = vec3(clamp(c.x, 0.0, 1.0), clamp(c.y, 0.0, 1.0), clamp(c.z, 0.0, 1.0));\n"
+	"FragColor = vec4(c, 1.0);\n"
 "}\n";
 
 

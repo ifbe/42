@@ -21,7 +21,7 @@ void tabbar_vbo_listtwig(struct arena* win, struct style* sty, struct arena* tmp
     tf[0] = 0.0;
     tf[1] = 0.25;
     tf[2] = 0.0;
-    carvesolid2d_rect(win, 0x808080, tc, tr, tf);
+    carveopaque2d_rect(win, 0x7f808080, tc, tr, tf);
 
     tc[0] = 0.0;
     tc[1] = 0.0;
@@ -32,7 +32,7 @@ void tabbar_vbo_listtwig(struct arena* win, struct style* sty, struct arena* tmp
     tf[0] = 0.0;
     tf[1] = 0.5;
     tf[2] = 0.0;
-    carvesolid2d_rect(win, 0x808080, tc, tr, tf);
+    carveopaque2d_rect(win, 0x7f808080, tc, tr, tf);
 
     tr[0] = 1.0/18;
     tr[1] = 0.0;
@@ -107,7 +107,7 @@ void tabbar_vbo_listroot(
             tr[0] = vr[0] / 2 / 8.1;
             tr[1] = vr[1] / 2 / 8.1;
             tr[2] = vr[2] / 2 / 8.1;
-            carvesolid2d_rect(win, 0x000080, tc, tr, tf);
+            carveopaque2d_rect(win, 0x7f000080, tc, tr, tf);
 
             tc[2] -= 0.1;
             tr[0] = vr[0] / 2 / 16;

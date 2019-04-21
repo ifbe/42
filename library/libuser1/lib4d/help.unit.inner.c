@@ -109,6 +109,7 @@ void vkbd_register(void*);
 //.else
 void login_register(void*);
 void overview_register(void*);
+void detail_register(void*);
 
 
 
@@ -415,5 +416,8 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	overview_register(tmp);
+	tmp += sizeof(struct actor);
+
+	detail_register(tmp);
 	tmp += sizeof(struct actor);
 }

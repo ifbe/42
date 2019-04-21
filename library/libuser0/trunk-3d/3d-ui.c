@@ -6,11 +6,18 @@ int actorstart(void*, void*, void*, void*, void*, void*);
 
 
 
-#define COUNT 3
+#define COUNT 4
 static u64 want[COUNT] = {
 	hex64('p','i','c','k','e','r', 0 , 0 ),
-	hex64('c','a','m','m','a','n', 0,  0 ),
-	hex64('o','v','e','r','v','i','e','w')
+	hex64('c','a','m','m','a','n', 0 , 0 ),
+	hex64('o','v','e','r','v','i','e','w'),
+	hex64('d','e','t','a','i','l', 0 , 0 )
+};
+static u8 flag[COUNT] = {
+	'#',
+	'#',
+	'#',
+	'#'
 };
 
 
@@ -131,6 +138,7 @@ int ui3d_create(struct arena* win, void* str)
 		sty->vc[0] = 0;
 		sty->vc[1] = 0;
 		sty->vc[2] = 0;
+		sty->uc[3] = flag[j];
 
 		sty->vr[0] = 1.0;
 		sty->vr[1] = 0;
