@@ -70,6 +70,28 @@ void fixview(mat4 viewmatrix, struct style* sty)
 	viewmatrix[3][3] = 1.0f;
 	//mat4_print(viewmatrix);
 }
+void fixorie(mat4 orie)
+{
+	orie[0][0] = 0.0;
+	orie[0][1] = -1.0;
+	orie[0][2] = 0.0;
+	orie[0][3] = 0.0;
+
+	orie[1][0] = 1.0;
+	orie[1][1] = 0.0;
+	orie[1][2] = 0.0;
+	orie[1][3] = 0.0;
+
+	orie[2][0] = 0.0;
+	orie[2][1] = 0.0;
+	orie[2][2] = 1.0;
+	orie[2][3] = 0.0;
+
+	orie[3][0] = 0.0;
+	orie[3][1] = 0.0;
+	orie[3][2] = 0.0;
+	orie[3][3] = 1.0;
+}
 void fixproj(mat4 proj, struct style* sty)
 {
 	float l = vec3_len(sty->vl);
@@ -118,6 +140,10 @@ void fixmatrix(mat4 m, struct arena* win)
 	mat4 t;
 
 	fixproj(m, &win->camera);
+
+	//fixorie(t);
+	//mat4_multiply(m, t);
+
 	fixview(t, &win->camera);
 	mat4_multiply(m, t);
 }
