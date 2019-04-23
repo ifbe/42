@@ -109,9 +109,9 @@ int actoroutput_detail_vbo(struct arena* win, struct style* sty)
 	vf = sty->vf;
 
 	//2. body
-	tr[0] = vr[0]/2;
-	tr[1] = vr[1]/2;
-	tr[2] = vr[2]/2;
+	tr[0] = vr[0]/4;
+	tr[1] = vr[1]/4;
+	tr[2] = vr[2]/4;
 	tf[0] = vf[0]/2;
 	tf[1] = vf[1]/2;
 	tf[2] = vf[2]/2;
@@ -146,13 +146,13 @@ int actoroutput_detail_vbo(struct arena* win, struct style* sty)
 		}
 
 		//arrow
-		tc[0] = -6.0/8;
+		tc[0] = -3.0/4;
 		tc[1] = (7-j*2)/16.0;
 		tc[2] = -0.5;
-		tr[0] = -4.0/8;
+		tr[0] = -1.0/4;
 		tr[1] = (7-j*2)/16.0;
 		tr[2] = -0.5;
-		carveline2d_arrow(win, 0x00ff00, tc, tr);
+		carveline2d_arrow(win, 0x0000ff, tc, tr);
 
 		//foot
 		tc[0] = -23.0/32;
@@ -201,13 +201,13 @@ int actoroutput_detail_vbo(struct arena* win, struct style* sty)
 		}
 
 		//arrow
-		tc[0] = 4.0/8;
+		tc[0] = 1.0/4;
 		tc[1] = (7-j*2)/16.0;
 		tc[2] = -0.5;
-		tr[0] = 6.0/8;
+		tr[0] = 3.0/4;
 		tr[1] = (7-j*2)/16.0;
 		tr[2] = -0.5;
-		carveline2d_arrow(win, 0x00ff00, tc, tr);
+		carveline2d_arrow(win, 0xff0000, tc, tr);
 
 		//foot
 		tc[0] = 19.0/32;
@@ -252,7 +252,7 @@ int actoroutput_detail_pixel(struct arena* win, struct style* sty)
 	}
 
 	//2. body
-	drawarena(win, 0, cx-ww/2, cy-hh/2, cx+ww/2, cy+hh/2);
+	drawarena(win, 0, cx-ww/4, cy-hh/2, cx+ww/4, cy+hh/2);
 
 	//3. irel
 	j = 0;
@@ -271,7 +271,7 @@ int actoroutput_detail_pixel(struct arena* win, struct style* sty)
 		}
 
 		//ofoot, ifoot
-		drawline_arrow(win,0x00ff00, cx-ww*6/8, cy+hh*(j+j-7)/16, cx-ww*4/8, cy+hh*(j+j-7)/16);
+		drawline_arrow(win,0x00ff00, cx-ww*3/4, cy+hh*(j+j-7)/16, cx-ww*1/4, cy+hh*(j+j-7)/16);
 		drawascii_fit(win, 0x00ff00, cx-ww*6/8, cy+hh*(j+j-8)/16, cx-ww*5/8, cy+hh*(j+j-6)/16, 'o');
 		drawascii_fit(win, 0x00ff00, cx-ww*5/8, cy+hh*(j+j-8)/16, cx-ww*4/8, cy+hh*(j+j-6)/16, 'i');
 
@@ -296,7 +296,7 @@ int actoroutput_detail_pixel(struct arena* win, struct style* sty)
 		}
 
 		//ofoot, ifoot
-		drawline_arrow(win,0x00ff00, cx+ww*4/8, cy+hh*(j+j-7)/16, cx+ww*6/8, cy+hh*(j+j-7)/16);
+		drawline_arrow(win,0x00ff00, cx+ww*1/4, cy+hh*(j+j-7)/16, cx+ww*3/4, cy+hh*(j+j-7)/16);
 		drawascii_fit(win, 0x00ff00, cx+ww*4/8, cy+hh*(j+j-8)/16, cx+ww*5/8, cy+hh*(j+j-6)/16, 'o');
 		drawascii_fit(win, 0x00ff00, cx+ww*5/8, cy+hh*(j+j-8)/16, cx+ww*6/8, cy+hh*(j+j-6)/16, 'i');
 

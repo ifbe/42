@@ -270,6 +270,17 @@ void corner_vbo_popup(
 
 found:
 	tr[0] = 0.0;
+	tr[1] = -1.0;
+	tr[2] = 0.0;
+	tf[0] = -1.0;
+	tf[1] = 0.0;
+	tf[2] = 0.0;
+	tc[0] = -1.0;
+	tc[1] = -1.0;
+	tc[2] = -0.9;
+	carveopaque2d_bezier(win, 0xbfffffff, tr, tf, tc);
+
+	tr[0] = 0.0;
 	tr[1] = 0.0;
 	tr[2] = 0.0;
 	tf[0] = 0.0;

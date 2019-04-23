@@ -72,10 +72,11 @@ typedef float mat4[4][4];
 #define _pin_  hex32('p','i','n',0)
 #define _sch_  hex32('s','c','h',0)
 //
-#define _bg3d_ hex32('b','g','3','d')
-#define _fg3d_ hex32('f','g','3','d')
 #define _cam3d_ hex64('c','a','m','3','d', 0, 0, 0)
 #define _lit3d_ hex64('l','i','t','3','d', 0, 0, 0)
+#define _mic3d_ hex64('m','i','c','3','d', 0, 0, 0)
+#define _bg3d_ hex32('b','g','3','d')
+#define _fg3d_ hex32('f','g','3','d')
 #define _ui3d_ hex32('u','i','3','d')
 #define _xx3d_ hex32('x','x','3','d')
 //
@@ -845,6 +846,7 @@ void carvesolid2d_circle(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 
 void carvesolid2d_prism4(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void carvesolid2d_sphere(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
+void carveopaque2d_bezier(   struct arena* win, u32 rgb, vec3 va, vec3 vb, vec3 vt);
 void carveopaque2d_triangle( struct arena* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
 void carveopaque2d_rect(     struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 void carveopaque2d_circle(   struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);

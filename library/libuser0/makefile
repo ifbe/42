@@ -33,10 +33,11 @@ root-vbo/vbo.base.c \
 root-vbo/vbo.tool.c \
 root-rgba/rgba.base.c \
 root-rgba/rgba.tool.c \
-trunk-3d/3d-bg.c \
-trunk-3d/3d-fg.c \
 trunk-3d/3d-cam.c \
 trunk-3d/3d-lit.c \
+trunk-3d/3d-mic.c \
+trunk-3d/3d-bg.c \
+trunk-3d/3d-fg.c \
 trunk-3d/3d-ui.c \
 trunk-3d/3d-xx.c \
 trunk-2d/2d-bg.c \

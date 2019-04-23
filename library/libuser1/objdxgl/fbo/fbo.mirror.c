@@ -74,22 +74,78 @@ void mirrorcamera(
 	float x,y,z,t;
 	vec3 p,q;
 	struct relation* rel;
-	struct arena* tmp;
+	struct arena* fbo;
 	struct glsrc* src = (void*)(lf->foot[0]);
 	struct gldst* dst = (void*)(tf->foot[0]);
 
 	rel = leaf->orel0;
 	if(0 == rel)return;
 
-	tmp = (void*)(rel->dstchip);
-	if(0 == tmp)return;
-	if(_fbo_ != tmp->fmt)return;
+	fbo = (void*)(rel->dstchip);
+	if(0 == fbo)return;
+	if(_fbo_ != fbo->fmt)return;
 
-	say("tex_rgb=%x\n", tmp->tex_color);
-	dst->tex[0] = tmp->tex_color;
+	say("tex_rgb=%x\n", fbo->tex_color);
+	dst->tex[0] = fbo->tex_color;
 
 
 	//mirror.n
+	x = -tf->vf[0];
+	y = -tf->vf[1];
+	z = -tf->vf[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+
+	//op*cos(on,op): t = op * mirror.n
+	t = (root->camera.vc[0] - tf->vc[0])*x
+	  + (root->camera.vc[1] - tf->vc[1])*y
+	  + (root->camera.vc[2] - tf->vc[2])*z;
+
+	//dir*len: fbo.n = t*mirror.n + offset
+	fbo->camera.vn[0] = x * t * 1.001;
+	fbo->camera.vn[1] = y * t * 1.001;
+	fbo->camera.vn[2] = z * t * 1.001;
+
+	//foot of a perpendicular: fbo.q = p - t*mirror.n
+	fbo->camera.vq[0] = root->camera.vc[0] - t*x;
+	fbo->camera.vq[1] = root->camera.vc[1] - t*y;
+	fbo->camera.vq[2] = root->camera.vc[2] - t*z;
+
+	//reflected point: p' = p - 2*t*mirror.n
+	fbo->camera.vc[0] = root->camera.vc[0] - 2*t*x;
+	fbo->camera.vc[1] = root->camera.vc[1] - 2*t*y;
+	fbo->camera.vc[2] = root->camera.vc[2] - 2*t*z;
+
+
+	//r = -mirror.r
+	x = -tf->vr[0];
+	y = -tf->vr[1];
+	z = -tf->vr[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+
+	//l.len = (l-q) * nr
+	t = (tf->vc[0] + tf->vr[0] - fbo->camera.vq[0]) * x
+	  + (tf->vc[1] + tf->vr[1] - fbo->camera.vq[1]) * y
+	  + (tf->vc[2] + tf->vr[2] - fbo->camera.vq[2]) * z;
+	fbo->camera.vl[0] = x * t;
+	fbo->camera.vl[1] = y * t;
+	fbo->camera.vl[2] = z * t;
+
+	//r.len = (r-q) * nr
+	t = (tf->vc[0] - tf->vr[0] - fbo->camera.vq[0]) * x
+	  + (tf->vc[1] - tf->vr[1] - fbo->camera.vq[1]) * y
+	  + (tf->vc[2] - tf->vr[2] - fbo->camera.vq[2]) * z;
+	fbo->camera.vr[0] = x * t;
+	fbo->camera.vr[1] = y * t;
+	fbo->camera.vr[2] = z * t;
+
+
+	//mirror.t
 	x = tf->vu[0];
 	y = tf->vu[1];
 	z = tf->vu[2];
@@ -98,106 +154,126 @@ void mirrorcamera(
 	y /= t;
 	z /= t;
 
-	//t = op * mirror.n
-	t = (root->camera.vc[0] - tf->vc[0])*x
-	  + (root->camera.vc[1] - tf->vc[1])*y
-	  + (root->camera.vc[2] - tf->vc[2])*z;
+	//b.len =  = (b-q) * nt
+	t = (tf->vc[0] - tf->vu[0] - fbo->camera.vq[0]) * x
+	  + (tf->vc[1] - tf->vu[1] - fbo->camera.vq[1]) * y
+	  + (tf->vc[2] - tf->vu[2] - fbo->camera.vq[2]) * z;
+	fbo->camera.vb[0] = x * t;
+	fbo->camera.vb[1] = y * t;
+	fbo->camera.vb[2] = z * t;
 
-	//p' = p - 2*t*mirror.n
-	tmp->camera.vc[0] = root->camera.vc[0] - 2*t*x;
-	tmp->camera.vc[1] = root->camera.vc[1] - 2*t*y;
-	tmp->camera.vc[2] = root->camera.vc[2] - 2*t*z;
+	//t.len = (u-q) * nt
+	t = (tf->vc[0] + tf->vu[0] - fbo->camera.vq[0]) * x
+	  + (tf->vc[1] + tf->vu[1] - fbo->camera.vq[1]) * y
+	  + (tf->vc[2] + tf->vu[2] - fbo->camera.vq[2]) * z;
+	fbo->camera.vu[0] = x * t;
+	fbo->camera.vu[1] = y * t;
+	fbo->camera.vu[2] = z * t;
 
-	//camera.n = t*mirror.n
-	tmp->camera.vn[0] = x*t;
-	tmp->camera.vn[1] = y*t;
-	tmp->camera.vn[2] = z*t;
-
-	//mirror.r
-	x = tf->vr[0];
-	y = tf->vr[1];
-	z = tf->vr[2];
-	t = squareroot(x*x + y*y + z*z);
-	x /= t;
-	y /= t;
-	z /= t;
-
-	//camera.l = mirror.r * (l-q)
-	tmp->camera.vl[0] = x * ((tf->vc[0] - tf->vr[0]) - (tmp->camera.vc[0] + tmp->camera.vn[0]));
-	tmp->camera.vl[1] = y * ((tf->vc[1] - tf->vr[1]) - (tmp->camera.vc[1] + tmp->camera.vn[1]));
-	tmp->camera.vl[2] = z * ((tf->vc[2] - tf->vr[2]) - (tmp->camera.vc[2] + tmp->camera.vn[2]));
-
-	//camera.r = mirror.r * (r-q)
-	tmp->camera.vr[0] = x * ((tf->vc[0] + tf->vr[0]) - (tmp->camera.vc[0] + tmp->camera.vn[0]));
-	tmp->camera.vr[1] = y * ((tf->vc[1] + tf->vr[1]) - (tmp->camera.vc[1] + tmp->camera.vn[1]));
-	tmp->camera.vr[2] = z * ((tf->vc[2] + tf->vr[2]) - (tmp->camera.vc[2] + tmp->camera.vn[2]));
-
-	//mirror.t
-	x = tf->vf[0];
-	y = tf->vf[1];
-	z = tf->vf[2];
-	t = squareroot(x*x + y*y + z*z);
-	x /= t;
-	y /= t;
-	z /= t;
-
-	//camera.b = mirror.t * (b-q)
-	tmp->camera.vb[0] = x * ((tf->vc[0] - tf->vf[0]) - (tmp->camera.vc[0] + tmp->camera.vn[0]));
-	tmp->camera.vb[1] = y * ((tf->vc[1] - tf->vf[1]) - (tmp->camera.vc[1] + tmp->camera.vn[1]));
-	tmp->camera.vb[2] = z * ((tf->vc[2] - tf->vf[2]) - (tmp->camera.vc[2] + tmp->camera.vn[2]));
-
-	//camera.u = mirror.t * (u-q)
-	tmp->camera.vu[0] = x * ((tf->vc[0] + tf->vf[0]) - (tmp->camera.vc[0] + tmp->camera.vn[0]));
-	tmp->camera.vu[1] = y * ((tf->vc[1] + tf->vf[1]) - (tmp->camera.vc[1] + tmp->camera.vn[1]));
-	tmp->camera.vu[2] = z * ((tf->vc[2] + tf->vf[2]) - (tmp->camera.vc[2] + tmp->camera.vn[2]));
-
-	tmp->camera.vn[0] *= 1.001;
-	tmp->camera.vn[1] *= 1.001;
-	tmp->camera.vn[2] *= 1.001;
-
+	carvefrustum(root, &fbo->camera);
+/*
 	say("%f,%f,%f\n",root->camera.vc[0], root->camera.vc[1], root->camera.vc[2]);
-	say("%f,%f,%f\n",tmp->camera.vc[0], tmp->camera.vc[1], tmp->camera.vc[2]);
-	say("%f,%f,%f\n",tmp->camera.vn[0], tmp->camera.vn[1], tmp->camera.vn[2]);
-	say("%f,%f,%f\n",tmp->camera.vl[0], tmp->camera.vl[1], tmp->camera.vl[2]);
-	say("%f,%f,%f\n",tmp->camera.vr[0], tmp->camera.vr[1], tmp->camera.vr[2]);
-	say("%f,%f,%f\n",tmp->camera.vb[0], tmp->camera.vb[1], tmp->camera.vb[2]);
-	say("%f,%f,%f\n",tmp->camera.vu[0], tmp->camera.vu[1], tmp->camera.vu[2]);
+	say("%f,%f,%f\n",fbo->camera.vc[0], fbo->camera.vc[1], fbo->camera.vc[2]);
+	say("%f,%f,%f\n",fbo->camera.vn[0], fbo->camera.vn[1], fbo->camera.vn[2]);
+	say("%f,%f,%f\n",fbo->camera.vl[0], fbo->camera.vl[1], fbo->camera.vl[2]);
+	say("%f,%f,%f\n",fbo->camera.vr[0], fbo->camera.vr[1], fbo->camera.vr[2]);
+	say("%f,%f,%f\n",fbo->camera.vb[0], fbo->camera.vb[1], fbo->camera.vb[2]);
+	say("%f,%f,%f\n",fbo->camera.vu[0], fbo->camera.vu[1], fbo->camera.vu[2]);
 	say("\n");
 
 	carveline_rect(root, 0xffffff, tf->vc, tf->vr, tf->vf);
 	p[0] = tf->vc[0] - tf->vr[0] - tf->vf[0];
 	p[1] = tf->vc[1] - tf->vr[1] - tf->vf[1];
 	p[2] = tf->vc[2] - tf->vr[2] - tf->vf[2];
-	q[0] = 2*p[0] - tmp->camera.vc[0];
-	q[1] = 2*p[1] - tmp->camera.vc[1];
-	q[2] = 2*p[2] - tmp->camera.vc[2];
-	carveline(root, 0xffffff, tmp->camera.vc, q);
+	q[0] = 2*p[0] - fbo->camera.vc[0];
+	q[1] = 2*p[1] - fbo->camera.vc[1];
+	q[2] = 2*p[2] - fbo->camera.vc[2];
+	carveline(root, 0xffffff, fbo->camera.vc, q);
 	p[0] = tf->vc[0] + tf->vr[0] - tf->vf[0];
 	p[1] = tf->vc[1] + tf->vr[1] - tf->vf[1];
 	p[2] = tf->vc[2] + tf->vr[2] - tf->vf[2];
-	q[0] = 2*p[0] - tmp->camera.vc[0];
-	q[1] = 2*p[1] - tmp->camera.vc[1];
-	q[2] = 2*p[2] - tmp->camera.vc[2];
-	carveline(root, 0xffffff, tmp->camera.vc, q);
+	q[0] = 2*p[0] - fbo->camera.vc[0];
+	q[1] = 2*p[1] - fbo->camera.vc[1];
+	q[2] = 2*p[2] - fbo->camera.vc[2];
+	carveline(root, 0xffffff, fbo->camera.vc, q);
 	p[0] = tf->vc[0] - tf->vr[0] + tf->vf[0];
 	p[1] = tf->vc[1] - tf->vr[1] + tf->vf[1];
 	p[2] = tf->vc[2] - tf->vr[2] + tf->vf[2];
-	q[0] = 2*p[0] - tmp->camera.vc[0];
-	q[1] = 2*p[1] - tmp->camera.vc[1];
-	q[2] = 2*p[2] - tmp->camera.vc[2];
-	carveline(root, 0xffffff, tmp->camera.vc, q);
+	q[0] = 2*p[0] - fbo->camera.vc[0];
+	q[1] = 2*p[1] - fbo->camera.vc[1];
+	q[2] = 2*p[2] - fbo->camera.vc[2];
+	carveline(root, 0xffffff, fbo->camera.vc, q);
 	p[0] = tf->vc[0] + tf->vr[0] + tf->vf[0];
 	p[1] = tf->vc[1] + tf->vr[1] + tf->vf[1];
 	p[2] = tf->vc[2] + tf->vr[2] + tf->vf[2];
-	q[0] = 2*p[0] - tmp->camera.vc[0];
-	q[1] = 2*p[1] - tmp->camera.vc[1];
-	q[2] = 2*p[2] - tmp->camera.vc[2];
-	carveline(root, 0xffffff, tmp->camera.vc, q);
+	q[0] = 2*p[0] - fbo->camera.vc[0];
+	q[1] = 2*p[1] - fbo->camera.vc[1];
+	q[2] = 2*p[2] - fbo->camera.vc[2];
+	carveline(root, 0xffffff, fbo->camera.vc, q);
+*/
 }
 
 
 
 
+static void mirror_read_vbo(
+	struct arena* win, struct style* sty,
+	struct actor* act, struct pinid* pin)
+{
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vu;
+
+	struct glsrc* src = (void*)(pin->foot[0]);
+	float (*vbuf)[6] = (void*)(src->vbuf);
+	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
+
+	vbuf[0][0] = vc[0] - vr[0] - vu[0];
+	vbuf[0][1] = vc[1] - vr[1] - vu[1];
+	vbuf[0][2] = vc[2] - vr[2] - vu[2];
+	vbuf[0][3] = 1.0;
+	vbuf[0][4] = 0.0;
+	vbuf[0][5] = 0.0;
+
+	vbuf[1][0] = vc[0] + vr[0] + vu[0];
+	vbuf[1][1] = vc[1] + vr[1] + vu[1];
+	vbuf[1][2] = vc[2] + vr[2] + vu[2];
+	vbuf[1][3] = 0.0;
+	vbuf[1][4] = 1.0;
+	vbuf[1][5] = 0.0;
+
+	vbuf[2][0] = vc[0] - vr[0] + vu[0];
+	vbuf[2][1] = vc[1] - vr[1] + vu[1];
+	vbuf[2][2] = vc[2] - vr[2] + vu[2];
+	vbuf[2][3] = 1.0;
+	vbuf[2][4] = 1.0;
+	vbuf[2][5] = 0.0;
+
+	vbuf[3][0] = vc[0] + vr[0] + vu[0];
+	vbuf[3][1] = vc[1] + vr[1] + vu[1];
+	vbuf[3][2] = vc[2] + vr[2] + vu[2];
+	vbuf[3][3] = 0.0;
+	vbuf[3][4] = 1.0;
+	vbuf[3][5] = 0.0;
+
+	vbuf[4][0] = vc[0] - vr[0] - vu[0];
+	vbuf[4][1] = vc[1] - vr[1] - vu[1];
+	vbuf[4][2] = vc[2] - vr[2] - vu[2];
+	vbuf[4][3] = 1.0;
+	vbuf[4][4] = 0.0;
+	vbuf[4][5] = 0.0;
+
+	vbuf[5][0] = vc[0] + vr[0] - vu[0];
+	vbuf[5][1] = vc[1] + vr[1] - vu[1];
+	vbuf[5][2] = vc[2] + vr[2] - vu[2];
+	vbuf[5][3] = 0.0;
+	vbuf[5][4] = 0.0;
+	vbuf[5][5] = 0.0;
+
+	src->vbuf_enq += 1;
+	mirrorcamera(act, pin, 0, sty, win, 0);
+}
 static void mirror_read_pixel(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct pinid* pin)
@@ -217,64 +293,6 @@ static void mirror_read_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-}
-static void mirror_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
-
-	struct glsrc* src = (void*)(pin->foot[0]);
-	float (*vbuf)[6] = (void*)(src->vbuf);
-	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
-
-	vbuf[0][0] = vc[0] - vr[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2];
-	vbuf[0][3] = 0.0;
-	vbuf[0][4] = 0.0;
-	vbuf[0][5] = 0.0;
-
-	vbuf[1][0] = vc[0] + vr[0] + vf[0];
-	vbuf[1][1] = vc[1] + vr[1] + vf[1];
-	vbuf[1][2] = vc[2] + vr[2] + vf[2];
-	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 1.0;
-	vbuf[1][5] = 0.0;
-
-	vbuf[2][0] = vc[0] - vr[0] + vf[0];
-	vbuf[2][1] = vc[1] - vr[1] + vf[1];
-	vbuf[2][2] = vc[2] - vr[2] + vf[2];
-	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 1.0;
-	vbuf[2][5] = 0.0;
-
-	vbuf[3][0] = vc[0] + vr[0] + vf[0];
-	vbuf[3][1] = vc[1] + vr[1] + vf[1];
-	vbuf[3][2] = vc[2] + vr[2] + vf[2];
-	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 1.0;
-	vbuf[3][5] = 0.0;
-
-	vbuf[4][0] = vc[0] - vr[0] - vf[0];
-	vbuf[4][1] = vc[1] - vr[1] - vf[1];
-	vbuf[4][2] = vc[2] - vr[2] - vf[2];
-	vbuf[4][3] = 0.0;
-	vbuf[4][4] = 0.0;
-	vbuf[4][5] = 0.0;
-
-	vbuf[5][0] = vc[0] + vr[0] - vf[0];
-	vbuf[5][1] = vc[1] + vr[1] - vf[1];
-	vbuf[5][2] = vc[2] + vr[2] - vf[2];
-	vbuf[5][3] = 1.0;
-	vbuf[5][4] = 0.0;
-	vbuf[5][5] = 0.0;
-
-	src->vbuf_enq += 1;
-	mirrorcamera(act, pin, 0, sty, win, 0);
 }
 static void mirror_read_json(
 	struct arena* win, struct style* sty,

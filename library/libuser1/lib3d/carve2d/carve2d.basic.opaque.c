@@ -62,6 +62,48 @@ void carveopaque2d_triangle(struct arena* win, u32 rgba,
 	ibuf[1] = vlen + 1;
 	ibuf[2] = vlen + 2;
 }
+void carveopaque2d_bezier(struct arena* win, u32 rgba,
+	vec3 va, vec3 vb, vec3 vt)
+{
+	u8* u = (void*)&rgba;
+	float bb = (float)u[0] / 255.0;
+	float gg = (float)u[1] / 255.0;
+	float rr = (float)u[2] / 255.0;
+	float aa = (float)u[3] / 255.0;
+
+	float* vbuf;
+	u16* ibuf;
+	int vlen = opaque2d_vars(win, opaque2d, &vbuf, &ibuf, acc + 1, acc);
+
+	int j;
+	float t;
+	for(j=0;j<acc;j++)
+	{
+		t = (float)j / (acc-1);
+
+		vbuf[8*j+0] = (1.0-t)*(1.0-t)*va[0] + 2*t*(1.0-t)*vt[0] + t*t*vb[0];
+		vbuf[8*j+1] = (1.0-t)*(1.0-t)*va[1] + 2*t*(1.0-t)*vt[1] + t*t*vb[1];
+		vbuf[8*j+2] = vt[2];
+
+		vbuf[8*j+4] = rr;
+		vbuf[8*j+5] = gg;
+		vbuf[8*j+6] = bb;
+		vbuf[8*j+7] = aa;
+
+		if(j >= acc-1)break;
+		ibuf[3*j+0] = vlen + j;
+		ibuf[3*j+1] = vlen + j+1;
+		ibuf[3*j+2] = vlen + acc;
+	}
+	vbuf[8*acc+0] = vt[0];
+	vbuf[8*acc+1] = vt[1];
+	vbuf[8*acc+2] = vt[2];
+	vbuf[8*acc+3] = 1.0;
+	vbuf[8*acc+4] = rr;
+	vbuf[8*acc+5] = gg;
+	vbuf[8*acc+6] = bb;
+	vbuf[8*acc+7] = aa;
+}
 void carveopaque2d_rect(struct arena* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf)
 {
