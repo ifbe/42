@@ -489,10 +489,22 @@ static void codeimg_start(
 	lf->foot[0] = (u64)src;
 	tf->foot[0] = (u64)dst;
 
+	//
+	src->geometry = 3;
+	src->method = 'v';
+
 	//shader
 	src->vs = codeimg_glsl_v;
 	src->fs = codeimg_glsl_f;
 	if(twig){if(_fg2d_ == twig->fmt)src->vs = codeimg_glsl2d_v;}
+	src->shader_enq = 42;
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len);
 
 	//texture
 	src->tex_name[0] = "tex0";
@@ -500,19 +512,7 @@ static void codeimg_start(
 	src->tex_fmt[0] = hex32('r','g','b','a');
 	src->tex_w[0] = leaf->width;
 	src->tex_h[0] = leaf->height;
-
-	//vertex
-	src->vbuf = memorycreate(4*6*6);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->method = 'v';
-
-	//send!
-	src->shader_enq[0] = 42;
 	src->tex_enq[0] = 42;
-	src->vbuf_enq = 0;
-	src->ibuf_enq = 0;
 }
 static void codeimg_delete(struct actor* act)
 {

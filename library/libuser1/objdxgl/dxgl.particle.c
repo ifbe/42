@@ -203,7 +203,7 @@ static void particle_start(
 	src->vs = particle_glsl_v;
 	src->gs = particle_glsl_g;
 	src->fs = particle_glsl_f;
-	src->shader_enq[0] = 42;
+	src->shader_enq = 42;
 
 	//argument
 	src->arg_name[0] = "objmat";
@@ -215,6 +215,7 @@ static void particle_start(
 	src->vbuf = leaf->buf;
 	src->vbuf_w = 4*9;
 	src->vbuf_h = COUNT;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf_enq = 42;
 }
 static void particle_delete(struct actor* act)

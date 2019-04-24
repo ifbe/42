@@ -394,10 +394,15 @@ static void model_start(
 	lf->foot[0] = (u64)src;
 	tf->foot[0] = (u64)dst;
 
+	//
+	src->geometry = 3;
+	src->method = 'v';
+
 	//shader
 	src->vs = model_glsl_v;
 	src->fs = model_glsl_f;
 	if(twig){if(_fg2d_ == twig->fmt)src->vs = model_glsl2d_v;}
+	src->shader_enq = 42;
 
 	//argument
 	src->arg_name[0] = "objmat";
@@ -406,15 +411,14 @@ static void model_start(
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf = leaf->buf;
 	src->vbuf_w = leaf->width;
 	src->vbuf_h = leaf->height;
-	src->method = 'v';
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = leaf->buf;
+	src->vbuf_enq = 42;
 
 	//send!
-	src->shader_enq[0] = 42;
 	src->tex_enq[0] = 0;
-	src->vbuf_enq = 42;
 	src->ibuf_enq = 0;
 }
 static void model_delete(struct actor* act)

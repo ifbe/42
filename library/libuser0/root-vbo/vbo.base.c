@@ -5,6 +5,11 @@ int preprocess(void*);
 int postprocess(void*);
 int actorinput_touch(struct arena* win, struct event* ev);
 //
+int aid3d_create(void*, void*);
+int aid3d_start(void*, void*, void*, void*);
+int aid3d_sread(void*, void*, void*, void*);
+int aid3d_swrite(void*, void*, void*, void*, void*);
+//
 int cam3d_create(void*, void*);
 int cam3d_start(void*, void*, void*, void*);
 int cam3d_sread(void*, void*, void*, void*);
@@ -49,6 +54,7 @@ int vbonode_sread(struct arena* win, struct style* stack)
 	struct pinid* pin;
 	struct arena* tmp;
 	struct relation* rel;
+//say("@vbonode_sread.begin\n");
 	preprocess(win);
 
 	rel = win->orel0;
@@ -63,9 +69,10 @@ int vbonode_sread(struct arena* win, struct style* stack)
 			tmp = (void*)(rel->dstchip);
 			switch(tmp->fmt)
 			{
+				case _aid3d_:aid3d_sread(tmp, pin, win, sty);break;
+				case _mic3d_:mic3d_sread(tmp, pin, win, sty);break;
 				case _cam3d_:cam3d_sread(tmp, pin, win, sty);break;
 				case _lit3d_:lit3d_sread(tmp, pin, win, sty);break;
-				case _mic3d_:lit3d_sread(tmp, pin, win, sty);break;
 				case _bg3d_:bg3d_sread(tmp, pin, win, sty);break;
 				case _fg3d_:fg3d_sread(tmp, pin, win, sty);break;
 				case _ui3d_:ui3d_sread(tmp, pin, win, sty);break;
@@ -77,6 +84,7 @@ int vbonode_sread(struct arena* win, struct style* stack)
 	}
 
 	postprocess(win);
+//say("@vbonode_sread.end\n");
 	return 0;
 }
 int vbonode_swrite(struct arena* win, struct style* stack, struct event* ev)
@@ -109,9 +117,10 @@ int vbonode_swrite(struct arena* win, struct style* stack, struct event* ev)
 			tmp = (void*)(rel->dstchip);
 			switch(tmp->fmt)
 			{
+				case _aid3d_:ret = aid3d_swrite(tmp, pin, win, sty, ev);break;
+				case _mic3d_:ret = mic3d_swrite(tmp, pin, win, sty, ev);break;
 				case _cam3d_:ret = cam3d_swrite(tmp, pin, win, sty, ev);break;
 				case _lit3d_:ret = lit3d_swrite(tmp, pin, win, sty, ev);break;
-				case _mic3d_:ret = lit3d_swrite(tmp, pin, win, sty, ev);break;
 				case _bg3d_:ret = bg3d_swrite(tmp, pin, win, sty, ev);break;
 				case _fg3d_:ret = fg3d_swrite(tmp, pin, win, sty, ev);break;
 				case _ui3d_:ret = ui3d_swrite(tmp, pin, win, sty, ev);break;
@@ -139,9 +148,10 @@ int vbonode_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 	if(0 == twig)return 0;
 	switch(twig->fmt)
 	{
+		case _aid3d_:aid3d_start(twig, tf, root, rf);return 1;
+		case _mic3d_:mic3d_start(twig, tf, root, rf);return 1;
 		case _cam3d_:cam3d_start(twig, tf, root, rf);return 1;
 		case _lit3d_:lit3d_start(twig, tf, root, rf);return 1;
-		case _mic3d_:lit3d_start(twig, tf, root, rf);return 1;
 		case _bg3d_:bg3d_start(twig, tf, root, rf);return 1;
 		case _fg3d_:fg3d_start(twig, tf, root, rf);return 1;
 		case _ui3d_:ui3d_start(twig, tf, root, rf);return 1;
@@ -161,6 +171,30 @@ void* vbonode_create(u64 type, void* addr)
 {
 	struct arena* win;
 	struct arena* tmp;
+
+	if(_aid3d_ == type)
+	{
+		win = allocarena();
+		if(win)
+		{
+			win->type = _twig_;
+			win->fmt = _aid3d_;
+			aid3d_create(win, 0);
+		}
+		return win;
+	}
+
+	if(_mic3d_ == type)
+	{
+		win = allocarena();
+		if(win)
+		{
+			win->type = _twig_;
+			win->fmt = _mic3d_;
+			mic3d_create(win, 0);
+		}
+		return win;
+	}
 
 	if(_cam3d_ == type)
 	{
@@ -182,18 +216,6 @@ void* vbonode_create(u64 type, void* addr)
 			win->type = _twig_;
 			win->fmt = _lit3d_;
 			lit3d_create(win, 0);
-		}
-		return win;
-	}
-
-	if(_mic3d_ == type)
-	{
-		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _mic3d_;
-			mic3d_create(win, 0);
 		}
 		return win;
 	}
@@ -251,6 +273,22 @@ void* vbonode_create(u64 type, void* addr)
 		win = addr;
 		if(win)
 		{
+			//aid3d
+			tmp = vbonode_create(_aid3d_, 0);
+			if(tmp)
+			{
+				relationcreate(tmp, 0, _win_, win, 0, _win_);
+				vbonode_start(tmp, 0, win, 0);
+			}
+
+			//mic3d
+			tmp = vbonode_create(_mic3d_, 0);
+			if(tmp)
+			{
+				relationcreate(tmp, 0, _win_, win, 0, _win_);
+				vbonode_start(tmp, 0, win, 0);
+			}
+
 			//cam3d
 			tmp = vbonode_create(_cam3d_, 0);
 			if(tmp)
@@ -261,14 +299,6 @@ void* vbonode_create(u64 type, void* addr)
 
 			//lit3d
 			tmp = vbonode_create(_lit3d_, 0);
-			if(tmp)
-			{
-				relationcreate(tmp, 0, _win_, win, 0, _win_);
-				vbonode_start(tmp, 0, win, 0);
-			}
-
-			//lit3d
-			tmp = vbonode_create(_mic3d_, 0);
 			if(tmp)
 			{
 				relationcreate(tmp, 0, _win_, win, 0, _win_);

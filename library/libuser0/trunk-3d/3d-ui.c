@@ -16,7 +16,7 @@ static u64 want[COUNT] = {
 static u8 flag[COUNT] = {
 	'#',
 	'#',
-	'#',
+	0,
 	'#'
 };
 
@@ -29,6 +29,7 @@ int ui3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stac
 	struct actor* act;
 	struct style* sty;
 	struct pinid* pin;
+//say("ui3d_sread\n");
 
 	sty = 0;
 	orel = cc->orel0;
@@ -89,6 +90,7 @@ int ui3d_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 	struct style* sty;
 	struct actor* act;
 	struct pinid* pin;
+say("ui3d_start\n");
 
 	rel = twig->orel0;
 	while(1)

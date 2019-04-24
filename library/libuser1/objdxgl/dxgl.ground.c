@@ -194,22 +194,21 @@ static void ground_start(
 	tf->foot[0] = (u64)dst;
 
 	//
+	src->geometry = 3;
+	src->method = 'v';
+
+	//
 	src->vs = ground_glsl_v;
 	src->fs = ground_glsl_f;
 	if(twig){if(_fg2d_ == twig->fmt)src->vs = ground_glsl2d_v;}
+	src->shader_enq = 42;
 
 	//vertex
-	src->vbuf = memorycreate(4*6*6);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
-	src->method = 'v';
-
-	//send!
-	src->shader_enq[0] = 42;
-	src->tex_enq[0] = 0;
-	src->vbuf_enq = 0;
-	src->ibuf_enq = 0;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len);
 }
 static void ground_delete(struct actor* act)
 {

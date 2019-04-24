@@ -72,9 +72,10 @@ typedef float mat4[4][4];
 #define _pin_  hex32('p','i','n',0)
 #define _sch_  hex32('s','c','h',0)
 //
+#define _aid3d_ hex64('a','i','d','3','d', 0, 0, 0)
+#define _mic3d_ hex64('m','i','c','3','d', 0, 0, 0)
 #define _cam3d_ hex64('c','a','m','3','d', 0, 0, 0)
 #define _lit3d_ hex64('l','i','t','3','d', 0, 0, 0)
-#define _mic3d_ hex64('m','i','c','3','d', 0, 0, 0)
 #define _bg3d_ hex32('b','g','3','d')
 #define _fg3d_ hex32('f','g','3','d')
 #define _ui3d_ hex32('u','i','3','d')
@@ -241,12 +242,22 @@ struct glsrc
 	void* te;
 	void* gs;
 	void* fs;
-	u8 shader_enq[4];
+	u8 shader_enq;
 
-	//[24,88)argument
-	char* arg_name[8];
-	void* arg_data[8];
-	u32 arg_fmt[8];
+	//[c0,e7]vertex
+	void* vbuf;
+	u32 vbuf_fmt;
+	u32 vbuf_w;
+	u32 vbuf_h;
+	u32 vbuf_len;
+	u8 vbuf_enq;
+
+	void* ibuf;
+	u32 ibuf_fmt;
+	u32 ibuf_w;
+	u32 ibuf_h;
+	u32 ibuf_len;
+	u8 ibuf_enq;
 
 	//[88,fc)texture
 	char* tex_name[4];
@@ -256,18 +267,10 @@ struct glsrc
 	u32 tex_fmt[4];
 	u8 tex_enq[4];
 
-	//[c0,e7]vertex
-	void* vbuf;
-	u32 vbuf_fmt;
-	u32 vbuf_w;
-	u32 vbuf_h;
-	u8 vbuf_enq;
-
-	void* ibuf;
-	u32 ibuf_fmt;
-	u32 ibuf_w;
-	u32 ibuf_h;
-	u8 ibuf_enq;
+	//[24,88)argument
+	char* arg_name[8];
+	void* arg_data[8];
+	u32 arg_fmt[8];
 
 	//[e8,eb]
 	u8 method;		//'v'=glDrawArrays, 'i'=glDrawElements

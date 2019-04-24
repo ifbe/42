@@ -27,6 +27,7 @@ int bg3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* stac
 	struct actor* act;
 	struct style* sty;
 	struct pinid* pin;
+//say("bg3d_sread\n");
 	win->vfmt = _3d_;
 
 	rel = cc->orel0;
@@ -66,6 +67,7 @@ int bg3d_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 	struct style* sty;
 	struct actor* act;
 	struct pinid* pin;
+say("bg3d_start\n");
 
 	rel = twig->orel0;
 	while(1)

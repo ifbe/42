@@ -8,11 +8,6 @@ int arenaevent(struct event* ev);
 int fbodelete(struct arena* win);
 int fbocreate(struct arena* win, char* arg);
 //
-void initobject(void*);
-void initshader(void*);
-void inittexture(void*);
-void initvertex(void*);
-//
 void coopctx_create(void*);
 void coopctx_update(void*);
 //
@@ -444,9 +439,9 @@ void windowopen_root(struct arena* w, struct arena* r)
 
 	//3.init
 	hostctx_create(w);
-	initshader(w);
-	inittexture(w);
-	initvertex(w);
+	//initshader(w);
+	//inittexture(w);
+	//initvertex(w);
 }
 void windowopen_coop(struct arena* w, struct arena* r)
 {
@@ -499,7 +494,7 @@ static GLFWwindow* thisfw;
 void windowread(struct arena* win)
 {
 	GLFWwindow* fw;
-	//say("%.8s\n", &w->fmt);
+	//say("@windowread.start:%.8s\n", &win->fmt);
 
 	//
 	if(_fbo_ == win->fmt)
@@ -535,6 +530,7 @@ void windowread(struct arena* win)
 		if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
 		glfwPollEvents();
 	}
+	//say("@windowread.end\n");
 }
 void windowwrite(struct arena* w)
 {

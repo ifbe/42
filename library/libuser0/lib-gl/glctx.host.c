@@ -114,6 +114,7 @@ void hostctx_render(struct arena* this)
 	struct arena* win;
 	struct datapair* mod;
 	GLfloat cammvp[4*4];
+//say("@hostctx_render.start\n");
 
 	if(_fbo_ == this->fmt)
 	{
@@ -168,6 +169,7 @@ void hostctx_render(struct arena* this)
 		if(0 == mod[j].src.vbuf)continue;
 		display_eachpass(&mod[j].dst, &mod[j].src, win, cammvp);
 	}
+//say("@hostctx_render.end\n");
 }
 
 
@@ -182,9 +184,9 @@ void update_eachpass(struct gldst* dst, struct glsrc* src)
 	void* buf1;
 	void* buf2;
 	//say("%llx,%llx\n", dst, src);
-
+//say("@update shader\n");
 	//0: shader
-	if(dst->shader_deq != src->shader_enq[0])
+	if(dst->shader_deq != src->shader_enq)
 	{
 		//say("@1\n");
 		buf0 = (void*)(src->vs);
@@ -195,15 +197,16 @@ void update_eachpass(struct gldst* dst, struct glsrc* src)
 			fd = shaderprogram(buf0, buf1, buf2, 0, 0, 0);
 
 			dst->shader = fd;
-			say("(%llx,%llx)->%x\n", buf0, buf1, fd);
+			//say("shader:(%llx,%llx,%llx)->%x\n", buf0, buf1, buf2, fd);
 		}
 
-		dst->shader_deq = src->shader_enq[0];
+		dst->shader_deq = src->shader_enq;
 	}
 
+//say("@update texture\n");
 	//2: texture
 	for(j=0;j<4;j++){
-		if(0 == src->tex_enq[j])continue;
+		if(dst->tex_deq[j] == src->tex_enq[j])continue;
 
 		buf0 = (void*)(src->tex_data[j]);
 		if(0 != buf0)
@@ -214,371 +217,47 @@ void update_eachpass(struct gldst* dst, struct glsrc* src)
 			fd = uploadtexture(dst, dst->tex[j], buf0, fmt, w, h);
 
 			dst->tex[j] = fd;
-			//say("(%llx,%x,%x,%x)->%x\n", buf0, fmt, w, h, fd);
+			//say("texture:(%llx,%x,%x,%x)->%x\n", buf0, fmt, w, h, fd);
 		}
 
 		dst->tex_deq[j] = src->tex_enq[j];
 	}
 
+//say("@update vertex\n");
 	//3: vertex
 	if(	(dst->vbo_deq != src->vbuf_enq) |
 		(dst->ibo_deq != src->ibuf_enq) )
 	{
 		//say("@4\n");
 		uploadvertex(dst, src);
-		//say("(%x,%x,%x)\n", dst->vao, dst->vbo, dst->ibo);
+		//say("vertex:(%x,%x,%x)\n", dst->vao, dst->vbo, dst->ibo);
 		dst->vbo_deq = src->vbuf_enq;
 		dst->ibo_deq = src->ibuf_enq;
 	}
+//say("@update done\n");
 }
 void hostctx_update(struct arena* win)
 {
 	int j;
 	struct datapair* mod;
-
+//say("@hostctx_update.start\n");
 	//local
 	mod = win->mod;
 	for(j=0;j<64;j++)
 	{
 		if(0 == mod[j].src.vbuf)continue;
+		//say("%d\n",j);
 		update_eachpass(&mod[j].dst, &mod[j].src);
 	}
+//say("@hostctx_update.end\n");
 }
-
-
-
-
 void hostctx_create(struct arena* win)
 {
 	int j;
 	u8* buf;
-	struct datapair* mod;
-	struct glsrc* src;
 
 	buf = memorycreate(0x10000);
 	for(j=0;j<0x10000;j++)buf[j] = 0;
 
-	win->mod = mod = (void*)buf;
-
-
-//--------------------font3d-------------------
-	//[0000,3fff]
-	src = &mod[font3d0].src;
-
-	src->vbuf = memorycreate(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = memorycreate(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-
-
-	//[4000,7fff]
-	src = &mod[font3d1].src;
-
-	src->vbuf = memorycreate(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = memorycreate(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-
-
-	//[8000,bfff]
-	src = &mod[font3d2].src;
-
-	src->vbuf = memorycreate(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = memorycreate(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-
-
-	//[c000,ffff]
-	src = &mod[font3d3].src;
-
-	src->vbuf = memorycreate(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = memorycreate(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-
-
-//--------------------font2d-------------------
-	//[0000,3fff]
-	src = &mod[font2d0].src;
-
-	src->vbuf = memorycreate(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = memorycreate(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-
-
-	//[4000,7fff]
-	src = &mod[font2d1].src;
-
-	src->vbuf = memorycreate(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = memorycreate(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-
-
-	//[8000,bfff]
-	src = &mod[font2d2].src;
-
-	src->vbuf = memorycreate(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = memorycreate(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-
-
-	//[c000,ffff]
-	src = &mod[font2d3].src;
-
-	src->vbuf = memorycreate(0x200000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x200000/36;
-
-	src->ibuf = memorycreate(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-
-
-//--------------------3d-------------------
-	//drawarray.point3d
-	src = &mod[point3d].src;
-
-	src->vbuf = memorycreate(0x100000);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*3*2;
-	src->vbuf_h = 0x100000/24;
-
-	src->method = 'v';
-	src->geometry = 1;
-
-	src->vbuf_enq = 1;
-
-
-	//drawelement.line3d
-	src = &mod[line3d].src;
-
-	src->vbuf = memorycreate(0x100000);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*3*2;
-	src->vbuf_h = 0x100000/24;
-
-	src->ibuf = memorycreate(0x100000);
-	src->ibuf_fmt = 0x22;
-	src->ibuf_w = 2*2;
-	src->ibuf_h = 0x100000/4;
-
-	src->method = 'i';
-	src->geometry = 2;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-
-
-	//drawelement.trigon3d
-	src = &mod[trigon3d].src;
-
-	src->vbuf = memorycreate(0x1000000);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*3*3;
-	src->vbuf_h = 0x1000000/36;
-
-	src->ibuf = memorycreate(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-
-
-	//opaque3d
-	src = &mod[opaque3d].src;
-
-	src->vbuf = memorycreate(0x1000000);
-	src->vbuf_fmt = vbuffmt_444;
-	src->vbuf_w = 4*4*3;
-	src->vbuf_h = 0x1000000/48;
-
-	src->ibuf = memorycreate(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-
-
-//----------------------2d--------------------
-	//drawarray.point2d
-	src = &mod[point2d].src;
-
-	src->vbuf = memorycreate(0x100000);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*3*2;
-	src->vbuf_h = 0x100000/24;
-
-	src->method = 'v';
-	src->geometry = 1;
-
-	src->vbuf_enq = 1;
-
-
-	//drawelement.line2d
-	src = &mod[line2d].src;
-
-	src->vbuf = memorycreate(0x100000);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*3*2;
-	src->vbuf_h = 0x100000/24;
-
-	src->ibuf = memorycreate(0x100000);
-	src->ibuf_fmt = 0x22;
-	src->ibuf_w = 2*2;
-	src->ibuf_h = 0x100000/4;
-
-	src->method = 'i';
-	src->geometry = 2;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-
-
-	//drawelement.trigon2d
-	src = &mod[trigon2d].src;
-
-	src->vbuf = memorycreate(0x100000);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*3*2;
-	src->vbuf_h = 0x100000/24;
-
-	src->ibuf = memorycreate(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
-
-
-	//opaque2d
-	src = &mod[opaque2d].src;
-
-	src->vbuf = memorycreate(0x100000);
-	src->vbuf_fmt = vbuffmt_44;
-	src->vbuf_w = 4*4*2;
-	src->vbuf_h = 0x100000/32;
-
-	src->ibuf = memorycreate(0x100000);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 0x100000/6;
-
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
+	win->mod = (void*)buf;
 }

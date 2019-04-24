@@ -402,20 +402,22 @@ static void terrain_start(
 	src->vs = terrain_glsl_v;
 	src->gs = terrain_glsl_g;
 	src->fs = terrain_glsl_f;
-	src->shader_enq[0] = 42;
+	src->shader_enq = 42;
 
 	//vertex
-	src->vbuf = memorycreate(4*6 * 256*256);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 4*6;
 	src->vbuf_h = 256*255;
+	src->vbuf_len = (src->vbuf_w) * 256*256;
+	src->vbuf = memorycreate(src->vbuf_len);
 	src->vbuf_enq = 42;
 
 	//index
-	src->ibuf = memorycreate(2*3 * 256*256*2);
 	src->ibuf_fmt = 0x222;
 	src->ibuf_w = 2*3;
 	src->ibuf_h = 254*254*2;
+	src->ibuf_len = (src->ibuf_w) * 256*256*2;
+	src->ibuf = memorycreate(src->ibuf_len);
 	src->ibuf_enq = 42;
 
 	//argument

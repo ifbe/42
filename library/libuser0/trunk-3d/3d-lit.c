@@ -25,6 +25,7 @@ int lit3d_sread(struct arena* cc, void* cf, struct arena* win, struct style* st)
 	struct actor* act;
 	struct style* sty;
 	struct pinid* pin;
+//say("lit3d_sread\n");
 
 	sty = 0;
 	orel = cc->orel0;
@@ -88,6 +89,7 @@ int lit3d_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 	struct style* sty;
 	struct actor* act;
 	struct pinid* pin;
+say("lit3d_start\n");
 
 	rel = twig->orel0;
 	while(1)

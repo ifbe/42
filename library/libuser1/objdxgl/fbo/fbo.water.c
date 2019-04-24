@@ -370,14 +370,15 @@ static void water_start(
 	src->vs = water_glsl_v;
 	src->fs = water_glsl_f;
 	if(twig){if(_fg2d_ == twig->fmt)src->vs = water_glsl2d_v;}
-	src->shader_enq[0] = 42;
+	src->shader_enq = 42;
 
 	//vertex
 	src->vbuf = memorycreate(4*6*6);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
-	src->vbuf_enq = 0;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len);
 
 	//argument
 	src->arg_name[0] = "time";

@@ -272,21 +272,23 @@ static void texball_start(
 	src->vs = texball_glsl_v;
 	src->fs = texball_glsl_f;
 	if(twig){if(_fg2d_ == twig->fmt)src->vs = texball_glsl2d_v;}
-	src->shader_enq[0] = 42;
+	src->shader_enq = 42;
 
 #define accx 64
 #define accy 63
 	//vertex
-	src->vbuf = memorycreate(4*6*(accx*accy+(accx-1)*2));
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 4*6;
 	src->vbuf_h = accx*accy+(accx-1)*2;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len);
 	src->vbuf_enq = 0;
 
-	src->ibuf = memorycreate(2*3*accy*(accx-1)*2);
 	src->ibuf_fmt = 0x222;
 	src->ibuf_w = 2*3;
 	src->ibuf_h = accy*(accx-1)*2;
+	src->ibuf_len = (src->ibuf_w) * (src->ibuf_h);
+	src->ibuf = memorycreate(src->ibuf_len);
 	src->ibuf_enq = 0;
 
 	//texture

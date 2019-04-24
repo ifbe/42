@@ -84,6 +84,8 @@ objdxgl/fbo/fbo.water.c \
 objdxgl/light/light.direction.c \
 objdxgl/light/light.point.c \
 objdxgl/light/light.spot.c \
+objdxgl/dxgl.aidfont.c \
+objdxgl/dxgl.aidgeom.c \
 objdxgl/dxgl.ground.c \
 objdxgl/dxgl.particle.c \
 objdxgl/dxgl.shadowmap.c \

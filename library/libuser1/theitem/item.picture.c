@@ -305,13 +305,14 @@ static void picture_start(
 	src->vs = picture_glsl_v;
 	src->fs = picture_glsl_f;
 	if(twig){if(_fg2d_ == twig->fmt)src->vs = picture_glsl2d_v;}
-	src->shader_enq[0] = 42;
+	src->shader_enq = 42;
 
 	//vertex
-	src->vbuf = memorycreate(4*6*6);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len);
 	src->vbuf_enq = 42;
 
 	//texture0

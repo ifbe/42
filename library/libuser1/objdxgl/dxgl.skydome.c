@@ -177,8 +177,29 @@ static void skydome_start(
 
 	//
 	src = alloc_winobj(root);
+	lf->foot[0] = (u64)src;
+
+	//
+	src->geometry = 3;
+	src->method = 'i';
+
+	//shader
 	src->vs = skydome_glsl_v;
 	src->fs = skydome_glsl_f;
+	src->shader_enq = 42;
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 4*6;
+	src->vbuf_h = 128+1;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len);
+
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 256;
+	src->ibuf_len = (src->ibuf_w) * (src->ibuf_h);
+	src->ibuf = memorycreate(src->ibuf_len);
 
 	//texture
 	src->tex_name[0] = "tex0";
@@ -186,24 +207,7 @@ static void skydome_start(
 	src->tex_fmt[0] = hex32('r','g','b','a');
 	src->tex_w[0] = leaf->width;
 	src->tex_h[0] = leaf->height;
-
-	//vertex
-	src->vbuf = memorycreate(4*6*129);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*6;
-	src->vbuf_h = 128+1;
-	src->ibuf = memorycreate(2*3*256);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 256;
-	src->method = 'i';
-
-	//send!
-	src->shader_enq[0] = 42;
 	src->tex_enq[0] = 42;
-	src->vbuf_enq = 0;
-	src->ibuf_enq = 0;
-	lf->foot[0] = (u64)src;
 }
 static void skydome_delete(struct actor* act)
 {

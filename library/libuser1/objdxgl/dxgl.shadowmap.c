@@ -388,17 +388,18 @@ static void shadowmap_start(
 	//
 	src->vs = shadowmap_glsl_v;
 	src->fs = shadowmap_glsl_f;
-	src->shader_enq[0] = 42;
+	src->shader_enq = 42;
 
 	src->arg_name[0] = "mapmvp";
 	src->arg_data[0] = memorycreate(4*4*4);
 	src->arg_fmt[0] = 'm';
 
 	//vertex
-	src->vbuf = memorycreate(4*6*12);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 12;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len);
 	src->vbuf_enq = 0;
 
 	//texture
