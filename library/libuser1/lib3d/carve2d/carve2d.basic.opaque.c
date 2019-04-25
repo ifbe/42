@@ -73,7 +73,7 @@ void carveopaque2d_bezier(struct arena* win, u32 rgba,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = opaque2d_vars(win, opaque2d, &vbuf, &ibuf, acc + 1, acc);
+	int vlen = opaque2d_vars(win, opaque2d, &vbuf, &ibuf, acc + 1, acc-1);
 
 	int j;
 	float t;
@@ -88,7 +88,7 @@ void carveopaque2d_bezier(struct arena* win, u32 rgba,
 		vbuf[8*j+4] = rr;
 		vbuf[8*j+5] = gg;
 		vbuf[8*j+6] = bb;
-		vbuf[8*j+7] = aa;
+		vbuf[8*j+7] = 0;
 
 		if(j >= acc-1)break;
 		ibuf[3*j+0] = vlen + j;

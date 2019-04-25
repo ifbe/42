@@ -278,7 +278,7 @@ found:
 	tc[0] = -1.0;
 	tc[1] = -1.0;
 	tc[2] = -0.9;
-	carveopaque2d_bezier(win, 0xbfffffff, tr, tf, tc);
+	carveopaque2d_bezier(win, 0xffffffff, tr, tf, tc);
 
 	tr[0] = 0.0;
 	tr[1] = 0.0;
@@ -304,7 +304,7 @@ found:
 			tc[0] = -7.0/8;
 			tc[1] = (-31+j*2)/32.0;
 			tr[0] = 1.0/8;
-			carveopaque2d_rect(win, 0x7f000080, tc, tr, tf);
+			carveopaque2d_rect(win, 0x3f000080, tc, tr, tf);
 
 			tr[0] = 1.0/32;
 			carvestring2d_center(win, rgb, tc, tr, tf, (void*)&ac->fmt, 8);
@@ -436,6 +436,7 @@ static int corner_swrite_twig(
 
 	st = (void*)(rel->srcfoot);
 	if(0 == st)return 0;
+	if('#' == st->uc[3])return 0;
 
 	int w = win->width;
 	int h = win->height;

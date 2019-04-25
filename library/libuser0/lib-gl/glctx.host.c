@@ -203,8 +203,20 @@ void update_eachpass(struct gldst* dst, struct glsrc* src)
 		dst->shader_deq = src->shader_enq;
 	}
 
+//say("@update vertex\n");
+	//2: vertex
+	if(	(dst->vbo_deq != src->vbuf_enq) |
+		(dst->ibo_deq != src->ibuf_enq) )
+	{
+		//say("@4\n");
+		uploadvertex(dst, src);
+		//say("vertex:(%x,%x,%x)\n", dst->vao, dst->vbo, dst->ibo);
+		dst->vbo_deq = src->vbuf_enq;
+		dst->ibo_deq = src->ibuf_enq;
+	}
+
 //say("@update texture\n");
-	//2: texture
+	//3: texture
 	for(j=0;j<4;j++){
 		if(dst->tex_deq[j] == src->tex_enq[j])continue;
 
@@ -221,18 +233,6 @@ void update_eachpass(struct gldst* dst, struct glsrc* src)
 		}
 
 		dst->tex_deq[j] = src->tex_enq[j];
-	}
-
-//say("@update vertex\n");
-	//3: vertex
-	if(	(dst->vbo_deq != src->vbuf_enq) |
-		(dst->ibo_deq != src->ibuf_enq) )
-	{
-		//say("@4\n");
-		uploadvertex(dst, src);
-		//say("vertex:(%x,%x,%x)\n", dst->vao, dst->vbo, dst->ibo);
-		dst->vbo_deq = src->vbuf_enq;
-		dst->ibo_deq = src->ibuf_enq;
 	}
 //say("@update done\n");
 }

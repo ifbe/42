@@ -138,13 +138,13 @@ int vjoy_swrite(
     //say("vjoy_joystick_write\n");
 	//if(win->vjoyw <= 0)return 0;
 
-	w = win->width;
-	h = win->height;
 	x = (ev->why)&0xffff;
 	y = ((ev->why)>>16)&0xffff;
 	if(y < h*3/4)return 0;
 
-	if(hex32('p','-',0,0) == ev->what)
+	w = win->width;
+	h = win->height;
+	if('p' == (ev->what&0xff))
 	{
 		y = (h-y)*16/h;
 		if(x*2 < w)
@@ -161,6 +161,8 @@ int vjoy_swrite(
 			else ret = 0;
 			if(ret)
 			{
+				if(hex32('p','-',0,0) != ev->what)return 1;
+
 				tmp[0] = tmp[1] = tmp[2] = 0;
 				tmp[3] = ret;
 				eventwrite(*(u64*)tmp, joy_left, (u64)win, 0);
@@ -183,6 +185,8 @@ int vjoy_swrite(
 
 			if(ret)
 			{
+				if(hex32('p','-',0,0) != ev->what)return 1;
+
 				tmp[0] = tmp[1] = tmp[2] = 0;
 				tmp[3] = ret;
 				eventwrite(*(u64*)tmp, joy_right, (u64)win, 0);
