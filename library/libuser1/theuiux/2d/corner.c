@@ -236,7 +236,58 @@ void corver_vbo_hover(
 
 
 
+void corner_vbo_popup_1234(struct arena* win)
+{
+	vec3 ta, tb, tc;
 
+	//left, bot
+	ta[0] = 0.0;
+	ta[1] = -1.0;
+	ta[2] = 0.0;
+	tb[0] = -1.0;
+	tb[1] = 0.0;
+	tb[2] = 0.0;
+	tc[0] = -1.0;
+	tc[1] = -1.0;
+	tc[2] = -0.9;
+	carveopaque2d_bezier(win, 0x7fffffff, ta, tb, tc);
+
+	//right, bot
+	ta[0] = 0.0;
+	ta[1] = -1.0;
+	ta[2] = 0.0;
+	tb[0] = 1.0;
+	tb[1] = 0.0;
+	tb[2] = 0.0;
+	tc[0] = 1.0;
+	tc[1] = -1.0;
+	tc[2] = -0.9;
+	carveopaque2d_bezier(win, 0x7fffffff, ta, tb, tc);
+
+	//left, top
+	ta[0] = 0.0;
+	ta[1] = 1.0;
+	ta[2] = 0.0;
+	tb[0] = -1.0;
+	tb[1] = 0.0;
+	tb[2] = 0.0;
+	tc[0] = -1.0;
+	tc[1] = 1.0;
+	tc[2] = -0.9;
+	carveopaque2d_bezier(win, 0x7fffffff, ta, tb, tc);
+
+	//right, top
+	ta[0] = 0.0;
+	ta[1] = 1.0;
+	ta[2] = 0.0;
+	tb[0] = 1.0;
+	tb[1] = 0.0;
+	tb[2] = 0.0;
+	tc[0] = 1.0;
+	tc[1] = 1.0;
+	tc[2] = -0.9;
+	carveopaque2d_bezier(win, 0x7fffffff, ta, tb, tc);
+}
 void corner_vbo_popup(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
@@ -269,16 +320,7 @@ void corner_vbo_popup(
 	return;
 
 found:
-	tr[0] = 0.0;
-	tr[1] = -1.0;
-	tr[2] = 0.0;
-	tf[0] = -1.0;
-	tf[1] = 0.0;
-	tf[2] = 0.0;
-	tc[0] = -1.0;
-	tc[1] = -1.0;
-	tc[2] = -0.9;
-	carveopaque2d_bezier(win, 0xffffffff, tr, tf, tc);
+	corner_vbo_popup_1234(win);
 
 	tr[0] = 0.0;
 	tr[1] = 0.0;
