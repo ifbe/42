@@ -142,58 +142,6 @@ void* allocstyle()
 	for(j=0;j<len;j++)buf[j] = 0;
 	return buf;
 }
-void arenavertex(struct arena* win)
-{
-	//target
-	win->target.vc[0] = 0.0;
-	win->target.vc[1] = 0.0;
-	win->target.vc[2] = 0.0;
-
-	win->target.vr[0] = 500.0;
-	win->target.vr[1] = 0.0;
-	win->target.vr[2] = 0.0;
-
-	win->target.vf[0] = 0.0;
-	win->target.vf[1] = 500.0;
-	win->target.vf[2] = 0.0;
-
-	win->target.vu[0] = 0.0;
-	win->target.vu[1] = 0.0;
-	win->target.vu[2] = 500.0;
-
-	//camera
-	win->camera.vl[0] = -1.0;
-	win->camera.vl[1] = 0.0;
-	win->camera.vl[2] = 0.0;
-
-	win->camera.vr[0] = 1.0;
-	win->camera.vr[1] = 0.0;
-	win->camera.vr[2] = 0.0;
-
-	win->camera.vb[0] = 0.0;
-	win->camera.vb[1] =-0.70710678118655;
-	win->camera.vb[2] =-0.70710678118655;
-
-	win->camera.vu[0] = 0.0;
-	win->camera.vu[1] = 0.70710678118655;
-	win->camera.vu[2] = 0.70710678118655;
-
-	win->camera.vn[0] = 0.0;
-	win->camera.vn[1] = 0.70710678118655;
-	win->camera.vn[2] =-0.70710678118655;
-/*
-	win->camera.vf[0] = 0.0;
-	win->camera.vf[1] = 0.0;
-	win->camera.vf[2] = 0.0;
-
-	win->camera.vq[0] = 0.0;
-	win->camera.vq[1] = 0.0;
-	win->camera.vq[2] = 0.0;
-*/
-	win->camera.vc[0] = 0.0;
-	win->camera.vc[1] = -2000.0;
-	win->camera.vc[2] = 2000.0;
-}
 
 
 
@@ -398,9 +346,9 @@ void* arenacreate(u64 type, void* addr)
 			win->fmt = hex64('b','g','r','a','8','8','8','8');
 			windowcreate(win);
 
-			arenavertex(win);
-			if(_vbo_ == win->fmt)vbonode_create(_vbo_, win);
-			else rgbanode_create(_rgba_, win);
+			if(_vbo_ != win->fmt){
+				rgbanode_create(_rgba_, win);
+			}
 		}
 
 		return win;
@@ -415,7 +363,6 @@ void* arenacreate(u64 type, void* addr)
 			win->type = _win_;
 			win->fmt = _coop_;
 			windowcreate(win);
-			arenavertex(win);
 		}
 		return win;
 	}
@@ -427,7 +374,6 @@ void* arenacreate(u64 type, void* addr)
 			win->type = _win_;
 			win->fmt = _fbo_;
 			windowcreate(win);
-			arenavertex(win);
 		}
 		return win;
 	}
@@ -586,7 +532,8 @@ int arenaread_all()
 	{
 		win = &arena[j];
 		if(0 == win->type)continue;
-		if(_win_ == win->type)windowread(win);
+		if(_root_ == win->type)windowread(win);
+		if( _win_ == win->type)windowread(win);
 	}
 	return 0;
 }

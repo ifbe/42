@@ -356,15 +356,15 @@ static void water_start(
 	if(0 == lf)return;
 
 	//
-	pair = alloc_winobj(root);
+	pair = alloc_winobj(root, 'o');
 	src = &pair->src;
 	dst = &pair->dst;
 	lf->foot[0] = (u64)src;
 	tf->foot[0] = (u64)dst;
 
 	//
+	src->geometry = 3;
 	src->method = 'v';
-	src->opaque = 1;
 
 	//
 	src->vs = water_glsl_v;

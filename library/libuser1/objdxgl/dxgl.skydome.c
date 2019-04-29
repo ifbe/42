@@ -176,7 +176,7 @@ static void skydome_start(
 	if(0 == lf)return;
 
 	//
-	src = alloc_winobj(root);
+	src = alloc_winobj(root, 's');
 	lf->foot[0] = (u64)src;
 
 	//

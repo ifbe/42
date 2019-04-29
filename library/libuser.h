@@ -41,9 +41,11 @@ typedef float mat4[4][4];
 #define _win_ hex32('w','i','n',0)
 #define _art_ hex32('a','r','t',0)
 #define _fd_ hex32('f','d',0,0)
+//
 #define _1d_ hex32('1','d',0,0)
 #define _2d_ hex32('2','d',0,0)
 #define _3d_ hex32('3','d',0,0)
+#define _ui_ hex32('u','i',0,0)
 //
 #define _coop_ hex32('c','o','o','p')
 #define _uart_ hex32('u','a','r','t')
@@ -151,26 +153,26 @@ typedef float mat4[4][4];
 #define pcm2222   0x2222
 #define pcm22222  0x22222
 #define pcm222222 0x222222
-//
+//solid
+#define point3d  0
+#define line3d   1
+#define trigon3d 2
+#define point2d  3
+#define line2d   4
+#define trigon2d 5
+#define solidaid_max 6
+//opaque
 #define font3d0 0
 #define font3d1 1
 #define font3d2 2
 #define font3d3 3
-
 #define font2d0 4
 #define font2d1 5
 #define font2d2 6
 #define font2d3 7
-
-#define point3d  8
-#define line3d   9
-#define trigon3d 10
-#define opaque3d  11
-
-#define point2d  12
-#define line2d   13
-#define trigon2d 14
-#define opaque2d  15
+#define opaquetrigon3d  8
+#define opaquetrigon2d  9
+#define opaqueaid_max 10
 
 
 
@@ -275,7 +277,6 @@ struct glsrc
 	//[e8,eb]
 	u8 method;		//'v'=glDrawArrays, 'i'=glDrawElements
 	u8 geometry;	//1=point, 2=line, *=trigon
-	u8 opaque;		//0=nothing, 1=blend
 	u8 target;		//0=rtt, 1=background, 2=geometry, 3=alphatest, 4=transparent, 5=overlay
 };
 struct gldst
@@ -580,7 +581,7 @@ struct arena
 		u64 padd2;
 		u64 len;
 		void* ctx;
-		void* mod;
+		void* gl_solid;
 		void* ximage;
 		void* texture;
 	};
@@ -588,6 +589,7 @@ struct arena
 		u64 padd3;
 		u64 addr;
 		void* buf;
+		void* gl_opaque;
 	};
 	union{
 		u64 padd4;
@@ -936,7 +938,7 @@ void carvestring(             struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3
 void carvestring_center(      struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 void carvedouble(             struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, double data);
 
-void* alloc_winobj(struct arena*);
+void* alloc_winobj(struct arena*, int type);
 
 
 

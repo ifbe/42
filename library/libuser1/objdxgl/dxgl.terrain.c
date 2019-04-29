@@ -387,7 +387,7 @@ static void terrain_start(
 	struct gldst* dst;
 	if(0 == lf)return;
 
-	pair = alloc_winobj(root);
+	pair = alloc_winobj(root, 's');
 	src = &pair->src;
 	dst = &pair->dst;
 	lf->foot[0] = (u64)src;
@@ -396,7 +396,6 @@ static void terrain_start(
 	//
 	src->method = 'i';
 	src->geometry = 3;
-	src->opaque = 0;
 
 	//shader
 	src->vs = terrain_glsl_v;

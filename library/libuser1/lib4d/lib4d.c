@@ -90,15 +90,33 @@ void actorcreatefromfile(struct actor* act, char* name)
 	else if(0 == ncmp(tmp, "ogg", 3))actorcreatefromogg(act, buf, len);
 	else if(0 == ncmp(tmp, "wav", 3))actorcreatefromwav(act, buf, len);
 }
-void* alloc_winobj(struct arena* win)
+void* alloc_winobj(struct arena* win, int type)
 {
 	int j;
-	struct datapair* mod = win->mod;
-	for(j=16;j<128;j++)
+	struct datapair* mod;
+
+	if('s' == type)
 	{
-		if(mod[j].src.vs)continue;
-		if(mod[j].src.vbuf)continue;
-		return &mod[j].src;
+		mod = win->gl_solid;
+
+		for(j=solidaid_max;j<128;j++)
+		{
+			if(mod[j].src.vs)continue;
+			if(mod[j].src.vbuf)continue;
+			return &mod[j];
+		}
+	}
+
+	if('o' == type)
+	{
+		mod = win->gl_opaque;
+
+		for(j=opaqueaid_max;j<128;j++)
+		{
+			if(mod[j].src.vs)continue;
+			if(mod[j].src.vbuf)continue;
+			return &mod[j];
+		}
 	}
 	return 0;
 }

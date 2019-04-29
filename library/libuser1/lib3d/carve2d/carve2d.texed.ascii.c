@@ -3,8 +3,8 @@
 int utf2unicode(u8* src,u32* dst);
 int ascii2d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
-	struct datapair* mod = win->mod;
-	struct glsrc* src = &mod[id].src;
+	struct datapair* mod = win->gl_opaque;
+	struct glsrc* src = &mod[font2d0 + id].src;
 	int vlen = src->vbuf_h;
 	int ilen = src->ibuf_h;
 
@@ -29,7 +29,7 @@ void carve2d_ascii(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = ascii2d_vars(win, font2d, &vbuf, &ibuf, 4, 2);
+	int vlen = ascii2d_vars(win, 0, &vbuf, &ibuf, 4, 2);
 
 	vbuf[ 0] = vc[0]+vr[0]/2-vr[0]-vf[0];
 	vbuf[ 1] = vc[1]+vr[1]/2-vr[1]-vf[1];
@@ -84,7 +84,7 @@ void carve2d_unicode(struct arena* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vvv = (unicode&0xffff)/0x4000;
-	int vlen = ascii2d_vars(win, font2d+vvv, &vbuf, &ibuf, 4, 2);
+	int vlen = ascii2d_vars(win, vvv, &vbuf, &ibuf, 4, 2);
 
 	unicode = unicode&0x3fff;
 	vbuf[ 0] = vc[0]-vr[0]-vf[0];

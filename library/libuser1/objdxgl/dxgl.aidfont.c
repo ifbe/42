@@ -64,7 +64,7 @@ static void aidfont_sread(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
-	struct datapair* mod = win->mod;
+	struct datapair* mod = win->gl_opaque;
 	if(_vbo_ != win->fmt)return;
 
 	//reuse shader
@@ -85,6 +85,8 @@ static void aidfont_sread(
 	mod[font2d2].src.tex_name[0] = mod[font3d2].src.tex_name[0];
 	mod[font2d3].dst.tex[0] = mod[font3d3].dst.tex[0];
 	mod[font2d3].src.tex_name[0] = mod[font3d3].src.tex_name[0];
+
+	//say("%d,%d,%d\n",mod[font2d0].dst.tex[0], mod[font2d0].dst.vbo, mod[font2d0].dst.ibo, mod[font2d0].dst.shader);
 }
 static void aidfont_swrite(
 	struct actor* act, struct pinid* pin,
@@ -120,14 +122,13 @@ static void aidfont_start(
 	struct datapair* mod;
 
 	buf = leaf->buf;
-	mod = root->mod;
+	mod = root->gl_opaque;
 
 //--------------------font3d-------------------
 	//[0000,3fff]
 	src = &mod[font3d0].src;
 	src->method = 'i';
 	src->geometry = 3;
-	src->opaque = 1;
 
 	src->vs = font3dvert;
 	src->fs = fontfrag;
@@ -159,7 +160,6 @@ static void aidfont_start(
 	src = &mod[font3d1].src;
 	src->method = 'i';
 	src->geometry = 3;
-	src->opaque = 1;
 
 	src->vbuf_len = 0x200000;
 	src->vbuf = memorycreate(src->vbuf_len);
@@ -187,7 +187,6 @@ static void aidfont_start(
 	src = &mod[font3d2].src;
 	src->method = 'i';
 	src->geometry = 3;
-	src->opaque = 1;
 
 	src->vbuf_len = 0x200000;
 	src->vbuf = memorycreate(src->vbuf_len);
@@ -215,7 +214,6 @@ static void aidfont_start(
 	src = &mod[font3d3].src;
 	src->method = 'i';
 	src->geometry = 3;
-	src->opaque = 1;
 
 	src->vbuf_len = 0x200000;
 	src->vbuf = memorycreate(src->vbuf_len);
@@ -244,7 +242,6 @@ static void aidfont_start(
 	src = &mod[font2d0].src;
 	src->method = 'i';
 	src->geometry = 3;
-	src->opaque = 1;
 
 	src->vs = font2dvert;
 	src->fs = fontfrag;
@@ -269,7 +266,6 @@ static void aidfont_start(
 	src = &mod[font2d1].src;
 	src->method = 'i';
 	src->geometry = 3;
-	src->opaque = 1;
 
 	src->vbuf_len = 0x200000;
 	src->vbuf = memorycreate(src->vbuf_len);
@@ -290,7 +286,6 @@ static void aidfont_start(
 	src = &mod[font2d2].src;
 	src->method = 'i';
 	src->geometry = 3;
-	src->opaque = 1;
 
 	src->vbuf_len = 0x200000;
 	src->vbuf = memorycreate(src->vbuf_len);
@@ -311,7 +306,6 @@ static void aidfont_start(
 	src = &mod[font2d3].src;
 	src->method = 'i';
 	src->geometry = 3;
-	src->opaque = 1;
 
 	src->vbuf_len = 0x200000;
 	src->vbuf = memorycreate(src->vbuf_len);

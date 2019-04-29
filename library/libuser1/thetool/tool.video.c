@@ -348,12 +348,13 @@ static void video_start(
 	if(_vbo_ != root->fmt)return;
 
 	//
-	pair = alloc_winobj(root);
+	pair = alloc_winobj(root, 's');
 	src = &pair->src;
 	dst = &pair->dst;
 	lf->foot[0] = (u64)src;
 	tf->foot[0] = (u64)dst;
 
+	src->geometry = 3;
 	src->method = 'v';
 
 	//shader

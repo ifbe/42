@@ -128,7 +128,6 @@ int windowcreate(struct arena* win)
 
 	win->fd = 0;
 	win->dc = 0;
-	win->mod = 0;
 	win->buf = malloc(2048*2048*4);
 
 	for(j=0;j<16;j++)win->input[j].w0 = 0xffff;

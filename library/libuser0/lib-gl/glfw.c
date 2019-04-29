@@ -4,16 +4,19 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "libuser.h"
+int vbonode_sread(struct arena* win, struct style* stack);
 int arenaevent(struct event* ev);
+//
 int fbodelete(struct arena* win);
 int fbocreate(struct arena* win, char* arg);
 //
-void coopctx_create(void*);
-void coopctx_update(void*);
+void coopwindow_create(void*);
+void coopwindow_update(void*);
+void coopwindow_render(void*);
 //
-void hostctx_create(void*);
-void hostctx_update(void*);
-void hostctx_render(void*);
+void hostwindow_create(void*);
+void hostwindow_render(void*);
+void hostwindow_update(void*);
 static u8 uppercase[] = {
 	' ', '!','\"', '#', '$', '%', '&','\"',		//20,27
 	'(', ')', '*', '+', '<', '_', '>', '?',		//28,2f
@@ -438,7 +441,7 @@ void windowopen_root(struct arena* w, struct arena* r)
 	}
 
 	//3.init
-	hostctx_create(w);
+	//hostctx_create(w);
 	//initshader(w);
 	//inittexture(w);
 	//initvertex(w);
@@ -485,30 +488,42 @@ void windowopen_coop(struct arena* w, struct arena* r)
 	}
 
 	//vao mapping
-	coopctx_create(w);
+	//coopctx_create(w);
 }
 
 
 
-static GLFWwindow* thisfw;
+
 void windowread(struct arena* win)
 {
 	GLFWwindow* fw;
-	//say("@windowread.start:%.8s\n", &win->fmt);
+	//say("@windowread.start:%.8s,%.8s,%llx\n", &win->type, &win->fmt, win->win);
 
 	//
-	if(_fbo_ == win->fmt)
+	if(_root_ == win->type)
 	{
-		//say("@windowread fbo\n");
-		glfwMakeContextCurrent(thisfw);
-		hostctx_render(win);
+		fw = win->win;
+		if(0 == fw)return;
+
+		//arena_rootread(win, 0, 0, 0, 0, 0);
+		vbonode_sread(win, 0);
+
+		glfwMakeContextCurrent(fw);
+		hostwindow_update(win);
+	}
+	else if(_fbo_ == win->fmt)
+	{
+		fw = win->win;
+		glfwMakeContextCurrent(fw);
+		hostwindow_render(win);
 	}
 	else if(_coop_ == win->fmt)
 	{
 		fw = win->win;
 		glfwMakeContextCurrent(fw);
-		coopctx_update(win);
-		hostctx_render(win);
+
+		coopwindow_render(win);
+
 		glfwSwapBuffers(fw);
 
 		//cleanup events
@@ -517,13 +532,11 @@ void windowread(struct arena* win)
 	}
 	else
 	{
-		arena_rootread(win, 0, 0, 0, 0, 0);
-
 		fw = win->win;
-		thisfw = fw;
 		glfwMakeContextCurrent(fw);
-		hostctx_update(win);
-		hostctx_render(win);
+
+		hostwindow_render(win);
+
 		glfwSwapBuffers(fw);
 
 		//cleanup events
@@ -596,6 +609,8 @@ void windowcreate(struct arena* win)
 		win->stride = 1024;
 		windowopen_root(win, 0);
 		win->fmt = _vbo_;
+
+		hostwindow_create(win);
 	}
 }
 

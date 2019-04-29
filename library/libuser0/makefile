@@ -163,12 +163,15 @@ linuxglfw:target
 	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
 	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
 	$(compiler) $(cflag) lib-gl/glfw.c
-	$(compiler) $(cflag) lib-gl/glctx.coop.c
-	$(compiler) $(cflag) lib-gl/glctx.fbo.c
-	$(compiler) $(cflag) lib-gl/glctx.host.c
-	$(compiler) $(cflag) lib-gl/globj.shader.c
-	$(compiler) $(cflag) lib-gl/globj.texture.c
-	$(compiler) $(cflag) lib-gl/globj.vertex.c
+	$(compiler) $(cflag) lib-gl/glwindow.host.c
+	$(compiler) $(cflag) lib-gl/glwindow.coop.c
+	$(compiler) $(cflag) lib-gl/glwindow.fbo.c
+	$(compiler) $(cflag) lib-gl/glviewport.host.c
+	$(compiler) $(cflag) lib-gl/glviewport.coop.c
+	$(compiler) $(cflag) lib-gl/glviewport.fbo.c
+	$(compiler) $(cflag) lib-gl/globject.shader.c
+	$(compiler) $(cflag) lib-gl/globject.texture.c
+	$(compiler) $(cflag) lib-gl/globject.vertex.c
 
 .PHONY:linuxglut
 linuxglut:target
@@ -244,12 +247,15 @@ macglfw:target
 	$(compiler) $(cflag) os-mac/mac.2.mic.c
 	$(compiler) $(cflag) os-mac/mac.3.cam.c
 	$(compiler) $(cflag) lib-gl/glfw.c
-	$(compiler) $(cflag) lib-gl/glctx.coop.c
-	$(compiler) $(cflag) lib-gl/glctx.fbo.c
-	$(compiler) $(cflag) lib-gl/glctx.host.c
-	$(compiler) $(cflag) lib-gl/globj.shader.c
-	$(compiler) $(cflag) lib-gl/globj.texture.c
-	$(compiler) $(cflag) lib-gl/globj.vertex.c
+	$(compiler) $(cflag) lib-gl/glwindow.host.c
+	$(compiler) $(cflag) lib-gl/glwindow.coop.c
+	$(compiler) $(cflag) lib-gl/glwindow.fbo.c
+	$(compiler) $(cflag) lib-gl/glviewport.host.c
+	$(compiler) $(cflag) lib-gl/glviewport.coop.c
+	$(compiler) $(cflag) lib-gl/glviewport.fbo.c
+	$(compiler) $(cflag) lib-gl/globject.shader.c
+	$(compiler) $(cflag) lib-gl/globject.texture.c
+	$(compiler) $(cflag) lib-gl/globject.vertex.c
 
 .PHONY:macglut
 macglut:target
@@ -322,15 +328,18 @@ winglfw:target
 	$(compiler) $(cflag) os-win/win.0.joy.c
 	$(compiler) $(cflag) os-win/win.0.std.c
 	$(compiler) $(cflag) os-win/win.0.tray.c
-	$(compiler) $(cflag) lib-gl/glfw.c
-	$(compiler) $(cflag) lib-gl/glctx.coop.c
-	$(compiler) $(cflag) lib-gl/glctx.fbo.c
-	$(compiler) $(cflag) lib-gl/glctx.host.c
-	$(compiler) $(cflag) lib-gl/globj.shader.c
-	$(compiler) $(cflag) lib-gl/globj.texture.c
-	$(compiler) $(cflag) lib-gl/globj.vertex.c
 	$(compiler) $(cflag) os-win/win.2.waveio.c
 	g++ $(cflag) -fno-rtti os-win/win.3.dshow.cpp
+	$(compiler) $(cflag) lib-gl/glfw.c
+	$(compiler) $(cflag) lib-gl/glwindow.host.c
+	$(compiler) $(cflag) lib-gl/glwindow.coop.c
+	$(compiler) $(cflag) lib-gl/glwindow.fbo.c
+	$(compiler) $(cflag) lib-gl/glviewport.host.c
+	$(compiler) $(cflag) lib-gl/glviewport.coop.c
+	$(compiler) $(cflag) lib-gl/glviewport.fbo.c
+	$(compiler) $(cflag) lib-gl/globject.shader.c
+	$(compiler) $(cflag) lib-gl/globject.texture.c
+	$(compiler) $(cflag) lib-gl/globject.vertex.c
 
 .PHONY:winglut
 winglut:target

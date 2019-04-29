@@ -49,9 +49,9 @@ void scene_export_pix(struct arena* win)
 	stopfile(fd);
 }
 void scene_export_vbo(struct arena* win)
-{
+{/*
 	int j,k;
-	struct datapair* mod = win->mod;
+	struct datapair* mod = win->gl_mod;
 	struct glsrc* src;
 	for(j=0;j<32;j++)
 	{
@@ -82,7 +82,7 @@ void scene_export_vbo(struct arena* win)
 		}
 
 		say("}\n");
-	}
+	}*/
 }
 void scene_export_file(u8* str, int len)
 {

@@ -2,8 +2,8 @@
 int utf2unicode(u8* src,u32* dst);
 int ascii3d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
-	struct datapair* mod = win->mod;
-	struct glsrc* src = &mod[id].src;
+	struct datapair* mod = win->gl_opaque;
+	struct glsrc* src = &mod[font3d0 + id].src;
 	int ilen = src->ibuf_h;
 	int vlen = src->vbuf_h;
 

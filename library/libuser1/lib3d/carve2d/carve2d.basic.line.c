@@ -1,10 +1,10 @@
 #include "libuser.h"
 #define halfsqrt3 0.8660254037844386
 #define acc 24
-int line2d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
+int line2d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
-	struct datapair* mod = win->mod;
-	struct glsrc* src = &mod[id].src;
+	struct datapair* mod = win->gl_solid;
+	struct glsrc* src = &mod[line2d].src;
 	int vlen = src->vbuf_h;
 	int ilen = src->ibuf_h;
 
@@ -28,7 +28,7 @@ void carveline2d(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line2d_vars(win, line2d, &vbuf, &ibuf, 2, 1);
+	int vlen = line2d_vars(win, 0, &vbuf, &ibuf, 2, 1);
 
 	vbuf[ 0] = va[0];
 	vbuf[ 1] = va[1];
@@ -60,7 +60,7 @@ void carveline2d_arrow(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line2d_vars(win, line2d, &vbuf, &ibuf, 4, 3);
+	int vlen = line2d_vars(win, 0, &vbuf, &ibuf, 4, 3);
 
 	vbuf[ 0] = va[0];
 	vbuf[ 1] = va[1];
@@ -157,7 +157,7 @@ void carveline2d_yshape(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line2d_vars(win, line2d, &vbuf, &ibuf, 4, 3);
+	int vlen = line2d_vars(win, 0, &vbuf, &ibuf, 4, 3);
 
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
@@ -203,7 +203,7 @@ void carveline2d_triangle(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line2d_vars(win, line2d, &vbuf, &ibuf, 3, 3);
+	int vlen = line2d_vars(win, 0, &vbuf, &ibuf, 3, 3);
 
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
@@ -242,7 +242,7 @@ void carveline2d_rect(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line2d_vars(win, line2d, &vbuf, &ibuf, 4, 4);
+	int vlen = line2d_vars(win, 0, &vbuf, &ibuf, 4, 4);
 
 	vbuf[ 0] = vc[0] - vr[0] - vf[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1];
@@ -292,7 +292,7 @@ void carveline2d_hexagon(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line2d_vars(win, line2d, &vbuf, &ibuf, 6, 6);
+	int vlen = line2d_vars(win, 0, &vbuf, &ibuf, 6, 6);
 
 	//0
 	vbuf[ 0] = vc[0] + vr[0];
@@ -380,7 +380,7 @@ void carveline2d_circle(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line2d_vars(win, line2d, &vbuf, &ibuf, lineacc, lineacc);
+	int vlen = line2d_vars(win, 0, &vbuf, &ibuf, lineacc, lineacc);
 
 	for(j=0;j<lineacc;j++)
 	{

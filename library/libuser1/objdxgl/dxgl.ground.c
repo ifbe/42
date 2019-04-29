@@ -187,7 +187,7 @@ static void ground_start(
 	if(0 == lf)return;
 
 	//
-	pair = alloc_winobj(root);
+	pair = alloc_winobj(root, 's');
 	src = &pair->src;
 	dst = &pair->dst;
 	lf->foot[0] = (u64)src;

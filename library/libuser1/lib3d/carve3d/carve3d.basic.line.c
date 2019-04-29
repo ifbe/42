@@ -1,10 +1,10 @@
 #include "libuser.h"
 #define halfsqrt3 0.8660254037844386
 #define acc 32
-int line3d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
+int line3d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
-	struct datapair* mod = win->mod;
-	struct glsrc* src = &mod[id].src;
+	struct datapair* mod = win->gl_solid;
+	struct glsrc* src = &mod[line3d].src;
 	int vlen = src->vbuf_h;
 	int ilen = src->ibuf_h;
 
@@ -28,7 +28,7 @@ void carveline(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, 2, 1);
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 2, 1);
 
 	vbuf[ 0] = va[0];
 	vbuf[ 1] = va[1];
@@ -58,7 +58,7 @@ void carveline_arrow(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, 4, 3);
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 4, 3);
 
 	vbuf[ 0] = va[0];
 	vbuf[ 1] = va[1];
@@ -124,7 +124,7 @@ void carveline_bezier(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, acc + 1, acc);
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc + 1, acc);
 
 	for(j=0;j<=acc;j++)
 	{
@@ -155,7 +155,7 @@ void carveline_special(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, acc + 1, acc);
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc + 1, acc);
 
 	for(j=0;j<=acc;j++)
 	{
@@ -188,7 +188,7 @@ void carveline_yshape(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, 4, 3);
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 4, 3);
 
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
@@ -234,7 +234,7 @@ void carveline_triangle(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, 3, 3);
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 3, 3);
 
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
@@ -277,7 +277,7 @@ void carveline_rect(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, 4, 4);
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 4, 4);
 
 	vbuf[ 0] = vc[0] - vr[0] - vf[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1];
@@ -326,7 +326,7 @@ void carveline_hexagon(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, 6, 6);
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 6, 6);
 
 	//0
 	vbuf[ 0] = vc[0] + vr[0];
@@ -412,7 +412,7 @@ void carveline_circle(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, lineacc, lineacc);
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, lineacc, lineacc);
 
 	for(j=0;j<lineacc;j++)
 	{
@@ -459,7 +459,7 @@ void carveline_cone(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, acc + 2, acc * 3);
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc + 2, acc * 3);
 
 	for(j=0;j<acc;j++)
 	{
@@ -523,7 +523,7 @@ void carveline_prism4(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, 8, 12);
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 8, 12);
 
 	vbuf[ 0] = vc[0] - vr[0] - vf[0] - vu[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1] - vu[1];
@@ -630,7 +630,7 @@ void carveline_cylinder(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, acc * 2, acc * 3);
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc * 2, acc * 3);
 
 	for(j=0;j<acc;j++)
 	{
@@ -688,7 +688,7 @@ void carveline_dodecahedron(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, 20, 30);
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 20, 30);
 
 	for(j=0;j<20*6;j+=6)
 	{
@@ -866,7 +866,7 @@ void carveline_icosahedron(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, 12, 30);
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 12, 30);
 
 	for(j=0;j<12*6;j++)
 	{
@@ -1007,7 +1007,7 @@ void carveline_sphere(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, line3d, &vbuf, &ibuf, accx*accy+2, accx*accy+accx*(accy+1));
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, accx*accy+2, accx*accy+accx*(accy+1));
 
 	for(k=0;k<accy;k++)
 	{

@@ -1,9 +1,9 @@
 #include "libuser.h"
 #define acc 24
-int opaque2d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
+int opaque2d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
-	struct datapair* mod = win->mod;
-	struct glsrc* src = &mod[id].src;
+	struct datapair* mod = win->gl_opaque;
+	struct glsrc* src = &mod[opaquetrigon2d].src;
 	int vlen = src->vbuf_h;
 	int ilen = src->ibuf_h;
 
@@ -29,7 +29,7 @@ void carveopaque2d_triangle(struct arena* win, u32 rgba,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = opaque2d_vars(win, opaque2d, &vbuf, &ibuf, 3, 1);
+	int vlen = opaque2d_vars(win, 0, &vbuf, &ibuf, 3, 1);
 
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
@@ -73,7 +73,7 @@ void carveopaque2d_bezier(struct arena* win, u32 rgba,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = opaque2d_vars(win, opaque2d, &vbuf, &ibuf, acc + 1, acc-1);
+	int vlen = opaque2d_vars(win, 0, &vbuf, &ibuf, acc + 1, acc-1);
 
 	int j;
 	float t;
@@ -115,7 +115,7 @@ void carveopaque2d_rect(struct arena* win, u32 rgba,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = opaque2d_vars(win, opaque2d, &vbuf, &ibuf, 4, 2);
+	int vlen = opaque2d_vars(win, 0, &vbuf, &ibuf, 4, 2);
 
 	vbuf[ 0] = vc[0] - vr[0] - vf[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1];
@@ -174,7 +174,7 @@ void carveopaque2d_prism4(struct arena* win, u32 rgba,
 	int j;
 	float* vbuf;
 	u16* ibuf;
-	int vlen = opaque2d_vars(win, opaque2d, &vbuf, &ibuf, 24, 12);
+	int vlen = opaque2d_vars(win, 0, &vbuf, &ibuf, 24, 12);
 
 	for(j=0;j<24*8;j+=8)
 	{
@@ -289,7 +289,7 @@ void carveopaque2d_circle(struct arena* win, u32 rgba,
 	float c,s;
 	float* vbuf;
 	u16* ibuf;
-	int vlen = opaque2d_vars(win, opaque2d, &vbuf, &ibuf, acc+1, acc);
+	int vlen = opaque2d_vars(win, 0, &vbuf, &ibuf, acc+1, acc);
 
 	for(j=0;j<acc;j++)
 	{
@@ -338,7 +338,7 @@ void carveopaque2d_sphere(struct arena* win, u32 rgba,
 #define accy (acc|0x1)
 	float* vbuf;
 	u16* ibuf;
-	int vlen = opaque2d_vars(win, opaque2d, &vbuf, &ibuf, accx*accy+2, accx*accy*2);
+	int vlen = opaque2d_vars(win, 0, &vbuf, &ibuf, accx*accy+2, accx*accy*2);
 
 	for(k=0;k<accy;k++)
 	{

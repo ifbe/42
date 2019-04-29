@@ -282,8 +282,7 @@ static void aidgeom_start(
 	struct datapair* mod;
 	struct glsrc* src;
 
-	mod = root->mod;
-
+	mod = root->gl_solid;
 
 //--------------------3d-------------------
 	//drawarray.point3d
@@ -351,29 +350,6 @@ static void aidgeom_start(
 	src->ibuf_enq = 1;
 
 
-	//opaque3d
-	src = &mod[opaque3d].src;
-	src->method = 'i';
-	src->geometry = 3;
-	src->opaque = 1;
-
-	src->vs = opaquevert;
-	src->fs = opaquefrag;
-	src->shader_enq = 1;
-
-	src->vbuf_len = 0x1000000;
-	src->vbuf = memorycreate(src->vbuf_len);
-	src->vbuf_w = 4*4*3;
-	src->vbuf_h = (src->vbuf_len) / (src->vbuf_w);
-	src->vbuf_fmt = vbuffmt_444;
-	src->vbuf_enq = 1;
-
-	src->ibuf_len = 0x100000;
-	src->ibuf = memorycreate(src->ibuf_len);
-	src->ibuf_w = 2*3;
-	src->ibuf_h = (src->ibuf_len) / (src->ibuf_w);
-	src->ibuf_fmt = 0x222;
-	src->ibuf_enq = 1;
 
 
 //----------------------2d--------------------
@@ -442,11 +418,39 @@ static void aidgeom_start(
 	src->ibuf_enq = 1;
 
 
-	//opaque2d
-	src = &mod[opaque2d].src;
+
+
+	mod = root->gl_opaque;
+
+//----------------------2d--------------------
+	//opaque3d
+	src = &mod[opaquetrigon3d].src;
 	src->method = 'i';
 	src->geometry = 3;
-	src->opaque = 1;
+
+	src->vs = opaquevert;
+	src->fs = opaquefrag;
+	src->shader_enq = 1;
+
+	src->vbuf_len = 0x1000000;
+	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf_w = 4*4*3;
+	src->vbuf_h = (src->vbuf_len) / (src->vbuf_w);
+	src->vbuf_fmt = vbuffmt_444;
+	src->vbuf_enq = 1;
+
+	src->ibuf_len = 0x100000;
+	src->ibuf = memorycreate(src->ibuf_len);
+	src->ibuf_w = 2*3;
+	src->ibuf_h = (src->ibuf_len) / (src->ibuf_w);
+	src->ibuf_fmt = 0x222;
+	src->ibuf_enq = 1;
+
+
+	//opaque2d
+	src = &mod[opaquetrigon2d].src;
+	src->method = 'i';
+	src->geometry = 3;
 
 	src->vs = opaque2d_vert;
 	src->fs = opaque2d_frag;

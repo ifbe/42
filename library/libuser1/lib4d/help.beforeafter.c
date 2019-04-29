@@ -25,20 +25,21 @@ void background_pixel(struct arena* win)
 void background_vbo(struct arena* win)
 {
 	int j;
-	struct datapair* mod = win->mod;
-	for(j=0;j<16;j++)
+	struct datapair* mod;
+
+	mod = win->gl_solid;
+	for(j=0;j<solidaid_max;j++)
 	{
 		mod[j].src.vbuf_h = 0;
 		mod[j].src.ibuf_h = 0;
 	}
-/*
-	if((win->edit) | (0 <= win->theone) | (0 == win->irel))
+
+	mod = win->gl_opaque;
+	for(j=0;j<opaqueaid_max;j++)
 	{
-		carveline(win, 0xff0000, 0.0, 0.0, 0.0, 10000.0, 0.0, 0.0);
-		carveline(win, 0x00ff00, 0.0, 0.0, 0.0, 0.0, 10000.0, 0.0);
-		carveline(win, 0x0000ff, 0.0, 0.0, 0.0, 0.0, 0.0, 10000.0);
+		mod[j].src.vbuf_h = 0;
+		mod[j].src.ibuf_h = 0;
 	}
-*/
 }
 void background_json(struct arena* win)
 {
@@ -86,11 +87,17 @@ void foreground_pixel(struct arena* win)
 void foreground_vbo(struct arena* win)
 {
 	int j;
-	struct relation* rel;
 	struct datapair* mod;
 
-	mod = win->mod;
-	for(j=0;j<16;j++)
+	mod = win->gl_solid;
+	for(j=0;j<solidaid_max;j++)
+	{
+		mod[j].src.vbuf_enq += 1;
+		mod[j].src.ibuf_enq += 1;
+	}
+
+	mod = win->gl_opaque;
+	for(j=0;j<opaqueaid_max;j++)
 	{
 		mod[j].src.vbuf_enq += 1;
 		mod[j].src.ibuf_enq += 1;

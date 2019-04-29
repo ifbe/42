@@ -48,6 +48,62 @@ int xx3d_swrite(void*, void*, void*, void*, void*);
 
 
 
+void defaultvertex(struct arena* win)
+{
+	//target
+	win->target.vc[0] = 0.0;
+	win->target.vc[1] = 0.0;
+	win->target.vc[2] = 0.0;
+
+	win->target.vr[0] = 500.0;
+	win->target.vr[1] = 0.0;
+	win->target.vr[2] = 0.0;
+
+	win->target.vf[0] = 0.0;
+	win->target.vf[1] = 500.0;
+	win->target.vf[2] = 0.0;
+
+	win->target.vu[0] = 0.0;
+	win->target.vu[1] = 0.0;
+	win->target.vu[2] = 500.0;
+
+	//camera
+	win->camera.vl[0] = -1.0;
+	win->camera.vl[1] = 0.0;
+	win->camera.vl[2] = 0.0;
+
+	win->camera.vr[0] = 1.0;
+	win->camera.vr[1] = 0.0;
+	win->camera.vr[2] = 0.0;
+
+	win->camera.vb[0] = 0.0;
+	win->camera.vb[1] =-0.70710678118655;
+	win->camera.vb[2] =-0.70710678118655;
+
+	win->camera.vu[0] = 0.0;
+	win->camera.vu[1] = 0.70710678118655;
+	win->camera.vu[2] = 0.70710678118655;
+
+	win->camera.vn[0] = 0.0;
+	win->camera.vn[1] = 0.70710678118655;
+	win->camera.vn[2] =-0.70710678118655;
+/*
+	win->camera.vf[0] = 0.0;
+	win->camera.vf[1] = 0.0;
+	win->camera.vf[2] = 0.0;
+
+	win->camera.vq[0] = 0.0;
+	win->camera.vq[1] = 0.0;
+	win->camera.vq[2] = 0.0;
+*/
+	win->camera.vc[0] = 0.0;
+	win->camera.vc[1] = -2000.0;
+	win->camera.vc[2] = 2000.0;
+}
+
+
+
+
 int vbonode_sread(struct arena* win, struct style* stack)
 {
 	struct style* sty;
@@ -167,111 +223,120 @@ int vbonode_delete(struct arena* win)
 {
 	return 0;
 }
-void* vbonode_create(u64 type, void* addr)
+void* vbonode_create(u64 type, u64 flag)
 {
+	int j;
+	u8* buf;
 	struct arena* win;
 	struct arena* tmp;
 
 	if(_aid3d_ == type)
 	{
 		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _aid3d_;
-			aid3d_create(win, 0);
-		}
+		if(0 == win)return 0;
+
+		win->type = _twig_;
+		win->fmt = _aid3d_;
+		aid3d_create(win, 0);
 		return win;
 	}
 
 	if(_mic3d_ == type)
 	{
 		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _mic3d_;
-			mic3d_create(win, 0);
-		}
+		if(0 == win)return 0;
+
+		win->type = _twig_;
+		win->fmt = _mic3d_;
+		mic3d_create(win, 0);
 		return win;
 	}
 
 	if(_cam3d_ == type)
 	{
 		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _cam3d_;
-			cam3d_create(win, 0);
-		}
+		if(0 == win)return 0;
+
+		win->type = _twig_;
+		win->fmt = _cam3d_;
+		cam3d_create(win, 0);
 		return win;
 	}
 
 	if(_lit3d_ == type)
 	{
 		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _lit3d_;
-			lit3d_create(win, 0);
-		}
+		if(0 == win)return 0;
+
+		win->type = _twig_;
+		win->fmt = _lit3d_;
+		lit3d_create(win, 0);
 		return win;
 	}
 
 	if(_bg3d_ == type)
 	{
 		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _bg3d_;
-			bg3d_create(win, 0);
-		}
+		if(0 == win)return 0;
+
+		win->type = _twig_;
+		win->fmt = _bg3d_;
+		bg3d_create(win, 0);
 		return win;
 	}
 
 	if(_fg3d_ == type)
 	{
 		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _fg3d_;
-			fg3d_create(win, 0);
-		}
+		if(0 == win)return 0;
+
+		win->type = _twig_;
+		win->fmt = _fg3d_;
+		fg3d_create(win, 0);
 		return win;
 	}
 
 	if(_ui3d_ == type)
 	{
 		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _ui3d_;
-			ui3d_create(win, 0);
-		}
+		if(0 == win)return 0;
+
+		win->type = _twig_;
+		win->fmt = _ui3d_;
+		ui3d_create(win, 0);
 		return win;
 	}
 
 	if(_xx3d_ == type)
 	{
 		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _xx3d_;
-			xx3d_create(win, 0);
-		}
+		if(0 == win)return 0;
+
+		win->type = _twig_;
+		win->fmt = _xx3d_;
+		xx3d_create(win, 0);
 		return win;
 	}
 
 	if(_vbo_ == type)
 	{
-		win = addr;
-		if(win)
+		win = allocarena();
+		if(0 == win)return 0;
+
+		win->type = _root_;
+		win->fmt = _vbo_;
+		win->width = win->fbwidth = 1024;
+		win->height = win->fbheight = 1024;
+		win->depth = win->fbdepth = 1024;
+		defaultvertex(win);
+
+		win->gl_solid = buf = memorycreate(0x10000);
+		for(j=0;j<0x10000;j++)buf[j] = 0;
+
+		win->gl_opaque = buf = memorycreate(0x10000);
+		for(j=0;j<0x10000;j++)buf[j] = 0;
+
+		if(_ui_ == flag)
 		{
 			//aid3d
 			tmp = vbonode_create(_aid3d_, 0);
@@ -281,6 +346,26 @@ void* vbonode_create(u64 type, void* addr)
 				vbonode_start(tmp, 0, win, 0);
 			}
 
+			//ui3d
+			tmp = vbonode_create(_ui3d_, 0);
+			if(tmp)
+			{
+				relationcreate(tmp, 0, _win_, win, 0, _win_);
+				vbonode_start(tmp, 0, win, 0);
+			}
+
+			//xx3d
+			tmp = vbonode_create(_xx3d_, 0);
+			if(tmp)
+			{
+				relationcreate(tmp, 0, _win_, win, 0, _win_);
+				vbonode_start(tmp, 0, win, 0);
+			}
+		}
+
+		if(_3d_ == flag)
+		{
+/*
 			//mic3d
 			tmp = vbonode_create(_mic3d_, 0);
 			if(tmp)
@@ -304,7 +389,7 @@ void* vbonode_create(u64 type, void* addr)
 				relationcreate(tmp, 0, _win_, win, 0, _win_);
 				vbonode_start(tmp, 0, win, 0);
 			}
-
+*/
 			//bg3d
 			tmp = vbonode_create(_bg3d_, 0);
 			if(tmp)
@@ -320,23 +405,8 @@ void* vbonode_create(u64 type, void* addr)
 				relationcreate(tmp, 0, _win_, win, 0, _win_);
 				vbonode_start(tmp, 0, win, 0);
 			}
-
-			//ui3d
-			tmp = vbonode_create(_ui3d_, 0);
-			if(tmp)
-			{
-				relationcreate(tmp, 0, _win_, win, 0, _win_);
-				vbonode_start(tmp, 0, win, 0);
-			}
-
-			//xx3d
-			tmp = vbonode_create(_xx3d_, 0);
-			if(tmp)
-			{
-				relationcreate(tmp, 0, _win_, win, 0, _win_);
-				vbonode_start(tmp, 0, win, 0);
-			}
 		}
+
 		return win;
 	}
 

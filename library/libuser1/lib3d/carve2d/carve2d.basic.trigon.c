@@ -1,9 +1,9 @@
 #include "libuser.h"
 #define acc 24
-int trigon2d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
+int trigon2d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
-	struct datapair* mod = win->mod;
-	struct glsrc* src = &mod[id].src;
+	struct datapair* mod = win->gl_solid;
+	struct glsrc* src = &mod[trigon2d].src;
 	int vlen = src->vbuf_h;
 	int ilen = src->ibuf_h;
 
@@ -27,7 +27,7 @@ void carvesolid2d_triangle(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = trigon2d_vars(win, trigon2d, &vbuf, &ibuf, 3, 1);
+	int vlen = trigon2d_vars(win, 0, &vbuf, &ibuf, 3, 1);
 
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
@@ -63,7 +63,7 @@ void carvesolid2d_rect(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = trigon2d_vars(win, trigon2d, &vbuf, &ibuf, 4, 2);
+	int vlen = trigon2d_vars(win, 0, &vbuf, &ibuf, 4, 2);
 
 	vbuf[ 0] = vc[0] - vr[0] - vf[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1];
@@ -112,7 +112,7 @@ void carvesolid2d_prism4(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = trigon2d_vars(win, trigon2d, &vbuf, &ibuf, 24, 12);
+	int vlen = trigon2d_vars(win, 0, &vbuf, &ibuf, 24, 12);
 
 	for(j=0;j<24*6;j+=6)
 	{
@@ -288,7 +288,7 @@ void carvesolid2d_circle(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = trigon2d_vars(win, trigon2d, &vbuf, &ibuf, acc+1, acc);
+	int vlen = trigon2d_vars(win, 0, &vbuf, &ibuf, acc+1, acc);
 
 	for(j=0;j<acc;j++)
 	{
@@ -333,7 +333,7 @@ void carvesolid2d_sphere(struct arena* win, u32 rgb,
 
 	float* vbuf;
 	u16* ibuf;
-	int vlen = trigon2d_vars(win, trigon2d, &vbuf, &ibuf, accx*accy+2, accx*accy*2);
+	int vlen = trigon2d_vars(win, 0, &vbuf, &ibuf, accx*accy+2, accx*accy*2);
 
 	for(k=0;k<accy;k++)
 	{
