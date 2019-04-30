@@ -224,11 +224,11 @@ int actorinput_3d(struct arena* win, struct style* sty, struct event* ev)
 
 #define COUNT 1
 static u64 want[COUNT] = {
-	hex64('t','e','r','r','a','i','n', 0)
+	hex64('m','o','d','e','l', 0, 0, 0)
 	//hex64('m','i','r','r','o','r', 0, 0)
 };
 static char* args[COUNT] = {
-	"datafile/jpg/terrain.jpg"
+	0
 };
 
 
@@ -332,7 +332,7 @@ int fg3d_create(struct arena* win, u8* str)
 	struct pinid* pin;
 	struct relation* rel;
 
-	for(j=0;j<0;j++)
+	for(j=0;j<COUNT;j++)
 	{
 		act = actorcreate(want[j], args[j]);
 		if(0 == act)continue;
@@ -355,17 +355,17 @@ int fg3d_create(struct arena* win, u8* str)
 		sty->vc[1] = 0;
 		sty->vc[2] = 0;
 
-		sty->vr[0] = 1000*1000*10;
+		sty->vr[0] = 100.0;
 		sty->vr[1] = 0;
 		sty->vr[2] = 0;
 
 		sty->vf[0] = 0;
-		sty->vf[1] = 1000*1000*10;
+		sty->vf[1] = 100.0;
 		sty->vf[2] = 0;
 
 		sty->vu[0] = 0;
 		sty->vu[1] = 0;
-		sty->vu[2] = 1000*1000*10;
+		sty->vu[2] = 100.0;
 	}
 	return 0;
 }

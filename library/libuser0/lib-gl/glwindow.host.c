@@ -118,7 +118,6 @@ void hostwindow_update(struct arena* win)
 
 
 
-
 void hostwindow_render(struct arena* win)
 {
 	struct relation* rel;
@@ -171,6 +170,8 @@ void viewportvertex1(struct arena* win)
 	win->target.vu[1] = 0.0;
 	win->target.vu[2] = 500.0;
 
+#define sin34 0.55919290
+#define cos34 0.8290
 	//camera
 	win->camera.vl[0] = -1.0;
 	win->camera.vl[1] = 0.0;
@@ -181,16 +182,16 @@ void viewportvertex1(struct arena* win)
 	win->camera.vr[2] = 0.0;
 
 	win->camera.vb[0] = 0.0;
-	win->camera.vb[1] =-0.8290;
-	win->camera.vb[2] =-0.55919290;
+	win->camera.vb[1] = -cos34;
+	win->camera.vb[2] = -sin34;
 
 	win->camera.vu[0] = 0.0;
-	win->camera.vu[1] = 0.8290;
-	win->camera.vu[2] = 0.55919290;
+	win->camera.vu[1] = cos34;
+	win->camera.vu[2] = sin34;
 
 	win->camera.vn[0] = 0.0;
-	win->camera.vn[1] = 0.55919290;
-	win->camera.vn[2] =-0.8290;
+	win->camera.vn[1] = sin34;
+	win->camera.vn[2] =-cos34;
 /*
 	win->camera.vf[0] = 0.0;
 	win->camera.vf[1] = 0.0;
@@ -201,8 +202,8 @@ void viewportvertex1(struct arena* win)
 	win->camera.vq[2] = 0.0;
 */
 	win->camera.vc[0] = 0.0;
-	win->camera.vc[1] =-2000.0 * 0.55919290;	//sin(34)
-	win->camera.vc[2] = 2000.0 * 0.8290;		//cos(34)
+	win->camera.vc[1] =-2000.0 * sin34;
+	win->camera.vc[2] = 2000.0 * cos34;
 }
 void viewportvertex2(struct arena* win)
 {
@@ -254,13 +255,15 @@ void viewportvertex2(struct arena* win)
 */
 	win->camera.vc[0] = 0.0;
 	win->camera.vc[1] = 0.0;
-	win->camera.vc[2] = 100000.0;
+	win->camera.vc[2] = 10000.0;
 }
 void hostwindow_create(struct arena* window)
 {
-	struct arena* viewport1;
-	struct style* sty1;
 	struct arena* world1;
+	struct arena* viewport1;
+	struct arena* viewport2;
+	struct style* sty1;
+	struct style* sty2;
 
 	viewport1 = hostviewport_create(window);
 	if(viewport1)
@@ -275,33 +278,47 @@ void hostwindow_create(struct arena* window)
 		relationcreate(viewport1, 0, _win_, window, sty1, _win_);
 	}
 
-	world1 = vbonode_create(_vbo_, _3d_);
-	if(world1){
-		world1->win = window->win;
-		relationcreate(world1, 0, _win_, viewport1, 0, _win_);
-	}
-
-
-	struct arena* viewport2;
-	struct style* sty2;
-	struct arena* world2;
-
 	viewport2 = hostviewport_create(window);
 	if(viewport2)
 	{
 		sty2 = allocstyle();
-		sty2->vc[0] = 0.0;
+		sty2->vc[0] = 0.5;
 		sty2->vc[1] = 0.0;
-		sty2->vq[0] = 1.0;
+		sty2->vq[0] = 0.5;
 		sty2->vq[1] = 1.0;
 
 		viewportvertex2(viewport2);
 		relationcreate(viewport2, 0, _win_, window, sty2, _win_);
 	}
 
+	world1 = vbonode_create(_vbo_, _3d_);
+	if(world1){
+		world1->win = window->win;
+		relationcreate(world1, 0, _win_, viewport1, 0, _win_);
+		relationcreate(world1, 0, _win_, viewport2, 0, _win_);
+	}
+
+
+	struct arena* uiviewport;
+	struct style* uistyle;
+	struct arena* world2;
+
+	uiviewport = hostviewport_create(window);
+	if(uiviewport)
+	{
+		uistyle = allocstyle();
+		uistyle->vc[0] = 0.0;
+		uistyle->vc[1] = 0.0;
+		uistyle->vq[0] = 1.0;
+		uistyle->vq[1] = 1.0;
+
+		viewportvertex2(uiviewport);
+		relationcreate(uiviewport, 0, _win_, window, uistyle, _win_);
+	}
+
 	world2 = vbonode_create(_vbo_, _ui_);
 	if(world2){
 		world2->win = window->win;
-		relationcreate(world2, 0, _win_, viewport2, 0, _win_);
+		relationcreate(world2, 0, _win_, uiviewport, 0, _win_);
 	}
 }

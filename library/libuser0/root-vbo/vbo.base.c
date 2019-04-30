@@ -326,7 +326,7 @@ void* vbonode_create(u64 type, u64 flag)
 		win->type = _root_;
 		win->fmt = _vbo_;
 		win->width = win->fbwidth = 1024;
-		win->height = win->fbheight = 1024;
+		win->height = win->fbheight = 768;
 		win->depth = win->fbdepth = 1024;
 		defaultvertex(win);
 

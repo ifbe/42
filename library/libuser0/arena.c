@@ -59,7 +59,7 @@ int windowdelete(void*);
 int windowstart(void*);
 int windowstop(void*);
 int windowread(void*);
-int windowwrite(void*);
+int windowwrite(void*, void*);
 int windowlist();
 int windowchoose();
 //
@@ -493,8 +493,8 @@ int arenaevent(struct event* e)
 
 	switch(win->fmt)
 	{
-		case _vbo_:vbonode_swrite(win, 0, &ev);break;
-		case _coop_:vbonode_swrite(win, 0, &ev);break;
+		case _vbo_:
+		case _coop_:windowwrite(win, &ev);break;
 		default:rgbanode_swrite(win, 0, &ev);
 	}
 	return 0;

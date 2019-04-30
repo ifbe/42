@@ -18,6 +18,7 @@
 
 void fixmatrix(float*, void*);
 void* allocarena();
+int vbonode_swrite(struct arena* win, struct style* stack, struct event* ev);
 
 
 
@@ -95,6 +96,33 @@ void display_eachpass(
 
 
 
+void hostviewport_event(
+	struct arena*  vp, struct style* aa,
+	struct arena* win, struct style* st,
+	struct event* ev, int len)
+{/*
+	w = win->fbwidth;
+	h = win->fbheight;
+	x0 = w * st->vc[0];	//0
+	y0 = h * st->vc[1];	//0
+	x1 = w * st->vq[0];	//0.5
+	y1 = h * st->vq[1];	//1
+*/
+	struct relation* rel;
+	struct arena* ctxnode;
+	rel = vp->orel0;
+	while(1){
+		if(0 == rel)break;
+		if(_win_ == rel->dsttype){
+			ctxnode = (void*)(rel->dstchip);
+			ctxnode->width = win->width;
+			ctxnode->height = win->height;
+			vbonode_swrite(ctxnode, 0, ev);
+			break;
+		}
+		rel = samesrcnextdst(rel);
+	}
+}
 void hostviewport_render(
 	struct arena*  vp, struct style* aa,
 	struct arena* win, struct style* st)
