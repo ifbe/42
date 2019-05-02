@@ -9,6 +9,154 @@ int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max);
 
 
 
+
+void* allocarena();
+void* allocstyle();
+void* vbonode_create(u64, u64);
+void viewportvertex1(struct arena* win)
+{
+	//target
+	win->target.vc[0] = 0.0;
+	win->target.vc[1] = 0.0;
+	win->target.vc[2] = 0.0;
+
+	win->target.vr[0] = 500.0;
+	win->target.vr[1] = 0.0;
+	win->target.vr[2] = 0.0;
+
+	win->target.vf[0] = 0.0;
+	win->target.vf[1] = 500.0;
+	win->target.vf[2] = 0.0;
+
+	win->target.vu[0] = 0.0;
+	win->target.vu[1] = 0.0;
+	win->target.vu[2] = 500.0;
+
+#define sin34 0.55919290
+#define cos34 0.8290
+	//camera
+	win->camera.vl[0] = -1.0;
+	win->camera.vl[1] = 0.0;
+	win->camera.vl[2] = 0.0;
+
+	win->camera.vr[0] = 1.0;
+	win->camera.vr[1] = 0.0;
+	win->camera.vr[2] = 0.0;
+
+	win->camera.vb[0] = 0.0;
+	win->camera.vb[1] = -cos34;
+	win->camera.vb[2] = -sin34;
+
+	win->camera.vu[0] = 0.0;
+	win->camera.vu[1] = cos34;
+	win->camera.vu[2] = sin34;
+
+	win->camera.vn[0] = 0.0;
+	win->camera.vn[1] = sin34;
+	win->camera.vn[2] =-cos34;
+/*
+	win->camera.vf[0] = 0.0;
+	win->camera.vf[1] = 0.0;
+	win->camera.vf[2] = 0.0;
+
+	win->camera.vq[0] = 0.0;
+	win->camera.vq[1] = 0.0;
+	win->camera.vq[2] = 0.0;
+*/
+	win->camera.vc[0] = 0.0;
+	win->camera.vc[1] =-2000.0 * sin34;
+	win->camera.vc[2] = 2000.0 * cos34;
+}
+void viewportvertex2(struct arena* win)
+{
+	//target
+	win->target.vc[0] = 0.0;
+	win->target.vc[1] = 0.0;
+	win->target.vc[2] = 0.0;
+
+	win->target.vr[0] = 500.0;
+	win->target.vr[1] = 0.0;
+	win->target.vr[2] = 0.0;
+
+	win->target.vf[0] = 0.0;
+	win->target.vf[1] = 500.0;
+	win->target.vf[2] = 0.0;
+
+	win->target.vu[0] = 0.0;
+	win->target.vu[1] = 0.0;
+	win->target.vu[2] = 500.0;
+
+	//camera
+	win->camera.vl[0] = -1.0;
+	win->camera.vl[1] = 0.0;
+	win->camera.vl[2] = 0.0;
+
+	win->camera.vr[0] = 1.0;
+	win->camera.vr[1] = 0.0;
+	win->camera.vr[2] = 0.0;
+
+	win->camera.vb[0] = 0.0;
+	win->camera.vb[1] = -1.0;
+	win->camera.vb[2] = 0.0;
+
+	win->camera.vu[0] = 0.0;
+	win->camera.vu[1] = 1.0;
+	win->camera.vu[2] = 0.0;
+
+	win->camera.vn[0] = 0.0;
+	win->camera.vn[1] = 0.0;
+	win->camera.vn[2] = -1.0;
+/*
+	win->camera.vf[0] = 0.0;
+	win->camera.vf[1] = 0.0;
+	win->camera.vf[2] = 0.0;
+
+	win->camera.vq[0] = 0.0;
+	win->camera.vq[1] = 0.0;
+	win->camera.vq[2] = 0.0;
+*/
+	win->camera.vc[0] = 0.0;
+	win->camera.vc[1] = 0.0;
+	win->camera.vc[2] = 10000.0;
+}
+void* hostviewport_create(struct arena* window)
+{
+	struct arena* viewport;
+
+	viewport = allocarena();
+	if(0 == viewport)return 0;
+
+	viewport->type = viewport->fmt = hex32('v','p',0,0);
+
+	return viewport;
+}
+void hostwindow_create(struct arena* window)
+{
+	struct arena* uiviewport;
+	struct style* uistyle;
+	struct arena* world2;
+
+	uiviewport = hostviewport_create(window);
+	if(uiviewport)
+	{
+		uistyle = allocstyle();
+		uistyle->vc[0] = 0.0;
+		uistyle->vc[1] = 0.0;
+		uistyle->vq[0] = 1.0;
+		uistyle->vq[1] = 1.0;
+
+		viewportvertex2(uiviewport);
+		relationcreate(uiviewport, 0, _win_, window, uistyle, _win_);
+	}
+
+	world2 = vbonode_create(_vbo_, _ui_);
+	if(world2){
+		world2->win = window->win;
+		relationcreate(world2, 0, _win_, uiviewport, 0, _win_);
+	}
+}
+
+
 static int roletype = 0;
 void role_delete()
 {
@@ -39,7 +187,11 @@ void role_create()
 	arterycreate(0,  "SERVE://0.0.0.0:2099");
 
 	//+libuser0
-	arenacreate(_win_,  0);
+	arenacreate(_std_, 0);
+	arenacreate(_tray_, 0);
+	struct arena* win = arenacreate(_win_,  0);
+
+	hostwindow_create(win);
 
 	//+libuser1
 	//actorcreate(_2048_, 0);

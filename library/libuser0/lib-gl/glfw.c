@@ -628,8 +628,6 @@ void windowcreate(struct arena* win)
 		win->stride = 1024;
 		windowopen_root(win, 0);
 		win->fmt = _vbo_;
-
-		hostwindow_create(win);
 	}
 }
 

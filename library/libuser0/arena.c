@@ -289,6 +289,8 @@ void* arenacreate(u64 type, void* addr)
 		}
 		return win;
 	}
+
+	//
 	else if(_cam_ == type)
 	{
 		if(0 == addr)return 0;
@@ -313,6 +315,8 @@ void* arenacreate(u64 type, void* addr)
 		}
 		return win;
 	}
+
+	//
 	else if(_bdc_ == type)
 	{
 		win = allocarena();
@@ -606,7 +610,5 @@ void initarena(u8* addr)
 	inittray(arena);
 	initwindow(arena);
 
-	arenacreate(_std_, 0);
-	arenacreate(_tray_, 0);
 	//say("[c,f):inited arena\n");
 }

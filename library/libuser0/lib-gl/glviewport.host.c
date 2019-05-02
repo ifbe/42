@@ -17,7 +17,6 @@
 #endif
 
 void fixmatrix(float*, void*);
-void* allocarena();
 int vbonode_swrite(struct arena* win, struct style* stack, struct event* ev);
 
 
@@ -188,19 +187,4 @@ found:
 
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
-}
-
-
-
-
-void* hostviewport_create(struct arena* window)
-{
-	struct arena* viewport;
-
-	viewport = allocarena();
-	if(0 == viewport)return 0;
-
-	viewport->type = viewport->fmt = hex32('v','p',0,0);
-
-	return viewport;
 }

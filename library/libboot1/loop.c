@@ -29,9 +29,6 @@ void sleep_us();
 //
 void* eventread();
 void eventwrite(u64,u64,u64,u64);
-//
-void role_create();
-void role_delete();
 //i
 int input(void*, int);
 //o
@@ -71,8 +68,6 @@ void loop()
 	u64 dt;
 	struct event* ev;
 
-	role_create();
-
 	//forever
 	while(alive)
 	{
@@ -98,6 +93,4 @@ void loop()
 		//say("dt=%d\n", delta);
 		if(dt < 16000)sleep_us(16000-dt);
 	}
-
-	role_delete();
 }

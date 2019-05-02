@@ -35,7 +35,9 @@ void initstdrel(void*);
 void* death();
 void* birth();
 //
+void role_create();
 void loop();
+//
 int openreadclose(void*,int,void*,int);
 int openwriteclose(void*,int,void*,int);
 //i
@@ -113,8 +115,7 @@ int main(int argc, char* argv[])
 	}
 
 	//before mainloop: load file as ui
-	//if(0 == srcctx)srcctx =
-	//if(0 == loadctx(srcctx))emptyctx();
+	role_create();
 
 	//mainloop
 	loop();
