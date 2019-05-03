@@ -3,7 +3,7 @@ window{
 width:1024
 height:1024
 depth:1024
-str:"42"
+title:"42"
 }
 viewport1{}
 viewport2{}
@@ -18,6 +18,12 @@ trunk4{type:ui}
 
 
 <actor>
+texball{
+file:"datafile/jpg/skysphere.jpg"
+}
+terrain{
+file:"datafile/jpg/cartoon.jpg"
+}
 aidfont{}
 aidgeom{}
 vjoy{}
@@ -29,22 +35,16 @@ pointer{}
 
 <style>
 leftpart{
-left:0.0
-top:0.0
-right:0.5
-bot:1.0
+c:0.0, 0.0
+q:0.5, 1.0
 }
 rightpart{
-left:0.5
-top:0.0
-right:1.0
-bot:1.0
+c:0.5, 0.0
+q:1.0, 1.0
 }
 fullscreen{
-left:0.0
-top:0.0
-right:1.0
-bot:1.0
+c:0.0, 0.0
+q:1.0, 1.0
 }
 vp1{
 l:-1.0, 0.0, 0.0

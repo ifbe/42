@@ -6,18 +6,16 @@ int actorstart(void*, void*, void*, void*, void*, void*);
 
 
 
-#define COUNT 5
+#define COUNT 4
 static u64 want[COUNT] = {
 	hex32('v','j','o','y'),
 	hex32('v','k','b','d'),
-	hex64('t','a','b','b','a','r', 0, 0),
 	hex64('c','o','r','n','e','r', 0, 0),
 	hex64('p','o','i','n','t','e','r', 0)
 };
 static u8 flag[COUNT] = {
 	'#',
 	'#',
-	0,
 	0,
 	0
 };
