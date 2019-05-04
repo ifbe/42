@@ -53,6 +53,9 @@ typedef float mat4[4][4];
 #define _cam_ hex32('c','a','m',0)
 #define _mic_ hex32('m','i','c',0)
 //
+#define _fbo_ hex32('f','b','o',0)
+#define _vp_ hex32('v','p', 0, 0)
+//
 #define _cli_ hex32('c','l','i',0)
 #define _tui_ hex32('t','u','i',0)
 #define _func_ hex32('f','u','n','c')
@@ -62,7 +65,6 @@ typedef float mat4[4][4];
 #define _pcb_  hex32('p','c','b',0)
 #define _xml_  hex32('x','m','l',0)
 #define _vbo_ hex32('v','b','o',0)
-#define _fbo_ hex32('f','b','o',0)
 #define _8bit_ hex32('8','b','i','t')
 //
 #define _std_ hex32('s','t','d', 0)

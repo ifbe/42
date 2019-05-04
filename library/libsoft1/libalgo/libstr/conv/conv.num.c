@@ -216,11 +216,19 @@ int double2decstr(double data, u8* str)
 int decstr2double(u8* src, double* data)
 {
 	int j;
-	u64 temp;
+	double flag;
+	double temp;
 	double asdf;
 
+stage0:
+	if('-' != src[0])flag = 1.0;
+	else{
+		flag = -1.0;
+		src += 1;
+	}
+
 stage1:
-	temp = 0;
+	temp = 0.0;
 	for(j=0;j<20;j++)
 	{
 		if((src[j] >= '0') && (src[j] <= '9'))
@@ -230,13 +238,13 @@ stage1:
 		else if(src[j] == '.')
 		{
 			j++;
-			*data = (double)temp;
+			*data = temp;
 			goto stage2;
 		}
 		else
 		{
-			*data = (double)temp;
-			return j;
+			*data = temp;
+			goto byebye;
 		}
 	}
 
@@ -251,5 +259,12 @@ stage2:
 		}
 		else break;
 	}
-	return j;
+
+byebye:
+	if(flag > 0.0){
+		return j;
+	}
+
+	*data *= -1.0;
+	return j+1;
 }

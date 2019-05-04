@@ -381,6 +381,15 @@ void* arenacreate(u64 type, void* addr)
 		}
 		return win;
 	}
+	else if(_vp_ == type)
+	{
+		win = allocarena();
+		if(0 == win)return 0;
+
+		win->type = _vp_;
+		win->fmt = _vp_;
+		return win;
+	}
 
 	//pcbdoc
 	else if(_sch_ == type)

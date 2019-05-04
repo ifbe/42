@@ -1,35 +1,70 @@
 <arena>
 window{
+fmt:win
+title:"42"
 width:1024
 height:1024
 depth:1024
-title:"42"
 }
-viewport1{}
-viewport2{}
-viewport3{}
-3dworld{type:3d}
-uiworld{type:ui}
-trunk1{type:bg}
-trunk2{type:fg}
-trunk3{type:aid}
-trunk4{type:ui}
+viewport1{
+fmt:vp
+}
+viewport2{
+fmt:vp
+}
+viewport3{
+fmt:vp
+}
+3dworld{
+fmt:vbo
+type:3d
+}
+uiworld{
+fmt:vbo
+type:ui
+}
+trunk1{
+fmt:bg
+}
+trunk2{
+fmt:fg
+}
+trunk3{
+fmt:aid
+}
+trunk4{
+fmt:ui
+}
 </arena>
 
 
 <actor>
 texball{
+fmt:texball
 file:"datafile/jpg/skysphere.jpg"
 }
 terrain{
+fmt:terrain
 file:"datafile/jpg/cartoon.jpg"
 }
-aidfont{}
-aidgeom{}
-vjoy{}
-vkbd{}
-corner{}
-pointer{}
+fonthelper{
+fmt:aidfont
+}
+geomhelper{
+fmt:aidgeom
+}
+vjoy{
+fmt:vjoy
+}
+vkbd{
+fmt:vkbd
+}
+corner{
+fmt:corner
+}
+pointer{
+fmt:pointer
+}
 </actor>
 
 
@@ -40,7 +75,7 @@ q:0.5, 1.0
 }
 rightpart{
 c:0.5, 0.0
-q:1.0, 1.0
+q:0.5, 1.0
 }
 fullscreen{
 c:0.0, 0.0
@@ -49,10 +84,10 @@ q:1.0, 1.0
 vp1{
 l:-1.0, 0.0, 0.0
 r: 1.0, 0.0, 0.0
-b: 0.0,-cos34,-sin34
-u: 0.0, cos34, sin34
-n: 0.0, sin34,-cos34
-c: 0.0,-2000.0 * sin34,  2000.0 * cos34
+b: 0.0,-0.829,-0.5591929
+u: 0.0, 0.829, 0.5591929
+n: 0.0, 0.5591929,-0.829
+c: 0.0,-1118.3858, 1658.0
 }
 vp2{
 l:-1.0, 0.0, 0.0
@@ -63,13 +98,13 @@ n: 0.0, 0.0,-1.0
 c: 0.0, 0.0, 10000.0
 }
 sty1{
-c: 0,0, 0,0, 0.0
+c: 0.0, 0.0, 0.0
 r: 10000000.0, 0.0, 0.0
 f: 0.0, 10000000.0, 0.0
 u: 0.0, 0.0, 10000000.0
 }
 sty2{
-c: 0,0, 0,0, 0.0
+c: 0.0, 0.0, 0.0
 r: 10000000.0, 0.0, 0.0
 f: 0.0, 10000000.0, 0.0
 u: 0.0, 0.0, 10000000.0
@@ -77,23 +112,23 @@ u: 0.0, 0.0, 10000000.0
 sty3{}
 sty4{}
 sty5{
-c: 0,0,-0,75, 0.0
+c: 0.0,-0.75, 0.0
 r: 1.0, 0.0, 0.0
 f: 0.0, 0.25, 0.0
 }
 sty6{
-c: 0,0,-0,75, 0.0
+c: 0.0,-0.75, 0.0
 r: 1.0, 0.0, 0.0
 f: 0.0, 0.25, 0.0
 }
 sty7{
-c: 0,0, 0,0, 0.0
+c: 0.0, 0.0, 0.0
 r: 10000000.0, 0.0, 0.0
 f: 0.0, 10000000.0, 0.0
 u: 0.0, 0.0, 10000000.0
 }
 sty8{
-c: 0,0, 0,0, 0.0
+c: 0.0, 0.0, 0.0
 r: 10000000.0, 0.0, 0.0
 f: 0.0, 10000000.0, 0.0
 u: 0.0, 0.0, 10000000.0
