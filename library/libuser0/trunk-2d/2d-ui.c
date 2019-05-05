@@ -144,7 +144,7 @@ int ui2d_create(struct arena* win, void* str)
 		act = actorcreate(want[j], 0);
 		if(0 == act)continue;
 
-		relationcreate(act, 0, _act_, win, 0, _win_);
+		relationcreate(act, 0, _act_, 0, win, 0, _win_, 0);
 
 		rel = act->irel0;
 		if(0 == rel)continue;

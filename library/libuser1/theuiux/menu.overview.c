@@ -116,7 +116,7 @@ int arenaactor(struct arena* win, struct arena* ccc, struct actor* act, struct a
 	actorcreate(0, act);
 	actorstart(act, pin, ccc, sty, win, 0);
 
-	relationcreate(act, pin, _act_, ccc, sty, _win_);
+	relationcreate(act, pin, _act_, 0, ccc, sty, _win_, 0);
 	return 0;
 }
 
@@ -1093,7 +1093,12 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		else if(y1 < 8)
 		{
 			act_d = &actor[x1+(y1*16)];
-			if((act_d->type) && (act_s->type))relationcreate(act_d, 0, _act_, act_s, 0, _act_);
+			if((act_d->type) && (act_s->type)){
+				relationcreate(
+					act_d, 0, _act_, 0,
+					act_s, 0, _act_, 0
+				);
+			}
 			else if(0 == act_s->type)actorcreate(act_d->fmt, 0);
 			else if(0 == act_d->type)actorcreate(act_s->fmt, 0);
 		}
@@ -1128,7 +1133,10 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		{
 			win_d = &arena[x1 + (y1-8)*16];
 			if((win_d->type) && (win_s->type)){
-				relationcreate(win_d, 0, _win_, win_s, 0, _win_);
+				relationcreate(
+					win_d, 0, _win_, 0,
+					win_s, 0, _win_, 0
+				);
 			}
 			else if(win_s->type){
 				if(_win_ == win_s->type)win_d = arenacreate(_coop_, win_s);
@@ -1153,17 +1161,17 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		else if(y1 < 8)
 		{
 			act_d = &actor[x1 + (y1*16)];
-			relationcreate(act_d, 0, _act_, ele_s, 0, _art_);
+			relationcreate(act_d, 0, _act_, 0, ele_s, 0, _art_, 0);
 		}
 		else if(y1 < 16)
 		{
 			win_d = &arena[x1 + (y1-8)*16];
-			relationcreate(win_d, 0, _win_, ele_s, 0, _art_);
+			relationcreate(win_d, 0, _win_, 0, ele_s, 0, _art_, 0);
 		}
 		else if(y1 < 24)
 		{
 			ele_d = &ele[x1 + (y1-16)*16];
-			relationcreate(ele_d, 0, _art_, ele_s, 0, _art_);
+			relationcreate(ele_d, 0, _art_, 0, ele_s, 0, _art_, 0);
 		}
 		else if(y1 < 32)
 		{
@@ -1184,17 +1192,17 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		else if(y1 < 8)
 		{
 			act_d = &actor[x1+(y1*16)];
-			relationcreate(act_d, 0, _act_, obj_s, 0, _fd_);
+			relationcreate(act_d, 0, _act_, 0, obj_s, 0, _fd_, 0);
 		}
 		else if(y1 < 16)
 		{
 			win_d = &arena[x1 + (y1-8)*16];
-			relationcreate(win_d, 0, _win_, obj_s, 0, _fd_);
+			relationcreate(win_d, 0, _win_, 0, obj_s, 0, _fd_, 0);
 		}
 		else if(y1 < 24)
 		{
 			ele_d = &ele[x1 + (y1-16)*16];
-			relationcreate(ele_d, 0, _art_, obj_s, 0, _fd_);
+			relationcreate(ele_d, 0, _art_, 0, obj_s, 0, _fd_, 0);
 		}
 		else if(y1 < 32)
 		{

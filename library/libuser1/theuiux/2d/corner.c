@@ -646,7 +646,7 @@ static int corner_create(struct actor* act, u8* str)
 	struct actor* ac = allocactor();
 	struct style* sty = allocstyle();
 	sty->uc[3] = 0;
-	relationcreate(ac, 0, _act_, act, sty, _act_);
+	relationcreate(ac, 0, _act_, 0, act, sty, _act_, 0);
 	return 0;
 }
 

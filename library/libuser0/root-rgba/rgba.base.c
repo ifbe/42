@@ -187,7 +187,7 @@ void* rgbanode_create(u64 type, void* addr)
 			tmp = rgbanode_create(_bg2d_, 0);
 			if(tmp)
 			{
-				relationcreate(tmp, 0, _win_, win, 0, _win_);
+				relationcreate(tmp, 0, _win_, 0, win, 0, _win_, 0);
 				rgbanode_start(tmp, 0, win, 0);
 			}
 
@@ -195,7 +195,7 @@ void* rgbanode_create(u64 type, void* addr)
 			tmp = rgbanode_create(_fg2d_, 0);
 			if(tmp)
 			{
-				relationcreate(tmp, 0, _win_, win, 0, _win_);
+				relationcreate(tmp, 0, _win_, 0, win, 0, _win_, 0);
 				rgbanode_start(tmp, 0, win, 0);
 			}
 
@@ -203,7 +203,7 @@ void* rgbanode_create(u64 type, void* addr)
 			tmp = rgbanode_create(_ui2d_, 0);
 			if(tmp)
 			{
-				relationcreate(tmp, 0, _win_, win, 0, _win_);
+				relationcreate(tmp, 0, _win_, 0, win, 0, _win_, 0);
 				rgbanode_start(tmp, 0, win, 0);
 			}
 
@@ -211,7 +211,7 @@ void* rgbanode_create(u64 type, void* addr)
 			tmp = rgbanode_create(_xx2d_, 0);
 			if(tmp)
 			{
-				relationcreate(tmp, 0, _win_, win, 0, _win_);
+				relationcreate(tmp, 0, _win_, 0, win, 0, _win_, 0);
 				rgbanode_start(tmp, 0, win, 0);
 			}
 		}

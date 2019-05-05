@@ -142,13 +142,15 @@ void hostwindow_create(struct arena* window)
 		uistyle->vq[1] = 1.0;
 
 		viewportvertex2(uiviewport);
-		relationcreate(uiviewport, 0, _win_, window, uistyle, _win_);
+		relationcreate(uiviewport, 0, _win_, 0,
+			window, uistyle, _win_, 0);
 	}
 
 	world2 = vbonode_create(_vbo_, _ui_);
 	if(world2){
 		world2->win = window->win;
-		relationcreate(world2, 0, _win_, uiviewport, 0, _win_);
+		relationcreate(world2, 0, _win_, 0,
+			uiviewport, 0, _win_, 0);
 	}
 }
 
@@ -663,7 +665,7 @@ void role_test(int argc, u8** argv)
 	char* str;
 	u8 buf[0x1000];
 
-	if(argc >= 2)str = argv[1];
+	if(argc >= 2)str = (char*)argv[1];
 	else str = "datafile/mainwindow.ml";
 
 	len = openreadclose(str, 0, buf, 0x1000);
@@ -680,10 +682,10 @@ void role_toycar(int argc, u8** argv)
 	if(0 == dst)return;
 
 	src = arenalist("std", 0);
-	if(src)relationcreate(dst, 0, _win_, src, 0, _win_);
+	if(src)relationcreate(dst, 0, _win_, 0, src, 0, _win_, 0);
 
 	src = arenalist("joy", 0);
-	if(src)relationcreate(dst, 0, _win_, src, 0, _win_);
+	if(src)relationcreate(dst, 0, _win_, 0, src, 0, _win_, 0);
 }
 void role_stepcar(int argc, u8** argv)
 {
@@ -693,10 +695,10 @@ void role_stepcar(int argc, u8** argv)
 	if(0 == dst)return;
 
 	src = arenalist("std", 0);
-	if(src)relationcreate(dst, 0, _win_, src, 0, _win_);
+	if(src)relationcreate(dst, 0, _win_, 0, src, 0, _win_, 0);
 
 	src = arenalist("joy", 0);
-	if(src)relationcreate(dst, 0, _win_, src, 0, _win_);
+	if(src)relationcreate(dst, 0, _win_, 0, src, 0, _win_, 0);
 }
 void role_control(int argc, u8** argv)
 {
@@ -712,10 +714,10 @@ void role_uarthelp(int argc, u8** argv)
 	if(0 == sys)return;
 
 	act = actorcreate(_std_, 0);
-	if(act)relationcreate(act, 0, _act_, sys, 0, _fd_);
+	if(act)relationcreate(act, 0, _act_, 0, sys, 0, _fd_, 0);
 
 	win = arenalist("std", 0);
-	if(win)relationcreate(act, 0, _act_, win, 0, _win_);
+	if(win)relationcreate(act, 0, _act_, 0, win, 0, _win_, 0);
 
 	win = arenacreate(_win_, 0);
 	if(win)arenaactor(win, 0, act, 0);

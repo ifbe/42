@@ -144,7 +144,7 @@ static void browser_write_event(
 		else
 		{
 			www = arterycreate(0, buf);
-			relationcreate(act, 0, _act_, www, 0, _art_);
+			relationcreate(act, 0, _act_, 0, www, 0, _art_, 0);
 		}
 	}
 	else if(0x8 == ev->why)

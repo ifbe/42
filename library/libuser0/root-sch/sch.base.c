@@ -84,14 +84,14 @@ void* schnode_create(u64 type, void* addr)
 		gnd = schnode_create(_pin_, 0);
 		if(gnd)
 		{
-			relationcreate(gnd, 0, _win_, win, 0, _win_);
+			relationcreate(gnd, 0, _win_, 0, win, 0, _win_, 0);
 			schnode_start(gnd, 0, win, 0);
 		}
 
 		vcc = schnode_create(_pin_, 0);
 		if(vcc)
 		{
-			relationcreate(vcc, 0, _win_, win, 0, _win_);
+			relationcreate(vcc, 0, _win_, 0, win, 0, _win_, 0);
 			schnode_start(vcc, 0, win, 0);
 		}
 		return win;

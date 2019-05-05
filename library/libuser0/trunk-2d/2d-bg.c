@@ -85,7 +85,7 @@ int bg2d_create(struct arena* win, u8* str)
 		act = actorcreate(hex32('c','u','b','e'), 0);
 		if(0 == act)continue;
 
-		relationcreate(act, 0, _act_, win, 0, _win_);
+		relationcreate(act, 0, _act_, 0, win, 0, _win_, 0);
 
 		rel = act->irel0;
 		if(0 == rel)continue;

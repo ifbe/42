@@ -129,28 +129,28 @@ void* relation_grow()
 	return temp;
 }
 void* relation_generate(
-	void* uchip, void* ufoot, u32 utype,
-	void* bchip, void* bfoot, u32 btype)
+	void* dc, void* df, u32 dctype, u32 dftype,
+	void* sc, void* sf, u32 sctype, u32 sftype)
 {
 	struct relation* w = relation_grow();
 	if(w == 0)return 0;
 
 	//1.dst
-	w->dstchip = (u64)uchip;
-	w->dstfoot = (u64)ufoot;
+	w->dstchip = (u64)dc;
+	w->dstfoot = (u64)df;
 
-	w->dsttype = utype;
-	w->dstflag = 0;
+	w->dsttype = dctype;
+	w->dstflag = dftype;
 
 	w->samedstprevsrc = 0;
 	w->samedstnextsrc = 0;
 
 	//2.src
-	w->srcchip = (u64)bchip;
-	w->srcfoot = (u64)bfoot;
+	w->srcchip = (u64)sc;
+	w->srcfoot = (u64)sf;
 
-	w->srctype = btype;
-	w->srcflag = 0;
+	w->srctype = sctype;
+	w->srcflag = sftype;
 
 	w->samesrcprevdst = 0;
 	w->samesrcnextdst = 0;
@@ -223,8 +223,8 @@ void relationdelete(struct relation* this)
 	relation_recycle(this);
 }
 void* relationcreate(
-	void* uchip, void* ufoot, u32 utype,
-	void* bchip, void* bfoot, u32 btype)
+	void* dc, void* df, u32 dctype, u32 dftype,
+	void* sc, void* sf, u32 sctype, u32 sftype)
 {
 	struct item* h1;
 	struct item* h2;
@@ -237,10 +237,10 @@ void* relationcreate(
 	}
 
 	//
-	ww = relation_generate(uchip, ufoot, utype, bchip, bfoot, btype);
+	ww = relation_generate(dc, df, dctype, dftype, sc, sf, sctype, sftype);
 
 	//dst wire
-	h1 = uchip;
+	h1 = dc;
 	if(0 != h1->ireln)
 	{
 		wc = h1->ireln;
@@ -250,7 +250,7 @@ void* relationcreate(
 	h1->ireln = ww;
 	if(0 == h1->irel0)h1->irel0 = ww;
 
-	h2 = bchip;
+	h2 = sc;
 	if(0 != h2->oreln)
 	{
 		wc = h2->oreln;

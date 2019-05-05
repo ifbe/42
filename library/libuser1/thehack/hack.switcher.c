@@ -138,7 +138,7 @@ static void switch_create(struct actor* act, u8* buf)
 	addr = systemcreate(_udp_, "127.0.0.1:2222");
 	if(0 == addr)return;
 
-	relationcreate(addr, 0, _fd_, act, 0, _act_);
+	relationcreate(addr, 0, _fd_, 0, act, 0, _act_, 0);
 }
 
 

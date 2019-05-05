@@ -100,7 +100,7 @@ int telnetclient_create(struct element* ele, u8* url)
 	void* obj = systemcreate(_tcp_, url);
 	if(0 == obj)return 0;
 
-	relationcreate(ele, 0, _art_, obj, 0, _fd_);
+	relationcreate(ele, 0, _art_, 0, obj, 0, _fd_, 0);
 
 	ele->stage1 = 0;
 	telnetclient_write(ele, 0, obj, 0, 0, 0);
@@ -151,7 +151,7 @@ int telnetmaster_write(
 	u8* buf, int len)
 {
 	struct element* e = arterycreate(_Telnet_, 0);
-	if(e)relationcreate(e, 0, _art_, obj, 0, _fd_);
+	if(e)relationcreate(e, 0, _art_, 0, obj, 0, _fd_, 0);
 
 	e->stage1 = 0;
 	telnetserver_write(e, 0, obj, 0, buf, len);
@@ -171,6 +171,6 @@ int telnetmaster_create(struct element* ele, u8* url)
 	void* obj = systemcreate(_TCP_, url);
 	if(0 == obj)return 0;
 
-	relationcreate(ele, 0, _art_, obj, 0, _fd_);
+	relationcreate(ele, 0, _art_, 0, obj, 0, _fd_, 0);
 	return 0;
 }

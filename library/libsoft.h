@@ -328,7 +328,7 @@ u64 threadcreate(void*, void*);
 int memorydelete(void*);
 void* memorycreate(int);
 int relationdelete(void*);
-void* relationcreate(void*,void*,int,void*,void*,int);
+void* relationcreate(void*,void*,int,int,void*,void*,int,int);
 //
 void* samesrcprevdst(void*);
 void* samesrcnextdst(void*);

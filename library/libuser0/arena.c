@@ -362,7 +362,7 @@ void* arenacreate(u64 type, void* addr)
 		win = allocarena();
 		if(win)
 		{
-			if(addr)relationcreate(addr, 0, _win_, win, 0, _win_);
+			if(addr)relationcreate(addr, 0, _win_, 0, win, 0, _win_, 0);
 
 			win->type = _win_;
 			win->fmt = _coop_;

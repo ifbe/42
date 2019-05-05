@@ -336,7 +336,7 @@ static void spectrum_create(struct actor* act)
 	win = arenacreate(_mic_, "0");
 	if(0 == win)return;
 
-	relationcreate(act, 0, _act_, win, 0, _win_);
+	relationcreate(act, 0, _act_, 0, win, 0, _win_, 0);
 }
 
 

@@ -342,7 +342,7 @@ void* vbonode_create(u64 type, u64 flag)
 			tmp = vbonode_create(_aid3d_, 0);
 			if(tmp)
 			{
-				relationcreate(tmp, 0, _win_, win, 0, _win_);
+				relationcreate(tmp, 0, _win_, 0, win, 0, _win_, 0);
 				vbonode_start(tmp, 0, win, 0);
 			}
 
@@ -350,7 +350,7 @@ void* vbonode_create(u64 type, u64 flag)
 			tmp = vbonode_create(_ui3d_, 0);
 			if(tmp)
 			{
-				relationcreate(tmp, 0, _win_, win, 0, _win_);
+				relationcreate(tmp, 0, _win_, 0, win, 0, _win_, 0);
 				vbonode_start(tmp, 0, win, 0);
 			}
 
@@ -358,7 +358,7 @@ void* vbonode_create(u64 type, u64 flag)
 			tmp = vbonode_create(_xx3d_, 0);
 			if(tmp)
 			{
-				relationcreate(tmp, 0, _win_, win, 0, _win_);
+				relationcreate(tmp, 0, _win_, 0, win, 0, _win_, 0);
 				vbonode_start(tmp, 0, win, 0);
 			}
 		}
@@ -394,7 +394,7 @@ void* vbonode_create(u64 type, u64 flag)
 			tmp = vbonode_create(_bg3d_, 0);
 			if(tmp)
 			{
-				relationcreate(tmp, 0, _win_, win, 0, _win_);
+				relationcreate(tmp, 0, _win_, 0, win, 0, _win_, 0);
 				vbonode_start(tmp, 0, win, 0);
 			}
 
@@ -402,7 +402,7 @@ void* vbonode_create(u64 type, u64 flag)
 			tmp = vbonode_create(_fg3d_, 0);
 			if(tmp)
 			{
-				relationcreate(tmp, 0, _win_, win, 0, _win_);
+				relationcreate(tmp, 0, _win_, 0, win, 0, _win_, 0);
 				vbonode_start(tmp, 0, win, 0);
 			}
 		}

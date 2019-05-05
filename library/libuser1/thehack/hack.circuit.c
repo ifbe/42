@@ -240,7 +240,7 @@ static void circuit_create(struct actor* act)
 	act->buf = memorycreate(WIDTH*HEIGHT*LAYER);
 
 	void* win = arenacreate(_sch_, 0);
-	if(win)relationcreate(win, 0, _win_, act, 0, _act_);
+	if(win)relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
 }
 
 

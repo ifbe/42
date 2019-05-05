@@ -385,7 +385,7 @@ static void piano_create(struct actor* act)
 	win = arenacreate(_mic_, "0");
 	if(0 == win)return;
 
-	relationcreate(win, 0, _win_, act, 0, _act_);
+	relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
 }
 
 
