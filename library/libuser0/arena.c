@@ -349,10 +349,6 @@ void* arenacreate(u64 type, void* addr)
 			win->type = _win_;
 			win->fmt = hex64('b','g','r','a','8','8','8','8');
 			windowcreate(win);
-
-			if(_vbo_ != win->fmt){
-				rgbanode_create(_rgba_, win);
-			}
 		}
 
 		return win;
@@ -381,14 +377,11 @@ void* arenacreate(u64 type, void* addr)
 		}
 		return win;
 	}
-	else if(_vp_ == type)
-	{
-		win = allocarena();
-		if(0 == win)return 0;
 
-		win->type = _vp_;
-		win->fmt = _vp_;
-		return win;
+	//vbo
+	else if(_vbo_ == type)
+	{
+		return vbonode_create(_vbo_, 0);
 	}
 
 	//pcbdoc

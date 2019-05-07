@@ -33,20 +33,6 @@ root-vbo/vbo.base.c \
 root-vbo/vbo.tool.c \
 root-rgba/rgba.base.c \
 root-rgba/rgba.tool.c \
-trunk-3d/3d-aid.c \
-trunk-3d/3d-mic.c \
-trunk-3d/3d-cam.c \
-trunk-3d/3d-lit.c \
-trunk-3d/3d-bg.c \
-trunk-3d/3d-fg.c \
-trunk-3d/3d-ui.c \
-trunk-3d/3d-xx.c \
-trunk-2d/2d-bg.c \
-trunk-2d/2d-fg.c \
-trunk-2d/2d-ui.c \
-trunk-2d/2d-xx.c \
-trunk-sch/sch.bus.c \
-trunk-sch/sch.pin.c \
 arena.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
@@ -166,9 +152,6 @@ linuxglfw:target
 	$(compiler) $(cflag) lib-gl/glwindow.host.c
 	$(compiler) $(cflag) lib-gl/glwindow.coop.c
 	$(compiler) $(cflag) lib-gl/glwindow.fbo.c
-	$(compiler) $(cflag) lib-gl/glviewport.host.c
-	$(compiler) $(cflag) lib-gl/glviewport.coop.c
-	$(compiler) $(cflag) lib-gl/glviewport.fbo.c
 	$(compiler) $(cflag) lib-gl/globject.shader.c
 	$(compiler) $(cflag) lib-gl/globject.texture.c
 	$(compiler) $(cflag) lib-gl/globject.vertex.c
@@ -250,9 +233,6 @@ macglfw:target
 	$(compiler) $(cflag) lib-gl/glwindow.host.c
 	$(compiler) $(cflag) lib-gl/glwindow.coop.c
 	$(compiler) $(cflag) lib-gl/glwindow.fbo.c
-	$(compiler) $(cflag) lib-gl/glviewport.host.c
-	$(compiler) $(cflag) lib-gl/glviewport.coop.c
-	$(compiler) $(cflag) lib-gl/glviewport.fbo.c
 	$(compiler) $(cflag) lib-gl/globject.shader.c
 	$(compiler) $(cflag) lib-gl/globject.texture.c
 	$(compiler) $(cflag) lib-gl/globject.vertex.c
@@ -334,9 +314,6 @@ winglfw:target
 	$(compiler) $(cflag) lib-gl/glwindow.host.c
 	$(compiler) $(cflag) lib-gl/glwindow.coop.c
 	$(compiler) $(cflag) lib-gl/glwindow.fbo.c
-	$(compiler) $(cflag) lib-gl/glviewport.host.c
-	$(compiler) $(cflag) lib-gl/glviewport.coop.c
-	$(compiler) $(cflag) lib-gl/glviewport.fbo.c
 	$(compiler) $(cflag) lib-gl/globject.shader.c
 	$(compiler) $(cflag) lib-gl/globject.texture.c
 	$(compiler) $(cflag) lib-gl/globject.vertex.c

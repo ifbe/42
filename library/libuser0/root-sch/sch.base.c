@@ -62,40 +62,11 @@ int schnode_delete(struct arena* win)
 void* schnode_create(u64 type, void* addr)
 {
 	struct arena* win;
-	struct arena* vcc;
-	struct arena* gnd;
 
-	if(_pin_ == type)
-	{
-		win = allocarena();
-		if(win)
-		{
-			win->type = _twig_;
-			win->fmt = _pin_;
-			schpin_create(win, addr);
-		}
-		return win;
-	}
+	win = allocarena();
+	if(0 == win)return 0;
 
-	if(_sch_ == type)
-	{
-		win = addr;
-
-		gnd = schnode_create(_pin_, 0);
-		if(gnd)
-		{
-			relationcreate(gnd, 0, _win_, 0, win, 0, _win_, 0);
-			schnode_start(gnd, 0, win, 0);
-		}
-
-		vcc = schnode_create(_pin_, 0);
-		if(vcc)
-		{
-			relationcreate(vcc, 0, _win_, 0, win, 0, _win_, 0);
-			schnode_start(vcc, 0, win, 0);
-		}
-		return win;
-	}
-
-	return 0;
+	win->type = _twig_;
+	win->fmt = _pin_;
+	return win;
 }

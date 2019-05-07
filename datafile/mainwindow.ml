@@ -6,15 +6,6 @@ width:1024
 height:1024
 depth:1024
 }
-viewport1{
-fmt:vp
-}
-viewport2{
-fmt:vp
-}
-viewport3{
-fmt:vp
-}
 3dworld{
 fmt:vbo
 type:3d
@@ -22,18 +13,6 @@ type:3d
 uiworld{
 fmt:vbo
 type:ui
-}
-trunk1{
-fmt:bg
-}
-trunk2{
-fmt:fg
-}
-trunk3{
-fmt:aid
-}
-trunk4{
-fmt:ui
 }
 </arena>
 
@@ -149,19 +128,18 @@ p8{}
 
 
 <relation>
-(window, leftpart, _win_) -> (viewport1, 0, _win_)
-(viewport1, vp1, _win_) -> (3dworld, 0, _win_)
+(window, leftpart, _win_, _vp_) -> (3dworld, 0, _win_, _out_)
+(window, rightpart, _win_, _vp_) -> (3dworld, 0, _win_, _out_)
+(window, fullscreen, _win_, _vp_) -> (uiworld, 0, _win_, _out_)
 
-(3dworld, vp1, _win_) -> (trunk1, 0, _win_)
+(3dworld, sty1, _win_, _bg_) -> (texball, p1, _act_, 0)
+(3dworld, sty2, _win_, _bg_) -> (terrain, p2, _act_, 0)
 
-(trunk1, sty1, _win_) -> (texball, p1, _act_)
-(trunk1, sty2, _win_) -> (terrain, p2, _act_)
+(uiworld, sty3, _win_, _aid_) -> (aidgeom, p3, _act_, 0)
+(uiworld, sty4, _win_, _aid_) -> (aidfont, p4, _act_, 0)
 
-(trunk3, sty3, _win_) -> (aidgeom, p3, _act_)
-(trunk3, sty4, _win_) -> (aidfont, p4, _act_)
-
-(trunk4, sty5, _win_) -> (vjoy, p5, _act_)
-(trunk4, sty6, _win_) -> (vkbd, p6, _act_)
-(trunk4, sty7, _win_) -> (corner, p7, _act_)
-(trunk4, sty8, _win_) -> (pointer, p8, _act_)
+(uiworld, sty5, _win_, _ui_) -> (vjoy, p5, _act_, 0)
+(uiworld, sty6, _win_, _ui_) -> (vkbd, p6, _act_, 0)
+(uiworld, sty7, _win_, _ui_) -> (corner, p7, _act_, 0)
+(uiworld, sty8, _win_, _ui_) -> (pointer, p8, _act_, 0)
 </relation>

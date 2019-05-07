@@ -16,8 +16,85 @@ void* allocarena();
 void* allocstyle();
 void* allocpinid();
 void* vbonode_create(u64, u64);
+int vbonode_start(struct arena* twig, void* tf, struct arena* root, void* rf);
 
 
+#define COUNT 5
+static u64 want[COUNT] = {
+	hex64('o','v','e','r','v','i','e','w'),
+	hex32('v','j','o','y'),
+	hex32('v','k','b','d'),
+	hex64('c','o','r','n','e','r', 0, 0),
+	hex64('p','o','i','n','t','e','r', 0)
+};
+static u8 flag[COUNT] = {
+	0,
+	'#',
+	'#',
+	0,
+	0
+};
+int other_create(struct arena* win, void* str)
+{
+	int j,k;
+	struct style* sty;
+	struct actor* act;
+	struct pinid* pin;
+	struct relation* rel;
+
+	for(j=0;j<COUNT;j++)
+	{
+		act = actorcreate(want[j], 0);
+		if(0 == act)continue;
+
+		sty = allocstyle();
+		if(0 == sty)continue;
+
+		pin = allocpinid();
+		if(0 == pin)continue;
+
+		sty->vc[0] = 0;
+		sty->vc[1] = 0;
+		sty->vc[2] = 0;
+		sty->uc[3] = flag[j];
+
+		sty->vr[0] = 1.0;
+		sty->vr[1] = 0;
+		sty->vr[2] = 0;
+
+		sty->vf[0] = 0;
+		sty->vf[1] = 1.0;
+		sty->vf[2] = 0;
+
+		sty->vu[0] = 0;
+		sty->vu[1] = 0;
+		sty->vu[2] = 1.0;
+
+		relationcreate(act, pin, _act_, 0, win, sty, _win_, _ui_);
+	}
+}
+int aider_create(struct arena* win, void* str)
+{
+#define _aid_ hex32('a','i','d',0)
+	struct actor* act;
+	struct style* sty;
+	struct pinid* pin;
+
+	act = actorcreate(hex64('a','i','d','f','o','n','t', 0), 0);
+	sty = allocstyle();
+	pin = allocpinid();
+
+	sty->uc[3] = '#';
+	relationcreate(act, pin, _act_, 0, win, sty, _win_, _aid_);
+
+
+	act = actorcreate(hex64('a','i','d','g','e','o','m', 0), 0);
+	sty = allocstyle();
+	pin = allocpinid();
+
+	sty->uc[3] = '#';
+	relationcreate(act, pin, _act_, 0, win, sty, _win_, _aid_);
+}
 
 
 void viewportvertex1(struct arena* win)
@@ -126,33 +203,8 @@ void viewportvertex2(struct arena* win)
 	win->camera.vc[1] = 0.0;
 	win->camera.vc[2] = 10000.0;
 }
-void hostwindow_create(struct arena* window)
-{
-	struct arena* uiviewport;
-	struct style* uistyle;
-	struct arena* world2;
 
-	uiviewport = arenacreate(_vp_, 0);
-	if(uiviewport)
-	{
-		uistyle = allocstyle();
-		uistyle->vc[0] = 0.0;
-		uistyle->vc[1] = 0.0;
-		uistyle->vq[0] = 1.0;
-		uistyle->vq[1] = 1.0;
 
-		viewportvertex2(uiviewport);
-		relationcreate(uiviewport, 0, _win_, 0,
-			window, uistyle, _win_, 0);
-	}
-
-	world2 = vbonode_create(_vbo_, _ui_);
-	if(world2){
-		world2->win = window->win;
-		relationcreate(world2, 0, _win_, 0,
-			uiviewport, 0, _win_, 0);
-	}
-}
 
 
 static int roletype = 0;
@@ -187,12 +239,25 @@ void role_create()
 	//+libuser0
 	arenacreate(_std_, 0);
 	arenacreate(_tray_, 0);
-	struct arena* win = arenacreate(_win_,  0);
 
-	hostwindow_create(win);
+	struct arena* win = arenacreate(_win_,  0);
+	struct arena* ctx = vbonode_create(_vbo_, _ui_);
+	struct style* win_vp1 = allocstyle();
+	struct pinid* ctx_pl1 = allocpinid();
+
+	ctx->win = win->win;
+	win_vp1->vc[0] = 0.0;
+	win_vp1->vc[1] = 0.0;
+	win_vp1->vq[0] = 1.0;
+	win_vp1->vq[1] = 1.0;
+	relationcreate(
+		ctx, ctx_pl1, _win_, 0,
+		win, win_vp1, _win_, _vp_);
 
 	//+libuser1
-	//actorcreate(_2048_, 0);
+	aider_create(ctx, 0);
+	other_create(ctx, 0);
+	vbonode_start(ctx, 0, win, 0);
 }
 
 

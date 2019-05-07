@@ -5,7 +5,7 @@
 #include <GLFW/glfw3.h>
 #include "libuser.h"
 int vbonode_sread(struct arena* win, struct style* stack);
-int hostviewport_event(void*, void*, void*, void*, void*, int);
+int vbonode_swrite(struct arena* win, struct style* stack, struct event* ev);
 int arenaevent(struct event* ev);
 //
 int fbodelete(struct arena* win);
@@ -549,7 +549,7 @@ void windowread(struct arena* win)
 void windowwrite(struct arena* win, struct event* ev)
 {
 	struct relation* rel;
-	struct arena* vp;
+	struct arena* ctx;
 	struct style* st;
 
 	rel = win->oreln;
@@ -558,9 +558,8 @@ void windowwrite(struct arena* win, struct event* ev)
 		if(0 == rel)break;
 
 		if(_win_ == rel->dsttype){
-			vp = (void*)(rel->dstchip);
-			st = (void*)(rel->srcfoot);
-			hostviewport_event(vp, 0, win, st, ev, 0);
+			ctx = (void*)(rel->dstchip);
+			vbonode_swrite(ctx, 0, ev);
 			break;
 		}
 

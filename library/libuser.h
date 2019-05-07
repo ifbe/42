@@ -36,6 +36,7 @@ typedef float mat4[4][4];
 #define _node_ hex32('n','o','d','e')
 #define _root_ hex32('r','o','o','t')
 #define _twig_ hex32('t','w','i','g')
+#define _ctx_ hex32('c','t','x',0)
 //
 #define _act_ hex32('a','c','t',0)
 #define _win_ hex32('w','i','n',0)
