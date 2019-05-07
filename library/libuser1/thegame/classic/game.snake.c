@@ -168,7 +168,7 @@ static void snake_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	snake_draw(act, pin, win, sty);
 }
-static int snake_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void snake_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

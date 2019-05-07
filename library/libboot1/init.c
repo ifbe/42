@@ -34,7 +34,7 @@ static u8 flag[COUNT] = {
 	0,
 	0
 };
-int other_create(struct arena* win, void* str)
+void other_create(struct arena* win, void* str)
 {
 	int j,k;
 	struct style* sty;
@@ -73,7 +73,7 @@ int other_create(struct arena* win, void* str)
 		relationcreate(act, pin, _act_, 0, win, sty, _win_, _ui_);
 	}
 }
-int aider_create(struct arena* win, void* str)
+void aider_create(struct arena* win, void* str)
 {
 #define _aid_ hex32('a','i','d',0)
 	struct actor* act;

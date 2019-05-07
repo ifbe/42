@@ -37,7 +37,7 @@ int sudoku_import(char* file, u8* buf)
 
 
 
-static void sudoku_read_pixel(
+static void sudoku_draw_pixel(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -82,7 +82,7 @@ static void sudoku_read_pixel(
 		}
 	}
 }
-static void sudoku_read_vbo2d(
+static void sudoku_draw_vbo2d(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -135,7 +135,7 @@ static void sudoku_read_vbo2d(
 		}
 	}
 }
-static void sudoku_read_vbo3d(
+static void sudoku_draw_vbo3d(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -192,12 +192,12 @@ static void sudoku_read_vbo3d(
 		}
 	}
 }
-static void sudoku_read_json(
+static void sudoku_draw_json(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 }
-static void sudoku_read_html(
+static void sudoku_draw_html(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -224,7 +224,7 @@ static void sudoku_read_html(
 	}//fory
 	htmlprintf(win, 2, "</div>\n");
 }
-static void sudoku_read_tui(
+static void sudoku_draw_tui(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -255,7 +255,7 @@ static void sudoku_read_tui(
 		}
 	}
 }
-static void sudoku_read_cli(
+static void sudoku_draw_cli(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -278,16 +278,16 @@ static void sudoku_draw(
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)sudoku_read_cli(act, pin, win, sty);
-	else if(fmt == _tui_)sudoku_read_tui(act, pin, win, sty);
-	else if(fmt == _html_)sudoku_read_html(act, pin, win, sty);
-	else if(fmt == _json_)sudoku_read_json(act, pin, win, sty);
+	if(fmt == _cli_)sudoku_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)sudoku_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)sudoku_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)sudoku_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)sudoku_read_vbo2d(act, pin, win, sty);
-		else sudoku_read_vbo3d(act, pin, win, sty);
+		if(_2d_ == win->vfmt)sudoku_draw_vbo2d(act, pin, win, sty);
+		else sudoku_draw_vbo3d(act, pin, win, sty);
 	}
-	else sudoku_read_pixel(act, pin, win, sty);
+	else sudoku_draw_pixel(act, pin, win, sty);
 }
 static void sudoku_event(
 	struct actor* act, struct pinid* pin,

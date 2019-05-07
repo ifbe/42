@@ -226,7 +226,7 @@ static void terminal_sread(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct style* sty = (void*)(peer->foot);
 	terminal_draw(act, pin, win, sty);
 }
-static int terminal_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void terminal_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
