@@ -22,9 +22,9 @@ static u8 table[4][8] = {
 
 
 
-static void calculator_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void calculator_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u32 fg;
 	int x,y;
@@ -70,9 +70,9 @@ static void calculator_read_pixel(
 		}
 	}
 }
-static void calculator_read_vbo2d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void calculator_draw_vbo2d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y,rgb;
 	vec3 tc,tr,tf;
@@ -142,23 +142,23 @@ static void calculator_read_vbo2d(
 		}
 	}
 }
-static void calculator_read_vbo3d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void calculator_draw_vbo3d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 }
-static void calculator_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void calculator_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void calculator_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void calculator_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -171,38 +171,38 @@ static void calculator_read_html(
 
 	win->len = len;
 }
-static void calculator_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void calculator_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void calculator_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void calculator_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	say("calc(%x,%x,%x)\n",win,act,sty);
 	say("buffer:%s\n", infix);
 	say("postfix:%s\n", postfix);
 	say("result:%s\n", result);
 }
-static void calculator_sread(
+static void calculator_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)calculator_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)calculator_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)calculator_read_html(win, sty, act, pin);
-	else if(fmt == _json_)calculator_read_json(win, sty, act, pin);
+	if(fmt == _cli_)calculator_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)calculator_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)calculator_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)calculator_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)calculator_read_vbo2d(win, sty, act, pin);
-		else calculator_read_vbo3d(win, sty, act, pin);
+		if(_2d_ == win->vfmt)calculator_draw_vbo2d(act, pin, win, sty);
+		else calculator_draw_vbo3d(act, pin, win, sty);
 	}
-	else calculator_read_pixel(win, sty, act, pin);
+	else calculator_draw_pixel(act, pin, win, sty);
 }
-static void calculator_swrite(
+static void calculator_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -250,28 +250,39 @@ static void calculator_swrite(
 		}
 	}
 }
-static void calculator_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void calculator_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	calculator_draw(act, pin, win, sty);
+}
+static void calculator_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	calculator_event(act, pin, win, sty, ev, 0);
+}
+static void calculator_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void calculator_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void calculator_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void calculator_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void calculator_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void calculator_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void calculator_start(struct halfrel* self, struct halfrel* peer)
 {
 	int j;
 	buffer[0] = '1';

@@ -225,9 +225,9 @@ edge:
 
 
 
-static void terrain_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void terrain_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -245,9 +245,9 @@ static void terrain_read_pixel(
 		hh = win->height/2;
 	}
 }
-static void terrain_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void terrain_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {/*
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -289,37 +289,50 @@ static void terrain_read_vbo(
 		mat[15] = 1.0;
 	}
 }
-static void terrain_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void terrain_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void terrain_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void terrain_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void terrain_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void terrain_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void terrain_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void terrain_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void terrain_sread(
+static void terrain_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)terrain_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)terrain_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)terrain_read_html(win, sty, act, pin);
-	else if(fmt == _json_)terrain_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)terrain_read_vbo(win, sty, act, pin);
-	else terrain_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)terrain_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)terrain_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)terrain_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)terrain_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)terrain_draw_vbo(act, pin, win, sty);
+	else terrain_draw_pixel(act, pin, win, sty);
+}
+
+
+
+
+static void terrain_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	terrain_draw(act, pin, win, sty);
 }
 static void terrain_swrite(
 	struct actor* act, struct pinid* pin,
@@ -327,12 +340,10 @@ static void terrain_swrite(
 	struct event* ev, int len)
 {
 }
-static void terrain_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void terrain_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	float x,y;
+	struct actor* act = (void*)(self->chip);
 	int w = act->width;
 	int h = act->height;
 	float* v = (void*)buf;
@@ -364,34 +375,28 @@ static void terrain_cread(
 
 	say("%d,%d,%d,%d\n", act->x0, act->y0, act->xn, act->yn);
 }
-static void terrain_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void terrain_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	say("@terrain_cwrite\n");
 }
-static void terrain_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void terrain_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void terrain_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void terrain_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	if(0 == lf)return;
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
 
-	pair = alloc_winobj(root, 's');
+	pair = alloc_winobj(win, 's');
 	src = &pair->src;
 	dst = &pair->dst;
-	lf->foot[0] = (u64)src;
-	tf->foot[0] = (u64)dst;
+	pin->foot[0] = (u64)src;
+	sty->foot[0] = (u64)dst;
 
 	//
 	src->method = 'i';
@@ -426,10 +431,10 @@ static void terrain_start(
 
 	//texture
 	src->tex_name[0] = "tex0";
-	src->tex_data[0] = leaf->buf;
 	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_w[0] = leaf->width;
-	src->tex_h[0] = leaf->height;
+	src->tex_data[0] = act->buf;
+	src->tex_w[0] = act->width;
+	src->tex_h[0] = act->height;
 	src->tex_enq[0] = 42;
 }
 static void terrain_delete(struct actor* act)

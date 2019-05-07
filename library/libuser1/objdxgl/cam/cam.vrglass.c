@@ -3,7 +3,7 @@
 
 
 
-static int vrglass_sread(
+static int vrglass_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -32,74 +32,10 @@ static int vrglass_sread(
 		tc[2] = 0.0;
 		carveline_rect(win, 0xff0000, tc, tr, tu);
 	}
-/*
-	//camera
-	tr[0] = 0.025;
-	tr[1] = 0.0;
-	tr[2] = 0.0;
-	tf[0] = 0.0;
-	tf[1] = 0.025;
-	tf[2] = 0.0;
 
-	tc[0] = -1.0;
-	tc[1] = -0.05 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0x0000ff, tc, tr, tf, (void*)"vl: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0x0000ff, tc, tr, tf, win->camera.vl);
-
-	tc[0] = -1.0;
-	tc[1] = -0.1 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0x0000ff, tc, tr, tf, (void*)"vr: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0x0000ff, tc, tr, tf, win->camera.vr);
-
-	tc[0] = -1.0;
-	tc[1] = -0.15 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0x00ff00, tc, tr, tf, (void*)"vb: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0x00ff00, tc, tr, tf, win->camera.vb);
-
-	tc[0] = -1.0;
-	tc[1] = -0.2 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0x00ff00, tc, tr, tf, (void*)"vu: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0x00ff00, tc, tr, tf, win->camera.vu);
-
-	tc[0] = -1.0;
-	tc[1] = -0.25 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0xff0000, tc, tr, tf, (void*)"vn: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0xff0000, tc, tr, tf, win->camera.vn);
-
-	tc[0] = -1.0;
-	tc[1] = -0.3 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0xff0000, tc, tr, tf, (void*)"vf: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0xff0000, tc, tr, tf, win->camera.vf);
-
-	tc[0] = -1.0;
-	tc[1] = -0.35 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0xffffff, tc, tr, tf, (void*)"vq: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->camera.vq);
-
-	tc[0] = -1.0;
-	tc[1] = -0.4 + 0.025;
-	tc[2] = 0.0;
-	carve2d_string(win, 0xffffff, tc, tr, tf, (void*)"vc: ", 4);
-	tc[0] += 0.05;
-	carve2d_vec4(win, 0xffffff, tc, tr, tf, win->camera.vc);
-*/
 	return 0;
 }
-static int vrglass_swrite(
+static int vrglass_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -212,28 +148,39 @@ static int vrglass_swrite(
 	win->camera.vu[2] = win->height/2 - win->camera.vc[2];
 	return 1;
 }
-static void vrglass_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void vrglass_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	vrglass_draw(act, pin, win, sty);
+}
+static int vrglass_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	return vrglass_event(act, pin, win, sty, ev, 0);
+}
+static void vrglass_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void vrglass_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void vrglass_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void vrglass_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void vrglass_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void vrglass_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void vrglass_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void vrglass_delete()

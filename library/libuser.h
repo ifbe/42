@@ -192,6 +192,17 @@ struct event
 	u64 where;
 	u64 when;
 };
+
+
+
+
+struct halfrel
+{
+	u64 chip;
+	u64 foot;
+	u32 type;
+	u32 flag;
+};
 struct relation
 {
 	//[0x00,0x1f]
@@ -543,27 +554,27 @@ struct arena
 		char padding1[8];
 	};
 	union{
-		int (*onstart)(void* leaf, void* lf, void* twig, void* tf, void* root,void* rf);
+		int (*onstart)(void* self, void* peer);
 		char padding2[8];
 	};
 	union{
-		int (*onstop)(void* leaf, void* lf, void* twig, void* tf, void* root,void* rf);
+		int (*onstop)(void* self, void* peer);
 		char padding3[8];
 	};
 	union{
-		int (*onget)(void* actor, void* pinid, void* buf, int len);
+		int (*oncread)(void* self, void* peer, void* buf, int len);
 		char padding4[8];
 	};
 	union{
-		int (*onpost)(void* actor, void* pinid, void* buf, int len);
+		int (*oncwrite)(void* self, void* peer, void* buf, int len);
 		char padding5[8];
 	};
 	union{
-		int (*onread)(void* dc,void* df,void* sc,void* sf);
+		int (*onsread)(void* self, void* peer, void* buf, int len);
 		char padding6[8];
 	};
 	union{
-		int (*onwrite)(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+		int (*onswrite)(void* self, void* peer, void* buf, int len);
 		char padding7[8];
 	};
 
@@ -678,27 +689,27 @@ struct actor
 		char padding1[8];
 	};
 	union{
-		int (*onstart)(void* leaf, void* lf, void* twig, void* tf, void* root,void* rf);
+		int (*onstart)(void* self, void* peer);
 		char padding2[8];
 	};
 	union{
-		int (*onstop)(void* leaf, void* lf, void* twig, void* tf, void* root,void* rf);
+		int (*onstop)(void* self, void* peer);
 		char padding3[8];
 	};
 	union{
-		int (*oncread)(void* actor, void* df, void* sc, void* sf, void* buf, int len);
+		int (*oncread)(void* self, void* peer, void* buf, int len);
 		char padding4[8];
 	};
 	union{
-		int (*oncwrite)(void* actor, void* df, void* sc, void* sf, void* buf, int len);
+		int (*oncwrite)(void* self, void* peer, void* buf, int len);
 		char padding5[8];
 	};
 	union{
-		int (*onsread)(void* actor, void* df, void* sc, void* sf, void* buf, int len);
+		int (*onsread)(void* self, void* peer, void* buf, int len);
 		char padding6[8];
 	};
 	union{
-		int (*onswrite)(void* actor, void* df, void* sc, void* sf, void* buf, int len);
+		int (*onswrite)(void* self, void* peer, void* buf, int len);
 		char padding7[8];
 	};
 
@@ -1035,10 +1046,10 @@ int actorread_all(struct arena*);
 int actorevent(struct event*);
 int arenaevent(struct event*);
 
-int actor_leafread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int actor_leafwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int actor_rootread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int actor_rootwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int actor_leafread(  struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int actor_leafwrite( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int actor_rootread(  struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int actor_rootwrite( struct halfrel* self,struct halfrel* peer,void* buf,int len);
 int actordelete(struct actor*);
 void* actorcreate(u64, void*);
 //

@@ -4,9 +4,9 @@
 
 
 
-static void clock_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void clock_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u32 c[7]={0xff,0xff00,0xffff,0xff0000,0xff00ff,0xffff00,0xffffff};
 	int j,k;
@@ -36,9 +36,9 @@ static void clock_read_pixel(
 		drawdecimal(win, c[j], cx+64-(j*24), cy-8, p[j]);
 	}
 }
-static void clock_read_vbo2d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void clock_draw_vbo2d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u8 j;
 	float a,c,s;
@@ -94,9 +94,9 @@ static void clock_read_vbo2d(
 		carve2d_ascii(win, 0xffffff, tc, tr, tf, j<10 ? j+0x30 : j+0x37);
 	}
 }
-static void clock_read_vbo3d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void clock_draw_vbo3d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u8 j;
 	float a,c,s;
@@ -150,14 +150,14 @@ static void clock_read_vbo3d(
 		carveascii(win, 0xffffff, tc, tr, tf, j<10 ? j+0x30 : j+0x37);
 	}
 }
-static void clock_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void clock_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void clock_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void clock_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -170,14 +170,14 @@ static void clock_read_html(
 
 	win->len = len;
 }
-static void clock_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void clock_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void clock_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void clock_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u64 date = dateread();
 	u8* p = (u8*)&date;
@@ -185,50 +185,48 @@ static void clock_read_cli(
 	say(	"_%02d_%02d_%02d_%02d_%02d_%02d_%02d\n",
 		p[6],p[5],p[4],p[3],p[2],p[1],p[0]);
 }
-static void clock_sread(
+static void clock_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)clock_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)clock_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)clock_read_html(win, sty, act, pin);
-	else if(fmt == _json_)clock_read_json(win, sty, act, pin);
+	if(fmt == _cli_)clock_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)clock_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)clock_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)clock_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)clock_read_vbo2d(win, sty, act, pin);
-		else clock_read_vbo3d(win, sty, act, pin);
+		if(_2d_ == win->vfmt)clock_draw_vbo2d(act, pin, win, sty);
+		else clock_draw_vbo3d(act, pin, win, sty);
 	}
-	else clock_read_pixel(win, sty, act, pin);
+	else clock_draw_pixel(act, pin, win, sty);
 }
-static void clock_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+
+static void clock_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	clock_draw(act, pin, win, sty);
+}
+static void clock_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void clock_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void clock_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void clock_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void clock_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void clock_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void clock_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void clock_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void clock_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void clock_delete(struct actor* act)

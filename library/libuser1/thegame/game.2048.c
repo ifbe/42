@@ -30,9 +30,9 @@ static u32 color2048[17] = {
 
 
 
-static void the2048_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void the2048_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u32 color;
 	int x,y,x0,y0,x1,y1;
@@ -86,9 +86,9 @@ static void the2048_read_pixel(
 		}
 	}
 }
-static void the2048_read_vbo2d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void the2048_draw_vbo2d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u32 rgb;
 	int x,y,w,h;
@@ -132,9 +132,9 @@ static void the2048_read_vbo2d(
 		}
 	}
 }
-static void the2048_read_vbo3d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void the2048_draw_vbo3d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u32 rgb;
 	int x,y;
@@ -186,9 +186,9 @@ static void the2048_read_vbo3d(
 		}
 	}
 }
-static void the2048_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void the2048_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 	int len = win->len;
@@ -207,9 +207,9 @@ static void the2048_read_json(
 
 	win->len = len;
 }
-static void the2048_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void the2048_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
@@ -234,9 +234,9 @@ static void the2048_read_html(
 	}//fory
 	htmlprintf(win, 2, "</div>\n");
 }
-static void the2048_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void the2048_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
@@ -250,9 +250,9 @@ static void the2048_read_tui(
 		}
 	}
 }
-static void the2048_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void the2048_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
 
@@ -282,22 +282,22 @@ static void the2048_read_cli(
 		val2048[tab[3][3]]
 	);
 }
-static void the2048_sread(
+static void the2048_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)the2048_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)the2048_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)the2048_read_html(win, sty, act, pin);
-	else if(fmt == _json_)the2048_read_json(win, sty, act, pin);
+	if(fmt == _cli_)the2048_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)the2048_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)the2048_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)the2048_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)the2048_read_vbo2d(win, sty, act, pin);
-		else the2048_read_vbo3d(win, sty, act, pin);
+		if(_2d_ == win->vfmt)the2048_draw_vbo2d(act, pin, win, sty);
+		else the2048_draw_vbo3d(act, pin, win, sty);
 	}
-	else the2048_read_pixel(win, sty, act, pin);
+	else the2048_draw_pixel(act, pin, win, sty);
 }
 
 
@@ -321,7 +321,7 @@ static void the2048_move(struct actor* act, int op)
 
 	new2048(q);
 }
-static void the2048_swrite(
+static void the2048_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -363,30 +363,42 @@ static void the2048_swrite(
 		if(s[3] & joyl_up)   the2048_move(act, 'f');
 	}
 }
-static void the2048_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void the2048_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	the2048_draw(act, pin, win, sty);
+}
+static void the2048_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	the2048_event(act, pin, win, sty, ev, 0);
+}
+static void the2048_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void the2048_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void the2048_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void the2048_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void the2048_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void the2048_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void the2048_start(struct halfrel* self, struct halfrel* peer)
 {
-	void* buf = leaf->buf;
+	struct actor* act = (void*)(self->chip);
+	void* buf = act->buf;
 	new2048(buf);
 }
 static void the2048_delete(struct actor* act, u8* buf)

@@ -123,9 +123,9 @@ int arenaactor(struct arena* win, struct arena* ccc, struct actor* act, struct a
 
 
 
-void overview_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void overview_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	struct relation* rel;
 	u32 c,cursor;
@@ -428,9 +428,9 @@ void overview_read_pixel(
 		}
 	}
 }
-void overview_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void overview_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u32 bg,fg,cursor;
 	float r,f;
@@ -995,9 +995,9 @@ void overview_read_vbo(
 		}
 	}
 }
-void overview_read_8bit(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void overview_draw_8bit(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {/*
 	int x,y;
 	int j,c;
@@ -1016,14 +1016,14 @@ void overview_read_8bit(
 	}
 */
 }
-void overview_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void overview_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-void overview_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void overview_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int j,k,x,y;
 	int ww = ((win->stride)/2)&0xfffc;
@@ -1048,21 +1048,21 @@ void overview_read_tui(
 	}
 */
 }
-void overview_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
-{
-}
-static void overview_sread(
+void overview_draw_cli(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
-	if(win->fmt == _cli_)overview_read_cli(win, 0, act, pin);
-	else if(win->fmt == _tui_)overview_read_tui(win, 0, act, pin);
-	else if(win->fmt == _vbo_)overview_read_vbo(win, 0, act, pin);
-	else if(win->fmt == _html_)overview_read_html(win, 0, act, pin);
-	else if(win->fmt == _8bit_)overview_read_8bit(win, 0, act, pin);
-	else overview_read_pixel(win, 0, act, pin);
+}
+static void overview_draw(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
+{
+	if(win->fmt == _cli_)overview_draw_cli(act, pin, win, 0);
+	else if(win->fmt == _tui_)overview_draw_tui(act, pin, win, 0);
+	else if(win->fmt == _vbo_)overview_draw_vbo(act, pin, win, 0);
+	else if(win->fmt == _html_)overview_draw_html(act, pin, win, 0);
+	else if(win->fmt == _8bit_)overview_draw_8bit(act, pin, win, 0);
+	else overview_draw_pixel(act, pin, win, 0);
 }
 
 
@@ -1209,7 +1209,7 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 		}
 	}
 }
-static int overview_swrite(
+static int overview_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -1319,28 +1319,39 @@ static int overview_swrite(
 	}*/
 	return 1;
 }
-static void overview_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void overview_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	overview_draw(act, pin, win, sty);
+}
+static int overview_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	return overview_event(act, pin, win, sty, ev, 0);
+}
+static void overview_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void overview_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void overview_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void overview_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void overview_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void overview_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void overview_start(struct halfrel* self, struct halfrel* peer)
 {
     say("@overview_start\n");
 }

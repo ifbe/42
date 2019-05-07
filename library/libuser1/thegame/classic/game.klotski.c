@@ -20,9 +20,9 @@ static u32 color[10] =
 
 
 
-static void klotski_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void klotski_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x, y, cx, cy, ww, hh;
 	if(sty)
@@ -55,9 +55,9 @@ static void klotski_read_pixel(
 		}
 	}
 }
-static void klotski_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void klotski_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -65,14 +65,14 @@ static void klotski_read_vbo(
 	float* vu = sty->vu;
 	carvesolid_rect(win, 0xffffff, vc, vr, vf);
 }
-static void klotski_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void klotski_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void klotski_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void klotski_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 
@@ -96,56 +96,54 @@ static void klotski_read_html(
 	}//fory
 	htmlprintf(win, 2, "</div>\n");
 }
-static void klotski_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void klotski_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void klotski_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void klotski_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void klotski_sread(
+static void klotski_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)klotski_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)klotski_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)klotski_read_html(win, sty, act, pin);
-	else if(fmt == _json_)klotski_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)klotski_read_vbo(win, sty, act, pin);
-	else klotski_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)klotski_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)klotski_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)klotski_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)klotski_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)klotski_draw_vbo(act, pin, win, sty);
+	else klotski_draw_pixel(act, pin, win, sty);
 }
-static void klotski_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+
+static void klotski_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	klotski_draw(act, pin, win, sty);
+}
+static void klotski_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void klotski_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void klotski_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void klotski_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void klotski_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void klotski_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void klotski_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void klotski_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void klotski_start(struct halfrel* self, struct halfrel* peer)
 {
 	data[0][1] = data[0][2] = data[1][1] = data[1][2] = caocao;
 	data[0][0] = data[1][0] = machao;

@@ -54,19 +54,19 @@ GLSL_VERSION
 
 
 
-static void particle_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void particle_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void particle_read_vbo2d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void particle_draw_vbo2d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void particle_read_vbo3d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void particle_draw_vbo3d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int j;
 	float x,y,z;
@@ -116,84 +116,85 @@ static void particle_read_vbo3d(
 	}
 	src->vbuf_enq += 1;
 }
-static void particle_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void particle_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void particle_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void particle_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void particle_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void particle_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void particle_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void particle_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	say("particle(%x,%x,%x)\n",win,act,sty);
 }
-static void particle_sread(
+static void particle_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)particle_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)particle_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)particle_read_html(win, sty, act, pin);
-	else if(fmt == _json_)particle_read_json(win, sty, act, pin);
+	if(fmt == _cli_)particle_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)particle_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)particle_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)particle_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)particle_read_vbo2d(win, sty, act, pin);
-		else particle_read_vbo3d(win, sty, act, pin);
+		if(_2d_ == win->vfmt)particle_draw_vbo2d(act, pin, win, sty);
+		else particle_draw_vbo3d(act, pin, win, sty);
 	}
-	else particle_read_pixel(win, sty, act, pin);
+	else particle_draw_pixel(act, pin, win, sty);
 }
-static void particle_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+
+static void particle_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	particle_draw(act, pin, win, sty);
+}
+static void particle_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void particle_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void particle_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void particle_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void particle_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void particle_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void particle_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void particle_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void particle_start(struct halfrel* self, struct halfrel* peer)
 {
 	void* vbuf;
 	void* ibuf;
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	if(0 == lf)return;
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
 
-	pair = alloc_winobj(root, 's');
+	pair = alloc_winobj(win, 's');
 	src = &pair->src;
 	dst = &pair->dst;
-	lf->foot[0] = (u64)src;
-	tf->foot[0] = (u64)dst;
+	pin->foot[0] = (u64)src;
+	sty->foot[0] = (u64)dst;
 
 	//
 	src->geometry = 1;
@@ -212,7 +213,7 @@ static void particle_start(
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf = leaf->buf;
+	src->vbuf = act->buf;
 	src->vbuf_w = 4*9;
 	src->vbuf_h = COUNT;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);

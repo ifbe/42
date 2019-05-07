@@ -18,9 +18,9 @@ void hex_prep(void* name)
 
 
 
-static void hex_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void hex_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u32 unicode, color;
 	int x,y,j;
@@ -94,19 +94,19 @@ static void hex_read_pixel(
 		}
 	}
 }
-static void hex_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void hex_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void hex_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void hex_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void hex_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void hex_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -119,31 +119,31 @@ static void hex_read_html(
 
 	win->len = len;
 }
-static void hex_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void hex_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void hex_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void hex_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	say("hex(%x,%x,%x)\n",win,act,sty);
 }
-static void hex_sread(
+static void hex_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)hex_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)hex_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)hex_read_html(win, sty, act, pin);
-	else if(fmt == _json_)hex_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)hex_read_vbo(win, sty, act, pin);
-	else hex_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)hex_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)hex_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)hex_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)hex_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)hex_draw_vbo(act, pin, win, sty);
+	else hex_draw_pixel(act, pin, win, sty);
 }
-static void hex_swrite(
+static void hex_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -173,28 +173,39 @@ static void hex_swrite(
 		if('	' == key)printmethod ^= 1;
 	}
 }
-static void hex_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void hex_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	hex_draw(act, pin, win, sty);
+}
+static void hex_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	hex_event(act, pin, win, sty, ev, 0);
+}
+static void hex_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void hex_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void hex_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void hex_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void hex_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void hex_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void hex_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void hex_delete(struct actor* act)

@@ -78,7 +78,7 @@ void carvearena(struct arena* win, int val, vec3 vc, vec3 vr, vec3 vf)
 
 
 
-int actoroutput_detail_vbo(struct arena* win, struct style* sty)
+int detail_draw_vbo(struct arena* win, struct style* sty)
 {
 	int j;
 	struct relation* rel;
@@ -229,7 +229,7 @@ int actoroutput_detail_vbo(struct arena* win, struct style* sty)
 
 	return 0;
 }
-int actoroutput_detail_pixel(struct arena* win, struct style* sty)
+int detail_draw_pixel(struct arena* win, struct style* sty)
 {
 	struct relation* rel;
 	struct actor* act;
@@ -305,47 +305,40 @@ int actoroutput_detail_pixel(struct arena* win, struct style* sty)
 	}
 	return 0;
 }
-
-
-
-
-static int detail_sread(
+static void detail_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
-	if(_vbo_ == win->fmt)actoroutput_detail_vbo(win, sty);
-	else actoroutput_detail_pixel(win, sty);
-	return 0;
+	if(_vbo_ == win->fmt)detail_draw_vbo(win, sty);
+	else detail_draw_pixel(win, sty);
 }
-static int detail_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+
+static void detail_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
-	return 0;
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	detail_draw(act, pin, win, sty);
 }
-static void detail_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static int detail_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
+	return 1;
 }
-static void detail_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
-{
-}
-static void detail_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void detail_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void detail_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void detail_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+}
+static void detail_stop(struct halfrel* self, struct halfrel* peer)
+{
+}
+static void detail_start(struct halfrel* self, struct halfrel* peer)
 {
     say("@detail_start\n");
 }

@@ -3,19 +3,19 @@
 
 
 
-void pointer_read_cli(struct arena* win, struct style* sty)
+void pointer_draw_cli(struct arena* win, struct style* sty)
 {
 }
-void pointer_read_tui(struct arena* win, struct style* sty)
+void pointer_draw_tui(struct arena* win, struct style* sty)
 {
 }
-void pointer_read_html(struct arena* win, struct style* sty)
+void pointer_draw_html(struct arena* win, struct style* sty)
 {
 }
-void pointer_read_json(struct arena* win, struct style* sty)
+void pointer_draw_json(struct arena* win, struct style* sty)
 {
 }
-void pointer_read_vbo(struct arena* win, struct style* sty)
+void pointer_draw_vbo(struct arena* win, struct style* sty)
 {
 	int j;
 	float x0,y0,x1,y1;
@@ -56,7 +56,7 @@ void pointer_read_vbo(struct arena* win, struct style* sty)
 */
 	}
 }
-void pointer_read_pixel(struct arena* win, struct style* sty)
+void pointer_draw_pixel(struct arena* win, struct style* sty)
 {
 	int j;
 	int x0,y0,x1,y1;
@@ -71,51 +71,49 @@ void pointer_read_pixel(struct arena* win, struct style* sty)
 		drawline_arrow(win, 0xff00ff, x0, y0, x1, y1);
 	}
 }
-static int pointer_sread(
+static int pointer_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)pointer_read_cli(win, sty);
-	else if(fmt == _tui_)pointer_read_tui(win, sty);
-	else if(fmt == _html_)pointer_read_html(win, sty);
-	else if(fmt == _json_)pointer_read_json(win, sty);
-	else if(fmt == _vbo_)pointer_read_vbo(win, sty);
-	else pointer_read_pixel(win, sty);
+	if(fmt == _cli_)pointer_draw_cli(win, sty);
+	else if(fmt == _tui_)pointer_draw_tui(win, sty);
+	else if(fmt == _html_)pointer_draw_html(win, sty);
+	else if(fmt == _json_)pointer_draw_json(win, sty);
+	else if(fmt == _vbo_)pointer_draw_vbo(win, sty);
+	else pointer_draw_pixel(win, sty);
 	return 0;
 }
-static int pointer_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+
+static void pointer_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	pointer_draw(act, pin, win, sty);
+}
+static int pointer_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	return 0;
 }
-static int pointer_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static int pointer_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	return 0;
 }
-static int pointer_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static int pointer_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	return 0;
 }
-static int pointer_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static int pointer_stop(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int pointer_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static int pointer_start(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

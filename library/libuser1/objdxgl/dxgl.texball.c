@@ -40,9 +40,9 @@ char* texball_glsl_f =
 
 
 
-static void texball_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void texball_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u32 tmp;
 	u32* dst;
@@ -89,9 +89,9 @@ static void texball_read_pixel(
 		}
 	}
 }
-static void texball_read_vbo2d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void texball_draw_vbo2d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	void* vbuf;
 	void* ibuf;
@@ -111,9 +111,9 @@ static void texball_read_vbo2d(
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
 }
-static void texball_read_vbo3d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void texball_draw_vbo3d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	void* vbuf;
 	void* ibuf;
@@ -131,14 +131,14 @@ static void texball_read_vbo3d(
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
 }
-static void texball_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void texball_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void texball_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void texball_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -151,35 +151,35 @@ static void texball_read_html(
 
 	win->len = len;
 }
-static void texball_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void texball_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void texball_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void texball_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	say("texball(%x,%x,%x)\n",win,act,sty);
 }
-static void texball_sread(
+static void texball_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)texball_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)texball_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)texball_read_html(win, sty, act, pin);
-	else if(fmt == _json_)texball_read_json(win, sty, act, pin);
+	if(fmt == _cli_)texball_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)texball_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)texball_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)texball_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)texball_read_vbo2d(win, sty, act, pin);
-		else texball_read_vbo3d(win, sty, act, pin);
+		if(_2d_ == win->vfmt)texball_draw_vbo2d(act, pin, win, sty);
+		else texball_draw_vbo3d(act, pin, win, sty);
 	}
-	else texball_read_pixel(win, sty, act, pin);
+	else texball_draw_pixel(act, pin, win, sty);
 }
-static void texball_swrite(
+static void texball_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -229,40 +229,54 @@ static void texball_swrite(
 		}
 	}
 }
-static void texball_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void texball_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	texball_draw(act, pin, win, sty);
+}
+static void texball_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	texball_event(act, pin, win, sty, ev, 0);
+}
+static void texball_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void texball_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void texball_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void texball_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void texball_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void texball_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void texball_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	if(0 == lf)return;
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
 
 	//
-	pair = alloc_winobj(root, 's');
+	pair = alloc_winobj(win, 's');
 	src = &pair->src;
 	dst = &pair->dst;
-	lf->foot[0] = (u64)src;
-	tf->foot[0] = (u64)dst;
+	pin->foot[0] = (u64)src;
+	sty->foot[0] = (u64)dst;
 
 	//
 	src->geometry = 3;
@@ -271,7 +285,6 @@ static void texball_start(
 	//shader
 	src->vs = texball_glsl_v;
 	src->fs = texball_glsl_f;
-	if(twig){if(_fg2d_ == twig->fmt)src->vs = texball_glsl2d_v;}
 	src->shader_enq = 42;
 
 #define accx 64
@@ -293,10 +306,10 @@ static void texball_start(
 
 	//texture
 	src->tex_name[0] = "tex0";
-	src->tex_data[0] = leaf->buf;
 	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_w[0] = leaf->width;
-	src->tex_h[0] = leaf->height;
+	src->tex_data[0] = act->buf;
+	src->tex_w[0] = act->width;
+	src->tex_h[0] = act->height;
 	src->tex_enq[0] = 42;
 }
 static void texball_delete(struct actor* act)

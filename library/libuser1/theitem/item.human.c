@@ -77,9 +77,9 @@ static vec3 bonevertc[15] = {
 
 
 
-static void human_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void human_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -97,9 +97,9 @@ static void human_read_pixel(
 		hh = win->height/2;
 	}
 }
-static void human_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void human_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int j,k;
 	vec3 t0, t1;
@@ -189,39 +189,39 @@ static void human_read_vbo(
 	act->camera.vl[1] =-y*n;
 	act->camera.vl[2] =-z*n;
 }
-static void human_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void human_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void human_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void human_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void human_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void human_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void human_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void human_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void human_sread(
+static void human_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)human_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)human_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)human_read_html(win, sty, act, pin);
-	else if(fmt == _json_)human_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)human_read_vbo(win, sty, act, pin);
-	else human_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)human_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)human_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)human_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)human_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)human_draw_vbo(act, pin, win, sty);
+	else human_draw_pixel(act, pin, win, sty);
 }
-static void human_swrite(
+static int human_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -230,7 +230,6 @@ static void human_swrite(
 	float x,y,z,n;
 	float sec,a,c,s;
 	struct relation* rel;
-	struct actor* map;
 	vec4 tmp;
 
 	if(_char_ == ev->what)
@@ -254,7 +253,7 @@ static void human_swrite(
 		if(t[3] & joyl_trigger)act->z0 = 0;
 		if(t[3] & joyl_bumper )act->z0 += 10;
 	}
-	else return;
+	else return 0;
 
 	//read terrain, fix z
 	rel = act->irel0;
@@ -267,14 +266,14 @@ static void human_swrite(
 			tmp[1] = sty->vc[1];
 			tmp[2] = 0.0;
 
-			map = (void*)(rel->srcchip);
-			actor_leafread(map, 0, act, 0, tmp, 0);
+			actor_leafread((void*)&rel->srcchip, (void*)&rel->dstchip, tmp, 0);
 
 			sty->vc[2] = tmp[2] + act->z0;
 			break;
 		}
 		rel = samedstnextsrc(rel);
 	}
+	return 1;
 
 /*		sec = timeread() / 1000000.0;
 
@@ -331,28 +330,39 @@ static void human_swrite(
 		boneverta[14][2] = boneverta[12][2] - 0.5;
 */
 }
-static void human_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void human_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	human_draw(act, pin, win, sty);
+}
+static int human_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	return human_event(act, pin, win, sty, ev, 0);
+}
+static void human_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void human_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void human_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void human_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void human_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void human_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void human_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void human_delete(struct actor* act)

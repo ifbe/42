@@ -7,39 +7,22 @@ static u8 buffer[16];
 
 
 
-static void gobang_sread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty)
+static void gobang_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void gobang_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+static void gobang_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void gobang_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void gobang_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void gobang_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void gobang_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void gobang_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void gobang_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void gobang_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void gobang_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void gobang_delete(struct actor* act)

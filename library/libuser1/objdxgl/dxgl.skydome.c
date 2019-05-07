@@ -30,9 +30,9 @@ char* skydome_glsl_f =
 
 
 
-static void skydome_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void skydome_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u32 tmp;
 	u32* dst;
@@ -79,9 +79,9 @@ static void skydome_read_pixel(
 		}
 	}
 }
-static void skydome_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void skydome_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	void* vbuf;
 	void* ibuf;
@@ -99,14 +99,14 @@ static void skydome_read_vbo(
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
 }
-static void skydome_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void skydome_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void skydome_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void skydome_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -119,65 +119,72 @@ static void skydome_read_html(
 
 	win->len = len;
 }
-static void skydome_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void skydome_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void skydome_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void skydome_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	say("skydome(%x,%x,%x)\n",win,act,sty);
 }
-static void skydome_sread(
+static void skydome_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)skydome_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)skydome_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)skydome_read_html(win, sty, act, pin);
-	else if(fmt == _json_)skydome_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)skydome_read_vbo(win, sty, act, pin);
-	else skydome_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)skydome_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)skydome_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)skydome_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)skydome_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)skydome_draw_vbo(act, pin, win, sty);
+	else skydome_draw_pixel(act, pin, win, sty);
 }
-static void skydome_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+
+static void skydome_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	skydome_draw(act, pin, win, sty);
+}
+static void skydome_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void skydome_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void skydome_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void skydome_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void skydome_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void skydome_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void skydome_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void skydome_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void skydome_start(struct halfrel* self, struct halfrel* peer)
 {
+	struct datapair* pair;
 	struct glsrc* src;
-	if(0 == lf)return;
+	struct gldst* dst;
+
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
 
 	//
-	src = alloc_winobj(root, 's');
-	lf->foot[0] = (u64)src;
+	pair = alloc_winobj(win, 's');
+	src = &pair->src;
+	dst = &pair->dst;
+	pin->foot[0] = (u64)src;
+	sty->foot[0] = (u64)dst;
 
 	//
 	src->geometry = 3;
@@ -203,10 +210,10 @@ static void skydome_start(
 
 	//texture
 	src->tex_name[0] = "tex0";
-	src->tex_data[0] = leaf->buf;
 	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_w[0] = leaf->width;
-	src->tex_h[0] = leaf->height;
+	src->tex_data[0] = act->buf;
+	src->tex_w[0] = act->width;
+	src->tex_h[0] = act->height;
 	src->tex_enq[0] = 42;
 }
 static void skydome_delete(struct actor* act)

@@ -157,7 +157,7 @@ void surround_zoom(struct arena* win, float delta)
 
 
 
-static int surround_sread(
+static int surround_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -186,7 +186,7 @@ static int surround_sread(
 	carvefrustum(win, sty);
 	return 0;
 }
-static int surround_swrite(
+static int surround_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -406,28 +406,39 @@ static int surround_swrite(
 	surround_fixcam(win);
 	return 1;
 }
-static void surround_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void surround_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	surround_draw(act, pin, win, sty);
+}
+static int surround_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	return surround_event(act, pin, win, sty, ev, 0);
+}
+static void surround_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void surround_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void surround_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void surround_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void surround_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void surround_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void surround_start(struct halfrel* self, struct halfrel* peer)
 {
     say("@surround_start\n");
 }

@@ -35,9 +35,9 @@ void piano_gen(short* pcm, float f)
 
 
 
-static void piano_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void piano_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -74,9 +74,9 @@ static void piano_read_pixel(
 		);
 	}
 }
-static void piano_read_vbo2d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void piano_draw_vbo2d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x;
 	vec3 tc,tr,tf,tu;
@@ -170,9 +170,9 @@ static void piano_read_vbo2d(
 	tc[2] = vc[2] + vr[2]*16/20 + vf[2]/64 - 0.01;
 	carve2d_string(win, 0xffffff, tc, tr, tf, (u8*)"7040", 4);
 }
-static void piano_read_vbo3d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void piano_draw_vbo3d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x;
 	vec3 tc,tr,tf,tu;
@@ -221,14 +221,14 @@ static void piano_read_vbo3d(
 		carvesolid_rect(win, 0x202020, tc, tr, tf);
 	}
 }
-static void piano_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void piano_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void piano_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void piano_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -241,35 +241,35 @@ static void piano_read_html(
 
 	win->len = len;
 }
-static void piano_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void piano_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void piano_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void piano_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	say("piano(%x,%x,%x)\n",win,act,sty);
 }
-static void piano_sread(
+static void piano_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)piano_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)piano_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)piano_read_html(win, sty, act, pin);
-	else if(fmt == _json_)piano_read_json(win, sty, act, pin);
+	if(fmt == _cli_)piano_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)piano_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)piano_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)piano_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)piano_read_vbo2d(win, sty, act, pin);
-		else piano_read_vbo3d(win, sty, act, pin);
+		if(_2d_ == win->vfmt)piano_draw_vbo2d(act, pin, win, sty);
+		else piano_draw_vbo3d(act, pin, win, sty);
 	}
-	else piano_read_pixel(win, sty, act, pin);
+	else piano_draw_pixel(act, pin, win, sty);
 }
-static void piano_swrite(
+static void piano_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -345,28 +345,39 @@ static void piano_swrite(
 
 	}//if(0==len)
 }
-static void piano_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void piano_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	piano_draw(act, pin, win, sty);
+}
+static void piano_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	piano_event(act, pin, win, sty, ev, 0);
+}
+static void piano_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void piano_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void piano_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void piano_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void piano_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void piano_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void piano_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void piano_delete(struct actor* act)

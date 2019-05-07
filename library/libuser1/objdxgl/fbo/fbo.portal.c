@@ -203,9 +203,9 @@ void portalcamera(
 
 
 
-static void portal_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void portal_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -223,9 +223,9 @@ static void portal_read_pixel(
 		hh = win->height/2;
 	}
 }
-static void portal_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void portal_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	vec3 tc,tr,tf,tu;
 	float* vc = sty->vc;
@@ -283,66 +283,64 @@ static void portal_read_vbo(
 
 	src->vbuf_enq += 1;
 }
-static void portal_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void portal_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void portal_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void portal_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void portal_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void portal_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void portal_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void portal_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void portal_sread(
+static void portal_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)portal_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)portal_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)portal_read_html(win, sty, act, pin);
-	else if(fmt == _json_)portal_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)portal_read_vbo(win, sty, act, pin);
-	else portal_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)portal_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)portal_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)portal_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)portal_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)portal_draw_vbo(act, pin, win, sty);
+	else portal_draw_pixel(act, pin, win, sty);
 }
-static void portal_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+
+static void portal_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	portal_draw(act, pin, win, sty);
+}
+static void portal_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void portal_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void portal_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void portal_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void portal_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void portal_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void portal_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void portal_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void portal_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct relation* rel;
 	struct arena* tmp;
@@ -350,14 +348,18 @@ static void portal_start(
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	if(0 == lf)return;
+
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
 
 	//
-	pair = alloc_winobj(root, 's');
+	pair = alloc_winobj(win, 's');
 	src = &pair->src;
 	dst = &pair->dst;
-	lf->foot[0] = (u64)src;
-	tf->foot[0] = (u64)dst;
+	pin->foot[0] = (u64)src;
+	sty->foot[0] = (u64)dst;
 
 	//
 	src->geometry = 3;
@@ -366,7 +368,6 @@ static void portal_start(
 	//
 	src->vs = portal_glsl_v;
 	src->fs = portal_glsl_f;
-	if(twig){if(_fg2d_ == twig->fmt)src->vs = portal_glsl2d_v;}
 	src->shader_enq = 42;
 
 	//vertex
@@ -383,7 +384,7 @@ static void portal_start(
 
 
 	//special
-	rel = leaf->orel0;
+	rel = act->orel0;
 	if(0 == rel)return;
 
 	tmp = (void*)(rel->dstchip);
@@ -394,21 +395,21 @@ static void portal_start(
 	dst->tex[0] = tmp->tex_color;
 
 	//tar
-	leaf->target.vc[0] = -1000;
-	leaf->target.vc[1] = 0;
-	leaf->target.vc[2] = 0;
+	act->target.vc[0] = -1000;
+	act->target.vc[1] = 0;
+	act->target.vc[2] = 0;
 
-	leaf->target.vr[0] = 0;
-	leaf->target.vr[1] = -250;
-	leaf->target.vr[2] = 0.0;
+	act->target.vr[0] = 0;
+	act->target.vr[1] = -250;
+	act->target.vr[2] = 0.0;
 
-	leaf->target.vf[0] = 250.0;
-	leaf->target.vf[1] = 0;
-	leaf->target.vf[2] = 0;
+	act->target.vf[0] = 250.0;
+	act->target.vf[1] = 0;
+	act->target.vf[2] = 0;
 
-	leaf->target.vu[0] = 0;
-	leaf->target.vu[1] = 0;
-	leaf->target.vu[2] = 250;
+	act->target.vu[0] = 0;
+	act->target.vu[1] = 0;
+	act->target.vu[2] = 250;
 }
 static void portal_delete(struct actor* act)
 {

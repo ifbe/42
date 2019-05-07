@@ -126,9 +126,9 @@ void tabbar_vbo_listroot(
         rel = samesrcnextdst(rel);
     }
 }
-void tabbar_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void tabbar_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
@@ -221,9 +221,9 @@ void tabbar_pixel_listroot(
         rel = samesrcnextdst(rel);
     }
 }
-void tabbar_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void tabbar_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
     tabbar_pixel_listroot(act, pin, win, sty);
 }
@@ -231,44 +231,44 @@ void tabbar_read_pixel(
 
 
 
-void tabbar_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void tabbar_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-void tabbar_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void tabbar_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-void tabbar_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void tabbar_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-void tabbar_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void tabbar_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void tabbar_sread(
+static void tabbar_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(_cli_ == fmt)tabbar_read_cli(win, sty, act, pin);
-	else if(_tui_ == fmt)tabbar_read_tui(win, sty, act, pin);
-	else if(_html_ == fmt)tabbar_read_html(win, sty, act, pin);
-	else if(_json_ == fmt)tabbar_read_json(win, sty, act, pin);
-	else if(_vbo_ == fmt)tabbar_read_vbo(win, sty, act, pin);
-	else tabbar_read_pixel(win, sty, act, pin);
+	if(_cli_ == fmt)tabbar_draw_cli(act, pin, win, sty);
+	else if(_tui_ == fmt)tabbar_draw_tui(act, pin, win, sty);
+	else if(_html_ == fmt)tabbar_draw_html(act, pin, win, sty);
+	else if(_json_ == fmt)tabbar_draw_json(act, pin, win, sty);
+	else if(_vbo_ == fmt)tabbar_draw_vbo(act, pin, win, sty);
+	else tabbar_draw_pixel(act, pin, win, sty);
 }
 
 
 
 
-static int tabbar_swrite_child(
+static int tabbar_event_child(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -330,7 +330,7 @@ found:
     }
     return 1;
 }
-static int tabbar_swrite(
+static int tabbar_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -340,7 +340,7 @@ static int tabbar_swrite(
 
     if(0x2d70 == ev->what)
     {
-        ret = tabbar_swrite_child(act, pin, win, sty, ev, len);
+        ret = tabbar_event_child(act, pin, win, sty, ev, len);
         if(ret)return 1;
 
         t = (void*)ev;
@@ -358,28 +358,39 @@ static int tabbar_swrite(
     }
     return 0;
 }
-static void tabbar_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void tabbar_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	tabbar_draw(act, pin, win, sty);
+}
+static int tabbar_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	return tabbar_event(act, pin, win, sty, ev, 0);
+}
+static void tabbar_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void tabbar_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void tabbar_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void tabbar_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void tabbar_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void tabbar_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void tabbar_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void tabbar_delete()
@@ -405,5 +416,5 @@ void tabbar_register(struct actor* p)
 	p->oncread  = (void*)tabbar_cread;
 	p->oncwrite = (void*)tabbar_cwrite;
 	p->onsread  = (void*)tabbar_sread;
-	p->onswrite = (void*)tabbar_swrite;
+	p->onswrite = (void*)tabbar_event;
 }

@@ -3,14 +3,14 @@
 
 
 
-static void spotlight_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void spotlight_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void spotlight_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void spotlight_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	vec3 tt;
 	float* vc = sty->vc;
@@ -23,66 +23,64 @@ static void spotlight_read_vbo(
 	tt[2] = - vf[2];
 	carvesolid_cone(win, 0xffff00, vc, vr, tt);
 }
-static void spotlight_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void spotlight_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void spotlight_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void spotlight_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void spotlight_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void spotlight_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void spotlight_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void spotlight_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void spotlight_sread(
+static void spotlight_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)spotlight_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)spotlight_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)spotlight_read_html(win, sty, act, pin);
-	else if(fmt == _json_)spotlight_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)spotlight_read_vbo(win, sty, act, pin);
-	else spotlight_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)spotlight_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)spotlight_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)spotlight_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)spotlight_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)spotlight_draw_vbo(act, pin, win, sty);
+	else spotlight_draw_pixel(act, pin, win, sty);
 }
-static void spotlight_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+
+static void spotlight_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	spotlight_draw(act, pin, win, sty);
+}
+static void spotlight_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void spotlight_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void spotlight_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void spotlight_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void spotlight_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void spotlight_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void spotlight_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void spotlight_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void spotlight_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void spotlight_delete(struct actor* act)

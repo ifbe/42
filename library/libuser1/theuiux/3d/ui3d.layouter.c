@@ -569,7 +569,7 @@ found:
 
 
 
-static int picker_sread(
+static int picker_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -624,7 +624,7 @@ found:
 	}
 	return 0;
 }
-static int picker_swrite(
+static int picker_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -665,28 +665,39 @@ found:
 	}
 	return 0;
 }
-static void picker_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void picker_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	picker_draw(act, pin, win, sty);
+}
+static int picker_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	return picker_event(act, pin, win, sty, ev, 0);
+}
+static void picker_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void picker_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void picker_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void picker_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void picker_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void picker_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void picker_start(struct halfrel* self, struct halfrel* peer)
 {
     say("@picker_start\n");
 }

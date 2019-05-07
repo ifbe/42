@@ -107,9 +107,9 @@ static void printnode(struct arena* win, struct bplushead* this, int x, int y,
 		);
 	}
 }
-static void bplus_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void bplus_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	struct bplusleaf* node;
 	struct bplushead* right;
@@ -127,19 +127,19 @@ static void bplus_read_pixel(
 //printmemory(node, 0x800);
 	printnode(win, right, cx, 1, cx, cy, ww, hh);
 }
-static void bplus_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void bplus_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void bplus_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void bplus_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void bplus_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void bplus_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -152,31 +152,31 @@ static void bplus_read_html(
 
 	win->len = len;
 }
-static void bplus_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void bplus_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void bplus_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void bplus_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	say("tree(%x,%x,%x)\n",win,act,sty);
 }
-static void bplus_sread(
+static void bplus_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)bplus_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)bplus_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)bplus_read_html(win, sty, act, pin);
-	else if(fmt == _json_)bplus_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)bplus_read_vbo(win, sty, act, pin);
-	else bplus_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)bplus_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)bplus_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)bplus_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)bplus_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)bplus_draw_vbo(act, pin, win, sty);
+	else bplus_draw_pixel(act, pin, win, sty);
 }
-static void bplus_swrite(
+static void bplus_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -191,28 +191,39 @@ static void bplus_swrite(
 		bplus_debug(node);
 	}
 }
-static void bplus_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void bplus_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	bplus_draw(act, pin, win, sty);
+}
+static void bplus_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	bplus_event(act, pin, win, sty, ev, 0);
+}
+static void bplus_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void bplus_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void bplus_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void bplus_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void bplus_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void bplus_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void bplus_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void bplus_delete(struct actor* act)

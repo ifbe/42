@@ -16,9 +16,9 @@ static u8 buffer[16];
 
 
 
-static void font_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void font_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y,m,n;
 	int cx, cy, ww, hh;
@@ -77,9 +77,9 @@ static void font_read_pixel(
 	drawsolid_rect(win, 0x0000ff, cx-32, cy-16, cx-1, cy-1);
 	drawhexadecimal(win, 0xff0000, cx-32, cy-16, chosen);
 }
-static void font_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void font_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y,dx,dy;
 	int left,right,near,far;
@@ -125,14 +125,14 @@ static void font_read_vbo(
 	tf[2] = vf[2]/4;
 	carvehexadecimal(win, 0x0000ff, vc, tr, tf, chosen);
 }
-static void font_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void font_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void font_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void font_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -145,14 +145,14 @@ static void font_read_html(
 
 	win->len = len;
 }
-static void font_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void font_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void font_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void font_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 	u8 ch;
@@ -179,20 +179,20 @@ static void font_read_cli(
 		say("\n");
 	}
 }
-static void font_sread(
+static void font_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)font_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)font_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)font_read_html(win, sty, act, pin);
-	else if(fmt == _json_)font_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)font_read_vbo(win, sty, act, pin);
-	else font_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)font_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)font_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)font_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)font_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)font_draw_vbo(act, pin, win, sty);
+	else font_draw_pixel(act, pin, win, sty);
 }
-static void font_swrite(
+static void font_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -219,28 +219,39 @@ static void font_swrite(
 		}
 	}
 }
-static void font_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void font_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	font_draw(act, pin, win, sty);
+}
+static void font_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	font_event(act, pin, win, sty, ev, 0);
+}
+static void font_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void font_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void font_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void font_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void font_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void font_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void font_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void font_delete(struct actor* act)

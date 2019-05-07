@@ -9,9 +9,9 @@ static u8 data[3][3];
 
 
 
-static void ooxx_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void ooxx_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x, y, cx, cy, ww, hh;
 	if(sty)
@@ -63,9 +63,9 @@ static void ooxx_read_pixel(
 		}//forx
 	}//fory
 }
-static void ooxx_read_vbo2d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void ooxx_draw_vbo2d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	vec3 tc,tr,tf;
 	if(0 == sty)sty = defaultstyle_vbo2d();
@@ -76,9 +76,9 @@ static void ooxx_read_vbo2d(
 	float* vu = sty->vu;
 	carvesolid2d_rect(win, 0x444444, vc, vr, vf);
 }
-static void ooxx_read_vbo3d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void ooxx_draw_vbo3d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -86,14 +86,14 @@ static void ooxx_read_vbo3d(
 	float* vu = sty->vu;
 	carvesolid_rect(win, 0x444444, vc, vr, vf);
 }
-static void ooxx_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void ooxx_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void ooxx_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void ooxx_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 	char p[2];
@@ -119,14 +119,14 @@ static void ooxx_read_html(
 	}//fory
 	htmlprintf(win, 2, "</div>\n");
 }
-static void ooxx_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void ooxx_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void ooxx_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void ooxx_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u8 ch;
 	int x,y;
@@ -143,23 +143,23 @@ static void ooxx_read_cli(
 		say("\n");
 	}
 }
-static void ooxx_sread(
+static void ooxx_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)ooxx_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)ooxx_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)ooxx_read_html(win, sty, act, pin);
-	else if(fmt == _json_)ooxx_read_json(win, sty, act, pin);
+	if(fmt == _cli_)ooxx_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)ooxx_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)ooxx_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)ooxx_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)ooxx_read_vbo2d(win, sty, act, pin);
-		else ooxx_read_vbo3d(win, sty, act, pin);
+		if(_2d_ == win->vfmt)ooxx_draw_vbo2d(act, pin, win, sty);
+		else ooxx_draw_vbo3d(act, pin, win, sty);
 	}
-	else ooxx_read_pixel(win, sty, act, pin);
+	else ooxx_draw_pixel(act, pin, win, sty);
 }
-void ooxx_swrite(
+void ooxx_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -192,35 +192,47 @@ say("%d,%d\n",x,y);
 		turn++;
 	}
 }
-static void ooxx_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void ooxx_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	ooxx_draw(act, pin, win, sty);
+}
+static void ooxx_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	ooxx_event(act, pin, win, sty, ev, 0);
+}
+static void ooxx_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void ooxx_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void ooxx_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void ooxx_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void ooxx_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void ooxx_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void ooxx_start(struct halfrel* self, struct halfrel* peer)
 {
 	int x,y;
 
 	turn=0;
-	for(y=0;y<3;y++)
-	{
-		for(x=0;x<3;x++)data[y][x] = 0;
+	for(y=0;y<3;y++){
+		for(x=0;x<3;x++){
+			data[y][x] = 0;
+		}
 	}
 }
 static void ooxx_delete(struct actor* act)

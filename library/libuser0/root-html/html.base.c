@@ -139,11 +139,12 @@ int htmlnode_leafread(struct arena* win)
 }
 int htmlnode_rootwrite(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
 {
-	void* dc;
-	void* df;
-	struct relation* orel = win->orel0;
+	struct relation* rel;
+	struct halfrel* self;
+	struct halfrel* peer;
 
-	if(0 == orel)
+	rel = win->orel0;
+	if(0 == rel)
 	{
 		say("@htmlnode_write: %.*s\n", len, buf);
 		artery_leafwrite(sc, sf, win, wf, "OK", 2);
@@ -152,16 +153,15 @@ int htmlnode_rootwrite(struct arena* win, void* wf, void* sc, void* sf, void* bu
 
 	while(1)
 	{
-		if(0 == orel)break;
+		if(0 == rel)break;
 
-		dc = (void*)(orel->dstchip);
-		df = (void*)(orel->dstfoot);
-		if(_act_ == orel->dsttype)
-		{
-			actor_rootwrite(dc, df, win, 0, buf, len);
+		if(_act_ == rel->dsttype){
+			self = (void*)&rel->dstchip;
+			peer = (void*)&rel->srcchip;
+			actor_rootwrite(self, peer, buf, len);
 		}
 
-		orel = samesrcnextdst(orel);
+		rel = samesrcnextdst(rel);
 	}
 
 	artery_leafwrite(sc, sf, win, wf, "actor!", 6);

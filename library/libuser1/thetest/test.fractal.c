@@ -90,9 +90,9 @@ int manderbrot_check(double x, double y)
 	}
 	return j;
 }
-static void fractal_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void fractal_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u32 c;
 	int x,y;
@@ -127,9 +127,9 @@ static void fractal_read_pixel(
 		}
 	}
 }
-static void fractal_read_vbo2d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void fractal_draw_vbo2d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
@@ -187,9 +187,9 @@ static void fractal_read_vbo2d(
 
 	src->vbuf_enq += 1;
 }
-static void fractal_read_vbo3d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void fractal_draw_vbo3d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -242,44 +242,44 @@ static void fractal_read_vbo3d(
 
 	src->vbuf_enq += 1;
 }
-static void fractal_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void fractal_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void fractal_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void fractal_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void fractal_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void fractal_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void fractal_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void fractal_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	say("fractal(%x,%x,%x)\n",win,act,sty);
 }
-static void fractal_sread(
+static void fractal_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)fractal_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)fractal_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)fractal_read_html(win, sty, act, pin);
-	else if(fmt == _json_)fractal_read_json(win, sty, act, pin);
+	if(fmt == _cli_)fractal_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)fractal_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)fractal_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)fractal_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)fractal_read_vbo2d(win, sty, act, pin);
-		else fractal_read_vbo3d(win, sty, act, pin);
+		if(_2d_ == win->vfmt)fractal_draw_vbo2d(act, pin, win, sty);
+		else fractal_draw_vbo3d(act, pin, win, sty);
 	}
-	else fractal_read_pixel(win, sty, act, pin);
+	else fractal_draw_pixel(act, pin, win, sty);
 }
-static void fractal_swrite(
+static void fractal_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -309,40 +309,54 @@ static void fractal_swrite(
 		else if(why == 0x50)act->target.vc[1] -= act->target.vf[1]*0.1;
 	}
 }
-static void fractal_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void fractal_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	fractal_draw(act, pin, win, sty);
+}
+static void fractal_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	fractal_event(act, pin, win, sty, ev, 0);
+}
+static void fractal_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void fractal_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void fractal_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void fractal_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void fractal_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void fractal_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void fractal_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	if(0 == lf)return;
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
 
 	//alloc
-	pair = alloc_winobj(root, 's');
+	pair = alloc_winobj(win, 's');
 	src = &pair->src;
 	dst = &pair->dst;
-	lf->foot[0] = (u64)src;
-	tf->foot[0] = (u64)dst;
+	pin->foot[0] = (u64)src;
+	sty->foot[0] = (u64)dst;
 
 	//
 	src->method = 'v';
@@ -350,7 +364,6 @@ static void fractal_start(
 	//shader
 	src->vs = fractal_glsl_v;
 	src->fs = glsl_julia;
-	if(twig){if(_fg2d_ == twig->fmt)src->vs = fractal_glsl2d_v;}
 	src->shader_enq = 42;
 
 	//vertex

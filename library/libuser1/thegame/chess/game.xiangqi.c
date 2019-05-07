@@ -65,9 +65,9 @@ void* char2hanzi(int val)
 	}
 	return "";
 }
-void xiangqi_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void xiangqi_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u32 black, brown, red;
 	u32 chesscolor, fontcolor, temp;
@@ -188,9 +188,9 @@ void xiangqi_read_pixel(
 		}//forx
 	}//fory
 }
-static void xiangqi_read_vbo2d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void xiangqi_draw_vbo2d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 	u32 chesscolor, fontcolor, temp;
@@ -279,9 +279,9 @@ static void xiangqi_read_vbo2d(
 		}
 	}
 }
-static void xiangqi_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void xiangqi_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 	u32 chesscolor, fontcolor, temp;
@@ -374,9 +374,9 @@ static void xiangqi_read_vbo(
 		}
 	}
 }
-static void xiangqi_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void xiangqi_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y,c;
 	int len = win->len;
@@ -396,9 +396,9 @@ static void xiangqi_read_json(
 
 	win->len = len;
 }
-static void xiangqi_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void xiangqi_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 
@@ -422,9 +422,9 @@ static void xiangqi_read_html(
 	}//fory
 	htmlprintf(win, 2, "</div>\n");
 }
-static void xiangqi_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void xiangqi_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y,color;
 	int width = win->stride;
@@ -455,27 +455,27 @@ static void xiangqi_read_tui(
 		}
 	}
 }
-static void xiangqi_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void xiangqi_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void xiangqi_sread(
+static void xiangqi_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)xiangqi_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)xiangqi_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)xiangqi_read_html(win, sty, act, pin);
-	else if(fmt == _json_)xiangqi_read_json(win, sty, act, pin);
+	if(fmt == _cli_)xiangqi_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)xiangqi_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)xiangqi_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)xiangqi_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)xiangqi_read_vbo2d(win, sty, act, pin);
-		else xiangqi_read_vbo(win, sty, act, pin);
+		if(_2d_ == win->vfmt)xiangqi_draw_vbo2d(act, pin, win, sty);
+		else xiangqi_draw_vbo(act, pin, win, sty);
 	}
-	else xiangqi_read_pixel(win, sty, act, pin);
+	else xiangqi_draw_pixel(act, pin, win, sty);
 }
 
 
@@ -507,7 +507,7 @@ int xiangqi_pickup(int x, int y, int turn)
 
 	return 0;
 }
-void xiangqi_swrite(
+void xiangqi_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -603,28 +603,39 @@ void xiangqi_swrite(
 		px = py = -1;
 	}
 }
-static void xiangqi_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void xiangqi_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	xiangqi_draw(act, pin, win, sty);
+}
+static void xiangqi_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	xiangqi_event(act, pin, win, sty, ev, 0);
+}
+static void xiangqi_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void xiangqi_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void xiangqi_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void xiangqi_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void xiangqi_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void xiangqi_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void xiangqi_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void xiangqi_delete(struct actor* act, u8* buf)

@@ -157,7 +157,7 @@ void orthcam_zoom(struct arena* win, float delta)
 
 
 
-static int orthcam_sread(
+static int orthcam_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -186,7 +186,7 @@ static int orthcam_sread(
 	carvefrustum(win, sty);
 	return 0;
 }
-static int orthcam_swrite(
+static int orthcam_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -406,28 +406,39 @@ static int orthcam_swrite(
 	orthcam_fixcam(win);
 	return 1;
 }
-static void orthcam_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void orthcam_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	orthcam_draw(act, pin, win, sty);
+}
+static int orthcam_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	return orthcam_event(act, pin, win, sty, ev, 0);
+}
+static void orthcam_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void orthcam_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void orthcam_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void orthcam_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void orthcam_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void orthcam_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void orthcam_start(struct halfrel* self, struct halfrel* peer)
 {
     say("@orthcam_start\n");
 }

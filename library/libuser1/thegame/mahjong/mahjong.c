@@ -7,39 +7,22 @@ static u8 data[144];
 
 
 
-static void mahjong_sread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty)
+static void mahjong_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void mahjong_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+static void mahjong_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void mahjong_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void mahjong_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void mahjong_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void mahjong_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void mahjong_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void mahjong_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mahjong_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void mahjong_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void mahjong_delete(struct actor* act)

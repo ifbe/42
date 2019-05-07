@@ -46,9 +46,9 @@ static int charlen = 0;
 
 
 
-static void terminal_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void terminal_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -80,9 +80,9 @@ static void terminal_read_pixel(
 		drawtext_reverse(win, 0xffffff, cx-ww, cy-hh, cx+ww-16, cy+hh, obuf, ocur);
 	}
 }
-static void terminal_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void terminal_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int ocur;
 	void* obuf;
@@ -118,14 +118,14 @@ static void terminal_read_vbo(
 	ocur = getcurout();
 	carvetext2d_reverse(win, 0xffffff, tc, vr, vf, obuf, ocur);
 }
-static void terminal_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void terminal_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void terminal_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void terminal_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -138,9 +138,9 @@ static void terminal_read_html(
 
 	win->len = len;
 }
-static void terminal_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void terminal_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x, y, w, h;
 	u32* p;
@@ -164,27 +164,27 @@ static void terminal_read_tui(
 		}
 	}
 }
-static void terminal_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void terminal_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u8* p;
 	int enq, deq;
 	//say("terminal(%x,%x,%x)\n",win,act,sty);
 }
-static void terminal_sread(
+static void terminal_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)terminal_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)terminal_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)terminal_read_html(win, sty, act, pin);
-	else if(fmt == _json_)terminal_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)terminal_read_vbo(win, sty, act, pin);
-	else terminal_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)terminal_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)terminal_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)terminal_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)terminal_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)terminal_draw_vbo(act, pin, win, sty);
+	else terminal_draw_pixel(act, pin, win, sty);
 }
-static void terminal_swrite(
+static void terminal_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	void* buf, int len)
@@ -213,28 +213,39 @@ static void terminal_swrite(
 		terminal_serverinput(act->idx, buf, len);
 	}
 }
-static void terminal_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void terminal_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	terminal_draw(act, pin, win, sty);
+}
+static int terminal_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	terminal_event(act, pin, win, sty, ev, 0);
+}
+static void terminal_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void terminal_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void terminal_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void terminal_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void terminal_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void terminal_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void terminal_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void terminal_delete(struct actor* act)

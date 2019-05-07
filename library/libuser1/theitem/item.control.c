@@ -15,9 +15,9 @@ static char statusbuffer[64] = {
 
 
 
-static void control_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void control_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u8* p;
 	int x,y;
@@ -52,9 +52,9 @@ static void control_read_pixel(
 	drawsolid_circle(win, 0xc0c0c0, cx-ww/2, cy+hh/2, ww/4);
 	drawsolid_circle(win, 0xc0c0c0, cx+ww/2, cy+hh/2, ww/4);
 }
-static void control_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void control_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 	u8* p;
@@ -122,39 +122,39 @@ static void control_read_vbo(
 		}
 	}
 }
-static void control_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void control_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void control_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void control_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void control_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void control_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void control_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void control_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void control_sread(
+static void control_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)control_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)control_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)control_read_html(win, sty, act, pin);
-	else if(fmt == _json_)control_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)control_read_vbo(win, sty, act, pin);
-	else control_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)control_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)control_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)control_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)control_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)control_draw_vbo(act, pin, win, sty);
+	else control_draw_pixel(act, pin, win, sty);
 }
-static void control_swrite(
+static void control_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -180,28 +180,39 @@ static void control_swrite(
 		irel = samedstnextsrc(irel);
 	}
 }
-static void control_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void control_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	control_draw(act, pin, win, sty);
+}
+static void control_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	control_event(act, pin, win, sty, ev, 0);
+}
+static void control_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void control_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void control_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void control_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void control_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void control_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void control_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void control_delete(struct actor* act)

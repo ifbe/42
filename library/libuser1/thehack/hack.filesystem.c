@@ -23,9 +23,9 @@ void fs_prep(void* name)
 
 
 
-static void fs_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void fs_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -45,19 +45,19 @@ static void fs_read_pixel(
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 	drawtext(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh, fsbuf, 0x1000);
 }
-static void fs_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void fs_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void fs_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void fs_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void fs_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void fs_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -70,30 +70,30 @@ static void fs_read_html(
 
 	win->len = len;
 }
-static void fs_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void fs_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void fs_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void fs_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void fs_sread(
+static void fs_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)fs_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)fs_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)fs_read_html(win, sty, act, pin);
-	else if(fmt == _json_)fs_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)fs_read_vbo(win, sty, act, pin);
-	else fs_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)fs_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)fs_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)fs_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)fs_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)fs_draw_vbo(act, pin, win, sty);
+	else fs_draw_pixel(act, pin, win, sty);
 }
-static void fs_swrite(
+static void fs_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -116,28 +116,39 @@ static void fs_swrite(
 		fs_prep(buffer);
 	}
 }
-static void fs_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void fs_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	fs_draw(act, pin, win, sty);
+}
+static void fs_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	fs_event(act, pin, win, sty, ev, 0);
+}
+static void fs_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void fs_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void fs_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void fs_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void fs_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void fs_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void fs_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void fs_delete(struct actor* act)

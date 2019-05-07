@@ -7,9 +7,9 @@ static u8 buffer[108];
 
 
 
-static void poker_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void poker_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int j, cx, cy, ww, hh;
 	if(sty)
@@ -54,19 +54,19 @@ static void poker_read_pixel(
 */
 	}
 }
-static void poker_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void poker_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void poker_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void poker_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void poker_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void poker_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -78,56 +78,54 @@ static void poker_read_html(
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 	win->len = len;
 }
-static void poker_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void poker_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void poker_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void poker_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void poker_sread(
+static void poker_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)poker_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)poker_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)poker_read_html(win, sty, act, pin);
-	else if(fmt == _json_)poker_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)poker_read_vbo(win, sty, act, pin);
-	else poker_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)poker_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)poker_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)poker_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)poker_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)poker_draw_vbo(act, pin, win, sty);
+	else poker_draw_pixel(act, pin, win, sty);
 }
-static void poker_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+
+static void poker_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	poker_draw(act, pin, win, sty);
+}
+static void poker_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void poker_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void poker_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void poker_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void poker_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void poker_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void poker_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void poker_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void poker_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void poker_delete(struct actor* act)

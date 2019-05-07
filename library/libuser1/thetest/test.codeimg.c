@@ -172,9 +172,9 @@ unsigned char BLUE6(int i,int j)
 
 
 
-static void codeimg_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void codeimg_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 	int width = win->width;
@@ -203,9 +203,9 @@ static void codeimg_read_pixel(
 		stride, height, cx-ww, cy-hh, cx+ww, cy+hh
 	);
 }
-static void codeimg_read_vbo2d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void codeimg_draw_vbo2d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	if(0 == sty)sty = defaultstyle_vbo2d();
 	float* vc = sty->vc;
@@ -261,9 +261,9 @@ static void codeimg_read_vbo2d(
 
 	src->vbuf_enq += 1;
 }
-static void codeimg_read_vbo3d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void codeimg_draw_vbo3d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	float (*vbuf)[6];
 	struct glsrc* src;
@@ -320,44 +320,44 @@ static void codeimg_read_vbo3d(
 
 	src->vbuf_enq += 1;
 }
-static void codeimg_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void codeimg_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void codeimg_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void codeimg_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void codeimg_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void codeimg_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void codeimg_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void codeimg_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	say("codeimg(%x,%x,%x)\n",win,act,sty);
 }
-static void codeimg_sread(
+static void codeimg_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)codeimg_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)codeimg_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)codeimg_read_html(win, sty, act, pin);
-	else if(fmt == _json_)codeimg_read_json(win, sty, act, pin);
+	if(fmt == _cli_)codeimg_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)codeimg_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)codeimg_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)codeimg_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)codeimg_read_vbo2d(win, sty, act, pin);
-		else codeimg_read_vbo3d(win, sty, act, pin);
+		if(_2d_ == win->vfmt)codeimg_draw_vbo2d(act, pin, win, sty);
+		else codeimg_draw_vbo3d(act, pin, win, sty);
 	}
-	else codeimg_read_pixel(win, sty, act, pin);
+	else codeimg_draw_pixel(act, pin, win, sty);
 }
-static void codeimg_swrite(
+static void codeimg_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -454,40 +454,54 @@ static void codeimg_swrite(
 		}
 	}
 }
-static void codeimg_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void codeimg_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	codeimg_draw(act, pin, win, sty);
+}
+static void codeimg_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	codeimg_event(act, pin, win, sty, ev, 0);
+}
+static void codeimg_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void codeimg_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void codeimg_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void codeimg_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void codeimg_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void codeimg_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void codeimg_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	if(0 == lf)return;
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
 
 	//alloc
-	pair = alloc_winobj(root, 's');
+	pair = alloc_winobj(win, 's');
 	src = &pair->src;
 	dst = &pair->dst;
-	lf->foot[0] = (u64)src;
-	tf->foot[0] = (u64)dst;
+	pin->foot[0] = (u64)src;
+	sty->foot[0] = (u64)dst;
 
 	//
 	src->geometry = 3;
@@ -496,7 +510,6 @@ static void codeimg_start(
 	//shader
 	src->vs = codeimg_glsl_v;
 	src->fs = codeimg_glsl_f;
-	if(twig){if(_fg2d_ == twig->fmt)src->vs = codeimg_glsl2d_v;}
 	src->shader_enq = 42;
 
 	//vertex
@@ -508,10 +521,10 @@ static void codeimg_start(
 
 	//texture
 	src->tex_name[0] = "tex0";
-	src->tex_data[0] = leaf->buf;
 	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_w[0] = leaf->width;
-	src->tex_h[0] = leaf->height;
+	src->tex_data[0] = act->buf;
+	src->tex_w[0] = act->width;
+	src->tex_h[0] = act->height;
 	src->tex_enq[0] = 42;
 }
 static void codeimg_delete(struct actor* act)

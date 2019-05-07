@@ -55,9 +55,9 @@ char* picture_glsl_f =
 
 
 
-static void picture_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void picture_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u32 tmp;
 	u32* dst;
@@ -104,9 +104,9 @@ static void picture_read_pixel(
 		}
 	}
 }
-static void picture_read_vbo2d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void picture_draw_vbo2d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -161,9 +161,9 @@ static void picture_read_vbo2d(
 
 	src->vbuf_enq += 1;
 }
-static void picture_read_vbo3d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void picture_draw_vbo3d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -218,84 +218,85 @@ static void picture_read_vbo3d(
 
 	src->vbuf_enq += 1;
 }
-static void picture_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void picture_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void picture_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void picture_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void picture_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void picture_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void picture_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void picture_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	say("picture(%x,%x,%x)\n",win,act,sty);
 }
-static void picture_sread(
+static void picture_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)picture_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)picture_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)picture_read_html(win, sty, act, pin);
-	else if(fmt == _json_)picture_read_json(win, sty, act, pin);
+	if(fmt == _cli_)picture_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)picture_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)picture_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)picture_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)picture_read_vbo2d(win, sty, act, pin);
-		else picture_read_vbo3d(win, sty, act, pin);
+		if(_2d_ == win->vfmt)picture_draw_vbo2d(act, pin, win, sty);
+		else picture_draw_vbo3d(act, pin, win, sty);
 	}
-	else picture_read_pixel(win, sty, act, pin);
+	else picture_draw_pixel(act, pin, win, sty);
 }
-static void picture_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+
+static void picture_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	picture_draw(act, pin, win, sty);
+}
+static void picture_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void picture_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void picture_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void picture_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void picture_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void picture_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void picture_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void picture_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void picture_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	if(0 == lf)return;
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
 
 	//alloc
-	pair = alloc_winobj(root, 's');
+	pair = alloc_winobj(win, 's');
 	src = &pair->src;
 	dst = &pair->dst;
-	lf->foot[0] = (u64)src;
-	tf->foot[0] = (u64)dst;
+	pin->foot[0] = (u64)src;
+	sty->foot[0] = (u64)dst;
 
 	//
 	src->geometry = 3;
@@ -304,7 +305,6 @@ static void picture_start(
 	//shader
 	src->vs = picture_glsl_v;
 	src->fs = picture_glsl_f;
-	if(twig){if(_fg2d_ == twig->fmt)src->vs = picture_glsl2d_v;}
 	src->shader_enq = 42;
 
 	//vertex
@@ -317,18 +317,18 @@ static void picture_start(
 
 	//texture0
 	src->tex_name[0] = "tex0";
-	src->tex_data[0] = leaf->nbuf;
+	src->tex_data[0] = act->nbuf;
 	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_w[0] = leaf->x0;
-	src->tex_h[0] = leaf->y0;
+	src->tex_w[0] = act->x0;
+	src->tex_h[0] = act->y0;
 	src->tex_enq[0] = 42;
 
 	//texture1
 	src->tex_name[1] = "tex1";
-	src->tex_data[1] = leaf->wbuf;
+	src->tex_data[1] = act->wbuf;
 	src->tex_fmt[1] = hex32('r','g','b','a');
-	src->tex_w[1] = leaf->xn;
-	src->tex_h[1] = leaf->yn;
+	src->tex_w[1] = act->xn;
+	src->tex_h[1] = act->yn;
 	src->tex_enq[1] = 42;
 }
 static void picture_delete(struct actor* act)

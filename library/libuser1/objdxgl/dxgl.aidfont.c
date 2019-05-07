@@ -60,10 +60,9 @@ GLSL_VERSION
 
 
 
-static void aidfont_sread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty)
+static void aidfont_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
+	struct arena* win = (void*)(peer->chip);
 	struct datapair* mod = win->gl_opaque;
 	if(_vbo_ != win->fmt)return;
 
@@ -86,43 +85,33 @@ static void aidfont_sread(
 	mod[font2d3].dst.tex[0] = mod[font3d3].dst.tex[0];
 	mod[font2d3].src.tex_name[0] = mod[font3d3].src.tex_name[0];
 
-	//say("%d,%d,%d\n",mod[font2d0].dst.tex[0], mod[font2d0].dst.vbo, mod[font2d0].dst.ibo, mod[font2d0].dst.shader);
 }
-static void aidfont_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+static void aidfont_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void aidfont_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void aidfont_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void aidfont_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void aidfont_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void aidfont_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void aidfont_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void aidfont_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void aidfont_start(struct halfrel* self, struct halfrel* peer)
 {
+	struct actor* act;
 	u8* buf;
-	struct glsrc* src;
-	struct datapair* mod;
 
-	buf = leaf->buf;
-	mod = root->gl_opaque;
+	struct arena* win;
+	struct datapair* mod;
+	struct glsrc* src;
+
+	act = (void*)(self->chip);
+	buf = act->buf;
+
+	win = (void*)(peer->chip);
+	mod = win->gl_opaque;
 
 //--------------------font3d-------------------
 	//[0000,3fff]

@@ -113,49 +113,6 @@ found:
 		rel = samesrcnextdst(rel);
 	}
 }
-void camman_sendcamera(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
-{
-	int y;
-	struct relation* rel;
-	struct arena* twig;
-	struct actor* leaf;
-
-	rel = win->orel0;
-	while(1)
-	{
-		if(0 == rel)break;
-		if(_win_ == rel->dsttype)
-		{
-			twig = (void*)(rel->dstchip);
-			if(_cam3d_ == twig->fmt)goto found;
-		}
-		rel = samesrcnextdst(rel);
-	}
-	return;
-
-found:
-	y = 0;
-	rel = twig->orel0;
-	while(1)
-	{
-		if(0 == rel)break;
-
-		if(_act_ == rel->dsttype)
-		{
-			if(y == act->y0){
-				leaf = (void*)(rel->dstchip);
-				leaf->onswrite(leaf, pin, win, sty, ev, 0);
-				return;
-			}
-			y += 1;
-		}
-
-		rel = samesrcnextdst(rel);
-	}
-}
 
 
 
@@ -218,7 +175,7 @@ found:
 
 
 
-static int camman_sread(
+static int camman_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -252,7 +209,7 @@ static int camman_sread(
 
 	return 0;
 }
-static int camman_swrite(
+static int camman_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -274,8 +231,30 @@ static int camman_swrite(
 		}
 	}
 
-	camman_sendcamera(act, pin, win, sty, ev, 0);
 	return 1;
+}
+
+
+
+
+static void camman_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	camman_draw(act, pin, win, sty);
+}
+static int camman_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	return camman_event(act, pin, win, sty, ev, 0);
 }
 static void camman_cread(
 	struct actor* act, struct pinid* pin,

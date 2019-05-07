@@ -4,9 +4,9 @@ void printhtmlbody(u8* buf, int len);
 
 
 
-static void browser_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void browser_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x0,y0,x1,y1;
 	int cx, cy, ww, hh;
@@ -44,9 +44,9 @@ static void browser_read_pixel(
 	drawline_rect(win, 0x404040, x0, y0, x1, y1);
 	drawtext(win, 0x000000, x0, y0, x1, y1, dat->buf, dat->len);
 }
-static void browser_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void browser_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	vec3 tc,tr,tf,tu;
 	struct str* str = act->idx;
@@ -77,45 +77,45 @@ static void browser_read_vbo(
 	tf[2] = vf[2]*0.02;
 	carvestring(win, 0x000000, tc, tr, tf, str->buf, str->len);
 }
-static void browser_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void browser_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void browser_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void browser_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void browser_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void browser_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void browser_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void browser_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	say("browser(%x,%x,%x)\n",win,act,sty);
 }
-static void browser_sread(
+static void browser_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(_cli_ == fmt)browser_read_cli(win, sty, act, pin);
-	else if(_tui_ == fmt)browser_read_tui(win, sty, act, pin);
-	else if(_html_ == fmt)browser_read_html(win, sty, act, pin);
-	else if(_json_ == fmt)browser_read_json(win, sty, act, pin);
-	else if(_vbo_ == fmt)browser_read_vbo(win, sty, act, pin);
-	else browser_read_pixel(win, sty, act, pin);
+	if(_cli_ == fmt)browser_draw_cli(act, pin, win, sty);
+	else if(_tui_ == fmt)browser_draw_tui(act, pin, win, sty);
+	else if(_html_ == fmt)browser_draw_html(act, pin, win, sty);
+	else if(_json_ == fmt)browser_draw_json(act, pin, win, sty);
+	else if(_vbo_ == fmt)browser_draw_vbo(act, pin, win, sty);
+	else browser_draw_pixel(act, pin, win, sty);
 }
 
 
 
 
-static void browser_write_event(
+static void browser_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev)
@@ -170,9 +170,8 @@ static void browser_write_event(
 		}
 	}
 }
-static void browser_write_data(
+static void browser_data(
 	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
 	u8* buf, int len)
 {
 	int j,cnt;
@@ -188,36 +187,39 @@ static void browser_write_data(
 
 	printhtmlbody(dat->buf, dat->len);
 }
-static void browser_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	void* buf, int len)
+
+
+
+
+static void browser_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
-	if(0 == win)browser_write_event(act, pin, win, sty, buf);
-	else browser_write_data(act, pin, win, sty, buf, len);
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	browser_draw(act, pin, win, sty);
 }
-static void browser_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void browser_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	if(len)browser_data(act, pin, buf, len);
+	else browser_event(act, pin, win, sty, ev);
+}
+static void browser_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void browser_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void browser_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void browser_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void browser_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void browser_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void browser_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void browser_delete(struct actor* act)

@@ -221,9 +221,9 @@ void sty_sty_mat(struct style* src, struct style* dst, mat4 mat)
 
 
 
-static void model_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void model_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	float* p;
 	float f;
@@ -271,9 +271,9 @@ static void model_read_pixel(
 	}
 */
 }
-static void model_read_vbo2d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void model_draw_vbo2d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	if(act->buf == 0)return;
 	if(0 == sty)sty = defaultstyle_vbo2d();
@@ -281,54 +281,54 @@ static void model_read_vbo2d(
 	struct glsrc* src = (void*)(pin->foot[0]);
 	sty_sty_mat(&act->target, sty, (void*)src->arg_data[0]);
 }
-static void model_read_vbo3d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void model_draw_vbo3d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	if(act->buf == 0)return;
 
 	struct glsrc* src = (void*)(pin->foot[0]);
 	sty_sty_mat(&act->target, sty, (void*)src->arg_data[0]);
 }
-static void model_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void model_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void model_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void model_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void model_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void model_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void model_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void model_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	say("model(%x,%x,%x)\n",win,act,sty);
 }
-static void model_sread(
+static void model_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)model_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)model_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)model_read_html(win, sty, act, pin);
-	else if(fmt == _json_)model_read_json(win, sty, act, pin);
+	if(fmt == _cli_)model_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)model_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)model_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)model_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)model_read_vbo2d(win, sty, act, pin);
-		else model_read_vbo3d(win, sty, act, pin);
+		if(_2d_ == win->vfmt)model_draw_vbo2d(act, pin, win, sty);
+		else model_draw_vbo3d(act, pin, win, sty);
 	}
-	else model_read_pixel(win, sty, act, pin);
+	else model_draw_pixel(act, pin, win, sty);
 }
-static void model_swrite(
+static void model_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -359,40 +359,54 @@ static void model_swrite(
 		actorcreatefromfile(act, buffer);
 	}
 }
-static void model_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void model_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	model_draw(act, pin, win, sty);
+}
+static void model_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	model_event(act, pin, win, sty, ev, 0);
+}
+static void model_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void model_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void model_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void model_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void model_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void model_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void model_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	if(0 == lf)return;
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
 
 	//alloc
-	pair = alloc_winobj(root, 's');
+	pair = alloc_winobj(win, 's');
 	src = &pair->src;
 	dst = &pair->dst;
-	lf->foot[0] = (u64)src;
-	tf->foot[0] = (u64)dst;
+	pin->foot[0] = (u64)src;
+	sty->foot[0] = (u64)dst;
 
 	//
 	src->geometry = 3;
@@ -401,7 +415,6 @@ static void model_start(
 	//shader
 	src->vs = model_glsl_v;
 	src->fs = model_glsl_f;
-	if(twig){if(_fg2d_ == twig->fmt)src->vs = model_glsl2d_v;}
 	src->shader_enq = 42;
 
 	//argument
@@ -411,10 +424,10 @@ static void model_start(
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = leaf->width;
-	src->vbuf_h = leaf->height;
+	src->vbuf_w = act->width;
+	src->vbuf_h = act->height;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = leaf->buf;
+	src->vbuf = act->buf;
 	src->vbuf_enq = 42;
 
 	//send!

@@ -97,11 +97,9 @@ public:
 			if(0 == orel)break;
 			if(_act_ == orel->dsttype)
 			{
-				actor_rootwrite(
-					(void*)(orel->dstchip), (void*)(orel->dstfoot),
-					(void*)(orel->srcchip), (void*)(orel->srcfoot),
-					obj[enq].buf, 640*480*3/2
-				);
+				struct halfrel* self = (struct halfrel*)&orel->dstchip;
+				struct halfrel* peer = (struct halfrel*)&orel->srcchip;
+				actor_rootwrite(self, peer, obj[enq].buf, 640*480*3/2);
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}

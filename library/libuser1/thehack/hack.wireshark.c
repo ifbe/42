@@ -15,9 +15,9 @@ void queuepacket(u8* dst, int* idx, u8* buf, int len)
 
 
 
-static void rawdump_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void rawdump_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int j;
 	int cx, cy, ww, hh;
@@ -37,19 +37,19 @@ static void rawdump_read_pixel(
 	}
 	drawline_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
 }
-static void rawdump_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void rawdump_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void rawdump_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void rawdump_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void rawdump_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void rawdump_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -62,63 +62,60 @@ static void rawdump_read_html(
 
 	win->len = len;
 }
-static void rawdump_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void rawdump_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void rawdump_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void rawdump_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void rawdump_sread(
+static void rawdump_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)rawdump_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)rawdump_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)rawdump_read_html(win, sty, act, pin);
-	else if(fmt == _json_)rawdump_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)rawdump_read_vbo(win, sty, act, pin);
-	else rawdump_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)rawdump_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)rawdump_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)rawdump_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)rawdump_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)rawdump_draw_vbo(act, pin, win, sty);
+	else rawdump_draw_pixel(act, pin, win, sty);
 }
-static void rawdump_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
-{
-	int j;
-	u8* dst;
-	struct actor* tmp;
-	if(0 == win)return;
 
-	//writefile();
-	queuepacket(act->buf, act->idx, buf, len);
+
+
+
+static void rawdump_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	rawdump_draw(act, pin, win, sty);
 }
-static void rawdump_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void rawdump_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	if(len)queuepacket(act->buf, act->idx, buf, len);
+}
+static void rawdump_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void rawdump_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void rawdump_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void rawdump_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void rawdump_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void rawdump_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void rawdump_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void rawdump_delete(struct actor* act, u8* buf)

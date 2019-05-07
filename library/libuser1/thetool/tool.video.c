@@ -58,9 +58,9 @@ char* video_hlsl_f = 0;
 
 
 
-void video_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void video_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u8* src;
 	u8* dst;
@@ -93,9 +93,9 @@ void video_read_pixel(
 		  dst, 0,   w,   h, cx-ww, cy-hh, cx+ww, cy+hh
 	);
 }
-void video_read_vbo2d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void video_draw_vbo2d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 	u8* dst;
@@ -174,9 +174,9 @@ void video_read_vbo2d(
 	data->vbuf_enq += 1;
 	data->tex_enq[0] += 1;
 }
-void video_read_vbo3d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void video_draw_vbo3d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 	u8* dst;
@@ -254,14 +254,14 @@ void video_read_vbo3d(
 	data->vbuf_enq += 1;
 	data->tex_enq[0] += 1;
 }
-void video_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void video_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-void video_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void video_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	//<head>
 	htmlprintf(win, 1, ".video{width:50%%;height:100px;float:left;background-color:#1984ea;}\n");
@@ -269,90 +269,81 @@ void video_read_html(
 	//<body>
 	htmlprintf(win, 2, "<div class=\"video\">\n");
 }
-void video_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void video_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-void video_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void video_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u8* src = act->idx;
 	say("src@%llx\n", src);
 }
-static void video_sread(
+static void video_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)video_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)video_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)video_read_html(win, sty, act, pin);
-	else if(fmt == _json_)video_read_json(win, sty, act, pin);
+	if(fmt == _cli_)video_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)video_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)video_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)video_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)video_read_vbo2d(win, sty, act, pin);
-		else video_read_vbo3d(win, sty, act, pin);
+		if(_2d_ == win->vfmt)video_draw_vbo2d(act, pin, win, sty);
+		else video_draw_vbo3d(act, pin, win, sty);
 	}
-	else video_read_pixel(win, sty, act, pin);
+	else video_draw_pixel(act, pin, win, sty);
 }
-static void video_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void video_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
-	if(0 == win)return;
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	video_draw(act, pin, win, sty);
+}
+static void video_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	struct actor* act;
 	if(0 == len)return;		//event
 
+	act = (void*)(self->chip);
 	act->idx = buf;
 }
-static void video_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void video_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void video_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void video_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void video_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void video_stop(struct halfrel* self, struct halfrel* peer)
 {
-	struct glsrc* src;
-	if(0 == lf)return;
-
-	src = (void*)(lf->foot[0]);
-	if(src->vbuf)
-	{
-		memorydelete(src->vbuf);
-		src->vbuf = 0;
-	}
 }
-static void video_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void video_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	if(0 == lf)return;
-	if(0 == tf)return;
-	if(_vbo_ != root->fmt)return;
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
 
 	//
-	pair = alloc_winobj(root, 's');
+	pair = alloc_winobj(win, 's');
 	src = &pair->src;
 	dst = &pair->dst;
-	lf->foot[0] = (u64)src;
-	tf->foot[0] = (u64)dst;
+	pin->foot[0] = (u64)src;
+	sty->foot[0] = (u64)dst;
 
 	src->geometry = 3;
 	src->method = 'v';
@@ -360,7 +351,6 @@ static void video_start(
 	//shader
 	src->vs = video_glsl_v;
 	src->fs = video_glsl_f;
-	if(twig){if(_fg2d_ == twig->fmt)src->vs = video_glsl2d_v;}
 	src->shader_enq = 42;
 
 	//vertex
@@ -372,7 +362,7 @@ static void video_start(
 
 	//texture
 	src->tex_name[0] = "tex0";
-	src->tex_data[0] = leaf->buf;
+	src->tex_data[0] = act->buf;
 	src->tex_fmt[0] = hex32('r','g','b','a');
 	src->tex_w[0] = 1024;
 	src->tex_h[0] = 1024;

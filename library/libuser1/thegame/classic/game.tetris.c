@@ -31,9 +31,9 @@ static u8 data[HEIGHT][WIDTH];
 
 
 
-static void tetris_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void tetris_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u32 c;
 	int x, y, cx, cy, ww, hh;
@@ -87,9 +87,9 @@ static void tetris_read_pixel(
 		cx+(that.x4-15)*ww, cy+(that.y4-19)*hh);
 */
 }
-static void tetris_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void tetris_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 	vec3 tc, tr, tf, tu, f;
@@ -120,14 +120,14 @@ static void tetris_read_vbo(
 		}
 	}
 }
-static void tetris_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void tetris_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void tetris_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void tetris_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 
@@ -149,9 +149,9 @@ static void tetris_read_html(
 	}//fory
 	htmlprintf(win, 2, "</div>\n");
 }
-static void tetris_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void tetris_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int x,y;
 	int w = win->stride;
@@ -194,25 +194,25 @@ static void tetris_read_tui(
 		p[(that.x4 + (that.y4-HEIGHT+h)*w)<<2]='#';
 	}
 }
-static void tetris_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void tetris_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void tetris_sread(
+static void tetris_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)tetris_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)tetris_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)tetris_read_html(win, sty, act, pin);
-	else if(fmt == _json_)tetris_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)tetris_read_vbo(win, sty, act, pin);
-	else tetris_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)tetris_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)tetris_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)tetris_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)tetris_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)tetris_draw_vbo(act, pin, win, sty);
+	else tetris_draw_pixel(act, pin, win, sty);
 }
-static void tetris_swrite(
+static void tetris_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -243,28 +243,39 @@ static void tetris_swrite(
 		}
 	}
 }
-static void tetris_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void tetris_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	tetris_draw(act, pin, win, sty);
+}
+static void tetris_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	tetris_event(act, pin, win, sty, ev, 0);
+}
+static void tetris_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void tetris_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void tetris_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void tetris_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void tetris_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void tetris_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void tetris_start(struct halfrel* self, struct halfrel* peer)
 {
 	tetris_generate(data, WIDTH, HEIGHT);
 }

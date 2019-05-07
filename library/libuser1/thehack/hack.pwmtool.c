@@ -17,9 +17,9 @@ void draw_pwm(struct arena* win, u32 rgb,
 	//heng
 	drawline(win, 0xffffff, x2, y0, x3, y0);
 }
-static void pwmtool_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void pwmtool_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int j;
 	int x0,x1,x2,x3,y0,y1;
@@ -59,23 +59,23 @@ static void pwmtool_read_pixel(
 		draw_pwm(win,0xffffff,x0,x1,x2,x3,y0,y1);
 	}
 }
-static void pwmtool_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void pwmtool_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	float* vc = sty->vc;
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 }
-static void pwmtool_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void pwmtool_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void pwmtool_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void pwmtool_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -88,58 +88,56 @@ static void pwmtool_read_html(
 
 	win->len = len;
 }
-static void pwmtool_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void pwmtool_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void pwmtool_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void pwmtool_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	say("pwmtool(%x,%x,%x)\n",win,act,sty);
 }
-static void pwmtool_sread(
+static void pwmtool_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)pwmtool_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)pwmtool_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)pwmtool_read_html(win, sty, act, pin);
-	else if(fmt == _json_)pwmtool_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)pwmtool_read_vbo(win, sty, act, pin);
-	else pwmtool_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)pwmtool_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)pwmtool_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)pwmtool_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)pwmtool_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)pwmtool_draw_vbo(act, pin, win, sty);
+	else pwmtool_draw_pixel(act, pin, win, sty);
 }
-static void pwmtool_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void pwmtool_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	pwmtool_draw(act, pin, win, sty);
+}
+static void pwmtool_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void pwmtool_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void pwmtool_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void pwmtool_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void pwmtool_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void pwmtool_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void pwmtool_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void pwmtool_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void pwmtool_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void pwmtool_delete(struct actor* act)

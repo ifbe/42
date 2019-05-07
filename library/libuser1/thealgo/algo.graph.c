@@ -155,9 +155,9 @@ static void starry_read_pixel(
 
 
 
-static void graph_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void graph_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {/*
 	struct arena* aa;
 	struct actor* bb;
@@ -211,9 +211,9 @@ static void graph_read_pixel(
 		);
 	}*/
 }
-static void graph_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void graph_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	float n;
 	u8 buf[0x1000];
@@ -286,14 +286,14 @@ static void graph_read_vbo(
 		carvestring_center(win, rgb, &vbuf[j*3], tr, tf, str, 8);
 	}
 }
-static void graph_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void graph_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void graph_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void graph_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -306,27 +306,27 @@ static void graph_read_html(
 
 	win->len = len;
 }
-static void graph_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void graph_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void graph_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void graph_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void graph_sread(
+static void graph_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)graph_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)graph_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)graph_read_html(win, sty, act, pin);
-	else if(fmt == _json_)graph_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)graph_read_vbo(win, sty, act, pin);
-	else graph_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)graph_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)graph_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)graph_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)graph_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)graph_draw_vbo(act, pin, win, sty);
+	else graph_draw_pixel(act, pin, win, sty);
 }
 
 
@@ -448,7 +448,7 @@ static void graph_traverse(struct actor* act, struct arena* this)
 		rel = samesrcnextdst(rel);
 	}*/
 }
-static void graph_swrite(
+static void graph_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -482,47 +482,58 @@ say("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
 
 
 
-static void graph_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void graph_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	graph_draw(act, pin, win, sty);
+}
+static void graph_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	graph_event(act, pin, win, sty, ev, 0);
+}
+static void graph_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void graph_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void graph_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void graph_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void graph_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void graph_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void graph_start(struct halfrel* self, struct halfrel* peer)
 {
 	int j;
-	float* vbuf = leaf->vbuf;
-	float* wbuf = leaf->wbuf;
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	float* vbuf = act->vbuf;
+	float* wbuf = act->wbuf;
 
 	//generate node, wire
-	graph_traverse(leaf, root);
+	graph_traverse(act, win);
 
 	//generate vbuf, ibuf;
-	leaf->vlen = leaf->nlen;
-	leaf->ilen = leaf->wlen;
-	for(j=0;j<leaf->vlen;j++)
+	act->vlen = act->nlen;
+	act->ilen = act->wlen;
+	for(j=0;j<act->vlen;j++)
 	{
-		vbuf[j*3 + 0] = tf->vc[0] + (getrandom() & 0xffff) / 16.0;
-		vbuf[j*3 + 1] = tf->vc[1] + (getrandom() & 0xffff) / 16.0;
-		vbuf[j*3 + 2] = tf->vc[2] + (getrandom() & 0xffff) / 16.0;
+		vbuf[j*3 + 0] = sty->vc[0] + (getrandom() & 0xffff) / 16.0;
+		vbuf[j*3 + 1] = sty->vc[1] + (getrandom() & 0xffff) / 16.0;
+		vbuf[j*3 + 2] = sty->vc[2] + (getrandom() & 0xffff) / 16.0;
 		say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
 	}
-	say("%d,%d,%d,%d\n", leaf->nlen, leaf->wlen, leaf->vlen, leaf->ilen);
+	say("%d,%d,%d,%d\n", act->nlen, act->wlen, act->vlen, act->ilen);
 }
 static void graph_delete(struct actor* act)
 {

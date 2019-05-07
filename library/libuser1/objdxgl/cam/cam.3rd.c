@@ -99,7 +99,7 @@ print:
 	carvefrustum(win, &win->camera);
 	return 0;
 }
-static int thirdperson_sread(
+static int thirdperson_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -120,7 +120,7 @@ static int thirdperson_sread(
 	thirdperson_sread000(act, pin, win, sty);
 	return 0;
 }
-static int thirdperson_swrite(
+static int thirdperson_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -195,28 +195,39 @@ static int thirdperson_swrite(
 	}
 	return 0;
 }
-static void thirdperson_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void thirdperson_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	thirdperson_draw(act, pin, win, sty);
+}
+static int thirdperson_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	return thirdperson_event(act, pin, win, sty, ev, 0);
+}
+static void thirdperson_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void thirdperson_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void thirdperson_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void thirdperson_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void thirdperson_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void thirdperson_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void thirdperson_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void thirdperson_delete(struct actor* act)

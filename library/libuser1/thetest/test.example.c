@@ -4,9 +4,9 @@ u32 getrandom();
 
 
 
-static void example_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void example_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	u32 bg,fg;
 	int cx, cy, ww, hh;
@@ -30,9 +30,9 @@ static void example_read_pixel(
 	drawsolid_rect(win, bg, cx-ww, cy-hh, cx+ww, cy+hh);
 	drawhexadecimal(win, fg, cx, cy, bg);
 }
-static void example_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void example_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	vec3 tc, tr, tf, tu, f;
 	float* vc = sty->vc;
@@ -80,14 +80,14 @@ static void example_read_vbo(
 	tc[2] = vc[2]-vr[2]/2+vf[2]/2+vu[2]*3/2;
 	carvesolid_sphere(win, 0x87cefa, tc, tr, tf, tu);
 }
-static void example_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void example_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void example_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void example_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -100,56 +100,54 @@ static void example_read_html(
 
 	win->len = len;
 }
-static void example_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void example_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void example_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void example_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void example_sread(
+static void example_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)example_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)example_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)example_read_html(win, sty, act, pin);
-	else if(fmt == _json_)example_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)example_read_vbo(win, sty, act, pin);
-	else example_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)example_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)example_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)example_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)example_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)example_draw_vbo(act, pin, win, sty);
+	else example_draw_pixel(act, pin, win, sty);
 }
-static void example_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+
+static void example_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	example_draw(act, pin, win, sty);
+}
+static void example_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void example_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void example_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void example_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void example_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void example_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void example_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void example_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void example_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void example_delete(struct actor* act)

@@ -127,9 +127,9 @@ void fixcam(struct style* cam, struct style* tar)
 
 
 
-static void shadowmap_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void shadowmap_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -147,9 +147,9 @@ static void shadowmap_read_pixel(
 		hh = win->height/2;
 	}
 }
-static void shadowmap_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void shadowmap_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	vec3 tr,tf,tu;
 	float* vc = sty->vc;
@@ -305,66 +305,64 @@ static void shadowmap_read_vbo(
 	tu[2] = 20.0;
 	carvesolid_sphere(win, 0xffff00, tmp->camera.vc, tr, tf, tu);
 }
-static void shadowmap_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void shadowmap_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void shadowmap_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void shadowmap_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void shadowmap_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void shadowmap_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void shadowmap_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void shadowmap_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void shadowmap_sread(
+static void shadowmap_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)shadowmap_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)shadowmap_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)shadowmap_read_html(win, sty, act, pin);
-	else if(fmt == _json_)shadowmap_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)shadowmap_read_vbo(win, sty, act, pin);
-	else shadowmap_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)shadowmap_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)shadowmap_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)shadowmap_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)shadowmap_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)shadowmap_draw_vbo(act, pin, win, sty);
+	else shadowmap_draw_pixel(act, pin, win, sty);
 }
-static void shadowmap_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+
+static void shadowmap_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	shadowmap_draw(act, pin, win, sty);
+}
+static void shadowmap_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void shadowmap_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void shadowmap_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void shadowmap_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void shadowmap_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void shadowmap_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void shadowmap_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void shadowmap_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void shadowmap_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct relation* rel;
 	struct arena* tmp;
@@ -372,14 +370,18 @@ static void shadowmap_start(
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	if(0 == lf)return;
+
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
 
 	//
-	pair = alloc_winobj(root, 's');
+	pair = alloc_winobj(win, 's');
 	src = &pair->src;
 	dst = &pair->dst;
-	lf->foot[0] = (u64)src;
-	tf->foot[0] = (u64)dst;
+	pin->foot[0] = (u64)src;
+	sty->foot[0] = (u64)dst;
 
 	//
 	src->geometry = 3;

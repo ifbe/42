@@ -362,7 +362,7 @@ found:
 
 
 
-void corner_read_vbo(
+void corner_draw_vbo(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -372,7 +372,7 @@ void corner_read_vbo(
 
 	corner_vbo_popup(act, pin, win, sty);
 }
-void corner_read_pixel(
+void corner_draw_pixel(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -448,14 +448,14 @@ void corner_read_pixel(
 		}
 	}
 }
-static int corner_sread(
+static int corner_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	switch(win->fmt)
 	{
-		case _vbo_:corner_read_vbo(act, pin, win, sty);break;
-		default:corner_read_pixel(act, pin, win, sty);
+		case _vbo_:corner_draw_vbo(act, pin, win, sty);break;
+		default:corner_draw_pixel(act, pin, win, sty);
 	}
 	return 0;
 }
@@ -463,7 +463,7 @@ static int corner_sread(
 
 
 
-static int corner_swrite_twig(
+static int corner_event_twig(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -550,7 +550,7 @@ static int corner_onoff(
 
 	return 1;
 }
-static int corner_swrite_root(
+static int corner_event_root(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -593,7 +593,7 @@ static int corner_swrite_root(
 	}
 	return 0;
 }
-static int corner_swrite(
+static int corner_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -601,39 +601,50 @@ static int corner_swrite(
 	int j;
 	if(0x2d70 == ev->what)
 	{
-		j = corner_swrite_root(act, pin, win, sty, ev, len);
+		j = corner_event_root(act, pin, win, sty, ev, len);
 		if(j)return 1;
 
-		j = corner_swrite_twig(act, pin, win, sty, ev, len);
+		j = corner_event_twig(act, pin, win, sty, ev, len);
 		if(j)return 1;
 	}
 	return 0;
 }
-static int corner_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void corner_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	corner_draw(act, pin, win, sty);
+}
+static int corner_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	return corner_event(act, pin, win, sty, ev, 0);
+}
+static int corner_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	return 0;
 }
-static int corner_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static int corner_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	return 0;
 }
-static int corner_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static int corner_stop(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int corner_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static int corner_start(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

@@ -129,43 +129,65 @@ void actorinput_touch(struct arena* win, struct event* ev)
 
 
 
-int actor_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+int actor_rootwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len)
 {
-	struct actor* act = dc;
-	return act->onswrite(dc, df, sc, sf, buf, len);
+	struct actor* act;
+	if(0 == self)return 0;
+
+	act = (void*)(self->chip);
+	if(0 == act)return 0;
+
+	return act->onswrite(self, peer, buf, len);
 }
-int actor_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+int actor_rootread(struct halfrel* self,struct halfrel* peer,void* buf,int len)
 {
-	struct actor* act = dc;
-	return act->onsread(dc, df, sc, sf, buf, len);
+	struct actor* act;
+	if(0 == self)return 0;
+
+	act = (void*)(self->chip);
+	if(0 == act)return 0;
+
+	return act->onsread(self, peer, buf, len);
 }
-int actor_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+int actor_leafwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len)
 {
-	struct actor* act = dc;
-	return act->oncwrite(dc, df, sc, sf, buf, len);
+	struct actor* act;
+	if(0 == self)return 0;
+
+	act = (void*)(self->chip);
+	if(0 == act)return 0;
+
+	return act->oncwrite(self, peer, buf, len);
 }
-int actor_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+int actor_leafread(struct halfrel* self,struct halfrel* peer,void* buf,int len)
 {
-	struct actor* act = dc;
-	return act->oncread(dc, df, sc, sf, buf, len);
+	struct actor* act;
+	if(0 == self)return 0;
+
+	act = (void*)(self->chip);
+	if(0 == act)return 0;
+
+	return act->oncread(self, peer, buf, len);
 }
-int actorstop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+int actorstop(struct halfrel* self, struct halfrel* peer)
 {
-	if(0 == leaf)return 0;
-	leaf->onstop(leaf, lf, twig, tf, root, rf);
-	return 0;
+	struct actor* act;
+	if(0 == self)return 0;
+
+	act = (void*)(self->chip);
+	if(0 == act)return 0;
+
+	return act->onstop(self, peer);
 }
-int actorstart(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+int actorstart(struct halfrel* self, struct halfrel* peer)
 {
-	if(0 == leaf)return 0;
-	leaf->onstart(leaf, lf, twig, tf, root, rf);
-	return 0;
+	struct actor* act;
+	if(0 == self)return 0;
+
+	act = (void*)(self->chip);
+	if(0 == act)return 0;
+
+	return act->onstart(self, peer);
 }
 int actordelete(struct actor* act)
 {

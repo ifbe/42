@@ -3,7 +3,7 @@
 
 
 
-static int firstperson_sread(
+static int firstperson_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
@@ -38,36 +38,31 @@ found:
 	carvefrustum(win, &win->camera);
 	return 0;
 }
-static int firstperson_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+static void firstperson_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
-	//do nothing, pass all to role
-	return 0;
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	firstperson_draw(act, pin, win, sty);
 }
-static void firstperson_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
-{
-}
-static void firstperson_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void firstperson_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void firstperson_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void firstperson_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void firstperson_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void firstperson_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+}
+static void firstperson_stop(struct halfrel* self, struct halfrel* peer)
+{
+}
+static void firstperson_start(struct halfrel* self, struct halfrel* peer)
 {
     say("@firstperson_start\n");
 }

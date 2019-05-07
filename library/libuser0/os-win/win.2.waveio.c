@@ -37,11 +37,9 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 			if(0 == orel)break;
 			if(_act_ == orel->dsttype)
 			{
-				actor_rootwrite(
-					(void*)(orel->dstchip), (void*)(orel->dstfoot),
-					(void*)(orel->srcchip), (void*)(orel->srcfoot),
-					ibuf + (1024*2*icur), 1024*2
-				);
+				struct halfrel* self = (struct halfrel*)&orel->dstchip;
+				struct halfrel* peer = (struct halfrel*)&orel->srcchip;
+				actor_rootwrite(self, peer, ibuf + (1024*2*icur), 1024*2);
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}

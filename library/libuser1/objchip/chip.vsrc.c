@@ -3,85 +3,83 @@
 
 
 
-static void vsrc_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void vsrc_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void vsrc_read_vbo2d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void vsrc_draw_vbo2d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void vsrc_read_vbo3d(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void vsrc_draw_vbo3d(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void vsrc_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void vsrc_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void vsrc_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void vsrc_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void vsrc_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void vsrc_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void vsrc_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void vsrc_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void vsrc_sread(
+static void vsrc_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)vsrc_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)vsrc_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)vsrc_read_html(win, sty, act, pin);
-	else if(fmt == _json_)vsrc_read_json(win, sty, act, pin);
+	if(fmt == _cli_)vsrc_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)vsrc_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)vsrc_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)vsrc_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)vsrc_read_vbo2d(win, sty, act, pin);
-		else vsrc_read_vbo3d(win, sty, act, pin);
+		if(_2d_ == win->vfmt)vsrc_draw_vbo2d(act, pin, win, sty);
+		else vsrc_draw_vbo3d(act, pin, win, sty);
 	}
-	else vsrc_read_pixel(win, sty, act, pin);
+	else vsrc_draw_pixel(act, pin, win, sty);
 }
-static void vsrc_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+
+static void vsrc_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	vsrc_draw(act, pin, win, sty);
+}
+static void vsrc_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void vsrc_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void vsrc_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void vsrc_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void vsrc_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void vsrc_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void vsrc_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void vsrc_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void vsrc_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void vsrc_delete(struct actor* act, u8* buf)

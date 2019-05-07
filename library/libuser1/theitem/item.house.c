@@ -4,9 +4,9 @@
 
 
 
-static void house_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void house_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -30,9 +30,9 @@ static void house_read_pixel(
 	drawline_rect(win, 0x404040, cx-ww*5/6, cy-hh*1/6, cx-ww*3/6, cy+hh*1/6);
 	drawline_rect(win, 0x404040, cx+ww*3/6, cy-hh*1/6, cx+ww*5/6, cy+hh*1/6);
 }
-static void house_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void house_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	vec3 tc, tr, tf, tu;
 	float* vc = sty->vc;
@@ -134,66 +134,64 @@ static void house_read_vbo(
 	tf[2] = vu[2]/8+vf[2]/2;
 	carvesolid_rect(win, 0xffffff, tc, vr, tf);
 }
-static void house_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void house_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void house_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void house_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void house_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void house_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void house_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void house_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void house_sread(
+static void house_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)house_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)house_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)house_read_html(win, sty, act, pin);
-	else if(fmt == _json_)house_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)house_read_vbo(win, sty, act, pin);
-	else house_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)house_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)house_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)house_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)house_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)house_draw_vbo(act, pin, win, sty);
+	else house_draw_pixel(act, pin, win, sty);
 }
-static void house_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+
+static void house_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	house_draw(act, pin, win, sty);
+}
+static void house_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void house_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void house_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void house_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void house_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void house_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void house_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void house_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void house_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void house_delete(struct actor* act)

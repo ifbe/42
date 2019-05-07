@@ -43,9 +43,9 @@ GLSL_VERSION
 
 
 
-static void ground_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void ground_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -63,9 +63,9 @@ static void ground_read_pixel(
 		hh = win->height/2;
 	}
 }
-static void ground_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void ground_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -120,78 +120,79 @@ static void ground_read_vbo(
 
 	src->vbuf_enq += 1;
 }
-static void ground_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void ground_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void ground_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void ground_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void ground_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void ground_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void ground_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void ground_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void ground_sread(
+static void ground_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)ground_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)ground_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)ground_read_html(win, sty, act, pin);
-	else if(fmt == _json_)ground_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)ground_read_vbo(win, sty, act, pin);
-	else ground_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)ground_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)ground_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)ground_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)ground_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)ground_draw_vbo(act, pin, win, sty);
+	else ground_draw_pixel(act, pin, win, sty);
 }
-static void ground_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+
+
+
+
+static void ground_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	ground_draw(act, pin, win, sty);
+}
+static void ground_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void ground_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void ground_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void ground_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void ground_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void ground_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void ground_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void ground_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void ground_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	if(0 == lf)return;
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
 
 	//
-	pair = alloc_winobj(root, 's');
+	pair = alloc_winobj(win, 's');
 	src = &pair->src;
 	dst = &pair->dst;
-	lf->foot[0] = (u64)src;
-	tf->foot[0] = (u64)dst;
+	pin->foot[0] = (u64)src;
+	sty->foot[0] = (u64)dst;
 
 	//
 	src->geometry = 3;
@@ -200,7 +201,6 @@ static void ground_start(
 	//
 	src->vs = ground_glsl_v;
 	src->fs = ground_glsl_f;
-	if(twig){if(_fg2d_ == twig->fmt)src->vs = ground_glsl2d_v;}
 	src->shader_enq = 42;
 
 	//vertex

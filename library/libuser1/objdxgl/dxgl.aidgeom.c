@@ -243,46 +243,29 @@ void initshader12341234(struct arena* win)
 
 
 
-static void aidgeom_sread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(_vbo_ != fmt)return;
-}
-static void aidgeom_swrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+static void aidgeom_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void aidgeom_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void aidgeom_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void aidgeom_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void aidgeom_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void aidgeom_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void aidgeom_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void aidgeom_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void aidgeom_stop(struct halfrel* self, struct halfrel* peer)
 {
+}
+static void aidgeom_start(struct halfrel* self, struct halfrel* peer)
+{
+	struct arena* win;
 	struct datapair* mod;
 	struct glsrc* src;
 
-	mod = root->gl_solid;
+	win = (void*)(peer->chip);
+	mod = win->gl_solid;
 
 //--------------------3d-------------------
 	//drawarray.point3d
@@ -420,7 +403,7 @@ static void aidgeom_start(
 
 
 
-	mod = root->gl_opaque;
+	mod = win->gl_opaque;
 
 //----------------------2d--------------------
 	//opaque3d

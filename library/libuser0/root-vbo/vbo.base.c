@@ -1,6 +1,6 @@
 #include "libuser.h"
 void* allocarena();
-int actorstart(void*, void*, void*, void*, void*, void*);
+int actorstart(void*, void*);
 //
 int preprocess(void*);
 int postprocess(void*);
@@ -67,10 +67,10 @@ void defaultvertex(struct arena* win)
 
 int vbonode_sread(struct arena* win, struct style* stack)
 {
-	struct relation* rel;
-	struct actor* act;
 	struct style* sty;
-	struct pinid* pin;
+	struct relation* rel;
+	struct halfrel* self;
+	struct halfrel* peer;
 
 	win->vfmt = _3d_;
 	preprocess(win);
@@ -85,9 +85,9 @@ int vbonode_sread(struct arena* win, struct style* stack)
 			sty = (void*)(rel->srcfoot);
 			if(sty){if('#' == sty->uc[3])goto next;}
 
-			act = (void*)(rel->dstchip);
-			pin = (void*)(rel->dstfoot);
-			actor_rootread(act, pin, win, sty, 0, 0);
+			self = (void*)&rel->dstchip;
+			peer = (void*)&rel->srcchip;
+			actor_rootread(self, peer, 0, 0);
 		}
 next:
 		rel = samesrcnextdst(rel);
@@ -99,10 +99,10 @@ next:
 int vbonode_swrite(struct arena* win, struct style* stack, struct event* ev)
 {
 	int ret;
-	struct relation* rel;
-	struct actor* act;
 	struct style* sty;
-	struct pinid* pin;
+	struct relation* rel;
+	struct halfrel* self;
+	struct halfrel* peer;
 
 	ret = 0;
 	rel = win->oreln;
@@ -115,9 +115,9 @@ int vbonode_swrite(struct arena* win, struct style* stack, struct event* ev)
 			sty = (void*)(rel->srcfoot);
 			if(sty){if('#' == sty->uc[3])goto next;}
 
-			act = (void*)(rel->dstchip);
-			pin = (void*)(rel->dstfoot);
-			ret = actor_rootwrite(act, pin, win, sty, ev, 0);
+			self = (void*)&rel->dstchip;
+			peer = (void*)&rel->srcchip;
+			ret = actor_rootwrite(self, peer, ev, 0);
 			if(ret)break;
 		}
 next:
@@ -127,43 +127,31 @@ next:
 	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
 	return ret;
 }
-
-
-
-
 int vbonode_stop(struct arena* win, struct style* sty)
 {
 	return 0;
 }
 int vbonode_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 {
+	struct halfrel* self;
+	struct halfrel* peer;
 	struct relation* rel;
-	struct style* sty;
-	struct actor* act;
-	struct pinid* pin;
 
 	rel = twig->orel0;
 	while(1)
 	{
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype)
-		{
-			sty = (void*)(rel->srcfoot);
-
-			act = (void*)(rel->dstchip);
-			pin = (void*)(rel->dstfoot);
-			actorstart(act, pin, twig, sty, twig, 0);
+		if(_act_ == rel->dsttype){
+			self = (void*)&rel->dstchip;
+			peer = (void*)&rel->srcchip;
+			actorstart(self, peer);
 		}
 
 		rel = samesrcnextdst(rel);
 	}
 	return 0;
 }
-
-
-
-
 int vbonode_delete(struct arena* win)
 {
 	return 0;

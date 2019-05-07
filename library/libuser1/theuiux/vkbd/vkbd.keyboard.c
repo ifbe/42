@@ -3,7 +3,7 @@
 
 
 
-void vkbd_keyboard_read_pixel(struct arena* win, struct style* sty)
+void vkbd_draw_pixel(struct arena* win, struct style* sty)
 {
 	u8 ch[8];
 	int c,l,rgb;
@@ -65,7 +65,7 @@ void vkbd_keyboard_read_pixel(struct arena* win, struct style* sty)
         }
     }
 }
-void vkbd_keyboard_read_vbo(struct arena* win, struct style* sty)
+void vkbd_draw_vbo(struct arena* win, struct style* sty)
 {
 	u8 ch[8];
 	float j,k;
@@ -140,28 +140,28 @@ void vkbd_keyboard_read_vbo(struct arena* win, struct style* sty)
         }
     }
 }
-void vkbd_keyboard_read_html(struct arena* win, struct style* sty)
+void vkbd_draw_html(struct arena* win, struct style* sty)
 {
 }
-void vkbd_keyboard_read_tui(struct arena* win, struct style* sty)
+void vkbd_draw_tui(struct arena* win, struct style* sty)
 {
 }
-void vkbd_keyboard_read_cli(struct arena* win, struct style* sty)
+void vkbd_draw_cli(struct arena* win, struct style* sty)
 {
 }
-static void vkbd_sread(
+static void vkbd_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)vkbd_keyboard_read_cli(win, sty);
-	else if(fmt == _tui_)vkbd_keyboard_read_tui(win, sty);
-	else if(fmt == _html_)vkbd_keyboard_read_html(win, sty);
-	else if(fmt == _vbo_)vkbd_keyboard_read_vbo(win, sty);
-	else vkbd_keyboard_read_pixel(win, sty);
+	if(fmt == _cli_)vkbd_draw_cli(win, sty);
+	else if(fmt == _tui_)vkbd_draw_tui(win, sty);
+	else if(fmt == _html_)vkbd_draw_html(win, sty);
+	else if(fmt == _vbo_)vkbd_draw_vbo(win, sty);
+	else vkbd_draw_pixel(win, sty);
 }
-static int vkbd_swrite(
+static int vkbd_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -185,6 +185,29 @@ static int vkbd_swrite(
 		eventwrite(x+(y*16), _char_, (u64)win, 0);
 	}
 	return 1;
+}
+
+
+
+
+static void vkbd_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	vkbd_draw(act, pin, win, sty);
+}
+static int vkbd_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	return vkbd_event(act, pin, win, sty, ev, 0);
 }
 static int vkbd_cread(
 	struct actor* act, struct pinid* pin,

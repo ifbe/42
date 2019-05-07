@@ -12,9 +12,9 @@ static u8 buffer[16];
 
 
 
-void doodle_read_pixel(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+void doodle_draw_pixel(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	float c,s,f;
 	int x0,y0,x1,y1;
@@ -59,9 +59,9 @@ void doodle_read_pixel(
 
 	drawbezier(win, 0xffffff, x0, y0, x1, y1, px, py);
 }
-static void doodle_read_vbo(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void doodle_draw_vbo(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	float a,c,s;
 	vec3 tc, tr, tf, tu, f;
@@ -121,14 +121,14 @@ static void doodle_read_vbo(
 	tu[2] = 0.0;
 	carveline(win, 0xffffff, tc, tu);
 }
-static void doodle_read_json(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void doodle_draw_json(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void doodle_read_html(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void doodle_draw_html(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -141,30 +141,30 @@ static void doodle_read_html(
 
 	win->len = len;
 }
-static void doodle_read_tui(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void doodle_draw_tui(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
 }
-static void doodle_read_cli(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+static void doodle_draw_cli(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
 {
-	say("doodle(%x,%x,%x)\n", win, sty, act, pin);
+	say("doodle(%x,%x,%x)\n", act, pin, win, sty);
 }
-static void doodle_sread(
+static void doodle_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)doodle_read_cli(win, sty, act, pin);
-	else if(fmt == _tui_)doodle_read_tui(win, sty, act, pin);
-	else if(fmt == _html_)doodle_read_html(win, sty, act, pin);
-	else if(fmt == _json_)doodle_read_json(win, sty, act, pin);
-	else if(fmt == _vbo_)doodle_read_vbo(win, sty, act, pin);
-	else doodle_read_pixel(win, sty, act, pin);
+	if(fmt == _cli_)doodle_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)doodle_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)doodle_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)doodle_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)doodle_draw_vbo(act, pin, win, sty);
+	else doodle_draw_pixel(act, pin, win, sty);
 }
-static void doodle_swrite(
+static void doodle_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -177,28 +177,39 @@ static void doodle_swrite(
 		py = (why>>16)&0xffff;
 	}
 }
-static void doodle_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void doodle_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	doodle_draw(act, pin, win, sty);
+}
+static void doodle_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	doodle_event(act, pin, win, sty, ev, 0);
+}
+static void doodle_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void doodle_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void doodle_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void doodle_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void doodle_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void doodle_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void doodle_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void doodle_delete(struct actor* act)

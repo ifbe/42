@@ -5,7 +5,7 @@ void carvearrorkey2d(void*, u32, vec3 vc, vec3 vr, vec3 vf, u8*, int);
 
 
 
-void vjoy_joystick_read_pixel(struct arena* win, struct style* sty)
+void vjoy_draw_pixel(struct arena* win, struct style* sty)
 {
 	u8 ch[8];
 	int c,l,rgb;
@@ -36,7 +36,7 @@ void vjoy_joystick_read_pixel(struct arena* win, struct style* sty)
 	ch[7] = '+';
 	drawarrorkey2d(win, 0xff00ff, w-h*3/16, h*13/16, w, h, ch, -1);
 }
-void vjoy_joystick_read_vbo(struct arena* win, struct style* sty)
+void vjoy_draw_vbo(struct arena* win, struct style* sty)
 {
 	u8 ch[8];
 	float j,k;
@@ -107,28 +107,28 @@ void vjoy_joystick_read_vbo(struct arena* win, struct style* sty)
 	vf[2] = 0.0;
 	carvearrorkey2d(win, 0xff00ff, vc, vr, vf, ch, -1);
 }
-void vjoy_joystick_read_html(struct arena* win, struct style* sty)
+void vjoy_draw_html(struct arena* win, struct style* sty)
 {
 }
-void vjoy_joystick_read_tui(struct arena* win, struct style* sty)
+void vjoy_draw_tui(struct arena* win, struct style* sty)
 {
 }
-void vjoy_joystick_read_cli(struct arena* win, struct style* sty)
+void vjoy_draw_cli(struct arena* win, struct style* sty)
 {
 }
-void vjoy_sread(
+void vjoy_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)vjoy_joystick_read_cli(win, sty);
-	else if(fmt == _tui_)vjoy_joystick_read_tui(win, sty);
-	else if(fmt == _html_)vjoy_joystick_read_html(win, sty);
-	else if(fmt == _vbo_)vjoy_joystick_read_vbo(win, sty);
-	else vjoy_joystick_read_pixel(win, sty);
+	if(fmt == _cli_)vjoy_draw_cli(win, sty);
+	else if(fmt == _tui_)vjoy_draw_tui(win, sty);
+	else if(fmt == _html_)vjoy_draw_html(win, sty);
+	else if(fmt == _vbo_)vjoy_draw_vbo(win, sty);
+	else vjoy_draw_pixel(win, sty);
 }
-int vjoy_swrite(
+int vjoy_event(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -196,31 +196,42 @@ int vjoy_swrite(
 	}
 	return 0;
 }
-static int vjoy_cread(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+
+
+
+
+static void vjoy_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'draw' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	vjoy_draw(act, pin, win, sty);
+}
+static int vjoy_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//if 'ev i' == self.foot
+	struct actor* act = (void*)(self->chip);
+	struct pinid* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	struct event* ev = (void*)buf;
+	return vjoy_event(act, pin, win, sty, ev, 0);
+}
+static int vjoy_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	return 0;
 }
-static int vjoy_cwrite(
-	struct actor* act, struct pinid* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static int vjoy_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	return 0;
 }
-static int vjoy_stop(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static int vjoy_stop(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int vjoy_start(
-	struct actor* leaf, struct pinid* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static int vjoy_start(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
