@@ -270,7 +270,7 @@ static void texball_start(struct halfrel* self, struct halfrel* peer)
 	struct pinid* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-
+say("@texball_start\n");
 	//
 	pair = alloc_winobj(win, 's');
 	src = &pair->src;

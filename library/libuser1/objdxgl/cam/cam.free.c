@@ -1,4 +1,5 @@
 #include "libuser.h"
+void fixmatrix(mat4 m, struct arena* win);
 
 
 
@@ -157,6 +158,36 @@ void surround_zoom(struct arena* win, float delta)
 
 
 
+static int surround_matrix(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty)
+{
+	//say("ask for cam mat\n");
+	if(_vbo_ != win->fmt)return 0;
+
+	float* m = act->buf;
+	fixmatrix((void*)m, win);
+	mat4_transpose((void*)m);
+/*
+	int x,y;
+	for(y=0;y<4;y++){
+		for(x=0;x<4;x++){
+			say("	%f", m[y*4+x]);
+		}
+		say("\n");
+	}
+*/
+	struct datapair* cam = win->gl_camera;
+	struct glsrc* src = &cam[0].src;
+
+	src->arg_fmt[0] = 'm';
+	src->arg_name[0] = "cammvp";
+	src->arg_data[0] = m;
+
+	src->arg_fmt[1] = 'v';
+	src->arg_name[1] = "camxyz";
+	src->arg_data[1] = win->camera.vc;
+}
 static int surround_draw(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
@@ -417,7 +448,8 @@ static void surround_sread(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct pinid* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	surround_draw(act, pin, win, sty);
+	if(_cam_ == self->flag)surround_matrix(act, pin, win, sty);
+	else surround_draw(act, pin, win, sty);
 }
 static int surround_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
@@ -445,9 +477,10 @@ static void surround_start(struct halfrel* self, struct halfrel* peer)
 static void surround_delete()
 {
 }
-static void surround_create(void* addr)
+static void surround_create(struct actor* act, void* arg)
 {
     say("@surround_create\n");
+	act->buf = memorycreate(0x1000);
 }
 
 

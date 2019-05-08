@@ -583,21 +583,22 @@ struct arena
 		u64 padd0;
 		u64 fd;
 		void* win;
+		void* gl_camera;
 	};
 	union{
 		u64 padd1;
 		u64 dc;
 		u64 gc;
 		void* er;
-		void* map;
+		void* gl_light;
 	};
 	union{
 		u64 padd2;
 		u64 len;
 		void* ctx;
-		void* gl_solid;
 		void* ximage;
 		void* texture;
+		void* gl_solid;
 	};
 	union{
 		u64 padd3;

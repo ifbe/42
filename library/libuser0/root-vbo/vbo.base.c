@@ -174,6 +174,12 @@ void* vbonode_create(u64 type, u64 flag)
 	win->depth = win->fbdepth = 1024;
 	defaultvertex(win);
 
+	win->gl_camera = buf = memorycreate(0x10000);
+	for(j=0;j<0x10000;j++)buf[j] = 0;
+
+	win->gl_light = buf = memorycreate(0x10000);
+	for(j=0;j<0x10000;j++)buf[j] = 0;
+
 	win->gl_solid = buf = memorycreate(0x10000);
 	for(j=0;j<0x10000;j++)buf[j] = 0;
 

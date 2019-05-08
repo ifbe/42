@@ -140,7 +140,7 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct actor* act)
 			y1 = y0 - 128 + h/2;
 			y1 = h-1 - y1;
 			if((x1 < 0) | (x1 >= w) | (y1 < 0) | (y1 >= h))f = 0.0;
-			else f = rgba[(w*y1 + x1) * 4] / 256.0;
+			else f = rgba[(w*y1 + x1) * 4] / 255.0;
 			vbuf[y*256+x][2] = f;
 
 			//local ->        world ->               uv
@@ -215,7 +215,7 @@ void terrain_locate(vec4 v, struct actor* act)
 	if(val > max)max = val;
 	val = rgba[(w*y1 + x1)*4];
 	if(val > max)max = val;
-	v[2] = max * 10000.0 / 256;
+	v[2] = max * 10000.0 / 255;
 	return;
 
 edge:
@@ -285,7 +285,7 @@ static void terrain_draw_vbo(
 		mat[11] = 0.0;
 		mat[12] = act->x0 * 1000.0;
 		mat[13] = act->y0 * 1000.0;
-		mat[14] = 0.0;
+		mat[14] = -10000.0;
 		mat[15] = 1.0;
 	}
 }

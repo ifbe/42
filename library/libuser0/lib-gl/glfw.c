@@ -419,7 +419,7 @@ void windowopen_root(struct arena* w, struct arena* r)
 	//2.setup
 	glfwSetWindowUserPointer(fw, w);
 	w->win = fw;
-	w->map = 0;
+
 	glfwGetFramebufferSize(fw, &x, &y);
 	w->fbwidth = w->fbstride = x;
 	w->fbheight = y;
@@ -466,7 +466,7 @@ void windowopen_coop(struct arena* w, struct arena* r)
 	//2.setup
 	glfwSetWindowUserPointer(fw, w);
 	w->win = fw;
-	w->map = 0;
+
 	glfwGetFramebufferSize(fw, &x, &y);
 	w->fbwidth = w->fbstride = x;
 	w->fbheight = y;
@@ -497,16 +497,23 @@ void windowopen_coop(struct arena* w, struct arena* r)
 
 void windowread(struct arena* win)
 {
+	struct relation* rel;
+	struct arena* tmp;
 	GLFWwindow* fw;
 	//say("@windowread.start:%.8s,%.8s,%llx\n", &win->type, &win->fmt, win->win);
 
 	//
 	if(_root_ == win->type)
 	{
-		fw = win->win;
+		rel = win->irel0;
+		if(0 == rel)return;
+
+		tmp = (void*)(rel->srcchip);
+		if(0 == tmp)return;
+
+		fw = tmp->win;
 		if(0 == fw)return;
 
-		//arena_rootread(win, 0, 0, 0, 0, 0);
 		vbonode_sread(win, 0);
 
 		glfwMakeContextCurrent(fw);
