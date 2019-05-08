@@ -165,16 +165,16 @@ typedef float mat4[4][4];
 #define trigon2d 5
 #define solidaid_max 6
 //opaque
-#define font3d0 0
-#define font3d1 1
-#define font3d2 2
-#define font3d3 3
-#define font2d0 4
-#define font2d1 5
-#define font2d2 6
-#define font2d3 7
-#define opaquetrigon3d  8
-#define opaquetrigon2d  9
+#define opaquetrigon3d 0
+#define opaquetrigon2d 1
+#define font3d0 2
+#define font3d1 3
+#define font3d2 4
+#define font3d3 5
+#define font2d0 6
+#define font2d1 7
+#define font2d2 8
+#define font2d3 9
 #define opaqueaid_max 10
 
 

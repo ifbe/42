@@ -116,9 +116,7 @@ void hostwindow_update(struct arena* win)
 
 
 
-void display_eachpass(
-	struct gldst* dst, struct glsrc* src,
-	struct arena* win, float* cammvp)
+void display_eachpass(struct gldst* dst, struct glsrc* src)
 {
 	int j;
 	u32 tmp;
@@ -132,8 +130,8 @@ void display_eachpass(
 	glUseProgram(dst->shader);
 
 	//1.argument
-	glUniformMatrix4fv(glGetUniformLocation(dst->shader, "cammvp"), 1, GL_FALSE, cammvp);
-	glUniform3fv(glGetUniformLocation(dst->shader, "camxyz"  ), 1, win->camera.vc);
+	//glUniformMatrix4fv(glGetUniformLocation(dst->shader, "cammvp"), 1, GL_FALSE, cammvp);
+	//glUniform3fv(glGetUniformLocation(dst->shader, "camxyz"  ), 1, win->camera.vc);
 	//glUniformMatrix4fv(glGetUniformLocation(dst->shader, "sunmvp"), 1, GL_FALSE, cammvp);
 	//glUniform3fv(glGetUniformLocation(dst->shader, "sunxyz"  ), 1, win->camera.vc);
 	for(j=0;j<4;j++){
@@ -205,11 +203,8 @@ void hostviewport_render(
 
 	//
 	glViewport(x0, y0, x1, y1);
-
-
-	//global arg: camera, light
-	fixmatrix(cammvp, ctx);
-	mat4_transpose((void*)cammvp);
+	//fixmatrix(cammvp, ctx);
+	//mat4_transpose((void*)cammvp);
 
 
 	//solid
@@ -217,7 +212,7 @@ void hostviewport_render(
 	for(j=0;j<64;j++)
 	{
 		if(0 == mod[j].src.vbuf)continue;
-		display_eachpass(&mod[j].dst, &mod[j].src, ctx, cammvp);
+		display_eachpass(&mod[j].dst, &mod[j].src);
 	}
 
 
@@ -230,7 +225,7 @@ void hostviewport_render(
 	for(j=0;j<64;j++)
 	{
 		if(0 == mod[j].src.vbuf)continue;
-		display_eachpass(&mod[j].dst, &mod[j].src, ctx, cammvp);
+		display_eachpass(&mod[j].dst, &mod[j].src);
 	}
 
 	glDisable(GL_BLEND);
