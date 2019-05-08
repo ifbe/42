@@ -58,11 +58,9 @@ void* soundlistener(struct arena* win)
 			if(0 == orel)break;
 			if(_act_ == orel->dsttype)
 			{
-				actor_rootwrite(
-					(void*)(orel->dstchip), (void*)(orel->dstfoot),
-					(void*)(orel->srcchip), (void*)(orel->srcfoot),
-					ibuf + (1024*2*icur), 1024*2
-				);
+				struct halfrel* self = (void*)&orel->dstchip;
+				struct halfrel* peer = (void*)&orel->srcchip;
+				actor_rootwrite(self, peer, ibuf + (1024*2*icur), 1024*2);
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}

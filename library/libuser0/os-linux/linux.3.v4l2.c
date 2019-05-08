@@ -180,11 +180,9 @@ void* visionlistener(struct arena* win)
 			if(0 == orel)break;
 			if(_act_ == orel->dsttype)
 			{
-				actor_rootwrite(
-					(void*)(orel->dstchip), (void*)(orel->dstfoot),
-					(void*)(orel->srcchip), (void*)(orel->srcfoot),
-					info[cur].buf, 640*480*3/2
-				);
+				struct halfrel* self = (void*)&orel->dstchip;
+				struct halfrel* peer = (void*)&orel->srcchip;
+				actor_rootwrite(self, peer, info[cur].buf, 640*480*3/2);
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}
