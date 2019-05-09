@@ -149,6 +149,7 @@ linuxglfw:target
 	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
 	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
 	$(compiler) $(cflag) lib-gl/glfw.c
+	$(compiler) $(cflag) lib-gl/glwindow.test.c
 	$(compiler) $(cflag) lib-gl/glwindow.host.c
 	$(compiler) $(cflag) lib-gl/glwindow.coop.c
 	$(compiler) $(cflag) lib-gl/glwindow.fbo.c
@@ -230,6 +231,7 @@ macglfw:target
 	$(compiler) $(cflag) os-mac/mac.2.mic.c
 	$(compiler) $(cflag) os-mac/mac.3.cam.c
 	$(compiler) $(cflag) lib-gl/glfw.c
+	$(compiler) $(cflag) lib-gl/glwindow.test.c
 	$(compiler) $(cflag) lib-gl/glwindow.host.c
 	$(compiler) $(cflag) lib-gl/glwindow.coop.c
 	$(compiler) $(cflag) lib-gl/glwindow.fbo.c
@@ -311,6 +313,7 @@ winglfw:target
 	$(compiler) $(cflag) os-win/win.2.waveio.c
 	g++ $(cflag) -fno-rtti os-win/win.3.dshow.cpp
 	$(compiler) $(cflag) lib-gl/glfw.c
+	$(compiler) $(cflag) lib-gl/glwindow.test.c
 	$(compiler) $(cflag) lib-gl/glwindow.host.c
 	$(compiler) $(cflag) lib-gl/glwindow.coop.c
 	$(compiler) $(cflag) lib-gl/glwindow.fbo.c

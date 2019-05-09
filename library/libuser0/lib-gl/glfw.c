@@ -18,6 +18,10 @@ void coopwindow_render(void*);
 void hostwindow_create(void*);
 void hostwindow_render(void*);
 void hostwindow_update(void*);
+//
+void testwindow_render(void*);
+void testwindow_event(void*, void*);
+//
 static u8 uppercase[] = {
 	' ', '!','\"', '#', '$', '%', '&','\"',		//20,27
 	'(', ')', '*', '+', '<', '_', '>', '?',		//28,2f
@@ -543,7 +547,9 @@ void windowread(struct arena* win)
 		fw = win->win;
 		glfwMakeContextCurrent(fw);
 
-		hostwindow_render(win);
+		rel = win->orel0;
+		if(rel)hostwindow_render(win);
+		else testwindow_render(win);
 
 		glfwSwapBuffers(fw);
 
@@ -560,6 +566,12 @@ void windowwrite(struct arena* win, struct event* ev)
 	struct style* st;
 
 	rel = win->oreln;
+	if(0 == rel){
+		printmemory(ev, 16);
+		testwindow_event(win, ev);
+		return;
+	}
+
 	while(1)
 	{
 		if(0 == rel)break;
