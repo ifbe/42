@@ -26,56 +26,53 @@ typedef float mat4[4][4];
 #else
 	#define GLSL_VERSION "#version 410 core\n"
 #endif
-//
+//tier
+#define _act_ hex32('a','c','t',0)
+#define _win_ hex32('w','i','n',0)
+#define _art_ hex32('a','r','t',0)
+#define _fd_ hex32('f','d',0,0)
+//tier=_win_, type:
+#define _mic_ hex32('m','i','c',0)
+#define _spk_ hex32('s','p','k',0)
+#define _cam_ hex32('c','a','m',0)
+#define _win_ hex32('w','i','n',0)
+#define _tray_ hex32('t','r','a','y')	//tray
+#define _std_ hex32('s','t','d', 0)		//cmdline
+#define _ctx_ hex32('c','t','x',0)		//memnode
+//tier=_win_, type=_win_, rfmt:
+#define _test_ hex32('t','e','s','t')
+#define _host_ hex32('h','o','s','t')
+#define _coop_ hex32('c','o','o','p')
+#define _fbo_ hex32('f','b','o',0)
+#define _vp_ hex32('v','p', 0, 0)
+//tier=_win_, type=_ctx_, rfmt:
+#define _vbo_ hex32('v','b','o',0)
+#define _rgba_ hex32('r','g','b','a')
+#define _cli_ hex32('c','l','i',0)
+#define _tui_ hex32('t','u','i',0)
+#define _func_ hex32('f','u','n','c')
+#define _sch_  hex32('s','c','h',0)
+#define _pcb_  hex32('p','c','b',0)
+#define _html_ hex32('h','t','m','l')
+#define _json_ hex32('j','s','o','n')
+#define _xml_  hex32('x','m','l',0)
+//tier=_win_, type=_ctx_, rfmt=vbo, vfmt:
+#define _1d_ hex32('1','d',0,0)
+#define _2d_ hex32('2','d',0,0)
+#define _3d_ hex32('3','d',0,0)
+#define _ui_ hex32('u','i',0,0)
+//tier=_act_, type:
 #define _orig_ hex32('o','r','i','g')
 #define _ORIG_ hex32('O','R','I','G')
 #define _copy_ hex32('c','o','p','y')
 #define _COPY_ hex32('C','O','P','Y')
 //
-#define _perm_ hex32('p','e','r','m')
-#define _node_ hex32('n','o','d','e')
-#define _root_ hex32('r','o','o','t')
-#define _twig_ hex32('t','w','i','g')
-#define _ctx_ hex32('c','t','x',0)
-//
-#define _act_ hex32('a','c','t',0)
-#define _win_ hex32('w','i','n',0)
-#define _art_ hex32('a','r','t',0)
-#define _fd_ hex32('f','d',0,0)
-//
-#define _1d_ hex32('1','d',0,0)
-#define _2d_ hex32('2','d',0,0)
-#define _3d_ hex32('3','d',0,0)
-#define _ui_ hex32('u','i',0,0)
-//
-#define _coop_ hex32('c','o','o','p')
 #define _uart_ hex32('u','a','r','t')
 #define _dbg_ hex32('d','b','g',0)
-#define _cam_ hex32('c','a','m',0)
-#define _mic_ hex32('m','i','c',0)
-//
-#define _fbo_ hex32('f','b','o',0)
-#define _vp_ hex32('v','p', 0, 0)
-//
-#define _cli_ hex32('c','l','i',0)
-#define _tui_ hex32('t','u','i',0)
-#define _func_ hex32('f','u','n','c')
-#define _html_ hex32('h','t','m','l')
-#define _json_ hex32('j','s','o','n')
-#define _rgba_ hex32('r','g','b','a')
-#define _pcb_  hex32('p','c','b',0)
-#define _xml_  hex32('x','m','l',0)
-#define _vbo_ hex32('v','b','o',0)
 #define _8bit_ hex32('8','b','i','t')
-//
-#define _std_ hex32('s','t','d', 0)
-#define _tray_ hex32('t','r','a','y')
-#define _mic_  hex32('m','i','c',0)
-#define _cam_  hex32('c','a','m',0)
 //
 #define _bus_  hex32('b','u','s',0)
 #define _pin_  hex32('p','i','n',0)
-#define _sch_  hex32('s','c','h',0)
 //
 #define _aid3d_ hex64('a','i','d','3','d', 0, 0, 0)
 #define _mic3d_ hex64('m','i','c','3','d', 0, 0, 0)

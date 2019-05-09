@@ -507,7 +507,7 @@ void windowread(struct arena* win)
 	//say("@windowread.start:%.8s,%.8s,%llx\n", &win->type, &win->fmt, win->win);
 
 	//
-	if(_root_ == win->type)
+	if(_ctx_ == win->type)
 	{
 		rel = win->irel0;
 		if(0 == rel)return;
@@ -567,7 +567,6 @@ void windowwrite(struct arena* win, struct event* ev)
 
 	rel = win->oreln;
 	if(0 == rel){
-		printmemory(ev, 16);
 		testwindow_event(win, ev);
 		return;
 	}

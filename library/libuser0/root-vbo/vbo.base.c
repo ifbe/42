@@ -167,11 +167,13 @@ void* vbonode_create(u64 type, u64 flag)
 	win = allocarena();
 	if(0 == win)return 0;
 
-	win->type = _root_;
+	win->type = _ctx_;
 	win->fmt = _vbo_;
+
 	win->width = win->fbwidth = 1024;
 	win->height = win->fbheight = 768;
 	win->depth = win->fbdepth = 1024;
+
 	defaultvertex(win);
 
 	win->gl_camera = buf = memorycreate(0x10000);

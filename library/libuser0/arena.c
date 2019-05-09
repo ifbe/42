@@ -261,7 +261,7 @@ void* arenacreate(u64 type, void* addr)
 		win = allocarena();
 		if(win)
 		{
-			win->type = _perm_;
+			win->type = _joy_;
 			win->fmt = _joy_;
 			joycreate(win, addr);
 		}
@@ -272,7 +272,7 @@ void* arenacreate(u64 type, void* addr)
 		win = allocarena();
 		if(win)
 		{
-			win->type = _perm_;
+			win->type = _std_;
 			win->fmt = _std_;
 			stdcreate(win, addr);
 		}
@@ -283,64 +283,54 @@ void* arenacreate(u64 type, void* addr)
 		win = allocarena();
 		if(win)
 		{
-			win->type = _perm_;
+			win->type = _tray_;
 			win->fmt = _tray_;
 			traycreate(win, addr);
 		}
 		return win;
 	}
 
-	//
-	else if(_cam_ == type)
-	{
-		if(0 == addr)return 0;
-		win = allocarena();
-		if(win)
-		{
-			win->type = _perm_;
-			win->fmt = hex32('y','u','v',0);
-			videocreate(win);
-		}
-		return win;
-	}
+	//audio
 	else if(_mic_ == type)
 	{
 		if(0 == addr)return 0;
 		win = allocarena();
 		if(win)
 		{
-			win->type = _perm_;
+			win->type = _mic_;
+			win->fmt = hex32('p','c','m',0);
+			soundcreate(win);
+		}
+		return win;
+	}
+	else if(_spk_ == type)
+	{
+		if(0 == addr)return 0;
+		win = allocarena();
+		if(win)
+		{
+			win->type = _spk_;
 			win->fmt = hex32('p','c','m',0);
 			soundcreate(win);
 		}
 		return win;
 	}
 
-	//
-	else if(_bdc_ == type)
+	//video
+	else if(_cam_ == type)
 	{
+		if(0 == addr)return 0;
 		win = allocarena();
 		if(win)
 		{
-			win->type = _perm_;
-			win->fmt = _bdc_;
-			toycar_create(win, 0);
-		}
-		return win;
-	}
-	else if(_step_ == type)
-	{
-		win = allocarena();
-		if(win)
-		{
-			win->type = _perm_;
-			win->fmt = _step_;
-			stepcar_create(win, 0);
+			win->type = _cam_;
+			win->fmt = hex32('y','u','v',0);
+			videocreate(win);
 		}
 		return win;
 	}
 
-	//1: gles
+	//window
 	else if(_win_ == type)
 	{
 		win = allocarena();
@@ -390,7 +380,7 @@ void* arenacreate(u64 type, void* addr)
 		win = allocarena();
 		if(win)
 		{
-			win->type = _node_;
+			win->type = _ctx_;
 			win->fmt = _sch_;
 			schnode_create(_sch_, win);
 		}
@@ -401,7 +391,7 @@ void* arenacreate(u64 type, void* addr)
 		win = allocarena();
 		if(win)
 		{
-			win->type = _node_;
+			win->type = _ctx_;
 			win->fmt = _pcb_;
 			pcbnode_create(win, addr);
 		}
@@ -414,7 +404,7 @@ void* arenacreate(u64 type, void* addr)
 		win = allocarena();
 		if(win)
 		{
-			win->type = _node_;
+			win->type = _ctx_;
 			win->fmt = _func_;
 			funcnode_create(win, addr);
 		}
@@ -427,7 +417,7 @@ void* arenacreate(u64 type, void* addr)
 		win = allocarena();
 		if(win)
 		{
-			win->type = _node_;
+			win->type = _ctx_;
 			win->fmt = _html_;
 			htmlnode_create(win, addr);
 		}
@@ -438,7 +428,7 @@ void* arenacreate(u64 type, void* addr)
 		win = allocarena();
 		if(win)
 		{
-			win->type = _node_;
+			win->type = _ctx_;
 			win->fmt = _json_;
 			jsonnode_create(win, addr);
 		}
@@ -449,7 +439,7 @@ void* arenacreate(u64 type, void* addr)
 		win = allocarena();
 		if(win)
 		{
-			win->type = _node_;
+			win->type = _ctx_;
 			win->fmt = _xml_;
 			xmlnode_create(win, addr);
 		}
@@ -538,8 +528,8 @@ int arenaread_all()
 	{
 		win = &arena[j];
 		if(0 == win->type)continue;
-		if(_root_ == win->type)windowread(win);
-		if( _win_ == win->type)windowread(win);
+		if(_ctx_ == win->type)windowread(win);
+		if(_win_ == win->type)windowread(win);
 	}
 	return 0;
 }

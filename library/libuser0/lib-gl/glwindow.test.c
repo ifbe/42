@@ -49,6 +49,6 @@ void testwindow_event(struct arena* win, struct event* ev)
 		t = (void*)ev;
 		win->x0 = t[0];
 		win->y0 = t[1];
-		say("%d,%d\n",t[0],t[1]);
+		//say("%d,%d\n",t[0],t[1]);
 	}
 }

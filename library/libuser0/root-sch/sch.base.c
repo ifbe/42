@@ -66,7 +66,7 @@ void* schnode_create(u64 type, void* addr)
 	win = allocarena();
 	if(0 == win)return 0;
 
-	win->type = _twig_;
+	win->type = _ctx_;
 	win->fmt = _pin_;
 	return win;
 }
