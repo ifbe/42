@@ -489,7 +489,7 @@ int arenaevent(struct event* e)
 
 	switch(win->fmt)
 	{
-		case _vbo_:
+		case _host_:
 		case _coop_:windowwrite(win, &ev);break;
 		default:rgbanode_swrite(win, 0, &ev);
 	}
@@ -528,6 +528,7 @@ int arenaread_all()
 	{
 		win = &arena[j];
 		if(0 == win->type)continue;
+
 		if(_ctx_ == win->type)windowread(win);
 		if(_win_ == win->type)windowread(win);
 	}

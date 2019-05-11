@@ -1,38 +1,38 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC -I.
 SRC = \
-lib-hw/hw.1602.c \
-lib-hw/hw.12864.c \
-lib-robot/3d-printer.c \
-lib-robot/3d-router.c \
-lib-robot/car-bldc.c \
-lib-robot/car-step.c \
-lib-robot/car-toy.c \
-lib-robot/copter-hexa.c \
-lib-robot/copter-octo.c \
-lib-robot/copter-quad.c \
-lib-robot/robot-arm.c \
-lib-robot/robot-dog.c \
-lib-robot/robot-man.c \
-lib-robot/robot-snake.c \
-root-cli/cli.base.c \
-root-cli/cli.tool.c \
-root-tui/tui.base.c \
-root-tui/tui.tool.c \
-root-func/func.base.c \
-root-func/func.tool.c \
-root-html/html.base.c \
-root-html/html.tool.c \
-root-json/json.base.c \
-root-json/json.tool.c \
-root-xml/xml.base.c \
-root-xml/xml.tool.c \
-root-sch/sch.base.c \
-root-sch/sch.tool.c \
-root-vbo/vbo.base.c \
-root-vbo/vbo.tool.c \
-root-rgba/rgba.base.c \
-root-rgba/rgba.tool.c \
+gadget/1602/gadget.1602.c \
+gadget/12864/gadget.12864.c \
+robot/bionic/robot-arm.c \
+robot/bionic/robot-dog.c \
+robot/bionic/robot-man.c \
+robot/bionic/robot-snake.c \
+robot/copter/copter-hexa.c \
+robot/copter/copter-octo.c \
+robot/copter/copter-quad.c \
+robot/factory/3d-printer.c \
+robot/factory/3d-router.c \
+robot/vehicle/car-bldc.c \
+robot/vehicle/car-step.c \
+robot/vehicle/car-toy.c \
+world/cli/cli.base.c \
+world/cli/cli.tool.c \
+world/tui/tui.base.c \
+world/tui/tui.tool.c \
+world/func/func.base.c \
+world/func/func.tool.c \
+world/html/html.base.c \
+world/html/html.tool.c \
+world/json/json.base.c \
+world/json/json.tool.c \
+world/xml/xml.base.c \
+world/xml/xml.tool.c \
+world/sch/sch.base.c \
+world/sch/sch.tool.c \
+world/vbo/vbo.base.c \
+world/vbo/vbo.tool.c \
+world/rgba/rgba.base.c \
+world/rgba/rgba.tool.c \
 arena.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
@@ -46,20 +46,16 @@ target: $(OBJ)
 ############################bare#########################
 .PHONY:barecli
 barecli:target
-	rm -f bare.*.o
-	$(compiler) $(cflag) os-bare/bare.cli.c
+	$(compiler) $(cflag) window/os-bare/bare.cli.c
 .PHONY:baretui
 baretui:target
-	rm -f bare.*.o
-	$(compiler) $(cflag) os-bare/bare.tui.c
+	$(compiler) $(cflag) window/os-bare/bare.tui.c
 .PHONY:bare8bit
 bare8bit:target
-	rm -f bare.*.o
-	$(compiler) $(cflag) os-bare/bare.8bit.c
+	$(compiler) $(cflag) window/os-bare/bare.8bit.c
 .PHONY:barefb
 barefb:target
-	rm -f bare.*.o
-	$(compiler) $(cflag) os-bare/bare.fb.c
+	$(compiler) $(cflag) window/os-bare/bare.fb.c
 ##########################################################
 
 
@@ -68,195 +64,127 @@ barefb:target
 ############################efi#########################
 .PHONY:eficli
 eficli:target
-	rm -f efi.*.o
-	$(compiler) $(cflag) os-efi/efi.cli.c
+	$(compiler) $(cflag) window/os-efi/efi.cli.c
 .PHONY:efifb
 efifb:target
-	rm -f efi.*.o
-	$(compiler) $(cflag) os-efi/efi.fb.c
+	$(compiler) $(cflag) window/os-efi/efi.fb.c
 #########################################################
 
 
 
 
 ############################linux#########################
+.PHONY:linux
+linux:
+	$(compiler) $(cflag) cmdline/linux/linux.stdio.c
+	$(compiler) $(cflag) systray/linux/linux.tray.c
+	$(compiler) $(cflag) camera/linux/linux.v4l2.c
+	$(compiler) $(cflag) micphone/linux/linux.pulse.c
+
 .PHONY:linuxcli
-linuxcli:target
-	rm -f linux.*.o gl*.o
-	$(compiler) $(cflag) os-linux/linux.0.joy.c
-	$(compiler) $(cflag) os-linux/linux.0.std.c
-	$(compiler) $(cflag) os-linux/linux.0.tray.c
-	$(compiler) $(cflag) os-linux/linux.1.cli.c
-	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
-	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
+linuxcli:target linux
+	$(compiler) $(cflag) gamepad/linux/linux.devjsn.c
+	$(compiler) $(cflag) window/linux/linux.cli.c
 
 .PHONY:linuxtui
-linuxtui:target
-	rm -f linux.*.o gl*.o
-	$(compiler) $(cflag) os-linux/linux.0.joy.c
-	$(compiler) $(cflag) os-linux/linux.0.std.c
-	$(compiler) $(cflag) os-linux/linux.0.tray.c
-	$(compiler) $(cflag) os-linux/linux.1.tui.c
-	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
-	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
+linuxtui:target linux
+	$(compiler) $(cflag) gamepad/linux/linux.devjsn.c
+	$(compiler) $(cflag) window/os-linux/linux.tui.c
 
 .PHONY:linuxfb
-linuxfb:target
-	rm -f linux.*.o gl*.o
-	$(compiler) $(cflag) os-linux/linux.0.joy.c
-	$(compiler) $(cflag) os-linux/linux.0.std.c
-	$(compiler) $(cflag) os-linux/linux.0.tray.c
-	$(compiler) $(cflag) os-linux/linux.1.fb.c
-	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
-	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
+linuxfb:target linux
+	$(compiler) $(cflag) gamepad/linux/linux.devjsn.c
+	$(compiler) $(cflag) window/os-linux/linux.fb.c
 
 .PHONY:linuxgtk
-linuxgtk:target
-	rm -f linux.*.o gl*.o
-	$(compiler) $(cflag) os-linux/linux.0.joy.c
-	$(compiler) $(cflag) os-linux/linux.0.std.c
-	$(compiler) $(cflag) os-linux/linux.0.tray.c
-	$(compiler) $(cflag) `pkg-config --cflags gtk+-3.0` os-linux/linux.gtk.c
-	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
-	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
+linuxgtk:target linux
+	$(compiler) $(cflag) gamepad/linux/linux.devjsn.c
+	$(compiler) $(cflag) `pkg-config --cflags gtk+-3.0` window/os-linux/linux.gtk.c
 
 .PHONY:linuxwayland
-linuxwayland:target
-	rm -f linux.*.o gl*.o
-	$(compiler) $(cflag) os-linux/linux.0.joy.c
-	$(compiler) $(cflag) os-linux/linux.0.std.c
-	$(compiler) $(cflag) os-linux/linux.0.tray.c
-	$(compiler) $(cflag) os-linux/linux.1.wayland.c
-	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
-	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
+linuxwayland:target linux
+	$(compiler) $(cflag) gamepad/linux/linux.devjsn.c
+	$(compiler) $(cflag) window/os-linux/linux.wayland.c
 
 .PHONY:linuxxlib
-linuxxlib:target
-	rm -f linux.*.o gl*.o
-	$(compiler) $(cflag) os-linux/linux.0.joy.c
-	$(compiler) $(cflag) os-linux/linux.0.std.c
-	$(compiler) $(cflag) os-linux/linux.0.tray.c
-	$(compiler) $(cflag) os-linux/linux.1.xlib.c
-	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
-	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
-
-.PHONY:linuxglfw
-linuxglfw:target
-	rm -f linux.*.o gl*.o
-	$(compiler) $(cflag) os-linux/linux.0.joy.c
-	$(compiler) $(cflag) os-linux/linux.0.std.c
-	$(compiler) $(cflag) os-linux/linux.0.tray.c
-	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
-	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
-	$(compiler) $(cflag) lib-gl/glfw.c
-	$(compiler) $(cflag) lib-gl/glwindow.test.c
-	$(compiler) $(cflag) lib-gl/glwindow.host.c
-	$(compiler) $(cflag) lib-gl/glwindow.coop.c
-	$(compiler) $(cflag) lib-gl/glwindow.fbo.c
-	$(compiler) $(cflag) lib-gl/globject.shader.c
-	$(compiler) $(cflag) lib-gl/globject.texture.c
-	$(compiler) $(cflag) lib-gl/globject.vertex.c
+linuxxlib:target linux
+	$(compiler) $(cflag) gamepad/linux/linux.devjsn.c
+	$(compiler) $(cflag) window/os-linux/linux.xlib.c
 
 .PHONY:linuxglut
-linuxglut:target
-	rm -f linux.*.o gl*.o
-	$(compiler) $(cflag) os-linux/linux.0.joy.c
-	$(compiler) $(cflag) os-linux/linux.0.std.c
-	$(compiler) $(cflag) os-linux/linux.0.tray.c
-	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
-	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
-	$(compiler) $(cflag) lib-gl/glut.c
+linuxglut:target linux
+	$(compiler) $(cflag) gamepad/linux/linux.devjsn.c
+	$(compiler) $(cflag) window/lib-gl/glut.c
+
+.PHONY:linuxglfw
+linuxglfw:target linux
+	$(compiler) $(cflag) gamepad/glfw/glfw.gamepad.c
+	$(compiler) $(cflag) window/lib-gl/glfw.c
+	$(compiler) $(cflag) window/lib-gl/glwindow.test.c
+	$(compiler) $(cflag) window/lib-gl/glwindow.host.c
+	$(compiler) $(cflag) window/lib-gl/glwindow.coop.c
+	$(compiler) $(cflag) window/lib-gl/glwindow.fbo.c
+	$(compiler) $(cflag) window/lib-gl/globject.shader.c
+	$(compiler) $(cflag) window/lib-gl/globject.texture.c
+	$(compiler) $(cflag) window/lib-gl/globject.vertex.c
 
 .PHONY:linuxsdl
-linuxsdl:target
-	rm -f linux.*.o gl*.o
-	$(compiler) $(cflag) os-linux/linux.0.joy.c
-	$(compiler) $(cflag) os-linux/linux.0.std.c
-	$(compiler) $(cflag) os-linux/linux.0.tray.c
-	$(compiler) $(cflag) os-linux/linux.2.pulseaudio.c
-	$(compiler) $(cflag) os-linux/linux.3.v4l2.c
-	$(compiler) $(cflag) lib-sdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
+linuxsdl:target linux
+	$(compiler) $(cflag) gamepad/sdl/sdl.gamepad.c
+	$(compiler) $(cflag) window/lib-sdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
 #########################################################
 
 
 
 
 #############################mac##########################
+.PHONY:macos
+macos:
+	$(compiler) $(cflag) cmdline/mac/mac.stdio.c
+	$(compiler) $(cflag) systray/mac/mac.tray.c
+	$(compiler) $(cflag) micphone/mac/mac.mic.c
+	$(compiler) $(cflag) camera/mac/mac.cam.c
+
 .PHONY:maccli
-maccli:target
-	rm -f mac.*.o gl*.o
-	$(compiler) $(cflag) os-mac/mac.0.joy.c
-	$(compiler) $(cflag) os-mac/mac.0.std.c
-	$(compiler) $(cflag) os-mac/mac.0.tray.c
-	$(compiler) $(cflag) os-mac/mac.1.cli.c
-	$(compiler) $(cflag) os-mac/mac.2.mic.c
-	$(compiler) $(cflag) os-mac/mac.3.cam.c
+maccli:target macos
+	$(compiler) $(cflag) gamepad/mac.joy.c
+	$(compiler) $(cflag) os-mac/mac.cli.c
 
 .PHONY:mactui
-mactui:target
-	rm -f mac.*.o gl*.o
-	$(compiler) $(cflag) os-mac/mac.0.joy.c
-	$(compiler) $(cflag) os-mac/mac.0.std.c
-	$(compiler) $(cflag) os-mac/mac.0.tray.c
-	$(compiler) $(cflag) os-mac/mac.1.tui.c
-	$(compiler) $(cflag) os-mac/mac.2.mic.c
-	$(compiler) $(cflag) os-mac/mac.3.cam.c
+mactui:target macos
+	$(compiler) $(cflag) gamepad/mac.joy.c
+	$(compiler) $(cflag) os-mac/mac.tui.c
 
 .PHONY:maccocoa
-maccocoa:target
-	rm -f mac.*.o gl*.o
-	$(compiler) $(cflag) os-mac/mac.0.joy.c
-	$(compiler) $(cflag) os-mac/mac.0.std.c
-	$(compiler) $(cflag) os-mac/mac.0.tray.c
-	$(compiler) $(cflag) os-mac/mac.1.cocoa.m
-	$(compiler) $(cflag) os-mac/mac.2.mic.c
-	$(compiler) $(cflag) os-mac/mac.3.cam.c
+maccocoa:target macos
+	$(compiler) $(cflag) gamepad/mac.joy.c
+	$(compiler) $(cflag) os-mac/mac.cocoa.m
 
 .PHONY:macquartz
-macquartz:target
-	rm -f mac.*.o gl*.o
-	$(compiler) $(cflag) os-mac/mac.0.joy.c
-	$(compiler) $(cflag) os-mac/mac.0.std.c
-	$(compiler) $(cflag) os-mac/mac.0.tray.c
-	$(compiler) $(cflag) os-mac/mac.1.quartz.c
-	$(compiler) $(cflag) os-mac/mac.2.mic.c
-	$(compiler) $(cflag) os-mac/mac.3.cam.c
-
-.PHONY:macglfw
-macglfw:target
-	rm -f mac.*.o gl*.o
-	$(compiler) $(cflag) os-mac/mac.0.joy.c
-	$(compiler) $(cflag) os-mac/mac.0.std.c
-	$(compiler) $(cflag) os-mac/mac.0.tray.c
-	$(compiler) $(cflag) os-mac/mac.2.mic.c
-	$(compiler) $(cflag) os-mac/mac.3.cam.c
-	$(compiler) $(cflag) lib-gl/glfw.c
-	$(compiler) $(cflag) lib-gl/glwindow.test.c
-	$(compiler) $(cflag) lib-gl/glwindow.host.c
-	$(compiler) $(cflag) lib-gl/glwindow.coop.c
-	$(compiler) $(cflag) lib-gl/glwindow.fbo.c
-	$(compiler) $(cflag) lib-gl/globject.shader.c
-	$(compiler) $(cflag) lib-gl/globject.texture.c
-	$(compiler) $(cflag) lib-gl/globject.vertex.c
+macquartz:target macos
+	$(compiler) $(cflag) gamepad/mac.joy.c
+	$(compiler) $(cflag) os-mac/mac.quartz.c
 
 .PHONY:macglut
-macglut:target
-	rm -f mac.*.o gl*.o
-	$(compiler) $(cflag) os-mac/mac.0.joy.c
-	$(compiler) $(cflag) os-mac/mac.0.std.c
-	$(compiler) $(cflag) os-mac/mac.0.tray.c
-	$(compiler) $(cflag) os-mac/mac.2.mic.c
-	$(compiler) $(cflag) os-mac/mac.3.cam.c
+macglut:target macos
+	$(compiler) $(cflag) gamepad/mac.joy.c
 	$(compiler) $(cflag) lib-gl/glut.c
 
+.PHONY:macglfw
+macglfw:target macos
+	$(compiler) $(cflag) gamepad/glfw/glfw.gamepad.c
+	$(compiler) $(cflag) window/lib-gl/glfw.c
+	$(compiler) $(cflag) window/lib-gl/glwindow.test.c
+	$(compiler) $(cflag) window/lib-gl/glwindow.host.c
+	$(compiler) $(cflag) window/lib-gl/glwindow.coop.c
+	$(compiler) $(cflag) window/lib-gl/glwindow.fbo.c
+	$(compiler) $(cflag) window/lib-gl/globject.shader.c
+	$(compiler) $(cflag) window/lib-gl/globject.texture.c
+	$(compiler) $(cflag) window/lib-gl/globject.vertex.c
+
 .PHONY:macsdl
-macsdl:target
-	rm -f mac.*.o gl*.o
-	$(compiler) $(cflag) os-mac/mac.0.joy.c
-	$(compiler) $(cflag) os-mac/mac.0.std.c
-	$(compiler) $(cflag) os-mac/mac.0.tray.c
-	$(compiler) $(cflag) os-mac/mac.2.mic.c
-	$(compiler) $(cflag) os-mac/mac.3.cam.c
+macsdl:target macos
+	$(compiler) $(cflag) gamepad/sdl/sdl.gamepad.c
 	$(compiler) $(cflag) lib-sdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
 #########################################################
 
@@ -264,82 +192,54 @@ macsdl:target
 
 
 ###########################windows#######################
+.PHONY:windows
+windows:
+	$(compiler) $(cflag) cmdline/win/win.stdio.c
+	$(compiler) $(cflag) systray/win/win.tray.c
+	$(compiler) $(cflag) micphone/win/win.waveio.c
+	g++ $(cflag) -fno-rtti camera/win/win.dshow.cpp
+
 .PHONY:wincli
-wincli:target
-	rm -f win.*.o gl*.o
-	$(compiler) $(cflag) os-win/win.0.joy.c
-	$(compiler) $(cflag) os-win/win.0.std.c
-	$(compiler) $(cflag) os-win/win.0.tray.c
-	$(compiler) $(cflag) os-win/win.1.cli.c
-	$(compiler) $(cflag) os-win/win.2.waveio.c
-	g++ $(cflag) -fno-rtti os-win/win.3.dshow.cpp
+wincli:target windows
+	$(compiler) $(cflag) gamepad/win/win.xinput.c
+	$(compiler) $(cflag) window/os-win/win.cli.c
 
 .PHONY:wintui
-wintui:target
-	rm -f win.*.o gl*.o
-	$(compiler) $(cflag) os-win/win.0.joy.c
-	$(compiler) $(cflag) os-win/win.0.std.c
-	$(compiler) $(cflag) os-win/win.0.tray.c
-	$(compiler) $(cflag) os-win/win.1.tui.c
-	$(compiler) $(cflag) os-win/win.2.waveio.c
-	g++ $(cflag) -fno-rtti os-win/win.3.dshow.cpp
+wintui:target windows
+	$(compiler) $(cflag) gamepad/win/win.xinput.c
+	$(compiler) $(cflag) window/os-win/win.tui.c
 
 .PHONY:winapi
-winapi:target
-	rm -f win.*.o gl*.o
-	$(compiler) $(cflag) os-win/win.0.joy.c
-	$(compiler) $(cflag) os-win/win.0.std.c
-	$(compiler) $(cflag) os-win/win.0.tray.c
-	$(compiler) $(cflag) os-win/win.1.api.c
-	$(compiler) $(cflag) os-win/win.2.waveio.c
-	g++ $(cflag) -fno-rtti os-win/win.3.dshow.cpp
+winapi:target windows
+	$(compiler) $(cflag) gamepad/win/win.xinput.c
+	$(compiler) $(cflag) window/os-win/win.api.c
 
 .PHONY:wind3d
-wind3d:target
-	rm -f win.*.o gl*.o
-	$(compiler) $(cflag) os-win/win.0.joy.c
-	$(compiler) $(cflag) os-win/win.0.std.c
-	$(compiler) $(cflag) os-win/win.0.tray.c
-	$(compiler) $(cflag) os-win/win.1.d3d.c
-	$(compiler) $(cflag) os-win/win.2.waveio.c
-	g++ $(cflag) -fno-rtti os-win/win.3.dshow.cpp
-
-.PHONY:winglfw
-winglfw:target
-	rm -f win.*.o gl*.o
-	$(compiler) $(cflag) os-win/win.0.joy.c
-	$(compiler) $(cflag) os-win/win.0.std.c
-	$(compiler) $(cflag) os-win/win.0.tray.c
-	$(compiler) $(cflag) os-win/win.2.waveio.c
-	g++ $(cflag) -fno-rtti os-win/win.3.dshow.cpp
-	$(compiler) $(cflag) lib-gl/glfw.c
-	$(compiler) $(cflag) lib-gl/glwindow.test.c
-	$(compiler) $(cflag) lib-gl/glwindow.host.c
-	$(compiler) $(cflag) lib-gl/glwindow.coop.c
-	$(compiler) $(cflag) lib-gl/glwindow.fbo.c
-	$(compiler) $(cflag) lib-gl/globject.shader.c
-	$(compiler) $(cflag) lib-gl/globject.texture.c
-	$(compiler) $(cflag) lib-gl/globject.vertex.c
+wind3d:target windows
+	$(compiler) $(cflag) gamepad/win/win.xinput.c
+	$(compiler) $(cflag) window/os-win/win.d3d.c
 
 .PHONY:winglut
-winglut:target
-	rm -f win.*.o gl*.o
-	$(compiler) $(cflag) os-win/win.0.joy.c
-	$(compiler) $(cflag) os-win/win.0.std.c
-	$(compiler) $(cflag) os-win/win.0.tray.c
-	$(compiler) $(cflag) lib-gl/glut.c
-	$(compiler) $(cflag) os-win/win.waveio.c
-	g++ $(cflag) -fno-rtti os-win/win.dshow.cpp
+winglut:target windows
+	$(compiler) $(cflag) gamepad/win/win.xinput.c
+	$(compiler) $(cflag) window/lib-gl/glut.c
+
+.PHONY:winglfw
+winglfw:target windows
+	$(compiler) $(cflag) gamepad/glfw/glfw.gamepad.c
+	$(compiler) $(cflag) window/lib-gl/glfw.c
+	$(compiler) $(cflag) window/lib-gl/glwindow.test.c
+	$(compiler) $(cflag) window/lib-gl/glwindow.host.c
+	$(compiler) $(cflag) window/lib-gl/glwindow.coop.c
+	$(compiler) $(cflag) window/lib-gl/glwindow.fbo.c
+	$(compiler) $(cflag) window/lib-gl/globject.shader.c
+	$(compiler) $(cflag) window/lib-gl/globject.texture.c
+	$(compiler) $(cflag) window/lib-gl/globject.vertex.c
 
 .PHONY:winsdl
-winsdl:target
-	rm -f win.*.o gl*.o
-	$(compiler) $(cflag) os-win/win.0.joy.c
-	$(compiler) $(cflag) os-win/win.0.std.c
-	$(compiler) $(cflag) os-win/win.0.tray.c
-	$(compiler) $(cflag) lib-sdl/sdl2.c
-	$(compiler) $(cflag) os-win/win.2.waveio.c
-	g++ $(cflag) -fno-rtti os-win/win.3.dshow.cpp
+winsdl:target windows
+	$(compiler) $(cflag) gamepad/sdl/sdl.gamepad.c
+	$(compiler) $(cflag) window/lib-sdl/sdl2.c
 ##########################################################
 
 

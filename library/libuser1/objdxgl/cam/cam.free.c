@@ -158,12 +158,12 @@ void surround_zoom(struct arena* win, float delta)
 
 
 
-static int surround_matrix(
+static void surround_matrix(
 	struct actor* act, struct pinid* pin,
 	struct arena* win, struct style* sty)
 {
 	//say("ask for cam mat\n");
-	if(_vbo_ != win->fmt)return 0;
+	if(_vbo_ != win->fmt)return;
 
 	float* m = act->buf;
 	fixmatrix((void*)m, win);
