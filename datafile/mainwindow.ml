@@ -23,8 +23,10 @@ fmt:texball
 file:"datafile/jpg/skysphere.jpg"
 }
 terrain{
-fmt:terrain
-file:"datafile/jpg/cartoon.jpg"
+fmt:ground
+}
+freecam{
+fmt:freecam
 }
 fonthelper{
 fmt:aidfont
@@ -60,7 +62,7 @@ fullscreen{
 c:0.0, 0.0
 q:1.0, 1.0
 }
-vp1{
+view1{
 l:-1.0, 0.0, 0.0
 r: 1.0, 0.0, 0.0
 b: 0.0,-0.829,-0.5591929
@@ -68,7 +70,7 @@ u: 0.0, 0.829, 0.5591929
 n: 0.0, 0.5591929,-0.829
 c: 0.0,-1118.3858, 1658.0
 }
-vp2{
+view2{
 l:-1.0, 0.0, 0.0
 r: 1.0, 0.0, 0.0
 b: 0.0,-1.0, 0.0
@@ -116,6 +118,7 @@ u: 0.0, 0.0, 10000000.0
 
 
 <pinid>
+p0{}
 p1{}
 p2{}
 p3{}
@@ -128,18 +131,19 @@ p8{}
 
 
 <relation>
-(window, leftpart, _win_, _vp_) -> (3dworld, 0, _win_, _out_)
-(window, rightpart, _win_, _vp_) -> (3dworld, 0, _win_, _out_)
-(window, fullscreen, _win_, _vp_) -> (uiworld, 0, _win_, _out_)
+(window, leftpart, win, vp) -> (3dworld, 0, win, out)
+(window, rightpart, win, vp) -> (3dworld, 0, win, out)
+(window, fullscreen, win, vp) -> (uiworld, 0, win, out)
 
-(3dworld, sty1, _win_, _bg_) -> (texball, p1, _act_, 0)
-(3dworld, sty2, _win_, _bg_) -> (terrain, p2, _act_, 0)
+(3dworld, view1, win, cam) -> (freecam, p0, act, cam)
+(3dworld, sty1, win, bg) -> (texball, p1, act, 0)
+(3dworld, sty2, win, bg) -> (terrain, p2, act, 0)
 
-(uiworld, sty3, _win_, _aid_) -> (aidgeom, p3, _act_, 0)
-(uiworld, sty4, _win_, _aid_) -> (aidfont, p4, _act_, 0)
+(uiworld, sty3, win, aid) -> (aidgeom, p3, act, 0)
+(uiworld, sty4, win, aid) -> (aidfont, p4, act, 0)
 
-(uiworld, sty5, _win_, _ui_) -> (vjoy, p5, _act_, 0)
-(uiworld, sty6, _win_, _ui_) -> (vkbd, p6, _act_, 0)
-(uiworld, sty7, _win_, _ui_) -> (corner, p7, _act_, 0)
-(uiworld, sty8, _win_, _ui_) -> (pointer, p8, _act_, 0)
+(uiworld, sty5, win, ui) -> (vjoy, p5, act, 0)
+(uiworld, sty6, win, ui) -> (vkbd, p6, act, 0)
+(uiworld, sty7, win, ui) -> (corner, p7, act, 0)
+(uiworld, sty8, win, ui) -> (pointer, p8, act, 0)
 </relation>

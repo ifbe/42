@@ -3,8 +3,9 @@ cflag ?= -c -O2 -fPIC
 
 target:
 	$(compiler) $(cflag) main.c
-	$(compiler) $(cflag) init.c
 	$(compiler) $(cflag) loop.c
+	$(compiler) $(cflag) prep/initdef.c
+	$(compiler) $(cflag) prep/initcfg.c
 	$(compiler) $(cflag) std/stdev.c
 	$(compiler) $(cflag) std/stdin.c
 	$(compiler) $(cflag) std/stdout.c

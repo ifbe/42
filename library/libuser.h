@@ -35,7 +35,7 @@ typedef float mat4[4][4];
 #define _mic_ hex32('m','i','c',0)
 #define _spk_ hex32('s','p','k',0)
 #define _cam_ hex32('c','a','m',0)
-#define _win_ hex32('w','i','n',0)
+#define _wnd_ hex32('w','n','d',0)
 #define _tray_ hex32('t','r','a','y')	//tray
 #define _std_ hex32('s','t','d', 0)		//cmdline
 #define _ctx_ hex32('c','t','x',0)		//memnode
