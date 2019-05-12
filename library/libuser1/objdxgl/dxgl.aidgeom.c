@@ -266,6 +266,7 @@ static void aidgeom_start(struct halfrel* self, struct halfrel* peer)
 
 	win = (void*)(peer->chip);
 	mod = win->gl_solid;
+	say("@aidgeom_start\n");
 
 //--------------------3d-------------------
 	//drawarray.point3d

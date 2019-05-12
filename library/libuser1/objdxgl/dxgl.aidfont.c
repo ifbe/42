@@ -106,6 +106,7 @@ static void aidfont_start(struct halfrel* self, struct halfrel* peer)
 	struct arena* win;
 	struct datapair* mod;
 	struct glsrc* src;
+	say("@aidfont_start\n");
 
 	act = (void*)(self->chip);
 	buf = act->buf;

@@ -50,13 +50,21 @@ fmt:pointer
 
 
 <style>
-leftpart{
+botleft{
 c:0.0, 0.0
-q:0.5, 1.0
+q:0.5, 0.5
 }
-rightpart{
+botright{
 c:0.5, 0.0
-q:0.5, 1.0
+q:0.5, 0.5
+}
+topleft{
+c:0.0, 0.5
+q:0.5, 0.5
+}
+topright{
+c:0.5, 0.5
+q:0.5, 0.5
 }
 fullscreen{
 c:0.0, 0.0
@@ -131,16 +139,18 @@ p8{}
 
 
 <relation>
-(window, leftpart, win, vp) -> (3dworld, 0, win, out)
-(window, rightpart, win, vp) -> (3dworld, 0, win, out)
+(window, botleft, win, vp) -> (3dworld, 0, win, out)
+(window, botright,win, vp) -> (3dworld, 0, win, out)
+(window, topleft, win, vp) -> (3dworld, 0, win, out)
+(window, topright,win, vp) -> (3dworld, 0, win, out)
 (window, fullscreen, win, vp) -> (uiworld, 0, win, out)
 
 (3dworld, view1, win, cam) -> (freecam, p0, act, cam)
 (3dworld, sty1, win, bg) -> (texball, p1, act, 0)
 (3dworld, sty2, win, bg) -> (terrain, p2, act, 0)
 
-(uiworld, sty3, win, aid) -> (aidgeom, p3, act, 0)
-(uiworld, sty4, win, aid) -> (aidfont, p4, act, 0)
+(uiworld, sty3, win, aid) -> (geomhelper, p3, act, 0)
+(uiworld, sty4, win, aid) -> (fonthelper, p4, act, 0)
 
 (uiworld, sty5, win, ui) -> (vjoy, p5, act, 0)
 (uiworld, sty6, win, ui) -> (vkbd, p6, act, 0)

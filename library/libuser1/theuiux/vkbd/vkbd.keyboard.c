@@ -104,7 +104,7 @@ void vkbd_draw_vbo(struct arena* win, struct style* sty)
             c = x+(y<<4);
             //if(c == (win->vkbdz))rgb = 0xff00ff;
             //else rgb = 0x808080;
-			rgb = 0x808080;
+			rgb = 0x80808080;
 
             vc[0] = (x-7.5)/8.0;
             vc[1] = (y-15.5)/16.0;
