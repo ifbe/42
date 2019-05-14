@@ -52,8 +52,8 @@ void parserelation(u8* buf, int len,
 	//window, leftpart, win, vp
 	int j,k;
 	int c[4];
-	u64 chiphash;
-	u64 foothash;
+	u64 hash;
+	u8* addr = (u8*)&hash;
 
 	k = 0;
 	for(j=0;j<len;j++){
@@ -68,90 +68,101 @@ void parserelation(u8* buf, int len,
 		return;
 	}
 
-thechip:
+	//thechip
 	j = 0;
 	while(0x20 == buf[j])j++;
-	parsefmt((void*)&chiphash, buf+j);
+	parsefmt(addr, buf+j);
 
 	for(k=0;k<clen;k++){
-		if(chiphash == chip[k].hash){
+		if(hash == chip[k].hash){
 			rel->chip = (u64)chip[k].addr;
 		}
 	}
 
-thefoot:
+	//thefoot
 	j = c[0];
 	while(0x20 == buf[j])j++;
-	parsefmt((void*)&foothash, buf+j);
+	parsefmt(addr, buf+j);
 
 	for(k=0;k<flen;k++){
-		if(foothash == foot[k].hash){
+		if(hash == foot[k].hash){
 			rel->foot = (u64)foot[k].addr;
 		}
 	}
 
-thetype:
+	//thetype
 	j = c[1];
 	while(0x20 == buf[j])j++;
-	parsefmt((void*)&rel->type, buf+j);
+	parsefmt(addr, buf+j);
+	rel->type = hash;
 
-theflag:
+	//theflag
 	j = c[2];
 	while(0x20 == buf[j])j++;
-	parsefmt((void*)&rel->flag, buf+j);
+	parsefmt(addr, buf+j);
+	rel->flag = hash;
 }
-int parsefloat(float* f, u8* str)
+void role_test_relation(u8* buf, int len,
+	struct chiplist chip[], int clen, struct footlist foot[], int flen)
 {
-	double d;
-	int j = decstr2double(str, &d);
+	//say("relation:\n%.*s\n", len, buf);
+	struct halfrel src;
+	struct halfrel dst;
+	struct relation* rel;
 
-	f[0] = d;
-	return j;
-}
-int parsevec4(vec4 vec, u8* str)
-{
-	int j = 0, k;
+	int j,k;
+	int wirellll = -1;
+	int wirerrrr = -1;
 
-first:
-	while(0x20 == str[j])j++;
-	j += parsefloat(&vec[0], str+j);
+	for(j=0;j<=len;j++) {
+		k = buf[j];
 
-	for(k=j;k<j+16;j++){
-		if(',' == str[k]){
-			j = k+1;
-			goto second;
+		if( (j == len) | ('\n' == k) ) {
+			wirellll = wirerrrr = -1;
+			continue;
 		}
-	}
-	return 1;
 
-second:
-	while(0x20 == str[j])j++;
-	j += parsefloat(&vec[1], str+j);
-
-	for(k=j;k<j+16;j++){
-		if(',' == str[k]){
-			j = k+1;
-			goto third;
+		//(src) -> (dst)
+		if('(' == k) {
+			if(wirellll < 0) {
+				wirellll = j+1;
+			}
+			else {
+				wirerrrr = j+1;
+			}
 		}
-	}
-	return 2;
+		if(')' == k) {
+			if(wirerrrr >= 0) {
+				//say("r(%.*s)\n", j-wirerrrr, buf+wirerrrr);
 
-third:
-	while(0x20 == str[j])j++;
-	j += parsefloat(&vec[2], str+j);
+				parserelation(buf+wirerrrr, j-wirerrrr,
+					chip, clen, foot, flen,
+					&dst);
 
-	for(k=j;k<j+16;j++){
-		if(',' == str[k]){
-			j = k+1;
-			goto fourth;
+				say("%llx,%llx,%.4s,%.4s -> %llx,%llx,%.4s,%.4s\n",
+					src.chip, src.foot, &src.type, &src.flag,
+					dst.chip, dst.foot, &dst.type, &dst.flag
+				);
+
+				rel = relationcreate(
+					(void*)dst.chip, (void*)dst.foot, dst.type, dst.flag,
+					(void*)src.chip, (void*)src.foot, src.type, src.flag
+				);
+				if(_act_ == rel->dsttype){
+					actorstart(&rel->dstchip, &rel->srcchip);
+				}
+
+				wirellll = wirerrrr = -1;
+			}
+			else if(wirellll >= 0) {
+				//say("l(%.*s) to ", j-wirellll, buf+wirellll);
+
+				parserelation(buf+wirellll, j-wirellll,
+					chip, clen, foot, flen,
+					&src);
+			}
 		}
-	}
-	return 3;
-
-fourth:
-	while(0x20 == str[j])j++;
-	j += parsefloat(&vec[3], str+j);
-	return 4;
+	}//for
 }
 
 
@@ -322,6 +333,63 @@ int role_test_actor(u8* buf, int len, struct chiplist chip[], int clen)
 
 	return clen;
 }
+
+
+
+
+int parsefloat(float* f, u8* str)
+{
+	double d;
+	int j = decstr2double(str, &d);
+
+	f[0] = d;
+	return j;
+}
+int parsevec4(vec4 vec, u8* str)
+{
+	int j = 0, k;
+
+first:
+	while(0x20 == str[j])j++;
+	j += parsefloat(&vec[0], str+j);
+
+	for(k=j;k<j+16;k++){
+		if(',' == str[k]){
+			j = k+1;
+			goto second;
+		}
+	}
+	return 1;
+
+second:
+	while(0x20 == str[j])j++;
+	j += parsefloat(&vec[1], str+j);
+
+	for(k=j;k<j+16;k++){
+		if(',' == str[k]){
+			j = k+1;
+			goto third;
+		}
+	}
+	return 2;
+
+third:
+	while(0x20 == str[j])j++;
+	j += parsefloat(&vec[2], str+j);
+
+	for(k=j;k<j+16;k++){
+		if(',' == str[k]){
+			j = k+1;
+			goto fourth;
+		}
+	}
+	return 3;
+
+fourth:
+	while(0x20 == str[j])j++;
+	j += parsefloat(&vec[3], str+j);
+	return 4;
+}
 int role_test_style(u8* buf, int len, struct footlist foot[], int flen)
 {
 	//say("style:\n%.*s\n", len, buf);
@@ -416,7 +484,6 @@ int role_test_style(u8* buf, int len, struct footlist foot[], int flen)
 
 	return flen;
 }
-
 int role_test_pinid(u8* buf, int len, struct footlist foot[], int flen)
 {
 	//say("pinid:\n%.*s\n", len, buf);
@@ -486,66 +553,9 @@ int role_test_pinid(u8* buf, int len, struct footlist foot[], int flen)
 	return flen;
 }
 
-void role_test_relation(u8* buf, int len,
-	struct chiplist chip[], int clen, struct footlist foot[], int flen)
-{
-	//say("relation:\n%.*s\n", len, buf);
-	struct halfrel src;
-	struct halfrel dst;
-	struct relation* rel;
 
-	int j,k;
-	int wirellll = -1;
-	int wirerrrr = -1;
 
-	for(j=0;j<=len;j++) {
-		k = buf[j];
 
-		if( (j == len) | ('\n' == k) ) {
-			wirellll = wirerrrr = -1;
-			continue;
-		}
-
-		//(src) -> (dst)
-		if('(' == k) {
-			if(wirellll < 0) {
-				wirellll = j+1;
-			}
-			else {
-				wirerrrr = j+1;
-			}
-		}
-		if(')' == k) {
-			if(wirerrrr >= 0) {
-				//say("r(%.*s)\n", j-wirerrrr, buf+wirerrrr);
-				parserelation(buf+wirerrrr, j-wirerrrr,
-					chip, clen, foot, flen,
-					&dst);
-
-				say("%llx,%llx,%.4s,%.4s -> %llx,%llx,%.4s,%.4s\n",
-					src.chip, src.foot, &src.type, &src.flag,
-					dst.chip, dst.foot, &dst.type, &dst.flag
-				);
-
-				rel = relationcreate(
-					(void*)dst.chip, (void*)dst.foot, dst.type, dst.flag,
-					(void*)src.chip, (void*)src.foot, src.type, src.flag
-				);
-				if(_act_ == rel->dsttype){
-					actorstart(&rel->dstchip, &rel->srcchip);
-				}
-
-				wirellll = wirerrrr = -1;
-			}
-			else if(wirellll >= 0) {
-				//say("l(%.*s) to ", j-wirellll, buf+wirellll);
-				parserelation(buf+wirellll, j-wirellll,
-					chip, clen, foot, flen,
-					&src);
-			}
-		}
-	}//for
-}
 void role_test1(u8* buf, int len)
 {
 	int j,k;
