@@ -35,7 +35,7 @@ void initstdrel(void*);
 void* death();
 void* birth();
 //
-void role_create();
+void prep();
 void loop();
 //
 int openreadclose(void*,int,void*,int);
@@ -114,10 +114,10 @@ int main(int argc, char* argv[])
 		if(termwrite(addr, k) < 0)goto byebye;
 	}
 
-	//before mainloop: load file as ui
-	role_create();
+	//load cfg
+	prep();
 
-	//mainloop
+	//main loop
 	loop();
 
 	//after mainloop: backup world
