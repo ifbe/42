@@ -75,12 +75,38 @@ void prep()
 {
 	int ret;
 	u8* argv[2];
-	argv[0] = (u8*)"role";
 
-	ret = role_fromfile(1, argv);
+	//+libhard0
+	//devicecreate(_ahci_, 0);
+	//devicecreate(_xhci_, 0);
+
+	//+libhard1
+	//drivercreate(_sata_, 0);
+	//drivercreate(_usb_, 0);
+
+	//+libsoft0
+	//systemcreate(_uart_, "/dev/ptmx");
+	//systemcreate(_uart_, "/dev/ttyACM0");
+
+	//+libsoft1
+	arterycreate(0,   "HACK://0.0.0.0:2222");
+	arterycreate(0,   "QUIC://0.0.0.0:4444");
+	arterycreate(0,    "SSH://0.0.0.0:2022");
+	arterycreate(0, "TELNET://0.0.0.0:2023");
+	arterycreate(0,   "HTTP://0.0.0.0:2080");
+	arterycreate(0,    "TLS://0.0.0.0:2443");
+	arterycreate(0,  "SERVE://0.0.0.0:2099");
+
+	//cmdline
+	arenacreate(_std_, 0);
+	arenacreate(_tray_, 0);
+
+	//try load from file
+	ret = role_fromfile(0, argv);
 	if(ret > 0)return;
 
-	ret = role_default(1, argv);
+	//at least one window
+	ret = role_default(0, argv);
 }
 void role(u8* buf, int len)
 {
