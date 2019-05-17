@@ -1,6 +1,6 @@
 #include "libuser.h"
 int relation_choose(void*, void*);
-int invmvp(vec3 v, struct arena* win);
+int invmvp(vec3 v, struct style* sty);
 int obb_ray(struct style* obb, vec3 ray[], vec3 out[]);
 
 
@@ -468,7 +468,7 @@ int playwith3d_pick(struct arena* root, struct arena* twig, struct actor* act, i
 	ray[1][1] = 1.0 - 2.0 * fy;
 	ray[1][2] = 0.0;
 
-	invmvp(ray[1], root);
+	invmvp(ray[1], &root->camera);
 	say("(%f,%f,%f) -> (%f,%f,%f)\n",
 		ray[0][0], ray[0][1], ray[0][2],
 		ray[1][0], ray[1][1], ray[1][2]
@@ -522,7 +522,7 @@ int playwith3d_move(struct arena* root, struct arena* twig, int x0, int y0, int 
 	ray0[1][0] = 2.0*fx0 - 1.0;
 	ray0[1][1] = 1.0 - 2.0*fy0;
 	ray0[1][2] = 0.0;
-	invmvp(ray0[1], root);
+	invmvp(ray0[1], &root->camera);
 	ray0[1][0] -= ray0[0][0];
 	ray0[1][1] -= ray0[0][1];
 	ray0[1][2] -= ray0[0][2];
@@ -533,7 +533,7 @@ int playwith3d_move(struct arena* root, struct arena* twig, int x0, int y0, int 
 	rayn[1][0] = 2.0*fxn - 1.0;
 	rayn[1][1] = 1.0 - 2.0*fyn;
 	rayn[1][2] = 0.0;
-	invmvp(rayn[1], root);
+	invmvp(rayn[1], &root->camera);
 	rayn[1][0] -= rayn[0][0];
 	rayn[1][1] -= rayn[0][1];
 	rayn[1][2] -= rayn[0][2];

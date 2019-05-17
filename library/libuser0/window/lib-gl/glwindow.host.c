@@ -206,7 +206,7 @@ void hostviewport_render(
 	x1 = w * st->vq[0];	//0.5
 	y1 = h * st->vq[1];	//1
 	glViewport(x0, y0, x1, y1);
-	//fixmatrix(cammvp, ctx);
+	//fixmatrix(cammvp, &ctx->camera);
 	//mat4_transpose((void*)cammvp);
 
 

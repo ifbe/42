@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
 void actorcreatefromfile(struct actor* act, char* name);
-void fixmatrix(mat4 mvp, struct arena* win);
+void fixmatrix(mat4 mvp, struct style* sty);
 
 
 
@@ -289,7 +289,7 @@ static void shadowmap_draw_vbo(
 
 	//calc matrix
 	mvp = (void*)(src->arg_data[0]);
-	fixmatrix(mvp, tmp);
+	fixmatrix(mvp, &tmp->camera);
 	mat4_transpose(mvp);
 
 

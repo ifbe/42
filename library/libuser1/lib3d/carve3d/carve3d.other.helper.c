@@ -1,5 +1,5 @@
 #include "libuser.h"
-void invmvp(vec3 v, struct arena* win);
+void invmvp(vec3 v, struct style* sty);
 
 
 
@@ -145,16 +145,16 @@ void carvecamera(struct arena* win, struct arena* w)
 	vb[1] = 1.0 - (w->input[10].yn)*2/y;
 	vb[2] = 0.5;
 
-	invmvp(va0, w);
-	invmvp(vb0, w);
-	invmvp(vc0, w);
-	invmvp(vd0, w);
-	invmvp(va1, w);
-	invmvp(vb1, w);
-	invmvp(vc1, w);
-	invmvp(vd1, w);
-	invmvp(va, w);
-	invmvp(vb, w);
+	invmvp(va0, &w->camera);
+	invmvp(vb0, &w->camera);
+	invmvp(vc0, &w->camera);
+	invmvp(vd0, &w->camera);
+	invmvp(va1, &w->camera);
+	invmvp(vb1, &w->camera);
+	invmvp(vc1, &w->camera);
+	invmvp(vd1, &w->camera);
+	invmvp(va,  &w->camera);
+	invmvp(vb,  &w->camera);
 
 	va1[0] = va0[0] + (va1[0]-va0[0])*10;
 	va1[1] = va0[1] + (va1[1]-va0[1])*10;

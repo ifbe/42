@@ -134,17 +134,17 @@ void fixproj(mat4 proj, struct style* sty)
 	proj[3][2] = -1.0;
 	proj[3][3] = 0.0;
 }
-void fixmatrix(mat4 m, struct arena* win)
+void fixmatrix(mat4 m, struct style* sty)
 {
 	int x;
 	mat4 t;
 
-	fixproj(m, &win->camera);
+	fixproj(m, sty);
 
 	//fixorie(t);
 	//mat4_multiply(m, t);
 
-	fixview(t, &win->camera);
+	fixview(t, sty);
 	mat4_multiply(m, t);
 }
 
@@ -247,15 +247,15 @@ void invview(mat4 viewmatrix, struct style* sty)
 	viewmatrix[3][2] = 0.0f;
 	viewmatrix[3][3] = 1.0f;
 }
-void invmvp(vec3 v, struct arena* win)
+void invmvp(vec3 v, struct style* sty)
 {
 	float f;
 	mat4 p;
 	mat4 q;
 	vec4 t = {v[0], v[1], v[2], 1.0};
 
-	invview(p, &win->camera);
-	invproj(q, &win->camera);
+	invview(p, sty);
+	invproj(q, sty);
 	mat4_multiply(p, q);
 
 	f = p[3][0]*t[0] + p[3][1]*t[1] + p[3][2]*t[2] + p[3][3]*t[3];

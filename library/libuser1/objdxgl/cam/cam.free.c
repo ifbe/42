@@ -1,5 +1,5 @@
 #include "libuser.h"
-void fixmatrix(mat4 m, struct arena* win);
+void fixmatrix(mat4 m, struct style* sty);
 
 
 
@@ -166,7 +166,7 @@ static void surround_matrix(
 	if(_vbo_ != win->fmt)return;
 
 	float* m = act->buf;
-	fixmatrix((void*)m, win);
+	fixmatrix((void*)m, &win->camera);
 	mat4_transpose((void*)m);
 /*
 	int x,y;
