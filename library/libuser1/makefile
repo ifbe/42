@@ -72,6 +72,7 @@ objcode/code.call.c \
 objcode/code.for.c \
 objcode/code.if.c \
 objcode/code.jump.c \
+objdxgl/cam/cam.ortho.c \
 objdxgl/cam/cam.1rd.c \
 objdxgl/cam/cam.3rd.c \
 objdxgl/cam/cam.free.c \

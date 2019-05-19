@@ -210,19 +210,18 @@ void hostviewport_render(
 	//mat4_transpose((void*)cammvp);
 
 
-	//
 	int j;
-	struct datapair* mod;
-	struct datapair* cam;
-	cam = ctx->gl_camera;
+	struct datapair* cam = ctx->gl_camera;
+	struct datapair* lit = ctx->gl_light;
+	struct datapair* solid = ctx->gl_solid;
+	struct datapair* opaque = ctx->gl_opaque;
 
 
 	//solid
-	mod = ctx->gl_solid;
 	for(j=0;j<64;j++)
 	{
-		if(0 == mod[j].src.vbuf)continue;
-		display_eachpass(&mod[j].dst, &mod[j].src, &cam[0].src);
+		if(0 == solid[j].src.vbuf)continue;
+		display_eachpass(&solid[j].dst, &solid[j].src, &cam[0].src);
 	}
 
 
@@ -231,11 +230,60 @@ void hostviewport_render(
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	mod = ctx->gl_opaque;
 	for(j=0;j<64;j++)
 	{
-		if(0 == mod[j].src.vbuf)continue;
-		display_eachpass(&mod[j].dst, &mod[j].src, &cam[0].src);
+		if(0 == opaque[j].src.vbuf)continue;
+		display_eachpass(&opaque[j].dst, &opaque[j].src, &cam[0].src);
+	}
+
+	glDisable(GL_BLEND);
+	glDepthMask(GL_TRUE);
+}
+void hostviewport_camera(struct halfrel* relcam, struct halfrel* relwin)
+{
+	float w,h,x0,y0,x1,y1;
+	struct arena* win = (void*)(relwin->chip);
+	struct style* sty = (void*)(relwin->foot);
+	w = win->fbwidth;
+	h = win->fbheight;
+	x0 = w * sty->vc[0];	//0
+	y0 = h * sty->vc[1];	//0
+	x1 = w * sty->vq[0];	//0.5
+	y1 = h * sty->vq[1];	//1
+	glViewport(x0, y0, x1, y1);
+
+
+	int j;
+	u8 buf[512];
+	u64* p = (void*)buf;
+
+	for(j=0;j<512;j++)buf[j] = 0;
+	actor_rootread(relcam, relwin, buf, 256);
+
+	struct datapair* cam = (void*)p[0];
+	struct datapair* lit = (void*)p[1];
+	struct datapair* solid = (void*)p[2];
+	struct datapair* opaque = (void*)p[3];
+	say("%llx,%llx,%llx,%llx\n",cam,lit,solid,opaque);
+
+
+	//solid
+	for(j=0;j<64;j++)
+	{
+		if(0 == solid[j].src.vbuf)continue;
+		display_eachpass(&solid[j].dst, &solid[j].src, &cam[0].src);
+	}
+
+
+	//opaque
+	glDepthMask(GL_FALSE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	for(j=0;j<64;j++)
+	{
+		if(0 == opaque[j].src.vbuf)continue;
+		display_eachpass(&opaque[j].dst, &opaque[j].src, &cam[0].src);
 	}
 
 	glDisable(GL_BLEND);
@@ -262,13 +310,17 @@ void hostwindow_render(struct arena* win)
 	{
 		if(0 == rel)break;
 
+		if(_act_ == rel->dsttype){
+			say("act\n");
+			hostviewport_camera((void*)&rel->dstchip, (void*)&rel->srcchip);
+		}
 		if(_win_ == rel->dsttype){
+			say("win\n");
+
 			st = (void*)(rel->srcfoot);
 			s1 = (void*)(rel->dstfoot);
-
 			ctx = (void*)(rel->dstchip);
-			//say("viewport:%llx\n", rel);
-			hostviewport_render(ctx, s1, win, st);
+			//hostviewport_render(ctx, s1, win, st);
 		}
 
 		rel = samesrcnextdst(rel);

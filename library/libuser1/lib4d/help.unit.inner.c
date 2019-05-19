@@ -8,6 +8,7 @@ void rectify_register(void*);
 
 //dxgl
 //.cam
+void orthcam_register(void*);
 void firstperson_register(void*);
 void thirdperson_register(void*);
 void rtsgame_register(void*);
@@ -148,6 +149,9 @@ void content_create(void* addr)
 
 //----------------------dxgl-----------------------
 //.cam
+	orthcam_register(tmp);
+	tmp += sizeof(struct actor);
+
 	firstperson_register(tmp);
 	tmp += sizeof(struct actor);
 

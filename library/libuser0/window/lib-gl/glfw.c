@@ -310,6 +310,7 @@ void windowread(struct arena* win)
 		if(0 == fw)return;
 
 		vbonode_sread(win, 0);
+		say("@@@@@@%llx\n",win);
 
 		glfwMakeContextCurrent(fw);
 		hostwindow_update(win);
