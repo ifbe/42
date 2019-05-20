@@ -106,34 +106,34 @@ u: 0.0, 0.0, 1.0
 f:-1.0, 0.0, 0.0
 c: 1000.0, 0.0, 500.0
 }
+sky{
+c: 0.0, 0.0, 0.0
+r: 10000000.0, 0.0, 0.0
+f: 0.0, 10000000.0, 0.0
+u: 0.0, 0.0, 10000000.0
+}
+gnd{
+c: 0.0, 0.0, 0.0
+r: 10000000.0, 0.0, 0.0
+f: 0.0, 10000000.0, 0.0
+u: 0.0, 0.0, 10000000.0
+}
+rabb{
+c: 0.0, 0.0, 0.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+u: 0.0, 0.0, 100.0
+}
 
 fullscreen{
 c:0.0, 0.0
 q:1.0, 1.0
 }
 ortho{
-c: 0.0, 0.0, -1.0
+c: 0.0, 0.0, 1.0
 r: 1.0, 0.0, 0.0
 f: 0.0, 1.0, 0.0
-u: 0.0, 0.0, 1.0
-}
-sty1{
-c: 0.0, 0.0, 0.0
-r: 10000000.0, 0.0, 0.0
-f: 0.0, 10000000.0, 0.0
-u: 0.0, 0.0, 10000000.0
-}
-sty2{
-c: 0.0, 0.0, 0.0
-r: 10000000.0, 0.0, 0.0
-f: 0.0, 10000000.0, 0.0
-u: 0.0, 0.0, 10000000.0
-}
-sty3{
-c: 0.0, 0.0, 0.0
-r: 100.0, 0.0, 0.0
-f: 0.0, 100.0, 0.0
-u: 0.0, 0.0, 100.0
+u: 0.0, 0.0,-1.0
 }
 sty4{}
 sty5{
@@ -185,9 +185,9 @@ p8{}
 (3dworld, overlook, win, cam) -> (cambr, p0, act, geom)
 (3dworld, frontlook, win, cam) -> (camtl, p0, act, geom)
 (3dworld, sidelook, win, cam) -> (camtr, p0, act, geom)
-(3dworld, sty1, win, bg) -> (texball, p1, act, 0)
-(3dworld, sty2, win, bg) -> (terrain, p2, act, 0)
-(3dworld, sty3, win, bg) -> (rabbit, p3, act, 0)
+(3dworld, sky, win, bg) -> (texball, p1, act, 0)
+(3dworld, gnd, win, bg) -> (terrain, p2, act, 0)
+(3dworld, rabb, win, bg) -> (rabbit, p3, act, 0)
 
 (window, 0, win, vp) -> (uiworld, 0, win, out)
 (window, fullscreen,win, cam) -> (uicamera, 0, act, cam)

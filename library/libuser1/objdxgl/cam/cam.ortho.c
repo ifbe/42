@@ -69,12 +69,32 @@ static void orthcam_matrix(
 
 	int j;
 	float* m = act->buf;
-	for(j=0;j<16;j++)m[j] = 0.0;
-	m[10] = m[15] = 1.0;
-	m[0] = s->vr[0];
-	m[1] = s->vr[1];
-	m[4] = s->vf[0];
-	m[5] = s->vf[1];
+
+	float cx = s->vc[0];
+	float cy = s->vc[1];
+	float cz = s->vc[2];
+
+	m[ 0] = s->vr[0];
+	m[ 1] = s->vr[1];
+	m[ 2] = s->vr[2];
+	m[ 3] = -(cx*m[0] + cy*m[1] + cz*m[2]);
+
+	m[ 4] = s->vf[0];
+	m[ 5] = s->vf[1];
+	m[ 6] = s->vf[2];
+	m[ 7] = -(cx*m[4] + cy*m[5] + cz*m[6]);
+
+	m[ 8] = s->vu[0];
+	m[ 9] = s->vu[1];
+	m[10] = s->vu[2];
+	m[11] = cx*m[8] + cy*m[9] + cz*m[10];
+
+	m[12] = 0.0;
+	m[13] = 0.0;
+	m[14] = 0.0;
+	m[15] = 1.0;
+
+	mat4_transpose((void*)m);
 
 
 	u64* p = (void*)buf;
