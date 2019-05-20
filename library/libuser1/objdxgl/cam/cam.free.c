@@ -187,7 +187,7 @@ static void surround_matrix(
 	struct relation* rel;
 	struct arena* r;
 	struct style* s;
-	say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
 	rel = act->irel0;
 	while(1){

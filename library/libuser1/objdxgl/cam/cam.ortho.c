@@ -38,6 +38,7 @@ static int orthcam_event(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
+	say("orthcam_event@%llx:%x,%x\n", act, ev->why, ev->what);
 	return 1;
 }
 
@@ -51,7 +52,7 @@ static void orthcam_matrix(
 	struct relation* rel;
 	struct arena* r;
 	struct style* s;
-	say("orthcam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+	//say("orthcam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
 	rel = act->irel0;
 	while(1){
@@ -69,7 +70,11 @@ static void orthcam_matrix(
 	int j;
 	float* m = act->buf;
 	for(j=0;j<16;j++)m[j] = 0.0;
-	m[0] = m[5] = m[10] = m[15] = 1.0;
+	m[10] = m[15] = 1.0;
+	m[0] = s->vr[0];
+	m[1] = s->vr[1];
+	m[4] = s->vf[0];
+	m[5] = s->vf[1];
 
 
 	u64* p = (void*)buf;

@@ -241,15 +241,14 @@ void hostviewport_render(
 }
 void hostviewport_camera(struct halfrel* relcam, struct halfrel* relwin)
 {
-	float w,h,x0,y0,x1,y1;
 	struct arena* win = (void*)(relwin->chip);
 	struct style* sty = (void*)(relwin->foot);
-	w = win->fbwidth;
-	h = win->fbheight;
-	x0 = w * sty->vc[0];	//0
-	y0 = h * sty->vc[1];	//0
-	x1 = w * sty->vq[0];	//0.5
-	y1 = h * sty->vq[1];	//1
+	float w = win->fbwidth;
+	float h = win->fbheight;
+	float x0 = w * sty->vc[0];	//0
+	float y0 = h * sty->vc[1];	//0
+	float x1 = w * sty->vq[0];	//0.5
+	float y1 = h * sty->vq[1];	//1
 	glViewport(x0, y0, x1, y1);
 
 
@@ -264,7 +263,7 @@ void hostviewport_camera(struct halfrel* relcam, struct halfrel* relwin)
 	struct datapair* lit = (void*)p[1];
 	struct datapair* solid = (void*)p[2];
 	struct datapair* opaque = (void*)p[3];
-	say("%llx,%llx,%llx,%llx\n",cam,lit,solid,opaque);
+	//say("%llx,%llx,%llx,%llx\n",cam,lit,solid,opaque);
 
 
 	//solid
@@ -311,11 +310,11 @@ void hostwindow_render(struct arena* win)
 		if(0 == rel)break;
 
 		if(_act_ == rel->dsttype){
-			say("act\n");
+			//say("act\n");
 			hostviewport_camera((void*)&rel->dstchip, (void*)&rel->srcchip);
 		}
 		if(_win_ == rel->dsttype){
-			say("win\n");
+			//say("win\n");
 
 			st = (void*)(rel->srcfoot);
 			s1 = (void*)(rel->dstfoot);
@@ -324,5 +323,57 @@ void hostwindow_render(struct arena* win)
 		}
 
 		rel = samesrcnextdst(rel);
+	}
+}
+
+
+
+
+int hostviewport_event(struct halfrel* relcam, struct halfrel* relwin, struct event* ev)
+{
+	short* t;
+	struct arena* win;
+	struct style* sty;
+	float w, h, x, y;
+	float x0, y0, x1, y1;
+	if('p' != (ev->what&0xff))return 0;
+
+	win = (void*)(relwin->chip);
+	sty = (void*)(relwin->foot);
+	w = win->width;
+	h = win->height;
+	x0 = w * sty->vc[0];
+	y0 = h * sty->vc[1];
+	x1 = x0 + w * sty->vq[0];
+	y1 = y0 + h * sty->vq[1];
+
+	t = (void*)ev;
+	x = t[0];
+	y = h-1 - t[1];
+	if(x < x0)return 0;
+	if(y < y0)return 0;
+	if(x > x1)return 0;
+	if(y > y1)return 0;
+
+	return actor_rootwrite(relcam, relwin, ev, 0);
+}
+void hostwindow_event(struct arena* win, struct event* ev)
+{
+	int ret;
+	struct halfrel* self;
+	struct halfrel* peer;
+	struct relation* rel = win->oreln;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(_act_ == rel->dsttype){
+			self = (void*)&rel->dstchip;
+			peer = (void*)&rel->srcchip;
+			ret = hostviewport_event(self, peer, ev);
+			if(ret > 0)break;
+		}
+
+		rel = samesrcprevdst(rel);
 	}
 }

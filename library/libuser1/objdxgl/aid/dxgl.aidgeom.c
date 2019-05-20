@@ -9,9 +9,10 @@ GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
 "layout(location = 1)in mediump vec3 c;\n"
 "out mediump vec3 colour;\n"
+"uniform mat4 cammvp;\n"
 "void main(){\n"
 	"colour = c;\n"
-	"gl_Position = vec4(v, 1.0);\n"
+	"gl_Position = cammvp * vec4(v, 1.0);\n"
 "}\n";
 
 char easy2d_frag[] =
@@ -54,11 +55,12 @@ GLSL_VERSION
 "out mediump vec3 colour;\n"
 "out mediump vec3 vertex;\n"
 "out mediump vec3 normal;\n"
+"uniform mat4 cammvp;\n"
 "void main(){\n"
 	"vertex = v;\n"
 	"colour = c;\n"
 	"normal = vec3(0.0, 0.0, -1.0);\n"
-	"gl_Position = vec4(vertex,1.0);\n"
+	"gl_Position = cammvp * vec4(vertex,1.0);\n"
 "}\n";
 
 char glsl2d_frag[] =
@@ -177,9 +179,10 @@ GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
 "layout(location = 1)in mediump vec4 c;\n"
 "out mediump vec4 colour;\n"
+"uniform mat4 cammvp;\n"
 "void main(){\n"
 	"colour = c;\n"
-	"gl_Position = vec4(v, 1.0);\n"
+	"gl_Position = cammvp * vec4(v, 1.0);\n"
 "}\n";
 
 char opaque2d_frag[] =

@@ -14,11 +14,15 @@ int fbocreate(struct arena* win, char* arg);
 void coopwindow_create(void*);
 void coopwindow_update(void*);
 void coopwindow_render(void*);
+void coopwindow_event(void*, void*);
 //
 void hostwindow_create(void*);
-void hostwindow_render(void*);
 void hostwindow_update(void*);
+void hostwindow_render(void*);
+void hostwindow_event(void*, void*);
 //
+void testwindow_create(void*);
+void testwindow_update(void*);
 void testwindow_render(void*);
 void testwindow_event(void*, void*);
 //
@@ -310,7 +314,7 @@ void windowread(struct arena* win)
 		if(0 == fw)return;
 
 		vbonode_sread(win, 0);
-		say("@@@@@@%llx\n",win);
+		//say("@@@@@@%llx\n",win);
 
 		glfwMakeContextCurrent(fw);
 		hostwindow_update(win);
@@ -353,27 +357,13 @@ void windowread(struct arena* win)
 }
 void windowwrite(struct arena* win, struct event* ev)
 {
-	struct relation* rel;
-	struct arena* ctx;
-	struct style* st;
+	struct relation* rel = win->oreln;
 
-	rel = win->oreln;
 	if(0 == rel){
 		testwindow_event(win, ev);
-		return;
 	}
-
-	while(1)
-	{
-		if(0 == rel)break;
-
-		if(_win_ == rel->dsttype){
-			ctx = (void*)(rel->dstchip);
-			vbonode_swrite(ctx, 0, ev);
-			break;
-		}
-
-		rel = samesrcprevdst(rel);
+	else{
+		hostwindow_event(win, ev);
 	}
 }
 void windowchange()

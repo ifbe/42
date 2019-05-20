@@ -51,10 +51,11 @@ GLSL_VERSION
 "layout(location = 2)in mediump vec2 t;\n"
 "out mediump vec3 colour;\n"
 "out mediump vec2 texuvw;\n"
+"uniform mat4 cammvp;\n"
 "void main(){\n"
 	"colour = c;\n"
 	"texuvw = t;\n"
-	"gl_Position = vec4(v, 1.0);\n"
+	"gl_Position = cammvp * vec4(v, 1.0);\n"
 "}\n";
 
 

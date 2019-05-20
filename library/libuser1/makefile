@@ -72,6 +72,8 @@ objcode/code.call.c \
 objcode/code.for.c \
 objcode/code.if.c \
 objcode/code.jump.c \
+objdxgl/aid/dxgl.aidfont.c \
+objdxgl/aid/dxgl.aidgeom.c \
 objdxgl/cam/cam.ortho.c \
 objdxgl/cam/cam.1rd.c \
 objdxgl/cam/cam.3rd.c \
@@ -85,8 +87,6 @@ objdxgl/fbo/fbo.water.c \
 objdxgl/light/light.direction.c \
 objdxgl/light/light.point.c \
 objdxgl/light/light.spot.c \
-objdxgl/dxgl.aidfont.c \
-objdxgl/dxgl.aidgeom.c \
 objdxgl/dxgl.ground.c \
 objdxgl/dxgl.particle.c \
 objdxgl/dxgl.shadowmap.c \
