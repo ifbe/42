@@ -214,6 +214,6 @@ p8{}
 (uiworld, sty7, win, ui) -> (corner, p7, act, 0)
 (uiworld, sty8, win, ui) -> (pointer, p8, act, 0)
 
-(player1, 0, win, con) -> (camtr, 0, act, con)
-(player2, 0, win, con) -> (cambl, 0, act, con)
+(player1, 0, win, con) -> (cambl, 0, act, con)
+(player2, 0, win, con) -> (camtr, 0, act, con)
 </relation>

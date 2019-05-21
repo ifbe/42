@@ -74,6 +74,9 @@ static void orthcam_matrix(
 	float cy = s->vc[1];
 	float cz = s->vc[2];
 /*
+	m[0] = m[5] = m[10] = 1.0;
+	m[1] = m[2] = m[3] = m[4] = m[6] = m[7] = m[8] = m[9] = m[11] = 0.0;
+*/
 	m[ 0] = s->vr[0];
 	m[ 1] = s->vr[1];
 	m[ 2] = s->vr[2];
@@ -84,13 +87,10 @@ static void orthcam_matrix(
 	m[ 6] = s->vf[2];
 	m[ 7] = -(cx*m[4] + cy*m[5] + cz*m[6]);
 
-	m[ 8] = s->vu[0];
-	m[ 9] = s->vu[1];
-	m[10] = s->vu[2];
+	m[ 8] =-s->vu[0];
+	m[ 9] =-s->vu[1];
+	m[10] =-s->vu[2];
 	m[11] = cx*m[8] + cy*m[9] + cz*m[10];
-*/
-	m[0] = m[5] = m[10] = 1.0;
-	m[1] = m[2] = m[3] = m[4] = m[6] = m[7] = m[8] = m[9] = m[11] = 0.0;
 
 	m[12] = 0.0;
 	m[13] = 0.0;
