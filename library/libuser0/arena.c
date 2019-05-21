@@ -598,10 +598,10 @@ void initarena(u8* addr)
 	for(j=0;j<0x400000;j++)addr[j]=0;
 	for(j=0;j<max;j++)arena[j].tier = _win_;
 
-	initjoy(arena);
 	initstd(arena);
-	inittray(arena);
 	initwindow(arena);
+	inittray(arena);
+	initjoy(arena);
 
 	//say("[c,f):inited arena\n");
 }

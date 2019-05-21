@@ -336,7 +336,6 @@ int hostviewport_event(struct halfrel* relcam, struct halfrel* relwin, struct ev
 	struct style* sty;
 	float w, h, x, y;
 	float x0, y0, x1, y1;
-	if('p' != (ev->what&0xff))return 0;
 
 	win = (void*)(relwin->chip);
 	sty = (void*)(relwin->foot);
@@ -347,15 +346,19 @@ int hostviewport_event(struct halfrel* relcam, struct halfrel* relwin, struct ev
 	x1 = x0 + w * sty->vq[0];
 	y1 = y0 + h * sty->vq[1];
 
-	t = (void*)ev;
-	x = t[0];
-	y = h-1 - t[1];
-	if(x < x0)return 0;
-	if(y < y0)return 0;
-	if(x > x1)return 0;
-	if(y > y1)return 0;
+	if('p' == (ev->what&0xff)){
+		t = (void*)ev;
+		x = t[0];
+		y = h-1 - t[1];
+		if(x < x0)return 0;
+		if(y < y0)return 0;
+		if(x > x1)return 0;
+		if(y > y1)return 0;
 
-	return actor_rootwrite(relcam, relwin, ev, 0);
+		return actor_rootwrite(relcam, relwin, ev, 0);
+	}
+
+	return 0;
 }
 void hostwindow_event(struct arena* win, struct event* ev)
 {

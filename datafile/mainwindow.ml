@@ -1,11 +1,4 @@
 <arena>
-window{
-fmt:win
-title:"42"
-width:1024
-height:1024
-depth:1024
-}
 3dworld{
 fmt:vbo
 type:3d
@@ -13,6 +6,19 @@ type:3d
 uiworld{
 fmt:vbo
 type:ui
+}
+window{
+fmt:win
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+player1{
+fmt:joy
+}
+player2{
+fmt:joy
 }
 </arena>
 
@@ -49,6 +55,9 @@ fmt:aidfont
 }
 geomhelper{
 fmt:aidgeom
+}
+overview{
+fmt:overview
 }
 vjoy{
 fmt:vjoy
@@ -135,7 +144,11 @@ r: 1.0, 0.0, 0.0
 f: 0.0, 1.0, 0.0
 u: 0.0, 0.0,-1.0
 }
-sty4{}
+ovv{
+c: 0.0, 0.0, 0.0
+r: 1.0, 0.0, 0.0
+f: 0.0, 1.0, 0.0
+}
 sty5{
 c: 0.0,-0.75, 0.0
 r: 1.0, 0.0, 0.0
@@ -195,8 +208,12 @@ p8{}
 (uiworld, ortho, win, cam) -> (uicamera, 0, act, geom)
 (uiworld, 0, win, aid) -> (geomhelper, 0, act, 0)
 (uiworld, 0, win, aid) -> (fonthelper, 0, act, 0)
+(uiworld, ovv, win, ui) -> (overview, p4, act, 0)
 (uiworld, sty5, win, ui) -> (vjoy, p5, act, 0)
 (uiworld, sty6, win, ui) -> (vkbd, p6, act, 0)
 (uiworld, sty7, win, ui) -> (corner, p7, act, 0)
 (uiworld, sty8, win, ui) -> (pointer, p8, act, 0)
+
+(player1, 0, win, con) -> (camtr, 0, act, con)
+(player2, 0, win, con) -> (cambl, 0, act, con)
 </relation>

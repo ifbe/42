@@ -501,6 +501,64 @@ static int surround_event(
 	surround_fixcam(win);
 	return 1;
 }
+static int surround_event1(
+	struct actor* act, struct pinid* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
+{
+	struct relation* rel;
+	struct style* s;
+	short* t;
+
+	if('p' == (ev->what&0xff))
+	{
+	}
+	else if(joy_left == (ev->what & joy_mask))
+	{
+		rel = act->irel0;
+		while(1){
+			if(0 == rel)return 0;
+
+			if(hex32('g','e','o','m') == rel->dstflag){
+				s = (void*)(rel->srcfoot);
+				break;
+			}
+			rel = samedstnextsrc(rel);
+		}
+
+		t = (void*)ev;
+		if(t[3] & joyl_left)		//x-
+		{
+			s->vc[0] -= 10;
+		}
+		if(t[3] & joyl_right)		//x+
+		{
+			s->vc[0] += 10;
+		}
+		if(t[3] & joyl_down)		//y-
+		{
+			s->vc[1] -= 10;
+		}
+		if(t[3] & joyl_up)			//y+
+		{
+			s->vc[1] += 10;
+		}
+		if(t[3] & joyl_trigger)		//z-
+		{
+			s->vc[2] -= 10;
+		}
+		if(t[3] & joyl_bumper)		//z+
+		{
+			s->vc[2] += 10;
+		}
+	}
+	else if(joy_right == (ev->what & joy_mask))
+	{
+		t = (void*)ev;
+	}
+
+	return 1;
+}
 
 
 
@@ -523,7 +581,7 @@ static int surround_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	return surround_event(act, pin, win, sty, ev, 0);
+	return surround_event1(act, pin, win, sty, ev, 0);
 }
 static void surround_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {

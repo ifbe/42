@@ -7,20 +7,66 @@
 
 
 
+static void* matchtable[10];
+
+
+
 
 static void joystick_sendevent(void* p, int j)
 {
 	struct event ev;
+	struct arena* joy;
+	struct relation* rel;
+	struct halfrel* self;
+	struct halfrel* peer;
+
 	ev.where = 0;
 	ev.when = 0;
 
-	ev.why = *(u64*)(p+0);
-	ev.what = joy_left;
-	arenaevent(&ev);
+	joy = matchtable[j];
+	if(0 == joy){
+		ev.why = *(u64*)(p+0);
+		ev.what = joy_left;
+		arenaevent(&ev);
 
-	ev.why = *(u64*)(p+8);
-	ev.what = joy_right;
-	arenaevent(&ev);
+		ev.why = *(u64*)(p+8);
+		ev.what = joy_right;
+		arenaevent(&ev);
+
+		return;
+	}
+
+	rel = joy->orel0;
+	if(0 == rel){
+		ev.why = *(u64*)(p+0);
+		ev.what = joy_left;
+		printmemory(&ev, 16);
+
+		ev.why = *(u64*)(p+8);
+		ev.what = joy_right;
+		printmemory(&ev, 16);
+
+		return;
+	}
+
+	while(1){
+		if(0 == rel)break;
+
+		if(_act_ == rel->dsttype){
+			self = (void*)&rel->dstchip;
+			peer = (void*)&rel->srcchip;
+
+			ev.why = *(u64*)(p+0);
+			ev.what = joy_left;
+			actor_rootwrite(self, peer, &ev, 0);
+
+			ev.why = *(u64*)(p+8);
+			ev.what = joy_right;
+			actor_rootwrite(self, peer, &ev, 0);
+		}
+
+		rel = samesrcnextdst(rel);
+	}
 }
 static void joystick_gamepad(struct xyzwpair* pair, int j)
 {
@@ -221,14 +267,27 @@ static void callback_joystick(int id, int ev)
 
 
 
+void joydelete(struct arena* win)
+{
+}
 void joycreate(struct arena* win)
 {
-	glfwSetJoystickCallback(callback_joystick);
-	threadcreate(thread_joystick, 0);
-}
-void initjoy()
-{
+	int j;
+	for(j=0;j<10;j++){
+		if(0 == matchtable[j]){
+			matchtable[j] = win;
+			break;
+		}
+	}
 }
 void freejoy()
 {
+}
+void initjoy()
+{
+	int j;
+	for(j=0;j<10;j++)matchtable[j] = 0;
+
+	glfwSetJoystickCallback(callback_joystick);
+	threadcreate(thread_joystick, 0);
 }
