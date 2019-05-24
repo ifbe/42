@@ -45,6 +45,75 @@ static int orthcam_event(
 
 
 
+static void ortho_v(mat4 m, struct style* s)
+{
+	float cx = s->vc[0];
+	float cy = s->vc[1];
+	float cz = s->vc[2];
+
+	m[0][0] = s->vr[0];
+	m[0][1] = s->vr[1];
+	m[0][2] = s->vr[2];
+	m[0][3] = -(cx*m[0][0] + cy*m[0][1] + cz*m[0][2]);
+
+	m[1][0] = s->vf[0];
+	m[1][1] = s->vf[1];
+	m[1][2] = s->vf[2];
+	m[1][3] = -(cx*m[1][0] + cy*m[1][1] + cz*m[1][2]);
+
+	m[2][0] =-s->vu[0];
+	m[2][1] =-s->vu[1];
+	m[2][2] =-s->vu[2];
+	m[2][3] = cx*m[2][0] + cy*m[2][1] + cz*m[2][2];
+
+	m[3][0] = 0.0;
+	m[3][1] = 0.0;
+	m[3][2] = 0.0;
+	m[3][3] = 1.0;
+}
+static void ortho_p(mat4 m, struct style* s)
+{
+	float l =-1.0;
+	float r = 1.0;
+	float b =-1.0;
+	float t = 1.0;
+	float n =-1.0;
+	float f = 1.0;
+
+	m[0][0] = 2.0 / (r-l);
+	m[0][1] = 0.0;
+	m[0][2] = 0.0;
+	m[0][3] = (l+r) / (l-r);
+
+	m[1][0] = 0.0;
+	m[1][1] = 2.0 / (t-b);
+	m[1][2] = 0.0;
+	m[1][3] = (b+t) / (b-t);
+
+	m[2][0] = 0.0;
+	m[2][1] = 0.0;
+	m[2][2] = 2.0 / (f-n);
+	m[2][3] = (n+f) / (n-f);
+
+	m[3][0] = 0.0;
+	m[3][1] = 0.0;
+	m[3][2] = 0.0;
+	m[3][3] = 1.0;
+}
+static void ortho_mvp(mat4 m, struct style* s)
+{
+	mat4 t;
+	ortho_p(m, s);
+
+	//ortho_o(t, s);
+	//mat4_multiply(m, t);
+
+	//ortho_p(t, s);
+	//mat4_multiply(m, t);
+
+	ortho_v(t, s);
+	mat4_multiply(m, t);
+}
 static void orthcam_matrix(
 	struct actor* act, struct pinid* pin,
 	u8* buf, int len)
@@ -69,34 +138,7 @@ static void orthcam_matrix(
 
 	int j;
 	float* m = act->buf;
-
-	float cx = s->vc[0];
-	float cy = s->vc[1];
-	float cz = s->vc[2];
-/*
-	m[0] = m[5] = m[10] = 1.0;
-	m[1] = m[2] = m[3] = m[4] = m[6] = m[7] = m[8] = m[9] = m[11] = 0.0;
-*/
-	m[ 0] = s->vr[0];
-	m[ 1] = s->vr[1];
-	m[ 2] = s->vr[2];
-	m[ 3] = -(cx*m[0] + cy*m[1] + cz*m[2]);
-
-	m[ 4] = s->vf[0];
-	m[ 5] = s->vf[1];
-	m[ 6] = s->vf[2];
-	m[ 7] = -(cx*m[4] + cy*m[5] + cz*m[6]);
-
-	m[ 8] =-s->vu[0];
-	m[ 9] =-s->vu[1];
-	m[10] =-s->vu[2];
-	m[11] = cx*m[8] + cy*m[9] + cz*m[10];
-
-	m[12] = 0.0;
-	m[13] = 0.0;
-	m[14] = 0.0;
-	m[15] = 1.0;
-
+	ortho_mvp((void*)m, s);
 	mat4_transpose((void*)m);
 
 

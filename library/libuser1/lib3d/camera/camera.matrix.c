@@ -136,12 +136,13 @@ void fixproj(mat4 proj, struct style* sty)
 }
 void fixmatrix(mat4 m, struct style* sty)
 {
-	int x;
 	mat4 t;
-
 	fixproj(m, sty);
 
 	//fixorie(t);
+	//mat4_multiply(m, t);
+
+	//fixproj(t, sty);
 	//mat4_multiply(m, t);
 
 	fixview(t, sty);

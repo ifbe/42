@@ -281,7 +281,7 @@ void* systemcreate(u64 type, void* argstr)
 	//decode ipaddr
 	port = 80;
 	url = name + parseurl(name, 0x100, host, &port);
-	say("systemcreate: %.8s://%s:%d/%s\n", &type, host, port, url);
+	//say("systemcreate: %.8s://%s:%d/%s\n", &type, host, port, url);
 
 	if(_RAW_ == type)		//raw server
 	{

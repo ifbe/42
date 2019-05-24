@@ -1,8 +1,6 @@
 #include "libuser.h"
 int openreadclose(void*,int,void*,int);
 int openwriteclose(void*,int,void*,int);
-void* allocarena();
-void* allocactor();
 void* allocstyle();
 void* allocpinid();
 int actorstart(void*, void*);
@@ -32,11 +30,10 @@ int parsefmt(u8* buf, u8* str)
 
 	for(j=0;j<8;j++){
 		k = str[j];
-		if((k >= '0') && (k <= '9')){
-			buf[j] = k;
-			continue;
-		}
-		if((k >= 'a') && (k <= 'z')){
+		if( ((k >= '0') && (k <= '9')) |
+			((k >= 'A') && (k <= 'Z')) |
+			((k >= 'a') && (k <= 'z')) )
+		{
 			buf[j] = k;
 			continue;
 		}
@@ -135,21 +132,23 @@ void role_test_relation(u8* buf, int len,
 			if(wirerrrr >= 0) {
 				//say("r(%.*s)\n", j-wirerrrr, buf+wirerrrr);
 
+				dst.chip = dst.foot = 0;
+				dst.type = dst.flag = 0;
 				parserelation(buf+wirerrrr, j-wirerrrr,
 					chip, clen, foot, flen,
 					&dst);
 
-				say("%llx,%llx,%.4s,%.4s -> %llx,%llx,%.4s,%.4s\n",
-					src.chip, src.foot, &src.type, &src.flag,
-					dst.chip, dst.foot, &dst.type, &dst.flag
-				);
-
-				rel = relationcreate(
-					(void*)dst.chip, (void*)dst.foot, dst.type, dst.flag,
-					(void*)src.chip, (void*)src.foot, src.type, src.flag
-				);
-				if(_act_ == rel->dsttype){
-					actorstart(&rel->dstchip, &rel->srcchip);
+				if((0 != dst.chip) && (0 != src.chip))
+				{
+					say("%llx,%llx,%.4s,%.4s -> %llx,%llx,%.4s,%.4s\n",
+						src.chip, src.foot, &src.type, &src.flag,
+						dst.chip, dst.foot, &dst.type, &dst.flag
+					);
+					rel = relationcreate(
+						(void*)dst.chip, (void*)dst.foot, dst.type, dst.flag,
+						(void*)src.chip, (void*)src.foot, src.type, src.flag
+					);
+					if(_act_ == rel->dsttype)actorstart(&rel->dstchip, &rel->srcchip);
 				}
 
 				wirellll = wirerrrr = -1;
@@ -157,181 +156,14 @@ void role_test_relation(u8* buf, int len,
 			else if(wirellll >= 0) {
 				//say("l(%.*s) to ", j-wirellll, buf+wirellll);
 
+				src.chip = src.foot = 0;
+				src.type = src.flag = 0;
 				parserelation(buf+wirellll, j-wirellll,
 					chip, clen, foot, flen,
 					&src);
 			}
 		}
 	}//for
-}
-
-
-
-
-int role_test_arena(u8* buf, int len, struct chiplist chip[], int clen)
-{
-	//say("arena:\n%.*s\n", len, buf);
-
-	u64 hash;
-
-	u64 fmt;
-	u64 file;
-
-	int j,k;
-	int str = -1;
-
-	int nodename = -1;
-	int nodedata = -1;
-
-	int propname = -1;
-	int propdata = -1;
-
-	for(j=0;j<=len;j++) {
-		k = buf[j];
-
-		if( (j == len) | ('\n' == k) ) {
-
-			str = -1;
-			continue;
-		}
-
-		if(	((k >= '0') && (k <= '9')) |
-			((k >= 'a') && (k <= 'z')) )
-		{
-			if(str < 0)str = j;
-			continue;
-		}
-
-		//propname: ...
-		if(':' == k) {
-			//in <type> && in node{} && have str
-			if( (nodename >= 0) && (str >= 0) ) {
-				propdata = j+1;
-				propname = str;
-				str = -1;
-
-				//say("propname = %.*s\n", j-propname, buf+propname);
-				if(0 == ncmp(buf+propname, "fmt", 3)){
-					parsefmt((void*)&fmt, buf+propdata);
-					//say("%llx\n", fmt);
-				}
-				if(0 == ncmp(buf+propname, "file", 4)){
-				}
-			}
-			continue;
-		}
-
-		//nodename{...}
-		if('{' == k) {
-			nodename = str;
-			nodedata = j+1;
-			str = -1;
-
-			parsefmt((void*)&hash, buf+nodename);
-			//say("winnode=%.*s\n", j-nodename, buf+nodename);
-		}
-		if('}' == k) {
-			if(nodename >= 0){
-				nodename = -1;
-
-				chip[clen].tier = _win_;
-				chip[clen].type = fmt;
-
-				chip[clen].hash = hash;
-				chip[clen].addr = arenacreate(fmt, 0);
-				//say("@%llx\n", arenabuf[arenalen]);
-
-				clen += 1;
-			}//if innode
-
-			fmt = 0;
-			file = 0;
-		}//if }
-	}//for
-
-	return clen;
-}
-int role_test_actor(u8* buf, int len, struct chiplist chip[], int clen)
-{
-	//say("actor:\n%.*s\n", len, buf);
-	u64 hash;
-
-	u64 fmt;
-	u64 file;
-
-	int j,k;
-	int str = -1;
-
-	int nodename = -1;
-	int nodedata = -1;
-
-	int propname = -1;
-	int propdata = -1;
-
-	for(j=0;j<=len;j++) {
-		k = buf[j];
-
-		if( (j == len) | ('\n' == k) ) {
-
-			str = -1;
-			continue;
-		}
-
-		if(	((k >= '0') && (k <= '9')) |
-			((k >= 'a') && (k <= 'z')) )
-		{
-			if(str < 0)str = j;
-			continue;
-		}
-
-		//propname: ...
-		if(':' == k) {
-			//in <type> && in node{} && have str
-			if( (nodename >= 0) && (str >= 0) ) {
-				propdata = j+1;
-				propname = str;
-				str = -1;
-
-				//say("propname = %.*s\n", j-propname, buf+propname);
-				if(0 == ncmp(buf+propname, "fmt", 3)){
-					parsefmt((void*)&fmt, buf+propdata);
-					//say("%llx\n", fmt);
-				}
-				if(0 == ncmp(buf+propname, "file", 4)){
-				}
-			}
-			continue;
-		}
-
-		//nodename{...}
-		if('{' == k) {
-			nodename = str;
-			nodedata = j+1;
-			str = -1;
-
-			parsefmt((void*)&hash, buf+nodename);
-			//say("actnode=%.*s\n", j-nodename, buf+nodename);
-		}
-		if('}' == k) {
-			if(nodename >= 0){
-				nodename = -1;
-
-				chip[clen].tier = _act_;
-				chip[clen].type = fmt;
-
-				chip[clen].hash = hash;
-				chip[clen].addr = actorcreate(fmt, 0);
-				//say("@%llx\n", act);
-
-				clen += 1;
-			}//if innode
-
-			fmt = 0;
-			file = 0;
-		}//if }
-	}//for
-
-	return clen;
 }
 
 
@@ -556,6 +388,382 @@ int role_test_pinid(u8* buf, int len, struct footlist foot[], int flen)
 
 
 
+int role_test_arena(u8* buf, int len, struct chiplist chip[], int clen)
+{
+	//say("arena:\n%.*s\n", len, buf);
+	u64 hash;
+	u64 fmt;
+	u8* file;
+	u8* tmp;
+
+	int j,k;
+	int str = -1;
+
+	int nodename = -1;
+	int nodedata = -1;
+
+	int propname = -1;
+	int propdata = -1;
+
+	for(j=0;j<=len;j++) {
+		k = buf[j];
+
+		if( (j == len) | ('\n' == k) ) {
+
+			str = -1;
+			continue;
+		}
+
+		if(	((k >= '0') && (k <= '9')) |
+			((k >= 'a') && (k <= 'z')) )
+		{
+			if(str < 0)str = j;
+			continue;
+		}
+
+		//propname: ...
+		if(':' == k) {
+			//in <type> && in node{} && have str
+			if( (nodename >= 0) && (str >= 0) ) {
+				propdata = j+1;
+				propname = str;
+				str = -1;
+
+				//say("propname = %.*s\n", j-propname, buf+propname);
+				if(0 == ncmp(buf+propname, "fmt", 3)){
+					parsefmt((void*)&fmt, buf+propdata);
+					//say("%llx\n", fmt);
+				}
+				if(0 == ncmp(buf+propname, "file", 4)){
+					file = buf+propdata;
+					while(*file == 0x20)file++;
+
+					tmp = file;
+					while(1){
+						if((*tmp == 0xa) | (*tmp == 0xd)){
+							*tmp = 0;
+							break;
+						}
+						tmp++;
+					}
+				}
+			}
+			continue;
+		}
+
+		//nodename{...}
+		if('{' == k) {
+			nodename = str;
+			nodedata = j+1;
+			str = -1;
+
+			parsefmt((void*)&hash, buf+nodename);
+			//say("winnode=%.*s\n", j-nodename, buf+nodename);
+		}
+		if('}' == k) {
+			if(nodename >= 0){
+				nodename = -1;
+
+				chip[clen].tier = _win_;
+				chip[clen].type = fmt;
+
+				chip[clen].hash = hash;
+				chip[clen].addr = arenacreate(fmt, 0);
+				//say("@%llx\n", arenabuf[arenalen]);
+
+				clen += 1;
+			}//if innode
+
+			fmt = 0;
+			file = 0;
+		}//if }
+	}//for
+
+	return clen;
+}
+int role_test_actor(u8* buf, int len, struct chiplist chip[], int clen)
+{
+	//say("actor:\n%.*s\n", len, buf);
+	u64 hash;
+	u64 fmt;
+	u8* file;
+	u8* tmp;
+
+	int j,k;
+	int str = -1;
+
+	int nodename = -1;
+	int nodedata = -1;
+
+	int propname = -1;
+	int propdata = -1;
+
+	for(j=0;j<=len;j++) {
+		k = buf[j];
+
+		if( (j == len) | ('\n' == k) ) {
+
+			str = -1;
+			continue;
+		}
+
+		if(	((k >= '0') && (k <= '9')) |
+			((k >= 'a') && (k <= 'z')) )
+		{
+			if(str < 0)str = j;
+			continue;
+		}
+
+		//propname: ...
+		if(':' == k) {
+			//in <type> && in node{} && have str
+			if( (nodename >= 0) && (str >= 0) ) {
+				propdata = j+1;
+				propname = str;
+				str = -1;
+
+				//say("propname = %.*s\n", j-propname, buf+propname);
+				if(0 == ncmp(buf+propname, "fmt", 3)){
+					parsefmt((void*)&fmt, buf+propdata);
+					//say("%llx\n", fmt);
+				}
+				if(0 == ncmp(buf+propname, "file", 4)){
+					file = buf+propdata;
+					while(*file == 0x20)file++;
+
+					tmp = file;
+					while(1){
+						if((*tmp == 0xa) | (*tmp == 0xd)){
+							*tmp = 0;
+							break;
+						}
+						tmp++;
+					}
+				}
+			}
+			continue;
+		}
+
+		//nodename{...}
+		if('{' == k) {
+			nodename = str;
+			nodedata = j+1;
+			str = -1;
+
+			parsefmt((void*)&hash, buf+nodename);
+			//say("actnode=%.*s\n", j-nodename, buf+nodename);
+		}
+		if('}' == k) {
+			if(nodename >= 0){
+				nodename = -1;
+
+				chip[clen].tier = _act_;
+				chip[clen].type = fmt;
+
+				chip[clen].hash = hash;
+				chip[clen].addr = actorcreate(fmt, file);
+				//say("@%llx\n", act);
+
+				clen += 1;
+			}//if innode
+
+			fmt = 0;
+			file = 0;
+		}//if }
+	}//for
+
+	return clen;
+}
+int role_test_system(u8* buf, int len, struct chiplist chip[], int clen)
+{
+	//say("system:\n%.*s\n", len, buf);
+	u64 hash;
+	u64 fmt;
+	u8* url;
+	u8* tmp;
+
+	int j,k;
+	int str = -1;
+
+	int nodename = -1;
+	int nodedata = -1;
+
+	int propname = -1;
+	int propdata = -1;
+
+	for(j=0;j<=len;j++) {
+		k = buf[j];
+
+		if( (j == len) | ('\n' == k) ) {
+
+			str = -1;
+			continue;
+		}
+
+		if(	((k >= '0') && (k <= '9')) |
+			((k >= 'a') && (k <= 'z')) )
+		{
+			if(str < 0)str = j;
+			continue;
+		}
+
+		//propname: ...
+		if(':' == k) {
+			//in <type> && in node{} && have str
+			if( (nodename >= 0) && (str >= 0) ) {
+				propdata = j+1;
+				propname = str;
+				str = -1;
+
+				//say("propname = %.*s\n", j-propname, buf+propname);
+				if(0 == ncmp(buf+propname, "fmt", 3)){
+					parsefmt((void*)&fmt, buf+propdata);
+					//say("%llx\n", fmt);
+				}
+				if(0 == ncmp(buf+propname, "url", 3)){
+					url = buf+propdata;
+					while(*url == 0x20)url++;
+
+					tmp = url;
+					while(1){
+						if((*tmp == 0xa) | (*tmp == 0xd)){
+							*tmp = 0;
+							break;
+						}
+						tmp++;
+					}
+				}
+			}
+			continue;
+		}
+
+		//nodename{...}
+		if('{' == k) {
+			nodename = str;
+			nodedata = j+1;
+			str = -1;
+
+			parsefmt((void*)&hash, buf+nodename);
+			//say("actnode=%.*s\n", j-nodename, buf+nodename);
+		}
+		if('}' == k) {
+			if(nodename >= 0){
+				nodename = -1;
+
+				chip[clen].tier = _fd_;
+				chip[clen].type = fmt;
+
+				chip[clen].hash = hash;
+				chip[clen].addr = systemcreate(fmt, url);
+				//say("@%llx\n", act);
+
+				clen += 1;
+			}//if innode
+
+			fmt = 0;
+			url = 0;
+		}//if }
+	}//for
+
+	return clen;
+}
+int role_test_artery(u8* buf, int len, struct chiplist chip[], int clen)
+{
+	//say("artery:\n%.*s\n", len, buf);
+	u64 hash;
+	u64 fmt;
+	u8* url;
+	u8* tmp;
+
+	int j,k;
+	int str = -1;
+
+	int nodename = -1;
+	int nodedata = -1;
+
+	int propname = -1;
+	int propdata = -1;
+
+	for(j=0;j<=len;j++) {
+		k = buf[j];
+
+		if( (j == len) | ('\n' == k) ) {
+
+			str = -1;
+			continue;
+		}
+
+		if(	((k >= '0') && (k <= '9')) |
+			((k >= 'a') && (k <= 'z')) )
+		{
+			if(str < 0)str = j;
+			continue;
+		}
+
+		//propname: ...
+		if(':' == k) {
+			//in <type> && in node{} && have str
+			if( (nodename >= 0) && (str >= 0) ) {
+				propdata = j+1;
+				propname = str;
+				str = -1;
+
+				//say("propname = %.*s\n", j-propname, buf+propname);
+				if(0 == ncmp(buf+propname, "fmt", 3)){
+					parsefmt((void*)&fmt, buf+propdata);
+					//say("%d:%llx\n", propdata, fmt);
+				}
+				if(0 == ncmp(buf+propname, "url", 3)){
+					url = buf+propdata;
+					while(*url == 0x20)url++;
+
+					tmp = url;
+					while(1){
+						if((*tmp == 0xa) | (*tmp == 0xd)){
+							*tmp = 0;
+							break;
+						}
+						tmp++;
+					}
+				}
+			}
+			continue;
+		}
+
+		//nodename{...}
+		if('{' == k) {
+			nodename = str;
+			nodedata = j+1;
+			str = -1;
+
+			parsefmt((void*)&hash, buf+nodename);
+			//say("actnode=%.*s\n", j-nodename, buf+nodename);
+		}
+		if('}' == k) {
+			if(nodename >= 0){
+				nodename = -1;
+
+				chip[clen].tier = _art_;
+				chip[clen].type = fmt;
+
+				chip[clen].hash = hash;
+				chip[clen].addr = arterycreate(fmt, url);
+				//say("haha:%llx,%llx\n", fmt, url);
+
+				clen += 1;
+			}//if innode
+
+			fmt = 0;
+			url = 0;
+		}//if }
+	}//for
+
+	return clen;
+}
+
+
+
+
 void role_test1(u8* buf, int len)
 {
 	int j,k;
@@ -595,6 +803,18 @@ void role_test1(u8* buf, int len)
 				typename = j+1;
 			}
 			else {
+				if(0 == ncmp(buf+typename, "system", 6)) {
+					clen = role_test_system(
+						buf + typedata, j-typedata,
+						cbuf, clen
+					);
+				}
+				if(0 == ncmp(buf+typename, "artery", 6)) {
+					clen = role_test_artery(
+						buf + typedata, j-typedata,
+						cbuf, clen
+					);
+				}
 				if(0 == ncmp(buf+typename, "arena", 5)) {
 					clen = role_test_arena(
 						buf + typedata, j-typedata,
@@ -662,7 +882,7 @@ int role_fromfile(int argc, u8** argv)
 	u8 buf[0x1000];
 
 	if(argc >= 2)str = (char*)argv[1];
-	else str = "datafile/mainwindow.ml";
+	else str = "datafile/myml/mainwindow.myml";
 
 	len = openreadclose(str, 0, buf, 0x1000);
 	if(len <= 0)return 0;

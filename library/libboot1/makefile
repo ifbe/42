@@ -4,7 +4,7 @@ cflag ?= -c -O2 -fPIC
 target:
 	$(compiler) $(cflag) main.c
 	$(compiler) $(cflag) prep/prep.c
-	$(compiler) $(cflag) prep/prep.config.c
+	$(compiler) $(cflag) prep/prep.myml.c
 	$(compiler) $(cflag) prep/prep.default.c
 	$(compiler) $(cflag) loop/loop.c
 	$(compiler) $(cflag) loop/loop.test.c

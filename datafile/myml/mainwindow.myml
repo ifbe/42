@@ -38,7 +38,7 @@ fmt:freecam
 }
 texball{
 fmt:texball
-file:"datafile/jpg/skysphere.jpg"
+file:datafile/jpg/skysphere.jpg
 }
 terrain{
 fmt:ground
