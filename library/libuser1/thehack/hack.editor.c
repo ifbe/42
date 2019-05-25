@@ -8,22 +8,22 @@ static u8 buffer[16];
 
 
 static void editor_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void editor_draw_vbo(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void editor_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void editor_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int len = win->len;
@@ -38,18 +38,18 @@ static void editor_draw_html(
 	win->len = len;
 }
 static void editor_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void editor_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	say("editor(%x,%x,%x)\n",win,act,sty);
 }
 static void editor_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -69,7 +69,7 @@ static void editor_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	editor_draw(act, pin, win, sty);

@@ -26,7 +26,7 @@ static struct plannet data[9] = {
 
 
 static void planet_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u32 c;
@@ -35,10 +35,10 @@ static void planet_draw_pixel(
 	u64 t = timeread() / 10000;
 	if(sty)
 	{
-		cx = sty->vc[0];
-		cy = sty->vc[1];
-		ww = sty->vr[0];
-		hh = sty->vf[1];
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
 	}
 	else
 	{
@@ -64,7 +64,7 @@ static void planet_draw_pixel(
 	}
 }
 static void planet_draw_vbo2d(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int j;
@@ -73,10 +73,10 @@ static void planet_draw_vbo2d(
 	vec3 tc, tr, tf, tu, f;
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 	u64 t = timeread() / 10000;
 
 	for(j=0;j<9;j++)
@@ -112,17 +112,17 @@ static void planet_draw_vbo2d(
 	}
 }
 static void planet_draw_vbo3d(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int j;
 	float l, r;
 	float a, c, s;
 	vec3 tc, tr, tf, tu, f;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 	u64 t = timeread() / 10000;
 
 	for(j=0;j<9;j++)
@@ -158,12 +158,12 @@ static void planet_draw_vbo3d(
 	}
 }
 static void planet_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void planet_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int len = win->len;
@@ -178,17 +178,17 @@ static void planet_draw_html(
 	win->len = len;
 }
 static void planet_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void planet_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void planet_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -211,7 +211,7 @@ static void planet_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	planet_draw(act, pin, win, sty);

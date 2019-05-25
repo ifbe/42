@@ -17,7 +17,7 @@ void actorcreatefromstl(struct actor* act, u8* buf, int len)
 	float* vn = act->target.vn;	//near
 	float* vf = act->target.vf;	//far
 	float* vb = act->target.vb;	//bot
-	float* vu = act->target.vu;	//top
+	float* vu = act->target.vt;	//top
 	float* vq = act->target.vq;	//info
 	float* vc = act->target.vc;	//center
 

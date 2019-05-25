@@ -68,7 +68,7 @@ void portalfrustum(struct arena* win, struct style* por)
 	say("%f,%f,%f\n", rt[0], rt[1], rt[2]);
 }*/
 void portalcamera(
-	struct actor* leaf, struct pinid* lf,
+	struct actor* leaf, struct style* lf,
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
 {
@@ -94,14 +94,14 @@ void portalcamera(
 
 
 	//q = from center to camera
-	q[0] = root->camera.vc[0] - tf->vc[0];
-	q[1] = root->camera.vc[1] - tf->vc[1];
-	q[2] = root->camera.vc[2] - tf->vc[2];
+	q[0] = root->camera.vc[0] - tf->f.vc[0];
+	q[1] = root->camera.vc[1] - tf->f.vc[1];
+	q[2] = root->camera.vc[2] - tf->f.vc[2];
 
 	//portal.n
-	x = -tf->vf[0];
-	y = -tf->vf[1];
-	z = -tf->vf[2];
+	x = -tf->f.vf[0];
+	y = -tf->f.vf[1];
+	z = -tf->f.vf[2];
 	t = squareroot(x*x + y*y + z*z);
 	x /= t;
 	y /= t;
@@ -109,9 +109,9 @@ void portalcamera(
 	n = x * q[0] + y * q[1] + z * q[1];
 
 	//portal.r
-	x = tf->vr[0];
-	y = tf->vr[1];
-	z = tf->vr[2];
+	x = tf->f.vr[0];
+	y = tf->f.vr[1];
+	z = tf->f.vr[2];
 	t = squareroot(x*x + y*y + z*z);
 	x /= t;
 	y /= t;
@@ -119,9 +119,9 @@ void portalcamera(
 	r = x * q[0] + y * q[1] + z * q[2];
 
 	//portal.t
-	x = tf->vu[0];
-	y = tf->vu[1];
-	z = tf->vu[2];
+	x = tf->f.vt[0];
+	y = tf->f.vt[1];
+	z = tf->f.vt[2];
 	t = squareroot(x*x + y*y + z*z);
 	x /= t;
 	y /= t;
@@ -171,9 +171,9 @@ void portalcamera(
 	tmp->camera.vr[2] = leaf->target.vr[2] - r*z;
 
 	//target.u
-	x = leaf->target.vu[0];
-	y = leaf->target.vu[1];
-	z = leaf->target.vu[2];
+	x = leaf->target.vt[0];
+	y = leaf->target.vt[1];
+	z = leaf->target.vt[2];
 	t = squareroot(x*x + y*y + z*z);
 	x /= t;
 	y /= t;
@@ -181,12 +181,12 @@ void portalcamera(
 	tmp->camera.vc[0] += x * u;
 	tmp->camera.vc[1] += y * u;
 	tmp->camera.vc[2] += z * u;
-	tmp->camera.vb[0] = - leaf->target.vu[0] - u*x;
-	tmp->camera.vb[1] = - leaf->target.vu[1] - u*y;
-	tmp->camera.vb[2] = - leaf->target.vu[2] - u*z;
-	tmp->camera.vu[0] = leaf->target.vu[0] - u*x;
-	tmp->camera.vu[1] = leaf->target.vu[1] - u*y;
-	tmp->camera.vu[2] = leaf->target.vu[2] - u*z;
+	tmp->camera.vb[0] = - leaf->target.vt[0] - u*x;
+	tmp->camera.vb[1] = - leaf->target.vt[1] - u*y;
+	tmp->camera.vb[2] = - leaf->target.vt[2] - u*z;
+	tmp->camera.vt[0] = leaf->target.vt[0] - u*x;
+	tmp->camera.vt[1] = leaf->target.vt[1] - u*y;
+	tmp->camera.vt[2] = leaf->target.vt[2] - u*z;
 /*
 	say("%f,%f,%f\n",root->camera.vc[0], root->camera.vc[1], root->camera.vc[2]);
 	say("%f,%f,%f\n",tmp->camera.vc[0], tmp->camera.vc[1], tmp->camera.vc[2]);
@@ -204,16 +204,16 @@ void portalcamera(
 
 
 static void portal_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->vc[0];
-		cy = sty->vc[1];
-		ww = sty->vr[0];
-		hh = sty->vf[1];
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
 	}
 	else
 	{
@@ -224,15 +224,15 @@ static void portal_draw_pixel(
 	}
 }
 static void portal_draw_vbo(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	vec3 tc,tr,tf,tu;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
-	carveline_rect(win, 0xffffff, act->target.vc, act->target.vr, act->target.vu);
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
+	carveline_rect(win, 0xffffff, act->target.vc, act->target.vr, act->target.vt);
 
 	struct glsrc* src = (void*)(pin->foot[0]);
 	float (*vbuf)[6] = (void*)(src->vbuf);
@@ -284,27 +284,27 @@ static void portal_draw_vbo(
 	src->vbuf_enq += 1;
 }
 static void portal_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void portal_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void portal_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void portal_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void portal_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -323,7 +323,7 @@ static void portal_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	portal_draw(act, pin, win, sty);
@@ -350,7 +350,7 @@ static void portal_start(struct halfrel* self, struct halfrel* peer)
 	struct gldst* dst;
 
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 
@@ -407,9 +407,9 @@ static void portal_start(struct halfrel* self, struct halfrel* peer)
 	act->target.vf[1] = 0;
 	act->target.vf[2] = 0;
 
-	act->target.vu[0] = 0;
-	act->target.vu[1] = 0;
-	act->target.vu[2] = 250;
+	act->target.vt[0] = 0;
+	act->target.vt[1] = 0;
+	act->target.vt[2] = 250;
 }
 static void portal_delete(struct actor* act)
 {

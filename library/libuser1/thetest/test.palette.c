@@ -12,7 +12,7 @@ static u8 buffer[16];
 
 
 static void palette_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int g,b;
@@ -20,10 +20,10 @@ static void palette_draw_pixel(
 	int cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->vc[0];
-		cy = sty->vc[1];
-		ww = sty->vr[0];
-		hh = sty->vf[1];
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
 	}
 	else
 	{
@@ -56,17 +56,17 @@ static void palette_draw_pixel(
 	drawhexadecimal(win, pal, cx, cy, pal);
 }
 static void palette_draw_vbo(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void palette_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void palette_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int len = win->len;
@@ -81,19 +81,19 @@ static void palette_draw_html(
 	win->len = len;
 }
 static void palette_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void palette_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	say("palette(%x,%x,%x)\n",win,act,sty);
 	say("r=%02x,g=%02x,b=%02x\n",red,green,blue);
 }
 static void palette_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -105,7 +105,7 @@ static void palette_draw(
 	else palette_draw_pixel(act, pin, win, sty);
 }
 static void palette_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -172,7 +172,7 @@ static void palette_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	palette_draw(act, pin, win, sty);
@@ -181,7 +181,7 @@ static void palette_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, 
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;

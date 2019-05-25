@@ -58,7 +58,7 @@ void tabbar_vbo_listtwig(struct arena* win, struct style* sty, struct arena* tmp
 
             ac = (void*)(rel->dstchip);
             st = (void*)(rel->srcfoot);
-            if('#' == st->uc[3])rgb = 0x404040;
+            if('#' == st->i.uc[3])rgb = 0x404040;
             else rgb = 0xff00ff;
             carvestring2d_center(win, rgb, tc, rr, tf, (void*)&ac->fmt, 8);
 
@@ -69,7 +69,7 @@ void tabbar_vbo_listtwig(struct arena* win, struct style* sty, struct arena* tmp
     }
 }
 void tabbar_vbo_listroot(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
     int j,rgb;
@@ -78,10 +78,10 @@ void tabbar_vbo_listroot(
     struct relation* rel;
     struct style* st;
     struct arena* aa;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 
     tc[0] = vc[0] - vf[0]*31/32;
     tc[1] = vc[1] - vf[1]*31/32;
@@ -127,7 +127,7 @@ void tabbar_vbo_listroot(
     }
 }
 void tabbar_draw_vbo(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	if(0 == sty)sty = defaultstyle_vbo2d();
@@ -166,7 +166,7 @@ void tabbar_pixel_listtwig(struct arena* win, struct style* sty, struct arena* t
 
             ac = (void*)(rel->dstchip);
             st = (void*)(rel->srcfoot);
-            if('#' == st->uc[3])rgb = 0x404040;
+            if('#' == st->i.uc[3])rgb = 0x404040;
             else rgb = 0xff00ff;
             drawstring_fit(
                 win, rgb,
@@ -182,7 +182,7 @@ void tabbar_pixel_listtwig(struct arena* win, struct style* sty, struct arena* t
     }
 }
 void tabbar_pixel_listroot(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
     int j,rgb;
@@ -222,7 +222,7 @@ void tabbar_pixel_listroot(
     }
 }
 void tabbar_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
     tabbar_pixel_listroot(act, pin, win, sty);
@@ -232,27 +232,27 @@ void tabbar_draw_pixel(
 
 
 void tabbar_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 void tabbar_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 void tabbar_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 void tabbar_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void tabbar_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -269,7 +269,7 @@ static void tabbar_draw(
 
 
 static int tabbar_event_child(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -317,8 +317,8 @@ found:
         if(_act_ == rel->dsttype){
             st = (void*)(rel->srcfoot);
             if(j == k){
-                if('#' == st->uc[3])st->uc[3] = 0;
-                else st->uc[3] = '#';
+                if('#' == st->i.uc[3])st->i.uc[3] = 0;
+                else st->i.uc[3] = '#';
                 return 1;
             }
 
@@ -331,7 +331,7 @@ found:
     return 1;
 }
 static int tabbar_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -366,7 +366,7 @@ static void tabbar_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	tabbar_draw(act, pin, win, sty);
@@ -375,7 +375,7 @@ static int tabbar_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, in
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;

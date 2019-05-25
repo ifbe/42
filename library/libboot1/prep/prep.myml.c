@@ -268,14 +268,14 @@ int role_test_style(u8* buf, int len, struct footlist foot[], int flen)
 				str = -1;
 
 				switch(buf[propname]){
-					case 'l':parsevec4(sty->vl, buf+propdata);break;
-					case 'r':parsevec4(sty->vr, buf+propdata);break;
-					case 'b':parsevec4(sty->vb, buf+propdata);break;
-					case 'u':parsevec4(sty->vu, buf+propdata);break;
-					case 'n':parsevec4(sty->vn, buf+propdata);break;
-					case 'f':parsevec4(sty->vf, buf+propdata);break;
-					case 'q':parsevec4(sty->vq, buf+propdata);break;
-					case 'c':parsevec4(sty->vc, buf+propdata);break;
+					case 'l':parsevec4(sty->f.vl, buf+propdata);break;
+					case 'r':parsevec4(sty->f.vr, buf+propdata);break;
+					case 'b':parsevec4(sty->f.vb, buf+propdata);break;
+					case 'u':parsevec4(sty->f.vt, buf+propdata);break;
+					case 'n':parsevec4(sty->f.vn, buf+propdata);break;
+					case 'f':parsevec4(sty->f.vf, buf+propdata);break;
+					case 'q':parsevec4(sty->f.vq, buf+propdata);break;
+					case 'c':parsevec4(sty->f.vc, buf+propdata);break;
 				}
 			}
 			continue;

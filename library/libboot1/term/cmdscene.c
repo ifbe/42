@@ -130,10 +130,10 @@ void exportarena(struct arena* win)
 			sty = (void*)(rel->srcfoot);
 			if(sty)
 			{
-				say("%f,%f,%f,%x\n",sty->vc[0],sty->vc[1],sty->vc[2],sty->uc[3]);
-				say("%f,%f,%f,%x\n",sty->vr[0],sty->vr[1],sty->vr[2],sty->uc[3]);
-				say("%f,%f,%f,%x\n",sty->vf[0],sty->vf[1],sty->vf[2],sty->uc[3]);
-				say("%f,%f,%f,%x\n",sty->vu[0],sty->vu[1],sty->vu[2],sty->uc[3]);
+				say("%f,%f,%f,%x\n",sty->f.vc[0],sty->f.vc[1],sty->f.vc[2],sty->i.uc[3]);
+				say("%f,%f,%f,%x\n",sty->f.vr[0],sty->f.vr[1],sty->f.vr[2],sty->i.ur[3]);
+				say("%f,%f,%f,%x\n",sty->f.vf[0],sty->f.vf[1],sty->f.vf[2],sty->i.uf[3]);
+				say("%f,%f,%f,%x\n",sty->f.vt[0],sty->f.vt[1],sty->f.vt[2],sty->i.ut[3]);
 			}
 
 			act = (void*)(rel->dstchip);

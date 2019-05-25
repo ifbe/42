@@ -59,17 +59,17 @@ int rubikscube_import(char* file, u8 (*buf)[4][4])
 
 
 static void rubikscube_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u32 bg;
 	int x, y, cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->vc[0];
-		cy = sty->vc[1];
-		ww = sty->vr[0];
-		hh = sty->vf[1];
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
 	}
 	else
 	{
@@ -156,16 +156,16 @@ static void rubikscube_draw_pixel(
 	}
 }
 static void rubikscube_draw_vbo(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int x,y,rgb;
 	vec3 f;
 	vec3 tc, tr, tf, tu;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 
 	u8 (*buf)[4][4] = act->buf;
 	if(0 == buf)return;
@@ -285,12 +285,12 @@ static void rubikscube_draw_vbo(
 	}
 }
 static void rubikscube_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void rubikscube_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int len = win->len;
@@ -304,18 +304,18 @@ static void rubikscube_draw_html(
 	win->len = len;
 }
 static void rubikscube_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void rubikscube_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	say("rubik(%x,%x,%x)\n",win,act,sty);
 }
 static void rubikscube_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -327,7 +327,7 @@ static void rubikscube_draw(
 	else rubikscube_draw_pixel(act, pin, win, sty);
 }
 static void rubikscube_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -346,7 +346,7 @@ static void rubikscube_sread(struct halfrel* self, struct halfrel* peer, u8* buf
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	rubikscube_draw(act, pin, win, sty);
@@ -355,7 +355,7 @@ static void rubikscube_swrite(struct halfrel* self, struct halfrel* peer, u8* bu
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;

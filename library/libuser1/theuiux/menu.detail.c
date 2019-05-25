@@ -94,19 +94,19 @@ int detail_draw_vbo(struct arena* win, struct style* sty)
 	if(0 == sty)
 	{
 		sty = &tmp;
-		sty->vc[0] = 0.0;
-		sty->vc[1] = 0.0;
-		sty->vc[2] = -0.9;
-		sty->vr[0] = 1.0;
-		sty->vr[1] = 0.0;
-		sty->vr[2] = 0.0;
-		sty->vf[0] = 0.0;
-		sty->vf[1] = 1.0;
-		sty->vf[2] = 0.0;
+		sty->f.vc[0] = 0.0;
+		sty->f.vc[1] = 0.0;
+		sty->f.vc[2] = -0.9;
+		sty->f.vr[0] = 1.0;
+		sty->f.vr[1] = 0.0;
+		sty->f.vr[2] = 0.0;
+		sty->f.vf[0] = 0.0;
+		sty->f.vf[1] = 1.0;
+		sty->f.vf[2] = 0.0;
 	}
-	vc = sty->vc;
-	vr = sty->vr;
-	vf = sty->vf;
+	vc = sty->f.vc;
+	vr = sty->f.vr;
+	vf = sty->f.vf;
 
 	//2. body
 	tr[0] = vr[0]/4;
@@ -238,10 +238,10 @@ int detail_draw_pixel(struct arena* win, struct style* sty)
 	//1. prep
 	if(sty)
 	{
-		cx = sty->vc[0];
-		cy = sty->vc[1];
-		ww = sty->vr[0];
-		hh = sty->vf[1];
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
 	}
 	else
 	{
@@ -306,7 +306,7 @@ int detail_draw_pixel(struct arena* win, struct style* sty)
 	return 0;
 }
 static void detail_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	if(_vbo_ == win->fmt)detail_draw_vbo(win, sty);
@@ -320,7 +320,7 @@ static void detail_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	detail_draw(act, pin, win, sty);

@@ -51,7 +51,7 @@ int sphere_trigon(vec3 sphere[], vec3 trigon[], vec3 out[])
 
 
 
-int sphere_obb(vec3 sphere[], struct style* sty, vec3 out[])
+int sphere_obb(vec3 sphere[], struct fstyle* sty, vec3 out[])
 {
 	return 0;
 }

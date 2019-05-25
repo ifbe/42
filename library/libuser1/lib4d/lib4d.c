@@ -21,7 +21,8 @@ void actorcreatefromwav(struct actor* act, u8* buf, int len);
 
 static u8* utf8data = 0;
 static u16* bgmdata = 0;
-static struct style def_vbo;
+static struct fstyle def2d;
+static struct fstyle def3d;
 
 
 
@@ -124,16 +125,63 @@ void* alloc_winobj(struct arena* win, int type)
 
 
 
-void* defaultstyle_vbo3d()
-{
-	return &def_vbo;
-}
 void* defaultstyle_vbo2d()
 {
-	return &def_vbo;
+	return &def2d;
 }
+void createstyle_vbo2d()
+{
+	def2d.vc[0] = 0.0;
+	def2d.vc[1] = 0.0;
+	def2d.vc[2] = 0.0;
+
+	def2d.vr[0] = 1.0;
+	def2d.vr[1] = 0.0;
+	def2d.vr[2] = 0.0;
+
+	def2d.vf[0] = 0.0;
+	def2d.vf[1] = 1.0;
+	def2d.vf[2] = 0.0;
+
+	def2d.vt[0] = 0.0;
+	def2d.vt[1] = 0.0;
+	def2d.vt[2] = 1.0;
+}
+
+
+
+
+void* defaultstyle_vbo3d()
+{
+	return &def3d;
+}
+void createstyle_vbo3d()
+{
+	def3d.vc[0] = 0.0;
+	def3d.vc[1] = 0.0;
+	def3d.vc[2] = 0.0;
+
+	def3d.vr[0] = 512.0;
+	def3d.vr[1] = 0.0;
+	def3d.vr[2] = 0.0;
+
+	def3d.vf[0] = 0.0;
+	def3d.vf[1] = 512.0;
+	def3d.vf[2] = 0.0;
+
+	def3d.vt[0] = 0.0;
+	def3d.vt[1] = 0.0;
+	def3d.vt[2] = 512.0;
+}
+
+
+
+
 void lib4d_create(void* addr)
 {
+	createstyle_vbo2d();
+	createstyle_vbo3d();
+
 	asset_create(addr);
 
 	content_create(addr);
@@ -141,22 +189,6 @@ void lib4d_create(void* addr)
 	backuper_create(addr);
 
 	overview_init(addr);
-
-	def_vbo.vc[0] = 0.0;
-	def_vbo.vc[1] = 0.0;
-	def_vbo.vc[2] = 0.0;
-
-	def_vbo.vr[0] = 512.0;
-	def_vbo.vr[1] = 0.0;
-	def_vbo.vr[2] = 0.0;
-
-	def_vbo.vf[0] = 0.0;
-	def_vbo.vf[1] = 512.0;
-	def_vbo.vf[2] = 0.0;
-
-	def_vbo.vu[0] = 0.0;
-	def_vbo.vu[1] = 0.0;
-	def_vbo.vu[2] = 512.0;
 }
 void lib4d_delete()
 {

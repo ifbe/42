@@ -55,44 +55,44 @@ GLSL_VERSION
 
 
 static void particle_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void particle_draw_vbo2d(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void particle_draw_vbo3d(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int j;
 	float x,y,z;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 	float* sbuf = act->buf;
 	struct glsrc* src = (void*)(pin->foot[0]);
 	float* mat = (void*)src->arg_data[0];
 
-	mat[ 0] = sty->vr[0];
-	mat[ 1] = sty->vr[1];
-	mat[ 2] = sty->vr[2];
+	mat[ 0] = sty->f.vr[0];
+	mat[ 1] = sty->f.vr[1];
+	mat[ 2] = sty->f.vr[2];
 	mat[ 3] = 0.0;
-	mat[ 4] = sty->vf[0];
-	mat[ 5] = sty->vf[1];
-	mat[ 6] = sty->vf[2];
+	mat[ 4] = sty->f.vf[0];
+	mat[ 5] = sty->f.vf[1];
+	mat[ 6] = sty->f.vf[2];
 	mat[ 7] = 0.0;
-	mat[ 8] = sty->vu[0];
-	mat[ 9] = sty->vu[1];
-	mat[10] = sty->vu[2];
+	mat[ 8] = sty->f.vt[0];
+	mat[ 9] = sty->f.vt[1];
+	mat[10] = sty->f.vt[2];
 	mat[11] = 0.0;
-	mat[12] = sty->vc[0];
-	mat[13] = sty->vc[1];
-	mat[14] = sty->vc[2];
+	mat[12] = sty->f.vc[0];
+	mat[13] = sty->f.vc[1];
+	mat[14] = sty->f.vc[2];
 	mat[15] = 1.0;
 
 //for(j=0;j<16;j++)mat[j] = 0.0;
@@ -117,28 +117,28 @@ static void particle_draw_vbo3d(
 	src->vbuf_enq += 1;
 }
 static void particle_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void particle_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void particle_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void particle_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	say("particle(%x,%x,%x)\n",win,act,sty);
 }
 static void particle_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -161,7 +161,7 @@ static void particle_sread(struct halfrel* self, struct halfrel* peer, u8* buf, 
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	particle_draw(act, pin, win, sty);
@@ -186,7 +186,7 @@ static void particle_start(struct halfrel* self, struct halfrel* peer)
 	struct glsrc* src;
 	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 

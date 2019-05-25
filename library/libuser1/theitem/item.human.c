@@ -78,16 +78,16 @@ static vec3 bonevertc[15] = {
 
 
 static void human_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->vc[0];
-		cy = sty->vc[1];
-		ww = sty->vr[0];
-		hh = sty->vf[1];
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
 	}
 	else
 	{
@@ -98,7 +98,7 @@ static void human_draw_pixel(
 	}
 }
 static void human_draw_vbo(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int j,k;
@@ -106,10 +106,10 @@ static void human_draw_vbo(
 	float w,h;
 	float x,y,z,n;
 	vec3* bonevert;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 	carveline_circle(win, 0xff00ff, vc, vr, vf);
 
 	j = (timeread()%1000000);
@@ -168,16 +168,16 @@ static void human_draw_vbo(
 	y = bonevert[0][1] - bonevert[1][1];
 	z = bonevert[0][2] - bonevert[1][2];
 	n = h/w*173.0 / squareroot(x*x + y*y + z*z);
-	act->camera.vu[0] = x*n;
-	act->camera.vu[1] = y*n;
-	act->camera.vu[2] = z*n;
+	act->camera.vt[0] = x*n;
+	act->camera.vt[1] = y*n;
+	act->camera.vt[2] = z*n;
 	act->camera.vb[0] =-x*n;
 	act->camera.vb[1] =-y*n;
 	act->camera.vb[2] =-z*n;
 
 	//right = cross(near, up)
 	vf = act->camera.vn;
-	vu = act->camera.vu;
+	vu = act->camera.vt;
 	x = vf[1] * vu[2] - vf[2] * vu[1];
 	y = vf[2] * vu[0] - vf[0] * vu[2];
 	z = vf[0] * vu[1] - vf[1] * vu[0];
@@ -190,27 +190,27 @@ static void human_draw_vbo(
 	act->camera.vl[2] =-z*n;
 }
 static void human_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void human_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void human_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void human_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void human_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -222,7 +222,7 @@ static void human_draw(
 	else human_draw_pixel(act, pin, win, sty);
 }
 static int human_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -236,20 +236,20 @@ static int human_event(
 	{
 		switch(ev->why)
 		{
-			case 'w':sty->vc[1] += 1000;break;
-			case 's':sty->vc[1] -= 1000;break;
-			case 'a':sty->vc[0] -= 1000;break;
-			case 'd':sty->vc[0] += 1000;break;
+			case 'w':sty->f.vc[1] += 1000;break;
+			case 's':sty->f.vc[1] -= 1000;break;
+			case 'a':sty->f.vc[0] -= 1000;break;
+			case 'd':sty->f.vc[0] += 1000;break;
 		}
 	}
 	else if(joy_left == (ev->what & joy_mask))
 	{
 		t = (void*)ev;
 		say("@human_swrite:%x\n", t[2]);
-		if(t[3] & joyl_left   )sty->vc[0] -= 10;
-		if(t[3] & joyl_right  )sty->vc[0] += 10;
-		if(t[3] & joyl_down   )sty->vc[1] -= 10;
-		if(t[3] & joyl_up     )sty->vc[1] += 10;
+		if(t[3] & joyl_left   )sty->f.vc[0] -= 10;
+		if(t[3] & joyl_right  )sty->f.vc[0] += 10;
+		if(t[3] & joyl_down   )sty->f.vc[1] -= 10;
+		if(t[3] & joyl_up     )sty->f.vc[1] += 10;
 		if(t[3] & joyl_trigger)act->z0 = 0;
 		if(t[3] & joyl_bumper )act->z0 += 10;
 	}
@@ -262,13 +262,13 @@ static int human_event(
 		if(0 == rel)break;
 		if(_act_ == rel->srctype)
 		{
-			tmp[0] = sty->vc[0];
-			tmp[1] = sty->vc[1];
+			tmp[0] = sty->f.vc[0];
+			tmp[1] = sty->f.vc[1];
 			tmp[2] = 0.0;
 
 			actor_leafread((void*)&rel->srcchip, (void*)&rel->dstchip, tmp, 0);
 
-			sty->vc[2] = tmp[2] + act->z0;
+			sty->f.vc[2] = tmp[2] + act->z0;
 			break;
 		}
 		rel = samedstnextsrc(rel);
@@ -338,7 +338,7 @@ static void human_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	human_draw(act, pin, win, sty);
@@ -347,7 +347,7 @@ static int human_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;

@@ -116,15 +116,15 @@ static void printnode(struct arena* win, struct bintree* this, int x, int y,
 */
 }
 static void bintree_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	struct bintree* node;
 	struct bintree* right;
-	int cx = sty->vc[0];
-	int cy = sty->vc[1];
-	int ww = sty->vr[0];
-	int hh = sty->vf[1];
+	int cx = sty->f.vc[0];
+	int cy = sty->f.vc[1];
+	int ww = sty->f.vr[0];
+	int hh = sty->f.vf[1];
 
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 	drawstring(win, 0xffffff, cx-ww, cy-hh, buffer, 0);
@@ -138,17 +138,17 @@ static void bintree_draw_pixel(
 	printnode(win, right, cx, 1, cx, cy, ww, hh);
 }
 static void bintree_draw_vbo(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void bintree_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void bintree_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int len = win->len;
@@ -163,18 +163,18 @@ static void bintree_draw_html(
 	win->len = len;
 }
 static void bintree_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void bintree_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	say("tree(%x,%x,%x)\n",win,act,sty);
 }
 static void bintree_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -187,7 +187,7 @@ static void bintree_draw(
 	else bintree_draw_pixel(act, pin, win, sty);
 }
 static void bintree_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -234,7 +234,7 @@ static void bintree_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	bintree_draw(act, pin, win, sty);
@@ -243,7 +243,7 @@ static void bintree_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, 
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;

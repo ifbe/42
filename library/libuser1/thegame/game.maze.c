@@ -12,7 +12,7 @@ void maze_solve(void* buf, int w, int h);
 
 
 static void maze_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u8* buf;
@@ -20,10 +20,10 @@ static void maze_draw_pixel(
 	int cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->vc[0];
-		cy = sty->vc[1];
-		ww = sty->vr[0];
-		hh = sty->vf[1];
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
 	}
 	else
 	{
@@ -135,17 +135,17 @@ static void maze_draw_pixel(
 	}
 }
 static void maze_draw_vbo2d(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int x,y,z,w;
 	vec3 tc, tr, tf, tu, f;
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 	u8* buf = act->buf;
 
 	for(y=0;y<HEIGHT;y++)
@@ -272,15 +272,15 @@ static void maze_draw_vbo2d(
 	}
 }
 static void maze_draw_vbo3d(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int x,y,z,w;
 	vec3 tc, tr, tf, tu, f;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 	u8* buf = act->buf;
 
 	carvesolid_rect(win, 0, vc, vr, vf);
@@ -440,18 +440,18 @@ static void maze_draw_vbo3d(
 	act->camera.vb[0] = 0.0;
 	act->camera.vb[1] = 0.0;
 	act->camera.vb[2] =-1.0;
-	act->camera.vu[0] = 0.0;
-	act->camera.vu[1] = 0.0;
-	act->camera.vu[2] = 1.0;
+	act->camera.vt[0] = 0.0;
+	act->camera.vt[1] = 0.0;
+	act->camera.vt[2] = 1.0;
 
 }
 static void maze_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void maze_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int len = win->len;
@@ -465,7 +465,7 @@ static void maze_draw_html(
 	win->len = len;
 }
 static void maze_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int x,y,stride;
@@ -485,7 +485,7 @@ static void maze_draw_tui(
 	}
 }
 static void maze_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int x,y;
@@ -502,7 +502,7 @@ static void maze_draw_cli(
 	say("\n\n\n\n");
 }
 static void maze_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -518,7 +518,7 @@ static void maze_draw(
 	else maze_draw_pixel(act, pin, win, sty);
 }
 static void maze_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -541,7 +541,7 @@ static void maze_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	maze_draw(act, pin, win, sty);
@@ -550,7 +550,7 @@ static void maze_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;

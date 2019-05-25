@@ -136,7 +136,7 @@ int ray_rect(vec3 ray[], vec3 rect[], vec3 out)
 //0: 0 intersection
 //n: n intersections
 //-1: infinite intersections
-int ray_obb(vec3 ray[], struct style* sty, vec3 out[])
+int ray_obb(vec3 ray[], struct fstyle* sty, vec3 out[])
 {
 	return 0;
 }

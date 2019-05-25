@@ -24,9 +24,9 @@ void defaultvertex(struct arena* win)
 	win->target.vf[1] = 500.0;
 	win->target.vf[2] = 0.0;
 
-	win->target.vu[0] = 0.0;
-	win->target.vu[1] = 0.0;
-	win->target.vu[2] = 500.0;
+	win->target.vt[0] = 0.0;
+	win->target.vt[1] = 0.0;
+	win->target.vt[2] = 500.0;
 
 	//camera
 	win->camera.vl[0] = -1.0;
@@ -41,9 +41,9 @@ void defaultvertex(struct arena* win)
 	win->camera.vb[1] =-0.70710678118655;
 	win->camera.vb[2] =-0.70710678118655;
 
-	win->camera.vu[0] = 0.0;
-	win->camera.vu[1] = 0.70710678118655;
-	win->camera.vu[2] = 0.70710678118655;
+	win->camera.vt[0] = 0.0;
+	win->camera.vt[1] = 0.70710678118655;
+	win->camera.vt[2] = 0.70710678118655;
 
 	win->camera.vn[0] = 0.0;
 	win->camera.vn[1] = 0.70710678118655;
@@ -83,7 +83,7 @@ int vbonode_sread(struct arena* win, struct style* stack)
 		if(_act_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
-			if(sty){if('#' == sty->uc[3])goto next;}
+			if(sty){if('#' == sty->i.uc[3])goto next;}
 
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
@@ -113,7 +113,7 @@ int vbonode_swrite(struct arena* win, struct style* stack, struct event* ev)
 		if(_act_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
-			if(sty){if('#' == sty->uc[3])goto next;}
+			if(sty){if('#' == sty->i.uc[3])goto next;}
 
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;

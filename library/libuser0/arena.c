@@ -301,7 +301,7 @@ void* arenacreate(u64 type, void* addr)
 
 		win->type = _bdc_;
 		win->fmt = _bdc_;
-		toycar_create(win, 0);
+		toycar_create(win, addr);
 		return win;
 	}
 

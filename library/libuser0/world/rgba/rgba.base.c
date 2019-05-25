@@ -27,7 +27,7 @@ int rgbanode_sread(struct arena* win, struct style* stack)
 		if(_act_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
-			if(sty){if('#' == sty->uc[3])goto next;}
+			if(sty){if('#' == sty->i.uc[3])goto next;}
 
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
@@ -57,7 +57,7 @@ int rgbanode_swrite(struct arena* win, struct style* stack, struct event* ev)
 		if(_act_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
-			if(sty){if('#' == sty->uc[3])goto next;}
+			if(sty){if('#' == sty->i.uc[3])goto next;}
 
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;

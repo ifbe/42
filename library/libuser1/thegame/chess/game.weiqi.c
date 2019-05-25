@@ -41,17 +41,17 @@ int weiqi_import(char* file, u8* buf)
 
 
 static void weiqi_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u32 c;
 	int x, y, cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->vc[0];
-		cy = sty->vc[1];
-		ww = sty->vr[0];
-		hh = sty->vf[1];
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
 	}
 	else
 	{
@@ -107,7 +107,7 @@ static void weiqi_draw_pixel(
 	}
 }
 static void weiqi_draw_vbo2d(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int x,y;
@@ -115,10 +115,10 @@ static void weiqi_draw_vbo2d(
 	vec3 tc, tr, tf, tu, f;
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 	carvesolid2d_rect(win, 0xf9d65b, vc, vr, vf);
 
 	for(y=-9;y<10;y++)
@@ -172,16 +172,16 @@ static void weiqi_draw_vbo2d(
 	}
 }
 static void weiqi_draw_vbo(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int x,y;
 	int j,k,rgb;
 	vec3 tc, tr, tf, tu, f;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 	carvesolid_rect(win, 0xf9d65b, vc, vr, vf);
 
 	for(y=-9;y<10;y++)
@@ -242,12 +242,12 @@ static void weiqi_draw_vbo(
 	}
 }
 static void weiqi_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void weiqi_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int x,y;
@@ -273,7 +273,7 @@ static void weiqi_draw_html(
 	htmlprintf(win, 2, "</div>\n");
 }
 static void weiqi_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int x,y,j,k,ret,color;
@@ -304,12 +304,12 @@ static void weiqi_draw_tui(
 	}
 }
 static void weiqi_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void weiqi_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -326,7 +326,7 @@ static void weiqi_draw(
 	else weiqi_draw_pixel(act, pin, win, sty);
 }
 static void weiqi_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -395,7 +395,7 @@ static void weiqi_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	weiqi_draw(act, pin, win, sty);
@@ -404,7 +404,7 @@ static void weiqi_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, in
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;

@@ -4,7 +4,7 @@
 
 
 static int orthcam_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {/*
 	vec3 tc,tf;
@@ -34,7 +34,7 @@ static int orthcam_draw(
 	return 0;
 }
 static int orthcam_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -45,7 +45,7 @@ static int orthcam_event(
 
 
 
-static void ortho_v(mat4 m, struct style* s)
+static void ortho_v(mat4 m, struct fstyle* s)
 {
 	float cx = s->vc[0];
 	float cy = s->vc[1];
@@ -61,9 +61,9 @@ static void ortho_v(mat4 m, struct style* s)
 	m[1][2] = s->vf[2];
 	m[1][3] = -(cx*m[1][0] + cy*m[1][1] + cz*m[1][2]);
 
-	m[2][0] =-s->vu[0];
-	m[2][1] =-s->vu[1];
-	m[2][2] =-s->vu[2];
+	m[2][0] =-s->vt[0];
+	m[2][1] =-s->vt[1];
+	m[2][2] =-s->vt[2];
 	m[2][3] = cx*m[2][0] + cy*m[2][1] + cz*m[2][2];
 
 	m[3][0] = 0.0;
@@ -71,7 +71,7 @@ static void ortho_v(mat4 m, struct style* s)
 	m[3][2] = 0.0;
 	m[3][3] = 1.0;
 }
-static void ortho_p(mat4 m, struct style* s)
+static void ortho_p(mat4 m, struct fstyle* s)
 {
 	float l =-1.0;
 	float r = 1.0;
@@ -100,7 +100,7 @@ static void ortho_p(mat4 m, struct style* s)
 	m[3][2] = 0.0;
 	m[3][3] = 1.0;
 }
-static void ortho_mvp(mat4 m, struct style* s)
+static void ortho_mvp(mat4 m, struct fstyle* s)
 {
 	mat4 t;
 	ortho_p(m, s);
@@ -115,12 +115,12 @@ static void ortho_mvp(mat4 m, struct style* s)
 	mat4_multiply(m, t);
 }
 static void orthcam_matrix(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	u8* buf, int len)
 {
 	struct relation* rel;
 	struct arena* r;
-	struct style* s;
+	struct fstyle* s;
 	//say("orthcam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
 	rel = act->irel0;
@@ -167,7 +167,7 @@ static void orthcam_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 
@@ -178,7 +178,7 @@ static int orthcam_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, i
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;

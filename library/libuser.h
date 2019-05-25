@@ -321,82 +321,36 @@ struct datapair
 
 
 
+struct fstyle{
+	vec4 vl;	//[00,0f]: left
+	vec4 vr;	//[10,1f]: right
+	vec4 vn;	//[20,2f]: near
+	vec4 vf;	//[30,3f]: far
+	vec4 vb;	//[40,4f]: bottom
+	vec4 vt;	//[50,5f]: upper
+	vec4 vq;	//[60,6f]: info
+	vec4 vc;	//[70,7f]: center
+};
+struct istyle{
+	int ul[4];
+	int ur[4];
+	int un[4];
+	int uf[4];
+	int ub[4];
+	int ut[4];
+	int uq[4];
+	int uc[4];
+};
 struct style
 {
+	//[00, 7f]: float
 	union{
-		//[00, 7f]: float
-		struct{
-			vec4 vl;	//[00,0f]: left
-			vec4 vr;	//[10,1f]: right
-			vec4 vn;	//[20,2f]: near
-			vec4 vf;	//[30,3f]: far
-			vec4 vb;	//[40,4f]: bottom
-			vec4 vu;	//[50,5f]: upper
-			vec4 vq;	//[60,6f]: info
-			vec4 vc;	//[70,7f]: center
-		};
-
-		//[00, 7f]: integer
-		struct{
-			int ul[4];
-			int ur[4];
-			int un[4];
-			int uf[4];
-			int ub[4];
-			int ut[4];
-			int uq[4];
-			int uc[4];
-		};
+		struct fstyle f;
+		struct istyle i;
 	};
 
 	//[80, ...]
-	u64 foot[0];
-};
-struct pinid
-{
-	//[00, 7f]
-	int flag00;
-	int flag01;
-	int flag02;
-	int flag03;
-
-	int flag04;
-	int flag05;
-	int flag06;
-	int flag07;
-
-	int flag08;
-	int flag09;
-	int flag0a;
-	int flag0b;
-
-	int flag0c;
-	int flag0d;
-	int flag0e;
-	int flag0f;
-
-	int flag10;
-	int flag11;
-	int flag12;
-	int flag13;
-
-	int flag14;
-	int flag15;
-	int flag16;
-	int flag17;
-
-	int flag18;
-	int flag19;
-	int flag1a;
-	int flag1b;
-
-	int flag1c;
-	int flag1d;
-	int flag1e;
-	int flag1f;
-
-	//[80, ...]
-	u64 foot[0];
+	u64 foot[16];
 };
 
 
@@ -645,8 +599,8 @@ struct arena
 	int wn;
 
 	//[100,1ff]
-	struct style target;
-	struct style camera;
+	struct fstyle target;
+	struct fstyle camera;
 
 	//[200,3ff]
 	struct xyzwpair input[32];
@@ -777,8 +731,8 @@ struct actor
 	int wn;
 
 	//[100,1ff]
-	struct style target;
-	struct style camera;
+	struct fstyle target;
+	struct fstyle camera;
 };
 
 
@@ -797,7 +751,7 @@ void gentui_decstr(struct arena* win, u32 rgb, int cx, int cy, int data);
 
 //----------------------------------2d------------------------------------
 void drawaxis(          struct arena* win);
-void select_2d(         struct arena* win, u32 rgb, struct style* sty, u32 flag);
+void select_2d(         struct arena* win, u32 rgb, struct fstyle* sty, u32 flag);
 
 void drawline(          struct arena* win, u32 rgb, int x1, int y1, int x2, int y2);
 void drawline_arrow(    struct arena* win, u32 rgb, int x1, int y1, int x2, int y2);
@@ -888,8 +842,8 @@ void carvetext2d_reverse(    struct arena* win, u32 rgb, vec3 vc, vec3 vr, vec3 
 
 //-----------------------------3d--------------------------
 void carveaxis(               struct arena* win);
-void carvefrustum(            struct arena* win, struct style* sty);
-void select_3d(               struct arena* win, u32 rgb, struct style* sty, u32 flag);
+void carvefrustum(            struct arena* win, struct fstyle* sty);
+void select_3d(               struct arena* win, u32 rgb, struct fstyle* sty, u32 flag);
 
 void carvepoint(              struct arena* win, u32 rgb, vec3 vc);
 void carvepoint_bezier(       struct arena* win, u32 rgb, vec3 va, vec3 vb, vec3 vt);

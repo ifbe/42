@@ -1,13 +1,13 @@
 #include "libuser.h"
 void* allocactor();
 void* allocstyle();
-int ui2d_cwrite(struct arena* win, struct style* sty, struct actor* sc, struct pinid* sf, int flag);
+int ui2d_cwrite(struct arena* win, struct style* sty, struct actor* sc, struct style* sf, int flag);
 
 
 
 
 void corner_vbo_drag_lefttop(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	float x, float y)
 {
@@ -26,7 +26,7 @@ void corner_vbo_drag_lefttop(
 	carvesolid2d_circle(win, 0xffffff, tc, tr, tf);
 }
 void corner_vbo_drag_righttop(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	float x, float y)
 {
@@ -60,7 +60,7 @@ void corner_vbo_drag_righttop(
 	carvesolid2d_triangle(win, 0xffff00, tc, tr, tf);
 }
 void corner_vbo_drag_leftbot(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	float x, float y)
 {
@@ -86,7 +86,7 @@ void corner_vbo_drag_leftbot(
 	carvesolid2d_rect(win, 0x404040, tc, tr, tf);
 }
 void corner_vbo_drag_rightbot(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	float x0, float y0, float xn, float yn)
 {
@@ -107,7 +107,7 @@ void corner_vbo_drag_rightbot(
 	carvesolid2d_triangle(win, 0x000000, tc, tr, tf);
 }
 void corner_vbo_drag(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int j;
@@ -166,7 +166,7 @@ void corner_vbo_drag(
 
 
 void corver_vbo_hover(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	float w,h,c;
@@ -276,7 +276,7 @@ void corver_vbo_hover(
 
 
 void corner_vbo_popup(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	struct relation* rel = act->orel0;
@@ -284,7 +284,7 @@ void corner_vbo_popup(
 
 	struct style* st = (void*)(rel->srcfoot);
 	if(0 == st)return;
-	if('#' == st->uc[3])return;
+	if('#' == st->i.uc[3])return;
 
 	int j,rgb;
 	vec3 tc,tr,tf;
@@ -315,7 +315,7 @@ void corner_vbo_popup(
 
 
 void corner_draw_vbo(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	corver_vbo_hover(act, pin, win, sty);
@@ -325,7 +325,7 @@ void corner_draw_vbo(
 	corner_vbo_popup(act, pin, win, sty);
 }
 void corner_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int x0,y0,xn,yn;
@@ -401,7 +401,7 @@ void corner_draw_pixel(
 	}
 }
 static int corner_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	switch(win->fmt)
@@ -416,7 +416,7 @@ static int corner_draw(
 
 
 static int corner_event_twig(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -430,7 +430,7 @@ static int corner_event_twig(
 
 	st = (void*)(rel->srcfoot);
 	if(0 == st)return 0;
-	if('#' == st->uc[3])return 0;
+	if('#' == st->i.uc[3])return 0;
 
 	int w = win->width;
 	int h = win->height;
@@ -461,10 +461,10 @@ found:
 			if(x == y){
 				st = (void*)(rel->srcfoot);
 
-				j = st->uc[3];
+				j = st->i.uc[3];
 				if('#' == j)j = 0;
 				else j = '#';
-				st->uc[3] = j;
+				st->i.uc[3] = j;
 
 				break;
 			}
@@ -482,7 +482,7 @@ found:
 
 
 static int corner_onoff(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	struct relation* rel;
@@ -495,15 +495,15 @@ static int corner_onoff(
 	st = (void*)(rel->srcfoot);
 	if(0 == st)return 0;
 
-	j = st->uc[3];
+	j = st->i.uc[3];
 	if('#' == j)j = 0;
 	else j = '#';
-	st->uc[3] = j;
+	st->i.uc[3] = j;
 
 	return 1;
 }
 static int corner_event_root(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -546,7 +546,7 @@ static int corner_event_root(
 	return 0;
 }
 static int corner_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -569,7 +569,7 @@ static void corner_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	corner_draw(act, pin, win, sty);
@@ -578,7 +578,7 @@ static int corner_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, in
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
@@ -612,7 +612,7 @@ static int corner_create(struct actor* act, u8* str)
 	ac->type = hex32('?','?','?', 0);
 	ac->fmt = hex32('?','?','?', 0);
 
-	sty->uc[3] = 0;
+	sty->i.uc[3] = 0;
 	relationcreate(ac, 0, _act_, 0, act, sty, _act_, 0);
 	return 0;
 }

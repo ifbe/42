@@ -201,10 +201,10 @@ void hostviewport_render(
 	float w,h,x0,y0,x1,y1;
 	w = win->fbwidth;
 	h = win->fbheight;
-	x0 = w * st->vc[0];	//0
-	y0 = h * st->vc[1];	//0
-	x1 = w * st->vq[0];	//0.5
-	y1 = h * st->vq[1];	//1
+	x0 = w * st->f.vc[0];	//0
+	y0 = h * st->f.vc[1];	//0
+	x1 = w * st->f.vq[0];	//0.5
+	y1 = h * st->f.vq[1];	//1
 	glViewport(x0, y0, x1, y1);
 	//fixmatrix(cammvp, &ctx->camera);
 	//mat4_transpose((void*)cammvp);
@@ -245,10 +245,10 @@ void hostviewport_camera(struct halfrel* relcam, struct halfrel* relwin)
 	struct style* sty = (void*)(relwin->foot);
 	float w = win->fbwidth;
 	float h = win->fbheight;
-	float x0 = w * sty->vc[0];	//0
-	float y0 = h * sty->vc[1];	//0
-	float x1 = w * sty->vq[0];	//0.5
-	float y1 = h * sty->vq[1];	//1
+	float x0 = w * sty->f.vc[0];	//0
+	float y0 = h * sty->f.vc[1];	//0
+	float x1 = w * sty->f.vq[0];	//0.5
+	float y1 = h * sty->f.vq[1];	//1
 	glViewport(x0, y0, x1, y1);
 
 
@@ -341,10 +341,10 @@ int hostviewport_event(struct halfrel* relcam, struct halfrel* relwin, struct ev
 	sty = (void*)(relwin->foot);
 	w = win->width;
 	h = win->height;
-	x0 = w * sty->vc[0];
-	y0 = h * sty->vc[1];
-	x1 = x0 + w * sty->vq[0];
-	y1 = y0 + h * sty->vq[1];
+	x0 = w * sty->f.vc[0];
+	y0 = h * sty->f.vc[1];
+	x1 = x0 + w * sty->f.vq[0];
+	y1 = y0 + h * sty->f.vq[1];
 
 	if('p' == (ev->what&0xff)){
 		t = (void*)ev;

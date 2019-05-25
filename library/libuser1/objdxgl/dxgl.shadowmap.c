@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
 void actorcreatefromfile(struct actor* act, char* name);
-void fixmatrix(mat4 mvp, struct style* sty);
+void fixmatrix(mat4 mvp, struct fstyle* sty);
 
 
 
@@ -76,7 +76,7 @@ GLSL_VERSION
 
 
 
-void fixcam(struct style* cam, struct style* tar)
+void fixcam(struct fstyle* cam, struct fstyle* tar)
 {
 	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
 	float x,y,z,norm;
@@ -116,9 +116,9 @@ void fixcam(struct style* cam, struct style* tar)
 	x /= norm;
 	y /= norm;
 	z /= norm;
-	cam->vu[0] = x*25.0;
-	cam->vu[1] = y*25.0;
-	cam->vu[2] = z*25.0;
+	cam->vt[0] = x*25.0;
+	cam->vt[1] = y*25.0;
+	cam->vt[2] = z*25.0;
 	cam->vb[0] = -x*25.0;
 	cam->vb[1] = -y*25.0;
 	cam->vb[2] = -z*25.0;
@@ -128,16 +128,16 @@ void fixcam(struct style* cam, struct style* tar)
 
 
 static void shadowmap_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->vc[0];
-		cy = sty->vc[1];
-		ww = sty->vr[0];
-		hh = sty->vf[1];
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
 	}
 	else
 	{
@@ -148,14 +148,14 @@ static void shadowmap_draw_pixel(
 	}
 }
 static void shadowmap_draw_vbo(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	vec3 tr,tf,tu;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 
 	float a,c,s;
 	float x,y,z,n;
@@ -272,19 +272,19 @@ static void shadowmap_draw_vbo(
 	a = tau * timeread() / 10000000.0;
 	c = cosine(a);
 	s = sine(a);
-	tmp->camera.vc[0] = sty->vc[0] + sty->vr[0]*c + sty->vf[0]*s + sty->vu[0]*2;
-	tmp->camera.vc[1] = sty->vc[1] + sty->vr[1]*c + sty->vf[1]*s + sty->vu[1]*2;
-	tmp->camera.vc[2] = sty->vc[2] + sty->vr[2]*c + sty->vf[2]*s + sty->vu[2]*2;
-	fixcam(&tmp->camera, sty);
+	tmp->camera.vc[0] = sty->f.vc[0] + sty->f.vr[0]*c + sty->f.vf[0]*s + sty->f.vt[0]*2;
+	tmp->camera.vc[1] = sty->f.vc[1] + sty->f.vr[1]*c + sty->f.vf[1]*s + sty->f.vt[1]*2;
+	tmp->camera.vc[2] = sty->f.vc[2] + sty->f.vr[2]*c + sty->f.vf[2]*s + sty->f.vt[2]*2;
+	fixcam(&tmp->camera, &sty->f);
 
 
 	//viewer camera
 	c = cosine(a + PI/2);
 	s = sine(a + PI/2);
-	act->camera.vc[0] = sty->vc[0] + sty->vr[0]*c + sty->vf[0]*s + sty->vu[0]*2;
-	act->camera.vc[1] = sty->vc[1] + sty->vr[1]*c + sty->vf[1]*s + sty->vu[1]*2;
-	act->camera.vc[2] = sty->vc[2] + sty->vr[2]*c + sty->vf[2]*s + sty->vu[2]*2;
-	fixcam(&act->camera, sty);
+	act->camera.vc[0] = sty->f.vc[0] + sty->f.vr[0]*c + sty->f.vf[0]*s + sty->f.vt[0]*2;
+	act->camera.vc[1] = sty->f.vc[1] + sty->f.vr[1]*c + sty->f.vf[1]*s + sty->f.vt[1]*2;
+	act->camera.vc[2] = sty->f.vc[2] + sty->f.vr[2]*c + sty->f.vf[2]*s + sty->f.vt[2]*2;
+	fixcam(&act->camera, &sty->f);
 
 
 	//calc matrix
@@ -306,27 +306,27 @@ static void shadowmap_draw_vbo(
 	carvesolid_sphere(win, 0xffff00, tmp->camera.vc, tr, tf, tu);
 }
 static void shadowmap_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void shadowmap_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void shadowmap_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void shadowmap_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void shadowmap_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -345,7 +345,7 @@ static void shadowmap_sread(struct halfrel* self, struct halfrel* peer, u8* buf,
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	shadowmap_draw(act, pin, win, sty);
@@ -372,7 +372,7 @@ static void shadowmap_start(struct halfrel* self, struct halfrel* peer)
 	struct gldst* dst;
 
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 

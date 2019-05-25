@@ -93,7 +93,7 @@ GLSL_VERSION
 
 
 
-void sty_sty_mat(struct style* src, struct style* dst, mat4 mat)
+void sty_sty_mat(struct fstyle* src, struct fstyle* dst, mat4 mat)
 {
 	float x,y,z,max;
 	float nr, nf, nu;
@@ -130,9 +130,9 @@ void sty_sty_mat(struct style* src, struct style* dst, mat4 mat)
 	z = dst->vf[2];
 	nf = squareroot(x*x+y*y+z*z);
 
-	x = dst->vu[0];
-	y = dst->vu[1];
-	z = dst->vu[2];
+	x = dst->vt[0];
+	y = dst->vt[1];
+	z = dst->vt[2];
 	nu = squareroot(x*x+y*y+z*z);
 
 	max = nr;
@@ -168,9 +168,9 @@ void sty_sty_mat(struct style* src, struct style* dst, mat4 mat)
 	z = src->vf[2];
 	nf = squareroot(x*x+y*y+z*z);
 
-	x = src->vu[0];
-	y = src->vu[1];
-	z = src->vu[2];
+	x = src->vt[0];
+	y = src->vt[1];
+	z = src->vt[2];
 	nu = squareroot(x*x+y*y+z*z);
 
 	max = nr;
@@ -222,7 +222,7 @@ void sty_sty_mat(struct style* src, struct style* dst, mat4 mat)
 
 
 static void model_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	float* p;
@@ -232,10 +232,10 @@ static void model_draw_pixel(
 	int cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->vc[0];
-		cy = sty->vc[1];
-		ww = sty->vr[0];
-		hh = sty->vf[1];
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
 	}
 	else
 	{
@@ -272,47 +272,47 @@ static void model_draw_pixel(
 */
 }
 static void model_draw_vbo2d(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	if(act->buf == 0)return;
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
 	struct glsrc* src = (void*)(pin->foot[0]);
-	sty_sty_mat(&act->target, sty, (void*)src->arg_data[0]);
+	sty_sty_mat(&act->target, &sty->f, (void*)src->arg_data[0]);
 }
 static void model_draw_vbo3d(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	if(act->buf == 0)return;
 
 	struct glsrc* src = (void*)(pin->foot[0]);
-	sty_sty_mat(&act->target, sty, (void*)src->arg_data[0]);
+	sty_sty_mat(&act->target, &sty->f, (void*)src->arg_data[0]);
 }
 static void model_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void model_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void model_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void model_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	say("model(%x,%x,%x)\n",win,act,sty);
 }
 static void model_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -329,7 +329,7 @@ static void model_draw(
 	else model_draw_pixel(act, pin, win, sty);
 }
 static void model_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -367,7 +367,7 @@ static void model_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	model_draw(act, pin, win, sty);
@@ -376,7 +376,7 @@ static void model_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, in
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
@@ -397,7 +397,7 @@ static void model_start(struct halfrel* self, struct halfrel* peer)
 	struct glsrc* src;
 	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 

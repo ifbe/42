@@ -59,7 +59,7 @@ char* video_hlsl_f = 0;
 
 
 void video_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u8* src;
@@ -69,10 +69,10 @@ void video_draw_pixel(
 	int h = win->height;
 	if(sty)
 	{
-		cx = sty->vc[0];
-		cy = sty->vc[1];
-		ww = sty->vr[0];
-		hh = sty->vf[1];
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
 	}
 	else
 	{
@@ -94,7 +94,7 @@ void video_draw_pixel(
 	);
 }
 void video_draw_vbo2d(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int x,y;
@@ -105,9 +105,9 @@ void video_draw_vbo2d(
 	if(0 == act->idx)return;
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
 
 	data = (void*)(pin->foot[0]);
 	vbuf = data->vbuf;
@@ -175,7 +175,7 @@ void video_draw_vbo2d(
 	data->tex_enq[0] += 1;
 }
 void video_draw_vbo3d(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int x,y;
@@ -183,10 +183,10 @@ void video_draw_vbo3d(
 	u8* src;
 	float (*vbuf)[6];
 	struct glsrc* data;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 	if(0 == act->idx)return;
 
 	data = (void*)(pin->foot[0]);
@@ -255,12 +255,12 @@ void video_draw_vbo3d(
 	data->tex_enq[0] += 1;
 }
 void video_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 void video_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	//<head>
@@ -270,19 +270,19 @@ void video_draw_html(
 	htmlprintf(win, 2, "<div class=\"video\">\n");
 }
 void video_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 void video_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u8* src = act->idx;
 	say("src@%llx\n", src);
 }
 static void video_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -306,7 +306,7 @@ static void video_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	video_draw(act, pin, win, sty);
@@ -334,7 +334,7 @@ static void video_start(struct halfrel* self, struct halfrel* peer)
 	struct glsrc* src;
 	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 

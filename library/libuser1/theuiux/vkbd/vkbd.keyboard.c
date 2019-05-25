@@ -150,7 +150,7 @@ void vkbd_draw_cli(struct arena* win, struct style* sty)
 {
 }
 static void vkbd_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -162,7 +162,7 @@ static void vkbd_draw(
 	else vkbd_draw_pixel(win, sty);
 }
 static int vkbd_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -194,7 +194,7 @@ static void vkbd_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	vkbd_draw(act, pin, win, sty);
@@ -203,35 +203,35 @@ static int vkbd_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	return vkbd_event(act, pin, win, sty, ev, 0);
 }
 static int vkbd_cread(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
 {
 	return 0;
 }
 static int vkbd_cwrite(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	u8* buf, int len)
 {
 	return 0;
 }
 static int vkbd_stop(
-	struct actor* leaf, struct pinid* lf,
+	struct actor* leaf, struct style* lf,
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
 {
 	return 0;
 }
 static int vkbd_start(
-	struct actor* leaf, struct pinid* lf,
+	struct actor* leaf, struct style* lf,
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
 {

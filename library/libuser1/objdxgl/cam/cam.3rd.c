@@ -35,9 +35,9 @@ void thridperson_fixcam(struct arena* win, float* v)
 	y = win->camera.vr[2]*win->camera.vn[0] - win->camera.vr[0]*win->camera.vn[2];
 	z = win->camera.vr[0]*win->camera.vn[1] - win->camera.vr[1]*win->camera.vn[0];
 	n = h / w / squareroot(x*x + y*y + z*z);
-	win->camera.vu[0] = x * n;
-	win->camera.vu[1] = y * n;
-	win->camera.vu[2] = z * n;
+	win->camera.vt[0] = x * n;
+	win->camera.vt[1] = y * n;
+	win->camera.vt[2] = z * n;
 	win->camera.vb[0] =-x * n;
 	win->camera.vb[1] =-y * n;
 	win->camera.vb[2] =-z * n;
@@ -47,13 +47,13 @@ void thridperson_fixcam(struct arena* win, float* v)
 
 
 static int thirdperson_sread000(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int j;
 	struct relation* rel;
 	struct actor* tar;
-	struct style* tmpsty;
+	struct fstyle* tmpsty;
 
 	//3rdcam's target
 	rel = act->irel0;
@@ -84,9 +84,9 @@ found:
 			tmpsty = (void*)(rel->srcfoot);
 
 			//camera.xyz = target.top + act.vector
-			win->camera.vc[0] = tmpsty->vc[0] + tmpsty->vu[0] + act->camera.vc[0];
-			win->camera.vc[1] = tmpsty->vc[1] + tmpsty->vu[1] + act->camera.vc[1];
-			win->camera.vc[2] = tmpsty->vc[2] + tmpsty->vu[2] + act->camera.vc[2];
+			win->camera.vc[0] = tmpsty->vc[0] + tmpsty->vt[0] + act->camera.vc[0];
+			win->camera.vc[1] = tmpsty->vc[1] + tmpsty->vt[1] + act->camera.vc[1];
+			win->camera.vc[2] = tmpsty->vc[2] + tmpsty->vt[2] + act->camera.vc[2];
 			thridperson_fixcam(win, act->camera.vc);
 			goto print;
 		}
@@ -100,14 +100,14 @@ print:
 	return 0;
 }
 static int thirdperson_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	vec3 tc,tr,tf;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 	tc[0] = vc[0] - vf[0]/2;
 	tc[1] = vc[1] - vf[1]/2;
 	tc[2] = vc[2] - vf[2]/2;
@@ -121,7 +121,7 @@ static int thirdperson_draw(
 	return 0;
 }
 static int thirdperson_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -203,7 +203,7 @@ static void thirdperson_sread(struct halfrel* self, struct halfrel* peer, u8* bu
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	thirdperson_draw(act, pin, win, sty);
@@ -212,7 +212,7 @@ static int thirdperson_swrite(struct halfrel* self, struct halfrel* peer, u8* bu
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;

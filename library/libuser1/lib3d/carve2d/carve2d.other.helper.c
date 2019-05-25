@@ -6,10 +6,10 @@
 void carveborder2d(struct arena* win, struct style* sty, void* name)
 {
 	vec3 tc,tr,tf;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 	int w = win->width;
 	int h = win->height;
 

@@ -117,7 +117,7 @@ void vjoy_draw_cli(struct arena* win, struct style* sty)
 {
 }
 void vjoy_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -129,7 +129,7 @@ void vjoy_draw(
 	else vjoy_draw_pixel(win, sty);
 }
 int vjoy_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -204,7 +204,7 @@ static void vjoy_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	vjoy_draw(act, pin, win, sty);
@@ -213,7 +213,7 @@ static int vjoy_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;

@@ -14,7 +14,7 @@ void mat4_print(mat4 m)
 		say("%f,%f,%f,%f\n",m[y][0], m[y][1], m[y][2], m[y][3]);
 	}
 }
-void fixview(mat4 viewmatrix, struct style* sty)
+void fixview(mat4 viewmatrix, struct fstyle* sty)
 {
 	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
 	float norm;
@@ -41,9 +41,9 @@ void fixview(mat4 viewmatrix, struct style* sty)
 	uz /= norm;
 
 	//uvn.v = above = cross(right, front)
-	float vx = sty->vu[0] - sty->vb[0];
-	float vy = sty->vu[1] - sty->vb[1];
-	float vz = sty->vu[2] - sty->vb[2];
+	float vx = sty->vt[0] - sty->vb[0];
+	float vy = sty->vt[1] - sty->vb[1];
+	float vz = sty->vt[2] - sty->vb[2];
 	norm = squareroot(vx*vx + vy*vy + vz*vz);
 	vx /= norm;
 	vy /= norm;
@@ -70,34 +70,12 @@ void fixview(mat4 viewmatrix, struct style* sty)
 	viewmatrix[3][3] = 1.0f;
 	//mat4_print(viewmatrix);
 }
-void fixorie(mat4 orie)
-{
-	orie[0][0] = 0.0;
-	orie[0][1] = -1.0;
-	orie[0][2] = 0.0;
-	orie[0][3] = 0.0;
-
-	orie[1][0] = 1.0;
-	orie[1][1] = 0.0;
-	orie[1][2] = 0.0;
-	orie[1][3] = 0.0;
-
-	orie[2][0] = 0.0;
-	orie[2][1] = 0.0;
-	orie[2][2] = 1.0;
-	orie[2][3] = 0.0;
-
-	orie[3][0] = 0.0;
-	orie[3][1] = 0.0;
-	orie[3][2] = 0.0;
-	orie[3][3] = 1.0;
-}
-void fixproj(mat4 proj, struct style* sty)
+void fixproj(mat4 proj, struct fstyle* sty)
 {
 	float l = vec3_len(sty->vl);
 	float r = vec3_len(sty->vr);
 	float b = vec3_len(sty->vb);
-	float t = vec3_len(sty->vu);
+	float t = vec3_len(sty->vt);
 	float n = vec3_len(sty->vn);
 	float f = 1e20;
 
@@ -105,13 +83,13 @@ void fixproj(mat4 proj, struct style* sty)
 	lr[0] = sty->vr[0] - sty->vl[0];
 	lr[1] = sty->vr[1] - sty->vl[1];
 	lr[2] = sty->vr[2] - sty->vl[2];
-	bt[0] = sty->vu[0] - sty->vb[0];
-	bt[1] = sty->vu[1] - sty->vb[1];
-	bt[2] = sty->vu[2] - sty->vb[2];
+	bt[0] = sty->vt[0] - sty->vb[0];
+	bt[1] = sty->vt[1] - sty->vb[1];
+	bt[2] = sty->vt[2] - sty->vb[2];
 	if(sty->vl[0]*lr[0] + sty->vl[1]*lr[1] + sty->vl[2]*lr[2] < 0)l = -l;
 	if(sty->vr[0]*lr[0] + sty->vr[1]*lr[1] + sty->vr[2]*lr[2] < 0)r = -r;
 	if(sty->vb[0]*bt[0] + sty->vb[1]*bt[1] + sty->vb[2]*bt[2] < 0)b = -b;
-	if(sty->vu[0]*bt[0] + sty->vu[1]*bt[1] + sty->vu[2]*bt[2] < 0)t = -t;
+	if(sty->vt[0]*bt[0] + sty->vt[1]*bt[1] + sty->vt[2]*bt[2] < 0)t = -t;
 //say("%f,%f,%f,%f,%f\n",l,r,b,t,n);
 
 	proj[0][0] = 2 * n / (r-l);
@@ -134,7 +112,29 @@ void fixproj(mat4 proj, struct style* sty)
 	proj[3][2] = -1.0;
 	proj[3][3] = 0.0;
 }
-void fixmatrix(mat4 m, struct style* sty)
+void fixorie(mat4 orie)
+{
+	orie[0][0] = 0.0;
+	orie[0][1] = -1.0;
+	orie[0][2] = 0.0;
+	orie[0][3] = 0.0;
+
+	orie[1][0] = 1.0;
+	orie[1][1] = 0.0;
+	orie[1][2] = 0.0;
+	orie[1][3] = 0.0;
+
+	orie[2][0] = 0.0;
+	orie[2][1] = 0.0;
+	orie[2][2] = 1.0;
+	orie[2][3] = 0.0;
+
+	orie[3][0] = 0.0;
+	orie[3][1] = 0.0;
+	orie[3][2] = 0.0;
+	orie[3][3] = 1.0;
+}
+void fixmatrix(mat4 m, struct fstyle* sty)
 {
 	mat4 t;
 	fixproj(m, sty);
@@ -152,12 +152,12 @@ void fixmatrix(mat4 m, struct style* sty)
 
 
 
-void invproj(mat4 proj, struct style* sty)
+void invproj(mat4 proj, struct fstyle* sty)
 {
 	float l = vec3_len(sty->vl);
 	float r = vec3_len(sty->vr);
 	float b = vec3_len(sty->vb);
-	float t = vec3_len(sty->vu);
+	float t = vec3_len(sty->vt);
 	float n = vec3_len(sty->vn);
 	float f = 1e20;
 
@@ -165,13 +165,13 @@ void invproj(mat4 proj, struct style* sty)
 	lr[0] = sty->vr[0] - sty->vl[0];
 	lr[1] = sty->vr[1] - sty->vl[1];
 	lr[2] = sty->vr[2] - sty->vl[2];
-	bt[0] = sty->vu[0] - sty->vb[0];
-	bt[1] = sty->vu[1] - sty->vb[1];
-	bt[2] = sty->vu[2] - sty->vb[2];
+	bt[0] = sty->vt[0] - sty->vb[0];
+	bt[1] = sty->vt[1] - sty->vb[1];
+	bt[2] = sty->vt[2] - sty->vb[2];
 	if(sty->vl[0]*lr[0] + sty->vl[1]*lr[1] + sty->vl[2]*lr[2] < 0)l = -l;
 	if(sty->vr[0]*lr[0] + sty->vr[1]*lr[1] + sty->vr[2]*lr[2] < 0)r = -r;
 	if(sty->vb[0]*bt[0] + sty->vb[1]*bt[1] + sty->vb[2]*bt[2] < 0)b = -b;
-	if(sty->vu[0]*bt[0] + sty->vu[1]*bt[1] + sty->vu[2]*bt[2] < 0)t = -t;
+	if(sty->vt[0]*bt[0] + sty->vt[1]*bt[1] + sty->vt[2]*bt[2] < 0)t = -t;
 
 	proj[0][0] = (r-l) / 2.0 / n;
 	proj[0][1] = 0.0;
@@ -193,7 +193,7 @@ void invproj(mat4 proj, struct style* sty)
 	proj[3][2] = (n-f) / 2.0 / n / f;
 	proj[3][3] = (n+f) / 2.0 / n / f;
 }
-void invview(mat4 viewmatrix, struct style* sty)
+void invview(mat4 viewmatrix, struct fstyle* sty)
 {
 	//a X b = [ay*bz - az*by, az*bx-ax*bz, ax*by-ay*bx]
 	float norm;
@@ -220,9 +220,9 @@ void invview(mat4 viewmatrix, struct style* sty)
 	uz /= norm;
 
 	//uvn.v = above cross(right, front)
-	float vx = sty->vu[0] - sty->vb[0];
-	float vy = sty->vu[1] - sty->vb[1];
-	float vz = sty->vu[2] - sty->vb[2];
+	float vx = sty->vt[0] - sty->vb[0];
+	float vy = sty->vt[1] - sty->vb[1];
+	float vz = sty->vt[2] - sty->vb[2];
 	norm = squareroot(vx*vx + vy*vy + vz*vz);
 	vx /= norm;
 	vy /= norm;
@@ -248,7 +248,7 @@ void invview(mat4 viewmatrix, struct style* sty)
 	viewmatrix[3][2] = 0.0f;
 	viewmatrix[3][3] = 1.0f;
 }
-void invmvp(vec3 v, struct style* sty)
+void invmvp(vec3 v, struct fstyle* sty)
 {
 	float f;
 	mat4 p;

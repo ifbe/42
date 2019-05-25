@@ -22,7 +22,7 @@ struct pair
 
 
 static void graph_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {/*
 	struct arena* aa;
@@ -78,7 +78,7 @@ static void graph_draw_pixel(
 	}*/
 }
 static void graph_draw_vbo(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	float n;
@@ -99,9 +99,9 @@ static void graph_draw_vbo(
 		for(j=0;j<100;j++)
 		{
 			forcedirected_3d(buf, act->vlen, act->vbuf, act->vlen, act->wbuf, act->wlen);
-			vbuf[0] = sty->vc[0];
-			vbuf[1] = sty->vc[1];
-			vbuf[2] = sty->vc[2];
+			vbuf[0] = sty->f.vc[0];
+			vbuf[1] = sty->f.vc[1];
+			vbuf[2] = sty->f.vc[2];
 		}
 /*
 		for(j=0;j<act->vlen;j++)
@@ -129,9 +129,9 @@ static void graph_draw_vbo(
 	tr[1] *= n;
 	tr[2] *= n;
 
-	tf[0] = win->camera.vu[0];
-	tf[1] = win->camera.vu[1];
-	tf[2] = win->camera.vu[2];
+	tf[0] = win->camera.vt[0];
+	tf[1] = win->camera.vt[1];
+	tf[2] = win->camera.vt[2];
 	n = 10.0 / squareroot(tf[0]*tf[0] + tf[1]*tf[1] + tf[2]*tf[2]);
 	tf[0] *= n;
 	tf[1] *= n;
@@ -153,12 +153,12 @@ static void graph_draw_vbo(
 	}
 }
 static void graph_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void graph_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int len = win->len;
@@ -173,17 +173,17 @@ static void graph_draw_html(
 	win->len = len;
 }
 static void graph_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void graph_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void graph_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -315,7 +315,7 @@ static void graph_traverse(struct actor* act, struct arena* this)
 	}*/
 }
 static void graph_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -335,9 +335,9 @@ static void graph_event(
 			act->ilen = act->wlen;
 			for(j=0;j<act->vlen;j++)
 			{
-				vbuf[j*3 + 0] = sty->vc[0] + (getrandom() & 0xffff) / 16.0;
-				vbuf[j*3 + 1] = sty->vc[1] + (getrandom() & 0xffff) / 16.0;
-				vbuf[j*3 + 2] = sty->vc[2] + (getrandom() & 0xffff) / 16.0;
+				vbuf[j*3 + 0] = sty->f.vc[0] + (getrandom() & 0xffff) / 16.0;
+				vbuf[j*3 + 1] = sty->f.vc[1] + (getrandom() & 0xffff) / 16.0;
+				vbuf[j*3 + 2] = sty->f.vc[2] + (getrandom() & 0xffff) / 16.0;
 				say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
 			}
 say("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
@@ -352,7 +352,7 @@ static void graph_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	graph_draw(act, pin, win, sty);
@@ -361,7 +361,7 @@ static void graph_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, in
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
@@ -380,7 +380,7 @@ static void graph_start(struct halfrel* self, struct halfrel* peer)
 {
 	int j;
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	float* vbuf = act->vbuf;
@@ -394,9 +394,9 @@ static void graph_start(struct halfrel* self, struct halfrel* peer)
 	act->ilen = act->wlen;
 	for(j=0;j<act->vlen;j++)
 	{
-		vbuf[j*3 + 0] = sty->vc[0] + (getrandom() & 0xffff) / 16.0;
-		vbuf[j*3 + 1] = sty->vc[1] + (getrandom() & 0xffff) / 16.0;
-		vbuf[j*3 + 2] = sty->vc[2] + (getrandom() & 0xffff) / 16.0;
+		vbuf[j*3 + 0] = sty->f.vc[0] + (getrandom() & 0xffff) / 16.0;
+		vbuf[j*3 + 1] = sty->f.vc[1] + (getrandom() & 0xffff) / 16.0;
+		vbuf[j*3 + 2] = sty->f.vc[2] + (getrandom() & 0xffff) / 16.0;
 		say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
 	}
 	say("%d,%d,%d,%d\n", act->nlen, act->wlen, act->vlen, act->ilen);

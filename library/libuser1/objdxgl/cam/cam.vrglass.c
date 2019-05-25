@@ -4,7 +4,7 @@
 
 
 static int vrglass_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	float y;
@@ -36,7 +36,7 @@ static int vrglass_draw(
 	return 0;
 }
 static int vrglass_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -143,9 +143,9 @@ static int vrglass_event(
 	win->camera.vb[1] = 0.0;
 	win->camera.vb[2] = -win->height/2 - win->camera.vc[2];
 
-	win->camera.vu[0] = 0.0;
-	win->camera.vu[1] = 0.0;
-	win->camera.vu[2] = win->height/2 - win->camera.vc[2];
+	win->camera.vt[0] = 0.0;
+	win->camera.vt[1] = 0.0;
+	win->camera.vt[2] = win->height/2 - win->camera.vc[2];
 	return 1;
 }
 
@@ -156,7 +156,7 @@ static void vrglass_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	vrglass_draw(act, pin, win, sty);
@@ -165,7 +165,7 @@ static int vrglass_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, i
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;

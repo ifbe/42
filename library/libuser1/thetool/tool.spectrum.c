@@ -27,7 +27,7 @@ static int that;
 
 
 static void spectrum_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	float t,cc,ss;
@@ -40,10 +40,10 @@ static void spectrum_draw_pixel(
 	float* amp = frame[cur].amp;
 	if(sty)
 	{
-		cx = sty->vc[0];
-		cy = sty->vc[1];
-		ww = sty->vr[0];
-		hh = sty->vf[1];
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
 	}
 	else
 	{
@@ -93,7 +93,7 @@ static void spectrum_draw_pixel(
 	drawdecimal(win, 0xffffff, cx, cy, that);
 }
 static void spectrum_draw_vbo2d(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int x;
@@ -101,10 +101,10 @@ static void spectrum_draw_vbo2d(
 	vec3 tc, tr, tf, tu;
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 
 	short* pcmbuf = (act->buf)+0x80000;
 	for(x=0;x<1024*16;x++)
@@ -138,7 +138,7 @@ static void spectrum_draw_vbo2d(
 	}
 }
 static void spectrum_draw_vbo3d(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int x;
@@ -148,10 +148,10 @@ static void spectrum_draw_vbo3d(
 	float* real = frame[cur].real;
 	float* imag = frame[cur].imag;
 	float* amp = frame[cur].amp;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 
 	for(x=0;x<512;x++)
 	{
@@ -169,12 +169,12 @@ static void spectrum_draw_vbo3d(
 	}
 }
 static void spectrum_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void spectrum_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int len = win->len;
@@ -189,7 +189,7 @@ static void spectrum_draw_html(
 	win->len = len;
 }
 static void spectrum_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int x,y;
@@ -211,13 +211,13 @@ static void spectrum_draw_tui(
 	}
 }
 static void spectrum_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	say("spectrum(%x,%x,%x)\n",win,act,sty);
 }
 static void spectrum_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -239,7 +239,7 @@ static void spectrum_draw(
 
 
 static void spectrum_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -251,7 +251,7 @@ static void spectrum_event(
 	}
 }
 static void spectrum_data(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	u8* buf, int len)
 {
 	int j,k;
@@ -305,7 +305,7 @@ static void spectrum_sread(struct halfrel* self, struct halfrel* peer, u8* buf, 
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	spectrum_draw(act, pin, win, sty);
@@ -314,7 +314,7 @@ static void spectrum_swrite(struct halfrel* self, struct halfrel* peer, u8* buf,
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;

@@ -40,22 +40,22 @@ void other_create(struct arena* win, void* str)
 		pin = allocpinid();
 		if(0 == pin)continue;
 
-		sty->vc[0] = 0;
-		sty->vc[1] = 0;
-		sty->vc[2] = 0;
-		sty->uc[3] = other_flag[j];
+		sty->f.vc[0] = 0;
+		sty->f.vc[1] = 0;
+		sty->f.vc[2] = 0;
+		sty->i.uc[3] = other_flag[j];
 
-		sty->vr[0] = 1.0;
-		sty->vr[1] = 0;
-		sty->vr[2] = 0;
+		sty->f.vr[0] = 1.0;
+		sty->f.vr[1] = 0;
+		sty->f.vr[2] = 0;
 
-		sty->vf[0] = 0;
-		sty->vf[1] = 1.0;
-		sty->vf[2] = 0;
+		sty->f.vf[0] = 0;
+		sty->f.vf[1] = 1.0;
+		sty->f.vf[2] = 0;
 
-		sty->vu[0] = 0;
-		sty->vu[1] = 0;
-		sty->vu[2] = 1.0;
+		sty->f.vt[0] = 0;
+		sty->f.vt[1] = 0;
+		sty->f.vt[2] = 1.0;
 
 		relationcreate(act, pin, _act_, 0, win, sty, _win_, _ui_);
 	}
@@ -73,7 +73,7 @@ void aider_create(struct arena* win, void* str)
 	sty = allocstyle();
 	pin = allocpinid();
 
-	sty->uc[3] = '#';
+	sty->i.uc[3] = '#';
 	relationcreate(act, pin, _act_, 0, win, sty, _win_, _aid_);
 
 
@@ -81,7 +81,7 @@ void aider_create(struct arena* win, void* str)
 	sty = allocstyle();
 	pin = allocpinid();
 
-	sty->uc[3] = '#';
+	sty->i.uc[3] = '#';
 	relationcreate(act, pin, _act_, 0, win, sty, _win_, _aid_);
 }
 
@@ -114,21 +114,21 @@ void bg_create(struct arena* win, void* str)
 		pin = allocpinid();
 		if(0 == pin)continue;
 
-		sty->vc[0] = 0;
-		sty->vc[1] = 0;
-		sty->vc[2] = 0;
+		sty->f.vc[0] = 0;
+		sty->f.vc[1] = 0;
+		sty->f.vc[2] = 0;
 
-		sty->vr[0] = 10.0*1000.0*1000.0;
-		sty->vr[1] = 0;
-		sty->vr[2] = 0;
+		sty->f.vr[0] = 10.0*1000.0*1000.0;
+		sty->f.vr[1] = 0;
+		sty->f.vr[2] = 0;
 
-		sty->vf[0] = 0;
-		sty->vf[1] = 10.0*1000.0*1000.0;
-		sty->vf[2] = 0;
+		sty->f.vf[0] = 0;
+		sty->f.vf[1] = 10.0*1000.0*1000.0;
+		sty->f.vf[2] = 0;
 
-		sty->vu[0] = 0;
-		sty->vu[1] = 0;
-		sty->vu[2] = 10.0*1000.0*1000.0;
+		sty->f.vt[0] = 0;
+		sty->f.vt[1] = 0;
+		sty->f.vt[2] = 10.0*1000.0*1000.0;
 
 		relationcreate(act, pin, _act_, 0, win, sty, _win_, _3d_);
 	}
@@ -152,21 +152,21 @@ void cam_create(struct arena* win, void* str)
 	pin = allocpinid();
 	if(0 == pin)return;
 
-	sty->vc[0] = 0;
-	sty->vc[1] = 0;
-	sty->vc[2] = 0;
+	sty->f.vc[0] = 0;
+	sty->f.vc[1] = 0;
+	sty->f.vc[2] = 0;
 
-	sty->vr[0] = 1.0;
-	sty->vr[1] = 0;
-	sty->vr[2] = 0;
+	sty->f.vr[0] = 1.0;
+	sty->f.vr[1] = 0;
+	sty->f.vr[2] = 0;
 
-	sty->vf[0] = 0;
-	sty->vf[1] = 1.0;
-	sty->vf[2] = 0;
+	sty->f.vf[0] = 0;
+	sty->f.vf[1] = 1.0;
+	sty->f.vf[2] = 0;
 
-	sty->vu[0] = 0;
-	sty->vu[1] = 0;
-	sty->vu[2] = 1.0;
+	sty->f.vt[0] = 0;
+	sty->f.vt[1] = 0;
+	sty->f.vt[2] = 1.0;
 
 	relationcreate(act, pin, _act_, _cam_, win, sty, _win_, _3d_);
 }
@@ -187,9 +187,9 @@ void viewportvertex1(struct arena* win)
 	win->target.vf[1] = 500.0;
 	win->target.vf[2] = 0.0;
 
-	win->target.vu[0] = 0.0;
-	win->target.vu[1] = 0.0;
-	win->target.vu[2] = 500.0;
+	win->target.vt[0] = 0.0;
+	win->target.vt[1] = 0.0;
+	win->target.vt[2] = 500.0;
 
 #define sin34 0.55919290
 #define cos34 0.8290
@@ -206,9 +206,9 @@ void viewportvertex1(struct arena* win)
 	win->camera.vb[1] = -cos34;
 	win->camera.vb[2] = -sin34;
 
-	win->camera.vu[0] = 0.0;
-	win->camera.vu[1] = cos34;
-	win->camera.vu[2] = sin34;
+	win->camera.vt[0] = 0.0;
+	win->camera.vt[1] = cos34;
+	win->camera.vt[2] = sin34;
 
 	win->camera.vn[0] = 0.0;
 	win->camera.vn[1] = sin34;
@@ -241,9 +241,9 @@ void viewportvertex2(struct arena* win)
 	win->target.vf[1] = 500.0;
 	win->target.vf[2] = 0.0;
 
-	win->target.vu[0] = 0.0;
-	win->target.vu[1] = 0.0;
-	win->target.vu[2] = 500.0;
+	win->target.vt[0] = 0.0;
+	win->target.vt[1] = 0.0;
+	win->target.vt[2] = 500.0;
 
 	//camera
 	win->camera.vl[0] = -1.0;
@@ -258,9 +258,9 @@ void viewportvertex2(struct arena* win)
 	win->camera.vb[1] = -1.0;
 	win->camera.vb[2] = 0.0;
 
-	win->camera.vu[0] = 0.0;
-	win->camera.vu[1] = 1.0;
-	win->camera.vu[2] = 0.0;
+	win->camera.vt[0] = 0.0;
+	win->camera.vt[1] = 1.0;
+	win->camera.vt[2] = 0.0;
 
 	win->camera.vn[0] = 0.0;
 	win->camera.vn[1] = 0.0;
@@ -291,10 +291,10 @@ void role_default1()
 	struct arena* _3d = vbonode_create(_vbo_, 0);
 	struct style* win_vp2 = allocstyle();
 	struct pinid* ctx_pl2 = allocpinid();
-	win_vp2->vc[0] = 0.0;
-	win_vp2->vc[1] = 0.0;
-	win_vp2->vq[0] = 1.0;
-	win_vp2->vq[1] = 1.0;
+	win_vp2->f.vc[0] = 0.0;
+	win_vp2->f.vc[1] = 0.0;
+	win_vp2->f.vq[0] = 1.0;
+	win_vp2->f.vq[1] = 1.0;
 	relationcreate(
 		_3d, ctx_pl2, _win_, 0,
 		win, win_vp2, _win_, _vp_);
@@ -307,10 +307,10 @@ void role_default1()
 	struct arena* _ui = vbonode_create(_vbo_, 0);
 	struct style* win_vp1 = allocstyle();
 	struct pinid* ctx_pl1 = allocpinid();
-	win_vp1->vc[0] = 0.0;
-	win_vp1->vc[1] = 0.0;
-	win_vp1->vq[0] = 1.0;
-	win_vp1->vq[1] = 1.0;
+	win_vp1->f.vc[0] = 0.0;
+	win_vp1->f.vc[1] = 0.0;
+	win_vp1->f.vq[0] = 1.0;
+	win_vp1->f.vq[1] = 1.0;
 	relationcreate(
 		_ui, ctx_pl1, _win_, 0,
 		win, win_vp1, _win_, _vp_);

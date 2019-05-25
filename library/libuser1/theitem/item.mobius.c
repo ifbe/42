@@ -5,27 +5,27 @@
 
 
 static void mobius_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void mobius_draw_vbo2d(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void mobius_draw_vbo3d(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int j;
 	float a,c,s;
 	float x,y,z,n;
 	vec3 tc,tr,tf,tu;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 
 	tc[0] = vc[0] + vu[0];
 	tc[1] = vc[1] + vu[1];
@@ -85,9 +85,9 @@ static void mobius_draw_vbo3d(
 			act->camera.vc[1] = tc[1] + tf[1] + tu[1]*10;
 			act->camera.vc[2] = tc[2] + tf[2] + tu[2]*10;
 
-			act->camera.vu[0] = 2*tu[0];
-			act->camera.vu[1] = 2*tu[1];
-			act->camera.vu[2] = 2*tu[2];
+			act->camera.vt[0] = 2*tu[0];
+			act->camera.vt[1] = 2*tu[1];
+			act->camera.vt[2] = 2*tu[2];
 			act->camera.vb[0] =-2*tu[0];
 			act->camera.vb[1] =-2*tu[1];
 			act->camera.vb[2] =-2*tu[2];
@@ -116,9 +116,9 @@ static void mobius_draw_vbo3d(
 			act->camera.vc[1] = tc[1] + tf[1] - tu[1]*10;
 			act->camera.vc[2] = tc[2] + tf[2] - tu[2]*10;
 
-			act->camera.vu[0] =-2*tu[0];
-			act->camera.vu[1] =-2*tu[1];
-			act->camera.vu[2] =-2*tu[2];
+			act->camera.vt[0] =-2*tu[0];
+			act->camera.vt[1] =-2*tu[1];
+			act->camera.vt[2] =-2*tu[2];
 			act->camera.vb[0] = 2*tu[0];
 			act->camera.vb[1] = 2*tu[1];
 			act->camera.vb[2] = 2*tu[2];
@@ -145,27 +145,27 @@ static void mobius_draw_vbo3d(
 	}
 }
 static void mobius_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void mobius_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void mobius_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void mobius_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void mobius_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -188,7 +188,7 @@ static void mobius_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	mobius_draw(act, pin, win, sty);

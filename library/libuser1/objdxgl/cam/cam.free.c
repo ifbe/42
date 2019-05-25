@@ -1,5 +1,5 @@
 #include "libuser.h"
-void fixmatrix(float* m, struct style* sty);
+void fixmatrix(float* m, struct fstyle* sty);
 
 
 
@@ -50,9 +50,9 @@ void surround_fixcam(struct arena* win)
 	x /= norm;
 	y /= norm;
 	z /= norm;
-	win->camera.vu[0] = x * t;
-	win->camera.vu[1] = y * t;
-	win->camera.vu[2] = z * t;
+	win->camera.vt[0] = x * t;
+	win->camera.vt[1] = y * t;
+	win->camera.vt[2] = z * t;
 	win->camera.vb[0] = -x * t;
 	win->camera.vb[1] = -y * t;
 	win->camera.vb[2] = -z * t;
@@ -162,12 +162,12 @@ void printvec4(float* s)
 {
 	say("%f, %f, %f, %f\n", s[0], s[1], s[2], s[3]);
 }
-void printstyle(struct style* sty)
+void printstyle(struct fstyle* sty)
 {
 	printvec4(sty->vl);
 	printvec4(sty->vr);
 	printvec4(sty->vb);
-	printvec4(sty->vu);
+	printvec4(sty->vt);
 	printvec4(sty->vn);
 	printvec4(sty->vf);
 	printvec4(sty->vq);
@@ -181,12 +181,12 @@ void printmat4(float* f)
 	printvec4(&f[12]);
 }
 static void surround_matrix(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	u8* buf, int len)
 {
 	struct relation* rel;
 	struct arena* r;
-	struct style* s;
+	struct fstyle* s;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
 	rel = act->irel0;
@@ -218,13 +218,13 @@ static void surround_matrix(
 	act->camera.vl[1] = - s->vr[1];
 	act->camera.vl[2] = - s->vr[2];
 
-	act->camera.vu[0] = s->vu[0];
-	act->camera.vu[1] = s->vu[1];
-	act->camera.vu[2] = s->vu[2];
+	act->camera.vt[0] = s->vt[0];
+	act->camera.vt[1] = s->vt[1];
+	act->camera.vt[2] = s->vt[2];
 
-	act->camera.vb[0] = - s->vu[0];
-	act->camera.vb[1] = - s->vu[1];
-	act->camera.vb[2] = - s->vu[2];
+	act->camera.vb[0] = - s->vt[0];
+	act->camera.vb[1] = - s->vt[1];
+	act->camera.vb[2] = - s->vt[2];
 
 	//printstyle(&act->camera);
 
@@ -253,7 +253,7 @@ static void surround_matrix(
 	src->arg_data[1] = act->camera.vc;
 }
 static int surround_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {/*
 	vec3 tc,tf;
@@ -282,7 +282,7 @@ static int surround_draw(
 	return 0;
 }
 static int surround_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -502,7 +502,7 @@ static int surround_event(
 	return 1;
 }
 static int surround_event1(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -529,27 +529,27 @@ static int surround_event1(
 		t = (void*)ev;
 		if(t[3] & joyl_left)		//x-
 		{
-			s->vc[0] -= 10;
+			s->f.vc[0] -= 10;
 		}
 		if(t[3] & joyl_right)		//x+
 		{
-			s->vc[0] += 10;
+			s->f.vc[0] += 10;
 		}
 		if(t[3] & joyl_down)		//y-
 		{
-			s->vc[1] -= 10;
+			s->f.vc[1] -= 10;
 		}
 		if(t[3] & joyl_up)			//y+
 		{
-			s->vc[1] += 10;
+			s->f.vc[1] += 10;
 		}
 		if(t[3] & joyl_trigger)		//z-
 		{
-			s->vc[2] -= 10;
+			s->f.vc[2] -= 10;
 		}
 		if(t[3] & joyl_bumper)		//z+
 		{
-			s->vc[2] += 10;
+			s->f.vc[2] += 10;
 		}
 	}
 	else if(joy_right == (ev->what & joy_mask))
@@ -567,7 +567,7 @@ static void surround_sread(struct halfrel* self, struct halfrel* peer, u8* buf, 
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	if(_cam_ == self->flag)surround_matrix(act, pin, buf, len);
@@ -577,7 +577,7 @@ static int surround_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, 
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;

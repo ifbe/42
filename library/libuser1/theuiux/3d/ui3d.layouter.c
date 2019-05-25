@@ -1,12 +1,12 @@
 #include "libuser.h"
 int relation_choose(void*, void*);
-int invmvp(vec3 v, struct style* sty);
-int obb_ray(struct style* obb, vec3 ray[], vec3 out[]);
+int invmvp(vec3 v, struct fstyle* sty);
+int obb_ray(struct fstyle* obb, vec3 ray[], vec3 out[]);
 
 
 
 
-int joystick2style(struct arena* win, struct style* sty, int aaa, short* tmp)
+int joystick2style(struct arena* win, struct fstyle* sty, int aaa, short* tmp)
 {
 	float c,s;
 	float tx,ty,tz;
@@ -92,13 +92,13 @@ int joystick2style(struct arena* win, struct style* sty, int aaa, short* tmp)
 		if(tmp[3] & joyl_trigger)
 		{
 			//right trigger
-			tx = (sty->vu[0])/16;
-			ty = (sty->vu[1])/16;
-			tz = (sty->vu[2])/16;
+			tx = (sty->vt[0])/16;
+			ty = (sty->vt[1])/16;
+			tz = (sty->vt[2])/16;
 
-			sty->vu[0] += tx;
-			sty->vu[1] += ty;
-			sty->vu[2] += tz;
+			sty->vt[0] += tx;
+			sty->vt[1] += ty;
+			sty->vt[2] += tz;
 
 			sty->vc[0] -= tx*2;
 			sty->vc[1] -= ty*2;
@@ -108,13 +108,13 @@ int joystick2style(struct arena* win, struct style* sty, int aaa, short* tmp)
 		if(tmp[3] & joyl_bumper)
 		{
 			//right bumper
-			tx = (sty->vu[0])/16;
-			ty = (sty->vu[1])/16;
-			tz = (sty->vu[2])/16;
+			tx = (sty->vt[0])/16;
+			ty = (sty->vt[1])/16;
+			tz = (sty->vt[2])/16;
 
-			sty->vu[0] += tx;
-			sty->vu[1] += ty;
-			sty->vu[2] += tz;
+			sty->vt[0] += tx;
+			sty->vt[1] += ty;
+			sty->vt[2] += tz;
 			return 0;
 		}
 
@@ -196,13 +196,13 @@ int joystick2style(struct arena* win, struct style* sty, int aaa, short* tmp)
 		if(tmp[3] & joyr_trigger)
 		{
 			//left trigger
-			tx = (sty->vu[0])/16;
-			ty = (sty->vu[1])/16;
-			tz = (sty->vu[2])/16;
+			tx = (sty->vt[0])/16;
+			ty = (sty->vt[1])/16;
+			tz = (sty->vt[2])/16;
 
-			sty->vu[0] -= tx;
-			sty->vu[1] -= ty;
-			sty->vu[2] -= tz;
+			sty->vt[0] -= tx;
+			sty->vt[1] -= ty;
+			sty->vt[2] -= tz;
 
 			sty->vc[0] += tx*2;
 			sty->vc[1] += ty*2;
@@ -212,13 +212,13 @@ int joystick2style(struct arena* win, struct style* sty, int aaa, short* tmp)
 		if(tmp[3] & joyr_bumper)
 		{
 			//left bumper
-			tx = (sty->vu[0])/16;
-			ty = (sty->vu[1])/16;
-			tz = (sty->vu[2])/16;
+			tx = (sty->vt[0])/16;
+			ty = (sty->vt[1])/16;
+			tz = (sty->vt[2])/16;
 
-			sty->vu[0] -= tx;
-			sty->vu[1] -= ty;
-			sty->vu[2] -= tz;
+			sty->vt[0] -= tx;
+			sty->vt[1] -= ty;
+			sty->vt[2] -= tz;
 			return 0;
 		}
 
@@ -248,7 +248,7 @@ int joystick2style(struct arena* win, struct style* sty, int aaa, short* tmp)
 
 	return 0;
 }
-int keyboard2style(struct arena* win, struct style* sty, short* tmp)
+int keyboard2style(struct arena* win, struct fstyle* sty, short* tmp)
 {
 	int sign = -1;
 	if(_vbo_ == win->fmt)sign = 1;
@@ -290,7 +290,7 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 {
 	float c,s,tx,ty,norm;
 	struct relation* orel;
-	struct style* sty;
+	struct fstyle* sty;
 	int ax, ay, aaa, bbb, sign;
 	int x = (ev->why)&0xffff;
 	int y = ((ev->why)>>16)&0xffff;
@@ -337,9 +337,9 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 		sty->vf[1] = (sty->vf[1])*17/16;
 		sty->vf[2] = (sty->vf[2])*17/16;
 
-		sty->vu[0] = (sty->vu[0])*17/16;
-		sty->vu[1] = (sty->vu[1])*17/16;
-		sty->vu[2] = (sty->vu[2])*17/16;
+		sty->vt[0] = (sty->vt[0])*17/16;
+		sty->vt[1] = (sty->vt[1])*17/16;
+		sty->vt[2] = (sty->vt[2])*17/16;
 		return 0;
 	}
 	if('b' == id)
@@ -352,9 +352,9 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 		sty->vf[1] = (sty->vf[1])*15/16;
 		sty->vf[2] = (sty->vf[2])*15/16;
 
-		sty->vu[0] = (sty->vu[0])*15/16;
-		sty->vu[1] = (sty->vu[1])*15/16;
-		sty->vu[2] = (sty->vu[2])*15/16;
+		sty->vt[0] = (sty->vt[0])*15/16;
+		sty->vt[1] = (sty->vt[1])*15/16;
+		sty->vt[2] = (sty->vt[2])*15/16;
 		return 0;
 	}
 	if(hex32('p','+',0,0) == ev->what)
@@ -398,9 +398,9 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 			sty->vf[1] = (sty->vf[1]) * aaa / bbb;
 			sty->vf[2] = (sty->vf[2]) * aaa / bbb;
 
-			sty->vu[0] = (sty->vu[0]) * aaa / bbb;
-			sty->vu[1] = (sty->vu[1]) * aaa / bbb;
-			sty->vu[2] = (sty->vu[2]) * aaa / bbb;
+			sty->vt[0] = (sty->vt[0]) * aaa / bbb;
+			sty->vt[1] = (sty->vt[1]) * aaa / bbb;
+			sty->vt[2] = (sty->vt[2]) * aaa / bbb;
 		}
 		else if((0 == id)|(10 == id))
 		{
@@ -453,7 +453,7 @@ int playwith3d_pick(struct arena* root, struct arena* twig, struct actor* act, i
 	int ret;
 	vec3 ray[2];
 	vec3 out[2];
-	struct style* sty;
+	struct fstyle* sty;
 	struct relation* rel;
 
 	float w = root->width;
@@ -506,7 +506,7 @@ int playwith3d_move(struct arena* root, struct arena* twig, int x0, int y0, int 
 	vec3 ray0[2];
 	vec3 rayn[2];
 	vec3 out[2];
-	struct style* sty;
+	struct fstyle* sty;
 	struct relation* rel;
 
 	float w = root->width;
@@ -570,14 +570,14 @@ found:
 
 
 static int picker_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int flag;
 	vec3 tc;
 	struct relation* rel;
 	struct arena* www;
-	struct style* sss;
+	struct fstyle* sss;
 	//carvefrustum(win, &win->camera);
 	//carveline_prism4(win, 0xff00ff, win->target.vc, win->target.vr, win->target.vf, win->target.vu);
 
@@ -614,8 +614,8 @@ found:
 		{
 			sss = (void*)(rel->srcfoot);
 
-			if(0 == flag)carveline_prism4(win, 0xffffff, sss->vc, sss->vr, sss->vf, sss->vu);
-			else carveopaque_prism4(win, 0xffffff, sss->vc, sss->vr, sss->vf, sss->vu);
+			if(0 == flag)carveline_prism4(win, 0xffffff, sss->vc, sss->vr, sss->vf, sss->vt);
+			else carveopaque_prism4(win, 0xffffff, sss->vc, sss->vr, sss->vf, sss->vt);
 
 			flag ++;
 		}
@@ -625,7 +625,7 @@ found:
 	return 0;
 }
 static int picker_event(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
@@ -673,7 +673,7 @@ static void picker_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	picker_draw(act, pin, win, sty);
@@ -682,7 +682,7 @@ static int picker_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, in
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;

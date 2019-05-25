@@ -67,7 +67,7 @@ void mirrorfrustum(struct arena* win, struct style* mir)
 	say("%f,%f,%f\n", rt[0], rt[1], rt[2]);
 }*/
 void mirrorcamera(
-	struct actor* leaf, struct pinid* lf,
+	struct actor* leaf, struct style* lf,
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
 {
@@ -90,18 +90,18 @@ void mirrorcamera(
 
 
 	//mirror.n
-	x = -tf->vf[0];
-	y = -tf->vf[1];
-	z = -tf->vf[2];
+	x = -tf->f.vf[0];
+	y = -tf->f.vf[1];
+	z = -tf->f.vf[2];
 	t = squareroot(x*x + y*y + z*z);
 	x /= t;
 	y /= t;
 	z /= t;
 
 	//op*cos(on,op): t = op * mirror.n
-	t = (root->camera.vc[0] - tf->vc[0])*x
-	  + (root->camera.vc[1] - tf->vc[1])*y
-	  + (root->camera.vc[2] - tf->vc[2])*z;
+	t = (root->camera.vc[0] - tf->f.vc[0])*x
+	  + (root->camera.vc[1] - tf->f.vc[1])*y
+	  + (root->camera.vc[2] - tf->f.vc[2])*z;
 
 	//dir*len: fbo.n = t*mirror.n + offset
 	fbo->camera.vn[0] = x * t * 1.001;
@@ -120,55 +120,55 @@ void mirrorcamera(
 
 
 	//r = -mirror.r
-	x = -tf->vr[0];
-	y = -tf->vr[1];
-	z = -tf->vr[2];
+	x = -tf->f.vr[0];
+	y = -tf->f.vr[1];
+	z = -tf->f.vr[2];
 	t = squareroot(x*x + y*y + z*z);
 	x /= t;
 	y /= t;
 	z /= t;
 
 	//l.len = (l-q) * nr
-	t = (tf->vc[0] + tf->vr[0] - fbo->camera.vq[0]) * x
-	  + (tf->vc[1] + tf->vr[1] - fbo->camera.vq[1]) * y
-	  + (tf->vc[2] + tf->vr[2] - fbo->camera.vq[2]) * z;
+	t = (tf->f.vc[0] + tf->f.vr[0] - fbo->camera.vq[0]) * x
+	  + (tf->f.vc[1] + tf->f.vr[1] - fbo->camera.vq[1]) * y
+	  + (tf->f.vc[2] + tf->f.vr[2] - fbo->camera.vq[2]) * z;
 	fbo->camera.vl[0] = x * t;
 	fbo->camera.vl[1] = y * t;
 	fbo->camera.vl[2] = z * t;
 
 	//r.len = (r-q) * nr
-	t = (tf->vc[0] - tf->vr[0] - fbo->camera.vq[0]) * x
-	  + (tf->vc[1] - tf->vr[1] - fbo->camera.vq[1]) * y
-	  + (tf->vc[2] - tf->vr[2] - fbo->camera.vq[2]) * z;
+	t = (tf->f.vc[0] - tf->f.vr[0] - fbo->camera.vq[0]) * x
+	  + (tf->f.vc[1] - tf->f.vr[1] - fbo->camera.vq[1]) * y
+	  + (tf->f.vc[2] - tf->f.vr[2] - fbo->camera.vq[2]) * z;
 	fbo->camera.vr[0] = x * t;
 	fbo->camera.vr[1] = y * t;
 	fbo->camera.vr[2] = z * t;
 
 
 	//mirror.t
-	x = tf->vu[0];
-	y = tf->vu[1];
-	z = tf->vu[2];
+	x = tf->f.vt[0];
+	y = tf->f.vt[1];
+	z = tf->f.vt[2];
 	t = squareroot(x*x + y*y + z*z);
 	x /= t;
 	y /= t;
 	z /= t;
 
 	//b.len =  = (b-q) * nt
-	t = (tf->vc[0] - tf->vu[0] - fbo->camera.vq[0]) * x
-	  + (tf->vc[1] - tf->vu[1] - fbo->camera.vq[1]) * y
-	  + (tf->vc[2] - tf->vu[2] - fbo->camera.vq[2]) * z;
+	t = (tf->f.vc[0] - tf->f.vt[0] - fbo->camera.vq[0]) * x
+	  + (tf->f.vc[1] - tf->f.vt[1] - fbo->camera.vq[1]) * y
+	  + (tf->f.vc[2] - tf->f.vt[2] - fbo->camera.vq[2]) * z;
 	fbo->camera.vb[0] = x * t;
 	fbo->camera.vb[1] = y * t;
 	fbo->camera.vb[2] = z * t;
 
 	//t.len = (u-q) * nt
-	t = (tf->vc[0] + tf->vu[0] - fbo->camera.vq[0]) * x
-	  + (tf->vc[1] + tf->vu[1] - fbo->camera.vq[1]) * y
-	  + (tf->vc[2] + tf->vu[2] - fbo->camera.vq[2]) * z;
-	fbo->camera.vu[0] = x * t;
-	fbo->camera.vu[1] = y * t;
-	fbo->camera.vu[2] = z * t;
+	t = (tf->f.vc[0] + tf->f.vt[0] - fbo->camera.vq[0]) * x
+	  + (tf->f.vc[1] + tf->f.vt[1] - fbo->camera.vq[1]) * y
+	  + (tf->f.vc[2] + tf->f.vt[2] - fbo->camera.vq[2]) * z;
+	fbo->camera.vt[0] = x * t;
+	fbo->camera.vt[1] = y * t;
+	fbo->camera.vt[2] = z * t;
 
 	carvefrustum(root, &fbo->camera);
 /*
@@ -217,13 +217,13 @@ void mirrorcamera(
 
 
 static void mirror_draw_vbo(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
 
 	struct glsrc* src = (void*)(pin->foot[0]);
 	float (*vbuf)[6] = (void*)(src->vbuf);
@@ -275,16 +275,16 @@ static void mirror_draw_vbo(
 	mirrorcamera(act, pin, 0, sty, win, 0);
 }
 static void mirror_draw_pixel(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->vc[0];
-		cy = sty->vc[1];
-		ww = sty->vr[0];
-		hh = sty->vf[1];
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
 	}
 	else
 	{
@@ -295,27 +295,27 @@ static void mirror_draw_pixel(
 	}
 }
 static void mirror_draw_json(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void mirror_draw_html(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void mirror_draw_tui(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void mirror_draw_cli(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 }
 static void mirror_draw(
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
@@ -334,7 +334,7 @@ static void mirror_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	mirror_draw(act, pin, win, sty);
@@ -358,7 +358,7 @@ static void mirror_start(struct halfrel* self, struct halfrel* peer)
 	struct gldst* dst;
 
 	struct actor* act = (void*)(self->chip);
-	struct pinid* pin = (void*)(self->foot);
+	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 
