@@ -84,7 +84,7 @@ void soundchoose()
 }
 void soundread(
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct style* pin)
 {
 	if(0 == act)return;
 }

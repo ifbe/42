@@ -51,9 +51,9 @@ dll:
 	$(library)/libuser1/*.o \
 	-lglfw3 -lglew32 -lglu32 -lole32 -lopengl32 -lstrmiids -lxinput -lwinmm -lws2_32 -lgdi32
 program:
-	windres --input-format=rc -O coff -i $(datafile)/42.rc -o $(datafile)/42.res
+	windres --input-format=rc -O coff -i $(datafile)/winres/42.rc -o $(datafile)/winres/42.res
 	g++ -mwindows \
-	$(datafile)/42.res \
+	$(datafile)/winres/42.res \
 	$(library)/libboot0/*.o \
 	$(library)/libboot1/*.o \
 	$(library)/libhard0/*.o \

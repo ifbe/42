@@ -481,7 +481,7 @@ extern "C" {
 
 void videoread(
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin)
+	struct actor* act, struct style* pin)
 {
 	printf("%llx,%llx,%llx,%llx\n", win, sty, act, pin);
 	if(0 == act)return;

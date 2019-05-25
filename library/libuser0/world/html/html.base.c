@@ -7,7 +7,7 @@ void printhtmlbody(u8* buf, int len);
 /*
 int httpserver_write(
 	struct arena* win, struct style* sty,
-	struct actor* act, struct pinid* pin,
+	struct actor* act, struct style* pin,
 	u8* buf, int len)
 {
 	int j,k,ret;
