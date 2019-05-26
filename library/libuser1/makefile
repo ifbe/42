@@ -195,6 +195,24 @@ theuiux/vkbd/vkbd.keyboard.c \
 theuiux/menu.overview.c \
 theuiux/menu.detail.c \
 theuiux/menu.login.c \
+world/cli/cli.base.c \
+world/cli/cli.tool.c \
+world/tui/tui.base.c \
+world/tui/tui.tool.c \
+world/func/func.base.c \
+world/func/func.tool.c \
+world/html/html.base.c \
+world/html/html.tool.c \
+world/json/json.base.c \
+world/json/json.tool.c \
+world/xml/xml.base.c \
+world/xml/xml.tool.c \
+world/sch/sch.base.c \
+world/sch/sch.tool.c \
+world/vbo/vbo.base.c \
+world/vbo/vbo.tool.c \
+world/rgba/rgba.base.c \
+world/rgba/rgba.tool.c \
 actor.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 

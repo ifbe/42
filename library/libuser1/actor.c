@@ -51,7 +51,7 @@ void* allocpinid()
 	int j,len;
 	u8* buf;
 
-	len = 0x100;	//sizeof(struct pinid);
+	len = 0x200;	//sizeof(struct pinid);
 	buf = (void*)pinid + pinlen;
 	pinlen += len;
 

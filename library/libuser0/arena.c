@@ -135,7 +135,7 @@ void* allocstyle()
 	int j,len;
 	u8* buf;
 
-	len = 0x100;	//sizeof(struct style);
+	len = 0x200;	//sizeof(struct style);
 	buf = (void*)style + stylen;
 	stylen += len;
 

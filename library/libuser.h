@@ -341,16 +341,42 @@ struct istyle{
 	int uq[4];
 	int uc[4];
 };
+struct fmotion{
+	vec4 j_angular;		//q
+	vec4 t_displace;	//v		jerk
+	vec4 a_angular;		//q
+	vec4 a_displace;	//v		accel
+	vec4 v_angular;		//q
+	vec4 v_displace;	//v		velocity
+	vec4 x_angular;		//q
+	vec4 x_displace;	//v		displace
+};
+struct imotion{
+	int ul[4];
+	int ur[4];
+	int un[4];
+	int uf[4];
+	int ub[4];
+	int ut[4];
+	int uq[4];
+	int uc[4];
+};
 struct style
 {
-	//[00, 7f]: float
+	//[00, 7f]
 	union{
 		struct fstyle f;
 		struct istyle i;
 	};
 
-	//[80, ...]
-	u64 foot[16];
+	//[80, ff]
+	union{
+		struct fmotion fm;
+		struct imotion im;
+	};
+
+	//[100, ...]
+	u64 foot[32];
 };
 
 
