@@ -257,6 +257,19 @@ struct glsrc
 	void* fs;
 	u8 shader_enq;
 
+	//[88,fc)texture
+	char* tex_name[4];
+	void* tex_data[4];
+	u32 tex_w[4];
+	u32 tex_h[4];
+	u32 tex_fmt[4];
+	u8 tex_enq[4];
+
+	//[24,88)argument
+	char* arg_name[8];
+	void* arg_data[8];
+	u32 arg_fmt[8];
+
 	//[c0,e7]vertex
 	void* vbuf;
 	u32 vbuf_fmt;
@@ -272,18 +285,9 @@ struct glsrc
 	u32 ibuf_len;
 	u8 ibuf_enq;
 
-	//[88,fc)texture
-	char* tex_name[4];
-	void* tex_data[4];
-	u32 tex_w[4];
-	u32 tex_h[4];
-	u32 tex_fmt[4];
-	u8 tex_enq[4];
-
-	//[24,88)argument
-	char* arg_name[8];
-	void* arg_data[8];
-	u32 arg_fmt[8];
+	//
+	int ifirst;
+	int icount;
 
 	//[e8,eb]
 	u8 method;		//'v'=glDrawArrays, 'i'=glDrawElements
@@ -305,6 +309,8 @@ struct gldst
 	u8 vbo_deq;
 	u32 ibo;
 	u8 ibo_deq;
+
+	//
 	u32 vao;
 };
 struct datapair
@@ -316,6 +322,46 @@ struct datapair
 	//[100,1ff]
 	struct gldst dst;
 	u8 opadd[0x40 - sizeof(struct gldst)];
+};
+
+
+
+
+struct current{
+	float value;
+	float ampli;
+	float phase;
+	float freq;
+};
+struct circstat{
+	//[00, 7f]
+	struct current c;
+};
+struct kalman{
+	u8 padd[0x80];
+};
+struct pidval{
+	float kp;
+	float ki;
+	float kd;
+	float kk;
+
+	float tp;	//enow - e_1
+	float ti;	//enow
+	float td;	//(enow - e_1) - (e_1 - e_2)
+	float tt;
+
+	float e_3;
+	float e_2;
+	float e_1;
+	float enow;
+
+	float o_3;
+	float o_2;
+	float o_1;
+	float onow;		//onow = o_1 + kp*tp + ki*ti + kd*kd
+
+	u8 padd[0x40];
 };
 
 
@@ -363,19 +409,33 @@ struct imotion{
 };
 struct style
 {
-	//[00, 7f]
+	//[00, 7f]: actual, css shape
 	union{
+		struct fstyle actualshape;
 		struct fstyle f;
 		struct istyle i;
 	};
 
-	//[80, ff]
+	//[80, ff]: actual, motion state
 	union{
+		struct fmotion actualmotion;
 		struct fmotion fm;
 		struct imotion im;
 	};
 
-	//[100, ...]
+	//[100, 17f]: expect, css shape
+	struct fstyle expectshape;
+
+	//[180, 1ff]: actual, motion state
+	struct fmotion expectmotion;
+
+	//[200, 27f]: kalman
+	struct kalman kal;
+
+	//[280, 2ff]: pidval
+	struct pidval pid;
+
+	//[300, ...]
 	u64 foot[32];
 };
 

@@ -132,14 +132,14 @@ void* allocarena()
 }
 void* allocstyle()
 {
-	int j,len;
+#define maxlen 0x400
+	int j;
 	u8* buf;
 
-	len = 0x200;	//sizeof(struct style);
 	buf = (void*)style + stylen;
-	stylen += len;
+	for(j=0;j<maxlen;j++)buf[j] = 0;
 
-	for(j=0;j<len;j++)buf[j] = 0;
+	stylen += maxlen;
 	return buf;
 }
 

@@ -48,14 +48,14 @@ void* allocactor()
 }
 void* allocpinid()
 {
-	int j,len;
+#define maxlen 0x400
+	int j;
 	u8* buf;
 
-	len = 0x200;	//sizeof(struct pinid);
 	buf = (void*)pinid + pinlen;
-	pinlen += len;
+	for(j=0;j<maxlen;j++)buf[j] = 0;
 
-	for(j=0;j<len;j++)buf[j] = 0;
+	pinlen += maxlen;
 	return buf;
 }
 

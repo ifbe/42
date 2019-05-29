@@ -79,13 +79,14 @@ void prep()
 	//cmdline
 	arenacreate(_std_, 0);
 	arenacreate(_tray_, 0);
-
+/*
 	//try load from file
 	ret = role_fromfile(0, argv);
 	if(ret > 0)return;
 
 	//at least one window
 	ret = role_default(0, argv);
+*/
 }
 void role(u8* buf, int len)
 {
