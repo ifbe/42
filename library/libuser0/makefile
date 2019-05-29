@@ -130,27 +130,27 @@ macos:
 .PHONY:maccli
 maccli:target macos
 	$(compiler) $(cflag) o-window/os-mac/mac.cli.c
-	$(compiler) $(cflag) x-gamepad/mac.joy.c
+	$(compiler) $(cflag) x-gamepad/mac/mac.gamepad.c
 
 .PHONY:mactui
 mactui:target macos
 	$(compiler) $(cflag) o-window/os-mac/mac.tui.c
-	$(compiler) $(cflag) x-gamepad/mac.joy.c
+	$(compiler) $(cflag) x-gamepad/mac/mac.gamepad.c
 
 .PHONY:maccocoa
 maccocoa:target macos
 	$(compiler) $(cflag) o-window/os-mac/mac.cocoa.m
-	$(compiler) $(cflag) x-gamepad/mac.joy.c
+	$(compiler) $(cflag) x-gamepad/mac/mac.gamepad.c
 
 .PHONY:macquartz
 macquartz:target macos
 	$(compiler) $(cflag) o-window/os-mac/mac.quartz.c
-	$(compiler) $(cflag) x-gamepad/mac.joy.c
+	$(compiler) $(cflag) x-gamepad/mac/mac.gamepad.c
 
 .PHONY:macglut
 macglut:target macos
 	$(compiler) $(cflag) o-window/lib-gl/glut.c
-	$(compiler) $(cflag) x-gamepad/mac.joy.c
+	$(compiler) $(cflag) x-gamepad/mac/mac.gamepad.c
 
 .PHONY:macglfw
 macglfw:target macos
