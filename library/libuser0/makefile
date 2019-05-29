@@ -65,7 +65,7 @@ linux:
 
 .PHONY:linuxcli
 linuxcli:target linux
-	$(compiler) $(cflag) o-window/linux/linux.cli.c
+	$(compiler) $(cflag) o-window/os-linux/linux.cli.c
 	$(compiler) $(cflag) x-gamepad/linux/linux.devjsn.c
 
 .PHONY:linuxtui
