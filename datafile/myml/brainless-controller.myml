@@ -5,13 +5,6 @@ fmt:udp
 </system>
 
 
-<artery>
-httpport{
-fmt:http
-}
-</artery>
-
-
 <arena>
 player1{
 fmt:joy
@@ -20,5 +13,5 @@ fmt:joy
 
 
 <relation>
-(player1, 0, win, con) -> (cambl, 0, act, con)
+(player1, 0, win, con) -> (udpport, 0, act, con)
 </relation>
