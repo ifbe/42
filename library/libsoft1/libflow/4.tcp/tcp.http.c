@@ -1,4 +1,6 @@
 #include "libsoft.h"
+int arenaread(void*, void*, void*, int);
+int arenawrite(void*, void*, void*, int);
 int findzero(void*);
 int findhead(void*);
 int findtail(void*);
@@ -13,13 +15,57 @@ int tlsserver_write(void*, void*, void*, void*, void* buf, int len);
 
 
 
+struct httpparsed{
+	u8* GET;
+	u8* POST;
+	u8* Host;
+	u8* Connection;
+	u8* Upgrade;
+	u8* Content_Length;
+	u8* Content_Type;
+	u8* Content;
+	u8* End;
+};
+void httpparser(u8* buf, int len, struct httpparsed* p)
+{
+	int j,k;
+	p->GET = 0;
+	p->POST = 0;
+	p->Host = 0;
+	p->Connection = 0;
+	p->Upgrade = 0;
+	p->Content_Length = 0;
+	p->Content_Type = 0;
+	p->Content = 0;
+	p->End = buf+len;
+
+	k = 0;
+	for(j=0;j<len;j++){
+		if((0xd == buf[j])&&(0xa == buf[j+1])){
+			if(0xd == buf[k]){p->Content = buf+k+2;break;}
+			else if(ncmp(buf+k, "GET ", 4) == 0)p->GET = buf+k+4;
+			else if(ncmp(buf+k, "POST ", 5) == 0)p->POST = buf+k+5;
+			else if(ncmp(buf+k, "Host: ", 6) == 0)p->Host = buf+k+6;
+			else if(ncmp(buf+k, "Upgrade: ", 9) == 0)p->Upgrade = buf+k+9;
+			else if(ncmp(buf+k, "Connection: ", 12) == 0)p->Connection = buf+k+12;
+			else if(ncmp(buf+k, "Content-Length: ", 16) == 0)p->Content_Length = buf+k+16;
+			
+			k = j+2;
+		}
+	}
+	//say("Content@%llx\nEnd@%llx\n", p->Content, p->End);
+}
+
+
+
+
 void httpserver_sendback(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
 	int ret;
-	printmemory(buf, len);
+	//printmemory(buf, len);
 
 	//response
 	ret = mysnprintf(buf+len, 0x1000,
@@ -38,7 +84,7 @@ int httpserver_nullpost(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len,
-	u8* POST)
+	struct httpparsed* p)
 {
 	return 0;
 }
@@ -46,30 +92,30 @@ int httpserver_nullget(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len,
-	u8* GET)
+	struct httpparsed* p)
 {
 	int ctxlen, tmplen, ret;
 	void* ctxbuf;
 	void* tmpbuf;
-	printmemory(buf, len);
-	if(0 == ncmp(GET, "/favicon.ico", 12))return 1;
+	//printmemory(buf, len);
+	if(0 == ncmp(p->GET, "/favicon.ico", 12))return 1;
 
 	//write ctx
 	ctxbuf = buf+len+1;
-	if(0 == ncmp(GET, "/ ", 2)){
+	if(0 == ncmp(p->GET, "/ ", 2)){
 		ctxlen = mysnprintf(ctxbuf, 0x1000, "<center>root</center><hr>");
 	}
-	else if(0 == ncmp(GET, "/arena ", 7)){
+	else if(0 == ncmp(p->GET, "/arena ", 7)){
 		ctxlen = mysnprintf(ctxbuf, 0x1000, "<center>arena</center><hr>");
 	}
-	else if(0 == ncmp(GET, "/actor ", 7)){
+	else if(0 == ncmp(p->GET, "/actor ", 7)){
 		ctxlen = mysnprintf(ctxbuf, 0x1000, "<center>actor</center><hr>");
 	}
 	else{
 		ret = 0;
-		while(GET[ret] > 0x20)ret++;
+		while(p->GET[ret] > 0x20)ret++;
 
-		ctxbuf = GET;
+		ctxbuf = p->GET;
 		ctxlen = ret;
 	}
 
@@ -92,41 +138,71 @@ int httpserver_orelpost(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len,
-	u8* POST)
+	struct httpparsed* p)
 {
+	int t;
+	struct relation* rel;
+	struct halfrel* self;
+	struct halfrel* peer;
+	say("@httpserver_orelpost\n");
+
+	rel = ele->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(_win_ == rel->dsttype){
+			self = (void*)&rel->dstchip;
+			peer = (void*)&rel->srcchip;
+			t = p->End - p->Content;
+			arenawrite(self, peer, p->Content, t);
+			break;
+		}
+
+		rel = samesrcnextdst(rel);
+	}
+
 	return 0;
 }
 int httpserver_orelget(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len,
-	u8* GET)
+	struct httpparsed* p)
 {
-	int ctxlen, tmplen, ret;
-	void* ctxbuf;
-	void* tmpbuf;
+	int ret;
 	struct relation* rel;
+	struct halfrel* self;
+	struct halfrel* peer;
 
-	printmemory(buf, len);
-	if(0 == ncmp(GET, "/favicon.ico", 12))return 1;
+	int ctxlen;
+	void* ctxbuf;
+	int tmplen;
+	void* tmpbuf;
+
+	//printmemory(buf, len);
+	if(0 == ncmp(p->GET, "/favicon.ico", 12))return 0;
 
 	//write ctx
-	rel = ele->orel0;
 	ctxbuf = buf+len+1;
-	ctxlen = mysnprintf(ctxbuf, 0x1000, "<html><body><center>");
+	ctxlen = 0;
+
+	rel = ele->orel0;
 	while(1)
 	{
 		if(0 == rel)break;
 
-		ctxlen += mysnprintf(ctxbuf+ctxlen, 0x1000,
-			"%llx,%llx,%.8s->%llx,%llx,%.8s<br>",
-			rel->srcchip, rel->srcfoot, &rel->srctype,
-			rel->dstchip, rel->dstfoot, &rel->dsttype
-		);
+		if(_win_ == rel->dsttype){
+			self = (void*)&rel->dstchip;
+			peer = (void*)&rel->srcchip;
+			ctxlen = arenaread(self, peer, ctxbuf, 0);
+			break;
+		}
 
 		rel = samesrcnextdst(rel);
 	}
-	ctxlen += mysnprintf(ctxbuf+ctxlen, 0x1000, "</center></body></html>");
+	//say("ctxlen=%d\n",ctxlen);
+	//printmemory(ctxbuf, ctxlen);
 
 	//write head
 	tmpbuf = ctxbuf+ctxlen+1;
@@ -141,7 +217,7 @@ int httpserver_orelget(
 	//send head, send ctx
 	system_leafwrite(obj, pin, ele, sty, tmpbuf, tmplen);
 	system_leafwrite(obj, pin, ele, sty, ctxbuf, ctxlen);
-	return 0;
+	return 1;
 }
 
 
@@ -309,11 +385,8 @@ int httpmaster_write(
 	u8* buf, int len)
 {
 	int j,k,ret;
-	u8* GET = 0;
-	u8* POST = 0;
-	u8* Upgrade = 0;
-	u8* Connection = 0;
 	struct element* e;
+	struct httpparsed p;
 
 	//https
 	if(0x16 == buf[0])
@@ -328,23 +401,10 @@ int httpmaster_write(
 	}
 
 	//parse
-	k = 0;
-	for(j=0;j<=len;j++)
-	{
-		if((j<len)&&(0xd != buf[j])&&(0xa != buf[j]))continue;
-
-		//say("%.*s\n", j-k, buf+k);
-		if(ncmp(buf+k, "Connection: ", 12) == 0)Connection = buf+k+12;
-		else if(ncmp(buf+k, "Upgrade: ", 9) == 0)Upgrade = buf+k+9;
-		else if(ncmp(buf+k, "POST ", 5) == 0)POST = buf+k+5;
-		else if(ncmp(buf+k, "GET ", 4) == 0)GET = buf+k+4;
-
-		if(0xa == buf[j+1])j++;
-		k = j+1;
-	}
+	httpparser(buf, len, &p);
 
 	//websocket
-	if((0 != Connection)&&(0 != Upgrade))
+	if((0 != p.Connection)&&(0 != p.Upgrade))
 	{
 		e = arterycreate(_Ws_, 0);
 		if(e)
@@ -359,8 +419,8 @@ int httpmaster_write(
 	if(0 == ele->orel0)
 	{
 		ret = 0;
-		if(GET)ret = httpserver_nullget(ele, sty, obj, pin, buf, len, GET);
-		else if(POST)ret = httpserver_nullpost(ele, sty, obj, pin, buf, len, POST);
+		if(p.GET)ret = httpserver_nullget(ele, sty, obj, pin, buf, len, &p);
+		else if(p.POST)ret = httpserver_nullpost(ele, sty, obj, pin, buf, len, &p);
 
 		//something wrong
 		if(ret <= 0)httpserver_sendback(ele, sty, obj, pin, buf, len);
@@ -370,17 +430,18 @@ int httpmaster_write(
 	else
 	{
 		ret = 0;
-		if(GET)ret = httpserver_orelget(ele, sty, obj, pin, buf, len, GET);
-		else if(POST)ret = httpserver_orelpost(ele, sty, obj, pin, buf, len, POST);
+		//say("%llx,%llx\n", p.GET, p.POST);
+		if(p.GET)ret = httpserver_orelget(ele, sty, obj, pin, buf, len, &p);
+		else if(p.POST)ret = httpserver_orelpost(ele, sty, obj, pin, buf, len, &p);
 
 		//something wrong
 		if(ret <= 0)httpserver_sendback(ele, sty, obj, pin, buf, len);
 	}
 
 	//close or not
-	if(0 != Connection)
+	if(0 != p.Connection)
 	{
-		if(0 == ncmp(Connection, "keep-alive", 10))return 0;
+		if(0 == ncmp(p.Connection, "keep-alive", 10))return 0;
 	}
 	systemdelete(obj);
 	return 0;

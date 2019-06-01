@@ -163,6 +163,18 @@ int systemstart()
 {
 	return 0;
 }
+
+
+
+
+int systemsearch()
+{
+	return 0;
+}
+int systemmodify()
+{
+	return 0;
+}
 int systemdelete(void* addr)
 {
 	struct object* o;

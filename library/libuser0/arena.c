@@ -44,11 +44,15 @@ int soundchoose();
 //
 int toycar_create(void*, void*);
 int toycar_delete(void*);
+int toycar_read(void*, void*, void*, int);
+int toycar_write(void*, void*, void*, int);
 int toycar_rootread(void*,void*,void*,void*,void*,int);
 int toycar_rootwrite(void*,void*,void*,void*,void*,int);
 //
 int stepcar_create(void*, void*);
 int stepcar_delete(void*, void*);
+int stepcar_read(void*, void*, void*, int);
+int stepcar_write(void*, void*, void*, int);
 int stepcar_rootread(void*,void*,void*,void*,void*,int);
 int stepcar_rootwrite(void*,void*,void*,void*,void*,int);
 //window
@@ -204,6 +208,40 @@ int arena_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 */
 	return 0;
 }
+
+
+
+
+int arenaread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+{
+	struct arena* win;
+	struct style* sty;
+
+	win = (void*)(self->chip);
+	sty = (void*)(self->foot);
+
+	switch(win->fmt){
+		case _bdc_:return toycar_read(self, peer, buf, len);
+		case _step_:return stepcar_read(self, peer, buf, len);
+	}
+
+	return 0;
+}
+int arenawrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+{
+	struct arena* win;
+	struct style* sty;
+
+	win = (void*)(self->chip);
+	sty = (void*)(self->foot);
+
+	switch(win->fmt){
+		case _bdc_:return toycar_write(self, peer, buf, len);
+		case _step_:return stepcar_write(self, peer, buf, len);
+	}
+
+	return 0;
+}
 int arenastop()
 {
 	return 0;
@@ -222,6 +260,18 @@ int arenastart(struct arena* twig, void* tf, struct arena* root, void* rf)
 	if(ret)return 1;
 
 	//try twig-?
+	return 0;
+}
+
+
+
+
+int arenasearch(struct arena* win, void* buf)
+{
+	return 0;
+}
+int arenamodify(struct arena* win, void* buf)
+{
 	return 0;
 }
 int arenadelete(struct arena* win)

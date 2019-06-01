@@ -189,6 +189,18 @@ int actorstart(struct halfrel* self, struct halfrel* peer)
 
 	return act->onstart(self, peer);
 }
+
+
+
+
+int actorsearch(struct arena* win, void* buf)
+{
+	return 0;
+}
+int actormodify(struct arena* win, void* buf)
+{
+	return 0;
+}
 int actordelete(struct actor* act)
 {
 	if(0 == act)return 0;

@@ -33,6 +33,18 @@ int driverstart()
 {
 	return 0;
 }
+
+
+
+
+int driversearch()
+{
+	return 0;
+}
+int drivermodify()
+{
+	return 0;
+}
 int driverdelete()
 {
 	return 0;

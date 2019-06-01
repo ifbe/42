@@ -90,7 +90,7 @@ int kqueuethread(int argc, const char * argv[])
 					obj[cc].selffd = cc;
 					obj[cc].thatfd = fd;
 					kqueue_add(cc);
-					eventwrite('+', _fd_, cc, timeread());
+					//eventwrite('+', _fd_, cc, timeread());
 				}
 				continue;
 			}

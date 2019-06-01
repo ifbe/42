@@ -224,6 +224,18 @@ int arterystart()
 {
 	return 0;
 }
+
+
+
+
+int arterysearch()
+{
+	return 0;
+}
+int arterymodify()
+{
+	return 0;
+}
 int arterydelete(void* ele)
 {
 	return 0;

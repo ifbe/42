@@ -32,6 +32,18 @@ int devicestart()
 {
 	return 0;
 }
+
+
+
+
+int devicesearch()
+{
+	return 0;
+}
+int devicemodify()
+{
+	return 0;
+}
 int devicedelete()
 {
 	return 0;

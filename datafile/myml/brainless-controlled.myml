@@ -6,6 +6,14 @@ url:0.0.0.0:2222
 </system>
 
 
+<artery>
+httpsrv{
+fmt:HTTP
+url:0.0.0.0:2080
+}
+</artery>
+
+
 <arena>
 player1{
 fmt:joy
@@ -18,5 +26,6 @@ fmt:bdc
 
 <relation>
 (udpport, 0, fd, con) -> (toycar, 0, win, con)
+(httpsrv, 0, art, con) -> (toycar, 0, win, con)
 (player1, 0, win, con) -> (toycar, 0, win, con)
 </relation>
