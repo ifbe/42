@@ -62,7 +62,7 @@ int stepcar_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
     int j;
     int ret = 0;
 
-    for(j=0;j<12;j++){
+    for(j=0;j<9;j++){
         ret += mysnprintf(buf+ret, 256,
             "%.4s: pin=%d, val=%d<br>\n",
             &name[j], table[j], expect[j]
