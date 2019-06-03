@@ -11,7 +11,7 @@ void rectify_register(void*);
 void orthcam_register(void*);
 void firstperson_register(void*);
 void thirdperson_register(void*);
-void rtsgame_register(void*);
+void rtscam_register(void*);
 void surround_register(void*);
 void vrglass_register(void*);
 //.fbo
@@ -158,7 +158,7 @@ void content_create(void* addr)
 	thirdperson_register(tmp);
 	tmp += sizeof(struct actor);
 
-	rtsgame_register(tmp);
+	rtscam_register(tmp);
 	tmp += sizeof(struct actor);
 
 	surround_register(tmp);

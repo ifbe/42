@@ -177,7 +177,7 @@ static void hex_event(
 
 
 
-static void hex_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void hex_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -186,7 +186,7 @@ static void hex_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int l
 	struct style* sty = (void*)(peer->foot);
 	hex_draw(act, pin, win, sty);
 }
-static void hex_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void hex_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -196,16 +196,20 @@ static void hex_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	struct event* ev = (void*)buf;
 	hex_event(act, pin, win, sty, ev, 0);
 }
-static void hex_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void hex_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void hex_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void hex_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void hex_search(struct actor* act)
+{
+}
+static void hex_modify(struct actor* act)
 {
 }
 static void hex_delete(struct actor* act)
@@ -230,10 +234,11 @@ void hex_register(struct actor* p)
 
 	p->oncreate = (void*)hex_create;
 	p->ondelete = (void*)hex_delete;
-	p->onstart  = (void*)hex_start;
-	p->onstop   = (void*)hex_stop;
-	p->oncread  = (void*)hex_cread;
-	p->oncwrite = (void*)hex_cwrite;
-	p->onsread  = (void*)hex_sread;
-	p->onswrite = (void*)hex_swrite;
+	p->onsearch = (void*)hex_search;
+	p->onmodify = (void*)hex_modify;
+
+	p->onstart = (void*)hex_start;
+	p->onstop  = (void*)hex_stop;
+	p->onread  = (void*)hex_read;
+	p->onwrite = (void*)hex_write;
 }

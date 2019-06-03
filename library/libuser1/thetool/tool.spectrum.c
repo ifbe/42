@@ -301,7 +301,7 @@ say("%llx, %x\n", buf, len);
 
 
 
-static void spectrum_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void spectrum_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -310,7 +310,7 @@ static void spectrum_sread(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct style* sty = (void*)(peer->foot);
 	spectrum_draw(act, pin, win, sty);
 }
-static void spectrum_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void spectrum_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -321,16 +321,20 @@ static void spectrum_swrite(struct halfrel* self, struct halfrel* peer, u8* buf,
 	if(len)spectrum_data(act, pin, buf, len);
 	else spectrum_event(act, pin, win, sty, ev, 0);
 }
-static void spectrum_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void spectrum_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void spectrum_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void spectrum_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void spectrum_search(struct actor* act)
+{
+}
+static void spectrum_modify(struct actor* act)
 {
 }
 static void spectrum_delete(struct actor* act)
@@ -362,10 +366,11 @@ void spectrum_register(struct actor* p)
 
 	p->oncreate = (void*)spectrum_create;
 	p->ondelete = (void*)spectrum_delete;
-	p->onstart  = (void*)spectrum_start;
-	p->onstop   = (void*)spectrum_stop;
-	p->oncread  = (void*)spectrum_cread;
-	p->oncwrite = (void*)spectrum_cwrite;
-	p->onsread  = (void*)spectrum_sread;
-	p->onswrite = (void*)spectrum_swrite;
+	p->onsearch = (void*)spectrum_search;
+	p->onmodify = (void*)spectrum_modify;
+
+	p->onstart = (void*)spectrum_start;
+	p->onstop  = (void*)spectrum_stop;
+	p->onread  = (void*)spectrum_read;
+	p->onwrite = (void*)spectrum_write;
 }

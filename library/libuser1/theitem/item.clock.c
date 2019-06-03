@@ -205,7 +205,7 @@ static void clock_draw(
 
 
 
-static void clock_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void clock_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -214,19 +214,23 @@ static void clock_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	clock_draw(act, pin, win, sty);
 }
-static void clock_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void clock_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void clock_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void clock_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void clock_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void clock_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void clock_search(struct actor* act)
+{
+}
+static void clock_modify(struct actor* act)
 {
 }
 static void clock_delete(struct actor* act)
@@ -251,10 +255,11 @@ void clock_register(struct actor* p)
 
 	p->oncreate = (void*)clock_create;
 	p->ondelete = (void*)clock_delete;
-	p->onstart  = (void*)clock_start;
-	p->onstop   = (void*)clock_stop;
-	p->oncread  = (void*)clock_cread;
-	p->oncwrite = (void*)clock_cwrite;
-	p->onsread  = (void*)clock_sread;
-	p->onswrite = (void*)clock_swrite;
+	p->onsearch = (void*)clock_search;
+	p->onmodify = (void*)clock_modify;
+
+	p->onstart = (void*)clock_start;
+	p->onstop  = (void*)clock_stop;
+	p->onread  = (void*)clock_read;
+	p->onwrite = (void*)clock_write;
 }

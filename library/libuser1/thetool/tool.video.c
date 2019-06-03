@@ -302,7 +302,7 @@ static void video_draw(
 
 
 
-static void video_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void video_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -311,19 +311,13 @@ static void video_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	video_draw(act, pin, win, sty);
 }
-static void video_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void video_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	struct actor* act;
 	if(0 == len)return;		//event
 
 	act = (void*)(self->chip);
 	act->idx = buf;
-}
-static void video_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void video_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
 }
 static void video_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -367,6 +361,16 @@ static void video_start(struct halfrel* self, struct halfrel* peer)
 	src->tex_w[0] = 1024;
 	src->tex_h[0] = 1024;
 }
+
+
+
+
+static void video_search(struct actor* act)
+{
+}
+static void video_modify(struct actor* act)
+{
+}
 static void video_delete(struct actor* act)
 {
 	if(0 == act)return;
@@ -399,10 +403,11 @@ void video_register(struct actor* p)
 
 	p->oncreate = (void*)video_create;
 	p->ondelete = (void*)video_delete;
-	p->onstart  = (void*)video_start;
-	p->onstop   = (void*)video_stop;
-	p->oncread  = (void*)video_cread;
-	p->oncwrite = (void*)video_cwrite;
-	p->onsread  = (void*)video_sread;
-	p->onswrite = (void*)video_swrite;
+	p->onsearch = (void*)video_search;
+	p->onmodify = (void*)video_modify;
+
+	p->onstart = (void*)video_start;
+	p->onstop  = (void*)video_stop;
+	p->onread  = (void*)video_read;
+	p->onwrite = (void*)video_write;
 }

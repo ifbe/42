@@ -1,6 +1,4 @@
 #include "libsoft.h"
-int arenaread(void*, void*, void*, int);
-int arenawrite(void*, void*, void*, int);
 int findzero(void*);
 int findhead(void*);
 int findtail(void*);
@@ -229,9 +227,10 @@ int httpclient_write(
 	u8* buf, int len)
 {
 	int j,k;
-	void* dc;
-	void* df;
 	struct relation* orel;
+	struct halfrel* self;
+	struct halfrel* peer;
+
 	if(0 == ele)return 0;
 	if(0 == obj)return 0;
 	//say("%.*s\n", len, buf);
@@ -272,16 +271,10 @@ int httpclient_write(
 	{
 		if(0 == orel)break;
 
-		dc = (void*)(orel->dstchip);
-		df = (void*)(orel->dstfoot);
-		if(_win_ == orel->dsttype)
-		{
-			arena_rootwrite(dc, df, ele, 0, buf, len);
-		}
-		else if(_act_ == orel->dsttype)
-		{
-			actor_rootwrite(dc, df, ele, 0, buf, len);
-		}
+		self = (void*)&orel->dstchip;
+		peer = (void*)&orel->srcchip;
+		if(_win_ == orel->dsttype)arenawrite(self, peer, buf, len);
+		else if(_act_ == orel->dsttype)actorwrite(self, peer, buf, len);
 
 		orel = samesrcnextdst(orel);
 	}

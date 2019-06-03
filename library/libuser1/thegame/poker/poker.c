@@ -104,7 +104,7 @@ static void poker_draw(
 
 
 
-static void poker_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void poker_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -113,19 +113,23 @@ static void poker_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	poker_draw(act, pin, win, sty);
 }
-static void poker_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void poker_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void poker_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void poker_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void poker_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void poker_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void poker_search(struct actor* act)
+{
+}
+static void poker_modify(struct actor* act)
 {
 }
 static void poker_delete(struct actor* act)
@@ -150,10 +154,11 @@ void poker_register(struct actor* p)
 
 	p->oncreate = (void*)poker_create;
 	p->ondelete = (void*)poker_delete;
-	p->onstart  = (void*)poker_start;
-	p->onstop   = (void*)poker_stop;
-	p->oncread  = (void*)poker_cread;
-	p->oncwrite = (void*)poker_cwrite;
-	p->onsread  = (void*)poker_sread;
-	p->onswrite = (void*)poker_swrite;
+	p->onsearch = (void*)poker_search;
+	p->onmodify = (void*)poker_modify;
+
+	p->onstart = (void*)poker_start;
+	p->onstop  = (void*)poker_stop;
+	p->onread  = (void*)poker_read;
+	p->onwrite = (void*)poker_write;
 }

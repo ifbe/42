@@ -7,22 +7,26 @@ static u8 buffer[16];
 
 
 
-static void brick_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void brick_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void brick_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void brick_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void brick_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void brick_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void brick_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void brick_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void brick_search(struct actor* act)
+{
+}
+static void brick_modify(struct actor* act)
 {
 }
 static void brick_delete(struct actor* act)
@@ -47,10 +51,11 @@ void brick_register(struct actor* p)
 
 	p->oncreate = (void*)brick_create;
 	p->ondelete = (void*)brick_delete;
-	p->onstart  = (void*)brick_start;
-	p->onstop   = (void*)brick_stop;
-	p->oncread  = (void*)brick_cread;
-	p->oncwrite = (void*)brick_cwrite;
-	p->onsread  = (void*)brick_sread;
-	p->onswrite = (void*)brick_swrite;
+	p->onsearch = (void*)brick_search;
+	p->onmodify = (void*)brick_modify;
+
+	p->onstart = (void*)brick_start;
+	p->onstop  = (void*)brick_stop;
+	p->onread  = (void*)brick_read;
+	p->onwrite = (void*)brick_write;
 }

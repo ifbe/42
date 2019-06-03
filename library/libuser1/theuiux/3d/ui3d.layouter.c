@@ -669,7 +669,7 @@ found:
 
 
 
-static void picker_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void picker_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -678,7 +678,7 @@ static void picker_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	picker_draw(act, pin, win, sty);
 }
-static int picker_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int picker_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -688,12 +688,6 @@ static int picker_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct event* ev = (void*)buf;
 	return picker_event(act, pin, win, sty, ev, 0);
 }
-static void picker_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void picker_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void picker_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
@@ -701,10 +695,20 @@ static void picker_start(struct halfrel* self, struct halfrel* peer)
 {
     say("@picker_start\n");
 }
-static void picker_delete()
+
+
+
+
+static void picker_search(struct actor* act)
 {
 }
-static void picker_create(void* addr)
+static void picker_modify(struct actor* act)
+{
+}
+static void picker_delete(struct actor* act)
+{
+}
+static void picker_create(struct actor* act, void* addr)
 {
     say("@picker_create\n");
 }
@@ -719,10 +723,11 @@ void picker_register(struct actor* p)
 
 	p->oncreate = (void*)picker_create;
 	p->ondelete = (void*)picker_delete;
-	p->onstart  = (void*)picker_start;
-	p->onstop   = (void*)picker_stop;
-	p->oncread  = (void*)picker_cread;
-	p->oncwrite = (void*)picker_cwrite;
-	p->onsread  = (void*)picker_sread;
-	p->onswrite = (void*)picker_swrite;
+	p->onsearch = (void*)picker_search;
+	p->onmodify = (void*)picker_modify;
+
+	p->onstart = (void*)picker_start;
+	p->onstop  = (void*)picker_stop;
+	p->onread  = (void*)picker_read;
+	p->onwrite = (void*)picker_write;
 }

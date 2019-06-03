@@ -254,7 +254,7 @@ static void calculator_event(
 
 
 
-static void calculator_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void calculator_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -263,7 +263,7 @@ static void calculator_sread(struct halfrel* self, struct halfrel* peer, u8* buf
 	struct style* sty = (void*)(peer->foot);
 	calculator_draw(act, pin, win, sty);
 }
-static void calculator_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void calculator_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -272,12 +272,6 @@ static void calculator_swrite(struct halfrel* self, struct halfrel* peer, u8* bu
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	calculator_event(act, pin, win, sty, ev, 0);
-}
-static void calculator_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void calculator_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
 }
 static void calculator_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -290,6 +284,16 @@ static void calculator_start(struct halfrel* self, struct halfrel* peer)
 	buffer[2] = '2';
 	buffer[3] = 0;
 	count = 3;
+}
+
+
+
+
+static void calculator_search(struct actor* act)
+{
+}
+static void calculator_modify(struct actor* act)
+{
 }
 static void calculator_delete(struct actor* act)
 {
@@ -313,10 +317,11 @@ void calculator_register(struct actor* p)
 
 	p->oncreate = (void*)calculator_create;
 	p->ondelete = (void*)calculator_delete;
-	p->onstart  = (void*)calculator_start;
-	p->onstop   = (void*)calculator_stop;
-	p->oncread  = (void*)calculator_cread;
-	p->oncwrite = (void*)calculator_cwrite;
-	p->onsread  = (void*)calculator_sread;
-	p->onswrite = (void*)calculator_swrite;
+	p->onsearch = (void*)calculator_search;
+	p->onmodify = (void*)calculator_modify;
+
+	p->onstart = (void*)calculator_start;
+	p->onstop  = (void*)calculator_stop;
+	p->onread  = (void*)calculator_read;
+	p->onwrite = (void*)calculator_write;
 }

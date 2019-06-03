@@ -175,7 +175,7 @@ static void circuit_draw(
 
 
 
-static void circuit_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void circuit_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -184,13 +184,7 @@ static void circuit_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	circuit_draw(act, pin, win, sty);
 }
-static void circuit_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void circuit_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void circuit_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void circuit_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void circuit_stop(struct halfrel* self, struct halfrel* peer)
@@ -228,6 +222,16 @@ static void circuit_start(struct halfrel* self, struct halfrel* peer)
 
 	solve_pcbwire((void*)data, WIDTH, HEIGHT, LAYER);
 }
+
+
+
+
+static void circuit_search(struct actor* act)
+{
+}
+static void circuit_modify(struct actor* act)
+{
+}
 static void circuit_delete(struct actor* act)
 {
 	if(0 == act)return;
@@ -252,10 +256,11 @@ void circuit_register(struct actor* p)
 
 	p->oncreate = (void*)circuit_create;
 	p->ondelete = (void*)circuit_delete;
-	p->onstart  = (void*)circuit_start;
-	p->onstop   = (void*)circuit_stop;
-	p->oncread  = (void*)circuit_cread;
-	p->oncwrite = (void*)circuit_cwrite;
-	p->onsread  = (void*)circuit_sread;
-	p->onswrite = (void*)circuit_swrite;
+	p->onsearch = (void*)circuit_search;
+	p->onmodify = (void*)circuit_modify;
+
+	p->onstart = (void*)circuit_start;
+	p->onstop  = (void*)circuit_stop;
+	p->onread  = (void*)circuit_read;
+	p->onwrite = (void*)circuit_write;
 }

@@ -206,7 +206,7 @@ static void geometry_event(
 
 
 
-static void geometry_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void geometry_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -215,7 +215,7 @@ static void geometry_sread(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct style* sty = (void*)(peer->foot);
 	geometry_draw(act, pin, win, sty);
 }
-static void geometry_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void geometry_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -225,16 +225,20 @@ static void geometry_swrite(struct halfrel* self, struct halfrel* peer, u8* buf,
 	struct event* ev = (void*)buf;
 	geometry_event(act, pin, win, sty, ev, 0);
 }
-static void geometry_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void geometry_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void geometry_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void geometry_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void geometry_search(struct actor* act, u8* buf)
+{
+}
+static void geometry_modify(struct actor* act, u8* buf)
 {
 }
 static void geometry_delete(struct actor* act, u8* buf)
@@ -262,10 +266,11 @@ void geometry_register(struct actor* p)
 
 	p->oncreate = (void*)geometry_create;
 	p->ondelete = (void*)geometry_delete;
-	p->onstart  = (void*)geometry_start;
-	p->onstop   = (void*)geometry_stop;
-	p->oncread  = (void*)geometry_cread;
-	p->oncwrite = (void*)geometry_cwrite;
-	p->onsread  = (void*)geometry_sread;
-	p->onswrite = (void*)geometry_swrite;
+	p->onsearch = (void*)geometry_search;
+	p->onmodify = (void*)geometry_modify;
+
+	p->onstart = (void*)geometry_start;
+	p->onstop  = (void*)geometry_stop;
+	p->onread  = (void*)geometry_read;
+	p->onwrite = (void*)geometry_write;
 }

@@ -111,7 +111,7 @@ static void stair_draw(
 
 
 
-static void stair_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void stair_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -120,19 +120,23 @@ static void stair_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	stair_draw(act, pin, win, sty);
 }
-static void stair_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void stair_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void stair_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void stair_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void stair_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void stair_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void stair_search(struct actor* act)
+{
+}
+static void stair_modify(struct actor* act)
 {
 }
 static void stair_delete(struct actor* act)
@@ -157,10 +161,11 @@ void stair_register(struct actor* p)
 
 	p->oncreate = (void*)stair_create;
 	p->ondelete = (void*)stair_delete;
-	p->onstart  = (void*)stair_start;
-	p->onstop   = (void*)stair_stop;
-	p->oncread  = (void*)stair_cread;
-	p->oncwrite = (void*)stair_cwrite;
-	p->onsread  = (void*)stair_sread;
-	p->onswrite = (void*)stair_swrite;
+	p->onsearch = (void*)stair_search;
+	p->onmodify = (void*)stair_modify;
+
+	p->onstart = (void*)stair_start;
+	p->onstop  = (void*)stair_stop;
+	p->onread  = (void*)stair_read;
+	p->onwrite = (void*)stair_write;
 }

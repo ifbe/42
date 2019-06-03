@@ -50,7 +50,7 @@ static void sokoban_draw(
 
 
 
-static void sokoban_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void sokoban_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -59,19 +59,23 @@ static void sokoban_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	sokoban_draw(act, pin, win, sty);
 }
-static void sokoban_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void sokoban_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void sokoban_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void sokoban_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void sokoban_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void sokoban_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void sokoban_search(struct actor* act)
+{
+}
+static void sokoban_modify(struct actor* act)
 {
 }
 static void sokoban_delete(struct actor* act)
@@ -95,10 +99,11 @@ void sokoban_register(struct actor* p)
 
 	p->oncreate = (void*)sokoban_create;
 	p->ondelete = (void*)sokoban_delete;
-	p->onstart  = (void*)sokoban_start;
-	p->onstop   = (void*)sokoban_stop;
-	p->oncread  = (void*)sokoban_cread;
-	p->oncwrite = (void*)sokoban_cwrite;
-	p->onsread  = (void*)sokoban_sread;
-	p->onswrite = (void*)sokoban_swrite;
+	p->onsearch = (void*)sokoban_search;
+	p->onmodify = (void*)sokoban_modify;
+
+	p->onstart = (void*)sokoban_start;
+	p->onstop  = (void*)sokoban_stop;
+	p->onread  = (void*)sokoban_read;
+	p->onwrite = (void*)sokoban_write;
 }

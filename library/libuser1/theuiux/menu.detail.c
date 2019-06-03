@@ -316,7 +316,7 @@ static void detail_draw(
 
 
 
-static void detail_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void detail_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -325,15 +325,9 @@ static void detail_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	detail_draw(act, pin, win, sty);
 }
-static int detail_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int detail_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	return 1;
-}
-static void detail_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void detail_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
 }
 static void detail_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -341,6 +335,16 @@ static void detail_stop(struct halfrel* self, struct halfrel* peer)
 static void detail_start(struct halfrel* self, struct halfrel* peer)
 {
     say("@detail_start\n");
+}
+
+
+
+
+void detail_search(struct actor* act)
+{
+}
+void detail_modify(struct actor* act)
+{
 }
 void detail_delete(struct actor* act)
 {
@@ -360,10 +364,11 @@ void detail_register(struct actor* p)
 
 	p->oncreate = (void*)detail_create;
 	p->ondelete = (void*)detail_delete;
-	p->onstart  = (void*)detail_start;
-	p->onstop   = (void*)detail_stop;
-	p->oncread  = (void*)detail_cread;
-	p->oncwrite = (void*)detail_cwrite;
-	p->onsread  = (void*)detail_sread;
-	p->onswrite = (void*)detail_swrite;
+	p->onsearch = (void*)detail_search;
+	p->onmodify = (void*)detail_modify;
+
+	p->onstart = (void*)detail_start;
+	p->onstop  = (void*)detail_stop;
+	p->onread  = (void*)detail_read;
+	p->onwrite = (void*)detail_write;
 }

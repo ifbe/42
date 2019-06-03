@@ -326,7 +326,7 @@ static void sudoku_event(
 
 
 
-static void sudoku_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void sudoku_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -335,7 +335,7 @@ static void sudoku_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	sudoku_draw(act, pin, win, sty);
 }
-static void sudoku_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void sudoku_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -345,16 +345,20 @@ static void sudoku_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct event* ev = (void*)buf;
 	sudoku_event(act, pin, win, sty, ev, 0);
 }
-static void sudoku_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void sudoku_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void sudoku_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void sudoku_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void sudoku_search(struct actor* act, u8* buf)
+{
+}
+static void sudoku_modify(struct actor* act, u8* buf)
 {
 }
 static void sudoku_delete(struct actor* act, u8* buf)
@@ -396,10 +400,11 @@ void sudoku_register(struct actor* p)
 
 	p->oncreate = (void*)sudoku_create;
 	p->ondelete = (void*)sudoku_delete;
-	p->onstart  = (void*)sudoku_start;
-	p->onstop   = (void*)sudoku_stop;
-	p->oncread  = (void*)sudoku_cread;
-	p->oncwrite = (void*)sudoku_cwrite;
-	p->onsread  = (void*)sudoku_sread;
-	p->onswrite = (void*)sudoku_swrite;
+	p->onsearch = (void*)sudoku_search;
+	p->onmodify = (void*)sudoku_modify;
+
+	p->onstart = (void*)sudoku_start;
+	p->onstop  = (void*)sudoku_stop;
+	p->onread  = (void*)sudoku_read;
+	p->onwrite = (void*)sudoku_write;
 }

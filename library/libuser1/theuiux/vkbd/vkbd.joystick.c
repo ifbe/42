@@ -200,7 +200,7 @@ int vjoy_event(
 
 
 
-static void vjoy_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void vjoy_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -209,7 +209,7 @@ static void vjoy_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	struct style* sty = (void*)(peer->foot);
 	vjoy_draw(act, pin, win, sty);
 }
-static int vjoy_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int vjoy_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -219,19 +219,23 @@ static int vjoy_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	struct event* ev = (void*)buf;
 	return vjoy_event(act, pin, win, sty, ev, 0);
 }
-static int vjoy_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-	return 0;
-}
-static int vjoy_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-	return 0;
-}
 static int vjoy_stop(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
 static int vjoy_start(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+
+
+
+
+static int vjoy_search(struct arena* win)
+{
+	return 0;
+}
+static int vjoy_modify(struct arena* win)
 {
 	return 0;
 }
@@ -254,10 +258,11 @@ void vjoy_register(struct actor* p)
 
 	p->oncreate = (void*)vjoy_create;
 	p->ondelete = (void*)vjoy_delete;
-	p->onstart  = (void*)vjoy_start;
-	p->onstop   = (void*)vjoy_stop;
-	p->oncread  = (void*)vjoy_cread;
-	p->oncwrite = (void*)vjoy_cwrite;
-	p->onsread  = (void*)vjoy_sread;
-	p->onswrite = (void*)vjoy_swrite;
+	p->onsearch = (void*)vjoy_search;
+	p->onmodify = (void*)vjoy_modify;
+
+	p->onstart = (void*)vjoy_start;
+	p->onstop  = (void*)vjoy_stop;
+	p->onread  = (void*)vjoy_read;
+	p->onwrite = (void*)vjoy_write;
 }

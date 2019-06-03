@@ -88,7 +88,7 @@ static void rawdump_draw(
 
 
 
-static void rawdump_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void rawdump_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -97,7 +97,7 @@ static void rawdump_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	rawdump_draw(act, pin, win, sty);
 }
-static void rawdump_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void rawdump_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
@@ -106,16 +106,20 @@ static void rawdump_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct event* ev = (void*)buf;
 	if(len)queuepacket(act->buf, act->idx, buf, len);
 }
-static void rawdump_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void rawdump_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void rawdump_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void rawdump_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void rawdump_search(struct actor* act, u8* buf)
+{
+}
+static void rawdump_modify(struct actor* act, u8* buf)
 {
 }
 static void rawdump_delete(struct actor* act, u8* buf)
@@ -147,10 +151,11 @@ void rawdump_register(struct actor* p)
 
 	p->oncreate = (void*)rawdump_create;
 	p->ondelete = (void*)rawdump_delete;
-	p->onstart  = (void*)rawdump_start;
-	p->onstop   = (void*)rawdump_stop;
-	p->oncread  = (void*)rawdump_cread;
-	p->oncwrite = (void*)rawdump_cwrite;
-	p->onsread  = (void*)rawdump_sread;
-	p->onswrite = (void*)rawdump_swrite;
+	p->onsearch = (void*)rawdump_search;
+	p->onmodify = (void*)rawdump_modify;
+
+	p->onstart = (void*)rawdump_start;
+	p->onstop  = (void*)rawdump_stop;
+	p->onread  = (void*)rawdump_read;
+	p->onwrite = (void*)rawdump_write;
 }

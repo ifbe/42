@@ -47,6 +47,9 @@ int nodetree_rootread(void* sc, void* sf, u8* buf, int len)
 {
 	int j;
 	struct relation* orel;
+	struct halfrel* self;
+	struct halfrel* peer;
+
 	struct item* chip;
 	struct item* dc;
 	void* df;
@@ -72,13 +75,15 @@ int nodetree_rootread(void* sc, void* sf, u8* buf, int len)
 
 		dc = (void*)(orel->dstchip);
 		df = (void*)(orel->dstfoot);
+		self = (void*)&orel->dstchip;
+		peer = (void*)&orel->srcchip;
 		//j += mysnprintf(buf+j, 0x10000-j, "%.8s,%.8s\n", &dc->tier, &dc->type);
 
 		if(0 == orel->dsttype)break;
 		else if(_fd_  == orel->dsttype)system_rootread(dc, df, sc, sf, buf, len);
 		else if(_art_ == orel->dsttype)artery_rootread(dc, df, sc, sf, buf, len);
-		else if(_win_ == orel->dsttype)arena_rootread( dc, df, sc, sf, buf, len);
-		else if(_act_ == orel->dsttype)actor_rootread( dc, df, sc, sf, buf, len);
+		else if(_win_ == orel->dsttype)arenaread(self, peer, buf, len);
+		else if(_act_ == orel->dsttype)actorread(self, peer, buf, len);
 
 		orel = samesrcnextdst(orel);
 	}
@@ -93,10 +98,13 @@ int nodetree_rootread(void* sc, void* sf, u8* buf, int len)
 //root -> leaf, throw data deeper into the tree
 int nodetree_rootwrite(void* sc, void* sf, u8* buf, int len)
 {
+	struct relation* orel;
+	struct halfrel* self;
+	struct halfrel* peer;
+
+	struct item* chip;
 	void* dc;
 	void* df;
-	struct item* chip;
-	struct relation* orel;
 
 	chip = sc;
 	if(0 == sc)return 0;
@@ -114,12 +122,14 @@ int nodetree_rootwrite(void* sc, void* sf, u8* buf, int len)
 
 		dc = (void*)(orel->dstchip);
 		df = (void*)(orel->dstfoot);
+		self = (void*)&orel->dstchip;
+		peer = (void*)&orel->srcchip;
 
 		if(0 == orel->dsttype)break;
 		else if(_fd_  == orel->dsttype)system_rootwrite(dc, df, sc, sf, buf, len);
 		else if(_art_ == orel->dsttype)artery_rootwrite(dc, df, sc, sf, buf, len);
-		else if(_win_ == orel->dsttype)arena_rootwrite( dc, df, sc, sf, buf, len);
-		else if(_act_ == orel->dsttype)actor_rootwrite( dc, df, sc, sf, buf, len);
+		else if(_win_ == orel->dsttype)arenawrite(self, peer, buf, len);
+		else if(_act_ == orel->dsttype)actorwrite(self, peer, buf, len);
 
 		orel = samesrcnextdst(orel);
 	}

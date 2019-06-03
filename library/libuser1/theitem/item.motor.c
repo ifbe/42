@@ -134,7 +134,7 @@ static void motor_draw(
 
 
 
-static void motor_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void motor_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -143,19 +143,23 @@ static void motor_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	motor_draw(act, pin, win, sty);
 }
-static void motor_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void motor_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void motor_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void motor_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void motor_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void motor_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void motor_search(struct actor* act)
+{
+}
+static void motor_modify(struct actor* act)
 {
 }
 static void motor_delete(struct actor* act)
@@ -180,10 +184,11 @@ void motor_register(struct actor* p)
 
 	p->oncreate = (void*)motor_create;
 	p->ondelete = (void*)motor_delete;
-	p->onstart  = (void*)motor_start;
-	p->onstop   = (void*)motor_stop;
-	p->oncread  = (void*)motor_cread;
-	p->oncwrite = (void*)motor_cwrite;
-	p->onsread  = (void*)motor_sread;
-	p->onswrite = (void*)motor_swrite;
+	p->onsearch = (void*)motor_search;
+	p->onmodify = (void*)motor_modify;
+
+	p->onstart = (void*)motor_start;
+	p->onstop  = (void*)motor_stop;
+	p->onread  = (void*)motor_read;
+	p->onwrite = (void*)motor_write;
 }

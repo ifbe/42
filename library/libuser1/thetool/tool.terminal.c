@@ -217,7 +217,7 @@ static void terminal_event(
 
 
 
-static void terminal_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void terminal_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -226,7 +226,7 @@ static void terminal_sread(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct style* sty = (void*)(peer->foot);
 	terminal_draw(act, pin, win, sty);
 }
-static void terminal_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void terminal_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -236,16 +236,20 @@ static void terminal_swrite(struct halfrel* self, struct halfrel* peer, u8* buf,
 	struct event* ev = (void*)buf;
 	terminal_event(act, pin, win, sty, ev, 0);
 }
-static void terminal_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void terminal_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void terminal_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void terminal_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void terminal_search(struct actor* act)
+{
+}
+static void terminal_modify(struct actor* act)
 {
 }
 static void terminal_delete(struct actor* act)
@@ -292,10 +296,11 @@ void terminal_register(struct actor* p)
 
 	p->oncreate = (void*)terminal_create;
 	p->ondelete = (void*)terminal_delete;
-	p->onstart  = (void*)terminal_start;
-	p->onstop   = (void*)terminal_stop;
-	p->oncread  = (void*)terminal_cread;
-	p->oncwrite = (void*)terminal_cwrite;
-	p->onsread  = (void*)terminal_sread;
-	p->onswrite = (void*)terminal_swrite;
+	p->onsearch = (void*)terminal_search;
+	p->onmodify = (void*)terminal_modify;
+
+	p->onstart = (void*)terminal_start;
+	p->onstop  = (void*)terminal_stop;
+	p->onread  = (void*)terminal_read;
+	p->onwrite = (void*)terminal_write;
 }

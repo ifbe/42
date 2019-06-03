@@ -129,7 +129,7 @@ void actorinput_touch(struct arena* win, struct event* ev)
 
 
 
-int actor_rootwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len)
+int actorwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len)
 {
 	struct actor* act;
 	if(0 == self)return 0;
@@ -137,9 +137,9 @@ int actor_rootwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len)
 	act = (void*)(self->chip);
 	if(0 == act)return 0;
 
-	return act->onswrite(self, peer, buf, len);
+	return act->onwrite(self, peer, buf, len);
 }
-int actor_rootread(struct halfrel* self,struct halfrel* peer,void* buf,int len)
+int actorread(struct halfrel* self,struct halfrel* peer,void* buf,int len)
 {
 	struct actor* act;
 	if(0 == self)return 0;
@@ -147,27 +147,7 @@ int actor_rootread(struct halfrel* self,struct halfrel* peer,void* buf,int len)
 	act = (void*)(self->chip);
 	if(0 == act)return 0;
 
-	return act->onsread(self, peer, buf, len);
-}
-int actor_leafwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len)
-{
-	struct actor* act;
-	if(0 == self)return 0;
-
-	act = (void*)(self->chip);
-	if(0 == act)return 0;
-
-	return act->oncwrite(self, peer, buf, len);
-}
-int actor_leafread(struct halfrel* self,struct halfrel* peer,void* buf,int len)
-{
-	struct actor* act;
-	if(0 == self)return 0;
-
-	act = (void*)(self->chip);
-	if(0 == act)return 0;
-
-	return act->oncread(self, peer, buf, len);
+	return act->onread(self, peer, buf, len);
 }
 int actorstop(struct halfrel* self, struct halfrel* peer)
 {

@@ -147,6 +147,17 @@ struct event
 	u64 where;
 	u64 when;
 };
+
+
+
+
+struct halfrel
+{
+	u64 chip;
+	u64 foot;
+	u32 type;
+	u32 flag;
+};
 struct relation
 {
 	//[0x00,0x1f]
@@ -290,17 +301,13 @@ struct element
 //
 int actordelete(void*);
 void* actorcreate(u64, void*);
-int actor_leafread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int actor_leafwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int actor_rootread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int actor_rootwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int actorread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int actorwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
 //
 int arenadelete(void*);
 void* arenacreate(u64, void*);
-int arena_leafread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arena_leafwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arena_rootread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arena_rootwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arenaread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arenawrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
 //
 int arterydelete(void*);
 void* arterycreate(u64, void*);

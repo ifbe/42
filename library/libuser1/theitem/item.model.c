@@ -363,7 +363,7 @@ static void model_event(
 
 
 
-static void model_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void model_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -372,7 +372,7 @@ static void model_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	model_draw(act, pin, win, sty);
 }
-static void model_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void model_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -381,12 +381,6 @@ static void model_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	model_event(act, pin, win, sty, ev, 0);
-}
-static void model_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void model_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
 }
 static void model_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -434,6 +428,16 @@ static void model_start(struct halfrel* self, struct halfrel* peer)
 	src->tex_enq[0] = 0;
 	src->ibuf_enq = 0;
 }
+
+
+
+
+static void model_search(struct actor* act)
+{
+}
+static void model_modify(struct actor* act)
+{
+}
 static void model_delete(struct actor* act)
 {
 	if(0 == act)return;
@@ -459,10 +463,11 @@ void model_register(struct actor* p)
 
 	p->oncreate = (void*)model_create;
 	p->ondelete = (void*)model_delete;
-	p->onstart  = (void*)model_start;
-	p->onstop   = (void*)model_stop;
-	p->oncread  = (void*)model_cread;
-	p->oncwrite = (void*)model_cwrite;
-	p->onsread  = (void*)model_sread;
-	p->onswrite = (void*)model_swrite;
+	p->onsearch = (void*)model_search;
+	p->onmodify = (void*)model_modify;
+
+	p->onstart = (void*)model_start;
+	p->onstop  = (void*)model_stop;
+	p->onread  = (void*)model_read;
+	p->onwrite = (void*)model_write;
 }

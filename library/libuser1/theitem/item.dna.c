@@ -127,7 +127,7 @@ static void dna_draw(
 
 
 
-static void dna_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void dna_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -136,19 +136,23 @@ static void dna_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int l
 	struct style* sty = (void*)(peer->foot);
 	dna_draw(act, pin, win, sty);
 }
-static void dna_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void dna_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void dna_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void dna_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void dna_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void dna_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void dna_search(struct actor* act)
+{
+}
+static void dna_modify(struct actor* act)
 {
 }
 static void dna_delete(struct actor* act)
@@ -173,10 +177,11 @@ void dna_register(struct actor* p)
 
 	p->oncreate = (void*)dna_create;
 	p->ondelete = (void*)dna_delete;
-	p->onstart  = (void*)dna_start;
-	p->onstop   = (void*)dna_stop;
-	p->oncread  = (void*)dna_cread;
-	p->oncwrite = (void*)dna_cwrite;
-	p->onsread  = (void*)dna_sread;
-	p->onswrite = (void*)dna_swrite;
+	p->onsearch = (void*)dna_search;
+	p->onmodify = (void*)dna_modify;
+
+	p->onstart = (void*)dna_start;
+	p->onstop  = (void*)dna_stop;
+	p->onread  = (void*)dna_read;
+	p->onwrite = (void*)dna_write;
 }

@@ -7,22 +7,26 @@ static u8 buffer[16];
 
 
 
-static void gobang_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void gobang_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void gobang_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void gobang_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void gobang_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void gobang_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void gobang_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void gobang_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void gobang_search(struct actor* act)
+{
+}
+static void gobang_modify(struct actor* act)
 {
 }
 static void gobang_delete(struct actor* act)
@@ -47,10 +51,11 @@ void gobang_register(struct actor* p)
 
 	p->oncreate = (void*)gobang_create;
 	p->ondelete = (void*)gobang_delete;
-	p->onstart  = (void*)gobang_start;
-	p->onstop   = (void*)gobang_stop;
-	p->oncread  = (void*)gobang_cread;
-	p->oncwrite = (void*)gobang_cwrite;
-	p->onsread  = (void*)gobang_sread;
-	p->onswrite = (void*)gobang_swrite;
+	p->onsearch = (void*)gobang_search;
+	p->onmodify = (void*)gobang_modify;
+
+	p->onstart = (void*)gobang_start;
+	p->onstop  = (void*)gobang_stop;
+	p->onread  = (void*)gobang_read;
+	p->onwrite = (void*)gobang_write;
 }

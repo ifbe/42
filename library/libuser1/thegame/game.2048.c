@@ -367,7 +367,7 @@ static void the2048_event(
 
 
 
-static void the2048_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void the2048_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -376,7 +376,7 @@ static void the2048_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	the2048_draw(act, pin, win, sty);
 }
-static void the2048_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void the2048_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -386,12 +386,6 @@ static void the2048_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct event* ev = (void*)buf;
 	the2048_event(act, pin, win, sty, ev, 0);
 }
-static void the2048_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void the2048_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void the2048_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
@@ -400,6 +394,16 @@ static void the2048_start(struct halfrel* self, struct halfrel* peer)
 	struct actor* act = (void*)(self->chip);
 	void* buf = act->buf;
 	new2048(buf);
+}
+
+
+
+
+static void the2048_search(struct actor* act, u8* buf)
+{
+}
+static void the2048_modify(struct actor* act, u8* buf)
+{
 }
 static void the2048_delete(struct actor* act, u8* buf)
 {
@@ -428,10 +432,11 @@ void the2048_register(struct actor* p)
 
 	p->oncreate = (void*)the2048_create;
 	p->ondelete = (void*)the2048_delete;
-	p->onstart  = (void*)the2048_start;
-	p->onstop   = (void*)the2048_stop;
-	p->oncread  = (void*)the2048_cread;
-	p->oncwrite = (void*)the2048_cwrite;
-	p->onsread  = (void*)the2048_sread;
-	p->onswrite = (void*)the2048_swrite;
+	p->onsearch = (void*)the2048_search;
+	p->onmodify = (void*)the2048_modify;
+
+	p->onstart = (void*)the2048_start;
+	p->onstop  = (void*)the2048_stop;
+	p->onread  = (void*)the2048_read;
+	p->onwrite = (void*)the2048_write;
 }

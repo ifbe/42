@@ -170,7 +170,7 @@ static void house_draw(
 
 
 
-static void house_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void house_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -179,19 +179,23 @@ static void house_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	house_draw(act, pin, win, sty);
 }
-static void house_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void house_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void house_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void house_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void house_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void house_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void house_search(struct actor* act)
+{
+}
+static void house_modify(struct actor* act)
 {
 }
 static void house_delete(struct actor* act)
@@ -216,10 +220,11 @@ void house_register(struct actor* p)
 
 	p->oncreate = (void*)house_create;
 	p->ondelete = (void*)house_delete;
-	p->onstart  = (void*)house_start;
-	p->onstop   = (void*)house_stop;
-	p->oncread  = (void*)house_cread;
-	p->oncwrite = (void*)house_cwrite;
-	p->onsread  = (void*)house_sread;
-	p->onswrite = (void*)house_swrite;
+	p->onsearch = (void*)house_search;
+	p->onmodify = (void*)house_modify;
+
+	p->onstart = (void*)house_start;
+	p->onstop  = (void*)house_stop;
+	p->onread  = (void*)house_read;
+	p->onwrite = (void*)house_write;
 }

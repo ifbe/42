@@ -195,7 +195,7 @@ static void bplus_event(
 
 
 
-static void bplus_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void bplus_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -204,7 +204,7 @@ static void bplus_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	bplus_draw(act, pin, win, sty);
 }
-static void bplus_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void bplus_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -214,16 +214,20 @@ static void bplus_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct event* ev = (void*)buf;
 	bplus_event(act, pin, win, sty, ev, 0);
 }
-static void bplus_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void bplus_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void bplus_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void bplus_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void bplus_search(struct actor* act)
+{
+}
+static void bplus_modify(struct actor* act)
 {
 }
 static void bplus_delete(struct actor* act)
@@ -248,10 +252,11 @@ void bplus_register(struct actor* p)
 
 	p->oncreate = (void*)bplus_create;
 	p->ondelete = (void*)bplus_delete;
-	p->onstart  = (void*)bplus_start;
-	p->onstop   = (void*)bplus_stop;
-	p->oncread  = (void*)bplus_cread;
-	p->oncwrite = (void*)bplus_cwrite;
-	p->onsread  = (void*)bplus_sread;
-	p->onswrite = (void*)bplus_swrite;
+	p->onsearch = (void*)bplus_search;
+	p->onmodify = (void*)bplus_modify;
+
+	p->onstart = (void*)bplus_start;
+	p->onstop  = (void*)bplus_stop;
+	p->onread  = (void*)bplus_read;
+	p->onwrite = (void*)bplus_write;
 }

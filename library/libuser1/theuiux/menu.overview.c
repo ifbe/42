@@ -1323,7 +1323,7 @@ static int overview_event(
 
 
 
-static void overview_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void overview_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -1332,7 +1332,7 @@ static void overview_sread(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct style* sty = (void*)(peer->foot);
 	overview_draw(act, pin, win, sty);
 }
-static int overview_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int overview_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -1342,18 +1342,22 @@ static int overview_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct event* ev = (void*)buf;
 	return overview_event(act, pin, win, sty, ev, 0);
 }
-static void overview_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void overview_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void overview_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void overview_start(struct halfrel* self, struct halfrel* peer)
 {
     say("@overview_start\n");
+}
+
+
+
+
+void overview_search(struct actor* act)
+{
+}
+void overview_modify(struct actor* act)
+{
 }
 void overview_delete(struct actor* act)
 {
@@ -1373,12 +1377,13 @@ void overview_register(struct actor* p)
 
 	p->oncreate = (void*)overview_create;
 	p->ondelete = (void*)overview_delete;
-	p->onstart  = (void*)overview_start;
-	p->onstop   = (void*)overview_stop;
-	p->oncread  = (void*)overview_cread;
-	p->oncwrite = (void*)overview_cwrite;
-	p->onsread  = (void*)overview_sread;
-	p->onswrite = (void*)overview_swrite;
+	p->onsearch = (void*)overview_search;
+	p->onmodify = (void*)overview_modify;
+
+	p->onstart = (void*)overview_start;
+	p->onstop  = (void*)overview_stop;
+	p->onread  = (void*)overview_read;
+	p->onwrite = (void*)overview_write;
 }
 void overview_init(void* addr)
 {

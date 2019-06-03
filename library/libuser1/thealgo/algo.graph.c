@@ -348,7 +348,7 @@ say("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
 
 
 
-static void graph_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void graph_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -357,7 +357,7 @@ static void graph_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	graph_draw(act, pin, win, sty);
 }
-static void graph_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void graph_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -366,12 +366,6 @@ static void graph_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	graph_event(act, pin, win, sty, ev, 0);
-}
-static void graph_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void graph_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
 }
 static void graph_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -400,6 +394,16 @@ static void graph_start(struct halfrel* self, struct halfrel* peer)
 		say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
 	}
 	say("%d,%d,%d,%d\n", act->nlen, act->wlen, act->vlen, act->ilen);
+}
+
+
+
+
+static void graph_search(struct actor* act)
+{
+}
+static void graph_modify(struct actor* act)
+{
 }
 static void graph_delete(struct actor* act)
 {
@@ -448,10 +452,11 @@ void graph_register(struct actor* p)
 
 	p->oncreate = (void*)graph_create;
 	p->ondelete = (void*)graph_delete;
-	p->onstart  = (void*)graph_start;
-	p->onstop   = (void*)graph_stop;
-	p->oncread  = (void*)graph_cread;
-	p->oncwrite = (void*)graph_cwrite;
-	p->onsread  = (void*)graph_sread;
-	p->onswrite = (void*)graph_swrite;
+	p->onsearch = (void*)graph_search;
+	p->onmodify = (void*)graph_modify;
+
+	p->onstart = (void*)graph_start;
+	p->onstop  = (void*)graph_stop;
+	p->onread  = (void*)graph_read;
+	p->onwrite = (void*)graph_write;
 }

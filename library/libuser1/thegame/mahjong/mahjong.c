@@ -7,22 +7,26 @@ static u8 data[144];
 
 
 
-static void mahjong_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void mahjong_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void mahjong_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void mahjong_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void mahjong_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void mahjong_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void mahjong_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void mahjong_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void mahjong_search(struct actor* act)
+{
+}
+static void mahjong_modify(struct actor* act)
 {
 }
 static void mahjong_delete(struct actor* act)
@@ -47,10 +51,11 @@ void mahjong_register(struct actor* p)
 
 	p->oncreate = (void*)mahjong_create;
 	p->ondelete = (void*)mahjong_delete;
-	p->onstart  = (void*)mahjong_start;
-	p->onstop   = (void*)mahjong_stop;
-	p->oncread  = (void*)mahjong_cread;
-	p->oncwrite = (void*)mahjong_cwrite;
-	p->onsread  = (void*)mahjong_sread;
-	p->onswrite = (void*)mahjong_swrite;
+	p->onsearch = (void*)mahjong_search;
+	p->onmodify = (void*)mahjong_modify;
+
+	p->onstart = (void*)mahjong_start;
+	p->onstop  = (void*)mahjong_stop;
+	p->onread  = (void*)mahjong_read;
+	p->onwrite = (void*)mahjong_write;
 }

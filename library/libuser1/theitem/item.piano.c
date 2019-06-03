@@ -349,7 +349,7 @@ static void piano_event(
 
 
 
-static void piano_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void piano_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -358,7 +358,7 @@ static void piano_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	piano_draw(act, pin, win, sty);
 }
-static void piano_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void piano_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -368,16 +368,20 @@ static void piano_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct event* ev = (void*)buf;
 	piano_event(act, pin, win, sty, ev, 0);
 }
-static void piano_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void piano_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void piano_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void piano_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void piano_search(struct actor* act)
+{
+}
+static void piano_modify(struct actor* act)
 {
 }
 static void piano_delete(struct actor* act)
@@ -409,10 +413,11 @@ void piano_register(struct actor* p)
 
 	p->oncreate = (void*)piano_create;
 	p->ondelete = (void*)piano_delete;
-	p->onstart  = (void*)piano_start;
-	p->onstop   = (void*)piano_stop;
-	p->oncread  = (void*)piano_cread;
-	p->oncwrite = (void*)piano_cwrite;
-	p->onsread  = (void*)piano_sread;
-	p->onswrite = (void*)piano_swrite;
+	p->onsearch = (void*)piano_search;
+	p->onmodify = (void*)piano_modify;
+
+	p->onstart = (void*)piano_start;
+	p->onstop  = (void*)piano_stop;
+	p->onread  = (void*)piano_read;
+	p->onwrite = (void*)piano_write;
 }

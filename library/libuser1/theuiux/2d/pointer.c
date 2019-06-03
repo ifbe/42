@@ -88,7 +88,7 @@ static int pointer_draw(
 
 
 
-static void pointer_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void pointer_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -97,15 +97,7 @@ static void pointer_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	pointer_draw(act, pin, win, sty);
 }
-static int pointer_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-	return 0;
-}
-static int pointer_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-	return 0;
-}
-static int pointer_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int pointer_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	return 0;
 }
@@ -117,11 +109,23 @@ static int pointer_start(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int pointer_delete(struct arena* win)
+
+
+
+
+static int pointer_search(struct actor* act)
 {
 	return 0;
 }
-static int pointer_create(struct arena* win, u8* str)
+static int pointer_modify(struct actor* act)
+{
+	return 0;
+}
+static int pointer_delete(struct actor* act)
+{
+	return 0;
+}
+static int pointer_create(struct actor* act, u8* str)
 {
 	return 0;
 }
@@ -136,10 +140,11 @@ void pointer_register(struct actor* p)
 
 	p->oncreate = (void*)pointer_create;
 	p->ondelete = (void*)pointer_delete;
-	p->onstart  = (void*)pointer_start;
-	p->onstop   = (void*)pointer_stop;
-	p->oncread  = (void*)pointer_cread;
-	p->oncwrite = (void*)pointer_cwrite;
-	p->onsread  = (void*)pointer_sread;
-	p->onswrite = (void*)pointer_swrite;
+	p->onsearch = (void*)pointer_search;
+	p->onmodify = (void*)pointer_modify;
+
+	p->onstart = (void*)pointer_start;
+	p->onstop  = (void*)pointer_stop;
+	p->onread  = (void*)pointer_read;
+	p->onwrite = (void*)pointer_write;
 }

@@ -257,7 +257,7 @@ void hostviewport_camera(struct halfrel* relcam, struct halfrel* relwin)
 	u64* p = (void*)buf;
 
 	for(j=0;j<512;j++)buf[j] = 0;
-	actor_rootread(relcam, relwin, buf, 256);
+	actorread(relcam, relwin, buf, 256);
 
 	struct datapair* cam = (void*)p[0];
 	struct datapair* lit = (void*)p[1];
@@ -355,7 +355,7 @@ int hostviewport_event(struct halfrel* relcam, struct halfrel* relwin, struct ev
 		if(x > x1)return 0;
 		if(y > y1)return 0;
 
-		return actor_rootwrite(relcam, relwin, ev, 0);
+		return actorwrite(relcam, relwin, ev, 0);
 	}
 
 	return 0;

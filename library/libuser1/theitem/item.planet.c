@@ -207,7 +207,7 @@ static void planet_draw(
 
 
 
-static void planet_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void planet_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -216,19 +216,23 @@ static void planet_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	planet_draw(act, pin, win, sty);
 }
-static void planet_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void planet_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void planet_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void planet_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void planet_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void planet_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void planet_modify(struct actor* act)
+{
+}
+static void planet_search(struct actor* act)
 {
 }
 static void planet_delete(struct actor* act)
@@ -250,10 +254,11 @@ void planet_register(struct actor* p)
 
 	p->oncreate = (void*)planet_create;
 	p->ondelete = (void*)planet_delete;
-	p->onstart  = (void*)planet_start;
-	p->onstop   = (void*)planet_stop;
-	p->oncread  = (void*)planet_cread;
-	p->oncwrite = (void*)planet_cwrite;
-	p->onsread  = (void*)planet_sread;
-	p->onswrite = (void*)planet_swrite;
+	p->onsearch = (void*)planet_search;
+	p->onmodify = (void*)planet_modify;
+
+	p->onstart = (void*)planet_start;
+	p->onstop  = (void*)planet_stop;
+	p->onread  = (void*)planet_read;
+	p->onwrite = (void*)planet_write;
 }

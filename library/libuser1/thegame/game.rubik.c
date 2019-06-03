@@ -342,7 +342,7 @@ static void rubikscube_event(
 
 
 
-static void rubikscube_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void rubikscube_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -351,7 +351,7 @@ static void rubikscube_sread(struct halfrel* self, struct halfrel* peer, u8* buf
 	struct style* sty = (void*)(peer->foot);
 	rubikscube_draw(act, pin, win, sty);
 }
-static void rubikscube_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void rubikscube_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -361,16 +361,20 @@ static void rubikscube_swrite(struct halfrel* self, struct halfrel* peer, u8* bu
 	struct event* ev = (void*)buf;
 	rubikscube_event(act, pin, win, sty, ev, 0);
 }
-static void rubikscube_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void rubikscube_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void rubikscube_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void rubikscube_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void rubikscube_search(struct actor* act)
+{
+}
+static void rubikscube_modify(struct actor* act)
 {
 }
 static void rubikscube_delete(struct actor* act)
@@ -414,10 +418,11 @@ void rubikscube_register(struct actor* p)
 
 	p->oncreate = (void*)rubikscube_create;
 	p->ondelete = (void*)rubikscube_delete;
-	p->onstart  = (void*)rubikscube_start;
-	p->onstop   = (void*)rubikscube_stop;
-	p->oncread  = (void*)rubikscube_cread;
-	p->oncwrite = (void*)rubikscube_cwrite;
-	p->onsread  = (void*)rubikscube_sread;
-	p->onswrite = (void*)rubikscube_swrite;
+	p->onsearch = (void*)rubikscube_search;
+	p->onmodify = (void*)rubikscube_modify;
+
+	p->onstart = (void*)rubikscube_start;
+	p->onstop  = (void*)rubikscube_stop;
+	p->onread  = (void*)rubikscube_read;
+	p->onwrite = (void*)rubikscube_write;
 }

@@ -607,7 +607,7 @@ void xiangqi_event(
 
 
 
-static void xiangqi_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void xiangqi_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -616,7 +616,7 @@ static void xiangqi_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	xiangqi_draw(act, pin, win, sty);
 }
-static void xiangqi_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void xiangqi_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -626,16 +626,20 @@ static void xiangqi_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct event* ev = (void*)buf;
 	xiangqi_event(act, pin, win, sty, ev, 0);
 }
-static void xiangqi_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void xiangqi_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void xiangqi_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void xiangqi_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void xiangqi_search(struct actor* act, u8* buf)
+{
+}
+static void xiangqi_modify(struct actor* act, u8* buf)
 {
 }
 static void xiangqi_delete(struct actor* act, u8* buf)
@@ -677,10 +681,11 @@ void xiangqi_register(struct actor* p)
 
 	p->oncreate = (void*)xiangqi_create;
 	p->ondelete = (void*)xiangqi_delete;
-	p->onstart  = (void*)xiangqi_start;
-	p->onstop   = (void*)xiangqi_stop;
-	p->oncread  = (void*)xiangqi_cread;
-	p->oncwrite = (void*)xiangqi_cwrite;
-	p->onsread  = (void*)xiangqi_sread;
-	p->onswrite = (void*)xiangqi_swrite;
+	p->onsearch = (void*)xiangqi_search;
+	p->onmodify = (void*)xiangqi_modify;
+
+	p->onstart = (void*)xiangqi_start;
+	p->onstop  = (void*)xiangqi_stop;
+	p->onread  = (void*)xiangqi_read;
+	p->onwrite = (void*)xiangqi_write;
 }

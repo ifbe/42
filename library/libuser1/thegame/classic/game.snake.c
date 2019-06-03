@@ -159,7 +159,7 @@ void snake_event(
 
 
 
-static void snake_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void snake_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -168,7 +168,7 @@ static void snake_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	snake_draw(act, pin, win, sty);
 }
-static void snake_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void snake_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -178,18 +178,22 @@ static void snake_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct event* ev = (void*)buf;
 	snake_event(act, pin, win, sty, ev, 0);
 }
-static void snake_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void snake_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void snake_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void snake_start(struct halfrel* self, struct halfrel* peer)
 {
 	snake_generate(buf, WIDTH, HEIGHT);
+}
+
+
+
+
+static void snake_search(struct actor* act)
+{
+}
+static void snake_modify(struct actor* act)
+{
 }
 static void snake_delete(struct actor* act)
 {
@@ -213,10 +217,11 @@ void snake_register(struct actor* p)
 
 	p->oncreate = (void*)snake_create;
 	p->ondelete = (void*)snake_delete;
-	p->onstart  = (void*)snake_start;
-	p->onstop   = (void*)snake_stop;
-	p->oncread  = (void*)snake_cread;
-	p->oncwrite = (void*)snake_cwrite;
-	p->onsread  = (void*)snake_sread;
-	p->onswrite = (void*)snake_swrite;
+	p->onsearch = (void*)snake_search;
+	p->onmodify = (void*)snake_modify;
+
+	p->onstart = (void*)snake_start;
+	p->onstop  = (void*)snake_stop;
+	p->onread  = (void*)snake_read;
+	p->onwrite = (void*)snake_write;
 }

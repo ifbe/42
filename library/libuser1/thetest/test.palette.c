@@ -168,7 +168,7 @@ static void palette_event(
 
 
 
-static void palette_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void palette_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -177,7 +177,7 @@ static void palette_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	palette_draw(act, pin, win, sty);
 }
-static void palette_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void palette_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -187,16 +187,20 @@ static void palette_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct event* ev = (void*)buf;
 	palette_event(act, pin, win, sty, ev, 0);
 }
-static void palette_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void palette_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void palette_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void palette_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void palette_search(struct actor* act)
+{
+}
+static void palette_modify(struct actor* act)
 {
 }
 static void palette_delete(struct actor* act)
@@ -221,10 +225,11 @@ void palette_register(struct actor* p)
 
 	p->oncreate = (void*)palette_create;
 	p->ondelete = (void*)palette_delete;
-	p->onstart  = (void*)palette_start;
-	p->onstop   = (void*)palette_stop;
-	p->oncread  = (void*)palette_cread;
-	p->oncwrite = (void*)palette_cwrite;
-	p->onsread  = (void*)palette_sread;
-	p->onswrite = (void*)palette_swrite;
+	p->onsearch = (void*)palette_search;
+	p->onmodify = (void*)palette_modify;
+
+	p->onstart = (void*)palette_start;
+	p->onstop  = (void*)palette_stop;
+	p->onread  = (void*)palette_read;
+	p->onwrite = (void*)palette_write;
 }

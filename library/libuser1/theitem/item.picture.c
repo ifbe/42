@@ -260,7 +260,7 @@ static void picture_draw(
 
 
 
-static void picture_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void picture_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -269,13 +269,7 @@ static void picture_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	picture_draw(act, pin, win, sty);
 }
-static void picture_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void picture_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void picture_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void picture_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void picture_stop(struct halfrel* self, struct halfrel* peer)
@@ -331,6 +325,16 @@ static void picture_start(struct halfrel* self, struct halfrel* peer)
 	src->tex_h[1] = act->yn;
 	src->tex_enq[1] = 42;
 }
+
+
+
+
+static void picture_search(struct actor* act)
+{
+}
+static void picture_modify(struct actor* act)
+{
+}
 static void picture_delete(struct actor* act)
 {
 	if(0 == act)return;
@@ -366,10 +370,11 @@ void picture_register(struct actor* p)
 
 	p->oncreate = (void*)picture_create;
 	p->ondelete = (void*)picture_delete;
-	p->onstart  = (void*)picture_start;
-	p->onstop   = (void*)picture_stop;
-	p->oncread  = (void*)picture_cread;
-	p->oncwrite = (void*)picture_cwrite;
-	p->onsread  = (void*)picture_sread;
-	p->onswrite = (void*)picture_swrite;
+	p->onsearch = (void*)picture_search;
+	p->onmodify = (void*)picture_modify;
+
+	p->onstart = (void*)picture_start;
+	p->onstop  = (void*)picture_stop;
+	p->onread  = (void*)picture_read;
+	p->onwrite = (void*)picture_write;
 }

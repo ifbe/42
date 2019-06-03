@@ -202,7 +202,7 @@ static void chess_draw(
 
 
 
-static void chess_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void chess_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -211,15 +211,9 @@ static void chess_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	chess_draw(act, pin, win, sty);
 }
-static void chess_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void chess_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//say("@chess:%x,%x\n", ev->why, ev->what);
-}
-static void chess_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void chess_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
 }
 static void chess_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -262,6 +256,16 @@ static void chess_start(struct halfrel* self, struct halfrel* peer)
 	buffer[7][6] = 'N';
 	buffer[7][7] = 'R';
 }
+
+
+
+
+static void chess_search(struct actor* act)
+{
+}
+static void chess_modify(struct actor* act)
+{
+}
 static void chess_delete(struct actor* act)
 {
 	if(0 == act)return;
@@ -284,10 +288,11 @@ void chess_register(struct actor* p)
 
 	p->oncreate = (void*)chess_create;
 	p->ondelete = (void*)chess_delete;
-	p->onstart  = (void*)chess_start;
-	p->onstop   = (void*)chess_stop;
-	p->oncread  = (void*)chess_cread;
-	p->oncwrite = (void*)chess_cwrite;
-	p->onsread  = (void*)chess_sread;
-	p->onswrite = (void*)chess_swrite;
+	p->onsearch = (void*)chess_search;
+	p->onmodify = (void*)chess_modify;
+
+	p->onstart = (void*)chess_start;
+	p->onstop  = (void*)chess_stop;
+	p->onread  = (void*)chess_read;
+	p->onwrite = (void*)chess_write;
 }

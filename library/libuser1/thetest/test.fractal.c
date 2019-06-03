@@ -313,7 +313,7 @@ static void fractal_event(
 
 
 
-static void fractal_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void fractal_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -322,7 +322,7 @@ static void fractal_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	fractal_draw(act, pin, win, sty);
 }
-static void fractal_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void fractal_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -331,12 +331,6 @@ static void fractal_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	fractal_event(act, pin, win, sty, ev, 0);
-}
-static void fractal_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void fractal_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
 }
 static void fractal_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -373,6 +367,16 @@ static void fractal_start(struct halfrel* self, struct halfrel* peer)
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf = memorycreate(src->vbuf_len);
 }
+
+
+
+
+static void fractal_search(struct actor* act)
+{
+}
+static void fractal_modify(struct actor* act)
+{
+}
 static void fractal_delete(struct actor* act)
 {
 	if(0 == act)return;
@@ -399,10 +403,11 @@ void fractal_register(struct actor* p)
 
 	p->oncreate = (void*)fractal_create;
 	p->ondelete = (void*)fractal_delete;
-	p->onstart  = (void*)fractal_start;
-	p->onstop   = (void*)fractal_stop;
-	p->oncread  = (void*)fractal_cread;
-	p->oncwrite = (void*)fractal_cwrite;
-	p->onsread  = (void*)fractal_sread;
-	p->onswrite = (void*)fractal_swrite;
+	p->onsearch = (void*)fractal_search;
+	p->onmodify = (void*)fractal_modify;
+
+	p->onstart = (void*)fractal_start;
+	p->onstop  = (void*)fractal_stop;
+	p->onread  = (void*)fractal_read;
+	p->onwrite = (void*)fractal_write;
 }

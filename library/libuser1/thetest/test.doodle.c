@@ -181,7 +181,7 @@ static void doodle_event(
 
 
 
-static void doodle_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void doodle_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -190,7 +190,7 @@ static void doodle_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	doodle_draw(act, pin, win, sty);
 }
-static void doodle_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void doodle_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -200,16 +200,20 @@ static void doodle_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct event* ev = (void*)buf;
 	doodle_event(act, pin, win, sty, ev, 0);
 }
-static void doodle_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void doodle_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void doodle_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void doodle_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void doodle_search(struct actor* act)
+{
+}
+static void doodle_modify(struct actor* act)
 {
 }
 static void doodle_delete(struct actor* act)
@@ -231,10 +235,11 @@ void doodle_register(struct actor* p)
 
 	p->oncreate = (void*)doodle_create;
 	p->ondelete = (void*)doodle_delete;
-	p->onstart  = (void*)doodle_start;
-	p->onstop   = (void*)doodle_stop;
-	p->oncread  = (void*)doodle_cread;
-	p->oncwrite = (void*)doodle_cwrite;
-	p->onsread  = (void*)doodle_sread;
-	p->onswrite = (void*)doodle_swrite;
+	p->onsearch = (void*)doodle_search;
+	p->onmodify = (void*)doodle_modify;
+
+	p->onstart = (void*)doodle_start;
+	p->onstop  = (void*)doodle_stop;
+	p->onread  = (void*)doodle_read;
+	p->onwrite = (void*)doodle_write;
 }

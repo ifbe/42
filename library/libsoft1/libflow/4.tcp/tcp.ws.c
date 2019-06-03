@@ -56,9 +56,10 @@ int wsclient_write(
 	u8* buf, int len)
 {
 	int ret;
-	void* dc;
-	void* df;
 	struct relation* orel;
+	struct halfrel* self;
+	struct halfrel* peer;
+
 	if(0 == ele->stage1)
 	{
 		ele->stage1 += 1;
@@ -88,9 +89,9 @@ int wsclient_write(
 	{
 		if(0 == orel)break;
 
-		dc = (void*)(orel->dstchip);
-		df = (void*)(orel->dstfoot);
-		if(_win_ == orel->dsttype)arena_rootwrite(dc, df, ele, sty, buf, len);
+		self = (void*)&orel->dstchip;
+		peer = (void*)&orel->srcchip;
+		if(_win_ == orel->dsttype)arenawrite(self, peer, buf, len);
 
 		orel = samesrcnextdst(orel);
 	}

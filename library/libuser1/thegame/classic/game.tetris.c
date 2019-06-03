@@ -247,7 +247,7 @@ static void tetris_event(
 
 
 
-static void tetris_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void tetris_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -256,7 +256,7 @@ static void tetris_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	tetris_draw(act, pin, win, sty);
 }
-static void tetris_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void tetris_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -266,18 +266,22 @@ static void tetris_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct event* ev = (void*)buf;
 	tetris_event(act, pin, win, sty, ev, 0);
 }
-static void tetris_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void tetris_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void tetris_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void tetris_start(struct halfrel* self, struct halfrel* peer)
 {
 	tetris_generate(data, WIDTH, HEIGHT);
+}
+
+
+
+
+static void tetris_search(struct actor* act)
+{
+}
+static void tetris_modify(struct actor* act)
+{
 }
 static void tetris_delete(struct actor* act)
 {
@@ -301,10 +305,11 @@ void tetris_register(struct actor* p)
 
 	p->oncreate = (void*)tetris_create;
 	p->ondelete = (void*)tetris_delete;
-	p->onstart  = (void*)tetris_start;
-	p->onstop   = (void*)tetris_stop;
-	p->oncread  = (void*)tetris_cread;
-	p->oncwrite = (void*)tetris_cwrite;
-	p->onsread  = (void*)tetris_sread;
-	p->onswrite = (void*)tetris_swrite;
+	p->onsearch = (void*)tetris_search;
+	p->onmodify = (void*)tetris_modify;
+
+	p->onstart = (void*)tetris_start;
+	p->onstop  = (void*)tetris_stop;
+	p->onread  = (void*)tetris_read;
+	p->onwrite = (void*)tetris_write;
 }

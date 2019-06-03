@@ -71,15 +71,15 @@ void* vbonode_create(u64, void*);
 int vbonode_delete(void*);
 int vbonode_start(void*, void*, void*, void*);
 int vbonode_stop(void*, void*);
-int vbonode_sread(struct arena* win, struct style* sty);
-int vbonode_swrite(struct arena* win, struct style* sty, struct event* ev);
+int vbonode_read(struct arena* win, struct style* sty);
+int vbonode_write(struct arena* win, struct style* sty, struct event* ev);
 //
 void* rgbanode_create(u64, void*);
 int rgbanode_delete(void*);
 int rgbanode_start(void*, void*, void*, void*);
 int rgbanode_stop(void*, void*);
-int rgbanode_sread(struct arena* win, struct style* sty);
-int rgbanode_swrite(struct arena* win, struct style* sty, struct event* ev);
+int rgbanode_read(struct arena* win, struct style* sty);
+int rgbanode_write(struct arena* win, struct style* sty, struct event* ev);
 //
 int schnode_create(u64, void*);
 int schnode_delete(void*);
@@ -145,68 +145,6 @@ void* allocstyle()
 
 	stylen += maxlen;
 	return buf;
-}
-
-
-
-
-int arena_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	struct arena* win = dc;
-	if(0 == win)return 0;
-
-//say("arenawrite@{\n");
-	switch(win->fmt)
-	{
-		case _html_:htmlnode_rootwrite(dc, df, sc, sf, buf, len);break;
-		case _json_:jsonnode_rootwrite(dc, df, sc, sf, buf, len);break;
-		case _bdc_ :  toycar_rootwrite(dc, df, sc, sf, buf, len);break;
-		case _step_: stepcar_rootwrite(dc, df, sc, sf, buf, len);break;
-		default: printmemory(buf, len);
-	}
-//say("}@arenawrite\n");
-	return 0;
-}
-int arena_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	struct relation* rel;
-	struct arena* win = dc;
-	if(0 == win)return 0;
-
-	switch(win->fmt)
-	{
-		case _html_:htmlnode_rootread(dc, df, sc, sf, buf, len);break;
-		case _json_:jsonnode_rootread(dc, df, sc, sf, buf, len);break;
-		case  _vbo_:vbonode_sread(win, 0);break;
-		default:rgbanode_sread(win, 0);break;
-	}
-	return 0;
-}
-int arena_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	return 0;
-}
-int arena_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	int j;
-	struct arena* win;
-/*
-	//0 == stack[0]: read all
-	for(j=0;j<0x100;j++)
-	{
-		win = &arena[j];
-		if(0 == win->type)continue;
-
-		windowread(win);
-	}
-	return 0;
-*/
-/*
-	//0 != stack[0]: read stack[0].ctx to stack[-1].buf
-	win = stack[0];
-	return windowread();
-*/
-	return 0;
 }
 
 
@@ -592,7 +530,7 @@ int arenaevent(struct event* e)
 	{
 		case _host_:
 		case _coop_:windowwrite(win, &ev);break;
-		default:rgbanode_swrite(win, 0, &ev);
+		default:rgbanode_write(win, 0, &ev);
 	}
 	return 0;
 }

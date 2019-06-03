@@ -26,6 +26,17 @@ struct event
 	u64 where;
 	u64 when;
 };
+
+
+
+
+struct halfrel
+{
+	u64 chip;
+	u64 foot;
+	u32 type;
+	u32 flag;
+};
 struct relation
 {
 	//[0x00,0x1f]
@@ -166,10 +177,10 @@ struct driver
 
 
 
-int actorread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int actorwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arenaread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arenawrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int actorread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int actorwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arenaread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arenawrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
 int arteryread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int systemread( void* dc,void* df,void* sc,void* sf,void* buf,int len);

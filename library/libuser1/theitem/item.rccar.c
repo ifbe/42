@@ -245,7 +245,7 @@ static void rccar_event(
 
 
 
-static void rccar_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void rccar_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -254,19 +254,23 @@ static void rccar_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	rccar_draw(act, pin, win, sty);
 }
-static void rccar_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void rccar_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void rccar_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void rccar_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void rccar_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void rccar_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void rccar_search(struct actor* act)
+{
+}
+static void rccar_modify(struct actor* act)
 {
 }
 static void rccar_delete(struct actor* act)
@@ -293,10 +297,11 @@ void rccar_register(struct actor* p)
 
 	p->oncreate = (void*)rccar_create;
 	p->ondelete = (void*)rccar_delete;
-	p->onstart  = (void*)rccar_start;
-	p->onstop   = (void*)rccar_stop;
-	p->oncread  = (void*)rccar_cread;
-	p->oncwrite = (void*)rccar_cwrite;
-	p->onsread  = (void*)rccar_sread;
-	p->onswrite = (void*)rccar_swrite;
+	p->onsearch = (void*)rccar_search;
+	p->onmodify = (void*)rccar_modify;
+
+	p->onstart = (void*)rccar_start;
+	p->onstop  = (void*)rccar_stop;
+	p->onread  = (void*)rccar_read;
+	p->onwrite = (void*)rccar_write;
 }

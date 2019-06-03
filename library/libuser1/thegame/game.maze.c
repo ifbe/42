@@ -537,7 +537,7 @@ static void maze_event(
 
 
 
-static void maze_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void maze_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -546,7 +546,7 @@ static void maze_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	struct style* sty = (void*)(peer->foot);
 	maze_draw(act, pin, win, sty);
 }
-static void maze_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void maze_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -555,12 +555,6 @@ static void maze_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	maze_event(act, pin, win, sty, ev, 0);
-}
-static void maze_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void maze_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
 }
 static void maze_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -572,6 +566,16 @@ static void maze_start(struct halfrel* self, struct halfrel* peer)
 
 	maze_generate(buf, WIDTH, HEIGHT);
 	maze_solve(buf, WIDTH, HEIGHT);
+}
+
+
+
+
+static void maze_search(struct actor* act)
+{
+}
+static void maze_modify(struct actor* act)
+{
 }
 static void maze_delete(struct actor* act)
 {
@@ -601,10 +605,11 @@ void maze_register(struct actor* p)
 
 	p->oncreate = (void*)maze_create;
 	p->ondelete = (void*)maze_delete;
-	p->onstart  = (void*)maze_start;
-	p->onstop   = (void*)maze_stop;
-	p->oncread  = (void*)maze_cread;
-	p->oncwrite = (void*)maze_cwrite;
-	p->onsread  = (void*)maze_sread;
-	p->onswrite = (void*)maze_swrite;
+	p->onsearch = (void*)maze_search;
+	p->onmodify = (void*)maze_modify;
+
+	p->onstart = (void*)maze_start;
+	p->onstop  = (void*)maze_stop;
+	p->onread  = (void*)maze_read;
+	p->onwrite = (void*)maze_write;
 }

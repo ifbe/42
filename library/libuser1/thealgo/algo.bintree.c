@@ -230,7 +230,7 @@ static void bintree_event(
 
 
 
-static void bintree_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void bintree_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -239,7 +239,7 @@ static void bintree_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	bintree_draw(act, pin, win, sty);
 }
-static void bintree_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void bintree_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -249,16 +249,20 @@ static void bintree_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct event* ev = (void*)buf;
 	bintree_event(act, pin, win, sty, ev, 0);
 }
-static void bintree_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void bintree_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void bintree_start(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void bintree_stop(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void bintree_search(struct actor* act)
+{
+}
+static void bintree_modify(struct actor* act)
 {
 }
 static void bintree_delete(struct actor* act)
@@ -283,10 +287,11 @@ void bintree_register(struct actor* p)
 
 	p->oncreate = (void*)bintree_create;
 	p->ondelete = (void*)bintree_delete;
-	p->onstart  = (void*)bintree_start;
-	p->onstop   = (void*)bintree_stop;
-	p->oncread  = (void*)bintree_cread;
-	p->oncwrite = (void*)bintree_cwrite;
-	p->onsread  = (void*)bintree_sread;
-	p->onswrite = (void*)bintree_swrite;
+	p->onsearch = (void*)bintree_search;
+	p->onmodify = (void*)bintree_modify;
+
+	p->onstart = (void*)bintree_start;
+	p->onstop  = (void*)bintree_stop;
+	p->onread  = (void*)bintree_read;
+	p->onwrite = (void*)bintree_write;
 }

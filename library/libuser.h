@@ -727,27 +727,27 @@ struct actor
 		char padding1[8];
 	};
 	union{
-		int (*onstart)(void* self, void* peer);
+		int (*onsearch)(void* actor, void* buf);
 		char padding2[8];
 	};
 	union{
-		int (*onstop)(void* self, void* peer);
+		int (*onmodify)(void* actor, void* buf);
 		char padding3[8];
 	};
 	union{
-		int (*oncread)(void* self, void* peer, void* buf, int len);
+		int (*onstart)(void* self, void* peer);
 		char padding4[8];
 	};
 	union{
-		int (*oncwrite)(void* self, void* peer, void* buf, int len);
+		int (*onstop)(void* self, void* peer);
 		char padding5[8];
 	};
 	union{
-		int (*onsread)(void* self, void* peer, void* buf, int len);
+		int (*onread)(void* self, void* peer, void* buf, int len);
 		char padding6[8];
 	};
 	union{
-		int (*onswrite)(void* self, void* peer, void* buf, int len);
+		int (*onwrite)(void* self, void* peer, void* buf, int len);
 		char padding7[8];
 	};
 
@@ -1083,17 +1083,13 @@ extern "C" {
 int actorevent(struct event*);
 int arenaevent(struct event*);
 
-int actor_leafread(  struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int actor_leafwrite( struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int actor_rootread(  struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int actor_rootwrite( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int actorread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int actorwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
 int actordelete(struct actor*);
 void* actorcreate(u64, void*);
 //
-int arena_leafread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arena_leafwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arena_rootread(  void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arena_rootwrite( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int arenaread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arenawrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
 int arenadelete(struct arena*);
 void* arenacreate(u64, void*);
 //

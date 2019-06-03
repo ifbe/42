@@ -190,7 +190,7 @@ static int vkbd_event(
 
 
 
-static void vkbd_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void vkbd_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -199,7 +199,7 @@ static void vkbd_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	struct style* sty = (void*)(peer->foot);
 	vkbd_draw(act, pin, win, sty);
 }
-static int vkbd_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int vkbd_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -209,31 +209,23 @@ static int vkbd_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	struct event* ev = (void*)buf;
 	return vkbd_event(act, pin, win, sty, ev, 0);
 }
-static int vkbd_cread(
-	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static int vkbd_stop(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int vkbd_cwrite(
-	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static int vkbd_start(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int vkbd_stop(
-	struct actor* leaf, struct style* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+
+
+
+
+static int vkbd_search(struct arena* win)
 {
 	return 0;
 }
-static int vkbd_start(
-	struct actor* leaf, struct style* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static int vkbd_modify(struct arena* win)
 {
 	return 0;
 }
@@ -256,10 +248,11 @@ void vkbd_register(struct actor* p)
 
 	p->oncreate = (void*)vkbd_create;
 	p->ondelete = (void*)vkbd_delete;
-	p->onstart  = (void*)vkbd_start;
-	p->onstop   = (void*)vkbd_stop;
-	p->oncread  = (void*)vkbd_cread;
-	p->oncwrite = (void*)vkbd_cwrite;
-	p->onsread  = (void*)vkbd_sread;
-	p->onswrite = (void*)vkbd_swrite;
+	p->onsearch = (void*)vkbd_search;
+	p->onmodify = (void*)vkbd_modify;
+
+	p->onstart = (void*)vkbd_start;
+	p->onstop  = (void*)vkbd_stop;
+	p->onread  = (void*)vkbd_read;
+	p->onwrite = (void*)vkbd_write;
 }

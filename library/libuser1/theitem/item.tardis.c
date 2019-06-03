@@ -85,7 +85,7 @@ static void tardis_draw(
 
 
 
-static void tardis_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void tardis_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -94,19 +94,23 @@ static void tardis_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	tardis_draw(act, pin, win, sty);
 }
-static void tardis_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void tardis_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void tardis_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void tardis_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void tardis_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void tardis_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void tardis_search(struct actor* act)
+{
+}
+static void tardis_modify(struct actor* act)
 {
 }
 static void tardis_delete(struct actor* act)
@@ -131,10 +135,11 @@ void tardis_register(struct actor* p)
 
 	p->oncreate = (void*)tardis_create;
 	p->ondelete = (void*)tardis_delete;
-	p->onstart  = (void*)tardis_start;
-	p->onstop   = (void*)tardis_stop;
-	p->oncread  = (void*)tardis_cread;
-	p->oncwrite = (void*)tardis_cwrite;
-	p->onsread  = (void*)tardis_sread;
-	p->onswrite = (void*)tardis_swrite;
+	p->onsearch = (void*)tardis_search;
+	p->onmodify = (void*)tardis_modify;
+
+	p->onstart = (void*)tardis_start;
+	p->onstop  = (void*)tardis_stop;
+	p->onread  = (void*)tardis_read;
+	p->onwrite = (void*)tardis_write;
 }

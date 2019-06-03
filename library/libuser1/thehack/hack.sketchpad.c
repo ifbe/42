@@ -549,7 +549,7 @@ static void sketchpad_event(
 
 
 
-static void sketchpad_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void sketchpad_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -558,7 +558,7 @@ static void sketchpad_sread(struct halfrel* self, struct halfrel* peer, u8* buf,
 	struct style* sty = (void*)(peer->foot);
 	sketchpad_draw(act, pin, win, sty);
 }
-static void sketchpad_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void sketchpad_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -567,12 +567,6 @@ static void sketchpad_swrite(struct halfrel* self, struct halfrel* peer, u8* buf
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	sketchpad_event(act, pin, win, sty, ev, 0);
-}
-static void sketchpad_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void sketchpad_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
 }
 static void sketchpad_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -622,6 +616,16 @@ static void sketchpad_start(struct halfrel* self, struct halfrel* peer)
 	centery = 0.00;
 	scale = 1.00;
 }
+
+
+
+
+static void sketchpad_search(struct actor* act)
+{
+}
+static void sketchpad_modify(struct actor* act)
+{
+}
 static void sketchpad_delete(struct actor* act)
 {
 	if(0 == act)return;
@@ -643,10 +647,11 @@ void sketchpad_register(struct actor* p)
 
 	p->oncreate = (void*)sketchpad_create;
 	p->ondelete = (void*)sketchpad_delete;
-	p->onstart  = (void*)sketchpad_start;
-	p->onstop   = (void*)sketchpad_stop;
-	p->oncread  = (void*)sketchpad_cread;
-	p->oncwrite = (void*)sketchpad_cwrite;
-	p->onsread  = (void*)sketchpad_sread;
-	p->onswrite = (void*)sketchpad_swrite;
+	p->onsearch = (void*)sketchpad_search;
+	p->onmodify = (void*)sketchpad_modify;
+
+	p->onstart = (void*)sketchpad_start;
+	p->onstop  = (void*)sketchpad_stop;
+	p->onread  = (void*)sketchpad_read;
+	p->onwrite = (void*)sketchpad_write;
 }

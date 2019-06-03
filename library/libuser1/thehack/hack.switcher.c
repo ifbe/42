@@ -103,7 +103,7 @@ static void switch_data(
 
 
 
-static void switch_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void switch_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -112,7 +112,7 @@ static void switch_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	switch_draw(act, pin, win, sty);
 }
-static void switch_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void switch_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -121,16 +121,20 @@ static void switch_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	switch_data(act, pin, win, sty, buf, len);
 }
-static void switch_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void switch_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void switch_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void switch_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void switch_search(struct actor* act, u8* buf)
+{
+}
+static void switch_modify(struct actor* act, u8* buf)
 {
 }
 static void switch_delete(struct actor* act, u8* buf)
@@ -161,10 +165,11 @@ void switch_register(struct actor* p)
 
 	p->oncreate = (void*)switch_create;
 	p->ondelete = (void*)switch_delete;
-	p->onstart  = (void*)switch_start;
-	p->onstop   = (void*)switch_stop;
-	p->oncread  = (void*)switch_cread;
-	p->oncwrite = (void*)switch_cwrite;
-	p->onsread  = (void*)switch_sread;
-	p->onswrite = (void*)switch_swrite;
+	p->onsearch = (void*)switch_search;
+	p->onmodify = (void*)switch_modify;
+
+	p->onstart = (void*)switch_start;
+	p->onstop  = (void*)switch_stop;
+	p->onread  = (void*)switch_read;
+	p->onwrite = (void*)switch_write;
 }

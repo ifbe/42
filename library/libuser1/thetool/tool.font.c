@@ -223,7 +223,7 @@ static void font_event(
 
 
 
-static void font_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void font_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -232,7 +232,7 @@ static void font_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	struct style* sty = (void*)(peer->foot);
 	font_draw(act, pin, win, sty);
 }
-static void font_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void font_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -242,16 +242,20 @@ static void font_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct event* ev = (void*)buf;
 	font_event(act, pin, win, sty, ev, 0);
 }
-static void font_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void font_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void font_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void font_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void font_search(struct actor* act)
+{
+}
+static void font_modify(struct actor* act)
 {
 }
 static void font_delete(struct actor* act)
@@ -276,10 +280,11 @@ void font_register(struct actor* p)
 
 	p->oncreate = (void*)font_create;
 	p->ondelete = (void*)font_delete;
-	p->onstart  = (void*)font_start;
-	p->onstop   = (void*)font_stop;
-	p->oncread  = (void*)font_cread;
-	p->oncwrite = (void*)font_cwrite;
-	p->onsread  = (void*)font_sread;
-	p->onswrite = (void*)font_swrite;
+	p->onsearch = (void*)font_search;
+	p->onmodify = (void*)font_modify;
+
+	p->onstart = (void*)font_start;
+	p->onstop  = (void*)font_stop;
+	p->onread  = (void*)font_read;
+	p->onwrite = (void*)font_write;
 }

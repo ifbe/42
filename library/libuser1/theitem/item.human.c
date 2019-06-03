@@ -266,7 +266,7 @@ static int human_event(
 			tmp[1] = sty->f.vc[1];
 			tmp[2] = 0.0;
 
-			actor_leafread((void*)&rel->srcchip, (void*)&rel->dstchip, tmp, 0);
+			actorread((void*)&rel->srcchip, (void*)&rel->dstchip, tmp, 0);
 
 			sty->f.vc[2] = tmp[2] + act->z0;
 			break;
@@ -334,7 +334,7 @@ static int human_event(
 
 
 
-static void human_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void human_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -343,7 +343,7 @@ static void human_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	human_draw(act, pin, win, sty);
 }
-static int human_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int human_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -353,16 +353,20 @@ static int human_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct event* ev = (void*)buf;
 	return human_event(act, pin, win, sty, ev, 0);
 }
-static void human_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void human_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void human_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void human_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void human_search(struct actor* act)
+{
+}
+static void human_modify(struct actor* act)
 {
 }
 static void human_delete(struct actor* act)
@@ -388,8 +392,7 @@ void human_register(struct actor* p)
 	p->ondelete = (void*)human_delete;
 	p->onstart  = (void*)human_start;
 	p->onstop   = (void*)human_stop;
-	p->oncread  = (void*)human_cread;
-	p->oncwrite = (void*)human_cwrite;
-	p->onsread  = (void*)human_sread;
-	p->onswrite = (void*)human_swrite;
+
+	p->onread  = (void*)human_read;
+	p->onwrite = (void*)human_write;
 }

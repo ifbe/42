@@ -122,7 +122,7 @@ static void klotski_draw(
 
 
 
-static void klotski_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void klotski_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -131,13 +131,7 @@ static void klotski_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	klotski_draw(act, pin, win, sty);
 }
-static void klotski_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void klotski_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void klotski_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void klotski_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void klotski_stop(struct halfrel* self, struct halfrel* peer)
@@ -156,6 +150,16 @@ static void klotski_start(struct halfrel* self, struct halfrel* peer)
 	data[4][0] = bing2;
 	data[4][3] = bing3; 
 	data[4][1] = data[4][2] = 0xff;
+}
+
+
+
+
+static void klotski_search(struct actor* act)
+{
+}
+static void klotski_modify(struct actor* act)
+{
 }
 static void klotski_delete(struct actor* act)
 {
@@ -179,10 +183,11 @@ void klotski_register(struct actor* p)
 
 	p->oncreate = (void*)klotski_create;
 	p->ondelete = (void*)klotski_delete;
-	p->onstart  = (void*)klotski_start;
-	p->onstop   = (void*)klotski_stop;
-	p->oncread  = (void*)klotski_cread;
-	p->oncwrite = (void*)klotski_cwrite;
-	p->onsread  = (void*)klotski_sread;
-	p->onswrite = (void*)klotski_swrite;
+	p->onsearch = (void*)klotski_search;
+	p->onmodify = (void*)klotski_modify;
+
+	p->onstart = (void*)klotski_start;
+	p->onstop  = (void*)klotski_stop;
+	p->onread  = (void*)klotski_read;
+	p->onwrite = (void*)klotski_write;
 }

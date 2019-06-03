@@ -196,7 +196,7 @@ say("%d,%d\n",x,y);
 
 
 
-static void ooxx_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void ooxx_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -205,7 +205,7 @@ static void ooxx_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	struct style* sty = (void*)(peer->foot);
 	ooxx_draw(act, pin, win, sty);
 }
-static void ooxx_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void ooxx_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -214,12 +214,6 @@ static void ooxx_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	ooxx_event(act, pin, win, sty, ev, 0);
-}
-static void ooxx_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void ooxx_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
 }
 static void ooxx_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -234,6 +228,16 @@ static void ooxx_start(struct halfrel* self, struct halfrel* peer)
 			data[y][x] = 0;
 		}
 	}
+}
+
+
+
+
+static void ooxx_search(struct actor* act)
+{
+}
+static void ooxx_modify(struct actor* act)
+{
 }
 static void ooxx_delete(struct actor* act)
 {
@@ -257,10 +261,11 @@ void ooxx_register(struct actor* p)
 
 	p->oncreate = (void*)ooxx_create;
 	p->ondelete = (void*)ooxx_delete;
-	p->onstart  = (void*)ooxx_start;
-	p->onstop   = (void*)ooxx_stop;
-	p->oncread  = (void*)ooxx_cread;
-	p->oncwrite = (void*)ooxx_cwrite;
-	p->onsread  = (void*)ooxx_sread;
-	p->onswrite = (void*)ooxx_swrite;
+	p->onsearch = (void*)ooxx_search;
+	p->onmodify = (void*)ooxx_modify;
+
+	p->onstart = (void*)ooxx_start;
+	p->onstop  = (void*)ooxx_stop;
+	p->onread  = (void*)ooxx_read;
+	p->onwrite = (void*)ooxx_write;
 }

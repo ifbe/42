@@ -7,22 +7,26 @@ static u8 buffer[16];
 
 
 
-static void puzzle_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void puzzle_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
-static void puzzle_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void puzzle_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void puzzle_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void puzzle_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void puzzle_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void puzzle_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void puzzle_search(struct actor* act)
+{
+}
+static void puzzle_modify(struct actor* act)
 {
 }
 static void puzzle_delete(struct actor* act)
@@ -47,10 +51,11 @@ void puzzle_register(struct actor* p)
 
 	p->oncreate = (void*)puzzle_create;
 	p->ondelete = (void*)puzzle_delete;
-	p->onstart  = (void*)puzzle_start;
-	p->onstop   = (void*)puzzle_stop;
-	p->oncread  = (void*)puzzle_cread;
-	p->oncwrite = (void*)puzzle_cwrite;
-	p->onsread  = (void*)puzzle_sread;
-	p->onswrite = (void*)puzzle_swrite;
+	p->onsearch = (void*)puzzle_search;
+	p->onmodify = (void*)puzzle_modify;
+
+	p->onstart = (void*)puzzle_start;
+	p->onstop  = (void*)puzzle_stop;
+	p->onread  = (void*)puzzle_read;
+	p->onwrite = (void*)puzzle_write;
 }

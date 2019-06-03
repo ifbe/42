@@ -120,7 +120,7 @@ static void fs_event(
 
 
 
-static void fs_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void fs_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -129,7 +129,7 @@ static void fs_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int le
 	struct style* sty = (void*)(peer->foot);
 	fs_draw(act, pin, win, sty);
 }
-static void fs_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void fs_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -139,16 +139,20 @@ static void fs_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int l
 	struct event* ev = (void*)buf;
 	fs_event(act, pin, win, sty, ev, 0);
 }
-static void fs_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void fs_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void fs_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void fs_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void fs_search(struct actor* act)
+{
+}
+static void fs_modify(struct actor* act)
 {
 }
 static void fs_delete(struct actor* act)
@@ -173,10 +177,11 @@ void fs_register(struct actor* p)
 
 	p->oncreate = (void*)fs_create;
 	p->ondelete = (void*)fs_delete;
-	p->onstart  = (void*)fs_start;
-	p->onstop   = (void*)fs_stop;
-	p->oncread  = (void*)fs_cread;
-	p->oncwrite = (void*)fs_cwrite;
-	p->onsread  = (void*)fs_sread;
-	p->onswrite = (void*)fs_swrite;
+	p->onsearch = (void*)fs_search;
+	p->onmodify = (void*)fs_modify;
+
+	p->onstart = (void*)fs_start;
+	p->onstop  = (void*)fs_stop;
+	p->onread  = (void*)fs_read;
+	p->onwrite = (void*)fs_write;
 }

@@ -148,7 +148,7 @@ static void pegged_draw(
 
 
 
-static void pegged_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void pegged_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -157,13 +157,7 @@ static void pegged_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	pegged_draw(act, pin, win, sty);
 }
-static void pegged_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void pegged_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void pegged_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void pegged_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void pegged_stop(struct halfrel* self, struct halfrel* peer)
@@ -181,6 +175,16 @@ static void pegged_start(struct halfrel* self, struct halfrel* peer)
 			else data[y][x] = 0;
 		}
 	}
+}
+
+
+
+
+static void pegged_search(struct actor* act)
+{
+}
+static void pegged_modify(struct actor* act)
+{
 }
 static void pegged_delete(struct actor* act)
 {
@@ -204,10 +208,11 @@ void pegged_register(struct actor* p)
 
 	p->oncreate = (void*)pegged_create;
 	p->ondelete = (void*)pegged_delete;
-	p->onstart  = (void*)pegged_start;
-	p->onstop   = (void*)pegged_stop;
-	p->oncread  = (void*)pegged_cread;
-	p->oncwrite = (void*)pegged_cwrite;
-	p->onsread  = (void*)pegged_sread;
-	p->onswrite = (void*)pegged_swrite;
+	p->onsearch = (void*)pegged_search;
+	p->onmodify = (void*)pegged_modify;
+
+	p->onstart = (void*)pegged_start;
+	p->onstop  = (void*)pegged_stop;
+	p->onread  = (void*)pegged_read;
+	p->onwrite = (void*)pegged_write;
 }

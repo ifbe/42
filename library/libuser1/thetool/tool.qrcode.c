@@ -169,7 +169,7 @@ static void qrcode_draw(
 
 
 
-static void qrcode_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void qrcode_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -178,13 +178,7 @@ static void qrcode_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	qrcode_draw(act, pin, win, sty);
 }
-static void qrcode_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void qrcode_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void qrcode_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void qrcode_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void qrcode_stop(struct halfrel* self, struct halfrel* peer)
@@ -194,6 +188,16 @@ static void qrcode_start(struct halfrel* self, struct halfrel* peer)
 {
 	slen=49;
 	qrcode_generate("haha",databuf,slen);
+}
+
+
+
+
+static void qrcode_search(struct actor* act)
+{
+}
+static void qrcode_modify(struct actor* act)
+{
 }
 static void qrcode_delete(struct actor* act)
 {
@@ -217,10 +221,11 @@ void qrcode_register(struct actor* p)
 
 	p->oncreate = (void*)qrcode_create;
 	p->ondelete = (void*)qrcode_delete;
+	p->onsearch = (void*)qrcode_search;
+	p->onmodify = (void*)qrcode_modify;
+
 	p->onstart  = (void*)qrcode_start;
 	p->onstop   = (void*)qrcode_stop;
-	p->oncread  = (void*)qrcode_cread;
-	p->oncwrite = (void*)qrcode_cwrite;
-	p->onsread  = (void*)qrcode_sread;
-	p->onswrite = (void*)qrcode_swrite;
+	p->onread  = (void*)qrcode_read;
+	p->onwrite = (void*)qrcode_write;
 }

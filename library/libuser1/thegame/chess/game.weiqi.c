@@ -391,7 +391,7 @@ static void weiqi_event(
 
 
 
-static void weiqi_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void weiqi_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -400,7 +400,7 @@ static void weiqi_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	weiqi_draw(act, pin, win, sty);
 }
-static void weiqi_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void weiqi_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -410,12 +410,6 @@ static void weiqi_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct event* ev = (void*)buf;
 	weiqi_event(act, pin, win, sty, ev, 0);
 }
-static void weiqi_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void weiqi_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void weiqi_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
@@ -423,6 +417,16 @@ static void weiqi_start(struct halfrel* self, struct halfrel* peer)
 {
 	turn = 0;
 	px = py = 0;
+}
+
+
+
+
+static void weiqi_search(struct actor* act)
+{
+}
+static void weiqi_modify(struct actor* act)
+{
 }
 static void weiqi_delete(struct actor* act)
 {
@@ -460,10 +464,11 @@ void weiqi_register(struct actor* p)
 
 	p->oncreate = (void*)weiqi_create;
 	p->ondelete = (void*)weiqi_delete;
-	p->onstart  = (void*)weiqi_start;
-	p->onstop   = (void*)weiqi_stop;
-	p->oncread  = (void*)weiqi_cread;
-	p->oncwrite = (void*)weiqi_cwrite;
-	p->onsread  = (void*)weiqi_sread;
-	p->onswrite = (void*)weiqi_swrite;
+	p->onsearch = (void*)weiqi_search;
+	p->onmodify = (void*)weiqi_modify;
+
+	p->onstart = (void*)weiqi_start;
+	p->onstop  = (void*)weiqi_stop;
+	p->onread  = (void*)weiqi_read;
+	p->onwrite = (void*)weiqi_write;
 }

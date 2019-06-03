@@ -191,7 +191,7 @@ static void browser_data(
 
 
 
-static void browser_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void browser_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -200,7 +200,7 @@ static void browser_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	browser_draw(act, pin, win, sty);
 }
-static void browser_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void browser_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
@@ -210,16 +210,20 @@ static void browser_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	if(len)browser_data(act, pin, buf, len);
 	else browser_event(act, pin, win, sty, ev);
 }
-static void browser_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void browser_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void browser_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void browser_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void browser_search(struct actor* act)
+{
+}
+static void browser_modify(struct actor* act)
 {
 }
 static void browser_delete(struct actor* act)
@@ -252,10 +256,11 @@ void browser_register(struct actor* p)
 
 	p->oncreate = (void*)browser_create;
 	p->ondelete = (void*)browser_delete;
-	p->onstart  = (void*)browser_start;
-	p->onstop   = (void*)browser_stop;
-	p->oncread  = (void*)browser_cread;
-	p->oncwrite = (void*)browser_cwrite;
-	p->onsread  = (void*)browser_sread;
-	p->onswrite = (void*)browser_swrite;
+	p->onsearch = (void*)browser_search;
+	p->onmodify = (void*)browser_modify;
+
+	p->onstart = (void*)browser_start;
+	p->onstop  = (void*)browser_stop;
+	p->onread  = (void*)browser_read;
+	p->onwrite = (void*)browser_write;
 }

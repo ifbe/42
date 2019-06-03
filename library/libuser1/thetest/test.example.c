@@ -126,7 +126,7 @@ static void example_draw(
 
 
 
-static void example_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void example_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -135,19 +135,23 @@ static void example_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	example_draw(act, pin, win, sty);
 }
-static void example_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void example_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void example_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void example_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void example_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void example_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void example_search(struct actor* act)
+{
+}
+static void example_modify(struct actor* act)
 {
 }
 static void example_delete(struct actor* act)
@@ -169,10 +173,11 @@ void example_register(struct actor* p)
 
 	p->oncreate = (void*)example_create;
 	p->ondelete = (void*)example_delete;
-	p->onstart  = (void*)example_start;
-	p->onstop   = (void*)example_stop;
-	p->oncread  = (void*)example_cread;
-	p->oncwrite = (void*)example_cread;
-	p->onsread  = (void*)example_sread;
-	p->onswrite = (void*)example_swrite;
+	p->onsearch = (void*)example_search;
+	p->onmodify = (void*)example_modify;
+
+	p->onstart = (void*)example_start;
+	p->onstop  = (void*)example_stop;
+	p->onread  = (void*)example_read;
+	p->onwrite = (void*)example_read;
 }

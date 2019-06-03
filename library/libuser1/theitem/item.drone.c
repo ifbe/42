@@ -142,7 +142,7 @@ static void drone_draw(
 
 
 
-static void drone_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void drone_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -151,19 +151,23 @@ static void drone_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	drone_draw(act, pin, win, sty);
 }
-static void drone_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void drone_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void drone_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void drone_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void drone_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void drone_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void drone_modify(struct actor* act)
+{
+}
+static void drone_search(struct actor* act)
 {
 }
 static void drone_delete(struct actor* act)
@@ -188,10 +192,11 @@ void drone_register(struct actor* p)
 
 	p->oncreate = (void*)drone_create;
 	p->ondelete = (void*)drone_delete;
-	p->onstart  = (void*)drone_start;
-	p->onstop   = (void*)drone_stop;
-	p->oncread  = (void*)drone_cread;
-	p->oncwrite = (void*)drone_cwrite;
-	p->onsread  = (void*)drone_sread;
-	p->onswrite = (void*)drone_swrite;
+	p->onsearch = (void*)drone_search;
+	p->onmodify = (void*)drone_modify;
+
+	p->onstart = (void*)drone_start;
+	p->onstop  = (void*)drone_stop;
+	p->onread  = (void*)drone_read;
+	p->onwrite = (void*)drone_write;
 }

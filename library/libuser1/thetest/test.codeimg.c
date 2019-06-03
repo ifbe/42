@@ -458,7 +458,7 @@ static void codeimg_event(
 
 
 
-static void codeimg_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void codeimg_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -467,7 +467,7 @@ static void codeimg_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	codeimg_draw(act, pin, win, sty);
 }
-static void codeimg_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void codeimg_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -476,12 +476,6 @@ static void codeimg_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	codeimg_event(act, pin, win, sty, ev, 0);
-}
-static void codeimg_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void codeimg_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
 }
 static void codeimg_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -527,6 +521,16 @@ static void codeimg_start(struct halfrel* self, struct halfrel* peer)
 	src->tex_h[0] = act->height;
 	src->tex_enq[0] = 42;
 }
+
+
+
+
+static void codeimg_search(struct actor* act)
+{
+}
+static void codeimg_modify(struct actor* act)
+{
+}
 static void codeimg_delete(struct actor* act)
 {
 	if(0 == act)return;
@@ -556,10 +560,11 @@ void codeimg_register(struct actor* p)
 
 	p->oncreate = (void*)codeimg_create;
 	p->ondelete = (void*)codeimg_delete;
-	p->onstart  = (void*)codeimg_start;
-	p->onstop   = (void*)codeimg_stop;
-	p->oncread  = (void*)codeimg_cread;
-	p->oncwrite = (void*)codeimg_cwrite;
-	p->onsread  = (void*)codeimg_sread;
-	p->onswrite = (void*)codeimg_swrite;
+	p->onsearch = (void*)codeimg_search;
+	p->onmodify = (void*)codeimg_modify;
+
+	p->onstart = (void*)codeimg_start;
+	p->onstop  = (void*)codeimg_stop;
+	p->onread  = (void*)codeimg_read;
+	p->onwrite = (void*)codeimg_write;
 }

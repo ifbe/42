@@ -237,7 +237,7 @@ static int camman_event(
 
 
 
-static void camman_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void camman_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -246,7 +246,7 @@ static void camman_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	camman_draw(act, pin, win, sty);
 }
-static int camman_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int camman_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -256,34 +256,26 @@ static int camman_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct event* ev = (void*)buf;
 	return camman_event(act, pin, win, sty, ev, 0);
 }
-static void camman_cread(
-	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void camman_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void camman_cwrite(
-	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
-	u8* buf, int len)
+static void camman_start(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void camman_stop(
-	struct actor* leaf, struct style* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+
+
+
+
+static void camman_search(struct actor* act)
 {
 }
-static void camman_start(
-	struct actor* leaf, struct style* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+static void camman_modify(struct actor* act)
 {
 }
-static void camman_delete()
+static void camman_delete(struct actor* act)
 {
 }
-static void camman_create(void* addr)
+static void camman_create(struct actor* act)
 {
 }
 
@@ -297,10 +289,11 @@ void camman_register(struct actor* p)
 
 	p->oncreate = (void*)camman_create;
 	p->ondelete = (void*)camman_delete;
-	p->onstart  = (void*)camman_start;
-	p->onstop   = (void*)camman_stop;
-	p->oncread  = (void*)camman_cread;
-	p->oncwrite = (void*)camman_cwrite;
-	p->onsread  = (void*)camman_sread;
-	p->onswrite = (void*)camman_swrite;
+	p->onsearch = (void*)camman_search;
+	p->onmodify = (void*)camman_modify;
+
+	p->onstart = (void*)camman_start;
+	p->onstop  = (void*)camman_stop;
+	p->onread  = (void*)camman_read;
+	p->onwrite = (void*)camman_write;
 }

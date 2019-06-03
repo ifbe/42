@@ -184,7 +184,7 @@ static void control_event(
 
 
 
-static void control_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void control_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -193,7 +193,7 @@ static void control_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	control_draw(act, pin, win, sty);
 }
-static void control_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void control_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -203,16 +203,20 @@ static void control_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	struct event* ev = (void*)buf;
 	control_event(act, pin, win, sty, ev, 0);
 }
-static void control_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void control_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void control_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void control_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void control_search(struct actor* act)
+{
+}
+static void control_modify(struct actor* act)
 {
 }
 static void control_delete(struct actor* act)
@@ -243,10 +247,11 @@ void control_register(struct actor* p)
 
 	p->oncreate = (void*)control_create;
 	p->ondelete = (void*)control_delete;
-	p->onstart  = (void*)control_start;
-	p->onstop   = (void*)control_stop;
-	p->oncread  = (void*)control_cread;
-	p->oncwrite = (void*)control_cwrite;
-	p->onsread  = (void*)control_sread;
-	p->onswrite = (void*)control_swrite;
+	p->onsearch = (void*)control_search;
+	p->onmodify = (void*)control_modify;
+
+	p->onstart = (void*)control_start;
+	p->onstop  = (void*)control_stop;
+	p->onread  = (void*)control_read;
+	p->onwrite = (void*)control_write;
 }

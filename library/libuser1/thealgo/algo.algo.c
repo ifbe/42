@@ -142,7 +142,7 @@ static void algorithm_event(
 
 
 
-static void algorithm_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void algorithm_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -151,7 +151,7 @@ static void algorithm_sread(struct halfrel* self, struct halfrel* peer, u8* buf,
 	struct style* sty = (void*)(peer->foot);
 	algorithm_draw(act, pin, win, sty);
 }
-static void algorithm_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void algorithm_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -161,16 +161,20 @@ static void algorithm_swrite(struct halfrel* self, struct halfrel* peer, u8* buf
 	struct event* ev = (void*)buf;
 	algorithm_event(act, pin, win, sty, ev, 0);
 }
-static void algorithm_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void algorithm_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void algorithm_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void algorithm_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void algorithm_search(struct actor* act)
+{
+}
+static void algorithm_modify(struct actor* act)
 {
 }
 static void algorithm_delete(struct actor* act)
@@ -195,10 +199,11 @@ void algorithm_register(struct actor* p)
 
 	p->oncreate = (void*)algorithm_create;
 	p->ondelete = (void*)algorithm_delete;
-	p->onstart  = (void*)algorithm_start;
-	p->onstop   = (void*)algorithm_stop;
-	p->oncread  = (void*)algorithm_cread;
-	p->oncwrite = (void*)algorithm_cwrite;
-	p->onsread  = (void*)algorithm_sread;
-	p->onswrite = (void*)algorithm_swrite;
+	p->onsearch = (void*)algorithm_search;
+	p->onmodify = (void*)algorithm_modify;
+
+	p->onstart = (void*)algorithm_start;
+	p->onstop  = (void*)algorithm_stop;
+	p->onread  = (void*)algorithm_read;
+	p->onwrite = (void*)algorithm_write;
 }

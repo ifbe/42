@@ -184,7 +184,7 @@ static void mobius_draw(
 
 
 
-static void mobius_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void mobius_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -193,19 +193,23 @@ static void mobius_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	mobius_draw(act, pin, win, sty);
 }
-static void mobius_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void mobius_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void mobius_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void mobius_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void mobius_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void mobius_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void mobius_search(struct actor* act)
+{
+}
+static void mobius_modify(struct actor* act)
 {
 }
 static void mobius_delete(struct actor* act)
@@ -230,10 +234,11 @@ void mobius_register(struct actor* p)
 
 	p->oncreate = (void*)mobius_create;
 	p->ondelete = (void*)mobius_delete;
-	p->onstart  = (void*)mobius_start;
-	p->onstop   = (void*)mobius_stop;
-	p->oncread  = (void*)mobius_cread;
-	p->oncwrite = (void*)mobius_cwrite;
-	p->onsread  = (void*)mobius_sread;
-	p->onswrite = (void*)mobius_swrite;
+	p->onsearch = (void*)mobius_search;
+	p->onmodify = (void*)mobius_modify;
+
+	p->onstart = (void*)mobius_start;
+	p->onstop  = (void*)mobius_stop;
+	p->onread  = (void*)mobius_read;
+	p->onwrite = (void*)mobius_write;
 }

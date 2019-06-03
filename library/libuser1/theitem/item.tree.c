@@ -217,7 +217,7 @@ static void tree_draw(
 
 
 
-static void tree_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void tree_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -226,19 +226,23 @@ static void tree_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	struct style* sty = (void*)(peer->foot);
 	tree_draw(act, pin, win, sty);
 }
-static void tree_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void tree_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void tree_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void tree_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void tree_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void tree_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void tree_search(struct actor* act)
+{
+}
+static void tree_modify(struct actor* act)
 {
 }
 static void tree_delete(struct actor* act)
@@ -263,10 +267,11 @@ void tree_register(struct actor* p)
 
 	p->oncreate = (void*)tree_create;
 	p->ondelete = (void*)tree_delete;
-	p->onstart  = (void*)tree_start;
-	p->onstop   = (void*)tree_stop;
-	p->oncread  = (void*)tree_cread;
-	p->oncwrite = (void*)tree_cwrite;
-	p->onsread  = (void*)tree_sread;
-	p->onswrite = (void*)tree_swrite;
+	p->onsearch = (void*)tree_search;
+	p->onmodify = (void*)tree_modify;
+
+	p->onstart = (void*)tree_start;
+	p->onstop  = (void*)tree_stop;
+	p->onread  = (void*)tree_read;
+	p->onwrite = (void*)tree_write;
 }

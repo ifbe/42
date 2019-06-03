@@ -127,7 +127,7 @@ static void login_draw(
 
 
 
-static void login_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void login_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -136,19 +136,23 @@ static void login_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	login_draw(act, pin, win, sty);
 }
-static void login_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void login_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void login_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void login_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void login_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void login_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void login_search(struct actor* act)
+{
+}
+static void login_modify(struct actor* act)
 {
 }
 static void login_delete(struct actor* act)
@@ -173,10 +177,11 @@ void login_register(struct actor* p)
 
 	p->oncreate = (void*)login_create;
 	p->ondelete = (void*)login_delete;
-	p->onstart  = (void*)login_start;
-	p->onstop   = (void*)login_stop;
-	p->oncread  = (void*)login_cread;
-	p->oncwrite = (void*)login_cwrite;
-	p->onsread  = (void*)login_sread;
-	p->onswrite = (void*)login_swrite;
+	p->onsearch = (void*)login_search;
+	p->onmodify = (void*)login_modify;
+
+	p->onstart = (void*)login_start;
+	p->onstop  = (void*)login_stop;
+	p->onread  = (void*)login_read;
+	p->onwrite = (void*)login_write;
 }

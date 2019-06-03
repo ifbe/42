@@ -66,6 +66,8 @@ int systemwrite_in(struct object* chip, u8* foot, u8* buf, int len)
 	void* df;
 	struct relation* irel;
 	struct relation* orel;
+	struct halfrel* self;
+	struct halfrel* peer;
 
 	irel = chip->irel0;
 	orel = chip->orel0;
@@ -96,18 +98,11 @@ int systemwrite_in(struct object* chip, u8* foot, u8* buf, int len)
 
 		dc = (void*)(orel->dstchip);
 		df = (void*)(orel->dstfoot);
-		if(_act_ == orel->dsttype)
-		{
-			actor_rootwrite(dc, df, chip, foot, buf, len);
-		}
-		else if(_win_ == orel->dsttype)
-		{
-			arena_rootwrite(dc, df, chip, foot, buf, len);
-		}
-		else if(_art_ == orel->dsttype)
-		{
-			artery_rootwrite(dc, df, chip, foot, buf, len);
-		}
+		self = (void*)&orel->dstchip;
+		peer = (void*)&orel->srcchip;
+		if(_act_ == orel->dsttype)actorwrite(self, peer, buf, len);
+		else if(_win_ == orel->dsttype)arenawrite(self, peer, buf, len);
+		else if(_art_ == orel->dsttype)artery_rootwrite(dc, df, chip, foot, buf, len);
 
 		orel = samesrcnextdst(orel);
 	}

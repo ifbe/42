@@ -116,7 +116,7 @@ static void pwmtool_draw(
 
 
 
-static void pwmtool_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void pwmtool_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -125,19 +125,23 @@ static void pwmtool_sread(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	pwmtool_draw(act, pin, win, sty);
 }
-static void pwmtool_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void pwmtool_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void pwmtool_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void pwmtool_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 }
 static void pwmtool_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void pwmtool_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void pwmtool_search(struct actor* act)
+{
+}
+static void pwmtool_modify(struct actor* act)
 {
 }
 static void pwmtool_delete(struct actor* act)
@@ -165,10 +169,11 @@ void pwmtool_register(struct actor* p)
 
 	p->oncreate = (void*)pwmtool_create;
 	p->ondelete = (void*)pwmtool_delete;
-	p->onstart  = (void*)pwmtool_start;
-	p->onstop   = (void*)pwmtool_stop;
-	p->oncread  = (void*)pwmtool_cread;
-	p->oncwrite = (void*)pwmtool_cwrite;
-	p->onsread  = (void*)pwmtool_sread;
-	p->onswrite = (void*)pwmtool_swrite;
+	p->onsearch = (void*)pwmtool_search;
+	p->onmodify = (void*)pwmtool_modify;
+
+	p->onstart = (void*)pwmtool_start;
+	p->onstop  = (void*)pwmtool_stop;
+	p->onread  = (void*)pwmtool_read;
+	p->onwrite = (void*)pwmtool_write;
 }

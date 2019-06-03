@@ -362,7 +362,7 @@ static int tabbar_event(
 
 
 
-static void tabbar_sread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void tabbar_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -371,7 +371,7 @@ static void tabbar_sread(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	tabbar_draw(act, pin, win, sty);
 }
-static int tabbar_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int tabbar_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -381,19 +381,23 @@ static int tabbar_swrite(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct event* ev = (void*)buf;
 	return tabbar_event(act, pin, win, sty, ev, 0);
 }
-static void tabbar_cread(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
-static void tabbar_cwrite(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
-}
 static void tabbar_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void tabbar_start(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void tabbar_delete()
+
+
+
+
+static void tabbar_search(struct actor* act)
+{
+}
+static void tabbar_modify(struct actor* act)
+{
+}
+static void tabbar_delete(struct actor* act)
 {
 }
 static void tabbar_create(struct actor* act, void* str)
@@ -411,10 +415,11 @@ void tabbar_register(struct actor* p)
 
 	p->oncreate = (void*)tabbar_create;
 	p->ondelete = (void*)tabbar_delete;
-	p->onstart  = (void*)tabbar_start;
-	p->onstop   = (void*)tabbar_stop;
-	p->oncread  = (void*)tabbar_cread;
-	p->oncwrite = (void*)tabbar_cwrite;
-	p->onsread  = (void*)tabbar_sread;
-	p->onswrite = (void*)tabbar_event;
+	p->onsearch = (void*)tabbar_search;
+	p->onmodify = (void*)tabbar_modify;
+
+	p->onstart = (void*)tabbar_start;
+	p->onstop  = (void*)tabbar_stop;
+	p->onread  = (void*)tabbar_read;
+	p->onwrite = (void*)tabbar_write;
 }

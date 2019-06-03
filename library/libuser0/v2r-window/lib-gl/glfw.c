@@ -4,8 +4,8 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "libuser.h"
-int vbonode_sread(struct arena* win, struct style* stack);
-int vbonode_swrite(struct arena* win, struct style* stack, struct event* ev);
+int vbonode_read(struct arena* win, struct style* stack);
+int vbonode_write(struct arena* win, struct style* stack, struct event* ev);
 int arenaevent(struct event* ev);
 //
 int fbodelete(struct arena* win);
@@ -313,7 +313,7 @@ void windowread(struct arena* win)
 		fw = tmp->win;
 		if(0 == fw)return;
 
-		vbonode_sread(win, 0);
+		vbonode_read(win, 0);
 		//say("@@@@@@%llx\n",win);
 
 		glfwMakeContextCurrent(fw);

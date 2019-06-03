@@ -58,11 +58,11 @@ static void joystick_sendevent(void* p, int j)
 
 			ev.why = *(u64*)(p+0);
 			ev.what = joy_left;
-			actor_rootwrite(self, peer, &ev, 0);
+			actorwrite(self, peer, &ev, 0);
 
 			ev.why = *(u64*)(p+8);
 			ev.what = joy_right;
-			actor_rootwrite(self, peer, &ev, 0);
+			actorwrite(self, peer, &ev, 0);
 		}
 
 		rel = samesrcnextdst(rel);
