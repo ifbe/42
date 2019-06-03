@@ -167,14 +167,6 @@ int systemstart()
 
 
 
-int systemsearch()
-{
-	return 0;
-}
-int systemmodify()
-{
-	return 0;
-}
 int systemdelete(void* addr)
 {
 	struct object* o;
@@ -341,6 +333,42 @@ void* systemcreate(u64 type, void* argstr)
 success:
 	return &obj[fd];
 }
+void* systemmodify(int argc, char** argv)
+{
+	int j;
+	u64 name = 0;
+	u8* tmp = (u8*)&name;
+	if(argc < 2)return 0;
+//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+	if(0 == ncmp(argv[1], "create", 6))
+	{
+		for(j=0;j<8;j++)
+		{
+			if(argv[2][j] <= 0x20)break;
+			tmp[j] = argv[2][j];
+		}
+		say("%llx,%llx\n",name, argv[3]);
+		arterycreate(name, argv[3]);
+	}
+	return 0;
+}
+void* systemsearch(u8* buf, int len)
+{
+	int j,k=0;
+	struct object* tmp;
+	for(j=0;j<0x1000;j++)
+	{
+		tmp = &obj[j];
+		if(0 == tmp->type)continue;
+
+		k++;
+		say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
+			&tmp->tier, &tmp->type, &tmp->fmt, &tmp->name);
+	}
+
+	if(0 == k)say("empth system\n");
+	return 0;
+}
 
 
 
@@ -369,50 +397,6 @@ int systemevent(struct event* ev)
 	if(ret <= 0)return 0;
 
 	return systemwrite_in(&obj[where], tmp, ppp, ret);
-}
-void* systemcommand(int argc, char** argv)
-{
-	int j;
-	u64 name = 0;
-	u8* tmp = (u8*)&name;
-	if(argc < 2)return 0;
-//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
-	if(0 == ncmp(argv[1], "create", 6))
-	{
-		for(j=0;j<8;j++)
-		{
-			if(argv[2][j] <= 0x20)break;
-			tmp[j] = argv[2][j];
-		}
-		say("%llx,%llx\n",name, argv[3]);
-		arterycreate(name, argv[3]);
-	}
-	return 0;
-}
-
-
-
-
-int systemread_all()
-{
-	return 0;
-}
-void* systemlist(u8* buf, int len)
-{
-	int j,k=0;
-	struct object* tmp;
-	for(j=0;j<0x1000;j++)
-	{
-		tmp = &obj[j];
-		if(0 == tmp->type)continue;
-
-		k++;
-		say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-			&tmp->tier, &tmp->type, &tmp->fmt, &tmp->name);
-	}
-
-	if(0 == k)say("empth system\n");
-	return 0;
 }
 void freesystem()
 {

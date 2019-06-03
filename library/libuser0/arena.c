@@ -266,14 +266,6 @@ int arenastart(struct arena* twig, void* tf, struct arena* root, void* rf)
 
 
 
-int arenasearch(struct arena* win, void* buf)
-{
-	return 0;
-}
-int arenamodify(struct arena* win, void* buf)
-{
-	return 0;
-}
 int arenadelete(struct arena* win)
 {
 	if(win == 0)return 0;
@@ -496,6 +488,67 @@ void* arenacreate(u64 type, void* addr)
 
 	return 0;
 }
+void* arenamodify(int argc, char** argv)
+{
+	int j;
+	u64 name = 0;
+	u8* tmp = (u8*)&name;
+	if(argc < 2)return 0;
+//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
+	if(0 == ncmp(argv[1], "create", 6))
+	{
+		for(j=0;j<8;j++)
+		{
+			if(argv[2][j] <= 0x20)break;
+			tmp[j] = argv[2][j];
+		}
+		say("%llx,%llx\n",name, argv[3]);
+		arenacreate(name, argv[3]);
+	}
+
+	return 0;
+}
+void* arenasearch(u8* buf, int len)
+{
+	int j,k;
+	u8* p;
+	struct arena* win;
+	if(0 == buf)
+	{
+		for(j=0;j<0x100;j++)
+		{
+			win = &arena[j];
+			if(0 == win->type)break;
+			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
+				&win->tier, &win->type, &win->fmt, &win->vfmt);
+		}
+		if(0 == j)say("empty arena\n");
+	}
+	else
+	{
+/*
+		for(j=0;j<len;j++){if('@' == buf[j])break;}
+
+		j = buf[j+1]-0x30;
+		if(j >= 10)j = 0;
+
+		if(0 == arena[j].type)return 0;
+		return &arena[j];
+*/
+		for(j=0;j<0x100;j++)
+		{
+			if(0 == arena[j].fmt)break;
+			p = (void*)(&arena[j].fmt);
+
+			for(k=0;k<8;k++)
+			{
+				if((0 == p[k])|(0x20 >= buf[k]))return &arena[j];
+				if(buf[k] != p[k])break;
+			}
+		}
+	}
+	return 0;
+}
 
 
 
@@ -543,30 +596,6 @@ int arenaevent(struct event* e)
 	}
 	return 0;
 }
-void* arenacommand(int argc, char** argv)
-{
-	int j;
-	u64 name = 0;
-	u8* tmp = (u8*)&name;
-	if(argc < 2)return 0;
-//say("%s,%s,%s,%s\n",argv[0],argv[1],argv[2],argv[3]);
-	if(0 == ncmp(argv[1], "create", 6))
-	{
-		for(j=0;j<8;j++)
-		{
-			if(argv[2][j] <= 0x20)break;
-			tmp[j] = argv[2][j];
-		}
-		say("%llx,%llx\n",name, argv[3]);
-		arenacreate(name, argv[3]);
-	}
-
-	return 0;
-}
-
-
-
-
 int arenaread_all()
 {
 	int j;
@@ -582,51 +611,6 @@ int arenaread_all()
 	}
 	return 0;
 }
-void* arenalist(u8* buf, int len)
-{
-	int j,k;
-	u8* p;
-	struct arena* win;
-	if(0 == buf)
-	{
-		for(j=0;j<0x100;j++)
-		{
-			win = &arena[j];
-			if(0 == win->type)break;
-			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-				&win->tier, &win->type, &win->fmt, &win->vfmt);
-		}
-		if(0 == j)say("empty arena\n");
-	}
-	else
-	{
-/*
-		for(j=0;j<len;j++){if('@' == buf[j])break;}
-
-		j = buf[j+1]-0x30;
-		if(j >= 10)j = 0;
-
-		if(0 == arena[j].type)return 0;
-		return &arena[j];
-*/
-		for(j=0;j<0x100;j++)
-		{
-			if(0 == arena[j].fmt)break;
-			p = (void*)(&arena[j].fmt);
-
-			for(k=0;k<8;k++)
-			{
-				if((0 == p[k])|(0x20 >= buf[k]))return &arena[j];
-				if(buf[k] != p[k])break;
-			}
-		}
-	}
-	return 0;
-}
-
-
-
-
 void freearena()
 {
 	//say("[c,f):freeing arena\n");

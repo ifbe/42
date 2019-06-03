@@ -8,27 +8,19 @@ static struct device* dev;
 
 
 
-int device_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+int deviceread(void* self, void* peer, void* buf, int len)
 {
 	return 0;
 }
-int device_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+int devicewrite(void* self, void* peer, void* buf, int len)
 {
 	return 0;
 }
-int device_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+int devicestop(void* self, void* peer, void* buf, int len)
 {
 	return 0;
 }
-int device_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	return 0;
-}
-int devicestop()
-{
-	return 0;
-}
-int devicestart()
+int devicestart(void* self, void* peer, void* buf, int len)
 {
 	return 0;
 }
@@ -36,14 +28,6 @@ int devicestart()
 
 
 
-int devicesearch()
-{
-	return 0;
-}
-int devicemodify()
-{
-	return 0;
-}
 int devicedelete()
 {
 	return 0;
@@ -61,19 +45,7 @@ void* devicecreate(u64 type, void* name)
 	}
 	return 0;
 }
-
-
-
-
-
-
-
-
-int deviceevent(void* ev)
-{
-	return 0;
-}
-void* devicecommand(int argc, char** argv)
+int devicemodify(int argc, char** argv)
 {
 	int j;
 	u64 name = 0;
@@ -92,11 +64,7 @@ void* devicecommand(int argc, char** argv)
 	}
 	return 0;
 }
-int deviceread_all()
-{
-	return 0;
-}
-void* devicelist(u8* buf)
+int devicesearch(u8* buf, int len)
 {
 	int j;
 	for(j=0;j<64;j++)
@@ -104,6 +72,14 @@ void* devicelist(u8* buf)
 		if(0 == dev[j].type)continue;
 		say("[%03x]: %.8s\n", j, &dev[j].type);
 	}
+	return 0;
+}
+
+
+
+
+int deviceevent(void* ev)
+{
 	return 0;
 }
 void freedevice()

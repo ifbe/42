@@ -38,7 +38,7 @@ int jsonnode_rootwrite(struct arena* win, void* wf, void* sc, void* sf, void* bu
 		rel = samesrcnextdst(rel);
 	}
 
-	actorread_all(win);
+	//actorread_all(win);
 	artery_leafwrite(sc, sf, win, wf, win->buf, win->len);
 	return 0;
 }

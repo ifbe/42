@@ -193,14 +193,6 @@ int actorstart(struct halfrel* self, struct halfrel* peer)
 
 
 
-int actorsearch(struct arena* win, void* buf)
-{
-	return 0;
-}
-int actormodify(struct arena* win, void* buf)
-{
-	return 0;
-}
 int actordelete(struct actor* act)
 {
 	if(0 == act)return 0;
@@ -276,46 +268,7 @@ void* actorcreate(u64 type, void* buf)
 	else if(_copy_ == act->type)act->type = _COPY_;
 	return act;
 }
-
-
-
-
-int actorevent(struct event* ev)
-{/*
-	int ret;
-	struct arena* win = (void*)(ev->where);
-
-	if(_drag_ == ev->what)
-	{
-		say("%s\n", (void*)(ev->why));
-		return 0;
-	}
-
-	//vkbd
-	ret = vkbd_write(win, 0, ev);
-	if(ret)goto theend;
-
-	//special
-	ret = actorinput_special(win, 0, ev);
-	if(ret)goto theend;
-
-	//temp
-	ret = menu_write(win, 0, ev);
-	if(ret)goto theend;
-
-	//fore
-	ret = fg3d_write(win, 0, ev);
-	if(ret)goto theend;
-
-	//back
-	ret = bg3d_write(win, 0, ev);
-	if(ret)goto theend;
-
-theend:
-	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
-*/	return 0;
-}
-void* actorcommand(int argc, char** argv)
+void* actormodify(int argc, char** argv)
 {
 	int j;
 	u64 name = 0;
@@ -335,53 +288,7 @@ void* actorcommand(int argc, char** argv)
 
 	return 0;
 }
-
-
-
-
-int actorread_all(struct arena* win)
-{/*
-	struct relation* orel;
-	struct actor* act;
-	struct style* sty;
-	struct pinid* pin;
-	if(_cli_ == win->fmt)return 0;
-
-	//bg
-	preprocess(win);
-
-	if(	(_json_ == win->fmt) |
-		(_html_ == win->fmt) )
-	{
-		sty = 0;
-		orel = win->orel0;
-		while(1)
-		{
-			if(orel == 0)break;
-
-			if(_act_ == orel->dsttype)
-			{
-				act = (void*)(orel->dstchip);
-				pin = (void*)(orel->dstfoot);
-				sty = (void*)(orel->srcfoot);
-				act->onread(win, sty, act, pin);
-			}
-
-			orel = samesrcnextdst(orel);
-		}
-	}
-	else
-	{
-		//foreground
-		fg3d_read(0, 0, win, 0);
-	}
-
-	//fg
-	postprocess(win);
-*/
-	return 0;
-}
-void* actorlist(u8* buf, int len)
+void* actorsearch(u8* buf, int len)
 {
 	int j,k;
 	u8* p;
@@ -417,6 +324,14 @@ void* actorlist(u8* buf, int len)
 
 
 
+int actorread_all(struct actor* act)
+{
+	return 0;
+}
+int actorevent(struct event* ev)
+{
+	return 0;
+}
 void freeactor()
 {
 	//say("[c,f):deleteing actor\n");

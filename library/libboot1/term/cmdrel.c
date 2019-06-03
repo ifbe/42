@@ -1,6 +1,6 @@
 #include "libboot.h"
-void* arenalist(u8* buf, int len);
-void* actorlist(u8* buf, int len);
+void* arenasearch(u8* buf, int len);
+void* actorsearch(u8* buf, int len);
 int arenaactor(void* root, void* twig, void* leaf, void* temp);
 //
 int ncmp(void*, void*, int);
@@ -26,8 +26,8 @@ void relation(u8* buf, int len)
 
 	if(0 == ncmp(argv[1], "add", 3))
 	{
-		win = arenalist(argv[2], 0);
-		act = actorlist(argv[3], 0);
+		win = arenasearch(argv[2], 0);
+		act = actorsearch(argv[3], 0);
 		arenaactor(win, 0, act, 0);
 		return;
 	}

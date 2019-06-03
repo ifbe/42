@@ -9,27 +9,19 @@ static struct driver* dri;
 
 
 
-int driver_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+int driverread(void* self, void* peer, void* buf, int len)
 {
 	return 0;
 }
-int driver_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+int driverwrite(void* self, void* peer, void* buf, int len)
 {
 	return 0;
 }
-int driver_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+int driverstop(void* self, void* peer, void* buf, int len)
 {
 	return 0;
 }
-int driver_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	return 0;
-}
-int driverstop()
-{
-	return 0;
-}
-int driverstart()
+int driverstart(void* self, void* peer, void* buf, int len)
 {
 	return 0;
 }
@@ -37,14 +29,6 @@ int driverstart()
 
 
 
-int driversearch()
-{
-	return 0;
-}
-int drivermodify()
-{
-	return 0;
-}
 int driverdelete()
 {
 	return 0;
@@ -62,15 +46,7 @@ void* drivercreate(u64 type, void* name)
 	}
 	return 0;
 }
-
-
-
-
-int driverevent(void* ev)
-{
-	return 0;
-}
-void* drivercommand(int argc, char** argv)
+int drivermodify(int argc, char** argv)
 {
 	int j;
 	u64 name = 0;
@@ -89,11 +65,7 @@ void* drivercommand(int argc, char** argv)
 	}
 	return 0;
 }
-int driverread_all()
-{
-	return 0;
-}
-void* driverlist(u8* buf, int len)
+int driversearch(u8* buf, int len)
 {
 	int j;
 	for(j=0;j<64;j++)
@@ -101,6 +73,14 @@ void* driverlist(u8* buf, int len)
 		if(0 == dri[j].type)continue;
 		say("[%03x]: %.8s\n", j, &dri[j].type);
 	}
+	return 0;
+}
+
+
+
+
+int driverevent(void* ev)
+{
 	return 0;
 }
 void freedriver()

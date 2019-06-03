@@ -172,7 +172,7 @@ int htmlnode_rootread(struct arena* win, void* wf, void* sc, void* sf, void* buf
 	int l1,l2;
 	struct str** ctx;
 	//say("@htmlnode_rootread.readall\n");
-	actorread_all(win);
+	//actorread_all(win);
 
 	ctx = win->ctx;
 	l1 = ctx[1]->len;

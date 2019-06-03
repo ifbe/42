@@ -1,16 +1,16 @@
 #include "libboot.h"
-void* devicelist(void*, int);
-void* driverlist(void*, int);
-void* systemlist(void*, int);
-void* arterylist(void*, int);
-void* arenalist(void*, int);
-void* actorlist(void*, int);
-void* devicecommand(int argc, void* argv);
-void* drivercommand(int argc, void* argv);
-void* systemcommand(int argc, void* argv);
-void* arterycommand(int argc, void* argv);
-void* arenacommand(int argc, void* argv);
-void* actorcommand(int argc, void* argv);
+void* devicesearch(void*, int);
+void* driversearch(void*, int);
+void* systemsearch(void*, int);
+void* arterysearch(void*, int);
+void* arenasearch(void*, int);
+void* actorsearch(void*, int);
+void* devicemodify(int argc, void* argv);
+void* drivermodify(int argc, void* argv);
+void* systemmodify(int argc, void* argv);
+void* arterymodify(int argc, void* argv);
+void* arenamodify(int argc, void* argv);
+void* actormodify(int argc, void* argv);
 //
 int event(void*, int);
 int node(void*, int);
@@ -32,27 +32,27 @@ void term_ls(u8* buf, int len)
 	if(buf[3] <= 0x20)
 	{
 		say("----------------\n");
-		devicelist(0, 0);
+		devicesearch(0, 0);
 		say("----------------\n");
-		driverlist(0, 0);
+		driversearch(0, 0);
 		say("----------------\n");
-		systemlist(0, 0);
+		systemsearch(0, 0);
 		say("----------------\n");
-		arterylist(0, 0);
+		arterysearch(0, 0);
 		say("----------------\n");
-		arenalist(0, 0);
+		arenasearch(0, 0);
 		say("----------------\n");
-		actorlist(0, 0);
+		actorsearch(0, 0);
 		return;
 	}
 
 	buf += 3;
-	if(0 == ncmp(buf, "device", 6))devicelist(0, 0);
-	else if(0 == ncmp(buf, "driver", 6))driverlist(0, 0);
-	else if(0 == ncmp(buf, "system", 6))systemlist(0, 0);
-	else if(0 == ncmp(buf, "artery", 6))arterylist(0, 0);
-	else if(0 == ncmp(buf, "arena", 5))arenalist(0, 0);
-	else if(0 == ncmp(buf, "actor", 5))actorlist(0, 0);
+	if(0 == ncmp(buf, "device", 6))devicesearch(0, 0);
+	else if(0 == ncmp(buf, "driver", 6))driversearch(0, 0);
+	else if(0 == ncmp(buf, "system", 6))systemsearch(0, 0);
+	else if(0 == ncmp(buf, "artery", 6))arterysearch(0, 0);
+	else if(0 == ncmp(buf, "arena", 5))arenasearch(0, 0);
+	else if(0 == ncmp(buf, "actor", 5))actorsearch(0, 0);
 	else say("ls(%s)\n", buf);
 }
 
@@ -99,12 +99,12 @@ int termwrite(u8* buf, int len)
 	{
 		scene(buf, len);
 	}
-	else if(0 == ncmp(buf, "device", 6))devicecommand(j, argv);
-	else if(0 == ncmp(buf, "driver", 6))drivercommand(j, argv);
-	else if(0 == ncmp(buf, "system", 6))systemcommand(j, argv);
-	else if(0 == ncmp(buf, "artery", 6))arterycommand(j, argv);
-	else if(0 == ncmp(buf, "arena", 5))arenacommand(j, argv);
-	else if(0 == ncmp(buf, "actor", 5))actorcommand(j, argv);
+	else if(0 == ncmp(buf, "device", 6))devicemodify(j, argv);
+	else if(0 == ncmp(buf, "driver", 6))drivermodify(j, argv);
+	else if(0 == ncmp(buf, "system", 6))systemmodify(j, argv);
+	else if(0 == ncmp(buf, "artery", 6))arterymodify(j, argv);
+	else if(0 == ncmp(buf, "arena", 5))arenamodify(j, argv);
+	else if(0 == ncmp(buf, "actor", 5))actormodify(j, argv);
 
 finish:
 	term_prompt();

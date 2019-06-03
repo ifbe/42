@@ -228,14 +228,6 @@ int arterystart()
 
 
 
-int arterysearch()
-{
-	return 0;
-}
-int arterymodify()
-{
-	return 0;
-}
 int arterydelete(void* ele)
 {
 	return 0;
@@ -655,15 +647,7 @@ void* arterycreate(u64 type, void* argstr)
 	}
 	return 0;
 }
-
-
-
-
-int arteryevent(struct event* ev)
-{
-	return 0;
-}
-void* arterycommand(int argc, char** argv)
+void* arterymodify(int argc, char** argv)
 {
 	int j;
 	u64 name = 0;
@@ -682,15 +666,7 @@ void* arterycommand(int argc, char** argv)
 	}
 	return 0;
 }
-
-
-
-
-int arteryread_all()
-{
-	return 0;
-}
-void* arterylist(u8* buf, int len)
+void* arterysearch(u8* buf, int len)
 {
 	int j,k=0;
 	struct element* art;
@@ -711,6 +687,10 @@ void* arterylist(u8* buf, int len)
 
 
 
+int arteryevent(struct event* ev)
+{
+	return 0;
+}
 void freeartery()
 {
 	//say("[8,c):freeing artery\n");

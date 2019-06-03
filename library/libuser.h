@@ -1080,7 +1080,6 @@ u64 timeread();
 #ifdef __cplusplus
 extern "C" {
 #endif
-int actorread_all(struct arena*);
 int actorevent(struct event*);
 int arenaevent(struct event*);
 
