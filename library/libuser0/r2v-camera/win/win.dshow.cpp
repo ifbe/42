@@ -99,7 +99,7 @@ public:
 			{
 				struct halfrel* self = (struct halfrel*)&orel->dstchip;
 				struct halfrel* peer = (struct halfrel*)&orel->srcchip;
-				actor_rootwrite(self, peer, obj[enq].buf, 640*480*3/2);
+				actorwrite(self, peer, obj[enq].buf, 640*480*3/2);
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}

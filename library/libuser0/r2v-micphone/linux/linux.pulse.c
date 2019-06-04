@@ -60,7 +60,7 @@ void* soundlistener(struct arena* win)
 			{
 				struct halfrel* self = (void*)&orel->dstchip;
 				struct halfrel* peer = (void*)&orel->srcchip;
-				actor_rootwrite(self, peer, ibuf + (1024*2*icur), 1024*2);
+				actorwrite(self, peer, ibuf + (1024*2*icur), 1024*2);
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}

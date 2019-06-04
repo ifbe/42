@@ -39,7 +39,7 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 			{
 				struct halfrel* self = (struct halfrel*)&orel->dstchip;
 				struct halfrel* peer = (struct halfrel*)&orel->srcchip;
-				actor_rootwrite(self, peer, ibuf + (1024*2*icur), 1024*2);
+				actorwrite(self, peer, ibuf + (1024*2*icur), 1024*2);
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}

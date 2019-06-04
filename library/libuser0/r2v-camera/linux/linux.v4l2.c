@@ -182,7 +182,7 @@ void* visionlistener(struct arena* win)
 			{
 				struct halfrel* self = (void*)&orel->dstchip;
 				struct halfrel* peer = (void*)&orel->srcchip;
-				actor_rootwrite(self, peer, info[cur].buf, 640*480*3/2);
+				actorwrite(self, peer, info[cur].buf, 640*480*3/2);
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}
