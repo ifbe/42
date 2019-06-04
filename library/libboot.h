@@ -86,10 +86,14 @@ struct item
 
 
 
-int actorread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int actorwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int arenaread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int arenawrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int actorread(  struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int actorwrite( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arenaread(  struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arenawrite( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arteryread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arterywrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int systemread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int systemwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
 //
 int artery_leafread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int artery_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);

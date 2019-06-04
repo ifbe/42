@@ -1082,30 +1082,32 @@ extern "C" {
 #endif
 int actorevent(struct event*);
 int arenaevent(struct event*);
-
-int actorread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int actorwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int actordelete(struct actor*);
-void* actorcreate(u64, void*);
-//
-int arenaread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int arenawrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int arenadelete(struct arena*);
-void* arenacreate(u64, void*);
-//
-int artery_leafread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int artery_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int artery_rootread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arterydelete(void*);
-void* arterycreate(u64, void*);
-//
 int system_leafread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int system_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int system_rootread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int system_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int artery_leafread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int artery_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int artery_rootread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+//
+int actordelete(struct actor*);
+void* actorcreate(u64, void*);
+int arenadelete(struct arena*);
+void* arenacreate(u64, void*);
+int arterydelete(void*);
+void* arterycreate(u64, void*);
 int systemdelete(void*);
 void* systemcreate(u64, void*);
+//
+int actorread(  struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int actorwrite( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arenaread(  struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arenawrite( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arteryread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arterywrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int systemread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int systemwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
 //
 int nodetree_rootread(void*, void*, void*, int);
 int nodetree_rootwrite(void*, void*, void*, int);

@@ -12,10 +12,12 @@ static void* matchtable[10];
 
 
 
-static void joystick_sendevent(void* p, int j)
+static void joystick_sendevent(struct xyzwpair* pair, int j)
 {
+	u8 buf[4];
 	struct event ev;
 	struct arena* joy;
+
 	struct relation* rel;
 	struct halfrel* self;
 	struct halfrel* peer;
@@ -25,11 +27,11 @@ static void joystick_sendevent(void* p, int j)
 
 	joy = matchtable[j];
 	if(0 == joy){
-		ev.why = *(u64*)(p+0);
+		ev.why = *(u64*)(&pair->x0);
 		ev.what = joy_left;
 		arenaevent(&ev);
 
-		ev.why = *(u64*)(p+8);
+		ev.why = *(u64*)(&pair->xn);
 		ev.what = joy_right;
 		arenaevent(&ev);
 
@@ -38,11 +40,11 @@ static void joystick_sendevent(void* p, int j)
 
 	rel = joy->orel0;
 	if(0 == rel){
-		ev.why = *(u64*)(p+0);
+		ev.why = *(u64*)(&pair->x0);
 		ev.what = joy_left;
 		printmemory(&ev, 16);
 
-		ev.why = *(u64*)(p+8);
+		ev.why = *(u64*)(&pair->xn);
 		ev.what = joy_right;
 		printmemory(&ev, 16);
 
@@ -52,15 +54,29 @@ static void joystick_sendevent(void* p, int j)
 	while(1){
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype){
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
+		self = (void*)&rel->dstchip;
+		peer = (void*)&rel->srcchip;
+		if(_fd_ == rel->dsttype)
+		{
+			buf[0] = '.';
+			buf[1] = '\n';
 
-			ev.why = *(u64*)(p+0);
+			if(pair->w0 & joyl_left)buf[0] = 'a';
+			if(pair->w0 & joyl_right)buf[0] = 'd';
+			if(pair->w0 & joyl_down)buf[0] = 's';
+			if(pair->w0 & joyl_up)buf[0] = 'w';
+			if(pair->w0 & joyl_trigger)buf[0] = ' ';
+			if(pair->w0 & joyl_bumper)buf[0] = '.';
+
+			systemwrite(self, peer, buf, 2);
+		}
+		else if(_act_ == rel->dsttype)
+		{
+			ev.why = *(u64*)(&pair->x0);
 			ev.what = joy_left;
 			actorwrite(self, peer, &ev, 0);
 
-			ev.why = *(u64*)(p+8);
+			ev.why = *(u64*)(&pair->xn);
 			ev.what = joy_right;
 			actorwrite(self, peer, &ev, 0);
 		}

@@ -1,6 +1,7 @@
 <system>
 udpport{
 fmt:udp
+url:127.0.0.1:2222
 }
 </system>
 
@@ -13,5 +14,5 @@ fmt:joy
 
 
 <relation>
-(player1, 0, win, con) -> (udpport, 0, act, con)
+(player1, 0, win, dbg) -> (udpport, 0, fd, 0)
 </relation>

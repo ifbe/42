@@ -150,11 +150,29 @@ int system_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	return 0;
 }
-int systemstop()
+
+
+
+
+int systemread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	return 0;
 }
-int systemstart()
+int systemwrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+{
+	int fd;
+	struct object* oo;
+	//say("@systemwrite:%llx\n", self);
+
+	oo = (void*)(self->chip);
+	fd = ((void*)oo - (void*)obj) / sizeof(struct object);
+	return writesocket(fd, 0, buf, len);
+}
+int systemstop(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int systemstart(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

@@ -177,14 +177,14 @@ struct driver
 
 
 
-int actorread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int actorwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int arenaread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int arenawrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int arteryread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int arterywrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int systemread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int systemwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
+int actorread(  struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int actorwrite( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arenaread(  struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arenawrite( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arteryread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arterywrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int systemread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int systemwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
 //
 void printmemory(void*, int);
 void say(void*, ...);
