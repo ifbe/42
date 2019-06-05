@@ -1,6 +1,5 @@
 #include "libuser.h"
 void* allocarena();
-int actorstart(void*, void*);
 //
 int preprocess(void*);
 int postprocess(void*);

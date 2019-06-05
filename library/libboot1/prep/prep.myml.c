@@ -3,7 +3,6 @@ int openreadclose(void*,int,void*,int);
 int openwriteclose(void*,int,void*,int);
 void* allocstyle();
 void* allocpinid();
-int actorstart(void*, void*);
 
 
 
@@ -148,7 +147,8 @@ void role_test_relation(u8* buf, int len,
 						(void*)dst.chip, (void*)dst.foot, dst.type, dst.flag,
 						(void*)src.chip, (void*)src.foot, src.type, src.flag
 					);
-					if(_act_ == rel->dsttype)actorstart(&rel->dstchip, &rel->srcchip);
+					relationstart((void*)&rel->dstchip, (void*)&rel->srcchip);
+					relationstart((void*)&rel->srcchip, (void*)&rel->dstchip);
 				}
 
 				wirellll = wirerrrr = -1;

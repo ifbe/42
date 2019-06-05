@@ -39,49 +39,6 @@ void relation_debug(struct relation* rel)
 	}
 	say("\n");
 }
-void relation_choose(struct item* item, struct relation* rel)
-{
-	struct relation* prev;
-	struct relation* next;
-	struct relation* tmp;
-
-	//no next: do nothing
-	if(0 == rel->samesrcnextdst)next = 0;
-	else next = (void*)wirebuf + rel->samesrcnextdst;
-	if(0 == next)return;
-
-	//prev
-	if(0 == rel->samesrcprevdst)prev = 0;
-	else prev = (void*)wirebuf + rel->samesrcprevdst;
-	if(prev)
-	{
-		prev->samesrcnextdst = (void*)next - (void*)wirebuf;
-		next->samesrcprevdst = (void*)prev - (void*)wirebuf;
-
-		rel->samesrcprevdst = (void*)(item->oreln) - (void*)wirebuf;
-		rel->samesrcnextdst = 0;
-
-		tmp = item->oreln;
-		tmp->samesrcnextdst = (void*)rel - (void*)wirebuf;
-
-		item->oreln = rel;
-		return;
-	}
-	else
-	{
-		next->samesrcprevdst = 0;
-
-		rel->samesrcprevdst = (void*)(item->oreln) - (void*)wirebuf;
-		rel->samesrcnextdst = 0;
-
-		tmp = item->oreln;
-		tmp->samesrcnextdst = (void*)rel - (void*)wirebuf;
-
-		item->orel0 = next;
-		item->oreln = rel;
-		return;
-	}
-}
 void relation_recycle(struct relation* rel)
 {
 	struct relation* temp;
@@ -185,21 +142,60 @@ void* samesrcnextdst(struct relation* rel)
 	if(rel->samesrcnextdst == 0)return 0;
 	return (void*)wirebuf + (rel->samesrcnextdst);
 }
-void* relationread(int off)
+
+
+
+
+int relationread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
-	if(off == 0)return 0;
-	return (void*)wirebuf + off;
-}
-void* relationwrite()
-{
+	switch(self->type){
+		case _fd_: return systemread(self, peer, buf, len);
+		case _art_:return arteryread(self, peer, buf, len);
+		case _win_:return  arenaread(self, peer, buf, len);
+		case _act_:return  actorread(self, peer, buf, len);
+	}
 	return 0;
 }
-void relationdelete(struct relation* this)
+int relationwrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+{
+	switch(self->type){
+		case _fd_: return systemwrite(self, peer, buf, len);
+		case _art_:return arterywrite(self, peer, buf, len);
+		case _win_:return  arenawrite(self, peer, buf, len);
+		case _act_:return  actorwrite(self, peer, buf, len);
+	}
+	return 0;
+}
+int relationstop(struct halfrel* self, struct halfrel* peer)
+{
+	switch(self->type){
+		case _fd_: return systemstop(self, peer);
+		case _art_:return arterystop(self, peer);
+		case _win_:return  arenastop(self, peer);
+		case _act_:return  actorstop(self, peer);
+	}
+	return 0;
+}
+int relationstart(struct halfrel* self, struct halfrel* peer)
+{
+	switch(self->type){
+		case _fd_: return systemstart(self, peer);
+		case _art_:return arterystart(self, peer);
+		case _win_:return  arenastart(self, peer);
+		case _act_:return  actorstart(self, peer);
+	}
+	return 0;
+}
+
+
+
+
+int relationdelete(struct relation* this)
 {
 	struct item* uchip;
 	struct relation* prev;
 	struct relation* next;
-	if(this == 0)return;
+	if(this == 0)return 0;
 
 	if(this->samedstprevsrc == 0)prev = 0;
 	else prev = (void*)wirebuf + (this->samedstprevsrc);
@@ -221,6 +217,7 @@ void relationdelete(struct relation* this)
 	if(this == uchip->irel0)uchip->irel0 = next;
 
 	relation_recycle(this);
+	return 0;
 }
 void* relationcreate(
 	void* dc, void* df, u32 dctype, u32 dftype,
@@ -261,4 +258,73 @@ void* relationcreate(
 	if(0 == h2->orel0)h2->orel0 = ww;
 
 	return ww;
+}
+void relation_choose(struct item* item, struct relation* rel)
+{
+	struct relation* prev;
+	struct relation* next;
+	struct relation* tmp;
+
+	//no next: do nothing
+	if(0 == rel->samesrcnextdst)next = 0;
+	else next = (void*)wirebuf + rel->samesrcnextdst;
+	if(0 == next)return;
+
+	//prev
+	if(0 == rel->samesrcprevdst)prev = 0;
+	else prev = (void*)wirebuf + rel->samesrcprevdst;
+	if(prev)
+	{
+		prev->samesrcnextdst = (void*)next - (void*)wirebuf;
+		next->samesrcprevdst = (void*)prev - (void*)wirebuf;
+
+		rel->samesrcprevdst = (void*)(item->oreln) - (void*)wirebuf;
+		rel->samesrcnextdst = 0;
+
+		tmp = item->oreln;
+		tmp->samesrcnextdst = (void*)rel - (void*)wirebuf;
+
+		item->oreln = rel;
+		return;
+	}
+	else
+	{
+		next->samesrcprevdst = 0;
+
+		rel->samesrcprevdst = (void*)(item->oreln) - (void*)wirebuf;
+		rel->samesrcnextdst = 0;
+
+		tmp = item->oreln;
+		tmp->samesrcnextdst = (void*)rel - (void*)wirebuf;
+
+		item->orel0 = next;
+		item->oreln = rel;
+		return;
+	}
+}
+void* relation_search(struct item* item, u32 foottype)
+{
+	struct relation* rel;
+
+	rel = item->orel0;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(foottype == rel->dstflag)return rel;
+
+		rel = samesrcnextdst(rel);
+	}
+
+	rel = item->irel0;
+	while(1)
+	{
+		if(0 == rel)break;
+
+		if(foottype == rel->srcflag)return rel;
+
+		rel = samedstnextsrc(rel);
+	}
+
+	return 0;
 }

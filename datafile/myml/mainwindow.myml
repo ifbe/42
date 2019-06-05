@@ -28,7 +28,7 @@ cambl{
 fmt:freecam
 }
 cambr{
-fmt:freecam
+fmt:orthcam
 }
 camtl{
 fmt:freecam
@@ -91,17 +91,18 @@ topright{
 c:0.5, 0.5
 q:0.5, 0.5
 }
-rtslook{
+rtsproj{
 r: 1.0, 0.0, 0.0
 u: 0.0, 0.829, 0.5591929
 f: 0.0, 0.5591929,-0.829
 c: 0.0,-1118.3858, 1658.0
 }
-overlook{
-r: 1.0, 0.0, 0.0
-u: 0.0, 1.0, 0.0
-f: 0.0, 0.0,-1.0
-c: 0.0, 0.0, 1000.0
+rtsorth{
+c: 0.0,-1118.3858, 1658.0
+r: 100.0, 0.0, 0.0
+u: 0.0, 82.9, 55.91929
+n: 0.0, 0.5591929,-0.829
+f: 0.0, 559192900000,-829000000000
 }
 frontlook{
 r: 1.0, 0.0, 0.0
@@ -141,8 +142,9 @@ q:1.0, 1.0
 ortho{
 c: 0.0, 0.0, 1.0
 r: 1.0, 0.0, 0.0
-f: 0.0, 1.0, 0.0
-u: 0.0, 0.0,-1.0
+u: 0.0, 1.0, 0.0
+n: 0.0, 0.0, 1.0
+f: 0.0, 0.0, -1.0
 }
 ovv{
 c: 0.0, 0.0, 0.0
@@ -188,22 +190,19 @@ p8{}
 
 
 <relation>
-(window, 0, win, vp) -> (3dworld, 0, win, out)
-(window, botleft, win, cam) -> (cambl, 0, act, cam)
-(window, botright,win, cam) -> (cambr, 0, act, cam)
-(window, topleft, win, cam) -> (camtl, 0, act, cam)
-(window, topright,win, cam) -> (camtr, 0, act, cam)
-
-(3dworld, rtslook, win, cam) -> (cambl, p0, act, geom)
-(3dworld, overlook, win, cam) -> (cambr, p0, act, geom)
+(3dworld, rtsproj, win, cam) -> (cambl, p0, act, geom)
+(3dworld, rtsorth, win, cam) -> (cambr, p0, act, geom)
 (3dworld, frontlook, win, cam) -> (camtl, p0, act, geom)
 (3dworld, sidelook, win, cam) -> (camtr, p0, act, geom)
 (3dworld, sky, win, bg) -> (texball, p1, act, 0)
 (3dworld, gnd, win, bg) -> (terrain, p2, act, 0)
 (3dworld, rabb, win, bg) -> (rabbit, p3, act, 0)
 
-(window, 0, win, vp) -> (uiworld, 0, win, out)
-(window, fullscreen,win, cam) -> (uicamera, 0, act, cam)
+(window, 0, win, vp) -> (3dworld, 0, win, out)
+(window, botleft, win, cam) -> (cambl, 0, act, cam)
+(window, botright,win, cam) -> (cambr, 0, act, cam)
+(window, topleft, win, cam) -> (camtl, 0, act, cam)
+(window, topright,win, cam) -> (camtr, 0, act, cam)
 
 (uiworld, ortho, win, cam) -> (uicamera, 0, act, geom)
 (uiworld, 0, win, aid) -> (geomhelper, 0, act, 0)
@@ -213,6 +212,9 @@ p8{}
 (uiworld, sty6, win, ui) -> (vkbd, p6, act, 0)
 (uiworld, sty7, win, ui) -> (corner, p7, act, 0)
 (uiworld, sty8, win, ui) -> (pointer, p8, act, 0)
+
+(window, 0, win, vp) -> (uiworld, 0, win, out)
+(window, fullscreen,win, cam) -> (uicamera, 0, act, cam)
 
 (player1, 0, win, con) -> (cambl, 0, act, con)
 (player2, 0, win, con) -> (camtr, 0, act, con)

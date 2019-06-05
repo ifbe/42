@@ -167,6 +167,7 @@ int actorstart(struct halfrel* self, struct halfrel* peer)
 	act = (void*)(self->chip);
 	if(0 == act)return 0;
 
+	say("@actor_start\n");
 	return act->onstart(self, peer);
 }
 

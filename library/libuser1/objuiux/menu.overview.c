@@ -1,8 +1,6 @@
 #include "libuser.h"
 void* allocstyle();
 void* allocstyle();
-void* actorstart(void*, void*, void*, void*, void*, void*);
-void* actorstop(void*, void*, void*, void*, void*, void*);
 void draw8bit_rect(
 	struct arena* win, u32 rgb,
 	int x0, int y0, int x1, int y1);
@@ -114,8 +112,6 @@ int arenaactor(struct arena* win, struct arena* ccc, struct actor* act, struct a
 	}
 
 	actorcreate(0, act);
-	actorstart(act, pin, ccc, sty, win, 0);
-
 	relationcreate(act, pin, _act_, 0, ccc, sty, _win_, 0);
 	return 0;
 }

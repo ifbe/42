@@ -45,26 +45,74 @@ static int orthcam_event(
 
 
 
+void orthocam_sty2cam(struct fstyle* d, struct fstyle* s)
+{
+	d->vc[0] = s->vc[0];
+	d->vc[1] = s->vc[1];
+	d->vc[2] = s->vc[2];
+
+	d->vn[0] = s->vn[0];
+	d->vn[1] = s->vn[1];
+	d->vn[2] = s->vn[2];
+
+	d->vf[0] = s->vf[0];
+	d->vf[1] = s->vf[1];
+	d->vf[2] = s->vf[2];
+
+	d->vr[0] = s->vr[0];
+	d->vr[1] = s->vr[1];
+	d->vr[2] = s->vr[2];
+
+	d->vl[0] = - s->vr[0];
+	d->vl[1] = - s->vr[1];
+	d->vl[2] = - s->vr[2];
+
+	d->vt[0] = s->vt[0];
+	d->vt[1] = s->vt[1];
+	d->vt[2] = s->vt[2];
+
+	d->vb[0] = - s->vt[0];
+	d->vb[1] = - s->vt[1];
+	d->vb[2] = - s->vt[2];
+
+	//printstyle(&act->camera);
+}
 static void ortho_v(mat4 m, struct fstyle* s)
 {
+	float x,y,z,n;
 	float cx = s->vc[0];
 	float cy = s->vc[1];
 	float cz = s->vc[2];
 
-	m[0][0] = s->vr[0];
-	m[0][1] = s->vr[1];
-	m[0][2] = s->vr[2];
-	m[0][3] = -(cx*m[0][0] + cy*m[0][1] + cz*m[0][2]);
 
-	m[1][0] = s->vf[0];
-	m[1][1] = s->vf[1];
-	m[1][2] = s->vf[2];
-	m[1][3] = -(cx*m[1][0] + cy*m[1][1] + cz*m[1][2]);
+	x = s->vr[0];y = s->vr[1];z = s->vr[2];
+	n = 1.0 / squareroot(x*x + y*y + z*z);
+	x *= n;y *= n;z *= n;
+	m[0][0] = x;
+	m[0][1] = y;
+	m[0][2] = z;
+	m[0][3] = -(cx*x + cy*y + cz*z);
 
-	m[2][0] =-s->vt[0];
-	m[2][1] =-s->vt[1];
-	m[2][2] =-s->vt[2];
-	m[2][3] = cx*m[2][0] + cy*m[2][1] + cz*m[2][2];
+
+	x = s->vt[0];
+	y = s->vt[1];
+	z = s->vt[2];
+	n = 1.0 / squareroot(x*x + y*y + z*z);
+	x *= n;y *= n;z *= n;
+	m[1][0] = x;
+	m[1][1] = y;
+	m[1][2] = z;
+	m[1][3] = -(cx*x + cy*y + cz*z);
+
+
+	x = s->vf[0];y = s->vf[1];z = s->vf[2];
+	n = 1.0 / squareroot(x*x + y*y + z*z);
+	x *= n;y *= n;z *= n;
+	m[2][0] =-x;
+	m[2][1] =-y;
+	m[2][2] =-z;
+	m[2][3] = -(cx*x + cy*y + cz*z);
+
 
 	m[3][0] = 0.0;
 	m[3][1] = 0.0;
@@ -73,12 +121,12 @@ static void ortho_v(mat4 m, struct fstyle* s)
 }
 static void ortho_p(mat4 m, struct fstyle* s)
 {
-	float l =-1.0;
-	float r = 1.0;
-	float b =-1.0;
-	float t = 1.0;
-	float n =-1.0;
-	float f = 1.0;
+	float r = vec3_len(s->vr);
+	float l = -r;
+	float t = vec3_len(s->vt);
+	float b = -t;
+	float n = -vec3_len(s->vn);
+	float f = vec3_len(s->vf);
 
 	m[0][0] = 2.0 / (r-l);
 	m[0][1] = 0.0;
@@ -136,9 +184,9 @@ static void orthcam_matrix(
 	if(0 == s)return;
 
 
-	int j;
 	float* m = act->buf;
-	ortho_mvp((void*)m, s);
+	orthocam_sty2cam(&act->camera, s);
+	ortho_mvp((void*)m, &act->camera);
 	mat4_transpose((void*)m);
 
 

@@ -216,11 +216,23 @@ int artery_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	return 0;
 }
-int arterystop()
+
+
+
+
+int arteryread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	return 0;
 }
-int arterystart()
+int arterywrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+{
+	return 0;
+}
+int arterystop(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int arterystart(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

@@ -69,15 +69,11 @@ int windowchoose();
 //
 void* vbonode_create(u64, void*);
 int vbonode_delete(void*);
-int vbonode_start(void*, void*, void*, void*);
-int vbonode_stop(void*, void*);
 int vbonode_read(struct arena* win, struct style* sty);
 int vbonode_write(struct arena* win, struct style* sty, struct event* ev);
 //
 void* rgbanode_create(u64, void*);
 int rgbanode_delete(void*);
-int rgbanode_start(void*, void*, void*, void*);
-int rgbanode_stop(void*, void*);
 int rgbanode_read(struct arena* win, struct style* sty);
 int rgbanode_write(struct arena* win, struct style* sty, struct event* ev);
 //
@@ -180,24 +176,19 @@ int arenawrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 
 	return 0;
 }
-int arenastop()
+int arenastop(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int arenastart(struct arena* twig, void* tf, struct arena* root, void* rf)
+int arenastart(struct halfrel* self, struct halfrel* peer)
 {
-	int ret;
-	if(0 == twig)return 0;
+	struct arena* win;
+	if(0 == self)return 0;
 
-	//try twig-gles
-	ret = vbonode_start(twig, tf, root, rf);
-	if(ret)return 1;
+	win = (void*)(self->chip);
+	if(0 == win)return 0;
 
-	//try twig-sch
-	ret = schnode_start(twig, tf, root, rf);
-	if(ret)return 1;
-
-	//try twig-?
+	say("@arena_start\n");
 	return 0;
 }
 

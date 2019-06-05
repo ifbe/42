@@ -180,6 +180,34 @@ void printmat4(float* f)
 	printvec4(&f[8]);
 	printvec4(&f[12]);
 }
+void freecam_sty2cam(struct fstyle* d, struct fstyle* s)
+{
+	d->vc[0] = s->vc[0];
+	d->vc[1] = s->vc[1];
+	d->vc[2] = s->vc[2];
+
+	d->vn[0] = s->vf[0];
+	d->vn[1] = s->vf[1];
+	d->vn[2] = s->vf[2];
+
+	d->vr[0] = s->vr[0];
+	d->vr[1] = s->vr[1];
+	d->vr[2] = s->vr[2];
+
+	d->vl[0] = - s->vr[0];
+	d->vl[1] = - s->vr[1];
+	d->vl[2] = - s->vr[2];
+
+	d->vt[0] = s->vt[0];
+	d->vt[1] = s->vt[1];
+	d->vt[2] = s->vt[2];
+
+	d->vb[0] = - s->vt[0];
+	d->vb[1] = - s->vt[1];
+	d->vb[2] = - s->vt[2];
+
+	//printstyle(&act->camera);
+}
 static void surround_matrix(
 	struct actor* act, struct style* pin,
 	u8* buf, int len)
@@ -202,34 +230,8 @@ static void surround_matrix(
 	if(0 == s)return;
 
 
-	act->camera.vc[0] = s->vc[0];
-	act->camera.vc[1] = s->vc[1];
-	act->camera.vc[2] = s->vc[2];
-
-	act->camera.vn[0] = s->vf[0];
-	act->camera.vn[1] = s->vf[1];
-	act->camera.vn[2] = s->vf[2];
-
-	act->camera.vr[0] = s->vr[0];
-	act->camera.vr[1] = s->vr[1];
-	act->camera.vr[2] = s->vr[2];
-
-	act->camera.vl[0] = - s->vr[0];
-	act->camera.vl[1] = - s->vr[1];
-	act->camera.vl[2] = - s->vr[2];
-
-	act->camera.vt[0] = s->vt[0];
-	act->camera.vt[1] = s->vt[1];
-	act->camera.vt[2] = s->vt[2];
-
-	act->camera.vb[0] = - s->vt[0];
-	act->camera.vb[1] = - s->vt[1];
-	act->camera.vb[2] = - s->vt[2];
-
-	//printstyle(&act->camera);
-
-
 	float* m = act->buf;
+	freecam_sty2cam(&act->camera, s);
 	fixmatrix(m, &act->camera);
 	mat4_transpose((void*)m);
 	//printmat4(m);
