@@ -25,7 +25,7 @@ fmt:joy
 
 <actor>
 cambl{
-fmt:freecam
+fmt:rtscam
 }
 cambr{
 fmt:orthcam
@@ -34,7 +34,7 @@ camtl{
 fmt:freecam
 }
 camtr{
-fmt:freecam
+fmt:vrglass
 }
 texball{
 fmt:texball
@@ -111,10 +111,10 @@ f: 0.0, 1.0, 0.0
 c: 0.0, -1000.0, 500.0
 }
 sidelook{
-r: 0.0, 1.0, 0.0
-u: 0.0, 0.0, 1.0
-f:-1.0, 0.0, 0.0
-c: 1000.0, 0.0, 500.0
+r: 0.0, 1000.0, 0.0
+u: 0.0, 0.0, 1000.0
+f:-1000.0, 0.0, 0.0
+c: 0.0, 0.0, 0.0
 }
 sky{
 c: 0.0, 0.0, 0.0
@@ -140,7 +140,7 @@ c:0.0, 0.0
 q:1.0, 1.0
 }
 ortho{
-c: 0.0, 0.0, 1.0
+c: 0.0, 0.0, 0.0
 r: 1.0, 0.0, 0.0
 u: 0.0, 1.0, 0.0
 n: 0.0, 0.0, 1.0
@@ -216,6 +216,6 @@ p8{}
 (window, 0, win, vp) -> (uiworld, 0, win, out)
 (window, fullscreen,win, cam) -> (uicamera, 0, act, cam)
 
-(player1, 0, win, con) -> (cambl, 0, act, con)
-(player2, 0, win, con) -> (camtr, 0, act, con)
+(player2, 0, win, con) -> (cambl, 0, act, con)
+(player1, 0, win, con) -> (camtr, 0, act, con)
 </relation>

@@ -1081,7 +1081,10 @@ u64 timeread();
 extern "C" {
 #endif
 int actorevent(struct event*);
+int actorread_all();
 int arenaevent(struct event*);
+int arenaread_all();
+//
 int system_leafread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int system_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
 int system_rootread( void* dc,void* df,void* sc,void* sf,void* buf,int len);

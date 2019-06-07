@@ -1,10 +1,32 @@
 #include "libuser.h"
 void fixmatrix(float* m, struct fstyle* sty);
+void printvec4(float* s)
+{
+	say("%f, %f, %f, %f\n", s[0], s[1], s[2], s[3]);
+}
+void printstyle(struct fstyle* sty)
+{
+	printvec4(sty->vl);
+	printvec4(sty->vr);
+	printvec4(sty->vb);
+	printvec4(sty->vt);
+	printvec4(sty->vn);
+	printvec4(sty->vf);
+	printvec4(sty->vq);
+	printvec4(sty->vc);
+}
+void printmat4(float* f)
+{
+	printvec4(&f[0]);
+	printvec4(&f[4]);
+	printvec4(&f[8]);
+	printvec4(&f[12]);
+}
 
 
 
 
-void surround_fixcam(struct arena* win)
+void freecam_fixcam(struct arena* win)
 {
 	float w,h,t;
 	float x,y,z,norm;
@@ -57,7 +79,7 @@ void surround_fixcam(struct arena* win)
 	win->camera.vb[1] = -y * t;
 	win->camera.vb[2] = -z * t;
 }
-void surround_rotatey(struct arena* win, float delta)
+void freecam_rotatey(struct arena* win, float delta)
 {
 	float q[4];
 	float va[4];
@@ -85,7 +107,7 @@ void surround_rotatey(struct arena* win, float delta)
 	win->camera.vc[1] = win->target.vc[1] + vb[1];
 	win->camera.vc[2] = win->target.vc[2] + vb[2];
 }
-void surround_rotatex(struct arena* win, float delta)
+void freecam_rotatex(struct arena* win, float delta)
 {
 	float c = cosine(delta);
 	float s = sine(delta);
@@ -98,10 +120,10 @@ void surround_rotatex(struct arena* win, float delta)
 	win->camera.vc[0] = win->target.vc[0] + vx*c + vy*s;
 	win->camera.vc[1] = win->target.vc[1] - vx*s + vy*c;
 }
-void surround_rotatexy(struct arena* win, int dx, int dy)
+void freecam_rotatexy(struct arena* win, int dx, int dy)
 {
-	if(0 != dy)surround_rotatey(win, dy / 100.0);
-	if(0 != dx)surround_rotatex(win, dx / 100.0);
+	if(0 != dy)freecam_rotatey(win, dy / 100.0);
+	if(0 != dx)freecam_rotatex(win, dx / 100.0);
 }
 void target_deltaxyz(struct arena* win, float x, float y, float z)
 {
@@ -127,7 +149,7 @@ void target_deltaxyz(struct arena* win, float x, float y, float z)
 	win->camera.vc[1] += dy;
 	win->camera.vc[2] += dz;
 }
-void surround_zoom(struct arena* win, float delta)
+void freecam_zoom(struct arena* win, float delta)
 {
 	float va[4];
 	float vb[4];
@@ -158,103 +180,7 @@ void surround_zoom(struct arena* win, float delta)
 
 
 
-void printvec4(float* s)
-{
-	say("%f, %f, %f, %f\n", s[0], s[1], s[2], s[3]);
-}
-void printstyle(struct fstyle* sty)
-{
-	printvec4(sty->vl);
-	printvec4(sty->vr);
-	printvec4(sty->vb);
-	printvec4(sty->vt);
-	printvec4(sty->vn);
-	printvec4(sty->vf);
-	printvec4(sty->vq);
-	printvec4(sty->vc);
-}
-void printmat4(float* f)
-{
-	printvec4(&f[0]);
-	printvec4(&f[4]);
-	printvec4(&f[8]);
-	printvec4(&f[12]);
-}
-void freecam_sty2cam(struct fstyle* d, struct fstyle* s)
-{
-	d->vc[0] = s->vc[0];
-	d->vc[1] = s->vc[1];
-	d->vc[2] = s->vc[2];
-
-	d->vn[0] = s->vf[0];
-	d->vn[1] = s->vf[1];
-	d->vn[2] = s->vf[2];
-
-	d->vr[0] = s->vr[0];
-	d->vr[1] = s->vr[1];
-	d->vr[2] = s->vr[2];
-
-	d->vl[0] = - s->vr[0];
-	d->vl[1] = - s->vr[1];
-	d->vl[2] = - s->vr[2];
-
-	d->vt[0] = s->vt[0];
-	d->vt[1] = s->vt[1];
-	d->vt[2] = s->vt[2];
-
-	d->vb[0] = - s->vt[0];
-	d->vb[1] = - s->vt[1];
-	d->vb[2] = - s->vt[2];
-
-	//printstyle(&act->camera);
-}
-static void surround_matrix(
-	struct actor* act, struct style* pin,
-	u8* buf, int len)
-{
-	struct relation* rel;
-	struct arena* r;
-	struct fstyle* s;
-	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
-
-	rel = act->irel0;
-	while(1){
-		if(0 == rel)return;
-		if(hex32('g','e','o','m') == rel->dstflag){
-			s = (void*)(rel->srcfoot);
-			r = (void*)(rel->srcchip);
-			break;
-		}
-		rel = samedstnextsrc(rel);
-	}
-	if(0 == s)return;
-
-
-	float* m = act->buf;
-	freecam_sty2cam(&act->camera, s);
-	fixmatrix(m, &act->camera);
-	mat4_transpose((void*)m);
-	//printmat4(m);
-
-
-	u64* p = (void*)buf;
-	struct glsrc* src = (void*)(buf+0x20);
-
-	p[0] = (u64)src;
-	p[1] = (u64)r->gl_light;
-	p[2] = (u64)r->gl_solid;
-	p[3] = (u64)r->gl_opaque;
-
-
-	src->arg_fmt[0] = 'm';
-	src->arg_name[0] = "cammvp";
-	src->arg_data[0] = m;
-
-	src->arg_fmt[1] = 'v';
-	src->arg_name[1] = "camxyz";
-	src->arg_data[1] = act->camera.vc;
-}
-static int surround_draw(
+static int freecam_draw(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {/*
@@ -283,7 +209,7 @@ static int surround_draw(
 	carvefrustum(win, sty);*/
 	return 0;
 }
-static int surround_event(
+static int freecam_event(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -341,8 +267,8 @@ static int surround_event(
 	{
 		id = (ev->why)>>48;
 		switch(id){
-			case 'f':surround_zoom(win, 100.0);break;
-			case 'b':surround_zoom(win,-100.0);break;
+			case 'f':freecam_zoom(win, 100.0);break;
+			case 'b':freecam_zoom(win,-100.0);break;
 			case 'r':return 1;
 			default:return 0;
 		}
@@ -374,8 +300,8 @@ static int surround_event(
 			x0 = (win->input[0].xn) - (win->input[1].xn);
 			y0 = (win->input[0].yn) - (win->input[1].yn);
 
-			if((x0*x0+y0*y0) < (x1*x1+y1*y1))surround_zoom(win, 10.0);
-			else surround_zoom(win, -10.0);
+			if((x0*x0+y0*y0) < (x1*x1+y1*y1))freecam_zoom(win, 10.0);
+			else freecam_zoom(win, -10.0);
 		}
 		else
 		{
@@ -384,7 +310,7 @@ static int surround_event(
 			x1 = (ev->why)&0xffff;
 			y1 = ((ev->why)>>16)&0xffff;
 
-			surround_rotatexy(win, x1-x0, y0-y1);
+			freecam_rotatexy(win, x1-x0, y0-y1);
 		}
 	}
 	else if(joy_left == (ev->what & joy_mask))
@@ -444,27 +370,27 @@ static int surround_event(
 
 		if(t[3] & joyr_left)		//x-
 		{
-			surround_rotatexy(win, -1.0, 0.0);
+			freecam_rotatexy(win, -1.0, 0.0);
 		}
 		if(t[3] & joyr_right)		//x+
 		{
-			surround_rotatexy(win, 1.0, 0.0);
+			freecam_rotatexy(win, 1.0, 0.0);
 		}
 		if(t[3] & joyr_down)		//y-
 		{
-			surround_rotatexy(win, 0.0, -1.0);
+			freecam_rotatexy(win, 0.0, -1.0);
 		}
 		if(t[3] & joyr_up)			//y+
 		{
-			surround_rotatexy(win, 0.0, 1.0);
+			freecam_rotatexy(win, 0.0, 1.0);
 		}
 		if(t[3] & joyr_trigger)		//z-
 		{
-			surround_zoom(win, 100.0);
+			freecam_zoom(win, 100.0);
 		}
 		if(t[3] & joyr_bumper)		//z+
 		{
-			surround_zoom(win, -100.0);
+			freecam_zoom(win, -100.0);
 		}
 		if(t[3] & joyr_thumb)		//w-
 		{
@@ -496,14 +422,14 @@ static int surround_event(
 		else if(y0 > 4096)y1 = y0 - 4096;
 		else y1 = 0;
 
-		if((0 != x1) | (0 != y1))surround_rotatexy(win, x1/4096.0, y1/4096.0);
+		if((0 != x1) | (0 != y1))freecam_rotatexy(win, x1/4096.0, y1/4096.0);
 	}
 
 	//fix it!
-	surround_fixcam(win);
+	freecam_fixcam(win);
 	return 1;
 }
-static int surround_event1(
+static int freecam_event1(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -511,6 +437,7 @@ static int surround_event1(
 	struct relation* rel;
 	struct style* s;
 	short* t;
+	say("freecam_event@%llx:%x,%x\n", act, ev->why, ev->what);
 
 	if('p' == (ev->what&0xff))
 	{
@@ -565,17 +492,116 @@ static int surround_event1(
 
 
 
-static void surround_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+void freecam_sty2cam(struct fstyle* d, struct fstyle* s)
+{
+	float x,y,z,n;
+	d->vc[0] = s->vc[0];
+	d->vc[1] = s->vc[1];
+	d->vc[2] = s->vc[2];
+
+
+	x = s->vr[0];
+	y = s->vr[1];
+	z = s->vr[2];
+	n = squareroot(x*x + y*y + z*z);
+	d->vr[0] = x / n;
+	d->vr[1] = y / n;
+	d->vr[2] = z / n;
+	d->vr[3] = 1.0;
+	d->vl[0] = -x / n;
+	d->vl[1] = -y / n;
+	d->vl[2] = -z / n;
+	d->vl[3] = -1.0;
+
+
+	x = s->vt[0];
+	y = s->vt[1];
+	z = s->vt[2];
+	n = squareroot(x*x + y*y + z*z);
+	d->vt[0] = x / n;
+	d->vt[1] = y / n;
+	d->vt[2] = z / n;
+	d->vt[3] = 1.0;
+	d->vb[0] = -x / n;
+	d->vb[1] = -y / n;
+	d->vb[2] = -z / n;
+	d->vb[3] = -1.0;
+
+
+	x = s->vf[0];
+	y = s->vf[1];
+	z = s->vf[2];
+	n = squareroot(x*x + y*y + z*z);
+	d->vn[0] = x / n;
+	d->vn[1] = y / n;
+	d->vn[2] = z / n;
+	d->vn[3] = 1.0;
+	d->vf[0] = x / n;
+	d->vf[1] = y / n;
+	d->vf[2] = z / n;
+	d->vf[3] = 1e20;
+}
+static void freecam_matrix(
+	struct actor* act, struct style* pin,
+	u8* buf, int len)
+{
+	struct relation* rel;
+	struct arena* r;
+	struct fstyle* s;
+	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)return;
+		if(hex32('g','e','o','m') == rel->dstflag){
+			s = (void*)(rel->srcfoot);
+			r = (void*)(rel->srcchip);
+			break;
+		}
+		rel = samedstnextsrc(rel);
+	}
+	if(0 == s)return;
+
+
+	float* m = act->buf;
+	freecam_sty2cam(&act->camera, s);
+	fixmatrix(m, &act->camera);
+	mat4_transpose((void*)m);
+	//printmat4(m);
+
+
+	u64* p = (void*)buf;
+	struct glsrc* src = (void*)(buf+0x20);
+
+	p[0] = (u64)src;
+	p[1] = (u64)r->gl_light;
+	p[2] = (u64)r->gl_solid;
+	p[3] = (u64)r->gl_opaque;
+
+
+	src->arg_fmt[0] = 'm';
+	src->arg_name[0] = "cammvp";
+	src->arg_data[0] = m;
+
+	src->arg_fmt[1] = 'v';
+	src->arg_name[1] = "camxyz";
+	src->arg_data[1] = act->camera.vc;
+}
+
+
+
+
+static void freecam_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	if(_cam_ == self->flag)surround_matrix(act, pin, buf, len);
-	else surround_draw(act, pin, win, sty);
+	if(_cam_ == self->flag)freecam_matrix(act, pin, buf, len);
+	else freecam_draw(act, pin, win, sty);
 }
-static int surround_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int freecam_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -583,49 +609,49 @@ static int surround_write(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	return surround_event1(act, pin, win, sty, ev, 0);
+	return freecam_event1(act, pin, win, sty, ev, 0);
 }
-static void surround_stop(struct halfrel* self, struct halfrel* peer)
+static void freecam_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void surround_start(struct halfrel* self, struct halfrel* peer)
+static void freecam_start(struct halfrel* self, struct halfrel* peer)
 {
-    say("@surround_start\n");
+    say("@freecam_start\n");
 }
 
 
 
 
-static void surround_search(struct actor* act)
+static void freecam_search(struct actor* act)
 {
 }
-static void surround_modify(struct actor* act)
+static void freecam_modify(struct actor* act)
 {
 }
-static void surround_delete(struct actor* act)
+static void freecam_delete(struct actor* act)
 {
 }
-static void surround_create(struct actor* act, void* arg)
+static void freecam_create(struct actor* act, void* arg)
 {
-    say("@surround_create\n");
+    say("@freecam_create\n");
 	act->buf = memorycreate(64);
 }
 
 
 
 
-void surround_register(struct actor* p)
+void freecam_register(struct actor* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('f', 'r', 'e', 'e', 'c', 'a', 'm', 0);
 
-	p->oncreate = (void*)surround_create;
-	p->ondelete = (void*)surround_delete;
-	p->onsearch = (void*)surround_search;
-	p->onmodify = (void*)surround_modify;
+	p->oncreate = (void*)freecam_create;
+	p->ondelete = (void*)freecam_delete;
+	p->onsearch = (void*)freecam_search;
+	p->onmodify = (void*)freecam_modify;
 
-	p->onstart = (void*)surround_start;
-	p->onstop  = (void*)surround_stop;
-	p->onread  = (void*)surround_read;
-	p->onwrite = (void*)surround_write;
+	p->onstart = (void*)freecam_start;
+	p->onstop  = (void*)freecam_stop;
+	p->onread  = (void*)freecam_read;
+	p->onwrite = (void*)freecam_write;
 }

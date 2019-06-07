@@ -305,7 +305,7 @@ void* actorsearch(u8* buf, int len)
 
 
 
-int actorread_all(struct actor* act)
+int actorread_all()
 {
 	return 0;
 }

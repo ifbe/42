@@ -12,7 +12,7 @@ void orthcam_register(void*);
 void firstperson_register(void*);
 void thirdperson_register(void*);
 void rtscam_register(void*);
-void surround_register(void*);
+void freecam_register(void*);
 void vrglass_register(void*);
 //.fbo
 void glass_register(void*);
@@ -161,7 +161,7 @@ void content_create(void* addr)
 	rtscam_register(tmp);
 	tmp += sizeof(struct actor);
 
-	surround_register(tmp);
+	freecam_register(tmp);
 	tmp += sizeof(struct actor);
 
 	vrglass_register(tmp);

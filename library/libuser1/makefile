@@ -40,8 +40,8 @@ lib3d/carve3d/carve3d.basic.trigon.c \
 lib3d/carve3d/carve3d.basic.opaque.c \
 lib3d/carve3d/carve3d.other.group.c \
 lib3d/carve3d/carve3d.other.helper.c \
-lib3d/camera/camera.matrix.c \
-lib3d/camera/camera.rotate.c \
+lib3d/camera/camera.projection.c \
+lib3d/camera/camera.orthogonal.c \
 lib3d/intersect/intersect.obb.c \
 lib3d/intersect/intersect.ray.c \
 lib3d/intersect/intersect.rect.c \

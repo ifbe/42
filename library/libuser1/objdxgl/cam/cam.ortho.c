@@ -1,4 +1,5 @@
 #include "libuser.h"
+void ortho_mvp(mat4 m, struct fstyle* s);
 
 
 
@@ -39,7 +40,7 @@ static int orthcam_event(
 	struct event* ev, int len)
 {
 	say("orthcam_event@%llx:%x,%x\n", act, ev->why, ev->what);
-	return 1;
+	return 0;
 }
 
 
@@ -47,120 +48,69 @@ static int orthcam_event(
 
 void orthocam_sty2cam(struct fstyle* d, struct fstyle* s)
 {
+	float a,b,c;
+	float x,y,z,n;
 	d->vc[0] = s->vc[0];
 	d->vc[1] = s->vc[1];
 	d->vc[2] = s->vc[2];
 
-	d->vn[0] = s->vn[0];
-	d->vn[1] = s->vn[1];
-	d->vn[2] = s->vn[2];
 
-	d->vf[0] = s->vf[0];
-	d->vf[1] = s->vf[1];
-	d->vf[2] = s->vf[2];
-
-	d->vr[0] = s->vr[0];
-	d->vr[1] = s->vr[1];
-	d->vr[2] = s->vr[2];
-
-	d->vl[0] = - s->vr[0];
-	d->vl[1] = - s->vr[1];
-	d->vl[2] = - s->vr[2];
-
-	d->vt[0] = s->vt[0];
-	d->vt[1] = s->vt[1];
-	d->vt[2] = s->vt[2];
-
-	d->vb[0] = - s->vt[0];
-	d->vb[1] = - s->vt[1];
-	d->vb[2] = - s->vt[2];
-
-	//printstyle(&act->camera);
-}
-static void ortho_v(mat4 m, struct fstyle* s)
-{
-	float x,y,z,n;
-	float cx = s->vc[0];
-	float cy = s->vc[1];
-	float cz = s->vc[2];
+	//left, right
+	x = s->vr[0];
+	y = s->vr[1];
+	z = s->vr[2];
+	n = squareroot(x*x + y*y + z*z);
+	d->vr[0] = x / n;
+	d->vr[1] = y / n;
+	d->vr[2] = z / n;
+	d->vr[3] = n;
+	d->vl[0] = - d->vr[0];
+	d->vl[1] = - d->vr[1];
+	d->vl[2] = - d->vr[2];
+	d->vl[3] = -n;
 
 
-	x = s->vr[0];y = s->vr[1];z = s->vr[2];
-	n = 1.0 / squareroot(x*x + y*y + z*z);
-	x *= n;y *= n;z *= n;
-	m[0][0] = x;
-	m[0][1] = y;
-	m[0][2] = z;
-	m[0][3] = -(cx*x + cy*y + cz*z);
-
-
+	//bottom, top
 	x = s->vt[0];
 	y = s->vt[1];
 	z = s->vt[2];
-	n = 1.0 / squareroot(x*x + y*y + z*z);
-	x *= n;y *= n;z *= n;
-	m[1][0] = x;
-	m[1][1] = y;
-	m[1][2] = z;
-	m[1][3] = -(cx*x + cy*y + cz*z);
+	n = squareroot(x*x + y*y + z*z);
+	d->vt[0] = x / n;
+	d->vt[1] = y / n;
+	d->vt[2] = z / n;
+	d->vt[3] = n;
+	d->vb[0] = - d->vt[0];
+	d->vb[1] = - d->vt[1];
+	d->vb[2] = - d->vt[2];
+	d->vb[3] = -n;
 
 
-	x = s->vf[0];y = s->vf[1];z = s->vf[2];
-	n = 1.0 / squareroot(x*x + y*y + z*z);
-	x *= n;y *= n;z *= n;
-	m[2][0] =-x;
-	m[2][1] =-y;
-	m[2][2] =-z;
-	m[2][3] = -(cx*x + cy*y + cz*z);
+	//near, front
+	a = s->vf[0] - s->vn[0];
+	b = s->vf[1] - s->vn[1];
+	c = s->vf[2] - s->vn[2];
 
+	x = s->vn[0];
+	y = s->vn[1];
+	z = s->vn[2];
+	n = squareroot(x*x + y*y + z*z);
+	d->vn[0] = x / n;
+	d->vn[1] = y / n;
+	d->vn[2] = z / n;
+	if(a*x + b*y + c*z < 0)n = -n;
+	d->vn[3] = n;
 
-	m[3][0] = 0.0;
-	m[3][1] = 0.0;
-	m[3][2] = 0.0;
-	m[3][3] = 1.0;
-}
-static void ortho_p(mat4 m, struct fstyle* s)
-{
-	float r = vec3_len(s->vr);
-	float l = -r;
-	float t = vec3_len(s->vt);
-	float b = -t;
-	float n = -vec3_len(s->vn);
-	float f = vec3_len(s->vf);
+	x = s->vf[0];
+	y = s->vf[1];
+	z = s->vf[2];
+	n = squareroot(x*x + y*y + z*z);
+	d->vf[0] = x / n;
+	d->vf[1] = y / n;
+	d->vf[2] = z / n;
+	if(a*x + b*y + c*z < 0)n = -n;
+	d->vf[3] = n;
 
-	m[0][0] = 2.0 / (r-l);
-	m[0][1] = 0.0;
-	m[0][2] = 0.0;
-	m[0][3] = (l+r) / (l-r);
-
-	m[1][0] = 0.0;
-	m[1][1] = 2.0 / (t-b);
-	m[1][2] = 0.0;
-	m[1][3] = (b+t) / (b-t);
-
-	m[2][0] = 0.0;
-	m[2][1] = 0.0;
-	m[2][2] = 2.0 / (f-n);
-	m[2][3] = (n+f) / (n-f);
-
-	m[3][0] = 0.0;
-	m[3][1] = 0.0;
-	m[3][2] = 0.0;
-	m[3][3] = 1.0;
-}
-static void ortho_mvp(mat4 m, struct fstyle* s)
-{
-	mat4 t;
-	ortho_p(m, s);
-
-	//ortho_o(t, s);
-	//mat4_multiply(m, t);
-
-	//ortho_p(t, s);
-	//mat4_multiply(m, t);
-
-	ortho_v(t, s);
-	mat4_multiply(m, t);
+	//printstyle(&act->camera);
 }
 static void orthcam_matrix(
 	struct actor* act, struct style* pin,

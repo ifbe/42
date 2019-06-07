@@ -1,4 +1,5 @@
 #include "libuser.h"
+void fixmatrix(float* m, struct fstyle* sty);
 
 
 
@@ -6,7 +7,7 @@
 static int vrglass_draw(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
-{
+{/*
 	float y;
 	vec3 tc,tr,tf,tu;
 	tr[0] = win->width/2;
@@ -32,10 +33,13 @@ static int vrglass_draw(
 		tc[2] = 0.0;
 		carveline_rect(win, 0xff0000, tc, tr, tu);
 	}
-
+*/
+	float time = (timeread() % 10000000) / 10000000.0;
+	act->camera.vq[0] = 1000 * cosine(tau * time);
+	act->camera.vq[1] = 1000 * sine(tau * time);
 	return 0;
 }
-static int vrglass_event(
+static int vrglass_event111(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
@@ -148,6 +152,101 @@ static int vrglass_event(
 	win->camera.vt[2] = win->height/2 - win->camera.vc[2];
 	return 1;
 }
+static int vrglass_event(
+	struct actor* act, struct style* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev, int len)
+{
+	say("vrglass_event@%llx:%x,%x\n", act, ev->why, ev->what);
+	return 1;
+}
+
+
+
+
+void vrglass_sty2cam(struct fstyle* d, struct fstyle* s)
+{
+	float x,y,z,n;
+	d->vc[0] = s->vc[0];
+	d->vc[1] = s->vc[1];
+	d->vc[2] = s->vc[2];
+
+
+	x = s->vr[0];	y = s->vr[1];	z = s->vr[2];
+	n = 1.0 / squareroot(x*x + y*y + z*z);
+	x *= n;		y*= n;		z*= n;
+	d->vr[0] = x;	d->vr[1] = y;	d->vr[2] = z;	d->vr[3] = 1000 - d->vq[0];
+	d->vl[0] = -x;	d->vl[1] = -y;	d->vl[2] = -z;	d->vl[3] = -1000 - d->vq[0];
+	d->vc[0] += x * d->vq[0];
+	d->vc[1] += y * d->vq[0];
+	d->vc[2] += z * d->vq[0];
+
+
+	x = s->vt[0];	y = s->vt[1];	z = s->vt[2];
+	n = 1.0 / squareroot(x*x + y*y + z*z);
+	x *= n;		y*= n;		z*= n;
+	d->vt[0] = x;	d->vt[1] = y;	d->vt[2] = z;	d->vt[3] = 1000 - d->vq[1];
+	d->vb[0] = -x;	d->vb[1] = -y;	d->vb[2] = -z;	d->vb[3] = -1000 - d->vq[1];
+	d->vc[0] += x * d->vq[1];
+	d->vc[1] += y * d->vq[1];
+	d->vc[2] += z * d->vq[1];
+
+
+	x = s->vf[0];	y = s->vf[1];	z = s->vf[2];
+	n = 1.0 / squareroot(x*x + y*y + z*z);
+	x *= n;		y*= n;		z*= n;
+	d->vn[0] = x;	d->vn[1] = y;	d->vn[2] = z;	d->vn[3] = d->vq[2];
+	d->vf[0] = x;	d->vf[1] = y;	d->vf[2] = z;	d->vf[3] = 1e20;
+	d->vc[0] -= x * d->vq[2];
+	d->vc[1] -= y * d->vq[2];
+	d->vc[2] -= z * d->vq[2];
+}
+static void vrglass_matrix(
+	struct actor* act, struct style* pin,
+	u8* buf, int len)
+{
+	struct relation* rel;
+	struct arena* r;
+	struct fstyle* s;
+	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)return;
+		if(hex32('g','e','o','m') == rel->dstflag){
+			s = (void*)(rel->srcfoot);
+			r = (void*)(rel->srcchip);
+			break;
+		}
+		rel = samedstnextsrc(rel);
+	}
+	if(0 == s)return;
+
+
+	float* m = act->buf;
+	vrglass_sty2cam(&act->camera, s);
+	fixmatrix(m, &act->camera);
+	mat4_transpose((void*)m);
+	//printmat4(m);
+
+
+	u64* p = (void*)buf;
+	struct glsrc* src = (void*)(buf+0x20);
+
+	p[0] = (u64)src;
+	p[1] = (u64)r->gl_light;
+	p[2] = (u64)r->gl_solid;
+	p[3] = (u64)r->gl_opaque;
+
+
+	src->arg_fmt[0] = 'm';
+	src->arg_name[0] = "cammvp";
+	src->arg_data[0] = m;
+
+	src->arg_fmt[1] = 'v';
+	src->arg_name[1] = "camxyz";
+	src->arg_data[1] = act->camera.vc;
+}
 
 
 
@@ -159,7 +258,8 @@ static void vrglass_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	vrglass_draw(act, pin, win, sty);
+	if(_cam_ == self->flag)vrglass_matrix(act, pin, buf, len);
+	else vrglass_draw(act, pin, win, sty);
 }
 static int vrglass_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
@@ -191,7 +291,7 @@ static void vrglass_delete(struct actor* act)
 {
 }
 static void vrglass_create(struct actor* act, void* str)
-{
+{/*
 	float* vc = act->camera.vc;
 	float* vn = act->camera.vn;
 
@@ -201,7 +301,12 @@ static void vrglass_create(struct actor* act, void* str)
 
 	vn[0] = 0.0;
 	vn[1] = -1000.0 - vc[1];
-	vn[2] = 0.0;
+	vn[2] = 0.0;*/
+
+	act->camera.vq[0] = 1000.0;
+	act->camera.vq[1] = 1000.0;
+	act->camera.vq[2] = 1000.0;
+	act->buf = memorycreate(64);
 }
 
 
