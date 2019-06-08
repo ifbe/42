@@ -34,9 +34,9 @@ static int vrglass_draw(
 		carveline_rect(win, 0xff0000, tc, tr, tu);
 	}
 */
-	float time = (timeread() % 10000000) / 10000000.0;
-	act->camera.vq[0] = 1000 * cosine(tau * time);
-	act->camera.vq[1] = 1000 * sine(tau * time);
+	//float time = (timeread() % 10000000) / 10000000.0;
+	//act->camera.vq[0] = 1000 * cosine(tau * time);
+	//act->camera.vq[1] = 1000 * sine(tau * time);
 	return 0;
 }
 static int vrglass_event111(
@@ -157,7 +157,18 @@ static int vrglass_event(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
+	short* t;
 	say("vrglass_event@%llx:%x,%x\n", act, ev->why, ev->what);
+
+	if(joy_left == (ev->what&joy_mask)){
+		t = (void*)ev;
+		if(t[3] & joyl_left   )act->camera.vq[0] -= 10.0;
+		if(t[3] & joyl_right  )act->camera.vq[0] += 10.0;
+		if(t[3] & joyl_down   )act->camera.vq[2] += 10.0;
+		if(t[3] & joyl_up     )act->camera.vq[2] -= 10.0;
+		if(t[3] & joyl_trigger)act->camera.vq[1] -= 10.0;
+		if(t[3] & joyl_bumper )act->camera.vq[1] += 10.0;
+	}
 	return 1;
 }
 

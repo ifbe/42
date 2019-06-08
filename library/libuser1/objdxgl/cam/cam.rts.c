@@ -57,7 +57,33 @@ static int rtscam_event(
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
+	short* t;
+	struct fstyle* s;
+	struct relation* rel;
 	say("rtscam_event@%llx:%x,%x\n", act, ev->why, ev->what);
+
+	//
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)return 0;
+		if(hex32('g','e','o','m') == rel->dstflag){
+			s = (void*)(rel->srcfoot);
+			break;
+		}
+		rel = samedstnextsrc(rel);
+	}
+	if(0 == s)return 0;
+
+	//
+	if(joy_left == (ev->what&joy_mask)){
+		t = (void*)ev;
+		if(t[3] & joyl_left   )s->vc[0] -= 10.0;
+		if(t[3] & joyl_right  )s->vc[0] += 10.0;
+		if(t[3] & joyl_down   )s->vc[1] -= 10.0;
+		if(t[3] & joyl_up     )s->vc[1] += 10.0;
+		if(t[3] & joyl_trigger)s->vc[2] -= 10.0;
+		if(t[3] & joyl_bumper )s->vc[2] += 10.0;
+	}
 	return 1;
 }
 
@@ -79,11 +105,11 @@ void rtscam_sty2cam(struct fstyle* d, struct fstyle* s)
 	d->vr[0] = x / n;
 	d->vr[1] = y / n;
 	d->vr[2] = z / n;
-	d->vr[3] = 1.0;
+	d->vr[3] = 0.7;
 	d->vl[0] = -x / n;
 	d->vl[1] = -y / n;
 	d->vl[2] = -z / n;
-	d->vl[3] = -1.0;
+	d->vl[3] = -0.7;
 
 
 	x = s->vt[0];
@@ -93,11 +119,11 @@ void rtscam_sty2cam(struct fstyle* d, struct fstyle* s)
 	d->vt[0] = x / n;
 	d->vt[1] = y / n;
 	d->vt[2] = z / n;
-	d->vt[3] = 1.0;
+	d->vt[3] = 0.7;
 	d->vb[0] = -x / n;
 	d->vb[1] = -y / n;
 	d->vb[2] = -z / n;
-	d->vb[3] = -1.0;
+	d->vb[3] = -0.7;
 
 
 	x = s->vf[0];
@@ -170,6 +196,7 @@ static void rtscam_read(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	if(_cam_ == self->flag)rtscam_matrix(act, pin, buf, len);
+	//else rtscam_draw(act, pin, win, sty);
 }
 static int rtscam_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {

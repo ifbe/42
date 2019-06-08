@@ -271,7 +271,7 @@ int role_test_style(u8* buf, int len, struct footlist foot[], int flen)
 					case 'l':parsevec4(sty->f.vl, buf+propdata);break;
 					case 'r':parsevec4(sty->f.vr, buf+propdata);break;
 					case 'b':parsevec4(sty->f.vb, buf+propdata);break;
-					case 'u':parsevec4(sty->f.vt, buf+propdata);break;
+					case 't':parsevec4(sty->f.vt, buf+propdata);break;
 					case 'n':parsevec4(sty->f.vn, buf+propdata);break;
 					case 'f':parsevec4(sty->f.vf, buf+propdata);break;
 					case 'q':parsevec4(sty->f.vq, buf+propdata);break;
