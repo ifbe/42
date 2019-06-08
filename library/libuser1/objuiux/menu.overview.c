@@ -52,23 +52,23 @@ void defaultstyle_2in3(struct fstyle* sty)
 	sty->vt[1] = 0.0;
 	sty->vt[2] = 1.0;
 }
-void defaultstyle_3d(struct fstyle* sty, struct fstyle* tar)
+void defaultstyle_3d(struct fstyle* sty, int w, int h, int d)
 {
-	sty->vr[0] = tar->vr[0];
-	sty->vr[1] = tar->vr[1];
-	sty->vr[2] = tar->vr[2];
+	sty->vr[0] = w;
+	sty->vr[1] = 0.0;
+	sty->vr[2] = 0.0;
 
-	sty->vf[0] = tar->vf[0];
-	sty->vf[1] = tar->vf[1];
-	sty->vf[2] = tar->vf[2];
+	sty->vf[0] = 0.0;
+	sty->vf[1] = h;
+	sty->vf[2] = 0.0;
 
-	sty->vt[0] = tar->vt[0];
-	sty->vt[1] = tar->vt[1];
-	sty->vt[2] = tar->vt[2];
+	sty->vt[0] = 0.0;
+	sty->vt[1] = 0.0;
+	sty->vt[2] = d;
 
-	sty->vc[0] = tar->vc[0];
-	sty->vc[1] = tar->vc[1];
-	sty->vc[2] = tar->vc[2];
+	sty->vc[0] = 0.0;
+	sty->vc[1] = 0.0;
+	sty->vc[2] = 0.0;
 }
 int arenaactor(struct arena* win, struct arena* ccc, struct actor* act, struct actor* tmp)
 {
@@ -89,7 +89,7 @@ int arenaactor(struct arena* win, struct arena* ccc, struct actor* act, struct a
 		case _fg3d_:
 		case _ui3d_:
 		{
-			if(_vbo_ == win->fmt)defaultstyle_3d(&sty->f, &win->target);
+			if(_vbo_ == win->fmt)defaultstyle_3d(&sty->f, w, h, (w+h)/2);
 			else{
 				w = win->width;
 				h = win->height;
@@ -1241,8 +1241,8 @@ static int overview_event(
 
 		if('-' == k)
 		{
-			j = win->input[id].x0;
-			k = win->input[id].y0;
+			j = win->mouse[id].x0;
+			k = win->mouse[id].y0;
 
 			if(0 == sty)
 			{

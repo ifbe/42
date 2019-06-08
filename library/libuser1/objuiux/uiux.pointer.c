@@ -22,17 +22,17 @@ void pointer_draw_vbo(struct arena* win, struct style* sty)
 	vec3 vc;
 	vec3 vr;
 	vec3 vf;
-	for(j=0;j<12;j++)
+	for(j=0;j<8;j++)
 	{
-		if(0 == win->input[j].z0)continue;
+		if(0 == win->mouse[j].z0)continue;
 
-		x0 = (float)(win->input[j].x0) / (float)(win->width);
+		x0 = (float)(win->mouse[j].x0) / (float)(win->width);
 		x0 = x0*2 - 1.0;
-		y0 = (float)(win->input[j].y0) / (float)(win->height);
+		y0 = (float)(win->mouse[j].y0) / (float)(win->height);
 		y0 = 1.0 - y0*2;
-		x1 = (float)(win->input[j].xn) / (float)(win->width);
+		x1 = (float)(win->mouse[j].xn) / (float)(win->width);
 		x1 = x1*2 - 1.0;
-		y1 = (float)(win->input[j].yn) / (float)(win->height);
+		y1 = (float)(win->mouse[j].yn) / (float)(win->height);
 		y1 = 1.0 - y1*2;
 
 		vc[0] = x0;
@@ -62,12 +62,12 @@ void pointer_draw_pixel(struct arena* win, struct style* sty)
 	int x0,y0,x1,y1;
 	for(j=0;j<12;j++)
 	{
-		if(0 == win->input[j].z0)continue;
+		if(0 == win->mouse[j].z0)continue;
 
-		x0 = win->input[j].x0;
-		y0 = win->input[j].y0;
-		x1 = win->input[j].xn;
-		y1 = win->input[j].yn;
+		x0 = win->mouse[j].x0;
+		y0 = win->mouse[j].y0;
+		x1 = win->mouse[j].xn;
+		y1 = win->mouse[j].yn;
 		drawline_arrow(win, 0xff00ff, x0, y0, x1, y1);
 	}
 }

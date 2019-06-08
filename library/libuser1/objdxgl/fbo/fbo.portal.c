@@ -71,7 +71,7 @@ void portalcamera(
 	struct actor* leaf, struct style* lf,
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
-{
+{/*
 	float x,y,z,t;
 	float r,u,n;
 	vec3 p,q;
@@ -187,6 +187,8 @@ void portalcamera(
 	tmp->camera.vt[0] = leaf->target.vt[0] - u*x;
 	tmp->camera.vt[1] = leaf->target.vt[1] - u*y;
 	tmp->camera.vt[2] = leaf->target.vt[2] - u*z;
+	carvefrustum(root, &tmp->camera);
+*/
 /*
 	say("%f,%f,%f\n",root->camera.vc[0], root->camera.vc[1], root->camera.vc[2]);
 	say("%f,%f,%f\n",tmp->camera.vc[0], tmp->camera.vc[1], tmp->camera.vc[2]);
@@ -197,7 +199,6 @@ void portalcamera(
 	say("%f,%f,%f\n",tmp->camera.vu[0], tmp->camera.vu[1], tmp->camera.vu[2]);
 	say("\n");
 */
-	carvefrustum(root, &tmp->camera);
 }
 
 

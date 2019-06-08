@@ -25,7 +25,7 @@ void printmat4(float* f)
 
 
 
-
+/*
 void freecam_fixcam(struct arena* win)
 {
 	float w,h,t;
@@ -175,7 +175,7 @@ void freecam_zoom(struct arena* win, float delta)
 	win->camera.vc[0] += delta * nx;
 	win->camera.vc[1] += delta * ny;
 	win->camera.vc[2] += delta * nz;
-}
+}*/
 
 
 
@@ -208,7 +208,7 @@ static int freecam_draw(
 	sty->vb[2] = -sty->vu[2];
 	carvefrustum(win, sty);*/
 	return 0;
-}
+}/*
 static int freecam_event(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
@@ -428,7 +428,7 @@ static int freecam_event(
 	//fix it!
 	freecam_fixcam(win);
 	return 1;
-}
+}*/
 static int freecam_event1(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,

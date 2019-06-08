@@ -258,7 +258,7 @@ static void shadowmap_draw_vbo(
 
 
 
-
+/*
 	rel = act->orel0;
 	if(0 == rel)return;
 
@@ -304,6 +304,7 @@ static void shadowmap_draw_vbo(
 	tu[1] = 0.0;
 	tu[2] = 20.0;
 	carvesolid_sphere(win, 0xffff00, tmp->camera.vc, tr, tf, tu);
+*/
 }
 static void shadowmap_draw_json(
 	struct actor* act, struct style* pin,

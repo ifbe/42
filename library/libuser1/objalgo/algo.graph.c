@@ -121,17 +121,23 @@ static void graph_draw_vbo(
 		carveline_arrow(win, 0xffffff, &vbuf[j*3], &vbuf[k*3]);
 	}
 
-	tr[0] = win->camera.vr[0];
-	tr[1] = win->camera.vr[1];
-	tr[2] = win->camera.vr[2];
+	//tr[0] = win->camera.vr[0];
+	//tr[1] = win->camera.vr[1];
+	//tr[2] = win->camera.vr[2];
+	tr[0] = 1.0;
+	tr[1] = 0.0;
+	tr[2] = 0.0;
 	n = 10.0 / squareroot(tr[0]*tr[0] + tr[1]*tr[1] + tr[2]*tr[2]);
 	tr[0] *= n;
 	tr[1] *= n;
 	tr[2] *= n;
 
-	tf[0] = win->camera.vt[0];
-	tf[1] = win->camera.vt[1];
-	tf[2] = win->camera.vt[2];
+	//tf[0] = win->camera.vt[0];
+	//tf[1] = win->camera.vt[1];
+	//tf[2] = win->camera.vt[2];
+	tf[0] = 0.0;
+	tf[1] = 1.0;
+	tf[2] = 0.0;
 	n = 10.0 / squareroot(tf[0]*tf[0] + tf[1]*tf[1] + tf[2]*tf[2]);
 	tf[0] *= n;
 	tf[1] *= n;

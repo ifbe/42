@@ -4,6 +4,7 @@ void fixmatrix(float* m, struct fstyle* sty);
 
 
 
+/*
 static int rtscam_event11111(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
@@ -41,17 +42,8 @@ static int rtscam_event11111(
 		if(y1 > win->width-16)win->camera.vc[1] -= 10;
 	}
 
-/*
-	float w = win->width;
-	float h = win->height;
-	win->nearn = 1;
-	win->nearl =-w/h;
-	win->nearr = w/h;
-	win->nearb =-1;
-	win->neart = 1;
-*/
 	return 1;
-}
+}*/
 static int rtscam_event(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,

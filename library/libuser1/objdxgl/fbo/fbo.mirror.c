@@ -70,7 +70,7 @@ void mirrorcamera(
 	struct actor* leaf, struct style* lf,
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
-{
+{/*
 	float x,y,z,t;
 	vec3 p,q;
 	struct relation* rel;
@@ -171,6 +171,7 @@ void mirrorcamera(
 	fbo->camera.vt[2] = z * t;
 
 	carvefrustum(root, &fbo->camera);
+*/
 /*
 	say("%f,%f,%f\n",root->camera.vc[0], root->camera.vc[1], root->camera.vc[2]);
 	say("%f,%f,%f\n",fbo->camera.vc[0], fbo->camera.vc[1], fbo->camera.vc[2]);
@@ -272,7 +273,7 @@ static void mirror_draw_vbo(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
-	mirrorcamera(act, pin, 0, sty, win, 0);
+	//mirrorcamera(act, pin, 0, sty, win, 0);
 }
 static void mirror_draw_pixel(
 	struct actor* act, struct style* pin,

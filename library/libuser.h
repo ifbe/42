@@ -685,11 +685,8 @@ struct arena
 	int wn;
 
 	//[100,1ff]
-	struct fstyle target;
-	struct fstyle camera;
-
-	//[200,3ff]
-	struct xyzwpair input[32];
+	struct xyzwpair touch[8];
+	struct xyzwpair mouse[8];
 };
 struct actor
 {

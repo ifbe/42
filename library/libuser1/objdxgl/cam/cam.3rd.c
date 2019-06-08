@@ -3,6 +3,7 @@
 
 
 
+/*
 void thridperson_fixcam(struct arena* win, float* v)
 {
 	float w,h;
@@ -42,10 +43,6 @@ void thridperson_fixcam(struct arena* win, float* v)
 	win->camera.vb[1] =-y * n;
 	win->camera.vb[2] =-z * n;
 }
-
-
-
-
 static int thirdperson_sread000(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
@@ -98,7 +95,7 @@ found:
 print:
 	carvefrustum(win, &win->camera);
 	return 0;
-}
+}*/
 static int thirdperson_draw(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
@@ -117,7 +114,7 @@ static int thirdperson_draw(
 	carvesolid_prism4(win, 0x008000, tc, vr, vu, tf);
 
 	//
-	thirdperson_sread000(act, pin, win, sty);
+	//thirdperson_sread000(act, pin, win, sty);
 	return 0;
 }
 static int thirdperson_event(
@@ -154,6 +151,7 @@ static int thirdperson_event(
 			return 0;
 		}
 	}
+/*
 	else if(0x4070 == ev->what)
 	{
 		id = (ev->why)>>48;
@@ -193,6 +191,7 @@ static int thirdperson_event(
 		act->camera.vc[1] = v[0]*s + v[1]*c;
 		return 1;
 	}
+*/
 	return 0;
 }
 

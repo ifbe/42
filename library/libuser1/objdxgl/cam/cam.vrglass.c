@@ -38,7 +38,7 @@ static int vrglass_draw(
 	//act->camera.vq[0] = 1000 * cosine(tau * time);
 	//act->camera.vq[1] = 1000 * sine(tau * time);
 	return 0;
-}
+}/*
 static int vrglass_event111(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
@@ -151,7 +151,7 @@ static int vrglass_event111(
 	win->camera.vt[1] = 0.0;
 	win->camera.vt[2] = win->height/2 - win->camera.vc[2];
 	return 1;
-}
+}*/
 static int vrglass_event(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,

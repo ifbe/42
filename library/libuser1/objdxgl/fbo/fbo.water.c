@@ -63,7 +63,7 @@ void watercamera(
 	struct actor* leaf, struct style* lf,
 	struct arena* twig, struct style* tf,
 	struct arena* root, struct style* rf)
-{
+{/*
 	float x,y,z,t;
 	vec3 p,q;
 	struct relation* rel;
@@ -164,6 +164,7 @@ void watercamera(
 	fbo->camera.vt[2] = z * t;
 
 	carvefrustum(root, &fbo->camera);
+*/
 /*
 	say("%f,%f,%f\n",root->camera.vc[0], root->camera.vc[1], root->camera.vc[2]);
 	say("%f,%f,%f\n",tmp->camera.vc[0], tmp->camera.vc[1], tmp->camera.vc[2]);

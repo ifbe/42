@@ -31,11 +31,10 @@ static int firstperson_draw(
 	return 0;
 
 found:
-	src = (void*)(&tar->camera);
-	dst = (void*)(   &win->camera);
-	for(j=0;j<sizeof(struct style);j++)dst[j] = src[j];
-
-	carvefrustum(win, &win->camera);
+	//src = (void*)(&tar->camera);
+	//dst = (void*)(   &win->camera);
+	//for(j=0;j<sizeof(struct style);j++)dst[j] = src[j];
+	//carvefrustum(win, &win->camera);
 	return 0;
 }
 

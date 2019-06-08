@@ -362,6 +362,7 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 		//playwith3d_pick(win, x, y);
 		return 0;
 	}
+/*
 	if(hex32('p','@',0,0) == ev->what)
 	{
 		if('l' == id)id = 10;
@@ -441,13 +442,13 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 			sty->vf[0] = tx*c - ty*s;
 			sty->vf[1] = tx*s + ty*c;
 		}
-	}
+	}*/
 	return 1;
 }
 
 
 
-
+/*
 int playwith3d_pick(struct arena* root, struct arena* twig, struct actor* act, int x, int y)
 {
 	int ret;
@@ -564,7 +565,7 @@ found:
 	sty->vc[0] += dx;
 	sty->vc[1] += dy;
 	return 0;
-}
+}*/
 
 
 
@@ -654,15 +655,15 @@ found:
 
 	if(hex32('p','+',0,0) == ev->what)
 	{
-		playwith3d_pick(win, www, act, t[0], t[1]);
+		//playwith3d_pick(win, www, act, t[0], t[1]);
 		return 1;
-	}
+	}/*
 	if(hex32('p','@',0,0) == ev->what)
 	{
 		if(win->input[10].z0)playwith3d_move(win, www, t[0], t[1], win->input[10].xn, win->input[10].yn);
 		if(win->input[ 0].z0)playwith3d_move(win, www, t[0], t[1], win->input[ 0].xn, win->input[ 0].yn);
 		return 1;
-	}
+	}*/
 	return 0;
 }
 

@@ -119,14 +119,20 @@ void corner_vbo_drag(
 	if(w<h)c = w / 32;
 	else c = h / 32;
 
-	if(win->input[10].z0)j = 10;
-	else if(win->input[0].z0)j = 0;
+	if(win->mouse[0].z0){
+		x0 = win->mouse[0].x0;
+		y0 = win->mouse[0].y0;
+		xn = win->mouse[0].xn;
+		yn = win->mouse[0].yn;
+	}
+	else if(win->touch[0].z0){
+		x0 = win->touch[0].x0;
+		y0 = win->touch[0].y0;
+		xn = win->touch[0].xn;
+		yn = win->touch[0].yn;
+	}
 	else return;
 
-	x0 = win->input[j].x0;
-	y0 = win->input[j].y0;
-	xn = win->input[j].xn;
-	yn = win->input[j].yn;
 
 	if(y0 < c){
 		if(x0 < c){
@@ -179,10 +185,10 @@ void corver_vbo_hover(
 	if(w<h)c = w / 32;
 	else c = h / 32;
 
-	x0 = win->input[10].x0;
-	y0 = win->input[10].y0;
-	xn = win->input[10].xn;
-	yn = win->input[10].yn;
+	x0 = win->mouse[0].x0;
+	y0 = win->mouse[0].y0;
+	xn = win->mouse[0].xn;
+	yn = win->mouse[0].yn;
 
 	vr[0] = 2*(float)c / (float)w;
 	vr[1] = 0.0;
@@ -338,10 +344,10 @@ void corner_draw_pixel(
 
 
 //---------hover
-	x0 = win->input[10].x0;
-	y0 = win->input[10].y0;
-	xn = win->input[10].xn;
-	yn = win->input[10].yn;
+	x0 = win->mouse[10].x0;
+	y0 = win->mouse[10].y0;
+	xn = win->mouse[10].xn;
+	yn = win->mouse[10].yn;
 
 	if((xn < c)&&(yn+c > h))t = 4;
 	else t = 1;
@@ -361,14 +367,18 @@ void corner_draw_pixel(
 
 
 //--------------drag
-	if(win->input[10].z0)t = 10;
-	else if(win->input[0].z0)t = 0;
-	else return;
-
-	x0 = win->input[t].x0;
-	y0 = win->input[t].y0;
-	xn = win->input[t].xn;
-	yn = win->input[t].yn;
+	if(win->mouse[0].z0){
+		x0 = win->mouse[0].x0;
+		y0 = win->mouse[0].y0;
+		xn = win->mouse[0].xn;
+		yn = win->mouse[0].yn;
+	}
+	else if(win->touch[0].z0){
+		x0 = win->touch[0].x0;
+		y0 = win->touch[0].y0;
+		xn = win->touch[0].xn;
+		yn = win->touch[0].yn;
+	}
 
 	if(y0 < c)
 	{

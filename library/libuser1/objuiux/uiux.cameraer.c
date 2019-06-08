@@ -6,7 +6,7 @@
 void camman_debug(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
-{
+{/*
 	vec3 tc,tr,tf;
 	tr[0] = 1.0 / 64;
 	tr[1] = 0.0;
@@ -53,7 +53,7 @@ void camman_debug(
 	tc[0] = -1.0;
 	tc[1] = 1.0 / 32;
 	tc[2] = 0.0;
-	carve2d_vec4(win, 0xffffff, tc, tr, tf, "vc", win->camera.vc);
+	carve2d_vec4(win, 0xffffff, tc, tr, tf, "vc", win->camera.vc);*/
 }
 
 

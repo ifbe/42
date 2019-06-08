@@ -84,9 +84,12 @@ void carveline_arrow(struct arena* win, u32 rgb,
 	z0 *= n0;
 
 	//n2 = cross(cam.vn, n1)
-	x1 = win->camera.vn[1]*z0 - win->camera.vn[2]*y0;
-	y1 = win->camera.vn[2]*x0 - win->camera.vn[0]*z0;
-	z1 = win->camera.vn[0]*y0 - win->camera.vn[1]*x0;
+	//x1 = win->camera.vn[1]*z0 - win->camera.vn[2]*y0;
+	//y1 = win->camera.vn[2]*x0 - win->camera.vn[0]*z0;
+	//z1 = win->camera.vn[0]*y0 - win->camera.vn[1]*x0;
+	x1 = z0;
+	y1 = 0;
+	z1 = - x0;
 	n1 = 16.0 / squareroot(x1*x1 + y1*y1 + z1*z1);
 	x1 *= n1;
 	y1 *= n1;

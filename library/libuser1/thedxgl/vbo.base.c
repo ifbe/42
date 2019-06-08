@@ -7,7 +7,7 @@ int actorinput_touch(struct arena* win, struct event* ev);
 
 
 
-
+/*
 void defaultvertex(struct arena* win)
 {
 	//target
@@ -47,7 +47,7 @@ void defaultvertex(struct arena* win)
 	win->camera.vn[0] = 0.0;
 	win->camera.vn[1] = 0.70710678118655;
 	win->camera.vn[2] =-0.70710678118655;
-/*
+
 	win->camera.vf[0] = 0.0;
 	win->camera.vf[1] = 0.0;
 	win->camera.vf[2] = 0.0;
@@ -55,11 +55,11 @@ void defaultvertex(struct arena* win)
 	win->camera.vq[0] = 0.0;
 	win->camera.vq[1] = 0.0;
 	win->camera.vq[2] = 0.0;
-*/
+
 	win->camera.vc[0] = 0.0;
 	win->camera.vc[1] = -2000.0;
 	win->camera.vc[2] = 2000.0;
-}
+}*/
 
 
 
@@ -185,7 +185,7 @@ void* vbonode_create(u64 type, u64 flag)
 	win->height = win->fbheight = 768;
 	win->depth = win->fbdepth = 1024;
 
-	defaultvertex(win);
+	//defaultvertex(win);
 
 	win->gl_camera = buf = memorycreate(0x10000);
 	for(j=0;j<0x10000;j++)buf[j] = 0;
