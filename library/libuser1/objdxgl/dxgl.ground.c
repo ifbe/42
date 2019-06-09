@@ -1,4 +1,5 @@
 #include "libuser.h"
+void actorcreatefromfile(struct actor* act, char* name);
 
 
 
@@ -30,14 +31,13 @@ GLSL_VERSION
 "out mediump vec4 FragColor;\n"
 "uniform sampler2D tex0;\n"
 "void main(){\n"
-	"mediump float x = mod(abs(vertex.x), 1000.0) - 500.0;\n"
-	"mediump float y = mod(abs(vertex.y), 1000.0) - 500.0;\n"
-	"if(x>-490.0 && x<490.0 && y>-490.0 && y<490.0)discard;\n"
-	"FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
-	//"mediump vec3 c;\n"
-	//"if(x * y > 0.0)c = vec3(0.5, 0.5, 0.5);\n"
-	//"else c = vec3(0.75, 0.75, 0.75);\n"
-	//"FragColor = vec4(c, 1.0);\n"
+	//"mediump float x = mod(abs(vertex.x), 1000.0) - 500.0;\n"
+	//"mediump float y = mod(abs(vertex.y), 1000.0) - 500.0;\n"
+	//"if(x>-490.0 && x<490.0 && y>-490.0 && y<490.0)discard;\n"
+
+	"mediump float x = mod(abs(vertex.x), 1000.0) / 1000.0;\n"
+	"mediump float y = mod(abs(vertex.y), 1000.0) / 1000.0;\n"
+	"FragColor = vec4(texture(tex0, vec2(x,y)).bgr, 1.0);\n"
 "}\n";
 
 
@@ -203,6 +203,14 @@ static void ground_start(struct halfrel* self, struct halfrel* peer)
 	src->vbuf_h = 6;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf = memorycreate(src->vbuf_len);
+
+	//texture
+	src->tex_name[0] = "tex0";
+	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex_data[0] = act->buf;
+	src->tex_w[0] = act->width;
+	src->tex_h[0] = act->height;
+	src->tex_enq[0] = 42;
 }
 
 
@@ -219,6 +227,11 @@ static void ground_delete(struct actor* act)
 }
 static void ground_create(struct actor* act, void* str)
 {
+	//max=16MB
+	if(0 == act->buf)act->buf = memorycreate(2048*2048*4);
+
+	if(0 == str)str = "datafile/jpg/wall.jpg";
+	actorcreatefromfile(act, str);
 }
 
 

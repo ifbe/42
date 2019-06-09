@@ -24,7 +24,7 @@ geomhelper{
 fmt:aidgeom
 }
 particle{
-fmt:particle
+fmt:rubik
 }
 
 texball{
@@ -33,6 +33,7 @@ file:datafile/jpg/skysphere.jpg
 }
 terrain{
 fmt:ground
+file:datafile/jpg/wall.jpg
 }
 rabbit{
 fmt:model
@@ -52,7 +53,7 @@ frontlook{
 r: 1.0, 0.0, 0.0
 t: 0.0, 0.0, 1.0
 f: 0.0, 1.0, 0.0
-c: 0.0, -1000.0, 1000.0
+c: 0.0, -990.0, 1000.0
 }
 
 sky{
@@ -68,16 +69,16 @@ f: 0.0, 10000000.0, 0.0
 t: 0.0, 0.0, 10000000.0
 }
 rabb{
-c: 0.0, 0.0, 0.0
+c: 0.0, 0.0, 1000.0
 r: 100.0, 0.0, 0.0
 f: 0.0, 100.0, 0.0
 t: 0.0, 0.0, 100.0
 }
 haha{
-c: -1000.0, 1000.0, 0.0
-r: 100.0, 0.0, 0.0
-f: 0.0, 100.0, 0.0
-t: 0.0, 0.0, 100.0
+c: 0.0, 0.0, 1000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
 }
 
 </style>

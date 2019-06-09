@@ -169,6 +169,12 @@ static int vrglass_event(
 		if(t[3] & joyl_trigger)act->camera.vq[1] -= 10.0;
 		if(t[3] & joyl_bumper )act->camera.vq[1] += 10.0;
 	}
+	if(_char_ == ev->what){
+		if('a' == ev->why)act->camera.vq[0] -= 10.0;
+		if('d' == ev->why)act->camera.vq[0] += 10.0;
+		if('s' == ev->why)act->camera.vq[2] += 10.0;
+		if('w' == ev->why)act->camera.vq[2] -= 10.0;
+	}
 	return 1;
 }
 
@@ -314,8 +320,8 @@ static void vrglass_create(struct actor* act, void* str)
 	vn[1] = -1000.0 - vc[1];
 	vn[2] = 0.0;*/
 
-	act->camera.vq[0] = 1000.0;
-	act->camera.vq[1] = 1000.0;
+	act->camera.vq[0] = 100.0;
+	act->camera.vq[1] = 100.0;
 	act->camera.vq[2] = 1000.0;
 	act->buf = memorycreate(64);
 }

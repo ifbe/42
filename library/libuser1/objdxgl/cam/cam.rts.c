@@ -76,6 +76,13 @@ static int rtscam_event(
 		if(t[3] & joyl_trigger)s->vc[2] -= 10.0;
 		if(t[3] & joyl_bumper )s->vc[2] += 10.0;
 	}
+
+	if(_char_ == ev->what){
+		if('a' == ev->why)s->vc[0] -= 10.0;
+		if('d' == ev->why)s->vc[0] += 10.0;
+		if('s' == ev->why)s->vc[1] -= 10.0;
+		if('w' == ev->why)s->vc[1] += 10.0;
+	}
 	return 1;
 }
 

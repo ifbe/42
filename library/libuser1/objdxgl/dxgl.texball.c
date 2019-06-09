@@ -30,9 +30,9 @@ char* texball_glsl_t = 0;
 char* texball_glsl_g = 0;
 char* texball_glsl_f = 
 	GLSL_VERSION
-	"uniform sampler2D tex0;\n"
 	"in mediump vec2 uvw;\n"
 	"out mediump vec4 FragColor;\n"
+	"uniform sampler2D tex0;\n"
 	"void main()\n"
 	"{\n"
 		"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"

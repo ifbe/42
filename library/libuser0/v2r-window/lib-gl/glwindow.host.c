@@ -357,6 +357,9 @@ int hostviewport_event(struct halfrel* relcam, struct halfrel* relwin, struct ev
 
 		return actorwrite(relcam, relwin, ev, 0);
 	}
+	if(_char_ == ev->what){
+		return actorwrite(relcam, relwin, ev, 0);
+	}
 
 	return 0;
 }
