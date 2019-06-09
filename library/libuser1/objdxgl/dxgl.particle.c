@@ -25,16 +25,16 @@ GLSL_VERSION
 "in mediump vec3 rgb[];\n"
 "out mediump vec3 colour;\n"
 "void build_house(vec4 position){\n"    
-	"gl_Position = position + vec4(-5.0, 0.0, 0.0, 0.0);\n"
+	"gl_Position = position + vec4(-2.0, 0.0, 0.0, 0.0);\n"
 	"colour = rgb[0];\n"
 	"EmitVertex();\n"
-	"gl_Position = position + vec4( 0.0, -5.0, 0.0, 0.0);\n"
+	"gl_Position = position + vec4( 0.0, -2.0, 0.0, 0.0);\n"
 	"colour = rgb[0];\n"
 	"EmitVertex();\n"
-	"gl_Position = position + vec4( 0.0,  5.0, 0.0, 0.0);\n"
+	"gl_Position = position + vec4( 0.0,  2.0, 0.0, 0.0);\n"
 	"colour = rgb[0];\n"
 	"EmitVertex();\n"
-	"gl_Position = position + vec4( 5.0,  0.0, 0.0, 0.0);\n"
+	"gl_Position = position + vec4( 2.0,  0.0, 0.0, 0.0);\n"
 	"colour = rgb[0];\n"
 	"EmitVertex();\n"
 "}\n"
@@ -103,16 +103,19 @@ static void particle_draw_vbo3d(
 	for(j=0;j<COUNT;j++)
 	{
 		x = sbuf[9*j + 0] + sbuf[9*j + 3];
-		if((x < -1.0) | (x > 1.0))sbuf[9*j + 3] = - sbuf[9*j + 3];
-		sbuf[9*j + 0] += sbuf[9*j + 3];
+		if(x <-1.0)x = 1.0;
+		else if(x > 1.0)x = -1.0;
+		sbuf[9*j + 0] = x;
 
 		y = sbuf[9*j + 1] + sbuf[9*j + 4];
-		if((y < -1.0) | (y > 1.0))sbuf[9*j + 4] = - sbuf[9*j + 4];
-		sbuf[9*j + 1] += sbuf[9*j + 4];
+		if(y <-1.0)y = 1.0;
+		else if(y > 1.0)y = -1.0;
+		sbuf[9*j + 1] = y;
 
 		z = sbuf[9*j + 2] + sbuf[9*j + 5];
-		if((z < -1.0) | (z > 1.0))sbuf[9*j + 5] = - sbuf[9*j + 5];
-		sbuf[9*j + 2] += sbuf[9*j + 5];
+		if(z <-1.0)z = 1.0;
+		else if(z > 1.0)z = -1.0;
+		sbuf[9*j + 2] = z;
 	}
 	src->vbuf_enq += 1;
 }
@@ -248,9 +251,9 @@ static void particle_create(struct actor* act)
 		vbuf[9*j + 2] = (getrandom()%8192)/4096.0 - 1.0;
 
 		//speed
-		vbuf[9*j + 3] = (getrandom()%8191 - 4095)/409600.0;
-		vbuf[9*j + 4] = (getrandom()%8191 - 4095)/409600.0;
-		vbuf[9*j + 5] = (getrandom()%8191 - 4095)/409600.0;
+		vbuf[9*j + 3] = 0.0;
+		vbuf[9*j + 4] = -0.01*(getrandom()%8192)/8192.0;
+		vbuf[9*j + 5] = 0.0;
 
 		//colour
 		vbuf[9*j + 6] = (getrandom()%8192)/8192.0;
