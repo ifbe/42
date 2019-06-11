@@ -439,22 +439,22 @@ static int freecam_event1(
 	short* t;
 	say("freecam_event@%llx:%x,%x\n", act, ev->why, ev->what);
 
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)return 0;
+
+		if(hex32('g','e','o','m') == rel->dstflag){
+			s = (void*)(rel->srcfoot);
+			break;
+		}
+		rel = samedstnextsrc(rel);
+	}
+
 	if('p' == (ev->what&0xff))
 	{
 	}
 	else if(joy_left == (ev->what & joy_mask))
 	{
-		rel = act->irel0;
-		while(1){
-			if(0 == rel)return 0;
-
-			if(hex32('g','e','o','m') == rel->dstflag){
-				s = (void*)(rel->srcfoot);
-				break;
-			}
-			rel = samedstnextsrc(rel);
-		}
-
 		t = (void*)ev;
 		if(t[3] & joyl_left)		//x-
 		{

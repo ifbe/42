@@ -24,7 +24,7 @@ geomhelper{
 fmt:aidgeom
 }
 particle{
-fmt:xiangqi
+fmt:2048
 }
 rtscam{
 fmt:freecam
@@ -41,7 +41,7 @@ rtsproj{
 r: 1000.0, 0.0, 0.0
 f: 0.0, 0.0, -1000.0
 t: 0.0, 1000.0, 0.0
-c: 0.0, 0.0, 1200.0
+c: 0.0, 0.0, 1000.0
 }
 haha{
 c: 0.0, 0.0, 0.0

@@ -344,10 +344,10 @@ void corner_draw_pixel(
 
 
 //---------hover
-	x0 = win->mouse[10].x0;
-	y0 = win->mouse[10].y0;
-	xn = win->mouse[10].xn;
-	yn = win->mouse[10].yn;
+	x0 = win->mouse[0].x0;
+	y0 = win->mouse[0].y0;
+	xn = win->mouse[0].xn;
+	yn = win->mouse[0].yn;
 
 	if((xn < c)&&(yn+c > h))t = 4;
 	else t = 1;
