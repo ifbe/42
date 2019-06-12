@@ -24,10 +24,10 @@ geomhelper{
 fmt:aidgeom
 }
 particle{
-fmt:2048
+fmt:weiqi
 }
 rtscam{
-fmt:freecam
+fmt:orthcam
 }
 </actor>
 
@@ -37,11 +37,12 @@ fullscreen{
 c:0.0, 0.0
 q:1.0, 1.0
 }
-rtsproj{
+camgeom{
+c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
-f: 0.0, 0.0, -1000.0
 t: 0.0, 1000.0, 0.0
-c: 0.0, 0.0, 1000.0
+n: 0.0, 0.0, -1000.0
+f: 0.0, 0.0, 1000.0
 }
 haha{
 c: 0.0, 0.0, 0.0
@@ -65,7 +66,7 @@ p3{}
 (3dworld, 0, win, aid) -> (geomhelper, 0, act, 0)
 (3dworld, 0, win, aid) -> (fonthelper, 0, act, 0)
 (3dworld, haha, win, bg) -> (particle, p0, act, 0)
-(3dworld, rtsproj, win, cam) -> (rtscam, p0, act, geom)
+(3dworld, camgeom, win, cam) -> (rtscam, p0, act, geom)
 
 (window, 0, win, vp) -> (3dworld, 0, win, out)
 (window, fullscreen, win, cam) -> (rtscam, 0, act, cam)
