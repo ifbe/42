@@ -498,7 +498,7 @@ static int freecam_event1(
 
 
 
-void freecam_sty2cam(struct fstyle* d, struct fstyle* s)
+void freecam_frustum(struct fstyle* d, struct fstyle* s)
 {
 	float x,y,z,n;
 	d->vc[0] = s->vc[0];
@@ -513,11 +513,11 @@ void freecam_sty2cam(struct fstyle* d, struct fstyle* s)
 	d->vr[0] = x / n;
 	d->vr[1] = y / n;
 	d->vr[2] = z / n;
-	d->vr[3] = 1.0;
+	//d->vr[3] = 1.0;
 	d->vl[0] = -x / n;
 	d->vl[1] = -y / n;
 	d->vl[2] = -z / n;
-	d->vl[3] = -1.0;
+	//d->vl[3] = -1.0;
 
 
 	x = s->vt[0];
@@ -527,11 +527,11 @@ void freecam_sty2cam(struct fstyle* d, struct fstyle* s)
 	d->vt[0] = x / n;
 	d->vt[1] = y / n;
 	d->vt[2] = z / n;
-	d->vt[3] = 1.0;
+	//d->vt[3] = 1.0;
 	d->vb[0] = -x / n;
 	d->vb[1] = -y / n;
 	d->vb[2] = -z / n;
-	d->vb[3] = -1.0;
+	//d->vb[3] = -1.0;
 
 
 	x = s->vf[0];
@@ -541,14 +541,15 @@ void freecam_sty2cam(struct fstyle* d, struct fstyle* s)
 	d->vn[0] = x / n;
 	d->vn[1] = y / n;
 	d->vn[2] = z / n;
-	d->vn[3] = 1.0;
+	//d->vn[3] = 1.0;
 	d->vf[0] = x / n;
 	d->vf[1] = y / n;
 	d->vf[2] = z / n;
-	d->vf[3] = 1e20;
+	//d->vf[3] = 1e20;
 }
 static void freecam_matrix(
-	struct actor* act, struct style* pin,
+	struct actor* act, struct style* frustum,
+	struct arena* win, struct style* wingeom,
 	u8* buf, int len)
 {
 	struct relation* rel;
@@ -570,8 +571,8 @@ static void freecam_matrix(
 
 
 	float* m = act->buf;
-	freecam_sty2cam(&act->camera, s);
-	fixmatrix(m, &act->camera);
+	freecam_frustum(&frustum->f, s);
+	fixmatrix(m, &frustum->f);
 	mat4_transpose((void*)m);
 	//printmat4(m);
 
@@ -604,8 +605,11 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	if(_cam_ == self->flag)freecam_matrix(act, pin, buf, len);
-	else freecam_draw(act, pin, win, sty);
+	switch(self->flag){
+		case _cam_:freecam_matrix(act, pin, win, sty, buf, len);break;
+		//case _obj_:
+		default:freecam_draw(act, pin, win, sty);
+	}
 }
 static int freecam_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {

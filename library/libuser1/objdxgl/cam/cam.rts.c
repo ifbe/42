@@ -89,7 +89,7 @@ static int rtscam_event(
 
 
 
-void rtscam_sty2cam(struct fstyle* d, struct fstyle* s)
+void rtscam_frustum(struct fstyle* d, struct fstyle* s)
 {
 	float x,y,z,n;
 	d->vc[0] = s->vc[0];
@@ -104,11 +104,11 @@ void rtscam_sty2cam(struct fstyle* d, struct fstyle* s)
 	d->vr[0] = x / n;
 	d->vr[1] = y / n;
 	d->vr[2] = z / n;
-	d->vr[3] = 0.7;
+	//d->vr[3] = 0.7;
 	d->vl[0] = -x / n;
 	d->vl[1] = -y / n;
 	d->vl[2] = -z / n;
-	d->vl[3] = -0.7;
+	//d->vl[3] = -0.7;
 
 
 	x = s->vt[0];
@@ -118,11 +118,11 @@ void rtscam_sty2cam(struct fstyle* d, struct fstyle* s)
 	d->vt[0] = x / n;
 	d->vt[1] = y / n;
 	d->vt[2] = z / n;
-	d->vt[3] = 0.7;
+	//d->vt[3] = 0.7;
 	d->vb[0] = -x / n;
 	d->vb[1] = -y / n;
 	d->vb[2] = -z / n;
-	d->vb[3] = -0.7;
+	//d->vb[3] = -0.7;
 
 
 	x = s->vf[0];
@@ -132,14 +132,15 @@ void rtscam_sty2cam(struct fstyle* d, struct fstyle* s)
 	d->vn[0] = x / n;
 	d->vn[1] = y / n;
 	d->vn[2] = z / n;
-	d->vn[3] = 1.0;
+	//d->vn[3] = 1.0;
 	d->vf[0] = x / n;
 	d->vf[1] = y / n;
 	d->vf[2] = z / n;
-	d->vf[3] = 1e20;
+	//d->vf[3] = 1e20;
 }
 static void rtscam_matrix(
-	struct actor* act, struct style* pin,
+	struct actor* act, struct style* frustum,
+	struct arena* win, struct style* wingeom,
 	u8* buf, int len)
 {
 	struct relation* rel;
@@ -161,8 +162,8 @@ static void rtscam_matrix(
 
 
 	float* m = act->buf;
-	rtscam_sty2cam(&act->camera, s);
-	fixmatrix(m, &act->camera);
+	rtscam_frustum(&frustum->f, s);
+	fixmatrix(m, &frustum->f);
 	mat4_transpose((void*)m);
 	//printmat4(m);
 
@@ -194,8 +195,9 @@ static void rtscam_read(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	if(_cam_ == self->flag)rtscam_matrix(act, pin, buf, len);
-	//else rtscam_draw(act, pin, win, sty);
+	switch(self->flag){
+		case _cam_:rtscam_matrix(act, pin, win, sty, buf, len);break;
+	}
 }
 static int rtscam_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {

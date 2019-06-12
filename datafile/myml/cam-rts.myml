@@ -32,7 +32,7 @@ fmt:texball
 file:datafile/jpg/skysphere.jpg
 }
 terrain{
-fmt:ground
+fmt:terrain
 file:datafile/jpg/cartoon.jpg
 }
 rabbit{
@@ -45,15 +45,25 @@ fmt:rtscam
 
 
 <style>
-fullscreen{
-c:0.0, 0.0
-q:1.0, 1.0
+rtsmodl{
 }
-rtsproj{
+rtsgeom{
 r: 1.0, 0.0, 0.0
 t: 0.0, 0.829, 0.5591929
 f: 0.0, 0.5591929,-0.829
 c: 0.0,-922.668, 1367.85
+}
+rtsfrus{
+l: 0.0, 0.0, 0.0, -0.7
+r: 0.0, 0.0, 0.0, 0.7
+b: 0.0, 0.0, 0.0, -0.7
+t: 0.0, 0.0, 0.0, 0.7
+n: 0.0, 0.0, 0.0, 0.7
+f: 0.0, 0.0, 0.0, 1000000000000.0
+}
+rtsrect{
+c:0.0, 0.0
+q:1.0, 1.0
 }
 
 sky{
@@ -64,21 +74,21 @@ t: 0.0, 0.0, 10000000.0
 }
 gnd{
 c: 0.0, 0.0, 0.0
-r: 10000000.0, 0.0, 0.0
-f: 0.0, 10000000.0, 0.0
-t: 0.0, 0.0, 10000000.0
+r: 100000.0, 0.0, 0.0
+f: 0.0, 100000.0, 0.0
+t: 0.0, 0.0, 100000.0
 }
 rabb{
-c: 0.0, 0.0, 10.0
-r: 10.0, 0.0, 0.0
-f: 0.0, 10.0, 0.0
-t: 0.0, 0.0, 10.0
+c: 0.0, 0.0, 0.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
 }
 haha{
-c: -100.0, 100.0, 0.0
-r: 10.0, 0.0, 0.0
-f: 0.0, 10.0, 0.0
-t: 0.0, 0.0, 10.0
+c: -1000.0, 1000.0, 0.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
 }
 
 </style>
@@ -100,10 +110,10 @@ p3{}
 (3dworld, sky, win, bg) -> (texball, p1, act, 0)
 (3dworld, gnd, win, bg) -> (terrain, p2, act, 0)
 (3dworld, rabb, win, bg) -> (rabbit, p3, act, 0)
-(3dworld, rtsproj, win, cam) -> (rtscam, p0, act, geom)
+(3dworld, rtsgeom, win, cam) -> (rtscam, rtsmodl, act, geom)
 
 (window, 0, win, vp) -> (3dworld, 0, win, out)
-(window, fullscreen, win, cam) -> (rtscam, 0, act, cam)
+(window, rtsrect, win, cam) -> (rtscam, rtsfrus, act, cam)
 
 (player1, 0, win, con) -> (rtscam, 0, act, con)
 </relation>

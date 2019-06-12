@@ -24,16 +24,16 @@ fmt:joy
 
 
 <actor>
-cambl{
+rtscam{
 fmt:rtscam
 }
-cambr{
+orthcam{
 fmt:orthcam
 }
-camtl{
+freecam{
 fmt:freecam
 }
-camtr{
+vrcam{
 fmt:vrglass
 }
 texball{
@@ -75,47 +75,91 @@ fmt:pointer
 
 
 <style>
-botleft{
-c:0.0, 0.0
-q:0.5, 0.5
+rtsmodl{
 }
-botright{
-c:0.5, 0.0
-q:0.5, 0.5
-}
-topleft{
-c:0.0, 0.5
-q:0.5, 0.5
-}
-topright{
-c:0.5, 0.5
-q:0.5, 0.5
-}
-rtsproj{
+rtsgeom{
 r: 1.0, 0.0, 0.0
 t: 0.0, 0.829, 0.5591929
 f: 0.0, 0.5591929,-0.829
 c: 0.0,-1118.3858, 1658.0
 }
-rtsorth{
+rtsfrus{
+l: 0.0, 0.0, 0.0, -0.7
+r: 0.0, 0.0, 0.0, 0.7
+b: 0.0, 0.0, 0.0, -0.7
+t: 0.0, 0.0, 0.0, 0.7
+n: 0.0, 0.0, 0.0, 0.7
+f: 0.0, 0.0, 0.0, 1000000000000.0
+}
+rtsrect{
+c:0.0, 0.0
+q:0.5, 0.5
+}
+
+orthmodl{
+}
+orthgeom{
 c: 0.0,-1118.3858, 1658.0
 r: 100.0, 0.0, 0.0
 t: 0.0, 82.9, 55.91929
 n: 0.0, 0.5591929,-0.829
 f: 0.0, 559192900000,-829000000000
 }
-frontlook{
+orthfrus{
+}
+orthrect{
+c:0.5, 0.0
+q:0.5, 0.5
+}
+
+freerect{
+c:0.0, 0.5
+q:0.5, 0.5
+}
+freefrus{
+l: 0.0, 0.0, 0.0, -1.0
+r: 0.0, 0.0, 0.0, 1.0
+b: 0.0, 0.0, 0.0, -1.0
+t: 0.0, 0.0, 0.0, 1.0
+n: 0.0, 0.0, 0.0, 1.0
+f: 0.0, 0.0, 0.0, 1000000000000.0
+}
+freegeom{
 r: 1.0, 0.0, 0.0
 t: 0.0, 0.0, 1.0
 f: 0.0, 1.0, 0.0
 c: 0.0, -1000.0, 500.0
 }
-sidelook{
+freemodl{
+}
+
+vrmodl{
+}
+vrgeom{
 r: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
 f:-1000.0, 0.0, 0.0
 c: 0.0, 0.0, 0.0
 }
+vrfrus{
+}
+vrrect{
+c:0.5, 0.5
+q:0.5, 0.5
+}
+
+fullscreen{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+uirect{
+c: 0.0, 0.0, 0.0
+r: 1.0, 0.0, 0.0
+t: 0.0, 1.0, 0.0
+n: 0.0, 0.0, 1.0
+f: 0.0, 0.0, -1.0
+}
+
 sky{
 c: 0.0, 0.0, 0.0
 r: 10000000.0, 0.0, 0.0
@@ -135,17 +179,6 @@ f: 0.0, 100.0, 0.0
 t: 0.0, 0.0, 100.0
 }
 
-fullscreen{
-c:0.0, 0.0
-q:1.0, 1.0
-}
-ortho{
-c: 0.0, 0.0, 0.0
-r: 1.0, 0.0, 0.0
-t: 0.0, 1.0, 0.0
-n: 0.0, 0.0, 1.0
-f: 0.0, 0.0, -1.0
-}
 ovv{
 c: 0.0, 0.0, 0.0
 r: 1.0, 0.0, 0.0
@@ -193,16 +226,16 @@ p8{}
 (3dworld, sky, win, bg) -> (texball, p1, act, 0)
 (3dworld, gnd, win, bg) -> (terrain, p2, act, 0)
 (3dworld, rabb, win, bg) -> (rabbit, p3, act, 0)
-(3dworld, rtsproj, win, cam) -> (cambl, p0, act, geom)
-(3dworld, rtsorth, win, cam) -> (cambr, p0, act, geom)
-(3dworld, frontlook, win, cam) -> (camtl, p0, act, geom)
-(3dworld, sidelook, win, cam) -> (camtr, p0, act, geom)
+(3dworld, rtsgeom, win, cam) -> (rtscam, rtsmodl, act, geom)
+(3dworld, orthgeom, win, cam) -> (orthcam, orthmodl, act, geom)
+(3dworld, freegeom, win, cam) -> (freecam, freemodl, act, geom)
+(3dworld, vrgeom, win, cam) -> (vrcam, vrmodl, act, geom)
 
 (window, 0, win, vp) -> (3dworld, 0, win, out)
-(window, botleft, win, cam) -> (cambl, 0, act, cam)
-(window, botright,win, cam) -> (cambr, 0, act, cam)
-(window, topleft, win, cam) -> (camtl, 0, act, cam)
-(window, topright,win, cam) -> (camtr, 0, act, cam)
+(window, rtsrect, win, cam) -> (rtscam, rtsfrus, act, cam)
+(window, orthrect,win, cam) -> (orthcam, orthfrus, act, cam)
+(window, freerect, win, cam) -> (freecam, freefrus, act, cam)
+(window, vrrect,win, cam) -> (vrcam, vrfrus, act, cam)
 
 (uiworld, 0, win, aid) -> (geomhelper, 0, act, 0)
 (uiworld, 0, win, aid) -> (fonthelper, 0, act, 0)
@@ -211,11 +244,11 @@ p8{}
 (uiworld, sty6, win, ui) -> (vkbd, p6, act, 0)
 (uiworld, sty7, win, ui) -> (corner, p7, act, 0)
 (uiworld, sty8, win, ui) -> (pointer, p8, act, 0)
-(uiworld, ortho, win, cam) -> (uicamera, 0, act, geom)
+(uiworld, uirect, win, cam) -> (uicamera, 0, act, geom)
 
 (window, 0, win, vp) -> (uiworld, 0, win, out)
 (window, fullscreen,win, cam) -> (uicamera, 0, act, cam)
 
-(player1, 0, win, con) -> (camtl, 0, act, con)
-(player2, 0, win, con) -> (cambl, 0, act, con)
+(player1, 0, win, con) -> (freecam, 0, act, con)
+(player2, 0, win, con) -> (rtscam, 0, act, con)
 </relation>

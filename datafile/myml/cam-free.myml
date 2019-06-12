@@ -42,6 +42,14 @@ fullscreen{
 c:0.0, 0.0
 q:1.0, 1.0
 }
+frustum{
+l: 0.0, 0.0, 0.0, -1.0
+r: 0.0, 0.0, 0.0, 1.0
+b: 0.0, 0.0, 0.0, -1.0
+t: 0.0, 0.0, 0.0, 1.0
+n: 0.0, 0.0, 0.0, 1.0
+f: 0.0, 0.0, 0.0, 1000000000.0
+}
 rtsproj{
 r: 1.0, 0.0, 0.0
 f: 0.0, 1.0, 0.0
@@ -82,7 +90,7 @@ p3{}
 (3dworld, rtsproj, win, cam) -> (rtscam, p0, act, geom)
 
 (window, 0, win, vp) -> (3dworld, 0, win, out)
-(window, fullscreen, win, cam) -> (rtscam, 0, act, cam)
+(window, fullscreen, win, cam) -> (rtscam, frustum, act, cam)
 
 (player1, 0, win, con) -> (rtscam, 0, act, con)
 </relation>
