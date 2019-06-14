@@ -3,25 +3,10 @@
 #define Ki 0.005f
 #define beta 10.0f
 
-//
-extern int timeinterval;
-extern float predictdata[9];
-
 //????
 static float integralx;
 static float integraly;
 static float integralz;
-
-//raw
-static float ax;
-static float ay;
-static float az;
-static float gx;
-static float gy;
-static float gz;
-static float mx;
-static float my;
-static float mz;
 
 //quaternion
 static float q0;
@@ -52,25 +37,23 @@ void deletequaternion()
 
 
 //accel + gyro
-void imuupdate()
+void imuupdate(vec3 acc, vec3 gyr)
 {
 	float vx, vy, vz;
 	float ex, ey, ez;
 	float norm,halfT;
 
-	//time
-	halfT=(float)timeinterval / 1000.0 / 1000.0 / 2.0;
-
 	//value
-	float ax=predictdata[0];
-	float ay=predictdata[1];
-	float az=predictdata[2];
-	float gx=predictdata[3];
-	float gy=predictdata[4];
-	float gz=predictdata[5];
+	float ax = acc[0];
+	float ay = acc[1];
+	float az = acc[2];
+
+	float gx = gyr[0];
+	float gy = gyr[1];
+	float gz = gyr[2];
 
 	//a
-	norm = sqrt(ax*ax+ay*ay+az*az);
+	norm = squareroot(ax*ax+ay*ay+az*az);
 	ax = ax/norm;
 	ay = ay/norm;
 	az = az/norm;
@@ -96,17 +79,17 @@ void imuupdate()
 	q2 = q2 + (q0*gy - q1*gz + q3*gx)*halfT;
 	q3 = q3 + (q0*gz + q1*gy - q2*gx)*halfT;
 
-	norm = sqrt(q0*q0 + q1*q1 + q2*q2 + q3*q3);
+	norm = squareroot(q0*q0 + q1*q1 + q2*q2 + q3*q3);
 	q0 = q0 / norm;
 	q1 = q1 / norm;
 	q2 = q2 / norm;
 	q3 = q3 / norm;
 
-	eulerian[0] = atan2(2*(q0*q1+q2*q3),1-2*(q1*q1+q2*q2))*180/3.141592653;
-	eulerian[1] = atan2(2*(q0*q3+q1*q2),1-2*(q2*q2+q3*q3))*180/3.141592653;
-	eulerian[2] = asin(2*q0*q2 - 2*q1*q3)*180/3.141592653;
+	eulerian[0] = arctan2(2*(q0*q1+q2*q3),1-2*(q1*q1+q2*q2))*180/3.141592653;
+	eulerian[1] = arctan2(2*(q0*q3+q1*q2),1-2*(q2*q2+q3*q3))*180/3.141592653;
+	eulerian[2] = arcsin(2*q0*q2 - 2*q1*q3)*180/3.141592653;
 
-	printf("imu:	%lf	%lf	%lf\n",
+	say("imu:	%lf	%lf	%lf\n",
 		eulerian[0],
 		eulerian[1],
 		eulerian[2]
@@ -118,7 +101,7 @@ void imuupdate()
 
 
 //accel + gyro + mag
-void mahonyahrsupdate()
+void mahonyahrsupdate(vec3 acc, vec3 gyr, vec3 mag)
 {
 	float norm,T;
 	float q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3;  
@@ -127,29 +110,27 @@ void mahonyahrsupdate()
 	float halfex, halfey, halfez;
 	float qa, qb, qc;
 
-	//time
-	T=(float)timeinterval / 1000.0 / 1000.0;
-	//printf("T=%f\n",T);
-
 	//value
-	ax=predictdata[0];
-	ay=predictdata[1];
-	az=predictdata[2];
-	gx=predictdata[3];
-	gy=predictdata[4];
-	gz=predictdata[5];
-	mx=predictdata[6];
-	my=predictdata[7];
-	mz=predictdata[8];
+	float ax = acc[0];
+	float ay = acc[1];
+	float az = acc[2];
+
+	float gx = gyr[0];
+	float gy = gyr[1];
+	float gz = gyr[2];
+
+	float mx = mag[0];
+	float my = mag[1];
+	float mz = mag[2];
 
 	// Normalise accelerometer measurement
-	norm = sqrt(ax * ax + ay * ay + az * az);
+	norm = squareroot(ax * ax + ay * ay + az * az);
 	ax /= norm;
 	ay /= norm;
 	az /= norm;     
 
 	// Normalise magnetometer measurement
-	norm = sqrt(mx * mx + my * my + mz * mz);
+	norm = squareroot(mx * mx + my * my + mz * mz);
 	mx /= norm;
 	my /= norm;
 	mz /= norm;   
@@ -170,7 +151,7 @@ void mahonyahrsupdate()
 	hx = 2.0f * (mx * (0.5f - q2q2 - q3q3) + my * (q1q2 - q0q3) + mz * (q1q3 + q0q2));
 	hy = 2.0f * (mx * (q1q2 + q0q3) + my * (0.5f - q1q1 - q3q3) + mz * (q2q3 - q0q1));
 
-	bx = sqrt(hx * hx + hy * hy);
+	bx = squareroot(hx * hx + hy * hy);
 	bz = 2.0f * (mx * (q1q3 - q0q2) + my * (q2q3 + q0q1) + mz * (0.5f - q1q1 - q2q2));
 
 
@@ -227,17 +208,17 @@ void mahonyahrsupdate()
 	
 
 	// Normalise quaternion
-	norm = sqrt(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
+	norm = squareroot(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
 	q0 /= norm;
 	q1 /= norm;
 	q2 /= norm;
 	q3 /= norm;
 
-	eulerian[0] = atan2(2*(q0*q1+q2*q3),1-2*(q1*q1+q2*q2))*180/3.141592653;
-	eulerian[1] = atan2(2*(q0*q3+q1*q2),1-2*(q2*q2+q3*q3))*180/3.141592653;
-	eulerian[2] = asin(2*q0*q2 - 2*q1*q3)*180/3.141592653;
+	eulerian[0] = arctan2(2*(q0*q1+q2*q3),1-2*(q1*q1+q2*q2))*180/3.141592653;
+	eulerian[1] = arctan2(2*(q0*q3+q1*q2),1-2*(q2*q2+q3*q3))*180/3.141592653;
+	eulerian[2] = arcsin(2*q0*q2 - 2*q1*q3)*180/3.141592653;
 
-	printf("ahrs:	%lf	%lf	%lf\n",
+	say("ahrs:	%lf	%lf	%lf\n",
 		eulerian[0],
 		eulerian[1],
 		eulerian[2]
@@ -265,7 +246,7 @@ void madgwickahrsupdate()
 
 	//time
 	T=(float)timeinterval / 1000.0 / 1000.0;
-	//printf("T=%f\n",T);
+	//say("T=%f\n",T);
 
 	//value
 	ax=predictdata[0];
@@ -287,14 +268,14 @@ void madgwickahrsupdate()
 
 
 	// Normalise accelerometer measurement
-	norm = sqrt(ax * ax + ay * ay + az * az);
+	norm = squareroot(ax * ax + ay * ay + az * az);
 	ax /= norm;
 	ay /= norm;
 	az /= norm;   
 
 
 	// Normalise magnetometer measurement
-	norm = sqrt(mx * mx + my * my + mz * mz);
+	norm = squareroot(mx * mx + my * my + mz * mz);
 	mx /= norm;
 	my /= norm;
 	mz /= norm;
@@ -345,7 +326,7 @@ void madgwickahrsupdate()
 		+ _2q2 * mz * q3
 		- my * q3q3;
 
-	_2bx	= sqrt(hx * hx + hy * hy);
+	_2bx	= squareroot(hx * hx + hy * hy);
 	_2bz	= -_2q0mx * q2
 		+ _2q0my * q1
 		+ mz * q0q0
@@ -387,7 +368,7 @@ void madgwickahrsupdate()
 		+ _2bx * q1 * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
 
 	// normalise step magnitude	// Apply feedback step
-	norm = sqrt(s0 * s0 + s1 * s1 + s2 * s2 + s3 * s3);
+	norm = squareroot(s0 * s0 + s1 * s1 + s2 * s2 + s3 * s3);
 	qDot1 -= beta * s0 / norm;
 	qDot2 -= beta * s1 / norm;
 	qDot3 -= beta * s2 / norm;
@@ -401,17 +382,17 @@ void madgwickahrsupdate()
 
 
 	// Normalise quaternion
-	norm = sqrt(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
+	norm = squareroot(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
 	q0 /= norm;
 	q1 /= norm;
 	q2 /= norm;
 	q3 /= norm;
 
-	eulerian[0] = atan2(2*(q0*q1+q2*q3),1-2*(q1*q1+q2*q2))*180/3.141592653;
-	eulerian[1] = atan2(2*(q0*q3+q1*q2),1-2*(q2*q2+q3*q3))*180/3.141592653;
-	eulerian[2] = asin(2*q0*q2 - 2*q1*q3)*180/3.141592653;
+	eulerian[0] = arctan2(2*(q0*q1+q2*q3),1-2*(q1*q1+q2*q2))*180/3.141592653;
+	eulerian[1] = arctan2(2*(q0*q3+q1*q2),1-2*(q2*q2+q3*q3))*180/3.141592653;
+	eulerian[2] = arcsin(2*q0*q2 - 2*q1*q3)*180/3.141592653;
 
-	printf("ahrs:	%lf	%lf	%lf\n",
+	say("ahrs:	%lf	%lf	%lf\n",
 		eulerian[0],
 		eulerian[1],
 		eulerian[2]
@@ -434,4 +415,38 @@ void ahrs_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 	receive gpsdata(already filtered):
 	receive mpudata(already filtered):
 */
+}
+int ahrs_stop(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int ahrs_start(struct halfrel* self, struct halfrel* peer)
+{
+	say("@ahrs_start\n");
+	return 0;
+}
+
+
+
+
+static void* ahrs_thread(struct arena* win)
+{
+	while(1){
+		say("@ahrs_thread:%llx,%llx\n", win, win->orel0);
+		sleep_us(1000000);
+	}
+}
+
+
+
+
+int ahrs_delete(struct arena* win)
+{
+	return 0;
+}
+int ahrs_create(struct arena* win, void* str)
+{
+	say("@ahrs_create\n");
+	threadcreate(ahrs_thread, win);
+	return 0;
 }

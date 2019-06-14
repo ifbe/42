@@ -1,6 +1,7 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC -I.
 SRC = \
+r2v-sensor/sensor.ahrs.c \
 v2r-gadget/1602/gadget.1602.c \
 v2r-gadget/12864/gadget.12864.c \
 v2r-robot/bionic/robot-arm.c \

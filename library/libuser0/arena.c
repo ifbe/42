@@ -1,6 +1,4 @@
 #include "libuser.h"
-#define _bdc_  hex32('b','d','c',0)
-#define _step_ hex32('s','t','e','p')
 
 
 
@@ -41,6 +39,9 @@ int soundread(void* win, void* sty, void* act, void* pin);
 int soundwrite(void*);
 int soundlist();
 int soundchoose();
+//
+int ahrs_create(void*, void*);
+int ahrs_delete(void*);
 //
 int toycar_create(void*, void*);
 int toycar_delete(void*);
@@ -265,6 +266,18 @@ void* arenacreate(u64 type, void* addr)
 	}
 
 	//
+	else if(_ahrs_ == type)
+	{
+		win = allocarena();
+		if(0 == win)return 0;
+
+		win->type = _ahrs_;
+		win->fmt = _ahrs_;
+		ahrs_create(win, addr);
+		return win;
+	}
+
+	//
 	else if(_bdc_ == type)
 	{
 		win = allocarena();
@@ -289,6 +302,8 @@ void* arenacreate(u64 type, void* addr)
 		soundcreate(win);
 		return win;
 	}
+
+	//
 	else if(_spk_ == type)
 	{
 		if(0 == addr)return 0;
@@ -313,6 +328,10 @@ void* arenacreate(u64 type, void* addr)
 		win->type = _cam_;
 		win->fmt = hex32('y','u','v',0);
 		videocreate(win);
+		return win;
+	}
+	else if(_cap_ == type)
+	{
 		return win;
 	}
 
@@ -348,7 +367,7 @@ void* arenacreate(u64 type, void* addr)
 		windowcreate(win);
 		return win;
 	}
-
+/*
 	//pcbdoc
 	else if(_sch_ == type)
 	{
@@ -414,7 +433,7 @@ void* arenacreate(u64 type, void* addr)
 		xmlnode_create(win, addr);
 		return win;
 	}
-
+*/
 	return 0;
 }
 void* arenamodify(int argc, char** argv)

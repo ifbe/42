@@ -32,19 +32,26 @@ typedef float mat4[4][4];
 #define _art_ hex32('a','r','t',0)
 #define _fd_ hex32('f','d',0,0)
 //tier=_win_, type:
+#define _ahrs_ hex32('a','h','r','s')
+#define _bdc_  hex32('b','d','c',0)
+#define _step_ hex32('s','t','e','p')
+//
 #define _mic_ hex32('m','i','c',0)
 #define _spk_ hex32('s','p','k',0)
+//
 #define _cam_ hex32('c','a','m',0)
+#define _cap_ hex32('c','a','p',0)
+//
 #define _wnd_ hex32('w','n','d',0)
 #define _tray_ hex32('t','r','a','y')	//tray
 #define _std_ hex32('s','t','d', 0)		//cmdline
-#define _ctx_ hex32('c','t','x',0)		//memnode
 //tier=_win_, type=_win_, rfmt:
 #define _test_ hex32('t','e','s','t')
 #define _host_ hex32('h','o','s','t')
 #define _coop_ hex32('c','o','o','p')
 #define _fbo_ hex32('f','b','o',0)
 #define _vp_ hex32('v','p', 0, 0)
+#define _ctx_ hex32('c','t','x',0)		//memnode
 //tier=_win_, type=_ctx_, rfmt:
 #define _vbo_ hex32('v','b','o',0)
 #define _rgba_ hex32('r','g','b','a')

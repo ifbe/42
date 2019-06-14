@@ -10,6 +10,9 @@ width:1024
 height:1024
 depth:1024
 }
+ahrs{
+fmt:ahrs
+}
 player1{
 fmt:joy
 }
@@ -23,14 +26,18 @@ fmt:aidfont
 geomhelper{
 fmt:aidgeom
 }
-particle{
-fmt:particle
-}
 
 texball{
 fmt:texball
 file:datafile/jpg/skysphere.jpg
 }
+particle{
+fmt:particle
+}
+geometry{
+fmt:drone
+}
+
 rtscam{
 fmt:freecam
 }
@@ -38,9 +45,13 @@ fmt:freecam
 
 
 <style>
-fullscreen{
-c:0.0, 0.0
-q:1.0, 1.0
+rtsxxxx{
+}
+rtsproj{
+r: 1.0, 0.0, 0.0
+f: 0.0, 1.0, 0.0
+t: 0.0, 0.0, 1.0
+c: 0.0, 0.0, 100.0
 }
 frustum{
 l: 0.0, 0.0, 0.0, -1.0
@@ -50,11 +61,9 @@ t: 0.0, 0.0, 0.0, 1.0
 n: 0.0, 0.0, 0.0, 1.0
 f: 0.0, 0.0, 0.0, 1000000000.0
 }
-rtsproj{
-r: 1.0, 0.0, 0.0
-f: 0.0, 1.0, 0.0
-t: 0.0, 0.0, 1.0
-c: 0.0, 0.0, 0.0
+fullscreen{
+c:0.0, 0.0
+q:1.0, 1.0
 }
 
 sky{
@@ -63,13 +72,18 @@ r: 10000000.0, 0.0, 0.0
 f: 0.0, 10000000.0, 0.0
 t: 0.0, 0.0, 10000000.0
 }
-haha{
+area{
 c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
 }
-
+haha{
+c: 0.0, 500.0, 0.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
+}
 </style>
 
 
@@ -77,20 +91,20 @@ t: 0.0, 0.0, 1000.0
 p0{}
 p1{}
 p2{}
-p3{}
 </pinid>
 
 
 <relation>
 (3dworld, 0, win, aid) -> (geomhelper, 0, act, 0)
 (3dworld, 0, win, aid) -> (fonthelper, 0, act, 0)
-(3dworld, haha, win, bg) -> (particle, p0, act, 0)
+(3dworld, sky, win, bg) -> (texball, p0, act, 0)
+(3dworld, area, win, bg) -> (particle, p1, act, 0)
+(3dworld, haha, win, bg) -> (geometry, p2, act, 0)
 
-(3dworld, sky, win, bg) -> (texball, p1, act, 0)
-(3dworld, rtsproj, win, cam) -> (rtscam, p0, act, geom)
-
-(window, 0, win, vp) -> (3dworld, 0, win, out)
+(3dworld, rtsproj, win, cam) -> (rtscam, rtsxxxx, act, geom)
 (window, fullscreen, win, cam) -> (rtscam, frustum, act, cam)
 
+(window, 0, win, vp) -> (3dworld, 0, win, out)
 (player1, 0, win, con) -> (rtscam, 0, act, con)
+(ahrs, 0, win, ahrs) -> (geometry, 0, act, ahrs)
 </relation>
