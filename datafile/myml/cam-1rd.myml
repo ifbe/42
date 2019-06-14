@@ -1,0 +1,119 @@
+<arena>
+3dworld{
+fmt:vbo
+type:3d
+}
+window{
+fmt:win
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+player1{
+fmt:joy
+}
+</arena>
+
+
+<actor>
+fonthelper{
+fmt:aidfont
+}
+geomhelper{
+fmt:aidgeom
+}
+particle{
+fmt:2048
+}
+
+texball{
+fmt:texball
+file:datafile/jpg/skysphere.jpg
+}
+terrain{
+fmt:terrain
+file:datafile/jpg/cartoon.jpg
+}
+rabbit{
+fmt:model
+}
+rtscam{
+fmt:1rdcam
+}
+</actor>
+
+
+<style>
+1rdmodl{
+}
+1rdgeom{
+r: 1.0, 0.0, 0.0
+t: 0.0, 1.0, 0.0
+f: 0.0, 0.0,-1.0
+c: 0.0,0.0, 1000.0
+}
+1rdfrus{
+l: 0.0, 0.0, 0.0, -1.0
+r: 0.0, 0.0, 0.0, 1.0
+b: 0.0, 0.0, 0.0, -1.0
+t: 0.0, 0.0, 0.0, 1.0
+n: 0.0, 0.0, 0.0, 1.0
+f: 0.0, 0.0, 0.0, 1000000000000.0
+}
+1rdrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+robb{
+}
+rabb{
+c: 0.0, 0.0, 0.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
+}
+
+sky{
+c: 0.0, 0.0, 0.0
+r: 10000000.0, 0.0, 0.0
+f: 0.0, 10000000.0, 0.0
+t: 0.0, 0.0, 10000000.0
+}
+gnd{
+c: 0.0, 0.0, 0.0
+r: 100000.0, 0.0, 0.0
+f: 0.0, 100000.0, 0.0
+t: 0.0, 0.0, 100000.0
+}
+haha{
+c: -1000.0, 1000.0, 0.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
+}
+</style>
+
+
+<pinid>
+p0{}
+p1{}
+p2{}
+p3{}
+</pinid>
+
+
+<relation>
+(3dworld, 0, win, aid) -> (geomhelper, 0, act, 0)
+(3dworld, 0, win, aid) -> (fonthelper, 0, act, 0)
+(3dworld, sky, win, bg) -> (texball, p1, act, 0)
+(3dworld, gnd, win, bg) -> (terrain, p2, act, 0)
+(3dworld, haha, win, bg) -> (particle, p0, act, 0)
+
+(3dworld, rabb, win, bg) -> (rabbit, robb, act, 0)
+(rabbit, 1rdgeom, win, view) -> (1rdcam, 1rdmodl, act, geom)
+(window, 1rdrect, win, cam) -> (1rdcam, 1rdfrus, act, cam)
+
+(window, 0, win, vp) -> (3dworld, 0, win, out)
+(player1, 0, win, con) -> (rtscam, 0, act, con)
+</relation>

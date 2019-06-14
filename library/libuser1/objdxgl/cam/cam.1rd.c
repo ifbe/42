@@ -1,4 +1,5 @@
 #include "libuser.h"
+void fixmatrix(float* m, struct fstyle* sty);
 
 
 
@@ -40,6 +41,106 @@ found:
 
 
 
+
+void firstperson_frustum(struct fstyle* d, struct fstyle* s)
+{
+	float x,y,z,n;
+	d->vc[0] = s->vc[0];
+	d->vc[1] = s->vc[1];
+	d->vc[2] = s->vc[2];
+
+
+	x = s->vr[0];
+	y = s->vr[1];
+	z = s->vr[2];
+	n = squareroot(x*x + y*y + z*z);
+	d->vr[0] = x / n;
+	d->vr[1] = y / n;
+	d->vr[2] = z / n;
+	//d->vr[3] = 0.7;
+	d->vl[0] = -x / n;
+	d->vl[1] = -y / n;
+	d->vl[2] = -z / n;
+	//d->vl[3] = -0.7;
+
+
+	x = s->vt[0];
+	y = s->vt[1];
+	z = s->vt[2];
+	n = squareroot(x*x + y*y + z*z);
+	d->vt[0] = x / n;
+	d->vt[1] = y / n;
+	d->vt[2] = z / n;
+	//d->vt[3] = 0.7;
+	d->vb[0] = -x / n;
+	d->vb[1] = -y / n;
+	d->vb[2] = -z / n;
+	//d->vb[3] = -0.7;
+
+
+	x = s->vf[0];
+	y = s->vf[1];
+	z = s->vf[2];
+	n = squareroot(x*x + y*y + z*z);
+	d->vn[0] = x / n;
+	d->vn[1] = y / n;
+	d->vn[2] = z / n;
+	//d->vn[3] = 1.0;
+	d->vf[0] = x / n;
+	d->vf[1] = y / n;
+	d->vf[2] = z / n;
+	//d->vf[3] = 1e20;
+}
+static void firstperson_matrix(
+	struct actor* act, struct style* frustum,
+	struct arena* win, struct style* wingeom,
+	u8* buf, int len)
+{
+	struct relation* rel;
+	struct arena* r;
+	struct fstyle* s;
+	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)return;
+		if(hex32('g','e','o','m') == rel->dstflag){
+			s = (void*)(rel->srcfoot);
+			r = (void*)(rel->srcchip);
+			break;
+		}
+		rel = samedstnextsrc(rel);
+	}
+	if(0 == s)return;
+
+
+	float* m = act->buf;
+	firstperson_frustum(&frustum->f, s);
+	fixmatrix(m, &frustum->f);
+	mat4_transpose((void*)m);
+	//printmat4(m);
+
+
+	u64* p = (void*)buf;
+	struct glsrc* src = (void*)(buf+0x20);
+
+	p[0] = (u64)src;
+	p[1] = (u64)r->gl_light;
+	p[2] = (u64)r->gl_solid;
+	p[3] = (u64)r->gl_opaque;
+
+
+	src->arg_fmt[0] = 'm';
+	src->arg_name[0] = "cammvp";
+	src->arg_data[0] = m;
+
+	src->arg_fmt[1] = 'v';
+	src->arg_name[1] = "camxyz";
+	src->arg_data[1] = act->camera.vc;
+}
+
+
+
 static void firstperson_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
@@ -47,7 +148,9 @@ static void firstperson_read(struct halfrel* self, struct halfrel* peer, u8* buf
 	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	firstperson_draw(act, pin, win, sty);
+	switch(self->flag){
+		case _cam_:firstperson_matrix(act, pin, win, sty, buf, len);break;
+	}
 }
 static void firstperson_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {

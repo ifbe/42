@@ -1,3 +1,4 @@
+#include "libuser.h"
 #define Kp 100.0f
 #define Ki 0.005f
 #define beta 10.0f
@@ -418,3 +419,19 @@ void madgwickahrsupdate()
 
 }
 */
+
+
+
+
+
+void ahrs_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	//writeback: east north sky?
+}
+void ahrs_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+/*
+	receive gpsdata(already filtered):
+	receive mpudata(already filtered):
+*/
+}
