@@ -1,5 +1,6 @@
 #include "libuser.h"
 #define _mic_ hex32('m','i','c',0)
+#define _pcm_ hex32('p','c','m',0)
 //libsoft1
 void fft(float* real, float* imag, int k);
 void ifft(float* real, float* imag, int k);
@@ -142,7 +143,7 @@ static void spectrum_draw_vbo3d(
 	struct arena* win, struct style* sty)
 {
 	int x;
-	float a,c,s;
+	float a,c,s,t;
 	vec3 tc, tr, tf, tu;
 	struct perframe* frame = act->buf;
 	float* real = frame[cur].real;
@@ -158,13 +159,17 @@ static void spectrum_draw_vbo3d(
 		a = x*tau/512;
 		c = cosine(a);
 		s = sine(a);
+		t = 1.0 - amp[x]*50.0;
 
 		tc[0] = vc[0] + vr[0]*c + vf[0]*s;
 		tc[1] = vc[1] + vr[1]*c + vf[1]*s;
 		tc[2] = vc[2] + vr[2]*c + vf[2]*s;
-		tr[0] = tc[0] + vu[0]*amp[x];
-		tr[1] = tc[1] + vu[1]*amp[x];
-		tr[2] = tc[2] + vu[2]*amp[x];
+		c *= t;
+		s *= t;
+
+		tr[0] = vc[0] + vr[0]*c + vf[0]*s;
+		tr[1] = vc[1] + vr[1]*c + vf[1]*s;
+		tr[2] = vc[2] + vr[2]*c + vf[2]*s;
 		carveline(win, 0xffffff, tc, tr);
 	}
 }
@@ -241,7 +246,7 @@ static void spectrum_draw(
 static void spectrum_event(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
-	struct event* ev, int len)
+	struct event* ev)
 {
 	int j,k;
 	if(_char_ == ev->what)
@@ -250,8 +255,9 @@ static void spectrum_event(
 		if((k>='0')&&(k<='9'))haha=k;
 	}
 }
-static void spectrum_data(
+static void spectrum_update(
 	struct actor* act, struct style* pin,
+	struct arena* win, struct style* sty,
 	u8* buf, int len)
 {
 	int j,k;
@@ -263,7 +269,7 @@ static void spectrum_data(
 	short* pcmbuf = (act->buf)+0x80000+(cur*1024*2);
 	short* pcmin = (void*)buf;
 
-	//soundwrite(0,0,buf,1024*2);
+	soundwrite(0,0,buf,1024*2);
 say("%llx, %x\n", buf, len);
 
 	cur = (cur+1) % 16;
@@ -310,22 +316,24 @@ static void spectrum_read(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	struct style* sty = (void*)(peer->foot);
 	spectrum_draw(act, pin, win, sty);
 }
-static void spectrum_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void spectrum_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	if(len)spectrum_data(act, pin, buf, len);
-	else spectrum_event(act, pin, win, sty, ev, 0);
+	switch(self->flag){
+		case _pcm_:spectrum_update(act, pin, win, sty, buf, len);break;
+		default:   spectrum_event( act, pin, win, sty, buf);break;
+	}
 }
 static void spectrum_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void spectrum_start(struct halfrel* self, struct halfrel* peer)
 {
+	say("@spectrum_start\n");
 }
 
 
@@ -344,16 +352,8 @@ static void spectrum_delete(struct actor* act)
 }
 static void spectrum_create(struct actor* act)
 {
-	struct arena* win;
 	if(0 == act)return;
-
 	act->buf = memorycreate(0x100000);
-	if(0 == act->buf)return;
-
-	win = arenacreate(_mic_, "0");
-	if(0 == win)return;
-
-	relationcreate(act, 0, _act_, 0, win, 0, _win_, 0);
 }
 
 

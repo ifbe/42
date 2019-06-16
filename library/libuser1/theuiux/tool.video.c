@@ -1,5 +1,6 @@
 #include "libuser.h"
 #define _cam_ hex32('c','a','m',0)
+#define _yuv_ hex32('y','u','v',0)
 void yuyv2rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3
@@ -97,20 +98,16 @@ void video_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
-	int x,y;
-	u8* dst;
-	u8* src;
-	float (*vbuf)[6];
-	struct glsrc* data;
-	if(0 == act->idx)return;
 	if(0 == sty)sty = defaultstyle_vbo2d();
-
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 
-	data = (void*)(pin->foot[0]);
-	vbuf = data->vbuf;
+	struct glsrc* data = (void*)(pin->foot[0]);
+	float (*vbuf)[6] = data->vbuf;
+
+	data->tex_data[0] = act->buf;
+	data->tex_enq[0] += 1;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -154,43 +151,22 @@ void video_draw_vbo2d(
 	vbuf[5][4] = 480/1024.0;//1.0;
 	vbuf[5][5] = 0.0;
 
-	data->tex_data[0] = act->buf;
-	for(y=0;y<480;y++)
-	{
-		dst = (act->buf) + (y*1024*4);
-		src = (act->idx) + (y*320*4);
-		for(x=0;x<320;x++)
-		{
-			dst[8*x + 0] = src[4*x + 0];
-			dst[8*x + 1] = src[4*x + 1];
-			dst[8*x + 2] = src[4*x + 3];
-
-			dst[8*x + 4] = src[4*x + 2];
-			dst[8*x + 5] = src[4*x + 1];
-			dst[8*x + 6] = src[4*x + 3];
-		}
-	}
-
 	data->vbuf_enq += 1;
-	data->tex_enq[0] += 1;
 }
 void video_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
-	int x,y;
-	u8* dst;
-	u8* src;
-	float (*vbuf)[6];
-	struct glsrc* data;
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	if(0 == act->idx)return;
 
-	data = (void*)(pin->foot[0]);
-	vbuf = data->vbuf;
+	struct glsrc* data = (void*)(pin->foot[0]);
+	float (*vbuf)[6] = data->vbuf;
+
+	data->tex_data[0] = act->buf;
+	data->tex_enq[0] += 1;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -234,25 +210,7 @@ void video_draw_vbo3d(
 	vbuf[5][4] = 1.0;
 	vbuf[5][5] = 0.0;
 
-	data->tex_data[0] = act->buf;
-	for(y=0;y<480;y++)
-	{
-		dst = (act->buf) + (y*1024*4);
-		src = (act->idx) + (y*320*4);
-		for(x=0;x<320;x++)
-		{
-			dst[8*x + 0] = src[4*x + 0];
-			dst[8*x + 1] = src[4*x + 1];
-			dst[8*x + 2] = src[4*x + 3];
-
-			dst[8*x + 4] = src[4*x + 2];
-			dst[8*x + 5] = src[4*x + 1];
-			dst[8*x + 6] = src[4*x + 3];
-		}
-	}
-
 	data->vbuf_enq += 1;
-	data->tex_enq[0] += 1;
 }
 void video_draw_json(
 	struct actor* act, struct style* pin,
@@ -298,6 +256,38 @@ static void video_draw(
 	}
 	else video_draw_pixel(act, pin, win, sty);
 }
+void video_update(
+	struct actor* act, struct style* pin,
+	struct arena* win, struct style* sty,
+	u8* buf, int len)
+{
+	int x,y;
+	u8* dst;
+	u8* src;
+	if(0 == act->buf)return;
+
+	for(y=0;y<480;y++)
+	{
+		dst = (act->buf) + (y*1024*4);
+		src = buf + (y*320*4);
+		for(x=0;x<320;x++)
+		{
+			dst[8*x + 0] = src[4*x + 0];
+			dst[8*x + 1] = src[4*x + 1];
+			dst[8*x + 2] = src[4*x + 3];
+
+			dst[8*x + 4] = src[4*x + 2];
+			dst[8*x + 5] = src[4*x + 1];
+			dst[8*x + 6] = src[4*x + 3];
+		}
+	}
+}
+void video_event(
+	struct actor* act, struct style* pin,
+	struct arena* win, struct style* sty,
+	struct event* ev)
+{
+}
 
 
 
@@ -311,13 +301,16 @@ static void video_read(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	struct style* sty = (void*)(peer->foot);
 	video_draw(act, pin, win, sty);
 }
-static void video_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void video_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
-	struct actor* act;
-	if(0 == len)return;		//event
-
-	act = (void*)(self->chip);
-	act->idx = buf;
+	struct actor* act = (void*)(self->chip);
+	struct style* pin = (void*)(self->foot);
+	struct arena* win = (void*)(peer->chip);
+	struct style* sty = (void*)(peer->foot);
+	switch(self->flag){
+		case _yuv_:video_update(act, pin, win, sty, buf, len);break;
+		default:   video_event( act, pin, win, sty, buf);break;
+	}
 }
 static void video_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -331,6 +324,8 @@ static void video_start(struct halfrel* self, struct halfrel* peer)
 	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	//say("%llx,%llx,%llx,%llx\n",act,pin,win,sty);
+	if(_yuv_ == self->flag)return;
 
 	//
 	pair = alloc_winobj(win, 's');
@@ -360,6 +355,7 @@ static void video_start(struct halfrel* self, struct halfrel* peer)
 	src->tex_fmt[0] = hex32('r','g','b','a');
 	src->tex_w[0] = 1024;
 	src->tex_h[0] = 1024;
+	src->tex_enq[0] = 1;
 }
 
 
@@ -382,15 +378,8 @@ static void video_delete(struct actor* act)
 }
 static void video_create(struct actor* act)
 {
-	struct arena* win;
 	if(0 == act)return;
-
 	act->buf = memorycreate(0x400000);
-
-	win = arenacreate(_cam_, "0");
-	if(0 == win)return;
-
-	relationcreate(act, 0, _act_, 0, win, 0, _win_, 0);
 }
 
 

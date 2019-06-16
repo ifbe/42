@@ -486,10 +486,14 @@ static int freecam_event1(
 		t = (void*)ev;
 	}
 	else if(_char_ == ev->what){
-		if('a' == ev->why)s->f.vc[0] -= 10.0;
-		if('d' == ev->why)s->f.vc[0] += 10.0;
-		if('s' == ev->why)s->f.vc[1] -= 10.0;
-		if('w' == ev->why)s->f.vc[1] += 10.0;
+		switch(ev->why){
+			case 'a':s->f.vc[0] -= 10.0;break;
+			case 'd':s->f.vc[0] += 10.0;break;
+			case 's':s->f.vc[1] -= 10.0;break;
+			case 'w':s->f.vc[1] += 10.0;break;
+			case '-':s->f.vc[2] -= 10.0;break;
+			case '+':s->f.vc[2] += 10.0;break;
+		}
 	}
 
 	return 1;

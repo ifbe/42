@@ -20,7 +20,7 @@ int traydelete(void*);
 //cam
 void initcam(void*);
 void freecam();
-int videocreate(void*);
+int videocreate(void*, void*);
 int videodelete(void*);
 int videostart(void*);
 int videostop(void*);
@@ -31,7 +31,7 @@ int videochoose();
 //mic
 void initmic(void*);
 void freemic();
-int soundcreate(void*);
+int soundcreate(void*, void*);
 int sounddelete(void*);
 int soundstart(void*);
 int soundstop(void*);
@@ -292,42 +292,36 @@ void* arenacreate(u64 type, void* addr)
 	//audio
 	else if(_mic_ == type)
 	{
-		if(0 == addr)return 0;
-
 		win = allocarena();
 		if(0 == win)return 0;
 
 		win->type = _mic_;
 		win->fmt = hex32('p','c','m',0);
-		soundcreate(win);
+		soundcreate(win, addr);
 		return win;
 	}
 
 	//
 	else if(_spk_ == type)
 	{
-		if(0 == addr)return 0;
-
 		win = allocarena();
 		if(0 == win)return 0;
 
 		win->type = _spk_;
 		win->fmt = hex32('p','c','m',0);
-		soundcreate(win);
+		soundcreate(win, addr);
 		return win;
 	}
 
 	//video
 	else if(_cam_ == type)
 	{
-		if(0 == addr)return 0;
-
 		win = allocarena();
 		if(0 == win)return 0;
 
 		win->type = _cam_;
 		win->fmt = hex32('y','u','v',0);
-		videocreate(win);
+		videocreate(win, addr);
 		return win;
 	}
 	else if(_cap_ == type)
