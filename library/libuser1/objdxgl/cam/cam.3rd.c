@@ -118,6 +118,169 @@ static int thirdperson_draw(
 	//thirdperson_sread000(act, pin, win, sty);
 	return 0;
 }
+
+
+
+
+void thirdperson_fixgeom(struct fstyle* d, struct fstyle* s, struct fstyle* delta)
+{
+	d->vc[0] = (s->vc[0] + s->vt[0]) - delta->vf[0];
+	d->vc[1] = (s->vc[1] + s->vt[1]) - delta->vf[1];
+	d->vc[2] = (s->vc[2] + s->vt[2]) - delta->vf[2];
+
+	d->vf[0] = delta->vf[0];
+	d->vf[1] = delta->vf[1];
+	d->vf[2] = delta->vf[2];
+
+	//right = cross(front, (0,0,1))
+	d->vr[0] = d->vf[1];
+	d->vr[1] =-d->vf[0];
+	d->vr[2] = 0.0;
+
+	//top = cross(right, front)
+	d->vt[0] = d->vr[1] * d->vf[2] - d->vr[2] * d->vf[1];
+	d->vt[1] = d->vr[2] * d->vf[0] - d->vr[0] * d->vf[2];
+	d->vt[2] = d->vr[0] * d->vf[1] - d->vr[1] * d->vf[0];
+}
+void thirdperson_frustum(struct fstyle* d, struct fstyle* s)
+{
+	float x,y,z,n;
+	d->vc[0] = s->vc[0];
+	d->vc[1] = s->vc[1];
+	d->vc[2] = s->vc[2];
+
+
+	x = s->vr[0];
+	y = s->vr[1];
+	z = s->vr[2];
+	n = squareroot(x*x + y*y + z*z);
+	d->vr[0] = x / n;
+	d->vr[1] = y / n;
+	d->vr[2] = z / n;
+	//d->vr[3] = 0.7;
+	d->vl[0] = -x / n;
+	d->vl[1] = -y / n;
+	d->vl[2] = -z / n;
+	//d->vl[3] = -0.7;
+
+
+	x = s->vt[0];
+	y = s->vt[1];
+	z = s->vt[2];
+	n = squareroot(x*x + y*y + z*z);
+	d->vt[0] = x / n;
+	d->vt[1] = y / n;
+	d->vt[2] = z / n;
+	//d->vt[3] = 0.7;
+	d->vb[0] = -x / n;
+	d->vb[1] = -y / n;
+	d->vb[2] = -z / n;
+	//d->vb[3] = -0.7;
+
+
+	x = s->vf[0];
+	y = s->vf[1];
+	z = s->vf[2];
+	n = squareroot(x*x + y*y + z*z);
+	d->vn[0] = x / n;
+	d->vn[1] = y / n;
+	d->vn[2] = z / n;
+	//d->vn[3] = 1.0;
+	d->vf[0] = x / n;
+	d->vf[1] = y / n;
+	d->vf[2] = z / n;
+	//d->vf[3] = 1e20;
+}
+
+
+
+
+void thirdperson_findroot(struct actor* act, struct arena** r, struct fstyle** s)
+{
+#define _geom_ hex32('g','e','o','m')
+	struct relation* rel = act->irel0;
+	while(1){
+		if(0 == rel)return;
+		if(_geom_ == rel->dstflag){
+			*s = (void*)(rel->srcfoot);
+			*r = (void*)(rel->srcchip);
+			return;
+		}
+		rel = samedstnextsrc(rel);
+	}
+}
+void thirdperson_findtarget(struct actor* act, struct fstyle** delta, struct fstyle** s)
+{
+#define _tar_ hex32('t','a','r',0)
+	struct relation* rel;
+	struct actor* tar;
+
+	rel = act->orel0;
+	while(1){
+		if(0 == rel)return;
+		if(_tar_ == rel->srcflag){
+			tar = (void*)(rel->dstchip);
+			*delta = (void*)(rel->srcfoot);
+			break;
+		}
+		rel = samesrcnextdst(rel);
+	}
+	if(0 == tar)return;
+
+
+	rel = tar->irel0;
+	while(1){
+		if(0 == rel)return;
+		if(_geom_ == rel->dstflag){
+			*s = (void*)(rel->srcfoot);
+			return;
+		}
+		rel = samedstnextsrc(rel);
+	}
+}
+static void thirdperson_matrix(
+	struct actor* act, struct style* frustum,
+	struct arena* win, struct style* wingeom,
+	u8* buf, int len)
+{
+	struct arena* root;
+	struct fstyle* geom;
+	struct fstyle* target;
+	struct fstyle* delta;
+
+	thirdperson_findroot(act, &root, &geom);
+	thirdperson_findtarget(act, &delta, &target);
+	say("%llx,%llx,%llx,%llx\n", root, geom, delta, target);
+
+	float* m = act->buf;
+	thirdperson_fixgeom(geom, target, delta);
+	thirdperson_frustum(&frustum->f, geom);
+	fixmatrix(m, &frustum->f);
+	mat4_transpose((void*)m);
+	//printmat4(m);
+
+
+	u64* p = (void*)buf;
+	struct glsrc* src = (void*)(buf+0x20);
+
+	p[0] = (u64)src;
+	p[1] = (u64)root->gl_light;
+	p[2] = (u64)root->gl_solid;
+	p[3] = (u64)root->gl_opaque;
+
+
+	src->arg_fmt[0] = 'm';
+	src->arg_name[0] = "cammvp";
+	src->arg_data[0] = m;
+
+	src->arg_fmt[1] = 'v';
+	src->arg_name[1] = "camxyz";
+	src->arg_data[1] = frustum->f.vc;
+}
+
+
+
+
 static int thirdperson_event(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
@@ -129,22 +292,40 @@ static int thirdperson_event(
 	int x0,y0,x1,y1,id;
 	if(0 == act)return 0;
 
-	//only hook mouse event
+	struct fstyle* target;
+	struct fstyle* delta;
+	thirdperson_findtarget(act, &delta, &target);
+
+	if(_char_ == ev->what){
+		switch(ev->why)
+		{
+			case 'a':a = 0.01;break;
+			case 'd':a =-0.01;break;
+			default:return 0;
+		}
+
+		s = sine(a);
+		c = cosine(a);
+		v[0] = delta->vf[0];
+		v[1] = delta->vf[1];
+		delta->vf[0] = v[0]*c - v[1]*s;
+		delta->vf[1] = v[0]*s + v[1]*c;
+	}
 	if(0x2b70 == ev->what)
 	{
 		id = (ev->why)>>48;
 		if('f' == id)
 		{
-			act->camera.vc[0] *= 0.99;
-			act->camera.vc[1] *= 0.99;
-			act->camera.vc[2] *= 0.99;
+			delta->vf[0] *= 0.99;
+			delta->vf[1] *= 0.99;
+			delta->vf[2] *= 0.99;
 			return 1;
 		}
 		if('b' == id)
 		{
-			act->camera.vc[0] *= 1.01;
-			act->camera.vc[1] *= 1.01;
-			act->camera.vc[2] *= 1.01;
+			delta->vf[0] *= 1.01;
+			delta->vf[1] *= 1.01;
+			delta->vf[2] *= 1.01;
 			return 1;
 		}
 		if('r' == id)
@@ -199,106 +380,6 @@ static int thirdperson_event(
 
 
 
-void thirdperson_frustum(struct fstyle* d, struct fstyle* s)
-{
-	float x,y,z,n;
-	d->vc[0] = s->vc[0];
-	d->vc[1] = s->vc[1];
-	d->vc[2] = s->vc[2];
-
-
-	x = s->vr[0];
-	y = s->vr[1];
-	z = s->vr[2];
-	n = squareroot(x*x + y*y + z*z);
-	d->vr[0] = x / n;
-	d->vr[1] = y / n;
-	d->vr[2] = z / n;
-	//d->vr[3] = 0.7;
-	d->vl[0] = -x / n;
-	d->vl[1] = -y / n;
-	d->vl[2] = -z / n;
-	//d->vl[3] = -0.7;
-
-
-	x = s->vt[0];
-	y = s->vt[1];
-	z = s->vt[2];
-	n = squareroot(x*x + y*y + z*z);
-	d->vt[0] = x / n;
-	d->vt[1] = y / n;
-	d->vt[2] = z / n;
-	//d->vt[3] = 0.7;
-	d->vb[0] = -x / n;
-	d->vb[1] = -y / n;
-	d->vb[2] = -z / n;
-	//d->vb[3] = -0.7;
-
-
-	x = s->vf[0];
-	y = s->vf[1];
-	z = s->vf[2];
-	n = squareroot(x*x + y*y + z*z);
-	d->vn[0] = x / n;
-	d->vn[1] = y / n;
-	d->vn[2] = z / n;
-	//d->vn[3] = 1.0;
-	d->vf[0] = x / n;
-	d->vf[1] = y / n;
-	d->vf[2] = z / n;
-	//d->vf[3] = 1e20;
-}
-static void thirdperson_matrix(
-	struct actor* act, struct style* frustum,
-	struct arena* win, struct style* wingeom,
-	u8* buf, int len)
-{
-	struct relation* rel;
-	struct arena* r;
-	struct fstyle* s;
-	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
-
-	rel = act->irel0;
-	while(1){
-		if(0 == rel)return;
-		if(hex32('g','e','o','m') == rel->dstflag){
-			s = (void*)(rel->srcfoot);
-			r = (void*)(rel->srcchip);
-			break;
-		}
-		rel = samedstnextsrc(rel);
-	}
-	if(0 == s)return;
-
-
-	float* m = act->buf;
-	thirdperson_frustum(&frustum->f, s);
-	fixmatrix(m, &frustum->f);
-	mat4_transpose((void*)m);
-	//printmat4(m);
-
-
-	u64* p = (void*)buf;
-	struct glsrc* src = (void*)(buf+0x20);
-
-	p[0] = (u64)src;
-	p[1] = (u64)r->gl_light;
-	p[2] = (u64)r->gl_solid;
-	p[3] = (u64)r->gl_opaque;
-
-
-	src->arg_fmt[0] = 'm';
-	src->arg_name[0] = "cammvp";
-	src->arg_data[0] = m;
-
-	src->arg_fmt[1] = 'v';
-	src->arg_name[1] = "camxyz";
-	src->arg_data[1] = act->camera.vc;
-}
-
-
-
-
 static void thirdperson_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'draw' == self.foot
@@ -342,9 +423,7 @@ static void thirdperson_delete(struct actor* act)
 static void thirdperson_create(struct actor* act, void* str)
 {
 	if(0 == act)return;
-	act->camera.vc[0] = 0.0;
-	act->camera.vc[1] =-2000.0;
-	act->camera.vc[2] = 500.0;
+	act->buf = memorycreate(64);
 }
 
 

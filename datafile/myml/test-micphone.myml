@@ -1,0 +1,80 @@
+<arena>
+3dworld{
+fmt:vbo
+type:3d
+}
+window{
+fmt:win
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+
+theear{
+fmt:mic
+}
+</arena>
+
+
+<actor>
+geomhelper{
+fmt:aidgeom
+}
+audio{
+fmt:spectrum
+}
+
+rtscam{
+fmt:freecam
+}
+</actor>
+
+
+<style>
+rtsxxxx{
+}
+rtsgeom{
+r: 1.0, 0.0, 0.0
+t: 0.0, 1.0, 0.0
+f: 0.0, 0.0, -1.0
+c: 0.0, 0.0, 1000.0
+}
+frustum{
+l: 0.0, 0.0, 0.0, -1.0
+r: 0.0, 0.0, 0.0, 1.0
+b: 0.0, 0.0, 0.0, -1.0
+t: 0.0, 0.0, 0.0, 1.0
+n: 0.0, 0.0, 0.0, 1.0
+f: 0.0, 0.0, 0.0, 1000000000.0
+}
+fullscreen{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+
+micarea{
+c: 0.0, 0.0, 10.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+</style>
+
+
+<pinid>
+p0{}
+p1{}
+</pinid>
+
+
+<relation>
+(3dworld, 0, win, aid) -> (geomhelper, 0, act, 0)
+
+(3dworld, micarea, win, bg) -> (audio, p0, act, 0)
+(theear, 0, win, 0) -> (audio, 0, act, pcm)
+
+(3dworld, rtsgeom, win, cam) -> (rtscam, rtsxxxx, act, geom)
+(window, fullscreen, win, cam) -> (rtscam, frustum, act, cam)
+(window, 0, win, vp) -> (3dworld, 0, win, out)
+</relation>

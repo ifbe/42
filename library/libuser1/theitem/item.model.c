@@ -394,6 +394,7 @@ static void model_start(struct halfrel* self, struct halfrel* peer)
 	struct style* pin = (void*)(self->foot);
 	struct arena* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	if(hex32('3','r','d', 0) == self->flag)return;
 
 	//alloc
 	pair = alloc_winobj(win, 's');

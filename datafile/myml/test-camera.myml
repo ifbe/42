@@ -11,9 +11,6 @@ height:1024
 depth:1024
 }
 
-theear{
-fmt:mic
-}
 theeye{
 fmt:cam
 }
@@ -21,12 +18,6 @@ fmt:cam
 
 
 <actor>
-geomhelper{
-fmt:aidgeom
-}
-audio{
-fmt:spectrum
-}
 video{
 fmt:video
 }
@@ -58,12 +49,6 @@ c:0.0, 0.0
 q:1.0, 1.0
 }
 
-micarea{
-c: 0.0, 0.0, 10.0
-r: 1000.0, 0.0, 0.0
-f: 0.0, 1000.0, 0.0
-t: 0.0, 0.0, 1000.0
-}
 camarea{
 c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
@@ -80,15 +65,10 @@ p1{}
 
 
 <relation>
-(3dworld, 0, win, aid) -> (geomhelper, 0, act, 0)
-
-(3dworld, micarea, win, bg) -> (audio, p0, act, 0)
-(theear, 0, win, 0) -> (audio, 0, act, pcm)
-
 (3dworld, camarea, win, bg) -> (video, p1, act, 0)
 (theeye, 0, win, 0) -> (video, 0, act, yuv)
 
-(3dworld, rtsgeom, win, cam) -> (rtscam, rtsxxxx, act, geom)
+(3dworld, rtsgeom, win, fg) -> (rtscam, rtsxxxx, act, geom)
 (window, fullscreen, win, cam) -> (rtscam, frustum, act, cam)
 (window, 0, win, vp) -> (3dworld, 0, win, out)
 </relation>

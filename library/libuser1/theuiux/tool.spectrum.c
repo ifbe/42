@@ -159,7 +159,7 @@ static void spectrum_draw_vbo3d(
 		a = x*tau/512;
 		c = cosine(a);
 		s = sine(a);
-		t = 1.0 - amp[x]*50.0;
+		t = 1.0 - amp[x]*10.0;
 
 		tc[0] = vc[0] + vr[0]*c + vf[0]*s;
 		tc[1] = vc[1] + vr[1]*c + vf[1]*s;

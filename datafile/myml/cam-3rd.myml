@@ -23,9 +23,6 @@ fmt:aidfont
 geomhelper{
 fmt:aidgeom
 }
-particle{
-fmt:2048
-}
 
 texball{
 fmt:texball
@@ -65,13 +62,18 @@ f: 0.0, 0.0, 0.0, 1000000000000.0
 c:0.0, 0.0
 q:1.0, 1.0
 }
-robb{
+
+obb{
 }
 rabb{
 c: 0.0, 0.0, 0.0
 r: 100.0, 0.0, 0.0
 f: 0.0, 100.0, 0.0
 t: 0.0, 0.0, 100.0
+}
+
+delta{
+f: 0.0, 1000.0, -1000.0
 }
 
 sky{
@@ -85,12 +87,6 @@ c: 0.0, 0.0, 0.0
 r: 100000.0, 0.0, 0.0
 f: 0.0, 100000.0, 0.0
 t: 0.0, 0.0, 100000.0
-}
-haha{
-c: -1000.0, 1000.0, 0.0
-r: 100.0, 0.0, 0.0
-f: 0.0, 100.0, 0.0
-t: 0.0, 0.0, 100.0
 }
 </style>
 
@@ -108,12 +104,13 @@ p3{}
 (3dworld, 0, win, aid) -> (fonthelper, 0, act, 0)
 (3dworld, sky, win, bg) -> (texball, p1, act, 0)
 (3dworld, gnd, win, bg) -> (terrain, p2, act, 0)
-(3dworld, haha, win, bg) -> (particle, p0, act, 0)
 
-(3dworld, rabb, win, bg) -> (rabbit, robb, act, 0)
-(rabbit, 3rdgeom, win, view) -> (3rdcam, 3rdmodl, act, geom)
+(3dworld, rabb, win, bg) -> (rabbit, obb, act, geom)
+(3dworld, 3rdgeom, win, 0) -> (3rdcam, 3rdmodl, act, geom)
+(3rdcam, delta, act, tar) -> (rabbit, 0, act, 3rd)
+
 (window, 3rdrect, win, cam) -> (3rdcam, 3rdfrus, act, cam)
-
 (window, 0, win, vp) -> (3dworld, 0, win, out)
+
 (player1, 0, win, con) -> (3rdcam, 0, act, con)
 </relation>
