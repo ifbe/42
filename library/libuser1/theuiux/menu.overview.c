@@ -512,7 +512,7 @@ void overview_draw_vbo(
 		tf[2] = vf[2] / 33.0;
 		carvesolid2d_rect(win, bg, tc, tr, tf);
 
-		tc[2] -= 0.01;
+		tc[2] += 0.01;
 		tr[0] = vr[0] / 32;
 		tr[1] = vr[1] / 32;
 		tr[2] = vr[2] / 32;
@@ -554,7 +554,7 @@ void overview_draw_vbo(
 		tf[2] = vf[2] / 33;
 		carvesolid2d_rect(win, bg, tc, tr, tf);
 
-		tc[2] -= 0.01;
+		tc[2] += 0.01;
 		tr[0] = vr[0] / 32;
 		tr[1] = vr[1] / 32;
 		tr[2] = vr[2] / 32;
@@ -594,7 +594,7 @@ void overview_draw_vbo(
 		tf[2] = vf[2] / 33.0;
 		carvesolid2d_rect(win, bg, tc, tr, tf);
 
-		tc[2] -= 0.01;
+		tc[2] += 0.01;
 		tr[0] = vr[0] / 32.0;
 		tr[1] = vr[1] / 32.0;
 		tr[2] = vr[2] / 32.0;
@@ -634,7 +634,7 @@ void overview_draw_vbo(
 		tf[2] = vf[2] / 33;
 		carvesolid2d_rect(win, bg, tc, tr, tf);
 
-		tc[2] -= 0.01;
+		tc[2] += 0.01;
 		tr[0] = vr[0] / 32.0;
 		tr[1] = vr[1] / 32.0;
 		tr[2] = vr[2] / 32.0;

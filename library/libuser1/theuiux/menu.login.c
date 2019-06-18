@@ -9,7 +9,7 @@ static void login_draw_pixel(
 	struct arena* win, struct style* sty)
 {
 }
-static void login_draw_vbo2d(
+static void login_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty)
 {
@@ -24,7 +24,7 @@ static void login_draw_vbo2d(
 
 	tc[0] = vc[0] + vf[0]/2;
 	tc[1] = vc[1] + vf[1]/2;
-	tc[2] = vc[2] + vf[2]/2 - 0.1;
+	tc[2] = vc[2] + vf[2]/2 + 1.0;
 	tr[0] = vr[0] / 4;
 	tr[1] = vr[1] / 4;
 	tr[2] = vr[2] / 4;
@@ -33,17 +33,9 @@ static void login_draw_vbo2d(
 	tf[2] = vf[2] / 4;
 	carvestring2d_center(win, 0xffffff, tc, tr, tf, (void*)"welcome!", 8);
 
-	tc[0] -= vf[0]/8;
-	tc[1] -= vf[1]/8;
-	tc[2] -= vf[2]/8;
-	tf[0] = - vr[0]/16 - vf[0]/4;
-	tf[1] = - vr[1]/16 - vf[1]/4;
-	tf[2] = - vr[2]/16 - vf[2]-4;
-	carvestring2d_center(win, 0xffffff, tc, tr, tf, (void*)"welcome!", 8);
-
 	tc[0] = vc[0] - vf[0]/8;
 	tc[1] = vc[1] - vf[1]/8;
-	tc[2] = vc[2] - vf[2]/8 - 0.1;
+	tc[2] = vc[2] - vf[2]/8 + 1.0;
 	tr[0] = vr[0] / 4;
 	tr[1] = vr[1] / 4;
 	tr[2] = vr[2] / 4;
@@ -51,7 +43,7 @@ static void login_draw_vbo2d(
 	tf[1] = vf[1] / 16;
 	tf[2] = vf[2] / 16;
 	carvesolid2d_rect(win, 0x202020, tc, tr, tf);
-	tc[2] -= 0.1;
+	tc[2] += 1.0;
 	tr[0] /= 8;
 	tr[1] /= 8;
 	tr[1] /= 8;
@@ -59,7 +51,7 @@ static void login_draw_vbo2d(
 
 	tc[0] = vc[0] - vf[0]*3/8;
 	tc[1] = vc[1] - vf[1]*3/8;
-	tc[2] = vc[2] - vf[2]*3/8 - 0.1;
+	tc[2] = vc[2] - vf[2]*3/8 + 1.0;
 	tr[0] = vr[0] / 4;
 	tr[1] = vr[1] / 4;
 	tr[2] = vr[2] / 4;
@@ -67,25 +59,11 @@ static void login_draw_vbo2d(
 	tf[1] = vf[1] / 16;
 	tf[2] = vf[2] / 16;
 	carvesolid2d_rect(win, 0x202020, tc, tr, tf);
-	tc[2] -= 0.1;
+	tc[2] += 1.0;
 	tr[0] /= 8;
 	tr[1] /= 8;
 	tr[1] /= 8;
 	carvestring2d_center(win, 0xffffff, tc, tr, tf, (void*)"password", 8);
-}
-static void login_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
-{
-	int z;
-	float a,c,s;
-	float A,C,S;
-	vec3 tc,tr,tf,tu;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carveline_prism4(win, 0xffffff, vc, vr ,vf, vu);
 }
 static void login_draw_json(
 	struct actor* act, struct style* pin,
@@ -116,11 +94,7 @@ static void login_draw(
 	else if(fmt == _tui_)login_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)login_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)login_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		if(_2d_ == win->vfmt)login_draw_vbo2d(act, pin, win, sty);
-		else login_draw_vbo3d(act, pin, win, sty);
-	}
+	else if(fmt == _vbo_)login_draw_vbo(act, pin, win, sty);
 	else login_draw_pixel(act, pin, win, sty);
 }
 

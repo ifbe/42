@@ -50,7 +50,7 @@ static void ortho_p(mat4 m, struct fstyle* s)
 
 	m[2][0] = 0.0;
 	m[2][1] = 0.0;
-	m[2][2] = 2.0 / (f-n);
+	m[2][2] = 2.0 / (n-f);
 	m[2][3] = (n+f) / (n-f);
 
 	m[3][0] = 0.0;
