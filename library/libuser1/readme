@@ -1,0 +1,6 @@
+obj = basic item:
+	piece, rect, cubic, wall, cards, symbol, footprint, 3dmodel, element, button
+the = scene root:
+	chess, 2048, rubik, maze, poker, schema, pcblayout, 3dscene, webpage, menu
+via = *pu object:
+	opengl context, directx context

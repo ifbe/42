@@ -12,8 +12,8 @@ explain:
 	libhard1:	protocol stack(sata, usb, tcpip...)
 	libsoft0:	function interface(unified, simple, goodlook...)
 	libsoft1:	logic central(algorithm, science, network...)
-	libuser0:	screen window(framebuffer, winapi, opengl, sdl...)
-	libuser1:	inner content(button, picture, sound, video...)
+	libuser0:	medium of exchange(eye, win, ear, mic...)
+	libuser1:	inside the brain(memory contexts)
 
 
 

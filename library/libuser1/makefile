@@ -124,6 +124,12 @@ objpack/pack.80211.c \
 objpack/pack.eth.c \
 objpack/pack.udp.c \
 objpack/pack.tcp.c \
+objuiux/tool.hex.c \
+objuiux/tool.qrcode.c \
+objuiux/tool.spectrum.c \
+objuiux/tool.video.c \
+objuiux/uiux.joystick.c \
+objuiux/uiux.keyboard.c \
 thegame/chess/game.chess.c \
 thegame/chess/game.gobang.c \
 thegame/chess/game.kriegspiel.c \
@@ -176,12 +182,8 @@ theuiux/hack.switcher.c \
 theuiux/hack.wireshark.c \
 theuiux/tool.calculator.c \
 theuiux/tool.font.c \
-theuiux/tool.hex.c \
-theuiux/tool.qrcode.c \
-theuiux/tool.spectrum.c \
 theuiux/tool.terminal.c \
 theuiux/tool.terminal.helper.c \
-theuiux/tool.video.c \
 theuiux/menu.overview.c \
 theuiux/menu.detail.c \
 theuiux/menu.login.c \
@@ -193,16 +195,9 @@ theuiux/uiux.list.c \
 theuiux/uiux.nav.c \
 theuiux/uiux.tab.c \
 theuiux/uiux.tag.c \
-theuiux/uiux.joystick.c \
-theuiux/uiux.keyboard.c \
-viaterm/cli.base.c \
-viaterm/tui.base.c \
-viacode/func.base.c \
-viahtml/html.base.c \
+viafile/html.base.c \
 viafile/json.base.c \
 viafile/xml.base.c \
-viachip/sch.base.c \
-viachip/pcb.base.c \
 viadxgl/vbo.base.c \
 viargba/rgba.base.c \
 actor.c
