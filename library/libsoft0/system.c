@@ -25,6 +25,7 @@ int stopuart(int);
 //i2c
 int systemi2c_create(void*, int);
 int systemi2c_delete(int);
+int systemi2c_read(int fd, int addr, u8* buf, u8 len);
 //spi
 int systemspi_create(void*, int);
 int systemspi_delete(int);
@@ -156,6 +157,20 @@ int system_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 
 int systemread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
+	struct object* oo;
+	int fd;
+	if(0 == self)return 0;
+	//say("@systemwrite:%llx\n", self);
+
+	oo = (void*)(self->chip);
+	if(0 == oo)return 0;
+
+	fd = ((void*)oo - (void*)obj) / sizeof(struct object);
+	if(0 == fd)return 0;
+
+	if(_i2c_ == oo->type){
+		//systemi2c_read(fd, , buf, len);
+	}
 	return 0;
 }
 int systemwrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)

@@ -9,20 +9,8 @@
 #include<sys/ioctl.h>
 #include<linux/i2c.h>		//if you have problem
 #include<linux/i2c-dev.h>
-void threadcreate(void*, void*);
 void printmemory(void*, int);
 void say(void*, ...);
-
-
-
-
-struct i2cjob{
-	int fd;
-	int dev;
-	int reg;
-	int len;
-};
-static struct i2cjob job[16];
 
 
 
@@ -88,38 +76,24 @@ int systemi2c_write(int fd, int addr, u8* buf, u8 len)
 
 	return 1;
 }
-
-
-
-
-static void systemi2c_thread()
-{
-	int fd,addr;
-	u8 buf[256];
-	while(1)
-	{
-		fd = job[0].fd;
-		addr = (job[0].dev<<16) | job[0].reg;
-say("%x,%x\n",fd,addr);
-		systemi2c_read(fd, addr, buf, job[0].len);
-printmemory(buf, job[0].len);
-	}
-}
-
-
-
-
 int systemi2c_stop(int fd, int dev, int reg, int len)
 {
 	return 0;
 }
 int systemi2c_start(int fd, int dev, int reg, int len)
 {
-	job[0].fd = fd;
-	job[0].dev = dev;
-	job[0].reg = reg;
-	job[0].len = len;
-	threadcreate(systemi2c_thread, 0);
+	return 0;
+}
+
+
+
+
+int systemi2c_search()
+{
+	return 0;
+}
+int systemi2c_modity()
+{
 	return 0;
 }
 int systemi2c_delete(int fd)
@@ -147,178 +121,3 @@ int systemi2c_create(u8* name, int flag)
 	say("i2c: %s\n", buf);
 	return open((void*)buf, O_RDWR);
 }
-/*
-static int fp=-1;
-static int where[4]={-1,-1,-1,-1};
-static char that[16];
-static unsigned char outbuf[16];
-
-
-
-
-
-
-
-
-int systemi2c_list(char* towhere)
-{
-	int x;
-	int y;
-	int ret;
-	unsigned char ch;
-
-	//listbuses
-	if(where[0]<0)
-	{
-		ret=system("ls /dev/i2c-*");
-		return 0;
-	}
-
-	//listdevices
-	if(where[1]<0)
-	{
-		for(y=0;y<8;y++)
-		{
-			for(x=0;x<16;x++)
-			{
-				ret=systemi2c_read((y*16)+x,0,&ch,1);
-
-				if(ret>0)printf("%02x ",x+(y*16));
-				else printf("-- ");
-			}
-			printf("\n");
-		}
-		return 1;
-	}
-
-	//listregisters
-	if(where[2]<0)
-	{
-		for(y=0;y<16;y++)
-		{
-			for(x=0;x<16;x++)
-			{
-				ret=systemi2c_read(where[1],(y*16)+x,&ch,1);
-
-				if(ret>0)printf("%02x ",ch);
-				else printf("-- ");
-			}
-			printf("\n");
-		}
-		return 2;
-	}
-
-	//listbits
-	if(where[3]<0)
-	{
-		return 3;
-	}
-
-	return -1;
-}
-int systemi2c_choose(int num,char* p)
-{
-	int ret;
-//printf("num=%d,p=%s\n",num,p);
-
-	//"cd"
-	if( (num<0) && (p==0) )
-	{
-		say("@i2c");
-		if(where[0]>=0)say("/0x%d",where[0]);
-		if(where[1]>=0)say("/0x%x",where[1]);
-		if(where[2]>=0)say("/0x%x",where[2]);
-		say("\n");
-		return 0;
-	}
-
-	//"cd .."
-	if(num<0)
-	{
-		if(where[2]>=0)
-		{
-			where[2]=-1;
-		}
-		else if(where[1]>=0)
-		{
-			where[1]=-1;
-		}
-		else if(where[0]>=0)
-		{
-			if(fp > 0)
-			{
-				close(fp);
-				where[0]=fp=-1;
-			}
-		}
-
-		return 1;
-	}
-
-	//"cd 1" or "cd /dev/i2c-1"
-	if(where[0]<0)
-	{
-		if(p!=0)fp = open(p,O_RDWR);
-		else
-		{
-			snprintf(that,16,"/dev/i2c-%d",num);
-			fp = open(that,O_RDWR);
-		}
-
-		if(fp <= 0)
-		{
-			printf("error open\n");
-			return -1;
-		}
-
-		where[0]=num;
-		where[1]=where[2]=where[3]=-1;
-		return 0x11;
-	}
-
-	//select device
-	if(where[1]<0)
-	{
-		ret=ioctl(fp,I2C_SLAVE,num);
-		if(ret < 0)
-		{
-			printf("error ioctl\n");
-			return -2;
-		}
-
-		where[1]=num;
-		return 0x12;
-	}
-
-	return 0;
-}
-
-
-
-
-void systemi2c_start(char* p)
-{
-}
-void systemi2c_stop()
-{
-}
-
-
-
-
-void systemi2c_create()
-{
-	fp=-1;
-	where[0]=where[1]=where[2]=where[3]=-1;
-}
-void systemi2c_delete()
-{
-	if(fp>0)
-	{
-		close(fp);
-
-		fp=-1;
-		where[0]=where[1]=where[2]=where[3]=-1;
-	}
-}
-*/

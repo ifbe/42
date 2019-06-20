@@ -166,10 +166,8 @@ libflow/4.tcp/tcp.telnet.c \
 libflow/4.tcp/tcp.tls.c \
 libflow/4.tcp/tcp.vnc.c \
 libflow/4.tcp/tcp.ws.c \
-libflow/i2c/sensor.accel.c \
-libflow/i2c/sensor.baro.c \
-libflow/i2c/sensor.gyro.c \
-libflow/i2c/sensor.mag.c \
+libflow/i2c/sensor.mpu9250.c \
+libflow/i2c/sensor.ms5611.c \
 libflow/uart/gcode.c \
 libflow/uart/gps.c \
 libphys/phys.elec.c \

@@ -3,8 +3,8 @@
 #define _ntfs_ hex32('n','t','f','s')
 #define _hfs_ hex32('h','f','s',0)
 #define _ext_ hex32('e','x','t',0)
-#define _mpu_ hex32('m','p','u',0)
 #define _ahrs_ hex32('a','h','r','s')
+#define _mpu9250_ hex64('m','p','u','9','2','5','0',0)
 //file
 int fileclient_create(struct element* ele, void* url);
 int mbrclient_create(struct element* ele, void* url);
@@ -14,8 +14,9 @@ int ntfsclient_create(struct element* ele, void* url);
 int hfsclient_create(struct element* ele, void* url);
 int extclient_create(struct element* ele, void* url);
 //i2c.mpu
-int mpuclient_create(struct element* ele, void* url);
-int mpuclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int mpu9250_create(struct element* ele, void* url);
+int mpu9250_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int mpu9250_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
 //i2c.ahrs
 int ahrsclient_create(struct element* ele, void* url);
 int ahrsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
@@ -149,8 +150,6 @@ int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 	switch(ele->type)
 	{
 		case _gps_: gpsclient_write(dc, df, sc, sf, buf, len);break;
-		case _mpu_: mpuclient_write(dc, df, sc, sf, buf, len);break;
-		case _ahrs_:ahrsclient_write(dc, df, sc, sf, buf, len);break;
 
 		case _HACK_:hackserver_write(dc, df, sc, sf, buf, len);break;
 		case _hack_:hackclient_write(dc, df, sc, sf, buf, len);break;
@@ -222,6 +221,10 @@ int artery_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 
 int arteryread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
+	struct element* ele = (void*)(self->chip);
+	if(_mpu9250_ == ele->type){
+		mpu9250_read(self, peer, buf, len);
+	}
 	return 0;
 }
 int arterywrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
@@ -234,6 +237,7 @@ int arterystop(struct halfrel* self, struct halfrel* peer)
 }
 int arterystart(struct halfrel* self, struct halfrel* peer)
 {
+	say("@arterystart\n");
 	return 0;
 }
 
@@ -305,13 +309,13 @@ void* arterycreate(u64 type, void* argstr)
 	}
 
 	//ahrs
-	if(_mpu_ == type)
+	if(_mpu9250_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _mpu_;
-		mpuclient_create(e, url);
+		e->type = _mpu9250_;
+		mpu9250_create(e, url);
 		return e;
 	}
 	if(_ahrs_ == type)
