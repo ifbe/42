@@ -27,7 +27,7 @@ void carvearrorkey2d(struct arena* win, u32 rgb,
 	tc[1] = vc[1]-vr[1]*2/3;
 	tc[2] = vc[2]-vr[2]*2/3-0.1;
 	carveopaque2d_circle(win, c, tc, tr, tf);
-	tc[2] += -0.1;
+	tc[2] += 0.1;
 	carve2d_ascii(win, 0xffffff, tc, tr, tf, buf[0]&0x7f);
 		
 
@@ -38,7 +38,7 @@ void carvearrorkey2d(struct arena* win, u32 rgb,
 	tc[1] = vc[1]+vr[1]*2/3;
 	tc[2] = vc[2]+vr[2]*2/3-0.1;
 	carveopaque2d_circle(win, c, tc, tr, tf);
-	tc[2] += -0.1;
+	tc[2] += 0.1;
 	carve2d_ascii(win, 0xffffff, tc, tr, tf, buf[1]&0x7f);
 
 	//y-: near
@@ -58,7 +58,7 @@ void carvearrorkey2d(struct arena* win, u32 rgb,
 	tc[1] = vc[1]+vf[1]*2/3;
 	tc[2] = vc[2]+vf[2]*2/3-0.1;
 	carveopaque2d_circle(win, c, tc, tr, tf);
-	tc[2] += -0.1;
+	tc[2] += 0.1;
 	carve2d_ascii(win, 0xffffff, tc, tr, tf, buf[3]&0x7f);
 
 	//z-: trigger
@@ -68,7 +68,7 @@ void carvearrorkey2d(struct arena* win, u32 rgb,
 	tc[1] = vc[1]-vr[1]*2/3+vf[1]*4/3;
 	tc[2] = vc[2]-vr[2]*2/3+vf[2]*4/3-0.1;
 	carveopaque2d_circle(win, c, tc, tr, tf);
-	tc[2] += -0.1;
+	tc[2] += 0.1;
 	carve2d_ascii(win, 0xffffff, tc, tr, tf, buf[4]&0x7f);
 
 	//z+: bumper
@@ -78,7 +78,7 @@ void carvearrorkey2d(struct arena* win, u32 rgb,
 	tc[1] = vc[1]+vr[1]*2/3+vf[1]*4/3;
 	tc[2] = vc[2]+vr[2]*2/3+vf[2]*4/3-0.1;
 	carveopaque2d_circle(win, c, tc, tr, tf);
-	tc[2] += -0.1;
+	tc[2] += 0.1;
 	carve2d_ascii(win, 0xffffff, tc, tr, tf, buf[5]&0x7f);
 
 	//press
@@ -88,7 +88,7 @@ void carvearrorkey2d(struct arena* win, u32 rgb,
 	tc[1] = vc[1];
 	tc[2] = vc[2]-0.1;
 	carveopaque2d_circle(win, c, tc, tr, tf);
-	tc[2] += -0.1;
+	tc[2] += 0.1;
 	carve2d_ascii(win, 0xffffff, tc, tr, tf, buf[6]&0x7f);
 
 	//select or start
@@ -98,6 +98,6 @@ void carvearrorkey2d(struct arena* win, u32 rgb,
 	tc[1] = vc[1]+vr[1]*t*4/3+vf[1]*2/3;
 	tc[2] = vc[2]+vr[2]*t*4/3+vf[2]*2/3-0.1;
 	carveopaque2d_circle(win, c, tc, tr, tf);
-	tc[2] += -0.1;
+	tc[2] += 0.1;
 	carve2d_ascii(win, 0xffffff, tc, tr, tf, buf[7]&0x7f);
 }

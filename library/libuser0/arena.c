@@ -56,6 +56,10 @@ int stepcar_read(void*, void*, void*, int);
 int stepcar_write(void*, void*, void*, int);
 int stepcar_rootread(void*,void*,void*,void*,void*,int);
 int stepcar_rootwrite(void*,void*,void*,void*,void*,int);
+//
+int khala_create(void*, void*);
+//
+int loopback_create(void*, void*);
 //window
 void initwindow(void*);
 void freewindow();
@@ -77,29 +81,6 @@ void* rgbanode_create(u64, void*);
 int rgbanode_delete(void*);
 int rgbanode_read(struct arena* win, struct style* sty);
 int rgbanode_write(struct arena* win, struct style* sty, struct event* ev);
-//
-int schnode_create(u64, void*);
-int schnode_delete(void*);
-int schnode_start(void*, void*, void*, void*);
-int schnode_stop(void*, void*);
-//
-int pcbnode_create(void*, void*);
-int pcbnode_delete(void*);
-//
-int htmlnode_create(void*, void*);
-int htmlnode_delete(void*);
-int htmlnode_rootread(void*,void*,void*,void*,void*,int);
-int htmlnode_rootwrite(void*,void*,void*,void*,void*,int);
-int jsonnode_create(void*, void*);
-int jsonnode_delete(void*);
-int jsonnode_rootread(void*,void*,void*,void*,void*,int);
-int jsonnode_rootwrite(void*,void*,void*,void*,void*,int);
-//
-int xmlnode_create(void*, void*);
-int xmlnode_delete(void*);
-//
-int funcnode_create(void*, void*);
-int funcnode_delete(void*);
 //
 int actorevent(struct event* ev);
 int input(void*, int);
@@ -359,6 +340,27 @@ void* arenacreate(u64 type, void* addr)
 		win->type = _win_;
 		win->fmt = _fbo_;
 		windowcreate(win);
+		return win;
+	}
+
+	else if(_khala_ == type)
+	{
+		win = allocarena();
+		if(0 == win)return 0;
+
+		win->type = _w2w_;
+		win->fmt = _khala_;
+		khala_create(win, addr);
+		return win;
+	}
+	else if(_loopback_ == type)
+	{
+		win = allocarena();
+		if(0 == win)return 0;
+
+		win->type = _w2w_;
+		win->fmt = _loopback_;
+		loopback_create(win, addr);
 		return win;
 	}
 /*

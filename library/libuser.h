@@ -45,6 +45,10 @@ typedef float mat4[4][4];
 #define _wnd_ hex32('w','n','d',0)
 #define _tray_ hex32('t','r','a','y')	//tray
 #define _std_ hex32('s','t','d', 0)		//cmdline
+//
+#define _w2w_ hex32('w','2','w', 0)
+#define _khala_ hex64('k','h','a','l','a', 0, 0, 0)
+#define _loopback_ hex64('l','o','o','p','b', 'a', 'c', 'k')
 //tier=_win_, type=_win_, rfmt:
 #define _test_ hex32('t','e','s','t')
 #define _host_ hex32('h','o','s','t')
