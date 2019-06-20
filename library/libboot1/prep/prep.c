@@ -37,10 +37,24 @@ void role(u8* buf, int len)
 	//say("%.*s\n", len, buf);
 
 	argc = str2arg(buf, len, tmp, 256, argv, 8);
-	if(argc < 2)return;
-
-	if(0 == ncmp(argv[1], "file", 4))
-	{
-		role_fromfile(argc-1, &argv[1]);
+	if(argc <= 1){
+		role_fromfile(1, argv);
+		return;
 	}
+
+	//builtin
+	if(0 == ncmp(argv[1], "builtin", 7)){
+
+	}
+
+	//myml
+	else{
+		role_fromfile(argc, argv);
+	}
+
+	//json
+
+	//cfg
+
+	//default
 }

@@ -429,11 +429,23 @@ static int freecam_event(
 	freecam_fixcam(win);
 	return 1;
 }*/
+void freecam_move(vec3 dst, vec3 src, float t)
+{
+	dst[0] += src[0] * t;
+	dst[1] += src[1] * t;
+	dst[2] += src[2] * t;
+}
+void freecam_rotate(vec3 a, vec3 b, vec3 axis, float angle)
+{
+	quaternion_operation(a, axis, angle);
+	quaternion_operation(b, axis, angle);
+}
 static int freecam_event1(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
 	struct event* ev, int len)
 {
+	float nx,ny,nz;
 	struct relation* rel;
 	struct style* s;
 	short* t;
@@ -486,13 +498,23 @@ static int freecam_event1(
 		t = (void*)ev;
 	}
 	else if(_char_ == ev->what){
+		nx = 10.0/vec3_len(s->f.vr);
+		ny = 10.0/vec3_len(s->f.vf);
+		nz = 10.0/vec3_len(s->f.vt);
 		switch(ev->why){
-			case 'a':s->f.vc[0] -= 10.0;break;
-			case 'd':s->f.vc[0] += 10.0;break;
-			case 's':s->f.vc[1] -= 10.0;break;
-			case 'w':s->f.vc[1] += 10.0;break;
-			case '-':s->f.vc[2] -= 10.0;break;
-			case '+':s->f.vc[2] += 10.0;break;
+			case 'a':freecam_move(s->f.vc, s->f.vr,-nx);break;
+			case 'd':freecam_move(s->f.vc, s->f.vr, nx);break;
+			case 's':freecam_move(s->f.vc, s->f.vf,-ny);break;
+			case 'w':freecam_move(s->f.vc, s->f.vf, ny);break;
+			case 'q':freecam_move(s->f.vc, s->f.vt,-nz);break;
+			case 'e':freecam_move(s->f.vc, s->f.vt, nz);break;
+
+			case 'j':freecam_rotate(s->f.vr, s->f.vf, s->f.vt, 0.05);break;
+			case 'l':freecam_rotate(s->f.vr, s->f.vf, s->f.vt,-0.05);break;
+			case 'i':freecam_rotate(s->f.vf, s->f.vt, s->f.vr, 0.05);break;
+			case 'k':freecam_rotate(s->f.vf, s->f.vt, s->f.vr,-0.05);break;
+			case 'u':freecam_rotate(s->f.vr, s->f.vt, s->f.vf,-0.05);break;
+			case 'o':freecam_rotate(s->f.vr, s->f.vt, s->f.vf, 0.05);break;
 		}
 	}
 

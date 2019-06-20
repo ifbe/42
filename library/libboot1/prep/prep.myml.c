@@ -881,7 +881,7 @@ int role_fromfile(int argc, u8** argv)
 	char* str;
 	u8 buf[0x1000];
 
-	if(argc >= 2)str = (char*)argv[1];
+	if(argc > 1)str = (char*)argv[1];
 	else str = "datafile/myml/mainwindow.myml";
 
 	len = openreadclose(str, 0, buf, 0x1000);
