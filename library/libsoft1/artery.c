@@ -17,9 +17,6 @@ int extclient_create(struct element* ele, void* url);
 int mpu9250_create(struct element* ele, void* url);
 int mpu9250_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
 int mpu9250_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
-//i2c.ahrs
-int ahrsclient_create(struct element* ele, void* url);
-int ahrsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //uart.gcode
 int gcodeclient_create(struct element* ele, void* url);
 int gcodeclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
@@ -316,15 +313,6 @@ void* arterycreate(u64 type, void* argstr)
 
 		e->type = _mpu9250_;
 		mpu9250_create(e, url);
-		return e;
-	}
-	if(_ahrs_ == type)
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		e->type = _ahrs_;
-		ahrsclient_create(e, url);
 		return e;
 	}
 

@@ -431,8 +431,23 @@ int ahrs_start(struct halfrel* self, struct halfrel* peer)
 
 static void* ahrs_thread(struct arena* win)
 {
+	vec4 tmp;
+	struct relation* rel;
+	struct halfrel* self;
+	struct halfrel* peer;
 	while(1){
-		say("@ahrs_thread:%llx,%llx\n", win, win->orel0);
+		//say("@ahrs_thread:%llx,%llx\n", win, win->irel0, win->orel0);
+
+		rel = win->irel0;
+		while(1){
+			if(0 == rel)break;
+			if(_art_ == rel->srctype){
+				self = (void*)&rel->srcchip;
+				peer = (void*)&rel->dstchip;
+				arteryread(self, peer, tmp, 16);
+			}
+			rel = samedstnextsrc(rel);
+		}
 		sleep_us(1000000);
 	}
 }

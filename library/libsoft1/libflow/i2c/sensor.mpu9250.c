@@ -34,6 +34,12 @@ int mpu9250_parse(u8* buf, int len)
 	);
 	return 0;
 }
+int ak8963_parse(u8* buf, int len)
+{
+	short* t = (short*)buf;
+	say("m=(%d,%d,%d)\n", t[0], t[1], t[2]);
+	return 0;
+}
 
 
 
@@ -59,9 +65,14 @@ int mpu9250_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 	if(0 == obj)return 0;
 
 	fd = obj->selffd;
-	systemi2c_read(fd, 0x0068003b, tmp, 14);
+	if(0 == fd)return 0;
 
+	systemi2c_read(fd, (0x68<<16) | 0x3b, tmp, 14);
 	mpu9250_parse(tmp, 14);
+
+	systemi2c_read(fd, (0x0c<<16) | 0x03, tmp, 7);
+	ak8963_parse(tmp, 14);
+
 	return 0;
 }
 int mpu9250_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
