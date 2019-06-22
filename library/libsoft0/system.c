@@ -101,9 +101,12 @@ int systemwrite_in(struct object* chip, u8* foot, u8* buf, int len)
 		df = (void*)(orel->dstfoot);
 		self = (void*)&orel->dstchip;
 		peer = (void*)&orel->srcchip;
-		if(_act_ == orel->dsttype)actorwrite(self, peer, buf, len);
-		else if(_win_ == orel->dsttype)arenawrite(self, peer, buf, len);
-		else if(_art_ == orel->dsttype)artery_rootwrite(dc, df, chip, foot, buf, len);
+		switch(orel->dsttype){
+			case _act_:actorwrite(self, peer, buf, len);break;
+			case _win_:arenawrite(self, peer, buf, len);break;
+			case _art_:arterywrite(self, peer, buf, len);break;
+			//artery_rootwrite(dc, df, chip, foot, buf, len);
+		}
 
 		orel = samesrcnextdst(orel);
 	}

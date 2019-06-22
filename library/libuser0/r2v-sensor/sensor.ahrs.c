@@ -408,6 +408,7 @@ void madgwickahrsupdate()
 void ahrs_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//writeback: east north sky?
+	say("@ahrs_read\n");
 }
 void ahrs_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
@@ -415,6 +416,7 @@ void ahrs_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 	receive gpsdata(already filtered):
 	receive mpudata(already filtered):
 */
+	say("@ahrs_write\n");
 }
 int ahrs_stop(struct halfrel* self, struct halfrel* peer)
 {

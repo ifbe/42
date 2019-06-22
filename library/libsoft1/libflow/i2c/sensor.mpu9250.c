@@ -48,30 +48,36 @@ int mpu9250_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	int fd;
 	u8 tmp[0x10];
-
 	struct element* ele;
 	struct relation* rel;
 	struct object* obj;
+	say("@mpu9250_read\n");
 
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
 
 	rel = ele->irel0;
-	if(0 == rel)return 0;
+	while(1){
+		if(0 == rel)break;
+
+		if(_fd_ == rel->srctype){
+			obj = (void*)(rel->srcchip);
+			if(0 == obj)return 0;
+
+			fd = obj->selffd;
+			if(0 == fd)return 0;
+
+			systemi2c_read(fd, (0x68<<16) | 0x3b, tmp, 14);
+			mpu9250_parse(tmp, 14);
+
+			systemi2c_read(fd, (0x0c<<16) | 0x03, tmp, 7);
+			ak8963_parse(tmp, 14);
+		}
+
+		rel = samedstnextsrc(rel);
+	}
 
 	//systemread(&rel->srcchip, &rel->dstchip, tmp, 14);
-
-	obj = (void*)(rel->srcchip);
-	if(0 == obj)return 0;
-
-	fd = obj->selffd;
-	if(0 == fd)return 0;
-
-	systemi2c_read(fd, (0x68<<16) | 0x3b, tmp, 14);
-	mpu9250_parse(tmp, 14);
-
-	systemi2c_read(fd, (0x0c<<16) | 0x03, tmp, 7);
-	ak8963_parse(tmp, 14);
 
 	return 0;
 }

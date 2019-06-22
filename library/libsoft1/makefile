@@ -168,6 +168,8 @@ libflow/4.tcp/tcp.vnc.c \
 libflow/4.tcp/tcp.ws.c \
 libflow/i2c/sensor.mpu9250.c \
 libflow/i2c/sensor.ms5611.c \
+libflow/i2c/sensor.unpack.c \
+libflow/i2c/sensor.mahony.c \
 libflow/uart/gcode.c \
 libflow/uart/gps.c \
 libphys/phys.elec.c \

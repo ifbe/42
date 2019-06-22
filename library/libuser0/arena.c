@@ -42,6 +42,8 @@ int soundchoose();
 //
 int ahrs_create(void*, void*);
 int ahrs_delete(void*);
+int ahrs_read(void*, void*, void*, int);
+int ahrs_write(void*, void*, void*, int);
 //
 int toycar_create(void*, void*);
 int toycar_delete(void*);
@@ -154,6 +156,7 @@ int arenawrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 	switch(win->fmt){
 		case _bdc_:return toycar_write(self, peer, buf, len);
 		case _step_:return stepcar_write(self, peer, buf, len);
+		case _ahrs_:return ahrs_write(self, peer, buf, len);
 	}
 
 	return 0;
