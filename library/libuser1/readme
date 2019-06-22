@@ -1,6 +1,8 @@
-obj = basic item:
-	piece, rect, cubic, wall, cards, symbol, footprint, 3dmodel, element, button
-the = scene root:
-	chess, 2048, rubik, maze, poker, schema, pcblayout, 3dscene, webpage, menu
-via = *pu object:
-	opengl context, directx context
+object = basic item:
+	piece, rect, cubic, wall, cards, button, armleg, symbol, footprint
+module = item composite:
+	chess, 2048, rubik, maze, poker, widget, human, mcusymbol, mcufootprint
+scene = scene root:
+	schema, pcblayout, 3dscene, uiscene, webpage, uiux
+project = scene composite:
+	opengl context, directx context, pcb project
