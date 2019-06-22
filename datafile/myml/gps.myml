@@ -1,0 +1,18 @@
+<system>
+uart{
+fmt:uart
+url:COM3
+}
+</system>
+
+
+<artery>
+gps{
+fmt:gps
+}
+</artery>
+
+
+<relation>
+(uart, 0, fd, 0) -> (gps, 0, art, 0)
+</relation>

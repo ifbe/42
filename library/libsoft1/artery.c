@@ -241,6 +241,7 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 		case _mpu9250_:return mpu9250_write(self, peer, buf, len);break;
 		case  _unpack_:return unpack_write(self, peer, buf, len);break;
 		case  _mahony_:return mahony_write(self, peer, buf, len);break;
+		case _gps_: gpsclient_write((void*)self->chip, 0, (void*)peer->chip, 0, buf, len);break;
 	}
 	return 0;
 }
