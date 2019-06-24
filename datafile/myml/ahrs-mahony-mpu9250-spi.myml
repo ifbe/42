@@ -1,0 +1,30 @@
+<system>
+spihost{
+fmt:spi
+url:/dev/spidev0.0
+}
+</system>
+
+
+<artery>
+mpu9250{
+fmt:mpu9250
+}
+mahony{
+fmt:mahony
+}
+</artery>
+
+
+<arena>
+ahrs{
+fmt:ahrs
+}
+</arena>
+
+
+<relation>
+(spihost, 0, fd, 0) -> (mpu9250, 0, art, 0)
+(mpu9250, 0, art, 0) -> (mahony, 0, art, 0)
+(mahony, 0, art, 0) -> (ahrs, 0, win, 0)
+</relation>

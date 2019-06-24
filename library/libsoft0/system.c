@@ -25,10 +25,13 @@ int stopuart(int);
 //i2c
 int systemi2c_create(void*, int);
 int systemi2c_delete(int);
-int systemi2c_read(int fd, int addr, u8* buf, u8 len);
+int systemi2c_read(int fd, int addr, u8* buf, int len);
+int systemi2c_write(int fd, int addr, u8* buf, int len);
 //spi
 int systemspi_create(void*, int);
 int systemspi_delete(int);
+int systemspi_read(int fd, int addr, u8* buf, int len);
+int systemspi_write(int fd, int addr, u8* buf, int len);
 //
 int startfile(void*, int);
 int stopfile(int);
@@ -280,6 +283,7 @@ void* systemcreate(u64 type, void* argstr)
 		if(fd <= 0)return 0;
 
 		obj[fd].type = _spi_;
+		obj[fd].selffd = fd;
 		goto success;
 	}
 	else if(_uart_ == type)
