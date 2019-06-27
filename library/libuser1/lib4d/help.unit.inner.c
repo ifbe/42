@@ -81,10 +81,12 @@ void tardis_register(void*);
 void tree_register(void*);
 
 //test
+void calib3d_register(void*);
 void codeimg_register(void*);
 void doodle_register(void*);
 void example_register(void*);
 void fractal_register(void*);
+void oscillo_register(void*);
 void palette_register(void*);
 void planet_register(void*);
 
@@ -350,6 +352,9 @@ void content_create(void* addr)
 
 
 //----------------------test----------------------
+	calib3d_register(tmp);
+	tmp += sizeof(struct actor);
+
 	codeimg_register(tmp);
 	tmp += sizeof(struct actor);
 
@@ -360,6 +365,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	fractal_register(tmp);
+	tmp += sizeof(struct actor);
+
+	oscillo_register(tmp);
 	tmp += sizeof(struct actor);
 
 	palette_register(tmp);

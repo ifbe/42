@@ -166,10 +166,12 @@ module/theitem/item.rccar.c \
 module/theitem/item.stair.c \
 module/theitem/item.tardis.c \
 module/theitem/item.tree.c \
+module/thetest/test.calib3d.c \
 module/thetest/test.codeimg.c \
 module/thetest/test.doodle.c \
 module/thetest/test.example.c \
 module/thetest/test.fractal.c \
+module/thetest/test.oscillo.c \
 module/thetest/test.palette.c \
 module/theuiux/hack.browser.c \
 module/theuiux/hack.circuit.c \

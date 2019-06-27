@@ -807,7 +807,7 @@ struct actor
 		char padding7[8];
 	};
 
-	//[80,bf]: buf
+	//[80,9f]: buf
 	union{
 		u64 fd;
 		void* win;
@@ -830,7 +830,7 @@ struct actor
 		void* nbuf;		//node list
 	};
 
-	//[c0,ff]: len
+	//[a0,bf]: len
 	union{
 		u64 data0;
 		int ilen;
