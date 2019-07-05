@@ -1,8 +1,18 @@
-object = basic item:
-	piece, rect, cubic, wall, cards, button, armleg, symbol, footprint
-module = item composite:
-	chess, 2048, rubik, maze, poker, widget, human, mcusymbol, mcufootprint
-scene = scene root:
-	schema, pcblayout, 3dscene, uiscene, webpage, uiux
-project = scene composite:
-	opengl context, directx context, pcb project
+myown:
+	object = basic item:
+		piece, rect, cubic, wall, cards, button, armleg, symbol, footprint
+	module = item composite:
+		chess, 2048, rubik, maze, poker, widget, human, mcusymbol, mcufootprint
+	scene = scene root:
+		schema, pcblayout, 3dscene, uiscene, webpage, uiux
+	project = scene interact:
+		3dscene, uiscene
+
+elec:
+	schematic, pcb
+
+dx11:
+	public context, someone's context
+
+gl41:
+	public context, someone's context
