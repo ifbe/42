@@ -1,4 +1,5 @@
-myown:
+//-------------residents----------------
+rawmine:
 	object = basic item:
 		piece, rect, cubic, wall, cards, button, armleg, symbol, footprint
 	module = item composite:
@@ -8,11 +9,21 @@ myown:
 	project = scene interact:
 		3dscene, uiscene
 
-elec:
+rawjohn:
+	another way to handle data storage
+
+rawlily:
+	another way to handle data storage
+
+
+
+
+//--------------diplomat----------------
+forelec:
 	schematic, pcb
 
-dx11:
+fordx11:
 	public context, someone's context
 
-gl41:
+forgl41:
 	public context, someone's context
