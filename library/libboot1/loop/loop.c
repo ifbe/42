@@ -75,7 +75,7 @@ void loop()
 		t0 = timeread();
 
 		//draw frame
-		//actorread_all();
+		actorread_all();
 		arenaread_all();
 
 		//cleanup events

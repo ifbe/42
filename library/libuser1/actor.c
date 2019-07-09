@@ -7,22 +7,8 @@ void lib3d_create(void*, void*);
 void lib3d_delete();
 void lib4d_create(void*, void*);
 void lib4d_delete();
-//pre
-int preprocess(struct arena* win);
-//back
-int bg3d_read( void*, void*, struct arena* win, struct style* sty);
-int bg3d_write(struct arena* win, struct style* sty, struct event* ev);
-//fore
-int fg3d_read( void*, void*, struct arena* win, struct style* sty);
-int fg3d_write(struct arena* win, struct style* sty, struct event* ev);
-//temp
-int menu_read( void*, void*, struct arena* win, struct style* sty);
-int menu_write(struct arena* win, struct style* sty, struct event* ev);
-//vkbd
-int vkbd_read( void*, void*, struct arena* win, struct style* sty);
-int vkbd_write(struct arena* win, struct style* sty, struct event* ev);
-//post
-int postprocess(struct arena* win);
+//
+int baby_read(void*, void*);
 
 
 
@@ -201,6 +187,12 @@ void* actorcreate(u64 type, void* buf)
 
 		act->oncreate(act, 0);
 	}
+	else if(_baby_ == type)
+	{
+		act = allocactor();
+		act->type = _baby_;
+		return act;
+	}
 	else
 	{
 		k = 0;
@@ -307,6 +299,12 @@ void* actorsearch(u8* buf, int len)
 
 int actorread_all()
 {
+	int j;
+	//say("@actorread_all\n");
+
+	for(j=0;j<256;j++){
+		if(_baby_ == actor[j].type)baby_read(0, 0);
+	}
 	return 0;
 }
 int actorevent(struct event* ev)

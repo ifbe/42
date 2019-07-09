@@ -73,6 +73,7 @@ typedef float mat4[4][4];
 #define _3d_ hex32('3','d',0,0)
 #define _ui_ hex32('u','i',0,0)
 //tier=_act_, type:
+#define _baby_ hex32('b','a','b','y')
 #define _orig_ hex32('o','r','i','g')
 #define _ORIG_ hex32('O','R','I','G')
 #define _copy_ hex32('c','o','p','y')
