@@ -201,7 +201,9 @@ rawmine/scene/scene.c \
 rawmine/project/project.c \
 rawbaby/baby.c \
 fordx11/dx11.ctx.c \
-fordx11/dx11.draw.fbo.c \
+fordx11/dx11.fbo.color.c \
+fordx11/dx11.fbo.depth.c \
+fordx11/dx11.fbo.gbuffer.c \
 fordx11/dx11.draw.wnd.c \
 fordx12/dx12.ctx.c \
 fordx12/dx12.draw.c \
@@ -211,7 +213,8 @@ forgl10/gl10.draw.c \
 forgl10/gl10.fbo.c \
 forgl41/gl41.ctx.coop.c \
 forgl41/gl41.ctx.self.c \
-forgl41/gl41.fbo.fbuffer.c \
+forgl41/gl41.fbo.color.c \
+forgl41/gl41.fbo.depth.c \
 forgl41/gl41.fbo.gbuffer.c \
 forgl41/gl41.draw.wnd.c \
 forelec/elec.sch.c \
