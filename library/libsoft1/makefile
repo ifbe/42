@@ -170,7 +170,7 @@ libflow/ahrs/parse/ahrs.parse.gps.c \
 libflow/ahrs/parse/ahrs.parse.lines.c \
 libflow/ahrs/parse/ahrs.sensor.mpu9250.c \
 libflow/ahrs/parse/ahrs.sensor.ms5611.c \
-libflow/ahrs/solve/ahrs.awithg.c \
+libflow/ahrs/solve/ahrs.easyag.c \
 libflow/ahrs/solve/ahrs.ekf.c \
 libflow/ahrs/solve/ahrs.madgwick.c \
 libflow/ahrs/solve/ahrs.mahony.c \
