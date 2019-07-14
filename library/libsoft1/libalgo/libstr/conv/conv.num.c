@@ -161,6 +161,117 @@ int data2hexstr(u64 data,u8* str)
 
 
 
+//float类型转换成10进制字符串
+int float2decstr(float data, u8* str)
+{
+	float temp;
+	int offset;
+	int count;
+
+	//符号部分
+	offset=0;
+	if(data<0)
+	{
+		str[0]='-';
+		offset+=1;
+
+		data=-data;
+	}
+
+	//整数部分
+	offset+=data2decstr( (u64)data , str+offset );
+
+	//小数点
+	str[offset]='.';
+	offset++;
+
+	//小数部分
+	temp=(float)(u64)data;
+	temp=data-temp;
+
+	if(temp<0.0000000000000000000000000000000001)
+	{
+		//特别小
+		str[offset]=0x30;
+		offset++;
+	}
+	else
+	{
+		//一般小数
+		while(temp<0.1)
+		{
+			temp*=10;
+			str[offset]=0x30;
+			offset++;
+		}
+		temp=temp*10000000;
+		count=data2decstr( (u64)temp , str+offset );
+		offset+=count;
+	}
+
+	//0
+	str[offset]=0;
+	return offset;
+}
+int decstr2float(u8* src, float* data)
+{
+	int j;
+	float flag;
+	float temp;
+	float asdf;
+
+stage0:
+	if('-' != src[0])flag = 1.0;
+	else{
+		flag = -1.0;
+		src += 1;
+	}
+
+stage1:
+	temp = 0.0;
+	for(j=0;j<20;j++)
+	{
+		if((src[j] >= '0') && (src[j] <= '9'))
+		{
+			temp = (temp*10) + src[j] - 0x30;
+		}
+		else if(src[j] == '.')
+		{
+			j++;
+			*data = temp;
+			goto stage2;
+		}
+		else
+		{
+			*data = temp;
+			goto byebye;
+		}
+	}
+
+stage2:
+	asdf = 0.1;
+	for(;j<30;j++)
+	{
+		if((src[j] >= '0') && (src[j] <= '9'))
+		{
+			*data += (src[j]-0x30)*asdf;
+			asdf *= 0.1;
+		}
+		else break;
+	}
+
+byebye:
+	if(flag > 0.0){
+		return j;
+	}
+
+	*data *= -1.0;
+	return j+1;
+}
+
+
+
+
 //double类型转换成10进制字符串
 int double2decstr(double data, u8* str)
 {
@@ -267,4 +378,55 @@ byebye:
 
 	*data *= -1.0;
 	return j+1;
+}
+
+
+
+
+//in:  3.66,1244,  1.4,   86.34     0.3,    7.7      ,5
+//out: float vector
+int parsefv(float* vec, int flen, u8* str, int slen)
+{
+	int j = 0, k;
+
+first:
+	while(0x20 == str[j])j++;
+	j += decstr2float(str+j, &vec[0]);
+
+	for(k=j;k<j+16;k++){
+		if(',' == str[k]){
+			j = k+1;
+			goto second;
+		}
+	}
+	return 1;
+
+second:
+	while(0x20 == str[j])j++;
+	j += decstr2float(str+j, &vec[1]);
+
+	for(k=j;k<j+16;k++){
+		if(',' == str[k]){
+			j = k+1;
+			goto third;
+		}
+	}
+	return 2;
+
+third:
+	while(0x20 == str[j])j++;
+	j += decstr2float(str+j, &vec[2]);
+
+	for(k=j;k<j+16;k++){
+		if(',' == str[k]){
+			j = k+1;
+			goto fourth;
+		}
+	}
+	return 3;
+
+fourth:
+	while(0x20 == str[j])j++;
+	j += decstr2float(str+j, &vec[3]);
+	return 4;
 }

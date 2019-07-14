@@ -1,0 +1,30 @@
+<system>
+udphost{
+fmt:UDP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<artery>
+unpack{
+fmt:unpack
+}
+easyag{
+fmt:easyag
+}
+</artery>
+
+
+<arena>
+ahrs{
+fmt:ahrs
+}
+</arena>
+
+
+<relation>
+(udphost, 0, fd, 0) -> (unpack, 0, art, 0)
+(unpack, 0, art, 0) -> (easyag, 0, art, 0)
+(easyag, 0, art, 0) -> (ahrs, 0, win, 0)
+</relation>

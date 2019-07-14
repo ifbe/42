@@ -1,4 +1,6 @@
 #include "libuser.h"
+int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
+//
 int openreadclose(void*,int,void*,int);
 int openwriteclose(void*,int,void*,int);
 void* allocstyle();
@@ -169,59 +171,6 @@ void role_test_relation(u8* buf, int len,
 
 
 
-int parsefloat(float* f, u8* str)
-{
-	double d;
-	int j = decstr2double(str, &d);
-
-	f[0] = d;
-	return j;
-}
-int parsevec4(vec4 vec, u8* str)
-{
-	int j = 0, k;
-
-first:
-	while(0x20 == str[j])j++;
-	j += parsefloat(&vec[0], str+j);
-
-	for(k=j;k<j+16;k++){
-		if(',' == str[k]){
-			j = k+1;
-			goto second;
-		}
-	}
-	return 1;
-
-second:
-	while(0x20 == str[j])j++;
-	j += parsefloat(&vec[1], str+j);
-
-	for(k=j;k<j+16;k++){
-		if(',' == str[k]){
-			j = k+1;
-			goto third;
-		}
-	}
-	return 2;
-
-third:
-	while(0x20 == str[j])j++;
-	j += parsefloat(&vec[2], str+j);
-
-	for(k=j;k<j+16;k++){
-		if(',' == str[k]){
-			j = k+1;
-			goto fourth;
-		}
-	}
-	return 3;
-
-fourth:
-	while(0x20 == str[j])j++;
-	j += parsefloat(&vec[3], str+j);
-	return 4;
-}
 int role_test_style(u8* buf, int len, struct footlist foot[], int flen)
 {
 	//say("style:\n%.*s\n", len, buf);
@@ -268,14 +217,14 @@ int role_test_style(u8* buf, int len, struct footlist foot[], int flen)
 				str = -1;
 
 				switch(buf[propname]){
-					case 'l':parsevec4(sty->f.vl, buf+propdata);break;
-					case 'r':parsevec4(sty->f.vr, buf+propdata);break;
-					case 'b':parsevec4(sty->f.vb, buf+propdata);break;
-					case 't':parsevec4(sty->f.vt, buf+propdata);break;
-					case 'n':parsevec4(sty->f.vn, buf+propdata);break;
-					case 'f':parsevec4(sty->f.vf, buf+propdata);break;
-					case 'q':parsevec4(sty->f.vq, buf+propdata);break;
-					case 'c':parsevec4(sty->f.vc, buf+propdata);break;
+					case 'l':parsefv(sty->f.vl, 4, buf+propdata, 99);break;
+					case 'r':parsefv(sty->f.vr, 4, buf+propdata, 99);break;
+					case 'b':parsefv(sty->f.vb, 4, buf+propdata, 99);break;
+					case 't':parsefv(sty->f.vt, 4, buf+propdata, 99);break;
+					case 'n':parsefv(sty->f.vn, 4, buf+propdata, 99);break;
+					case 'f':parsefv(sty->f.vf, 4, buf+propdata, 99);break;
+					case 'q':parsefv(sty->f.vq, 4, buf+propdata, 99);break;
+					case 'c':parsefv(sty->f.vc, 4, buf+propdata, 99);break;
 				}
 			}
 			continue;

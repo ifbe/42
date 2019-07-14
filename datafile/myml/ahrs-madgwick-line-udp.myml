@@ -1,15 +1,14 @@
 <system>
-i2chost{
-fmt:i2c
-url:/dev/i2c-1
+udphost{
+fmt:UDP
+url:0.0.0.0:9999
 }
 </system>
 
 
 <artery>
-mpu9250{
-fmt:mpu9250
-url:0x68,0xc
+unpack{
+fmt:unpack
 }
 madgwick{
 fmt:madgwick
@@ -25,7 +24,7 @@ fmt:ahrs
 
 
 <relation>
-(i2chost, 0, fd, 0) -> (mpu9250, 0, art, 0)
-(mpu9250, 0, art, 0) -> (madgwick, 0, art, 0)
+(udphost, 0, fd, 0) -> (unpack, 0, art, 0)
+(unpack, 0, art, 0) -> (madgwick, 0, art, 0)
 (madgwick, 0, art, 0) -> (ahrs, 0, win, 0)
 </relation>

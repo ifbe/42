@@ -71,13 +71,44 @@ void imuupdate(
 
 
 
-void easyag_delete()
+int easyag_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	say("@easyag_read\n");
+	return 0;
+}
+int easyag_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+	int j;
+	float* fbuf = (void*)buf;
+	say("@easyag_write\n");
+
+	for(j=0;j<len;j++){
+		say("	%f", fbuf, j);
+	}
+	say("\n");
+	return 0;
+}
+int easyag_stop(struct halfrel* self, struct halfrel* peer)
+{
+	say("@easyag_stop\n");
+	return 0;
+}
+int easyag_start(struct halfrel* self, struct halfrel* peer)
+{
+	say("@easyag_start\n");
+	return 0;
+}
+
+
+
+
+void easyag_delete(struct element* ele)
 {
 }
-void easyag_create()
+void easyag_create(struct element* ele, u8* url)
 {
-	q0=1.0;
-	q1=q2=q3=0;
+	q0 = 1.0;
+	q1 = q2 = q3 = 0;
 
-	integralx=integraly=integralz=0;
+	integralx = integraly = integralz = 0;
 }

@@ -1,7 +1,5 @@
 #include "libuser.h"
 #define _data_ hex32('d','a','t','a')
-int parsefloat(float* f, u8* str);
-int parsevec4(float* vec, u8* str);
 
 
 
@@ -99,7 +97,7 @@ static void oscillo_data(
 
 	ff = act->vbuf;
 	j = act->vlen;
-	parsefloat(&ff[3*j + 2], buf);
+	decstr2float(buf, &ff[3*j + 2]);
 	//say("%d: %f,%f,%f\n", j, ff[3*j], ff[3*j+1], ff[3*j+2]);
 
 	act->vlen = (j+1) % 0x10000;

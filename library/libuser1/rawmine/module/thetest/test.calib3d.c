@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define _data_ hex32('d','a','t','a')
-int parsevec4(float* vec, u8* str);
+int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
 
 
 
@@ -98,7 +98,7 @@ static void calib3d_data(
 
 	ff = act->vbuf;
 	j = act->vlen;
-	parsevec4(&ff[3*j], buf);
+	parsefv(&ff[3*j+0], 3, buf, len);
 	//say("%d: %f,%f,%f\n", j, ff[3*j], ff[3*j+1], ff[3*j+2]);
 
 	act->vlen = (j+1) % 0x10000;

@@ -1,12 +1,14 @@
 <arena>
+3dworld{
+fmt:vbo
+type:3d
+}
 window{
 fmt:win
 title:"42"
 width:1024
 height:1024
 depth:1024
-}
-speaker{
 }
 </arena>
 
@@ -23,17 +25,6 @@ fmt:login
 }
 rtscam{
 fmt:orthcam
-}
-3dworld{
-fmt:vbo
-type:3d
-}
-
-public{
-fmt:glpub
-}
-private{
-fmt:glpriv
 }
 </actor>
 
@@ -74,12 +65,6 @@ p3{}
 (3dworld, haha, win, bg) -> (particle, p0, act, 0)
 (3dworld, ortho, win, cam) -> (rtscam, p0, act, geom)
 
-(public, 0, act, ctx) -> (3dworld, 0, act, cam)
-(public, 0, act, lit) -> (thesun, 0, act, cam)
-
-(private, 0, act, ctx) -> (public, 0, act, cam)
-(private, fullscreen, act, cam) -> (rtscam, 0, act, cam)
-
-(window, 0, win, data) -> (3dworld, 0, act, out)
-(window, fullscreen, win, draw) -> (private, 0, act, cam)
+(window, 0, win, vp) -> (3dworld, 0, win, out)
+(window, fullscreen, win, cam) -> (rtscam, 0, act, cam)
 </relation>

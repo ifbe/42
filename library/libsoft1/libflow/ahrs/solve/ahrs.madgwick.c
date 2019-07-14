@@ -274,10 +274,12 @@ int madgwick_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 }
 int madgwick_stop(struct halfrel* self, struct halfrel* peer)
 {
+	say("@madgwick_stop\n");
 	return 0;
 }
 int madgwick_start(struct halfrel* self, struct halfrel* peer)
 {
+	say("@madgwick_start\n");
 	return 0;
 }
 
