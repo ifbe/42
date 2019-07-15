@@ -6,8 +6,17 @@ rawmine:
 		chess, 2048, rubik, maze, poker, widget, human, mcusymbol, mcufootprint
 	scene = scene root:
 		schema, pcblayout, 3dscene, uiscene, webpage, uiux
-	project = scene interact:
-		3dscene, uiscene
+	project = purpose, cause:
+		many scene interact with eath other
+
+rawbaby:
+	just cry
+
+rawtest:
+	debug purpose
+
+rawkirk:
+	drone pilot
 
 rawjohn:
 	another way to handle data storage
@@ -22,8 +31,14 @@ rawlily:
 forelec:
 	schematic, pcb
 
+forsound:
+	speaker context
+
 fordx11:
-	public context, someone's context
+	directx context, render target
 
 forgl41:
-	public context, someone's context
+	opengl context, render target
+
+formetal:
+	metal context, render target
