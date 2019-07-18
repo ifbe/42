@@ -1,6 +1,13 @@
 #include "libuser.h"
 #define _data_ hex32('d','a','t','a')
-int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
+struct mag_minmax{
+	float xmin;
+	float xmax;
+	float ymin;
+	float ymax;
+	float zmin;
+	float zmax;
+};
 
 
 
@@ -90,24 +97,34 @@ static void calib3d_draw(
 static void calib3d_data(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
-	u8* buf, int len)
+	float* buf, int len)
 {
 	int j;
-	float* ff;
-	say("@calib3d_data\n");
+	int t = act->vlen;
+	float* f = act->vbuf;
+	struct mag_minmax* priv = act->buf;
+	//say("@calib3d_data:%d\n", len);
 
-	ff = act->vbuf;
-	j = act->vlen;
-	parsefv(&ff[3*j+0], 3, buf, len);
-	//say("%d: %f,%f,%f\n", j, ff[3*j], ff[3*j+1], ff[3*j+2]);
+	for(j=0;j<len;j+=3){
+		f[3*t + j+0] = buf[j+0];
+		f[3*t + j+1] = buf[j+1];
+		f[3*t + j+2] = buf[j+2];
+	}
+	act->vlen += len/3;
 
-	act->vlen = (j+1) % 0x10000;
+	if(buf[0] < priv->xmin)priv->xmin = buf[0];
+	if(buf[0] > priv->xmax)priv->xmax = buf[0];
+	if(buf[1] < priv->ymin)priv->ymin = buf[1];
+	if(buf[1] > priv->ymax)priv->ymax = buf[1];
+	if(buf[2] < priv->zmin)priv->zmin = buf[2];
+	if(buf[2] > priv->zmax)priv->zmax = buf[2];
+	say("%f,%f,%f,%f,%f,%f\n",priv->xmin,priv->xmax,priv->ymin,priv->ymax,priv->zmin,priv->zmax);
 }
 
 
 
 
-static void calib3d_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void calib3d_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -116,7 +133,7 @@ static void calib3d_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	calib3d_draw(act, pin, win, sty);
 }
-static void calib3d_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void calib3d_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
@@ -199,6 +216,7 @@ static void calib3d_create(struct actor* act, void* str)
 	int j;
 	u16* uu;
 	float* ff;
+	struct mag_minmax* priv;
 	if(0 == act)return;
 	if(act->vbuf)return;
 	if(act->ibuf)return;
@@ -217,6 +235,14 @@ static void calib3d_create(struct actor* act, void* str)
 		uu[j*2 + 0] = j;
 		uu[j*2 + 1] = j+1;
 	}
+
+	priv = act->buf = memorycreate(sizeof(struct mag_minmax));
+	priv->xmin = 99999.0;
+	priv->xmax = -99999.0;
+	priv->ymin = 99999.0;
+	priv->ymax = -99999.0;
+	priv->zmin = 99999.0;
+	priv->zmax = -99999.0;
 }
 
 

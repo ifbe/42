@@ -166,8 +166,6 @@ libflow/4.tcp/tcp.telnet.c \
 libflow/4.tcp/tcp.tls.c \
 libflow/4.tcp/tcp.vnc.c \
 libflow/4.tcp/tcp.ws.c \
-libflow/ahrs/parse/ahrs.parse.gps.c \
-libflow/ahrs/parse/ahrs.parse.lines.c \
 libflow/ahrs/parse/ahrs.sensor.mpu9250.c \
 libflow/ahrs/parse/ahrs.sensor.ms5611.c \
 libflow/ahrs/solve/ahrs.easyag.c \
@@ -175,6 +173,9 @@ libflow/ahrs/solve/ahrs.ekf.c \
 libflow/ahrs/solve/ahrs.madgwick.c \
 libflow/ahrs/solve/ahrs.mahony.c \
 libflow/gcode/gcode.c \
+libflow/line/line.order.c \
+libflow/line/line.tofv.c \
+libflow/line/line.togps.c \
 libphys/phys.elec.c \
 libphys/phys.mech.c \
 artery.c

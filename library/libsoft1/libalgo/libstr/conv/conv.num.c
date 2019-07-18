@@ -394,6 +394,7 @@ first:
 	j += decstr2float(str+j, &vec[0]);
 
 	for(k=j;k<j+16;k++){
+		if('\n' == str[k])break;
 		if(',' == str[k]){
 			j = k+1;
 			goto second;
@@ -406,6 +407,7 @@ second:
 	j += decstr2float(str+j, &vec[1]);
 
 	for(k=j;k<j+16;k++){
+		if('\n' == str[k])break;
 		if(',' == str[k]){
 			j = k+1;
 			goto third;
@@ -418,6 +420,7 @@ third:
 	j += decstr2float(str+j, &vec[2]);
 
 	for(k=j;k<j+16;k++){
+		if('\n' == str[k])break;
 		if(',' == str[k]){
 			j = k+1;
 			goto fourth;

@@ -5,6 +5,17 @@ url:0.0.0.0:9999
 }
 </system>
 
+
+<artery>
+reline{
+fmt:reline
+}
+line2fv{
+fmt:line2fv
+}
+</artery>
+
+
 <arena>
 3dworld{
 fmt:vbo
@@ -75,5 +86,7 @@ p2{}
 (window, fullscreen, win, cam) -> (rtscam, frustum, act, cam)
 (window, 0, win, vp) -> (3dworld, 0, win, out)
 
-(udpport, 0, fd, 0) -> (calib3d, 0, act, data)
+(udpport, 0, fd, 0) -> (reline, 0, art, 0)
+(reline, 0, art, 0) -> (line2fv, 0, art, 0)
+(line2fv, 0, art, 0) -> (calib3d, 0, act, data)
 </relation>
