@@ -173,9 +173,11 @@ libflow/ahrs/solve/ahrs.ekf.c \
 libflow/ahrs/solve/ahrs.madgwick.c \
 libflow/ahrs/solve/ahrs.mahony.c \
 libflow/gcode/gcode.c \
-libflow/line/line.order.c \
-libflow/line/line.tofv.c \
-libflow/line/line.togps.c \
+libflow/stream/stream.reorder.bylength.c \
+libflow/stream/stream.reorder.bysymbol.c \
+libflow/stream/stream.reorder.linefeed.c \
+libflow/stream/stream.tofv.c \
+libflow/stream/stream.togps.c \
 libphys/phys.elec.c \
 libphys/phys.mech.c \
 artery.c
