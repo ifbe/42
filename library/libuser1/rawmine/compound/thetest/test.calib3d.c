@@ -110,7 +110,7 @@ static void calib3d_data(
 		f[3*t + j+1] = buf[j+1];
 		f[3*t + j+2] = buf[j+2];
 	}
-	act->vlen += len/3;
+	act->vlen = (act->vlen + len/3) % 0x10000;
 
 	if(buf[0] < priv->xmin)priv->xmin = buf[0];
 	if(buf[0] > priv->xmax)priv->xmax = buf[0];

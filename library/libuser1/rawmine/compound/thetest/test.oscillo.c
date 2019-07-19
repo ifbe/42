@@ -89,24 +89,22 @@ static void oscillo_draw(
 static void oscillo_data(
 	struct actor* act, struct style* pin,
 	struct arena* win, struct style* sty,
-	u8* buf, int len)
+	float* buf, int len)
 {
-	int j;
-	float* ff;
-	say("@oscillo_data\n");
+	int t = act->vlen;
+	float* f = act->vbuf;
+	//say("@oscillo_data:%d\n", len);
 
-	ff = act->vbuf;
-	j = act->vlen;
-	decstr2float(buf, &ff[3*j + 2]);
+	f[3*t + 2] = buf[0];
+	act->vlen = (act->vlen + len/3) % 0x10000;
+
 	//say("%d: %f,%f,%f\n", j, ff[3*j], ff[3*j+1], ff[3*j+2]);
-
-	act->vlen = (j+1) % 0x10000;
 }
 
 
 
 
-static void oscillo_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void oscillo_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -115,7 +113,7 @@ static void oscillo_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	oscillo_draw(act, pin, win, sty);
 }
-static void oscillo_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void oscillo_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);

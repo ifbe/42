@@ -176,8 +176,9 @@ libflow/gcode/gcode.c \
 libflow/stream/stream.reorder.bylength.c \
 libflow/stream/stream.reorder.bysymbol.c \
 libflow/stream/stream.reorder.linefeed.c \
-libflow/stream/stream.tofv.c \
-libflow/stream/stream.togps.c \
+libflow/stream/stream.parse.mavlink.c \
+libflow/stream/stream.parse.nema0183.c \
+libflow/stream/stream.parse.tofv.c \
 libphys/phys.elec.c \
 libphys/phys.mech.c \
 artery.c
