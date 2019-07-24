@@ -9,7 +9,7 @@ libboot0:
 libboot1:
 	make -s -C $(library)/libboot1 compiler="clang" cflag=$(flag)
 libhard0:
-	make -s -C $(library)/libhard0 compiler="clang" cflag=$(flag) x64
+	make -s -C $(library)/libhard0 compiler="clang" cflag=$(flag) macx64
 libhard1:
 	make -s -C $(library)/libhard1 compiler="clang" cflag=$(flag)
 libsoft0:

@@ -15,12 +15,6 @@ bare:
 	$(compiler) $(cflag) bare/bare.system.signal.c
 	$(compiler) $(cflag) bare/bare.system.shell.c
 	$(compiler) $(cflag) bare/bare.system.time.c
-	$(compiler) $(cflag) bare/bare.wire.bt.c
-	$(compiler) $(cflag) bare/bare.wire.i2c.c
-	$(compiler) $(cflag) bare/bare.wire.spi.c
-	$(compiler) $(cflag) bare/bare.wire.uart.c
-	$(compiler) $(cflag) bare/bare.wire.usb.c
-	$(compiler) $(cflag) bare/bare.wire.wifi.c
 	$(compiler) $(cflag) system.c
 
 .PHONY:efi
@@ -37,12 +31,6 @@ efi:
 	$(compiler) $(cflag) efi/efi.system.signal.c
 	$(compiler) $(cflag) efi/efi.system.shell.c
 	$(compiler) $(cflag) efi/efi.system.time.c
-	$(compiler) $(cflag) efi/efi.wire.bt.c
-	$(compiler) $(cflag) efi/efi.wire.i2c.c
-	$(compiler) $(cflag) efi/efi.wire.spi.c
-	$(compiler) $(cflag) efi/efi.wire.uart.c
-	$(compiler) $(cflag) efi/efi.wire.usb.c
-	$(compiler) $(cflag) efi/efi.wire.wifi.c
 	$(compiler) $(cflag) system.c
 
 .PHONY:bsd
@@ -72,14 +60,6 @@ linux:
 	$(compiler) $(cflag) linux/linux.system.shell.c
 	$(compiler) $(cflag) linux/linux.system.signal.c
 	$(compiler) $(cflag) linux/linux.system.time.c
-	$(compiler) $(cflag) linux/linux.wire.bt.c
-	$(compiler) $(cflag) linux/linux.wire.i2c.c
-	$(compiler) $(cflag) linux/linux.wire.gpio.c
-	$(compiler) $(cflag) linux/linux.wire.pci.c
-	$(compiler) $(cflag) linux/linux.wire.spi.c
-	$(compiler) $(cflag) linux/linux.wire.uart.c
-	$(compiler) $(cflag) linux/linux.wire.usb.c
-	$(compiler) $(cflag) linux/linux.wire.wifi.c
 	$(compiler) $(cflag) system.c
 
 .PHONY:mac
@@ -96,14 +76,6 @@ mac:
 	$(compiler) $(cflag) mac/mac.system.shell.c
 	$(compiler) $(cflag) mac/mac.system.signal.c
 	$(compiler) $(cflag) mac/mac.system.time.c
-	$(compiler) $(cflag) mac/mac.wire.bt.c
-	$(compiler) $(cflag) mac/mac.wire.i2c.c
-	$(compiler) $(cflag) mac/mac.wire.gpio.c
-	$(compiler) $(cflag) mac/mac.wire.pci.c
-	$(compiler) $(cflag) mac/mac.wire.spi.c
-	$(compiler) $(cflag) mac/mac.wire.uart.c
-	$(compiler) $(cflag) mac/mac.wire.usb.c
-	$(compiler) $(cflag) mac/mac.wire.wifi.c
 	$(compiler) $(cflag) system.c
 
 .PHONY:win
@@ -119,14 +91,6 @@ win:
 	$(compiler) $(cflag) win/win.system.shell.c
 	$(compiler) $(cflag) win/win.system.signal.c
 	$(compiler) $(cflag) win/win.system.time.c
-	$(compiler) $(cflag) win/win.wire.bt.c
-	$(compiler) $(cflag) win/win.wire.i2c.c
-	$(compiler) $(cflag) win/win.wire.gpio.c
-	$(compiler) $(cflag) win/win.wire.pci.c
-	$(compiler) $(cflag) win/win.wire.spi.c
-	$(compiler) $(cflag) win/win.wire.uart.c
-	$(compiler) $(cflag) win/win.wire.usb.c
-	$(compiler) $(cflag) win/win.wire.wifi.c
 	$(compiler) $(cflag) system.c
 clean:
 	rm -f *.o *.a
