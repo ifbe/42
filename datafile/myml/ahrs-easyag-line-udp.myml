@@ -7,8 +7,11 @@ url:0.0.0.0:9999
 
 
 <artery>
-unpack{
-fmt:unpack
+reline{
+fmt:reline
+}
+line2fv{
+fmt:line2fv
 }
 easyag{
 fmt:easyag
@@ -24,7 +27,8 @@ fmt:ahrs
 
 
 <relation>
-(udphost, 0, fd, 0) -> (unpack, 0, art, 0)
-(unpack, 0, art, 0) -> (easyag, 0, art, 0)
+(udphost, 0, fd, 0) -> (reline, 0, art, 0)
+(reline, 0, art, 0) -> (line2fv, 0, art, 0)
+(line2fv, 0, art, 0) -> (easyag, 0, art, 0)
 (easyag, 0, art, 0) -> (ahrs, 0, win, 0)
 </relation>

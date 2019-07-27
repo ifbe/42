@@ -431,5 +431,31 @@ third:
 fourth:
 	while(0x20 == str[j])j++;
 	j += decstr2float(str+j, &vec[3]);
+
+	for(k=j;k<j+16;k++){
+		if('\n' == str[k])break;
+		if(',' == str[k]){
+			j = k+1;
+			goto fifth;
+		}
+	}
 	return 4;
+
+fifth:
+	while(0x20 == str[j])j++;
+	j += decstr2float(str+j, &vec[4]);
+
+	for(k=j;k<j+16;k++){
+		if('\n' == str[k])break;
+		if(',' == str[k]){
+			j = k+1;
+			goto sixth;
+		}
+	}
+	return 5;
+
+sixth:
+	while(0x20 == str[j])j++;
+	j += decstr2float(str+j, &vec[5]);
+	return 6;
 }

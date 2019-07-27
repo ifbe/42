@@ -10,7 +10,7 @@ libboot1:
 	+make -s -C $(library)/libboot1 \
 	cflag="-c -O2 -fPIC -I.."
 libhard0:
-	+make -s -C $(library)/libhard0 x64 \
+	+make -s -C $(library)/libhard0 linuxx64 \
 	cflag="-c -O2 -fPIC -I.."
 libhard1:
 	+make -s -C $(library)/libhard1 \
@@ -57,7 +57,7 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lglfw -lGLEW -lGLU -lGL -lpulse -lpulse-simple -lpthread
+	-lglfw3 -lGLEW -lGLU -lGL -lpulse -lpulse-simple -lpthread -lX11 -lm -ldl
 clean:
 	rm -f *.o *.a *.so
 	make -C $(library) clean

@@ -18,6 +18,7 @@ int line2fv_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 	struct halfrel* cself;
 	struct halfrel* cpeer;
 	//say("@line2fv_write:%d\n", len);
+	//printmemory(buf, len);
 
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;

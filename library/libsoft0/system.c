@@ -295,7 +295,7 @@ void* systemcreate(u64 type, void* argstr)
 		}
 		host[j] = 0;
 
-		fd = startuart(host, 9600);	//115200);
+		fd = startuart(host, 115200);
 		if(fd <= 0)return 0;
 
 		obj[fd].type = _uart_;
