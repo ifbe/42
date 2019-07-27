@@ -1,0 +1,1 @@
+//equation -> schematic -> pcblayout -> realboard

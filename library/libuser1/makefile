@@ -201,10 +201,11 @@ rawmine/scene/3dwithaid.c \
 rawmine/scene/3dwithout.c \
 rawmine/scene/schematic.c \
 rawmine/scene/printboard.c \
-rawmine/solution/equtosch.c \
-rawmine/solution/schtopcb.c \
-rawmine/solution/uitoreal.c \
-rawmine/solution/uitovirt.c \
+rawmine/solution/pcb.c \
+rawmine/solution/game.client.c \
+rawmine/solution/game.server.c \
+rawmine/solution/ui.real.c \
+rawmine/solution/ui.virt.c \
 rawbaby/baby.c \
 fordx11/dx11.ctx.c \
 fordx11/dx11.fbo.color.c \

@@ -19,8 +19,8 @@ static float q3;
 
 //accel + gyro
 void imuupdate(
-	float ax, float ay, float az,
-	float gx, float gy, float gz)
+	float gx, float gy, float gz,
+	float ax, float ay, float az)
 {
 	float norm;
 	float vx, vy, vz;
@@ -62,10 +62,10 @@ void imuupdate(
 	q2 = q2 / norm;
 	q3 = q3 / norm;
 
-	//eulerian[0] = arctan2(2*(q0*q1+q2*q3),1-2*(q1*q1+q2*q2))*180/3.141592653;
-	//eulerian[1] = arctan2(2*(q0*q3+q1*q2),1-2*(q2*q2+q3*q3))*180/3.141592653;
-	//eulerian[2] = arcsin(2*q0*q2 - 2*q1*q3)*180/3.141592653;
-	//say("imu:	%lf	%lf	%lf\n", eulerian[0], eulerian[1], eulerian[2]);
+	vx = arctan2(2*(q0*q1+q2*q3),1-2*(q1*q1+q2*q2))*180/3.141592653;
+	vy = arcsin(2*q0*q2 - 2*q1*q3)*180/3.141592653;
+	vz = arctan2(2*(q0*q3+q1*q2),1-2*(q2*q2+q3*q3))*180/3.141592653;
+	say("imu:	%f	%f	%f\n", vx, vy, vz);
 }
 
 
@@ -79,13 +79,14 @@ int easyag_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 int easyag_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	int j;
-	float* fbuf = (void*)buf;
+	float* f = (void*)buf;
 	say("@easyag_write\n");
-
-	for(j=0;j<len;j++){
-		say("	%f", fbuf, j);
-	}
+/*
+	for(j=0;j<len;j++)say("	%f", f[j]);
 	say("\n");
+*/
+	if(6 == len)imuupdate(f[0],f[1],f[2], f[3],f[4],f[5]);
+	else say("err@easyag_write:len=%d\n",len);
 	return 0;
 }
 int easyag_stop(struct halfrel* self, struct halfrel* peer)

@@ -99,8 +99,8 @@ void mahonyupdate6(
 	q3 *= recipNorm;
 }
 void mahonyupdate9(
-	float ax, float ay, float az,
 	float gx, float gy, float gz,
+	float ax, float ay, float az,
 	float mx, float my, float mz)
 {
 	float norm;
@@ -206,10 +206,10 @@ void mahonyupdate9(
 	q3 /= norm;
 
 
-	//eulerian[0] = arctan2(2*(q0*q1+q2*q3),1-2*(q1*q1+q2*q2))*180/3.141592653;
-	//eulerian[1] = arctan2(2*(q0*q3+q1*q2),1-2*(q2*q2+q3*q3))*180/3.141592653;
-	//eulerian[2] = arcsin(2*q0*q2 - 2*q1*q3)*180/3.141592653;
-	//say("ahrs:	%lf	%lf	%lf\n", eulerian[0], eulerian[1], eulerian[2]);
+	//gx = arctan2(2*(q0*q1+q2*q3),1-2*(q1*q1+q2*q2))*180/3.141592653;
+	//gy = arcsin(2*q0*q2 - 2*q1*q3)*180/3.141592653;
+	//gz = arctan2(2*(q0*q3+q1*q2),1-2*(q2*q2+q3*q3))*180/3.141592653;
+	//say("ahrs:	%f	%f	%f\n", gx, gy, gz);
 }
 
 
@@ -239,10 +239,17 @@ int mahony_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	struct element* ele;
 	struct relation* rel;
+	float* f = (void*)buf;
 	say("@mahony_write\n");
 
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
+
+        switch(len){
+                case 9:mahonyupdate9(f[0],f[1],f[2], f[3],f[4],f[5], f[6],f[7],f[8]);break;
+                case 6:mahonyupdate6(f[0],f[1],f[2], f[3],f[4],f[5]);break;
+                default:say("err@mahony_write:len=%d\n", len);
+        }
 
 	rel = ele->orel0;
 	while(1){
