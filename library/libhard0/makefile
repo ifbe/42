@@ -9,15 +9,6 @@ efi:
 	$(compiler) $(cflag) efi/efi.wire.uart.c
 	$(compiler) $(cflag) efi/efi.wire.usb.c
 	$(compiler) $(cflag) efi/efi.wire.wifi.c
-.PHONY:arm
-arm:
-	$(compiler) $(cflag) bare/cpu/arm/arm.fp.c
-	$(compiler) $(cflag) device.c
-
-.PHONY:arm64
-arm64:
-	$(compiler) $(cflag) bare/cpu/arm64/arm64.fp.c
-	$(compiler) $(cflag) device.c
 
 .PHONY:mips
 mips:
@@ -28,6 +19,30 @@ mips:
 mips64:
 	$(compiler) $(cflag) bare/cpu/mips64/mips64.fp.c
 	$(compiler) $(cflag) device.c
+
+
+
+
+#---------------------x64-------------------------
+.PHONY:arm
+arm:
+	$(compiler) $(cflag) bare/cpu/arm/arm.fp.c
+	$(compiler) $(cflag) device.c
+
+.PHONY:arm64
+arm64:
+	$(compiler) $(cflag) bare/cpu/arm64/arm64.fp.c
+	$(compiler) $(cflag) device.c
+
+linuxarm:arm
+	$(compiler) $(cflag) linux/linux.wire.bt.c
+	$(compiler) $(cflag) linux/linux.wire.i2c.c
+	$(compiler) $(cflag) linux/linux.wire.gpio.c
+	$(compiler) $(cflag) linux/linux.wire.pci.c
+	$(compiler) $(cflag) linux/linux.wire.spi.c
+	$(compiler) $(cflag) linux/linux.wire.uart.c
+	$(compiler) $(cflag) linux/linux.wire.usb.c
+	$(compiler) $(cflag) linux/linux.wire.wifi.c
 
 
 

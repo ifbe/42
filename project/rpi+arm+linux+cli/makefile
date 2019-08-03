@@ -9,7 +9,7 @@ libboot0:
 libboot1:
 	+make -s -C $(library)/libboot1 cflag=$(flag)
 libhard0:
-	+make -s -C $(library)/libhard0 cflag=$(flag) arm
+	+make -s -C $(library)/libhard0 cflag=$(flag) linuxarm
 libhard1:
 	+make -s -C $(library)/libhard1 cflag=$(flag)
 libsoft0:
