@@ -383,7 +383,7 @@ void* systemmodify(int argc, char** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		arterycreate(name, argv[3]);
+		systemcreate(name, argv[3]);
 	}
 	return 0;
 }
