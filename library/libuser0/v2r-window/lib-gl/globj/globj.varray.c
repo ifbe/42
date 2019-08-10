@@ -18,7 +18,7 @@
 
 
 
-
+/*
 void coopctx_copy(struct datapair* d, struct datapair* s)
 {
 	int j;
@@ -152,4 +152,4 @@ void coopwindow_create(struct arena* win)
 
 	win->gl_opaque = buf = memorycreate(0x10000);
 	for(j=0;j<0x10000;j++)buf[j] = 0;
-}
+}*/

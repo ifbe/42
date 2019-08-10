@@ -115,7 +115,7 @@ void orthocam_sty2cam(struct fstyle* d, struct fstyle* s)
 static void orthcam_matrix(
 	struct actor* act, struct style* pin,
 	u8* buf, int len)
-{
+{/*
 	struct relation* rel;
 	struct arena* r;
 	struct fstyle* s;
@@ -156,6 +156,7 @@ static void orthcam_matrix(
 	src->arg_fmt[1] = 'v';
 	src->arg_name[1] = "camxyz";
 	src->arg_data[1] = s->vc;
+*/
 }
 
 

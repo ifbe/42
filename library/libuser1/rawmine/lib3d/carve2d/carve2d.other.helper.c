@@ -3,7 +3,7 @@
 
 
 
-void carveborder2d(struct arena* win, struct style* sty, void* name)
+void carveborder2d(struct actor* win, struct style* sty, void* name)
 {
 	vec3 tc,tr,tf;
 	float* vc = sty->f.vc;

@@ -142,7 +142,7 @@ static void rtscam_matrix(
 	struct actor* act, struct style* frustum,
 	struct arena* win, struct style* wingeom,
 	u8* buf, int len)
-{
+{/*
 	struct relation* rel;
 	struct arena* r;
 	struct fstyle* s;
@@ -184,6 +184,7 @@ static void rtscam_matrix(
 	src->arg_fmt[1] = 'v';
 	src->arg_name[1] = "camxyz";
 	src->arg_data[1] = act->camera.vc;
+*/
 }
 
 

@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define acc 16
-int trigon3d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
+int trigon3d_vars(struct actor* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	struct datapair* mod = win->gl_solid;
 	struct glsrc* src = &mod[trigon3d].src;
@@ -18,7 +18,7 @@ int trigon3d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int v
 
 
 
-void carvesolid_triangle(struct arena* win, u32 rgb,
+void carvesolid_triangle(struct actor* win, u32 rgb,
 	vec3 v0, vec3 v1, vec3 v2)
 {
 	vec3 n;
@@ -68,7 +68,7 @@ void carvesolid_triangle(struct arena* win, u32 rgb,
 	ibuf[1] = vlen + 1;
 	ibuf[2] = vlen + 2;
 }
-void carvesolid_rect(struct arena* win, u32 rgb,
+void carvesolid_rect(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	vec3 n;
@@ -133,7 +133,7 @@ void carvesolid_rect(struct arena* win, u32 rgb,
 	ibuf[4] = vlen + 2;
 	ibuf[5] = vlen + 3;
 }
-void carvesolid_circle(struct arena* win, u32 rgb,
+void carvesolid_circle(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 #define circieacc (acc*2)
@@ -202,7 +202,7 @@ void carvesolid_pyramid5()
 void carvesolid_pyramid6()
 {
 }
-void carvesolid_cone(struct arena* win, u32 rgb,
+void carvesolid_cone(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	int a,b,j;
@@ -254,7 +254,7 @@ void carvesolid_cone(struct arena* win, u32 rgb,
 	vbuf[a+ 8] = vu[2];
 }
 /*
-void carvesolid_cone(struct arena* win, u32 rgb,
+void carvesolid_cone(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	int a,b,j;
@@ -329,7 +329,7 @@ void carvesolid_cone(struct arena* win, u32 rgb,
 void carvesolid_prism3()
 {
 }
-void carvesolid_prism4(struct arena* win, u32 rgb,
+void carvesolid_prism4(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	int j;
@@ -506,7 +506,7 @@ void carvesolid_prism5()
 void carvesolid_prism6()
 {
 }
-void carvesolid_cask(struct arena* win, u32 rgb,
+void carvesolid_cask(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	int a,b,j;
@@ -561,7 +561,7 @@ void carvesolid_cask(struct arena* win, u32 rgb,
 		ibuf[b+5] = vlen + 1 + j*2;
 	}
 }
-void carvesolid_cylinder(struct arena* win, u32 rgb,
+void carvesolid_cylinder(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	vec3 tc;
@@ -591,7 +591,7 @@ void carvesolid_tetrahedron()
 void carvesolid_octahedron()
 {
 }
-void carvesolid_dodecahedron(struct arena* win, u32 rgb,
+void carvesolid_dodecahedron(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	int j;
@@ -826,7 +826,7 @@ void carvesolid_dodecahedron(struct arena* win, u32 rgb,
 	ibuf[106] = vlen+11;
 	ibuf[107] = vlen+7;
 }
-void carvesolid_icosahedron(struct arena* win, u32 rgb,
+void carvesolid_icosahedron(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	int j;
@@ -982,7 +982,7 @@ void carvesolid_icosahedron(struct arena* win, u32 rgb,
 	ibuf[58] = vlen+9;
 	ibuf[59] = vlen+1;
 }
-void carvesolid_sphere(struct arena* win, u32 rgb,
+void carvesolid_sphere(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 #define accx (acc)
@@ -1076,7 +1076,7 @@ void carvesolid_sphere(struct arena* win, u32 rgb,
 		ibuf[b + (6*j) + 5] = vlen+accx*(accy-1)+(j+1)%accx;
 	}
 }
-void carvesolid_tokamak(struct arena* win, u32 rgb,
+void carvesolid_tokamak(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	float bb = (float)(rgb&0xff) / 256.0;

@@ -1,6 +1,6 @@
 #include "libuser.h"
 int utf2unicode(u8* src,u32* dst);
-int ascii3d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
+int ascii3d_vars(struct actor* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	struct datapair* mod = win->gl_opaque;
 	struct glsrc* src = &mod[font3d0 + id].src;
@@ -19,7 +19,7 @@ int ascii3d_vars(struct arena* win, int id, float** vbuf, u16** ibuf, int vcnt, 
 
 
 //ascii is 8x16, but in 16x16, so move right 1/2
-void carveascii(struct arena* win, u32 rgb,
+void carveascii(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8 dat)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -73,7 +73,7 @@ void carveascii(struct arena* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-void carveunicode(struct arena* win, u32 rgb,
+void carveunicode(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 unicode)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -133,14 +133,14 @@ void carveunicode(struct arena* win, u32 rgb,
 
 
 
-void carveutf8(struct arena* win, u32 rgb,
+void carveutf8(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
 	u32 unicode;
 	utf2unicode(buf, &unicode);
 	carveunicode(win, rgb, vc, vr, vf, unicode);
 }
-void carvedecimal(struct arena* win, u32 rgb,
+void carvedecimal(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 val)
 {
 	int j,len;
@@ -169,7 +169,7 @@ void carvedecimal(struct arena* win, u32 rgb,
 		carveascii(win, rgb, tc, vr, vf, str[len-1-j]);
 	}
 }
-void carvehexadecimal(struct arena* win, u32 rgb,
+void carvehexadecimal(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 val)
 {
 	int j,len;
@@ -199,7 +199,7 @@ void carvehexadecimal(struct arena* win, u32 rgb,
 		carveascii(win, rgb, tc, vr, vf, str[len-1-j]);
 	}
 }
-void carvestring(struct arena* win, u32 rgb,
+void carvestring(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
 	int j;
@@ -231,7 +231,7 @@ void carvestring(struct arena* win, u32 rgb,
 		carveascii(win, rgb, tc, tr, vf, buf[j]);
 	}
 }
-void carvestring_center(struct arena* win, u32 rgb,
+void carvestring_center(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
 	int j;
@@ -263,7 +263,7 @@ void carvestring_center(struct arena* win, u32 rgb,
 		carveascii(win, rgb, tc, tr, vf, buf[j]);
 	}
 }
-void carvedouble(struct arena* win, u32 rgb,
+void carvedouble(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, double data)
 {
 	u8 mystr[100];

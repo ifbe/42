@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define acc 24
-int opaque2d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
+int opaque2d_vars(struct actor* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	struct datapair* mod = win->gl_opaque;
 	struct glsrc* src = &mod[opaquetrigon2d].src;
@@ -18,7 +18,7 @@ int opaque2d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int v
 
 
 
-void carveopaque2d_triangle(struct arena* win, u32 rgba,
+void carveopaque2d_triangle(struct actor* win, u32 rgba,
 	vec3 v0, vec3 v1, vec3 v2)
 {
 	u8* t = (void*)&rgba;
@@ -62,7 +62,7 @@ void carveopaque2d_triangle(struct arena* win, u32 rgba,
 	ibuf[1] = vlen + 1;
 	ibuf[2] = vlen + 2;
 }
-void carveopaque2d_bezier(struct arena* win, u32 rgba,
+void carveopaque2d_bezier(struct actor* win, u32 rgba,
 	vec3 va, vec3 vb, vec3 vt)
 {
 	u8* u = (void*)&rgba;
@@ -104,7 +104,7 @@ void carveopaque2d_bezier(struct arena* win, u32 rgba,
 	vbuf[8*acc+6] = bb;
 	vbuf[8*acc+7] = aa;
 }
-void carveopaque2d_rect(struct arena* win, u32 rgba,
+void carveopaque2d_rect(struct actor* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	u8* t = (void*)&rgba;
@@ -162,7 +162,7 @@ void carveopaque2d_rect(struct arena* win, u32 rgba,
 	ibuf[4] = vlen + 2;
 	ibuf[5] = vlen + 3;
 }
-void carveopaque2d_prism4(struct arena* win, u32 rgba,
+void carveopaque2d_prism4(struct actor* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	u8* t = (void*)&rgba;
@@ -276,7 +276,7 @@ void carveopaque2d_prism4(struct arena* win, u32 rgba,
 
 
 
-void carveopaque2d_circle(struct arena* win, u32 rgba,
+void carveopaque2d_circle(struct actor* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	u8* t = (void*)&rgba;
@@ -321,7 +321,7 @@ void carveopaque2d_circle(struct arena* win, u32 rgba,
 	vbuf[a+4] = gg;
 	vbuf[a+5] = bb;
 }
-void carveopaque2d_sphere(struct arena* win, u32 rgba,
+void carveopaque2d_sphere(struct actor* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	u8* t = (void*)&rgba;

@@ -90,7 +90,7 @@ int fbocreate(struct arena* win, char* arg)
 
 void render_fbo(struct arena* win)
 {
-    glBindFramebuffer(GL_FRAMEBUFFER, win->fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, win->fbo);
 
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);

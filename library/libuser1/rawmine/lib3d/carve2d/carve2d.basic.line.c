@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define halfsqrt3 0.8660254037844386
 #define acc 24
-int line2d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
+int line2d_vars(struct actor* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	struct datapair* mod = win->gl_solid;
 	struct glsrc* src = &mod[line2d].src;
@@ -19,7 +19,7 @@ int line2d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int vcn
 
 
 
-void carveline2d(struct arena* win, u32 rgb,
+void carveline2d(struct actor* win, u32 rgb,
 	vec3 va, vec3 vb)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -47,7 +47,7 @@ void carveline2d(struct arena* win, u32 rgb,
 	ibuf[0] = vlen;
 	ibuf[1] = vlen+1;
 }
-void carveline2d_arrow(struct arena* win, u32 rgb,
+void carveline2d_arrow(struct actor* win, u32 rgb,
 	vec3 va, vec3 vb)
 {
 	vec3 v0;
@@ -114,7 +114,7 @@ void carveline2d_arrow(struct arena* win, u32 rgb,
 	ibuf[4] = vlen+3;
 	ibuf[5] = vlen+1;
 }
-void carveline2d_bezier(struct arena* win, u32 rgb,
+void carveline2d_bezier(struct actor* win, u32 rgb,
 	vec3 va, vec3 vb, vec3 vt)
 {
 	int j;
@@ -148,7 +148,7 @@ void carveline2d_bezier(struct arena* win, u32 rgb,
 
 
 
-void carveline2d_yshape(struct arena* win, u32 rgb,
+void carveline2d_yshape(struct actor* win, u32 rgb,
 	vec3 v0, vec3 v1, vec3 v2)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -194,7 +194,7 @@ void carveline2d_yshape(struct arena* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-void carveline2d_triangle(struct arena* win, u32 rgb,
+void carveline2d_triangle(struct actor* win, u32 rgb,
 	vec3 v0, vec3 v1, vec3 v2)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -233,7 +233,7 @@ void carveline2d_triangle(struct arena* win, u32 rgb,
 	ibuf[4] = vlen;
 	ibuf[5] = vlen+2;
 }
-void carveline2d_rect(struct arena* win, u32 rgb,
+void carveline2d_rect(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -281,7 +281,7 @@ void carveline2d_rect(struct arena* win, u32 rgb,
 	ibuf[6] = vlen+0;
 	ibuf[7] = vlen+2;
 }
-void carveline2d_hexagon(struct arena* win, u32 rgb,
+void carveline2d_hexagon(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	float v[4];
@@ -367,7 +367,7 @@ void carveline2d_hexagon(struct arena* win, u32 rgb,
 	ibuf[10] = vlen+5;
 	ibuf[11] = vlen+0;
 }
-void carveline2d_circle(struct arena* win, u32 rgb,
+void carveline2d_circle(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 #define lineacc (acc*2)

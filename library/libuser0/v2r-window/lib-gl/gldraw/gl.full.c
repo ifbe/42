@@ -15,16 +15,13 @@
 #else
 	#include <GL/glew.h>
 #endif
-
 GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c);
 GLuint uploadtexture(void* i, u32 t, void* buf, int fmt, int w, int h);
 GLuint uploadvertex(void* i, void* o);
-//
-void fixmatrix(float*, void*);
 
 
 
-
+/*
 void update_eachpass(struct gldst* dst, struct glsrc* src)
 {
 	int j;
@@ -382,4 +379,49 @@ void hostwindow_event(struct arena* win, struct event* ev)
 
 		rel = samesrcprevdst(rel);
 	}
+}
+*/
+
+
+
+
+void hostwindow_render(struct arena* win)
+{
+/*
+	struct relation* rel;
+	struct actor* act;
+
+	//0: upload data to gpu
+	rel = win->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		act = (void*)(orel->dstchip);
+		switch(act->type){
+			case self:upload_self();
+			case coop:upload_coop();
+		}
+
+		rel = samesrcnextdst(rel);
+	}
+
+	//1: render to specific target
+	rel = win->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		act = (void*)(orel->dstchip);
+		switch(act->type){
+			case fbo0:break;
+			case fboc:break;
+			case fbod:break;
+			case fbog:break;
+		}
+
+		rel = samesrcnextdst(rel);
+	}
+*/
+}
+void hostwindow_event(struct arena* win, struct event* ev)
+{
 }

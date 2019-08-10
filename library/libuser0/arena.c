@@ -74,16 +74,6 @@ int windowwrite(void*, void*);
 int windowlist();
 int windowchoose();
 //
-void* vbonode_create(u64, void*);
-int vbonode_delete(void*);
-int vbonode_read(struct arena* win, struct style* sty);
-int vbonode_write(struct arena* win, struct style* sty, struct event* ev);
-//
-void* rgbanode_create(u64, void*);
-int rgbanode_delete(void*);
-int rgbanode_read(struct arena* win, struct style* sty);
-int rgbanode_write(struct arena* win, struct style* sty, struct event* ev);
-//
 int actorevent(struct event* ev);
 int input(void*, int);
 //
@@ -209,12 +199,6 @@ void* arenacreate(u64 type, void* addr)
 	{
 		if(arena[0].type)return 0;
 		type = _win_;
-	}
-
-	//vbo
-	else if(_vbo_ == type)
-	{
-		return vbonode_create(_vbo_, 0);
 	}
 
 	//0: system object
@@ -539,7 +523,6 @@ int arenaevent(struct event* e)
 	{
 		case _host_:
 		case _coop_:windowwrite(win, &ev);break;
-		default:rgbanode_write(win, 0, &ev);
 	}
 	return 0;
 }
@@ -553,7 +536,6 @@ int arenaread_all()
 		win = &arena[j];
 		if(0 == win->type)continue;
 
-		if(_ctx_ == win->type)windowread(win);
 		if(_win_ == win->type)windowread(win);
 	}
 	return 0;

@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define acc 24
-int trigon2d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
+int trigon2d_vars(struct actor* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	struct datapair* mod = win->gl_solid;
 	struct glsrc* src = &mod[trigon2d].src;
@@ -18,7 +18,7 @@ int trigon2d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int v
 
 
 
-void carvesolid2d_triangle(struct arena* win, u32 rgb,
+void carvesolid2d_triangle(struct actor* win, u32 rgb,
 	vec3 v0, vec3 v1, vec3 v2)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -54,7 +54,7 @@ void carvesolid2d_triangle(struct arena* win, u32 rgb,
 	ibuf[1] = vlen + 1;
 	ibuf[2] = vlen + 2;
 }
-void carvesolid2d_rect(struct arena* win, u32 rgb,
+void carvesolid2d_rect(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -102,7 +102,7 @@ void carvesolid2d_rect(struct arena* win, u32 rgb,
 	ibuf[4] = vlen + 2;
 	ibuf[5] = vlen + 3;
 }
-void carvesolid2d_prism4(struct arena* win, u32 rgb,
+void carvesolid2d_prism4(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	int j;
@@ -277,7 +277,7 @@ void carvesolid2d_prism4(struct arena* win, u32 rgb,
 
 
 
-void carvesolid2d_circle(struct arena* win, u32 rgb,
+void carvesolid2d_circle(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	int a,b,j;
@@ -318,7 +318,7 @@ void carvesolid2d_circle(struct arena* win, u32 rgb,
 	vbuf[a+4] = gg;
 	vbuf[a+5] = bb;
 }
-void carvesolid2d_sphere(struct arena* win, u32 rgb,
+void carvesolid2d_sphere(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 #define accx (acc)

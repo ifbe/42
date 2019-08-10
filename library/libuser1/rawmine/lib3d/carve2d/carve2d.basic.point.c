@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define acc 18
-int point2d_vars(struct arena* win, int unused, float** vbuf, int vcnt)
+int point2d_vars(struct actor* win, int unused, float** vbuf, int vcnt)
 {
 	struct datapair* mod = win->gl_solid;
 	struct glsrc* src = &mod[point2d].src;
@@ -15,7 +15,7 @@ int point2d_vars(struct arena* win, int unused, float** vbuf, int vcnt)
 
 
 
-void carvepoint2d(struct arena* win, u32 rgb, vec3 vc)
+void carvepoint2d(struct actor* win, u32 rgb, vec3 vc)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -31,7 +31,7 @@ void carvepoint2d(struct arena* win, u32 rgb, vec3 vc)
 	vbuf[4] = gg;
 	vbuf[5] = bb;
 }
-void carvepoint2d_bezier(struct arena* win, u32 rgb,
+void carvepoint2d_bezier(struct actor* win, u32 rgb,
 	vec3 va, vec3 vb, vec3 vt)
 {
 	int j;
@@ -59,19 +59,19 @@ void carvepoint2d_bezier(struct arena* win, u32 rgb,
 
 
 
-void carvepoint2d_triangle(struct arena* win, u32 rgb,
+void carvepoint2d_triangle(struct actor* win, u32 rgb,
 	vec3 v0, vec3 v1, vec3 v2)
 {
 }
-void carvepoint2d_yshape(struct arena* win, u32 rgb,
+void carvepoint2d_yshape(struct actor* win, u32 rgb,
 	vec3 v0, vec3 v1, vec3 v2)
 {
 }
-void carvepoint2d_rect(struct arena* win, u32 rgb,
+void carvepoint2d_rect(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 }
-void carvepoint2d_circle(struct arena* win, u32 rgb,
+void carvepoint2d_circle(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	int j,k;

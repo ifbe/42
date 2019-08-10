@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define halfsqrt3 0.8660254037844386
 #define acc 32
-int line3d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
+int line3d_vars(struct actor* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	struct datapair* mod = win->gl_solid;
 	struct glsrc* src = &mod[line3d].src;
@@ -19,7 +19,7 @@ int line3d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int vcn
 
 
 
-void carveline(struct arena* win, u32 rgb,
+void carveline(struct actor* win, u32 rgb,
 	vec3 va, vec3 vb)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -47,7 +47,7 @@ void carveline(struct arena* win, u32 rgb,
 	ibuf[0] = vlen;
 	ibuf[1] = vlen+1;
 }
-void carveline_arrow(struct arena* win, u32 rgb,
+void carveline_arrow(struct actor* win, u32 rgb,
 	vec3 va, vec3 vb)
 {
 	float x0,y0,z0,n0;
@@ -116,7 +116,7 @@ void carveline_arrow(struct arena* win, u32 rgb,
 	ibuf[4] = vlen+1;
 	ibuf[5] = vlen+3;
 }
-void carveline_bezier(struct arena* win, u32 rgb,
+void carveline_bezier(struct actor* win, u32 rgb,
 	vec3 va, vec3 vb, vec3 vt)
 {
 	int j;
@@ -146,7 +146,7 @@ void carveline_bezier(struct arena* win, u32 rgb,
 		ibuf[2*j+1] = vlen + j+1;
 	}
 }
-void carveline_special(struct arena* win, u32 rgb,
+void carveline_special(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu,
 	float sa, float da)
 {
@@ -182,7 +182,7 @@ void carveline_special(struct arena* win, u32 rgb,
 
 
 
-void carveline_yshape(struct arena* win, u32 rgb,
+void carveline_yshape(struct actor* win, u32 rgb,
 	vec3 v0, vec3 v1, vec3 v2)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -228,7 +228,7 @@ void carveline_yshape(struct arena* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-void carveline_triangle(struct arena* win, u32 rgb,
+void carveline_triangle(struct actor* win, u32 rgb,
 	vec3 v0, vec3 v1, vec3 v2)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -271,7 +271,7 @@ void carveline_triangle(struct arena* win, u32 rgb,
 
 
 
-void carveline_rect(struct arena* win, u32 rgb,
+void carveline_rect(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -319,7 +319,7 @@ void carveline_rect(struct arena* win, u32 rgb,
 	ibuf[6] = vlen+0;
 	ibuf[7] = vlen+2;
 }
-void carveline_hexagon(struct arena* win, u32 rgb,
+void carveline_hexagon(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	float v[4];
@@ -401,7 +401,7 @@ void carveline_hexagon(struct arena* win, u32 rgb,
 	ibuf[10] = vlen+5;
 	ibuf[11] = vlen+0;
 }
-void carveline_circle(struct arena* win, u32 rgb,
+void carveline_circle(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 #define lineacc (acc*2)
@@ -449,7 +449,7 @@ void carveline_pyramid5()
 void carveline_pyramid6()
 {
 }
-void carveline_cone(struct arena* win, u32 rgb,
+void carveline_cone(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	int a,b,j,k;
@@ -517,7 +517,7 @@ void carveline_cone(struct arena* win, u32 rgb,
 void carveline_prism3()
 {
 }
-void carveline_prism4(struct arena* win, u32 rgb,
+void carveline_prism4(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -620,7 +620,7 @@ void carveline_prism6()
 void carveline_cask()
 {
 }
-void carveline_cylinder(struct arena* win, u32 rgb,
+void carveline_cylinder(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	int a,b,j,k;
@@ -678,7 +678,7 @@ void carveline_tetrahedron()
 void carveline_octahedron()
 {
 }
-void carveline_dodecahedron(struct arena* win, u32 rgb,
+void carveline_dodecahedron(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	int j;
@@ -856,7 +856,7 @@ void carveline_dodecahedron(struct arena* win, u32 rgb,
 	ibuf[58] = vlen+7;
 	ibuf[59] = vlen+19;
 }
-void carveline_icosahedron(struct arena* win, u32 rgb,
+void carveline_icosahedron(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	int j;
@@ -995,7 +995,7 @@ void carveline_icosahedron(struct arena* win, u32 rgb,
 	ibuf[58] = vlen+4;
 	ibuf[59] = vlen+6;
 }
-void carveline_sphere(struct arena* win, u32 rgb,
+void carveline_sphere(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 #define accx (acc)

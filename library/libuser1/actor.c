@@ -193,6 +193,48 @@ void* actorcreate(u64 type, void* buf)
 		act->type = _baby_;
 		return act;
 	}
+	else if(_test_ == type)
+	{
+		act = allocactor();
+		act->type = _test_;
+		return act;
+	}
+	else if(_gl41self_ == type)
+	{
+		act = allocactor();
+		act->type = _gl41self_;
+		return act;
+	}
+	else if(_gl41coop_ == type)
+	{
+		act = allocactor();
+		act->type = _gl41coop_;
+		return act;
+	}
+	else if(_gl41draw_ == type)
+	{
+		act = allocactor();
+		act->type = _gl41draw_;
+		return act;
+	}
+	else if(_gl41fbod_ == type)
+	{
+		act = allocactor();
+		act->type = _gl41fbod_;
+		return act;
+	}
+	else if(_gl41fboc_ == type)
+	{
+		act = allocactor();
+		act->type = _gl41fboc_;
+		return act;
+	}
+	else if(_gl41fbog_ == type)
+	{
+		act = allocactor();
+		act->type = _gl41fbog_;
+		return act;
+	}
 	else
 	{
 		k = 0;

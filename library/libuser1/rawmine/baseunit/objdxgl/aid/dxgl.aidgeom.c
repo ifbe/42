@@ -256,7 +256,7 @@ static void aidgeom_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void aidgeom_start(struct halfrel* self, struct halfrel* peer)
-{
+{/*
 	struct arena* win;
 	struct datapair* mod;
 	struct glsrc* src;
@@ -450,6 +450,7 @@ static void aidgeom_start(struct halfrel* self, struct halfrel* peer)
 	src->ibuf_h = (src->ibuf_len) / (src->ibuf_w);
 	src->ibuf_fmt = 0x222;
 	src->ibuf_enq = 1;
+*/
 }
 
 

@@ -91,7 +91,7 @@ void actorcreatefromfile(struct actor* act, char* name)
 	else if(0 == ncmp(tmp, "ogg", 3))actorcreatefromogg(act, buf, len);
 	else if(0 == ncmp(tmp, "wav", 3))actorcreatefromwav(act, buf, len);
 }
-void* alloc_winobj(struct arena* win, int type)
+void* alloc_winobj(struct actor* win, int type)
 {
 	int j;
 	struct datapair* mod;

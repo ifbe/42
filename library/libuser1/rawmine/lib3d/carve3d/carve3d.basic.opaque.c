@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define acc 32
-int opaque3d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
+int opaque3d_vars(struct actor* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	struct datapair* mod = win->gl_opaque;
 	struct glsrc* src = &mod[opaquetrigon3d].src;
@@ -18,7 +18,7 @@ int opaque3d_vars(struct arena* win, int unused, float** vbuf, u16** ibuf, int v
 
 
 
-void carveopaque_triangle(struct arena* win, u32 rgba,
+void carveopaque_triangle(struct actor* win, u32 rgba,
 	vec3 v0, vec3 v1, vec3 v2)
 {
 	u8* t = (void*)&rgba;
@@ -79,7 +79,7 @@ void carveopaque_triangle(struct arena* win, u32 rgba,
 	ibuf[1] = vlen + 1;
 	ibuf[2] = vlen + 2;
 }
-void carveopaque_rect(struct arena* win, u32 rgba,
+void carveopaque_rect(struct actor* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	u8* t = (void*)&rgba;
@@ -158,7 +158,7 @@ void carveopaque_rect(struct arena* win, u32 rgba,
 	ibuf[4] = vlen + 2;
 	ibuf[5] = vlen + 3;
 }
-void carveopaque_circle(struct arena* win, u32 rgba,
+void carveopaque_circle(struct actor* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	u8* t = (void*)&rgba;
@@ -235,7 +235,7 @@ void carveopaque_pyramid5()
 void carveopaque_pyramid6()
 {
 }
-void carveopaque_cone(struct arena* win, u32 rgba,
+void carveopaque_cone(struct actor* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	u8* t = (void*)&rgba;
@@ -301,7 +301,7 @@ void carveopaque_cone(struct arena* win, u32 rgba,
 void carveopaque_prism3()
 {
 }
-void carveopaque_prism4(struct arena* win, u32 rgba,
+void carveopaque_prism4(struct actor* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	u8* t = (void*)&rgba;
@@ -481,7 +481,7 @@ void carveopaque_prism5()
 void carveopaque_prism6()
 {
 }
-void carveopaque_cask(struct arena* win, u32 rgba,
+void carveopaque_cask(struct actor* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	u8* t = (void*)&rgba;
@@ -544,7 +544,7 @@ void carveopaque_cask(struct arena* win, u32 rgba,
 		ibuf[b+5] = vlen + 1 + j*2;
 	}
 }
-void carveopaque_cylinder(struct arena* win, u32 rgb,
+void carveopaque_cylinder(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	vec3 tc;
@@ -574,7 +574,7 @@ void carveopaque_tetrahedron()
 void carveopaque_octahedron()
 {
 }
-void carveopaque_dodecahedron(struct arena* win, u32 rgba,
+void carveopaque_dodecahedron(struct actor* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	u8* t = (void*)&rgba;
@@ -813,7 +813,7 @@ void carveopaque_dodecahedron(struct arena* win, u32 rgba,
 	ibuf[106] = vlen+11;
 	ibuf[107] = vlen+7;
 }
-void carveopaque_icosahedron(struct arena* win, u32 rgba,
+void carveopaque_icosahedron(struct actor* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	u8* t = (void*)&rgba;
@@ -972,7 +972,7 @@ void carveopaque_icosahedron(struct arena* win, u32 rgba,
 	ibuf[58] = vlen+9;
 	ibuf[59] = vlen+1;
 }
-void carveopaque_sphere(struct arena* win, u32 rgba,
+void carveopaque_sphere(struct actor* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	u8* t = (void*)&rgba;
@@ -1075,7 +1075,7 @@ void carveopaque_sphere(struct arena* win, u32 rgba,
 		ibuf[b + (6*j) + 5] = vlen+accx*(accy-1)+(j+1)%accx;
 	}
 }
-void carveopaque_tokamak(struct arena* win, u32 rgba,
+void carveopaque_tokamak(struct actor* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	u8* t = (void*)&rgba;

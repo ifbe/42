@@ -24,6 +24,14 @@ OBJ = $(patsubst %.c,%.o,$(SRC))
 target: $(OBJ)
 %.o: %.c
 	$(compiler) $(cflag) $<
+opengl:
+	$(compiler) $(cflag) v2r-window/lib-gl/gldraw/gl.test.c
+	$(compiler) $(cflag) v2r-window/lib-gl/gldraw/gl.full.c
+	$(compiler) $(cflag) v2r-window/lib-gl/globj/globj.fbo.c
+	$(compiler) $(cflag) v2r-window/lib-gl/globj/globj.shader.c
+	$(compiler) $(cflag) v2r-window/lib-gl/globj/globj.texture.c
+	$(compiler) $(cflag) v2r-window/lib-gl/globj/globj.varray.c
+	$(compiler) $(cflag) v2r-window/lib-gl/globj/globj.vertex.c
 
 
 
@@ -102,15 +110,8 @@ linuxglut:target linux
 	$(compiler) $(cflag) w2w-gamepad/linux/linux.devjsn.c
 
 .PHONY:linuxglfw
-linuxglfw:target linux
+linuxglfw:target linux opengl
 	$(compiler) $(cflag) v2r-window/lib-gl/glfw.c
-	$(compiler) $(cflag) v2r-window/lib-gl/glwindow.test.c
-	$(compiler) $(cflag) v2r-window/lib-gl/glwindow.host.c
-	$(compiler) $(cflag) v2r-window/lib-gl/glwindow.coop.c
-	$(compiler) $(cflag) v2r-window/lib-gl/glwindow.fbo.c
-	$(compiler) $(cflag) v2r-window/lib-gl/globject.shader.c
-	$(compiler) $(cflag) v2r-window/lib-gl/globject.texture.c
-	$(compiler) $(cflag) v2r-window/lib-gl/globject.vertex.c
 	$(compiler) $(cflag) w2w-gamepad/glfw/glfw.gamepad.c
 
 .PHONY:linuxsdl
@@ -156,15 +157,8 @@ macglut:target macos
 	$(compiler) $(cflag) w2w-gamepad/mac/mac.gamepad.c
 
 .PHONY:macglfw
-macglfw:target macos
+macglfw:target macos opengl
 	$(compiler) $(cflag) v2r-window/lib-gl/glfw.c
-	$(compiler) $(cflag) v2r-window/lib-gl/glwindow.test.c
-	$(compiler) $(cflag) v2r-window/lib-gl/glwindow.host.c
-	$(compiler) $(cflag) v2r-window/lib-gl/glwindow.coop.c
-	$(compiler) $(cflag) v2r-window/lib-gl/glwindow.fbo.c
-	$(compiler) $(cflag) v2r-window/lib-gl/globject.shader.c
-	$(compiler) $(cflag) v2r-window/lib-gl/globject.texture.c
-	$(compiler) $(cflag) v2r-window/lib-gl/globject.vertex.c
 	$(compiler) $(cflag) w2w-gamepad/glfw/glfw.gamepad.c
 
 .PHONY:macsdl
@@ -210,15 +204,8 @@ winglut:target windows
 	$(compiler) $(cflag) w2w-gamepad/win/win.xinput.c
 
 .PHONY:winglfw
-winglfw:target windows
+winglfw:target windows opengl
 	$(compiler) $(cflag) v2r-window/lib-gl/glfw.c
-	$(compiler) $(cflag) v2r-window/lib-gl/glwindow.test.c
-	$(compiler) $(cflag) v2r-window/lib-gl/glwindow.host.c
-	$(compiler) $(cflag) v2r-window/lib-gl/glwindow.coop.c
-	$(compiler) $(cflag) v2r-window/lib-gl/glwindow.fbo.c
-	$(compiler) $(cflag) v2r-window/lib-gl/globject.shader.c
-	$(compiler) $(cflag) v2r-window/lib-gl/globject.texture.c
-	$(compiler) $(cflag) v2r-window/lib-gl/globject.vertex.c
 	$(compiler) $(cflag) w2w-gamepad/glfw/glfw.gamepad.c
 
 .PHONY:winsdl

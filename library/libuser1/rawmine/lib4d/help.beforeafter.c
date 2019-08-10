@@ -22,7 +22,7 @@ void background_pixel(struct arena* win)
 	}
 */
 }
-void background_vbo(struct arena* win)
+void background_vbo(struct actor* win)
 {
 	int j;
 	struct datapair* mod;
@@ -84,7 +84,7 @@ void preprocess(struct arena* win)
 void foreground_pixel(struct arena* win)
 {
 }
-void foreground_vbo(struct arena* win)
+void foreground_vbo(struct actor* win)
 {
 	int j;
 	struct datapair* mod;

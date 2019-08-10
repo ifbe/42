@@ -3,7 +3,7 @@
 
 
 
-void carvearrorkey2d(struct arena* win, u32 rgb,
+void carvearrorkey2d(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf,
 	u8* buf, int t)
 {

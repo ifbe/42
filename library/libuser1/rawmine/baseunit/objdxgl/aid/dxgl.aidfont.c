@@ -62,7 +62,7 @@ GLSL_VERSION
 
 
 static void aidfont_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
-{
+{/*
 	struct arena* win = (void*)(peer->chip);
 	struct datapair* mod = win->gl_opaque;
 	if(_vbo_ != win->fmt)return;
@@ -85,7 +85,7 @@ static void aidfont_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	mod[font2d2].src.tex_name[0] = mod[font3d2].src.tex_name[0];
 	mod[font2d3].dst.tex[0] = mod[font3d3].dst.tex[0];
 	mod[font2d3].src.tex_name[0] = mod[font3d3].src.tex_name[0];
-
+*/
 }
 static void aidfont_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
@@ -94,7 +94,7 @@ static void aidfont_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void aidfont_start(struct halfrel* self, struct halfrel* peer)
-{
+{/*
 	struct actor* act;
 	u8* buf;
 
@@ -305,6 +305,7 @@ static void aidfont_start(struct halfrel* self, struct halfrel* peer)
 	src->ibuf_h = (src->ibuf_len) / (src->ibuf_w);
 	src->ibuf_fmt = 0x222;
 	src->ibuf_enq = 1;
+*/
 }
 
 

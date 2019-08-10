@@ -5,7 +5,7 @@
 
 
 
-void carvedrone_node(struct arena* win, u32 rgb,
+void carvedrone_node(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	float j;
@@ -96,7 +96,7 @@ void carvedrone_node(struct arena* win, u32 rgb,
 	t1[2] = (v0[2]-v2[2])/2;
 	carvesolid_rect(win, 0x204060, t0, t1, t2);
 }
-void carvedrone(struct arena* win, u32 rgb,
+void carvedrone(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	int x,y;
@@ -153,7 +153,7 @@ void carvedrone(struct arena* win, u32 rgb,
 		}
 	}
 }
-void carvesnowman(struct arena* win, u32 rgb, vec3 vc)
+void carvesnowman(struct actor* win, u32 rgb, vec3 vc)
 {
 	vec3 tc;
 	vec3 tr;
@@ -391,7 +391,7 @@ void carveplanet(float vbuf[][6], u16* ibuf,
 
 
 
-void carvesolid_bodypart(struct arena* win, u32 rgb, vec3 t0, vec3 t1)
+void carvesolid_bodypart(struct actor* win, u32 rgb, vec3 t0, vec3 t1)
 {
 	float n;
 	vec3 tc, tr, tf, tu;

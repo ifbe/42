@@ -4,7 +4,7 @@ void invmvp(vec3 v, struct style* sty);
 
 
 
-void select_3d(struct arena* win, u32 rgb, struct fstyle* sty, u32 flag)
+void select_3d(struct actor* win, u32 rgb, struct fstyle* sty, u32 flag)
 {
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -12,7 +12,7 @@ void select_3d(struct arena* win, u32 rgb, struct fstyle* sty, u32 flag)
 	float* vu = sty->vt;
 	carveline_prism4(win, rgb, vc, vr, vf, vu);
 }
-void carveaxis(struct arena* win)
+void carveaxis(struct actor* win)
 {
 	vec3 va, vb;
 	va[0] = -10000.0;
@@ -37,7 +37,7 @@ void carveaxis(struct arena* win)
 	vb[2] = 10000.0;
 	carveline(win, 0x0000ff, va, vb);
 }
-void carvefrustum(struct arena* win, struct fstyle* sty)
+void carvefrustum(struct actor* win, struct fstyle* sty)
 {
 	vec3 tc, tr, tf;
 	float* vc = sty->vc;
@@ -89,7 +89,7 @@ void carvefrustum(struct arena* win, struct fstyle* sty)
 	tc[2] = vc[2] + (vn[2] + vr[2] + vu[2])*1000.0;
 	carveline(win, 0xffffff, vc, tc);
 }/*
-void carvecamera(struct arena* win, struct arena* w)
+void carvecamera(struct actor* win, struct actor* w)
 {
 	vec3 va0,vb0,vc0,vd0;
 	vec3 va1,vb1,vc1,vd1;

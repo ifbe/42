@@ -4,25 +4,13 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "libuser.h"
-int vbonode_read(struct arena* win, struct style* stack);
-int vbonode_write(struct arena* win, struct style* stack, struct event* ev);
 int arenaevent(struct event* ev);
 //
-int fbodelete(struct arena* win);
-int fbocreate(struct arena* win, char* arg);
-//
-void coopwindow_create(void*);
-void coopwindow_update(void*);
-void coopwindow_render(void*);
-void coopwindow_event(void*, void*);
-//
 void hostwindow_create(void*);
-void hostwindow_update(void*);
 void hostwindow_render(void*);
 void hostwindow_event(void*, void*);
 //
 void testwindow_create(void*);
-void testwindow_update(void*);
 void testwindow_render(void*);
 void testwindow_event(void*, void*);
 //
@@ -296,11 +284,31 @@ void windowopen_coop(struct arena* w, struct arena* r)
 
 void windowread(struct arena* win)
 {
-	struct relation* rel;
-	struct arena* tmp;
 	GLFWwindow* fw;
-	//say("@windowread.start:%.8s,%.8s,%llx\n", &win->type, &win->fmt, win->win);
+	struct relation* rel;
+	say("@windowread.start:%.8s,%.8s,%llx\n", &win->type, &win->fmt, win->win);
 
+	//0: context current
+	fw = win->win;
+	glfwMakeContextCurrent(fw);
+
+	//1: render everything
+	rel = win->orel0;
+	if(0 == rel){
+		say("%llx,%llx\n", win, fw);
+		testwindow_render(win);
+	}
+	else{
+		hostwindow_render(win);
+	}
+
+	//2: swap buffer
+	glfwSwapBuffers(fw);
+
+	//3: poll event
+	if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
+	glfwPollEvents();
+/*
 	//
 	if(_ctx_ == win->type)
 	{
@@ -325,19 +333,6 @@ void windowread(struct arena* win)
 		glfwMakeContextCurrent(fw);
 		hostwindow_render(win);
 	}
-	else if(_coop_ == win->fmt)
-	{
-		fw = win->win;
-		glfwMakeContextCurrent(fw);
-
-		coopwindow_render(win);
-
-		glfwSwapBuffers(fw);
-
-		//cleanup events
-		//if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
-		glfwPollEvents();
-	}
 	else
 	{
 		fw = win->win;
@@ -354,6 +349,7 @@ void windowread(struct arena* win)
 		glfwPollEvents();
 	}
 	//say("@windowread.end\n");
+*/
 }
 void windowwrite(struct arena* win, struct event* ev)
 {
@@ -380,34 +376,14 @@ void windowstart(struct arena* w)
 }
 void windowdelete(struct arena* win)
 {
-	if(_fbo_ == win->fmt)
-	{
-		fbodelete(win);
-	}
-	else if(_coop_ == win->fmt)
-	{
-		glfwDestroyWindow(win->win);
-	}
-	else
-	{
-		glfwDestroyWindow(win->win);
-	}
+	glfwDestroyWindow(win->win);
 }
 void windowcreate(struct arena* win)
 {
 	struct relation* rel = 0;
 	struct arena* share = 0;
 
-	if(_fbo_ == win->fmt)
-	{
-		win->fbwidth = win->width = 1024;
-		win->fbheight = win->height = 1024;
-		win->fbdepth = win->depth = 1024;
-		win->fbstride = win->stride = 1024;
-		fbocreate(win, 0);
-		win->fmt = _fbo_;
-	}
-	else if(_coop_ == win->fmt)
+	if(_coop_ == win->fmt)
 	{
 		rel = win->orel0;
 		if(rel)share = (void*)(rel->dstchip);

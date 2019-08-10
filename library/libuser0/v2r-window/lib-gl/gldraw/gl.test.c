@@ -23,13 +23,19 @@ void testwindow_render(struct arena* win)
 {
 	float w = win->width;
 	float h = win->height;
+	float fbw = win->fbwidth;
+	float fbh = win->fbheight;
+
 	float x = win->x0;
 	float y = h-1 - win->y0;
-
 	float r = x / w;
 	float g = y / h;
 	float b = 0.0;
 	float a = 0.0;
+
+	//fbw != w, fbh != h, so ...
+	x *= fbw / w;
+	y *= fbh / h;
 
 	//viewport can not change clearcolor area
 	glViewport(0, 0, x, y);

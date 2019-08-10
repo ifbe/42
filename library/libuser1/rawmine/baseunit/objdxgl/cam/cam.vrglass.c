@@ -221,7 +221,7 @@ void vrglass_sty2cam(struct fstyle* d, struct fstyle* s)
 static void vrglass_matrix(
 	struct actor* act, struct style* pin,
 	u8* buf, int len)
-{
+{/*
 	struct relation* rel;
 	struct arena* r;
 	struct fstyle* s;
@@ -263,6 +263,7 @@ static void vrglass_matrix(
 	src->arg_fmt[1] = 'v';
 	src->arg_name[1] = "camxyz";
 	src->arg_data[1] = act->camera.vc;
+*/
 }
 
 

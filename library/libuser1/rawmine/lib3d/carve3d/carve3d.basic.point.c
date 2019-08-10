@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define acc 18
-int point3d_vars(struct arena* win, int unused, float** vbuf, int vcnt)
+int point3d_vars(struct actor* win, int unused, float** vbuf, int vcnt)
 {
 	struct datapair* mod = win->gl_solid;
 	struct glsrc* src = &mod[point3d].src;
@@ -15,7 +15,7 @@ int point3d_vars(struct arena* win, int unused, float** vbuf, int vcnt)
 
 
 
-void carvepoint(struct arena* win, u32 rgb, vec3 vc)
+void carvepoint(struct actor* win, u32 rgb, vec3 vc)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -31,7 +31,7 @@ void carvepoint(struct arena* win, u32 rgb, vec3 vc)
 	vbuf[4] = gg;
 	vbuf[5] = bb;
 }
-void carvepoint_bezier(struct arena* win, u32 rgb,
+void carvepoint_bezier(struct actor* win, u32 rgb,
 	vec3 va, vec3 vb, vec3 vt)
 {
 	int j;
@@ -59,15 +59,15 @@ void carvepoint_bezier(struct arena* win, u32 rgb,
 
 
 
-void carvepoint_triangle(struct arena* win, u32 rgb,
+void carvepoint_triangle(struct actor* win, u32 rgb,
 	vec3 v0, vec3 v1, vec3 v2)
 {
 }
-void carvepoint_rect(struct arena* win, u32 rgb,
+void carvepoint_rect(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 }
-void carvepoint_circle(struct arena* win, u32 rgb,
+void carvepoint_circle(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	int j,k;
@@ -112,7 +112,7 @@ void carvepoint_pyramid5()
 void carvepoint_pyramid6()
 {
 }
-void carvepoint_cone(struct arena* win, u32 rgb,
+void carvepoint_cone(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	int j,k;
@@ -173,11 +173,11 @@ void carvepoint_prism5()
 void carvepoint_prism6()
 {
 }
-void carvepoint_cask(struct arena* win, u32 rgb,
+void carvepoint_cask(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 }
-void carvepoint_cylinder(struct arena* win, u32 rgb,
+void carvepoint_cylinder(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	int j,k;
@@ -229,7 +229,7 @@ void carvepoint_tetrahedron()
 void carvepoint_octahedron()
 {
 }
-void carvepoint_dodecahedron(struct arena* win, u32 rgb,
+void carvepoint_dodecahedron(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	int j;
@@ -334,7 +334,7 @@ void carvepoint_dodecahedron(struct arena* win, u32 rgb,
 	vbuf[115] = vc[1] + a*vr[1] + b*vf[1];
 	vbuf[116] = vc[2] + a*vr[2] + b*vf[2];
 }
-void carvepoint_icosahedron(struct arena* win, u32 rgb,
+void carvepoint_icosahedron(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	int j;
@@ -406,7 +406,7 @@ void carvepoint_icosahedron(struct arena* win, u32 rgb,
 	vbuf[67] = vc[1] + n*vr[1] + m*vf[1];
 	vbuf[68] = vc[2] + n*vr[2] + m*vf[2];
 }
-void carvepoint_sphere(struct arena* win, u32 rgb,
+void carvepoint_sphere(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 #define accx (acc*2)

@@ -1,27 +1,19 @@
 <arena>
-window{
+opengl{
 fmt:win
 title:"42"
 width:1024
 height:1024
 depth:1024
 }
-speaker{
-}
 </arena>
 
 
 <actor>
-fonthelper{
-fmt:aidfont
-}
-geomhelper{
-fmt:aidgeom
-}
 particle{
 fmt:login
 }
-rtscam{
+orthcam{
 fmt:orthcam
 }
 3dworld{
@@ -29,57 +21,56 @@ fmt:vbo
 type:3d
 }
 
-public{
-fmt:glpub
+thectx{
+fmt:gl41self
 }
-private{
+thewnd{
 fmt:glpriv
 }
 </actor>
 
 
 <style>
-fullscreen{
-c:0.0, 0.0
-q:1.0, 1.0
-}
-ortho{
-c: 0.0, 0.0, 0.0
-r: 1000.0, 0.0, 0.0
-t: 0.0, 1000.0, 0.0
-n: 0.0, 0.0, 1000.0
-f: 0.0, 0.0, -1000.0
-}
-haha{
+area{
 c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
 }
 
+orthmodl{
+}
+orthgeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+t: 0.0, 1000.0, 0.0
+n: 0.0, 0.0, 1000.0
+f: 0.0, 0.0, -1000.0
+}
+orthfrus{
+}
+orthrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
 </style>
 
 
-<pinid>
-p0{}
-p1{}
-p2{}
-p3{}
-</pinid>
-
-
 <relation>
-(3dworld, 0, win, aid) -> (geomhelper, 0, act, 0)
-(3dworld, 0, win, aid) -> (fonthelper, 0, act, 0)
-(3dworld, haha, win, bg) -> (particle, p0, act, 0)
-(3dworld, ortho, win, cam) -> (rtscam, p0, act, geom)
 
-(public, 0, act, ctx) -> (3dworld, 0, act, cam)
-(public, 0, act, lit) -> (thesun, 0, act, cam)
+#scene: 3dworld
+(3dworld, area, act, 0) -> (particle, 0, act, 0)
+(3dworld, orthgeom, act, 0) -> (orthcam, orthmodl, act, 0)
 
-(private, 0, act, ctx) -> (public, 0, act, cam)
-(private, fullscreen, act, cam) -> (rtscam, 0, act, cam)
 
-(window, 0, win, data) -> (3dworld, 0, act, out)
-(window, fullscreen, win, draw) -> (private, 0, act, cam)
+#gl41: 3dworld
+(thectx, 0, act, 0) -> (3dworld, 0, act, 0)
+(thewnd, 0, act, 0) -> (thectx, 0, act, 0)
+(thewnd, orthrect, act, 0) -> (orthcam, orthfrus, act, 0)
+
+
+#window
+(opengl, 0, win, ctx) -> (thectx, 0, act, 0)
+(opengl, 0, win, wnd) -> (thewnd, 0, act, 0)
+
 </relation>
