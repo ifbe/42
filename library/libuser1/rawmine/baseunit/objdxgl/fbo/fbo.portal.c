@@ -384,7 +384,7 @@ static void portal_start(struct halfrel* self, struct halfrel* peer)
 
 	tmp = (void*)(rel->dstchip);
 	if(0 == tmp)return;
-	if(_fbo_ != tmp->fmt)return;
+	//if(_fbo_ != tmp->fmt)return;
 
 	say("tex_rgb=%x\n", tmp->tex_color);
 	dst->tex[0] = tmp->tex_color;
@@ -427,8 +427,8 @@ static void portal_create(struct actor* act, void* str)
 	void* win;
 	if(0 == act)return;
 
-	win = arenacreate(_fbo_, 0);
-	if(win)relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
+	//win = arenacreate(_fbo_, 0);
+	//if(win)relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
 }
 
 

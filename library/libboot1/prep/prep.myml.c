@@ -113,13 +113,19 @@ void role_test_relation(u8* buf, int len,
 	int wirerrrr = -1;
 
 	for(j=0;j<=len;j++) {
-		k = buf[j];
 
+		k = buf[j];
 		if( (j == len) | ('\n' == k) ) {
 			wirellll = wirerrrr = -1;
 			continue;
 		}
 
+		if('#' == k){
+			while('\n' != buf[j])j++;
+			j++;
+			k = buf[j];
+		}
+//say("@%c@\n",k);
 		//(src) -> (dst)
 		if('(' == k) {
 			if(wirellll < 0) {
@@ -131,7 +137,7 @@ void role_test_relation(u8* buf, int len,
 		}
 		if(')' == k) {
 			if(wirerrrr >= 0) {
-				//say("r(%.*s)\n", j-wirerrrr, buf+wirerrrr);
+				say("r(%.*s)\n", j-wirerrrr, buf+wirerrrr);
 
 				dst.chip = dst.foot = 0;
 				dst.type = dst.flag = 0;
@@ -152,11 +158,11 @@ void role_test_relation(u8* buf, int len,
 					relationstart((void*)&rel->dstchip, (void*)&rel->srcchip);
 					relationstart((void*)&rel->srcchip, (void*)&rel->dstchip);
 				}
-
+//say("***\n");
 				wirellll = wirerrrr = -1;
 			}
 			else if(wirellll >= 0) {
-				//say("l(%.*s) to ", j-wirellll, buf+wirellll);
+				say("l(%.*s) to ", j-wirellll, buf+wirellll);
 
 				src.chip = src.foot = 0;
 				src.type = src.flag = 0;

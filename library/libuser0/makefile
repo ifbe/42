@@ -25,7 +25,8 @@ target: $(OBJ)
 %.o: %.c
 	$(compiler) $(cflag) $<
 opengl:
-	$(compiler) $(cflag) v2r-window/lib-gl/gldraw/gl.test.c
+	$(compiler) $(cflag) v2r-window/lib-gl/gldraw/gl.none.c
+	$(compiler) $(cflag) v2r-window/lib-gl/gldraw/gl.easy.c
 	$(compiler) $(cflag) v2r-window/lib-gl/gldraw/gl.full.c
 	$(compiler) $(cflag) v2r-window/lib-gl/globj/globj.fbo.c
 	$(compiler) $(cflag) v2r-window/lib-gl/globj/globj.shader.c

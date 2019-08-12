@@ -26,17 +26,20 @@ typedef float mat4[4][4];
 #else
 	#define GLSL_VERSION "#version 410 core\n"
 #endif
+//
+#define _3dworld_  hex64('3','d','w','o','r','l','d', 0)
+#define _eeworld_  hex64('e','e','w','o','r','l','d', 0)
 //dxhelp
-#define _dx11self_ hex64('d','x','1','1','s','e','l','f')
+#define _dx11data_ hex64('d','x','1','1','d','a','t','a')
 #define _dx11coop_ hex64('d','x','1','1','c','o','o','p')
-#define _dx11draw_ hex64('d','x','1','1','d','b','o','w')
+#define _dx11wnd0_ hex64('d','x','1','1','w','n','d','0')
 #define _dx11fbod_ hex64('d','x','1','1','f','b','o','d')
 #define _dx11fboc_ hex64('d','x','1','1','f','b','o','c')
 #define _dx11fbog_ hex64('d','x','1','1','f','b','o','g')
 //glhelp
-#define _gl41self_ hex64('g','l','4','1','s','e','l','f')
+#define _gl41data_ hex64('g','l','4','1','d','a','t','a')
 #define _gl41coop_ hex64('g','l','4','1','c','o','o','p')
-#define _gl41draw_ hex64('g','l','4','1','d','b','o','w')
+#define _gl41wnd0_ hex64('g','l','4','1','w','n','d','0')
 #define _gl41fbod_ hex64('g','l','4','1','f','b','o','d')
 #define _gl41fboc_ hex64('g','l','4','1','f','b','o','c')
 #define _gl41fbog_ hex64('g','l','4','1','f','b','o','g')
@@ -64,12 +67,10 @@ typedef float mat4[4][4];
 #define _khala_ hex64('k','h','a','l','a', 0, 0, 0)
 #define _loopback_ hex64('l','o','o','p','b', 'a', 'c', 'k')
 //tier=_win_, type=_win_, rfmt:
-#define _test_ hex32('t','e','s','t')
-#define _host_ hex32('h','o','s','t')
+#define _none_ hex32('n','o','n','e')
+#define _easy_ hex32('e','a','s','y')
+#define _full_ hex32('f','u','l','l')
 #define _coop_ hex32('c','o','o','p')
-#define _fbo_ hex32('f','b','o',0)
-#define _vp_ hex32('v','p', 0, 0)
-#define _ctx_ hex32('c','t','x',0)		//memnode
 //tier=_win_, type=_ctx_, rfmt:
 #define _vbo_ hex32('v','b','o',0)
 #define _rgba_ hex32('r','g','b','a')
@@ -88,6 +89,8 @@ typedef float mat4[4][4];
 #define _ui_ hex32('u','i',0,0)
 //tier=_act_, type:
 #define _baby_ hex32('b','a','b','y')
+#define _test_ hex32('t','e','s','t')
+//
 #define _orig_ hex32('o','r','i','g')
 #define _ORIG_ hex32('O','R','I','G')
 #define _copy_ hex32('c','o','p','y')
@@ -349,7 +352,7 @@ struct datapair
 	//[1c0,1ff]
 	struct gldst dst;
 	u8 opadd[0x40 - sizeof(struct gldst)];
-};
+};/*
 struct glctx
 {
 	//[00,24)shader
@@ -393,7 +396,7 @@ struct glctx
 	u8 method;		//'v'=glDrawArrays, 'i'=glDrawElements
 	u8 geometry;	//1=point, 2=line, *=trigon
 	u8 target;		//0=rtt, 1=background, 2=geometry, 3=alphatest, 4=transparent, 5=overlay
-};
+};*/
 
 
 

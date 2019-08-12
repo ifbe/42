@@ -298,6 +298,26 @@ void* arenacreate(u64 type, void* addr)
 	}
 
 	//window
+	else if(_none_ == type)
+	{
+		win = allocarena();
+		if(0 == win)return 0;
+
+		win->type = _win_;
+		win->fmt = _none_;
+		windowcreate(win);
+		return win;
+	}
+	else if(_easy_ == type)
+	{
+		win = allocarena();
+		if(0 == win)return 0;
+
+		win->type = _win_;
+		win->fmt = _easy_;
+		windowcreate(win);
+		return win;
+	}
 	else if(_win_ == type)
 	{
 		win = allocarena();
@@ -316,16 +336,6 @@ void* arenacreate(u64 type, void* addr)
 		if(addr)relationcreate(addr, 0, _win_, 0, win, 0, _win_, 0);
 		win->type = _win_;
 		win->fmt = _coop_;
-		windowcreate(win);
-		return win;
-	}
-	else if(_fbo_ == type)
-	{
-		win = allocarena();
-		if(0 == win)return 0;
-
-		win->type = _win_;
-		win->fmt = _fbo_;
 		windowcreate(win);
 		return win;
 	}
@@ -521,7 +531,9 @@ int arenaevent(struct event* e)
 
 	switch(win->fmt)
 	{
-		case _host_:
+		case _none_:
+		case _easy_:
+		case _full_:
 		case _coop_:windowwrite(win, &ev);break;
 	}
 	return 0;

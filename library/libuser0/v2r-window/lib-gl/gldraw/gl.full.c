@@ -385,9 +385,11 @@ void hostwindow_event(struct arena* win, struct event* ev)
 
 
 
-void hostwindow_render(struct arena* win)
+void fullwindow_write(struct arena* win, struct event* ev)
 {
-/*
+}
+void fullwindow_read(struct arena* win)
+{
 	struct relation* rel;
 	struct actor* act;
 
@@ -396,15 +398,17 @@ void hostwindow_render(struct arena* win)
 	while(1){
 		if(0 == rel)break;
 
-		act = (void*)(orel->dstchip);
-		switch(act->type){
-			case self:upload_self();
-			case coop:upload_coop();
-		}
+		act = (void*)(rel->dstchip);
+		say("=>%.8s\n", &act->type);
+		//switch(act->type){
+		//	case _gl41self_:upload_self();
+		//	case _gl41coop_:upload_coop();
+		//}
 
 		rel = samesrcnextdst(rel);
 	}
 
+/*
 	//1: render to specific target
 	rel = win->orel0;
 	while(1){
@@ -422,6 +426,9 @@ void hostwindow_render(struct arena* win)
 	}
 */
 }
-void hostwindow_event(struct arena* win, struct event* ev)
+void fullwindow_delete(struct arena* win)
+{
+}
+void fullwindow_create(struct arena* win)
 {
 }

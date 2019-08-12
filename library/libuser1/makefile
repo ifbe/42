@@ -207,6 +207,7 @@ rawmine/solution/game.server.c \
 rawmine/solution/ui.real.c \
 rawmine/solution/ui.virt.c \
 rawbaby/baby.c \
+rawtest/test.c \
 fordx11/dx11.ctx.c \
 fordx11/dx11.fbo.color.c \
 fordx11/dx11.fbo.depth.c \

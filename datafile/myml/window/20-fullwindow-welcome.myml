@@ -10,22 +10,21 @@ depth:1024
 
 
 <actor>
-particle{
+login{
 fmt:login
 }
 orthcam{
 fmt:orthcam
 }
 3dworld{
-fmt:vbo
-type:3d
+fmt:3dworld
 }
 
 thectx{
 fmt:gl41self
 }
 thewnd{
-fmt:glpriv
+fmt:gl41wnd0
 }
 </actor>
 
@@ -59,7 +58,7 @@ q:1.0, 1.0
 <relation>
 
 #scene: 3dworld
-(3dworld, area, act, 0) -> (particle, 0, act, 0)
+(3dworld, area, act, 0) -> (login, 0, act, 0)
 (3dworld, orthgeom, act, 0) -> (orthcam, orthmodl, act, 0)
 
 

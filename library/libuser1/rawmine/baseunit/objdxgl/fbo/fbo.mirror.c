@@ -406,8 +406,8 @@ static void mirror_create(struct actor* act, void* str)
 	void* win;
 	if(0 == act)return;
 
-	win = arenacreate(_fbo_, 0);
-	if(win)relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
+	//win = arenacreate(_fbo_, 0);
+	//if(win)relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
 }
 
 

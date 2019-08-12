@@ -415,8 +415,8 @@ static void water_create(struct actor* act, void* str)
 	act->buf = memorycreate(0x1000000);
 	actorcreatefromfile(act, "datafile/jpg/dudvmap.jpg");
 
-	win = arenacreate(_fbo_, 0);
-	if(win)relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
+	//win = arenacreate(_fbo_, 0);
+	//if(win)relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
 }
 
 

@@ -8,7 +8,15 @@ void lib3d_delete();
 void lib4d_create(void*, void*);
 void lib4d_delete();
 //
+int baby_create(void*, void*);
+int baby_delete(void*, void*);
 int baby_read(void*, void*);
+int baby_write(void*, void*);
+//
+int test_create(void*, void*);
+int test_delete(void*, void*);
+int test_read(void*, void*);
+int test_write(void*, void*);
 
 
 
@@ -123,6 +131,7 @@ int actorwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len)
 	act = (void*)(self->chip);
 	if(0 == act)return 0;
 
+	if(0 == act->onwrite)return 0;
 	return act->onwrite(self, peer, buf, len);
 }
 int actorread(struct halfrel* self,struct halfrel* peer,void* buf,int len)
@@ -133,6 +142,7 @@ int actorread(struct halfrel* self,struct halfrel* peer,void* buf,int len)
 	act = (void*)(self->chip);
 	if(0 == act)return 0;
 
+	if(0 == act->onread)return 0;
 	return act->onread(self, peer, buf, len);
 }
 int actorstop(struct halfrel* self, struct halfrel* peer)
@@ -143,6 +153,7 @@ int actorstop(struct halfrel* self, struct halfrel* peer)
 	act = (void*)(self->chip);
 	if(0 == act)return 0;
 
+	if(0 == act->onstop)return 0;
 	return act->onstop(self, peer);
 }
 int actorstart(struct halfrel* self, struct halfrel* peer)
@@ -154,6 +165,7 @@ int actorstart(struct halfrel* self, struct halfrel* peer)
 	if(0 == act)return 0;
 
 	say("@actor_start\n");
+	if(0 == act->onstart)return 0;
 	return act->onstart(self, peer);
 }
 
@@ -163,12 +175,14 @@ int actorstart(struct halfrel* self, struct halfrel* peer)
 int actordelete(struct actor* act)
 {
 	if(0 == act)return 0;
-	if(_orig_ == act->type)return 0;
-	if(_copy_ == act->type)return 0;
+	switch(act->type){
+		case _orig_:return 0;
+		case _copy_:return 0;
+		case _ORIG_:act->type = _orig_;
+		case _COPY_:act->type = _copy_;
+	}
 	act->ondelete(act);
 
-	if(_ORIG_ == act->type)act->type = _orig_;
-	else if(_COPY_ == act->type)act->type = _copy_;
 	return 0;
 }
 void* actorcreate(u64 type, void* buf)
@@ -177,6 +191,7 @@ void* actorcreate(u64 type, void* buf)
 	u8* src;
 	u8* dst;
 	struct actor* act;
+	say("%llx,%llx\n", type, buf);
 
 	if(0 == type)
 	{
@@ -187,22 +202,28 @@ void* actorcreate(u64 type, void* buf)
 
 		act->oncreate(act, 0);
 	}
+
+	//test
 	else if(_baby_ == type)
 	{
 		act = allocactor();
 		act->type = _baby_;
+		baby_create(act, buf);
 		return act;
 	}
 	else if(_test_ == type)
 	{
 		act = allocactor();
 		act->type = _test_;
+		test_create(act, buf);
 		return act;
 	}
-	else if(_gl41self_ == type)
+
+	//gl41
+	else if(_gl41data_ == type)
 	{
 		act = allocactor();
-		act->type = _gl41self_;
+		act->type = _gl41data_;
 		return act;
 	}
 	else if(_gl41coop_ == type)
@@ -211,10 +232,10 @@ void* actorcreate(u64 type, void* buf)
 		act->type = _gl41coop_;
 		return act;
 	}
-	else if(_gl41draw_ == type)
+	else if(_gl41wnd0_ == type)
 	{
 		act = allocactor();
-		act->type = _gl41draw_;
+		act->type = _gl41wnd0_;
 		return act;
 	}
 	else if(_gl41fbod_ == type)
@@ -235,6 +256,22 @@ void* actorcreate(u64 type, void* buf)
 		act->type = _gl41fbog_;
 		return act;
 	}
+
+	//world
+	else if(_3dworld_ == type)
+	{
+		act = allocactor();
+		act->type = _3dworld_;
+		return act;
+	}
+	else if(_eeworld_ == type)
+	{
+		act = allocactor();
+		act->type = _eeworld_;
+		return act;
+	}
+
+	//
 	else
 	{
 		k = 0;

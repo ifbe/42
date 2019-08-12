@@ -1,0 +1,21 @@
+<arena>
+opengl{
+fmt:easy
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</arena>
+
+
+<actor>
+test{
+fmt:test
+}
+</actor>
+
+
+<relation>
+(opengl, 0, win, 0) -> (test, 0, act, 0)
+</relation>

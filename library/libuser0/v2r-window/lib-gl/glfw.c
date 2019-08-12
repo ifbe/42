@@ -6,13 +6,20 @@
 #include "libuser.h"
 int arenaevent(struct event* ev);
 //
-void hostwindow_create(void*);
-void hostwindow_render(void*);
-void hostwindow_event(void*, void*);
+void nonewindow_create(void*);
+void nonewindow_delete(void*);
+void nonewindow_read(void*);
+void nonewindow_event(void*, void*);
 //
-void testwindow_create(void*);
-void testwindow_render(void*);
-void testwindow_event(void*, void*);
+void easywindow_create(void*);
+void easywindow_delete(void*);
+void easywindow_read(void*);
+void easywindow_event(void*, void*);
+//
+void fullwindow_create(void*);
+void fullwindow_delete(void*);
+void fullwindow_read(void*);
+void fullwindow_event(void*, void*);
 //
 static u8 uppercase[] = {
 	' ', '!','\"', '#', '$', '%', '&','\"',		//20,27
@@ -282,24 +289,40 @@ void windowopen_coop(struct arena* w, struct arena* r)
 
 
 
+void windowwrite(struct arena* win, struct event* ev)
+{
+	if(0 == win)return;
+	switch(win->fmt){
+		case _none_:nonewindow_write(win, ev);break;
+		case _easy_:easywindow_write(win, ev);break;
+		case _full_:fullwindow_write(win, ev);break;
+	}
+}
 void windowread(struct arena* win)
 {
 	GLFWwindow* fw;
 	struct relation* rel;
-	say("@windowread.start:%.8s,%.8s,%llx\n", &win->type, &win->fmt, win->win);
+	//say("@windowread.start:%.8s,%.8s,%llx\n", &win->type, &win->fmt, win->win);
 
 	//0: context current
 	fw = win->win;
 	glfwMakeContextCurrent(fw);
 
 	//1: render everything
+/*
 	rel = win->orel0;
 	if(0 == rel){
-		say("%llx,%llx\n", win, fw);
+		//say("%llx,%llx\n", win, fw);
 		testwindow_render(win);
 	}
 	else{
 		hostwindow_render(win);
+	}
+*/
+	switch(win->fmt){
+		case _none_:nonewindow_read(win);break;
+		case _easy_:easywindow_read(win);break;
+		case _full_:fullwindow_read(win);break;
 	}
 
 	//2: swap buffer
@@ -351,17 +374,6 @@ void windowread(struct arena* win)
 	//say("@windowread.end\n");
 */
 }
-void windowwrite(struct arena* win, struct event* ev)
-{
-	struct relation* rel = win->oreln;
-
-	if(0 == rel){
-		testwindow_event(win, ev);
-	}
-	else{
-		hostwindow_event(win, ev);
-	}
-}
 void windowchange()
 {
 }
@@ -376,6 +388,12 @@ void windowstart(struct arena* w)
 }
 void windowdelete(struct arena* win)
 {
+	switch(win->fmt){
+		case _none_:nonewindow_delete(win);
+		case _easy_:easywindow_delete(win);
+		default:fullwindow_delete(win);
+	}
+
 	glfwDestroyWindow(win->win);
 }
 void windowcreate(struct arena* win)
@@ -392,8 +410,8 @@ void windowcreate(struct arena* win)
 		win->height = 768;
 		win->depth = 1024;
 		win->stride = 1024;
+
 		windowopen_coop(win, share);
-		win->fmt = _coop_;
 	}
 	else
 	{
@@ -402,7 +420,12 @@ void windowcreate(struct arena* win)
 		win->depth = 1024;
 		win->stride = 1024;
 		windowopen_root(win, 0);
-		win->fmt = _host_;
+
+		switch(win->fmt){
+			case _none_:nonewindow_create(win);
+			case _easy_:easywindow_create(win);
+			default:fullwindow_create(win);
+		}
 	}
 }
 
