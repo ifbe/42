@@ -534,7 +534,8 @@ int arenaevent(struct event* e)
 		case _none_:
 		case _easy_:
 		case _full_:
-		case _coop_:windowwrite(win, &ev);break;
+		case _coop_:
+		default:windowwrite(win, &ev);break;
 	}
 	return 0;
 }

@@ -295,7 +295,8 @@ void windowwrite(struct arena* win, struct event* ev)
 	switch(win->fmt){
 		case _none_:nonewindow_write(win, ev);break;
 		case _easy_:easywindow_write(win, ev);break;
-		case _full_:fullwindow_write(win, ev);break;
+		case _full_:
+		default:fullwindow_write(win, ev);break;
 	}
 }
 void windowread(struct arena* win)
@@ -322,13 +323,17 @@ void windowread(struct arena* win)
 	switch(win->fmt){
 		case _none_:nonewindow_read(win);break;
 		case _easy_:easywindow_read(win);break;
-		case _full_:fullwindow_read(win);break;
+		case _full_:
+		default:fullwindow_read(win);break;
 	}
 
 	//2: swap buffer
 	glfwSwapBuffers(fw);
 
-	//3: poll event
+	//3: title
+	glfwSetWindowTitle(fw, "holyshit");
+
+	//4: poll event
 	if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
 	glfwPollEvents();
 /*

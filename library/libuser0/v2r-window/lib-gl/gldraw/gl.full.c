@@ -385,50 +385,66 @@ void hostwindow_event(struct arena* win, struct event* ev)
 
 
 
-void fullwindow_write(struct arena* win, struct event* ev)
-{
-}
-void fullwindow_read(struct arena* win)
+void fullwindow_render(struct arena* ogl, struct actor* wnd)
 {
 	struct relation* rel;
 	struct actor* act;
+	say("%llx,%llx\n", ogl, wnd);
+	if(0 == wnd)return;
+
+	rel = wnd->orel0;
+	while(1){
+		if(0 == rel)return;
+
+		act = (void*)(rel->dstchip);
+		say("=>%.8s\n", &act->type);
+
+		rel = samesrcnextdst(rel);
+	}
+}
+
+
+
+
+void fullwindow_write(struct arena* ogl, struct event* ev)
+{
+	//say("@fullwindow_write\n");
+}
+void fullwindow_read(struct arena* ogl)
+{
+	float w, h;
+	struct relation* rel;
+	struct actor* act;
+	//say("@fullwindow_read\n");
+
+	//
+	w = ogl->fbwidth;
+	h = ogl->fbheight;
+	glViewport(0, 0, w, h);
+
+	//clear screen
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//glenable
+	glEnable(GL_DEPTH_TEST);
 
 	//0: upload data to gpu
-	rel = win->orel0;
+	rel = ogl->orel0;
 	while(1){
 		if(0 == rel)break;
 
 		act = (void*)(rel->dstchip);
-		say("=>%.8s\n", &act->type);
-		//switch(act->type){
-		//	case _gl41self_:upload_self();
-		//	case _gl41coop_:upload_coop();
-		//}
-
-		rel = samesrcnextdst(rel);
-	}
-
-/*
-	//1: render to specific target
-	rel = win->orel0;
-	while(1){
-		if(0 == rel)break;
-
-		act = (void*)(orel->dstchip);
 		switch(act->type){
-			case fbo0:break;
-			case fboc:break;
-			case fbod:break;
-			case fbog:break;
+			case _gl41wnd0_:fullwindow_render(ogl, act);break;
 		}
 
 		rel = samesrcnextdst(rel);
 	}
-*/
 }
-void fullwindow_delete(struct arena* win)
+void fullwindow_delete(struct arena* ogl)
 {
 }
-void fullwindow_create(struct arena* win)
+void fullwindow_create(struct arena* ogl)
 {
 }

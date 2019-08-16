@@ -1,0 +1,32 @@
+<arena>
+opengl{
+fmt:win
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</arena>
+
+<actor>
+glwnd{
+fmt:gl41wnd0
+}
+glview0{
+fmt:gl41view
+}
+glview1{
+fmt:gl41view
+}
+glctx{
+fmt:gl41data
+}
+</actor>
+
+<relation>
+(opengl, 0, win, 0) -> (glwnd, 0, act, 0)
+(glwnd, 0, act, 0) -> (glview0, 0, act, 0)
+(glwnd, 0, act, 0) -> (glview1, 0, act, 0)
+(glview0, 0, act, 0) -> (glctx, 0, act, 0)
+(glview1, 0, act, 0) -> (glctx, 0, act, 0)
+</relation>

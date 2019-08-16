@@ -53,51 +53,43 @@ static GLuint vao = 0;
 
 
 
-void easywindow_write(struct arena* win, struct event* ev)
+void easywindow_renderself()
 {
-	say("@easywindow_event\n");
-}
-void easywindow_read(struct arena* win)
-{
-	struct relation* rel;
-	struct actor* act;
+	//shader
+	if(0 == shader)shader = shaderprogram(vs, fs, 0, 0, 0, 0);
+	glUseProgram(shader);
 
-	struct datapair* pair;
-	struct glsrc* src;
-	struct gldst* dst;
+	if(0 == vao)glGenVertexArrays(1, &vao);
+	glBindVertexArray(vao);
 
-	float w = win->fbwidth;
-	float h = win->fbheight;
-
-	//clear screen
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//
-	glViewport(0, 0, w, h);
-	glEnable(GL_DEPTH_TEST);
-
-	rel = win->orel0;
-	if(0 == rel)
-	{
-		//shader
-		glUseProgram(shader);
-		glBindVertexArray(vao);
+	if(0 == vbo){
+		glGenBuffers(1, &vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, 4*6*3, vbuf, GL_STATIC_DRAW);
 
-		//draw
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-		return;
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
+		glEnableVertexAttribArray(1);
 	}
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-	act = (void*)(rel->dstchip);
+	//draw
+	glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+void easywindow_renderpeer(struct arena* win)
+{
+	struct relation* rel = win->orel0;
+	if(0 == rel)return;
+
+	struct actor* act = (void*)(rel->dstchip);
 	if(0 == act)return;
 
-	pair = act->buf;
+	struct datapair* pair = act->buf;
 	if(0 == pair)return;
 
-	src = &pair->src;
-	dst = &pair->dst;
+	struct glsrc* src = &pair->src;
+	struct gldst* dst = &pair->dst;
 	//say("src=%llx,dst=%llx\n", src, dst);
 
 	//shader
@@ -143,22 +135,33 @@ void easywindow_read(struct arena* win)
 	//draw
 	glDrawElements(GL_TRIANGLES, 3*12, GL_UNSIGNED_SHORT, (void*)0);
 }
+
+
+
+
+void easywindow_write(struct arena* win, struct event* ev)
+{
+	say("@easywindow_event\n");
+}
+void easywindow_read(struct arena* win)
+{
+	float w = win->fbwidth;
+	float h = win->fbheight;
+
+	//
+	glViewport(0, 0, w, h);
+	glEnable(GL_DEPTH_TEST);
+
+	//clear screen
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	if(0 == win->orel0)easywindow_renderself();
+	else easywindow_renderpeer(win);
+}
 void easywindow_delete(struct arena* win)
 {
 }
 void easywindow_create(struct arena* win)
 {
-	shader = shaderprogram(vs, fs, 0, 0, 0, 0);
-
-	glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-
-	glGenBuffers(1, &vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, 4*6*3, vbuf, GL_STATIC_DRAW);
-
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 24, (void*)12);
-	glEnableVertexAttribArray(1);
 }
