@@ -11,7 +11,7 @@ void* locate_camera_in_world()
 
 
 
-int gl41draw_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {/*
 	struct relation* rel = self->orel0;
 
@@ -19,15 +19,15 @@ int gl41draw_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 		if(0 == rel)break;
 
 		//
-		gl41draw_prerequ();
-		gl41draw_thiscam();
+		gl41wnd0_prerequ();
+		gl41wnd0_thiscam();
 
 		rel = samesrcnextdst();
 	}
 */
 	return 0;
 }
-int gl41draw_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {/*
 	struct relation* rel;
 	struct style* sty;
@@ -53,19 +53,19 @@ found:
 */
 	return 0;
 }
-int gl41draw_stop(struct halfrel* self, struct halfrel* peer)
+int gl41wnd0_stop(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int gl41draw_start(struct halfrel* self, struct halfrel* peer)
+int gl41wnd0_start(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int gl41draw_delete(struct actor* act)
+int gl41wnd0_delete(struct actor* act)
 {
 	return 0;
 }
-int gl41draw_create(struct actor* act)
+int gl41wnd0_create(struct actor* act, void* data)
 {
 	return 0;
 }

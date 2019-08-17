@@ -236,7 +236,7 @@ forfile/xml.base.c \
 forrgba/rgba.base.c \
 forsound/sound.pcm.c \
 forterm/term.cli.c \
-actor.c
+nervus.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 target: $(OBJ)

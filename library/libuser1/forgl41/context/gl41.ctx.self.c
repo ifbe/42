@@ -7,7 +7,7 @@ int actorinput_touch(struct arena* win, struct event* ev);
 
 
 
-int gl41self_read(struct arena* win, struct style* stack)
+int gl41data_read(struct arena* win, struct style* stack)
 {
 	struct style* sty;
 	struct relation* rel;
@@ -38,7 +38,7 @@ next:
 	postprocess(win);
 	return 0;
 }
-int gl41self_write(struct arena* win, struct style* stack, struct event* ev)
+int gl41data_write(struct arena* win, struct style* stack, struct event* ev)
 {
 	int ret;
 	struct style* sty;
@@ -69,11 +69,11 @@ next:
 	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
 	return ret;
 }
-int gl41self_stop(struct arena* win, struct style* sty)
+int gl41data_stop(struct arena* win, struct style* sty)
 {
 	return 0;
 }
-int gl41self_start(struct arena* twig, void* tf, struct arena* root, void* rf)
+int gl41data_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 {
 	struct halfrel* self;
 	struct halfrel* peer;
@@ -98,20 +98,20 @@ int gl41self_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 
 
 
-int gl41self_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int gl41data_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//for each object in target world: read ctx
 	return 0;
 }
-int gl41self_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int gl41data_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	return 0;
 }
-int gl41self_stop(struct halfrel* self, struct halfrel* peer)
+int gl41data_stop(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int gl41self_start(struct halfrel* self, struct halfrel* peer)
+int gl41data_start(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -119,19 +119,19 @@ int gl41self_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int gl41self_search(struct arena* win)
+int gl41data_search(struct arena* win)
 {
 	return 0;
 }
-int gl41self_modify(struct arena* win)
+int gl41data_modify(struct arena* win)
 {
 	return 0;
 }
-int gl41self_delete(struct arena* win)
+int gl41data_delete(struct arena* win)
 {
 	return 0;
 }
-void* gl41self_create(struct actor* act, u64 flag)
+int gl41data_create(struct actor* act, void* flag)
 {
 	int j;
 	u8* buf;
@@ -148,5 +148,5 @@ void* gl41self_create(struct actor* act, u64 flag)
 	buf = act->gl_opaque = memorycreate(0x10000);
 	for(j=0;j<0x10000;j++)buf[j] = 0;
 
-	return act;
+	return 0;
 }

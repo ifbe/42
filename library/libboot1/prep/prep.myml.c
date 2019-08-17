@@ -206,6 +206,12 @@ int role_test_style(u8* buf, int len, struct footlist foot[], int flen)
 			continue;
 		}
 
+		if('#' == k){
+			while('\n' != buf[j])j++;
+			j++;
+			k = buf[j];
+		}
+
 		if(	((k >= '0') && (k <= '9')) |
 			((k >= 'a') && (k <= 'z')) )
 		{
@@ -294,6 +300,12 @@ int role_test_pinid(u8* buf, int len, struct footlist foot[], int flen)
 			continue;
 		}
 
+		if('#' == k){
+			while('\n' != buf[j])j++;
+			j++;
+			k = buf[j];
+		}
+
 		if(	((k >= '0') && (k <= '9')) |
 			((k >= 'a') && (k <= 'z')) )
 		{
@@ -367,6 +379,12 @@ int role_test_arena(u8* buf, int len, struct chiplist chip[], int clen)
 
 			str = -1;
 			continue;
+		}
+
+		if('#' == k){
+			while('\n' != buf[j])j++;
+			j++;
+			k = buf[j];
 		}
 
 		if(	((k >= '0') && (k <= '9')) |
@@ -462,6 +480,12 @@ int role_test_actor(u8* buf, int len, struct chiplist chip[], int clen)
 			continue;
 		}
 
+		if('#' == k){
+			while('\n' != buf[j])j++;
+			j++;
+			k = buf[j];
+		}
+
 		if(	((k >= '0') && (k <= '9')) |
 			((k >= 'a') && (k <= 'z')) )
 		{
@@ -553,6 +577,12 @@ int role_test_system(u8* buf, int len, struct chiplist chip[], int clen)
 
 			str = -1;
 			continue;
+		}
+
+		if('#' == k){
+			while('\n' != buf[j])j++;
+			j++;
+			k = buf[j];
 		}
 
 		if(	((k >= '0') && (k <= '9')) |
@@ -648,6 +678,12 @@ int role_test_artery(u8* buf, int len, struct chiplist chip[], int clen)
 			continue;
 		}
 
+		if('#' == k){
+			while('\n' != buf[j])j++;
+			j++;
+			k = buf[j];
+		}
+
 		if(	((k >= '0') && (k <= '9')) |
 			((k >= 'a') && (k <= 'z')) )
 		{
@@ -739,7 +775,7 @@ void role_test1(u8* buf, int len)
 		k = buf[j];
 
 		if( (j == len) | ('\n' == k) ) {
-			//say("%04d: %.*s\n", l, j-head, buf+head);
+			//say("%04d: %.*s\n", line, j-head, buf+head);
 
 			head = j+1;
 			line += 1;
@@ -752,6 +788,12 @@ void role_test1(u8* buf, int len)
 				j++;
 				continue;
 			}
+		}
+		if('>' == k) {
+			if(typename < 0)continue;
+
+			////say("typename = %.*s\n", j-typename, buf+typename);
+			typedata = j+1;
 		}
 		if('<' == k) {
 			if(typename < 0) {
@@ -804,12 +846,6 @@ void role_test1(u8* buf, int len)
 				typename = -1;
 			}
 		}
-		if('>' == k) {
-			if(typename < 0)continue;
-
-			////say("typename = %.*s\n", j-typename, buf+typename);
-			typedata = j+1;
-		}
 	}//for
 /*
 	for(j=0;j<clen;j++)
@@ -839,7 +875,7 @@ int role_fromfile(int argc, u8** argv)
 	if(argc > 1)str = (char*)argv[1];
 	else str = "datafile/myml/mainwindow.myml";
 
-	len = openreadclose(str, 0, buf, 0x1000);
+	len = openreadclose(str, 0, buf, 0x2000);
 	if(len <= 0)return 0;
 	//say("%s", buf);
 

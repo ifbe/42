@@ -23,7 +23,7 @@ int gl41fboc_delete(struct actor* act)
 {
     return 0;
 }
-int gl41fboc_create(struct actor* act)
+int gl41fboc_create(struct actor* act, void* addr)
 {
     return 0;
 }

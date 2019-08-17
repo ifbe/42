@@ -1,29 +1,15 @@
-<arena>
-3dworld{
-fmt:vbo
-type:3d
-}
-uiworld{
-fmt:vbo
-type:ui
-}
-window{
-fmt:win
-title:"42"
-width:1024
-height:1024
-depth:1024
-}
-player1{
-fmt:joy
-}
-player2{
-fmt:joy
-}
-</arena>
-
-
 <actor>
+#3d scene
+texball{
+fmt:texball
+file:datafile/jpg/skysphere.jpg
+}
+terrain{
+fmt:ground
+}
+rabbit{
+fmt:model
+}
 rtscam{
 fmt:rtscam
 }
@@ -36,20 +22,11 @@ fmt:freecam
 vrcam{
 fmt:vrglass
 }
-texball{
-fmt:texball
-file:datafile/jpg/skysphere.jpg
-}
-terrain{
-fmt:ground
-}
-rabbit{
-fmt:model
+3dworld{
+fmt:3dworld
 }
 
-uicamera{
-fmt:orthcam
-}
+#ui scene
 fonthelper{
 fmt:aidfont
 }
@@ -71,10 +48,66 @@ fmt:corner
 pointer{
 fmt:pointer
 }
+uicam{
+fmt:orthcam
+}
+uiworld{
+fmt:3dworld
+}
+
+#ctx
+glctx3d{
+fmt:gl41data
+}
+glctxui{
+fmt:gl41data
+}
+glviewbg{
+fmt:gl41view
+}
+glviewfg{
+fmt:gl41view
+}
+glwnd{
+fmt:gl41wnd0
+}
 </actor>
 
 
+<arena>
+opengl{
+fmt:win
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</arena>
+
+
+
 <style>
+#--------3dscene.object--------
+sky{
+c: 0.0, 0.0, 0.0
+r: 10000000.0, 0.0, 0.0
+f: 0.0, 10000000.0, 0.0
+t: 0.0, 0.0, 10000000.0
+}
+gnd{
+c: 0.0, 0.0, 0.0
+r: 10000000.0, 0.0, 0.0
+f: 0.0, 10000000.0, 0.0
+t: 0.0, 0.0, 10000000.0
+}
+rabb{
+c: 0.0, 0.0, 0.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
+}
+
+#--------3dscene.camera--------
 rtsmodl{
 }
 rtsgeom{
@@ -148,37 +181,7 @@ c:0.5, 0.5
 q:0.5, 0.5
 }
 
-fullscreen{
-c:0.0, 0.0
-q:1.0, 1.0
-}
-uirect{
-c: 0.0, 0.0, 0.0
-r: 1.0, 0.0, 0.0
-t: 0.0, 1.0, 0.0
-n: 0.0, 0.0, 1.0
-f: 0.0, 0.0, -1.0
-}
-
-sky{
-c: 0.0, 0.0, 0.0
-r: 10000000.0, 0.0, 0.0
-f: 0.0, 10000000.0, 0.0
-t: 0.0, 0.0, 10000000.0
-}
-gnd{
-c: 0.0, 0.0, 0.0
-r: 10000000.0, 0.0, 0.0
-f: 0.0, 10000000.0, 0.0
-t: 0.0, 0.0, 10000000.0
-}
-rabb{
-c: 0.0, 0.0, 0.0
-r: 100.0, 0.0, 0.0
-f: 0.0, 100.0, 0.0
-t: 0.0, 0.0, 100.0
-}
-
+#--------uiscene.object--------
 ovv{
 c: 0.0, 0.0, 0.0
 r: 1.0, 0.0, 0.0
@@ -206,6 +209,23 @@ r: 10000000.0, 0.0, 0.0
 f: 0.0, 10000000.0, 0.0
 t: 0.0, 0.0, 10000000.0
 }
+
+#--------uiscene.camera--------
+uimodl{
+}
+uigeom{
+c: 0.0, 0.0, 0.0
+r: 1.0, 0.0, 0.0
+t: 0.0, 1.0, 0.0
+n: 0.0, 0.0, 1.0
+f: 0.0, 0.0, -1.0
+}
+uifrus{
+}
+uirect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
 </style>
 
 
@@ -223,32 +243,45 @@ p8{}
 
 
 <relation>
-(3dworld, sky, win, bg) -> (texball, p1, act, 0)
-(3dworld, gnd, win, bg) -> (terrain, p2, act, 0)
-(3dworld, rabb, win, bg) -> (rabbit, p3, act, 0)
-(3dworld, rtsgeom, win, cam) -> (rtscam, rtsmodl, act, geom)
-(3dworld, orthgeom, win, cam) -> (orthcam, orthmodl, act, geom)
-(3dworld, freegeom, win, cam) -> (freecam, freemodl, act, geom)
-(3dworld, vrgeom, win, cam) -> (vrcam, vrmodl, act, geom)
+#3dworld depends on inner objects
+(3dworld, sky, act, bg) -> (texball, p1, act, 0)
+(3dworld, gnd, act, bg) -> (terrain, p2, act, 0)
+(3dworld, rabb, act, bg) -> (rabbit, p3, act, 0)
+(3dworld, rtsgeom, act, cam) -> (rtscam, rtsmodl, act, geom)
+(3dworld, orthgeom, act, cam) -> (orthcam, orthmodl, act, geom)
+(3dworld, freegeom, act, cam) -> (freecam, freemodl, act, geom)
+(3dworld, vrgeom, act, cam) -> (vrcam, vrmodl, act, geom)
 
-(window, 0, win, vp) -> (3dworld, 0, win, out)
-(window, rtsrect, win, cam) -> (rtscam, rtsfrus, act, cam)
-(window, orthrect,win, cam) -> (orthcam, orthfrus, act, cam)
-(window, freerect, win, cam) -> (freecam, freefrus, act, cam)
-(window, vrrect,win, cam) -> (vrcam, vrfrus, act, cam)
+#uiworld depends on inner objects
+(uiworld, 0, act, aid) -> (geomhelper, 0, act, 0)
+(uiworld, 0, act, aid) -> (fonthelper, 0, act, 0)
+(uiworld, ovv, act, ui) -> (overview, p4, act, 0)
+(uiworld, sty5, act, ui) -> (vjoy, p5, act, 0)
+(uiworld, sty6, act, ui) -> (vkbd, p6, act, 0)
+(uiworld, sty7, act, ui) -> (corner, p7, act, 0)
+(uiworld, sty8, act, ui) -> (pointer, p8, act, 0)
+(uiworld, uigeom, act, cam) -> (uicam, uimodl, act, geom)
 
-(uiworld, 0, win, aid) -> (geomhelper, 0, act, 0)
-(uiworld, 0, win, aid) -> (fonthelper, 0, act, 0)
-(uiworld, ovv, win, ui) -> (overview, p4, act, 0)
-(uiworld, sty5, win, ui) -> (vjoy, p5, act, 0)
-(uiworld, sty6, win, ui) -> (vkbd, p6, act, 0)
-(uiworld, sty7, win, ui) -> (corner, p7, act, 0)
-(uiworld, sty8, win, ui) -> (pointer, p8, act, 0)
-(uiworld, uirect, win, cam) -> (uicamera, 0, act, geom)
+#context depends on scene
+(glctx3d, 0, act, 0) -> (3dworld, 0, act, 0)
+(glctxui, 0, act, 0) -> (uiworld, 0, act, 0)
 
-(window, 0, win, vp) -> (uiworld, 0, win, out)
-(window, fullscreen,win, cam) -> (uicamera, 0, act, cam)
+#viewport depends on ctx + cam
+(glviewbg, 0, act, 0) -> (glctx3d, 0, act, 0)
+(glviewbg, rtsrect, act, cam) -> (rtscam, rtsfrus, act, cam)
+(glviewbg, orthrect,act, cam) -> (orthcam, orthfrus, act, cam)
+(glviewbg, freerect, act, cam) -> (freecam, freefrus, act, cam)
+(glviewbg, vrrect, act, cam) -> (vrcam, vrfrus, act, cam)
 
-(player1, 0, win, con) -> (freecam, 0, act, con)
-(player2, 0, win, con) -> (rtscam, 0, act, con)
+(glviewfg, 0, act, 0) -> (glctxui, 0, act, 0)
+(glviewfg, uirect, act, 0) -> (uicam, uifrus, act, 0)
+
+#window depends on glview
+(glwnd, 0, act, 0) -> (glviewbg, 0, act, 0)
+(glwnd, 0, act, 0) -> (glviewfg, 0, act, 0)
+
+#opengl depends on worldcontexts + rendertargets
+(opengl, 0, win, 0) -> (glctx3d, 0, act, 0)
+(opengl, 0, win, 0) -> (glctxui, 0, act, 0)
+(opengl, 0, win, 0) -> (glwnd, 0, act, 0)
 </relation>

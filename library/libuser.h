@@ -36,9 +36,11 @@ typedef float mat4[4][4];
 #define _dx11fbod_ hex64('d','x','1','1','f','b','o','d')
 #define _dx11fboc_ hex64('d','x','1','1','f','b','o','c')
 #define _dx11fbog_ hex64('d','x','1','1','f','b','o','g')
-//glhelp
+//
 #define _gl41data_ hex64('g','l','4','1','d','a','t','a')
 #define _gl41coop_ hex64('g','l','4','1','c','o','o','p')
+#define _gl41view_ hex64('g','l','4','1','v','i','e','w')
+//
 #define _gl41wnd0_ hex64('g','l','4','1','w','n','d','0')
 #define _gl41fbod_ hex64('g','l','4','1','f','b','o','d')
 #define _gl41fboc_ hex64('g','l','4','1','f','b','o','c')

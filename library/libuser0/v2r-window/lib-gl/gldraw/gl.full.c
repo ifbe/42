@@ -21,7 +21,6 @@ GLuint uploadvertex(void* i, void* o);
 
 
 
-/*
 void update_eachpass(struct gldst* dst, struct glsrc* src)
 {
 	int j;
@@ -83,32 +82,6 @@ void update_eachpass(struct gldst* dst, struct glsrc* src)
 	}
 //say("@update done\n");
 }
-void hostwindow_update(struct arena* win)
-{
-	int j;
-	struct datapair* mod;
-//say("@hostctx_update.start:%llx\n", win);
-
-	//solid
-	mod = win->gl_solid;
-	for(j=0;j<64;j++)
-	{
-		if(0 == mod[j].src.vbuf)continue;
-		//say("%d\n",j);
-		update_eachpass(&mod[j].dst, &mod[j].src);
-	}
-
-	//opaque
-	mod = win->gl_opaque;
-	for(j=0;j<64;j++)
-	{
-		if(0 == mod[j].src.vbuf)continue;
-		//say("%d\n",j);
-		update_eachpass(&mod[j].dst, &mod[j].src);
-	}
-
-//say("@hostctx_update.end\n");
-}
 
 
 
@@ -117,6 +90,7 @@ void hostwindow_update(struct arena* win)
 	//glUniform3fv(glGetUniformLocation(dst->shader, "camxyz"  ), 1, win->camera.vc);
 	//glUniformMatrix4fv(glGetUniformLocation(dst->shader, "sunmvp"), 1, GL_FALSE, cammvp);
 	//glUniform3fv(glGetUniformLocation(dst->shader, "sunxyz"  ), 1, win->camera.vc);
+/*
 void updatearg(u32 shader, struct glsrc* src)
 {
 	int j;
@@ -385,22 +359,88 @@ void hostwindow_event(struct arena* win, struct event* ev)
 
 
 
-void fullwindow_render(struct arena* ogl, struct actor* wnd)
+void fullwindow_upload(struct arena* ogl, struct actor* ctx)
+{
+	int j;
+	struct datapair* mod;
+	say("@fullwindow_upload: %llx,%llx,%.8s\n", ogl, ctx, &ctx->type);
+
+	//solid
+	mod = ctx->gl_solid;
+	if(0 == mod)return;
+
+	for(j=0;j<64;j++)
+	{
+		if(0 == mod[j].src.vbuf)continue;
+		//say("%d\n",j);
+		update_eachpass(&mod[j].dst, &mod[j].src);
+	}
+
+	//opaque
+	mod = ctx->gl_opaque;
+	if(0 == mod)return;
+
+	for(j=0;j<64;j++)
+	{
+		if(0 == mod[j].src.vbuf)continue;
+		//say("%d\n",j);
+		update_eachpass(&mod[j].dst, &mod[j].src);
+	}
+}
+
+
+
+
+void fullwindow_render(struct actor* ctx, struct actor* cam)
+{
+	say("@fullwindow_render: %.8s,%.8s\n", &ctx->type, &cam->fmt);
+}
+void fullwindow_viewport(struct arena* ogl, struct actor* view)
 {
 	struct relation* rel;
-	struct actor* act;
-	say("%llx,%llx\n", ogl, wnd);
-	if(0 == wnd)return;
+	struct actor* ctx;
+	struct actor* cam;
+	say("@fullwindow_viewport: %llx,%llx,%.8s\n", ogl, view, &view->type);
+	if(0 == view)return;
 
-	rel = wnd->orel0;
+	rel = view->orel0;
 	while(1){
-		if(0 == rel)return;
+		if(0 == rel)break;
 
-		act = (void*)(rel->dstchip);
-		say("=>%.8s\n", &act->type);
+		cam = (void*)(rel->dstchip);
+		//say("=>%.8s\n", &cam->type);
+		switch(cam->type){
+			case _gl41data_:
+			case _gl41coop_:ctx = cam;break;
+			default:fullwindow_render(ctx, cam);break;
+		}
 
 		rel = samesrcnextdst(rel);
 	}
+}
+void fullwindow_rendertarget(struct arena* ogl, struct actor* wnd)
+{
+	int cnt;
+	struct relation* rel;
+	struct actor* act;
+	say("@fullwindow_rendertarget: %llx,%llx,%.8s\n", ogl, wnd, &wnd->type);
+	if(0 == wnd)return;
+
+	cnt = 0;
+	rel = wnd->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		act = (void*)(rel->dstchip);
+		//say("=>%.8s\n", &act->type);
+		switch(act->type){
+			case _gl41view_:cnt++;fullwindow_viewport(ogl, act);break;
+		}
+
+		rel = samesrcnextdst(rel);
+	}
+
+	if(0 == cnt)fullwindow_viewport(ogl, wnd);
 }
 
 
@@ -436,7 +476,8 @@ void fullwindow_read(struct arena* ogl)
 
 		act = (void*)(rel->dstchip);
 		switch(act->type){
-			case _gl41wnd0_:fullwindow_render(ogl, act);break;
+			case _gl41data_:fullwindow_upload(ogl, act);break;
+			case _gl41wnd0_:fullwindow_rendertarget(ogl, act);break;
 		}
 
 		rel = samesrcnextdst(rel);

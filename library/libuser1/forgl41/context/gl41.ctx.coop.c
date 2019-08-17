@@ -31,7 +31,7 @@ int gl41coop_delete(struct actor* act)
 {
 	return 0;
 }
-int gl41coop_create(struct actor* act)
+int gl41coop_create(struct actor* act, void* addr)
 {
 	return 0;
 }
