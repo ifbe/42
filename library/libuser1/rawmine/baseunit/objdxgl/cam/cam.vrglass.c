@@ -6,7 +6,7 @@ void fixmatrix(float* m, struct fstyle* sty);
 
 static int vrglass_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {/*
 	float y;
 	vec3 tc,tr,tf,tu;
@@ -41,7 +41,7 @@ static int vrglass_draw(
 }/*
 static int vrglass_event111(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int id;
@@ -154,7 +154,7 @@ static int vrglass_event111(
 }*/
 static int vrglass_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short* t;
@@ -223,7 +223,7 @@ static void vrglass_matrix(
 	u8* buf, int len)
 {/*
 	struct relation* rel;
-	struct arena* r;
+	struct actor* r;
 	struct fstyle* s;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -274,20 +274,20 @@ static void vrglass_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	if(_cam_ == self->flag)vrglass_matrix(act, pin, buf, len);
-	else vrglass_draw(act, pin, win, sty);
+	//if(_cam_ == self->flag)vrglass_matrix(act, pin, buf, len);
+	//else vrglass_draw(act, pin, win, sty);
 }
 static int vrglass_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	return vrglass_event(act, pin, win, sty, ev, 0);
+	return 0;//vrglass_event(act, pin, win, sty, ev, 0);
 }
 static void vrglass_stop(struct halfrel* self, struct halfrel* peer)
 {

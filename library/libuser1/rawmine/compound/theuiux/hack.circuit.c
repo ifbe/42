@@ -14,7 +14,7 @@ int solve_pcbwire(u8* buf, int w, int h, int l);
 
 static void circuit_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u32 c,val;
 	int x,y,z;
@@ -71,7 +71,7 @@ static void circuit_draw_pixel(
 }
 static void circuit_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u32 c,val;
 	int x,y,z;
@@ -129,12 +129,12 @@ static void circuit_draw_vbo(
 }
 static void circuit_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void circuit_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -149,18 +149,18 @@ static void circuit_draw_html(
 }
 static void circuit_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void circuit_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	say("circuit(%x,%x,%x)\n",win,act,sty);
 }
 static void circuit_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -180,9 +180,9 @@ static void circuit_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	circuit_draw(act, pin, win, sty);
+	//circuit_draw(act, pin, win, sty);
 }
 static void circuit_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
@@ -192,10 +192,31 @@ static void circuit_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void circuit_start(struct halfrel* self, struct halfrel* peer)
 {
-	int x,y,z,w;
-	struct actor* act = (void*)(self->chip);
-	u8 (*data)[HEIGHT][WIDTH] = act->buf;
+}
 
+
+
+
+static void circuit_search(struct actor* act)
+{
+}
+static void circuit_modify(struct actor* act)
+{
+}
+static void circuit_delete(struct actor* act)
+{
+	if(0 == act)return;
+	if(act->buf)memorydelete(act->buf);
+}
+static void circuit_create(struct actor* act)
+{
+	int x,y,z,w;
+	u8 (*data)[HEIGHT][WIDTH];
+
+	if(0 == act)return;
+	act->buf = memorycreate(WIDTH*HEIGHT*LAYER);
+
+	data = act->buf;
 	for(z=0;z<LAYER;z++)
 	{
 		for(y=0;y<HEIGHT;y++)
@@ -221,29 +242,6 @@ static void circuit_start(struct halfrel* self, struct halfrel* peer)
 	}
 
 	solve_pcbwire((void*)data, WIDTH, HEIGHT, LAYER);
-}
-
-
-
-
-static void circuit_search(struct actor* act)
-{
-}
-static void circuit_modify(struct actor* act)
-{
-}
-static void circuit_delete(struct actor* act)
-{
-	if(0 == act)return;
-	if(act->buf)memorydelete(act->buf);
-}
-static void circuit_create(struct actor* act)
-{
-	if(0 == act)return;
-	act->buf = memorycreate(WIDTH*HEIGHT*LAYER);
-
-	void* win = arenacreate(_sch_, 0);
-	if(win)relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
 }
 
 

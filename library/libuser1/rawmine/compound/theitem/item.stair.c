@@ -5,12 +5,12 @@
 
 static void stair_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void stair_draw_vbo2d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int j;
 	vec3 tc, tr, tf, tu;
@@ -36,7 +36,7 @@ static void stair_draw_vbo2d(
 }
 static void stair_draw_vbo3d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int z;
 	vec3 tc, tr, tf, tu;
@@ -73,27 +73,27 @@ static void stair_draw_vbo3d(
 }
 static void stair_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void stair_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void stair_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void stair_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void stair_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)stair_draw_cli(act, pin, win, sty);
@@ -102,8 +102,8 @@ static void stair_draw(
 	else if(fmt == _json_)stair_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)stair_draw_vbo2d(act, pin, win, sty);
-		else stair_draw_vbo3d(act, pin, win, sty);
+		//if(_2d_ == win->vfmt)stair_draw_vbo2d(act, pin, win, sty);
+		//else stair_draw_vbo3d(act, pin, win, sty);
 	}
 	else stair_draw_pixel(act, pin, win, sty);
 }
@@ -116,9 +116,9 @@ static void stair_read(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	stair_draw(act, pin, win, sty);
+	//stair_draw(act, pin, win, sty);
 }
 static void stair_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {

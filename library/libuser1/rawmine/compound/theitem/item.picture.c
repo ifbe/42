@@ -57,7 +57,7 @@ char* picture_glsl_f =
 
 static void picture_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u32 tmp;
 	u32* dst;
@@ -106,7 +106,7 @@ static void picture_draw_pixel(
 }
 static void picture_draw_vbo2d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
@@ -163,7 +163,7 @@ static void picture_draw_vbo2d(
 }
 static void picture_draw_vbo3d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
@@ -220,28 +220,28 @@ static void picture_draw_vbo3d(
 }
 static void picture_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void picture_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void picture_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void picture_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	say("picture(%x,%x,%x)\n",win,act,sty);
 }
 static void picture_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -251,8 +251,8 @@ static void picture_draw(
 	else if(fmt == _json_)picture_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)picture_draw_vbo2d(act, pin, win, sty);
-		else picture_draw_vbo3d(act, pin, win, sty);
+		//if(_2d_ == win->vfmt)picture_draw_vbo2d(act, pin, win, sty);
+		//else picture_draw_vbo3d(act, pin, win, sty);
 	}
 	else picture_draw_pixel(act, pin, win, sty);
 }
@@ -265,9 +265,9 @@ static void picture_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	picture_draw(act, pin, win, sty);
+	//picture_draw(act, pin, win, sty);
 }
 static void picture_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
@@ -282,9 +282,9 @@ static void picture_start(struct halfrel* self, struct halfrel* peer)
 	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-
+/*
 	//alloc
 	pair = alloc_winobj(win, 's');
 	src = &pair->src;
@@ -324,6 +324,7 @@ static void picture_start(struct halfrel* self, struct halfrel* peer)
 	src->tex_w[1] = act->xn;
 	src->tex_h[1] = act->yn;
 	src->tex_enq[1] = 42;
+*/
 }
 
 

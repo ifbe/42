@@ -42,12 +42,12 @@ char* weather_glsl_f =
 
 static void weather_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void weather_draw_vbo2d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
@@ -104,7 +104,7 @@ static void weather_draw_vbo2d(
 }
 static void weather_draw_vbo3d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int x,y,z;
 	vec3 tc;
@@ -177,28 +177,28 @@ static void weather_draw_vbo3d(
 }
 static void weather_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void weather_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void weather_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void weather_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	say("weather(%x,%x,%x)\n",win,act,sty);
 }
 static void weather_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)weather_draw_cli(act, pin, win, sty);
@@ -207,8 +207,8 @@ static void weather_draw(
 	else if(fmt == _json_)weather_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)weather_draw_vbo2d(act, pin, win, sty);
-		else weather_draw_vbo3d(act, pin, win, sty);
+		//if(_2d_ == win->vfmt)weather_draw_vbo2d(act, pin, win, sty);
+		//else weather_draw_vbo3d(act, pin, win, sty);
 	}
 	else weather_draw_pixel(act, pin, win, sty);
 }
@@ -221,9 +221,9 @@ static void weather_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	weather_draw(act, pin, win, sty);
+	//weather_draw(act, pin, win, sty);
 }
 static void weather_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
@@ -238,9 +238,9 @@ static void weather_start(struct halfrel* self, struct halfrel* peer)
 	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-
+/*
 	//alloc
 	pair = alloc_winobj(win, 's');
 	src = &pair->src;
@@ -264,6 +264,7 @@ static void weather_start(struct halfrel* self, struct halfrel* peer)
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf = memorycreate(src->vbuf_len);
 	src->vbuf_enq = 0;
+*/
 }
 
 

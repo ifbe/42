@@ -63,7 +63,7 @@ GLSL_VERSION
 
 static void aidfont_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {/*
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct datapair* mod = win->gl_opaque;
 	if(_vbo_ != win->fmt)return;
 
@@ -98,7 +98,7 @@ static void aidfont_start(struct halfrel* self, struct halfrel* peer)
 	struct actor* act;
 	u8* buf;
 
-	struct arena* win;
+	struct actor* win;
 	struct datapair* mod;
 	struct glsrc* src;
 	say("@aidfont_start\n");

@@ -26,7 +26,7 @@ void printmat4(float* f)
 
 
 /*
-void freecam_fixcam(struct arena* win)
+void freecam_fixcam(struct actor* win)
 {
 	float w,h,t;
 	float x,y,z,norm;
@@ -79,7 +79,7 @@ void freecam_fixcam(struct arena* win)
 	win->camera.vb[1] = -y * t;
 	win->camera.vb[2] = -z * t;
 }
-void freecam_rotatey(struct arena* win, float delta)
+void freecam_rotatey(struct actor* win, float delta)
 {
 	float q[4];
 	float va[4];
@@ -107,7 +107,7 @@ void freecam_rotatey(struct arena* win, float delta)
 	win->camera.vc[1] = win->target.vc[1] + vb[1];
 	win->camera.vc[2] = win->target.vc[2] + vb[2];
 }
-void freecam_rotatex(struct arena* win, float delta)
+void freecam_rotatex(struct actor* win, float delta)
 {
 	float c = cosine(delta);
 	float s = sine(delta);
@@ -120,12 +120,12 @@ void freecam_rotatex(struct arena* win, float delta)
 	win->camera.vc[0] = win->target.vc[0] + vx*c + vy*s;
 	win->camera.vc[1] = win->target.vc[1] - vx*s + vy*c;
 }
-void freecam_rotatexy(struct arena* win, int dx, int dy)
+void freecam_rotatexy(struct actor* win, int dx, int dy)
 {
 	if(0 != dy)freecam_rotatey(win, dy / 100.0);
 	if(0 != dx)freecam_rotatex(win, dx / 100.0);
 }
-void target_deltaxyz(struct arena* win, float x, float y, float z)
+void target_deltaxyz(struct actor* win, float x, float y, float z)
 {
 	float norm;
 	float tx, ty;
@@ -149,7 +149,7 @@ void target_deltaxyz(struct arena* win, float x, float y, float z)
 	win->camera.vc[1] += dy;
 	win->camera.vc[2] += dz;
 }
-void freecam_zoom(struct arena* win, float delta)
+void freecam_zoom(struct actor* win, float delta)
 {
 	float va[4];
 	float vb[4];
@@ -182,7 +182,7 @@ void freecam_zoom(struct arena* win, float delta)
 
 static int freecam_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {/*
 	vec3 tc,tf;
 	float* vc = sty->vc;
@@ -211,7 +211,7 @@ static int freecam_draw(
 }/*
 static int freecam_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short* t;
@@ -442,7 +442,7 @@ void freecam_rotate(vec3 a, vec3 b, vec3 axis, float angle)
 }
 static int freecam_event1(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	float nx,ny,nz;
@@ -575,11 +575,11 @@ void freecam_frustum(struct fstyle* d, struct fstyle* s)
 }
 static void freecam_matrix(
 	struct actor* act, struct style* frustum,
-	struct arena* win, struct style* wingeom,
+	struct actor* win, struct style* wingeom,
 	u8* buf, int len)
 {/*
 	struct relation* rel;
-	struct arena* r;
+	struct actor* r;
 	struct fstyle* s;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -630,23 +630,24 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+/*
 	switch(self->flag){
 		case _cam_:freecam_matrix(act, pin, win, sty, buf, len);break;
 		//case _obj_:
 		default:freecam_draw(act, pin, win, sty);
-	}
+	}*/
 }
 static int freecam_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	return freecam_event1(act, pin, win, sty, ev, 0);
+	return 0;//freecam_event1(act, pin, win, sty, ev, 0);
 }
 static void freecam_stop(struct halfrel* self, struct halfrel* peer)
 {

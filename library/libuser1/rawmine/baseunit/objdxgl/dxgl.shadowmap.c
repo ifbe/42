@@ -129,7 +129,7 @@ void fixcam(struct fstyle* cam, struct fstyle* tar)
 
 static void shadowmap_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -149,7 +149,7 @@ static void shadowmap_draw_pixel(
 }
 static void shadowmap_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	vec3 tr,tf,tu;
 	float* vc = sty->f.vc;
@@ -161,7 +161,7 @@ static void shadowmap_draw_vbo(
 	float x,y,z,n;
 	void* mvp;
 	struct relation* rel;
-	struct arena* tmp;
+	struct actor* tmp;
 	struct gldst* dst = (void*)(sty->foot[0]);
 	struct glsrc* src = (void*)(pin->foot[0]);
 	float (*vbuf)[6] = (void*)(src->vbuf);
@@ -308,27 +308,27 @@ static void shadowmap_draw_vbo(
 }
 static void shadowmap_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void shadowmap_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void shadowmap_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void shadowmap_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void shadowmap_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)shadowmap_draw_cli(act, pin, win, sty);
@@ -347,9 +347,9 @@ static void shadowmap_read(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	shadowmap_draw(act, pin, win, sty);
+	//shadowmap_draw(act, pin, win, sty);
 }
 static void shadowmap_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
@@ -360,7 +360,7 @@ static void shadowmap_stop(struct halfrel* self, struct halfrel* peer)
 static void shadowmap_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct relation* rel;
-	struct arena* tmp;
+	struct actor* tmp;
 
 	struct datapair* pair;
 	struct glsrc* src;
@@ -368,9 +368,9 @@ static void shadowmap_start(struct halfrel* self, struct halfrel* peer)
 
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-
+/*
 	//
 	pair = alloc_winobj(win, 's');
 	src = &pair->src;
@@ -402,6 +402,7 @@ static void shadowmap_start(struct halfrel* self, struct halfrel* peer)
 	//texture
 	src->tex_name[0] = "tex0";
 	src->tex_enq[0] = 0;
+*/
 }
 
 
@@ -424,7 +425,7 @@ static void shadowmap_create(struct actor* act, void* str)
 	void* win;
 	if(0 == act)return;
 
-	//win = arenacreate(_fbo_, 0);
+	//win = actorcreate(_fbo_, 0);
 	//if(win)relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
 }
 

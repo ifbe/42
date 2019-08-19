@@ -3,19 +3,19 @@
 
 
 
-int pcbnode_read(struct arena* win)
+int pcbnode_read(struct actor* win)
 {
 	return 0;
 }
-int pcbnode_write(struct arena* win)
+int pcbnode_write(struct actor* win)
 {
 	return 0;
 }
-int pcbnode_delete(struct arena* win)
+int pcbnode_delete(struct actor* win)
 {
 	return 0;
 }
-int pcbnode_create(struct arena* win, void* str)
+int pcbnode_create(struct actor* win, void* str)
 {
 	return 0;
 }

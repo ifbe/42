@@ -6,7 +6,7 @@ void printhtmlbody(u8* buf, int len);
 
 /*
 int httpserver_write(
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct actor* act, struct style* pin,
 	u8* buf, int len)
 {
@@ -42,7 +42,7 @@ int httpserver_write(
 		ret = websocket_read_handshake(buf, len, hp[1]->buf, 0x1000);
 		ret = systemwrite(act, pin, win, sty, hp[1]->buf, ret);
 
-		addr = arenacreate(_WS_, act);
+		addr = actorcreate(_WS_, act);
 		if(0 == addr)return 0;
 
 		relationcreate(addr, 0, _win_, act, 0, _fd_);
@@ -97,7 +97,7 @@ int httpserver_write(
 
 	return 0;
 }
-int httpserver_create(struct arena* win, void* str)
+int httpserver_create(struct actor* win, void* str)
 {
 	int j;
 	void* tmp;
@@ -114,7 +114,7 @@ int httpserver_create(struct arena* win, void* str)
 	relationcreate(win, 0, _win_, tmp, 0, _fd_);
 	return 0;
 }*/
-void scene_import_html(struct arena* win, u8* str)
+void scene_import_html(struct actor* win, u8* str)
 {
 	int len;
 	u8* buf= win->buf;
@@ -129,15 +129,15 @@ void scene_import_html(struct arena* win, u8* str)
 
 
 
-int htmlnode_leafwrite(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
+int htmlnode_leafwrite(struct actor* win, void* wf, void* sc, void* sf, void* buf, int len)
 {
 	return 0;
 }
-int htmlnode_leafread(struct arena* win)
+int htmlnode_leafread(struct actor* win)
 {
 	return 0;
 }
-int htmlnode_rootwrite(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
+int htmlnode_rootwrite(struct actor* win, void* wf, void* sc, void* sf, void* buf, int len)
 {
 	struct relation* rel;
 	struct halfrel* self;
@@ -167,7 +167,7 @@ int htmlnode_rootwrite(struct arena* win, void* wf, void* sc, void* sf, void* bu
 	artery_leafwrite(sc, sf, win, wf, "actor!", 6);
 	return 0;
 }
-int htmlnode_rootread(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
+int htmlnode_rootread(struct actor* win, void* wf, void* sc, void* sf, void* buf, int len)
 {
 	int l1,l2;
 	struct str** ctx;
@@ -183,11 +183,11 @@ int htmlnode_rootread(struct arena* win, void* wf, void* sc, void* sf, void* buf
 	artery_leafwrite(sc, sf, win, wf, ctx[2]->buf, l2);
 	return 0;
 }
-int htmlnode_delete(struct arena* win)
+int htmlnode_delete(struct actor* win)
 {
 	return 0;
 }
-int htmlnode_create(struct arena* win, void* str)
+int htmlnode_create(struct actor* win, void* str)
 {
 	void** ctx = memorycreate(0x1000);
 	void*  buf = memorycreate(0x200000);

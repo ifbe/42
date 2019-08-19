@@ -51,7 +51,7 @@ static struct bplusleaf node[16];
 
 
 
-static void printnode(struct arena* win, struct bplushead* this, int x, int y,
+static void printnode(struct actor* win, struct bplushead* this, int x, int y,
 	int cx, int cy, int ww, int hh)
 {
 	int j,k,len;
@@ -109,7 +109,7 @@ static void printnode(struct arena* win, struct bplushead* this, int x, int y,
 }
 static void bplus_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	struct bplusleaf* node;
 	struct bplushead* right;
@@ -129,17 +129,17 @@ static void bplus_draw_pixel(
 }
 static void bplus_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void bplus_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void bplus_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -154,18 +154,18 @@ static void bplus_draw_html(
 }
 static void bplus_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void bplus_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	say("tree(%x,%x,%x)\n",win,act,sty);
 }
 static void bplus_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -178,7 +178,7 @@ static void bplus_draw(
 }
 static void bplus_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	u64 type = ev->what;
@@ -200,19 +200,19 @@ static void bplus_read(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	bplus_draw(act, pin, win, sty);
+	//bplus_draw(act, pin, win, sty);
 }
 static void bplus_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	bplus_event(act, pin, win, sty, ev, 0);
+	//bplus_event(act, pin, win, sty, ev, 0);
 }
 static void bplus_stop(struct halfrel* self, struct halfrel* peer)
 {

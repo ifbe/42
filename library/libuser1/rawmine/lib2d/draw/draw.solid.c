@@ -4,7 +4,7 @@
 
 
 
-void drawsolid_triangle_crop(struct arena* win, u32 rgb,
+void drawsolid_triangle_crop(struct actor* win, u32 rgb,
 	int x0, int y0, int x1, int y1, int x2, int y2)
 {
 	int l,r,x,y;
@@ -41,7 +41,7 @@ void drawsolid_triangle_crop(struct arena* win, u32 rgb,
 		for(x=m;x<=n;x++)tmp[x] = rgb;
 	}
 }
-void drawsolid_triangle(struct arena* win, u32 rgb,
+void drawsolid_triangle(struct actor* win, u32 rgb,
 	int x0, int y0, int x1, int y1, int x2, int y2)
 {
 	int t;
@@ -70,7 +70,7 @@ void drawsolid_triangle(struct arena* win, u32 rgb,
 
 
 
-void drawsolid_rect(struct arena* win, u32 rgb,
+void drawsolid_rect(struct actor* win, u32 rgb,
 	int x1, int y1, int x2, int y2)
 {
 	int x,y;
@@ -99,7 +99,7 @@ void drawsolid_rect(struct arena* win, u32 rgb,
 		}
 	}
 }
-void drawsolid_circle(struct arena* win, u32 rgb,
+void drawsolid_circle(struct actor* win, u32 rgb,
 	int cx, int cy, int radius)
 {
 	int x, y, ret;
@@ -136,11 +136,11 @@ void drawsolid_circle(struct arena* win, u32 rgb,
 		}
 	}
 }
-void drawsolid_oval(struct arena* win, u32 rgb,
+void drawsolid_oval(struct actor* win, u32 rgb,
 	int cx, int cy, int rx, int ry, int fx, int fy)
 {
 }
-void drawsolid_sector(struct arena* win, u32 rgb,
+void drawsolid_sector(struct actor* win, u32 rgb,
 	int cx, int cy, int radius, int start, int end)
 {
 }

@@ -219,7 +219,7 @@ GLSL_VERSION
 
 
 
-void initshader12341234(struct arena* win)  
+void initshader12341234(struct actor* win)  
 {
 /*
 	int j;
@@ -257,7 +257,7 @@ static void aidgeom_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void aidgeom_start(struct halfrel* self, struct halfrel* peer)
 {/*
-	struct arena* win;
+	struct actor* win;
 	struct datapair* mod;
 	struct glsrc* src;
 

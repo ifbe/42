@@ -5,7 +5,7 @@
 
 void camman_debug(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {/*
 	vec3 tc,tr,tf;
 	tr[0] = 1.0 / 64;
@@ -61,12 +61,12 @@ void camman_debug(
 
 void camman_listcamera(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int y, rgb;
 	vec3 tc, tr, tf;
 	struct relation* rel;
-	struct arena* twig;
+	struct actor* twig;
 	struct actor* leaf;
 
 	rel = win->orel0;
@@ -119,12 +119,12 @@ found:
 
 void camman_listlight(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int y, rgb;
 	vec3 tc, tr, tf;
 	struct relation* rel;
-	struct arena* twig;
+	struct actor* twig;
 	struct actor* leaf;
 
 	rel = win->orel0;
@@ -177,7 +177,7 @@ found:
 
 static int camman_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	vec3 tc,tr,tf;
 
@@ -211,7 +211,7 @@ static int camman_draw(
 }
 static int camman_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int x,y,z,w;
@@ -242,19 +242,19 @@ static void camman_read(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	camman_draw(act, pin, win, sty);
+	//camman_draw(act, pin, win, sty);
 }
 static int camman_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	return camman_event(act, pin, win, sty, ev, 0);
+	return 0;//camman_event(act, pin, win, sty, ev, 0);
 }
 static void camman_stop(struct halfrel* self, struct halfrel* peer)
 {

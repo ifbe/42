@@ -5,7 +5,7 @@ void fixmatrix(float* m, struct fstyle* sty);
 
 
 /*
-void thridperson_fixcam(struct arena* win, float* v)
+void thridperson_fixcam(struct actor* win, float* v)
 {
 	float w,h;
 	float x,y,z,n;
@@ -46,7 +46,7 @@ void thridperson_fixcam(struct arena* win, float* v)
 }
 static int thirdperson_sread000(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int j;
 	struct relation* rel;
@@ -99,7 +99,7 @@ print:
 }*/
 static int thirdperson_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	vec3 tc,tr,tf;
 	float* vc = sty->f.vc;
@@ -195,7 +195,7 @@ void thirdperson_frustum(struct fstyle* d, struct fstyle* s)
 
 
 
-void thirdperson_findroot(struct actor* act, struct arena** r, struct fstyle** s)
+void thirdperson_findroot(struct actor* act, struct actor** r, struct fstyle** s)
 {
 #define _geom_ hex32('g','e','o','m')
 	struct relation* rel = act->irel0;
@@ -240,10 +240,10 @@ void thirdperson_findtarget(struct actor* act, struct fstyle** delta, struct fst
 }
 static void thirdperson_matrix(
 	struct actor* act, struct style* frustum,
-	struct arena* win, struct style* wingeom,
+	struct actor* win, struct style* wingeom,
 	u8* buf, int len)
 {/*
-	struct arena* root;
+	struct actor* root;
 	struct fstyle* geom;
 	struct fstyle* target;
 	struct fstyle* delta;
@@ -284,7 +284,7 @@ static void thirdperson_matrix(
 
 static int thirdperson_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short* t;
@@ -386,21 +386,22 @@ static void thirdperson_read(struct halfrel* self, struct halfrel* peer, u8* buf
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+/*
 	switch(self->flag){
 		case _cam_:thirdperson_matrix(act, pin, win, sty, buf, len);break;
-	}
+	}*/
 }
 static int thirdperson_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	return thirdperson_event(act, pin, win, sty, ev, 0);
+	return 0;//thirdperson_event(act, pin, win, sty, ev, 0);
 }
 static void thirdperson_stop(struct halfrel* self, struct halfrel* peer)
 {

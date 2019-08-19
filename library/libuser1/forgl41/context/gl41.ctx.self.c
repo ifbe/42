@@ -101,6 +101,19 @@ int gl41data_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 int gl41data_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//for each object in target world: read ctx
+	struct actor* data;
+	struct relation* rel;
+
+	data = (void*)(self->chip);
+	if(0 == data)return 0;
+
+	rel = data->orel0;
+	if(0 == rel)return 0;
+
+	self = (void*)(&rel->dstchip);
+	peer = (void*)(&rel->srcchip);
+	actorread(self, peer, buf, len);
+
 	return 0;
 }
 int gl41data_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)

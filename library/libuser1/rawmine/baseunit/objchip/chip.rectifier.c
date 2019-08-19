@@ -28,7 +28,7 @@ void rectify_chosen(float* v, int* t)
 
 static void rectify_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -48,7 +48,7 @@ static void rectify_draw_pixel(
 }
 static void rectify_draw_vbo2d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
@@ -57,7 +57,7 @@ static void rectify_draw_vbo2d(
 }
 static void rectify_draw_vbo3d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 time;
 	int chosen[2];
@@ -206,27 +206,27 @@ static void rectify_draw_vbo3d(
 }
 static void rectify_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void rectify_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void rectify_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void rectify_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void rectify_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)rectify_draw_cli(act, pin, win, sty);
@@ -235,8 +235,8 @@ static void rectify_draw(
 	else if(fmt == _json_)rectify_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)rectify_draw_vbo2d(act, pin, win, sty);
-		else rectify_draw_vbo3d(act, pin, win, sty);
+		//if(_2d_ == win->vfmt)rectify_draw_vbo2d(act, pin, win, sty);
+		//else rectify_draw_vbo3d(act, pin, win, sty);
 	}
 	else rectify_draw_pixel(act, pin, win, sty);
 }
@@ -249,9 +249,9 @@ static void rectify_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	rectify_draw(act, pin, win, sty);
+	//rectify_draw(act, pin, win, sty);
 }
 static void rectify_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {

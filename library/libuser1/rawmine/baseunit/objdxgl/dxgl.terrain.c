@@ -227,7 +227,7 @@ edge:
 
 static void terrain_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -247,7 +247,7 @@ static void terrain_draw_pixel(
 }
 static void terrain_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {/*
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -291,27 +291,27 @@ static void terrain_draw_vbo(
 }
 static void terrain_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void terrain_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void terrain_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void terrain_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void terrain_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)terrain_draw_cli(act, pin, win, sty);
@@ -365,13 +365,13 @@ static void terrain_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	terrain_draw(act, pin, win, sty);
+	//terrain_draw(act, pin, win, sty);
 }
 static void terrain_write(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
@@ -385,9 +385,9 @@ static void terrain_start(struct halfrel* self, struct halfrel* peer)
 	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-
+/*
 	pair = alloc_winobj(win, 's');
 	src = &pair->src;
 	dst = &pair->dst;
@@ -432,6 +432,7 @@ static void terrain_start(struct halfrel* self, struct halfrel* peer)
 	src->tex_w[0] = act->width;
 	src->tex_h[0] = act->height;
 	src->tex_enq[0] = 42;
+*/
 }
 
 

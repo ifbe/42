@@ -37,7 +37,7 @@ void piano_gen(short* pcm, float f)
 
 static void piano_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -76,7 +76,7 @@ static void piano_draw_pixel(
 }
 static void piano_draw_vbo2d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int x;
 	vec3 tc,tr,tf,tu;
@@ -172,7 +172,7 @@ static void piano_draw_vbo2d(
 }
 static void piano_draw_vbo3d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int x;
 	vec3 tc,tr,tf,tu;
@@ -223,12 +223,12 @@ static void piano_draw_vbo3d(
 }
 static void piano_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void piano_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -243,18 +243,18 @@ static void piano_draw_html(
 }
 static void piano_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void piano_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	say("piano(%x,%x,%x)\n",win,act,sty);
 }
 static void piano_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -264,14 +264,14 @@ static void piano_draw(
 	else if(fmt == _json_)piano_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)piano_draw_vbo2d(act, pin, win, sty);
-		else piano_draw_vbo3d(act, pin, win, sty);
+		//if(_2d_ == win->vfmt)piano_draw_vbo2d(act, pin, win, sty);
+		//else piano_draw_vbo3d(act, pin, win, sty);
 	}
 	else piano_draw_pixel(act, pin, win, sty);
 }
 static void piano_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int j,k;
@@ -354,19 +354,19 @@ static void piano_read(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	piano_draw(act, pin, win, sty);
+	//piano_draw(act, pin, win, sty);
 }
 static void piano_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	piano_event(act, pin, win, sty, ev, 0);
+	//piano_event(act, pin, win, sty, ev, 0);
 }
 static void piano_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -391,13 +391,13 @@ static void piano_delete(struct actor* act)
 }
 static void piano_create(struct actor* act)
 {
-	struct arena* win;
+	struct actor* win;
 	if(0 == act)return;
 
 	act->buf = memorycreate(0x100000);
 	if(0 == act->buf)return;
 
-	win = arenacreate(_mic_, "0");
+	win = actorcreate(_mic_, "0");
 	if(0 == win)return;
 
 	relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);

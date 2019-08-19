@@ -3,15 +3,15 @@
 
 
 
-int jsonnode_leafwrite(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
+int jsonnode_leafwrite(struct actor* win, void* wf, void* sc, void* sf, void* buf, int len)
 {
 	return 0;
 }
-int jsonnode_leafread(struct arena* win)
+int jsonnode_leafread(struct actor* win)
 {
 	return 0;
 }
-int jsonnode_rootwrite(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
+int jsonnode_rootwrite(struct actor* win, void* wf, void* sc, void* sf, void* buf, int len)
 {
 	struct relation* rel;
 	struct halfrel* self;
@@ -42,15 +42,15 @@ int jsonnode_rootwrite(struct arena* win, void* wf, void* sc, void* sf, void* bu
 	artery_leafwrite(sc, sf, win, wf, win->buf, win->len);
 	return 0;
 }
-int jsonnode_rootread(struct arena* win, void* wf, void* sc, void* sf, void* buf, int len)
+int jsonnode_rootread(struct actor* win, void* wf, void* sc, void* sf, void* buf, int len)
 {
 	return 0;
 }
-int jsonnode_delete(struct arena* win)
+int jsonnode_delete(struct actor* win)
 {
 	return 0;
 }
-int jsonnode_create(struct arena* win, void* str)
+int jsonnode_create(struct actor* win, void* str)
 {
 	win->len = 0;
 	win->buf = memorycreate(0x100000);

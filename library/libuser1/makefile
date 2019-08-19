@@ -197,8 +197,7 @@ rawmine/compound/theuiux/uiux.list.c \
 rawmine/compound/theuiux/uiux.nav.c \
 rawmine/compound/theuiux/uiux.tab.c \
 rawmine/compound/theuiux/uiux.tag.c \
-rawmine/scene/3dwithaid.c \
-rawmine/scene/3dwithout.c \
+rawmine/scene/world3d.c \
 rawmine/scene/schematic.c \
 rawmine/scene/printboard.c \
 rawmine/solution/pcb.c \

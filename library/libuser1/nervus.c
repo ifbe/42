@@ -17,8 +17,16 @@ int test_create(void*, void*);
 int test_delete(void*, void*);
 int test_read(void*, void*);
 int test_write(void*, void*);
+//
+int world3d_create(void*, void*);
+int world3d_delete(void*, void*);
+int world3d_start(void*, void*);
+int world3d_stop(void*, void*);
+int world3d_write(void*, void*, void*, int);
+int world3d_read(void*, void*, void*, int);
 //gl41 helper
 int gl41data_create(void*, void*);
+int gl41data_read(void*, void*, void*, int);
 int gl41coop_create(void*, void*);
 int gl41view_create(void*, void*);
 int gl41fboc_create(void*, void*);
@@ -150,6 +158,10 @@ int actorread(struct halfrel* self,struct halfrel* peer,void* buf,int len)
 	act = (void*)(self->chip);
 	if(0 == act)return 0;
 
+	switch(act->type){
+		case _world3d_:return world3d_read(self, peer, buf, len);
+	}
+
 	if(0 == act->onread)return 0;
 	return act->onread(self, peer, buf, len);
 }
@@ -228,10 +240,11 @@ void* actorcreate(u64 type, void* buf)
 	}
 
 	//world
-	else if(_3dworld_ == type)
+	else if(_world3d_ == type)
 	{
 		act = allocactor();
-		act->type = _3dworld_;
+		act->type = _world3d_;
+		world3d_create(act, buf);
 		return act;
 	}
 	else if(_eeworld_ == type)
@@ -400,11 +413,21 @@ void* actorsearch(u8* buf, int len)
 int actorread_all()
 {
 	int j;
+	struct halfrel self;
 	//say("@actorread_all\n");
 
 	for(j=0;j<256;j++){
-		if(_baby_ == actor[j].type)baby_read(0, 0);
-	}
+	switch(actor[j].type){
+		case _baby_:baby_read(0, 0);break;
+		case _test_:test_read(0, 0);break;
+		//case _world3d_:world3d_read(0, 0, 0, 0);break;
+		case _gl41data_:{
+			self.chip = (u64)&actor[j];
+			gl41data_read(&self, 0, 0, 0);
+			break;
+		}
+	}//switch
+	}//for
 	return 0;
 }
 int actorevent(struct event* ev)

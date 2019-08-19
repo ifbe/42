@@ -27,9 +27,9 @@ int listshell(void*, int);
 int startshell();
 int writeshell(int fd, int off, char* buf, int len);
 //
-void drawterm(struct arena* win, void* term, int x0, int y0, int x1, int y1);
+void drawterm(struct actor* win, void* term, int x0, int y0, int x1, int y1);
 void terminal_serverinput(struct uartterm* term, u8* buf, int len);
-void terminal_clientinput(struct actor* act, struct style* pin, struct arena* win, struct style* sty, struct event* ev);
+void terminal_clientinput(struct actor* act, struct style* pin, struct actor* win, struct style* sty, struct event* ev);
 //
 void* getstdin();
 int getcurin();
@@ -48,7 +48,7 @@ static int charlen = 0;
 
 static void terminal_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -82,7 +82,7 @@ static void terminal_draw_pixel(
 }
 static void terminal_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int ocur;
 	void* obuf;
@@ -120,12 +120,12 @@ static void terminal_draw_vbo(
 }
 static void terminal_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void terminal_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -140,7 +140,7 @@ static void terminal_draw_html(
 }
 static void terminal_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int x, y, w, h;
 	u32* p;
@@ -166,7 +166,7 @@ static void terminal_draw_tui(
 }
 static void terminal_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u8* p;
 	int enq, deq;
@@ -174,7 +174,7 @@ static void terminal_draw_cli(
 }
 static void terminal_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)terminal_draw_cli(act, pin, win, sty);
@@ -186,7 +186,7 @@ static void terminal_draw(
 }
 static void terminal_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	void* buf, int len)
 {
 	int j;
@@ -222,19 +222,19 @@ static void terminal_read(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	terminal_draw(act, pin, win, sty);
+	//terminal_draw(act, pin, win, sty);
 }
 static void terminal_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	terminal_event(act, pin, win, sty, ev, 0);
+	//terminal_event(act, pin, win, sty, ev, 0);
 }
 static void terminal_stop(struct halfrel* self, struct halfrel* peer)
 {

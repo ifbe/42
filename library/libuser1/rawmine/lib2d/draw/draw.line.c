@@ -4,7 +4,7 @@
 
 
 
-void drawline(struct arena* win, u32 rgb,
+void drawline(struct actor* win, u32 rgb,
 	int x0, int y0, int x1, int y1)
 {
 	int dx,dy,sx,sy,e1,e2;
@@ -33,7 +33,7 @@ void drawline(struct arena* win, u32 rgb,
 		if(e2 < dy){e1 += dx;y0 += sy;}
 	}
 }
-void drawline_arrow(struct arena* win, u32 rgb,
+void drawline_arrow(struct actor* win, u32 rgb,
 	int x0, int y0, int x1, int y1)
 {
 	float x,y,a,b;
@@ -55,7 +55,7 @@ void drawline_arrow(struct arena* win, u32 rgb,
 	b = y1 + 0.5*x + halfsqrt3*y;
 	drawline(win, rgb, x1, y1, (int)a, (int)b);
 }
-void drawbezier(struct arena* win, u32 rgb,
+void drawbezier(struct actor* win, u32 rgb,
 	int x1, int y1, int x2, int y2, int xc, int yc)
 {
 	int x,y,t;
@@ -81,14 +81,14 @@ void drawbezier(struct arena* win, u32 rgb,
 
 
 
-void drawline_triangle(struct arena* win, u32 rgb,
+void drawline_triangle(struct actor* win, u32 rgb,
 	int x1, int y1, int x2, int y2, int x3, int y3)
 {
 	drawline(win, rgb, x1, y1, x2, y2);
 	drawline(win, rgb, x1, y1, x3, y3);
 	drawline(win, rgb, x2, y2, x3, y3);
 }
-void drawline_rect(struct arena* win, u32 rgb,
+void drawline_rect(struct actor* win, u32 rgb,
 	int x1, int y1, int x2, int y2)
 {
 	int x,y,n;
@@ -145,7 +145,7 @@ void drawline_rect(struct arena* win, u32 rgb,
 		}
 	}
 }
-void drawline_circle(struct arena* win, u32 rgb,
+void drawline_circle(struct actor* win, u32 rgb,
 	int cx, int cy, int radius)
 {
 	int x, y, ret;
@@ -180,11 +180,11 @@ void drawline_circle(struct arena* win, u32 rgb,
 		buf[ (y*stride) + x2 ] = rgb;
 	}
 }
-void drawline_oval(struct arena* win, u32 rgb,
+void drawline_oval(struct actor* win, u32 rgb,
 	int cx, int cy, int rx, int ry, int fx, int fy)
 {
 }
-void drawline_sector(struct arena* win, u32 rgb,
+void drawline_sector(struct actor* win, u32 rgb,
 	int cx, int cy, int radius, int start, int end)
 {
 }
@@ -192,14 +192,14 @@ void drawline_sector(struct arena* win, u32 rgb,
 
 
 
-void drawaxis(struct arena* win)
+void drawaxis(struct actor* win)
 {
 	int w = win->width;
 	int h = win->height;
 	drawline(win, 0xffffff, w/2, 0, w/2, h);
 	drawline(win, 0xffffff, 0, h/2, w, h/2);
 }
-void select_2d(struct arena* win, u32 rgb, struct fstyle* sty, u32 flag)
+void select_2d(struct actor* win, u32 rgb, struct fstyle* sty, u32 flag)
 {
 	int lb[2];
 	int lu[2];

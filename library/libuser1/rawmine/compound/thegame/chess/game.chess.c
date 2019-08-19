@@ -10,7 +10,7 @@ static u8 buffer[8][8];
 
 static void chess_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u32 color;
 	int x, y, cx, cy, ww, hh;
@@ -51,7 +51,7 @@ static void chess_draw_pixel(
 }
 static void chess_draw_vbo2d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u32 rgb;
 	int x,y;
@@ -88,7 +88,7 @@ static void chess_draw_vbo2d(
 }
 static void chess_draw_vbo3d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u32 rgb;
 	int x,y;
@@ -126,12 +126,12 @@ static void chess_draw_vbo3d(
 }
 static void chess_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void chess_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int x,y,color;
 
@@ -160,12 +160,12 @@ static void chess_draw_html(
 }
 static void chess_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void chess_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u8 ch;
 	int x,y;
@@ -184,7 +184,7 @@ static void chess_draw_cli(
 }
 static void chess_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)chess_draw_cli(act, pin, win, sty);
@@ -193,8 +193,8 @@ static void chess_draw(
 	else if(fmt == _json_)chess_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)chess_draw_vbo2d(act, pin, win, sty);
-		else chess_draw_vbo3d(act, pin, win, sty);
+		//if(_2d_ == win->vfmt)chess_draw_vbo2d(act, pin, win, sty);
+		//else chess_draw_vbo3d(act, pin, win, sty);
 	}
 	else chess_draw_pixel(act, pin, win, sty);
 }
@@ -207,9 +207,9 @@ static void chess_read(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	chess_draw(act, pin, win, sty);
+	//chess_draw(act, pin, win, sty);
 }
 static void chess_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
@@ -220,7 +220,29 @@ static void chess_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void chess_start(struct halfrel* self, struct halfrel* peer)
 {
+}
+
+
+
+
+static void chess_search(struct actor* act)
+{
+}
+static void chess_modify(struct actor* act)
+{
+}
+static void chess_delete(struct actor* act)
+{
+	if(0 == act)return;
+	if(_copy_ == act->type)memorydelete(act->buf);
+}
+static void chess_create(struct actor* act)
+{
 	int j,k;
+	if(0 == act)return;
+	if(_orig_ == act->type)act->buf = buffer;
+	if(_copy_ == act->type)act->buf = memorycreate(64);
+
 	for(k=0;k<8;k++)
 	{
 		for(j=0;j<8;j++)
@@ -255,27 +277,6 @@ static void chess_start(struct halfrel* self, struct halfrel* peer)
 	buffer[7][5] = 'B';
 	buffer[7][6] = 'N';
 	buffer[7][7] = 'R';
-}
-
-
-
-
-static void chess_search(struct actor* act)
-{
-}
-static void chess_modify(struct actor* act)
-{
-}
-static void chess_delete(struct actor* act)
-{
-	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
-}
-static void chess_create(struct actor* act)
-{
-	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = buffer;
-	if(_copy_ == act->type)act->buf = memorycreate(64);
 }
 
 

@@ -27,7 +27,7 @@ typedef float mat4[4][4];
 	#define GLSL_VERSION "#version 410 core\n"
 #endif
 //
-#define _3dworld_  hex64('3','d','w','o','r','l','d', 0)
+#define _world3d_  hex64('3','d','w','o','r','l','d', 0)
 #define _eeworld_  hex64('e','e','w','o','r','l','d', 0)
 //dxhelp
 #define _dx11data_ hex64('d','x','1','1','d','a','t','a')
@@ -710,7 +710,6 @@ struct arena
 	union{
 		u64 padd2;
 		u64 len;
-		void* ctx;
 		void* ximage;
 		void* texture;
 	};
@@ -830,6 +829,7 @@ struct actor
 		void* win;
 		void* ibuf;		//indx buf
 		void* gl_camera;
+		void* ctx;
 	};
 	union{
 		u64 dc;
@@ -903,58 +903,58 @@ void* defaultstyle_vbo2d();
 
 
 //----------------------------------1d------------------------------------
-void gentui_rect(  struct arena* win, u32 rgb, int x0, int y0, int x1, int y1);
-void gentui_utf8(  struct arena* win, u32 rgb, int cx, int cy, u8* buf, int len);
-void gentui_str(   struct arena* win, u32 rgb, int cx, int cy, u8* str, int len);
-void gentui_text(  struct arena* win, u32 rgb, int cx, int cy, u8* str, int len);
-void gentui_decstr(struct arena* win, u32 rgb, int cx, int cy, int data);
+void gentui_rect(  struct actor* win, u32 rgb, int x0, int y0, int x1, int y1);
+void gentui_utf8(  struct actor* win, u32 rgb, int cx, int cy, u8* buf, int len);
+void gentui_str(   struct actor* win, u32 rgb, int cx, int cy, u8* str, int len);
+void gentui_text(  struct actor* win, u32 rgb, int cx, int cy, u8* str, int len);
+void gentui_decstr(struct actor* win, u32 rgb, int cx, int cy, int data);
 
 
 
 
 //----------------------------------2d------------------------------------
-void drawaxis(          struct arena* win);
-void select_2d(         struct arena* win, u32 rgb, struct fstyle* sty, u32 flag);
+void drawaxis(          struct actor* win);
+void select_2d(         struct actor* win, u32 rgb, struct fstyle* sty, u32 flag);
 
-void drawline(          struct arena* win, u32 rgb, int x1, int y1, int x2, int y2);
-void drawline_arrow(    struct arena* win, u32 rgb, int x1, int y1, int x2, int y2);
-void drawbezier(        struct arena* win, u32 rgb, int ax, int ay, int bx, int by, int cx, int cy);
-void drawline_triangle( struct arena* win, u32 rgb, int x1, int y1, int x2, int y2, int x3, int y3);
-void drawline_rect(     struct arena* win, u32 rgb, int x1, int y1, int x2, int y2);
-void drawline_hexagon(  struct arena* win, u32 rgb, int cx, int cy, int rx, int ry);
-void drawline_circle(   struct arena* win, u32 rgb, int cx, int cy, int r);
-void drawline_oval(     struct arena* win, u32 rgb, int cx, int cy, int rx, int ry, int fx, int fy);
-void drawline_sector(   struct arena* win, u32 rgb, int cx, int cy, int radius, int start, int end);
+void drawline(          struct actor* win, u32 rgb, int x1, int y1, int x2, int y2);
+void drawline_arrow(    struct actor* win, u32 rgb, int x1, int y1, int x2, int y2);
+void drawbezier(        struct actor* win, u32 rgb, int ax, int ay, int bx, int by, int cx, int cy);
+void drawline_triangle( struct actor* win, u32 rgb, int x1, int y1, int x2, int y2, int x3, int y3);
+void drawline_rect(     struct actor* win, u32 rgb, int x1, int y1, int x2, int y2);
+void drawline_hexagon(  struct actor* win, u32 rgb, int cx, int cy, int rx, int ry);
+void drawline_circle(   struct actor* win, u32 rgb, int cx, int cy, int r);
+void drawline_oval(     struct actor* win, u32 rgb, int cx, int cy, int rx, int ry, int fx, int fy);
+void drawline_sector(   struct actor* win, u32 rgb, int cx, int cy, int radius, int start, int end);
 
-void drawsolid_triangle(struct arena* win, u32 rgb, int x1, int y1, int x2, int y2, int x3, int y3);
-void drawsolid_rect(    struct arena* win, u32 rgb, int x1, int y1, int x2, int y2);
-void drawsolid_circle(  struct arena* win, u32 rgb, int cx, int cy, int r);
-void drawsolid_oval(    struct arena* win, u32 rgb, int cx, int cy, int rx, int ry, int fx, int fy);
-void drawsolid_sector(  struct arena* win, u32 rgb, int cx, int cy, int radius, int start, int end);
+void drawsolid_triangle(struct actor* win, u32 rgb, int x1, int y1, int x2, int y2, int x3, int y3);
+void drawsolid_rect(    struct actor* win, u32 rgb, int x1, int y1, int x2, int y2);
+void drawsolid_circle(  struct actor* win, u32 rgb, int cx, int cy, int r);
+void drawsolid_oval(    struct actor* win, u32 rgb, int cx, int cy, int rx, int ry, int fx, int fy);
+void drawsolid_sector(  struct actor* win, u32 rgb, int cx, int cy, int radius, int start, int end);
 
-void drawicon_1(        struct arena* win, u32 rgb, int x0, int y0, int x1, int y1);
-void drawhyaline_rect(  struct arena* win, u32 rgb, int x1, int y1, int x2, int y2);
-void drawhyaline_circle(struct arena* win, u32 rgb, int cx, int cy, int r);
+void drawicon_1(        struct actor* win, u32 rgb, int x0, int y0, int x1, int y1);
+void drawhyaline_rect(  struct actor* win, u32 rgb, int x1, int y1, int x2, int y2);
+void drawhyaline_circle(struct actor* win, u32 rgb, int cx, int cy, int r);
 
-void drawascii(         struct arena* win, u32 rgb, int cx, int cy, u8 data);
-void drawbyte(          struct arena* win, u32 rgb, int cx, int cy, u8 data);
-void drawunicode(       struct arena* win, u32 rgb, int cx, int cy, u32 unicode);
-void drawutf8(          struct arena* win, u32 rgb, int cx, int cy, u8* buf, int len);
-void drawstring(        struct arena* win, u32 rgb, int cx, int cy, u8* buf, int len);
-void drawdecimal(       struct arena* win, u32 rgb, int cx, int cy, int data);
-void drawhexadecimal(   struct arena* win, u32 rgb, int cx, int cy, u64 data);
-void drawdouble(        struct arena* win, u32 rgb, int cx, int cy, double z);
+void drawascii(         struct actor* win, u32 rgb, int cx, int cy, u8 data);
+void drawbyte(          struct actor* win, u32 rgb, int cx, int cy, u8 data);
+void drawunicode(       struct actor* win, u32 rgb, int cx, int cy, u32 unicode);
+void drawutf8(          struct actor* win, u32 rgb, int cx, int cy, u8* buf, int len);
+void drawstring(        struct actor* win, u32 rgb, int cx, int cy, u8* buf, int len);
+void drawdecimal(       struct actor* win, u32 rgb, int cx, int cy, int data);
+void drawhexadecimal(   struct actor* win, u32 rgb, int cx, int cy, u64 data);
+void drawdouble(        struct actor* win, u32 rgb, int cx, int cy, double z);
 
-void drawascii_fit(     struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8 data);
-void drawunicode_fit(   struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u32 unicode);
-void drawutf8_fit(      struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-void drawstring_fit(    struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-void drawdec_fit(       struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, int);
-void drawhex_fit(       struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u64);
+void drawascii_fit(     struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u8 data);
+void drawunicode_fit(   struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u32 unicode);
+void drawutf8_fit(      struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+void drawstring_fit(    struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+void drawdec_fit(       struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, int);
+void drawhex_fit(       struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u64);
 
-void drawtext(          struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-void drawtext_reverse(  struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-void drawvt100(         struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+void drawtext(          struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+void drawtext_reverse(  struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+void drawvt100(         struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
 
 
 
@@ -1226,7 +1226,7 @@ void* memorycreate(int);
 void* eventread();
 void* eventwrite(u64,u64,u64,u64);
 //
-int htmlprintf(struct arena*, int, char*, ...);
+int htmlprintf(struct actor*, int, char*, ...);
 int mysnprintf(void*, int, void*, ...);
 int myvsnprintf(void*, int, void*, __builtin_va_list);
 int printmemory(void*, int);

@@ -239,7 +239,7 @@ static int drawvt100_1b(u8* p, struct txtcfg* cfg)
 
 
 void drawvt100(
-	struct arena* win, u32 rgb,
+	struct actor* win, u32 rgb,
 	int x0, int y0, int x1, int y1,
 	u8* buf, int len)
 {
@@ -331,7 +331,7 @@ void drawvt100(
 
 
 
-void drawterm(struct arena* win, struct uartterm* term, int x0, int y0, int x1, int y1)
+void drawterm(struct actor* win, struct uartterm* term, int x0, int y0, int x1, int y1)
 {
 	u32 bg, fg;
 	int x,y;

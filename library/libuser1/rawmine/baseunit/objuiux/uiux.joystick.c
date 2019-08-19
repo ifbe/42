@@ -5,7 +5,7 @@ void carvearrorkey2d(void*, u32, vec3 vc, vec3 vr, vec3 vf, u8*, int);
 
 
 
-void vjoy_draw_pixel(struct arena* win, struct style* sty)
+void vjoy_draw_pixel(struct actor* win, struct style* sty)
 {
 	u8 ch[8];
 	int c,l,rgb;
@@ -36,7 +36,7 @@ void vjoy_draw_pixel(struct arena* win, struct style* sty)
 	ch[7] = '+';
 	drawarrorkey2d(win, 0xff00ff, w-h*3/16, h*13/16, w, h, ch, -1);
 }
-void vjoy_draw_vbo(struct arena* win, struct style* sty)
+void vjoy_draw_vbo(struct actor* win, struct style* sty)
 {
 	u8 ch[8];
 	float j,k;
@@ -107,18 +107,18 @@ void vjoy_draw_vbo(struct arena* win, struct style* sty)
 	vf[2] = 0.0;
 	carvearrorkey2d(win, 0xff00ff, vc, vr, vf, ch, -1);
 }
-void vjoy_draw_html(struct arena* win, struct style* sty)
+void vjoy_draw_html(struct actor* win, struct style* sty)
 {
 }
-void vjoy_draw_tui(struct arena* win, struct style* sty)
+void vjoy_draw_tui(struct actor* win, struct style* sty)
 {
 }
-void vjoy_draw_cli(struct arena* win, struct style* sty)
+void vjoy_draw_cli(struct actor* win, struct style* sty)
 {
 }
 void vjoy_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -130,7 +130,7 @@ void vjoy_draw(
 }
 int vjoy_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short tmp[4];
@@ -205,19 +205,19 @@ static void vjoy_read(struct halfrel* self, struct halfrel* peer, u8* buf, int l
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	vjoy_draw(act, pin, win, sty);
+	//vjoy_draw(act, pin, win, sty);
 }
 static int vjoy_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	return vjoy_event(act, pin, win, sty, ev, 0);
+	return 0;//vjoy_event(act, pin, win, sty, ev, 0);
 }
 static int vjoy_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -231,19 +231,19 @@ static int vjoy_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static int vjoy_search(struct arena* win)
+static int vjoy_search(struct actor* win)
 {
 	return 0;
 }
-static int vjoy_modify(struct arena* win)
+static int vjoy_modify(struct actor* win)
 {
 	return 0;
 }
-static int vjoy_delete(struct arena* win)
+static int vjoy_delete(struct actor* win)
 {
 	return 0;
 }
-static int vjoy_create(struct arena* win, u8* str)
+static int vjoy_create(struct actor* win, u8* str)
 {
 	return 0;
 }

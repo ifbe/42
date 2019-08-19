@@ -1,7 +1,7 @@
 #include "libuser.h"
 void drawascii_bitmap(u8* buf, int ch);
 void carveunicode_surround(
-	struct arena*,u32,
+	struct actor*,u32,
 	float,float,float,
 	float,float,float,
 	float,float,float,
@@ -18,7 +18,7 @@ static u8 buffer[16];
 
 static void font_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int x,y,m,n;
 	int cx, cy, ww, hh;
@@ -79,7 +79,7 @@ static void font_draw_pixel(
 }
 static void font_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int x,y,dx,dy;
 	int left,right,near,far;
@@ -127,12 +127,12 @@ static void font_draw_vbo(
 }
 static void font_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void font_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -147,12 +147,12 @@ static void font_draw_html(
 }
 static void font_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void font_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int x,y;
 	u8 ch;
@@ -181,7 +181,7 @@ static void font_draw_cli(
 }
 static void font_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -194,7 +194,7 @@ static void font_draw(
 }
 static void font_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int k;
@@ -228,19 +228,19 @@ static void font_read(struct halfrel* self, struct halfrel* peer, u8* buf, int l
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	font_draw(act, pin, win, sty);
+	//font_draw(act, pin, win, sty);
 }
 static void font_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	font_event(act, pin, win, sty, ev, 0);
+	//font_event(act, pin, win, sty, ev, 0);
 }
 static void font_stop(struct halfrel* self, struct halfrel* peer)
 {

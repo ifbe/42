@@ -42,7 +42,7 @@ char* texball_glsl_f =
 
 static void texball_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u32 tmp;
 	u32* dst;
@@ -91,7 +91,7 @@ static void texball_draw_pixel(
 }
 static void texball_draw_vbo2d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	void* vbuf;
 	void* ibuf;
@@ -113,7 +113,7 @@ static void texball_draw_vbo2d(
 }
 static void texball_draw_vbo3d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	void* vbuf;
 	void* ibuf;
@@ -133,12 +133,12 @@ static void texball_draw_vbo3d(
 }
 static void texball_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void texball_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -153,18 +153,18 @@ static void texball_draw_html(
 }
 static void texball_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void texball_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	say("texball(%x,%x,%x)\n",win,act,sty);
 }
 static void texball_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -174,14 +174,14 @@ static void texball_draw(
 	else if(fmt == _json_)texball_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)texball_draw_vbo2d(act, pin, win, sty);
-		else texball_draw_vbo3d(act, pin, win, sty);
+		//if(_2d_ == win->vfmt)texball_draw_vbo2d(act, pin, win, sty);
+		//else texball_draw_vbo3d(act, pin, win, sty);
 	}
 	else texball_draw_pixel(act, pin, win, sty);
 }
 static void texball_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	struct glsrc* src = (void*)(pin->foot[0]);
@@ -238,19 +238,19 @@ static void texball_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	texball_draw(act, pin, win, sty);
+	//texball_draw(act, pin, win, sty);
 }
 static void texball_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	texball_event(act, pin, win, sty, ev, 0);
+	//texball_event(act, pin, win, sty, ev, 0);
 }
 static void texball_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -262,9 +262,10 @@ static void texball_start(struct halfrel* self, struct halfrel* peer)
 	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 say("@texball_start\n");
+/*
 	//
 	pair = alloc_winobj(win, 's');
 	src = &pair->src;
@@ -305,6 +306,7 @@ say("@texball_start\n");
 	src->tex_w[0] = act->width;
 	src->tex_h[0] = act->height;
 	src->tex_enq[0] = 42;
+*/
 }
 
 

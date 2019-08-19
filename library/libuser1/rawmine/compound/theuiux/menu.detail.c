@@ -3,7 +3,7 @@
 
 
 
-void drawarena(struct arena* win, int val, int x0, int y0, int xn, int yn)
+void drawactor(struct actor* win, int val, int x0, int y0, int xn, int yn)
 {
 	void* buf;
 	int x,y;
@@ -26,13 +26,13 @@ void drawarena(struct arena* win, int val, int x0, int y0, int xn, int yn)
 				case 0:buf = &win->tier;break;
 				case 1:buf = &win->type;break;
 				case 2:buf = &win->fmt; break;
-				case 3:buf = &win->vfmt;break;
+				//case 3:buf = &win->vfmt;break;
 			}
 			drawstring_fit(win, 0xffffff, xa, ya, xb, yb, buf, 8);
 		}
 	}
 }
-void carvearena(struct arena* win, int val, vec3 vc, vec3 vr, vec3 vf)
+void carveactor(struct actor* win, int val, vec3 vc, vec3 vr, vec3 vf)
 {
 	int x,y;
 	void* buf;
@@ -60,7 +60,7 @@ void carvearena(struct arena* win, int val, vec3 vc, vec3 vr, vec3 vf)
 				case 0:buf = &win->tier;break;
 				case 1:buf = &win->type;break;
 				case 2:buf = &win->fmt; break;
-				case 3:buf = &win->vfmt;break;
+				//case 3:buf = &win->vfmt;break;
 			}
 
 			tc[2] = -0.8;
@@ -78,7 +78,7 @@ void carvearena(struct arena* win, int val, vec3 vc, vec3 vr, vec3 vf)
 
 
 
-int detail_draw_vbo(struct arena* win, struct style* sty)
+int detail_draw_vbo(struct actor* win, struct style* sty)
 {
 	int j;
 	struct relation* rel;
@@ -115,7 +115,7 @@ int detail_draw_vbo(struct arena* win, struct style* sty)
 	tf[0] = vf[0]/2;
 	tf[1] = vf[1]/2;
 	tf[2] = vf[2]/2;
-	carvearena(win, 0, vc, tr, tf);
+	carveactor(win, 0, vc, tr, tf);
 
 	//3. irel
 	j = 0;
@@ -229,7 +229,7 @@ int detail_draw_vbo(struct arena* win, struct style* sty)
 
 	return 0;
 }
-int detail_draw_pixel(struct arena* win, struct style* sty)
+int detail_draw_pixel(struct actor* win, struct style* sty)
 {
 	struct relation* rel;
 	struct actor* act;
@@ -252,7 +252,7 @@ int detail_draw_pixel(struct arena* win, struct style* sty)
 	}
 
 	//2. body
-	drawarena(win, 0, cx-ww/4, cy-hh/2, cx+ww/4, cy+hh/2);
+	drawactor(win, 0, cx-ww/4, cy-hh/2, cx+ww/4, cy+hh/2);
 
 	//3. irel
 	j = 0;
@@ -307,7 +307,7 @@ int detail_draw_pixel(struct arena* win, struct style* sty)
 }
 static void detail_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	if(_vbo_ == win->fmt)detail_draw_vbo(win, sty);
 	else detail_draw_pixel(win, sty);
@@ -321,9 +321,9 @@ static void detail_read(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	detail_draw(act, pin, win, sty);
+	//detail_draw(act, pin, win, sty);
 }
 static int detail_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {

@@ -3,19 +3,19 @@
 
 
 
-int xmlnode_read(struct arena* win)
+int xmlnode_read(struct actor* win)
 {
 	return 0;
 }
-int xmlnode_write(struct arena* win)
+int xmlnode_write(struct actor* win)
 {
 	return 0;
 }
-int xmlnode_delete(struct arena* win)
+int xmlnode_delete(struct actor* win)
 {
 	return 0;
 }
-int xmlnode_create(struct arena* win, void* str)
+int xmlnode_create(struct actor* win, void* str)
 {
 	return 0;
 }

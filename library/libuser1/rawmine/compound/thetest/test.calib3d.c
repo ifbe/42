@@ -32,7 +32,7 @@ GLSL_VERSION
 
 static void calib3d_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -52,7 +52,7 @@ static void calib3d_draw_pixel(
 }
 static void calib3d_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	struct glsrc* src = (void*)(pin->foot[0]);
 	src->vbuf_enq += 1;
@@ -60,27 +60,27 @@ static void calib3d_draw_vbo(
 }
 static void calib3d_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void calib3d_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void calib3d_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void calib3d_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void calib3d_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)calib3d_draw_cli(act, pin, win, sty);
@@ -96,7 +96,7 @@ static void calib3d_draw(
 
 static void calib3d_data(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	float* buf, int len)
 {
 	int j;
@@ -129,19 +129,21 @@ static void calib3d_read(struct halfrel* self, struct halfrel* peer, void* buf, 
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	calib3d_draw(act, pin, win, sty);
+	//calib3d_draw(act, pin, win, sty);
 }
 static void calib3d_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+/*
 	switch(self->flag){
 		case _data_:calib3d_data(act, pin, win, sty, buf, len);break;
 	}
+*/
 }
 static void calib3d_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -153,10 +155,10 @@ static void calib3d_start(struct halfrel* self, struct halfrel* peer)
 	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	if(_data_ == self->flag)return;
-
+/*
 	//
 	pair = alloc_winobj(win, 's');
 	src = &pair->src;
@@ -188,6 +190,7 @@ static void calib3d_start(struct halfrel* self, struct halfrel* peer)
 	src->ibuf_w = 2*2;
 	src->ibuf_h = 0xffff;
 	src->ibuf_enq = 1;
+*/
 }
 
 

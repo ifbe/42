@@ -1,5 +1,5 @@
 #include "libuser.h"
-void carvesolid_bodypart(struct arena*, u32, vec3, vec3);
+void carvesolid_bodypart(struct actor*, u32, vec3, vec3);
 
 
 
@@ -79,7 +79,7 @@ static vec3 bonevertc[15] = {
 
 static void human_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -99,7 +99,7 @@ static void human_draw_pixel(
 }
 static void human_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int j,k;
 	vec3 t0, t1;
@@ -191,27 +191,27 @@ static void human_draw_vbo(
 }
 static void human_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void human_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void human_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void human_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void human_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)human_draw_cli(act, pin, win, sty);
@@ -223,7 +223,7 @@ static void human_draw(
 }
 static int human_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short* t;
@@ -339,19 +339,19 @@ static void human_read(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	human_draw(act, pin, win, sty);
+	//human_draw(act, pin, win, sty);
 }
 static int human_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	return human_event(act, pin, win, sty, ev, 0);
+	return 0;//human_event(act, pin, win, sty, ev, 0);
 }
 static void human_stop(struct halfrel* self, struct halfrel* peer)
 {

@@ -3,20 +3,20 @@
 
 
 
-void pointer_draw_cli(struct arena* win, struct style* sty)
+void pointer_draw_cli(struct actor* win, struct style* sty)
 {
 }
-void pointer_draw_tui(struct arena* win, struct style* sty)
+void pointer_draw_tui(struct actor* win, struct style* sty)
 {
 }
-void pointer_draw_html(struct arena* win, struct style* sty)
+void pointer_draw_html(struct actor* win, struct style* sty)
 {
 }
-void pointer_draw_json(struct arena* win, struct style* sty)
+void pointer_draw_json(struct actor* win, struct style* sty)
 {
 }
-void pointer_draw_vbo(struct arena* win, struct style* sty)
-{
+void pointer_draw_vbo(struct actor* win, struct style* sty)
+{/*
 	int j;
 	float x0,y0,x1,y1;
 	vec3 vc;
@@ -42,22 +42,11 @@ void pointer_draw_vbo(struct arena* win, struct style* sty)
 		vr[1] = y1;
 		vr[2] = -0.99;
 		carveline2d_arrow(win, 0xff00ff, vc, vr);
-/*
-		vc[0] = (x0+x1)/2;
-		vc[1] = (y0+y1)/2;
-		vc[2] = -0.99;
-		vr[0] = (x1-x0)/2;
-		vr[1] = 0.0;
-		vr[2] = -0.99;
-		vf[0] = 0.0;
-		vf[1] = (y1-y0)/2;
-		vf[2] = -0.99;
-		carveline2d_rect(win, 0x00ff00, vc, vr, vf);
-*/
 	}
+*/
 }
-void pointer_draw_pixel(struct arena* win, struct style* sty)
-{
+void pointer_draw_pixel(struct actor* win, struct style* sty)
+{/*
 	int j;
 	int x0,y0,x1,y1;
 	for(j=0;j<12;j++)
@@ -69,11 +58,11 @@ void pointer_draw_pixel(struct arena* win, struct style* sty)
 		x1 = win->mouse[j].xn;
 		y1 = win->mouse[j].yn;
 		drawline_arrow(win, 0xff00ff, x0, y0, x1, y1);
-	}
+	}*/
 }
 static int pointer_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)pointer_draw_cli(win, sty);
@@ -93,9 +82,9 @@ static void pointer_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	pointer_draw(act, pin, win, sty);
+	//pointer_draw(act, pin, win, sty);
 }
 static int pointer_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {

@@ -4,7 +4,7 @@ u32 getrandom();
 
 
 
-void draw8bit_rect(struct arena* win, u8 rgb, int x0, int y0, int x1, int y1)
+void draw8bit_rect(struct actor* win, u8 rgb, int x0, int y0, int x1, int y1)
 {
 	int x,y;
 	u8* buf = win->buf;
@@ -20,7 +20,7 @@ void draw8bit_rect(struct arena* win, u8 rgb, int x0, int y0, int x1, int y1)
 
 
 
-void drawicon_1(struct arena* win, u32 rgb,
+void drawicon_1(struct actor* win, u32 rgb,
 	int x0, int y0, int x1, int y1)
 {
 	u32 r,g,b,a;
@@ -56,19 +56,19 @@ void drawicon_1(struct arena* win, u32 rgb,
 		}
 	}
 }
-void drawicon_normal(struct arena* win, u32 rgb,
+void drawicon_normal(struct actor* win, u32 rgb,
 	int x0, int y0, int x1, int y1, u8* buf, int len)
 {
 }
-void drawicon_focused(struct arena* win, u32 rgb,
+void drawicon_focused(struct actor* win, u32 rgb,
 	int x0, int y0, int x1, int y1, u8* buf, int len)
 {
 }
-void drawicon_pressed(struct arena* win, u32 rgb,
+void drawicon_pressed(struct actor* win, u32 rgb,
 	int x0, int y0, int x1, int y1, u8* buf, int len)
 {
 }
-void drawicon_disabled(struct arena* win, u32 rgb,
+void drawicon_disabled(struct actor* win, u32 rgb,
 	int x0, int y0, int x1, int y1, u8* buf, int len)
 {
 }
@@ -76,7 +76,7 @@ void drawicon_disabled(struct arena* win, u32 rgb,
 
 
 
-void drawhyaline_rect(struct arena* win, u32 rgb,
+void drawhyaline_rect(struct actor* win, u32 rgb,
 	int x1, int y1, int x2, int y2)
 {
 	u8 r,g,b,a;
@@ -122,7 +122,7 @@ void drawhyaline_rect(struct arena* win, u32 rgb,
 
 
 
-void drawarrorkey2d(struct arena* win, u32 rgb,
+void drawarrorkey2d(struct actor* win, u32 rgb,
 	int x0, int y0, int x1, int y1, u8* buf, int t)
 {
 	u32 c;
@@ -179,7 +179,7 @@ void drawarrorkey2d(struct arena* win, u32 rgb,
 	drawsolid_circle(win, c, cx+r*t*4/3, cy-r*2/3, r/3);
 	drawascii_fit(win, 0xffffff, cx+r*t*4/3-r/3, cy-r, cx+r*t*4/3+r/3, cy-r/3, buf[7]&0x7f);
 }
-void drawborder2d(struct arena* win, struct style* sty, void* name)
+void drawborder2d(struct actor* win, struct style* sty, void* name)
 {
 	int cx = sty->f.vc[0];
 	int cy = sty->f.vc[1];

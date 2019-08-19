@@ -5,7 +5,7 @@ void yuyv2rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3
 );
-void* arenacreate(u64, void*);
+void* actorcreate(u64, void*);
 
 
 
@@ -61,7 +61,7 @@ char* video_hlsl_f = 0;
 
 void video_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u8* src;
 	u8* dst;
@@ -96,7 +96,7 @@ void video_draw_pixel(
 }
 void video_draw_vbo2d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	if(0 == sty)sty = defaultstyle_vbo2d();
 	float* vc = sty->f.vc;
@@ -155,7 +155,7 @@ void video_draw_vbo2d(
 }
 void video_draw_vbo3d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
@@ -214,12 +214,12 @@ void video_draw_vbo3d(
 }
 void video_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 void video_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	//<head>
 	htmlprintf(win, 1, ".video{width:50%%;height:100px;float:left;background-color:#1984ea;}\n");
@@ -229,19 +229,19 @@ void video_draw_html(
 }
 void video_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 void video_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u8* src = act->idx;
 	say("src@%llx\n", src);
 }
 static void video_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -251,14 +251,14 @@ static void video_draw(
 	else if(fmt == _json_)video_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)video_draw_vbo2d(act, pin, win, sty);
-		else video_draw_vbo3d(act, pin, win, sty);
+		//if(_2d_ == win->vfmt)video_draw_vbo2d(act, pin, win, sty);
+		//else video_draw_vbo3d(act, pin, win, sty);
 	}
 	else video_draw_pixel(act, pin, win, sty);
 }
 void video_update(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	u8* buf, int len)
 {
 	int x,y;
@@ -284,7 +284,7 @@ void video_update(
 }
 void video_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev)
 {
 }
@@ -297,20 +297,22 @@ static void video_read(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	video_draw(act, pin, win, sty);
+	//video_draw(act, pin, win, sty);
 }
 static void video_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+/*
 	switch(self->flag){
 		case _yuv_:video_update(act, pin, win, sty, buf, len);break;
 		default:   video_event( act, pin, win, sty, buf);break;
 	}
+*/
 }
 static void video_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -322,11 +324,11 @@ static void video_start(struct halfrel* self, struct halfrel* peer)
 	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//say("%llx,%llx,%llx,%llx\n",act,pin,win,sty);
 	if(_yuv_ == self->flag)return;
-
+/*
 	//
 	pair = alloc_winobj(win, 's');
 	src = &pair->src;
@@ -356,6 +358,7 @@ static void video_start(struct halfrel* self, struct halfrel* peer)
 	src->tex_w[0] = 1024;
 	src->tex_h[0] = 1024;
 	src->tex_enq[0] = 1;
+*/
 }
 
 

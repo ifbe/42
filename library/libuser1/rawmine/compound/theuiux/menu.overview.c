@@ -2,7 +2,7 @@
 void* allocstyle();
 void* allocstyle();
 void draw8bit_rect(
-	struct arena* win, u32 rgb,
+	struct actor* win, u32 rgb,
 	int x0, int y0, int x1, int y1);
 
 
@@ -70,7 +70,7 @@ void defaultstyle_3d(struct fstyle* sty, int w, int h, int d)
 	sty->vc[1] = 0.0;
 	sty->vc[2] = 0.0;
 }
-int arenaactor(struct arena* win, struct arena* ccc, struct actor* act, struct actor* tmp)
+int arenaactor(struct actor* win, struct actor* ccc, struct actor* act, struct actor* tmp)
 {
 	int w,h;
 	struct style* sty;
@@ -121,7 +121,7 @@ int arenaactor(struct arena* win, struct arena* ccc, struct actor* act, struct a
 
 void overview_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	struct relation* rel;
 	u32 c,cursor;
@@ -174,7 +174,7 @@ void overview_draw_pixel(
 		if(0 == arena[j].type)break;
 
 		if(j+128 == cursor)c = 0xffff00ff;
-		else if(win == &arena[j])c = 0xff808080;
+		//else if(win == &arena[j])c = 0xff808080;
 		else c = 0x80ffffff;
 
 		x = j%16;
@@ -426,7 +426,7 @@ void overview_draw_pixel(
 }
 void overview_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u32 bg,fg,cursor;
 	float r,f;
@@ -535,8 +535,9 @@ void overview_draw_vbo(
 		else
 		{
 			bg = 0x404040;
-			if(win == &arena[j])fg = 0xffff00ff;
-			else fg = 0x80ffffff;
+			//if(win == &arena[j])fg = 0xffff00ff;
+			//else fg = 0x80ffffff;
+			fg = 0x80ffffff;
 		}
 
 		x = j % 16;
@@ -993,7 +994,7 @@ void overview_draw_vbo(
 }
 void overview_draw_8bit(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {/*
 	int x,y;
 	int j,c;
@@ -1014,12 +1015,12 @@ void overview_draw_8bit(
 }
 void overview_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 void overview_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int j,k,x,y;
 	int ww = ((win->stride)/2)&0xfffc;
@@ -1046,12 +1047,12 @@ void overview_draw_tui(
 }
 void overview_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void overview_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	if(win->fmt == _cli_)overview_draw_cli(act, pin, win, 0);
 	else if(win->fmt == _tui_)overview_draw_tui(act, pin, win, 0);
@@ -1064,7 +1065,7 @@ static void overview_draw(
 
 
 
-void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
+void overview_drag(struct actor* win, int x0, int y0, int x1, int y1)
 {
 	int j;
 	struct object* obj_s;
@@ -1123,7 +1124,7 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 			act_d = &actor[x1 + (y1*16)];
 			if(0 == act_d->type)return;
 
-			arenaactor(win, win_s, act_d, 0);
+			//arenaactor(win, win_s, act_d, 0);
 		}
 		else if(y1 < 16)
 		{
@@ -1207,7 +1208,7 @@ void overview_drag(struct arena* win, int x0, int y0, int x1, int y1)
 }
 static int overview_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short* t;
@@ -1238,7 +1239,7 @@ static int overview_event(
 		}
 		act->x0 = x;
 		act->y0 = y;
-
+/*
 		if('-' == k)
 		{
 			j = win->mouse[id].x0;
@@ -1263,7 +1264,9 @@ static int overview_event(
 			overview_drag(win, j, k, x, y);
 			return 1;
 		}
-	}/*
+*/
+	}
+/*
 	else if(_char_ == ev->what)
 	{
 		if((0xd == ev->why)|(0xa == ev->why))
@@ -1324,7 +1327,7 @@ static void overview_read(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	overview_draw(act, pin, win, sty);
 }
@@ -1333,7 +1336,7 @@ static int overview_write(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	return overview_event(act, pin, win, sty, ev, 0);

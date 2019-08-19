@@ -15,7 +15,7 @@ static u8 buffer[16];
 
 static void algorithm_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int cx = sty->f.vc[0];
 	int cy = sty->f.vc[1];
@@ -56,17 +56,17 @@ static void algorithm_draw_pixel(
 }
 static void algorithm_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void algorithm_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void algorithm_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -81,18 +81,18 @@ static void algorithm_draw_html(
 }
 static void algorithm_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void algorithm_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	say("algorithm(%x,%x,%x)\n",win,act,sty);
 }
 static void algorithm_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -105,7 +105,7 @@ static void algorithm_draw(
 }
 static void algorithm_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	u64 key = ev->why;
@@ -147,19 +147,19 @@ static void algorithm_read(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	algorithm_draw(act, pin, win, sty);
+	//algorithm_draw(act, pin, win, sty);
 }
 static void algorithm_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	algorithm_event(act, pin, win, sty, ev, 0);
+	//algorithm_event(act, pin, win, sty, ev, 0);
 }
 static void algorithm_stop(struct halfrel* self, struct halfrel* peer)
 {

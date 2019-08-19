@@ -1,10 +1,10 @@
 #include "libuser.h"
-void carvesnowman(struct arena* win, u32 rgb, vec3 vc);
+void carvesnowman(struct actor* win, u32 rgb, vec3 vc);
 
 
 
 
-void background_pixel(struct arena* win)
+void background_pixel(struct actor* win)
 {
 	int x;
 	int w = win->width;
@@ -41,11 +41,11 @@ void background_vbo(struct actor* win)
 		mod[j].src.ibuf_h = 0;
 	}
 }
-void background_json(struct arena* win)
+void background_json(struct actor* win)
 {
 	win->len = mysnprintf(win->buf, 0x100000, "{\n");
 }
-void background_html(struct arena* win)
+void background_html(struct actor* win)
 {
 	struct str** ctx = win->ctx;
 
@@ -61,13 +61,13 @@ void background_html(struct arena* win)
 		"<body style=\"width:100%%;height:100%%;\">\n"
 	);
 }
-void background_tui(struct arena* win)
+void background_tui(struct actor* win)
 {
 }
-void background_cli(struct arena* win)
+void background_cli(struct actor* win)
 {
 }
-void preprocess(struct arena* win)
+void preprocess(struct actor* win)
 {
 	u64 fmt = win->fmt;
 	if(_cli_ == fmt)background_cli(win);
@@ -81,7 +81,7 @@ void preprocess(struct arena* win)
 
 
 
-void foreground_pixel(struct arena* win)
+void foreground_pixel(struct actor* win)
 {
 }
 void foreground_vbo(struct actor* win)
@@ -103,7 +103,7 @@ void foreground_vbo(struct actor* win)
 		mod[j].src.ibuf_enq += 1;
 	}
 }
-void foreground_json(struct arena* win)
+void foreground_json(struct actor* win)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -112,7 +112,7 @@ void foreground_json(struct arena* win)
 
 	win->len = len;
 }
-void foreground_html(struct arena* win)
+void foreground_html(struct actor* win)
 {
 	int len;
 	u8* buf;
@@ -126,13 +126,13 @@ void foreground_html(struct arena* win)
 	buf = ctx[2]->buf + len;
 	ctx[2]->len += mysnprintf(buf, 0x100000-len, "</body></html>\n");
 }
-void foreground_tui(struct arena* win)
+void foreground_tui(struct actor* win)
 {
 }
-void foreground_cli(struct arena* win)
+void foreground_cli(struct actor* win)
 {
 }
-void postprocess(struct arena* win)
+void postprocess(struct actor* win)
 {
 	u64 fmt = win->fmt;
 	if(_cli_ == fmt)foreground_cli(win);

@@ -6,7 +6,7 @@ void printhtmlbody(u8* buf, int len);
 
 static void browser_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int x0,y0,x1,y1;
 	int cx, cy, ww, hh;
@@ -46,7 +46,7 @@ static void browser_draw_pixel(
 }
 static void browser_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	vec3 tc,tr,tf,tu;
 	struct str* str = act->idx;
@@ -79,28 +79,28 @@ static void browser_draw_vbo(
 }
 static void browser_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void browser_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void browser_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void browser_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	say("browser(%x,%x,%x)\n",win,act,sty);
 }
 static void browser_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -117,7 +117,7 @@ static void browser_draw(
 
 static void browser_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev)
 {
 	int len;
@@ -196,19 +196,19 @@ static void browser_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	browser_draw(act, pin, win, sty);
+	//browser_draw(act, pin, win, sty);
 }
 static void browser_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	if(len)browser_data(act, pin, buf, len);
-	else browser_event(act, pin, win, sty, ev);
+	//if(len)browser_data(act, pin, buf, len);
+	//else browser_event(act, pin, win, sty, ev);
 }
 static void browser_stop(struct halfrel* self, struct halfrel* peer)
 {

@@ -3,7 +3,7 @@
 
 
 
-int htmlprintf(struct arena* win, int j, char* fmt, ...)
+int htmlprintf(struct actor* win, int j, char* fmt, ...)
 {
 	__builtin_va_list arg;
 	struct str** ctx;

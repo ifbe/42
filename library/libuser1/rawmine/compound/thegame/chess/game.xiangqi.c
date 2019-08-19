@@ -67,7 +67,7 @@ void* char2hanzi(int val)
 }
 void xiangqi_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u32 black, brown, red;
 	u32 chesscolor, fontcolor, temp;
@@ -190,7 +190,7 @@ void xiangqi_draw_pixel(
 }
 static void xiangqi_draw_vbo2d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int x,y;
 	u32 chesscolor, fontcolor, temp;
@@ -281,7 +281,7 @@ static void xiangqi_draw_vbo2d(
 }
 static void xiangqi_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int x,y;
 	u32 chesscolor, fontcolor, temp;
@@ -376,7 +376,7 @@ static void xiangqi_draw_vbo(
 }
 static void xiangqi_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int x,y,c;
 	int len = win->len;
@@ -398,7 +398,7 @@ static void xiangqi_draw_json(
 }
 static void xiangqi_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int x,y;
 
@@ -424,7 +424,7 @@ static void xiangqi_draw_html(
 }
 static void xiangqi_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int x,y,color;
 	int width = win->stride;
@@ -457,12 +457,12 @@ static void xiangqi_draw_tui(
 }
 static void xiangqi_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void xiangqi_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -472,8 +472,8 @@ static void xiangqi_draw(
 	else if(fmt == _json_)xiangqi_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)xiangqi_draw_vbo2d(act, pin, win, sty);
-		else xiangqi_draw_vbo(act, pin, win, sty);
+		//if(_2d_ == win->vfmt)xiangqi_draw_vbo2d(act, pin, win, sty);
+		//else xiangqi_draw_vbo(act, pin, win, sty);
 	}
 	else xiangqi_draw_pixel(act, pin, win, sty);
 }
@@ -509,7 +509,7 @@ int xiangqi_pickup(int x, int y, int turn)
 }
 void xiangqi_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int x, y, ret;
@@ -612,19 +612,19 @@ static void xiangqi_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	xiangqi_draw(act, pin, win, sty);
+	//xiangqi_draw(act, pin, win, sty);
 }
 static void xiangqi_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	xiangqi_event(act, pin, win, sty, ev, 0);
+	//xiangqi_event(act, pin, win, sty, ev, 0);
 }
 static void xiangqi_stop(struct halfrel* self, struct halfrel* peer)
 {

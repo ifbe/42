@@ -9,17 +9,17 @@ int arenaevent(struct event* ev);
 void nonewindow_create(void*);
 void nonewindow_delete(void*);
 void nonewindow_read(void*);
-void nonewindow_event(void*, void*);
+void nonewindow_write(void*, void*);
 //
 void easywindow_create(void*);
 void easywindow_delete(void*);
 void easywindow_read(void*);
-void easywindow_event(void*, void*);
+void easywindow_write(void*, void*);
 //
 void fullwindow_create(void*);
 void fullwindow_delete(void*);
 void fullwindow_read(void*);
-void fullwindow_event(void*, void*);
+void fullwindow_write(void*, void*);
 //
 static u8 uppercase[] = {
 	' ', '!','\"', '#', '$', '%', '&','\"',		//20,27

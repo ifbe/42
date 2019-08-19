@@ -17,7 +17,7 @@ void queuepacket(u8* dst, int* idx, u8* buf, int len)
 
 static void rawdump_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int j;
 	int cx, cy, ww, hh;
@@ -39,17 +39,17 @@ static void rawdump_draw_pixel(
 }
 static void rawdump_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void rawdump_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void rawdump_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -64,17 +64,17 @@ static void rawdump_draw_html(
 }
 static void rawdump_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void rawdump_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void rawdump_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)rawdump_draw_cli(act, pin, win, sty);
@@ -93,18 +93,18 @@ static void rawdump_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	rawdump_draw(act, pin, win, sty);
+	//rawdump_draw(act, pin, win, sty);
 }
 static void rawdump_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	if(len)queuepacket(act->buf, act->idx, buf, len);
+	//if(len)queuepacket(act->buf, act->idx, buf, len);
 }
 static void rawdump_stop(struct halfrel* self, struct halfrel* peer)
 {

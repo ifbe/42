@@ -61,13 +61,13 @@ GLSL_VERSION
 
 void watercamera(
 	struct actor* leaf, struct style* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+	struct actor* twig, struct style* tf,
+	struct actor* root, struct style* rf)
 {/*
 	float x,y,z,t;
 	vec3 p,q;
 	struct relation* rel;
-	struct arena* fbo;
+	struct actor* fbo;
 	struct glsrc* src = (void*)(lf->foot[0]);
 	struct gldst* dst = (void*)(tf->foot[0]);
 
@@ -212,7 +212,7 @@ void watercamera(
 
 static void water_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -232,7 +232,7 @@ static void water_draw_pixel(
 }
 static void water_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
@@ -292,27 +292,27 @@ static void water_draw_vbo(
 }
 static void water_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void water_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void water_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void water_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void water_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)water_draw_cli(act, pin, win, sty);
@@ -331,7 +331,7 @@ static void water_read(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	water_draw(act, pin, win, sty);
 }
@@ -348,9 +348,9 @@ static void water_start(struct halfrel* self, struct halfrel* peer)
 	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-
+/*
 	//
 	pair = alloc_winobj(win, 'o');
 	src = &pair->src;
@@ -390,6 +390,7 @@ static void water_start(struct halfrel* self, struct halfrel* peer)
 
 	//texture1
 	src->tex_name[1] = "reflect";
+*/
 }
 
 
@@ -415,7 +416,7 @@ static void water_create(struct actor* act, void* str)
 	act->buf = memorycreate(0x1000000);
 	actorcreatefromfile(act, "datafile/jpg/dudvmap.jpg");
 
-	//win = arenacreate(_fbo_, 0);
+	//win = actorcreate(_fbo_, 0);
 	//if(win)relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
 }
 

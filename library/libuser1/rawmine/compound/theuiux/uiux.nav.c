@@ -1,10 +1,10 @@
 #include "libuser.h"
-int actoroutput_void(    struct arena* win, struct style* sty);
-int actoroutput_console( struct arena* win, struct style* sty);
-int actoroutput_overview(struct arena* win, struct style* sty);
-int actoroutput_detail(  struct arena* win, struct style* sty);
-int actoroutput_editor(  struct arena* win, struct style* sty);
-int actoroutput_player( struct arena* win, struct style* sty);
+int actoroutput_void(    struct actor* win, struct style* sty);
+int actoroutput_console( struct actor* win, struct style* sty);
+int actoroutput_overview(struct actor* win, struct style* sty);
+int actoroutput_detail(  struct actor* win, struct style* sty);
+int actoroutput_editor(  struct actor* win, struct style* sty);
+int actoroutput_player( struct actor* win, struct style* sty);
 
 
 
@@ -23,19 +23,19 @@ static void* nametab[8] = {
 
 
 
-void navmenu_draw_cli(struct arena* win)
+void navmenu_draw_cli(struct actor* win)
 {
 }
-void navmenu_draw_tui(struct arena* win)
+void navmenu_draw_tui(struct actor* win)
 {
 }
-void navmenu_draw_html(struct arena* win)
+void navmenu_draw_html(struct actor* win)
 {
 }
-void navmenu_draw_json(struct arena* win)
+void navmenu_draw_json(struct actor* win)
 {
 }
-void navmenu_draw_vbo(struct arena* win)
+void navmenu_draw_vbo(struct actor* win)
 {
 	struct style sty;
 	vec3 vc;
@@ -139,7 +139,7 @@ void navmenu_draw_vbo(struct arena* win)
 	carvestring2d_center(win, 0xffffff, vc, vr, vf, nametab[tmp], 0);
 */
 }
-void navmenu_draw_pixel(struct arena* win)
+void navmenu_draw_pixel(struct actor* win)
 {
 	struct style sty;
 	int va[2];
@@ -227,7 +227,7 @@ void navmenu_draw_pixel(struct arena* win)
 	drawstring_fit(win, 0xffffff, w/4, h/16, w*3/4, h/8, nametab[tmp], 0);
 */
 }
-void navmenu_draw(struct arena* win, struct style* sty)
+void navmenu_draw(struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(_cli_ == fmt)navmenu_draw_cli(win);
@@ -237,7 +237,7 @@ void navmenu_draw(struct arena* win, struct style* sty)
 	else if(_vbo_ == fmt)navmenu_draw_vbo(win);
 	else navmenu_draw_pixel(win);
 }
-int navmenu_event(struct arena* win, struct style* sty, struct event* ev)
+int navmenu_event(struct actor* win, struct style* sty, struct event* ev)
 {
 	short* t;
 	int pa[2];

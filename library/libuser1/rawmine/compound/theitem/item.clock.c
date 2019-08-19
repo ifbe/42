@@ -6,7 +6,7 @@
 
 static void clock_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u32 c[7]={0xff,0xff00,0xffff,0xff0000,0xff00ff,0xffff00,0xffffff};
 	int j,k;
@@ -38,7 +38,7 @@ static void clock_draw_pixel(
 }
 static void clock_draw_vbo2d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u8 j;
 	float a,c,s;
@@ -96,7 +96,7 @@ static void clock_draw_vbo2d(
 }
 static void clock_draw_vbo3d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u8 j;
 	float a,c,s;
@@ -152,12 +152,12 @@ static void clock_draw_vbo3d(
 }
 static void clock_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void clock_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -172,12 +172,12 @@ static void clock_draw_html(
 }
 static void clock_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void clock_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 date = dateread();
 	u8* p = (u8*)&date;
@@ -187,7 +187,7 @@ static void clock_draw_cli(
 }
 static void clock_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)clock_draw_cli(act, pin, win, sty);
@@ -196,8 +196,8 @@ static void clock_draw(
 	else if(fmt == _json_)clock_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)clock_draw_vbo2d(act, pin, win, sty);
-		else clock_draw_vbo3d(act, pin, win, sty);
+		//if(_2d_ == win->vfmt)clock_draw_vbo2d(act, pin, win, sty);
+		//else clock_draw_vbo3d(act, pin, win, sty);
 	}
 	else clock_draw_pixel(act, pin, win, sty);
 }
@@ -210,9 +210,9 @@ static void clock_read(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	clock_draw(act, pin, win, sty);
+	//clock_draw(act, pin, win, sty);
 }
 static void clock_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {

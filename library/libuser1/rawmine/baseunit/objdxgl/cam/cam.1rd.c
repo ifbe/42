@@ -6,7 +6,7 @@ void fixmatrix(float* m, struct fstyle* sty);
 
 static int firstperson_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int j;
 	struct relation* rel;
@@ -93,11 +93,11 @@ void firstperson_frustum(struct fstyle* d, struct fstyle* s)
 }
 static void firstperson_matrix(
 	struct actor* act, struct style* frustum,
-	struct arena* win, struct style* wingeom,
+	struct actor* win, struct style* wingeom,
 	u8* buf, int len)
 {/*
 	struct relation* rel;
-	struct arena* r;
+	struct actor* r;
 	struct fstyle* s;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -147,11 +147,11 @@ static void firstperson_read(struct halfrel* self, struct halfrel* peer, u8* buf
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	switch(self->flag){
+/*	switch(self->flag){
 		case _cam_:firstperson_matrix(act, pin, win, sty, buf, len);break;
-	}
+	}*/
 }
 static void firstperson_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {

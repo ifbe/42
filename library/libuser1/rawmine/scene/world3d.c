@@ -1,6 +1,4 @@
 #include "libuser.h"
-void* allocarena();
-//
 int preprocess(void*);
 int postprocess(void*);
 int actorinput_touch(struct arena* win, struct event* ev);
@@ -63,9 +61,24 @@ void defaultvertex(struct arena* win)
 
 
 
-/*
-int vbonode_read(struct arena* win, struct style* stack)
+
+int world3d_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
+	struct actor* world;
+	struct actor* glctx;
+
+	struct relation* rel;
+	struct actor* act;
+	struct style* sty;
+
+	world = (void*)self->chip;
+	if(0 == world)return 0;
+
+	glctx = (void*)peer->chip;
+	if(0 == glctx)return 0;
+
+	say("@world3d_read:%.8s, %.8s\n", &world->type, &glctx->type);
+/*
 	struct style* sty;
 	struct relation* rel;
 	struct halfrel* self;
@@ -73,8 +86,8 @@ int vbonode_read(struct arena* win, struct style* stack)
 
 	win->vfmt = _3d_;
 	preprocess(win);
-
-	rel = win->orel0;
+*/
+	rel = world->orel0;
 	while(1)
 	{
 		if(0 == rel)break;
@@ -84,19 +97,24 @@ int vbonode_read(struct arena* win, struct style* stack)
 			sty = (void*)(rel->srcfoot);
 			if(sty){if('#' == sty->i.uc[3])goto next;}
 
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			actorread(self, peer, 0, 0);
+			act = (void*)(rel->dstchip);
+			say("%.8s\n", &act->fmt);
+
+			//self = (void*)&rel->dstchip;
+			//peer = (void*)&rel->srcchip;
+			//actorread(self, peer, 0, 0);
 		}
 next:
 		rel = samesrcnextdst(rel);
 	}
 
-	postprocess(win);
+	//postprocess(win);
 	return 0;
 }
-int vbonode_write(struct arena* win, struct style* stack, struct event* ev)
+int world3d_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
+	return 0;
+/*
 	int ret;
 	struct style* sty;
 	struct relation* rel;
@@ -125,13 +143,17 @@ next:
 
 	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
 	return ret;
+*/
 }
-int vbonode_stop(struct arena* win, struct style* sty)
+int world3d_stop(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int vbonode_start(struct arena* twig, void* tf, struct arena* root, void* rf)
+int world3d_start(struct halfrel* self, struct halfrel* peer)
 {
+	say("@world3d_start\n");
+	return 0;
+/*
 	struct halfrel* self;
 	struct halfrel* peer;
 	struct relation* rel;
@@ -150,25 +172,29 @@ int vbonode_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 		rel = samesrcnextdst(rel);
 	}
 	return 0;
+*/
 }
 
 
 
 
-int vbonode_search(struct arena* win)
+int world3d_search(struct actor* world)
 {
 	return 0;
 }
-int vbonode_modify(struct arena* win)
+int world3d_modify(struct actor* world)
 {
 	return 0;
 }
-int vbonode_delete(struct arena* win)
+int world3d_delete(struct actor* world)
 {
 	return 0;
 }
-void* vbonode_create(u64 type, u64 flag)
+int world3d_create(struct actor* world, void* str)
 {
+	say("@world3d_create\n");
+	return 0;
+/*
 	int j;
 	u8* buf;
 	struct arena* win;
@@ -198,6 +224,5 @@ void* vbonode_create(u64 type, u64 flag)
 
 	win->gl_opaque = buf = memorycreate(0x10000);
 	for(j=0;j<0x10000;j++)buf[j] = 0;
-
-	return win;
-}*/
+*/
+}

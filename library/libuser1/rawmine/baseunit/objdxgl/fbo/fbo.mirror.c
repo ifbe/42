@@ -43,8 +43,8 @@ GLSL_VERSION
 
 /*
 void mat4_vector(mat4 m, float* v);
-void fixview(mat4 viewmatrix, struct arena* win);
-void mirrorfrustum(struct arena* win, struct style* mir)
+void fixview(mat4 viewmatrix, struct actor* win);
+void mirrorfrustum(struct actor* win, struct style* mir)
 {
 	mat4 view;
 	vec3 lb,rt;
@@ -68,13 +68,13 @@ void mirrorfrustum(struct arena* win, struct style* mir)
 }*/
 void mirrorcamera(
 	struct actor* leaf, struct style* lf,
-	struct arena* twig, struct style* tf,
-	struct arena* root, struct style* rf)
+	struct actor* twig, struct style* tf,
+	struct actor* root, struct style* rf)
 {/*
 	float x,y,z,t;
 	vec3 p,q;
 	struct relation* rel;
-	struct arena* fbo;
+	struct actor* fbo;
 	struct glsrc* src = (void*)(lf->foot[0]);
 	struct gldst* dst = (void*)(tf->foot[0]);
 
@@ -219,7 +219,7 @@ void mirrorcamera(
 
 static void mirror_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
@@ -277,7 +277,7 @@ static void mirror_draw_vbo(
 }
 static void mirror_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -297,27 +297,27 @@ static void mirror_draw_pixel(
 }
 static void mirror_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void mirror_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void mirror_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void mirror_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void mirror_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)mirror_draw_cli(act, pin, win, sty);
@@ -336,9 +336,9 @@ static void mirror_read(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	mirror_draw(act, pin, win, sty);
+	//mirror_draw(act, pin, win, sty);
 }
 static void mirror_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
@@ -354,9 +354,9 @@ static void mirror_start(struct halfrel* self, struct halfrel* peer)
 
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-
+/*
 	//
 	pair = alloc_winobj(win, 's');
 	src = &pair->src;
@@ -384,6 +384,7 @@ static void mirror_start(struct halfrel* self, struct halfrel* peer)
 	//texture
 	src->tex_name[0] = "tex0";
 	src->tex_enq[0] = 0;
+*/
 }
 
 
@@ -406,7 +407,7 @@ static void mirror_create(struct actor* act, void* str)
 	void* win;
 	if(0 == act)return;
 
-	//win = arenacreate(_fbo_, 0);
+	//win = actorcreate(_fbo_, 0);
 	//if(win)relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
 }
 

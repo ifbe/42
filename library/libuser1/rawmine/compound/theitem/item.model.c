@@ -223,7 +223,7 @@ void sty_sty_mat(struct fstyle* src, struct fstyle* dst, mat4 mat)
 
 static void model_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	float* p;
 	float f;
@@ -273,7 +273,7 @@ static void model_draw_pixel(
 }
 static void model_draw_vbo2d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	if(act->buf == 0)return;
 	if(0 == sty)sty = defaultstyle_vbo2d();
@@ -283,7 +283,7 @@ static void model_draw_vbo2d(
 }
 static void model_draw_vbo3d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	if(act->buf == 0)return;
 
@@ -292,28 +292,28 @@ static void model_draw_vbo3d(
 }
 static void model_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void model_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void model_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void model_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	say("model(%x,%x,%x)\n",win,act,sty);
 }
 static void model_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -323,14 +323,14 @@ static void model_draw(
 	else if(fmt == _json_)model_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)model_draw_vbo2d(act, pin, win, sty);
-		else model_draw_vbo3d(act, pin, win, sty);
+		//if(_2d_ == win->vfmt)model_draw_vbo2d(act, pin, win, sty);
+		//else model_draw_vbo3d(act, pin, win, sty);
 	}
 	else model_draw_pixel(act, pin, win, sty);
 }
 static void model_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int j,ret;
@@ -368,19 +368,19 @@ static void model_read(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	model_draw(act, pin, win, sty);
+	//model_draw(act, pin, win, sty);
 }
 static void model_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	model_event(act, pin, win, sty, ev, 0);
+	//model_event(act, pin, win, sty, ev, 0);
 }
 static void model_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -392,10 +392,10 @@ static void model_start(struct halfrel* self, struct halfrel* peer)
 	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	if(hex32('3','r','d', 0) == self->flag)return;
-
+/*
 	//alloc
 	pair = alloc_winobj(win, 's');
 	src = &pair->src;
@@ -428,6 +428,7 @@ static void model_start(struct halfrel* self, struct halfrel* peer)
 	//send!
 	src->tex_enq[0] = 0;
 	src->ibuf_enq = 0;
+*/
 }
 
 

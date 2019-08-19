@@ -167,7 +167,7 @@ void drawascii_alpha(u8* buf, int w, int h, int xx, int yy, u8 ch)
 
 
 
-void drawascii(struct arena* win, u32 rgb, int xx, int yy, u8 ch)
+void drawascii(struct actor* win, u32 rgb, int xx, int yy, u8 ch)
 {
 	u8 temp;
 	u8* points;
@@ -197,7 +197,7 @@ void drawascii(struct arena* win, u32 rgb, int xx, int yy, u8 ch)
 		}//x
 	}//y
 }
-void drawbyte(struct arena* win, u32 rgb, int x, int y, u8 ch)
+void drawbyte(struct actor* win, u32 rgb, int x, int y, u8 ch)
 {
 	int i;
 	u8 temp = ch;
@@ -212,7 +212,7 @@ void drawbyte(struct arena* win, u32 rgb, int x, int y, u8 ch)
 	if(ch>0x39)ch+=0x7;
 	drawascii(win, rgb, x+8, y, ch);
 }
-void drawstring(struct arena* win, u32 rgb, int x, int y, u8* buf, int len)
+void drawstring(struct actor* win, u32 rgb, int x, int y, u8* buf, int len)
 {
 	int j;
 	if(buf == 0)return;
@@ -226,13 +226,13 @@ void drawstring(struct arena* win, u32 rgb, int x, int y, u8* buf, int len)
 		drawascii(win, rgb, x+j*8, y, buf[j]);
 	}
 }
-void drawdouble(struct arena* win, u32 rgb, int x, int y, double data)
+void drawdouble(struct actor* win, u32 rgb, int x, int y, double data)
 {
 	u8 mystr[100];
 	double2decstr(data, mystr);
 	drawstring(win, rgb, x, y, mystr, 0);
 }
-void drawdecimal(struct arena* win, u32 rgb, int x, int y, int dec)
+void drawdecimal(struct actor* win, u32 rgb, int x, int y, int dec)
 {
 	char ch;
 	int i,count;
@@ -264,7 +264,7 @@ void drawdecimal(struct arena* win, u32 rgb, int x, int y, int dec)
 		dec=dec/10;
 	}
 }
-void drawhexadecimal(struct arena* win, u32 rgb, int x, int y, u64 hex)
+void drawhexadecimal(struct actor* win, u32 rgb, int x, int y, u64 hex)
 {
 	char ch;
 	int i = 0;
@@ -287,7 +287,7 @@ void drawhexadecimal(struct arena* win, u32 rgb, int x, int y, u64 hex)
 	}
 }
 void drawtext(
-	struct arena* win, u32 rgb,
+	struct actor* win, u32 rgb,
 	int x0, int y0, int x1, int y1,
 	u8* buf, int len)
 {
@@ -319,7 +319,7 @@ void drawtext(
 	}
 }
 void drawtext_reverse(
-	struct arena* win, u32 rgb,
+	struct actor* win, u32 rgb,
 	int x0, int y0, int x1, int y1,
 	u8* buf, int len)
 {
@@ -350,7 +350,7 @@ void drawtext_reverse(
 
 
 
-void drawascii_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8 ch)
+void drawascii_fit(struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u8 ch)
 {
 	u8 temp;
 	u8* points;
@@ -395,7 +395,7 @@ void drawascii_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u
 		}//x
 	}//y
 }
-void drawstring_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len)
+void drawstring_fit(struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len)
 {
 	int j,scale;
 	if(0 == buf)return;
@@ -425,7 +425,7 @@ void drawstring_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, 
 		);
 	}
 }
-void drawdec_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, int dec)
+void drawdec_fit(struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, int dec)
 {
 	int len = 0;
 	u8 ch[22];
@@ -447,6 +447,6 @@ void drawdec_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, int
 
 	drawstring_fit(win, rgb, x0, y0, x1, y1, ch+22-len, len);
 }
-void drawhex_fit(struct arena* win, u32 rgb, int x0, int y0, int x1, int y1, u64 dec)
+void drawhex_fit(struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u64 dec)
 {
 }

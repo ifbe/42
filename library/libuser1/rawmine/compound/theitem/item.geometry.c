@@ -5,7 +5,7 @@
 
 static void geometry_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int cx = sty->f.vc[0];
 	int cy = sty->f.vc[1];
@@ -17,7 +17,7 @@ static void geometry_draw_pixel(
 }
 static void geometry_draw_vbo2d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	vec3 tr, tf;
 	float* vc = sty->f.vc;
@@ -47,7 +47,7 @@ static void geometry_draw_vbo2d(
 }
 static void geometry_draw_vbo3d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	vec3 t1,t2;
 	float* vc = sty->f.vc;
@@ -155,27 +155,27 @@ static void geometry_draw_vbo3d(
 }
 static void geometry_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void geometry_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void geometry_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void geometry_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void geometry_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)geometry_draw_cli(act, pin, win, sty);
@@ -184,14 +184,14 @@ static void geometry_draw(
 	else if(fmt == _json_)geometry_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)geometry_draw_vbo2d(act, pin, win, sty);
-		else geometry_draw_vbo3d(act, pin, win, sty);
+		//if(_2d_ == win->vfmt)geometry_draw_vbo2d(act, pin, win, sty);
+		//else geometry_draw_vbo3d(act, pin, win, sty);
 	}
 	else geometry_draw_pixel(act, pin, win, sty);
 }
 static void geometry_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	char c;
@@ -211,19 +211,19 @@ static void geometry_read(struct halfrel* self, struct halfrel* peer, u8* buf, i
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	geometry_draw(act, pin, win, sty);
+	//geometry_draw(act, pin, win, sty);
 }
 static void geometry_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	geometry_event(act, pin, win, sty, ev, 0);
+	//geometry_event(act, pin, win, sty, ev, 0);
 }
 static void geometry_stop(struct halfrel* self, struct halfrel* peer)
 {

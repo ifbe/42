@@ -12,7 +12,7 @@ static u8 databuf[49*49];
 
 static void qrcode_draw_pixel(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u32 color;
 	int x,y;
@@ -54,7 +54,7 @@ static void qrcode_draw_pixel(
 }
 static void qrcode_draw_vbo2d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u32 rgb;
 	int x,y,w,h;
@@ -90,7 +90,7 @@ static void qrcode_draw_vbo2d(
 }
 static void qrcode_draw_vbo3d(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
@@ -100,12 +100,12 @@ static void qrcode_draw_vbo3d(
 }
 static void qrcode_draw_json(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 }
 static void qrcode_draw_html(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -120,7 +120,7 @@ static void qrcode_draw_html(
 }
 static void qrcode_draw_tui(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int x,y;
 	int width = win->stride;
@@ -144,13 +144,13 @@ static void qrcode_draw_tui(
 }
 static void qrcode_draw_cli(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	say("qrcode(%x,%x,%x)\n",win,act,sty);
 }
 static void qrcode_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -160,8 +160,8 @@ static void qrcode_draw(
 	else if(fmt == _json_)qrcode_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)qrcode_draw_vbo2d(act, pin, win, sty);
-		else qrcode_draw_vbo3d(act, pin, win, sty);
+		//if(_2d_ == win->vfmt)qrcode_draw_vbo2d(act, pin, win, sty);
+		//else qrcode_draw_vbo3d(act, pin, win, sty);
 	}
 	else qrcode_draw_pixel(act, pin, win, sty);
 }
@@ -174,9 +174,9 @@ static void qrcode_read(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	qrcode_draw(act, pin, win, sty);
+	//qrcode_draw(act, pin, win, sty);
 }
 static void qrcode_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
@@ -186,8 +186,6 @@ static void qrcode_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void qrcode_start(struct halfrel* self, struct halfrel* peer)
 {
-	slen=49;
-	qrcode_generate("haha",databuf,slen);
 }
 
 
@@ -209,6 +207,9 @@ static void qrcode_create(struct actor* act)
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = databuf;
 	if(_copy_ == act->type)act->buf = memorycreate(49*49);
+
+	slen=49;
+	qrcode_generate("haha",databuf,slen);
 }
 
 

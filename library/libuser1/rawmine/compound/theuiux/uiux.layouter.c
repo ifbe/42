@@ -6,7 +6,7 @@ int obb_ray(struct fstyle* obb, vec3 ray[], vec3 out[]);
 
 
 
-int joystick2style(struct arena* win, struct fstyle* sty, int aaa, short* tmp)
+int joystick2style(struct actor* win, struct fstyle* sty, int aaa, short* tmp)
 {
 	float c,s;
 	float tx,ty,tz;
@@ -248,7 +248,7 @@ int joystick2style(struct arena* win, struct fstyle* sty, int aaa, short* tmp)
 
 	return 0;
 }
-int keyboard2style(struct arena* win, struct fstyle* sty, short* tmp)
+int keyboard2style(struct actor* win, struct fstyle* sty, short* tmp)
 {
 	int sign = -1;
 	if(_vbo_ == win->fmt)sign = 1;
@@ -286,7 +286,7 @@ int keyboard2style(struct arena* win, struct fstyle* sty, short* tmp)
 	}
 	return 0;
 }
-int actorinput_editor_target(struct arena* win, struct event* ev)
+int actorinput_editor_target(struct actor* win, struct event* ev)
 {
 	float c,s,tx,ty,norm;
 	struct relation* orel;
@@ -449,7 +449,7 @@ int actorinput_editor_target(struct arena* win, struct event* ev)
 
 
 /*
-int playwith3d_pick(struct arena* root, struct arena* twig, struct actor* act, int x, int y)
+int playwith3d_pick(struct actor* root, struct actor* twig, struct actor* act, int x, int y)
 {
 	int ret;
 	vec3 ray[2];
@@ -500,7 +500,7 @@ int playwith3d_pick(struct arena* root, struct arena* twig, struct actor* act, i
 	if(rel)relation_choose(twig, rel);
 	return 0;
 }
-int playwith3d_move(struct arena* root, struct arena* twig, int x0, int y0, int xn, int yn)
+int playwith3d_move(struct actor* root, struct actor* twig, int x0, int y0, int xn, int yn)
 {
 	int ret;
 	float dx, dy;
@@ -572,12 +572,12 @@ found:
 
 static int picker_draw(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty)
+	struct actor* win, struct style* sty)
 {
 	int flag;
 	vec3 tc;
 	struct relation* rel;
-	struct arena* www;
+	struct actor* www;
 	struct fstyle* sss;
 	//carvefrustum(win, &win->camera);
 	//carveline_prism4(win, 0xff00ff, win->target.vc, win->target.vr, win->target.vf, win->target.vu);
@@ -627,11 +627,11 @@ found:
 }
 static int picker_event(
 	struct actor* act, struct style* pin,
-	struct arena* win, struct style* sty,
+	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short* t;
-	struct arena* www = 0;
+	struct actor* www = 0;
 	struct relation* rel = win->orel0;
 	//say("@picker_swrite:%llx,%llx\n", ev->what, ev->why);
 
@@ -675,19 +675,19 @@ static void picker_read(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	picker_draw(act, pin, win, sty);
+	//picker_draw(act, pin, win, sty);
 }
 static int picker_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct arena* win = (void*)(peer->chip);
+	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	return picker_event(act, pin, win, sty, ev, 0);
+	return 0;//picker_event(act, pin, win, sty, ev, 0);
 }
 static void picker_stop(struct halfrel* self, struct halfrel* peer)
 {
