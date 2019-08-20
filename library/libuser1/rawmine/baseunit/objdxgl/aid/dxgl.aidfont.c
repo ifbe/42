@@ -7,7 +7,7 @@ void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
 
 
 #ifdef __ANDROID__
-	char fontfrag[] = {
+	static char fontfrag[] = {
 		GLSL_VERSION
 		"in mediump vec3 colour;\n"
 		"in mediump vec2 texuvw;\n"
@@ -18,7 +18,7 @@ void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
 		"}\n"
 	};
 #else
-	char fontfrag[] = {
+	static char fontfrag[] = {
 		GLSL_VERSION
 		"in mediump vec3 colour;\n"
 		"in mediump vec2 texuvw;\n"
@@ -30,7 +30,7 @@ void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
 	};
 #endif
 
-char font3dvert[] =
+static char font3dvert[] =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
 "layout(location = 1)in mediump vec3 c;\n"
@@ -43,7 +43,7 @@ GLSL_VERSION
 	"texuvw = t;\n"
 	"gl_Position = cammvp * vec4(v, 1.0);\n"
 "}\n";
-
+/*
 char font2dvert[] =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
@@ -57,7 +57,7 @@ GLSL_VERSION
 	"texuvw = t;\n"
 	"gl_Position = cammvp * vec4(v, 1.0);\n"
 "}\n";
-
+*/
 
 
 

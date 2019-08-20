@@ -62,7 +62,7 @@ static void ooxx_draw_pixel(
 			}
 		}//forx
 	}//fory
-}
+}/*
 static void ooxx_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -75,7 +75,7 @@ static void ooxx_draw_vbo2d(
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
 	carvesolid2d_rect(win, 0x444444, vc, vr, vf);
-}
+}*/
 static void ooxx_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

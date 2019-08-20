@@ -2,7 +2,7 @@
 
 
 
-
+/*
 char* fractal_glsl2d_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
@@ -13,6 +13,7 @@ char* fractal_glsl2d_v =
 		"uvw = texuvw;\n"
 		"gl_Position = vec4(vertex, 1.0);\n"
 	"}\n";
+*/
 char* fractal_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
@@ -126,7 +127,7 @@ static void fractal_draw_pixel(
 			buf[w*(cy+y) + cx+x] = 0xff000000 | (c*0x010101);
 		}
 	}
-}
+}/*
 static void fractal_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -186,7 +187,7 @@ static void fractal_draw_vbo2d(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
-}
+}*/
 static void fractal_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

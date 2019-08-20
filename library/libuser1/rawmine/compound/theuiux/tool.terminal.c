@@ -111,12 +111,12 @@ static void terminal_draw_vbo(
 	tc[0] = vc[0];
 	tc[1] = vc[1];
 	tc[2] = -0.5;
-	carveopaque2d_rect(win, 0x404040, tc, vr, vf);
+	carveopaque_rect(win, 0x404040, tc, vr, vf);
 
 	tc[2] = -0.8;
 	obuf = getstdout();
 	ocur = getcurout();
-	carvetext2d_reverse(win, 0xffffff, tc, vr, vf, obuf, ocur);
+	carvetext_reverse(win, 0xffffff, tc, vr, vf, obuf, ocur);
 }
 static void terminal_draw_json(
 	struct actor* act, struct style* pin,

@@ -48,7 +48,7 @@ static void chess_draw_pixel(
 			);
 		}
 	}
-}
+}/*
 static void chess_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -85,7 +85,7 @@ static void chess_draw_vbo2d(
 			carvesolid2d_rect(win, rgb, tc, tr, tf);
 		}
 	}
-}
+}*/
 static void chess_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

@@ -4,9 +4,9 @@ void ortho_mvp(mat4 m, struct fstyle* s);
 
 
 
-static int orthcam_draw(
+static int orthcam_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct actor* ctx, struct style* sty)
 {/*
 	vec3 tc,tf;
 	float* vc = sty->vc;
@@ -19,7 +19,7 @@ static int orthcam_draw(
 	tf[0] = vf[0] / 2;
 	tf[1] = vf[1] / 2;
 	tf[2] = vf[2] / 2;
-	carvesolid_prism4(win, 0x800000, tc, vr, vu, tf);
+	carvesolid_prism4(ctx, 0x800000, tc, vr, vu, tf);
 
 	sty->vn[0] = sty->vf[0];
 	sty->vn[1] = sty->vf[1];
@@ -30,7 +30,7 @@ static int orthcam_draw(
 	sty->vb[0] = -sty->vu[0];
 	sty->vb[1] = -sty->vu[1];
 	sty->vb[2] = -sty->vu[2];
-	carvefrustum(win, sty);
+	carvefrustum(ctx, sty);
 */
 	return 0;
 }
@@ -114,32 +114,41 @@ void orthocam_sty2cam(struct fstyle* d, struct fstyle* s)
 }
 static void orthcam_matrix(
 	struct actor* act, struct style* pin,
-	u8* buf, int len)
-{/*
+	struct actor* ctx, struct style* sty)
+{
+	say("@orthcam_matrix:%llx,%llx,%llx,%llx\n", ctx->gl_camera, ctx->gl_light, ctx->gl_solid, ctx->gl_opaque);
+
 	struct relation* rel;
-	struct actor* r;
-	struct fstyle* s;
+	struct actor* world;
+	struct fstyle* obb;
 	//say("orthcam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
 	rel = act->irel0;
 	while(1){
 		if(0 == rel)return;
-		if(hex32('g','e','o','m') == rel->dstflag){
-			s = (void*)(rel->srcfoot);
-			r = (void*)(rel->srcchip);
+		world = (void*)(rel->srcchip);
+		if(_world3d_ == world->type){
+			obb = (void*)(rel->srcfoot);
 			break;
 		}
 		rel = samedstnextsrc(rel);
 	}
-	if(0 == s)return;
-
+	if(0 == obb)return;
 
 	float* m = act->buf;
-	orthocam_sty2cam(&act->camera, s);
-	ortho_mvp((void*)m, &act->camera);
+	orthocam_sty2cam(&pin->f, obb);
+	ortho_mvp((void*)m, &pin->f);
 	mat4_transpose((void*)m);
 
+	struct glsrc* src = ctx->gl_camera;
+	src->arg_fmt[0] = 'm';
+	src->arg_name[0] = "cammvp";
+	src->arg_data[0] = m;
 
+	src->arg_fmt[1] = 'v';
+	src->arg_name[1] = "camxyz";
+	src->arg_data[1] = obb->vc;
+/*
 	u64* p = (void*)buf;
 	struct glsrc* src = (void*)(buf+0x20);
 
@@ -149,31 +158,37 @@ static void orthcam_matrix(
 	p[3] = (u64)r->gl_opaque;
 
 
-	src->arg_fmt[0] = 'm';
-	src->arg_name[0] = "cammvp";
-	src->arg_data[0] = m;
-
-	src->arg_fmt[1] = 'v';
-	src->arg_name[1] = "camxyz";
-	src->arg_data[1] = s->vc;
 */
 }
 
 
 
 
-static void orthcam_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void orthcam_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	struct actor* ctx = buf;
+	say("@orthcam_read:\n");
 
+	if(ctx){
+		switch(ctx->type){
+			case _gl41data_:break;//orthcam_draw_vbo(act,pin,ctx,sty);
+		}
+	}
+	else{
+		switch(win->type){
+			case _gl41view_:
+			case _gl41wnd0_:orthcam_matrix(act, pin, win, sty);
+		}
+	}
 	//if(_cam_ == self->flag)orthcam_matrix(act, pin, buf, len);
 	//else orthcam_draw(act, pin, win, sty);
 }
-static int orthcam_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int orthcam_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

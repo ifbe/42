@@ -14,7 +14,7 @@ static void geometry_draw_pixel(
 	if(ww > hh)ww = hh;
 	if(hh > ww)hh = ww;
 	drawsolid_rect(win, 0x808080, cx-ww, cy-hh, cx+ww, cy+hh);
-}
+}/*
 static void geometry_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -44,7 +44,7 @@ static void geometry_draw_vbo2d(
 		tf[2] = vf[2] / n;
 	}
 	carveopaque2d_rect(win, 0x7fffffff, vc, tr, tf);
-}
+}*/
 static void geometry_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

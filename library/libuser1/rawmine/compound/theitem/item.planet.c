@@ -62,7 +62,7 @@ static void planet_draw_pixel(
 		y = cy + l*sine(tau*t/data[j].period);
 		drawsolid_circle(win, c, x, y, r);
 	}
-}
+}/*
 static void planet_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -110,7 +110,7 @@ static void planet_draw_vbo2d(
 		tc[2] = vc[2] + (vr[2]*c + vf[2]*s)*l;
 		carvesolid2d_sphere(win, data[j].color, tc, tr, tf, tu);
 	}
-}
+}*/
 static void planet_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

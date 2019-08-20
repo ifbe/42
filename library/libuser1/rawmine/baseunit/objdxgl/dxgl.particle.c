@@ -58,12 +58,12 @@ static void particle_draw_pixel(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
-}
+}/*
 static void particle_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
-}
+}*/
 static void particle_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

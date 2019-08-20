@@ -68,8 +68,8 @@ int world3d_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 	struct actor* glctx;
 
 	struct relation* rel;
-	struct actor* act;
 	struct style* sty;
+	//struct actor* act;
 
 	world = (void*)self->chip;
 	if(0 == world)return 0;
@@ -97,12 +97,12 @@ int world3d_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 			sty = (void*)(rel->srcfoot);
 			if(sty){if('#' == sty->i.uc[3])goto next;}
 
-			act = (void*)(rel->dstchip);
-			say("%.8s\n", &act->fmt);
+			//act = (void*)(rel->dstchip);
+			//say("%.8s\n", &act->fmt);
 
-			//self = (void*)&rel->dstchip;
-			//peer = (void*)&rel->srcchip;
-			//actorread(self, peer, 0, 0);
+			self = (void*)&rel->dstchip;
+			peer = (void*)&rel->srcchip;
+			actorread(self, peer, glctx, 0);
 		}
 next:
 		rel = samesrcnextdst(rel);

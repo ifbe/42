@@ -92,7 +92,7 @@ static void spectrum_draw_pixel(
 		}
 	}
 	drawdecimal(win, 0xffffff, cx, cy, that);
-}
+}/*
 static void spectrum_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -137,7 +137,7 @@ static void spectrum_draw_vbo2d(
 		tr[2] = tc[2] + vf[2]*amp[x]*10;
 		carveline2d(win, 0xff0000, tc, tr);
 	}
-}
+}*/
 static void spectrum_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

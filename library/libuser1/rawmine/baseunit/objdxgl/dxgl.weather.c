@@ -2,7 +2,7 @@
 
 
 
-
+/*
 char* weather_glsl2d_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
@@ -13,6 +13,7 @@ char* weather_glsl2d_v =
 		"uvw = texuvw;\n"
 		"gl_Position = vec4(vertex, 1.0);\n"
 	"}\n";
+*/
 char* weather_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
@@ -44,7 +45,7 @@ static void weather_draw_pixel(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
-}
+}/*
 static void weather_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -101,7 +102,7 @@ static void weather_draw_vbo2d(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
-}
+}*/
 static void weather_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

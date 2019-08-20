@@ -37,7 +37,7 @@ void carveactor(struct actor* win, int val, vec3 vc, vec3 vr, vec3 vf)
 	int x,y;
 	void* buf;
 	vec3 tc,tr,tf,tu;
-	carveline2d_rect(win, 0xffffff, vc, vr, vf);
+	carveline_rect(win, 0xffffff, vc, vr, vf);
 
 	for(y=0;y<4;y++)
 	{
@@ -52,7 +52,7 @@ void carveactor(struct actor* win, int val, vec3 vc, vec3 vr, vec3 vf)
 			tf[0] = 0.0;
 			tf[1] = vf[1]/4.1;
 			tf[2] = 0.0;
-			carvesolid2d_rect(win, 0xffffff, tc, tr, tf);
+			carvesolid_rect(win, 0xffffff, tc, tr, tf);
 
 			if(y)continue;
 			switch(x)
@@ -70,7 +70,7 @@ void carveactor(struct actor* win, int val, vec3 vc, vec3 vr, vec3 vf)
 			tf[0] = 0.0;
 			tf[1] = vf[1]/4;
 			tf[2] = 0.0;
-			carvestring2d_center(win, 0x000000, tc, tr, tf, buf, 8);
+			carvestring_center(win, 0x000000, tc, tr, tf, buf, 8);
 		}
 	}
 }
@@ -135,14 +135,14 @@ int detail_draw_vbo(struct actor* win, struct style* sty)
 		tc[0] = -7.0/8;
 		tc[1] = (7-j*2)/16.0;
 		tc[2] = -0.5;
-		carvesolid2d_rect(win, 0xffffff, tc, tr, tf);
+		carvesolid_rect(win, 0xffffff, tc, tr, tf);
 
 		//name
 		tc[2] = -0.6;
 		if(_act_ == rel->srctype)
 		{
 			act = (void*)(rel->srcchip);
-			carvestring2d_center(win, 0, tc, tr, tf, (void*)(&act->fmt), 0);
+			carvestring_center(win, 0, tc, tr, tf, (void*)(&act->fmt), 0);
 		}
 
 		//arrow
@@ -152,7 +152,7 @@ int detail_draw_vbo(struct actor* win, struct style* sty)
 		tr[0] = -1.0/4;
 		tr[1] = (7-j*2)/16.0;
 		tr[2] = -0.5;
-		carveline2d_arrow(win, 0x0000ff, tc, tr);
+		carveline_arrow(win, 0x0000ff, tc, tr);
 
 		//foot
 		tc[0] = -23.0/32;
@@ -164,9 +164,9 @@ int detail_draw_vbo(struct actor* win, struct style* sty)
 		tf[0] = 0;
 		tf[1] = 1.0/16;
 		tf[2] = 0;
-		carve2d_ascii(win, 0x00ff00, tc, tr, tf, 'o');
+		carveascii(win, 0x00ff00, tc, tr, tf, 'o');
 		tc[0] = -19.0/32;
-		carve2d_ascii(win, 0x00ff00, tc, tr, tf, 'i');
+		carveascii(win, 0x00ff00, tc, tr, tf, 'i');
 
 		j++;
 		rel = samedstnextsrc(rel);
@@ -190,14 +190,14 @@ int detail_draw_vbo(struct actor* win, struct style* sty)
 		tc[0] = 7.0/8;
 		tc[1] = (7-j*2)/16.0;
 		tc[2] = -0.5;
-		carvesolid2d_rect(win, 0xffffff, tc, tr, tf);
+		carvesolid_rect(win, 0xffffff, tc, tr, tf);
 
 		//name
 		tc[2] = -0.6;
 		if(_act_ == rel->dsttype)
 		{
 			act = (void*)(rel->dstchip);
-			carvestring2d_center(win, 0, tc, tr, tf, (void*)(&act->fmt), 0);
+			carvestring_center(win, 0, tc, tr, tf, (void*)(&act->fmt), 0);
 		}
 
 		//arrow
@@ -207,7 +207,7 @@ int detail_draw_vbo(struct actor* win, struct style* sty)
 		tr[0] = 3.0/4;
 		tr[1] = (7-j*2)/16.0;
 		tr[2] = -0.5;
-		carveline2d_arrow(win, 0xff0000, tc, tr);
+		carveline_arrow(win, 0xff0000, tc, tr);
 
 		//foot
 		tc[0] = 19.0/32;
@@ -219,9 +219,9 @@ int detail_draw_vbo(struct actor* win, struct style* sty)
 		tf[0] = 0;
 		tf[1] = 1.0/16;
 		tf[2] = 0;
-		carve2d_ascii(win, 0x00ff00, tc, tr, tf, 'o');
+		carveascii(win, 0x00ff00, tc, tr, tf, 'o');
 		tc[0] = 23.0/32;
-		carve2d_ascii(win, 0x00ff00, tc, tr, tf, 'i');
+		carveascii(win, 0x00ff00, tc, tr, tf, 'i');
 
 		j++;
 		rel = samesrcnextdst(rel);

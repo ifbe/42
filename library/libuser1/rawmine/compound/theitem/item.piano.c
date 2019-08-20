@@ -73,7 +73,7 @@ static void piano_draw_pixel(
 			(cx-ww)+(4*j+5)*ww/14, (cy-4)
 		);
 	}
-}
+}/*
 static void piano_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -169,7 +169,7 @@ static void piano_draw_vbo2d(
 	tc[1] = vc[1] + vr[1]*16/20 + vf[1]/64;
 	tc[2] = vc[2] + vr[2]*16/20 + vf[2]/64 - 0.01;
 	carve2d_string(win, 0xffffff, tc, tr, tf, (u8*)"7040", 4);
-}
+}*/
 static void piano_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

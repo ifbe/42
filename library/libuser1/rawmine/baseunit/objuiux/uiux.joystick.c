@@ -1,6 +1,6 @@
 #include "libuser.h"
 void drawarrorkey2d(void*, u32, int x0, int y0, int x1, int y1, u8*, int);
-void carvearrorkey2d(void*, u32, vec3 vc, vec3 vr, vec3 vf, u8*, int);
+void carvearrorkey(void*, u32, vec3 vc, vec3 vr, vec3 vf, u8*, int);
 
 
 
@@ -85,7 +85,7 @@ void vjoy_draw_vbo(struct actor* win, struct style* sty)
 	vf[0] = 0.0;
 	vf[1] = k;
 	vf[2] = 0.0;
-	carvearrorkey2d(win, 0xff00ff, vc, vr, vf, ch, 1);
+	carvearrorkey(win, 0xff00ff, vc, vr, vf, ch, 1);
 
 	ch[0] = 'x';
 	ch[1] = 'b';
@@ -105,7 +105,7 @@ void vjoy_draw_vbo(struct actor* win, struct style* sty)
 	vf[0] = 0.0;
 	vf[1] = k;
 	vf[2] = 0.0;
-	carvearrorkey2d(win, 0xff00ff, vc, vr, vf, ch, -1);
+	carvearrorkey(win, 0xff00ff, vc, vr, vf, ch, -1);
 }
 void vjoy_draw_html(struct actor* win, struct style* sty)
 {

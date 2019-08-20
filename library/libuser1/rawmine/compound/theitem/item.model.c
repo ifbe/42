@@ -5,7 +5,7 @@ void actorcreatefromfile(struct actor* act, char* name);
 
 
 
-
+/*
 char* model_glsl2d_v =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
@@ -19,7 +19,7 @@ GLSL_VERSION
 	"vertex = vec3(objmat * vec4(v, 1.0));\n"
 	"gl_Position = objmat * vec4(v, 1.0);\n"
 "}\n";
-
+*/
 char* model_glsl_v =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
@@ -270,7 +270,7 @@ static void model_draw_pixel(
 		drawline(win, 0xffffff, v[1][0], v[1][1], v[2][0], v[2][1]);
 	}
 */
-}
+}/*
 static void model_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -280,7 +280,7 @@ static void model_draw_vbo2d(
 
 	struct glsrc* src = (void*)(pin->foot[0]);
 	sty_sty_mat(&act->target, &sty->f, (void*)src->arg_data[0]);
-}
+}*/
 static void model_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

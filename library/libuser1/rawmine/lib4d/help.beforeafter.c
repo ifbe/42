@@ -22,25 +22,6 @@ void background_pixel(struct actor* win)
 	}
 */
 }
-void background_vbo(struct actor* win)
-{
-	int j;
-	struct datapair* mod;
-
-	mod = win->gl_solid;
-	for(j=0;j<solidaid_max;j++)
-	{
-		mod[j].src.vbuf_h = 0;
-		mod[j].src.ibuf_h = 0;
-	}
-
-	mod = win->gl_opaque;
-	for(j=0;j<opaqueaid_max;j++)
-	{
-		mod[j].src.vbuf_h = 0;
-		mod[j].src.ibuf_h = 0;
-	}
-}
 void background_json(struct actor* win)
 {
 	win->len = mysnprintf(win->buf, 0x100000, "{\n");
@@ -74,7 +55,6 @@ void preprocess(struct actor* win)
 	else if(_tui_ == fmt)background_tui(win);
 	else if(_html_ == fmt)background_html(win);
 	else if(_json_ == fmt)background_json(win);
-	else if(_vbo_ == fmt)background_vbo(win);
 	else background_pixel(win);
 }
 
@@ -83,25 +63,6 @@ void preprocess(struct actor* win)
 
 void foreground_pixel(struct actor* win)
 {
-}
-void foreground_vbo(struct actor* win)
-{
-	int j;
-	struct datapair* mod;
-
-	mod = win->gl_solid;
-	for(j=0;j<solidaid_max;j++)
-	{
-		mod[j].src.vbuf_enq += 1;
-		mod[j].src.ibuf_enq += 1;
-	}
-
-	mod = win->gl_opaque;
-	for(j=0;j<opaqueaid_max;j++)
-	{
-		mod[j].src.vbuf_enq += 1;
-		mod[j].src.ibuf_enq += 1;
-	}
 }
 void foreground_json(struct actor* win)
 {
@@ -139,6 +100,5 @@ void postprocess(struct actor* win)
 	else if(_tui_ == fmt)foreground_tui(win);
 	else if(_html_ == fmt)foreground_html(win);
 	else if(_json_ == fmt)foreground_json(win);
-	else if(_vbo_ == fmt)foreground_vbo(win);
 	else foreground_pixel(win);
 }

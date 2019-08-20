@@ -7,12 +7,12 @@ static void isrc_draw_pixel(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
-}
+}/*
 static void isrc_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
-}
+}*/
 static void isrc_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -49,8 +49,8 @@ static void isrc_draw(
 	else if(fmt == _json_)isrc_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		if(_2d_ == win->vfmt)isrc_draw_vbo2d(act, pin, win, sty);
-		else isrc_draw_vbo3d(act, pin, win, sty);
+		//if(_2d_ == win->vfmt)isrc_draw_vbo2d(act, pin, win, sty);
+		//else isrc_draw_vbo3d(act, pin, win, sty);
 	}
 	else isrc_draw_pixel(act, pin, win, sty);
 }

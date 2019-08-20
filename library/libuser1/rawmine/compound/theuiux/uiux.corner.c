@@ -22,8 +22,8 @@ void corner_vbo_drag_lefttop(
 	tf[0] = 0.0;
 	tf[1] = tc[1]-1.0;
 	tf[2] = 0.0;
-	carveline2d_rect(win, 0xffffff, tc, tr, tf);
-	carvesolid2d_circle(win, 0xffffff, tc, tr, tf);
+	carveline_rect(win, 0xffffff, tc, tr, tf);
+	carvesolid_circle(win, 0xffffff, tc, tr, tf);
 }
 void corner_vbo_drag_righttop(
 	struct actor* act, struct style* pin,
@@ -42,22 +42,22 @@ void corner_vbo_drag_righttop(
 	tf[0] = 1.0;
 	tf[1] = -1.0;
 	tf[2] = -0.99;
-	carvesolid2d_triangle(win, 0x0000ff, tc, tr, tf);
+	carvesolid_triangle(win, 0x0000ff, tc, tr, tf);
 
 	tf[0] = -1.0;
 	tf[1] = 1.0;
 	tf[2] = -0.99;
-	carvesolid2d_triangle(win, 0x00ffff, tc, tr, tf);
+	carvesolid_triangle(win, 0x00ffff, tc, tr, tf);
 
 	tr[0] = 1.0;
 	tr[1] = 1.0;
 	tr[2] = -0.99;
-	carvesolid2d_triangle(win, 0xff0000, tc, tr, tf);
+	carvesolid_triangle(win, 0xff0000, tc, tr, tf);
 
 	tf[0] = 1.0;
 	tf[1] = -1.0;
 	tf[2] = -0.99;
-	carvesolid2d_triangle(win, 0xffff00, tc, tr, tf);
+	carvesolid_triangle(win, 0xffff00, tc, tr, tf);
 }
 void corner_vbo_drag_leftbot(
 	struct actor* act, struct style* pin,
@@ -75,7 +75,7 @@ void corner_vbo_drag_leftbot(
 	tf[0] = 0.0;
 	tf[1] = 1.0;
 	tf[2] = 0.0;
-	carvesolid2d_rect(win, 0x404040, tc, tr, tf);
+	carvesolid_rect(win, 0x404040, tc, tr, tf);
 
 	tc[0] = 0.0;
 	tc[1] = y;
@@ -83,7 +83,7 @@ void corner_vbo_drag_leftbot(
 	tr[1] = 0.0;
 	tf[0] = 0.0;
 	tf[1] = 1.0+tc[1];
-	carvesolid2d_rect(win, 0x404040, tc, tr, tf);
+	carvesolid_rect(win, 0x404040, tc, tr, tf);
 }
 void corner_vbo_drag_rightbot(
 	struct actor* act, struct style* pin,
@@ -101,10 +101,10 @@ void corner_vbo_drag_rightbot(
 	tc[0] = xn;
 	tc[1] = yn;
 	tc[2] = -0.9;
-	carvesolid2d_triangle(win, 0x808080, tc, tr, tf);
+	carvesolid_triangle(win, 0x808080, tc, tr, tf);
 	tc[0] = 1.0;
 	tc[1] = -1.0;
-	carvesolid2d_triangle(win, 0x000000, tc, tr, tf);
+	carvesolid_triangle(win, 0x000000, tc, tr, tf);
 }
 void corner_vbo_drag(
 	struct actor* act, struct style* pin,
@@ -312,10 +312,10 @@ void corner_vbo_popup(
 		tc[0] = -7.0/8;
 		tc[1] = (-31+j*2)/32.0;
 		tr[0] = 1.0/8;
-		carveopaque2d_rect(win, 0x3f000080, tc, tr, tf);
+		carveopaque_rect(win, 0x3f000080, tc, tr, tf);
 
 		tr[0] = 1.0/32;
-		carvestring2d_center(win, 0xffffff, tc, tr, tf, (void*)"test", 8);
+		carvestring_center(win, 0xffffff, tc, tr, tf, (void*)"test", 8);
 	}
 }
 

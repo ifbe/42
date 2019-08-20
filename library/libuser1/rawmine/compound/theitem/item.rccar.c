@@ -25,7 +25,7 @@ static void rccar_draw_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-}
+}/*
 static void rccar_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -63,7 +63,7 @@ static void rccar_draw_vbo2d(
 			carvesolid2d_rect(win, 0x202020, tc, tr, tf);
 		}
 	}
-}
+}*/
 static void rccar_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

@@ -187,7 +187,7 @@ void xiangqi_draw_pixel(
 			);
 		}//forx
 	}//fory
-}
+}/*
 static void xiangqi_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -278,7 +278,7 @@ static void xiangqi_draw_vbo2d(
 				(u8*)char2hanzi(data[y][x]), 0);
 		}
 	}
-}
+}*/
 static void xiangqi_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

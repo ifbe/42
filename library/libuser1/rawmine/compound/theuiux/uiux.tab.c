@@ -21,7 +21,7 @@ void tabbar_vbo_listtwig(struct actor* win, struct style* sty, struct actor* tmp
     tf[0] = 0.0;
     tf[1] = 0.25;
     tf[2] = 0.0;
-    carveopaque2d_rect(win, 0x7f808080, tc, tr, tf);
+    carveopaque_rect(win, 0x7f808080, tc, tr, tf);
 
     tc[0] = 0.0;
     tc[1] = 0.0;
@@ -32,7 +32,7 @@ void tabbar_vbo_listtwig(struct actor* win, struct style* sty, struct actor* tmp
     tf[0] = 0.0;
     tf[1] = 0.5;
     tf[2] = 0.0;
-    carveopaque2d_rect(win, 0x7f808080, tc, tr, tf);
+    carveopaque_rect(win, 0x7f808080, tc, tr, tf);
 
     tr[0] = 1.0/18;
     tr[1] = 0.0;
@@ -54,13 +54,13 @@ void tabbar_vbo_listtwig(struct actor* win, struct style* sty, struct actor* tmp
             y = j/8;
             tc[0] = (2*x-7)/16.0;
             tc[1] = (7-2*y)/16.0;
-            carveopaque2d_rect(win, 0x7fffffff, tc, tr, tf);
+            carveopaque_rect(win, 0x7fffffff, tc, tr, tf);
 
             ac = (void*)(rel->dstchip);
             st = (void*)(rel->srcfoot);
             if('#' == st->i.uc[3])rgb = 0x404040;
             else rgb = 0xff00ff;
-            carvestring2d_center(win, rgb, tc, rr, tf, (void*)&ac->fmt, 8);
+            carvestring_center(win, rgb, tc, rr, tf, (void*)&ac->fmt, 8);
 
             j++;
             if(j >= 64)break;
@@ -92,7 +92,7 @@ void tabbar_vbo_listroot(
     tf[0] = vf[0] / 32;
     tf[1] = vf[1] / 32;
     tf[2] = vf[2] / 32;
-	carveline2d_rect(win, 0xff0000, tc, tr, tf);
+	carveline_rect(win, 0xff0000, tc, tr, tf);
 
     j = 0;
     rel = win->orel0;
@@ -107,7 +107,7 @@ void tabbar_vbo_listroot(
             tr[0] = vr[0] / 2 / 8.1;
             tr[1] = vr[1] / 2 / 8.1;
             tr[2] = vr[2] / 2 / 8.1;
-            carveopaque2d_rect(win, 0x7f000080, tc, tr, tf);
+            carveopaque_rect(win, 0x7f000080, tc, tr, tf);
 
             tc[2] -= 0.1;
             tr[0] = vr[0] / 2 / 16;
@@ -115,7 +115,7 @@ void tabbar_vbo_listroot(
             tr[2] = vr[2] / 2 / 16;
 
             aa = (void*)(rel->dstchip);
-            carvestring2d_center(win, 0xffffff, tc, tr, tf, (void*)(&aa->fmt), 8);
+            carvestring_center(win, 0xffffff, tc, tr, tf, (void*)(&aa->fmt), 8);
 
             if(j == act->x0)tabbar_vbo_listtwig(win, sty, aa, j);
 
@@ -130,7 +130,7 @@ void tabbar_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
-	if(0 == sty)sty = defaultstyle_vbo2d();
+	//if(0 == sty)sty = defaultstyle_vbo2d();
 
     //root
     tabbar_vbo_listroot(act, pin, win, sty);

@@ -133,7 +133,7 @@ static void maze_draw_pixel(
 			}
 		}
 	}
-}
+}/*
 static void maze_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -270,7 +270,7 @@ static void maze_draw_vbo2d(
 			}
 		}
 	}
-}
+}*/
 static void maze_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

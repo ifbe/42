@@ -1,0 +1,18 @@
+<system>
+uart{
+fmt:uart
+url:COM3
+}
+</system>
+
+
+<artery>
+mavlink{
+fmt:mavlink
+}
+</artery>
+
+
+<relation>
+(uart, 0, fd, 0) -> (mavlink, 0, art, 0)
+</relation>

@@ -8,7 +8,7 @@ static void tardis_draw_pixel(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
-}
+}/*
 static void tardis_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -20,7 +20,7 @@ static void tardis_draw_vbo2d(
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
 	carvesolid2d_rect(win, 0xff, vc, vr ,vf);
-}
+}*/
 static void tardis_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

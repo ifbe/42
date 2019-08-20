@@ -81,7 +81,7 @@ static void sudoku_draw_pixel(
 			}
 		}
 	}
-}
+}/*
 static void sudoku_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -134,7 +134,7 @@ static void sudoku_draw_vbo2d(
 			}
 		}
 	}
-}
+}*/
 static void sudoku_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

@@ -45,7 +45,7 @@ static void rectify_draw_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-}
+}/*
 static void rectify_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -54,7 +54,7 @@ static void rectify_draw_vbo2d(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-}
+}*/
 static void rectify_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

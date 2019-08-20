@@ -94,6 +94,44 @@ int gl41data_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 	}
 	return 0;
 }*/
+void gl41data_before(struct actor* ctx)
+{
+	int j;
+	struct datapair* mod;
+
+	mod = ctx->gl_solid;
+	for(j=0;j<solidaid_max;j++)
+	{
+		mod[j].src.vbuf_h = 0;
+		mod[j].src.ibuf_h = 0;
+	}
+
+	mod = ctx->gl_opaque;
+	for(j=0;j<opaqueaid_max;j++)
+	{
+		mod[j].src.vbuf_h = 0;
+		mod[j].src.ibuf_h = 0;
+	}
+}
+void gl41data_after(struct actor* ctx)
+{
+	int j;
+	struct datapair* mod;
+
+	mod = ctx->gl_solid;
+	for(j=0;j<solidaid_max;j++)
+	{
+		mod[j].src.vbuf_enq += 1;
+		mod[j].src.ibuf_enq += 1;
+	}
+
+	mod = ctx->gl_opaque;
+	for(j=0;j<opaqueaid_max;j++)
+	{
+		mod[j].src.vbuf_enq += 1;
+		mod[j].src.ibuf_enq += 1;
+	}
+}
 
 
 
@@ -110,10 +148,13 @@ int gl41data_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 	rel = data->orel0;
 	if(0 == rel)return 0;
 
+	gl41data_before(data);
+
 	self = (void*)(&rel->dstchip);
 	peer = (void*)(&rel->srcchip);
 	actorread(self, peer, buf, len);
 
+	gl41data_after(data);
 	return 0;
 }
 int gl41data_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)

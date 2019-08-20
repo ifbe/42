@@ -7,7 +7,7 @@ static void stair_draw_pixel(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
-}
+}/*
 static void stair_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -33,7 +33,7 @@ static void stair_draw_vbo2d(
 		tc[2] = vc[2] + vr[2]*j/8 + vf[2]*j/8;
 		carvesolid2d_rect(win, 0x808080, tc, tr, tf);
 	}
-}
+}*/
 static void stair_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

@@ -51,7 +51,7 @@ static void qrcode_draw_pixel(
 		}
 //say("\n");
 	}
-}
+}/*
 static void qrcode_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -87,7 +87,7 @@ static void qrcode_draw_vbo2d(
 			carvesolid2d_rect(win, rgb, tc, tr, tf);
 		}
 	}
-}
+}*/
 static void qrcode_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

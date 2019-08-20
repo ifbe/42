@@ -107,7 +107,7 @@ found:
 			y += 1;
 
 			leaf = (void*)(rel->dstchip);
-			carve2d_string(win, rgb, tc, tr, tf, (void*)&leaf->fmt, 8);
+			carvestring(win, rgb, tc, tr, tf, (void*)&leaf->fmt, 8);
 		}
 
 		rel = samesrcnextdst(rel);
@@ -165,7 +165,7 @@ found:
 			y += 1;
 
 			leaf = (void*)(rel->dstchip);
-			carve2d_string(win, rgb, tc, tr, tf, (void*)&leaf->fmt, 8);
+			carvestring(win, rgb, tc, tr, tf, (void*)&leaf->fmt, 8);
 		}
 
 		rel = samesrcnextdst(rel);
@@ -191,12 +191,12 @@ static int camman_draw(
 	tc[0] = 0.125 - 1.0;
 	tc[1] = 0.0;
 	tc[2] = 0.0;
-	carveopaque2d_rect(win, 0x3fffffff, tc, tr, tf);
+	carveopaque_rect(win, 0x3fffffff, tc, tr, tf);
 */
 	tc[0] = 1.0 - 0.125;
 	tc[1] = 0.0;
 	tc[2] = 0.0;
-	carveopaque2d_rect(win, 0x3fffffff, tc, tr, tf);
+	carveopaque_rect(win, 0x3fffffff, tc, tr, tf);
 
 	//
 	camman_debug(act, pin, win, sty);

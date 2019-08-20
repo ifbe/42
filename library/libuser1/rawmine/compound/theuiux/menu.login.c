@@ -11,16 +11,17 @@ static void login_draw_pixel(
 }
 static void login_draw_vbo(
 	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct actor* ctx, struct style* sty)
 {
 	vec3 tc,tr,tf;
-	if(0 == sty)sty = defaultstyle_vbo2d();
+	//if(0 == sty)sty = defaultstyle_vbo3d();
+say("@login_draw_vbo:%llx,%llx\n",act,ctx);
 
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	carvesolid2d_rect(win, 0x808080, vc, vr ,vf);
+	carvesolid_rect(ctx, 0x808080, vc, vr ,vf);
 
 	tc[0] = vc[0] + vf[0]/2;
 	tc[1] = vc[1] + vf[1]/2;
@@ -31,7 +32,7 @@ static void login_draw_vbo(
 	tf[0] = vf[0] / 4;
 	tf[1] = vf[1] / 4;
 	tf[2] = vf[2] / 4;
-	carvestring2d_center(win, 0xffffff, tc, tr, tf, (void*)"welcome!", 8);
+	carvestring_center(ctx, 0xffffff, tc, tr, tf, (void*)"welcome!", 8);
 
 	tc[0] = vc[0] - vf[0]/8;
 	tc[1] = vc[1] - vf[1]/8;
@@ -42,12 +43,12 @@ static void login_draw_vbo(
 	tf[0] = vf[0] / 16;
 	tf[1] = vf[1] / 16;
 	tf[2] = vf[2] / 16;
-	carvesolid2d_rect(win, 0x202020, tc, tr, tf);
+	carvesolid_rect(ctx, 0x202020, tc, tr, tf);
 	tc[2] += 1.0;
 	tr[0] /= 8;
 	tr[1] /= 8;
 	tr[1] /= 8;
-	carvestring2d_center(win, 0xffffff, tc, tr, tf, (void*)"username", 8);
+	carvestring_center(ctx, 0xffffff, tc, tr, tf, (void*)"username", 8);
 
 	tc[0] = vc[0] - vf[0]*3/8;
 	tc[1] = vc[1] - vf[1]*3/8;
@@ -58,12 +59,12 @@ static void login_draw_vbo(
 	tf[0] = vf[0] / 16;
 	tf[1] = vf[1] / 16;
 	tf[2] = vf[2] / 16;
-	carvesolid2d_rect(win, 0x202020, tc, tr, tf);
+	carvesolid_rect(ctx, 0x202020, tc, tr, tf);
 	tc[2] += 1.0;
 	tr[0] /= 8;
 	tr[1] /= 8;
 	tr[1] /= 8;
-	carvestring2d_center(win, 0xffffff, tc, tr, tf, (void*)"password", 8);
+	carvestring_center(ctx, 0xffffff, tc, tr, tf, (void*)"password", 8);
 }
 static void login_draw_json(
 	struct actor* act, struct style* pin,
@@ -101,16 +102,22 @@ static void login_draw(
 
 
 
-static void login_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void login_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	struct actor* ctx = buf;
+	say("@login_read:%llx,%llx,%llx\n",act,win,buf);
+
+	if(ctx){
+		if(_gl41data_ == ctx->type)login_draw_vbo(act,pin,ctx,sty);
+	}
 	//login_draw(act, pin, win, sty);
 }
-static void login_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void login_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 }
 static void login_stop(struct halfrel* self, struct halfrel* peer)

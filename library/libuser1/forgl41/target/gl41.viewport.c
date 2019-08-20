@@ -3,6 +3,10 @@
 
 
 
+int gl41view_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+{
+    return 0;
+}
 int gl41view_delete(struct arena* win)
 {
 	return 0;

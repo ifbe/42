@@ -105,7 +105,7 @@ static void weiqi_draw_pixel(
 			);
 		}
 	}
-}
+}/*
 static void weiqi_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -170,7 +170,7 @@ static void weiqi_draw_vbo2d(
 			carvesolid2d_circle(win, rgb, tc, tr, tf);
 		}
 	}
-}
+}*/
 static void weiqi_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

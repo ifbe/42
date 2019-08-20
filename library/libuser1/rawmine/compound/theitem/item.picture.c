@@ -4,7 +4,7 @@ void readimagefrompng(u8* buf, int len, int* width, int* height, int* depth, int
 
 
 
-
+/*
 char* picture_glsl2d_v =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 vertex;\n"
@@ -14,7 +14,7 @@ GLSL_VERSION
 	"uvw = texuvw;\n"
 	"gl_Position = vec4(vertex, 1.0);\n"
 "}\n";
-
+*/
 char* picture_glsl_v =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 vertex;\n"
@@ -103,7 +103,7 @@ static void picture_draw_pixel(
 			}
 		}
 	}
-}
+}/*
 static void picture_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -160,7 +160,7 @@ static void picture_draw_vbo2d(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
-}
+}*/
 static void picture_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

@@ -35,7 +35,7 @@ static void clock_draw_pixel(
 	{
 		drawdecimal(win, c[j], cx+64-(j*24), cy-8, p[j]);
 	}
-}
+}/*
 static void clock_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -93,7 +93,7 @@ static void clock_draw_vbo2d(
 		tc[2] = vc[2] + c*vr[2]*7/8 + s*vf[2]*7/8 - 0.1;
 		carve2d_ascii(win, 0xffffff, tc, tr, tf, j<10 ? j+0x30 : j+0x37);
 	}
-}
+}*/
 static void clock_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

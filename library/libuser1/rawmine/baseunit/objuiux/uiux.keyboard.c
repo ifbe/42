@@ -115,7 +115,7 @@ void vkbd_draw_vbo(struct actor* win, struct style* sty)
             vf[0] = 0.0;
             vf[1] = 0.5/17;
             vf[2] = 0.0;
-            carveopaque2d_rect(win, rgb, vc, vr, vf);
+            carveopaque_rect(win, rgb, vc, vr, vf);
 
             vc[2] = -0.91;
             vr[0] = j;
@@ -130,13 +130,13 @@ void vkbd_draw_vbo(struct actor* win, struct style* sty)
                 else if(0xd == c)c = 'r';
                 vc[0] = (x-7.5)/8.0+j;
                 vc[1] = (y-15.5)/16.0;
-                carve2d_ascii(win, 0xffffff, vc, vr, vf, c);
+                carveascii(win, 0xffffff, vc, vr, vf, c);
                 c = '\\';
             }
 
             vc[0] = (x-7.5)/8.0;
             vc[1] = (y-15.5)/16.0;
-            carve2d_ascii(win, 0xffffff, vc, vr, vf, c);
+            carveascii(win, 0xffffff, vc, vr, vf, c);
         }
     }
 }

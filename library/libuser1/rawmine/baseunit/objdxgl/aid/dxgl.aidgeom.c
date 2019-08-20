@@ -14,7 +14,7 @@ GLSL_VERSION
 	"colour = c;\n"
 	"gl_Position = cammvp * vec4(v, 1.0);\n"
 "}\n";
-
+/*
 char easy2d_frag[] =
 GLSL_VERSION
 "in mediump vec3 colour;\n"
@@ -22,7 +22,7 @@ GLSL_VERSION
 "void main(){\n"
 	"FragColor = vec4(colour, 1.0);\n"
 "}\n";
-
+*/
 
 
 
@@ -47,7 +47,7 @@ GLSL_VERSION
 
 
 
-
+/*
 char glsl2d_vert[] =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
@@ -97,7 +97,7 @@ GLSL_VERSION
 	"c = vec3(clamp(c.x, 0.0, 1.0), clamp(c.y, 0.0, 1.0), clamp(c.z, 0.0, 1.0));\n"
 	"FragColor = vec4(c, 1.0);\n"
 "}\n";
-
+*/
 
 
 
@@ -173,7 +173,7 @@ GLSL_VERSION
 
 
 
-
+/*
 char opaque2d_vert[] =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
@@ -192,7 +192,7 @@ GLSL_VERSION
 "void main(){\n"
 	"FragColor = colour;\n"
 "}\n";
-
+*/
 
 
 

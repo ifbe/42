@@ -85,7 +85,7 @@ static void the2048_draw_pixel(
 			);
 		}
 	}
-}
+}/*
 static void the2048_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -131,7 +131,7 @@ static void the2048_draw_vbo2d(
 			carve2d_decimal(win, 0, tc, tr, tf, val2048[tab[y][x]]);
 		}
 	}
-}
+}*/
 static void the2048_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

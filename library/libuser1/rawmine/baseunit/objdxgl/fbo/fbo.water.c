@@ -4,7 +4,7 @@ void actorcreatefromfile(struct actor* act, char* name);
 
 
 
-
+/*
 char* water_glsl2d_v =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
@@ -16,7 +16,7 @@ GLSL_VERSION
 	"normal = vec3(0.0, 0.0, 1.0);\n"
 	"gl_Position = vec4(v, 1.0);\n"
 "}\n";
-
+*/
 char* water_glsl_v =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"

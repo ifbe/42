@@ -30,7 +30,7 @@ static void tree_draw_pixel(
 	drawsolid_rect(win, 0x00ff00, cx-ww*3/4, cy-hh/2, cx+ww*3/4, cy-hh/4);
 	drawsolid_rect(win, 0x00ff00, cx-ww/2, cy-hh*3/4, cx+ww/2, cy-hh/2);
 	drawsolid_rect(win, 0x00ff00, cx-ww/4, cy-hh, cx+ww/4, cy-hh*3/4);
-}
+}/*
 static void tree_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -90,7 +90,7 @@ static void tree_draw_vbo2d(
 	tr[1] = vr[1]*1/4;
 	tr[2] = vr[2]*1/4;
 	carvesolid_prism4(win, 0x00ff00, tc, tr, tf, tu);
-}
+}*/
 static void tree_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)

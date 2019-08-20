@@ -69,7 +69,7 @@ static void calculator_draw_pixel(
 			);
 		}
 	}
-}
+}/*
 static void calculator_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -141,7 +141,7 @@ static void calculator_draw_vbo2d(
 			carve2d_ascii(win, 0xffffff, tc, tr, tf, table[y][x]);
 		}
 	}
-}
+}*/
 static void calculator_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
