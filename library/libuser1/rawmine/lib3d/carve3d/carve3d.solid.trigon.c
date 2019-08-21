@@ -1,17 +1,132 @@
 #include "libuser.h"
 #define acc 16
+
+
+
+
+static char solidtrigon_vert[] =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 c;\n"
+"layout(location = 2)in mediump vec3 n;\n"
+"out mediump vec3 normal;\n"
+"out mediump vec3 vertex;\n"
+"out mediump vec3 colour;\n"
+"uniform mat4 cammvp;\n"
+"void main(){\n"
+	"vertex = v;\n"
+	"normal = n;\n"
+	"colour = c;\n"
+	"gl_Position = cammvp * vec4(vertex,1.0);\n"
+"}\n";
+
+static char solidtrigon_frag[] =
+GLSL_VERSION
+"in mediump vec3 vertex;\n"
+"in mediump vec3 normal;\n"
+"in mediump vec3 colour;\n"
+"out mediump vec4 FragColor;\n"
+"uniform mediump vec3 camxyz;\n"
+
+"mediump vec3 dirsun0 = vec3(1.0, 1.0, 1.0);\n"
+"mediump vec3 dirsun1 = vec3(-1.0, 0.0, 0.0);\n"
+
+"mediump vec3 LA = vec3(1.0, 1.0, 1.0);\n"
+"mediump vec3 LD = vec3(1.0, 1.0, 1.0);\n"
+"mediump vec3 LS = vec3(1.0, 1.0, 1.0);\n"
+"mediump vec3 KA = vec3(0.231250, 0.231250, 0.231250);\n"
+"mediump vec3 KD = vec3(0.277500, 0.277500, 0.277500);\n"
+"mediump vec3 KS = vec3(0.773911, 0.773911, 0.773911);\n"
+
+"vec3 sun0(){\n"
+	"mediump vec3 N = normalize(normal);\n"
+	"mediump vec3 L = normalize(dirsun0);\n"
+	"mediump float SN = dot(N, L);\n"
+	"mediump vec3 ret = LD*KD*max(SN, 0.0);\n"
+	"if(SN < 0.0)return ret;\n"
+
+	"mediump vec3 E = normalize(camxyz - vertex);\n"
+	"mediump vec3 H = normalize(E + L);\n"
+	"mediump float NH = max(dot(N, H), 0.0);\n"
+	"return ret + LS*KS*pow(NH, 89.6);\n"
+"}\n"
+"vec3 sun1(){\n"
+	"mediump vec3 N = normalize(normal);\n"
+	"mediump vec3 L = normalize(dirsun1);\n"
+	"mediump float SN = dot(N, L);\n"
+	"mediump vec3 ret = LD*KD*max(SN, 0.0);\n"
+	"if(SN < 0.0)return ret;\n"
+
+	"mediump vec3 E = normalize(camxyz - vertex);\n"
+	"mediump vec3 H = normalize(E + L);\n"
+	"mediump float NH = max(dot(N, H), 0.0);\n"
+	"return ret + LS*KS*pow(NH, 89.6);\n"
+"}\n"
+//"float shadow(){\n"
+	//"if(uvw.z - texture(tex0, uvw.xy).r > 0.000001)return 0.1;\n"
+	//"return 1.0;\n"
+//"}\n"
+"void main(){\n"
+	"mediump vec3 c = colour;\n"
+	"c += sun0() / 2.0;\n"
+	"c += sun1() / 2.0;\n"
+	"c = vec3(clamp(c.x, 0.0, 1.0), clamp(c.y, 0.0, 1.0), clamp(c.z, 0.0, 1.0));\n"
+	"FragColor = vec4(c, 1.0);\n"
+"}\n";
+
+
+
+
+static int trigon3d_fill(struct glsrc* src)
+{
+	src->method = 'i';
+	src->geometry = 3;
+
+	if(0 == src->vs){
+		src->vs = solidtrigon_vert;
+		src->fs = solidtrigon_frag;
+		src->shader_enq = 1;
+	}
+
+	if(0 == src->ibuf){
+		src->ibuf_len = 0x100000;
+		src->ibuf = memorycreate(src->ibuf_len);
+		if(0 == src->ibuf)return -2;
+
+		src->ibuf_w = 2*3;
+		src->ibuf_h = 0;	//(src->ibuf_len) / (src->ibuf_w);
+		src->ibuf_fmt = 0x222;
+		src->ibuf_enq = 1;
+	}
+
+	if(0 == src->vbuf){
+		src->vbuf_len = 0x1000000;
+		src->vbuf = memorycreate(src->vbuf_len);
+		if(0 == src->vbuf)return -1;
+
+		src->vbuf_w = 4*3*3;
+		src->vbuf_h = 0;	//(src->vbuf_len) / (src->vbuf_w);
+		src->vbuf_fmt = vbuffmt_333;
+		src->vbuf_enq = 1;
+	}
+
+	return 0;
+}
 int trigon3d_vars(struct actor* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	struct datapair* mod;
 	struct glsrc* src;
-	int vlen,ilen;
+	int vlen,ilen,ret;
 	if(0 == win)return -1;
 
 	mod = win->gl_solid;
 	if(0 == mod)return -2;
 
 	src = &mod[trigon3d].src;
-	if(0 == src->vbuf)return -3;
+	if(0 == src->vbuf){
+		ret = trigon3d_fill(src);
+		if(ret < 0)return -3;
+	}
 
 	vlen = src->vbuf_h;
 	ilen = src->ibuf_h;

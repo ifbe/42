@@ -22,9 +22,6 @@ void water_register(void*);
 //.light
 void dirlight_register(void*);
 void spotlight_register(void*);
-//.aid
-void aidfont_register(void*);
-void aidgeom_register(void*);
 //.else
 void ground_register(void*);
 void particle_register(void*);
@@ -187,13 +184,6 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	spotlight_register(tmp);
-	tmp += sizeof(struct actor);
-
-//.aid
-	aidfont_register(tmp);
-	tmp += sizeof(struct actor);
-
-	aidgeom_register(tmp);
 	tmp += sizeof(struct actor);
 
 //.else

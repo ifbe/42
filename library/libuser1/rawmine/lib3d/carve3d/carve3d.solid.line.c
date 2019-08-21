@@ -1,13 +1,85 @@
 #include "libuser.h"
 #define halfsqrt3 0.8660254037844386
 #define acc 32
+
+
+
+
+static char solidline_vert[] =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 c;\n"
+"out mediump vec3 colour;\n"
+"uniform mat4 cammvp;\n"
+"void main(){\n"
+	"colour = c;\n"
+	"gl_Position = cammvp * vec4(v, 1.0);\n"
+"}\n";
+
+static char solidline_frag[] =
+GLSL_VERSION
+"in mediump vec3 colour;\n"
+"out mediump vec4 FragColor;\n"
+"void main(){\n"
+	"FragColor = vec4(colour, 1.0);\n"
+"}\n";
+
+
+
+
+static int line3d_fill(struct glsrc* src)
+{
+	src->method = 'i';
+	src->geometry = 2;
+
+	if(0 == src->vs){
+		src->vs = solidline_vert;
+		src->fs = solidline_frag;
+		src->shader_enq = 1;
+	}
+
+	if(0 == src->ibuf){
+		src->vbuf_len = 0x100000;
+		src->vbuf = memorycreate(src->vbuf_len);
+		if(0 == src->ibuf)return -2;
+
+		src->vbuf_w = 4*3*2;
+		src->vbuf_h = 0;	//(src->vbuf_len) / (src->vbuf_w);
+		src->vbuf_fmt = vbuffmt_33;
+		src->vbuf_enq = 1;
+	}
+
+	if(0 == src->vbuf){
+		src->ibuf_len = 0x100000;
+		src->ibuf = memorycreate(src->ibuf_len);
+		if(0 == src->vbuf)return -1;
+
+		src->ibuf_w = 2*2;
+		src->ibuf_h = 0;	//(src->ibuf_len) / (src->ibuf_w);
+		src->ibuf_fmt = 0x22;
+		src->ibuf_enq = 1;
+	}
+
+	return 0;
+}
 int line3d_vars(struct actor* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
-	struct datapair* mod = win->gl_solid;
-	struct glsrc* src = &mod[line3d].src;
-	int vlen = src->vbuf_h;
-	int ilen = src->ibuf_h;
+	struct datapair* mod;
+	struct glsrc* src;
+	int vlen,ilen,ret;
+	if(0 == win)return -1;
 
+	mod = win->gl_solid;
+	if(0 == mod)return -2;
+
+	src = &mod[line3d].src;
+	if(0 == src->vbuf){
+		ret = line3d_fill(src);
+		if(ret < 0)return -3;
+	}
+
+	vlen = src->vbuf_h;
+	ilen = src->ibuf_h;
 	*vbuf = (src->vbuf) + (24*vlen);
 	*ibuf = (src->ibuf) + (4*ilen);
 	src->vbuf_h += vcnt;

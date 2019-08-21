@@ -96,12 +96,14 @@ static int aidfont_fill(struct glsrc* src, int id)
 	src->method = 'i';
 	src->geometry = 3;
 
-	src->vs = font3dvert;
-	src->fs = fontfrag;
-	src->shader_enq = 1;
+	if(0 == src->vs){
+		src->vs = font3dvert;
+		src->fs = fontfrag;
+		src->shader_enq = 1;
+	}
 
 	if(0 == src->tex_data[0]){
-		if(0 == buf)return -1;
+		if(0 == buf)return -3;
 
 		src->tex_name[0] = "tex0";
 		src->tex_data[0] = buf + 0x400000*id;
@@ -118,7 +120,7 @@ static int aidfont_fill(struct glsrc* src, int id)
 		if(0 == src->ibuf)return -2;
 
 		src->ibuf_w = 2*3;
-		src->ibuf_h = (src->ibuf_len) / (src->ibuf_w);
+		src->ibuf_h = 0;	//(src->ibuf_len) / (src->ibuf_w);
 		src->ibuf_fmt = 0x222;
 		src->ibuf_enq = 1;
 	}
@@ -126,10 +128,10 @@ static int aidfont_fill(struct glsrc* src, int id)
 	if(0 == src->vbuf){
 		src->vbuf_len = 0x200000;
 		src->vbuf = memorycreate(src->vbuf_len);
-		if(0 == src->vbuf)return -3;
+		if(0 == src->vbuf)return -1;
 
 		src->vbuf_w = 4*3*3;
-		src->vbuf_h = (src->vbuf_len) / (src->vbuf_w);
+		src->vbuf_h = 0;	//(src->vbuf_len) / (src->vbuf_w);
 		src->vbuf_fmt = vbuffmt_333;
 		src->vbuf_enq = 1;
 	}

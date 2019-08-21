@@ -1,11 +1,72 @@
 #include "libuser.h"
 #define acc 18
+
+
+
+
+static char solidpoint_vert[] =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 c;\n"
+"out mediump vec3 colour;\n"
+"uniform mat4 cammvp;\n"
+"void main(){\n"
+	"colour = c;\n"
+	"gl_Position = cammvp * vec4(v, 1.0);\n"
+"}\n";
+
+static char solidpoint_frag[] =
+GLSL_VERSION
+"in mediump vec3 colour;\n"
+"out mediump vec4 FragColor;\n"
+"void main(){\n"
+	"FragColor = vec4(colour, 1.0);\n"
+"}\n";
+
+
+
+
+static int point3d_fill(struct glsrc* src)
+{
+	src->method = 'v';
+	src->geometry = 1;
+
+	if(0 == src->vs){
+		src->vs = solidpoint_vert;
+		src->fs = solidpoint_frag;
+		src->shader_enq = 1;
+	}
+
+	if(0 == src->vbuf){
+		src->vbuf_len = 0x100000;
+		src->vbuf = memorycreate(src->vbuf_len);
+		if(0 == src->vbuf)return -1;
+
+		src->vbuf_w = 4*3*2;
+		src->vbuf_h = 0;	//(src->vbuf_len) / (src->vbuf_w);
+		src->vbuf_fmt = vbuffmt_33;
+		src->vbuf_enq = 1;
+	}
+
+	return 0;
+}
 int point3d_vars(struct actor* win, int unused, float** vbuf, int vcnt)
 {
-	struct datapair* mod = win->gl_solid;
-	struct glsrc* src = &mod[point3d].src;
-	int vlen = src->vbuf_h;
+	struct datapair* mod;
+	struct glsrc* src;
+	int vlen,ret;
+	if(0 == win)return -1;
 
+	mod = win->gl_solid;
+	if(0 == mod)return -2;
+
+	src = &mod[point3d].src;
+	if(0 == src->vbuf){
+		ret = point3d_fill(src);
+		if(ret < 0)return -3;
+	}
+
+	vlen = src->vbuf_h;
 	*vbuf = (src->vbuf) + (24*vlen);
 	src->vbuf_h += vcnt;
 

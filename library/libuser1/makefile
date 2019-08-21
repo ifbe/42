@@ -72,8 +72,6 @@ rawmine/baseunit/objcode/code.call.c \
 rawmine/baseunit/objcode/code.for.c \
 rawmine/baseunit/objcode/code.if.c \
 rawmine/baseunit/objcode/code.jump.c \
-rawmine/baseunit/objdxgl/aid/dxgl.aidfont.c \
-rawmine/baseunit/objdxgl/aid/dxgl.aidgeom.c \
 rawmine/baseunit/objdxgl/cam/cam.ortho.c \
 rawmine/baseunit/objdxgl/cam/cam.1rd.c \
 rawmine/baseunit/objdxgl/cam/cam.3rd.c \

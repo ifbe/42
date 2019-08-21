@@ -172,7 +172,7 @@ void* visionlistener(struct arena* win)
 		buf.memory = V4L2_MEMORY_MMAP;
 		ioctl(fd, VIDIOC_DQBUF, &buf);
 
-		//do
+		say("cur=%d\n");
 		//printmemory(info[cur].buf+0xfff, 16);
 		struct relation* orel = win->orel0;
 		while(1)

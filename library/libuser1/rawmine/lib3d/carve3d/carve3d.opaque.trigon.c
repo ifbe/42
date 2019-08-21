@@ -1,5 +1,67 @@
 #include "libuser.h"
 #define acc 32
+
+
+
+
+static char opaquetrigon_vert[] =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 v;\n"
+"layout(location = 1)in mediump vec3 n;\n"
+"layout(location = 2)in mediump vec4 c;\n"
+"out mediump vec4 colour;\n"
+"uniform mat4 cammvp;\n"
+"void main(){\n"
+	"colour = c;\n"
+	"gl_Position = cammvp * vec4(v, 1.0);\n"
+"}\n";
+
+static char opaquetrigon_frag[] =
+GLSL_VERSION
+"in mediump vec4 colour;\n"
+"out mediump vec4 FragColor;\n"
+"void main(){\n"
+	"FragColor = colour;\n"
+"}\n";
+
+
+
+
+static int opaque3d_fill(struct glsrc* src)
+{
+	src->method = 'i';
+	src->geometry = 3;
+
+	if(0 == src->vs){
+		src->vs = opaquetrigon_vert;
+		src->fs = opaquetrigon_frag;
+		src->shader_enq = 1;
+	}
+
+	if(0 == src->ibuf){
+		src->ibuf_len = 0x100000;
+		src->ibuf = memorycreate(src->ibuf_len);
+		if(0 == src->ibuf)return -2;
+
+		src->ibuf_w = 2*3;
+		src->ibuf_h = 0;	//(src->ibuf_len) / (src->ibuf_w);
+		src->ibuf_fmt = 0x222;
+		src->ibuf_enq = 1;
+	}
+
+	if(0 == src->vbuf){
+		src->vbuf_len = 0x1000000;
+		src->vbuf = memorycreate(src->vbuf_len);
+		if(0 == src->vbuf)return -1;
+
+		src->vbuf_w = 4*4*3;
+		src->vbuf_h = 0;	//(src->vbuf_len) / (src->vbuf_w);
+		src->vbuf_fmt = vbuffmt_444;
+		src->vbuf_enq = 1;
+	}
+
+	return 0;
+}
 int opaque3d_vars(struct actor* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	struct datapair* mod = win->gl_opaque;
