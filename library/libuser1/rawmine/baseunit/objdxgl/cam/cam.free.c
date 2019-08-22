@@ -574,64 +574,69 @@ void freecam_frustum(struct fstyle* d, struct fstyle* s)
 	//d->vf[3] = 1e20;
 }
 static void freecam_matrix(
-	struct actor* act, struct style* frustum,
-	struct actor* win, struct style* wingeom,
-	u8* buf, int len)
-{/*
+	struct actor* act, struct style* pin,
+	struct actor* ctx, struct style* sty)
+{
+	say("@orthcam_matrix:%llx,%llx,%llx,%llx\n", ctx->gl_camera, ctx->gl_light, ctx->gl_solid, ctx->gl_opaque);
+
 	struct relation* rel;
-	struct actor* r;
-	struct fstyle* s;
+	struct actor* world;
+	struct fstyle* obb;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
 	rel = act->irel0;
 	while(1){
 		if(0 == rel)return;
-		if(hex32('g','e','o','m') == rel->dstflag){
-			s = (void*)(rel->srcfoot);
-			r = (void*)(rel->srcchip);
+		world = (void*)(rel->srcchip);
+		if(_world3d_ == world->type){
+			obb = (void*)(rel->srcfoot);
 			break;
 		}
 		rel = samedstnextsrc(rel);
 	}
-	if(0 == s)return;
+	if(0 == obb)return;
 
 
 	float* m = act->buf;
-	freecam_frustum(&frustum->f, s);
-	fixmatrix(m, &frustum->f);
+	freecam_frustum(&pin->f, obb);
+	fixmatrix((void*)m, &pin->f);
 	mat4_transpose((void*)m);
 	//printmat4(m);
 
-
-	u64* p = (void*)buf;
-	struct glsrc* src = (void*)(buf+0x20);
-
-	p[0] = (u64)src;
-	p[1] = (u64)r->gl_light;
-	p[2] = (u64)r->gl_solid;
-	p[3] = (u64)r->gl_opaque;
-
-
+	struct glsrc* src = ctx->gl_camera;
 	src->arg_fmt[0] = 'm';
 	src->arg_name[0] = "cammvp";
 	src->arg_data[0] = m;
 
 	src->arg_fmt[1] = 'v';
 	src->arg_name[1] = "camxyz";
-	src->arg_data[1] = act->camera.vc;
-*/
+	src->arg_data[1] = obb->vc;
 }
 
 
 
 
-static void freecam_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void freecam_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	struct actor* ctx = buf;
+	say("@freecam_read:\n");
+
+	if(ctx){
+		switch(ctx->type){
+			case _gl41data_:break;//freecam_draw_vbo(act,pin,ctx,sty);
+		}
+	}
+	else{
+		switch(win->type){
+			case _gl41view_:
+			case _gl41wnd0_:freecam_matrix(act, pin, win, sty);
+		}
+	}
 /*
 	switch(self->flag){
 		case _cam_:freecam_matrix(act, pin, win, sty, buf, len);break;
@@ -639,7 +644,7 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 		default:freecam_draw(act, pin, win, sty);
 	}*/
 }
-static int freecam_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int freecam_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

@@ -39,25 +39,25 @@ static int line3d_fill(struct glsrc* src)
 	}
 
 	if(0 == src->ibuf){
-		src->vbuf_len = 0x100000;
-		src->vbuf = memorycreate(src->vbuf_len);
-		if(0 == src->ibuf)return -2;
-
-		src->vbuf_w = 4*3*2;
-		src->vbuf_h = 0;	//(src->vbuf_len) / (src->vbuf_w);
-		src->vbuf_fmt = vbuffmt_33;
-		src->vbuf_enq = 1;
-	}
-
-	if(0 == src->vbuf){
 		src->ibuf_len = 0x100000;
 		src->ibuf = memorycreate(src->ibuf_len);
-		if(0 == src->vbuf)return -1;
+		if(0 == src->ibuf)return -1;
 
 		src->ibuf_w = 2*2;
 		src->ibuf_h = 0;	//(src->ibuf_len) / (src->ibuf_w);
 		src->ibuf_fmt = 0x22;
 		src->ibuf_enq = 1;
+	}
+
+	if(0 == src->vbuf){
+		src->vbuf_len = 0x100000;
+		src->vbuf = memorycreate(src->vbuf_len);
+		if(0 == src->vbuf)return -2;
+
+		src->vbuf_w = 4*3*2;
+		src->vbuf_h = 0;	//(src->vbuf_len) / (src->vbuf_w);
+		src->vbuf_fmt = vbuffmt_33;
+		src->vbuf_enq = 1;
 	}
 
 	return 0;
@@ -101,6 +101,7 @@ void carveline(struct actor* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 2, 1);
+	if(vlen < 0)return;
 
 	vbuf[ 0] = va[0];
 	vbuf[ 1] = va[1];
@@ -131,6 +132,7 @@ void carveline_arrow(struct actor* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 4, 3);
+	if(vlen < 0)return;
 
 	vbuf[ 0] = va[0];
 	vbuf[ 1] = va[1];
@@ -200,6 +202,7 @@ void carveline_bezier(struct actor* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc + 1, acc);
+	if(vlen < 0)return;
 
 	for(j=0;j<=acc;j++)
 	{
@@ -231,6 +234,7 @@ void carveline_special(struct actor* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc + 1, acc);
+	if(vlen < 0)return;
 
 	for(j=0;j<=acc;j++)
 	{
@@ -264,6 +268,7 @@ void carveline_yshape(struct actor* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 4, 3);
+	if(vlen < 0)return;
 
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
@@ -310,6 +315,7 @@ void carveline_triangle(struct actor* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 3, 3);
+	if(vlen < 0)return;
 
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
@@ -353,6 +359,7 @@ void carveline_rect(struct actor* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 4, 4);
+	if(vlen < 0)return;
 
 	vbuf[ 0] = vc[0] - vr[0] - vf[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1];
@@ -402,6 +409,7 @@ void carveline_hexagon(struct actor* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 6, 6);
+	if(vlen < 0)return;
 
 	//0
 	vbuf[ 0] = vc[0] + vr[0];
@@ -488,6 +496,7 @@ void carveline_circle(struct actor* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, lineacc, lineacc);
+	if(vlen < 0)return;
 
 	for(j=0;j<lineacc;j++)
 	{
@@ -535,6 +544,7 @@ void carveline_cone(struct actor* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc + 2, acc * 3);
+	if(vlen < 0)return;
 
 	for(j=0;j<acc;j++)
 	{
@@ -599,6 +609,7 @@ void carveline_prism4(struct actor* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 8, 12);
+	if(vlen < 0)return;
 
 	vbuf[ 0] = vc[0] - vr[0] - vf[0] - vu[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1] - vu[1];
@@ -706,6 +717,7 @@ void carveline_cylinder(struct actor* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc * 2, acc * 3);
+	if(vlen < 0)return;
 
 	for(j=0;j<acc;j++)
 	{
@@ -764,6 +776,7 @@ void carveline_dodecahedron(struct actor* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 20, 30);
+	if(vlen < 0)return;
 
 	for(j=0;j<20*6;j+=6)
 	{
@@ -942,6 +955,7 @@ void carveline_icosahedron(struct actor* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 12, 30);
+	if(vlen < 0)return;
 
 	for(j=0;j<12*6;j++)
 	{
@@ -1083,6 +1097,7 @@ void carveline_sphere(struct actor* win, u32 rgb,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, accx*accy+2, accx*accy+accx*(accy+1));
+	if(vlen < 0)return;
 
 	for(k=0;k<accy;k++)
 	{
