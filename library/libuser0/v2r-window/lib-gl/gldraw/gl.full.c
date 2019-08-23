@@ -362,7 +362,7 @@ void fullwindow_upload(struct arena* ogl, struct actor* ctx)
 {
 	int j;
 	struct datapair* mod;
-	say("@fullwindow_upload: %llx,%llx,%.8s\n", ogl, ctx, &ctx->type);
+	//say("@fullwindow_upload: %llx,%llx,%.8s\n", ogl, ctx, &ctx->type);
 
 	//solid
 	mod = ctx->gl_solid;
@@ -395,7 +395,7 @@ void fullwindow_eachpass(struct arena* ogl, struct actor* view)
 	int j;
 	float w,h;
 	struct datapair* mod;
-	say("@fullwindow_render: %llx,%llx,%llx,%llx\n", view->gl_camera, view->gl_light, view->gl_solid, view->gl_opaque);
+	//say("@fullwindow_render: %llx,%llx,%llx,%llx\n", view->gl_camera, view->gl_light, view->gl_solid, view->gl_opaque);
 
 	w = ogl->fbwidth;
 	h = ogl->fbheight;
@@ -437,7 +437,7 @@ void fullwindow_viewport(struct arena* ogl, struct actor* view)
 	struct halfrel* self;
 	struct halfrel* peer;
 
-	say("@fullwindow_viewport: %llx,%llx,%.8s\n", ogl, view, &view->type);
+	//say("@fullwindow_viewport: %llx,%llx,%.8s\n", ogl, view, &view->type);
 	if(0 == view)return;
 
 	rel = view->orel0;
@@ -472,7 +472,7 @@ void fullwindow_render(struct arena* ogl, struct actor* wnd)
 	int cnt;
 	struct relation* rel;
 	struct actor* act;
-	say("@fullwindow_render: %llx,%llx,%.8s\n", ogl, wnd, &wnd->type);
+	//say("@fullwindow_render: %llx,%llx,%.8s\n", ogl, wnd, &wnd->type);
 	if(0 == wnd)return;
 
 	cnt = 0;

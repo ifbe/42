@@ -458,9 +458,10 @@ int role_test_actor(u8* buf, int len, struct chiplist chip[], int clen)
 {
 	//say("actor:\n%.*s\n", len, buf);
 	u64 hash;
-	u64 fmt;
-	u8* file;
 	u8* tmp;
+
+	u64 fmt;
+	u8* file = 0;
 
 	int j,k;
 	int str = -1;

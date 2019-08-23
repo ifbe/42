@@ -607,16 +607,22 @@ void xiangqi_event(
 
 
 
-static void xiangqi_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void xiangqi_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	struct actor* ctx = buf;
+	say("@xiangqi_read:%llx,%llx,%llx\n",act,win,buf);
+
+	if(ctx){
+		if(_gl41data_ == ctx->type)xiangqi_draw_vbo(act,pin,ctx,sty);
+	}
 	//xiangqi_draw(act, pin, win, sty);
 }
-static void xiangqi_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void xiangqi_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -656,12 +662,13 @@ static void xiangqi_create(struct actor* act, void* str)
 	int ret;
 	void* buf;
 	if(0 == act)return;
+say("@xiangqi_create:%llx\n",str);
 
-	else if(_orig_ == act->type)buf = data;
+	if(_orig_ == act->type)buf = data;
 	else if(_copy_ == act->type)buf = memorycreate(10*9);
 
 	if(str)ret = xiangqi_import(buf, str);
-	if((0==str)|(ret<=0))xiangqi_generate(data);
+	if((0==str)|(ret<=0))xiangqi_generate(buf);
 
 	for(ret=0;ret<90;ret+=9)printmemory(buf+ret, 9);
 
