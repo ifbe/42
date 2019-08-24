@@ -1,6 +1,9 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC -I.
 SRC = \
+rawbaby/baby.c \
+rawtest/test.c \
+rawmine/mine.c \
 rawmine/lib1d/lib1d.c \
 rawmine/lib1d/cli/print.cli.c \
 rawmine/lib1d/tui/print.tui.c \
@@ -189,7 +192,8 @@ rawmine/compound/theuiux/uiux.list.c \
 rawmine/compound/theuiux/uiux.nav.c \
 rawmine/compound/theuiux/uiux.tab.c \
 rawmine/compound/theuiux/uiux.tag.c \
-rawmine/scene/world3d.c \
+rawmine/scene/3dworld.c \
+rawmine/scene/eeworld.c \
 rawmine/scene/schematic.c \
 rawmine/scene/printboard.c \
 rawmine/solution/pcb.c \
@@ -197,8 +201,7 @@ rawmine/solution/game.client.c \
 rawmine/solution/game.server.c \
 rawmine/solution/ui.real.c \
 rawmine/solution/ui.virt.c \
-rawbaby/baby.c \
-rawtest/test.c \
+forhoff/hoff.c \
 fordx11/dx11.ctx.c \
 fordx11/dx11.fbo.color.c \
 fordx11/dx11.fbo.depth.c \

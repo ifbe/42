@@ -40,3 +40,13 @@ int baby_create(struct actor* act)
 {
 	return 0;
 }
+
+
+
+
+void baby_free()
+{
+}
+void baby_init(void* addr)
+{
+}

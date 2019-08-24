@@ -127,3 +127,13 @@ int test_create(struct actor* act)
 
 	return 0;
 }
+
+
+
+
+void test_free()
+{
+}
+void test_init(void* addr)
+{
+}

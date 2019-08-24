@@ -1,12 +1,11 @@
 #include "libuser.h"
-void lib1d_create(void*, void*);
-void lib1d_delete();
-void lib2d_create(void*, void*);
-void lib2d_delete();
-void lib3d_create(void*, void*);
-void lib3d_delete();
-void lib4d_create(void*, void*);
-void lib4d_delete();
+void baby_free();
+void baby_init(void*);
+void test_free();
+void test_init(void*);
+void mine_free();
+void mine_init(void*);
+
 //
 int baby_create(void*, void*);
 int baby_delete(void*, void*);
@@ -17,6 +16,18 @@ int test_create(void*, void*);
 int test_delete(void*, void*);
 int test_read(void*, void*);
 int test_write(void*, void*);
+
+//
+int eeworld_create(void*, void*);
+int eeworld_delete(void*, void*);
+int eeworld_start(void*, void*);
+int eeworld_stop(void*, void*);
+int eeworld_write(void*, void*, void*, int);
+int eeworld_read(void*, void*, void*, int);
+//hoff helper
+int hoffdata_create(void*, void*);
+int hoffdata_read(void*, void*, void*, int);
+
 //
 int world3d_create(void*, void*);
 int world3d_delete(void*, void*);
@@ -160,6 +171,7 @@ int actorread(struct halfrel* self,struct halfrel* peer,void* buf,int len)
 
 	switch(act->type){
 		case _world3d_:return world3d_read(self, peer, buf, len);
+		case _eeworld_:return eeworld_read(self, peer, buf, len);
 	}
 
 	if(0 == act->onread)return 0;
@@ -251,6 +263,15 @@ void* actorcreate(u64 type, void* buf)
 	{
 		act = allocactor();
 		act->type = _eeworld_;
+		eeworld_create(act, buf);
+		return act;
+	}
+
+	else if(_hoffdata_ == type)
+	{
+		act = allocactor();
+		act->type = _hoffdata_;
+		hoffdata_create(act, buf);
 		return act;
 	}
 
@@ -420,10 +441,14 @@ int actorread_all()
 	switch(actor[j].type){
 		case _baby_:baby_read(0, 0);break;
 		case _test_:test_read(0, 0);break;
-		//case _world3d_:world3d_read(0, 0, 0, 0);break;
 		case _gl41data_:{
 			self.chip = (u64)&actor[j];
 			gl41data_read(&self, 0, 0, 0);
+			break;
+		}
+		case _hoffdata_:{
+			self.chip = (u64)&actor[j];
+			hoffdata_read(&self, 0, 0, 0);
 			break;
 		}
 	}//switch
@@ -437,11 +462,9 @@ int actorevent(struct event* ev)
 void freeactor()
 {
 	//say("[c,f):deleteing actor\n");
-
-	lib4d_delete();
-	lib3d_delete();
-	lib2d_delete();
-	lib1d_delete();
+	mine_free();
+	test_free();
+	baby_free();
 
 	pinid = 0;
 	style = 0;
@@ -459,10 +482,8 @@ void initactor(u8* addr)
 #define max (0x100000/sizeof(struct actor))
 	for(j=0;j<max;j++)actor[j].tier = _act_;
 
-	lib1d_create(addr, 0);
-	lib2d_create(addr, 0);
-	lib3d_create(addr, 0);
-	lib4d_create(addr, 0);
-
+	baby_init(addr);
+	test_init(addr);
+	mine_init(addr);
 	//say("[c,f):createed actor\n");
 }

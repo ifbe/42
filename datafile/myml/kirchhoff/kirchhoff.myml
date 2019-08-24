@@ -1,0 +1,26 @@
+<actor>
+resistor{
+fmt:resistor
+}
+vsrc{
+fmt:vsrc
+}
+
+board{
+fmt:eeworld
+}
+
+hoff{
+fmt:hoffdata
+}
+</actor>
+
+<relation>
+(board, 0, act, vcc) -> (vsrc, 0, act, vcc)
+(board, 0, act, vcc) -> (resistor, 0, act, vcc)
+
+(board, 0, act, gnd) -> (vsrc, 0, act, gnd)
+(board, 0, act, gnd) -> (resistor, 0, act, gnd)
+
+(hoff, 0, act, 0) -> (board, 0, act, 0)
+</relation>

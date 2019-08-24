@@ -58,16 +58,21 @@ static void vsrc_draw(
 
 
 
-static void vsrc_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void vsrc_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	struct actor* tmp = buf;
+
+	switch(tmp->type){
+		case _hoffdata_:say("@vsrc_read:%llx %.4s -> %llx %.4s\n", act, &self->flag, win, &peer->flag);break;
+	}
 	//vsrc_draw(act, pin, win, sty);
 }
-static void vsrc_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void vsrc_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 }
 static void vsrc_stop(struct halfrel* self, struct halfrel* peer)

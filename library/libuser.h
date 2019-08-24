@@ -29,9 +29,13 @@ typedef float mat4[4][4];
 //
 #define _world3d_  hex64('3','d','w','o','r','l','d', 0)
 #define _eeworld_  hex64('e','e','w','o','r','l','d', 0)
+//
+#define _hoffdata_ hex64('h','o','f','f','d','a','t','a')
 //dxhelp
 #define _dx11data_ hex64('d','x','1','1','d','a','t','a')
 #define _dx11coop_ hex64('d','x','1','1','c','o','o','p')
+#define _dx11view_ hex64('d','x','1','1','v','i','e','w')
+
 #define _dx11wnd0_ hex64('d','x','1','1','w','n','d','0')
 #define _dx11fbod_ hex64('d','x','1','1','f','b','o','d')
 #define _dx11fboc_ hex64('d','x','1','1','f','b','o','c')
@@ -40,7 +44,7 @@ typedef float mat4[4][4];
 #define _gl41data_ hex64('g','l','4','1','d','a','t','a')
 #define _gl41coop_ hex64('g','l','4','1','c','o','o','p')
 #define _gl41view_ hex64('g','l','4','1','v','i','e','w')
-//
+
 #define _gl41wnd0_ hex64('g','l','4','1','w','n','d','0')
 #define _gl41fbod_ hex64('g','l','4','1','f','b','o','d')
 #define _gl41fboc_ hex64('g','l','4','1','f','b','o','c')
