@@ -1,0 +1,44 @@
+#import "mos"
+
+sram(vdd, gnd, q, nq, bl, nbl, wl)
+{
+	m2,m4 -> pmos
+	m1,m3,m5,m6 -> nmos
+
+	vdd@m2.s, m4.s
+	gnd@m1.s, m3.s
+	  q@m3.d, m4.d, m1.g, m2.g, m6.s
+	 nq@m1.d, m2.d, m3.g, m4.g, m5.s
+	 bl@m6.d
+	nbl@m5.d
+	 wl@m5.g, m6.g
+}
+
+decoder38(vdd, gnd, a0, a1, a2, w0, w1, w2, w3, w4, w5, w6, w7)
+{
+}
+
+mem8b(vdd, gnd, dat, a0, a1, a2)
+{
+	//dependency
+	s0,s1,s2,s3,s4,s5,s6,s7 -> sram
+	dc -> decoder38
+
+	//export
+	vdd@dc.vdd, s0.vdd, s1.vdd, ...
+	vdd@dc.vdd, s0.gnd, s1.gnd, ...
+	dat@s0.bl, s1.bl, s2.bl, s3.bl, ...
+	 a0@dc.a0
+	 a1@dc.a1
+	 a2@dc.a2
+
+	//myown
+	 w0@dc.w0, s0.w0
+	 w1@dc.w1, s1.w1
+	 w2@dc.w2, s1.w2
+	 w3@dc.w3, s1.w3
+	 w4@dc.w4, s1.w4
+	 w5@dc.w5, s1.w5
+	 w6@dc.w6, s1.w6
+	 w7@dc.w7, s1.w7
+}

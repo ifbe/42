@@ -334,16 +334,22 @@ static int human_event(
 
 
 
-static void human_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void human_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	struct actor* ctx = buf;
+	say("@human_read:%llx,%llx,%llx\n",act,win,buf);
+
+	if(ctx){
+		if(_gl41data_ == ctx->type)human_draw_vbo(act,pin,ctx,sty);
+	}
 	//human_draw(act, pin, win, sty);
 }
-static int human_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int human_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

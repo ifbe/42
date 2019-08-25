@@ -11,7 +11,7 @@ depth:1024
 
 <actor>
 xiangqi{
-fmt:chess
+fmt:human
 }
 freecam{
 fmt:freecam
