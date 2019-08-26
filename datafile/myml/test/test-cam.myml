@@ -1,6 +1,0 @@
-<arena>
-vision{
-fmt:cam
-file:/dev/video0
-}
-</arena>

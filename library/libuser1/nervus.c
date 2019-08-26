@@ -239,14 +239,14 @@ void* actorcreate(u64 type, void* buf)
 	else if(_baby_ == type)
 	{
 		act = allocactor();
-		act->type = _baby_;
+		act->fmt = act->type = _baby_;
 		baby_create(act, buf);
 		return act;
 	}
 	else if(_test_ == type)
 	{
 		act = allocactor();
-		act->type = _test_;
+		act->fmt = act->type = _test_;
 		test_create(act, buf);
 		return act;
 	}
@@ -255,14 +255,14 @@ void* actorcreate(u64 type, void* buf)
 	else if(_world3d_ == type)
 	{
 		act = allocactor();
-		act->type = _world3d_;
+		act->fmt = act->type = _world3d_;
 		world3d_create(act, buf);
 		return act;
 	}
 	else if(_eeworld_ == type)
 	{
 		act = allocactor();
-		act->type = _eeworld_;
+		act->fmt = act->type = _eeworld_;
 		eeworld_create(act, buf);
 		return act;
 	}
@@ -270,7 +270,7 @@ void* actorcreate(u64 type, void* buf)
 	else if(_hoffdata_ == type)
 	{
 		act = allocactor();
-		act->type = _hoffdata_;
+		act->fmt = act->type = _hoffdata_;
 		hoffdata_create(act, buf);
 		return act;
 	}
@@ -279,49 +279,49 @@ void* actorcreate(u64 type, void* buf)
 	else if(_gl41data_ == type)
 	{
 		act = allocactor();
-		act->type = _gl41data_;
+		act->fmt = act->type = _gl41data_;
 		gl41data_create(act, buf);
 		return act;
 	}
 	else if(_gl41coop_ == type)
 	{
 		act = allocactor();
-		act->type = _gl41coop_;
+		act->fmt = act->type = _gl41coop_;
 		gl41coop_create(act, buf);
 		return act;
 	}
 	else if(_gl41view_ == type)
 	{
 		act = allocactor();
-		act->type = _gl41view_;
+		act->fmt = act->type = _gl41view_;
 		gl41view_create(act, buf);
 		return act;
 	}
 	else if(_gl41fboc_ == type)
 	{
 		act = allocactor();
-		act->type = _gl41fboc_;
+		act->fmt = act->type = _gl41fboc_;
 		gl41fboc_create(act, buf);
 		return act;
 	}
 	else if(_gl41fbod_ == type)
 	{
 		act = allocactor();
-		act->type = _gl41fbod_;
+		act->fmt = act->type = _gl41fbod_;
 		gl41fbod_create(act, buf);
 		return act;
 	}
 	else if(_gl41fbog_ == type)
 	{
 		act = allocactor();
-		act->type = _gl41fbog_;
+		act->fmt = act->type = _gl41fbog_;
 		gl41fbog_create(act, buf);
 		return act;
 	}
 	else if(_gl41wnd0_ == type)
 	{
 		act = allocactor();
-		act->type = _gl41wnd0_;
+		act->fmt = act->type = _gl41wnd0_;
 		gl41wnd0_create(act, buf);
 		return act;
 	}

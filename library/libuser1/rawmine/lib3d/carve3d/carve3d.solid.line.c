@@ -121,10 +121,10 @@ void carveline(struct actor* win, u32 rgb,
 	ibuf[1] = vlen+1;
 }
 void carveline_arrow(struct actor* win, u32 rgb,
-	vec3 va, vec3 vb)
+	vec3 va, vec3 vb, vec3 vn)
 {
-	float x0,y0,z0,n0;
-	float x1,y1,z1,n1;
+	vec3 tx;
+	vec3 ty;
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
@@ -148,37 +148,22 @@ void carveline_arrow(struct actor* win, u32 rgb,
 	vbuf[10] = gg;
 	vbuf[11] = bb;
 
-	//n1 = va - vb
-	x0 = va[0] - vb[0];
-	y0 = va[1] - vb[1];
-	z0 = va[2] - vb[2];
-	n0 = 16.0 / squareroot(x0*x0 + y0*y0 + z0*z0);
-	x0 *= n0;
-	y0 *= n0;
-	z0 *= n0;
+	//tx = va - vb, ty = rotate(tx,30)
+	ty[0] = tx[0] = va[0] - vb[0];
+	ty[1] = tx[1] = va[1] - vb[1];
+	ty[2] = tx[2] = va[2] - vb[2];
+	quaternion_operation(ty, vn, PI/2);
 
-	//n2 = cross(cam.vn, n1)
-	//x1 = win->camera.vn[1]*z0 - win->camera.vn[2]*y0;
-	//y1 = win->camera.vn[2]*x0 - win->camera.vn[0]*z0;
-	//z1 = win->camera.vn[0]*y0 - win->camera.vn[1]*x0;
-	x1 = z0;
-	y1 = 0;
-	z1 = - x0;
-	n1 = 16.0 / squareroot(x1*x1 + y1*y1 + z1*z1);
-	x1 *= n1;
-	y1 *= n1;
-	z1 *= n1;
-
-	vbuf[12] = vb[0] + halfsqrt3 * x0 + 0.5 * x1;
-	vbuf[13] = vb[1] + halfsqrt3 * y0 + 0.5 * y1;
-	vbuf[14] = vb[2] + halfsqrt3 * z0 + 0.5 * z1;
+	vbuf[12] = vb[0] + (halfsqrt3 * tx[0] + 0.5 * ty[0]) / 16;
+	vbuf[13] = vb[1] + (halfsqrt3 * tx[1] + 0.5 * ty[1]) / 16;
+	vbuf[14] = vb[2] + (halfsqrt3 * tx[2] + 0.5 * ty[2]) / 16;
 	vbuf[15] = rr;
 	vbuf[16] = gg;
 	vbuf[17] = bb;
 
-	vbuf[18] = vb[0] + halfsqrt3 * x0 - 0.5 * x1;
-	vbuf[19] = vb[1] + halfsqrt3 * y0 - 0.5 * y1;
-	vbuf[20] = vb[2] + halfsqrt3 * z0 - 0.5 * z1;
+	vbuf[18] = vb[0] + (halfsqrt3 * tx[0] - 0.5 * ty[0]) / 16;
+	vbuf[19] = vb[1] + (halfsqrt3 * tx[1] - 0.5 * ty[1]) / 16;
+	vbuf[20] = vb[2] + (halfsqrt3 * tx[2] - 0.5 * ty[2]) / 16;
 	vbuf[21] = rr;
 	vbuf[22] = gg;
 	vbuf[23] = bb;

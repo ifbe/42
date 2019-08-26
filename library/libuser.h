@@ -1028,7 +1028,7 @@ void carvepoint_icosahedron(  struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3
 void carvepoint_sphere(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
 void carveline(               struct actor* ctx, u32 rgb, vec3 va, vec3 vb);
-void carveline_arrow(         struct actor* ctx, u32 rgb, vec3 va, vec3 vb);
+void carveline_arrow(         struct actor* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vn);
 void carveline_bezier(        struct actor* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
 void carveline_special(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu, float sa, float da);
 void carveline_yshape(        struct actor* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);

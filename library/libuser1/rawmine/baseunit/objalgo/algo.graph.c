@@ -118,7 +118,7 @@ static void graph_draw_vbo(
 		j = wire[i].parent;
 		k = wire[i].child;
 
-		carveline_arrow(win, 0xffffff, &vbuf[j*3], &vbuf[k*3]);
+		carveline_arrow(win, 0xffffff, &vbuf[j*3], &vbuf[k*3], sty->f.vt);
 	}
 
 	//tr[0] = win->camera.vr[0];

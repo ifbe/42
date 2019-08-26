@@ -432,12 +432,14 @@ void overview_draw_vbo(
 	float r,f;
 	int x,y,j,k;
 	struct relation* rel;
-	float* vc;
-	float* vr;
-	float* vf;
 	vec3 tc;
 	vec3 tr;
 	vec3 tf;
+
+	float* vc;
+	float* vr;
+	float* vf;
+	float* vt;
 	struct style tmp;
 	if(0 == sty)
 	{
@@ -451,11 +453,16 @@ void overview_draw_vbo(
 		sty->f.vf[0] = 0.0;
 		sty->f.vf[1] = 1.0;
 		sty->f.vf[2] = 0.0;
+		sty->f.vt[0] = 0.0;
+		sty->f.vt[1] = 0.0;
+		sty->f.vt[2] = 1.0;
 	}
 	vc = sty->f.vc;
 	vr = sty->f.vr;
 	vf = sty->f.vf;
+	vt = sty->f.vt;
 	cursor = (act->x0) + (act->y0)*16;
+
 /*
 	tc[0] = -1.0;
 	tc[1] = 0.5;
@@ -671,7 +678,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0x0000ff, tc, tr);
+				carveline_arrow(win, 0x0000ff, tc, tr, vt);
 			}
 			else if(_art_ == rel->srctype)
 			{
@@ -689,7 +696,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0x00ffff, tc, tr);
+				carveline_arrow(win, 0x00ffff, tc, tr, vt);
 			}
 			else if(_win_ == rel->srctype)
 			{
@@ -707,7 +714,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0xffff00, tc, tr);
+				carveline_arrow(win, 0xffff00, tc, tr, vt);
 			}
 			else if(_act_ == rel->srctype)
 			{
@@ -725,7 +732,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0xff0000, tc, tr);
+				carveline_arrow(win, 0xff0000, tc, tr, vt);
 			}
 			rel = samedstnextsrc(rel);
 		}
@@ -757,7 +764,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0x4040ff, tc, tr);
+				carveline_arrow(win, 0x4040ff, tc, tr, vt);
 			}
 			else if(_art_ == rel->srctype)
 			{
@@ -775,7 +782,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0x40ffff, tc, tr);
+				carveline_arrow(win, 0x40ffff, tc, tr, vt);
 			}
 			else if(_win_ == rel->srctype)
 			{
@@ -793,7 +800,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0xffff40, tc, tr);
+				carveline_arrow(win, 0xffff40, tc, tr, vt);
 			}
 			else if(_act_ == rel->srctype)
 			{
@@ -811,7 +818,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0xff4040, tc, tr);
+				carveline_arrow(win, 0xff4040, tc, tr, vt);
 			}
 
 			rel = samedstnextsrc(rel);
@@ -844,7 +851,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0xc0ffc0, tc, tr);
+				carveline_arrow(win, 0xc0ffc0, tc, tr, vt);
 			}
 			else if(_art_ == rel->srctype)
 			{
@@ -862,7 +869,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0xc0ffc0, tc, tr);
+				carveline_arrow(win, 0xc0ffc0, tc, tr, vt);
 			}
 			else if(_win_ == rel->srctype)
 			{
@@ -880,7 +887,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0xffffff, tc, tr);
+				carveline_arrow(win, 0xffffff, tc, tr, vt);
 			}
 			else if(_act_ == rel->srctype)
 			{
@@ -898,7 +905,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0xffc0ff, tc, tr);
+				carveline_arrow(win, 0xffc0ff, tc, tr, vt);
 			}
 
 			rel = samedstnextsrc(rel);
@@ -931,7 +938,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0xc0ffc0, tc, tr);
+				carveline_arrow(win, 0xc0ffc0, tc, tr, vt);
 			}
 			else if(_art_ == rel->srctype)
 			{
@@ -949,7 +956,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0xc0ffc0, tc, tr);
+				carveline_arrow(win, 0xc0ffc0, tc, tr, vt);
 			}
 			else if(_win_ == rel->srctype)
 			{
@@ -967,7 +974,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0xffffff, tc, tr);
+				carveline_arrow(win, 0xffffff, tc, tr, vt);
 			}
 			else if(_act_ == rel->srctype)
 			{
@@ -985,7 +992,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_arrow(win, 0xffc0ff, tc, tr);
+				carveline_arrow(win, 0xffc0ff, tc, tr, vt);
 			}
 
 			rel = samedstnextsrc(rel);

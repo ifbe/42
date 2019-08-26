@@ -152,7 +152,7 @@ int detail_draw_vbo(struct actor* win, struct style* sty)
 		tr[0] = -1.0/4;
 		tr[1] = (7-j*2)/16.0;
 		tr[2] = -0.5;
-		carveline_arrow(win, 0x0000ff, tc, tr);
+		carveline_arrow(win, 0x0000ff, tc, tr, sty->f.vt);
 
 		//foot
 		tc[0] = -23.0/32;
@@ -207,7 +207,7 @@ int detail_draw_vbo(struct actor* win, struct style* sty)
 		tr[0] = 3.0/4;
 		tr[1] = (7-j*2)/16.0;
 		tr[2] = -0.5;
-		carveline_arrow(win, 0xff0000, tc, tr);
+		carveline_arrow(win, 0xff0000, tc, tr, sty->f.vt);
 
 		//foot
 		tc[0] = 19.0/32;
