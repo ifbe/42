@@ -168,6 +168,8 @@ void gl41data_copy(struct relation* rel)
 	dst = (void*)&dstpair[solidaid_max];
 	for(j=0;j<sizeof(struct glsrc);j++)dst[j] = src[j];
 	//printmemory(dst, 0x200);
+
+say("7777@method=%x, geom=%x, ibuf_h=%x\n", srcpair->src.method, srcpair->src.geometry, srcpair->src.ibuf_h);
 }
 
 

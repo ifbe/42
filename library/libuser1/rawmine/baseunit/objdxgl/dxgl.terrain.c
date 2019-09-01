@@ -105,14 +105,14 @@ GLSL_VERSION
 
 
 
-void terrain_generate(float (*vbuf)[6], u16* ibuf, struct actor* act)
+void terrain_generate(float (*vbuf)[6], u16* ibuf, struct actor* act, struct glsrc* src)
 {
 	float f;
 	int x,y,j;
 	int x0,y0,x1,y1;
-	u8* rgba = act->buf;
-	int w = act->width;
-	int h = act->height;
+	u8* rgba = src->tex_data[0];
+	int w = src->tex_w[0];
+	int h = src->tex_h[0];
 	float cx = (w-1) / 2.0;
 	float cy = (h-1) / 2.0;
 
@@ -268,7 +268,7 @@ static void terrain_draw_vbo(
 	if(0 == act->w0){
 		act->w0 = 42;
 
-		terrain_generate(vbuf, ibuf, act);
+		terrain_generate(vbuf, ibuf, act, src);
 		src->vbuf_enq += 1;
 
 		mat[ 0] = 127.5*1000.0;
@@ -382,6 +382,13 @@ static void terrain_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void terrain_start(struct halfrel* self, struct halfrel* peer)
 {
+	struct actor* act = (void*)(self->chip);
+	struct style* pin = (void*)(self->foot);
+	if(0 == act)return;
+	if(0 == pin)return;
+
+	pin->data[0] = (u64)(act->buf);
+	say("@texball_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 
@@ -440,7 +447,7 @@ static void terrain_create(struct actor* act, void* str)
 	src->tex_name[0] = "tex0";
 	src->tex_fmt[0] = hex32('r','g','b','a');
 	src->tex_data[0] = memorycreate(2048*2048*4);
-	if(0 == str)str = "datafile/jpg/terrain.jpg";
+	if(0 == str)str = "datafile/jpg/cartoon.jpg";
 	loadtexfromfile(src, 0, str);
 	if((0 == src->tex_w[0]) | (0 == src->tex_h[0]))
 	{

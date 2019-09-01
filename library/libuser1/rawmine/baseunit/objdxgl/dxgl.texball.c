@@ -127,6 +127,7 @@ static void texball_draw_vbo3d(
 
 	src = act->buf;
 	if(0 == src)return;
+say("5555@method=%x, geom=%x, ibuf_h=%x\n", src->method, src->geometry, src->ibuf_h);
 
 	vbuf = (void*)(src->vbuf);
 	ibuf = (void*)(src->ibuf);
@@ -268,14 +269,10 @@ static void texball_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	//struct actor* win = (void*)(peer->chip);
-	//struct style* sty = (void*)(peer->foot);
 	if(0 == act)return;
 	if(0 == pin)return;
 
-	//max=16, give data to scene
 	pin->data[0] = (u64)(act->buf);
-	//sty->data[1] = (u64)(act->buf);
 	say("@texball_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 

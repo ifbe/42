@@ -284,14 +284,10 @@ static void picture_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	//struct actor* win = (void*)(peer->chip);
-	//struct style* sty = (void*)(peer->foot);
 	if(0 == act)return;
 	if(0 == pin)return;
 
-	//max=16, give data to scene
 	pin->data[0] = (u64)(act->buf);
-	//sty->data[1] = (u64)(act->buf);
 	say("@picture_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 

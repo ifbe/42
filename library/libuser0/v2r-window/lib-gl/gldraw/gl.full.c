@@ -146,6 +146,7 @@ void display_eachpass(struct gldst* dst, struct glsrc* src, struct glsrc* cam)
 	glBindVertexArray(vao);
 //say("%d,%d,%d,%d,%d,%d\n", dst->shader, dst->tex[0], vao, vbo, src->ibuf_h, src->vbuf_h);
 
+say("8888@method=%x, geom=%x, ibuf_h=%x\n", src->method, src->geometry, src->ibuf_h);
 	if('i' == src->method)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dst->ibo);

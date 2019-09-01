@@ -78,6 +78,7 @@ void world3d_copy(struct actor* world, struct style* sty, struct style* pin)
 	int j;
 	u8* src;
 	u8* dst;
+	struct datapair* srcpair;
 	if(0 == pin)return;
 	if(0 == sty)return;
 
@@ -95,8 +96,11 @@ void world3d_copy(struct actor* world, struct style* sty, struct style* pin)
 	}
 
 	//copy
-	for(j=0;j<sizeof(struct style);j++)dst[j] = src[j];
+	for(j=0;j<sizeof(struct glsrc);j++)dst[j] = src[j];
 	//printmemory(dst, 0x200);
+
+srcpair = (void*)src;
+say("6666@method=%x, geom=%x, ibuf_h=%x\n", srcpair->src.method, srcpair->src.geometry, srcpair->src.ibuf_h);
 }
 
 
