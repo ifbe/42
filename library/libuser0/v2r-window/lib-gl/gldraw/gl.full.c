@@ -24,7 +24,6 @@ GLuint uploadvertex(void* i, void* o);
 void update_eachpass(struct gldst* dst, struct glsrc* src)
 {
 	int j;
-	u32 fd;
 	int w,h,fmt;
 	void* buf0;
 	void* buf1;
@@ -38,11 +37,10 @@ void update_eachpass(struct gldst* dst, struct glsrc* src)
 		buf0 = (void*)(src->vs);
 		buf1 = (void*)(src->fs);
 		buf2 = (void*)(src->gs);
+		//say("shader:%llx,%llx,%llx\n", buf0, buf1, buf2);
 		if((0 != buf0)&&(0 != buf1))
 		{
-			fd = shaderprogram(buf0, buf1, buf2, 0, 0, 0);
-
-			dst->shader = fd;
+			dst->shader = shaderprogram(buf0, buf1, buf2, 0, 0, 0);
 			//say("shader:(%llx,%llx,%llx)->%x\n", buf0, buf1, buf2, fd);
 		}
 
@@ -72,9 +70,7 @@ void update_eachpass(struct gldst* dst, struct glsrc* src)
 			fmt = src->tex_fmt[j];
 			w = src->tex_w[j];
 			h = src->tex_h[j];
-			fd = uploadtexture(dst, dst->tex[j], buf0, fmt, w, h);
-
-			dst->tex[j] = fd;
+			dst->tex[j] = uploadtexture(dst, dst->tex[j], buf0, fmt, w, h);
 			//say("texture:(%llx,%x,%x,%x)->%x\n", buf0, fmt, w, h, fd);
 		}
 

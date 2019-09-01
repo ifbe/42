@@ -1,6 +1,5 @@
 #include "libuser.h"
-void readimagefromjpg(u8* buf, int len, int* width, int* height, int* depth, int* stride);
-void readimagefrompng(u8* buf, int len, int* width, int* height, int* depth, int* stride);
+void loadtexfromfile(struct glsrc* src, int idx, char* name);
 
 
 
@@ -171,7 +170,7 @@ static void picture_draw_vbo3d(
 	float* vu = sty->f.vt;
 	if(0 == act->buf)return;
 
-	struct glsrc* src = (void*)(pin->foot[0]);
+	struct glsrc* src = act->buf;
 	float (*vbuf)[6] = (void*)(src->vbuf);
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
@@ -260,16 +259,22 @@ static void picture_draw(
 
 
 
-static void picture_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void picture_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	struct actor* ctx = buf;
+	//say("@texball_read:%llx,%llx,%llx\n",act,win,buf);
+
+	if(ctx){
+		if(_gl41data_ == ctx->type)picture_draw_vbo3d(act,pin,ctx,sty);
+	}
 	//picture_draw(act, pin, win, sty);
 }
-static void picture_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void picture_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 }
 static void picture_stop(struct halfrel* self, struct halfrel* peer)
@@ -277,54 +282,17 @@ static void picture_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void picture_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct datapair* pair;
-	struct glsrc* src;
-	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-/*
-	//alloc
-	pair = alloc_winobj(win, 's');
-	src = &pair->src;
-	dst = &pair->dst;
-	pin->foot[0] = (u64)src;
-	sty->foot[0] = (u64)dst;
+	//struct actor* win = (void*)(peer->chip);
+	//struct style* sty = (void*)(peer->foot);
+	if(0 == act)return;
+	if(0 == pin)return;
 
-	//
-	src->geometry = 3;
-	src->method = 'v';
-
-	//shader
-	src->vs = picture_glsl_v;
-	src->fs = picture_glsl_f;
-	src->shader_enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len);
-	src->vbuf_enq = 42;
-
-	//texture0
-	src->tex_name[0] = "tex0";
-	src->tex_data[0] = act->nbuf;
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_w[0] = act->x0;
-	src->tex_h[0] = act->y0;
-	src->tex_enq[0] = 42;
-
-	//texture1
-	src->tex_name[1] = "tex1";
-	src->tex_data[1] = act->wbuf;
-	src->tex_fmt[1] = hex32('r','g','b','a');
-	src->tex_w[1] = act->xn;
-	src->tex_h[1] = act->yn;
-	src->tex_enq[1] = 42;
-*/
+	//max=16, give data to scene
+	pin->data[0] = (u64)(act->buf);
+	//sty->data[1] = (u64)(act->buf);
+	say("@picture_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 
@@ -344,21 +312,48 @@ static void picture_delete(struct actor* act)
 }
 static void picture_create(struct actor* act, void* str)
 {
-	void* buf;
+	int j;
+	u8* buf;
+	struct glsrc* src;
 	if(0 == act)return;
-#define len 0x1000000
+
+	buf = memorycreate(0x200);
+	if(0 == buf)return;
+
+	for(j=0;j<0x200;j++)buf[j] = 0;
+	act->buf = buf;
+	src = act->buf;
+
+	//property
+	src->geometry = 3;
+	src->method = 'v';
+
+	//shader
+	src->vs = picture_glsl_v;
+	src->fs = picture_glsl_f;
+	src->shader_enq = 42;
 
 	//texture0
-	buf = memorycreate(len);
-	openreadclose("datafile/jpg/test.jpg", 0, buf, len);
-	readimagefromjpg(buf, len, &act->x0, &act->y0, &act->z0, &act->w0);
-	act->nbuf = buf;
+	src->tex_name[0] = "tex0";
+	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex_data[0] = memorycreate(2048*2048*4);
+	loadtexfromfile(src, 0, "datafile/jpg/test.jpg");
+	src->tex_enq[0] = 42;
 
 	//texture1
-	buf = memorycreate(len);
-	openreadclose("datafile/jpg/cartoon.jpg", 0, buf, len);
-	readimagefromjpg(buf, len, &act->xn, &act->yn, &act->zn, &act->wn);
-	act->wbuf = buf;
+	src->tex_name[1] = "tex1";
+	src->tex_fmt[1] = hex32('r','g','b','a');
+	src->tex_data[1] = memorycreate(2048*2048*4);
+	loadtexfromfile(src, 1, "datafile/jpg/cartoon.jpg");
+	src->tex_enq[1] = 42;
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf_enq = 42;
 }
 
 

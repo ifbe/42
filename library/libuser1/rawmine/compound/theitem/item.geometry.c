@@ -206,16 +206,20 @@ static void geometry_event(
 
 
 
-static void geometry_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void geometry_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	struct actor* ctx = buf;
+	if(ctx){
+		if(_gl41data_ == ctx->type)geometry_draw_vbo3d(act,pin,ctx,sty);
+	}
 	//geometry_draw(act, pin, win, sty);
 }
-static void geometry_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void geometry_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

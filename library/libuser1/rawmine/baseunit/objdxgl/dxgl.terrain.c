@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
-void actorcreatefromfile(struct actor* act, char* name);
+void loadtexfromfile(struct glsrc* src, int idx, char* name);
 
 
 
@@ -254,7 +254,7 @@ static void terrain_draw_vbo(
 	float* vf = sty->vf;
 	float* vu = sty->vu;
 */
-	struct glsrc* src = (void*)(pin->foot[0]);
+	struct glsrc* src = act->buf;
 	if(0 == src)return;
 
 	float* mat = src->arg_data[0];
@@ -360,19 +360,21 @@ static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int
 
 
 
-static void terrain_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void terrain_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	//terrain_draw(act, pin, win, sty);
+	struct actor* ctx = buf;
+	//say("@terrain_read:%llx,%llx,%llx\n",act,win,buf);
+
+	if(ctx){
+		if(_gl41data_ == ctx->type)terrain_draw_vbo(act,pin,ctx,sty);
+	}
 }
-static void terrain_write(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
-	struct event* ev, int len)
+static void terrain_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 }
 static void terrain_stop(struct halfrel* self, struct halfrel* peer)
@@ -380,59 +382,6 @@ static void terrain_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void terrain_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct datapair* pair;
-	struct glsrc* src;
-	struct gldst* dst;
-	struct actor* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-/*
-	pair = alloc_winobj(win, 's');
-	src = &pair->src;
-	dst = &pair->dst;
-	pin->foot[0] = (u64)src;
-	sty->foot[0] = (u64)dst;
-
-	//
-	src->method = 'i';
-	src->geometry = 3;
-
-	//shader
-	src->vs = terrain_glsl_v;
-	src->gs = terrain_glsl_g;
-	src->fs = terrain_glsl_f;
-	src->shader_enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*6;
-	src->vbuf_h = 256*255;
-	src->vbuf_len = (src->vbuf_w) * 256*256;
-	src->vbuf = memorycreate(src->vbuf_len);
-	src->vbuf_enq = 42;
-
-	//index
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 254*254*2;
-	src->ibuf_len = (src->ibuf_w) * 256*256*2;
-	src->ibuf = memorycreate(src->ibuf_len);
-	src->ibuf_enq = 42;
-
-	//argument
-	src->arg_name[0] = "objmat";
-	src->arg_data[0] = memorycreate(4*4*4);
-	src->arg_fmt[0] = 'm';
-
-	//texture
-	src->tex_name[0] = "tex0";
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_data[0] = act->buf;
-	src->tex_w[0] = act->width;
-	src->tex_h[0] = act->height;
-	src->tex_enq[0] = 42;
-*/
 }
 
 
@@ -454,23 +403,51 @@ static void terrain_delete(struct actor* act)
 }
 static void terrain_create(struct actor* act, void* str)
 {
+	int j;
 	int x,y,c;
+	u8* buf;
 	u8* rgba;
+	struct glsrc* src;
 	if(0 == act)return;
 
-	//max=16MB
-	if(0 == act->buf)act->buf = memorycreate(2048*2048*4);
+	act->x0 = 0;
+	act->y0 = 0;
+	act->w0 = 0;
 
-	//try file
+	buf = memorycreate(0x200);
+	if(0 == buf)return;
+
+	for(j=0;j<0x200;j++)buf[j] = 0;
+	act->buf = buf;
+	src = act->buf;
+
+	//
+	src->method = 'i';
+	src->geometry = 3;
+
+	//shader
+	src->vs = terrain_glsl_v;
+	src->gs = terrain_glsl_g;
+	src->fs = terrain_glsl_f;
+	src->shader_enq = 42;
+
+	//argument
+	src->arg_name[0] = "objmat";
+	src->arg_data[0] = memorycreate(4*4*4);
+	src->arg_fmt[0] = 'm';
+
+	//texture
+	src->tex_name[0] = "tex0";
+	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex_data[0] = memorycreate(2048*2048*4);
 	if(0 == str)str = "datafile/jpg/terrain.jpg";
-	actorcreatefromfile(act, str);
-
-	//gen terr
-	rgba = act->buf;
-	if((0 == act->width) | (0 == act->height))
+	loadtexfromfile(src, 0, str);
+	if((0 == src->tex_w[0]) | (0 == src->tex_h[0]))
 	{
-		act->width = 2048;
-		act->height = 2048;
+		src->tex_w[0] = 2048;
+		src->tex_h[0] = 2048;
+
+		rgba = src->tex_data[0];
 		for(y=0;y<2048;y++)
 		{
 			for(x=0;x<2048;x++)
@@ -481,10 +458,23 @@ static void terrain_create(struct actor* act, void* str)
 			}
 		}
 	}
+	src->tex_enq[0] = 42;
 
-	act->x0 = 0;
-	act->y0 = 0;
-	act->w0 = 0;
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 4*6;
+	src->vbuf_h = 256*255;
+	src->vbuf_len = (src->vbuf_w) * 256*256;
+	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf_enq = 42;
+
+	//index
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 254*254*2;
+	src->ibuf_len = (src->ibuf_w) * 256*256*2;
+	src->ibuf = memorycreate(src->ibuf_len);
+	src->ibuf_enq = 42;
 }
 
 

@@ -92,7 +92,7 @@ static void skydome_draw_vbo(
 	float* vu = sty->f.vt;
 	if(0 == act->buf)return;
 
-	src = (void*)(pin->foot[0]);
+	src = (void*)(pin->data[0]);
 	vbuf = (void*)(src->vbuf);
 	ibuf = (void*)(src->ibuf);
 	carveskydome(vbuf, ibuf, vc, vr, vf, vu);

@@ -75,7 +75,7 @@ static void particle_draw_vbo3d(
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
 	float* sbuf = act->buf;
-	struct glsrc* src = (void*)(pin->foot[0]);
+	struct glsrc* src = (void*)(pin->data[0]);
 	float* mat = (void*)src->arg_data[0];
 
 	mat[ 0] = sty->f.vr[0];

@@ -1,0 +1,32 @@
+#import "rlc"
+#import "mos"
+
+buck(vin, gnd, pwm, vo)
+{
+	d0: diode
+	t0: nmos
+	l0: inductor
+	c0: capacitor
+
+	vin@ t0.d
+	gnd@ d0.+, c0.-
+	pwm@ t0.g
+	vo @ c0.+, l0.-
+
+	tmp@ t0.s, d0.-, l0.+
+}
+
+boost(vin, gnd, pwm, vo)
+{
+	d0: diode
+	t0: nmos
+	l0: inductor
+	ci, co: capacitor
+
+	vin@ ci.+, l0.+
+	gnd@ ci.-, nmos.s, co.-
+	pwm@ t0.g
+	vo @ d0.-, co.+
+
+	tmp@ t0.d, l0.-, d0.+
+}

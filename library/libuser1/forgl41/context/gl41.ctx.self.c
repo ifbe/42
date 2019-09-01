@@ -132,6 +132,43 @@ void gl41data_after(struct actor* ctx)
 		mod[j].src.ibuf_enq += 1;
 	}
 }
+void gl41data_get(struct relation* rel)
+{
+	struct halfrel* self;
+	struct halfrel* peer;
+	if(0 == rel)return;
+
+	self = (void*)(&rel->dstchip);
+	peer = (void*)(&rel->srcchip);
+	actorread(self, peer, 0, 0);
+}
+void gl41data_copy(struct relation* rel)
+{
+	int j;
+	struct actor* world;
+	struct actor* data;
+	u8* src;
+	u8* dst;
+	struct datapair* srcpair;
+	struct datapair* dstpair;
+
+	world = (void*)(rel->dstchip);
+	if(0 == world)return;
+
+	data = (void*)(rel->srcchip);
+	if(0 == data)return;
+
+	srcpair = world->buf;
+	src = world->buf;
+	if(0 == src)return;
+	if(0 == srcpair->src.vbuf)return;
+	//printmemory(src, 0x200);
+
+	dstpair = data->gl_solid;
+	dst = (void*)&dstpair[solidaid_max];
+	for(j=0;j<sizeof(struct glsrc);j++)dst[j] = src[j];
+	//printmemory(dst, 0x200);
+}
 
 
 
@@ -150,11 +187,11 @@ int gl41data_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 
 	gl41data_before(data);
 
-	self = (void*)(&rel->dstchip);
-	peer = (void*)(&rel->srcchip);
-	actorread(self, peer, buf, len);
+	gl41data_get(rel);
 
 	gl41data_after(data);
+
+	gl41data_copy(rel);
 	return 0;
 }
 int gl41data_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)

@@ -274,7 +274,7 @@ static void codeimg_draw_vbo3d(
 	float* vu = sty->f.vt;
 	if(0 == act->buf)return;
 
-	src = (void*)(pin->foot[0]);
+	src = (void*)(pin->data[0]);
 	vbuf = src->vbuf;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
@@ -372,7 +372,7 @@ static void codeimg_event(
 	img = act->buf;
 	if(0 == img)return;
 
-	src = (void*)(pin->foot[0]);
+	src = (void*)(pin->data[0]);
 	if(_char_ == ev->what)
 	{
 		switch(ev->why)

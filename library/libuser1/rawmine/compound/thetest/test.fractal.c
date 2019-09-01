@@ -196,7 +196,7 @@ static void fractal_draw_vbo3d(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	struct glsrc* src = (void*)(pin->foot[0]);
+	struct glsrc* src = (void*)(pin->data[0]);
 	float (*vbuf)[6] = src->vbuf;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];

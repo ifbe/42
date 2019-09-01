@@ -62,6 +62,46 @@ void defaultvertex(struct arena* win)
 
 
 
+void* world3d_alloc(struct actor* world)
+{
+	int j;
+	struct datapair* pair = world->buf;
+	if(0 == pair)return 0;
+
+	for(j=0;j<16;j++){
+		if(0 == pair[j].src.vbuf)return &pair[j];
+	}
+	return 0;
+}
+void world3d_copy(struct actor* world, struct style* sty, struct style* pin)
+{
+	int j;
+	u8* src;
+	u8* dst;
+	if(0 == pin)return;
+	if(0 == sty)return;
+
+	src = (void*)(pin->data[0]);
+	if(0 == src)return;
+
+	//data
+	dst = (void*)(sty->data[0]);
+	if(0 == dst){
+		dst = world3d_alloc(world);
+		if(0 == dst)return;
+
+		sty->data[0] = (u64)dst;
+		say("new: %llx\n", src, dst);
+	}
+
+	//copy
+	for(j=0;j<sizeof(struct style);j++)dst[j] = src[j];
+	//printmemory(dst, 0x200);
+}
+
+
+
+
 int world3d_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	struct actor* world;
@@ -69,6 +109,7 @@ int world3d_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 
 	struct relation* rel;
 	struct style* sty;
+	struct style* pin;
 	//struct actor* act;
 
 	world = (void*)self->chip;
@@ -77,16 +118,8 @@ int world3d_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 	glctx = (void*)peer->chip;
 	if(0 == glctx)return 0;
 
-	say("@world3d_read:%.8s, %.8s\n", &world->type, &glctx->type);
-/*
-	struct style* sty;
-	struct relation* rel;
-	struct halfrel* self;
-	struct halfrel* peer;
+	//say("@world3d_read:%.8s, %.8s\n", &world->type, &glctx->type);
 
-	win->vfmt = _3d_;
-	preprocess(win);
-*/
 	rel = world->orel0;
 	while(1)
 	{
@@ -97,18 +130,18 @@ int world3d_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 			sty = (void*)(rel->srcfoot);
 			if(sty){if('#' == sty->i.uc[3])goto next;}
 
-			//act = (void*)(rel->dstchip);
-			//say("%.8s\n", &act->fmt);
-
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
 			actorread(self, peer, glctx, 0);
+
+			pin = (void*)(rel->dstfoot);
+			world3d_copy(world, sty, pin);
 		}
 next:
 		rel = samesrcnextdst(rel);
 	}
 
-	//postprocess(win);
+	//printmemory(world->buf+0x100, 0x100);
 	return 0;
 }
 int world3d_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
@@ -192,7 +225,12 @@ int world3d_delete(struct actor* world)
 }
 int world3d_create(struct actor* world, void* str)
 {
+	int j;
+	u8* buf;
 	say("@world3d_create\n");
+
+	buf = world->buf = memorycreate(0x10000);
+	for(j=0;j<0x10000;j++)buf[j] = 0;
 	return 0;
 /*
 	int j;

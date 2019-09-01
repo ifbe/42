@@ -287,7 +287,7 @@ static void model_draw_vbo3d(
 {
 	if(act->buf == 0)return;
 
-	struct glsrc* src = (void*)(pin->foot[0]);
+	struct glsrc* src = (void*)(pin->data[0]);
 	sty_sty_mat(&act->target, &sty->f, (void*)src->arg_data[0]);
 }
 static void model_draw_json(

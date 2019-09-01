@@ -21,7 +21,7 @@ unsigned char* njGetImage(void);
 
 
 
-void readimagefromjpg(u8* buf, int len, int* width, int* height, int* depth, int* stride)
+void loadimgfromjpg(u8* buf, int len, int* width, int* height, int* depth, int* stride)
 {
 	int ret;
 	u8* rgb;
@@ -49,19 +49,11 @@ void readimagefromjpg(u8* buf, int len, int* width, int* height, int* depth, int
 	*depth = 3;
 	njDone();
 }
-void actorcreatefromjpg(struct actor* act, u8* buf, int len)
-{
-	readimagefromjpg(
-		buf, len,
-		&act->width, &act->height,
-		&act->depth, &act->stride
-	);
-}
 
 
 
 
-void readimagefrompng(u8* buf, int len, int* width, int* height, int* depth, int* stride)
+void loadimgfrompng(u8* buf, int len, int* width, int* height, int* depth, int* stride)
 {
 	int w,h,d;
 	int j,ret;
@@ -115,12 +107,4 @@ void readimagefrompng(u8* buf, int len, int* width, int* height, int* depth, int
 	}
 
 	upng_free(upng);
-}
-void actorcreatefrompng(struct actor* act, u8* buf, int len)
-{
-	readimagefrompng(
-		buf, len,
-		&act->width, &act->height,
-		&act->depth, &act->stride
-	);
 }

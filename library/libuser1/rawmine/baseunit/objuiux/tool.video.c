@@ -164,7 +164,7 @@ void video_draw_vbo3d(
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
 
-	struct glsrc* data = (void*)(pin->foot[0]);
+	struct glsrc* data = (void*)(pin->data[0]);
 	float (*vbuf)[6] = data->vbuf;
 
 	data->tex_data[0] = act->buf;

@@ -226,7 +226,7 @@ static void mirror_draw_vbo(
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
 
-	struct glsrc* src = (void*)(pin->foot[0]);
+	struct glsrc* src = (void*)(pin->data[0]);
 	float (*vbuf)[6] = (void*)(src->vbuf);
 	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
 

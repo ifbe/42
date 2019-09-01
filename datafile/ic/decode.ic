@@ -1,0 +1,34 @@
+#import "mos"
+#include "logic.ic"
+
+decoder12(vdd, gnd, en, a0, w0, w1)
+{
+}
+
+decoder24(vdd, gnd, en, a0, a1, w0, w1, w2, w3)
+{
+}
+
+decoder38(vdd, gnd, en, a0, a1, a2, w0, w1, w2, w3, w4, w5, w6, w7)
+{
+	n0, n1, n2 -> not
+	c0, c1, c2, c3, c4, c5, c6, c7 -> nand3
+
+	vdd@ n0.vdd, n1.vdd, n2.vdd, c0.vdd, c1.vdd, c2.vdd, c3.vdd, c4.vdd, c5.vdd, c6.vdd, c7.vdd
+	gnd@ n0.gnd, n1.gnd, n2.gnd, c0.gnd, c1.gnd, c2.gnd, c3.gnd, c4.gnd, c5.gnd, c6.gnd, c7.gnd
+	a0 @ n0.i, c0.ia, c2.ia, c4.ia, c6.ia
+	a1 @ n1.i, c0.ib, c1.ib, c4.ib, c5.ib
+	a2 @ n2.i, c0.ic, c1.ic, c2.ic, c3.ic
+	w0 @ c0.o
+	w1 @ c1.o
+	w2 @ c2.o
+	w3 @ c3.o
+	w4 @ c4.o
+	w5 @ c5.o
+	w6 @ c6.o
+	w7 @ c7.o
+
+	t0 @ n0.o, c1.ia, c3.ia, c5.ia, c7.ia
+	t1 @ n1.o, c2.ib, c3.ib, c6.ib, c7.ib
+	t2 @ n2.o, c4.ic, c5.ic, c6.ic, c7.ic
+}

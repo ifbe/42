@@ -106,7 +106,7 @@ void* allocarena()
 }
 void* allocstyle()
 {
-#define maxlen 0x400
+#define maxlen 0x200
 	int j;
 	u8* buf;
 

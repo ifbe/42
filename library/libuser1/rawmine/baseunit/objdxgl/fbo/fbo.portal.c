@@ -235,7 +235,7 @@ static void portal_draw_vbo(
 	float* vu = sty->f.vt;
 	carveline_rect(win, 0xffffff, act->target.vc, act->target.vr, act->target.vt);
 
-	struct glsrc* src = (void*)(pin->foot[0]);
+	struct glsrc* src = (void*)(pin->data[0]);
 	float (*vbuf)[6] = (void*)(src->vbuf);
 
 	portalcamera(act, pin, 0, sty, win, 0);

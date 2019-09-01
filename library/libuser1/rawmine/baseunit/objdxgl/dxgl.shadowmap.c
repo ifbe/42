@@ -162,8 +162,8 @@ static void shadowmap_draw_vbo(
 	void* mvp;
 	struct relation* rel;
 	struct actor* tmp;
-	struct gldst* dst = (void*)(sty->foot[0]);
-	struct glsrc* src = (void*)(pin->foot[0]);
+	struct gldst* dst = (void*)(sty->data[0]);
+	struct glsrc* src = (void*)(pin->data[0]);
 	float (*vbuf)[6] = (void*)(src->vbuf);
 	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
 

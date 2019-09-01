@@ -116,7 +116,7 @@ static void orthcam_matrix(
 	struct actor* act, struct style* pin,
 	struct actor* ctx, struct style* sty)
 {
-	say("@orthcam_matrix:%llx,%llx,%llx,%llx\n", ctx->gl_camera, ctx->gl_light, ctx->gl_solid, ctx->gl_opaque);
+	//say("@orthcam_matrix:%llx,%llx,%llx,%llx\n", ctx->gl_camera, ctx->gl_light, ctx->gl_solid, ctx->gl_opaque);
 
 	struct relation* rel;
 	struct actor* world;
@@ -172,7 +172,7 @@ static void orthcam_read(struct halfrel* self, struct halfrel* peer, void* buf, 
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct actor* ctx = buf;
-	say("@orthcam_read:\n");
+	//say("@orthcam_read:\n");
 
 	if(ctx){
 		switch(ctx->type){

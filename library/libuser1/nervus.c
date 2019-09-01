@@ -69,7 +69,7 @@ void* allocactor()
 }
 void* allocpinid()
 {
-#define maxlen 0x400
+#define maxlen 0x200
 	int j;
 	u8* buf;
 

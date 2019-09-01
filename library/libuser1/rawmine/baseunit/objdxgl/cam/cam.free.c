@@ -577,7 +577,7 @@ static void freecam_matrix(
 	struct actor* act, struct style* pin,
 	struct actor* ctx, struct style* sty)
 {
-	say("@orthcam_matrix:%llx,%llx,%llx,%llx\n", ctx->gl_camera, ctx->gl_light, ctx->gl_solid, ctx->gl_opaque);
+	//say("@freecam_matrix:%llx,%llx,%llx,%llx\n", ctx->gl_camera, ctx->gl_light, ctx->gl_solid, ctx->gl_opaque);
 
 	struct relation* rel;
 	struct actor* world;
@@ -624,7 +624,7 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, void* buf, 
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct actor* ctx = buf;
-	say("@freecam_read:\n");
+	//say("@freecam_read:\n");
 
 	if(ctx){
 		switch(ctx->type){

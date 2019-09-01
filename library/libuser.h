@@ -327,7 +327,6 @@ struct glsrc
 	int icount;
 
 	//[e8,eb]
-	void* belongtocamera;
 	u8 method;		//'v'=glDrawArrays, 'i'=glDrawElements
 	u8 geometry;	//1=point, 2=line, *=trigon
 	u8 target;		//0=rtt, 1=background, 2=geometry, 3=alphatest, 4=transparent, 5=overlay
@@ -493,12 +492,29 @@ struct style
 {
 	//[00, 7f]: actual, css shape
 	union{
-		struct fstyle actualshape;
-		struct fmotion actualmotion;
+		//struct fstyle actualshape;
+		//struct fmotion actualmotion;
 		struct fstyle f;
+		struct fstyle fs;
+		struct fstyle fshape;
 		struct istyle i;
+		struct istyle is;
+		struct istyle ishape;
 	};
 
+	//[80, ff]: actual, css shape
+	union{
+		//struct fstyle actualshape;
+		//struct fmotion actualmotion;
+		struct fmotion fm;
+		struct fmotion fmotion;
+		struct imotion im;
+		struct imotion imotion;
+	};
+
+	//[100, 1ff]
+	u64 data[16];
+/*
 	//[80, ff]: expect, motion state
 	union{
 		struct fstyle expectshape;
@@ -520,9 +536,7 @@ struct style
 	//[200, 2ff]
 	struct kalman kal;
 	struct pidval pid;
-
-	//[300, 3ff]
-	u64 foot[32];
+*/
 };
 
 

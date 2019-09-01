@@ -8,10 +8,11 @@ void initutf8(void*);
 int openreadclose(void* name, int off, void* buf, int len);
 int openwriteclose(void* name, int off, void* buf, int len);
 //
+void loadimgfromjpg(u8* buf, int len, int* width, int* height, int* depth, int* stride);
+void loadimgfrompng(u8* buf, int len, int* width, int* height, int* depth, int* stride);
+//
 void actorcreatefromobj(struct actor* act, u8* buf, int len);
 void actorcreatefromstl(struct actor* act, u8* buf, int len);
-void actorcreatefromjpg(struct actor* act, u8* buf, int len);
-void actorcreatefrompng(struct actor* act, u8* buf, int len);
 void actorcreatefrommp3(struct actor* act, u8* buf, int len);
 void actorcreatefromogg(struct actor* act, u8* buf, int len);
 void actorcreatefromwav(struct actor* act, u8* buf, int len);
@@ -21,7 +22,7 @@ void actorcreatefromwav(struct actor* act, u8* buf, int len);
 
 static u8* utf8data = 0;
 static u16* bgmdata = 0;
-static struct fstyle def2d;
+//static struct fstyle def2d;
 static struct fstyle def3d;
 
 
@@ -59,9 +60,46 @@ void asset_create(void* addr)
 void asset_delete()
 {
 }
+
+
+
+
+
+
+
+
+void loadtexfromfile(struct glsrc* src, int idx, char* name)
+{
+	int w,h,d,s;
+	int len;
+	u8* buf;
+	u8* tmp;
+	if(0 == src)return;
+	if(0 == name)return;
+
+	buf = src->tex_data[idx];
+	if(0 == buf)return;
+
+	tmp = getsuffix(name);
+	if(0 == tmp)return;
+
+	len = openreadclose(name, 0, buf, 0x1000000);
+	if(len <= 0)
+	{
+		say("len=%d, %s\n", len, name);
+		return;
+	}
+
+	if(0 == tmp[0])return;
+	else if(0 == ncmp(tmp, "jpg", 3))loadimgfromjpg(buf, len, &w, &h, &d, &s);
+	else if(0 == ncmp(tmp, "png", 3))loadimgfrompng(buf, len, &w, &h, &d, &s);
+
+	src->tex_w[idx] = w;
+	src->tex_h[idx] = h;
+}
 void actorcreatefromfile(struct actor* act, char* name)
 {
-	int j,len;
+	int len;
 	u8* tmp;
 	u8* buf;
 	//u8 str[256];
@@ -83,8 +121,8 @@ void actorcreatefromfile(struct actor* act, char* name)
 	}
 
 	if(0 == tmp[0])return;
-	else if(0 == ncmp(tmp, "jpg", 3))actorcreatefromjpg(act, buf, len);
-	else if(0 == ncmp(tmp, "png", 3))actorcreatefrompng(act, buf, len);
+	else if(0 == ncmp(tmp, "jpg", 3))loadimgfromjpg(buf, len, &act->width, &act->height, &act->depth, &act->stride);
+	else if(0 == ncmp(tmp, "png", 3))loadimgfrompng(buf, len, &act->width, &act->height, &act->depth, &act->stride);
 	else if(0 == ncmp(tmp, "obj", 3))actorcreatefromobj(act, buf, len);
 	else if(0 == ncmp(tmp, "stl", 3))actorcreatefromstl(act, buf, len);
 	else if(0 == ncmp(tmp, "mp3", 3))actorcreatefrommp3(act, buf, len);
@@ -124,7 +162,7 @@ void* alloc_winobj(struct actor* win, int type)
 
 
 
-
+/*
 void* defaultstyle_vbo2d()
 {
 	return &def2d;
@@ -146,7 +184,7 @@ void createstyle_vbo2d()
 	def2d.vt[0] = 0.0;
 	def2d.vt[1] = 0.0;
 	def2d.vt[2] = 1.0;
-}
+}*/
 
 
 
@@ -179,7 +217,7 @@ void createstyle_vbo3d()
 
 void lib4d_create(void* addr)
 {
-	createstyle_vbo2d();
+	//createstyle_vbo2d();
 	createstyle_vbo3d();
 
 	asset_create(addr);

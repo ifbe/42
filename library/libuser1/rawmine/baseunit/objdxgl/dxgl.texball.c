@@ -1,5 +1,5 @@
 #include "libuser.h"
-void actorcreatefromfile(struct actor* act, char* name);
+void loadtexfromfile(struct glsrc* src, int idx, char* name);
 void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
 
@@ -37,6 +37,7 @@ char* texball_glsl_f =
 	"void main()\n"
 	"{\n"
 		"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
+		//"FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
 	"}\n";
 
 
@@ -123,9 +124,10 @@ static void texball_draw_vbo3d(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	if(0 == act->buf)return;
 
-	src = (void*)(pin->foot[0]);
+	src = act->buf;
+	if(0 == src)return;
+
 	vbuf = (void*)(src->vbuf);
 	ibuf = (void*)(src->ibuf);
 	carveplanet(vbuf, ibuf, vc, vr, vf, vu);
@@ -185,10 +187,10 @@ static void texball_event(
 	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
-	struct glsrc* src = (void*)(pin->foot[0]);
+	//struct glsrc* src = (void*)(pin->data[0]);
 
 	if(_char_ == ev->what)
-	{
+	{/*
 		switch(ev->why)
 		{
 			case '1':
@@ -227,23 +229,29 @@ static void texball_event(
 				src->tex_enq[0] += 1;
 				break;
 			}
-		}
+		}*/
 	}
 }
 
 
 
 
-static void texball_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void texball_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	struct actor* ctx = buf;
+	//say("@texball_read:%llx,%llx,%llx\n",act,win,buf);
+
+	if(ctx){
+		if(_gl41data_ == ctx->type)texball_draw_vbo3d(act,pin,ctx,sty);
+	}
 	//texball_draw(act, pin, win, sty);
 }
-static void texball_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void texball_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -258,56 +266,17 @@ static void texball_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void texball_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct datapair* pair;
-	struct glsrc* src;
-	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-say("@texball_start\n");
-/*
-	//
-	pair = alloc_winobj(win, 's');
-	src = &pair->src;
-	dst = &pair->dst;
-	pin->foot[0] = (u64)src;
-	sty->foot[0] = (u64)dst;
+	//struct actor* win = (void*)(peer->chip);
+	//struct style* sty = (void*)(peer->foot);
+	if(0 == act)return;
+	if(0 == pin)return;
 
-	//
-	src->geometry = 3;
-	src->method = 'i';
-
-	//shader
-	src->vs = texball_glsl_v;
-	src->fs = texball_glsl_f;
-	src->shader_enq = 42;
-
-#define accx 64
-#define accy 63
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*6;
-	src->vbuf_h = accx*accy+(accx-1)*2;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len);
-	src->vbuf_enq = 0;
-
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = accy*(accx-1)*2;
-	src->ibuf_len = (src->ibuf_w) * (src->ibuf_h);
-	src->ibuf = memorycreate(src->ibuf_len);
-	src->ibuf_enq = 0;
-
-	//texture
-	src->tex_name[0] = "tex0";
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_data[0] = act->buf;
-	src->tex_w[0] = act->width;
-	src->tex_h[0] = act->height;
-	src->tex_enq[0] = 42;
-*/
+	//max=16, give data to scene
+	pin->data[0] = (u64)(act->buf);
+	//sty->data[1] = (u64)(act->buf);
+	say("@texball_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 
@@ -329,13 +298,52 @@ static void texball_delete(struct actor* act)
 }
 static void texball_create(struct actor* act, void* str)
 {
+	int j;
+	u8* buf;
+	struct glsrc* src;
 	if(0 == act)return;
 
-	//max=16MB
-	if(0 == act->buf)act->buf = memorycreate(2048*2048*4);
+	buf = memorycreate(0x200);
+	if(0 == buf)return;
 
+	for(j=0;j<0x200;j++)buf[j] = 0;
+	act->buf = buf;
+	src = act->buf;
+
+	//
+	src->geometry = 3;
+	src->method = 'i';
+
+	//shader
+	src->vs = texball_glsl_v;
+	src->fs = texball_glsl_f;
+	src->shader_enq = 42;
+
+	//texture
+	src->tex_name[0] = "tex0";
+	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex_data[0] = memorycreate(2048*2048*4);
 	if(0 == str)str = "datafile/jpg/earth.jpg";
-	actorcreatefromfile(act, str);
+	loadtexfromfile(src, 0, str);
+	src->tex_enq[0] = 42;
+	//say("w=%d,h=%d\n",src->tex_w[0], src->tex_h[0]);
+
+#define accx 64
+#define accy 63
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 4*6;
+	src->vbuf_h = accx*accy+(accx-1)*2;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf_enq = 0;
+
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = accy*(accx-1)*2;
+	src->ibuf_len = (src->ibuf_w) * (src->ibuf_h);
+	src->ibuf = memorycreate(src->ibuf_len);
+	src->ibuf_enq = 0;
 }
 
 

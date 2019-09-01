@@ -1,0 +1,82 @@
+<arena>
+opengl{
+fmt:win
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</arena>
+
+
+<actor>
+texball{
+fmt:geom
+}
+freecam{
+fmt:freecam
+}
+3dworld{
+fmt:3dworld
+}
+
+thectx{
+fmt:gl41data
+}
+thewnd{
+fmt:gl41wnd0
+}
+</actor>
+
+
+<style>
+skyhaha{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+freemodl{
+}
+freegeom{
+c: 0.0, -2000.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+freefrus{
+l: 0.0, 0.0, 0.0, -1.0
+r: 0.0, 0.0, 0.0, 1.0
+b: 0.0, 0.0, 0.0, -1.0
+t: 0.0, 0.0, 0.0, 1.0
+n: 0.0, 0.0, 0.0, 1.0
+f: 0.0, 0.0, 0.0, 1000000000.0
+}
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+
+#3dworld depends on inner objects
+(3dworld, skygeom, act, 0) -> (texball, skyhaha, act, 0)
+(3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
+
+#glctx depends on scene
+(thectx, 0, act, 0) -> (3dworld, 0, act, 0)
+
+#glwnd depends on ctx + cam
+(thewnd, 0, act, 0) -> (thectx, 0, act, 0)
+(thewnd, freerect, act, 0) -> (freecam, freefrus, act, 0)
+
+#opengl depends on ctx + wnd
+(opengl, 0, win, ctx) -> (thectx, 0, act, 0)
+(opengl, 0, win, wnd) -> (thewnd, 0, act, 0)
+
+</relation>

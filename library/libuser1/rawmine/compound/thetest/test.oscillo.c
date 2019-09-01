@@ -46,7 +46,7 @@ static void oscillo_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
-	struct glsrc* src = (void*)(pin->foot[0]);
+	struct glsrc* src = (void*)(pin->data[0]);
 	src->vbuf_enq += 1;
 	//say("@oscillo_draw_vbo\n");
 }
