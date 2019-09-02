@@ -421,12 +421,8 @@ static void terrain_create(struct actor* act, void* str)
 	act->y0 = 0;
 	act->w0 = 0;
 
-	buf = memorycreate(0x200);
-	if(0 == buf)return;
-
-	for(j=0;j<0x200;j++)buf[j] = 0;
-	act->buf = buf;
-	src = act->buf;
+	src = act->buf = memorycreate(0x200, 0);
+	if(0 == src)return;
 
 	//
 	src->method = 'i';
@@ -440,13 +436,13 @@ static void terrain_create(struct actor* act, void* str)
 
 	//argument
 	src->arg_name[0] = "objmat";
-	src->arg_data[0] = memorycreate(4*4*4);
+	src->arg_data[0] = memorycreate(4*4*4, 0);
 	src->arg_fmt[0] = 'm';
 
 	//texture
 	src->tex_name[0] = "tex0";
 	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_data[0] = memorycreate(2048*2048*4);
+	src->tex_data[0] = memorycreate(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";
 	loadtexfromfile(src, 0, str);
 	if((0 == src->tex_w[0]) | (0 == src->tex_h[0]))
@@ -472,7 +468,7 @@ static void terrain_create(struct actor* act, void* str)
 	src->vbuf_w = 4*6;
 	src->vbuf_h = 256*255;
 	src->vbuf_len = (src->vbuf_w) * 256*256;
-	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 	src->vbuf_enq = 42;
 
 	//index
@@ -480,7 +476,7 @@ static void terrain_create(struct actor* act, void* str)
 	src->ibuf_w = 2*3;
 	src->ibuf_h = 254*254*2;
 	src->ibuf_len = (src->ibuf_w) * 256*256*2;
-	src->ibuf = memorycreate(src->ibuf_len);
+	src->ibuf = memorycreate(src->ibuf_len, 0);
 	src->ibuf_enq = 42;
 }
 

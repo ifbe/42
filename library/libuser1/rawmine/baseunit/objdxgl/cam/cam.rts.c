@@ -233,7 +233,7 @@ static void rtscam_delete(struct actor* act)
 }
 static void rtscam_create(struct actor* act, void* addr)
 {
-	act->buf = memorycreate(64);
+	act->buf = memorycreate(64, 0);
 }
 
 

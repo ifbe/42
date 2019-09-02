@@ -205,7 +205,7 @@ static void oscillo_create(struct actor* act, void* str)
 
 	act->vlen = 0;
 
-	ff = act->vbuf = memorycreate(4*3*0x10000);
+	ff = act->vbuf = memorycreate(4*3*0x10000, 0);
 	for(j=0;j<0x10000;j++){
 		ff[j*3 + 0] = j;
 		ff[j*3 + 1] = 0.0;
@@ -215,7 +215,7 @@ static void oscillo_create(struct actor* act, void* str)
 		ff[j*3 + 2] = k;
 	}
 
-	uu = act->ibuf = memorycreate(2*2*0x10000);
+	uu = act->ibuf = memorycreate(2*2*0x10000, 0);
 	for(j=0;j<0xffff;j++){
 		uu[j*2 + 0] = j;
 		uu[j*2 + 1] = j+1;

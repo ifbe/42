@@ -370,7 +370,7 @@ static void portal_start(struct halfrel* self, struct halfrel* peer)
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 
 	//texture
 	src->tex_name[0] = "tex0";

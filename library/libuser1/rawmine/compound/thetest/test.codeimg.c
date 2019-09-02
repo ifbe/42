@@ -512,7 +512,7 @@ static void codeimg_start(struct halfrel* self, struct halfrel* peer)
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 
 	//texture
 	src->tex_name[0] = "tex0";
@@ -546,7 +546,7 @@ static void codeimg_create(struct actor* act)
 	u32* src;
 	if(0 == act)return;
 
-	src = memorycreate(1024*1024*4);
+	src = memorycreate(1024*1024*4, 0);
 	act->buf = src;
 	act->width = 1024;
 	act->height = 1024;

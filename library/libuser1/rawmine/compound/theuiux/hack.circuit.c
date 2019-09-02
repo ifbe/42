@@ -214,7 +214,7 @@ static void circuit_create(struct actor* act)
 	u8 (*data)[HEIGHT][WIDTH];
 
 	if(0 == act)return;
-	act->buf = memorycreate(WIDTH*HEIGHT*LAYER);
+	act->buf = memorycreate(WIDTH*HEIGHT*LAYER, 0);
 
 	data = act->buf;
 	for(z=0;z<LAYER;z++)

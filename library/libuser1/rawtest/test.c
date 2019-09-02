@@ -99,7 +99,7 @@ int test_create(struct actor* act)
 	struct datapair* pair;
 	struct glsrc* src;
 
-	act->buf = memorycreate(0x1000);
+	act->buf = memorycreate(0x1000, 0);
 	if(0 == act->buf)return 0;
 
 	buf = act->buf;

@@ -159,7 +159,7 @@ static void klotski_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = data;
-	if(_copy_ == act->type)act->buf = memorycreate(20);
+	if(_copy_ == act->type)act->buf = memorycreate(20, 0);
 
 	data[0][1] = data[0][2] = data[1][1] = data[1][2] = caocao;
 	data[0][0] = data[1][0] = machao;

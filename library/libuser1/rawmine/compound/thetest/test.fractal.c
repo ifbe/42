@@ -387,7 +387,7 @@ static void fractal_delete(struct actor* act)
 static void fractal_create(struct actor* act)
 {
 	if(0 == act)return;
-	act->buf = memorycreate(16);
+	act->buf = memorycreate(16, 0);
 
 	act->target.vc[0] = 0;
 	act->target.vc[1] = 0;

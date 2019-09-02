@@ -127,7 +127,7 @@ static void texball_draw_vbo3d(
 
 	src = act->buf;
 	if(0 == src)return;
-say("5555@method=%x, geom=%x, ibuf_h=%x\n", src->method, src->geometry, src->ibuf_h);
+//say("5555@method=%x, geom=%x, ibuf_h=%x\n", src->method, src->geometry, src->ibuf_h);
 
 	vbuf = (void*)(src->vbuf);
 	ibuf = (void*)(src->ibuf);
@@ -296,16 +296,11 @@ static void texball_delete(struct actor* act)
 static void texball_create(struct actor* act, void* str)
 {
 	int j;
-	u8* buf;
 	struct glsrc* src;
 	if(0 == act)return;
 
-	buf = memorycreate(0x200);
-	if(0 == buf)return;
-
-	for(j=0;j<0x200;j++)buf[j] = 0;
-	act->buf = buf;
-	src = act->buf;
+	src = act->buf = memorycreate(0x200, 0);
+	if(0 == src)return;
 
 	//
 	src->geometry = 3;
@@ -319,7 +314,7 @@ static void texball_create(struct actor* act, void* str)
 	//texture
 	src->tex_name[0] = "tex0";
 	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_data[0] = memorycreate(2048*2048*4);
+	src->tex_data[0] = memorycreate(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/earth.jpg";
 	loadtexfromfile(src, 0, str);
 	src->tex_enq[0] = 42;
@@ -332,14 +327,14 @@ static void texball_create(struct actor* act, void* str)
 	src->vbuf_w = 4*6;
 	src->vbuf_h = accx*accy+(accx-1)*2;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 	src->vbuf_enq = 0;
 
 	src->ibuf_fmt = 0x222;
 	src->ibuf_w = 2*3;
 	src->ibuf_h = accy*(accx-1)*2;
 	src->ibuf_len = (src->ibuf_w) * (src->ibuf_h);
-	src->ibuf = memorycreate(src->ibuf_len);
+	src->ibuf = memorycreate(src->ibuf_len, 0);
 	src->ibuf_enq = 0;
 }
 

@@ -194,13 +194,13 @@ static void skydome_start(struct halfrel* self, struct halfrel* peer)
 	src->vbuf_w = 4*6;
 	src->vbuf_h = 128+1;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 
 	src->ibuf_fmt = 0x222;
 	src->ibuf_w = 2*3;
 	src->ibuf_h = 256;
 	src->ibuf_len = (src->ibuf_w) * (src->ibuf_h);
-	src->ibuf = memorycreate(src->ibuf_len);
+	src->ibuf = memorycreate(src->ibuf_len, 0);
 
 	//texture
 	src->tex_name[0] = "tex0";
@@ -230,7 +230,7 @@ static void skydome_delete(struct actor* act)
 static void skydome_create(struct actor* act)
 {
 	if(0 == act)return;
-	actorcreatefromfile(act, "jpg/skydome.jpg");
+	//actorcreatefromfile(act, "jpg/skydome.jpg");
 }
 
 

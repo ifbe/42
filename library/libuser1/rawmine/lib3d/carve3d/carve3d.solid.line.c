@@ -40,7 +40,7 @@ static int line3d_fill(struct glsrc* src)
 
 	if(0 == src->ibuf){
 		src->ibuf_len = 0x100000;
-		src->ibuf = memorycreate(src->ibuf_len);
+		src->ibuf = memorycreate(src->ibuf_len, 0);
 		if(0 == src->ibuf)return -1;
 
 		src->ibuf_w = 2*2;
@@ -51,7 +51,7 @@ static int line3d_fill(struct glsrc* src)
 
 	if(0 == src->vbuf){
 		src->vbuf_len = 0x100000;
-		src->vbuf = memorycreate(src->vbuf_len);
+		src->vbuf = memorycreate(src->vbuf_len, 0);
 		if(0 == src->vbuf)return -2;
 
 		src->vbuf_w = 4*3*2;

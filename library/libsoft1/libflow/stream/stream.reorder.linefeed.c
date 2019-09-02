@@ -90,7 +90,7 @@ int reline_start(struct halfrel* self, struct halfrel* peer)
 int reline_create(struct element* ele, u8* url)
 {
 	say("@reline_create\n");
-	ele->buf = memorycreate(0x1000);
+	ele->buf = memorycreate(0x1000, 0);
 	ele->len = 0;
 	return 1;
 }

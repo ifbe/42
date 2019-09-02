@@ -378,7 +378,7 @@ static void mirror_start(struct halfrel* self, struct halfrel* peer)
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 	src->vbuf_enq = 0;
 
 	//texture

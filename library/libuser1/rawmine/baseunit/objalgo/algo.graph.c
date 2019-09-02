@@ -441,12 +441,12 @@ static void graph_create(struct actor* act, void* str)
 	if(0 == act)return;
 
 	//node
-	act->nbuf = memorycreate(0x1000);
-	act->wbuf = memorycreate(0x1000);
+	act->nbuf = memorycreate(0x1000, 0);
+	act->wbuf = memorycreate(0x1000, 0);
 
 	//geom
-	act->vbuf = memorycreate(0x1000);
-	act->ibuf = memorycreate(0x1000);
+	act->vbuf = memorycreate(0x1000, 0);
+	act->ibuf = memorycreate(0x1000, 0);
 }
 
 

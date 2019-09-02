@@ -237,11 +237,11 @@ static void browser_create(struct actor* act)
 	u8* buf;
 	if(0 == act)return;
 
-	buf = memorycreate(0x1000);
+	buf = memorycreate(0x1000, 0);
 	for(j=0;j<0x1000;j++)buf[j] = 0;
 	act->idx = buf;
 
-	buf = memorycreate(0x100000);
+	buf = memorycreate(0x100000, 0);
 	for(j=0;j<0x1000;j++)buf[j] = 0;
 	act->buf = buf;
 }

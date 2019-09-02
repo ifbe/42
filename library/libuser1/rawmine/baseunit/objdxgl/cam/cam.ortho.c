@@ -221,7 +221,7 @@ static void orthcam_delete(struct actor* act)
 static void orthcam_create(struct actor* act, void* arg)
 {
     say("@orthcam_create\n");
-	act->buf = memorycreate(64);
+	act->buf = memorycreate(64, 0);
 }
 
 

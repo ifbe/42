@@ -86,7 +86,7 @@ static void sokoban_delete(struct actor* act)
 static void sokoban_create(struct actor* act)
 {
 	if(0 == act)return;
-	//act->buf = memorycreate(WIDTH*HEIGHT);
+	//act->buf = memorycreate(WIDTH*HEIGHT, 0);
 }
 
 

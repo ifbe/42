@@ -665,7 +665,7 @@ static void xiangqi_create(struct actor* act, void* str)
 say("@xiangqi_create:%llx\n",str);
 
 	if(_orig_ == act->type)buf = data;
-	else if(_copy_ == act->type)buf = memorycreate(10*9);
+	else if(_copy_ == act->type)buf = memorycreate(10*9, 0);
 
 	if(str)ret = xiangqi_import(buf, str);
 	if((0==str)|(ret<=0))xiangqi_generate(buf);

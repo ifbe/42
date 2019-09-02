@@ -3,23 +3,23 @@
 
 
 
-void actorcreatefromobj(struct actor* act, u8* buf, int len)
+void parsevertfromobj(struct glsrc* ctx, struct actor* act, u8* buf, int len)
 {
 }
-void actorcreatefromstl(struct actor* act, u8* buf, int len)
+void parsevertfromstl(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len)
 {
 	u8 tmp[0x100];
 	int j,ret;
 	float* src;
 	float* dst;
-	float* vl = act->target.vl;	//left
-	float* vr = act->target.vr;	//right
-	float* vn = act->target.vn;	//near
-	float* vf = act->target.vf;	//far
-	float* vb = act->target.vb;	//bot
-	float* vu = act->target.vt;	//top
-	float* vq = act->target.vq;	//info
-	float* vc = act->target.vc;	//center
+	float* vl = sty->vl;	//left
+	float* vr = sty->vr;	//right
+	float* vn = sty->vn;	//near
+	float* vf = sty->vf;	//far
+	float* vb = sty->vb;	//bot
+	float* vu = sty->vt;	//top
+	float* vq = sty->vq;	//info
+	float* vc = sty->vc;	//center
 
 	vl[0] = 100000.0;
 	vl[1] = 0.0;
@@ -90,7 +90,8 @@ void actorcreatefromstl(struct actor* act, u8* buf, int len)
 		vq[0], vq[1], vq[2], vc[0], vc[1], vc[2]
 	);
 
-	act->width = 4*6;
-	act->height = ret*3;
-	act->buf = buf;
+	ctx->vbuf_h = ret*3;
+	//act->width = 4*6;
+	//act->height = ret*3;
+	//act->buf = buf;
 }

@@ -205,7 +205,7 @@ static void particle_start(struct halfrel* self, struct halfrel* peer)
 
 	//argument
 	src->arg_name[0] = "objmat";
-	src->arg_data[0] = memorycreate(4*4*4);
+	src->arg_data[0] = memorycreate(4*4*4, 0);
 	src->arg_fmt[0] = 'm';
 
 	//vertex
@@ -241,7 +241,7 @@ static void particle_create(struct actor* act)
 	int j;
 	if(0 == act)return;
 
-	act->buf = memorycreate(4*9 * COUNT);
+	act->buf = memorycreate(4*9 * COUNT, 0);
 	float* vbuf = act->buf;
 
 	for(j=0;j<COUNT;j++)

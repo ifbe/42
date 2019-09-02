@@ -446,7 +446,7 @@ static void weiqi_create(struct actor* act, void* str)
 	if(0 == act)return;
 
 	if(_orig_ == act->type)buf = (void*)data;
-	if(_copy_ == act->type)buf = memorycreate(19*19);
+	if(_copy_ == act->type)buf = memorycreate(19*19, 0);
 
 	//read
 	ret = 0;

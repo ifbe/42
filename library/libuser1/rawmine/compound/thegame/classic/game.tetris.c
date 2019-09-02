@@ -291,7 +291,7 @@ static void tetris_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = data;
-	if(_copy_ == act->type)act->buf = memorycreate(WIDTH*HEIGHT);
+	if(_copy_ == act->type)act->buf = memorycreate(WIDTH*HEIGHT, 0);
 
 	tetris_generate(data, WIDTH, HEIGHT);
 }

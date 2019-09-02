@@ -144,13 +144,13 @@ void gl41data_get(struct relation* rel)
 }
 void gl41data_copy(struct relation* rel)
 {
-	int j;
+	int j,k;
 	struct actor* world;
 	struct actor* data;
-	u8* src;
-	u8* dst;
 	struct datapair* srcpair;
 	struct datapair* dstpair;
+	u8* src;
+	u8* dst;
 
 	world = (void*)(rel->dstchip);
 	if(0 == world)return;
@@ -159,17 +159,20 @@ void gl41data_copy(struct relation* rel)
 	if(0 == data)return;
 
 	srcpair = world->buf;
-	src = world->buf;
-	if(0 == src)return;
-	if(0 == srcpair->src.vbuf)return;
-	//printmemory(src, 0x200);
+	if(0 == srcpair)return;
 
 	dstpair = data->gl_solid;
-	dst = (void*)&dstpair[solidaid_max];
-	for(j=0;j<sizeof(struct glsrc);j++)dst[j] = src[j];
-	//printmemory(dst, 0x200);
+	if(0 == dstpair)return;
 
-say("7777@method=%x, geom=%x, ibuf_h=%x\n", srcpair->src.method, srcpair->src.geometry, srcpair->src.ibuf_h);
+	for(j=0;j<16;j++){
+		if(0 == srcpair[j].src.vbuf)continue;
+
+		src = (void*)&srcpair[j];
+		dst = (void*)&dstpair[j + solidaid_max];
+		for(k=0;k<sizeof(struct glsrc);k++)dst[k] = src[k];
+	}
+
+//say("7777@method=%x, geom=%x, ibuf_h=%x\n", srcpair->src.method, srcpair->src.geometry, srcpair->src.ibuf_h);
 }
 
 
@@ -229,16 +232,16 @@ int gl41data_create(struct actor* act, void* flag)
 	int j;
 	u8* buf;
 
-	buf = act->gl_camera = memorycreate(0x10000);
+	buf = act->gl_camera = memorycreate(0x10000, 0);
 	for(j=0;j<0x10000;j++)buf[j] = 0;
 
-	buf = act->gl_light = memorycreate(0x10000);
+	buf = act->gl_light = memorycreate(0x10000, 0);
 	for(j=0;j<0x10000;j++)buf[j] = 0;
 
-	buf = act->gl_solid = memorycreate(0x10000);
+	buf = act->gl_solid = memorycreate(0x10000, 0);
 	for(j=0;j<0x10000;j++)buf[j] = 0;
 
-	buf = act->gl_opaque = memorycreate(0x10000);
+	buf = act->gl_opaque = memorycreate(0x10000, 0);
 	for(j=0;j<0x10000;j++)buf[j] = 0;
 
 	return 0;

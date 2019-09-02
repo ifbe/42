@@ -164,7 +164,7 @@ static void fs_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = fsbuf;
-	if(_copy_ == act->type)act->buf = memorycreate(0x1000);
+	if(_copy_ == act->type)act->buf = memorycreate(0x1000, 0);
 }
 
 

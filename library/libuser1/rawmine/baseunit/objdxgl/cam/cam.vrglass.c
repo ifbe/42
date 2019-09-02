@@ -324,7 +324,7 @@ static void vrglass_create(struct actor* act, void* str)
 	act->camera.vq[0] = 100.0;
 	act->camera.vq[1] = 100.0;
 	act->camera.vq[2] = 1000.0;
-	act->buf = memorycreate(64);
+	act->buf = memorycreate(64, 0);
 }
 
 

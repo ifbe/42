@@ -186,7 +186,7 @@ static void pegged_create(struct actor* act)
 	int x,y;
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = data;
-	if(_copy_ == act->type)act->buf = memorycreate(49);
+	if(_copy_ == act->type)act->buf = memorycreate(49, 0);
 
 	for(y=0;y<7;y++)
 	{

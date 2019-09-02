@@ -384,7 +384,7 @@ static void video_delete(struct actor* act)
 static void video_create(struct actor* act)
 {
 	if(0 == act)return;
-	act->buf = memorycreate(0x400000);
+	act->buf = memorycreate(0x400000, 0);
 }
 
 

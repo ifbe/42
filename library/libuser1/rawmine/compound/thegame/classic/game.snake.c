@@ -203,7 +203,7 @@ static void snake_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = buf;
-	if(_copy_ == act->type)act->buf = memorycreate(WIDTH*HEIGHT*4);
+	if(_copy_ == act->type)act->buf = memorycreate(WIDTH*HEIGHT*4, 0);
 
 	snake_generate(buf, WIDTH, HEIGHT);
 }

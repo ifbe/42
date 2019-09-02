@@ -39,7 +39,7 @@ static int point3d_fill(struct glsrc* src)
 
 	if(0 == src->vbuf){
 		src->vbuf_len = 0x100000;
-		src->vbuf = memorycreate(src->vbuf_len);
+		src->vbuf = memorycreate(src->vbuf_len, 0);
 		if(0 == src->vbuf)return -1;
 
 		src->vbuf_w = 4*3*2;

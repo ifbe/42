@@ -394,7 +394,7 @@ static void piano_create(struct actor* act)
 	struct actor* win;
 	if(0 == act)return;
 
-	act->buf = memorycreate(0x100000);
+	act->buf = memorycreate(0x100000, 0);
 	if(0 == act->buf)return;
 
 	win = actorcreate(_mic_, "0");

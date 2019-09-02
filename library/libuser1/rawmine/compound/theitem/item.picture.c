@@ -309,16 +309,11 @@ static void picture_delete(struct actor* act)
 static void picture_create(struct actor* act, void* str)
 {
 	int j;
-	u8* buf;
 	struct glsrc* src;
 	if(0 == act)return;
 
-	buf = memorycreate(0x200);
-	if(0 == buf)return;
-
-	for(j=0;j<0x200;j++)buf[j] = 0;
-	act->buf = buf;
-	src = act->buf;
+	src = act->buf = memorycreate(0x200, 0);
+	if(0 == src)return;
 
 	//property
 	src->geometry = 3;
@@ -332,14 +327,14 @@ static void picture_create(struct actor* act, void* str)
 	//texture0
 	src->tex_name[0] = "tex0";
 	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_data[0] = memorycreate(2048*2048*4);
+	src->tex_data[0] = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(src, 0, "datafile/jpg/test.jpg");
 	src->tex_enq[0] = 42;
 
 	//texture1
 	src->tex_name[1] = "tex1";
 	src->tex_fmt[1] = hex32('r','g','b','a');
-	src->tex_data[1] = memorycreate(2048*2048*4);
+	src->tex_data[1] = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(src, 1, "datafile/jpg/cartoon.jpg");
 	src->tex_enq[1] = 42;
 
@@ -348,7 +343,7 @@ static void picture_create(struct actor* act, void* str)
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 	src->vbuf_enq = 42;
 }
 

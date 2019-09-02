@@ -147,7 +147,7 @@ static void switch_create(struct actor* act, u8* buf)
 {
 	void* addr;
 	if(0 == act)return;
-	act->buf = memorycreate(0x100000);
+	act->buf = memorycreate(0x100000, 0);
 
 	addr = systemcreate(_udp_, "127.0.0.1:2222");
 	if(0 == addr)return;

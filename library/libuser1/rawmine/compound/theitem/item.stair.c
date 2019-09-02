@@ -148,7 +148,7 @@ static void stair_create(struct actor* act)
 {
 	if(0 == act)return;
 	//if(_orig_ == act->type)act->buf = buffer;
-	//if(_copy_ == act->type)act->buf = memorycreate(256);
+	//if(_copy_ == act->type)act->buf = memorycreate(256, 0);
 }
 
 

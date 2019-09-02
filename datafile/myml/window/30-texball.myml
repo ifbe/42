@@ -12,6 +12,7 @@ depth:1024
 <actor>
 texball{
 fmt:texball
+file:datafile/jpg/skysphere.jpg
 }
 freecam{
 fmt:freecam

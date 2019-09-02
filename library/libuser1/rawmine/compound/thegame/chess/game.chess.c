@@ -247,7 +247,7 @@ static void chess_create(struct actor* act)
 	int j,k;
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = buffer;
-	if(_copy_ == act->type)act->buf = memorycreate(64);
+	if(_copy_ == act->type)act->buf = memorycreate(64, 0);
 
 	for(k=0;k<8;k++)
 	{

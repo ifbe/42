@@ -590,7 +590,7 @@ static void maze_delete(struct actor* act)
 static void maze_create(struct actor* act)
 {
 	if(0 == act)return;
-	act->buf = memorycreate(WIDTH*HEIGHT);
+	act->buf = memorycreate(WIDTH*HEIGHT, 0);
 
 	act->x0 = 31;
 	act->y0 = -31;

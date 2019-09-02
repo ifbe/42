@@ -379,7 +379,7 @@ static void sudoku_create(struct actor* act, void* str)
 	if(0 == act)return;
 
 	//malloc
-	buf = memorycreate(81);
+	buf = memorycreate(81, 0);
 	if(0 == buf)return;
 
 	//read

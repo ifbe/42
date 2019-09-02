@@ -206,7 +206,7 @@ static void qrcode_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = databuf;
-	if(_copy_ == act->type)act->buf = memorycreate(49*49);
+	if(_copy_ == act->type)act->buf = memorycreate(49*49, 0);
 
 	slen=49;
 	qrcode_generate("haha",databuf,slen);

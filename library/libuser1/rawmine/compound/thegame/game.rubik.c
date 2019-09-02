@@ -401,7 +401,7 @@ static void rubikscube_create(struct actor* act, void* str)
 //printmemory(str,4);
 
 	//malloc
-	buf = memorycreate(6 * level * level);
+	buf = memorycreate(6 * level * level, 0);
 	if(0 == buf)return;
 
 	//read

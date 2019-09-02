@@ -62,7 +62,7 @@ int line2fv_start(struct halfrel* self, struct halfrel* peer)
 int line2fv_create(struct element* ele, u8* url)
 {
 	say("@line2fv_create\n");
-	ele->buf = memorycreate(0x1000);
+	ele->buf = memorycreate(0x1000, 0);
 	ele->len = 0;
 	return 1;
 }

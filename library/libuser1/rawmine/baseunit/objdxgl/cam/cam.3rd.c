@@ -425,7 +425,7 @@ static void thirdperson_delete(struct actor* act)
 static void thirdperson_create(struct actor* act, void* str)
 {
 	if(0 == act)return;
-	act->buf = memorycreate(64);
+	act->buf = memorycreate(64, 0);
 }
 
 

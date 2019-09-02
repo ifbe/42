@@ -34,7 +34,7 @@ void asset_create(void* addr)
 	if(0 == utf8data)
 	{
 		//malloc
-		utf8data = memorycreate(0x200000);
+		utf8data = memorycreate(0x200000, 0);
 		if(0 == utf8data)return;
 
 		//read
@@ -96,7 +96,7 @@ void loadtexfromfile(struct glsrc* src, int idx, char* name)
 
 	src->tex_w[idx] = w;
 	src->tex_h[idx] = h;
-}
+}/*
 void actorcreatefromfile(struct actor* act, char* name)
 {
 	int len;
@@ -111,7 +111,7 @@ void actorcreatefromfile(struct actor* act, char* name)
 	//mysnprintf(str, 256, "%s/%s", "datafile", name);
 
 	buf = act->buf;
-	if(0 == buf)buf = memorycreate(0x1000000);
+	if(0 == buf)buf = memorycreate(0x1000000, 0);
 
 	len = openreadclose(name, 0, buf, 0x1000000);
 	if(len <= 0)
@@ -158,7 +158,7 @@ void* alloc_winobj(struct actor* win, int type)
 		}
 	}
 	return 0;
-}
+}*/
 
 
 

@@ -263,7 +263,7 @@ static void weather_start(struct halfrel* self, struct halfrel* peer)
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 	src->vbuf_enq = 0;
 */
 }
@@ -285,7 +285,7 @@ static void weather_delete(struct actor* act)
 static void weather_create(struct actor* act)
 {
 	if(0 == act)return;
-	act->buf = memorycreate(16);
+	act->buf = memorycreate(256, 0);
 
 	act->target.vc[0] = 0;
 	act->target.vc[1] = 0;

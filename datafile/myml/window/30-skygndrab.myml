@@ -10,9 +10,18 @@ depth:1024
 
 
 <actor>
-xiangqi{
-fmt:human
+texball{
+fmt:texball
+file:datafile/jpg/skysphere.jpg
 }
+terrain{
+fmt:terrain
+}
+rabbit{
+fmt:model
+file:datafile/stl/bunny-lowpoly.stl
+}
+
 freecam{
 fmt:freecam
 }
@@ -30,7 +39,27 @@ fmt:gl41wnd0
 
 
 <style>
-area{
+skyhaha{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 10000000.0, 0.0, 0.0
+f: 0.0, 10000000.0, 0.0
+t: 0.0, 0.0, 10000000.0
+}
+
+gndhaha{
+}
+gndgeom{
+c: 0.0, 0.0, 0.0
+r: 10000000.0, 0.0, 0.0
+f: 0.0, 10000000.0, 0.0
+t: 0.0, 0.0, 10000000.0
+}
+
+rabhaha{
+}
+rabgeom{
 c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
@@ -40,7 +69,7 @@ t: 0.0, 0.0, 1000.0
 freemodl{
 }
 freegeom{
-c: 0.0, -2000.0, 1000.0
+c: 0.0, -2000.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
@@ -63,7 +92,9 @@ q:1.0, 1.0
 <relation>
 
 #3dworld depends on inner objects
-(3dworld, area, act, 0) -> (xiangqi, 0, act, 0)
+(3dworld, skygeom, act, 0) -> (texball, skyhaha, act, 0)
+(3dworld, gndgeom, act, 0) -> (terrain, gndhaha, act, 0)
+(3dworld, rabgeom, act, 0) -> (rabbit, rabhaha, act, 0)
 (3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
 
 #glctx depends on scene

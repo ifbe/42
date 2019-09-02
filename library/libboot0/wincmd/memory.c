@@ -5,9 +5,14 @@
 
 
 
-void* memorycreate(int size)
+void* memorycreate(int size, int cmd)
 {
-	return malloc(size);
+	int j;
+	char* buf = malloc(size);
+	if(0 == buf)return 0;
+
+	for(j=0;j<size;j++)buf[j] = 0;
+	return buf;
 }
 void memorydelete(void* addr)
 {

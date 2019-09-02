@@ -284,7 +284,7 @@ static void rccar_create(struct actor* act)
 	if(0 == act)return;
 	boardwrite(_car_, 0, "+", 0);
 	//if(_orig_ == act->type)act->buf = buffer;
-	//if(_copy_ == act->type)act->buf = memorycreate(256);
+	//if(_copy_ == act->type)act->buf = memorycreate(256, 0);
 }
 
 

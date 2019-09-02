@@ -388,7 +388,7 @@ static void shadowmap_start(struct halfrel* self, struct halfrel* peer)
 	src->shader_enq = 42;
 
 	src->arg_name[0] = "mapmvp";
-	src->arg_data[0] = memorycreate(4*4*4);
+	src->arg_data[0] = memorycreate(4*4*4, 0);
 	src->arg_fmt[0] = 'm';
 
 	//vertex
@@ -396,7 +396,7 @@ static void shadowmap_start(struct halfrel* self, struct halfrel* peer)
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 12;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 	src->vbuf_enq = 0;
 
 	//texture

@@ -298,7 +298,7 @@ static void calculator_create(struct actor* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = buffer;
-	if(_copy_ == act->type)act->buf = memorycreate(128);
+	if(_copy_ == act->type)act->buf = memorycreate(128, 0);
 
 	buffer[0] = '1';
 	buffer[1] = '+';

@@ -1245,7 +1245,7 @@ int nodetree_rootwrite(void*, void*, void*, int);
 int threaddelete(u64);
 u64 threadcreate(void*, void*);
 int memorydelete(void*);
-void* memorycreate(int);
+void* memorycreate(int, int);
 void* eventread();
 void* eventwrite(u64,u64,u64,u64);
 //

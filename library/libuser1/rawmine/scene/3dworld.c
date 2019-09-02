@@ -75,32 +75,32 @@ void* world3d_alloc(struct actor* world)
 }
 void world3d_copy(struct actor* world, struct style* sty, struct style* pin)
 {
-	int j;
+	int j,k;
 	u8* src;
 	u8* dst;
-	struct datapair* srcpair;
 	if(0 == pin)return;
 	if(0 == sty)return;
 
-	src = (void*)(pin->data[0]);
-	if(0 == src)return;
+	for(j=0;j<4;j++){
+		src = (void*)(pin->data[j]);
+		if(0 == src)return;
 
-	//data
-	dst = (void*)(sty->data[0]);
-	if(0 == dst){
-		dst = world3d_alloc(world);
-		if(0 == dst)return;
+		//data
+		dst = (void*)(sty->data[j]);
+		if(0 == dst){
+			dst = world3d_alloc(world);
+			if(0 == dst)return;
 
-		sty->data[0] = (u64)dst;
-		say("new: %llx\n", src, dst);
+			sty->data[0] = (u64)dst;
+			say("new: %llx\n", src, dst);
+		}
+
+		//copy
+		for(k=0;k<sizeof(struct glsrc);k++)dst[k] = src[k];
+		//printmemory(dst, 0x200);
 	}
-
-	//copy
-	for(j=0;j<sizeof(struct glsrc);j++)dst[j] = src[j];
-	//printmemory(dst, 0x200);
-
-srcpair = (void*)src;
-say("6666@method=%x, geom=%x, ibuf_h=%x\n", srcpair->src.method, srcpair->src.geometry, srcpair->src.ibuf_h);
+//struct datapair* srcpair = (void*)src;
+//say("6666@method=%x, geom=%x, ibuf_h=%x\n", srcpair->src.method, srcpair->src.geometry, srcpair->src.ibuf_h);
 }
 
 
@@ -233,7 +233,7 @@ int world3d_create(struct actor* world, void* str)
 	u8* buf;
 	say("@world3d_create\n");
 
-	buf = world->buf = memorycreate(0x10000);
+	buf = world->buf = memorycreate(0x10000, 0);
 	for(j=0;j<0x10000;j++)buf[j] = 0;
 	return 0;
 /*

@@ -137,8 +137,8 @@ void parse_gpt(u8* src, u8* dst)
 int gptclient_start(struct object* obj, void* of, struct element* ele, void* ef, u8* buf, int len)
 {
 	int ret;
-	u8* src = memorycreate(0x10000);
-	u8* dst = memorycreate(0x10000);
+	u8* src = memorycreate(0x10000, 0);
+	u8* dst = memorycreate(0x10000, 0);
 	ele->mod = src;
 	ele->buf = dst;
 

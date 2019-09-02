@@ -182,7 +182,7 @@ int gpsclient_create(struct element* ele, u8* url)
 {
 	struct str* tmp;
 
-	ele->buf = tmp = memorycreate(0x1000);
+	ele->buf = tmp = memorycreate(0x1000, 0);
 	tmp->len = 0;
 
 	return 0;

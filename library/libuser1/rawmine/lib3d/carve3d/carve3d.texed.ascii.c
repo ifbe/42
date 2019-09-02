@@ -55,7 +55,7 @@ static int aidfont_load()
 	if(buf)return 0;
 	say("@loadbuf\n");
 
-	buf = memorycreate(2048*2048*4);
+	buf = memorycreate(2048*2048*4, 0);
 	if(0 == buf)return -1;
 
 	//clean
@@ -116,7 +116,7 @@ static int aidfont_fill(struct glsrc* src, int id)
 
 	if(0 == src->ibuf){
 		src->ibuf_len = 0x100000;
-		src->ibuf = memorycreate(src->ibuf_len);
+		src->ibuf = memorycreate(src->ibuf_len, 0);
 		if(0 == src->ibuf)return -2;
 
 		src->ibuf_w = 2*3;
@@ -127,7 +127,7 @@ static int aidfont_fill(struct glsrc* src, int id)
 
 	if(0 == src->vbuf){
 		src->vbuf_len = 0x200000;
-		src->vbuf = memorycreate(src->vbuf_len);
+		src->vbuf = memorycreate(src->vbuf_len, 0);
 		if(0 == src->vbuf)return -1;
 
 		src->vbuf_w = 4*3*3;

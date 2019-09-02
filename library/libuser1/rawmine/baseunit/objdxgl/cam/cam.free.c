@@ -677,7 +677,7 @@ static void freecam_delete(struct actor* act)
 static void freecam_create(struct actor* act, void* arg)
 {
     say("@freecam_create\n");
-	act->buf = memorycreate(64);
+	act->buf = memorycreate(64, 0);
 }
 
 

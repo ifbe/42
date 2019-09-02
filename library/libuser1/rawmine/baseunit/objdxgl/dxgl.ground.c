@@ -202,7 +202,7 @@ static void ground_start(struct halfrel* self, struct halfrel* peer)
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 
 	//texture
 	src->tex_name[0] = "tex0";
@@ -229,10 +229,10 @@ static void ground_delete(struct actor* act)
 static void ground_create(struct actor* act, void* str)
 {
 	//max=16MB
-	if(0 == act->buf)act->buf = memorycreate(2048*2048*4);
+	if(0 == act->buf)act->buf = memorycreate(2048*2048*4, 0);
 
-	if(0 == str)str = "datafile/jpg/wall.jpg";
-	actorcreatefromfile(act, str);
+	//if(0 == str)str = "datafile/jpg/wall.jpg";
+	//actorcreatefromfile(act, str);
 }
 
 

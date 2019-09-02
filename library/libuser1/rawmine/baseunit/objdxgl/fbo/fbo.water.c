@@ -368,12 +368,12 @@ static void water_start(struct halfrel* self, struct halfrel* peer)
 	src->shader_enq = 42;
 
 	//vertex
-	src->vbuf = memorycreate(4*6*6);
+	src->vbuf = memorycreate(4*6*6, 0);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 
 	//argument
 	src->arg_name[0] = "time";
@@ -413,11 +413,8 @@ static void water_create(struct actor* act, void* str)
 	void* win;
 	if(0 == act)return;
 
-	act->buf = memorycreate(0x1000000);
-	actorcreatefromfile(act, "datafile/jpg/dudvmap.jpg");
-
-	//win = actorcreate(_fbo_, 0);
-	//if(win)relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
+	//act->buf = memorycreate(0x1000000, 0);
+	//actorcreatefromfile(act, "datafile/jpg/dudvmap.jpg");
 }
 
 

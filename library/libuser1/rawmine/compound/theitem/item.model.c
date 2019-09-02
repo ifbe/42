@@ -1,7 +1,7 @@
 #include "libuser.h"
 int windowread(int type, void* buf);
 int windowwrite(int type, void* buf);
-void actorcreatefromfile(struct actor* act, char* name);
+void parsevertfromstl(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len);
 
 
 
@@ -285,10 +285,11 @@ static void model_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
+	if(0 == act)return;
 	if(act->buf == 0)return;
 
-	struct glsrc* src = (void*)(pin->data[0]);
-	sty_sty_mat(&act->target, &sty->f, (void*)src->arg_data[0]);
+	struct glsrc* src = act->buf;
+	sty_sty_mat(&pin->fs, &sty->fs, (void*)src->arg_data[0]);
 }
 static void model_draw_json(
 	struct actor* act, struct style* pin,
@@ -356,23 +357,27 @@ static void model_event(
 				break;
 			}
 		}
-		actorcreatefromfile(act, buffer);
+		//actorcreatefromfile(act, buffer);
 	}
 }
 
 
 
 
-static void model_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void model_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	struct actor* ctx = buf;
+	if(ctx){
+		if(_gl41data_ == ctx->type)model_draw_vbo3d(act,pin,ctx,sty);
+	}
 	//model_draw(act, pin, win, sty);
 }
-static void model_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void model_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -387,48 +392,21 @@ static void model_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void model_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct datapair* pair;
 	struct glsrc* src;
-	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	if(hex32('3','r','d', 0) == self->flag)return;
-/*
-	//alloc
-	pair = alloc_winobj(win, 's');
-	src = &pair->src;
-	dst = &pair->dst;
-	pin->foot[0] = (u64)src;
-	sty->foot[0] = (u64)dst;
-
-	//
-	src->geometry = 3;
-	src->method = 'v';
-
-	//shader
-	src->vs = model_glsl_v;
-	src->fs = model_glsl_f;
-	src->shader_enq = 42;
-
-	//argument
-	src->arg_name[0] = "objmat";
-	src->arg_data[0] = memorycreate(4*4*4);
-	src->arg_fmt[0] = 'm';
+	if(0 == act)return;
+	if(0 == pin)return;
 
 	//vertex
+	src = act->buf;
+	parsevertfromstl(src, &pin->fs, src->vbuf, src->vbuf_len);
 	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = act->width;
-	src->vbuf_h = act->height;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = act->buf;
+	src->vbuf_w = 4*6;
 	src->vbuf_enq = 42;
 
-	//send!
-	src->tex_enq[0] = 0;
-	src->ibuf_enq = 0;
-*/
+	pin->data[0] = (u64)(act->buf);
+	say("@texball_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 
@@ -448,11 +426,32 @@ static void model_delete(struct actor* act)
 }
 static void model_create(struct actor* act, void* str)
 {
+	int j;
+	struct glsrc* src;
 	if(0 == act)return;
 
-	if(0 == act->buf)act->buf = memorycreate(0x1000000);
+	src = act->buf = memorycreate(0x200, 0);
+	if(0 == src)return;
+
+	//
+	src->geometry = 3;
+	src->method = 'v';
+
+	//shader
+	src->vs = model_glsl_v;
+	src->fs = model_glsl_f;
+	src->shader_enq = 42;
+
+	//argument
+	src->arg_name[0] = "objmat";
+	src->arg_data[0] = memorycreate(4*4*4, 0);
+	src->arg_fmt[0] = 'm';
+
+	//vertex
+	src->vbuf_len = 0x1000000;
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 	if(0 == str)str = "datafile/stl/bunny-lowpoly.stl";
-	actorcreatefromfile(act, str);
+	j = openreadclose(str, 0, src->vbuf, src->vbuf_len);
 }
 
 

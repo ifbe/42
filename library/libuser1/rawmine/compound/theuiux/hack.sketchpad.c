@@ -603,7 +603,7 @@ static void sketchpad_start(struct halfrel* self, struct halfrel* peer)
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 
 
 	//
@@ -636,7 +636,7 @@ static void sketchpad_delete(struct actor* act)
 static void sketchpad_create(struct actor* act)
 {
 	if(0 == act)return;
-	act->buf = databuf = memorycreate(0x100000);
+	act->buf = databuf = memorycreate(0x100000, 0);
 }
 
 

@@ -355,7 +355,7 @@ static void spectrum_delete(struct actor* act)
 static void spectrum_create(struct actor* act)
 {
 	if(0 == act)return;
-	act->buf = memorycreate(0x100000);
+	act->buf = memorycreate(0x100000, 0);
 }
 
 

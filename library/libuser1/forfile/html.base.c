@@ -189,8 +189,8 @@ int htmlnode_delete(struct actor* win)
 }
 int htmlnode_create(struct actor* win, void* str)
 {
-	void** ctx = memorycreate(0x1000);
-	void*  buf = memorycreate(0x200000);
+	void** ctx = memorycreate(0x1000, 0);
+	void*  buf = memorycreate(0x200000, 0);
 
 	ctx[0] = 0;
 	ctx[1] = buf;

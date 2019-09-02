@@ -53,6 +53,6 @@ int jsonnode_delete(struct actor* win)
 int jsonnode_create(struct actor* win, void* str)
 {
 	win->len = 0;
-	win->buf = memorycreate(0x100000);
+	win->buf = memorycreate(0x100000, 0);
 	return 0;
 }

@@ -265,8 +265,8 @@ static void terminal_create(struct actor* act, void* arg)
 	if(0 == arg)return;
 	else
 	{
-		act->idx = memorycreate(sizeof(struct uartterm));
-		act->buf = memorycreate(0x100000);
+		act->idx = memorycreate(sizeof(struct uartterm), 0);
+		act->buf = memorycreate(0x100000, 0);
 
 		term = act->idx;
 		term->curx = 0;

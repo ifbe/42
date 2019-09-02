@@ -230,7 +230,7 @@ static void control_create(struct actor* act)
 	u8* p;
 	if(0 == act)return;
 
-	p = memorycreate(256);
+	p = memorycreate(256, 0);
 	if(0 == p)return;
 
 	for(j=0;j<32;j++)p[j] = statusbuffer[j];
