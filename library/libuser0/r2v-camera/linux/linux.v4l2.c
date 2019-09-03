@@ -211,20 +211,15 @@ void* visionlistener(struct arena* win)
 
 
 
-int videolist()
+int videoread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
+	u64 addr = info[(cur+23)%24].addr;
+	say("addr=%llx\n",addr);
+
+	*(u64*)buf = addr;
 	return 0;
 }
-int videochoose()
-{
-	return 0;
-}
-void* videoread(char* buf, int frame)
-{
-	return &info[(cur+23)%24];
-	return 0;
-}
-int videowrite(char* buf, int frame)
+int videowrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	return 0;
 }
@@ -243,6 +238,11 @@ int videodelete(struct arena* win)
 }
 int videocreate(struct arena* win)
 {
+	int j;
+	for(j=0;j<24;j++){
+		info[j].addr = 0;
+	}
+
 	alive = 1;
 	threadcreate(visionlistener, win);
 	return 0;

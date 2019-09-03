@@ -479,15 +479,17 @@ fail:
 extern "C" {
 
 
-void videoread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct style* pin)
+int videoread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
-	printf("%llx,%llx,%llx,%llx\n", win, sty, act, pin);
-	if(0 == act)return;
+	u64 addr = obj[(enq+59)%60].addr;
+	say("addr=%llx\n",addr);
+
+	*(u64*)buf = addr;
+	return 0;
 }
-void videowrite()
+int videowrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
+	return 0;
 }
 void videolist()
 {

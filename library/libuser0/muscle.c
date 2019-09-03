@@ -24,7 +24,7 @@ int videocreate(void*, void*);
 int videodelete(void*);
 int videostart(void*);
 int videostop(void*);
-int videoread(void* win, void* sty, void* act, void* pin);
+int videoread(void* win, void* sty, void* act, int);
 int videowrite(void*);
 int videolist();
 int videochoose();
@@ -122,13 +122,10 @@ void* allocstyle()
 
 int arenaread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
-	struct arena* win;
-	struct style* sty;
+	struct arena* win = (void*)(self->chip);
 
-	win = (void*)(self->chip);
-	sty = (void*)(self->foot);
-
-	switch(win->fmt){
+	switch(win->type){
+		case _cam_:return videoread(self, peer, buf, len);
 		case _bdc_:return toycar_read(self, peer, buf, len);
 		case _step_:return stepcar_read(self, peer, buf, len);
 	}

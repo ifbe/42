@@ -61,6 +61,36 @@ char* video_hlsl_f = 0;
 
 
 
+void video_update(
+	u8* dstbuf, int dstlen,
+	u8* srcbuf, int srclen)
+{
+	int x,y;
+	u8* dst;
+	u8* src;
+	if(0 == srcbuf)return;
+	if(0 == dstbuf)return;
+
+	for(y=0;y<480;y++)
+	{
+		dst = dstbuf + (y*640*4);
+		src = srcbuf + (y*640*2);
+		for(x=0;x<640;x+=2)
+		{
+			dst[4*x + 0] = src[2*x + 0];
+			dst[4*x + 1] = src[2*x + 1];
+			dst[4*x + 2] = src[2*x + 3];
+
+			dst[4*x + 4] = src[2*x + 2];
+			dst[4*x + 5] = src[2*x + 1];
+			dst[4*x + 6] = src[2*x + 3];
+		}
+	}
+}
+
+
+
+
 void video_draw_pixel(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -95,66 +125,7 @@ void video_draw_pixel(
 		  src, 0, 640, 480,     0,     0,     0,     0,
 		  dst, 0,   w,   h, cx-ww, cy-hh, cx+ww, cy+hh
 	);
-}/*
-void video_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
-{
-	if(0 == sty)sty = defaultstyle_vbo2d();
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-
-	struct glsrc* data = (void*)(pin->foot[0]);
-	float (*vbuf)[6] = data->vbuf;
-
-	data->tex_data[0] = act->buf;
-	data->tex_enq[0] += 1;
-
-	vbuf[0][0] = vc[0] - vr[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2];
-	vbuf[0][3] = 0.0;
-	vbuf[0][4] = 480/1024.0;//1.0;
-	vbuf[0][5] = 0.0;
-
-	vbuf[1][0] = vc[0] + vr[0] + vf[0];
-	vbuf[1][1] = vc[1] + vr[1] + vf[1];
-	vbuf[1][2] = vc[2] + vr[2] + vf[2];
-	vbuf[1][3] = 640/1024.0;//0.0;
-	vbuf[1][4] = 0.0;
-	vbuf[1][5] = 0.0;
-
-	vbuf[2][0] = vc[0] - vr[0] + vf[0];
-	vbuf[2][1] = vc[1] - vr[1] + vf[1];
-	vbuf[2][2] = vc[2] - vr[2] + vf[2];
-	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 0.0;
-	vbuf[2][5] = 0.0;
-
-	vbuf[3][0] = vc[0] + vr[0] + vf[0];
-	vbuf[3][1] = vc[1] + vr[1] + vf[1];
-	vbuf[3][2] = vc[2] + vr[2] + vf[2];
-	vbuf[3][3] = 640/1024.0;//0.0;
-	vbuf[3][4] = 0.0;
-	vbuf[3][5] = 0.0;
-
-	vbuf[4][0] = vc[0] - vr[0] - vf[0];
-	vbuf[4][1] = vc[1] - vr[1] - vf[1];
-	vbuf[4][2] = vc[2] - vr[2] - vf[2];
-	vbuf[4][3] = 0.0;
-	vbuf[4][4] = 480/1024.0;//1.0;
-	vbuf[4][5] = 0.0;
-
-	vbuf[5][0] = vc[0] + vr[0] - vf[0];
-	vbuf[5][1] = vc[1] + vr[1] - vf[1];
-	vbuf[5][2] = vc[2] + vr[2] - vf[2];
-	vbuf[5][3] = 640/1024.0;//1.0;
-	vbuf[5][4] = 480/1024.0;//1.0;
-	vbuf[5][5] = 0.0;
-
-	data->vbuf_enq += 1;
-}*/
+}
 void video_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -166,8 +137,6 @@ void video_draw_vbo3d(
 
 	struct glsrc* data = act->buf;
 	float (*vbuf)[6] = data->vbuf;
-
-	data->tex_enq[0] += 1;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -212,6 +181,22 @@ void video_draw_vbo3d(
 	vbuf[5][5] = 0.0;
 
 	data->vbuf_enq += 1;
+
+
+	struct relation* rel = act->orel0;
+	if(0 == rel)return;
+
+	u8* srcbuf = 0;
+	struct halfrel* self = (void*)&rel->dstchip;
+	struct halfrel* peer = (void*)&rel->srcchip;
+	arenaread(self, peer, &srcbuf, 0);
+	say("srcbuf=%llx\n",srcbuf);
+	if(0 == srcbuf)return;
+
+	video_update(data->tex_data[0], 1024*1024*4, srcbuf, 640*480*2);
+	data->tex_w[0] = 640;
+	data->tex_h[0] = 480;
+	data->tex_enq[0] += 1;
 }
 void video_draw_json(
 	struct actor* act, struct style* pin,
@@ -256,32 +241,6 @@ static void video_draw(
 		//else video_draw_vbo3d(act, pin, win, sty);
 	}
 	else video_draw_pixel(act, pin, win, sty);
-}
-void video_update(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
-	u8* buf, int len)
-{
-	int x,y;
-	u8* dst;
-	u8* src;
-	if(0 == act->buf)return;
-
-	for(y=0;y<480;y++)
-	{
-		dst = (act->buf) + (y*1024*4);
-		src = buf + (y*320*4);
-		for(x=0;x<320;x++)
-		{
-			dst[8*x + 0] = src[4*x + 0];
-			dst[8*x + 1] = src[4*x + 1];
-			dst[8*x + 2] = src[4*x + 3];
-
-			dst[8*x + 4] = src[4*x + 2];
-			dst[8*x + 5] = src[4*x + 1];
-			dst[8*x + 6] = src[4*x + 3];
-		}
-	}
 }
 void video_event(
 	struct actor* act, struct style* pin,
@@ -374,9 +333,6 @@ static void video_create(struct actor* act)
 	src->tex_name[0] = "tex0";
 	src->tex_data[0] = memorycreate(1024*1024*4, 0);
 	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_w[0] = 1024;
-	src->tex_h[0] = 1024;
-	src->tex_enq[0] = 1;
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_33;
