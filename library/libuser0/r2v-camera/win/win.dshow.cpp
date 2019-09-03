@@ -482,7 +482,7 @@ extern "C" {
 int videoread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	u64 addr = obj[(enq+59)%60].addr;
-	say("addr=%llx\n",addr);
+	printf("addr=%llx\n",addr);
 
 	*(u64*)buf = addr;
 	return 0;
