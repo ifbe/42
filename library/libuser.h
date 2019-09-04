@@ -192,16 +192,16 @@ typedef float mat4[4][4];
 #define point3d  0
 #define line3d   1
 #define trigon3d 2
-#define solidaid_max 3
+#define solidaid_max 4
 //opaque
-#define font3d0 0
-#define font3d1 1
-#define font3d2 2
-#define font3d3 3
-#define opaquepoint3d  4
-#define opaqueline3d   5
-#define opaquetrigon3d 6
-#define opaqueaid_max 7
+#define opaquepoint3d  0
+#define opaqueline3d   1
+#define opaquetrigon3d 2
+#define font3d0 4
+#define font3d1 5
+#define font3d2 6
+#define font3d3 7
+#define opaqueaid_max 8
 //#define point2d  3
 //#define line2d   4
 //#define trigon2d 5

@@ -170,7 +170,61 @@ int ascii3d_vars(struct actor* win, int id, float** vbuf, u16** ibuf, int vcnt, 
 
 
 
-//ascii is 8x16, but in 16x16, so move right 1/2
+void carveascii_test(struct actor* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf)
+{
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
+
+	float* vbuf;
+	u16* ibuf;
+	int vlen = ascii3d_vars(win, 0, &vbuf, &ibuf, 4, 2);
+	if(vlen < 0)return;
+
+	vbuf[ 0] = vc[0];
+	vbuf[ 1] = vc[1];
+	vbuf[ 2] = vc[2];
+	vbuf[ 3] = rr;
+	vbuf[ 4] = gg;
+	vbuf[ 5] = bb;
+	vbuf[ 6] = 0.0;
+	vbuf[ 7] = 1.0;
+
+	vbuf[ 9] = vc[0]+vr[0];
+	vbuf[10] = vc[1]+vr[1];
+	vbuf[11] = vc[2]+vr[2];
+	vbuf[12] = rr;
+	vbuf[13] = gg;
+	vbuf[14] = bb;
+	vbuf[15] = 1.0;
+	vbuf[16] = 1.0;
+
+	vbuf[18] = vc[0]+vf[0];
+	vbuf[19] = vc[1]+vf[1];
+	vbuf[20] = vc[2]+vf[2];
+	vbuf[21] = rr;
+	vbuf[22] = gg;
+	vbuf[23] = bb;
+	vbuf[24] = 0.0;
+	vbuf[25] = 0.0;
+
+	vbuf[27] = vc[0]+vr[0]+vf[0];
+	vbuf[28] = vc[1]+vr[1]+vf[1];
+	vbuf[29] = vc[2]+vr[2]+vf[2];
+	vbuf[30] = rr;
+	vbuf[31] = gg;
+	vbuf[32] = bb;
+	vbuf[33] = 1.0;
+	vbuf[34] = 0.0;
+
+	ibuf[0] = vlen+0;
+	ibuf[1] = vlen+1;
+	ibuf[2] = vlen+3;
+	ibuf[3] = vlen+0;
+	ibuf[4] = vlen+2;
+	ibuf[5] = vlen+3;
+}
 void carveascii(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8 dat)
 {
@@ -183,36 +237,36 @@ void carveascii(struct actor* win, u32 rgb,
 	int vlen = ascii3d_vars(win, 0, &vbuf, &ibuf, 4, 2);
 	if(vlen < 0)return;
 
-	vbuf[ 0] = vc[0]+vr[0]/2-vr[0]-vf[0];
-	vbuf[ 1] = vc[1]+vr[1]/2-vr[1]-vf[1];
-	vbuf[ 2] = vc[2]+vr[2]/2-vr[2]-vf[2];
+	vbuf[ 0] = vc[0];
+	vbuf[ 1] = vc[1];
+	vbuf[ 2] = vc[2];
 	vbuf[ 3] = rr;
 	vbuf[ 4] = gg;
 	vbuf[ 5] = bb;
 	vbuf[ 6] = (dat+0.0)/128.0;
 	vbuf[ 7] = 1.0/128.0;
 
-	vbuf[ 9] = vc[0]+vr[0]/2+vr[0]-vf[0];
-	vbuf[10] = vc[1]+vr[1]/2+vr[1]-vf[1];
-	vbuf[11] = vc[2]+vr[2]/2+vr[2]-vf[2];
+	vbuf[ 9] = vc[0]+vr[0];
+	vbuf[10] = vc[1]+vr[1];
+	vbuf[11] = vc[2]+vr[2];
 	vbuf[12] = rr;
 	vbuf[13] = gg;
 	vbuf[14] = bb;
 	vbuf[15] = (dat+1.0)/128.0;
 	vbuf[16] = 1.0/128.0;
 
-	vbuf[18] = vc[0]+vr[0]/2-vr[0]+vf[0];
-	vbuf[19] = vc[1]+vr[1]/2-vr[1]+vf[1];
-	vbuf[20] = vc[2]+vr[2]/2-vr[2]+vf[2];
+	vbuf[18] = vc[0]+vf[0];
+	vbuf[19] = vc[1]+vf[1];
+	vbuf[20] = vc[2]+vf[2];
 	vbuf[21] = rr;
 	vbuf[22] = gg;
 	vbuf[23] = bb;
 	vbuf[24] = (dat+0.0)/128.0;
 	vbuf[25] = 0.0;
 
-	vbuf[27] = vc[0]+vr[0]/2+vr[0]+vf[0];
-	vbuf[28] = vc[1]+vr[1]/2+vr[1]+vf[1];
-	vbuf[29] = vc[2]+vr[2]/2+vr[2]+vf[2];
+	vbuf[27] = vc[0]+vr[0]+vf[0];
+	vbuf[28] = vc[1]+vr[1]+vf[1];
+	vbuf[29] = vc[2]+vr[2]+vf[2];
 	vbuf[30] = rr;
 	vbuf[31] = gg;
 	vbuf[32] = bb;
@@ -240,27 +294,27 @@ void carveunicode(struct actor* win, u32 rgb,
 	if(vlen < 0)return;
 
 	unicode = unicode&0x3fff;
-	vbuf[ 0] = vc[0]-vr[0]-vf[0];
-	vbuf[ 1] = vc[1]-vr[1]-vf[1];
-	vbuf[ 2] = vc[2]-vr[2]-vf[2];
+	vbuf[ 0] = vc[0];
+	vbuf[ 1] = vc[1];
+	vbuf[ 2] = vc[2];
 	vbuf[ 3] = rr;
 	vbuf[ 4] = gg;
 	vbuf[ 5] = bb;
 	vbuf[ 6] = (unicode&0x7f)/128.0;
 	vbuf[ 7] = ((unicode>>7)+1)/128.0;
 
-	vbuf[ 9] = vc[0]+vr[0]-vf[0];
-	vbuf[10] = vc[1]+vr[1]-vf[1];
-	vbuf[11] = vc[2]+vr[2]-vf[2];
+	vbuf[ 9] = vc[0]+vr[0];
+	vbuf[10] = vc[1]+vr[1];
+	vbuf[11] = vc[2]+vr[2];
 	vbuf[12] = rr;
 	vbuf[13] = gg;
 	vbuf[14] = bb;
 	vbuf[15] = ((unicode&0x7f)+1)/128.0;
 	vbuf[16] = ((unicode>>7)+1)/128.0;
 
-	vbuf[18] = vc[0]-vr[0]+vf[0];
-	vbuf[19] = vc[1]-vr[1]+vf[1];
-	vbuf[20] = vc[2]-vr[2]+vf[2];
+	vbuf[18] = vc[0]+vf[0];
+	vbuf[19] = vc[1]+vf[1];
+	vbuf[20] = vc[2]+vf[2];
 	vbuf[21] = rr;
 	vbuf[22] = gg;
 	vbuf[23] = bb;
@@ -356,9 +410,9 @@ void carvehexadecimal(struct actor* win, u32 rgb,
 void carvestring(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
-	int j;
+	int j,k;
+	u32 unicode;
 	vec3 tc;
-	vec3 tr;
 
 	if(0 == buf)return;
 	if(0 == len)
@@ -374,15 +428,27 @@ void carvestring(struct actor* win, u32 rgb,
 	}
 	if(len == 0)return;
 
-	for(j=0;j<len;j++)
+	j = k = 0;
+	tc[0] = vc[0];
+	tc[1] = vc[1];
+	tc[2] = vc[2];
+	while(j < len)
 	{
-		tc[0] = vc[0] + (vr[0]/2)*(j+1);
-		tc[1] = vc[1] + (vr[1]/2)*(j+1);
-		tc[2] = vc[2] + (vr[2]/2)*(j+1);
-		tr[0] = vr[0]/2;
-		tr[1] = vr[1]/2;
-		tr[2] = vr[2]/2;
-		carveascii(win, rgb, tc, tr, vf, buf[j]);
+		k = utf2unicode(buf+j, &unicode);
+		if(k > 1){
+			carveunicode(win, rgb, tc, vr, vf, unicode);
+			tc[0] += vr[0];
+			tc[1] += vr[1];
+			tc[2] += vr[2];
+			j += k;
+		}
+		else{
+			carveascii(win, rgb, tc, vr, vf, buf[j]);
+			tc[0] += vr[0]/2;
+			tc[1] += vr[1]/2;
+			tc[2] += vr[2]/2;
+			j++;
+		}
 	}
 }
 void carvestring_center(struct actor* win, u32 rgb,
@@ -449,31 +515,31 @@ void carvetext_reverse(struct actor* win, u32 rgb,
 	u8* buf, int len)
 {
 	int j,k;
-	float f;
+	float fx,fy;
 	vec3 tc;
 	vec3 tr;
 	vec3 tf;
 	if(0 == buf)return;
 	if(0 == len)return;
 
-	f = 16.0 / (float)(win->fbheight);
-	tf[0] = vf[0] * f;
-	tf[1] = vf[1] * f;
-	tf[2] = vf[2] * f;
+	fx = 32.0 / 500;
+	tr[0] = vr[0] * fx;
+	tr[1] = vr[1] * fx;
+	tr[2] = vr[2] * fx;
 
-	tc[0] = vc[0] - vr[0] - vf[0] + tf[0];
-	tc[1] = vc[1] - vr[1] - vf[1] + tf[1];
-	tc[2] = vc[2] - vr[2] - vf[2] + tf[2];
+	fy = 32.0 / 500;
+	tf[0] = vf[0] * fy;
+	tf[1] = vf[1] * fy;
+	tf[2] = vf[2] * fy;
+
+	tc[0] = vc[0] - vr[0] - vf[0];
+	tc[1] = vc[1] - vr[1] - vf[1];
+	tc[2] = vc[2] - vr[2] - vf[2];
 
 	k = len;
 	for(j=len-1;j>=0;j--)
 	{
-		if(tc[1] >= 1.0)break;
-
-		f = 32.0 / (float)(win->fbwidth);
-		tr[0] = vr[0] * f;
-		tr[1] = vr[1] * f;
-		tr[2] = vr[2] * f;
+		if(tc[1] >= 250.0)break;
 
 		if(0 == j)
 		{
@@ -484,9 +550,9 @@ void carvetext_reverse(struct actor* win, u32 rgb,
 		if('\n' == buf[j])
 		{
 			carvestring(win, rgb, tc, tr, tf, buf+j+1, k-j-1);
-			tc[0] += 2*tf[0];
-			tc[1] += 2*tf[1];
-			tc[2] += 2*tf[2];
+			tc[0] += tf[0];
+			tc[1] += tf[1];
+			tc[2] += tf[2];
 
 			k = j;
 		}

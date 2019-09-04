@@ -107,16 +107,15 @@ static void terminal_draw_vbo(
 	vc = sty->f.vc;
 	vr = sty->f.vr;
 	vf = sty->f.vf;
+	carveopaque_rect(win, 0x80808080, vc, vr, vf);
 
 	tc[0] = vc[0];
 	tc[1] = vc[1];
-	tc[2] = -0.5;
-	carveopaque_rect(win, 0x404040, tc, vr, vf);
-
-	tc[2] = -0.8;
+	tc[2] = vc[2]+1;
 	obuf = getstdout();
 	ocur = getcurout();
 	carvetext_reverse(win, 0xffffff, tc, vr, vf, obuf, ocur);
+	//carvestring(win, 0xffffff, vc, vr, vf, obuf, ocur);
 }
 static void terminal_draw_json(
 	struct actor* act, struct style* pin,
@@ -217,16 +216,22 @@ static void terminal_event(
 
 
 
-static void terminal_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void terminal_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	struct actor* ctx = buf;
+	//say("@drone_read:%llx,%llx,%llx\n",act,win,buf);
+
+	if(ctx){
+		if(_gl41data_ == ctx->type)terminal_draw_vbo(act,pin,ctx,sty);
+	}
 	//terminal_draw(act, pin, win, sty);
 }
-static void terminal_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void terminal_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

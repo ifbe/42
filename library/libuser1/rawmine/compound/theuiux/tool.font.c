@@ -6,6 +6,8 @@ void carveunicode_surround(
 	float,float,float,
 	float,float,float,
 	int, int);
+void carveascii_test(struct actor* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf);
 
 
 
@@ -81,15 +83,16 @@ static void font_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
-	int x,y,dx,dy;
-	int left,right,near,far;
-	vec3 tc, tr, tf, tu, f;
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
 	carveline_rect(win, 0xffffff, vc, vr, vf);
-
+	carveascii_test(win, 0xffffff, vc, vr, vf);
+/*
+	int x,y,dx,dy;
+	int left,right,near,far;
+	vec3 tc, tr, tf, tu, f;
 	for(y=-32;y<32;y++)
 	{
 		for(x=-32;x<32;x++)
@@ -124,6 +127,7 @@ static void font_draw_vbo(
 	tf[1] = vf[1]/4;
 	tf[2] = vf[2]/4;
 	carvehexadecimal(win, 0x0000ff, vc, tr, tf, chosen);
+*/
 }
 static void font_draw_json(
 	struct actor* act, struct style* pin,
@@ -223,16 +227,22 @@ static void font_event(
 
 
 
-static void font_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void font_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	struct actor* ctx = buf;
+	//say("@drone_read:%llx,%llx,%llx\n",act,win,buf);
+
+	if(ctx){
+		if(_gl41data_ == ctx->type)font_draw_vbo(act,pin,ctx,sty);
+	}
 	//font_draw(act, pin, win, sty);
 }
-static void font_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void font_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

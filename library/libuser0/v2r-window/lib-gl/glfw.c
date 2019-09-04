@@ -301,6 +301,7 @@ void windowwrite(struct arena* win, struct event* ev)
 }
 void windowread(struct arena* win)
 {
+	char str[64];
 	GLFWwindow* fw;
 	struct relation* rel;
 	//say("@windowread.start:%.8s,%.8s,%llx\n", &win->type, &win->fmt, win->win);
@@ -331,7 +332,8 @@ void windowread(struct arena* win)
 	glfwSwapBuffers(fw);
 
 	//3: title
-	glfwSetWindowTitle(fw, "holyshit");
+	snprintf(str, 64, "%dx%d", win->width, win->height);
+	glfwSetWindowTitle(fw, str);
 
 	//4: poll event
 	if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}

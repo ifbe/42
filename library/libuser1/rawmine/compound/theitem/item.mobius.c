@@ -184,16 +184,22 @@ static void mobius_draw(
 
 
 
-static void mobius_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void mobius_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	struct actor* ctx = buf;
+	//say("@drone_read:%llx,%llx,%llx\n",act,win,buf);
+
+	if(ctx){
+		if(_gl41data_ == ctx->type)mobius_draw_vbo3d(act,pin,ctx,sty);
+	}
 	//mobius_draw(act, pin, win, sty);
 }
-static void mobius_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void mobius_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 }
 static void mobius_stop(struct halfrel* self, struct halfrel* peer)

@@ -64,11 +64,22 @@ static int opaque3d_fill(struct glsrc* src)
 }
 int opaque3d_vars(struct actor* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
-	struct datapair* mod = win->gl_opaque;
-	struct glsrc* src = &mod[opaquetrigon3d].src;
-	int vlen = src->vbuf_h;
-	int ilen = src->ibuf_h;
+	struct datapair* mod;
+	struct glsrc* src;
+	int vlen,ilen,ret;
+	if(0 == win)return -1;
 
+	mod = win->gl_opaque;
+	if(0 == mod)return -2;
+
+	src = &mod[opaquetrigon3d].src;
+	if(0 == src->vbuf){
+		ret = opaque3d_fill(src);
+		if(ret < 0)return -3;
+	}
+
+	vlen = src->vbuf_h;
+	ilen = src->ibuf_h;
 	*vbuf = (src->vbuf) + (48*vlen);
 	*ibuf = (src->ibuf) + (6*ilen);
 	src->vbuf_h += vcnt;
@@ -92,6 +103,7 @@ void carveopaque_triangle(struct actor* win, u32 rgba,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, 3, 1);
+	if(vlen < 0)return;
 
 	vec3 n;
 	n[0] = (v1[1]-v0[1])*(v2[2]-v0[2]) - (v1[2]-v0[2])*(v2[1]-v0[1]);
@@ -153,6 +165,7 @@ void carveopaque_rect(struct actor* win, u32 rgba,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, 4, 2);
+	if(vlen < 0)return;
 
 	vec3 n;
 	n[0] = vr[1]*vf[2] - vr[2]*vf[1];
@@ -235,6 +248,7 @@ void carveopaque_circle(struct actor* win, u32 rgba,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, circieacc+1, circieacc);
+	if(vlen < 0)return;
 
 	vec3 n;
 	n[0] = vr[1]*vf[2] - vr[2]*vf[1];
@@ -313,6 +327,7 @@ void carveopaque_cone(struct actor* win, u32 rgba,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, acc + 1, acc);
+	if(vlen < 0)return;
 
 	for(j=0;j<acc;j++)
 	{
@@ -376,6 +391,7 @@ void carveopaque_prism4(struct actor* win, u32 rgba,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, 24, 12);
+	if(vlen < 0)return;
 
 	for(j=0;j<24*12;j+=12)
 	{
@@ -559,6 +575,7 @@ void carveopaque_cask(struct actor* win, u32 rgba,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, acc * 2, acc * 2);
+	if(vlen < 0)return;
 
 	for(j=0;j<acc;j++)
 	{
@@ -652,6 +669,7 @@ void carveopaque_dodecahedron(struct actor* win, u32 rgba,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, 20, 36);
+	if(vlen < 0)return;
 
 	//(+-1, +-1, +-1)
 	vbuf[0*12 + 0] = vc[0]-vr[0]-vf[0]-vu[0];
@@ -891,6 +909,7 @@ void carveopaque_icosahedron(struct actor* win, u32 rgba,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, 12, 20);
+	if(vlen < 0)return;
 
 	//(+-m, 0, +-n)
 	vbuf[0*12 + 0] = vc[0] - m*vr[0] - n*vu[0];
@@ -1052,6 +1071,7 @@ void carveopaque_sphere(struct actor* win, u32 rgba,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, accx*accy+2, accx*accy*2);
+	if(vlen < 0)return;
 
 	for(k=0;k<accy;k++)
 	{
@@ -1149,4 +1169,5 @@ void carveopaque_tokamak(struct actor* win, u32 rgba,
 	float* vbuf;
 	u16* ibuf;
 	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, acc*acc*2, acc*acc);
+	if(vlen < 0)return;
 }
