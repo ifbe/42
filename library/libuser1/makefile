@@ -151,6 +151,7 @@ rawmine/compound/theitem/item.drone.c \
 rawmine/compound/theitem/item.geometry.c \
 rawmine/compound/theitem/item.house.c \
 rawmine/compound/theitem/item.human.c \
+rawmine/compound/theitem/item.mario.c \
 rawmine/compound/theitem/item.mobius.c \
 rawmine/compound/theitem/item.model.c \
 rawmine/compound/theitem/item.motor.c \
@@ -160,6 +161,7 @@ rawmine/compound/theitem/item.planet.c \
 rawmine/compound/theitem/item.rccar.c \
 rawmine/compound/theitem/item.stair.c \
 rawmine/compound/theitem/item.tardis.c \
+rawmine/compound/theitem/item.texmix.c \
 rawmine/compound/theitem/item.tree.c \
 rawmine/compound/thetest/test.calib3d.c \
 rawmine/compound/thetest/test.codeimg.c \

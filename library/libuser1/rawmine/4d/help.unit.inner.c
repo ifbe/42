@@ -67,6 +67,7 @@ void drone_register(void*);
 void geometry_register(void*);
 void house_register(void*);
 void human_register(void*);
+void mario_register(void*);
 void mobius_register(void*);
 void model_register(void*);
 void motor_register(void*);
@@ -75,6 +76,7 @@ void picture_register(void*);
 void rccar_register(void*);
 void stair_register(void*);
 void tardis_register(void*);
+void texmix_register(void*);
 void tree_register(void*);
 
 //test
@@ -311,6 +313,9 @@ void content_create(void* addr)
 	human_register(tmp);
 	tmp += sizeof(struct actor);
 
+	mario_register(tmp);
+	tmp += sizeof(struct actor);
+
 	mobius_register(tmp);
 	tmp += sizeof(struct actor);
 
@@ -333,6 +338,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	tardis_register(tmp);
+	tmp += sizeof(struct actor);
+
+	texmix_register(tmp);
 	tmp += sizeof(struct actor);
 
 	tree_register(tmp);

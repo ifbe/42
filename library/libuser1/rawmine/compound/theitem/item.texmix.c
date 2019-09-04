@@ -3,8 +3,18 @@ void loadtexfromfile(struct glsrc* src, int idx, char* name);
 
 
 
-
-char* picture_glsl_v =
+/*
+char* texmix_glsl2d_v =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec2 texuvw;\n"
+"out mediump vec2 uvw;\n"
+"void main(){\n"
+	"uvw = texuvw;\n"
+	"gl_Position = vec4(vertex, 1.0);\n"
+"}\n";
+*/
+char* texmix_glsl_v =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 vertex;\n"
 "layout(location = 1)in mediump vec2 texuvw;\n"
@@ -15,21 +25,36 @@ GLSL_VERSION
 	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
 "}\n";
 
-char* picture_glsl_f =
+char* texmix_glsl_f =
 GLSL_VERSION
 "in mediump vec2 uvw;\n"
 "out mediump vec4 FragColor;\n"
 "uniform sampler2D tex0;\n"
+"uniform sampler2D tex1;\n"
 "void main(){\n"
-	"mediump vec3 bgr = texture(tex0, uvw).bgr;\n"
-	"FragColor = vec4(bgr, 1.0);\n"
+	"mediump vec3 c0 = texture(tex0, uvw).bgr;\n"
+	"mediump vec3 c1 = texture(tex1, uvw).bgr;\n"
+	"FragColor = vec4((c0+c1)*0.5, 1.0);\n"
 "}\n";
+/*
+char* texmix_glsl_f =
+	GLSL_VERSION
+	"uniform sampler2D tex0;\n"
+	"in mediump vec2 uvw;\n"
+	"out mediump vec4 FragColor;\n"
+	"void main()\n"
+	"{\n"
+		"mediump vec4 tmp = texture(tex0, uvw);"
+		"if(tmp.a < 0.01)discard;"
+		"FragColor = tmp.bgra;\n"
+	"}\n";
+*/
 
 
 
 
 
-static void picture_draw_pixel(
+static void texmix_draw_pixel(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
@@ -78,7 +103,7 @@ static void picture_draw_pixel(
 		}
 	}
 }/*
-static void picture_draw_vbo2d(
+static void texmix_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
@@ -135,7 +160,7 @@ static void picture_draw_vbo2d(
 
 	src->vbuf_enq += 1;
 }*/
-static void picture_draw_vbo3d(
+static void texmix_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
@@ -192,49 +217,49 @@ static void picture_draw_vbo3d(
 
 	src->vbuf_enq += 1;
 }
-static void picture_draw_json(
+static void texmix_draw_json(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 }
-static void picture_draw_html(
+static void texmix_draw_html(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 }
-static void picture_draw_tui(
+static void texmix_draw_tui(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 }
-static void picture_draw_cli(
+static void texmix_draw_cli(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
-	say("picture(%x,%x,%x)\n",win,act,sty);
+	say("texmix(%x,%x,%x)\n",win,act,sty);
 }
-static void picture_draw(
+static void texmix_draw(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)picture_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)picture_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)picture_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)picture_draw_json(act, pin, win, sty);
+	if(fmt == _cli_)texmix_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)texmix_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)texmix_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)texmix_draw_json(act, pin, win, sty);
 	else if(fmt == _vbo_)
 	{
-		//if(_2d_ == win->vfmt)picture_draw_vbo2d(act, pin, win, sty);
-		//else picture_draw_vbo3d(act, pin, win, sty);
+		//if(_2d_ == win->vfmt)texmix_draw_vbo2d(act, pin, win, sty);
+		//else texmix_draw_vbo3d(act, pin, win, sty);
 	}
-	else picture_draw_pixel(act, pin, win, sty);
+	else texmix_draw_pixel(act, pin, win, sty);
 }
 
 
 
 
-static void picture_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void texmix_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -245,17 +270,17 @@ static void picture_read(struct halfrel* self, struct halfrel* peer, void* buf, 
 	//say("@texball_read:%llx,%llx,%llx\n",act,win,buf);
 
 	if(ctx){
-		if(_gl41data_ == ctx->type)picture_draw_vbo3d(act,pin,ctx,sty);
+		if(_gl41data_ == ctx->type)texmix_draw_vbo3d(act,pin,ctx,sty);
 	}
-	//picture_draw(act, pin, win, sty);
+	//texmix_draw(act, pin, win, sty);
 }
-static void picture_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void texmix_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 }
-static void picture_stop(struct halfrel* self, struct halfrel* peer)
+static void texmix_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void picture_start(struct halfrel* self, struct halfrel* peer)
+static void texmix_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
@@ -263,25 +288,25 @@ static void picture_start(struct halfrel* self, struct halfrel* peer)
 	if(0 == pin)return;
 
 	pin->data[0] = (u64)(act->buf);
-	say("@picture_start:%llx, %llx\n", pin->data[0], pin->data[1]);
+	say("@texmix_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 
 
 
-static void picture_search(struct actor* act)
+static void texmix_search(struct actor* act)
 {
 }
-static void picture_modify(struct actor* act)
+static void texmix_modify(struct actor* act)
 {
 }
-static void picture_delete(struct actor* act)
+static void texmix_delete(struct actor* act)
 {
 	if(0 == act)return;
 	memorydelete(act->buf);
 	act->buf = 0;
 }
-static void picture_create(struct actor* act, void* str)
+static void texmix_create(struct actor* act, void* str)
 {
 	int j;
 	struct glsrc* src;
@@ -295,17 +320,23 @@ static void picture_create(struct actor* act, void* str)
 	src->method = 'v';
 
 	//shader
-	src->vs = picture_glsl_v;
-	src->fs = picture_glsl_f;
+	src->vs = texmix_glsl_v;
+	src->fs = texmix_glsl_f;
 	src->shader_enq = 42;
 
 	//texture0
 	src->tex_name[0] = "tex0";
 	src->tex_fmt[0] = hex32('r','g','b','a');
 	src->tex_data[0] = memorycreate(2048*2048*4, 0);
-	if(0 == str)str = "datafile/jpg/cartoon.jpg";
-	loadtexfromfile(src, 0, str);
+	loadtexfromfile(src, 0, "datafile/jpg/test.jpg");
 	src->tex_enq[0] = 42;
+
+	//texture1
+	src->tex_name[1] = "tex1";
+	src->tex_fmt[1] = hex32('r','g','b','a');
+	src->tex_data[1] = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(src, 1, "datafile/jpg/cartoon.jpg");
+	src->tex_enq[1] = 42;
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_33;
@@ -319,18 +350,18 @@ static void picture_create(struct actor* act, void* str)
 
 
 
-void picture_register(struct actor* p)
+void texmix_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('p', 'i', 'c', 't', 'u', 'r', 'e', 0);
+	p->fmt = hex64('t', 'e', 'x', 'm', 'i', 'x', 0, 0);
 
-	p->oncreate = (void*)picture_create;
-	p->ondelete = (void*)picture_delete;
-	p->onsearch = (void*)picture_search;
-	p->onmodify = (void*)picture_modify;
+	p->oncreate = (void*)texmix_create;
+	p->ondelete = (void*)texmix_delete;
+	p->onsearch = (void*)texmix_search;
+	p->onmodify = (void*)texmix_modify;
 
-	p->onstart = (void*)picture_start;
-	p->onstop  = (void*)picture_stop;
-	p->onread  = (void*)picture_read;
-	p->onwrite = (void*)picture_write;
+	p->onstart = (void*)texmix_start;
+	p->onstop  = (void*)texmix_stop;
+	p->onread  = (void*)texmix_read;
+	p->onwrite = (void*)texmix_write;
 }

@@ -10,9 +10,8 @@ depth:1024
 
 
 <actor>
-picture{
-fmt:picture
-file:datafile/jpg/earth.jpg
+texmix{
+fmt:texmix
 }
 freecam{
 fmt:freecam
@@ -66,7 +65,7 @@ q:1.0, 1.0
 <relation>
 
 #3dworld depends on inner objects
-(3dworld, skygeom, act, 0) -> (picture, skyhaha, act, 0)
+(3dworld, skygeom, act, 0) -> (texmix, skyhaha, act, 0)
 (3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
 
 #glctx depends on scene
