@@ -21,7 +21,7 @@ GLuint uploadvertex(void* i, void* o);
 
 
 
-void update_eachpass(struct gldst* dst, struct glsrc* src)
+void update_onedraw(struct gldst* dst, struct glsrc* src)
 {
 	int j;
 	int w,h,fmt;
@@ -78,14 +78,38 @@ void update_eachpass(struct gldst* dst, struct glsrc* src)
 	}
 //say("@update done\n");
 }
+void fullwindow_upload(struct arena* ogl, struct actor* ctx)
+{
+	int j;
+	struct datapair* mod;
+	//say("@fullwindow_upload: %llx,%llx,%.8s\n", ogl, ctx, &ctx->type);
+
+	//solid
+	mod = ctx->gl_solid;
+	if(0 == mod)return;
+
+	for(j=0;j<64;j++)
+	{
+		if(0 == mod[j].src.vbuf)continue;
+		//say("%d\n",j);
+		update_onedraw(&mod[j].dst, &mod[j].src);
+	}
+
+	//opaque
+	mod = ctx->gl_opaque;
+	if(0 == mod)return;
+
+	for(j=0;j<64;j++)
+	{
+		if(0 == mod[j].src.vbuf)continue;
+		//say("%d\n",j);
+		update_onedraw(&mod[j].dst, &mod[j].src);
+	}
+}
 
 
 
 
-//glUniformMatrix4fv(glGetUniformLocation(dst->shader, "cammvp"), 1, GL_FALSE, cammvp);
-//glUniform3fv(glGetUniformLocation(dst->shader, "camxyz"  ), 1, win->camera.vc);
-//glUniformMatrix4fv(glGetUniformLocation(dst->shader, "sunmvp"), 1, GL_FALSE, cammvp);
-//glUniform3fv(glGetUniformLocation(dst->shader, "sunxyz"  ), 1, win->camera.vc);
 void updatearg(u32 shader, struct glsrc* src)
 {
 	int j;
@@ -112,7 +136,7 @@ void updatearg(u32 shader, struct glsrc* src)
 		}//switch
 	}//for
 }
-void display_eachpass(struct gldst* dst, struct glsrc* src, struct glsrc* cam)
+void render_onedraw(struct gldst* dst, struct glsrc* src, struct glsrc* cam)
 {
 	int j;
 	u32 fmt;
@@ -160,243 +184,29 @@ void display_eachpass(struct gldst* dst, struct glsrc* src, struct glsrc* cam)
 		else if(2 == src->geometry)glDrawArrays(GL_LINES, 0, src->vbuf_h);
 		else glDrawArrays(GL_TRIANGLES, 0, src->vbuf_h);
 	}
-}/*
-void hostviewport_render(
-	struct arena* ctx, struct style* aa,
-	struct arena* win, struct style* st)
-{
-	float w,h,x0,y0,x1,y1;
-	w = win->fbwidth;
-	h = win->fbheight;
-	x0 = w * st->f.vc[0];	//0
-	y0 = h * st->f.vc[1];	//0
-	x1 = w * st->f.vq[0];	//0.5
-	y1 = h * st->f.vq[1];	//1
-	glViewport(x0, y0, x1, y1);
-	//fixmatrix(cammvp, &ctx->camera);
-	//mat4_transpose((void*)cammvp);
-
-
-	int j;
-	struct datapair* cam = ctx->gl_camera;
-	struct datapair* lit = ctx->gl_light;
-	struct datapair* solid = ctx->gl_solid;
-	struct datapair* opaque = ctx->gl_opaque;
-
-
-	//solid
-	for(j=0;j<64;j++)
-	{
-		if(0 == solid[j].src.vbuf)continue;
-		display_eachpass(&solid[j].dst, &solid[j].src, &cam[0].src);
-	}
-
-
-	//opaque
-	glDepthMask(GL_FALSE);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	for(j=0;j<64;j++)
-	{
-		if(0 == opaque[j].src.vbuf)continue;
-		display_eachpass(&opaque[j].dst, &opaque[j].src, &cam[0].src);
-	}
-
-	glDisable(GL_BLEND);
-	glDepthMask(GL_TRUE);
 }
-void hostviewport_camera(struct halfrel* relcam, struct halfrel* relwin)
-{
-	struct arena* win = (void*)(relwin->chip);
-	struct style* sty = (void*)(relwin->foot);
-	float w = win->fbwidth;
-	float h = win->fbheight;
-	float x0 = w * sty->f.vc[0];	//0
-	float y0 = h * sty->f.vc[1];	//0
-	float x1 = w * sty->f.vq[0];	//0.5
-	float y1 = h * sty->f.vq[1];	//1
-	glViewport(x0, y0, x1, y1);
-
-
-	int j;
-	u8 buf[512];
-	u64* p = (void*)buf;
-
-	for(j=0;j<512;j++)buf[j] = 0;
-	actorread(relcam, relwin, buf, 256);
-
-	struct datapair* cam = (void*)p[0];
-	struct datapair* lit = (void*)p[1];
-	struct datapair* solid = (void*)p[2];
-	struct datapair* opaque = (void*)p[3];
-	//say("%llx,%llx,%llx,%llx\n",cam,lit,solid,opaque);
-
-
-	//solid
-	for(j=0;j<64;j++)
-	{
-		if(0 == solid[j].src.vbuf)continue;
-		display_eachpass(&solid[j].dst, &solid[j].src, &cam[0].src);
-	}
-
-
-	//opaque
-	glDepthMask(GL_FALSE);
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-	for(j=0;j<64;j++)
-	{
-		if(0 == opaque[j].src.vbuf)continue;
-		display_eachpass(&opaque[j].dst, &opaque[j].src, &cam[0].src);
-	}
-
-	glDisable(GL_BLEND);
-	glDepthMask(GL_TRUE);
-}
-void hostwindow_render(struct arena* win)
-{
-	struct relation* rel;
-	struct arena* ctx;
-	struct style* st;
-	struct style* s1;
-
-	//glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
-
-	//prepare
-	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
-	//glPointSize(2.0 * win->fbwidth / win->width);
-	//glLineWidth(8);
-
-	rel = win->orel0;
-	while(1)
-	{
-		if(0 == rel)break;
-
-		if(_act_ == rel->dsttype){
-			//say("act\n");
-			hostviewport_camera((void*)&rel->dstchip, (void*)&rel->srcchip);
-		}
-		if(_win_ == rel->dsttype){
-			//say("win\n");
-
-			st = (void*)(rel->srcfoot);
-			s1 = (void*)(rel->dstfoot);
-			ctx = (void*)(rel->dstchip);
-			//hostviewport_render(ctx, s1, win, st);
-		}
-
-		rel = samesrcnextdst(rel);
-	}
-}
-
-
-
-
-int hostviewport_event(struct halfrel* relcam, struct halfrel* relwin, struct event* ev)
-{
-	short* t;
-	struct arena* win;
-	struct style* sty;
-	float w, h, x, y;
-	float x0, y0, x1, y1;
-
-	win = (void*)(relwin->chip);
-	sty = (void*)(relwin->foot);
-	w = win->width;
-	h = win->height;
-	x0 = w * sty->f.vc[0];
-	y0 = h * sty->f.vc[1];
-	x1 = x0 + w * sty->f.vq[0];
-	y1 = y0 + h * sty->f.vq[1];
-
-	if('p' == (ev->what&0xff)){
-		t = (void*)ev;
-		x = t[0];
-		y = h-1 - t[1];
-		if(x < x0)return 0;
-		if(y < y0)return 0;
-		if(x > x1)return 0;
-		if(y > y1)return 0;
-
-		return actorwrite(relcam, relwin, ev, 0);
-	}
-	if(_char_ == ev->what){
-		return actorwrite(relcam, relwin, ev, 0);
-	}
-
-	return 0;
-}
-void hostwindow_event(struct arena* win, struct event* ev)
-{
-	int ret;
-	struct halfrel* self;
-	struct halfrel* peer;
-	struct relation* rel = win->oreln;
-	while(1)
-	{
-		if(0 == rel)break;
-
-		if(_act_ == rel->dsttype){
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			ret = hostviewport_event(self, peer, ev);
-			if(ret > 0)break;
-		}
-
-		rel = samesrcprevdst(rel);
-	}
-}
-*/
-
-
-
-
-void fullwindow_upload(struct arena* ogl, struct actor* ctx)
+void fullwindow_eachpass(struct arena* ogl, struct actor* view, struct fstyle* area)
 {
 	int j;
-	struct datapair* mod;
-	//say("@fullwindow_upload: %llx,%llx,%.8s\n", ogl, ctx, &ctx->type);
-
-	//solid
-	mod = ctx->gl_solid;
-	if(0 == mod)return;
-
-	for(j=0;j<64;j++)
-	{
-		if(0 == mod[j].src.vbuf)continue;
-		//say("%d\n",j);
-		update_eachpass(&mod[j].dst, &mod[j].src);
-	}
-
-	//opaque
-	mod = ctx->gl_opaque;
-	if(0 == mod)return;
-
-	for(j=0;j<64;j++)
-	{
-		if(0 == mod[j].src.vbuf)continue;
-		//say("%d\n",j);
-		update_eachpass(&mod[j].dst, &mod[j].src);
-	}
-}
-
-
-
-
-void fullwindow_eachpass(struct arena* ogl, struct actor* view)
-{
-	int j;
-	float w,h;
+	float w, h, x0, y0, dx, dy;
 	struct datapair* mod;
 	//say("@fullwindow_render: %llx,%llx,%llx,%llx\n", view->gl_camera, view->gl_light, view->gl_solid, view->gl_opaque);
 
 	w = ogl->fbwidth;
 	h = ogl->fbheight;
-	glViewport(0, 0, w, h);
+	if(0 == area){
+		x0 = 0;
+		y0 = 0;
+		dx = w;
+		dy = h;
+	}
+	else{
+		x0 = w * area->vc[0];
+		y0 = h * area->vc[1];
+		dx = w * area->vq[0];
+		dy = h * area->vq[1];
+	}
+	glViewport(x0, y0, dx, dy);
 
 
 	struct datapair* cam = view->gl_camera;
@@ -409,7 +219,7 @@ void fullwindow_eachpass(struct arena* ogl, struct actor* view)
 	for(j=0;j<64;j++)
 	{
 		if(0 == solid[j].src.vbuf)continue;
-		display_eachpass(&solid[j].dst, &solid[j].src, &cam[0].src);
+		render_onedraw(&solid[j].dst, &solid[j].src, &cam[0].src);
 	}
 
 
@@ -421,7 +231,7 @@ void fullwindow_eachpass(struct arena* ogl, struct actor* view)
 	for(j=0;j<64;j++)
 	{
 		if(0 == opaque[j].src.vbuf)continue;
-		display_eachpass(&opaque[j].dst, &opaque[j].src, &cam[0].src);
+		render_onedraw(&opaque[j].dst, &opaque[j].src, &cam[0].src);
 	}
 
 	glDisable(GL_BLEND);
@@ -430,6 +240,8 @@ void fullwindow_eachpass(struct arena* ogl, struct actor* view)
 void fullwindow_viewport(struct arena* ogl, struct actor* view)
 {
 	struct actor* tmp;
+	struct fstyle* sty;
+
 	struct relation* rel;
 	struct halfrel* self;
 	struct halfrel* peer;
@@ -453,10 +265,14 @@ void fullwindow_viewport(struct arena* ogl, struct actor* view)
 				break;
 			}
 			default:{
+				//get mvp
 				self = (void*)(&rel->dstchip);
 				peer = (void*)(&rel->srcchip);
 				actorread(self, peer, 0, 0);
-				fullwindow_eachpass(ogl, view);
+
+				//render
+				sty = (void*)(rel->srcfoot);
+				fullwindow_eachpass(ogl, view, sty);
 				break;
 			}
 		}
@@ -502,11 +318,6 @@ void fullwindow_read(struct arena* ogl)
 	struct relation* rel;
 	struct actor* act;
 	//say("@fullwindow_read\n");
-
-	//
-	w = ogl->fbwidth;
-	h = ogl->fbheight;
-	glViewport(0, 0, w, h);
 
 	//clear screen
 	glClearColor(0.0, 0.0, 0.0, 1.0);

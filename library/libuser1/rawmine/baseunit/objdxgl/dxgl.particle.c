@@ -70,14 +70,28 @@ static void particle_draw_vbo3d(
 {
 	int j;
 	float x,y,z;
+	struct glsrc* src;
+	float* mat;
+	float* buf;
+
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	float* sbuf = act->buf;
-	struct glsrc* src = (void*)(pin->data[0]);
-	float* mat = (void*)src->arg_data[0];
+	//carveline_prism4(win, 0xffffff, vc, vr, vf, vu);
 
+
+	src = act->buf;
+	if(0 == src)return;
+
+	mat = (void*)src->arg_data[0];
+	if(0 == mat)return;
+
+	buf = src->vbuf;
+	if(0 == buf)return;
+
+
+	//update matrix
 	mat[ 0] = sty->f.vr[0];
 	mat[ 1] = sty->f.vr[1];
 	mat[ 2] = sty->f.vr[2];
@@ -95,27 +109,24 @@ static void particle_draw_vbo3d(
 	mat[14] = sty->f.vc[2];
 	mat[15] = 1.0;
 
-//for(j=0;j<16;j++)mat[j] = 0.0;
-//mat[0] = mat[5] = mat[10] = mat[15] = 1000.0;
-//mat[15] = 1.0;
 
-	carveline_prism4(win, 0xffffff, vc, vr, vf, vu);
+	//update vertex
 	for(j=0;j<COUNT;j++)
 	{
-		x = sbuf[9*j + 0] + sbuf[9*j + 3];
+		x = buf[9*j + 0] + buf[9*j + 3];
 		if(x <-1.0)x = 1.0;
 		else if(x > 1.0)x = -1.0;
-		sbuf[9*j + 0] = x;
+		buf[9*j + 0] = x;
 
-		y = sbuf[9*j + 1] + sbuf[9*j + 4];
+		y = buf[9*j + 1] + buf[9*j + 4];
 		if(y <-1.0)y = 1.0;
 		else if(y > 1.0)y = -1.0;
-		sbuf[9*j + 1] = y;
+		buf[9*j + 1] = y;
 
-		z = sbuf[9*j + 2] + sbuf[9*j + 5];
+		z = buf[9*j + 2] + buf[9*j + 5];
 		if(z <-1.0)z = 1.0;
 		else if(z > 1.0)z = -1.0;
-		sbuf[9*j + 2] = z;
+		buf[9*j + 2] = z;
 	}
 	src->vbuf_enq += 1;
 }
@@ -160,16 +171,22 @@ static void particle_draw(
 
 
 
-static void particle_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void particle_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
+	struct actor* ctx = buf;
+	//say("@texball_read:%llx,%llx,%llx\n",act,win,buf);
+
+	if(ctx){
+		if(_gl41data_ == ctx->type)particle_draw_vbo3d(act,pin,ctx,sty);
+	}
 	//particle_draw(act, pin, win, sty);
 }
-static void particle_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void particle_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 }
 static void particle_stop(struct halfrel* self, struct halfrel* peer)
@@ -177,45 +194,13 @@ static void particle_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void particle_start(struct halfrel* self, struct halfrel* peer)
 {
-	void* vbuf;
-	void* ibuf;
-	struct datapair* pair;
-	struct glsrc* src;
-	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-/*
-	pair = alloc_winobj(win, 's');
-	src = &pair->src;
-	dst = &pair->dst;
-	pin->foot[0] = (u64)src;
-	sty->foot[0] = (u64)dst;
+	if(0 == act)return;
+	if(0 == pin)return;
 
-	//
-	src->geometry = 1;
-	src->method = 'v';
-
-	//shader
-	src->vs = particle_glsl_v;
-	src->gs = particle_glsl_g;
-	src->fs = particle_glsl_f;
-	src->shader_enq = 42;
-
-	//argument
-	src->arg_name[0] = "objmat";
-	src->arg_data[0] = memorycreate(4*4*4, 0);
-	src->arg_fmt[0] = 'm';
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf = act->buf;
-	src->vbuf_w = 4*9;
-	src->vbuf_h = COUNT;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf_enq = 42;
-*/
+	pin->data[0] = (u64)(act->buf);
+	say("@particle_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 
@@ -239,11 +224,13 @@ static void particle_delete(struct actor* act)
 static void particle_create(struct actor* act)
 {
 	int j;
+	float* vbuf;
+	struct glsrc* src;
 	if(0 == act)return;
 
-	act->buf = memorycreate(4*9 * COUNT, 0);
-	float* vbuf = act->buf;
 
+	vbuf = memorycreate(4*9 * COUNT, 0);
+	if(0 == vbuf)return;
 	for(j=0;j<COUNT;j++)
 	{
 		//vertex
@@ -261,6 +248,32 @@ static void particle_create(struct actor* act)
 		vbuf[9*j + 7] = (getrandom()%8192)/8192.0;
 		vbuf[9*j + 8] = (getrandom()%8192)/8192.0;
 	}
+
+
+	src = act->buf = memorycreate(0x200, 0);
+	if(0 == src)return;
+
+	//
+	src->geometry = 1;
+	src->method = 'v';
+
+	//shader
+	src->vs = particle_glsl_v;
+	src->gs = particle_glsl_g;
+	src->fs = particle_glsl_f;
+	src->shader_enq = 42;
+
+	//argument
+	src->arg_name[0] = "objmat";
+	src->arg_data[0] = memorycreate(4*4*4, 0);
+	src->arg_fmt[0] = 'm';
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf_w = 4*9;
+	src->vbuf_h = COUNT;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = vbuf;
 }
 
 

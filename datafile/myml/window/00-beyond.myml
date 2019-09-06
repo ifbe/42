@@ -1,0 +1,66 @@
+<actor>
+
+#virt space
+texball{
+fmt:texball
+}
+freecam{
+fmt:freecam
+}
+virt{
+fmt:world3d
+}
+
+#real space
+screen{
+fmt:screen
+}
+real{
+fmt:world3d
+}
+
+#code space
+handler{
+fmt:handler
+}
+
+#superior space
+beyond{
+fmt:beyond
+}
+</actor>
+
+
+<arena>
+gl41wnd{
+fmt:gl41wnd
+}
+gl41{
+fmt:win
+}
+</arena>
+
+
+<relation>
+#virt space: sky and cam
+(virt, 0, act, ctx) -> (texball, 0, act, glsl)
+(virt, 0, act, ctx) -> (freecam, 0, act, glsl)
+(virt, 0, act, mvp) -> (freecam, 0, act, mvp)
+
+#gl41 space: wnd
+(gl41, 0, act, 0) -> (gl41wnd, 0, act, 0)
+
+#real space: display
+(real, 0, act, 0) -> (screen, 0, act, src)
+
+#superior space:
+(beyond, 0, act, ev) -> (handler, 0, act, 0)
+(beyond, 0, act, ev) -> (virt, 0, act, 0)
+
+(beyond, 0, act, ctx) -> (virt, 0, act, ctx)
+(beyond, 0, act, ctx) -> (gl41, 0, act, ctx)
+
+(beyond, 0, act, 111) -> (virt, 0, act, mvp)
+(beyond, 0, act, 111) -> (gl41, 0, act, wnd)
+(beyond, 0, act, 111) -> (real, 0, act, img)
+</relation>
