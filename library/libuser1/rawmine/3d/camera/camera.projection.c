@@ -51,6 +51,7 @@ void fixproj(mat4 proj, struct fstyle* sty)
 	float t = sty->vt[3];
 	float n = sty->vn[3];
 	float f = sty->vf[3];
+	//say("%f,%f,%f,%f,%f,%f\n",l,r,b,t,n,f);
 
 	proj[0][0] = 2 * n / (r-l);
 	proj[0][1] = 0.0;

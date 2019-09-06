@@ -106,6 +106,29 @@ void fullwindow_upload(struct arena* ogl, struct actor* ctx)
 		update_onedraw(&mod[j].dst, &mod[j].src);
 	}
 }
+void update_frustum(struct arena* ogl, struct fstyle* area, struct fstyle* frus)
+{
+	float w, h, x0, y0, dx, dy;
+	w = ogl->fbwidth;
+	h = ogl->fbheight;
+
+	if(0 == area){
+		x0 = 0;
+		y0 = 0;
+		dx = w;
+		dy = h;
+	}
+	else{
+		x0 = w * area->vc[0];
+		y0 = h * area->vc[1];
+		dx = w * area->vq[0];
+		dy = h * area->vq[1];
+	}
+	frus->vb[3] =-dy / dx;
+	frus->vt[3] = dy / dx;
+
+	glViewport(x0, y0, dx, dy);
+}
 
 
 
@@ -185,34 +208,15 @@ void render_onedraw(struct gldst* dst, struct glsrc* src, struct glsrc* cam)
 		else glDrawArrays(GL_TRIANGLES, 0, src->vbuf_h);
 	}
 }
-void fullwindow_eachpass(struct arena* ogl, struct actor* view, struct fstyle* area)
+void fullwindow_eachpass(struct arena* ogl, struct actor* view)
 {
 	int j;
-	float w, h, x0, y0, dx, dy;
 	struct datapair* mod;
-	//say("@fullwindow_render: %llx,%llx,%llx,%llx\n", view->gl_camera, view->gl_light, view->gl_solid, view->gl_opaque);
-
-	w = ogl->fbwidth;
-	h = ogl->fbheight;
-	if(0 == area){
-		x0 = 0;
-		y0 = 0;
-		dx = w;
-		dy = h;
-	}
-	else{
-		x0 = w * area->vc[0];
-		y0 = h * area->vc[1];
-		dx = w * area->vq[0];
-		dy = h * area->vq[1];
-	}
-	glViewport(x0, y0, dx, dy);
-
-
 	struct datapair* cam = view->gl_camera;
 	struct datapair* lit = view->gl_light;
 	struct datapair* solid = view->gl_solid;
 	struct datapair* opaque = view->gl_opaque;
+	//say("@fullwindow_render: %llx,%llx,%llx,%llx\n", view->gl_camera, view->gl_light, view->gl_solid, view->gl_opaque);
 
 
 	//solid
@@ -240,7 +244,8 @@ void fullwindow_eachpass(struct arena* ogl, struct actor* view, struct fstyle* a
 void fullwindow_viewport(struct arena* ogl, struct actor* view)
 {
 	struct actor* tmp;
-	struct fstyle* sty;
+	struct fstyle* area;
+	struct fstyle* frus;
 
 	struct relation* rel;
 	struct halfrel* self;
@@ -265,14 +270,17 @@ void fullwindow_viewport(struct arena* ogl, struct actor* view)
 				break;
 			}
 			default:{
+				area = (void*)(rel->srcfoot);
+				frus = (void*)(rel->dstfoot);
+				update_frustum(ogl, area, frus);
+
 				//get mvp
 				self = (void*)(&rel->dstchip);
 				peer = (void*)(&rel->srcchip);
 				actorread(self, peer, 0, 0);
 
 				//render
-				sty = (void*)(rel->srcfoot);
-				fullwindow_eachpass(ogl, view, sty);
+				fullwindow_eachpass(ogl, view);
 				break;
 			}
 		}
