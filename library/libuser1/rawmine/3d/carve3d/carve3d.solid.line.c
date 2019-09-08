@@ -383,6 +383,101 @@ void carveline_rect(struct actor* win, u32 rgb,
 	ibuf[6] = vlen+0;
 	ibuf[7] = vlen+2;
 }
+void carveline_rectselect(struct actor* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf)
+{
+	int j;
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
+
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 12, 8);
+	if(vlen < 0)return;
+
+	for(j=0;j<72;j+=6){
+		vbuf[j+3] = rr;
+		vbuf[j+4] = gg;
+		vbuf[j+5] = bb;
+	}
+
+	//left bot
+	vbuf[ 0] = vc[0] - vr[0] - vf[0];
+	vbuf[ 1] = vc[1] - vr[1] - vf[1];
+	vbuf[ 2] = vc[2] - vr[2] - vf[2];
+
+	vbuf[ 6] = vc[0] - vr[0] - vf[0]/2;
+	vbuf[ 7] = vc[1] - vr[1] - vf[1]/2;
+	vbuf[ 8] = vc[2] - vr[2] - vf[2]/2;
+
+	vbuf[12] = vc[0] - vr[0]/2 - vf[0];
+	vbuf[13] = vc[1] - vr[1]/2 - vf[1];
+	vbuf[14] = vc[2] - vr[2]/2 - vf[2];
+
+	//right bot
+	vbuf[18] = vc[0] + vr[0] - vf[0];
+	vbuf[19] = vc[1] + vr[1] - vf[1];
+	vbuf[20] = vc[2] + vr[2] - vf[2];
+
+	vbuf[24] = vc[0] + vr[0] - vf[0]/2;
+	vbuf[25] = vc[1] + vr[1] - vf[1]/2;
+	vbuf[26] = vc[2] + vr[2] - vf[2]/2;
+
+	vbuf[30] = vc[0] + vr[0]/2 - vf[0];
+	vbuf[31] = vc[1] + vr[1]/2 - vf[1];
+	vbuf[32] = vc[2] + vr[2]/2 - vf[2];
+
+	//left top
+	vbuf[36] = vc[0] - vr[0] + vf[0];
+	vbuf[37] = vc[1] - vr[1] + vf[1];
+	vbuf[38] = vc[2] - vr[2] + vf[2];
+
+	vbuf[42] = vc[0] - vr[0] + vf[0]/2;
+	vbuf[43] = vc[1] - vr[1] + vf[1]/2;
+	vbuf[44] = vc[2] - vr[2] + vf[2]/2;
+
+	vbuf[48] = vc[0] - vr[0]/2 + vf[0];
+	vbuf[49] = vc[1] - vr[1]/2 + vf[1];
+	vbuf[50] = vc[2] - vr[2]/2 + vf[2];
+
+	//right top
+	vbuf[54] = vc[0] + vr[0] + vf[0];
+	vbuf[55] = vc[1] + vr[1] + vf[1];
+	vbuf[56] = vc[2] + vr[2] + vf[2];
+
+	vbuf[60] = vc[0] + vr[0] + vf[0]/2;
+	vbuf[61] = vc[1] + vr[1] + vf[1]/2;
+	vbuf[62] = vc[2] + vr[2] + vf[2]/2;
+
+	vbuf[66] = vc[0] + vr[0]/2 + vf[0];
+	vbuf[67] = vc[1] + vr[1]/2 + vf[1];
+	vbuf[68] = vc[2] + vr[2]/2 + vf[2];
+
+	ibuf[ 0] = vlen;
+	ibuf[ 1] = vlen+1;
+	ibuf[ 2] = vlen;
+	ibuf[ 3] = vlen+2;
+
+	ibuf[ 4] = vlen+3;
+	ibuf[ 5] = vlen+4;
+	ibuf[ 6] = vlen+3;
+	ibuf[ 7] = vlen+5;
+
+	ibuf[ 8] = vlen+6;
+	ibuf[ 9] = vlen+7;
+	ibuf[10] = vlen+6;
+	ibuf[11] = vlen+8;
+
+	ibuf[12] = vlen+ 9;
+	ibuf[13] = vlen+10;
+	ibuf[14] = vlen+ 9;
+	ibuf[15] = vlen+11;
+}
+
+
+
+
 void carveline_hexagon(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {

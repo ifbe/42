@@ -10,18 +10,38 @@ depth:1024
 
 
 <actor>
+texball{
+fmt:texball
+file:datafile/jpg/skysphere.jpg
+}
+freecam{
+fmt:freecam
+}
+3dworld{
+fmt:3dworld
+}
+
 login{
 fmt:login
 }
 orthcam{
 fmt:orthcam
 }
-3dworld{
+uiworld{
 fmt:3dworld
 }
 
-thectx{
+ctx000{
 fmt:gl41data
+}
+ctx111{
+fmt:gl41data
+}
+view00{
+fmt:gl41view
+}
+view11{
+fmt:gl41view
 }
 thewnd{
 fmt:gl41wnd0
@@ -30,11 +50,41 @@ fmt:gl41wnd0
 
 
 <style>
-area{
+skyhaha{
+}
+skygeom{
 c: 0.0, 0.0, 0.0
+r: 10000000.0, 0.0, 0.0
+f: 0.0, 10000000.0, 0.0
+t: 0.0, 0.0, 10000000.0
+}
+
+freemodl{
+}
+freegeom{
+c: 0.0, -2000.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
+}
+freefrus{
+l: 0.0, 0.0, 0.0, -1.0
+r: 0.0, 0.0, 0.0, 1.0
+b: 0.0, 0.0, 0.0, -1.0
+t: 0.0, 0.0, 0.0, 1.0
+n: 0.0, 0.0, 0.0, 1.0
+f: 0.0, 0.0, 0.0, 1000000000.0
+}
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+
+area{
+c: 0.0, 0.0, 0.0
+r: 500.0, 0.0, 0.0
+f: 0.0, 500.0, 0.0
+t: 0.0, 0.0, 500.0
 }
 
 orthmodl{
@@ -56,20 +106,33 @@ q:1.0, 1.0
 
 
 <relation>
-
 #3dworld depends on inner objects
-(3dworld, area, act, 0) -> (login, 0, act, 0)
-(3dworld, orthgeom, act, 0) -> (orthcam, orthmodl, act, 0)
+(3dworld, skygeom, act, 0) -> (texball, skyhaha, act, 0)
+(3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
+
+#uiworld depends on inner objects
+(uiworld, area, act, 0) -> (login, 0, act, 0)
+(uiworld, orthgeom, act, 0) -> (orthcam, orthmodl, act, 0)
 
 #glctx depends on scene
-(thectx, 0, act, 0) -> (3dworld, 0, act, 0)
+(ctx000, 0, act, 0) -> (3dworld, 0, act, 0)
+(ctx111, 0, act, 0) -> (uiworld, 0, act, 0)
 
-#glwnd depends on ctx + cam
-(thewnd, 0, act, 0) -> (thectx, 0, act, 0)
-(thewnd, orthrect, act, 0) -> (orthcam, orthfrus, act, 0)
+#glview depends on ctx + cam
+(view00, 0, act, 0) -> (ctx000, 0, act, 0)
+(view00, freerect, act, 0) -> (freecam, freefrus, act, 0)
+
+#glview depends on ctx + cam
+(view11, 0, act, 0) -> (ctx111, 0, act, 0)
+(view11, orthrect, act, 0) -> (orthcam, orthfrus, act, 0)
+
+#glwnd depends on view
+(thewnd, 0, act, 0) -> (view00, 0, act, 0)
+(thewnd, 0, act, 0) -> (view11, 0, act, 0)
 
 #opengl depends on ctx + wnd
-(opengl, 0, win, ctx) -> (thectx, 0, act, 0)
+(opengl, 0, win, ctx) -> (ctx000, 0, act, 0)
+(opengl, 0, win, ctx) -> (ctx111, 0, act, 0)
 (opengl, 0, win, wnd) -> (thewnd, 0, act, 0)
 
 </relation>

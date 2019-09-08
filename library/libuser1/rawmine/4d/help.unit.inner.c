@@ -115,6 +115,7 @@ void vkbd_register(void*);
 void login_register(void*);
 void overview_register(void*);
 void detail_register(void*);
+void skillbar_register(void*);
 
 
 
@@ -439,5 +440,8 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	detail_register(tmp);
+	tmp += sizeof(struct actor);
+
+	skillbar_register(tmp);
 	tmp += sizeof(struct actor);
 }

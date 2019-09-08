@@ -188,6 +188,7 @@ rawmine/compound/theuiux/menu.detail.c \
 rawmine/compound/theuiux/menu.login.c \
 rawmine/compound/theuiux/uiux.pointer.c \
 rawmine/compound/theuiux/uiux.corner.c \
+rawmine/compound/theuiux/uiux.skillbar.c \
 rawmine/compound/theuiux/uiux.cameraer.c \
 rawmine/compound/theuiux/uiux.layouter.c \
 rawmine/compound/theuiux/uiux.list.c \
