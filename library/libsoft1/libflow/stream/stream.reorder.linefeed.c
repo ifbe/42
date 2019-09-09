@@ -1,32 +1,16 @@
 #include "libsoft.h"
-int reline_send(struct element* ele, u8* buf, int len)
-{
-	struct relation* rel;
-	struct halfrel* cself;
-	struct halfrel* cpeer;
-
-	rel = ele->orel0;
-	while(1){
-		if(0 == rel)break;
-
-		cself = (void*)&rel->dstchip;
-		cpeer = (void*)&rel->srcchip;
-		switch(rel->dsttype){
-			case _art_:arterywrite(cself, cpeer, buf, len);break;
-			case _act_: actorwrite(cself, cpeer, buf, len);break;
-		}
-
-		rel = samesrcnextdst(rel);
-	}
-	return 0;
-}
+#define _src_ hex32('s','r','c',0)
+#define _dst_ hex32('d','s','t',0)
 
 
 
 
 int reline_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
+	float f[10];
 	say("@reline_read\n");
+
+	relationread((void*)(self->chip), _src_, f, 10);
 	return 0;
 }
 int reline_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
@@ -34,7 +18,7 @@ int reline_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 	int j,k,cur;
 	u8* tmp;
 	struct element* ele;
-	//say("@reline_write:%d\n", len);
+	say("@reline_write:%d\n", len);
 
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
@@ -48,7 +32,7 @@ int reline_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 			cur++;
 
 			if('\n' == buf[j]){
-				reline_send(ele, tmp, cur);
+				relationwrite((void*)ele, _dst_, tmp, cur);
 				cur = 0;
 
 				j++;
@@ -64,7 +48,7 @@ int reline_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 	k = 0;
 	for(j=0;j<len;j++){
 		if('\n' == buf[j]){
-			reline_send(ele, buf+k, j-k+1);
+			relationwrite((void*)ele, _dst_, buf+k, j-k+1);
 			k = j+1;
 		}
 	}

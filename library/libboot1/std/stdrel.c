@@ -165,7 +165,7 @@ int relationread(struct item* item, int foot, void* buf, int len)
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
-		if(foot == rel->dstfoot){
+		if(foot == rel->dstflag){
 			self = (void*)&rel->srcchip;
 			peer = (void*)&rel->dstchip;
 			return relation_r(self, peer, buf, len);
@@ -176,7 +176,7 @@ int relationread(struct item* item, int foot, void* buf, int len)
 	rel = item->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(foot == rel->srcfoot){
+		if(foot == rel->srcflag){
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
 			return relation_r(self, peer, buf, len);
@@ -209,7 +209,8 @@ int relationwrite(struct item* item, int foot, void* buf, int len)
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
-		if(foot == rel->dstfoot){
+		//say("irel:%.8s\n",&rel->dstflag);
+		if(foot == rel->dstflag){
 			self = (void*)&rel->srcchip;
 			peer = (void*)&rel->dstchip;
 			return relation_w(self, peer, buf, len);
@@ -220,7 +221,8 @@ int relationwrite(struct item* item, int foot, void* buf, int len)
 	rel = item->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(foot == rel->srcfoot){
+		//say("orel:%.8s\n",&rel->srcflag);
+		if(foot == rel->srcflag){
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
 			return relation_w(self, peer, buf, len);

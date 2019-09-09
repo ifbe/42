@@ -1,4 +1,6 @@
 #include "libsoft.h"
+#define _src_ hex32('s','r','c',0)
+#define _dst_ hex32('d','s','t',0)
 int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
 
 
@@ -6,7 +8,10 @@ int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
 
 int line2fv_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
+	float f[10];
 	say("@line2fv_read\n");
+
+	relationread((void*)(self->chip), _src_, f, 10);
 	return 0;
 }
 int line2fv_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
@@ -14,10 +19,7 @@ int line2fv_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 	int cnt;
 	float tmp[9];
 	struct element* ele;
-	struct relation* rel;
-	struct halfrel* cself;
-	struct halfrel* cpeer;
-	//say("@line2fv_write:%d\n", len);
+	say("@line2fv_write:%d\n", len);
 	//printmemory(buf, len);
 
 	ele = (void*)(self->chip);
@@ -31,20 +33,8 @@ int line2fv_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 		return 0;
 	}
 
-
-	rel = ele->orel0;
-	while(1){
-		if(0 == rel)break;
-
-		cself = (void*)&rel->dstchip;
-		cpeer = (void*)&rel->srcchip;
-		switch(rel->dsttype){
-			case _art_:arterywrite(cself, cpeer, tmp, cnt);break;
-			case _act_: actorwrite(cself, cpeer, tmp, cnt);break;
-		}
-
-		rel = samesrcnextdst(rel);
-	}
+#define _dst_ hex32('d','s','t',0)
+	return relationwrite((void*)ele, _dst_, tmp, cnt);
 	return 0;
 }
 int line2fv_stop(struct halfrel* self, struct halfrel* peer)

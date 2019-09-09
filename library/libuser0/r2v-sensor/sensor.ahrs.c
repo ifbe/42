@@ -1,20 +1,22 @@
 #include "libuser.h"
+#define _src_ hex32('s','r','c',0)
 
 
 
 
-void ahrs_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+void ahrs_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//writeback: east north sky?
 	say("@ahrs_read\n");
 }
-void ahrs_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+void ahrs_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 /*
 	receive gpsdata(already filtered):
 	receive mpudata(already filtered):
 */
-	say("@ahrs_write\n");
+	float* q = buf;
+	say("@ahrs_write:%f,%f,%f,%f\n", q[0], q[1], q[2], q[3]);
 }
 int ahrs_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -32,22 +34,9 @@ int ahrs_start(struct halfrel* self, struct halfrel* peer)
 static void* ahrs_thread(struct arena* win)
 {
 	vec4 tmp;
-	struct relation* rel;
-	struct halfrel* self;
-	struct halfrel* peer;
 	while(1){
-		//say("@ahrs_thread:%llx,%llx\n", win, win->irel0, win->orel0);
-
-		rel = win->irel0;
-		while(1){
-			if(0 == rel)break;
-			if(_art_ == rel->srctype){
-				self = (void*)&rel->srcchip;
-				peer = (void*)&rel->dstchip;
-				arteryread(self, peer, tmp, 16);
-			}
-			rel = samedstnextsrc(rel);
-		}
+		say("@ahrs_thread:%llx\n", win);
+		relationread((void*)win, _src_, tmp, 4);
 		sleep_us(1000000);
 	}
 }

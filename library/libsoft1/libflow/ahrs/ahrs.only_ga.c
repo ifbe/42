@@ -1,4 +1,7 @@
 #include "libuser.h"
+#define _src_ hex32('s','r','c',0)
+#define _dst_ hex32('d','s','t',0)
+
 #define halfT 0.001
 #define Kp 100.0f
 #define Ki 0.005f
@@ -9,10 +12,11 @@ static float integraly;
 static float integralz;
 
 //quaternion
-static float q0;
-static float q1;
-static float q2;
-static float q3;
+static float q[4];
+#define q0 q[0]
+#define q1 q[1]
+#define q2 q[2]
+#define q3 q[3]
 
 
 
@@ -73,20 +77,25 @@ void imuupdate(
 
 int easyag_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
+	float f[10];
 	say("@easyag_read\n");
+
+	relationread((void*)(self->chip), _src_, f, 10);
 	return 0;
 }
 int easyag_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	int j;
 	float* f = (void*)buf;
-	say("@easyag_write\n");
-/*
-	for(j=0;j<len;j++)say("	%f", f[j]);
-	say("\n");
-*/
-	if(6 == len)imuupdate(f[0],f[1],f[2], f[3],f[4],f[5]);
-	else say("err@easyag_write:len=%d\n",len);
+
+	if(6 != len){
+		say("err@easyag_write:len=%d\n",len);
+		return 0;
+	}
+
+	say("@easyag_write:%f,%f,%f,%f,%f,%f\n",f[0],f[1],f[2], f[3],f[4],f[5]);
+	imuupdate(f[0],f[1],f[2], f[3],f[4],f[5]);
+	relationwrite((void*)self->chip, _dst_, q, 4);
 	return 0;
 }
 int easyag_stop(struct halfrel* self, struct halfrel* peer)
