@@ -59,6 +59,30 @@ struct relation
 
 
 
+struct item
+{
+	union{
+		void* irel0;
+		u64 ipad0;
+	};
+	union{
+		void* ireln;
+		u64 ipadn;
+	};
+	union{
+		void* orel0;
+		u64 opad0;
+	};
+	union{
+		void* oreln;
+		u64 opadn;
+	};
+
+	u64 tier;
+	u64 type;
+	u64 fmt;
+	u64 name;
+};
 struct device
 {
 	//[00,1f]: wire
@@ -206,8 +230,8 @@ int systemstart(struct halfrel* self,struct halfrel* peer);
 int systemdelete(void*);
 void* systemcreate(u64, void*);
 //
-int relationread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int relationwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int relationread( struct item* item, int foot, void* buf, int len);
+int relationwrite(struct item* item, int foot, void* buf, int len);
 int relationstop( struct halfrel* self,struct halfrel* peer);
 int relationstart(struct halfrel* self,struct halfrel* peer);
 int relationdelete(void*);

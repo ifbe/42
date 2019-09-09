@@ -353,4 +353,5 @@ void fullwindow_delete(struct arena* ogl)
 }
 void fullwindow_create(struct arena* ogl)
 {
+	ogl->fmt = _full_;
 }

@@ -146,7 +146,7 @@ void* samesrcnextdst(struct relation* rel)
 
 
 
-int relationread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int relation_r(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	switch(self->type){
 		case _fd_: return systemread(self, peer, buf, len);
@@ -156,7 +156,41 @@ int relationread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 	}
 	return 0;
 }
-int relationwrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int relationread(struct item* item, int foot, void* buf, int len)
+{
+	struct relation* rel;
+	struct halfrel* self;
+	struct halfrel* peer;
+
+	rel = item->irel0;
+	while(1){
+		if(0 == rel)break;
+		if(foot == rel->dstfoot){
+			self = (void*)&rel->srcchip;
+			peer = (void*)&rel->dstchip;
+			return relation_r(self, peer, buf, len);
+		}
+		rel = samedstnextsrc(rel);
+	}
+
+	rel = item->orel0;
+	while(1){
+		if(0 == rel)break;
+		if(foot == rel->srcfoot){
+			self = (void*)&rel->dstchip;
+			peer = (void*)&rel->srcchip;
+			return relation_r(self, peer, buf, len);
+		}
+		rel = samesrcnextdst(rel);
+	}
+
+	return 0;
+}
+
+
+
+
+int relation_w(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	switch(self->type){
 		case _fd_: return systemwrite(self, peer, buf, len);
@@ -166,6 +200,40 @@ int relationwrite(struct halfrel* self, struct halfrel* peer, void* buf, int len
 	}
 	return 0;
 }
+int relationwrite(struct item* item, int foot, void* buf, int len)
+{
+	struct relation* rel;
+	struct halfrel* self;
+	struct halfrel* peer;
+
+	rel = item->irel0;
+	while(1){
+		if(0 == rel)break;
+		if(foot == rel->dstfoot){
+			self = (void*)&rel->srcchip;
+			peer = (void*)&rel->dstchip;
+			return relation_w(self, peer, buf, len);
+		}
+		rel = samedstnextsrc(rel);
+	}
+
+	rel = item->orel0;
+	while(1){
+		if(0 == rel)break;
+		if(foot == rel->srcfoot){
+			self = (void*)&rel->dstchip;
+			peer = (void*)&rel->srcchip;
+			return relation_w(self, peer, buf, len);
+		}
+		rel = samesrcnextdst(rel);
+	}
+
+	return 0;
+}
+
+
+
+
 int relationstop(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->type){
@@ -176,6 +244,10 @@ int relationstop(struct halfrel* self, struct halfrel* peer)
 	}
 	return 0;
 }
+
+
+
+
 int relationstart(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->type){

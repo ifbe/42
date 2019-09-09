@@ -164,4 +164,5 @@ void easywindow_delete(struct arena* win)
 }
 void easywindow_create(struct arena* win)
 {
+	win->fmt = _easy_;
 }

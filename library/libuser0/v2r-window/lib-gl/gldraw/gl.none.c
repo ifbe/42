@@ -63,6 +63,7 @@ void nonewindow_delete(struct arena* win)
 }
 void nonewindow_create(struct arena* win)
 {
+	win->fmt = _none_;
 	win->x0 = win->width / 2;
 	win->y0 = win->height / 2;
 }

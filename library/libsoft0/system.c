@@ -415,7 +415,7 @@ int systemevent(struct event* ev)
 	u64 what = ev->what;
 	u64 where = ev->where;
 	u8 tmp[0x40];
-	//say("%llx,%llx,%llx\n",why,what,where);
+	say("%llx,%llx,%llx\n",why,what,where);
 
 	if(why == '+')
 	{

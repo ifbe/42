@@ -124,8 +124,8 @@ int systemstart(struct halfrel* self,struct halfrel* peer);
 int systemdelete(void*);
 void* systemcreate(u64, void*);
 //
-int relationread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int relationwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int relationread( struct item* item, int foot, void* buf, int len);
+int relationwrite(struct item* item, int foot, void* buf, int len);
 int relationstop( struct halfrel* self,struct halfrel* peer);
 int relationstart(struct halfrel* self,struct halfrel* peer);
 int relationdelete(struct relation* rel);

@@ -457,6 +457,7 @@ void carvestring_center(struct actor* win, u32 rgb,
 	int j;
 	vec3 tc;
 	vec3 tr;
+	vec3 tf;
 
 	if(0 == buf)return;
 	if(0 == len)
@@ -472,15 +473,19 @@ void carvestring_center(struct actor* win, u32 rgb,
 	}
 	if(len == 0)return;
 
+	//eachsize = 2*vr/len
+	tr[0] = vr[0]/8;
+	tr[1] = vr[1]/8;
+	tr[2] = vr[2]/8;
+	tf[0] = vf[0]*2;
+	tf[1] = vf[1]*2;
+	tf[2] = vf[2]*2;
 	for(j=0;j<len;j++)
 	{
-		tc[0] = vc[0] + (vr[0]/4)*(2*j-len+2),
-		tc[1] = vc[1] + (vr[1]/4)*(2*j-len+2),
-		tc[2] = vc[2] + (vr[2]/4)*(2*j-len+2),
-		tr[0] = vr[0]/2;
-		tr[1] = vr[1]/2;
-		tr[2] = vr[2]/2;
-		carveascii(win, rgb, tc, tr, vf, buf[j]);
+		tc[0] = vc[0] + (vr[0]/4)*(2*j-len) - vf[0];
+		tc[1] = vc[1] + (vr[1]/4)*(2*j-len) - vf[1];
+		tc[2] = vc[2] + (vr[2]/4)*(2*j-len) - vf[2];
+		carveascii(win, rgb, tc, vr, tf, buf[j]);
 	}
 }
 
