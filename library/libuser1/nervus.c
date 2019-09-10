@@ -44,6 +44,7 @@ int gl41fboc_create(void*, void*);
 int gl41fbod_create(void*, void*);
 int gl41fbog_create(void*, void*);
 int gl41wnd0_create(void*, void*);
+int gl41wnd0_write(void*, void*, void*, int);
 
 
 
@@ -157,6 +158,10 @@ int actorwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len)
 
 	act = (void*)(self->chip);
 	if(0 == act)return 0;
+
+	switch(act->type){
+		case _gl41wnd0_:return gl41wnd0_write(self, peer, buf, len);
+	}
 
 	if(0 == act->onwrite)return 0;
 	return act->onwrite(self, peer, buf, len);

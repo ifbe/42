@@ -4,7 +4,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "libuser.h"
-int arenaevent(struct event* ev);
+void windowwrite(struct arena* ogl, struct event* ev);
 //
 void nonewindow_create(void*);
 void nonewindow_delete(void*);
@@ -42,7 +42,7 @@ static u8 uppercase[] = {
 static void callback_keyboard(GLFWwindow* fw, int key, int scan, int action, int mods)
 {
 	struct event e;
-	struct arena* win = glfwGetWindowUserPointer(fw);
+	struct arena* ogl = glfwGetWindowUserPointer(fw);
     //printf("key=%x,scan=%x,action=%x,mods=%x\n", key, scan, action, mods);
 
 	if(0 == action)return;
@@ -90,8 +90,8 @@ static void callback_keyboard(GLFWwindow* fw, int key, int scan, int action, int
 		e.what = _char_;
 	}
 
-	e.where = (u64)win;
-	arenaevent(&e);
+	e.where = (u64)ogl;
+	windowwrite(ogl, &e);
 	//eventwrite(why, what, where, 0);
 }
 static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
@@ -99,7 +99,7 @@ static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
 	u64 x,y,temp;
 	struct event e;
 	double xpos, ypos;
-	struct arena* win = glfwGetWindowUserPointer(fw);
+	struct arena* ogl = glfwGetWindowUserPointer(fw);
 
 	glfwGetCursorPos(fw, &xpos, &ypos);
 	x = ((int)xpos)&0xffff;
@@ -112,8 +112,8 @@ static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
 
 		e.why = x + (y<<16) + (temp<<48);
 		e.what = 0x2b70;
-		e.where = (u64)win;
-		arenaevent(&e);
+		e.where = (u64)ogl;
+		windowwrite(ogl, &e);
 	}
 	else if(0 == action)
 	{
@@ -122,15 +122,15 @@ static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
 
 		e.why = x + (y<<16) + (temp<<48);
 		e.what = 0x2d70;
-		e.where = (u64)win;
-		arenaevent(&e);
+		e.where = (u64)ogl;
+		windowwrite(ogl, &e);
 	}
 }
 static void callback_move(GLFWwindow* fw, double xpos, double ypos)
 {
 	u64 x,y,temp;
 	struct event e;
-	struct arena* win = glfwGetWindowUserPointer(fw);
+	struct arena* ogl = glfwGetWindowUserPointer(fw);
 
 	if(GLFW_PRESS == glfwGetMouseButton(fw, GLFW_MOUSE_BUTTON_LEFT))temp = 'l';
 	else temp = 'l';
@@ -140,27 +140,27 @@ static void callback_move(GLFWwindow* fw, double xpos, double ypos)
 
 	e.why = x + (y<<16) + (temp<<48);
 	e.what = 0x4070;
-	e.where = (u64)win;
-	arenaevent(&e);
+	e.where = (u64)ogl;
+	windowwrite(ogl, &e);
 }
 static void callback_scroll(GLFWwindow* fw, double x, double y)
 {
 	struct event e;
-	struct arena* win = glfwGetWindowUserPointer(fw);
-	//printf("%llx: %f,%f\n", (u64)win, x, y);
+	struct arena* ogl = glfwGetWindowUserPointer(fw);
+	//printf("%llx: %f,%f\n", (u64)ogl, x, y);
 
-	e.where = (u64)win;
+	e.where = (u64)ogl;
 	e.what = 0x2b70;
 	if(y > 0.0)	//wheel_up
 	{
 		e.why = ((u64)'f')<<48;
-		arenaevent(&e);
+		windowwrite(ogl, &e);
 		//eventwrite(why, 0x2b70, where, 0);
 	}
 	else	//wheel_down
 	{
 		e.why = ((u64)'b')<<48;
-		arenaevent(&e);
+		windowwrite(ogl, &e);
 		//eventwrite(why, 0x2b70, where, 0);
 	}
 }
@@ -169,7 +169,7 @@ static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 	char dragdata[0x1000];
 	int j,ret=0;
 	struct event e;
-	struct arena* win = glfwGetWindowUserPointer(fw);
+	struct arena* ogl = glfwGetWindowUserPointer(fw);
 
 	for(j=0;j<count;j++)
 	{
@@ -179,18 +179,18 @@ static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 
 	e.why = (u64)dragdata;
 	e.what = _drag_;
-	e.where = (u64)win;
-	arenaevent(&e);
+	e.where = (u64)ogl;
+	windowwrite(ogl, &e);
 }
 static void callback_reshape(GLFWwindow* fw, int w, int h)
 {
-	struct arena* win = glfwGetWindowUserPointer(fw);
-	win->fbwidth = win->fbstride = w;
-	win->fbheight = h;
+	struct arena* ogl = glfwGetWindowUserPointer(fw);
+	ogl->fbwidth = ogl->fbstride = w;
+	ogl->fbheight = h;
 
 	glfwGetWindowSize(fw, &w, &h);
-	win->width = win->stride = w;
-	win->height = h;
+	ogl->width = ogl->stride = w;
+	ogl->height = h;
 }
 
 
@@ -289,97 +289,45 @@ void windowopen_coop(struct arena* w, struct arena* r)
 
 
 
-void windowwrite(struct arena* win, struct event* ev)
+void windowwrite(struct arena* ogl, struct event* ev)
 {
-	if(0 == win)return;
-	switch(win->fmt){
-		case _none_:nonewindow_write(win, ev);break;
-		case _easy_:easywindow_write(win, ev);break;
+	if(0 == ogl)return;
+	switch(ogl->fmt){
+		case _none_:nonewindow_write(ogl, ev);break;
+		case _easy_:easywindow_write(ogl, ev);break;
 		case _full_:
-		default:fullwindow_write(win, ev);break;
+		default:fullwindow_write(ogl, ev);break;
 	}
 }
-void windowread(struct arena* win)
+void windowread(struct arena* ogl)
 {
 	char str[64];
 	GLFWwindow* fw;
 	struct relation* rel;
-	//say("@windowread.start:%.8s,%.8s,%llx\n", &win->type, &win->fmt, win->win);
+	//say("@windowread.start:%.8s,%.8s,%llx\n", &ogl->type, &ogl->fmt, ogl->win);
 
 	//0: context current
-	fw = win->win;
+	fw = ogl->win;
 	glfwMakeContextCurrent(fw);
 
 	//1: render everything
-/*
-	rel = win->orel0;
-	if(0 == rel){
-		//say("%llx,%llx\n", win, fw);
-		testwindow_render(win);
-	}
-	else{
-		hostwindow_render(win);
-	}
-*/
-	switch(win->fmt){
-		case _none_:nonewindow_read(win);break;
-		case _easy_:easywindow_read(win);break;
+	switch(ogl->fmt){
+		case _none_:nonewindow_read(ogl);break;
+		case _easy_:easywindow_read(ogl);break;
 		case _full_:
-		default:fullwindow_read(win);break;
+		default:fullwindow_read(ogl);break;
 	}
 
 	//2: swap buffer
 	glfwSwapBuffers(fw);
 
 	//3: title
-	snprintf(str, 64, "%dx%d", win->width, win->height);
+	snprintf(str, 64, "%dx%d(%d,%d)", ogl->width, ogl->height, ogl->fbwidth, ogl->fbheight);
 	glfwSetWindowTitle(fw, str);
 
 	//4: poll event
 	if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
 	glfwPollEvents();
-/*
-	//
-	if(_ctx_ == win->type)
-	{
-		rel = win->irel0;
-		if(0 == rel)return;
-
-		tmp = (void*)(rel->srcchip);
-		if(0 == tmp)return;
-
-		fw = tmp->win;
-		if(0 == fw)return;
-
-		vbonode_read(win, 0);
-		//say("@@@@@@%llx\n",win);
-
-		glfwMakeContextCurrent(fw);
-		hostwindow_update(win);
-	}
-	else if(_fbo_ == win->fmt)
-	{
-		fw = win->win;
-		glfwMakeContextCurrent(fw);
-		hostwindow_render(win);
-	}
-	else
-	{
-		fw = win->win;
-		glfwMakeContextCurrent(fw);
-
-		rel = win->orel0;
-		if(rel)hostwindow_render(win);
-		else testwindow_render(win);
-
-		glfwSwapBuffers(fw);
-
-		//cleanup events
-		if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
-		glfwPollEvents();
-	}
-	//say("@windowread.end\n");
-*/
 }
 void windowchange()
 {
@@ -387,51 +335,51 @@ void windowchange()
 void windowlist()
 {
 }
-void windowstop(struct arena* w)
+void windowstop(struct arena* ogl)
 {
 }
-void windowstart(struct arena* w)
+void windowstart(struct arena* ogl)
 {
 }
-void windowdelete(struct arena* win)
+void windowdelete(struct arena* ogl)
 {
-	switch(win->fmt){
-		case _none_:nonewindow_delete(win);
-		case _easy_:easywindow_delete(win);
-		default:fullwindow_delete(win);
+	switch(ogl->fmt){
+		case _none_:nonewindow_delete(ogl);
+		case _easy_:easywindow_delete(ogl);
+		default:fullwindow_delete(ogl);
 	}
 
-	glfwDestroyWindow(win->win);
+	glfwDestroyWindow(ogl->win);
 }
-void windowcreate(struct arena* win)
+void windowcreate(struct arena* ogl)
 {
 	struct relation* rel = 0;
 	struct arena* share = 0;
 
-	if(_coop_ == win->fmt)
+	if(_coop_ == ogl->fmt)
 	{
-		rel = win->orel0;
+		rel = ogl->orel0;
 		if(rel)share = (void*)(rel->dstchip);
 
-		win->width = 1024;
-		win->height = 768;
-		win->depth = 1024;
-		win->stride = 1024;
+		ogl->width = 1024;
+		ogl->height = 768;
+		ogl->depth = 1024;
+		ogl->stride = 1024;
 
-		windowopen_coop(win, share);
+		windowopen_coop(ogl, share);
 	}
 	else
 	{
-		win->width = 1024;
-		win->height = 768;
-		win->depth = 1024;
-		win->stride = 1024;
-		windowopen_root(win, 0);
+		ogl->width = 1024;
+		ogl->height = 768;
+		ogl->depth = 1024;
+		ogl->stride = 1024;
+		windowopen_root(ogl, 0);
 
-		switch(win->fmt){
-			case _none_:nonewindow_create(win);
-			case _easy_:easywindow_create(win);
-			default:fullwindow_create(win);
+		switch(ogl->fmt){
+			case _none_:nonewindow_create(ogl);
+			case _easy_:easywindow_create(ogl);
+			default:fullwindow_create(ogl);
 		}
 	}
 }

@@ -652,7 +652,10 @@ static int freecam_write(struct halfrel* self, struct halfrel* peer, void* buf, 
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	return 0;//freecam_event1(act, pin, win, sty, ev, 0);
+
+	say("@freecam_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
+	//freecam_event1(act, pin, win, sty, ev, 0);
+	return 0;
 }
 static void freecam_stop(struct halfrel* self, struct halfrel* peer)
 {

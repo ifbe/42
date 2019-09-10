@@ -318,7 +318,8 @@ void fullwindow_render(struct arena* ogl, struct actor* wnd)
 
 void fullwindow_write(struct arena* ogl, struct event* ev)
 {
-	//say("@fullwindow_write\n");
+	say("@fullwindow_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
+	relationwrite((void*)ogl, _wnd_, ev, 0);
 }
 void fullwindow_read(struct arena* ogl)
 {
