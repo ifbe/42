@@ -1,4 +1,6 @@
 #include "libsoft.h"
+#define _src_ hex32('s','r','c',0)
+#define _dst_ hex32('d','s','t',0)
 double squareroot(double);
 
 #define T 0.001
@@ -6,7 +8,12 @@ double squareroot(double);
 #define Ki 0.001
 
 //
-float q0,q1,q2,q3;
+static float q[4];
+#define qx q[0]
+#define qy q[1]
+#define qz q[2]
+#define qw q[3]
+//
 float integralx, integraly, integralz;
 
 
@@ -48,9 +55,9 @@ void mahonyupdate6(
 		az *= recipNorm;
 
 		// Estimated direction of gravity
-		halfvx = q1 * q3 - q0 * q2;
-		halfvy = q0 * q1 + q2 * q3;
-		halfvz = q0 * q0 - 0.5f + q3 * q3;
+		halfvx = qx * qz - qw * qy;
+		halfvy = qw * qx + qy * qz;
+		halfvz = qw * qw - 0.5f + qz * qz;
 
 		// Error is sum of cross product between estimated
 		// and measured direction of gravity
@@ -83,20 +90,20 @@ void mahonyupdate6(
 	gx *= (0.5f * T);		// pre-multiply common factors
 	gy *= (0.5f * T);
 	gz *= (0.5f * T);
-	qa = q0;
-	qb = q1;
-	qc = q2;
-	q0 += (-qb * gx - qc * gy - q3 * gz);
-	q1 += (qa * gx + qc * gz - q3 * gy);
-	q2 += (qa * gy - qb * gz + q3 * gx);
-	q3 += (qa * gz + qb * gy - qc * gx);
+	qa = qw;
+	qb = qx;
+	qc = qy;
+	qw += (-qb * gx - qc * gy - qz * gz);
+	qx += (qa * gx + qc * gz - qz * gy);
+	qy += (qa * gy - qb * gz + qz * gx);
+	qz += (qa * gz + qb * gy - qc * gx);
 
 	// Normalise quaternion
-	recipNorm = invSqrt(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
-	q0 *= recipNorm;
-	q1 *= recipNorm;
-	q2 *= recipNorm;
-	q3 *= recipNorm;
+	recipNorm = invSqrt(qw * qw + qx * qx + qy * qy + qz * qz);
+	qw *= recipNorm;
+	qx *= recipNorm;
+	qy *= recipNorm;
+	qz *= recipNorm;
 }
 void mahonyupdate9(
 	float gx, float gy, float gz,
@@ -104,7 +111,7 @@ void mahonyupdate9(
 	float mx, float my, float mz)
 {
 	float norm;
-	float q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3;  
+	float qwqw, qwqx, qwqy, qwqz, qxqx, qxqy, qxqz, qyqy, qyqz, qzqz;  
 	float hx, hy, bx, bz;
 	float halfvx, halfvy, halfvz, halfwx, halfwy, halfwz;
 	float halfex, halfey, halfez;
@@ -124,34 +131,34 @@ void mahonyupdate9(
 
 
 	// Auxiliary variables to avoid repeated arithmetic
-	q0q0 = q0 * q0;
-	q0q1 = q0 * q1;
-	q0q2 = q0 * q2;
-	q0q3 = q0 * q3;
-	q1q1 = q1 * q1;
-	q1q2 = q1 * q2;
-	q1q3 = q1 * q3;
-	q2q2 = q2 * q2;
-	q2q3 = q2 * q3;
-	q3q3 = q3 * q3;   
+	qwqw = qw * qw;
+	qwqx = qw * qx;
+	qwqy = qw * qy;
+	qwqz = qw * qz;
+	qxqx = qx * qx;
+	qxqy = qx * qy;
+	qxqz = qx * qz;
+	qyqy = qy * qy;
+	qyqz = qy * qz;
+	qzqz = qz * qz;   
 
 
 	// Reference direction of Earth's magnetic field
-	hx = 2.0f * (mx * (0.5f - q2q2 - q3q3) + my * (q1q2 - q0q3) + mz * (q1q3 + q0q2));
-	hy = 2.0f * (mx * (q1q2 + q0q3) + my * (0.5f - q1q1 - q3q3) + mz * (q2q3 - q0q1));
+	hx = 2.0f * (mx * (0.5f - qyqy - qzqz) + my * (qxqy - qwqz) + mz * (qxqz + qwqy));
+	hy = 2.0f * (mx * (qxqy + qwqz) + my * (0.5f - qxqx - qzqz) + mz * (qyqz - qwqx));
 
 	bx = squareroot(hx * hx + hy * hy);
-	bz = 2.0f * (mx * (q1q3 - q0q2) + my * (q2q3 + q0q1) + mz * (0.5f - q1q1 - q2q2));
+	bz = 2.0f * (mx * (qxqz - qwqy) + my * (qyqz + qwqx) + mz * (0.5f - qxqx - qyqy));
 
 
 	// Estimated direction of gravity and magnetic field
-	halfvx = q1q3 - q0q2;
-	halfvy = q0q1 + q2q3;
-	halfvz = q0q0 - 0.5f + q3q3;
+	halfvx = qxqz - qwqy;
+	halfvy = qwqx + qyqz;
+	halfvz = qwqw - 0.5f + qzqz;
 
-	halfwx = bx * (0.5f - q2q2 - q3q3) + bz * (q1q3 - q0q2);
-	halfwy = bx * (q1q2 - q0q3) + bz * (q0q1 + q2q3);
-	halfwz = bx * (q0q2 + q1q3) + bz * (0.5f - q1q1 - q2q2);  
+	halfwx = bx * (0.5f - qyqy - qzqz) + bz * (qxqz - qwqy);
+	halfwy = bx * (qxqy - qwqz) + bz * (qwqx + qyqz);
+	halfwz = bx * (qwqy + qxqz) + bz * (0.5f - qxqx - qyqy);  
 
 
 	// Error is sum of cross product between estimated direction and measured direction of field vectors
@@ -189,27 +196,27 @@ void mahonyupdate9(
 	gx *= 0.5f * T;		// pre-multiply common factors
 	gy *= 0.5f * T;
 	gz *= 0.5f * T;
-	qa = q0;
-	qb = q1;
-	qc = q2;
-	q0 += (-qb * gx - qc * gy - q3 * gz);
-	q1 += (qa * gx + qc * gz - q3 * gy);
-	q2 += (qa * gy - qb * gz + q3 * gx);
-	q3 += (qa * gz + qb * gy - qc * gx); 
+	qa = qw;
+	qb = qx;
+	qc = qy;
+	qw += (-qb * gx - qc * gy - qz * gz);
+	qx += (qa * gx + qc * gz - qz * gy);
+	qy += (qa * gy - qb * gz + qz * gx);
+	qz += (qa * gz + qb * gy - qc * gx); 
 	
 
 	// Normalise quaternion
-	norm = squareroot(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
-	q0 /= norm;
-	q1 /= norm;
-	q2 /= norm;
-	q3 /= norm;
+	norm = squareroot(qw * qw + qx * qx + qy * qy + qz * qz);
+	qw /= norm;
+	qx /= norm;
+	qy /= norm;
+	qz /= norm;
 
 
-	//gx = arctan2(2*(q0*q1+q2*q3),1-2*(q1*q1+q2*q2))*180/3.141592653;
-	//gy = arcsin(2*q0*q2 - 2*q1*q3)*180/3.141592653;
-	//gz = arctan2(2*(q0*q3+q1*q2),1-2*(q2*q2+q3*q3))*180/3.141592653;
-	//say("ahrs:	%f	%f	%f\n", gx, gy, gz);
+	//gx = arctan2(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
+	//gy = arcsin(2*qw*qy - 2*qx*qz)*180/3.141592653;
+	//gz = arctan2(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
+	//say("euler:	%f	%f	%f\n", gx, gy, gz);
 }
 
 
@@ -217,49 +224,33 @@ void mahonyupdate9(
 
 int mahony_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
+	float f[10];
 	struct element* ele;
-	struct relation* rel;
 	say("@mahony_read\n");
 
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
 
-	rel = ele->irel0;
-	while(1){
-		if(0 == rel)break;
-		if(_art_ == rel->srctype){
-			arteryread((void*)&rel->srcchip, (void*)&rel->dstchip, buf, len);
-		}
-		rel = samedstnextsrc(rel);
-	}
-
+	relationread((void*)(self->chip), _src_, f, 10);
 	return 0;
 }
 int mahony_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
+	float* f;
 	struct element* ele;
-	struct relation* rel;
-	float* f = (void*)buf;
 	say("@mahony_write\n");
 
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
 
-        switch(len){
-                case 9:mahonyupdate9(f[0],f[1],f[2], f[3],f[4],f[5], f[6],f[7],f[8]);break;
-                case 6:mahonyupdate6(f[0],f[1],f[2], f[3],f[4],f[5]);break;
-                default:say("err@mahony_write:len=%d\n", len);
-        }
-
-	rel = ele->orel0;
-	while(1){
-		if(0 == rel)break;
-		if(_win_ == rel->dsttype){
-			arenawrite((void*)&rel->dstchip, (void*)&rel->srcchip, buf, len);
-		}
-		rel = samesrcnextdst(rel);
+	f = (void*)buf;
+	switch(len){
+		case 9:mahonyupdate9(f[0],f[1],f[2], f[3],f[4],f[5], f[6],f[7],f[8]);break;
+		case 6:mahonyupdate6(f[0],f[1],f[2], f[3],f[4],f[5]);break;
+		default:say("err@mahony_write:len=%d\n", len);return 0;
 	}
 
+	relationwrite((void*)ele, _dst_, q, 4);
 	return 0;
 }
 int mahony_stop(struct halfrel* self, struct halfrel* peer)
@@ -284,8 +275,8 @@ int mahony_create(struct element* ele, u8* url)
 {
 	say("@mahony_create\n");
 
-	q0 = 1.0;
-	q1 = q2 = q3 = 0.0;
+	qw = 1.0;
+	qx = qy = qz = 0.0;
 	integralx = integraly = integralz = 0.0;
 	return 1;
 }

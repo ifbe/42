@@ -1,5 +1,9 @@
 #include "libuser.h"
 #define _src_ hex32('s','r','c',0)
+#define qx q[0]
+#define qy q[1]
+#define qz q[2]
+#define qw q[3]
 
 
 
@@ -15,8 +19,13 @@ void ahrs_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 	receive gpsdata(already filtered):
 	receive mpudata(already filtered):
 */
+	vec4 e;
 	float* q = buf;
-	say("@ahrs_write:%f,%f,%f,%f\n", q[0], q[1], q[2], q[3]);
+
+	e[0] = arctan2(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
+	e[1] = arcsin(2*qw*qy - 2*qx*qz)*180/3.141592653;
+	e[2] = arctan2(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
+	say("@ahrs_write:%f,%f,%f,%f -> %f,%f,%f\n", qx,qy,qz,qw, e[0],e[1],e[2]);
 }
 int ahrs_stop(struct halfrel* self, struct halfrel* peer)
 {

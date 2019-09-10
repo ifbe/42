@@ -25,7 +25,7 @@ fmt:ahrs
 
 
 <relation>
-(i2chost, 0, fd, 0) -> (mpu9250, 0, art, 0)
-(mpu9250, 0, art, 0) -> (mahony, 0, art, 0)
-(mahony, 0, art, 0) -> (ahrs, 0, win, 0)
+(i2chost, 0, fd, 0) -> (mpu9250, 0, art, src)
+(mpu9250, 0, art, dst) -> (mahony, 0, art, src)
+(mahony, 0, art, dst) -> (ahrs, 0, win, src)
 </relation>

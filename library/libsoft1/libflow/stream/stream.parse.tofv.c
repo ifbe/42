@@ -25,17 +25,8 @@ int line2fv_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
 
-
 	cnt = parsefv(tmp, 9, buf, len);
-	//say("fvcnt: %d\n", cnt);
-	if((cnt != 3) && (cnt != 6) && (cnt != 9) ) {
-		say("wrong fvcnt: %d\n", cnt);
-		return 0;
-	}
-
-#define _dst_ hex32('d','s','t',0)
 	return relationwrite((void*)ele, _dst_, tmp, cnt);
-	return 0;
 }
 int line2fv_stop(struct halfrel* self, struct halfrel* peer)
 {

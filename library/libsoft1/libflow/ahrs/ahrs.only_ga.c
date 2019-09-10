@@ -13,10 +13,10 @@ static float integralz;
 
 //quaternion
 static float q[4];
-#define q0 q[0]
-#define q1 q[1]
-#define q2 q[2]
-#define q3 q[3]
+#define qx q[0]
+#define qy q[1]
+#define qz q[2]
+#define qw q[3]
 
 
 
@@ -39,9 +39,9 @@ void imuupdate(
 
 
 	//
-	vx = 2*(q1*q3 - q0*q2);
-	vy = 2*(q0*q1 + q2*q3);
-	vz = q0*q0 - q1*q1 - q2*q2 + q3*q3;
+	vx = 2*(qx*qz - qw*qy);
+	vy = 2*(qw*qx + qy*qz);
+	vz = qw*qw - qx*qx - qy*qy + qz*qz;
 
 	ex = (ay*vz - az*vy);
 	ey = (az*vx - ax*vz);
@@ -55,21 +55,21 @@ void imuupdate(
 	gy = gy + Kp*ey + integraly;
 	gz = gz + Kp*ez + integralz;
 
-	q0 = q0 + (-q1*gx - q2*gy - q3*gz)*halfT;
-	q1 = q1 + (q0*gx + q2*gz - q3*gy)*halfT;
-	q2 = q2 + (q0*gy - q1*gz + q3*gx)*halfT;
-	q3 = q3 + (q0*gz + q1*gy - q2*gx)*halfT;
+	qw = qw + (-qx*gx - qy*gy - qz*gz)*halfT;
+	qx = qx + (qw*gx + qy*gz - qz*gy)*halfT;
+	qy = qy + (qw*gy - qx*gz + qz*gx)*halfT;
+	qz = qz + (qw*gz + qx*gy - qy*gx)*halfT;
 
-	norm = squareroot(q0*q0 + q1*q1 + q2*q2 + q3*q3);
-	q0 = q0 / norm;
-	q1 = q1 / norm;
-	q2 = q2 / norm;
-	q3 = q3 / norm;
+	norm = squareroot(qw*qw + qx*qx + qy*qy + qz*qz);
+	qw = qw / norm;
+	qx = qx / norm;
+	qy = qy / norm;
+	qz = qz / norm;
 
-	vx = arctan2(2*(q0*q1+q2*q3),1-2*(q1*q1+q2*q2))*180/3.141592653;
-	vy = arcsin(2*q0*q2 - 2*q1*q3)*180/3.141592653;
-	vz = arctan2(2*(q0*q3+q1*q2),1-2*(q2*q2+q3*q3))*180/3.141592653;
-	say("imu:	%f	%f	%f\n", vx, vy, vz);
+	//vx = arctan2(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
+	//vy = arcsin(2*qw*qy - 2*qx*qz)*180/3.141592653;
+	//vz = arctan2(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
+	//say("euler:	%f	%f	%f\n", vx, vy, vz);
 }
 
 
@@ -92,8 +92,8 @@ int easyag_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 		say("err@easyag_write:len=%d\n",len);
 		return 0;
 	}
-
 	say("@easyag_write:%f,%f,%f,%f,%f,%f\n",f[0],f[1],f[2], f[3],f[4],f[5]);
+
 	imuupdate(f[0],f[1],f[2], f[3],f[4],f[5]);
 	relationwrite((void*)self->chip, _dst_, q, 4);
 	return 0;
@@ -117,8 +117,8 @@ void easyag_delete(struct element* ele)
 }
 void easyag_create(struct element* ele, u8* url)
 {
-	q0 = 1.0;
-	q1 = q2 = q3 = 0;
+	qw = 1.0;
+	qx = qy = qz = 0;
 
 	integralx = integraly = integralz = 0;
 }

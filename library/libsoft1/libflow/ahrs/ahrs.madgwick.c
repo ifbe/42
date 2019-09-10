@@ -1,12 +1,18 @@
 #include "libsoft.h"
+#define _src_ hex32('s','r','c',0)
+#define _dst_ hex32('d','s','t',0)
 double squareroot(double);
 
 //
 #define T 0.001
 #define beta 0.1
-
 //
-float q0, q1, q2, q3;
+static float q[4];
+#define qx q[0]
+#define qy q[1]
+#define qz q[2]
+#define qw q[3]
+//
 float integralx, integraly, integralz;
 
 
@@ -29,16 +35,16 @@ void madgwickupdate6(
 {
 	float recipNorm;
 	float s0, s1, s2, s3;
-	float q0q0, q1q1, q2q2, q3q3;
+	float qwqw, qxqx, qyqy, qzqz;
 	float qDot1, qDot2, qDot3, qDot4;
-	float _2q0, _2q1, _2q2, _2q3, _4q0, _4q1, _4q2 ,_8q1, _8q2;
+	float _2qw, _2qx, _2qy, _2qz, _4qw, _4qx, _4qy ,_8qx, _8qy;
 
 
 	// Rate of change of quaternion from gyroscope
-	qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
-	qDot2 = 0.5f * (q0 * gx + q2 * gz - q3 * gy);
-	qDot3 = 0.5f * (q0 * gy - q1 * gz + q3 * gx);
-	qDot4 = 0.5f * (q0 * gz + q1 * gy - q2 * gx);
+	qDot1 = 0.5f * (-qx * gx - qy * gy - qz * gz);
+	qDot2 = 0.5f * (qw * gx + qy * gz - qz * gy);
+	qDot3 = 0.5f * (qw * gy - qx * gz + qz * gx);
+	qDot4 = 0.5f * (qw * gz + qx * gy - qy * gx);
 
 
 	// Normalise accelerometer measurement
@@ -49,26 +55,26 @@ void madgwickupdate6(
 
 
 	// Auxiliary variables to avoid repeated arithmetic
-	_2q0 = 2.0f * q0;
-	_2q1 = 2.0f * q1;
-	_2q2 = 2.0f * q2;
-	_2q3 = 2.0f * q3;
-	_4q0 = 4.0f * q0;
-	_4q1 = 4.0f * q1;
-	_4q2 = 4.0f * q2;
-	_8q1 = 8.0f * q1;
-	_8q2 = 8.0f * q2;
-	q0q0 = q0 * q0;
-	q1q1 = q1 * q1;
-	q2q2 = q2 * q2;
-	q3q3 = q3 * q3;
+	_2qw = 2.0f * qw;
+	_2qx = 2.0f * qx;
+	_2qy = 2.0f * qy;
+	_2qz = 2.0f * qz;
+	_4qw = 4.0f * qw;
+	_4qx = 4.0f * qx;
+	_4qy = 4.0f * qy;
+	_8qx = 8.0f * qx;
+	_8qy = 8.0f * qy;
+	qwqw = qw * qw;
+	qxqx = qx * qx;
+	qyqy = qy * qy;
+	qzqz = qz * qz;
 
 
 	// Gradient decent algorithm corrective step
-	s0 = _4q0*q2q2 + _2q2*ax + _4q0*q1q1 - _2q1*ay;
-	s1 = _4q1*q3q3 - _2q3*ax + 4.0*q0q0*q1 - _2q0*ay - _4q1 + _8q1*q1q1 + _8q1*q2q2 + _4q1*az;
-	s2 = 4.0f * q0q0*q2 + _2q0*ax + _4q2*q3q3 - _2q3*ay - _4q2 + _8q2*q1q1 + _8q2*q2q2 + _4q2*az;
-	s3 = 4.0f * q1q1*q3 - _2q1*ax + 4.0*q2q2 * q3 - _2q2*ay;
+	s0 = _4qw*qyqy + _2qy*ax + _4qw*qxqx - _2qx*ay;
+	s1 = _4qx*qzqz - _2qz*ax + 4.0*qwqw*qx - _2qw*ay - _4qx + _8qx*qxqx + _8qx*qyqy + _4qx*az;
+	s2 = 4.0f * qwqw*qy + _2qw*ax + _4qy*qzqz - _2qz*ay - _4qy + _8qy*qxqx + _8qy*qyqy + _4qy*az;
+	s3 = 4.0f * qxqx*qz - _2qx*ax + 4.0*qyqy * qz - _2qy*ay;
 	recipNorm = invSqrt(s0*s0 + s1*s1 + s2*s2 + s3*s3); // normalise step magnitude
 	s0 *= recipNorm;
 	s1 *= recipNorm;
@@ -84,18 +90,18 @@ void madgwickupdate6(
 
 
 	// Integrate rate of change of quaternion to yield quaternion
-	q0 += qDot1 * T;
-	q1 += qDot2 * T;
-	q2 += qDot3 * T;
-	q3 += qDot4 * T;
+	qw += qDot1 * T;
+	qx += qDot2 * T;
+	qy += qDot3 * T;
+	qz += qDot4 * T;
 
 
 	// Normalise quaternion
-	recipNorm = invSqrt(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
-	q0 *= recipNorm;
-	q1 *= recipNorm;
-	q2 *= recipNorm;
-	q3 *= recipNorm;
+	recipNorm = invSqrt(qw * qw + qx * qx + qy * qy + qz * qz);
+	qw *= recipNorm;
+	qx *= recipNorm;
+	qy *= recipNorm;
+	qz *= recipNorm;
 }
 void madgwickupdate9(
 	float gx, float gy, float gz,
@@ -106,18 +112,18 @@ void madgwickupdate9(
 	float hx, hy;
 	float s0, s1, s2, s3;
 	float qDot1, qDot2, qDot3, qDot4;
-	float _2q0mx, _2q0my, _2q0mz, _2q1mx;
+	float _2qwmx, _2qwmy, _2qwmz, _2qxmx;
 	float _2bx, _2bz, _4bx, _4bz;
-	float _2q0, _2q1, _2q2, _2q3;
-	float _2q0q2, _2q2q3;
-	float q0q0, q0q1, q0q2, q0q3, q1q1, q1q2, q1q3, q2q2, q2q3, q3q3;
+	float _2qw, _2qx, _2qy, _2qz;
+	float _2qwqy, _2qyqz;
+	float qwqw, qwqx, qwqy, qwqz, qxqx, qxqy, qxqz, qyqy, qyqz, qzqz;
 
 
 	// Rate of change of quaternion from gyroscope
-	qDot1 = 0.5f * (-q1 * gx - q2 * gy - q3 * gz);
-	qDot2 = 0.5f * (q0 * gx + q2 * gz - q3 * gy);
-	qDot3 = 0.5f * (q0 * gy - q1 * gz + q3 * gx);
-	qDot4 = 0.5f * (q0 * gz + q1 * gy - q2 * gx);
+	qDot1 = 0.5f * (-qx * gx - qy * gy - qz * gz);
+	qDot2 = 0.5f * (qw * gx + qy * gz - qz * gy);
+	qDot3 = 0.5f * (qw * gy - qx * gz + qz * gx);
+	qDot4 = 0.5f * (qw * gz + qx * gy - qy * gx);
 
 
 	// Normalise accelerometer measurement
@@ -135,68 +141,68 @@ void madgwickupdate9(
 
 
 	// Auxiliary variables to avoid repeated arithmetic
-	_2q0mx = 2.0f * q0 * mx;
-	_2q0my = 2.0f * q0 * my;
-	_2q0mz = 2.0f * q0 * mz;
-	_2q1mx = 2.0f * q1 * mx;
+	_2qwmx = 2.0f * qw * mx;
+	_2qwmy = 2.0f * qw * my;
+	_2qwmz = 2.0f * qw * mz;
+	_2qxmx = 2.0f * qx * mx;
 
-	_2q0 = 2.0f * q0;
-	_2q1 = 2.0f * q1;
-	_2q2 = 2.0f * q2;
-	_2q3 = 2.0f * q3;
+	_2qw = 2.0f * qw;
+	_2qx = 2.0f * qx;
+	_2qy = 2.0f * qy;
+	_2qz = 2.0f * qz;
 
-	_2q0q2 = 2.0f * q0 * q2;
-	_2q2q3 = 2.0f * q2 * q3;
+	_2qwqy = 2.0f * qw * qy;
+	_2qyqz = 2.0f * qy * qz;
 
-	q0q0 = q0 * q0;
-	q0q1 = q0 * q1;
-	q0q2 = q0 * q2;
-	q0q3 = q0 * q3;
-	q1q1 = q1 * q1;
-	q1q2 = q1 * q2;
-	q1q3 = q1 * q3;
-	q2q2 = q2 * q2;
-	q2q3 = q2 * q3;
-	q3q3 = q3 * q3;
+	qwqw = qw * qw;
+	qwqx = qw * qx;
+	qwqy = qw * qy;
+	qwqz = qw * qz;
+	qxqx = qx * qx;
+	qxqy = qx * qy;
+	qxqz = qx * qz;
+	qyqy = qy * qy;
+	qyqz = qy * qz;
+	qzqz = qz * qz;
 
 
 	// Reference direction of Earth's magnetic field
-	hx = mx*q0q0 - _2q0my*q3 + _2q0mz*q2 + mx*q1q1 + _2q1*my*q2 + _2q1*mz*q3 - mx*q2q2- mx*q3q3;
-	hy = _2q0mx*q3 + my*q0q0 - _2q0mz*q1 + _2q1mx*q2 - my*q1q1 + my*q2q2 + _2q2*mz*q3 - my*q3q3;
+	hx = mx*qwqw - _2qwmy*qz + _2qwmz*qy + mx*qxqx + _2qx*my*qy + _2qx*mz*qz - mx*qyqy- mx*qzqz;
+	hy = _2qwmx*qz + my*qwqw - _2qwmz*qx + _2qxmx*qy - my*qxqx + my*qyqy + _2qy*mz*qz - my*qzqz;
 
 	_2bx = squareroot(hx * hx + hy * hy);
-	_2bz = -_2q0mx*q2 + _2q0my*q1 + mz*q0q0 + _2q1mx*q3 - mz*q1q1 + _2q2*my*q3 - mz*q2q2 + mz*q3q3;
+	_2bz = -_2qwmx*qy + _2qwmy*qx + mz*qwqw + _2qxmx*qz - mz*qxqx + _2qy*my*qz - mz*qyqy + mz*qzqz;
 
 	_4bx	= 2.0f * _2bx;
 	_4bz	= 2.0f * _2bz;
 
 
 	// Gradient decent algorithm corrective step
-	s0	= -_2q2 * (2.0f * q1q3 - _2q0q2 - ax)
-		+ _2q1 * (2.0f * q0q1 + _2q2q3 - ay)
-		- _2bz * q2 * (_2bx * (0.5f - q2q2 - q3q3) + _2bz * (q1q3 - q0q2) - mx)
-		+ (-_2bx * q3 + _2bz * q1) * (_2bx * (q1q2 - q0q3) + _2bz * (q0q1 + q2q3) - my)
-		+ _2bx * q2 * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
+	s0	= -_2qy * (2.0f * qxqz - _2qwqy - ax)
+		+ _2qx * (2.0f * qwqx + _2qyqz - ay)
+		- _2bz * qy * (_2bx * (0.5f - qyqy - qzqz) + _2bz * (qxqz - qwqy) - mx)
+		+ (-_2bx * qz + _2bz * qx) * (_2bx * (qxqy - qwqz) + _2bz * (qwqx + qyqz) - my)
+		+ _2bx * qy * (_2bx * (qwqy + qxqz) + _2bz * (0.5f - qxqx - qyqy) - mz);
 
-	s1	= _2q3 * (2.0f * q1q3 - _2q0q2 - ax)
-		+ _2q0 * (2.0f * q0q1 + _2q2q3 - ay)
-		- 4.0f * q1 * (1 - 2.0f * q1q1 - 2.0f * q2q2 - az)
-		+ _2bz * q3 * (_2bx * (0.5f - q2q2 - q3q3) + _2bz * (q1q3 - q0q2) - mx)
-		+ (_2bx * q2 + _2bz * q0) * (_2bx * (q1q2 - q0q3) + _2bz * (q0q1 + q2q3) - my)
-		+ (_2bx * q3 - _4bz * q1) * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
+	s1	= _2qz * (2.0f * qxqz - _2qwqy - ax)
+		+ _2qw * (2.0f * qwqx + _2qyqz - ay)
+		- 4.0f * qx * (1 - 2.0f * qxqx - 2.0f * qyqy - az)
+		+ _2bz * qz * (_2bx * (0.5f - qyqy - qzqz) + _2bz * (qxqz - qwqy) - mx)
+		+ (_2bx * qy + _2bz * qw) * (_2bx * (qxqy - qwqz) + _2bz * (qwqx + qyqz) - my)
+		+ (_2bx * qz - _4bz * qx) * (_2bx * (qwqy + qxqz) + _2bz * (0.5f - qxqx - qyqy) - mz);
 
-	s2	= -_2q0 * (2.0f * q1q3 - _2q0q2 - ax)
-		+ _2q3 * (2.0f * q0q1 + _2q2q3 - ay)
-		- 4.0f * q2 * (1 - 2.0f * q1q1 - 2.0f * q2q2 - az)
-		+ (-_4bx * q2 - _2bz * q0) * (_2bx * (0.5f - q2q2 - q3q3) + _2bz * (q1q3 - q0q2) - mx)
-		+ (_2bx * q1 + _2bz * q3) * (_2bx * (q1q2 - q0q3) + _2bz * (q0q1 + q2q3) - my)
-		+ (_2bx * q0 - _4bz * q2) * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
+	s2	= -_2qw * (2.0f * qxqz - _2qwqy - ax)
+		+ _2qz * (2.0f * qwqx + _2qyqz - ay)
+		- 4.0f * qy * (1 - 2.0f * qxqx - 2.0f * qyqy - az)
+		+ (-_4bx * qy - _2bz * qw) * (_2bx * (0.5f - qyqy - qzqz) + _2bz * (qxqz - qwqy) - mx)
+		+ (_2bx * qx + _2bz * qz) * (_2bx * (qxqy - qwqz) + _2bz * (qwqx + qyqz) - my)
+		+ (_2bx * qw - _4bz * qy) * (_2bx * (qwqy + qxqz) + _2bz * (0.5f - qxqx - qyqy) - mz);
 
-	s3	= _2q1 * (2.0f * q1q3 - _2q0q2 - ax)
-		+ _2q2 * (2.0f * q0q1 + _2q2q3 - ay)
-		+ (-_4bx * q3 + _2bz * q1) * (_2bx * (0.5f - q2q2 - q3q3) + _2bz * (q1q3 - q0q2) - mx)
-		+ (-_2bx * q0 + _2bz * q2) * (_2bx * (q1q2 - q0q3) + _2bz * (q0q1 + q2q3) - my)
-		+ _2bx * q1 * (_2bx * (q0q2 + q1q3) + _2bz * (0.5f - q1q1 - q2q2) - mz);
+	s3	= _2qx * (2.0f * qxqz - _2qwqy - ax)
+		+ _2qy * (2.0f * qwqx + _2qyqz - ay)
+		+ (-_4bx * qz + _2bz * qx) * (_2bx * (0.5f - qyqy - qzqz) + _2bz * (qxqz - qwqy) - mx)
+		+ (-_2bx * qw + _2bz * qy) * (_2bx * (qxqy - qwqz) + _2bz * (qwqx + qyqz) - my)
+		+ _2bx * qx * (_2bx * (qwqy + qxqz) + _2bz * (0.5f - qxqx - qyqy) - mz);
 
 
 	// normalise step magnitude	// Apply feedback step
@@ -208,25 +214,24 @@ void madgwickupdate9(
 
 
 	// Integrate rate of change of quaternion to yield quaternion
-	q0 += qDot1 * T;
-	q1 += qDot2 * T;
-	q2 += qDot3 * T;
-	q3 += qDot4 * T;
+	qw += qDot1 * T;
+	qx += qDot2 * T;
+	qy += qDot3 * T;
+	qz += qDot4 * T;
 
 
 	// Normalise quaternion
-	norm = squareroot(q0 * q0 + q1 * q1 + q2 * q2 + q3 * q3);
-	q0 /= norm;
-	q1 /= norm;
-	q2 /= norm;
-	q3 /= norm;
+	norm = squareroot(qw * qw + qx * qx + qy * qy + qz * qz);
+	qw /= norm;
+	qx /= norm;
+	qy /= norm;
+	qz /= norm;
 
 
-	//gx = arctan2(2*(q0*q1+q2*q3),1-2*(q1*q1+q2*q2))*180/3.141592653;
-	//gy = arcsin(2*q0*q2 - 2*q1*q3)*180/3.141592653;
-	//gz = arctan2(2*(q0*q3+q1*q2),1-2*(q2*q2+q3*q3))*180/3.141592653;
-	//say("ahrs:	%f	%f	%f\n", gx, gy, gz);
-
+	//gx = arctan2(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
+	//gy = arcsin(2*qw*qy - 2*qx*qz)*180/3.141592653;
+	//gz = arctan2(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
+	//say("euler:	%f	%f	%f\n", gx, gy, gz);
 }
 
 
@@ -234,49 +239,33 @@ void madgwickupdate9(
 
 int madgwick_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
+	float f[10];
 	struct element* ele;
-	struct relation* rel;
 	say("@madgwick_read\n");
 
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
 
-	rel = ele->irel0;
-	while(1){
-		if(0 == rel)break;
-		if(_art_ == rel->srctype){
-			arteryread((void*)&rel->srcchip, (void*)&rel->dstchip, buf, len);
-		}
-		rel = samedstnextsrc(rel);
-	}
-
+	relationread((void*)(self->chip), _src_, f, 10);
 	return 0;
 }
 int madgwick_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
+	float* f;
 	struct element* ele;
-	struct relation* rel;
-	float* f = (void*)buf;
 	say("@madgwick_write\n");
 
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
 
+	f = (void*)buf;
 	switch(len){
 		case 9:madgwickupdate9(f[0],f[1],f[2], f[3],f[4],f[5], f[6],f[7],f[8]);break;
 		case 6:madgwickupdate6(f[0],f[1],f[2], f[3],f[4],f[5]);break;
-		default:say("err@madgwick_write:len=%d\n", len);
+		default:say("err@madgwick_write:len=%d\n", len);return 0;
 	}
 
-	rel = ele->orel0;
-	while(1){
-		if(0 == rel)break;
-		if(_win_ == rel->dsttype){
-			arenawrite((void*)&rel->dstchip, (void*)&rel->srcchip, buf, len);
-		}
-		rel = samesrcnextdst(rel);
-	}
-
+	relationwrite((void*)ele, _dst_, q, 4);
 	return 0;
 }
 int madgwick_stop(struct halfrel* self, struct halfrel* peer)
@@ -301,8 +290,8 @@ int madgwick_create(struct element* ele, u8* url)
 {
 	say("@madgwick_create\n");
 
-	q0 = 1.0;
-	q1 = q2 = q3 = 0.0;
+	qw = 1.0;
+	qx = qy = qz = 0.0;
 	integralx = integraly = integralz = 0.0;
 	return 1;
 }

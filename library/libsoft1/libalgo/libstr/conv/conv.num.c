@@ -387,75 +387,28 @@ byebye:
 //out: float vector
 int parsefv(float* vec, int flen, u8* str, int slen)
 {
-	int j = 0, k;
+	int j,k,cnt;
+	j = k = cnt = 0;
 
-first:
-	while(0x20 == str[j])j++;
-	j += decstr2float(str+j, &vec[0]);
+	while(1){
+		while(0x20 == str[j])j++;
+		j += decstr2float(str+j, &vec[cnt]);
 
-	for(k=j;k<j+16;k++){
-		if('\n' == str[k])break;
-		if(',' == str[k]){
-			j = k+1;
-			goto second;
+		for(k=0;k<16;k++){
+			//normally finished
+			if('\n' == str[j+k])return cnt+1;
+
+			//havenot finished
+			if(',' == str[j+k]){
+				j += k+1;
+				break;
+			}
 		}
+		if(16 == k)return cnt+1;
+
+		cnt += 1;
 	}
-	return 1;
 
-second:
-	while(0x20 == str[j])j++;
-	j += decstr2float(str+j, &vec[1]);
-
-	for(k=j;k<j+16;k++){
-		if('\n' == str[k])break;
-		if(',' == str[k]){
-			j = k+1;
-			goto third;
-		}
-	}
-	return 2;
-
-third:
-	while(0x20 == str[j])j++;
-	j += decstr2float(str+j, &vec[2]);
-
-	for(k=j;k<j+16;k++){
-		if('\n' == str[k])break;
-		if(',' == str[k]){
-			j = k+1;
-			goto fourth;
-		}
-	}
-	return 3;
-
-fourth:
-	while(0x20 == str[j])j++;
-	j += decstr2float(str+j, &vec[3]);
-
-	for(k=j;k<j+16;k++){
-		if('\n' == str[k])break;
-		if(',' == str[k]){
-			j = k+1;
-			goto fifth;
-		}
-	}
-	return 4;
-
-fifth:
-	while(0x20 == str[j])j++;
-	j += decstr2float(str+j, &vec[4]);
-
-	for(k=j;k<j+16;k++){
-		if('\n' == str[k])break;
-		if(',' == str[k]){
-			j = k+1;
-			goto sixth;
-		}
-	}
-	return 5;
-
-sixth:
-	while(0x20 == str[j])j++;
-	j += decstr2float(str+j, &vec[5]);
-	return 6;
+	//something wrong
+	return 0;
 }
