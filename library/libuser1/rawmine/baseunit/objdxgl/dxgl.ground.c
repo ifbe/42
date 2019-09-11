@@ -1,5 +1,5 @@
 #include "libuser.h"
-void actorcreatefromfile(struct actor* act, char* name);
+void loadtexfromfile(struct glsrc* src, int idx, char* name);
 
 
 
@@ -72,7 +72,7 @@ static void ground_draw_vbo(
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
 
-	struct glsrc* src = (void*)(pin->data[0]);
+	struct glsrc* src = act->buf;
 	float (*vbuf)[6] = (void*)(src->vbuf);
 	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
 
@@ -156,16 +156,21 @@ static void ground_draw(
 
 
 
-static void ground_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void ground_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	//ground_draw(act, pin, win, sty);
+	struct actor* ctx = buf;
+	//say("@ground_read:%llx,%llx,%llx\n",act,win,buf);
+
+	if(ctx){
+		if(_gl41data_ == ctx->type)ground_draw_vbo(act,pin,ctx,sty);
+	}
 }
-static void ground_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void ground_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 }
 static void ground_stop(struct halfrel* self, struct halfrel* peer)
@@ -173,45 +178,13 @@ static void ground_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void ground_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct datapair* pair;
-	struct glsrc* src;
-	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-/*
-	//
-	pair = alloc_winobj(win, 's');
-	src = &pair->src;
-	dst = &pair->dst;
-	pin->foot[0] = (u64)src;
-	sty->foot[0] = (u64)dst;
+	if(0 == act)return;
+	if(0 == pin)return;
 
-	//
-	src->geometry = 3;
-	src->method = 'v';
-
-	//
-	src->vs = ground_glsl_v;
-	src->fs = ground_glsl_f;
-	src->shader_enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
-
-	//texture
-	src->tex_name[0] = "tex0";
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_data[0] = act->buf;
-	src->tex_w[0] = act->width;
-	src->tex_h[0] = act->height;
-	src->tex_enq[0] = 42;
-*/
+	pin->data[0] = (u64)(act->buf);
+	say("@ground_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 
@@ -228,11 +201,36 @@ static void ground_delete(struct actor* act)
 }
 static void ground_create(struct actor* act, void* str)
 {
-	//max=16MB
-	if(0 == act->buf)act->buf = memorycreate(2048*2048*4, 0);
+	int j;
+	struct glsrc* src;
+	if(0 == act)return;
 
-	//if(0 == str)str = "datafile/jpg/wall.jpg";
-	//actorcreatefromfile(act, str);
+	src = act->buf = memorycreate(0x200, 0);
+	if(0 == src)return;
+
+	//
+	src->geometry = 3;
+	src->method = 'v';
+
+	//
+	src->vs = ground_glsl_v;
+	src->fs = ground_glsl_f;
+	src->shader_enq = 42;
+
+	//texture
+	src->tex_name[0] = "tex0";
+	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex_data[0] = memorycreate(2048*2048*4, 0);
+	if(0 == str)str = "datafile/jpg/wall.jpg";
+	loadtexfromfile(src, 0, str);
+	src->tex_enq[0] = 42;
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 }
 
 

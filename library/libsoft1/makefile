@@ -178,7 +178,8 @@ libflow/stream/stream.reorder.bysymbol.c \
 libflow/stream/stream.reorder.linefeed.c \
 libflow/stream/stream.parse.mavlink.c \
 libflow/stream/stream.parse.nema0183.c \
-libflow/stream/stream.parse.tofv.c \
+libflow/stream/stream.parse.str2fv.c \
+libflow/stream/stream.parse.fv2str.c \
 libphys/phys.elec.c \
 libphys/phys.mech.c \
 artery.c

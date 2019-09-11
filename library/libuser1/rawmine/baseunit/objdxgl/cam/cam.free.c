@@ -1,5 +1,10 @@
 #include "libuser.h"
 void fixmatrix(float* m, struct fstyle* sty);
+void invmvp(float* v, struct fstyle* sty);
+
+
+
+
 void printvec4(float* s)
 {
 	say("%f, %f, %f, %f\n", s[0], s[1], s[2], s[3]);
@@ -180,7 +185,7 @@ void freecam_zoom(struct actor* win, float delta)
 
 
 
-static int freecam_draw(
+static int freecam_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {/*
@@ -207,6 +212,29 @@ static int freecam_draw(
 	sty->vb[1] = -sty->vu[1];
 	sty->vb[2] = -sty->vu[2];
 	carvefrustum(win, sty);*/
+
+	float x = act->x0;
+	float y = act->y0;
+	vec3 vc,vr,vf,vt;
+
+	vc[0] = x;
+	vc[1] = y;
+	vc[2] = 0;
+	vr[0] = x;
+	vr[1] = y;
+	vr[2] = 1000;
+	carveline(win, 0xffffff, vc, vr);
+
+	vr[0] = 100;
+	vr[1] = 0;
+	vr[2] = 0;
+	vf[0] = 0;
+	vf[1] = 100;
+	vf[2] = 0;
+	vt[0] = 0;
+	vt[1] = 0;
+	vt[2] = 100;
+	carveopaque_sphere(win, 0x80808080, vc, vr, vf, vt);
 	return 0;
 }/*
 static int freecam_event(
@@ -520,6 +548,48 @@ static int freecam_event1(
 
 	return 1;
 }
+static int freecam_event2(
+	struct actor* act, struct style* frus,
+	struct actor* win, struct style* area,
+	struct event* ev, int len)
+{
+	float w,h,k;
+	vec4 dr;
+	short* t;
+	float* vc;
+	if(0x2b70 != ev->what)return 0;
+
+	//get w,h
+	w = 1024;
+	h = 768;
+
+	//screen to ndc
+	t = (void*)&ev->why;
+	dr[0] = 2*t[0] / w - 1.0;
+	dr[1] = 1.0 - 2*t[1] / h;
+	dr[2] = -0.5;
+
+	//ndc to world
+	invmvp(dr, &frus->fs);
+	say("%f,%f,%f\n",dr[0],dr[1],dr[2]);
+
+	//direction
+	vc = frus->fs.vc;
+	dr[0] -= vc[0];
+	dr[1] -= vc[1];
+	dr[2] -= vc[2];
+	say("%f,%f,%f\n",dr[0],dr[1],dr[2]);
+
+	//(x, y, -1000)
+	k = (0-vc[2]) / dr[2];
+	dr[0] = vc[0] + dr[0] * k;
+	dr[1] = vc[1] + dr[1] * k;
+	say("%f,%f\n",dr[0],dr[1]);
+
+	act->x0 = dr[0];
+	act->y0 = dr[1];
+	return 0;
+}
 
 
 
@@ -628,7 +698,7 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, void* buf, 
 
 	if(ctx){
 		switch(ctx->type){
-			case _gl41data_:break;//freecam_draw_vbo(act,pin,ctx,sty);
+			case _gl41data_:freecam_draw_vbo(act,pin,ctx,sty);
 		}
 	}
 	else{
@@ -648,13 +718,13 @@ static int freecam_write(struct halfrel* self, struct halfrel* peer, void* buf, 
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
+	struct style* frus = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
+	struct style* area = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 
 	say("@freecam_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
-	//freecam_event1(act, pin, win, sty, ev, 0);
+	freecam_event2(act, frus, win, area, ev, 0);
 	return 0;
 }
 static void freecam_stop(struct halfrel* self, struct halfrel* peer)
@@ -681,6 +751,8 @@ static void freecam_create(struct actor* act, void* arg)
 {
     say("@freecam_create\n");
 	act->buf = memorycreate(64, 0);
+	act->x0 = 0;
+	act->y0 = 0;
 }
 
 

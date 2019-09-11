@@ -49,6 +49,9 @@ typedef float mat4[4][4];
 #define _gl41fbod_ hex64('g','l','4','1','f','b','o','d')
 #define _gl41fboc_ hex64('g','l','4','1','f','b','o','c')
 #define _gl41fbog_ hex64('g','l','4','1','f','b','o','g')
+//
+#define _src_ hex32('s','r','c',0)
+#define _dst_ hex32('d','s','t',0)
 //tier
 #define _act_ hex32('a','c','t',0)
 #define _win_ hex32('w','i','n',0)

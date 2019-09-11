@@ -7,6 +7,7 @@
 #define _mpu9250_ hex64('m','p','u','9','2','5','0',0)
 #define _line2fv_ hex64('l','i','n','e','2','f','v',0)
 #define _reline_ hex64('r','e','l','i','n','e',0,0)
+#define _fv2str_ hex64('f','v','2','s','t','r',0,0)
 //
 #define _easyag_  hex64('e','a','s','y','a','g', 0 , 0 )
 #define _mahony_  hex64('m','a','h','o','n','y', 0 , 0 )
@@ -29,6 +30,9 @@ int reline_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
 int line2fv_create(struct element* ele, void* url);
 int line2fv_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
 int line2fv_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int fv2str_create(struct element* ele, void* url);
+int fv2str_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int fv2str_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
 //
 int easyag_create(struct element* ele, void* url);
 int easyag_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
@@ -245,6 +249,7 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 		case _mpu9250_:mpu9250_read(self, peer, buf, len);break;
 		case _line2fv_:line2fv_read(self, peer, buf, len);break;
 		case _reline_:reline_read(self, peer, buf, len);break;
+		case _fv2str_:fv2str_read(self, peer, buf, len);break;
 
 		case _easyag_:easyag_read(self, peer, buf, len);break;
 		case _mahony_:mahony_read(self, peer, buf, len);break;
@@ -259,6 +264,7 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 		case _mpu9250_:return mpu9250_write(self, peer, buf, len);break;
 		case _line2fv_:return line2fv_write(self, peer, buf, len);break;
 		case _reline_:return reline_write(self, peer, buf, len);break;
+		case _fv2str_:return fv2str_write(self, peer, buf, len);break;
 
 		case _easyag_:return easyag_write(self, peer, buf, len);break;
 		case _mahony_:return mahony_write(self, peer, buf, len);break;
@@ -371,6 +377,15 @@ void* arterycreate(u64 type, void* argstr)
 
 		e->type = _line2fv_;
 		line2fv_create(e, url);
+		return e;
+	}
+	if(_fv2str_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _fv2str_;
+		fv2str_create(e, url);
 		return e;
 	}
 
