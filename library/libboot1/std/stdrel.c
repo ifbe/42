@@ -156,12 +156,14 @@ int relation_r(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 	}
 	return 0;
 }
-int relationread(struct item* item, int foot, void* buf, int len)
+int relationread(void* chip, int foot, void* buf, int len)
 {
+	struct item* item;
 	struct relation* rel;
 	struct halfrel* self;
 	struct halfrel* peer;
 
+	item = chip;
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
@@ -200,12 +202,14 @@ int relation_w(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 	}
 	return 0;
 }
-int relationwrite(struct item* item, int foot, void* buf, int len)
+int relationwrite(void* chip, int foot, void* buf, int len)
 {
+	struct item* item;
 	struct relation* rel;
 	struct halfrel* self;
 	struct halfrel* peer;
 
+	item = chip;
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;

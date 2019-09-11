@@ -38,7 +38,7 @@ int serveclient_create(struct element* ele, u8* url)
 	int j,k;
 	void* obj;
 	u8* tmp[0x100];
-
+/*
 	obj = systemcreate(_tcp_, url);
 	if(0 == obj)return 0;
 
@@ -58,28 +58,14 @@ int serveclient_create(struct element* ele, u8* url)
 	{
 		k = mysnprintf(tmp, 0xff, "SERVE %.*s\n", j-k, url+k);
 		system_leafwrite(obj, 0, ele, 0, tmp, k);
-	}
+	}*/
 	return 1;
 }
 
 
 
 
-int serveserver_leafwrite(
-	struct element* ele, void* sty,
-	struct object* sc, void* sf,
-	u8* buf, int len)
-{
-	return 0;
-}
-int serveserver_leafread(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
-{
-	return 0;
-}
-int serveserver_rootwrite(
+int serveserver_write(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
@@ -87,7 +73,7 @@ int serveserver_rootwrite(
 	printmemory(buf,len);
 	return 0;
 }
-int serveserver_rootread(
+int serveserver_read(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
@@ -122,7 +108,7 @@ int servemaster_write(
 	struct relation* irel;
 	u8* GET = 0;
 	u8* SERVE = 0;
-
+/*
 	//old
 	if(obj->orel0)
 	{
@@ -223,7 +209,7 @@ int servemaster_write(
 				irel = samedstnextsrc(irel);
 			}
 		}
-	}
+	}*/
 	return 0;
 }
 int servemaster_read()
@@ -236,10 +222,5 @@ int servemaster_delete(struct element* ele)
 }
 int servemaster_create(struct element* ele, u8* url)
 {
-	int ret;
-	void* obj = systemcreate(_TCP_, url);
-	if(0 == obj)return 0;
-
-	relationcreate(ele, 0, _art_, 0, obj, 0, _fd_, 0);
 	return 0;
 }

@@ -76,12 +76,12 @@ int telnetclient_write(
 
 	switch(ele->stage1)
 	{
-		case 0:system_leafwrite(obj, 0, ele, 0, cpacket0, sizeof(cpacket0));break;
-		case 1:system_leafwrite(obj, 0, ele, 0, cpacket1, sizeof(cpacket1));break;
-		case 2:system_leafwrite(obj, 0, ele, 0, cpacket2, sizeof(cpacket2));break;
-		case 3:system_leafwrite(obj, 0, ele, 0, cpacket3, sizeof(cpacket3));break;
-		case 4:system_leafwrite(obj, 0, ele, 0, cpacket4, sizeof(cpacket4));break;
-		case 5:system_leafwrite(obj, 0, ele, 0, cpacket5, sizeof(cpacket5));break;
+		case 0:relationwrite(ele, _src_, cpacket0, sizeof(cpacket0));break;
+		case 1:relationwrite(ele, _src_, cpacket1, sizeof(cpacket1));break;
+		case 2:relationwrite(ele, _src_, cpacket2, sizeof(cpacket2));break;
+		case 3:relationwrite(ele, _src_, cpacket3, sizeof(cpacket3));break;
+		case 4:relationwrite(ele, _src_, cpacket4, sizeof(cpacket4));break;
+		case 5:relationwrite(ele, _src_, cpacket5, sizeof(cpacket5));break;
 	}
 	ele->stage1 += 1;
 	return 0;
@@ -119,12 +119,12 @@ int telnetserver_write(
 
 	switch(ele->stage1)
 	{
-		case 0:system_leafwrite(obj, 0, ele, 0, spacket0, sizeof(spacket0));break;
-		case 1:system_leafwrite(obj, 0, ele, 0, spacket1, sizeof(spacket1));break;
-		case 2:system_leafwrite(obj, 0, ele, 0, spacket2, sizeof(spacket2));break;
-		case 3:system_leafwrite(obj, 0, ele, 0, spacket3, sizeof(spacket3));break;
-		case 4:system_leafwrite(obj, 0, ele, 0, spacket4, sizeof(spacket4));break;
-		case 5:system_leafwrite(obj, 0, ele, 0, spacket5, sizeof(spacket5));break;
+		case 0:relationwrite(ele, _src_, spacket0, sizeof(spacket0));break;
+		case 1:relationwrite(ele, _src_, spacket1, sizeof(spacket1));break;
+		case 2:relationwrite(ele, _src_, spacket2, sizeof(spacket2));break;
+		case 3:relationwrite(ele, _src_, spacket3, sizeof(spacket3));break;
+		case 4:relationwrite(ele, _src_, spacket4, sizeof(spacket4));break;
+		case 5:relationwrite(ele, _src_, spacket5, sizeof(spacket5));break;
 	}
 	ele->stage1 += 1;
 	return 0;

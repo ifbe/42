@@ -13,6 +13,10 @@ typedef float mat4[4][4];
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
+//
+#define _src_ hex32('s','r','c',0)
+#define _dst_ hex32('d','s','t',0)
+//
 #define _fd_ hex32('f','d',0,0)
 #define _art_ hex32('a','r','t',0)
 #define _win_ hex32('w','i','n',0)
@@ -359,8 +363,8 @@ int systemstart(struct halfrel* self,struct halfrel* peer);
 int systemdelete(void*);
 void* systemcreate(u64, void*);
 //
-int relationread( struct item* item, int foot, void* buf, int len);
-int relationwrite(struct item* item, int foot, void* buf, int len);
+int relationread( void* item, int foot, void* buf, int len);
+int relationwrite(void* item, int foot, void* buf, int len);
 int relationstop( struct halfrel* self,struct halfrel* peer);
 int relationstart(struct halfrel* self,struct halfrel* peer);
 int relationdelete(void*);

@@ -173,6 +173,7 @@ libflow/ahrs/ahrs.madgwick.c \
 libflow/ahrs/ahrs.ekf.c \
 libflow/ahrs/ahrs.ukf.c \
 libflow/gcode/gcode.c \
+libflow/stream/stream.echo.c \
 libflow/stream/stream.reorder.bylength.c \
 libflow/stream/stream.reorder.bysymbol.c \
 libflow/stream/stream.reorder.linefeed.c \

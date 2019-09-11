@@ -6,20 +6,20 @@ int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
 
 
 
-int line2fv_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int str2fv_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	float f[10];
-	say("@line2fv_read\n");
+	say("@str2fv_read\n");
 
 	relationread((void*)(self->chip), _src_, f, 10);
 	return 0;
 }
-int line2fv_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int str2fv_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	int cnt;
 	float tmp[9];
 	struct element* ele;
-	say("@line2fv_write:%d\n", len);
+	say("@str2fv_write:%d\n", len);
 	//printmemory(buf, len);
 
 	ele = (void*)(self->chip);
@@ -28,11 +28,11 @@ int line2fv_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 	cnt = parsefv(tmp, 9, buf, len);
 	return relationwrite((void*)ele, _dst_, tmp, cnt);
 }
-int line2fv_stop(struct halfrel* self, struct halfrel* peer)
+int str2fv_stop(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int line2fv_start(struct halfrel* self, struct halfrel* peer)
+int str2fv_start(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -40,9 +40,9 @@ int line2fv_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int line2fv_create(struct element* ele, u8* url)
+int str2fv_create(struct element* ele, u8* url)
 {
-	say("@line2fv_create\n");
+	say("@str2fv_create\n");
 	ele->buf = memorycreate(0x1000, 0);
 	ele->len = 0;
 	return 1;

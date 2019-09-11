@@ -129,20 +129,12 @@ void scene_import_html(struct actor* win, u8* str)
 
 
 
-int htmlnode_leafwrite(struct actor* win, void* wf, void* sc, void* sf, void* buf, int len)
-{
-	return 0;
-}
-int htmlnode_leafread(struct actor* win)
-{
-	return 0;
-}
-int htmlnode_rootwrite(struct actor* win, void* wf, void* sc, void* sf, void* buf, int len)
+int htmlnode_write(struct actor* win, void* wf, void* sc, void* sf, void* buf, int len)
 {
 	struct relation* rel;
 	struct halfrel* self;
 	struct halfrel* peer;
-
+/*
 	rel = win->orel0;
 	if(0 == rel)
 	{
@@ -164,23 +156,23 @@ int htmlnode_rootwrite(struct actor* win, void* wf, void* sc, void* sf, void* bu
 		rel = samesrcnextdst(rel);
 	}
 
-	artery_leafwrite(sc, sf, win, wf, "actor!", 6);
+	artery_leafwrite(sc, sf, win, wf, "actor!", 6);*/
 	return 0;
 }
-int htmlnode_rootread(struct actor* win, void* wf, void* sc, void* sf, void* buf, int len)
+int htmlnode_read(struct actor* win, void* wf, void* sc, void* sf, void* buf, int len)
 {
 	int l1,l2;
 	struct str** ctx;
 	//say("@htmlnode_rootread.readall\n");
 	//actorread_all(win);
-
+/*
 	ctx = win->ctx;
 	l1 = ctx[1]->len;
 	l2 = ctx[2]->len;
 	//say("@htmlnode_rootread:%llx,%x,%x\n",ctx,l1,l2);
 	artery_leafwrite(sc, sf, win, wf, 0, l1+l2);
 	artery_leafwrite(sc, sf, win, wf, ctx[1]->buf, l1);
-	artery_leafwrite(sc, sf, win, wf, ctx[2]->buf, l2);
+	artery_leafwrite(sc, sf, win, wf, ctx[2]->buf, l2);*/
 	return 0;
 }
 int htmlnode_delete(struct actor* win)

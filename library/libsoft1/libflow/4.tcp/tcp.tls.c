@@ -940,7 +940,7 @@ int tlsclient_write(
 			ret = tls_clientwrite_clienthello(buf, 0, tmp, 0);
 			if(ret <= 0)break;
 
-			ret = system_leafwrite(obj, 0, ele, 0, tmp, ret);
+			ret = relationwrite(ele, _src_, tmp, ret);
 			if(ret <= 0)break;
 
 			break;
@@ -971,7 +971,7 @@ int tlsclient_write(
 			ret += tls_write_client_cipherspec(tmp+ret, len);
 			ret += tls_write_client_hellorequest(tmp+ret, len);
 
-			ret = system_leafwrite(obj, 0, ele, 0, tmp, ret);
+			ret = relationwrite(ele, _src_, tmp, ret);
 			break;
 		}
 		default:printmemory(buf,len);
@@ -1094,7 +1094,7 @@ int tlsserver_write(
 			ret += tls_write_server_certificate(ele, 0, buf+ret, len);
 			ret += tls_write_server_keyexch(    ele, 0, buf+ret, len);
 			ret += tls_write_server_done(       ele, 0, buf+ret, len);
-			system_leafwrite(obj, 0, ele, 0, buf, ret);
+			relationwrite(ele, _src_, buf, ret);
 
 			break;
 		}
@@ -1109,7 +1109,7 @@ int tlsserver_write(
 			ret = tls_write_server_newsession(buf, len);
 			ret += tls_write_server_cipherspec(buf+ret, len);
 			ret += tls_write_server_encrypthandshake(buf+ret, len);
-			system_leafwrite(obj, 0, ele, 0, buf, ret);
+			relationwrite(ele, _src_, buf, ret);
 
 			break;
 		}
@@ -1143,7 +1143,7 @@ int tlsmaster_write(
 	struct element* e;
 	if(0x16 != buf[0])
 	{
-		system_leafwrite(obj, 0, ele, 0, response, sizeof(response));
+		relationwrite(ele, _src_, response, sizeof(response));
 		return 0;
 	}
 

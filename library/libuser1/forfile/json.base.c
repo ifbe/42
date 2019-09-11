@@ -16,7 +16,7 @@ int jsonnode_rootwrite(struct actor* win, void* wf, void* sc, void* sf, void* bu
 	struct relation* rel;
 	struct halfrel* self;
 	struct halfrel* peer;
-
+/*
 	rel = win->orel0;
 	if(0 == rel)
 	{
@@ -39,7 +39,7 @@ int jsonnode_rootwrite(struct actor* win, void* wf, void* sc, void* sf, void* bu
 	}
 
 	//actorread_all(win);
-	artery_leafwrite(sc, sf, win, wf, win->buf, win->len);
+	artery_leafwrite(sc, sf, win, wf, win->buf, win->len);*/
 	return 0;
 }
 int jsonnode_rootread(struct actor* win, void* wf, void* sc, void* sf, void* buf, int len)

@@ -20,11 +20,6 @@ int tftpclient_delete(struct element* ele)
 }
 int tftpclient_create(struct element* ele, u8* url)
 {
-	int ret;
-	void* obj = systemcreate(_UDP_, url);
-	if(0 == obj)return 0;
-
-	relationcreate(ele, 0, _art_, 0, obj, 0, _fd_, 0);
 	return 0;
 }
 
@@ -59,9 +54,9 @@ int tftpserver_write(
 	{
 		str[ret] = ':';
 		str[ret+1] = ' ';
-		system_leafwrite(obj,pin,ele,sty,str,ret+2);
+		relationwrite((void*)ele, _src_, str,ret+2);
 	}
-	system_leafwrite(obj,pin,ele,sty,buf,len);
+	relationwrite((void*)ele, _src_, buf,len);
 	return 0;
 }
 int tftpserver_read()

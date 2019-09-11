@@ -4,10 +4,8 @@ int findhead(void*);
 int findtail(void*);
 int openreadclose(void* name, u64 off, void* mem, u64 len);
 int openwriteclose(void* name, u64 off, void* mem, u64 len);
-int nodetree_rootread(void*, void*, void*, int);
-int nodetree_rootwrite(void*, void*, void*, int);
-int wsserver_rootread(void*, void*, void*, void*, void* buf, int len);
-int wsserver_rootwrite(void*, void*, void*, void*, void* buf, int len);
+int wsserver_read(void*, void*, void*, void*, void* buf, int len);
+int wsserver_write(void*, void*, void*, void*, void* buf, int len);
 int tlsserver_write(void*, void*, void*, void*, void* buf, int len);
 
 
@@ -56,7 +54,7 @@ void httpparser(u8* buf, int len, struct httpparsed* p)
 
 
 
-
+/*
 void httpserver_sendback(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
@@ -216,7 +214,7 @@ int httpserver_orelget(
 	system_leafwrite(obj, pin, ele, sty, tmpbuf, tmplen);
 	system_leafwrite(obj, pin, ele, sty, ctxbuf, ctxlen);
 	return 1;
-}
+}*/
 
 
 
@@ -265,7 +263,7 @@ int httpclient_write(
 		printmemory(buf, len);
 		return 0;
 	}
-
+/*
 	//send to o rel
 	while(1)
 	{
@@ -278,7 +276,7 @@ int httpclient_write(
 
 		orel = samesrcnextdst(orel);
 	}
-
+*/
 	return 0;
 }
 int httpclient_read()
@@ -290,13 +288,10 @@ int httpclient_delete(struct element* ele)
 	return 0;
 }
 int httpclient_create(struct element* ele, u8* url)
-{
+{/*
 	int ret;
 	void* obj;
 	u8 buf[0x1000];
-
-	obj = systemcreate(_tcp_, url);
-	if(0 == obj)return 0;
 
 	ret = mysnprintf(buf, 0x1000,
 		"GET %s HTTP/1.1\r\n"
@@ -310,18 +305,18 @@ int httpclient_create(struct element* ele, u8* url)
 
 	ele->type = _http_;
 	ele->stage1 = 0;
-	relationcreate(ele, 0, _art_, 0, obj, 0, _fd_, 0);
+*/
 	return 1;
 }
 
 
 
 
-int httpserver_leafwrite(
+int httpserver_write(
 	struct element* ele, void* sty,
 	struct object* sc, void* sf,
 	u8* buf, int len)
-{
+{/*
 	u8 tmp[0x1000];
 	if(0 == buf)
 	{
@@ -335,25 +330,10 @@ int httpserver_leafwrite(
 		buf = tmp;
 	}
 
-	system_leafwrite(ele->obj, 0, ele, sty, buf, len);
+	system_leafwrite(ele->obj, 0, ele, sty, buf, len);*/
 	return 0;
 }
-int httpserver_leafread(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
-{
-	return 0;
-}
-int httpserver_rootwrite(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
-{
-	printmemory(buf,len);
-	return 0;
-}
-int httpserver_rootread(
+int httpserver_read(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
@@ -402,12 +382,12 @@ int httpmaster_write(
 		e = arterycreate(_Ws_, 0);
 		if(e)
 		{
-			relationcreate(e, 0, _art_, 0, obj, 0, _fd_, 0);
-			wsserver_rootwrite(e, sty, obj, pin, buf, len);
+			relationcreate(e, 0, _art_, _src_, obj, 0, _fd_, 0);
+			wsserver_write(e, sty, obj, pin, buf, len);
 		}
 		return 0;
 	}
-
+/*
 	//no orel, root=none
 	if(0 == ele->orel0)
 	{
@@ -430,7 +410,7 @@ int httpmaster_write(
 		//something wrong
 		if(ret <= 0)httpserver_sendback(ele, sty, obj, pin, buf, len);
 	}
-
+*/
 	//close or not
 	if(0 != p.Connection)
 	{
@@ -449,10 +429,5 @@ int httpmaster_delete(struct element* ele)
 }
 int httpmaster_create(struct element* ele, u8* url)
 {
-	int ret;
-	void* obj = systemcreate(_TCP_, url);
-	if(0 == obj)return 0;
-
-	relationcreate(ele, 0, _art_, 0, obj, 0, _fd_, 0);
 	return 0;
 }

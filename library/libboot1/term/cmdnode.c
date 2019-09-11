@@ -6,7 +6,7 @@ int mysnprintf(void*, int, void*, ...);
 
 
 
-
+/*
 //leaf -> root: example: tcpip data pack until ethernet layer
 int nodetree_leafread(void* sc, void* sf, u8* buf, int len)
 {
@@ -134,7 +134,7 @@ int nodetree_rootwrite(void* sc, void* sf, u8* buf, int len)
 		orel = samesrcnextdst(orel);
 	}
 	return 0;
-}
+}*/
 
 
 

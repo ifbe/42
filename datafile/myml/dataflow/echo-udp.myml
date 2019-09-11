@@ -1,0 +1,18 @@
+<system>
+udphost{
+fmt:UDP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<artery>
+echo{
+fmt:echo
+}
+</artery>
+
+
+<relation>
+(udphost, 0, fd, dst) -> (echo, 0, art, src)
+</relation>

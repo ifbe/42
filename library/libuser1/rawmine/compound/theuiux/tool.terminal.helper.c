@@ -615,18 +615,5 @@ void terminal_clientinput(
 	else if(ev->what == _char_)j = 1;
 	else return;
 
-	irel = act->irel0;
-	while(1)
-	{
-		if(0 == irel)break;
-
-		dc = (void*)(irel->srcchip);
-		df = (void*)(irel->srcfoot);
-		if(_fd_ == irel->srctype)
-		{
-			system_leafwrite(dc, df, act, pin, &why, j);
-		}
-
-		irel = samedstnextsrc(irel);
-	}
+	relationwrite(act, _src_, &why, j);
 }

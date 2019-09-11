@@ -77,9 +77,9 @@ int quicmaster_write(
 	{
 		str[ret] = ':';
 		str[ret+1] = ' ';
-		system_leafwrite(obj,pin,ele,sty,str,ret+2);
+		relationwrite((void*)ele, _src_, str,ret+2);
 	}
-	system_leafwrite(obj,pin,ele,sty,buf,len);
+	relationwrite((void*)ele, _src_, buf,len);
 	return 0;
 }
 int quicmaster_read()

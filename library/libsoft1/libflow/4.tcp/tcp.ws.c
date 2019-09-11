@@ -8,8 +8,6 @@ void sha1sum(u8* out, u8* in, int len);
 void base64_encode(u8* out,u8* in, int len);
 void datastr2hexstr(void* o, void* i, int len);
 void decstr2data(void* i, void* o);
-int nodetree_rootread(void*, void*, void*, int);
-int nodetree_rootwrite(void*, void*, void*, int);
 
 
 
@@ -108,7 +106,7 @@ int wsclient_create(struct element* ele, u8* url)
 	int ret;
 	void* obj;
 	u8 buf[0x1000];
-
+/*
 	obj = systemcreate(_tcp_, url);
 	if(0 == obj)return 0;
 
@@ -119,7 +117,7 @@ int wsclient_create(struct element* ele, u8* url)
 
 	ele->type = _ws_;
 	ele->stage1 = 0;
-	relationcreate(ele, 0, _art_, 0, obj, 0, _fd_, 0);
+	relationcreate(ele, 0, _art_, 0, obj, 0, _fd_, 0);*/
 	return 1;
 }
 
@@ -324,6 +322,10 @@ int websocket_serverwrite_head(u8* buf, int len, u8* dst, int max)
 
 	return ret;
 }
+
+
+
+/*
 int wsserver_leafwrite(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
@@ -338,19 +340,12 @@ int wsserver_leafwrite(
 	//body, unchanged
 	system_leafwrite(ele->obj, pin, ele, sty, buf, len);
 	return 0;
-}
-int wsserver_leafread(
+}*/
+int wsserver_write(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
-{
-	return 0;
-}
-int wsserver_rootwrite(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
-{
+{/*
 	int hlen,blen,ret;
 	u8 body[0x1000];
 	if(0 == ele->stage1)
@@ -379,10 +374,10 @@ int wsserver_rootwrite(
 	{
 		ele->obj = obj;
 		nodetree_rootwrite(ele, sty, body, blen);
-	}
+	}*/
 	return 0;
 }
-int wsserver_rootread(
+int wsserver_read(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)

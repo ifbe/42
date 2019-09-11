@@ -65,6 +65,7 @@ int writesocket(int fd, void* tmp, void* buf, int len)
 	type = obj[fd].type;
 	if(_UDP_ == type)
 	{
+		if(0 == tmp)tmp = obj[fd].peer;
 		ret = sendto(
 			fd, buf, len, 0,
 			tmp, sizeof(struct sockaddr_in)

@@ -10,11 +10,11 @@ url:/dev/ttyUSB0
 reline{
 fmt:reline
 }
-line2fv{
-fmt:line2fv
+str2fv{
+fmt:str2fv
 }
-mahony{
-fmt:mahony
+easyag{
+fmt:easyag
 }
 </artery>
 
@@ -28,7 +28,7 @@ fmt:ahrs
 
 <relation>
 (uart, 0, fd, dst) -> (reline, 0, art, src)
-(reline, 0, art, dst) -> (line2fv, 0, art, src)
-(line2fv, 0, art, dst) -> (mahony, 0, art, src)
-(mahony, 0, art, dst) -> (ahrs, 0, win, src)
+(reline, 0, art, dst) -> (str2fv, 0, art, src)
+(str2fv, 0, art, dst) -> (easyag, 0, art, src)
+(easyag, 0, art, dst) -> (ahrs, 0, win, src)
 </relation>

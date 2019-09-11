@@ -144,28 +144,14 @@ int dns_write_answer(u8* buf, int len)
 
 
 
-int dnsclient_leafread(
+int dnsclient_read(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
 	return 0;
 }
-int dnsclient_leafwrite(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
-{
-	return 0;
-}
-int dnsclient_rootread(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
-{
-	return 0;
-}
-int dnsclient_rootwrite(
+int dnsclient_write(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
@@ -203,7 +189,7 @@ int dnsclient_create(struct element* ele, u8* url)
 	void* obj;
 	u8 tmp[0x1000];
 //say("@dnsclient_create\n");
-
+/*
 	ret = dns_write_query(tmp, 0x1000, url, 0);
 	if(ret <= 0)return 0;
 
@@ -212,35 +198,21 @@ int dnsclient_create(struct element* ele, u8* url)
 
 	relationcreate(ele, 0, _art_, 0, obj, 0, _fd_, 0);
 
-	ret = system_leafwrite(obj, 0, ele, 0, tmp, ret);
+	ret = relationwrite((void*)ele, _src_, tmp, ret);*/
 	return 0;
 }
 
 
 
 
-int dnsserver_leafread(
+int dnsserver_read(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
 	return 0;
 }
-int dnsserver_leafwrite(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
-{
-	return 0;
-}
-int dnsserver_rootread(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
-{
-	return 0;
-}
-int dnsserver_rootwrite(
+int dnsserver_write(
 	struct element* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
@@ -255,11 +227,6 @@ int dnsserver_delete(struct element* ele)
 }
 int dnsserver_create(struct element* ele, u8* url)
 {
-	int ret;
-	void* obj = systemcreate(_UDP_, url);
-	if(0 == obj)return 0;
-
-	relationcreate(ele, 0, _art_, 0, obj, 0, _fd_, 0);
 	return 0;
 }
 

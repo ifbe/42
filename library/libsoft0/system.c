@@ -119,7 +119,7 @@ int systemwrite_in(struct object* chip, u8* foot, u8* buf, int len)
 
 
 
-
+/*
 int system_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	//say("systemwrite@{\n");
@@ -156,7 +156,7 @@ int system_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 int system_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	return 0;
-}
+}*/
 
 
 
@@ -186,6 +186,8 @@ int systemwrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 	//say("@systemwrite:%llx\n", self);
 
 	oo = (void*)(self->chip);
+	if(_TCP_ == oo->type)oo = &obj[oo->thatfd];
+
 	fd = ((void*)oo - (void*)obj) / sizeof(struct object);
 	return writesocket(fd, 0, buf, len);
 }
@@ -417,21 +419,23 @@ int systemevent(struct event* ev)
 	u8 tmp[0x40];
 	say("%llx,%llx,%llx\n",why,what,where);
 
-	if(why == '+')
-	{
-		say("come:%x(from:%x)\n", where, obj[where].thatfd);
-		return 0;
-	}
-	else if(why == '-')
-	{
-		say("gone:%x\n", where);
-		return 0;
-	}
+	switch(why){
+		case '+':{
+			say("come:%x(from:%x)\n", where, obj[where].thatfd);
+			return 0;
+		}
+		case '-':{
+			say("gone:%x\n", where);
+			return 0;
+		}
+		case '@':{
+			ret = readsocket(where, tmp, ppp, 0x100000);
+			if(ret <= 0)return 0;
 
-	ret = readsocket(where, tmp, ppp, 0x100000);
-	if(ret <= 0)return 0;
-
-	return systemwrite_in(&obj[where], tmp, ppp, ret);
+			return systemwrite_in(&obj[where], tmp, ppp, ret);
+		}
+	}
+	return 0;
 }
 void freesystem()
 {

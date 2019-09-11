@@ -15,7 +15,7 @@ void terminalthread(struct arena* win)
 		}
 		else {
 			//say("%x\n", ret);
-			nodetree_rootwrite(win, 0, &ret, 1);
+			relationwrite(win, _dst_, &ret, 1);
 		}
 	}
 }

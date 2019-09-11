@@ -4,9 +4,10 @@
 #define _hfs_ hex32('h','f','s',0)
 #define _ext_ hex32('e','x','t',0)
 //
+#define _echo_ hex32('e','c','h','o')
 #define _mpu9250_ hex64('m','p','u','9','2','5','0',0)
-#define _line2fv_ hex64('l','i','n','e','2','f','v',0)
 #define _reline_ hex64('r','e','l','i','n','e',0,0)
+#define _str2fv_ hex64('s','t','r','2','f','v',0,0)
 #define _fv2str_ hex64('f','v','2','s','t','r',0,0)
 //
 #define _easyag_  hex64('e','a','s','y','a','g', 0 , 0 )
@@ -20,16 +21,19 @@ int fatclient_create(struct element* ele, void* url);
 int ntfsclient_create(struct element* ele, void* url);
 int hfsclient_create(struct element* ele, void* url);
 int extclient_create(struct element* ele, void* url);
-//i2c.mpu
+//
+int echo_create(struct element* ele, void* url);
+int echo_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int echo_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
 int mpu9250_create(struct element* ele, void* url);
 int mpu9250_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
 int mpu9250_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
 int reline_create(struct element* ele, void* url);
 int reline_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
 int reline_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
-int line2fv_create(struct element* ele, void* url);
-int line2fv_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
-int line2fv_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int str2fv_create(struct element* ele, void* url);
+int str2fv_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int str2fv_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
 int fv2str_create(struct element* ele, void* url);
 int fv2str_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
 int fv2str_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
@@ -60,9 +64,9 @@ int hackserver_create(struct element* ele, void* url);
 int hackserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //udp.dns
 int dnsclient_create(struct element* ele, void* url);
-int dnsclient_rootwrite( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int dnsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int dnsserver_create(struct element* ele, void* url);
-int dnsserver_rootwrite( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int dnsserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //udp.tftp
 int tftpclient_create(struct element* ele, void* url);
 int tftpclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
@@ -93,20 +97,16 @@ int telnetmaster_write( struct element* ele, void* sty, struct object* obj, void
 int httpclient_create(struct element* ele, void* url);
 int httpclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int httpserver_create(struct element* ele, void* url);
-int httpserver_leafread( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int httpserver_leafwrite(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int httpserver_rootread( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int httpserver_rootwrite(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int httpserver_read( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int httpserver_write(struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int httpmaster_create(struct element* ele, void* url);
 int httpmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //tcp.ws
 int wsclient_create(struct element* ele, void* url);
 int wsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int wsserver_create(struct element* ele, void* url);
-int wsserver_leafread( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
-int wsserver_leafwrite(struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
-int wsserver_rootread( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
-int wsserver_rootwrite(struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
+int wsserver_read( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
+int wsserver_write(struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
 int wsmaster_create(struct element* ele, void* url);
 int wsmaster_write( struct element* ele, void* sty, struct object* obj, void* pin, void* buf, int len);
 //tcp.tls
@@ -120,10 +120,8 @@ int tlsmaster_write( struct element* ele, void* sty, struct object* obj, void* p
 int serveclient_create(struct element* ele, void* url);
 int serveclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int serveserver_create(struct element* ele, void* url);
-int serveserver_leafread( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int serveserver_leafwrite( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int serveserver_rootread( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
-int serveserver_rootwrite( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int serveserver_read( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int serveserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 int servemaster_create(struct element* ele, void* url);
 int servemaster_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
 //
@@ -163,7 +161,7 @@ int parsetypefromurl(u8* url, u8* type)
 
 
 
-
+/*
 int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	struct element* ele = dc;
@@ -237,7 +235,7 @@ int artery_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 int artery_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
 	return 0;
-}
+}*/
 
 
 
@@ -246,9 +244,11 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	struct element* ele = (void*)(self->chip);
 	switch(ele->type){
+		case _echo_:echo_read(self, peer, buf, len);break;
 		case _mpu9250_:mpu9250_read(self, peer, buf, len);break;
-		case _line2fv_:line2fv_read(self, peer, buf, len);break;
+
 		case _reline_:reline_read(self, peer, buf, len);break;
+		case _str2fv_:str2fv_read(self, peer, buf, len);break;
 		case _fv2str_:fv2str_read(self, peer, buf, len);break;
 
 		case _easyag_:easyag_read(self, peer, buf, len);break;
@@ -260,10 +260,13 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 int arterywrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	struct element* ele = (void*)(self->chip);
+	say("@arterywrite\n");
 	switch(ele->type){
+		case _echo_:return echo_write(self, peer, buf, len);break;
 		case _mpu9250_:return mpu9250_write(self, peer, buf, len);break;
-		case _line2fv_:return line2fv_write(self, peer, buf, len);break;
+
 		case _reline_:return reline_write(self, peer, buf, len);break;
+		case _str2fv_:return str2fv_write(self, peer, buf, len);break;
 		case _fv2str_:return fv2str_write(self, peer, buf, len);break;
 
 		case _easyag_:return easyag_write(self, peer, buf, len);break;
@@ -352,6 +355,15 @@ void* arterycreate(u64 type, void* argstr)
 	}
 
 	//gyro raw data
+	if(_echo_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _echo_;
+		echo_create(e, url);
+		return e;
+	}
 	if(_mpu9250_ == type)
 	{
 		e = allocelement();
@@ -361,6 +373,8 @@ void* arterycreate(u64 type, void* argstr)
 		mpu9250_create(e, url);
 		return e;
 	}
+
+	//
 	if(_reline_ == type)
 	{
 		e = allocelement();
@@ -370,13 +384,13 @@ void* arterycreate(u64 type, void* argstr)
 		reline_create(e, url);
 		return e;
 	}
-	if(_line2fv_ == type)
+	if(_str2fv_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _line2fv_;
-		line2fv_create(e, url);
+		e->type = _str2fv_;
+		str2fv_create(e, url);
 		return e;
 	}
 	if(_fv2str_ == type)

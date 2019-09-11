@@ -99,7 +99,20 @@ int kqueuethread(int argc, const char * argv[])
 			if(cnt >= 0)
 			{
 				//printmemory(buf, cnt);
-				system_rootwrite(&obj[fd], obj[fd].peer, 0, 0, buf, cnt);
+				cc = fd;
+				if( (_Tcp_ == obj[fd].type) &&
+					(0 == obj[fd].irel0) &&
+					(0 == obj[fd].orel0) )
+				{
+					//TCP = Tcp.parent
+					cc = obj[fd].thatfd;
+
+					//Tcp = TCP.child
+					obj[cc].thatfd = fd;
+				}
+
+				say("%.4s\n", &obj[cc].type);
+				relationwrite(&obj[cc], _dst_, buf, cnt);
 			}
 			if(cnt <= 0)
 			{
