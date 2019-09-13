@@ -3,6 +3,24 @@
 
 
 
+//
+static u64 thread = 0;
+static int alive = 0;
+//
+static u8* ibuf = 0;
+static int icur = 0;
+void* visionlistener(struct arena* win)
+{
+	while(1){
+		relationwrite(win, _dst_, ibuf, 640*480*2);
+		sleep_us(1000*1000);
+	}
+	return 0;
+}
+
+
+
+
 int videolist()
 {
 	return 0;
@@ -33,6 +51,12 @@ int videodelete(struct arena* win)
 }
 int videocreate(struct arena* win)
 {
+	ibuf = memorycreate(0x100000, 0);
+	icur = 0;
+
+	//thread
+	alive = 1;
+	thread = threadcreate(visionlistener, win);
 	return 0;
 }
 

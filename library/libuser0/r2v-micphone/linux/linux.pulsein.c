@@ -15,12 +15,9 @@ static int alive = 1;
 static u64 thread;
 //
 static u8* ibuf = 0;
-static u8* obuf = 0;
 static int icur = 0;
-static int ocur = 0;
 //
 static pa_simple* s_in;
-static pa_simple* s_out;
 static const pa_sample_spec ss =
 {
 	.format = PA_SAMPLE_S16LE,
@@ -31,7 +28,7 @@ static const pa_sample_spec ss =
 
 
 
-void* soundlistener(struct arena* win)
+void* micphonelistener(struct arena* win)
 {
 	int ret,err;
 	pa_usec_t latency;
@@ -78,67 +75,36 @@ finish:
 
 
 
-int soundlist()
+int micphonelist()
 {
 	return 0;
 }
-int soundchoose()
+int micphonechoose()
 {
 	return 0;
 }
-int soundread(int dev, int time, u8* buf, int len)
+int micphoneread(int dev, int time, u8* buf, int len)
 {
 	return 0;
 }
-int soundwrite(int dev, int time, u8* buf, int len)
+int micphonewrite(int dev, int time, u8* buf, int len)
 {
-	int err;
-	pa_usec_t latency;
-
-	if ((latency = pa_simple_get_latency(s_out, &err)) == (pa_usec_t) -1)
-	{
-		printf("error@pa_simple_get_latency:%s\n", pa_strerror(err));
-		goto finish;
-	}
-	fprintf(stderr, "Out: %0.0f usec\n", (float)latency);
-
-	if (pa_simple_write(s_out, buf, len/2, &err) < 0)
-	{
-		printf("error@pa_simple_write:%s\n", pa_strerror(err));
-		goto finish;
-	}
-
-	if(pa_simple_drain(s_out, &err) < 0)
-	{
-		printf("error@pa_simple_drain:%s\n", pa_strerror(err));
-	}
-finish:
 	return 0;
 }
-void soundstop()
+void micphonestop()
 {
 }
-void soundstart()
+void micphonestart()
 {
 }
-void sounddelete(struct arena* win)
+void micphonedelete(struct arena* win)
 {
 	alive = 0;
 	if(s_in)pa_simple_free(s_in);
-	if(s_out)pa_simple_free(s_out);
 }
-void soundcreate(struct arena* win)
+void micphonecreate(struct arena* win)
 {
 	int error;
-
-	//out
-	s_out = pa_simple_new(NULL, "42", PA_STREAM_PLAYBACK, NULL,
-		"playback", &ss, NULL, NULL, &error);
-	if(!s_out)
-	{
-		printf("error@pa_simple_new:%s\n", pa_strerror(error));
-		return;
-	}
 
 	//in
 	s_in = pa_simple_new(NULL, "42", PA_STREAM_RECORD, NULL,
@@ -150,21 +116,19 @@ void soundcreate(struct arena* win)
 	}
 
 	ibuf = malloc(0x100000);
-	obuf = malloc(0x100000);
 	icur = 0;
-	ocur = 0;
 
 	//thread
 	alive = 1;
-	thread = threadcreate(soundlistener, win);
+	thread = threadcreate(micphonelistener, win);
 }
 
 
 
 
-void initmic()
+void initmicphone()
 {
 }
-void freemic()
+void freemicphone()
 {
 }
