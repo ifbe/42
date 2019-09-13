@@ -17,6 +17,28 @@ void inittray(void*);
 void freetray();
 int traycreate(void*, void*);
 int traydelete(void*);
+//micphone
+void initmicphone(void*);
+void freemicphone();
+int micphonecreate(void*, void*);
+int micphonedelete(void*);
+int micphonestart(void*);
+int micphonestop(void*);
+int micphoneread(void* win, void* sty, void* act, void* pin);
+int micphonewrite(void*);
+int micphonelist();
+int micphonechoose();
+//speaker
+void initspeaker(void*);
+void freespeaker();
+int speakercreate(void*, void*);
+int speakerdelete(void*);
+int speakerstart(void*);
+int speakerstop(void*);
+int speakerread(void* win, void* sty, void* act, void* pin);
+int speakerwrite(void*);
+int speakerlist();
+int speakerchoose();
 //cam
 void initcam(void*);
 void freecam();
@@ -28,17 +50,17 @@ int videoread(void* win, void* sty, void* act, int);
 int videowrite(void*);
 int videolist();
 int videochoose();
-//mic
-void initmic(void*);
-void freemic();
-int soundcreate(void*, void*);
-int sounddelete(void*);
-int soundstart(void*);
-int soundstop(void*);
-int soundread(void* win, void* sty, void* act, void* pin);
-int soundwrite(void*);
-int soundlist();
-int soundchoose();
+//window
+void initwindow(void*);
+void freewindow();
+int windowcreate(void*);
+int windowdelete(void*);
+int windowstart(void*);
+int windowstop(void*);
+int windowread(void*);
+int windowwrite(void*, void*);
+int windowlist();
+int windowchoose();
 //
 int ahrs_create(void*, void*);
 int ahrs_delete(void*);
@@ -254,7 +276,7 @@ void* arenacreate(u64 type, void* addr)
 		return win;
 	}
 
-	//audio
+	//micphone
 	else if(_mic_ == type)
 	{
 		win = allocarena();
@@ -262,11 +284,11 @@ void* arenacreate(u64 type, void* addr)
 
 		win->type = _mic_;
 		win->fmt = hex32('p','c','m',0);
-		soundcreate(win, addr);
+		micphonecreate(win, addr);
 		return win;
 	}
 
-	//
+	//speaker
 	else if(_spk_ == type)
 	{
 		win = allocarena();
@@ -274,7 +296,7 @@ void* arenacreate(u64 type, void* addr)
 
 		win->type = _spk_;
 		win->fmt = hex32('p','c','m',0);
-		soundcreate(win, addr);
+		speakercreate(win, addr);
 		return win;
 	}
 
@@ -357,73 +379,7 @@ void* arenacreate(u64 type, void* addr)
 		loopback_create(win, addr);
 		return win;
 	}
-/*
-	//pcbdoc
-	else if(_sch_ == type)
-	{
-		win = allocarena();
-		if(0 == win)return 0;
 
-		win->type = _ctx_;
-		win->fmt = _sch_;
-		schnode_create(_sch_, win);
-		return win;
-	}
-	else if(_pcb_ == type)
-	{
-		win = allocarena();
-		if(0 == win)return 0;
-
-		win->type = _ctx_;
-		win->fmt = _pcb_;
-		pcbnode_create(win, addr);
-		return win;
-	}
-
-	//else
-	else if(_func_ == type)
-	{
-		win = allocarena();
-		if(0 == win)return 0;
-
-		win->type = _ctx_;
-		win->fmt = _func_;
-		funcnode_create(win, addr);
-		return win;
-	}
-
-	//
-	else if(_html_ == type)
-	{
-		win = allocarena();
-		if(0 == win)return 0;
-
-		win->type = _ctx_;
-		win->fmt = _html_;
-		htmlnode_create(win, addr);
-		return win;
-	}
-	else if(_json_ == type)
-	{
-		win = allocarena();
-		if(0 == win)return 0;
-
-		win->type = _ctx_;
-		win->fmt = _json_;
-		jsonnode_create(win, addr);
-		return win;
-	}
-	else if(_xml_ == type)
-	{
-		win = allocarena();
-		if(0 == win)return 0;
-
-		win->type = _ctx_;
-		win->fmt = _xml_;
-		xmlnode_create(win, addr);
-		return win;
-	}
-*/
 	return 0;
 }
 void* arenamodify(int argc, char** argv)

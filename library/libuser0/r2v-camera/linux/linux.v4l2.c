@@ -172,6 +172,9 @@ void* visionlistener(struct arena* win)
 		buf.memory = V4L2_MEMORY_MMAP;
 		ioctl(fd, VIDIOC_DQBUF, &buf);
 
+		//send
+		relationwrite(win, _dst_, info[cur].buf, info[cur].len);
+/*
 		say("cur=%d\n",cur);
 		//printmemory(info[cur].buf+0xfff, 16);
 		struct relation* orel = win->orel0;
@@ -186,7 +189,7 @@ void* visionlistener(struct arena* win)
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}
-
+*/
 		//enq
 		ioctl(fd, VIDIOC_QBUF, &buf);
 		cur = (cur+1)%24;

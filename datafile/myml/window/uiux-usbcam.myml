@@ -68,7 +68,7 @@ q:1.0, 1.0
 
 <relation>
 #canvas depends on usbcam
-(canvas, 0, act, 0) -> (usbcam, 0, win, 0)
+(canvas, 0, act, yuv) -> (usbcam, 0, win, dst)
 
 #3dworld depends on inner objects
 (3dworld, skygeom, act, 0) -> (canvas, skyhaha, act, 0)

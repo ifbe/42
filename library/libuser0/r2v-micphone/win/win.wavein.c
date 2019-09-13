@@ -13,24 +13,18 @@ static HWAVEIN wavein;
 static WAVEHDR headin[16];
 static u8* ibuf = 0;
 static int icur = 0;
-//
-static HWAVEOUT waveout;
-static WAVEHDR headout[16];
-static u8* obuf = 0;
-static int ocur = 0;
-static int olen = 0;
 
 
 
-void soundwrite(int dev, int time, u8* buf, int len);
+
 static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1, DWORD dw2)
 {
 	//printf("@icb\n");
 	if(WIM_DATA == uMsg)
 	{
-		//soundwrite(0, 0, ibuf + (1024*2*icur), 2048);
 		//printf("WIM_DATA:%d\n", icur);
-
+		relationwrite(working, _dst_, ibuf + (1024*2*icur), 1024*2);
+/*
 		struct relation* orel = (struct relation*)(working->orel0);
 		while(1)
 		{
@@ -43,7 +37,7 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}
-
+*/
 		waveInAddBuffer(wavein, &headin[icur], sizeof (WAVEHDR));
 		icur = (icur+1)%16;
 	}
@@ -56,88 +50,38 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 		printf("WIM_CLOSE\n");
 	}
 }
-static void CALLBACK ocb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1, DWORD dw2)
-{
-	//printf("@ocb\n");
-	if(WIM_DATA == uMsg)
-	{
-		printf("WOM_DONE\n");
-	}
-	else if(WOM_OPEN == uMsg)
-	{
-		printf("WOM_OPEN\n");
-	}
-	else if(WOM_CLOSE == uMsg)
-	{
-		printf("WOM_CLOSE\n");
-	}
-}
 
 
 
 
-void soundlist()
+void micphonelist()
 {
 }
-void soundchoose()
+void micphonechoose()
 {
 }
-void soundread(
+void micphoneread(
 	struct arena* win, struct style* sty,
 	struct actor* act, struct style* pin)
 {
-	if(0 == act)return;
 }
-void soundwrite(int dev, int time, u8* buf, int len)
+void micphonewrite(int dev, int time, u8* buf, int len)
 {
-	int j;
-	if(0 == obuf)obuf = malloc(0x100000);
-	if(len >= 0x100000)return;
-
-	if(olen+len >= 0x100000)olen = 0;
-	for(j=0;j<len;j++)obuf[olen+j] = buf[j];
-
-	ZeroMemory(&headout[ocur], sizeof(WAVEHDR));
-	headout[ocur].lpData = obuf+olen;
-	headout[ocur].dwBufferLength = len;
-	headout[ocur].dwFlags = 0L;
-	headout[ocur].dwLoops = 0L;
-	waveOutPrepareHeader(waveout, &headout[ocur], sizeof(WAVEHDR));
-	waveOutWrite(waveout, &headout[ocur], sizeof(WAVEHDR));
-
-	ocur = (ocur+1) % 16;
-	olen = olen+len;
 }
-void soundstop()
+void micphonestop()
 {
 	waveInClose(wavein);
-	waveOutClose(waveout);
-	//waveOutUnprepareHeader(waveout, &headout, sizeof(WAVEHDR));
 }
-void soundstart()
+void micphonestart()
 {
 }
-void sounddelete(struct arena* win)
+void micphonedelete(struct arena* win)
 {
 }
-void soundcreate(struct arena* win)
+void micphonecreate(struct arena* win)
 {
 	int j,ret;
 	working = win;
-
-	fmt.wFormatTag = WAVE_FORMAT_PCM;
-	fmt.nAvgBytesPerSec = 44100*2;
-	fmt.nSamplesPerSec = 44100;
-	fmt.wBitsPerSample = 16;
-	fmt.nChannels = 1;
-	fmt.nBlockAlign = 2;
-	fmt.cbSize = 0;
-	ret = waveOutOpen(
-		&waveout, WAVE_MAPPER,
-		&fmt, (DWORD_PTR)ocb,
-		0L, CALLBACK_FUNCTION
-	);
-	say("@waveOutOpen:%d\n", ret);
 
 	fmt.wFormatTag = WAVE_FORMAT_PCM;
 	fmt.nAvgBytesPerSec = 8000*2;

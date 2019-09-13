@@ -175,7 +175,8 @@ macsdl:target macos
 .PHONY:windows
 windows:
 	g++ $(cflag) -fno-rtti r2v-camera/win/win.dshow.cpp
-	$(compiler) $(cflag) r2v-micphone/win/win.waveio.c
+	$(compiler) $(cflag) r2v-micphone/win/win.wavein.c
+	$(compiler) $(cflag) v2r-speaker/win/win.waveout.c
 	$(compiler) $(cflag) w2w-cmdline/win/win.stdio.c
 	$(compiler) $(cflag) w2w-systray/win/win.tray.c
 

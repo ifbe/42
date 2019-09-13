@@ -271,8 +271,11 @@ static void video_write(struct halfrel* self, struct halfrel* peer, void* buf, i
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
+	//struct actor* win = (void*)(peer->chip);
+	//struct style* sty = (void*)(peer->foot);
+	if(_yuv_ == self->flag){
+		say("@video_write.yuv: %llx,%x\n", buf, len);
+	}
 /*
 	switch(self->flag){
 		case _yuv_:video_update(act, pin, win, sty, buf, len);break;
