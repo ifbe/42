@@ -260,7 +260,6 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 int arterywrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	struct element* ele = (void*)(self->chip);
-	say("@arterywrite\n");
 	switch(ele->type){
 		case _echo_:return echo_write(self, peer, buf, len);break;
 		case _mpu9250_:return mpu9250_write(self, peer, buf, len);break;

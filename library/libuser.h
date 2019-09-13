@@ -1108,6 +1108,7 @@ void carveopaque_icosahedron( struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3
 void carveopaque_sphere(      struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
 void carveascii(              struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
+void carveascii_center(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
 void carvedecimal(            struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
 void carvehexadecimal(        struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
 void carveunicode(            struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);

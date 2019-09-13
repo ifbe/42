@@ -651,7 +651,7 @@ static void freecam_matrix(
 
 	struct relation* rel;
 	struct actor* world;
-	struct fstyle* obb;
+	struct fstyle* obb = 0;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
 	rel = act->irel0;

@@ -29,10 +29,12 @@ static void drone_draw_vbo(
 	struct actor* win, struct style* sty)
 {
     vec3 tc,tr,tf,tu;
+	vec3 kc,kr,kf,ku;
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
+	carveline_rect(win, 0xffffff, vc, vr, vf);
 
     tu[0] = vu[0] / 64;
     tu[1] = vu[1] / 64;
@@ -66,6 +68,13 @@ static void drone_draw_vbo(
     carvesolid_prism4(win, 0xfedcba, vc, tr, tf, tu);
 
 
+    kr[0] = vr[0] / 4;
+    kr[1] = vr[1] / 4;
+    kr[2] = vr[2] / 4;
+    kf[0] = vf[0] / 4;
+    kf[1] = vf[1] / 4;
+    kf[2] = vf[2] / 4;
+
     tr[0] = vr[0] / 32;
     tr[1] = vr[1] / 32;
     tr[2] = vr[2] / 32;
@@ -75,36 +84,46 @@ static void drone_draw_vbo(
     tu[0] = vu[0] / 32;
     tu[1] = vu[1] / 32;
     tu[2] = vu[2] / 32;
-#define rr0 (vr[0]*31/32)
-#define rr1 (vr[1]*31/32)
-#define rr2 (vr[2]*31/32)
-#define ff0 (vf[0]*31/32)
-#define ff1 (vf[1]*31/32)
-#define ff2 (vf[2]*31/32)
 
-    //lb
-    tc[0] = vc[0] - rr0 - ff0 + tu[0];
-    tc[1] = vc[1] - rr1 - ff1 + tu[1];
-    tc[2] = vc[2] - rr2 - ff2 + tu[2];
+    //rf, motor1
+    tc[0] = vc[0] + vr[0] + vf[0];
+    tc[1] = vc[1] + vr[1] + vf[1];
+    tc[2] = vc[2] + vr[2] + vf[2];
     carvesolid_cylinder(win, 0x765432, tc, tr, tf, tu);
+    tc[0] = vc[0] + vr[0] + vf[0] + tu[0];
+    tc[1] = vc[1] + vr[1] + vf[1] + tu[1];
+    tc[2] = vc[2] + vr[2] + vf[2] + tu[2];
+	carveascii_center(win, 0xffffff, tc, kr, kf, '1');
 
-    //rb
-    tc[0] = vc[0] + rr0 - ff0 + tu[0];
-    tc[1] = vc[1] + rr1 - ff1 + tu[1];
-    tc[2] = vc[2] + rr2 - ff2 + tu[2];
+    //ln, motor2
+    tc[0] = vc[0] - vr[0] - vf[0];
+    tc[1] = vc[1] - vr[1] - vf[1];
+    tc[2] = vc[2] - vr[2] - vf[2];
     carvesolid_cylinder(win, 0x765432, tc, tr, tf, tu);
+    tc[0] = vc[0] - vr[0] - vf[0] + tu[0];
+    tc[1] = vc[1] - vr[1] - vf[1] + tu[1];
+    tc[2] = vc[2] - vr[2] - vf[2] + tu[2];
+	carveascii_center(win, 0xffffff, tc, kr, kf, '2');
 
-    //lf
-    tc[0] = vc[0] - rr0 + ff0 + tu[0];
-    tc[1] = vc[1] - rr1 + ff1 + tu[1];
-    tc[2] = vc[2] - rr2 + ff2 + tu[2];
+    //lf, motor3
+    tc[0] = vc[0] - vr[0] + vf[0];
+    tc[1] = vc[1] - vr[1] + vf[1];
+    tc[2] = vc[2] - vr[2] + vf[2];
     carvesolid_cylinder(win, 0x765432, tc, tr, tf, tu);
+    tc[0] = vc[0] - vr[0] + vf[0] + tu[0];
+    tc[1] = vc[1] - vr[1] + vf[1] + tu[1];
+    tc[2] = vc[2] - vr[2] + vf[2] + tu[2];
+	carveascii_center(win, 0xffffff, tc, kr, kf, '3');
 
-    //rf
-    tc[0] = vc[0] + rr0 + ff0 + tu[0];
-    tc[1] = vc[1] + rr1 + ff1 + tu[1];
-    tc[2] = vc[2] + rr2 + ff2 + tu[2];
+    //rn, motor4
+    tc[0] = vc[0] + vr[0] - vf[0];
+    tc[1] = vc[1] + vr[1] - vf[1];
+    tc[2] = vc[2] + vr[2] - vf[2];
     carvesolid_cylinder(win, 0x765432, tc, tr, tf, tu);
+    tc[0] = vc[0] + vr[0] - vf[0] + tu[0];
+    tc[1] = vc[1] + vr[1] - vf[1] + tu[1];
+    tc[2] = vc[2] + vr[2] - vf[2] + tu[2];
+	carveascii_center(win, 0xffffff, tc, kr, kf, '4');
 }
 static void drone_draw_json(
 	struct actor* act, struct style* pin,
@@ -138,6 +157,70 @@ static void drone_draw(
 	else if(fmt == _vbo_)drone_draw_vbo(act, pin, win, sty);
 	else drone_draw_pixel(act, pin, win, sty);
 }
+void drone_write_quaternion(struct actor* act, float* f)
+{
+	struct relation* rel;
+	struct actor* world;
+	struct fstyle* sty = 0;
+	say("%f,%f,%f,%f\n",f[0],f[1],f[2],f[3]);
+
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)break;
+		world = (void*)(rel->srcchip);
+		if(_world3d_ == world->type){
+			sty = (void*)(rel->srcfoot);
+		}
+		rel = samedstnextsrc(rel);
+	}
+	if(0 == sty)return;
+	//say("%f,%f,%f\n",sty->vr[3], sty->vf[3], sty->vt[3]);
+
+	sty->vr[0] = 1.0;
+	sty->vr[1] = 0.0;
+	sty->vr[2] = 0.0;
+	quaternion_rotate(sty->vr, f);
+	sty->vr[0] *= sty->vr[3];
+	sty->vr[1] *= sty->vr[3];
+	sty->vr[2] *= sty->vr[3];
+
+	sty->vf[0] = 0.0;
+	sty->vf[1] = 1.0;
+	sty->vf[2] = 0.0;
+	quaternion_rotate(sty->vf, f);
+	sty->vf[0] *= sty->vf[3];
+	sty->vf[1] *= sty->vf[3];
+	sty->vf[2] *= sty->vf[3];
+
+	sty->vt[0] = 0.0;
+	sty->vt[1] = 0.0;
+	sty->vt[2] = 1.0;
+	quaternion_rotate(sty->vt, f);
+	sty->vt[0] *= sty->vt[3];
+	sty->vt[1] *= sty->vt[3];
+	sty->vt[2] *= sty->vt[3];
+}
+void drone_write_euler(struct actor* act, float* f)
+{
+	vec4 q;
+	float rx = f[0]*PI/360;
+	float ry = f[1]*PI/360;
+	float rz = f[2]*PI/360;
+
+	float sinx = sine(rx);
+	float siny = sine(ry);
+	float sinz = sine(rz);
+	float cosx = cosine(rx);
+	float cosy = cosine(ry);
+	float cosz = cosine(rz);
+
+	q[0] = sinx * cosy * cosz - cosx * siny * sinz;
+	q[1] = cosx * siny * cosz + sinx * cosy * sinz;
+	q[2] = cosx * cosy * sinz - sinx * siny * cosz;
+	q[3] = cosx * cosy * cosz + sinx * siny * sinz;
+
+	drone_write_quaternion(act, q);
+}
 
 
 
@@ -158,6 +241,9 @@ static void drone_read(struct halfrel* self, struct halfrel* peer, void* buf, in
 }
 static void drone_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
+	struct actor* act = (void*)(self->chip);
+	struct style* pin = (void*)(self->foot);
+	drone_write_euler(act, buf);
 }
 static void drone_stop(struct halfrel* self, struct halfrel* peer)
 {

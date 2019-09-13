@@ -280,6 +280,19 @@ void carveascii(struct actor* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
+void carveascii_center(struct actor* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, u8 dat)
+{
+	vec3 tc;
+	tc[0] = vc[0] - vr[0]/4 - vf[0]/2;
+	tc[1] = vc[1] - vr[1]/4 - vf[1]/2;
+	tc[2] = vc[2] - vr[2]/4 - vf[2]/2;
+	carveascii(win, rgb, tc, vr, vf, dat);
+}
+
+
+
+
 void carveunicode(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 unicode)
 {
@@ -337,10 +350,6 @@ void carveunicode(struct actor* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-
-
-
-
 void carveutf8(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
