@@ -23,11 +23,11 @@ void joystick_event(struct arena* win, void* p)
 
 		ev.why = *(u64*)(p+0);
 		ev.what = joy_left;
-		nodetree_rootwrite(win, 0, &ev, 0);
+		relationwrite(win, _dst_, &ev, 0);
 
 		ev.why = *(u64*)(p+8);
 		ev.what = joy_right;
-		nodetree_rootwrite(win, 0, &ev, 0);
+		relationwrite(win, _dst_, &ev, 0);
 	}
 }
 void joystickthread(struct arena* win)
