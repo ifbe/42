@@ -48,7 +48,7 @@ void* micphonelistener(struct arena* win)
 			goto finish;
 		}
 		usleep(1000000*10/441);
-
+/*
 		struct relation* orel = win->orel0;
 		while(1)
 		{
@@ -61,8 +61,9 @@ void* micphonelistener(struct arena* win)
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}
+*/
+		relationwrite(win, _dst_, ibuf + (1024*2*icur), 1024*2);
 		icur = (icur+1)%8;
-
 		//info.enq = (info.enq + 4096) % 0x100000;
 		//eventwrite((u64)&info, 's', 0, 0);
 		//usleep(10000*1024/441);

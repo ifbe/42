@@ -71,7 +71,6 @@ void speakerstart()
 }
 void speakerdelete(struct arena* win)
 {
-	alive = 0;
 	if(s_out)pa_simple_free(s_out);
 }
 void speakercreate(struct arena* win)
