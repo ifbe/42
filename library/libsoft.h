@@ -16,6 +16,7 @@ typedef float mat4[4][4];
 //
 #define _src_ hex32('s','r','c',0)
 #define _dst_ hex32('d','s','t',0)
+#define _clk_ hex32('c','l','k',0)
 //
 #define _fd_ hex32('f','d',0,0)
 #define _art_ hex32('a','r','t',0)

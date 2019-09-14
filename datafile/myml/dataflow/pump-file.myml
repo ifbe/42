@@ -1,0 +1,27 @@
+<system>
+udphost{
+fmt:UDP
+url:0.0.0.0:9999
+}
+file{
+fmt:file
+url:a.out
+}
+</system>
+
+
+<artery>
+pump{
+fmt:pump
+}
+dbglog{
+fmt:dbglog
+}
+</artery>
+
+
+<relation>
+(pump, 0, art, src) -> (file, 0, fd, dst)
+(pump, 0, art, dst) -> (dbglog, 0, art, src)
+(pump, 0, art, clk) -> (udphost, 0, fd, dst)
+</relation>

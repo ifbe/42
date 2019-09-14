@@ -52,6 +52,7 @@ typedef float mat4[4][4];
 //
 #define _src_ hex32('s','r','c',0)
 #define _dst_ hex32('d','s','t',0)
+#define _clk_ hex32('c','l','k',0)
 //tier
 #define _act_ hex32('a','c','t',0)
 #define _win_ hex32('w','i','n',0)

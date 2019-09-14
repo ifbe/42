@@ -4,8 +4,9 @@
 #define _hfs_ hex32('h','f','s',0)
 #define _ext_ hex32('e','x','t',0)
 //
-#define _echo_ hex32('e','c','h','o')
 #define _dbglog_ hex64('d','b','g','l','o','g',0,0)
+#define _echo_ hex32('e','c','h','o')
+#define _pump_ hex32('p','u','m','p')
 //
 #define _mpu9250_ hex64('m','p','u','9','2','5','0',0)
 #define _lsm9ds1_ hex64('l','s','m','9','d','s','1',0)
@@ -26,12 +27,15 @@ int ntfsclient_create(struct element* ele, void* url);
 int hfsclient_create(struct element* ele, void* url);
 int extclient_create(struct element* ele, void* url);
 //
-int echo_create(struct element* ele, void* url);
-int echo_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
-int echo_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
 int dbglog_create(struct element* ele, void* url);
 int dbglog_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
 int dbglog_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int echo_create(struct element* ele, void* url);
+int echo_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int echo_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int pump_create(struct element* ele, void* url);
+int pump_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int pump_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
 //
 int mpu9250_create(struct element* ele, void* url);
 int mpu9250_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
@@ -256,10 +260,12 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	struct element* ele = (void*)(self->chip);
 	switch(ele->type){
-		case _echo_:echo_read(self, peer, buf, len);break;
 		case _dbglog_:dbglog_read(self, peer, buf, len);break;
+		case _echo_:echo_read(self, peer, buf, len);break;
+		case _pump_:pump_read(self, peer, buf, len);break;
 
 		case _mpu9250_:mpu9250_read(self, peer, buf, len);break;
+		case _lsm9ds1_:lsm9ds1_read(self, peer, buf, len);break;
 
 		case _reline_:reline_read(self, peer, buf, len);break;
 		case _str2fv_:str2fv_read(self, peer, buf, len);break;
@@ -274,11 +280,14 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 int arterywrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	struct element* ele = (void*)(self->chip);
+	//say("@arterywrite\n");
 	switch(ele->type){
-		case _echo_:return echo_write(self, peer, buf, len);break;
 		case _dbglog_:return dbglog_write(self, peer, buf, len);break;
+		case _echo_:return echo_write(self, peer, buf, len);break;
+		case _pump_:return pump_write(self, peer, buf, len);break;
 
 		case _mpu9250_:return mpu9250_write(self, peer, buf, len);break;
+		case _lsm9ds1_:return lsm9ds1_write(self, peer, buf, len);break;
 
 		case _reline_:return reline_write(self, peer, buf, len);break;
 		case _str2fv_:return str2fv_write(self, peer, buf, len);break;
@@ -370,6 +379,15 @@ void* arterycreate(u64 type, void* argstr)
 	}
 
 	//test
+	if(_dbglog_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _dbglog_;
+		dbglog_create(e, url);
+		return e;
+	}
 	if(_echo_ == type)
 	{
 		e = allocelement();
@@ -379,13 +397,13 @@ void* arterycreate(u64 type, void* argstr)
 		echo_create(e, url);
 		return e;
 	}
-	if(_dbglog_ == type)
+	if(_pump_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _dbglog_;
-		dbglog_create(e, url);
+		e->type = _pump_;
+		pump_create(e, url);
 		return e;
 	}
 

@@ -9,7 +9,8 @@ int dbglog_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 }
 int dbglog_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
-	say("@dbglog_write: %llx, %x\n", buf, len);
+	say("@dbglog_write: 0x%x\n", len);
+	printmemory(buf, len<16 ? len : 16);
 	return 0;
 }
 int dbglog_stop(struct halfrel* self, struct halfrel* peer)

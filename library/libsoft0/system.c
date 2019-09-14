@@ -166,7 +166,7 @@ int systemread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 	struct object* oo;
 	int fd;
 	if(0 == self)return 0;
-	//say("@systemwrite:%llx\n", self);
+	//say("@systemread:%llx\n", self);
 
 	oo = (void*)(self->chip);
 	if(0 == oo)return 0;
@@ -176,6 +176,9 @@ int systemread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 
 	if(_i2c_ == oo->type){
 		//systemi2c_read(fd, , buf, len);
+	}
+	if(_file_ == oo->type){
+		return readfile(fd, 0, buf, len);
 	}
 	return 0;
 }
