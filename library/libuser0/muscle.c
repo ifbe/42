@@ -24,8 +24,8 @@ int micphonecreate(void*, void*);
 int micphonedelete(void*);
 int micphonestart(void*);
 int micphonestop(void*);
-int micphoneread(void* win, void* sty, void* act, void* pin);
-int micphonewrite(void*);
+int micphoneread(void*, void*, void*, int, void*, int);
+int micphonewrite(void*, void*, void*, int, void*, int);
 int micphonelist();
 int micphonechoose();
 //speaker
@@ -35,8 +35,8 @@ int speakercreate(void*, void*);
 int speakerdelete(void*);
 int speakerstart(void*);
 int speakerstop(void*);
-int speakerread(void* win, void* sty, void* act, void* pin);
-int speakerwrite(void*);
+int speakerread(void*, void*, void*, int, void*, int);
+int speakerwrite(void*, void*, void*, int, void*, int);
 int speakerlist();
 int speakerchoose();
 //cam
@@ -46,8 +46,8 @@ int videocreate(void*, void*);
 int videodelete(void*);
 int videostart(void*);
 int videostop(void*);
-int videoread(void* win, void* sty, void* act, int);
-int videowrite(void*);
+int videoread(void*, void*, void*, int, void*, int);
+int videowrite(void*, void*, void*, int, void*, int);
 int videolist();
 int videochoose();
 //window
@@ -57,44 +57,29 @@ int windowcreate(void*);
 int windowdelete(void*);
 int windowstart(void*);
 int windowstop(void*);
-int windowread(void*);
-int windowwrite(void*, void*);
+int windowread(void*, void*, void*, int, void*, int);
+int windowwrite(void*, void*, void*, int, void*, int);
 int windowlist();
 int windowchoose();
 //
 int ahrs_create(void*, void*);
 int ahrs_delete(void*);
-int ahrs_read(void*, void*, void*, int);
-int ahrs_write(void*, void*, void*, int);
+int ahrs_read(void*, void*, void*, int, void*, int);
+int ahrs_write(void*, void*, void*, int, void*, int);
 //
 int toycar_create(void*, void*);
 int toycar_delete(void*);
-int toycar_read(void*, void*, void*, int);
-int toycar_write(void*, void*, void*, int);
-int toycar_rootread(void*,void*,void*,void*,void*,int);
-int toycar_rootwrite(void*,void*,void*,void*,void*,int);
+int toycar_read(void*, void*, void*, int, void*, int);
+int toycar_write(void*, void*, void*, int, void*, int);
 //
 int stepcar_create(void*, void*);
 int stepcar_delete(void*, void*);
-int stepcar_read(void*, void*, void*, int);
-int stepcar_write(void*, void*, void*, int);
-int stepcar_rootread(void*,void*,void*,void*,void*,int);
-int stepcar_rootwrite(void*,void*,void*,void*,void*,int);
+int stepcar_read(void*, void*, void*, int, void*, int);
+int stepcar_write(void*, void*, void*, int, void*, int);
 //
 int khala_create(void*, void*);
 //
 int loopback_create(void*, void*);
-//window
-void initwindow(void*);
-void freewindow();
-int windowcreate(void*);
-int windowdelete(void*);
-int windowstart(void*);
-int windowstop(void*);
-int windowread(void*);
-int windowwrite(void*, void*);
-int windowlist();
-int windowchoose();
 //
 int actorevent(struct event* ev);
 int input(void*, int);
@@ -142,30 +127,26 @@ void* allocstyle()
 
 
 
-int arenaread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int arenaread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct arena* win = (void*)(self->chip);
 
 	switch(win->type){
-		case _cam_:return videoread(self, peer, buf, len);
-		case _bdc_:return toycar_read(self, peer, buf, len);
-		case _step_:return stepcar_read(self, peer, buf, len);
+		case _cam_:return videoread(self, peer, arg, idx, buf, len);
+		case _bdc_:return toycar_read(self, peer, arg, idx, buf, len);
+		case _step_:return stepcar_read(self, peer, arg, idx, buf, len);
 	}
 
 	return 0;
 }
-int arenawrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int arenawrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct arena* win;
-	struct style* sty;
-
-	win = (void*)(self->chip);
-	sty = (void*)(self->foot);
+	struct arena* win = (void*)(self->chip);
 
 	switch(win->fmt){
-		case _bdc_:return toycar_write(self, peer, buf, len);
-		case _step_:return stepcar_write(self, peer, buf, len);
-		case _ahrs_:return ahrs_write(self, peer, buf, len);
+		case _bdc_:return toycar_write(self, peer, arg, idx, buf, len);
+		case _step_:return stepcar_write(self, peer, arg, idx, buf, len);
+		case _ahrs_:return ahrs_write(self, peer, arg, idx, buf, len);
 	}
 
 	return 0;
@@ -488,7 +469,7 @@ int arenaevent(struct event* e)
 		case _easy_:
 		case _full_:
 		case _coop_:
-		default:windowwrite(win, &ev);break;
+		default:windowwrite(win, 0, 0, 0, &ev, 0);break;
 	}
 	return 0;
 }
@@ -502,7 +483,7 @@ int arenaread_all()
 		win = &arena[j];
 		if(0 == win->type)continue;
 
-		if(_win_ == win->type)windowread(win);
+		if(_win_ == win->type)windowread(win, 0, 0, 0, 0, 0);
 	}
 	return 0;
 }

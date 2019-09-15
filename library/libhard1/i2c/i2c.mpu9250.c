@@ -145,7 +145,7 @@ int mpu9250_start_spi(int fd)
 
 
 
-int mpu9250_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int mpu9250_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int fd;
 	u8 tmp[0x80];
@@ -200,7 +200,7 @@ int mpu9250_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 
 	return 0;
 }
-int mpu9250_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int mpu9250_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }

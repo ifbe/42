@@ -187,9 +187,7 @@ void video_draw_vbo3d(
 	if(0 == rel)return;
 
 	u8* srcbuf = 0;
-	struct halfrel* self = (void*)&rel->dstchip;
-	struct halfrel* peer = (void*)&rel->srcchip;
-	arenaread(self, peer, &srcbuf, 0);
+	relationread(act, _src_, 0, 0, &srcbuf, 0);
 	say("srcbuf=%llx\n",srcbuf);
 	if(0 == srcbuf)return;
 
@@ -252,7 +250,7 @@ void video_event(
 
 
 
-static void video_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void video_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -267,7 +265,7 @@ static void video_read(struct halfrel* self, struct halfrel* peer, void* buf, in
 	}
 	//video_draw(act, pin, win, sty);
 }
-static void video_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void video_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);

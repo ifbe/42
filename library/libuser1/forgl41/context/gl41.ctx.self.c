@@ -140,7 +140,7 @@ void gl41data_get(struct relation* rel)
 
 	self = (void*)(&rel->dstchip);
 	peer = (void*)(&rel->srcchip);
-	actorread(self, peer, 0, 0);
+	actorread(self, peer, 0, 0, 0, 0);
 }
 void gl41data_copy(struct relation* rel)
 {
@@ -178,7 +178,7 @@ void gl41data_copy(struct relation* rel)
 
 
 
-int gl41data_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int gl41data_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//for each object in target world: read ctx
 	struct actor* data;
@@ -199,7 +199,7 @@ int gl41data_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 	gl41data_copy(rel);
 	return 0;
 }
-int gl41data_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int gl41data_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

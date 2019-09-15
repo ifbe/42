@@ -55,8 +55,6 @@ int wsclient_write(
 {
 	int ret;
 	struct relation* orel;
-	struct halfrel* self;
-	struct halfrel* peer;
 
 	if(0 == ele->stage1)
 	{
@@ -83,16 +81,8 @@ int wsclient_write(
 	ret = wsclient_read(buf, len);
 	buf += ret;
 	len -= ret;
-	while(1)
-	{
-		if(0 == orel)break;
 
-		self = (void*)&orel->dstchip;
-		peer = (void*)&orel->srcchip;
-		if(_win_ == orel->dsttype)arenawrite(self, peer, buf, len);
-
-		orel = samesrcnextdst(orel);
-	}
+	relationwrite(ele, _dst_, 0, 0, buf, len);
 	return 0;
 }
 int wsclient_delete(struct element* ele)

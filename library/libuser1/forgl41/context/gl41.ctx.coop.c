@@ -3,7 +3,7 @@
 
 
 
-int gl41coop_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int gl41coop_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//0: locate target
 
@@ -15,7 +15,7 @@ int gl41coop_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 
 	return 0;
 }
-int gl41coop_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int gl41coop_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

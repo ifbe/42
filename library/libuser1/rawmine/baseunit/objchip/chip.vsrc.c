@@ -58,7 +58,7 @@ static void vsrc_draw(
 
 
 
-static void vsrc_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void vsrc_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -72,7 +72,7 @@ static void vsrc_read(struct halfrel* self, struct halfrel* peer, void* buf, int
 	}
 	//vsrc_draw(act, pin, win, sty);
 }
-static void vsrc_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void vsrc_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 static void vsrc_stop(struct halfrel* self, struct halfrel* peer)

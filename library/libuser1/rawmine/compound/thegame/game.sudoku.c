@@ -326,7 +326,7 @@ static void sudoku_event(
 
 
 
-static void sudoku_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void sudoku_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -341,7 +341,7 @@ static void sudoku_read(struct halfrel* self, struct halfrel* peer, void* buf, i
 	}
 	//sudoku_draw(act, pin, win, sty);
 }
-static void sudoku_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void sudoku_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

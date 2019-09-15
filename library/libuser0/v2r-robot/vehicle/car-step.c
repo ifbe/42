@@ -57,7 +57,7 @@ static void stepcar_status(int EN)
 
 
 
-int stepcar_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int stepcar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
     int j;
     int ret = 0;
@@ -70,7 +70,7 @@ int stepcar_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
     }
     return ret;
 }
-int stepcar_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int stepcar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
     printmemory(buf, len);
     return 0;

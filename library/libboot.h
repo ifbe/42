@@ -9,6 +9,8 @@ typedef unsigned long long u64;
 #define _win_ hex32('w','i','n',0)
 #define _art_ hex32('a','r','t',0)
 #define _fd_ hex32('f','d',0,0)
+#define _dri_ hex32('d','r','i',0)
+#define _dev_ hex32('d','e','v',0)
 
 
 
@@ -87,45 +89,50 @@ struct item
 
 
 //
-int artery_leafread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int artery_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int artery_rootread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int system_leafread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int system_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int system_rootread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int system_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-//
-int actorread(  struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int actorwrite( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int actorread(  struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int actorwrite( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int actorstop(  struct halfrel* self,struct halfrel* peer);
 int actorstart( struct halfrel* self,struct halfrel* peer);
 int actordelete(void*);
 void* actorcreate(u64, void*);
 //
-int arenaread(  struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int arenawrite( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arenaread(  struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int arenawrite( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int arenastop(  struct halfrel* self,struct halfrel* peer);
 int arenastart( struct halfrel* self,struct halfrel* peer);
 int arenadelete(void*);
 void* arenacreate(u64, void*);
 //
-int arteryread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int arterywrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arteryread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int arterywrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int arterystop( struct halfrel* self,struct halfrel* peer);
 int arterystart(struct halfrel* self,struct halfrel* peer);
 int arterydelete(void*);
 void* arterycreate(u64, void*);
 //
-int systemread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int systemwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int systemread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int systemwrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int systemstop( struct halfrel* self,struct halfrel* peer);
 int systemstart(struct halfrel* self,struct halfrel* peer);
 int systemdelete(void*);
 void* systemcreate(u64, void*);
 //
-int relationread( void* item, int foot, void* buf, int len);
-int relationwrite(void* item, int foot, void* buf, int len);
+int driverread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int driverwrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int driverstop( struct halfrel* self,struct halfrel* peer);
+int driverstart(struct halfrel* self,struct halfrel* peer);
+int driverdelete(void*);
+void* drivercreate(u64, void*);
+//
+int deviceread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int devicewrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int devicestop( struct halfrel* self,struct halfrel* peer);
+int devicestart(struct halfrel* self,struct halfrel* peer);
+int devicedelete(void*);
+void* devicecreate(u64, void*);
+//
+int relationread( void* item, int foot, void* arg, int idx, void* buf, int len);
+int relationwrite(void* item, int foot, void* arg, int idx, void* buf, int len);
 int relationstop( struct halfrel* self,struct halfrel* peer);
 int relationstart(struct halfrel* self,struct halfrel* peer);
 int relationdelete(struct relation* rel);

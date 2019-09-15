@@ -12,7 +12,7 @@ static int icur = 0;
 void* micphonelistener(struct arena* win)
 {
 	while(1){
-		relationwrite(win, _dst_, ibuf, 44100*2);
+		relationwrite(win, _dst_, 0, 0, ibuf, 44100*2);
 		sleep_us(1000*1000);
 	}
 	return 0;

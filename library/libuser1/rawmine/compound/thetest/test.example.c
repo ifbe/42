@@ -126,7 +126,7 @@ static void example_draw(
 
 
 
-static void example_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void example_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -135,7 +135,7 @@ static void example_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	//example_draw(act, pin, win, sty);
 }
-static void example_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void example_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 static void example_stop(struct halfrel* self, struct halfrel* peer)

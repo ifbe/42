@@ -173,7 +173,7 @@ void* visionlistener(struct arena* win)
 		ioctl(fd, VIDIOC_DQBUF, &buf);
 
 		//send
-		relationwrite(win, _dst_, info[cur].buf, info[cur].len);
+		relationwrite(win, _dst_, 0, 0, info[cur].buf, info[cur].len);
 /*
 		say("cur=%d\n",cur);
 		//printmemory(info[cur].buf+0xfff, 16);

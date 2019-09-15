@@ -9,42 +9,42 @@ void mine_init(void*);
 //
 int baby_create(void*, void*);
 int baby_delete(void*, void*);
-int baby_read(void*, void*);
-int baby_write(void*, void*);
+int baby_read(void*, void*, void*, int, void*, int);
+int baby_write(void*, void*, void*, int, void*, int);
 //
 int test_create(void*, void*);
 int test_delete(void*, void*);
-int test_read(void*, void*);
-int test_write(void*, void*);
+int test_read(void*, void*, void*, int, void*, int);
+int test_write(void*, void*, void*, int, void*, int);
 
 //
 int eeworld_create(void*, void*);
 int eeworld_delete(void*, void*);
 int eeworld_start(void*, void*);
 int eeworld_stop(void*, void*);
-int eeworld_write(void*, void*, void*, int);
-int eeworld_read(void*, void*, void*, int);
+int eeworld_write(void*, void*, void*, int, void*, int);
+int eeworld_read(void*, void*, void*, int, void*, int);
 //hoff helper
 int hoffdata_create(void*, void*);
-int hoffdata_read(void*, void*, void*, int);
+int hoffdata_read(void*, void*, void*, int, void*, int);
 
 //
 int world3d_create(void*, void*);
 int world3d_delete(void*, void*);
 int world3d_start(void*, void*);
 int world3d_stop(void*, void*);
-int world3d_write(void*, void*, void*, int);
-int world3d_read(void*, void*, void*, int);
+int world3d_write(void*, void*, void*, int, void*, int);
+int world3d_read(void*, void*, void*, int, void*, int);
 //gl41 helper
 int gl41data_create(void*, void*);
-int gl41data_read(void*, void*, void*, int);
+int gl41data_read(void*, void*, void*, int, void*, int);
 int gl41coop_create(void*, void*);
 int gl41view_create(void*, void*);
 int gl41fboc_create(void*, void*);
 int gl41fbod_create(void*, void*);
 int gl41fbog_create(void*, void*);
 int gl41wnd0_create(void*, void*);
-int gl41wnd0_write(void*, void*, void*, int);
+int gl41wnd0_write(void*, void*, void*, int, void*, int);
 
 
 
@@ -151,7 +151,7 @@ void actorinput_touch(struct arena* win, struct event* ev)
 
 
 
-int actorwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len)
+int actorwrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
 {
 	struct actor* act;
 	if(0 == self)return 0;
@@ -160,13 +160,13 @@ int actorwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len)
 	if(0 == act)return 0;
 
 	switch(act->type){
-		case _gl41wnd0_:return gl41wnd0_write(self, peer, buf, len);
+		case _gl41wnd0_:return gl41wnd0_write(self, peer, arg, idx, buf, len);
 	}
 
 	if(0 == act->onwrite)return 0;
-	return act->onwrite(self, peer, buf, len);
+	return act->onwrite(self, peer, arg, idx, buf, len);
 }
-int actorread(struct halfrel* self,struct halfrel* peer,void* buf,int len)
+int actorread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
 {
 	struct actor* act;
 	if(0 == self)return 0;
@@ -175,12 +175,12 @@ int actorread(struct halfrel* self,struct halfrel* peer,void* buf,int len)
 	if(0 == act)return 0;
 
 	switch(act->type){
-		case _world3d_:return world3d_read(self, peer, buf, len);
-		case _eeworld_:return eeworld_read(self, peer, buf, len);
+		case _world3d_:return world3d_read(self, peer, arg, idx, buf, len);
+		case _eeworld_:return eeworld_read(self, peer, arg, idx, buf, len);
 	}
 
 	if(0 == act->onread)return 0;
-	return act->onread(self, peer, buf, len);
+	return act->onread(self, peer, arg, idx, buf, len);
 }
 int actorstop(struct halfrel* self, struct halfrel* peer)
 {
@@ -444,16 +444,16 @@ int actorread_all()
 
 	for(j=0;j<256;j++){
 	switch(actor[j].type){
-		case _baby_:baby_read(0, 0);break;
-		case _test_:test_read(0, 0);break;
+		case _baby_:baby_read(0, 0, 0, 0, 0, 0);break;
+		case _test_:test_read(0, 0, 0, 0, 0, 0);break;
 		case _gl41data_:{
 			self.chip = (u64)&actor[j];
-			gl41data_read(&self, 0, 0, 0);
+			gl41data_read(&self, 0, 0, 0, 0, 0);
 			break;
 		}
 		case _hoffdata_:{
 			self.chip = (u64)&actor[j];
-			hoffdata_read(&self, 0, 0, 0);
+			hoffdata_read(&self, 0, 0, 0, 0, 0);
 			break;
 		}
 	}//switch

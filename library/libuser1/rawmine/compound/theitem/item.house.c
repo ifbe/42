@@ -170,7 +170,7 @@ static void house_draw(
 
 
 
-static void house_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void house_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -179,7 +179,7 @@ static void house_read(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	struct style* sty = (void*)(peer->foot);
 	//house_draw(act, pin, win, sty);
 }
-static void house_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void house_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 static void house_stop(struct halfrel* self, struct halfrel* peer)

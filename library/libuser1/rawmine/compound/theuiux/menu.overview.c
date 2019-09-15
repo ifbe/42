@@ -1329,7 +1329,7 @@ static int overview_event(
 
 
 
-static void overview_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void overview_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -1344,7 +1344,7 @@ static void overview_read(struct halfrel* self, struct halfrel* peer, void* buf,
 		if(_gl41data_ == ctx->type)overview_draw_vbo(act,pin,ctx,sty);
 	}
 }
-static int overview_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static int overview_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

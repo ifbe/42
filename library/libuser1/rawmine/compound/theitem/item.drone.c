@@ -225,7 +225,7 @@ void drone_write_euler(struct actor* act, float* f)
 
 
 
-static void drone_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void drone_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -239,7 +239,7 @@ static void drone_read(struct halfrel* self, struct halfrel* peer, void* buf, in
 		if(_gl41data_ == ctx->type)drone_draw_vbo(act,pin,ctx,sty);
 	}
 }
-static void drone_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void drone_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);

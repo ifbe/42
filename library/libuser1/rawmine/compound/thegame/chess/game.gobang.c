@@ -7,10 +7,10 @@ static u8 buffer[16];
 
 
 
-static void gobang_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void gobang_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void gobang_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void gobang_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 static void gobang_stop(struct halfrel* self, struct halfrel* peer)

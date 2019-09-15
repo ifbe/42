@@ -362,7 +362,7 @@ static int tabbar_event(
 
 
 
-static void tabbar_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void tabbar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -371,7 +371,7 @@ static void tabbar_read(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	//tabbar_draw(act, pin, win, sty);
 }
-static int tabbar_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int tabbar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

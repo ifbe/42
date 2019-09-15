@@ -381,7 +381,7 @@ static int thirdperson_event(
 
 
 
-static void thirdperson_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void thirdperson_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -393,7 +393,7 @@ static void thirdperson_read(struct halfrel* self, struct halfrel* peer, u8* buf
 		case _cam_:thirdperson_matrix(act, pin, win, sty, buf, len);break;
 	}*/
 }
-static int thirdperson_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int thirdperson_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

@@ -9,11 +9,11 @@ static struct driver* dri;
 
 
 
-int driverread(void* self, void* peer, void* buf, int len)
+int driverread(void* self, void* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int driverwrite(void* self, void* peer, void* buf, int len)
+int driverwrite(void* self, void* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

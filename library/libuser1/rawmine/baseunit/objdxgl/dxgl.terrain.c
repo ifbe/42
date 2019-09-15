@@ -360,7 +360,7 @@ static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int
 
 
 
-static void terrain_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void terrain_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -374,7 +374,7 @@ static void terrain_read(struct halfrel* self, struct halfrel* peer, void* buf, 
 		if(_gl41data_ == ctx->type)terrain_draw_vbo(act,pin,ctx,sty);
 	}
 }
-static void terrain_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void terrain_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 static void terrain_stop(struct halfrel* self, struct halfrel* peer)

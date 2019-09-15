@@ -75,15 +75,15 @@ void imuupdate(
 
 
 
-int easyag_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int easyag_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	float f[10];
 	say("@easyag_read\n");
 
-	relationread((void*)(self->chip), _src_, f, 10);
+	relationread((void*)(self->chip), _src_, 0, 0, f, 10);
 	return 0;
 }
-int easyag_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int easyag_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	int j;
 	float* f = (void*)buf;
@@ -95,7 +95,7 @@ int easyag_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 	say("@easyag_write:%f,%f,%f,%f,%f,%f\n",f[0],f[1],f[2], f[3],f[4],f[5]);
 
 	imuupdate(f[0],f[1],f[2], f[3],f[4],f[5]);
-	relationwrite((void*)self->chip, _dst_, q, 4);
+	relationwrite((void*)self->chip, _dst_, 0, 0, q, 4);
 	return 0;
 }
 int easyag_stop(struct halfrel* self, struct halfrel* peer)

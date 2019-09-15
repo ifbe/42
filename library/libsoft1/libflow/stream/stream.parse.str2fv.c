@@ -6,15 +6,19 @@ int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
 
 
 
-int str2fv_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int str2fv_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	float f[10];
+	struct element* ele;
 	say("@str2fv_read\n");
 
-	relationread((void*)(self->chip), _src_, f, 10);
+	ele = (void*)(self->chip);
+	if(0 == ele)return 0;
+
+	relationread(ele, _src_, 0, 0, f, 10);
 	return 0;
 }
-int str2fv_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int str2fv_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	int cnt;
 	float tmp[9];
@@ -26,7 +30,7 @@ int str2fv_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 	if(0 == ele)return 0;
 
 	cnt = parsefv(tmp, 9, buf, len);
-	return relationwrite((void*)ele, _dst_, tmp, cnt);
+	return relationwrite(ele, _dst_, 0, 0, tmp, cnt);
 }
 int str2fv_stop(struct halfrel* self, struct halfrel* peer)
 {

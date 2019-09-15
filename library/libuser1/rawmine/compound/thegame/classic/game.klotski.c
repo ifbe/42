@@ -122,7 +122,7 @@ static void klotski_draw(
 
 
 
-static void klotski_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void klotski_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -131,7 +131,7 @@ static void klotski_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	//klotski_draw(act, pin, win, sty);
 }
-static void klotski_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void klotski_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 static void klotski_stop(struct halfrel* self, struct halfrel* peer)

@@ -156,7 +156,7 @@ static void ground_draw(
 
 
 
-static void ground_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void ground_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -170,7 +170,7 @@ static void ground_read(struct halfrel* self, struct halfrel* peer, void* buf, i
 		if(_gl41data_ == ctx->type)ground_draw_vbo(act,pin,ctx,sty);
 	}
 }
-static void ground_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void ground_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 static void ground_stop(struct halfrel* self, struct halfrel* peer)

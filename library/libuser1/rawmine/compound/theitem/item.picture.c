@@ -234,7 +234,7 @@ static void picture_draw(
 
 
 
-static void picture_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void picture_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -249,7 +249,7 @@ static void picture_read(struct halfrel* self, struct halfrel* peer, void* buf, 
 	}
 	//picture_draw(act, pin, win, sty);
 }
-static void picture_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void picture_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 static void picture_stop(struct halfrel* self, struct halfrel* peer)

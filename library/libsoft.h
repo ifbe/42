@@ -327,45 +327,37 @@ struct element
 
 
 
-int artery_leafread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int artery_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int artery_rootread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int system_leafread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int system_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int system_rootread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int system_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
 //
-int actorread(  struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int actorwrite( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int actorread(  struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int actorwrite( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int actorstop(  struct halfrel* self,struct halfrel* peer);
 int actorstart( struct halfrel* self,struct halfrel* peer);
 int actordelete(void*);
 void* actorcreate(u64, void*);
 //
-int arenaread(  struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int arenawrite( struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arenaread(  struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int arenawrite( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int arenastop(  struct halfrel* self,struct halfrel* peer);
 int arenastart( struct halfrel* self,struct halfrel* peer);
 int arenadelete(void*);
 void* arenacreate(u64, void*);
 //
-int arteryread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int arterywrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int arteryread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int arterywrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int arterystop( struct halfrel* self,struct halfrel* peer);
 int arterystart(struct halfrel* self,struct halfrel* peer);
 int arterydelete(void*);
 void* arterycreate(u64, void*);
 //
-int systemread( struct halfrel* self,struct halfrel* peer,void* buf,int len);
-int systemwrite(struct halfrel* self,struct halfrel* peer,void* buf,int len);
+int systemread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int systemwrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int systemstop( struct halfrel* self,struct halfrel* peer);
 int systemstart(struct halfrel* self,struct halfrel* peer);
 int systemdelete(void*);
 void* systemcreate(u64, void*);
 //
-int relationread( void* item, int foot, void* buf, int len);
-int relationwrite(void* item, int foot, void* buf, int len);
+int relationread( void* item, int foot, void* arg, int idx, void* buf, int len);
+int relationwrite(void* item, int foot, void* arg, int idx, void* buf, int len);
 int relationstop( struct halfrel* self,struct halfrel* peer);
 int relationstart(struct halfrel* self,struct halfrel* peer);
 int relationdelete(void*);

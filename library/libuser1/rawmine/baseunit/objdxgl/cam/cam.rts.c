@@ -190,7 +190,7 @@ static void rtscam_matrix(
 
 
 
-static void rtscam_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void rtscam_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
@@ -201,7 +201,7 @@ static void rtscam_read(struct halfrel* self, struct halfrel* peer, u8* buf, int
 		case _cam_:rtscam_matrix(act, pin, win, sty, buf, len);break;
 	}*/
 }
-static int rtscam_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int rtscam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

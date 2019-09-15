@@ -254,7 +254,7 @@ static int human_event(
 		if(t[3] & joyl_bumper )act->z0 += 10;
 	}
 	else return 0;
-
+/*
 	//read terrain, fix z
 	rel = act->irel0;
 	while(1)
@@ -274,67 +274,68 @@ static int human_event(
 		rel = samedstnextsrc(rel);
 	}
 	return 1;
-
-/*		sec = timeread() / 1000000.0;
-
-		x = boneverta[0][0] - boneverta[1][0];
-		y = boneverta[0][1] - boneverta[1][1];
-		z = boneverta[0][2] - boneverta[1][2];
-		n = squareroot(x*x + y*y + z*z);
-
-		a = PI/90*sine(2.0*PI*sec);
-		c = cosine(a);
-		s = sine(a);
-		boneverta[0][0] = boneverta[1][0] + n*s;
-		boneverta[0][1] = 0.0;
-		boneverta[0][2] = boneverta[1][2] + n*c;
-
-		//arm
-		a = PI/3*sine(2.0*PI*sec);
-		c = cosine(a);
-		s = sine(a);
-		boneverta[5][1] = -s * 0.3;
-		boneverta[5][2] = 0.6 - c * 0.3;
-		boneverta[6][1] = s * 0.3;
-		boneverta[6][2] = 0.6 - c * 0.3;
-
-		a = PI/3*sine(2.0*PI*sec);
-		c = cosine(a);
-		s = sine(a);
-		boneverta[7][1] = boneverta[5][1] - s * 0.3;
-		boneverta[7][2] = boneverta[5][2] - c * 0.3;
-		boneverta[8][1] = boneverta[6][1] + s * 0.3;
-		boneverta[8][2] = boneverta[6][2] - c * 0.3;
-
-		//leg
-		a = PI/3*sine(2.0*PI*sec);
-		c = cosine(a);
-		s = sine(a);
-		if(a > 0.0)
-		{
-			boneverta[11][1] =  s * 0.5;
-			boneverta[11][2] = -c * 0.5;
-			boneverta[12][1] = 0.0;
-			boneverta[12][2] = -0.5;
-		}
-		else
-		{
-			boneverta[11][1] = 0.0;
-			boneverta[11][2] = -0.5;
-			boneverta[12][1] = -s * 0.5;
-			boneverta[12][2] = -c * 0.5;
-		}
-		boneverta[13][1] = boneverta[11][1];
-		boneverta[13][2] = boneverta[11][2] - 0.5;
-		boneverta[14][1] = boneverta[12][1];
-		boneverta[14][2] = boneverta[12][2] - 0.5;
 */
+/*	sec = timeread() / 1000000.0;
+
+	x = boneverta[0][0] - boneverta[1][0];
+	y = boneverta[0][1] - boneverta[1][1];
+	z = boneverta[0][2] - boneverta[1][2];
+	n = squareroot(x*x + y*y + z*z);
+
+	a = PI/90*sine(2.0*PI*sec);
+	c = cosine(a);
+	s = sine(a);
+	boneverta[0][0] = boneverta[1][0] + n*s;
+	boneverta[0][1] = 0.0;
+	boneverta[0][2] = boneverta[1][2] + n*c;
+
+	//arm
+	a = PI/3*sine(2.0*PI*sec);
+	c = cosine(a);
+	s = sine(a);
+	boneverta[5][1] = -s * 0.3;
+	boneverta[5][2] = 0.6 - c * 0.3;
+	boneverta[6][1] = s * 0.3;
+	boneverta[6][2] = 0.6 - c * 0.3;
+
+	a = PI/3*sine(2.0*PI*sec);
+	c = cosine(a);
+	s = sine(a);
+	boneverta[7][1] = boneverta[5][1] - s * 0.3;
+	boneverta[7][2] = boneverta[5][2] - c * 0.3;
+	boneverta[8][1] = boneverta[6][1] + s * 0.3;
+	boneverta[8][2] = boneverta[6][2] - c * 0.3;
+
+	//leg
+	a = PI/3*sine(2.0*PI*sec);
+	c = cosine(a);
+	s = sine(a);
+	if(a > 0.0)
+	{
+		boneverta[11][1] =  s * 0.5;
+		boneverta[11][2] = -c * 0.5;
+		boneverta[12][1] = 0.0;
+		boneverta[12][2] = -0.5;
+	}
+	else
+	{
+		boneverta[11][1] = 0.0;
+		boneverta[11][2] = -0.5;
+		boneverta[12][1] = -s * 0.5;
+		boneverta[12][2] = -c * 0.5;
+	}
+	boneverta[13][1] = boneverta[11][1];
+	boneverta[13][2] = boneverta[11][2] - 0.5;
+	boneverta[14][1] = boneverta[12][1];
+	boneverta[14][2] = boneverta[12][2] - 0.5;
+*/
+	return 1;
 }
 
 
 
 
-static void human_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void human_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -349,7 +350,7 @@ static void human_read(struct halfrel* self, struct halfrel* peer, void* buf, in
 	}
 	//human_draw(act, pin, win, sty);
 }
-static int human_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static int human_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

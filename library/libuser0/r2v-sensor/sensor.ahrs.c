@@ -8,12 +8,12 @@
 
 
 
-void ahrs_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+void ahrs_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//writeback: east north sky?
 	say("@ahrs_read\n");
 }
-void ahrs_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+void ahrs_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 /*
 	receive gpsdata(already filtered):
@@ -45,7 +45,7 @@ static void* ahrs_thread(struct arena* win)
 	vec4 tmp;
 	while(1){
 		say("@ahrs_thread:%llx\n", win);
-		relationread((void*)win, _src_, tmp, 4);
+		relationread((void*)win, _src_, 0, 0, tmp, 4);
 		sleep_us(1000000);
 	}
 }

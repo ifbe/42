@@ -111,7 +111,7 @@ static void stair_draw(
 
 
 
-static void stair_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void stair_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -126,7 +126,7 @@ static void stair_read(struct halfrel* self, struct halfrel* peer, void* buf, in
 	}
 	//stair_draw(act, pin, win, sty);
 }
-static void stair_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void stair_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 static void stair_stop(struct halfrel* self, struct halfrel* peer)

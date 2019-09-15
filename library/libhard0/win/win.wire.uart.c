@@ -35,7 +35,7 @@ DWORD WINAPI systemuart_thread(struct object* oo)
 		ret = ReadFile(hcom, buf+enq, ret, (void*)&cnt, 0);
 		if( (ret > 0) && (cnt > 0) )
 		{
-			relationwrite(oo, _dst_, buf+enq, cnt);
+			relationwrite(oo, _dst_, 0, 0, buf+enq, cnt);
 
 			enq = (enq + cnt)%0x10000;
 

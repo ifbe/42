@@ -367,7 +367,7 @@ static void the2048_event(
 
 
 
-static void the2048_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void the2048_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -382,7 +382,7 @@ static void the2048_read(struct halfrel* self, struct halfrel* peer, void* buf, 
 	}
 	//the2048_draw(act, pin, win, sty);
 }
-static void the2048_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void the2048_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

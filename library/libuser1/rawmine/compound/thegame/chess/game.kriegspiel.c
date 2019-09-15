@@ -7,10 +7,10 @@ static u8 buffer[16];
 
 
 
-static void kriegspiel_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void kriegspiel_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void kriegspiel_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void kriegspiel_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 static void kriegspiel_stop(struct halfrel* self, struct halfrel* peer)

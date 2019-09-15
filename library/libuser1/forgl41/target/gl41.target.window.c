@@ -12,7 +12,7 @@ void* locate_camera_in_world()
 
 
 
-int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {/*
 	struct relation* rel = self->orel0;
 
@@ -28,12 +28,12 @@ int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, void* buf, int len
 */
 	return 0;
 }
-int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct event* ev = buf;
 	say("@gl41wnd0_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
 
-	relationwrite((void*)(self->chip), _mvp_, buf, len);
+	relationwrite((void*)(self->chip), _mvp_, 0, 0, buf, len);
 	/*
 	struct relation* rel;
 	struct style* sty;

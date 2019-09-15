@@ -54,9 +54,9 @@ int tftpserver_write(
 	{
 		str[ret] = ':';
 		str[ret+1] = ' ';
-		relationwrite((void*)ele, _src_, str,ret+2);
+		relationwrite(ele, _src_, 0, 0, str,ret+2);
 	}
-	relationwrite((void*)ele, _src_, buf,len);
+	relationwrite(ele, _src_, 0, 0, buf,len);
 	return 0;
 }
 int tftpserver_read()

@@ -615,5 +615,5 @@ void terminal_clientinput(
 	else if(ev->what == _char_)j = 1;
 	else return;
 
-	relationwrite(act, _src_, &why, j);
+	relationwrite(act, _src_, 0, 0, &why, j);
 }

@@ -227,7 +227,7 @@ static void font_event(
 
 
 
-static void font_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void font_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -242,7 +242,7 @@ static void font_read(struct halfrel* self, struct halfrel* peer, void* buf, int
 	}
 	//font_draw(act, pin, win, sty);
 }
-static void font_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void font_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

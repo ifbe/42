@@ -277,7 +277,7 @@ void fullwindow_viewport(struct arena* ogl, struct actor* view)
 				//get mvp
 				self = (void*)(&rel->dstchip);
 				peer = (void*)(&rel->srcchip);
-				actorread(self, peer, 0, 0);
+				actorread(self, peer, 0, 0, 0, 0);
 
 				//render
 				fullwindow_eachpass(ogl, view);
@@ -319,7 +319,7 @@ void fullwindow_render(struct arena* ogl, struct actor* wnd)
 void fullwindow_write(struct arena* ogl, struct event* ev)
 {
 	say("@fullwindow_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
-	relationwrite((void*)ogl, _wnd_, ev, 0);
+	relationwrite(ogl, _wnd_, 0, 0, ev, 0);
 }
 void fullwindow_read(struct arena* ogl)
 {

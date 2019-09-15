@@ -230,7 +230,7 @@ static void bintree_event(
 
 
 
-static void bintree_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void bintree_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -239,7 +239,7 @@ static void bintree_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	//bintree_draw(act, pin, win, sty);
 }
-static void bintree_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void bintree_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

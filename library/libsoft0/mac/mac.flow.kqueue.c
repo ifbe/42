@@ -112,7 +112,7 @@ int kqueuethread(int argc, const char * argv[])
 				}
 
 				//say("@kqueuethread: %.4s\n", &obj[cc].type);
-				relationwrite(&obj[cc], _dst_, buf, cnt);
+				relationwrite(&obj[cc], _dst_, 0, 0, buf, cnt);
 			}
 			if(cnt <= 0)
 			{

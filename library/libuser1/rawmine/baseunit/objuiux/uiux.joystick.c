@@ -200,7 +200,7 @@ int vjoy_event(
 
 
 
-static void vjoy_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void vjoy_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -209,7 +209,7 @@ static void vjoy_read(struct halfrel* self, struct halfrel* peer, u8* buf, int l
 	struct style* sty = (void*)(peer->foot);
 	//vjoy_draw(act, pin, win, sty);
 }
-static int vjoy_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int vjoy_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

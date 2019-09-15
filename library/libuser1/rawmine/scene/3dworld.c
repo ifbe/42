@@ -106,7 +106,7 @@ void world3d_copy(struct actor* world, struct style* sty, struct style* pin)
 
 
 
-int world3d_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int world3d_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct actor* world;
 	struct actor* glctx;
@@ -136,7 +136,7 @@ int world3d_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
-			actorread(self, peer, glctx, 0);
+			actorread(self, peer, 0, 0, glctx, 0);
 
 			pin = (void*)(rel->dstfoot);
 			world3d_copy(world, sty, pin);
@@ -148,7 +148,7 @@ next:
 	//printmemory(world->buf+0x100, 0x100);
 	return 0;
 }
-int world3d_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int world3d_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 /*

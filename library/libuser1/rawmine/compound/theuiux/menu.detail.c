@@ -316,7 +316,7 @@ static void detail_draw(
 
 
 
-static void detail_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void detail_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -325,7 +325,7 @@ static void detail_read(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	struct style* sty = (void*)(peer->foot);
 	//detail_draw(act, pin, win, sty);
 }
-static int detail_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int detail_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	return 1;
 }

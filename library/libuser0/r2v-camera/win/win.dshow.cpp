@@ -87,7 +87,7 @@ public:
 		obj[enq].len = pSample->GetActualDataLength();
 		pSample->GetPointer(buf);
 		pSample->Release();
-		relationwrite(working, _dst_, obj[enq].buf, obj[enq].len);
+		relationwrite(working, _dst_, 0, 0, obj[enq].buf, obj[enq].len);
 /*
 		//printf("%llx,%x\n", obj[0].buf, obj[0].len);
 		working->width = working->stride = 640;

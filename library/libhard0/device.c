@@ -8,11 +8,11 @@ static struct device* dev;
 
 
 
-int deviceread(void* self, void* peer, void* buf, int len)
+int deviceread(void* self, void* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int devicewrite(void* self, void* peer, void* buf, int len)
+int devicewrite(void* self, void* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

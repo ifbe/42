@@ -12,7 +12,7 @@ static int icur = 0;
 void* visionlistener(struct arena* win)
 {
 	while(1){
-		relationwrite(win, _dst_, ibuf, 640*480*2);
+		relationwrite(win, _dst_, 0, 0, ibuf, 640*480*2);
 		sleep_us(1000*1000);
 	}
 	return 0;

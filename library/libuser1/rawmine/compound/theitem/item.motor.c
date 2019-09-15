@@ -134,7 +134,7 @@ static void motor_draw(
 
 
 
-static void motor_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void motor_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -143,7 +143,7 @@ static void motor_read(struct halfrel* self, struct halfrel* peer, u8* buf, int 
 	struct style* sty = (void*)(peer->foot);
 	//motor_draw(act, pin, win, sty);
 }
-static void motor_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void motor_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 static void motor_stop(struct halfrel* self, struct halfrel* peer)

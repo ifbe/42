@@ -28,46 +28,46 @@ int hfsclient_create(struct element* ele, void* url);
 int extclient_create(struct element* ele, void* url);
 //
 int dbglog_create(struct element* ele, void* url);
-int dbglog_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
-int dbglog_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int dbglog_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int dbglog_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int echo_create(struct element* ele, void* url);
-int echo_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
-int echo_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int echo_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int echo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int pump_create(struct element* ele, void* url);
-int pump_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
-int pump_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int pump_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int pump_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 int mpu9250_create(struct element* ele, void* url);
-int mpu9250_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
-int mpu9250_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int mpu9250_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int mpu9250_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int lsm9ds1_create(struct element* ele, void* url);
-int lsm9ds1_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
-int lsm9ds1_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int lsm9ds1_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int lsm9ds1_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 int reline_create(struct element* ele, void* url);
-int reline_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
-int reline_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int reline_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int str2fv_create(struct element* ele, void* url);
-int str2fv_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
-int str2fv_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int str2fv_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int str2fv_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fv2str_create(struct element* ele, void* url);
-int fv2str_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
-int fv2str_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int fv2str_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int fv2str_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 int easyag_create(struct element* ele, void* url);
-int easyag_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
-int easyag_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int easyag_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int easyag_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int mahony_create(struct element* ele, void* url);
-int mahony_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
-int mahony_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int mahony_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int mahony_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int madgwick_create(struct element* ele, void* url);
-int madgwick_read( struct halfrel* self, struct halfrel* peer, u8* buf, int len);
-int madgwick_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len);
+int madgwick_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int madgwick_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //uart.gcode
 int gcodeclient_create(struct element* ele, void* url);
-int gcodeclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int gcodeclient_write( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int gcodeserver_create(struct element* ele, void* url);
-int gcodeserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int gcodeserver_write( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //uart.gps
 int gpsclient_create(struct element* ele, void* url);
 int gpsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
@@ -256,48 +256,48 @@ int artery_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 
 
 
-int arteryread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct element* ele = (void*)(self->chip);
 	switch(ele->type){
-		case _dbglog_:dbglog_read(self, peer, buf, len);break;
-		case _echo_:echo_read(self, peer, buf, len);break;
-		case _pump_:pump_read(self, peer, buf, len);break;
+		case _dbglog_:dbglog_read(self, peer, arg, idx, buf, len);break;
+		case _echo_:echo_read(self, peer, arg, idx, buf, len);break;
+		case _pump_:pump_read(self, peer, arg, idx, buf, len);break;
 
-		case _mpu9250_:mpu9250_read(self, peer, buf, len);break;
-		case _lsm9ds1_:lsm9ds1_read(self, peer, buf, len);break;
+		case _mpu9250_:mpu9250_read(self, peer, arg, idx, buf, len);break;
+		case _lsm9ds1_:lsm9ds1_read(self, peer, arg, idx, buf, len);break;
 
-		case _reline_:reline_read(self, peer, buf, len);break;
-		case _str2fv_:str2fv_read(self, peer, buf, len);break;
-		case _fv2str_:fv2str_read(self, peer, buf, len);break;
+		case _reline_:reline_read(self, peer, arg, idx, buf, len);break;
+		case _str2fv_:str2fv_read(self, peer, arg, idx, buf, len);break;
+		case _fv2str_:fv2str_read(self, peer, arg, idx, buf, len);break;
 
-		case _easyag_:easyag_read(self, peer, buf, len);break;
-		case _mahony_:mahony_read(self, peer, buf, len);break;
-		case _madgwick_:madgwick_read(self, peer, buf, len);break;
+		case _easyag_:easyag_read(self, peer, arg, idx, buf, len);break;
+		case _mahony_:mahony_read(self, peer, arg, idx, buf, len);break;
+		case _madgwick_:madgwick_read(self, peer, arg, idx, buf, len);break;
 	}
 	return 0;
 }
-int arterywrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct element* ele = (void*)(self->chip);
 	//say("@arterywrite\n");
 	switch(ele->type){
-		case _dbglog_:return dbglog_write(self, peer, buf, len);break;
-		case _echo_:return echo_write(self, peer, buf, len);break;
-		case _pump_:return pump_write(self, peer, buf, len);break;
+		case _dbglog_:return dbglog_write(self, peer, arg, idx, buf, len);break;
+		case _echo_:return echo_write(self, peer, arg, idx, buf, len);break;
+		case _pump_:return pump_write(self, peer, arg, idx, buf, len);break;
 
-		case _mpu9250_:return mpu9250_write(self, peer, buf, len);break;
-		case _lsm9ds1_:return lsm9ds1_write(self, peer, buf, len);break;
+		case _mpu9250_:return mpu9250_write(self, peer, arg, idx, buf, len);break;
+		case _lsm9ds1_:return lsm9ds1_write(self, peer, arg, idx, buf, len);break;
 
-		case _reline_:return reline_write(self, peer, buf, len);break;
-		case _str2fv_:return str2fv_write(self, peer, buf, len);break;
-		case _fv2str_:return fv2str_write(self, peer, buf, len);break;
+		case _reline_:return reline_write(self, peer, arg, idx, buf, len);break;
+		case _str2fv_:return str2fv_write(self, peer, arg, idx, buf, len);break;
+		case _fv2str_:return fv2str_write(self, peer, arg, idx, buf, len);break;
 
-		case _easyag_:return easyag_write(self, peer, buf, len);break;
-		case _mahony_:return mahony_write(self, peer, buf, len);break;
-		case _madgwick_:return madgwick_write(self, peer, buf, len);break;
+		case _easyag_:return easyag_write(self, peer, arg, idx, buf, len);break;
+		case _mahony_:return mahony_write(self, peer, arg, idx, buf, len);break;
+		case _madgwick_:return madgwick_write(self, peer, arg, idx, buf, len);break;
 
-		case _gps_: gpsclient_write((void*)self->chip, 0, (void*)peer->chip, 0, buf, len);break;
+		case _gps_:return gpsclient_write(self, peer, arg, idx, buf, len);break;
 	}
 	return 0;
 }

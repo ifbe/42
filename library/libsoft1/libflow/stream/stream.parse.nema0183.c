@@ -123,15 +123,16 @@ int gpsclient_parse(u8* buf, int len)
 	}
 	return 0;
 }
-int gpsclient_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int gpsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int j,k;
 	struct str* str;
+	struct element* ele;
 	//say("%.*s", len, buf);
 	//printmemory(buf, len);
+
+	ele = (void*)(self->chip);
+	if(0 == ele)return 0;
 
 	//tail
 	str = ele->buf;
@@ -191,10 +192,7 @@ int gpsclient_create(struct element* ele, u8* url)
 
 
 
-int gpsserver_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int gpsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

@@ -164,7 +164,7 @@ static void orthcam_matrix(
 
 
 
-static void orthcam_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void orthcam_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -188,7 +188,7 @@ static void orthcam_read(struct halfrel* self, struct halfrel* peer, void* buf, 
 	//if(_cam_ == self->flag)orthcam_matrix(act, pin, buf, len);
 	//else orthcam_draw(act, pin, win, sty);
 }
-static int orthcam_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static int orthcam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

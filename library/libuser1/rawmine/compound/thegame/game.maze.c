@@ -537,7 +537,7 @@ static void maze_event(
 
 
 
-static void maze_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void maze_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -552,7 +552,7 @@ static void maze_read(struct halfrel* self, struct halfrel* peer, void* buf, int
 	}
 	//maze_draw(act, pin, win, sty);
 }
-static void maze_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void maze_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

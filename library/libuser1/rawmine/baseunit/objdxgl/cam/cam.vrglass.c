@@ -269,7 +269,7 @@ static void vrglass_matrix(
 
 
 
-static void vrglass_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void vrglass_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -279,7 +279,7 @@ static void vrglass_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	//if(_cam_ == self->flag)vrglass_matrix(act, pin, buf, len);
 	//else vrglass_draw(act, pin, win, sty);
 }
-static int vrglass_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int vrglass_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);

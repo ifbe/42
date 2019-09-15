@@ -88,7 +88,7 @@ static void rawdump_draw(
 
 
 
-static void rawdump_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void rawdump_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -97,7 +97,7 @@ static void rawdump_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	//rawdump_draw(act, pin, win, sty);
 }
-static void rawdump_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void rawdump_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);

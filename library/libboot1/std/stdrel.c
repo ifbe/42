@@ -146,17 +146,19 @@ void* samesrcnextdst(struct relation* rel)
 
 
 
-int relation_r(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int relation_r(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	switch(self->type){
-		case _fd_: return systemread(self, peer, buf, len);
-		case _art_:return arteryread(self, peer, buf, len);
-		case _win_:return  arenaread(self, peer, buf, len);
-		case _act_:return  actorread(self, peer, buf, len);
+		case _dev_:return deviceread(self, peer, arg, idx, buf, len);
+		case _dri_:return driverread(self, peer, arg, idx, buf, len);
+		case  _fd_:return systemread(self, peer, arg, idx, buf, len);
+		case _art_:return arteryread(self, peer, arg, idx, buf, len);
+		case _win_:return  arenaread(self, peer, arg, idx, buf, len);
+		case _act_:return  actorread(self, peer, arg, idx, buf, len);
 	}
 	return 0;
 }
-int relationread(void* chip, int foot, void* buf, int len)
+int relationread(void* chip, int foot, void* arg, int idx, void* buf, int len)
 {
 	struct item* item;
 	struct relation* rel;
@@ -170,7 +172,7 @@ int relationread(void* chip, int foot, void* buf, int len)
 		if(foot == rel->dstflag){
 			self = (void*)&rel->srcchip;
 			peer = (void*)&rel->dstchip;
-			return relation_r(self, peer, buf, len);
+			return relation_r(self, peer, arg, idx, buf, len);
 		}
 		rel = samedstnextsrc(rel);
 	}
@@ -181,7 +183,7 @@ int relationread(void* chip, int foot, void* buf, int len)
 		if(foot == rel->srcflag){
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
-			return relation_r(self, peer, buf, len);
+			return relation_r(self, peer, arg, idx, buf, len);
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -192,17 +194,19 @@ int relationread(void* chip, int foot, void* buf, int len)
 
 
 
-int relation_w(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int relation_w(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	switch(self->type){
-		case _fd_: return systemwrite(self, peer, buf, len);
-		case _art_:return arterywrite(self, peer, buf, len);
-		case _win_:return  arenawrite(self, peer, buf, len);
-		case _act_:return  actorwrite(self, peer, buf, len);
+		case _dev_:return devicewrite(self, peer, arg, idx, buf, len);
+		case _dri_:return driverwrite(self, peer, arg, idx, buf, len);
+		case  _fd_:return systemwrite(self, peer, arg, idx, buf, len);
+		case _art_:return arterywrite(self, peer, arg, idx, buf, len);
+		case _win_:return  arenawrite(self, peer, arg, idx, buf, len);
+		case _act_:return  actorwrite(self, peer, arg, idx, buf, len);
 	}
 	return 0;
 }
-int relationwrite(void* chip, int foot, void* buf, int len)
+int relationwrite(void* chip, int foot, void* arg, int idx, void* buf, int len)
 {
 	struct item* item;
 	struct relation* rel;
@@ -217,7 +221,7 @@ int relationwrite(void* chip, int foot, void* buf, int len)
 		if(foot == rel->dstflag){
 			self = (void*)&rel->srcchip;
 			peer = (void*)&rel->dstchip;
-			return relation_w(self, peer, buf, len);
+			return relation_w(self, peer, arg, idx, buf, len);
 		}
 		rel = samedstnextsrc(rel);
 	}
@@ -229,7 +233,7 @@ int relationwrite(void* chip, int foot, void* buf, int len)
 		if(foot == rel->srcflag){
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
-			return relation_w(self, peer, buf, len);
+			return relation_w(self, peer, arg, idx, buf, len);
 		}
 		rel = samesrcnextdst(rel);
 	}

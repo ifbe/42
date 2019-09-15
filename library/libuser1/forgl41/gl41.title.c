@@ -3,11 +3,11 @@
 
 
 
-int gl41title_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int gl41title_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int gl41title_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int gl41title_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

@@ -102,7 +102,7 @@ static void login_draw(
 
 
 
-static void login_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void login_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -117,7 +117,7 @@ static void login_read(struct halfrel* self, struct halfrel* peer, void* buf, in
 	}
 	//login_draw(act, pin, win, sty);
 }
-static void login_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+static void login_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 static void login_stop(struct halfrel* self, struct halfrel* peer)

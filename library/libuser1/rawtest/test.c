@@ -60,11 +60,11 @@ static mat4 cammvp;
 
 
 
-int test_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int test_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int test_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int test_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

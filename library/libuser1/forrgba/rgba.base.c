@@ -30,7 +30,7 @@ int rgbanode_read(struct arena* win, struct style* stack)
 
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
-			actorread(self, peer, 0, 0);
+			actorread(self, peer, 0, 0, 0, 0);
 		}
 next:
 		rel = samesrcnextdst(rel);
@@ -60,7 +60,7 @@ int rgbanode_write(struct arena* win, struct style* stack, struct event* ev)
 
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
-			ret = actorwrite(self, peer, ev, 0);
+			ret = actorwrite(self, peer, 0, 0, ev, 0);
 			if(ret)break;
 		}
 next:

@@ -48,7 +48,7 @@ static void toycar_status(int E)
 
 
 
-int toycar_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int toycar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
     int j;
     int ret = mysnprintf(buf, 256,
@@ -68,7 +68,7 @@ int toycar_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
     ret += mysnprintf(buf+ret, 256, "</body></html>");
     return ret;
 }
-int toycar_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int toycar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
     say("@toycar_write\n");
     printmemory(buf, len);

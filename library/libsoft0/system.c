@@ -70,8 +70,6 @@ int systemwrite_in(struct object* chip, u8* foot, u8* buf, int len)
 	void* df;
 	struct relation* irel;
 	struct relation* orel;
-	struct halfrel* self;
-	struct halfrel* peer;
 
 	irel = chip->irel0;
 	orel = chip->orel0;
@@ -95,7 +93,7 @@ int systemwrite_in(struct object* chip, u8* foot, u8* buf, int len)
 		printmemory(buf, len);
 		return 0;
 	}
-
+/*
 	while(1)
 	{
 		if(0 == orel)break;
@@ -113,55 +111,15 @@ int systemwrite_in(struct object* chip, u8* foot, u8* buf, int len)
 
 		orel = samesrcnextdst(orel);
 	}
-
+*/
+	relationwrite(chip, _dst_, 0, 0, buf, len);
 	return 42;
 }
 
 
 
-/*
-int system_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	//say("systemwrite@{\n");
-	systemwrite_in(dc, df, buf, len);
-	//say("}@systemwrite\n");
 
-	return 0;
-}
-int system_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	return 0;
-}
-int system_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	int fd;
-	if(0 == dc)return 0;
-
-	fd = (dc - (void*)obj) / sizeof(struct object);
-	if(_uart_ == obj[fd].type)
-	{
-		return writeuart(fd, 0, buf, len);
-	}
-	if(_ptmx_ == obj[fd].type)
-	{
-		return writeshell(fd, 0, buf, len);
-	}
-	else
-	{
-		return writesocket(fd, df, buf, len);
-	}
-
-	return 0;
-}
-int system_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	return 0;
-}*/
-
-
-
-
-int systemread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int systemread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct object* oo;
 	int fd;
@@ -174,15 +132,13 @@ int systemread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 	fd = ((void*)oo - (void*)obj) / sizeof(struct object);
 	if(0 == fd)return 0;
 
-	if(_i2c_ == oo->type){
-		//systemi2c_read(fd, , buf, len);
-	}
-	if(_file_ == oo->type){
-		return readfile(fd, 0, buf, len);
+	switch(oo->type){
+		case _i2c_:return systemi2c_read(fd, idx, buf, len);
+		case _file_:return readfile(fd, idx, buf, len);
 	}
 	return 0;
 }
-int systemwrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int systemwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	int fd;
 	struct object* oo;

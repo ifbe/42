@@ -77,7 +77,7 @@ static int pointer_draw(
 
 
 
-static void pointer_read(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static void pointer_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -86,7 +86,7 @@ static void pointer_read(struct halfrel* self, struct halfrel* peer, u8* buf, in
 	struct style* sty = (void*)(peer->foot);
 	//pointer_draw(act, pin, win, sty);
 }
-static int pointer_write(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+static int pointer_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

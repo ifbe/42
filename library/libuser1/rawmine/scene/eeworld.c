@@ -3,14 +3,10 @@
 
 
 
-int eeworld_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int eeworld_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct actor* world;
 	struct actor* kirch;
-
-	struct relation* rel;
-	struct style* sty;
-	//struct actor* act;
 
 	world = (void*)self->chip;
 	if(0 == world)return 0;
@@ -19,7 +15,7 @@ int eeworld_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 	if(0 == kirch)return 0;
 
 	say("@eeworld_read:%.8s, %.8s\n", &world->type, &kirch->type);
-
+/*
 	rel = world->orel0;
 	while(1)
 	{
@@ -33,7 +29,8 @@ int eeworld_read(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 next:
 		rel = samesrcnextdst(rel);
 	}
-
+*/
+	relationread(world, _src_, 0, 0, 0, 0);
 	return 0;
 }
 int eeworld_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)

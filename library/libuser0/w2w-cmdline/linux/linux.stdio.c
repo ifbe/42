@@ -20,7 +20,7 @@ void terminalthread(struct arena* win)
 		}
 		else {
 			//say("%x\n", ret);
-			relationwrite(win, _dst_, &ret, 1);
+			relationwrite(win, _dst_, 0, 0, &ret, 1);
 		}
 	}
 }
