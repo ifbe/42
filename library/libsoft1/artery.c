@@ -70,9 +70,9 @@ int gcodeserver_create(struct element* ele, void* url);
 int gcodeserver_write( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //uart.gps
 int gpsclient_create(struct element* ele, void* url);
-int gpsclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int gpsclient_write( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int gpsserver_create(struct element* ele, void* url);
-int gpsserver_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);
+int gpsserver_write( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //socket
 int hackclient_create(struct element* ele, void* url);
 int hackclient_write( struct element* ele, void* sty, struct object* obj, void* pin, u8* buf, int len);

@@ -1,0 +1,27 @@
+<system>
+udphost{
+fmt:UDP
+url:0.0.0.0:9999
+}
+i2chost{
+fmt:i2c
+url:/dev/i2c-1
+}
+</system>
+
+
+<artery>
+lsm9ds1{
+fmt:lsm9ds1
+}
+dbglog{
+fmt:dbglog
+}
+</artery>
+
+
+<relation>
+(lsm9ds1, 0, art, src) -> (i2chost, 0, fd, dst)
+(lsm9ds1, 0, art, dst) -> (dbglog, 0, art, src)
+(lsm9ds1, 0, art, clk) -> (udphost, 0, fd, dst)
+</relation>
