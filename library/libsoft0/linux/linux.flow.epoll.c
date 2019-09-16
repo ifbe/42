@@ -61,8 +61,9 @@ void epoll_add(u64 fd)
 }
 static void* epollthread(void* p)
 {
-	int i, ret;
+	int i;
 	int fd, cc;
+	int ret, cnt;
 	struct epoll_event epollevent[16];
 
 	while(alive)

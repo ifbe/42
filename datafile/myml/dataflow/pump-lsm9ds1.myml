@@ -14,14 +14,14 @@ url:/dev/i2c-1
 lsm9ds1{
 fmt:lsm9ds1
 }
-dbglog{
-fmt:dbglog
+dbgf32{
+fmt:dbgf32
 }
 </artery>
 
 
 <relation>
-(lsm9ds1, 0, art, src) -> (i2chost, 0, fd, dst)
-(lsm9ds1, 0, art, dst) -> (dbglog, 0, art, src)
 (lsm9ds1, 0, art, clk) -> (udphost, 0, fd, dst)
+(lsm9ds1, 0, art, src) -> (i2chost, 0, fd, dst)
+(lsm9ds1, 0, art, dst) -> (dbgf32, 0, art, src)
 </relation>

@@ -173,7 +173,8 @@ libflow/ahrs/ahrs.madgwick.c \
 libflow/ahrs/ahrs.ekf.c \
 libflow/ahrs/ahrs.ukf.c \
 libflow/gcode/gcode.c \
-libflow/stream/stream.test.dbglog.c \
+libflow/stream/stream.test.dbgf32.c \
+libflow/stream/stream.test.dbghex.c \
 libflow/stream/stream.test.echo.c \
 libflow/stream/stream.test.pump.c \
 libflow/stream/stream.reorder.bylength.c \
@@ -183,6 +184,7 @@ libflow/stream/stream.parse.mavlink.c \
 libflow/stream/stream.parse.nema0183.c \
 libflow/stream/stream.parse.str2fv.c \
 libflow/stream/stream.parse.fv2str.c \
+libflow/stream/stream.parse.qu2eu.c \
 libphys/phys.elec.c \
 libphys/phys.mech.c \
 artery.c

@@ -14,14 +14,14 @@ url:a.out
 pump{
 fmt:pump
 }
-dbglog{
-fmt:dbglog
+dbghex{
+fmt:dbghex
 }
 </artery>
 
 
 <relation>
 (pump, 0, art, src) -> (file, 0, fd, dst)
-(pump, 0, art, dst) -> (dbglog, 0, art, src)
+(pump, 0, art, dst) -> (dbghex, 0, art, src)
 (pump, 0, art, clk) -> (udphost, 0, fd, dst)
 </relation>

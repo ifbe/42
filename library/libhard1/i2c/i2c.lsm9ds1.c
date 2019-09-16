@@ -78,7 +78,7 @@ int lsm9ds1_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 
 	if(_clk_ == self->flag){
 		ret = readlsm9ds1(it, tmp);
-		relationwrite(it, _src_, 0, 0, tmp, ret);
+		relationwrite(it, _dst_, 0, 0, tmp, ret);
 	}
 	return 0;
 }

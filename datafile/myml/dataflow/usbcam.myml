@@ -1,6 +1,6 @@
 <artery>
-dbglog{
-fmt:dbglog
+dbghex{
+fmt:dbghex
 }
 </artery>
 
@@ -13,5 +13,5 @@ fmt:cam
 
 
 <relation>
-(usbcam, 0, win, dst) -> (dbglog, 0, art, src)
+(usbcam, 0, win, dst) -> (dbghex, 0, art, src)
 </relation>

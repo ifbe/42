@@ -369,6 +369,12 @@ void* samesrcnextdst(void*);
 void* samedstprevsrc(void*);
 void* samedstnextsrc(void*);
 //
+double sine(double);
+double cosine(double);
+double arcsin(double);
+double arccos(double);
+double arctan2(double, double);
+//
 int threaddelete(u64);
 u64 threadcreate(void*, void*);
 int memorydelete(void*);

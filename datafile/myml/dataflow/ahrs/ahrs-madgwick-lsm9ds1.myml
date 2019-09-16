@@ -1,0 +1,36 @@
+<system>
+i2chost{
+fmt:i2c
+url:/dev/i2c-1
+}
+clock{
+fmt:UDP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<artery>
+lsm9ds1{
+fmt:lsm9ds1
+}
+madgwick{
+fmt:madgwick
+}
+qu2eu{
+fmt:qu2eu
+}
+dbgf32{
+fmt:dbgf32
+}
+</artery>
+
+
+<relation>
+(i2chost, 0, fd, 0) -> (lsm9ds1, 0, art, src)
+(lsm9ds1, 0, art, dst) -> (madgwick, 0, art, src)
+(madgwick, 0, art, dst) -> (qu2eu, 0, art, src)
+(qu2eu, 0, art, dst) -> (dbgf32, 0, art, src)
+
+(clock, 0, fd, dst) -> (lsm9ds1, 0, art, clk)
+</relation>

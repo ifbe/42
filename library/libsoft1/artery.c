@@ -4,7 +4,8 @@
 #define _hfs_ hex32('h','f','s',0)
 #define _ext_ hex32('e','x','t',0)
 //
-#define _dbglog_ hex64('d','b','g','l','o','g',0,0)
+#define _dbgf32_ hex64('d','b','g','f','3','2',0,0)
+#define _dbghex_ hex64('d','b','g','h','e','x',0,0)
 #define _echo_ hex32('e','c','h','o')
 #define _pump_ hex32('p','u','m','p')
 //
@@ -14,6 +15,7 @@
 #define _reline_ hex64('r','e','l','i','n','e',0,0)
 #define _str2fv_ hex64('s','t','r','2','f','v',0,0)
 #define _fv2str_ hex64('f','v','2','s','t','r',0,0)
+#define _qu2eu_ hex64('q','u','2','e','u',0,0,0)
 //
 #define _easyag_  hex64('e','a','s','y','a','g', 0 , 0 )
 #define _mahony_  hex64('m','a','h','o','n','y', 0 , 0 )
@@ -27,9 +29,12 @@ int ntfsclient_create(struct element* ele, void* url);
 int hfsclient_create(struct element* ele, void* url);
 int extclient_create(struct element* ele, void* url);
 //
-int dbglog_create(struct element* ele, void* url);
-int dbglog_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int dbglog_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int dbgf32_create(struct element* ele, void* url);
+int dbgf32_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int dbgf32_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int dbghex_create(struct element* ele, void* url);
+int dbghex_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int dbghex_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int echo_create(struct element* ele, void* url);
 int echo_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int echo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
@@ -47,6 +52,9 @@ int lsm9ds1_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 int reline_create(struct element* ele, void* url);
 int reline_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int qu2eu_create(struct element* ele, void* url);
+int qu2eu_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int qu2eu_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int str2fv_create(struct element* ele, void* url);
 int str2fv_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int str2fv_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
@@ -260,7 +268,8 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 {
 	struct element* ele = (void*)(self->chip);
 	switch(ele->type){
-		case _dbglog_:dbglog_read(self, peer, arg, idx, buf, len);break;
+		case _dbgf32_:dbgf32_read(self, peer, arg, idx, buf, len);break;
+		case _dbghex_:dbghex_read(self, peer, arg, idx, buf, len);break;
 		case _echo_:echo_read(self, peer, arg, idx, buf, len);break;
 		case _pump_:pump_read(self, peer, arg, idx, buf, len);break;
 
@@ -268,6 +277,7 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _lsm9ds1_:lsm9ds1_read(self, peer, arg, idx, buf, len);break;
 
 		case _reline_:reline_read(self, peer, arg, idx, buf, len);break;
+		case _qu2eu_:qu2eu_read(self, peer, arg, idx, buf, len);break;
 		case _str2fv_:str2fv_read(self, peer, arg, idx, buf, len);break;
 		case _fv2str_:fv2str_read(self, peer, arg, idx, buf, len);break;
 
@@ -282,14 +292,15 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	struct element* ele = (void*)(self->chip);
 	//say("@arterywrite\n");
 	switch(ele->type){
-		case _dbglog_:return dbglog_write(self, peer, arg, idx, buf, len);break;
+		case _dbgf32_:return dbgf32_write(self, peer, arg, idx, buf, len);break;
+		case _dbghex_:return dbghex_write(self, peer, arg, idx, buf, len);break;
 		case _echo_:return echo_write(self, peer, arg, idx, buf, len);break;
 		case _pump_:return pump_write(self, peer, arg, idx, buf, len);break;
 
 		case _mpu9250_:return mpu9250_write(self, peer, arg, idx, buf, len);break;
 		case _lsm9ds1_:return lsm9ds1_write(self, peer, arg, idx, buf, len);break;
 
-		case _reline_:return reline_write(self, peer, arg, idx, buf, len);break;
+		case _qu2eu_:return qu2eu_write(self, peer, arg, idx, buf, len);break;
 		case _str2fv_:return str2fv_write(self, peer, arg, idx, buf, len);break;
 		case _fv2str_:return fv2str_write(self, peer, arg, idx, buf, len);break;
 
@@ -379,13 +390,22 @@ void* arterycreate(u64 type, void* argstr)
 	}
 
 	//test
-	if(_dbglog_ == type)
+	if(_dbgf32_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _dbglog_;
-		dbglog_create(e, url);
+		e->type = _dbgf32_;
+		dbgf32_create(e, url);
+		return e;
+	}
+	if(_dbghex_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _dbghex_;
+		dbghex_create(e, url);
 		return e;
 	}
 	if(_echo_ == type)
@@ -428,6 +448,15 @@ void* arterycreate(u64 type, void* argstr)
 	}
 
 	//
+	if(_qu2eu_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _qu2eu_;
+		qu2eu_create(e, url);
+		return e;
+	}
 	if(_reline_ == type)
 	{
 		e = allocelement();
