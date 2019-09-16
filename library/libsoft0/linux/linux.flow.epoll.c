@@ -17,11 +17,14 @@
 #include <sys/types.h>
 #include "libsoft.h"
 #define MAXSIZE 4096
+#define BUFFER_SIZE 0x100000
+int readsocket(int, void*, void*, int);
 
 
 
 
 struct object* obj;
+static void* buf;
 static int alive = 0;
 static int epollfd = 0;
 
@@ -117,7 +120,36 @@ static void* epollthread(void* p)
 				else
 				{
 					//printf("#### %x\n", fd);
-					eventwrite('@', _fd_, fd, timeread());
+					//eventwrite('@', _fd_, fd, timeread());
+					cnt = readsocket(fd, obj[fd].peer, buf, BUFFER_SIZE);
+					if(cnt >= 0)
+					{
+						//printmemory(buf, cnt);
+						cc = fd;
+						if( (_Tcp_ == obj[fd].type) &&
+							(0 == obj[fd].irel0) &&
+							(0 == obj[fd].orel0) )
+						{
+							//TCP = Tcp.parent
+							cc = obj[fd].thatfd;
+
+							//Tcp = TCP.child
+							obj[cc].thatfd = fd;
+						}
+
+						//say("@kqueuethread: %.4s\n", &obj[cc].type);
+						relationwrite(&obj[cc], _dst_, 0, 0, buf, cnt);
+					}
+					if(cnt <= 0)
+					{
+						epoll_del(fd);
+						close(fd);
+						obj[fd].type = 0;
+						obj[fd].name = 0;
+						obj[fd].selffd = 0;
+						obj[fd].thatfd = 0;
+						continue;
+					}
 				}
 			}//EPOLLIN
 		}//for
@@ -140,6 +172,7 @@ void deletewatcher(int num)
 void createwatcher(void* addr)
 {
 	obj = addr;
+	buf = addr+0x300000;
 
 	epollfd = epoll_create(MAXSIZE);
 	if(epollfd <= 0)printf("error@epoll_create: %d,%d\n", epollfd, errno);

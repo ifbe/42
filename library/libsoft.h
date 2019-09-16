@@ -18,10 +18,12 @@ typedef float mat4[4][4];
 #define _dst_ hex32('d','s','t',0)
 #define _clk_ hex32('c','l','k',0)
 //
-#define _fd_ hex32('f','d',0,0)
-#define _art_ hex32('a','r','t',0)
-#define _win_ hex32('w','i','n',0)
 #define _act_ hex32('a','c','t',0)
+#define _win_ hex32('w','i','n',0)
+#define _art_ hex32('a','r','t',0)
+#define _fd_ hex32('f','d',0,0)
+#define _dri_ hex32('d','r','i',0)
+#define _dev_ hex32('d','e','v',0)
 //
 #define _FILE_ hex32('F','I','L','E')
 #define _file_ hex32('f','i','l','e')
