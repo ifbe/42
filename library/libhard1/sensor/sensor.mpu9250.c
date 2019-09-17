@@ -202,6 +202,7 @@ int mpu9250_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 }
 int mpu9250_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
+	say("@mpu9250_write: %.4s\n", &self->flag);
 	return 0;
 }
 int mpu9250_stop(struct halfrel* self, struct halfrel* peer)
@@ -210,36 +211,8 @@ int mpu9250_stop(struct halfrel* self, struct halfrel* peer)
 }
 int mpu9250_start(struct halfrel* self, struct halfrel* peer)
 {
-	int fd;
-	struct element* ele;
-	struct relation* rel;
-	struct object* obj;
-	say("@mpu9250_start\n");
-
-
-	ele = (void*)(self->chip);
-	if(0 == ele)return 0;
-
-	rel = ele->irel0;
-	while(1){
-		if(0 == rel)break;
-
-		if(_fd_ == rel->srctype){
-			obj = (void*)(rel->srcchip);
-			if(0 == obj)return 0;
-
-			fd = obj->selffd;
-			if(0 == fd)return 0;
-
-			switch(obj->type){
-				case _i2c_:mpu9250_start_i2c(fd);break;
-				case _spi_:mpu9250_start_spi(fd);break;
-			}//switch
-		}//if(fd)
-
-		rel = samedstnextsrc(rel);
-	}//while
-
+	u64 foot = self->flag;
+	say("@mpu9250_start: %.8s\n", &foot);
 	return 0;
 }
 

@@ -247,6 +247,8 @@ int relationwrite(void* chip, int foot, void* arg, int idx, void* buf, int len)
 int relationstop(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->type){
+		case _dev_:return devicestop(self, peer);
+		case _dri_:return driverstop(self, peer);
 		case _fd_: return systemstop(self, peer);
 		case _art_:return arterystop(self, peer);
 		case _win_:return  arenastop(self, peer);
@@ -261,6 +263,8 @@ int relationstop(struct halfrel* self, struct halfrel* peer)
 int relationstart(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->type){
+		case _dev_:return devicestart(self, peer);
+		case _dri_:return driverstart(self, peer);
 		case _fd_: return systemstart(self, peer);
 		case _art_:return arterystart(self, peer);
 		case _win_:return  arenastart(self, peer);

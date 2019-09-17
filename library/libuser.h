@@ -1261,6 +1261,20 @@ int systemstart(struct halfrel* self, struct halfrel* peer);
 int systemdelete(void*);
 void* systemcreate(u64, void*);
 //
+int driverread( struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
+int driverwrite(struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
+int driverstop( struct halfrel* self, struct halfrel* peer);
+int driverstart(struct halfrel* self, struct halfrel* peer);
+int driverdelete(void*);
+void* drivercreate(u64, void*);
+//
+int deviceread( struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
+int devicewrite(struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
+int devicestop( struct halfrel* self, struct halfrel* peer);
+int devicestart(struct halfrel* self, struct halfrel* peer);
+int devicedelete(void*);
+void* devicecreate(u64, void*);
+//
 int relationread( void* item, int foot, void* arg, int idx, void* buf, int len);
 int relationwrite(void* item, int foot, void* arg, int idx, void* buf, int len);
 int relationstop( struct halfrel* self, struct halfrel* peer);

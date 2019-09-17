@@ -88,6 +88,7 @@ int lsm9ds1_stop(struct halfrel* self, struct halfrel* peer)
 }
 int lsm9ds1_start(struct halfrel* self, struct halfrel* peer)
 {
+	say("@lsm9ds1_start\n");
 	return 0;
 }
 

@@ -1,3 +1,10 @@
+<driver>
+lsm9ds1{
+fmt:lsm9ds1
+}
+</driver>
+
+
 <system>
 i2chost{
 fmt:i2c
@@ -11,9 +18,6 @@ url:0.0.0.0:9999
 
 
 <artery>
-lsm9ds1{
-fmt:lsm9ds1
-}
 madgwick{
 fmt:madgwick
 }
@@ -27,10 +31,10 @@ fmt:dbgf32
 
 
 <relation>
-(i2chost, 0, fd, 0) -> (lsm9ds1, 0, art, src)
-(lsm9ds1, 0, art, dst) -> (madgwick, 0, art, src)
+(i2chost, 0, fd, 0) -> (lsm9ds1, 0, dri, src)
+(lsm9ds1, 0, dri, dst) -> (madgwick, 0, art, src)
 (madgwick, 0, art, dst) -> (qu2eu, 0, art, src)
 (qu2eu, 0, art, dst) -> (dbgf32, 0, art, src)
 
-(clock, 0, fd, dst) -> (lsm9ds1, 0, art, clk)
+(clock, 0, fd, dst) -> (lsm9ds1, 0, dri, clk)
 </relation>

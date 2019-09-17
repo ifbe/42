@@ -156,6 +156,7 @@ int systemstop(struct halfrel* self, struct halfrel* peer)
 }
 int systemstart(struct halfrel* self, struct halfrel* peer)
 {
+	say("@systemstart\n");
 	return 0;
 }
 

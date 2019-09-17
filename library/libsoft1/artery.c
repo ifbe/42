@@ -9,9 +9,6 @@
 #define _echo_ hex32('e','c','h','o')
 #define _pump_ hex32('p','u','m','p')
 //
-#define _mpu9250_ hex64('m','p','u','9','2','5','0',0)
-#define _lsm9ds1_ hex64('l','s','m','9','d','s','1',0)
-//
 #define _reline_ hex64('r','e','l','i','n','e',0,0)
 #define _str2fv_ hex64('s','t','r','2','f','v',0,0)
 #define _fv2str_ hex64('f','v','2','s','t','r',0,0)
@@ -41,13 +38,6 @@ int echo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u
 int pump_create(struct element* ele, void* url);
 int pump_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int pump_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-//
-int mpu9250_create(struct element* ele, void* url);
-int mpu9250_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int mpu9250_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int lsm9ds1_create(struct element* ele, void* url);
-int lsm9ds1_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int lsm9ds1_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 int reline_create(struct element* ele, void* url);
 int reline_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
@@ -185,84 +175,6 @@ int parsetypefromurl(u8* url, u8* type)
 
 
 
-/*
-int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	struct element* ele = dc;
-	if(0 == ele)return 0;
-
-//say("arterywrite@{\n");
-	switch(ele->type)
-	{
-		case _gps_: gpsclient_write(dc, df, sc, sf, buf, len);break;
-
-		case _HACK_:hackserver_write(dc, df, sc, sf, buf, len);break;
-		case _hack_:hackclient_write(dc, df, sc, sf, buf, len);break;
-
-		case _Dns_:dnsserver_rootwrite(dc, df, sc, sf, buf, len);break;
-		case _dns_:dnsclient_rootwrite(dc, df, sc, sf, buf, len);break;
-
-		case _QUIC_:quicmaster_write(dc, df, sc, sf, buf, len);break;
-		case _Quic_:quicserver_write(dc, df, sc, sf, buf, len);break;
-		case _quic_:quicclient_write(dc, df, sc, sf, buf, len);break;
-
-		case _SSH_:sshmaster_write(dc, df, sc, sf, buf, len);break;
-		case _Ssh_:sshserver_write(dc, df, sc, sf, buf, len);break;
-		case _ssh_:sshclient_write(dc, df, sc, sf, buf, len);break;
-
-		case _TELNET_:telnetmaster_write(dc, df, sc, sf, buf, len);break;
-		case _Telnet_:telnetserver_write(dc, df, sc, sf, buf, len);break;
-		case _telnet_:telnetclient_write(dc, df, sc, sf, buf, len);break;
-
-		case _HTTP_:httpmaster_write(dc, df, sc, sf, buf, len);break;
-		case _Http_:httpserver_rootwrite(dc, df, sc, sf, buf, len);break;
-		case _http_:httpclient_write(dc, df, sc, sf, buf, len);break;
-
-		case _WS_:wsmaster_write(dc, df, sc, sf, buf, len);break;
-		case _Ws_:wsserver_rootwrite(dc, df, sc, sf, buf, len);break;
-		case _ws_:wsclient_write(dc, df, sc, sf, buf, len);break;
-
-		case _TLS_:tlsmaster_write(dc, df, sc, sf, buf, len);break;
-		case _Tls_:tlsserver_write(dc, df, sc, sf, buf, len);break;
-		case _tls_:tlsclient_write(dc, df, sc, sf, buf, len);break;
-
-		case _SERVE_:servemaster_write(dc, df, sc, sf, buf, len);break;
-		case _Serve_:serveserver_rootwrite(dc, df, sc, sf, buf, len);break;
-		case _serve_:serveclient_write(dc, df, sc, sf, buf, len);break;
-
-		dafault: printmemory(buf, len);
-	}
-//say("}@arterywrite\n");
-
-	return 0;
-}
-int artery_rootread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	return 0;
-}
-int artery_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	struct element* ele = dc;
-	if(0 == ele)return 0;
-
-	switch(ele->type)
-	{
-		case _HTTP_:
-		case _Http_:httpserver_leafwrite(dc, df, sc, sf, buf, len);break;
-		case _WS_:
-		case _Ws_:wsserver_leafwrite(dc, df, sc, sf, buf, len);break;
-
-		default: say("%llx\n", ele->type);
-	}
-	return 0;
-}
-int artery_leafread(void* dc,void* df,void* sc,void* sf,void* buf,int len)
-{
-	return 0;
-}*/
-
-
-
 
 int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -272,9 +184,6 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _dbghex_:dbghex_read(self, peer, arg, idx, buf, len);break;
 		case _echo_:echo_read(self, peer, arg, idx, buf, len);break;
 		case _pump_:pump_read(self, peer, arg, idx, buf, len);break;
-
-		case _mpu9250_:mpu9250_read(self, peer, arg, idx, buf, len);break;
-		case _lsm9ds1_:lsm9ds1_read(self, peer, arg, idx, buf, len);break;
 
 		case _reline_:reline_read(self, peer, arg, idx, buf, len);break;
 		case _qu2eu_:qu2eu_read(self, peer, arg, idx, buf, len);break;
@@ -296,9 +205,6 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _dbghex_:return dbghex_write(self, peer, arg, idx, buf, len);break;
 		case _echo_:return echo_write(self, peer, arg, idx, buf, len);break;
 		case _pump_:return pump_write(self, peer, arg, idx, buf, len);break;
-
-		case _mpu9250_:return mpu9250_write(self, peer, arg, idx, buf, len);break;
-		case _lsm9ds1_:return lsm9ds1_write(self, peer, arg, idx, buf, len);break;
 
 		case _qu2eu_:return qu2eu_write(self, peer, arg, idx, buf, len);break;
 		case _str2fv_:return str2fv_write(self, peer, arg, idx, buf, len);break;
@@ -424,26 +330,6 @@ void* arterycreate(u64 type, void* argstr)
 
 		e->type = _pump_;
 		pump_create(e, url);
-		return e;
-	}
-
-	//gyro
-	if(_mpu9250_ == type)
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		e->type = _mpu9250_;
-		mpu9250_create(e, url);
-		return e;
-	}
-	if(_lsm9ds1_ == type)
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		e->type = _lsm9ds1_;
-		lsm9ds1_create(e, url);
 		return e;
 	}
 

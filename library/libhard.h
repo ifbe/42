@@ -247,5 +247,8 @@ void* samesrcnextdst(void*);
 void* samedstprevsrc(void*);
 void* samedstnextsrc(void*);
 //
+int ncmp(void*, void*, int);
+int cmp(void*, void*);
+//
 void printmemory(void*, int);
 void say(void*, ...);

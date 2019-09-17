@@ -22,6 +22,7 @@ int devicestop(void* self, void* peer, void* buf, int len)
 }
 int devicestart(void* self, void* peer, void* buf, int len)
 {
+	say("@devicestart\n");
 	return 0;
 }
 
@@ -70,7 +71,7 @@ int devicesearch(u8* buf, int len)
 	for(j=0;j<64;j++)
 	{
 		if(0 == dev[j].type)continue;
-		say("[%03x]: %.8s\n", j, &dev[j].type);
+		say("[%04x]: %.8s\n", j, &dev[j].type);
 	}
 	return 0;
 }
