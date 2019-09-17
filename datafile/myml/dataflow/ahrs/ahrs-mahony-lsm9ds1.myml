@@ -1,8 +1,12 @@
-<system>
+<device>
 i2chost{
 fmt:i2c
 url:/dev/i2c-1
 }
+</device>
+
+
+<system>
 clock{
 fmt:UDP
 url:0.0.0.0:9999
@@ -27,7 +31,7 @@ fmt:dbgf32
 
 
 <relation>
-(i2chost, 0, fd, 0) -> (lsm9ds1, 0, art, src)
+(i2chost, 0, dev, 0) -> (lsm9ds1, 0, art, i2c)
 (lsm9ds1, 0, art, dst) -> (mahony, 0, art, src)
 (mahony, 0, art, dst) -> (qu2eu, 0, art, src)
 (qu2eu, 0, art, dst) -> (dbgf32, 0, art, src)

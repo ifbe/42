@@ -1,3 +1,11 @@
+<device>
+spihost{
+fmt:spi
+url:/dev/spidev0.0
+}
+</device>
+
+
 <driver>
 mpu9250{
 fmt:mpu9250
@@ -6,10 +14,6 @@ fmt:mpu9250
 
 
 <system>
-spihost{
-fmt:spi
-url:/dev/spidev0.0
-}
 clock{
 fmt:UDP
 url:0.0.0.0:9999
@@ -31,7 +35,7 @@ fmt:dbgf32
 
 
 <relation>
-(spihost, 0, fd, 0) -> (mpu9250, 0, dri, src)
+(spihost, 0, dev, 0) -> (mpu9250, 0, dri, spi)
 (mpu9250, 0, dri, dst) -> (madgwick, 0, art, src)
 (madgwick, 0, art, dst) -> (qu2eu, 0, art, src)
 (qu2eu, 0, art, dst) -> (dbgf32, 0, art, src)

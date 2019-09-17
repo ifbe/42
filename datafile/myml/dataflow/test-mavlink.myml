@@ -1,9 +1,9 @@
-<system>
+<driver>
 uart{
 fmt:uart
 url:COM3
 }
-</system>
+</driver>
 
 
 <artery>
@@ -14,5 +14,5 @@ fmt:mavlink
 
 
 <relation>
-(uart, 0, fd, 0) -> (mavlink, 0, art, 0)
+(uart, 0, dev, 0) -> (mavlink, 0, art, 0)
 </relation>

@@ -5,14 +5,14 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <termios.h>
-#include "libsoft.h"
+#include "libhard.h"
 int epoll_add(int);
 int listfolder(char*, int, char*, char*);
 
 
 
 
-static struct object* obj;
+static struct device* dev;
 
 
 
@@ -70,8 +70,8 @@ int uart_start(char* p, int speed)
 	tcflush(fd,TCIFLUSH);
 	tcsetattr(fd,TCSANOW,&option);
 
-	obj[fd].type = _uart_;
-	obj[fd].buf = (void*)malloc(0x100000);
+	dev[fd].type = _uart_;
+	dev[fd].buf = (void*)malloc(0x100000);
 	epoll_add(fd);
 
 	return fd;
@@ -85,5 +85,5 @@ void freeuart()
 }
 void inituart(void* addr)
 {
-	obj = addr;
+	dev = addr;
 }

@@ -1,11 +1,15 @@
+<device>
+i2chost{
+fmt:i2c
+url:/dev/i2c-1
+}
+</device>
+
+
 <system>
 udphost{
 fmt:UDP
 url:0.0.0.0:9999
-}
-i2chost{
-fmt:i2c
-url:/dev/i2c-1
 }
 </system>
 
@@ -22,6 +26,6 @@ fmt:dbgf32
 
 <relation>
 (lsm9ds1, 0, art, clk) -> (udphost, 0, fd, dst)
-(lsm9ds1, 0, art, src) -> (i2chost, 0, fd, dst)
+(lsm9ds1, 0, art, i2c) -> (i2chost, 0, dev, dst)
 (lsm9ds1, 0, art, dst) -> (dbgf32, 0, art, src)
 </relation>

@@ -13,6 +13,10 @@ typedef unsigned long long u64;
 #define _dri_ hex32('d','r','i',0)
 #define _dev_ hex32('d','e','v',0)
 //
+#define _src_ hex32('s','r','c',0)
+#define _dst_ hex32('d','s','t',0)
+#define _clk_ hex32('c','l','k',0)
+//
 #define _ahci_ hex32('a','h','c','i')
 #define _xhci_ hex32('x','h','c','i')
 #define _usb_ hex32('u','s','b',0)
@@ -135,6 +139,7 @@ struct device
 	};
 	union{
 		u64 padd3;
+		void* buf;
 		void* addr3;
 	};
 

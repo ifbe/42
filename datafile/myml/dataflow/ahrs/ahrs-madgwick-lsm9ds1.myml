@@ -1,3 +1,11 @@
+<device>
+i2chost{
+fmt:i2c
+url:/dev/i2c-1
+}
+</device>
+
+
 <driver>
 lsm9ds1{
 fmt:lsm9ds1
@@ -6,10 +14,6 @@ fmt:lsm9ds1
 
 
 <system>
-i2chost{
-fmt:i2c
-url:/dev/i2c-1
-}
 clock{
 fmt:UDP
 url:0.0.0.0:9999
@@ -31,7 +35,7 @@ fmt:dbgf32
 
 
 <relation>
-(i2chost, 0, fd, 0) -> (lsm9ds1, 0, dri, src)
+(i2chost, 0, dev, 0) -> (lsm9ds1, 0, dri, i2c)
 (lsm9ds1, 0, dri, dst) -> (madgwick, 0, art, src)
 (madgwick, 0, art, dst) -> (qu2eu, 0, art, src)
 (qu2eu, 0, art, dst) -> (dbgf32, 0, art, src)

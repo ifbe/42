@@ -1,9 +1,9 @@
-<system>
+<device>
 uart{
 fmt:uart
 url:/dev/ttyUSB0
 }
-</system>
+</device>
 
 
 <artery>
@@ -27,7 +27,7 @@ fmt:ahrs
 
 
 <relation>
-(uart, 0, fd, dst) -> (reline, 0, art, src)
+(uart, 0, dev, dst) -> (reline, 0, art, src)
 (reline, 0, art, dst) -> (str2fv, 0, art, src)
 (str2fv, 0, art, dst) -> (madgwick, 0, art, src)
 (madgwick, 0, art, dst) -> (ahrs, 0, win, src)

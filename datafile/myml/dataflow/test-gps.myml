@@ -1,9 +1,9 @@
-<system>
+<device>
 uart{
 fmt:uart
 url:COM3
 }
-</system>
+</device>
 
 
 <artery>
@@ -14,5 +14,5 @@ fmt:gps
 
 
 <relation>
-(uart, 0, fd, 0) -> (gps, 0, art, 0)
+(uart, 0, dev, 0) -> (gps, 0, art, 0)
 </relation>

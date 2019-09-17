@@ -1,16 +1,20 @@
-<system>
+<device>
 i2chost{
 fmt:i2c
 url:/dev/i2c-1
 }
-</system>
+</device>
 
 
-<artery>
+<driver>
 mpu9250{
 fmt:mpu9250
 url:0x68,0xc
 }
+</driver>
+
+
+<artery>
 easyag{
 fmt:easyag
 }
@@ -25,7 +29,7 @@ fmt:ahrs
 
 
 <relation>
-(i2chost, 0, fd, 0) -> (mpu9250, 0, art, src)
-(mpu9250, 0, art, dst) -> (easyag, 0, art, src)
+(i2chost, 0, dev, 0) -> (mpu9250, 0, dri, i2c)
+(mpu9250, 0, dri, dst) -> (easyag, 0, art, src)
 (easyag, 0, art, dst) -> (ahrs, 0, win, src)
 </relation>
