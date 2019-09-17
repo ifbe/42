@@ -1,24 +1,24 @@
-void systemspi_read()
+void spi_read()
 {
 }
-void systemspi_write()
+void spi_write()
 {
 }
-void systemspi_list()
+void spi_list()
 {
 }
-void systemspi_choose()
+void spi_choose()
 {
 }
-void systemspi_stop()
+void spi_stop()
 {
 }
-void systemspi_start()
+void spi_start()
 {
 }
-void systemspi_delete()
+void spi_delete()
 {
 }
-void systemspi_create()
+void spi_create()
 {
 }

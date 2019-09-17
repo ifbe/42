@@ -14,14 +14,7 @@ int actorread_all();
 int actorevent(void*);
 int arenaread_all();
 int arenaevent(void*);
-int arteryread_all();
-int arteryevent(void*);
-int systemread_all();
 int systemevent(void*);
-int driverread_all();
-int driverevent(void*);
-int deviceread_all();
-int deviceevent(void*);
 //
 u64 timeread();
 void timewrite(u64);
@@ -55,11 +48,10 @@ void eventhandler(struct event* ev)
 	int ret;
 	//say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);
 
-	if(_dev_ == ev->what)deviceevent(ev);
-	else if(_dri_ == ev->what)driverevent(ev);
-	else if(_fd_  == ev->what)systemevent(ev);
-	else if(_art_ == ev->what)arteryevent(ev);
-	else arenaevent(ev);
+	switch(ev->what){
+		case _fd_:systemevent(ev);break;
+		default:arenaevent(ev);
+	}
 }
 void loop()
 {

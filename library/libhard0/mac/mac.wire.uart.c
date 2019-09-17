@@ -16,31 +16,31 @@ static struct object* obj;
 
 
 
-int readuart(int fd, int off, void* buf, int len)
+int uart_read(int fd, int off, void* buf, int len)
 {
 	int ret;
 	ret = read(fd, buf, len);
 	return ret;
 }
-int writeuart(int fd, int off, void* buf, int len)
+int uart_write(int fd, int off, void* buf, int len)
 {
 	int ret;
 	ret = write(fd, buf, len);
 	return ret;
 }
-int listuart(char* buf, int len)
+int uart_list(char* buf, int len)
 {
 	return 0;
 }
-int chooseuart()
+int uart_choose()
 {
 	return 0;
 }
-int stopuart()
+int uart_stop()
 {
 	return 0;
 }
-int startuart(char* p, int speed)
+int uart_start(char* p, int speed)
 {
 	struct termios option;
 	int fd=open(p , O_RDWR|O_NOCTTY|O_NDELAY);
@@ -73,10 +73,14 @@ int startuart(char* p, int speed)
 
 	return fd;
 }
-void deleteuart()
+
+
+
+
+void freeuart()
 {
 }
-void createuart(void* addr)
+void inituart(void* addr)
 {
 	obj = addr;
 }

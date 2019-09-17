@@ -1,24 +1,24 @@
-int systembt_list()
+int bt_list()
 {
 }
-int systembt_choose()
+int bt_choose()
 {
 }
-int systembt_read()
+int bt_read()
 {
 }
-int systembt_write()
+int bt_write()
 {
 }
-int systembt_start()
+int bt_start()
 {
 }
-int systembt_stop()
+int bt_stop()
 {
 }
-int systembt_create()
+int bt_create()
 {
 }
-int systembt_delete()
+int bt_delete()
 {
 }

@@ -15,7 +15,7 @@ void say(void*, ...);
 
 
 
-int systemi2c_read(int fd, int addr, u8* buf, u8 len)
+int i2c_read(int fd, int addr, u8* buf, u8 len)
 {
 	struct i2c_msg messages[2];
 	struct i2c_rdwr_ioctl_data packets;
@@ -45,7 +45,7 @@ int systemi2c_read(int fd, int addr, u8* buf, u8 len)
 
 	return 1;
 }
-int systemi2c_write(int fd, int addr, u8* buf, u8 len)
+int i2c_write(int fd, int addr, u8* buf, u8 len)
 {
 	int j;
 	u8 out[512];
@@ -76,11 +76,11 @@ int systemi2c_write(int fd, int addr, u8* buf, u8 len)
 
 	return 1;
 }
-int systemi2c_stop(int fd, int dev, int reg, int len)
+int i2c_stop(int fd, int dev, int reg, int len)
 {
 	return 0;
 }
-int systemi2c_start(int fd, int dev, int reg, int len)
+int i2c_start(int fd, int dev, int reg, int len)
 {
 	return 0;
 }
@@ -88,19 +88,19 @@ int systemi2c_start(int fd, int dev, int reg, int len)
 
 
 
-int systemi2c_search()
+int i2c_search()
 {
 	return 0;
 }
-int systemi2c_modity()
+int i2c_modity()
 {
 	return 0;
 }
-int systemi2c_delete(int fd)
+int i2c_delete(int fd)
 {
 	return close(fd);
 }
-int systemi2c_create(u8* name, int flag)
+int i2c_create(u8* name, int flag)
 {
 	int j;
 	u8 buf[256];

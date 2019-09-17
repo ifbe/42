@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include<stdlib.h>
 
-int systemwifi_list(int stage)
+int wifi_list(int stage)
 {
 	if(stage == 0)
 	{
@@ -12,25 +12,25 @@ int systemwifi_list(int stage)
 		system("netsh wlan show networks");
 	}
 }
-int systemwifi_choose()
+int wifi_choose()
 {
 }
-int systemwifi_read()
+int wifi_read()
 {
 }
-int systemwifi_write()
+int wifi_write()
 {
 }
-int systemwifi_start()
+int wifi_start()
 {
 }
-int systemwifi_stop()
+int wifi_stop()
 {
 }
-int systemwifi_create()
+int wifi_create()
 {
 }
-int systemwifi_delete()
+int wifi_delete()
 {
 }
 

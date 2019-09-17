@@ -18,11 +18,11 @@ static int fp=-1;
 
 
 
-int systemusb_read()
+int usb_read()
 {
 	return 1;
 }
-int systemusb_write()
+int usb_write()
 {
 	return 1;
 }
@@ -30,12 +30,12 @@ int systemusb_write()
 
 
 
-int systemusb_list(char* towhere)
+int usb_list(char* towhere)
 {
-	int ret=system("lsusb");
+	int ret = system("lsusb");
 	return ret;
 }
-int systemusb_choose()
+int usb_choose()
 {
 	return 0;
 }
@@ -43,19 +43,19 @@ int systemusb_choose()
 
 
 
-void systemusb_start(char* p)
+void usb_start(char* p)
 {
 }
-void systemusb_stop()
+void usb_stop()
 {
 }
 
 
 
 
-void systemusb_create()
+void usb_create()
 {
 }
-void systemusb_delete()
+void usb_delete()
 {
 }

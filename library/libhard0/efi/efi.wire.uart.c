@@ -7,33 +7,37 @@ void say(char*,...);
 
 
 
-int readuart(int fd, char* buf, int off, int len)
+int uart_read(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
-int writeuart(int fd, char* buf, int off, int len)
+int uart_write(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
-int listuart()
+int uart_list()
 {
 	return 0;
 }
-int chooseuart(char* p, int speed)
+int uart_choose(char* p, int speed)
 {
 	return 0;
 }
-int stopuart()
+int uart_stop()
 {
 	return 0;
 }
-int startuart(char* p)
+int uart_start(char* p)
 {
 	return 0;
 }
-void deleteuart()
+
+
+
+
+void freeuart()
 {
 }
-void createuart()
+void inituart()
 {
 }

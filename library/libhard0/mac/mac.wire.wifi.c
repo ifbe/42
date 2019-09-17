@@ -1,6 +1,6 @@
-void systemwifi_list()
+void wifi_list()
 {
 }
-void systemwifi_choose()
+void wifi_choose()
 {
 }

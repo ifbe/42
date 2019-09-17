@@ -19,7 +19,7 @@ static int alive = 0;
 
 
 
-DWORD WINAPI systemuart_thread(struct object* oo)
+DWORD WINAPI uart_thread(struct object* oo)
 {
 	int ret;
 	int enq;
@@ -44,7 +44,7 @@ DWORD WINAPI systemuart_thread(struct object* oo)
 	}
 	return 0;
 }
-static int systemuart_designate()
+static int uart_designate()
 {
 	//designedated fakeid: [8,f]
 	int id = curid;
@@ -55,11 +55,11 @@ static int systemuart_designate()
 
 
 
-int readuart(int fd, int off, void* buf, int len)
+int uart_read(int fd, int off, void* buf, int len)
 {
 	return 0;
 }
-int writeuart(int fd, int off, void* buf, int len)
+int uart_write(int fd, int off, void* buf, int len)
 {
 	u32 cnt=0;
 	int ret;
@@ -74,7 +74,7 @@ int writeuart(int fd, int off, void* buf, int len)
 	//say("write:ret=%d,cnt=%d,errno=%d\n", ret, cnt, GetLastError());
 	return ret;
 }
-int listuart(u8* p)
+int uart_list(u8* p)
 {
 	int j,k=0;
 	HANDLE h;
@@ -99,14 +99,14 @@ int listuart(u8* p)
 	}
 	return k;
 }
-int chooseuart()
+int uart_choose()
 {
 	return 0;
 }
-int stopuart()
+int uart_stop()
 {
 }
-int startuart(char* p, int speed)
+int uart_start(char* p, int speed)
 {
 	//
 	int ret;
@@ -177,16 +177,20 @@ int startuart(char* p, int speed)
 
 	//
 	alive = 1;
-	ret = systemuart_designate();
-	threadcreate(systemuart_thread, &obj[ret]);
+	ret = uart_designate();
+	threadcreate(uart_thread, &obj[ret]);
 
 	//success
 	return ret;
 }
-int deleteuart()
+
+
+
+
+int freeuart()
 {
 }
-int createuart(void* addr)
+int inituart(void* addr)
 {
 	obj = addr;
 }

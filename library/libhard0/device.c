@@ -1,26 +1,74 @@
 #include "libhard.h"
-int ncmp(void*, void*, int);
+//i2c
+int i2c_create(void*, int);
+int i2c_delete(int);
+int i2c_read(int fd, int addr, u8* buf, int len);
+int i2c_write(int fd, int addr, u8* buf, int len);
+//spi
+int spi_create(void*, int);
+int spi_delete(int);
+int spi_read(int fd, int addr, u8* buf, int len);
+int spi_write(int fd, int addr, u8* buf, int len);
+//uart
+int inituart(void*);
+int freeuart();
+int uart_start(void*, int);
+int uart_stop(int);
+int uart_read(int fd, int addr, u8* buf, int len);
+int uart_write(int fd, int addr, u8* buf, int len);
+
 
 
 
 static struct device* dev;
+static int devlen = 0;
+void* allocdevice()
+{
+	void* addr = &dev[devlen];
+	devlen += 1;
+	return addr;
+}
 
 
 
 
-int deviceread(void* self, void* peer, void* arg, int idx, void* buf, int len)
+int deviceread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+{
+	struct device* ele;
+	int fd;
+	//say("@devicewrite\n");
+
+	ele = (void*)(self->chip);
+	fd = ele->fd;
+
+	switch(ele->type){
+		case _i2c_:return i2c_read(fd, idx, buf, len);break;
+		case _spi_:return spi_read(fd, idx, buf, len);break;
+		case _uart_:return uart_read(fd, idx, buf, len);break;
+	}
+	return 0;
+}
+int devicewrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+{
+	struct device* ele;
+	int fd;
+	//say("@devicewrite\n");
+
+	ele = (void*)(self->chip);
+	fd = ele->fd;
+
+	switch(ele->type){
+		case _i2c_:return i2c_write(fd, idx, buf, len);break;
+		case _spi_:return spi_write(fd, idx, buf, len);break;
+		case _uart_:return uart_write(fd, idx, buf, len);break;
+	}
+	return 0;
+}
+int devicestop(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int devicewrite(void* self, void* peer, void* arg, int idx, void* buf, int len)
-{
-	return 0;
-}
-int devicestop(void* self, void* peer, void* buf, int len)
-{
-	return 0;
-}
-int devicestart(void* self, void* peer, void* buf, int len)
+int devicestart(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	say("@devicestart\n");
 	return 0;
@@ -35,14 +83,35 @@ int devicedelete()
 }
 void* devicecreate(u64 type, void* name)
 {
-	int j;
-	for(j=0;j<64;j++)
+	int fd;
+
+	if(_i2c_ == type)
 	{
-		if(0 == dev[j].type)
-		{
-			dev[j].type = type;
-			return &dev[j];
-		}
+		fd = i2c_create(name, 0);
+		if(fd <= 0)return 0;
+
+		dev[fd].type = _i2c_;
+		dev[fd].fd = fd;
+
+		return &dev[fd];
+	}
+	if(_spi_ == type)
+	{
+		fd = spi_create(name, 0);
+		if(fd <= 0)return 0;
+
+		dev[fd].type = _spi_;
+		dev[fd].fd = fd;
+		return &dev[fd];
+	}
+	else if(_uart_ == type)
+	{
+		fd = uart_start(name, 115200);
+		if(fd <= 0)return 0;
+
+		dev[fd].type = _uart_;
+		dev[fd].fd = fd;
+		return &dev[fd];
 	}
 	return 0;
 }
@@ -79,13 +148,11 @@ int devicesearch(u8* buf, int len)
 
 
 
-int deviceevent(void* ev)
-{
-	return 0;
-}
 void freedevice()
 {
 	//say("[4,8):freeing device\n");
+
+	freeuart();
 }
 void initdevice(u8* addr)
 {
@@ -95,6 +162,8 @@ void initdevice(u8* addr)
 #define max (0x100000/sizeof(struct device))
 	for(j=0;j<0x400000;j++)addr[j]=0;
 	for(j=0;j<max;j++)dev[j].tier = _dev_;
+
+	inituart(addr);
 
 	//devicecreate(_ahci_, 0);
 	//devicecreate(_xhci_, 0);

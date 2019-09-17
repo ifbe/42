@@ -139,10 +139,6 @@ int driversearch(u8* buf, int len)
 
 
 
-int driverevent(void* ev)
-{
-	return 0;
-}
 void freedriver()
 {
 	//say("[4,8):freeing driver\n");

@@ -7,23 +7,11 @@ void say(char*,...);
 
 
 
-int systemwifi_read()
+int wifi_read()
 {
 	return 0;
 }
-int systemwifi_write()
-{
-	return 0;
-}
-
-
-
-
-int systemwifi_list(char* towhere)
-{
-	return 0;
-}
-int systemwifi_choose()
+int wifi_write()
 {
 	return 0;
 }
@@ -31,11 +19,11 @@ int systemwifi_choose()
 
 
 
-int systemwifi_start(char* p)
+int wifi_list(char* towhere)
 {
 	return 0;
 }
-int systemwifi_stop()
+int wifi_choose()
 {
 	return 0;
 }
@@ -43,9 +31,21 @@ int systemwifi_stop()
 
 
 
-void systemwifi_create()
+int wifi_start(char* p)
+{
+	return 0;
+}
+int wifi_stop()
+{
+	return 0;
+}
+
+
+
+
+void wifi_create()
 {
 }
-void systemwifi_delete()
+void wifi_delete()
 {
 }

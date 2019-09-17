@@ -1,6 +1,6 @@
-void systemusb_list()
+void usb_list()
 {
 }
-void systemusb_choose()
+void usb_choose()
 {
 }

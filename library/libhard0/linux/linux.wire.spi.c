@@ -23,7 +23,7 @@ unsigned int spi_speed = 1000000;
 
 
 
-int systemspi_read_byte(int fd, u8 reg)
+int spi_read_byte(int fd, u8 reg)
 {
         int ret;
         u8 rx_buffer[2];
@@ -47,7 +47,7 @@ int systemspi_read_byte(int fd, u8 reg)
 
         return rx_buffer[1];
 }
-int systemspi_write_byte(int fd, u8 reg, u8 data)
+int spi_write_byte(int fd, u8 reg, u8 data)
 {
         int ret;
         u8 rx_buffer[2];
@@ -72,43 +72,43 @@ int systemspi_write_byte(int fd, u8 reg, u8 data)
 
         return rx_buffer[1];
 }
-int systemspi_read(int fd, int reg, u8* buf, int len)
+int spi_read(int fd, int reg, u8* buf, int len)
 {
 	int j,ret;
 	for(j=0;j<len;j++){
-		ret = systemspi_read_byte(fd, reg+j);
+		ret = spi_read_byte(fd, reg+j);
 		if(ret < 0)break;
 
 		buf[j] = ret;
 	}
 	return j;
 }
-int systemspi_write(int fd, int reg, u8* buf, int len)
+int spi_write(int fd, int reg, u8* buf, int len)
 {
 	int j,ret;
 	for(j=0;j<len;j++){
-		ret = systemspi_write_byte(fd, reg+j, buf[0]);
+		ret = spi_write_byte(fd, reg+j, buf[0]);
 		if(ret < 0)break;
 
 		buf[j] = ret;
 	}
 	return j;
 }
-int systemspi_stop(int fd, int dev, int reg, int len)
+int spi_stop(int fd, int dev, int reg, int len)
 {
 	return 0;
 }
-int systemspi_start(int fd, int dev, int reg, int len)
+int spi_start(int fd, int dev, int reg, int len)
 {
 	return 0;
 }
-int systemspi_delete(int fd)
+int spi_delete(int fd)
 {
 	int ret = close(fd);
 	if(ret < 0)perror("Error - Could not close SPI device");
 	return ret;
 }
-int systemspi_create(char* buf, int len)
+int spi_create(char* buf, int len)
 {
 	int j,ret;
 	u8 str[128];

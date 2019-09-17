@@ -1,25 +1,25 @@
-int systemgpio_list()
+int gpio_list()
 {
 }
-int systemgpio_choose()
+int gpio_choose()
 {
 }
-int systemgpio_read()
+int gpio_read()
 {
 }
-int systemgpio_write()
+int gpio_write()
 {
 }
-int systemgpio_start()
+int gpio_start()
 {
 }
-int systemgpio_stop()
+int gpio_stop()
 {
 }
-int systemgpio_create()
+int gpio_create()
 {
 }
-int systemgpio_delete()
+int gpio_delete()
 {
 }
 

@@ -9,41 +9,23 @@ int deletesignal();
 //epoll,iocp,kqueue
 int createwatcher(void*);
 int deletewatcher();
-//socket
-int createsocket(void*);
-int deletesocket();
 //shell
 int createshell(void*);
 int deleteshell();
 int startshell(void*, int);
 int stopshell(int);
-//uart
-int createuart(void*);
-int deleteuart();
-int startuart(void*, int);
-int stopuart(int);
-//i2c
-int systemi2c_create(void*, int);
-int systemi2c_delete(int);
-int systemi2c_read(int fd, int addr, u8* buf, int len);
-int systemi2c_write(int fd, int addr, u8* buf, int len);
-//spi
-int systemspi_create(void*, int);
-int systemspi_delete(int);
-int systemspi_read(int fd, int addr, u8* buf, int len);
-int systemspi_write(int fd, int addr, u8* buf, int len);
+int readshell(  int, int, void*, int);
+int writeshell( int, int, void*, int);
 //
 int startfile(void*, int);
 int stopfile(int);
-int startsocket(void* addr, int port, int type);
-int stopsocket(int);
-//
 int readfile(   int, int, void*, int);
 int writefile(  int, int, void*, int);
-int readuart(   int, int, void*, int);
-int writeuart(  int, int, void*, int);
-int readshell(  int, int, void*, int);
-int writeshell( int, int, void*, int);
+//socket
+int createsocket(void*);
+int deletesocket();
+int startsocket(void* addr, int port, int type);
+int stopsocket(int);
 int readsocket( int,void*,void*, int);
 int writesocket(int,void*,void*, int);
 //
@@ -133,7 +115,6 @@ int systemread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	if(0 == fd)return 0;
 
 	switch(oo->type){
-		case _i2c_:return systemi2c_read(fd, idx, buf, len);
 		case _file_:return readfile(fd, idx, buf, len);
 	}
 	return 0;
@@ -227,40 +208,6 @@ void* systemcreate(u64 type, void* argstr)
 
 		obj[fd].type = _file_;
 		obj[fd].selffd = fd;
-		goto success;
-	}
-	else if(_i2c_ == type)
-	{
-		fd = systemi2c_create(name, 0);
-		if(fd <= 0)return 0;
-
-		obj[fd].type = _i2c_;
-		obj[fd].selffd = fd;
-
-		goto success;
-	}
-	else if(_spi_ == type)
-	{
-		fd = systemspi_create(name, 0);
-		if(fd <= 0)return 0;
-
-		obj[fd].type = _spi_;
-		obj[fd].selffd = fd;
-		goto success;
-	}
-	else if(_uart_ == type)
-	{
-		for(j=0;j<0x100;j++)
-		{
-			if(name[j] < 0x20)break;
-			host[j] = name[j];
-		}
-		host[j] = 0;
-
-		fd = startuart(host, 115200);
-		if(fd <= 0)return 0;
-
-		obj[fd].type = _uart_;
 		goto success;
 	}
 	else if(_ptmx_ == type)
@@ -401,7 +348,6 @@ void freesystem()
 {
 	//say("[8,c):freeing system\n");
 
-	deleteuart();
 	deleteshell();
 	deletesocket();
 	deletewatcher();
@@ -423,7 +369,6 @@ void initsystem(u8* addr)
 	createwatcher(addr);
 	createsocket(addr);
 	createshell(addr);
-	createuart(addr);
 
 	//say("[8,c):inited system\n");
 }

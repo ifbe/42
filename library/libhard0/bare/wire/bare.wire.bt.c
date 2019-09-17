@@ -1,4 +1,4 @@
-int systembt_list()
+int bt_list()
 {
 	return 0;
 }

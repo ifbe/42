@@ -1,24 +1,24 @@
-int systemusb_list()
+int usb_list()
 {
 }
-int systemusb_choose()
+int usb_choose()
 {
 }
-int systemusb_read()
+int usb_read()
 {
 }
-int systemusb_write()
+int usb_write()
 {
 }
-int systemusb_start()
+int usb_start()
 {
 }
-int systemusb_stop()
+int usb_stop()
 {
 }
-int systemusb_create()
+int usb_create()
 {
 }
-int systemusb_delete()
+int usb_delete()
 {
 }

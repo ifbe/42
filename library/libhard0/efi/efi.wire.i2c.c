@@ -8,23 +8,11 @@ void say(char*,...);
 
 
 //
-int systemi2c_read(u8 dev,u8 reg,u8* buf,u8 count)
+int i2c_read(u8 dev,u8 reg,u8* buf,u8 count)
 {
 	return 0;
 }
-int systemi2c_write(u8 dev,u8 reg,u8* buf,u8 count)
-{
-	return 0;
-}
-
-
-
-
-int systemi2c_list(char* towhere)
-{
-	return 0;
-}
-int systemi2c_choose(int num,char* p)
+int i2c_write(u8 dev,u8 reg,u8* buf,u8 count)
 {
 	return 0;
 }
@@ -32,19 +20,31 @@ int systemi2c_choose(int num,char* p)
 
 
 
-void systemi2c_start(char* p)
+int i2c_list(char* towhere)
+{
+	return 0;
+}
+int i2c_choose(int num,char* p)
+{
+	return 0;
+}
+
+
+
+
+void i2c_start(char* p)
 {
 }
-void systemi2c_stop()
+void i2c_stop()
 {
 }
 
 
 
 
-void systemi2c_create()
+void i2c_create()
 {
 }
-void systemi2c_delete()
+void i2c_delete()
 {
 }

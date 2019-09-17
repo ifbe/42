@@ -7,11 +7,11 @@ void say(char*,...);
 
 
 
-int systemusb_read()
+int usb_read()
 {
 	return 1;
 }
-int systemusb_write()
+int usb_write()
 {
 	return 1;
 }
@@ -19,29 +19,29 @@ int systemusb_write()
 
 
 
-int systemusb_list(char* towhere)
+int usb_list(char* towhere)
 {
 }
-int systemusb_choose()
-{
-}
-
-
-
-
-void systemusb_start(char* p)
-{
-}
-void systemusb_stop()
+int usb_choose()
 {
 }
 
 
 
 
-void systemusb_create()
+void usb_start(char* p)
 {
 }
-void systemusb_delete()
+void usb_stop()
+{
+}
+
+
+
+
+void usb_create()
+{
+}
+void usb_delete()
 {
 }

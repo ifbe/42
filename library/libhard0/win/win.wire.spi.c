@@ -1,25 +1,25 @@
-int systemspi_list()
+int spi_list()
 {
 }
-int systemspi_choose()
+int spi_choose()
 {
 }
-int systemspi_read()
+int spi_read()
 {
 }
-int systemspi_write()
+int spi_write()
 {
 }
-int systemspi_start()
+int spi_start()
 {
 }
-int systemspi_stop()
+int spi_stop()
 {
 }
-int systemspi_create()
+int spi_create()
 {
 }
-int systemspi_delete()
+int spi_delete()
 {
 }
 

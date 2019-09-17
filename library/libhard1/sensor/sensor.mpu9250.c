@@ -1,9 +1,5 @@
 #include "libsoft.h"
 int sleep_us();
-int systemi2c_read(int fd, int addr, u8* buf, int len);
-int systemi2c_write(int fd, int addr, u8* buf, int len);
-int systemspi_read(int fd, int addr, u8* buf, int len);
-int systemspi_write(int fd, int addr, u8* buf, int len);
 
 
 
@@ -47,7 +43,7 @@ int mpu9250_parse(u8* buf, int len)
 
 
 
-
+/*
 int mpu9250_start_i2c(int fd)
 {
 	say("@mpu9250_start_i2c\n");
@@ -141,10 +137,6 @@ int mpu9250_start_spi(int fd)
 
 	return 0;
 }
-
-
-
-
 int mpu9250_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int fd;
@@ -198,6 +190,11 @@ int mpu9250_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 
 	//systemread(&rel->srcchip, &rel->dstchip, tmp, 14);
 
+	return 0;
+}
+*/
+int mpu9250_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+{
 	return 0;
 }
 int mpu9250_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)

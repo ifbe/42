@@ -7,19 +7,11 @@ void say(char*,...);
 
 
 
-int readuart(int fd, char* buf, int off, int len)
+int uartread(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
-int writeuart(int fd, char* buf, int off, int len)
-{
-	return 0;
-}
-int listuart()
-{
-	return 0;
-}
-int chooseuart(char* p, int speed)
+int uartwrite(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
@@ -31,9 +23,13 @@ int startuart(char* p)
 {
 	return 0;
 }
-void deleteuart()
+
+
+
+
+void freeuart()
 {
 }
-void createuart()
+void inituart()
 {
 }

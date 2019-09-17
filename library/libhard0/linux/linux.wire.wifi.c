@@ -18,11 +18,11 @@ static int fp=-1;
 
 
 
-int systemwifi_read()
+int wifi_read()
 {
 	return 1;
 }
-int systemwifi_write()
+int wifi_write()
 {
 	return 1;
 }
@@ -30,12 +30,12 @@ int systemwifi_write()
 
 
 
-int systemwifi_list(char* towhere)
+int wifi_list(char* towhere)
 {
-	int ret=system("ifconfig|grep wlan -A 1");
+	int ret = system("ifconfig|grep wlan -A 1");
 	return ret;
 }
-int systemwifi_choose()
+int wifi_choose()
 {
 	return 0;
 }
@@ -43,19 +43,19 @@ int systemwifi_choose()
 
 
 
-void systemwifi_start(char* p)
+void wifi_start(char* p)
 {
 }
-void systemwifi_stop()
+void wifi_stop()
 {
 }
 
 
 
 
-void systemwifi_create()
+void wifi_create()
 {
 }
-void systemwifi_delete()
+void wifi_delete()
 {
 }

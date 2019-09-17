@@ -1,6 +1,6 @@
-void systembt_list()
+void bt_list()
 {
 }
-void systembt_choose()
+void bt_choose()
 {
 }

@@ -18,11 +18,11 @@ static int fp=-1;
 
 
 
-int systembt_read()
+int bt_read()
 {
 	return 1;
 }
-int systembt_write()
+int bt_write()
 {
 	return 1;
 }
@@ -30,7 +30,7 @@ int systembt_write()
 
 
 
-int systembt_list(char* p)
+int bt_list(char* p)
 {
 	char buf[0x80];
 	if(p == 0)snprintf(buf, 0x80, "hcitool scan");
@@ -39,7 +39,7 @@ int systembt_list(char* p)
 	printf("%s\n",buf);
 	return system(buf);
 }
-int systembt_choose()
+int bt_choose()
 {
 	return 0;
 }
@@ -47,11 +47,11 @@ int systembt_choose()
 
 
 
-int systembt_start(char* p)
+int bt_start(char* p)
 {
 	return 0;
 }
-int systembt_stop()
+int bt_stop()
 {
 	return 0;
 }
@@ -59,9 +59,9 @@ int systembt_stop()
 
 
 
-void systembt_create()
+void bt_create()
 {
 }
-void systembt_delete()
+void bt_delete()
 {
 }

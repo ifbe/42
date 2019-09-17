@@ -29,12 +29,7 @@ typedef float mat4[4][4];
 #define _file_ hex32('f','i','l','e')
 #define _mbr_ hex32('m','b','r',0)
 #define _gpt_ hex32('g','p','t',0)
-//
-#define _spi_  hex32('s','p','i',0)
-#define _i2c_  hex32('i','2','c',0)
 //uart family
-#define _uart_ hex32('u','a','r','t')
-#define _Uart_ hex32('U','a','r','t')
 #define _gcode_ hex64('g','c','o','d','e',0,0,0)
 #define _Gcode_ hex64('G','c','o','d','e',0,0,0)
 #define _gps_ hex32('g','p','s',0)

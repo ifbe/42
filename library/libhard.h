@@ -16,6 +16,10 @@ typedef unsigned long long u64;
 #define _ahci_ hex32('a','h','c','i')
 #define _xhci_ hex32('x','h','c','i')
 #define _usb_ hex32('u','s','b',0)
+//
+#define _spi_  hex32('s','p','i',0)
+#define _i2c_  hex32('i','2','c',0)
+#define _uart_ hex32('u','a','r','t')
 
 
 
@@ -117,6 +121,7 @@ struct device
 
 	//[40,5f]: data
 	union{
+		int fd;
 		u64 padd0;
 		void* addr0;
 	};
