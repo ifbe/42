@@ -67,175 +67,198 @@ int mpu9250_parse(u8* buf, float* vec)
 
 
 
-/*
-int mpu9250_start_i2c(int fd)
-{
-	say("@mpu9250_start_i2c\n");
-	return 0;
-}
 
-
-
-
-int spi8963_read(int fd, u8 reg, u8* buf, int len)
+int spi9250_slv8963_read(struct driver* dri, u8 reg, u8* buf, int len)
 {
 	u8 tmp[16];
 
 	//MPUREG_I2C_SLV0_ADDR
 	tmp[0] = 0xc|0x80;
-	systemspi_write(fd, 0x25, tmp, 1);
+	relationwrite(dri, _spi_, 0, 0x25, tmp, 1);
 
 	//MPUREG_I2C_SLV0_REG
 	tmp[0] = reg;
-	systemspi_write(fd, 0x26, tmp, 1);
+	relationwrite(dri, _spi_, 0, 0x26, tmp, 1);
 
 	//MPUREG_I2C_SLV0_CTRL
 	tmp[0] = len|0x80;
-	systemspi_write(fd, 0x27, tmp, 1);
+	relationwrite(dri, _spi_, 0, 0x27, tmp, 1);
 
 	//10ms
 	sleep_us(1000*10);
 
 	//read out
-	systemspi_read(fd, 0x49 | 0x80, buf, len);
+	relationread(dri, _spi_, 0, 0x49 | 0x80, buf, len);
 	return 0;
 }
-int spi8963_write(int fd, u8 reg, u8* buf, int len)
+int spi9250_slv8963_write(struct driver* dri, u8 reg, u8* buf, int len)
 {
 	u8 tmp[16];
 
 	//MPUREG_I2C_SLV0_ADDR
 	tmp[0] = 0xc;
-	systemspi_write(fd, 0x25, tmp, 1);
+	relationwrite(dri, _spi_, 0, 0x25, tmp, 1);
 
 	//MPUREG_I2C_SLV0_REG
 	tmp[0] = reg;
-	systemspi_write(fd, 0x26, tmp, 1);
+	relationwrite(dri, _spi_, 0, 0x26, tmp, 1);
 
 	//MPUREG_I2C_SLV0_D0
 	tmp[0] = buf[0];
-	systemspi_write(fd, 0x63, tmp, 1);
+	relationwrite(dri, _spi_, 0, 0x63, tmp, 1);
 
 	//MPUREG_I2C_SLV0_CTRL
 	tmp[0] = 0x81;
-	systemspi_write(fd, 0x27, tmp, 1);
+	relationwrite(dri, _spi_, 0, 0x27, tmp, 1);
 
 	return 0;
 }
-int mpu9250_start_spi(int fd)
+int spi9250_slv8963_stop(struct driver* dri)
 {
-	u8 tmp[0x80];
-	say("@mpu9250_start_spi\n");
+	return 0;
+}
+int spi9250_slv8963_start(struct driver* dri)
+{
+	u8 tmp[0x20];
 
-//check stage
-	//check 9250.whoami
-	systemspi_read(fd, 0x75|0x80, tmp, 1);
-	if(0x71 != tmp[0]){
-		say("mpu9250.whoami != 0x71\n");
-		return 0;
-	}
-
-	//MPUREG_USER_CTRL, MPUREG_I2C_MST_CTRL
-	tmp[0] = 0x20;
-	systemspi_write(fd, 0x6a, tmp, 1);
-	tmp[0] = 0xd;
-	systemspi_write(fd, 0x24, tmp, 1);
-
-	//check 8963.whoami
-	spi8963_read(fd, 0, tmp, 1);
+//check 8963.whoami
+	spi9250_slv8963_read(dri, 0, tmp, 1);
 	if(0x48 != tmp[0]){
 		say("ak8963.whoami != 0x48\n");
 		return 0;
 	}
 
-
-//init mpu9250
-
-
 //init ak8963
 	tmp[0] = 1;
-	spi8963_write(fd, 0xb, tmp, 1);
+	spi9250_slv8963_write(dri, 0xb, tmp, 1);
+	sleep_us(1000);
 
 	tmp[0] = 0x16;
-	spi8963_write(fd, 0xa, tmp, 1);
+	spi9250_slv8963_write(dri, 0xa, tmp, 1);
+	sleep_us(1000);
 
 	return 0;
 }
-int mpu9250_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
-{
-	int fd;
-	u8 tmp[0x80];
-	struct element* ele;
-	struct relation* rel;
-	struct object* obj;
-	say("@mpu9250_read\n");
 
-	ele = (void*)(self->chip);
-	if(0 == ele)return 0;
 
-	rel = ele->irel0;
-	while(1){
-		if(0 == rel)break;
 
-		if(_fd_ == rel->srctype){
-			obj = (void*)(rel->srcchip);
-			if(0 == obj)return 0;
 
-			fd = obj->selffd;
-			if(0 == fd)return 0;
-
-			switch(obj->type){
-				case _i2c_:{
-					systemi2c_read(fd, (0x68<<16) | 0x3b, tmp, 14);
-					mpu9250_parse(tmp, 14);
-
-					systemi2c_read(fd, (0x0c<<16) | 0x03, tmp, 7);
-					ak8963_parse(tmp, 6);
-					break;
-				}
-				case _spi_:{
-					tmp[0] = 0xc | 0x80;
-					systemspi_write(fd, 0x25, tmp, 1);
-					tmp[0] = 0x3;
-					systemspi_write(fd, 0x26, tmp, 1);
-					tmp[0] = 0x87;
-					systemspi_write(fd, 0x27, tmp, 1);
-
-					systemspi_read(fd, 0x3b|0x80, tmp, 20);
-					mpu9250_parse(tmp, 14);
-					ak8963_parse(tmp+14, 6);
-					break;
-				}
-			}//switch
-		}//if(fd)
-
-		rel = samedstnextsrc(rel);
-	}//while
-
-	//systemread(&rel->srcchip, &rel->dstchip, tmp, 14);
-
-	return 0;
-}
-*/
-int mpu9250_spiread(struct driver* dri, float* vec)
+int spi9250_read(struct driver* dri, float* vec)
 {
 	u8 tmp[0x20];
 
-	//write
-	tmp[0] = 0xc | 0x80;
-	relationwrite(dri, _spi_, 0, 0x25, tmp, 1);
-	tmp[0] = 0x3;
-	relationwrite(dri, _spi_, 0, 0x26, tmp, 1);
-	tmp[0] = 0x87;
-	relationwrite(dri, _spi_, 0, 0x27, tmp, 1);
+	//read 8963
+	spi9250_slv8963_read(dri, 3, tmp, 7);
 
-	//read
+	//read 9250
 	relationread(dri, _spi_, 0, 0x3b|0x80, tmp, 20);
 
 	//parse
 	mpu9250_parse(tmp, vec);
 	ak8963_parse(tmp+14, &vec[6]);
 	return 9;
+}
+int spi9250_stop(struct driver* dri)
+{
+	return 0;
+}
+int spi9250_start(struct driver* dri)
+{
+	u8 tmp[0x80];
+
+//check 9250.whoami
+	relationread(dri, _spi_, 0, 0x75|0x80, tmp, 1);
+	if(0x71 != tmp[0]){
+		say("mpu9250.whoami != 0x71\n");
+		return 0;
+	}
+
+//init mpu9250
+	//reset
+	tmp[0] = 0x80;
+	relationwrite(dri, _spi_, 0, 0x6b, tmp, 1);
+	sleep_us(1000);
+
+	//clock
+	tmp[0] = 0x01;
+	relationwrite(dri, _spi_, 0, 0x6b, tmp, 1);
+	sleep_us(1000);
+
+	//enable
+	tmp[0] = 0x00;
+	relationwrite(dri, _spi_, 0, 0x6c, tmp, 1);
+	sleep_us(1000);
+
+	//CONFIG
+	tmp[0] = 0x03;
+	relationwrite(dri, _spi_, 0, 0x1a, tmp, 1);
+	sleep_us(1000);
+
+	//SMPLRT_DIV
+	tmp[0] = 0x04;
+	relationwrite(dri, _spi_, 0, 0x19, tmp, 1);
+	sleep_us(1000);
+
+	//GYRO_CONFIG
+	relationread(dri, _spi_, 0, 0x1b|0x80, tmp, 1);
+	tmp[0] = (tmp[0] & 0xe7) | (gyr_cfg << 3);
+	relationwrite(dri, _spi_, 0, 0x1b, tmp, 1);
+	sleep_us(1000);
+
+	//ACCEL_CONFIG
+	relationread(dri, _spi_, 0, 0x1c|0x80, tmp, 1);
+	tmp[0] = (tmp[0] & 0xe7) | (acc_cfg << 3);
+	relationwrite(dri, _spi_, 0, 0x1c, tmp, 1);
+	sleep_us(1000);
+
+	//ACCEL_CONFIG2
+	relationread(dri, _spi_, 0, 0x1d|0x80, tmp, 1);
+	tmp[0] = (tmp[0] & 0xf0) | 0x3;
+	relationwrite(dri, _spi_, 0, 0x1d, tmp, 1);
+	sleep_us(1000);
+
+	//INT_PIN_CFG
+	tmp[0] = 0x22;
+	relationwrite(dri, _spi_, 0, 0x37, tmp, 1);
+	sleep_us(1000);
+
+	//INT_ENABLE
+	tmp[0] = 0x01;
+	relationwrite(dri, _spi_, 0, 0x38, tmp, 1);
+	sleep_us(1000);
+
+	//MPUREG_USER_CTRL
+	tmp[0] = 0x20;
+	relationwrite(dri, _spi_, 0, 0x6a, tmp, 1);
+	sleep_us(1000);
+
+	//MPUREG_I2C_MST_CTRL
+	tmp[0] = 0xd;
+	relationwrite(dri, _spi_, 0, 0x24, tmp, 1);
+	sleep_us(1000*10);
+
+	return 0;
+}
+
+
+
+
+int i2c9250_start(struct driver* dri)
+{
+	say("@i2c9250_start\n");
+	return 0;
+}
+int mpu9250_i2cread(struct driver* dri, float* vec)
+{
+	u8 tmp[32];
+
+	relationread(dri, _i2c_, 0, 0x68003b, tmp, 14);
+	mpu9250_parse(tmp, vec);
+
+	relationread(dri, _i2c_, 0, 0x0c0003, tmp, 7);
+	ak8963_parse(tmp, &vec[6]);
+
+	return 0;
 }
 
 
@@ -256,7 +279,10 @@ int mpu9250_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 	if(0 == it)return 0;
 
 	if(_clk_ == self->flag){
-		ret = mpu9250_spiread(it, tmp);
+		if(1){
+			ret = spi9250_read(it, tmp);
+		}
+
 		relationwrite(it, _dst_, 0, 0, tmp, ret);
 	}
 	return 0;
@@ -273,8 +299,13 @@ int mpu9250_start(struct halfrel* self, struct halfrel* peer)
 	it = (void*)(self->chip);
 	if(0 == it)return 0;
 
-	if(_spi_ == self->flag){
-		//mpu9250_spistart(it, tmp);
+	switch(self->flag){
+		case _i2c_:i2c9250_start(it);break;
+		case _spi_:{
+			spi9250_start(it);
+			spi9250_slv8963_start(it);
+			break;
+		}
 	}
 	return 0;
 }
