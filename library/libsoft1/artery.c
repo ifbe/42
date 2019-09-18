@@ -206,6 +206,7 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _echo_:return echo_write(self, peer, arg, idx, buf, len);break;
 		case _pump_:return pump_write(self, peer, arg, idx, buf, len);break;
 
+		case _reline_:return reline_write(self, peer, arg, idx, buf, len);break;
 		case _qu2eu_:return qu2eu_write(self, peer, arg, idx, buf, len);break;
 		case _str2fv_:return str2fv_write(self, peer, arg, idx, buf, len);break;
 		case _fv2str_:return fv2str_write(self, peer, arg, idx, buf, len);break;

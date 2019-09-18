@@ -13,22 +13,41 @@ fmt:mpu9250
 </driver>
 
 
+<system>
+clock{
+fmt:UDP
+url:0.0.0.0:9999
+}
+target{
+fmt:udp
+url:192.168.0.217:9999
+}
+</system>
+
+
 <artery>
 easyag{
 fmt:easyag
 }
-</artery>
-
-
-<arena>
-ahrs{
-fmt:ahrs
+qu2eu{
+fmt:qu2eu
 }
-</arena>
+fv2str{
+fmt:fv2str
+}
+dbgf32{
+fmt:dbgf32
+}
+</artery>
 
 
 <relation>
 (spihost, 0, dev, 0) -> (mpu9250, 0, dri, spi)
 (mpu9250, 0, dri, dst) -> (easyag, 0, art, src)
-(easyag, 0, art, dst) -> (ahrs, 0, win, src)
+(easyag, 0, art, dst) -> (qu2eu, 0, art, src)
+#(qu2eu, 0, art, dst) -> (dbgf32, 0, art, src)
+(qu2eu, 0, art, dst) -> (fv2str, 0, art, src)
+(fv2str, 0, art, dst) -> (target, 0, fd, src)
+
+(clock, 0, fd, dst) -> (mpu9250, 0, dri, clk)
 </relation>

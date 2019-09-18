@@ -88,7 +88,7 @@ int easyag_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	int j;
 	float* f = (void*)buf;
 
-	if(6 != len){
+	if((6 != len) && (9 != len)){
 		say("err@easyag_write:len=%d\n",len);
 		return 0;
 	}
