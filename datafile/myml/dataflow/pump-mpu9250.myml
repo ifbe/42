@@ -1,0 +1,35 @@
+<device>
+spihost{
+fmt:spi
+url:/dev/spidev0.0
+}
+</device>
+
+
+<driver>
+mpu9250{
+fmt:mpu9250
+}
+</driver>
+
+
+<system>
+udphost{
+fmt:UDP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<artery>
+dbgf32{
+fmt:dbgf32
+}
+</artery>
+
+
+<relation>
+(mpu9250, 0, dri, clk) -> (udphost, 0, fd, dst)
+(mpu9250, 0, dri, spi) -> (spihost, 0, dev, dst)
+(mpu9250, 0, dri, dst) -> (dbgf32, 0, art, src)
+</relation>

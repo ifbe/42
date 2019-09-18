@@ -6,6 +6,13 @@ url:/dev/i2c-1
 </device>
 
 
+<driver>
+lsm9ds1{
+fmt:lsm9ds1
+}
+</driver>
+
+
 <system>
 udphost{
 fmt:UDP
@@ -15,9 +22,6 @@ url:0.0.0.0:9999
 
 
 <artery>
-lsm9ds1{
-fmt:lsm9ds1
-}
 dbgf32{
 fmt:dbgf32
 }
@@ -25,7 +29,7 @@ fmt:dbgf32
 
 
 <relation>
-(lsm9ds1, 0, art, clk) -> (udphost, 0, fd, dst)
-(lsm9ds1, 0, art, i2c) -> (i2chost, 0, dev, dst)
-(lsm9ds1, 0, art, dst) -> (dbgf32, 0, art, src)
+(lsm9ds1, 0, dri, clk) -> (udphost, 0, fd, dst)
+(lsm9ds1, 0, dri, i2c) -> (i2chost, 0, dev, dst)
+(lsm9ds1, 0, dri, dst) -> (dbgf32, 0, art, src)
 </relation>
