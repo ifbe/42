@@ -477,13 +477,20 @@ int arenaread_all()
 {
 	int j;
 	struct arena* win;
+	struct halfrel self;
 
 	for(j=31;j>=0;j--)
 	{
 		win = &arena[j];
 		if(0 == win->type)continue;
 
-		if(_win_ == win->type)windowread(win, 0, 0, 0, 0, 0);
+		if(_win_ == win->type){
+			windowread(win, 0, 0, 0, 0, 0);
+		}
+		if(_spk_ == win->type){
+			self.chip = (u64)win;
+			speakerread(&self, 0, 0, 0, 0, 0);
+		}
 	}
 	return 0;
 }

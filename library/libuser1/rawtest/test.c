@@ -96,6 +96,7 @@ int test_create(struct actor* act)
 {
 	int j;
 	u8* buf;
+	short* pcm;
 	struct datapair* pair;
 	struct glsrc* src;
 
@@ -125,6 +126,12 @@ int test_create(struct actor* act)
 	src->ibuf_len = 2*3*2*6;
 	src->ibuf_enq = 1;
 
+
+	act->ctx = memorycreate(0x20000, 0);
+	if(0 == act->ctx)return 0;
+
+	pcm = act->ctx;
+	for(j=0;j<44100;j++)pcm[j] = (short)(4096.0*sine(j*tau/100));
 	return 0;
 }
 

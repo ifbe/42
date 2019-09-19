@@ -1,5 +1,17 @@
 <arena>
-sound{
+speaker{
 fmt:spk
 }
 </arena>
+
+
+<actor>
+test{
+fmt:test
+}
+</actor>
+
+
+<relation>
+(speaker, 0, win, 0) -> (test, 0, act, 0)
+</relation>

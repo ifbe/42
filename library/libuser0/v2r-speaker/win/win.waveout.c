@@ -44,10 +44,32 @@ void speakerlist()
 void speakerchoose()
 {
 }
-void speakerread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct style* pin)
+void speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	struct arena* spk = (void*)(self->chip);
+	if(0 == spk)return;
+	//say("spk=%llx\n",spk);
+
+	struct relation* rel = spk->orel0;
+	if(0 == rel)return;
+	//say("rel=%llx\n",rel);
+
+	struct actor* act = (void*)(rel->dstchip);
+	if(0 == act)return;
+	//say("act=%llx\n",act);
+
+	ZeroMemory(&headout[ocur], sizeof(WAVEHDR));
+	headout[ocur].lpData = act->ctx;
+	headout[ocur].dwBufferLength = 40000*2;
+	headout[ocur].dwFlags = 0L;
+	headout[ocur].dwLoops = 0L;
+	waveOutPrepareHeader(waveout, &headout[ocur], sizeof(WAVEHDR));
+	waveOutWrite(waveout, &headout[ocur], sizeof(WAVEHDR));
+
+	ocur = (ocur+1) % 16;
+	olen = olen+len;
+
+	sleep_us(1000*1000);
 }
 void speakerwrite(int dev, int time, u8* buf, int len)
 {
