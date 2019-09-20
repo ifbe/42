@@ -20,9 +20,13 @@ void initdriver(void*);
 //libhard0
 void freedevice();
 void initdevice(void*);
-int deviceread_all(void*);
-int devicewrite_ev(void*);
 //libboot1
+void freepulser();
+void initpulser(void*);
+//libboot0
+void freetheall();
+void inittheall(void*);
+//
 void freestdin();
 void initstdin(void*);
 void freestdout();
@@ -31,7 +35,6 @@ void freestdev();
 void initstdev(void*);
 void freestdrel();
 void initstdrel(void*);
-//libboot0
 void* death();
 void* birth();
 //

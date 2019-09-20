@@ -56,21 +56,34 @@ void peername(u64 fd, u32* buf)
 
 int writesocket(int fd, void* tmp, void* buf, int len)
 {
-	u64 type;
 	int ret;
+	u64 type;
 	if(fd == 0)return 0;
 	if(buf == 0)return 0;
 //say("@writesocket:%x,%llx,%llx,%x\n",fd,tmp,buf,len);
 
 	type = obj[fd].type;
-	if(_UDP_ == type)
-	{
+	if(_UDP_ == type){
 		if(0 == tmp)tmp = obj[fd].peer;
 		ret = sendto(
 			fd, buf, len, 0,
 			tmp, sizeof(struct sockaddr_in)
 		);
 		return ret;
+	}
+	if(_udp_ == type){
+		ret = 0;
+		while(1){
+			if(len-ret <= 1024){
+				write(fd, buf+ret, len-ret);
+				break;
+			}
+			else{
+				write(fd, buf+ret, 1024);
+				ret += 1024;
+			}
+		}
+		return len;
 	}
 
 	ret = write(fd, buf, len);

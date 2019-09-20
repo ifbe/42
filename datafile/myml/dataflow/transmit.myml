@@ -1,0 +1,26 @@
+<system>
+server{
+fmt:UDP
+url:0.0.0.0:9999
+}
+client{
+fmt:udp
+url:127.0.0.1:6666
+}
+</system>
+
+
+<artery>
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+
+<relation>
+#ok done
+(server, 0, fd, dst) -> (client, 0, fd, src)
+
+#it's for debug purpose
+(server, 0, fd, dst) -> (dbghex, 0, art, src)
+</relation>

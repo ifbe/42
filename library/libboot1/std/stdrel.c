@@ -172,7 +172,7 @@ int relationread(void* chip, int foot, void* arg, int idx, void* buf, int len)
 		if(foot == rel->dstflag){
 			self = (void*)&rel->srcchip;
 			peer = (void*)&rel->dstchip;
-			return relation_r(self, peer, arg, idx, buf, len);
+			relation_r(self, peer, arg, idx, buf, len);
 		}
 		rel = samedstnextsrc(rel);
 	}
@@ -183,7 +183,7 @@ int relationread(void* chip, int foot, void* arg, int idx, void* buf, int len)
 		if(foot == rel->srcflag){
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
-			return relation_r(self, peer, arg, idx, buf, len);
+			relation_r(self, peer, arg, idx, buf, len);
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -221,7 +221,7 @@ int relationwrite(void* chip, int foot, void* arg, int idx, void* buf, int len)
 		if(foot == rel->dstflag){
 			self = (void*)&rel->srcchip;
 			peer = (void*)&rel->dstchip;
-			return relation_w(self, peer, arg, idx, buf, len);
+			relation_w(self, peer, arg, idx, buf, len);
 		}
 		rel = samedstnextsrc(rel);
 	}
@@ -233,7 +233,7 @@ int relationwrite(void* chip, int foot, void* arg, int idx, void* buf, int len)
 		if(foot == rel->srcflag){
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
-			return relation_w(self, peer, arg, idx, buf, len);
+			relation_w(self, peer, arg, idx, buf, len);
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -244,7 +244,7 @@ int relationwrite(void* chip, int foot, void* arg, int idx, void* buf, int len)
 
 
 
-int relationstop(struct halfrel* self, struct halfrel* peer)
+int relation_d(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->type){
 		case _dev_:return devicestop(self, peer);
@@ -256,11 +256,17 @@ int relationstop(struct halfrel* self, struct halfrel* peer)
 	}
 	return 0;
 }
+int relationstop(struct halfrel* self, struct halfrel* peer)
+{
+	relation_d(self, peer);
+	relation_d(peer, self);
+	return 0;
+}
 
 
 
 
-int relationstart(struct halfrel* self, struct halfrel* peer)
+int relation_a(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->type){
 		case _dev_:return devicestart(self, peer);
@@ -270,6 +276,12 @@ int relationstart(struct halfrel* self, struct halfrel* peer)
 		case _win_:return  arenastart(self, peer);
 		case _act_:return  actorstart(self, peer);
 	}
+	return 0;
+}
+int relationstart(struct halfrel* self, struct halfrel* peer)
+{
+	relation_a(self, peer);
+	relation_a(peer, self);
 	return 0;
 }
 

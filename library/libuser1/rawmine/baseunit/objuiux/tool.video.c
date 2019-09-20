@@ -183,15 +183,7 @@ void video_draw_vbo3d(
 	data->vbuf_enq += 1;
 
 
-	struct relation* rel = act->orel0;
-	if(0 == rel)return;
-
-	u8* srcbuf = 0;
-	relationread(act, _src_, 0, 0, &srcbuf, 0);
-	say("srcbuf=%llx\n",srcbuf);
-	if(0 == srcbuf)return;
-
-	video_update(data->tex_data[0], 1024*1024*4, srcbuf, 640*480*2);
+	//video_update(data->tex_data[0], 1024*1024*4, srcbuf, 640*480*2);
 	data->tex_w[0] = 640;
 	data->tex_h[0] = 480;
 	data->tex_enq[0] += 1;
@@ -272,7 +264,7 @@ static void video_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	//struct actor* win = (void*)(peer->chip);
 	//struct style* sty = (void*)(peer->foot);
 	if(_yuv_ == self->flag){
-		say("@video_write.yuv: %llx,%x\n", buf, len);
+		say("@video_write.yuv: %llx,%x,%llx,%x\n", arg, idx, buf, len);
 	}
 /*
 	switch(self->flag){

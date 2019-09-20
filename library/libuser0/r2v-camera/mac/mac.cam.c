@@ -52,6 +52,7 @@ int videodelete(struct arena* win)
 int videocreate(struct arena* win)
 {
 	ibuf = memorycreate(0x100000, 0);
+	for(icur=0;icur<640*48082;icur++)ibuf[icur] = 0x66;
 	icur = 0;
 
 	//thread

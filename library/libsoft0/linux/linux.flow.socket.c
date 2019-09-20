@@ -59,8 +59,8 @@ void peername(u64 fd, u32* buf)
 
 int writesocket(int fd, void* tmp, void* buf, int len)
 {
-	u64 type;
 	int ret;
+	u64 type;
 	if(fd == 0)return 0;
 	if(buf == 0)return 0;
 
@@ -72,6 +72,20 @@ int writesocket(int fd, void* tmp, void* buf, int len)
 			tmp, sizeof(struct sockaddr_in)
 		);
 		return ret;
+	}
+	if(_udp_ == type){
+		ret = 0;
+		while(1){
+			if(len-ret <= 1024){
+				write(fd, buf+ret, len-ret);
+				break;
+			}
+			else{
+				write(fd, buf+ret, 1024);
+				ret += 1024;
+			}
+		}
+		return len;
 	}
 
 	ret = write(fd, buf, len);
