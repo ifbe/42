@@ -123,6 +123,14 @@ int gpsclient_parse(u8* buf, int len)
 	}
 	return 0;
 }
+
+
+
+
+int gpsclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
 int gpsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int j,k;

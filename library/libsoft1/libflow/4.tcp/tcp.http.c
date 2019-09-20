@@ -219,12 +219,9 @@ int httpserver_orelget(
 
 
 
-int httpclient_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int httpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	int j,k;
+/*	int j,k;
 	struct relation* orel;
 	struct halfrel* self;
 	struct halfrel* peer;
@@ -263,6 +260,7 @@ int httpclient_write(
 		printmemory(buf, len);
 		return 0;
 	}
+*/
 /*
 	//send to o rel
 	while(1)
@@ -279,7 +277,7 @@ int httpclient_write(
 */
 	return 0;
 }
-int httpclient_read()
+int httpclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -312,10 +310,7 @@ int httpclient_create(struct element* ele, u8* url)
 
 
 
-int httpserver_write(
-	struct element* ele, void* sty,
-	struct object* sc, void* sf,
-	u8* buf, int len)
+int httpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {/*
 	u8 tmp[0x1000];
 	if(0 == buf)
@@ -333,10 +328,7 @@ int httpserver_write(
 	system_leafwrite(ele->obj, 0, ele, sty, buf, len);*/
 	return 0;
 }
-int httpserver_read(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int httpserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -352,15 +344,14 @@ int httpserver_create(struct element* ele, u8* url)
 
 
 
-int httpmaster_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int j,k,ret;
-	struct element* e;
+	u8 tmp[0x1000];
 	struct httpparsed p;
-
+	struct element* e = (void*)(self->chip);
+	if(0 == e)return 0;
+/*
 	//https
 	if(0x16 == buf[0])
 	{
@@ -372,10 +363,10 @@ int httpmaster_write(
 		}
 		return 0;
 	}
-
+*/
 	//parse
 	httpparser(buf, len, &p);
-
+/*
 	//websocket
 	if((0 != p.Connection)&&(0 != p.Upgrade))
 	{
@@ -387,39 +378,28 @@ int httpmaster_write(
 		}
 		return 0;
 	}
-/*
-	//no orel, root=none
-	if(0 == ele->orel0)
-	{
-		ret = 0;
-		if(p.GET)ret = httpserver_nullget(ele, sty, obj, pin, buf, len, &p);
-		else if(p.POST)ret = httpserver_nullpost(ele, sty, obj, pin, buf, len, &p);
-
-		//something wrong
-		if(ret <= 0)httpserver_sendback(ele, sty, obj, pin, buf, len);
-	}
-
-	//have orel, root=this
-	else
-	{
-		ret = 0;
-		//say("%llx,%llx\n", p.GET, p.POST);
-		if(p.GET)ret = httpserver_orelget(ele, sty, obj, pin, buf, len, &p);
-		else if(p.POST)ret = httpserver_orelpost(ele, sty, obj, pin, buf, len, &p);
-
-		//something wrong
-		if(ret <= 0)httpserver_sendback(ele, sty, obj, pin, buf, len);
-	}
 */
+	if(p.GET){
+		ret = mysnprintf(tmp, 0x1000,
+			"HTTP/1.1 200 OK\r\n"
+			"Content-type: text/plain\r\n"
+			"Content-Length: %d\r\n"
+			"\r\n",
+			len
+		);
+		relationwrite(e, _src_, 0, 0, tmp, ret);
+		relationwrite(e, _src_, 0, 0, buf, len);
+	}
+
 	//close or not
 	if(0 != p.Connection)
 	{
 		if(0 == ncmp(p.Connection, "keep-alive", 10))return 0;
 	}
-	systemdelete(obj);
+	//systemdelete(obj);
 	return 0;
 }
-int httpmaster_read()
+int httpmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
