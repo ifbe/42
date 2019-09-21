@@ -226,48 +226,48 @@ static void mirror_draw_vbo(
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
 
-	struct glsrc* src = (void*)(pin->data[0]);
+	struct glsrc* src = act->buf;
 	float (*vbuf)[6] = (void*)(src->vbuf);
 	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
 
-	vbuf[0][0] = vc[0] - vr[0] - vu[0];
-	vbuf[0][1] = vc[1] - vr[1] - vu[1];
-	vbuf[0][2] = vc[2] - vr[2] - vu[2];
+	vbuf[0][0] = vc[0] - vr[0] - vf[0];
+	vbuf[0][1] = vc[1] - vr[1] - vf[1];
+	vbuf[0][2] = vc[2] - vr[2] - vf[2];
 	vbuf[0][3] = 1.0;
 	vbuf[0][4] = 0.0;
 	vbuf[0][5] = 0.0;
 
-	vbuf[1][0] = vc[0] + vr[0] + vu[0];
-	vbuf[1][1] = vc[1] + vr[1] + vu[1];
-	vbuf[1][2] = vc[2] + vr[2] + vu[2];
+	vbuf[1][0] = vc[0] + vr[0] + vf[0];
+	vbuf[1][1] = vc[1] + vr[1] + vf[1];
+	vbuf[1][2] = vc[2] + vr[2] + vf[2];
 	vbuf[1][3] = 0.0;
 	vbuf[1][4] = 1.0;
 	vbuf[1][5] = 0.0;
 
-	vbuf[2][0] = vc[0] - vr[0] + vu[0];
-	vbuf[2][1] = vc[1] - vr[1] + vu[1];
-	vbuf[2][2] = vc[2] - vr[2] + vu[2];
+	vbuf[2][0] = vc[0] - vr[0] + vf[0];
+	vbuf[2][1] = vc[1] - vr[1] + vf[1];
+	vbuf[2][2] = vc[2] - vr[2] + vf[2];
 	vbuf[2][3] = 1.0;
 	vbuf[2][4] = 1.0;
 	vbuf[2][5] = 0.0;
 
-	vbuf[3][0] = vc[0] + vr[0] + vu[0];
-	vbuf[3][1] = vc[1] + vr[1] + vu[1];
-	vbuf[3][2] = vc[2] + vr[2] + vu[2];
+	vbuf[3][0] = vc[0] + vr[0] + vf[0];
+	vbuf[3][1] = vc[1] + vr[1] + vf[1];
+	vbuf[3][2] = vc[2] + vr[2] + vf[2];
 	vbuf[3][3] = 0.0;
 	vbuf[3][4] = 1.0;
 	vbuf[3][5] = 0.0;
 
-	vbuf[4][0] = vc[0] - vr[0] - vu[0];
-	vbuf[4][1] = vc[1] - vr[1] - vu[1];
-	vbuf[4][2] = vc[2] - vr[2] - vu[2];
+	vbuf[4][0] = vc[0] - vr[0] - vf[0];
+	vbuf[4][1] = vc[1] - vr[1] - vf[1];
+	vbuf[4][2] = vc[2] - vr[2] - vf[2];
 	vbuf[4][3] = 1.0;
 	vbuf[4][4] = 0.0;
 	vbuf[4][5] = 0.0;
 
-	vbuf[5][0] = vc[0] + vr[0] - vu[0];
-	vbuf[5][1] = vc[1] + vr[1] - vu[1];
-	vbuf[5][2] = vc[2] + vr[2] - vu[2];
+	vbuf[5][0] = vc[0] + vr[0] - vf[0];
+	vbuf[5][1] = vc[1] + vr[1] - vf[1];
+	vbuf[5][2] = vc[2] + vr[2] - vf[2];
 	vbuf[5][3] = 0.0;
 	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
@@ -331,16 +331,19 @@ static void mirror_draw(
 
 
 
-static void mirror_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void mirror_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	//mirror_draw(act, pin, win, sty);
+	struct actor* ctx = buf;
+	if(ctx){
+		if(_gl41data_ == ctx->type)mirror_draw_vbo(act,pin,ctx,sty);
+	}
 }
-static void mirror_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void mirror_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 static void mirror_stop(struct halfrel* self, struct halfrel* peer)
@@ -348,21 +351,42 @@ static void mirror_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void mirror_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct datapair* pair;
-	struct glsrc* src;
-	struct gldst* dst;
-
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-/*
-	//
-	pair = alloc_winobj(win, 's');
-	src = &pair->src;
-	dst = &pair->dst;
-	pin->foot[0] = (u64)src;
-	sty->foot[0] = (u64)dst;
+	if(0 == act)return;
+	if(0 == pin)return;
+	if(hex32('m','v','p',0) == self->flag){
+		say("mirror_start: mvp\n");
+		return;
+	}
+
+	pin->data[0] = (u64)(act->buf);
+	say("@mirror_start:%llx, %llx\n", pin->data[0], pin->data[1]);
+}
+
+
+
+
+static void mirror_search(struct actor* act)
+{
+}
+static void mirror_modify(struct actor* act)
+{
+}
+static void mirror_delete(struct actor* act)
+{
+	if(0 == act)return;
+	memorydelete(act->buf);
+	act->buf = 0;
+}
+static void mirror_create(struct actor* act, void* str)
+{
+	int j;
+	struct glsrc* src;
+	if(0 == act)return;
+
+	src = act->buf = memorycreate(0x200, 0);
+	if(0 == src)return;
 
 	//
 	src->geometry = 3;
@@ -384,31 +408,6 @@ static void mirror_start(struct halfrel* self, struct halfrel* peer)
 	//texture
 	src->tex_name[0] = "tex0";
 	src->tex_enq[0] = 0;
-*/
-}
-
-
-
-
-static void mirror_search(struct actor* act)
-{
-}
-static void mirror_modify(struct actor* act)
-{
-}
-static void mirror_delete(struct actor* act)
-{
-	if(0 == act)return;
-	memorydelete(act->buf);
-	act->buf = 0;
-}
-static void mirror_create(struct actor* act, void* str)
-{
-	void* win;
-	if(0 == act)return;
-
-	//win = actorcreate(_fbo_, 0);
-	//if(win)relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
 }
 
 

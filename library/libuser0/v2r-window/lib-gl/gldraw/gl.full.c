@@ -288,7 +288,19 @@ void fullwindow_viewport(struct arena* ogl, struct actor* view)
 		rel = samesrcnextdst(rel);
 	}
 }
-void fullwindow_render(struct arena* ogl, struct actor* wnd)
+void fullwindow_renderfboc(struct arena* ogl, struct actor* wnd)
+{
+	say("@gl41fboc\n");
+}
+void fullwindow_renderfbod(struct arena* ogl, struct actor* wnd)
+{
+	say("@gl41fbod\n");
+}
+void fullwindow_renderfbog(struct arena* ogl, struct actor* wnd)
+{
+	say("@gl41fbog\n");
+}
+void fullwindow_renderwnd(struct arena* ogl, struct actor* wnd)
 {
 	int cnt;
 	struct relation* rel;
@@ -343,7 +355,10 @@ void fullwindow_read(struct arena* ogl)
 		act = (void*)(rel->dstchip);
 		switch(act->type){
 			case _gl41data_:fullwindow_upload(ogl, act);break;
-			case _gl41wnd0_:fullwindow_render(ogl, act);break;
+			case _gl41fboc_:fullwindow_renderfboc(ogl, act);break;
+			case _gl41fbod_:fullwindow_renderfboc(ogl, act);break;
+			case _gl41fbog_:fullwindow_renderfboc(ogl, act);break;
+			case _gl41wnd0_:fullwindow_renderwnd(ogl, act);break;
 		}
 
 		rel = samesrcnextdst(rel);

@@ -224,7 +224,10 @@ static void tree_read(struct halfrel* self, struct halfrel* peer, void* arg, int
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	//tree_draw(act, pin, win, sty);
+	struct actor* ctx = buf;
+	if(ctx){
+		if(_gl41data_ == ctx->type)tree_draw_vbo3d(act,pin,ctx,sty);
+	}
 }
 static void tree_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
