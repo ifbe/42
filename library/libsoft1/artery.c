@@ -4,10 +4,11 @@
 #define _hfs_ hex32('h','f','s',0)
 #define _ext_ hex32('e','x','t',0)
 //
-#define _dbgf32_ hex64('d','b','g','f','3','2',0,0)
-#define _dbghex_ hex64('d','b','g','h','e','x',0,0)
 #define _echo_ hex32('e','c','h','o')
 #define _pump_ hex32('p','u','m','p')
+#define _dbgf32_ hex64('d','b','g','f','3','2',0,0)
+#define _dbghex_ hex64('d','b','g','h','e','x',0,0)
+#define _fftpcm_ hex64('f','f','t','p','c','m',0,0)
 //
 #define _reline_ hex64('r','e','l','i','n','e',0,0)
 #define _str2fv_ hex64('s','t','r','2','f','v',0,0)
@@ -62,18 +63,6 @@ int extclient_stop( struct halfrel* self, struct halfrel* peer);
 int extclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int extclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
-int dbgf32_create(struct element* ele, void* url);
-int dbgf32_delete(struct element* ele, void* url);
-int dbgf32_start(struct halfrel* self, struct halfrel* peer);
-int dbgf32_stop( struct halfrel* self, struct halfrel* peer);
-int dbgf32_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int dbgf32_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int dbghex_create(struct element* ele, void* url);
-int dbghex_delete(struct element* ele, void* url);
-int dbghex_start(struct halfrel* self, struct halfrel* peer);
-int dbghex_stop( struct halfrel* self, struct halfrel* peer);
-int dbghex_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int dbghex_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int echo_create(struct element* ele, void* url);
 int echo_delete(struct element* ele, void* url);
 int echo_start(struct halfrel* self, struct halfrel* peer);
@@ -86,6 +75,24 @@ int pump_stop( struct halfrel* self, struct halfrel* peer);
 int pump_start(struct halfrel* self, struct halfrel* peer);
 int pump_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int pump_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int dbgf32_create(struct element* ele, void* url);
+int dbgf32_delete(struct element* ele, void* url);
+int dbgf32_start(struct halfrel* self, struct halfrel* peer);
+int dbgf32_stop( struct halfrel* self, struct halfrel* peer);
+int dbgf32_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int dbgf32_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int dbghex_create(struct element* ele, void* url);
+int dbghex_delete(struct element* ele, void* url);
+int dbghex_start(struct halfrel* self, struct halfrel* peer);
+int dbghex_stop( struct halfrel* self, struct halfrel* peer);
+int dbghex_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int dbghex_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int fftpcm_create(struct element* ele, void* url);
+int fftpcm_delete(struct element* ele, void* url);
+int fftpcm_start(struct halfrel* self, struct halfrel* peer);
+int fftpcm_stop( struct halfrel* self, struct halfrel* peer);
+int fftpcm_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int fftpcm_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 int reline_create(struct element* ele, void* url);
 int reline_delete(struct element* ele, void* url);
@@ -370,10 +377,11 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 {
 	struct element* ele = (void*)(self->chip);
 	switch(ele->type){
-		case _dbgf32_:dbgf32_read(self, peer, arg, idx, buf, len);break;
-		case _dbghex_:dbghex_read(self, peer, arg, idx, buf, len);break;
 		case _echo_:echo_read(self, peer, arg, idx, buf, len);break;
 		case _pump_:pump_read(self, peer, arg, idx, buf, len);break;
+		case _dbgf32_:dbgf32_read(self, peer, arg, idx, buf, len);break;
+		case _dbghex_:dbghex_read(self, peer, arg, idx, buf, len);break;
+		case _fftpcm_:fftpcm_read(self, peer, arg, idx, buf, len);break;
 
 		case _reline_:reline_read(self, peer, arg, idx, buf, len);break;
 		case _qu2eu_:qu2eu_read(self, peer, arg, idx, buf, len);break;
@@ -397,10 +405,11 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	struct element* ele = (void*)(self->chip);
 	//say("@arterywrite\n");
 	switch(ele->type){
-		case _dbgf32_:return dbgf32_write(self, peer, arg, idx, buf, len);break;
-		case _dbghex_:return dbghex_write(self, peer, arg, idx, buf, len);break;
 		case _echo_:return echo_write(self, peer, arg, idx, buf, len);break;
 		case _pump_:return pump_write(self, peer, arg, idx, buf, len);break;
+		case _dbgf32_:return dbgf32_write(self, peer, arg, idx, buf, len);break;
+		case _dbghex_:return dbghex_write(self, peer, arg, idx, buf, len);break;
+		case _fftpcm_:return fftpcm_write(self, peer, arg, idx, buf, len);break;
 
 		case _reline_:return reline_write(self, peer, arg, idx, buf, len);break;
 		case _qu2eu_:return qu2eu_write(self, peer, arg, idx, buf, len);break;
@@ -425,7 +434,15 @@ int arterystop(struct halfrel* self, struct halfrel* peer)
 }
 int arterystart(struct halfrel* self, struct halfrel* peer)
 {
+	struct element* ele;
 	say("@arterystart\n");
+
+	ele = (void*)(self->chip);
+	if(0 == ele)return 0;
+
+	switch(ele->type){
+		case _http_:return httpclient_start(self, peer);break;
+	}
 	return 0;
 }
 
@@ -497,6 +514,24 @@ void* arterycreate(u64 type, void* argstr)
 	}
 
 	//test
+	if(_echo_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _echo_;
+		echo_create(e, url);
+		return e;
+	}
+	if(_pump_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _pump_;
+		pump_create(e, url);
+		return e;
+	}
 	if(_dbgf32_ == type)
 	{
 		e = allocelement();
@@ -515,22 +550,13 @@ void* arterycreate(u64 type, void* argstr)
 		dbghex_create(e, url);
 		return e;
 	}
-	if(_echo_ == type)
+	if(_fftpcm_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _echo_;
-		echo_create(e, url);
-		return e;
-	}
-	if(_pump_ == type)
-	{
-		e = allocelement();
-		if(0 == e)return 0;
-
-		e->type = _pump_;
-		pump_create(e, url);
+		e->type = _fftpcm_;
+		fftpcm_create(e, url);
 		return e;
 	}
 

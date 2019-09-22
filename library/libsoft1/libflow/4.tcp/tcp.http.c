@@ -219,66 +219,55 @@ int httpserver_orelget(
 
 
 
-int httpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
-{
-/*	int j,k;
-	struct relation* orel;
-	struct halfrel* self;
-	struct halfrel* peer;
-
-	if(0 == ele)return 0;
-	if(0 == obj)return 0;
-	//say("%.*s\n", len, buf);
-
-	if(0 == ele->stage1)
-	{
-		k = 0;
-		for(j=0;j<=len;j++)
-		{
-			if((j>=len)|(0xa == buf[j])|(0xd == buf[j]))
-			{
-				say("%.*s\n", j-k, buf+k);
-				if(j >= len)break;
-				if((0xd == buf[k])&&(0xa == buf[k+1]))
-				{
-					buf += k+2;
-					len -= k+2;
-					break;
-				}
-
-				if(0xd == buf[j])j++;
-				k = j+1;
-			}
-		}
-	}
-	ele->stage1 += 1;
-
-	//if no o rel
-	orel = ele->orel0;
-	if(0 == orel)
-	{
-		printmemory(buf, len);
-		return 0;
-	}
-*/
-/*
-	//send to o rel
-	while(1)
-	{
-		if(0 == orel)break;
-
-		self = (void*)&orel->dstchip;
-		peer = (void*)&orel->srcchip;
-		if(_win_ == orel->dsttype)arenawrite(self, peer, buf, len);
-		else if(_act_ == orel->dsttype)actorwrite(self, peer, buf, len);
-
-		orel = samesrcnextdst(orel);
-	}
-*/
-	return 0;
-}
 int httpclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	return 0;
+}
+int httpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+{
+	int j,k;
+	struct element* ele;
+	say("@httpclient_write: %x\n", len);
+	//printmemory(buf, 256);
+
+	ele = (void*)(self->chip);
+	if(0 == ele)return 0;
+
+	if(ele->stage1 > 0){
+		relationwrite(ele, _dst_, 0, 0, buf, len);
+	}
+	else{
+		k = 0;
+		for(j=0;j<len/2;j++){
+			//say("%d,%x\n",j,buf[j]);
+			if(	(buf[j+0] == 0xd) && (buf[j+1] == 0xa) ) {
+				if(buf[k] != 0xd){
+					say("%.*s\n", j-k, buf+k);
+					k = j+2;
+				}
+				else{
+					relationwrite(ele, _dst_, 0, 0, buf+j+2, len-j-2);
+					break;
+				}
+				j++;
+			}
+		}
+		ele->stage1 = 1;
+	}
+
+	return 0;
+}
+int httpclient_stop(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+{
+	return 0;
+}
+int httpclient_start(struct halfrel* self, struct halfrel* peer)
+{
+	struct element* ele = (void*)(self->chip);
+	if(_src_ == self->flag){
+		relationwrite(ele, _src_, 0, 0, ele->buf, ele->len);
+		ele->stage1 = 0;
+	}
 	return 0;
 }
 int httpclient_delete(struct element* ele)
@@ -286,25 +275,47 @@ int httpclient_delete(struct element* ele)
 	return 0;
 }
 int httpclient_create(struct element* ele, u8* url)
-{/*
-	int ret;
-	void* obj;
-	u8 buf[0x1000];
+{
+	int j;
+	u8* buf;
+	int hlen;
+	u8* host;
+	int clen;
+	u8* ctxt;
+	if(0 == url)return 0;
+	if(0 == url[0])return 0;
+	//printmemory(url, 32);
 
-	ret = mysnprintf(buf, 0x1000,
-		"GET %s HTTP/1.1\r\n"
-		"Host: %s\r\n"
+	//get host
+	buf = url;
+	for(j=0;j<32;j++){
+		if('/' == buf[j])break;
+	}
+	if(buf[j] != '/')return 0;
+	host = buf;
+	hlen = j;
+
+	//get ctx
+	buf = host + j;
+	for(j=0;j<256;j++){
+		if(buf[j] <= 0x20)break;
+	}
+	if(buf[j] > 0x20)return 0;
+	ctxt = buf;
+	clen = j;
+
+	buf = ele->buf = memorycreate(0x1000, 0);
+	if(0 == buf)return 0;
+
+	ele->len = mysnprintf(buf, 0x1000,
+		"GET %.*s HTTP/1.1\r\n"
+		"Host: %.*s\r\n"
 		"\r\n",
-		"/", url
+		clen, ctxt,
+		hlen, host
 	);
-
-	ret = system_leafwrite(obj, 0, ele, 0, buf, ret);
-	if(ret <= 0)return 0;
-
-	ele->type = _http_;
-	ele->stage1 = 0;
-*/
-	return 1;
+	say("%.*s\n", ele->len, buf);
+	return 0;
 }
 
 

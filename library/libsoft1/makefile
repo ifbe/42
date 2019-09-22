@@ -173,10 +173,11 @@ libflow/ahrs/ahrs.madgwick.c \
 libflow/ahrs/ahrs.ekf.c \
 libflow/ahrs/ahrs.ukf.c \
 libflow/gcode/gcode.c \
-libflow/stream/stream.test.dbgf32.c \
-libflow/stream/stream.test.dbghex.c \
 libflow/stream/stream.test.echo.c \
 libflow/stream/stream.test.pump.c \
+libflow/stream/stream.test.dbgf32.c \
+libflow/stream/stream.test.dbghex.c \
+libflow/stream/stream.test.fftpcm.c \
 libflow/stream/stream.reorder.bylength.c \
 libflow/stream/stream.reorder.bysymbol.c \
 libflow/stream/stream.reorder.linefeed.c \

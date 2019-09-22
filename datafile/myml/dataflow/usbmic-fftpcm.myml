@@ -1,0 +1,17 @@
+<artery>
+fftpcm{
+fmt:fftpcm
+}
+</artery>
+
+
+<arena>
+usbmic{
+fmt:mic
+}
+</arena>
+
+
+<relation>
+(usbmic, 0, win, dst) -> (fftpcm, 0, art, src)
+</relation>
