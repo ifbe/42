@@ -7,12 +7,14 @@
 static u64 thread = 0;
 static int alive = 0;
 //
-static u8* ibuf = 0;
+static short* ibuf = 0;
 static int icur = 0;
 void* micphonelistener(struct arena* win)
 {
+	int j;
 	while(1){
-		relationwrite(win, _dst_, 0, 0, ibuf, 44100*2);
+		for(j=0;j<1024;j++)ibuf[j] = (getrandom()&0xfff) - 0x800;
+		relationwrite(win, _dst_, 0, 0, ibuf, 1024*2);
 		sleep_us(1000*1000);
 	}
 	return 0;

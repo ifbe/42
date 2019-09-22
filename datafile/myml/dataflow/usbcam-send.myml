@@ -1,0 +1,29 @@
+<system>
+client{
+fmt:tcp
+url:192.168.0.217:9999
+}
+</system>
+
+
+<artery>
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+
+<arena>
+usbcam{
+fmt:cam
+}
+</arena>
+
+
+<relation>
+#sendto network
+(usbcam, 0, win, dst) -> (client, 0, fd, src)
+
+#sendto stdout
+(usbcam, 0, win, dst) -> (dbghex, 0, art, src)
+</relation>

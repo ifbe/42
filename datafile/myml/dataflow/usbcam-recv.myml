@@ -1,0 +1,19 @@
+<system>
+server{
+fmt:TCP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<artery>
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+
+<relation>
+#sendto stdout
+(server, 0, fd, dst) -> (dbghex, 0, art, src)
+</relation>
