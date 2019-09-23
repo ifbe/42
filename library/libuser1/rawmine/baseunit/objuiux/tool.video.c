@@ -259,12 +259,19 @@ static void video_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 }
 static void video_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	struct glsrc* data;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	//struct actor* win = (void*)(peer->chip);
 	//struct style* sty = (void*)(peer->foot);
 	if(_yuv_ == self->flag){
 		say("@video_write.yuv: %llx,%x,%llx,%x\n", arg, idx, buf, len);
+
+		data = act->buf;
+		if(0 == data)return;
+		if(0 == data->tex_data[0])return;
+
+		video_update(data->tex_data[0], 1024*1024*4, buf, 640*480*2);
 	}
 /*
 	switch(self->flag){

@@ -10,7 +10,10 @@
 #define _dbghex_ hex64('d','b','g','h','e','x',0,0)
 #define _fftpcm_ hex64('f','f','t','p','c','m',0,0)
 //
-#define _reline_ hex64('r','e','l','i','n','e',0,0)
+#define _recut_ hex64('r','e','c','u','t', 0, 0, 0)
+#define _reline_ hex64('r','e','l','i','n','e', 0, 0)
+#define _reorder_ hex64('r','e','o','r','d','e','r', 0)
+//
 #define _str2fv_ hex64('s','t','r','2','f','v',0,0)
 #define _fv2str_ hex64('f','v','2','s','t','r',0,0)
 #define _qu2eu_ hex64('q','u','2','e','u',0,0,0)
@@ -94,12 +97,25 @@ int fftpcm_stop( struct halfrel* self, struct halfrel* peer);
 int fftpcm_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fftpcm_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
+int recut_create(struct element* ele, void* url);
+int recut_delete(struct element* ele, void* url);
+int recut_start(struct halfrel* self, struct halfrel* peer);
+int recut_stop( struct halfrel* self, struct halfrel* peer);
+int recut_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int recut_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int reline_create(struct element* ele, void* url);
 int reline_delete(struct element* ele, void* url);
 int reline_start(struct halfrel* self, struct halfrel* peer);
 int reline_stop( struct halfrel* self, struct halfrel* peer);
 int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int reline_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int reorder_create(struct element* ele, void* url);
+int reorder_delete(struct element* ele, void* url);
+int reorder_start(struct halfrel* self, struct halfrel* peer);
+int reorder_stop( struct halfrel* self, struct halfrel* peer);
+int reorder_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int reorder_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+//
 int qu2eu_create(struct element* ele, void* url);
 int qu2eu_delete(struct element* ele, void* url);
 int qu2eu_start(struct halfrel* self, struct halfrel* peer);
@@ -383,7 +399,10 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _dbghex_:dbghex_read(self, peer, arg, idx, buf, len);break;
 		case _fftpcm_:fftpcm_read(self, peer, arg, idx, buf, len);break;
 
+		case _recut_:recut_read(self, peer, arg, idx, buf, len);break;
 		case _reline_:reline_read(self, peer, arg, idx, buf, len);break;
+		case _reorder_:reorder_read(self, peer, arg, idx, buf, len);break;
+
 		case _qu2eu_:qu2eu_read(self, peer, arg, idx, buf, len);break;
 		case _str2fv_:str2fv_read(self, peer, arg, idx, buf, len);break;
 		case _fv2str_:fv2str_read(self, peer, arg, idx, buf, len);break;
@@ -411,7 +430,10 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _dbghex_:return dbghex_write(self, peer, arg, idx, buf, len);break;
 		case _fftpcm_:return fftpcm_write(self, peer, arg, idx, buf, len);break;
 
+		case _recut_:return recut_write(self, peer, arg, idx, buf, len);break;
 		case _reline_:return reline_write(self, peer, arg, idx, buf, len);break;
+		case _reorder_:return reorder_write(self, peer, arg, idx, buf, len);break;
+
 		case _qu2eu_:return qu2eu_write(self, peer, arg, idx, buf, len);break;
 		case _str2fv_:return str2fv_write(self, peer, arg, idx, buf, len);break;
 		case _fv2str_:return fv2str_write(self, peer, arg, idx, buf, len);break;
@@ -560,14 +582,13 @@ void* arterycreate(u64 type, void* argstr)
 		return e;
 	}
 
-	//
-	if(_qu2eu_ == type)
+	if(_recut_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _qu2eu_;
-		qu2eu_create(e, url);
+		e->type = _recut_;
+		recut_create(e, url);
 		return e;
 	}
 	if(_reline_ == type)
@@ -577,6 +598,26 @@ void* arterycreate(u64 type, void* argstr)
 
 		e->type = _reline_;
 		reline_create(e, url);
+		return e;
+	}
+	if(_reorder_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _reorder_;
+		reorder_create(e, url);
+		return e;
+	}
+
+	//
+	if(_qu2eu_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _qu2eu_;
+		qu2eu_create(e, url);
 		return e;
 	}
 	if(_str2fv_ == type)

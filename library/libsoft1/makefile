@@ -178,9 +178,9 @@ libflow/stream/stream.test.pump.c \
 libflow/stream/stream.test.dbgf32.c \
 libflow/stream/stream.test.dbghex.c \
 libflow/stream/stream.test.fftpcm.c \
-libflow/stream/stream.reorder.bylength.c \
-libflow/stream/stream.reorder.bysymbol.c \
-libflow/stream/stream.reorder.linefeed.c \
+libflow/stream/stream.revise.recut.c \
+libflow/stream/stream.revise.reline.c \
+libflow/stream/stream.revise.reorder.c \
 libflow/stream/stream.parse.mavlink.c \
 libflow/stream/stream.parse.nema0183.c \
 libflow/stream/stream.parse.str2fv.c \
