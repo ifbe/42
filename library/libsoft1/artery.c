@@ -416,6 +416,9 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _HTTP_:httpmaster_read(self, peer, arg, idx, buf, len);break;
 		case _Http_:httpserver_read(self, peer, arg, idx, buf, len);break;
 		case _http_:httpclient_read(self, peer, arg, idx, buf, len);break;
+		case _WS_:wsmaster_read(self, peer, arg, idx, buf, len);break;
+		case _Ws_:wsserver_read(self, peer, arg, idx, buf, len);break;
+		case _ws_:wsclient_read(self, peer, arg, idx, buf, len);break;
 	}
 	return 0;
 }
@@ -447,6 +450,9 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _HTTP_:return httpmaster_write(self, peer, arg, idx, buf, len);break;
 		case _Http_:return httpserver_write(self, peer, arg, idx, buf, len);break;
 		case _http_:return httpclient_write(self, peer, arg, idx, buf, len);break;
+		case _WS_:return wsmaster_write(self, peer, arg, idx, buf, len);break;
+		case _Ws_:return wsserver_write(self, peer, arg, idx, buf, len);break;
+		case _ws_:return wsclient_write(self, peer, arg, idx, buf, len);break;
 	}
 	return 0;
 }

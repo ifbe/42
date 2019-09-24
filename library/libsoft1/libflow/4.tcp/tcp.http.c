@@ -360,8 +360,12 @@ int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 	int j,k,ret;
 	u8 tmp[0x1000];
 	struct httpparsed p;
-	struct element* e = (void*)(self->chip);
-	if(0 == e)return 0;
+	struct relation* rel;
+	struct object* obj;
+	struct element* ele;
+
+	ele = (void*)(self->chip);
+	if(0 == ele)return 0;
 /*
 	//https
 	if(0x16 == buf[0])
@@ -377,19 +381,23 @@ int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 */
 	//parse
 	httpparser(buf, len, &p);
-/*
+
 	//websocket
 	if((0 != p.Connection)&&(0 != p.Upgrade))
 	{
-		e = arterycreate(_Ws_, 0);
-		if(e)
-		{
-			relationcreate(e, 0, _art_, _src_, obj, 0, _fd_, 0);
-			wsserver_write(e, sty, obj, pin, buf, len);
-		}
+		obj = (void*)(peer->chip);
+		if(0 == obj)return 0;
+
+		obj = obj->thatobj;
+		ele = arterycreate(_Ws_, 0);
+
+		rel = relationcreate(ele, 0, _art_, _src_, obj, 0, _fd_, _dst_);
+		self = (void*)&rel->dstchip;
+		peer = (void*)&rel->srcchip;
+		arterywrite(self, peer, 0, 0, buf, len);
 		return 0;
 	}
-*/
+
 	if(p.GET){
 		ret = mysnprintf(tmp, 0x1000,
 			"HTTP/1.1 200 OK\r\n"
@@ -398,8 +406,8 @@ int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 			"\r\n",
 			len
 		);
-		relationwrite(e, _src_, 0, 0, tmp, ret);
-		relationwrite(e, _src_, 0, 0, buf, len);
+		relationwrite(ele, _src_, 0, 0, tmp, ret);
+		relationwrite(ele, _src_, 0, 0, buf, len);
 	}
 
 	//close or not

@@ -105,8 +105,10 @@ static void* epollthread(void* p)
 						obj[cc].name = 0;
 						obj[cc].irel0 = obj[cc].ireln = 0;
 						obj[cc].orel0 = obj[cc].oreln = 0;
-						obj[cc].selffd = cc;
 						obj[cc].thatfd = fd;
+						obj[cc].thatobj = &obj[fd];
+						obj[cc].selffd = cc;
+						//obj[cc].selfobj = &obj[cc];
 						epoll_add(cc);
 
 						printf("++++ %d\n",cc);
@@ -136,6 +138,7 @@ static void* epollthread(void* p)
 
 							//Tcp = TCP.child
 							obj[cc].thatfd = fd;
+							obj[cc].thatobj = &obj[fd];
 						}
 
 						//say("@kqueuethread: %.4s\n", &obj[cc].type);

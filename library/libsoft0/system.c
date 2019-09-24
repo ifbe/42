@@ -266,6 +266,11 @@ void* systemcreate(u64 type, void* argstr)
 
 		obj[fd].type = _TCP_;
 	}
+	else if(_Tcp_ == type)	//tcp client
+	{
+		obj[fd].type = _Tcp_;
+		obj[fd].selffd = fd;
+	}
 	else if(_tcp_ == type)	//tcp client
 	{
 		fd = startsocket(host, port, _tcp_);

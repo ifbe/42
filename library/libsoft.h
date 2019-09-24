@@ -155,8 +155,14 @@ struct event
 
 struct halfrel
 {
-	u64 chip;
-	u64 foot;
+	union{
+		u64 chip;
+		void* pchip;
+	};
+	union{
+		u64 foot;
+		void* pfoot;
+	};
 	u32 type;
 	u32 flag;
 };
@@ -233,12 +239,16 @@ struct object
 	u64 name;
 
 	//[40,5f]: data
-	u64 selffd;
 	u64 thatfd;
-	u64 dc;
+	union{
+		u64 that;
+		void* thatobj;
+	};
+	u64 selffd;
 	union{
 		u64 addr;
 		void* buf;
+		void* selfobj;
 	};
 
 	//[60,7f]: prop

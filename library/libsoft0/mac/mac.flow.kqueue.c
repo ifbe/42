@@ -87,8 +87,10 @@ int kqueuethread(int argc, const char * argv[])
 				{
 					obj[cc].type = _Tcp_;
 					obj[cc].name = 0;
-					obj[cc].selffd = cc;
 					obj[cc].thatfd = fd;
+					obj[cc].thatobj = &obj[fd];
+					obj[cc].selffd = cc;
+					//obj[cc].selfobj = &obj[cc];
 					kqueue_add(cc);
 					//eventwrite('+', _fd_, cc, timeread());
 				}
@@ -109,6 +111,7 @@ int kqueuethread(int argc, const char * argv[])
 
 					//Tcp = TCP.child
 					obj[cc].thatfd = fd;
+					obj[cc].thatobj = &obj[fd];
 				}
 
 				//say("@kqueuethread: %.4s\n", &obj[cc].type);
