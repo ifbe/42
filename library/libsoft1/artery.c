@@ -8,6 +8,7 @@
 #define _pump_ hex32('p','u','m','p')
 #define _dbgf32_ hex64('d','b','g','f','3','2',0,0)
 #define _dbghex_ hex64('d','b','g','h','e','x',0,0)
+#define _goslow_ hex64('g','o','s','l','o','w',0,0)
 #define _fftpcm_ hex64('f','f','t','p','c','m',0,0)
 //
 #define _recut_ hex64('r','e','c','u','t', 0, 0, 0)
@@ -90,6 +91,12 @@ int dbghex_start(struct halfrel* self, struct halfrel* peer);
 int dbghex_stop( struct halfrel* self, struct halfrel* peer);
 int dbghex_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int dbghex_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int goslow_create(struct element* ele, void* url);
+int goslow_delete(struct element* ele, void* url);
+int goslow_start(struct halfrel* self, struct halfrel* peer);
+int goslow_stop( struct halfrel* self, struct halfrel* peer);
+int goslow_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int goslow_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fftpcm_create(struct element* ele, void* url);
 int fftpcm_delete(struct element* ele, void* url);
 int fftpcm_start(struct halfrel* self, struct halfrel* peer);
@@ -397,6 +404,7 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _pump_:pump_read(self, peer, arg, idx, buf, len);break;
 		case _dbgf32_:dbgf32_read(self, peer, arg, idx, buf, len);break;
 		case _dbghex_:dbghex_read(self, peer, arg, idx, buf, len);break;
+		case _goslow_:goslow_read(self, peer, arg, idx, buf, len);break;
 		case _fftpcm_:fftpcm_read(self, peer, arg, idx, buf, len);break;
 
 		case _recut_:recut_read(self, peer, arg, idx, buf, len);break;
@@ -431,6 +439,7 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _pump_:return pump_write(self, peer, arg, idx, buf, len);break;
 		case _dbgf32_:return dbgf32_write(self, peer, arg, idx, buf, len);break;
 		case _dbghex_:return dbghex_write(self, peer, arg, idx, buf, len);break;
+		case _goslow_:return goslow_write(self, peer, arg, idx, buf, len);break;
 		case _fftpcm_:return fftpcm_write(self, peer, arg, idx, buf, len);break;
 
 		case _recut_:return recut_write(self, peer, arg, idx, buf, len);break;
@@ -576,6 +585,15 @@ void* arterycreate(u64 type, void* argstr)
 
 		e->type = _dbghex_;
 		dbghex_create(e, url);
+		return e;
+	}
+	if(_goslow_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _goslow_;
+		goslow_create(e, url);
 		return e;
 	}
 	if(_fftpcm_ == type)

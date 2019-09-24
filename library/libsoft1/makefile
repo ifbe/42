@@ -177,6 +177,7 @@ libflow/stream/stream.test.echo.c \
 libflow/stream/stream.test.pump.c \
 libflow/stream/stream.test.dbgf32.c \
 libflow/stream/stream.test.dbghex.c \
+libflow/stream/stream.test.goslow.c \
 libflow/stream/stream.test.fftpcm.c \
 libflow/stream/stream.revise.recut.c \
 libflow/stream/stream.revise.reline.c \

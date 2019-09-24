@@ -7,6 +7,9 @@ url:192.168.0.217:9999
 
 
 <artery>
+goslow{
+fmt:goslow
+}
 dbghex{
 fmt:dbghex
 }
@@ -21,9 +24,8 @@ fmt:cam
 
 
 <relation>
-#sendto network
-(usbcam, 0, win, dst) -> (client, 0, fd, src)
+(usbcam, 0, win, dst) -> (goslow, 0, art, src)
+(goslow, 0, art, dst) -> (client, 0, fd, src)
 
-#sendto stdout
 (usbcam, 0, win, dst) -> (dbghex, 0, art, src)
 </relation>
