@@ -20,11 +20,12 @@ int recut_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 
 	mem = ele->buf;
 	ret = ele->len;
-	say("@recut_write: %x, %x\n", ele->len, len);
+	say("@recut_write: %x + %x = %x\n", ret, len, ret+len);
 
 	j = 0;
 	while(1){
 		if(ret == 640*480*2){
+			say("sending\n");
 			relationwrite(ele, _dst_, 0, 0, mem, 640*480*2);
 			ret = 0;
 			continue;

@@ -59,7 +59,7 @@ void peername(u64 fd, u32* buf)
 
 int writesocket(int fd, void* tmp, void* buf, int len)
 {
-	int ret;
+	int ret,cnt;
 	u64 type;
 	if(fd == 0)return 0;
 	if(buf == 0)return 0;
@@ -88,8 +88,23 @@ int writesocket(int fd, void* tmp, void* buf, int len)
 		return len;
 	}
 
-	ret = write(fd, buf, len);
-	return ret;
+	//must check, don't trust
+	cnt = 0;
+	while(1){
+		ret = write(fd, buf+cnt, len-cnt);
+		if(ret <= 0){
+			say("@write:ret=%d,errno=%d\n", ret, errno);
+			if(11 != errno)return -1;
+
+			usleep(1000);
+			continue;
+		}
+		if(ret == len-cnt)break;
+
+		cnt += ret;
+		say("continue@writesocket: %x/%x\n", cnt, len);
+	}
+	return len;
 }
 int readsocket(int fd, void* tmp, void* buf, int len)
 {

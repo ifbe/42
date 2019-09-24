@@ -17,14 +17,18 @@ int goslow_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 }
 int goslow_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct element* ele;
-	say("@goslow_write\n");
-
-	ele = self->pchip;
+	int j;
+	struct element* ele = self->pchip;
 	if(0 == ele)return 0;
 
-	if(0 == ele->stage1)relationwrite(ele, _src_, 0, 0, buf, len);
-	ele->stage1 = (ele->stage1 + 1) % 60;
+	j = ele->stage1;
+	say("@goslow_write:%d\n", j);
+
+	if(0 == j){
+		say("@goslow.sending\n");
+		relationwrite(ele, _dst_, 0, 0, buf, len);
+	}
+	ele->stage1 = (j + 1) % 24;
 	return 0;
 }
 int goslow_stop(struct halfrel* self, struct halfrel* peer)
