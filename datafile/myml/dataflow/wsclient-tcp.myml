@@ -1,7 +1,11 @@
 <system>
+udp{
+fmt:UDP
+url:0.0.0.0:9999
+}
 tcp{
 fmt:tcp
-url:127.0.0.1:9999
+url:127.0.0.1:2222
 }
 </system>
 
@@ -19,5 +23,6 @@ fmt:dbghex
 
 <relation>
 (tcp, 0, fd, dst) -> (ws, 0, art, src)
+(ws, 0, art, dst) -> (udp, 0, art, dst)
 (ws, 0, art, dst) -> (dbghex, 0, art, src)
 </relation>
