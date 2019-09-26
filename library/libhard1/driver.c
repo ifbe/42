@@ -144,7 +144,7 @@ int driversearch(u8* buf, int len)
 
 void freedriver()
 {
-	//say("[4,8):freeing driver\n");
+	//say("[6,8):freeing driver\n");
 }
 void initdriver(u8* addr)
 {
@@ -157,5 +157,5 @@ void initdriver(u8* addr)
 	for(j=0;j<max;j++)dri[j].tier = _dri_;
 
 	//drivercreate(_usb_, 0);
-	//say("[4,8):inited driver\n");
+	//say("[6,8):inited driver\n");
 }

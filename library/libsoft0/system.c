@@ -351,7 +351,7 @@ int systemevent(struct event* ev)
 }
 void freesystem()
 {
-	//say("[8,c):freeing system\n");
+	//say("[8,9):freeing system\n");
 
 	deleteshell();
 	deletesocket();
@@ -375,5 +375,5 @@ void initsystem(u8* addr)
 	createsocket(addr);
 	createshell(addr);
 
-	//say("[8,c):inited system\n");
+	//say("[8,a):inited system\n");
 }

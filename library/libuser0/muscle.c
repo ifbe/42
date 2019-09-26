@@ -496,7 +496,7 @@ int arenaread_all()
 }
 void freearena()
 {
-	//say("[c,f):freeing arena\n");
+	//say("[c,e):freeing arena\n");
 
 	freewindow();
 	freetray();
@@ -510,7 +510,7 @@ void initarena(u8* addr)
 	style = (void*)(addr+0x100000);
 
 #define max (0x100000/sizeof(struct arena))
-	for(j=0;j<0x400000;j++)addr[j]=0;
+	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)arena[j].tier = _win_;
 
 	initstd(arena);
@@ -518,5 +518,5 @@ void initarena(u8* addr)
 	inittray(arena);
 	initjoy(arena);
 
-	//say("[c,f):inited arena\n");
+	//say("[c,e):inited arena\n");
 }

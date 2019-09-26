@@ -1,4 +1,29 @@
 #include "libuser.h"
+//libuser1
+void freeactor();
+void initactor(void*);
+//libuser0
+void freearena();
+void initarena(void*);
+//libsoft1
+void freeartery();
+void initartery(void*);
+//libsoft0
+void freesystem();
+void initsystem(void*);
+//libhard1
+void freedriver();
+void initdriver(void*);
+//libhard0
+void freedevice();
+void initdevice(void*);
+//libboot1
+void freeworker();
+void initworker(void*);
+//libboot0
+void freepwrclk();
+void initpwrclk(void*);
+//
 int arenaactor(struct arena* root, struct arena* twig, struct actor* leaf, struct actor* temp);
 int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max);
 int openreadclose(void*,int,void*,int);
@@ -10,23 +35,46 @@ int role_default(int, u8**);
 
 
 
-void prep()
+void birth(void* addr)
 {
-	int ret;
-	u8* argv[2];
+	//libboot
+	initpwrclk(addr+0x000000);
+	initworker(addr+0x200000);
 
-	//cmdline
-	arenacreate(_std_, 0);
-	arenacreate(_tray_, 0);
-/*
-	//try load from file
-	ret = role_fromfile(0, argv);
-	if(ret > 0)return;
+	//libsoft
+	initdevice(addr+0x400000);
+	initdriver(addr+0x600000);
 
-	//at least one window
-	ret = role_default(0, argv);
-*/
+	//libsoft
+	initsystem(addr+0x800000);
+	initartery(addr+0xa00000);
+
+	//libuser
+	initarena( addr+0xc00000);
+	initactor( addr+0xe00000);
 }
+void death()
+{
+	//libuser
+	freeactor();
+	freearena();
+
+	//libsoft
+	freeartery();
+	freesystem();
+
+	//libhard
+	freedriver();
+	freedevice();
+
+	//libboot
+	freeworker();
+	freepwrclk();
+}
+
+
+
+
 void role(u8* buf, int len)
 {
 	int j,argc;
@@ -49,4 +97,20 @@ void role(u8* buf, int len)
 		}
 	}
 	role_fromfile(argc, argv);
+}
+void prep()
+{
+	int ret;
+	u8* argv[2];
+
+	//cmdline
+	arenacreate(_std_, 0);
+/*
+	//try load from file
+	ret = role_fromfile(0, argv);
+	if(ret > 0)return;
+
+	//at least one window
+	ret = role_default(0, argv);
+*/
 }

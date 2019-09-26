@@ -15,7 +15,7 @@ bare:
 efi:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
-	$(compiler) $(cflag) efi/start.c
+	$(compiler) $(cflag) efi/efimain.c
 	$(compiler) $(cflag) efi/serial.c
 	$(compiler) $(cflag) efi/memory.c
 	$(compiler) $(cflag) efi/thread.c
@@ -25,7 +25,7 @@ efi:
 none:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
-	$(compiler) $(cflag) none/start.c
+	$(compiler) $(cflag) none/main.c
 	$(compiler) $(cflag) none/serial.c
 	$(compiler) $(cflag) none/memory.c
 	$(compiler) $(cflag) none/thread.c
@@ -35,7 +35,7 @@ none:
 wincmd:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
-	$(compiler) $(cflag) wincmd/start.c
+	$(compiler) $(cflag) wincmd/main.c
 	$(compiler) $(cflag) wincmd/serial.c
 	$(compiler) $(cflag) wincmd/memory.c
 	$(compiler) $(cflag) wincmd/thread.c
@@ -45,7 +45,7 @@ wincmd:
 rpi:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
-	$(compiler) $(cflag) none/start.c
+	$(compiler) $(cflag) none/main.c
 	$(compiler) $(cflag) none/serial.c
 	$(compiler) $(cflag) none/memory.c
 	$(compiler) $(cflag) none/thread.c

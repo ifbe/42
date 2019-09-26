@@ -316,7 +316,7 @@ void say(u8* fmt, ...)
 
 	//write position
 	cur = cur+ret;
-	if(cur > 0xf0000)cur = 0;
+	if(cur > 0x3f000)cur = 0;
 	outcur = cur;
 }
 

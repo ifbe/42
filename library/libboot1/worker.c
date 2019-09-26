@@ -1,4 +1,9 @@
 #include "libboot.h"
+//
+void freestdev();
+void initstdev(void*);
+void freestdrel();
+void initstdrel(void*);
 
 
 
@@ -82,7 +87,10 @@ int workersearch(u8* buf, int len)
 
 void freeworker()
 {
-	//say("[0,4):freeing worker\n");
+	//say("[2,4):freeing worker\n");
+
+	freestdev();
+	freestdrel();
 }
 void initworker(u8* addr)
 {
@@ -90,8 +98,11 @@ void initworker(u8* addr)
 	wrk = (void*)(addr+0x000000);
 
 #define max (0x100000/sizeof(struct worker))
-	//for(j=0;j<0x400000;j++)addr[j]=0;
-	//for(j=0;j<max;j++)wrk[j].tier = _wrk_;
+	for(j=0;j<0x200000;j++)addr[j]=0;
+	for(j=0;j<max;j++)wrk[j].tier = _wrk_;
 
-	//say("[0,4):inited worker\n");
+	initstdev( addr+0x100000);
+	initstdrel(addr+0x180000);
+
+	//say("[2,4):inited worker\n");
 }

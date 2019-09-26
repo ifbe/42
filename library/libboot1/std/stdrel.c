@@ -7,7 +7,7 @@
 static struct relation* recycle = 0;
 static struct relation* wirebuf = 0;
 static int wirecur = 0x40;
-static int wirelen = 0x100000;
+static int wirelen = 0x40000;
 void initstdrel(void* addr)
 {
 	wirebuf = addr;

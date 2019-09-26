@@ -10,8 +10,15 @@
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
-void boardcreate();
-void createserial();
+//
+void birth(void* addr);
+void death();
+//
+int termwrite(u8* buf, int len);
+int openwriteclose(void*,int,void*,int);
+//
+void prep();
+void loop();
 
 
 
@@ -65,7 +72,28 @@ int arg2utf8(u8* src, u8* dst)
 	dst[k] = 0;
 	return k;
 }
+int main(int argc, char** argv)
+{
+	int j,k;
+	u8 tmp[0x1000];
 
+	u8* addr = malloc(0x1000000);
+	birth(addr);
+
+	for(j=1;j<argc;j++){
+		k = arg2utf8(argv[j], tmp);
+		//tmp[k] = '\n';
+		//lowlevel_output(tmp, k+1);
+		termwrite(tmp, k);
+	}
+
+	if(argc <= 1)prep();
+	loop();
+
+	openwriteclose("universe.bin",0,addr,0x1000000);
+	death();
+	return 0;
+}
 
 
 
@@ -74,6 +102,7 @@ void* pollenv()
 	Sleep(1);
 	return 0;
 }
+/*
 void* waitenv()
 {
 	return 0;
@@ -119,3 +148,36 @@ void* birth()
 	if(0 != temp)temp = 0x1000 - temp;
 	return rawuniverse + temp;
 }
+
+int main(int argc, char* argv[])
+{
+	//before
+	u64 j,k;
+	u8* addr = beforedawn();
+
+	//cmdline
+	termwrite("\n@42@\n", 1);
+	for(j=1;j<argc;j++)
+	{
+		k = arg2utf8(argv[j], addr);
+		say("%.*s\n", k, addr);
+
+		if(termwrite(addr, k) < 0)goto byebye;
+	}
+
+	//load cfg
+	prep();
+
+	//main loop
+	loop();
+
+	//after mainloop: backup world
+	//if(0 == dstctx)dstctx =
+	//if(0 == storectx(dstctx))dump();
+	openwriteclose("universe.bin",0,addr,0x1000000);
+
+byebye:
+	//after
+	afterdusk();
+	return 0;
+}*/

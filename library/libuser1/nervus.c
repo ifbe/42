@@ -464,7 +464,7 @@ int actorevent(struct event* ev)
 }
 void freeactor()
 {
-	//say("[c,f):deleteing actor\n");
+	//say("[e,f):deleteing actor\n");
 	mine_free();
 	test_free();
 	baby_free();
@@ -485,5 +485,5 @@ void initactor(u8* addr)
 	baby_init(addr);
 	test_init(addr);
 	mine_init(addr);
-	//say("[c,f):createed actor\n");
+	//say("[e,f):createed actor\n");
 }

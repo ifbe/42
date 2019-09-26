@@ -154,7 +154,7 @@ void input(u8* buf, int len)
 			if(0xd == k)k = 0xa;
 			say("%c", k);
 
-			if(enq > 0xf0000)enq = 0;
+			if(enq > 0x3f000)enq = 0;
 			inbuf[enq] = k;
 			enq++;
 

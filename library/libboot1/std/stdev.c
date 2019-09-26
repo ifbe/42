@@ -32,7 +32,7 @@ void eventwrite(u64 why, u64 what, u64 where, u64 when)
 	//safely update the pointer
 	while(__sync_lock_test_and_set(&lock,1) == 1);
 	this = enq;
-	temp = (this+0x20)%0x100000;
+	temp = (this+0x20)%0x40000;
 	if(temp == deq)
 	{
 		//full
@@ -60,6 +60,6 @@ void* eventread()
 	if(enq == deq)return pollenv();
 
 	ret = deq;
-	deq = (deq+0x20)%0x100000;
+	deq = (deq+0x20)%0x40000;
 	return eventqueue + ret;
 }

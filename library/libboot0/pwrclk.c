@@ -1,4 +1,11 @@
 #include "libboot.h"
+void freestdin();
+void initstdin(void*);
+void freestdout();
+void initstdout(void*);
+//
+void boardcreate();
+void createserial();
 
 
 
@@ -82,7 +89,9 @@ int pwrclksearch(u8* buf, int len)
 
 void freepwrclk()
 {
-	//say("[0,4):freeing pwrclk\n");
+	//say("[0,2):freeing pwrclk\n");
+	freestdout();
+	freestdin();
 }
 void initpwrclk(u8* addr)
 {
@@ -90,8 +99,13 @@ void initpwrclk(u8* addr)
 	pwr = (void*)(addr+0x000000);
 
 #define max (0x100000/sizeof(struct pwrclk))
-	//for(j=0;j<0x400000;j++)addr[j]=0;
-	//for(j=0;j<max;j++)pwr[j].tier = _pwr_;
+	for(j=0;j<0x200000;j++)addr[j]=0;
+	for(j=0;j<max;j++)pwr[j].tier = _pwr_;
 
-	//say("[0,4):inited pwrclk\n");
+	createserial();
+
+	initstdin( addr+0x100000);
+	initstdout(addr+0x180000);
+
+	//say("[0,2):inited pwrclk\n");
 }

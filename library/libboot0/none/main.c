@@ -9,16 +9,50 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-void boardcreate();
+//
+void birth(void* addr);
+void death();
+//
+int termwrite(u8* buf, int len);
+int openwriteclose(void*,int,void*,int);
+//
+void prep();
+void loop();
 
 
 
+int main(int argc, char** argv)
+{
+	int j,k;
+	u8 tmp[0x1000];
 
+	u8* addr = malloc(0x1000000);
+	birth(addr);
+
+	for(j=1;j<argc;j++){
+		k = arg2utf8(argv[j], tmp);
+		//tmp[k] = '\n';
+		//lowlevel_output(tmp, k+1);
+		termwrite(tmp, k);
+	}
+
+	if(argc <= 1)prep();
+	loop();
+
+	openwriteclose("universe.bin",0,addr,0x1000000);
+	death();
+	return 0;
+}
+
+
+
+void* pollenv()
+{
+	Sleep(1);
+	return 0;
+}
+/*
 static u8* rawuniverse;
-
-
-
-
 void death()
 {
 }
@@ -74,3 +108,4 @@ int arg2utf8(char* src, char* dst)
 {
 	return snprintf(dst, 0x1000, "%s", src);
 }
+*/
