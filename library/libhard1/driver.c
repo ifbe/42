@@ -19,10 +19,10 @@ int mpu9250_read(  struct halfrel* self, struct halfrel* peer, void* arg, int id
 
 
 
-static struct device* dev;
 static struct driver* dri;
-static int devlen = 0;
 static int drilen = 0;
+static void* bbb;
+static int bbblen = 0;
 void* allocdriver()
 {
 	void* addr = &dri[drilen];
@@ -127,12 +127,15 @@ int drivermodify(int argc, char** argv)
 }
 int driversearch(u8* buf, int len)
 {
-	int j;
+	int j,k=0;
 	for(j=0;j<64;j++)
 	{
 		if(0 == dri[j].type)continue;
 		say("[%04x]: %.8s\n", j, &dri[j].type);
+		k++;
 	}
+
+	if(0 == k)say("empth driver\n");
 	return 0;
 }
 
@@ -146,10 +149,11 @@ void freedriver()
 void initdriver(u8* addr)
 {
 	int j;
-	dev = (void*)(addr+0x000000);
-	dri = (void*)(addr+0x100000);
+	dri = (void*)(addr+0x000000);
+	bbb = (void*)(addr+0x100000);
 
 #define max (0x100000/sizeof(struct driver))
+	for(j=0;j<0x200000;j++)addr[j] = 0;
 	for(j=0;j<max;j++)dri[j].tier = _dri_;
 
 	//drivercreate(_usb_, 0);

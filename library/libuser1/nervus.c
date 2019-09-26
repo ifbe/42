@@ -49,11 +49,9 @@ int gl41wnd0_write(void*, void*, void*, int, void*, int);
 
 
 
-static struct arena* arena = 0;
 static struct actor* actor = 0;
-static struct style* style = 0;
-static struct pinid* pinid = 0;
 static int actlen = 0;
+static struct pinid* pinid = 0;
 static int pinlen = 0;
 void* allocactor()
 {
@@ -472,19 +470,16 @@ void freeactor()
 	baby_free();
 
 	pinid = 0;
-	style = 0;
 	actor = 0;
-	arena = 0;
 }
 void initactor(u8* addr)
 {
 	int j;
-	arena = (void*)(addr+0x000000);
-	actor = (void*)(addr+0x100000);
-	style = (void*)(addr+0x200000);
-	pinid = (void*)(addr+0x300000);
+	actor = (void*)(addr+0x000000);
+	pinid = (void*)(addr+0x100000);
 
 #define max (0x100000/sizeof(struct actor))
+	for(j=0;j<0x200000;j++)addr[j] = 0;
 	for(j=0;j<max;j++)actor[j].tier = _act_;
 
 	baby_init(addr);

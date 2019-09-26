@@ -38,8 +38,8 @@ int cmp(void*, void*);
 
 //
 static struct object* obj = 0;
-static void* ppp = 0;
 static int objlen = 0;
+static void* ppp = 0;
 static int ppplen = 0;
 
 
@@ -363,10 +363,10 @@ void initsystem(u8* addr)
 {
 	int j;
 	obj = (void*)(addr+0x000000);
-	ppp = (void*)(addr+0x200000);
+	ppp = (void*)(addr+0x100000);
 
 #define max (0x100000/sizeof(struct object))
-	for(j=0;j<0x400000;j++)addr[j]=0;
+	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)obj[j].tier = _fd_;
 
 	createrandom(addr);

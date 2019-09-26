@@ -1078,18 +1078,15 @@ void freeartery()
 
 	qqq = 0;
 	ele = 0;
-	ppp = 0;
-	obj = 0;
 }
-void initartery(void* addr)
+void initartery(u8* addr)
 {
 	int j;
-	obj = addr+0x000000;
-	ele = addr+0x100000;
-	ppp = addr+0x200000;
-	qqq = addr+0x300000;
+	ele = (void*)(addr+0x000000);
+	qqq = (void*)(addr+0x100000);
 
 #define max (0x100000/sizeof(struct element))
+	for(j=0;j<0x200000;j++)addr[j] = 0;
 	for(j=0;j<max;j++)ele[j].tier = _art_;
 
 	//arterycreate(0, (u8*)"HACK://0.0.0.0:2222");

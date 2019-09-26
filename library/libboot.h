@@ -9,9 +9,11 @@ typedef unsigned long long u64;
 #define _act_ hex32('a','c','t',0)
 #define _win_ hex32('w','i','n',0)
 #define _art_ hex32('a','r','t',0)
-#define _fd_ hex32('f','d',0,0)
+#define _fd_  hex32('f','d', 0, 0)
 #define _dri_ hex32('d','r','i',0)
 #define _dev_ hex32('d','e','v',0)
+#define _wrk_ hex32('w','r','k',0)
+#define _pwr_ hex32('p','w','r',0)
 
 
 
@@ -85,6 +87,58 @@ struct item
 	u64 fmt;
 	u64 name;
 };
+struct pwrclk
+{
+	union{
+		void* irel0;
+		u64 ipad0;
+	};
+	union{
+		void* ireln;
+		u64 ipadn;
+	};
+	union{
+		void* orel0;
+		u64 opad0;
+	};
+	union{
+		void* oreln;
+		u64 opadn;
+	};
+
+	u64 tier;
+	u64 type;
+	u64 hfmt;
+	u64 vfmt;
+
+	u8 tmp[0xc0];
+};
+struct worker
+{
+	union{
+		void* irel0;
+		u64 ipad0;
+	};
+	union{
+		void* ireln;
+		u64 ipadn;
+	};
+	union{
+		void* orel0;
+		u64 opad0;
+	};
+	union{
+		void* oreln;
+		u64 opadn;
+	};
+
+	u64 tier;
+	u64 type;
+	u64 hfmt;
+	u64 vfmt;
+
+	u8 tmp[0xc0];
+};
 
 
 
@@ -139,5 +193,7 @@ int relationstart(struct halfrel* self,struct halfrel* peer);
 int relationdelete(struct relation* rel);
 void* relationcreate(void*,void*,u32,u32,void*,void*,u32,u32);
 //
+int ncmp(void*, void*, int);
+int cmp(void*, void*);
 void printmemory(void*, int);
 void say(void*, ...);

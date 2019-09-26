@@ -22,6 +22,8 @@ int uart_write(int fd, int addr, u8* buf, int len);
 
 static struct device* dev;
 static int devlen = 0;
+static void* aaa;
+static int aaalen = 0;
 void* allocdevice()
 {
 	void* addr = &dev[devlen];
@@ -136,12 +138,15 @@ int devicemodify(int argc, char** argv)
 }
 int devicesearch(u8* buf, int len)
 {
-	int j;
+	int j,k=0;
 	for(j=0;j<64;j++)
 	{
 		if(0 == dev[j].type)continue;
 		say("[%04x]: %.8s\n", j, &dev[j].type);
+		k++;
 	}
+
+	if(0 == k)say("empth device\n");
 	return 0;
 }
 
@@ -158,9 +163,10 @@ void initdevice(u8* addr)
 {
 	int j;
 	dev = (void*)(addr+0x000000);
+	aaa = (void*)(addr+0x100000);
 
 #define max (0x100000/sizeof(struct device))
-	for(j=0;j<0x400000;j++)addr[j]=0;
+	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)dev[j].tier = _dev_;
 
 	inituart(addr);

@@ -8,6 +8,10 @@ void draw8bit_rect(
 
 
 
+static struct pwrclk* pwr = 0;
+static struct worker* wrk = 0;
+static struct device* dev = 0;
+static struct driver* dri = 0;
 static struct object* obj = 0;
 static struct element* ele = 0;
 static struct arena* arena = 0;
@@ -1399,8 +1403,17 @@ void overview_register(struct actor* p)
 }
 void overview_init(void* addr)
 {
-	obj = addr - 0x400000;
-	ele = addr - 0x300000;
-	arena = addr + 0x000000;
-	actor = addr + 0x100000;
+	addr -= 0xe00000;
+
+	pwr = addr + 0x000000;
+	wrk = addr + 0x200000;
+
+	dev = addr + 0x400000;
+	dri = addr + 0x600000;
+
+	obj = addr + 0x800000;
+	ele = addr + 0xa00000;
+
+	arena = addr + 0xc00000;
+	actor = addr + 0xe00000;
 }

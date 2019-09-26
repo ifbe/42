@@ -93,8 +93,8 @@ int parsexml_detail(void*, int, void*, void*, void*, void*);
 
 //
 static struct arena* arena = 0;
-static struct style* style = 0;
 static int winlen = 0;
+static struct style* style = 0;
 static int stylen = 0;
 void* allocarena()
 {
@@ -507,7 +507,7 @@ void initarena(u8* addr)
 {
 	int j;
 	arena = (void*)(addr+0x000000);
-	style = (void*)(addr+0x200000);
+	style = (void*)(addr+0x100000);
 
 #define max (0x100000/sizeof(struct arena))
 	for(j=0;j<0x400000;j++)addr[j]=0;

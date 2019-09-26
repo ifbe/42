@@ -125,7 +125,7 @@ void content_delete()
 }
 void content_create(void* addr)
 {
-	void* tmp = addr + 0x100000;
+	void* tmp = addr;
 
 
 

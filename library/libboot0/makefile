@@ -4,6 +4,7 @@ cflag ?= -c -O2 -fPIC
 .PHONY:bare
 bare:
 	rm -f *.o
+	$(compiler) $(cflag) pwrclk.c
 	$(compiler) $(cflag) bare/start.c
 	$(compiler) $(cflag) bare/serial.c
 	$(compiler) $(cflag) bare/memory.c
@@ -13,6 +14,7 @@ bare:
 .PHONY:efi
 efi:
 	rm -f *.o
+	$(compiler) $(cflag) pwrclk.c
 	$(compiler) $(cflag) efi/start.c
 	$(compiler) $(cflag) efi/serial.c
 	$(compiler) $(cflag) efi/memory.c
@@ -22,6 +24,7 @@ efi:
 .PHONY:none
 none:
 	rm -f *.o
+	$(compiler) $(cflag) pwrclk.c
 	$(compiler) $(cflag) none/start.c
 	$(compiler) $(cflag) none/serial.c
 	$(compiler) $(cflag) none/memory.c
@@ -31,6 +34,7 @@ none:
 .PHONY:wincmd
 wincmd:
 	rm -f *.o
+	$(compiler) $(cflag) pwrclk.c
 	$(compiler) $(cflag) wincmd/start.c
 	$(compiler) $(cflag) wincmd/serial.c
 	$(compiler) $(cflag) wincmd/memory.c
@@ -40,6 +44,7 @@ wincmd:
 .PHONY:rpi
 rpi:
 	rm -f *.o
+	$(compiler) $(cflag) pwrclk.c
 	$(compiler) $(cflag) none/start.c
 	$(compiler) $(cflag) none/serial.c
 	$(compiler) $(cflag) none/memory.c

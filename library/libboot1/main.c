@@ -21,11 +21,11 @@ void initdriver(void*);
 void freedevice();
 void initdevice(void*);
 //libboot1
-void freepulser();
-void initpulser(void*);
+void freeworker();
+void initworker(void*);
 //libboot0
-void freetheall();
-void inittheall(void*);
+void freepwrclk();
+void initpwrclk(void*);
 //
 void freestdin();
 void initstdin(void*);
@@ -57,24 +57,26 @@ void* beforedawn()
 {
 	//allocate
 	void* addr = birth();
-
-	//libboot
 	initstdin( addr+0x000000);
 	initstdout(addr+0x100000);
 	initstdev( addr+0x200000);
 	initstdrel(addr+0x300000);
 
+	//libboot
+	initpwrclk(addr+0x000000);
+	initworker(addr+0x200000);
+
 	//libsoft
 	initdevice(addr+0x400000);
-	initdriver(addr+0x400000);
+	initdriver(addr+0x600000);
 
 	//libsoft
 	initsystem(addr+0x800000);
-	initartery(addr+0x800000);
+	initartery(addr+0xa00000);
 
 	//libuser
-	initarena(addr+0xc00000);
-	initactor(addr+0xc00000);
+	initarena( addr+0xc00000);
+	initactor( addr+0xe00000);
 
 	return addr;
 }

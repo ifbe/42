@@ -1,6 +1,5 @@
 #include "libuser.h"
 void content_create(void*);
-void backuper_create(void*);
 void overview_init(void*);
 //
 void* getsuffix(void* p);
@@ -28,7 +27,7 @@ static struct fstyle def3d;
 
 
 
-void asset_create(void* addr)
+void asset_create()
 {
 	int j,k;
 	if(0 == utf8data)
@@ -220,11 +219,9 @@ void lib4d_create(void* addr)
 	//createstyle_vbo2d();
 	createstyle_vbo3d();
 
-	asset_create(addr);
+	asset_create();
 
 	content_create(addr);
-
-	backuper_create(addr);
 
 	overview_init(addr);
 }
