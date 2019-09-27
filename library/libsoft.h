@@ -29,11 +29,6 @@ typedef float mat4[4][4];
 #define _file_ hex32('f','i','l','e')
 #define _mbr_ hex32('m','b','r',0)
 #define _gpt_ hex32('g','p','t',0)
-//uart family
-#define _gcode_ hex64('g','c','o','d','e',0,0,0)
-#define _Gcode_ hex64('G','c','o','d','e',0,0,0)
-#define _gps_ hex32('g','p','s',0)
-#define _Gps_ hex32('G','p','s',0)
 //raw family
 #define _RAW_ hex32('R','A','W',0)
 #define _Raw_ hex32('R','a','w',0)

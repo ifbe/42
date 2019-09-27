@@ -1,0 +1,18 @@
+<system>
+broadcast{
+fmt:udp
+url:0.0.0.0:14555
+}
+</system>
+
+
+<artery>
+mavlink{
+fmt:Mavlink
+}
+</artery>
+
+
+<relation>
+(broadcast, 0, fd, dst) -> (mavlink, 0, art, src)
+</relation>

@@ -17,7 +17,7 @@ float nema183_convert(u8* buf, int len)
 
 	return f;
 }
-int gpsclient_parse(u8* buf, int len)
+int nema0183client_parse(u8* buf, int len)
 {
 	int j,k,t;
 	double tmp;
@@ -127,11 +127,11 @@ int gpsclient_parse(u8* buf, int len)
 
 
 
-int gpsclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int nema0183client_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int gpsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int nema0183client_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int j,k;
 	struct str* str;
@@ -152,7 +152,7 @@ int gpsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 			str->buf[k+j] = buf[j];
 			if(0xa == buf[j])
 			{
-				gpsclient_parse(str->buf, k+j+1);
+				nema0183client_parse(str->buf, k+j+1);
 				buf += j+1;
 				len -= j+1;
 
@@ -173,7 +173,7 @@ freshframe:
 	{
 		if(0xa == buf[j])
 		{
-			gpsclient_parse(buf+k, j-k+1);
+			nema0183client_parse(buf+k, j-k+1);
 			k = j+1;
 		}
 	}
@@ -187,7 +187,11 @@ freshframe:
 	}
 	return 0;
 }
-int gpsclient_create(struct element* ele, u8* url)
+int nema0183client_delete(struct element* ele)
+{
+	return 0;
+}
+int nema0183client_create(struct element* ele, u8* url)
 {
 	struct str* tmp;
 
@@ -200,11 +204,19 @@ int gpsclient_create(struct element* ele, u8* url)
 
 
 
-int gpsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int nema0183server_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int gpsserver_create(struct element* ele, u8* url)
+int nema0183server_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+{
+	return 0;
+}
+int nema0183server_delete(struct element* ele, u8* url)
+{
+	return 0;
+}
+int nema0183server_create(struct element* ele, u8* url)
 {
 	return 0;
 }

@@ -4,12 +4,23 @@
 #define _hfs_ hex32('h','f','s',0)
 #define _ext_ hex32('e','x','t',0)
 //
+#define _gcode_ hex64('g','c','o','d','e',0,0,0)
+#define _Gcode_ hex64('G','c','o','d','e',0,0,0)
+#define _modbus_ hex64('m','o','d','b','u','s',0,0)
+#define _Modbus_ hex64('M','o','d','b','u','s',0,0)
+#define _mavlink_ hex64('m','a','v','l','i','n','k',0)
+#define _Mavlink_ hex64('M','a','v','l','i','n','k',0)
+#define _nema0183_ hex64('n','e','m','a','0','1','8','3')
+#define _Nema0183_ hex64('N','e','m','a','0','1','8','3')
+//
+#define _search_ hex64('s','e','a','r','c','h',0,0)
+//
 #define _echo_ hex32('e','c','h','o')
 #define _pump_ hex32('p','u','m','p')
-#define _dbgf32_ hex64('d','b','g','f','3','2',0,0)
-#define _dbghex_ hex64('d','b','g','h','e','x',0,0)
 #define _goslow_ hex64('g','o','s','l','o','w',0,0)
 #define _fftpcm_ hex64('f','f','t','p','c','m',0,0)
+#define _dbgf32_ hex64('d','b','g','f','3','2',0,0)
+#define _dbghex_ hex64('d','b','g','h','e','x',0,0)
 //
 #define _recut_ hex64('r','e','c','u','t', 0, 0, 0)
 #define _reline_ hex64('r','e','l','i','n','e', 0, 0)
@@ -73,6 +84,13 @@ int echo_start(struct halfrel* self, struct halfrel* peer);
 int echo_stop( struct halfrel* self, struct halfrel* peer);
 int echo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int echo_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int search_create(struct element* ele, void* url);
+int search_delete(struct element* ele, void* url);
+int search_start(struct halfrel* self, struct halfrel* peer);
+int search_stop( struct halfrel* self, struct halfrel* peer);
+int search_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int search_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+//
 int pump_create(struct element* ele, void* url);
 int pump_delete(struct element* ele, void* url);
 int pump_stop( struct halfrel* self, struct halfrel* peer);
@@ -173,19 +191,30 @@ int gcodeserver_start(struct halfrel* self, struct halfrel* peer);
 int gcodeserver_stop( struct halfrel* self, struct halfrel* peer);
 int gcodeserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int gcodeserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-//uart.gps
-int gpsclient_create(struct element* ele, void* url);
-int gpsclient_delete(struct element* ele, void* url);
-int gpsclient_start(struct halfrel* self, struct halfrel* peer);
-int gpsclient_stop( struct halfrel* self, struct halfrel* peer);
-int gpsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int gpsclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int gpsserver_create(struct element* ele, void* url);
-int gpsserver_delete(struct element* ele, void* url);
-int gpsserver_start(struct halfrel* self, struct halfrel* peer);
-int gpsserver_stop( struct halfrel* self, struct halfrel* peer);
-int gpsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int gpsserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int mavlinkclient_create(struct element* ele, void* url);
+int mavlinkclient_delete(struct element* ele, void* url);
+int mavlinkclient_start(struct halfrel* self, struct halfrel* peer);
+int mavlinkclient_stop( struct halfrel* self, struct halfrel* peer);
+int mavlinkclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int mavlinkclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int mavlinkserver_create(struct element* ele, void* url);
+int mavlinkserver_delete(struct element* ele, void* url);
+int mavlinkserver_start(struct halfrel* self, struct halfrel* peer);
+int mavlinkserver_stop( struct halfrel* self, struct halfrel* peer);
+int mavlinkserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int mavlinkserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int nema0183client_create(struct element* ele, void* url);
+int nema0183client_delete(struct element* ele, void* url);
+int nema0183client_start(struct halfrel* self, struct halfrel* peer);
+int nema0183client_stop( struct halfrel* self, struct halfrel* peer);
+int nema0183client_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int nema0183client_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int nema0183server_create(struct element* ele, void* url);
+int nema0183server_delete(struct element* ele, void* url);
+int nema0183server_start(struct halfrel* self, struct halfrel* peer);
+int nema0183server_stop( struct halfrel* self, struct halfrel* peer);
+int nema0183server_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int nema0183server_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //socket
 int hackclient_create(struct element* ele, void* url);
 int hackclient_delete(struct element* ele, void* url);
@@ -400,12 +429,14 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 {
 	struct element* ele = (void*)(self->chip);
 	switch(ele->type){
+		case _search_:search_read(self, peer, arg, idx, buf, len);break;
+
 		case _echo_:echo_read(self, peer, arg, idx, buf, len);break;
 		case _pump_:pump_read(self, peer, arg, idx, buf, len);break;
-		case _dbgf32_:dbgf32_read(self, peer, arg, idx, buf, len);break;
-		case _dbghex_:dbghex_read(self, peer, arg, idx, buf, len);break;
 		case _goslow_:goslow_read(self, peer, arg, idx, buf, len);break;
 		case _fftpcm_:fftpcm_read(self, peer, arg, idx, buf, len);break;
+		case _dbgf32_:dbgf32_read(self, peer, arg, idx, buf, len);break;
+		case _dbghex_:dbghex_read(self, peer, arg, idx, buf, len);break;
 
 		case _recut_:recut_read(self, peer, arg, idx, buf, len);break;
 		case _reline_:reline_read(self, peer, arg, idx, buf, len);break;
@@ -419,7 +450,12 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _mahony_:mahony_read(self, peer, arg, idx, buf, len);break;
 		case _madgwick_:madgwick_read(self, peer, arg, idx, buf, len);break;
 
-		case _gps_:gpsclient_read(self, peer, arg, idx, buf, len);break;
+		case _gcode_:gcodeclient_read(self, peer, arg, idx, buf, len);break;
+		case _Gcode_:gcodeserver_read(self, peer, arg, idx, buf, len);break;
+		case _mavlink_:mavlinkclient_read(self, peer, arg, idx, buf, len);break;
+		case _Mavlink_:mavlinkserver_read(self, peer, arg, idx, buf, len);break;
+		case _nema0183_:nema0183client_read(self, peer, arg, idx, buf, len);break;
+		case _Nema0183_:nema0183server_read(self, peer, arg, idx, buf, len);break;
 
 		case _HTTP_:httpmaster_read(self, peer, arg, idx, buf, len);break;
 		case _Http_:httpserver_read(self, peer, arg, idx, buf, len);break;
@@ -435,12 +471,14 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	struct element* ele = (void*)(self->chip);
 	//say("@arterywrite\n");
 	switch(ele->type){
+		case _search_:return search_write(self, peer, arg, idx, buf, len);break;
+
 		case _echo_:return echo_write(self, peer, arg, idx, buf, len);break;
 		case _pump_:return pump_write(self, peer, arg, idx, buf, len);break;
-		case _dbgf32_:return dbgf32_write(self, peer, arg, idx, buf, len);break;
-		case _dbghex_:return dbghex_write(self, peer, arg, idx, buf, len);break;
 		case _goslow_:return goslow_write(self, peer, arg, idx, buf, len);break;
 		case _fftpcm_:return fftpcm_write(self, peer, arg, idx, buf, len);break;
+		case _dbgf32_:return dbgf32_write(self, peer, arg, idx, buf, len);break;
+		case _dbghex_:return dbghex_write(self, peer, arg, idx, buf, len);break;
 
 		case _recut_:return recut_write(self, peer, arg, idx, buf, len);break;
 		case _reline_:return reline_write(self, peer, arg, idx, buf, len);break;
@@ -454,7 +492,12 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _mahony_:return mahony_write(self, peer, arg, idx, buf, len);break;
 		case _madgwick_:return madgwick_write(self, peer, arg, idx, buf, len);break;
 
-		case _gps_:return gpsclient_write(self, peer, arg, idx, buf, len);break;
+		case _Gcode_:return gcodeserver_write(self, peer, arg, idx, buf, len);break;
+		case _gcode_:return gcodeclient_write(self, peer, arg, idx, buf, len);break;
+		case _Mavlink_:return mavlinkserver_write(self, peer, arg, idx, buf, len);break;
+		case _mavlink_:return mavlinkclient_write(self, peer, arg, idx, buf, len);break;
+		case _Nema0183_:return nema0183server_write(self, peer, arg, idx, buf, len);break;
+		case _nema0183_:return nema0183client_write(self, peer, arg, idx, buf, len);break;
 
 		case _HTTP_:return httpmaster_write(self, peer, arg, idx, buf, len);break;
 		case _Http_:return httpserver_write(self, peer, arg, idx, buf, len);break;
@@ -607,6 +650,7 @@ void* arterycreate(u64 type, void* argstr)
 		return e;
 	}
 
+	//
 	if(_recut_ == type)
 	{
 		e = allocelement();
@@ -693,7 +737,7 @@ void* arterycreate(u64 type, void* argstr)
 		return e;
 	}
 
-	//gcode: client,server
+	//
 	if(_gcode_ == type)
 	{
 		e = allocelement();
@@ -712,24 +756,40 @@ void* arterycreate(u64 type, void* argstr)
 		gcodeserver_create(e, url);
 		return e;
 	}
-
-	//gps: client,server
-	if(_gps_ == type)
+	if(_mavlink_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _gps_;
-		gpsclient_create(e, url);
+		e->type = _mavlink_;
+		mavlinkclient_create(e, url);
 		return e;
 	}
-	if(_Gps_ == type)
+	if(_Mavlink_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _Gps_;
-		gpsserver_create(e, url);
+		e->type = _Mavlink_;
+		mavlinkserver_create(e, url);
+		return e;
+	}
+	if(_nema0183_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _nema0183_;
+		nema0183client_create(e, url);
+		return e;
+	}
+	if(_Nema0183_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _Nema0183_;
+		nema0183server_create(e, url);
 		return e;
 	}
 
