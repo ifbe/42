@@ -17,52 +17,63 @@ int reline_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	relationread(ele, _src_, 0, 0, f, 10);
 	return 0;
 }
-int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int j,k,cur;
 	u8* tmp;
-	u8* ori;
 	struct element* ele;
-	say("@reline_write:%d\n", len);
+	say("@reline_write:%.4s\n", &self->flag);
 
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
 
-	//remain part
-	ori = buf;
-	cur = ele->len;
-	tmp = ele->buf;
-	if(cur){
-		for(j=0;j<len;j++){
-			tmp[cur] = ori[j];
-			cur++;
+	switch(self->flag){
+		case _dst_:{
+			printmemory(buf, len);
+			break;
+		}
+		case _src_:{
+			//remain part
+			cur = ele->len;
+			tmp = ele->buf;
+			if(cur){
+				for(j=0;j<len;j++){
+					tmp[cur] = buf[j];
+					cur++;
 
-			if('\n' == ori[j]){
-				relationwrite(ele, _dst_, 0, 0, tmp, cur);
-				cur = 0;
+					if('\n' == buf[j]){
+						relationwrite(ele, _dst_, 0, 0, tmp, cur);
+						cur = 0;
 
-				j++;
-				break;
+						j++;
+						break;
+					}
+				}
+				ele->len = cur;
+
+				buf += j;
+				len -= j;
 			}
-		}
-		ori += j;
-		len -= j;
-	}
-	if(len <= 0)return 0;
+			if(len <= 0)return 0;
 
-	//other part
-	k = 0;
-	for(j=0;j<len;j++){
-		if('\n' == ori[j]){
-			relationwrite(ele, _dst_, 0, 0, ori+k, j-k+1);
-			k = j+1;
+			//other part
+			k = 0;
+			for(j=0;j<len;j++){
+				if('\n' == buf[j]){
+					relationwrite(ele, _dst_, 0, 0, buf+k, j-k+1);
+					k = j+1;
+				}
+			}
+			if(k >= len)return 0;
+
+			//
+			for(j=0;j<len-k;j++)tmp[j] = buf[k+j];
+			ele->len = j;
+
+			break;
 		}
 	}
-	if(k >= len)return 0;
 
-	//
-	for(j=0;j<len-k;j++)tmp[j] = ori[k+j];
-	ele->len = j;
 	return 0;
 }
 int reline_stop(struct halfrel* self, struct halfrel* peer)

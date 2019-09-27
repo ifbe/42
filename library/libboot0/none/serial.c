@@ -46,3 +46,13 @@ void lowlevel_output(char* buf, int len)
 {
 	printf("%.*s", len, buf);
 }
+
+
+
+
+void deleteserial()
+{
+}
+void createserial()
+{
+}

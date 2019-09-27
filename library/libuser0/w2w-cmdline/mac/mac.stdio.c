@@ -13,7 +13,7 @@ void terminalthread(struct arena* win)
 	while(1)
 	{
 		ret = lowlevel_input();
-		if(0 == win->orel0){
+		if( (0 == win->orel0) && (0 == win->irel0) ){
 			eventwrite(ret, _char_, 0, 0);
 		}
 		else {

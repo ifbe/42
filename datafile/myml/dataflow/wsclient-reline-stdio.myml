@@ -1,0 +1,34 @@
+<arena>
+std{
+fmt:std
+}
+</arena>
+
+
+<artery>
+reline{
+fmt:reline
+}
+ws{
+fmt:ws
+url:127.0.0.1
+}
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+
+<system>
+tcp{
+fmt:tcp
+url:127.0.0.1:2222
+}
+</system>
+
+
+<relation>
+(std, 0, win, dst) -> (reline, 0, art, src)
+(reline, 0, art, dst) -> (ws, 0, art, dst)
+(tcp, 0, fd, dst) -> (ws, 0, art, src)
+</relation>

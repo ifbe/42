@@ -13,7 +13,7 @@
 void birth(void* addr);
 void death();
 //
-int termwrite(u8* buf, int len);
+int termwrite(void* buf, int len);
 int openwriteclose(void*,int,void*,int);
 //
 void prep();
@@ -24,22 +24,16 @@ void loop();
 int main(int argc, char** argv)
 {
 	int j,k;
-	u8 tmp[0x1000];
 
 	u8* addr = malloc(0x1000000);
 	birth(addr);
 
-	for(j=1;j<argc;j++){
-		k = arg2utf8(argv[j], tmp);
-		//tmp[k] = '\n';
-		//lowlevel_output(tmp, k+1);
-		termwrite(tmp, k);
-	}
-
+	for(j=1;j<argc;j++)termwrite(argv[j], 0);
 	if(argc <= 1)prep();
-	loop();
 
+	loop();
 	openwriteclose("universe.bin",0,addr,0x1000000);
+
 	death();
 	return 0;
 }
@@ -48,7 +42,7 @@ int main(int argc, char** argv)
 
 void* pollenv()
 {
-	Sleep(1);
+	usleep(1000);
 	return 0;
 }
 /*
