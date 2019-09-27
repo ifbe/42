@@ -30,6 +30,42 @@ void printmat4(float* f)
 
 
 
+
+static void freecam_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+{
+	struct relation* rel;
+	struct actor* world;
+	struct fstyle* obb = 0;
+	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)return;
+		world = (void*)(rel->srcchip);
+		if(_world3d_ == world->type){
+			self[0] = (void*)&rel->dstchip;
+			peer[0] = (void*)&rel->srcchip;
+			return;
+		}
+		rel = samedstnextsrc(rel);
+	}
+}
+static void freecam_modify(struct actor* act)
+{
+}
+static void freecam_delete(struct actor* act)
+{
+}
+static void freecam_create(struct actor* act, void* arg)
+{
+    say("@freecam_create\n");
+	act->buf = memorycreate(64, 0);
+	act->x0 = 0;
+	act->y0 = 0;
+}
+
+
+
 /*
 void freecam_fixcam(struct actor* win)
 {
@@ -474,21 +510,14 @@ static int freecam_event1(
 	struct event* ev, int len)
 {
 	float nx,ny,nz;
-	struct relation* rel;
-	struct style* s;
 	short* t;
+	struct fstyle* obb;
+	struct halfrel* self;
+	struct halfrel* peer;
 	say("freecam_event@%llx:%x,%x\n", act, ev->why, ev->what);
 
-	rel = act->irel0;
-	while(1){
-		if(0 == rel)return 0;
-
-		if(hex32('g','e','o','m') == rel->dstflag){
-			s = (void*)(rel->srcfoot);
-			break;
-		}
-		rel = samedstnextsrc(rel);
-	}
+	freecam_search(act, 0, &self, &peer);
+	obb = peer->pfoot;
 
 	if('p' == (ev->what&0xff))
 	{
@@ -498,27 +527,27 @@ static int freecam_event1(
 		t = (void*)ev;
 		if(t[3] & joyl_left)		//x-
 		{
-			s->f.vc[0] -= 10;
+			obb->vc[0] -= 10;
 		}
 		if(t[3] & joyl_right)		//x+
 		{
-			s->f.vc[0] += 10;
+			obb->vc[0] += 10;
 		}
 		if(t[3] & joyl_down)		//y-
 		{
-			s->f.vc[1] -= 10;
+			obb->vc[1] -= 10;
 		}
 		if(t[3] & joyl_up)			//y+
 		{
-			s->f.vc[1] += 10;
+			obb->vc[1] += 10;
 		}
 		if(t[3] & joyl_trigger)		//z-
 		{
-			s->f.vc[2] -= 10;
+			obb->vc[2] -= 10;
 		}
 		if(t[3] & joyl_bumper)		//z+
 		{
-			s->f.vc[2] += 10;
+			obb->vc[2] += 10;
 		}
 	}
 	else if(joy_right == (ev->what & joy_mask))
@@ -526,23 +555,23 @@ static int freecam_event1(
 		t = (void*)ev;
 	}
 	else if(_char_ == ev->what){
-		nx = 10.0/vec3_len(s->f.vr);
-		ny = 10.0/vec3_len(s->f.vf);
-		nz = 10.0/vec3_len(s->f.vt);
+		nx = 10.0/vec3_len(obb->vr);
+		ny = 10.0/vec3_len(obb->vf);
+		nz = 10.0/vec3_len(obb->vt);
 		switch(ev->why){
-			case 'a':freecam_move(s->f.vc, s->f.vr,-nx);break;
-			case 'd':freecam_move(s->f.vc, s->f.vr, nx);break;
-			case 's':freecam_move(s->f.vc, s->f.vf,-ny);break;
-			case 'w':freecam_move(s->f.vc, s->f.vf, ny);break;
-			case 'q':freecam_move(s->f.vc, s->f.vt,-nz);break;
-			case 'e':freecam_move(s->f.vc, s->f.vt, nz);break;
+			case 'a':freecam_move(obb->vc, obb->vr,-nx);break;
+			case 'd':freecam_move(obb->vc, obb->vr, nx);break;
+			case 's':freecam_move(obb->vc, obb->vf,-ny);break;
+			case 'w':freecam_move(obb->vc, obb->vf, ny);break;
+			case 'q':freecam_move(obb->vc, obb->vt,-nz);break;
+			case 'e':freecam_move(obb->vc, obb->vt, nz);break;
 
-			case 'j':freecam_rotate(s->f.vr, s->f.vf, s->f.vt, 0.05);break;
-			case 'l':freecam_rotate(s->f.vr, s->f.vf, s->f.vt,-0.05);break;
-			case 'i':freecam_rotate(s->f.vf, s->f.vt, s->f.vr, 0.05);break;
-			case 'k':freecam_rotate(s->f.vf, s->f.vt, s->f.vr,-0.05);break;
-			case 'u':freecam_rotate(s->f.vr, s->f.vt, s->f.vf,-0.05);break;
-			case 'o':freecam_rotate(s->f.vr, s->f.vt, s->f.vf, 0.05);break;
+			case 'j':freecam_rotate(obb->vr, obb->vf, obb->vt, 0.05);break;
+			case 'l':freecam_rotate(obb->vr, obb->vf, obb->vt,-0.05);break;
+			case 'i':freecam_rotate(obb->vf, obb->vt, obb->vr, 0.05);break;
+			case 'k':freecam_rotate(obb->vf, obb->vt, obb->vr,-0.05);break;
+			case 'u':freecam_rotate(obb->vr, obb->vt, obb->vf,-0.05);break;
+			case 'o':freecam_rotate(obb->vr, obb->vt, obb->vf, 0.05);break;
 		}
 	}
 
@@ -644,39 +673,26 @@ void freecam_frustum(struct fstyle* d, struct fstyle* s)
 	//d->vf[3] = 1e20;
 }
 static void freecam_matrix(
-	struct actor* act, struct style* pin,
+	struct actor* act, struct style* frus,
 	struct actor* ctx, struct style* sty)
 {
 	//say("@freecam_matrix:%llx,%llx,%llx,%llx\n", ctx->gl_camera, ctx->gl_light, ctx->gl_solid, ctx->gl_opaque);
+	struct halfrel* self;
+	struct halfrel* peer;
+	freecam_search(act, 0, &self, &peer);
 
-	struct relation* rel;
-	struct actor* world;
-	struct fstyle* obb = 0;
-	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+	struct fstyle* obb = peer->pfoot;
+	freecam_frustum(&frus->f, obb);
 
-	rel = act->irel0;
-	while(1){
-		if(0 == rel)return;
-		world = (void*)(rel->srcchip);
-		if(_world3d_ == world->type){
-			obb = (void*)(rel->srcfoot);
-			break;
-		}
-		rel = samedstnextsrc(rel);
-	}
-	if(0 == obb)return;
-
-
-	float* m = act->buf;
-	freecam_frustum(&pin->f, obb);
-	fixmatrix((void*)m, &pin->f);
-	mat4_transpose((void*)m);
+	float* mat = act->buf;
+	fixmatrix((void*)mat, &frus->f);
+	mat4_transpose((void*)mat);
 	//printmat4(m);
 
 	struct glsrc* src = ctx->gl_camera;
 	src->arg_fmt[0] = 'm';
 	src->arg_name[0] = "cammvp";
-	src->arg_data[0] = m;
+	src->arg_data[0] = mat;
 
 	src->arg_fmt[1] = 'v';
 	src->arg_name[1] = "camxyz";
@@ -724,7 +740,7 @@ static int freecam_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 	struct event* ev = (void*)buf;
 
 	say("@freecam_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
-	freecam_event2(act, frus, win, area, ev, 0);
+	freecam_event1(act, frus, win, area, ev, 0);
 	return 0;
 }
 static void freecam_stop(struct halfrel* self, struct halfrel* peer)
@@ -733,26 +749,6 @@ static void freecam_stop(struct halfrel* self, struct halfrel* peer)
 static void freecam_start(struct halfrel* self, struct halfrel* peer)
 {
     say("@freecam_start\n");
-}
-
-
-
-
-static void freecam_search(struct actor* act)
-{
-}
-static void freecam_modify(struct actor* act)
-{
-}
-static void freecam_delete(struct actor* act)
-{
-}
-static void freecam_create(struct actor* act, void* arg)
-{
-    say("@freecam_create\n");
-	act->buf = memorycreate(64, 0);
-	act->x0 = 0;
-	act->y0 = 0;
 }
 
 

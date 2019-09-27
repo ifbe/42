@@ -238,8 +238,14 @@ struct event
 
 struct halfrel
 {
-	u64 chip;
-	u64 foot;
+	union{
+		u64 chip;
+		void* pchip;
+	};
+	union{
+		u64 foot;
+		void* pfoot;
+	};
 	u32 type;
 	u32 flag;
 };

@@ -112,40 +112,57 @@ DWORD WINAPI iocpthread(LPVOID pM)
 		//accept
 		if(pio->stage == 0)
 		{
-			tmp = fd/4;
-			ret = cc/4;
+			//ret = cc/4;
 			//printf("[%x,%x]++++\n", tmp, ret);
-			eventwrite('+', _fd_, ret, 0);
+			//eventwrite('+', _fd_, ret, 0);
 
-			ret = cc/4;
-			obj[ret].type = _Tcp_;
-			obj[ret].name = 0;
-			obj[ret].irel0 = obj[ret].ireln = 0;
-			obj[ret].orel0 = obj[ret].oreln = 0;
-			obj[ret].selffd = ret;
-			obj[ret].thatfd = tmp;
+			//ret = cc/4;
+			obj[cc/4].type = _Tcp_;
+			obj[cc/4].name = 0;
+			obj[cc/4].irel0 = obj[cc/4].ireln = 0;
+			obj[cc/4].orel0 = obj[cc/4].oreln = 0;
+			obj[cc/4].thatfd = fd;
+			obj[cc/4].thatobj = &obj[fd/4];
+			obj[cc/4].selffd = cc;
+			//obj[cc/4].selfobj = &obj[cc/4];
 
 			iocp_add(cc);
 			iocp_mod(cc);
 		}
 		else if(tran == 0)
 		{
-			ret = fd/4;
+			//ret = fd/4;
 			//printf("[%x]----\n", ret);
-			eventwrite('-', _fd_, ret, 0);
+			//eventwrite('-', _fd_, ret, 0);
 
-			obj[ret].type = 0;
-			obj[ret].name = 0;
+			obj[fd/4].type = 0;
+			obj[fd/4].name = 0;
 
 			iocp_del(fd);
 		}
 		else
 		{
-			pio->count = tran;
-
-			ret = fd/4;
+			//pio->count = tran;
+			//ret = fd/4;
 			//printf("[%x]####\n", ret);
-			eventwrite('@', _fd_, ret, 0);
+			//eventwrite('@', _fd_, ret, 0);
+
+			cc = fd;
+			if( (_Tcp_ == obj[fd/4].type) &&
+				(0 == obj[fd/4].irel0) &&
+				(0 == obj[fd/4].orel0) )
+			{
+				//TCP = Tcp.parent
+				cc = obj[fd/4].thatfd;
+
+				//Tcp = TCP.child
+				obj[cc/4].thatfd = fd;
+				obj[cc/4].thatobj = &obj[fd/4];
+			}
+
+			//say("@kqueuethread: %.4s\n", &obj[cc/4].type);
+			relationwrite(&obj[cc/4], _dst_, 0, 0, pio->bufing.buf, tran);
+			iocp_mod(fd);
 		}
 	}
 	return 0;
