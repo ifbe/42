@@ -366,6 +366,21 @@ int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
+
+	//say("foot=%.4s\n", &self->flag);
+	if(_dst_ == self->flag){
+		ret = mysnprintf(tmp, 0x1000,
+			"HTTP/1.1 200 OK\r\n"
+			"Content-type: text/plain\r\n"
+			"Content-Length: %d\r\n"
+			"\r\n",
+			len
+		);
+		relationwrite(ele, _src_, 0, 0, tmp, ret);
+		relationwrite(ele, _src_, 0, 0, buf, len);
+		return 0;
+	}
+
 /*
 	//https
 	if(0x16 == buf[0])
@@ -395,6 +410,11 @@ int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 		self = (void*)&rel->dstchip;
 		peer = (void*)&rel->srcchip;
 		arterywrite(self, peer, 0, 0, buf, len);
+		return 0;
+	}
+
+	if(ele->orel0){
+		relationwrite(ele, _dst_, p.GET, 0, buf, len);
 		return 0;
 	}
 

@@ -1,0 +1,22 @@
+<system>
+tcphost{
+fmt:TCP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<artery>
+http{
+fmt:HTTP
+}
+search{
+fmt:search
+}
+</artery>
+
+
+<relation>
+(tcphost, 0, fd, dst) -> (http, 0, art, src)
+(http, 0, art, dst) -> (search, 0, art, src)
+</relation>

@@ -469,7 +469,7 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct element* ele = (void*)(self->chip);
-	//say("@arterywrite\n");
+	//say("@arterywrite: %.8s\n", &ele->type);
 	switch(ele->type){
 		case _search_:return search_write(self, peer, arg, idx, buf, len);break;
 
@@ -548,15 +548,27 @@ void* arterycreate(u64 type, void* argstr)
 		url += ret;
 	}
 
-	//file system
+	//
 	if(_file_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
+		e->type = _file_;
 		fileclient_create(e, url);
 		return e;
 	}
+	if(_search_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _search_;
+		search_create(e, url);
+		return e;
+	}
+
+	//file system
 	if(_fat_ == type)
 	{
 		e = allocelement();
