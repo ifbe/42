@@ -1,4 +1,5 @@
 #include "libhard.h"
+int parseuart(void*, int*, void*);
 //i2c
 int i2c_create(void*, int);
 int i2c_delete(int);
@@ -85,7 +86,8 @@ int devicedelete()
 }
 void* devicecreate(u64 type, void* name)
 {
-	int fd;
+	int fd, baud;
+	u8 tmp[256];
 
 	if(_i2c_ == type)
 	{
@@ -108,7 +110,10 @@ void* devicecreate(u64 type, void* name)
 	}
 	else if(_uart_ == type)
 	{
-		fd = uart_start(name, 115200);
+		parseuart(tmp, &baud, name);
+		say("parse: %s,%d\n", tmp, baud);
+
+		fd = uart_start(tmp, baud);
 		if(fd <= 0)return 0;
 
 		dev[fd].type = _uart_;

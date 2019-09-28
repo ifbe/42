@@ -1,0 +1,26 @@
+<device>
+uart{
+fmt:uart
+url:/dev/ttyACM0,250000
+}
+</device>
+
+
+<artery>
+gcode{
+fmt:gcode
+}
+</artery>
+
+
+<arena>
+stdio{
+fmt:std
+}
+</arena>
+
+
+<relation>
+(uart, 0, dev, dst) -> (gcode, 0, art, src)
+(stdio, 0, win, dst) -> (gcode, 0, art, clk)
+</relation>

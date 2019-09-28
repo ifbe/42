@@ -43,16 +43,16 @@ int uart_stop()
 int uart_start(char* p, int speed)
 {
 	struct termios option;
-	int fd=open(p , O_RDWR|O_NOCTTY|O_NDELAY);
-	if(fd<=0)
+	int fd = open(p , O_RDWR|O_NOCTTY|O_NDELAY);
+	if(fd <= 0)
 	{
 		say("error:%d@open:%s\n",errno,p);
 		return -1;
 	}
 
 	//get
-	tcgetattr(fd,&option);
-	fcntl(fd,F_SETFL,0);
+	tcgetattr(fd, &option);
+	fcntl(fd, F_SETFL, 0);
 
 	if(speed == 9600)speed = B9600;
 	else speed = B115200;
@@ -61,14 +61,14 @@ int uart_start(char* p, int speed)
 	option.c_cflag = speed | CS8 | CLOCAL | CREAD;
 	option.c_iflag = IGNPAR;
 	option.c_oflag = 0;
-	option.c_lflag=0;
+	option.c_lflag = 0;
 
 	//set
-	tcflush(fd,TCIFLUSH);
-	tcsetattr(fd,TCSANOW,&option);
+	tcflush(fd, TCIFLUSH);
+	tcsetattr(fd, TCSANOW, &option);
 
-	obj[fd].type = hex32('u','a','r','t');
-	obj[fd].buf = (void*)malloc(0x100000);
+	//obj[fd].type = hex32('u','a','r','t');
+	//obj[fd].buf = (void*)malloc(0x100000);
 	kqueue_add(fd);
 
 	return fd;

@@ -31,3 +31,22 @@ int parseurl(u8* buf, int len, u8* addr, int* port)
 	addr[j] = 0;
 	return j;
 }
+
+
+int parseuart(u8* path, int* baud, u8* url)
+{
+	int j;
+	u64 val = 115200;
+
+	for(j=0;j<256;j++){
+		if(url[j] <= 0x20)break;
+		if(url[j] == ','){
+			decstr2data(url+j+1, &val);
+			break;
+		}
+		path[j] = url[j];
+	}
+
+	*baud = val;
+	return 0;
+}

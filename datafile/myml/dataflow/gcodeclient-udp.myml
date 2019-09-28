@@ -1,0 +1,18 @@
+<system>
+listen{
+fmt:UDP
+url:0.0.0.0:14550
+}
+</system>
+
+
+<artery>
+mavlink{
+fmt:mavlink
+}
+</artery>
+
+
+<relation>
+(listen, 0, fd, dst) -> (mavlink, 0, art, src)
+</relation>

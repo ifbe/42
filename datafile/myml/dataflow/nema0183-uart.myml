@@ -1,0 +1,18 @@
+<device>
+uart{
+fmt:uart
+url:/dev/ttyACM0,115200
+}
+</device>
+
+
+<artery>
+nema0183{
+fmt:nema0183
+}
+</artery>
+
+
+<relation>
+(uart, 0, dev, dst) -> (nema0183, 0, art, src)
+</relation>

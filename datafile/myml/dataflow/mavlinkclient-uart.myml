@@ -1,9 +1,9 @@
-<driver>
+<device>
 uart{
 fmt:uart
 url:COM3
 }
-</driver>
+</device>
 
 
 <artery>

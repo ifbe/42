@@ -9,6 +9,16 @@ int gcodeclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int 
 }
 int gcodeclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	switch(self->flag){
+		case _src_:{
+			say("%.*s", len, buf);
+			break;
+		}
+		case _clk_:{
+			relationwrite(self->pchip, _src_, 0, 0, "M105\n", 5);
+			break;
+		}
+	}
 	return 0;
 }
 int gcodeclient_delete(struct element* ele)
