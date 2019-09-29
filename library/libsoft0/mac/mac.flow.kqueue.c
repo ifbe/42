@@ -26,14 +26,14 @@ static int alive = 0;
 int kqueue_add(int fd)
 {
 	struct kevent ke;
-	EV_SET(&ke, fd, EVFILT_READ, EV_ADD, 0, 0, NULL);
+	EV_SET(&ke, fd, EVFILT_READ, EV_ADD, 0, 0, &obj[fd]);
 	kevent(kqfd, &ke, 1, NULL, 0, NULL);
 	return 0;
 }
 int kqueue_del(int fd)
 {
 	struct kevent ke;
-	EV_SET(&ke, fd, EVFILT_READ, EV_DELETE, 0, 0, NULL);
+	EV_SET(&ke, fd, EVFILT_READ, EV_DELETE, 0, 0, &obj[fd]);
 	kevent(kqfd, &ke, 1, NULL, 0, NULL);
 	return 0;
 }
@@ -50,6 +50,9 @@ int kqueuethread(int argc, const char * argv[])
 {
 	int fd,cc;
 	int ret,cnt;
+	struct object* here;
+	struct object* child;
+	struct object* parent;
 	struct kevent events[10];
 	struct timespec timeout = {10,0};
 
@@ -76,55 +79,73 @@ int kqueuethread(int argc, const char * argv[])
 
 		for (int j=0;j<ret;j++)
 		{
-			struct kevent current_event = events[j];
-			fd = current_event.ident;
+			here = events[j].udata;
+			fd = events[j].ident;
+			//say("here=%llx,fd=%x\n", here, fd);
 
-			switch(obj[fd].type){
+			switch(here->type){
 			case _TCP_:{
 				socklen_t size;
 				struct sockaddr_in addr;
 				int cc = accept(fd, (struct sockaddr *)&addr, &size);
 				if(cc > 0)
 				{
-					obj[cc].type = _Tcp_;
-					obj[cc].name = 0;
-					obj[cc].tempfd = fd;
-					obj[cc].tempobj = &obj[fd];
-					obj[cc].selffd = cc;
-					//obj[cc].selfobj = &obj[cc];
+					child = &obj[cc];
+					child->type = _Tcp_;
+					child->name = 0;
+					child->selffd = cc;
+					child->selfobj = child;
+					child->tempfd = fd;
+					child->tempobj = here;
 					kqueue_add(cc);
 					//eventwrite('+', _fd_, cc, timeread());
 				}
 				break;
 			}
-			default:{
-				cnt = readsocket(fd, obj[fd].peer, buf, BUFFER_SIZE);
+			case _Tcp_:{
+				cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
 				if(cnt >= 0)
 				{
 					//printmemory(buf, cnt);
-					cc = fd;
-					if( (_Tcp_ == obj[fd].type) &&
-						(0 == obj[fd].irel0) &&
-						(0 == obj[fd].orel0) )
+					if( (0 == here->irel0) && (0 == here->orel0) )
 					{
-						//TCP = Tcp.parent
-						cc = obj[fd].tempfd;
+						//tell parent, its me
+						parent = here->tempobj;
+						parent->tempfd = fd;
+						parent->tempobj = here;
 
-						//Tcp = TCP.child
-						obj[cc].tempfd = fd;
-						obj[cc].tempobj = &obj[fd];
+						//parent send
+						here = parent;
 					}
 
-					//say("@kqueuethread: %.4s\n", &obj[cc].type);
-					relationwrite(&obj[cc], _dst_, 0, 0, buf, cnt);
+					//say("@kqueuethread: %.4s\n", &here->type);
+					relationwrite(here, _dst_, 0, 0, buf, cnt);
 				}
 				if(cnt <= 0)
 				{
 					kqueue_del(fd);
 					close(fd);
-					obj[fd].type = 0;
-					continue;
+					here->type = 0;
 				}
+				break;
+			}
+			case _uart_:{
+				break;
+			}
+			default:{
+				cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
+				if(cnt >= 0)
+				{
+					//say("@kqueuethread: %.4s\n", &obj[cc].type);
+					relationwrite(here, _dst_, 0, 0, buf, cnt);
+				}
+				if(cnt <= 0)
+				{
+					kqueue_del(fd);
+					close(fd);
+					here->type = 0;
+				}
+				break;
 			}
 			}//switch
 		}//for
@@ -138,7 +159,7 @@ void deletewatcher(int num)
 void createwatcher(void* addr)
 {
 	obj = addr;
-	buf = addr+0x300000;
+	buf = addr+0x100000;
 
 	alive = 1;
 	threadcreate(kqueuethread, 0);

@@ -24,6 +24,8 @@ typedef float mat4[4][4];
 #define _fd_ hex32('f','d',0,0)
 #define _dri_ hex32('d','r','i',0)
 #define _dev_ hex32('d','e','v',0)
+#define _wrk_ hex32('w','r','k',0)
+#define _pwr_ hex32('p','w','r',0)
 //
 #define _FILE_ hex32('F','I','L','E')
 #define _file_ hex32('f','i','l','e')
@@ -33,10 +35,10 @@ typedef float mat4[4][4];
 #define _RAW_ hex32('R','A','W',0)
 #define _Raw_ hex32('R','a','w',0)
 #define _raw_ hex32('r','a','w',0)
-#define _ICMP_ 0x504d4349		//s
-#define _icmp_ 0x706d6369		//c
-#define _IGMP_ 0x504d4749		//s
-#define _igmp_ 0x706d6769		//c
+#define _ICMP_ hex32('I','C','M','P')
+#define _icmp_ hex32('i','c','m','p')
+#define _IGMP_ hex32('I','G','M','P')
+#define _igmp_ hex32('i','g','m','p')
 #define _ARP_ hex32('A','R','P',0)
 #define _arp_ hex32('a','r','p',0)
 #define _EAP_ hex32('E','A','P',0)
@@ -91,43 +93,62 @@ typedef float mat4[4][4];
 #define _Tls_  hex32('T','l','s',0)
 #define _tls_  hex32('t','l','s',0)
 //hole
-#define _HOLE_ 0x454c4f48		//s
-#define _hole_ 0x656c6f68		//c
-#define _STUN_ 0x4e555453		//s
-#define _stun_ 0x6e757473		//c
-#define _TURN_ 0x4e525554		//s
-#define _turn_ 0x6e727574		//c
-#define _ICE_ 0x454349		//s
-#define _ice_ 0x656369		//c
+#define _HOLE_ hex32('H','O','L','E')
+#define _Hole_ hex32('H','o','l','e')
+#define _hole_ hex32('h','o','l','e')
+#define _STUN_ hex32('S','T','U','N')
+#define _Stun_ hex32('S','t','u','n')
+#define _stun_ hex32('s','t','u','n')
+#define _TURN_ hex32('T','U','R','N')
+#define _Turn_ hex32('T','u','r','n')
+#define _turn_ hex32('t','u','r','n')
+#define _ICE_ hex32('I','C','E',0)
+#define _Ice_ hex32('I','c','e',0)
+#define _ice_ hex32('i','c','e',0)
 //http family
-#define _HTTPS_ 0x5350545448	//parse, reply
-#define _https_ 0x7370747468	//req url, get reply
-#define _WSS_ 0x535357		//s
-#define _wss_ 0x737377		//c
+#define _HTTPS_ hex64('H','T','T','P','S', 0, 0, 0)
+#define _Https_ hex64('H','t','t','p','s', 0, 0, 0)
+#define _https_ hex64('h','t','t','p','s', 0, 0, 0)
+#define _WSS_ hex32('W','S','S', 0)
+#define _Wss_ hex32('W','s','s', 0)
+#define _wss_ hex32('w','s','s', 0)
 //live stream
-#define _FLV_ 0x564c46		//s
-#define _flv_ 0x766c66		//c
-#define _RTMP_ 0x504d5452		//s
-#define _rtmp_ 0x706d7472		//c
+#define _FLV_ hex32('F','L','V',0)
+#define _Flv_ hex32('F','l','v',0)
+#define _flv_ hex32('f','l','v',0)
+#define _RTMP_ hex32('R','T','M','P')
+#define _Rtmp_ hex32('R','t','m','p')
+#define _rtmp_ hex32('r','t','m','p')
 //remote desktop
-#define _RDP_ 0x504452		//s
-#define _rdp_ 0x706472		//c
-#define _VNC_ 0x434e56		//s
-#define _vnc_ 0x636e76		//c
-#define _SPICE_ 0x4543495053	//s
-#define _spice_ 0x6563697073	//c
+#define _RDP_ hex32('R','D','P',0)
+#define _Rdp_ hex32('R','d','p',0)
+#define _rdp_ hex32('r','d','p',0)
+#define _VNC_ hex32('V','N','C',0)
+#define _Vnc_ hex32('V','n','c',0)
+#define _vnc_ hex32('v','n','c',0)
+#define _SPICE_ hex64('S','P','I','C','E', 0, 0, 0)
+#define _Spice_ hex64('S','p','i','c','e', 0, 0, 0)
+#define _spice_ hex64('s','p','i','c','e', 0, 0, 0)
 //download
-#define _ED2K_ 0x4b324445		//s
-#define _ed2k_ 0x6b326465		//c
-#define _MAGNET_ 0x54454e47414d	//s
-#define _magnet_ 0x74656e67616d	//c
-#define _TORRENT_ 0x544e4552524f54	//s
-#define _torrent_ 0x746e6572726f74	//c
+#define _ED2K_ hex32('E','D','2','K')
+#define _Ed2k_ hex32('E','d','2','k')
+#define _ed2k_ hex32('e','d','2','k')
+#define _MAGNET_ hex64('M','A','G','N','E','T', 0, 0)
+#define _Magnet_ hex64('M','a','g','n','e','t', 0, 0)
+#define _magnet_ hex64('m','a','g','n','e','t', 0, 0)
+#define _TORRENT_ hex64('T','O','R','R','E','N','T', 0)
+#define _Torrent_ hex64('T','o','r','r','e','n','t', 0)
+#define _torrent_ hex64('t','o','r','r','e','n','t', 0)
 //
-#define _PROXY_ 0x59584f5250	//s
-#define _proxy_ 0x79786f7270	//c
-#define _SQL_ 0x4c5153		//s
-#define _sql_ 0x6c7173		//c
+#define _PROXY_ hex64('P','R','O','X','Y', 0, 0, 0)
+#define _Proxy_ hex64('P','r','o','x','y', 0, 0, 0)
+#define _proxy_ hex64('p','r','o','x','y', 0, 0, 0)
+#define _SQL_ hex32('S','Q','L',0)
+#define _Sql_ hex32('S','q','l',0)
+#define _sql_ hex32('s','q','l',0)
+//
+#define _ptmx_ hex32('p','t','m','x')
+#define _uart_ hex32('u','a','r','t')
 
 
 
