@@ -1,0 +1,18 @@
+<system>
+raw{
+fmt:RAW
+url:0.0.0.0:9999
+}
+</system>
+
+
+<artery>
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+
+<relation>
+(raw, 0, fd, dst) -> (dbghex, 0, art, src)
+</relation>

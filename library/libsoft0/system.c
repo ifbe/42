@@ -205,12 +205,13 @@ void* systemcreate(u64 type, void* argstr)
 		if(fd <= 0)return 0;
 
 		obj[fd].type = _ptmx_;
+		obj[fd].selffd = fd;
 		goto success;
 	}
 
 	//decode ipaddr
 	port = 80;
-	url = name + parseurl(name, 0x100, host, &port);
+	if(name)url = name + parseurl(name, 0x100, host, &port);
 	//say("systemcreate: %.8s://%s:%d/%s\n", &type, host, port, url);
 
 	if(_RAW_ == type)		//raw server
@@ -219,6 +220,7 @@ void* systemcreate(u64 type, void* argstr)
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _RAW_;
+		obj[fd].selffd = fd;
 	}
 	else if(_raw_ == type)	//raw client
 	{
@@ -226,6 +228,7 @@ void* systemcreate(u64 type, void* argstr)
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _raw_;
+		obj[fd].selffd = fd;
 	}
 	else if(_UDP_ == type)	//udp master
 	{
@@ -233,6 +236,7 @@ void* systemcreate(u64 type, void* argstr)
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _UDP_;
+		obj[fd].selffd = fd;
 	}
 	else if(_Udp_ == type)	//udp server
 	{
@@ -244,6 +248,7 @@ void* systemcreate(u64 type, void* argstr)
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _udp_;
+		obj[fd].selffd = fd;
 	}
 	else if(_TCP_ == type)	//tcp master
 	{
@@ -251,11 +256,11 @@ void* systemcreate(u64 type, void* argstr)
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _TCP_;
+		obj[fd].selffd = fd;
 	}
 	else if(_Tcp_ == type)	//tcp server
 	{
 		obj[fd].type = _Tcp_;
-		obj[fd].selffd = fd;
 	}
 	else if(_tcp_ == type)	//tcp client
 	{
@@ -263,6 +268,7 @@ void* systemcreate(u64 type, void* argstr)
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _tcp_;
+		obj[fd].selffd = fd;
 	}
 
 success:

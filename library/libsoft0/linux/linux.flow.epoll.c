@@ -40,7 +40,10 @@ void epoll_add(u64 fd)
 	fcntl(fd, F_SETFL, flag | O_NONBLOCK);
 
 	ev.events = EPOLLIN | EPOLLET;
+	ev.data.u64 = 0;
 	ev.data.ptr = &obj[fd];
+	//printf("%x,%x\n", &obj[fd], ev.data.ptr);
+	//printf("%llx,%llx\n", &obj[fd], ev.data.ptr);
 	epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev);
 }
 void epoll_del(u64 fd)
@@ -48,6 +51,7 @@ void epoll_del(u64 fd)
 	struct epoll_event ev;
 
 	ev.events = EPOLLIN;
+	ev.data.u64 = 0;
 	ev.data.ptr = &obj[fd];
 	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
 	close(fd);
@@ -57,6 +61,7 @@ void epoll_mod(u64 fd)
 	struct epoll_event ev;
 
 	ev.events = EPOLLIN | EPOLLET;
+	ev.data.u64 = 0;
 	ev.data.ptr = &obj[fd];
 	epoll_ctl(epollfd, EPOLL_CTL_MOD, fd, &ev);
 }
@@ -68,27 +73,37 @@ static void* epollthread(void* p)
 	struct object* here;
 	struct object* child;
 	struct object* parent;
-	struct epoll_event epollevent[16];
+	struct epoll_event ev[16];
 
 	while(alive)
 	{
-		ret = epoll_wait(epollfd, epollevent, 16, -1);	//start fetch
+		ret = epoll_wait(epollfd, ev, 16, -1);
 		if(ret <= 0)continue;
 
 		//printf("epoll:%d\n",ret);
 		for(j=0; j<ret; j++)
 		{
-			here = events[j].data.ptr;
+			here = ev[j].data.ptr;
 			fd = here->selffd;
+			//printmemory(&ev[j], sizeof(struct epoll_event));
+			//say("fd=%x, here=%llx\n", fd, here);
+			//printf("fd=%x, here=%llx\n", fd, here);
+			//printf("fd=%x, here=%x\n", fd, here);
 
-			if(epollevent[j].events & EPOLLRDHUP)
+			if(ev[j].events & EPOLLRDHUP)
 			{
 				printf("rdhup!!!!!!!\n");
 				eventwrite('-', _fd_, fd, timeread());
 			}
-			else if(epollevent[j].events & EPOLLIN)
+			else if(ev[j].events & EPOLLIN)
 			{
 				switch(here->type){
+				case _ptmx_:
+				case _uart_:{
+					cnt = read(fd, buf, BUFFER_SIZE);
+					relationwrite(here, _dst_, 0, 0, buf, cnt);
+					break;
+				}//uart
 				case _TCP_:{
 					while(1)
 					{
@@ -96,6 +111,7 @@ static void* epollthread(void* p)
 						socklen_t len = sizeof(struct sockaddr_in);
 
 						cc = accept(fd, (struct sockaddr*)&haha, &len);
+						printf("cc=%x,errno=%d\n",cc,errno);
 						if(cc <= 0)break;
 
 						if(cc >= MAXSIZE){
@@ -110,6 +126,7 @@ static void* epollthread(void* p)
 							child->selfobj = child;
 							child->tempfd = fd;
 							child->tempobj = here;
+							printf("fd=%x,cc=%x,here=%x,child=%x\n",fd,cc,here,child);
 
 							memcpy(child->peer, &haha, 8);
 							epoll_add(cc);
@@ -147,12 +164,8 @@ static void* epollthread(void* p)
 						here->type = 0;
 						continue;
 					}
-				}//Tcp
-				case _uart_:{
-					cnt = read(fd, buf, BUFFER_SIZE);
-					relationwrite(here, _dst_, 0, 0, buf, cnt);
 					break;
-				}//uart
+				}//Tcp
 				default:{
 					cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
 					if(cnt >= 0)
@@ -185,14 +198,14 @@ static void* epollthread(void* p)
 
 
 
-void freeewatcher()
+void freewatcher()
 {
 	alive = 0;
 }
 void initwatcher(void* addr)
 {
 	obj = addr;
-	buf = addr+0x300000;
+	buf = addr + 0x100000;
 
 	epollfd = epoll_create(MAXSIZE);
 	if(epollfd <= 0)printf("error@epoll_create: %d,%d\n", epollfd, errno);

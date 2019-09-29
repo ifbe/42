@@ -173,7 +173,7 @@ int startsocket(char* addr, int port, int type)
 		rawfd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
 		if(rawfd == -1)
 		{
-			printf("error%d@socket:%d\n",errno,rawfd);
+			printf("error@socket:%d,%d\n",rawfd,errno);
 			return 0;
 		}
 
