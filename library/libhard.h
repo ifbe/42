@@ -96,6 +96,43 @@ struct item
 	u64 type;
 	u64 fmt;
 	u64 name;
+
+	//[40,5f]: fd/handle
+	union{
+		u64 sz0;
+		u64 selffd;
+	};
+	union{
+		u64 sz1;
+		void* selfobj;
+	};
+	union{
+		u64 sz2;
+		u64 tempfd;
+	};
+	union{
+		u64 sz3;
+		void* tempobj;
+	};
+
+	//[60,7f]: memory
+	union{
+		u64 padd0;
+		void* addr0;
+	};
+	union{
+		u64 padd1;
+		void* addr1;
+	};
+	union{
+		u64 padd2;
+		void* addr2;
+	};
+	union{
+		u64 padd3;
+		void* addr3;
+		void* buf;
+	};
 };
 struct device
 {
@@ -123,9 +160,26 @@ struct device
 	u64 stage1;
 	u64 name;
 
-	//[40,5f]: data
+	//[40,5f]: fd/handle
 	union{
-		int fd;
+		u64 sz0;
+		u64 selffd;
+	};
+	union{
+		u64 sz1;
+		void* selfobj;
+	};
+	union{
+		u64 sz2;
+		u64 tempfd;
+	};
+	union{
+		u64 sz3;
+		void* tempobj;
+	};
+
+	//[60,7f]: memory
+	union{
 		u64 padd0;
 		void* addr0;
 	};
@@ -139,19 +193,9 @@ struct device
 	};
 	union{
 		u64 padd3;
-		void* buf;
 		void* addr3;
+		void* buf;
 	};
-
-	//[60,7f]: prop
-	int width;
-	int height;
-	int depth;
-	int stride;
-	int fbwidth;
-	int fbheight;
-	int fbdepth;
-	int fbstride;
 
 	//[80,ff]
 	u8 data[0x80];
@@ -182,7 +226,25 @@ struct driver
 	u64 stage1;
 	u64 name;
 
-	//[40,5f]: data
+	//[40,5f]: fd/handle
+	union{
+		u64 sz0;
+		u64 selffd;
+	};
+	union{
+		u64 sz1;
+		void* selfobj;
+	};
+	union{
+		u64 sz2;
+		u64 tempfd;
+	};
+	union{
+		u64 sz3;
+		void* tempobj;
+	};
+
+	//[60,7f]: data
 	union{
 		u64 padd0;
 		void* addr0;
@@ -199,16 +261,6 @@ struct driver
 		u64 padd3;
 		void* addr3;
 	};
-
-	//[60,7f]: prop
-	int width;
-	int height;
-	int depth;
-	int stride;
-	int fbwidth;
-	int fbheight;
-	int fbdepth;
-	int fbstride;
 
 	//[80,ff]
 	u8 data[0x80];

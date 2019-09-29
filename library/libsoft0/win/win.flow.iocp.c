@@ -121,8 +121,8 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			obj[cc/4].name = 0;
 			obj[cc/4].irel0 = obj[cc/4].ireln = 0;
 			obj[cc/4].orel0 = obj[cc/4].oreln = 0;
-			obj[cc/4].thatfd = fd;
-			obj[cc/4].thatobj = &obj[fd/4];
+			obj[cc/4].tempfd = fd;
+			obj[cc/4].tempobj = &obj[fd/4];
 			obj[cc/4].selffd = cc;
 			//obj[cc/4].selfobj = &obj[cc/4];
 
@@ -153,11 +153,11 @@ DWORD WINAPI iocpthread(LPVOID pM)
 				(0 == obj[fd/4].orel0) )
 			{
 				//TCP = Tcp.parent
-				cc = obj[fd/4].thatfd;
+				cc = obj[fd/4].tempfd;
 
 				//Tcp = TCP.child
-				obj[cc/4].thatfd = fd;
-				obj[cc/4].thatobj = &obj[fd/4];
+				obj[cc/4].tempfd = fd;
+				obj[cc/4].tempobj = &obj[fd/4];
 			}
 
 			//say("@kqueuethread: %.4s\n", &obj[cc/4].type);

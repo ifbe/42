@@ -86,6 +86,43 @@ struct item
 	u64 type;
 	u64 fmt;
 	u64 name;
+
+	//[40,5f]: fd/handle
+	union{
+		u64 sz0;
+		u64 selffd;
+	};
+	union{
+		u64 sz1;
+		void* selfobj;
+	};
+	union{
+		u64 sz2;
+		u64 tempfd;
+	};
+	union{
+		u64 sz3;
+		void* tempobj;
+	};
+
+	//[60,7f]: memory
+	union{
+		u64 padd0;
+		void* addr0;
+	};
+	union{
+		u64 padd1;
+		void* addr1;
+	};
+	union{
+		u64 padd2;
+		void* addr2;
+	};
+	union{
+		u64 padd3;
+		void* addr3;
+		void* buf;
+	};
 };
 struct pwrclk
 {
@@ -111,7 +148,45 @@ struct pwrclk
 	u64 hfmt;
 	u64 vfmt;
 
-	u8 tmp[0xc0];
+	//[40,5f]: fd/handle
+	union{
+		u64 sz0;
+		u64 selffd;
+	};
+	union{
+		u64 sz1;
+		void* selfobj;
+	};
+	union{
+		u64 sz2;
+		u64 tempfd;
+	};
+	union{
+		u64 sz3;
+		void* tempobj;
+	};
+
+	//[60,7f]: memory
+	union{
+		u64 padd0;
+		void* addr0;
+	};
+	union{
+		u64 padd1;
+		void* addr1;
+	};
+	union{
+		u64 padd2;
+		void* addr2;
+	};
+	union{
+		u64 padd3;
+		void* addr3;
+		void* buf;
+	};
+
+	//[80, ff]
+	u8 tmp[0x80];
 };
 struct worker
 {
@@ -137,7 +212,45 @@ struct worker
 	u64 hfmt;
 	u64 vfmt;
 
-	u8 tmp[0xc0];
+	//[40,5f]: fd/handle
+	union{
+		u64 sz0;
+		u64 selffd;
+	};
+	union{
+		u64 sz1;
+		void* selfobj;
+	};
+	union{
+		u64 sz2;
+		u64 tempfd;
+	};
+	union{
+		u64 sz3;
+		void* tempobj;
+	};
+
+	//[60,7f]: memory
+	union{
+		u64 padd0;
+		void* addr0;
+	};
+	union{
+		u64 padd1;
+		void* addr1;
+	};
+	union{
+		u64 padd2;
+		void* addr2;
+	};
+	union{
+		u64 padd3;
+		void* addr3;
+		void* buf;
+	};
+
+	//[80,ff]
+	u8 tmp[0x80];
 };
 
 

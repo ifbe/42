@@ -206,6 +206,43 @@ struct item
 	u64 type;
 	u64 fmt;
 	u64 name;
+
+	//[40,5f]: fd/handle
+	union{
+		u64 sz0;
+		u64 selffd;
+	};
+	union{
+		u64 sz1;
+		void* selfobj;
+	};
+	union{
+		u64 sz2;
+		u64 tempfd;
+	};
+	union{
+		u64 sz3;
+		void* tempobj;
+	};
+
+	//[60,7f]: memory
+	union{
+		u64 padd0;
+		void* addr0;
+	};
+	union{
+		u64 padd1;
+		void* addr1;
+	};
+	union{
+		u64 padd2;
+		void* addr2;
+	};
+	union{
+		u64 padd3;
+		void* addr3;
+		void* buf;
+	};
 };
 struct object
 {
@@ -233,28 +270,42 @@ struct object
 	u64 fmt;
 	u64 name;
 
-	//[40,5f]: data
-	u64 thatfd;
+	//[40,5f]: fd/handle
 	union{
-		u64 that;
-		void* thatobj;
+		u64 sz0;
+		u64 selffd;
 	};
-	u64 selffd;
 	union{
-		u64 addr;
-		void* buf;
+		u64 sz1;
 		void* selfobj;
 	};
+	union{
+		u64 sz2;
+		u64 tempfd;
+	};
+	union{
+		u64 sz3;
+		void* tempobj;
+	};
 
-	//[60,7f]: prop
-	int width;
-	int height;
-	int depth;
-	int stride;
-	int fbwidth;
-	int fbheight;
-	int fbdepth;
-	int fbstride;
+	//[60,7f]: memory
+	union{
+		u64 padd0;
+		void* addr0;
+	};
+	union{
+		u64 padd1;
+		void* addr1;
+	};
+	union{
+		u64 padd2;
+		void* addr2;
+	};
+	union{
+		u64 padd3;
+		void* addr3;
+		void* buf;
+	};
 
 	//[0x80,0xbf]
 	u8 self[0x20];

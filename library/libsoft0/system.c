@@ -44,7 +44,7 @@ static int ppplen = 0;
 
 
 
-
+/*
 int systemwrite_in(struct object* chip, u8* foot, u8* buf, int len)
 {
 	int ret;
@@ -75,28 +75,10 @@ int systemwrite_in(struct object* chip, u8* foot, u8* buf, int len)
 		printmemory(buf, len);
 		return 0;
 	}
-/*
-	while(1)
-	{
-		if(0 == orel)break;
 
-		dc = (void*)(orel->dstchip);
-		df = (void*)(orel->dstfoot);
-		self = (void*)&orel->dstchip;
-		peer = (void*)&orel->srcchip;
-		switch(orel->dsttype){
-			case _act_:actorwrite(self, peer, buf, len);break;
-			case _win_:arenawrite(self, peer, buf, len);break;
-			case _art_:arterywrite(self, peer, buf, len);break;
-			//artery_rootwrite(dc, df, chip, foot, buf, len);
-		}
-
-		orel = samesrcnextdst(orel);
-	}
-*/
 	relationwrite(chip, _dst_, 0, 0, buf, len);
 	return 42;
-}
+}*/
 
 
 
@@ -126,7 +108,7 @@ int systemwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	//say("@systemwrite:%llx\n", self);
 
 	oo = (void*)(self->chip);
-	if(_TCP_ == oo->type)oo = &obj[oo->thatfd];
+	if(_TCP_ == oo->type)oo = &obj[oo->tempfd];
 
 	fd = ((void*)oo - (void*)obj) / sizeof(struct object);
 	return writesocket(fd, 0, buf, len);
@@ -165,7 +147,7 @@ int systemdelete(void* addr)
 		o->name = 0;
 
 		o->selffd = 0;
-		o->thatfd = 0;
+		o->tempfd = 0;
 
 		o->irel0 = o->ireln = 0;
 		o->orel0 = o->oreln = 0;
@@ -330,7 +312,7 @@ int systemevent(struct event* ev)
 	u64 where = ev->where;
 	u8 tmp[0x40];
 	say("%llx,%llx,%llx\n",why,what,where);
-
+/*
 	switch(why){
 		case '+':{
 			say("come:%x(from:%x)\n", where, obj[where].thatfd);
@@ -346,7 +328,7 @@ int systemevent(struct event* ev)
 
 			return systemwrite_in(&obj[where], tmp, ppp, ret);
 		}
-	}
+	}*/
 	return 0;
 }
 void freesystem()

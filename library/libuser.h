@@ -577,6 +577,43 @@ struct item
 	u64 type;
 	u64 fmt;
 	u64 name;
+
+	//[40,5f]: fd/handle
+	union{
+		u64 sz0;
+		u64 selffd;
+	};
+	union{
+		u64 sz1;
+		void* selfobj;
+	};
+	union{
+		u64 sz2;
+		u64 tempfd;
+	};
+	union{
+		u64 sz3;
+		void* tempobj;
+	};
+
+	//[60,7f]: memory
+	union{
+		u64 padd0;
+		void* addr0;
+	};
+	union{
+		u64 padd1;
+		void* addr1;
+	};
+	union{
+		u64 padd2;
+		void* addr2;
+	};
+	union{
+		u64 padd3;
+		void* addr3;
+		void* buf;
+	};
 };
 struct object
 {
@@ -604,24 +641,42 @@ struct object
 	u64 fmt;
 	u64 name;
 
-	//[40,5f]: data
-	u64 selffd;
-	u64 thatfd;
-	u64 dc;
+	//[40,5f]: fd/handle
 	union{
-		u64 addr;
-		void* buf;
+		u64 sz0;
+		u64 selffd;
+	};
+	union{
+		u64 sz1;
+		void* selfobj;
+	};
+	union{
+		u64 sz2;
+		u64 tempfd;
+	};
+	union{
+		u64 sz3;
+		void* tempobj;
 	};
 
-	//[60,7f]: prop
-	int width;
-	int height;
-	int depth;
-	int stride;
-	int fbwidth;
-	int fbheight;
-	int fbdepth;
-	int fbstride;
+	//[60,7f]: memory
+	union{
+		u64 padd0;
+		void* addr0;
+	};
+	union{
+		u64 padd1;
+		void* addr1;
+	};
+	union{
+		u64 padd2;
+		void* addr2;
+	};
+	union{
+		u64 padd3;
+		void* addr3;
+		void* buf;
+	};
 
 	//[0x80,0xbf]
 	u8 self[0x20];
@@ -656,37 +711,42 @@ struct element
 	u64 stage1;
 	u64 name;
 
-	//[40,5f]: data
+	//[40,5f]: fd/handle
 	union{
-		u64 fd;
-		void* win;
+		u64 sz0;
+		u64 selffd;
 	};
 	union{
-		u64 dc;
-		u64 gc;
-		void* er;
+		u64 sz1;
+		void* selfobj;
 	};
 	union{
-		u64 len;
-		void* hp;
-		void* mod;
-		void* ximage;
-		void* texture;
+		u64 sz2;
+		u64 tempfd;
 	};
 	union{
-		u64 addr;
-		void* buf;
+		u64 sz3;
+		void* tempobj;
 	};
 
-	//[60,7f]: prop
-	int width;
-	int height;
-	int depth;
-	int stride;
-	int fbwidth;
-	int fbheight;
-	int fbdepth;
-	int fbstride;
+	//[60,7f]: memory
+	union{
+		u64 padd0;
+		void* addr0;
+	};
+	union{
+		u64 padd1;
+		void* addr1;
+	};
+	union{
+		u64 padd2;
+		void* addr2;
+	};
+	union{
+		u64 padd3;
+		void* addr3;
+		void* buf;
+	};
 
 	//[80,ff]
 	u8 data[0x80];
@@ -717,7 +777,49 @@ struct arena
 	u64 fmt;
 	u64 vfmt;
 
-	//[40,7f]: func
+	//[40,5f]: fd
+	union{
+		u64 padd0;
+		u64 fd;
+		void* win;
+	};
+	union{
+		u64 padd1;
+		u64 dc;
+		u64 gc;
+		void* er;
+	};
+	union{
+		u64 padd2;
+		u64 len;
+		void* ximage;
+		void* texture;
+	};
+	union{
+		u64 padd3;
+		u64 addr;
+		void* buf;
+	};
+
+	//[60,7f]: buf
+	union{
+		u64 padd4;
+		u32 fbo;
+	};
+	union{
+		u64 padd5;
+		u32 rbo;
+	};
+	union{
+		u64 padd6;
+		u32 tex_depth;
+	};
+	union{
+		u64 padd7;
+		u32 tex_color;
+	};
+
+	//[80,bf]: func
 	union{
 		int (*oncreate)(void* actor, void* buf);
 		char padding0[8];
@@ -749,46 +851,6 @@ struct arena
 	union{
 		int (*onswrite)(void* self, void* peer, void* buf, int len);
 		char padding7[8];
-	};
-
-	//[80,bf]: data
-	union{
-		u64 padd0;
-		u64 fd;
-		void* win;
-	};
-	union{
-		u64 padd1;
-		u64 dc;
-		u64 gc;
-		void* er;
-	};
-	union{
-		u64 padd2;
-		u64 len;
-		void* ximage;
-		void* texture;
-	};
-	union{
-		u64 padd3;
-		u64 addr;
-		void* buf;
-	};
-	union{
-		u64 padd4;
-		u32 fbo;
-	};
-	union{
-		u64 padd5;
-		u32 rbo;
-	};
-	union{
-		u64 padd6;
-		u32 tex_depth;
-	};
-	union{
-		u64 padd7;
-		u32 tex_color;
 	};
 
 	//[c0,cf]
@@ -845,7 +907,53 @@ struct actor
 	u64 fmt;
 	u64 name0;
 
-	//[40,7f]: func
+	//[40,5f]: fd
+	union{
+		u64 fd;
+		void* win;
+		void* ibuf;		//indx buf
+		void* gl_camera;
+		void* ctx;
+	};
+	union{
+		u64 dc;
+		u64 gc;
+		void* er;
+		void* vbuf;		//vert buf
+		void* gl_light;
+	};
+	union{
+		u64 len;
+		void* idx;
+		void* wbuf;		//wire list
+		void* gl_solid;
+	};
+	union{
+		u64 addr;
+		void* buf;
+		void* nbuf;		//node list
+		void* gl_opaque;
+	};
+
+	//[60,7f]: buf
+	union{
+		u64 data0;
+		int ilen;
+	};
+	union{
+		u64 data1;
+		int vlen;
+	};
+	union{
+		u64 data2;
+		int wlen;
+	};
+	union{
+		u64 data3;
+		int nlen;
+	};
+
+	//[80,bf]: func
 	union{
 		int (*oncreate)(void* actor, void* buf);
 		char padding0[8];
@@ -877,52 +985,6 @@ struct actor
 	union{
 		int (*onwrite)(void* self, void* peer, void* arg, int idx, void* buf, int len);
 		char padding7[8];
-	};
-
-	//[80,9f]: buf
-	union{
-		u64 fd;
-		void* win;
-		void* ibuf;		//indx buf
-		void* gl_camera;
-		void* ctx;
-	};
-	union{
-		u64 dc;
-		u64 gc;
-		void* er;
-		void* vbuf;		//vert buf
-		void* gl_light;
-	};
-	union{
-		u64 len;
-		void* idx;
-		void* wbuf;		//wire list
-		void* gl_solid;
-	};
-	union{
-		u64 addr;
-		void* buf;
-		void* nbuf;		//node list
-		void* gl_opaque;
-	};
-
-	//[a0,bf]: len
-	union{
-		u64 data0;
-		int ilen;
-	};
-	union{
-		u64 data1;
-		int vlen;
-	};
-	union{
-		u64 data2;
-		int wlen;
-	};
-	union{
-		u64 data3;
-		int nlen;
 	};
 
 	//[c0,cf]

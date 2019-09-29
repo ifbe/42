@@ -42,7 +42,7 @@ int deviceread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	//say("@devicewrite\n");
 
 	ele = (void*)(self->chip);
-	fd = ele->fd;
+	fd = ele->selffd;
 
 	switch(ele->type){
 		case _i2c_:return i2c_read(fd, idx, buf, len);break;
@@ -58,7 +58,7 @@ int devicewrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	//say("@devicewrite\n");
 
 	ele = (void*)(self->chip);
-	fd = ele->fd;
+	fd = ele->selffd;
 
 	switch(ele->type){
 		case _i2c_:return i2c_write(fd, idx, buf, len);break;
@@ -95,7 +95,7 @@ void* devicecreate(u64 type, void* name)
 		if(fd <= 0)return 0;
 
 		dev[fd].type = _i2c_;
-		dev[fd].fd = fd;
+		dev[fd].selffd = fd;
 
 		return &dev[fd];
 	}
@@ -105,7 +105,7 @@ void* devicecreate(u64 type, void* name)
 		if(fd <= 0)return 0;
 
 		dev[fd].type = _spi_;
-		dev[fd].fd = fd;
+		dev[fd].selffd = fd;
 		return &dev[fd];
 	}
 	else if(_uart_ == type)
@@ -117,7 +117,7 @@ void* devicecreate(u64 type, void* name)
 		if(fd <= 0)return 0;
 
 		dev[fd].type = _uart_;
-		dev[fd].fd = fd;
+		dev[fd].selffd = fd;
 		return &dev[fd];
 	}
 	return 0;

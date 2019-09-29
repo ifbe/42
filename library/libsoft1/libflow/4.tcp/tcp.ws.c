@@ -448,7 +448,7 @@ int wsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 
 	//source
 	Tcp = peer->pchip;
-	Tcp = Tcp->thatobj;
+	Tcp = Tcp->tempobj;
 
 	//WS = self->pchip;
 	Ws = arterycreate(_Ws_, 0);

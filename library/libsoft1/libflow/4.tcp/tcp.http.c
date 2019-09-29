@@ -403,7 +403,7 @@ int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 		obj = (void*)(peer->chip);
 		if(0 == obj)return 0;
 
-		obj = obj->thatobj;
+		obj = obj->tempobj;
 		ele = arterycreate(_Ws_, 0);
 
 		rel = relationcreate(ele, 0, _art_, _src_, obj, 0, _fd_, _dst_);

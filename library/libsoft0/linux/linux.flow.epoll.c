@@ -85,9 +85,8 @@ static void* epollthread(void* p)
 			}
 			else if(epollevent[i].events & EPOLLIN)
 			{
-				//accept
-				if(_TCP_ == obj[fd].type)
-				{
+				switch(obj[fd].type){
+				case _TCP_:{
 					while(1)
 					{
 						struct sockaddr_in haha;
@@ -107,8 +106,8 @@ static void* epollthread(void* p)
 						obj[cc].name = 0;
 						obj[cc].irel0 = obj[cc].ireln = 0;
 						obj[cc].orel0 = obj[cc].oreln = 0;
-						obj[cc].thatfd = fd;
-						obj[cc].thatobj = &obj[fd];
+						obj[cc].tempfd = fd;
+						obj[cc].tempobj = &obj[fd];
 						obj[cc].selffd = cc;
 						//obj[cc].selfobj = &obj[cc];
 						epoll_add(cc);
@@ -119,11 +118,9 @@ static void* epollthread(void* p)
 
 					//reset tcpfd
 					epoll_mod(fd);
-				}//accept
-
-				//read
-				else
-				{
+					break;
+				}//TCP
+				default:{
 					printf("#### %x\n", fd);
 					//eventwrite('@', _fd_, fd, timeread());
 
@@ -139,11 +136,11 @@ static void* epollthread(void* p)
 							(0 == obj[fd].orel0) )
 						{
 							//TCP = Tcp.parent
-							cc = obj[fd].thatfd;
+							cc = obj[fd].tempfd;
 
 							//Tcp = TCP.child
-							obj[cc].thatfd = fd;
-							obj[cc].thatobj = &obj[fd];
+							obj[cc].tempfd = fd;
+							obj[cc].tempobj = &obj[fd];
 						}
 
 						//say("@kqueuethread: %.4s\n", &obj[cc].type);
@@ -154,12 +151,10 @@ static void* epollthread(void* p)
 						epoll_del(fd);
 						close(fd);
 						obj[fd].type = 0;
-						obj[fd].name = 0;
-						obj[fd].selffd = 0;
-						obj[fd].thatfd = 0;
 						continue;
 					}
 				}
+				}//switch
 			}//EPOLLIN
 		}//for
 

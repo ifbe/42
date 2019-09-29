@@ -78,8 +78,9 @@ int kqueuethread(int argc, const char * argv[])
 		{
 			struct kevent current_event = events[j];
 			fd = current_event.ident;
-			if(_TCP_ == obj[fd].type)
-			{
+
+			switch(obj[fd].type){
+			case _TCP_:{
 				socklen_t size;
 				struct sockaddr_in addr;
 				int cc = accept(fd, (struct sockaddr *)&addr, &size);
@@ -87,46 +88,45 @@ int kqueuethread(int argc, const char * argv[])
 				{
 					obj[cc].type = _Tcp_;
 					obj[cc].name = 0;
-					obj[cc].thatfd = fd;
-					obj[cc].thatobj = &obj[fd];
+					obj[cc].tempfd = fd;
+					obj[cc].tempobj = &obj[fd];
 					obj[cc].selffd = cc;
 					//obj[cc].selfobj = &obj[cc];
 					kqueue_add(cc);
 					//eventwrite('+', _fd_, cc, timeread());
 				}
-				continue;
+				break;
 			}
-
-			cnt = readsocket(fd, obj[fd].peer, buf, BUFFER_SIZE);
-			if(cnt >= 0)
-			{
-				//printmemory(buf, cnt);
-				cc = fd;
-				if( (_Tcp_ == obj[fd].type) &&
-					(0 == obj[fd].irel0) &&
-					(0 == obj[fd].orel0) )
+			default:{
+				cnt = readsocket(fd, obj[fd].peer, buf, BUFFER_SIZE);
+				if(cnt >= 0)
 				{
-					//TCP = Tcp.parent
-					cc = obj[fd].thatfd;
+					//printmemory(buf, cnt);
+					cc = fd;
+					if( (_Tcp_ == obj[fd].type) &&
+						(0 == obj[fd].irel0) &&
+						(0 == obj[fd].orel0) )
+					{
+						//TCP = Tcp.parent
+						cc = obj[fd].tempfd;
 
-					//Tcp = TCP.child
-					obj[cc].thatfd = fd;
-					obj[cc].thatobj = &obj[fd];
+						//Tcp = TCP.child
+						obj[cc].tempfd = fd;
+						obj[cc].tempobj = &obj[fd];
+					}
+
+					//say("@kqueuethread: %.4s\n", &obj[cc].type);
+					relationwrite(&obj[cc], _dst_, 0, 0, buf, cnt);
 				}
-
-				//say("@kqueuethread: %.4s\n", &obj[cc].type);
-				relationwrite(&obj[cc], _dst_, 0, 0, buf, cnt);
+				if(cnt <= 0)
+				{
+					kqueue_del(fd);
+					close(fd);
+					obj[fd].type = 0;
+					continue;
+				}
 			}
-			if(cnt <= 0)
-			{
-				kqueue_del(fd);
-				close(fd);
-				obj[fd].type = 0;
-				obj[fd].name = 0;
-				obj[fd].selffd = 0;
-				obj[fd].thatfd = 0;
-				continue;
-			}
+			}//switch
 		}//for
 	}//while1
 	return 0;
