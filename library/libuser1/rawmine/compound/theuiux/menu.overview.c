@@ -236,7 +236,7 @@ void overview_draw_pixel(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_fd_ == rel->srctype)
+			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
@@ -286,7 +286,7 @@ void overview_draw_pixel(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_fd_ == rel->srctype)
+			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
@@ -337,7 +337,7 @@ void overview_draw_pixel(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_fd_ == rel->srctype)
+			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
@@ -387,7 +387,7 @@ void overview_draw_pixel(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_fd_ == rel->srctype)
+			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
@@ -665,7 +665,7 @@ void overview_draw_vbo(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_fd_ == rel->srctype)
+			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
@@ -751,7 +751,7 @@ void overview_draw_vbo(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_fd_ == rel->srctype)
+			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
@@ -838,7 +838,7 @@ void overview_draw_vbo(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_fd_ == rel->srctype)
+			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
@@ -925,7 +925,7 @@ void overview_draw_vbo(
 		while(1)
 		{
 			if(0 == rel)break;
-			if(_fd_ == rel->srctype)
+			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
 				k = k / sizeof(struct object);
@@ -1200,17 +1200,17 @@ void overview_drag(struct actor* win, int x0, int y0, int x1, int y1)
 		else if(y1 < 8)
 		{
 			act_d = &actor[x1+(y1*16)];
-			relationcreate(act_d, 0, _act_, 0, obj_s, 0, _fd_, 0);
+			relationcreate(act_d, 0, _act_, 0, obj_s, 0, _sys_, 0);
 		}
 		else if(y1 < 16)
 		{
 			win_d = &arena[x1 + (y1-8)*16];
-			relationcreate(win_d, 0, _win_, 0, obj_s, 0, _fd_, 0);
+			relationcreate(win_d, 0, _win_, 0, obj_s, 0, _sys_, 0);
 		}
 		else if(y1 < 24)
 		{
 			ele_d = &ele[x1 + (y1-16)*16];
-			relationcreate(ele_d, 0, _art_, 0, obj_s, 0, _fd_, 0);
+			relationcreate(ele_d, 0, _art_, 0, obj_s, 0, _sys_, 0);
 		}
 		else if(y1 < 32)
 		{

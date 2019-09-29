@@ -149,7 +149,7 @@ static void graph_draw_vbo(
 		tmp = node[j].addr;
 		switch(tmp->tier)
 		{
-			case  _fd_:rgb = 0x0000ff;str = (void*)&tmp->type;break;
+			case _sys_:rgb = 0x0000ff;str = (void*)&tmp->type;break;
 			case _art_:rgb = 0xff0000;str = (void*)&tmp->type;break;
 			case _win_:rgb = 0xffff00;str = (void*)&tmp->fmt;break;
 			case _act_:rgb = 0x00ffff;str = (void*)&tmp->fmt;break;

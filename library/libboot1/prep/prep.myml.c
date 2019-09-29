@@ -635,7 +635,7 @@ int role_test_system(u8* buf, int len, struct chiplist chip[], int clen)
 			if(nodename >= 0){
 				nodename = -1;
 
-				chip[clen].tier = _fd_;
+				chip[clen].tier = _sys_;
 				chip[clen].type = fmt;
 
 				chip[clen].hash = hash;

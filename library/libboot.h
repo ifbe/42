@@ -9,7 +9,7 @@ typedef unsigned long long u64;
 #define _act_ hex32('a','c','t',0)
 #define _win_ hex32('w','i','n',0)
 #define _art_ hex32('a','r','t',0)
-#define _fd_  hex32('f','d', 0, 0)
+#define _sys_ hex32('s','y','s',0)
 #define _dri_ hex32('d','r','i',0)
 #define _dev_ hex32('d','e','v',0)
 #define _wrk_ hex32('w','r','k',0)
@@ -298,6 +298,20 @@ int devicestop( struct halfrel* self,struct halfrel* peer);
 int devicestart(struct halfrel* self,struct halfrel* peer);
 int devicedelete(void*);
 void* devicecreate(u64, void*);
+//
+int workerread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int workerwrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int workerstop( struct halfrel* self,struct halfrel* peer);
+int workerstart(struct halfrel* self,struct halfrel* peer);
+int workerdelete(void*);
+void* workercreate(u64, void*);
+//
+int pwrclkread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int pwrclkwrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int pwrclkstop( struct halfrel* self,struct halfrel* peer);
+int pwrclkstart(struct halfrel* self,struct halfrel* peer);
+int pwrclkdelete(void*);
+void* pwrclkcreate(u64, void*);
 //
 int relationread( void* item, int foot, void* arg, int idx, void* buf, int len);
 int relationwrite(void* item, int foot, void* arg, int idx, void* buf, int len);

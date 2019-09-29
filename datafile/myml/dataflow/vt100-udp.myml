@@ -1,7 +1,7 @@
 <system>
-ptmx{
-fmt:ptmx
-url:/dev/ptmx
+udp{
+fmt:UDP
+url:0.0.0.0:9999
 }
 </system>
 
@@ -21,6 +21,6 @@ fmt:std
 
 
 <relation>
-(ptmx, 0, sys, dst) -> (vt100, 0, art, src)
+(udp, 0, sys, dst) -> (vt100, 0, art, src)
 (stdio, 0, win, dst) -> (vt100, 0, art, dst)
 </relation>

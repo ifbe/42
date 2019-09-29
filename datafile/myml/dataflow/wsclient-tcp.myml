@@ -22,7 +22,7 @@ fmt:dbghex
 
 
 <relation>
-(tcp, 0, fd, dst) -> (ws, 0, art, src)
+(tcp, 0, sys, dst) -> (ws, 0, art, src)
 (ws, 0, art, dst) -> (udp, 0, art, dst)
 (ws, 0, art, dst) -> (dbghex, 0, art, src)
 </relation>

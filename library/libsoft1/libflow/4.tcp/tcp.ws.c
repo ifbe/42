@@ -461,7 +461,7 @@ int wsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	//relationstart(&rel->srcchip, &rel->dstchip);
 
 	//
-	rel = relationcreate(Ws, 0, _art_, _src_, Tcp, 0, _fd_, _dst_);
+	rel = relationcreate(Ws, 0, _art_, _src_, Tcp, 0, _sys_, _dst_);
 	//relationstart(&rel->srcchip, &rel->dstchip);
 
 	self = (void*)&rel->dstchip;

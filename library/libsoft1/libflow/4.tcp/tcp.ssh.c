@@ -580,7 +580,7 @@ int sshclient_create(struct element* ele, u8* url)
 
 	ele->type = _ssh_;
 	ele->stage1 = 0;
-	relationcreate(ele, 0, _art_, 0, obj, 0, _fd_, 0);
+	relationcreate(ele, 0, _art_, 0, obj, 0, _sys_, 0);
 	return 0;
 }
 
@@ -825,7 +825,7 @@ int sshmaster_write(
 	if(ret)relationwrite(ele, _src_, 0, 0, tmp, ret);
 
 	e = arterycreate(_Ssh_, 0);
-	if(e)relationcreate(e, 0, _art_, 0, obj, 0, _fd_, 0);
+	if(e)relationcreate(e, 0, _art_, 0, obj, 0, _sys_, 0);
 	return 0;
 }
 int sshmaster_read()

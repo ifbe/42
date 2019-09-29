@@ -29,7 +29,7 @@ fmt:dbgf32
 
 
 <relation>
-(mpu9250, 0, dri, clk) -> (udphost, 0, fd, dst)
+(mpu9250, 0, dri, clk) -> (udphost, 0, sys, dst)
 (mpu9250, 0, dri, spi) -> (spihost, 0, dev, dst)
 (mpu9250, 0, dri, dst) -> (dbgf32, 0, art, src)
 </relation>

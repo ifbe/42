@@ -164,21 +164,6 @@ static void control_event(
 	struct relation* irel;
 	if((_char_ != ev->what)&&(_kbd_ != ev->what))return;
 	say("%x\n", ev->why);
-
-	irel = act->irel0;
-	while(1)
-	{
-		if(0 == irel)break;
-
-		dc = (void*)(irel->srcchip);
-		df = (void*)(irel->srcfoot);
-		if(_fd_ == irel->srctype)
-		{
-			system_leafwrite(dc, df, act, pin, &ev->why, 1);
-		}
-
-		irel = samedstnextsrc(irel);
-	}
 }
 
 

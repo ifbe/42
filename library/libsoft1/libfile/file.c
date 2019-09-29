@@ -344,7 +344,7 @@ int fileclient_create(struct element* ele, u8* url)
 	if(0 == type)goto fail;
 
 	ele->type = type;
-	relationcreate(ele, 0, _art_, 0, obj, 0, _fd_, 0);
+	relationcreate(ele, 0, _art_, 0, obj, 0, _sys_, 0);
 
 	if(_mbr_ == type)mbrclient_start(obj, 0, ele, 0, buf, ret);
 	if(_gpt_ == type)gptclient_start(obj, 0, ele, 0, buf, ret);

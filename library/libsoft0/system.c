@@ -359,7 +359,7 @@ void initsystem(u8* addr)
 
 #define max (0x100000/sizeof(struct object))
 	for(j=0;j<0x200000;j++)addr[j]=0;
-	for(j=0;j<max;j++)obj[j].tier = _fd_;
+	for(j=0;j<max;j++)obj[j].tier = _sys_;
 
 	initrandom(addr);
 	initsignal(addr);

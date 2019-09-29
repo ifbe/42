@@ -109,7 +109,7 @@ q:1.0, 1.0
 (opengl, 0, win, ctx) -> (thectx, 0, act, 0)
 (opengl, 0, win, wnd) -> (thewnd, 0, act, 0)
 
-(udphost, 0, fd, dst) -> (reline, 0, art, src)
+(udphost, 0, sys, dst) -> (reline, 0, art, src)
 (reline, 0, art, dst) -> (str2fv, 0, art, src)
 (str2fv, 0, art, dst) -> (drone, 0, act, 0)
 </relation>

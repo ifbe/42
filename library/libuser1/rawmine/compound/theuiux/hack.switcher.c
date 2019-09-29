@@ -83,21 +83,6 @@ static void switch_data(
 	dst = act->buf;
 	for(j=0;j<len;j++)dst[j] = buf[j];
 	dst[j] = 0;
-
-	struct relation* orel = act->orel0;
-	while(1)
-	{
-		if(0 == orel)break;
-		if(_fd_ == orel->dsttype)
-		{
-			system_leafwrite(
-				(void*)(orel->dstchip), (void*)(orel->dstfoot),
-				(void*)(orel->srcchip), (void*)(orel->srcfoot),
-				act->buf, len
-			);
-		}
-		orel = samesrcnextdst(orel);
-	}
 }
 
 
@@ -145,14 +130,8 @@ static void switch_delete(struct actor* act, u8* buf)
 }
 static void switch_create(struct actor* act, u8* buf)
 {
-	void* addr;
 	if(0 == act)return;
 	act->buf = memorycreate(0x100000, 0);
-
-	addr = systemcreate(_udp_, "127.0.0.1:2222");
-	if(0 == addr)return;
-
-	relationcreate(addr, 0, _fd_, 0, act, 0, _act_, 0);
 }
 
 

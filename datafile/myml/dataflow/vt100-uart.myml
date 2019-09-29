@@ -1,9 +1,9 @@
-<system>
-ptmx{
-fmt:ptmx
-url:/dev/ptmx
+<device>
+uart{
+fmt:uart
+url:/dev/ttyACM0
 }
-</system>
+</device>
 
 
 <artery>
@@ -21,6 +21,6 @@ fmt:std
 
 
 <relation>
-(ptmx, 0, sys, dst) -> (vt100, 0, art, src)
+(uart, 0, sys, dst) -> (vt100, 0, art, src)
 (stdio, 0, win, dst) -> (vt100, 0, art, dst)
 </relation>

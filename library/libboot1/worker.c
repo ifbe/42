@@ -32,7 +32,7 @@ int workerstop(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int workerstart(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int workerstart(struct halfrel* self, struct halfrel* peer)
 {
 	say("@workerstart\n");
 	return 0;

@@ -22,7 +22,7 @@ fmt:cam
 
 <relation>
 #sendto network
-(usbcam, 0, win, dst) -> (client, 0, fd, src)
+(usbcam, 0, win, dst) -> (client, 0, sys, src)
 
 #sendto stdout
 (usbcam, 0, win, dst) -> (dbghex, 0, art, src)

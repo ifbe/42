@@ -27,7 +27,7 @@ fmt:ahrs
 
 
 <relation>
-(udphost, 0, fd, 0) -> (reline, 0, art, src)
+(udphost, 0, sys, 0) -> (reline, 0, art, src)
 (reline, 0, art, dst) -> (str2fv, 0, art, src)
 (str2fv, 0, art, dst) -> (madgwick, 0, art, src)
 (madgwick, 0, art, dst) -> (ahrs, 0, win, src)

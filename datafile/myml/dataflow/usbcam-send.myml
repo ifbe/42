@@ -25,7 +25,7 @@ fmt:cam
 
 <relation>
 (usbcam, 0, win, dst) -> (goslow, 0, art, src)
-(goslow, 0, art, dst) -> (client, 0, fd, src)
+(goslow, 0, art, dst) -> (client, 0, sys, src)
 
 (usbcam, 0, win, dst) -> (dbghex, 0, art, src)
 </relation>

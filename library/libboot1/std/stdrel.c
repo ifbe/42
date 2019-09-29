@@ -149,9 +149,11 @@ void* samesrcnextdst(struct relation* rel)
 int relation_r(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	switch(self->type){
+		case _pwr_:return pwrclkread(self, peer, arg, idx, buf, len);
+		case _wrk_:return workerread(self, peer, arg, idx, buf, len);
 		case _dev_:return deviceread(self, peer, arg, idx, buf, len);
 		case _dri_:return driverread(self, peer, arg, idx, buf, len);
-		case  _fd_:return systemread(self, peer, arg, idx, buf, len);
+		case _sys_:return systemread(self, peer, arg, idx, buf, len);
 		case _art_:return arteryread(self, peer, arg, idx, buf, len);
 		case _win_:return  arenaread(self, peer, arg, idx, buf, len);
 		case _act_:return  actorread(self, peer, arg, idx, buf, len);
@@ -197,9 +199,11 @@ int relationread(void* chip, int foot, void* arg, int idx, void* buf, int len)
 int relation_w(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	switch(self->type){
+		case _pwr_:return pwrclkwrite(self, peer, arg, idx, buf, len);
+		case _wrk_:return workerwrite(self, peer, arg, idx, buf, len);
 		case _dev_:return devicewrite(self, peer, arg, idx, buf, len);
 		case _dri_:return driverwrite(self, peer, arg, idx, buf, len);
-		case  _fd_:return systemwrite(self, peer, arg, idx, buf, len);
+		case _sys_:return systemwrite(self, peer, arg, idx, buf, len);
 		case _art_:return arterywrite(self, peer, arg, idx, buf, len);
 		case _win_:return  arenawrite(self, peer, arg, idx, buf, len);
 		case _act_:return  actorwrite(self, peer, arg, idx, buf, len);
@@ -247,9 +251,11 @@ int relationwrite(void* chip, int foot, void* arg, int idx, void* buf, int len)
 int relation_d(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->type){
+		case _pwr_:return pwrclkstop(self, peer);
+		case _wrk_:return workerstop(self, peer);
 		case _dev_:return devicestop(self, peer);
 		case _dri_:return driverstop(self, peer);
-		case _fd_: return systemstop(self, peer);
+		case _sys_: return systemstop(self, peer);
 		case _art_:return arterystop(self, peer);
 		case _win_:return  arenastop(self, peer);
 		case _act_:return  actorstop(self, peer);
@@ -269,9 +275,11 @@ int relationstop(struct halfrel* self, struct halfrel* peer)
 int relation_a(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->type){
+		case _pwr_:return pwrclkstart(self, peer);
+		case _wrk_:return workerstart(self, peer);
 		case _dev_:return devicestart(self, peer);
 		case _dri_:return driverstart(self, peer);
-		case _fd_: return systemstart(self, peer);
+		case _sys_: return systemstart(self, peer);
 		case _art_:return arterystart(self, peer);
 		case _win_:return  arenastart(self, peer);
 		case _act_:return  actorstart(self, peer);

@@ -82,7 +82,7 @@ q:1.0, 1.0
 
 <relation>
 #canvas depends on usbcam
-(server, 0, fd, dst) -> (recut, 0, art, src)
+(server, 0, sys, dst) -> (recut, 0, art, src)
 (recut, 0, art, dst) -> (canvas, 0, act, yuv)
 
 #3dworld depends on inner objects

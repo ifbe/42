@@ -34,7 +34,7 @@ int pwrclkstop(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int pwrclkstart(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int pwrclkstart(struct halfrel* self, struct halfrel* peer)
 {
 	say("@pwrclkstart\n");
 	return 0;

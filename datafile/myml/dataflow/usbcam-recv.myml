@@ -17,6 +17,6 @@ fmt:dbghex
 
 
 <relation>
-(server, 0, fd, dst) -> (recut, 0, art, src)
+(server, 0, sys, dst) -> (recut, 0, art, src)
 (recut, 0, art, dst) -> (dbghex, 0, art, src)
 </relation>

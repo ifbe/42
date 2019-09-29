@@ -19,8 +19,8 @@ fmt:dbghex
 
 <relation>
 #ok done
-(server, 0, fd, dst) -> (client, 0, fd, src)
+(server, 0, sys, dst) -> (client, 0, sys, src)
 
 #it's for debug purpose
-(server, 0, fd, dst) -> (dbghex, 0, art, src)
+(server, 0, sys, dst) -> (dbghex, 0, art, src)
 </relation>

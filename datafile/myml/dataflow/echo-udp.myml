@@ -14,5 +14,5 @@ fmt:echo
 
 
 <relation>
-(udphost, 0, fd, dst) -> (echo, 0, art, src)
+(udphost, 0, sys, dst) -> (echo, 0, art, src)
 </relation>

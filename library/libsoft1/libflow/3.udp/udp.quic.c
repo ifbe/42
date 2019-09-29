@@ -96,6 +96,6 @@ int quicmaster_create(struct element* ele, u8* url)
 	void* obj = systemcreate(_UDP_, url);
 	if(0 == obj)return 0;
 
-	relationcreate(ele, 0, _art_, 0, obj, 0, _fd_, 0);
+	relationcreate(ele, 0, _art_, 0, obj, 0, _sys_, 0);
 	return 0;
 }

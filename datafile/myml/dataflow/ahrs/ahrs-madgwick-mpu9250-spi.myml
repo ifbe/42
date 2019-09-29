@@ -40,5 +40,5 @@ fmt:dbgf32
 (madgwick, 0, art, dst) -> (qu2eu, 0, art, src)
 (qu2eu, 0, art, dst) -> (dbgf32, 0, art, src)
 
-(clock, 0, fd, dst) -> (mpu9250, 0, dri, clk)
+(clock, 0, sys, dst) -> (mpu9250, 0, dri, clk)
 </relation>

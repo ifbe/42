@@ -14,5 +14,5 @@ fmt:HTTP
 
 
 <relation>
-(tcphost, 0, fd, dst) -> (http, 0, art, src)
+(tcphost, 0, sys, dst) -> (http, 0, art, src)
 </relation>

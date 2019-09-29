@@ -29,7 +29,7 @@ fmt:dbgf32
 
 
 <relation>
-(lsm9ds1, 0, dri, clk) -> (udphost, 0, fd, dst)
+(lsm9ds1, 0, dri, clk) -> (udphost, 0, sys, dst)
 (lsm9ds1, 0, dri, i2c) -> (i2chost, 0, dev, dst)
 (lsm9ds1, 0, dri, dst) -> (dbgf32, 0, art, src)
 </relation>

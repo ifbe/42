@@ -25,6 +25,6 @@ url:127.0.0.1:2222
 
 
 <relation>
-(tcp, 0, fd, dst) -> (ws, 0, art, src)
+(tcp, 0, sys, dst) -> (ws, 0, art, src)
 (ws, 0, art, dst) -> (std, 0, win, dst)
 </relation>
