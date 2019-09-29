@@ -36,3 +36,13 @@ void deleteshell()
 void createshell(void* addr)
 {
 }
+
+
+
+
+void freeshell()
+{
+}
+void initshell()
+{
+}

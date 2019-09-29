@@ -103,15 +103,18 @@ int startshell(char* p)
 	if(ret < 0)return -5;
 	else if(ret == 0)systemshell_child(name);
 
-	ret = write(fd, "unset PROMPT_COMMAND\n", 21);
 	kqueue_add(fd);
 	return fd;
 }
-void createshell(void* addr)
+
+
+
+
+void freeshell()
+{
+}
+void initshell(void* addr)
 {
 	signal(SIGCHLD, SIG_IGN);
 	obj = addr;
-}
-void deleteshell()
-{
 }

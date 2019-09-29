@@ -37,11 +37,11 @@ static void sig_tstp(int a)
 
 
 
-void createsignal()
+void freesignal()
+{
+}
+void initsignal()
 {
 	signal(SIGINT, sig_int);
 	signal(SIGTSTP, sig_tstp);
-}
-void deletesignal()
-{
 }

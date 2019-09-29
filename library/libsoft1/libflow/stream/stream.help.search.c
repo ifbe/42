@@ -31,6 +31,10 @@ int search_start(struct halfrel* self, struct halfrel* peer)
 
 
 
+int search_delete(struct element* ele)
+{
+	return 0;
+}
 int search_create(struct element* ele, u8* url)
 {
 	say("@search_create\n");

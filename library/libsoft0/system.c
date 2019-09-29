@@ -1,33 +1,33 @@
 #include "libsoft.h"
 #define _ptmx_ hex32('p','t','m','x')
 //random
-int createrandom(void*);
-int deleterandom();
+int initrandom(void*);
+int freerandom();
 //signal
-int createsignal(void*);
-int deletesignal();
+int initsignal(void*);
+int freesignal();
 //epoll,iocp,kqueue
-int createwatcher(void*);
-int deletewatcher();
+int initwatcher(void*);
+int freewatcher();
 //shell
-int createshell(void*);
-int deleteshell();
+int initshell(void*);
+int freeshell();
 int startshell(void*, int);
 int stopshell(int);
-int readshell(  int, int, void*, int);
-int writeshell( int, int, void*, int);
-//
-int startfile(void*, int);
-int stopfile(int);
-int readfile(   int, int, void*, int);
-int writefile(  int, int, void*, int);
+int readshell( int, int, void*, int);
+int writeshell(int, int, void*, int);
 //socket
-int createsocket(void*);
-int deletesocket();
+int initsocket(void*);
+int freesocket();
 int startsocket(void* addr, int port, int type);
 int stopsocket(int);
 int readsocket( int,void*,void*, int);
 int writesocket(int,void*,void*, int);
+//
+int startfile(void*, int);
+int stopfile(int);
+int readfile( int, int, void*, int);
+int writefile(int, int, void*, int);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
 int ncmp(void*, void*, int);
@@ -227,12 +227,16 @@ void* systemcreate(u64 type, void* argstr)
 
 		obj[fd].type = _raw_;
 	}
-	else if(_UDP_ == type)	//udp server
+	else if(_UDP_ == type)	//udp master
 	{
 		fd = startsocket(host, port, _UDP_);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _UDP_;
+	}
+	else if(_Udp_ == type)	//udp server
+	{
+		obj[fd].type = _Udp_;
 	}
 	else if(_udp_ == type)	//udp client
 	{
@@ -241,14 +245,14 @@ void* systemcreate(u64 type, void* argstr)
 
 		obj[fd].type = _udp_;
 	}
-	else if(_TCP_ == type)	//tcp server
+	else if(_TCP_ == type)	//tcp master
 	{
 		fd = startsocket(host, port, _TCP_);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _TCP_;
 	}
-	else if(_Tcp_ == type)	//tcp client
+	else if(_Tcp_ == type)	//tcp server
 	{
 		obj[fd].type = _Tcp_;
 		obj[fd].selffd = fd;
@@ -335,11 +339,11 @@ void freesystem()
 {
 	//say("[8,9):freeing system\n");
 
-	deleteshell();
-	deletesocket();
-	deletewatcher();
-	deletesignal();
-	deleterandom();
+	freesocket();
+	freeshell();
+	freewatcher();
+	freesignal();
+	freerandom();
 }
 void initsystem(u8* addr)
 {
@@ -351,11 +355,11 @@ void initsystem(u8* addr)
 	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)obj[j].tier = _fd_;
 
-	createrandom(addr);
-	createsignal(addr);
-	createwatcher(addr);
-	createsocket(addr);
-	createshell(addr);
+	initrandom(addr);
+	initsignal(addr);
+	initwatcher(addr);
+	initshell(addr);
+	initsocket(addr);
 
 	//say("[8,a):inited system\n");
 }

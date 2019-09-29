@@ -1,6 +1,6 @@
-void createsignal()
+void freesignal()
 {
 }
-void deletesignal()
+void initsignal()
 {
 }

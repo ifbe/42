@@ -171,10 +171,10 @@ DWORD WINAPI iocpthread(LPVOID pM)
 
 
 
-void deletewatcher()
+void freewatcher()
 {
 }
-void createwatcher(void* addr)
+void initwatcher(void* addr)
 {
 	obj = addr;
 

@@ -53,11 +53,15 @@ BOOL CtrlHandler( DWORD fdwCtrlType )
 		default: 
 			return FALSE; 
 	}
-} 
-void createsignal()
+}
+
+
+
+
+void freesignal()
+{
+}
+void initsignal()
 {
 	SetConsoleCtrlHandler((PHANDLER_ROUTINE)CtrlHandler, 1);
-}
-void deletesignal()
-{
 }

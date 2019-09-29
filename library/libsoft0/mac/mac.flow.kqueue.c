@@ -9,6 +9,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "libsoft.h"
+#define MAXSIZE 4096
 #define BUFFER_SIZE 0x100000
 int readsocket(int, void*, void*, int);
 
@@ -42,10 +43,6 @@ int kqueue_mod(int fd)
 	struct kevent ke;
 	return 0;
 }
-
-
-
-
 int kqueuethread(int argc, const char * argv[])
 {
 	int fd,cc;
@@ -85,11 +82,18 @@ int kqueuethread(int argc, const char * argv[])
 
 			switch(here->type){
 			case _TCP_:{
-				socklen_t size;
 				struct sockaddr_in addr;
-				int cc = accept(fd, (struct sockaddr *)&addr, &size);
-				if(cc > 0)
-				{
+				socklen_t len = sizeof(struct sockaddr_in);
+
+				int cc = accept(fd, (struct sockaddr *)&addr, &len);
+				if(cc <= 0)break;
+
+				if(cc >= MAXSIZE){
+					printf("fd>MAXSIZE\n");
+					close(cc);
+					break;
+				}
+				else{
 					child = &obj[cc];
 					child->type = _Tcp_;
 					child->name = 0;
@@ -97,11 +101,13 @@ int kqueuethread(int argc, const char * argv[])
 					child->selfobj = child;
 					child->tempfd = fd;
 					child->tempobj = here;
+
+					memcpy(child->peer, &addr, 8);
 					kqueue_add(cc);
 					//eventwrite('+', _fd_, cc, timeread());
 				}
 				break;
-			}
+			}//TCP
 			case _Tcp_:{
 				cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
 				if(cnt >= 0)
@@ -128,10 +134,12 @@ int kqueuethread(int argc, const char * argv[])
 					here->type = 0;
 				}
 				break;
-			}
+			}//Tcp
 			case _uart_:{
+				cnt = read(fd, buf, BUFFER_SIZE);
+				relationwrite(here, _dst_, 0, 0, buf, cnt);
 				break;
-			}
+			}//uart
 			default:{
 				cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
 				if(cnt >= 0)
@@ -146,17 +154,21 @@ int kqueuethread(int argc, const char * argv[])
 					here->type = 0;
 				}
 				break;
-			}
+			}//default
 			}//switch
 		}//for
 	}//while1
 	return 0;
 }
-void deletewatcher(int num)
+
+
+
+
+void freewatcher()
 {
 	alive = 0;
 }
-void createwatcher(void* addr)
+void initwatcher(void* addr)
 {
 	obj = addr;
 	buf = addr+0x100000;

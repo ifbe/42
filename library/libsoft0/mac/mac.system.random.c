@@ -19,15 +19,15 @@ unsigned int getrandom()
 
 
 
-void createrandom()
+void freerandom()
 {
-	_dev_urandom=open("/dev/urandom",O_RDONLY);
-	if(_dev_urandom==-1)
+	if(_dev_urandom > 0)close(_dev_urandom);
+}
+void initrandom()
+{
+	_dev_urandom = open("/dev/urandom",O_RDONLY);
+	if(_dev_urandom <= 0)
 	{
 		printf("error open:/dev/urandom:%x\n",_dev_urandom);
 	}
-}
-void deleterandom()
-{
-	if(_dev_urandom != -1)close(_dev_urandom);
 }

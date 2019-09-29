@@ -407,11 +407,15 @@ u64 startsocket(char* addr, int port, int type)
 	else printf("error@type\n");
 	return 0;
 }
-void deletesocket()
+
+
+
+
+void freesocket()
 {
 	WSACleanup();
 }
-void createsocket(void* addr)
+void initsocket(void* addr)
 {
 	obj = addr;
 

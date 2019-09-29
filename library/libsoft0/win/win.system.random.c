@@ -9,10 +9,14 @@ unsigned int getrandom()
 {
 	return rand();
 }
-void createrandom()
+
+
+
+
+void freerandom()
+{
+}
+void initrandom()
 {
 	srand((int)time(0));
-}
-void deleterandom()
-{
 }

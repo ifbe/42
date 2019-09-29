@@ -18,7 +18,6 @@
 #include "libsoft.h"
 #define MAXSIZE 4096
 #define BUFFER_SIZE 0x100000
-#define _uart_ hex32('u','a','r','t')
 int uart_read(int, int, void*, int);
 int readsocket(int, void*, void*, int);
 
@@ -33,23 +32,6 @@ static int epollfd = 0;
 
 
 
-void epoll_del(u64 fd)
-{
-	struct epoll_event ev;
-
-	ev.events = EPOLLIN;
-	ev.data.fd = fd;
-	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
-	close(fd);
-}
-void epoll_mod(u64 fd)
-{
-	struct epoll_event ev;
-
-	ev.events = EPOLLIN | EPOLLET;
-	ev.data.fd = fd;
-	epoll_ctl(epollfd, EPOLL_CTL_MOD, fd, &ev);
-}
 void epoll_add(u64 fd)
 {
 	int flag;
@@ -58,14 +40,34 @@ void epoll_add(u64 fd)
 	fcntl(fd, F_SETFL, flag | O_NONBLOCK);
 
 	ev.events = EPOLLIN | EPOLLET;
-	ev.data.fd = fd;
+	ev.data.ptr = &obj[fd];
 	epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev);
+}
+void epoll_del(u64 fd)
+{
+	struct epoll_event ev;
+
+	ev.events = EPOLLIN;
+	ev.data.ptr = &obj[fd];
+	epoll_ctl(epollfd, EPOLL_CTL_DEL, fd, &ev);
+	close(fd);
+}
+void epoll_mod(u64 fd)
+{
+	struct epoll_event ev;
+
+	ev.events = EPOLLIN | EPOLLET;
+	ev.data.ptr = &obj[fd];
+	epoll_ctl(epollfd, EPOLL_CTL_MOD, fd, &ev);
 }
 static void* epollthread(void* p)
 {
-	int i;
+	int j;
 	int fd, cc;
 	int ret, cnt;
+	struct object* here;
+	struct object* child;
+	struct object* parent;
 	struct epoll_event epollevent[16];
 
 	while(alive)
@@ -74,18 +76,19 @@ static void* epollthread(void* p)
 		if(ret <= 0)continue;
 
 		//printf("epoll:%d\n",ret);
-		for(i=0; i<ret; i++)
+		for(j=0; j<ret; j++)
 		{
-			fd = epollevent[i].data.fd;
+			here = events[j].data.ptr;
+			fd = here->selffd;
 
-			if(epollevent[i].events & EPOLLRDHUP)
+			if(epollevent[j].events & EPOLLRDHUP)
 			{
 				printf("rdhup!!!!!!!\n");
 				eventwrite('-', _fd_, fd, timeread());
 			}
-			else if(epollevent[i].events & EPOLLIN)
+			else if(epollevent[j].events & EPOLLIN)
 			{
-				switch(obj[fd].type){
+				switch(here->type){
 				case _TCP_:{
 					while(1)
 					{
@@ -93,67 +96,80 @@ static void* epollthread(void* p)
 						socklen_t len = sizeof(struct sockaddr_in);
 
 						cc = accept(fd, (struct sockaddr*)&haha, &len);
-						if(cc == -1)break;
-						if(cc >= MAXSIZE)
-						{
+						if(cc <= 0)break;
+
+						if(cc >= MAXSIZE){
 							printf("fd>MAXSIZE\n");
 							close(cc);
-							continue;
 						}
+						else{
+							child = &obj[cc];
+							child->type = _Tcp_;
+							child->name = 0;
+							child->selffd = cc;
+							child->selfobj = child;
+							child->tempfd = fd;
+							child->tempobj = here;
 
-						memcpy(obj[cc].peer, &haha, 8);
-						obj[cc].type = _Tcp_;
-						obj[cc].name = 0;
-						obj[cc].irel0 = obj[cc].ireln = 0;
-						obj[cc].orel0 = obj[cc].oreln = 0;
-						obj[cc].tempfd = fd;
-						obj[cc].tempobj = &obj[fd];
-						obj[cc].selffd = cc;
-						//obj[cc].selfobj = &obj[cc];
-						epoll_add(cc);
-
-						printf("++++ %d\n",cc);
-						eventwrite('+', _fd_, cc, timeread());
+							memcpy(child->peer, &haha, 8);
+							epoll_add(cc);
+						}
+						continue;
 					}//while
 
 					//reset tcpfd
 					epoll_mod(fd);
 					break;
 				}//TCP
-				default:{
-					printf("#### %x\n", fd);
-					//eventwrite('@', _fd_, fd, timeread());
-
-					cnt = readsocket(fd, obj[fd].peer, buf, BUFFER_SIZE);
-					printmemory(buf, cnt);
-
+				case _Tcp_:{
+					cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
 					if(cnt >= 0)
 					{
 						//printmemory(buf, cnt);
-						cc = fd;
-						if( (_Tcp_ == obj[fd].type) &&
-							(0 == obj[fd].irel0) &&
-							(0 == obj[fd].orel0) )
+						if( (0 == here->irel0) && (0 == here->orel0) )
 						{
-							//TCP = Tcp.parent
-							cc = obj[fd].tempfd;
+							//tell parent, its me
+							parent = here->tempobj;
+							parent->tempfd = fd;
+							parent->tempobj = here;
 
-							//Tcp = TCP.child
-							obj[cc].tempfd = fd;
-							obj[cc].tempobj = &obj[fd];
+							//parent send
+							here = parent;
 						}
 
 						//say("@kqueuethread: %.4s\n", &obj[cc].type);
-						relationwrite(&obj[cc], _dst_, 0, 0, buf, cnt);
+						relationwrite(here, _dst_, 0, 0, buf, cnt);
 					}
 					if(cnt <= 0)
 					{
 						epoll_del(fd);
 						close(fd);
-						obj[fd].type = 0;
+						here->type = 0;
 						continue;
 					}
-				}
+				}//Tcp
+				case _uart_:{
+					cnt = read(fd, buf, BUFFER_SIZE);
+					relationwrite(here, _dst_, 0, 0, buf, cnt);
+					break;
+				}//uart
+				default:{
+					cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
+					if(cnt >= 0)
+					{
+						printmemory(buf, cnt);
+						//say("@kqueuethread: %.4s\n", &obj[cc].type);
+						relationwrite(here, _dst_, 0, 0, buf, cnt);
+					}
+					if(cnt <= 0)
+					{
+						epoll_del(fd);
+						close(fd);
+						here->type = 0;
+						continue;
+					}
+					break;
+				}//default
 				}//switch
 			}//EPOLLIN
 		}//for
@@ -169,11 +185,11 @@ static void* epollthread(void* p)
 
 
 
-void deletewatcher(int num)
+void freeewatcher()
 {
 	alive = 0;
 }
-void createwatcher(void* addr)
+void initwatcher(void* addr)
 {
 	obj = addr;
 	buf = addr+0x300000;

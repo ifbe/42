@@ -14,6 +14,7 @@
 #define _Nema0183_ hex64('N','e','m','a','0','1','8','3')
 //
 #define _search_ hex64('s','e','a','r','c','h',0,0)
+#define _vt100_ hex64('v','t','1','0','0', 0, 0, 0)
 //
 #define _echo_ hex32('e','c','h','o')
 #define _pump_ hex32('p','u','m','p')
@@ -78,19 +79,25 @@ int extclient_stop( struct halfrel* self, struct halfrel* peer);
 int extclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int extclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
-int echo_create(struct element* ele, void* url);
-int echo_delete(struct element* ele, void* url);
-int echo_start(struct halfrel* self, struct halfrel* peer);
-int echo_stop( struct halfrel* self, struct halfrel* peer);
-int echo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int echo_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int search_create(struct element* ele, void* url);
 int search_delete(struct element* ele, void* url);
 int search_start(struct halfrel* self, struct halfrel* peer);
 int search_stop( struct halfrel* self, struct halfrel* peer);
 int search_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int search_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int vt100_create(struct element* ele, void* url);
+int vt100_delete(struct element* ele, void* url);
+int vt100_start(struct halfrel* self, struct halfrel* peer);
+int vt100_stop( struct halfrel* self, struct halfrel* peer);
+int vt100_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int vt100_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
+int echo_create(struct element* ele, void* url);
+int echo_delete(struct element* ele, void* url);
+int echo_start(struct halfrel* self, struct halfrel* peer);
+int echo_stop( struct halfrel* self, struct halfrel* peer);
+int echo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int echo_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int pump_create(struct element* ele, void* url);
 int pump_delete(struct element* ele, void* url);
 int pump_stop( struct halfrel* self, struct halfrel* peer);
@@ -430,6 +437,7 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	struct element* ele = (void*)(self->chip);
 	switch(ele->type){
 		case _search_:search_read(self, peer, arg, idx, buf, len);break;
+		case _vt100_:vt100_read(self, peer, arg, idx, buf, len);break;
 
 		case _echo_:echo_read(self, peer, arg, idx, buf, len);break;
 		case _pump_:pump_read(self, peer, arg, idx, buf, len);break;
@@ -472,6 +480,7 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	//say("@arterywrite: %.8s\n", &ele->type);
 	switch(ele->type){
 		case _search_:return search_write(self, peer, arg, idx, buf, len);break;
+		case _vt100_:return vt100_write(self, peer, arg, idx, buf, len);break;
 
 		case _echo_:return echo_write(self, peer, arg, idx, buf, len);break;
 		case _pump_:return pump_write(self, peer, arg, idx, buf, len);break;
@@ -565,6 +574,15 @@ void* arterycreate(u64 type, void* argstr)
 
 		e->type = _search_;
 		search_create(e, url);
+		return e;
+	}
+	if(_vt100_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _vt100_;
+		vt100_create(e, url);
 		return e;
 	}
 

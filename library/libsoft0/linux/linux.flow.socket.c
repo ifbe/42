@@ -418,13 +418,17 @@ int startsocket(char* addr, int port, int type)
 	printf("error@type\n");
 	return 0;
 }
-void deletesocket(int num)
+
+
+
+
+void freesocket(int num)
 {
 }
-void createsocket(void* addr)
+void initsocket(void* addr)
 {
 	struct sigaction sa;
-	sa.sa_handler=SIG_IGN;
+	sa.sa_handler = SIG_IGN;
 	sigaction(SIGPIPE, &sa, 0);
 
 	obj = addr;
