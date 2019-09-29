@@ -15,6 +15,7 @@ int gcodeclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 			break;
 		}
 		case _clk_:{
+			say("@gcodeclient_write.clk\n");
 			relationwrite(self->pchip, _src_, 0, 0, "M105\n", 5);
 			break;
 		}

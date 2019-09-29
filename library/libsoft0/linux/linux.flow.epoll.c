@@ -18,6 +18,8 @@
 #include "libsoft.h"
 #define MAXSIZE 4096
 #define BUFFER_SIZE 0x100000
+#define _uart_ hex32('u','a','r','t')
+int uart_read(int, int, void*, int);
 int readsocket(int, void*, void*, int);
 
 
@@ -122,9 +124,12 @@ static void* epollthread(void* p)
 				//read
 				else
 				{
-					//printf("#### %x\n", fd);
+					printf("#### %x\n", fd);
 					//eventwrite('@', _fd_, fd, timeread());
+
 					cnt = readsocket(fd, obj[fd].peer, buf, BUFFER_SIZE);
+					printmemory(buf, cnt);
+
 					if(cnt >= 0)
 					{
 						//printmemory(buf, cnt);

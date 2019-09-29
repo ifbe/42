@@ -54,8 +54,18 @@ int uart_start(char* p, int speed)
 	tcgetattr(fd, &option);
 	fcntl(fd, F_SETFL, 0);
 
-	if(speed == 9600)speed = B9600;
-	else speed = B115200;
+	switch(speed){
+		case 9600:  speed = B9600;  break;
+		case 19200: speed = B19200; break;
+		case 38400: speed = B38400; break;
+		case 57600: speed = B57600; break;
+		case 115200:speed = B115200;break;
+		case 230400:speed = B230400;break;
+		case 460800:speed = B460800;break;
+		case 921600:speed = B921600;break;
+		//case 250000:speed = B250000;break;
+		default:return 0;
+	}
 
 	//8n1
 	option.c_cflag = speed | CS8 | CLOCAL | CREAD;

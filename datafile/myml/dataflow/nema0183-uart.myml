@@ -1,7 +1,7 @@
 <device>
 uart{
 fmt:uart
-url:/dev/ttyACM0,115200
+url:/dev/ttyAMA0,9600
 }
 </device>
 
