@@ -144,7 +144,26 @@ int startsocket(char* addr, int port, int type)
 	//RAW
 	if(_RAW_ == type)
 	{
-		return 0;
+		//create
+		rawfd = socket(AF_INET, SOCK_RAW, 0);
+		if(rawfd == -1)
+		{
+			printf("error@socket:%d,%d\n",rawfd,errno);
+			return 0;
+		}
+
+		//reuse
+		ret = 1;
+		ret = setsockopt(rawfd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
+		if(ret == -1)
+		{
+			perror("setsockopt");
+			close(rawfd);
+			return 0;
+		}
+
+		kqueue_add(rawfd);
+		return rawfd;
 	}
 
 	//raw client
