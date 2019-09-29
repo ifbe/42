@@ -43,7 +43,7 @@ int pwrclkstart(struct halfrel* self, struct halfrel* peer)
 
 
 
-int pwrclkdelete()
+int pwrclkdelete(void* item)
 {
 	return 0;
 }

@@ -8,7 +8,7 @@ typedef unsigned long long u64;
 #define _win_  hex32('w','i','n', 0)
 #define _dev_  hex32('d','e','v', 0)
 #define _dri_  hex32('d','r','i', 0)
-#define _fd_   hex32('f','d', 0 , 0)
+#define _sys_  hex32('s','y','s', 0)
 #define _art_  hex32('a','r','t', 0)
 int actorread_all();
 int actorevent(void*);
@@ -49,7 +49,7 @@ void eventhandler(struct event* ev)
 	//say("ev:%x,%x,%x,%x\n",ev->why,ev->what,ev->where,ev->when);
 
 	switch(ev->what){
-		case _fd_:systemevent(ev);break;
+		case _sys_:systemevent(ev);break;
 		default:arenaevent(ev);
 	}
 }

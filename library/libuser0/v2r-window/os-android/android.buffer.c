@@ -19,7 +19,7 @@ void freearena();
 void initarena(void*);
 int arenaevent(void*);
 //libsoft1
-#define _fd_ hex32('f','d',0,0)
+#define _art_ hex32('a','r','t',0)
 void freeartery();
 void initartery(void*);
 int arteryevent(void*);
@@ -98,7 +98,7 @@ again:
 
 		//libsoft.file/socket: receiving events
 		ret = (ev->what)&0xff;
-		if(_fd_ == ev->what)
+		if(_sys_ == ev->what)
 		{
 			//network rawdata -> my event
 			ret = systemevent(ev);

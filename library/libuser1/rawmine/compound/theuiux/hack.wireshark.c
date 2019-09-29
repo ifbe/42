@@ -1,6 +1,5 @@
 #include "libuser.h"
 #define _UDP_ hex32('U','D','P',0)
-#define _fd_ hex32('f','d',0,0)
 void* systemcreate(u64, void*);
 
 
@@ -130,15 +129,9 @@ static void rawdump_delete(struct actor* act, u8* buf)
 }
 static void rawdump_create(struct actor* act, u8* buf)
 {
-	void* addr;
 	if(0 == act)return;
 	act->idx = memorycreate(0x10000, 0);
 	act->buf = memorycreate(0x100000, 0);
-
-	addr = systemcreate(_UDP_, "127.0.0.1:2222");
-	if(0 == addr)return;
-
-	relationcreate(act, 0, _act_, 0, addr, 0, _fd_, 0);
 }
 
 

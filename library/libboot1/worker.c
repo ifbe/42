@@ -41,7 +41,7 @@ int workerstart(struct halfrel* self, struct halfrel* peer)
 
 
 
-int workerdelete()
+int workerdelete(void* item)
 {
 	return 0;
 }
