@@ -6,7 +6,6 @@ efi:
 	$(compiler) $(cflag) efi/efi.wire.bt.c
 	$(compiler) $(cflag) efi/efi.wire.i2c.c
 	$(compiler) $(cflag) efi/efi.wire.spi.c
-	$(compiler) $(cflag) efi/efi.wire.uart.c
 	$(compiler) $(cflag) efi/efi.wire.usb.c
 	$(compiler) $(cflag) efi/efi.wire.wifi.c
 
@@ -40,7 +39,6 @@ linuxarm:arm
 	$(compiler) $(cflag) linux/linux.wire.gpio.c
 	$(compiler) $(cflag) linux/linux.wire.pci.c
 	$(compiler) $(cflag) linux/linux.wire.spi.c
-	$(compiler) $(cflag) linux/linux.wire.uart.c
 	$(compiler) $(cflag) linux/linux.wire.usb.c
 	$(compiler) $(cflag) linux/linux.wire.wifi.c
 
@@ -98,7 +96,6 @@ barex64:x64
 	$(compiler) $(cflag) bare/bare.wire.bt.c
 	$(compiler) $(cflag) bare/bare.wire.i2c.c
 	$(compiler) $(cflag) bare/bare.wire.spi.c
-	$(compiler) $(cflag) bare/bare.wire.uart.c
 	$(compiler) $(cflag) bare/bare.wire.usb.c
 	$(compiler) $(cflag) bare/bare.wire.wifi.c
 	$(compiler) $(cflag) bare/bare.c
@@ -110,7 +107,6 @@ linuxx64:x64
 	$(compiler) $(cflag) linux/linux.wire.gpio.c
 	$(compiler) $(cflag) linux/linux.wire.pci.c
 	$(compiler) $(cflag) linux/linux.wire.spi.c
-	$(compiler) $(cflag) linux/linux.wire.uart.c
 	$(compiler) $(cflag) linux/linux.wire.usb.c
 	$(compiler) $(cflag) linux/linux.wire.wifi.c
 
@@ -121,7 +117,6 @@ macx64:x64
 	$(compiler) $(cflag) mac/mac.wire.gpio.c
 	$(compiler) $(cflag) mac/mac.wire.pci.c
 	$(compiler) $(cflag) mac/mac.wire.spi.c
-	$(compiler) $(cflag) mac/mac.wire.uart.c
 	$(compiler) $(cflag) mac/mac.wire.usb.c
 	$(compiler) $(cflag) mac/mac.wire.wifi.c
 
@@ -132,7 +127,6 @@ winx64:x64
 	$(compiler) $(cflag) win/win.wire.gpio.c
 	$(compiler) $(cflag) win/win.wire.pci.c
 	$(compiler) $(cflag) win/win.wire.spi.c
-	$(compiler) $(cflag) win/win.wire.uart.c
 	$(compiler) $(cflag) win/win.wire.usb.c
 	$(compiler) $(cflag) win/win.wire.wifi.c
 

@@ -1,5 +1,4 @@
 #include "libhard.h"
-int parseuart(void*, int*, void*);
 //i2c
 int i2c_create(void*, int);
 int i2c_delete(int);
@@ -10,13 +9,8 @@ int spi_create(void*, int);
 int spi_delete(int);
 int spi_read(int fd, int addr, u8* buf, int len);
 int spi_write(int fd, int addr, u8* buf, int len);
-//uart
-int inituart(void*);
-int freeuart();
-int uart_start(void*, int);
-int uart_stop(int);
-int uart_read(int fd, int addr, u8* buf, int len);
-int uart_write(int fd, int addr, u8* buf, int len);
+//16550
+//pl011
 
 
 
@@ -47,7 +41,6 @@ int deviceread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	switch(ele->type){
 		case _i2c_:return i2c_read(fd, idx, buf, len);break;
 		case _spi_:return spi_read(fd, idx, buf, len);break;
-		case _uart_:return uart_read(fd, idx, buf, len);break;
 	}
 	return 0;
 }
@@ -63,7 +56,6 @@ int devicewrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	switch(ele->type){
 		case _i2c_:return i2c_write(fd, idx, buf, len);break;
 		case _spi_:return spi_write(fd, idx, buf, len);break;
-		case _uart_:return uart_write(fd, idx, buf, len);break;
 	}
 	return 0;
 }
@@ -108,18 +100,6 @@ void* devicecreate(u64 type, void* name)
 		dev[fd].selffd = fd;
 		return &dev[fd];
 	}
-	else if(_uart_ == type)
-	{
-		parseuart(tmp, &baud, name);
-		say("parse: %s,%d\n", tmp, baud);
-
-		fd = uart_start(tmp, baud);
-		if(fd <= 0)return 0;
-
-		dev[fd].type = _uart_;
-		dev[fd].selffd = fd;
-		return &dev[fd];
-	}
 	return 0;
 }
 int devicemodify(int argc, char** argv)
@@ -161,8 +141,6 @@ int devicesearch(u8* buf, int len)
 void freedevice()
 {
 	//say("[4,6):freeing device\n");
-
-	freeuart();
 }
 void initdevice(u8* addr)
 {
@@ -173,8 +151,6 @@ void initdevice(u8* addr)
 #define max (0x100000/sizeof(struct device))
 	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)dev[j].tier = _dev_;
-
-	inituart(addr);
 
 	//devicecreate(_ahci_, 0);
 	//devicecreate(_xhci_, 0);

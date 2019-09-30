@@ -64,7 +64,7 @@ int stopshell()
 {
 	return 0;
 }
-int startshell(char* p)
+int startshell(char* p, int baud)
 {
 	int fd;
 	int ret;

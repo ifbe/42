@@ -16,6 +16,13 @@ int startshell(void*, int);
 int stopshell(int);
 int readshell( int, int, void*, int);
 int writeshell(int, int, void*, int);
+//uart
+int inituart(void*);
+int freeuart();
+int uart_start(void*, int);
+int stopuart(int);
+int readuart( int, int, void*, int);
+int uart_write(int, int, void*, int);
 //socket
 int initsocket(void*);
 int freesocket();
@@ -30,6 +37,7 @@ int readfile( int, int, void*, int);
 int writefile(int, int, void*, int);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
+int parseuart(void*, int*, void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 
@@ -90,7 +98,7 @@ int systemread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	if(0 == self)return 0;
 	//say("@systemread:%llx\n", self);
 
-	oo = (void*)(self->chip);
+	oo = self->pchip;
 	if(0 == oo)return 0;
 
 	fd = ((void*)oo - (void*)obj) / sizeof(struct object);
@@ -107,11 +115,29 @@ int systemwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	struct object* oo;
 	//say("@systemwrite:%llx\n", self);
 
-	oo = (void*)(self->chip);
-	if(_TCP_ == oo->type)oo = &obj[oo->tempfd];
+	oo = self->pchip;
+	if(0 == oo)return 0;
 
-	fd = ((void*)oo - (void*)obj) / sizeof(struct object);
-	return writesocket(fd, 0, buf, len);
+	switch(oo->type){
+		case _file_:{
+			return writefile(oo->selffd, idx, buf, len);
+		}
+		case _ptmx_:{
+			return writeshell(oo->selffd, idx, buf, len);
+			break;
+		}
+		case _uart_:{
+			return uart_write(oo->selffd, idx, buf, len);
+			break;
+		}
+		case _TCP_:{
+			oo = oo->tempobj;
+		}
+		default:{
+			return writesocket(oo->selffd, 0, buf, len);
+		}
+	}
+	return 0;
 }
 int systemstop(struct halfrel* self, struct halfrel* peer)
 {
@@ -190,24 +216,32 @@ void* systemcreate(u64 type, void* argstr)
 
 		obj[fd].type = _file_;
 		obj[fd].selffd = fd;
-		goto success;
+		return &obj[fd];
 	}
 	else if(_ptmx_ == type)
 	{
-		for(j=0;j<0x100;j++)
-		{
-			if(name[j] < 0x20)break;
-			host[j] = name[j];
-		}
-		host[j] = 0;
+                parseuart(host, &port, name);
+                say("parse: %s,%d\n", host, port);
 
-		fd = startshell(host, 115200);
+		fd = startshell(host, port);
 		if(fd <= 0)return 0;
 
 		obj[fd].type = _ptmx_;
 		obj[fd].selffd = fd;
-		goto success;
+		return &obj[fd];
 	}
+	else if(_uart_ == type)
+        {
+                parseuart(host, &port, name);
+                say("parse: %s,%d\n", host, port);
+
+                fd = uart_start(host, port);
+                if(fd <= 0)return 0;
+
+                obj[fd].type = _uart_;
+                obj[fd].selffd = fd;
+		return &obj[fd];
+        }
 
 	//decode ipaddr
 	port = 80;
@@ -221,6 +255,7 @@ void* systemcreate(u64 type, void* argstr)
 
 		obj[fd].type = _RAW_;
 		obj[fd].selffd = fd;
+		return &obj[fd];
 	}
 	else if(_raw_ == type)	//raw client
 	{
@@ -229,6 +264,7 @@ void* systemcreate(u64 type, void* argstr)
 
 		obj[fd].type = _raw_;
 		obj[fd].selffd = fd;
+		return &obj[fd];
 	}
 	else if(_UDP_ == type)	//udp master
 	{
@@ -237,6 +273,7 @@ void* systemcreate(u64 type, void* argstr)
 
 		obj[fd].type = _UDP_;
 		obj[fd].selffd = fd;
+		return &obj[fd];
 	}
 	else if(_Udp_ == type)	//udp server
 	{
@@ -249,6 +286,7 @@ void* systemcreate(u64 type, void* argstr)
 
 		obj[fd].type = _udp_;
 		obj[fd].selffd = fd;
+		return &obj[fd];
 	}
 	else if(_TCP_ == type)	//tcp master
 	{
@@ -257,6 +295,7 @@ void* systemcreate(u64 type, void* argstr)
 
 		obj[fd].type = _TCP_;
 		obj[fd].selffd = fd;
+		return &obj[fd];
 	}
 	else if(_Tcp_ == type)	//tcp server
 	{
@@ -269,10 +308,10 @@ void* systemcreate(u64 type, void* argstr)
 
 		obj[fd].type = _tcp_;
 		obj[fd].selffd = fd;
+		return &obj[fd];
 	}
 
-success:
-	return &obj[fd];
+	return 0;
 }
 void* systemmodify(int argc, char** argv)
 {
@@ -346,6 +385,7 @@ void freesystem()
 	//say("[8,9):freeing system\n");
 
 	freesocket();
+	freeuart();
 	freeshell();
 	freewatcher();
 	freesignal();
@@ -365,6 +405,7 @@ void initsystem(u8* addr)
 	initsignal(addr);
 	initwatcher(addr);
 	initshell(addr);
+	inituart(addr);
 	initsocket(addr);
 
 	//say("[8,a):inited system\n");
