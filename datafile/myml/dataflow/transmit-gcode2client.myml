@@ -1,5 +1,5 @@
 <system>
-uart{
+gcode{
 fmt:uart
 url:/dev/ttyACM0,250000
 }
@@ -11,6 +11,6 @@ url:192.168.0.217:9999
 
 
 <relation>
-(uart, 0, sys, dst) -> (udp, 0, sys, src)
-(uart, 0, sys, src) -> (udp, 0, sys, dst)
+(gcode, 0, sys, dst) -> (udp, 0, sys, src)
+(gcode, 0, sys, src) -> (udp, 0, sys, dst)
 </relation>

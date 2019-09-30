@@ -1,0 +1,26 @@
+<system>
+peer{
+fmt:udp
+url:192.168.0.204:9999
+}
+</system>
+
+
+<artery>
+gcode{
+fmt:gcode
+}
+</artery>
+
+
+<arena>
+stdio{
+fmt:std
+}
+</arena>
+
+
+<relation>
+(peer, 0, sys, dst) -> (gcode, 0, art, src)
+(stdio, 0, win, dst) -> (gcode, 0, art, clk)
+</relation>

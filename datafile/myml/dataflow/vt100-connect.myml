@@ -1,0 +1,26 @@
+<system>
+udp{
+fmt:udp
+url:192.168.0.204:9999
+}
+</system>
+
+
+<artery>
+vt100{
+fmt:vt100
+}
+</artery>
+
+
+<arena>
+stdio{
+fmt:std
+}
+</arena>
+
+
+<relation>
+(udp, 0, sys, dst) -> (vt100, 0, art, src)
+(stdio, 0, win, dst) -> (vt100, 0, art, dst)
+</relation>

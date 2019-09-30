@@ -1,0 +1,16 @@
+<system>
+mav{
+fmt:uart
+url:/dev/ttyACM0,921600
+}
+udp{
+fmt:udp
+url:192.168.0.217:9999
+}
+</system>
+
+
+<relation>
+(mav, 0, sys, dst) -> (udp, 0, sys, src)
+(mav, 0, sys, src) -> (udp, 0, sys, dst)
+</relation>
