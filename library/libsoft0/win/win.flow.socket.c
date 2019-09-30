@@ -92,8 +92,9 @@ int writesocket(int fd, void* tmp, void* buf, int len)
 	{
 		wbuf.buf = buf;
 		wbuf.len = len;
-		ret = sizeof(struct sockaddr_in);
-		ret = WSASendTo(fd*4, &wbuf, 1, &dwret, 0, tmp, ret, 0, 0);
+		if(0 == tmp)tmp = obj[fd].peer;
+		ret = WSASendTo(fd*4, &wbuf, 1, &dwret, 0,
+			tmp, sizeof(struct sockaddr_in), 0, 0);
 		return len;
 	}
 
