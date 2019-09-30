@@ -1,9 +1,9 @@
-<device>
+<system>
 uart{
 fmt:uart
 url:/dev/ttyAMA0,9600
 }
-</device>
+</system>
 
 
 <artery>
@@ -14,5 +14,5 @@ fmt:nema0183
 
 
 <relation>
-(uart, 0, dev, dst) -> (nema0183, 0, art, src)
+(uart, 0, sys, dst) -> (nema0183, 0, art, src)
 </relation>

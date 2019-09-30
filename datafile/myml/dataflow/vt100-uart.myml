@@ -1,9 +1,9 @@
-<device>
+<system>
 uart{
 fmt:uart
 url:/dev/ttyACM0
 }
-</device>
+</system>
 
 
 <artery>

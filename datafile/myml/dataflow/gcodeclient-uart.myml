@@ -1,9 +1,9 @@
-<device>
+<system>
 uart{
 fmt:uart
 url:/dev/ttyACM0,250000
 }
-</device>
+</system>
 
 
 <artery>
@@ -21,6 +21,6 @@ fmt:std
 
 
 <relation>
-(uart, 0, dev, dst) -> (gcode, 0, art, src)
+(uart, 0, sys, dst) -> (gcode, 0, art, src)
 (stdio, 0, win, dst) -> (gcode, 0, art, clk)
 </relation>

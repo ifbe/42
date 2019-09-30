@@ -1,9 +1,9 @@
-<device>
+<system>
 uart{
 fmt:uart
 url:COM3
 }
-</device>
+</system>
 
 
 <artery>
@@ -14,5 +14,5 @@ fmt:mavlink
 
 
 <relation>
-(uart, 0, dev, dst) -> (mavlink, 0, art, src)
+(uart, 0, system, dst) -> (mavlink, 0, art, src)
 </relation>
