@@ -1,0 +1,16 @@
+<system>
+uart{
+fmt:uart
+url:/dev/ttyACM0,250000
+}
+udp{
+fmt:udp
+url:192.168.0.217:9999
+}
+</system>
+
+
+<relation>
+(uart, 0, sys, dst) -> (udp, 0, sys, src)
+(uart, 0, sys, src) -> (udp, 0, sys, dst)
+</relation>

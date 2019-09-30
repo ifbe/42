@@ -1,0 +1,15 @@
+<system>
+uart{
+fmt:uart
+url:/dev/ttyAMA0,9600
+}
+send{
+fmt:udp
+url:192.168.0.217:9999
+}
+</system>
+
+
+<relation>
+(uart, 0, sys, dst) -> (send, 0, sys, src)
+</relation>

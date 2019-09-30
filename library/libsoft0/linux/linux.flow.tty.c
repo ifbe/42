@@ -28,7 +28,7 @@ int uart_read(int fd, int off, void* buf, int len)
 int uart_write(int fd, int off, void* buf, int len)
 {
 	int ret;
-	printf("@uart_write:%.*s\n", len, buf);
+	//printf("@uart_write:%.*s\n", len, buf);
 
 	ret = write(fd, buf, len);
 	if(ret != len){

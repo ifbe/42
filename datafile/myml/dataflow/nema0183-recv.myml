@@ -1,0 +1,18 @@
+<system>
+recv{
+fmt:UDP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<artery>
+nema0183{
+fmt:nema0183
+}
+</artery>
+
+
+<relation>
+(recv, 0, sys, dst) -> (nema0183, 0, art, src)
+</relation>

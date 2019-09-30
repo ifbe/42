@@ -1,18 +1,26 @@
 <system>
 listen{
 fmt:UDP
-url:0.0.0.0:14550
+url:0.0.0.0:9999
 }
 </system>
 
 
 <artery>
-mavlink{
-fmt:mavlink
+gcode{
+fmt:gcode
 }
 </artery>
 
 
+<arena>
+stdio{
+fmt:std
+}
+</arena>
+
+
 <relation>
-(listen, 0, sys, dst) -> (mavlink, 0, art, src)
+(listen, 0, sys, dst) -> (gcode, 0, art, src)
+(stdio, 0, win, dst) -> (gcode, 0, art, clk)
 </relation>

@@ -1,0 +1,16 @@
+<system>
+ptmx{
+fmt:ptmx
+url:/dev/ptmx
+}
+send{
+fmt:udp
+url:192.168.0.217:9999
+}
+</system>
+
+
+<relation>
+(ptmx, 0, sys, dst) -> (send, 0, sys, src)
+(ptmx, 0, sys, src) -> (send, 0, sys, dst)
+</relation>
