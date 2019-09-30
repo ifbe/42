@@ -1,0 +1,15 @@
+<system>
+uart{
+fmt:uart
+url:/dev/ttyAMA0,9600
+}
+host{
+fmt:UDP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<relation>
+(uart, 0, sys, dst) -> (host, 0, sys, src)
+</relation>

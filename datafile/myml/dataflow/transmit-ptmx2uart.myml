@@ -1,0 +1,16 @@
+<system>
+ptmx{
+fmt:ptmx
+url:/dev/ptmx
+}
+uart{
+fmt:uart
+url:/dev/ttyACM0, 115200
+}
+</system>
+
+
+<relation>
+(ptmx, 0, sys, dst) -> (uart, 0, sys, src)
+(ptmx, 0, sys, src) -> (uart, 0, sys, dst)
+</relation>
