@@ -92,6 +92,9 @@ DWORD WINAPI iocpthread(LPVOID pM)
 	SOCKET cc;
 	DWORD tran = 0;
 	DWORD flag = 0;
+	struct object* here;
+	struct object* parent;
+	struct object* child;
 
 	tmp = GetCurrentThreadId();
 	while(1)
@@ -115,16 +118,19 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			//ret = cc/4;
 			//printf("[%x,%x]++++\n", tmp, ret);
 			//eventwrite('+', _fd_, ret, 0);
+			printf("parent=%x, child=%x\n", fd, cc);
 
-			//ret = cc/4;
-			obj[cc/4].type = _Tcp_;
-			obj[cc/4].name = 0;
-			obj[cc/4].irel0 = obj[cc/4].ireln = 0;
-			obj[cc/4].orel0 = obj[cc/4].oreln = 0;
-			obj[cc/4].tempfd = fd;
-			obj[cc/4].tempobj = &obj[fd/4];
-			obj[cc/4].selffd = cc;
-			//obj[cc/4].selfobj = &obj[cc/4];
+			parent = &obj[fd/4];
+			child = &obj[cc/4];
+
+			child->type = _Tcp_;
+			child->name = 0;
+			child->irel0 = child->ireln = 0;
+			child->orel0 = child->oreln = 0;
+			child->selffd = cc/4;
+			child->selfobj = child;
+			child->tempfd = fd/4;
+			child->tempobj = parent;
 
 			iocp_add(cc);
 			iocp_mod(cc);
@@ -147,24 +153,30 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			//printf("[%x]####\n", ret);
 			//eventwrite('@', _fd_, ret, 0);
 
-			cc = fd;
-			if( (_Tcp_ == obj[fd/4].type) &&
-				(0 == obj[fd/4].irel0) &&
-				(0 == obj[fd/4].orel0) )
-			{
-				//TCP = Tcp.parent
-				cc = obj[fd/4].tempfd;
+			here = &obj[fd/4];
+			switch(here->type){
+			case _Tcp_:{
+				if(	(0 == here->irel0) && (0 == here->orel0) ){
+					//tell parent, its me
+					parent = here->tempobj;
+					parent->tempfd = fd;
+					parent->tempobj = here;
 
-				//Tcp = TCP.child
-				obj[cc/4].tempfd = fd;
-				obj[cc/4].tempobj = &obj[fd/4];
-			}
+					//parent send
+					here = parent;
+				}
 
-			//say("@kqueuethread: %.4s\n", &obj[cc/4].type);
-			relationwrite(&obj[cc/4], _dst_, 0, 0, pio->bufing.buf, tran);
-			iocp_mod(fd);
-		}
-	}
+				relationwrite(here, _dst_, 0, 0, pio->bufing.buf, tran);
+				iocp_mod(fd);
+				break;
+			}//Tcp
+			default:{
+				relationwrite(here, _dst_, 0, 0, pio->bufing.buf, tran);
+				iocp_mod(fd);
+			}//default
+			}//switch
+		}//else
+	}//while
 	return 0;
 }
 
