@@ -126,7 +126,7 @@ static void* epollthread(void* p)
 							child->selfobj = child;
 							child->tempfd = fd;
 							child->tempobj = here;
-							printf("fd=%x,cc=%x,here=%x,child=%x\n",fd,cc,here,child);
+							//printf("fd=%x,cc=%x,here=%llx,child=%llx\n",fd,cc,here,child);
 
 							memcpy(child->peer, &haha, 8);
 							epoll_add(cc);

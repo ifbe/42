@@ -75,15 +75,15 @@ int writesocket(int fd, void* tmp, void* buf, int len)
 		return ret;
 	}
 	if(_udp_ == type){
-		ret = 0;
+		cnt = 0;
 		while(1){
-			if(len-ret <= 1024){
-				write(fd, buf+ret, len-ret);
+			if(len-cnt <= 1024){
+				ret = write(fd, buf+cnt, len-cnt);
 				break;
 			}
 			else{
-				write(fd, buf+ret, 1024);
-				ret += 1024;
+				ret = write(fd, buf+cnt, 1024);
+				cnt += 1024;
 			}
 		}
 		return len;
