@@ -78,8 +78,8 @@ q:1.0, 1.0
 (thectx, 0, act, 0) -> (3dworld, 0, act, 0)
 
 #glwnd depends on ctx + cam
-(thewnd, 0, act, 0) -> (thectx, 0, act, 0)
-(thewnd, freerect, act, 0) -> (freecam, freefrus, act, 0)
+(thewnd, 0, act, ctx) -> (thectx, 0, act, 0)
+(thewnd, freerect, act, mvp) -> (freecam, freefrus, act, 0)
 
 #opengl depends on ctx + wnd
 (opengl, 0, win, ctx) -> (thectx, 0, act, 0)

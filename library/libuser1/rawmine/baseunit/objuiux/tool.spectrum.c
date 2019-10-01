@@ -30,7 +30,7 @@ static int that;
 static void spectrum_draw_pixel(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
-{
+{/*
 	float t,cc,ss;
 	int x,y;
 	int cx, cy, ww, hh;
@@ -92,7 +92,9 @@ static void spectrum_draw_pixel(
 		}
 	}
 	drawdecimal(win, 0xffffff, cx, cy, that);
-}/*
+*/
+}
+/*
 static void spectrum_draw_vbo2d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -143,6 +145,29 @@ static void spectrum_draw_vbo3d(
 	struct actor* win, struct style* sty)
 {
 	int x;
+	vec3 ta,tb;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vu = sty->f.vt;
+	short* buf = act->buf;
+	if(0 == buf)return;
+
+	carveline_rect(win, 0xffff00, vc, vr, vf);
+	for(x=0;x<1024;x++)
+	{
+		ta[0] = vc[0] + vr[0] * (x-512)/512.0;
+		ta[1] = vc[1] + vr[1] * (x-512)/512.0;
+		ta[2] = vc[2] + vr[2] * (x-512)/512.0;
+
+		tb[0] = ta[0] + vf[0] * buf[x] / 32768.0;
+		tb[1] = ta[1] + vf[1] * buf[x] / 32768.0;
+		tb[2] = ta[2] + vf[2] * buf[x] / 32768.0;
+
+		carveline(win, 0xffffff, ta, tb);
+	}
+
+/*	int x;
 	float a,c,s,t;
 	vec3 tc, tr, tf, tu;
 	struct perframe* frame = act->buf;
@@ -171,7 +196,7 @@ static void spectrum_draw_vbo3d(
 		tr[1] = vc[1] + vr[1]*c + vf[1]*s;
 		tr[2] = vc[2] + vr[2]*c + vf[2]*s;
 		carveline(win, 0xffffff, tc, tr);
-	}
+	}*/
 }
 static void spectrum_draw_json(
 	struct actor* act, struct style* pin,
@@ -242,7 +267,7 @@ static void spectrum_draw(
 
 
 
-
+/*
 static void spectrum_event(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty,
@@ -302,27 +327,34 @@ say("%llx, %x\n", buf, len);
 	}
 	//say("k=%d\n",k);
 	that = k*44100/1024;
-}
+}*/
 
 
 
 
-static void spectrum_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void spectrum_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	//spectrum_draw(act, pin, win, sty);
+	struct actor* ctx = buf;
+	if(ctx){
+		if(_gl41data_ == ctx->type)spectrum_draw_vbo3d(act,pin,ctx,sty);
+	}
 }
 static void spectrum_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
+	//struct actor* win = (void*)(peer->chip);
+	//struct style* sty = (void*)(peer->foot);
+	if(_pcm_ == self->flag){
+		say("@spectrum_write.pcm: %d\n", len);
+		act->buf = buf;
+	}
 /*
 	switch(self->flag){
 		case _pcm_:spectrum_update(act, pin, win, sty, buf, len);break;
@@ -349,13 +381,9 @@ static void spectrum_modify(struct actor* act)
 }
 static void spectrum_delete(struct actor* act)
 {
-	if(0 == act)return;
-	memorydelete(act->buf);
 }
 static void spectrum_create(struct actor* act)
 {
-	if(0 == act)return;
-	act->buf = memorycreate(0x100000, 0);
 }
 
 
