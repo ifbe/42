@@ -471,6 +471,9 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _WS_:wsmaster_read(self, peer, arg, idx, buf, len);break;
 		case _Ws_:wsserver_read(self, peer, arg, idx, buf, len);break;
 		case _ws_:wsclient_read(self, peer, arg, idx, buf, len);break;
+		case _SSH_:sshmaster_read(self, peer, arg, idx, buf, len);break;
+		case _Ssh_:sshserver_read(self, peer, arg, idx, buf, len);break;
+		case _ssh_:sshclient_read(self, peer, arg, idx, buf, len);break;
 	}
 	return 0;
 }
@@ -514,6 +517,9 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _WS_:return wsmaster_write(self, peer, arg, idx, buf, len);break;
 		case _Ws_:return wsserver_write(self, peer, arg, idx, buf, len);break;
 		case _ws_:return wsclient_write(self, peer, arg, idx, buf, len);break;
+		case _SSH_:return sshmaster_write(self, peer, arg, idx, buf, len);break;
+		case _Ssh_:return sshserver_write(self, peer, arg, idx, buf, len);break;
+		case _ssh_:return sshclient_write(self, peer, arg, idx, buf, len);break;
 	}
 	return 0;
 }
@@ -532,6 +538,7 @@ int arterystart(struct halfrel* self, struct halfrel* peer)
 	switch(ele->type){
 		case _http_:return httpclient_start(self, peer);break;
 		case _ws_:return wsclient_start(self, peer);break;
+		case _ssh_:return sshclient_start(self, peer);break;
 	}
 	return 0;
 }

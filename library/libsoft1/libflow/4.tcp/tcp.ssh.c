@@ -393,7 +393,7 @@ int secureshell_clientread_handshake(u8* buf, int len, u8* dst, int cnt)
 	}
 	return 0;
 }
-int secureshell_clientwrite_handshake(u8* buf, int len, u8* dst, int cnt)
+int secureshell_clientwrite_handshake(u8* dst, int cnt)
 {
 	return mysnprintf(dst, cnt, version);
 }
@@ -516,13 +516,19 @@ int secureshell_clientwrite_data(u8* buf, int len, u8* dst, int cnt)
 	dst[3] = 0x20;
 	return 4+0x20;
 }
-int sshclient_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int sshclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
+int sshclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
+	struct element* ele;
+	say("@sshclient_write\n");
+	printmemory(buf, len);
+
+	ele = self->pchip;
 	if(0 == ele->stage1)
 	{
 		secureshell_clientread_handshake(buf, len, tmp, 0x1000);
@@ -556,8 +562,18 @@ int sshclient_write(
 	ele->stage1 += 1;
 	return 0;
 }
-int sshclient_read()
+int sshclient_stop(struct halfrel* self, struct halfrel* peer)
 {
+	return 0;
+}
+int sshclient_start(struct halfrel* self, struct halfrel* peer)
+{
+	int ret;
+	u8 buf[0x100];
+	say("@sshclient_start\n");
+
+	ret = secureshell_clientwrite_handshake(buf, 0x100);
+	ret = relationwrite(self->pchip, _src_, 0, 0, buf, ret);
 	return 0;
 }
 int sshclient_delete(struct element* ele)
@@ -566,21 +582,6 @@ int sshclient_delete(struct element* ele)
 }
 int sshclient_create(struct element* ele, u8* url)
 {
-	int ret;
-	void* obj;
-	u8 buf[0x1000];
-
-	obj = systemcreate(_tcp_, url);
-	if(0 == obj)return 0;
-
-	ret = secureshell_clientwrite_handshake(url, 0, buf, 0x100);
-
-	ret = relationwrite(ele, _src_, 0, 0, buf, ret);
-	if(ret <= 0)return 0;
-
-	ele->type = _ssh_;
-	ele->stage1 = 0;
-	relationcreate(ele, 0, _art_, 0, obj, 0, _sys_, 0);
 	return 0;
 }
 
@@ -749,14 +750,19 @@ int secureshell_serverwrite_handshake0x15(u8* buf, int len, u8* dst, int cnt)
 	dst[5] = 0x15;
 	return secureshell_write_head(dst, off);
 }
-int sshserver_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int sshserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
+int sshserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
+	struct element* ele;
+	say("@sshserver_write\n");
+	printmemory(buf, len);
 
+	ele = self->pchip;
 	if(0 == ele->stage1)
 	{
 		ret = secureshell_serverread_handshake0x14(buf, len, tmp, 0x100);
@@ -784,16 +790,13 @@ int sshserver_write(
 	ele->stage1 += 1;
 	return 0;
 }
-int sshserver_read()
-{
-	return 0;
-}
 int sshserver_delete(struct element* ele)
 {
 	return 0;
 }
 int sshserver_create(struct element* ele, u8* url)
 {
+	ele->stage1 = 0;
 	return 0;
 }
 
@@ -812,24 +815,38 @@ int secureshell_serverwrite_handshake(u8* buf, int len, u8* dst, int cnt)
 {
 	return 0;
 }
-int sshmaster_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int sshmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	int ret;
-	u8 tmp[0x1000];
-	struct element* e;
-
-	ret = secureshell_serverread_handshake(buf, len, tmp, 0x100);
-	if(ret)relationwrite(ele, _src_, 0, 0, tmp, ret);
-
-	e = arterycreate(_Ssh_, 0);
-	if(e)relationcreate(e, 0, _art_, 0, obj, 0, _sys_, 0);
 	return 0;
 }
-int sshmaster_read()
+int sshmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
+	int ret;
+	u8 tmp[0x100];
+	struct object* obj;
+	struct element* ele;
+	say("@sshmaster_write\n");
+	printmemory(buf, len);
+
+	//check if it's ssh
+	ret = secureshell_serverread_handshake(buf, len, tmp, 0x100);
+	if(0 == ret){
+		//relationwrite(ele, _src_, 0, 0, "only ssh!\n", 9);
+		//close(obj->tempobj);
+		return 0;
+	}
+
+	//send back
+	ele = self->pchip;
+	relationwrite(ele, _src_, 0, 0, tmp, ret);
+
+	//link temp to Ssh
+	obj = (void*)(peer->chip);
+	if(0 == obj)return 0;
+
+	obj = obj->tempobj;
+	ele = arterycreate(_Ssh_, 0);
+	relationcreate(ele, 0, _art_, _src_, obj, 0, _sys_, _dst_);
 	return 0;
 }
 int sshmaster_delete(struct element* ele)
