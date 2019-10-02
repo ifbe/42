@@ -43,14 +43,17 @@ static u8 dh[] = {
 	0x70,0x61,0x1f,0x49,0xb2,0x8d,0x22,0x8f,
 	0x61
 };
-void tls_prep_cert()
+void tls_prep_cert(u8* dirbuf, int dirlen)
 {
 	int j,fl;
 	u8 buf[0x2000];
 
 
 	//cert1,2,3......
-	fl = openreadclose("fullchain.pem", 0, buf, 0x2000);
+	mysnprintf(dirbuf+dirlen, 256-dirlen, "fullchain.pem");
+	say("fullchain: %s\n", dirbuf);
+
+	fl = openreadclose(dirbuf, 0, buf, 0x2000);
 	if(fl<=0){say("err@fullchain.pem:%d\n",fl);return;}
 
 	j = pem2bin(cert_first+3, buf, 0, fl);
@@ -71,7 +74,10 @@ void tls_prep_cert()
 
 
 	//private and modulus
-	j = openreadclose("privkey.pem", 0, buf, 0x2000);
+	mysnprintf(dirbuf+dirlen, 256-dirlen, "privkey.pem");
+	say("privkey: %s\n", dirbuf);
+
+	j = openreadclose(dirbuf, 0, buf, 0x2000);
 	if(j<=0){say("err@privkey.pem:%d\n",j);return;}
 
 	j = pem2bin(buf, buf, 0, j);
@@ -1173,7 +1179,15 @@ int tlsmaster_delete(struct element* ele)
 }
 int tlsmaster_create(struct element* ele, u8* url)
 {
-	tls_prep_cert();
+	int j;
+	u8 buf[256];
+	for(j=0;j<256;j++){
+		if(url[j] <= 0x20)break;
+		buf[j] = url[j];
+	}
+	if(j >= 256)return 0;
+
+	tls_prep_cert(buf, j);
 	return 0;
 }
 

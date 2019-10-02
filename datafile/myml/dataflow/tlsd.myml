@@ -9,6 +9,7 @@ url:0.0.0.0:2222
 <artery>
 tlsd{
 fmt:TLS
+url:/etc/letsencrypt/live/deepstack.tech/
 }
 </artery>
 
