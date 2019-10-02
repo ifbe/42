@@ -369,12 +369,13 @@ int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 
 	//say("foot=%.4s\n", &self->flag);
 	if(_dst_ == self->flag){
+		if(0 == arg)arg = "text/plain";
 		ret = mysnprintf(tmp, 0x1000,
 			"HTTP/1.1 200 OK\r\n"
-			"Content-type: text/plain\r\n"
+			"Content-type: %s\r\n"
 			"Content-Length: %d\r\n"
 			"\r\n",
-			len
+			arg, len
 		);
 		relationwrite(ele, _src_, 0, 0, tmp, ret);
 		relationwrite(ele, _src_, 0, 0, buf, len);

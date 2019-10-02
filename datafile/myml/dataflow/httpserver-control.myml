@@ -1,0 +1,23 @@
+<system>
+tcphost{
+fmt:TCP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<artery>
+http{
+fmt:HTTP
+}
+control{
+fmt:control
+url:../web/html/control.html
+}
+</artery>
+
+
+<relation>
+(tcphost, 0, sys, dst) -> (http, 0, art, src)
+(http, 0, art, dst) -> (control, 0, art, src)
+</relation>

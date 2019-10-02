@@ -13,7 +13,8 @@
 #define _nema0183_ hex64('n','e','m','a','0','1','8','3')
 #define _Nema0183_ hex64('N','e','m','a','0','1','8','3')
 //
-#define _search_ hex64('s','e','a','r','c','h',0,0)
+#define _control_ hex64('c','o','n','t','r','o','l', 0)
+#define _search_ hex64('s','e','a','r','c','h', 0, 0)
 #define _vt100_ hex64('v','t','1','0','0', 0, 0, 0)
 //
 #define _echo_ hex32('e','c','h','o')
@@ -79,6 +80,12 @@ int extclient_stop( struct halfrel* self, struct halfrel* peer);
 int extclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int extclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
+int control_create(struct element* ele, void* url);
+int control_delete(struct element* ele, void* url);
+int control_start(struct halfrel* self, struct halfrel* peer);
+int control_stop( struct halfrel* self, struct halfrel* peer);
+int control_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int control_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int search_create(struct element* ele, void* url);
 int search_delete(struct element* ele, void* url);
 int search_start(struct halfrel* self, struct halfrel* peer);
@@ -436,6 +443,7 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 {
 	struct element* ele = (void*)(self->chip);
 	switch(ele->type){
+		case _control_:control_read(self, peer, arg, idx, buf, len);break;
 		case _search_:search_read(self, peer, arg, idx, buf, len);break;
 		case _vt100_:vt100_read(self, peer, arg, idx, buf, len);break;
 
@@ -486,6 +494,7 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	struct element* ele = (void*)(self->chip);
 	//say("@arterywrite: %.8s\n", &ele->type);
 	switch(ele->type){
+		case _control_:return control_write(self, peer, arg, idx, buf, len);break;
 		case _search_:return search_write(self, peer, arg, idx, buf, len);break;
 		case _vt100_:return vt100_write(self, peer, arg, idx, buf, len);break;
 
@@ -575,13 +584,13 @@ void* arterycreate(u64 type, void* argstr)
 	}
 
 	//
-	if(_file_ == type)
+	if(_control_ == type)
 	{
 		e = allocelement();
 		if(0 == e)return 0;
 
-		e->type = _file_;
-		fileclient_create(e, url);
+		e->type = _control_;
+		control_create(e, url);
 		return e;
 	}
 	if(_search_ == type)
@@ -600,6 +609,17 @@ void* arterycreate(u64 type, void* argstr)
 
 		e->type = _vt100_;
 		vt100_create(e, url);
+		return e;
+	}
+
+	//
+	if(_file_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _file_;
+		fileclient_create(e, url);
 		return e;
 	}
 

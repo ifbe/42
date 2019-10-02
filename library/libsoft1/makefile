@@ -172,6 +172,7 @@ libflow/ahrs/ahrs.mahony.c \
 libflow/ahrs/ahrs.madgwick.c \
 libflow/ahrs/ahrs.ekf.c \
 libflow/ahrs/ahrs.ukf.c \
+libflow/stream/stream.help.control.c \
 libflow/stream/stream.help.search.c \
 libflow/stream/stream.help.vt100.c \
 libflow/stream/stream.conv.str2fv.c \
