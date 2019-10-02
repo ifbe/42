@@ -508,7 +508,12 @@ int secureshell_clientread_handshake0x21(u8* buf, int len, u8* dst, int cnt)
 
 	return 0;
 }
-int secureshell_clientwrite_data(u8* buf, int len, u8* dst, int cnt)
+int secureshell_clientwrite_handshake0x15(u8* buf, int len, u8* dst, int cnt)
+{
+	dst[5] = 0x15;
+	return secureshell_write_head(dst, 6);
+}
+int secureshell_clientwrite_encryptdata(u8* buf, int len, u8* dst, int cnt)
 {
 	dst[0] = 0;
 	dst[1] = 0;
@@ -516,6 +521,10 @@ int secureshell_clientwrite_data(u8* buf, int len, u8* dst, int cnt)
 	dst[3] = 0x20;
 	return 4+0x20;
 }
+
+
+
+
 int sshclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
@@ -554,7 +563,12 @@ int sshclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	{
 		ret = secureshell_clientread_handshake0x21(buf, len, tmp, 0x1000);
 
-		ret = secureshell_clientwrite_data(buf, len, tmp, 0x1000);
+		//new keys
+		ret = secureshell_clientwrite_handshake0x15(buf, len, tmp, 0x1000);
+		if(ret)relationwrite(ele, _src_, 0, 0, tmp, ret);
+
+		//encrypted data
+		ret = secureshell_clientwrite_encryptdata(buf, len, tmp, 0x1000);
 		if(ret)relationwrite(ele, _src_, 0, 0, tmp, ret);
 	}
 	else printmemory(buf, len);
@@ -582,6 +596,7 @@ int sshclient_delete(struct element* ele)
 }
 int sshclient_create(struct element* ele, u8* url)
 {
+	ele->stage1 = 0;
 	return 0;
 }
 
@@ -750,6 +765,14 @@ int secureshell_serverwrite_handshake0x15(u8* buf, int len, u8* dst, int cnt)
 	dst[5] = 0x15;
 	return secureshell_write_head(dst, off);
 }
+int secureshell_serverwrite_encryptpacket(u8* buf, int len, u8* dst, int cnt)
+{
+	return 16;
+}
+
+
+
+
 int sshserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
@@ -767,6 +790,7 @@ int sshserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	{
 		ret = secureshell_serverread_handshake0x14(buf, len, tmp, 0x100);
 
+		//key exchange init
 		ret = secureshell_serverwrite_handshake0x14(buf, len, tmp, 0x1000);
 		if(ret)relationwrite(ele, _src_, 0, 0, tmp, ret);
 	}
@@ -774,6 +798,7 @@ int sshserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	{
 		ret = secureshell_serverread_handshake0x22(buf, len, tmp, 0x100);
 
+		//group exchange group
 		ret = secureshell_serverwrite_handshake0x1f(buf, len, tmp, 0x1000);
 		if(ret)relationwrite(ele, _src_, 0, 0, tmp, ret);
 	}
@@ -781,8 +806,10 @@ int sshserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	{
 		ret = secureshell_serverread_handshake0x20(buf, len, tmp, 0x100);
 
+		//group exchange reply, new keys, encrypted packet
 		ret = secureshell_serverwrite_handshake0x21(buf, len, tmp, 0x1000);
 		ret += secureshell_serverwrite_handshake0x15(buf, len, tmp+ret, 0x1000-ret);
+		//ret += secureshell_serverwrite_encryptpacket(buf, len, tmp+ret, 0x1000-ret);
 		if(ret)relationwrite(ele, _src_, 0, 0, tmp, ret);
 	}
 	else printmemory(buf, len);
