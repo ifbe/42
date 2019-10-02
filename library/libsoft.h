@@ -361,38 +361,43 @@ struct element
 	u64 stage1;
 	u64 name;
 
-	//[40,5f]: data
+	//[40,5f]: fd/handle
 	union{
-		u64 fd;
-		void* obj;
-		void* win;
+		u64 sz0;
+		u64 selffd;
 	};
 	union{
-		u64 dc;
-		u64 gc;
-		void* er;
+		u64 sz1;
+		void* selfobj;
 	};
 	union{
-		u64 len;
-		void* hp;
-		void* mod;
-		void* ximage;
-		void* texture;
+		u64 sz2;
+		u64 tempfd;
 	};
 	union{
-		u64 addr;
-		void* buf;
+		u64 sz3;
+		void* tempobj;
 	};
 
-	//[60,7f]: prop
-	int width;
-	int height;
-	int depth;
-	int stride;
-	int fbwidth;
-	int fbheight;
-	int fbdepth;
-	int fbstride;
+	//[60,7f]: memory
+	union{
+		u64 padd0;
+		void* buf0;
+	};
+	union{
+		u64 padd1;
+		void* buf1;
+	};
+	union{
+		u64 padd2;
+		void* buf2;
+		u64 len;
+	};
+	union{
+		u64 padd3;
+		void* buf3;
+		void* buf;
+	};
 
 	//[80,ff]
 	u8 data[0x80];

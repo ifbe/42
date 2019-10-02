@@ -1,3 +1,10 @@
+<artery>
+fftpcm{
+fmt:fftpcm
+}
+</artery>
+
+
 <arena>
 opengl{
 fmt:win
@@ -13,8 +20,8 @@ fmt:mic
 
 
 <actor>
-oscillo{
-fmt:oscillo
+spectrum{
+fmt:spectrum
 }
 freecam{
 fmt:freecam
@@ -45,10 +52,10 @@ t: 0.0, 0.0, 1000.0
 freemodl{
 }
 freegeom{
-c: 0.0, 0.0, 1200.0
-r: 1000.0, 0.0, 0.0
-t: 0.0, 1000.0, 0.0
-f: 0.0, 0.0, -1000.0
+c: 0.0, -2000.0, 250.0
+r: 1.0, 0.0, 0.0
+t: 0.0, 0.0, 1.0
+f: 0.0, 1.0, 0.0
 }
 freefrus{
 l: 0.0, 0.0, 0.0, -1.0
@@ -66,11 +73,12 @@ q:1.0, 1.0
 
 
 <relation>
-#oscillo depends on usbcam
-(oscillo, 0, act, pcm) -> (usbmic, 0, win, dst)
+#spectrum depends on usbcam
+(usbmic, 0, win, dst) -> (fftpcm, 0, art, src)
+(fftpcm, 0, art, dst) -> (spectrum, 0, act, pcm)
 
 #3dworld depends on inner objects
-(3dworld, skygeom, act, 0) -> (oscillo, skyhaha, act, 0)
+(3dworld, skygeom, act, 0) -> (spectrum, skyhaha, act, 0)
 (3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
 
 #glctx depends on scene

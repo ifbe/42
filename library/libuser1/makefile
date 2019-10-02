@@ -119,10 +119,11 @@ rawmine/baseunit/objpack/pack.80211.c \
 rawmine/baseunit/objpack/pack.eth.c \
 rawmine/baseunit/objpack/pack.udp.c \
 rawmine/baseunit/objpack/pack.tcp.c \
-rawmine/baseunit/objuiux/tool.hex.c \
-rawmine/baseunit/objuiux/tool.qrcode.c \
-rawmine/baseunit/objuiux/tool.spectrum.c \
-rawmine/baseunit/objuiux/tool.video.c \
+rawmine/baseunit/objuiux/uiux.hex.c \
+rawmine/baseunit/objuiux/uiux.oscillo.c \
+rawmine/baseunit/objuiux/uiux.qrcode.c \
+rawmine/baseunit/objuiux/uiux.spectrum.c \
+rawmine/baseunit/objuiux/uiux.video.c \
 rawmine/baseunit/objuiux/uiux.joystick.c \
 rawmine/baseunit/objuiux/uiux.keyboard.c \
 rawmine/compound/thegame/chess/game.chess.c \
@@ -168,7 +169,6 @@ rawmine/compound/thetest/test.codeimg.c \
 rawmine/compound/thetest/test.doodle.c \
 rawmine/compound/thetest/test.example.c \
 rawmine/compound/thetest/test.fractal.c \
-rawmine/compound/thetest/test.oscillo.c \
 rawmine/compound/thetest/test.palette.c \
 rawmine/compound/theuiux/hack.browser.c \
 rawmine/compound/theuiux/hack.circuit.c \

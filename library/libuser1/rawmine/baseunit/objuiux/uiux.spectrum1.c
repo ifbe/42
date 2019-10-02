@@ -4,7 +4,7 @@
 
 
 
-char* oscillo_glsl_v =
+char* spectrum_glsl_v =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
 "uniform mat4 cammvp;\n"
@@ -12,7 +12,7 @@ GLSL_VERSION
 	"gl_Position = cammvp * vec4(v, 1.0);\n"
 "}\n";
 
-char* oscillo_glsl_f =
+char* spectrum_glsl_f =
 GLSL_VERSION
 "out mediump vec4 FragColor;\n"
 "void main(){\n"
@@ -22,7 +22,7 @@ GLSL_VERSION
 
 
 
-static void oscillo_draw_pixel(
+static void spectrum_draw_pixel(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
@@ -42,58 +42,58 @@ static void oscillo_draw_pixel(
 		hh = win->height/2;
 	}
 }
-static void oscillo_draw_vbo(
+static void spectrum_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 	struct glsrc* src = (void*)(pin->data[0]);
 	src->vbuf_enq += 1;
-	//say("@oscillo_draw_vbo\n");
+	//say("@spectrum_draw_vbo\n");
 }
-static void oscillo_draw_json(
+static void spectrum_draw_json(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 }
-static void oscillo_draw_html(
+static void spectrum_draw_html(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 }
-static void oscillo_draw_tui(
+static void spectrum_draw_tui(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 }
-static void oscillo_draw_cli(
+static void spectrum_draw_cli(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 }
-static void oscillo_draw(
+static void spectrum_draw(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)oscillo_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)oscillo_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)oscillo_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)oscillo_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)oscillo_draw_vbo(act, pin, win, sty);
-	else oscillo_draw_pixel(act, pin, win, sty);
+	if(fmt == _cli_)spectrum_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)spectrum_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)spectrum_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)spectrum_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)spectrum_draw_vbo(act, pin, win, sty);
+	else spectrum_draw_pixel(act, pin, win, sty);
 }
 
 
 
 
-static void oscillo_data(
+static void spectrum_data(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty,
 	float* buf, int len)
 {
 	int t = act->vlen;
 	float* f = act->vbuf;
-	//say("@oscillo_data:%d\n", len);
+	//say("@spectrum_data:%d\n", len);
 
 	f[3*t + 2] = buf[0];
 	act->vlen = (act->vlen + len/3) % 0x10000;
@@ -104,16 +104,16 @@ static void oscillo_data(
 
 
 
-static void oscillo_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void spectrum_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	//oscillo_draw(act, pin, win, sty);
+	//spectrum_draw(act, pin, win, sty);
 }
-static void oscillo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void spectrum_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
@@ -121,14 +121,14 @@ static void oscillo_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	struct style* sty = (void*)(peer->foot);
 /*
 	switch(self->flag){
-		case _data_:oscillo_data(act, pin, win, sty, buf, len);break;
+		case _data_:spectrum_data(act, pin, win, sty, buf, len);break;
 	}
 */
 }
-static void oscillo_stop(struct halfrel* self, struct halfrel* peer)
+static void spectrum_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void oscillo_start(struct halfrel* self, struct halfrel* peer)
+static void spectrum_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct datapair* pair;
 	struct glsrc* src;
@@ -151,8 +151,8 @@ static void oscillo_start(struct halfrel* self, struct halfrel* peer)
 	src->method = 'i';
 
 	//
-	src->vs = oscillo_glsl_v;
-	src->fs = oscillo_glsl_f;
+	src->vs = spectrum_glsl_v;
+	src->fs = spectrum_glsl_f;
 	src->shader_enq = 42;
 
 	//vertex
@@ -176,13 +176,13 @@ static void oscillo_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void oscillo_search(struct actor* act)
+static void spectrum_search(struct actor* act)
 {
 }
-static void oscillo_modify(struct actor* act)
+static void spectrum_modify(struct actor* act)
 {
 }
-static void oscillo_delete(struct actor* act)
+static void spectrum_delete(struct actor* act)
 {
 	if(0 == act)return;
 	if(act->ibuf){
@@ -194,7 +194,7 @@ static void oscillo_delete(struct actor* act)
 		act->vbuf = 0;
 	}
 }
-static void oscillo_create(struct actor* act, void* str)
+static void spectrum_create(struct actor* act, void* str)
 {
 	int j,k;
 	u16* uu;
@@ -225,18 +225,18 @@ static void oscillo_create(struct actor* act, void* str)
 
 
 
-void oscillo_register(struct actor* p)
+void spectrum_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('o', 's', 'c', 'i', 'l', 'l', 'o', 0);
+	p->fmt = hex64('s', 'p', 'e', 'c', 't', 'r', 'u', 'm');
 
-	p->oncreate = (void*)oscillo_create;
-	p->ondelete = (void*)oscillo_delete;
-	p->onsearch = (void*)oscillo_search;
-	p->onmodify = (void*)oscillo_modify;
+	p->oncreate = (void*)spectrum_create;
+	p->ondelete = (void*)spectrum_delete;
+	p->onsearch = (void*)spectrum_search;
+	p->onmodify = (void*)spectrum_modify;
 
-	p->onstart = (void*)oscillo_start;
-	p->onstop  = (void*)oscillo_stop;
-	p->onread  = (void*)oscillo_read;
-	p->onwrite = (void*)oscillo_write;
+	p->onstart = (void*)spectrum_start;
+	p->onstop  = (void*)spectrum_stop;
+	p->onread  = (void*)spectrum_read;
+	p->onwrite = (void*)spectrum_write;
 }

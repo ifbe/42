@@ -24,24 +24,33 @@ int fftpcm_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
 
+	//1. pcm->complex
 	pcm = buf;
-	real = ele->buf;
-	imag = ele->buf + 0x80000;
+	real = ele->buf0;
+	imag = ele->buf0 + 0x80000;
 	for(j=0;j<1024;j++){
 		real[j] = pcm[j] / 32768.0;
 		imag[j] = 0.0;
 	}
 	fft(real, imag, 10);
 
+	//2.complex->pcm
+	pcm = ele->buf + ele->len;
+	ele->len = (ele->len+2048) % 0x100000;
+
 	max = 0.0;
-	for(j=1;j<512;j++){
+	for(j=0;j<1024;j++){
 		tmp = real[j]*real[j] + imag[j]*imag[j];
+		pcm[j] = (short)(squareroot(tmp)*100.0);
+		if(j < 1)continue;
 		if(max < tmp)max = tmp;
 	}
 
 	max = squareroot(max);
 	max = max * 44100 / 1024;
 	say("freq = %f\n", max);
+
+	relationwrite(ele, _dst_, 0, 0, pcm, 1024*2);
 	return 0;
 }
 int fftpcm_stop(struct halfrel* self, struct halfrel* peer)
@@ -63,6 +72,9 @@ int fftpcm_delete(struct element* ele)
 int fftpcm_create(struct element* ele, u8* url)
 {
 	say("@fftpcm_create\n");
+	ele->buf0 = memorycreate(0x100000, 0);
+
 	ele->buf = memorycreate(0x100000, 0);
+	ele->len = 0;
 	return 1;
 }
