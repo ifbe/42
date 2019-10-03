@@ -88,6 +88,7 @@ rawmine/baseunit/objdxgl/fbo/fbo.water.c \
 rawmine/baseunit/objdxgl/light/light.direction.c \
 rawmine/baseunit/objdxgl/light/light.point.c \
 rawmine/baseunit/objdxgl/light/light.spot.c \
+rawmine/baseunit/objdxgl/dxgl.field.c \
 rawmine/baseunit/objdxgl/dxgl.ground.c \
 rawmine/baseunit/objdxgl/dxgl.particle.c \
 rawmine/baseunit/objdxgl/dxgl.shadowmap.c \

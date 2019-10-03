@@ -23,6 +23,7 @@ void water_register(void*);
 void dirlight_register(void*);
 void spotlight_register(void*);
 //.else
+void field_register(void*);
 void ground_register(void*);
 void particle_register(void*);
 void skydome_register(void*);
@@ -191,6 +192,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 //.else
+	field_register(tmp);
+	tmp += sizeof(struct actor);
+
 	ground_register(tmp);
 	tmp += sizeof(struct actor);
 
