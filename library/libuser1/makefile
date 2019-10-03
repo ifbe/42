@@ -124,6 +124,7 @@ rawmine/baseunit/objuiux/uiux.oscillo.c \
 rawmine/baseunit/objuiux/uiux.qrcode.c \
 rawmine/baseunit/objuiux/uiux.spectrum.c \
 rawmine/baseunit/objuiux/uiux.video.c \
+rawmine/baseunit/objuiux/uiux.voxel.c \
 rawmine/baseunit/objuiux/uiux.joystick.c \
 rawmine/baseunit/objuiux/uiux.keyboard.c \
 rawmine/compound/thegame/chess/game.chess.c \

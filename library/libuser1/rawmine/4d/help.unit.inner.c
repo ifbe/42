@@ -98,6 +98,7 @@ void sketchpad_register(void*);
 void spectrum_register(void*);
 void terminal_register(void*);
 void video_register(void*);
+void voxel_register(void*);
 
 //menu
 //.2d
@@ -401,6 +402,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	video_register(tmp);
+	tmp += sizeof(struct actor);
+
+	voxel_register(tmp);
 	tmp += sizeof(struct actor);
 
 
