@@ -20,6 +20,9 @@ fmt:cam
 
 
 <actor>
+canvas{
+fmt:video
+}
 spectrum{
 fmt:spectrum
 }
@@ -40,6 +43,15 @@ fmt:gl41wnd0
 
 
 <style>
+vidhaha{
+}
+vidgeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
 skyhaha{
 }
 skygeom{
@@ -74,10 +86,13 @@ q:1.0, 1.0
 
 <relation>
 #spectrum depends on usbcam
+(usbcam, 0, win, dst) -> (canvas, 0, act, yuv)
+
 (usbcam, 0, win, dst) -> (fftrgb, 0, art, src)
 (fftrgb, 0, art, dst) -> (spectrum, 0, act, pcm)
 
 #3dworld depends on inner objects
+(3dworld, vidgeom, act, 0) -> (canvas, vidhaha, act, 0)
 (3dworld, skygeom, act, 0) -> (spectrum, skyhaha, act, 0)
 (3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
 

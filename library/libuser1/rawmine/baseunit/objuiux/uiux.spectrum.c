@@ -16,6 +16,7 @@ static void spectrum_draw_vbo3d(
 	struct actor* win, struct style* sty)
 {
 	int x,y;
+	int r,g,b;
 	float dx,dy,dz;
 	void** tab;
 	short* buf;
@@ -47,7 +48,10 @@ static void spectrum_draw_vbo3d(
 			tb[1] = ta[1] + vu[1] * dz;
 			tb[2] = ta[2] + vu[2] * dz;
 
-			carveline(win, 0xffffff, ta, tb);
+			r = (x/100)*26+13;
+			g = ((x%100)/10)*26+13;
+			b = (x%10)*26+13;
+			carveline(win, (r<<16)|(g<<8)|b, ta, tb);
 		}
 	}
 }
