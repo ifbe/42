@@ -172,7 +172,7 @@ HRESULT enumdev(void* dev, int which)
 				if(FAILED(hr))printf("error@bindtoobject\n");
 				else
 				{
-					printf("%S	**selected**\n", var.bstrVal);
+					printf("%S	***selected***\n", var.bstrVal);
 					flag = 1;
 				}
 			}
@@ -184,12 +184,17 @@ HRESULT enumdev(void* dev, int which)
 		pPropBag->Release();
 		pMoniker->Release();
 	}
+	printf("\n");
 
 	//
 	pEnum->Release();
 	pDevEnum->Release();
 	return flag;
 }
+
+
+
+
 HRESULT enumpin(IBaseFilter * pFilter, PIN_DIRECTION dirrequired, int iNum, IPin **ppPin)
 {
     IEnumPins* pEnum;
@@ -222,7 +227,7 @@ HRESULT enumpin(IBaseFilter * pFilter, PIN_DIRECTION dirrequired, int iNum, IPin
     } 
 
     return hr;
-}
+}/*
 HRESULT enumfmt(IPin* pin)
 {
 	HRESULT hr;
@@ -238,27 +243,37 @@ HRESULT enumfmt(IPin* pin)
 	{
 		if(mt->majortype == MEDIATYPE_Video)
 		{
-			//printf("video,");
+			printf("video,");
 			if(mt->subtype == MEDIASUBTYPE_YUY2)
 			{
-				//printf("yuyv,");
+				printf("yuyv,");
 				if(mt->formattype == FORMAT_VideoInfo)
 				{
 					head = (VIDEOINFOHEADER*)(mt->pbFormat);
 					bmp = &(head->bmiHeader);
-					//printf("%dx%d", bmp->biWidth, bmp->biHeight);
-				}
-				//else printf("???");
-			}
-			//else printf("???");
-		}
-		//else printf("???");
+					printf("%dx%d~%d", bmp->biWidth, bmp->biHeight, 10*1000*1000/head->AvgTimePerFrame);
 
-		//printf("\n");
+					if( (bmp->biWidth == 640) && (bmp->biHeight == 480) )
+					{
+						printf("	***found***");
+					}
+				}
+				else printf("???");
+			}
+			else printf("???");
+		}
+		else printf("???");
+
+		printf("\n");
 	}
 
+	printf("\n");
 	return 1;
-}
+}*/
+
+
+
+
 HRESULT configgraph(IAMStreamConfig* devcfg)
 {
 	int iCount = 0;
@@ -271,65 +286,56 @@ HRESULT configgraph(IAMStreamConfig* devcfg)
 	BITMAPINFOHEADER* bmp;
 
 	hr = devcfg->GetNumberOfCapabilities(&iCount, &iSize);
-	if(FAILED(hr)){printf("%x@GetNumberOfCapabilities\n",hr);return -2;}
+	if(FAILED(hr)){
+		printf("%x@GetNumberOfCapabilities\n",hr);
+		return -2;
+	}
+	if(iSize != sizeof(VIDEO_STREAM_CONFIG_CAPS)){
+		printf("iSize != sizeof(VIDEO_STREAM_CONFIG_CAPS)\n");
+		return -3;
+	}
 
-	obj[0].width = 1920;
-	obj[0].height = 1080;
-	if (iSize == sizeof(VIDEO_STREAM_CONFIG_CAPS))
+	// Use the video capabilities structure.
+	for (int iFormat = 0; iFormat < iCount; iFormat++)
 	{
-		// Use the video capabilities structure.
-		for (int iFormat = 0; iFormat < iCount; iFormat++)
+		hr = devcfg->GetStreamCaps(iFormat, &pmtConfig, (BYTE*)&scc);
+		if (FAILED(hr))continue;
+
+		if(pmtConfig->majortype == MEDIATYPE_Video)
 		{
-			hr = devcfg->GetStreamCaps(iFormat, &pmtConfig, (BYTE*)&scc);
-			if (FAILED(hr))continue;
-
-			if(pmtConfig->majortype == MEDIATYPE_Video)
+			printf("video,");
+			if(pmtConfig->subtype == MEDIASUBTYPE_YUY2)
 			{
-				printf("video,");
-				if(pmtConfig->subtype == MEDIASUBTYPE_YUY2)
+				printf("yuyv,");
+				if(pmtConfig->formattype == FORMAT_VideoInfo)
 				{
-					printf("yuyv,");
-					if(pmtConfig->formattype == FORMAT_VideoInfo)
-					{
-						head = (VIDEOINFOHEADER*)(pmtConfig->pbFormat);
-						bmp = &(head->bmiHeader);
-						printf("%dx%d~%d", bmp->biWidth, bmp->biHeight, head->AvgTimePerFrame);
+					head = (VIDEOINFOHEADER*)(pmtConfig->pbFormat);
+					bmp = &head->bmiHeader;
+					printf("%dx%d~%d", bmp->biWidth, bmp->biHeight, 10*1000*1000/head->AvgTimePerFrame);
 
-						if( (bmp->biWidth== 640) && (bmp->biHeight==480) )
+					if( (bmp->biWidth == 640) && (bmp->biHeight == 480) )
+					{
+						hr = devcfg->SetFormat(pmtConfig);
+						if(SUCCEEDED(hr))
 						{
-							hr = devcfg->SetFormat(pmtConfig);
-							if(SUCCEEDED(hr))
-							{
-								obj[0].width = 640;
-								obj[0].height = 480;
-								printf("	***selected***");
-							}
-							else
-							{
-								printf("	***%x***", hr);
-							}
+							printf("	***selected***");
+						}
+						else
+						{
+							printf("	***%x***", hr);
 						}
 					}
-					else printf("???");
 				}
 				else printf("???");
 			}
 			else printf("???");
+		}
+		else printf("???");
 
-			printf("\n");
-		}
+		printf("\n");
 	}
-/*
-	if( (bmp->biWidth==640) && (bmp->biHeight==480) )
-	{
-		if(devcfg != 0)
-		{
-			hr = devcfg->SetFormat(mt);
-			if(hr == S_OK)printf("	***selected***");
-			else printf("	***%x***",hr);
-		}
-	}
-*/
+
+	printf("\n");
 	return S_OK;
 }
 void shutupdie()
@@ -409,8 +415,8 @@ void letsgo()
 	hr = enumpin(dev, PINDIR_OUTPUT, 0, &devout);
 	if(hr < 0)goto fail;
 
-	hr = enumfmt(devout);
-	if(hr < 0)goto fail;
+	//hr = enumfmt(devout);
+	//if(hr < 0)goto fail;
 
 
 
@@ -437,12 +443,15 @@ void letsgo()
 
 	hr = enumpin(sample, PINDIR_INPUT, 0, &samplein);
 
-	hr = enumfmt(samplein);
+	//hr = enumfmt(samplein);
 
 
 
 
-	//connect, start
+	//connect, connect, start
+	hr = m_pGraph->Connect(devout, samplein);
+	if(FAILED(hr)){printf("error %x@graph connect\n",hr);goto fail;}
+
 	hr = m_pBuild->FindInterface(
 		&PIN_CATEGORY_CAPTURE, &MEDIATYPE_Video,
 		dev, IID_IAMStreamConfig,
@@ -451,17 +460,14 @@ void letsgo()
 	if(FAILED(hr)){printf("%x@findinterface\n",hr);goto fail;}
 
 	hr = configgraph(devcfg);
-
-	hr = m_pGraph->Connect(devout, samplein);
-	if(FAILED(hr)){printf("error %x@graph connect\n",hr);goto fail;}
-
+/*
 	hr = pGrabber->GetConnectedMediaType(&mt);
 	if(FAILED(hr)){printf("error %x@media type\n",hr);goto fail;}
 
 	head = (VIDEOINFOHEADER*)(mt.pbFormat);
-	bmp = &(head->bmiHeader);
-	printf("[mediatype]%dx%d\n", bmp->biWidth, bmp->biHeight);
-
+	bmp = &head->bmiHeader;
+	printf("GetConnectedMediaType: %dx%d~%d\n", bmp->biWidth, bmp->biHeight, 10*1000*1000/head->AvgTimePerFrame);
+*/
 	hr = g_pMC->Run();
 	if(FAILED(hr)){printf("error %x@run\n",hr);goto fail;}
 
