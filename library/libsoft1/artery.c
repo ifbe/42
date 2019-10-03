@@ -17,10 +17,12 @@
 #define _search_ hex64('s','e','a','r','c','h', 0, 0)
 #define _vt100_ hex64('v','t','1','0','0', 0, 0, 0)
 //
+#define _fftpcm_ hex64('f','f','t','p','c','m',0,0)
+#define _fftrgb_ hex64('f','f','t','r','g','b',0,0)
+//
 #define _echo_ hex32('e','c','h','o')
 #define _pump_ hex32('p','u','m','p')
 #define _goslow_ hex64('g','o','s','l','o','w',0,0)
-#define _fftpcm_ hex64('f','f','t','p','c','m',0,0)
 #define _dbgf32_ hex64('d','b','g','f','3','2',0,0)
 #define _dbghex_ hex64('d','b','g','h','e','x',0,0)
 //
@@ -111,6 +113,12 @@ int pump_stop( struct halfrel* self, struct halfrel* peer);
 int pump_start(struct halfrel* self, struct halfrel* peer);
 int pump_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int pump_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int goslow_create(struct element* ele, void* url);
+int goslow_delete(struct element* ele, void* url);
+int goslow_start(struct halfrel* self, struct halfrel* peer);
+int goslow_stop( struct halfrel* self, struct halfrel* peer);
+int goslow_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int goslow_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int dbgf32_create(struct element* ele, void* url);
 int dbgf32_delete(struct element* ele, void* url);
 int dbgf32_start(struct halfrel* self, struct halfrel* peer);
@@ -123,18 +131,19 @@ int dbghex_start(struct halfrel* self, struct halfrel* peer);
 int dbghex_stop( struct halfrel* self, struct halfrel* peer);
 int dbghex_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int dbghex_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int goslow_create(struct element* ele, void* url);
-int goslow_delete(struct element* ele, void* url);
-int goslow_start(struct halfrel* self, struct halfrel* peer);
-int goslow_stop( struct halfrel* self, struct halfrel* peer);
-int goslow_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int goslow_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+//
 int fftpcm_create(struct element* ele, void* url);
 int fftpcm_delete(struct element* ele, void* url);
 int fftpcm_start(struct halfrel* self, struct halfrel* peer);
 int fftpcm_stop( struct halfrel* self, struct halfrel* peer);
 int fftpcm_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fftpcm_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int fftrgb_create(struct element* ele, void* url);
+int fftrgb_delete(struct element* ele, void* url);
+int fftrgb_start(struct halfrel* self, struct halfrel* peer);
+int fftrgb_stop( struct halfrel* self, struct halfrel* peer);
+int fftrgb_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int fftrgb_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 int recut_create(struct element* ele, void* url);
 int recut_delete(struct element* ele, void* url);
@@ -450,9 +459,11 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _echo_:echo_read(self, peer, arg, idx, buf, len);break;
 		case _pump_:pump_read(self, peer, arg, idx, buf, len);break;
 		case _goslow_:goslow_read(self, peer, arg, idx, buf, len);break;
-		case _fftpcm_:fftpcm_read(self, peer, arg, idx, buf, len);break;
 		case _dbgf32_:dbgf32_read(self, peer, arg, idx, buf, len);break;
 		case _dbghex_:dbghex_read(self, peer, arg, idx, buf, len);break;
+
+		case _fftpcm_:fftpcm_read(self, peer, arg, idx, buf, len);break;
+		case _fftrgb_:fftrgb_read(self, peer, arg, idx, buf, len);break;
 
 		case _recut_:recut_read(self, peer, arg, idx, buf, len);break;
 		case _reline_:reline_read(self, peer, arg, idx, buf, len);break;
@@ -501,9 +512,11 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _echo_:return echo_write(self, peer, arg, idx, buf, len);break;
 		case _pump_:return pump_write(self, peer, arg, idx, buf, len);break;
 		case _goslow_:return goslow_write(self, peer, arg, idx, buf, len);break;
-		case _fftpcm_:return fftpcm_write(self, peer, arg, idx, buf, len);break;
 		case _dbgf32_:return dbgf32_write(self, peer, arg, idx, buf, len);break;
 		case _dbghex_:return dbghex_write(self, peer, arg, idx, buf, len);break;
+
+		case _fftpcm_:return fftpcm_write(self, peer, arg, idx, buf, len);break;
+		case _fftrgb_:return fftrgb_write(self, peer, arg, idx, buf, len);break;
 
 		case _recut_:return recut_write(self, peer, arg, idx, buf, len);break;
 		case _reline_:return reline_write(self, peer, arg, idx, buf, len);break;
@@ -707,6 +720,8 @@ void* arterycreate(u64 type, void* argstr)
 		goslow_create(e, url);
 		return e;
 	}
+
+	//
 	if(_fftpcm_ == type)
 	{
 		e = allocelement();
@@ -714,6 +729,15 @@ void* arterycreate(u64 type, void* argstr)
 
 		e->type = _fftpcm_;
 		fftpcm_create(e, url);
+		return e;
+	}
+	if(_fftrgb_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _fftrgb_;
+		fftrgb_create(e, url);
 		return e;
 	}
 

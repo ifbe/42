@@ -190,6 +190,7 @@ libflow/stream/stream.test.dbgf32.c \
 libflow/stream/stream.test.dbghex.c \
 libflow/stream/stream.test.goslow.c \
 libflow/stream/stream.test.fftpcm.c \
+libflow/stream/stream.test.fftrgb.c \
 libphys/phys.elec.c \
 libphys/phys.mech.c \
 artery.c

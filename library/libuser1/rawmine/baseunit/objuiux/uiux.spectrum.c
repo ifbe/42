@@ -108,7 +108,7 @@ void spectrum_data(struct actor* act, int type, void* buf, int len)
 {
 	int j,idx;
 	void** tab;
-	say("@spectrum_write.pcm: %d\n", len);
+	say("@spectrum_write.pcm: %d,%llx\n", len, buf);
 
 	idx = act->len;
 	tab = act->buf;
