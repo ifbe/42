@@ -346,6 +346,7 @@ void fullwindow_read(struct arena* ogl)
 
 	//glenable
 	glEnable(GL_DEPTH_TEST);
+	glPointSize(4.0);
 
 	//0: upload data to gpu
 	rel = ogl->orel0;

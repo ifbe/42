@@ -154,16 +154,16 @@ void carveline_arrow(struct actor* win, u32 rgb,
 	ty[2] = tx[2] = va[2] - vb[2];
 	quaternion_operation(ty, vn, PI/2);
 
-	vbuf[12] = vb[0] + (halfsqrt3 * tx[0] + 0.5 * ty[0]) / 16;
-	vbuf[13] = vb[1] + (halfsqrt3 * tx[1] + 0.5 * ty[1]) / 16;
-	vbuf[14] = vb[2] + (halfsqrt3 * tx[2] + 0.5 * ty[2]) / 16;
+	vbuf[12] = vb[0] + (halfsqrt3 * tx[0] + 0.5 * ty[0]) / 8;
+	vbuf[13] = vb[1] + (halfsqrt3 * tx[1] + 0.5 * ty[1]) / 8;
+	vbuf[14] = vb[2] + (halfsqrt3 * tx[2] + 0.5 * ty[2]) / 8;
 	vbuf[15] = rr;
 	vbuf[16] = gg;
 	vbuf[17] = bb;
 
-	vbuf[18] = vb[0] + (halfsqrt3 * tx[0] - 0.5 * ty[0]) / 16;
-	vbuf[19] = vb[1] + (halfsqrt3 * tx[1] - 0.5 * ty[1]) / 16;
-	vbuf[20] = vb[2] + (halfsqrt3 * tx[2] - 0.5 * ty[2]) / 16;
+	vbuf[18] = vb[0] + (halfsqrt3 * tx[0] - 0.5 * ty[0]) / 8;
+	vbuf[19] = vb[1] + (halfsqrt3 * tx[1] - 0.5 * ty[1]) / 8;
+	vbuf[20] = vb[2] + (halfsqrt3 * tx[2] - 0.5 * ty[2]) / 8;
 	vbuf[21] = rr;
 	vbuf[22] = gg;
 	vbuf[23] = bb;

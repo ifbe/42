@@ -15,6 +15,7 @@ static void field_draw_vbo3d(
 {
 	int x,y,z;
 	float ax,ay,az;
+	float* vec;
 
 	vec3 ta,tb;
 	float* vc = sty->f.vc;
@@ -23,9 +24,12 @@ static void field_draw_vbo3d(
 	float* vu = sty->f.vt;
 	carveline_prism4(win, 0xffffff, vc, vr, vf, vu);
 
+	vec = act->buf;
 	for(z=0;z<20;z++){
 	for(y=0;y<20;y++){
 	for(x=0;x<20;x++){
+
+		//field
 		ax = x/10.0-0.95;
 		ay = y/10.0-0.95;
 		az = z/10.0-0.95;
@@ -37,7 +41,18 @@ static void field_draw_vbo3d(
 		tb[0] = ta[0] + ta[2] / 10.0;
 		tb[1] = ta[1];
 		tb[2] = ta[2] - ta[0] / 10.0;
-		carveline_arrow(win, 0xffffff, ta, tb, vu);
+
+		carveline_arrow(win, 0x007f7f, ta, tb, vf);
+
+		//particle
+		ta[0] = vec[(z*20*20 + y*20 + x)*3 + 0];
+		ta[1] = vec[(z*20*20 + y*20 + x)*3 + 1];
+		ta[2] = vec[(z*20*20 + y*20 + x)*3 + 2];
+
+		vec[(z*20*20 + y*20 + x)*3 + 0] += ta[2] / 100.0 - ta[0]/1000.0;
+		vec[(z*20*20 + y*20 + x)*3 + 2] +=-ta[0] / 100.0 - ta[2]/1000.0;
+
+		carvepoint(win, 0xffffff, ta);
 	}
 	}
 	}
@@ -106,6 +121,31 @@ static void field_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void field_start(struct halfrel* self, struct halfrel* peer)
 {
+	int x,y,z;
+	float ax,ay,az;
+
+	struct actor* act = (void*)(self->chip);
+	float* vec = act->buf;
+
+	struct fstyle* sty = (void*)(peer->foot);
+	float* vc = sty->vc;
+	float* vr = sty->vr;
+	float* vf = sty->vf;
+	float* vu = sty->vt;
+
+	for(z=0;z<20;z++){
+	for(y=0;y<20;y++){
+	for(x=0;x<20;x++){
+		ax = x/10.0-0.95;
+		ay = y/10.0-0.95;
+		az = z/10.0-0.95;
+
+		vec[(z*20*20 + y*20 + x)*3 + 0] = vc[0] + vr[0]*ax + vf[0]*ay + vu[0]*az;
+		vec[(z*20*20 + y*20 + x)*3 + 1] = vc[1] + vr[1]*ax + vf[1]*ay + vu[1]*az;
+		vec[(z*20*20 + y*20 + x)*3 + 2] = vc[2] + vr[2]*ax + vf[2]*ay + vu[2]*az;
+	}
+	}
+	}
 }
 
 
