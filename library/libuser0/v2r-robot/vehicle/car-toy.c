@@ -71,12 +71,7 @@ int toycar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 int toycar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
     say("@toycar_write\n");
-    printmemory(buf, len);
-    return 0;
-}
-void toycar_rootwrite(struct arena* win, struct style* sty, void* sc, void* sf, u8* buf, int len)
-{
-    if(0 == buf)return;
+    //printmemory(buf, len);
 
     switch(buf[0])
     {
@@ -87,6 +82,7 @@ void toycar_rootwrite(struct arena* win, struct style* sty, void* sc, void* sf, 
         case ' ':toycar_status(1);break;
         default: toycar_status(0);break;
     }
+    return 0;
 }
 void toycar_delete(struct arena* win)
 {

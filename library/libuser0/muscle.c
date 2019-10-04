@@ -129,7 +129,7 @@ void* allocstyle()
 
 int arenaread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct arena* win = (void*)(self->chip);
+	struct arena* win = self->pchip;
 
 	switch(win->type){
 		case _cam_:return videoread(self, peer, arg, idx, buf, len);
@@ -141,7 +141,7 @@ int arenaread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, vo
 }
 int arenawrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct arena* win = (void*)(self->chip);
+	struct arena* win = self->pchip;
 
 	switch(win->fmt){
 		case _bdc_:return toycar_write(self, peer, arg, idx, buf, len);

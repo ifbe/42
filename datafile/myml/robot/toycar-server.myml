@@ -1,0 +1,18 @@
+<system>
+server{
+fmt:UDP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<arena>
+car{
+fmt:bdc
+}
+</arena>
+
+
+<relation>
+(server, 0, win, dst) -> (car, 0, win, src)
+</relation>

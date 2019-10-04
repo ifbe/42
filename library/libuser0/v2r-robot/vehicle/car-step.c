@@ -70,14 +70,11 @@ int stepcar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
     }
     return ret;
 }
-int stepcar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int stepcar_write(struct arena* win, struct style* sty, void* sc, void* sf, u8* buf, int len)
 {
+	say("@stepcar_write\n");
     printmemory(buf, len);
-    return 0;
-}
-int stepcar_rootwrite(struct arena* win, struct style* sty, void* sc, void* sf, u8* buf, int len)
-{
-	int j,k;
+
 	switch(buf[0])
 	{
 		case 'w':stepcar_update(0, 1, 1, 0);break;

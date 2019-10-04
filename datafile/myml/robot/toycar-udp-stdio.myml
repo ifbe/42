@@ -1,0 +1,18 @@
+<arena>
+std{
+fmt:std
+}
+</arena>
+
+
+<system>
+car{
+fmt:udp
+url:127.0.0.1:9999
+}
+</system>
+
+
+<relation>
+(std, 0, win, dst) -> (car, 0, sys, src)
+</relation>
