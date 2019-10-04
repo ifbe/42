@@ -22,7 +22,7 @@ int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	int j,k,cur;
 	u8* tmp;
 	struct element* ele;
-	say("@reline_write:%.4s\n", &self->flag);
+	//say("@reline_write:%.4s\n", &self->flag);
 
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
@@ -42,7 +42,8 @@ int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 					cur++;
 
 					if('\n' == buf[j]){
-						relationwrite(ele, _dst_, 0, 0, tmp, cur);
+						say("@reline_write:%.*s", cur, tmp);
+						relationwrite(ele, _dst_, 0, 0, tmp, cur-1);
 						cur = 0;
 
 						j++;
@@ -60,6 +61,7 @@ int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 			k = 0;
 			for(j=0;j<len;j++){
 				if('\n' == buf[j]){
+						say("@reline_write:%.*s", j-k, buf+k);
 					relationwrite(ele, _dst_, 0, 0, buf+k, j-k+1);
 					k = j+1;
 				}

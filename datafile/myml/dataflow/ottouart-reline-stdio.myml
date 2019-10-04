@@ -1,0 +1,35 @@
+<arena>
+std{
+fmt:std
+}
+</arena>
+
+
+<artery>
+fixstd{
+fmt:reline
+}
+fixuart{
+fmt:reline
+}
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+
+<system>
+otto{
+fmt:uart
+url:/dev/tty.SLAB_USBtoUART,115200
+}
+</system>
+
+
+<relation>
+(std, 0, win, dst) -> (fixstd, 0, art, src)
+(fixstd, 0, art, dst) -> (otto, 0, sys, src)
+
+(otto, 0, sys, dst) -> (fixuart, 0, art, src)
+(fixuart, 0, art, dst) -> (dbghex, 0, art, src)
+</relation>

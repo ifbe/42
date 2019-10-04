@@ -1,0 +1,30 @@
+<arena>
+std{
+fmt:std
+}
+</arena>
+
+
+<artery>
+reline{
+fmt:reline
+}
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+
+<system>
+otto{
+fmt:udp
+url:192.168.0.112:1234
+}
+</system>
+
+
+<relation>
+(std, 0, win, dst) -> (reline, 0, art, src)
+(reline, 0, art, dst) -> (otto, 0, sys, src)
+(otto, 0, sys, dst) -> (dbghex, 0, art, src)
+</relation>

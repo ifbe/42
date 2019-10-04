@@ -26,6 +26,9 @@ int uart_write(int fd, int off, void* buf, int len)
 {
 	int ret;
 	ret = write(fd, buf, len);
+	if(ret != len){
+		printf("err@write:%d,%d\n", ret, errno);
+	}
 	return ret;
 }
 int uart_list(char* buf, int len)
@@ -40,16 +43,42 @@ int uart_stop()
 {
 	return 0;
 }
-int uart_start(char* p, int speed)
+int uart_start(char* path, int speed)
 {
-	struct termios option;
-	int fd = open(p , O_RDWR|O_NOCTTY|O_NDELAY);
-	if(fd <= 0)
-	{
-		say("error:%d@open:%s\n",errno,p);
+	struct termios options;
+	int fd = open(path , O_RDWR|O_NOCTTY|O_NDELAY);
+	if(fd <= 0){
+		say("error:%d@open:%s\n", errno, path);
 		return -1;
 	}
+	else{
+		say("open: %s, %d\n", path, speed);
+	}
 
+	switch(speed){
+		case 9600:  speed = B9600;  break;
+		case 19200: speed = B19200; break;
+		case 38400: speed = B38400; break;
+		case 57600: speed = B57600; break;
+		case 115200:speed = B115200;break;
+		case 230400:speed = B230400;break;
+		//case 460800:speed = B460800;break;
+		//case 921600:speed = B921600;break;
+		//case 250000:speed = B250000;break;
+		default:return 0;
+	}
+
+	tcgetattr(fd, &options);
+	cfsetispeed(&options, speed);
+	cfsetospeed(&options, speed);
+
+	options.c_cflag &= ~PARENB;
+	options.c_cflag &= ~CSTOPB;
+	options.c_cflag &= ~CSIZE;
+	options.c_cflag |= CS8;
+	options.c_cflag |= (CLOCAL | CREAD);
+	tcsetattr(fd, TCSANOW, &options);
+/*
 	//get
 	tcgetattr(fd, &option);
 	fcntl(fd, F_SETFL, 0);
@@ -76,7 +105,7 @@ int uart_start(char* p, int speed)
 	//set
 	tcflush(fd, TCIFLUSH);
 	tcsetattr(fd, TCSANOW, &option);
-
+*/
 	//obj[fd].type = hex32('u','a','r','t');
 	//obj[fd].buf = (void*)malloc(0x100000);
 	kqueue_add(fd);

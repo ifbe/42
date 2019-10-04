@@ -231,17 +231,17 @@ void* systemcreate(u64 type, void* argstr)
 		return &obj[fd];
 	}
 	else if(_uart_ == type)
-        {
-                parseuart(host, &port, name);
-                say("parse: %s,%d\n", host, port);
+	{
+		parseuart(host, &port, name);
+		say("parse: %s,%d\n", host, port);
 
-                fd = uart_start(host, port);
-                if(fd <= 0)return 0;
+		fd = uart_start(host, port);
+		if(fd <= 0)return 0;
 
-                obj[fd].type = _uart_;
-                obj[fd].selffd = fd;
+		obj[fd].type = _uart_;
+		obj[fd].selffd = fd;
 		return &obj[fd];
-        }
+	}
 
 	//decode ipaddr
 	port = 80;
