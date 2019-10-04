@@ -1,3 +1,21 @@
+<system>
+server{
+fmt:TCP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<artery>
+recut{
+fmt:recut
+}
+fftrgb{
+fmt:fftrgb
+}
+</artery>
+
+
 <arena>
 opengl{
 fmt:win
@@ -10,8 +28,11 @@ depth:1024
 
 
 <actor>
-2048{
-fmt:2048
+canvas{
+fmt:video
+}
+voxel{
+fmt:voxel
 }
 freecam{
 fmt:freecam
@@ -30,6 +51,15 @@ fmt:gl41wnd0
 
 
 <style>
+vidhaha{
+}
+vidgeom{
+c: 0.0, 0.0, -1000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
 skyhaha{
 }
 skygeom{
@@ -42,10 +72,10 @@ t: 0.0, 0.0, 1000.0
 freemodl{
 }
 freegeom{
-c: 0.0, 0.0, 1200.0
-r: 1000.0, 0.0, 0.0
-t: 0.0, 1000.0, 0.0
-f: 0.0, 0.0, -1000.0
+c: 0.0, -2000.0, 0.0
+r: 1.0, 0.0, 0.0
+t: 0.0, 0.0, 1.0
+f: 0.0, 1.0, 0.0
 }
 freefrus{
 l: 0.0, 0.0, 0.0, -1.0
@@ -63,13 +93,20 @@ q:1.0, 1.0
 
 
 <relation>
+#voxel depends on usbcam
+(server, 0, sys, dst) -> (recut, 0, art, src)
+(recut, 0, art, dst) -> (canvas, 0, act, yuv)
+
+(recut, 0, art, dst) -> (fftrgb, 0, art, src)
+(fftrgb, 0, art, dst) -> (voxel, 0, act, pcm)
 
 #3dworld depends on inner objects
-(3dworld, skygeom, act, 0) -> (2048, skyhaha, act, 0)
+(3dworld, vidgeom, act, 0) -> (canvas, vidhaha, act, 0)
+(3dworld, skygeom, act, 0) -> (voxel, skyhaha, act, 0)
 (3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
 
 #glctx depends on scene
-(thectx, 0, act, 0) -> (3dworld, 0, act, gl41)
+(thectx, 0, act, 0) -> (3dworld, 0, act, 0)
 
 #glwnd depends on ctx + cam
 (thewnd, 0, act, ctx) -> (thectx, 0, act, 0)

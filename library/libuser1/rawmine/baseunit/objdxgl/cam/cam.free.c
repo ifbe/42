@@ -252,7 +252,7 @@ static int freecam_draw_vbo(
 	float x = act->x0;
 	float y = act->y0;
 	vec3 vc,vr,vf,vt;
-
+/*
 	vc[0] = x;
 	vc[1] = y;
 	vc[2] = 0;
@@ -271,8 +271,10 @@ static int freecam_draw_vbo(
 	vt[1] = 0;
 	vt[2] = 100;
 	carveopaque_sphere(win, 0x80808080, vc, vr, vf, vt);
+*/
 	return 0;
-}/*
+}
+/*
 static int freecam_event(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty,

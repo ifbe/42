@@ -350,6 +350,19 @@ void carveunicode(struct actor* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
+void carveunicode_center(struct actor* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, u32 unicode)
+{
+	vec3 tc;
+	tc[0] = vc[0] - vr[0]/2 - vf[0]/2;
+	tc[1] = vc[1] - vr[1]/2 - vf[1]/2;
+	tc[2] = vc[2] - vr[2]/2 - vf[2]/2;
+	carveunicode(win, rgb, tc, vr, vf, unicode);
+}
+
+
+
+
 void carveutf8(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
@@ -357,65 +370,19 @@ void carveutf8(struct actor* win, u32 rgb,
 	utf2unicode(buf, &unicode);
 	carveunicode(win, rgb, vc, vr, vf, unicode);
 }
-void carvedecimal(struct actor* win, u32 rgb,
-	vec3 vc, vec3 vr, vec3 vf, u32 val)
+void carveutf8_center(struct actor* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
-	int j,len;
-	u8 str[8];
-	float f;
 	vec3 tc;
-
-	for(len=0;len<8;len++)
-	{
-		if(0 == val)break;
-		str[len] = 0x30 + (val%10);
-		val = val/10;
-	}
-	if(len == 0)
-	{
-		len = 1;
-		str[0] = '0';
-	}
-
-	for(j=0;j<len;j++)
-	{
-		f = (float)(j-len/2)*2;
-		tc[0] = vc[0] + (vr[0]*f);
-		tc[1] = vc[1] + (vr[1]*f);
-		tc[2] = vc[2] + (vr[2]*f);
-		carveascii(win, rgb, tc, vr, vf, str[len-1-j]);
-	}
+	tc[0] = vc[0] - vr[0]/2 - vf[0]/2;
+	tc[1] = vc[1] - vr[1]/2 - vf[1]/2;
+	tc[2] = vc[2] - vr[2]/2 - vf[2]/2;
+	carveutf8(win, rgb, tc, vr, vf, buf, len);
 }
-void carvehexadecimal(struct actor* win, u32 rgb,
-	vec3 vc, vec3 vr, vec3 vf, u32 val)
-{
-	int j,len;
-	u8 str[8];
-	float f;
-	vec3 tc;
 
-	for(len=0;len<8;len++)
-	{
-		if(0 == val)break;
-		str[len] = 0x30 + (val&0xf);
-		if(str[len] > 0x39)str[len] += 7;
-		val = val>>4;
-	}
-	if(len == 0)
-	{
-		len = 1;
-		str[0] = '0';
-	}
 
-	for(j=0;j<len;j++)
-	{
-		f = (float)((j-len/2)*2+1);
-		tc[0] = vc[0] + (vr[0]*f);
-		tc[1] = vc[1] + (vr[1]*f);
-		tc[2] = vc[2] + (vr[2]*f);
-		carveascii(win, rgb, tc, vr, vf, str[len-1-j]);
-	}
-}
+
+
 void carvestring(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
@@ -501,6 +468,49 @@ void carvestring_center(struct actor* win, u32 rgb,
 
 
 
+void carvedecimal(struct actor* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, u32 val)
+{
+	int j,len;
+	u8 str[8];
+
+	for(len=0;len<8;len++)
+	{
+		if(0 == val)break;
+		str[len] = 0x30 + (val%10);
+		val = val/10;
+	}
+	if(len == 0)
+	{
+		len = 1;
+		str[0] = '0';
+	}
+	carvestring(win, rgb, vc, vr, vf, str, len);
+}
+void carvehexadecimal(struct actor* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, u32 val)
+{
+	int j,len;
+	u8 str[8];
+
+	for(len=0;len<8;len++)
+	{
+		if(0 == val)break;
+		str[len] = 0x30 + (val&0xf);
+		if(str[len] > 0x39)str[len] += 7;
+		val = val>>4;
+	}
+	if(len == 0)
+	{
+		len = 1;
+		str[0] = '0';
+	}
+	carvestring(win, rgb, vc, vr, vf, str, len);
+}
+
+
+
+
 void carvefloat(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, float data)
 {
@@ -528,33 +538,32 @@ void carvetext_reverse(struct actor* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf,
 	u8* buf, int len)
 {
-	int j,k;
-	float fx,fy;
+	int j,k,cnt;
+	float n;
 	vec3 tc;
 	vec3 tr;
 	vec3 tf;
 	if(0 == buf)return;
 	if(0 == len)return;
 
-	fx = 32.0 / 500;
-	tr[0] = vr[0] * fx;
-	tr[1] = vr[1] * fx;
-	tr[2] = vr[2] * fx;
+	n = 32.0 / vec3_len(vr);
+	tr[0] = vr[0] * n;
+	tr[1] = vr[1] * n;
+	tr[2] = vr[2] * n;
 
-	fy = 32.0 / 500;
-	tf[0] = vf[0] * fy;
-	tf[1] = vf[1] * fy;
-	tf[2] = vf[2] * fy;
+	n = 32.0 / vec3_len(vf);
+	tf[0] = vf[0] * n;
+	tf[1] = vf[1] * n;
+	tf[2] = vf[2] * n;
 
 	tc[0] = vc[0] - vr[0] - vf[0];
 	tc[1] = vc[1] - vr[1] - vf[1];
 	tc[2] = vc[2] - vr[2] - vf[2];
 
 	k = len;
+	cnt = 0;
 	for(j=len-1;j>=0;j--)
 	{
-		if(tc[1] >= 250.0)break;
-
 		if(0 == j)
 		{
 			carvestring(win, rgb, tc, tr, tf, buf, k);
@@ -569,6 +578,10 @@ void carvetext_reverse(struct actor* win, u32 rgb,
 			tc[2] += tf[2];
 
 			k = j;
+
+			cnt += 1;
+			if(cnt > 100)break;
 		}
+
 	}
 }

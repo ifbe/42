@@ -1180,10 +1180,13 @@ void carveopaque_sphere(      struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3
 
 void carveascii(              struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
 void carveascii_center(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
+void carveunicode(            struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
+void carveunicode_center(     struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
+void carveutf8(               struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
+void carveutf8_center(        struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
+
 void carvedecimal(            struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
 void carvehexadecimal(        struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void carveunicode(            struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
-void carveutf8(               struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
 void carvestring(             struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 void carvestring_center(      struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 void carvetext_reverse(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);

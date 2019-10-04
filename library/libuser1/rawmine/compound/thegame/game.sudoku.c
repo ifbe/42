@@ -181,13 +181,13 @@ static void sudoku_draw_vbo3d(
 				tc[0] += tu[0] + vu[0]*0.01;
 				tc[1] += tu[1] + vu[1]*0.01;
 				tc[2] += tu[2] + vu[2]*0.01;
-				tr[0] = vr[0] / 18;
-				tr[1] = vr[1] / 18;
-				tr[2] = vr[2] / 18;
-				tf[0] = vf[0] / 18;
-				tf[1] = vf[1] / 18;
-				tf[2] = vf[2] / 18;
-				carveascii(win, ~rgb, tc, tr, tf, 0x30+data[y*9+x]);
+				tr[0] = vr[0] / 9;
+				tr[1] = vr[1] / 9;
+				tr[2] = vr[2] / 9;
+				tf[0] = vf[0] / 9;
+				tf[1] = vf[1] / 9;
+				tf[2] = vf[2] / 9;
+				carveascii_center(win, ~rgb, tc, tr, tf, 0x30+data[y*9+x]);
 			}
 		}
 	}

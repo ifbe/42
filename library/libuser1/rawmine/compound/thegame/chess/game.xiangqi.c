@@ -363,13 +363,13 @@ static void xiangqi_draw_vbo(
 			tc[0] += tu[0] + vu[0]*0.01;
 			tc[1] += tu[1] + vu[1]*0.01;
 			tc[2] += tu[2] + vu[2]*0.01;
-			tr[0] = vr[0] / 18;
-			tr[1] = vr[1] / 18;
-			tr[2] = vr[2] / 18;
-			tf[0] = vf[0] / 20;
-			tf[1] = vf[1] / 20;
-			tf[2] = vf[2] / 20;
-			carveutf8(win, fontcolor, tc, tr, tf,
+			tr[0] = vr[0] / 8;
+			tr[1] = vr[1] / 8;
+			tr[2] = vr[2] / 8;
+			tf[0] = vf[0] / 8;
+			tf[1] = vf[1] / 8;
+			tf[2] = vf[2] / 8;
+			carveutf8_center(win, fontcolor, tc, tr, tf,
 				(u8*)char2hanzi(data[y][x]), 0);
 		}
 	}

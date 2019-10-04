@@ -38,10 +38,13 @@ static void voxel_draw_vbo3d(
 	for(z=0;z<10;z++){
 	for(y=0;y<10;y++){
 	for(x=0;x<10;x++){
+		dw = buf[z*100 + y*10 + x];
+		if(dw < 8)continue;
+
 		dx = x / 5.0 - 0.9;
 		dy = y / 5.0 - 0.9;
 		dz = z / 5.0 - 0.9;
-		dw = buf[z*100 + y*10 + x] / 327680.0;
+		dw = dw / 327680.0;
 		tc[0] = vc[0] + vr[0]*dx + vf[0]*dy + vu[0]*dz;
 		tc[1] = vc[1] + vr[1]*dx + vf[1]*dy + vu[1]*dz;
 		tc[2] = vc[2] + vr[2]*dx + vf[2]*dy + vu[2]*dz;
