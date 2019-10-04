@@ -58,9 +58,9 @@ static void voxel_draw_vbo3d(
 		tu[1] = vu[1]*dw;
 		tu[2] = vu[2]*dw;
 
-		r = x*26+13;
+		r = z*26+13;
 		g = y*26+13;
-		b = z*26+13;
+		b = x*26+13;
 		carvesolid_prism4(win, (r<<16)|(g<<8)|b, tc, tr, tf, tu);
 	}
 	}
