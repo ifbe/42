@@ -320,37 +320,27 @@ int file_check(u8* buf, int len)
 
 
 
-int fileclient_create(struct element* ele, u8* url)
+int fileclient_start(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
 	u64 type;
-	struct object* obj;
-	u8 buf[0x1000];
-
-	ret = 0;
-	for(ret=0;ret<0x1000;ret++){
-		if(url[ret] < 0x20)break;
-		buf[ret] = url[ret];
-	}
-	buf[ret] = 0;
-
-	obj = systemcreate(_file_, buf);
-	if(0 == obj)return 0;
+	struct element* ele = self->pchip;
+	struct object* obj = peer->pchip;
+	void* buf = ele->buf = memorycreate(0x1000, 0);
 
 	ret = readfile(obj->selffd, 0, buf, 0x1000);
-	if(ret != 0x1000)goto fail;
+	if(ret != 0x1000)return -1;
 
 	type = file_check(buf, 0x1000);
-	if(0 == type)goto fail;
-
-	ele->type = type;
-	relationcreate(ele, 0, _art_, 0, obj, 0, _sys_, 0);
+	if(0 == type)return -2;
 
 	if(_mbr_ == type)mbrclient_start(obj, 0, ele, 0, buf, ret);
 	if(_gpt_ == type)gptclient_start(obj, 0, ele, 0, buf, ret);
 	return 0;
 
-fail:
-	systemdelete(obj);
+	return 0;
+}
+int fileclient_create(struct element* ele, u8* url)
+{
 	return 0;
 }

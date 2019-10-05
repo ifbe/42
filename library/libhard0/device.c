@@ -76,7 +76,7 @@ int devicedelete()
 {
 	return 0;
 }
-void* devicecreate(u64 type, void* name)
+void* devicecreate(u64 type, void* name, int argc, char** argv)
 {
 	int fd, baud;
 	u8 tmp[256];
@@ -117,7 +117,7 @@ int devicemodify(int argc, char** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		devicecreate(name, argv[3]);
+		devicecreate(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;
 }

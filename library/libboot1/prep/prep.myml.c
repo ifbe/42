@@ -440,7 +440,7 @@ int role_test_arena(u8* buf, int len, struct chiplist chip[], int clen)
 				chip[clen].type = fmt;
 
 				chip[clen].hash = hash;
-				chip[clen].addr = arenacreate(fmt, 0);
+				chip[clen].addr = arenacreate(fmt, 0, 0, 0);
 				//say("@%llx\n", arenabuf[arenalen]);
 
 				clen += 1;
@@ -540,7 +540,7 @@ int role_test_actor(u8* buf, int len, struct chiplist chip[], int clen)
 				chip[clen].type = fmt;
 
 				chip[clen].hash = hash;
-				chip[clen].addr = actorcreate(fmt, file);
+				chip[clen].addr = actorcreate(fmt, file, 0, 0);
 				//say("@%llx\n", act);
 
 				clen += 1;
@@ -639,7 +639,7 @@ int role_test_system(u8* buf, int len, struct chiplist chip[], int clen)
 				chip[clen].type = fmt;
 
 				chip[clen].hash = hash;
-				chip[clen].addr = systemcreate(fmt, url);
+				chip[clen].addr = systemcreate(fmt, url, 0, 0);
 				//say("@%llx\n", act);
 
 				clen += 1;
@@ -738,7 +738,7 @@ int role_test_artery(u8* buf, int len, struct chiplist chip[], int clen)
 				chip[clen].type = fmt;
 
 				chip[clen].hash = hash;
-				chip[clen].addr = arterycreate(fmt, url);
+				chip[clen].addr = arterycreate(fmt, url, 0, 0);
 				//say("haha:%llx,%llx\n", fmt, url);
 
 				clen += 1;
@@ -837,7 +837,7 @@ int role_test_driver(u8* buf, int len, struct chiplist chip[], int clen)
 				chip[clen].type = fmt;
 
 				chip[clen].hash = hash;
-				chip[clen].addr = drivercreate(fmt, url);
+				chip[clen].addr = drivercreate(fmt, url, 0, 0);
 				//say("haha:%llx,%llx\n", fmt, url);
 
 				clen += 1;
@@ -936,7 +936,7 @@ int role_test_device(u8* buf, int len, struct chiplist chip[], int clen)
 				chip[clen].type = fmt;
 
 				chip[clen].hash = hash;
-				chip[clen].addr = devicecreate(fmt, url);
+				chip[clen].addr = devicecreate(fmt, url, 0, 0);
 				//say("haha:%llx,%llx\n", fmt, url);
 
 				clen += 1;

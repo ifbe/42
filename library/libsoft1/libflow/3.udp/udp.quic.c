@@ -3,14 +3,11 @@
 
 
 
-int quicclient_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int quicclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int quicclient_read()
+int quicclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -26,14 +23,11 @@ int quicclient_create(struct element* ele, u8* url)
 
 
 
-int quicserver_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int quicserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int quicserver_read()
+int quicserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -49,17 +43,15 @@ int quicserver_create(struct element* ele, u8* url)
 
 
 
-int quicmaster_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int quicmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8* tmp;
 	u8 str[30];
+	struct element* ele = self->pchip;
 
 	//who
-	tmp = pin;
+	tmp = arg;
 	if(tmp){
 		ret = mysnprintf(str, 30,
 			"%d.%d.%d.%d:%d",
@@ -92,10 +84,5 @@ int quicmaster_delete(struct element* ele)
 }
 int quicmaster_create(struct element* ele, u8* url)
 {
-	int ret;
-	void* obj = systemcreate(_UDP_, url);
-	if(0 == obj)return 0;
-
-	relationcreate(ele, 0, _art_, 0, obj, 0, _sys_, 0);
 	return 0;
 }

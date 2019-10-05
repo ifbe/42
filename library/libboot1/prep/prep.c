@@ -104,7 +104,7 @@ void prep()
 	u8* argv[2];
 
 	//cmdline
-	arenacreate(_std_, 0);
+	arenacreate(_std_, 0, 0, 0);
 /*
 	//try load from file
 	ret = role_fromfile(0, argv);

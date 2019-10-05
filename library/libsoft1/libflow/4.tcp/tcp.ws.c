@@ -451,10 +451,10 @@ int wsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	Tcp = Tcp->tempobj;
 
 	//WS = self->pchip;
-	Ws = arterycreate(_Ws_, 0);
+	Ws = arterycreate(_Ws_, 0, 0, 0);
 
 	//echo
-	echo = arterycreate(_echo_, 0);
+	echo = arterycreate(_echo_, 0, 0, 0);
 
 	//
 	rel = relationcreate(echo, 0, _art_, _src_, Ws, 0, _art_, _dst_);

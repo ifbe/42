@@ -180,7 +180,7 @@ int systemdelete(void* addr)
 	}
 	return 0;
 }
-void* systemcreate(u64 type, void* argstr)
+void* systemcreate(u64 type, void* argstr, int argc, char** argv)
 {
 	int j,k,fd,ret;
 	u8 host[0x100];	//127.0.0.1
@@ -220,8 +220,8 @@ void* systemcreate(u64 type, void* argstr)
 	}
 	else if(_ptmx_ == type)
 	{
-                parseuart(host, &port, name);
-                say("parse: %s,%d\n", host, port);
+		parseuart(host, &port, name);
+		say("parse: %s,%d\n", host, port);
 
 		fd = startshell(host, port);
 		if(fd <= 0)return 0;
@@ -328,7 +328,7 @@ void* systemmodify(int argc, char** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		systemcreate(name, argv[3]);
+		systemcreate(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;
 }

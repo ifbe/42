@@ -1,20 +1,22 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<fcntl.h>
-#include<unistd.h>
-#include<termios.h>
-#include<sys/ioctl.h>
-#include<sys/select.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "libboot.h"
+//#include<fcntl.h>
+//#include<unistd.h>
+//#include<termios.h>
+//#include<sys/ioctl.h>
+//#include<sys/select.h>
 #define u8 unsigned char
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
 //
-void birth(void* addr);
-void death();
-//
+int sleep_us();
 int termwrite(void* buf, int len);
 int openwriteclose(void*,int,void*,int);
+//
+void birth(void* addr);
+void death();
 //
 void prep();
 void loop();
@@ -27,6 +29,8 @@ int main(int argc, char** argv)
 
 	u8* addr = malloc(0x1000000);
 	birth(addr);
+
+	pwrclkcreate(_main_, 0, argc, argv);
 
 	for(j=1;j<argc;j++)termwrite(argv[j], 0);
 	if(argc <= 1)prep();
@@ -42,7 +46,7 @@ int main(int argc, char** argv)
 
 void* pollenv()
 {
-	usleep(1000);
+	sleep_us(1000);
 	return 0;
 }
 /*

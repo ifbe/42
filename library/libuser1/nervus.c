@@ -220,7 +220,7 @@ int actordelete(struct actor* act)
 
 	return 0;
 }
-void* actorcreate(u64 type, void* buf)
+void* actorcreate(u64 type, void* buf, int argc, char** argv)
 {
 	int j,k;
 	u8* src;
@@ -393,7 +393,7 @@ void* actormodify(int argc, char** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		actorcreate(name, argv[3]);
+		actorcreate(name, argv[3], argc-3, &argv[3]);
 	}
 
 	return 0;

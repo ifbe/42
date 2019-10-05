@@ -872,7 +872,7 @@ int sshmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	if(0 == obj)return 0;
 
 	obj = obj->tempobj;
-	ele = arterycreate(_Ssh_, 0);
+	ele = arterycreate(_Ssh_, 0, 0, 0);
 	relationcreate(ele, 0, _art_, _src_, obj, 0, _sys_, _dst_);
 	return 0;
 }

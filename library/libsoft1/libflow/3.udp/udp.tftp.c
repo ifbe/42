@@ -3,14 +3,11 @@
 
 
 
-int tftpclient_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int tftpclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tftpclient_read()
+int tftpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -26,17 +23,19 @@ int tftpclient_create(struct element* ele, u8* url)
 
 
 
-int tftpserver_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int tftpserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
+int tftpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8* tmp;
 	u8 str[30];
+	struct element* ele = self->pchip;
 
 	//who
-	tmp = pin;
+	tmp = arg;
 	if(tmp){
 		ret = mysnprintf(str, 30,
 			"%d.%d.%d.%d:%d",
@@ -59,20 +58,11 @@ int tftpserver_write(
 	relationwrite(ele, _src_, 0, 0, buf,len);
 	return 0;
 }
-int tftpserver_read()
-{
-	return 0;
-}
 int tftpserver_delete(struct element* ele)
 {
 	return 0;
 }
 int tftpserver_create(struct element* ele, u8* url)
 {
-	int ret;
-	void* obj = systemcreate(_UDP_, url);
-	if(0 == obj)return 0;
-
-	relationcreate(ele, 0, _art_, 0, obj, 0, _sys_, 0);
 	return 0;
 }

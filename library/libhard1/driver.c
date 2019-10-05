@@ -80,7 +80,7 @@ int driverdelete()
 {
 	return 0;
 }
-void* drivercreate(u64 type, void* url)
+void* drivercreate(u64 type, void* url, int argc, char** argv)
 {
 	struct driver* dr;
 	say("@drivercreate: %.8s\n", &type);
@@ -121,7 +121,7 @@ int drivermodify(int argc, char** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		drivercreate(name, argv[3]);
+		drivercreate(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;
 }

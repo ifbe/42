@@ -133,7 +133,7 @@ static void browser_event(
 	if(0xd == ev->why)
 	{
 		str->len = 0;
-
+/*
 		if(0 == ncmp(buf, "file://", 7))
 		{
 			dat = act->buf;
@@ -145,7 +145,7 @@ static void browser_event(
 		{
 			www = arterycreate(0, buf);
 			relationcreate(act, 0, _act_, 0, www, 0, _art_, 0);
-		}
+		}*/
 	}
 	else if(0x8 == ev->why)
 	{

@@ -45,7 +45,7 @@ int workerdelete(void* item)
 {
 	return 0;
 }
-void* workercreate(u64 type, void* name)
+void* workercreate(u64 type, void* name, int argc, char** argv)
 {
 	return 0;
 }
@@ -64,7 +64,7 @@ int workermodify(int argc, char** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		workercreate(name, argv[3]);
+		workercreate(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;
 }

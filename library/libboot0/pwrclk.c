@@ -47,8 +47,15 @@ int pwrclkdelete(void* item)
 {
 	return 0;
 }
-void* pwrclkcreate(u64 type, void* name)
+void* pwrclkcreate(u64 type, void* name, int argc, char** argv)
 {
+	struct pwrclk* tmp;
+
+	if(_main_ == type){
+		tmp = allocpwrclk();
+		tmp->type = _main_;
+		return tmp;
+	}
 	return 0;
 }
 int pwrclkmodify(int argc, char** argv)
@@ -66,7 +73,7 @@ int pwrclkmodify(int argc, char** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		pwrclkcreate(name, argv[3]);
+		pwrclkcreate(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;
 }

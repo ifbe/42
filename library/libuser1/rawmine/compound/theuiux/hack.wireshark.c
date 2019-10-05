@@ -1,6 +1,5 @@
 #include "libuser.h"
 #define _UDP_ hex32('U','D','P',0)
-void* systemcreate(u64, void*);
 
 
 

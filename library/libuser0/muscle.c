@@ -188,7 +188,7 @@ int arenadelete(struct arena* win)
 	win->fmt = 0;
 	return 0;
 }
-void* arenacreate(u64 type, void* addr)
+void* arenacreate(u64 type, void* addr, int argc, char** argv)
 {
 	int j = 0;
 	struct arena* win;
@@ -378,7 +378,7 @@ void* arenamodify(int argc, char** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		arenacreate(name, argv[3]);
+		arenacreate(name, argv[3], argc-3, &argv[3]);
 	}
 
 	return 0;

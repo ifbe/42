@@ -14,6 +14,9 @@ typedef unsigned long long u64;
 #define _dev_ hex32('d','e','v',0)
 #define _wrk_ hex32('w','r','k',0)
 #define _pwr_ hex32('p','w','r',0)
+//
+#define _main_ hex32('m','a','i','n')
+#define _start_ hex64('s','t','a','r','t', 0, 0, 0)
 
 
 
@@ -262,56 +265,56 @@ int actorwrite( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void
 int actorstop(  struct halfrel* self,struct halfrel* peer);
 int actorstart( struct halfrel* self,struct halfrel* peer);
 int actordelete(void*);
-void* actorcreate(u64, void*);
+void* actorcreate(u64 type, void* addr, int argc, char** argv);
 //
 int arenaread(  struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int arenawrite( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int arenastop(  struct halfrel* self,struct halfrel* peer);
 int arenastart( struct halfrel* self,struct halfrel* peer);
 int arenadelete(void*);
-void* arenacreate(u64, void*);
+void* arenacreate(u64 type, void* addr, int argc, char** argv);
 //
 int arteryread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int arterywrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int arterystop( struct halfrel* self,struct halfrel* peer);
 int arterystart(struct halfrel* self,struct halfrel* peer);
 int arterydelete(void*);
-void* arterycreate(u64, void*);
+void* arterycreate(u64 type, void* addr, int argc, char** argv);
 //
 int systemread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int systemwrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int systemstop( struct halfrel* self,struct halfrel* peer);
 int systemstart(struct halfrel* self,struct halfrel* peer);
 int systemdelete(void*);
-void* systemcreate(u64, void*);
+void* systemcreate(u64 type, void* addr, int argc, char** argv);
 //
 int driverread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int driverwrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int driverstop( struct halfrel* self,struct halfrel* peer);
 int driverstart(struct halfrel* self,struct halfrel* peer);
 int driverdelete(void*);
-void* drivercreate(u64, void*);
+void* drivercreate(u64 type, void* addr, int argc, char** argv);
 //
 int deviceread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int devicewrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int devicestop( struct halfrel* self,struct halfrel* peer);
 int devicestart(struct halfrel* self,struct halfrel* peer);
 int devicedelete(void*);
-void* devicecreate(u64, void*);
+void* devicecreate(u64 type, void* addr, int argc, char** argv);
 //
 int workerread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int workerwrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int workerstop( struct halfrel* self,struct halfrel* peer);
 int workerstart(struct halfrel* self,struct halfrel* peer);
 int workerdelete(void*);
-void* workercreate(u64, void*);
+void* workercreate(u64 type, void* addr, int argc, char** argv);
 //
 int pwrclkread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int pwrclkwrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int pwrclkstop( struct halfrel* self,struct halfrel* peer);
 int pwrclkstart(struct halfrel* self,struct halfrel* peer);
 int pwrclkdelete(void*);
-void* pwrclkcreate(u64, void*);
+void* pwrclkcreate(u64 type, void* addr, int argc, char** argv);
 //
 int relationread( void* item, int foot, void* arg, int idx, void* buf, int len);
 int relationwrite(void* item, int foot, void* arg, int idx, void* buf, int len);

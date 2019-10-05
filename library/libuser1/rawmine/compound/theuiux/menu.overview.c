@@ -115,7 +115,7 @@ int arenaactor(struct actor* win, struct actor* ccc, struct actor* act, struct a
 		}
 	}
 
-	actorcreate(0, act);
+	actorcreate(0, act, 0, 0);
 	relationcreate(act, pin, _act_, 0, ccc, sty, _win_, 0);
 	return 0;
 }
@@ -1096,7 +1096,7 @@ void overview_drag(struct actor* win, int x0, int y0, int x1, int y1)
 		if((x0==x1)&&(y0==y1))
 		{
 			if(0 == act_s->type)return;
-			actorcreate(0, act_s);
+			actorcreate(0, act_s, 0, 0);
 		}
 		else if(y1 < 8)
 		{
@@ -1107,8 +1107,8 @@ void overview_drag(struct actor* win, int x0, int y0, int x1, int y1)
 					act_s, 0, _act_, 0
 				);
 			}
-			else if(0 == act_s->type)actorcreate(act_d->fmt, 0);
-			else if(0 == act_d->type)actorcreate(act_s->fmt, 0);
+			else if(0 == act_s->type)actorcreate(act_d->fmt, 0, 0, 0);
+			else if(0 == act_d->type)actorcreate(act_s->fmt, 0, 0, 0);
 		}
 		else if(y1 < 16)
 		{
@@ -1147,10 +1147,10 @@ void overview_drag(struct actor* win, int x0, int y0, int x1, int y1)
 				);
 			}
 			else if(win_s->type){
-				if(_win_ == win_s->type)win_d = arenacreate(_coop_, win_s);
+				if(_win_ == win_s->type)win_d = arenacreate(_coop_, win_s, 0, 0);
 			}
 			else if(win_d->type){
-				if(_win_ == win_s->type)win_s = arenacreate(_coop_, win_d);
+				if(_win_ == win_s->type)win_s = arenacreate(_coop_, win_d, 0, 0);
 			}
 		}
 		else if(y1 < 24)

@@ -63,31 +63,39 @@ static u8 spacket5[] = {
 
 
 
-int telnetclient_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
-{
-	if(ele->stage1 >= 6)
-	{
-		say("%.*s", len, buf);
-		return 0;
-	}
 
+int telnetclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
+int telnetclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+{
+	struct element* ele = self->pchip;
 	switch(ele->stage1)
 	{
-		case 0:relationwrite(ele, _src_, 0, 0, cpacket0, sizeof(cpacket0));break;
 		case 1:relationwrite(ele, _src_, 0, 0, cpacket1, sizeof(cpacket1));break;
 		case 2:relationwrite(ele, _src_, 0, 0, cpacket2, sizeof(cpacket2));break;
 		case 3:relationwrite(ele, _src_, 0, 0, cpacket3, sizeof(cpacket3));break;
 		case 4:relationwrite(ele, _src_, 0, 0, cpacket4, sizeof(cpacket4));break;
 		case 5:relationwrite(ele, _src_, 0, 0, cpacket5, sizeof(cpacket5));break;
+		default:{
+			say("%.*s", len, buf);
+			return 0;
+		}
 	}
 	ele->stage1 += 1;
 	return 0;
 }
-int telnetclient_read()
+int telnetclient_stop(struct halfrel* self, struct halfrel* peer)
 {
+	return 0;
+}
+int telnetclient_start(struct halfrel* self, struct halfrel* peer)
+{
+	struct element* ele = self->pchip;
+	relationwrite(ele, _src_, 0, 0, cpacket0, sizeof(cpacket0));
+
+	ele->stage1 = 1;
 	return 0;
 }
 int telnetclient_delete(struct element* ele)
@@ -96,25 +104,20 @@ int telnetclient_delete(struct element* ele)
 }
 int telnetclient_create(struct element* ele, u8* url)
 {
-	int ret;
-	void* obj = systemcreate(_tcp_, url);
-	if(0 == obj)return 0;
-
-	relationcreate(ele, 0, _art_, 0, obj, 0, _sys_, 0);
-
 	ele->stage1 = 0;
-	telnetclient_write(ele, 0, obj, 0, 0, 0);
 	return 0;
 }
 
 
 
 
-int telnetserver_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int telnetserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
+	return 0;
+}
+int telnetserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+{
+	struct element* ele = self->pchip;
 	printmemory(buf, len);
 
 	switch(ele->stage1)
@@ -129,10 +132,6 @@ int telnetserver_write(
 	ele->stage1 += 1;
 	return 0;
 }
-int telnetserver_read()
-{
-	return 0;
-}
 int telnetserver_delete(struct element* ele)
 {
 	return 0;
@@ -145,20 +144,24 @@ int telnetserver_create(struct element* ele, u8* url)
 
 
 
-int telnetmaster_write(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int telnetmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	struct element* e = arterycreate(_Telnet_, 0);
-	if(e)relationcreate(e, 0, _art_, 0, obj, 0, _sys_, 0);
-
-	e->stage1 = 0;
-	telnetserver_write(e, 0, obj, 0, buf, len);
 	return 0;
 }
-int telnetmaster_read()
+int telnetmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
+	struct element* ele;
+	struct object* obj;
+	struct relation* rel;
+
+	obj = peer->pchip;
+	obj = obj->tempobj;
+	ele = arterycreate(_Telnet_, 0, 0, 0);
+
+	rel = relationcreate(ele, 0, _art_, 0, obj, 0, _sys_, 0);
+	self = (void*)&rel->dstchip;
+	peer = (void*)&rel->srcchip;
+	arterywrite(self, peer, arg, idx, buf, len);
 	return 0;
 }
 int telnetmaster_delete(struct element* ele)
@@ -167,10 +170,5 @@ int telnetmaster_delete(struct element* ele)
 }
 int telnetmaster_create(struct element* ele, u8* url)
 {
-	int ret;
-	void* obj = systemcreate(_TCP_, url);
-	if(0 == obj)return 0;
-
-	relationcreate(ele, 0, _art_, 0, obj, 0, _sys_, 0);
 	return 0;
 }

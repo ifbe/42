@@ -582,7 +582,7 @@ int arterydelete(void* ele)
 {
 	return 0;
 }
-void* arterycreate(u64 type, void* argstr)
+void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 {
 	int j,fd,ret,port;
 	struct element* e;
@@ -1169,11 +1169,6 @@ void* arterycreate(u64 type, void* argstr)
 		if(0 == e)return 0;
 
 		e->type = _http_;
-		if(url)
-		{
-			f = arterycreate(_tls_, url);
-			relationcreate(e, 0, _art_, 0, f, 0, _art_, 0);
-		}
 
 		return e;
 	}
@@ -1194,7 +1189,7 @@ void* arterymodify(int argc, char** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		arterycreate(name, argv[3]);
+		arterycreate(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;
 }
