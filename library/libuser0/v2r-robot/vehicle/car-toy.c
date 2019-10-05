@@ -26,7 +26,7 @@ static int name[16] = {
 };
 static char table[16];
 static char value[16];
-static void toycar_update(int L, int R)
+static void toycar_update(int L, int R, int el, int er)
 {
     int j;
 
@@ -36,13 +36,10 @@ static void toycar_update(int L, int R)
     value[4] = value[6] = R;
     value[5] = value[7] = !R;
 
+    value[ 8] = value[ 9] = el;
+    value[10] = value[11] = er;
+
     for(j=0;j<8;j++)boardwrite(_gpio_, table[j], 0, value[j]);
-}
-static void toycar_status(int E)
-{
-    int j;
-    for(j=8;j<12;j++)value[j] = E;
-    for(j=8;j<12;j++)boardwrite(_gpio_, table[j], 0, value[j]);
 }
 
 
@@ -75,12 +72,17 @@ int toycar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 
     switch(buf[0])
     {
-        case 'a':toycar_update(1, 0);break;
-        case 'd':toycar_update(0, 1);break;
-        case 'w':toycar_update(1, 1);break;
-        case 's':toycar_update(0, 0);break;
-        case ' ':toycar_status(1);break;
-        default: toycar_status(0);break;
+        case 'a':toycar_update(1, 0, 1, 1);break;
+        case 'd':toycar_update(0, 1, 1, 1);break;
+        case 'w':toycar_update(1, 1, 1, 1);break;
+        case 's':toycar_update(0, 0, 1, 1);break;
+
+        case 'q':toycar_update(1, 1, 0, 1);break;
+        case 'e':toycar_update(1, 1, 1, 0);break;
+        case 'z':toycar_update(0, 0, 0, 1);break;
+        case 'c':toycar_update(0, 0, 1, 0);break;
+
+        default: toycar_update(0, 0, 0, 0);break;
     }
     return 0;
 }

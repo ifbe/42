@@ -102,6 +102,7 @@ void initpwrclk(u8* addr)
 	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)pwr[j].tier = _pwr_;
 
+	boardcreate();
 	createserial();
 
 	initstdin( addr+0x100000);
