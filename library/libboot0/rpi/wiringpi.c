@@ -53,18 +53,18 @@ int boardstart(int name, int mode)
 	int pin = -1;
 	switch(name)
 	{
-		case hex32('l','f','e',0):pin =  3;break;
+		case hex32('l','f','e',0):pin =  5;break;
 		case hex32('l','f','p',0):pin = 21;break;
 		case hex32('l','f','n',0):pin = 22;break;
 		case hex32('l','n','p',0):pin = 23;break;
 		case hex32('l','n','n',0):pin = 24;break;
-		case hex32('l','n','e',0):pin = 25;break;
-		case hex32('r','f','e',0):pin =  5;break;
+		case hex32('l','n','e',0):pin = 29;break;
+		case hex32('r','f','e',0):pin = 25;break;
 		case hex32('r','f','p',0):pin =  6;break;
 		case hex32('r','f','n',0):pin = 26;break;
 		case hex32('r','n','p',0):pin = 27;break;
 		case hex32('r','n','n',0):pin = 28;break;
-		case hex32('r','n','e',0):pin = 29;break;
+		case hex32('r','n','e',0):pin =  3;break;
 
 		case hex32('e','n', 0, 0):pin = 21;break;
 		case hex32('x','d', 0, 0):pin = 22;break;

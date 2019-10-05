@@ -39,7 +39,7 @@ static void toycar_update(int L, int R, int el, int er)
     value[ 8] = value[ 9] = el;
     value[10] = value[11] = er;
 
-    for(j=0;j<8;j++)boardwrite(_gpio_, table[j], 0, value[j]);
+    for(j=0;j<12;j++)boardwrite(_gpio_, table[j], 0, value[j]);
 }
 
 
@@ -72,6 +72,11 @@ int toycar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 
     switch(buf[0])
     {
+	case '1':boardwrite(_gpio_, table[ 8], 0, 1);break;
+	case '2':boardwrite(_gpio_, table[ 9], 0, 1);break;
+	case '3':boardwrite(_gpio_, table[10], 0, 1);break;
+	case '4':boardwrite(_gpio_, table[11], 0, 1);break;
+
         case 'a':toycar_update(1, 0, 1, 1);break;
         case 'd':toycar_update(0, 1, 1, 1);break;
         case 'w':toycar_update(1, 1, 1, 1);break;
