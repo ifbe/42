@@ -1,5 +1,6 @@
 #include "libuser.h"
 int lowlevel_input();
+int termwrite(void* buf, int len);
 
 
 
@@ -19,17 +20,25 @@ void terminalthread(struct arena* win)
 		}
 	}
 }
+
+
+
+
+void stddelete(struct arena* win)
+{
+}
 void stdcreate(struct arena* win)
 {
+	termwrite("\n", 1);
 	threadcreate(terminalthread, win);
 }
 
 
 
 
-void initstd()
+void freestd()
 {
 }
-void freestd()
+void initstd()
 {
 }

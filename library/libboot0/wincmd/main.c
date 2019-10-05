@@ -3,19 +3,13 @@
 #include <conio.h>
 #include <direct.h>
 #include <windows.h>
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-#define hex16(a,b) (a | (b<<8))
-#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
-#define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
-//
-void birth(void* addr);
-void death();
+#include "libboot.h"
 //
 int termwrite(u8* buf, int len);
 int openwriteclose(void*,int,void*,int);
+//
+void birth(void* addr);
+void death();
 //
 void prep();
 void loop();
@@ -74,11 +68,14 @@ int arg2utf8(u8* src, u8* dst)
 }
 int main(int argc, char** argv)
 {
+	//before
 	int j,k;
 	u8 tmp[0x1000];
-
 	u8* addr = malloc(0x1000000);
 	birth(addr);
+
+	//prep
+	pwrclkcreate(_win32_, 0, argc, argv);
 
 	for(j=1;j<argc;j++){
 		k = arg2utf8(argv[j], tmp);
@@ -86,14 +83,17 @@ int main(int argc, char** argv)
 		//lowlevel_output(tmp, k+1);
 		termwrite(tmp, k);
 	}
-
 	if(argc <= 1)prep();
-	loop();
 
+	//loop
+	workercreate(_loop_, 0, 0, 0);
+
+	//after
 	openwriteclose("universe.bin",0,addr,0x1000000);
 	death();
 	return 0;
 }
+
 
 
 

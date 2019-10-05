@@ -56,6 +56,11 @@ void* pwrclkcreate(u64 type, void* name, int argc, char** argv)
 		tmp->type = _main_;
 		return tmp;
 	}
+	if(_win32_ == type){
+		tmp = allocpwrclk();
+		tmp->type = _win32_;
+		return tmp;
+	}
 	return 0;
 }
 int pwrclkmodify(int argc, char** argv)

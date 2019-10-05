@@ -14,9 +14,19 @@ typedef unsigned long long u64;
 #define _dev_ hex32('d','e','v',0)
 #define _wrk_ hex32('w','r','k',0)
 #define _pwr_ hex32('p','w','r',0)
-//
-#define _main_ hex32('m','a','i','n')
+//bare metal
 #define _start_ hex64('s','t','a','r','t', 0, 0, 0)
+#define _efimain_ hex64('e','f','i','m','a','i','n')
+//kernal module
+#define _kext_ hex32('k','e','x','t')
+#define _ko_ hex32('k','o', 0, 0)
+//application
+#define _main_ hex32('m','a','i','n')
+#define _ndkmain_ hex64('n','d','k','m','a','i','n', 0)
+#define _win32_ hex64('w','i','n','3','2', 0, 0, 0)
+#define _winmain_ hex64('w','i','n','m','a','i','n', 0)
+//
+#define _loop_ hex32('l','o','o','p')
 
 
 

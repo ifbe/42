@@ -1,15 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "libboot.h"
-//#include<fcntl.h>
-//#include<unistd.h>
-//#include<termios.h>
-//#include<sys/ioctl.h>
-//#include<sys/select.h>
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
 //
 int sleep_us();
 int termwrite(void* buf, int len);
@@ -25,22 +16,27 @@ void loop();
 
 int main(int argc, char** argv)
 {
-	int j,k;
-
+	//before
+	int j;
 	u8* addr = malloc(0x1000000);
 	birth(addr);
 
+	//prep
 	pwrclkcreate(_main_, 0, argc, argv);
 
 	for(j=1;j<argc;j++)termwrite(argv[j], 0);
 	if(argc <= 1)prep();
 
-	loop();
-	openwriteclose("universe.bin",0,addr,0x1000000);
+	//loop
+	workercreate(_loop_, 0, 0, 0);
 
+	//after
+	openwriteclose("universe.bin",0,addr,0x1000000);
+	free(addr);
 	death();
 	return 0;
 }
+
 
 
 

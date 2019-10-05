@@ -1,7 +1,8 @@
 <system>
 uart{
 fmt:uart
-url:/dev/ttyACM0
+#url:/dev/ttyACM0
+url:/dev/tty.usbmodem424242423
 }
 </system>
 

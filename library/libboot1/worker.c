@@ -1,4 +1,5 @@
 #include "libboot.h"
+void loop();
 //
 void freestdev();
 void initstdev(void*);
@@ -47,6 +48,15 @@ int workerdelete(void* item)
 }
 void* workercreate(u64 type, void* name, int argc, char** argv)
 {
+	struct worker* tmp;
+
+	if(_loop_ == type){
+		tmp = allocworker();
+		tmp->type = _loop_;
+
+		loop();
+		return tmp;
+	}
 	return 0;
 }
 int workermodify(int argc, char** argv)
