@@ -1,0 +1,22 @@
+<actor>
+V0{
+fmt:vsrc
+val:5v
+}
+R0{
+fmt:resistor
+val:500
+}
+
+pcb{
+fmt:eeworld
+}
+</actor>
+
+
+<relation>
+(pcb, 0, act, vcc) -> (V0, 0, act, p)
+(pcb, 0, act, vcc) -> (R0, 0, act, p)
+(pcb, 0, act, gnd) -> (V0, 0, act, n)
+(pcb, 0, act, gnd) -> (R0, 0, act, n)
+</relation>

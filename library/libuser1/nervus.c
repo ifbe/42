@@ -454,6 +454,11 @@ int actorread_all()
 			hoffdata_read(&self, 0, 0, 0, 0, 0);
 			break;
 		}
+		case _eeworld_:{
+			self.chip = (u64)&actor[j];
+			eeworld_read(&self, 0, 0, 0, 0, 0);
+			break;
+		}
 	}//switch
 	}//for
 	return 0;

@@ -516,7 +516,7 @@ static int freecam_event1(
 	struct fstyle* obb;
 	struct halfrel* self;
 	struct halfrel* peer;
-	say("freecam_event@%llx:%x,%x\n", act, ev->why, ev->what);
+	//say("freecam_event@%llx:%x,%x\n", act, ev->why, ev->what);
 
 	freecam_search(act, 0, &self, &peer);
 	obb = peer->pfoot;
@@ -741,7 +741,7 @@ static int freecam_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 	struct style* area = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 
-	say("@freecam_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
+	//say("@freecam_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
 	freecam_event1(act, frus, win, area, ev, 0);
 	return 0;
 }

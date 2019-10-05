@@ -120,6 +120,24 @@ void carveline(struct actor* win, u32 rgb,
 	ibuf[0] = vlen;
 	ibuf[1] = vlen+1;
 }
+void carveline_shorter(struct actor* win, u32 rgb,
+	vec3 va, vec3 vb)
+{
+	vec3 t, ta, tb;
+	t[0] = (va[0] + vb[0])/2;
+	t[1] = (va[1] + vb[1])/2;
+	t[2] = (va[2] + vb[2])/2;
+
+	ta[0] = t[0] + (va[0] - t[0])*0.95;
+	ta[1] = t[1] + (va[1] - t[1])*0.95;
+	ta[2] = t[2] + (va[2] - t[2])*0.95;
+
+	tb[0] = t[0] + (vb[0] - t[0])*0.95;
+	tb[1] = t[1] + (vb[1] - t[1])*0.95;
+	tb[2] = t[2] + (vb[2] - t[2])*0.95;
+
+	carveline(win, rgb, ta, tb);
+}
 void carveline_arrow(struct actor* win, u32 rgb,
 	vec3 va, vec3 vb, vec3 vn)
 {

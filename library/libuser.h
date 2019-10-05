@@ -1077,51 +1077,6 @@ void drawvt100(         struct actor* win, u32 rgb, int x0, int y0, int x1, int 
 
 
 
-//-----------------------------2in3--------------------------
-/*
-void carvepoint2d(           struct actor* win, u32 rgb, vec3 vc);
-void carvepoint2d_bezier(    struct actor* win, u32 rgb, vec3 va, vec3 vb, vec3 vt);
-void carvepoint2d_triangle(  struct actor* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carvepoint2d_rect(      struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carvepoint2d_circle(    struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-
-void carveline2d(            struct actor* win, u32 rgb, vec3 va, vec3 vb);
-void carveline2d_arrow(      struct actor* win, u32 rgb, vec3 va, vec3 vb);
-void carveline2d_bezier(     struct actor* win, u32 rgb, vec3 va, vec3 vb, vec3 vt);
-void carveline2d_yshape(     struct actor* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carveline2d_triangle(   struct actor* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carveline2d_rect(       struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carveline2d_circle(     struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-
-void carvesolid2d_triangle(  struct actor* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carvesolid2d_rect(      struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carvesolid2d_circle(    struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carvesolid2d_prism4(    struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvesolid2d_sphere(    struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-
-void carveopaque2d_bezier(   struct actor* win, u32 rgb, vec3 va, vec3 vb, vec3 vt);
-void carveopaque2d_triangle( struct actor* win, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carveopaque2d_rect(     struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carveopaque2d_circle(   struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carveopaque2d_prism4(   struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveopaque2d_sphere(   struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-
-void carve2d_ascii(          struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
-void carve2d_decimal(        struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void carve2d_hexadecimal(    struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void carve2d_unicode(        struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
-void carve2d_utf8(           struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
-void carve2d_string(         struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carve2d_double(         struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, double data);
-void carve2d_vec4(           struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, char* s, vec3 v);
-
-void carvestring2d_center(   struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carvetext2d(            struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carvetext2d_reverse(    struct actor* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-*/
-
-
-
 //-----------------------------3d--------------------------
 void carveaxis(               struct actor* ctx);
 void carvefrustum(            struct actor* ctx, struct fstyle* sty);
@@ -1140,6 +1095,7 @@ void carvepoint_icosahedron(  struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3
 void carvepoint_sphere(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
 void carveline(               struct actor* ctx, u32 rgb, vec3 va, vec3 vb);
+void carveline_shorter(       struct actor* ctx, u32 rgb, vec3 va, vec3 vb);
 void carveline_arrow(         struct actor* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vn);
 void carveline_bezier(        struct actor* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
 void carveline_special(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu, float sa, float da);

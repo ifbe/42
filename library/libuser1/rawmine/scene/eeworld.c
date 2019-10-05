@@ -5,32 +5,16 @@
 
 int eeworld_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct actor* world;
-	struct actor* kirch;
+	struct relation* rel;
+	struct actor* act = self->pchip;
 
-	world = (void*)self->chip;
-	if(0 == world)return 0;
-
-	kirch = (void*)peer->chip;
-	if(0 == kirch)return 0;
-
-	say("@eeworld_read:%.8s, %.8s\n", &world->type, &kirch->type);
-/*
-	rel = world->orel0;
-	while(1)
-	{
+	rel = act->orel0;
+	while(1){
 		if(0 == rel)break;
-
-		if(_act_ == rel->dsttype){
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			actorread(self, peer, kirch, 0);
-		}
-next:
+		say("%llx.%.4s@%llx.%.4s\n", rel->srcchip, &rel->srcflag, rel->dstchip, &rel->dstflag);
 		rel = samesrcnextdst(rel);
 	}
-*/
-	relationread(world, _src_, 0, 0, 0, 0);
+	say("\n");
 	return 0;
 }
 int eeworld_write(struct halfrel* self, struct halfrel* peer, void* buf, int len)

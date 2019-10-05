@@ -212,6 +212,7 @@ int role_test_style(u8* buf, int len, struct footlist foot[], int flen)
 		}
 
 		if(	((k >= '0') && (k <= '9')) |
+			((k >= 'A') && (k <= 'Z')) |
 			((k >= 'a') && (k <= 'z')) )
 		{
 			if(str < 0)str = j;
@@ -306,6 +307,7 @@ int role_test_pinid(u8* buf, int len, struct footlist foot[], int flen)
 		}
 
 		if(	((k >= '0') && (k <= '9')) |
+			((k >= 'A') && (k <= 'Z')) |
 			((k >= 'a') && (k <= 'z')) )
 		{
 			if(str < 0)str = j;
@@ -387,6 +389,7 @@ int role_test_arena(u8* buf, int len, struct chiplist chip[], int clen)
 		}
 
 		if(	((k >= '0') && (k <= '9')) |
+			((k >= 'A') && (k <= 'Z')) |
 			((k >= 'a') && (k <= 'z')) )
 		{
 			if(str < 0)str = j;
@@ -487,6 +490,7 @@ int role_test_actor(u8* buf, int len, struct chiplist chip[], int clen)
 		}
 
 		if(	((k >= '0') && (k <= '9')) |
+			((k >= 'A') && (k <= 'Z')) |
 			((k >= 'a') && (k <= 'z')) )
 		{
 			if(str < 0)str = j;
@@ -586,6 +590,7 @@ int role_test_system(u8* buf, int len, struct chiplist chip[], int clen)
 		}
 
 		if(	((k >= '0') && (k <= '9')) |
+			((k >= 'A') && (k <= 'Z')) |
 			((k >= 'a') && (k <= 'z')) )
 		{
 			if(str < 0)str = j;
@@ -685,6 +690,7 @@ int role_test_artery(u8* buf, int len, struct chiplist chip[], int clen)
 		}
 
 		if(	((k >= '0') && (k <= '9')) |
+			((k >= 'A') && (k <= 'Z')) |
 			((k >= 'a') && (k <= 'z')) )
 		{
 			if(str < 0)str = j;
@@ -784,6 +790,7 @@ int role_test_driver(u8* buf, int len, struct chiplist chip[], int clen)
 		}
 
 		if(	((k >= '0') && (k <= '9')) |
+			((k >= 'A') && (k <= 'Z')) |
 			((k >= 'a') && (k <= 'z')) )
 		{
 			if(str < 0)str = j;
@@ -883,6 +890,7 @@ int role_test_device(u8* buf, int len, struct chiplist chip[], int clen)
 		}
 
 		if(	((k >= '0') && (k <= '9')) |
+			((k >= 'A') && (k <= 'Z')) |
 			((k >= 'a') && (k <= 'z')) )
 		{
 			if(str < 0)str = j;
