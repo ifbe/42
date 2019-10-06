@@ -59,16 +59,35 @@ static void spotlight_draw(
 
 
 
-static void spotlight_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+void spotlight_light(
+	struct actor* act, struct style* pin,
+	struct actor* win, struct style* sty)
+{
+	struct glsrc* src = win->gl_light;
+
+	src->arg_fmt[0] = 'v';
+	src->arg_name[0] = "sunxyz";
+	src->arg_data[0] = sty->fs.vc;
+}
+static void spotlight_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	//spotlight_draw(act, pin, win, sty);
+	struct actor* ctx = buf;
+
+	if(ctx){
+		switch(ctx->type){
+			case _gl41data_:{
+				spotlight_light(act,pin,ctx,sty);
+				spotlight_draw_vbo(act,pin,ctx,sty);
+			}
+		}
+	}
 }
-static void spotlight_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void spotlight_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 static void spotlight_stop(struct halfrel* self, struct halfrel* peer)

@@ -159,12 +159,14 @@ void updatearg(u32 shader, struct glsrc* src)
 		}//switch
 	}//for
 }
-void render_onedraw(struct gldst* dst, struct glsrc* src, struct glsrc* cam)
+void render_onedraw(struct datapair* cam, struct datapair* lit, struct datapair* data)
 {
 	int j;
 	u32 fmt;
 	u32 vbo;
 	u32 vao;
+	struct gldst* dst = &data->dst;
+	struct glsrc* src = &data->src;
 	if(0 == dst->shader)return;
 	if(0 == dst->vao)return;
 
@@ -173,7 +175,8 @@ void render_onedraw(struct gldst* dst, struct glsrc* src, struct glsrc* cam)
 
 	//1.argument
 	updatearg(dst->shader, src);
-	updatearg(dst->shader, cam);
+	updatearg(dst->shader, &lit->src);
+	updatearg(dst->shader, &cam->src);
 
 	//2.texture
 	for(j=0;j<4;j++)
@@ -211,7 +214,6 @@ void render_onedraw(struct gldst* dst, struct glsrc* src, struct glsrc* cam)
 void fullwindow_eachpass(struct arena* ogl, struct actor* view)
 {
 	int j;
-	struct datapair* mod;
 	struct datapair* cam = view->gl_camera;
 	struct datapair* lit = view->gl_light;
 	struct datapair* solid = view->gl_solid;
@@ -223,7 +225,7 @@ void fullwindow_eachpass(struct arena* ogl, struct actor* view)
 	for(j=0;j<64;j++)
 	{
 		if(0 == solid[j].src.vbuf)continue;
-		render_onedraw(&solid[j].dst, &solid[j].src, &cam[0].src);
+		render_onedraw(cam, lit, &solid[j]);
 	}
 
 
@@ -235,7 +237,7 @@ void fullwindow_eachpass(struct arena* ogl, struct actor* view)
 	for(j=0;j<64;j++)
 	{
 		if(0 == opaque[j].src.vbuf)continue;
-		render_onedraw(&opaque[j].dst, &opaque[j].src, &cam[0].src);
+		render_onedraw(cam, lit, &opaque[j]);
 	}
 
 	glDisable(GL_BLEND);
