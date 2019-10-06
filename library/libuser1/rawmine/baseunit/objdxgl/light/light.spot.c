@@ -17,11 +17,12 @@ static void spotlight_draw_vbo(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
+	u32 rgb = (act->data0)&0xffffff;
 
 	tt[0] = - vf[0];
 	tt[1] = - vf[1];
 	tt[2] = - vf[2];
-	carvesolid_cone(win, 0xffff00, vc, vr, tt);
+	carvesolid_cone(win, rgb, vc, vr, tt);
 }
 static void spotlight_draw_json(
 	struct actor* act, struct style* pin,
@@ -63,11 +64,25 @@ void spotlight_light(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
-	struct glsrc* src = win->gl_light;
+	u32 rgb;
+	float* tmp;
+	struct glsrc* src;
+
+	rgb = act->data0;
+	tmp = act->buf;
+	tmp[2] = (rgb&0xff) / 255.0;
+	tmp[1] = ((rgb >>  8)&0xff) / 255.0;
+	tmp[0] = ((rgb >> 16)&0xff) / 255.0;
+
+	src = win->gl_light;
 
 	src->arg_fmt[0] = 'v';
 	src->arg_name[0] = "sunxyz";
 	src->arg_data[0] = sty->fs.vc;
+
+	src->arg_fmt[1] = 'v';
+	src->arg_name[1] = "sunrgb";
+	src->arg_data[1] = tmp;
 }
 static void spotlight_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -111,6 +126,8 @@ static void spotlight_delete(struct actor* act)
 }
 static void spotlight_create(struct actor* act, void* str)
 {
+	act->data0 = 0xffff00;
+	act->buf = memorycreate(0x1000, 0);
 }
 
 
