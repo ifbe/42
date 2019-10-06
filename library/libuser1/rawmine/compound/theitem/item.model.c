@@ -43,6 +43,9 @@ GLSL_VERSION
 "uniform mediump vec3 camxyz;\n"
 "uniform mediump vec3 sunxyz;\n"
 "uniform mediump vec3 sunrgb;\n"
+"uniform mediump vec3 KA;\n"
+"uniform mediump vec3 KD;\n"
+"uniform mediump vec3 KS;\n"
 
 //"mediump vec3 dirsun0 = vec3(1.0, 1.0, 1.0);\n"
 //"mediump vec3 dirsun1 = vec3(-1.0, 0.0, 0.0);\n"
@@ -53,9 +56,9 @@ GLSL_VERSION
 "mediump vec3 LA = sunrgb;\n"
 "mediump vec3 LD = sunrgb;\n"
 "mediump vec3 LS = sunrgb;\n"
-"mediump vec3 KA = vec3(0.231250, 0.231250, 0.231250);\n"
-"mediump vec3 KD = vec3(0.277500, 0.277500, 0.277500);\n"
-"mediump vec3 KS = vec3(0.773911, 0.773911, 0.773911);\n"
+//"mediump vec3 KA = vec3(0.231250, 0.231250, 0.231250);\n"
+//"mediump vec3 KD = vec3(0.277500, 0.277500, 0.277500);\n"
+//"mediump vec3 KS = vec3(0.773911, 0.773911, 0.773911);\n"
 
 "vec3 sun0(){\n"
 	"mediump vec3 N = normalize(normal);\n"
@@ -444,6 +447,7 @@ static void model_delete(struct actor* act)
 static void model_create(struct actor* act, void* str)
 {
 	int j;
+	float* tmp;
 	struct glsrc* src;
 	if(0 == act)return;
 
@@ -460,9 +464,24 @@ static void model_create(struct actor* act, void* str)
 	src->shader_enq = 42;
 
 	//argument
+	src->arg_fmt[0] = 'm';
 	src->arg_name[0] = "objmat";
 	src->arg_data[0] = memorycreate(4*4*4, 0);
-	src->arg_fmt[0] = 'm';
+
+	src->arg_fmt[1] = 'v';
+	src->arg_name[1] = "KA";
+	tmp = src->arg_data[1] = memorycreate(4*4, 0);
+	tmp[0] = tmp[1] = tmp[2] = 0.231250;
+
+	src->arg_fmt[2] = 'v';
+	src->arg_name[2] = "KD";
+	tmp = src->arg_data[2] = memorycreate(4*4, 0);
+	tmp[0] = tmp[1] = tmp[2] = 0.277500;
+
+	src->arg_fmt[3] = 'v';
+	src->arg_name[3] = "KS";
+	tmp = src->arg_data[3] = memorycreate(4*4, 0);
+	tmp[0] = tmp[1] = tmp[2] = 0.773911;
 
 	//vertex
 	src->vbuf_len = 0x1000000;

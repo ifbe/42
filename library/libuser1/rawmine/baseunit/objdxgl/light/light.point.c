@@ -121,7 +121,7 @@ static void pointlight_delete(struct actor* act)
 }
 static void pointlight_create(struct actor* act, void* str)
 {
-	act->data0 = 0xff8040;
+	act->data0 = 0xffffff;
 	act->buf = memorycreate(0x1000, 0);
 }
 

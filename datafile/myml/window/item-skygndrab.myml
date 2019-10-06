@@ -19,7 +19,9 @@ fmt:terrain
 }
 rabbit{
 fmt:model
-file:datafile/stl/bunny-lowpoly.stl
+file:datafile/stl/dog-lowpoly.stl
+#file:datafile/stl/bunny-lowpoly.stl
+#file:datafile/stl/gengar-lowpoly.stl
 }
 
 light{
