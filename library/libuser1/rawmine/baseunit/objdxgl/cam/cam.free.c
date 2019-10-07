@@ -557,9 +557,9 @@ static int freecam_event1(
 		t = (void*)ev;
 	}
 	else if(_char_ == ev->what){
-		nx = 10.0/vec3_len(obb->vr);
-		ny = 10.0/vec3_len(obb->vf);
-		nz = 10.0/vec3_len(obb->vt);
+		nx = 100.0/vec3_len(obb->vr);
+		ny = 100.0/vec3_len(obb->vf);
+		nz = 100.0/vec3_len(obb->vt);
 		switch(ev->why){
 			case 'a':freecam_move(obb->vc, obb->vr,-nx);break;
 			case 'd':freecam_move(obb->vc, obb->vr, nx);break;

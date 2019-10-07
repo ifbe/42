@@ -801,22 +801,22 @@ struct arena
 		void* buf;
 	};
 
-	//[60,7f]: buf
+	//[60, 7f]
 	union{
 		u64 padd4;
-		u32 fbo;
+		void* addr0;
 	};
 	union{
 		u64 padd5;
-		u32 rbo;
+		void* addr1;
 	};
 	union{
 		u64 padd6;
-		u32 tex_depth;
+		void* addr2;
 	};
 	union{
 		u64 padd7;
-		u32 tex_color;
+		void* addr3;
 	};
 
 	//[80,bf]: func
@@ -914,6 +914,7 @@ struct actor
 		void* ibuf;		//indx buf
 		void* gl_camera;
 		void* ctx;
+		u32 fbo;
 	};
 	union{
 		u64 dc;
@@ -921,18 +922,21 @@ struct actor
 		void* er;
 		void* vbuf;		//vert buf
 		void* gl_light;
+		u32 rbo;
 	};
 	union{
 		u64 len;
 		void* idx;
 		void* wbuf;		//wire list
 		void* gl_solid;
+		u32 tex_depth;
 	};
 	union{
 		u64 addr;
 		void* buf;
 		void* nbuf;		//node list
 		void* gl_opaque;
+		u32 tex_color;
 	};
 
 	//[60,7f]: buf
@@ -1250,15 +1254,6 @@ int actorevent(struct event*);
 int actorread_all();
 int arenaevent(struct event*);
 int arenaread_all();
-//
-int system_leafread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int system_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int system_rootread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int system_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int artery_leafread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int artery_leafwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int artery_rootread( void* dc,void* df,void* sc,void* sf,void* buf,int len);
-int artery_rootwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len);
 //
 int actorread(  struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
 int actorwrite( struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);

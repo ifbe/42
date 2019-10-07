@@ -18,6 +18,7 @@
 GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c);
 GLuint uploadtexture(void* i, u32 t, void* buf, int fmt, int w, int h);
 GLuint uploadvertex(void* i, void* o);
+int fbocreate(void*, int);
 
 
 
@@ -292,24 +293,51 @@ void fullwindow_viewport(struct arena* ogl, struct actor* view)
 }
 void fullwindow_renderfboc(struct arena* ogl, struct actor* wnd)
 {
-	say("@gl41fboc\n");
+	//say("@gl41fboc\n");
+	if(0 == wnd->fbo)fbocreate(wnd, 'c');
+	else glBindFramebuffer(GL_FRAMEBUFFER, wnd->fbo);
+
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+	glPointSize(4.0);
 }
 void fullwindow_renderfbod(struct arena* ogl, struct actor* wnd)
 {
-	say("@gl41fbod\n");
+	//say("@gl41fbod\n");
+	if(0 == wnd->fbo)fbocreate(wnd, 'd');
+	else glBindFramebuffer(GL_FRAMEBUFFER, wnd->fbo);
+
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+	glPointSize(4.0);
 }
 void fullwindow_renderfbog(struct arena* ogl, struct actor* wnd)
 {
-	say("@gl41fbog\n");
+	//say("@gl41fbog\n");
+	if(0 == wnd->fbo)fbocreate(wnd, 'g');
+	else glBindFramebuffer(GL_FRAMEBUFFER, wnd->fbo);
+
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+	glPointSize(4.0);
 }
 void fullwindow_renderwnd(struct arena* ogl, struct actor* wnd)
 {
 	int cnt;
 	struct relation* rel;
 	struct actor* act;
-	//say("@fullwindow_render: %llx,%llx,%.8s\n", ogl, wnd, &wnd->type);
-	if(0 == wnd)return;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	//clear and setup
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+	glPointSize(4.0);
+
+	//upload data to gpu
 	cnt = 0;
 	rel = wnd->orel0;
 	while(1){
@@ -342,15 +370,6 @@ void fullwindow_read(struct arena* ogl)
 	struct actor* act;
 	//say("@fullwindow_read\n");
 
-	//clear screen
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//glenable
-	glEnable(GL_DEPTH_TEST);
-	glPointSize(4.0);
-
-	//0: upload data to gpu
 	rel = ogl->orel0;
 	while(1){
 		if(0 == rel)break;
@@ -359,8 +378,8 @@ void fullwindow_read(struct arena* ogl)
 		switch(act->type){
 			case _gl41data_:fullwindow_upload(ogl, act);break;
 			case _gl41fboc_:fullwindow_renderfboc(ogl, act);break;
-			case _gl41fbod_:fullwindow_renderfboc(ogl, act);break;
-			case _gl41fbog_:fullwindow_renderfboc(ogl, act);break;
+			case _gl41fbod_:fullwindow_renderfbod(ogl, act);break;
+			case _gl41fbog_:fullwindow_renderfbog(ogl, act);break;
 			case _gl41wnd0_:fullwindow_renderwnd(ogl, act);break;
 		}
 

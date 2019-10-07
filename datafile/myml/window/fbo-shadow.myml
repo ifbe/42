@@ -1,0 +1,128 @@
+<arena>
+opengl{
+fmt:win
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</arena>
+
+
+<actor>
+ground{
+fmt:ground
+}
+tree{
+fmt:tree
+}
+light{
+fmt:dirlit
+}
+freecam{
+fmt:freecam
+}
+3dworld{
+fmt:3dworld
+}
+
+thectx{
+fmt:gl41data
+}
+thefbo{
+fmt:gl41fbod
+}
+thewnd{
+fmt:gl41wnd0
+}
+</actor>
+
+
+<style>
+grndhaha{
+}
+grndgeom{
+c: 0.0, 0.0, 0.0
+r: 10000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+treehaha{
+}
+treegeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+mirrhaha{
+}
+mirrgeom{
+c: 0.0, 0.0, 2000.0
+r: 100.0, 0.0, 0.0
+t: 0.0, 100.0, 0.0
+f: 0.0, 0.0, -100.0
+}
+mirrfrus{
+l: 0.0, 0.0, 0.0,-1.0
+r: 0.0, 0.0, 0.0, 1.0
+b: 0.0, 0.0, 0.0,-1.0
+t: 0.0, 0.0, 0.0, 1.0
+n: 0.0, 0.0, 0.0, 1.0
+f: 0.0, 0.0, 0.0, 1000000000000.0
+}
+mirrrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+
+freemodl{
+}
+freegeom{
+r: 1.0, 0.0, 0.0
+f: 0.0, 1.0, 0.0
+t: 0.0, 0.0, 1.0
+c: 0.0,-2000.0, 0.0
+}
+freefrus{
+l: 0.0, 0.0, 0.0,-1.0
+r: 0.0, 0.0, 0.0, 1.0
+b: 0.0, 0.0, 0.0,-1.0
+t: 0.0, 0.0, 0.0, 1.0
+n: 0.0, 0.0, 0.0, 1.0
+f: 0.0, 0.0, 0.0, 1000000000000.0
+}
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+
+#3dworld depends on inner objects
+(3dworld, grndgeom, act, 0) -> (ground, grndhaha, act, 0)
+(3dworld, treegeom, act, 0) -> (tree, treehaha, act, 0)
+(3dworld, mirrgeom, act, 0) -> (light, mirrhaha, act, 0)
+(3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
+
+#glctx depends on scene
+(thectx, 0, act, 0) -> (3dworld, 0, act, 0)
+
+#glfbo depends on ctx + cam
+(thefbo, 0, act, ctx) -> (thectx, 0, act, 0)
+(thefbo, mirrrect, act, mvp) -> (light, mirrfrus, act, 0)
+
+#glwnd depends on ctx + cam
+(thewnd, 0, act, ctx) -> (thectx, 0, act, 0)
+(thewnd, freerect, act, mvp) -> (freecam, freefrus, act, 0)
+
+#opengl depends on ctx + wnd
+(opengl, 0, win, ctx) -> (thectx, 0, act, 0)
+(opengl, 0, win, fbo) -> (thefbo, 0, act, 0)
+(opengl, 0, win, wnd) -> (thewnd, 0, act, 0)
+
+</relation>

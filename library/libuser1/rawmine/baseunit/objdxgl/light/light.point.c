@@ -17,7 +17,7 @@ static void pointlight_draw_vbo(
 	float* vf = sty->f.vf;
 	float* vt = sty->f.vt;
 	u32 rgb = (act->data0)&0xffffff;
-	carveopaque_sphere(win, 0x40000000|rgb, vc, vr, vf, vt);
+	carveopaque_sphere(win, 0x80000000|rgb, vc, vr, vf, vt);
 }
 static void pointlight_draw_json(
 	struct actor* act, struct style* pin,

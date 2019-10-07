@@ -4,6 +4,40 @@ void ortho_mvp(mat4 m, struct fstyle* s);
 
 
 
+static void orthcam_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+{
+	struct relation* rel;
+	struct actor* world;
+	struct fstyle* obb = 0;
+	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)return;
+		world = (void*)(rel->srcchip);
+		if(_world3d_ == world->type){
+			self[0] = (void*)&rel->dstchip;
+			peer[0] = (void*)&rel->srcchip;
+			return;
+		}
+		rel = samedstnextsrc(rel);
+	}
+}
+static void orthcam_modify(struct actor* act)
+{
+}
+static void orthcam_delete(struct actor* act)
+{
+}
+static void orthcam_create(struct actor* act, void* arg)
+{
+    say("@orthcam_create\n");
+	act->buf = memorycreate(64, 0);
+}
+
+
+
+
 static int orthcam_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct actor* ctx, struct style* sty)
@@ -116,24 +150,13 @@ static void orthcam_matrix(
 	struct actor* act, struct style* pin,
 	struct actor* ctx, struct style* sty)
 {
+	struct fstyle* obb;
+	struct halfrel* self;
+	struct halfrel* peer;
 	//say("@orthcam_matrix:%llx,%llx,%llx,%llx\n", ctx->gl_camera, ctx->gl_light, ctx->gl_solid, ctx->gl_opaque);
 
-	struct relation* rel;
-	struct actor* world;
-	struct fstyle* obb;
-	//say("orthcam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
-
-	rel = act->irel0;
-	while(1){
-		if(0 == rel)return;
-		world = (void*)(rel->srcchip);
-		if(_world3d_ == world->type){
-			obb = (void*)(rel->srcfoot);
-			break;
-		}
-		rel = samedstnextsrc(rel);
-	}
-	if(0 == obb)return;
+	orthcam_search(act, 0, &self, &peer);
+	obb = peer->pfoot;
 
 	float* m = act->buf;
 	orthocam_sty2cam(&pin->f, obb);
@@ -148,17 +171,6 @@ static void orthcam_matrix(
 	src->arg_fmt[1] = 'v';
 	src->arg_name[1] = "camxyz";
 	src->arg_data[1] = obb->vc;
-/*
-	u64* p = (void*)buf;
-	struct glsrc* src = (void*)(buf+0x20);
-
-	p[0] = (u64)src;
-	p[1] = (u64)r->gl_light;
-	p[2] = (u64)r->gl_solid;
-	p[3] = (u64)r->gl_opaque;
-
-
-*/
 }
 
 
@@ -204,24 +216,6 @@ static void orthcam_stop(struct halfrel* self, struct halfrel* peer)
 static void orthcam_start(struct halfrel* self, struct halfrel* peer)
 {
     say("@orthcam_start\n");
-}
-
-
-
-
-static void orthcam_search(struct actor* act)
-{
-}
-static void orthcam_modify(struct actor* act)
-{
-}
-static void orthcam_delete(struct actor* act)
-{
-}
-static void orthcam_create(struct actor* act, void* arg)
-{
-    say("@orthcam_create\n");
-	act->buf = memorycreate(64, 0);
 }
 
 
