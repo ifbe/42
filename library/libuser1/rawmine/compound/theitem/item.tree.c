@@ -26,10 +26,10 @@ static void tree_draw_pixel(
 	drawline(win, 0x6a4b23, cx-ww, cy+hh, cx+ww, cy+hh);
 	drawsolid_rect(win, 0x404040, cx-ww/4, cy, cx+ww/4, cy+hh);
 
-	drawsolid_rect(win, 0x00ff00, cx-ww, cy-hh*1/4, cx+ww, cy);
-	drawsolid_rect(win, 0x00ff00, cx-ww*3/4, cy-hh/2, cx+ww*3/4, cy-hh/4);
-	drawsolid_rect(win, 0x00ff00, cx-ww/2, cy-hh*3/4, cx+ww/2, cy-hh/2);
-	drawsolid_rect(win, 0x00ff00, cx-ww/4, cy-hh, cx+ww/4, cy-hh*3/4);
+	drawsolid_rect(win, 0x008000, cx-ww, cy-hh*1/4, cx+ww, cy);
+	drawsolid_rect(win, 0x008000, cx-ww*3/4, cy-hh/2, cx+ww*3/4, cy-hh/4);
+	drawsolid_rect(win, 0x008000, cx-ww/2, cy-hh*3/4, cx+ww/2, cy-hh/2);
+	drawsolid_rect(win, 0x008000, cx-ww/4, cy-hh, cx+ww/4, cy-hh*3/4);
 }/*
 static void tree_draw_vbo2d(
 	struct actor* act, struct style* pin,

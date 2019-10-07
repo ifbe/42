@@ -124,7 +124,6 @@ static void dirlight_draw_vbo(
 	struct datapair* dst;
 	struct glsrc* src;
 	float (*vbuf)[6];
-	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
 
 	dst = (void*)(sty->data[0]);
 	if(0 == dst)return;
@@ -138,6 +137,7 @@ static void dirlight_draw_vbo(
 	//say("shader=%d\n", dst->dst.shader);
 
 	//light ray (for debug)
+	carveline_rect(win, 0xffffff, vc, vr, vt);
 	for(y=-1.0;y<1.01;y+=0.2)
 	{
 		for(x=-1.0;x<1.01;x+=0.2)
@@ -280,11 +280,12 @@ void dirlight_sty2cam(struct fstyle* d, struct fstyle* s)
 	d->vf[0] = x / n;
 	d->vf[1] = y / n;
 	d->vf[2] = z / n;
-	d->vf[3] = 10000.0;
-	d->vn[0] = - d->vf[0];
-	d->vn[1] = - d->vf[1];
-	d->vn[2] = - d->vf[2];
-	d->vn[3] = 1.0;
+	//d->vf[3] = 2000.0;
+
+	d->vn[0] = d->vf[0];
+	d->vn[1] = d->vf[1];
+	d->vn[2] = d->vf[2];
+	//d->vn[3] = 1.0;
 }
 static void dirlight_matrix(
 	struct actor* act, struct style* pin,
@@ -367,6 +368,7 @@ static void dirlight_read(struct halfrel* self, struct halfrel* peer, void* arg,
 		switch(win->type){
 			case _gl41view_:
 			case _gl41fbod_:
+			case _gl41fboc_:
 			case _gl41wnd0_:dirlight_matrix(act, pin, win, sty);
 		}
 	}

@@ -615,7 +615,7 @@ static void xiangqi_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct actor* ctx = buf;
-	say("@xiangqi_read:%llx,%llx,%llx\n",act,win,buf);
+	//say("@xiangqi_read:%llx,%llx,%llx\n",act,win,buf);
 
 	if(ctx){
 		if(_gl41data_ == ctx->type)xiangqi_draw_vbo(act,pin,ctx,sty);
