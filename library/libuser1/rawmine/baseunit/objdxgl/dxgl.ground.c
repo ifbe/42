@@ -29,6 +29,8 @@ char* ground_glsl_f =
 GLSL_VERSION
 "in mediump vec3 vertex;\n"
 "out mediump vec4 FragColor;\n"
+//"layout(location = 0)out vec3 color;\n"
+"layout(location = 1)out vec3 hahah;\n"
 "uniform sampler2D tex0;\n"
 "void main(){\n"
 	//"mediump float x = mod(abs(vertex.x), 1000.0) - 500.0;\n"
@@ -38,6 +40,8 @@ GLSL_VERSION
 	"mediump float x = mod(abs(vertex.x), 1000.0) / 1000.0;\n"
 	"mediump float y = mod(abs(vertex.y), 1000.0) / 1000.0;\n"
 	"FragColor = vec4(texture(tex0, vec2(x,y)).bgr, 1.0);\n"
+	//"color = vec3(1.0, 1.0, 0.0);\n"
+	"hahah = vec3(x, y, 0.0);\n"
 "}\n";
 
 

@@ -50,6 +50,11 @@ case 'd':{
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, target->tex0, 0);
 #endif
 
+	//No color buffer is drawn to
+	glDrawBuffer(GL_NONE);
+
+	// Always check that our framebuffer is ok
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fbod!!!\n");
 	break;
 }//d
 
@@ -75,14 +80,12 @@ case 'c':{
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, target->tex0, 0);
 #endif
 
-	// Set the list of draw buffers.
+	//1 drawbuffer
 	GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
-	glDrawBuffers(1, DrawBuffers); // "1" is the size of DrawBuffers
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		say("error@framebuffer!!!\n");
-	}
+	glDrawBuffers(1, DrawBuffers);
 
+	//check
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fboc!!!\n");
 	break;
 }//c
 
@@ -117,19 +120,17 @@ case 'g':{
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 #ifdef __ANDROID__
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, target->tex1, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, target->tex1, 0);
 #else
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, target->tex1, 0);
 #endif
 
-	// Set the list of draw buffers.
-	GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1};
+	//2 drawbuffer
+	GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT0};
 	glDrawBuffers(2, DrawBuffers);
-	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		say("error@framebuffer!!!\n");
-	}
 
+	//check
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fbog!!!\n");
 	break;
 }//g
 }//switch

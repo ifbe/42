@@ -318,13 +318,19 @@ void fullwindow_renderfbod(struct arena* opengl, struct actor* target)
 void fullwindow_renderfbog(struct arena* opengl, struct actor* target)
 {
 	//say("@gl41fbog\n");
-	if(0 == target->fbo)fbocreate(target, 'g');
+	if(0 == target->fbo){
+		target->width = target->fbwidth = 1024;
+		target->height = target->fbheight = 1024;
+		fbocreate(target, 'g');
+	}
 	else glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	glPointSize(4.0);
+
+	fullwindow_viewport(opengl, target);
 }
 void fullwindow_renderwnd(struct arena* opengl, struct actor* target)
 {

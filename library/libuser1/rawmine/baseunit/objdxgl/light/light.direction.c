@@ -24,7 +24,7 @@ char* dirlit_glsl_f =
 GLSL_VERSION
 "uniform sampler2D tex0;\n"
 "in mediump vec2 uvw;\n"
-"out mediump vec4 FragColor;\n"
+"layout(location = 0)out mediump vec4 FragColor;\n"
 "void main()\n"
 "{\n"
 	//"FragColor = vec4(uvw, 1.0, 1.0);\n"
@@ -369,6 +369,7 @@ static void dirlight_read(struct halfrel* self, struct halfrel* peer, void* arg,
 			case _gl41view_:
 			case _gl41fbod_:
 			case _gl41fboc_:
+			case _gl41fbog_:
 			case _gl41wnd0_:dirlight_matrix(act, pin, win, sty);
 		}
 	}
