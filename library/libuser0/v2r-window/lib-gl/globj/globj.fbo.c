@@ -21,8 +21,8 @@
 
 int fbodelete(struct actor* win)
 {
-	if(win->tex_color)glDeleteTextures(1, &win->tex_color);
-	if(win->tex_depth)glDeleteTextures(1, &win->tex_depth);
+	if(win->tex1)glDeleteTextures(1, &win->tex1);
+	if(win->tex0)glDeleteTextures(1, &win->tex0);
 	if(win->rbo)glDeleteRenderbuffers(1, &win->rbo);
 	if(win->fbo)glDeleteFramebuffers(1, &win->fbo);
 	return 0;
@@ -44,32 +44,34 @@ int fbocreate(struct actor* win, int arg)
 switch(arg){
 case 'd':{
 	//depth buffer
-	glGenTextures(1, &win->tex_depth);
-	glBindTexture(GL_TEXTURE_2D, win->tex_depth);
+	glGenTextures(1, &win->tex0);
+	glBindTexture(GL_TEXTURE_2D, win->tex0);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 #ifdef __ANDROID__
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, win->tex_depth, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, win->tex0, 0);
 #else
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, win->tex_depth, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, win->tex0, 0);
 #endif
+
+	break;
 }//c
 case 'c':{
 	//color buffer
-	glGenTextures(1, &win->tex_color);
-	glBindTexture(GL_TEXTURE_2D, win->tex_color);
+	glGenTextures(1, &win->tex0);
+	glBindTexture(GL_TEXTURE_2D, win->tex0);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 #ifdef __ANDROID__
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, win->tex_color, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, win->tex0, 0);
 #else
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, win->tex_color, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, win->tex0, 0);
 #endif
 
 	// Set the list of draw buffers.
@@ -79,33 +81,35 @@ case 'c':{
 	{
 		say("error@framebuffer!!!\n");
 	}
+
+	break;
 }//c
 case 'g':{
 	//geometry buffer
-	glGenTextures(1, &win->tex_color);
-	glBindTexture(GL_TEXTURE_2D, win->tex_color);
+	glGenTextures(1, &win->tex0);
+	glBindTexture(GL_TEXTURE_2D, win->tex0);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 #ifdef __ANDROID__
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, win->tex_color, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, win->tex0, 0);
 #else
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, win->tex_color, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, win->tex0, 0);
 #endif
 
-	glGenTextures(1, &win->tex_depth);
-	glBindTexture(GL_TEXTURE_2D, win->tex_depth);
+	glGenTextures(1, &win->tex1);
+	glBindTexture(GL_TEXTURE_2D, win->tex1);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 #ifdef __ANDROID__
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, win->tex_depth, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, win->tex1, 0);
 #else
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, win->tex_depth, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, win->tex1, 0);
 #endif
 
 	// Set the list of draw buffers.
@@ -115,6 +119,8 @@ case 'g':{
 	{
 		say("error@framebuffer!!!\n");
 	}
+
+	//break;
 }//g
 }//switch
 return 0;

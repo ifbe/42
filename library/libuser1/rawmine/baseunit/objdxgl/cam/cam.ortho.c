@@ -147,20 +147,25 @@ void orthocam_sty2cam(struct fstyle* d, struct fstyle* s)
 	//printstyle(&act->camera);
 }
 static void orthcam_matrix(
-	struct actor* act, struct style* pin,
-	struct actor* ctx, struct style* sty)
+	struct actor* act, struct fstyle* frus,
+	struct actor* ctx, struct fstyle* area)
 {
 	struct fstyle* obb;
 	struct halfrel* self;
 	struct halfrel* peer;
-	//say("@orthcam_matrix:%llx,%llx,%llx,%llx\n", ctx->gl_camera, ctx->gl_light, ctx->gl_solid, ctx->gl_opaque);
+	float dx,dy;
+
+	dx = area->vq[0] * ctx->fbwidth;
+	dy = area->vq[1] * ctx->fbheight;
+	frus->vb[3] =-dy / dx;
+	frus->vt[3] = dy / dx;
 
 	orthcam_search(act, 0, &self, &peer);
 	obb = peer->pfoot;
 
 	float* m = act->buf;
-	orthocam_sty2cam(&pin->f, obb);
-	ortho_mvp((void*)m, &pin->f);
+	orthocam_sty2cam(frus, obb);
+	ortho_mvp((void*)m, frus);
 	mat4_transpose((void*)m);
 
 	struct glsrc* src = ctx->gl_camera;
@@ -194,7 +199,7 @@ static void orthcam_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 	else{
 		switch(win->type){
 			case _gl41view_:
-			case _gl41wnd0_:orthcam_matrix(act, pin, win, sty);
+			case _gl41wnd0_:orthcam_matrix(act, &pin->fs, win, &sty->fs);
 		}
 	}
 	//if(_cam_ == self->flag)orthcam_matrix(act, pin, buf, len);

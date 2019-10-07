@@ -237,6 +237,11 @@ int graph_addpair(struct actor* act, int parent, int child)
 		{
 			return j;
 		}
+		if(	(wire[j].parent == child) &&
+			(wire[j].child == parent) )
+		{
+			return j;
+		}
 	}
 
 	j = act->wlen;
@@ -247,78 +252,42 @@ int graph_addpair(struct actor* act, int parent, int child)
 	return j;
 }
 static void graph_traverse(struct actor* act, struct actor* this)
-{
+{/*
 	int j,k,ret;
 	int nlen0, nlenx;
 	int wlen0, wlenx;
-	struct relation* irel;
-	struct relation* orel;
 	struct node* node = act->nbuf;
 	struct pair* wire = act->wbuf;
 
 	//first node
 	nlen0 = act->nlen = 0;
 	wlen0 = act->wlen = 0;
-	graph_addnode(act, _win_, this);
+*/
+	struct relation* irel;
+	struct relation* orel;
+	int parent, child;
 
-	//start traverse
-	for(j=0;j<6;j++)
-	{
-		//this.tail = 
-		nlenx = act->nlen;
-		wlenx = act->wlen;
+	parent = graph_addnode(act, _win_, this);
 
-		//for each
-		for(k=nlen0;k<nlenx;k++)
-		{
-			this = node[k].addr;
+	irel = this->irel0;
+	while(1){
+		if(0 == irel)break;
 
-			irel = this->irel0;
-			while(1)
-			{
-				if(0 == irel)break;
+		child = graph_addnode(act, irel->srctype, (void*)(irel->srcchip));
+		if(parent != child)graph_addpair(act, parent, child);
 
-				ret = graph_addnode(act, irel->srctype, (void*)(irel->srcchip));
-				if(ret >= 0)graph_addpair(act, ret, k);
-
-				irel = samedstnextsrc(irel);
-			}
-
-			orel = this->orel0;
-			while(1)
-			{
-				if(0 == orel)break;
-
-				ret = graph_addnode(act, orel->dsttype, (void*)(orel->dstchip));
-				if(ret >= 0)graph_addpair(act, k, ret);
-
-				orel = samesrcnextdst(orel);
-			}
-		}
-
-		//next.start = this.tail
-		nlen0 = nlenx;
-		wlen0 = wlenx;
+		irel = samedstnextsrc(irel);
 	}
 
-/*	int j, k;
-	struct actor* child;
-	struct relation* rel;
+	orel = this->orel0;
+	while(1){
+		if(0 == orel)break;
 
-	j = graph_add(_win_, this);
-	rel = this->orel0;
-	while(1)
-	{
-		if(rel == 0)return;
+		child = graph_addnode(act, orel->dsttype, (void*)(orel->dstchip));
+		if(parent != child)graph_addpair(act, parent, child);
 
-		child = (void*)(rel->dstchip);
-		k = graph_add(rel->dsttype, child);
-
-		graph_traverse(act, child);
-		graph_pair(j, k);
-
-		rel = samesrcnextdst(rel);
-	}*/
+		orel = samesrcnextdst(orel);
+	}
 }
 static void graph_event(
 	struct actor* act, struct style* pin,
@@ -334,7 +303,7 @@ static void graph_event(
 		if('g' == ev->why)
 		{
 			//generate node, wire
-			graph_traverse(act, win);
+			graph_traverse(act, act);
 
 			//generate vbuf, ibuf;
 			act->vlen = act->nlen;
@@ -354,16 +323,19 @@ say("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
 
 
 
-static void graph_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void graph_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	//graph_draw(act, pin, win, sty);
+	struct actor* ctx = buf;
+	if(ctx){
+		if(_gl41data_ == ctx->type)graph_draw_vbo(act,pin,ctx,sty);
+	}
 }
-static void graph_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void graph_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -385,9 +357,9 @@ static void graph_start(struct halfrel* self, struct halfrel* peer)
 	struct style* sty = (void*)(peer->foot);
 	float* vbuf = act->vbuf;
 	float* wbuf = act->wbuf;
-/*
+
 	//generate node, wire
-	graph_traverse(act, win);
+	graph_traverse(act, act);
 
 	//generate vbuf, ibuf;
 	act->vlen = act->nlen;
@@ -400,7 +372,6 @@ static void graph_start(struct halfrel* self, struct halfrel* peer)
 		say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
 	}
 	say("%d,%d,%d,%d\n", act->nlen, act->wlen, act->vlen, act->ilen);
-*/
 }
 
 

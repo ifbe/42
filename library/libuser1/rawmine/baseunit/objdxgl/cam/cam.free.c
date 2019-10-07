@@ -675,19 +675,26 @@ void freecam_frustum(struct fstyle* d, struct fstyle* s)
 	//d->vf[3] = 1e20;
 }
 static void freecam_matrix(
-	struct actor* act, struct style* frus,
-	struct actor* ctx, struct style* sty)
+	struct actor* act, struct fstyle* frus,
+	struct actor* ctx, struct fstyle* area)
 {
 	//say("@freecam_matrix:%llx,%llx,%llx,%llx\n", ctx->gl_camera, ctx->gl_light, ctx->gl_solid, ctx->gl_opaque);
 	struct halfrel* self;
 	struct halfrel* peer;
+	struct fstyle* obb;
+	float dx,dy;
+
+	dx = area->vq[0] * ctx->fbwidth;
+	dy = area->vq[1] * ctx->fbheight;
+	frus->vb[3] =-dy / dx;
+	frus->vt[3] = dy / dx;
 	freecam_search(act, 0, &self, &peer);
 
-	struct fstyle* obb = peer->pfoot;
-	freecam_frustum(&frus->f, obb);
+	obb = peer->pfoot;
+	freecam_frustum(frus, obb);
 
 	float* mat = act->buf;
-	fixmatrix((void*)mat, &frus->f);
+	fixmatrix((void*)mat, frus);
 	mat4_transpose((void*)mat);
 	//printmat4(m);
 
@@ -722,7 +729,7 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 	else{
 		switch(win->type){
 			case _gl41view_:
-			case _gl41wnd0_:freecam_matrix(act, pin, win, sty);
+			case _gl41wnd0_:freecam_matrix(act, &pin->fs, win, &sty->fs);
 		}
 	}
 /*

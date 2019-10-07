@@ -69,9 +69,14 @@ void update_onedraw(struct gldst* dst, struct glsrc* src)
 		if(0 != buf0)
 		{
 			fmt = src->tex_fmt[j];
-			w = src->tex_w[j];
-			h = src->tex_h[j];
-			dst->tex[j] = uploadtexture(dst, dst->tex[j], buf0, fmt, w, h);
+			if('!' == fmt){
+				dst->tex[j] = src->tex_data[j];
+			}
+			else{
+				w = src->tex_w[j];
+				h = src->tex_h[j];
+				dst->tex[j] = uploadtexture(dst, dst->tex[j], buf0, fmt, w, h);
+			}
 			//say("texture:(%llx,%x,%x,%x)->%x\n", buf0, fmt, w, h, fd);
 		}
 
@@ -106,29 +111,6 @@ void fullwindow_upload(struct arena* ogl, struct actor* ctx)
 		//say("%d\n",j);
 		update_onedraw(&mod[j].dst, &mod[j].src);
 	}
-}
-void update_frustum(struct arena* ogl, struct fstyle* area, struct fstyle* frus)
-{
-	float w, h, x0, y0, dx, dy;
-	w = ogl->fbwidth;
-	h = ogl->fbheight;
-
-	if(0 == area){
-		x0 = 0;
-		y0 = 0;
-		dx = w;
-		dy = h;
-	}
-	else{
-		x0 = w * area->vc[0];
-		y0 = h * area->vc[1];
-		dx = w * area->vq[0];
-		dy = h * area->vq[1];
-	}
-	frus->vb[3] =-dy / dx;
-	frus->vt[3] = dy / dx;
-
-	glViewport(x0, y0, dx, dy);
 }
 
 
@@ -184,7 +166,7 @@ void render_onedraw(struct datapair* cam, struct datapair* lit, struct datapair*
 	{
 		if(0 == dst->tex[j])continue;
 		if(0 == src->tex_name[j])continue;
-
+say("tex=%x\n", dst->tex[j]);
 		glUniform1i(glGetUniformLocation(dst->shader, src->tex_name[j]), j);
 		glActiveTexture(GL_TEXTURE0 + j);
 		glBindTexture(GL_TEXTURE_2D, dst->tex[j]);
@@ -246,6 +228,7 @@ void fullwindow_eachpass(struct arena* ogl, struct actor* view)
 }
 void fullwindow_viewport(struct arena* ogl, struct actor* view)
 {
+	float w, h, x0, y0, dx, dy;
 	struct actor* tmp;
 	struct fstyle* area;
 	struct fstyle* frus;
@@ -273,16 +256,21 @@ void fullwindow_viewport(struct arena* ogl, struct actor* view)
 				break;
 			}
 			default:{
-				area = (void*)(rel->srcfoot);
-				frus = (void*)(rel->dstfoot);
-				update_frustum(ogl, area, frus);
-
-				//get mvp
+				//update frustum, get mvp
 				self = (void*)(&rel->dstchip);
 				peer = (void*)(&rel->srcchip);
 				actorread(self, peer, 0, 0, 0, 0);
 
 				//render
+				area = (void*)(rel->srcfoot);
+				frus = (void*)(rel->dstfoot);
+				w = view->fbwidth;
+				h = view->fbheight;
+				x0 = w * area->vc[0];
+				y0 = h * area->vc[1];
+				dx = w * area->vq[0];
+				dy = h * area->vq[1];
+				glViewport(x0, y0, dx, dy);
 				fullwindow_eachpass(ogl, view);
 				break;
 			}
@@ -291,45 +279,56 @@ void fullwindow_viewport(struct arena* ogl, struct actor* view)
 		rel = samesrcnextdst(rel);
 	}
 }
-void fullwindow_renderfboc(struct arena* ogl, struct actor* wnd)
+void fullwindow_renderfboc(struct arena* opengl, struct actor* target)
 {
 	//say("@gl41fboc\n");
-	if(0 == wnd->fbo)fbocreate(wnd, 'c');
-	else glBindFramebuffer(GL_FRAMEBUFFER, wnd->fbo);
+	if(0 == target->fbo)fbocreate(target, 'c');
+	else glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	glPointSize(4.0);
 }
-void fullwindow_renderfbod(struct arena* ogl, struct actor* wnd)
+void fullwindow_renderfbod(struct arena* opengl, struct actor* target)
 {
 	//say("@gl41fbod\n");
-	if(0 == wnd->fbo)fbocreate(wnd, 'd');
-	else glBindFramebuffer(GL_FRAMEBUFFER, wnd->fbo);
+	if(0 == target->fbo){
+		target->width = target->fbwidth = 1024;
+		target->height = target->fbheight = 1024;
+		fbocreate(target, 'd');
+	}
+	else glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
+	//say("%x,%x\n", target->fbo, target->tex0);
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	glPointSize(4.0);
+
+	fullwindow_viewport(opengl, target);
 }
-void fullwindow_renderfbog(struct arena* ogl, struct actor* wnd)
+void fullwindow_renderfbog(struct arena* opengl, struct actor* target)
 {
 	//say("@gl41fbog\n");
-	if(0 == wnd->fbo)fbocreate(wnd, 'g');
-	else glBindFramebuffer(GL_FRAMEBUFFER, wnd->fbo);
+	if(0 == target->fbo)fbocreate(target, 'g');
+	else glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_DEPTH_TEST);
 	glPointSize(4.0);
 }
-void fullwindow_renderwnd(struct arena* ogl, struct actor* wnd)
+void fullwindow_renderwnd(struct arena* opengl, struct actor* target)
 {
 	int cnt;
 	struct relation* rel;
 	struct actor* act;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	target->width = opengl->width;
+	target->height = opengl->height;
+	target->fbwidth = opengl->fbwidth;
+	target->fbheight = opengl->fbheight;
 
 	//clear and setup
 	glClearColor(0.0, 0.0, 0.0, 1.0);
@@ -339,20 +338,20 @@ void fullwindow_renderwnd(struct arena* ogl, struct actor* wnd)
 
 	//upload data to gpu
 	cnt = 0;
-	rel = wnd->orel0;
+	rel = target->orel0;
 	while(1){
 		if(0 == rel)break;
 
 		act = (void*)(rel->dstchip);
 		//say("=>%.8s\n", &act->type);
 		switch(act->type){
-			case _gl41view_:cnt++;fullwindow_viewport(ogl, act);break;
+			case _gl41view_:cnt++;fullwindow_viewport(opengl, act);break;
 		}
 
 		rel = samesrcnextdst(rel);
 	}
 
-	if(0 == cnt)fullwindow_viewport(ogl, wnd);
+	if(0 == cnt)fullwindow_viewport(opengl, target);
 }
 
 

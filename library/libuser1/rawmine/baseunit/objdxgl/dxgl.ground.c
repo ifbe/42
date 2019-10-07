@@ -71,10 +71,17 @@ static void ground_draw_vbo(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-
-	struct glsrc* src = act->buf;
-	float (*vbuf)[6] = (void*)(src->vbuf);
+	struct datapair* dst;
+	struct glsrc* src;
+	float (*vbuf)[6];
 	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
+
+	dst = (void*)(sty->data[0]);
+	if(0 == dst)return;
+	src = (void*)(pin->data[0]);
+	if(0 == src)return;
+	vbuf = (void*)(src->vbuf);
+	if(0 == vbuf)return;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];

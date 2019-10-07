@@ -91,7 +91,7 @@ void world3d_copy(struct actor* world, struct style* sty, struct style* pin)
 			dst = world3d_alloc(world);
 			if(0 == dst)return;
 
-			sty->data[0] = (u64)dst;
+			sty->data[j] = (u64)dst;
 			say("new: %llx\n", src, dst);
 		}
 
@@ -116,10 +116,10 @@ int world3d_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	struct style* pin;
 	//struct actor* act;
 
-	world = (void*)self->chip;
+	world = self->pchip;
 	if(0 == world)return 0;
 
-	glctx = (void*)peer->chip;
+	glctx = peer->pchip;
 	if(0 == glctx)return 0;
 
 	//say("@world3d_read:%.8s, %.8s\n", &world->type, &glctx->type);

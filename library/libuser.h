@@ -911,50 +911,54 @@ struct actor
 	union{
 		u64 fd;
 		void* win;
-		void* ibuf;		//indx buf
-		void* gl_camera;
 		void* ctx;
 		u32 fbo;
+		int vlen;
 	};
 	union{
 		u64 dc;
 		u64 gc;
 		void* er;
-		void* vbuf;		//vert buf
-		void* gl_light;
 		u32 rbo;
+		int ilen;
 	};
 	union{
 		u64 len;
 		void* idx;
-		void* wbuf;		//wire list
-		void* gl_solid;
-		u32 tex_depth;
+		u32 tex0;
+		int nlen;
 	};
 	union{
 		u64 addr;
 		void* buf;
-		void* nbuf;		//node list
-		void* gl_opaque;
-		u32 tex_color;
+		u32 tex1;
+		int wlen;
 	};
 
 	//[60,7f]: buf
 	union{
 		u64 data0;
-		int ilen;
+		void* buf0;
+		void* vbuf;		//vert buf
+		void* gl_camera;
 	};
 	union{
 		u64 data1;
-		int vlen;
+		void* buf1;
+		void* ibuf;		//indx buf
+		void* gl_light;
 	};
 	union{
 		u64 data2;
-		int wlen;
+		void* buf2;
+		void* nbuf;		//node list
+		void* gl_solid;
 	};
 	union{
 		u64 data3;
-		int nlen;
+		void* buf3;
+		void* wbuf;		//wire list
+		void* gl_opaque;
 	};
 
 	//[80,bf]: func
