@@ -144,7 +144,7 @@ void updatearg(u32 shader, struct glsrc* src)
 }
 void render_onedraw(struct datapair* cam, struct datapair* lit, struct datapair* data)
 {
-	int j;
+	int j,k;
 	u32 fmt;
 	u32 vbo;
 	u32 vao;
@@ -162,14 +162,24 @@ void render_onedraw(struct datapair* cam, struct datapair* lit, struct datapair*
 	updatearg(dst->shader, &cam->src);
 
 	//2.texture
+	k = 0;
+	for(j=0;j<4;j++){
+		if(0 == lit->src.tex_name[j])continue;
+		if(0 == lit->src.tex_data[j])continue;
+		glActiveTexture(GL_TEXTURE0 + k);
+		glBindTexture(GL_TEXTURE_2D, lit->src.tex_data[j]);
+		glUniform1i(glGetUniformLocation(dst->shader, lit->src.tex_name[j]), k);
+		k++;
+	}
 	for(j=0;j<4;j++)
 	{
 		if(0 == dst->tex[j])continue;
 		if(0 == src->tex_name[j])continue;
 //say("tex=%x\n", dst->tex[j]);
-		glUniform1i(glGetUniformLocation(dst->shader, src->tex_name[j]), j);
-		glActiveTexture(GL_TEXTURE0 + j);
+		glActiveTexture(GL_TEXTURE0 + k);
 		glBindTexture(GL_TEXTURE_2D, dst->tex[j]);
+		glUniform1i(glGetUniformLocation(dst->shader, src->tex_name[j]), k);
+		k++;
 	}
 
 	//3.vertex
@@ -279,24 +289,6 @@ void fullwindow_viewport(struct arena* ogl, struct actor* view)
 		rel = samesrcnextdst(rel);
 	}
 }
-void fullwindow_renderfboc(struct arena* opengl, struct actor* target)
-{
-	//say("@gl41fboc\n");
-	if(0 == target->fbo){
-		target->width = target->fbwidth = 1024;
-		target->height = target->fbheight = 1024;
-		fbocreate(target, 'c');
-	}
-	else glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
-	//say("@renderfboc: %x,%x\n", target->fbo, target->tex0);
-
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-	glPointSize(4.0);
-
-	fullwindow_viewport(opengl, target);
-}
 void fullwindow_renderfbod(struct arena* opengl, struct actor* target)
 {
 	//say("@gl41fbod\n");
@@ -307,6 +299,24 @@ void fullwindow_renderfbod(struct arena* opengl, struct actor* target)
 	}
 	else glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
 	//say("@renderfbod: %x,%x\n", target->fbo, target->tex0);
+
+	glClearColor(0.0, 0.0, 0.0, 1.0);
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_DEPTH_TEST);
+	glPointSize(4.0);
+
+	fullwindow_viewport(opengl, target);
+}
+void fullwindow_renderfboc(struct arena* opengl, struct actor* target)
+{
+	//say("@gl41fboc\n");
+	if(0 == target->fbo){
+		target->width = target->fbwidth = 1024;
+		target->height = target->fbheight = 1024;
+		fbocreate(target, 'c');
+	}
+	else glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
+	//say("@renderfboc: %x,%x\n", target->fbo, target->tex0);
 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

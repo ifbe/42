@@ -29,20 +29,33 @@ char* ground_glsl_f =
 GLSL_VERSION
 "in mediump vec3 vertex;\n"
 "out mediump vec4 FragColor;\n"
-//"layout(location = 0)out vec3 color;\n"
-"layout(location = 1)out vec3 hahah;\n"
 "uniform sampler2D tex0;\n"
+"uniform sampler2D suntex;\n"
+"uniform mat4 sunmvp;\n"
+"float shadow(){\n"
+	"mediump vec4 tmp = sunmvp * vec4(vertex, 1.0);\n"
+	"tmp /= tmp.w;\n"
+	"tmp = (tmp+1.0)*0.5;\n"
+	"if(tmp.x < 0.0)return 0.5;\n"
+	"if(tmp.x > 1.0)return 0.5;\n"
+	"if(tmp.y < 0.0)return 0.5;\n"
+	"if(tmp.y > 1.0)return 0.5;\n"
+	"if(tmp.z - texture(suntex, tmp.xy).r > 0.001)return 0.5;\n"
+	"return 1.0;\n"
+"}\n"
 "void main(){\n"
+	"mediump float x = mod(abs(vertex.x), 1000.0) / 1000.0;\n"
+	"mediump float y = mod(abs(vertex.y), 1000.0) / 1000.0;\n"
+	"FragColor = vec4(shadow() * texture(tex0, vec2(x,y)).bgr, 1.0);\n"
+"}\n";
+
+//"layout(location = 0)out vec3 color;\n"
+//"layout(location = 1)out vec3 hahah;\n"
 	//"mediump float x = mod(abs(vertex.x), 1000.0) - 500.0;\n"
 	//"mediump float y = mod(abs(vertex.y), 1000.0) - 500.0;\n"
 	//"if(x>-490.0 && x<490.0 && y>-490.0 && y<490.0)discard;\n"
-
-	"mediump float x = mod(abs(vertex.x), 1000.0) / 1000.0;\n"
-	"mediump float y = mod(abs(vertex.y), 1000.0) / 1000.0;\n"
-	"FragColor = vec4(texture(tex0, vec2(x,y)).bgr, 1.0);\n"
 	//"color = vec3(1.0, 1.0, 0.0);\n"
-	"hahah = vec3(x, y, 0.0);\n"
-"}\n";
+	//"hahah = vec3(x, y, 0.0);\n"
 
 
 

@@ -1,8 +1,9 @@
 #include "libuser.h"
 void ortho_mvp(mat4 m, struct fstyle* s);
-struct sunbuf{
+static struct sunbuf{
 	mat4 mvp;
 	vec4 rgb;
+	u8 data[0];
 };
 
 
@@ -14,8 +15,7 @@ GLSL_VERSION
 "layout(location = 1)in mediump vec2 texuvw;\n"
 "out mediump vec2 uvw;\n"
 "uniform mat4 cammvp;\n"
-"void main()\n"
-"{\n"
+"void main(){\n"
 	"uvw = texuvw;\n"
 	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
 "}\n";
@@ -23,18 +23,12 @@ GLSL_VERSION
 char* dirlit_glsl_f =
 GLSL_VERSION
 "uniform sampler2D tex0;\n"
+"uniform sampler2D suntex;\n"
 "in mediump vec2 uvw;\n"
 "layout(location = 0)out mediump vec4 FragColor;\n"
-"void main()\n"
-"{\n"
-	//"FragColor = vec4(uvw, 1.0, 1.0);\n"
-	"FragColor = vec4(texture(tex0, uvw).rgb, 1.0);\n"
-
-	//"mediump float n = 1.0;"
-	//"mediump float f = 1000.0;"
-	//"mediump float d = texture(tex0, uvw).r;"
-	//"mediump float c = (2.0 * n) / (f + n - d * (f - n));"
-	//"FragColor = vec4(c, c, c, 1.0);\n"
+"void main(){\n"
+	//"FragColor = vec4(texture(tex0, uvw).rgb, 1.0);\n"
+	"FragColor = vec4(texture(suntex, uvw).rgb, 1.0);\n"
 "}\n";
 
 
@@ -67,23 +61,20 @@ static void dirlight_delete(struct actor* act)
 }
 static void dirlight_create(struct actor* act, void* str)
 {
-	int j;
 	struct sunbuf* sun;
 	struct glsrc* src;
 	if(0 == act)return;
 
-	//buf0
 	sun = act->buf0 = memorycreate(0x1000, 0);
+	if(0 == sun)return;
+
+	//
 	sun->rgb[0] = 1.0;
 	sun->rgb[1] = 1.0;
 	sun->rgb[2] = 1.0;
 
-
-	//buf1
-	src = act->buf1 = memorycreate(0x200, 0);
-	if(0 == src)return;
-
 	//
+	src = (void*)(sun->data);
 	src->geometry = 3;
 	src->method = 'v';
 
@@ -91,9 +82,6 @@ static void dirlight_create(struct actor* act, void* str)
 	src->vs = dirlit_glsl_v;
 	src->fs = dirlit_glsl_f;
 	src->shader_enq = 42;
-
-	//texture
-	src->tex_name[0] = "tex0";
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_33;
@@ -115,26 +103,16 @@ static void dirlight_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
+	struct sunbuf* sun;
+	struct glsrc* src;
+	float (*vbuf)[6];
+
 	float x,y;
 	vec3 ta, tb;
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vt = sty->f.vt;
-	struct datapair* dst;
-	struct glsrc* src;
-	float (*vbuf)[6];
-
-	dst = (void*)(sty->data[0]);
-	if(0 == dst)return;
-	src = (void*)(pin->data[0]);
-	if(0 == src)return;
-	vbuf = (void*)(src->vbuf);
-	if(0 == vbuf)return;
-	//printmemory(&dst->src, sizeof(struct glsrc));
-	//say("haha\n");
-	//printmemory(&dst->dst, sizeof(struct gldst));
-	//say("shader=%d\n", dst->dst.shader);
 
 	//light ray (for debug)
 	carveline_rect(win, 0xffffff, vc, vr, vt);
@@ -151,6 +129,14 @@ static void dirlight_draw_vbo(
 			carveline(win, 0xffff00, ta, tb);
 		}
 	}
+
+
+	sun = act->buf0;
+	if(0 == sun)return;
+	src = (void*)(sun->data);
+	if(0 == src)return;
+	vbuf = (void*)(src->vbuf);
+	if(0 == vbuf)return;
 
 	//depth fbo (for debug)
 	vbuf[0][0] = vc[0] - vr[0] - vt[0] - vf[0];
@@ -288,34 +274,38 @@ void dirlight_sty2cam(struct fstyle* d, struct fstyle* s)
 	//d->vn[3] = 1.0;
 }
 static void dirlight_matrix(
-	struct actor* act, struct style* pin,
-	struct actor* fbo, struct style* sty)
+	struct actor* act, struct fstyle* frus,
+	struct actor* fbo, struct fstyle* area)
 {
 	struct halfrel* self;
 	struct halfrel* peer;
 	struct fstyle* obb;
 
 	struct sunbuf* sun;
+	struct glsrc* own;
 	struct glsrc* src;
 
-if(1){
-	src = act->buf1;
-	say("fbo=%x, tex=%x\n", fbo->fbo, fbo->tex0);
-	src->tex_data[0] = fbo->tex0;
-	src->tex_fmt[0] = '!';
-	src->tex_enq[0] += 1;
-}
+	sun = act->buf0;
+	if(0 == sun)return;
+	own = (void*)(sun->data);
+	if(0 == own)return;
+	src = fbo->gl_camera;
+	if(0 == src)return;
+
+
+	own->tex_data[0] = fbo->tex0;
+	//say("fbo=%x, tex=%x\n", fbo->fbo, fbo->tex0);
+
+
 	//locate world
 	dirlight_search(act, 0, &self, &peer);
 	obb = peer->pfoot;
 
 	//write context
-	sun = act->buf0;
-	dirlight_sty2cam(&pin->f, obb);
-	ortho_mvp(sun->mvp, &pin->f);
+	dirlight_sty2cam(frus, obb);
+	ortho_mvp(sun->mvp, frus);
 	mat4_transpose(sun->mvp);
 
-	src = fbo->gl_camera;
 	src->arg_fmt[0] = 'm';
 	src->arg_name[0] = "cammvp";
 	src->arg_data[0] = sun->mvp;
@@ -329,11 +319,19 @@ if(1){
 
 
 void dirlight_light(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct actor* act, struct fstyle* pin,
+	struct actor* win, struct fstyle* sty)
 {
-	struct glsrc* src = win->gl_light;
-	struct sunbuf* sun = act->buf0;
+	struct sunbuf* sun;
+	struct glsrc* own;
+	struct glsrc* src;
+
+	sun = act->buf0;
+	if(0 == sun)return;
+	own = (void*)(sun->data);
+	if(0 == own)return;
+	src = win->gl_light;
+	if(0 == src)return;
 
 	src->arg_fmt[0] = 'm';
 	src->arg_name[0] = "sunmvp";
@@ -342,6 +340,11 @@ void dirlight_light(
 	src->arg_fmt[1] = 'v';
 	src->arg_name[1] = "sunrgb";
 	src->arg_data[1] = sun->rgb;
+
+	src->tex_name[0] = "suntex";
+	src->tex_data[0] = own->tex_data[0];
+	src->tex_fmt[0] = '!';
+	src->tex_enq[0] += 1;
 }
 
 
@@ -359,8 +362,8 @@ static void dirlight_read(struct halfrel* self, struct halfrel* peer, void* arg,
 	if(ctx){
 		switch(ctx->type){
 			case _gl41data_:{
-				dirlight_light(act,pin,ctx,sty);
-				dirlight_draw_vbo(act,pin,ctx,sty);
+				dirlight_light(act, &pin->fs, ctx, &sty->fs);
+				dirlight_draw_vbo(act, pin, ctx, sty);
 			}
 		}
 	}
@@ -370,7 +373,7 @@ static void dirlight_read(struct halfrel* self, struct halfrel* peer, void* arg,
 			case _gl41fbod_:
 			case _gl41fboc_:
 			case _gl41fbog_:
-			case _gl41wnd0_:dirlight_matrix(act, pin, win, sty);
+			case _gl41wnd0_:dirlight_matrix(act, &pin->fs, win, &sty->fs);
 		}
 	}
 }
@@ -387,7 +390,8 @@ static void dirlight_start(struct halfrel* self, struct halfrel* peer)
 	if(0 == act)return;
 	if(0 == pin)return;
 
-	pin->data[0] = (u64)(act->buf1);
+	struct sunbuf* sun = act->buf0;
+	pin->data[0] = (u64)(sun->data);
 	say("@dirlit_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
