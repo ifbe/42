@@ -1,6 +1,6 @@
 #include "libuser.h"
 void ortho_mvp(mat4 m, struct fstyle* s);
-static struct sunbuf{
+struct sunbuf{
 	mat4 mvp;
 	vec4 rgb;
 	u8 data[0];

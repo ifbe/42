@@ -1,4 +1,38 @@
 #include "libuser.h"
+struct sunbuf{
+	mat4 mvp;
+	vec4 rgb;
+	u32 u_rgb;
+
+	u8 data[0];
+};
+
+
+
+
+static void pointlight_search(struct actor* act)
+{
+}
+static void pointlight_modify(struct actor* act)
+{
+}
+static void pointlight_delete(struct actor* act)
+{
+}
+static void pointlight_create(struct actor* act, void* str)
+{
+	struct sunbuf* sun;
+	if(0 == act)return;
+
+	sun = act->buf0 = memorycreate(0x1000, 0);
+	if(0 == sun)return;
+
+	//
+	sun->rgb[0] = 1.0;
+	sun->rgb[1] = 1.0;
+	sun->rgb[2] = 1.0;
+	sun->u_rgb = 0xffffff;
+}
 
 
 
@@ -12,12 +46,16 @@ static void pointlight_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
+	struct sunbuf* sun;
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vt = sty->f.vt;
-	u32 rgb = (act->data0)&0xffffff;
-	carveopaque_sphere(win, 0x80000000|rgb, vc, vr, vf, vt);
+
+	sun = act->buf0;
+	if(0 == sun)return;
+
+	carveopaque_sphere(win, 0x80000000|sun->u_rgb, vc, vr, vf, vt);
 }
 static void pointlight_draw_json(
 	struct actor* act, struct style* pin,
@@ -56,28 +94,24 @@ static void pointlight_draw(
 
 
 void pointlight_light(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct actor* act, struct fstyle* pin,
+	struct actor* win, struct fstyle* sty)
 {
-	u32 rgb;
-	float* tmp;
+	struct sunbuf* sun;
 	struct glsrc* src;
 
-	rgb = act->data0;
-	tmp = act->buf;
-	tmp[2] = (rgb&0xff) / 255.0;
-	tmp[1] = ((rgb >>  8)&0xff) / 255.0;
-	tmp[0] = ((rgb >> 16)&0xff) / 255.0;
-
+	sun = act->buf0;
+	if(0 == sun)return;
 	src = win->gl_light;
+	if(0 == src)return;
 
 	src->arg_fmt[0] = 'v';
 	src->arg_name[0] = "sunxyz";
-	src->arg_data[0] = sty->fs.vc;
+	src->arg_data[0] = sty->vc;
 
 	src->arg_fmt[1] = 'v';
 	src->arg_name[1] = "sunrgb";
-	src->arg_data[1] = tmp;
+	src->arg_data[1] = sun->rgb;
 }
 static void pointlight_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -91,8 +125,8 @@ static void pointlight_read(struct halfrel* self, struct halfrel* peer, void* ar
 	if(ctx){
 		switch(ctx->type){
 			case _gl41data_:{
-				pointlight_light(act,pin,ctx,sty);
-				pointlight_draw_vbo(act,pin,ctx,sty);
+				pointlight_light(act, &pin->fs, ctx, &sty->fs);
+				pointlight_draw_vbo(act, pin, ctx, sty);
 			}
 		}
 	}
@@ -105,24 +139,6 @@ static void pointlight_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void pointlight_start(struct halfrel* self, struct halfrel* peer)
 {
-}
-
-
-
-
-static void pointlight_search(struct actor* act)
-{
-}
-static void pointlight_modify(struct actor* act)
-{
-}
-static void pointlight_delete(struct actor* act)
-{
-}
-static void pointlight_create(struct actor* act, void* str)
-{
-	act->data0 = 0xffffff;
-	act->buf = memorycreate(0x1000, 0);
 }
 
 

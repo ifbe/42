@@ -10,7 +10,7 @@ struct sunbuf{
 
 
 
-char* spotlit_glsl_v =
+char* projector_glsl_v =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 vertex;\n"
 "layout(location = 1)in mediump vec2 texuvw;\n"
@@ -21,7 +21,7 @@ GLSL_VERSION
 	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
 "}\n";
 
-char* spotlit_glsl_f =
+char* projector_glsl_f =
 GLSL_VERSION
 "uniform sampler2D suntex;\n"
 "in mediump vec2 uvw;\n"
@@ -38,7 +38,7 @@ GLSL_VERSION
 
 
 
-static void spotlight_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void projector_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
 	struct actor* world;
@@ -57,13 +57,13 @@ static void spotlight_search(struct actor* act, u32 foot, struct halfrel* self[]
 		rel = samedstnextsrc(rel);
 	}
 }
-static void spotlight_modify(struct actor* act)
+static void projector_modify(struct actor* act)
 {
 }
-static void spotlight_delete(struct actor* act)
+static void projector_delete(struct actor* act)
 {
 }
-static void spotlight_create(struct actor* act, void* str)
+static void projector_create(struct actor* act, void* str)
 {
 	struct sunbuf* sun;
 	struct glsrc* src;
@@ -83,8 +83,8 @@ static void spotlight_create(struct actor* act, void* str)
 	src->method = 'v';
 
 	//
-	src->vs = spotlit_glsl_v;
-	src->fs = spotlit_glsl_f;
+	src->vs = projector_glsl_v;
+	src->fs = projector_glsl_f;
 	src->shader_enq = 42;
 
 	//vertex
@@ -98,12 +98,12 @@ static void spotlight_create(struct actor* act, void* str)
 
 
 
-static void spotlight_draw_pixel(
+static void projector_draw_pixel(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 }
-static void spotlight_draw_vbo(
+static void projector_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
@@ -176,43 +176,43 @@ static void spotlight_draw_vbo(
 
 	src->vbuf_enq += 1;
 }
-static void spotlight_draw_json(
+static void projector_draw_json(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 }
-static void spotlight_draw_html(
+static void projector_draw_html(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 }
-static void spotlight_draw_tui(
+static void projector_draw_tui(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 }
-static void spotlight_draw_cli(
+static void projector_draw_cli(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 }
-static void spotlight_draw(
+static void projector_draw(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
-	if(fmt == _cli_)spotlight_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)spotlight_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)spotlight_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)spotlight_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)spotlight_draw_vbo(act, pin, win, sty);
-	else spotlight_draw_pixel(act, pin, win, sty);
+	if(fmt == _cli_)projector_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)projector_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)projector_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)projector_draw_json(act, pin, win, sty);
+	else if(fmt == _vbo_)projector_draw_vbo(act, pin, win, sty);
+	else projector_draw_pixel(act, pin, win, sty);
 }
 
 
 
 
-void spotlight_frustum(struct fstyle* d, struct fstyle* s)
+void projector_frustum(struct fstyle* d, struct fstyle* s)
 {
 	float x,y,z,n;
 	d->vc[0] = s->vc[0];
@@ -261,7 +261,7 @@ void spotlight_frustum(struct fstyle* d, struct fstyle* s)
 	d->vf[2] = z / n;
 	//d->vf[3] = 1e20;
 }
-static void spotlight_matrix(
+static void projector_matrix(
 	struct actor* act, struct fstyle* frus,
 	struct actor* fbo, struct fstyle* area)
 {
@@ -286,10 +286,10 @@ static void spotlight_matrix(
 
 
 	//
-	spotlight_search(act, 0, &self, &peer);
+	projector_search(act, 0, &self, &peer);
 	obb = peer->pfoot;
 
-	spotlight_frustum(frus, obb);
+	projector_frustum(frus, obb);
 	fixmatrix(sun->mvp, frus);
 	mat4_transpose(sun->mvp);
 
@@ -301,7 +301,7 @@ static void spotlight_matrix(
 	src->arg_name[1] = "camxyz";
 	src->arg_data[1] = obb->vc;
 }
-void spotlight_light(
+void projector_light(
 	struct actor* act, struct fstyle* pin,
 	struct actor* win, struct fstyle* sty)
 {
@@ -333,7 +333,7 @@ void spotlight_light(
 	src->tex_fmt[0] = '!';
 	src->tex_enq[0] += 1;
 }
-static void spotlight_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void projector_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -345,8 +345,8 @@ static void spotlight_read(struct halfrel* self, struct halfrel* peer, void* arg
 	if(ctx){
 		switch(ctx->type){
 			case _gl41data_:{
-				spotlight_light(act, &pin->fs, ctx, &sty->fs);
-				spotlight_draw_vbo(act, pin, ctx, sty);
+				projector_light(act, &pin->fs, ctx, &sty->fs);
+				projector_draw_vbo(act, pin, ctx, sty);
 			}
 		}
 	}
@@ -356,17 +356,17 @@ static void spotlight_read(struct halfrel* self, struct halfrel* peer, void* arg
 			case _gl41fbod_:
 			case _gl41fboc_:
 			case _gl41fbog_:
-			case _gl41wnd0_:spotlight_matrix(act, &pin->fs, win, &sty->fs);
+			case _gl41wnd0_:projector_matrix(act, &pin->fs, win, &sty->fs);
 		}
 	}
 }
-static void spotlight_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void projector_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void spotlight_stop(struct halfrel* self, struct halfrel* peer)
+static void projector_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void spotlight_start(struct halfrel* self, struct halfrel* peer)
+static void projector_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
@@ -375,24 +375,24 @@ static void spotlight_start(struct halfrel* self, struct halfrel* peer)
 
 	struct sunbuf* sun = act->buf0;
 	pin->data[0] = (u64)(sun->data);
-	say("@spotlight_start:%llx, %llx\n", pin->data[0], pin->data[1]);
+	say("@projector_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 
 
 
-void spotlight_register(struct actor* p)
+void projector_register(struct actor* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s','p','o','t','l', 'i', 't', 0);
+	p->fmt = hex64('p','r','j','t','o', 'r', 0, 0);
 
-	p->oncreate = (void*)spotlight_create;
-	p->ondelete = (void*)spotlight_delete;
-	p->onsearch = (void*)spotlight_search;
-	p->onmodify = (void*)spotlight_modify;
+	p->oncreate = (void*)projector_create;
+	p->ondelete = (void*)projector_delete;
+	p->onsearch = (void*)projector_search;
+	p->onmodify = (void*)projector_modify;
 
-	p->onstart = (void*)spotlight_start;
-	p->onstop  = (void*)spotlight_stop;
-	p->onread  = (void*)spotlight_read;
-	p->onwrite = (void*)spotlight_write;
+	p->onstart = (void*)projector_start;
+	p->onstop  = (void*)projector_stop;
+	p->onread  = (void*)projector_read;
+	p->onwrite = (void*)projector_write;
 }

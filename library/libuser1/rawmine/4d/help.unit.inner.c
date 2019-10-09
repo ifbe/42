@@ -21,9 +21,11 @@ void portal_register(void*);
 void water_register(void*);
 //.light
 void dirlight_register(void*);
-void spotlight_register(void*);
 void pointlight_register(void*);
+void projector_register(void*);
+void spotlight_register(void*);
 //.else
+void curtain_register(void*);
 void field_register(void*);
 void ground_register(void*);
 void particle_register(void*);
@@ -192,10 +194,16 @@ void content_create(void* addr)
 	spotlight_register(tmp);
 	tmp += sizeof(struct actor);
 
+	projector_register(tmp);
+	tmp += sizeof(struct actor);
+
 	pointlight_register(tmp);
 	tmp += sizeof(struct actor);
 
 //.else
+	curtain_register(tmp);
+	tmp += sizeof(struct actor);
+
 	field_register(tmp);
 	tmp += sizeof(struct actor);
 

@@ -87,11 +87,12 @@ rawmine/baseunit/objdxgl/fbo/fbo.portal.c \
 rawmine/baseunit/objdxgl/fbo/fbo.water.c \
 rawmine/baseunit/objdxgl/light/light.direction.c \
 rawmine/baseunit/objdxgl/light/light.point.c \
+rawmine/baseunit/objdxgl/light/light.projector.c \
 rawmine/baseunit/objdxgl/light/light.spot.c \
+rawmine/baseunit/objdxgl/dxgl.curtain.c \
 rawmine/baseunit/objdxgl/dxgl.field.c \
 rawmine/baseunit/objdxgl/dxgl.ground.c \
 rawmine/baseunit/objdxgl/dxgl.particle.c \
-rawmine/baseunit/objdxgl/dxgl.shadowmap.c \
 rawmine/baseunit/objdxgl/dxgl.skydome.c \
 rawmine/baseunit/objdxgl/dxgl.terrain.c \
 rawmine/baseunit/objdxgl/dxgl.texball.c \
