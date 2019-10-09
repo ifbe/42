@@ -51,9 +51,7 @@ int uart_start(char* path, int speed)
 		say("error:%d@open:%s\n", errno, path);
 		return -1;
 	}
-	else{
-		say("open: %s, %d\n", path, speed);
-	}
+	//else say("open: %s, %d\n", path, speed);
 
 	switch(speed){
 		case 9600:  speed = B9600;  break;

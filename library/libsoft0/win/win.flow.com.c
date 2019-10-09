@@ -134,12 +134,12 @@ int uart_start(char* p, int speed)
 		0,
 		NULL
 	);
-	say("name=%s, hcom=%llx\n", buf, hcom);
 	if(hcom == INVALID_HANDLE_VALUE)
 	{
 		say("err:%d@open\n",GetLastError());
 		return -1;
 	}
+	else say("name=%s, hcom=%llx\n", buf, hcom);
 
 	//
 	COMMTIMEOUTS timeouts;

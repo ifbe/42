@@ -221,7 +221,7 @@ void* systemcreate(u64 type, void* argstr, int argc, char** argv)
 	else if(_ptmx_ == type)
 	{
 		parseuart(host, &port, name);
-		say("parse: %s,%d\n", host, port);
+		say("parse: %s, %d\n", host, port);
 
 		fd = startshell(host, port);
 		if(fd <= 0)return 0;
@@ -233,7 +233,7 @@ void* systemcreate(u64 type, void* argstr, int argc, char** argv)
 	else if(_uart_ == type)
 	{
 		parseuart(host, &port, name);
-		say("parse: %s,%d\n", host, port);
+		say("parse: %s, %d\n", host, port);
 
 		fd = uart_start(host, port);
 		if(fd <= 0)return 0;
