@@ -23,16 +23,17 @@ GLSL_VERSION
 
 char* projector_glsl_f =
 GLSL_VERSION
-"uniform sampler2D suntex;\n"
 "in mediump vec2 uvw;\n"
 "layout(location = 0)out mediump vec4 FragColor;\n"
+"uniform sampler2D suntex;\n"
+"uniform sampler2D sunimg;\n"
 "void main(){\n"
 	//"FragColor = vec4(texture(tex0, uvw).rgb, 1.0);\n"
 	"mediump float n = 1.0;"
 	"mediump float f = 10000.0;"
 	"mediump float d = texture(suntex, uvw).r;"
 	"mediump float c = (2.0 * n) / (f + n - d * (f - n));"
-	"FragColor = vec4(c, c, c, 1.0);\n"
+	"FragColor = vec4(c*texture(sunimg, uvw).bgr, 1.0);\n"
 "}\n";
 
 
@@ -332,6 +333,14 @@ void projector_light(
 	src->tex_data[0] = own->tex_data[0];
 	src->tex_fmt[0] = '!';
 	src->tex_enq[0] += 1;
+
+	if(0 == src->tex_name[1]){
+		src->tex_name[1] = "sunimg";
+		src->tex_fmt[1] = hex32('r','g','b','a');
+		src->tex_data[1] = memorycreate(2048*2048*4, 0);
+		loadtexfromfile(src, 1, "datafile/jpg/cartoon.jpg");
+	}
+		src->tex_enq[1] += 1;
 }
 static void projector_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

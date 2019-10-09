@@ -686,8 +686,8 @@ static void freecam_matrix(
 
 	dx = area->vq[0] * ctx->fbwidth;
 	dy = area->vq[1] * ctx->fbheight;
-	frus->vb[3] =-dy / dx;
-	frus->vt[3] = dy / dx;
+	frus->vb[3] = frus->vl[3] * dy / dx;
+	frus->vt[3] = frus->vr[3] * dy / dx;
 	freecam_search(act, 0, &self, &peer);
 
 	obb = peer->pfoot;

@@ -13,6 +13,9 @@ depth:1024
 ground{
 fmt:ground
 }
+tree{
+fmt:xiangqi
+}
 freecam{
 fmt:freecam
 }
@@ -37,6 +40,15 @@ c: 0.0, 0.0, 0.0
 r: 1000000.0, 0.0, 0.0
 f: 0.0, 1000000.0, 0.0
 t: 0.0, 0.0, 1000000.0
+}
+
+treehaha{
+}
+treegeom{
+c: 0.0, 0.0, 0.0
+r: 500.0, 0.0, 0.0
+f: 0.0, 500.0, 0.0
+t: 0.0, 0.0, 500.0
 }
 
 freemodl{
@@ -66,6 +78,7 @@ q:1.0, 1.0
 
 #3dworld depends on inner objects
 (3dworld, skygeom, act, 0) -> (ground, skyhaha, act, 0)
+(3dworld, treegeom, act, 0) -> (tree, treehaha, act, 0)
 (3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
 
 #glctx depends on scene

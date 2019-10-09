@@ -90,6 +90,10 @@ void fullwindow_upload(struct arena* ogl, struct actor* ctx)
 	struct datapair* mod;
 	//say("@fullwindow_upload: %llx,%llx,%.8s\n", ogl, ctx, &ctx->type);
 
+	//light
+	mod = ctx->gl_light;
+	update_onedraw(&mod[0].dst, &mod[0].src);
+
 	//solid
 	mod = ctx->gl_solid;
 	if(0 == mod)return;
