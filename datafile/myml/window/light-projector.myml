@@ -13,7 +13,10 @@ depth:1024
 ground{
 fmt:ground
 }
-test{
+cur1{
+fmt:curtain
+}
+cur2{
 fmt:curtain
 }
 tree{
@@ -51,22 +54,31 @@ f: 0.0, 10000.0, 0.0
 t: 0.0, 0.0, 10000.0
 }
 
-testhaha{
-}
-testgeom{
-c: 0.0, -2000.0, 500.0
-r: 1000.0, 0.0, 0.0
-f: 0.0, 1000.0, 0.0
-t: 0.0, 0.0, 500.0
-}
-
 treehaha{
 }
 treegeom{
-c: 0.0, 0.0, 0.0
+c: 0.0, -2000.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1500.0
+}
+
+cur1haha{
+}
+cur1geom{
+c: 500.0, -1000.0, 1000.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
+}
+
+cur2haha{
+}
+cur2geom{
+c: -500.0, 1000.0, 500.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 500.0
 }
 
 mirrhaha{
@@ -117,8 +129,9 @@ q:1.0, 1.0
 
 #3dworld depends on inner objects
 (3dworld, grndgeom, act, 0) -> (ground, grndhaha, act, 0)
-(3dworld, testgeom, act, 0) -> (test, testhaha, act, 0)
 (3dworld, treegeom, act, 0) -> (tree, treehaha, act, 0)
+(3dworld, cur1geom, act, 0) -> (cur1, cur1haha, act, 0)
+(3dworld, cur2geom, act, 0) -> (cur2, cur2haha, act, 0)
 (3dworld, mirrgeom, act, 0) -> (light, mirrhaha, act, 0)
 (3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
 

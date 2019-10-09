@@ -26,7 +26,9 @@ GLSL_VERSION
 	"tmp /= tmp.w;\n"
 	"tmp = (tmp+1.0)*0.5;\n"
 	//"FragColor = vec4(tmp.x, tmp.y, tmp.z, 1.0);\n"
-	"FragColor = vec4(texture(sunimg, tmp.xy).bgr, 1.0);\n"
+	"mediump float visiable = 1.0;\n"
+	"if(tmp.z - texture(suntex, tmp.xy).r > 0.0001)visiable = 0.0;\n"
+	"FragColor = vec4(visiable * texture(sunimg, tmp.xy).bgr, 1.0);\n"
 "}\n";
 
 
