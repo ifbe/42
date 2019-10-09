@@ -22,14 +22,14 @@ GLSL_VERSION
 
 char* spotlit_glsl_f =
 GLSL_VERSION
-"uniform sampler2D tex0;\n"
+"uniform sampler2D suntex;\n"
 "in mediump vec2 uvw;\n"
 "layout(location = 0)out mediump vec4 FragColor;\n"
 "void main(){\n"
 	//"FragColor = vec4(texture(tex0, uvw).rgb, 1.0);\n"
 	"mediump float n = 1.0;"
 	"mediump float f = 10000.0;"
-	"mediump float d = texture(tex0, uvw).r;"
+	"mediump float d = texture(suntex, uvw).r;"
 	"mediump float c = (2.0 * n) / (f + n - d * (f - n));"
 	"FragColor = vec4(c, c, c, 1.0);\n"
 "}\n";
@@ -85,9 +85,6 @@ static void spotlight_create(struct actor* act, void* str)
 	src->vs = spotlit_glsl_v;
 	src->fs = spotlit_glsl_f;
 	src->shader_enq = 42;
-
-	//texture
-	src->tex_name[0] = "tex0";
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_33;
@@ -272,15 +269,22 @@ static void spotlight_matrix(
 	struct fstyle* obb;
 
 	struct sunbuf* sun;
+	struct glsrc* own;
 	struct glsrc* src;
 
 	sun = act->buf0;
-	src = (void*)(sun->data);
-	src->tex_data[0] = fbo->tex0;
-	src->tex_fmt[0] = '!';
-	src->tex_enq[0] += 1;
+	if(0 == sun)return;
+	own = (void*)(sun->data);
+	if(0 == own)return;
+	src = fbo->gl_camera;
+	if(0 == src)return;
 
 
+	//
+	own->tex_data[0] = fbo->tex0;
+
+
+	//
 	spotlight_search(act, 0, &self, &peer);
 	obb = peer->pfoot;
 
@@ -288,8 +292,6 @@ static void spotlight_matrix(
 	fixmatrix(sun->mvp, frus);
 	mat4_transpose(sun->mvp);
 
-
-	src = fbo->gl_camera;
 	src->arg_fmt[0] = 'm';
 	src->arg_name[0] = "cammvp";
 	src->arg_data[0] = sun->mvp;
@@ -303,20 +305,32 @@ void spotlight_light(
 	struct actor* win, struct fstyle* sty)
 {
 	struct sunbuf* sun;
+	struct glsrc* own;
 	struct glsrc* src;
 
 	sun = act->buf0;
 	if(0 == sun)return;
+	own = (void*)(sun->data);
+	if(0 == own)return;
 	src = win->gl_light;
 	if(0 == src)return;
 
-	src->arg_fmt[0] = 'v';
-	src->arg_name[0] = "sunxyz";
-	src->arg_data[0] = sty->vc;
+	src->arg_fmt[0] = 'm';
+	src->arg_name[0] = "sunmvp";
+	src->arg_data[0] = sun->mvp;
 
 	src->arg_fmt[1] = 'v';
 	src->arg_name[1] = "sunrgb";
 	src->arg_data[1] = sun->rgb;
+
+	src->arg_fmt[2] = 'v';
+	src->arg_name[2] = "sunxyz";
+	src->arg_data[2] = sty->vc;
+
+	src->tex_name[0] = "suntex";
+	src->tex_data[0] = own->tex_data[0];
+	src->tex_fmt[0] = '!';
+	src->tex_enq[0] += 1;
 }
 static void spotlight_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

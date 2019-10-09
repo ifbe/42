@@ -27,8 +27,8 @@ GLSL_VERSION
 "in mediump vec2 uvw;\n"
 "layout(location = 0)out mediump vec4 FragColor;\n"
 "void main(){\n"
-	//"FragColor = vec4(texture(tex0, uvw).rgb, 1.0);\n"
-	"FragColor = vec4(texture(suntex, uvw).rgb, 1.0);\n"
+	"mediump float d = 100.0 * texture(suntex, uvw).r;"
+	"FragColor = vec4(d, d, d, 1.0);\n"
 "}\n";
 
 

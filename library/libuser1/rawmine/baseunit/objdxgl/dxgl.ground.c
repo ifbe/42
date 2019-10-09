@@ -40,7 +40,7 @@ GLSL_VERSION
 	"if(tmp.x > 1.0)return 0.5;\n"
 	"if(tmp.y < 0.0)return 0.5;\n"
 	"if(tmp.y > 1.0)return 0.5;\n"
-	"if(tmp.z - texture(suntex, tmp.xy).r > 0.001)return 0.5;\n"
+	"if(tmp.z - texture(suntex, tmp.xy).r > 0.0001)return 0.5;\n"
 	"return 1.0;\n"
 "}\n"
 "void main(){\n"

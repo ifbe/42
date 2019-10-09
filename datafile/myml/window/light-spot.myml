@@ -13,6 +13,10 @@ depth:1024
 ground{
 fmt:ground
 }
+test{
+fmt:model
+file:datafile/stl/spider-lowpoly.stl
+}
 tree{
 fmt:tree
 }
@@ -48,6 +52,15 @@ f: 0.0, 10000.0, 0.0
 t: 0.0, 0.0, 10000.0
 }
 
+testhaha{
+}
+testgeom{
+c: 0.0, -2000.0, 500.0
+r: 500.0, 0.0, 0.0
+f: 0.0, 500.0, 0.0
+t: 0.0, 0.0, 500.0
+}
+
 treehaha{
 }
 treegeom{
@@ -60,18 +73,18 @@ t: 0.0, 0.0, 1000.0
 mirrhaha{
 }
 mirrgeom{
-c: 0.0, -3000.0, 3000.0
+c: 0.0, -4000.0, 2000.0
 r: 1000.0, 0.0, 0.0
 t: 0.0, 707.0, 707.0
 f: 0.0, 707.0, -707.0
 }
 mirrfrus{
-l: 0.0, 0.0, 0.0,-1.0
-r: 0.0, 0.0, 0.0, 1.0
-b: 0.0, 0.0, 0.0,-1.0
-t: 0.0, 0.0, 0.0, 1.0
+l: 0.0, 0.0, 0.0,-0.7
+r: 0.0, 0.0, 0.0, 0.7
+b: 0.0, 0.0, 0.0,-0.7
+t: 0.0, 0.0, 0.0, 0.7
 n: 0.0, 0.0, 0.0, 1.0
-f: 0.0, 0.0, 0.0, 1000000.0
+f: 0.0, 0.0, 0.0, 100000.0
 }
 mirrrect{
 c:0.0, 0.0
@@ -81,18 +94,18 @@ q:1.0, 1.0
 freemodl{
 }
 freegeom{
-c: 0.0, -3000.0, 3000.0
+c: 0.0, -4000.0, 2000.0
 r: 1000.0, 0.0, 0.0
 t: 0.0, 707.0, 707.0
 f: 0.0, 707.0, -707.0
 }
 freefrus{
-l: 0.0, 0.0, 0.0,-1.0
-r: 0.0, 0.0, 0.0, 1.0
-b: 0.0, 0.0, 0.0,-1.0
-t: 0.0, 0.0, 0.0, 1.0
+l: 0.0, 0.0, 0.0,-0.7
+r: 0.0, 0.0, 0.0, 0.7
+b: 0.0, 0.0, 0.0,-0.7
+t: 0.0, 0.0, 0.0, 0.7
 n: 0.0, 0.0, 0.0, 1.0
-f: 0.0, 0.0, 0.0, 1000000.0
+f: 0.0, 0.0, 0.0, 100000.0
 }
 freerect{
 c:0.0, 0.0
@@ -105,6 +118,7 @@ q:1.0, 1.0
 
 #3dworld depends on inner objects
 (3dworld, grndgeom, act, 0) -> (ground, grndhaha, act, 0)
+(3dworld, testgeom, act, 0) -> (test, testhaha, act, 0)
 (3dworld, treegeom, act, 0) -> (tree, treehaha, act, 0)
 (3dworld, mirrgeom, act, 0) -> (light, mirrhaha, act, 0)
 (3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
