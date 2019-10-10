@@ -13,6 +13,7 @@ int memorydelete(void*);
 void* memorycreate(int size, int flag);
 void death();
 void birth(void*);
+void args_create(int, char**);
 
 
 
@@ -74,7 +75,9 @@ void* pwrclkcreate(u64 type, void* name, int argc, char** argv)
 	//app
 	if( (_main_ == type)|(_win32_ == type) ){
 		tmp = memorycreate(0x1000000, 0);
+
 		birth(tmp);
+		args_create(argc, argv);
 
 		tmp->type = type;
 		return tmp;

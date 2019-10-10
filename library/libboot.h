@@ -27,9 +27,8 @@ typedef unsigned long long u64;
 #define _win32_ hex64('w','i','n','3','2', 0, 0, 0)
 #define _winmain_ hex64('w','i','n','m','a','i','n', 0)
 //
-#define _args_ hex32('a','r','g','s')
-#define _term_ hex32('t','e','r','m')
-#define _loop_ hex32('l','o','o','p')
+#define _poller_ hex64('p','o','l','l','e','r', 0, 0)
+#define _pulser_ hex64('p','u','l','s','e','r', 0, 0)
 
 
 

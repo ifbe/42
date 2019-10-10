@@ -48,14 +48,11 @@ void* pollenv()
 int main(int argc, char** argv)
 {
 	void* all;
-	void* arg;
 	void* thr;
 
-	all = pwrclkcreate(_main_, 0, 0, 0);
-	arg = workercreate(_args_, 0, argc, argv);
-	thr = workercreate(_loop_, 0, 0, 0);
+	all = pwrclkcreate(_main_, 0, argc, argv);
+	thr = workercreate(_poller_, 0, 0, 0);
 
-	workerdelete(arg);
 	workerdelete(thr);
 	pwrclkdelete(all);
 	return 0;

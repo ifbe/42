@@ -8,7 +8,6 @@ int arenaread_all();
 int arenaevent(void*);
 //
 u64 timeread();
-void timewrite(u64);
 void sleep_us();
 //
 void* eventread();
@@ -32,7 +31,7 @@ static int alive = 1;
 
 
 
-void loop()
+void poller()
 {
 	//before
 	u64 t0;

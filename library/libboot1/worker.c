@@ -4,8 +4,8 @@ void initstdev(void*);
 void freestdrel();
 void initstdrel(void*);
 //
-void args_create(int, char**);
-void loop();
+void poller(void*);
+void pulser(void*);
 
 
 
@@ -57,17 +57,20 @@ void* workercreate(u64 type, void* name, int argc, char** argv)
 {
 	struct worker* tmp;
 
-	if(_args_ == type){
+	if(_pulser_ == type)
+	{
 		tmp = allocworker();
-		tmp->type = _args_;
-		args_create(argc, argv);
+		tmp->type = _pulser_;
+
+		pulser(tmp);
 		return tmp;
 	}
-	if(_loop_ == type){
-		tmp = allocworker();
-		tmp->type = _loop_;
 
-		loop();
+	if(_poller_ == type){
+		tmp = allocworker();
+		tmp->type = _poller_;
+
+		poller(tmp);
 		return tmp;
 	}
 	return 0;

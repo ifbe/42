@@ -58,7 +58,6 @@ int arg2utf8(u8* src, u8* dst)
 int main(int argc, char** argv)
 {
 	void* all;
-	void* arg;
 	void* thr;
 /*
 	for(j=1;j<argc;j++){
@@ -66,11 +65,9 @@ int main(int argc, char** argv)
 	}
 	if(argc <= 1)prep();
 */
-	all = pwrclkcreate(_win32_, 0, 0, 0);
-	arg = workercreate(_args_, 0, argc, argv);
-	thr = workercreate(_loop_, 0, 0, 0);
+	all = pwrclkcreate(_win32_, 0, argc, argv);
+	thr = workercreate(_poller_, 0, 0, 0);
 
-	workerdelete(arg);
 	workerdelete(thr);
 	pwrclkdelete(all);
 

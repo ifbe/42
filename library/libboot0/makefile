@@ -25,6 +25,8 @@ efi:
 none:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
+	$(compiler) $(cflag) init/init.c
+	$(compiler) $(cflag) init/args.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/board.c
 	$(compiler) $(cflag) app/none/main.c
@@ -35,6 +37,8 @@ none:
 rpi:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
+	$(compiler) $(cflag) init/init.c
+	$(compiler) $(cflag) init/args.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/rpi/wiringpi.c
 	$(compiler) $(cflag) app/none/main.c
@@ -45,6 +49,8 @@ rpi:
 wincmd:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
+	$(compiler) $(cflag) init/init.c
+	$(compiler) $(cflag) init/args.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/board.c
 	$(compiler) $(cflag) app/win/main.c
