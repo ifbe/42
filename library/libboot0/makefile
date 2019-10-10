@@ -47,9 +47,9 @@ wincmd:
 	$(compiler) $(cflag) pwrclk.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/board.c
-	$(compiler) $(cflag) app/wincmd/main.c
-	$(compiler) $(cflag) app/wincmd/serial.c
-	$(compiler) $(cflag) app/wincmd/thread.c
+	$(compiler) $(cflag) app/win/main.c
+	$(compiler) $(cflag) app/win/serial.c
+	$(compiler) $(cflag) app/win/thread.c
 
 clean:
 	rm -f *.o

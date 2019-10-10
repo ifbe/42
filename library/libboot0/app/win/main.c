@@ -4,21 +4,10 @@
 #include <direct.h>
 #include <windows.h>
 #include "libboot.h"
-//
-int termwrite(u8* buf, int len);
-int openwriteclose(void*,int,void*,int);
-//
-void birth(void* addr);
-void death();
-//
-void prep();
-void loop();
 
 
 
 
-//
-static u8* rawuniverse = 0;
 int arg2utf8(u8* src, u8* dst)
 {
 	int j,k;
@@ -68,29 +57,23 @@ int arg2utf8(u8* src, u8* dst)
 }
 int main(int argc, char** argv)
 {
-	//before
-	int j,k;
-	u8 tmp[0x1000];
-	u8* addr = malloc(0x1000000);
-	birth(addr);
-
-	//prep
-	pwrclkcreate(_win32_, 0, argc, argv);
-
+	void* all;
+	void* arg;
+	void* thr;
+/*
 	for(j=1;j<argc;j++){
 		k = arg2utf8(argv[j], tmp);
-		//tmp[k] = '\n';
-		//lowlevel_output(tmp, k+1);
-		termwrite(tmp, k);
 	}
 	if(argc <= 1)prep();
+*/
+	all = pwrclkcreate(_win32_, 0, 0, 0);
+	arg = workercreate(_args_, 0, argc, argv);
+	thr = workercreate(_loop_, 0, 0, 0);
 
-	//loop
-	workercreate(_loop_, 0, 0, 0);
+	workerdelete(arg);
+	workerdelete(thr);
+	pwrclkdelete(all);
 
-	//after
-	openwriteclose("universe.bin",0,addr,0x1000000);
-	death();
 	return 0;
 }
 
