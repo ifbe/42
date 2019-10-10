@@ -1,10 +1,11 @@
 #include "libboot.h"
-void loop();
-//
 void freestdev();
 void initstdev(void*);
 void freestdrel();
 void initstdrel(void*);
+//
+void args_create(int, char**);
+void loop();
 
 
 
@@ -42,14 +43,26 @@ int workerstart(struct halfrel* self, struct halfrel* peer)
 
 
 
-int workerdelete(void* item)
+int workerdelete(void* addr)
 {
+	struct worker* tmp;
+	if(0 == addr)return 0;
+
+	tmp = addr;
+	say("workerdelete:%.8s\n", &tmp->type);
+
 	return 0;
 }
 void* workercreate(u64 type, void* name, int argc, char** argv)
 {
 	struct worker* tmp;
 
+	if(_args_ == type){
+		tmp = allocworker();
+		tmp->type = _args_;
+		args_create(argc, argv);
+		return tmp;
+	}
 	if(_loop_ == type){
 		tmp = allocworker();
 		tmp->type = _loop_;

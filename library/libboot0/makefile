@@ -5,51 +5,51 @@ cflag ?= -c -O2 -fPIC
 bare:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
-	$(compiler) $(cflag) bare/start.c
-	$(compiler) $(cflag) bare/serial.c
 	$(compiler) $(cflag) bare/memory.c
-	$(compiler) $(cflag) bare/thread.c
-	$(compiler) $(cflag) none/board.c
+	$(compiler) $(cflag) bare/board.c
+	$(compiler) $(cflag) bare/barex64/start.c
+	$(compiler) $(cflag) bare/barex64/serial.c
+	$(compiler) $(cflag) bare/barex64/thread.c
 
 .PHONY:efi
 efi:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
-	$(compiler) $(cflag) efi/efimain.c
-	$(compiler) $(cflag) efi/serial.c
-	$(compiler) $(cflag) efi/memory.c
-	$(compiler) $(cflag) efi/thread.c
-	$(compiler) $(cflag) none/board.c
+	$(compiler) $(cflag) bare/memory.c
+	$(compiler) $(cflag) bare/board.c
+	$(compiler) $(cflag) bare/efi/efimain.c
+	$(compiler) $(cflag) bare/efi/serial.c
+	$(compiler) $(cflag) bare/efi/thread.c
 
 .PHONY:none
 none:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
-	$(compiler) $(cflag) none/main.c
-	$(compiler) $(cflag) none/serial.c
-	$(compiler) $(cflag) none/memory.c
-	$(compiler) $(cflag) none/thread.c
-	$(compiler) $(cflag) none/board.c
-
-.PHONY:wincmd
-wincmd:
-	rm -f *.o
-	$(compiler) $(cflag) pwrclk.c
-	$(compiler) $(cflag) wincmd/main.c
-	$(compiler) $(cflag) wincmd/serial.c
-	$(compiler) $(cflag) wincmd/memory.c
-	$(compiler) $(cflag) wincmd/thread.c
-	$(compiler) $(cflag) none/board.c
+	$(compiler) $(cflag) app/memory.c
+	$(compiler) $(cflag) app/board.c
+	$(compiler) $(cflag) app/none/main.c
+	$(compiler) $(cflag) app/none/serial.c
+	$(compiler) $(cflag) app/none/thread.c
 
 .PHONY:rpi
 rpi:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
-	$(compiler) $(cflag) none/main.c
-	$(compiler) $(cflag) none/serial.c
-	$(compiler) $(cflag) none/memory.c
-	$(compiler) $(cflag) none/thread.c
-	$(compiler) $(cflag) rpi/wiringpi.c
+	$(compiler) $(cflag) app/memory.c
+	$(compiler) $(cflag) app/rpi/wiringpi.c
+	$(compiler) $(cflag) app/none/main.c
+	$(compiler) $(cflag) app/none/serial.c
+	$(compiler) $(cflag) app/none/thread.c
+
+.PHONY:wincmd
+wincmd:
+	rm -f *.o
+	$(compiler) $(cflag) pwrclk.c
+	$(compiler) $(cflag) app/memory.c
+	$(compiler) $(cflag) app/board.c
+	$(compiler) $(cflag) app/wincmd/main.c
+	$(compiler) $(cflag) app/wincmd/serial.c
+	$(compiler) $(cflag) app/wincmd/thread.c
 
 clean:
 	rm -f *.o

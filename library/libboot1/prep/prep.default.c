@@ -1,30 +1,30 @@
 #include "libuser.h"
-
+int role_fromfile(void*, int);
+int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max);
 
 
 
 void role_default()
 {
-	say("@role_default\n");
+	arenacreate(_std_, 0, 0, 0);
+}
+void role(u8* buf, int len)
+{
+	int j,argc;
+	u8* argv[8];
+	u8 tmp[256];
 
-	//+libhard0
-	//devicecreate(_ahci_, 0);
-	//devicecreate(_xhci_, 0);
+	//if(buf[len-1] <= 0xa)len--;
+	//say("%.*s\n", len, buf);
 
-	//+libhard1
-	//drivercreate(_sata_, 0);
-	//drivercreate(_usb_, 0);
-
-	//+libsoft0
-	//systemcreate(_uart_, "/dev/ptmx");
-	//systemcreate(_uart_, "/dev/ttyACM0");
-
-	//+libsoft1
-	arterycreate(0,   "HACK://0.0.0.0:2222", 0, 0);
-	arterycreate(0,   "QUIC://0.0.0.0:4444", 0, 0);
-	arterycreate(0,    "SSH://0.0.0.0:2022", 0, 0);
-	arterycreate(0, "TELNET://0.0.0.0:2023", 0, 0);
-	arterycreate(0,   "HTTP://0.0.0.0:2080", 0, 0);
-	arterycreate(0,    "TLS://0.0.0.0:2443", 0, 0);
-	arterycreate(0,  "SERVE://0.0.0.0:2099", 0, 0);
+	if('=' == buf[4]){
+		argc = 2;
+		argv[0] = buf;
+		argv[1] = &buf[5];
+	}
+	else{
+		argc = str2arg(buf, len, tmp, 256, argv, 8);
+		if(argc <= 1)return;
+	}
+	role_fromfile(argv[1], 0);
 }

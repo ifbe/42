@@ -16,8 +16,9 @@ typedef unsigned long long u64;
 #define _pwr_ hex32('p','w','r',0)
 //bare metal
 #define _start_ hex64('s','t','a','r','t', 0, 0, 0)
-#define _efimain_ hex64('e','f','i','m','a','i','n')
-//kernal module
+#define _efimain_ hex64('e','f','i','m','a','i','n', 0)
+//module
+#define _lib42_ hex64('l','i','b','4','2', 0, 0, 0)
 #define _kext_ hex32('k','e','x','t')
 #define _ko_ hex32('k','o', 0, 0)
 //application
@@ -26,6 +27,8 @@ typedef unsigned long long u64;
 #define _win32_ hex64('w','i','n','3','2', 0, 0, 0)
 #define _winmain_ hex64('w','i','n','m','a','i','n', 0)
 //
+#define _args_ hex32('a','r','g','s')
+#define _term_ hex32('t','e','r','m')
 #define _loop_ hex32('l','o','o','p')
 
 

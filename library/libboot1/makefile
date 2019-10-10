@@ -4,7 +4,8 @@ cflag ?= -c -O2 -fPIC
 target:
 	$(compiler) $(cflag) worker.c
 	$(compiler) $(cflag) prep/prep.c
-	$(compiler) $(cflag) prep/term.c
+	$(compiler) $(cflag) prep/prep.args.c
+	$(compiler) $(cflag) prep/prep.term.c
 	$(compiler) $(cflag) prep/prep.default.c
 	$(compiler) $(cflag) prep/prep.myml.c
 	$(compiler) $(cflag) prep/prep.mython.c

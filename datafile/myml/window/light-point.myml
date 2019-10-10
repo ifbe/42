@@ -17,7 +17,7 @@ tree{
 fmt:tree
 }
 light{
-fmt:dirlit
+fmt:pointlit
 }
 freecam{
 fmt:freecam
@@ -61,9 +61,9 @@ mirrhaha{
 }
 mirrgeom{
 c: 0.0, -1000.0, 1000.0
-r: 1000.0, 0.0, 0.0
-t: 0.0, 707.0, 707.0
-f: 0.0, 707.0, -707.0
+r: 100.0, 0.0, 0.0
+t: 0.0, 70.7, 70.7
+f: 0.0, 70.7,-70.7
 }
 mirrfrus{
 l: 0.0, 0.0, 0.0,-1.0

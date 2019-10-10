@@ -1084,14 +1084,9 @@ void role_test1(u8* buf, int len)
 	}
 */
 }
-int role_fromfile(int argc, u8** argv)
+int role_fromfile(char* str, int len)
 {
-	int j,len;
-	char* str;
-	u8 buf[0x1000];
-
-	if(argc > 1)str = (char*)argv[1];
-	else str = "datafile/myml/mainwindow.myml";
+	u8 buf[0x2000];
 
 	len = openreadclose(str, 0, buf, 0x2000);
 	if(len <= 0)return 0;
