@@ -1,5 +1,7 @@
 #include "libuser.h"
 void fixmatrix(void* m, struct fstyle* sty);
+void loadtexfromfile(struct glsrc* src, int idx, char* name);
+
 struct sunbuf{
 	mat4 mvp;
 	vec4 rgb;
