@@ -127,11 +127,9 @@ void updatearg(u32 shader, struct glsrc* src)
 	u32 uuu;
 
 	if((src->routine_name) && (src->routine_detail)){
-		iii = glGetSubroutineUniformLocation(shader, GL_FRAGMENT_SHADER, src->routine_name);
-		if(iii){
-			uuu = glGetSubroutineIndex(shader, GL_FRAGMENT_SHADER, src->routine_detail);
-			glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &uuu);
-		}
+		//iii = glGetSubroutineUniformLocation(shader, GL_FRAGMENT_SHADER, src->routine_name);
+		uuu = glGetSubroutineIndex(shader, GL_FRAGMENT_SHADER, src->routine_detail);
+		if(uuu < 256)glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &uuu);
 	}
 
 	for(j=0;j<4;j++){

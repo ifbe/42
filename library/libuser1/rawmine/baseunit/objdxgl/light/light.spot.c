@@ -316,6 +316,9 @@ void spotlight_light(
 	src = win->gl_light;
 	if(0 == src)return;
 
+	src->routine_name = "passtype";
+	src->routine_detail = "spotlight";
+
 	src->arg_fmt[0] = 'm';
 	src->arg_name[0] = "sunmvp";
 	src->arg_data[0] = sun->mvp;

@@ -12,7 +12,7 @@ int args_create(int argc, char** argv)
 		role_default();
 		return 0;
 	}
-	for(j=0;j<argc;j++){
+	for(j=1;j<argc;j++){
 		role_fromfile(argv[j], 0);
 	}
 	return 0;

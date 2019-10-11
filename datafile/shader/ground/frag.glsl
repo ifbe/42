@@ -8,6 +8,9 @@ uniform mat4 sunmvp;
 subroutine vec3 passtype();
 subroutine uniform passtype routine;
 
+subroutine (passtype) vec3 rawcolor(){
+	return vec3(1.0);
+}
 subroutine (passtype) vec3 dirlight(){
 	mediump vec4 tmp = sunmvp * vec4(vertex, 1.0);
 	tmp /= tmp.w;
@@ -16,6 +19,14 @@ subroutine (passtype) vec3 dirlight(){
 	if(tmp.x > 1.0)return vec3(0.5);
 	if(tmp.y < 0.0)return vec3(0.5);
 	if(tmp.y > 1.0)return vec3(0.5);
+	if(tmp.z - texture(suntex, tmp.xy).r > 0.0001)return vec3(0.5);
+	return vec3(1.0);
+}
+subroutine (passtype) vec3 spotlight(){
+	mediump vec4 tmp = sunmvp * vec4(vertex, 1.0);
+	tmp /= tmp.w;
+	if(tmp.x*tmp.x + tmp.y*tmp.y > 1.0)return vec3(0.5);
+	tmp = (tmp+1.0)*0.5;
 	if(tmp.z - texture(suntex, tmp.xy).r > 0.0001)return vec3(0.5);
 	return vec3(1.0);
 }
