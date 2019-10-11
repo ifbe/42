@@ -123,24 +123,36 @@ void fullwindow_upload(struct arena* ogl, struct actor* ctx)
 void updatearg(u32 shader, struct glsrc* src)
 {
 	int j;
-	u32 tmp;
+	int iii;
+	u32 uuu;
+
+	if((src->routine_name) && (src->routine_detail)){
+		iii = glGetSubroutineUniformLocation(shader, GL_FRAGMENT_SHADER, src->routine_name);
+		if(iii){
+			uuu = glGetSubroutineIndex(shader, GL_FRAGMENT_SHADER, src->routine_detail);
+			glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &uuu);
+		}
+	}
 
 	for(j=0;j<4;j++){
 		if(0 == src->arg_name[j])break;
 		if(0 == src->arg_data[j])break;
 //say("%d,%d,%llx,%s\n", j, shader, src, src->arg_name[j]);
-		tmp = glGetUniformLocation(shader, src->arg_name[j]);
+
+		iii = glGetUniformLocation(shader, src->arg_name[j]);
+		if(iii < 0)continue;
+
 		switch(src->arg_fmt[j]){
 			case 'm':{
-				glUniformMatrix4fv(tmp, 1, GL_FALSE, src->arg_data[j]);
+				glUniformMatrix4fv(iii, 1, GL_FALSE, src->arg_data[j]);
 				break;
 			}//mat4
 			case 'v':{
-				glUniform3fv(tmp, 1, src->arg_data[j]);
+				glUniform3fv(iii, 1, src->arg_data[j]);
 				break;
 			}//vertex
 			case 'f':{
-				glUniform1fv(tmp, 1, src->arg_data[j]);
+				glUniform1fv(iii, 1, src->arg_data[j]);
 				break;
 			}//float
 		}//switch

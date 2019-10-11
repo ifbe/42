@@ -306,6 +306,15 @@ struct glsrc
 	void* fs;
 	u8 shader_enq;
 
+	//
+	char* routine_name;
+	char* routine_detail;
+
+	//[24,88)argument
+	char* arg_name[8];
+	void* arg_data[8];
+	u32 arg_fmt[8];
+
 	//[88,fc)texture
 	char* tex_name[4];
 	void* tex_data[4];
@@ -313,11 +322,6 @@ struct glsrc
 	u32 tex_h[4];
 	u32 tex_fmt[4];
 	u8 tex_enq[4];
-
-	//[24,88)argument
-	char* arg_name[8];
-	void* arg_data[8];
-	u32 arg_fmt[8];
 
 	//[c0,e7]vertex
 	void* vbuf;
