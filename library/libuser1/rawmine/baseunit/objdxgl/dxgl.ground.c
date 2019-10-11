@@ -3,62 +3,6 @@ void loadtexfromfile(struct glsrc* src, int idx, char* name);
 
 
 
-/*
-char* ground_glsl2d_v =
-GLSL_VERSION
-"layout(location = 0)in mediump vec3 v;\n"
-"layout(location = 1)in mediump vec2 t;\n"
-"out mediump vec2 texuvw;\n"
-"void main(){\n"
-	"texuvw = t;\n"
-	"gl_Position = vec4(v, 1.0);\n"
-"}\n";
-*/
-char* ground_glsl_v =
-GLSL_VERSION
-"layout(location = 0)in mediump vec3 v;\n"
-"layout(location = 1)in mediump vec2 t;\n"
-"out mediump vec3 vertex;\n"
-"uniform mat4 cammvp;\n"
-"void main(){\n"
-	"vertex = v;\n"
-	"gl_Position = cammvp * vec4(v, 1.0);\n"
-"}\n";
-
-char* ground_glsl_f =
-GLSL_VERSION
-"in mediump vec3 vertex;\n"
-"out mediump vec4 FragColor;\n"
-"uniform sampler2D tex0;\n"
-"uniform sampler2D suntex;\n"
-"uniform mat4 sunmvp;\n"
-"float shadow(){\n"
-	"mediump vec4 tmp = sunmvp * vec4(vertex, 1.0);\n"
-	"tmp /= tmp.w;\n"
-	"tmp = (tmp+1.0)*0.5;\n"
-	"if(tmp.x < 0.0)return 0.5;\n"
-	"if(tmp.x > 1.0)return 0.5;\n"
-	"if(tmp.y < 0.0)return 0.5;\n"
-	"if(tmp.y > 1.0)return 0.5;\n"
-	"if(tmp.z - texture(suntex, tmp.xy).r > 0.0001)return 0.5;\n"
-	"return 1.0;\n"
-"}\n"
-"void main(){\n"
-	"mediump float x = mod(abs(vertex.x), 1000.0) / 1000.0;\n"
-	"mediump float y = mod(abs(vertex.y), 1000.0) / 1000.0;\n"
-	"FragColor = vec4(shadow() * texture(tex0, vec2(x,y)).bgr, 1.0);\n"
-"}\n";
-
-//"layout(location = 0)out vec3 color;\n"
-//"layout(location = 1)out vec3 hahah;\n"
-	//"mediump float x = mod(abs(vertex.x), 1000.0) - 500.0;\n"
-	//"mediump float y = mod(abs(vertex.y), 1000.0) - 500.0;\n"
-	//"if(x>-490.0 && x<490.0 && y>-490.0 && y<490.0)discard;\n"
-	//"color = vec3(1.0, 1.0, 0.0);\n"
-	//"hahah = vec3(x, y, 0.0);\n"
-
-
-
 
 static void ground_draw_pixel(
 	struct actor* act, struct style* pin,
@@ -237,8 +181,10 @@ static void ground_create(struct actor* act, void* str)
 	src->method = 'v';
 
 	//
-	src->vs = ground_glsl_v;
-	src->fs = ground_glsl_f;
+	src->vs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/ground/vert.glsl", 0, src->vs, 0x1000);
+	src->fs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/ground/frag.glsl", 0, src->fs, 0x1000);
 	src->shader_enq = 42;
 
 	//texture
