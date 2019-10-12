@@ -1,210 +1,82 @@
 #include "libuser.h"
-#define PI 3.1415926535897932384626433832795028841971693993151
-void actorcreatefromfile(struct actor* act, char* name);
-
-
-
-/*
-char* water_glsl2d_v =
-GLSL_VERSION
-"layout(location = 0)in mediump vec3 v;\n"
-"layout(location = 1)in mediump vec2 t;\n"
-"out mediump vec3 normal;\n"
-"out mediump vec2 texuvw;\n"
-"void main(){\n"
-	"texuvw = t;\n"
-	"normal = vec3(0.0, 0.0, 1.0);\n"
-	"gl_Position = vec4(v, 1.0);\n"
-"}\n";
-*/
-char* water_glsl_v =
-GLSL_VERSION
-"layout(location = 0)in mediump vec3 v;\n"
-"layout(location = 1)in mediump vec2 t;\n"
-"out mediump vec3 normal;\n"
-"out mediump vec2 texuvw;\n"
-"out mediump vec3 angle0;\n"
-"uniform vec3 camxyz;\n"
-"uniform mat4 cammvp;\n"
-"void main(){\n"
-	"texuvw = t;\n"
-	"normal = vec3(0.0, 0.0, 1.0);\n"
-	"angle0 = camxyz - v;\n"
-	"gl_Position = cammvp * vec4(v, 1.0);\n"
-"}\n";
-
-char* water_glsl_f =
-GLSL_VERSION
-"in mediump vec3 normal;\n"
-"in mediump vec2 texuvw;\n"
-"in mediump vec3 angle0;\n"
-"out mediump vec4 FragColor;\n"
-"uniform mediump float time;\n"
-"uniform sampler2D dudvmap;\n"
-"uniform sampler2D reflect;\n"
-"void main(){\n"
-	"mediump vec2 du = texture(dudvmap, vec2(texuvw.x+time, texuvw.y)).rg;\n"
-	"du = (2.0*du - vec2(1.0, 1.0)) / 64.0;\n"
-	"mediump vec2 dv = texture(dudvmap, vec2(texuvw.x+du.y, texuvw.y-time)).rg;\n"
-	"dv = (2.0*dv - vec2(1.0, 1.0)) / 64.0;\n"
-	"mediump vec2 uv = texuvw + du + dv;\n"
-	"uv = vec2(clamp(uv.x, 0.001, 0.999), clamp(uv.y, 0.001, 0.999));\n"
-
-	"mediump vec3 N = normalize(normal);\n"
-	"mediump vec3 A = normalize(angle0);\n"
-	"mediump vec3 c = texture(reflect, uv).rgb;\n"
-	"FragColor = vec4(c, 1.0 - 0.9*abs(dot(N, A)));\n"
-"}\n";
+void fixmatrix(void* m, struct fstyle* sty);
+void loadtexfromfile(struct glsrc* src, int idx, char* name);
+struct waterbuf{
+	mat4 mvp;
+	float time;
+	u8 data[0];
+};
 
 
 
 
-void watercamera(
-	struct actor* leaf, struct style* lf,
-	struct actor* twig, struct style* tf,
-	struct actor* root, struct style* rf)
-{/*
-	float x,y,z,t;
-	vec3 p,q;
+static void water_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+{
 	struct relation* rel;
-	struct actor* fbo;
-	struct glsrc* src = (void*)(lf->foot[0]);
-	struct gldst* dst = (void*)(tf->foot[0]);
+	struct actor* world;
+	struct fstyle* obb = 0;
+	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
-	rel = leaf->orel0;
-	if(0 == rel)return;
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)return;
+		world = (void*)(rel->srcchip);
+		if(_world3d_ == world->type){
+			self[0] = (void*)&rel->dstchip;
+			peer[0] = (void*)&rel->srcchip;
+			return;
+		}
+		rel = samedstnextsrc(rel);
+	}
+}
+static void water_modify(struct actor* act)
+{
+}
+static void water_delete(struct actor* act)
+{
+}
+static void water_create(struct actor* act, void* str)
+{
+	struct waterbuf* water;
+	struct glsrc* src;
+	if(0 == act)return;
 
-	fbo = (void*)(rel->dstchip);
-	if(0 == fbo)return;
-	if(_fbo_ != fbo->fmt)return;
-
-	//say("tex_rgb=%x\n", fbo->tex_color);
-	dst->tex[1] = fbo->tex_color;
-
-
-	//mirror.n
-	x = tf->f.vt[0];
-	y = tf->f.vt[1];
-	z = tf->f.vt[2];
-	t = squareroot(x*x + y*y + z*z);
-	x /= t;
-	y /= t;
-	z /= t;
-
-	//op*cos(on,op): t = op * mirror.n
-	t = (root->camera.vc[0] - tf->f.vc[0])*x
-	  + (root->camera.vc[1] - tf->f.vc[1])*y
-	  + (root->camera.vc[2] - tf->f.vc[2])*z;
-
-	//dir*len: fbo.n = t*mirror.n + offset
-	fbo->camera.vn[0] = x * t * 1.001;
-	fbo->camera.vn[1] = y * t * 1.001;
-	fbo->camera.vn[2] = z * t * 1.001;
-
-	//foot of a perpendicular: fbo.q = p - t*mirror.n
-	fbo->camera.vq[0] = root->camera.vc[0] - t*x;
-	fbo->camera.vq[1] = root->camera.vc[1] - t*y;
-	fbo->camera.vq[2] = root->camera.vc[2] - t*z;
-
-	//reflected point: p' = p - 2*t*mirror.n
-	fbo->camera.vc[0] = root->camera.vc[0] - 2*t*x;
-	fbo->camera.vc[1] = root->camera.vc[1] - 2*t*y;
-	fbo->camera.vc[2] = root->camera.vc[2] - 2*t*z;
+	water = act->buf0 = memorycreate(0x1000, 0);
+	if(0 == water)return;
 
 
-	//r = -mirror.r
-	x = -tf->f.vr[0];
-	y = -tf->f.vr[1];
-	z = -tf->f.vr[2];
-	t = squareroot(x*x + y*y + z*z);
-	x /= t;
-	y /= t;
-	z /= t;
+	//
+	src = (void*)(water->data);
+	src->geometry = 3;
+	src->method = 'v';
 
-	//l.len = (l-q) * nr
-	t = (tf->f.vc[0] + tf->f.vr[0] - fbo->camera.vq[0]) * x
-	  + (tf->f.vc[1] + tf->f.vr[1] - fbo->camera.vq[1]) * y
-	  + (tf->f.vc[2] + tf->f.vr[2] - fbo->camera.vq[2]) * z;
-	fbo->camera.vl[0] = x * t;
-	fbo->camera.vl[1] = y * t;
-	fbo->camera.vl[2] = z * t;
+	//
+	src->vs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/water/vert.glsl", 0, src->vs, 0x1000);
+	src->fs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/water/frag.glsl", 0, src->fs, 0x1000);
+	src->shader_enq = 42;
 
-	//r.len = (r-q) * nr
-	t = (tf->f.vc[0] - tf->f.vr[0] - fbo->camera.vq[0]) * x
-	  + (tf->f.vc[1] - tf->f.vr[1] - fbo->camera.vq[1]) * y
-	  + (tf->f.vc[2] - tf->f.vr[2] - fbo->camera.vq[2]) * z;
-	fbo->camera.vr[0] = x * t;
-	fbo->camera.vr[1] = y * t;
-	fbo->camera.vr[2] = z * t;
+	//argument
+	src->arg_name[0] = "time";
+	src->arg_data[0] = &water->time;
+	src->arg_fmt[0] = 'f';
 
+	//texture0
+	src->tex_name[0] = "dudvmap";
+	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex_data[0] = memorycreate(2048*2048*4, 0);
+	if(0 == str)str = "datafile/jpg/dudvmap.jpg";
+	loadtexfromfile(src, 0, str);
+	src->tex_enq[0] = 42;
 
-	//mirror.t
-	x = tf->f.vf[0];
-	y = tf->f.vf[1];
-	z = tf->f.vf[2];
-	t = squareroot(x*x + y*y + z*z);
-	x /= t;
-	y /= t;
-	z /= t;
-
-	//b.len =  = (b-q) * nt
-	t = (tf->f.vc[0] - tf->f.vf[0] - fbo->camera.vq[0]) * x
-	  + (tf->f.vc[1] - tf->f.vf[1] - fbo->camera.vq[1]) * y
-	  + (tf->f.vc[2] - tf->f.vf[2] - fbo->camera.vq[2]) * z;
-	fbo->camera.vb[0] = x * t;
-	fbo->camera.vb[1] = y * t;
-	fbo->camera.vb[2] = z * t;
-
-	//t.len = (u-q) * nt
-	t = (tf->f.vc[0] + tf->f.vf[0] - fbo->camera.vq[0]) * x
-	  + (tf->f.vc[1] + tf->f.vf[1] - fbo->camera.vq[1]) * y
-	  + (tf->f.vc[2] + tf->f.vf[2] - fbo->camera.vq[2]) * z;
-	fbo->camera.vt[0] = x * t;
-	fbo->camera.vt[1] = y * t;
-	fbo->camera.vt[2] = z * t;
-
-	carvefrustum(root, &fbo->camera);
-*/
-/*
-	say("%f,%f,%f\n",root->camera.vc[0], root->camera.vc[1], root->camera.vc[2]);
-	say("%f,%f,%f\n",tmp->camera.vc[0], tmp->camera.vc[1], tmp->camera.vc[2]);
-	say("%f,%f,%f\n",tmp->camera.vn[0], tmp->camera.vn[1], tmp->camera.vn[2]);
-	say("%f,%f,%f\n",tmp->camera.vl[0], tmp->camera.vl[1], tmp->camera.vl[2]);
-	say("%f,%f,%f\n",tmp->camera.vr[0], tmp->camera.vr[1], tmp->camera.vr[2]);
-	say("%f,%f,%f\n",tmp->camera.vb[0], tmp->camera.vb[1], tmp->camera.vb[2]);
-	say("%f,%f,%f\n",tmp->camera.vu[0], tmp->camera.vu[1], tmp->camera.vu[2]);
-	say("\n");
-
-	carveline_rect(root, 0xffffff, tf->vc, tf->vr, tf->vf);
-	p[0] = tf->vc[0] - tf->vr[0] - tf->vf[0];
-	p[1] = tf->vc[1] - tf->vr[1] - tf->vf[1];
-	p[2] = tf->vc[2] - tf->vr[2] - tf->vf[2];
-	q[0] = 2*p[0] - tmp->camera.vc[0];
-	q[1] = 2*p[1] - tmp->camera.vc[1];
-	q[2] = 2*p[2] - tmp->camera.vc[2];
-	carveline(root, 0xffffff, tmp->camera.vc, q);
-	p[0] = tf->vc[0] + tf->vr[0] - tf->vf[0];
-	p[1] = tf->vc[1] + tf->vr[1] - tf->vf[1];
-	p[2] = tf->vc[2] + tf->vr[2] - tf->vf[2];
-	q[0] = 2*p[0] - tmp->camera.vc[0];
-	q[1] = 2*p[1] - tmp->camera.vc[1];
-	q[2] = 2*p[2] - tmp->camera.vc[2];
-	carveline(root, 0xffffff, tmp->camera.vc, q);
-	p[0] = tf->vc[0] - tf->vr[0] + tf->vf[0];
-	p[1] = tf->vc[1] - tf->vr[1] + tf->vf[1];
-	p[2] = tf->vc[2] - tf->vr[2] + tf->vf[2];
-	q[0] = 2*p[0] - tmp->camera.vc[0];
-	q[1] = 2*p[1] - tmp->camera.vc[1];
-	q[2] = 2*p[2] - tmp->camera.vc[2];
-	carveline(root, 0xffffff, tmp->camera.vc, q);
-	p[0] = tf->vc[0] + tf->vr[0] + tf->vf[0];
-	p[1] = tf->vc[1] + tf->vr[1] + tf->vf[1];
-	p[2] = tf->vc[2] + tf->vr[2] + tf->vf[2];
-	q[0] = 2*p[0] - tmp->camera.vc[0];
-	q[1] = 2*p[1] - tmp->camera.vc[1];
-	q[2] = 2*p[2] - tmp->camera.vc[2];
-	carveline(root, 0xffffff, tmp->camera.vc, q);
-*/
+	//vertex
+	src->vbuf = memorycreate(4*6*6, 0);
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 }
 
 
@@ -234,17 +106,23 @@ static void water_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
+	struct waterbuf* water;
+	struct glsrc* src;
+	float (*vbuf)[6];
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
+	carveline_rect(win, 0xffffff, vc, vr, vf);
 
-	struct glsrc* src = (void*)(pin->data[0]);
-	float (*vbuf)[6] = (void*)(src->vbuf);
-	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
+	water = act->buf0;
+	if(0 == water)return;
+	src = (void*)(water->data);
+	if(0 == src)return;
+	vbuf = (void*)(src->vbuf);
+	if(0 == vbuf)return;
 
-	act->target.vq[0] = (timeread()%10000000)/10000000.0;
-	watercamera(act, pin, 0, sty, win, 0);
+	water->time = (timeread()%10000000)/10000000.0;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -326,16 +204,177 @@ static void water_draw(
 
 
 
-static void water_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+void water_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
+{
+	float x,y,z,t;
+
+
+//----------------n,f----------------
+	//water.n
+	x = obb->vt[0];
+	y = obb->vt[1];
+	z = obb->vt[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+
+	//op*cos(on,op): t = op * water.n
+	t = (cam[0] - obb->vc[0])*x
+	  + (cam[1] - obb->vc[1])*y
+	  + (cam[2] - obb->vc[2])*z;
+
+	//dir*len: fbo.n = t*water.n + offset
+	frus->vn[0] = x;
+	frus->vn[1] = y;
+	frus->vn[2] = z;
+	frus->vn[3] = t*1.001;
+
+	frus->vf[0] = x;
+	frus->vf[1] = y;
+	frus->vf[2] = z;
+	frus->vf[3] = 1e20;
+
+
+//-------------p,q---------------
+	//foot of a perpendicular: q = p - t*water.n
+	frus->vq[0] = cam[0] - t*x;
+	frus->vq[1] = cam[1] - t*y;
+	frus->vq[2] = cam[2] - t*z;
+
+	//reflected point: p' = p - 2*t*water.n
+	frus->vc[0] = cam[0] - 2*t*x;
+	frus->vc[1] = cam[1] - 2*t*y;
+	frus->vc[2] = cam[2] - 2*t*z;
+
+
+//--------------l,r--------------------
+	//nr = -norm(water.r)
+	x = -obb->vr[0];
+	y = -obb->vr[1];
+	z = -obb->vr[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+
+	//l.len = (l-q) * nr
+	t = (obb->vc[0] + obb->vr[0] - frus->vq[0]) * x
+	  + (obb->vc[1] + obb->vr[1] - frus->vq[1]) * y
+	  + (obb->vc[2] + obb->vr[2] - frus->vq[2]) * z;
+	frus->vl[0] = -x;
+	frus->vl[1] = -y;
+	frus->vl[2] = -z;
+	frus->vl[3] = t;
+
+	//r.len = (r-q) * nr
+	t = (obb->vc[0] - obb->vr[0] - frus->vq[0]) * x
+	  + (obb->vc[1] - obb->vr[1] - frus->vq[1]) * y
+	  + (obb->vc[2] - obb->vr[2] - frus->vq[2]) * z;
+	frus->vr[0] = x;
+	frus->vr[1] = y;
+	frus->vr[2] = z;
+	frus->vr[3] = t;
+
+
+//----------------b,t-----------------
+	//nt = norm(water.t)
+	x = obb->vf[0];
+	y = obb->vf[1];
+	z = obb->vf[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+
+	//b.len =  = (b-q) * nt
+	t = (obb->vc[0] - obb->vf[0] - frus->vq[0]) * x
+	  + (obb->vc[1] - obb->vf[1] - frus->vq[1]) * y
+	  + (obb->vc[2] - obb->vf[2] - frus->vq[2]) * z;
+	frus->vb[0] = x;
+	frus->vb[1] = y;
+	frus->vb[2] = z;
+	frus->vb[3] = t;
+
+	//t.len = (u-q) * nt
+	t = (obb->vc[0] + obb->vf[0] - frus->vq[0]) * x
+	  + (obb->vc[1] + obb->vf[1] - frus->vq[1]) * y
+	  + (obb->vc[2] + obb->vf[2] - frus->vq[2]) * z;
+	frus->vt[0] = x;
+	frus->vt[1] = y;
+	frus->vt[2] = z;
+	frus->vt[3] = t;
+}
+static void water_matrix(
+	struct actor* act, struct fstyle* frus,
+	struct actor* fbo, struct fstyle* area)
+{
+	struct halfrel* self;
+	struct halfrel* peer;
+	struct fstyle* obb;
+
+	struct waterbuf* water;
+	struct glsrc* own;
+	struct glsrc* src;
+
+	//
+	water = act->buf0;
+	if(0 == water)return;
+	own = (void*)(water->data);
+	if(0 == own)return;
+
+	own->tex_data[1] = fbo->tex0;
+	own->tex_name[1] = "reflect";
+	own->tex_fmt[1] = '!';
+	own->tex_enq[1] += 1;
+
+
+	//
+	src = fbo->gl_camera;
+	if(0 == src)return;
+
+	water_search(act, 0, &self, &peer);
+	obb = peer->pfoot;
+
+	vec3 cam = {2000.0, -2000.0, 2000.0};
+	water_frustum(frus, obb, cam);
+	fixmatrix(water->mvp, frus);
+	mat4_transpose(water->mvp);
+
+	src->arg_fmt[0] = 'm';
+	src->arg_name[0] = "cammvp";
+	src->arg_data[0] = water->mvp;
+
+	src->arg_fmt[1] = 'v';
+	src->arg_name[1] = "camxyz";
+	src->arg_data[1] = obb->vc;
+}
+
+
+
+
+static void water_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	water_draw(act, pin, win, sty);
+	struct actor* ctx = buf;
+	if(ctx){
+		if(_gl41data_ == ctx->type)water_draw_vbo(act,pin,ctx,sty);
+	}
+	else{
+		switch(win->type){
+			case _gl41view_:
+			case _gl41fbod_:
+			case _gl41fboc_:
+			case _gl41fbog_:
+			case _gl41wnd0_:water_matrix(act, &pin->fs, win, &sty->fs);
+		}
+	}
 }
-static void water_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void water_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 static void water_stop(struct halfrel* self, struct halfrel* peer)
@@ -343,78 +382,17 @@ static void water_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void water_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct datapair* pair;
-	struct glsrc* src;
-	struct gldst* dst;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-/*
-	//
-	pair = alloc_winobj(win, 'o');
-	src = &pair->src;
-	dst = &pair->dst;
-	pin->foot[0] = (u64)src;
-	sty->foot[0] = (u64)dst;
-
-	//
-	src->geometry = 3;
-	src->method = 'v';
-
-	//
-	src->vs = water_glsl_v;
-	src->fs = water_glsl_f;
-	src->shader_enq = 42;
-
-	//vertex
-	src->vbuf = memorycreate(4*6*6, 0);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
-
-	//argument
-	src->arg_name[0] = "time";
-	src->arg_data[0] = &act->target.vq[0];
-	src->arg_fmt[0] = 'f';
-
-	//texture0
-	src->tex_name[0] = "dudvmap";
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_data[0] = act->buf;
-	src->tex_w[0] = act->width;
-	src->tex_h[0] = act->height;
-	src->tex_enq[0] = 42;
-
-	//texture1
-	src->tex_name[1] = "reflect";
-*/
-}
-
-
-
-
-static void water_search(struct actor* act)
-{
-}
-static void water_modify(struct actor* act)
-{
-}
-static void water_delete(struct actor* act)
-{
 	if(0 == act)return;
-	memorydelete(act->buf);
-	act->buf = 0;
-}
-static void water_create(struct actor* act, void* str)
-{
-	void* win;
-	if(0 == act)return;
+	if(0 == pin)return;
+	if(hex32('m','v','p',0) == self->flag){
+		say("water_start: mvp\n");
+		return;
+	}
 
-	//act->buf = memorycreate(0x1000000, 0);
-	//actorcreatefromfile(act, "datafile/jpg/dudvmap.jpg");
+	struct waterbuf* water = act->buf0;
+	pin->data[0] = (u64)(water->data);
 }
 
 

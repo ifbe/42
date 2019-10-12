@@ -10,6 +10,10 @@ depth:1024
 
 
 <actor>
+texball{
+fmt:texball
+file:datafile/jpg/skysphere.jpg
+}
 tree{
 fmt:tree
 }
@@ -36,6 +40,15 @@ fmt:gl41wnd0
 
 
 <style>
+skyhaha{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 10000000.0, 0.0, 0.0
+f: 0.0, 10000000.0, 0.0
+t: 0.0, 0.0, 10000000.0
+}
+
 treehaha{
 }
 treegeom{
@@ -49,9 +62,9 @@ mirrhaha{
 }
 mirrgeom{
 c: 0.0, 0.0, 0.0
-r: 5000.0, 0.0, 0.0
-f: 0.0, 5000.0, 0.0
-t: 0.0, 0.0, 5000.0
+r: 2000.0, 0.0, 0.0
+f: 0.0, 2000.0, 0.0
+t: 0.0, 0.0, 2000.0
 }
 mirrfrus{
 l: 0.0, 0.0, 0.0,-1.0
@@ -92,6 +105,7 @@ q:1.0, 1.0
 <relation>
 
 #3dworld depends on inner objects
+(3dworld, skygeom, act, 0) -> (texball, skyhaha, act, 0)
 (3dworld, treegeom, act, 0) -> (tree, treehaha, act, 0)
 (3dworld, mirrgeom, act, 0) -> (mirror, mirrhaha, act, 0)
 (3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)

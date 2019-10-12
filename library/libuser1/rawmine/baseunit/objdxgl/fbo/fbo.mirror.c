@@ -58,11 +58,6 @@ static void mirror_modify(struct actor* act)
 }
 static void mirror_delete(struct actor* act)
 {
-	if(0 == act)return;
-	if(act->buf){
-		memorydelete(act->buf);
-		act->buf = 0;
-	}
 }
 static void mirror_create(struct actor* act, void* str)
 {
