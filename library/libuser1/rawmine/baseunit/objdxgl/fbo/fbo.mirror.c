@@ -1,21 +1,13 @@
 #include "libuser.h"
-#define PI 3.1415926535897932384626433832795028841971693993151
-void actorcreatefromfile(struct actor* act, char* name);
+void fixmatrix(void* m, struct fstyle* sty);
+struct mirrbuf{
+	mat4 mvp;
+	u8 data[0];
+};
 
 
 
-/*
-char* mirror_glsl2d_v =
-GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec2 texuvw;\n"
-"out mediump vec2 uvw;\n"
-"void main()\n"
-"{\n"
-	"uvw = texuvw;\n"
-	"gl_Position = vec4(vertex, 1.0);\n"
-"}\n";
-*/
+
 char* mirror_glsl_v =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 vertex;\n"
@@ -41,177 +33,63 @@ GLSL_VERSION
 
 
 
-/*
-void mat4_vector(mat4 m, float* v);
-void fixview(mat4 viewmatrix, struct actor* win);
-void mirrorfrustum(struct actor* win, struct style* mir)
+
+static void mirror_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
-	mat4 view;
-	vec3 lb,rt;
-	float* vc = mir->vc;
-	float* vr = mir->vr;
-	float* vf = mir->vf;
-
-	fixview(view, win);
-	lb[0] = vc[0] - vr[0] - vf[0];
-	lb[1] = vc[1] - vr[1] - vf[1];
-	lb[2] = vc[2] - vr[2] - vf[2];
-	mat4_vector(view, lb);
-	rt[0] = vc[0] + vr[0] + vf[0];
-	rt[1] = vc[1] + vr[1] + vf[1];
-	rt[2] = vc[2] + vr[2] + vf[2];
-	mat4_vector(view, rt);
-
-	say("\n");
-	say("%f,%f,%f\n", lb[0], lb[1], lb[2]);
-	say("%f,%f,%f\n", rt[0], rt[1], rt[2]);
-}*/
-void mirrorcamera(
-	struct actor* leaf, struct style* lf,
-	struct actor* twig, struct style* tf,
-	struct actor* root, struct style* rf)
-{/*
-	float x,y,z,t;
-	vec3 p,q;
 	struct relation* rel;
-	struct actor* fbo;
-	struct glsrc* src = (void*)(lf->foot[0]);
-	struct gldst* dst = (void*)(tf->foot[0]);
+	struct actor* world;
+	struct fstyle* obb = 0;
+	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
-	rel = leaf->orel0;
-	if(0 == rel)return;
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)return;
+		world = (void*)(rel->srcchip);
+		if(_world3d_ == world->type){
+			self[0] = (void*)&rel->dstchip;
+			peer[0] = (void*)&rel->srcchip;
+			return;
+		}
+		rel = samedstnextsrc(rel);
+	}
+}
+static void mirror_modify(struct actor* act)
+{
+}
+static void mirror_delete(struct actor* act)
+{
+	if(0 == act)return;
+	if(act->buf){
+		memorydelete(act->buf);
+		act->buf = 0;
+	}
+}
+static void mirror_create(struct actor* act, void* str)
+{
+	struct mirrbuf* mirr;
+	struct glsrc* src;
+	if(0 == act)return;
 
-	fbo = (void*)(rel->dstchip);
-	if(0 == fbo)return;
-	if(_fbo_ != fbo->fmt)return;
+	mirr = act->buf0 = memorycreate(0x1000, 0);
+	if(0 == mirr)return;
 
-	say("tex_rgb=%x\n", fbo->tex_color);
-	dst->tex[0] = fbo->tex_color;
+	//
+	src = (void*)(mirr->data);
+	src->geometry = 3;
+	src->method = 'v';
 
+	//shader
+	src->vs = mirror_glsl_v;
+	src->fs = mirror_glsl_f;
+	src->shader_enq = 42;
 
-	//mirror.n
-	x = -tf->f.vf[0];
-	y = -tf->f.vf[1];
-	z = -tf->f.vf[2];
-	t = squareroot(x*x + y*y + z*z);
-	x /= t;
-	y /= t;
-	z /= t;
-
-	//op*cos(on,op): t = op * mirror.n
-	t = (root->camera.vc[0] - tf->f.vc[0])*x
-	  + (root->camera.vc[1] - tf->f.vc[1])*y
-	  + (root->camera.vc[2] - tf->f.vc[2])*z;
-
-	//dir*len: fbo.n = t*mirror.n + offset
-	fbo->camera.vn[0] = x * t * 1.001;
-	fbo->camera.vn[1] = y * t * 1.001;
-	fbo->camera.vn[2] = z * t * 1.001;
-
-	//foot of a perpendicular: fbo.q = p - t*mirror.n
-	fbo->camera.vq[0] = root->camera.vc[0] - t*x;
-	fbo->camera.vq[1] = root->camera.vc[1] - t*y;
-	fbo->camera.vq[2] = root->camera.vc[2] - t*z;
-
-	//reflected point: p' = p - 2*t*mirror.n
-	fbo->camera.vc[0] = root->camera.vc[0] - 2*t*x;
-	fbo->camera.vc[1] = root->camera.vc[1] - 2*t*y;
-	fbo->camera.vc[2] = root->camera.vc[2] - 2*t*z;
-
-
-	//r = -mirror.r
-	x = -tf->f.vr[0];
-	y = -tf->f.vr[1];
-	z = -tf->f.vr[2];
-	t = squareroot(x*x + y*y + z*z);
-	x /= t;
-	y /= t;
-	z /= t;
-
-	//l.len = (l-q) * nr
-	t = (tf->f.vc[0] + tf->f.vr[0] - fbo->camera.vq[0]) * x
-	  + (tf->f.vc[1] + tf->f.vr[1] - fbo->camera.vq[1]) * y
-	  + (tf->f.vc[2] + tf->f.vr[2] - fbo->camera.vq[2]) * z;
-	fbo->camera.vl[0] = x * t;
-	fbo->camera.vl[1] = y * t;
-	fbo->camera.vl[2] = z * t;
-
-	//r.len = (r-q) * nr
-	t = (tf->f.vc[0] - tf->f.vr[0] - fbo->camera.vq[0]) * x
-	  + (tf->f.vc[1] - tf->f.vr[1] - fbo->camera.vq[1]) * y
-	  + (tf->f.vc[2] - tf->f.vr[2] - fbo->camera.vq[2]) * z;
-	fbo->camera.vr[0] = x * t;
-	fbo->camera.vr[1] = y * t;
-	fbo->camera.vr[2] = z * t;
-
-
-	//mirror.t
-	x = tf->f.vt[0];
-	y = tf->f.vt[1];
-	z = tf->f.vt[2];
-	t = squareroot(x*x + y*y + z*z);
-	x /= t;
-	y /= t;
-	z /= t;
-
-	//b.len =  = (b-q) * nt
-	t = (tf->f.vc[0] - tf->f.vt[0] - fbo->camera.vq[0]) * x
-	  + (tf->f.vc[1] - tf->f.vt[1] - fbo->camera.vq[1]) * y
-	  + (tf->f.vc[2] - tf->f.vt[2] - fbo->camera.vq[2]) * z;
-	fbo->camera.vb[0] = x * t;
-	fbo->camera.vb[1] = y * t;
-	fbo->camera.vb[2] = z * t;
-
-	//t.len = (u-q) * nt
-	t = (tf->f.vc[0] + tf->f.vt[0] - fbo->camera.vq[0]) * x
-	  + (tf->f.vc[1] + tf->f.vt[1] - fbo->camera.vq[1]) * y
-	  + (tf->f.vc[2] + tf->f.vt[2] - fbo->camera.vq[2]) * z;
-	fbo->camera.vt[0] = x * t;
-	fbo->camera.vt[1] = y * t;
-	fbo->camera.vt[2] = z * t;
-
-	carvefrustum(root, &fbo->camera);
-*/
-/*
-	say("%f,%f,%f\n",root->camera.vc[0], root->camera.vc[1], root->camera.vc[2]);
-	say("%f,%f,%f\n",fbo->camera.vc[0], fbo->camera.vc[1], fbo->camera.vc[2]);
-	say("%f,%f,%f\n",fbo->camera.vn[0], fbo->camera.vn[1], fbo->camera.vn[2]);
-	say("%f,%f,%f\n",fbo->camera.vl[0], fbo->camera.vl[1], fbo->camera.vl[2]);
-	say("%f,%f,%f\n",fbo->camera.vr[0], fbo->camera.vr[1], fbo->camera.vr[2]);
-	say("%f,%f,%f\n",fbo->camera.vb[0], fbo->camera.vb[1], fbo->camera.vb[2]);
-	say("%f,%f,%f\n",fbo->camera.vu[0], fbo->camera.vu[1], fbo->camera.vu[2]);
-	say("\n");
-
-	carveline_rect(root, 0xffffff, tf->vc, tf->vr, tf->vf);
-	p[0] = tf->vc[0] - tf->vr[0] - tf->vf[0];
-	p[1] = tf->vc[1] - tf->vr[1] - tf->vf[1];
-	p[2] = tf->vc[2] - tf->vr[2] - tf->vf[2];
-	q[0] = 2*p[0] - fbo->camera.vc[0];
-	q[1] = 2*p[1] - fbo->camera.vc[1];
-	q[2] = 2*p[2] - fbo->camera.vc[2];
-	carveline(root, 0xffffff, fbo->camera.vc, q);
-	p[0] = tf->vc[0] + tf->vr[0] - tf->vf[0];
-	p[1] = tf->vc[1] + tf->vr[1] - tf->vf[1];
-	p[2] = tf->vc[2] + tf->vr[2] - tf->vf[2];
-	q[0] = 2*p[0] - fbo->camera.vc[0];
-	q[1] = 2*p[1] - fbo->camera.vc[1];
-	q[2] = 2*p[2] - fbo->camera.vc[2];
-	carveline(root, 0xffffff, fbo->camera.vc, q);
-	p[0] = tf->vc[0] - tf->vr[0] + tf->vf[0];
-	p[1] = tf->vc[1] - tf->vr[1] + tf->vf[1];
-	p[2] = tf->vc[2] - tf->vr[2] + tf->vf[2];
-	q[0] = 2*p[0] - fbo->camera.vc[0];
-	q[1] = 2*p[1] - fbo->camera.vc[1];
-	q[2] = 2*p[2] - fbo->camera.vc[2];
-	carveline(root, 0xffffff, fbo->camera.vc, q);
-	p[0] = tf->vc[0] + tf->vr[0] + tf->vf[0];
-	p[1] = tf->vc[1] + tf->vr[1] + tf->vf[1];
-	p[2] = tf->vc[2] + tf->vr[2] + tf->vf[2];
-	q[0] = 2*p[0] - fbo->camera.vc[0];
-	q[1] = 2*p[1] - fbo->camera.vc[1];
-	q[2] = 2*p[2] - fbo->camera.vc[2];
-	carveline(root, 0xffffff, fbo->camera.vc, q);
-*/
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+	src->vbuf_enq = 0;
 }
 
 
@@ -221,14 +99,21 @@ static void mirror_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
+	struct mirrbuf* mirr;
+	struct glsrc* src;
+	float (*vbuf)[6];
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-
-	struct glsrc* src = act->buf;
-	float (*vbuf)[6] = (void*)(src->vbuf);
 	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
+
+	mirr = act->buf0;
+	if(0 == mirr)return;
+	src = (void*)(mirr->data);
+	if(0 == src)return;
+	vbuf = (void*)(src->vbuf);
+	if(0 == vbuf)return;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -331,6 +216,155 @@ static void mirror_draw(
 
 
 
+void mirror_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
+{
+	float x,y,z,t;
+
+
+//----------------n,f----------------
+	//mirror.n
+	x = obb->vt[0];
+	y = obb->vt[1];
+	z = obb->vt[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+
+	//op*cos(on,op): t = op * mirror.n
+	t = (cam[0] - obb->vc[0])*x
+	  + (cam[1] - obb->vc[1])*y
+	  + (cam[2] - obb->vc[2])*z;
+
+	//dir*len: fbo.n = t*mirror.n + offset
+	frus->vn[0] = x;
+	frus->vn[1] = y;
+	frus->vn[2] = z;
+	frus->vn[3] = t*1.001;
+
+	frus->vf[0] = x;
+	frus->vf[1] = y;
+	frus->vf[2] = z;
+	frus->vf[3] = 1e20;
+
+
+//-------------p,q---------------
+	//foot of a perpendicular: q = p - t*mirror.n
+	frus->vq[0] = cam[0] - t*x;
+	frus->vq[1] = cam[1] - t*y;
+	frus->vq[2] = cam[2] - t*z;
+
+	//reflected point: p' = p - 2*t*mirror.n
+	frus->vc[0] = cam[0] - 2*t*x;
+	frus->vc[1] = cam[1] - 2*t*y;
+	frus->vc[2] = cam[2] - 2*t*z;
+
+
+//--------------l,r--------------------
+	//nr = -norm(mirror.r)
+	x = -obb->vr[0];
+	y = -obb->vr[1];
+	z = -obb->vr[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+
+	//l.len = (l-q) * nr
+	t = (obb->vc[0] + obb->vr[0] - frus->vq[0]) * x
+	  + (obb->vc[1] + obb->vr[1] - frus->vq[1]) * y
+	  + (obb->vc[2] + obb->vr[2] - frus->vq[2]) * z;
+	frus->vl[0] = -x;
+	frus->vl[1] = -y;
+	frus->vl[2] = -z;
+	frus->vl[3] = t;
+
+	//r.len = (r-q) * nr
+	t = (obb->vc[0] - obb->vr[0] - frus->vq[0]) * x
+	  + (obb->vc[1] - obb->vr[1] - frus->vq[1]) * y
+	  + (obb->vc[2] - obb->vr[2] - frus->vq[2]) * z;
+	frus->vr[0] = x;
+	frus->vr[1] = y;
+	frus->vr[2] = z;
+	frus->vr[3] = t;
+
+
+//----------------b,t-----------------
+	//nt = norm(mirror.t)
+	x = obb->vf[0];
+	y = obb->vf[1];
+	z = obb->vf[2];
+	t = squareroot(x*x + y*y + z*z);
+	x /= t;
+	y /= t;
+	z /= t;
+
+	//b.len =  = (b-q) * nt
+	t = (obb->vc[0] - obb->vf[0] - frus->vq[0]) * x
+	  + (obb->vc[1] - obb->vf[1] - frus->vq[1]) * y
+	  + (obb->vc[2] - obb->vf[2] - frus->vq[2]) * z;
+	frus->vb[0] = x;
+	frus->vb[1] = y;
+	frus->vb[2] = z;
+	frus->vb[3] = t;
+
+	//t.len = (u-q) * nt
+	t = (obb->vc[0] + obb->vf[0] - frus->vq[0]) * x
+	  + (obb->vc[1] + obb->vf[1] - frus->vq[1]) * y
+	  + (obb->vc[2] + obb->vf[2] - frus->vq[2]) * z;
+	frus->vt[0] = x;
+	frus->vt[1] = y;
+	frus->vt[2] = z;
+	frus->vt[3] = t;
+}
+static void mirror_matrix(
+	struct actor* act, struct fstyle* frus,
+	struct actor* fbo, struct fstyle* area)
+{
+	struct halfrel* self;
+	struct halfrel* peer;
+	struct fstyle* obb;
+
+	struct mirrbuf* mirr;
+	struct glsrc* own;
+	struct glsrc* src;
+
+	//
+	mirr = act->buf0;
+	if(0 == mirr)return;
+	own = (void*)(mirr->data);
+	if(0 == own)return;
+
+	own->tex_data[0] = fbo->tex0;
+	own->tex_name[0] = "tex0";
+	own->tex_fmt[0] = '!';
+	own->tex_enq[0] += 1;
+
+
+	//
+	src = fbo->gl_camera;
+	if(0 == src)return;
+
+	mirror_search(act, 0, &self, &peer);
+	obb = peer->pfoot;
+
+	vec3 cam = {2000.0, -2000.0, 2000.0};
+	mirror_frustum(frus, obb, cam);
+	fixmatrix(mirr->mvp, frus);
+	mat4_transpose(mirr->mvp);
+
+	src->arg_fmt[0] = 'm';
+	src->arg_name[0] = "cammvp";
+	src->arg_data[0] = mirr->mvp;
+
+	src->arg_fmt[1] = 'v';
+	src->arg_name[1] = "camxyz";
+	src->arg_data[1] = obb->vc;
+}
+
+
+
+
 static void mirror_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
@@ -341,6 +375,15 @@ static void mirror_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 	struct actor* ctx = buf;
 	if(ctx){
 		if(_gl41data_ == ctx->type)mirror_draw_vbo(act,pin,ctx,sty);
+	}
+	else{
+		switch(win->type){
+			case _gl41view_:
+			case _gl41fbod_:
+			case _gl41fboc_:
+			case _gl41fbog_:
+			case _gl41wnd0_:mirror_matrix(act, &pin->fs, win, &sty->fs);
+		}
 	}
 }
 static void mirror_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
@@ -360,54 +403,8 @@ static void mirror_start(struct halfrel* self, struct halfrel* peer)
 		return;
 	}
 
-	pin->data[0] = (u64)(act->buf);
-	say("@mirror_start:%llx, %llx\n", pin->data[0], pin->data[1]);
-}
-
-
-
-
-static void mirror_search(struct actor* act)
-{
-}
-static void mirror_modify(struct actor* act)
-{
-}
-static void mirror_delete(struct actor* act)
-{
-	if(0 == act)return;
-	memorydelete(act->buf);
-	act->buf = 0;
-}
-static void mirror_create(struct actor* act, void* str)
-{
-	int j;
-	struct glsrc* src;
-	if(0 == act)return;
-
-	src = act->buf = memorycreate(0x200, 0);
-	if(0 == src)return;
-
-	//
-	src->geometry = 3;
-	src->method = 'v';
-
-	//shader
-	src->vs = mirror_glsl_v;
-	src->fs = mirror_glsl_f;
-	src->shader_enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
-	src->vbuf_enq = 0;
-
-	//texture
-	src->tex_name[0] = "tex0";
-	src->tex_enq[0] = 0;
+	struct mirrbuf* mirr = act->buf0;
+	pin->data[0] = (u64)(mirr->data);
 }
 
 
