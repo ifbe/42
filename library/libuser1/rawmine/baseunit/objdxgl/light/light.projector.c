@@ -119,13 +119,13 @@ static void projector_draw_vbo(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vt = sty->f.vt;
-
 	carveline_rect(win, 0xffffff, vc, vr, vt);
+
+
 	tt[0] = - vf[0];
 	tt[1] = - vf[1];
 	tt[2] = - vf[2];
 	carvesolid_cone(win, 0xffffff, vc, vr, tt);
-
 
 	sun = act->buf0;
 	if(0 == sun)return;
@@ -333,6 +333,10 @@ void projector_light(
 	src->arg_fmt[2] = 'v';
 	src->arg_name[2] = "sunxyz";
 	src->arg_data[2] = sty->vc;
+
+	src->arg_fmt[3] = 'v';
+	src->arg_name[3] = "sundir";
+	src->arg_data[3] = sty->vf;
 
 	src->tex_name[0] = "suntex";
 	src->tex_data[0] = own->tex_data[0];

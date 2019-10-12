@@ -3,6 +3,7 @@ void fixmatrix(void* m, struct fstyle* sty);
 struct sunbuf{
 	mat4 mvp;
 	vec4 rgb;
+	u32 u_rgb;
 
 	u8 data[0];
 };
@@ -73,9 +74,10 @@ static void spotlight_create(struct actor* act, void* str)
 	if(0 == sun)return;
 
 	//
-	sun->rgb[0] = 1.0;
-	sun->rgb[1] = 1.0;
-	sun->rgb[2] = 1.0;
+	sun->u_rgb = 0xff0000;
+	sun->rgb[0] = ((sun->u_rgb >>16) & 0xff) / 255.0;
+	sun->rgb[1] = ((sun->u_rgb >> 8) & 0xff) / 255.0;
+	sun->rgb[2] = ((sun->u_rgb >> 0) & 0xff) / 255.0;
 
 	//
 	src = (void*)(sun->data);
@@ -116,12 +118,7 @@ static void spotlight_draw_vbo(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vt = sty->f.vt;
-
 	carveline_rect(win, 0xffffff, vc, vr, vt);
-	tt[0] = - vf[0];
-	tt[1] = - vf[1];
-	tt[2] = - vf[2];
-	carvesolid_cone(win, 0xffffff, vc, vr, tt);
 
 
 	sun = act->buf0;
@@ -130,6 +127,12 @@ static void spotlight_draw_vbo(
 	if(0 == src)return;
 	vbuf = (void*)(src->vbuf);
 	if(0 == vbuf)return;
+
+	tt[0] = - vf[0];
+	tt[1] = - vf[1];
+	tt[2] = - vf[2];
+	carvesolid_cone(win, sun->u_rgb, vc, vr, tt);
+
 
 	//depth fbo (for debug)
 	vbuf[0][0] = vc[0] - vr[0] - vt[0] - vf[0];
@@ -330,6 +333,10 @@ void spotlight_light(
 	src->arg_fmt[2] = 'v';
 	src->arg_name[2] = "sunxyz";
 	src->arg_data[2] = sty->vc;
+
+	src->arg_fmt[3] = 'v';
+	src->arg_name[3] = "sundir";
+	src->arg_data[3] = sty->vf;
 
 	src->tex_name[0] = "suntex";
 	src->tex_data[0] = own->tex_data[0];

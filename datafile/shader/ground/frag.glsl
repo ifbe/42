@@ -1,12 +1,13 @@
 #version 410 core
 in mediump vec3 vertex;
 out mediump vec4 FragColor;
+subroutine vec3 passtype();
+subroutine uniform passtype routine;
+
 uniform sampler2D suntex;
 uniform sampler2D sunimg;
 uniform sampler2D tex0;
 uniform mat4 sunmvp;
-subroutine vec3 passtype();
-subroutine uniform passtype routine;
 
 subroutine (passtype) vec3 rawcolor(){
 	return vec3(1.0);

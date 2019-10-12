@@ -14,7 +14,8 @@ ground{
 fmt:ground
 }
 tree{
-fmt:tree
+fmt:model
+file:datafile/stl/spider-lowpoly.stl
 }
 light{
 fmt:pointlit
@@ -51,7 +52,7 @@ t: 0.0, 0.0, 10000.0
 treehaha{
 }
 treegeom{
-c: 0.0, 0.0, 0.0
+c: 0.0, 0.0, 1000.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0

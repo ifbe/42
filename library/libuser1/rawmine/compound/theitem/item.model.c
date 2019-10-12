@@ -5,113 +5,6 @@ void parsevertfromstl(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len);
 
 
 
-/*
-char* model_glsl2d_v =
-GLSL_VERSION
-"layout(location = 0)in mediump vec3 v;\n"
-"layout(location = 1)in mediump vec3 n;\n"
-"out mediump vec3 vertex;\n"
-"out mediump vec3 normal;\n"
-"uniform mat4 objmat;\n"
-"void main()\n"
-"{\n"
-	"normal = n;\n"
-	"vertex = vec3(objmat * vec4(v, 1.0));\n"
-	"gl_Position = objmat * vec4(v, 1.0);\n"
-"}\n";
-*/
-char* model_glsl_v =
-GLSL_VERSION
-"layout(location = 0)in mediump vec3 v;\n"
-"layout(location = 1)in mediump vec3 n;\n"
-"out mediump vec3 vertex;\n"
-"out mediump vec3 normal;\n"
-"uniform mat4 objmat;\n"
-"uniform mat4 cammvp;\n"
-"void main()\n"
-"{\n"
-	"normal = n;\n"
-	"vertex = vec3(objmat * vec4(v, 1.0));\n"
-	"gl_Position = cammvp * objmat * vec4(v, 1.0);\n"
-"}\n";
-
-char* model_glsl_f =
-GLSL_VERSION
-"in mediump vec3 vertex;\n"
-"in mediump vec3 normal;\n"
-"out mediump vec4 FragColor;\n"
-"uniform mediump vec3 camxyz;\n"
-"uniform mediump vec3 sunxyz;\n"
-"uniform mediump vec3 sunrgb;\n"
-"uniform mediump vec3 KA;\n"
-"uniform mediump vec3 KD;\n"
-"uniform mediump vec3 KS;\n"
-
-//"mediump vec3 dirsun0 = vec3(1.0, 1.0, 1.0);\n"
-//"mediump vec3 dirsun1 = vec3(-1.0, 0.0, 0.0);\n"
-
-//"mediump vec3 LA = vec3(1.0, 1.0, 1.0);\n"
-//"mediump vec3 LD = vec3(1.0, 1.0, 1.0);\n"
-//"mediump vec3 LS = vec3(1.0, 1.0, 1.0);\n"
-"mediump vec3 LA = sunrgb;\n"
-"mediump vec3 LD = sunrgb;\n"
-"mediump vec3 LS = sunrgb;\n"
-//"mediump vec3 KA = vec3(0.231250, 0.231250, 0.231250);\n"
-//"mediump vec3 KD = vec3(0.277500, 0.277500, 0.277500);\n"
-//"mediump vec3 KS = vec3(0.773911, 0.773911, 0.773911);\n"
-
-"vec3 sun0(){\n"
-	"mediump vec3 N = normalize(normal);\n"
-	"mediump vec3 L = normalize(sunxyz - vertex);\n"
-	"mediump float SN = dot(N, L);\n"
-	"mediump vec3 ret = LD*KD*max(SN, 0.0);\n"
-	"if(SN < 0.0)return ret;\n"
-
-	"mediump vec3 E = normalize(camxyz - vertex);\n"
-	"mediump vec3 H = normalize(E + L);\n"
-	"mediump float NH = max(dot(N, H), 0.0);\n"
-	"return ret + LS*KS*pow(NH, 25.0);\n"
-"}\n"
-/*
-"vec3 sun0(){\n"
-	"mediump vec3 N = normalize(normal);\n"
-	"mediump vec3 L = normalize(dirsun0);\n"
-	"mediump float SN = dot(N, L);\n"
-	"mediump vec3 ret = LD*KD*max(SN, 0.0);\n"
-	"if(SN < 0.0)return ret;\n"
-
-	"mediump vec3 E = normalize(camxyz - vertex);\n"
-	"mediump vec3 H = normalize(E + L);\n"
-	"mediump float NH = max(dot(N, H), 0.0);\n"
-	"return ret + LS*KS*pow(NH, 25.0);\n"
-"}\n"
-"vec3 sun1(){\n"
-	"mediump vec3 N = normalize(normal);\n"
-	"mediump vec3 L = normalize(dirsun1);\n"
-	"mediump float SN = dot(N, L);\n"
-	"mediump vec3 ret = LD*KD*max(SN, 0.0);\n"
-	"if(SN < 0.0)return ret;\n"
-
-	"mediump vec3 E = normalize(camxyz - vertex);\n"
-	"mediump vec3 H = normalize(E + L);\n"
-	"mediump float NH = max(dot(N, H), 0.0);\n"
-	"return ret + LS*KS*pow(NH, 25.0);\n"
-"}\n"
-*/
-//"float shadow(){\n"
-	//"if(uvw.z - texture(tex0, uvw.xy).r > 0.000001)return 0.1;\n"
-	//"return 1.0;\n"
-//"}\n"
-"void main(){\n"
-	"mediump vec3 light = LA*KA;\n"
-	"light += sun0() / 2.0;\n"
-	//"light += sun1() / 2.0;\n"
-	"light = vec3(clamp(light.x, 0.0, 1.0), clamp(light.y, 0.0, 1.0), clamp(light.z, 0.0, 1.0));\n"
-	"FragColor = vec4(light, 1.0);\n"
-"}\n";
-
-
-
 
 void sty_sty_mat(struct fstyle* src, struct fstyle* dst, mat4 mat)
 {
@@ -459,8 +352,10 @@ static void model_create(struct actor* act, void* str)
 	src->method = 'v';
 
 	//shader
-	src->vs = model_glsl_v;
-	src->fs = model_glsl_f;
+	src->vs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/model/vert.glsl", 0, src->vs, 0x1000);
+	src->fs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/model/frag.glsl", 0, src->fs, 0x1000);
 	src->shader_enq = 42;
 
 	//argument

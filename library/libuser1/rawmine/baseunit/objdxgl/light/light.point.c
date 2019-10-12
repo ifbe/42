@@ -28,10 +28,10 @@ static void pointlight_create(struct actor* act, void* str)
 	if(0 == sun)return;
 
 	//
-	sun->rgb[0] = 1.0;
-	sun->rgb[1] = 1.0;
-	sun->rgb[2] = 1.0;
-	sun->u_rgb = 0xffffff;
+	sun->u_rgb = 0x0000ff;
+	sun->rgb[0] = ((sun->u_rgb >>16) & 0xff) / 255.0;
+	sun->rgb[1] = ((sun->u_rgb >> 8) & 0xff) / 255.0;
+	sun->rgb[2] = ((sun->u_rgb >> 0) & 0xff) / 255.0;
 }
 
 
@@ -104,6 +104,9 @@ void pointlight_light(
 	if(0 == sun)return;
 	src = win->gl_light;
 	if(0 == src)return;
+
+	src->routine_name = "passtype";
+	src->routine_detail = "pointlight";
 
 	src->arg_fmt[0] = 'v';
 	src->arg_name[0] = "sunxyz";

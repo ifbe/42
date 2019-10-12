@@ -3,6 +3,8 @@ void ortho_mvp(mat4 m, struct fstyle* s);
 struct sunbuf{
 	mat4 mvp;
 	vec4 rgb;
+	u32 u_rgb;
+
 	u8 data[0];
 };
 
@@ -69,9 +71,10 @@ static void dirlight_create(struct actor* act, void* str)
 	if(0 == sun)return;
 
 	//
-	sun->rgb[0] = 1.0;
-	sun->rgb[1] = 1.0;
-	sun->rgb[2] = 1.0;
+	sun->u_rgb = 0xffff00;
+	sun->rgb[0] = ((sun->u_rgb >>16) & 0xff) / 255.0;
+	sun->rgb[1] = ((sun->u_rgb >> 8) & 0xff) / 255.0;
+	sun->rgb[2] = ((sun->u_rgb >> 0) & 0xff) / 255.0;
 
 	//
 	src = (void*)(sun->data);
@@ -113,9 +116,17 @@ static void dirlight_draw_vbo(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vt = sty->f.vt;
+	carveline_rect(win, 0xffffff, vc, vr, vt);
+
+
+	sun = act->buf0;
+	if(0 == sun)return;
+	src = (void*)(sun->data);
+	if(0 == src)return;
+	vbuf = (void*)(src->vbuf);
+	if(0 == vbuf)return;
 
 	//light ray (for debug)
-	carveline_rect(win, 0xffffff, vc, vr, vt);
 	for(y=-1.0;y<1.01;y+=0.2)
 	{
 		for(x=-1.0;x<1.01;x+=0.2)
@@ -126,17 +137,9 @@ static void dirlight_draw_vbo(
 			tb[0] = ta[0] - vf[0];
 			tb[1] = ta[1] - vf[1];
 			tb[2] = ta[2] - vf[2];
-			carveline(win, 0xffff00, ta, tb);
+			carveline(win, sun->u_rgb, ta, tb);
 		}
 	}
-
-
-	sun = act->buf0;
-	if(0 == sun)return;
-	src = (void*)(sun->data);
-	if(0 == src)return;
-	vbuf = (void*)(src->vbuf);
-	if(0 == vbuf)return;
 
 	//depth fbo (for debug)
 	vbuf[0][0] = vc[0] - vr[0] - vt[0] - vf[0];
@@ -343,6 +346,10 @@ void dirlight_light(
 	src->arg_fmt[1] = 'v';
 	src->arg_name[1] = "sunrgb";
 	src->arg_data[1] = sun->rgb;
+
+	src->arg_fmt[2] = 'v';
+	src->arg_name[2] = "sundir";
+	src->arg_data[2] = sty->vf;
 
 	src->tex_name[0] = "suntex";
 	src->tex_data[0] = own->tex_data[0];

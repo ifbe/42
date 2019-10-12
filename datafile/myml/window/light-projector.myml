@@ -19,8 +19,9 @@ fmt:curtain
 cur2{
 fmt:curtain
 }
-tree{
-fmt:tree
+test{
+fmt:model
+file:datafile/stl/spider-lowpoly.stl
 }
 light{
 fmt:prjtor
@@ -54,13 +55,13 @@ f: 0.0, 10000.0, 0.0
 t: 0.0, 0.0, 10000.0
 }
 
-treehaha{
+testhaha{
 }
-treegeom{
-c: 0.0, -2000.0, 0.0
-r: 1000.0, 0.0, 0.0
-f: 0.0, 1000.0, 0.0
-t: 0.0, 0.0, 1500.0
+testgeom{
+c: -1000.0, -2000.0, 500.0
+r: 500.0, 0.0, 0.0
+f: 0.0, 500.0, 0.0
+t: 0.0, 0.0, 500.0
 }
 
 cur1haha{
@@ -129,7 +130,7 @@ q:1.0, 1.0
 
 #3dworld depends on inner objects
 (3dworld, grndgeom, act, 0) -> (ground, grndhaha, act, 0)
-(3dworld, treegeom, act, 0) -> (tree, treehaha, act, 0)
+(3dworld, testgeom, act, 0) -> (test, testhaha, act, 0)
 (3dworld, cur1geom, act, 0) -> (cur1, cur1haha, act, 0)
 (3dworld, cur2geom, act, 0) -> (cur2, cur2haha, act, 0)
 (3dworld, mirrgeom, act, 0) -> (light, mirrhaha, act, 0)
