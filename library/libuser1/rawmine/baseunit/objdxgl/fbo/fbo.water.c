@@ -209,7 +209,7 @@ void water_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 	float x,y,z,t;
 
 
-//----------------n,f----------------
+//-------------p,q---------------
 	//water.n
 	x = obb->vt[0];
 	y = obb->vt[1];
@@ -224,19 +224,6 @@ void water_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 	  + (cam[1] - obb->vc[1])*y
 	  + (cam[2] - obb->vc[2])*z;
 
-	//dir*len: fbo.n = t*water.n + offset
-	frus->vn[0] = x;
-	frus->vn[1] = y;
-	frus->vn[2] = z;
-	frus->vn[3] = t*1.001;
-
-	frus->vf[0] = x;
-	frus->vf[1] = y;
-	frus->vf[2] = z;
-	frus->vf[3] = 1e20;
-
-
-//-------------p,q---------------
 	//foot of a perpendicular: q = p - t*water.n
 	frus->vq[0] = cam[0] - t*x;
 	frus->vq[1] = cam[1] - t*y;
@@ -246,6 +233,19 @@ void water_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 	frus->vc[0] = cam[0] - 2*t*x;
 	frus->vc[1] = cam[1] - 2*t*y;
 	frus->vc[2] = cam[2] - 2*t*z;
+
+
+//----------------n,f----------------
+	//vec(frus.n) = vec(water.n), len(frus.n) > len(cam to plane)
+	frus->vn[0] = x;
+	frus->vn[1] = y;
+	frus->vn[2] = z;
+	frus->vn[3] = t*1.001;
+
+	frus->vf[0] = x;
+	frus->vf[1] = y;
+	frus->vf[2] = z;
+	frus->vf[3] = 1e20;
 
 
 //--------------l,r--------------------

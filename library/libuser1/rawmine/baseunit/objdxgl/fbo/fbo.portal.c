@@ -3,6 +3,8 @@ void fixmatrix(void* m, struct fstyle* sty);
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
 struct portalbuf{
 	mat4 mvp;
+	vec4 vc;
+	vec4 vq;
 	u8 data[0];
 };
 
@@ -12,15 +14,11 @@ struct portalbuf{
 static void portal_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct actor* world;
-	struct fstyle* obb = 0;
-	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
 	rel = act->irel0;
 	while(1){
 		if(0 == rel)return;
-		world = (void*)(rel->srcchip);
-		if(_world3d_ == world->type){
+		if(foot == rel->dstflag){
 			self[0] = (void*)&rel->dstchip;
 			peer[0] = (void*)&rel->srcchip;
 			return;
@@ -91,18 +89,30 @@ static void portal_draw_vbo_b(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
-	vec3 tc;
+	struct portalbuf* portal;
+	vec3 tc,tt;
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vt = sty->f.vt;
-	carveline_rect(win, 0x3f0000, vc, vr, vt);
-	carveopaque_circle(win, 0x80ffffff, vc, vr, vt);
 
+	carveline_rect(win, 0xffffff, vc, vr, vt);
 	tc[0] = vc[0] - vt[0];
 	tc[1] = vc[1] - vt[1];
 	tc[2] = vc[2] - vt[2];
 	carvesolid_rect(win, 0x3f0000, tc, vr, vf);
+	tc[0] = vc[0] - vt[0] - vf[0];
+	tc[1] = vc[1] - vt[1] - vf[1];
+	tc[2] = vc[2] - vt[2] - vf[2];
+	tt[0] = vc[0] - vt[0] + vf[0];
+	tt[1] = vc[1] - vt[1] + vf[1];
+	tt[2] = vc[2] - vt[2] + vf[2];
+	carveline_arrow(win, 0xffffff, tc, tt, vt);
+
+	carveopaque_circle(win, 0x80ffffff, vc, vr, vt);
+	portal = act->buf0;
+	if(0 == portal)return;
+	carveline_arrow(win, 0xff0000, portal->vc, portal->vq, vt);
 }
 static void portal_draw_vbo(
 	struct actor* act, struct style* pin,
@@ -112,17 +122,24 @@ static void portal_draw_vbo(
 	struct glsrc* src;
 	float (*vbuf)[6];
 
-	vec3 tc;
+	vec3 tc,tt;
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vt = sty->f.vt;
 
-	carveline_rect(win, 0x00003f, vc, vr, vt);
+	carveline_rect(win, 0xffffff, vc, vr, vt);
 	tc[0] = vc[0] - vt[0];
 	tc[1] = vc[1] - vt[1];
 	tc[2] = vc[2] - vt[2];
 	carvesolid_rect(win, 0x00003f, tc, vr, vf);
+	tc[0] = vc[0] - vt[0] - vf[0];
+	tc[1] = vc[1] - vt[1] - vf[1];
+	tc[2] = vc[2] - vt[2] - vf[2];
+	tt[0] = vc[0] - vt[0] + vf[0];
+	tt[1] = vc[1] - vt[1] + vf[1];
+	tt[2] = vc[2] - vt[2] + vf[2];
+	carveline_arrow(win, 0xffffff, tc, tt, vt);
 
 	portal = act->buf0;
 	if(0 == portal)return;
@@ -211,50 +228,190 @@ static void portal_draw(
 
 
 
-void portal_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
+void portal_frustum(struct fstyle* frus, struct fstyle* por, struct fstyle* tar, vec3 cam)
 {
-	float x,y,z,t;
-	frus->vc[0] = 1000.0;
-	frus->vc[1] = 0.0;
-	frus->vc[2] = 1000.0;
+	float x0,y0,z0,t0;
+	float delta;
 
-	frus->vl[0] = -1.0;
-	frus->vl[1] = 0.0;
-	frus->vl[2] = 0.0;
-	frus->vl[3] = -1.0;
+//-------------q---------------
+	//portal.n
+	x0 = por->vf[0];
+	y0 = por->vf[1];
+	z0 = por->vf[2];
+	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
+	x0 /= t0;
+	y0 /= t0;
+	z0 /= t0;
 
-	frus->vr[0] = 1.0;
-	frus->vr[1] = 0.0;
-	frus->vr[2] = 0.0;
-	frus->vr[3] = 1.0;
+	//op*cos(on,op): t = op * portal.n
+	t0= (por->vc[0] - cam[0])*x0
+	  + (por->vc[1] - cam[1])*y0
+	  + (por->vc[2] - cam[2])*z0;
 
-	frus->vb[0] = 0.0;
-	frus->vb[1] = 0.0;
-	frus->vb[2] = -1.0;
-	frus->vb[3] = -1.0;
+	//foot of a perpendicular: q = p - t*portal.n
+	frus->vq[0] = cam[0] + t0*x0;
+	frus->vq[1] = cam[1] + t0*y0;
+	frus->vq[2] = cam[2] + t0*z0;
 
-	frus->vt[0] = 0.0;
-	frus->vt[1] = 0.0;
-	frus->vt[2] = 1.0;
-	frus->vt[3] = 1.0;
+	frus->vc[0] = tar->vc[0];
+	frus->vc[1] = tar->vc[1];
+	frus->vc[2] = tar->vc[2];
 
-	frus->vn[0] = 0.0;
-	frus->vn[1] = 1.0;
-	frus->vn[2] = 0.0;
-	frus->vn[3] = 1.0;
+	//length(frus.n) > length(camera to portal)
+	frus->vn[3] = t0;
+	frus->vf[3] = 1e20;
+	say("q,c = (%f,%f,%f), (%f,%f,%f)\n", frus->vq[0], frus->vq[1], frus->vq[2], frus->vc[0], frus->vc[1], frus->vc[2]);
 
-	frus->vf[0] = 0.0;
-	frus->vf[1] = 1.0;
-	frus->vf[2] = 0.0;
-	frus->vf[3] = 100000000.0;
+
+//----------------n,f----------------
+	//dir*len: fbo.n = t*portal.n + offset
+	x0 = tar->vf[0];
+	y0 = tar->vf[1];
+	z0 = tar->vf[2];
+	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
+	x0 /= t0;
+	y0 /= t0;
+	z0 /= t0;
+
+	frus->vn[0] = x0;
+	frus->vn[1] = y0;
+	frus->vn[2] = z0;
+
+	frus->vf[0] = x0;
+	frus->vf[1] = y0;
+	frus->vf[2] = z0;
+
+	frus->vc[0] -= x0 * (frus->vn[3]);
+	frus->vc[1] -= y0 * (frus->vn[3]);
+	frus->vc[2] -= z0 * (frus->vn[3]);
+
+	say("n,f,c = (%f,%f,%f), (%f,%f,%f), (%f,%f,%f)\n",
+		frus->vn[0], frus->vn[1], frus->vn[2],
+		frus->vf[0], frus->vf[1], frus->vf[2],
+		frus->vc[0], frus->vc[1], frus->vc[2]);
+
+
+//--------------l,r--------------------
+	//nr(portal) = norm(portal.r)
+	x0 = por->vr[0];
+	y0 = por->vr[1];
+	z0 = por->vr[2];
+	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
+	x0 /= t0;
+	y0 /= t0;
+	z0 /= t0;
+
+	//l.len = (l-q) * nr
+	t0= (por->vc[0] - por->vr[0] - frus->vq[0]) * x0
+	  + (por->vc[1] - por->vr[1] - frus->vq[1]) * y0
+	  + (por->vc[2] - por->vr[2] - frus->vq[2]) * z0;
+	frus->vl[3] = t0;
+
+	//r.len = (r-q) * nr
+	t0= (por->vc[0] + por->vr[0] - frus->vq[0]) * x0
+	  + (por->vc[1] + por->vr[1] - frus->vq[1]) * y0
+	  + (por->vc[2] + por->vr[2] - frus->vq[2]) * z0;
+	frus->vr[3] = t0;
+
+	//delta z
+	delta = (frus->vq[0] - por->vc[0]) * x0
+	      + (frus->vq[1] - por->vc[1]) * y0
+		  + (frus->vq[2] - por->vc[2]) * z0;
+
+	//nr(target) = norm(target.r)
+	x0 = tar->vr[0];
+	y0 = tar->vr[1];
+	z0 = tar->vr[2];
+	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
+	x0 /= t0;
+	y0 /= t0;
+	z0 /= t0;
+
+	frus->vl[0] = -x0;
+	frus->vl[1] = -y0;
+	frus->vl[2] = -z0;
+
+	frus->vr[0] = x0;
+	frus->vr[1] = y0;
+	frus->vr[2] = z0;
+
+	frus->vc[0] += x0 * delta;
+	frus->vc[1] += y0 * delta;
+	frus->vc[2] += z0 * delta;
+
+	say("l,r,c = (%f,%f,%f), (%f,%f,%f), (%f,%f,%f)\n",
+		frus->vl[0], frus->vl[1], frus->vl[2],
+		frus->vr[0], frus->vr[1], frus->vr[2],
+		frus->vc[0], frus->vc[1], frus->vc[2]);
+
+
+//----------------b,t-----------------
+	//nt(portal) = norm(portal.t)
+	x0 = por->vt[0];
+	y0 = por->vt[1];
+	z0 = por->vt[2];
+	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
+	x0 /= t0;
+	y0 /= t0;
+	z0 /= t0;
+
+	//b.len =  = (b-q) * nt
+	t0= (por->vc[0] - por->vt[0] - frus->vq[0]) * x0
+	  + (por->vc[1] - por->vt[1] - frus->vq[1]) * y0
+	  + (por->vc[2] - por->vt[2] - frus->vq[2]) * z0;
+	frus->vb[3] = t0;
+
+	//t.len = (u-q) * nt
+	t0= (por->vc[0] + por->vt[0] - frus->vq[0]) * x0
+	  + (por->vc[1] + por->vt[1] - frus->vq[1]) * y0
+	  + (por->vc[2] + por->vt[2] - frus->vq[2]) * z0;
+	frus->vt[3] = t0;
+
+	//delta z
+	delta = (frus->vq[0] - por->vc[0]) * x0
+	      + (frus->vq[1] - por->vc[1]) * y0
+		  + (frus->vq[2] - por->vc[2]) * z0;
+
+	//nt(target) = norm(target.r)
+	x0 = tar->vt[0];
+	y0 = tar->vt[1];
+	z0 = tar->vt[2];
+	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
+	x0 /= t0;
+	y0 /= t0;
+	z0 /= t0;
+
+	frus->vb[0] = -x0;
+	frus->vb[1] = -y0;
+	frus->vb[2] = -z0;
+
+	frus->vt[0] = x0;
+	frus->vt[1] = y0;
+	frus->vt[2] = z0;
+
+	frus->vc[0] += x0 * delta;
+	frus->vc[1] += y0 * delta;
+	frus->vc[2] += z0 * delta;
+
+	say("b,t,c = (%f,%f,%f), (%f,%f,%f), (%f,%f,%f)\n",
+		frus->vb[0], frus->vb[1], frus->vb[2],
+		frus->vt[0], frus->vt[1], frus->vt[2],
+		frus->vc[0], frus->vc[1], frus->vc[2]);
+
+
+//--------------larger vn--------------
+	frus->vn[3] *= 1.001;
+	say("portal_frustum: (%f,%f), (%f,%f), (%f,%f)\n",
+		frus->vn[3], frus->vf[3], frus->vl[3], frus->vr[3], frus->vb[3], frus->vt[3]);
 }
 static void portal_matrix(
 	struct actor* act, struct fstyle* frus,
 	struct actor* fbo, struct fstyle* area)
 {
-	struct halfrel* self;
-	struct halfrel* peer;
-	struct fstyle* obb;
+	struct halfrel* self[1];
+	struct halfrel* peer[1];
+	struct fstyle* obba;
+	struct fstyle* obbb;
 
 	struct portalbuf* portal;
 	struct glsrc* own;
@@ -276,11 +433,25 @@ static void portal_matrix(
 	src = fbo->gl_camera;
 	if(0 == src)return;
 
-	portal_search(act, 0, &self, &peer);
-	obb = peer->pfoot;
+	self[0] = peer[0] = 0;
+	portal_search(act, 'a', self, peer);
+	if(0 == peer)return;
+	obba = peer[0]->pfoot;
 
-	vec3 cam = {2000.0, -2000.0, 2000.0};
-	portal_frustum(frus, obb, cam);
+	self[0] = peer[0] = 0;
+	portal_search(act, 'b', self, peer);
+	if(0 == peer)return;
+	obbb = peer[0]->pfoot;
+
+	vec3 cam = {-1000.0, -2500.0, 1000.0};
+	portal_frustum(frus, obba, obbb, cam);
+	portal->vc[0] = frus->vc[0];
+	portal->vc[1] = frus->vc[1];
+	portal->vc[2] = frus->vc[2];
+	portal->vq[0] = frus->vc[0] + frus->vn[0]*frus->vn[3];
+	portal->vq[1] = frus->vc[1] + frus->vn[1]*frus->vn[3];
+	portal->vq[2] = frus->vc[2] + frus->vn[2]*frus->vn[3];
+
 	fixmatrix(portal->mvp, frus);
 	mat4_transpose(portal->mvp);
 
@@ -290,7 +461,7 @@ static void portal_matrix(
 
 	src->arg_fmt[1] = 'v';
 	src->arg_name[1] = "camxyz";
-	src->arg_data[1] = obb->vc;
+	src->arg_data[1] = obba->vc;
 }
 
 
