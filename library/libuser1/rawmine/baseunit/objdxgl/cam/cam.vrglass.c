@@ -4,39 +4,57 @@ void fixmatrix(float* m, struct fstyle* sty);
 
 
 
-static int vrglass_draw(
+static void vrglass_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+{
+	struct relation* rel;
+	struct actor* world;
+	struct fstyle* obb = 0;
+	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)return;
+		world = (void*)(rel->srcchip);
+		if(_world3d_ == world->type){
+			self[0] = (void*)&rel->dstchip;
+			peer[0] = (void*)&rel->srcchip;
+			return;
+		}
+		rel = samedstnextsrc(rel);
+	}
+}
+static void vrglass_modify(struct actor* act)
+{
+}
+static void vrglass_delete(struct actor* act)
+{
+}
+static void vrglass_create(struct actor* act, void* str)
+{
+	act->buf = memorycreate(0x1000, 0);
+}
+
+
+
+
+static int vrglass_draw_vbo(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
-{/*
+{
 	float y;
-	vec3 tc,tr,tf,tu;
-	tr[0] = win->width/2;
-	tr[1] = 0.0;
-	tr[2] = 0.0;
-	tu[0] = 0.0;
-	tu[1] = 0.0;
-	tu[2] = win->height/2;
+	vec3 tc;
+	float* vc = sty->f.vc;
+	float* vr = sty->f.vr;
+	float* vf = sty->f.vf;
+	float* vt = sty->f.vt;
 
-	tc[0] = 0.0;
-	tc[1] = 0.0;
-	tc[2] = 0.0;
-	tf[0] = 0.0;
-	tf[1] = 1000.0;
-	tf[2] = 0.0;
-	carveline_prism4(win, 0xff0000, tc, tr, tf, tu);
-	carvefrustum(win, &win->camera);
-
-	for(y=-1000.0;y<1001.0;y+=500.0)
+	for(y=0.0;y<1.01;y+=0.1)
 	{
-		tc[0] = 0.0;
-		tc[1] = y;
-		tc[2] = 0.0;
-		carveline_rect(win, 0xff0000, tc, tr, tu);
+		tc[0] = vc[0] + vf[0]*y;
+		tc[1] = vc[1] + vf[1]*y;
+		tc[2] = vc[2] + vf[2]*y;
+		carveline_rect(win, 0xff0000, tc, vr, vt);
 	}
-*/
-	//float time = (timeread() % 10000000) / 10000000.0;
-	//act->camera.vq[0] = 1000 * cosine(tau * time);
-	//act->camera.vq[1] = 1000 * sine(tau * time);
 	return 0;
 }/*
 static int vrglass_event111(
@@ -153,27 +171,38 @@ static int vrglass_event111(
 	return 1;
 }*/
 static int vrglass_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct actor* act, struct fstyle* pin,
+	struct actor* win, struct fstyle* sty,
 	struct event* ev, int len)
 {
 	short* t;
-	say("vrglass_event@%llx:%x,%x\n", act, ev->why, ev->what);
+	struct fstyle* obb;
+	struct halfrel* self;
+	struct halfrel* peer;
+	//say("vrglass_event@%llx:%x,%x\n", act, ev->why, ev->what);
+
+	vrglass_search(act, 0, &self, &peer);
+	obb = peer->pfoot;
 
 	if(joy_left == (ev->what&joy_mask)){
 		t = (void*)ev;
-		if(t[3] & joyl_left   )act->camera.vq[0] -= 10.0;
-		if(t[3] & joyl_right  )act->camera.vq[0] += 10.0;
-		if(t[3] & joyl_down   )act->camera.vq[2] += 10.0;
-		if(t[3] & joyl_up     )act->camera.vq[2] -= 10.0;
-		if(t[3] & joyl_trigger)act->camera.vq[1] -= 10.0;
-		if(t[3] & joyl_bumper )act->camera.vq[1] += 10.0;
+		if(t[3] & joyl_left   )obb->vq[0] -= 10.0;
+		if(t[3] & joyl_right  )obb->vq[0] += 10.0;
+		if(t[3] & joyl_down   )obb->vq[2] += 10.0;
+		if(t[3] & joyl_up     )obb->vq[2] -= 10.0;
+		if(t[3] & joyl_trigger)obb->vq[1] -= 10.0;
+		if(t[3] & joyl_bumper )obb->vq[1] += 10.0;
 	}
 	if(_char_ == ev->what){
-		if('a' == ev->why)act->camera.vq[0] -= 10.0;
-		if('d' == ev->why)act->camera.vq[0] += 10.0;
-		if('s' == ev->why)act->camera.vq[2] += 10.0;
-		if('w' == ev->why)act->camera.vq[2] -= 10.0;
+		switch(ev->why){
+			case 'a':obb->vq[0] -= 10.0;break;
+			case 'd':obb->vq[0] += 10.0;break;
+			case 's':obb->vq[1] -= 10.0;break;
+			case 'w':obb->vq[1] += 10.0;break;
+			case 'q':obb->vq[2] -= 10.0;break;
+			case 'e':obb->vq[2] += 10.0;break;
+		}
+		say("%f,%f,%f\n", obb->vq[0], obb->vq[1], obb->vq[2]);
 	}
 	return 1;
 }
@@ -181,105 +210,151 @@ static int vrglass_event(
 
 
 
-void vrglass_sty2cam(struct fstyle* d, struct fstyle* s)
+void vrglass_frustum(struct fstyle* frus, struct fstyle* obb)
 {
 	float x,y,z,n;
-	d->vc[0] = s->vc[0];
-	d->vc[1] = s->vc[1];
-	d->vc[2] = s->vc[2];
+	//say("@vrglass_frustum\n");
+
+	frus->vc[0] = obb->vq[0];
+	frus->vc[1] = obb->vq[1];
+	frus->vc[2] = obb->vq[2];
 
 
-	x = s->vr[0];	y = s->vr[1];	z = s->vr[2];
-	n = 1.0 / squareroot(x*x + y*y + z*z);
-	x *= n;		y*= n;		z*= n;
-	d->vr[0] = x;	d->vr[1] = y;	d->vr[2] = z;	d->vr[3] = 1000 - d->vq[0];
-	d->vl[0] = -x;	d->vl[1] = -y;	d->vl[2] = -z;	d->vl[3] = -1000 - d->vq[0];
-	d->vc[0] += x * d->vq[0];
-	d->vc[1] += y * d->vq[0];
-	d->vc[2] += z * d->vq[0];
+	//l,r
+	x = obb->vr[0];
+	y = obb->vr[1];
+	z = obb->vr[2];
+	n = squareroot(x*x + y*y + z*z);
+	x /= n;
+	y /= n;
+	z /= n;
+
+	frus->vl[0] =-x;
+	frus->vl[1] =-y;
+	frus->vl[2] =-z;
+	frus->vl[3] = 
+	  (obb->vc[0] - obb->vr[0] - obb->vq[0])*x
+	+ (obb->vc[1] - obb->vr[1] - obb->vq[1])*y
+	+ (obb->vc[2] - obb->vr[2] - obb->vq[2])*z;
+
+	frus->vr[0] = x;
+	frus->vr[1] = y;
+	frus->vr[2] = z;
+	frus->vr[3] = 
+	  (obb->vc[0] + obb->vr[0] - obb->vq[0])*x
+	+ (obb->vc[1] + obb->vr[1] - obb->vq[1])*y
+	+ (obb->vc[2] + obb->vr[2] - obb->vq[2])*z;
 
 
-	x = s->vt[0];	y = s->vt[1];	z = s->vt[2];
-	n = 1.0 / squareroot(x*x + y*y + z*z);
-	x *= n;		y*= n;		z*= n;
-	d->vt[0] = x;	d->vt[1] = y;	d->vt[2] = z;	d->vt[3] = 1000 - d->vq[1];
-	d->vb[0] = -x;	d->vb[1] = -y;	d->vb[2] = -z;	d->vb[3] = -1000 - d->vq[1];
-	d->vc[0] += x * d->vq[1];
-	d->vc[1] += y * d->vq[1];
-	d->vc[2] += z * d->vq[1];
+	//b,t
+	x = obb->vt[0];
+	y = obb->vt[1];
+	z = obb->vt[2];
+	n = squareroot(x*x + y*y + z*z);
+	x /= n;
+	y /= n;
+	z /= n;
+
+	frus->vb[0] =-x;
+	frus->vb[1] =-y;
+	frus->vb[2] =-z;
+	frus->vb[3] = 
+	  (obb->vc[0] - obb->vt[0] - obb->vq[0])*x
+	+ (obb->vc[1] - obb->vt[1] - obb->vq[1])*y
+	+ (obb->vc[2] - obb->vt[2] - obb->vq[2])*z;
+
+	frus->vt[0] = x;
+	frus->vt[1] = y;
+	frus->vt[2] = z;
+	frus->vt[3] = 
+	  (obb->vc[0] + obb->vt[0] - obb->vq[0])*x
+	+ (obb->vc[1] + obb->vt[1] - obb->vq[1])*y
+	+ (obb->vc[2] + obb->vt[2] - obb->vq[2])*z;
 
 
-	x = s->vf[0];	y = s->vf[1];	z = s->vf[2];
-	n = 1.0 / squareroot(x*x + y*y + z*z);
-	x *= n;		y*= n;		z*= n;
-	d->vn[0] = x;	d->vn[1] = y;	d->vn[2] = z;	d->vn[3] = d->vq[2];
-	d->vf[0] = x;	d->vf[1] = y;	d->vf[2] = z;	d->vf[3] = 1e20;
-	d->vc[0] -= x * d->vq[2];
-	d->vc[1] -= y * d->vq[2];
-	d->vc[2] -= z * d->vq[2];
+	//n,f
+	x = obb->vf[0];
+	y = obb->vf[1];
+	z = obb->vf[2];
+	n = squareroot(x*x + y*y + z*z);
+	x /= n;
+	y /= n;
+	z /= n;
+
+	frus->vn[0] = x;
+	frus->vn[1] = y;
+	frus->vn[2] = z;
+	frus->vn[3] = 
+	  (obb->vc[0] - obb->vq[0])*x
+	+ (obb->vc[1] - obb->vq[1])*y
+	+ (obb->vc[2] - obb->vq[2])*z;
+
+	frus->vf[0] = x;
+	frus->vf[1] = y;
+	frus->vf[2] = z;
+	frus->vf[3] = 1e10;
+/*	say("portal_frustum: (%f,%f), (%f,%f), (%f,%f)\n",
+		frus->vn[3], frus->vf[3], frus->vl[3], frus->vr[3], frus->vb[3], frus->vt[3]);*/
 }
 static void vrglass_matrix(
-	struct actor* act, struct style* pin,
-	u8* buf, int len)
-{/*
-	struct relation* rel;
-	struct actor* r;
-	struct fstyle* s;
-	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+	struct actor* act, struct fstyle* frus,
+	struct actor* ctx, struct fstyle* area)
+{
+	struct halfrel* self;
+	struct halfrel* peer;
+	struct fstyle* obb;
+	float dx,dy;
+	//say("@vrglass_matrix\n");
 
-	rel = act->irel0;
-	while(1){
-		if(0 == rel)return;
-		if(hex32('g','e','o','m') == rel->dstflag){
-			s = (void*)(rel->srcfoot);
-			r = (void*)(rel->srcchip);
-			break;
-		}
-		rel = samedstnextsrc(rel);
-	}
-	if(0 == s)return;
+	dx = area->vq[0] * ctx->fbwidth;
+	dy = area->vq[1] * ctx->fbheight;
+	frus->vb[3] = frus->vl[3] * dy / dx;
+	frus->vt[3] = frus->vr[3] * dy / dx;
+	vrglass_search(act, 0, &self, &peer);
 
+	obb = peer->pfoot;
+	vrglass_frustum(frus, obb);
 
-	float* m = act->buf;
-	vrglass_sty2cam(&act->camera, s);
-	fixmatrix(m, &act->camera);
-	mat4_transpose((void*)m);
-	//printmat4(m);
+	float* mat = act->buf;
+	fixmatrix((void*)mat, frus);
+	mat4_transpose((void*)mat);
+	//printmat4(mat);
 
-
-	u64* p = (void*)buf;
-	struct glsrc* src = (void*)(buf+0x20);
-
-	p[0] = (u64)src;
-	p[1] = (u64)r->gl_light;
-	p[2] = (u64)r->gl_solid;
-	p[3] = (u64)r->gl_opaque;
-
-
+	struct glsrc* src = ctx->gl_camera;
 	src->arg_fmt[0] = 'm';
 	src->arg_name[0] = "cammvp";
-	src->arg_data[0] = m;
+	src->arg_data[0] = mat;
 
 	src->arg_fmt[1] = 'v';
 	src->arg_name[1] = "camxyz";
-	src->arg_data[1] = act->camera.vc;
-*/
+	src->arg_data[1] = obb->vq;
 }
 
 
 
 
-static void vrglass_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void vrglass_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	//if(_cam_ == self->flag)vrglass_matrix(act, pin, buf, len);
-	//else vrglass_draw(act, pin, win, sty);
+	struct actor* ctx = buf;
+	//say("@vrglass_read\n");
+	if(ctx){
+		switch(ctx->type){
+			case _gl41data_:vrglass_draw_vbo(act,pin,ctx,sty);
+		}
+	}
+	else{
+		switch(win->type){
+			case _gl41view_:
+			case _gl41wnd0_:vrglass_matrix(act, &pin->fs, win, &sty->fs);
+		}
+	}
 }
-static int vrglass_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static int vrglass_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct actor* act = (void*)(self->chip);
@@ -287,44 +362,14 @@ static int vrglass_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	return 0;//vrglass_event(act, pin, win, sty, ev, 0);
+	vrglass_event(act, &pin->fs, win, &sty->fs, ev, 0);
+	return 0;
 }
 static void vrglass_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void vrglass_start(struct halfrel* self, struct halfrel* peer)
 {
-}
-
-
-
-
-static void vrglass_search(struct actor* act)
-{
-}
-static void vrglass_modify(struct actor* act)
-{
-}
-static void vrglass_delete(struct actor* act)
-{
-}
-static void vrglass_create(struct actor* act, void* str)
-{/*
-	float* vc = act->camera.vc;
-	float* vn = act->camera.vn;
-
-	vc[0] = 0.0;
-	vc[1] = -2000.0;
-	vc[2] = 200.0;
-
-	vn[0] = 0.0;
-	vn[1] = -1000.0 - vc[1];
-	vn[2] = 0.0;*/
-
-	act->camera.vq[0] = 100.0;
-	act->camera.vq[1] = 100.0;
-	act->camera.vq[2] = 1000.0;
-	act->buf = memorycreate(64, 0);
 }
 
 

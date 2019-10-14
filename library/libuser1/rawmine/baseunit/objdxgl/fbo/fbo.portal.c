@@ -260,7 +260,7 @@ void portal_frustum(struct fstyle* frus, struct fstyle* por, struct fstyle* tar,
 	//length(frus.n) > length(camera to portal)
 	frus->vn[3] = t0;
 	frus->vf[3] = 1e20;
-	say("q,c = (%f,%f,%f), (%f,%f,%f)\n", frus->vq[0], frus->vq[1], frus->vq[2], frus->vc[0], frus->vc[1], frus->vc[2]);
+	//say("q,c = (%f,%f,%f), (%f,%f,%f)\n", frus->vq[0], frus->vq[1], frus->vq[2], frus->vc[0], frus->vc[1], frus->vc[2]);
 
 
 //----------------n,f----------------
@@ -285,10 +285,10 @@ void portal_frustum(struct fstyle* frus, struct fstyle* por, struct fstyle* tar,
 	frus->vc[1] -= y0 * (frus->vn[3]);
 	frus->vc[2] -= z0 * (frus->vn[3]);
 
-	say("n,f,c = (%f,%f,%f), (%f,%f,%f), (%f,%f,%f)\n",
+/*	say("n,f,c = (%f,%f,%f), (%f,%f,%f), (%f,%f,%f)\n",
 		frus->vn[0], frus->vn[1], frus->vn[2],
 		frus->vf[0], frus->vf[1], frus->vf[2],
-		frus->vc[0], frus->vc[1], frus->vc[2]);
+		frus->vc[0], frus->vc[1], frus->vc[2]);*/
 
 
 //--------------l,r--------------------
@@ -339,10 +339,10 @@ void portal_frustum(struct fstyle* frus, struct fstyle* por, struct fstyle* tar,
 	frus->vc[1] += y0 * delta;
 	frus->vc[2] += z0 * delta;
 
-	say("l,r,c = (%f,%f,%f), (%f,%f,%f), (%f,%f,%f)\n",
+/*	say("l,r,c = (%f,%f,%f), (%f,%f,%f), (%f,%f,%f)\n",
 		frus->vl[0], frus->vl[1], frus->vl[2],
 		frus->vr[0], frus->vr[1], frus->vr[2],
-		frus->vc[0], frus->vc[1], frus->vc[2]);
+		frus->vc[0], frus->vc[1], frus->vc[2]);*/
 
 
 //----------------b,t-----------------
@@ -393,16 +393,16 @@ void portal_frustum(struct fstyle* frus, struct fstyle* por, struct fstyle* tar,
 	frus->vc[1] += y0 * delta;
 	frus->vc[2] += z0 * delta;
 
-	say("b,t,c = (%f,%f,%f), (%f,%f,%f), (%f,%f,%f)\n",
+/*	say("b,t,c = (%f,%f,%f), (%f,%f,%f), (%f,%f,%f)\n",
 		frus->vb[0], frus->vb[1], frus->vb[2],
 		frus->vt[0], frus->vt[1], frus->vt[2],
-		frus->vc[0], frus->vc[1], frus->vc[2]);
+		frus->vc[0], frus->vc[1], frus->vc[2]);*/
 
 
 //--------------larger vn--------------
 	frus->vn[3] *= 1.001;
-	say("portal_frustum: (%f,%f), (%f,%f), (%f,%f)\n",
-		frus->vn[3], frus->vf[3], frus->vl[3], frus->vr[3], frus->vb[3], frus->vt[3]);
+/*	say("portal_frustum: (%f,%f), (%f,%f), (%f,%f)\n",
+		frus->vn[3], frus->vf[3], frus->vl[3], frus->vr[3], frus->vb[3], frus->vt[3]);*/
 }
 static void portal_matrix(
 	struct actor* act, struct fstyle* frus,
