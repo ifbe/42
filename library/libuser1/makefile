@@ -76,10 +76,7 @@ rawmine/baseunit/objcode/code.for.c \
 rawmine/baseunit/objcode/code.if.c \
 rawmine/baseunit/objcode/code.jump.c \
 rawmine/baseunit/objdxgl/cam/cam.ortho.c \
-rawmine/baseunit/objdxgl/cam/cam.1rd.c \
-rawmine/baseunit/objdxgl/cam/cam.3rd.c \
 rawmine/baseunit/objdxgl/cam/cam.free.c \
-rawmine/baseunit/objdxgl/cam/cam.rts.c \
 rawmine/baseunit/objdxgl/cam/cam.vrglass.c \
 rawmine/baseunit/objdxgl/fbo/fbo.glass.c \
 rawmine/baseunit/objdxgl/fbo/fbo.mirror.c \
@@ -129,6 +126,9 @@ rawmine/baseunit/objuiux/uiux.video.c \
 rawmine/baseunit/objuiux/uiux.voxel.c \
 rawmine/baseunit/objuiux/uiux.joystick.c \
 rawmine/baseunit/objuiux/uiux.keyboard.c \
+rawmine/compound/thedxgl/cam.1rd.c \
+rawmine/compound/thedxgl/cam.3rd.c \
+rawmine/compound/thedxgl/cam.rts.c \
 rawmine/compound/thegame/chess/game.chess.c \
 rawmine/compound/thegame/chess/game.gobang.c \
 rawmine/compound/thegame/chess/game.kriegspiel.c \
