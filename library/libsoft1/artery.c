@@ -251,6 +251,18 @@ int hackserver_start(struct halfrel* self, struct halfrel* peer);
 int hackserver_stop( struct halfrel* self, struct halfrel* peer);
 int hackserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int hackserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int socksclient_create(struct element* ele, void* url);
+int socksclient_delete(struct element* ele, void* url);
+int socksclient_start(struct halfrel* self, struct halfrel* peer);
+int socksclient_stop( struct halfrel* self, struct halfrel* peer);
+int socksclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int socksclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int socksmaster_create(struct element* ele, void* url);
+int socksmaster_delete(struct element* ele, void* url);
+int socksmaster_start(struct halfrel* self, struct halfrel* peer);
+int socksmaster_stop( struct halfrel* self, struct halfrel* peer);
+int socksmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int socksmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //udp.dns
 int dnsclient_create(struct element* ele, void* url);
 int dnsclient_delete(struct element* ele, void* url);
@@ -484,6 +496,9 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _nema0183_:nema0183client_read(self, peer, arg, idx, buf, len);break;
 		case _Nema0183_:nema0183server_read(self, peer, arg, idx, buf, len);break;
 
+		case _SOCKS_:socksmaster_read(self, peer, arg, idx, buf, len);break;
+		case _socks_:socksclient_read(self, peer, arg, idx, buf, len);break;
+
 		case _HTTP_:httpmaster_read(self, peer, arg, idx, buf, len);break;
 		case _Http_:httpserver_read(self, peer, arg, idx, buf, len);break;
 		case _http_:httpclient_read(self, peer, arg, idx, buf, len);break;
@@ -537,6 +552,9 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _Nema0183_:return nema0183server_write(self, peer, arg, idx, buf, len);break;
 		case _nema0183_:return nema0183client_write(self, peer, arg, idx, buf, len);break;
 
+		case _SOCKS_:return socksmaster_write(self, peer, arg, idx, buf, len);break;
+		case _socks_:return socksclient_write(self, peer, arg, idx, buf, len);break;
+	
 		case _HTTP_:return httpmaster_write(self, peer, arg, idx, buf, len);break;
 		case _Http_:return httpserver_write(self, peer, arg, idx, buf, len);break;
 		case _http_:return httpclient_write(self, peer, arg, idx, buf, len);break;
@@ -901,6 +919,24 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 
 		e->type = _hack_;
 		if(url)hackclient_create(e, url);
+		return e;
+	}
+	if(_SOCKS_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _SOCKS_;
+		if(url)socksmaster_create(e, url);
+		return e;
+	}
+	if(_socks_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _socks_;
+		if(url)socksclient_create(e, url);
 		return e;
 	}
 

@@ -67,9 +67,9 @@ typedef float mat4[4][4];
 #define _quic_ hex32('q','u','i','c')
 #define _Quic_ hex32('Q','u','i','c')
 #define _QUIC_ hex32('Q','U','I','C')
-#define _socks5_ hex64('s','o','c','k','s','5')
-#define _Socks5_ hex64('S','o','c','k','s','5')
-#define _SOCKS5_ hex64('S','O','C','K','S','5')
+#define _socks_ hex64('s','o','c','k','s', 0, 0, 0)
+#define _Socks_ hex64('S','o','c','k','s', 0, 0, 0)
+#define _SOCKS_ hex64('S','O','C','K','S', 0, 0, 0)
 //tcp family
 #define _TCP_ hex32('T','C','P',0)
 #define _Tcp_ hex32('T','c','p',0)

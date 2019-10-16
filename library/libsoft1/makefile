@@ -161,6 +161,7 @@ libflow/4.tcp/tcp.rdp.c \
 libflow/4.tcp/tcp.rtmp.c \
 libflow/4.tcp/tcp.serve.c \
 libflow/4.tcp/tcp.sql.c \
+libflow/4.tcp/tcp.socks.c \
 libflow/4.tcp/tcp.ssh.c \
 libflow/4.tcp/tcp.telnet.c \
 libflow/4.tcp/tcp.tls.c \
