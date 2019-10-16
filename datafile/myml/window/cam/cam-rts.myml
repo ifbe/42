@@ -1,119 +1,95 @@
 <arena>
-3dworld{
-fmt:vbo
-type:3d
-}
-window{
+opengl{
 fmt:win
 title:"42"
 width:1024
 height:1024
 depth:1024
 }
-player1{
-fmt:joy
-}
 </arena>
 
 
 <actor>
-fonthelper{
-fmt:aidfont
+ground{
+fmt:ground
 }
-geomhelper{
-fmt:aidgeom
+tree{
+fmt:xiangqi
 }
-particle{
-fmt:2048
+freecam{
+fmt:freecam
+}
+3dworld{
+fmt:3dworld
 }
 
-texball{
-fmt:texball
-file:datafile/jpg/skysphere.jpg
+thectx{
+fmt:gl41data
 }
-terrain{
-fmt:terrain
-file:datafile/jpg/cartoon.jpg
-}
-rabbit{
-fmt:model
-}
-rtscam{
-fmt:rtscam
+thewnd{
+fmt:gl41wnd0
 }
 </actor>
 
 
 <style>
-rtsmodl{
+skyhaha{
 }
-rtsgeom{
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 1000000.0, 0.0, 0.0
+f: 0.0, 1000000.0, 0.0
+t: 0.0, 0.0, 1000000.0
+}
+
+treehaha{
+}
+treegeom{
+c: 0.0, 0.0, 0.0
+r: 500.0, 0.0, 0.0
+f: 0.0, 500.0, 0.0
+t: 0.0, 0.0, 500.0
+}
+
+freemodl{
+}
+freegeom{
 r: 1.0, 0.0, 0.0
 t: 0.0, 0.829, 0.5591929
 f: 0.0, 0.5591929,-0.829
 c: 0.0,-922.668, 1367.85
 }
-rtsfrus{
+freefrus{
 l: 0.0, 0.0, 0.0, -0.7
 r: 0.0, 0.0, 0.0, 0.7
 b: 0.0, 0.0, 0.0, -0.7
 t: 0.0, 0.0, 0.0, 0.7
-n: 0.0, 0.0, 0.0, 0.7
+n: 0.0, 0.0, 0.0, 1.0
 f: 0.0, 0.0, 0.0, 1000000000000.0
 }
-rtsrect{
+freerect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
-
-sky{
-c: 0.0, 0.0, 0.0
-r: 10000000.0, 0.0, 0.0
-f: 0.0, 10000000.0, 0.0
-t: 0.0, 0.0, 10000000.0
-}
-gnd{
-c: 0.0, 0.0, 0.0
-r: 100000.0, 0.0, 0.0
-f: 0.0, 100000.0, 0.0
-t: 0.0, 0.0, 100000.0
-}
-rabb{
-c: 0.0, 0.0, 0.0
-r: 100.0, 0.0, 0.0
-f: 0.0, 100.0, 0.0
-t: 0.0, 0.0, 100.0
-}
-haha{
-c: -1000.0, 1000.0, 0.0
-r: 100.0, 0.0, 0.0
-f: 0.0, 100.0, 0.0
-t: 0.0, 0.0, 100.0
-}
-
 </style>
 
 
-<pinid>
-p0{}
-p1{}
-p2{}
-p3{}
-</pinid>
-
-
 <relation>
-(3dworld, 0, win, aid) -> (geomhelper, 0, act, 0)
-(3dworld, 0, win, aid) -> (fonthelper, 0, act, 0)
-(3dworld, haha, win, bg) -> (particle, p0, act, 0)
 
-(3dworld, sky, win, bg) -> (texball, p1, act, 0)
-(3dworld, gnd, win, bg) -> (terrain, p2, act, 0)
-(3dworld, rabb, win, bg) -> (rabbit, p3, act, 0)
-(3dworld, rtsgeom, win, cam) -> (rtscam, rtsmodl, act, geom)
+#3dworld depends on inner objects
+(3dworld, skygeom, act, 0) -> (ground, skyhaha, act, 0)
+(3dworld, treegeom, act, 0) -> (tree, treehaha, act, 0)
+(3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
 
-(window, 0, win, vp) -> (3dworld, 0, win, out)
-(window, rtsrect, win, cam) -> (rtscam, rtsfrus, act, cam)
+#glctx depends on scene
+(thectx, 0, act, 0) -> (3dworld, 0, act, 0)
 
-(player1, 0, win, con) -> (rtscam, 0, act, con)
+#glwnd depends on ctx + cam
+(thewnd, 0, act, ctx) -> (thectx, 0, act, 0)
+(thewnd, freerect, act, mvp) -> (freecam, freefrus, act, 0)
+
+#opengl depends on ctx + wnd
+(opengl, 0, win, ctx) -> (thectx, 0, act, 0)
+(opengl, 0, win, wnd) -> (thewnd, 0, act, 0)
+
 </relation>

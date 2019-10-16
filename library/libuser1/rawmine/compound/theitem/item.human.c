@@ -77,6 +77,42 @@ static vec3 bonevertc[15] = {
 
 
 
+static void human_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+{
+	struct relation* rel;
+	struct actor* world;
+	struct fstyle* obb = 0;
+	//say("human_search\n");
+
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)return;
+		world = (void*)(rel->srcchip);
+		if(_world3d_ == world->type){
+			self[0] = (void*)&rel->dstchip;
+			peer[0] = (void*)&rel->srcchip;
+			return;
+		}
+		rel = samedstnextsrc(rel);
+	}
+}
+static void human_modify(struct actor* act)
+{
+}
+static void human_delete(struct actor* act)
+{
+	if(0 == act)return;
+	//if(_copy_ == act->type)memorydelete(act->buf);
+}
+static void human_create(struct actor* act)
+{
+	if(0 == act)return;
+	act->z0 = 0;
+}
+
+
+
+
 static void human_draw_pixel(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -343,7 +379,7 @@ static void human_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct actor* ctx = buf;
-	say("@human_read:%llx,%llx,%llx\n",act,win,buf);
+	//say("@human_read:%llx,%llx,%llx\n",act,win,buf);
 
 	if(ctx){
 		if(_gl41data_ == ctx->type)human_draw_vbo(act,pin,ctx,sty);
@@ -370,26 +406,6 @@ static void human_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void human_search(struct actor* act)
-{
-}
-static void human_modify(struct actor* act)
-{
-}
-static void human_delete(struct actor* act)
-{
-	if(0 == act)return;
-	//if(_copy_ == act->type)memorydelete(act->buf);
-}
-static void human_create(struct actor* act)
-{
-	if(0 == act)return;
-	act->z0 = 0;
-}
-
-
-
-
 void human_register(struct actor* p)
 {
 	p->type = _orig_;
@@ -397,9 +413,11 @@ void human_register(struct actor* p)
 
 	p->oncreate = (void*)human_create;
 	p->ondelete = (void*)human_delete;
+	p->onsearch = (void*)human_search;
+	p->onmodify = (void*)human_modify;
+
 	p->onstart  = (void*)human_start;
 	p->onstop   = (void*)human_stop;
-
 	p->onread  = (void*)human_read;
 	p->onwrite = (void*)human_write;
 }

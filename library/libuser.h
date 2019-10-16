@@ -975,7 +975,7 @@ struct actor
 		char padding1[8];
 	};
 	union{
-		int (*onsearch)(void* actor, void* buf);
+		int (*onsearch)(void* actor, int flag, void** self, void** peer);
 		char padding2[8];
 	};
 	union{
