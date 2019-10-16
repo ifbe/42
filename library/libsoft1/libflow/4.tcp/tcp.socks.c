@@ -1,5 +1,6 @@
 #include "libsoft.h"
-static u8 socks5_reply[] = {5, 0};
+static u8 socks5_data0[] = {5, 0};
+static u8 socks5_data1[] = {5, 0, 0, 1, 0, 0, 0, 0, 0, 0};
 struct socks5_request{
     u8 ver;     //5
     u8 cmd;
@@ -65,21 +66,27 @@ int socksmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 	say("@socksmaster_write\n");
     printmemory(buf, len);
 
+    if(len < 3)return 0;
     if(3 == len){
         ch = buf;
         if( (5 == ch[0]) && (1 == ch[1]) && (0 == ch[2]) ){
-            relationwrite(self->pchip, _src_, arg, idx, socks5_reply, 2);
+            relationwrite(self->pchip, _src_, arg, idx, socks5_data0, 2);
         }
         return 0;
     }
-    if(len > 3){
-        req = buf;
+
+    req = buf;
+    if(5 == req->ver){
         ch = req->url;
         j = req->len;
         say("ver=%x,cmd=%x,atyp=%x: %.*s:%d\n",
             req->ver, req->cmd, req->atyp,
             j, ch, (ch[j]<<8) + ch[j+1]
         );
+        relationwrite(self->pchip, _src_, arg, idx, socks5_data1, 10);
+    }
+    else{
+        say("\n????????\n");
     }
 	return 0;
 }
