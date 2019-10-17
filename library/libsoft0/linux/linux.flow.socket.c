@@ -161,7 +161,42 @@ int startsocket(char* addr, int port, int type)
 {
 	int fd;
 	int ret;
+	char** ptr;
 	struct hostent* host;
+
+	//dns thing
+	for(ret=0;ret<256;ret++)
+	{
+		if((addr[ret]>='a')&&(addr[ret]<='z'))
+		{
+			//dns
+			host = gethostbyname(addr);
+			if(0 == host){
+				printf("err@gethostbyname: %d\n", errno);
+				return 0;
+			}
+
+			//alias
+			ptr = host->h_aliases;
+			while(1){
+				if(0 == *ptr)break;
+				printf("alias:%s\n", *ptr);
+				ptr++;
+			}
+
+			//address
+			ptr = host->h_addr_list;
+			while(1){
+				if(0 == *ptr)break;
+				printf("ipadd:%s\n", inet_ntoa(*(struct in_addr*)ptr[0]));
+				ptr++;
+			}
+
+			//choose
+			addr = inet_ntoa(*(struct in_addr*)host->h_addr_list[0]);
+			break;
+		}
+	}
 
 	//RAW
 	if(_RAW_ == type)
@@ -216,16 +251,6 @@ int startsocket(char* addr, int port, int type)
 	if(_raw_ == type)
 	{
 		return 0;
-	}
-
-	for(ret=0;ret<256;ret++)
-	{
-		if((addr[ret]>='a')&&(addr[ret]<='z'))
-		{
-			host = gethostbyname(addr);
-			addr = inet_ntoa(*(struct in_addr*)host->h_addr_list[0]);
-			break;
-		}
 	}
 
 	//udp server

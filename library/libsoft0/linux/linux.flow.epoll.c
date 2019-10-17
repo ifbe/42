@@ -104,6 +104,7 @@ static void* epollthread(void* p)
 					relationwrite(here, _dst_, 0, 0, buf, cnt);
 					break;
 				}//uart
+
 				case _TCP_:{
 					while(1)
 					{
@@ -138,6 +139,7 @@ static void* epollthread(void* p)
 					epoll_mod(fd);
 					break;
 				}//TCP
+
 				case _Tcp_:{
 					cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
 					if(cnt >= 0)
@@ -166,11 +168,13 @@ static void* epollthread(void* p)
 					}
 					break;
 				}//Tcp
+
+				case _tcp_:
 				default:{
 					cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
 					if(cnt >= 0)
 					{
-						printmemory(buf, cnt);
+						//printmemory(buf, cnt);
 						//say("@kqueuethread: %.4s\n", &obj[cc].type);
 						relationwrite(here, _dst_, 0, 0, buf, cnt);
 					}

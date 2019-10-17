@@ -257,6 +257,12 @@ int socksclient_start(struct halfrel* self, struct halfrel* peer);
 int socksclient_stop( struct halfrel* self, struct halfrel* peer);
 int socksclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int socksclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int socksserver_create(struct element* ele, void* url);
+int socksserver_delete(struct element* ele, void* url);
+int socksserver_start(struct halfrel* self, struct halfrel* peer);
+int socksserver_stop( struct halfrel* self, struct halfrel* peer);
+int socksserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int socksserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int socksmaster_create(struct element* ele, void* url);
 int socksmaster_delete(struct element* ele, void* url);
 int socksmaster_start(struct halfrel* self, struct halfrel* peer);
@@ -497,6 +503,7 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _Nema0183_:nema0183server_read(self, peer, arg, idx, buf, len);break;
 
 		case _SOCKS_:socksmaster_read(self, peer, arg, idx, buf, len);break;
+		case _Socks_:socksserver_read(self, peer, arg, idx, buf, len);break;
 		case _socks_:socksclient_read(self, peer, arg, idx, buf, len);break;
 
 		case _HTTP_:httpmaster_read(self, peer, arg, idx, buf, len);break;
@@ -553,6 +560,7 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _nema0183_:return nema0183client_write(self, peer, arg, idx, buf, len);break;
 
 		case _SOCKS_:return socksmaster_write(self, peer, arg, idx, buf, len);break;
+		case _Socks_:return socksserver_write(self, peer, arg, idx, buf, len);break;
 		case _socks_:return socksclient_write(self, peer, arg, idx, buf, len);break;
 	
 		case _HTTP_:return httpmaster_write(self, peer, arg, idx, buf, len);break;
@@ -928,6 +936,15 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 
 		e->type = _SOCKS_;
 		if(url)socksmaster_create(e, url);
+		return e;
+	}
+	if(_Socks_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _Socks_;
+		if(url)socksserver_create(e, url);
 		return e;
 	}
 	if(_socks_ == type)
