@@ -108,13 +108,13 @@ void pointlight_light(
 	src->routine_name = "passtype";
 	src->routine_detail = "pointlight";
 
-	src->arg_fmt[0] = 'v';
-	src->arg_name[0] = "sunxyz";
-	src->arg_data[0] = sty->vc;
+	src->arg[0].fmt = 'v';
+	src->arg[0].name = "sunxyz";
+	src->arg[0].data = sty->vc;
 
-	src->arg_fmt[1] = 'v';
-	src->arg_name[1] = "sunrgb";
-	src->arg_data[1] = sun->rgb;
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "sunrgb";
+	src->arg[1].data = sun->rgb;
 }
 static void pointlight_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

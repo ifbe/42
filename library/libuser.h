@@ -311,17 +311,24 @@ struct glsrc
 	char* routine_detail;
 
 	//[24,88)argument
-	char* arg_name[8];
-	void* arg_data[8];
-	u32 arg_fmt[8];
+	struct arg{
+		char* name;
+		void* data;
+		u32 fmt;
+	}arg[7];
 
 	//[88,fc)texture
-	char* tex_name[4];
-	void* tex_data[4];
-	u32 tex_w[4];
-	u32 tex_h[4];
-	u32 tex_fmt[4];
-	u8 tex_enq[4];
+	struct tex{
+		char* name;
+		union{
+			void* data;
+			u32 glfd;
+		};
+		u32 w;
+		u32 h;
+		u32 fmt;
+		u8 enq;
+	}tex[4];
 
 	//[c0,e7]vertex
 	void* vbuf;
@@ -975,7 +982,7 @@ struct actor
 		char padding1[8];
 	};
 	union{
-		int (*onsearch)(void* actor, int flag, void** self, void** peer);
+		int (*onsearch)(void* actor, int flag, struct halfrel** self, struct halfrel** peer);
 		char padding2[8];
 	};
 	union{

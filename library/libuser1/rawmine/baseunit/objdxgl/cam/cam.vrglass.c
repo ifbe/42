@@ -321,13 +321,13 @@ static void vrglass_matrix(
 	//printmat4(mat);
 
 	struct glsrc* src = ctx->gl_camera;
-	src->arg_fmt[0] = 'm';
-	src->arg_name[0] = "cammvp";
-	src->arg_data[0] = mat;
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "cammvp";
+	src->arg[0].data = mat;
 
-	src->arg_fmt[1] = 'v';
-	src->arg_name[1] = "camxyz";
-	src->arg_data[1] = obb->vq;
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "camxyz";
+	src->arg[1].data = obb->vq;
 }
 
 

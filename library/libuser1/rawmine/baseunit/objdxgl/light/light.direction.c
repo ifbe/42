@@ -296,7 +296,7 @@ static void dirlight_matrix(
 	if(0 == src)return;
 
 
-	own->tex_data[0] = fbo->tex0;
+	own->tex[0].glfd = fbo->tex0;
 	//say("fbo=%x, tex=%x\n", fbo->fbo, fbo->tex0);
 
 
@@ -309,13 +309,13 @@ static void dirlight_matrix(
 	ortho_mvp(sun->mvp, frus);
 	mat4_transpose(sun->mvp);
 
-	src->arg_fmt[0] = 'm';
-	src->arg_name[0] = "cammvp";
-	src->arg_data[0] = sun->mvp;
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "cammvp";
+	src->arg[0].data = sun->mvp;
 
-	src->arg_fmt[1] = 'v';
-	src->arg_name[1] = "camxyz";
-	src->arg_data[1] = obb->vc;
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "camxyz";
+	src->arg[1].data = obb->vc;
 }
 
 
@@ -339,22 +339,22 @@ void dirlight_light(
 	src->routine_name = "passtype";
 	src->routine_detail = "dirlight";
 
-	src->arg_fmt[0] = 'm';
-	src->arg_name[0] = "sunmvp";
-	src->arg_data[0] = sun->mvp;
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "sunmvp";
+	src->arg[0].data = sun->mvp;
 
-	src->arg_fmt[1] = 'v';
-	src->arg_name[1] = "sunrgb";
-	src->arg_data[1] = sun->rgb;
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "sunrgb";
+	src->arg[1].data = sun->rgb;
 
-	src->arg_fmt[2] = 'v';
-	src->arg_name[2] = "sundir";
-	src->arg_data[2] = sty->vf;
+	src->arg[2].fmt = 'v';
+	src->arg[2].name = "sundir";
+	src->arg[2].data = sty->vf;
 
-	src->tex_name[0] = "suntex";
-	src->tex_data[0] = own->tex_data[0];
-	src->tex_fmt[0] = '!';
-	src->tex_enq[0] += 1;
+	src->tex[0].glfd = own->tex[0].glfd;
+	src->tex[0].name = "suntex";
+	src->tex[0].fmt = '!';
+	src->tex[0].enq += 1;
 }
 
 

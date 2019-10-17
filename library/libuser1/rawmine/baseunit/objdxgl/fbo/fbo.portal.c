@@ -423,10 +423,10 @@ static void portal_matrix(
 	own = (void*)(portal->data);
 	if(0 == own)return;
 
-	own->tex_data[0] = fbo->tex0;
-	own->tex_name[0] = "tex0";
-	own->tex_fmt[0] = '!';
-	own->tex_enq[0] += 1;
+	own->tex[0].glfd = fbo->tex0;
+	own->tex[0].name = "tex0";
+	own->tex[0].fmt = '!';
+	own->tex[0].enq += 1;
 
 
 	//
@@ -435,12 +435,12 @@ static void portal_matrix(
 
 	self[0] = peer[0] = 0;
 	portal_search(act, 'a', self, peer);
-	if(0 == peer)return;
+	if(0 == peer[0])return;
 	obba = peer[0]->pfoot;
 
 	self[0] = peer[0] = 0;
 	portal_search(act, 'b', self, peer);
-	if(0 == peer)return;
+	if(0 == peer[0])return;
 	obbb = peer[0]->pfoot;
 
 	vec3 cam = {-1000.0, -2500.0, 1000.0};
@@ -455,13 +455,13 @@ static void portal_matrix(
 	fixmatrix(portal->mvp, frus);
 	mat4_transpose(portal->mvp);
 
-	src->arg_fmt[0] = 'm';
-	src->arg_name[0] = "cammvp";
-	src->arg_data[0] = portal->mvp;
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "cammvp";
+	src->arg[0].data = portal->mvp;
 
-	src->arg_fmt[1] = 'v';
-	src->arg_name[1] = "camxyz";
-	src->arg_data[1] = obba->vc;
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "camxyz";
+	src->arg[1].data = obba->vc;
 }
 
 

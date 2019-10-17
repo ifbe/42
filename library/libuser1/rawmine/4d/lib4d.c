@@ -76,7 +76,7 @@ void loadtexfromfile(struct glsrc* src, int idx, char* name)
 	if(0 == src)return;
 	if(0 == name)return;
 
-	buf = src->tex_data[idx];
+	buf = src->tex[idx].data;
 	if(0 == buf)return;
 
 	tmp = getsuffix(name);
@@ -93,8 +93,8 @@ void loadtexfromfile(struct glsrc* src, int idx, char* name)
 	else if(0 == ncmp(tmp, "jpg", 3))loadimgfromjpg(buf, len, &w, &h, &d, &s);
 	else if(0 == ncmp(tmp, "png", 3))loadimgfrompng(buf, len, &w, &h, &d, &s);
 
-	src->tex_w[idx] = w;
-	src->tex_h[idx] = h;
+	src->tex[idx].w = w;
+	src->tex[idx].h = h;
 }/*
 void actorcreatefromfile(struct actor* act, char* name)
 {

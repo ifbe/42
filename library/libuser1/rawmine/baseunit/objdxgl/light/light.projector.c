@@ -285,7 +285,7 @@ static void projector_matrix(
 
 
 	//
-	own->tex_data[0] = fbo->tex0;
+	own->tex[0].glfd = fbo->tex0;
 
 
 	//
@@ -296,13 +296,13 @@ static void projector_matrix(
 	fixmatrix(sun->mvp, frus);
 	mat4_transpose(sun->mvp);
 
-	src->arg_fmt[0] = 'm';
-	src->arg_name[0] = "cammvp";
-	src->arg_data[0] = sun->mvp;
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "cammvp";
+	src->arg[0].data = sun->mvp;
 
-	src->arg_fmt[1] = 'v';
-	src->arg_name[1] = "camxyz";
-	src->arg_data[1] = obb->vc;
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "camxyz";
+	src->arg[1].data = obb->vc;
 }
 void projector_light(
 	struct actor* act, struct fstyle* pin,
@@ -322,34 +322,34 @@ void projector_light(
 	src->routine_name = "passtype";
 	src->routine_detail = "projector";
 
-	src->arg_fmt[0] = 'm';
-	src->arg_name[0] = "sunmvp";
-	src->arg_data[0] = sun->mvp;
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "sunmvp";
+	src->arg[0].data = sun->mvp;
 
-	src->arg_fmt[1] = 'v';
-	src->arg_name[1] = "sunrgb";
-	src->arg_data[1] = sun->rgb;
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "sunrgb";
+	src->arg[1].data = sun->rgb;
 
-	src->arg_fmt[2] = 'v';
-	src->arg_name[2] = "sunxyz";
-	src->arg_data[2] = sty->vc;
+	src->arg[2].fmt = 'v';
+	src->arg[2].name = "sunxyz";
+	src->arg[2].data = sty->vc;
 
-	src->arg_fmt[3] = 'v';
-	src->arg_name[3] = "sundir";
-	src->arg_data[3] = sty->vf;
+	src->arg[3].fmt = 'v';
+	src->arg[3].name = "sundir";
+	src->arg[3].data = sty->vf;
 
-	src->tex_name[0] = "suntex";
-	src->tex_data[0] = own->tex_data[0];
-	src->tex_fmt[0] = '!';
-	src->tex_enq[0] += 1;
+	src->tex[0].glfd = own->tex[0].glfd;
+	src->tex[0].name = "suntex";
+	src->tex[0].fmt = '!';
+	src->tex[0].enq += 1;
 
-	if(0 == src->tex_name[1]){
-		src->tex_name[1] = "sunimg";
-		src->tex_fmt[1] = hex32('r','g','b','a');
-		src->tex_data[1] = memorycreate(2048*2048*4, 0);
+	if(0 == src->tex[1].name){
+		src->tex[1].name = "sunimg";
+		src->tex[1].fmt = hex32('r','g','b','a');
+		src->tex[1].data = memorycreate(2048*2048*4, 0);
 		loadtexfromfile(src, 1, "datafile/jpg/cartoon.jpg");
 	}
-		src->tex_enq[1] += 1;
+	src->tex[1].enq += 1;
 }
 static void projector_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

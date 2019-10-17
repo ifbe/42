@@ -312,13 +312,13 @@ static void texball_create(struct actor* act, void* str)
 	src->shader_enq = 42;
 
 	//texture
-	src->tex_name[0] = "tex0";
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_data[0] = memorycreate(2048*2048*4, 0);
+	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].name = "tex0";
+	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/earth.jpg";
 	loadtexfromfile(src, 0, str);
-	src->tex_enq[0] = 42;
-	//say("w=%d,h=%d\n",src->tex_w[0], src->tex_h[0]);
+	src->tex[0].enq = 42;
+	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
 
 #define accx 64
 #define accy 63

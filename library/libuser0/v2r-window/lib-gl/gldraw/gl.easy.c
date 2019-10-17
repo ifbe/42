@@ -99,7 +99,7 @@ void easywindow_renderpeer(struct arena* win)
 		dst->shader_deq = src->shader_enq;
 	}
 	glUseProgram(dst->shader);
-	glUniformMatrix4fv(glGetUniformLocation(dst->shader, "cammvp"), 1, GL_FALSE, src->arg_data[0]);
+	glUniformMatrix4fv(glGetUniformLocation(dst->shader, "cammvp"), 1, GL_FALSE, src->arg[0].data);
 
 	//vao
 	if(0 == dst->vao)glGenVertexArrays(1, &dst->vao);

@@ -389,7 +389,7 @@ static void codeimg_event(
 						img[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
 					}
 				}
-				src->tex_enq[0] += 1;
+				src->tex[0].enq += 1;
 				break;
 			}
 			case '2':
@@ -404,7 +404,7 @@ static void codeimg_event(
 						img[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
 					}
 				}
-				src->tex_enq[0] += 1;
+				src->tex[0].enq += 1;
 				break;
 			}
 			case '3':
@@ -419,7 +419,7 @@ static void codeimg_event(
 						img[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
 					}
 				}
-				src->tex_enq[0] += 1;
+				src->tex[0].enq += 1;
 				break;
 			}
 			case '4':
@@ -434,7 +434,7 @@ static void codeimg_event(
 						img[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
 					}
 				}
-				src->tex_enq[0] += 1;
+				src->tex[0].enq += 1;
 				break;
 			}
 			case '6':
@@ -449,7 +449,7 @@ static void codeimg_event(
 						img[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
 					}
 				}
-				src->tex_enq[0] += 1;
+				src->tex[0].enq += 1;
 				break;
 			}
 		}

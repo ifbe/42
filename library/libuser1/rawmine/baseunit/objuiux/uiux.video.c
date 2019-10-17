@@ -182,10 +182,10 @@ void video_draw_vbo3d(
 	data->vbuf_enq += 1;
 
 
-	//video_update(data->tex_data[0], 1024*1024*4, srcbuf, 640*480*2);
-	data->tex_w[0] = 640;
-	data->tex_h[0] = 480;
-	data->tex_enq[0] += 1;
+	//video_update(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
+	data->tex[0].w = 640;
+	data->tex[0].h = 480;
+	data->tex[0].enq += 1;
 }
 void video_draw_json(
 	struct actor* act, struct style* pin,
@@ -268,9 +268,9 @@ static void video_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 
 		data = act->buf;
 		if(0 == data)return;
-		if(0 == data->tex_data[0])return;
+		if(0 == data->tex[0].data)return;
 
-		video_update(data->tex_data[0], 1024*1024*4, buf, 640*480*2);
+		video_update(data->tex[0].data, 1024*1024*4, buf, 640*480*2);
 	}
 /*
 	switch(self->flag){
@@ -329,9 +329,9 @@ static void video_create(struct actor* act)
 	src->shader_enq = 42;
 
 	//texture
-	src->tex_name[0] = "tex0";
-	src->tex_data[0] = memorycreate(1024*1024*4, 0);
-	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex[0].name = "tex0";
+	src->tex[0].data = memorycreate(1024*1024*4, 0);
+	src->tex[0].fmt = hex32('r','g','b','a');
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_33;

@@ -58,17 +58,17 @@ static void water_create(struct actor* act, void* str)
 	src->shader_enq = 42;
 
 	//argument
-	src->arg_name[0] = "time";
-	src->arg_data[0] = &water->time;
-	src->arg_fmt[0] = 'f';
+	src->arg[0].name = "time";
+	src->arg[0].data = &water->time;
+	src->arg[0].fmt = 'f';
 
 	//texture0
-	src->tex_name[0] = "dudvmap";
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_data[0] = memorycreate(2048*2048*4, 0);
+	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].name = "dudvmap";
+	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/dudvmap.jpg";
 	loadtexfromfile(src, 0, str);
-	src->tex_enq[0] = 42;
+	src->tex[0].enq = 42;
 
 	//vertex
 	src->vbuf = memorycreate(4*6*6, 0);
@@ -323,10 +323,10 @@ static void water_matrix(
 	own = (void*)(water->data);
 	if(0 == own)return;
 
-	own->tex_data[1] = fbo->tex0;
-	own->tex_name[1] = "reflect";
-	own->tex_fmt[1] = '!';
-	own->tex_enq[1] += 1;
+	own->tex[1].glfd = fbo->tex0;
+	own->tex[1].name = "reflect";
+	own->tex[1].fmt = '!';
+	own->tex[1].enq += 1;
 
 
 	//
@@ -341,13 +341,13 @@ static void water_matrix(
 	fixmatrix(water->mvp, frus);
 	mat4_transpose(water->mvp);
 
-	src->arg_fmt[0] = 'm';
-	src->arg_name[0] = "cammvp";
-	src->arg_data[0] = water->mvp;
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "cammvp";
+	src->arg[0].data = water->mvp;
 
-	src->arg_fmt[1] = 'v';
-	src->arg_name[1] = "camxyz";
-	src->arg_data[1] = obb->vc;
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "camxyz";
+	src->arg[1].data = obb->vc;
 }
 
 

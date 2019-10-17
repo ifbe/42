@@ -192,7 +192,7 @@ static void model_draw_vbo2d(
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
 	struct glsrc* src = (void*)(pin->foot[0]);
-	sty_sty_mat(&act->target, &sty->f, (void*)src->arg_data[0]);
+	sty_sty_mat(&act->target, &sty->f, (void*)src->arg[0].data);
 }*/
 static void model_draw_vbo3d(
 	struct actor* act, struct style* pin,
@@ -202,7 +202,7 @@ static void model_draw_vbo3d(
 	if(act->buf == 0)return;
 
 	struct glsrc* src = act->buf;
-	sty_sty_mat(&pin->fs, &sty->fs, (void*)src->arg_data[0]);
+	sty_sty_mat(&pin->fs, &sty->fs, (void*)src->arg[0].data);
 }
 static void model_draw_json(
 	struct actor* act, struct style* pin,
@@ -359,23 +359,23 @@ static void model_create(struct actor* act, void* str)
 	src->shader_enq = 42;
 
 	//argument
-	src->arg_fmt[0] = 'm';
-	src->arg_name[0] = "objmat";
-	src->arg_data[0] = memorycreate(4*4*4, 0);
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "objmat";
+	src->arg[0].data = memorycreate(4*4*4, 0);
 
-	src->arg_fmt[1] = 'v';
-	src->arg_name[1] = "KA";
-	tmp = src->arg_data[1] = memorycreate(4*4, 0);
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "KA";
+	tmp = src->arg[1].data = memorycreate(4*4, 0);
 	tmp[0] = tmp[1] = tmp[2] = 0.231250;
 
-	src->arg_fmt[2] = 'v';
-	src->arg_name[2] = "KD";
-	tmp = src->arg_data[2] = memorycreate(4*4, 0);
+	src->arg[2].fmt = 'v';
+	src->arg[2].name = "KD";
+	tmp = src->arg[2].data = memorycreate(4*4, 0);
 	tmp[0] = tmp[1] = tmp[2] = 0.277500;
 
-	src->arg_fmt[3] = 'v';
-	src->arg_name[3] = "KS";
-	tmp = src->arg_data[3] = memorycreate(4*4, 0);
+	src->arg[3].fmt = 'v';
+	src->arg[3].name = "KS";
+	tmp = src->arg[3].data = memorycreate(4*4, 0);
 	tmp[0] = tmp[1] = tmp[2] = 0.773911;
 
 	//vertex

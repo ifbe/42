@@ -116,7 +116,7 @@ int test_create(struct actor* act)
 
 	fixmatrix(cammvp, &sty);
 	mat4_transpose(cammvp);
-	src->arg_data[0] = cammvp;
+	src->arg[0].data = cammvp;
 
 	src->vbuf = vbuf;
 	src->vbuf_len = 4*6*8;

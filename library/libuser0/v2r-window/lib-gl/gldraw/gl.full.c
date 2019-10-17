@@ -63,24 +63,24 @@ void update_onedraw(struct gldst* dst, struct glsrc* src)
 //say("@update texture\n");
 	//3: texture
 	for(j=0;j<4;j++){
-		if(dst->tex_deq[j] == src->tex_enq[j])continue;
+		if(dst->tex_deq[j] == src->tex[j].enq)continue;
 
-		buf0 = (void*)(src->tex_data[j]);
+		buf0 = (void*)(src->tex[j].data);
 		if(0 != buf0)
 		{
-			fmt = src->tex_fmt[j];
+			fmt = src->tex[j].fmt;
 			if('!' == fmt){
-				dst->tex[j] = src->tex_data[j];
+				dst->tex[j] = src->tex[j].glfd;
 			}
 			else{
-				w = src->tex_w[j];
-				h = src->tex_h[j];
+				w = src->tex[j].w;
+				h = src->tex[j].h;
 				dst->tex[j] = uploadtexture(dst, dst->tex[j], buf0, fmt, w, h);
 			}
 			//say("texture:(%llx,%x,%x,%x)->%x\n", buf0, fmt, w, h, fd);
 		}
 
-		dst->tex_deq[j] = src->tex_enq[j];
+		dst->tex_deq[j] = src->tex[j].enq;
 	}
 //say("@update done\n");
 }
@@ -133,24 +133,24 @@ void updatearg(u32 shader, struct glsrc* src)
 	}
 
 	for(j=0;j<4;j++){
-		if(0 == src->arg_name[j])break;
-		if(0 == src->arg_data[j])break;
-//say("%d,%d,%llx,%s\n", j, shader, src, src->arg_name[j]);
+		if(0 == src->arg[j].name)break;
+		if(0 == src->arg[j].data)break;
+//say("%d,%d,%llx,%s\n", j, shader, src, src->arg[j].name);
 
-		iii = glGetUniformLocation(shader, src->arg_name[j]);
+		iii = glGetUniformLocation(shader, src->arg[j].name);
 		if(iii < 0)continue;
 
-		switch(src->arg_fmt[j]){
+		switch(src->arg[j].fmt){
 			case 'm':{
-				glUniformMatrix4fv(iii, 1, GL_FALSE, src->arg_data[j]);
+				glUniformMatrix4fv(iii, 1, GL_FALSE, src->arg[j].data);
 				break;
 			}//mat4
 			case 'v':{
-				glUniform3fv(iii, 1, src->arg_data[j]);
+				glUniform3fv(iii, 1, src->arg[j].data);
 				break;
 			}//vertex
 			case 'f':{
-				glUniform1fv(iii, 1, src->arg_data[j]);
+				glUniform1fv(iii, 1, src->arg[j].data);
 				break;
 			}//float
 		}//switch
@@ -178,21 +178,21 @@ void render_onedraw(struct datapair* cam, struct datapair* lit, struct datapair*
 	//2.texture
 	k = 0;
 	for(j=0;j<4;j++){
-		if(0 == lit->src.tex_name[j])continue;
-		if(0 == lit->src.tex_data[j])continue;
+		if(0 == lit->src.tex[j].name)continue;
+		if(0 == lit->src.tex[j].data)continue;
 		glActiveTexture(GL_TEXTURE0 + k);
-		glBindTexture(GL_TEXTURE_2D, lit->src.tex_data[j]);
-		glUniform1i(glGetUniformLocation(dst->shader, lit->src.tex_name[j]), k);
+		glBindTexture(GL_TEXTURE_2D, lit->src.tex[j].glfd);
+		glUniform1i(glGetUniformLocation(dst->shader, lit->src.tex[j].name), k);
 		k++;
 	}
 	for(j=0;j<4;j++)
 	{
 		if(0 == dst->tex[j])continue;
-		if(0 == src->tex_name[j])continue;
+		if(0 == src->tex[j].name)continue;
 //say("tex=%x\n", dst->tex[j]);
 		glActiveTexture(GL_TEXTURE0 + k);
 		glBindTexture(GL_TEXTURE_2D, dst->tex[j]);
-		glUniform1i(glGetUniformLocation(dst->shader, src->tex_name[j]), k);
+		glUniform1i(glGetUniformLocation(dst->shader, src->tex[j].name), k);
 		k++;
 	}
 

@@ -36,26 +36,30 @@ int socksclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 {
     struct element* ele;
     struct socks5_request req;
-	say("@socksclient_write\n");
+	say("@socksclient_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
     printmemory(buf, len);
 
     ele = self->pchip;
     if(2 == ele->stage1){
+say("here\n");
         relationwrite(ele, _src_, 0, 0, socks5_client2, sizeof(socks5_client2));
         ele->stage1 = 3;
+say("shit\n");
         return 0;
     }
     if(1 == ele->stage1){
+say("alive\n");
         req.ver = 5;
         req.cmd = 1;
         req.rsv = 0;
         req.atyp = 3;
-        req.len = snprintf(req.url, 32, "www.baidu.com");
+        req.len = mysnprintf(req.url, 32, "www.baidu.com");
         req.url[req.len+0] = 0;
         req.url[req.len+1] = 80;
-
+say("alive1\n");
         relationwrite(ele, _src_, 0, 0, &req, 7+req.len);
         ele->stage1 = 2;
+say("alive2\n");
         return 0;
     }
 	return 0;
@@ -95,7 +99,7 @@ int socksserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int 
 int socksserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	say("@socksserver_write: chip=%llx, foot=%.4s, len=%d\n", self->chip, &self->flag, len);
-    //printmemory(buf, len);
+    if(len < 16)printmemory(buf, len);
 
     if('a' == self->flag){
         relationwrite(self->pchip, 'b', 0, 0, buf, len);

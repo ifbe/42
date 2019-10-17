@@ -102,16 +102,16 @@ static int aidfont_fill(struct glsrc* src, int id)
 		src->shader_enq = 1;
 	}
 
-	if(0 == src->tex_data[0]){
+	if(0 == src->tex[0].data){
 		if(0 == buf)return -3;
 
-		src->tex_name[0] = "tex0";
-		src->tex_data[0] = buf + 0x400000*id;
+		src->tex[0].name = "tex0";
+		src->tex[0].data = buf + 0x400000*id;
 
-		src->tex_w[0] = 2048;
-		src->tex_h[0] = 2048;
-		src->tex_fmt[0] = hex32('o','n','e', 0);
-		src->tex_enq[0] = 1;
+		src->tex[0].w = 2048;
+		src->tex[0].h = 2048;
+		src->tex[0].fmt = hex32('o','n','e', 0);
+		src->tex[0].enq = 1;
 	}
 
 	if(0 == src->ibuf){

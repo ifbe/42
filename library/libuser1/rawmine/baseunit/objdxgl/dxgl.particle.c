@@ -84,7 +84,7 @@ static void particle_draw_vbo3d(
 	src = act->buf;
 	if(0 == src)return;
 
-	mat = (void*)src->arg_data[0];
+	mat = (void*)src->arg[0].data;
 	if(0 == mat)return;
 
 	buf = src->vbuf;
@@ -264,9 +264,9 @@ static void particle_create(struct actor* act)
 	src->shader_enq = 42;
 
 	//argument
-	src->arg_name[0] = "objmat";
-	src->arg_data[0] = memorycreate(4*4*4, 0);
-	src->arg_fmt[0] = 'm';
+	src->arg[0].name = "objmat";
+	src->arg[0].data = memorycreate(4*4*4, 0);
+	src->arg[0].fmt = 'm';
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_333;

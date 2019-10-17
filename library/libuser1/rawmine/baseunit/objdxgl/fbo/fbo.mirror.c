@@ -329,10 +329,10 @@ static void mirror_matrix(
 	own = (void*)(mirr->data);
 	if(0 == own)return;
 
-	own->tex_data[0] = fbo->tex0;
-	own->tex_name[0] = "tex0";
-	own->tex_fmt[0] = '!';
-	own->tex_enq[0] += 1;
+	own->tex[0].glfd = fbo->tex0;
+	own->tex[0].name = "tex0";
+	own->tex[0].fmt = '!';
+	own->tex[0].enq += 1;
 
 
 	//
@@ -347,13 +347,13 @@ static void mirror_matrix(
 	fixmatrix(mirr->mvp, frus);
 	mat4_transpose(mirr->mvp);
 
-	src->arg_fmt[0] = 'm';
-	src->arg_name[0] = "cammvp";
-	src->arg_data[0] = mirr->mvp;
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "cammvp";
+	src->arg[0].data = mirr->mvp;
 
-	src->arg_fmt[1] = 'v';
-	src->arg_name[1] = "camxyz";
-	src->arg_data[1] = obb->vc;
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "camxyz";
+	src->arg[1].data = obb->vc;
 }
 
 

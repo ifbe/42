@@ -110,9 +110,9 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct actor* act, struct gls
 	float f;
 	int x,y,j;
 	int x0,y0,x1,y1;
-	u8* rgba = src->tex_data[0];
-	int w = src->tex_w[0];
-	int h = src->tex_h[0];
+	u8* rgba = src->tex[0].data;
+	int w = src->tex[0].w;
+	int h = src->tex[0].h;
 	float cx = (w-1) / 2.0;
 	float cy = (h-1) / 2.0;
 
@@ -257,7 +257,7 @@ static void terrain_draw_vbo(
 	struct glsrc* src = act->buf;
 	if(0 == src)return;
 
-	float* mat = src->arg_data[0];
+	float* mat = src->arg[0].data;
 	if(0 == mat)return;
 
 	void* vbuf = src->vbuf;
@@ -435,22 +435,22 @@ static void terrain_create(struct actor* act, void* str)
 	src->shader_enq = 42;
 
 	//argument
-	src->arg_name[0] = "objmat";
-	src->arg_data[0] = memorycreate(4*4*4, 0);
-	src->arg_fmt[0] = 'm';
+	src->arg[0].name = "objmat";
+	src->arg[0].data = memorycreate(4*4*4, 0);
+	src->arg[0].fmt = 'm';
 
 	//texture
-	src->tex_name[0] = "tex0";
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_data[0] = memorycreate(2048*2048*4, 0);
+	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].name = "tex0";
+	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";
 	loadtexfromfile(src, 0, str);
-	if((0 == src->tex_w[0]) | (0 == src->tex_h[0]))
+	if((0 == src->tex[0].w) | (0 == src->tex[0].h))
 	{
-		src->tex_w[0] = 2048;
-		src->tex_h[0] = 2048;
+		src->tex[0].w = 2048;
+		src->tex[0].h = 2048;
 
-		rgba = src->tex_data[0];
+		rgba = src->tex[0].data;
 		for(y=0;y<2048;y++)
 		{
 			for(x=0;x<2048;x++)
@@ -461,7 +461,7 @@ static void terrain_create(struct actor* act, void* str)
 			}
 		}
 	}
-	src->tex_enq[0] = 42;
+	src->tex[0].enq = 42;
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_33;
