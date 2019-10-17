@@ -262,22 +262,31 @@ static int human_event(
 	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
-	short* t;
-	float x,y,z,n;
-	float sec,a,c,s;
-	struct relation* rel;
-	vec4 tmp;
+	struct halfrel* self;
+	struct halfrel* peer;
+	struct fstyle* obb;
+	//say("act=%llx\n", act);
+
+	human_search(act, 0, &self, &peer);
+	obb = peer->pfoot;
+	//say("@human_event:%llx\n", obb);
 
 	if(_char_ == ev->what)
 	{
 		switch(ev->why)
 		{
-			case 'w':sty->f.vc[1] += 1000;break;
-			case 's':sty->f.vc[1] -= 1000;break;
-			case 'a':sty->f.vc[0] -= 1000;break;
-			case 'd':sty->f.vc[0] += 1000;break;
+			case 'w':obb->vc[1] += 100;break;
+			case 's':obb->vc[1] -= 100;break;
+			case 'a':obb->vc[0] -= 100;break;
+			case 'd':obb->vc[0] += 100;break;
 		}
 	}
+/*	short* t;
+	float x,y,z,n;
+	float sec,a,c,s;
+	struct relation* rel;
+	vec4 tmp;
+
 	else if(joy_left == (ev->what & joy_mask))
 	{
 		t = (void*)ev;
@@ -290,7 +299,7 @@ static int human_event(
 		if(t[3] & joyl_bumper )act->z0 += 10;
 	}
 	else return 0;
-/*
+
 	//read terrain, fix z
 	rel = act->irel0;
 	while(1)
@@ -394,7 +403,7 @@ static int human_write(struct halfrel* self, struct halfrel* peer, void* arg, in
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	return 0;//human_event(act, pin, win, sty, ev, 0);
+	return human_event(act, pin, win, sty, ev, 0);
 }
 static void human_stop(struct halfrel* self, struct halfrel* peer)
 {

@@ -67,7 +67,7 @@ static int thirdperson_draw(
 
 
 
-static void thirdperson_fixcam(struct fstyle* obb, struct fstyle* tar, int dx, int dy)
+static void thirdperson_fixcam(struct fstyle* obb, struct fstyle* tar, int dx, int dy, int roll)
 {
 	float a,c,s;
 	float q[4];		//quaternion
@@ -80,17 +80,26 @@ static void thirdperson_fixcam(struct fstyle* obb, struct fstyle* tar, int dx, i
 	v[1] = obb->vc[1] - t[1];
 	v[2] = obb->vc[2] - t[2];
 
+	if(roll != 0){
+		a = 1.0 + roll/20.0;
+		v[0] *= a;
+		v[1] *= a;
+		v[2] *= a;
+		obb->vc[0] = t[0]+v[0];
+		obb->vc[1] = t[1]+v[1];
+		obb->vc[2] = t[2]+v[2];
+	}
 	if(dy != 0){
 		q[0] =-v[1];
 		q[1] = v[0];
 		q[2] = 0.0;
-		quaternion_operation(v, q, dy/100.0);
+		quaternion_operation(v, q, -dy/100.0);
 		obb->vc[0] = t[0]+v[0];
 		obb->vc[1] = t[1]+v[1];
 		obb->vc[2] = t[2]+v[2];
 	}
 	if(dx != 0){
-		a = 0.01*dx;
+		a = -dx/100.0;
 		s = sine(a);
 		c = cosine(a);
 		obb->vc[0] = t[0] + v[0]*c - v[1]*s;
@@ -117,7 +126,7 @@ static int thirdperson_event(
 	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
-	int dx,dy;
+	int dx,dy,roll;
 	short* t;
 	struct actor* tmp;
 
@@ -128,39 +137,48 @@ static int thirdperson_event(
 
 	thirdperson_search(act, 0, &self, &peer);
 	obb = peer->pfoot;
-//say("111:%llx\n", obb);
+
 	thirdperson_search(act, _tar_, &self, &peer);
 	tmp = peer->pchip;
-//say("222:%llx\n", tmp);
+	if(_char_ == ev->what){
+		tmp->onwrite(peer, self, 0, 0, ev, 0);
+	}
+
 	tmp->onsearch(tmp, 0, &self, &peer);
 	tar = peer->pfoot;
-//say("333:%llx\n",tar);
 
 	if(_char_ == ev->what){
-		switch(ev->why)
-		{
-			case 'a':dx =-1;dy = 0;break;
-			case 'd':dx = 1;dy = 0;break;
-			case 'w':dx = 0;dy = 1;break;
-			case 's':dx = 0;dy =-1;break;
-			default: return 0;
-		}
-		//say("444\n");
-		thirdperson_fixcam(obb, tar, dx, dy);
+		thirdperson_fixcam(obb, tar, 0, 0, 0);
+		return 0;
 	}
 	if(0x4070 == ev->what){
 		t = (void*)ev;
 		if(act->w0 != 0){
-			thirdperson_fixcam(obb, tar, t[0] - act->xn, t[1] - act->yn);
+			thirdperson_fixcam(obb, tar, t[0] - act->xn, t[1] - act->yn, 0);
 		}
 		act->xn = t[0];
 		act->yn = t[1];
 	}
 	if(0x2b70 == ev->what){
 		t = (void*)ev;
-		act->x0 = act->xn = t[0];
-		act->y0 = act->yn = t[1];
-		act->w0 = 1;
+		say("%c\n",t[3]);
+		switch(t[3]){
+			case 'l':
+			case 'r':{
+				act->w0 = 1;
+				act->x0 = act->xn = t[0];
+				act->y0 = act->yn = t[1];
+				break;
+			}
+			case 'f':{
+				thirdperson_fixcam(obb, tar, 0, 0, -1);
+				break;
+			}
+			case 'b':{
+				thirdperson_fixcam(obb, tar, 0, 0, 1);
+				break;
+			}
+		}
 	}
 	if(0x2d70 == ev->what){
 		act->w0 = 0;
