@@ -16,11 +16,14 @@ struct socks5_request{
         //DST.ADDR: desired destination address
         //DST.PORT: desired destination port in network octet order
 };
-static u8 socks5_client0[] = {0};
+static u8 socks5_client0[] = {5,1,0};
 static u8 socks5_server0[] = {5, 0};
 static u8 socks5_client1[] = {0};
 static u8 socks5_server1[] = {5, 0, 0, 1, 0, 0, 0, 0, 0, 0};
-static u8 socks5_client2[] = {0};
+static u8 socks5_client2[] =
+"GET / HTTP/1.1\r\n"
+"Host: www.baidu.com:80\r\n"
+"\r\n";
 
 
 
@@ -31,8 +34,30 @@ int socksclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int 
 }
 int socksclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+    struct element* ele;
+    struct socks5_request req;
 	say("@socksclient_write\n");
     printmemory(buf, len);
+
+    ele = self->pchip;
+    if(2 == ele->stage1){
+        relationwrite(ele, _src_, 0, 0, socks5_client2, sizeof(socks5_client2));
+        ele->stage1 = 3;
+        return 0;
+    }
+    if(1 == ele->stage1){
+        req.ver = 5;
+        req.cmd = 1;
+        req.rsv = 0;
+        req.atyp = 3;
+        req.len = snprintf(req.url, 32, "www.baidu.com");
+        req.url[req.len+0] = 0;
+        req.url[req.len+1] = 80;
+
+        relationwrite(ele, _src_, 0, 0, &req, 7+req.len);
+        ele->stage1 = 2;
+        return 0;
+    }
 	return 0;
 }
 int socksclient_stop(struct halfrel* self, struct halfrel* peer)
@@ -41,7 +66,12 @@ int socksclient_stop(struct halfrel* self, struct halfrel* peer)
 }
 int socksclient_start(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksclient_start\n");
+    struct element* ele;
+	say("@socksclient_start: %.4s\n", &self->flag);
+
+    ele = self->pchip;
+    relationwrite(ele, _src_, 0, 0, socks5_client0, 3);
+    ele->stage1 = 1;
 	return 0;
 }
 int socksclient_delete(struct element* ele)
@@ -51,6 +81,7 @@ int socksclient_delete(struct element* ele)
 int socksclient_create(struct element* ele, u8* url)
 {
 	say("@socksclient_create\n");
+    ele->stage1 = 0;
 	return 0;
 }
 

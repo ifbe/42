@@ -1,18 +1,18 @@
 <system>
 tcphost{
 fmt:tcp
-url:127.0.0.1:22
+url:127.0.0.1:8888
 }
 </system>
 
 
 <artery>
-ssh{
-fmt:ssh
+socks{
+fmt:socks
 }
 </artery>
 
 
 <relation>
-(tcphost, 0, sys, dst) -> (ssh, 0, art, src)
+(tcphost, 0, sys, dst) -> (socks, 0, art, src)
 </relation>

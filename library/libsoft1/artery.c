@@ -594,6 +594,7 @@ int arterystart(struct halfrel* self, struct halfrel* peer)
 	switch(ele->type){
 		case _http_:return httpclient_start(self, peer);break;
 		case _ws_:return wsclient_start(self, peer);break;
+		case _socks_:return socksclient_start(self, peer);break;
 
 		case _ssh_:return sshclient_start(self, peer);break;
 		case _tls_:return tlsclient_start(self, peer);break;
