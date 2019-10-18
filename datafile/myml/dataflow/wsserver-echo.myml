@@ -1,0 +1,19 @@
+<system>
+tcphost{
+fmt:TCP
+url:0.0.0.0:2222
+}
+</system>
+
+
+<artery>
+server{
+fmt:WS
+url:echo
+}
+</artery>
+
+
+<relation>
+(tcphost, 0, sys, dst) -> (server, 0, art, src)
+</relation>

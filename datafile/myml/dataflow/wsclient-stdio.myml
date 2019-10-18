@@ -10,9 +10,6 @@ ws{
 fmt:ws
 url:127.0.0.1
 }
-dbghex{
-fmt:dbghex
-}
 </artery>
 
 
@@ -26,5 +23,5 @@ url:127.0.0.1:2222
 
 <relation>
 (tcp, 0, sys, dst) -> (ws, 0, art, src)
-(ws, 0, art, dst) -> (std, 0, win, dst)
+(std, 0, win, dst) -> (ws, 0, art, dst)
 </relation>

@@ -440,33 +440,56 @@ int wsmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 }
 int wsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	struct object* obj;		//parent
+	struct object* Tcp;		//child
+
+	struct element* ele;	//master
+	struct element* Ws;		//server
+
 	struct relation* rel;
-	struct object* Tcp;
-	struct element* Ws;
+	struct object* ptmx;
 	struct element* echo;
 	say("@wsmaster_write\n");
 
-	//source
-	Tcp = peer->pchip;
-	Tcp = Tcp->tempobj;
+	//parent, child
+	obj = peer->pchip;
+	if(0 == obj)return 0;
+	Tcp = obj->tempobj;
+	if(0 == Tcp)return 0;
 
-	//WS = self->pchip;
+	//master, server
+	ele = self->pchip;
+	if(0 == ele)return 0;
 	Ws = arterycreate(_Ws_, 0, 0, 0);
+	if(0 == Ws)return 0;
 
-	//echo
-	echo = arterycreate(_echo_, 0, 0, 0);
-
-	//
-	rel = relationcreate(echo, 0, _art_, _src_, Ws, 0, _art_, _dst_);
-	//relationstart(&rel->srcchip, &rel->dstchip);
-
-	//
+	//child -> server
 	rel = relationcreate(Ws, 0, _art_, _src_, Tcp, 0, _sys_, _dst_);
 	//relationstart(&rel->srcchip, &rel->dstchip);
-
 	self = (void*)&rel->dstchip;
 	peer = (void*)&rel->srcchip;
 	arterywrite(self, peer, 0, 0, buf, len);
+
+	//server -> ???
+	switch(ele->name){
+	case _echo_:{
+		say("1111111\n");
+		echo = arterycreate(_echo_, 0, 0, 0);
+		relationcreate(Ws, 0, _art_, _dst_, echo, 0, _art_, _src_);
+		//relationstart(&rel->srcchip, &rel->dstchip);
+		break;
+	}//echo
+	case _ptmx_:{
+		say("22222222\n");
+		ptmx = systemcreate(_ptmx_, "/dev/ptmx", 0, 0);
+		relationcreate(Ws, 0, _art_, _dst_, ptmx, 0, _art_, _dst_);
+		//relationstart(&rel->srcchip, &rel->dstchip);
+		break;
+	}//ptmx
+	default:{
+		say("who can serve it?\n");
+	}
+	}//switch
 	return 0;
 }
 int wsmaster_stop(struct halfrel* self, struct halfrel* peer)
@@ -483,5 +506,17 @@ int wsmaster_delete(struct element* ele)
 }
 int wsmaster_create(struct element* ele, u8* url)
 {
+	if(0 == url)goto none;
+	if(0 == ncmp(url, "echo", 4)){
+		ele->name = _echo_;
+		return 0;
+	}
+	if(0 == ncmp(url, "ptmx", 4)){
+		ele->name = _ptmx_;
+		return 0;
+	}
+
+none:
+	ele->name = 0;
 	return 0;
 }
