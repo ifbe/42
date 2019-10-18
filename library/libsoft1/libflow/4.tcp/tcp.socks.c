@@ -34,32 +34,30 @@ int socksclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int 
 }
 int socksclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+    u8 tmp[64];
     struct element* ele;
-    struct socks5_request req;
+    struct socks5_request* req;
 	say("@socksclient_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
-    printmemory(buf, len);
+    printmemory(buf, len<16?len:16);
 
     ele = self->pchip;
     if(2 == ele->stage1){
-say("here\n");
-        relationwrite(ele, _src_, 0, 0, socks5_client2, sizeof(socks5_client2));
+        relationwrite(ele, _src_, 0, 0, socks5_client2, sizeof(socks5_client2)-1);
         ele->stage1 = 3;
-say("shit\n");
         return 0;
     }
     if(1 == ele->stage1){
-say("alive\n");
-        req.ver = 5;
-        req.cmd = 1;
-        req.rsv = 0;
-        req.atyp = 3;
-        req.len = mysnprintf(req.url, 32, "www.baidu.com");
-        req.url[req.len+0] = 0;
-        req.url[req.len+1] = 80;
-say("alive1\n");
-        relationwrite(ele, _src_, 0, 0, &req, 7+req.len);
+        req = (void*)tmp;
+        req->ver = 5;
+        req->cmd = 1;
+        req->rsv = 0;
+        req->atyp = 3;
+        req->len = mysnprintf(req->url, 32, "www.baidu.com");
+        req->url[req->len+0] = 0;
+        req->url[req->len+1] = 80;
+
+        relationwrite(ele, _src_, 0, 0, req, 7+req->len);
         ele->stage1 = 2;
-say("alive2\n");
         return 0;
     }
 	return 0;
@@ -99,7 +97,7 @@ int socksserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int 
 int socksserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	say("@socksserver_write: chip=%llx, foot=%.4s, len=%d\n", self->chip, &self->flag, len);
-    if(len < 16)printmemory(buf, len);
+    printmemory(buf, len<16?len:16);
 
     if('a' == self->flag){
         relationwrite(self->pchip, 'b', 0, 0, buf, len);
@@ -141,7 +139,7 @@ int socksmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
     u8* ch;
     struct socks5_request* req;
 	say("@socksmaster_write: chip=%llx, foot=%.4s, len=%d\n", self->chip, &self->flag, len);
-    if(len < 16)printmemory(buf, len);
+    printmemory(buf, len<16?len:16);
 
     if(len < 3)return 0;
     if(3 == len){
@@ -178,7 +176,7 @@ say("2\n");
 say("3\n");
     //connect a,b
     void* art = arterycreate(_Socks_, 0, 0, 0);
-    if(0 == sys)return 0;
+    if(0 == art)return 0;
     relationcreate(art, 0, _art_, 'a', obj, 0, _sys_, _dst_);
     relationcreate(art, 0, _art_, 'b', sys, 0, _sys_, _dst_);
 say("4\n");

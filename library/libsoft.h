@@ -67,9 +67,6 @@ typedef float mat4[4][4];
 #define _quic_ hex32('q','u','i','c')
 #define _Quic_ hex32('Q','u','i','c')
 #define _QUIC_ hex32('Q','U','I','C')
-#define _socks_ hex64('s','o','c','k','s', 0, 0, 0)
-#define _Socks_ hex64('S','o','c','k','s', 0, 0, 0)
-#define _SOCKS_ hex64('S','O','C','K','S', 0, 0, 0)
 //tcp family
 #define _TCP_ hex32('T','C','P',0)
 #define _Tcp_ hex32('T','c','p',0)
@@ -92,6 +89,13 @@ typedef float mat4[4][4];
 #define _TLS_  hex32('T','L','S',0)
 #define _Tls_  hex32('T','l','s',0)
 #define _tls_  hex32('t','l','s',0)
+//proxy
+#define _PROXY_ hex64('P','R','O','X','Y', 0, 0, 0)
+#define _Proxy_ hex64('P','r','o','x','y', 0, 0, 0)
+#define _proxy_ hex64('p','r','o','x','y', 0, 0, 0)
+#define _SOCKS_ hex64('S','O','C','K','S', 0, 0, 0)
+#define _Socks_ hex64('S','o','c','k','s', 0, 0, 0)
+#define _socks_ hex64('s','o','c','k','s', 0, 0, 0)
 //hole
 #define _HOLE_ hex32('H','O','L','E')
 #define _Hole_ hex32('H','o','l','e')
@@ -140,9 +144,6 @@ typedef float mat4[4][4];
 #define _Torrent_ hex64('T','o','r','r','e','n','t', 0)
 #define _torrent_ hex64('t','o','r','r','e','n','t', 0)
 //
-#define _PROXY_ hex64('P','R','O','X','Y', 0, 0, 0)
-#define _Proxy_ hex64('P','r','o','x','y', 0, 0, 0)
-#define _proxy_ hex64('p','r','o','x','y', 0, 0, 0)
 #define _SQL_ hex32('S','Q','L',0)
 #define _Sql_ hex32('S','q','l',0)
 #define _sql_ hex32('s','q','l',0)

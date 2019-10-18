@@ -1,0 +1,18 @@
+<system>
+tcphost{
+fmt:tcp
+url:127.0.0.1:8080
+}
+</system>
+
+
+<artery>
+proxy{
+fmt:proxy
+}
+</artery>
+
+
+<relation>
+(tcphost, 0, sys, dst) -> (proxy, 0, art, src)
+</relation>

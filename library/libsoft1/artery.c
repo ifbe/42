@@ -251,6 +251,24 @@ int hackserver_start(struct halfrel* self, struct halfrel* peer);
 int hackserver_stop( struct halfrel* self, struct halfrel* peer);
 int hackserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int hackserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int proxyclient_create(struct element* ele, void* url);
+int proxyclient_delete(struct element* ele, void* url);
+int proxyclient_start(struct halfrel* self, struct halfrel* peer);
+int proxyclient_stop( struct halfrel* self, struct halfrel* peer);
+int proxyclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int proxyclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int proxyserver_create(struct element* ele, void* url);
+int proxyserver_delete(struct element* ele, void* url);
+int proxyserver_start(struct halfrel* self, struct halfrel* peer);
+int proxyserver_stop( struct halfrel* self, struct halfrel* peer);
+int proxyserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int proxyserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int proxymaster_create(struct element* ele, void* url);
+int proxymaster_delete(struct element* ele, void* url);
+int proxymaster_start(struct halfrel* self, struct halfrel* peer);
+int proxymaster_stop( struct halfrel* self, struct halfrel* peer);
+int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int proxymaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int socksclient_create(struct element* ele, void* url);
 int socksclient_delete(struct element* ele, void* url);
 int socksclient_start(struct halfrel* self, struct halfrel* peer);
@@ -502,6 +520,9 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _nema0183_:nema0183client_read(self, peer, arg, idx, buf, len);break;
 		case _Nema0183_:nema0183server_read(self, peer, arg, idx, buf, len);break;
 
+		case _PROXY_:proxymaster_read(self, peer, arg, idx, buf, len);break;
+		case _Proxy_:proxyserver_read(self, peer, arg, idx, buf, len);break;
+		case _proxy_:proxyclient_read(self, peer, arg, idx, buf, len);break;
 		case _SOCKS_:socksmaster_read(self, peer, arg, idx, buf, len);break;
 		case _Socks_:socksserver_read(self, peer, arg, idx, buf, len);break;
 		case _socks_:socksclient_read(self, peer, arg, idx, buf, len);break;
@@ -559,6 +580,9 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _Nema0183_:return nema0183server_write(self, peer, arg, idx, buf, len);break;
 		case _nema0183_:return nema0183client_write(self, peer, arg, idx, buf, len);break;
 
+		case _PROXY_:return proxymaster_write(self, peer, arg, idx, buf, len);break;
+		case _Proxy_:return proxyserver_write(self, peer, arg, idx, buf, len);break;
+		case _proxy_:return proxyclient_write(self, peer, arg, idx, buf, len);break;
 		case _SOCKS_:return socksmaster_write(self, peer, arg, idx, buf, len);break;
 		case _Socks_:return socksserver_write(self, peer, arg, idx, buf, len);break;
 		case _socks_:return socksclient_write(self, peer, arg, idx, buf, len);break;
@@ -594,6 +618,8 @@ int arterystart(struct halfrel* self, struct halfrel* peer)
 	switch(ele->type){
 		case _http_:return httpclient_start(self, peer);break;
 		case _ws_:return wsclient_start(self, peer);break;
+
+		case _proxy_:return proxyclient_start(self, peer);break;
 		case _socks_:return socksclient_start(self, peer);break;
 
 		case _ssh_:return sshclient_start(self, peer);break;
@@ -928,6 +954,33 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 
 		e->type = _hack_;
 		if(url)hackclient_create(e, url);
+		return e;
+	}
+	if(_PROXY_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _PROXY_;
+		if(url)proxymaster_create(e, url);
+		return e;
+	}
+	if(_Proxy_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _Proxy_;
+		if(url)proxyserver_create(e, url);
+		return e;
+	}
+	if(_proxy_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _proxy_;
+		if(url)proxyclient_create(e, url);
 		return e;
 	}
 	if(_SOCKS_ == type)
