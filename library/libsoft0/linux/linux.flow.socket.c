@@ -35,7 +35,7 @@ static int udpfd = 0;
 
 
 
-void selfname(u64 fd, u32* buf)
+int selfname(u64 fd, u32* buf)
 {
 	struct sockaddr_in addr;
 	socklen_t len = sizeof(struct sockaddr_in);
@@ -43,8 +43,9 @@ void selfname(u64 fd, u32* buf)
 
 	buf[0] = *(u32*)&addr.sin_addr;
 	buf[1] = addr.sin_port;
+	return 1;
 }
-void peername(u64 fd, u32* buf)
+int peername(u64 fd, u32* buf)
 {
 	struct sockaddr_in addr;
 	socklen_t len = sizeof(struct sockaddr_in);
@@ -52,6 +53,32 @@ void peername(u64 fd, u32* buf)
 
 	buf[0] = *(u32*)&addr.sin_addr;
 	buf[1] = addr.sin_port;
+	return 1;
+}
+int waitconnectwithselect(int sock)
+{
+	int ret;
+	fd_set fds;
+	struct timeval time;
+	printf("waiting\n");
+
+	FD_ZERO(&fds);
+	FD_SET(sock, &fds);
+
+	time.tv_sec = 3;
+	time.tv_usec = 0;
+
+	ret = select(sock+1, NULL, &fds, NULL, &time);
+	if(ret < 0){
+		say("error@select\n");
+		return 0;
+	}
+	if(ret == 0){
+		say("timeout@select\n");
+		return 0;
+	}
+
+	return 1;
 }
 
 
@@ -429,11 +456,19 @@ int startsocket(char* addr, int port, int type)
 		peer->sin_port = htons(port);
 
 		//work
+		fcntl(fd, F_SETFL, O_NONBLOCK | fcntl(fd, F_GETFL, 0));
+		printf("@@@@@@@@before connect\n");
 		ret = connect(fd, (void*)peer, sizeof(struct sockaddr_in));
-		if(ret < 0)
-		{
-			printf("connect error\n");
-			return 0;
+		printf("@@@@@@@@after connect\n");
+		if(ret < 0){
+			if(EINPROGRESS != errno){
+				printf("connect error\n");
+				return 0;
+			}
+			if(waitconnectwithselect(fd) <= 0){
+				close(fd);
+				return 0;
+			}
 		}
 
 		//done
