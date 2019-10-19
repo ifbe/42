@@ -158,8 +158,6 @@ int choosesocket()
 void stopsocket(int x)
 {
 	int ret = close(x);
-	obj[x].type = 0;
-	obj[x].name = 0;
 	printf("---- %d %d, %d\n", x, ret, errno);
 }
 int startsocket(char* addr, int port, int type)

@@ -60,8 +60,9 @@ int changeshell(char* p, int speed)
 {
 	return 0;
 }
-int stopshell()
+int stopshell(int fd)
 {
+	close(fd);
 	return 0;
 }
 int startshell(char* p, int baud)

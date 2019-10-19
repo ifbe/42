@@ -4,7 +4,6 @@
 #include <windows.h>
 #include "libsoft.h"
 void sleep_us(int);
-void nodetree_rootwrite(void*, void*, void*, int);
 
 
 
@@ -103,8 +102,9 @@ int uart_choose()
 {
 	return 0;
 }
-int uart_stop()
+int uart_stop(int hcom)
 {
+	say("!!!this func is wrong!!!\n");
 }
 int uart_start(char* p, int speed)
 {

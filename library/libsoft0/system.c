@@ -19,9 +19,9 @@ int writeshell(int, int, void*, int);
 //uart
 int inituart(void*);
 int freeuart();
+int uart_stop(int);
 int uart_start(void*, int);
-int stopuart(int);
-int readuart( int, int, void*, int);
+int uart_read( int, int, void*, int);
 int uart_write(int, int, void*, int);
 //socket
 int initsocket(void*);
@@ -49,44 +49,6 @@ static struct object* obj = 0;
 static int objlen = 0;
 static void* ppp = 0;
 static int ppplen = 0;
-
-
-
-/*
-int systemwrite_in(struct object* chip, u8* foot, u8* buf, int len)
-{
-	int ret;
-	void* dc;
-	void* df;
-	struct relation* irel;
-	struct relation* orel;
-
-	irel = chip->irel0;
-	orel = chip->orel0;
-	if((0 == irel)&&(0 == orel))
-	{
-		ret = chip->thatfd;
-		irel = obj[ret].irel0;
-		orel = obj[ret].orel0;
-	}
-
-	if(0 == orel)
-	{
-		ret = chip->type;
-		if((_UDP_ == ret)|(_udp_ == ret))
-		{
-			say("%d,%d,%d,%d:%d\n",
-				foot[4], foot[5], foot[6], foot[7],
-				(foot[2]<<8)+foot[3]
-			);
-		}
-		printmemory(buf, len);
-		return 0;
-	}
-
-	relationwrite(chip, _dst_, 0, 0, buf, len);
-	return 42;
-}*/
 
 
 
@@ -154,30 +116,43 @@ int systemstart(struct halfrel* self, struct halfrel* peer)
 
 int systemdelete(void* addr)
 {
-	struct object* o;
-	int fd = (addr - (void*)obj) / sizeof(struct object);
-	if(_file_ == obj[fd].type)
-	{
+	struct object* oo;
+	int fd;
+	if(0 == addr)return 0;
+
+	oo = addr;
+	fd = oo->selffd;
+
+
+	//del irel, orel
+	if(0 != oo->irel0)relationdelete(oo->irel0);
+	if(0 != oo->orel0)relationdelete(oo->orel0);
+	oo->irel0 = oo->ireln = 0;
+	oo->orel0 = oo->oreln = 0;
+
+
+	//del it self
+	switch(oo->type){
+	case _file_:{
 		stopfile(fd);
+		break;
 	}
-	else
-	{
+	case _ptmx_:{
+		stopshell(fd);
+		break;
+	}
+	case _uart_:{
+		uart_stop(fd);
+		break;
+	}
+	default:{
 		stopsocket(fd);
-
-		o = addr;
-		if(0 != o->irel0)relationdelete(o->irel0);
-		if(0 != o->orel0)relationdelete(o->orel0);
-
-		o->type = 0;
-		o->fmt = 0;
-		o->name = 0;
-
-		o->selffd = 0;
-		o->tempfd = 0;
-
-		o->irel0 = o->ireln = 0;
-		o->orel0 = o->oreln = 0;
 	}
+	}
+	oo->type = 0;
+	oo->type = 0;
+	oo->fmt = 0;
+	oo->name = 0;
 	return 0;
 }
 void* systemcreate(u64 type, void* argstr, int argc, char** argv)

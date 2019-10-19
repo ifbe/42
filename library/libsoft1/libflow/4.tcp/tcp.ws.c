@@ -97,24 +97,24 @@ int wsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	u8 tmp[0x1000];
 	struct relation* orel;
 	struct element* ele = self->pchip;
-	say("@wsclient_write: %.4s\n", &self->flag);
+	say("@wsclient_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
+    printmemory(buf, len<16?len:16);
 
 	switch(self->flag){
 		case _dst_:{
 			ret = websocket_clientwrite(buf, len, tmp, 0x1000);
-			printmemory(buf, len);
-			printmemory(tmp, ret);
+			//printmemory(buf, len);
+			//printmemory(tmp, ret);
 			relationwrite(ele, _src_, 0, 0, tmp, ret);
 			break;
 		}
 		case _src_:{
 			if(0 == ele->stage1)
 			{
-				ele->stage1 += 1;
-				say("ws.serverhello={\n"
+			/*	say("ws.serverhello={\n"
 					"%.*s"
 					"}=ws.serverhello\n",
-					len, buf);
+					len, buf);*/
 
 				//parse serverhello
 				//websocket_clientread_handshake();
@@ -374,13 +374,14 @@ int wsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	int ret;
 	u8 tmp[0x1000];
 	struct element* ele = self->pchip;
-	say("@wsserver_write: %.4s\n", &self->flag);
+	say("@wsserver_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
+    printmemory(buf, len<16?len:16);
 
 	switch(self->flag){
 		case _dst_:{
 			ret = websocket_serverwrite_head(buf, len, tmp, 0x100);
-			printmemory(tmp, ret);
-			printmemory(buf, len);
+			//printmemory(tmp, ret);
+			//printmemory(buf, len);
 			relationwrite(ele, _src_, 0, 0, tmp, ret);
 			relationwrite(ele, _src_, 0, 0, buf, len);
 			break;
@@ -388,10 +389,10 @@ int wsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 		case _src_:{
 			if(0 == ele->stage1){
 				ele->stage1 = 1;
-				say("ws.clienthello={\n"
+			/*	say("ws.clienthello={\n"
 					"%.*s"
 					"}=ws.clienthello\n",
-					len, buf);
+					len, buf);*/
 
 				//parse clienthello
 				ret = websocket_serverread_handshake(buf, len, tmp, 256);
@@ -401,11 +402,11 @@ int wsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 				//blen = mysnprintf(tmp, 0x1000, "Who dare summon me ?!");
 
 				ele->stage1 = 1;
-				return 0;
 			}
 			else{
 				ret = websocket_serverread_head(buf, len, tmp, 0x1000);
-				//printmemory(tmp, ret);
+				say("sending:\n");
+				printmemory(tmp, ret<16?ret:16);
 				relationwrite(ele, _dst_, 0, 0, tmp, ret);
 			}
 			break;
@@ -449,7 +450,8 @@ int wsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	struct relation* rel;
 	struct object* ptmx;
 	struct element* echo;
-	say("@wsmaster_write\n");
+	say("@wsserver_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
+    printmemory(buf, len<16?len:16);
 
 	//parent, child
 	obj = peer->pchip;
@@ -482,7 +484,7 @@ int wsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	case _ptmx_:{
 		say("22222222\n");
 		ptmx = systemcreate(_ptmx_, "/dev/ptmx", 0, 0);
-		relationcreate(Ws, 0, _art_, _dst_, ptmx, 0, _art_, _dst_);
+		relationcreate(Ws, 0, _art_, _dst_, ptmx, 0, _sys_, _dst_);
 		//relationstart(&rel->srcchip, &rel->dstchip);
 		break;
 	}//ptmx

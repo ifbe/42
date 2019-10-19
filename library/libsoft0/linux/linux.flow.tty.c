@@ -46,8 +46,9 @@ int uart_change()
 {
 	return 0;
 }
-int uart_stop()
+int uart_stop(int fd)
 {
+	close(fd);
 	return 0;
 }
 int uart_start(char* p, int speed)

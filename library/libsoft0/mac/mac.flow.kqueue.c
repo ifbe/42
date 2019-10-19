@@ -130,8 +130,9 @@ int kqueuethread(int argc, const char * argv[])
 				if(cnt <= 0)
 				{
 					kqueue_del(fd);
-					close(fd);
-					here->type = 0;
+					systemdelete(here);
+					//close(fd);
+					//here->type = 0;
 				}
 				break;
 			}//Tcp
@@ -150,8 +151,9 @@ int kqueuethread(int argc, const char * argv[])
 				if(cnt <= 0)
 				{
 					kqueue_del(fd);
-					close(fd);
-					here->type = 0;
+					systemdelete(here);
+					//close(fd);
+					//here->type = 0;
 				}
 				break;
 			}//default

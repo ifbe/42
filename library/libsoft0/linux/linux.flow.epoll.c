@@ -162,8 +162,9 @@ static void* epollthread(void* p)
 					if(cnt <= 0)
 					{
 						epoll_del(fd);
-						close(fd);
-						here->type = 0;
+						systemdelete(here);
+						//close(fd);
+						//here->type = 0;
 						continue;
 					}
 					break;
@@ -181,8 +182,9 @@ static void* epollthread(void* p)
 					if(cnt <= 0)
 					{
 						epoll_del(fd);
-						close(fd);
-						here->type = 0;
+						systemdelete(here);
+						//close(fd);
+						//here->type = 0;
 						continue;
 					}
 					break;

@@ -298,29 +298,50 @@ int relationstart(struct halfrel* self, struct halfrel* peer)
 
 int relationdelete(struct relation* this)
 {
-	struct item* uchip;
+	struct item* chip;
 	struct relation* prev;
 	struct relation* next;
 	if(this == 0)return 0;
 
+
+	//samedst
 	if(this->samedstprevsrc == 0)prev = 0;
 	else prev = (void*)wirebuf + (this->samedstprevsrc);
 	if(this->samedstnextsrc == 0)next = 0;
 	else next = (void*)wirebuf + (this->samedstnextsrc);
 
-	if(prev != 0)
-	{
+	if(prev != 0){
 		if(next == 0)prev->samedstnextsrc = 0;
 		else prev->samedstnextsrc = (void*)next - (void*)wirebuf;
 	}
-	if(next != 0)
-	{
+	if(next != 0){
 		if(prev == 0)next->samedstprevsrc = 0;
 		else next->samedstprevsrc = (void*)prev - (void*)wirebuf;
 	}
 
-	uchip = (void*)(this->dstchip);
-	if(this == uchip->irel0)uchip->irel0 = next;
+	chip = (void*)(this->dstchip);
+	if(this == chip->irel0)chip->irel0 = next;
+	if(this == chip->ireln)chip->ireln = prev;
+
+
+	//samesrc
+	if(this->samesrcprevdst == 0)prev = 0;
+	else prev = (void*)wirebuf + (this->samesrcprevdst);
+	if(this->samesrcnextdst == 0)next = 0;
+	else next = (void*)wirebuf + (this->samesrcnextdst);
+
+	if(prev != 0){
+		if(next == 0)prev->samesrcnextdst = 0;
+		else prev->samesrcnextdst = (void*)next - (void*)wirebuf;
+	}
+	if(next != 0){
+		if(prev == 0)next->samesrcprevdst = 0;
+		else next->samesrcprevdst = (void*)prev - (void*)wirebuf;
+	}
+
+	chip = (void*)(this->srcchip);
+	if(this == chip->orel0)chip->orel0 = next;
+	if(this == chip->oreln)chip->oreln = prev;
 
 	relation_recycle(this);
 	return 0;

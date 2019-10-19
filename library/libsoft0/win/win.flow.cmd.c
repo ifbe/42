@@ -22,8 +22,9 @@ int chooseshell(char* p)
 {
 	return 0;
 }
-int stopshell()
+int stopshell(int fd)
 {
+	say("!!!this func is wrong!!!\n");
 	return 0;
 }
 int startshell(char* p)
