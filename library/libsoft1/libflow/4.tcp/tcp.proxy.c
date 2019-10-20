@@ -1,4 +1,9 @@
 #include "libsoft.h"
+#define _ok_ hex16('o','k')
+
+
+
+
 static u8 proxy_client0[] =
 "CONNECT baidu.com:80 HTTP/1.1\r\n"
 "\r\n";
@@ -81,6 +86,7 @@ int proxyserver_delete(struct element* ele)
 int proxyserver_create(struct element* ele, u8* url)
 {
 	say("@proxyserver_create\n");
+	ele->stage1 = 0;
 	return 0;
 }
 
@@ -95,6 +101,7 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 {
 	int j;
 	u8 tmp[256];
+	struct relation* rel;
 
 	struct object* obj;			//parent
 	struct object* Tcp;			//child
@@ -135,21 +142,27 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 	//
 	switch(ele->name){
 	case _socks_:{
-		socks = arterycreate(_socks_, 0, 0, 0);
+		socks = arterycreate(_socks_, tmp, 0, 0);
 		if(0 == socks)break;
 		relationcreate(Proxy, 0, _art_, 'b', socks, 0, _art_, _dst_);
 
 		client = systemcreate(_tcp_, "127.0.0.1:8888", 0, 0);
 		if(0 == client)break;
-		relationcreate(socks, 0, _art_, _src_, client, 0, _sys_, _dst_);
+
+		rel = relationcreate(socks, 0, _art_, _src_, client, 0, _sys_, _dst_);
+		self = (void*)&rel->dstchip;
+		peer = (void*)&rel->srcchip;
+		relationstart(self, peer);
 		break;
 	}//socks
 	default:{
 		client = systemcreate(_tcp_, tmp, 0, 0);
 		if(0 == client)break;
-		relationcreate(Proxy, 0, _art_, 'b', client, 0, _sys_, _dst_);
 
-		relationwrite(self->pchip, _src_, arg, idx, proxy_server0, sizeof(proxy_server0)-1);
+		rel = relationcreate(Proxy, 0, _art_, 'b', client, 0, _sys_, _dst_);
+		self = (void*)&rel->dstchip;
+		peer = (void*)&rel->srcchip;
+		proxyserver_write(self, peer, 0, _ok_, 0, 0);
 	}//default
 	}
 

@@ -1,4 +1,5 @@
 #include "libsoft.h"
+#define _ok_ hex16('o','k')
 int decstr2data(void*, void*);
 
 
@@ -43,23 +44,27 @@ int socksclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int
     u8 tmp[256];
     struct element* ele;
     struct socks5_request* req;
-	say("@socksclient_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
-    printmemory(buf, len<16?len:16);
+	say("@socksclient_write: %llx, %.4s, %x\n", self->pchip, &self->flag, len);
+    if(len>0)printmemory(buf, len<16?len:16);
 
     ele = self->pchip;
     switch(self->flag){
     case _dst_:{
-        printmemory(buf, len);
-        //relationwrite(ele, _src_, 0, 0, buf, len);
+        //dst to src
+        relationwrite(ele, _src_, 0, 0, buf, len);
         break;
     }//dst
     case _src_:{
         if(3 == ele->stage1){
-            say("????????????\n");
+            //src to dst
+            relationwrite(ele, _dst_, 0, 0, buf, len);
             return 0;
         }
+
         if(2 == ele->stage1){
-            if(1){
+            //recv: socks5 reply1
+            //send: socks5 ready
+            if(0){
                 req = (void*)(ele->data);
                 j = req->len;
                 port = (req->url[j]<<8)+req->url[j+1];
@@ -69,18 +74,29 @@ int socksclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int
                 relationwrite(ele, _src_, 0, 0, tmp, j);
             }
             else{
-                relationwrite(ele, _dst_, 0, 0, 0, 0);
+                relationwrite(ele, _dst_, 0, _ok_, 0, 0);
             }
             ele->stage1 = 3;
             return 0;
         }
+
         if(1 == ele->stage1){
+            //recv: socks5 reply0
+            //send: socks5 packet1(request)
             req = (void*)(ele->data);
  
             printmemory(req, 7+req->len);
             relationwrite(ele, _src_, 0, 0, req, 7+req->len);
  
             ele->stage1 = 2;
+            return 0;
+        }//socks5 
+
+        if(0 == ele->stage1){
+            //recv: socket ready
+            //send: client packet0(hello)
+            relationwrite(ele, _src_, 0, 0, socks5_client0, 3);
+            ele->stage1 = 1;
             return 0;
         }
     }//src
@@ -94,12 +110,12 @@ int socksclient_stop(struct halfrel* self, struct halfrel* peer)
 int socksclient_start(struct halfrel* self, struct halfrel* peer)
 {
     struct element* ele;
+    struct object* obj;
 	say("@socksclient_start: %.4s\n", &self->flag);
 
     if(_src_ == self->flag){
-        ele = self->pchip;
-        relationwrite(ele, _src_, 0, 0, socks5_client0, 3);
-        ele->stage1 = 1;
+		obj = peer->pchip;
+        if(_sys_ == obj->tier)socksclient_write(self, peer, 0, _ok_, 0, 0);
     }
     return 0;
 }

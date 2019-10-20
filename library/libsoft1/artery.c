@@ -619,11 +619,13 @@ int arterystart(struct halfrel* self, struct halfrel* peer)
 		case _http_:return httpclient_start(self, peer);break;
 		case _ws_:return wsclient_start(self, peer);break;
 
-		case _proxy_:return proxyclient_start(self, peer);break;
-		case _socks_:return socksclient_start(self, peer);break;
-
 		case _ssh_:return sshclient_start(self, peer);break;
 		case _tls_:return tlsclient_start(self, peer);break;
+
+		case _proxy_:return proxyclient_start(self, peer);break;
+		case _Proxy_:return proxyserver_start(self, peer);break;
+		case _socks_:return socksclient_start(self, peer);break;
+		case _Socks_:return socksserver_start(self, peer);break;
 	}
 	return 0;
 }

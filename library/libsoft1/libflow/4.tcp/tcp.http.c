@@ -1,4 +1,5 @@
 #include "libsoft.h"
+#define _ok_ hex16('o','k')
 int findzero(void*);
 int findhead(void*);
 int findtail(void*);
@@ -54,170 +55,6 @@ void httpparser(u8* buf, int len, struct httpparsed* p)
 
 
 
-/*
-void httpserver_sendback(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
-{
-	int ret;
-	//printmemory(buf, len);
-
-	//response
-	ret = mysnprintf(buf+len, 0x1000,
-		"HTTP/1.1 200 OK\r\n"
-		"Content-type: text/plain\r\n"
-		"Content-Length: %d\r\n"
-		"\r\n",
-		len
-	);
-
-	//send head, send ctx
-	system_leafwrite(obj, pin, ele, sty, buf+len, ret);
-	system_leafwrite(obj, pin, ele, sty, buf, len);
-}
-int httpserver_nullpost(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len,
-	struct httpparsed* p)
-{
-	return 0;
-}
-int httpserver_nullget(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len,
-	struct httpparsed* p)
-{
-	int ctxlen, tmplen, ret;
-	void* ctxbuf;
-	void* tmpbuf;
-	//printmemory(buf, len);
-	if(0 == ncmp(p->GET, "/favicon.ico", 12))return 1;
-
-	//write ctx
-	ctxbuf = buf+len+1;
-	if(0 == ncmp(p->GET, "/ ", 2)){
-		ctxlen = mysnprintf(ctxbuf, 0x1000, "<center>root</center><hr>");
-	}
-	else if(0 == ncmp(p->GET, "/arena ", 7)){
-		ctxlen = mysnprintf(ctxbuf, 0x1000, "<center>arena</center><hr>");
-	}
-	else if(0 == ncmp(p->GET, "/actor ", 7)){
-		ctxlen = mysnprintf(ctxbuf, 0x1000, "<center>actor</center><hr>");
-	}
-	else{
-		ret = 0;
-		while(p->GET[ret] > 0x20)ret++;
-
-		ctxbuf = p->GET;
-		ctxlen = ret;
-	}
-
-	//write head
-	tmpbuf = ctxbuf+ctxlen+1;
-	tmplen = mysnprintf(tmpbuf, 0x1000,
-		"HTTP/1.1 200 OK\r\n"
-		"Content-type: text/html\r\n"
-		"Content-Length: %d\r\n"
-		"\r\n",
-		ctxlen
-	);
-
-	//send head, send ctx
-	system_leafwrite(obj, pin, ele, sty, tmpbuf, tmplen);
-	system_leafwrite(obj, pin, ele, sty, ctxbuf, ctxlen);
-	return 1;
-}
-int httpserver_orelpost(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len,
-	struct httpparsed* p)
-{
-	int t;
-	struct relation* rel;
-	struct halfrel* self;
-	struct halfrel* peer;
-	say("@httpserver_orelpost\n");
-
-	rel = ele->orel0;
-	while(1)
-	{
-		if(0 == rel)break;
-
-		if(_win_ == rel->dsttype){
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			t = p->End - p->Content;
-			arenawrite(self, peer, p->Content, t);
-			break;
-		}
-
-		rel = samesrcnextdst(rel);
-	}
-
-	return 0;
-}
-int httpserver_orelget(
-	struct element* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len,
-	struct httpparsed* p)
-{
-	int ret;
-	struct relation* rel;
-	struct halfrel* self;
-	struct halfrel* peer;
-
-	int ctxlen;
-	void* ctxbuf;
-	int tmplen;
-	void* tmpbuf;
-
-	//printmemory(buf, len);
-	if(0 == ncmp(p->GET, "/favicon.ico", 12))return 0;
-
-	//write ctx
-	ctxbuf = buf+len+1;
-	ctxlen = 0;
-
-	rel = ele->orel0;
-	while(1)
-	{
-		if(0 == rel)break;
-
-		if(_win_ == rel->dsttype){
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			ctxlen = arenaread(self, peer, ctxbuf, 0);
-			break;
-		}
-
-		rel = samesrcnextdst(rel);
-	}
-	//say("ctxlen=%d\n",ctxlen);
-	//printmemory(ctxbuf, ctxlen);
-
-	//write head
-	tmpbuf = ctxbuf+ctxlen+1;
-	tmplen = mysnprintf(tmpbuf, 0x1000,
-		"HTTP/1.1 200 OK\r\n"
-		"Content-type: text/html\r\n"
-		"Content-Length: %d\r\n"
-		"\r\n",
-		ctxlen
-	);
-
-	//send head, send ctx
-	system_leafwrite(obj, pin, ele, sty, tmpbuf, tmplen);
-	system_leafwrite(obj, pin, ele, sty, ctxbuf, ctxlen);
-	return 1;
-}*/
-
-
-
 
 int httpclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -227,33 +64,52 @@ int httpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 {
 	int j,k;
 	struct element* ele;
-	say("@httpclient_write: %x\n", len);
-	//printmemory(buf, 256);
+	say("@httpclient_write: %llx, %.4s, %x\n", self->pchip, &self->flag, len);
+    if(len>0)printmemory(buf, len<16?len:16);
 
-	ele = (void*)(self->chip);
+	ele = self->pchip;
 	if(0 == ele)return 0;
 
-	if(ele->stage1 > 0){
-		relationwrite(ele, _dst_, 0, 0, buf, len);
+    switch(self->flag){
+    case _dst_:{
+		break;
 	}
-	else{
-		k = 0;
-		for(j=0;j<len/2;j++){
-			//say("%d,%x\n",j,buf[j]);
-			if(	(buf[j+0] == 0xd) && (buf[j+1] == 0xa) ) {
-				if(buf[k] != 0xd){
-					say("%.*s\n", j-k, buf+k);
-					k = j+2;
-				}
-				else{
-					relationwrite(ele, _dst_, 0, 0, buf+j+2, len-j-2);
-					break;
-				}
-				j++;
-			}
+	case _src_:{
+		if(ele->stage1 >= 2){
+            //src to dst
+			relationwrite(ele, _dst_, 0, 0, buf, len);
+			return 0;
 		}
-		ele->stage1 = 1;
-	}
+
+		if(ele->stage1 == 1){
+            //recv: http reply0
+            //send: http data
+			k = 0;
+			for(j=0;j<len/2;j++){
+				//say("%d,%x\n",j,buf[j]);
+				if(	(buf[j+0] == 0xd) && (buf[j+1] == 0xa) ) {
+					if(buf[k] != 0xd){
+						//say("(((%.*s)))\n", j-k, buf+k);
+						k = j+2;
+					}
+					else{
+						relationwrite(ele, _dst_, 0, 0, buf+j+2, len-j-2);
+						break;
+					}
+					j++;
+				}
+			}
+			ele->stage1 = 2;
+		}
+
+		if(ele->stage1 == 0){
+            //recv: socket ready
+            //send: client packet0(hello)
+			relationwrite(ele, _src_, 0, 0, ele->buf, ele->len);
+			ele->stage1 = 1;
+		}
+	}//src
+	}//switch
 
 	return 0;
 }
@@ -263,10 +119,14 @@ int httpclient_stop(struct halfrel* self, struct halfrel* peer, void* arg, int i
 }
 int httpclient_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct element* ele = (void*)(self->chip);
+	struct element* ele;
+	struct object* obj;
+	say("@httpclient_start: %.4s\n", &self->flag);
+
+	ele = self->pchip;
 	if(_src_ == self->flag){
-		relationwrite(ele, _src_, 0, 0, ele->buf, ele->len);
-		ele->stage1 = 0;
+		obj = peer->pchip;
+		if(_sys_ == obj->tier)httpclient_write(self, peer, 0, _ok_, 0, 0);
 	}
 	return 0;
 }
@@ -279,35 +139,42 @@ int httpclient_create(struct element* ele, u8* url)
 	int j;
 	u8* buf;
 	int hlen;
-	u8* host;
+	void* host;
 	int clen;
-	u8* ctxt;
+	void* ctxt;
+	ele->stage1 = 0;
 	if(0 == url)return 0;
 	if(0 == url[0])return 0;
 	//printmemory(url, 32);
 
 	//get host
-	buf = url;
 	for(j=0;j<32;j++){
-		if('/' == buf[j])break;
+		if(url[j] <= 0x20)break;
+		if('/' == url[j])break;
 	}
-	if(buf[j] != '/')return 0;
-	host = buf;
+	host = url;
 	hlen = j;
 
 	//get ctx
-	buf = host + j;
-	for(j=0;j<256;j++){
-		if(buf[j] <= 0x20)break;
+	if('/' != url[j]){
+		ctxt = "/";
+		clen = 1;
 	}
-	if(buf[j] > 0x20)return 0;
-	ctxt = buf;
-	clen = j;
+	else{
+		buf = url + j;
+		for(j=0;j<256;j++){
+			if(buf[j] <= 0x20)break;
+		}
+		if(buf[j] > 0x20)return 0;
+		ctxt = buf;
+		clen = j;
+	}
 
-	buf = ele->buf = memorycreate(0x1000, 0);
+	//http req0
+	buf = ele->buf = ele->data;
 	if(0 == buf)return 0;
 
-	ele->len = mysnprintf(buf, 0x1000,
+	ele->len = mysnprintf(buf, 0x80,
 		"GET %.*s HTTP/1.1\r\n"
 		"Host: %.*s\r\n"
 		"\r\n",

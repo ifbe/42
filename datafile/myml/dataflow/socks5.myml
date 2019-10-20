@@ -9,11 +9,20 @@ url:127.0.0.1:8888
 <artery>
 socks{
 fmt:socks
-url:www.baidu.com:80/index.html
+url:www.baidu.com:80
+}
+http{
+fmt:http
+url:www.baidu.com:80
+}
+dbghex{
+fmt:dbghex
 }
 </artery>
 
 
 <relation>
+(http, 0, art, dst) -> (dbghex, 0, art, src)
+(socks, 0, art, dst) -> (http, 0, art, src)
 (tcphost, 0, sys, dst) -> (socks, 0, art, src)
 </relation>
