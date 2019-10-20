@@ -12,16 +12,16 @@ depth:1024
 <actor>
 texball{
 fmt:texball
-file:datafile/jpg/skysphere.jpg
+url:datafile/jpg/skysphere.jpg
 }
 terrain{
 fmt:terrain
 }
 rabbit{
 fmt:model
-file:datafile/stl/dog-lowpoly.stl
-#file:datafile/stl/bunny-lowpoly.stl
-#file:datafile/stl/gengar-lowpoly.stl
+url:datafile/stl/dog-lowpoly.stl
+#url:datafile/stl/bunny-lowpoly.stl
+#url:datafile/stl/gengar-lowpoly.stl
 }
 
 light{

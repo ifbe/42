@@ -12,11 +12,11 @@ depth:1024
 <actor>
 texball{
 fmt:texball
-file:datafile/jpg/skysphere.jpg
+url:datafile/jpg/skysphere.jpg
 }
 terrain{
 fmt:terrain
-file:datafile/jpg/cartoon.jpg
+url:datafile/jpg/cartoon.jpg
 }
 tree{
 fmt:human

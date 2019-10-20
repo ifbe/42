@@ -2,7 +2,7 @@
 #3d scene
 texball{
 fmt:texball
-file:datafile/jpg/skysphere.jpg
+url:datafile/jpg/skysphere.jpg
 }
 terrain{
 fmt:ground

@@ -55,7 +55,13 @@ int proxyserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int
         relationwrite(self->pchip, 'b', 0, 0, buf, len);
     }
     if('b' == self->flag){
-        relationwrite(self->pchip, 'a', 0, 0, buf, len);
+		if(0 == len){
+			//socks success, inform requester
+			relationwrite(self->pchip, 'a', 0, 0, proxy_server0, sizeof(proxy_server0)-1);
+		}
+		else{
+			relationwrite(self->pchip, 'a', 0, 0, buf, len);
+		}
     }
 	return 0;
 }
@@ -89,6 +95,15 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 {
 	int j;
 	u8 tmp[256];
+
+	struct object* obj;			//parent
+	struct object* Tcp;			//child
+	struct object* client;		//client
+
+	struct element* ele;		//master
+	struct element* Proxy;		//server
+	struct element* socks;
+
 	say("@proxymaster_write: chip=%llx, foot=%.4s, len=%d\n", self->chip, &self->flag, len);
     printmemory(buf, len<16?len:16);
 
@@ -102,25 +117,42 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 	}
 	say("target=%s\n", tmp);
 
-	//side a
-	struct object* obj;
+	//parent, child
 	obj = (void*)(peer->chip);
 	if(0 == obj)return 0;
-	obj = obj->tempobj;
-    if(0 == obj)return 0;
+	Tcp = obj->tempobj;
+    if(0 == Tcp)return 0;
 
-    //side b
-    void* sys = systemcreate(_tcp_, tmp, 0, 0);
-    if(0 == sys)return 0;
+	//master, server
+	ele = self->pchip;
+	if(0 == ele)return 0;
+    Proxy = arterycreate(_Proxy_, 0, 0, 0);
+    if(0 == Proxy)return 0;
 
-    //connect a,b
-    void* art = arterycreate(_Proxy_, 0, 0, 0);
-    if(0 == art)return 0;
-    relationcreate(art, 0, _art_, 'a', obj, 0, _sys_, _dst_);
-    relationcreate(art, 0, _art_, 'b', sys, 0, _sys_, _dst_);
+	//child -> server
+    relationcreate(Proxy, 0, _art_, 'a', Tcp, 0, _sys_, _dst_);
 
-    //tell client, ok now
-    relationwrite(self->pchip, _src_, arg, idx, proxy_server0, sizeof(proxy_server0)-1);
+	//
+	switch(ele->name){
+	case _socks_:{
+		socks = arterycreate(_socks_, 0, 0, 0);
+		if(0 == socks)break;
+		relationcreate(Proxy, 0, _art_, 'b', socks, 0, _art_, _dst_);
+
+		client = systemcreate(_tcp_, "127.0.0.1:8888", 0, 0);
+		if(0 == client)break;
+		relationcreate(socks, 0, _art_, _src_, client, 0, _sys_, _dst_);
+		break;
+	}//socks
+	default:{
+		client = systemcreate(_tcp_, tmp, 0, 0);
+		if(0 == client)break;
+		relationcreate(Proxy, 0, _art_, 'b', client, 0, _sys_, _dst_);
+
+		relationwrite(self->pchip, _src_, arg, idx, proxy_server0, sizeof(proxy_server0)-1);
+	}//default
+	}
+
 	return 0;
 }
 int proxymaster_stop(struct halfrel* self, struct halfrel* peer)
@@ -138,6 +170,15 @@ int proxymaster_delete(struct element* ele)
 }
 int proxymaster_create(struct element* ele, u8* url)
 {
-	say("@proxymaster_create\n");
+	say("@proxymaster.start\n");
+	if(0 == url)goto none;
+	if(0 == ncmp(url, "socks", 5)){
+		ele->name = _socks_;
+		return 0;
+	}
+
+none:
+	ele->name = 0;
+	say("@proxymaster.ending\n");
 	return 0;
 }

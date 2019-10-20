@@ -15,7 +15,7 @@ fmt:ground
 }
 tree{
 fmt:model
-file:datafile/stl/spider-lowpoly.stl
+url:datafile/stl/spider-lowpoly.stl
 }
 light{
 fmt:pointlit

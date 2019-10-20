@@ -359,11 +359,6 @@ int role_test_pinid(u8* buf, int len, struct footlist foot[], int flen)
 int role_test_arena(u8* buf, int len, struct chiplist chip[], int clen)
 {
 	//say("arena:\n%.*s\n", len, buf);
-	u64 hash;
-	u64 fmt;
-	u8* file;
-	u8* tmp;
-
 	int j,k;
 	int str = -1;
 
@@ -372,6 +367,12 @@ int role_test_arena(u8* buf, int len, struct chiplist chip[], int clen)
 
 	int propname = -1;
 	int propdata = -1;
+
+	u64 hash = 0;
+	u8* tmp = 0;
+
+	u64 fmt = 0;
+	u8* url = 0;
 
 	for(j=0;j<=len;j++) {
 		k = buf[j];
@@ -409,11 +410,11 @@ int role_test_arena(u8* buf, int len, struct chiplist chip[], int clen)
 					parsefmt((void*)&fmt, buf+propdata);
 					//say("%llx\n", fmt);
 				}
-				if(0 == ncmp(buf+propname, "file", 4)){
-					file = buf+propdata;
-					while(*file == 0x20)file++;
+				if(0 == ncmp(buf+propname, "url", 3)){
+					url = buf+propdata;
+					while(*url == 0x20)url++;
 
-					tmp = file;
+					tmp = url;
 					while(1){
 						if((*tmp == 0xa) | (*tmp == 0xd)){
 							*tmp = 0;
@@ -437,20 +438,20 @@ int role_test_arena(u8* buf, int len, struct chiplist chip[], int clen)
 		}
 		if('}' == k) {
 			if(nodename >= 0){
-				nodename = -1;
+				//say("haha:%llx,%llx\n", fmt, url);
 
 				chip[clen].tier = _win_;
 				chip[clen].type = fmt;
 
 				chip[clen].hash = hash;
 				chip[clen].addr = arenacreate(fmt, 0, 0, 0);
-				//say("@%llx\n", arenabuf[arenalen]);
 
+				nodename = -1;
 				clen += 1;
 			}//if innode
 
 			fmt = 0;
-			file = 0;
+			url = 0;
 		}//if }
 	}//for
 
@@ -459,12 +460,6 @@ int role_test_arena(u8* buf, int len, struct chiplist chip[], int clen)
 int role_test_actor(u8* buf, int len, struct chiplist chip[], int clen)
 {
 	//say("actor:\n%.*s\n", len, buf);
-	u64 hash;
-	u8* tmp;
-
-	u64 fmt;
-	u8* file = 0;
-
 	int j,k;
 	int str = -1;
 
@@ -474,105 +469,11 @@ int role_test_actor(u8* buf, int len, struct chiplist chip[], int clen)
 	int propname = -1;
 	int propdata = -1;
 
-	for(j=0;j<=len;j++) {
-		k = buf[j];
+	u64 hash = 0;
+	u8* tmp = 0;
 
-		if( (j == len) | ('\n' == k) ) {
-
-			str = -1;
-			continue;
-		}
-
-		if('#' == k){
-			while('\n' != buf[j])j++;
-			j++;
-			k = buf[j];
-		}
-
-		if(	((k >= '0') && (k <= '9')) |
-			((k >= 'A') && (k <= 'Z')) |
-			((k >= 'a') && (k <= 'z')) )
-		{
-			if(str < 0)str = j;
-			continue;
-		}
-
-		//propname: ...
-		if(':' == k) {
-			//in <type> && in node{} && have str
-			if( (nodename >= 0) && (str >= 0) ) {
-				propdata = j+1;
-				propname = str;
-				str = -1;
-
-				//say("propname = %.*s\n", j-propname, buf+propname);
-				if(0 == ncmp(buf+propname, "fmt", 3)){
-					parsefmt((void*)&fmt, buf+propdata);
-					//say("%llx\n", fmt);
-				}
-				if(0 == ncmp(buf+propname, "file", 4)){
-					file = buf+propdata;
-					while(*file == 0x20)file++;
-
-					tmp = file;
-					while(1){
-						if((*tmp == 0xa) | (*tmp == 0xd)){
-							*tmp = 0;
-							break;
-						}
-						tmp++;
-					}
-				}
-			}
-			continue;
-		}
-
-		//nodename{...}
-		if('{' == k) {
-			nodename = str;
-			nodedata = j+1;
-			str = -1;
-
-			parsefmt((void*)&hash, buf+nodename);
-			//say("actnode=%.*s\n", j-nodename, buf+nodename);
-		}
-		if('}' == k) {
-			if(nodename >= 0){
-				nodename = -1;
-
-				chip[clen].tier = _act_;
-				chip[clen].type = fmt;
-
-				chip[clen].hash = hash;
-				chip[clen].addr = actorcreate(fmt, file, 0, 0);
-				//say("@%llx\n", act);
-
-				clen += 1;
-			}//if innode
-
-			fmt = 0;
-			file = 0;
-		}//if }
-	}//for
-
-	return clen;
-}
-int role_test_system(u8* buf, int len, struct chiplist chip[], int clen)
-{
-	//say("system:\n%.*s\n", len, buf);
-	u64 hash;
-	u64 fmt;
-	u8* url;
-	u8* tmp;
-
-	int j,k;
-	int str = -1;
-
-	int nodename = -1;
-	int nodedata = -1;
-
-	int propname = -1;
-	int propdata = -1;
+	u64 fmt = 0;
+	u8* url = 0;
 
 	for(j=0;j<=len;j++) {
 		k = buf[j];
@@ -638,15 +539,116 @@ int role_test_system(u8* buf, int len, struct chiplist chip[], int clen)
 		}
 		if('}' == k) {
 			if(nodename >= 0){
+				//say("haha:%llx,%llx\n", fmt, url);
+
+				chip[clen].tier = _act_;
+				chip[clen].type = fmt;
+
+				chip[clen].hash = hash;
+				chip[clen].addr = actorcreate(fmt, url, 0, 0);
+
 				nodename = -1;
+				clen += 1;
+			}//if innode
+
+			fmt = 0;
+			url = 0;
+		}//if }
+	}//for
+
+	return clen;
+}
+int role_test_system(u8* buf, int len, struct chiplist chip[], int clen)
+{
+	//say("system:\n%.*s\n", len, buf);
+	int j,k;
+	int str = -1;
+
+	int nodename = -1;
+	int nodedata = -1;
+
+	int propname = -1;
+	int propdata = -1;
+
+	u64 hash = 0;
+	u8* tmp = 0;
+
+	u64 fmt = 0;
+	u8* url = 0;
+
+	for(j=0;j<=len;j++) {
+		k = buf[j];
+
+		if( (j == len) | ('\n' == k) ) {
+
+			str = -1;
+			continue;
+		}
+
+		if('#' == k){
+			while('\n' != buf[j])j++;
+			j++;
+			k = buf[j];
+		}
+
+		if(	((k >= '0') && (k <= '9')) |
+			((k >= 'A') && (k <= 'Z')) |
+			((k >= 'a') && (k <= 'z')) )
+		{
+			if(str < 0)str = j;
+			continue;
+		}
+
+		//propname: ...
+		if(':' == k) {
+			//in <type> && in node{} && have str
+			if( (nodename >= 0) && (str >= 0) ) {
+				propdata = j+1;
+				propname = str;
+				str = -1;
+
+				//say("propname = %.*s\n", j-propname, buf+propname);
+				if(0 == ncmp(buf+propname, "fmt", 3)){
+					parsefmt((void*)&fmt, buf+propdata);
+					//say("%llx\n", fmt);
+				}
+				if(0 == ncmp(buf+propname, "url", 3)){
+					url = buf+propdata;
+					while(*url == 0x20)url++;
+
+					tmp = url;
+					while(1){
+						if((*tmp == 0xa) | (*tmp == 0xd)){
+							*tmp = 0;
+							break;
+						}
+						tmp++;
+					}
+				}
+			}
+			continue;
+		}
+
+		//nodename{...}
+		if('{' == k) {
+			nodename = str;
+			nodedata = j+1;
+			str = -1;
+
+			parsefmt((void*)&hash, buf+nodename);
+			//say("actnode=%.*s\n", j-nodename, buf+nodename);
+		}
+		if('}' == k) {
+			if(nodename >= 0){
+				//say("haha:%llx,%llx\n", fmt, url);
 
 				chip[clen].tier = _sys_;
 				chip[clen].type = fmt;
 
 				chip[clen].hash = hash;
 				chip[clen].addr = systemcreate(fmt, url, 0, 0);
-				//say("@%llx\n", act);
 
+				nodename = -1;
 				clen += 1;
 			}//if innode
 
@@ -660,11 +662,6 @@ int role_test_system(u8* buf, int len, struct chiplist chip[], int clen)
 int role_test_artery(u8* buf, int len, struct chiplist chip[], int clen)
 {
 	//say("artery:\n%.*s\n", len, buf);
-	u64 hash;
-	u64 fmt;
-	u8* url;
-	u8* tmp;
-
 	int j,k;
 	int str = -1;
 
@@ -673,6 +670,12 @@ int role_test_artery(u8* buf, int len, struct chiplist chip[], int clen)
 
 	int propname = -1;
 	int propdata = -1;
+
+	u64 hash = 0;
+	u8* tmp = 0;
+
+	u64 fmt = 0;
+	u8* url = 0;
 
 	for(j=0;j<=len;j++) {
 		k = buf[j];
@@ -738,15 +741,15 @@ int role_test_artery(u8* buf, int len, struct chiplist chip[], int clen)
 		}
 		if('}' == k) {
 			if(nodename >= 0){
-				nodename = -1;
+				//say("haha:%llx,%llx\n", fmt, url);
 
 				chip[clen].tier = _art_;
 				chip[clen].type = fmt;
 
 				chip[clen].hash = hash;
 				chip[clen].addr = arterycreate(fmt, url, 0, 0);
-				//say("haha:%llx,%llx\n", fmt, url);
 
+				nodename = -1;
 				clen += 1;
 			}//if innode
 
@@ -760,11 +763,6 @@ int role_test_artery(u8* buf, int len, struct chiplist chip[], int clen)
 int role_test_driver(u8* buf, int len, struct chiplist chip[], int clen)
 {
 	//say("artery:\n%.*s\n", len, buf);
-	u64 hash;
-	u64 fmt;
-	u8* url;
-	u8* tmp;
-
 	int j,k;
 	int str = -1;
 
@@ -773,6 +771,12 @@ int role_test_driver(u8* buf, int len, struct chiplist chip[], int clen)
 
 	int propname = -1;
 	int propdata = -1;
+
+	u64 hash = 0;
+	u8* tmp = 0;
+
+	u64 fmt = 0;
+	u8* url = 0;
 
 	for(j=0;j<=len;j++) {
 		k = buf[j];
@@ -838,15 +842,15 @@ int role_test_driver(u8* buf, int len, struct chiplist chip[], int clen)
 		}
 		if('}' == k) {
 			if(nodename >= 0){
-				nodename = -1;
+				//say("haha:%llx,%llx\n", fmt, url);
 
 				chip[clen].tier = _dri_;
 				chip[clen].type = fmt;
 
 				chip[clen].hash = hash;
 				chip[clen].addr = drivercreate(fmt, url, 0, 0);
-				//say("haha:%llx,%llx\n", fmt, url);
 
+				nodename = -1;
 				clen += 1;
 			}//if innode
 
@@ -860,11 +864,6 @@ int role_test_driver(u8* buf, int len, struct chiplist chip[], int clen)
 int role_test_device(u8* buf, int len, struct chiplist chip[], int clen)
 {
 	//say("artery:\n%.*s\n", len, buf);
-	u64 hash;
-	u64 fmt;
-	u8* url;
-	u8* tmp;
-
 	int j,k;
 	int str = -1;
 
@@ -873,6 +872,12 @@ int role_test_device(u8* buf, int len, struct chiplist chip[], int clen)
 
 	int propname = -1;
 	int propdata = -1;
+
+	u64 hash = 0;
+	u8* tmp = 0;
+
+	u64 fmt = 0;
+	u8* url = 0;
 
 	for(j=0;j<=len;j++) {
 		k = buf[j];
@@ -938,15 +943,15 @@ int role_test_device(u8* buf, int len, struct chiplist chip[], int clen)
 		}
 		if('}' == k) {
 			if(nodename >= 0){
-				nodename = -1;
+				//say("haha:%llx,%llx\n", fmt, url);
 
 				chip[clen].tier = _dev_;
 				chip[clen].type = fmt;
 
 				chip[clen].hash = hash;
 				chip[clen].addr = devicecreate(fmt, url, 0, 0);
-				//say("haha:%llx,%llx\n", fmt, url);
 
+				nodename = -1;
 				clen += 1;
 			}//if innode
 

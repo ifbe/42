@@ -475,15 +475,15 @@ int wsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	//server -> ???
 	switch(ele->name){
 	case _echo_:{
-		say("1111111\n");
 		echo = arterycreate(_echo_, 0, 0, 0);
+		if(0 == echo)break;
 		relationcreate(Ws, 0, _art_, _dst_, echo, 0, _art_, _src_);
 		//relationstart(&rel->srcchip, &rel->dstchip);
 		break;
 	}//echo
 	case _ptmx_:{
-		say("22222222\n");
 		ptmx = systemcreate(_ptmx_, "/dev/ptmx", 0, 0);
+		if(0 == ptmx)break;
 		relationcreate(Ws, 0, _art_, _dst_, ptmx, 0, _sys_, _dst_);
 		//relationstart(&rel->srcchip, &rel->dstchip);
 		break;

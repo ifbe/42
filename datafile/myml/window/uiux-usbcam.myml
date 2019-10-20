@@ -8,7 +8,7 @@ depth:1024
 }
 usbcam{
 fmt:cam
-file:/dev/video0
+url:/dev/video0
 }
 </arena>
 

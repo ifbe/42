@@ -12,7 +12,7 @@ depth:1024
 <actor>
 picture{
 fmt:picture
-file:datafile/jpg/earth.jpg
+url:datafile/jpg/earth.jpg
 }
 freecam{
 fmt:freecam

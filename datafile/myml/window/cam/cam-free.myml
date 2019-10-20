@@ -29,7 +29,7 @@ fmt:aidgeom
 
 texball{
 fmt:texball
-file:datafile/jpg/skysphere.jpg
+url:datafile/jpg/skysphere.jpg
 }
 particle{
 fmt:particle

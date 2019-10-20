@@ -15,7 +15,7 @@ fmt:ground
 }
 test{
 fmt:model
-file:datafile/stl/spider-lowpoly.stl
+url:datafile/stl/spider-lowpoly.stl
 }
 tree{
 fmt:tree

@@ -1,4 +1,9 @@
 #include "libsoft.h"
+int decstr2data(void*, void*);
+
+
+
+
 struct socks5_request{
     u8 ver;     //5
     u8 cmd;
@@ -20,9 +25,9 @@ static u8 socks5_client0[] = {5,1,0};
 static u8 socks5_server0[] = {5, 0};
 static u8 socks5_client1[] = {0};
 static u8 socks5_server1[] = {5, 0, 0, 1, 0, 0, 0, 0, 0, 0};
-static u8 socks5_client2[] =
+static u8 httpreq[] =
 "GET / HTTP/1.1\r\n"
-"Host: www.baidu.com:80\r\n"
+"Host: %.*s:%d\r\n"
 "\r\n";
 
 
@@ -34,32 +39,52 @@ int socksclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int 
 }
 int socksclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-    u8 tmp[64];
+    int j,port;
+    u8 tmp[256];
     struct element* ele;
     struct socks5_request* req;
 	say("@socksclient_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
     printmemory(buf, len<16?len:16);
 
     ele = self->pchip;
-    if(2 == ele->stage1){
-        relationwrite(ele, _src_, 0, 0, socks5_client2, sizeof(socks5_client2)-1);
-        ele->stage1 = 3;
-        return 0;
-    }
-    if(1 == ele->stage1){
-        req = (void*)tmp;
-        req->ver = 5;
-        req->cmd = 1;
-        req->rsv = 0;
-        req->atyp = 3;
-        req->len = mysnprintf(req->url, 32, "www.baidu.com");
-        req->url[req->len+0] = 0;
-        req->url[req->len+1] = 80;
+    switch(self->flag){
+    case _dst_:{
+        printmemory(buf, len);
+        //relationwrite(ele, _src_, 0, 0, buf, len);
+        break;
+    }//dst
+    case _src_:{
+        if(3 == ele->stage1){
+            say("????????????\n");
+            return 0;
+        }
+        if(2 == ele->stage1){
+            if(1){
+                req = (void*)(ele->data);
+                j = req->len;
+                port = (req->url[j]<<8)+req->url[j+1];
+                j = mysnprintf(tmp, 256, httpreq, j, req->url, port);
 
-        relationwrite(ele, _src_, 0, 0, req, 7+req->len);
-        ele->stage1 = 2;
-        return 0;
-    }
+                printmemory(tmp, j);
+                relationwrite(ele, _src_, 0, 0, tmp, j);
+            }
+            else{
+                relationwrite(ele, _dst_, 0, 0, 0, 0);
+            }
+            ele->stage1 = 3;
+            return 0;
+        }
+        if(1 == ele->stage1){
+            req = (void*)(ele->data);
+ 
+            printmemory(req, 7+req->len);
+            relationwrite(ele, _src_, 0, 0, req, 7+req->len);
+ 
+            ele->stage1 = 2;
+            return 0;
+        }
+    }//src
+    }//switch
 	return 0;
 }
 int socksclient_stop(struct halfrel* self, struct halfrel* peer)
@@ -71,19 +96,49 @@ int socksclient_start(struct halfrel* self, struct halfrel* peer)
     struct element* ele;
 	say("@socksclient_start: %.4s\n", &self->flag);
 
-    ele = self->pchip;
-    relationwrite(ele, _src_, 0, 0, socks5_client0, 3);
-    ele->stage1 = 1;
-	return 0;
+    if(_src_ == self->flag){
+        ele = self->pchip;
+        relationwrite(ele, _src_, 0, 0, socks5_client0, 3);
+        ele->stage1 = 1;
+    }
+    return 0;
 }
 int socksclient_delete(struct element* ele)
 {
 	return 0;
 }
-int socksclient_create(struct element* ele, u8* url)
+int socksclient_create(struct element* ele, char* url)
 {
-	say("@socksclient_create\n");
+    int j,port;
+    struct socks5_request* req;
+	say("@socksclient_create: %llx\n", url);
     ele->stage1 = 0;
+
+    if(0 == url)url = "www.baidu.com";
+    say("%s\n", url);
+
+    //head
+    req = (void*)(ele->data);
+    req->ver = 5;
+    req->cmd = 1;
+    req->rsv = 0;
+    req->atyp = 3;
+
+    //addr
+    for(j=0;j<128;j++){
+        if(url[j] <= 0x20)break;
+        if(url[j] == ':')break;
+        req->url[j] = url[j];
+    }
+    req->len = j;
+
+    //port
+    if(url[j] != ':')port = 80;
+    else{
+        decstr2data(url+j+1, &port);
+    }
+    req->url[req->len+0] = (port>>8)&0xff;
+    req->url[req->len+1] = port&0xff;
 	return 0;
 }
 
