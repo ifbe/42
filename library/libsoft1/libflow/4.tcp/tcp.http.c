@@ -105,7 +105,7 @@ int httpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 		if(ele->stage1 == 0){
             //recv: socket ready
             //send: client packet0(hello)
-			relationwrite(ele, _src_, 0, 0, ele->buf, ele->len);
+			relationwrite(ele, _src_, 0, 0, ele->buf0, ele->len);
 			ele->stage1 = 1;
 		}
 	}//src
@@ -171,7 +171,7 @@ int httpclient_create(struct element* ele, u8* url)
 	}
 
 	//http req0
-	buf = ele->buf = ele->data;
+	buf = ele->buf0 = ele->data;
 	if(0 == buf)return 0;
 
 	ele->len = mysnprintf(buf, 0x80,

@@ -143,7 +143,7 @@ int nema0183client_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 	if(0 == ele)return 0;
 
 	//tail
-	str = ele->buf;
+	str = ele->buf0;
 	if(0 != str->len)
 	{
 		k = str->len;
@@ -195,7 +195,7 @@ int nema0183client_create(struct element* ele, u8* url)
 {
 	struct str* tmp;
 
-	ele->buf = tmp = memorycreate(0x1000, 0);
+	ele->buf0 = tmp = memorycreate(0x1000, 0);
 	tmp->len = 0;
 
 	return 0;

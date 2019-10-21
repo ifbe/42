@@ -35,7 +35,7 @@ int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 		case _src_:{
 			//remain part
 			cur = ele->len;
-			tmp = ele->buf;
+			tmp = ele->buf0;
 			if(cur){
 				for(j=0;j<len;j++){
 					tmp[cur] = buf[j];
@@ -93,7 +93,7 @@ int reline_start(struct halfrel* self, struct halfrel* peer)
 int reline_create(struct element* ele, u8* url)
 {
 	say("@reline_create\n");
-	ele->buf = memorycreate(0x1000, 0);
+	ele->buf0 = memorycreate(0x1000, 0);
 	ele->len = 0;
 	return 1;
 }

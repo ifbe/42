@@ -326,7 +326,7 @@ int fileclient_start(struct halfrel* self, struct halfrel* peer)
 	u64 type;
 	struct element* ele = self->pchip;
 	struct object* obj = peer->pchip;
-	void* buf = ele->buf = memorycreate(0x1000, 0);
+	void* buf = ele->buf0 = memorycreate(0x1000, 0);
 
 	ret = readfile(obj->selffd, 0, buf, 0x1000);
 	if(ret != 0x1000)return -1;

@@ -50,7 +50,7 @@ int fftrgb_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 //say("alive2\n");
 
 	//2. tmp->pcm, send
-	pcm = ele->buf + ele->len;
+	pcm = ele->buf1 + ele->len;
 	ele->len = (ele->len + 1024*2) % 0x100000;
 //say("alive3\n");
 	for(x=0;x<1024;x++){
@@ -82,7 +82,7 @@ int fftrgb_create(struct element* ele, u8* url)
 	say("@fftrgb_create\n");
 	ele->buf0 = memorycreate(0x100000, 0);
 
-	ele->buf = memorycreate(0x100000, 0);
+	ele->buf1 = memorycreate(0x100000, 0);
 	ele->len = 0;
 	return 1;
 }

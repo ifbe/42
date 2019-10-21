@@ -53,19 +53,29 @@ int proxyserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int 
 }
 int proxyserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	struct element* ele;
 	say("@proxyserver_write: chip=%llx, foot=%.4s, len=%d\n", self->chip, &self->flag, len);
     printmemory(buf, len<16?len:16);
 
-    if('a' == self->flag){
-        relationwrite(self->pchip, 'b', 0, 0, buf, len);
+	ele = self->pchip;
+    if('c' == self->flag){		//client
+        relationwrite(ele, 's', 0, 0, buf, len);
     }
-    if('b' == self->flag){
-		if(0 == len){
-			//socks success, inform requester
-			relationwrite(self->pchip, 'a', 0, 0, proxy_server0, sizeof(proxy_server0)-1);
+    if('s' == self->flag){		//server
+		if(0 == len){			//server ready
+			if(ele->buf0){
+				//this is http proxy: send cached request directly
+				relationwrite(ele, 's', 0, 0, ele->buf0, ele->len);
+				memorydelete(ele->buf0);
+				ele->buf0 = 0;
+			}
+			else{
+				//this is https proxy: tell client ready to send request
+				relationwrite(ele, 'c', 0, 0, proxy_server0, sizeof(proxy_server0)-1);
+			}
 		}
 		else{
-			relationwrite(self->pchip, 'a', 0, 0, buf, len);
+			relationwrite(ele, 'c', 0, 0, buf, len);
 		}
     }
 	return 0;
@@ -100,7 +110,7 @@ int proxymaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int 
 int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int j;
-	u8 tmp[256];
+	u8* ptr;
 	struct relation* rel;
 
 	struct object* obj;			//parent
@@ -114,56 +124,92 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 	say("@proxymaster_write: chip=%llx, foot=%.4s, len=%d\n", self->chip, &self->flag, len);
     printmemory(buf, len<16?len:16);
 
-	if(0 != ncmp(buf, "CONNECT ", 8))return 0;
-	for(j=0;j<len-8;j++){
-		if(buf[j+8] <= 0x20){
-			tmp[j] = 0;
-			break;
-		}
-		tmp[j] = buf[j+8];
-	}
-	say("target=%s\n", tmp);
 
+//0: CONNECT or GET ?
+	ptr = 0;
+	if(0 == ncmp(buf, "CONNECT ", 8)){
+		ptr = buf+8;
+	}
+	else if(0 == ncmp(buf, "GET ", 4)){
+		for(j=4;j<len-1;j++){
+			if( (0xd == buf[j]) && (0xa == buf[j+1]) ){
+				if(0 == ncmp(buf+j+2, "Host: ", 6)){
+					ptr = buf+j+2+6;
+					break;
+				}
+			}
+		}
+		if(0 == ptr)return 0;
+	}
+	else return 0;
+
+
+//1: create servant
 	//parent, child
 	obj = (void*)(peer->chip);
 	if(0 == obj)return 0;
 	Tcp = obj->tempobj;
     if(0 == Tcp)return 0;
 
-	//master, server
+	//master, servant
 	ele = self->pchip;
 	if(0 == ele)return 0;
     Proxy = arterycreate(_Proxy_, 0, 0, 0);
     if(0 == Proxy)return 0;
 
-	//child -> server
-    relationcreate(Proxy, 0, _art_, 'a', Tcp, 0, _sys_, _dst_);
+	//child -> servant
+    relationcreate(Proxy, 0, _art_, 'c', Tcp, 0, _sys_, _dst_);
 
-	//
+
+//2: copy host
+	for(j=0;j<128;j++){
+		if( (ptr[j] == '/') | (ptr[j] <= 0x20) ) {
+			Proxy->data[j] = 0;
+			break;
+		}
+		Proxy->data[j] = ptr[j];
+	}
+	if(0 == ncmp(buf, "GET ", 4)){
+		Proxy->len = len;
+		Proxy->buf0 = memorycreate(len, 0);
+
+		ptr = Proxy->buf0;
+		for(j=0;j<len;j++)ptr[j] = buf[j];
+	}
+
+
+//3: server prepare
+	say("target=%s\n", Proxy->data);
 	switch(ele->name){
-	case _socks_:{
-		socks = arterycreate(_socks_, tmp, 0, 0);
-		if(0 == socks)break;
-		relationcreate(Proxy, 0, _art_, 'b', socks, 0, _art_, _dst_);
+		case _socks_:{
+			//socksclient -> proxyserver
+			socks = arterycreate(_socks_, Proxy->data, 0, 0);
+			if(0 == socks)break;
+			relationcreate(Proxy, 0, _art_, 's', socks, 0, _art_, _dst_);
 
-		client = systemcreate(_tcp_, "127.0.0.1:8888", 0, 0);
-		if(0 == client)break;
+			//tcpclient -> socksclient
+			client = systemcreate(_tcp_, "127.0.0.1:8888", 0, 0);
+			if(0 == client)break;
+			rel = relationcreate(socks, 0, _art_, _src_, client, 0, _sys_, _dst_);
 
-		rel = relationcreate(socks, 0, _art_, _src_, client, 0, _sys_, _dst_);
-		self = (void*)&rel->dstchip;
-		peer = (void*)&rel->srcchip;
-		relationstart(self, peer);
-		break;
-	}//socks
-	default:{
-		client = systemcreate(_tcp_, tmp, 0, 0);
-		if(0 == client)break;
+			//fake ready from tcpclient to socksclient
+			self = (void*)&rel->dstchip;
+			peer = (void*)&rel->srcchip;
+			relationstart(self, peer);
+			break;
+		}//socks
+		default:{
+			//tcpclient -> proxyserver
+			client = systemcreate(_tcp_, Proxy->data, 0, 0);
+			if(0 == client)break;
+			rel = relationcreate(Proxy, 0, _art_, 's', client, 0, _sys_, _dst_);
 
-		rel = relationcreate(Proxy, 0, _art_, 'b', client, 0, _sys_, _dst_);
-		self = (void*)&rel->dstchip;
-		peer = (void*)&rel->srcchip;
-		proxyserver_write(self, peer, 0, _ok_, 0, 0);
-	}//default
+			//fake ready from tcpclient to proxyserver
+			self = (void*)&rel->dstchip;
+			peer = (void*)&rel->srcchip;
+			proxyserver_write(self, peer, 0, _ok_, 0, 0);
+			break;
+		}//default
 	}
 
 	return 0;

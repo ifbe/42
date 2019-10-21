@@ -35,7 +35,7 @@ int fftpcm_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	fft(real, imag, 10);
 
 	//2.complex->pcm
-	pcm = ele->buf + ele->len;
+	pcm = ele->buf1 + ele->len;
 	ele->len = (ele->len+2048) % 0x100000;
 
 	max = 0.0;
@@ -74,7 +74,7 @@ int fftpcm_create(struct element* ele, u8* url)
 	say("@fftpcm_create\n");
 	ele->buf0 = memorycreate(0x100000, 0);
 
-	ele->buf = memorycreate(0x100000, 0);
+	ele->buf1 = memorycreate(0x100000, 0);
 	ele->len = 0;
 	return 1;
 }

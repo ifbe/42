@@ -141,10 +141,9 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			//printf("[%x]----\n", ret);
 			//eventwrite('-', _fd_, ret, 0);
 
-			obj[fd/4].type = 0;
-			obj[fd/4].name = 0;
-
+			here = &obj[fd/4];
 			iocp_del(fd);
+			systemdelete(here);
 		}
 		else
 		{

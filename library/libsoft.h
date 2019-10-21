@@ -397,7 +397,6 @@ struct element
 	union{
 		u64 padd3;
 		void* buf3;
-		void* buf;
 	};
 
 	//[80,ff]

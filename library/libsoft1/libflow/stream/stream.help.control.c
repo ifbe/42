@@ -18,7 +18,7 @@ int control_write(struct halfrel* self, struct halfrel* peer, u8* arg, int idx, 
 	say("%.*s\n", j, arg);
 
 	ele = self->pchip;
-	relationwrite(self->pchip, _src_, "text/html", 0, ele->buf, ele->len);
+	relationwrite(self->pchip, _src_, "text/html", 0, ele->buf0, ele->len);
 	return 0;
 }
 int control_stop(struct halfrel* self, struct halfrel* peer)
@@ -41,7 +41,7 @@ int control_create(struct element* ele, u8* url)
 {
 	say("@control_create\n");
 
-	ele->buf = memorycreate(0x1000, 0);
-	ele->len = openreadclose(url, 0, ele->buf, 0x1000);
+	ele->buf0 = memorycreate(0x1000, 0);
+	ele->len = openreadclose(url, 0, ele->buf0, 0x1000);
 	return 1;
 }

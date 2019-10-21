@@ -47,7 +47,7 @@ int str2fv_start(struct halfrel* self, struct halfrel* peer)
 int str2fv_create(struct element* ele, u8* url)
 {
 	say("@str2fv_create\n");
-	ele->buf = memorycreate(0x1000, 0);
+	ele->buf0 = memorycreate(0x1000, 0);
 	ele->len = 0;
 	return 1;
 }

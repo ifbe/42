@@ -18,7 +18,7 @@ int recut_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
 
-	mem = ele->buf;
+	mem = ele->buf0;
 	ret = ele->len;
 	say("@recut_write: %x + %x = %x\n", ret, len, ret+len);
 
@@ -54,7 +54,7 @@ int recut_start(struct halfrel* self, struct halfrel* peer)
 int recut_create(struct element* ele, u8* url)
 {
 	say("@recut_create\n");
-	ele->buf = memorycreate(0x100000, 0);
+	ele->buf0 = memorycreate(0x100000, 0);
 	ele->len = 0;
 	return 1;
 }
