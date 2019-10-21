@@ -255,7 +255,7 @@ int relation_d(struct halfrel* self, struct halfrel* peer)
 		case _wrk_:return workerstop(self, peer);
 		case _dev_:return devicestop(self, peer);
 		case _dri_:return driverstop(self, peer);
-		case _sys_: return systemstop(self, peer);
+		case _sys_:return systemstop(self, peer);
 		case _art_:return arterystop(self, peer);
 		case _win_:return  arenastop(self, peer);
 		case _act_:return  actorstop(self, peer);
@@ -279,7 +279,7 @@ int relation_a(struct halfrel* self, struct halfrel* peer)
 		case _wrk_:return workerstart(self, peer);
 		case _dev_:return devicestart(self, peer);
 		case _dri_:return driverstart(self, peer);
-		case _sys_: return systemstart(self, peer);
+		case _sys_:return systemstart(self, peer);
 		case _art_:return arterystart(self, peer);
 		case _win_:return  arenastart(self, peer);
 		case _act_:return  actorstart(self, peer);

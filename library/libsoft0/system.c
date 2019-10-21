@@ -103,6 +103,7 @@ int systemwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 }
 int systemstop(struct halfrel* self, struct halfrel* peer)
 {
+	say("@systemstop\n");
 	return 0;
 }
 int systemstart(struct halfrel* self, struct halfrel* peer)
@@ -116,8 +117,9 @@ int systemstart(struct halfrel* self, struct halfrel* peer)
 
 int systemdelete(void* addr)
 {
-	struct object* oo;
 	int fd;
+	struct object* oo;
+	struct relation* rel;
 	if(0 == addr)return 0;
 
 	oo = addr;
@@ -125,9 +127,18 @@ int systemdelete(void* addr)
 
 
 	//del irel, orel
-	if(0 != oo->irel0)relationdelete(oo->irel0);
-	if(0 != oo->orel0)relationdelete(oo->orel0);
+	rel = oo->irel0;
+	if(0 != rel){
+		relationstop((void*)&rel->srcchip, (void*)&rel->dstchip);
+		relationdelete(rel);
+	}
 	oo->irel0 = oo->ireln = 0;
+
+	rel = oo->orel0;
+	if(0 != rel){
+		relationstop((void*)&rel->srcchip, (void*)&rel->dstchip);
+		relationdelete(rel);
+	}
 	oo->orel0 = oo->oreln = 0;
 
 

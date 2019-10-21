@@ -605,6 +605,24 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 }
 int arterystop(struct halfrel* self, struct halfrel* peer)
 {
+	struct element* ele;
+	say("@arterystop\n");
+
+	ele = self->pchip;
+	if(0 == ele)return 0;
+
+	switch(ele->type){
+		case _http_:return httpclient_stop(self, peer);break;
+		case _ws_:return wsclient_stop(self, peer);break;
+
+		case _ssh_:return sshclient_stop(self, peer);break;
+		case _tls_:return tlsclient_stop(self, peer);break;
+
+		case _proxy_:return proxyclient_stop(self, peer);break;
+		case _Proxy_:return proxyserver_stop(self, peer);break;
+		case _socks_:return socksclient_stop(self, peer);break;
+		case _Socks_:return socksserver_stop(self, peer);break;
+	}
 	return 0;
 }
 int arterystart(struct halfrel* self, struct halfrel* peer)
@@ -612,7 +630,7 @@ int arterystart(struct halfrel* self, struct halfrel* peer)
 	struct element* ele;
 	say("@arterystart\n");
 
-	ele = (void*)(self->chip);
+	ele = self->pchip;
 	if(0 == ele)return 0;
 
 	switch(ele->type){

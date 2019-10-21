@@ -115,6 +115,7 @@ int httpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 }
 int httpclient_stop(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	say("@httpclient_stop: %.4s\n", &self->flag);
 	return 0;
 }
 int httpclient_start(struct halfrel* self, struct halfrel* peer)
@@ -188,6 +189,10 @@ int httpclient_create(struct element* ele, u8* url)
 
 
 
+int httpserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+{
+	return 0;
+}
 int httpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {/*
 	u8 tmp[0x1000];
@@ -206,8 +211,14 @@ int httpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 	system_leafwrite(ele->obj, 0, ele, sty, buf, len);*/
 	return 0;
 }
-int httpserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int httpserver_stop(struct halfrel* self, struct halfrel* peer)
 {
+	say("@httpserver_stop: %.4s\n", &self->flag);
+	return 0;
+}
+int httpserver_start(struct halfrel* self, struct halfrel* peer)
+{
+	say("@httpserver_start: %.4s\n", &self->flag);
 	return 0;
 }
 int httpserver_delete(struct element* ele)

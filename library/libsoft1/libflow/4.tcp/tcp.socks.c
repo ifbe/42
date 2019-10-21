@@ -105,6 +105,7 @@ int socksclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 }
 int socksclient_stop(struct halfrel* self, struct halfrel* peer)
 {
+	say("@socksclient_stop: %.4s\n", &self->flag);
 	return 0;
 }
 int socksclient_start(struct halfrel* self, struct halfrel* peer)
@@ -180,11 +181,12 @@ int socksserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 }
 int socksserver_stop(struct halfrel* self, struct halfrel* peer)
 {
+	say("@socksserver_stop: %.4s\n", &self->flag);
 	return 0;
 }
 int socksserver_start(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksserver_start\n");
+	say("@socksserver_start: %.4s\n", &self->flag);
 	return 0;
 }
 int socksserver_delete(struct element* ele)

@@ -9,11 +9,15 @@ void createserial();
 void boarddelete();
 void boardcreate();
 //
+int args_delete(void*);
+void args_create(int, char**);
 int memorydelete(void*);
 void* memorycreate(int size, int flag);
 void death();
 void birth(void*);
-void args_create(int, char**);
+//
+int openreadclose(void*, int, void*, int);
+int openwriteclose(void*, int, void*, int);
 
 
 
@@ -62,8 +66,11 @@ int pwrclkdelete(void* addr)
 	say("workerdelete:%.8s\n", &tmp->type);
 
 	switch(tmp->type){
-	case _main_:
-	case _win32_:death();
+		case _main_:
+		case _win32_:{
+			openwriteclose("universe.bin", 0, pwr, 0x1000000);
+			death();
+		}
 	}
 	return 0;
 }

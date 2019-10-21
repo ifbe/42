@@ -27,10 +27,12 @@ int proxyclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 }
 int proxyclient_stop(struct halfrel* self, struct halfrel* peer)
 {
+	say("@proxyclient_stop: %.4s\n", &self->flag);
 	return 0;
 }
 int proxyclient_start(struct halfrel* self, struct halfrel* peer)
 {
+	say("@proxyclient_start: %.4s\n", &self->flag);
 	return 0;
 }
 int proxyclient_delete(struct element* ele)
@@ -82,11 +84,12 @@ int proxyserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 }
 int proxyserver_stop(struct halfrel* self, struct halfrel* peer)
 {
+	say("@proxyserver_stop: %.4s\n", &self->flag);
 	return 0;
 }
 int proxyserver_start(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyserver_start\n");
+	say("@proxyserver_start: %.4s\n", &self->flag);
 	return 0;
 }
 int proxyserver_delete(struct element* ele)
@@ -188,7 +191,7 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 			relationcreate(Proxy, 0, _art_, 's', socks, 0, _art_, _dst_);
 
 			//tcpclient -> socksclient
-			client = systemcreate(_tcp_, "127.0.0.1:8888", 0, 0);
+			client = systemcreate(_tcp_, ele->data, 0, 0);
 			if(0 == client)break;
 			rel = relationcreate(socks, 0, _art_, _src_, client, 0, _sys_, _dst_);
 
@@ -229,9 +232,29 @@ int proxymaster_delete(struct element* ele)
 }
 int proxymaster_create(struct element* ele, u8* url)
 {
-	say("@proxymaster.start\n");
+	int j,k;
+	say("@proxymaster.create\n");
+
 	if(0 == url)goto none;
 	if(0 == ncmp(url, "socks", 5)){
+		for(j=5;j<0x80;j++){
+			if(url[j] <= 0x20){
+				mysnprintf(ele->data, 0x80, "127.0.0.1:8888");
+				break;
+			}
+			if(0 == ncmp(url+j, "://", 3)){
+				url += j+3;
+				for(k=0;k<64;k++){
+					if(url[k] <= 0x20){
+						ele->data[k] = 0;
+						break;
+					}
+					ele->data[k] = url[k];
+				}
+				break;
+			}
+		}
+
 		ele->name = _socks_;
 		return 0;
 	}
