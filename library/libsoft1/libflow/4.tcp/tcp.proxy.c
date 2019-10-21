@@ -133,7 +133,7 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 	if(0 == ncmp(buf, "CONNECT ", 8)){
 		ptr = buf+8;
 	}
-	else if(0 == ncmp(buf, "GET ", 4)){
+	else if( (0 == ncmp(buf, "GET ", 4)) | (0 == ncmp(buf, "POST ", 5)) ){
 		for(j=4;j<len-1;j++){
 			if( (0xd == buf[j]) && (0xa == buf[j+1]) ){
 				if(0 == ncmp(buf+j+2, "Host: ", 6)){
@@ -172,7 +172,7 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 		}
 		Proxy->data[j] = ptr[j];
 	}
-	if(0 == ncmp(buf, "GET ", 4)){
+	if(0 != ncmp(buf, "CONNECT ", 8)){
 		Proxy->len = len;
 		Proxy->buf0 = memorycreate(len, 0);
 
