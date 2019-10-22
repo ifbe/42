@@ -85,14 +85,16 @@ int httpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
             //recv: http reply0
             //send: http data
 			k = 0;
-			for(j=0;j<len/2;j++){
+			for(j=0;j<len-2;j++){
 				//say("%d,%x\n",j,buf[j]);
 				if(	(buf[j+0] == 0xd) && (buf[j+1] == 0xa) ) {
 					if(buf[k] != 0xd){
-						//say("(((%.*s)))\n", j-k, buf+k);
+						say("(((%.*s)))\n", j-k, buf+k);
 						k = j+2;
 					}
 					else{
+						//say("dbg:%d\n",len-j-2);
+						//printmemory(buf+j+2, len-j-2);
 						relationwrite(ele, _dst_, 0, 0, buf+j+2, len-j-2);
 						break;
 					}

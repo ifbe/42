@@ -4,6 +4,7 @@ all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	+make -s a
 	+make -s so
 	+make -s program
+	cp a.out ../..
 libboot0:
 	+make -s -C $(library)/libboot0 cflag=$(flag) rpi
 libboot1:
