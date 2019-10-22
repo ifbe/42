@@ -30,6 +30,7 @@ none:
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/board.c
 	$(compiler) $(cflag) app/none/main.c
+	$(compiler) $(cflag) app/none/envev.c
 	$(compiler) $(cflag) app/none/serial.c
 	$(compiler) $(cflag) app/none/thread.c
 
@@ -42,6 +43,7 @@ rpi:
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/rpi/wiringpi.c
 	$(compiler) $(cflag) app/none/main.c
+	$(compiler) $(cflag) app/none/envev.c
 	$(compiler) $(cflag) app/none/serial.c
 	$(compiler) $(cflag) app/none/thread.c
 
@@ -54,6 +56,7 @@ wincmd:
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/board.c
 	$(compiler) $(cflag) app/win/main.c
+	$(compiler) $(cflag) app/win/envev.c
 	$(compiler) $(cflag) app/win/serial.c
 	$(compiler) $(cflag) app/win/thread.c
 

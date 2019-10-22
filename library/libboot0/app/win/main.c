@@ -77,20 +77,7 @@ int main(int argc, char** argv)
 
 
 
-void* pollenv()
-{
-	Sleep(1);
-	return 0;
-}
 /*
-void* waitenv()
-{
-	return 0;
-}
-
-
-
-
 void death()
 {
 	free(rawuniverse);
