@@ -105,18 +105,19 @@ void listfile(char* dest)
 void choosefile()
 {
 }
-int writefile(u64 fd, u64 off, char* buf, u64 len)
+int readfile(void* obj, int fd, void* arg, int off, char* buf, int len)
 {
 	int ret;
 
-	ret=lseek64(fd, off, SEEK_SET);
-	if(-1 == ret)
-	{
-		//say("errno:%d,seek:%llx\n", errno, off);
-		return -2;
-	}
+	if(arg){
+		ret = lseek64(fd, off, SEEK_SET);
+		if(-1 == ret){
+			//say("errno:%d,seek:%llx\n", errno, off);
+			return -2;
+		}
+	}//from head
 
-	ret = write(fd, buf, len);
+	ret = read(fd, buf, len);
 	if(-1 == ret)
 	{
 		//say("errno:%d,read:%llx,%llx\n", errno, off, len);
@@ -125,18 +126,19 @@ int writefile(u64 fd, u64 off, char* buf, u64 len)
 
 	return ret;
 }
-int readfile(u64 fd, u64 off, char* buf, u64 len)
+int writefile(void* obj, int fd, void* arg, int off, char* buf, int len)
 {
 	int ret;
 
-	ret = lseek64(fd, off, SEEK_SET);
-	if(-1 == ret)
-	{
-		//say("errno:%d,seek:%llx\n", errno, off);
-		return -2;
-	}
+	if(arg){
+		ret = lseek64(fd, off, SEEK_SET);
+		if(-1 == ret){
+			//say("errno:%d,seek:%llx\n", errno, off);
+			return -2;
+		}
+	}//from head
 
-	ret = read(fd, buf, len);
+	ret = write(fd, buf, len);
 	if(-1 == ret)
 	{
 		//say("errno:%d,read:%llx,%llx\n", errno, off, len);

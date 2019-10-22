@@ -26,18 +26,19 @@ void say(char* fmt,...);
 
 
 
-int writefile(u64 fd, u64 off, char* buf, u64 len)
+int readfile(void* obj, int fd, void* arg, int off, char* buf, int len)
 {
 	int ret;
 
-	ret = lseek(fd, off, SEEK_SET);
-	if(-1 == ret)
-	{
-		//say("errno:%d,seek:%llx\n", errno, off);
-		return -2;
-	}
+	if(arg){
+		ret = lseek(fd, off, SEEK_SET);
+		if(-1 == ret){
+			//say("errno:%d,seek:%llx\n", errno, off);
+			return -2;
+		}
+	}//from head
 
-	ret = write(fd, buf, len);
+	ret = read(fd, buf, len);
 	if(-1 == ret)
 	{
 		//say("errno:%d,read:%llx,%llx\n", errno, off, len);
@@ -46,18 +47,19 @@ int writefile(u64 fd, u64 off, char* buf, u64 len)
 
 	return ret;
 }
-int readfile(u64 fd, u64 off, char* buf, u64 len)
+int writefile(void* obj, int fd, void* arg, int off, char* buf, int len)
 {
 	int ret;
 
-	ret = lseek(fd, off, SEEK_SET);
-	if(-1 == ret)
-	{
-		//say("errno:%d,seek:%llx\n", errno, off);
-		return -2;
-	}
+	if(arg){
+		ret = lseek(fd, off, SEEK_SET);
+		if(-1 == ret){
+			//say("errno:%d,seek:%llx\n", errno, off);
+			return -2;
+		}
+	}//from head
 
-	ret = read(fd, buf, len);
+	ret = write(fd, buf, len);
 	if(-1 == ret)
 	{
 		//say("errno:%d,read:%llx,%llx\n", errno, off, len);
@@ -73,15 +75,14 @@ int stopfile(int fd)
 int startfile(char* path, int flag)
 {
 	int ret;
+	say("@startfile:%s,%x\n", path, flag);
 	if(0 == path){ret = -0xfff;goto fail;}
 	if(0 == path[0]){ret = -0xffe;goto fail;}
 
-	if('w' == flag)
-	{
+	if('w' == flag){
 		ret = open(path, O_RDWR | O_CREAT, S_IRWXU | S_IRWXG | S_IRWXO);
 	}
-	else
-	{
+	else{
 		ret = open(path, O_RDONLY);
 	}
 	if(ret > 0)return ret;

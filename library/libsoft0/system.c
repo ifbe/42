@@ -31,11 +31,6 @@ int stopsocket(int);
 int readsocket( int,void*,void*, int);
 int writesocket(int,void*,void*, int);
 //
-int startfile(void*, int);
-int stopfile(int);
-int readfile( int, int, void*, int);
-int writefile(int, int, void*, int);
-//
 int parseurl(u8* buf, int len, u8* addr, int* port);
 int parseuart(void*, int*, void*);
 int ncmp(void*, void*, int);
@@ -63,11 +58,8 @@ int systemread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	oo = self->pchip;
 	if(0 == oo)return 0;
 
-	fd = ((void*)oo - (void*)obj) / sizeof(struct object);
-	if(0 == fd)return 0;
-
 	switch(oo->type){
-		case _file_:return readfile(fd, idx, buf, len);
+		case _file_:return readfile(oo, oo->selffd, arg, idx, buf, len);
 	}
 	return 0;
 }
@@ -82,7 +74,7 @@ int systemwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 
 	switch(oo->type){
 		case _file_:{
-			return writefile(oo->selffd, idx, buf, len);
+			return writefile(oo, oo->selffd, arg, idx, buf, len);
 		}
 		case _ptmx_:{
 			return writeshell(oo->selffd, idx, buf, len);
@@ -195,6 +187,15 @@ void* systemcreate(u64 type, void* argstr, int argc, char** argv)
 	if(0 == type)return 0;
 
 	//file family
+	if(_FILE_ == type)
+	{
+		fd = startfile(name, 'w');
+		if(fd <= 0)return 0;
+
+		obj[fd].type = _FILE_;
+		obj[fd].selffd = fd;
+		return &obj[fd];
+	}
 	if(_file_ == type)
 	{
 		fd = startfile(name, 'r');

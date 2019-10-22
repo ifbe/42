@@ -5,11 +5,6 @@
 #define _hfs_ hex32('h','f','s',0)
 #define _ntfs_ hex32('n','t','f','s')
 u32 crc32(u32 crc, u8* buf, u32 len);
-//
-int startfile(void*, int);
-int stopfile(int);
-int readfile(u64 file, u64 off, u8* mem, u64 len);
-int writefile(u64 file, u64 off, u8* mem, u64 len);
 
 
 
@@ -134,15 +129,52 @@ void parse_gpt(u8* src, u8* dst)
 
 
 
-int gptclient_start(struct object* obj, void* of, struct element* ele, void* ef, u8* buf, int len)
+int gptclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
+int gptclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+{
+	return 0;
+}
+int gptclient_stop(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int gptclient_start(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
-	u8* src = ele->buf0 = memorycreate(0x10000, 0);
-	u8* dst = ele->buf1 = memorycreate(0x10000, 0);
+	struct object* obj;
+	struct element* ele;
+	u8* src;
+	u8* dst;
 
-	ret = readfile(obj->selffd, 0, src, 0x4800);
+	obj = peer->pchip;
+	ele = self->pchip;
+	src = ele->buf0;
+	dst = ele->buf1;
+
+	ret = readfile(obj, obj->selffd, "", 0, src, 0x4800);
 	if(ret != 0x4800)return 0;
 
 	parse_gpt(src, dst);
+	return 0;
+}
+int gptclient_delete(struct element* ele)
+{
+	if(ele->buf0){
+		memorydelete(ele->buf0);
+		ele->buf0 = 0;
+	}
+	if(ele->buf1){
+		memorydelete(ele->buf1);
+		ele->buf1 = 0;
+	}
+	return 0;
+}
+int gptclient_create(struct element* ele, u8* url)
+{
+	ele->buf0 = memorycreate(0x10000, 0);
+	ele->buf1 = memorycreate(0x10000, 0);
 	return 0;
 }

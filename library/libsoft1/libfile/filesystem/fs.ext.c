@@ -1,6 +1,4 @@
 #include "libsoft.h"
-int readfile(u64 file, u64 off, u8* mem, u64 len);
-int writefile(u64 file, u64 off, u8* mem, u64 len);
 int cleverread(u64, u64, u64, u8*, u64, u64);
 int cleverwrite(u64, u64, u64, u8*, u64, u64);
 
@@ -40,7 +38,7 @@ static u64 whichblock(u64 groupnum)
 	sector+=groupnum/(0x200/0x20);
 
 	//肯定在这个扇区里面
-	readfile(0, sector*0x200, blockrecord, 0x200);
+	readfile(0, 0, "", sector*0x200, blockrecord, 0x200);
 
 	//每0x20描述一个组，一个扇区有16个组的信息
 	u8* addr=blockrecord+8+(groupnum*0x20)%0x200;
@@ -87,7 +85,7 @@ static u8* checkcacheforinode(u64 wanted)
 		//read inode table
 		//say("inode:%x@%x\n",this,where);
 		//注意inodepergroup奇葩时这里出问题
-		readfile(0, where*0x200, rdi, count*inodesize*0x200);
+		readfile(0, 0, "", where*0x200, rdi, count*inodesize*0x200);
 
 		//读满0x400个inode就走人
 		rdi+=count*inodesize;		//注意inodepergroup奇葩时这里出问题
@@ -333,7 +331,7 @@ static int ext_start(u64 sector)
 	block0 = sector;
 
 	//读分区前8扇区，检查magic值
-	ret = readfile(0, block0*0x200, pbr, 0x1000);
+	ret = readfile(0, 0, "", block0*0x200, pbr, 0x1000);
 	ret = check_ext(pbr);
 	if(ret == 0)return -1;
 

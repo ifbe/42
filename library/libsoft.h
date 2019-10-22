@@ -452,6 +452,11 @@ double arcsin(double);
 double arccos(double);
 double arctan2(double, double);
 //
+int startfile(void*, int);
+int stopfile(int);
+int readfile( void*, int, void*, int, void*, int);
+int writefile(void*, int, void*, int, void*, int);
+//
 int threaddelete(u64);
 u64 threadcreate(void*, void*);
 int memorydelete(void*);

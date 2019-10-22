@@ -3,8 +3,6 @@
 #define	BSWAP_16(x)	((BSWAP_8(x) << 8) | BSWAP_8((x) >> 8))
 #define	BSWAP_32(x)	((BSWAP_16(x) << 16) | BSWAP_16((x) >> 16))
 #define	BSWAP_64(x)	((BSWAP_32(x) << 32) | BSWAP_32((x) >> 32))
-int readfile(u64 file, u64 off, u8* mem, u64 len);
-int writefile(u64 file, u64 off, u8* mem, u64 len);
 int cleverread(u64,u64,u64,	u8*,u64,u64);
 int cleverwrite(u64,u64,u64,	u8*,u64,u64);
 
@@ -138,10 +136,9 @@ void explainleafnode()
 static void hfs_explain(u64 number)
 {
 	say("%llx@%llx\n",number,catalogsector+nodesize*number);
-	readfile(0,
-		(catalogsector+nodesize*number)*0x200,
-		datahome,
-		nodesize*0x200
+	readfile(0, 0,
+		"", (catalogsector+nodesize*number)*0x200,
+		datahome, nodesize*0x200
 	);  //0x1000
 	printmemory(datahome,0x1000);
 
@@ -182,10 +179,9 @@ u64 searchbtreeforcnid(u64 nodenum,u64 wantcnid)
 	say("enter node:%llx\n",nodenum);
 
 	//把指定节点读到内存,顺便看看这节点是啥类型
-	readfile(0,
-		(catalogsector+nodenum*nodesize)*0x200,
-		datahome,
-		nodesize*0x200
+	readfile(0, 0,
+		"", (catalogsector+nodenum*nodesize)*0x200,
+		datahome, nodesize*0x200
 	);
 	u8 type=*(u8*)(datahome+8);
 
@@ -209,10 +205,9 @@ u64 searchbtreeforcnid(u64 nodenum,u64 wantcnid)
 
 			//临时读下一个到datahome+0x8000那里(节点最大不超过0x8000吧)
 			//读这个临时节点的第一个记录看看，能确定下来目前的最后一个record就是想要的
-			readfile(0,
-				(catalogsector+temptempnodenum*nodesize)*0x200,
-				datahome+0x8000,
-				nodesize*0x200
+			readfile(0, 0,
+				"", (catalogsector+temptempnodenum*nodesize)*0x200,
+				datahome+0x8000, nodesize*0x200
 			);
 			u64 temptempkey=BSWAP_32(*(u32*)(datahome+0x8000+0x10));
 
@@ -316,10 +311,9 @@ static void explaindirectory(u64 nodenum,u64 wantcnid)
 			if(nodenum==0)break;
 			say("next node:%x\n",nodenum);
 
-			readfile(0,
-				(catalogsector+nodenum*nodesize)*0x200,
-				datahome,
-				nodesize*0x200
+			readfile(0, 0,
+				"", (catalogsector+nodenum*nodesize)*0x200,
+				datahome, nodesize*0x200
 			);
 			totalrecords=BSWAP_16(*(u16*)(datahome+0xa));
 			temp=0;
@@ -401,10 +395,9 @@ void explainfile(u64 fathercnid,u64 wantcnid,u64 nodenum,u64 wantwhere)
 
 
 	//然后是后面的记录
-	readfile(0,
-		(catalogsector+nodenum*nodesize)*0x200,
-		catabuf,
-		nodesize*0x200
+	readfile(0, 0,
+		"", (catalogsector+nodenum*nodesize)*0x200,
+		catabuf, nodesize*0x200
 	);
 
 	//
@@ -489,10 +482,9 @@ static int hfs_choose(u64 id)
 	if(id==2)
 	{
 		//根肯定在最开始的地方，相当于稍微优化一下
-		readfile(0,
-			(catalogsector+firstleafnode*nodesize)*0x200,
-			datahome,
-			nodesize*0x200
+		readfile(0, 0,
+			"", (catalogsector+firstleafnode*nodesize)*0x200,
+			datahome, nodesize*0x200
 		);
 		foundnode=firstleafnode;
 	}
@@ -576,7 +568,7 @@ int explainhfshead()
 
 
 //----------------第二次读，把分区头读进catabuf--------------
-	readfile(0, catalogsector*0x200, catabuf, 0x1000);
+	readfile(0, 0, "", catalogsector*0x200, catabuf, 0x1000);
 	//printmemory(catabuf,0x200);
 
 	//nodesize
@@ -632,7 +624,7 @@ int hfs_start(u64 sector)
 	block0=sector;
 
 	//检查
-	ret = readfile(0, block0*0x200, pbr, 0x1000);
+	ret = readfile(0, 0, "", block0*0x200, pbr, 0x1000);
 	ret = check_hfs(pbr);
 	if(ret==0)return -1;
 

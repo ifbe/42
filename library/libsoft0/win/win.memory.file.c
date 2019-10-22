@@ -109,31 +109,39 @@ void listfile(char* dest)
 void choosefile(char* buf)
 {
 }
-int writefile(HANDLE file, u64 off, void* mem, u64 len)
+int readfile(void* obj, HANDLE file, void* arg, int off, void* mem, int len)
 {
 	LARGE_INTEGER li;
 	DWORD val;
 	int ret;
 
-	li.QuadPart = off;
-	SetFilePointer(file, li.LowPart, &li.HighPart, FILE_BEGIN);
+	if(arg){
+		li.QuadPart = off;
+		SetFilePointer (file, li.LowPart, &li.HighPart, FILE_BEGIN);
+	}//from head
+
+	ret = ReadFile(file, mem, len, &val, 0);
+	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
+	return val;
+}
+int writefile(void* obj, HANDLE file, void* arg, int off, void* mem, int len)
+{
+	LARGE_INTEGER li;
+	DWORD val;
+	int ret;
+
+	if(arg){
+		li.QuadPart = off;
+		SetFilePointer(file, li.LowPart, &li.HighPart, FILE_BEGIN);
+	}//from head
 
 	ret = WriteFile(file, mem, len, &val, NULL);
 	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
 	return val;
 }
-int readfile(HANDLE file, u64 off, void* mem, u64 len)
+void stopfile(HANDLE fd)
 {
-	LARGE_INTEGER li;
-	DWORD val;
-	int ret;
-
-	li.QuadPart = off;
-	SetFilePointer (file, li.LowPart, &li.HighPart, FILE_BEGIN);
-
-	ret = ReadFile(file, mem, len, &val, 0);
-	if(ret == 0)say("ret=%d,val=%d,error=%d\n", ret, val, GetLastError());
-	return val;
+	CloseHandle(fd);
 }
 HANDLE startfile(u8* path, int flag)
 {
@@ -211,13 +219,9 @@ HANDLE startfile(u8* path, int flag)
 	}
 	return fd;
 }
-void stopfile(HANDLE fd)
+void deletefile()
 {
-	CloseHandle(fd);
 }
 void createfile()
-{
-}
-void deletefile()
 {
 }

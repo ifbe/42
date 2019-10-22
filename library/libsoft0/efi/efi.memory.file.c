@@ -7,11 +7,10 @@ void say(char* fmt,...);
 
 
 
-//file名字，mem地址，文件内偏移，总字节数
-int writefile(u64 fd, u64 off, u8* buf, u64 len)
+int readfile(void* obj, int fd, void* arg, int off, u8* buf, int len)
 {
 }
-int readfile(u64 fd, u64 off, u8* buf, u64 len)
+int writefile(void* obj, int fd, void* arg, int off, u8* buf, int len)
 {
 }
 void listfile(char* dest)

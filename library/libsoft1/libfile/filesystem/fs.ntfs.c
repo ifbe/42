@@ -1,6 +1,4 @@
 #include "libsoft.h"
-int readfile(u64 file, u64 off, u8* mem, u64 len);
-int writefile(u64 file, u64 off, u8* mem, u64 len);
 int cleverread(u64,u64,u64, u8*,u64,u64);
 int cleverwrite(u64,u64,u64, u8*,u64,u64);
 
@@ -584,10 +582,9 @@ int explainntfshead()
 	say("indexsize:%x\n",indexsize);
 
 	//保存开头几个mft,然后开始	//32个扇区=16个mft=0x4000
-	readfile(0,
-		(ntfssector+mftcluster*clustersize)*0x200,
-		mft0,
-		32*0x200
+	readfile(0, 0,
+		"", (ntfssector+mftcluster*clustersize)*0x200,
+		mft0, 32*0x200
 	);
 	//printmemory(mft0,0x400);		//	$Mft
 	//printmemory(mft0+0x400*5,0x400);	//	.
@@ -649,7 +646,7 @@ static int ntfs_start(u64 sector)
 	ntfssector=sector;
 
 	//读PBR，检查失败就返回
-	ret = readfile(0, ntfssector*0x200, pbr, 0x200);
+	ret = readfile(0, 0, "", ntfssector*0x200, pbr, 0x200);
 	ret = check_ntfs(pbr);
 	if(ret==0)return -1;
 

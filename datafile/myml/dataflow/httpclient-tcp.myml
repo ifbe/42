@@ -3,6 +3,10 @@ tcp{
 fmt:tcp
 url:www.baidu.com:80
 }
+file{
+fmt:FILE
+url:index.html
+}
 </system>
 
 
@@ -11,13 +15,10 @@ http{
 fmt:http
 url:www.baidu.com/
 }
-dbghex{
-fmt:dbghex
-}
 </artery>
 
 
 <relation>
+(http, 0, art, dst) -> (file, 0, sys, src)
 (tcp, 0, sys, dst) -> (http, 0, art, src)
-(http, 0, art, dst) -> (dbghex, 0, art, src)
 </relation>

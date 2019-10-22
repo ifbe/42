@@ -104,25 +104,35 @@ void parse_mbr(u8* src, u8* dst)
 	for(j=0;j<0x10000;j++)dst[j] = 0;
 
 	//主分区
-	ret = mbrrecord(src+0x1be,dst);
+	ret = mbrrecord(src+0x1be, dst);
 	if(ret > 0)dst += 0x80;
 
-	ret = mbrrecord(src+0x1ce,dst);
+	ret = mbrrecord(src+0x1ce, dst);
 	if(ret > 0)dst += 0x80;
 
-	ret = mbrrecord(src+0x1de,dst);
+	ret = mbrrecord(src+0x1de, dst);
 	if(ret > 0)dst += 0x80;
 
-	ret = mbrrecord(src+0x1ee,dst);
+	ret = mbrrecord(src+0x1ee, dst);
 	if(ret > 0)dst += 0x80;
 }
 
 
 
 
-int mbrclient_start(struct object* obj, void* of, struct element* ele, void* ef, u8* buf, int len)
+int mbrclient_start(struct halfrel* self, struct halfrel* peer)
 {
-	u8 tmp[0x4000];
-	parse_mbr(buf, tmp);
+	int ret;
+	u8 src[0x200];
+	u8 dst[0x200];
+	struct object* obj;
+	struct element* ele;
+
+	obj = peer->pchip;
+	ele = self->pchip;
+
+	ret = readfile(obj, obj->selffd, "", 0, src, 0x4800);
+
+	parse_mbr(src, dst);
 	return 0;
 }

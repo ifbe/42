@@ -1,6 +1,4 @@
 #include "libsoft.h"
-int mbrclient_start(struct object* obj, void* of, struct element* ele, void* ef, u8* buf, int len);
-int gptclient_start(struct object* obj, void* of, struct element* ele, void* ef, u8* buf, int len);
 
 
 
@@ -96,11 +94,6 @@ int parse_png(void*, int);
 #define _webp_ hex32('w','e','b','p')
 int check_webp(void*);
 int parse_webp(void*, int);
-//
-int startfile(void*, int);
-int stopfile(int);
-int readfile(u64 file, u64 off, u8* mem, u64 len);
-int writefile(u64 file, u64 off, u8* mem, u64 len);
 
 
 
@@ -111,7 +104,7 @@ int openreadclose(void* name, int off, void* buf, int len)
 	int fd = startfile(name, 'r');
 	if(fd <= 0)return fd;
 
-	ret = readfile(fd, off, buf, len);
+	ret = readfile(0, fd, "", off, buf, len);
 
 	stopfile(fd);
 	return ret;
@@ -122,7 +115,7 @@ int openwriteclose(void* name, int off, void* buf, int len)
 	int fd = startfile(name, 'w');
 	if(fd <= 0)return fd;
 
-	ret = writefile(fd, off, buf, len);
+	ret = writefile(0, fd, "", off, buf, len);
 
 	stopfile(fd);
 	return ret;
@@ -189,7 +182,7 @@ void cleverread(
 		rdi,rsi,rcx
 	);
 */
-	readfile(0, rsi, rdi, rcx);
+	readfile(0, 0, "", rsi, rdi, rcx);
 }
 
 
@@ -320,27 +313,37 @@ int file_check(u8* buf, int len)
 
 
 
+int fileclient_stop(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
 int fileclient_start(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
 	u64 type;
 	struct element* ele = self->pchip;
 	struct object* obj = peer->pchip;
-	void* buf = ele->buf0 = memorycreate(0x1000, 0);
+	void* buf = memorycreate(0x1000, 0);
 
-	ret = readfile(obj->selffd, 0, buf, 0x1000);
+	ret = readfile(obj, obj->selffd, "", 0, buf, 0x1000);
 	if(ret != 0x1000)return -1;
 
 	type = file_check(buf, 0x1000);
 	if(0 == type)return -2;
 
-	if(_mbr_ == type)mbrclient_start(obj, 0, ele, 0, buf, ret);
-	if(_gpt_ == type)gptclient_start(obj, 0, ele, 0, buf, ret);
+	say("filetype = %.8s\n", &type);
 	return 0;
-
+}
+int fileclient_delete(struct element* ele)
+{
+	if(ele->buf0){
+		memorydelete(ele->buf0);
+		ele->buf0 = 0;
+	}
 	return 0;
 }
 int fileclient_create(struct element* ele, u8* url)
 {
+	ele->buf0 = memorycreate(0x1000, 0);
 	return 0;
 }
