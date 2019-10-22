@@ -609,21 +609,20 @@ struct item
 
 	//[60,7f]: memory
 	union{
-		u64 padd0;
-		void* addr0;
+		u64 addr0;
+		void* buf0;
 	};
 	union{
-		u64 padd1;
-		void* addr1;
+		u64 addr1;
+		void* buf1;
 	};
 	union{
-		u64 padd2;
-		void* addr2;
+		u64 addr2;
+		void* buf2;
 	};
 	union{
-		u64 padd3;
-		void* addr3;
-		void* buf;
+		u64 addr3;
+		void* buf3;
 	};
 };
 struct object
@@ -672,21 +671,20 @@ struct object
 
 	//[60,7f]: memory
 	union{
-		u64 padd0;
-		void* addr0;
+		u64 addr0;
+		void* buf0;
 	};
 	union{
-		u64 padd1;
-		void* addr1;
+		u64 addr1;
+		void* buf1;
 	};
 	union{
-		u64 padd2;
-		void* addr2;
+		u64 addr2;
+		void* buf2;
 	};
 	union{
-		u64 padd3;
-		void* addr3;
-		void* buf;
+		u64 addr3;
+		void* buf3;
 	};
 
 	//[0x80,0xbf]
@@ -742,21 +740,20 @@ struct element
 
 	//[60,7f]: memory
 	union{
-		u64 padd0;
-		void* addr0;
+		u64 addr0;
+		void* buf0;
 	};
 	union{
-		u64 padd1;
-		void* addr1;
+		u64 addr1;
+		void* buf1;
 	};
 	union{
-		u64 padd2;
-		void* addr2;
+		u64 addr2;
+		void* buf2;
 	};
 	union{
-		u64 padd3;
-		void* addr3;
-		void* buf;
+		u64 addr3;
+		void* buf3;
 	};
 
 	//[80,ff]
@@ -812,22 +809,22 @@ struct arena
 		void* buf;
 	};
 
-	//[60, 7f]
+	//[60,7f]: memory
 	union{
-		u64 padd4;
-		void* addr0;
+		u64 addr0;
+		void* buf0;
 	};
 	union{
-		u64 padd5;
-		void* addr1;
+		u64 addr1;
+		void* buf1;
 	};
 	union{
-		u64 padd6;
-		void* addr2;
+		u64 addr2;
+		void* buf2;
 	};
 	union{
-		u64 padd7;
-		void* addr3;
+		u64 addr3;
+		void* buf3;
 	};
 
 	//[80,bf]: func

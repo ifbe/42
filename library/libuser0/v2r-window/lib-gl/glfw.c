@@ -304,7 +304,7 @@ void windowread(struct arena* ogl)
 	char str[64];
 	GLFWwindow* fw;
 	struct relation* rel;
-	//say("@windowread.start:%.8s,%.8s,%llx\n", &ogl->type, &ogl->fmt, ogl->win);
+	//say("@windowread:%.8s,%.8s,%llx\n", &ogl->type, &ogl->fmt, ogl->win);
 
 	//0: context current
 	fw = ogl->win;
@@ -377,9 +377,9 @@ void windowcreate(struct arena* ogl)
 		windowopen_root(ogl, 0);
 
 		switch(ogl->fmt){
-			case _none_:nonewindow_create(ogl);
-			case _easy_:easywindow_create(ogl);
-			default:fullwindow_create(ogl);
+			case _none_:nonewindow_create(ogl);break;
+			case _easy_:easywindow_create(ogl);break;
+			default:fullwindow_create(ogl);break;
 		}
 	}
 }
