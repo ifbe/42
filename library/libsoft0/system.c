@@ -59,6 +59,7 @@ int systemread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	if(0 == oo)return 0;
 
 	switch(oo->type){
+		case _FILE_:
 		case _file_:return readfile(oo, oo->selffd, arg, idx, buf, len);
 	}
 	return 0;
@@ -73,6 +74,7 @@ int systemwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	if(0 == oo)return 0;
 
 	switch(oo->type){
+		case _FILE_:
 		case _file_:{
 			return writefile(oo, oo->selffd, arg, idx, buf, len);
 		}
