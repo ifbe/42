@@ -122,7 +122,7 @@ int world3d_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	glctx = peer->pchip;
 	if(0 == glctx)return 0;
 
-	//say("@world3d_read:%.8s, %.8s\n", &world->type, &glctx->type);
+	say("@world3d_read:%.8s, %.8s\n", &world->type, &glctx->type);
 
 	rel = world->orel0;
 	while(1)

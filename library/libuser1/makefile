@@ -221,7 +221,6 @@ forgl10/gl10.draw.c \
 forgl10/gl10.fbo.c \
 forgl41/context/gl41.ctx.self.c \
 forgl41/context/gl41.ctx.coop.c \
-forgl41/target/gl41.viewport.c \
 forgl41/target/gl41.target.color.c \
 forgl41/target/gl41.target.depth.c \
 forgl41/target/gl41.target.gbuffer.c \

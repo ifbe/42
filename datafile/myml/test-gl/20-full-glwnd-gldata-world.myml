@@ -1,4 +1,7 @@
 <actor>
+tree{
+fmt:tree
+}
 world{
 fmt:3dworld
 }
@@ -22,12 +25,40 @@ depth:1024
 </arena>
 
 
+<style>
+treepart{
+}
+treegeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+freefrus{
+l: 0.0, 0.0, 0.0, -1.0
+r: 0.0, 0.0, 0.0, 1.0
+b: 0.0, 0.0, 0.0, -1.0
+t: 0.0, 0.0, 0.0, 1.0
+n: 0.0, 0.0, 0.0, 1.0
+f: 0.0, 0.0, 0.0, 1000000000.0
+}
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+}
+
+
 <relation>
+#world depends on tree
+(world, treegeom, act, 1) -> (tree, treepart, act, 0)
+
 #gldata depends on world
-(gldata, 0, act, 0) -> (world, 0, act, 0)
+(gldata, 0, act, 1) -> (world, 0, act, 1)
 
 #glwnd depends on gldata
-(glwnd, 0, act, 0) -> (gldata, 0, act, 0)
+(glwnd, freerect, act, 0) -> (gldata, freefrus, act, 1)
 
 #opengl depends on glwnd
 (opengl, 0, win, 0) -> (glwnd, 0, act, 0)

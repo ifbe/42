@@ -39,7 +39,8 @@ int world3d_read(void*, void*, void*, int, void*, int);
 int gl41data_create(void*, void*);
 int gl41data_read(void*, void*, void*, int, void*, int);
 int gl41coop_create(void*, void*);
-int gl41view_create(void*, void*);
+int gl41coop_read(void*, void*, void*, int, void*, int);
+//
 int gl41fboc_create(void*, void*);
 int gl41fbod_create(void*, void*);
 int gl41fbog_create(void*, void*);
@@ -291,13 +292,6 @@ void* actorcreate(u64 type, void* buf, int argc, char** argv)
 		act = allocactor();
 		act->fmt = act->type = _gl41coop_;
 		gl41coop_create(act, buf);
-		return act;
-	}
-	else if(_gl41view_ == type)
-	{
-		act = allocactor();
-		act->fmt = act->type = _gl41view_;
-		gl41view_create(act, buf);
 		return act;
 	}
 	else if(_gl41fboc_ == type)

@@ -183,6 +183,7 @@ int gl41data_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 	//for each object in target world: read ctx
 	struct actor* data;
 	struct relation* rel;
+	say("@gl41data_read\n");
 
 	data = (void*)(self->chip);
 	if(0 == data)return 0;

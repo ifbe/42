@@ -218,7 +218,7 @@ void render_onedraw(struct datapair* cam, struct datapair* lit, struct datapair*
 		else glDrawArrays(GL_TRIANGLES, 0, src->vbuf_h);
 	}
 }
-void fullwindow_eachpass(struct arena* ogl, struct actor* view)
+void fullwindow_render(struct arena* ogl, struct actor* view)
 {
 	int j;
 	struct datapair* cam = view->gl_camera;
@@ -250,59 +250,10 @@ void fullwindow_eachpass(struct arena* ogl, struct actor* view)
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 }
-void fullwindow_viewport(struct arena* ogl, struct actor* view)
-{
-	float w, h, x0, y0, dx, dy;
-	struct actor* tmp;
-	struct fstyle* area;
-	struct fstyle* frus;
 
-	struct relation* rel;
-	struct halfrel* self;
-	struct halfrel* peer;
 
-	//say("@fullwindow_viewport: %llx,%llx,%.8s\n", ogl, view, &view->type);
-	if(0 == view)return;
 
-	rel = view->orel0;
-	while(1){
-		if(0 == rel)break;
 
-		tmp = (void*)(rel->dstchip);
-		//say("=>%.8s\n", &tmp->type);
-		switch(tmp->type){
-			case _gl41data_:
-			case _gl41coop_:{
-				view->gl_camera = tmp->gl_camera;
-				view->gl_light = tmp->gl_light;
-				view->gl_solid = tmp->gl_solid;
-				view->gl_opaque = tmp->gl_opaque;
-				break;
-			}
-			default:{
-				//update frustum, get mvp
-				self = (void*)(&rel->dstchip);
-				peer = (void*)(&rel->srcchip);
-				actorread(self, peer, 0, 0, 0, 0);
-
-				//render
-				area = (void*)(rel->srcfoot);
-				frus = (void*)(rel->dstfoot);
-				w = view->fbwidth;
-				h = view->fbheight;
-				x0 = w * area->vc[0];
-				y0 = h * area->vc[1];
-				dx = w * area->vq[0];
-				dy = h * area->vq[1];
-				glViewport(x0, y0, dx, dy);
-				fullwindow_eachpass(ogl, view);
-				break;
-			}
-		}
-
-		rel = samesrcnextdst(rel);
-	}
-}
 void fullwindow_renderfbod(struct arena* opengl, struct actor* target)
 {
 	//say("@gl41fbod\n");
@@ -319,7 +270,7 @@ void fullwindow_renderfbod(struct arena* opengl, struct actor* target)
 	glEnable(GL_DEPTH_TEST);
 	glPointSize(4.0);
 
-	fullwindow_viewport(opengl, target);
+	fullwindow_render(opengl, target);
 }
 void fullwindow_renderfboc(struct arena* opengl, struct actor* target)
 {
@@ -337,7 +288,7 @@ void fullwindow_renderfboc(struct arena* opengl, struct actor* target)
 	glEnable(GL_DEPTH_TEST);
 	glPointSize(4.0);
 
-	fullwindow_viewport(opengl, target);
+	fullwindow_render(opengl, target);
 }
 void fullwindow_renderfbog(struct arena* opengl, struct actor* target)
 {
@@ -354,13 +305,15 @@ void fullwindow_renderfbog(struct arena* opengl, struct actor* target)
 	glEnable(GL_DEPTH_TEST);
 	glPointSize(4.0);
 
-	fullwindow_viewport(opengl, target);
+	fullwindow_render(opengl, target);
 }
 void fullwindow_renderwnd(struct arena* opengl, struct actor* target)
 {
-	int cnt;
+	struct actor* data;
 	struct relation* rel;
-	struct actor* act;
+	struct halfrel* self;
+	struct halfrel* peer;
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	target->width = opengl->width;
 	target->height = opengl->height;
@@ -373,22 +326,33 @@ void fullwindow_renderwnd(struct arena* opengl, struct actor* target)
 	glEnable(GL_DEPTH_TEST);
 	glPointSize(4.0);
 
-	//upload data to gpu
-	cnt = 0;
+	//
 	rel = target->orel0;
 	while(1){
 		if(0 == rel)break;
 
-		act = (void*)(rel->dstchip);
-		//say("=>%.8s\n", &act->type);
-		switch(act->type){
-			case _gl41view_:cnt++;fullwindow_viewport(opengl, act);break;
+		data = (void*)(rel->dstchip);
+		//say("=>%.8s\n", &data->type);
+		switch(data->type){
+			case _gl41data_:{
+				//read data
+				self = (void*)(&rel->dstchip);
+				peer = (void*)(&rel->srcchip);
+				actorread(self, peer, 0, 0, 0, 0);
+
+				//upload data
+				fullwindow_upload(opengl, data);
+
+				//view area
+
+				//render all
+				fullwindow_render(opengl, data);
+				break;
+			}
 		}
 
 		rel = samesrcnextdst(rel);
 	}
-
-	if(0 == cnt)fullwindow_viewport(opengl, target);
 }
 
 
@@ -412,7 +376,6 @@ void fullwindow_read(struct arena* ogl)
 
 		act = (void*)(rel->dstchip);
 		switch(act->type){
-			case _gl41data_:fullwindow_upload(ogl, act);break;
 			case _gl41fboc_:fullwindow_renderfboc(ogl, act);break;
 			case _gl41fbod_:fullwindow_renderfbod(ogl, act);break;
 			case _gl41fbog_:fullwindow_renderfbog(ogl, act);break;

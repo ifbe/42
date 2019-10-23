@@ -728,7 +728,6 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 	}
 	else{
 		switch(win->type){
-			case _gl41view_:
 			case _gl41wnd0_:freecam_matrix(act, &pin->fs, win, &sty->fs);
 		}
 	}

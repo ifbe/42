@@ -366,7 +366,6 @@ static void water_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 	}
 	else{
 		switch(win->type){
-			case _gl41view_:
 			case _gl41fbod_:
 			case _gl41fboc_:
 			case _gl41fbog_:

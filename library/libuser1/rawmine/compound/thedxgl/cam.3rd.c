@@ -244,7 +244,6 @@ static void thirdperson_read(struct halfrel* self, struct halfrel* peer, void* a
 	}
 	else{
 		switch(win->type){
-			case _gl41view_:
 			case _gl41wnd0_:thirdperson_matrix(act, &pin->fs, win, &sty->fs);
 		}
 	}

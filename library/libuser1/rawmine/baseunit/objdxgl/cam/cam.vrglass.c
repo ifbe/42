@@ -349,7 +349,6 @@ static void vrglass_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 	}
 	else{
 		switch(win->type){
-			case _gl41view_:
 			case _gl41wnd0_:vrglass_matrix(act, &pin->fs, win, &sty->fs);
 		}
 	}
