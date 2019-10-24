@@ -250,16 +250,30 @@ struct halfrel
 struct relation
 {
 	//[0x00,0x1f]
-	u64 dstchip;
-	u64 dstfoot;
+	union{
+		u8 dst[0];
+		u64 dstchip;
+		void* pdstchip;
+	};
+	union{
+		u64 dstfoot;
+		void* pdstfoot;
+	};
 	u32 dsttype;
 	u32 dstflag;
 	u32 samedstprevsrc;
 	u32 samedstnextsrc;
 
 	//0x20,0x3f
-	u64 srcchip;
-	u64 srcfoot;
+	union{
+		u8 src[0];
+		u64 srcchip;
+		void* psrcchip;
+	};
+	union{
+		u64 srcfoot;
+		void* psrcfoot;
+	};
 	u32 srctype;
 	u32 srcflag;
 	u32 samesrcprevdst;

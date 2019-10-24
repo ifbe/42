@@ -62,18 +62,18 @@ void defaultvertex(struct arena* win)
 
 
 
-void* world3d_alloc(struct actor* world)
+void* ctx_alloc(struct actor* ctx)
 {
 	int j;
-	struct datapair* pair = world->buf;
+	struct datapair* pair = ctx->gl_solid;
 	if(0 == pair)return 0;
 
-	for(j=0;j<16;j++){
+	for(j=16;j<64;j++){
 		if(0 == pair[j].src.vbuf)return &pair[j];
 	}
 	return 0;
 }
-void world3d_copy(struct actor* world, struct style* sty, struct style* pin)
+void ctx_copy(struct actor* ctx, struct style* sty, struct style* pin)
 {
 	int j,k;
 	u8* src;
@@ -88,7 +88,7 @@ void world3d_copy(struct actor* world, struct style* sty, struct style* pin)
 		//data
 		dst = (void*)(sty->data[j]);
 		if(0 == dst){
-			dst = world3d_alloc(world);
+			dst = ctx_alloc(ctx);
 			if(0 == dst)return;
 
 			sty->data[j] = (u64)dst;
@@ -108,13 +108,14 @@ void world3d_copy(struct actor* world, struct style* sty, struct style* pin)
 
 int world3d_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	void** stack;
 	struct actor* world;
 	struct actor* glctx;
 
 	struct relation* rel;
 	struct style* sty;
 	struct style* pin;
-	//struct actor* act;
+	//say("@world3d_read: %.4s, %.4s\n", &self->flag, &peer->flag);
 
 	world = self->pchip;
 	if(0 == world)return 0;
@@ -122,24 +123,38 @@ int world3d_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	glctx = peer->pchip;
 	if(0 == glctx)return 0;
 
-	say("@world3d_read:%.8s, %.8s\n", &world->type, &glctx->type);
+	rel = world->orel0;
+	while(1){
+		if(0 == rel)break;
+		if(hex32('c','a','m','0') == rel->srcflag){
+			goto found;
+		}
+		rel = samesrcnextdst(rel);
+	}
+	return 0;
+
+found:
+	stack = arg;
+	stack[idx+0] = peer;
+	stack[idx+1] = self;
+	stack[idx+2] = (void*)(rel->src);
+	stack[idx+3] = (void*)(rel->dst);
+	idx += 4;
 
 	rel = world->orel0;
-	while(1)
-	{
+	while(1){
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype)
-		{
-			sty = (void*)(rel->srcfoot);
+		if(_act_ == rel->dsttype){
+			pin = rel->pdstfoot;
+			sty = rel->psrcfoot;
 			if(sty){if('#' == sty->i.uc[3])goto next;}
 
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			actorread(self, peer, 0, 0, glctx, 0);
+			self = (void*)(rel->dst);
+			peer = (void*)(rel->src);
+			actorread(self, peer, stack, idx, 0, 0);
 
-			pin = (void*)(rel->dstfoot);
-			world3d_copy(world, sty, pin);
+			ctx_copy(glctx, sty, pin);
 		}
 next:
 		rel = samesrcnextdst(rel);
@@ -150,6 +165,27 @@ next:
 }
 int world3d_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	struct actor* world;
+	struct relation* rel;
+	say("@world3d_write\n");
+
+	world = self->pchip;
+	if(0 == world)return 0;
+
+	rel = world->orel0;
+	while(1){
+		if(0 == rel)break;
+		if(hex32('c','a','m','0') == rel->srcflag){
+			goto found;
+		}
+		rel = samesrcnextdst(rel);
+	}
+	return 0;
+
+found:
+	self = (void*)(rel->dst);
+	peer = (void*)(rel->src);
+	actorwrite(self, peer, 0, 0, buf, len);
 	return 0;
 /*
 	int ret;

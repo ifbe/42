@@ -180,13 +180,36 @@ void gl41data_copy(struct relation* rel)
 
 int gl41data_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//for each object in target world: read ctx
+	void* stack[8];
 	struct actor* data;
+	struct actor* mwnd;
 	struct relation* rel;
-	say("@gl41data_read\n");
+	//say("@gl41data_read: %.4s, %.4s\n", &self->flag, &peer->flag);
 
-	data = (void*)(self->chip);
+	mwnd = peer->pchip;
+	if(0 == mwnd)return 0;
+
+	data = self->pchip;
 	if(0 == data)return 0;
+
+	gl41data_before(data);
+
+	stack[0] = peer;
+	stack[1] = self;
+	idx = 2;
+
+	rel = data->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		actorread((void*)(rel->dst), (void*)(rel->src), stack, idx, 0, 0);
+
+		rel = samesrcnextdst(rel);
+	}
+
+	gl41data_after(data);
+/*
+	//say("mwnd = %llx, data = %llx\n", mwnd, data);
 
 	rel = data->orel0;
 	if(0 == rel)return 0;
@@ -198,10 +221,23 @@ int gl41data_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 	gl41data_after(data);
 
 	gl41data_copy(rel);
+*/
 	return 0;
 }
 int gl41data_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	struct actor* act;
+	struct relation* rel;
+	say("@gl41data_write\n");
+
+	act = self->pchip;
+	if(0 == act)return 0;
+	rel = act->orel0;
+	if(0 == rel)return 0;
+
+	self = (void*)(rel->dst);
+	peer = (void*)(rel->src);
+	actorwrite(self, peer, 0, 0, buf, len);
 	return 0;
 }
 int gl41data_stop(struct halfrel* self, struct halfrel* peer)

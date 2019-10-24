@@ -90,29 +90,7 @@ static void texball_draw_pixel(
 			}
 		}
 	}
-}/*
-static void texball_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
-{
-	void* vbuf;
-	void* ibuf;
-	struct glsrc* src;
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	if(0 == act->buf)return;
-
-	src = (void*)(pin->foot[0]);
-	vbuf = (void*)(src->vbuf);
-	ibuf = (void*)(src->ibuf);
-	carveplanet(vbuf, ibuf, vc, vr, vf, vu);
-	src->vbuf_enq += 1;
-	src->ibuf_enq += 1;
-}*/
+}
 static void texball_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -188,50 +166,6 @@ static void texball_event(
 	struct actor* win, struct style* sty,
 	struct event* ev, int len)
 {
-	//struct glsrc* src = (void*)(pin->data[0]);
-
-	if(_char_ == ev->what)
-	{/*
-		switch(ev->why)
-		{
-			case '1':
-			{
-				actorcreatefromfile(act, "jpg/universe.jpg");
-				src->tex_data[0] = act->buf;
-				src->tex_w[0] = act->width;
-				src->tex_h[0] = act->height;
-				src->tex_enq[0] += 1;
-				break;
-			}
-			case '2':
-			{
-				actorcreatefromfile(act, "jpg/skysphere.jpg");
-				src->tex_data[0] = act->buf;
-				src->tex_w[0] = act->width;
-				src->tex_h[0] = act->height;
-				src->tex_enq[0] += 1;
-				break;
-			}
-			case '3':
-			{
-				actorcreatefromfile(act, "jpg/thesun.jpg");
-				src->tex_data[0] = act->buf;
-				src->tex_w[0] = act->width;
-				src->tex_h[0] = act->height;
-				src->tex_enq[0] += 1;
-				break;
-			}
-			case '4':
-			{
-				actorcreatefromfile(act, "jpg/earth.jpg");
-				src->tex_data[0] = act->buf;
-				src->tex_w[0] = act->width;
-				src->tex_h[0] = act->height;
-				src->tex_enq[0] += 1;
-				break;
-			}
-		}*/
-	}
 }
 
 
@@ -239,18 +173,46 @@ static void texball_event(
 
 static void texball_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
+	//rendertarget -> rendercontext
+	struct actor* wnd;
+	struct actor* ctx;
+
+	//rendercontext -> world
+	struct actor* dat;
+	struct actor* wrd;
+
+	//world -> camera
+	struct actor* wor;
+	struct actor* cam;
+
+	//world -> tree
+	struct halfrel** stack;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
-	//say("@texball_read:%llx,%llx,%llx\n",act,win,buf);
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)texball_draw_vbo3d(act,pin,ctx,sty);
+
+	stack = arg;
+	if(stack){
+		wnd = stack[idx-6]->pchip;
+		ctx = stack[idx-5]->pchip;
+		dat = stack[idx-4]->pchip;
+		wrd = stack[idx-3]->pchip;
+		wor = stack[idx-2]->pchip;
+		cam = stack[idx-1]->pchip;
+/*		say("(%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s)\n",
+			&wnd->type, &stack[idx-6]->flag,
+			&ctx->type, &stack[idx-5]->flag,
+			&dat->type, &stack[idx-4]->flag,
+			&wrd->type, &stack[idx-3]->flag,
+			&wor->type, &stack[idx-2]->flag,
+			&cam->type, &stack[idx-1]->flag,
+			&win->type, &peer->flag,
+			&act->type, &self->flag
+		);*/
+		texball_draw_vbo3d(act,pin,ctx,sty);
 	}
-	//texball_draw(act, pin, win, sty);
 }
 static void texball_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

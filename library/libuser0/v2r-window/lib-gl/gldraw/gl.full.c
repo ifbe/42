@@ -218,31 +218,51 @@ void render_onedraw(struct datapair* cam, struct datapair* lit, struct datapair*
 		else glDrawArrays(GL_TRIANGLES, 0, src->vbuf_h);
 	}
 }
-void fullwindow_render(struct arena* ogl, struct actor* view)
+void fullwindow_render(struct arena* ogl, int tmp, struct halfrel* src, struct halfrel* dst)
 {
 	int j;
-	struct datapair* cam = view->gl_camera;
-	struct datapair* lit = view->gl_light;
-	struct datapair* solid = view->gl_solid;
-	struct datapair* opaque = view->gl_opaque;
-	//say("@fullwindow_render: %llx,%llx,%llx,%llx\n", view->gl_camera, view->gl_light, view->gl_solid, view->gl_opaque);
+	int x0,y0,ww,hh;
+	struct actor* wnd = src->pchip;
+	struct fstyle* area = src->pfoot;
+	struct actor* ctx = dst->pchip;
+	struct fstyle* frus = dst->pfoot;
 
+	struct datapair* cam = ctx->gl_camera;
+	struct datapair* lit = ctx->gl_light;
+	struct datapair* solid = ctx->gl_solid;
+	struct datapair* opaque = ctx->gl_opaque;
+	//say("@fullwindow_render: %.4s, %.4s\n", &src->flag, &dst->flag);
+	//say("@fullwindow_render: %llx,%llx,%llx,%llx\n", ctx->gl_camera, ctx->gl_light, ctx->gl_solid, ctx->gl_opaque);
+
+
+	//
+	x0 = area->vc[0] * wnd->fbwidth;
+	y0 = area->vc[1] * wnd->fbheight;
+	ww = area->vq[0] * wnd->fbwidth;
+	hh = area->vq[1] * wnd->fbheight;
+	//say("%d,%d,%d,%d\n", x0, y0, ww, hh);
+	glViewport(x0, y0, ww, hh);
+	glScissor(x0, y0, ww, hh);
+
+	//
+	glEnable(GL_SCISSOR_TEST);
+	glEnable(GL_DEPTH_TEST);
+	glPointSize(4.0);
+	glClearColor(0.1, 0.1, 0.1, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//solid
-	for(j=0;j<64;j++)
-	{
+	for(j=0;j<64;j++){
 		if(0 == solid[j].src.vbuf)continue;
 		render_onedraw(cam, lit, &solid[j]);
 	}
-
 
 	//opaque
 	glDepthMask(GL_FALSE);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	for(j=0;j<64;j++)
-	{
+	for(j=0;j<64;j++){
 		if(0 == opaque[j].src.vbuf)continue;
 		render_onedraw(cam, lit, &opaque[j]);
 	}
@@ -256,99 +276,102 @@ void fullwindow_render(struct arena* ogl, struct actor* view)
 
 void fullwindow_renderfbod(struct arena* opengl, struct actor* target)
 {
+	struct actor* data;
+	struct relation* rel;
 	//say("@gl41fbod\n");
+
 	if(0 == target->fbo){
 		target->width = target->fbwidth = 1024;
 		target->height = target->fbheight = 1024;
 		fbocreate(target, 'd');
 	}
-	else glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
-	//say("@renderfbod: %x,%x\n", target->fbo, target->tex0);
+	glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
 
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-	glPointSize(4.0);
+	rel = target->orel0;
+	while(1){
+		if(0 == rel)break;
 
-	fullwindow_render(opengl, target);
+		data = (void*)(rel->dstchip);
+		if(_gl41data_ == data->type){
+			fullwindow_render(opengl, 0, (void*)(rel->src), (void*)(rel->dst));
+		}
+
+		rel = samesrcnextdst(rel);
+	}
 }
 void fullwindow_renderfboc(struct arena* opengl, struct actor* target)
 {
+	struct actor* data;
+	struct relation* rel;
 	//say("@gl41fboc\n");
+
 	if(0 == target->fbo){
 		target->width = target->fbwidth = 1024;
 		target->height = target->fbheight = 1024;
 		fbocreate(target, 'c');
 	}
-	else glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
-	//say("@renderfboc: %x,%x\n", target->fbo, target->tex0);
+	glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
 
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-	glPointSize(4.0);
+	rel = target->orel0;
+	while(1){
+		if(0 == rel)break;
 
-	fullwindow_render(opengl, target);
+		data = (void*)(rel->dstchip);
+		if(_gl41data_ == data->type){
+			fullwindow_render(opengl, 0, (void*)(rel->src), (void*)(rel->dst));
+		}
+
+		rel = samesrcnextdst(rel);
+	}
 }
 void fullwindow_renderfbog(struct arena* opengl, struct actor* target)
 {
+	struct actor* data;
+	struct relation* rel;
 	//say("@gl41fbog\n");
+
 	if(0 == target->fbo){
 		target->width = target->fbwidth = 1024;
 		target->height = target->fbheight = 1024;
 		fbocreate(target, 'g');
 	}
-	else glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
 
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-	glPointSize(4.0);
+	rel = target->orel0;
+	while(1){
+		if(0 == rel)break;
 
-	fullwindow_render(opengl, target);
+		data = (void*)(rel->dstchip);
+		if(_gl41data_ == data->type){
+			fullwindow_render(opengl, 0, (void*)(rel->src), (void*)(rel->dst));
+		}
+
+		rel = samesrcnextdst(rel);
+	}
 }
 void fullwindow_renderwnd(struct arena* opengl, struct actor* target)
 {
 	struct actor* data;
 	struct relation* rel;
-	struct halfrel* self;
-	struct halfrel* peer;
+	//say("@fullwindow_renderwnd\n");
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	target->width = opengl->width;
-	target->height = opengl->height;
-	target->fbwidth = opengl->fbwidth;
-	target->fbheight = opengl->fbheight;
-
-	//clear and setup
-	glClearColor(0.0, 0.0, 0.0, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
-	glPointSize(4.0);
 
 	//
 	rel = target->orel0;
 	while(1){
 		if(0 == rel)break;
 
-		data = (void*)(rel->dstchip);
-		//say("=>%.8s\n", &data->type);
-		switch(data->type){
-			case _gl41data_:{
-				//read data
-				self = (void*)(&rel->dstchip);
-				peer = (void*)(&rel->srcchip);
-				actorread(self, peer, 0, 0, 0, 0);
+		data = rel->pdstchip;
+		if(_gl41data_ == data->type){
+			//read data
+			actorread((void*)(rel->dst), (void*)(rel->src), 0, 0, 0, 0);
 
-				//upload data
-				fullwindow_upload(opengl, data);
+			//upload data
+			fullwindow_upload(opengl, data);
 
-				//view area
-
-				//render all
-				fullwindow_render(opengl, data);
-				break;
-			}
+			//render all
+			fullwindow_render(opengl, 0, (void*)(rel->src), (void*)(rel->dst));
 		}
 
 		rel = samesrcnextdst(rel);
@@ -365,7 +388,6 @@ void fullwindow_write(struct arena* ogl, struct event* ev)
 }
 void fullwindow_read(struct arena* ogl)
 {
-	float w, h;
 	struct relation* rel;
 	struct actor* act;
 	//say("@fullwindow_read\n");
@@ -374,12 +396,20 @@ void fullwindow_read(struct arena* ogl)
 	while(1){
 		if(0 == rel)break;
 
-		act = (void*)(rel->dstchip);
+		act = rel->pdstchip;
+		//say("%.8s\n", &act->type);
 		switch(act->type){
 			case _gl41fboc_:fullwindow_renderfboc(ogl, act);break;
 			case _gl41fbod_:fullwindow_renderfbod(ogl, act);break;
 			case _gl41fbog_:fullwindow_renderfbog(ogl, act);break;
-			case _gl41wnd0_:fullwindow_renderwnd(ogl, act);break;
+			case _gl41wnd0_:{
+				act->width = ogl->width;
+				act->height = ogl->height;
+				act->fbwidth = ogl->fbwidth;
+				act->fbheight = ogl->fbheight;
+				fullwindow_renderwnd(ogl, act);
+				break;
+			}
 		}
 
 		rel = samesrcnextdst(rel);

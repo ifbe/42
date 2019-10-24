@@ -1,6 +1,13 @@
 <actor>
+cam{
+fmt:freecam
+}
 tree{
 fmt:tree
+}
+sky{
+fmt:texball
+url:datafile/jpg/skysphere.jpg
 }
 world{
 fmt:3dworld
@@ -26,6 +33,15 @@ depth:1024
 
 
 <style>
+freepart{
+}
+freegeom{
+c: 0.0, -2000.0, 500.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
 treepart{
 }
 treegeom{
@@ -35,7 +51,16 @@ f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
 }
 
-freefrus{
+skypart{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 10000000.0, 0.0, 0.0
+f: 0.0, 10000000.0, 0.0
+t: 0.0, 0.0, 10000000.0
+}
+
+aaaafrus{
 l: 0.0, 0.0, 0.0, -1.0
 r: 0.0, 0.0, 0.0, 1.0
 b: 0.0, 0.0, 0.0, -1.0
@@ -43,23 +68,39 @@ t: 0.0, 0.0, 0.0, 1.0
 n: 0.0, 0.0, 0.0, 1.0
 f: 0.0, 0.0, 0.0, 1000000000.0
 }
-freerect{
+aaaarect{
 c:0.0, 0.0
-q:1.0, 1.0
+q:0.5, 0.5
 }
+
+bbbbfrus{
+l: 0.0, 0.0, 0.0, -1.0
+r: 0.0, 0.0, 0.0, 1.0
+b: 0.0, 0.0, 0.0, -1.0
+t: 0.0, 0.0, 0.0, 1.0
+n: 0.0, 0.0, 0.0, 1.0
+f: 0.0, 0.0, 0.0, 1000000000.0
 }
+bbbbrect{
+c:0.5, 0.5
+q:0.5, 0.5
+}
+</style>
 
 
 <relation>
 #world depends on tree
-(world, treegeom, act, 1) -> (tree, treepart, act, 0)
+(world, freegeom, act, cam0) -> (cam, freepart, act, 0)
+(world, treegeom, act, obj0) -> (tree, treepart, act, 0)
+(world, skygeom, act, obj0) -> (sky, skypart, act, 0)
 
 #gldata depends on world
-(gldata, 0, act, 1) -> (world, 0, act, 1)
+(gldata, 0, act, all) -> (world, 0, act, all)
 
 #glwnd depends on gldata
-(glwnd, freerect, act, 0) -> (gldata, freefrus, act, 1)
+(glwnd, aaaarect, act, cam0) -> (gldata, aaaafrus, act, cam0)
+(glwnd, bbbbrect, act, cam0) -> (gldata, bbbbfrus, act, cam0)
 
 #opengl depends on glwnd
-(opengl, 0, win, 0) -> (glwnd, 0, act, 0)
+(opengl, 0, win, wnd) -> (glwnd, 0, act, togl)
 </relation>

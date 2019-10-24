@@ -37,13 +37,20 @@ int world3d_write(void*, void*, void*, int, void*, int);
 int world3d_read(void*, void*, void*, int, void*, int);
 //gl41 helper
 int gl41data_create(void*, void*);
-int gl41data_read(void*, void*, void*, int, void*, int);
+int gl41data_delete(void*);
+int gl41data_read( void*, void*, void*, int, void*, int);
+int gl41data_write(void*, void*, void*, int, void*, int);
 int gl41coop_create(void*, void*);
-int gl41coop_read(void*, void*, void*, int, void*, int);
+int gl41coop_delete(void*);
+int gl41coop_read( void*, void*, void*, int, void*, int);
+int gl41coop_write(void*, void*, void*, int, void*, int);
 //
 int gl41fboc_create(void*, void*);
+int gl41fboc_write(void*, void*, void*, int, void*, int);
 int gl41fbod_create(void*, void*);
+int gl41fbod_write(void*, void*, void*, int, void*, int);
 int gl41fbog_create(void*, void*);
+int gl41fbog_write(void*, void*, void*, int, void*, int);
 int gl41wnd0_create(void*, void*);
 int gl41wnd0_write(void*, void*, void*, int, void*, int);
 
@@ -159,7 +166,10 @@ int actorwrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 	if(0 == act)return 0;
 
 	switch(act->type){
+		case _gl41data_:return gl41data_write(self, peer, arg, idx, buf, len);
+		case _gl41coop_:return gl41coop_write(self, peer, arg, idx, buf, len);
 		case _gl41wnd0_:return gl41wnd0_write(self, peer, arg, idx, buf, len);
+		case _world3d_:return world3d_write(self, peer, arg, idx, buf, len);
 	}
 
 	if(0 == act->onwrite)return 0;
@@ -174,6 +184,8 @@ int actorread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void
 	if(0 == act)return 0;
 
 	switch(act->type){
+		case _gl41data_:return gl41data_read(self, peer, arg, idx, buf, len);
+		case _gl41coop_:return gl41coop_read(self, peer, arg, idx, buf, len);
 		case _world3d_:return world3d_read(self, peer, arg, idx, buf, len);
 		case _eeworld_:return eeworld_read(self, peer, arg, idx, buf, len);
 	}
@@ -438,11 +450,6 @@ int actorread_all()
 	switch(actor[j].type){
 		case _baby_:baby_read(0, 0, 0, 0, 0, 0);break;
 		case _test_:test_read(0, 0, 0, 0, 0, 0);break;
-		case _gl41data_:{
-			self.chip = (u64)&actor[j];
-			gl41data_read(&self, 0, 0, 0, 0, 0);
-			break;
-		}
 		case _hoffdata_:{
 			self.chip = (u64)&actor[j];
 			hoffdata_read(&self, 0, 0, 0, 0, 0);
