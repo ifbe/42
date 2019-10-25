@@ -5,63 +5,45 @@ int actorinput_touch(struct arena* win, struct event* ev);
 
 
 
-/*
-void defaultvertex(struct arena* win)
+
+void gl41data_before(struct actor* ctx)
 {
-	//target
-	win->target.vc[0] = 0.0;
-	win->target.vc[1] = 0.0;
-	win->target.vc[2] = 0.0;
+	int j;
+	struct datapair* mod;
 
-	win->target.vr[0] = 500.0;
-	win->target.vr[1] = 0.0;
-	win->target.vr[2] = 0.0;
+	mod = ctx->gl_solid;
+	for(j=0;j<solidaid_max;j++)
+	{
+		mod[j].src.vbuf_h = 0;
+		mod[j].src.ibuf_h = 0;
+	}
 
-	win->target.vf[0] = 0.0;
-	win->target.vf[1] = 500.0;
-	win->target.vf[2] = 0.0;
+	mod = ctx->gl_opaque;
+	for(j=0;j<opaqueaid_max;j++)
+	{
+		mod[j].src.vbuf_h = 0;
+		mod[j].src.ibuf_h = 0;
+	}
+}
+void gl41data_after(struct actor* ctx)
+{
+	int j;
+	struct datapair* mod;
 
-	win->target.vt[0] = 0.0;
-	win->target.vt[1] = 0.0;
-	win->target.vt[2] = 500.0;
+	mod = ctx->gl_solid;
+	for(j=0;j<solidaid_max;j++)
+	{
+		mod[j].src.vbuf_enq += 1;
+		mod[j].src.ibuf_enq += 1;
+	}
 
-	//camera
-	win->camera.vl[0] = -1.0;
-	win->camera.vl[1] = 0.0;
-	win->camera.vl[2] = 0.0;
-
-	win->camera.vr[0] = 1.0;
-	win->camera.vr[1] = 0.0;
-	win->camera.vr[2] = 0.0;
-
-	win->camera.vb[0] = 0.0;
-	win->camera.vb[1] =-0.70710678118655;
-	win->camera.vb[2] =-0.70710678118655;
-
-	win->camera.vt[0] = 0.0;
-	win->camera.vt[1] = 0.70710678118655;
-	win->camera.vt[2] = 0.70710678118655;
-
-	win->camera.vn[0] = 0.0;
-	win->camera.vn[1] = 0.70710678118655;
-	win->camera.vn[2] =-0.70710678118655;
-
-	win->camera.vf[0] = 0.0;
-	win->camera.vf[1] = 0.0;
-	win->camera.vf[2] = 0.0;
-
-	win->camera.vq[0] = 0.0;
-	win->camera.vq[1] = 0.0;
-	win->camera.vq[2] = 0.0;
-
-	win->camera.vc[0] = 0.0;
-	win->camera.vc[1] = -2000.0;
-	win->camera.vc[2] = 2000.0;
-}*/
-
-
-
-
+	mod = ctx->gl_opaque;
+	for(j=0;j<opaqueaid_max;j++)
+	{
+		mod[j].src.vbuf_enq += 1;
+		mod[j].src.ibuf_enq += 1;
+	}
+}
 void* ctx_alloc(struct actor* ctx)
 {
 	int j;
@@ -106,43 +88,46 @@ void ctx_copy(struct actor* ctx, struct style* sty, struct style* pin)
 
 
 
-int world3d_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int idx, void* buf, int len)
+//stack:
+//-6: ogl
+//-5: glwnd
+//-4: glwnd, area
+//-3: glctx, frus
+//-2: glctx
+//-1: world
+int world3d_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	struct actor* world;
 	struct actor* glctx;
+	struct actor* world;
 	struct relation* tocam;
 	struct relation* toobj;
 	struct style* sty;
 	struct style* pin;
-	//say("@world3d_read: %.4s, %.4s\n", &self->flag, &peer->flag);
+	//say("%d,%llx@world3d_read: %.4s, %.4s\n", rsp, stack, &peer->flag, &self->flag);
+
+	glctx = peer->pchip;
+	if(0 == glctx)return 0;
 
 	world = self->pchip;
 	if(0 == world)return 0;
 
-	glctx = peer->pchip;
-	if(0 == glctx)return 0;
+	gl41data_before(glctx);
 
 readcam:
 	tocam = world->orel0;
 	while(1){
 		if(0 == tocam)break;
-		if(stack[idx-1]->flag == tocam->srcflag){
-			stack[idx+0] = peer;
-			stack[idx+1] = self;
-			stack[idx+2] = (void*)(tocam->src);
-			stack[idx+3] = (void*)(tocam->dst);
-			idx += 4;
-
-			self = (void*)(tocam->dst);
-			peer = (void*)(tocam->src);
-			actorread(self, peer, stack, idx, 0, 0);
+		if(stack[rsp-3]->flag == tocam->srcflag){
+			stack[rsp+0] = (void*)(tocam->src);
+			stack[rsp+1] = (void*)(tocam->dst);
+			actorread(stack[rsp+1], stack[rsp+0], stack, rsp+2, 0, 0);
 
 			ctx_copy(glctx, sty, pin);
 			goto readobj;
 		}
 		tocam = samesrcnextdst(tocam);
 	}
-	return 0;
+	goto theend;
 
 readobj:
 	toobj = world->orel0;
@@ -157,7 +142,7 @@ readobj:
 
 			self = (void*)(toobj->dst);
 			peer = (void*)(toobj->src);
-			actorread(self, peer, stack, idx, 0, 0);
+			actorread(self, peer, stack, rsp+2, 0, 0);
 
 			ctx_copy(glctx, sty, pin);
 		}
@@ -165,7 +150,8 @@ next:
 		toobj = samesrcnextdst(toobj);
 	}
 
-	//printmemory(world->buf+0x100, 0x100);
+theend:
+	gl41data_after(glctx);
 	return 0;
 }
 int world3d_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

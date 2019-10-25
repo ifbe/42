@@ -349,29 +349,35 @@ void fullwindow_renderfbog(struct arena* opengl, struct actor* target)
 		rel = samesrcnextdst(rel);
 	}
 }
-void fullwindow_renderwnd(struct arena* opengl, struct actor* target)
+void fullwindow_renderwnd(struct halfrel** stack, int rsp)
 {
-	struct actor* data;
+	struct arena* ogl;
+	struct actor* wnd;
+	struct actor* ctx;
 	struct relation* rel;
-	//say("@fullwindow_renderwnd\n");
+	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
 
+	ogl = stack[rsp-2]->pchip;
+	wnd = stack[rsp-1]->pchip;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//
-	rel = target->orel0;
+	rel = wnd->orel0;
 	while(1){
 		if(0 == rel)break;
 
-		data = rel->pdstchip;
-		if(_gl41data_ == data->type){
-			//read data
-			actorread((void*)(rel->dst), (void*)(rel->src), 0, 0, 0, 0);
+		ctx = rel->pdstchip;
+		if(_gl41data_ == ctx->type){
+			//read ctx
+			stack[rsp+0] = (void*)(rel->src);
+			stack[rsp+1] = (void*)(rel->dst);
+			actorread(stack[rsp+1], stack[rsp+0], stack, rsp+2, 0, 0);
 
-			//upload data
-			fullwindow_upload(opengl, data);
+			//upload ctx
+			fullwindow_upload(ogl, ctx);
 
 			//render all
-			fullwindow_render(opengl, 0, (void*)(rel->src), (void*)(rel->dst));
+			fullwindow_render(ogl, 0, stack[rsp+0], stack[rsp+1]);
 		}
 
 		rel = samesrcnextdst(rel);
@@ -388,6 +394,7 @@ void fullwindow_write(struct arena* ogl, struct event* ev)
 }
 void fullwindow_read(struct arena* ogl)
 {
+	struct halfrel* stack[16];
 	struct relation* rel;
 	struct actor* act;
 	//say("@fullwindow_read\n");
@@ -407,7 +414,10 @@ void fullwindow_read(struct arena* ogl)
 				act->height = ogl->height;
 				act->fbwidth = ogl->fbwidth;
 				act->fbheight = ogl->fbheight;
-				fullwindow_renderwnd(ogl, act);
+
+				stack[0+0] = (void*)(rel->src);
+				stack[0+1] = (void*)(rel->dst);
+				fullwindow_renderwnd(stack, 0+2);
 				break;
 			}
 		}

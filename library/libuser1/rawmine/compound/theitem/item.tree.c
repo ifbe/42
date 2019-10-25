@@ -217,7 +217,7 @@ static void tree_draw(
 
 
 
-static void tree_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void tree_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//rendertarget -> rendercontext
 	struct actor* wnd;
@@ -232,35 +232,19 @@ static void tree_read(struct halfrel* self, struct halfrel* peer, void* arg, int
 	struct actor* cam;
 
 	//world -> tree
-	struct halfrel** stack;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-/*	struct actor* ctx = buf;
-	if(ctx){
-		if(_gl41data_ == ctx->type)tree_draw_vbo3d(act,pin,ctx,sty);
-	}*/
 
-	stack = arg;
 	if(stack){
-		wnd = stack[idx-6]->pchip;
-		ctx = stack[idx-5]->pchip;
-		dat = stack[idx-4]->pchip;
-		wrd = stack[idx-3]->pchip;
-		wor = stack[idx-2]->pchip;
-		cam = stack[idx-1]->pchip;
-/*		say("(%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s)\n",
-			&wnd->type, &stack[idx-6]->flag,
-			&ctx->type, &stack[idx-5]->flag,
-			&dat->type, &stack[idx-4]->flag,
-			&wrd->type, &stack[idx-3]->flag,
-			&wor->type, &stack[idx-2]->flag,
-			&cam->type, &stack[idx-1]->flag,
-			&win->type, &peer->flag,
-			&act->type, &self->flag
-		);*/
-		tree_draw_vbo3d(act,pin,ctx,sty);
+		wnd = stack[rsp-6]->pchip;
+		ctx = stack[rsp-5]->pchip;
+		dat = stack[rsp-4]->pchip;
+		wrd = stack[rsp-3]->pchip;
+		wor = stack[rsp-2]->pchip;
+		cam = stack[rsp-1]->pchip;
+		tree_draw_vbo3d(act, pin, ctx, sty);
 	}
 }
 static void tree_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

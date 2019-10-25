@@ -706,7 +706,16 @@ static void freecam_matrix(
 
 
 
-static void freecam_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+//stack:
+//-8: ogl
+//-7: glwnd
+//-6: glwnd, area
+//-5: glctx, frus
+//-4: glctx
+//-3: world
+//-2: world, geom
+//-1: cam, part
+static void freecam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//rendertarget -> rendercontext
 	struct actor* wnd;
@@ -723,29 +732,27 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 	struct actor* cam;
 
 	//world -> tree
-	struct halfrel** stack;
 	struct actor* act = self->pchip;
 	struct fstyle* part = self->pfoot;
 	struct actor* win = peer->pchip;
 	struct fstyle* geom = peer->pfoot;
 
-	stack = arg;
 	if(stack){
-		wnd = stack[idx-6]->pchip;
-		area = stack[idx-6]->pfoot;
-		ctx = stack[idx-5]->pchip;
-		frus = stack[idx-5]->pfoot;
-		dat = stack[idx-4]->pchip;
-		wrd = stack[idx-3]->pchip;
-		wor = stack[idx-2]->pchip;
-		cam = stack[idx-1]->pchip;
+		wnd = stack[rsp-6]->pchip;
+		area = stack[rsp-6]->pfoot;
+		ctx = stack[rsp-5]->pchip;
+		frus = stack[rsp-5]->pfoot;
+		dat = stack[rsp-4]->pchip;
+		wrd = stack[rsp-3]->pchip;
+		wor = stack[rsp-2]->pchip;
+		cam = stack[rsp-1]->pchip;
 /*		say("(%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s)\n",
-			&wnd->type, &stack[idx-6]->flag,
-			&ctx->type, &stack[idx-5]->flag,
-			&dat->type, &stack[idx-4]->flag,
-			&wrd->type, &stack[idx-3]->flag,
-			&wor->type, &stack[idx-2]->flag,
-			&cam->type, &stack[idx-1]->flag,
+			&wnd->type, &stack[rsp-6]->flag,
+			&ctx->type, &stack[rsp-5]->flag,
+			&dat->type, &stack[rsp-4]->flag,
+			&wrd->type, &stack[rsp-3]->flag,
+			&wor->type, &stack[rsp-2]->flag,
+			&cam->type, &stack[rsp-1]->flag,
 			&win->type, &peer->flag,
 			&act->type, &self->flag
 		);*/

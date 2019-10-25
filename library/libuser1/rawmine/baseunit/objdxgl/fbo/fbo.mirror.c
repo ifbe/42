@@ -359,7 +359,7 @@ static void mirror_matrix(
 
 
 
-static void mirror_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void mirror_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//if 'draw' == self.foot
 	struct actor* act = (void*)(self->chip);

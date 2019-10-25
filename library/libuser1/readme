@@ -1,44 +1,10 @@
-//-------------residents----------------
-rawmine:
-	object = basic item:
-		piece, rect, cubic, wall, cards, button, armleg, symbol, footprint
-	module = item composite:
-		chess, 2048, rubik, maze, poker, widget, human, mcusymbol, mcufootprint
-	scene = scene root:
-		schema, pcblayout, 3dscene, uiscene, webpage, uiux
-	project = purpose, cause:
-		many scene interact with eath other
-
-rawbaby:
-	just cry
-
-rawtest:
-	debug purpose
-
-rawkirk:
-	drone pilot
-
-rawjohn:
-	another way to handle data storage
-
-rawlily:
-	another way to handle data storage
-
-
-
-
-//--------------diplomat----------------
-forelec:
-	schematic, pcb
-
-forsound:
-	speaker context
-
-fordx11:
-	directx context, render target
-
-forgl41:
-	opengl context, render target
-
-formetal:
-	metal context, render target
+raw:
+	real world of here
+	real world of there
+	virt world of emulate
+	virt world of gaming
+	work world of schematic
+	work world of printboard
+for:
+	some structure from world to wormhole
+	some structure from wormhole to world

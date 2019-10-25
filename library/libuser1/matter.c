@@ -157,30 +157,12 @@ void actorinput_touch(struct arena* win, struct event* ev)
 
 
 
-int actorwrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
-{
-	struct actor* act;
-	if(0 == self)return 0;
-
-	act = (void*)(self->chip);
-	if(0 == act)return 0;
-
-	switch(act->type){
-		case _gl41data_:return gl41data_write(self, peer, arg, idx, buf, len);
-		case _gl41coop_:return gl41coop_write(self, peer, arg, idx, buf, len);
-		case _gl41wnd0_:return gl41wnd0_write(self, peer, arg, idx, buf, len);
-		case _world3d_:return world3d_write(self, peer, arg, idx, buf, len);
-	}
-
-	if(0 == act->onwrite)return 0;
-	return act->onwrite(self, peer, arg, idx, buf, len);
-}
 int actorread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
 {
 	struct actor* act;
 	if(0 == self)return 0;
 
-	act = (void*)(self->chip);
+	act = self->pchip;
 	if(0 == act)return 0;
 
 	switch(act->type){
@@ -192,6 +174,24 @@ int actorread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void
 
 	if(0 == act->onread)return 0;
 	return act->onread(self, peer, arg, idx, buf, len);
+}
+int actorwrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
+{
+	struct actor* act;
+	if(0 == self)return 0;
+
+	act = self->pchip;
+	if(0 == act)return 0;
+
+	switch(act->type){
+		case _gl41data_:return gl41data_write(self, peer, arg, idx, buf, len);
+		case _gl41coop_:return gl41coop_write(self, peer, arg, idx, buf, len);
+		case _gl41wnd0_:return gl41wnd0_write(self, peer, arg, idx, buf, len);
+		case _world3d_:return world3d_write(self, peer, arg, idx, buf, len);
+	}
+
+	if(0 == act->onwrite)return 0;
+	return act->onwrite(self, peer, arg, idx, buf, len);
 }
 int actorstop(struct halfrel* self, struct halfrel* peer)
 {
