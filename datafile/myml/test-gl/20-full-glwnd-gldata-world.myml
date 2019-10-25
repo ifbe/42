@@ -1,5 +1,8 @@
 <actor>
-cam{
+cam0{
+fmt:freecam
+}
+cam1{
 fmt:freecam
 }
 tree{
@@ -33,15 +36,6 @@ depth:1024
 
 
 <style>
-freepart{
-}
-freegeom{
-c: 0.0, -2000.0, 500.0
-r: 1000.0, 0.0, 0.0
-f: 0.0, 1000.0, 0.0
-t: 0.0, 0.0, 1000.0
-}
-
 treepart{
 }
 treegeom{
@@ -60,6 +54,24 @@ f: 0.0, 10000000.0, 0.0
 t: 0.0, 0.0, 10000000.0
 }
 
+aaaapart{
+}
+aaaageom{
+c: 0.0, -2000.0, 500.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+bbbbpart{
+}
+bbbbgeom{
+c: 0.0, -2000.0, 2000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 707.0,-707.0
+t: 0.0, 707.0, 707.0
+}
+
 aaaafrus{
 l: 0.0, 0.0, 0.0, -1.0
 r: 0.0, 0.0, 0.0, 1.0
@@ -70,7 +82,7 @@ f: 0.0, 0.0, 0.0, 1000000000.0
 }
 aaaarect{
 c:0.0, 0.0
-q:0.5, 0.5
+q:1.0, 1.0
 }
 
 bbbbfrus{
@@ -82,15 +94,16 @@ n: 0.0, 0.0, 0.0, 1.0
 f: 0.0, 0.0, 0.0, 1000000000.0
 }
 bbbbrect{
-c:0.5, 0.5
-q:0.5, 0.5
+c:0.75, 0.75
+q:0.25, 0.25
 }
 </style>
 
 
 <relation>
 #world depends on tree
-(world, freegeom, act, cam0) -> (cam, freepart, act, 0)
+(world, aaaageom, act, cam0) -> (cam0, aaaapart, act, 0)
+(world, bbbbgeom, act, cam1) -> (cam1, bbbbpart, act, 0)
 (world, treegeom, act, obj0) -> (tree, treepart, act, 0)
 (world, skygeom, act, obj0) -> (sky, skypart, act, 0)
 
@@ -98,8 +111,8 @@ q:0.5, 0.5
 (gldata, 0, act, all) -> (world, 0, act, all)
 
 #glwnd depends on gldata
-(glwnd, aaaarect, act, cam0) -> (gldata, aaaafrus, act, cam0)
-(glwnd, bbbbrect, act, cam0) -> (gldata, bbbbfrus, act, cam0)
+(glwnd, aaaarect, act, 0) -> (gldata, aaaafrus, act, cam0)
+(glwnd, bbbbrect, act, 0) -> (gldata, bbbbfrus, act, cam1)
 
 #opengl depends on glwnd
 (opengl, 0, win, wnd) -> (glwnd, 0, act, togl)

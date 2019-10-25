@@ -75,7 +75,7 @@ int stopfile(int fd)
 int startfile(char* path, int flag)
 {
 	int ret;
-	say("@startfile:%s,%x\n", path, flag);
+	//say("@startfile:%s,%x\n", path, flag);
 	if(0 == path){ret = -0xfff;goto fail;}
 	if(0 == path[0]){ret = -0xffe;goto fail;}
 

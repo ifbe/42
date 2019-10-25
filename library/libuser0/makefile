@@ -18,7 +18,7 @@ v2r-robot/vehicle/car-step.c \
 v2r-robot/vehicle/car-toy.c \
 w2w-network/w2w.khala.c \
 w2w-network/w2w.loopback.c \
-muscle.c
+reality.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 target: $(OBJ)

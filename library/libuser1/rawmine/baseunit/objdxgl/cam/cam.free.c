@@ -749,27 +749,8 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 			&win->type, &peer->flag,
 			&act->type, &self->flag
 		);*/
-		freecam_matrix(act, part, win, geom, ctx, frus, wnd, area);
+		if(cam == act)freecam_matrix(act, part, win, geom, ctx, frus, wnd, area);
 	}
-/*	struct actor* ctx = buf;
-	//say("@freecam_read:\n");
-
-	if(ctx){
-		switch(ctx->type){
-			case _gl41data_:freecam_draw_vbo(act,pin,ctx,sty);
-		}
-	}
-	else{
-		switch(win->type){
-			case _gl41wnd0_:freecam_matrix(act, &pin->fs, win, &sty->fs);
-		}
-	}
-
-	switch(self->flag){
-		case _cam_:freecam_matrix(act, pin, win, sty, buf, len);break;
-		//case _obj_:
-		default:freecam_draw(act, pin, win, sty);
-	}*/
 }
 static int freecam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

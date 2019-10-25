@@ -198,15 +198,12 @@ rawmine/compound/theuiux/uiux.list.c \
 rawmine/compound/theuiux/uiux.nav.c \
 rawmine/compound/theuiux/uiux.tab.c \
 rawmine/compound/theuiux/uiux.tag.c \
-rawmine/scene/3dworld.c \
-rawmine/scene/eeworld.c \
-rawmine/scene/schematic.c \
-rawmine/scene/printboard.c \
-rawmine/solution/pcb.c \
-rawmine/solution/game.client.c \
-rawmine/solution/game.server.c \
-rawmine/solution/ui.real.c \
-rawmine/solution/ui.virt.c \
+rawmine/scene/scene.guide.c \
+rawmine/scene/scene.loading.c \
+rawmine/world/3dworld.c \
+rawmine/world/eeworld.c \
+rawmine/world/schematic.c \
+rawmine/world/printboard.c \
 forhoff/hoff.c \
 fordx11/dx11.ctx.c \
 fordx11/dx11.fbo.color.c \
@@ -235,7 +232,7 @@ forfile/xml.base.c \
 forrgba/rgba.base.c \
 forsound/sound.pcm.c \
 forterm/term.cli.c \
-nervus.c
+virtual.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 target: $(OBJ)

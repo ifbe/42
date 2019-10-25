@@ -12,20 +12,32 @@ void* locate_camera_in_world()
 
 
 
-int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
-{/*
-	struct relation* rel = self->orel0;
+int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int idx, void* buf, int len)
+{
+	//if(opengl reading)foreach{read, upload, render}
+	struct actor* wnd;
+	struct relation* rel;
+	say("@gl41wnd0_read\n");
 
+	wnd = self->pchip;
+	if(0 == wnd)return 0;
+
+	rel = wnd->orel0;
 	while(1){
 		if(0 == rel)break;
 
-		//
-		gl41wnd0_prerequ();
-		gl41wnd0_thiscam();
+		//read data
+		stack[idx+0] = (void*)(rel->src);
+		stack[idx+1] = (void*)(rel->dst);
+		idx += 2;
+		actorread(stack[idx-1], stack[idx-2], stack, idx, 0, 0);
 
-		rel = samesrcnextdst();
+		//render this
+		arenawrite(stack[0], stack[1], stack, idx, 0, 0);
+
+		rel = samesrcnextdst(rel);
 	}
-*/
+
 	return 0;
 }
 int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
@@ -42,7 +54,7 @@ int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 
 	wnd = self->pchip;
 	if(0 == wnd)return 0;
-	rel = wnd->orel0;
+	rel = wnd->oreln;
 	if(0 == rel)return 0;
 
 	v = (short*)ev;
@@ -57,7 +69,7 @@ int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 			x = v[0];
 			y = wnd->height-v[1];
 			if( (x>x0) && (x<xn) && (y>y0) && (y<yn) )goto found;
-			rel = samesrcnextdst(rel);
+			rel = samesrcprevdst(rel);
 		}
 		return 0;
 	}

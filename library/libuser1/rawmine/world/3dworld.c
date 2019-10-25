@@ -106,13 +106,12 @@ void ctx_copy(struct actor* ctx, struct style* sty, struct style* pin)
 
 
 
-int world3d_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int world3d_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int idx, void* buf, int len)
 {
-	void** stack;
 	struct actor* world;
 	struct actor* glctx;
-
-	struct relation* rel;
+	struct relation* tocam;
+	struct relation* toobj;
 	struct style* sty;
 	struct style* pin;
 	//say("@world3d_read: %.4s, %.4s\n", &self->flag, &peer->flag);
@@ -123,41 +122,47 @@ int world3d_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	glctx = peer->pchip;
 	if(0 == glctx)return 0;
 
-	rel = world->orel0;
+readcam:
+	tocam = world->orel0;
 	while(1){
-		if(0 == rel)break;
-		if(hex32('c','a','m','0') == rel->srcflag){
-			goto found;
+		if(0 == tocam)break;
+		if(stack[idx-1]->flag == tocam->srcflag){
+			stack[idx+0] = peer;
+			stack[idx+1] = self;
+			stack[idx+2] = (void*)(tocam->src);
+			stack[idx+3] = (void*)(tocam->dst);
+			idx += 4;
+
+			self = (void*)(tocam->dst);
+			peer = (void*)(tocam->src);
+			actorread(self, peer, stack, idx, 0, 0);
+
+			ctx_copy(glctx, sty, pin);
+			goto readobj;
 		}
-		rel = samesrcnextdst(rel);
+		tocam = samesrcnextdst(tocam);
 	}
 	return 0;
 
-found:
-	stack = arg;
-	stack[idx+0] = peer;
-	stack[idx+1] = self;
-	stack[idx+2] = (void*)(rel->src);
-	stack[idx+3] = (void*)(rel->dst);
-	idx += 4;
-
-	rel = world->orel0;
+readobj:
+	toobj = world->orel0;
 	while(1){
-		if(0 == rel)break;
+		if(0 == toobj)break;
 
-		if(_act_ == rel->dsttype){
-			pin = rel->pdstfoot;
-			sty = rel->psrcfoot;
+		if(toobj == tocam)goto next;
+		if(_act_ == toobj->dsttype){
+			pin = toobj->pdstfoot;
+			sty = toobj->psrcfoot;
 			if(sty){if('#' == sty->i.uc[3])goto next;}
 
-			self = (void*)(rel->dst);
-			peer = (void*)(rel->src);
+			self = (void*)(toobj->dst);
+			peer = (void*)(toobj->src);
 			actorread(self, peer, stack, idx, 0, 0);
 
 			ctx_copy(glctx, sty, pin);
 		}
 next:
-		rel = samesrcnextdst(rel);
+		toobj = samesrcnextdst(toobj);
 	}
 
 	//printmemory(world->buf+0x100, 0x100);

@@ -208,20 +208,7 @@ int gl41data_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 	}
 
 	gl41data_after(data);
-/*
-	//say("mwnd = %llx, data = %llx\n", mwnd, data);
 
-	rel = data->orel0;
-	if(0 == rel)return 0;
-
-	gl41data_before(data);
-
-	gl41data_get(rel);
-
-	gl41data_after(data);
-
-	gl41data_copy(rel);
-*/
 	return 0;
 }
 int gl41data_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
