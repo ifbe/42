@@ -265,8 +265,10 @@ void projector_frustum(struct fstyle* d, struct fstyle* s)
 	//d->vf[3] = 1e20;
 }
 static void projector_matrix(
-	struct actor* act, struct fstyle* frus,
-	struct actor* fbo, struct fstyle* area)
+	struct actor* act, struct fstyle* part,
+	struct actor* wrd, struct fstyle* geom,
+	struct actor* ctx, struct fstyle* frus,
+	struct arena* fbo, struct fstyle* area)
 {
 	struct halfrel* self;
 	struct halfrel* peer;
@@ -280,7 +282,7 @@ static void projector_matrix(
 	if(0 == sun)return;
 	own = (void*)(sun->data);
 	if(0 == own)return;
-	src = fbo->gl_camera;
+	src = ctx->gl_camera;
 	if(0 == src)return;
 
 
@@ -373,7 +375,7 @@ static void projector_read(struct halfrel* self, struct halfrel* peer, void* arg
 			case _gl41fbod_:
 			case _gl41fboc_:
 			case _gl41fbog_:
-			case _gl41wnd0_:projector_matrix(act, &pin->fs, win, &sty->fs);
+			case _gl41wnd0_:projector_matrix(act, &pin->fs, win, &sty->fs, 0, 0, 0, 0);
 		}
 	}
 }

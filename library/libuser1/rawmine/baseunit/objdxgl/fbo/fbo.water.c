@@ -308,7 +308,7 @@ void water_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 static void water_matrix(
 	struct actor* act, struct fstyle* frus,
 	struct actor* fbo, struct fstyle* area)
-{
+{/*
 	struct halfrel* self;
 	struct halfrel* peer;
 	struct fstyle* obb;
@@ -347,7 +347,7 @@ static void water_matrix(
 
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
-	src->arg[1].data = obb->vc;
+	src->arg[1].data = obb->vc;*/
 }
 
 

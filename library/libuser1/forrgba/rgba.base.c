@@ -67,7 +67,7 @@ next:
 		rel = samesrcprevdst(rel);
 	}
 
-	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
+	//if('p' == (ev->what&0xff))actorinput_touch(win, ev);
 	return ret;
 }
 int rgbanode_stop(struct arena* win, struct style* sty)

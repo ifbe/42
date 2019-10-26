@@ -181,7 +181,7 @@ static void human_draw_vbo(
 
 		carvesolid_bodypart(win, 0x008080, t0, t1);
 	}
-
+/*
 	x = bonevert[0][0];
 	y = bonevert[0][1];
 	z = bonevert[0][2];
@@ -223,7 +223,7 @@ static void human_draw_vbo(
 	act->camera.vr[2] = z*n;
 	act->camera.vl[0] =-x*n;
 	act->camera.vl[1] =-y*n;
-	act->camera.vl[2] =-z*n;
+	act->camera.vl[2] =-z*n;*/
 }
 static void human_draw_json(
 	struct actor* act, struct style* pin,

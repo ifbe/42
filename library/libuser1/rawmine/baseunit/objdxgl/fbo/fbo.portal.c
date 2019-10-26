@@ -405,9 +405,12 @@ void portal_frustum(struct fstyle* frus, struct fstyle* por, struct fstyle* tar,
 		frus->vn[3], frus->vf[3], frus->vl[3], frus->vr[3], frus->vb[3], frus->vt[3]);*/
 }
 static void portal_matrix(
-	struct actor* act, struct fstyle* frus,
-	struct actor* fbo, struct fstyle* area)
-{
+	struct actor* act, struct fstyle* part,
+	struct actor* wrd, struct fstyle* geom,
+	struct actor* ctx, struct fstyle* frus,
+	struct arena* fbo, struct fstyle* area,
+	struct actor* dat, struct fstyle* camf)
+{/*
 	struct halfrel* self[1];
 	struct halfrel* peer[1];
 	struct fstyle* obba;
@@ -461,7 +464,7 @@ static void portal_matrix(
 
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
-	src->arg[1].data = obba->vc;
+	src->arg[1].data = obba->vc;*/
 }
 
 
@@ -486,7 +489,7 @@ static void portal_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 			case _gl41fbod_:
 			case _gl41fboc_:
 			case _gl41fbog_:
-			case _gl41wnd0_:portal_matrix(act, &pin->fs, win, &sty->fs);
+			case _gl41wnd0_:portal_matrix(act, &pin->fs, win, &sty->fs, 0, 0, 0, 0, 0, 0);
 		}
 	}
 }

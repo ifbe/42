@@ -1,13 +1,22 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "libuser.h"
-#define _mvp_ hex32('m','v','p',0)
 
-
-
-
-void* locate_camera_in_world()
-{
-	return 0;
-}
+#ifdef __ANDROID__
+	#include <jni.h>
+	#include <errno.h>
+	#include <EGL/egl.h>
+	#include <GLES/gl.h>
+	#include <GLES3/gl3.h>
+	#include <GLES3/gl3ext.h>
+	#include <android/log.h>
+	#include <android_native_app_glue.h>
+#else
+	#include <GL/glew.h>
+#endif
+void fullwindow_upload(struct arena* ogl, struct actor* ctx);
+void fullwindow_render(struct arena* ogl, int tmp, struct halfrel* src, struct halfrel* dst);
 
 
 
@@ -15,27 +24,37 @@ void* locate_camera_in_world()
 int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	say("@gl41wnd0_read\n");
-/*	struct actor* wnd;
+	struct arena* ogl;
+	struct arena* wnd;
+	struct actor* ctx;
 	struct relation* rel;
+	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
 
-	wnd = self->pchip;
-	if(0 == wnd)return 0;
+	ogl = stack[rsp-2]->pchip;
+	wnd = stack[rsp-1]->pchip;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	//
 	rel = wnd->orel0;
 	while(1){
 		if(0 == rel)break;
 
-		//read data
-		stack[idx+0] = (void*)(rel->src);
-		stack[idx+1] = (void*)(rel->dst);
-		actorread(stack[idx+1], stack[idx+0], stack, idx+2, 0, 0);
+		ctx = rel->pdstchip;
+		if(_gl41data_ == ctx->type){
+			//read ctx
+			stack[rsp+0] = (void*)(rel->src);
+			stack[rsp+1] = (void*)(rel->dst);
+			actorread(stack[rsp+1], stack[rsp+0], stack, rsp+2, 0, 0);
 
-		//render this
-		arenawrite(stack[0], stack[1], stack, idx+2, 0, 0);
+			//upload ctx
+			fullwindow_upload(ogl, ctx);
+
+			//render all
+			fullwindow_render(ogl, 0, stack[rsp+0], stack[rsp+1]);
+		}
 
 		rel = samesrcnextdst(rel);
 	}
-*/
 	return 0;
 }
 int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)

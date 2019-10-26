@@ -8,12 +8,7 @@ static void mobius_draw_pixel(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
 {
-}/*
-static void mobius_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
-{
-}*/
+}
 static void mobius_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -78,7 +73,7 @@ static void mobius_draw_vbo3d(
 		tu[0] = x * n;
 		tu[1] = y * n;
 		tu[2] = z * n;
-
+/*
 		if((act->x0 < 180) && (j == act->x0))
 		{
 			act->camera.vc[0] = tc[0] + tf[0] + tu[0]*10;
@@ -142,6 +137,7 @@ static void mobius_draw_vbo3d(
 			carvesolid_prism4(win, 0xff0000, tc, tr, tf, tu);
 		}
 		else carvesolid_prism4(win, 0x808080, tc, tr, tf, tu);
+*/
 	}
 }
 static void mobius_draw_json(

@@ -277,8 +277,10 @@ void dirlight_sty2cam(struct fstyle* d, struct fstyle* s)
 	//d->vn[3] = 1.0;
 }
 static void dirlight_matrix(
-	struct actor* act, struct fstyle* frus,
-	struct actor* fbo, struct fstyle* area)
+	struct actor* act, struct fstyle* part,
+	struct actor* wrd, struct fstyle* geom,
+	struct actor* ctx, struct fstyle* frus,
+	struct arena* fbo, struct fstyle* area)
 {
 	struct halfrel* self;
 	struct halfrel* peer;
@@ -292,7 +294,7 @@ static void dirlight_matrix(
 	if(0 == sun)return;
 	own = (void*)(sun->data);
 	if(0 == own)return;
-	src = fbo->gl_camera;
+	src = ctx->gl_camera;
 	if(0 == src)return;
 
 
@@ -382,7 +384,7 @@ static void dirlight_read(struct halfrel* self, struct halfrel* peer, void* arg,
 			case _gl41fbod_:
 			case _gl41fboc_:
 			case _gl41fbog_:
-			case _gl41wnd0_:dirlight_matrix(act, &pin->fs, win, &sty->fs);
+			case _gl41wnd0_:dirlight_matrix(act, &pin->fs, win, &sty->fs, 0, 0, 0, 0);
 		}
 	}
 }

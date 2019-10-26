@@ -113,7 +113,7 @@ int actorinput_special(struct arena* win, struct style* sty, struct event* ev)
 		return 1;
 	}
 	return 0;
-}
+}/*
 void actorinput_touch(struct arena* win, struct event* ev)
 {
 	int x,y,z,btn;
@@ -143,7 +143,7 @@ void actorinput_touch(struct arena* win, struct event* ev)
 	{
 		win->touch[btn].z0 = 0;
 	}
-}
+}*/
 
 
 

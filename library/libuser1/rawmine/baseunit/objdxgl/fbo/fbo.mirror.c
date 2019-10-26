@@ -315,7 +315,7 @@ static void mirror_matrix(
 	struct actor* act, struct fstyle* part,
 	struct actor* wrd, struct fstyle* geom,
 	struct actor* ctx, struct fstyle* frus,
-	struct actor* fbo, struct fstyle* area,
+	struct arena* fbo, struct fstyle* area,
 	struct actor* dat, struct fstyle* camf)
 {
 	struct mirrbuf* mirr = act->buf0;
@@ -334,7 +334,7 @@ static void mirror_matrix(
 	mat4_transpose(mirr->mvp);
 
 	//
-	struct glsrc* src = fbo->gl_camera;
+	struct glsrc* src = ctx->gl_camera;
 
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";
@@ -361,11 +361,11 @@ static void mirror_matrix(
 static void mirror_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//rendertarget -> rendercontext
-	struct actor* wnd;struct fstyle* rect;
+	struct arena* wnd;struct fstyle* rect;
 	struct actor* ccc;struct fstyle* camf;
 
 	//rendertarget -> rendercontext
-	struct actor* fbo;struct fstyle* area;
+	struct arena* fbo;struct fstyle* area;
 	struct actor* ctx;struct fstyle* frus;
 
 	//world -> mirror

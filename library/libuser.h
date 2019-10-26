@@ -799,23 +799,27 @@ struct arena
 
 	//[40,5f]: fd
 	union{
+		u32 fbo;
 		u64 padd0;
 		u64 fd;
 		void* win;
 	};
 	union{
+		u32 rbo;
 		u64 padd1;
 		u64 dc;
 		u64 gc;
 		void* er;
 	};
 	union{
+		u32 tex0;
 		u64 padd2;
 		u64 len;
 		void* ximage;
 		void* texture;
 	};
 	union{
+		u32 tex1;
 		u64 padd3;
 		u64 addr;
 		void* buf;
@@ -896,10 +900,6 @@ struct arena
 	int yn;
 	int zn;
 	int wn;
-
-	//[100,1ff]
-	struct xyzwpair touch[8];
-	struct xyzwpair mouse[8];
 };
 struct actor
 {
@@ -932,26 +932,22 @@ struct actor
 		u64 fd;
 		void* win;
 		void* ctx;
-		u32 fbo;
 		int vlen;
 	};
 	union{
 		u64 dc;
 		u64 gc;
 		void* er;
-		u32 rbo;
 		int ilen;
 	};
 	union{
 		u64 len;
 		void* idx;
-		u32 tex0;
 		int nlen;
 	};
 	union{
 		u64 addr;
 		void* buf;
-		u32 tex1;
 		int wlen;
 	};
 
@@ -1038,10 +1034,6 @@ struct actor
 	int yn;
 	int zn;
 	int wn;
-
-	//[100,1ff]
-	struct fstyle target;
-	struct fstyle camera;
 };
 
 

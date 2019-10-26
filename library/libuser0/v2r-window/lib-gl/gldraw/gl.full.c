@@ -18,7 +18,6 @@
 GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c);
 GLuint uploadtexture(void* i, u32 t, void* buf, int fmt, int w, int h);
 GLuint uploadvertex(void* i, void* o);
-int fbocreate(void*, int);
 
 
 
@@ -222,7 +221,7 @@ void fullwindow_render(struct arena* ogl, int tmp, struct halfrel* src, struct h
 {
 	int j;
 	int x0,y0,ww,hh;
-	struct actor* wnd = src->pchip;
+	struct arena* wnd = src->pchip;
 	struct fstyle* area = src->pfoot;
 	struct actor* ctx = dst->pchip;
 	struct fstyle* frus = dst->pfoot;
@@ -274,119 +273,6 @@ void fullwindow_render(struct arena* ogl, int tmp, struct halfrel* src, struct h
 
 
 
-void fullwindow_renderfbod(struct arena* opengl, struct actor* target)
-{
-	struct actor* data;
-	struct relation* rel;
-	//say("@gl41fbod\n");
-
-	if(0 == target->fbo){
-		target->width = target->fbwidth = 1024;
-		target->height = target->fbheight = 1024;
-		fbocreate(target, 'd');
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
-
-	rel = target->orel0;
-	while(1){
-		if(0 == rel)break;
-
-		data = (void*)(rel->dstchip);
-		if(_gl41data_ == data->type){
-			fullwindow_render(opengl, 0, (void*)(rel->src), (void*)(rel->dst));
-		}
-
-		rel = samesrcnextdst(rel);
-	}
-}
-void fullwindow_renderfboc(struct arena* opengl, struct actor* target)
-{
-	struct actor* data;
-	struct relation* rel;
-	//say("@gl41fboc\n");
-
-	if(0 == target->fbo){
-		target->width = target->fbwidth = 1024;
-		target->height = target->fbheight = 1024;
-		fbocreate(target, 'c');
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
-
-	rel = target->orel0;
-	while(1){
-		if(0 == rel)break;
-
-		data = (void*)(rel->dstchip);
-		if(_gl41data_ == data->type){
-			fullwindow_render(opengl, 0, (void*)(rel->src), (void*)(rel->dst));
-		}
-
-		rel = samesrcnextdst(rel);
-	}
-}
-void fullwindow_renderfbog(struct arena* opengl, struct actor* target)
-{
-	struct actor* data;
-	struct relation* rel;
-	//say("@gl41fbog\n");
-
-	if(0 == target->fbo){
-		target->width = target->fbwidth = 1024;
-		target->height = target->fbheight = 1024;
-		fbocreate(target, 'g');
-	}
-	glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
-
-	rel = target->orel0;
-	while(1){
-		if(0 == rel)break;
-
-		data = (void*)(rel->dstchip);
-		if(_gl41data_ == data->type){
-			fullwindow_render(opengl, 0, (void*)(rel->src), (void*)(rel->dst));
-		}
-
-		rel = samesrcnextdst(rel);
-	}
-}
-void fullwindow_renderwnd(struct halfrel** stack, int rsp)
-{
-	struct arena* ogl;
-	struct actor* wnd;
-	struct actor* ctx;
-	struct relation* rel;
-	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
-
-	ogl = stack[rsp-2]->pchip;
-	wnd = stack[rsp-1]->pchip;
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	//
-	rel = wnd->orel0;
-	while(1){
-		if(0 == rel)break;
-
-		ctx = rel->pdstchip;
-		if(_gl41data_ == ctx->type){
-			//read ctx
-			stack[rsp+0] = (void*)(rel->src);
-			stack[rsp+1] = (void*)(rel->dst);
-			actorread(stack[rsp+1], stack[rsp+0], stack, rsp+2, 0, 0);
-
-			//upload ctx
-			fullwindow_upload(ogl, ctx);
-
-			//render all
-			fullwindow_render(ogl, 0, stack[rsp+0], stack[rsp+1]);
-		}
-
-		rel = samesrcnextdst(rel);
-	}
-}
-
-
-
-
 void fullwindow_write(struct arena* ogl, struct event* ev)
 {
 	struct halfrel* stack[16];
@@ -398,30 +284,24 @@ void fullwindow_read(struct arena* ogl)
 {
 	struct halfrel* stack[16];
 	struct relation* rel;
-	struct actor* act;
+	struct arena* wnd;
 	//say("@fullwindow_read\n");
 
 	rel = ogl->orel0;
 	while(1){
 		if(0 == rel)break;
 
-		act = rel->pdstchip;
-		//say("%.8s\n", &act->type);
-		switch(act->type){
-			case _gl41fboc_:fullwindow_renderfboc(ogl, act);break;
-			case _gl41fbod_:fullwindow_renderfbod(ogl, act);break;
-			case _gl41fbog_:fullwindow_renderfbog(ogl, act);break;
-			case _gl41wnd0_:{
-				act->width = ogl->width;
-				act->height = ogl->height;
-				act->fbwidth = ogl->fbwidth;
-				act->fbheight = ogl->fbheight;
-
+		wnd = rel->pdstchip;
+		//say("%.8s\n", &wnd->type);
+		switch(wnd->type){
+			case _gl41wnd0_:
+				wnd->width = ogl->width;
+				wnd->height = ogl->height;
+				wnd->fbwidth = ogl->fbwidth;
+				wnd->fbheight = ogl->fbheight;
 				stack[0+0] = (void*)(rel->src);
 				stack[0+1] = (void*)(rel->dst);
-				fullwindow_renderwnd(stack, 0+2);
-				break;
-			}
+				arenaread(stack[1], stack[0], stack, 0+2, 0, 0);
 		}
 
 		rel = samesrcnextdst(rel);

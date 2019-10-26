@@ -581,13 +581,13 @@ static int picker_draw(
 	struct fstyle* sss;
 	//carvefrustum(win, &win->camera);
 	//carveline_prism4(win, 0xff00ff, win->target.vc, win->target.vr, win->target.vf, win->target.vu);
-
+/*
 	tc[0] = act->target.vc[0];
 	tc[1] = act->target.vc[1];
 	tc[2] = act->target.vc[2] + 1000.0*1000.0;
 	carveline(win, 0xff00ff, act->target.vc, tc);
 //say(">>>>>%f,%f,%f\n", tc[0], tc[1], tc[2]);
-
+*/
 	www = 0;
 	rel = win->orel0;
 	while(1)

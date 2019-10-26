@@ -678,7 +678,7 @@ static void freecam_matrix(
 	struct actor* act, struct fstyle* part,
 	struct actor* wrd, struct fstyle* geom,
 	struct actor* ctx, struct fstyle* frus,
-	struct actor* wnd, struct fstyle* area)
+	struct arena* wnd, struct fstyle* area)
 {
 	float dx,dy;
 
@@ -714,7 +714,7 @@ static void freecam_matrix(
 static void freecam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//rendertarget -> rendercontext, world -> camera
-	struct actor* wnd;struct fstyle* area;
+	struct arena* wnd;struct fstyle* area;
 	struct actor* ctx;struct fstyle* frus;
 	struct actor* wor;struct fstyle* cgeo;
 	struct actor* cam;struct fstyle* cpar;

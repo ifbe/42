@@ -508,7 +508,7 @@ static void sketchpad_event(
 				count++;
 			}
 		}
-	}
+	}/*
 	else if(type==0x2b70)		//p+
 	{
 		int k = (key>>48)&0xffff;
@@ -534,7 +534,7 @@ static void sketchpad_event(
 			act->target.vr[0] *= 0.9;
 			act->target.vf[1] *= 0.9;
 		}
-	}
+	}*/
 	else if(type==0x4070)		//p@
 	{
 		int x = key&0xffff;
