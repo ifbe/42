@@ -28,6 +28,10 @@ opengl:
 	$(compiler) $(cflag) v2r-window/lib-gl/gldraw/gl.none.c
 	$(compiler) $(cflag) v2r-window/lib-gl/gldraw/gl.easy.c
 	$(compiler) $(cflag) v2r-window/lib-gl/gldraw/gl.full.c
+	$(compiler) $(cflag) v2r-window/lib-gl/gltar/gl41.target.color.c
+	$(compiler) $(cflag) v2r-window/lib-gl/gltar/gl41.target.depth.c
+	$(compiler) $(cflag) v2r-window/lib-gl/gltar/gl41.target.gbuffer.c
+	$(compiler) $(cflag) v2r-window/lib-gl/gltar/gl41.target.window.c
 	$(compiler) $(cflag) v2r-window/lib-gl/globj/globj.fbo.c
 	$(compiler) $(cflag) v2r-window/lib-gl/globj/globj.shader.c
 	$(compiler) $(cflag) v2r-window/lib-gl/globj/globj.texture.c
@@ -113,7 +117,7 @@ linuxglut:target linux
 
 .PHONY:linuxglfw
 linuxglfw:target linux opengl
-	$(compiler) $(cflag) v2r-window/lib-gl/glfw.c
+	$(compiler) $(cflag) v2r-window/lib-gl/gllib/glfw.c
 	$(compiler) $(cflag) w2w-gamepad/glfw/glfw.gamepad.c
 
 .PHONY:linuxsdl
@@ -161,7 +165,7 @@ macglut:target macos
 
 .PHONY:macglfw
 macglfw:target macos opengl
-	$(compiler) $(cflag) v2r-window/lib-gl/glfw.c
+	$(compiler) $(cflag) v2r-window/lib-gl/gllib/glfw.c
 	$(compiler) $(cflag) w2w-gamepad/glfw/glfw.gamepad.c
 
 .PHONY:macsdl
@@ -209,7 +213,7 @@ winglut:target windows
 
 .PHONY:winglfw
 winglfw:target windows opengl
-	$(compiler) $(cflag) v2r-window/lib-gl/glfw.c
+	$(compiler) $(cflag) v2r-window/lib-gl/gllib/glfw.c
 	$(compiler) $(cflag) w2w-gamepad/glfw/glfw.gamepad.c
 
 .PHONY:winsdl

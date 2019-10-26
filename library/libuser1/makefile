@@ -216,14 +216,8 @@ fordx12/dx12.fbo.c \
 forgl10/gl10.ctx.c \
 forgl10/gl10.draw.c \
 forgl10/gl10.fbo.c \
-forgl41/context/gl41.ctx.self.c \
-forgl41/context/gl41.ctx.coop.c \
-forgl41/target/gl41.target.color.c \
-forgl41/target/gl41.target.depth.c \
-forgl41/target/gl41.target.gbuffer.c \
-forgl41/target/gl41.target.window.c \
-forgl41/gl41.icon.c \
-forgl41/gl41.title.c \
+forgl41/gl41.coop.c \
+forgl41/gl41.data.c \
 forelec/elec.sch.c \
 forelec/elec.pcb.c \
 forfile/html.base.c \

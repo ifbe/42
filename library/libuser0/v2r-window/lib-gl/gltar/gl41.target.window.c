@@ -52,11 +52,11 @@ int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 
 	wnd = self->pchip;
 	if(0 == wnd)return 0;
-	rel = wnd->oreln;
-	if(0 == rel)return 0;
 
-	v = (short*)ev;
 	if('p' == (ev->what&0xff)){
+		rel = wnd->oreln;
+		if(0 == rel)return 0;
+
 		while(1){
 			if(0 == rel)return 0;
 			sty = rel->psrcfoot;
@@ -64,6 +64,8 @@ int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 			y0 = sty->vc[1] * wnd->height;
 			xn = sty->vq[0] * wnd->width + x0;
 			yn = sty->vq[1] * wnd->height + y0;
+
+			v = (short*)ev;
 			x = v[0];
 			y = wnd->height-v[1];
 			if( (x>x0) && (x<xn) && (y>y0) && (y<yn) )goto found;
@@ -71,8 +73,14 @@ int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 		}
 		return 0;
 	}
+	else{
+		rel = wnd->buf0;
+		if(0 == rel)rel = wnd->orel0;
+		if(0 == rel)return 0;
+	}
 
 found:
+	wnd->buf0 = rel;
 	stack[rsp+0] = (void*)(rel->src);
 	stack[rsp+1] = (void*)(rel->dst);
 	actorwrite(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, len);

@@ -62,6 +62,23 @@ int windowwrite(void*, void*, void*, int, void*, int);
 int windowlist();
 int windowchoose();
 //
+int gl41fboc_create(void*, void*);
+int gl41fboc_delete(void*, void*);
+int gl41fboc_read( void*, void*, void*, int, void*, int);
+int gl41fboc_write(void*, void*, void*, int, void*, int);
+int gl41fbod_create(void*, void*);
+int gl41fbod_delete(void*, void*);
+int gl41fbod_read( void*, void*, void*, int, void*, int);
+int gl41fbod_write(void*, void*, void*, int, void*, int);
+int gl41fbog_create(void*, void*);
+int gl41fbog_delete(void*, void*);
+int gl41fbog_read( void*, void*, void*, int, void*, int);
+int gl41fbog_write(void*, void*, void*, int, void*, int);
+int gl41wnd0_create(void*, void*);
+int gl41wnd0_delete(void*, void*);
+int gl41wnd0_read( void*, void*, void*, int, void*, int);
+int gl41wnd0_write(void*, void*, void*, int, void*, int);
+//
 int ahrs_create(void*, void*);
 int ahrs_delete(void*);
 int ahrs_read(void*, void*, void*, int, void*, int);
@@ -77,16 +94,10 @@ int stepcar_delete(void*, void*);
 int stepcar_read(void*, void*, void*, int, void*, int);
 int stepcar_write(void*, void*, void*, int, void*, int);
 //
-int khala_create(void*, void*);
-//
-int loopback_create(void*, void*);
-//
-int actorevent(struct event* ev);
 int input(void*, int);
 //
 int cmp(void*, void*);
 int ncmp(void*, void*, int);
-int parsexml_detail(void*, int, void*, void*, void*, void*);
 
 
 
@@ -131,10 +142,14 @@ int arenaread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, vo
 {
 	struct arena* win = self->pchip;
 
-	switch(win->type){
+	switch(win->fmt){
 		case _cam_:return videoread(self, peer, arg, idx, buf, len);
 		case _bdc_:return toycar_read(self, peer, arg, idx, buf, len);
 		case _step_:return stepcar_read(self, peer, arg, idx, buf, len);
+		case _gl41fboc_:return gl41fboc_read(self,peer,arg,idx,buf,len);
+		case _gl41fbod_:return gl41fbod_read(self,peer,arg,idx,buf,len);
+		case _gl41fbog_:return gl41fbog_read(self,peer,arg,idx,buf,len);
+		case _gl41wnd0_:return gl41wnd0_read(self,peer,arg,idx,buf,len);
 	}
 
 	return 0;
@@ -147,6 +162,10 @@ int arenawrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _bdc_:return toycar_write(self, peer, arg, idx, buf, len);
 		case _step_:return stepcar_write(self, peer, arg, idx, buf, len);
 		case _ahrs_:return ahrs_write(self, peer, arg, idx, buf, len);
+		case _gl41fboc_:return gl41fboc_write(self,peer,arg,idx,buf,len);
+		case _gl41fbod_:return gl41fbod_write(self,peer,arg,idx,buf,len);
+		case _gl41fbog_:return gl41fbog_write(self,peer,arg,idx,buf,len);
+		case _gl41wnd0_:return gl41wnd0_write(self,peer,arg,idx,buf,len);
 	}
 
 	return 0;
@@ -188,7 +207,7 @@ int arenadelete(struct arena* win)
 	win->fmt = 0;
 	return 0;
 }
-void* arenacreate(u64 type, void* addr, int argc, char** argv)
+void* arenacreate(u64 type, void* arg, int argc, char** argv)
 {
 	int j = 0;
 	struct arena* win;
@@ -209,7 +228,7 @@ void* arenacreate(u64 type, void* addr, int argc, char** argv)
 
 		win->type = _joy_;
 		win->fmt = _joy_;
-		joycreate(win, addr);
+		joycreate(win, arg);
 		return win;
 	}
 	else if(_std_ == type)
@@ -219,7 +238,7 @@ void* arenacreate(u64 type, void* addr, int argc, char** argv)
 
 		win->type = _std_;
 		win->fmt = _std_;
-		stdcreate(win, addr);
+		stdcreate(win, arg);
 		return win;
 	}
 	else if(_tray_ == type)
@@ -229,7 +248,7 @@ void* arenacreate(u64 type, void* addr, int argc, char** argv)
 
 		win->type = _tray_;
 		win->fmt = _tray_;
-		traycreate(win, addr);
+		traycreate(win, arg);
 		return win;
 	}
 
@@ -241,7 +260,7 @@ void* arenacreate(u64 type, void* addr, int argc, char** argv)
 
 		win->type = _ahrs_;
 		win->fmt = _ahrs_;
-		ahrs_create(win, addr);
+		ahrs_create(win, arg);
 		return win;
 	}
 
@@ -253,7 +272,7 @@ void* arenacreate(u64 type, void* addr, int argc, char** argv)
 
 		win->type = _bdc_;
 		win->fmt = _bdc_;
-		toycar_create(win, addr);
+		toycar_create(win, arg);
 		return win;
 	}
 
@@ -265,7 +284,7 @@ void* arenacreate(u64 type, void* addr, int argc, char** argv)
 
 		win->type = _mic_;
 		win->fmt = hex32('p','c','m',0);
-		micphonecreate(win, addr);
+		micphonecreate(win, arg);
 		return win;
 	}
 
@@ -277,7 +296,7 @@ void* arenacreate(u64 type, void* addr, int argc, char** argv)
 
 		win->type = _spk_;
 		win->fmt = hex32('p','c','m',0);
-		speakercreate(win, addr);
+		speakercreate(win, arg);
 		return win;
 	}
 
@@ -289,7 +308,7 @@ void* arenacreate(u64 type, void* addr, int argc, char** argv)
 
 		win->type = _cam_;
 		win->fmt = hex32('y','u','v',0);
-		videocreate(win, addr);
+		videocreate(win, arg);
 		return win;
 	}
 	else if(_cap_ == type)
@@ -333,33 +352,47 @@ void* arenacreate(u64 type, void* addr, int argc, char** argv)
 		win = allocarena();
 		if(0 == win)return 0;
 
-		if(addr)relationcreate(addr, 0, _win_, 0, win, 0, _win_, 0);
 		win->type = _win_;
 		win->fmt = _coop_;
 		windowcreate(win);
 		return win;
 	}
-
-	else if(_khala_ == type)
-	{
+	else if(_gl41fboc_ == type)
+        {
 		win = allocarena();
 		if(0 == win)return 0;
 
-		win->type = _w2w_;
-		win->fmt = _khala_;
-		khala_create(win, addr);
-		return win;
-	}
-	else if(_loopback_ == type)
-	{
+                win->fmt = win->type = _gl41fboc_;
+                gl41fboc_create(win, arg);
+                return win;
+        }
+        else if(_gl41fbod_ == type)
+        {
 		win = allocarena();
 		if(0 == win)return 0;
 
-		win->type = _w2w_;
-		win->fmt = _loopback_;
-		loopback_create(win, addr);
-		return win;
-	}
+                win->fmt = win->type = _gl41fbod_;
+                gl41fbod_create(win, arg);
+                return win;
+        }
+        else if(_gl41fbog_ == type)
+        {
+		win = allocarena();
+		if(0 == win)return 0;
+
+                win->fmt = win->type = _gl41fbog_;
+                gl41fbog_create(win, arg);
+                return win;
+        }
+        else if(_gl41wnd0_ == type)
+        {
+		win = allocarena();
+		if(0 == win)return 0;
+
+                win->fmt = win->type = _gl41wnd0_;
+                gl41wnd0_create(win, arg);
+                return win;
+        }
 
 	return 0;
 }

@@ -44,15 +44,6 @@ int gl41coop_create(void*, void*);
 int gl41coop_delete(void*);
 int gl41coop_read( void*, void*, void*, int, void*, int);
 int gl41coop_write(void*, void*, void*, int, void*, int);
-//
-int gl41fboc_create(void*, void*);
-int gl41fboc_write(void*, void*, void*, int, void*, int);
-int gl41fbod_create(void*, void*);
-int gl41fbod_write(void*, void*, void*, int, void*, int);
-int gl41fbog_create(void*, void*);
-int gl41fbog_write(void*, void*, void*, int, void*, int);
-int gl41wnd0_create(void*, void*);
-int gl41wnd0_write(void*, void*, void*, int, void*, int);
 
 
 
@@ -186,7 +177,6 @@ int actorwrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 	switch(act->type){
 		case _gl41data_:return gl41data_write(self, peer, arg, idx, buf, len);
 		case _gl41coop_:return gl41coop_write(self, peer, arg, idx, buf, len);
-		case _gl41wnd0_:return gl41wnd0_write(self, peer, arg, idx, buf, len);
 		case _world3d_:return world3d_write(self, peer, arg, idx, buf, len);
 	}
 
@@ -304,34 +294,6 @@ void* actorcreate(u64 type, void* buf, int argc, char** argv)
 		act = allocactor();
 		act->fmt = act->type = _gl41coop_;
 		gl41coop_create(act, buf);
-		return act;
-	}
-	else if(_gl41fboc_ == type)
-	{
-		act = allocactor();
-		act->fmt = act->type = _gl41fboc_;
-		gl41fboc_create(act, buf);
-		return act;
-	}
-	else if(_gl41fbod_ == type)
-	{
-		act = allocactor();
-		act->fmt = act->type = _gl41fbod_;
-		gl41fbod_create(act, buf);
-		return act;
-	}
-	else if(_gl41fbog_ == type)
-	{
-		act = allocactor();
-		act->fmt = act->type = _gl41fbog_;
-		gl41fbog_create(act, buf);
-		return act;
-	}
-	else if(_gl41wnd0_ == type)
-	{
-		act = allocactor();
-		act->fmt = act->type = _gl41wnd0_;
-		gl41wnd0_create(act, buf);
 		return act;
 	}
 

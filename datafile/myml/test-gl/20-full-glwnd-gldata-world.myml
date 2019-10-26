@@ -18,13 +18,13 @@ fmt:3dworld
 gldata{
 fmt:gl41data
 }
-glwnd{
-fmt:gl41wnd0
-}
 </actor>
 
 
 <arena>
+glwnd{
+fmt:gl41wnd0
+}
 opengl{
 fmt:win
 title:"42"
@@ -111,9 +111,9 @@ q:0.25, 0.25
 (gldata, 0, act, all) -> (world, 0, act, all)
 
 #glwnd depends on gldata
-(glwnd, aaaarect, act, 0) -> (gldata, aaaafrus, act, cam0)
-(glwnd, bbbbrect, act, 0) -> (gldata, bbbbfrus, act, cam1)
+(glwnd, aaaarect, win, 0) -> (gldata, aaaafrus, act, cam0)
+(glwnd, bbbbrect, win, 0) -> (gldata, bbbbfrus, act, cam1)
 
 #opengl depends on glwnd
-(opengl, 0, win, wnd) -> (glwnd, 0, act, togl)
+(opengl, 0, win, wnd) -> (glwnd, 0, win, togl)
 </relation>
