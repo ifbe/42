@@ -99,15 +99,13 @@ int world3d_read(struct halfrel* self, struct halfrel* peer, struct halfrel** st
 	struct relation* toobj;
 	struct style* sty;
 	struct style* pin;
-	//say("%d,%llx@world3d_read: %.4s, %.4s\n", rsp, stack, &peer->flag, &self->flag);
+	say("%d,%llx@world3d_read: %.4s, %.4s\n", rsp, stack, &peer->flag, &self->flag);
 
 	glctx = peer->pchip;
 	if(0 == glctx)return 0;
 
 	world = self->pchip;
 	if(0 == world)return 0;
-
-	gl41data_before(glctx);
 
 readcam:
 	tocam = world->orel0;
@@ -117,15 +115,15 @@ readcam:
 			stack[rsp+0] = (void*)(tocam->src);
 			stack[rsp+1] = (void*)(tocam->dst);
 			actorread(stack[rsp+1], stack[rsp+0], stack, rsp+2, 0, 0);
-
-			ctx_copy(glctx, sty, pin);
 			goto readobj;
 		}
 		tocam = samesrcnextdst(tocam);
 	}
-	goto theend;
+	return 0;
 
 readobj:
+	gl41data_before(glctx);
+
 	toobj = world->orel0;
 	while(1){
 		if(0 == toobj)break;
@@ -146,8 +144,9 @@ next:
 		toobj = samesrcnextdst(toobj);
 	}
 
-theend:
 	gl41data_after(glctx);
+
+theend:
 	return 0;
 }
 int world3d_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
