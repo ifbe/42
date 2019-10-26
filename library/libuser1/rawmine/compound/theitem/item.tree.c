@@ -219,32 +219,26 @@ static void tree_draw(
 
 static void tree_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//rendertarget -> rendercontext
+	//rendertarget -> rendercontext, world -> camera
 	struct actor* wnd;
 	struct actor* ctx;
-
-	//rendercontext -> world
-	struct actor* dat;
-	struct actor* wrd;
-
-	//world -> camera
 	struct actor* wor;
 	struct actor* cam;
 
 	//world -> tree
-	struct actor* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
+	struct actor* win;struct style* geom;
+	struct actor* act;struct style* part;
 
+	//world -> tree
 	if(stack){
-		wnd = stack[rsp-6]->pchip;
-		ctx = stack[rsp-5]->pchip;
-		dat = stack[rsp-4]->pchip;
-		wrd = stack[rsp-3]->pchip;
+		wnd = stack[rsp-4]->pchip;
+		ctx = stack[rsp-3]->pchip;
 		wor = stack[rsp-2]->pchip;
 		cam = stack[rsp-1]->pchip;
-		tree_draw_vbo3d(act, pin, ctx, sty);
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		tree_draw_vbo3d(act, part, ctx, geom);
 	}
 }
 static void tree_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

@@ -389,8 +389,10 @@ void fullwindow_renderwnd(struct halfrel** stack, int rsp)
 
 void fullwindow_write(struct arena* ogl, struct event* ev)
 {
+	struct halfrel* stack[16];
 	//say("@fullwindow_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
-	relationwrite(ogl, _wnd_, 0, 0, ev, 0);
+
+	relationwrite(ogl, _wnd_, stack, 0, ev, 0);
 }
 void fullwindow_read(struct arena* ogl)
 {

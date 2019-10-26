@@ -89,12 +89,8 @@ void ctx_copy(struct actor* ctx, struct style* sty, struct style* pin)
 
 
 //stack:
-//-6: ogl
-//-5: glwnd
-//-4: glwnd, area
-//-3: glctx, frus
-//-2: glctx
-//-1: world
+//-2: glwnd, area
+//-1: glctx, frus
 int world3d_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct actor* glctx;
@@ -117,7 +113,7 @@ readcam:
 	tocam = world->orel0;
 	while(1){
 		if(0 == tocam)break;
-		if(stack[rsp-3]->flag == tocam->srcflag){
+		if(stack[rsp-1]->flag == tocam->srcflag){
 			stack[rsp+0] = (void*)(tocam->src);
 			stack[rsp+1] = (void*)(tocam->dst);
 			actorread(stack[rsp+1], stack[rsp+0], stack, rsp+2, 0, 0);
@@ -154,7 +150,7 @@ theend:
 	gl41data_after(glctx);
 	return 0;
 }
-int world3d_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int world3d_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct actor* world;
 	struct relation* rel;
@@ -166,17 +162,14 @@ int world3d_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 	rel = world->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(hex32('c','a','m','0') == rel->srcflag){
-			goto found;
+		if(stack[rsp-1]->flag == rel->srcflag){
+			stack[rsp+0] = (void*)(rel->src);
+			stack[rsp+1] = (void*)(rel->dst);
+			actorwrite(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, len);
+			break;
 		}
 		rel = samesrcnextdst(rel);
 	}
-	return 0;
-
-found:
-	self = (void*)(rel->dst);
-	peer = (void*)(rel->src);
-	actorwrite(self, peer, 0, 0, buf, len);
 	return 0;
 /*
 	int ret;

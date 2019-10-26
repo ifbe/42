@@ -707,45 +707,30 @@ static void freecam_matrix(
 
 
 //stack:
-//-8: ogl
-//-7: glwnd
-//-6: glwnd, area
-//-5: glctx, frus
-//-4: glctx
-//-3: world
+//-4: glwnd, area
+//-3: glctx, frus
 //-2: world, geom
-//-1: cam, part
+//-1: atcam, part
 static void freecam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//rendertarget -> rendercontext
-	struct actor* wnd;
-	struct fstyle* area;
-	struct actor* ctx;
-	struct fstyle* frus;
-
-	//rendercontext -> world
-	struct actor* dat;
-	struct actor* wrd;
-
-	//world -> camera
-	struct actor* wor;
-	struct actor* cam;
+	//rendertarget -> rendercontext, world -> camera
+	struct actor* wnd;struct fstyle* area;
+	struct actor* ctx;struct fstyle* frus;
+	struct actor* wor;struct fstyle* cgeo;
+	struct actor* cam;struct fstyle* cpar;
 
 	//world -> tree
-	struct actor* act = self->pchip;
-	struct fstyle* part = self->pfoot;
-	struct actor* win = peer->pchip;
-	struct fstyle* geom = peer->pfoot;
+	struct actor* win;struct fstyle* geom;
+	struct actor* act;struct fstyle* part;
 
 	if(stack){
-		wnd = stack[rsp-6]->pchip;
-		area = stack[rsp-6]->pfoot;
-		ctx = stack[rsp-5]->pchip;
-		frus = stack[rsp-5]->pfoot;
-		dat = stack[rsp-4]->pchip;
-		wrd = stack[rsp-3]->pchip;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		ctx = stack[rsp-3]->pchip;frus = stack[rsp-3]->pfoot;
 		wor = stack[rsp-2]->pchip;
 		cam = stack[rsp-1]->pchip;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
 /*		say("(%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s)\n",
 			&wnd->type, &stack[rsp-6]->flag,
 			&ctx->type, &stack[rsp-5]->flag,
@@ -761,15 +746,16 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, struct half
 }
 static int freecam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
-	struct style* frus = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* area = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
+	struct actor* win;struct style* geom;
+	struct actor* act;struct style* part;
+	struct event* ev;
 
-	//say("@freecam_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
-	freecam_event1(act, frus, win, area, ev, 0);
+	win = peer->pchip;geom = peer->pfoot;
+	act = self->pchip;part = self->pfoot;
+	ev = (void*)buf;
+
+	say("%llx@freecam_write:%llx,%llx,%llx,%llx\n", act, ev->why, ev->what, ev->where, ev->when);
+	freecam_event1(act, part, win, geom, ev, 0);
 	return 0;
 }
 static void freecam_stop(struct halfrel* self, struct halfrel* peer)

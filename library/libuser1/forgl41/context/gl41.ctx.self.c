@@ -4,13 +4,10 @@
 
 
 //stack:
-//-4: ogl
-//-3: glwnd
 //-2: glwnd, area
 //-1: glctx, frus
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	struct actor* mwnd;
 	struct actor* data;
 	struct relation* rel;
 	//say("%d,%llx@gl41data_read: %.4s, %.4s\n", rsp, stack, &peer->flag, &self->flag);
@@ -23,9 +20,7 @@ int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 		if(0 == rel)break;
 
 		if(_act_ == rel->dsttype){
-			stack[rsp+0] = (void*)(rel->src);
-			stack[rsp+1] = (void*)(rel->dst);
-			actorread(stack[rsp+1], stack[rsp+0], stack, rsp+2, 0, 0);
+			actorread((void*)(rel->dst), (void*)(rel->src), stack, rsp, 0, 0);
 		}
 
 		rel = samesrcnextdst(rel);
@@ -33,7 +28,7 @@ int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 
 	return 0;
 }
-int gl41data_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int gl41data_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct actor* act;
 	struct relation* rel;
@@ -46,7 +41,7 @@ int gl41data_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 
 	self = (void*)(rel->dst);
 	peer = (void*)(rel->src);
-	actorwrite(self, peer, 0, 0, buf, len);
+	actorwrite(self, peer, stack, rsp, buf, len);
 	return 0;
 }
 int gl41data_stop(struct halfrel* self, struct halfrel* peer)

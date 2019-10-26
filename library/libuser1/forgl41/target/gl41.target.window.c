@@ -12,7 +12,7 @@ void* locate_camera_in_world()
 
 
 
-int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int idx, void* buf, int len)
+int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	say("@gl41wnd0_read\n");
 /*	struct actor* wnd;
@@ -38,7 +38,7 @@ int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 */
 	return 0;
 }
-int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	float x,y,x0,y0,xn,yn;
 	short* v;
@@ -73,9 +73,9 @@ int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	}
 
 found:
-	self = (void*)(rel->dst);
-	peer = (void*)(rel->src);
-	actorwrite(self, peer, 0, 0, buf, len);
+	stack[rsp+0] = (void*)(rel->src);
+	stack[rsp+1] = (void*)(rel->dst);
+	actorwrite(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, len);
 	return 0;
 }
 int gl41wnd0_stop(struct halfrel* self, struct halfrel* peer)

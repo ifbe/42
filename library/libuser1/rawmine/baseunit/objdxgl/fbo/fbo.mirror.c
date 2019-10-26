@@ -312,21 +312,15 @@ void mirror_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 	frus->vt[3] = t;
 }
 static void mirror_matrix(
-	struct actor* act, struct fstyle* frus,
-	struct actor* fbo, struct fstyle* area)
+	struct actor* act, struct fstyle* part,
+	struct actor* wrd, struct fstyle* geom,
+	struct actor* ctx, struct fstyle* frus,
+	struct actor* fbo, struct fstyle* area,
+	struct actor* dat, struct fstyle* camf)
 {
-	struct halfrel* self;
-	struct halfrel* peer;
-	struct fstyle* obb;
-
-	struct mirrbuf* mirr;
-	struct glsrc* own;
-	struct glsrc* src;
-
-	//
-	mirr = act->buf0;
+	struct mirrbuf* mirr = act->buf0;
 	if(0 == mirr)return;
-	own = (void*)(mirr->data);
+	struct glsrc* own = (void*)(mirr->data);
 	if(0 == own)return;
 
 	own->tex[0].glfd = fbo->tex0;
@@ -335,17 +329,12 @@ static void mirror_matrix(
 	own->tex[0].enq += 1;
 
 
-	//
-	src = fbo->gl_camera;
-	if(0 == src)return;
-
-	mirror_search(act, 0, &self, &peer);
-	obb = peer->pfoot;
-
-	vec3 cam = {2000.0, -2000.0, 2000.0};
-	mirror_frustum(frus, obb, cam);
+	mirror_frustum(frus, geom, camf->vc);
 	fixmatrix(mirr->mvp, frus);
 	mat4_transpose(mirr->mvp);
+
+	//
+	struct glsrc* src = fbo->gl_camera;
 
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";
@@ -353,29 +342,63 @@ static void mirror_matrix(
 
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
-	src->arg[1].data = obb->vc;
+	src->arg[1].data = frus->vc;
 }
 
 
 
 
+//stack last:
+//-8: glwnd, area
+//-7: glctx, frus
+//-6: world, geom
+//-5: mirro, part
+//stack curr:
+//-4: glfbo, area
+//-3: glctx, frus
+//-2: world, geom
+//-1: mirro, part
 static void mirror_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
-	if(ctx){
-		if(_gl41data_ == ctx->type)mirror_draw_vbo(act,pin,ctx,sty);
+	//rendertarget -> rendercontext
+	struct actor* wnd;struct fstyle* rect;
+	struct actor* ccc;struct fstyle* camf;
+
+	//rendertarget -> rendercontext
+	struct actor* fbo;struct fstyle* area;
+	struct actor* ctx;struct fstyle* frus;
+
+	//world -> mirror
+	struct actor* win;struct style* geom;
+	struct actor* act;struct style* part;
+
+	if(rsp<6){
+		say("@mirror_read, depth=1\n");
+		return;
 	}
 	else{
-		switch(win->type){
-			case _gl41fbod_:
-			case _gl41fboc_:
-			case _gl41fbog_:
-			case _gl41wnd0_:mirror_matrix(act, &pin->fs, win, &sty->fs);
+		say("@mirror_read, depth=2\n");
+		return;
+	}
+
+	if(stack){
+		wnd = stack[rsp-8]->pchip;rect = stack[rsp-8]->pfoot;
+		ccc = stack[rsp-7]->pchip;camf = stack[rsp-7]->pfoot;
+		//wrl = stack[rsp-6]//geom
+		//cam = stack[rsp-5]//part
+
+		fbo = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		ctx = stack[rsp-3]->pchip;frus = stack[rsp-3]->pfoot;
+		//wor = stack[rsp-2]->pchip;//geom
+		//cam = stack[rsp-1]->pchip;//part
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		if(0){
+			mirror_matrix(act,&part->fs, win,&geom->fs, ctx,frus, fbo,area, ccc,camf);
+		}
+		else{
+			mirror_draw_vbo(act,part, ctx,geom);
 		}
 	}
 }
