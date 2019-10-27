@@ -37,6 +37,67 @@ void carveaxis(struct actor* win)
 	vb[2] = 10000.0;
 	carveline(win, 0x0000ff, va, vb);
 }
+void carvefrustum(struct actor* ctx, struct fstyle* frus)
+{
+	vec3 lbn,rbn,ltn,rtn;
+	vec3 lbf,rbf,ltf,rtf;
+	float* vc = frus->vc;
+	float* vn = frus->vn;
+	float* vl = frus->vl;
+	float* vr = frus->vr;
+	float* vb = frus->vb;
+	float* vt = frus->vt;
+
+	lbn[0] = vc[0] + vn[0]*vn[3] + vr[0]*vl[3] + vt[0]*vb[3];
+	lbn[1] = vc[1] + vn[1]*vn[3] + vr[1]*vl[3] + vt[1]*vb[3];
+	lbn[2] = vc[2] + vn[2]*vn[3] + vr[2]*vl[3] + vt[2]*vb[3];
+
+	rbn[0] = vc[0] + vn[0]*vn[3] + vr[0]*vr[3] + vt[0]*vb[3];
+	rbn[1] = vc[1] + vn[1]*vn[3] + vr[1]*vr[3] + vt[1]*vb[3];
+	rbn[2] = vc[2] + vn[2]*vn[3] + vr[2]*vr[3] + vt[2]*vb[3];
+
+	ltn[0] = vc[0] + vn[0]*vn[3] + vr[0]*vl[3] + vt[0]*vt[3];
+	ltn[1] = vc[1] + vn[1]*vn[3] + vr[1]*vl[3] + vt[1]*vt[3];
+	ltn[2] = vc[2] + vn[2]*vn[3] + vr[2]*vl[3] + vt[2]*vt[3];
+
+	rtn[0] = vc[0] + vn[0]*vn[3] + vr[0]*vr[3] + vt[0]*vt[3];
+	rtn[1] = vc[1] + vn[1]*vn[3] + vr[1]*vr[3] + vt[1]*vt[3];
+	rtn[2] = vc[2] + vn[2]*vn[3] + vr[2]*vr[3] + vt[2]*vt[3];
+
+	lbf[0] = vc[0] + (lbn[0]-vc[0])*1000;
+	lbf[1] = vc[1] + (lbn[1]-vc[1])*1000;
+	lbf[2] = vc[2] + (lbn[2]-vc[2])*1000;
+
+	rbf[0] = vc[0] + (rbn[0]-vc[0])*1000;
+	rbf[1] = vc[1] + (rbn[1]-vc[1])*1000;
+	rbf[2] = vc[2] + (rbn[2]-vc[2])*1000;
+
+	ltf[0] = vc[0] + (ltn[0]-vc[0])*1000;
+	ltf[1] = vc[1] + (ltn[1]-vc[1])*1000;
+	ltf[2] = vc[2] + (ltn[2]-vc[2])*1000;
+
+	rtf[0] = vc[0] + (rtn[0]-vc[0])*1000;
+	rtf[1] = vc[1] + (rtn[1]-vc[1])*1000;
+	rtf[2] = vc[2] + (rtn[2]-vc[2])*1000;
+
+	carveline(ctx, 0, lbn, rbn);
+	carveline(ctx, 0, ltn, rtn);
+	carveline(ctx, 0, lbn, ltn);
+	carveline(ctx, 0, rbn, rtn);
+
+	carveline(ctx, 0, lbf, rbf);
+	carveline(ctx, 0, ltf, rtf);
+	carveline(ctx, 0, lbf, ltf);
+	carveline(ctx, 0, rbf, rtf);
+
+	carveline(ctx, 0, lbn, lbf);
+	carveline(ctx, 0, rbn, rbf);
+	carveline(ctx, 0, ltn, ltf);
+	carveline(ctx, 0, rtn, rtf);
+	//say("(%f,%f,%f)->(%f,%f,%f)\n",lbf[0],lbf[1],lbf[2],rtf[0],rtf[1],rtf[2]);
+	//say("(%f,%f,%f)->(%f,%f,%f)->(%f,%f,%f)\n",vc[0],vc[1],vc[2],lbn[0],lbn[1],lbn[2],rtn[0],rtn[1],rtn[2]);
+	//say("(%f,%f,%f)->(%f,%f,%f)->(%f,%f,%f)\n",vc[0],vc[1],vc[2],lbf[0],lbf[1],lbf[2],rtf[0],rtf[1],rtf[2]);
+}/*
 void carvefrustum(struct actor* win, struct fstyle* sty)
 {
 	vec3 tc, tr, tf;
@@ -88,7 +149,7 @@ void carvefrustum(struct actor* win, struct fstyle* sty)
 	tc[1] = vc[1] + (vn[1] + vr[1] + vu[1])*1000.0;
 	tc[2] = vc[2] + (vn[2] + vr[2] + vu[2])*1000.0;
 	carveline(win, 0xffffff, vc, tc);
-}/*
+}
 void carvecamera(struct actor* win, struct actor* w)
 {
 	vec3 va0,vb0,vc0,vd0;

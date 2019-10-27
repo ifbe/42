@@ -67,7 +67,7 @@ int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 	struct event* ev;
 
 	ev = buf;
-	say("@gl41wnd0_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
+	//say("@gl41wnd0_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
 
 	wnd = self->pchip;
 	if(0 == wnd)return 0;

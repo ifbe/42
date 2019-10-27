@@ -226,11 +226,13 @@ static int freecam_draw_vbo(
 	struct actor* win, struct fstyle* geom,
 	struct actor* ctx, struct fstyle* frus)
 {
-	float* vc = geom->vc;
-	float* vr = geom->vr;
-	float* vf = geom->vf;
-	float* vt = geom->vt;
-	carveline_rect(ctx, 0x000000, vc, vr, vt);
+	//float* vc = geom->vc;
+	//float* vr = geom->vr;
+	//float* vt = geom->vt;
+	//carveline_rect(ctx, 0, vc, vr, vt);
+
+	frus = act->buf0;
+	if(frus)carvefrustum(ctx, frus);
 	return 0;
 }
 /*
@@ -700,8 +702,13 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, struct half
 			&win->type, &peer->flag,
 			&act->type, &self->flag
 		);*/
-		if('m' == len)freecam_matrix(act, part, win, geom, ctx, frus, wnd, area);
-		if('v' == len)freecam_draw_vbo(act, part, win, geom, ctx, frus);
+		if('m' == len){
+			freecam_matrix(act, part, win, geom, ctx, frus, wnd, area);
+			act->buf0 = frus;
+		}
+		if('v' == len){
+			freecam_draw_vbo(act, part, win, geom, ctx, frus);
+		}
 	}
 }
 static int freecam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

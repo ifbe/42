@@ -94,9 +94,9 @@ int line3d_vars(struct actor* win, int unused, float** vbuf, u16** ibuf, int vcn
 void carveline(struct actor* win, u32 rgb,
 	vec3 va, vec3 vb)
 {
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
 
 	float* vbuf;
 	u16* ibuf;
