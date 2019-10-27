@@ -92,7 +92,7 @@ int gl41data_read_matrix(struct actor* glctx, struct actor* world, struct halfre
 		if(stack[rsp-1]->flag == rel->srcflag){
 			stack[rsp+0] = (void*)(rel->src);
 			stack[rsp+1] = (void*)(rel->dst);
-			actorread(stack[rsp+1], stack[rsp+0], stack, rsp+2, 0, 0);
+			actorread(stack[rsp+1], stack[rsp+0], stack, rsp+2, 0, 'm');
 			break;
 		}
 		rel = samesrcnextdst(rel);
@@ -117,7 +117,7 @@ int gl41data_read_vertex(struct actor* glctx, struct actor* world, struct halfre
 
 			stack[rsp+0] = (void*)(rel->src);
 			stack[rsp+1] = (void*)(rel->dst);
-			actorread(stack[rsp+1], stack[rsp+0], stack, rsp+2, 0, 0);
+			actorread(stack[rsp+1], stack[rsp+0], stack, rsp+2, 0, 'v');
 
 			gl41data_copy(glctx, sty, pin);
 		}

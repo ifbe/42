@@ -222,56 +222,15 @@ void freecam_zoom(struct actor* win, float delta)
 
 
 static int freecam_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
-{/*
-	vec3 tc,tf;
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
-	tc[0] = vc[0] - vf[0]/2;
-	tc[1] = vc[1] - vf[1]/2;
-	tc[2] = vc[2] - vf[2]/2;
-	tf[0] = vf[0] / 2;
-	tf[1] = vf[1] / 2;
-	tf[2] = vf[2] / 2;
-	carvesolid_prism4(win, 0x800000, tc, vr, vu, tf);
-
-	sty->vn[0] = sty->vf[0];
-	sty->vn[1] = sty->vf[1];
-	sty->vn[2] = sty->vf[2];
-	sty->vl[0] = -sty->vr[0];
-	sty->vl[1] = -sty->vr[1];
-	sty->vl[2] = -sty->vr[2];
-	sty->vb[0] = -sty->vu[0];
-	sty->vb[1] = -sty->vu[1];
-	sty->vb[2] = -sty->vu[2];
-	carvefrustum(win, sty);*/
-
-	float x = act->x0;
-	float y = act->y0;
-	vec3 vc,vr,vf,vt;
-/*
-	vc[0] = x;
-	vc[1] = y;
-	vc[2] = 0;
-	vr[0] = x;
-	vr[1] = y;
-	vr[2] = 1000;
-	carveline(win, 0xffffff, vc, vr);
-
-	vr[0] = 100;
-	vr[1] = 0;
-	vr[2] = 0;
-	vf[0] = 0;
-	vf[1] = 100;
-	vf[2] = 0;
-	vt[0] = 0;
-	vt[1] = 0;
-	vt[2] = 100;
-	carveopaque_sphere(win, 0x80808080, vc, vr, vf, vt);
-*/
+	struct actor* act, struct fstyle* part,
+	struct actor* win, struct fstyle* geom,
+	struct actor* ctx, struct fstyle* frus)
+{
+	float* vc = geom->vc;
+	float* vr = geom->vr;
+	float* vf = geom->vf;
+	float* vt = geom->vt;
+	carveline_rect(ctx, 0x000000, vc, vr, vt);
 	return 0;
 }
 /*
@@ -741,7 +700,8 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, struct half
 			&win->type, &peer->flag,
 			&act->type, &self->flag
 		);*/
-		if(cam == act)freecam_matrix(act, part, win, geom, ctx, frus, wnd, area);
+		if('m' == len)freecam_matrix(act, part, win, geom, ctx, frus, wnd, area);
+		if('v' == len)freecam_draw_vbo(act, part, win, geom, ctx, frus);
 	}
 }
 static int freecam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
