@@ -220,8 +220,8 @@ static void tree_draw(
 static void tree_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//rendertarget -> rendercontext, world -> camera
-	struct arena* wnd;struct fstyle* area;
-	struct actor* ctx;struct fstyle* frus;
+	struct arena* wnd;//struct fstyle* area;
+	struct actor* ctx;//struct fstyle* frus;
 	struct actor* wor;
 	struct actor* cam;
 
@@ -231,11 +231,11 @@ static void tree_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 
 	//world -> tree
 	if(stack){
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		ctx = stack[rsp-3]->pchip;frus = stack[rsp-3]->pfoot;
+		wnd = stack[rsp-4]->pchip;//area = stack[rsp-4]->pfoot;
+		ctx = stack[rsp-3]->pchip;//frus = stack[rsp-3]->pfoot;
 		wor = stack[rsp-2]->pchip;
 		cam = stack[rsp-1]->pchip;
-		say("eye@(%f,%f,%f)\n", frus->vc[0], frus->vc[1], frus->vc[2]);
+		//say("eye@(%f,%f,%f)\n", frus->vc[0], frus->vc[1], frus->vc[2]);
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;

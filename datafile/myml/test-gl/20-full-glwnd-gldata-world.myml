@@ -5,6 +5,9 @@ fmt:freecam
 cam1{
 fmt:freecam
 }
+mirror{
+fmt:mirror
+}
 tree{
 fmt:tree
 }
@@ -22,6 +25,9 @@ fmt:gl41data
 
 
 <arena>
+glfbo{
+fmt:gl41fboc
+}
 glwnd{
 fmt:gl41wnd0
 }
@@ -54,6 +60,27 @@ f: 0.0, 10000000.0, 0.0
 t: 0.0, 0.0, 10000000.0
 }
 
+mirrpart{
+}
+mirrgeom{
+c: 0.0, 0.0, 0.0
+r: 2000.0, 0.0, 0.0
+f: 0.0, 2000.0, 0.0
+t: 0.0, 0.0, 2000.0
+}
+mirrfrus{
+l: 0.0, 0.0, 0.0,-1.0
+r: 0.0, 0.0, 0.0, 1.0
+b: 0.0, 0.0, 0.0,-1.0
+t: 0.0, 0.0, 0.0, 1.0
+n: 0.0, 0.0, 0.0, 1.0
+f: 0.0, 0.0, 0.0, 1000000000000.0
+}
+mirrrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+
 aaaapart{
 }
 aaaageom{
@@ -62,16 +89,6 @@ r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
 }
-
-bbbbpart{
-}
-bbbbgeom{
-c: 0.0, -2000.0, 2000.0
-r: 1000.0, 0.0, 0.0
-f: 0.0, 707.0,-707.0
-t: 0.0, 707.0, 707.0
-}
-
 aaaafrus{
 l: 0.0, 0.0, 0.0, -1.0
 r: 0.0, 0.0, 0.0, 1.0
@@ -85,6 +102,14 @@ c:0.0, 0.0
 q:1.0, 1.0
 }
 
+bbbbpart{
+}
+bbbbgeom{
+c: 0.0, -2000.0, 2000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 707.0,-707.0
+t: 0.0, 707.0, 707.0
+}
 bbbbfrus{
 l: 0.0, 0.0, 0.0, -1.0
 r: 0.0, 0.0, 0.0, 1.0
@@ -101,9 +126,13 @@ q:0.5, 0.25
 
 
 <relation>
+#mirror depends on glfbo
+(mirror, 0, act, 0) -> (glfbo, 0, win, 0)
+
 #world depends on tree
 (world, aaaageom, act, cam0) -> (cam0, aaaapart, act, 0)
 (world, bbbbgeom, act, cam1) -> (cam1, bbbbpart, act, 0)
+(world, mirrgeom, act, cam2) -> (mirror, mirrpart, act, 0)
 (world, treegeom, act, obj0) -> (tree, treepart, act, 0)
 (world, skygeom, act, obj0) -> (sky, skypart, act, 0)
 
@@ -113,6 +142,7 @@ q:0.5, 0.25
 #glwnd depends on gldata
 (glwnd, aaaarect, win, 0) -> (gldata, aaaafrus, act, cam0)
 (glwnd, bbbbrect, win, 0) -> (gldata, bbbbfrus, act, cam1)
+(glfbo, mirrrect, win, 0) -> (gldata, mirrfrus, act, cam2)
 
 #opengl depends on glwnd
 (opengl, 0, win, wnd) -> (glwnd, 0, win, togl)

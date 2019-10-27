@@ -23,7 +23,7 @@ void fullwindow_render(struct arena* ogl, int tmp, struct halfrel* src, struct h
 
 int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	say("@gl41wnd0_read\n");
+	//say("@gl41wnd0_read\n");
 	struct arena* ogl;
 	struct arena* wnd;
 	struct actor* ctx;

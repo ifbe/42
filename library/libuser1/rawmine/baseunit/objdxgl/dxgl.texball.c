@@ -171,43 +171,34 @@ static void texball_event(
 
 
 
-static void texball_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void texball_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//rendertarget -> rendercontext
 	struct actor* wnd;
 	struct actor* ctx;
 
-	//rendercontext -> world
-	struct actor* dat;
-	struct actor* wrd;
-
 	//world -> camera
 	struct actor* wor;
 	struct actor* cam;
 
-	//world -> tree
-	struct halfrel** stack;
+	//world -> texball
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct actor* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 
-
-	stack = arg;
 	if(stack){
-		wnd = stack[idx-6]->pchip;
-		ctx = stack[idx-5]->pchip;
-		dat = stack[idx-4]->pchip;
-		wrd = stack[idx-3]->pchip;
-		wor = stack[idx-2]->pchip;
-		cam = stack[idx-1]->pchip;
+		wnd = stack[rsp-4]->pchip;
+		ctx = stack[rsp-3]->pchip;
+		wor = stack[rsp-2]->pchip;
+		cam = stack[rsp-1]->pchip;
 /*		say("(%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s)\n",
-			&wnd->type, &stack[idx-6]->flag,
-			&ctx->type, &stack[idx-5]->flag,
-			&dat->type, &stack[idx-4]->flag,
-			&wrd->type, &stack[idx-3]->flag,
-			&wor->type, &stack[idx-2]->flag,
-			&cam->type, &stack[idx-1]->flag,
+			&wnd->type, &stack[rsp-6]->flag,
+			&ctx->type, &stack[rsp-5]->flag,
+			&dat->type, &stack[rsp-4]->flag,
+			&wrd->type, &stack[rsp-3]->flag,
+			&wor->type, &stack[rsp-2]->flag,
+			&cam->type, &stack[rsp-1]->flag,
 			&win->type, &peer->flag,
 			&act->type, &self->flag
 		);*/

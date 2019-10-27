@@ -14,8 +14,7 @@ GLSL_VERSION
 "layout(location = 1)in mediump vec2 texuvw;\n"
 "uniform mat4 cammvp;\n"
 "out mediump vec2 uvw;\n"
-"void main()\n"
-"{\n"
+"void main(){\n"
 	"uvw = texuvw;\n"
 	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
 "}\n";
@@ -25,8 +24,7 @@ GLSL_VERSION
 "uniform sampler2D tex0;\n"
 "in mediump vec2 uvw;\n"
 "out mediump vec4 FragColor;\n"
-"void main()\n"
-"{\n"
+"void main(){\n"
 	"mediump vec3 c = 0.8*texture(tex0, uvw).rgb + vec3(0.2, 0.2, 0.2);\n"
 	"FragColor = vec4(c, 1.0);\n"
 "}\n";
@@ -101,7 +99,7 @@ static void mirror_draw_vbo(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
+	//carvesolid_rect(win, 0x404040, vc, vr, vf);
 
 	mirr = act->buf0;
 	if(0 == mirr)return;
@@ -372,18 +370,24 @@ static void mirror_read(struct halfrel* self, struct halfrel* peer, struct halfr
 	struct actor* win;struct style* geom;
 	struct actor* act;struct style* part;
 
-	if(rsp<6){
-		say("@mirror_read, depth=1\n");
+	win = peer->pchip;geom = peer->pfoot;
+	act = self->pchip;part = self->pfoot;
+/*
+	struct relation* rel;
+	if(rsp<8){
+		rel = act->orel0;
+		say("@mirror_read, depth=1, orel=%llx\n", rel);
+		if(rel)arenaread((void*)(rel->dst), (void*)(rel->src), stack, rsp, buf, len);
 		return;
 	}
 	else{
 		say("@mirror_read, depth=2\n");
 		return;
 	}
-
+*/
 	if(stack){
-		wnd = stack[rsp-8]->pchip;rect = stack[rsp-8]->pfoot;
-		ccc = stack[rsp-7]->pchip;camf = stack[rsp-7]->pfoot;
+		//wnd = stack[rsp-8]->pchip;rect = stack[rsp-8]->pfoot;
+		//ccc = stack[rsp-7]->pchip;camf = stack[rsp-7]->pfoot;
 		//wrl = stack[rsp-6]//geom
 		//cam = stack[rsp-5]//part
 
@@ -392,8 +396,6 @@ static void mirror_read(struct halfrel* self, struct halfrel* peer, struct halfr
 		//wor = stack[rsp-2]->pchip;//geom
 		//cam = stack[rsp-1]->pchip;//part
 
-		win = peer->pchip;geom = peer->pfoot;
-		act = self->pchip;part = self->pfoot;
 		if(0){
 			mirror_matrix(act,&part->fs, win,&geom->fs, ctx,frus, fbo,area, ccc,camf);
 		}
@@ -410,14 +412,10 @@ static void mirror_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void mirror_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct actor* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
+	struct actor* act = self->pchip;
+	struct style* pin = self->pfoot;
 	if(0 == act)return;
 	if(0 == pin)return;
-	if(hex32('m','v','p',0) == self->flag){
-		say("mirror_start: mvp\n");
-		return;
-	}
 
 	struct mirrbuf* mirr = act->buf0;
 	pin->data[0] = (u64)(mirr->data);

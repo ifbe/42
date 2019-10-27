@@ -28,7 +28,8 @@ int gl41fboc_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 	struct arena* wnd;
 	struct actor* data;
 	struct relation* rel;
-	//say("@gl41fboc\n");
+	say("@gl41fboc: %llx\n", self->pchip);
+	return 0;
 
 	ogl = stack[rsp-2]->pchip;
 	wnd = stack[rsp-1]->pchip;
