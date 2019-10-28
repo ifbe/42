@@ -92,20 +92,22 @@ static void tree_draw_vbo2d(
 	carvesolid_prism4(win, 0x00ff00, tc, tr, tf, tu);
 }*/
 static void tree_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct actor* act, struct style* part,
+	struct actor* win, struct style* geom,
+	struct actor* cam, struct fstyle* frus,
+	struct actor* ctx, struct fstyle* none)
 {
 	vec3 tc, tr, tf, tu, f;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	//carvesolid_rect(win, 0x6a4b23, vc, vr, vf);
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	//carvesolid_rect(ctx, 0x6a4b23, vc, vr, vf);
 /*
 	tc[0] = vc[0]-vu[0];
 	tc[1] = vc[1]-vu[1];
 	tc[2] = vc[2]-vu[2];
-	carvesolid_cone(win, 0x6a4b23, tc, vr, vu);
+	carvesolid_cone(ctx, 0x6a4b23, tc, vr, vu);
 */
 	tc[0] = vc[0]+vu[0]/4;
 	tc[1] = vc[1]+vu[1]/4;
@@ -119,7 +121,7 @@ static void tree_draw_vbo3d(
 	tu[0] = vu[0]/4;
 	tu[1] = vu[1]/4;
 	tu[2] = vu[2]/4;
-	carvesolid_prism4(win, 0x404040, tc, tr, tf, tu);
+	carvesolid_prism4(ctx, 0x404040, tc, tr, tf, tu);
 
 	tc[0] = vc[0]+vu[0]*9/16;
 	tc[1] = vc[1]+vu[1]*9/16;
@@ -133,7 +135,7 @@ static void tree_draw_vbo3d(
 	tu[0] = vu[0]/16;
 	tu[1] = vu[1]/16;
 	tu[2] = vu[2]/16;
-	carvesolid_prism4(win, 0x00ff00, tc, tr, tf, tu);
+	carvesolid_prism4(ctx, 0x00ff00, tc, tr, tf, tu);
 
 	tc[0] = vc[0]+vu[0]*11/16;
 	tc[1] = vc[1]+vu[1]*11/16;
@@ -147,7 +149,7 @@ static void tree_draw_vbo3d(
 	tu[0] = vu[0]/16;
 	tu[1] = vu[1]/16;
 	tu[2] = vu[2]/16;
-	carvesolid_prism4(win, 0x00ff00, tc, tr, tf, tu);
+	carvesolid_prism4(ctx, 0x00ff00, tc, tr, tf, tu);
 
 	tc[0] = vc[0]+vu[0]*13/16;
 	tc[1] = vc[1]+vu[1]*13/16;
@@ -161,7 +163,7 @@ static void tree_draw_vbo3d(
 	tu[0] = vu[0]/16;
 	tu[1] = vu[1]/16;
 	tu[2] = vu[2]/16;
-	carvesolid_prism4(win, 0x00ff00, tc, tr, tf, tu);
+	carvesolid_prism4(ctx, 0x00ff00, tc, tr, tf, tu);
 
 	tc[0] = vc[0]+vu[0]*15/16;
 	tc[1] = vc[1]+vu[1]*15/16;
@@ -175,7 +177,7 @@ static void tree_draw_vbo3d(
 	tu[0] = vu[0]/16;
 	tu[1] = vu[1]/16;
 	tu[2] = vu[2]/16;
-	carvesolid_prism4(win, 0x00ff00, tc, tr, tf, tu);
+	carvesolid_prism4(ctx, 0x00ff00, tc, tr, tf, tu);
 }
 static void tree_draw_json(
 	struct actor* act, struct style* pin,
@@ -217,13 +219,16 @@ static void tree_draw(
 
 
 
+//stack:
+//-4: wnd, area
+//-3: ctx
+//-2: ctx
+//-1: cam, frus
 static void tree_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//rendertarget -> rendercontext, world -> camera
-	struct arena* wnd;//struct fstyle* area;
-	struct actor* ctx;//struct fstyle* frus;
-	struct actor* wor;
-	struct actor* cam;
+	//ctx -> cam
+	struct actor* ctx;
+	struct actor* cam;struct fstyle* frus;
 
 	//world -> tree
 	struct actor* win;struct style* geom;
@@ -231,15 +236,12 @@ static void tree_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 
 	//world -> tree
 	if(stack){
-		wnd = stack[rsp-4]->pchip;//area = stack[rsp-4]->pfoot;
-		ctx = stack[rsp-3]->pchip;//frus = stack[rsp-3]->pfoot;
-		wor = stack[rsp-2]->pchip;
-		cam = stack[rsp-1]->pchip;
-		//say("eye@(%f,%f,%f)\n", frus->vc[0], frus->vc[1], frus->vc[2]);
+		ctx = stack[rsp-2]->pchip;
+		cam = stack[rsp-1]->pchip;frus = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		tree_draw_vbo3d(act, part, ctx, geom);
+		tree_draw_vbo3d(act,part, win,geom, cam,frus, ctx,0);
 	}
 }
 static void tree_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

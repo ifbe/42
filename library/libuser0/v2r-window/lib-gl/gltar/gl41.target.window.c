@@ -32,7 +32,6 @@ int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 
 	ogl = stack[rsp-2]->pchip;
 	wnd = stack[rsp-1]->pchip;
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//
 	rel = wnd->orel0;
@@ -50,6 +49,7 @@ int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 			fullwindow_upload(ogl, ctx);
 
 			//render all
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			fullwindow_render(ogl, 0, stack[rsp+0], stack[rsp+1]);
 		}
 

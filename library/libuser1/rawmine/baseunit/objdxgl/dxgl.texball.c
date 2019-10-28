@@ -92,20 +92,21 @@ static void texball_draw_pixel(
 	}
 }
 static void texball_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct actor* act, struct style* part,
+	struct actor* win, struct style* geom,
+	struct actor* cam, struct fstyle* frus,
+	struct actor* ctx, struct fstyle* none)
 {
 	void* vbuf;
 	void* ibuf;
 	struct glsrc* src;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
 
 	src = act->buf;
 	if(0 == src)return;
-//say("5555@method=%x, geom=%x, ibuf_h=%x\n", src->method, src->geometry, src->ibuf_h);
 
 	vbuf = (void*)(src->vbuf);
 	ibuf = (void*)(src->ibuf);
@@ -171,38 +172,28 @@ static void texball_event(
 
 
 
+//stack:
+//-4: wnd, area
+//-3: ctx
+//-2: ctx
+//-1: cam, frus
 static void texball_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//rendertarget -> rendercontext
-	struct actor* wnd;
+	//ctx -> cam
 	struct actor* ctx;
-
-	//world -> camera
-	struct actor* wor;
-	struct actor* cam;
+	struct actor* cam;struct fstyle* frus;
 
 	//world -> texball
-	struct actor* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
+	struct actor* win;struct style* geom;
+	struct actor* act;struct style* part;
 
 	if(stack){
-		wnd = stack[rsp-4]->pchip;
-		ctx = stack[rsp-3]->pchip;
-		wor = stack[rsp-2]->pchip;
-		cam = stack[rsp-1]->pchip;
-/*		say("(%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s)\n",
-			&wnd->type, &stack[rsp-6]->flag,
-			&ctx->type, &stack[rsp-5]->flag,
-			&dat->type, &stack[rsp-4]->flag,
-			&wrd->type, &stack[rsp-3]->flag,
-			&wor->type, &stack[rsp-2]->flag,
-			&cam->type, &stack[rsp-1]->flag,
-			&win->type, &peer->flag,
-			&act->type, &self->flag
-		);*/
-		texball_draw_vbo3d(act,pin,ctx,sty);
+		ctx = stack[rsp-2]->pchip;
+		cam = stack[rsp-1]->pchip;frus = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		texball_draw_vbo3d(act,part, win,geom, cam,frus, ctx,0);
 	}
 }
 static void texball_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

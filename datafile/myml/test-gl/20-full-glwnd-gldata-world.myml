@@ -137,12 +137,14 @@ q:0.333, 0.333
 (world, skygeom, act, obj0) -> (sky, skypart, act, 0)
 
 #gldata depends on world
-(gldata, 0, act, all) -> (world, 0, act, all)
+(gldata, 0, act, a0) -> (cam0, aaaafrus, act, 0)
+(gldata, 0, act, a1) -> (cam1, bbbbfrus, act, 0)
+(gldata, 0, act, a2) -> (mirror, mirrfrus, act, 0)
 
 #glwnd depends on gldata
-(glwnd, aaaarect, win, 0) -> (gldata, aaaafrus, act, cam0)
-(glwnd, bbbbrect, win, 0) -> (gldata, bbbbfrus, act, cam1)
-(glfbo, mirrrect, win, 0) -> (gldata, mirrfrus, act, cam2)
+(glwnd, aaaarect, win, 0) -> (gldata, 0, act, a0)
+(glwnd, bbbbrect, win, 0) -> (gldata, 0, act, a1)
+(glfbo, mirrrect, win, 0) -> (gldata, 0, act, a2)
 
 #opengl depends on glwnd
 (opengl, 0, win, wnd) -> (glwnd, 0, win, togl)

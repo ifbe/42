@@ -224,7 +224,8 @@ void freecam_zoom(struct actor* win, float delta)
 static int freecam_draw_vbo(
 	struct actor* act, struct fstyle* part,
 	struct actor* win, struct fstyle* geom,
-	struct actor* ctx, struct fstyle* frus)
+	struct actor* cam, struct fstyle* frus,
+	struct actor* ctx, struct fstyle* none)
 {
 	//float* vc = geom->vc;
 	//float* vr = geom->vr;
@@ -638,7 +639,8 @@ void freecam_frustum(struct fstyle* d, struct fstyle* s)
 static void freecam_matrix(
 	struct actor* act, struct fstyle* part,
 	struct actor* wrd, struct fstyle* geom,
-	struct actor* ctx, struct fstyle* frus,
+	struct actor* cam, struct fstyle* frus,
+	struct actor* ctx, struct fstyle* none,
 	struct arena* wnd, struct fstyle* area)
 {
 	float dx,dy;
@@ -668,17 +670,19 @@ static void freecam_matrix(
 
 
 //stack:
-//-4: glwnd, area
-//-3: glctx, frus
-//-2: world, geom
-//-1: atcam, part
+//-4: wnd, area
+//-3: ctx
+//-2: ctx
+//-1: cam, frus
 static void freecam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//rendertarget -> rendercontext, world -> camera
+	//wnd -> ctx
 	struct arena* wnd;struct fstyle* area;
-	struct actor* ctx;struct fstyle* frus;
-	struct actor* wor;struct fstyle* cgeo;
-	struct actor* cam;struct fstyle* cpar;
+	//struct actor* ctx;
+
+	//ctx -> cam
+	struct actor* ctx;
+	struct actor* cam;struct fstyle* frus;
 
 	//world -> tree
 	struct actor* win;struct fstyle* geom;
@@ -686,28 +690,18 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, struct half
 
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		ctx = stack[rsp-3]->pchip;frus = stack[rsp-3]->pfoot;
-		wor = stack[rsp-2]->pchip;
-		cam = stack[rsp-1]->pchip;
+		//ctx = stack[rsp-3]->pchip;
+		ctx = stack[rsp-2]->pchip;
+		cam = stack[rsp-1]->pchip;frus = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-/*		say("(%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s), (%.8s, %.4s) -> (%.8s, %.4s)\n",
-			&wnd->type, &stack[rsp-6]->flag,
-			&ctx->type, &stack[rsp-5]->flag,
-			&dat->type, &stack[rsp-4]->flag,
-			&wrd->type, &stack[rsp-3]->flag,
-			&wor->type, &stack[rsp-2]->flag,
-			&cam->type, &stack[rsp-1]->flag,
-			&win->type, &peer->flag,
-			&act->type, &self->flag
-		);*/
 		if('m' == len){
-			freecam_matrix(act, part, win, geom, ctx, frus, wnd, area);
+			freecam_matrix(act,part, win,geom, cam,frus, ctx,0, wnd,area);
 			act->buf0 = frus;
 		}
 		if('v' == len){
-			freecam_draw_vbo(act, part, win, geom, ctx, frus);
+			freecam_draw_vbo(act,part, win,geom, cam,frus, ctx,0);
 		}
 	}
 }
@@ -721,8 +715,8 @@ static int freecam_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 	act = self->pchip;part = self->pfoot;
 	ev = (void*)buf;
 
-	say("%llx@freecam_write:%llx,%llx,%llx,%llx\n", act, ev->why, ev->what, ev->where, ev->when);
-	freecam_event1(act, part, win, geom, ev, 0);
+	//say("%llx@freecam_write:%llx,%llx,%llx,%llx\n", act, ev->why, ev->what, ev->where, ev->when);
+	freecam_event1(act,part, win,geom, ev, 0);
 	return 0;
 }
 static void freecam_stop(struct halfrel* self, struct halfrel* peer)

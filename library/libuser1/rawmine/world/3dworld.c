@@ -13,7 +13,8 @@ int world3d_read(struct halfrel* self, struct halfrel* peer, struct halfrel** st
 }
 int world3d_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	struct actor* world;
+	return 0;
+/*	struct actor* world;
 	struct relation* rel;
 	say("@world3d_write\n");
 
@@ -32,7 +33,7 @@ int world3d_write(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 		rel = samesrcnextdst(rel);
 	}
 	return 0;
-/*
+
 	int ret;
 	struct style* sty;
 	struct relation* rel;
