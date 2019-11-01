@@ -18,6 +18,12 @@ int test_read(void*, void*, void*, int, void*, int);
 int test_write(void*, void*, void*, int, void*, int);
 
 //
+int reality_create(void*, void*);
+int reality_delete(void*);
+int reality_write(void*, void*, void*, int, void*, int);
+int reality_read( void*, void*, void*, int, void*, int);
+
+//
 int eeworld_create(void*, void*);
 int eeworld_delete(void*, void*);
 int eeworld_start(void*, void*);
@@ -159,6 +165,7 @@ int actorread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void
 	switch(act->type){
 		case _gl41data_:return gl41data_read(self, peer, arg, idx, buf, len);
 		case _gl41coop_:return gl41coop_read(self, peer, arg, idx, buf, len);
+		case _reality_:return reality_read(self, peer, arg, idx, buf, len);
 		case _world3d_:return world3d_read(self, peer, arg, idx, buf, len);
 		case _eeworld_:return eeworld_read(self, peer, arg, idx, buf, len);
 	}
@@ -177,6 +184,7 @@ int actorwrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 	switch(act->type){
 		case _gl41data_:return gl41data_write(self, peer, arg, idx, buf, len);
 		case _gl41coop_:return gl41coop_write(self, peer, arg, idx, buf, len);
+		case _reality_:return reality_write(self, peer, arg, idx, buf, len);
 		case _world3d_:return world3d_write(self, peer, arg, idx, buf, len);
 	}
 
@@ -257,14 +265,16 @@ void* actorcreate(u64 type, void* buf, int argc, char** argv)
 		return act;
 	}
 
-	//world
-	else if(_world3d_ == type)
+	//reality
+	else if(_reality_ == type)
 	{
 		act = allocactor();
-		act->fmt = act->type = _world3d_;
-		world3d_create(act, buf);
+		act->fmt = act->type = _reality_;
+		reality_create(act, buf);
 		return act;
 	}
+
+	//circuit
 	else if(_eeworld_ == type)
 	{
 		act = allocactor();
@@ -272,7 +282,6 @@ void* actorcreate(u64 type, void* buf, int argc, char** argv)
 		eeworld_create(act, buf);
 		return act;
 	}
-
 	else if(_hoffdata_ == type)
 	{
 		act = allocactor();
@@ -281,7 +290,14 @@ void* actorcreate(u64 type, void* buf, int argc, char** argv)
 		return act;
 	}
 
-	//gl41
+	//world
+	else if(_world3d_ == type)
+	{
+		act = allocactor();
+		act->fmt = act->type = _world3d_;
+		world3d_create(act, buf);
+		return act;
+	}
 	else if(_gl41data_ == type)
 	{
 		act = allocactor();

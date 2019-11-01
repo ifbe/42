@@ -429,8 +429,10 @@ void overview_draw_pixel(
 	}
 }
 void overview_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct actor* act, struct fstyle* part,
+	struct actor* win, struct fstyle* geom,
+	struct actor* cam, struct fstyle* frus,
+	struct actor* ctx, struct fstyle* temp)
 {
 	u32 bg,fg,cursor;
 	float r,f;
@@ -444,27 +446,27 @@ void overview_draw_vbo(
 	float* vr;
 	float* vf;
 	float* vt;
-	struct style tmp;
-	if(0 == sty)
+	struct fstyle tmp;
+	if(0 == geom)
 	{
-		sty = &tmp;
-		sty->f.vc[0] = 0.0;
-		sty->f.vc[1] = 0.0;
-		sty->f.vc[2] = -0.5;
-		sty->f.vr[0] = 1.0;
-		sty->f.vr[1] = 0.0;
-		sty->f.vr[2] = 0.0;
-		sty->f.vf[0] = 0.0;
-		sty->f.vf[1] = 1.0;
-		sty->f.vf[2] = 0.0;
-		sty->f.vt[0] = 0.0;
-		sty->f.vt[1] = 0.0;
-		sty->f.vt[2] = 1.0;
+		geom = &tmp;
+		geom->vc[0] = 0.0;
+		geom->vc[1] = 0.0;
+		geom->vc[2] = -0.5;
+		geom->vr[0] = 1.0;
+		geom->vr[1] = 0.0;
+		geom->vr[2] = 0.0;
+		geom->vf[0] = 0.0;
+		geom->vf[1] = 1.0;
+		geom->vf[2] = 0.0;
+		geom->vt[0] = 0.0;
+		geom->vt[1] = 0.0;
+		geom->vt[2] = 1.0;
 	}
-	vc = sty->f.vc;
-	vr = sty->f.vr;
-	vf = sty->f.vf;
-	vt = sty->f.vt;
+	vc = geom->vc;
+	vr = geom->vr;
+	vf = geom->vf;
+	vt = geom->vt;
 	cursor = (act->x0) + (act->y0)*16;
 
 /*
@@ -474,21 +476,21 @@ void overview_draw_vbo(
 	tr[0] = 1.0;
 	tr[1] = 0.5;
 	tr[2] = 0.0;
-	carveline2d(win, 0x0000ff, tc, tr);
+	carveline2d(ctx, 0x0000ff, tc, tr);
 	tc[0] = -1.0;
 	tc[1] = 0.0;
 	tc[2] = 0.0;
 	tr[0] = 1.0;
 	tr[1] = 0.0;
 	tr[2] = 0.0;
-	carveline2d(win, 0x00ff00, tc, tr);
+	carveline2d(ctx, 0x00ff00, tc, tr);
 	tc[0] = -1.0;
 	tc[1] = -0.5;
 	tc[2] = 0.0;
 	tr[0] = 1.0;
 	tr[1] = -0.5;
 	tr[2] = 0.0;
-	carveline2d(win, 0xff0000, tc, tr);
+	carveline2d(ctx, 0xff0000, tc, tr);
 */
 	//actor
 	for(j=0;j<128;j++)
@@ -521,7 +523,7 @@ void overview_draw_vbo(
 		tf[0] = vf[0] / 33.0;
 		tf[1] = vf[1] / 33.0;
 		tf[2] = vf[2] / 33.0;
-		carvesolid_rect(win, bg, tc, tr, tf);
+		carvesolid_rect(ctx, bg, tc, tr, tf);
 
 		tc[2] += 0.01;
 		tr[0] = vr[0] / 32;
@@ -530,7 +532,7 @@ void overview_draw_vbo(
 		tf[0] = vf[0] / 32;
 		tf[1] = vf[1] / 32;
 		tf[2] = vf[2] / 32;
-		carvestring_center(win, fg, tc, tr, tf, (u8*)&actor[j].fmt, 8);
+		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&actor[j].fmt, 8);
 	}
 
 	//arena
@@ -546,7 +548,7 @@ void overview_draw_vbo(
 		else
 		{
 			bg = 0x404040;
-			//if(win == &arena[j])fg = 0xffff00ff;
+			//if(ctx == &arena[j])fg = 0xffff00ff;
 			//else fg = 0x80ffffff;
 			fg = 0x80ffffff;
 		}
@@ -564,7 +566,7 @@ void overview_draw_vbo(
 		tf[0] = vf[0] / 33;
 		tf[1] = vf[1] / 33;
 		tf[2] = vf[2] / 33;
-		carvesolid_rect(win, bg, tc, tr, tf);
+		carvesolid_rect(ctx, bg, tc, tr, tf);
 
 		tc[2] += 0.01;
 		tr[0] = vr[0] / 32;
@@ -573,7 +575,7 @@ void overview_draw_vbo(
 		tf[0] = vf[0] / 32;
 		tf[1] = vf[1] / 32;
 		tf[2] = vf[2] / 32;
-		carvestring_center(win, fg, tc, tr, tf, (u8*)&arena[j].fmt, 8);
+		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&arena[j].fmt, 8);
 	}
 
 	//artery
@@ -604,7 +606,7 @@ void overview_draw_vbo(
 		tf[0] = vf[0] / 33.0;
 		tf[1] = vf[1] / 33.0;
 		tf[2] = vf[2] / 33.0;
-		carvesolid_rect(win, bg, tc, tr, tf);
+		carvesolid_rect(ctx, bg, tc, tr, tf);
 
 		tc[2] += 0.01;
 		tr[0] = vr[0] / 32.0;
@@ -613,7 +615,7 @@ void overview_draw_vbo(
 		tf[0] = vf[0] / 32.0;
 		tf[1] = vf[1] / 32.0;
 		tf[2] = vf[2] / 32.0;
-		carvestring_center(win, fg, tc, tr, tf, (u8*)&ele[j].type, 8);
+		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&ele[j].type, 8);
 	}
 
 	//system
@@ -644,7 +646,7 @@ void overview_draw_vbo(
 		tf[0] = vf[0] / 33;
 		tf[1] = vf[1] / 33;
 		tf[2] = vf[2] / 33;
-		carvesolid_rect(win, bg, tc, tr, tf);
+		carvesolid_rect(ctx, bg, tc, tr, tf);
 
 		tc[2] += 0.01;
 		tr[0] = vr[0] / 32.0;
@@ -653,7 +655,7 @@ void overview_draw_vbo(
 		tf[0] = vf[0] / 32.0;
 		tf[1] = vf[1] / 32.0;
 		tf[2] = vf[2] / 32.0;
-		carvestring_center(win, fg, tc, tr, tf, (u8*)&obj[j].type, 8);
+		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&obj[j].type, 8);
 	}
 
 	//actor.irel
@@ -682,7 +684,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0x0000ff, tc, tr);
+				carveline_shorter(ctx, 0x0000ff, tc, tr);
 			}
 			else if(_art_ == rel->srctype)
 			{
@@ -700,7 +702,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0x00ffff, tc, tr);
+				carveline_shorter(ctx, 0x00ffff, tc, tr);
 			}
 			else if(_win_ == rel->srctype)
 			{
@@ -718,7 +720,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0xffff00, tc, tr);
+				carveline_shorter(ctx, 0xffff00, tc, tr);
 			}
 			else if(_act_ == rel->srctype)
 			{
@@ -736,7 +738,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0xff0000, tc, tr);
+				carveline_shorter(ctx, 0xff0000, tc, tr);
 			}
 			rel = samedstnextsrc(rel);
 		}
@@ -768,7 +770,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0x4040ff, tc, tr);
+				carveline_shorter(ctx, 0x4040ff, tc, tr);
 			}
 			else if(_art_ == rel->srctype)
 			{
@@ -786,7 +788,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0x40ffff, tc, tr);
+				carveline_shorter(ctx, 0x40ffff, tc, tr);
 			}
 			else if(_win_ == rel->srctype)
 			{
@@ -804,7 +806,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0xffff40, tc, tr);
+				carveline_shorter(ctx, 0xffff40, tc, tr);
 			}
 			else if(_act_ == rel->srctype)
 			{
@@ -822,7 +824,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0xff4040, tc, tr);
+				carveline_shorter(ctx, 0xff4040, tc, tr);
 			}
 
 			rel = samedstnextsrc(rel);
@@ -855,7 +857,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0xc0ffc0, tc, tr);
+				carveline_shorter(ctx, 0xc0ffc0, tc, tr);
 			}
 			else if(_art_ == rel->srctype)
 			{
@@ -873,7 +875,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0xc0ffc0, tc, tr);
+				carveline_shorter(ctx, 0xc0ffc0, tc, tr);
 			}
 			else if(_win_ == rel->srctype)
 			{
@@ -891,7 +893,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0xffffff, tc, tr);
+				carveline_shorter(ctx, 0xffffff, tc, tr);
 			}
 			else if(_act_ == rel->srctype)
 			{
@@ -909,7 +911,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0xffc0ff, tc, tr);
+				carveline_shorter(ctx, 0xffc0ff, tc, tr);
 			}
 
 			rel = samedstnextsrc(rel);
@@ -942,7 +944,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0xc0ffc0, tc, tr);
+				carveline_shorter(ctx, 0xc0ffc0, tc, tr);
 			}
 			else if(_art_ == rel->srctype)
 			{
@@ -960,7 +962,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0xc0ffc0, tc, tr);
+				carveline_shorter(ctx, 0xc0ffc0, tc, tr);
 			}
 			else if(_win_ == rel->srctype)
 			{
@@ -978,7 +980,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0xffffff, tc, tr);
+				carveline_shorter(ctx, 0xffffff, tc, tr);
 			}
 			else if(_act_ == rel->srctype)
 			{
@@ -996,7 +998,7 @@ void overview_draw_vbo(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(win, 0xffc0ff, tc, tr);
+				carveline_shorter(ctx, 0xffc0ff, tc, tr);
 			}
 
 			rel = samedstnextsrc(rel);
@@ -1067,7 +1069,7 @@ static void overview_draw(
 {
 	if(win->fmt == _cli_)overview_draw_cli(act, pin, win, 0);
 	else if(win->fmt == _tui_)overview_draw_tui(act, pin, win, 0);
-	else if(win->fmt == _vbo_)overview_draw_vbo(act, pin, win, 0);
+	//else if(win->fmt == _vbo_)overview_draw_vbo(act, pin, win, 0);
 	else if(win->fmt == _html_)overview_draw_html(act, pin, win, 0);
 	else if(win->fmt == _8bit_)overview_draw_8bit(act, pin, win, 0);
 	else overview_draw_pixel(act, pin, win, 0);
@@ -1333,19 +1335,24 @@ static int overview_event(
 
 
 
-static void overview_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void overview_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//overview_draw(act, pin, win, sty);
-	struct actor* ctx = buf;
-	//say("@overview_read:%llx,%llx,%llx\n",act,win,buf);
+	//ctx -> cam
+	struct actor* ctx;
+	struct actor* cam;struct fstyle* frus;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)overview_draw_vbo(act,pin,ctx,sty);
+	//world -> tree
+	struct actor* win;struct fstyle* geom;
+	struct actor* act;struct fstyle* part;
+
+	//world -> tree
+	if(stack){
+		ctx = stack[rsp-2]->pchip;
+		cam = stack[rsp-1]->pchip;frus = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		overview_draw_vbo(act,part, win,geom, cam,frus, ctx,0);
 	}
 }
 static int overview_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

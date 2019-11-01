@@ -173,10 +173,14 @@ next:
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	int ret;
+	struct arena* wnd;
 	struct actor* ctx;
 	struct actor* cam;
 	struct relation* rel;
 	//say("%d,%llx@gl41data_read: %.4s, %.4s\n", rsp, stack, &peer->flag, &self->flag);
+
+	wnd = peer->pchip;
+	if(_gl41wnd0_ != wnd->type)return 0;
 
 	ctx = self->pchip;
 	if(0 == ctx)return 0;
@@ -196,6 +200,8 @@ int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 
 				//get vertex
 				gl41data_read_vertex(ctx, stack[rsp+2]->pchip, stack, rsp+2, 0, 0);
+
+				//get framebuffer
 			}
 		}
 

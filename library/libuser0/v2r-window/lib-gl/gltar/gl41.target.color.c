@@ -37,7 +37,6 @@ int gl41fboc_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 		wnd->height = wnd->fbheight = 1024;
 		fbocreate(wnd, 'c');
 	}
-	glBindFramebuffer(GL_FRAMEBUFFER, wnd->fbo);
 
 	rel = wnd->orel0;
 	while(1){
@@ -45,6 +44,7 @@ int gl41fboc_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 
 		data = (void*)(rel->dstchip);
 		if(_gl41data_ == data->type){
+			glBindFramebuffer(GL_FRAMEBUFFER, wnd->fbo);
 			fullwindow_render(ogl, 0, (void*)(rel->src), (void*)(rel->dst));
 		}
 

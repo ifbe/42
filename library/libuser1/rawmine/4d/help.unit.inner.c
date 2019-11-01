@@ -78,6 +78,7 @@ void motor_register(void*);
 void piano_register(void*);
 void picture_register(void*);
 void rccar_register(void*);
+void screen_register(void*);
 void stair_register(void*);
 void tardis_register(void*);
 void texmix_register(void*);
@@ -350,6 +351,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	rccar_register(tmp);
+	tmp += sizeof(struct actor);
+
+	screen_register(tmp);
 	tmp += sizeof(struct actor);
 
 	stair_register(tmp);

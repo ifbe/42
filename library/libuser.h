@@ -27,6 +27,7 @@ typedef float mat4[4][4];
 	#define GLSL_VERSION "#version 410 core\n"
 #endif
 //
+#define _reality_  hex64('r','e','a','l','i','t','y', 0)
 #define _world3d_  hex64('3','d','w','o','r','l','d', 0)
 #define _eeworld_  hex64('e','e','w','o','r','l','d', 0)
 //

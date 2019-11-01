@@ -144,6 +144,7 @@ rawmine/compound/theitem/item.piano.c \
 rawmine/compound/theitem/item.picture.c \
 rawmine/compound/theitem/item.planet.c \
 rawmine/compound/theitem/item.rccar.c \
+rawmine/compound/theitem/item.screen.c \
 rawmine/compound/theitem/item.stair.c \
 rawmine/compound/theitem/item.tardis.c \
 rawmine/compound/theitem/item.texmix.c \
@@ -182,6 +183,7 @@ rawmine/compound/theuiux/uiux.tag.c \
 rawmine/scene/scene.guide.c \
 rawmine/scene/scene.loading.c \
 rawmine/world/3dworld.c \
+rawmine/world/realworld.c \
 rawmine/world/eeworld.c \
 rawmine/world/schematic.c \
 rawmine/world/printboard.c \
