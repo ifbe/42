@@ -80,7 +80,7 @@ static int orthcam_event(
 
 
 
-void orthocam_sty2cam(struct fstyle* d, struct fstyle* s)
+void orthocam_frustum(struct fstyle* d, struct fstyle* s)
 {
 	float a,b,c;
 	float x,y,z,n;
@@ -147,62 +147,63 @@ void orthocam_sty2cam(struct fstyle* d, struct fstyle* s)
 	//printstyle(&act->camera);
 }
 static void orthcam_matrix(
-	struct actor* act, struct fstyle* frus,
-	struct actor* ctx, struct fstyle* area)
+	struct actor* act, struct fstyle* part,
+	struct actor* wrd, struct fstyle* geom,
+	struct actor* cam, struct fstyle* frus,
+	struct actor* ctx, struct fstyle* none,
+	struct arena* wnd, struct fstyle* area)
 {
-	struct fstyle* obb;
-	struct halfrel* self;
-	struct halfrel* peer;
 	float dx,dy;
 
-	dx = area->vq[0] * ctx->fbwidth;
-	dy = area->vq[1] * ctx->fbheight;
+	dx = area->vq[0] * wnd->fbwidth;
+	dy = area->vq[1] * wnd->fbheight;
 	frus->vb[3] =-dy / dx;
 	frus->vt[3] = dy / dx;
+	orthocam_frustum(frus, geom);
 
-	orthcam_search(act, 0, &self, &peer);
-	obb = peer->pfoot;
-
-	float* m = act->buf;
-	orthocam_sty2cam(frus, obb);
-	ortho_mvp((void*)m, frus);
-	mat4_transpose((void*)m);
+	float* mat = act->buf;
+	ortho_mvp((void*)mat, frus);
+	mat4_transpose((void*)mat);
 
 	struct glsrc* src = ctx->gl_camera;
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";
-	src->arg[0].data = m;
+	src->arg[0].data = mat;
 
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
-	src->arg[1].data = obb->vc;
+	src->arg[1].data = geom->vc;
 }
 
 
 
 
-static void orthcam_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void orthcam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
-	//say("@orthcam_read:\n");
+	//wnd -> ctx
+	struct arena* wnd;struct fstyle* area;
+	//struct actor* ctx;
 
-	if(ctx){
-		switch(ctx->type){
-			case _gl41data_:break;//orthcam_draw_vbo(act,pin,ctx,sty);
+	//ctx -> cam
+	struct actor* ctx;
+	struct actor* cam;struct fstyle* frus;
+
+	//world -> tree
+	struct actor* win;struct fstyle* geom;
+	struct actor* act;struct fstyle* part;
+
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		//ctx = stack[rsp-3]->pchip;
+		ctx = stack[rsp-2]->pchip;
+		cam = stack[rsp-1]->pchip;frus = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		if('m' == len){
+			orthcam_matrix(act,part, win,geom, cam,frus, ctx,0, wnd,area);
 		}
 	}
-	else{
-		switch(win->type){
-			case _gl41wnd0_:orthcam_matrix(act, &pin->fs, win, &sty->fs);
-		}
-	}
-	//if(_cam_ == self->flag)orthcam_matrix(act, pin, buf, len);
-	//else orthcam_draw(act, pin, win, sty);
 }
 static int orthcam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

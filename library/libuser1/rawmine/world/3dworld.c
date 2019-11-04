@@ -114,9 +114,9 @@ int world3d_create(struct actor* world, void* str)
 	int j;
 	u8* buf;
 	say("@world3d_create\n");
-
+/*
 	buf = world->buf = memorycreate(0x10000, 0);
-	for(j=0;j<0x10000;j++)buf[j] = 0;
+	for(j=0;j<0x10000;j++)buf[j] = 0;*/
 	return 0;
 /*
 	int j;
