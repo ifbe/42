@@ -56,8 +56,8 @@ int gl41coop_write(void*, void*, void*, int, void*, int);
 
 static struct actor* actor = 0;
 static int actlen = 0;
-static struct pinid* pinid = 0;
-static int pinlen = 0;
+static struct style* style = 0;
+static int stylen = 0;
 void* allocactor()
 {
 	int j,max;
@@ -71,16 +71,16 @@ void* allocactor()
 	}
 	return 0;
 }
-void* allocpinid()
+void* allocstyle()
 {
 #define maxlen 0x200
 	int j;
 	u8* buf;
 
-	buf = (void*)pinid + pinlen;
+	buf = (void*)style + stylen;
 	for(j=0;j<maxlen;j++)buf[j] = 0;
 
-	pinlen += maxlen;
+	stylen += maxlen;
 	return buf;
 }
 
@@ -453,14 +453,14 @@ void freeactor()
 	test_free();
 	baby_free();
 
-	pinid = 0;
+	style = 0;
 	actor = 0;
 }
 void initactor(u8* addr)
 {
 	int j;
 	actor = (void*)(addr+0x000000);
-	pinid = (void*)(addr+0x100000);
+	style = (void*)(addr+0x100000);
 
 #define max (0x100000/sizeof(struct actor))
 	for(j=0;j<0x200000;j++)addr[j] = 0;

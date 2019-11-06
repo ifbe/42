@@ -707,16 +707,16 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, struct half
 }
 static int freecam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct actor* win;struct style* geom;
+	struct actor* wld;struct style* geom;
 	struct actor* act;struct style* part;
 	struct event* ev;
 
-	win = peer->pchip;geom = peer->pfoot;
+	wld = peer->pchip;geom = peer->pfoot;
 	act = self->pchip;part = self->pfoot;
 	ev = (void*)buf;
 
 	//say("%llx@freecam_write:%llx,%llx,%llx,%llx\n", act, ev->why, ev->what, ev->where, ev->when);
-	freecam_event1(act,part, win,geom, ev, 0);
+	freecam_event1(act,part, wld,geom, ev, 0);
 	return 0;
 }
 static void freecam_stop(struct halfrel* self, struct halfrel* peer)

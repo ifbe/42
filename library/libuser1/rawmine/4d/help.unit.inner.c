@@ -82,6 +82,7 @@ void screen_register(void*);
 void stair_register(void*);
 void tardis_register(void*);
 void texmix_register(void*);
+void theeye_register(void*);
 void tree_register(void*);
 
 //test
@@ -363,6 +364,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	texmix_register(tmp);
+	tmp += sizeof(struct actor);
+
+	theeye_register(tmp);
 	tmp += sizeof(struct actor);
 
 	tree_register(tmp);

@@ -70,10 +70,16 @@ static int orthcam_draw_vbo(
 }
 static int orthcam_event(
 	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct actor* wld, struct style* sty,
 	struct event* ev, int len)
 {
-	say("orthcam_event@%llx:%x,%x\n", act, ev->why, ev->what);
+	//say("orthcam_event@%llx:%x,%x\n", act, ev->why, ev->what);
+	if(_char_ == ev->what){
+		switch(ev->why){
+		case 'a':sty->fs.vc[0] -= 10;break;
+		case 'd':sty->fs.vc[0] += 10;break;
+		}
+	}
 	return 0;
 }
 
@@ -207,13 +213,17 @@ static void orthcam_read(struct halfrel* self, struct halfrel* peer, struct half
 }
 static int orthcam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	return 0;//orthcam_event(act, pin, win, sty, ev, 0);
+	struct actor* wld;struct style* geom;
+	struct actor* act;struct style* part;
+	struct event* ev;
+
+	wld = peer->pchip;geom = peer->pfoot;
+	act = self->pchip;part = self->pfoot;
+	ev = (void*)buf;
+
+	//say("%llx@freecam_write:%llx,%llx,%llx,%llx\n", act, ev->why, ev->what, ev->where, ev->when);
+	orthcam_event(act,part, wld,geom, ev, 0);
+	return 0;
 }
 static void orthcam_stop(struct halfrel* self, struct halfrel* peer)
 {

@@ -148,6 +148,7 @@ rawmine/compound/theitem/item.screen.c \
 rawmine/compound/theitem/item.stair.c \
 rawmine/compound/theitem/item.tardis.c \
 rawmine/compound/theitem/item.texmix.c \
+rawmine/compound/theitem/item.theeye.c \
 rawmine/compound/theitem/item.tree.c \
 rawmine/compound/thetest/test.calib3d.c \
 rawmine/compound/thetest/test.codeimg.c \

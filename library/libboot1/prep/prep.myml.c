@@ -1,10 +1,9 @@
 #include "libuser.h"
 int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
+void* allocstyle();
 //
 int openreadclose(void*,int,void*,int);
 int openwriteclose(void*,int,void*,int);
-void* allocstyle();
-void* allocpinid();
 
 
 
@@ -171,186 +170,6 @@ void role_test_relation(u8* buf, int len,
 			}
 		}
 	}//for
-}
-
-
-
-
-int role_test_style(u8* buf, int len, struct footlist foot[], int flen)
-{
-	//say("style:\n%.*s\n", len, buf);
-	u64 hash;
-	struct style* sty;
-
-	int j,k;
-	int str = -1;
-
-	int nodename = -1;
-	int nodedata = -1;
-
-	int propname = -1;
-	int propdata = -1;
-
-	for(j=0;j<=len;j++) {
-		k = buf[j];
-
-		if( (j == len) | ('\n' == k) ) {
-/*
-			if(propdata >= 0) {
-				say("propctx = %.*s\n", j-propdata, buf+propdata);
-				propname = propdata = -1;
-			}
-*/
-			str = -1;
-			continue;
-		}
-
-		if('#' == k){
-			while('\n' != buf[j])j++;
-			j++;
-			k = buf[j];
-		}
-
-		if(	((k >= '0') && (k <= '9')) |
-			((k >= 'A') && (k <= 'Z')) |
-			((k >= 'a') && (k <= 'z')) )
-		{
-			if(str < 0)str = j;
-			continue;
-		}
-
-		//propname: ...
-		if(':' == k) {
-			//in <type> && in node{} && have str
-			if( (nodename >= 0) && (str >= 0) ) {
-				//say("propname = %.*s\n", j-str, buf+str);
-				propdata = j+1;
-				propname = str;
-				str = -1;
-
-				switch(buf[propname]){
-					case 'l':parsefv(sty->f.vl, 4, buf+propdata, 99);break;
-					case 'r':parsefv(sty->f.vr, 4, buf+propdata, 99);break;
-					case 'b':parsefv(sty->f.vb, 4, buf+propdata, 99);break;
-					case 't':parsefv(sty->f.vt, 4, buf+propdata, 99);break;
-					case 'n':parsefv(sty->f.vn, 4, buf+propdata, 99);break;
-					case 'f':parsefv(sty->f.vf, 4, buf+propdata, 99);break;
-					case 'q':parsefv(sty->f.vq, 4, buf+propdata, 99);break;
-					case 'c':parsefv(sty->f.vc, 4, buf+propdata, 99);break;
-				}
-			}
-			continue;
-		}
-
-		//nodename{...}
-		if('{' == k) {
-			nodename = str;
-			nodedata = j+1;
-			str = -1;
-
-			//say("stynode=%.*s\n", j-nodename, buf+nodename);
-
-			parsefmt((void*)&hash, buf+nodename);
-
-			sty = allocstyle();
-		}
-		if('}' == k) {
-			if(nodename >= 0){
-				nodename = -1;
-/*
-				say("l:%f, %f, %f\n", sty->vl[0], sty->vl[1], sty->vl[2]);
-				say("r:%f, %f, %f\n", sty->vr[0], sty->vr[1], sty->vr[2]);
-				say("b:%f, %f, %f\n", sty->vb[0], sty->vb[1], sty->vb[2]);
-				say("u:%f, %f, %f\n", sty->vu[0], sty->vu[1], sty->vu[2]);
-				say("n:%f, %f, %f\n", sty->vn[0], sty->vn[1], sty->vn[2]);
-				say("f:%f, %f, %f\n", sty->vf[0], sty->vf[1], sty->vf[2]);
-				say("q:%f, %f, %f\n", sty->vq[0], sty->vq[1], sty->vq[2]);
-				say("c:%f, %f, %f\n", sty->vc[0], sty->vc[1], sty->vc[2]);
-*/
-				foot[flen].hash = hash;
-				foot[flen].addr = sty;
-
-				flen += 1;
-			}//if innode
-		}//if }
-	}//for
-
-	return flen;
-}
-int role_test_pinid(u8* buf, int len, struct footlist foot[], int flen)
-{
-	//say("pinid:\n%.*s\n", len, buf);
-	u64 hash;
-	struct pinid* pin;
-
-	int j,k;
-	int str = -1;
-
-	int nodename = -1;
-	int nodedata = -1;
-
-	int propname = -1;
-	int propdata = -1;
-
-	for(j=0;j<=len;j++) {
-		k = buf[j];
-
-		if( (j == len) | ('\n' == k) ) {
-			str = -1;
-			continue;
-		}
-
-		if('#' == k){
-			while('\n' != buf[j])j++;
-			j++;
-			k = buf[j];
-		}
-
-		if(	((k >= '0') && (k <= '9')) |
-			((k >= 'A') && (k <= 'Z')) |
-			((k >= 'a') && (k <= 'z')) )
-		{
-			if(str < 0)str = j;
-			continue;
-		}
-
-		//propname: ...
-		if(':' == k) {
-			//in <type> && in node{} && have str
-			if( (nodename >= 0) && (str >= 0) ) {
-				say("propname = %.*s\n", j-str, buf+str);
-				propdata = j+1;
-				propname = str;
-				str = -1;
-			}
-			continue;
-		}
-
-		//nodename{...}
-		if('{' == k) {
-			nodename = str;
-			nodedata = j+1;
-			str = -1;
-
-			//say("pinnode=%.*s\n", j-nodename, buf+nodename);
-
-			parsefmt((void*)&hash, buf+nodename);
-
-			pin = allocpinid();
-		}
-		if('}' == k) {
-			if(nodename >= 0) {
-				nodename = -1;
-
-				foot[flen].hash = hash;
-				foot[flen].addr = pin;
-
-				flen += 1;
-			}
-		}
-	}//for
-
-	return flen;
 }
 
 
@@ -966,6 +785,111 @@ int role_test_device(u8* buf, int len, struct chiplist chip[], int clen)
 
 
 
+
+
+
+
+int role_test_style(u8* buf, int len, struct footlist foot[], int flen)
+{
+	//say("style:\n%.*s\n", len, buf);
+	u64 hash;
+	struct style* sty;
+
+	int j,k;
+	int str = -1;
+
+	int nodename = -1;
+	int nodedata = -1;
+
+	int propname = -1;
+	int propdata = -1;
+
+	for(j=0;j<=len;j++) {
+		k = buf[j];
+
+		if( (j == len) | ('\n' == k) ) {
+/*
+			if(propdata >= 0) {
+				say("propctx = %.*s\n", j-propdata, buf+propdata);
+				propname = propdata = -1;
+			}
+*/
+			str = -1;
+			continue;
+		}
+
+		if('#' == k){
+			while('\n' != buf[j])j++;
+			j++;
+			k = buf[j];
+		}
+
+		if(	((k >= '0') && (k <= '9')) |
+			((k >= 'A') && (k <= 'Z')) |
+			((k >= 'a') && (k <= 'z')) )
+		{
+			if(str < 0)str = j;
+			continue;
+		}
+
+		//propname: ...
+		if(':' == k) {
+			//in <type> && in node{} && have str
+			if( (nodename >= 0) && (str >= 0) ) {
+				//say("propname = %.*s\n", j-str, buf+str);
+				propdata = j+1;
+				propname = str;
+				str = -1;
+
+				switch(buf[propname]){
+					case 'l':parsefv(sty->f.vl, 4, buf+propdata, 99);break;
+					case 'r':parsefv(sty->f.vr, 4, buf+propdata, 99);break;
+					case 'b':parsefv(sty->f.vb, 4, buf+propdata, 99);break;
+					case 't':parsefv(sty->f.vt, 4, buf+propdata, 99);break;
+					case 'n':parsefv(sty->f.vn, 4, buf+propdata, 99);break;
+					case 'f':parsefv(sty->f.vf, 4, buf+propdata, 99);break;
+					case 'q':parsefv(sty->f.vq, 4, buf+propdata, 99);break;
+					case 'c':parsefv(sty->f.vc, 4, buf+propdata, 99);break;
+				}
+			}
+			continue;
+		}
+
+		//nodename{...}
+		if('{' == k) {
+			nodename = str;
+			nodedata = j+1;
+			str = -1;
+
+			//say("stynode=%.*s\n", j-nodename, buf+nodename);
+
+			parsefmt((void*)&hash, buf+nodename);
+
+			sty = allocstyle();
+		}
+		if('}' == k) {
+			if(nodename >= 0){
+				nodename = -1;
+/*
+				say("l:%f, %f, %f\n", sty->vl[0], sty->vl[1], sty->vl[2]);
+				say("r:%f, %f, %f\n", sty->vr[0], sty->vr[1], sty->vr[2]);
+				say("b:%f, %f, %f\n", sty->vb[0], sty->vb[1], sty->vb[2]);
+				say("u:%f, %f, %f\n", sty->vu[0], sty->vu[1], sty->vu[2]);
+				say("n:%f, %f, %f\n", sty->vn[0], sty->vn[1], sty->vn[2]);
+				say("f:%f, %f, %f\n", sty->vf[0], sty->vf[1], sty->vf[2]);
+				say("q:%f, %f, %f\n", sty->vq[0], sty->vq[1], sty->vq[2]);
+				say("c:%f, %f, %f\n", sty->vc[0], sty->vc[1], sty->vc[2]);
+*/
+				foot[flen].hash = hash;
+				foot[flen].addr = sty;
+
+				flen += 1;
+			}//if innode
+		}//if }
+	}//for
+
+	return flen;
+}
 void role_test1(u8* buf, int len)
 {
 	int j,k;
@@ -1049,12 +973,6 @@ void role_test1(u8* buf, int len)
 				}
 				if(0 == ncmp(buf+typename, "style", 5)) {
 					flen = role_test_style(
-						buf + typedata, j-typedata,
-						fbuf, flen
-					);
-				}
-				if(0 == ncmp(buf+typename, "pinid", 5)) {
-					flen = role_test_pinid(
 						buf + typedata, j-typedata,
 						fbuf, flen
 					);

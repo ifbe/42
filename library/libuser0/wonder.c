@@ -105,8 +105,8 @@ int ncmp(void*, void*, int);
 //
 static struct arena* arena = 0;
 static int winlen = 0;
-static struct style* style = 0;
-static int stylen = 0;
+static struct style* pinid = 0;
+static int pinlen = 0;
 void* allocarena()
 {
 	int j;
@@ -122,16 +122,16 @@ void* allocarena()
 	win->orel0 = win->oreln = 0;
 	return win;
 }
-void* allocstyle()
+void* allocpinid()
 {
 #define maxlen 0x200
 	int j;
 	u8* buf;
 
-	buf = (void*)style + stylen;
+	buf = (void*)pinid + pinlen;
 	for(j=0;j<maxlen;j++)buf[j] = 0;
 
-	stylen += maxlen;
+	pinlen += maxlen;
 	return buf;
 }
 
@@ -358,41 +358,41 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 		return win;
 	}
 	else if(_gl41fboc_ == type)
-        {
+	{
 		win = allocarena();
 		if(0 == win)return 0;
 
-                win->fmt = win->type = _gl41fboc_;
-                gl41fboc_create(win, arg);
-                return win;
-        }
-        else if(_gl41fbod_ == type)
-        {
+		win->fmt = win->type = _gl41fboc_;
+		gl41fboc_create(win, arg);
+		return win;
+	}
+	else if(_gl41fbod_ == type)
+	{
 		win = allocarena();
 		if(0 == win)return 0;
 
-                win->fmt = win->type = _gl41fbod_;
-                gl41fbod_create(win, arg);
-                return win;
-        }
-        else if(_gl41fbog_ == type)
-        {
+		win->fmt = win->type = _gl41fbod_;
+		gl41fbod_create(win, arg);
+		return win;
+	}
+	else if(_gl41fbog_ == type)
+	{
 		win = allocarena();
 		if(0 == win)return 0;
 
-                win->fmt = win->type = _gl41fbog_;
-                gl41fbog_create(win, arg);
-                return win;
-        }
-        else if(_gl41wnd0_ == type)
-        {
+		win->fmt = win->type = _gl41fbog_;
+		gl41fbog_create(win, arg);
+		return win;
+	}
+	else if(_gl41wnd0_ == type)
+	{
 		win = allocarena();
 		if(0 == win)return 0;
 
-                win->fmt = win->type = _gl41wnd0_;
-                gl41wnd0_create(win, arg);
-                return win;
-        }
+		win->fmt = win->type = _gl41wnd0_;
+		gl41wnd0_create(win, arg);
+		return win;
+	}
 
 	return 0;
 }
@@ -540,7 +540,7 @@ void initarena(u8* addr)
 {
 	int j;
 	arena = (void*)(addr+0x000000);
-	style = (void*)(addr+0x100000);
+	pinid = (void*)(addr+0x100000);
 
 #define max (0x100000/sizeof(struct arena))
 	for(j=0;j<0x200000;j++)addr[j]=0;
