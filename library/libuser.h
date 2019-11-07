@@ -542,6 +542,8 @@ struct style
 	union{
 		//struct fstyle actualshape;
 		//struct fmotion actualmotion;
+		struct fstyle frus;
+		struct fstyle frustum;
 		struct fmotion fm;
 		struct fmotion fmotion;
 		struct imotion im;

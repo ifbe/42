@@ -222,18 +222,17 @@ void freecam_zoom(struct actor* win, float delta)
 
 
 static int freecam_draw_vbo(
-	struct actor* act, struct fstyle* part,
-	struct actor* win, struct fstyle* geom,
-	struct actor* cam, struct fstyle* frus,
-	struct actor* ctx, struct fstyle* none)
+	struct actor* act, struct style* part,
+	struct actor* win, struct style* geom,
+	struct actor* wrl, struct style* frus,
+	struct actor* ctx, struct style* none)
 {
 	//float* vc = geom->vc;
 	//float* vr = geom->vr;
 	//float* vt = geom->vt;
 	//carveline_rect(ctx, 0, vc, vr, vt);
 
-	frus = act->buf0;
-	if(frus)carvefrustum(ctx, frus);
+	carvefrustum(ctx, &geom->frus);
 	return 0;
 }
 /*
@@ -587,7 +586,7 @@ static int freecam_event2(
 
 
 
-void freecam_frustum(struct fstyle* d, struct fstyle* s)
+void freecam_shape2frustum(struct fstyle* s, struct fstyle* d)
 {
 	float x,y,z,n;
 	d->vc[0] = s->vc[0];
@@ -637,19 +636,21 @@ void freecam_frustum(struct fstyle* d, struct fstyle* s)
 	//d->vf[3] = 1e20;
 }
 static void freecam_matrix(
-	struct actor* act, struct fstyle* part,
-	struct actor* wrd, struct fstyle* geom,
-	struct actor* cam, struct fstyle* frus,
-	struct actor* ctx, struct fstyle* none,
-	struct arena* wnd, struct fstyle* area)
+	struct actor* act, struct style* part,
+	struct actor* wrd, struct style* geom,
+	struct actor* ctx, struct style* none,
+	struct arena* wnd, struct style* area)
 {
 	float dx,dy;
+	struct fstyle* rect = &area->fshape;
+	struct fstyle* shape = &geom->fshape;
+	struct fstyle* frus = &geom->frus;
 
-	dx = area->vq[0] * wnd->fbwidth;
-	dy = area->vq[1] * wnd->fbheight;
+	dx = rect->vq[0] * wnd->fbwidth;
+	dy = rect->vq[1] * wnd->fbheight;
 	frus->vb[3] = frus->vl[3] * dy / dx;
 	frus->vt[3] = frus->vr[3] * dy / dx;
-	freecam_frustum(frus, geom);
+	freecam_shape2frustum(shape, frus);
 
 	float* mat = act->buf;
 	fixmatrix((void*)mat, frus);
@@ -663,7 +664,7 @@ static void freecam_matrix(
 
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
-	src->arg[1].data = geom->vc;
+	src->arg[1].data = frus->vc;
 }
 
 
@@ -671,37 +672,37 @@ static void freecam_matrix(
 
 //stack:
 //-4: wnd, area
-//-3: ctx
-//-2: ctx
-//-1: cam, frus
+//-3: ctx, 0
+//-2: cam, part of cam
+//-1: world, geom of cam
 static void freecam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> ctx
-	struct arena* wnd;struct fstyle* area;
-	//struct actor* ctx;
-
-	//ctx -> cam
+	struct arena* wnd;struct style* area;
 	struct actor* ctx;
-	struct actor* cam;struct fstyle* frus;
 
-	//world -> tree
-	struct actor* win;struct fstyle* geom;
-	struct actor* act;struct fstyle* part;
+	//cam -> world
+	struct actor* cam;
+	struct actor* wrd;struct style* camg;
+
+	//world -> this
+	struct actor* win;struct style* geom;
+	struct actor* act;struct style* part;
 
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		//ctx = stack[rsp-3]->pchip;
-		ctx = stack[rsp-2]->pchip;
-		cam = stack[rsp-1]->pchip;frus = stack[rsp-1]->pfoot;
+		ctx = stack[rsp-3]->pchip;
+
+		cam = stack[rsp-2]->pchip;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
 		if('m' == len){
-			freecam_matrix(act,part, win,geom, cam,frus, ctx,0, wnd,area);
-			act->buf0 = frus;
+			freecam_matrix(act,part, win,geom, ctx,0, wnd,area);
 		}
 		if('v' == len){
-			freecam_draw_vbo(act,part, win,geom, cam,frus, ctx,0);
+			freecam_draw_vbo(act,part, win,geom, wrd,camg, ctx,0);
 		}
 	}
 }

@@ -842,14 +842,22 @@ int role_test_style(u8* buf, int len, struct footlist foot[], int flen)
 				str = -1;
 
 				switch(buf[propname]){
-					case 'l':parsefv(sty->f.vl, 4, buf+propdata, 99);break;
-					case 'r':parsefv(sty->f.vr, 4, buf+propdata, 99);break;
-					case 'b':parsefv(sty->f.vb, 4, buf+propdata, 99);break;
-					case 't':parsefv(sty->f.vt, 4, buf+propdata, 99);break;
-					case 'n':parsefv(sty->f.vn, 4, buf+propdata, 99);break;
-					case 'f':parsefv(sty->f.vf, 4, buf+propdata, 99);break;
-					case 'q':parsefv(sty->f.vq, 4, buf+propdata, 99);break;
-					case 'c':parsefv(sty->f.vc, 4, buf+propdata, 99);break;
+					case 'l':parsefv(sty->fshape.vl, 4, buf+propdata, 99);break;
+					case 'r':parsefv(sty->fshape.vr, 4, buf+propdata, 99);break;
+					case 'b':parsefv(sty->fshape.vb, 4, buf+propdata, 99);break;
+					case 't':parsefv(sty->fshape.vt, 4, buf+propdata, 99);break;
+					case 'n':parsefv(sty->fshape.vn, 4, buf+propdata, 99);break;
+					case 'f':parsefv(sty->fshape.vf, 4, buf+propdata, 99);break;
+					case 'q':parsefv(sty->fshape.vq, 4, buf+propdata, 99);break;
+					case 'c':parsefv(sty->fshape.vc, 4, buf+propdata, 99);break;
+					case 'L':parsefv(sty->frustum.vl, 4, buf+propdata, 99);break;
+					case 'R':parsefv(sty->frustum.vr, 4, buf+propdata, 99);break;
+					case 'B':parsefv(sty->frustum.vb, 4, buf+propdata, 99);break;
+					case 'T':parsefv(sty->frustum.vt, 4, buf+propdata, 99);break;
+					case 'N':parsefv(sty->frustum.vn, 4, buf+propdata, 99);break;
+					case 'F':parsefv(sty->frustum.vf, 4, buf+propdata, 99);break;
+					case 'Q':parsefv(sty->frustum.vq, 4, buf+propdata, 99);break;
+					case 'C':parsefv(sty->frustum.vc, 4, buf+propdata, 99);break;
 				}
 			}
 			continue;

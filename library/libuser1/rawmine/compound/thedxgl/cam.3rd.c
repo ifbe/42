@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define _tar_ hex32('t','a','r',0)
 void fixmatrix(float* m, struct fstyle* sty);
-void freecam_frustum(struct fstyle* d, struct fstyle* s);
+void freecam_shape2frustum(struct fstyle* d, struct fstyle* s);
 
 
 
@@ -207,7 +207,7 @@ static void thirdperson_matrix(
 	thirdperson_search(act, 0, &self, &peer);
 
 	obb = peer->pfoot;
-	freecam_frustum(frus, obb);
+	freecam_shape2frustum(obb, frus);
 
 	float* mat = act->buf;
 	fixmatrix((void*)mat, frus);

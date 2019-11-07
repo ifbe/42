@@ -52,25 +52,25 @@ void* gl41data_alloc(struct actor* ctx)
 	}
 	return 0;
 }
-void gl41data_copy(struct actor* ctx, struct style* sty, struct style* pin)
+void gl41data_copy(struct actor* ctx, struct style* geom, struct style* part)
 {
 	int j,k;
 	u8* src;
 	u8* dst;
-	if(0 == pin)return;
-	if(0 == sty)return;
+	if(0 == part)return;
+	if(0 == geom)return;
 
 	for(j=0;j<4;j++){
-		src = (void*)(pin->data[j]);
+		src = (void*)(part->data[j]);
 		if(0 == src)return;
 
 		//data
-		dst = (void*)(sty->data[j]);
+		dst = (void*)(geom->data[j]);
 		if(0 == dst){
 			dst = gl41data_alloc(ctx);
 			if(0 == dst)return;
 
-			sty->data[j] = (u64)dst;
+			geom->data[j] = (u64)dst;
 			say("new: %llx\n", src, dst);
 		}
 
@@ -98,9 +98,9 @@ int gl41data_write_event(struct actor* ctx, struct actor* cam, struct halfrel** 
 			//search for camera's world
 			world = rel->psrcchip;
 			if(_world3d_ == world->type){
-				stack[rsp+0] = (void*)(rel->src);
-				stack[rsp+1] = (void*)(rel->dst);
-				actorwrite(stack[rsp+1], stack[rsp+0], stack, rsp, buf, len);
+				stack[rsp+0] = (void*)(rel->dst);	//camera
+				stack[rsp+1] = (void*)(rel->src);	//world
+				actorwrite(stack[rsp+0], stack[rsp+1], stack, rsp+2, buf, len);
 			}
 		}
 		rel = samedstnextsrc(rel);
@@ -120,11 +120,9 @@ int gl41data_read_matrix(struct actor* ctx, struct actor* cam, struct halfrel** 
 			//search for camera's world
 			world = rel->psrcchip;
 			if(_world3d_ == world->type){
-
-				//read matrix from camera
-				stack[rsp+0] = (void*)(rel->src);
-				stack[rsp+1] = (void*)(rel->dst);
-				actorread(stack[rsp+1], stack[rsp+0], stack, rsp, 0, 'm');
+				stack[rsp+0] = (void*)(rel->dst);	//camera
+				stack[rsp+1] = (void*)(rel->src);	//world
+				actorread(stack[rsp+0], stack[rsp+1], stack, rsp+2, 0, 'm');
 				return 1;
 			}
 		}
@@ -135,8 +133,8 @@ int gl41data_read_matrix(struct actor* ctx, struct actor* cam, struct halfrel** 
 int gl41data_read_vertex(struct actor* glctx, struct actor* world, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct relation* rel;
-	struct style* sty;
-	struct style* pin;
+	struct style* geom;
+	struct style* part;
 	//say("gldata_read_vertex\n");
 
 	gl41data_before(glctx);
@@ -146,15 +144,12 @@ int gl41data_read_vertex(struct actor* glctx, struct actor* world, struct halfre
 		if(0 == rel)break;
 
 		if(_act_ == rel->dsttype){
-			pin = rel->pdstfoot;
-			sty = rel->psrcfoot;
-			if(sty){if('#' == sty->i.uc[3])goto next;}
+			part = rel->pdstfoot;
+			geom = rel->psrcfoot;
+			if(geom){if('#' == geom->i.uc[3])goto next;}
 
-			stack[rsp+0] = (void*)(rel->src);
-			stack[rsp+1] = (void*)(rel->dst);
-			actorread(stack[rsp+1], stack[rsp+0], stack, rsp, 0, 'v');
-
-			gl41data_copy(glctx, sty, pin);
+			actorread((void*)(rel->dst), (void*)(rel->src), stack, rsp, 0, 'v');
+			gl41data_copy(glctx, geom, part);
 		}
 next:
 		rel = samesrcnextdst(rel);
@@ -169,7 +164,7 @@ next:
 
 //stack:
 //-2: wnd, area
-//-1: ctx, frus
+//-1: ctx, 0
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	int ret;
@@ -190,20 +185,20 @@ int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 		if(0 == rel)break;
 
 		if(_act_ == rel->dsttype){
+		if(stack[rsp-1]->flag == rel->srcflag){
+			//this is cam
 			cam = rel->pdstchip;
-			if(stack[rsp-1]->flag == rel->srcflag){
-				//get matrix
-				stack[rsp+0] = (void*)(rel->src);
-				stack[rsp+1] = (void*)(rel->dst);
-				ret = gl41data_read_matrix(ctx, cam, stack, rsp+2, 0, 0);
-				if(ret <= 0)break;
 
-				//get vertex
-				gl41data_read_vertex(ctx, stack[rsp+2]->pchip, stack, rsp+2, 0, 0);
+			//get matrix
+			ret = gl41data_read_matrix(ctx, cam, stack, rsp, 0, 0);
+			if(ret <= 0)break;
 
-				//get framebuffer
-			}
-		}
+			//get vertex
+			gl41data_read_vertex(ctx, stack[rsp+1]->pchip, stack, rsp+2, 0, 0);
+
+			//get framebuffer
+		}//found camera
+		}//correct type
 
 		rel = samesrcnextdst(rel);
 	}
@@ -225,14 +220,14 @@ int gl41data_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 		if(0 == rel)break;
 
 		if(_act_ == rel->dsttype){
+		if(stack[rsp-1]->flag == rel->srcflag){
 			cam = rel->pdstchip;
-			if(stack[rsp-1]->flag == rel->srcflag){
-				//get matrix
-				stack[rsp+0] = (void*)(rel->src);
-				stack[rsp+1] = (void*)(rel->dst);
-				gl41data_write_event(ctx, cam, stack, rsp+2, buf, len);
-			}
-		}
+			//get matrix
+			stack[rsp+0] = (void*)(rel->src);
+			stack[rsp+1] = (void*)(rel->dst);
+			gl41data_write_event(ctx, cam, stack, rsp+2, buf, len);
+		}//found camera
+		}//correct type
 
 		rel = samesrcnextdst(rel);
 	}

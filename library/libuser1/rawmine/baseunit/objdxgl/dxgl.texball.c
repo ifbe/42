@@ -4,18 +4,7 @@ void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
 
 
-/*
-char* texball_glsl2d_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"out mediump vec2 uvw;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = vec4(vertex, 1.0);\n"
-	"}\n";
-*/
+
 char* texball_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"
@@ -94,8 +83,8 @@ static void texball_draw_pixel(
 static void texball_draw_vbo3d(
 	struct actor* act, struct style* part,
 	struct actor* win, struct style* geom,
-	struct actor* cam, struct fstyle* frus,
-	struct actor* ctx, struct fstyle* none)
+	struct actor* wrd, struct style* camg,
+	struct actor* ctx, struct style* none)
 {
 	void* vbuf;
 	void* ibuf;
@@ -175,25 +164,28 @@ static void texball_event(
 //stack:
 //-4: wnd, area
 //-3: ctx
-//-2: ctx
-//-1: cam, frus
+//-2: cam, part of cam
+//-1: world, geom of cam
 static void texball_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//ctx -> cam
+	//wnd -> ctx
 	struct actor* ctx;
-	struct actor* cam;struct fstyle* frus;
+
+	//cam -> world
+	struct actor* cam;
+	struct actor* wrd;struct style* camg;
 
 	//world -> texball
 	struct actor* win;struct style* geom;
 	struct actor* act;struct style* part;
 
 	if(stack){
-		ctx = stack[rsp-2]->pchip;
-		cam = stack[rsp-1]->pchip;frus = stack[rsp-1]->pfoot;
+		ctx = stack[rsp-3]->pchip;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		texball_draw_vbo3d(act,part, win,geom, cam,frus, ctx,0);
+		texball_draw_vbo3d(act,part, win,geom, wrd,camg, ctx,0);
 	}
 }
 static void texball_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
