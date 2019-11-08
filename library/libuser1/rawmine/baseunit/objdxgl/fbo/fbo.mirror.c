@@ -91,7 +91,7 @@ static void mirror_create(struct actor* act, void* str)
 static void mirror_draw_vbo(
 	struct actor* act, struct style* part,
 	struct actor* win, struct style* geom,
-	struct actor* cam, struct fstyle* frus,
+	struct actor* wrd, struct style* camg,
 	struct actor* ctx, struct fstyle* none)
 {
 	struct mirrbuf* mirr;
@@ -346,34 +346,34 @@ static void mirror_matrix(
 //stack:
 //-4: wnd, area
 //-3: ctx
-//-2: ctx
-//-1: cam, frus
+//-2: cam, part of cam
+//-1: world, geom of cam
 //-4: fbo, area
 //-3: ctx
-//-2: ctx
-//-1: mir, frus
+//-2: mir, part of mir
+//-1: world, geom of mir
 static void mirror_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd -> ctx
-	struct arena* wnd;struct fstyle* area;
-	//struct actor* ctx;
-//ctx -> cam
+	struct arena* wnd;struct style* area;
 	struct actor* ctx;
-	struct actor* cam;struct fstyle* frus;
+//ctx -> cam
+	struct actor* cam;
+	struct actor* wrd;struct style* camg;
 
 //fbo -> ctx
-	struct arena* fbo;struct fstyle* rect;
+	struct arena* fbo;struct style* rect;
 	//struct actor* ctx;
 //ctx -> mir
-	//struct actor* ctx;
-	struct actor* mir;struct fstyle* mifr;
+	//struct actor* mir;
+	struct actor* wrl;struct style* mirg;
 
 //world -> mirror
 	struct actor* win;struct style* geom;
 	struct actor* act;struct style* part;
 
 	if(0 == stack)return;
-	if('f' == len){
+/*	if('f' == len){
 		act = self->pchip;
 		struct relation* rel = act->orel0;
 		arenaread((void*)(rel->dst), (void*)(rel->src), stack, rsp, 0, 0);
@@ -391,17 +391,6 @@ static void mirror_read(struct halfrel* self, struct halfrel* peer, struct halfr
 		own->tex[0].enq += 1;
 		return;
 	}
-	if('v' == len){
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		//ctx = stack[rsp-3]->pchip;
-		ctx = stack[rsp-2]->pchip;
-		cam = stack[rsp-1]->pchip;frus = stack[rsp-1]->pfoot;
-
-		win = peer->pchip;geom = peer->pfoot;
-		act = self->pchip;part = self->pfoot;
-		mirror_draw_vbo(act,part, win,geom, cam,frus, ctx, 0);
-		return;
-	}
 	if('m' == len){
 		wnd = stack[rsp-8]->pchip;area = stack[rsp-8]->pfoot;
 		//ctx = stack[rsp-7]->pchip;
@@ -416,6 +405,17 @@ static void mirror_read(struct halfrel* self, struct halfrel* peer, struct halfr
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
 		mirror_matrix(act,&part->fs, win,&geom->fs, mir,mifr, ctx, 0, fbo,rect, cam,frus);
+		return;
+	}
+*/	if('v' == len){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		ctx = stack[rsp-3]->pchip;
+		cam = stack[rsp-2]->pchip;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		mirror_draw_vbo(act,part, win,geom, cam,camg, ctx, 0);
 		return;
 	}
 }

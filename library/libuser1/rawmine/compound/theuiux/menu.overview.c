@@ -429,10 +429,10 @@ void overview_draw_pixel(
 	}
 }
 void overview_draw_vbo(
-	struct actor* act, struct fstyle* part,
-	struct actor* win, struct fstyle* geom,
-	struct actor* cam, struct fstyle* frus,
-	struct actor* ctx, struct fstyle* temp)
+	struct actor* act, struct style* part,
+	struct actor* win, struct style* geom,
+	struct actor* wrd, struct style* camg,
+	struct actor* ctx, struct style* temp)
 {
 	u32 bg,fg,cursor;
 	float r,f;
@@ -446,27 +446,27 @@ void overview_draw_vbo(
 	float* vr;
 	float* vf;
 	float* vt;
-	struct fstyle tmp;
+	struct style tmp;
 	if(0 == geom)
 	{
 		geom = &tmp;
-		geom->vc[0] = 0.0;
-		geom->vc[1] = 0.0;
-		geom->vc[2] = -0.5;
-		geom->vr[0] = 1.0;
-		geom->vr[1] = 0.0;
-		geom->vr[2] = 0.0;
-		geom->vf[0] = 0.0;
-		geom->vf[1] = 1.0;
-		geom->vf[2] = 0.0;
-		geom->vt[0] = 0.0;
-		geom->vt[1] = 0.0;
-		geom->vt[2] = 1.0;
+		geom->fshape.vc[0] = 0.0;
+		geom->fshape.vc[1] = 0.0;
+		geom->fshape.vc[2] = -0.5;
+		geom->fshape.vr[0] = 1.0;
+		geom->fshape.vr[1] = 0.0;
+		geom->fshape.vr[2] = 0.0;
+		geom->fshape.vf[0] = 0.0;
+		geom->fshape.vf[1] = 1.0;
+		geom->fshape.vf[2] = 0.0;
+		geom->fshape.vt[0] = 0.0;
+		geom->fshape.vt[1] = 0.0;
+		geom->fshape.vt[2] = 1.0;
 	}
-	vc = geom->vc;
-	vr = geom->vr;
-	vf = geom->vf;
-	vt = geom->vt;
+	vc = geom->fshape.vc;
+	vr = geom->fshape.vr;
+	vf = geom->fshape.vf;
+	vt = geom->fshape.vt;
 	cursor = (act->x0) + (act->y0)*16;
 
 /*
@@ -1337,22 +1337,24 @@ static int overview_event(
 
 static void overview_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//ctx -> cam
+	//wnd -> ctx
 	struct actor* ctx;
-	struct actor* cam;struct fstyle* frus;
 
-	//world -> tree
-	struct actor* win;struct fstyle* geom;
-	struct actor* act;struct fstyle* part;
+	//cam -> world
+	struct actor* cam;
+	struct actor* wrd;struct style* camg;
 
-	//world -> tree
+	//world -> texball
+	struct actor* win;struct style* geom;
+	struct actor* act;struct style* part;
+
 	if(stack){
-		ctx = stack[rsp-2]->pchip;
-		cam = stack[rsp-1]->pchip;frus = stack[rsp-1]->pfoot;
+		ctx = stack[rsp-3]->pchip;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		overview_draw_vbo(act,part, win,geom, cam,frus, ctx,0);
+		overview_draw_vbo(act,part, win,geom, wrd,camg, ctx,0);
 	}
 }
 static int overview_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

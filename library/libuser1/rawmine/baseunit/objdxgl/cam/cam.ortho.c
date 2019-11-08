@@ -86,7 +86,7 @@ static int orthcam_event(
 
 
 
-void orthocam_frustum(struct fstyle* d, struct fstyle* s)
+void orthocam_shape2frustum(struct fstyle* s, struct fstyle* d)
 {
 	float a,b,c;
 	float x,y,z,n;
@@ -149,23 +149,23 @@ void orthocam_frustum(struct fstyle* d, struct fstyle* s)
 	d->vf[2] = z / n;
 	if(a*x + b*y + c*z < 0)n = -n;
 	d->vf[3] = n;
-
-	//printstyle(&act->camera);
 }
 static void orthcam_matrix(
-	struct actor* act, struct fstyle* part,
-	struct actor* wrd, struct fstyle* geom,
-	struct actor* cam, struct fstyle* frus,
-	struct actor* ctx, struct fstyle* none,
-	struct arena* wnd, struct fstyle* area)
+	struct actor* act, struct style* part,
+	struct actor* wrd, struct style* geom,
+	struct actor* ctx, struct style* none,
+	struct arena* wnd, struct style* area)
 {
 	float dx,dy;
+	struct fstyle* rect = &area->fshape;
+	struct fstyle* shape = &geom->fshape;
+	struct fstyle* frus = &geom->frus;
 
-	dx = area->vq[0] * wnd->fbwidth;
-	dy = area->vq[1] * wnd->fbheight;
-	frus->vb[3] =-dy / dx;
-	frus->vt[3] = dy / dx;
-	orthocam_frustum(frus, geom);
+	dx = rect->vq[0] * wnd->fbwidth;
+	dy = rect->vq[1] * wnd->fbheight;
+	frus->vb[3] = frus->vl[3] * dy / dx;
+	frus->vt[3] = frus->vr[3] * dy / dx;
+	orthocam_shape2frustum(shape, frus);
 
 	float* mat = act->buf;
 	ortho_mvp((void*)mat, frus);
@@ -178,7 +178,7 @@ static void orthcam_matrix(
 
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
-	src->arg[1].data = geom->vc;
+	src->arg[1].data = frus->vc;
 }
 
 
@@ -187,27 +187,28 @@ static void orthcam_matrix(
 static void orthcam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> ctx
-	struct arena* wnd;struct fstyle* area;
-	//struct actor* ctx;
-
-	//ctx -> cam
+	struct arena* wnd;struct style* area;
 	struct actor* ctx;
-	struct actor* cam;struct fstyle* frus;
+
+	//cam -> world
+	struct actor* cam;
+	struct actor* wrd;struct style* camg;
 
 	//world -> tree
-	struct actor* win;struct fstyle* geom;
-	struct actor* act;struct fstyle* part;
+	struct actor* win;struct style* geom;
+	struct actor* act;struct style* part;
 
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		//ctx = stack[rsp-3]->pchip;
-		ctx = stack[rsp-2]->pchip;
-		cam = stack[rsp-1]->pchip;frus = stack[rsp-1]->pfoot;
+		ctx = stack[rsp-3]->pchip;
+
+		cam = stack[rsp-2]->pchip;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
 		if('m' == len){
-			orthcam_matrix(act,part, win,geom, cam,frus, ctx,0, wnd,area);
+			orthcam_matrix(act,part, win,geom, ctx,0, wnd,area);
 		}
 	}
 }
