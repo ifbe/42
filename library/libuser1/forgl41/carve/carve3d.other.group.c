@@ -153,6 +153,34 @@ void carvedrone(struct actor* win, u32 rgb,
 		}
 	}
 }
+
+
+
+
+void carvesolid_propeller(struct actor* ctx, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vt, int dir)
+{
+	vec3 tc,tr,tf;
+	tc[0] = vc[0] + vr[0];
+	tc[1] = vc[1] + vr[1];
+	tc[2] = vc[2] + vr[2];
+	tf[0] = vf[0]/8 + dir*vt[0]/8;
+	tf[1] = vf[1]/8 + dir*vt[1]/8;
+	tf[2] = vf[2]/8 + dir*vt[2]/8;
+	carvesolid_circle(ctx, rgb, tc, vr, tf);
+
+	tc[0] = vc[0] - vr[0];
+	tc[1] = vc[1] - vr[1];
+	tc[2] = vc[2] - vr[2];
+	tf[0] = vf[0]/8 - dir*vt[0]/8;
+	tf[1] = vf[1]/8 - dir*vt[1]/8;
+	tf[2] = vf[2]/8 - dir*vt[2]/8;
+	carvesolid_circle(ctx, rgb, tc, vr, tf);
+}
+
+
+
+
 void carvesnowman(struct actor* win, u32 rgb, vec3 vc)
 {
 	vec3 tc;

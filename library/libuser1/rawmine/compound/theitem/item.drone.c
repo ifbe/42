@@ -25,20 +25,22 @@ static void drone_draw_pixel(
 	}
 }
 static void drone_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct actor* act, struct style* part,
+	struct actor* win, struct style* geom,
+	struct actor* wrd, struct style* camg,
+	struct actor* ctx, struct style* temp)
 {
     vec3 tc,tr,tf,tu;
 	vec3 kc,kr,kf,ku;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carveline_rect(win, 0xffffff, vc, vr, vf);
+	float* vc = geom->fshape.vc;
+	float* vr = geom->fshape.vr;
+	float* vf = geom->fshape.vf;
+	float* vt = geom->fshape.vt;
+	carveline_rect(ctx, 0xffffff, vc, vr, vf);
 
-    tu[0] = vu[0] / 64;
-    tu[1] = vu[1] / 64;
-    tu[2] = vu[2] / 64;
+    tu[0] = vt[0] / 64;
+    tu[1] = vt[1] / 64;
+    tu[2] = vt[2] / 64;
 
     //center
     tr[0] = vr[0] / 4;
@@ -47,7 +49,7 @@ static void drone_draw_vbo(
     tf[0] = vf[0] / 4;
     tf[1] = vf[1] / 4;
     tf[2] = vf[2] / 4;
-    carvesolid_prism4(win, 0xffffff, vc, tr, tf, tu);
+    carvesolid_prism4(ctx, 0xffffff, vc, tr, tf, tu);
 
     //pie
     tr[0] = vr[0] + vf[0];
@@ -56,7 +58,7 @@ static void drone_draw_vbo(
     tf[0] = (vf[0] - vr[0]) / 16;
     tf[1] = (vf[1] - vr[1]) / 16;
     tf[2] = (vf[2] - vr[2]) / 16;
-    carvesolid_prism4(win, 0xfedcba, vc, tr, tf, tu);
+    carvesolid_prism4(ctx, 0xfedcba, vc, tr, tf, tu);
 
     //na
     tr[0] = (vr[0] + vf[0]) / 16;
@@ -65,7 +67,7 @@ static void drone_draw_vbo(
     tf[0] = vf[0] - vr[0];
     tf[1] = vf[1] - vr[1];
     tf[2] = vf[2] - vr[2];
-    carvesolid_prism4(win, 0xfedcba, vc, tr, tf, tu);
+    carvesolid_prism4(ctx, 0xfedcba, vc, tr, tf, tu);
 
 
     kr[0] = vr[0] / 4;
@@ -74,6 +76,9 @@ static void drone_draw_vbo(
     kf[0] = vf[0] / 4;
     kf[1] = vf[1] / 4;
     kf[2] = vf[2] / 4;
+	ku[0] = vt[0] / 4;
+	ku[1] = vt[1] / 4;
+	ku[2] = vt[2] / 4;
 
     tr[0] = vr[0] / 32;
     tr[1] = vr[1] / 32;
@@ -81,49 +86,53 @@ static void drone_draw_vbo(
     tf[0] = vf[0] / 32;
     tf[1] = vf[1] / 32;
     tf[2] = vf[2] / 32;
-    tu[0] = vu[0] / 32;
-    tu[1] = vu[1] / 32;
-    tu[2] = vu[2] / 32;
+    tu[0] = vt[0] / 32;
+    tu[1] = vt[1] / 32;
+    tu[2] = vt[2] / 32;
 
     //rf, motor1
     tc[0] = vc[0] + vr[0] + vf[0];
     tc[1] = vc[1] + vr[1] + vf[1];
     tc[2] = vc[2] + vr[2] + vf[2];
-    carvesolid_cylinder(win, 0x765432, tc, tr, tf, tu);
+    carvesolid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
     tc[0] = vc[0] + vr[0] + vf[0] + tu[0];
     tc[1] = vc[1] + vr[1] + vf[1] + tu[1];
     tc[2] = vc[2] + vr[2] + vf[2] + tu[2];
-	carveascii_center(win, 0xffffff, tc, kr, kf, '1');
+	carveascii_center(ctx, 0xffffff, tc, kr, kf, '1');
+	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1);
 
     //ln, motor2
     tc[0] = vc[0] - vr[0] - vf[0];
     tc[1] = vc[1] - vr[1] - vf[1];
     tc[2] = vc[2] - vr[2] - vf[2];
-    carvesolid_cylinder(win, 0x765432, tc, tr, tf, tu);
+    carvesolid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
     tc[0] = vc[0] - vr[0] - vf[0] + tu[0];
     tc[1] = vc[1] - vr[1] - vf[1] + tu[1];
     tc[2] = vc[2] - vr[2] - vf[2] + tu[2];
-	carveascii_center(win, 0xffffff, tc, kr, kf, '2');
+	carveascii_center(ctx, 0xffffff, tc, kr, kf, '2');
+	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1);
 
     //lf, motor3
     tc[0] = vc[0] - vr[0] + vf[0];
     tc[1] = vc[1] - vr[1] + vf[1];
     tc[2] = vc[2] - vr[2] + vf[2];
-    carvesolid_cylinder(win, 0x765432, tc, tr, tf, tu);
+    carvesolid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
     tc[0] = vc[0] - vr[0] + vf[0] + tu[0];
     tc[1] = vc[1] - vr[1] + vf[1] + tu[1];
     tc[2] = vc[2] - vr[2] + vf[2] + tu[2];
-	carveascii_center(win, 0xffffff, tc, kr, kf, '3');
+	carveascii_center(ctx, 0xffffff, tc, kr, kf, '3');
+	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1);
 
     //rn, motor4
     tc[0] = vc[0] + vr[0] - vf[0];
     tc[1] = vc[1] + vr[1] - vf[1];
     tc[2] = vc[2] + vr[2] - vf[2];
-    carvesolid_cylinder(win, 0x765432, tc, tr, tf, tu);
+    carvesolid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
     tc[0] = vc[0] + vr[0] - vf[0] + tu[0];
     tc[1] = vc[1] + vr[1] - vf[1] + tu[1];
     tc[2] = vc[2] + vr[2] - vf[2] + tu[2];
-	carveascii_center(win, 0xffffff, tc, kr, kf, '4');
+	carveascii_center(ctx, 0xffffff, tc, kr, kf, '4');
+	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1);
 }
 static void drone_draw_json(
 	struct actor* act, struct style* pin,
@@ -154,7 +163,6 @@ static void drone_draw(
 	else if(fmt == _tui_)drone_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)drone_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)drone_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)drone_draw_vbo(act, pin, win, sty);
 	else drone_draw_pixel(act, pin, win, sty);
 }
 void drone_write_quaternion(struct actor* act, float* f)
@@ -225,18 +233,26 @@ void drone_write_euler(struct actor* act, float* f)
 
 
 
-static void drone_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void drone_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
-	//say("@drone_read:%llx,%llx,%llx\n",act,win,buf);
+	//wnd -> ctx
+	struct actor* ctx;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)drone_draw_vbo(act,pin,ctx,sty);
+	//cam -> world
+	struct actor* cam;
+	struct actor* wrd;struct style* camg;
+
+	//world -> texball
+	struct actor* win;struct style* geom;
+	struct actor* act;struct style* part;
+
+	if(stack){
+		ctx = stack[rsp-3]->pchip;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		drone_draw_vbo(act,part, win,geom, wrd,camg, ctx,0);
 	}
 }
 static void drone_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

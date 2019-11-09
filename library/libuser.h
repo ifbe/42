@@ -1145,6 +1145,7 @@ void carvesolid_cylinder(     struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3
 void carvesolid_dodecahedron( struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void carvesolid_icosahedron(  struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void carvesolid_sphere(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carvesolid_propeller(    struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu, int dir);
 
 void carveopaque_triangle(    struct actor* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
 void carveopaque_rect(        struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);

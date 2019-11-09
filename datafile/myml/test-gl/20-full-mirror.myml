@@ -8,8 +8,8 @@ fmt:freecam
 mirror{
 fmt:mirror
 }
-tree{
-fmt:tree
+drone{
+fmt:drone
 }
 sky{
 fmt:texball
@@ -42,9 +42,9 @@ depth:1024
 
 
 <style>
-treepart{
+dronpart{
 }
-treegeom{
+drongeom{
 c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
@@ -79,7 +79,7 @@ F: 0.0, 0.0, 0.0, 1000000000000.0
 aaaapart{
 }
 aaaageom{
-c: 0.0, -2000.0, 500.0
+c: 0.0, -3000.0, 1000.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
@@ -128,11 +128,11 @@ q:0.333, 0.333
 (mirror, 0, act, 0) -> (glfbo, 0, win, 0)
 
 #world depends on tree
-(world, aaaageom, act, cam0) -> (cam0, aaaapart, act, 0)
-(world, bbbbgeom, act, cam1) -> (cam1, bbbbpart, act, 0)
-(world, mirrgeom, act, cam2) -> (mirror, mirrpart, act, 0)
-(world, treegeom, act, obj0) -> (tree, treepart, act, 0)
-(world, skygeom, act, obj0) -> (sky, skypart, act, 0)
+(world, skygeom, act, 0) -> (sky, skypart, act, 0)
+(world, drongeom, act, 0) -> (drone, dronpart, act, 0)
+(world, aaaageom, act, 0) -> (cam0, aaaapart, act, 0)
+(world, bbbbgeom, act, 0) -> (cam1, bbbbpart, act, 0)
+(world, mirrgeom, act, 0) -> (mirror, mirrpart, act, 0)
 
 #gldata depends on world
 (gldata, 0, act, a0) -> (cam0, 0, act, 0)
