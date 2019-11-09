@@ -1,80 +1,17 @@
 <arena>
-player1{
+gamepad{
 fmt:joy
-}
-khala{
-fmt:khala
-}
-uiworld{
-fmt:vbo
-type:3d
-}
-window{
-fmt:win
-title:"42"
-width:1024
-height:1024
-depth:1024
 }
 </arena>
 
 
-<actor>
-fonthelper{
-fmt:aidfont
+<artery>
+dbghex{
+fmt:dbghex
 }
-geomhelper{
-fmt:aidgeom
-}
-joystick{
-fmt:vjoy
-}
-keyboard{
-fmt:vkbd
-}
-orthcam{
-fmt:orthcam
-}
-</actor>
-
-
-<style>
-fullscreen{
-c:0.0, 0.0
-q:1.0, 1.0
-}
-ortho{
-c: 0.0, 0.0, 0.0
-r: 1.0, 0.0, 0.0
-t: 0.0, 1.0, 0.0
-n: 0.0, 0.0, 1.0
-f: 0.0, 0.0, -1.0
-}
-joy{
-c: 0.0, 0.0, 0.0
-r: 1000.0, 0.0, 0.0
-f: 0.0, 1000.0, 0.0
-t: 0.0, 0.0, 1000.0
-}
-kbd{
-c: 0.0, 0.0, 0.0
-r: 1000.0, 0.0, 0.0
-f: 0.0, 1000.0, 0.0
-t: 0.0, 0.0, 1000.0
-}
-</style>
+</artery>
 
 
 <relation>
-(uiworld, 0, win, aid) -> (geomhelper, 0, act, 0)
-(uiworld, 0, win, aid) -> (fonthelper, 0, act, 0)
-(uiworld, joy, win, bg) -> (joystick, p0, act, 0)
-(uiworld, kbd, win, bg) -> (keyboard, p0, act, 0)
-(uiworld, ortho, win, cam) -> (orthcam, p0, act, geom)
-
-(window, 0, win, vp) -> (uiworld, 0, win, out)
-(window, fullscreen, win, cam) -> (orthcam, 0, act, cam)
-
-(player1, 0, win, con) -> (cambl, 0, act, con)
-(khala, 0, win, w2w) -> (uiworld, 0, win, w2w)
+(gamepad, 0, win, dst) -> (dbghex, 0, art, 0)
 </relation>

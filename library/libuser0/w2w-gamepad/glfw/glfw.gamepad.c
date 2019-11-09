@@ -17,12 +17,15 @@ static void joystick_sendevent(struct xyzwpair* pair, int j)
 	u8 buf[4];
 	struct event ev;
 	struct arena* joy;
+	//say("@joystick_sendevent:%d\n", j);
+	//printmemory(matchtable, 32);
 
 	ev.where = 0;
 	ev.when = 0;
 
 	joy = matchtable[j];
 	if(0 == joy){
+		say("@1\n");
 		ev.why = *(u64*)(&pair->x0);
 		ev.what = joy_left;
 		arenaevent(&ev);
@@ -35,6 +38,7 @@ static void joystick_sendevent(struct xyzwpair* pair, int j)
 	}
 
 	if((0 == joy->orel0) && (0 == joy->irel0)){
+		say("@2\n");
 		ev.why = *(u64*)(&pair->x0);
 		ev.what = joy_left;
 		printmemory(&ev, 16);
@@ -230,7 +234,7 @@ static void joystick_ds4(struct xyzwpair* pair, const float* f, const u8* u)
 	if(u[16])pair->w0 |= joyl_down;
 	if(u[17])pair->w0 |= joyl_left;
 }
-static void thread_joystick(struct arena* win)
+static void thread_joystick(struct arena* joy)
 {
 	int j, k;
 	int c1, c2;
@@ -264,7 +268,7 @@ static void thread_joystick(struct arena* win)
 			if(0){
 				joystick_8bitdo(&pair, f, u);
 				joystick_sendevent(&pair, j);
-			}//win, 8bitdo
+			}//windows, 8bitdo
 
 			if(0){
 				joystick_xbox(&pair, f, u);
@@ -281,21 +285,21 @@ static void thread_joystick(struct arena* win)
 }
 static void callback_joystick(int id, int ev)
 {
-        say("joystick: %d,%d\n", id, ev);
+	say("joystick: %d,%d\n", id, ev);
 }
 
 
 
 
-void joydelete(struct arena* win)
+void joydelete(struct arena* joy)
 {
 }
-void joycreate(struct arena* win)
+void joycreate(struct arena* joy)
 {
 	int j;
 	for(j=0;j<10;j++){
 		if(0 == matchtable[j]){
-			matchtable[j] = win;
+			matchtable[j] = joy;
 			break;
 		}
 	}
