@@ -17,5 +17,5 @@ fmt:test
 
 
 <relation>
-(opengl, 0, win, 0) -> (test, 0, act, 0)
+(opengl, 0, 0) -> (test, 0, 0)
 </relation>

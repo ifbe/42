@@ -19,6 +19,6 @@ url:www.baidu.com/
 
 
 <relation>
-(http, 0, art, dst) -> (file, 0, sys, src)
-(tcp, 0, sys, dst) -> (http, 0, art, src)
+(http, 0, dst) -> (file, 0, src)
+(tcp, 0, dst) -> (http, 0, src)
 </relation>

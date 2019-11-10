@@ -15,5 +15,5 @@ url:socket
 
 
 <relation>
-(tcphost, 0, sys, dst) -> (proxyd, 0, art, src)
+(tcphost, 0, dst) -> (proxyd, 0, src)
 </relation>

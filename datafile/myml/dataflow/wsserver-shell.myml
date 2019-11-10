@@ -15,5 +15,5 @@ url:ptmx
 
 
 <relation>
-(tcphost, 0, sys, dst) -> (server, 0, art, src)
+(tcphost, 0, dst) -> (server, 0, src)
 </relation>

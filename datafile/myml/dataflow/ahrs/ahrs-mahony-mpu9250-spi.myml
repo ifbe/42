@@ -28,7 +28,7 @@ fmt:ahrs
 
 
 <relation>
-(spihost, 0, dev, 0) -> (mpu9250, 0, dri, spi)
-(mpu9250, 0, dri, dst) -> (mahony, 0, art, src)
-(mahony, 0, art, dst) -> (ahrs, 0, win, src)
+(spihost, 0, 0) -> (mpu9250, 0, spi)
+(mpu9250, 0, dst) -> (mahony, 0, src)
+(mahony, 0, dst) -> (ahrs, 0, src)
 </relation>

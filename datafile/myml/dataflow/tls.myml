@@ -14,5 +14,5 @@ fmt:tls
 
 
 <relation>
-(tcphost, 0, sys, dst) -> (tls, 0, art, src)
+(tcphost, 0, dst) -> (tls, 0, src)
 </relation>

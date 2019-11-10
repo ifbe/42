@@ -21,6 +21,6 @@ fmt:std
 
 
 <relation>
-(peer, 0, sys, dst) -> (gcode, 0, art, src)
-(stdio, 0, win, dst) -> (gcode, 0, art, clk)
+(peer, 0, dst) -> (gcode, 0, src)
+(stdio, 0, dst) -> (gcode, 0, clk)
 </relation>

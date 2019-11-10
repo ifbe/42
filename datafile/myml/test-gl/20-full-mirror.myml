@@ -45,7 +45,7 @@ depth:1024
 dronpart{
 }
 drongeom{
-c: 0.0, 0.0, 0.0
+c: 0.0, 0.0, 500.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
@@ -125,25 +125,25 @@ q:0.333, 0.333
 
 <relation>
 #mirror depends on glfbo
-(mirror, 0, act, 0) -> (glfbo, 0, win, 0)
+(mirror, 0, 0) -> (glfbo, 0, 0)
 
 #world depends on tree
-(world, skygeom, act, 0) -> (sky, skypart, act, 0)
-(world, drongeom, act, 0) -> (drone, dronpart, act, 0)
-(world, aaaageom, act, 0) -> (cam0, aaaapart, act, 0)
-(world, bbbbgeom, act, 0) -> (cam1, bbbbpart, act, 0)
-(world, mirrgeom, act, 0) -> (mirror, mirrpart, act, 0)
+(world, skygeom, 0) -> (sky, skypart, 0)
+(world, drongeom, 0) -> (drone, dronpart, 0)
+(world, aaaageom, 0) -> (cam0, aaaapart, 0)
+(world, bbbbgeom, 0) -> (cam1, bbbbpart, 0)
+(world, mirrgeom, 0) -> (mirror, mirrpart, 0)
 
 #gldata depends on world
-(gldata, 0, act, a0) -> (cam0, 0, act, 0)
-(gldata, 0, act, a1) -> (cam1, 0, act, 0)
-(gldata, 0, act, a2) -> (mirror, 0, act, 0)
+(gldata, 0, a0) -> (cam0, 0, 0)
+(gldata, 0, a1) -> (cam1, 0, 0)
+(gldata, 0, a2) -> (mirror, 0, 0)
 
 #glwnd depends on gldata
-(glwnd, aaaarect, win, 0) -> (gldata, 0, act, a0)
-(glwnd, bbbbrect, win, 0) -> (gldata, 0, act, a1)
-(glfbo, mirrrect, win, 0) -> (gldata, 0, act, a2)
+(glwnd, aaaarect, 0) -> (gldata, 0, a0)
+(glwnd, bbbbrect, 0) -> (gldata, 0, a1)
+(glfbo, mirrrect, 0) -> (gldata, 0, a2)
 
 #opengl depends on glwnd
-(opengl, 0, win, wnd) -> (glwnd, 0, win, togl)
+(opengl, 0, wnd) -> (glwnd, 0, togl)
 </relation>

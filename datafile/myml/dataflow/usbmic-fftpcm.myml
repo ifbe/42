@@ -13,5 +13,5 @@ fmt:mic
 
 
 <relation>
-(usbmic, 0, win, dst) -> (fftpcm, 0, art, src)
+(usbmic, 0, dst) -> (fftpcm, 0, src)
 </relation>

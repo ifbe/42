@@ -14,5 +14,5 @@ fmt:nema0183
 
 
 <relation>
-(recv, 0, sys, dst) -> (nema0183, 0, art, src)
+(recv, 0, dst) -> (nema0183, 0, src)
 </relation>

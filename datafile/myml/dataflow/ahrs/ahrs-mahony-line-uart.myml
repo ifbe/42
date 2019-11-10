@@ -27,8 +27,8 @@ fmt:ahrs
 
 
 <relation>
-(uart, 0, sys, dst) -> (reline, 0, art, src)
-(reline, 0, art, dst) -> (str2fv, 0, art, src)
-(str2fv, 0, art, dst) -> (mahony, 0, art, src)
-(mahony, 0, art, dst) -> (ahrs, 0, win, src)
+(uart, 0, dst) -> (reline, 0, src)
+(reline, 0, dst) -> (str2fv, 0, src)
+(str2fv, 0, dst) -> (mahony, 0, src)
+(mahony, 0, dst) -> (ahrs, 0, src)
 </relation>

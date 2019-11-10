@@ -24,7 +24,7 @@ url:192.168.0.112:1234
 
 
 <relation>
-(std, 0, win, dst) -> (reline, 0, art, src)
-(reline, 0, art, dst) -> (otto, 0, sys, src)
-(otto, 0, sys, dst) -> (dbghex, 0, art, src)
+(std, 0, dst) -> (reline, 0, src)
+(reline, 0, dst) -> (otto, 0, src)
+(otto, 0, dst) -> (dbghex, 0, src)
 </relation>

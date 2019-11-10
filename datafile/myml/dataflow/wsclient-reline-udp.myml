@@ -22,8 +22,8 @@ url:127.0.0.1
 
 
 <relation>
-(tcp, 0, sys, dst) -> (ws, 0, art, src)
+(tcp, 0, dst) -> (ws, 0, src)
 
-(udp, 0, sys, dst) -> (reline, 0, art, src)
-(reline, 0, art, dst) -> (ws, 0, art, dst)
+(udp, 0, dst) -> (reline, 0, src)
+(reline, 0, dst) -> (ws, 0, dst)
 </relation>

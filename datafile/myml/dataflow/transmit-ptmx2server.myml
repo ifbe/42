@@ -11,6 +11,6 @@ url:0.0.0.0:9999
 
 
 <relation>
-(ptmx, 0, sys, dst) -> (host, 0, sys, src)
-(ptmx, 0, sys, src) -> (host, 0, sys, dst)
+(ptmx, 0, dst) -> (host, 0, src)
+(ptmx, 0, src) -> (host, 0, dst)
 </relation>

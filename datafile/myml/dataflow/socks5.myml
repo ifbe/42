@@ -22,7 +22,7 @@ fmt:dbghex
 
 
 <relation>
-(http, 0, art, dst) -> (dbghex, 0, art, src)
-(socks, 0, art, dst) -> (http, 0, art, src)
-(tcphost, 0, sys, dst) -> (socks, 0, art, src)
+(http, 0, dst) -> (dbghex, 0, src)
+(socks, 0, dst) -> (http, 0, src)
+(tcphost, 0, dst) -> (socks, 0, src)
 </relation>

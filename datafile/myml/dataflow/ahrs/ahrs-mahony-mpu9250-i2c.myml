@@ -29,7 +29,7 @@ fmt:ahrs
 
 
 <relation>
-(i2chost, 0, dev, 0) -> (mpu9250, 0, dri, i2c)
-(mpu9250, 0, dri, dst) -> (mahony, 0, art, src)
-(mahony, 0, art, dst) -> (ahrs, 0, win, src)
+(i2chost, 0, 0) -> (mpu9250, 0, i2c)
+(mpu9250, 0, dst) -> (mahony, 0, src)
+(mahony, 0, dst) -> (ahrs, 0, src)
 </relation>

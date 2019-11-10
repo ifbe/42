@@ -17,6 +17,6 @@ fmt:search
 
 
 <relation>
-(tcphost, 0, sys, dst) -> (http, 0, art, src)
-(http, 0, art, dst) -> (search, 0, art, src)
+(tcphost, 0, dst) -> (http, 0, src)
+(http, 0, dst) -> (search, 0, src)
 </relation>

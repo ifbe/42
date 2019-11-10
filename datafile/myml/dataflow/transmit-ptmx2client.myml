@@ -11,6 +11,6 @@ url:192.168.0.217:9999
 
 
 <relation>
-(ptmx, 0, sys, dst) -> (send, 0, sys, src)
-(ptmx, 0, sys, src) -> (send, 0, sys, dst)
+(ptmx, 0, dst) -> (send, 0, src)
+(ptmx, 0, src) -> (send, 0, dst)
 </relation>

@@ -79,22 +79,22 @@ t:0.0, 0.0, 0.1
 
 <relation>
 #world depends on overview
-(world, aaaageom, act, cam0) -> (cam0, aaaapart, act, 0)
-(world, viewgeom, act, obj0) -> (overview, viewpart, act, 0)
+(world, aaaageom, 0) -> (cam0, aaaapart, 0)
+(world, viewgeom, 0) -> (overview, viewpart, 0)
 
 #gldata depends on world
-(gldata, 0, act, a0) -> (cam0, 0, act, 0)
+(gldata, 0, a0) -> (cam0, 0, 0)
 
 #glwnd depends on gldata
-(glwnd, aaaarect, win, 0) -> (gldata, 0, act, a0)
+(glwnd, aaaarect, 0) -> (gldata, 0, a0)
 
 #opengl depends on glwnd
-(opengl, 0, win, wnd) -> (glwnd, 0, win, togl)
+(opengl, 0, wnd) -> (glwnd, 0, togl)
 
 #screen depends on opengl
-(screen, 0, act, 0) -> (opengl, 0, win, 0)
+(screen, 0, 0) -> (opengl, 0, 0)
 
 #reality depends on screen
-(reality, scrxyz, act, 0) -> (screen, 0, act, 0)
-(reality, eyexyz, act, 0) -> (theeye, 0, act, 0)
+(reality, scrxyz, 0) -> (screen, 0, 0)
+(reality, eyexyz, 0) -> (theeye, 0, 0)
 </relation>

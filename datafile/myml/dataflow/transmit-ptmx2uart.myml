@@ -11,6 +11,6 @@ url:/dev/ttyACM0, 115200
 
 
 <relation>
-(ptmx, 0, sys, dst) -> (uart, 0, sys, src)
-(ptmx, 0, sys, src) -> (uart, 0, sys, dst)
+(ptmx, 0, dst) -> (uart, 0, src)
+(ptmx, 0, src) -> (uart, 0, dst)
 </relation>

@@ -21,6 +21,6 @@ fmt:std
 
 
 <relation>
-(udp, 0, sys, dst) -> (vt100, 0, art, src)
-(stdio, 0, win, dst) -> (vt100, 0, art, dst)
+(udp, 0, dst) -> (vt100, 0, src)
+(stdio, 0, dst) -> (vt100, 0, dst)
 </relation>

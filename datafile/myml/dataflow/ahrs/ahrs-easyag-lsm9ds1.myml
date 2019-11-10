@@ -42,12 +42,12 @@ fmt:dbgf32
 
 
 <relation>
-(i2chost, 0, dev, 0) -> (lsm9ds1, 0, dri, i2c)
-(lsm9ds1, 0, dri, dst) -> (easyag, 0, art, src)
-(easyag, 0, art, dst) -> (qu2eu, 0, art, src)
-#(qu2eu, 0, art, dst) -> (dbgf32, 0, art, src)
-(qu2eu, 0, art, dst) -> (fv2str, 0, art, src)
-(fv2str, 0, art, dst) -> (target, 0, sys, src)
+(i2chost, 0, 0) -> (lsm9ds1, 0, i2c)
+(lsm9ds1, 0, dst) -> (easyag, 0, src)
+(easyag, 0, dst) -> (qu2eu, 0, src)
+#(qu2eu, 0, dst) -> (dbgf32, 0, src)
+(qu2eu, 0, dst) -> (fv2str, 0, src)
+(fv2str, 0, dst) -> (target, 0, src)
 
-(clock, 0, sys, dst) -> (lsm9ds1, 0, dri, clk)
+(clock, 0, dst) -> (lsm9ds1, 0, clk)
 </relation>

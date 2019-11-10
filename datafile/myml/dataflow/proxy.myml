@@ -14,5 +14,5 @@ fmt:proxy
 
 
 <relation>
-(tcphost, 0, sys, dst) -> (proxy, 0, art, src)
+(tcphost, 0, dst) -> (proxy, 0, src)
 </relation>

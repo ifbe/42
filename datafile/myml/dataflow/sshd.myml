@@ -14,5 +14,5 @@ fmt:SSH
 
 
 <relation>
-(tcphost, 0, sys, dst) -> (sshd, 0, art, src)
+(tcphost, 0, dst) -> (sshd, 0, src)
 </relation>

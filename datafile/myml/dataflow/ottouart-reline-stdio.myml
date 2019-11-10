@@ -27,9 +27,9 @@ url:/dev/tty.SLAB_USBtoUART,115200
 
 
 <relation>
-(std, 0, win, dst) -> (fixstd, 0, art, src)
-(fixstd, 0, art, dst) -> (otto, 0, sys, src)
+(std, 0, dst) -> (fixstd, 0, src)
+(fixstd, 0, dst) -> (otto, 0, src)
 
-(otto, 0, sys, dst) -> (fixuart, 0, art, src)
-(fixuart, 0, art, dst) -> (dbghex, 0, art, src)
+(otto, 0, dst) -> (fixuart, 0, src)
+(fixuart, 0, dst) -> (dbghex, 0, src)
 </relation>

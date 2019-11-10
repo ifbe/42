@@ -11,6 +11,6 @@ url:192.168.0.217:9999
 
 
 <relation>
-(gcode, 0, sys, dst) -> (udp, 0, sys, src)
-(gcode, 0, sys, src) -> (udp, 0, sys, dst)
+(gcode, 0, dst) -> (udp, 0, src)
+(gcode, 0, src) -> (udp, 0, dst)
 </relation>

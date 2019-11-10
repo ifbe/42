@@ -21,7 +21,7 @@ fmt:dbghex
 
 
 <relation>
-(pump, 0, art, src) -> (file, 0, sys, dst)
-(pump, 0, art, dst) -> (dbghex, 0, art, src)
-(pump, 0, art, clk) -> (udphost, 0, sys, dst)
+(pump, 0, src) -> (file, 0, dst)
+(pump, 0, dst) -> (dbghex, 0, src)
+(pump, 0, clk) -> (udphost, 0, dst)
 </relation>

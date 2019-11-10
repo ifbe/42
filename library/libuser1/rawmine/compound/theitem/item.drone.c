@@ -30,6 +30,7 @@ static void drone_draw_vbo(
 	struct actor* wrd, struct style* camg,
 	struct actor* ctx, struct style* temp)
 {
+	float dt;
     vec3 tc,tr,tf,tu;
 	vec3 kc,kr,kf,ku;
 	float* vc = geom->fshape.vc;
@@ -90,6 +91,8 @@ static void drone_draw_vbo(
     tu[1] = vt[1] / 32;
     tu[2] = vt[2] / 32;
 
+	dt = timeread() % 1000000;
+
     //rf, motor1
     tc[0] = vc[0] + vr[0] + vf[0];
     tc[1] = vc[1] + vr[1] + vf[1];
@@ -99,7 +102,7 @@ static void drone_draw_vbo(
     tc[1] = vc[1] + vr[1] + vf[1] + tu[1];
     tc[2] = vc[2] + vr[2] + vf[2] + tu[2];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '1');
-	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1);
+	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1, dt);
 
     //ln, motor2
     tc[0] = vc[0] - vr[0] - vf[0];
@@ -110,7 +113,7 @@ static void drone_draw_vbo(
     tc[1] = vc[1] - vr[1] - vf[1] + tu[1];
     tc[2] = vc[2] - vr[2] - vf[2] + tu[2];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '2');
-	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1);
+	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1, dt);
 
     //lf, motor3
     tc[0] = vc[0] - vr[0] + vf[0];
@@ -121,7 +124,7 @@ static void drone_draw_vbo(
     tc[1] = vc[1] - vr[1] + vf[1] + tu[1];
     tc[2] = vc[2] - vr[2] + vf[2] + tu[2];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '3');
-	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1);
+	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1, dt);
 
     //rn, motor4
     tc[0] = vc[0] + vr[0] - vf[0];
@@ -132,7 +135,7 @@ static void drone_draw_vbo(
     tc[1] = vc[1] + vr[1] - vf[1] + tu[1];
     tc[2] = vc[2] + vr[2] - vf[2] + tu[2];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '4');
-	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1);
+	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1, dt);
 }
 static void drone_draw_json(
 	struct actor* act, struct style* pin,

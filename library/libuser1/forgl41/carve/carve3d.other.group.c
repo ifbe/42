@@ -158,24 +158,39 @@ void carvedrone(struct actor* win, u32 rgb,
 
 
 void carvesolid_propeller(struct actor* ctx, u32 rgb,
-	vec3 vc, vec3 vr, vec3 vf, vec3 vt, int dir)
+	vec3 vc, vec3 vr, vec3 vf, vec3 vt, int dir, int dt)
 {
+	float a;
+	vec3 rr,ff;
 	vec3 tc,tr,tf;
-	tc[0] = vc[0] + vr[0];
-	tc[1] = vc[1] + vr[1];
-	tc[2] = vc[2] + vr[2];
-	tf[0] = vf[0]/8 + dir*vt[0]/8;
-	tf[1] = vf[1]/8 + dir*vt[1]/8;
-	tf[2] = vf[2]/8 + dir*vt[2]/8;
-	carvesolid_circle(ctx, rgb, tc, vr, tf);
 
-	tc[0] = vc[0] - vr[0];
-	tc[1] = vc[1] - vr[1];
-	tc[2] = vc[2] - vr[2];
-	tf[0] = vf[0]/8 - dir*vt[0]/8;
-	tf[1] = vf[1]/8 - dir*vt[1]/8;
-	tf[2] = vf[2]/8 - dir*vt[2]/8;
-	carvesolid_circle(ctx, rgb, tc, vr, tf);
+	a = dir * dt * tau / 1000000.0;
+
+	rr[0] = vr[0];
+	rr[1] = vr[1];
+	rr[2] = vr[2];
+	quaternion_operation(rr, vt, a);
+
+	ff[0] = vf[0];
+	ff[1] = vf[1];
+	ff[2] = vf[2];
+	quaternion_operation(ff, vt, a);
+
+	tc[0] = vc[0] + rr[0];
+	tc[1] = vc[1] + rr[1];
+	tc[2] = vc[2] + rr[2];
+	tf[0] = ff[0]/8 + dir*vt[0]/8;
+	tf[1] = ff[1]/8 + dir*vt[1]/8;
+	tf[2] = ff[2]/8 + dir*vt[2]/8;
+	carvesolid_circle(ctx, rgb, tc, rr, tf);
+
+	tc[0] = vc[0] - rr[0];
+	tc[1] = vc[1] - rr[1];
+	tc[2] = vc[2] - rr[2];
+	tf[0] = ff[0]/8 - dir*vt[0]/8;
+	tf[1] = ff[1]/8 - dir*vt[1]/8;
+	tf[2] = ff[2]/8 - dir*vt[2]/8;
+	carvesolid_circle(ctx, rgb, tc, rr, tf);
 }
 
 

@@ -14,5 +14,5 @@ fmt:echo
 
 
 <relation>
-(tcphost, 0, sys, dst) -> (echo, 0, art, src)
+(tcphost, 0, dst) -> (echo, 0, src)
 </relation>

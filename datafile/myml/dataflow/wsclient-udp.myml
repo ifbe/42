@@ -19,6 +19,6 @@ url:127.0.0.1
 
 
 <relation>
-(tcp, 0, sys, dst) -> (ws, 0, art, src)
-(udp, 0, sys, dst) -> (ws, 0, art, dst)
+(tcp, 0, dst) -> (ws, 0, src)
+(udp, 0, dst) -> (ws, 0, dst)
 </relation>

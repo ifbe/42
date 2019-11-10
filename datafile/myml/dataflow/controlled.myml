@@ -25,7 +25,7 @@ fmt:bdc
 
 
 <relation>
-(udpport, 0, sys, con) -> (toycar, 0, win, con)
-(httpport, 0, art, con) -> (toycar, 0, win, con)
-(player1, 0, win, con) -> (toycar, 0, win, con)
+(udpport, 0, con) -> (toycar, 0, con)
+(httpport, 0, con) -> (toycar, 0, con)
+(player1, 0, con) -> (toycar, 0, con)
 </relation>

@@ -27,8 +27,8 @@ fmt:ahrs
 
 
 <relation>
-(udphost, 0, sys, 0) -> (reline, 0, art, src)
-(reline, 0, art, dst) -> (str2fv, 0, art, src)
-(str2fv, 0, art, dst) -> (madgwick, 0, art, src)
-(madgwick, 0, art, dst) -> (ahrs, 0, win, src)
+(udphost, 0, 0) -> (reline, 0, src)
+(reline, 0, dst) -> (str2fv, 0, src)
+(str2fv, 0, dst) -> (madgwick, 0, src)
+(madgwick, 0, dst) -> (ahrs, 0, src)
 </relation>

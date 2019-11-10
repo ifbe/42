@@ -57,10 +57,10 @@ void parserelation(u8* buf, int len,
 		if(',' == buf[j]){
 			c[k] = j+1;
 			k++;
-			if(k >= 4)return;
+			if(k >= 3)return;
 		}
 	}
-	if(k != 3){
+	if(k != 2){
 		say("error@parserelation,k=%d\n",k);
 		return;
 	}
@@ -72,7 +72,8 @@ void parserelation(u8* buf, int len,
 
 	for(k=0;k<clen;k++){
 		if(hash == chip[k].hash){
-			rel->chip = (u64)chip[k].addr;
+			rel->pchip = chip[k].addr;
+			rel->type = chip[k].tier;
 		}
 	}
 
@@ -86,15 +87,15 @@ void parserelation(u8* buf, int len,
 			rel->foot = (u64)foot[k].addr;
 		}
 	}
-
+/*
 	//thetype
 	j = c[1];
 	while(0x20 == buf[j])j++;
 	parsefmt(addr, buf+j);
 	rel->type = hash;
-
+*/
 	//theflag
-	j = c[2];
+	j = c[1];
 	while(0x20 == buf[j])j++;
 	parsefmt(addr, buf+j);
 	rel->flag = hash;

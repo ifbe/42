@@ -15,5 +15,5 @@ url:/etc/letsencrypt/live/deepstack.tech/
 
 
 <relation>
-(tcphost, 0, sys, dst) -> (tlsd, 0, art, src)
+(tcphost, 0, dst) -> (tlsd, 0, src)
 </relation>

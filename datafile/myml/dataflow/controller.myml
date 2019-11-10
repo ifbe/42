@@ -13,5 +13,5 @@ fmt:dbghex
 
 
 <relation>
-(gamepad, 0, win, dst) -> (dbghex, 0, art, 0)
+(gamepad, 0, dst) -> (dbghex, 0, 0)
 </relation>

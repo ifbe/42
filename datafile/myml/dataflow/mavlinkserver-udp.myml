@@ -14,5 +14,5 @@ fmt:Mavlink
 
 
 <relation>
-(broadcast, 0, sys, dst) -> (mavlink, 0, art, src)
+(broadcast, 0, dst) -> (mavlink, 0, src)
 </relation>

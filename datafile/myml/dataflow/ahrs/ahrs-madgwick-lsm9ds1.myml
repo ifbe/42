@@ -35,10 +35,10 @@ fmt:dbgf32
 
 
 <relation>
-(i2chost, 0, dev, 0) -> (lsm9ds1, 0, dri, i2c)
-(lsm9ds1, 0, dri, dst) -> (madgwick, 0, art, src)
-(madgwick, 0, art, dst) -> (qu2eu, 0, art, src)
-(qu2eu, 0, art, dst) -> (dbgf32, 0, art, src)
+(i2chost, 0, 0) -> (lsm9ds1, 0, i2c)
+(lsm9ds1, 0, dst) -> (madgwick, 0, src)
+(madgwick, 0, dst) -> (qu2eu, 0, src)
+(qu2eu, 0, dst) -> (dbgf32, 0, src)
 
-(clock, 0, sys, dst) -> (lsm9ds1, 0, dri, clk)
+(clock, 0, dst) -> (lsm9ds1, 0, clk)
 </relation>

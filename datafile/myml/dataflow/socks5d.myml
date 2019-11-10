@@ -14,5 +14,5 @@ fmt:SOCKS
 
 
 <relation>
-(tcphost, 0, sys, dst) -> (socks5d, 0, art, src)
+(tcphost, 0, dst) -> (socks5d, 0, src)
 </relation>
