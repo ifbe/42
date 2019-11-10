@@ -126,13 +126,15 @@ void video_draw_pixel(
 	);
 }
 void video_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct actor* act, struct style* part,
+	struct actor* win, struct style* geom,
+	struct actor* wrd, struct style* camg,
+	struct actor* ctx, struct style* temp)
 {
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = geom->fshape.vc;
+	float* vr = geom->fshape.vr;
+	float* vf = geom->fshape.vf;
+	float* vt = geom->fshape.vt;
 
 	struct glsrc* data = act->buf;
 	float (*vbuf)[6] = data->vbuf;
@@ -241,28 +243,33 @@ void video_event(
 
 
 
-static void video_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void video_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
-	//say("@texball_read:%llx,%llx,%llx\n",act,win,buf);
+	//wnd -> ctx
+	struct actor* ctx;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)video_draw_vbo3d(act,pin,ctx,sty);
+	//cam -> world
+	struct actor* cam;
+	struct actor* wrd;struct style* camg;
+
+	//world -> texball
+	struct actor* win;struct style* geom;
+	struct actor* act;struct style* part;
+
+	if(stack){
+		ctx = stack[rsp-3]->pchip;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		video_draw_vbo3d(act,part, win,geom, wrd,camg, ctx,0);
 	}
-	//video_draw(act, pin, win, sty);
 }
 static void video_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct glsrc* data;
 	struct actor* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	//struct actor* win = (void*)(peer->chip);
-	//struct style* sty = (void*)(peer->foot);
 	if(_yuv_ == self->flag){
 		say("@video_write.yuv: %llx,%x,%llx,%x\n", arg, idx, buf, len);
 
@@ -272,12 +279,6 @@ static void video_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 
 		video_update(data->tex[0].data, 1024*1024*4, buf, 640*480*2);
 	}
-/*
-	switch(self->flag){
-		case _yuv_:video_update(act, pin, win, sty, buf, len);break;
-		default:   video_event( act, pin, win, sty, buf);break;
-	}
-*/
 }
 static void video_stop(struct halfrel* self, struct halfrel* peer)
 {

@@ -17,6 +17,9 @@ fmt:dbghex
 
 
 <arena>
+thewnd{
+fmt:gl41wnd0
+}
 opengl{
 fmt:win
 title:"42"
@@ -41,9 +44,6 @@ fmt:3dworld
 thectx{
 fmt:gl41data
 }
-thewnd{
-fmt:gl41wnd0
-}
 </actor>
 
 
@@ -64,15 +64,14 @@ c: 0.0, 0.0, 1200.0
 r: 1000.0, 0.0, 0.0
 t: 0.0, 1000.0, 0.0
 f: 0.0, 0.0, -1000.0
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
 }
-freefrus{
-l: 0.0, 0.0, 0.0, -1.0
-r: 0.0, 0.0, 0.0, 1.0
-b: 0.0, 0.0, 0.0, -1.0
-t: 0.0, 0.0, 0.0, 1.0
-n: 0.0, 0.0, 0.0, 1.0
-f: 0.0, 0.0, 0.0, 1000000000.0
-}
+
 freerect{
 c:0.0, 0.0
 q:1.0, 1.0
@@ -82,22 +81,20 @@ q:1.0, 1.0
 
 <relation>
 #canvas depends on usbcam
-(server, 0, sys, dst) -> (recut, 0, art, src)
-(recut, 0, art, dst) -> (canvas, 0, act, yuv)
+(server, 0, dst) -> (recut, 0, src)
+(recut, 0, dst) -> (canvas, 0, yuv)
 
 #3dworld depends on inner objects
-(3dworld, skygeom, act, 0) -> (canvas, skyhaha, act, 0)
-(3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
+(3dworld, skygeom, 0) -> (canvas, skyhaha, 0)
+(3dworld, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glctx depends on scene
-(thectx, 0, act, 0) -> (3dworld, 0, act, 0)
+(thectx, 0, cam0) -> (freecam, 0, 0)
 
 #glwnd depends on ctx + cam
-(thewnd, 0, act, ctx) -> (thectx, 0, act, 0)
-(thewnd, freerect, act, mvp) -> (freecam, freefrus, act, 0)
+(thewnd, freerect, 0) -> (thectx, 0, cam0)
 
-#opengl depends on ctx + wnd
-(opengl, 0, win, ctx) -> (thectx, 0, act, 0)
-(opengl, 0, win, wnd) -> (thewnd, 0, act, 0)
+#opengl depends on wnd
+(opengl, 0, wnd) -> (thewnd, 0, 0)
 
 </relation>
