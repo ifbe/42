@@ -61,6 +61,7 @@ typedef float mat4[4][4];
 #define _dev_ hex32('d','e','v',0)
 //tier=_win_, type:
 #define _ahrs_ hex32('a','h','r','s')
+#define _car_ hex32('c','a','r',0)
 #define _bdc_  hex32('b','d','c',0)
 #define _step_ hex32('s','t','e','p')
 //
@@ -70,7 +71,6 @@ typedef float mat4[4][4];
 #define _cam_ hex32('c','a','m',0)
 #define _cap_ hex32('c','a','p',0)
 //
-#define _wnd_ hex32('w','n','d',0)
 #define _tray_ hex32('t','r','a','y')	//tray
 #define _std_ hex32('s','t','d', 0)		//cmdline
 //
@@ -78,6 +78,7 @@ typedef float mat4[4][4];
 #define _khala_ hex64('k','h','a','l','a', 0, 0, 0)
 #define _loopback_ hex64('l','o','o','p','b', 'a', 'c', 'k')
 //tier=_win_, type=_win_, rfmt:
+#define _wnd_ hex32('w','n','d',0)
 #define _none_ hex32('n','o','n','e')
 #define _easy_ hex32('e','a','s','y')
 #define _full_ hex32('f','u','l','l')
@@ -93,11 +94,6 @@ typedef float mat4[4][4];
 #define _html_ hex32('h','t','m','l')
 #define _json_ hex32('j','s','o','n')
 #define _xml_  hex32('x','m','l',0)
-//tier=_win_, type=_ctx_, rfmt=vbo, vfmt:
-#define _1d_ hex32('1','d',0,0)
-#define _2d_ hex32('2','d',0,0)
-#define _3d_ hex32('3','d',0,0)
-#define _ui_ hex32('u','i',0,0)
 //tier=_act_, type:
 #define _baby_ hex32('b','a','b','y')
 #define _test_ hex32('t','e','s','t')
@@ -113,20 +109,6 @@ typedef float mat4[4][4];
 //
 #define _bus_  hex32('b','u','s',0)
 #define _pin_  hex32('p','i','n',0)
-//
-#define _aid3d_ hex64('a','i','d','3','d', 0, 0, 0)
-#define _mic3d_ hex64('m','i','c','3','d', 0, 0, 0)
-#define _cam3d_ hex64('c','a','m','3','d', 0, 0, 0)
-#define _lit3d_ hex64('l','i','t','3','d', 0, 0, 0)
-#define _bg3d_ hex32('b','g','3','d')
-#define _fg3d_ hex32('f','g','3','d')
-#define _ui3d_ hex32('u','i','3','d')
-#define _xx3d_ hex32('x','x','3','d')
-//
-#define _bg2d_ hex32('b','g','2','d')
-#define _fg2d_ hex32('f','g','2','d')
-#define _ui2d_ hex32('u','i','2','d')
-#define _xx2d_ hex32('x','x','2','d')
 //
 #define _TCP_ hex32('T','C','P',0)
 #define _tcp_ hex32('t','c','p',0)

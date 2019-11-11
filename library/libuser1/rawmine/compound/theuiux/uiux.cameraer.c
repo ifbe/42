@@ -76,7 +76,7 @@ void camman_listcamera(
 		if(_win_ == rel->dsttype)
 		{
 			twig = (void*)(rel->dstchip);
-			if(_cam3d_ == twig->fmt)goto found;
+			//if(_cam3d_ == twig->fmt)goto found;
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -134,7 +134,7 @@ void camman_listlight(
 		if(_win_ == rel->dsttype)
 		{
 			twig = (void*)(rel->dstchip);
-			if(_lit3d_ == twig->fmt)goto found;
+			//if(_lit3d_ == twig->fmt)goto found;
 		}
 		rel = samesrcnextdst(rel);
 	}

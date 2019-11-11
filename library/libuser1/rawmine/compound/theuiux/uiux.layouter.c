@@ -597,7 +597,7 @@ static int picker_draw(
 		if(_win_ == rel->dsttype)
 		{
 			www = (void*)(rel->dstchip);
-			if(_fg3d_ == www->fmt)goto found;
+			//if(_fg3d_ == www->fmt)goto found;
 		}
 
 		rel = samesrcnextdst(rel);
@@ -642,7 +642,7 @@ static int picker_event(
 		if(_win_ == rel->dsttype)
 		{
 			www = (void*)(rel->dstchip);
-			if(_fg3d_ == www->fmt)goto found;
+			//if(_fg3d_ == www->fmt)goto found;
 		}
 
 		rel = samesrcnextdst(rel);

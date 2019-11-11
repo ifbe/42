@@ -19,7 +19,7 @@ static struct actor* actor = 0;
 
 
 
-
+/*
 void defaultstyle_2d(struct fstyle* sty, int w, int h, int d)
 {
 	sty->vc[0] = w/2;
@@ -118,7 +118,7 @@ int arenaactor(struct actor* win, struct actor* ccc, struct actor* act, struct a
 	actorcreate(0, act, 0, 0);
 	relationcreate(act, pin, _act_, 0, ccc, sty, _win_, 0);
 	return 0;
-}
+}*/
 
 
 

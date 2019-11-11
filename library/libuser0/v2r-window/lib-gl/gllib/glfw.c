@@ -4,7 +4,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include "libuser.h"
-void windowwrite(struct arena* ogl, struct event* ev);
 //
 void nonewindow_create(void*);
 void nonewindow_delete(void*);
@@ -21,6 +20,23 @@ void fullwindow_delete(void*);
 void fullwindow_read(void*);
 void fullwindow_write(void*, void*);
 //
+int gl41fboc_create(void*, void*);
+int gl41fboc_delete(void*, void*);
+int gl41fboc_read( void*, void*, void*, int, void*, int);
+int gl41fboc_write(void*, void*, void*, int, void*, int);
+int gl41fbod_create(void*, void*);
+int gl41fbod_delete(void*, void*);
+int gl41fbod_read( void*, void*, void*, int, void*, int);
+int gl41fbod_write(void*, void*, void*, int, void*, int);
+int gl41fbog_create(void*, void*);
+int gl41fbog_delete(void*, void*);
+int gl41fbog_read( void*, void*, void*, int, void*, int);
+int gl41fbog_write(void*, void*, void*, int, void*, int);
+int gl41wnd0_create(void*, void*);
+int gl41wnd0_delete(void*, void*);
+int gl41wnd0_read( void*, void*, void*, int, void*, int);
+int gl41wnd0_write(void*, void*, void*, int, void*, int);
+//
 static u8 uppercase[] = {
 	' ', '!','\"', '#', '$', '%', '&','\"',		//20,27
 	'(', ')', '*', '+', '<', '_', '>', '?',		//28,2f
@@ -35,6 +51,16 @@ static u8 uppercase[] = {
 	'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',		//70,77
 	'X', 'Y', 'Z', '{', '|', '}', '~', ' ',		//78,7f
 };
+void windowdispatch(struct arena* ogl, struct event* ev)
+{
+	if(0 == ogl)return;
+	switch(ogl->fmt){
+		case _none_:nonewindow_write(ogl, ev);break;
+		case _easy_:easywindow_write(ogl, ev);break;
+		case _full_:
+		default:fullwindow_write(ogl, ev);break;
+	}
+}
 
 
 
@@ -91,7 +117,7 @@ static void callback_keyboard(GLFWwindow* fw, int key, int scan, int action, int
 	}
 
 	e.where = (u64)ogl;
-	windowwrite(ogl, &e);
+	windowdispatch(ogl, &e);
 	//eventwrite(why, what, where, 0);
 }
 static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
@@ -113,7 +139,7 @@ static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
 		e.why = x + (y<<16) + (temp<<48);
 		e.what = 0x2b70;
 		e.where = (u64)ogl;
-		windowwrite(ogl, &e);
+		windowdispatch(ogl, &e);
 	}
 	else if(0 == action)
 	{
@@ -123,7 +149,7 @@ static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
 		e.why = x + (y<<16) + (temp<<48);
 		e.what = 0x2d70;
 		e.where = (u64)ogl;
-		windowwrite(ogl, &e);
+		windowdispatch(ogl, &e);
 	}
 }
 static void callback_move(GLFWwindow* fw, double xpos, double ypos)
@@ -141,7 +167,7 @@ static void callback_move(GLFWwindow* fw, double xpos, double ypos)
 	e.why = x + (y<<16) + (temp<<48);
 	e.what = 0x4070;
 	e.where = (u64)ogl;
-	windowwrite(ogl, &e);
+	windowdispatch(ogl, &e);
 }
 static void callback_scroll(GLFWwindow* fw, double x, double y)
 {
@@ -154,13 +180,13 @@ static void callback_scroll(GLFWwindow* fw, double x, double y)
 	if(y > 0.0)	//wheel_up
 	{
 		e.why = ((u64)'f')<<48;
-		windowwrite(ogl, &e);
+		windowdispatch(ogl, &e);
 		//eventwrite(why, 0x2b70, where, 0);
 	}
 	else	//wheel_down
 	{
 		e.why = ((u64)'b')<<48;
-		windowwrite(ogl, &e);
+		windowdispatch(ogl, &e);
 		//eventwrite(why, 0x2b70, where, 0);
 	}
 }
@@ -180,7 +206,7 @@ static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 	e.why = (u64)dragdata;
 	e.what = _drag_;
 	e.where = (u64)ogl;
-	windowwrite(ogl, &e);
+	windowdispatch(ogl, &e);
 }
 static void callback_reshape(GLFWwindow* fw, int w, int h)
 {
@@ -289,22 +315,29 @@ void windowopen_coop(struct arena* w, struct arena* r)
 
 
 
-void windowwrite(struct arena* ogl, struct event* ev)
+void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	if(0 == ogl)return;
-	switch(ogl->fmt){
-		case _none_:nonewindow_write(ogl, ev);break;
-		case _easy_:easywindow_write(ogl, ev);break;
-		case _full_:
-		default:fullwindow_write(ogl, ev);break;
-	}
-}
-void windowread(struct arena* ogl)
-{
-	char str[64];
+	struct arena* ogl;
 	GLFWwindow* fw;
-	struct relation* rel;
 	//say("@windowread:%.8s,%.8s,%llx\n", &ogl->type, &ogl->fmt, ogl->win);
+
+	ogl = self->pchip;
+	if(_gl41fboc_ == ogl->fmt){
+		gl41fboc_read(self, peer, arg, idx, buf, len);
+		return;
+	}
+	if(_gl41fbod_ == ogl->fmt){
+		gl41fbod_read(self, peer, arg, idx, buf, len);
+		return;
+	}
+	if(_gl41fbog_ == ogl->fmt){
+		gl41fbog_read(self, peer, arg, idx, buf, len);
+		return;
+	}
+	if(_gl41wnd0_ == ogl->fmt){
+		gl41wnd0_read(self, peer, arg, idx, buf, len);
+		return;
+	}
 
 	//0: context current
 	fw = ogl->win;
@@ -322,12 +355,16 @@ void windowread(struct arena* ogl)
 	glfwSwapBuffers(fw);
 
 	//3: title
+	char str[64];
 	snprintf(str, 64, "%dx%d(%d,%d)", ogl->width, ogl->height, ogl->fbwidth, ogl->fbheight);
 	glfwSetWindowTitle(fw, str);
 
 	//4: poll event
 	if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
 	glfwPollEvents();
+}
+void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+{
 }
 void windowchange()
 {
@@ -344,20 +381,40 @@ void windowstart(struct arena* ogl)
 void windowdelete(struct arena* ogl)
 {
 	switch(ogl->fmt){
-		case _none_:nonewindow_delete(ogl);
-		case _easy_:easywindow_delete(ogl);
-		default:fullwindow_delete(ogl);
+		case _gl41fboc_:gl41fboc_delete(ogl, 0);break;
+		case _gl41fbod_:gl41fbod_delete(ogl, 0);break;
+		case _gl41fbog_:gl41fbog_delete(ogl, 0);break;
+		case _gl41wnd0_:gl41wnd0_delete(ogl, 0);break;
+		case _none_:nonewindow_delete(ogl);break;
+		case _easy_:easywindow_delete(ogl);break;
+		default:fullwindow_delete(ogl);break;
 	}
 
 	glfwDestroyWindow(ogl->win);
 }
-void windowcreate(struct arena* ogl)
+void windowcreate(struct arena* ogl, void* arg)
 {
 	struct relation* rel = 0;
 	struct arena* share = 0;
 
-	if(_coop_ == ogl->fmt)
-	{
+	switch(ogl->fmt){
+	case _gl41fboc_:{
+		gl41fboc_create(ogl, arg);
+		break;
+	}
+	case _gl41fbod_:{
+		gl41fbod_create(ogl, arg);
+		break;
+	}
+	case _gl41fbog_:{
+		gl41fbog_create(ogl, arg);
+		break;
+	}
+	case _gl41wnd0_:{
+		gl41wnd0_create(ogl, arg);
+		break;
+	}
+	case _coop_:{
 		rel = ogl->orel0;
 		if(rel)share = (void*)(rel->dstchip);
 
@@ -367,20 +424,38 @@ void windowcreate(struct arena* ogl)
 		ogl->stride = 1024;
 
 		windowopen_coop(ogl, share);
+		break;
 	}
-	else
-	{
+	case _none_:{
 		ogl->width = 1024;
 		ogl->height = 768;
 		ogl->depth = 1024;
 		ogl->stride = 1024;
-		windowopen_root(ogl, 0);
 
-		switch(ogl->fmt){
-			case _none_:nonewindow_create(ogl);break;
-			case _easy_:easywindow_create(ogl);break;
-			default:fullwindow_create(ogl);break;
-		}
+		windowopen_root(ogl, 0);
+		nonewindow_create(ogl);
+		break;
+	}
+	case _easy_:{
+		ogl->width = 1024;
+		ogl->height = 768;
+		ogl->depth = 1024;
+		ogl->stride = 1024;
+
+		windowopen_root(ogl, 0);
+		easywindow_create(ogl);
+		break;
+	}
+	default:{
+		ogl->width = 1024;
+		ogl->height = 768;
+		ogl->depth = 1024;
+		ogl->stride = 1024;
+
+		windowopen_root(ogl, 0);
+		fullwindow_create(ogl);
+		break;
+	}
 	}
 }
 

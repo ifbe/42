@@ -53,7 +53,7 @@ int videochoose();
 //window
 void initwindow(void*);
 void freewindow();
-int windowcreate(void*);
+int windowcreate(void*, void*);
 int windowdelete(void*);
 int windowstart(void*);
 int windowstop(void*);
@@ -61,23 +61,6 @@ int windowread(void*, void*, void*, int, void*, int);
 int windowwrite(void*, void*, void*, int, void*, int);
 int windowlist();
 int windowchoose();
-//
-int gl41fboc_create(void*, void*);
-int gl41fboc_delete(void*, void*);
-int gl41fboc_read( void*, void*, void*, int, void*, int);
-int gl41fboc_write(void*, void*, void*, int, void*, int);
-int gl41fbod_create(void*, void*);
-int gl41fbod_delete(void*, void*);
-int gl41fbod_read( void*, void*, void*, int, void*, int);
-int gl41fbod_write(void*, void*, void*, int, void*, int);
-int gl41fbog_create(void*, void*);
-int gl41fbog_delete(void*, void*);
-int gl41fbog_read( void*, void*, void*, int, void*, int);
-int gl41fbog_write(void*, void*, void*, int, void*, int);
-int gl41wnd0_create(void*, void*);
-int gl41wnd0_delete(void*, void*);
-int gl41wnd0_read( void*, void*, void*, int, void*, int);
-int gl41wnd0_write(void*, void*, void*, int, void*, int);
 //
 int ahrs_create(void*, void*);
 int ahrs_delete(void*);
@@ -146,10 +129,10 @@ int arenaread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, vo
 		case _cam_:return videoread(self, peer, arg, idx, buf, len);
 		case _bdc_:return toycar_read(self, peer, arg, idx, buf, len);
 		case _step_:return stepcar_read(self, peer, arg, idx, buf, len);
-		case _gl41fboc_:return gl41fboc_read(self,peer,arg,idx,buf,len);
-		case _gl41fbod_:return gl41fbod_read(self,peer,arg,idx,buf,len);
-		case _gl41fbog_:return gl41fbog_read(self,peer,arg,idx,buf,len);
-		case _gl41wnd0_:return gl41wnd0_read(self,peer,arg,idx,buf,len);
+		case _gl41fboc_:
+		case _gl41fbod_:
+		case _gl41fbog_:
+		case _gl41wnd0_:return windowread(self,peer,arg,idx,buf,len);
 	}
 
 	return 0;
@@ -162,10 +145,10 @@ int arenawrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _bdc_:return toycar_write(self, peer, arg, idx, buf, len);
 		case _step_:return stepcar_write(self, peer, arg, idx, buf, len);
 		case _ahrs_:return ahrs_write(self, peer, arg, idx, buf, len);
-		case _gl41fboc_:return gl41fboc_write(self,peer,arg,idx,buf,len);
-		case _gl41fbod_:return gl41fbod_write(self,peer,arg,idx,buf,len);
-		case _gl41fbog_:return gl41fbog_write(self,peer,arg,idx,buf,len);
-		case _gl41wnd0_:return gl41wnd0_write(self,peer,arg,idx,buf,len);
+		case _gl41fboc_:
+		case _gl41fbod_:
+		case _gl41fbog_:
+		case _gl41wnd0_:return windowwrite(self,peer,arg,idx,buf,len);
 	}
 
 	return 0;
@@ -270,8 +253,18 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 		win = allocarena();
 		if(0 == win)return 0;
 
-		win->type = _bdc_;
+		win->type = _car_;
 		win->fmt = _bdc_;
+		toycar_create(win, arg);
+		return win;
+	}
+	else if(_step_ == type)
+	{
+		win = allocarena();
+		if(0 == win)return 0;
+
+		win->type = _car_;
+		win->fmt = _step_;
 		toycar_create(win, arg);
 		return win;
 	}
@@ -313,6 +306,12 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 	}
 	else if(_cap_ == type)
 	{
+		win = allocarena();
+		if(0 == win)return 0;
+
+		win->type = _cam_;
+		win->fmt = hex32('h','o','l','o');
+		//hologram_create(win, arg);
 		return win;
 	}
 
@@ -324,7 +323,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _win_;
 		win->fmt = _none_;
-		windowcreate(win);
+		windowcreate(win, arg);
 		return win;
 	}
 	else if(_easy_ == type)
@@ -334,7 +333,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _win_;
 		win->fmt = _easy_;
-		windowcreate(win);
+		windowcreate(win, arg);
 		return win;
 	}
 	else if(_win_ == type)
@@ -344,7 +343,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _win_;
 		win->fmt = hex64('b','g','r','a','8','8','8','8');
-		windowcreate(win);
+		windowcreate(win, arg);
 		return win;
 	}
 	else if(_coop_ == type)
@@ -354,7 +353,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _win_;
 		win->fmt = _coop_;
-		windowcreate(win);
+		windowcreate(win, arg);
 		return win;
 	}
 	else if(_gl41fboc_ == type)
@@ -363,7 +362,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 		if(0 == win)return 0;
 
 		win->fmt = win->type = _gl41fboc_;
-		gl41fboc_create(win, arg);
+		windowcreate(win, arg);
 		return win;
 	}
 	else if(_gl41fbod_ == type)
@@ -372,7 +371,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 		if(0 == win)return 0;
 
 		win->fmt = win->type = _gl41fbod_;
-		gl41fbod_create(win, arg);
+		windowcreate(win, arg);
 		return win;
 	}
 	else if(_gl41fbog_ == type)
@@ -381,7 +380,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 		if(0 == win)return 0;
 
 		win->fmt = win->type = _gl41fbog_;
-		gl41fbog_create(win, arg);
+		windowcreate(win, arg);
 		return win;
 	}
 	else if(_gl41wnd0_ == type)
@@ -390,7 +389,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 		if(0 == win)return 0;
 
 		win->fmt = win->type = _gl41wnd0_;
-		gl41wnd0_create(win, arg);
+		windowcreate(win, arg);
 		return win;
 	}
 
@@ -464,6 +463,7 @@ void* arenasearch(u8* buf, int len)
 int arenaevent(struct event* e)
 {
 	int j;
+	struct halfrel self;
 	struct event ev;
 	struct arena* win;
 
@@ -502,7 +502,10 @@ int arenaevent(struct event* e)
 		case _easy_:
 		case _full_:
 		case _coop_:
-		default:windowwrite(win, 0, 0, 0, &ev, 0);break;
+		default:{
+			self.pchip = win;
+			windowwrite(&self, 0, 0, 0, &ev, 0);break;
+		}
 	}
 	return 0;
 }

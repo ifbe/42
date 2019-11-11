@@ -15,7 +15,6 @@ int rgbanode_read(struct arena* win, struct style* stack)
 	struct halfrel* self;
 	struct halfrel* peer;
 
-	win->vfmt = _3d_;
 	preprocess(win);
 
 	rel = win->orel0;

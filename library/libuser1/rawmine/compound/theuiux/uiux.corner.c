@@ -457,11 +457,12 @@ static int corner_event_twig(
 		if(0 == rel)break;
 		if(_win_ == rel->dsttype){
 			ar = (void*)(rel->dstchip);
-			if(_ui3d_ == ar->fmt)goto found;
-			if(_ui2d_ == ar->fmt)goto found;
+			//if(_ui3d_ == ar->fmt)goto found;
+			//if(_ui2d_ == ar->fmt)goto found;
 		}
 		rel = samesrcnextdst(rel);
 	}
+	return 0;
 
 found:
 	x = 0;
