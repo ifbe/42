@@ -521,10 +521,11 @@ int arenaread_all()
 		if(0 == win->type)continue;
 
 		if(_win_ == win->type){
-			windowread(win, 0, 0, 0, 0, 0);
+			self.pchip = win;
+			windowread(&self, 0, 0, 0, 0, 0);
 		}
 		if(_spk_ == win->type){
-			self.chip = (u64)win;
+			self.pchip = win;
 			speakerread(&self, 0, 0, 0, 0, 0);
 		}
 	}

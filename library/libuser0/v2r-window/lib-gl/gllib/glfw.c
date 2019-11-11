@@ -54,6 +54,8 @@ static u8 uppercase[] = {
 void windowdispatch(struct arena* ogl, struct event* ev)
 {
 	if(0 == ogl)return;
+	//say("ogl=%llx, fmt=%.8s\n", ogl, &ogl->fmt);
+
 	switch(ogl->fmt){
 		case _none_:nonewindow_write(ogl, ev);break;
 		case _easy_:easywindow_write(ogl, ev);break;
@@ -319,7 +321,7 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 {
 	struct arena* ogl;
 	GLFWwindow* fw;
-	//say("@windowread:%.8s,%.8s,%llx\n", &ogl->type, &ogl->fmt, ogl->win);
+	//say("@windowread\n");
 
 	ogl = self->pchip;
 	if(_gl41fboc_ == ogl->fmt){
@@ -338,7 +340,6 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		gl41wnd0_read(self, peer, arg, idx, buf, len);
 		return;
 	}
-
 	//0: context current
 	fw = ogl->win;
 	glfwMakeContextCurrent(fw);
@@ -365,6 +366,11 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 }
 void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	struct arena* ogl;
+	if(0 == self)return;
+
+	ogl = self->pchip;
+	if(_gl41wnd0_ == ogl->fmt)gl41wnd0_write(self, peer, arg, idx, buf, len);
 }
 void windowchange()
 {
