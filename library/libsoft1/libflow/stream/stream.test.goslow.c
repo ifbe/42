@@ -28,7 +28,7 @@ int goslow_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 		say("@goslow.sending\n");
 		relationwrite(ele, _dst_, 0, 0, buf, len);
 	}
-	ele->stage1 = (j + 1) % 24;
+	ele->stage1 = (j + 1) % 8;
 	return 0;
 }
 int goslow_stop(struct halfrel* self, struct halfrel* peer)

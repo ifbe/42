@@ -5,8 +5,6 @@
 
 void windowread(struct arena* win)
 {
-	//draw frame
-	actorread_all(win);
 }
 void windowwrite()
 {
