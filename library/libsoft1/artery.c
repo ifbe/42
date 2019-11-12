@@ -19,6 +19,7 @@
 //
 #define _fftpcm_ hex64('f','f','t','p','c','m',0,0)
 #define _fftrgb_ hex64('f','f','t','r','g','b',0,0)
+#define _rotate_ hex64('r','o','t','a','t','e',0,0)
 //
 #define _echo_ hex32('e','c','h','o')
 #define _pump_ hex32('p','u','m','p')
@@ -144,6 +145,12 @@ int fftrgb_start(struct halfrel* self, struct halfrel* peer);
 int fftrgb_stop( struct halfrel* self, struct halfrel* peer);
 int fftrgb_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fftrgb_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int rotate_create(struct element* ele, void* url);
+int rotate_delete(struct element* ele, void* url);
+int rotate_start(struct halfrel* self, struct halfrel* peer);
+int rotate_stop( struct halfrel* self, struct halfrel* peer);
+int rotate_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int rotate_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 int recut_create(struct element* ele, void* url);
 int recut_delete(struct element* ele, void* url);
@@ -500,6 +507,7 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 
 		case _fftpcm_:fftpcm_read(self, peer, arg, idx, buf, len);break;
 		case _fftrgb_:fftrgb_read(self, peer, arg, idx, buf, len);break;
+		case _rotate_:rotate_read(self, peer, arg, idx, buf, len);break;
 
 		case _recut_:recut_read(self, peer, arg, idx, buf, len);break;
 		case _reline_:reline_read(self, peer, arg, idx, buf, len);break;
@@ -560,6 +568,7 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 
 		case _fftpcm_:return fftpcm_write(self, peer, arg, idx, buf, len);break;
 		case _fftrgb_:return fftrgb_write(self, peer, arg, idx, buf, len);break;
+		case _rotate_:return rotate_write(self, peer, arg, idx, buf, len);break;
 
 		case _recut_:return recut_write(self, peer, arg, idx, buf, len);break;
 		case _reline_:return reline_write(self, peer, arg, idx, buf, len);break;
@@ -811,6 +820,15 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 
 		e->type = _fftrgb_;
 		fftrgb_create(e, url);
+		return e;
+	}
+	if(_rotate_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _rotate_;
+		rotate_create(e, url);
 		return e;
 	}
 

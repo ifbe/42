@@ -10,6 +10,9 @@ url:0.0.0.0:9999
 recut{
 fmt:recut
 }
+rotate{
+fmt:rotate
+}
 dbghex{
 fmt:dbghex
 }
@@ -82,7 +85,8 @@ q:1.0, 1.0
 <relation>
 #canvas depends on usbcam
 (server, 0, dst) -> (recut, 0, src)
-(recut, 0, dst) -> (canvas, 0, yuv)
+(recut, 0, dst) -> (rotate, 0, src)
+(rotate, 0, dst) -> (canvas, 0, yuv)
 
 #3dworld depends on inner objects
 (3dworld, skygeom, 0) -> (canvas, skyhaha, 0)
