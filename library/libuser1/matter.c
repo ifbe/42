@@ -418,34 +418,6 @@ void* actorsearch(u8* buf, int len)
 
 
 
-int actorread_all()
-{
-	int j;
-	struct halfrel self;
-	//say("@actorread_all\n");
-
-	for(j=0;j<256;j++){
-	switch(actor[j].type){
-		case _baby_:baby_read(0, 0, 0, 0, 0, 0);break;
-		case _test_:test_read(0, 0, 0, 0, 0, 0);break;
-		case _hoffdata_:{
-			self.chip = (u64)&actor[j];
-			hoffdata_read(&self, 0, 0, 0, 0, 0);
-			break;
-		}
-		case _eeworld_:{
-			self.chip = (u64)&actor[j];
-			eeworld_read(&self, 0, 0, 0, 0, 0);
-			break;
-		}
-	}//switch
-	}//for
-	return 0;
-}
-int actorevent(struct event* ev)
-{
-	return 0;
-}
 void freeactor()
 {
 	//say("[e,f):deleteing actor\n");

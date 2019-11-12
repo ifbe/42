@@ -342,33 +342,6 @@ void* systemsearch(u8* buf, int len)
 
 
 
-int systemevent(struct event* ev)
-{
-	int ret;
-	u64 why = ev->why;
-	u64 what = ev->what;
-	u64 where = ev->where;
-	u8 tmp[0x40];
-	say("%llx,%llx,%llx\n",why,what,where);
-/*
-	switch(why){
-		case '+':{
-			say("come:%x(from:%x)\n", where, obj[where].thatfd);
-			return 0;
-		}
-		case '-':{
-			say("gone:%x\n", where);
-			return 0;
-		}
-		case '@':{
-			ret = readsocket(where, tmp, ppp, 0x100000);
-			if(ret <= 0)return 0;
-
-			return systemwrite_in(&obj[where], tmp, ppp, ret);
-		}
-	}*/
-	return 0;
-}
 void freesystem()
 {
 	//say("[8,9):freeing system\n");

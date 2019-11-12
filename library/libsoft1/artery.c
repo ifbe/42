@@ -1341,10 +1341,6 @@ void* arterysearch(u8* buf, int len)
 
 
 
-int arteryevent(struct event* ev)
-{
-	return 0;
-}
 void freeartery()
 {
 	//say("[a,c):freeing artery\n");

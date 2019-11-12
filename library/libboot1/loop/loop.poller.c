@@ -1,37 +1,92 @@
-typedef unsigned char u8;
-typedef unsigned short u16;
-typedef unsigned int u32;
-typedef unsigned long long u64;
-int actorread_all();
-int actorevent(void*);
-int arenaread_all();
-int arenaevent(void*);
-//
-u64 timeread();
-void sleep_us();
-//
-void* eventread();
-void eventwrite(u64,u64,u64,u64);
-//o
-void printmemory(void*, int);
-void say(void*, ...);
+#include "libuser.h"
+int input(void*, int);
 
 
 
 
-struct event
-{
-	u64 why;
-	u64 what;
-	u64 where;
-	u64 when;
-};
 static int alive = 1;
+static struct arena* arena = 0;
+static struct actor* actor = 0;
 
 
 
 
-void poller()
+int arenaevent(void* poller, struct event* e)
+{
+	int j;
+	struct halfrel self;
+	struct halfrel peer;
+	struct event ev;
+	struct arena* win;
+
+	ev.why = e->why;
+	ev.what = e->what;
+	ev.where = e->where;
+	ev.when = e->when;
+
+	if(0 == ev.where)
+	{
+		//from cmd
+		if(_char_ == ev.what)
+		{
+			input(&ev.why, 0);
+			return 0;
+		}
+
+		//maybe gamepad
+		for(j=0;j<16;j++)
+		{
+			win = &arena[j];
+			if(_win_ == win->type)
+			{
+				ev.where = (u64)win;
+				break;
+			}
+		}
+	}
+
+	win = (void*)(ev.where);
+	if(0 == win)return 0;
+
+	switch(win->fmt)
+	{
+		case _none_:
+		case _easy_:
+		case _full_:
+		case _coop_:
+		default:{
+			self.pchip = win;
+			peer.pchip = poller;
+			arenawrite(&self, &peer, 0, 0, &ev, 0);break;
+		}
+	}
+	return 0;
+}
+int arenaread_all(void* poller)
+{
+	int j;
+	struct arena* win;
+	struct halfrel self;
+	struct halfrel peer;
+
+	peer.pchip = poller;
+	for(j=31;j>=0;j--)
+	{
+		win = &arena[j];
+		if(0 == win->type)continue;
+
+		if(_win_ == win->type){
+			self.pchip = win;
+			arenaread(&self, &peer, 0, 0, 0, 0);
+		}
+		if(_spk_ == win->type){
+			self.pchip = win;
+			arenaread(&self, &peer, 0, 0, 0, 0);
+		}
+	}
+	return 0;
+}
+void poller(void* poller)
 {
 	//before
 	u64 t0;
@@ -45,8 +100,7 @@ void poller()
 		t0 = timeread();
 
 		//draw frame
-		actorread_all();
-		arenaread_all();
+		arenaread_all(poller);
 
 		//cleanup events
 		while(1)
@@ -55,7 +109,7 @@ void poller()
 			if(0 == ev)break;
 			if(0 == ev->what)return;
 
-			arenaevent(ev);
+			arenaevent(poller, ev);
 		}
 
 		//max fps
@@ -63,4 +117,16 @@ void poller()
 		//say("dt=%d\n", delta);
 		if(dt < 16000)sleep_us(16000-dt);
 	}
+}
+
+
+
+
+void freepoller()
+{
+}
+void initpoller(void* addr)
+{
+	arena = addr + 0xc00000;
+	actor = addr + 0xe00000;
 }

@@ -24,18 +24,7 @@ static void joystick_sendevent(struct xyzwpair* pair, int j)
 	ev.when = 0;
 
 	joy = matchtable[j];
-	if(0 == joy){
-		say("@1\n");
-		ev.why = *(u64*)(&pair->x0);
-		ev.what = joy_left;
-		arenaevent(&ev);
-
-		ev.why = *(u64*)(&pair->xn);
-		ev.what = joy_right;
-		arenaevent(&ev);
-
-		return;
-	}
+	if(0 == joy)return;
 
 	if((0 == joy->orel0) && (0 == joy->irel0)){
 		say("@2\n");

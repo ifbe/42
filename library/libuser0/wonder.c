@@ -77,8 +77,6 @@ int stepcar_delete(void*, void*);
 int stepcar_read(void*, void*, void*, int, void*, int);
 int stepcar_write(void*, void*, void*, int, void*, int);
 //
-int input(void*, int);
-//
 int cmp(void*, void*);
 int ncmp(void*, void*, int);
 
@@ -125,6 +123,10 @@ int arenaread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, vo
 {
 	struct arena* win = self->pchip;
 
+	switch(win->type){
+		case _win_:windowread(self, peer, arg, idx, buf, len);return 0;
+		case _spk_:speakerread(self, peer, arg, idx, buf, len);return 0;
+	}
 	switch(win->fmt){
 		case _cam_:return videoread(self, peer, arg, idx, buf, len);
 		case _bdc_:return toycar_read(self, peer, arg, idx, buf, len);
@@ -141,6 +143,10 @@ int arenawrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 {
 	struct arena* win = self->pchip;
 
+	switch(win->type){
+		case _win_:windowwrite(self, peer, arg, idx, buf, len);return 0;
+		case _spk_:speakerwrite(self, peer, arg, idx, buf, len);return 0;
+	}
 	switch(win->fmt){
 		case _bdc_:return toycar_write(self, peer, arg, idx, buf, len);
 		case _step_:return stepcar_write(self, peer, arg, idx, buf, len);
@@ -460,77 +466,6 @@ void* arenasearch(u8* buf, int len)
 
 
 
-int arenaevent(struct event* e)
-{
-	int j;
-	struct halfrel self;
-	struct event ev;
-	struct arena* win;
-
-	ev.why = e->why;
-	ev.what = e->what;
-	ev.where = e->where;
-	ev.when = e->when;
-
-	if(0 == ev.where)
-	{
-		//from cmd
-		if(_char_ == ev.what)
-		{
-			input(&ev.why, 0);
-			return 0;
-		}
-
-		//maybe gamepad
-		for(j=0;j<16;j++)
-		{
-			win = &arena[j];
-			if(_win_ == win->type)
-			{
-				ev.where = (u64)win;
-				break;
-			}
-		}
-	}
-
-	win = (void*)(ev.where);
-	if(0 == win)return 0;
-
-	switch(win->fmt)
-	{
-		case _none_:
-		case _easy_:
-		case _full_:
-		case _coop_:
-		default:{
-			self.pchip = win;
-			windowwrite(&self, 0, 0, 0, &ev, 0);break;
-		}
-	}
-	return 0;
-}
-int arenaread_all()
-{
-	int j;
-	struct arena* win;
-	struct halfrel self;
-
-	for(j=31;j>=0;j--)
-	{
-		win = &arena[j];
-		if(0 == win->type)continue;
-
-		if(_win_ == win->type){
-			self.pchip = win;
-			windowread(&self, 0, 0, 0, 0, 0);
-		}
-		if(_spk_ == win->type){
-			self.pchip = win;
-			speakerread(&self, 0, 0, 0, 0, 0);
-		}
-	}
-	return 0;
-}
 void freearena()
 {
 	//say("[c,e):freeing arena\n");

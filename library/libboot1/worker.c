@@ -5,7 +5,10 @@ void freestdrel();
 void initstdrel(void*);
 //
 void poller(void*);
+void initpoller(void*);
+//
 void pulser(void*);
+void initpulser(void*);
 
 
 
@@ -129,6 +132,7 @@ void initworker(u8* addr)
 
 	initstdev( addr+0x100000);
 	initstdrel(addr+0x180000);
+	initpoller(addr - 0x200000);
 
 	//say("[2,4):inited worker\n");
 }

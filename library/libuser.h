@@ -1252,11 +1252,6 @@ u64 timeread();
 #ifdef __cplusplus
 extern "C" {
 #endif
-int actorevent(struct event*);
-int actorread_all();
-int arenaevent(struct event*);
-int arenaread_all();
-//
 int actorread(  struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
 int actorwrite( struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
 int actorstop(  struct halfrel* self, struct halfrel* peer);
