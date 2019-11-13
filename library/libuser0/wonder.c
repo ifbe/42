@@ -271,7 +271,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _car_;
 		win->fmt = _step_;
-		toycar_create(win, arg);
+		stepcar_create(win, arg);
 		return win;
 	}
 

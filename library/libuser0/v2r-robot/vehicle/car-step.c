@@ -28,6 +28,20 @@ static int expect[9];
 
 
 
+static void stepcar_test(int a)
+{
+	int j;
+	boardwrite(_gpio_, table[a], 0, 0);
+
+	for(j=0;j<200*32;j++)
+	{
+		boardwrite(_gpio_, table[a+1], 0, 1);
+		sleep_us(100);
+
+		boardwrite(_gpio_, table[a+1], 0, 0);
+		sleep_us(100);
+	}
+}
 static void stepcar_update(int a, int b, int c, int d)
 {
 	int j,k;
@@ -37,7 +51,7 @@ static void stepcar_update(int a, int b, int c, int d)
 	actual[4] = c;
 	actual[6] = d;
 
-	for(j=0;j<8;j+=2)boardwrite(_gpio_, table[j], 0, actual[j/2]);
+	for(j=0;j<8;j+=2)boardwrite(_gpio_, table[j], 0, actual[j]);
 	for(k=0;k<200*32;k++)
 	{
 		for(j=1;j<8;j+=2)boardwrite(_gpio_, table[j], 0, 1);
@@ -77,8 +91,12 @@ int stepcar_write(struct arena* win, struct style* sty, void* sc, void* sf, u8* 
 
 	switch(buf[0])
 	{
-		case 'w':stepcar_update(0, 1, 1, 0);break;
-		case 's':stepcar_update(1, 0, 0, 1);break;
+		case '1':stepcar_test(0);break;
+		case '2':stepcar_test(2);break;
+		case '3':stepcar_test(4);break;
+		case '4':stepcar_test(6);break;
+		case 'w':stepcar_update(0, 1, 0, 1);break;
+		case 's':stepcar_update(1, 0, 1, 0);break;
 		case 'a':stepcar_update(1, 1, 0, 0);break;
 		case 'd':stepcar_update(0, 0, 1, 1);break;
 		case 'j':stepcar_update(1, 1, 1, 1);break;

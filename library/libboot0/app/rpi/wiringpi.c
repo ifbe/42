@@ -10,33 +10,33 @@
 
 int boardread(int type, int addr, u8* buf, int len)
 {
-	switch(type)
-	{
-		case _gpio_:
-		{
-			return digitalRead(addr);
-			break;
-		}
-		default:printf("%x,%x,%x,%x\n", type, addr, buf, len);
+	switch(type){
+	case _gpio_:{
+		return digitalRead(addr);
+		break;
 	}
+	default:{
+		printf("%x,%x,%x,%x\n", type, addr, buf, len);
+	}//default
+	}//switch
 	return 0;
 }
 int boardwrite(int type, int addr, u8* buf, int len)
 {
-	switch(type)
-	{
-		case _gpio_:
-		{
-			digitalWrite(addr, len);
-			break;
-		}
-		case _pwm_:
-		{
-			//_pwm_, 18, "1ms/2ms"
-			break;
-		}
-		default:printf("%x,%x,%x,%x\n", type, addr, buf, len);
+	//say("@boardwrite: %.4s, %d, %d\n", &type, addr, len);
+	switch(type){
+	case _gpio_:{
+		digitalWrite(addr, len);
+		break;
 	}
+	case _pwm_:{
+		//_pwm_, 18, "1ms/2ms"
+		break;
+	}
+	default:{
+		printf("%x,%x,%x,%x\n", type, addr, buf, len);
+	}//default
+	}//switch
 	return 0;
 }
 
@@ -77,6 +77,8 @@ int boardstart(int name, int mode)
 		case hex32('w','s', 0, 0):pin = 29;break;
 		default:return -1;
 	}
+	say("@boardstart: name=%x,mode=%x,pin=%d\n", name, mode, pin);
+
 	switch(mode)
 	{
 		case 'i':

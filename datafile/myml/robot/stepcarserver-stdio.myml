@@ -1,0 +1,13 @@
+<arena>
+std{
+fmt:std
+}
+car{
+fmt:step
+}
+</arena>
+
+
+<relation>
+(std, 0, dst) -> (car, 0, src)
+</relation>
