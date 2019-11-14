@@ -9,8 +9,6 @@ void createserial();
 void boarddelete();
 void boardcreate();
 //
-int args_delete(void*);
-void args_create(int, char**);
 int memorydelete(void*);
 void* memorycreate(int size, int flag);
 void death();
@@ -84,7 +82,6 @@ void* pwrclkcreate(u64 type, void* name, int argc, char** argv)
 		tmp = memorycreate(0x1000000, 0);
 
 		birth(tmp);
-		args_create(argc, argv);
 
 		tmp->type = type;
 		return tmp;

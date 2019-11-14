@@ -59,6 +59,7 @@ typedef float mat4[4][4];
 #define _sys_ hex32('s','y','s',0)
 #define _dri_ hex32('d','r','i',0)
 #define _dev_ hex32('d','e','v',0)
+#define _wrk_ hex32('w','r','k',0)
 //tier=_win_, type:
 #define _ahrs_ hex32('a','h','r','s')
 #define _car_ hex32('c','a','r',0)
@@ -1293,6 +1294,13 @@ int devicestop( struct halfrel* self, struct halfrel* peer);
 int devicestart(struct halfrel* self, struct halfrel* peer);
 int devicedelete(void*);
 void* devicecreate(u64 type, void* addr, int argc, char** argv);
+//
+int workerread( struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
+int workerwrite(struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
+int workerstop( struct halfrel* self, struct halfrel* peer);
+int workerstart(struct halfrel* self, struct halfrel* peer);
+int workerdelete(void*);
+void* workercreate(u64 type, void* addr, int argc, char** argv);
 //
 int relationread( void* item, int foot, void* arg, int idx, void* buf, int len);
 int relationwrite(void* item, int foot, void* arg, int idx, void* buf, int len);

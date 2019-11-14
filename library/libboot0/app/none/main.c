@@ -10,8 +10,8 @@ int main(int argc, char** argv)
 	void* all;
 	void* thr;
 
-	all = pwrclkcreate(_main_, 0, argc, argv);
-	thr = workercreate(_poller_, 0, 0, 0);
+	all = pwrclkcreate(_main_, 0, 0, 0);
+	thr = workercreate(0, 0, argc, argv);
 
 	workerdelete(thr);
 	pwrclkdelete(all);

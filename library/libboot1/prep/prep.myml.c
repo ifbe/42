@@ -782,6 +782,107 @@ int role_test_device(u8* buf, int len, struct chiplist chip[], int clen)
 
 	return clen;
 }
+int role_test_worker(u8* buf, int len, struct chiplist chip[], int clen)
+{
+	//say("artery:\n%.*s\n", len, buf);
+	int j,k;
+	int str = -1;
+
+	int nodename = -1;
+	int nodedata = -1;
+
+	int propname = -1;
+	int propdata = -1;
+
+	u64 hash = 0;
+	u8* tmp = 0;
+
+	u64 fmt = 0;
+	u8* url = 0;
+
+	for(j=0;j<=len;j++) {
+		k = buf[j];
+
+		if( (j == len) | ('\n' == k) ) {
+
+			str = -1;
+			continue;
+		}
+
+		if('#' == k){
+			while('\n' != buf[j])j++;
+			j++;
+			k = buf[j];
+		}
+
+		if(	((k >= '0') && (k <= '9')) |
+			((k >= 'A') && (k <= 'Z')) |
+			((k >= 'a') && (k <= 'z')) )
+		{
+			if(str < 0)str = j;
+			continue;
+		}
+
+		//propname: ...
+		if(':' == k) {
+			//in <type> && in node{} && have str
+			if( (nodename >= 0) && (str >= 0) ) {
+				propdata = j+1;
+				propname = str;
+				str = -1;
+
+				//say("propname = %.*s\n", j-propname, buf+propname);
+				if(0 == ncmp(buf+propname, "fmt", 3)){
+					parsefmt((void*)&fmt, buf+propdata);
+					//say("%d:%llx\n", propdata, fmt);
+				}
+				if(0 == ncmp(buf+propname, "url", 3)){
+					url = buf+propdata;
+					while(*url == 0x20)url++;
+
+					tmp = url;
+					while(1){
+						if((*tmp == 0xa) | (*tmp == 0xd)){
+							*tmp = 0;
+							break;
+						}
+						tmp++;
+					}
+				}
+			}
+			continue;
+		}
+
+		//nodename{...}
+		if('{' == k) {
+			nodename = str;
+			nodedata = j+1;
+			str = -1;
+
+			parsefmt((void*)&hash, buf+nodename);
+			//say("actnode=%.*s\n", j-nodename, buf+nodename);
+		}
+		if('}' == k) {
+			if(nodename >= 0){
+				//say("haha:%llx,%llx\n", fmt, url);
+
+				chip[clen].tier = _wrk_;
+				chip[clen].type = fmt;
+
+				chip[clen].hash = hash;
+				chip[clen].addr = workercreate(fmt, url, 0, 0);
+
+				nodename = -1;
+				clen += 1;
+			}//if innode
+
+			fmt = 0;
+			url = 0;
+		}//if }
+	}//for
+
+	return clen;
+}
 
 
 
@@ -944,6 +1045,12 @@ void role_test1(u8* buf, int len)
 				typename = j+1;
 			}
 			else {
+				if(0 == ncmp(buf+typename, "worker", 6)) {
+					clen = role_test_worker(
+						buf + typedata, j-typedata,
+						cbuf, clen
+					);
+				}
 				if(0 == ncmp(buf+typename, "device", 6)) {
 					clen = role_test_device(
 						buf + typedata, j-typedata,

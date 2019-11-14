@@ -65,8 +65,8 @@ int main(int argc, char** argv)
 	}
 	if(argc <= 1)prep();
 */
-	all = pwrclkcreate(_win32_, 0, argc, argv);
-	thr = workercreate(_poller_, 0, 0, 0);
+	all = pwrclkcreate(_win32_, 0, 0, 0);
+	thr = workercreate(0, 0, argc, argv);
 
 	workerdelete(thr);
 	pwrclkdelete(all);

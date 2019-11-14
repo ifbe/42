@@ -3,12 +3,17 @@ void freestdev();
 void initstdev(void*);
 void freestdrel();
 void initstdrel(void*);
+int args_delete(void*);
+void args_create(int, char**);
 //
-void poller(void*);
-void initpoller(void*);
-//
+void waiter(void*);
+void initwaiter(void*);
 void pulser(void*);
 void initpulser(void*);
+void poller(void*);
+void initpoller(void*);
+void realer(void*);
+void initrealer(void*);
 
 
 
@@ -60,12 +65,37 @@ void* workercreate(u64 type, void* name, int argc, char** argv)
 {
 	struct worker* tmp;
 
+	if(0 == type){
+		args_create(argc, argv);
+		if(0 == wrk->type){
+			tmp = allocworker();
+			tmp->type = _waiter_;
+		}
+
+		switch(wrk->type){
+			case _waiter_:waiter(wrk);break;
+			case _pulser_:pulser(wrk);break;
+			case _poller_:poller(wrk);break;
+			case _realer_:realer(wrk);break;
+		}
+		return 0;
+	}
+
+	if(_waiter_ == type)
+	{
+		tmp = allocworker();
+		tmp->type = _waiter_;
+
+		//waiter(tmp);
+		return tmp;
+	}
+
 	if(_pulser_ == type)
 	{
 		tmp = allocworker();
 		tmp->type = _pulser_;
 
-		pulser(tmp);
+		//pulser(tmp);
 		return tmp;
 	}
 
@@ -73,7 +103,16 @@ void* workercreate(u64 type, void* name, int argc, char** argv)
 		tmp = allocworker();
 		tmp->type = _poller_;
 
-		poller(tmp);
+		//poller(tmp);
+		return tmp;
+	}
+
+	if(_realer_ == type)
+	{
+		tmp = allocworker();
+		tmp->type = _realer_;
+
+		//realer(tmp);
 		return tmp;
 	}
 	return 0;
@@ -132,7 +171,9 @@ void initworker(u8* addr)
 
 	initstdev( addr+0x100000);
 	initstdrel(addr+0x180000);
+
 	initpoller(addr - 0x200000);
+	initrealer(addr - 0x200000);
 
 	//say("[2,4):inited worker\n");
 }
