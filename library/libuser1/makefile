@@ -131,6 +131,7 @@ rawmine/compound/thegame/game.rubik.c \
 rawmine/compound/thegame/game.sudoku.c \
 rawmine/compound/theitem/item.clock.c \
 rawmine/compound/theitem/item.control.c \
+rawmine/compound/theitem/item.dancemat.c \
 rawmine/compound/theitem/item.dna.c \
 rawmine/compound/theitem/item.drone.c \
 rawmine/compound/theitem/item.geometry.c \

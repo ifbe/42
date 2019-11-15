@@ -66,6 +66,7 @@ void switch_register(void*);
 //item
 void clock_register(void*);
 void control_register(void*);
+void dancemat_register(void*);
 void dna_register(void*);
 void drone_register(void*);
 void geometry_register(void*);
@@ -316,6 +317,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	control_register(tmp);
+	tmp += sizeof(struct actor);
+
+	dancemat_register(tmp);
 	tmp += sizeof(struct actor);
 
 	dna_register(tmp);
