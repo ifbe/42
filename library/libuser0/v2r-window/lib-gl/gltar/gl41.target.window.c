@@ -72,7 +72,7 @@ int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 	wnd = self->pchip;
 	if(0 == wnd)return 0;
 
-	if('p' == (ev->what&0xff)){
+	if(0x4070 == ev->what){
 		rel = wnd->oreln;
 		if(0 == rel)return 0;
 
