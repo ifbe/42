@@ -4,7 +4,8 @@
 #include <unistd.h>
 #include <X11/Xlib.h>
 #include "libuser.h"
-int lowlevel_input();
+int rgbanode_read(void*, void*);
+int rgbanode_write(void*, void*);
 
 
 
@@ -118,7 +119,7 @@ void windowevent(struct arena* win, XEvent xev)
 		if(xi == 0)return;
 
 		XPutImage(
-			dsp, win->fd, (void*)(win->gc), xi,
+			dsp, win->xlibfd, win->xlibgc, xi,
 			0, 0, 0, 0,
 			win->width, win->height
 		); 
@@ -137,7 +138,7 @@ void windowevent(struct arena* win, XEvent xev)
 		myev.why = x + (y<<16) + (k<<48);
 		myev.what = hex32('p', '+', 0, 0);
 		myev.where = (u64)win;
-		actorevent(&myev);
+		rgbanode_write(win, &myev);
 		//eventwrite(why, what, where, 0);
 	}//ButtonPress
 	else if(ButtonRelease == xev.type)
@@ -154,7 +155,7 @@ void windowevent(struct arena* win, XEvent xev)
 		myev.why = x + (y<<16) + (k<<48);
 		myev.what = hex32('p', '-', 0, 0);
 		myev.where = (u64)win;
-		actorevent(&myev);
+		rgbanode_write(win, &myev);
 		//eventwrite(why, what, where, 0);
 	}//ButtonRelease
 	else if(MotionNotify == xev.type)
@@ -166,7 +167,7 @@ void windowevent(struct arena* win, XEvent xev)
 		myev.why = x + (y<<16) + (k<<48);
 		myev.what = hex32('p', '@', 0, 0);
 		myev.where = (u64)win;
-		actorevent(&myev);
+		rgbanode_write(win, &myev);
 		//eventwrite(why, what, where, 0);
 	}//MotionNotify
 	else if(KeyPress == xev.type)
@@ -184,7 +185,7 @@ void windowevent(struct arena* win, XEvent xev)
 			{
 				//eventwrite(why, what, where, 0);
 				myev.where = (u64)win;
-				actorevent(&myev);
+				rgbanode_write(win, &myev);
 				return;
 			}
 		}
@@ -195,7 +196,7 @@ void windowevent(struct arena* win, XEvent xev)
 			{
 				//eventwrite(why, what, where, 0);
 				myev.where = (u64)win;
-				actorevent(&myev);
+				rgbanode_write(win, &myev);
 				return;
 			}
 		}
@@ -204,7 +205,7 @@ void windowevent(struct arena* win, XEvent xev)
 		myev.why = xlib2kbd[xev.xkey.keycode];
 		myev.what = hex32('k','b','d',0);
 		myev.where = (u64)win;
-		actorevent(&myev);
+		rgbanode_write(win, &myev);
 		//eventwrite(why, what, where, 0);
 	}//KeyPress
 }
@@ -212,31 +213,37 @@ void windowevent(struct arena* win, XEvent xev)
 
 
 
-void windowread(struct arena* win)
+void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	XEvent xev;
-	actorread_all(win);
+	struct arena* win = self->pchip;
+
+	//read context
+	rgbanode_read(win, 0);
+
+	//update screen
 	XPutImage(
-		dsp, win->fd, (void*)(win->gc), win->ximage,
+		dsp, win->xlibfd, win->xlibgc, win->ximage,
 		0, 0, 0, 0,
 		win->width, win->height
 	); 
 
+	//peak event
 	while(XPending(dsp))
 	{
 		XNextEvent(dsp, &xev);
 		windowevent(win, xev);
 	}//while
 }
-void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
+void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 /*
 	XEvent xev;
 	memset(&xev,0,sizeof(XEvent));
 	xev.type = Expose;
 	xev.xexpose.display = dsp;
-	xev.xexpose.window = win->fd;
-	XSendEvent(dsp, win->fd, False, ExposureMask, &xev);
+	xev.xexpose.window = win->xlibfd;
+	XSendEvent(dsp, win->xlibfd, False, ExposureMask, &xev);
 	XFlush(dsp);	//must
 */
 }
@@ -254,7 +261,7 @@ void windowstart()
 }
 void windowdelete(struct arena* win)
 {
-	XDestroyWindow(dsp, win->fd);
+	XDestroyWindow(dsp, win->xlibfd);
 	fuckyou--;
 
 	if(0 == fuckyou)
@@ -272,13 +279,11 @@ void windowcreate(struct arena* win)
 	win->width = win->stride = 1024;
 	win->height = 768;
 
-	for(j=0;j<16;j++)
+/*	for(j=0;j<16;j++)
 	{
 		win->input[j].w0 = 0xffff;
 		win->input[j].w0 = 0xffff;
-	}
-
-
+	}*/
 
 
 	//
@@ -290,19 +295,19 @@ void windowcreate(struct arena* win)
 	);
 
 	//window, gc
-	win->fd = XCreateSimpleWindow(
+	win->xlibfd = XCreateSimpleWindow(
 		dsp, RootWindow(dsp,0), 0, 0,
 		win->width, win->height,
 		1, 0, 0);
-	win->gc = (u64)XCreateGC(dsp, win->fd, 0, NULL);
+	win->xlibgc = XCreateGC(dsp, win->xlibfd, 0, NULL);
 
 	//intercept window delete event 
-	XSetWMProtocols(dsp, win->fd, &wmDelete, 1);
+	XSetWMProtocols(dsp, win->xlibfd, &wmDelete, 1);
 
 	//
 	XSelectInput
 	(
-		dsp, win->fd,
+		dsp, win->xlibfd,
 		PointerMotionMask|
 		KeyPressMask|KeyReleaseMask|
 		ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
@@ -311,8 +316,8 @@ void windowcreate(struct arena* win)
 	);
 
 	//
-	//fdmap[j] = win->fd;
-	XMapWindow(dsp, win->fd);
+	//fdmap[j] = win->xlibfd;
+	XMapWindow(dsp, win->xlibfd);
 	fuckyou++;
 }
 

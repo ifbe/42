@@ -8,14 +8,37 @@ int actorinput_touch(struct arena* win, struct event* ev);
 
 
 
-int rgbanode_read(struct arena* win, struct style* stack)
+void background_pixel(struct arena* win)
+{
+	int x;
+	int w = win->width;
+	int h = win->height;
+	int s = win->stride;
+	int len = s*h;
+	u32* buf = (u32*)(win->buf);
+
+	for(x=0;x<len;x++)buf[x] = 0xff000000;
+}
+void foreground_pixel(struct arena* win)
+{
+/*	if((win->theone) | (win->edit) | (0 == win->irel))
+	{
+		drawline(win, 0xffffff, 0, h/2, w, h/2);
+		drawline(win, 0xffffff, w/2, 0, w/2, h);
+	}*/
+}
+
+
+
+
+int rgbanode_read(struct arena* win, struct event* ev)
 {
 	struct style* sty;
 	struct relation* rel;
 	struct halfrel* self;
 	struct halfrel* peer;
 
-	preprocess(win);
+	background_pixel(win);
 
 	rel = win->orel0;
 	while(1)
@@ -35,16 +58,17 @@ next:
 		rel = samesrcnextdst(rel);
 	}
 
-	postprocess(win);
+	foreground_pixel(win);
 	return 0;
 }
-int rgbanode_write(struct arena* win, struct style* stack, struct event* ev)
+int rgbanode_write(struct arena* win, struct event* ev)
 {
 	int ret;
 	struct style* sty;
 	struct halfrel* self;
 	struct halfrel* peer;
 	struct relation* rel;
+	say("@rgbanode_write:%.8s,%llx\n", &ev->what, ev->why);
 
 	ret = 0;
 	rel = win->oreln;
@@ -75,23 +99,6 @@ int rgbanode_stop(struct arena* win, struct style* sty)
 }
 int rgbanode_start(struct arena* twig, void* tf, struct arena* root, void* rf)
 {
-	struct halfrel* self;
-	struct halfrel* peer;
-	struct relation* rel;
-
-	rel = twig->orel0;
-	while(1)
-	{
-		if(0 == rel)break;
-
-		if(_act_ == rel->dsttype){
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			actorstart(self, peer);
-		}
-
-		rel = samesrcnextdst(rel);
-	}
 	return 0;
 }
 
@@ -111,13 +118,7 @@ int rgbanode_delete(struct arena* win)
 {
 	return 0;
 }
-void* rgbanode_create(u64 type, void* addr)
+int rgbanode_create(u64 type, void* addr)
 {
-	struct arena* win = allocarena();
-	if(0 == win)return 0;
-
-	win->fmt = hex64('r','g','b','a','8','8','8','8');
-	win->width = win->fbwidth = 1024;
-	win->height = win->fbheight = 768;
-	return win;
+	return 0;
 }

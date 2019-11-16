@@ -3,6 +3,27 @@
 
 
 
+static void tree_search(struct actor* act)
+{
+}
+static void tree_modify(struct actor* act)
+{
+}
+static void tree_delete(struct actor* act)
+{
+	if(0 == act)return;
+	//if(_copy_ == act->type)memorydelete(act->buf);
+}
+static void tree_create(struct actor* act)
+{
+	if(0 == act)return;
+	//if(_orig_ == act->type)act->buf = buffer;
+	//if(_copy_ == act->type)act->buf = memorycreate(256, 0);
+}
+
+
+
+
 static void tree_draw_pixel(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -254,27 +275,6 @@ static void tree_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void tree_start(struct halfrel* self, struct halfrel* peer)
 {
-}
-
-
-
-
-static void tree_search(struct actor* act)
-{
-}
-static void tree_modify(struct actor* act)
-{
-}
-static void tree_delete(struct actor* act)
-{
-	if(0 == act)return;
-	//if(_copy_ == act->type)memorydelete(act->buf);
-}
-static void tree_create(struct actor* act)
-{
-	if(0 == act)return;
-	//if(_orig_ == act->type)act->buf = buffer;
-	//if(_copy_ == act->type)act->buf = memorycreate(256, 0);
 }
 
 

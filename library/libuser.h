@@ -787,14 +787,14 @@ struct arena
 	union{
 		u32 fbo;
 		u64 padd0;
-		u64 fd;
+		u64 xlibfd;
 		void* win;
 	};
 	union{
 		u32 rbo;
 		u64 padd1;
 		u64 dc;
-		u64 gc;
+		void* xlibgc;
 		void* er;
 	};
 	union{

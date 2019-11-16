@@ -30,6 +30,34 @@ static u32 color2048[17] = {
 
 
 
+static void the2048_search(struct actor* act, u8* buf)
+{
+}
+static void the2048_modify(struct actor* act, u8* buf)
+{
+}
+static void the2048_delete(struct actor* act, u8* buf)
+{
+	if(0 == act)return;
+	act->buf = 0;
+}
+static void the2048_create(struct actor* act, u8* buf)
+{
+	int j;
+	u8* p;
+	if(0 == act)return;
+
+	p = (u8*)act + 0x100;
+	for(j=0;j<0x100;j++)p[j] = 0;
+	act->buf = p;
+	act->len = 0;
+
+	new2048(act->buf);
+}
+
+
+
+
 static void the2048_draw_pixel(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -85,53 +113,7 @@ static void the2048_draw_pixel(
 			);
 		}
 	}
-}/*
-static void the2048_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
-{
-	u32 rgb;
-	int x,y,w,h;
-	u8 (*tab)[4];
-	float j,k;
-	vec3 tc, tr, tf, tu;
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carvesolid2d_rect(win, 0x444444, vc, vr, vf);
-
-	if(0 == act->buf)tab = ((void*)act) + 0x100;
-	else tab = (void*)(act->buf) + (act->len)*16;
-	for(y=0;y<4;y++)
-	{
-		for(x=0;x<4;x++)
-		{
-			rgb = color2048[tab[y][x]];
-			//say("%x\n", rgb);
-
-			j = (x+x-3) / 4.0;
-			k = (3-y-y) / 4.0;
-			tc[0] = vc[0] + j*vr[0] + k*vf[0];
-			tc[1] = vc[1] + j*vr[1] + k*vf[1];
-			tc[2] = vc[2] + j*vr[2] + k*vf[2] - 0.1;
-			tr[0] = vr[0] / 4.1;
-			tr[1] = vr[1] / 4.1;
-			tr[2] = vr[2] / 4.1;
-			tf[0] = vf[0] / 4.1;
-			tf[1] = vf[1] / 4.1;
-			tf[2] = vf[2] / 4.1;
-			carvesolid2d_rect(win, rgb, tc, tr, tf);
-
-			tr[0] /= 4;
-			tf[1] /= 4;
-			tc[2] -= 0.1;
-			carve2d_decimal(win, 0, tc, tr, tf, val2048[tab[y][x]]);
-		}
-	}
-}*/
+}
 static void the2048_draw_vbo3d(
 	struct actor* act, struct style* pin,
 	struct actor* win, struct style* sty)
@@ -292,12 +274,6 @@ static void the2048_draw(
 	else if(fmt == _tui_)the2048_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)the2048_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)the2048_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)the2048_draw_vbo2d(act, pin, win, sty);
-		//else the2048_draw_vbo3d(act, pin, win, sty);
-	}
-	else the2048_draw_pixel(act, pin, win, sty);
 }
 
 
@@ -369,62 +345,25 @@ static void the2048_event(
 
 static void the2048_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
-	say("@the2048_read:%llx,%llx,%llx\n",act,win,buf);
+	struct actor* act;struct style* part;
+	struct actor* win;struct style* geom;
+	//say("@the2048_read\n");
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)the2048_draw_vbo3d(act,pin,ctx,sty);
-	}
-	//the2048_draw(act, pin, win, sty);
+	act = self->pchip;part = self->pfoot;
+	win = peer->pchip;geom = peer->pfoot;
+	the2048_draw_pixel(act, part, win, geom);
 }
 static void the2048_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//the2048_event(act, pin, win, sty, ev, 0);
+	struct actor* act;struct style* part;
+	struct actor* win;struct style* geom;
+	the2048_event(act, part, win, geom, buf, 0);
 }
 static void the2048_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void the2048_start(struct halfrel* self, struct halfrel* peer)
 {
-}
-
-
-
-
-static void the2048_search(struct actor* act, u8* buf)
-{
-}
-static void the2048_modify(struct actor* act, u8* buf)
-{
-}
-static void the2048_delete(struct actor* act, u8* buf)
-{
-	if(0 == act)return;
-	act->buf = 0;
-}
-static void the2048_create(struct actor* act, u8* buf)
-{
-	int j;
-	u8* p;
-	if(0 == act)return;
-
-	p = (u8*)act + 0x100;
-	for(j=0;j<0x100;j++)p[j] = 0;
-	act->buf = p;
-	act->len = 0;
-
-	new2048(act->buf);
 }
 
 

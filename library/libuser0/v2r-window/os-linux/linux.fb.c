@@ -6,36 +6,43 @@
 #include <sys/ioctl.h>		//ioctl
 #include <linux/fb.h>		//framebuffer
 #include "libuser.h"
+int rgbanode_read(void*, void*);
+int rgbanode_write(void*, void*);
 
 
 
 //physical info
-static u64 fbaddr=0;
-static int fbfd=-1;
-static int fbtotalbyte=0;
-static int fboneline=0;
+static u64 fbaddr = 0;
+static int fbfd = -1;
+static int fbtotalbyte = 0;
+static int fboneline = 0;
 //virtual info
-static int xmax=0;
-static int ymax=0;
-static int bpp=0;
+static int xmax = 0;
+static int ymax = 0;
+static int bpp = 0;
 
 
 
 
-void windowread(struct arena* win)
+void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	int x,y,ret;
-	u8* buf = (void*)(win->buf);
-	actorread_all(win);
+	u8* canvas;
+	struct arena* win = self->pchip;
 
+	//read context
+	rgbanode_read(win, 0);
+
+	//update screen
+	canvas = (void*)(win->buf);
 	if(16 == bpp)
 	{
 		for(x=0;x<xmax*ymax;x++)
 		{
-			*(u16*)(buf+x*2) =
-			    (buf[x*4+0]>>3)
-			+ ( (buf[x*4+1]>>2) <<  5 )
-			+ ( (buf[x*4+2]>>3) << 11 );
+			*(u16*)(canvas+x*2) =
+			    (canvas[x*4+0]>>3)
+			+ ( (canvas[x*4+1]>>2) <<  5 )
+			+ ( (canvas[x*4+2]>>3) << 11 );
 		}
 	}
 	else if(24 == bpp)
@@ -43,17 +50,17 @@ void windowread(struct arena* win)
 		x = xmax*bpp/8;
 		for(y=0;y<ymax;y++)
 		{
-			ret=lseek(fbfd, y*fboneline, SEEK_SET);
-			ret=write(fbfd, buf + y*x, x);
+			ret = lseek(fbfd, y*fboneline, SEEK_SET);
+			ret = write(fbfd, canvas + y*x, x);
 		}
 	}
 	else if(32 == bpp)
 	{
 		lseek(fbfd, 0, SEEK_SET);
-		write(fbfd, buf, fbtotalbyte);
+		write(fbfd, canvas, fbtotalbyte);
 	}
 }
-void windowwrite(struct arena* win)
+void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 void windowlist()
@@ -77,8 +84,8 @@ void windowcreate(struct arena* w)
 	int j;
 
 	//目的地
-	fbfd=open("/dev/fb0",O_RDWR);
-	if(fbfd<0)
+	fbfd = open("/dev/fb0",O_RDWR);
+	if(fbfd < 0)
 	{
 		printf("chmod /dev/fb0, or sudo!\n");
 		exit(-1);
@@ -91,9 +98,9 @@ void windowcreate(struct arena* w)
 		printf("error2\n");
 		exit(-1);
 	}
-	fbaddr=finfo.smem_start;
-	fbtotalbyte=finfo.smem_len;
-	fboneline=finfo.line_length;
+	fbaddr = finfo.smem_start;
+	fbtotalbyte = finfo.smem_len;
+	fboneline = finfo.line_length;
 	printf("fbaddr=%llx,fbtotalbyte=%x,fboneline=%x\n",fbaddr,fbtotalbyte,fboneline);
 	printf("linelen=%x(%d)\n",finfo.line_length,finfo.line_length);
 
@@ -104,9 +111,9 @@ void windowcreate(struct arena* w)
 		printf("error3\n");
 		exit(-1);
 	}
-	xmax=vinfo.xres;
-	ymax=vinfo.yres;
-	bpp=vinfo.bits_per_pixel;
+	xmax = vinfo.xres;
+	ymax = vinfo.yres;
+	bpp = vinfo.bits_per_pixel;
 	printf("xmax=%d,ymax=%d,bpp=%d\n",xmax,ymax,bpp);
 
 
@@ -121,7 +128,7 @@ void windowcreate(struct arena* w)
 	w->stride = fboneline/4;
 
 	w->buf = malloc(2048*1024*4);
-	for(j=0;j<16;j++)w->input[j].id = 0xffff;
+	//for(j=0;j<16;j++)w->input[j].id = 0xffff;
 }
 
 

@@ -4,24 +4,6 @@ void carvesnowman(struct actor* win, u32 rgb, vec3 vc);
 
 
 
-void background_pixel(struct actor* win)
-{
-	int x;
-	int w = win->width;
-	int h = win->height;
-	int s = win->stride;
-	int len = s*h;
-	u32* buf = (u32*)(win->buf);
-
-	for(x=0;x<len;x++)buf[x] = 0xff000000;
-/*
-	if((win->theone) | (win->edit) | (0 == win->irel))
-	{
-		drawline(win, 0xffffff, 0, h/2, w, h/2);
-		drawline(win, 0xffffff, w/2, 0, w/2, h);
-	}
-*/
-}
 void background_json(struct actor* win)
 {
 	win->len = mysnprintf(win->buf, 0x100000, "{\n");
@@ -55,15 +37,11 @@ void preprocess(struct actor* win)
 	else if(_tui_ == fmt)background_tui(win);
 	else if(_html_ == fmt)background_html(win);
 	else if(_json_ == fmt)background_json(win);
-	else background_pixel(win);
 }
 
 
 
 
-void foreground_pixel(struct actor* win)
-{
-}
 void foreground_json(struct actor* win)
 {
 	int len = win->len;
@@ -100,5 +78,4 @@ void postprocess(struct actor* win)
 	else if(_tui_ == fmt)foreground_tui(win);
 	else if(_html_ == fmt)foreground_html(win);
 	else if(_json_ == fmt)foreground_json(win);
-	else foreground_pixel(win);
 }
