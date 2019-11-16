@@ -9,8 +9,9 @@
 #include <winuser.h>
 #include <commctrl.h>
 #include "libuser.h"
-int lowlevel_input();
 int arg2utf8(void*, void*);
+int rgbanode_read(void*, void*);
+int rgbanode_write(void*, void*);
 
 
 
@@ -29,15 +30,18 @@ static RECT rt, re;
 
 
 
-int windowread(struct arena* win)
+int windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	MSG msg;
 	BITMAPINFO info;
+	struct arena* win = self->pchip;
+
+	//read context
+	rgbanode_read(win, 0);
+
+	//update screen
 	int w = win->width;
 	int h = win->height;
-	arena_rootread(win, 0, 0, 0, 0, 0);
-
-	//draw frame
 	info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	info.bmiHeader.biPlanes = 1;
 	info.bmiHeader.biBitCount = 32;
@@ -54,7 +58,7 @@ int windowread(struct arena* win)
 	info.bmiHeader.biHeight = -h;
 	info.bmiHeader.biSizeImage = w*h*4;
 	SetDIBitsToDevice(
-		(void*)(win->dc),
+		win->hdc,
 		0, 0,w, h,		//dst: x,y,w,h
 		0, 0,0, h,		//src: x,y,0,h
 		win->buf, &info, DIB_RGB_COLORS
@@ -68,7 +72,7 @@ int windowread(struct arena* win)
 	}
 	return 0;
 }
-int windowwrite(void* dc,void* df,void* sc,void* sf,void* buf, int len)
+int windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -102,8 +106,8 @@ int windowdelete(struct arena* win)
 		hex16('w','-'),
 		(LPARAM)win
 	);*/
-	HWND wnd = (void*)(win->fd);
-	HDC dc = (void*)(win->dc);
+	HWND wnd = win->hwnd;
+	HDC dc = win->hdc;
 
 	ReleaseDC(wnd, dc);
 
@@ -126,11 +130,11 @@ int windowcreate(struct arena* win)
 	win->width = win->stride = 1024;
 	win->height = 768;
 
-	win->fd = 0;
-	win->dc = 0;
+	win->hwnd = 0;
+	win->hdc = 0;
 	win->buf = malloc(2048*2048*4);
 
-	for(j=0;j<16;j++)win->input[j].w0 = 0xffff;
+	//for(j=0;j<16;j++)win->input[j].w0 = 0xffff;
 
 
 
@@ -173,8 +177,8 @@ int windowcreate(struct arena* win)
 	hProc(0x0049, 1);
 
 	//完成
-	win->fd = (u64)wnd;
-	win->dc = (u64)dc;
+	win->hwnd = wnd;
+	win->hdc = dc;
 	SetWindowLongPtr(wnd, GWLP_USERDATA, (u64)win);
 	alivecount++;
 
@@ -222,7 +226,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = val;
 			ev.what = 0x64626b;
 			ev.where = addr;
-			arenaevent(&ev);
+			rgbanode_write(win, &ev);
 			return 0;
 		}
 
@@ -235,7 +239,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				ev.why = 0x1b;
 				ev.what = 0x64626b;
 				ev.where = addr;
-				arenaevent(&ev);
+				rgbanode_write(win, &ev);
 			}
 			else
 			{
@@ -243,7 +247,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				ev.why = wparam;
 				ev.what = 0x72616863;
 				ev.where = addr;
-				arenaevent(&ev);
+				rgbanode_write(win, &ev);
 			}
 			return 0;
 		}
@@ -281,6 +285,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 */
+/*
 		case WM_POINTERDOWN:
 		{
 			u64 x,y,k;
@@ -310,7 +315,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2b70;
 			ev.where = addr;
-			arenaevent(&ev);
+			rgbanode_write(win, &ev);
 			return 0;
 		}
 		case WM_POINTERUP:
@@ -337,7 +342,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2d70;
 			ev.where = addr;
-			arenaevent(&ev);
+			rgbanode_write(win, &ev);
 			return 0;
 		}
 		case WM_POINTERUPDATE:
@@ -360,10 +365,10 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x4070;
 			ev.where = addr;
-			arenaevent(&ev);
+			rgbanode_write(win, &ev);
 			return 0;
 		}
-
+*/
 		case WM_MOUSEWHEEL:
 		{
 			u64 x,y,k;
@@ -380,7 +385,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2b70;
 			ev.where = addr;
-			arenaevent(&ev);
+			rgbanode_write(win, &ev);
 			return 0;
 		}
 
@@ -408,7 +413,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x4070;
 			ev.where = addr;
-			arenaevent(&ev);
+			rgbanode_write(win, &ev);
 			return 0;
 		}
 
@@ -425,7 +430,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2d70;
 			ev.where = addr;
-			arenaevent(&ev);
+			rgbanode_write(win, &ev);
 			return 0;
 		}
 
@@ -442,7 +447,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2d70;
 			ev.where = addr;
-			arenaevent(&ev);
+			rgbanode_write(win, &ev);
 			return 0;
 		}
 
@@ -467,7 +472,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2b70;
 			ev.where = addr;
-			arenaevent(&ev);
+			rgbanode_write(win, &ev);
 			return 0;
 		}
 
@@ -492,7 +497,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2b70;
 			ev.where = addr;
-			arenaevent(&ev);
+			rgbanode_write(win, &ev);
 			return 0;
 		}
 
@@ -519,7 +524,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = (u64)buf;
 			ev.what = _drag_;
 			ev.where = addr;
-			arenaevent(&ev);
+			rgbanode_write(win, &ev);
 			return 0;
 		}
 

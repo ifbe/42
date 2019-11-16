@@ -787,21 +787,22 @@ struct arena
 	union{
 		u32 fbo;
 		u64 padd0;
-		u64 xlibfd;
+		u64 xlibfd;		//xlib
+		void* hwnd;		//winapi
 		void* win;
 	};
 	union{
 		u32 rbo;
 		u64 padd1;
-		u64 dc;
-		void* xlibgc;
+		void* xlibgc;	//xlib
+		void* hdc;		//winapi
 		void* er;
 	};
 	union{
 		u32 tex0;
 		u64 padd2;
 		u64 len;
-		void* ximage;
+		void* ximage;	//xlib
 		void* texture;
 	};
 	union{

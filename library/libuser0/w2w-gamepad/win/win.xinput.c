@@ -56,7 +56,7 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 		t[1] = 0x30 + id;
 		t[2] = 'l';
 		t[3] = '0';
-		arenaevent(&ev);
+		eventwrite(ev.why, ev.what, ev.where, ev.when);
 	}
 
 	//right
@@ -80,7 +80,7 @@ void joyprint(int id, XINPUT_GAMEPAD g)
 		t[1] = 0x30 + id;
 		t[2] = 'r';
 		t[3] = '0';
-		arenaevent(&ev);
+		eventwrite(ev.why, ev.what, ev.where, ev.when);
 	}
 }
 void* gamepadthread(void* win)
