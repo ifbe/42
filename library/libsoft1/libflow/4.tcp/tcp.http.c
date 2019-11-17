@@ -239,6 +239,7 @@ int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 {
 	int j,k,ret;
 	u8 tmp[0x1000];
+	struct str* s[16];
 	struct httpparsed p;
 	struct relation* rel;
 	struct object* obj;
@@ -295,7 +296,28 @@ int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 	}
 
 	if(ele->orel0){
-		relationwrite(ele, _dst_, p.GET, 0, buf, len);
+		for(j=0;j<4;j++)s[j] = 0;
+		relationread(ele, _dst_, p.GET, 0, s, 4);
+
+		len = 0;
+		for(j=0;j<4;j++){
+			if(s[j])len += s[j]->len;
+		}
+		ret = mysnprintf(tmp, 0x1000,
+			"HTTP/1.1 200 OK\r\n"
+			"Content-type: %s\r\n"
+			"Content-Length: %d\r\n"
+			"\r\n",
+			"text/html", len
+		);
+		relationwrite(ele, _src_, 0, 0, tmp, ret);
+
+		for(j=0;j<4;j++){
+			if(s[j]){
+				relationwrite(ele, _src_, 0, 0, s[j]->buf, s[j]->len);
+			}
+		}
+		
 		return 0;
 	}
 

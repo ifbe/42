@@ -4,6 +4,12 @@
 #include<SDL2/SDL_video.h>
 #include"libuser.h"
 #undef main
+int rgbanode_read(void*, void*);
+int rgbanode_write(void*, void*);
+
+
+
+
 static u8 uppercase[] = {
 	' ', '!','\"', '#', '$', '%', '&','\"',		//20,27
 	'(', ')', '*', '+', '<', '_', '>', '?',		//28,2f
@@ -22,19 +28,25 @@ static u8 uppercase[] = {
 
 
 
-void windowread(struct arena* w)
+void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	SDL_Event ev;
 	SDL_Keysym key;
 	u64 why;
-	u64 where = (u64)w;
-	arena_rootread(w, 0, 0, 0, 0, 0);
+	u64 where;
+	struct arena* wnd = self->pchip;
 
-	SDL_UpdateTexture(w->texture, NULL, w->buf, (w->width)*4);
-	SDL_RenderClear(w->er);
-	SDL_RenderCopy(w->er, w->texture, NULL, NULL);
-	SDL_RenderPresent(w->er);
+	//read context
+	rgbanode_read(wnd, 0);
 
+	//update screen
+	SDL_UpdateTexture(wnd->sdltex, NULL, wnd->buf, (wnd->width)*4);
+	SDL_RenderClear(wnd->sdlren);
+	SDL_RenderCopy(wnd->sdlren, wnd->sdltex, NULL, NULL);
+	SDL_RenderPresent(wnd->sdlren);
+
+	//cleanup events
+	where = (u64)wnd;
 	while(SDL_PollEvent(&ev))
 	{
 		if(SDL_QUIT == ev.type)
@@ -50,15 +62,15 @@ void windowread(struct arena* w)
 			if(SDL_WINDOWEVENT_RESIZED == ev.window.event)
 			{
 				//say("%d,%d\n", ev.window.data1, ev.window.data2);
-				w->width = w->stride = ev.window.data1;
-				w->height = ev.window.data2;
+				wnd->width = wnd->stride = ev.window.data1;
+				wnd->height = ev.window.data2;
 
-				SDL_DestroyTexture(w->texture);
-				w->texture = SDL_CreateTexture(
-					w->er,
+				SDL_DestroyTexture(wnd->sdltex);
+				wnd->sdltex = SDL_CreateTexture(
+					wnd->sdlren,
 					SDL_PIXELFORMAT_ARGB8888,
 					SDL_TEXTUREACCESS_STREAMING,
-					w->width, w->height
+					wnd->width, wnd->height
 				);
 			}
 		}
@@ -139,7 +151,7 @@ void windowread(struct arena* w)
 		}
 	}
 }
-void windowwrite(struct arena* w)
+void windowwrite(struct arena* wnd)
 {
 	//SDL_Event ev;  
 	//ev.type = SDL_USEREVENT;  
@@ -157,25 +169,25 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct arena* w)
+void windowdelete(struct arena* wnd)
 {
-	SDL_DestroyTexture(w->texture);
-	SDL_DestroyRenderer(w->er);
-	SDL_DestroyWindow(w->win); 
+	SDL_DestroyTexture(wnd->sdltex);
+	SDL_DestroyRenderer(wnd->sdlren);
+	SDL_DestroyWindow(wnd->sdlwnd); 
 	SDL_Quit(); 
 }
-void windowcreate(struct arena* w)
+void windowcreate(struct arena* wnd)
 {
 	//data
-	w->fmt = hex64('r','g','b','a','8','8','8','8');
+	wnd->fmt = hex64('r','g','b','a','8','8','8','8');
 
-	w->width= w->stride = 1024;
-	w->height = 768;
+	wnd->width= wnd->stride = 1024;
+	wnd->height = 768;
 
-	w->fbwidth= w->fbstride = 1024;
-	w->fbheight = 768;
+	wnd->fbwidth= wnd->fbstride = 1024;
+	wnd->fbheight = 768;
 
-	w->buf = malloc(2048*2048*4);
+	wnd->buf = malloc(2048*2048*4);
 
 
 
@@ -183,19 +195,19 @@ void windowcreate(struct arena* w)
 	//sdl2
 	SDL_Init(SDL_INIT_EVERYTHING);
 
-	w->win = SDL_CreateWindow(
+	wnd->sdlwnd = SDL_CreateWindow(
 		"i am groot!",
 		SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED,
-		w->width, w->height,
+		wnd->width, wnd->height,
 		SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
 	);
-	w->er = SDL_CreateRenderer(w->win, -1, 0);
-	w->texture = SDL_CreateTexture(
-		w->er,
+	wnd->sdlren = SDL_CreateRenderer(wnd->sdlwnd, -1, 0);
+	wnd->sdltex = SDL_CreateTexture(
+		wnd->sdlren,
 		SDL_PIXELFORMAT_ARGB8888,
 		SDL_TEXTUREACCESS_STREAMING,
-		w->width, w->height
+		wnd->width, wnd->height
 	);
 }
 

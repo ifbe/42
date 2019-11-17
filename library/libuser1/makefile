@@ -31,10 +31,9 @@ rawmine/4d/asset.html.c \
 rawmine/4d/asset.image.c \
 rawmine/4d/asset.model.c \
 rawmine/4d/asset.sound.c \
-rawmine/4d/help.unit.extra.c \
-rawmine/4d/help.unit.inner.c \
-rawmine/4d/help.unit.outer.c \
-rawmine/4d/help.beforeafter.c \
+rawmine/4d/help.extra.c \
+rawmine/4d/help.inner.c \
+rawmine/4d/help.outer.c \
 rawmine/baseunit/objalgo/algo.algo.c \
 rawmine/baseunit/objalgo/algo.bintree.c \
 rawmine/baseunit/objalgo/algo.bplus.c \

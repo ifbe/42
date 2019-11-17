@@ -789,21 +789,23 @@ struct arena
 		u64 padd0;
 		u64 xlibfd;		//xlib
 		void* hwnd;		//winapi
-		void* win;
+		void* sdlwnd;	//sdl
+		void* glwnd;
 	};
 	union{
 		u32 rbo;
 		u64 padd1;
 		void* xlibgc;	//xlib
 		void* hdc;		//winapi
-		void* er;
+		void* sdlren;	//sdl
 	};
 	union{
 		u32 tex0;
 		u64 padd2;
 		u64 len;
 		void* ximage;	//xlib
-		void* texture;
+		void* binfo;	//winapi
+		void* sdltex;	//sdl
 	};
 	union{
 		u32 tex1;

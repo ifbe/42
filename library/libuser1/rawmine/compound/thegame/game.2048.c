@@ -89,7 +89,7 @@ static void the2048_draw_pixel(
 		{
 			//color
 			color = color2048[tab[y][x]];
-			if( ( (win->fmt)&0xffffff) == 0x626772)	//bgra->rgba
+			if(0x626772  == (win->fmt&0xffffff) )	//bgra->rgba
 			{
 				color = 0xff000000
 					+ ((color&0xff)<<16)

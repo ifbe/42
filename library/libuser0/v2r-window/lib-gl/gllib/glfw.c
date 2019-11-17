@@ -240,7 +240,7 @@ void windowopen_root(struct arena* w, struct arena* r)
 
 	//2.setup
 	glfwSetWindowUserPointer(fw, w);
-	w->win = fw;
+	w->glwnd = fw;
 
 	glfwGetFramebufferSize(fw, &x, &y);
 	w->fbwidth = w->fbstride = x;
@@ -273,7 +273,7 @@ void windowopen_coop(struct arena* w, struct arena* r)
 {
 	int x,y,j;
 	GLFWwindow* parent = 0;
-	if(r)parent = r->win;
+	if(r)parent = r->glwnd;
 
 	//1.glfw
 	x = w->width;
@@ -287,7 +287,7 @@ void windowopen_coop(struct arena* w, struct arena* r)
 
 	//2.setup
 	glfwSetWindowUserPointer(fw, w);
-	w->win = fw;
+	w->glwnd = fw;
 
 	glfwGetFramebufferSize(fw, &x, &y);
 	w->fbwidth = w->fbstride = x;
@@ -341,7 +341,7 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		return;
 	}
 	//0: context current
-	fw = ogl->win;
+	fw = ogl->glwnd;
 	glfwMakeContextCurrent(fw);
 
 	//1: render everything
@@ -396,7 +396,7 @@ void windowdelete(struct arena* ogl)
 		default:fullwindow_delete(ogl);break;
 	}
 
-	glfwDestroyWindow(ogl->win);
+	glfwDestroyWindow(ogl->glwnd);
 }
 void windowcreate(struct arena* ogl, void* arg)
 {

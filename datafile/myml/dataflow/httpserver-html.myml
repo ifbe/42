@@ -1,0 +1,26 @@
+<system>
+tcphost{
+fmt:TCP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<artery>
+http{
+fmt:HTTP
+}
+</artery>
+
+
+<actor>
+htmlroot{
+fmt:html
+}
+</actor>
+
+
+<relation>
+(tcphost, 0, dst) -> (http, 0, src)
+(http, 0, dst) -> (htmlroot, 0, src)
+</relation>

@@ -24,6 +24,12 @@ int reality_write(void*, void*, void*, int, void*, int);
 int reality_read( void*, void*, void*, int, void*, int);
 
 //
+int htmlnode_create(void*, void*);
+int htmlnode_delete(void*);
+int htmlnode_write(void*, void*, void*, int, void*, int);
+int htmlnode_read( void*, void*, void*, int, void*, int);
+
+//
 int eeworld_create(void*, void*);
 int eeworld_delete(void*, void*);
 int eeworld_start(void*, void*);
@@ -168,6 +174,7 @@ int actorread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void
 		case _reality_:return reality_read(self, peer, arg, idx, buf, len);
 		case _world3d_:return world3d_read(self, peer, arg, idx, buf, len);
 		case _eeworld_:return eeworld_read(self, peer, arg, idx, buf, len);
+		case _html_:return htmlnode_read(self, peer, arg, idx, buf, len);
 	}
 
 	if(0 == act->onread)return 0;
@@ -186,6 +193,8 @@ int actorwrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 		case _gl41coop_:return gl41coop_write(self, peer, arg, idx, buf, len);
 		case _reality_:return reality_write(self, peer, arg, idx, buf, len);
 		case _world3d_:return world3d_write(self, peer, arg, idx, buf, len);
+		case _eeworld_:return eeworld_write(self, peer, arg, idx, buf, len);
+		case _html_:return htmlnode_write(self, peer, arg, idx, buf, len);
 	}
 
 	if(0 == act->onwrite)return 0;
@@ -287,6 +296,15 @@ void* actorcreate(u64 type, void* buf, int argc, char** argv)
 		act = allocactor();
 		act->fmt = act->type = _hoffdata_;
 		hoffdata_create(act, buf);
+		return act;
+	}
+
+	//html
+	else if(_html_ == type)
+	{
+		act = allocactor();
+		act->fmt = act->type = _html_;
+		htmlnode_create(act, buf);
 		return act;
 	}
 
