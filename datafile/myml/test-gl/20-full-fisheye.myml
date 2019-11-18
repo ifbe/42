@@ -1,0 +1,163 @@
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<actor>
+cam0{
+fmt:freecam
+}
+cam1{
+fmt:freecam
+}
+cam2{
+fmt:freecam
+}
+cam3{
+fmt:freecam
+}
+sky{
+fmt:texball
+url:datafile/jpg/skysphere.jpg
+}
+world{
+fmt:3dworld
+}
+gldata{
+fmt:gl41data
+}
+</actor>
+
+
+<arena>
+glwnd{
+fmt:gl41wnd0
+}
+opengl{
+fmt:win
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</arena>
+
+
+<style>
+skypart{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 10000000.0, 0.0, 0.0
+f: 0.0, 10000000.0, 0.0
+t: 0.0, 0.0, 10000000.0
+}
+
+aaaapart{
+}
+aaaageom{
+c: 0.0, 0.0, 0.0
+r: -500.0, 866.0, 0.0
+f: -866.0,-500.0, 0.0
+t: 0.0, 0.0, 1000.0
+
+L: 0.0, 0.0, 0.0,-1.732
+R: 0.0, 0.0, 0.0, 1.732
+B: 0.0, 0.0, 0.0,-999
+T: 0.0, 0.0, 0.0, 999
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+bbbbpart{
+}
+bbbbgeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+
+L: 0.0, 0.0, 0.0,-1.732
+R: 0.0, 0.0, 0.0, 1.732
+B: 0.0, 0.0, 0.0,-999
+T: 0.0, 0.0, 0.0, 999
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+ccccpart{
+}
+ccccgeom{
+c: 0.0, 0.0, 0.0
+r: -500.0,-866.0, 0.0
+f: 866.0,-500.0, 0.0
+t: 0.0, 0.0, 1000.0
+
+L: 0.0, 0.0, 0.0,-1.732
+R: 0.0, 0.0, 0.0, 1.732
+B: 0.0, 0.0, 0.0,-999
+T: 0.0, 0.0, 0.0, 999
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+thispart{
+}
+thisgeom{
+c: 0.0, 0.0, 8000.0
+r: 1000.0, 0.0, 0.0
+t: 0.0, 1000.0, 0.0
+f: 0.0, 0.0,-1000.0
+
+L: 0.0, 0.0, 0.0,-1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0,-1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+aaaarect{
+c:0.0, 0.1
+q:0.333333333, 0.8
+}
+bbbbrect{
+c:0.333333333, 0.1
+q:0.333333333, 0.8
+}
+ccccrect{
+c:0.666666666, 0.1
+q:0.333333333, 0.8
+}
+thisrect{
+c:0.0,0.0
+q:0.3,0.3
+}
+</style>
+
+
+<relation>
+#world depends on tree
+(world, skygeom, 0) -> (sky, skypart, 0)
+(world, aaaageom, 0) -> (cam1, aaaapart, 0)
+(world, bbbbgeom, 0) -> (cam2, bbbbpart, 0)
+(world, ccccgeom, 0) -> (cam3, ccccpart, 0)
+(world, thisgeom, 0) -> (cam0, thispart, 0)
+
+#gldata depends on world
+(gldata, 0, a0) -> (cam1, 0, 0)
+(gldata, 0, a1) -> (cam2, 0, 0)
+(gldata, 0, a2) -> (cam3, 0, 0)
+(gldata, 0, kk) -> (cam0, 0, 0)
+
+#glwnd depends on gldata
+(glwnd, aaaarect, 0) -> (gldata, 0, a0)
+(glwnd, bbbbrect, 0) -> (gldata, 0, a1)
+(glwnd, ccccrect, 0) -> (gldata, 0, a2)
+(glwnd, thisrect, 0) -> (gldata, 0, kk)
+
+#opengl depends on glwnd
+(opengl, 0, wnd) -> (glwnd, 0, togl)
+</relation>
