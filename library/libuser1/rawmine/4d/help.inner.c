@@ -32,6 +32,7 @@ void particle_register(void*);
 void skydome_register(void*);
 void terrain_register(void*);
 void texball_register(void*);
+void texbox_register(void*);
 void weather_register(void*);
 
 //algo
@@ -223,6 +224,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct actor);
 
 	texball_register(tmp);
+	tmp += sizeof(struct actor);
+
+	texbox_register(tmp);
 	tmp += sizeof(struct actor);
 
 	weather_register(tmp);

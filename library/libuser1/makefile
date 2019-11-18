@@ -73,6 +73,7 @@ rawmine/baseunit/objdxgl/dxgl.particle.c \
 rawmine/baseunit/objdxgl/dxgl.skydome.c \
 rawmine/baseunit/objdxgl/dxgl.terrain.c \
 rawmine/baseunit/objdxgl/dxgl.texball.c \
+rawmine/baseunit/objdxgl/dxgl.texbox.c \
 rawmine/baseunit/objdxgl/dxgl.weather.c \
 rawmine/baseunit/objfile/file.binary.c \
 rawmine/baseunit/objfile/file.folder.c \

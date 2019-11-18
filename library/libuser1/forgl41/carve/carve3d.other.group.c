@@ -430,6 +430,201 @@ void carveplanet(float vbuf[][6], u16* ibuf,
 		ibuf[b + 5] = accx*(accy-1)+j+1;
 	}
 }
+void carveskybox(float vbuf[][6], u16* ibuf,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+	//left
+	vbuf[0][0] = vc[0]-vr[0]+vf[0]-vu[0];
+	vbuf[0][1] = vc[1]-vr[1]+vf[1]-vu[1];
+	vbuf[0][2] = vc[2]-vr[2]+vf[2]-vu[2];
+	vbuf[0][3] = 0.0;
+	vbuf[0][4] = 0.0;
+	vbuf[0][5] = 0.0;
+	vbuf[1][0] = vc[0]-vr[0]-vf[0]-vu[0];
+	vbuf[1][1] = vc[1]-vr[1]-vf[1]-vu[1];
+	vbuf[1][2] = vc[2]-vr[2]-vf[2]-vu[2];
+	vbuf[1][3] = 1.0;
+	vbuf[1][4] = 0.0;
+	vbuf[1][5] = 0.0;
+	vbuf[2][0] = vc[0]-vr[0]+vf[0]+vu[0];
+	vbuf[2][1] = vc[1]-vr[1]+vf[1]+vu[1];
+	vbuf[2][2] = vc[2]-vr[2]+vf[2]+vu[2];
+	vbuf[2][3] = 0.0;
+	vbuf[2][4] = 1.0;
+	vbuf[2][5] = 0.0;
+	vbuf[3][0] = vc[0]-vr[0]-vf[0]+vu[0];
+	vbuf[3][1] = vc[1]-vr[1]-vf[1]+vu[1];
+	vbuf[3][2] = vc[2]-vr[2]-vf[2]+vu[2];
+	vbuf[3][3] = 1.0;
+	vbuf[3][4] = 1.0;
+	vbuf[3][5] = 0.0;
+	ibuf[0] = 0;
+	ibuf[1] = 1;
+	ibuf[2] = 2;
+	ibuf[3] = 3;
+	ibuf[4] = 2;
+	ibuf[5] = 1;
+
+	//right
+	vbuf[4][0] = vc[0]+vr[0]-vf[0]-vu[0];
+	vbuf[4][1] = vc[1]+vr[1]-vf[1]-vu[1];
+	vbuf[4][2] = vc[2]+vr[2]-vf[2]-vu[2];
+	vbuf[4][3] = 0.0;
+	vbuf[4][4] = 0.0;
+	vbuf[4][5] = 0.0;
+	vbuf[5][0] = vc[0]+vr[0]+vf[0]-vu[0];
+	vbuf[5][1] = vc[1]+vr[1]+vf[1]-vu[1];
+	vbuf[5][2] = vc[2]+vr[2]+vf[2]-vu[2];
+	vbuf[5][3] = 1.0;
+	vbuf[5][4] = 0.0;
+	vbuf[5][5] = 0.0;
+	vbuf[6][0] = vc[0]+vr[0]-vf[0]+vu[0];
+	vbuf[6][1] = vc[1]+vr[1]-vf[1]+vu[1];
+	vbuf[6][2] = vc[2]+vr[2]-vf[2]+vu[2];
+	vbuf[6][3] = 0.0;
+	vbuf[6][4] = 1.0;
+	vbuf[6][5] = 0.0;
+	vbuf[7][0] = vc[0]+vr[0]+vf[0]+vu[0];
+	vbuf[7][1] = vc[1]+vr[1]+vf[1]+vu[1];
+	vbuf[7][2] = vc[2]+vr[2]+vf[2]+vu[2];
+	vbuf[7][3] = 1.0;
+	vbuf[7][4] = 1.0;
+	vbuf[7][5] = 0.0;
+	ibuf[ 6] = 4;
+	ibuf[ 7] = 5;
+	ibuf[ 8] = 6;
+	ibuf[ 9] = 7;
+	ibuf[10] = 6;
+	ibuf[11] = 5;
+
+	//near
+	vbuf[ 8][0] = vc[0]-vr[0]-vf[0]-vu[0];
+	vbuf[ 8][1] = vc[1]-vr[1]-vf[1]-vu[1];
+	vbuf[ 8][2] = vc[2]-vr[2]-vf[2]-vu[2];
+	vbuf[ 8][3] = 0.0;
+	vbuf[ 8][4] = 0.0;
+	vbuf[ 8][5] = 0.0;
+	vbuf[ 9][0] = vc[0]+vr[0]-vf[0]-vu[0];
+	vbuf[ 9][1] = vc[1]+vr[1]-vf[1]-vu[1];
+	vbuf[ 9][2] = vc[2]+vr[2]-vf[2]-vu[2];
+	vbuf[ 9][3] = 1.0;
+	vbuf[ 9][4] = 0.0;
+	vbuf[ 9][5] = 0.0;
+	vbuf[10][0] = vc[0]-vr[0]-vf[0]+vu[0];
+	vbuf[10][1] = vc[1]-vr[1]-vf[1]+vu[1];
+	vbuf[10][2] = vc[2]-vr[2]-vf[2]+vu[2];
+	vbuf[10][3] = 0.0;
+	vbuf[10][4] = 1.0;
+	vbuf[10][5] = 0.0;
+	vbuf[11][0] = vc[0]+vr[0]-vf[0]+vu[0];
+	vbuf[11][1] = vc[1]+vr[1]-vf[1]+vu[1];
+	vbuf[11][2] = vc[2]+vr[2]-vf[2]+vu[2];
+	vbuf[11][3] = 1.0;
+	vbuf[11][4] = 1.0;
+	vbuf[11][5] = 0.0;
+	ibuf[12] =  8;
+	ibuf[13] =  9;
+	ibuf[14] = 10;
+	ibuf[15] = 11;
+	ibuf[16] = 10;
+	ibuf[17] =  9;
+
+	//far
+	vbuf[12][0] = vc[0]+vr[0]+vf[0]-vu[0];
+	vbuf[12][1] = vc[1]+vr[1]+vf[1]-vu[1];
+	vbuf[12][2] = vc[2]+vr[2]+vf[2]-vu[2];
+	vbuf[12][3] = 0.0;
+	vbuf[12][4] = 0.0;
+	vbuf[12][5] = 0.0;
+	vbuf[13][0] = vc[0]-vr[0]+vf[0]-vu[0];
+	vbuf[13][1] = vc[1]-vr[1]+vf[1]-vu[1];
+	vbuf[13][2] = vc[2]-vr[2]+vf[2]-vu[2];
+	vbuf[13][3] = 1.0;
+	vbuf[13][4] = 0.0;
+	vbuf[13][5] = 0.0;
+	vbuf[14][0] = vc[0]+vr[0]+vf[0]+vu[0];
+	vbuf[14][1] = vc[1]+vr[1]+vf[1]+vu[1];
+	vbuf[14][2] = vc[2]+vr[2]+vf[2]+vu[2];
+	vbuf[14][3] = 0.0;
+	vbuf[14][4] = 1.0;
+	vbuf[14][5] = 0.0;
+	vbuf[15][0] = vc[0]-vr[0]+vf[0]+vu[0];
+	vbuf[15][1] = vc[1]-vr[1]+vf[1]+vu[1];
+	vbuf[15][2] = vc[2]-vr[2]+vf[2]+vu[2];
+	vbuf[15][3] = 1.0;
+	vbuf[15][4] = 1.0;
+	vbuf[15][5] = 0.0;
+	ibuf[18] = 12;
+	ibuf[19] = 13;
+	ibuf[20] = 14;
+	ibuf[21] = 15;
+	ibuf[22] = 14;
+	ibuf[23] = 13;
+
+	//bot
+	vbuf[16][0] = vc[0]-vr[0]-vf[0]-vu[0];
+	vbuf[16][1] = vc[1]-vr[1]-vf[1]-vu[1];
+	vbuf[16][2] = vc[2]-vr[2]-vf[2]-vu[2];
+	vbuf[16][3] = 0.0;
+	vbuf[16][4] = 0.0;
+	vbuf[16][5] = 0.0;
+	vbuf[17][0] = vc[0]+vr[0]-vf[0]-vu[0];
+	vbuf[17][1] = vc[1]+vr[1]-vf[1]-vu[1];
+	vbuf[17][2] = vc[2]+vr[2]-vf[2]-vu[2];
+	vbuf[17][3] = 1.0;
+	vbuf[17][4] = 0.0;
+	vbuf[17][5] = 0.0;
+	vbuf[18][0] = vc[0]-vr[0]+vf[0]-vu[0];
+	vbuf[18][1] = vc[1]-vr[1]+vf[1]-vu[1];
+	vbuf[18][2] = vc[2]-vr[2]+vf[2]-vu[2];
+	vbuf[18][3] = 0.0;
+	vbuf[18][4] = 1.0;
+	vbuf[18][5] = 0.0;
+	vbuf[19][0] = vc[0]+vr[0]+vf[0]-vu[0];
+	vbuf[19][1] = vc[1]+vr[1]+vf[1]-vu[1];
+	vbuf[19][2] = vc[2]+vr[2]+vf[2]-vu[2];
+	vbuf[19][3] = 1.0;
+	vbuf[19][4] = 1.0;
+	vbuf[19][5] = 0.0;
+	ibuf[24] = 16;
+	ibuf[25] = 17;
+	ibuf[26] = 18;
+	ibuf[27] = 19;
+	ibuf[28] = 18;
+	ibuf[29] = 17;
+
+	//top
+	vbuf[20][0] = vc[0]-vr[0]-vf[0]+vu[0];
+	vbuf[20][1] = vc[1]-vr[1]-vf[1]+vu[1];
+	vbuf[20][2] = vc[2]-vr[2]-vf[2]+vu[2];
+	vbuf[20][3] = 0.0;
+	vbuf[20][4] = 0.0;
+	vbuf[20][5] = 0.0;
+	vbuf[21][0] = vc[0]+vr[0]-vf[0]+vu[0];
+	vbuf[21][1] = vc[1]+vr[1]-vf[1]+vu[1];
+	vbuf[21][2] = vc[2]+vr[2]-vf[2]+vu[2];
+	vbuf[21][3] = 1.0;
+	vbuf[21][4] = 0.0;
+	vbuf[21][5] = 0.0;
+	vbuf[22][0] = vc[0]-vr[0]+vf[0]+vu[0];
+	vbuf[22][1] = vc[1]-vr[1]+vf[1]+vu[1];
+	vbuf[22][2] = vc[2]-vr[2]+vf[2]+vu[2];
+	vbuf[22][3] = 0.0;
+	vbuf[22][4] = 1.0;
+	vbuf[22][5] = 0.0;
+	vbuf[23][0] = vc[0]+vr[0]+vf[0]+vu[0];
+	vbuf[23][1] = vc[1]+vr[1]+vf[1]+vu[1];
+	vbuf[23][2] = vc[2]+vr[2]+vf[2]+vu[2];
+	vbuf[23][3] = 1.0;
+	vbuf[23][4] = 1.0;
+	vbuf[23][5] = 0.0;
+	ibuf[30] = 20;
+	ibuf[31] = 21;
+	ibuf[32] = 22;
+	ibuf[33] = 23;
+	ibuf[34] = 22;
+	ibuf[35] = 21;
+}
 
 
 
