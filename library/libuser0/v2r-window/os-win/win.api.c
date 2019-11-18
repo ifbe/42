@@ -76,6 +76,18 @@ int windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 {
 	return 0;
 }
+int windowstop(struct arena* win)
+{
+	return 0;
+}
+int windowstart(struct arena* win)
+{
+	return 0;
+}
+
+
+
+
 int windowlist()
 {
 	return 0;
@@ -88,14 +100,6 @@ int windowchange()
 
 	//窗口标题
 	//SetWindowText(win, "hahahaha");
-	return 0;
-}
-int windowstart(struct arena* win)
-{
-	return 0;
-}
-int windowstop(struct arena* win)
-{
 	return 0;
 }
 int windowdelete(struct arena* win)

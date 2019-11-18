@@ -71,3 +71,17 @@ void gentui_decstr(struct actor* win, u32 rgb, int x, int y, int data)
 	int len = data2decstr(data, str);
 	gentui_str(win, rgb, x, y, str, len);
 }
+
+
+
+
+int tuinode_read(struct actor* win, struct event* ev)
+{
+	gentui_rect(win, 4, 0, 0, 80, 25);
+	gentui_str(win, 1, 0, 0, (void*)"fuck", 4);
+	return 0;
+}
+int tuinode_write(struct actor* win, struct event* ev)
+{
+	return 0;
+}
