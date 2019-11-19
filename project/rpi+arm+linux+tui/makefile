@@ -18,7 +18,7 @@ libsoft0:
 libsoft1:
 	+make -s -C $(library)/libsoft1 cflag=$(flag)
 libuser0:
-	+make -s -C $(library)/libuser0 cflag=$(flag) linuxfb
+	+make -s -C $(library)/libuser0 cflag=$(flag) linuxtui
 libuser1:
 	+make -s -C $(library)/libuser1 cflag=$(flag)
 a:
@@ -52,7 +52,6 @@ program:
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
 	-lwiringPi -lpulse -lpulse-simple -lpthread -lm
-	#-lasound -lpthread -lm
 clean:
-	rm -f *.o *.a *.so
 	make -C $(library) clean
+	rm -f *.o *.a *.so

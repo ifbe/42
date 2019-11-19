@@ -8,6 +8,8 @@
 #include<sys/select.h>
 #include"libuser.h"
 int lowlevel_input();
+void tuinode_read(void*, void*);
+void tuinode_write(void*, void*);
 
 
 
@@ -30,7 +32,7 @@ static void newsize(int num)
 	width=w.ws_col;
 	height=w.ws_row;
 }
-void* terminalthread(void* win)
+void* textuithread(void* win)
 {
 	u64 why, what, where;
 	while(1)
@@ -49,6 +51,10 @@ void* terminalthread(void* win)
 
 	}//while
 }
+
+
+
+
 static void attr(u8 bg, u8 fg)
 {
 	char str[6] = {0x1b, 0x5b, '4', 0, 'm', 0};
@@ -59,22 +65,18 @@ static void attr(u8 bg, u8 fg)
 	}
 	else printf("\033[0m");
 }
-
-
-
-
-void windowwrite(struct arena* src)
+void windowdraw(struct arena* src)
 {
+	int x,y;
+	u8 ch,bg=0,fg=0;
+	u8* p;
+	u8* buf;
 	printf("\033[H\033[J");
 /*
 	printf("%s",src->buf);
 	fflush(stdout);
 */
-	int x,y;
-	u8 ch,bg=0,fg=0;
-	u8* p;
-	u8* buf = (u8*)(src->buf);
-
+	buf = (u8*)(src->buf);
 	for(y=0;y<height;y++)
 	{
 		for(x=0;x<width;x++)
@@ -91,7 +93,7 @@ void windowwrite(struct arena* src)
 				}
 
 				//这是汉字
-				printf("%2s",p);
+				printf("%s",p);
 				x++;
 			}
 			else
@@ -113,19 +115,37 @@ void windowwrite(struct arena* src)
 	}
 	if(bg != 0)attr(0,0);
 }
-void windowread(char* addr)
+
+
+
+
+void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	struct arena* win = self->pchip;
+
+	//read context
+	tuinode_read(win, 0);
+
+	//update screen
+	windowdraw(win);
 }
-void windowlist()
-{
-}
-void windowchange()
+void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 void windowstop()
 {
 }
 void windowstart()
+{
+}
+
+
+
+
+void windowlist()
+{
+}
+void windowchange()
 {
 }
 void windowdelete(struct arena* w)
@@ -140,7 +160,7 @@ void windowcreate(struct arena* w)
 	w->height = height;
 
 	w->buf = malloc(0x100000);
-	threadcreate(terminalthread, w);
+	threadcreate(textuithread, w);
 }
 
 
