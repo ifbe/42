@@ -77,8 +77,18 @@ void gentui_decstr(struct actor* win, u32 rgb, int x, int y, int data)
 
 int tuinode_read(struct actor* win, struct event* ev)
 {
-	gentui_rect(win, 4, 0, 0, 80, 25);
-	gentui_str(win, 1, 0, 0, (void*)"fuck", 4);
+	struct relation* rel;
+	//gentui_rect(win, 4, 0, 0, 80, 25);
+	//gentui_str(win, 1, 0, 0, (void*)"fuck", 4);
+
+	rel = win->orel0;
+	while(1){
+		if(0 == rel)break;
+		if(_act_ == rel->dsttype){
+			actorread((void*)rel->dst, (void*)rel->src, 0, 0, 0, 0);
+		}
+		rel = samesrcnextdst(rel);
+	}
 	return 0;
 }
 int tuinode_write(struct actor* win, struct event* ev)

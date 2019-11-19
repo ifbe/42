@@ -351,7 +351,10 @@ static void the2048_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 
 	act = self->pchip;part = self->pfoot;
 	win = peer->pchip;geom = peer->pfoot;
-	the2048_draw_pixel(act, part, win, geom);
+	switch(win->fmt){
+	case _tui_:the2048_draw_tui(act, part, win, geom);break;
+	default:the2048_draw_pixel(act, part, win, geom);
+	}
 }
 static void the2048_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

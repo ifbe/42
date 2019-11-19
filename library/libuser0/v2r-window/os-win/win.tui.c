@@ -6,6 +6,8 @@
 #define MOUSE_HWHEELED 0x0008
 #endif
 int lowlevel_input();
+void tuinode_read(void*, void*);
+void tuinode_write(void*, void*);
 
 
 
@@ -249,7 +251,7 @@ static void gotoxy(int x, int y)
 	pos.Y = bInfo.srWindow.Top + y;
 	SetConsoleCursorPosition(output, pos);
 }
-void windowwrite(struct arena* win)
+void windowdraw(struct arena* win)
 {
 	int x,y;
 	u8 ch, bg=0, fg=7;
@@ -298,19 +300,37 @@ void windowwrite(struct arena* win)
 		}
 	}
 }
-void windowread()
+
+
+
+
+void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	struct arena* win = self->pchip;
+
+	//read context
+	tuinode_read(win, 0);
+
+	//update screen
+	windowdraw(win);
 }
-void windowlist()
-{
-}
-void windowchange()
+void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
 void windowstop()
 {
 }
 void windowstart()
+{
+}
+
+
+
+
+void windowmodify()
+{
+}
+void windowsearch()
 {
 }
 void windowdelete(struct arena* w)
