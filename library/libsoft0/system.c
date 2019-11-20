@@ -160,7 +160,7 @@ int systemdelete(void* addr)
 	oo->name = 0;
 	return 0;
 }
-void* systemcreate(u64 type, void* argstr, int argc, char** argv)
+void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 {
 	int j,k,fd,ret;
 	u8 host[0x100];	//127.0.0.1
@@ -302,7 +302,7 @@ void* systemcreate(u64 type, void* argstr, int argc, char** argv)
 
 	return 0;
 }
-void* systemmodify(int argc, char** argv)
+void* systemmodify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;

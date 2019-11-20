@@ -100,7 +100,7 @@ int i2c_delete(int fd)
 {
 	return close(fd);
 }
-int i2c_create(u8* name, int flag)
+int i2c_create(u8* name, int flag, int argc, u8** argv)
 {
 	int j;
 	u8 buf[256];

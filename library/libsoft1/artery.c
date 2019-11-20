@@ -39,415 +39,415 @@
 #define _mahony_  hex64('m','a','h','o','n','y', 0 , 0 )
 #define _madgwick_ hex64('m','a','d','g','w','i','c','k')
 //file
-int fileclient_create(struct element* ele, void* url);
+int fileclient_create(struct element* ele, void* url, int argc, u8** argv);
 int fileclient_delete(struct element* ele, void* url);
 int fileclient_start(struct halfrel* self, struct halfrel* peer);
 int fileclient_stop( struct halfrel* self, struct halfrel* peer);
 int fileclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fileclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int mbrclient_create(struct element* ele, void* url);
+int mbrclient_create(struct element* ele, void* url, int argc, u8** argv);
 int mbrclient_delete(struct element* ele, void* url);
 int mbrclient_start(struct halfrel* self, struct halfrel* peer);
 int mbrclient_stop( struct halfrel* self, struct halfrel* peer);
 int mbrclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int mbrclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int gptclient_create(struct element* ele, void* url);
+int gptclient_create(struct element* ele, void* url, int argc, u8** argv);
 int gptclient_delete(struct element* ele, void* url);
 int gptclient_start(struct halfrel* self, struct halfrel* peer);
 int gptclient_stop( struct halfrel* self, struct halfrel* peer);
 int gptclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int gptclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
-int fatclient_create(struct element* ele, void* url);
+int fatclient_create(struct element* ele, void* url, int argc, u8** argv);
 int fatclient_delete(struct element* ele, void* url);
 int fatclient_start(struct halfrel* self, struct halfrel* peer);
 int fatclient_stop( struct halfrel* self, struct halfrel* peer);
 int fatclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fatclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int ntfsclient_create(struct element* ele, void* url);
+int ntfsclient_create(struct element* ele, void* url, int argc, u8** argv);
 int ntfsclient_delete(struct element* ele, void* url);
 int ntfsclient_start(struct halfrel* self, struct halfrel* peer);
 int ntfsclient_stop( struct halfrel* self, struct halfrel* peer);
 int ntfsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int ntfsclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int hfsclient_create(struct element* ele, void* url);
+int hfsclient_create(struct element* ele, void* url, int argc, u8** argv);
 int hfsclient_delete(struct element* ele, void* url);
 int hfsclient_start(struct halfrel* self, struct halfrel* peer);
 int hfsclient_stop( struct halfrel* self, struct halfrel* peer);
 int hfsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int hfsclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int extclient_create(struct element* ele, void* url);
+int extclient_create(struct element* ele, void* url, int argc, u8** argv);
 int extclient_delete(struct element* ele, void* url);
 int extclient_start(struct halfrel* self, struct halfrel* peer);
 int extclient_stop( struct halfrel* self, struct halfrel* peer);
 int extclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int extclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
-int control_create(struct element* ele, void* url);
+int control_create(struct element* ele, void* url, int argc, u8** argv);
 int control_delete(struct element* ele, void* url);
 int control_start(struct halfrel* self, struct halfrel* peer);
 int control_stop( struct halfrel* self, struct halfrel* peer);
 int control_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int control_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int search_create(struct element* ele, void* url);
+int search_create(struct element* ele, void* url, int argc, u8** argv);
 int search_delete(struct element* ele, void* url);
 int search_start(struct halfrel* self, struct halfrel* peer);
 int search_stop( struct halfrel* self, struct halfrel* peer);
 int search_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int search_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int vt100_create(struct element* ele, void* url);
+int vt100_create(struct element* ele, void* url, int argc, u8** argv);
 int vt100_delete(struct element* ele, void* url);
 int vt100_start(struct halfrel* self, struct halfrel* peer);
 int vt100_stop( struct halfrel* self, struct halfrel* peer);
 int vt100_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int vt100_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
-int echo_create(struct element* ele, void* url);
+int echo_create(struct element* ele, void* url, int argc, u8** argv);
 int echo_delete(struct element* ele, void* url);
 int echo_start(struct halfrel* self, struct halfrel* peer);
 int echo_stop( struct halfrel* self, struct halfrel* peer);
 int echo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int echo_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int pump_create(struct element* ele, void* url);
+int pump_create(struct element* ele, void* url, int argc, u8** argv);
 int pump_delete(struct element* ele, void* url);
 int pump_stop( struct halfrel* self, struct halfrel* peer);
 int pump_start(struct halfrel* self, struct halfrel* peer);
 int pump_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int pump_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int goslow_create(struct element* ele, void* url);
+int goslow_create(struct element* ele, void* url, int argc, u8** argv);
 int goslow_delete(struct element* ele, void* url);
 int goslow_start(struct halfrel* self, struct halfrel* peer);
 int goslow_stop( struct halfrel* self, struct halfrel* peer);
 int goslow_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int goslow_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int dbgf32_create(struct element* ele, void* url);
+int dbgf32_create(struct element* ele, void* url, int argc, u8** argv);
 int dbgf32_delete(struct element* ele, void* url);
 int dbgf32_start(struct halfrel* self, struct halfrel* peer);
 int dbgf32_stop( struct halfrel* self, struct halfrel* peer);
 int dbgf32_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int dbgf32_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int dbghex_create(struct element* ele, void* url);
+int dbghex_create(struct element* ele, void* url, int argc, u8** argv);
 int dbghex_delete(struct element* ele, void* url);
 int dbghex_start(struct halfrel* self, struct halfrel* peer);
 int dbghex_stop( struct halfrel* self, struct halfrel* peer);
 int dbghex_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int dbghex_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
-int fftpcm_create(struct element* ele, void* url);
+int fftpcm_create(struct element* ele, void* url, int argc, u8** argv);
 int fftpcm_delete(struct element* ele, void* url);
 int fftpcm_start(struct halfrel* self, struct halfrel* peer);
 int fftpcm_stop( struct halfrel* self, struct halfrel* peer);
 int fftpcm_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fftpcm_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int fftrgb_create(struct element* ele, void* url);
+int fftrgb_create(struct element* ele, void* url, int argc, u8** argv);
 int fftrgb_delete(struct element* ele, void* url);
 int fftrgb_start(struct halfrel* self, struct halfrel* peer);
 int fftrgb_stop( struct halfrel* self, struct halfrel* peer);
 int fftrgb_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fftrgb_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int rotate_create(struct element* ele, void* url);
+int rotate_create(struct element* ele, void* url, int argc, u8** argv);
 int rotate_delete(struct element* ele, void* url);
 int rotate_start(struct halfrel* self, struct halfrel* peer);
 int rotate_stop( struct halfrel* self, struct halfrel* peer);
 int rotate_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int rotate_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
-int recut_create(struct element* ele, void* url);
+int recut_create(struct element* ele, void* url, int argc, u8** argv);
 int recut_delete(struct element* ele, void* url);
 int recut_start(struct halfrel* self, struct halfrel* peer);
 int recut_stop( struct halfrel* self, struct halfrel* peer);
 int recut_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int recut_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int reline_create(struct element* ele, void* url);
+int reline_create(struct element* ele, void* url, int argc, u8** argv);
 int reline_delete(struct element* ele, void* url);
 int reline_start(struct halfrel* self, struct halfrel* peer);
 int reline_stop( struct halfrel* self, struct halfrel* peer);
 int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int reline_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int reorder_create(struct element* ele, void* url);
+int reorder_create(struct element* ele, void* url, int argc, u8** argv);
 int reorder_delete(struct element* ele, void* url);
 int reorder_start(struct halfrel* self, struct halfrel* peer);
 int reorder_stop( struct halfrel* self, struct halfrel* peer);
 int reorder_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int reorder_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
-int qu2eu_create(struct element* ele, void* url);
+int qu2eu_create(struct element* ele, void* url, int argc, u8** argv);
 int qu2eu_delete(struct element* ele, void* url);
 int qu2eu_start(struct halfrel* self, struct halfrel* peer);
 int qu2eu_stop( struct halfrel* self, struct halfrel* peer);
 int qu2eu_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int qu2eu_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int str2fv_create(struct element* ele, void* url);
+int str2fv_create(struct element* ele, void* url, int argc, u8** argv);
 int str2fv_delete(struct element* ele, void* url);
 int str2fv_start(struct halfrel* self, struct halfrel* peer);
 int str2fv_stop( struct halfrel* self, struct halfrel* peer);
 int str2fv_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int str2fv_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int fv2str_create(struct element* ele, void* url);
+int fv2str_create(struct element* ele, void* url, int argc, u8** argv);
 int fv2str_delete(struct element* ele, void* url);
 int fv2str_start(struct halfrel* self, struct halfrel* peer);
 int fv2str_stop( struct halfrel* self, struct halfrel* peer);
 int fv2str_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fv2str_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
-int easyag_create(struct element* ele, void* url);
+int easyag_create(struct element* ele, void* url, int argc, u8** argv);
 int easyag_delete(struct element* ele, void* url);
 int easyag_start(struct halfrel* self, struct halfrel* peer);
 int easyag_stop( struct halfrel* self, struct halfrel* peer);
 int easyag_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int easyag_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int mahony_create(struct element* ele, void* url);
+int mahony_create(struct element* ele, void* url, int argc, u8** argv);
 int mahony_delete(struct element* ele, void* url);
 int mahony_start(struct halfrel* self, struct halfrel* peer);
 int mahony_stop( struct halfrel* self, struct halfrel* peer);
 int mahony_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int mahony_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int madgwick_create(struct element* ele, void* url);
+int madgwick_create(struct element* ele, void* url, int argc, u8** argv);
 int madgwick_delete(struct element* ele, void* url);
 int madgwick_start(struct halfrel* self, struct halfrel* peer);
 int madgwick_stop( struct halfrel* self, struct halfrel* peer);
 int madgwick_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int madgwick_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //uart.gcode
-int gcodeclient_create(struct element* ele, void* url);
+int gcodeclient_create(struct element* ele, void* url, int argc, u8** argv);
 int gcodeclient_delete(struct element* ele, void* url);
 int gcodeclient_start(struct halfrel* self, struct halfrel* peer);
 int gcodeclient_stop( struct halfrel* self, struct halfrel* peer);
 int gcodeclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int gcodeclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int gcodeserver_create(struct element* ele, void* url);
+int gcodeserver_create(struct element* ele, void* url, int argc, u8** argv);
 int gcodeserver_delete(struct element* ele, void* url);
 int gcodeserver_start(struct halfrel* self, struct halfrel* peer);
 int gcodeserver_stop( struct halfrel* self, struct halfrel* peer);
 int gcodeserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int gcodeserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int mavlinkclient_create(struct element* ele, void* url);
+int mavlinkclient_create(struct element* ele, void* url, int argc, u8** argv);
 int mavlinkclient_delete(struct element* ele, void* url);
 int mavlinkclient_start(struct halfrel* self, struct halfrel* peer);
 int mavlinkclient_stop( struct halfrel* self, struct halfrel* peer);
 int mavlinkclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int mavlinkclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int mavlinkserver_create(struct element* ele, void* url);
+int mavlinkserver_create(struct element* ele, void* url, int argc, u8** argv);
 int mavlinkserver_delete(struct element* ele, void* url);
 int mavlinkserver_start(struct halfrel* self, struct halfrel* peer);
 int mavlinkserver_stop( struct halfrel* self, struct halfrel* peer);
 int mavlinkserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int mavlinkserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int nema0183client_create(struct element* ele, void* url);
+int nema0183client_create(struct element* ele, void* url, int argc, u8** argv);
 int nema0183client_delete(struct element* ele, void* url);
 int nema0183client_start(struct halfrel* self, struct halfrel* peer);
 int nema0183client_stop( struct halfrel* self, struct halfrel* peer);
 int nema0183client_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int nema0183client_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int nema0183server_create(struct element* ele, void* url);
+int nema0183server_create(struct element* ele, void* url, int argc, u8** argv);
 int nema0183server_delete(struct element* ele, void* url);
 int nema0183server_start(struct halfrel* self, struct halfrel* peer);
 int nema0183server_stop( struct halfrel* self, struct halfrel* peer);
 int nema0183server_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int nema0183server_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //socket
-int hackclient_create(struct element* ele, void* url);
+int hackclient_create(struct element* ele, void* url, int argc, u8** argv);
 int hackclient_delete(struct element* ele, void* url);
 int hackclient_start(struct halfrel* self, struct halfrel* peer);
 int hackclient_stop( struct halfrel* self, struct halfrel* peer);
 int hackclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int hackclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int hackserver_create(struct element* ele, void* url);
+int hackserver_create(struct element* ele, void* url, int argc, u8** argv);
 int hackserver_delete(struct element* ele, void* url);
 int hackserver_start(struct halfrel* self, struct halfrel* peer);
 int hackserver_stop( struct halfrel* self, struct halfrel* peer);
 int hackserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int hackserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int proxyclient_create(struct element* ele, void* url);
+int proxyclient_create(struct element* ele, void* url, int argc, u8** argv);
 int proxyclient_delete(struct element* ele, void* url);
 int proxyclient_start(struct halfrel* self, struct halfrel* peer);
 int proxyclient_stop( struct halfrel* self, struct halfrel* peer);
 int proxyclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int proxyclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int proxyserver_create(struct element* ele, void* url);
+int proxyserver_create(struct element* ele, void* url, int argc, u8** argv);
 int proxyserver_delete(struct element* ele, void* url);
 int proxyserver_start(struct halfrel* self, struct halfrel* peer);
 int proxyserver_stop( struct halfrel* self, struct halfrel* peer);
 int proxyserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int proxyserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int proxymaster_create(struct element* ele, void* url);
+int proxymaster_create(struct element* ele, void* url, int argc, u8** argv);
 int proxymaster_delete(struct element* ele, void* url);
 int proxymaster_start(struct halfrel* self, struct halfrel* peer);
 int proxymaster_stop( struct halfrel* self, struct halfrel* peer);
 int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int proxymaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int socksclient_create(struct element* ele, void* url);
+int socksclient_create(struct element* ele, void* url, int argc, u8** argv);
 int socksclient_delete(struct element* ele, void* url);
 int socksclient_start(struct halfrel* self, struct halfrel* peer);
 int socksclient_stop( struct halfrel* self, struct halfrel* peer);
 int socksclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int socksclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int socksserver_create(struct element* ele, void* url);
+int socksserver_create(struct element* ele, void* url, int argc, u8** argv);
 int socksserver_delete(struct element* ele, void* url);
 int socksserver_start(struct halfrel* self, struct halfrel* peer);
 int socksserver_stop( struct halfrel* self, struct halfrel* peer);
 int socksserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int socksserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int socksmaster_create(struct element* ele, void* url);
+int socksmaster_create(struct element* ele, void* url, int argc, u8** argv);
 int socksmaster_delete(struct element* ele, void* url);
 int socksmaster_start(struct halfrel* self, struct halfrel* peer);
 int socksmaster_stop( struct halfrel* self, struct halfrel* peer);
 int socksmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int socksmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //udp.dns
-int dnsclient_create(struct element* ele, void* url);
+int dnsclient_create(struct element* ele, void* url, int argc, u8** argv);
 int dnsclient_delete(struct element* ele, void* url);
 int dnsclient_start(struct halfrel* self, struct halfrel* peer);
 int dnsclient_stop( struct halfrel* self, struct halfrel* peer);
 int dnsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int dnsclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int dnsserver_create(struct element* ele, void* url);
+int dnsserver_create(struct element* ele, void* url, int argc, u8** argv);
 int dnsserver_delete(struct element* ele, void* url);
 int dnsserver_start(struct halfrel* self, struct halfrel* peer);
 int dnsserver_stop( struct halfrel* self, struct halfrel* peer);
 int dnsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int dnsserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //udp.tftp
-int tftpclient_create(struct element* ele, void* url);
+int tftpclient_create(struct element* ele, void* url, int argc, u8** argv);
 int tftpclient_delete(struct element* ele, void* url);
 int tftpclient_start(struct halfrel* self, struct halfrel* peer);
 int tftpclient_stop( struct halfrel* self, struct halfrel* peer);
 int tftpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tftpclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int tftpserver_create(struct element* ele, void* url);
+int tftpserver_create(struct element* ele, void* url, int argc, u8** argv);
 int tftpserver_delete(struct element* ele, void* url);
 int tftpserver_start(struct halfrel* self, struct halfrel* peer);
 int tftpserver_stop( struct halfrel* self, struct halfrel* peer);
 int tftpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tftpserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //udp.quic
-int quicclient_create(struct element* ele, void* url);
+int quicclient_create(struct element* ele, void* url, int argc, u8** argv);
 int quicclient_delete(struct element* ele, void* url);
 int quicclient_start(struct halfrel* self, struct halfrel* peer);
 int quicclient_stop( struct halfrel* self, struct halfrel* peer);
 int quicclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int quicclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int quicserver_create(struct element* ele, void* url);
+int quicserver_create(struct element* ele, void* url, int argc, u8** argv);
 int quicserver_delete(struct element* ele, void* url);
 int quicserver_start(struct halfrel* self, struct halfrel* peer);
 int quicserver_stop( struct halfrel* self, struct halfrel* peer);
 int quicserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int quicserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int quicmaster_create(struct element* ele, void* url);
+int quicmaster_create(struct element* ele, void* url, int argc, u8** argv);
 int quicmaster_delete(struct element* ele, void* url);
 int quicmaster_start(struct halfrel* self, struct halfrel* peer);
 int quicmaster_stop( struct halfrel* self, struct halfrel* peer);
 int quicmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int quicmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.ssh
-int sshclient_create(struct element* ele, void* url);
+int sshclient_create(struct element* ele, void* url, int argc, u8** argv);
 int sshclient_delete(struct element* ele, void* url);
 int sshclient_start(struct halfrel* self, struct halfrel* peer);
 int sshclient_stop( struct halfrel* self, struct halfrel* peer);
 int sshclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int sshclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int sshserver_create(struct element* ele, void* url);
+int sshserver_create(struct element* ele, void* url, int argc, u8** argv);
 int sshserver_delete(struct element* ele, void* url);
 int sshserver_start(struct halfrel* self, struct halfrel* peer);
 int sshserver_stop( struct halfrel* self, struct halfrel* peer);
 int sshserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int sshserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int sshmaster_create(struct element* ele, void* url);
+int sshmaster_create(struct element* ele, void* url, int argc, u8** argv);
 int sshmaster_delete(struct element* ele, void* url);
 int sshmaster_start(struct halfrel* self, struct halfrel* peer);
 int sshmaster_stop( struct halfrel* self, struct halfrel* peer);
 int sshmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int sshmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.telnet
-int telnetclient_create(struct element* ele, void* url);
+int telnetclient_create(struct element* ele, void* url, int argc, u8** argv);
 int telnetclient_delete(struct element* ele, void* url);
 int telnetclient_start(struct halfrel* self, struct halfrel* peer);
 int telnetclient_stop( struct halfrel* self, struct halfrel* peer);
 int telnetclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int telnetclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int telnetserver_create(struct element* ele, void* url);
+int telnetserver_create(struct element* ele, void* url, int argc, u8** argv);
 int telnetserver_delete(struct element* ele, void* url);
 int telnetserver_start(struct halfrel* self, struct halfrel* peer);
 int telnetserver_stop( struct halfrel* self, struct halfrel* peer);
 int telnetserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int telnetserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int telnetmaster_create(struct element* ele, void* url);
+int telnetmaster_create(struct element* ele, void* url, int argc, u8** argv);
 int telnetmaster_delete(struct element* ele, void* url);
 int telnetmaster_start(struct halfrel* self, struct halfrel* peer);
 int telnetmaster_stop( struct halfrel* self, struct halfrel* peer);
 int telnetmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int telnetmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.http
-int httpclient_create(struct element* ele, void* url);
+int httpclient_create(struct element* ele, void* url, int argc, u8** argv);
 int httpclient_delete(struct element* ele, void* url);
 int httpclient_start(struct halfrel* self, struct halfrel* peer);
 int httpclient_stop( struct halfrel* self, struct halfrel* peer);
 int httpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int httpclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int httpserver_create(struct element* ele, void* url);
+int httpserver_create(struct element* ele, void* url, int argc, u8** argv);
 int httpserver_delete(struct element* ele, void* url);
 int httpserver_start(struct halfrel* self, struct halfrel* peer);
 int httpserver_stop( struct halfrel* self, struct halfrel* peer);
 int httpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int httpserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int httpmaster_create(struct element* ele, void* url);
+int httpmaster_create(struct element* ele, void* url, int argc, u8** argv);
 int httpmaster_delete(struct element* ele, void* url);
 int httpmaster_start(struct halfrel* self, struct halfrel* peer);
 int httpmaster_stop( struct halfrel* self, struct halfrel* peer);
 int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int httpmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.ws
-int wsclient_create(struct element* ele, void* url);
+int wsclient_create(struct element* ele, void* url, int argc, u8** argv);
 int wsclient_delete(struct element* ele, void* url);
 int wsclient_start(struct halfrel* self, struct halfrel* peer);
 int wsclient_stop( struct halfrel* self, struct halfrel* peer);
 int wsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int wsclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int wsserver_create(struct element* ele, void* url);
+int wsserver_create(struct element* ele, void* url, int argc, u8** argv);
 int wsserver_delete(struct element* ele, void* url);
 int wsserver_start(struct halfrel* self, struct halfrel* peer);
 int wsserver_stop( struct halfrel* self, struct halfrel* peer);
 int wsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int wsserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int wsmaster_create(struct element* ele, void* url);
+int wsmaster_create(struct element* ele, void* url, int argc, u8** argv);
 int wsmaster_delete(struct element* ele, void* url);
 int wsmaster_start(struct halfrel* self, struct halfrel* peer);
 int wsmaster_stop( struct halfrel* self, struct halfrel* peer);
 int wsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int wsmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.tls
-int tlsclient_create(struct element* ele, void* url);
+int tlsclient_create(struct element* ele, void* url, int argc, u8** argv);
 int tlsclient_delete(struct element* ele, void* url);
 int tlsclient_start(struct halfrel* self, struct halfrel* peer);
 int tlsclient_stop( struct halfrel* self, struct halfrel* peer);
 int tlsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tlsclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int tlsserver_create(struct element* ele, void* url);
+int tlsserver_create(struct element* ele, void* url, int argc, u8** argv);
 int tlsserver_delete(struct element* ele, void* url);
 int tlsserver_start(struct halfrel* self, struct halfrel* peer);
 int tlsserver_stop( struct halfrel* self, struct halfrel* peer);
 int tlsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tlsserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int tlsmaster_create(struct element* ele, void* url);
+int tlsmaster_create(struct element* ele, void* url, int argc, u8** argv);
 int tlsmaster_delete(struct element* ele, void* url);
 int tlsmaster_start(struct halfrel* self, struct halfrel* peer);
 int tlsmaster_stop( struct halfrel* self, struct halfrel* peer);
 int tlsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tlsmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.serve
-int serveclient_create(struct element* ele, void* url);
+int serveclient_create(struct element* ele, void* url, int argc, u8** argv);
 int serveclient_delete(struct element* ele, void* url);
 int serveclient_start(struct halfrel* self, struct halfrel* peer);
 int serveclient_stop( struct halfrel* self, struct halfrel* peer);
 int serveclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int serveclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int serveserver_create(struct element* ele, void* url);
+int serveserver_create(struct element* ele, void* url, int argc, u8** argv);
 int serveserver_delete(struct element* ele, void* url);
 int serveserver_start(struct halfrel* self, struct halfrel* peer);
 int serveserver_stop( struct halfrel* self, struct halfrel* peer);
 int serveserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int serveserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int servemaster_create(struct element* ele, void* url);
+int servemaster_create(struct element* ele, void* url, int argc, u8** argv);
 int servemaster_delete(struct element* ele, void* url);
 int servemaster_start(struct halfrel* self, struct halfrel* peer);
 int servemaster_stop( struct halfrel* self, struct halfrel* peer);
@@ -664,7 +664,7 @@ int arterydelete(void* ele)
 {
 	return 0;
 }
-void* arterycreate(u64 type, void* argstr, int argc, char** argv)
+void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 {
 	int j,fd,ret,port;
 	struct element* e;
@@ -685,7 +685,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _control_;
-		control_create(e, url);
+		control_create(e, url, argc, argv);
 		return e;
 	}
 	if(_search_ == type)
@@ -694,7 +694,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _search_;
-		search_create(e, url);
+		search_create(e, url, argc, argv);
 		return e;
 	}
 	if(_vt100_ == type)
@@ -703,7 +703,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _vt100_;
-		vt100_create(e, url);
+		vt100_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -714,7 +714,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _file_;
-		fileclient_create(e, url);
+		fileclient_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -725,7 +725,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _fat_;
-		fatclient_create(e, url);
+		fatclient_create(e, url, argc, argv);
 		return e;
 	}
 	if(_ntfs_ == type)
@@ -734,7 +734,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _ntfs_;
-		ntfsclient_create(e, url);
+		ntfsclient_create(e, url, argc, argv);
 		return e;
 	}
 	if(_hfs_ == type)
@@ -743,7 +743,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _hfs_;
-		hfsclient_create(e, url);
+		hfsclient_create(e, url, argc, argv);
 		return e;
 	}
 	if(_ext_ == type)
@@ -752,7 +752,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _ext_;
-		extclient_create(e, url);
+		extclient_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -763,7 +763,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _echo_;
-		echo_create(e, url);
+		echo_create(e, url, argc, argv);
 		return e;
 	}
 	if(_pump_ == type)
@@ -772,7 +772,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _pump_;
-		pump_create(e, url);
+		pump_create(e, url, argc, argv);
 		return e;
 	}
 	if(_dbgf32_ == type)
@@ -781,7 +781,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _dbgf32_;
-		dbgf32_create(e, url);
+		dbgf32_create(e, url, argc, argv);
 		return e;
 	}
 	if(_dbghex_ == type)
@@ -790,7 +790,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _dbghex_;
-		dbghex_create(e, url);
+		dbghex_create(e, url, argc, argv);
 		return e;
 	}
 	if(_goslow_ == type)
@@ -799,7 +799,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _goslow_;
-		goslow_create(e, url);
+		goslow_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -810,7 +810,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _fftpcm_;
-		fftpcm_create(e, url);
+		fftpcm_create(e, url, argc, argv);
 		return e;
 	}
 	if(_fftrgb_ == type)
@@ -819,7 +819,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _fftrgb_;
-		fftrgb_create(e, url);
+		fftrgb_create(e, url, argc, argv);
 		return e;
 	}
 	if(_rotate_ == type)
@@ -828,7 +828,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _rotate_;
-		rotate_create(e, url);
+		rotate_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -839,7 +839,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _recut_;
-		recut_create(e, url);
+		recut_create(e, url, argc, argv);
 		return e;
 	}
 	if(_reline_ == type)
@@ -848,7 +848,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _reline_;
-		reline_create(e, url);
+		reline_create(e, url, argc, argv);
 		return e;
 	}
 	if(_reorder_ == type)
@@ -857,7 +857,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _reorder_;
-		reorder_create(e, url);
+		reorder_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -868,7 +868,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _qu2eu_;
-		qu2eu_create(e, url);
+		qu2eu_create(e, url, argc, argv);
 		return e;
 	}
 	if(_str2fv_ == type)
@@ -877,7 +877,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _str2fv_;
-		str2fv_create(e, url);
+		str2fv_create(e, url, argc, argv);
 		return e;
 	}
 	if(_fv2str_ == type)
@@ -886,7 +886,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _fv2str_;
-		fv2str_create(e, url);
+		fv2str_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -897,7 +897,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _easyag_;
-		easyag_create(e, url);
+		easyag_create(e, url, argc, argv);
 		return e;
 	}
 	if(_mahony_ == type)
@@ -906,7 +906,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _mahony_;
-		mahony_create(e, url);
+		mahony_create(e, url, argc, argv);
 		return e;
 	}
 	if(_madgwick_ == type)
@@ -915,7 +915,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _madgwick_;
-		madgwick_create(e, url);
+		madgwick_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -926,7 +926,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _gcode_;
-		gcodeclient_create(e, url);
+		gcodeclient_create(e, url, argc, argv);
 		return e;
 	}
 	if(_Gcode_ == type)
@@ -935,7 +935,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _Gcode_;
-		gcodeserver_create(e, url);
+		gcodeserver_create(e, url, argc, argv);
 		return e;
 	}
 	if(_mavlink_ == type)
@@ -944,7 +944,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _mavlink_;
-		mavlinkclient_create(e, url);
+		mavlinkclient_create(e, url, argc, argv);
 		return e;
 	}
 	if(_Mavlink_ == type)
@@ -953,7 +953,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _Mavlink_;
-		mavlinkserver_create(e, url);
+		mavlinkserver_create(e, url, argc, argv);
 		return e;
 	}
 	if(_nema0183_ == type)
@@ -962,7 +962,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _nema0183_;
-		nema0183client_create(e, url);
+		nema0183client_create(e, url, argc, argv);
 		return e;
 	}
 	if(_Nema0183_ == type)
@@ -971,7 +971,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _Nema0183_;
-		nema0183server_create(e, url);
+		nema0183server_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -982,7 +982,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _HACK_;
-		if(url)hackserver_create(e, url);
+		if(url)hackserver_create(e, url, argc, argv);
 		return e;
 	}
 	if(_hack_ == type)
@@ -991,7 +991,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _hack_;
-		if(url)hackclient_create(e, url);
+		if(url)hackclient_create(e, url, argc, argv);
 		return e;
 	}
 	if(_PROXY_ == type)
@@ -1000,7 +1000,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _PROXY_;
-		if(url)proxymaster_create(e, url);
+		if(url)proxymaster_create(e, url, argc, argv);
 		return e;
 	}
 	if(_Proxy_ == type)
@@ -1009,7 +1009,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _Proxy_;
-		if(url)proxyserver_create(e, url);
+		if(url)proxyserver_create(e, url, argc, argv);
 		return e;
 	}
 	if(_proxy_ == type)
@@ -1018,7 +1018,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _proxy_;
-		if(url)proxyclient_create(e, url);
+		if(url)proxyclient_create(e, url, argc, argv);
 		return e;
 	}
 	if(_SOCKS_ == type)
@@ -1027,7 +1027,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _SOCKS_;
-		if(url)socksmaster_create(e, url);
+		if(url)socksmaster_create(e, url, argc, argv);
 		return e;
 	}
 	if(_Socks_ == type)
@@ -1036,7 +1036,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _Socks_;
-		if(url)socksserver_create(e, url);
+		if(url)socksserver_create(e, url, argc, argv);
 		return e;
 	}
 	if(_socks_ == type)
@@ -1045,7 +1045,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _socks_;
-		if(url)socksclient_create(e, url);
+		if(url)socksclient_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -1056,7 +1056,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _Dns_;
-		if(url)dnsserver_create(e, url);
+		if(url)dnsserver_create(e, url, argc, argv);
 		return e;
 	}
 	if(_dns_ == type)
@@ -1065,7 +1065,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _dns_;
-		if(url)dnsclient_create(e, url);
+		if(url)dnsclient_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -1076,7 +1076,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _tftp_;
-		if(url)tftpclient_create(e, url);
+		if(url)tftpclient_create(e, url, argc, argv);
 		return e;
 	}
 	if(_Tftp_ == type)
@@ -1085,7 +1085,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _Tftp_;
-		if(url)tftpserver_create(e, url);
+		if(url)tftpserver_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -1096,7 +1096,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _QUIC_;
-		if(url)quicmaster_create(e, url);
+		if(url)quicmaster_create(e, url, argc, argv);
 		return e;
 	}
 	if(_Quic_ == type)
@@ -1105,7 +1105,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _Quic_;
-		if(url)quicserver_create(e, url);
+		if(url)quicserver_create(e, url, argc, argv);
 		return e;
 	}
 	if(_quic_ == type)
@@ -1114,7 +1114,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _quic_;
-		if(url)quicclient_create(e, url);
+		if(url)quicclient_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -1125,7 +1125,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _SERVE_;
-		if(url)servemaster_create(e, url);
+		if(url)servemaster_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1135,7 +1135,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _Serve_;
-		if(url)serveserver_create(e, url);
+		if(url)serveserver_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1145,7 +1145,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _serve_;
-		if(url)serveclient_create(e, url);
+		if(url)serveclient_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1157,7 +1157,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _SSH_;
-		if(url)sshmaster_create(e, url);
+		if(url)sshmaster_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1167,7 +1167,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _Ssh_;
-		if(url)sshserver_create(e, url);
+		if(url)sshserver_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1177,7 +1177,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _ssh_;
-		if(url)sshclient_create(e, url);
+		if(url)sshclient_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1189,7 +1189,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _TELNET_;
-		if(url)telnetmaster_create(e, url);
+		if(url)telnetmaster_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1199,7 +1199,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _Telnet_;
-		if(url)telnetserver_create(e, url);
+		if(url)telnetserver_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1209,7 +1209,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _telnet_;
-		if(url)telnetclient_create(e, url);
+		if(url)telnetclient_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1221,7 +1221,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _HTTP_;
-		if(url)httpmaster_create(e, url);
+		if(url)httpmaster_create(e, url, argc, argv);
 		return e;
 	}
 	if(_Http_ == type)
@@ -1230,7 +1230,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _Http_;
-		if(url)httpserver_create(e, url);
+		if(url)httpserver_create(e, url, argc, argv);
 		return e;
 	}
 	if(_http_ == type)
@@ -1239,7 +1239,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _http_;
-		if(url)httpclient_create(e, url);
+		if(url)httpclient_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1251,7 +1251,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _WS_;
-		if(url)wsmaster_create(e, url);
+		if(url)wsmaster_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1261,7 +1261,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _Ws_;
-		if(url)wsserver_create(e, url);
+		if(url)wsserver_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1271,7 +1271,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _ws_;
-		if(url)wsclient_create(e, url);
+		if(url)wsclient_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1283,7 +1283,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _TLS_;
-		if(url)tlsmaster_create(e, url);
+		if(url)tlsmaster_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1293,7 +1293,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _Tls_;
-		if(url)tlsserver_create(e, url);
+		if(url)tlsserver_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1303,7 +1303,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 		if(0 == e)return 0;
 
 		e->type = _tls_;
-		if(url)tlsclient_create(e, url);
+		if(url)tlsclient_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1319,7 +1319,7 @@ void* arterycreate(u64 type, void* argstr, int argc, char** argv)
 	}
 	return 0;
 }
-void* arterymodify(int argc, char** argv)
+void* arterymodify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;

@@ -72,7 +72,7 @@ int pwrclkdelete(void* addr)
 	}
 	return 0;
 }
-void* pwrclkcreate(u64 type, void* name, int argc, char** argv)
+void* pwrclkcreate(u64 type, void* name, int argc, u8** argv)
 {
 	int j;
 	struct pwrclk* tmp;
@@ -105,7 +105,7 @@ void* pwrclkcreate(u64 type, void* name, int argc, char** argv)
 
 	return 0;
 }
-int pwrclkmodify(int argc, char** argv)
+int pwrclkmodify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;

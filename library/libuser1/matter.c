@@ -7,52 +7,52 @@ void mine_free();
 void mine_init(void*);
 
 //
-int baby_create(void*, void*);
+int baby_create(void*, void*, int, u8**);
 int baby_delete(void*, void*);
 int baby_read(void*, void*, void*, int, void*, int);
 int baby_write(void*, void*, void*, int, void*, int);
 //
-int test_create(void*, void*);
+int test_create(void*, void*, int, u8**);
 int test_delete(void*, void*);
 int test_read(void*, void*, void*, int, void*, int);
 int test_write(void*, void*, void*, int, void*, int);
 
 //
-int reality_create(void*, void*);
+int reality_create(void*, void*, int, u8**);
 int reality_delete(void*);
 int reality_write(void*, void*, void*, int, void*, int);
 int reality_read( void*, void*, void*, int, void*, int);
 
 //
-int htmlnode_create(void*, void*);
+int htmlnode_create(void*, void*, int, u8**);
 int htmlnode_delete(void*);
 int htmlnode_write(void*, void*, void*, int, void*, int);
 int htmlnode_read( void*, void*, void*, int, void*, int);
 
 //
-int eeworld_create(void*, void*);
+int eeworld_create(void*, void*, int, u8**);
 int eeworld_delete(void*, void*);
 int eeworld_start(void*, void*);
 int eeworld_stop(void*, void*);
 int eeworld_write(void*, void*, void*, int, void*, int);
 int eeworld_read(void*, void*, void*, int, void*, int);
 //hoff helper
-int hoffdata_create(void*, void*);
+int hoffdata_create(void*, void*, int, u8**);
 int hoffdata_read(void*, void*, void*, int, void*, int);
 
 //
-int world3d_create(void*, void*);
+int world3d_create(void*, void*, int, u8**);
 int world3d_delete(void*, void*);
 int world3d_start(void*, void*);
 int world3d_stop(void*, void*);
 int world3d_write(void*, void*, void*, int, void*, int);
 int world3d_read(void*, void*, void*, int, void*, int);
 //gl41 helper
-int gl41data_create(void*, void*);
+int gl41data_create(void*, void*, int, u8**);
 int gl41data_delete(void*);
 int gl41data_read( void*, void*, void*, int, void*, int);
 int gl41data_write(void*, void*, void*, int, void*, int);
-int gl41coop_create(void*, void*);
+int gl41coop_create(void*, void*, int, u8**);
 int gl41coop_delete(void*);
 int gl41coop_read( void*, void*, void*, int, void*, int);
 int gl41coop_write(void*, void*, void*, int, void*, int);
@@ -240,7 +240,7 @@ int actordelete(struct actor* act)
 
 	return 0;
 }
-void* actorcreate(u64 type, void* buf, int argc, char** argv)
+void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 {
 	int j,k;
 	u8* src;
@@ -255,7 +255,7 @@ void* actorcreate(u64 type, void* buf, int argc, char** argv)
 		if(_ORIG_ == act->type)return 0;
 		if(_COPY_ == act->type)return 0;
 
-		act->oncreate(act, 0);
+		act->oncreate(act, 0, 0, 0);
 	}
 
 	//test
@@ -263,14 +263,14 @@ void* actorcreate(u64 type, void* buf, int argc, char** argv)
 	{
 		act = allocactor();
 		act->fmt = act->type = _baby_;
-		baby_create(act, buf);
+		baby_create(act, buf, 0, 0);
 		return act;
 	}
 	else if(_test_ == type)
 	{
 		act = allocactor();
 		act->fmt = act->type = _test_;
-		test_create(act, buf);
+		test_create(act, buf, 0, 0);
 		return act;
 	}
 
@@ -279,7 +279,7 @@ void* actorcreate(u64 type, void* buf, int argc, char** argv)
 	{
 		act = allocactor();
 		act->fmt = act->type = _reality_;
-		reality_create(act, buf);
+		reality_create(act, buf, 0, 0);
 		return act;
 	}
 
@@ -288,14 +288,14 @@ void* actorcreate(u64 type, void* buf, int argc, char** argv)
 	{
 		act = allocactor();
 		act->fmt = act->type = _eeworld_;
-		eeworld_create(act, buf);
+		eeworld_create(act, buf, 0, 0);
 		return act;
 	}
 	else if(_hoffdata_ == type)
 	{
 		act = allocactor();
 		act->fmt = act->type = _hoffdata_;
-		hoffdata_create(act, buf);
+		hoffdata_create(act, buf, 0, 0);
 		return act;
 	}
 
@@ -304,7 +304,7 @@ void* actorcreate(u64 type, void* buf, int argc, char** argv)
 	{
 		act = allocactor();
 		act->fmt = act->type = _html_;
-		htmlnode_create(act, buf);
+		htmlnode_create(act, buf, 0, 0);
 		return act;
 	}
 
@@ -313,21 +313,21 @@ void* actorcreate(u64 type, void* buf, int argc, char** argv)
 	{
 		act = allocactor();
 		act->fmt = act->type = _world3d_;
-		world3d_create(act, buf);
+		world3d_create(act, buf, 0, 0);
 		return act;
 	}
 	else if(_gl41data_ == type)
 	{
 		act = allocactor();
 		act->fmt = act->type = _gl41data_;
-		gl41data_create(act, buf);
+		gl41data_create(act, buf, 0, 0);
 		return act;
 	}
 	else if(_gl41coop_ == type)
 	{
 		act = allocactor();
 		act->fmt = act->type = _gl41coop_;
-		gl41coop_create(act, buf);
+		gl41coop_create(act, buf, 0, 0);
 		return act;
 	}
 
@@ -373,14 +373,14 @@ void* actorcreate(u64 type, void* buf, int argc, char** argv)
 			//act->fmt
 		}
 
-		act->oncreate(act, buf);
+		act->oncreate(act, buf, 0, 0);
 	}
 
 	if(_orig_ == act->type)act->type = _ORIG_;
 	else if(_copy_ == act->type)act->type = _COPY_;
 	return act;
 }
-void* actormodify(int argc, char** argv)
+void* actormodify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;

@@ -108,7 +108,7 @@ int spi_delete(int fd)
 	if(ret < 0)perror("Error - Could not close SPI device");
 	return ret;
 }
-int spi_create(char* buf, int len)
+int spi_create(char* buf, int len, int argc, u8** argv)
 {
 	int j,ret;
 	u8 str[128];

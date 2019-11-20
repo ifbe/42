@@ -11,7 +11,7 @@ int main(int argc, char** argv)
 	void* thr;
 
 	all = pwrclkcreate(_main_, 0, 0, 0);
-	thr = workercreate(0, 0, argc, argv);
+	thr = workercreate(0, 0, argc, (u8**)argv);
 
 	workerdelete(thr);
 	pwrclkdelete(all);

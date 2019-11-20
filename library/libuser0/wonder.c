@@ -5,22 +5,22 @@
 
 void initjoy(void*);
 void freejoy();
-int joycreate(void*, void*);
+int joycreate(void*, void*, int, u8**);
 int joydelete(void*);
 //
 void initstd(void*);
 void freestd();
-int stdcreate(void*, void*);
+int stdcreate(void*, void*, int, u8**);
 int stddelete(void*);
 //
 void inittray(void*);
 void freetray();
-int traycreate(void*, void*);
+int traycreate(void*, void*, int, u8**);
 int traydelete(void*);
 //micphone
 void initmicphone(void*);
 void freemicphone();
-int micphonecreate(void*, void*);
+int micphonecreate(void*, void*, int, u8**);
 int micphonedelete(void*);
 int micphonestart(void*);
 int micphonestop(void*);
@@ -31,7 +31,7 @@ int micphonechoose();
 //speaker
 void initspeaker(void*);
 void freespeaker();
-int speakercreate(void*, void*);
+int speakercreate(void*, void*, int, u8**);
 int speakerdelete(void*);
 int speakerstart(void*);
 int speakerstop(void*);
@@ -42,7 +42,7 @@ int speakerchoose();
 //cam
 void initcam(void*);
 void freecam();
-int videocreate(void*, void*);
+int videocreate(void*, void*, int, u8**);
 int videodelete(void*);
 int videostart(void*);
 int videostop(void*);
@@ -53,7 +53,7 @@ int videochoose();
 //window
 void initwindow(void*);
 void freewindow();
-int windowcreate(void*, void*);
+int windowcreate(void*, void*, int, u8**);
 int windowdelete(void*);
 int windowstart(void*);
 int windowstop(void*);
@@ -62,17 +62,17 @@ int windowwrite(void*, void*, void*, int, void*, int);
 int windowlist();
 int windowchoose();
 //
-int ahrs_create(void*, void*);
+int ahrs_create(void*, void*, int, u8**);
 int ahrs_delete(void*);
 int ahrs_read(void*, void*, void*, int, void*, int);
 int ahrs_write(void*, void*, void*, int, void*, int);
 //
-int toycar_create(void*, void*);
+int toycar_create(void*, void*, int, u8**);
 int toycar_delete(void*);
 int toycar_read(void*, void*, void*, int, void*, int);
 int toycar_write(void*, void*, void*, int, void*, int);
 //
-int stepcar_create(void*, void*);
+int stepcar_create(void*, void*, int, u8**);
 int stepcar_delete(void*, void*);
 int stepcar_read(void*, void*, void*, int, void*, int);
 int stepcar_write(void*, void*, void*, int, void*, int);
@@ -196,7 +196,7 @@ int arenadelete(struct arena* win)
 	win->fmt = 0;
 	return 0;
 }
-void* arenacreate(u64 type, void* arg, int argc, char** argv)
+void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 {
 	int j = 0;
 	struct arena* win;
@@ -217,7 +217,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _joy_;
 		win->fmt = _joy_;
-		joycreate(win, arg);
+		joycreate(win, arg, argc, argv);
 		return win;
 	}
 	else if(_std_ == type)
@@ -227,7 +227,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _std_;
 		win->fmt = _std_;
-		stdcreate(win, arg);
+		stdcreate(win, arg, argc, argv);
 		return win;
 	}
 	else if(_tray_ == type)
@@ -237,7 +237,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _tray_;
 		win->fmt = _tray_;
-		traycreate(win, arg);
+		traycreate(win, arg, argc, argv);
 		return win;
 	}
 
@@ -249,7 +249,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _ahrs_;
 		win->fmt = _ahrs_;
-		ahrs_create(win, arg);
+		ahrs_create(win, arg, argc, argv);
 		return win;
 	}
 
@@ -261,7 +261,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _car_;
 		win->fmt = _bdc_;
-		toycar_create(win, arg);
+		toycar_create(win, arg, argc, argv);
 		return win;
 	}
 	else if(_step_ == type)
@@ -271,7 +271,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _car_;
 		win->fmt = _step_;
-		stepcar_create(win, arg);
+		stepcar_create(win, arg, argc, argv);
 		return win;
 	}
 
@@ -283,7 +283,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _mic_;
 		win->fmt = hex32('p','c','m',0);
-		micphonecreate(win, arg);
+		micphonecreate(win, arg, argc, argv);
 		return win;
 	}
 
@@ -295,7 +295,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _spk_;
 		win->fmt = hex32('p','c','m',0);
-		speakercreate(win, arg);
+		speakercreate(win, arg, argc, argv);
 		return win;
 	}
 
@@ -307,7 +307,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _cam_;
 		win->fmt = hex32('y','u','v',0);
-		videocreate(win, arg);
+		videocreate(win, arg, argc, argv);
 		return win;
 	}
 	else if(_cap_ == type)
@@ -317,7 +317,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _cam_;
 		win->fmt = hex32('h','o','l','o');
-		//hologram_create(win, arg);
+		//hologram_create(win, arg, argc, argv);
 		return win;
 	}
 
@@ -329,7 +329,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _win_;
 		win->fmt = _none_;
-		windowcreate(win, arg);
+		windowcreate(win, arg, argc, argv);
 		return win;
 	}
 	else if(_easy_ == type)
@@ -339,7 +339,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _win_;
 		win->fmt = _easy_;
-		windowcreate(win, arg);
+		windowcreate(win, arg, argc, argv);
 		return win;
 	}
 	else if(_win_ == type)
@@ -349,7 +349,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _win_;
 		win->fmt = hex64('b','g','r','a','8','8','8','8');
-		windowcreate(win, arg);
+		windowcreate(win, arg, argc, argv);
 		return win;
 	}
 	else if(_coop_ == type)
@@ -359,7 +359,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 
 		win->type = _win_;
 		win->fmt = _coop_;
-		windowcreate(win, arg);
+		windowcreate(win, arg, argc, argv);
 		return win;
 	}
 	else if(_gl41fboc_ == type)
@@ -368,7 +368,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 		if(0 == win)return 0;
 
 		win->fmt = win->type = _gl41fboc_;
-		windowcreate(win, arg);
+		windowcreate(win, arg, argc, argv);
 		return win;
 	}
 	else if(_gl41fbod_ == type)
@@ -377,7 +377,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 		if(0 == win)return 0;
 
 		win->fmt = win->type = _gl41fbod_;
-		windowcreate(win, arg);
+		windowcreate(win, arg, argc, argv);
 		return win;
 	}
 	else if(_gl41fbog_ == type)
@@ -386,7 +386,7 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 		if(0 == win)return 0;
 
 		win->fmt = win->type = _gl41fbog_;
-		windowcreate(win, arg);
+		windowcreate(win, arg, argc, argv);
 		return win;
 	}
 	else if(_gl41wnd0_ == type)
@@ -395,13 +395,13 @@ void* arenacreate(u64 type, void* arg, int argc, char** argv)
 		if(0 == win)return 0;
 
 		win->fmt = win->type = _gl41wnd0_;
-		windowcreate(win, arg);
+		windowcreate(win, arg, argc, argv);
 		return win;
 	}
 
 	return 0;
 }
-void* arenamodify(int argc, char** argv)
+void* arenamodify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;

@@ -1,11 +1,11 @@
 #include "libhard.h"
 //i2c
-int i2c_create(void*, int);
+int i2c_create(void*, int, int, u8**);
 int i2c_delete(int);
 int i2c_read(int fd, int addr, u8* buf, int len);
 int i2c_write(int fd, int addr, u8* buf, int len);
 //spi
-int spi_create(void*, int);
+int spi_create(void*, int, int, u8**);
 int spi_delete(int);
 int spi_read(int fd, int addr, u8* buf, int len);
 int spi_write(int fd, int addr, u8* buf, int len);
@@ -76,14 +76,14 @@ int devicedelete()
 {
 	return 0;
 }
-void* devicecreate(u64 type, void* name, int argc, char** argv)
+void* devicecreate(u64 type, void* name, int argc, u8** argv)
 {
 	int fd, baud;
 	u8 tmp[256];
 
 	if(_i2c_ == type)
 	{
-		fd = i2c_create(name, 0);
+		fd = i2c_create(name, 0, argc, argv);
 		if(fd <= 0)return 0;
 
 		dev[fd].type = _i2c_;
@@ -93,7 +93,7 @@ void* devicecreate(u64 type, void* name, int argc, char** argv)
 	}
 	if(_spi_ == type)
 	{
-		fd = spi_create(name, 0);
+		fd = spi_create(name, 0, argc, argv);
 		if(fd <= 0)return 0;
 
 		dev[fd].type = _spi_;
@@ -102,7 +102,7 @@ void* devicecreate(u64 type, void* name, int argc, char** argv)
 	}
 	return 0;
 }
-int devicemodify(int argc, char** argv)
+int devicemodify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;

@@ -1,7 +1,7 @@
 #include "libhard.h"
 //
 #define _lsm9ds1_ hex64('l','s','m','9','d','s','1',0)
-int lsm9ds1_create(struct driver* ele, void* url);
+int lsm9ds1_create(struct driver* ele, void* url, int argc, u8** argv);
 int lsm9ds1_delete(struct driver* ele);
 int lsm9ds1_start( struct halfrel* self, struct halfrel* peer);
 int lsm9ds1_stop(  struct halfrel* self, struct halfrel* peer);
@@ -9,7 +9,7 @@ int lsm9ds1_write( struct halfrel* self, struct halfrel* peer, void* arg, int id
 int lsm9ds1_read(  struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 #define _mpu9250_ hex64('m','p','u','9','2','5','0',0)
-int mpu9250_create(struct driver* ele, void* url);
+int mpu9250_create(struct driver* ele, void* url, int argc, u8** argv);
 int mpu9250_delete(struct driver* ele);
 int mpu9250_start( struct halfrel* self, struct halfrel* peer);
 int mpu9250_stop(  struct halfrel* self, struct halfrel* peer);
@@ -80,7 +80,7 @@ int driverdelete()
 {
 	return 0;
 }
-void* drivercreate(u64 type, void* url, int argc, char** argv)
+void* drivercreate(u64 type, void* url, int argc, u8** argv)
 {
 	struct driver* dr;
 	say("@drivercreate: %.8s\n", &type);
@@ -91,7 +91,7 @@ void* drivercreate(u64 type, void* url, int argc, char** argv)
 		if(0 == dr)return 0;
 
 		dr->type = _mpu9250_;
-		mpu9250_create(dr, url);
+		mpu9250_create(dr, url, argc, argv);
 		return dr;
 	}
 	if(_lsm9ds1_ == type)
@@ -100,13 +100,13 @@ void* drivercreate(u64 type, void* url, int argc, char** argv)
 		if(0 == dr)return 0;
 
 		dr->type = _lsm9ds1_;
-		lsm9ds1_create(dr, url);
+		lsm9ds1_create(dr, url, argc, argv);
 		return dr;
 	}
 
 	return 0;
 }
-int drivermodify(int argc, char** argv)
+int drivermodify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;

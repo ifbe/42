@@ -4,7 +4,7 @@ void initstdev(void*);
 void freestdrel();
 void initstdrel(void*);
 int args_delete(void*);
-void args_create(int, char**);
+void args_create(int, u8**);
 //
 void waiter(void*);
 void initwaiter(void*);
@@ -61,7 +61,7 @@ int workerdelete(void* addr)
 
 	return 0;
 }
-void* workercreate(u64 type, void* name, int argc, char** argv)
+void* workercreate(u64 type, void* name, int argc, u8** argv)
 {
 	struct worker* tmp;
 
@@ -117,7 +117,7 @@ void* workercreate(u64 type, void* name, int argc, char** argv)
 	}
 	return 0;
 }
-int workermodify(int argc, char** argv)
+int workermodify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;
