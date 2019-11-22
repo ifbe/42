@@ -1,3 +1,10 @@
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <system>
 server{
 fmt:TCP
