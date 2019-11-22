@@ -189,6 +189,9 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 	int propname = -1;
 	int propdata = -1;
 
+	int argc = 0;
+	u8* argv[16];
+
 	u64 hash = 0;
 	u8* tmp = 0;
 
@@ -225,6 +228,9 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 				propdata = j+1;
 				propname = str;
 				str = -1;
+
+				argv[argc] = buf+propname;
+				argc += 1;
 
 				//say("propname = %.*s\n", j-propname, buf+propname);
 				if(0 == ncmp(buf+propname, "fmt", 3)){
@@ -265,17 +271,19 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 				chip[clen].type = fmt;
 				chip[clen].hash = hash;
 				switch(tier){
-					case _act_:chip[clen].addr =  actorcreate(fmt, url, 0, 0);break;
-					case _win_:chip[clen].addr =  arenacreate(fmt, url, 0, 0);break;
-					case _art_:chip[clen].addr = arterycreate(fmt, url, 0, 0);break;
-					case _sys_:chip[clen].addr = systemcreate(fmt, url, 0, 0);break;
-					case _dri_:chip[clen].addr = drivercreate(fmt, url, 0, 0);break;
-					case _dev_:chip[clen].addr = devicecreate(fmt, url, 0, 0);break;
-					case _wrk_:chip[clen].addr = workercreate(fmt, url, 0, 0);break;
+					case _act_:chip[clen].addr =  actorcreate(fmt, url, argc, argv);break;
+					case _win_:chip[clen].addr =  arenacreate(fmt, url, argc, argv);break;
+					case _art_:chip[clen].addr = arterycreate(fmt, url, argc, argv);break;
+					case _sys_:chip[clen].addr = systemcreate(fmt, url, argc, argv);break;
+					case _dri_:chip[clen].addr = drivercreate(fmt, url, argc, argv);break;
+					case _dev_:chip[clen].addr = devicecreate(fmt, url, argc, argv);break;
+					case _wrk_:chip[clen].addr = workercreate(fmt, url, argc, argv);break;
 				}
 
 				nodename = -1;
 				clen += 1;
+
+				argc = 0;
 			}//if innode
 
 			fmt = 0;

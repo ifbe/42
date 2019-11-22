@@ -8,9 +8,11 @@ fmt:poller
 <actor>
 cam0{
 fmt:freecam
+script:1111
 }
 cam1{
 fmt:freecam
+script:2222
 }
 mirror{
 fmt:mirror

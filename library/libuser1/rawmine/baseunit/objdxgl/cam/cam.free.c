@@ -56,9 +56,15 @@ static void freecam_modify(struct actor* act)
 static void freecam_delete(struct actor* act)
 {
 }
-static void freecam_create(struct actor* act, void* arg)
+static void freecam_create(struct actor* act, void* arg, int argc, u8** argv)
 {
+	int j;
     say("@freecam_create\n");
+
+	for(j=0;j<argc;j++){
+		say("%d:%.8s\n", j, argv[j]);
+	}
+
 	act->buf = memorycreate(64, 0);
 	act->x0 = 0;
 	act->y0 = 0;

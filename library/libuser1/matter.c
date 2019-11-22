@@ -255,7 +255,7 @@ void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 		if(_ORIG_ == act->type)return 0;
 		if(_COPY_ == act->type)return 0;
 
-		act->oncreate(act, 0, 0, 0);
+		act->oncreate(act, 0, argc, argv);
 	}
 
 	//test
@@ -263,14 +263,14 @@ void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 	{
 		act = allocactor();
 		act->fmt = act->type = _baby_;
-		baby_create(act, buf, 0, 0);
+		baby_create(act, buf, argc, argv);
 		return act;
 	}
 	else if(_test_ == type)
 	{
 		act = allocactor();
 		act->fmt = act->type = _test_;
-		test_create(act, buf, 0, 0);
+		test_create(act, buf, argc, argv);
 		return act;
 	}
 
@@ -279,7 +279,7 @@ void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 	{
 		act = allocactor();
 		act->fmt = act->type = _reality_;
-		reality_create(act, buf, 0, 0);
+		reality_create(act, buf, argc, argv);
 		return act;
 	}
 
@@ -288,14 +288,14 @@ void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 	{
 		act = allocactor();
 		act->fmt = act->type = _eeworld_;
-		eeworld_create(act, buf, 0, 0);
+		eeworld_create(act, buf, argc, argv);
 		return act;
 	}
 	else if(_hoffdata_ == type)
 	{
 		act = allocactor();
 		act->fmt = act->type = _hoffdata_;
-		hoffdata_create(act, buf, 0, 0);
+		hoffdata_create(act, buf, argc, argv);
 		return act;
 	}
 
@@ -304,7 +304,7 @@ void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 	{
 		act = allocactor();
 		act->fmt = act->type = _html_;
-		htmlnode_create(act, buf, 0, 0);
+		htmlnode_create(act, buf, argc, argv);
 		return act;
 	}
 
@@ -313,21 +313,21 @@ void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 	{
 		act = allocactor();
 		act->fmt = act->type = _world3d_;
-		world3d_create(act, buf, 0, 0);
+		world3d_create(act, buf, argc, argv);
 		return act;
 	}
 	else if(_gl41data_ == type)
 	{
 		act = allocactor();
 		act->fmt = act->type = _gl41data_;
-		gl41data_create(act, buf, 0, 0);
+		gl41data_create(act, buf, argc, argv);
 		return act;
 	}
 	else if(_gl41coop_ == type)
 	{
 		act = allocactor();
 		act->fmt = act->type = _gl41coop_;
-		gl41coop_create(act, buf, 0, 0);
+		gl41coop_create(act, buf, argc, argv);
 		return act;
 	}
 
@@ -373,7 +373,7 @@ void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 			//act->fmt
 		}
 
-		act->oncreate(act, buf, 0, 0);
+		act->oncreate(act, buf, argc, argv);
 	}
 
 	if(_orig_ == act->type)act->type = _ORIG_;
