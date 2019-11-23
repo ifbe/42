@@ -61,11 +61,22 @@ static void freecam_create(struct actor* act, void* arg, int argc, u8** argv)
 	int j;
     say("@freecam_create\n");
 
+	//matrix
+	act->buf0 = memorycreate(64, 0);
+
+	//script
 	for(j=0;j<argc;j++){
-		say("%d:%.8s\n", j, argv[j]);
+		if(0 == ncmp(argv[j], "script:", 7)){
+			if('f' == argv[j][7]){
+				act->data1 = 'f';	//frus
+			}
+			else{
+				act->data1 = 0;
+			}
+		}
 	}
 
-	act->buf = memorycreate(64, 0);
+	//
 	act->x0 = 0;
 	act->y0 = 0;
 }
@@ -473,21 +484,17 @@ void freecam_rotate(vec3 a, vec3 b, vec3 axis, float angle)
 	quaternion_operation(a, axis, angle);
 	quaternion_operation(b, axis, angle);
 }
-static int freecam_event1(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+static int freecam_event_obb(
+	struct actor* act, struct style* part,
+	struct actor* win, struct style* geom,
 	struct event* ev, int len)
 {
-	float nx,ny,nz;
 	short* t;
+	float nx,ny,nz;
 	struct fstyle* obb;
-	struct halfrel* self;
-	struct halfrel* peer;
 	//say("freecam_event@%llx:%x,%x\n", act, ev->why, ev->what);
 
-	freecam_search(act, 0, &self, &peer);
-	obb = peer->pfoot;
-
+	obb = &geom->fshape;
 	if('p' == (ev->what&0xff))
 	{
 	}
@@ -545,6 +552,24 @@ static int freecam_event1(
 	}
 
 	return 1;
+}
+static int freecam_event_frus(
+	struct actor* act, struct style* part,
+	struct actor* win, struct style* geom,
+	struct event* ev, int len)
+{
+	struct fstyle* frus;
+
+	frus = &geom->frustum;
+	if(_char_ == ev->what){
+		switch(ev->why){
+			case 'a':frus->vl[3]+=0.01;frus->vr[3]-=0.01;break;
+			case 'd':frus->vl[3]-=0.01;frus->vr[3]+=0.01;break;
+			case 's':frus->vn[3]-=0.01;break;
+			case 'w':frus->vn[3]+=0.01;break;
+		}
+	}
+	return 0;
 }
 static int freecam_event2(
 	struct actor* act, struct style* frus,
@@ -658,7 +683,7 @@ static void freecam_matrix(
 	frus->vt[3] = frus->vr[3] * dy / dx;
 	freecam_shape2frustum(shape, frus);
 
-	float* mat = act->buf;
+	float* mat = act->buf0;
 	fixmatrix((void*)mat, frus);
 	mat4_transpose((void*)mat);
 	//printmat4(m);
@@ -721,9 +746,14 @@ static int freecam_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 	wld = peer->pchip;geom = peer->pfoot;
 	act = self->pchip;part = self->pfoot;
 	ev = (void*)buf;
-
 	//say("%llx@freecam_write:%llx,%llx,%llx,%llx\n", act, ev->why, ev->what, ev->where, ev->when);
-	freecam_event1(act,part, wld,geom, ev, 0);
+
+	if('f' == act->data1){
+		freecam_event_frus(act,part, wld,geom, ev, 0);
+	}
+	else{
+		freecam_event_obb(act,part, wld,geom, ev, 0);
+	}
 	return 0;
 }
 static void freecam_stop(struct halfrel* self, struct halfrel* peer)
