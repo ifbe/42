@@ -490,45 +490,71 @@ static int freecam_event_obb(
 	struct event* ev, int len)
 {
 	short* t;
-	float nx,ny,nz;
 	struct fstyle* obb;
+	float nx,ny,nz;
 	//say("freecam_event@%llx:%x,%x\n", act, ev->why, ev->what);
 
 	obb = &geom->fshape;
 	if('p' == (ev->what&0xff))
 	{
 	}
-	else if(joy_left == (ev->what & joy_mask))
+	else if('j' == (ev->what&0xff))
 	{
 		t = (void*)ev;
-		if(t[3] & joyl_left)		//x-
+		if(joy_left == (ev->what & joy_mask))
 		{
-			obb->vc[0] -= 10;
+			if(t[3] & joyl_left)		//x-
+			{
+				obb->vc[0] -= 10;
+			}
+			if(t[3] & joyl_right)		//x+
+			{
+				obb->vc[0] += 10;
+			}
+			if(t[3] & joyl_down)		//y-
+			{
+				obb->vc[1] -= 10;
+			}
+			if(t[3] & joyl_up)			//y+
+			{
+				obb->vc[1] += 10;
+			}
+			if(t[3] & joyl_trigger)		//z-
+			{
+				obb->vc[2] -= 10;
+			}
+			if(t[3] & joyl_bumper)		//z+
+			{
+				obb->vc[2] += 10;
+			}
 		}
-		if(t[3] & joyl_right)		//x+
+		else if(joy_right == (ev->what & joy_mask))
 		{
-			obb->vc[0] += 10;
+			if(t[3] & joyr_left)		//x-
+			{
+				freecam_rotate(obb->vr, obb->vf, obb->vt, 0.05);
+			}
+			if(t[3] & joyr_right)		//x+
+			{
+				freecam_rotate(obb->vr, obb->vf, obb->vt,-0.05);
+			}
+			if(t[3] & joyr_down)		//y-
+			{
+				freecam_rotate(obb->vf, obb->vt, obb->vr,-0.05);
+			}
+			if(t[3] & joyr_up)			//y+
+			{
+				freecam_rotate(obb->vf, obb->vt, obb->vr, 0.05);
+			}
+			if(t[3] & joyr_trigger)		//z-
+			{
+				freecam_rotate(obb->vr, obb->vt, obb->vf,-0.05);
+			}
+			if(t[3] & joyr_bumper)		//z+
+			{
+				freecam_rotate(obb->vr, obb->vt, obb->vf, 0.05);
+			}
 		}
-		if(t[3] & joyl_down)		//y-
-		{
-			obb->vc[1] -= 10;
-		}
-		if(t[3] & joyl_up)			//y+
-		{
-			obb->vc[1] += 10;
-		}
-		if(t[3] & joyl_trigger)		//z-
-		{
-			obb->vc[2] -= 10;
-		}
-		if(t[3] & joyl_bumper)		//z+
-		{
-			obb->vc[2] += 10;
-		}
-	}
-	else if(joy_right == (ev->what & joy_mask))
-	{
-		t = (void*)ev;
 	}
 	else if(_char_ == ev->what){
 		nx = 100.0/vec3_len(obb->vr);
@@ -558,7 +584,9 @@ static int freecam_event_frus(
 	struct actor* win, struct style* geom,
 	struct event* ev, int len)
 {
+	short* t;
 	struct fstyle* frus;
+	float nx,ny,nz;
 
 	frus = &geom->frustum;
 	if(_char_ == ev->what){
@@ -567,6 +595,32 @@ static int freecam_event_frus(
 			case 'd':frus->vl[3]-=0.01;frus->vr[3]+=0.01;break;
 			case 's':frus->vn[3]-=0.01;break;
 			case 'w':frus->vn[3]+=0.01;break;
+		}
+	}
+	else if('j' == (ev->what&0xff))
+	{
+		t = (void*)ev;
+		if(joy_left == (ev->what & joy_mask))
+		{
+			if(t[3] & joyl_left)		//x-
+			{
+				frus->vl[3]+=0.01;frus->vr[3]-=0.01;
+			}
+			if(t[3] & joyl_right)		//x+
+			{
+				frus->vl[3]-=0.01;frus->vr[3]+=0.01;
+			}
+			if(t[3] & joyl_down)		//y-
+			{
+				frus->vn[3]-=0.01;
+			}
+			if(t[3] & joyl_up)			//y+
+			{
+				frus->vn[3]+=0.01;
+			}
+		}
+		else if(joy_right == (ev->what & joy_mask))
+		{
 		}
 	}
 	return 0;

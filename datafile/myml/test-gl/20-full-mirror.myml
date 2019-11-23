@@ -47,6 +47,9 @@ width:1024
 height:1024
 depth:1024
 }
+gamepad{
+fmt:joy
+}
 </arena>
 
 
@@ -155,4 +158,7 @@ q:0.333, 0.333
 
 #opengl depends on glwnd
 (opengl, 0, wnd) -> (glwnd, 0, togl)
+
+#gamepad
+(gamepad, 0, dst) -> (opengl, 0, 0)
 </relation>

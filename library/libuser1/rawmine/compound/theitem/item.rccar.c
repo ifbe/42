@@ -212,7 +212,7 @@ static void rccar_event(
 		return;
 	}
 
-	if(joy_event == (ev->what & 0xff))
+	if('j' == (ev->what & 0xff))
 	{
 		if(joy_left == (ev->what & joy_mask))
 		{

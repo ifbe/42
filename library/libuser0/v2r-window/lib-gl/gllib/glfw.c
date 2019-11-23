@@ -368,9 +368,12 @@ void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 {
 	struct arena* ogl;
 	if(0 == self)return;
-
 	ogl = self->pchip;
-	if(_gl41wnd0_ == ogl->fmt)gl41wnd0_write(self, peer, arg, idx, buf, len);
+
+	switch(ogl->fmt){
+		case _gl41wnd0_:gl41wnd0_write(self, peer, arg, idx, buf, len);break;
+		default:windowdispatch(ogl, buf);
+	}
 }
 void windowchange()
 {
@@ -383,6 +386,7 @@ void windowstop(struct arena* ogl)
 }
 void windowstart(struct arena* ogl)
 {
+	say("@windowstart:%llx\n", ogl);
 }
 void windowdelete(struct arena* ogl)
 {
