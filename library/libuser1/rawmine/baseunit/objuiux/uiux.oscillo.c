@@ -27,8 +27,8 @@ static int that;
 
 
 static void oscillo_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {/*
 	float t,cc,ss;
 	int x,y;
@@ -95,8 +95,8 @@ static void oscillo_draw_pixel(
 }
 /*
 static void oscillo_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x;
 	float a,c,s;
@@ -140,8 +140,8 @@ static void oscillo_draw_vbo2d(
 	}
 }*/
 static void oscillo_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,t;
 	float tmp,val;
@@ -209,13 +209,13 @@ static void oscillo_draw_vbo3d(
 	}*/
 }
 static void oscillo_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void oscillo_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -229,8 +229,8 @@ static void oscillo_draw_html(
 	win->len = len;
 }
 static void oscillo_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 	int w = win->stride;
@@ -251,14 +251,14 @@ static void oscillo_draw_tui(
 	}
 }
 static void oscillo_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("oscillo(%x,%x,%x)\n",win,act,sty);
 }
 static void oscillo_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(0 == act->buf)return;
@@ -279,8 +279,8 @@ static void oscillo_draw(
 
 /*
 static void oscillo_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev)
 {
 	int j,k;
@@ -291,8 +291,8 @@ static void oscillo_event(
 	}
 }
 static void oscillo_update(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	u8* buf, int len)
 {
 	int j,k;
@@ -338,7 +338,7 @@ say("%llx, %x\n", buf, len);
 	//say("k=%d\n",k);
 	that = k*44100/1024;
 }*/
-void oscillo_data(struct actor* act, int type, void* buf, int len)
+void oscillo_data(struct entity* act, int type, void* buf, int len)
 {
 	int idx;
 	void** tab;
@@ -356,11 +356,11 @@ void oscillo_data(struct actor* act, int type, void* buf, int len)
 static void oscillo_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	if(ctx){
 		if(_gl41data_ == ctx->type)oscillo_draw_vbo3d(act,pin,ctx,sty);
 	}
@@ -368,9 +368,9 @@ static void oscillo_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 static void oscillo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	//struct actor* win = (void*)(peer->chip);
+	//struct entity* win = (void*)(peer->chip);
 	//struct style* sty = (void*)(peer->foot);
 	if(_pcm_ == self->flag){
 		oscillo_data(act, 0, buf, len);
@@ -393,16 +393,16 @@ static void oscillo_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void oscillo_search(struct actor* act)
+static void oscillo_search(struct entity* act)
 {
 }
-static void oscillo_modify(struct actor* act)
+static void oscillo_modify(struct entity* act)
 {
 }
-static void oscillo_delete(struct actor* act)
+static void oscillo_delete(struct entity* act)
 {
 }
-static void oscillo_create(struct actor* act)
+static void oscillo_create(struct entity* act)
 {
 	act->buf = memorycreate(0x1000, 0);
 	act->len = 0;
@@ -411,7 +411,7 @@ static void oscillo_create(struct actor* act)
 
 
 
-void oscillo_register(struct actor* p)
+void oscillo_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('o', 's', 'c', 'i', 'l', 'l', 'o', 0);

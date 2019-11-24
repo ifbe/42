@@ -5,7 +5,7 @@ fmt:poller
 </worker>
 
 
-<actor>
+<entity>
 overview{
 fmt:overview
 }
@@ -28,10 +28,10 @@ fmt:theeye
 reality{
 fmt:reality
 }
-</actor>
+</entity>
 
 
-<arena>
+<supply>
 glwnd{
 fmt:gl41wnd0
 }
@@ -42,7 +42,7 @@ width:1024
 height:1024
 depth:1024
 }
-</arena>
+</supply>
 
 
 <style>

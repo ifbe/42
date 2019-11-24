@@ -1,14 +1,14 @@
 #include "libuser.h"
-void* allocactor();
+void* allocentity();
 void* allocstyle();
-int ui2d_cwrite(struct actor* win, struct style* sty, struct actor* sc, struct style* sf, int flag);
+int ui2d_cwrite(struct entity* win, struct style* sty, struct entity* sc, struct style* sf, int flag);
 
 
 
 
 void corner_vbo_drag_lefttop(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	float x, float y)
 {
 	vec3 tc,tr,tf;
@@ -26,8 +26,8 @@ void corner_vbo_drag_lefttop(
 	carvesolid_circle(win, 0xffffff, tc, tr, tf);
 }
 void corner_vbo_drag_righttop(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	float x, float y)
 {
 	vec3 tc,tr,tf;
@@ -60,8 +60,8 @@ void corner_vbo_drag_righttop(
 	carvesolid_triangle(win, 0xffff00, tc, tr, tf);
 }
 void corner_vbo_drag_leftbot(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	float x, float y)
 {
 	vec3 tc, tr, tf;
@@ -86,8 +86,8 @@ void corner_vbo_drag_leftbot(
 	carvesolid_rect(win, 0x404040, tc, tr, tf);
 }
 void corner_vbo_drag_rightbot(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	float x0, float y0, float xn, float yn)
 {
 	vec3 tc, tr, tf;
@@ -107,8 +107,8 @@ void corner_vbo_drag_rightbot(
 	carvesolid_triangle(win, 0x000000, tc, tr, tf);
 }
 void corner_vbo_drag(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int j;
 	float w,h,c;
@@ -173,8 +173,8 @@ void corner_vbo_drag(
 
 
 void corver_vbo_hover(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	float w,h,c;
 	float x0,y0,xn,yn;
@@ -284,8 +284,8 @@ void corver_vbo_hover(
 
 
 void corner_vbo_popup(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	struct relation* rel = act->orel0;
 	if(0 == rel)return;
@@ -323,8 +323,8 @@ void corner_vbo_popup(
 
 
 void corner_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	corver_vbo_hover(act, pin, win, sty);
 
@@ -333,8 +333,8 @@ void corner_draw_vbo(
 	corner_vbo_popup(act, pin, win, sty);
 }
 void corner_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x0,y0,xn,yn;
 	int w,h,c,t;
@@ -414,8 +414,8 @@ void corner_draw_pixel(
 */
 }
 static int corner_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	switch(win->fmt)
 	{
@@ -429,12 +429,12 @@ static int corner_draw(
 
 
 static int corner_event_twig(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	struct relation* rel;
-	struct actor* ar;
+	struct entity* ar;
 	struct style* st;
 	int x,y,j;
 
@@ -496,8 +496,8 @@ found:
 
 
 static int corner_onoff(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	struct relation* rel;
 	struct style* st;
@@ -517,8 +517,8 @@ static int corner_onoff(
 	return 1;
 }
 static int corner_event_root(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short* t;
@@ -560,8 +560,8 @@ static int corner_event_root(
 	return 0;
 }
 static int corner_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int j;
@@ -582,18 +582,18 @@ static int corner_event(
 static void corner_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//corner_draw(act, pin, win, sty);
 }
 static int corner_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	return 0;//corner_event(act, pin, win, sty, ev, 0);
@@ -610,21 +610,21 @@ static int corner_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static int corner_search(struct actor* win)
+static int corner_search(struct entity* win)
 {
 	return 0;
 }
-static int corner_modify(struct actor* win)
+static int corner_modify(struct entity* win)
 {
 	return 0;
 }
-static int corner_delete(struct actor* win)
+static int corner_delete(struct entity* win)
 {
 	return 0;
 }
-static int corner_create(struct actor* act, u8* str)
+static int corner_create(struct entity* act, u8* str)
 {
-	struct actor* ac = allocactor();
+	struct entity* ac = allocentity();
 	struct style* sty = allocstyle();
 
 	ac->type = hex32('?','?','?', 0);
@@ -638,7 +638,7 @@ static int corner_create(struct actor* act, u8* str)
 
 
 
-void corner_register(struct actor* p)
+void corner_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('c', 'o', 'r', 'n', 'e', 'r', 0, 0);

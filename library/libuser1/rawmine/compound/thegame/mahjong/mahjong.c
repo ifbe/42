@@ -23,18 +23,18 @@ static void mahjong_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void mahjong_search(struct actor* act)
+static void mahjong_search(struct entity* act)
 {
 }
-static void mahjong_modify(struct actor* act)
+static void mahjong_modify(struct entity* act)
 {
 }
-static void mahjong_delete(struct actor* act)
+static void mahjong_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void mahjong_create(struct actor* act)
+static void mahjong_create(struct entity* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = data;
@@ -44,7 +44,7 @@ static void mahjong_create(struct actor* act)
 
 
 
-void mahjong_register(struct actor* p)
+void mahjong_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('m', 'a', 'h', 'j', 'o', 'n', 'g', 0);

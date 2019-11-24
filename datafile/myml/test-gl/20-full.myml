@@ -1,4 +1,4 @@
-<arena>
+<supply>
 opengl{
 fmt:win
 title:"42"
@@ -6,4 +6,4 @@ width:1024
 height:1024
 depth:1024
 }
-</arena>
+</supply>

@@ -5,19 +5,19 @@ int input(void*, int);
 
 
 static int alive = 1;
-static struct arena* arena = 0;
-static struct actor* actor = 0;
+static struct supply* supply = 0;
+static struct entity* entity = 0;
 
 
 
 
-int arenaevent(void* poller, struct event* e)
+int supplyevent(void* poller, struct event* e)
 {
 	int j;
 	struct halfrel self;
 	struct halfrel peer;
 	struct event ev;
-	struct arena* win;
+	struct supply* win;
 
 	ev.why = e->why;
 	ev.what = e->what;
@@ -36,7 +36,7 @@ int arenaevent(void* poller, struct event* e)
 		//maybe gamepad
 		for(j=0;j<16;j++)
 		{
-			win = &arena[j];
+			win = &supply[j];
 			if(_win_ == win->type)
 			{
 				ev.where = (u64)win;
@@ -57,31 +57,31 @@ int arenaevent(void* poller, struct event* e)
 		default:{
 			self.pchip = win;
 			peer.pchip = poller;
-			arenawrite(&self, &peer, 0, 0, &ev, 0);break;
+			supplywrite(&self, &peer, 0, 0, &ev, 0);break;
 		}
 	}
 	return 0;
 }
-int arenaread_all(void* poller)
+int supplyread_all(void* poller)
 {
 	int j;
-	struct arena* win;
+	struct supply* win;
 	struct halfrel self;
 	struct halfrel peer;
 
 	peer.pchip = poller;
 	for(j=31;j>=0;j--)
 	{
-		win = &arena[j];
+		win = &supply[j];
 		if(0 == win->type)continue;
 
 		if(_win_ == win->type){
 			self.pchip = win;
-			arenaread(&self, &peer, 0, 0, 0, 0);
+			supplyread(&self, &peer, 0, 0, 0, 0);
 		}
 		if(_spk_ == win->type){
 			self.pchip = win;
-			arenaread(&self, &peer, 0, 0, 0, 0);
+			supplyread(&self, &peer, 0, 0, 0, 0);
 		}
 	}
 	return 0;
@@ -100,7 +100,7 @@ void poller(void* poller)
 		t0 = timeread();
 
 		//draw frame
-		arenaread_all(poller);
+		supplyread_all(poller);
 
 		//cleanup events
 		while(1)
@@ -109,7 +109,7 @@ void poller(void* poller)
 			if(0 == ev)break;
 			if(0 == ev->what)return;
 
-			arenaevent(poller, ev);
+			supplyevent(poller, ev);
 		}
 
 		//max fps
@@ -127,6 +127,6 @@ void freepoller()
 }
 void initpoller(void* addr)
 {
-	arena = addr + 0xc00000;
-	actor = addr + 0xe00000;
+	supply = addr + 0xc00000;
+	entity = addr + 0xe00000;
 }

@@ -27,11 +27,11 @@ int speakerstart()
 {
 	return 0;
 }
-int speakerdelete(struct arena* win)
+int speakerdelete(struct supply* win)
 {
 	return 0;
 }
-int speakercreate(struct arena* win)
+int speakercreate(struct supply* win)
 {
 	return 0;
 }

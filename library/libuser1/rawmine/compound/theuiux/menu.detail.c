@@ -3,7 +3,7 @@
 
 
 
-void drawactor(struct actor* win, int val, int x0, int y0, int xn, int yn)
+void drawentity(struct entity* win, int val, int x0, int y0, int xn, int yn)
 {
 	void* buf;
 	int x,y;
@@ -32,7 +32,7 @@ void drawactor(struct actor* win, int val, int x0, int y0, int xn, int yn)
 		}
 	}
 }
-void carveactor(struct actor* win, int val, vec3 vc, vec3 vr, vec3 vf)
+void carveentity(struct entity* win, int val, vec3 vc, vec3 vr, vec3 vf)
 {
 	int x,y;
 	void* buf;
@@ -78,11 +78,11 @@ void carveactor(struct actor* win, int val, vec3 vc, vec3 vr, vec3 vf)
 
 
 
-int detail_draw_vbo(struct actor* win, struct style* sty)
+int detail_draw_vbo(struct entity* win, struct style* sty)
 {
 	int j;
 	struct relation* rel;
-	struct actor* act;
+	struct entity* act;
 	vec3 tc, tr, tf;
 
 	float* vc;
@@ -115,7 +115,7 @@ int detail_draw_vbo(struct actor* win, struct style* sty)
 	tf[0] = vf[0]/2;
 	tf[1] = vf[1]/2;
 	tf[2] = vf[2]/2;
-	carveactor(win, 0, vc, tr, tf);
+	carveentity(win, 0, vc, tr, tf);
 
 	//3. irel
 	j = 0;
@@ -229,10 +229,10 @@ int detail_draw_vbo(struct actor* win, struct style* sty)
 
 	return 0;
 }
-int detail_draw_pixel(struct actor* win, struct style* sty)
+int detail_draw_pixel(struct entity* win, struct style* sty)
 {
 	struct relation* rel;
-	struct actor* act;
+	struct entity* act;
 	int cx,cy,ww,hh, j;
 
 	//1. prep
@@ -252,7 +252,7 @@ int detail_draw_pixel(struct actor* win, struct style* sty)
 	}
 
 	//2. body
-	drawactor(win, 0, cx-ww/4, cy-hh/2, cx+ww/4, cy+hh/2);
+	drawentity(win, 0, cx-ww/4, cy-hh/2, cx+ww/4, cy+hh/2);
 
 	//3. irel
 	j = 0;
@@ -306,8 +306,8 @@ int detail_draw_pixel(struct actor* win, struct style* sty)
 	return 0;
 }
 static void detail_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	if(_vbo_ == win->fmt)detail_draw_vbo(win, sty);
 	else detail_draw_pixel(win, sty);
@@ -319,9 +319,9 @@ static void detail_draw(
 static void detail_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//detail_draw(act, pin, win, sty);
 }
@@ -340,16 +340,16 @@ static void detail_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-void detail_search(struct actor* act)
+void detail_search(struct entity* act)
 {
 }
-void detail_modify(struct actor* act)
+void detail_modify(struct entity* act)
 {
 }
-void detail_delete(struct actor* act)
+void detail_delete(struct entity* act)
 {
 }
-void detail_create(struct actor* act, void* str)
+void detail_create(struct entity* act, void* str)
 {
     say("@detail_create\n");
 }
@@ -357,7 +357,7 @@ void detail_create(struct actor* act, void* str)
 
 
 
-void detail_register(struct actor* p)
+void detail_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('d', 'e', 't', 'a', 'i', 'l', 0, 0);

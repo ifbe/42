@@ -34,7 +34,7 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	SDL_Keysym key;
 	u64 why;
 	u64 where;
-	struct arena* wnd = self->pchip;
+	struct supply* wnd = self->pchip;
 
 	//read context
 	rgbanode_read(wnd, 0);
@@ -151,7 +151,7 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		}
 	}
 }
-void windowwrite(struct arena* wnd)
+void windowwrite(struct supply* wnd)
 {
 	//SDL_Event ev;  
 	//ev.type = SDL_USEREVENT;  
@@ -169,14 +169,14 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct arena* wnd)
+void windowdelete(struct supply* wnd)
 {
 	SDL_DestroyTexture(wnd->sdltex);
 	SDL_DestroyRenderer(wnd->sdlren);
 	SDL_DestroyWindow(wnd->sdlwnd); 
 	SDL_Quit(); 
 }
-void windowcreate(struct arena* wnd)
+void windowcreate(struct supply* wnd)
 {
 	//data
 	wnd->fmt = hex64('r','g','b','a','8','8','8','8');

@@ -19,7 +19,7 @@
 
 
 
-void nonewindow_write(struct arena* win, struct event* ev)
+void nonewindow_write(struct supply* win, struct event* ev)
 {
 	short* t;
 	if(0x2b70 == ev->what){
@@ -29,7 +29,7 @@ void nonewindow_write(struct arena* win, struct event* ev)
 		//say("%d,%d\n",t[0],t[1]);
 	}
 }
-void nonewindow_read(struct arena* win)
+void nonewindow_read(struct supply* win)
 {
 	float w = win->width;
 	float h = win->height;
@@ -58,10 +58,10 @@ void nonewindow_read(struct arena* win)
 	glClearColor(r, g, b, a);
 	glClear(GL_COLOR_BUFFER_BIT);	//GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT
 }
-void nonewindow_delete(struct arena* win)
+void nonewindow_delete(struct supply* win)
 {
 }
-void nonewindow_create(struct arena* win)
+void nonewindow_create(struct supply* win)
 {
 	win->fmt = _none_;
 	win->x0 = win->width / 2;

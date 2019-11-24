@@ -32,8 +32,8 @@ char* texball_glsl_f =
 
 
 static void texball_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 tmp;
 	u32* dst;
@@ -81,10 +81,10 @@ static void texball_draw_pixel(
 	}
 }
 static void texball_draw_vbo3d(
-	struct actor* act, struct style* part,
-	struct actor* win, struct style* geom,
-	struct actor* wrd, struct style* camg,
-	struct actor* ctx, struct style* none)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* ctx, struct style* none)
 {
 	void* vbuf;
 	void* ibuf;
@@ -104,13 +104,13 @@ static void texball_draw_vbo3d(
 	src->ibuf_enq += 1;
 }
 static void texball_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void texball_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -124,19 +124,19 @@ static void texball_draw_html(
 	win->len = len;
 }
 static void texball_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void texball_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("texball(%x,%x,%x)\n",win,act,sty);
 }
 static void texball_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -152,8 +152,8 @@ static void texball_draw(
 	else texball_draw_pixel(act, pin, win, sty);
 }
 static void texball_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
@@ -169,15 +169,15 @@ static void texball_event(
 static void texball_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> ctx
-	struct actor* ctx;
+	struct entity* ctx;
 
 	//cam -> world
-	struct actor* cam;
-	struct actor* wrd;struct style* camg;
+	struct entity* cam;
+	struct entity* wrd;struct style* camg;
 
 	//world -> texball
-	struct actor* win;struct style* geom;
-	struct actor* act;struct style* part;
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
 
 	if(stack){
 		ctx = stack[rsp-3]->pchip;
@@ -191,9 +191,9 @@ static void texball_read(struct halfrel* self, struct halfrel* peer, struct half
 static void texball_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//texball_event(act, pin, win, sty, ev, 0);
@@ -203,7 +203,7 @@ static void texball_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void texball_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	if(0 == act)return;
 	if(0 == pin)return;
@@ -215,13 +215,13 @@ static void texball_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void texball_search(struct actor* act)
+static void texball_search(struct entity* act)
 {
 }
-static void texball_modify(struct actor* act)
+static void texball_modify(struct entity* act)
 {
 }
-static void texball_delete(struct actor* act)
+static void texball_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(0 == act->buf){
@@ -229,7 +229,7 @@ static void texball_delete(struct actor* act)
 		act->buf = 0;
 	}
 }
-static void texball_create(struct actor* act, void* str)
+static void texball_create(struct entity* act, void* str)
 {
 	int j;
 	struct glsrc* src;
@@ -277,7 +277,7 @@ static void texball_create(struct actor* act, void* str)
 
 
 
-void texball_register(struct actor* p)
+void texball_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('t', 'e', 'x', 'b', 'a', 'l', 'l', 0);

@@ -13,12 +13,12 @@ static int termcount = 0;
 
 
 
-void windowread(struct arena* win)
+void windowread(struct supply* win)
 {
 	//draw frame
-	actorread_all(win);
+	entityread_all(win);
 }
-void windowwrite(struct arena* win)
+void windowwrite(struct supply* win)
 {
 }
 void windowlist()
@@ -33,10 +33,10 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct arena* w)
+void windowdelete(struct supply* w)
 {
 }
-void windowcreate(struct arena* w)
+void windowcreate(struct supply* w)
 {
 	w->fmt = _cli_;
 	w->buf = 0;

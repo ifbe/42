@@ -1,7 +1,7 @@
 
 void videoread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct style* pin)
+	struct supply* win, struct style* sty,
+	struct entity* act, struct style* pin)
 {
 	printf("%llx,%llx,%llx,%llx\n", win, sty, act, pin);
 	if(0 == act)return;
@@ -21,10 +21,10 @@ void videostop()
 void videostart()
 {
 }
-void videodelete(struct arena* win)
+void videodelete(struct supply* win)
 {
 }
-void videocreate(struct arena* win)
+void videocreate(struct supply* win)
 {
 }
 

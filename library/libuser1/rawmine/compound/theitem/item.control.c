@@ -16,8 +16,8 @@ static char statusbuffer[64] = {
 
 
 static void control_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u8* p;
 	int x,y;
@@ -53,8 +53,8 @@ static void control_draw_pixel(
 	drawsolid_circle(win, 0xc0c0c0, cx+ww/2, cy+hh/2, ww/4);
 }
 static void control_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 	u8* p;
@@ -123,28 +123,28 @@ static void control_draw_vbo(
 	}
 }
 static void control_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void control_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void control_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void control_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void control_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)control_draw_cli(act, pin, win, sty);
@@ -155,8 +155,8 @@ static void control_draw(
 	else control_draw_pixel(act, pin, win, sty);
 }
 static void control_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	void* dc;
@@ -172,18 +172,18 @@ static void control_event(
 static void control_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//control_draw(act, pin, win, sty);
 }
 static void control_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//control_event(act, pin, win, sty, ev, 0);
@@ -198,18 +198,18 @@ static void control_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void control_search(struct actor* act)
+static void control_search(struct entity* act)
 {
 }
-static void control_modify(struct actor* act)
+static void control_modify(struct entity* act)
 {
 }
-static void control_delete(struct actor* act)
+static void control_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(act->buf)memorydelete(act->buf);
 }
-static void control_create(struct actor* act)
+static void control_create(struct entity* act)
 {
 	int j;
 	u8* p;
@@ -225,7 +225,7 @@ static void control_create(struct actor* act)
 
 
 
-void control_register(struct actor* p)
+void control_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('c', 'o', 'n', 't', 'r', 'o', 'l', 0);

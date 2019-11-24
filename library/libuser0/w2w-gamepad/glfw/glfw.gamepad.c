@@ -16,7 +16,7 @@ static void joystick_sendevent(struct xyzwpair* pair, int j)
 {
 	u8 buf[4];
 	struct event ev;
-	struct arena* joy;
+	struct supply* joy;
 	//say("@joystick_sendevent:%d\n", j);
 	//printmemory(matchtable, 32);
 
@@ -70,11 +70,11 @@ static void joystick_sendevent(struct xyzwpair* pair, int j)
 		{
 			ev.why = *(u64*)(&pair->x0);
 			ev.what = joy_left;
-			actorwrite(self, peer, &ev, 0);
+			entitywrite(self, peer, &ev, 0);
 
 			ev.why = *(u64*)(&pair->xn);
 			ev.what = joy_right;
-			actorwrite(self, peer, &ev, 0);
+			entitywrite(self, peer, &ev, 0);
 		}
 
 		rel = samesrcnextdst(rel);
@@ -223,7 +223,7 @@ static void joystick_ds4(struct xyzwpair* pair, const float* f, const u8* u)
 	if(u[16])pair->w0 |= joyl_down;
 	if(u[17])pair->w0 |= joyl_left;
 }
-static void thread_joystick(struct arena* joy)
+static void thread_joystick(struct supply* joy)
 {
 	int j, k;
 	int c1, c2;
@@ -280,10 +280,10 @@ static void callback_joystick(int id, int ev)
 
 
 
-void joydelete(struct arena* joy)
+void joydelete(struct supply* joy)
 {
 }
-void joycreate(struct arena* joy)
+void joycreate(struct supply* joy)
 {
 	int j;
 	for(j=0;j<10;j++){

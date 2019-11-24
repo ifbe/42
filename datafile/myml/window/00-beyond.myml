@@ -1,4 +1,4 @@
-<actor>
+<entity>
 
 #virt space
 texball{
@@ -28,17 +28,17 @@ fmt:handler
 beyond{
 fmt:beyond
 }
-</actor>
+</entity>
 
 
-<arena>
+<supply>
 gl41wnd{
 fmt:gl41wnd
 }
 gl41{
 fmt:win
 }
-</arena>
+</supply>
 
 
 <relation>

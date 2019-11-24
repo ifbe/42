@@ -61,8 +61,8 @@ void parsexml_relation(u8* buf, int len)
 
 	int j,k,p,q;
 	int a,b,m,n;
-	struct arena* win;
-	struct actor* act;
+	struct supply* win;
+	struct entity* act;
 	u8* css;
 	u8* pin;
 
@@ -113,18 +113,18 @@ void parsexml_relation(u8* buf, int len)
 		win = arteryget(buf+a, b-a);
 		if(0 == win)return;
 	}
-	else if(0 == ncmp(buf+a, "arena/", 6))
+	else if(0 == ncmp(buf+a, "supply/", 6))
 	{
 		p = _win_;
 		a += 6;
-		win = arenaget(buf+a, b-a);
+		win = supplyget(buf+a, b-a);
 		if(0 == win)return;
 	}
-	else if(0 == ncmp(buf+a, "actor/", 6))
+	else if(0 == ncmp(buf+a, "entity/", 6))
 	{
 		p = _act_;
 		a += 6;
-		win = actorget(buf+a, b-a);
+		win = entityget(buf+a, b-a);
 		if(0 == win)return;
 	}
 	else return;
@@ -143,18 +143,18 @@ void parsexml_relation(u8* buf, int len)
 		act = arteryget(buf+m, n-m);
 		if(0 == act)return;
 	}
-	else if(0 == ncmp(buf+m, "arena/", 6))
+	else if(0 == ncmp(buf+m, "supply/", 6))
 	{
 		q = _win_;
 		m += 6;
-		act = arenaget(buf+m, n-m);
+		act = supplyget(buf+m, n-m);
 		if(0 == act)return;
 	}
-	else if(0 == ncmp(buf+m, "actor/", 6))
+	else if(0 == ncmp(buf+m, "entity/", 6))
 	{
 		q = _act_;
 		m += 6;
-		act = actorget(buf+m, n-m);
+		act = entityget(buf+m, n-m);
 		if(0 == act)return;
 	}
 	else return;
@@ -229,13 +229,13 @@ void parsexml(u8* buf, int len)
 					}
 					else if(_win_ == ret)
 					{
-						//say("arena");
-						arenapost(buf+sb[sp], k+1-sb[sp]);
+						//say("supply");
+						supplypost(buf+sb[sp], k+1-sb[sp]);
 					}
 					else if(_act_ == ret)
 					{
-						//say("actor");
-						actorpost(buf+sb[sp], k+1-sb[sp]);
+						//say("entity");
+						entitypost(buf+sb[sp], k+1-sb[sp]);
 					}
 				}
 			}
@@ -258,8 +258,8 @@ void parsexml(u8* buf, int len)
 					if(0 == ncmp(buf+j+1, "relation", 8))ret = _relation_;
 					else if(0 == ncmp(buf+j+1, "system", 6))ret = _fd_;
 					else if(0 == ncmp(buf+j+1, "artery", 6))ret = _art_;
-					else if(0 == ncmp(buf+j+1, "arena", 5))ret = _win_;
-					else if(0 == ncmp(buf+j+1, "actor", 5))ret = _act_;
+					else if(0 == ncmp(buf+j+1, "supply", 5))ret = _win_;
+					else if(0 == ncmp(buf+j+1, "entity", 5))ret = _act_;
 				}
 			}
 

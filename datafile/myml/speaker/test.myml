@@ -1,15 +1,15 @@
-<arena>
+<supply>
 speaker{
 fmt:spk
 }
-</arena>
+</supply>
 
 
-<actor>
+<entity>
 test{
 fmt:test
 }
-</actor>
+</entity>
 
 
 <relation>

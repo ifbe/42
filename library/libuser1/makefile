@@ -229,7 +229,7 @@ forrgba/rgba.base.c \
 forsound/sound.pcm.c \
 forterm/term.cli.c \
 forterm/term.tui.c \
-matter.c
+entity.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 target: $(OBJ)

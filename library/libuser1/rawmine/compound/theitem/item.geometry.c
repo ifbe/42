@@ -4,8 +4,8 @@
 
 
 static void geometry_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int cx = sty->f.vc[0];
 	int cy = sty->f.vc[1];
@@ -16,8 +16,8 @@ static void geometry_draw_pixel(
 	drawsolid_rect(win, 0x808080, cx-ww, cy-hh, cx+ww, cy+hh);
 }/*
 static void geometry_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	vec3 tr, tf;
 	float* vc = sty->f.vc;
@@ -46,8 +46,8 @@ static void geometry_draw_vbo2d(
 	carveopaque2d_rect(win, 0x80808080, vc, tr, tf);
 }*/
 static void geometry_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	vec3 t1,t2;
 	float* vc = sty->f.vc;
@@ -154,28 +154,28 @@ static void geometry_draw_vbo3d(
 	}
 }
 static void geometry_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void geometry_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void geometry_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void geometry_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void geometry_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)geometry_draw_cli(act, pin, win, sty);
@@ -190,8 +190,8 @@ static void geometry_draw(
 	else geometry_draw_pixel(act, pin, win, sty);
 }
 static void geometry_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	char c;
@@ -209,11 +209,11 @@ static void geometry_event(
 static void geometry_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	if(ctx){
 		if(_gl41data_ == ctx->type)geometry_draw_vbo3d(act,pin,ctx,sty);
 	}
@@ -221,9 +221,9 @@ static void geometry_read(struct halfrel* self, struct halfrel* peer, void* arg,
 }
 static void geometry_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//geometry_event(act, pin, win, sty, ev, 0);
 	struct event* ev = (void*)buf;
@@ -238,16 +238,16 @@ static void geometry_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void geometry_search(struct actor* act, u8* buf)
+static void geometry_search(struct entity* act, u8* buf)
 {
 }
-static void geometry_modify(struct actor* act, u8* buf)
+static void geometry_modify(struct entity* act, u8* buf)
 {
 }
-static void geometry_delete(struct actor* act, u8* buf)
+static void geometry_delete(struct entity* act, u8* buf)
 {
 }
-static void geometry_create(struct actor* act, u8* buf)
+static void geometry_create(struct entity* act, u8* buf)
 {
 	int dimen = '3';
 	int shape = 'p';
@@ -262,7 +262,7 @@ static void geometry_create(struct actor* act, u8* buf)
 
 
 
-void geometry_register(struct actor* p)
+void geometry_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex32('g','e','o','m');

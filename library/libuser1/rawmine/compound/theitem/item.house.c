@@ -5,8 +5,8 @@
 
 
 static void house_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -31,8 +31,8 @@ static void house_draw_pixel(
 	drawline_rect(win, 0x404040, cx+ww*3/6, cy-hh*1/6, cx+ww*5/6, cy+hh*1/6);
 }
 static void house_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	vec3 tc, tr, tf, tu;
 	float* vc = sty->f.vc;
@@ -135,28 +135,28 @@ static void house_draw_vbo(
 	carvesolid_rect(win, 0xffffff, tc, vr, tf);
 }
 static void house_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void house_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void house_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void house_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void house_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)house_draw_cli(act, pin, win, sty);
@@ -173,9 +173,9 @@ static void house_draw(
 static void house_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//house_draw(act, pin, win, sty);
 }
@@ -192,18 +192,18 @@ static void house_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void house_search(struct actor* act)
+static void house_search(struct entity* act)
 {
 }
-static void house_modify(struct actor* act)
+static void house_modify(struct entity* act)
 {
 }
-static void house_delete(struct actor* act)
+static void house_delete(struct entity* act)
 {
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void house_create(struct actor* act)
+static void house_create(struct entity* act)
 {
 	if(0 == act)return;
 	//if(_orig_ == act->type)act->buf = buffer;
@@ -213,7 +213,7 @@ static void house_create(struct actor* act)
 
 
 
-void house_register(struct actor* p)
+void house_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('h', 'o', 'u', 's', 'e', 0, 0, 0);

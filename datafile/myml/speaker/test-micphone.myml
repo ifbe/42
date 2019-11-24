@@ -1,4 +1,4 @@
-<arena>
+<supply>
 3dworld{
 fmt:vbo
 type:3d
@@ -14,10 +14,10 @@ depth:1024
 theear{
 fmt:mic
 }
-</arena>
+</supply>
 
 
-<actor>
+<entity>
 geomhelper{
 fmt:aidgeom
 }
@@ -28,7 +28,7 @@ fmt:spectrum
 rtscam{
 fmt:freecam
 }
-</actor>
+</entity>
 
 
 <style>

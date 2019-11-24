@@ -5,8 +5,8 @@ u32 getrandom();
 
 
 static void example_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 bg,fg;
 	int cx, cy, ww, hh;
@@ -31,8 +31,8 @@ static void example_draw_pixel(
 	drawhexadecimal(win, fg, cx, cy, bg);
 }
 static void example_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	vec3 tc, tr, tf, tu, f;
 	float* vc = sty->f.vc;
@@ -81,13 +81,13 @@ static void example_draw_vbo(
 	carvesolid_sphere(win, 0x87cefa, tc, tr, tf, tu);
 }
 static void example_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void example_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -101,18 +101,18 @@ static void example_draw_html(
 	win->len = len;
 }
 static void example_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void example_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void example_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)example_draw_cli(act, pin, win, sty);
@@ -129,9 +129,9 @@ static void example_draw(
 static void example_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//example_draw(act, pin, win, sty);
 }
@@ -148,25 +148,25 @@ static void example_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void example_search(struct actor* act)
+static void example_search(struct entity* act)
 {
 }
-static void example_modify(struct actor* act)
+static void example_modify(struct entity* act)
 {
 }
-static void example_delete(struct actor* act)
-{
-	if(0 == act)return;
-}
-static void example_create(struct actor* act)
+static void example_delete(struct entity* act)
 {
 	if(0 == act)return;
 }
+static void example_create(struct entity* act)
+{
+	if(0 == act)return;
+}
 
 
 
 
-void example_register(struct actor* p)
+void example_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('e', 'x', 'a', 'm', 'p', 'l', 'e', 0);

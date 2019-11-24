@@ -10,7 +10,7 @@ int termwrite(void* buf, int len);
 
 
 
-void terminalthread(struct arena* win)
+void terminalthread(struct supply* win)
 {
 	int ret;
 	while(1)
@@ -29,10 +29,10 @@ void terminalthread(struct arena* win)
 
 
 
-void stddelete(struct arena* win)
+void stddelete(struct supply* win)
 {
 }
-void stdcreate(struct arena* win)
+void stdcreate(struct supply* win)
 {
 	termwrite("\n", 1);
 	threadcreate(terminalthread, win);

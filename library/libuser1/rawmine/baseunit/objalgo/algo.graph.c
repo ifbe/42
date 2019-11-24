@@ -22,11 +22,11 @@ struct pair
 
 
 static void graph_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {/*
-	struct actor* aa;
-	struct actor* bb;
+	struct entity* aa;
+	struct entity* bb;
 	void* p;
 	int i,j,k;
 	int cx = sty->vc[0];
@@ -78,15 +78,15 @@ static void graph_draw_pixel(
 	}*/
 }
 static void graph_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	float n;
 	u8 buf[0x1000];
 	vec3 tc, tr, tf, tu;
 	int rgb;
 	int i,j,k;
-	struct actor* tmp;
+	struct entity* tmp;
 	void* str;
 	struct node* node = act->nbuf;
 	struct pair* wire = act->wbuf;
@@ -159,13 +159,13 @@ static void graph_draw_vbo(
 	}
 }
 static void graph_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void graph_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -179,18 +179,18 @@ static void graph_draw_html(
 	win->len = len;
 }
 static void graph_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void graph_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void graph_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)graph_draw_cli(act, pin, win, sty);
@@ -204,7 +204,7 @@ static void graph_draw(
 
 
 
-int graph_addnode(struct actor* act, u64 type, void* addr)
+int graph_addnode(struct entity* act, u64 type, void* addr)
 {
 	int j;
 	struct node* node = act->nbuf;
@@ -225,7 +225,7 @@ int graph_addnode(struct actor* act, u64 type, void* addr)
 	node[j].addr = addr;
 	return j;
 }
-int graph_addpair(struct actor* act, int parent, int child)
+int graph_addpair(struct entity* act, int parent, int child)
 {
 	int j;
 	struct pair* wire = act->wbuf;
@@ -251,7 +251,7 @@ int graph_addpair(struct actor* act, int parent, int child)
 	wire[j].child = child;
 	return j;
 }
-static void graph_traverse(struct actor* act, struct actor* this)
+static void graph_traverse(struct entity* act, struct entity* this)
 {/*
 	int j,k,ret;
 	int nlen0, nlenx;
@@ -290,8 +290,8 @@ static void graph_traverse(struct actor* act, struct actor* this)
 	}
 }
 static void graph_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int j;
@@ -326,11 +326,11 @@ say("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
 static void graph_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	if(ctx){
 		if(_gl41data_ == ctx->type)graph_draw_vbo(act,pin,ctx,sty);
 	}
@@ -338,9 +338,9 @@ static void graph_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 static void graph_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//graph_event(act, pin, win, sty, ev, 0);
@@ -351,9 +351,9 @@ static void graph_stop(struct halfrel* self, struct halfrel* peer)
 static void graph_start(struct halfrel* self, struct halfrel* peer)
 {
 	int j;
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	float* vbuf = act->vbuf;
 	float* wbuf = act->wbuf;
@@ -377,13 +377,13 @@ static void graph_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void graph_search(struct actor* act)
+static void graph_search(struct entity* act)
 {
 }
-static void graph_modify(struct actor* act)
+static void graph_modify(struct entity* act)
 {
 }
-static void graph_delete(struct actor* act)
+static void graph_delete(struct entity* act)
 {
 	if(0 == act)return;
 
@@ -407,7 +407,7 @@ static void graph_delete(struct actor* act)
 		act->nbuf = 0;
 	}
 }
-static void graph_create(struct actor* act, void* str)
+static void graph_create(struct entity* act, void* str)
 {
 	if(0 == act)return;
 
@@ -423,7 +423,7 @@ static void graph_create(struct actor* act, void* str)
 
 
 
-void graph_register(struct actor* p)
+void graph_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('g', 'r', 'a', 'p', 'h', 0, 0, 0);

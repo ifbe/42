@@ -82,7 +82,7 @@ char* sketchpad_glsl_f =
 
 
 /*
-static void wangge(struct actor* win)
+static void wangge(struct entity* win)
 {
 	int temp;
 	int x,y;
@@ -148,7 +148,7 @@ static void wangge(struct actor* win)
 
 }
 */
-static void tuxiang(struct actor* win)
+static void tuxiang(struct entity* win)
 {
 	int x, y;
 	int value1, value2, counter;
@@ -209,8 +209,8 @@ static void tuxiang(struct actor* win)
 	}//result2img
 }
 static void sketchpad_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	double rx,ry,rw;
 	int x,y,w,counter;
@@ -281,8 +281,8 @@ skipthese:
 	drawstring(win, 0xcccccc, cx-ww, cy-hh+48, result, 0);
 }/*
 static void sketchpad_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	if(0 == sty)sty = defaultstyle_vbo2d();
 	float* vc = sty->f.vc;
@@ -340,18 +340,18 @@ static void sketchpad_draw_vbo2d(
 	src->vbuf_enq += 1;
 }*/
 static void sketchpad_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void sketchpad_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void sketchpad_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -365,8 +365,8 @@ static void sketchpad_draw_html(
 	win->len = len;
 }
 static void sketchpad_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x, y;
 	int value1, value2, counter;
@@ -421,14 +421,14 @@ static void sketchpad_draw_tui(
 	}
 }
 static void sketchpad_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("sketchpad(%x,%x,%x)\n",win,act,sty);
 }
 static void sketchpad_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -444,8 +444,8 @@ static void sketchpad_draw(
 	else sketchpad_draw_pixel(act, pin, win, sty);
 }
 static void sketchpad_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int ret;
@@ -553,18 +553,18 @@ static void sketchpad_event(
 static void sketchpad_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//sketchpad_draw(act, pin, win, sty);
 }
 static void sketchpad_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//sketchpad_event(act, pin, win, sty, ev, 0);
@@ -577,9 +577,9 @@ static void sketchpad_start(struct halfrel* self, struct halfrel* peer)
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 /*
 	//alloc
@@ -622,18 +622,18 @@ static void sketchpad_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void sketchpad_search(struct actor* act)
+static void sketchpad_search(struct entity* act)
 {
 }
-static void sketchpad_modify(struct actor* act)
+static void sketchpad_modify(struct entity* act)
 {
 }
-static void sketchpad_delete(struct actor* act)
+static void sketchpad_delete(struct entity* act)
 {
 	if(0 == act)return;
 	memorydelete(act->buf);
 }
-static void sketchpad_create(struct actor* act)
+static void sketchpad_create(struct entity* act)
 {
 	if(0 == act)return;
 	act->buf = databuf = memorycreate(0x100000, 0);
@@ -642,7 +642,7 @@ static void sketchpad_create(struct actor* act)
 
 
 
-void sketchpad_register(struct actor* p)
+void sketchpad_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('s', 'k', 'e', 't', 'c', 'h', 0, 0);

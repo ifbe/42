@@ -8,23 +8,23 @@ static u8 buffer[16];
 
 
 static void editor_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void editor_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void editor_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void editor_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -38,19 +38,19 @@ static void editor_draw_html(
 	win->len = len;
 }
 static void editor_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void editor_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("editor(%x,%x,%x)\n",win,act,sty);
 }
 static void editor_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -68,9 +68,9 @@ static void editor_draw(
 static void editor_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//editor_draw(act, pin, win, sty);
 }
@@ -87,18 +87,18 @@ static void editor_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void editor_search(struct actor* act)
+static void editor_search(struct entity* act)
 {
 }
-static void editor_modify(struct actor* act)
+static void editor_modify(struct entity* act)
 {
 }
-static void editor_delete(struct actor* act)
+static void editor_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void editor_create(struct actor* act)
+static void editor_create(struct entity* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = buffer;
@@ -108,7 +108,7 @@ static void editor_create(struct actor* act)
 
 
 
-void editor_register(struct actor* p)
+void editor_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('e', 'd', 'i', 't', 'o', 'r', 0, 0);

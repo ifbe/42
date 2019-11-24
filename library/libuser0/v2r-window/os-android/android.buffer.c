@@ -5,19 +5,19 @@
 #include <android/log.h>
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
-#include "arena.h"
+#include "supply.h"
 #define LOG_TAG "finalanswer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 //libuser1
 #define _char_ hex32('c','h','a','r')
-void freeactor();
-void initactor(void*);
-int actorevent(void*);
+void freeentity();
+void initentity(void*);
+int entityevent(void*);
 //libuser0
 #define _win_ hex32('w','i','n',0)
-void freearena();
-void initarena(void*);
-int arenaevent(void*);
+void freesupply();
+void initsupply(void*);
+int supplyevent(void*);
 //libsoft1
 #define _art_ hex32('a','r','t',0)
 void freeartery();
@@ -58,7 +58,7 @@ void* birth();
 
 
 static void* world;
-static struct arena* arena;
+static struct supply* supply;
 static ANativeWindow* native;
 static ANativeWindow_Buffer buffer;
 
@@ -81,10 +81,10 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 
 		//draw pixel
 		//LOGI("width=%d,stride=%d\n", buffer.width, buffer.stride);
-		arena[0].buf = buffer.bits;
-		arena[0].width = buffer.width;
-		arena[0].stride = buffer.stride;
-		actorread(&arena[0],0,0,0);
+		supply[0].buf = buffer.bits;
+		supply[0].width = buffer.width;
+		supply[0].stride = buffer.stride;
+		entityread(&supply[0],0,0,0);
 
 		//
 		ANativeWindow_unlockAndPost(native);
@@ -106,8 +106,8 @@ again:
 			else goto again;
 		}
 
-		//foreach changed: actor_read, window_write
-		actorevent(ev);
+		//foreach changed: entity_read, window_write
+		entityevent(ev);
 	}
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv* env, jobject obj, jlong type, jlong data)
@@ -116,7 +116,7 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Write(JNIEnv
 	u64 why, what, where;
 	//say("@Write:%llx,%llx\n", type, data);
 
-	where = (u64)&arena[0];
+	where = (u64)&supply[0];
 	eventwrite(data, type, where, 0);
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv* env, jobject obj, jobject surface)
@@ -132,10 +132,10 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Start(JNIEnv
 	ANativeWindow_setBuffersGeometry(native, w, h, WINDOW_FORMAT_RGBA_8888);
 	LOGI("w=%d,h=%d\n", w, h);
 
-	arena[0].type = hex32('w','i','n',0);
-	arena[0].fmt = hex64('r','g','b','a','8','8','8','8');
-	arena[0].width = w;
-	arena[0].height = h;
+	supply[0].type = hex32('w','i','n',0);
+	supply[0].fmt = hex64('r','g','b','a','8','8','8','8');
+	supply[0].width = w;
+	supply[0].height = h;
 }
 JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Stop(JNIEnv* env, jobject obj)
 {
@@ -162,11 +162,11 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* vm, void* reserved)
 	initartery(world+0x800000);
 
 	//libuser
-	initarena(world+0xc00000);
-	initactor(world+0xc00000);
+	initsupply(world+0xc00000);
+	initentity(world+0xc00000);
 
 	//
-	arena = world+0xc00000;
+	supply = world+0xc00000;
 	return JNI_VERSION_1_6;
 }
 JNIEXPORT void JNICALL JNI_OnUnLoad(JavaVM* vm, void* reserved)
@@ -174,8 +174,8 @@ JNIEXPORT void JNICALL JNI_OnUnLoad(JavaVM* vm, void* reserved)
 	LOGI("JNI_OnUnLoad\n");
 
 	//libuser
-	freeactor();
-	freearena();
+	freeentity();
+	freesupply();
 
 	//libsoft
 	freeartery();

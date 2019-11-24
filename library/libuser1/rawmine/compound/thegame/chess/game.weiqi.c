@@ -41,8 +41,8 @@ int weiqi_import(char* file, u8* buf)
 
 
 static void weiqi_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 c;
 	int x, y, cx, cy, ww, hh;
@@ -107,8 +107,8 @@ static void weiqi_draw_pixel(
 	}
 }/*
 static void weiqi_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 	int j,rgb;
@@ -172,8 +172,8 @@ static void weiqi_draw_vbo2d(
 	}
 }*/
 static void weiqi_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 	int j,k,rgb;
@@ -242,13 +242,13 @@ static void weiqi_draw_vbo(
 	}
 }
 static void weiqi_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void weiqi_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 
@@ -273,8 +273,8 @@ static void weiqi_draw_html(
 	htmlprintf(win, 2, "</div>\n");
 }
 static void weiqi_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y,j,k,ret,color;
 	int width = win->stride;
@@ -304,13 +304,13 @@ static void weiqi_draw_tui(
 	}
 }
 static void weiqi_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void weiqi_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -326,8 +326,8 @@ static void weiqi_draw(
 	else weiqi_draw_pixel(act, pin, win, sty);
 }
 static void weiqi_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	char val;
@@ -394,11 +394,11 @@ static void weiqi_event(
 static void weiqi_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	say("@weiqi_read:%llx,%llx,%llx\n",act,win,buf);
 
 	if(ctx){
@@ -409,9 +409,9 @@ static void weiqi_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 static void weiqi_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//weiqi_event(act, pin, win, sty, ev, 0);
@@ -428,18 +428,18 @@ static void weiqi_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void weiqi_search(struct actor* act)
+static void weiqi_search(struct entity* act)
 {
 }
-static void weiqi_modify(struct actor* act)
+static void weiqi_modify(struct entity* act)
 {
 }
-static void weiqi_delete(struct actor* act)
+static void weiqi_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void weiqi_create(struct actor* act, void* str)
+static void weiqi_create(struct entity* act, void* str)
 {
 	int ret;
 	u8* buf;
@@ -463,7 +463,7 @@ static void weiqi_create(struct actor* act, void* str)
 
 
 
-void weiqi_register(struct actor* p)
+void weiqi_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('w', 'e', 'i', 'q','i', 0, 0, 0);

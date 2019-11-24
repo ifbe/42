@@ -4,10 +4,10 @@ void ortho_mvp(mat4 m, struct fstyle* s);
 
 
 
-static void orthcam_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void orthcam_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct actor* world;
+	struct entity* world;
 	struct fstyle* obb = 0;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -23,13 +23,13 @@ static void orthcam_search(struct actor* act, u32 foot, struct halfrel* self[], 
 		rel = samedstnextsrc(rel);
 	}
 }
-static void orthcam_modify(struct actor* act)
+static void orthcam_modify(struct entity* act)
 {
 }
-static void orthcam_delete(struct actor* act)
+static void orthcam_delete(struct entity* act)
 {
 }
-static void orthcam_create(struct actor* act, void* arg)
+static void orthcam_create(struct entity* act, void* arg)
 {
     say("@orthcam_create\n");
 	act->buf = memorycreate(64, 0);
@@ -39,8 +39,8 @@ static void orthcam_create(struct actor* act, void* arg)
 
 
 static int orthcam_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* ctx, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* ctx, struct style* sty)
 {/*
 	vec3 tc,tf;
 	float* vc = sty->vc;
@@ -69,8 +69,8 @@ static int orthcam_draw_vbo(
 	return 0;
 }
 static int orthcam_event(
-	struct actor* act, struct style* pin,
-	struct actor* wld, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* wld, struct style* sty,
 	struct event* ev, int len)
 {
 	//say("orthcam_event@%llx:%x,%x\n", act, ev->why, ev->what);
@@ -151,10 +151,10 @@ void orthocam_shape2frustum(struct fstyle* s, struct fstyle* d)
 	d->vf[3] = n;
 }
 static void orthcam_matrix(
-	struct actor* act, struct style* part,
-	struct actor* wrd, struct style* geom,
-	struct actor* ctx, struct style* none,
-	struct arena* wnd, struct style* area)
+	struct entity* act, struct style* part,
+	struct entity* wrd, struct style* geom,
+	struct entity* ctx, struct style* none,
+	struct supply* wnd, struct style* area)
 {
 	float dx,dy;
 	struct fstyle* rect = &area->fshape;
@@ -187,16 +187,16 @@ static void orthcam_matrix(
 static void orthcam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> ctx
-	struct arena* wnd;struct style* area;
-	struct actor* ctx;
+	struct supply* wnd;struct style* area;
+	struct entity* ctx;
 
 	//cam -> world
-	struct actor* cam;
-	struct actor* wrd;struct style* camg;
+	struct entity* cam;
+	struct entity* wrd;struct style* camg;
 
 	//world -> tree
-	struct actor* win;struct style* geom;
-	struct actor* act;struct style* part;
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
 
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
@@ -214,8 +214,8 @@ static void orthcam_read(struct halfrel* self, struct halfrel* peer, struct half
 }
 static int orthcam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct actor* wld;struct style* geom;
-	struct actor* act;struct style* part;
+	struct entity* wld;struct style* geom;
+	struct entity* act;struct style* part;
 	struct event* ev;
 
 	wld = peer->pchip;geom = peer->pfoot;
@@ -237,7 +237,7 @@ static void orthcam_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-void orthcam_register(struct actor* p)
+void orthcam_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('o', 'r', 't', 'h', 'c', 'a', 'm', 0);

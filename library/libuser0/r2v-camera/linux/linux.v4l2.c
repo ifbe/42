@@ -30,7 +30,7 @@ static int alive = 1;
 
 
 
-void* visionlistener(struct arena* win)
+void* visionlistener(struct supply* win)
 {
 	//v4l2_open
 	int j;
@@ -185,7 +185,7 @@ void* visionlistener(struct arena* win)
 			{
 				struct halfrel* self = (void*)&orel->dstchip;
 				struct halfrel* peer = (void*)&orel->srcchip;
-				actorwrite(self, peer, info[cur].buf, 640*480*3/2);
+				entitywrite(self, peer, info[cur].buf, 640*480*3/2);
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}
@@ -234,12 +234,12 @@ int videostart()
 {
 	return 0;
 }
-int videodelete(struct arena* win)
+int videodelete(struct supply* win)
 {
 	alive = 0;
 	return 0;
 }
-int videocreate(struct arena* win)
+int videocreate(struct supply* win)
 {
 	int j;
 	for(j=0;j<24;j++){

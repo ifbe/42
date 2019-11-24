@@ -23,18 +23,18 @@ static void brick_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void brick_search(struct actor* act)
+static void brick_search(struct entity* act)
 {
 }
-static void brick_modify(struct actor* act)
+static void brick_modify(struct entity* act)
 {
 }
-static void brick_delete(struct actor* act)
+static void brick_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void brick_create(struct actor* act)
+static void brick_create(struct entity* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = buffer;
@@ -44,7 +44,7 @@ static void brick_create(struct actor* act)
 
 
 
-void brick_register(struct actor* p)
+void brick_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('b', 'r', 'i', 'c', 'k', 0, 0, 0);

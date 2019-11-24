@@ -3,12 +3,12 @@
 
 
 
-void actorcreatefrommp3(struct actor* act, u8* buf, int len)
+void entitycreatefrommp3(struct entity* act, u8* buf, int len)
 {
 }
-void actorcreatefromogg(struct actor* act, u8* buf, int len)
+void entitycreatefromogg(struct entity* act, u8* buf, int len)
 {
 }
-void actorcreatefromwav(struct actor* act, u8* buf, int len)
+void entitycreatefromwav(struct entity* act, u8* buf, int len)
 {
 }

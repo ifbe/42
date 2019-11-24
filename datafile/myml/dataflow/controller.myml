@@ -1,8 +1,8 @@
-<arena>
+<supply>
 gamepad{
 fmt:joy
 }
-</arena>
+</supply>
 
 
 <artery>

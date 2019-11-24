@@ -77,7 +77,7 @@ static int fuckyou = 0;
 
 
 
-void windowevent(struct arena* win, XEvent xev)
+void windowevent(struct supply* win, XEvent xev)
 {
 	u64 x,y,k;
 	struct event myev;
@@ -216,7 +216,7 @@ void windowevent(struct arena* win, XEvent xev)
 void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	XEvent xev;
-	struct arena* win = self->pchip;
+	struct supply* win = self->pchip;
 
 	//read context
 	rgbanode_read(win, 0);
@@ -259,7 +259,7 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct arena* win)
+void windowdelete(struct supply* win)
 {
 	XDestroyWindow(dsp, win->xlibfd);
 	fuckyou--;
@@ -270,7 +270,7 @@ void windowdelete(struct arena* win)
 		eventwrite(0,0,0,0);
 	}
 }
-void windowcreate(struct arena* win)
+void windowcreate(struct supply* win)
 {
 	int j;
 	win->type = hex32('w', 'i', 'n', 0);

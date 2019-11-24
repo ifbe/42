@@ -5,7 +5,7 @@
 
 
 
-static struct arena* working;
+static struct supply* working;
 static WAVEFORMATEX fmt;
 static int alive = 0;
 //
@@ -46,7 +46,7 @@ void speakerchoose()
 }
 void speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct arena* spk = (void*)(self->chip);
+	struct supply* spk = (void*)(self->chip);
 	if(0 == spk)return;
 	//say("spk=%llx\n",spk);
 
@@ -54,7 +54,7 @@ void speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	if(0 == rel)return;
 	//say("rel=%llx\n",rel);
 
-	struct actor* act = (void*)(rel->dstchip);
+	struct entity* act = (void*)(rel->dstchip);
 	if(0 == act)return;
 	//say("act=%llx\n",act);
 
@@ -99,10 +99,10 @@ void speakerstop()
 void speakerstart()
 {
 }
-void speakerdelete(struct arena* win)
+void speakerdelete(struct supply* win)
 {
 }
-void speakercreate(struct arena* win)
+void speakercreate(struct supply* win)
 {
 	int j,ret;
 	working = win;

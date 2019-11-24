@@ -24,19 +24,19 @@ int baby_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int baby_search(struct actor* act)
+int baby_search(struct entity* act)
 {
 	return 0;
 }
-int baby_modify(struct actor* act)
+int baby_modify(struct entity* act)
 {
 	return 0;
 }
-int baby_delete(struct actor* act)
+int baby_delete(struct entity* act)
 {
 	return 0;
 }
-int baby_create(struct actor* act)
+int baby_create(struct entity* act)
 {
 	return 0;
 }

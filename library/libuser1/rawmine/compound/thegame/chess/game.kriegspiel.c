@@ -23,18 +23,18 @@ static void kriegspiel_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void kriegspiel_search(struct actor* act)
+static void kriegspiel_search(struct entity* act)
 {
 }
-static void kriegspiel_modify(struct actor* act)
+static void kriegspiel_modify(struct entity* act)
 {
 }
-static void kriegspiel_delete(struct actor* act)
+static void kriegspiel_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void kriegspiel_create(struct actor* act)
+static void kriegspiel_create(struct entity* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = buffer;
@@ -44,7 +44,7 @@ static void kriegspiel_create(struct actor* act)
 
 
 
-void kriegspiel_register(struct actor* p)
+void kriegspiel_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('k', 'r', 'i', 'e', 'g', 0, 0, 0);

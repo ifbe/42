@@ -1,4 +1,4 @@
-<arena>
+<supply>
 3dworld{
 fmt:vbo
 type:3d
@@ -13,10 +13,10 @@ depth:1024
 player1{
 fmt:joy
 }
-</arena>
+</supply>
 
 
-<actor>
+<entity>
 fonthelper{
 fmt:aidfont
 }
@@ -41,7 +41,7 @@ fmt:model
 rtscam{
 fmt:1rdcam
 }
-</actor>
+</entity>
 
 
 <style>

@@ -51,7 +51,7 @@ static u8 uppercase[] = {
 	'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W',		//70,77
 	'X', 'Y', 'Z', '{', '|', '}', '~', ' ',		//78,7f
 };
-void windowdispatch(struct arena* ogl, struct event* ev)
+void windowdispatch(struct supply* ogl, struct event* ev)
 {
 	if(0 == ogl)return;
 	//say("ogl=%llx, fmt=%.8s\n", ogl, &ogl->fmt);
@@ -70,7 +70,7 @@ void windowdispatch(struct arena* ogl, struct event* ev)
 static void callback_keyboard(GLFWwindow* fw, int key, int scan, int action, int mods)
 {
 	struct event e;
-	struct arena* ogl = glfwGetWindowUserPointer(fw);
+	struct supply* ogl = glfwGetWindowUserPointer(fw);
     //printf("key=%x,scan=%x,action=%x,mods=%x\n", key, scan, action, mods);
 
 	if(0 == action)return;
@@ -127,7 +127,7 @@ static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
 	u64 x,y,temp;
 	struct event e;
 	double xpos, ypos;
-	struct arena* ogl = glfwGetWindowUserPointer(fw);
+	struct supply* ogl = glfwGetWindowUserPointer(fw);
 
 	glfwGetCursorPos(fw, &xpos, &ypos);
 	x = ((int)xpos)&0xffff;
@@ -158,7 +158,7 @@ static void callback_move(GLFWwindow* fw, double xpos, double ypos)
 {
 	u64 x,y,temp;
 	struct event e;
-	struct arena* ogl = glfwGetWindowUserPointer(fw);
+	struct supply* ogl = glfwGetWindowUserPointer(fw);
 
 	if(GLFW_PRESS == glfwGetMouseButton(fw, GLFW_MOUSE_BUTTON_LEFT))temp = 'l';
 	else temp = 'l';
@@ -174,7 +174,7 @@ static void callback_move(GLFWwindow* fw, double xpos, double ypos)
 static void callback_scroll(GLFWwindow* fw, double x, double y)
 {
 	struct event e;
-	struct arena* ogl = glfwGetWindowUserPointer(fw);
+	struct supply* ogl = glfwGetWindowUserPointer(fw);
 	//printf("%llx: %f,%f\n", (u64)ogl, x, y);
 
 	e.where = (u64)ogl;
@@ -197,7 +197,7 @@ static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 	char dragdata[0x1000];
 	int j,ret=0;
 	struct event e;
-	struct arena* ogl = glfwGetWindowUserPointer(fw);
+	struct supply* ogl = glfwGetWindowUserPointer(fw);
 
 	for(j=0;j<count;j++)
 	{
@@ -212,7 +212,7 @@ static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 }
 static void callback_reshape(GLFWwindow* fw, int w, int h)
 {
-	struct arena* ogl = glfwGetWindowUserPointer(fw);
+	struct supply* ogl = glfwGetWindowUserPointer(fw);
 	ogl->fbwidth = ogl->fbstride = w;
 	ogl->fbheight = h;
 
@@ -224,7 +224,7 @@ static void callback_reshape(GLFWwindow* fw, int w, int h)
 
 
 
-void windowopen_root(struct arena* w, struct arena* r)
+void windowopen_root(struct supply* w, struct supply* r)
 {
 	int x,y,j;
 
@@ -269,7 +269,7 @@ void windowopen_root(struct arena* w, struct arena* r)
 	//inittexture(w);
 	//initvertex(w);
 }
-void windowopen_coop(struct arena* w, struct arena* r)
+void windowopen_coop(struct supply* w, struct supply* r)
 {
 	int x,y,j;
 	GLFWwindow* parent = 0;
@@ -319,7 +319,7 @@ void windowopen_coop(struct arena* w, struct arena* r)
 
 void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct arena* ogl;
+	struct supply* ogl;
 	GLFWwindow* fw;
 	//say("@windowread\n");
 
@@ -366,7 +366,7 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 }
 void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct arena* ogl;
+	struct supply* ogl;
 	if(0 == self)return;
 	ogl = self->pchip;
 
@@ -381,14 +381,14 @@ void windowchange()
 void windowlist()
 {
 }
-void windowstop(struct arena* ogl)
+void windowstop(struct supply* ogl)
 {
 }
-void windowstart(struct arena* ogl)
+void windowstart(struct supply* ogl)
 {
 	say("@windowstart:%llx\n", ogl);
 }
-void windowdelete(struct arena* ogl)
+void windowdelete(struct supply* ogl)
 {
 	switch(ogl->fmt){
 		case _gl41fboc_:gl41fboc_delete(ogl, 0);break;
@@ -402,10 +402,10 @@ void windowdelete(struct arena* ogl)
 
 	glfwDestroyWindow(ogl->glwnd);
 }
-void windowcreate(struct arena* ogl, void* arg)
+void windowcreate(struct supply* ogl, void* arg)
 {
 	struct relation* rel = 0;
-	struct arena* share = 0;
+	struct supply* share = 0;
 
 	switch(ogl->fmt){
 	case _gl41fboc_:{

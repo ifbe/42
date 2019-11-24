@@ -6,7 +6,7 @@ int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max);
 
 void role_default()
 {
-	arenacreate(_std_, 0, 0, 0);
+	supplycreate(_std_, 0, 0, 0);
 }
 void role(u8* buf, int len)
 {

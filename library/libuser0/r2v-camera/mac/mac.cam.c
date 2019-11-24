@@ -9,7 +9,7 @@ static int alive = 0;
 //
 static u8* ibuf = 0;
 static int icur = 0;
-void* visionlistener(struct arena* win)
+void* visionlistener(struct supply* win)
 {
 	while(1){
 		relationwrite(win, _dst_, 0, 0, ibuf, 640*480*2);
@@ -45,11 +45,11 @@ int videostart()
 {
 	return 0;
 }
-int videodelete(struct arena* win)
+int videodelete(struct supply* win)
 {
 	return 0;
 }
-int videocreate(struct arena* win)
+int videocreate(struct supply* win)
 {
 	ibuf = memorycreate(0x100000, 0);
 	for(icur=0;icur<640*48082;icur++)ibuf[icur] = 0x66;

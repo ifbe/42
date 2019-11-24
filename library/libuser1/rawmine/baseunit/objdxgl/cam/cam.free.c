@@ -31,10 +31,10 @@ void printmat4(float* f)
 
 
 
-static void freecam_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void freecam_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct actor* world;
+	struct entity* world;
 	struct fstyle* obb = 0;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -50,13 +50,13 @@ static void freecam_search(struct actor* act, u32 foot, struct halfrel* self[], 
 		rel = samedstnextsrc(rel);
 	}
 }
-static void freecam_modify(struct actor* act)
+static void freecam_modify(struct entity* act)
 {
 }
-static void freecam_delete(struct actor* act)
+static void freecam_delete(struct entity* act)
 {
 }
-static void freecam_create(struct actor* act, void* arg, int argc, u8** argv)
+static void freecam_create(struct entity* act, void* arg, int argc, u8** argv)
 {
 	int j;
     say("@freecam_create\n");
@@ -84,7 +84,7 @@ static void freecam_create(struct actor* act, void* arg, int argc, u8** argv)
 
 
 /*
-void freecam_fixcam(struct actor* win)
+void freecam_fixcam(struct entity* win)
 {
 	float w,h,t;
 	float x,y,z,norm;
@@ -137,7 +137,7 @@ void freecam_fixcam(struct actor* win)
 	win->camera.vb[1] = -y * t;
 	win->camera.vb[2] = -z * t;
 }
-void freecam_rotatey(struct actor* win, float delta)
+void freecam_rotatey(struct entity* win, float delta)
 {
 	float q[4];
 	float va[4];
@@ -165,7 +165,7 @@ void freecam_rotatey(struct actor* win, float delta)
 	win->camera.vc[1] = win->target.vc[1] + vb[1];
 	win->camera.vc[2] = win->target.vc[2] + vb[2];
 }
-void freecam_rotatex(struct actor* win, float delta)
+void freecam_rotatex(struct entity* win, float delta)
 {
 	float c = cosine(delta);
 	float s = sine(delta);
@@ -178,12 +178,12 @@ void freecam_rotatex(struct actor* win, float delta)
 	win->camera.vc[0] = win->target.vc[0] + vx*c + vy*s;
 	win->camera.vc[1] = win->target.vc[1] - vx*s + vy*c;
 }
-void freecam_rotatexy(struct actor* win, int dx, int dy)
+void freecam_rotatexy(struct entity* win, int dx, int dy)
 {
 	if(0 != dy)freecam_rotatey(win, dy / 100.0);
 	if(0 != dx)freecam_rotatex(win, dx / 100.0);
 }
-void target_deltaxyz(struct actor* win, float x, float y, float z)
+void target_deltaxyz(struct entity* win, float x, float y, float z)
 {
 	float norm;
 	float tx, ty;
@@ -207,7 +207,7 @@ void target_deltaxyz(struct actor* win, float x, float y, float z)
 	win->camera.vc[1] += dy;
 	win->camera.vc[2] += dz;
 }
-void freecam_zoom(struct actor* win, float delta)
+void freecam_zoom(struct entity* win, float delta)
 {
 	float va[4];
 	float vb[4];
@@ -239,10 +239,10 @@ void freecam_zoom(struct actor* win, float delta)
 
 
 static int freecam_draw_vbo(
-	struct actor* act, struct style* part,
-	struct actor* win, struct style* geom,
-	struct actor* wrl, struct style* frus,
-	struct actor* ctx, struct style* none)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrl, struct style* frus,
+	struct entity* ctx, struct style* none)
 {
 	//float* vc = geom->vc;
 	//float* vr = geom->vr;
@@ -254,8 +254,8 @@ static int freecam_draw_vbo(
 }
 /*
 static int freecam_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short* t;
@@ -485,8 +485,8 @@ void freecam_rotate(vec3 a, vec3 b, vec3 axis, float angle)
 	quaternion_operation(b, axis, angle);
 }
 static int freecam_event_obb(
-	struct actor* act, struct style* part,
-	struct actor* win, struct style* geom,
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
 	struct event* ev, int len)
 {
 	short* t;
@@ -580,8 +580,8 @@ static int freecam_event_obb(
 	return 1;
 }
 static int freecam_event_frus(
-	struct actor* act, struct style* part,
-	struct actor* win, struct style* geom,
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
 	struct event* ev, int len)
 {
 	short* t;
@@ -626,8 +626,8 @@ static int freecam_event_frus(
 	return 0;
 }
 static int freecam_event2(
-	struct actor* act, struct style* frus,
-	struct actor* win, struct style* area,
+	struct entity* act, struct style* frus,
+	struct entity* win, struct style* area,
 	struct event* ev, int len)
 {
 	float w,h,k;
@@ -721,10 +721,10 @@ void freecam_shape2frustum(struct fstyle* s, struct fstyle* d)
 	//d->vf[3] = 1e20;
 }
 static void freecam_matrix(
-	struct actor* act, struct style* part,
-	struct actor* wrd, struct style* geom,
-	struct actor* ctx, struct style* none,
-	struct arena* wnd, struct style* area)
+	struct entity* act, struct style* part,
+	struct entity* wrd, struct style* geom,
+	struct entity* ctx, struct style* none,
+	struct supply* wnd, struct style* area)
 {
 	float dx,dy;
 	struct fstyle* rect = &area->fshape;
@@ -763,16 +763,16 @@ static void freecam_matrix(
 static void freecam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> ctx
-	struct arena* wnd;struct style* area;
-	struct actor* ctx;
+	struct supply* wnd;struct style* area;
+	struct entity* ctx;
 
 	//cam -> world
-	struct actor* cam;
-	struct actor* wrd;struct style* camg;
+	struct entity* cam;
+	struct entity* wrd;struct style* camg;
 
 	//world -> this
-	struct actor* win;struct style* geom;
-	struct actor* act;struct style* part;
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
 
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
@@ -793,8 +793,8 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, struct half
 }
 static int freecam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct actor* wld;struct style* geom;
-	struct actor* act;struct style* part;
+	struct entity* wld;struct style* geom;
+	struct entity* act;struct style* part;
 	struct event* ev;
 
 	wld = peer->pchip;geom = peer->pfoot;
@@ -821,7 +821,7 @@ static void freecam_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-void freecam_register(struct actor* p)
+void freecam_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('f', 'r', 'e', 'e', 'c', 'a', 'm', 0);

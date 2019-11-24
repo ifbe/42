@@ -3,7 +3,7 @@
 
 
 
-void background_html(struct actor* win)
+void background_html(struct entity* win)
 {
 	struct str** ctx = win->ctx;
 
@@ -25,7 +25,7 @@ void background_html(struct actor* win)
 		"<body>\n"
 	);
 }
-void foreground_html(struct actor* win)
+void foreground_html(struct entity* win)
 {
 	int len;
 	u8* buf;
@@ -51,7 +51,7 @@ void foreground_html(struct actor* win)
 int htmlnode_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void** buf, int len)
 {
 	int j;
-	struct actor* win;
+	struct entity* win;
 	struct str** ctx;
 	say("@htmlnode_read\n");
 
@@ -69,11 +69,11 @@ int htmlnode_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	relationwrite(self->pchip, _src_, "text/html", 0, "htmlnode_read\n", 14);
 	return 0;
 }
-int htmlnode_delete(struct actor* win)
+int htmlnode_delete(struct entity* win)
 {
 	return 0;
 }
-int htmlnode_create(struct actor* win, void* str)
+int htmlnode_create(struct entity* win, void* str)
 {
 	void** ctx = memorycreate(0x1000, 0);
 	void*  buf = memorycreate(0x100000, 0);

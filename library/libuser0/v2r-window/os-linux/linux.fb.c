@@ -28,7 +28,7 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 {
 	int x,y,ret;
 	u8* canvas;
-	struct arena* win = self->pchip;
+	struct supply* win = self->pchip;
 
 	//read context
 	rgbanode_read(win, 0);
@@ -75,11 +75,11 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct arena* w)
+void windowdelete(struct supply* w)
 {
 	if(fbfd != -1)close(fbfd);
 }
-void windowcreate(struct arena* w)
+void windowcreate(struct supply* w)
 {
 	int j;
 

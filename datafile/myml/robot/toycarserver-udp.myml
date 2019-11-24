@@ -6,11 +6,11 @@ url:0.0.0.0:9999
 </system>
 
 
-<arena>
+<supply>
 car{
 fmt:bdc
 }
-</arena>
+</supply>
 
 
 <relation>

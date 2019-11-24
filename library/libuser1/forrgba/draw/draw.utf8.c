@@ -43,7 +43,7 @@ void drawunicode_alpha(u8* buf, int w, int h, int xx, int yy, u32 unicode)
 
 
 
-void drawunicode_error(struct actor* win, u32 rgb, int x, int y, u32 unicode)
+void drawunicode_error(struct entity* win, u32 rgb, int x, int y, u32 unicode)
 {
 	u8 ch;
 	drawsolid_rect(win, 0x888888, x, y, x+16, y+16);
@@ -64,7 +64,7 @@ void drawunicode_error(struct actor* win, u32 rgb, int x, int y, u32 unicode)
 	if(ch > 0x39)ch += 7;
 	drawascii(win, 0xff0000, x+9, y, ch);
 }
-void drawunicode(struct actor* win, u32 rgb, int xx, int yy, u32 unicode)
+void drawunicode(struct entity* win, u32 rgb, int xx, int yy, u32 unicode)
 {
 	u16 temp;
 	u16* points;
@@ -97,7 +97,7 @@ void drawunicode(struct actor* win, u32 rgb, int xx, int yy, u32 unicode)
 		}//x
 	}//y
 }
-void drawunicode_fit(struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u32 unicode)
+void drawunicode_fit(struct entity* win, u32 rgb, int x0, int y0, int x1, int y1, u32 unicode)
 {
 	u16 temp;
 	u16* points;
@@ -146,13 +146,13 @@ void drawunicode_fit(struct actor* win, u32 rgb, int x0, int y0, int x1, int y1,
 
 
 
-void drawutf8(struct actor* win, u32 rgb, int xx, int yy, u8* ch, int len)
+void drawutf8(struct entity* win, u32 rgb, int xx, int yy, u8* ch, int len)
 {
 	u32 unicode;
 	utf2unicode(ch, &unicode);
 	drawunicode(win, rgb, xx, yy, unicode);
 }
-void drawutf8_fit(struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u8* ch, int len)
+void drawutf8_fit(struct entity* win, u32 rgb, int x0, int y0, int x1, int y1, u8* ch, int len)
 {
 	u32 unicode;
 	utf2unicode(ch, &unicode);

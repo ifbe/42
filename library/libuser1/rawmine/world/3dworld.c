@@ -14,7 +14,7 @@ int world3d_read(struct halfrel* self, struct halfrel* peer, struct halfrel** st
 int world3d_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	return 0;
-/*	struct actor* world;
+/*	struct entity* world;
 	struct relation* rel;
 	say("@world3d_write\n");
 
@@ -27,7 +27,7 @@ int world3d_write(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 		if(stack[rsp-1]->flag == rel->srcflag){
 			stack[rsp+0] = (void*)(rel->src);
 			stack[rsp+1] = (void*)(rel->dst);
-			actorwrite(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, len);
+			entitywrite(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, len);
 			break;
 		}
 		rel = samesrcnextdst(rel);
@@ -53,14 +53,14 @@ int world3d_write(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
-			ret = actorwrite(self, peer, ev, 0);
+			ret = entitywrite(self, peer, ev, 0);
 			if(ret)break;
 		}
 next:
 		rel = samesrcprevdst(rel);
 	}
 
-	if('p' == (ev->what&0xff))actorinput_touch(win, ev);
+	if('p' == (ev->what&0xff))entityinput_touch(win, ev);
 	return ret;
 */
 }
@@ -85,7 +85,7 @@ int world3d_start(struct halfrel* self, struct halfrel* peer)
 		if(_act_ == rel->dsttype){
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
-			actorstart(self, peer);
+			entitystart(self, peer);
 		}
 
 		rel = samesrcnextdst(rel);
@@ -97,19 +97,19 @@ int world3d_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int world3d_search(struct actor* world)
+int world3d_search(struct entity* world)
 {
 	return 0;
 }
-int world3d_modify(struct actor* world)
+int world3d_modify(struct entity* world)
 {
 	return 0;
 }
-int world3d_delete(struct actor* world)
+int world3d_delete(struct entity* world)
 {
 	return 0;
 }
-int world3d_create(struct actor* world, void* str)
+int world3d_create(struct entity* world, void* str)
 {
 	int j;
 	u8* buf;
@@ -121,11 +121,11 @@ int world3d_create(struct actor* world, void* str)
 /*
 	int j;
 	u8* buf;
-	struct arena* win;
-	struct actor* act;
+	struct supply* win;
+	struct entity* act;
 	if(_vbo_ != type)return 0;
 
-	win = allocarena();
+	win = allocsupply();
 	if(0 == win)return 0;
 
 	win->type = _ctx_;

@@ -14,11 +14,11 @@ fmt:vt100
 </artery>
 
 
-<arena>
+<supply>
 stdio{
 fmt:std
 }
-</arena>
+</supply>
 
 
 <relation>

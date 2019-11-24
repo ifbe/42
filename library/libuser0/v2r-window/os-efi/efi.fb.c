@@ -15,7 +15,7 @@ static void* screen = 0;
 void windowread()
 {
 }
-void windowwrite(struct arena* src)
+void windowwrite(struct supply* src)
 {
 	int j;
 	int bpp;
@@ -44,10 +44,10 @@ void windowstart()
 void windowstop()
 {
 }
-void windowdelete(struct arena* w)
+void windowdelete(struct supply* w)
 {
 }
-void windowcreate(struct arena* w)
+void windowcreate(struct supply* w)
 {
 	int ret, num, chosen;
 	u64 fmt;

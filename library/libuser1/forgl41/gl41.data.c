@@ -3,7 +3,7 @@
 
 
 
-void gl41data_before(struct actor* ctx)
+void gl41data_before(struct entity* ctx)
 {
 	int j;
 	struct datapair* mod;
@@ -22,7 +22,7 @@ void gl41data_before(struct actor* ctx)
 		mod[j].src.ibuf_h = 0;
 	}
 }
-void gl41data_after(struct actor* ctx)
+void gl41data_after(struct entity* ctx)
 {
 	int j;
 	struct datapair* mod;
@@ -41,7 +41,7 @@ void gl41data_after(struct actor* ctx)
 		mod[j].src.ibuf_enq += 1;
 	}
 }
-void* gl41data_alloc(struct actor* ctx)
+void* gl41data_alloc(struct entity* ctx)
 {
 	int j;
 	struct datapair* pair = ctx->gl_solid;
@@ -52,7 +52,7 @@ void* gl41data_alloc(struct actor* ctx)
 	}
 	return 0;
 }
-void gl41data_copy(struct actor* ctx, struct style* geom, struct style* part)
+void gl41data_copy(struct entity* ctx, struct style* geom, struct style* part)
 {
 	int j,k;
 	u8* src;
@@ -85,10 +85,10 @@ void gl41data_copy(struct actor* ctx, struct style* geom, struct style* part)
 
 
 
-int gl41data_write_event(struct actor* ctx, struct actor* cam, struct halfrel** stack, int rsp, void* buf, int len)
+int gl41data_write_event(struct entity* ctx, struct entity* cam, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct relation* rel;
-	struct actor* world;
+	struct entity* world;
 	//say("@gldata_write_event\n");
 
 	rel = cam->irel0;
@@ -100,17 +100,17 @@ int gl41data_write_event(struct actor* ctx, struct actor* cam, struct halfrel** 
 			if(_world3d_ == world->type){
 				stack[rsp+0] = (void*)(rel->dst);	//camera
 				stack[rsp+1] = (void*)(rel->src);	//world
-				actorwrite(stack[rsp+0], stack[rsp+1], stack, rsp+2, buf, len);
+				entitywrite(stack[rsp+0], stack[rsp+1], stack, rsp+2, buf, len);
 			}
 		}
 		rel = samedstnextsrc(rel);
 	}
 	return 0;
 }
-int gl41data_read_matrix(struct actor* ctx, struct actor* cam, struct halfrel** stack, int rsp, void* buf, int len)
+int gl41data_read_matrix(struct entity* ctx, struct entity* cam, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct relation* rel;
-	struct actor* world;
+	struct entity* world;
 	//say("@gldata_read_matrix\n");
 
 	rel = cam->irel0;
@@ -122,7 +122,7 @@ int gl41data_read_matrix(struct actor* ctx, struct actor* cam, struct halfrel** 
 			if(_world3d_ == world->type){
 				stack[rsp+0] = (void*)(rel->dst);	//camera
 				stack[rsp+1] = (void*)(rel->src);	//world
-				actorread(stack[rsp+0], stack[rsp+1], stack, rsp+2, 0, 'm');
+				entityread(stack[rsp+0], stack[rsp+1], stack, rsp+2, 0, 'm');
 				return 1;
 			}
 		}
@@ -130,7 +130,7 @@ int gl41data_read_matrix(struct actor* ctx, struct actor* cam, struct halfrel** 
 	}
 	return 0;
 }
-int gl41data_read_vertex(struct actor* glctx, struct actor* world, struct halfrel** stack, int rsp, void* buf, int len)
+int gl41data_read_vertex(struct entity* glctx, struct entity* world, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct relation* rel;
 	struct style* geom;
@@ -148,7 +148,7 @@ int gl41data_read_vertex(struct actor* glctx, struct actor* world, struct halfre
 			geom = rel->psrcfoot;
 			if(geom){if('#' == geom->i.uc[3])goto next;}
 
-			actorread((void*)(rel->dst), (void*)(rel->src), stack, rsp, 0, 'v');
+			entityread((void*)(rel->dst), (void*)(rel->src), stack, rsp, 0, 'v');
 			gl41data_copy(glctx, geom, part);
 		}
 next:
@@ -168,9 +168,9 @@ next:
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	int ret;
-	struct arena* wnd;
-	struct actor* ctx;
-	struct actor* cam;
+	struct supply* wnd;
+	struct entity* ctx;
+	struct entity* cam;
 	struct relation* rel;
 	//say("%d,%llx@gl41data_read: %.4s, %.4s\n", rsp, stack, &peer->flag, &self->flag);
 
@@ -207,8 +207,8 @@ int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 }
 int gl41data_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	struct actor* ctx;
-	struct actor* cam;
+	struct entity* ctx;
+	struct entity* cam;
 	struct relation* rel;
 	//say("@gl41data_write\n");
 
@@ -245,19 +245,19 @@ int gl41data_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int gl41data_search(struct arena* win)
+int gl41data_search(struct supply* win)
 {
 	return 0;
 }
-int gl41data_modify(struct arena* win)
+int gl41data_modify(struct supply* win)
 {
 	return 0;
 }
-int gl41data_delete(struct arena* win)
+int gl41data_delete(struct supply* win)
 {
 	return 0;
 }
-int gl41data_create(struct actor* act, void* flag)
+int gl41data_create(struct entity* act, void* flag)
 {
 	int j;
 	u8* buf;

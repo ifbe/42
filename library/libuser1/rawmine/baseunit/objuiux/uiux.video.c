@@ -91,8 +91,8 @@ void video_update(
 
 
 void video_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u8* src;
 	u8* dst;
@@ -126,10 +126,10 @@ void video_draw_pixel(
 	);
 }
 void video_draw_vbo3d(
-	struct actor* act, struct style* part,
-	struct actor* win, struct style* geom,
-	struct actor* wrd, struct style* camg,
-	struct actor* ctx, struct style* temp)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* ctx, struct style* temp)
 {
 	float* vc = geom->fshape.vc;
 	float* vr = geom->fshape.vr;
@@ -190,13 +190,13 @@ void video_draw_vbo3d(
 	data->tex[0].enq += 1;
 }
 void video_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 void video_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	//<head>
 	htmlprintf(win, 1, ".video{width:50%%;height:100px;float:left;background-color:#1984ea;}\n");
@@ -205,20 +205,20 @@ void video_draw_html(
 	htmlprintf(win, 2, "<div class=\"video\">\n");
 }
 void video_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 void video_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u8* src = act->idx;
 	say("src@%llx\n", src);
 }
 static void video_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -234,8 +234,8 @@ static void video_draw(
 	else video_draw_pixel(act, pin, win, sty);
 }
 void video_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev)
 {
 }
@@ -246,15 +246,15 @@ void video_event(
 static void video_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> ctx
-	struct actor* ctx;
+	struct entity* ctx;
 
 	//cam -> world
-	struct actor* cam;
-	struct actor* wrd;struct style* camg;
+	struct entity* cam;
+	struct entity* wrd;struct style* camg;
 
 	//world -> texball
-	struct actor* win;struct style* geom;
-	struct actor* act;struct style* part;
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
 
 	if(stack){
 		ctx = stack[rsp-3]->pchip;
@@ -268,7 +268,7 @@ static void video_read(struct halfrel* self, struct halfrel* peer, struct halfre
 static void video_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct glsrc* data;
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	if(_yuv_ == self->flag){
 		say("@video_write.yuv: %llx,%x,%llx,%x\n", arg, idx, buf, len);
@@ -285,7 +285,7 @@ static void video_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void video_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	if(0 == act)return;
 	if(0 == pin)return;
@@ -297,13 +297,13 @@ static void video_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void video_search(struct actor* act)
+static void video_search(struct entity* act)
 {
 }
-static void video_modify(struct actor* act)
+static void video_modify(struct entity* act)
 {
 }
-static void video_delete(struct actor* act)
+static void video_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(act->buf)
@@ -312,7 +312,7 @@ static void video_delete(struct actor* act)
 		act->buf = 0;
 	}
 }
-static void video_create(struct actor* act)
+static void video_create(struct entity* act)
 {
 	int j;
 	struct glsrc* src;
@@ -345,7 +345,7 @@ static void video_create(struct actor* act)
 
 
 
-void video_register(struct actor* p)
+void video_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('v', 'i', 'd', 'e', 'o', 0, 0, 0);

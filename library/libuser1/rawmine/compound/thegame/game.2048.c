@@ -30,18 +30,18 @@ static u32 color2048[17] = {
 
 
 
-static void the2048_search(struct actor* act, u8* buf)
+static void the2048_search(struct entity* act, u8* buf)
 {
 }
-static void the2048_modify(struct actor* act, u8* buf)
+static void the2048_modify(struct entity* act, u8* buf)
 {
 }
-static void the2048_delete(struct actor* act, u8* buf)
+static void the2048_delete(struct entity* act, u8* buf)
 {
 	if(0 == act)return;
 	act->buf = 0;
 }
-static void the2048_create(struct actor* act, u8* buf)
+static void the2048_create(struct entity* act, u8* buf)
 {
 	int j;
 	u8* p;
@@ -59,8 +59,8 @@ static void the2048_create(struct actor* act, u8* buf)
 
 
 static void the2048_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 color;
 	int x,y,x0,y0,x1,y1;
@@ -115,8 +115,8 @@ static void the2048_draw_pixel(
 	}
 }
 static void the2048_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 rgb;
 	int x,y;
@@ -169,8 +169,8 @@ static void the2048_draw_vbo3d(
 	}
 }
 static void the2048_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 	int len = win->len;
@@ -190,8 +190,8 @@ static void the2048_draw_json(
 	win->len = len;
 }
 static void the2048_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
@@ -217,8 +217,8 @@ static void the2048_draw_html(
 	htmlprintf(win, 2, "</div>\n");
 }
 static void the2048_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
@@ -233,8 +233,8 @@ static void the2048_draw_tui(
 	}
 }
 static void the2048_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
 
@@ -265,8 +265,8 @@ static void the2048_draw_cli(
 	);
 }
 static void the2048_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -279,7 +279,7 @@ static void the2048_draw(
 
 
 
-static void the2048_move(struct actor* act, int op)
+static void the2048_move(struct entity* act, int op)
 {
 	int j;
 	u8* p;
@@ -298,8 +298,8 @@ static void the2048_move(struct actor* act, int op)
 	new2048(q);
 }
 static void the2048_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int k;
@@ -345,8 +345,8 @@ static void the2048_event(
 
 static void the2048_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct actor* act;struct style* part;
-	struct actor* win;struct style* geom;
+	struct entity* act;struct style* part;
+	struct entity* win;struct style* geom;
 	//say("@the2048_read\n");
 
 	act = self->pchip;part = self->pfoot;
@@ -358,8 +358,8 @@ static void the2048_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 }
 static void the2048_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct actor* act;struct style* part;
-	struct actor* win;struct style* geom;
+	struct entity* act;struct style* part;
+	struct entity* win;struct style* geom;
 	the2048_event(act, part, win, geom, buf, 0);
 }
 static void the2048_stop(struct halfrel* self, struct halfrel* peer)
@@ -372,7 +372,7 @@ static void the2048_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-void the2048_register(struct actor* p)
+void the2048_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex32('2','0','4','8');

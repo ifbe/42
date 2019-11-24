@@ -21,11 +21,11 @@ fmt:easyag
 </artery>
 
 
-<arena>
+<supply>
 ahrs{
 fmt:ahrs
 }
-</arena>
+</supply>
 
 
 <relation>

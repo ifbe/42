@@ -6,10 +6,10 @@ void freecam_shape2frustum(struct fstyle* d, struct fstyle* s);
 
 
 
-static void thirdperson_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void thirdperson_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct actor* world;
+	struct entity* world;
 	struct fstyle* obb = 0;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -38,13 +38,13 @@ static void thirdperson_search(struct actor* act, u32 foot, struct halfrel* self
 		rel = samedstnextsrc(rel);
 	}
 }
-static void thirdperson_modify(struct actor* act)
+static void thirdperson_modify(struct entity* act)
 {
 }
-static void thirdperson_delete(struct actor* act)
+static void thirdperson_delete(struct entity* act)
 {
 }
-static void thirdperson_create(struct actor* act, void* str)
+static void thirdperson_create(struct entity* act, void* str)
 {
 	if(0 == act)return;
 	act->buf = memorycreate(64, 0);
@@ -54,10 +54,10 @@ static void thirdperson_create(struct actor* act, void* str)
 
 
 static int thirdperson_draw(
-	struct actor* act, struct style* part,
-	struct actor* win, struct style* geom,
-	struct actor* wrl, struct style* frus,
-	struct actor* ctx, struct style* none)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrl, struct style* frus,
+	struct entity* ctx, struct style* none)
 {
 	carvefrustum(ctx, &geom->frus);
 	return 0;
@@ -121,13 +121,13 @@ static void thirdperson_fixcam(struct fstyle* obb, struct fstyle* tar, int dx, i
 	obb->vt[2] = obb->vr[0]*obb->vf[1] - obb->vr[1]*obb->vf[0];
 }
 static int thirdperson_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int dx,dy,roll;
 	short* t;
-	struct actor* tmp;
+	struct entity* tmp;
 
 	struct halfrel* self;
 	struct halfrel* peer;
@@ -187,10 +187,10 @@ static int thirdperson_event(
 
 
 static void thirdperson_matrix(
-	struct actor* act, struct style* part,
-	struct actor* wrd, struct style* geom,
-	struct actor* ctx, struct style* none,
-	struct arena* wnd, struct style* area)
+	struct entity* act, struct style* part,
+	struct entity* wrd, struct style* geom,
+	struct entity* ctx, struct style* none,
+	struct supply* wnd, struct style* area)
 {
 	struct fstyle* rect = &area->fshape;
 	struct fstyle* shape = &geom->fshape;
@@ -224,16 +224,16 @@ static void thirdperson_matrix(
 static void thirdperson_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> ctx
-	struct arena* wnd;struct style* area;
-	struct actor* ctx;
+	struct supply* wnd;struct style* area;
+	struct entity* ctx;
 
 	//cam -> world
-	struct actor* cam;
-	struct actor* wrd;struct style* camg;
+	struct entity* cam;
+	struct entity* wrd;struct style* camg;
 
 	//world -> this
-	struct actor* win;struct style* geom;
-	struct actor* act;struct style* part;
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
 
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
@@ -254,8 +254,8 @@ static void thirdperson_read(struct halfrel* self, struct halfrel* peer, struct 
 }
 static int thirdperson_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct actor* wld;struct style* geom;
-	struct actor* act;struct style* part;
+	struct entity* wld;struct style* geom;
+	struct entity* act;struct style* part;
 	struct event* ev;
 
 	wld = peer->pchip;geom = peer->pfoot;
@@ -275,7 +275,7 @@ static void thirdperson_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-void thirdperson_register(struct actor* p)
+void thirdperson_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('3', 'r', 'd', 'c', 'a', 'm', 0, 0);

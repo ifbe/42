@@ -1,5 +1,5 @@
 #include "libuser.h"
-void actorcreatefromfile(struct actor* act, char* name);
+void entitycreatefromfile(struct entity* act, char* name);
 void carveskydome(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
 
@@ -31,8 +31,8 @@ char* skydome_glsl_f =
 
 
 static void skydome_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 tmp;
 	u32* dst;
@@ -80,8 +80,8 @@ static void skydome_draw_pixel(
 	}
 }
 static void skydome_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	void* vbuf;
 	void* ibuf;
@@ -100,13 +100,13 @@ static void skydome_draw_vbo(
 	src->ibuf_enq += 1;
 }
 static void skydome_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void skydome_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -120,19 +120,19 @@ static void skydome_draw_html(
 	win->len = len;
 }
 static void skydome_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void skydome_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("skydome(%x,%x,%x)\n",win,act,sty);
 }
 static void skydome_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -150,9 +150,9 @@ static void skydome_draw(
 static void skydome_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//skydome_draw(act, pin, win, sty);
 }
@@ -168,9 +168,9 @@ static void skydome_start(struct halfrel* self, struct halfrel* peer)
 	struct glsrc* src;
 	struct gldst* dst;
 
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 /*
 	//
@@ -215,28 +215,28 @@ static void skydome_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void skydome_search(struct actor* act)
+static void skydome_search(struct entity* act)
 {
 }
-static void skydome_modify(struct actor* act)
+static void skydome_modify(struct entity* act)
 {
 }
-static void skydome_delete(struct actor* act)
+static void skydome_delete(struct entity* act)
 {
 	if(0 == act)return;
 	memorydelete(act->buf);
 	act->buf = 0;
 }
-static void skydome_create(struct actor* act)
+static void skydome_create(struct entity* act)
 {
 	if(0 == act)return;
-	//actorcreatefromfile(act, "jpg/skydome.jpg");
+	//entitycreatefromfile(act, "jpg/skydome.jpg");
 }
 
 
 
 
-void skydome_register(struct actor* p)
+void skydome_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('s', 'k', 'y', 'd', 'o', 'm', 'e', 0);

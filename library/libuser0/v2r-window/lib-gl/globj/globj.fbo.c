@@ -19,7 +19,7 @@
 
 
 
-int fbodelete(struct arena* target)
+int fbodelete(struct supply* target)
 {
 	if(target->tex1)glDeleteTextures(1, &target->tex1);
 	if(target->tex0)glDeleteTextures(1, &target->tex0);
@@ -27,7 +27,7 @@ int fbodelete(struct arena* target)
 	if(target->fbo)glDeleteFramebuffers(1, &target->fbo);
 	return 0;
 }
-int fbocreate(struct arena* target, int arg)
+int fbocreate(struct supply* target, int arg)
 {
 	//frame buffer
 	glGenFramebuffers(1, &target->fbo);

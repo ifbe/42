@@ -3,7 +3,7 @@
 
 
 
-void parsevertfromobj(struct glsrc* ctx, struct actor* act, u8* buf, int len)
+void parsevertfromobj(struct glsrc* ctx, struct entity* act, u8* buf, int len)
 {
 }
 void parsevertfromstl(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len)

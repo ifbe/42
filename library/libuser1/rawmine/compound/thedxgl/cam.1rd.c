@@ -5,12 +5,12 @@ void fixmatrix(float* m, struct fstyle* sty);
 
 
 static int firstperson_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int j;
 	struct relation* rel;
-	struct actor* tar;
+	struct entity* tar;
 	u8* src;
 	u8* dst;
 
@@ -92,12 +92,12 @@ void firstperson_frustum(struct fstyle* d, struct fstyle* s)
 	//d->vf[3] = 1e20;
 }
 static void firstperson_matrix(
-	struct actor* act, struct style* frustum,
-	struct actor* win, struct style* wingeom,
+	struct entity* act, struct style* frustum,
+	struct entity* win, struct style* wingeom,
 	u8* buf, int len)
 {/*
 	struct relation* rel;
-	struct actor* r;
+	struct entity* r;
 	struct fstyle* s;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -145,9 +145,9 @@ static void firstperson_matrix(
 static void firstperson_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 /*	switch(self->flag){
 		case _cam_:firstperson_matrix(act, pin, win, sty, buf, len);break;
@@ -167,16 +167,16 @@ static void firstperson_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void firstperson_search(struct actor* act)
+static void firstperson_search(struct entity* act)
 {
 }
-static void firstperson_modify(struct actor* act)
+static void firstperson_modify(struct entity* act)
 {
 }
-static void firstperson_delete(struct actor* act)
+static void firstperson_delete(struct entity* act)
 {
 }
-static void firstperson_create(struct actor* act, void* addr)
+static void firstperson_create(struct entity* act, void* addr)
 {
     say("@firstperson_create\n");
 }
@@ -184,7 +184,7 @@ static void firstperson_create(struct actor* act, void* addr)
 
 
 
-void firstperson_register(struct actor* p)
+void firstperson_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('1', 'r', 'd', 'c', 'a', 'm', 0, 0);

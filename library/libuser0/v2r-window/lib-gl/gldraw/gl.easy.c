@@ -77,12 +77,12 @@ void easywindow_renderself()
 	//draw
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 }
-void easywindow_renderpeer(struct arena* win)
+void easywindow_renderpeer(struct supply* win)
 {
 	struct relation* rel = win->orel0;
 	if(0 == rel)return;
 
-	struct actor* act = (void*)(rel->dstchip);
+	struct entity* act = (void*)(rel->dstchip);
 	if(0 == act)return;
 
 	struct datapair* pair = act->buf;
@@ -139,11 +139,11 @@ void easywindow_renderpeer(struct arena* win)
 
 
 
-void easywindow_write(struct arena* win, struct event* ev)
+void easywindow_write(struct supply* win, struct event* ev)
 {
 	say("@easywindow_event\n");
 }
-void easywindow_read(struct arena* win)
+void easywindow_read(struct supply* win)
 {
 	float w = win->fbwidth;
 	float h = win->fbheight;
@@ -159,10 +159,10 @@ void easywindow_read(struct arena* win)
 	if(0 == win->orel0)easywindow_renderself();
 	else easywindow_renderpeer(win);
 }
-void easywindow_delete(struct arena* win)
+void easywindow_delete(struct supply* win)
 {
 }
-void easywindow_create(struct arena* win)
+void easywindow_create(struct supply* win)
 {
 	win->fmt = _easy_;
 }

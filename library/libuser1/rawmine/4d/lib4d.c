@@ -10,11 +10,11 @@ int openwriteclose(void* name, int off, void* buf, int len);
 void loadimgfromjpg(u8* buf, int len, int* width, int* height, int* depth, int* stride);
 void loadimgfrompng(u8* buf, int len, int* width, int* height, int* depth, int* stride);
 //
-void actorcreatefromobj(struct actor* act, u8* buf, int len);
-void actorcreatefromstl(struct actor* act, u8* buf, int len);
-void actorcreatefrommp3(struct actor* act, u8* buf, int len);
-void actorcreatefromogg(struct actor* act, u8* buf, int len);
-void actorcreatefromwav(struct actor* act, u8* buf, int len);
+void entitycreatefromobj(struct entity* act, u8* buf, int len);
+void entitycreatefromstl(struct entity* act, u8* buf, int len);
+void entitycreatefrommp3(struct entity* act, u8* buf, int len);
+void entitycreatefromogg(struct entity* act, u8* buf, int len);
+void entitycreatefromwav(struct entity* act, u8* buf, int len);
 
 
 
@@ -96,7 +96,7 @@ void loadtexfromfile(struct glsrc* src, int idx, char* name)
 	src->tex[idx].w = w;
 	src->tex[idx].h = h;
 }/*
-void actorcreatefromfile(struct actor* act, char* name)
+void entitycreatefromfile(struct entity* act, char* name)
 {
 	int len;
 	u8* tmp;
@@ -122,13 +122,13 @@ void actorcreatefromfile(struct actor* act, char* name)
 	if(0 == tmp[0])return;
 	else if(0 == ncmp(tmp, "jpg", 3))loadimgfromjpg(buf, len, &act->width, &act->height, &act->depth, &act->stride);
 	else if(0 == ncmp(tmp, "png", 3))loadimgfrompng(buf, len, &act->width, &act->height, &act->depth, &act->stride);
-	else if(0 == ncmp(tmp, "obj", 3))actorcreatefromobj(act, buf, len);
-	else if(0 == ncmp(tmp, "stl", 3))actorcreatefromstl(act, buf, len);
-	else if(0 == ncmp(tmp, "mp3", 3))actorcreatefrommp3(act, buf, len);
-	else if(0 == ncmp(tmp, "ogg", 3))actorcreatefromogg(act, buf, len);
-	else if(0 == ncmp(tmp, "wav", 3))actorcreatefromwav(act, buf, len);
+	else if(0 == ncmp(tmp, "obj", 3))entitycreatefromobj(act, buf, len);
+	else if(0 == ncmp(tmp, "stl", 3))entitycreatefromstl(act, buf, len);
+	else if(0 == ncmp(tmp, "mp3", 3))entitycreatefrommp3(act, buf, len);
+	else if(0 == ncmp(tmp, "ogg", 3))entitycreatefromogg(act, buf, len);
+	else if(0 == ncmp(tmp, "wav", 3))entitycreatefromwav(act, buf, len);
 }
-void* alloc_winobj(struct actor* win, int type)
+void* alloc_winobj(struct entity* win, int type)
 {
 	int j;
 	struct datapair* mod;

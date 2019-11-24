@@ -30,8 +30,8 @@ GLSL_VERSION
 
 
 static void picture_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 tmp;
 	u32* dst;
@@ -79,8 +79,8 @@ static void picture_draw_pixel(
 	}
 }/*
 static void picture_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
@@ -136,8 +136,8 @@ static void picture_draw_vbo2d(
 	src->vbuf_enq += 1;
 }*/
 static void picture_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
@@ -193,29 +193,29 @@ static void picture_draw_vbo3d(
 	src->vbuf_enq += 1;
 }
 static void picture_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void picture_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void picture_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void picture_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("picture(%x,%x,%x)\n",win,act,sty);
 }
 static void picture_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -237,11 +237,11 @@ static void picture_draw(
 static void picture_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	//say("@texball_read:%llx,%llx,%llx\n",act,win,buf);
 
 	if(ctx){
@@ -257,7 +257,7 @@ static void picture_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void picture_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	if(0 == act)return;
 	if(0 == pin)return;
@@ -269,19 +269,19 @@ static void picture_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void picture_search(struct actor* act)
+static void picture_search(struct entity* act)
 {
 }
-static void picture_modify(struct actor* act)
+static void picture_modify(struct entity* act)
 {
 }
-static void picture_delete(struct actor* act)
+static void picture_delete(struct entity* act)
 {
 	if(0 == act)return;
 	memorydelete(act->buf);
 	act->buf = 0;
 }
-static void picture_create(struct actor* act, void* str)
+static void picture_create(struct entity* act, void* str)
 {
 	int j;
 	struct glsrc* src;
@@ -319,7 +319,7 @@ static void picture_create(struct actor* act, void* str)
 
 
 
-void picture_register(struct actor* p)
+void picture_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('p', 'i', 'c', 't', 'u', 'r', 'e', 0);

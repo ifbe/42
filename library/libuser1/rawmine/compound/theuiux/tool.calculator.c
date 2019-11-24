@@ -23,8 +23,8 @@ static u8 table[4][8] = {
 
 
 static void calculator_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 fg;
 	int x,y;
@@ -71,8 +71,8 @@ static void calculator_draw_pixel(
 	}
 }/*
 static void calculator_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y,rgb;
 	vec3 tc,tr,tf;
@@ -143,8 +143,8 @@ static void calculator_draw_vbo2d(
 	}
 }*/
 static void calculator_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
@@ -152,13 +152,13 @@ static void calculator_draw_vbo3d(
 	float* vu = sty->f.vt;
 }
 static void calculator_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void calculator_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -172,13 +172,13 @@ static void calculator_draw_html(
 	win->len = len;
 }
 static void calculator_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void calculator_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("calc(%x,%x,%x)\n",win,act,sty);
 	say("buffer:%s\n", infix);
@@ -186,8 +186,8 @@ static void calculator_draw_cli(
 	say("result:%s\n", result);
 }
 static void calculator_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -203,8 +203,8 @@ static void calculator_draw(
 	else calculator_draw_pixel(act, pin, win, sty);
 }
 static void calculator_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	double final;
@@ -257,18 +257,18 @@ static void calculator_event(
 static void calculator_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//calculator_draw(act, pin, win, sty);
 }
 static void calculator_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//calculator_event(act, pin, win, sty, ev, 0);
@@ -283,18 +283,18 @@ static void calculator_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void calculator_search(struct actor* act)
+static void calculator_search(struct entity* act)
 {
 }
-static void calculator_modify(struct actor* act)
+static void calculator_modify(struct entity* act)
 {
 }
-static void calculator_delete(struct actor* act)
+static void calculator_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void calculator_create(struct actor* act)
+static void calculator_create(struct entity* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = buffer;
@@ -310,7 +310,7 @@ static void calculator_create(struct actor* act)
 
 
 
-void calculator_register(struct actor* p)
+void calculator_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex32('c', 'a', 'l', 'c');

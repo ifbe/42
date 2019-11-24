@@ -11,7 +11,7 @@ struct portalbuf{
 
 
 
-static void portal_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void portal_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
 
@@ -26,13 +26,13 @@ static void portal_search(struct actor* act, u32 foot, struct halfrel* self[], s
 		rel = samedstnextsrc(rel);
 	}
 }
-static void portal_modify(struct actor* act)
+static void portal_modify(struct entity* act)
 {
 }
-static void portal_delete(struct actor* act)
+static void portal_delete(struct entity* act)
 {
 }
-static void portal_create(struct actor* act, void* str)
+static void portal_create(struct entity* act, void* str)
 {
 	struct portalbuf* portal;
 	struct glsrc* src;
@@ -66,8 +66,8 @@ static void portal_create(struct actor* act, void* str)
 
 
 static void portal_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -86,8 +86,8 @@ static void portal_draw_pixel(
 	}
 }
 static void portal_draw_vbo_b(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	struct portalbuf* portal;
 	vec3 tc,tt;
@@ -115,8 +115,8 @@ static void portal_draw_vbo_b(
 	carveline_arrow(win, 0xff0000, portal->vc, portal->vq, vt);
 }
 static void portal_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	struct portalbuf* portal;
 	struct glsrc* src;
@@ -193,28 +193,28 @@ static void portal_draw_vbo(
 	src->vbuf_enq += 1;
 }
 static void portal_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void portal_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void portal_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void portal_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void portal_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)portal_draw_cli(act, pin, win, sty);
@@ -405,11 +405,11 @@ void portal_frustum(struct fstyle* frus, struct fstyle* por, struct fstyle* tar,
 		frus->vn[3], frus->vf[3], frus->vl[3], frus->vr[3], frus->vb[3], frus->vt[3]);*/
 }
 static void portal_matrix(
-	struct actor* act, struct fstyle* part,
-	struct actor* wrd, struct fstyle* geom,
-	struct actor* ctx, struct fstyle* frus,
-	struct arena* fbo, struct fstyle* area,
-	struct actor* dat, struct fstyle* camf)
+	struct entity* act, struct fstyle* part,
+	struct entity* wrd, struct fstyle* geom,
+	struct entity* ctx, struct fstyle* frus,
+	struct supply* fbo, struct fstyle* area,
+	struct entity* dat, struct fstyle* camf)
 {/*
 	struct halfrel* self[1];
 	struct halfrel* peer[1];
@@ -473,11 +473,11 @@ static void portal_matrix(
 static void portal_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	if(ctx){
 		if(_gl41data_ == ctx->type){
 			if('a' == self->flag)portal_draw_vbo(act,pin,ctx,sty);
@@ -501,7 +501,7 @@ static void portal_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void portal_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct actor* act;
+	struct entity* act;
 	struct style* pin;
 	struct portalbuf* portal;
 
@@ -523,7 +523,7 @@ static void portal_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-void portal_register(struct actor* p)
+void portal_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('p', 'o', 'r', 't', 'a', 'l', 0, 0);

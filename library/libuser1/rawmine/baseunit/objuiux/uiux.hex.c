@@ -19,8 +19,8 @@ void hex_prep(void* name)
 
 
 static void hex_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 unicode, color;
 	int x,y,j;
@@ -95,18 +95,18 @@ static void hex_draw_pixel(
 	}
 }
 static void hex_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void hex_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void hex_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -120,19 +120,19 @@ static void hex_draw_html(
 	win->len = len;
 }
 static void hex_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void hex_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("hex(%x,%x,%x)\n",win,act,sty);
 }
 static void hex_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -144,8 +144,8 @@ static void hex_draw(
 	else hex_draw_pixel(act, pin, win, sty);
 }
 static void hex_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int j,ret;
@@ -180,18 +180,18 @@ static void hex_event(
 static void hex_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//hex_draw(act, pin, win, sty);
 }
 static void hex_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//hex_event(act, pin, win, sty, ev, 0);
@@ -206,18 +206,18 @@ static void hex_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void hex_search(struct actor* act)
+static void hex_search(struct entity* act)
 {
 }
-static void hex_modify(struct actor* act)
+static void hex_modify(struct entity* act)
 {
 }
-static void hex_delete(struct actor* act)
+static void hex_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void hex_create(struct actor* act)
+static void hex_create(struct entity* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = databuf;
@@ -227,7 +227,7 @@ static void hex_create(struct actor* act)
 
 
 
-void hex_register(struct actor* p)
+void hex_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex32('h', 'e', 'x', 0);

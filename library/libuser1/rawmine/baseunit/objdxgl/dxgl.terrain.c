@@ -105,7 +105,7 @@ GLSL_VERSION
 
 
 
-void terrain_generate(float (*vbuf)[6], u16* ibuf, struct actor* act, struct glsrc* src)
+void terrain_generate(float (*vbuf)[6], u16* ibuf, struct entity* act, struct glsrc* src)
 {
 	float f;
 	int x,y,j;
@@ -171,7 +171,7 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct actor* act, struct gls
 		}
 	}
 }
-void terrain_locate(vec4 v, struct actor* act)
+void terrain_locate(vec4 v, struct entity* act)
 {
 	//geometry
 	int w = act->width;
@@ -226,8 +226,8 @@ edge:
 
 
 static void terrain_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -246,8 +246,8 @@ static void terrain_draw_pixel(
 	}
 }
 static void terrain_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {/*
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -290,28 +290,28 @@ static void terrain_draw_vbo(
 	}
 }
 static void terrain_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void terrain_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void terrain_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void terrain_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void terrain_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)terrain_draw_cli(act, pin, win, sty);
@@ -324,7 +324,7 @@ static void terrain_draw(
 static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	float x,y;
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	int w = act->width;
 	int h = act->height;
 	float* v = (void*)buf;
@@ -363,11 +363,11 @@ static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int
 static void terrain_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	//say("@terrain_read:%llx,%llx,%llx\n",act,win,buf);
 
 	if(ctx){
@@ -382,7 +382,7 @@ static void terrain_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void terrain_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	if(0 == act)return;
 	if(0 == pin)return;
@@ -394,13 +394,13 @@ static void terrain_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void terrain_search(struct actor* act)
+static void terrain_search(struct entity* act)
 {
 }
-static void terrain_modify(struct actor* act)
+static void terrain_modify(struct entity* act)
 {
 }
-static void terrain_delete(struct actor* act)
+static void terrain_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(0 == act->buf){
@@ -408,7 +408,7 @@ static void terrain_delete(struct actor* act)
 		act->buf = 0;
 	}
 }
-static void terrain_create(struct actor* act, void* str)
+static void terrain_create(struct entity* act, void* str)
 {
 	int j;
 	int x,y,c;
@@ -483,7 +483,7 @@ static void terrain_create(struct actor* act, void* str)
 
 
 
-void terrain_register(struct actor* p)
+void terrain_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('t', 'e', 'r', 'r', 'a', 'i', 'n', 0);

@@ -27,9 +27,9 @@ int listshell(void*, int);
 int startshell();
 int writeshell(int fd, int off, char* buf, int len);
 //
-void drawterm(struct actor* win, void* term, int x0, int y0, int x1, int y1);
+void drawterm(struct entity* win, void* term, int x0, int y0, int x1, int y1);
 void terminal_serverinput(struct uartterm* term, u8* buf, int len);
-void terminal_clientinput(struct actor* act, struct style* pin, struct actor* win, struct style* sty, struct event* ev);
+void terminal_clientinput(struct entity* act, struct style* pin, struct entity* win, struct style* sty, struct event* ev);
 //
 void* getstdin();
 int getcurin();
@@ -47,8 +47,8 @@ static int charlen = 0;
 
 
 static void terminal_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -81,8 +81,8 @@ static void terminal_draw_pixel(
 	}
 }
 static void terminal_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int ocur;
 	void* obuf;
@@ -118,13 +118,13 @@ static void terminal_draw_vbo(
 	//carvestring(win, 0xffffff, vc, vr, vf, obuf, ocur);
 }
 static void terminal_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void terminal_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -138,8 +138,8 @@ static void terminal_draw_html(
 	win->len = len;
 }
 static void terminal_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x, y, w, h;
 	u32* p;
@@ -164,16 +164,16 @@ static void terminal_draw_tui(
 	}
 }
 static void terminal_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u8* p;
 	int enq, deq;
 	//say("terminal(%x,%x,%x)\n",win,act,sty);
 }
 static void terminal_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)terminal_draw_cli(act, pin, win, sty);
@@ -184,8 +184,8 @@ static void terminal_draw(
 	else terminal_draw_pixel(act, pin, win, sty);
 }
 static void terminal_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	void* buf, int len)
 {
 	int j;
@@ -219,11 +219,11 @@ static void terminal_event(
 static void terminal_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	//say("@drone_read:%llx,%llx,%llx\n",act,win,buf);
 
 	if(ctx){
@@ -234,9 +234,9 @@ static void terminal_read(struct halfrel* self, struct halfrel* peer, void* arg,
 static void terminal_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//terminal_event(act, pin, win, sty, ev, 0);
@@ -251,18 +251,18 @@ static void terminal_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void terminal_search(struct actor* act)
+static void terminal_search(struct entity* act)
 {
 }
-static void terminal_modify(struct actor* act)
+static void terminal_modify(struct entity* act)
 {
 }
-static void terminal_delete(struct actor* act)
+static void terminal_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(0 == act->buf)memorydelete(act->buf);
 }
-static void terminal_create(struct actor* act, void* arg)
+static void terminal_create(struct entity* act, void* arg)
 {
 	struct uartterm* term;
 	if(0 == act)return;
@@ -294,7 +294,7 @@ static void terminal_create(struct actor* act, void* arg)
 
 
 
-void terminal_register(struct actor* p)
+void terminal_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex32('t', 'e', 'r', 'm');

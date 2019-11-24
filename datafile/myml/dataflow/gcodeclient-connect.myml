@@ -13,11 +13,11 @@ fmt:gcode
 </artery>
 
 
-<arena>
+<supply>
 stdio{
 fmt:std
 }
-</arena>
+</supply>
 
 
 <relation>

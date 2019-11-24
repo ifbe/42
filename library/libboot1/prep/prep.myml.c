@@ -271,8 +271,8 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 				chip[clen].type = fmt;
 				chip[clen].hash = hash;
 				switch(tier){
-					case _act_:chip[clen].addr =  actorcreate(fmt, url, argc, argv);break;
-					case _win_:chip[clen].addr =  arenacreate(fmt, url, argc, argv);break;
+					case _act_:chip[clen].addr = entitycreate(fmt, url, argc, argv);break;
+					case _win_:chip[clen].addr = supplycreate(fmt, url, argc, argv);break;
 					case _art_:chip[clen].addr = arterycreate(fmt, url, argc, argv);break;
 					case _sys_:chip[clen].addr = systemcreate(fmt, url, argc, argv);break;
 					case _dri_:chip[clen].addr = drivercreate(fmt, url, argc, argv);break;
@@ -481,13 +481,13 @@ void role_test1(u8* buf, int len)
 						buf + typedata, j-typedata
 					);
 				}
-				if(0 == ncmp(buf+typename, "arena", 5)) {
+				if(0 == ncmp(buf+typename, "supply", 6)) {
 					clen = role_test_node(
 						_win_, 0, cbuf, clen,
 						buf + typedata, j-typedata
 					);
 				}
-				if(0 == ncmp(buf+typename, "actor", 5)) {
+				if(0 == ncmp(buf+typename, "entity", 6)) {
 					clen = role_test_node(
 						_act_, 0, cbuf, clen,
 						buf + typedata, j-typedata

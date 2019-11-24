@@ -12,8 +12,8 @@ void maze_solve(void* buf, int w, int h);
 
 
 static void maze_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u8* buf;
 	int x,y,w;
@@ -135,8 +135,8 @@ static void maze_draw_pixel(
 	}
 }
 static void maze_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y,z,w;
 	vec3 tc, tr, tf, tu, f;
@@ -283,13 +283,13 @@ static void maze_draw_vbo3d(
 	}
 }
 static void maze_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void maze_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -302,8 +302,8 @@ static void maze_draw_html(
 	win->len = len;
 }
 static void maze_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y,stride;
 	u8* p;
@@ -322,8 +322,8 @@ static void maze_draw_tui(
 	}
 }
 static void maze_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 	u8* buf = act->buf;
@@ -339,8 +339,8 @@ static void maze_draw_cli(
 	say("\n\n\n\n");
 }
 static void maze_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)maze_draw_cli(act, pin, win, sty);
@@ -355,8 +355,8 @@ static void maze_draw(
 	else maze_draw_pixel(act, pin, win, sty);
 }
 static void maze_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	if(_char_ == ev->what)
@@ -377,11 +377,11 @@ static void maze_event(
 static void maze_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	say("@maze_read:%llx,%llx,%llx\n",act,win,buf);
 
 	if(ctx){
@@ -392,9 +392,9 @@ static void maze_read(struct halfrel* self, struct halfrel* peer, void* arg, int
 static void maze_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//maze_event(act, pin, win, sty, ev, 0);
@@ -409,13 +409,13 @@ static void maze_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void maze_search(struct actor* act)
+static void maze_search(struct entity* act)
 {
 }
-static void maze_modify(struct actor* act)
+static void maze_modify(struct entity* act)
 {
 }
-static void maze_delete(struct actor* act)
+static void maze_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(act->buf)
@@ -424,7 +424,7 @@ static void maze_delete(struct actor* act)
 		act->buf = 0;
 	}
 }
-static void maze_create(struct actor* act)
+static void maze_create(struct entity* act)
 {
 	if(0 == act)return;
 	act->buf = memorycreate(WIDTH*HEIGHT, 0);
@@ -439,7 +439,7 @@ static void maze_create(struct actor* act)
 
 
 
-void maze_register(struct actor* p)
+void maze_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex32('m', 'a', 'z', 'e');

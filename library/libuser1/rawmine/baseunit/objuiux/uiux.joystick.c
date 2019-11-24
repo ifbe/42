@@ -5,7 +5,7 @@ void carvearrorkey(void*, u32, vec3 vc, vec3 vr, vec3 vf, u8*, int);
 
 
 
-void vjoy_draw_pixel(struct actor* win, struct style* sty)
+void vjoy_draw_pixel(struct entity* win, struct style* sty)
 {
 	u8 ch[8];
 	int c,l,rgb;
@@ -36,7 +36,7 @@ void vjoy_draw_pixel(struct actor* win, struct style* sty)
 	ch[7] = '+';
 	drawarrorkey2d(win, 0xff00ff, w-h*3/16, h*13/16, w, h, ch, -1);
 }
-void vjoy_draw_vbo(struct actor* win, struct style* sty)
+void vjoy_draw_vbo(struct entity* win, struct style* sty)
 {
 	u8 ch[8];
 	float j,k;
@@ -107,18 +107,18 @@ void vjoy_draw_vbo(struct actor* win, struct style* sty)
 	vf[2] = 0.0;
 	carvearrorkey(win, 0xff00ff, vc, vr, vf, ch, -1);
 }
-void vjoy_draw_html(struct actor* win, struct style* sty)
+void vjoy_draw_html(struct entity* win, struct style* sty)
 {
 }
-void vjoy_draw_tui(struct actor* win, struct style* sty)
+void vjoy_draw_tui(struct entity* win, struct style* sty)
 {
 }
-void vjoy_draw_cli(struct actor* win, struct style* sty)
+void vjoy_draw_cli(struct entity* win, struct style* sty)
 {
 }
 void vjoy_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -129,8 +129,8 @@ void vjoy_draw(
 	else vjoy_draw_pixel(win, sty);
 }
 int vjoy_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short tmp[4];
@@ -203,18 +203,18 @@ int vjoy_event(
 static void vjoy_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//vjoy_draw(act, pin, win, sty);
 }
 static int vjoy_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	return 0;//vjoy_event(act, pin, win, sty, ev, 0);
@@ -231,19 +231,19 @@ static int vjoy_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static int vjoy_search(struct actor* win)
+static int vjoy_search(struct entity* win)
 {
 	return 0;
 }
-static int vjoy_modify(struct actor* win)
+static int vjoy_modify(struct entity* win)
 {
 	return 0;
 }
-static int vjoy_delete(struct actor* win)
+static int vjoy_delete(struct entity* win)
 {
 	return 0;
 }
-static int vjoy_create(struct actor* win, u8* str)
+static int vjoy_create(struct entity* win, u8* str)
 {
 	return 0;
 }
@@ -251,7 +251,7 @@ static int vjoy_create(struct actor* win, u8* str)
 
 
 
-void vjoy_register(struct actor* p)
+void vjoy_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex32('v', 'j', 'o', 'y');

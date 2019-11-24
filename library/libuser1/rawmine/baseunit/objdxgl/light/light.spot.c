@@ -39,10 +39,10 @@ GLSL_VERSION
 
 
 
-static void spotlight_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void spotlight_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct actor* world;
+	struct entity* world;
 	struct fstyle* obb = 0;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -58,13 +58,13 @@ static void spotlight_search(struct actor* act, u32 foot, struct halfrel* self[]
 		rel = samedstnextsrc(rel);
 	}
 }
-static void spotlight_modify(struct actor* act)
+static void spotlight_modify(struct entity* act)
 {
 }
-static void spotlight_delete(struct actor* act)
+static void spotlight_delete(struct entity* act)
 {
 }
-static void spotlight_create(struct actor* act, void* str)
+static void spotlight_create(struct entity* act, void* str)
 {
 	struct sunbuf* sun;
 	struct glsrc* src;
@@ -101,13 +101,13 @@ static void spotlight_create(struct actor* act, void* str)
 
 
 static void spotlight_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void spotlight_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	struct sunbuf* sun;
 	struct glsrc* src;
@@ -180,28 +180,28 @@ static void spotlight_draw_vbo(
 	src->vbuf_enq += 1;
 }
 static void spotlight_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void spotlight_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void spotlight_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void spotlight_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void spotlight_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)spotlight_draw_cli(act, pin, win, sty);
@@ -265,10 +265,10 @@ void spotlight_frustum(struct fstyle* d, struct fstyle* s)
 	//d->vf[3] = 1e20;
 }
 static void spotlight_matrix(
-	struct actor* act, struct fstyle* part,
-	struct actor* wrd, struct fstyle* geom,
-	struct actor* ctx, struct fstyle* frus,
-	struct arena* fbo, struct fstyle* area)
+	struct entity* act, struct fstyle* part,
+	struct entity* wrd, struct fstyle* geom,
+	struct entity* ctx, struct fstyle* frus,
+	struct supply* fbo, struct fstyle* area)
 {
 	struct halfrel* self;
 	struct halfrel* peer;
@@ -307,8 +307,8 @@ static void spotlight_matrix(
 	src->arg[1].data = obb->vc;
 }
 void spotlight_light(
-	struct actor* act, struct fstyle* pin,
-	struct actor* win, struct fstyle* sty)
+	struct entity* act, struct fstyle* pin,
+	struct entity* win, struct fstyle* sty)
 {
 	struct sunbuf* sun;
 	struct glsrc* own;
@@ -348,11 +348,11 @@ void spotlight_light(
 static void spotlight_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 
 	if(ctx){
 		switch(ctx->type){
@@ -379,7 +379,7 @@ static void spotlight_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void spotlight_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	if(0 == act)return;
 	if(0 == pin)return;
@@ -392,7 +392,7 @@ static void spotlight_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-void spotlight_register(struct actor* p)
+void spotlight_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('s','p','o','t','l', 'i', 't', 0);

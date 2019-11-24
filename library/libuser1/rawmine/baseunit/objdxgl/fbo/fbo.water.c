@@ -10,10 +10,10 @@ struct waterbuf{
 
 
 
-static void water_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void water_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct actor* world;
+	struct entity* world;
 	struct fstyle* obb = 0;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -29,13 +29,13 @@ static void water_search(struct actor* act, u32 foot, struct halfrel* self[], st
 		rel = samedstnextsrc(rel);
 	}
 }
-static void water_modify(struct actor* act)
+static void water_modify(struct entity* act)
 {
 }
-static void water_delete(struct actor* act)
+static void water_delete(struct entity* act)
 {
 }
-static void water_create(struct actor* act, void* str)
+static void water_create(struct entity* act, void* str)
 {
 	struct waterbuf* water;
 	struct glsrc* src;
@@ -83,8 +83,8 @@ static void water_create(struct actor* act, void* str)
 
 
 static void water_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -103,8 +103,8 @@ static void water_draw_pixel(
 	}
 }
 static void water_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	struct waterbuf* water;
 	struct glsrc* src;
@@ -169,28 +169,28 @@ static void water_draw_vbo(
 	src->vbuf_enq += 1;
 }
 static void water_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void water_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void water_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void water_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void water_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)water_draw_cli(act, pin, win, sty);
@@ -306,8 +306,8 @@ void water_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 	frus->vt[3] = t;
 }
 static void water_matrix(
-	struct actor* act, struct fstyle* frus,
-	struct actor* fbo, struct fstyle* area)
+	struct entity* act, struct fstyle* frus,
+	struct entity* fbo, struct fstyle* area)
 {/*
 	struct halfrel* self;
 	struct halfrel* peer;
@@ -356,11 +356,11 @@ static void water_matrix(
 static void water_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	if(ctx){
 		if(_gl41data_ == ctx->type)water_draw_vbo(act,pin,ctx,sty);
 	}
@@ -381,7 +381,7 @@ static void water_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void water_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	if(0 == act)return;
 	if(0 == pin)return;
@@ -397,7 +397,7 @@ static void water_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-void water_register(struct actor* p)
+void water_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('w', 'a', 't', 'e', 'r', 0, 0, 0);

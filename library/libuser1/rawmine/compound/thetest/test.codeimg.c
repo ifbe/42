@@ -1,5 +1,5 @@
 #include "libuser.h"
-void actorcreatefromfile(struct actor* act, char* name);
+void entitycreatefromfile(struct entity* act, char* name);
 void scale_image(void* src, void* dst,
 	int sw, int sh, int sx1, int sy1, int sx2, int sy2,
 	int dw, int dh, int dx1, int dy1, int dx2, int dy2);
@@ -174,8 +174,8 @@ unsigned char BLUE6(int i,int j)
 
 
 static void codeimg_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 	int width = win->width;
@@ -205,8 +205,8 @@ static void codeimg_draw_pixel(
 	);
 }/*
 static void codeimg_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	if(0 == sty)sty = defaultstyle_vbo2d();
 	float* vc = sty->f.vc;
@@ -263,8 +263,8 @@ static void codeimg_draw_vbo2d(
 	src->vbuf_enq += 1;
 }*/
 static void codeimg_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	float (*vbuf)[6];
 	struct glsrc* src;
@@ -322,29 +322,29 @@ static void codeimg_draw_vbo3d(
 	src->vbuf_enq += 1;
 }
 static void codeimg_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void codeimg_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void codeimg_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void codeimg_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("codeimg(%x,%x,%x)\n",win,act,sty);
 }
 static void codeimg_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)codeimg_draw_cli(act, pin, win, sty);
@@ -359,8 +359,8 @@ static void codeimg_draw(
 	else codeimg_draw_pixel(act, pin, win, sty);
 }
 static void codeimg_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int x,y;
@@ -462,18 +462,18 @@ static void codeimg_event(
 static void codeimg_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//codeimg_draw(act, pin, win, sty);
 }
 static void codeimg_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//codeimg_event(act, pin, win, sty, ev, 0);
@@ -486,9 +486,9 @@ static void codeimg_start(struct halfrel* self, struct halfrel* peer)
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 /*
 	//alloc
@@ -527,19 +527,19 @@ static void codeimg_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void codeimg_search(struct actor* act)
+static void codeimg_search(struct entity* act)
 {
 }
-static void codeimg_modify(struct actor* act)
+static void codeimg_modify(struct entity* act)
 {
 }
-static void codeimg_delete(struct actor* act)
+static void codeimg_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(0 != act->buf)memorydelete(act->buf);
 	act->buf = 0;
 }
-static void codeimg_create(struct actor* act)
+static void codeimg_create(struct entity* act)
 {
 	int x,y;
 	int rr,gg,bb;
@@ -555,7 +555,7 @@ static void codeimg_create(struct actor* act)
 
 
 
-void codeimg_register(struct actor* p)
+void codeimg_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('c', 'o', 'd', 'e', 'i', 'm', 'g', 0);

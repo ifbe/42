@@ -1,4 +1,4 @@
-<arena>
+<supply>
 3dworld{
 fmt:vbo
 type:3d
@@ -16,10 +16,10 @@ fmt:ahrs
 player1{
 fmt:joy
 }
-</arena>
+</supply>
 
 
-<actor>
+<entity>
 fonthelper{
 fmt:aidfont
 }
@@ -41,7 +41,7 @@ fmt:drone
 rtscam{
 fmt:freecam
 }
-</actor>
+</entity>
 
 
 <style>

@@ -5,7 +5,7 @@ fmt:fftrgb
 </artery>
 
 
-<arena>
+<supply>
 opengl{
 fmt:win
 title:"42"
@@ -16,10 +16,10 @@ depth:1024
 usbcam{
 fmt:cam
 }
-</arena>
+</supply>
 
 
-<actor>
+<entity>
 canvas{
 fmt:video
 }
@@ -39,7 +39,7 @@ fmt:gl41data
 thewnd{
 fmt:gl41wnd0
 }
-</actor>
+</entity>
 
 
 <style>

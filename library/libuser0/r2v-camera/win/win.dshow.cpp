@@ -50,7 +50,7 @@ struct pictureobject
 	u64 height;
 };
 static struct pictureobject obj[60];
-static struct arena* working;
+static struct supply* working;
 static int enq = 0;
 
 
@@ -100,7 +100,7 @@ public:
 			{
 				struct halfrel* self = (struct halfrel*)&orel->dstchip;
 				struct halfrel* peer = (struct halfrel*)&orel->srcchip;
-				actorwrite(self, peer, obj[enq].buf, 640*480*3/2);
+				entitywrite(self, peer, obj[enq].buf, 640*480*3/2);
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}
@@ -510,11 +510,11 @@ void videostop()
 void videostart()
 {
 }
-void videodelete(struct arena* win)
+void videodelete(struct supply* win)
 {
 	//shutupdie();
 }
-void videocreate(struct arena* win)
+void videocreate(struct supply* win)
 {
 	working = win;
 	letsgo();

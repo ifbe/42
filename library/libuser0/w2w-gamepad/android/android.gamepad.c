@@ -3,7 +3,7 @@
 
 
 
-void joycreate(struct arena* win)
+void joycreate(struct supply* win)
 {
 }
 void initjoy()

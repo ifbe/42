@@ -5,8 +5,8 @@
 
 
 static void drone_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -25,10 +25,10 @@ static void drone_draw_pixel(
 	}
 }
 static void drone_draw_vbo(
-	struct actor* act, struct style* part,
-	struct actor* win, struct style* geom,
-	struct actor* wrd, struct style* camg,
-	struct actor* ctx, struct style* temp)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* ctx, struct style* temp)
 {
 	float dt;
     vec3 tc,tr,tf,tu;
@@ -138,28 +138,28 @@ static void drone_draw_vbo(
 	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1, dt);
 }
 static void drone_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void drone_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void drone_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void drone_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void drone_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)drone_draw_cli(act, pin, win, sty);
@@ -168,10 +168,10 @@ static void drone_draw(
 	else if(fmt == _json_)drone_draw_json(act, pin, win, sty);
 	else drone_draw_pixel(act, pin, win, sty);
 }
-void drone_write_quaternion(struct actor* act, float* f)
+void drone_write_quaternion(struct entity* act, float* f)
 {
 	struct relation* rel;
-	struct actor* world;
+	struct entity* world;
 	struct fstyle* sty = 0;
 	say("%f,%f,%f,%f\n",f[0],f[1],f[2],f[3]);
 
@@ -211,7 +211,7 @@ void drone_write_quaternion(struct actor* act, float* f)
 	sty->vt[1] *= sty->vt[3];
 	sty->vt[2] *= sty->vt[3];
 }
-void drone_write_euler(struct actor* act, float* f)
+void drone_write_euler(struct entity* act, float* f)
 {
 	vec4 q;
 	float rx = f[0]*PI/360;
@@ -239,15 +239,15 @@ void drone_write_euler(struct actor* act, float* f)
 static void drone_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> ctx
-	struct actor* ctx;
+	struct entity* ctx;
 
 	//cam -> world
-	struct actor* cam;
-	struct actor* wrd;struct style* camg;
+	struct entity* cam;
+	struct entity* wrd;struct style* camg;
 
 	//world -> texball
-	struct actor* win;struct style* geom;
-	struct actor* act;struct style* part;
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
 
 	if(stack){
 		ctx = stack[rsp-3]->pchip;
@@ -260,7 +260,7 @@ static void drone_read(struct halfrel* self, struct halfrel* peer, struct halfre
 }
 static void drone_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	drone_write_euler(act, buf);
 }
@@ -274,18 +274,18 @@ static void drone_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void drone_modify(struct actor* act)
+static void drone_modify(struct entity* act)
 {
 }
-static void drone_search(struct actor* act)
+static void drone_search(struct entity* act)
 {
 }
-static void drone_delete(struct actor* act)
+static void drone_delete(struct entity* act)
 {
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void drone_create(struct actor* act)
+static void drone_create(struct entity* act)
 {
 	if(0 == act)return;
 	//if(_orig_ == act->type)act->buf = buffer;
@@ -295,7 +295,7 @@ static void drone_create(struct actor* act)
 
 
 
-void drone_register(struct actor* p)
+void drone_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('d', 'r', 'o', 'n', 'e', 0, 0, 0);

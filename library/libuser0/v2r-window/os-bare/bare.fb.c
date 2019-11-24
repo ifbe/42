@@ -7,7 +7,7 @@ static u32* screen = 0;
 void windowread()
 {
 }
-void windowwrite(struct arena* win)
+void windowwrite(struct supply* win)
 {
 	int j;
 	u32* ibuf = win->buf;
@@ -30,10 +30,10 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct arena* w)
+void windowdelete(struct supply* w)
 {
 }
-void windowcreate(struct arena* w)
+void windowcreate(struct supply* w)
 {
 	w->type = hex32('w','i','n',0);
 	w->fmt = hex64('b','g','r','a','8','8','8','8');

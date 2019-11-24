@@ -19,23 +19,23 @@ static void screen_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void screen_search(struct actor* act)
+static void screen_search(struct entity* act)
 {
 }
-static void screen_modify(struct actor* act)
+static void screen_modify(struct entity* act)
 {
 }
-static void screen_delete(struct actor* act)
+static void screen_delete(struct entity* act)
 {
 }
-static void screen_create(struct actor* act, void* str)
+static void screen_create(struct entity* act, void* str)
 {
 }
 
 
 
 
-void screen_register(struct actor* p)
+void screen_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('s', 'c', 'r', 'e', 'e', 'n', 0, 0);

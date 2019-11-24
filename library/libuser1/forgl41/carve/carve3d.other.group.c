@@ -5,7 +5,7 @@
 
 
 
-void carvedrone_node(struct actor* win, u32 rgb,
+void carvedrone_node(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	float j;
@@ -96,7 +96,7 @@ void carvedrone_node(struct actor* win, u32 rgb,
 	t1[2] = (v0[2]-v2[2])/2;
 	carvesolid_rect(win, 0x204060, t0, t1, t2);
 }
-void carvedrone(struct actor* win, u32 rgb,
+void carvedrone(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	int x,y;
@@ -157,7 +157,7 @@ void carvedrone(struct actor* win, u32 rgb,
 
 
 
-void carvesolid_propeller(struct actor* ctx, u32 rgb,
+void carvesolid_propeller(struct entity* ctx, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vt, int dir, int dt)
 {
 	float a;
@@ -196,7 +196,7 @@ void carvesolid_propeller(struct actor* ctx, u32 rgb,
 
 
 
-void carvesnowman(struct actor* win, u32 rgb, vec3 vc)
+void carvesnowman(struct entity* win, u32 rgb, vec3 vc)
 {
 	vec3 tc;
 	vec3 tr;
@@ -629,7 +629,7 @@ void carveskybox(float vbuf[][6], u16* ibuf,
 
 
 
-void carvesolid_bodypart(struct actor* win, u32 rgb, vec3 t0, vec3 t1)
+void carvesolid_bodypart(struct entity* win, u32 rgb, vec3 t0, vec3 t1)
 {
 	float n;
 	vec3 tc, tr, tf, tu;
@@ -674,7 +674,7 @@ void carvesolid_bodypart(struct actor* win, u32 rgb, vec3 t0, vec3 t1)
 
 
 
-void carvearrorkey(struct actor* win, u32 rgb,
+void carvearrorkey(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf,
 	u8* buf, int t)
 {

@@ -3,7 +3,7 @@
 
 
 
-void gentui_rect(struct actor* win, u32 rgb, int x0, int y0, int x1, int y1)
+void gentui_rect(struct entity* win, u32 rgb, int x0, int y0, int x1, int y1)
 {
 	int x,y;
 	int stride = win->stride;
@@ -18,7 +18,7 @@ void gentui_rect(struct actor* win, u32 rgb, int x0, int y0, int x1, int y1)
 		}
 	}
 }
-void gentui_utf8(struct actor* win, u32 rgb, int x, int y, u8* utf, int len)
+void gentui_utf8(struct entity* win, u32 rgb, int x, int y, u8* utf, int len)
 {
 	int j;
 	int stride = win->stride;
@@ -31,7 +31,7 @@ void gentui_utf8(struct actor* win, u32 rgb, int x, int y, u8* utf, int len)
 	for(j=0;j<len;j++)buf[4*(y*stride+x) + j] = utf[j];
 	for(;j<6;j++)buf[4*(y*stride+x) + j] = 0;
 }
-void gentui_str(struct actor* win, u32 rgb, int x, int y, u8* str, int len)
+void gentui_str(struct entity* win, u32 rgb, int x, int y, u8* str, int len)
 {
 	int j;
 	int stride = win->stride;
@@ -41,7 +41,7 @@ void gentui_str(struct actor* win, u32 rgb, int x, int y, u8* str, int len)
 	if(len == 0)while(str[len] != 0)len++;
 	for(j=0;j<len;j++)buf[4*(y*stride+x+j)] = str[j];
 }
-void gentui_text(struct actor* win, u32 rgb, int x, int y, u8* buf, int len)
+void gentui_text(struct entity* win, u32 rgb, int x, int y, u8* buf, int len)
 {
 	int j, k;
 	int cc, dy;
@@ -65,7 +65,7 @@ void gentui_text(struct actor* win, u32 rgb, int x, int y, u8* buf, int len)
 		dy++;
 	}
 }
-void gentui_decstr(struct actor* win, u32 rgb, int x, int y, int data)
+void gentui_decstr(struct entity* win, u32 rgb, int x, int y, int data)
 {
 	u8 str[16];
 	int len = data2decstr(data, str);
@@ -75,7 +75,7 @@ void gentui_decstr(struct actor* win, u32 rgb, int x, int y, int data)
 
 
 
-int tuinode_read(struct actor* win, struct event* ev)
+int tuinode_read(struct entity* win, struct event* ev)
 {
 	struct relation* rel;
 	//gentui_rect(win, 4, 0, 0, 80, 25);
@@ -85,13 +85,13 @@ int tuinode_read(struct actor* win, struct event* ev)
 	while(1){
 		if(0 == rel)break;
 		if(_act_ == rel->dsttype){
-			actorread((void*)rel->dst, (void*)rel->src, 0, 0, 0, 0);
+			entityread((void*)rel->dst, (void*)rel->src, 0, 0, 0, 0);
 		}
 		rel = samesrcnextdst(rel);
 	}
 	return 0;
 }
-int tuinode_write(struct actor* win, struct event* ev)
+int tuinode_write(struct entity* win, struct event* ev)
 {
 	return 0;
 }

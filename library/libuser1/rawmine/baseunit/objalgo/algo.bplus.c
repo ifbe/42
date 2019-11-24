@@ -51,7 +51,7 @@ static struct bplusleaf node[16];
 
 
 
-static void printnode(struct actor* win, struct bplushead* this, int x, int y,
+static void printnode(struct entity* win, struct bplushead* this, int x, int y,
 	int cx, int cy, int ww, int hh)
 {
 	int j,k,len;
@@ -108,8 +108,8 @@ static void printnode(struct actor* win, struct bplushead* this, int x, int y,
 	}
 }
 static void bplus_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	struct bplusleaf* node;
 	struct bplushead* right;
@@ -128,18 +128,18 @@ static void bplus_draw_pixel(
 	printnode(win, right, cx, 1, cx, cy, ww, hh);
 }
 static void bplus_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void bplus_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void bplus_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -153,19 +153,19 @@ static void bplus_draw_html(
 	win->len = len;
 }
 static void bplus_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void bplus_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("tree(%x,%x,%x)\n",win,act,sty);
 }
 static void bplus_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -177,8 +177,8 @@ static void bplus_draw(
 	else bplus_draw_pixel(act, pin, win, sty);
 }
 static void bplus_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	u64 type = ev->what;
@@ -198,18 +198,18 @@ static void bplus_event(
 static void bplus_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//bplus_draw(act, pin, win, sty);
 }
 static void bplus_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//bplus_event(act, pin, win, sty, ev, 0);
@@ -224,18 +224,18 @@ static void bplus_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void bplus_search(struct actor* act)
+static void bplus_search(struct entity* act)
 {
 }
-static void bplus_modify(struct actor* act)
+static void bplus_modify(struct entity* act)
 {
 }
-static void bplus_delete(struct actor* act)
+static void bplus_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void bplus_create(struct actor* act)
+static void bplus_create(struct entity* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = node;
@@ -245,7 +245,7 @@ static void bplus_create(struct actor* act)
 
 
 
-void bplus_register(struct actor* p)
+void bplus_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('b', 'p', 'l', 'u', 's', 0, 0, 0);

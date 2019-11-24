@@ -25,19 +25,19 @@ int reality_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int reality_search(struct actor* world)
+int reality_search(struct entity* world)
 {
 	return 0;
 }
-int reality_modify(struct actor* world)
+int reality_modify(struct entity* world)
 {
 	return 0;
 }
-int reality_delete(struct actor* world)
+int reality_delete(struct entity* world)
 {
 	return 0;
 }
-int reality_create(struct actor* world, void* str)
+int reality_create(struct entity* world, void* str)
 {
 	return 0;
 }

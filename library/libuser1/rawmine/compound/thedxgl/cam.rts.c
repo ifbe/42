@@ -6,8 +6,8 @@ void fixmatrix(float* m, struct fstyle* sty);
 
 /*
 static int rtscam_event11111(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	//say("%llx,%llx\n", ev->why, ev->what);
@@ -45,8 +45,8 @@ static int rtscam_event11111(
 	return 1;
 }*/
 static int rtscam_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short* t;
@@ -139,12 +139,12 @@ void rtscam_frustum(struct fstyle* d, struct fstyle* s)
 	//d->vf[3] = 1e20;
 }
 static void rtscam_matrix(
-	struct actor* act, struct style* frustum,
-	struct actor* win, struct style* wingeom,
+	struct entity* act, struct style* frustum,
+	struct entity* win, struct style* wingeom,
 	u8* buf, int len)
 {/*
 	struct relation* rel;
-	struct actor* r;
+	struct entity* r;
 	struct fstyle* s;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -192,9 +192,9 @@ static void rtscam_matrix(
 
 static void rtscam_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 /*
 	switch(self->flag){
@@ -204,9 +204,9 @@ static void rtscam_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 static int rtscam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	return 0;//rtscam_event(act, pin, win, sty, ev, 0);
@@ -222,16 +222,16 @@ static void rtscam_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void rtscam_search(struct actor* act)
+static void rtscam_search(struct entity* act)
 {
 }
-static void rtscam_modify(struct actor* act)
+static void rtscam_modify(struct entity* act)
 {
 }
-static void rtscam_delete(struct actor* act)
+static void rtscam_delete(struct entity* act)
 {
 }
-static void rtscam_create(struct actor* act, void* addr)
+static void rtscam_create(struct entity* act, void* addr)
 {
 	act->buf = memorycreate(64, 0);
 }
@@ -239,7 +239,7 @@ static void rtscam_create(struct actor* act, void* addr)
 
 
 
-void rtscam_register(struct actor* p)
+void rtscam_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('r', 't', 's', 'c', 'a', 'm', 0, 0);

@@ -22,8 +22,8 @@ static struct snake buf[WIDTH*HEIGHT];
 
 
 void snake_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int j;
 	int t1, t2, t3, t4;
@@ -67,18 +67,18 @@ void snake_draw_pixel(
 	drawsolid_rect(win, 0x00ff00, t1+1, t2+1, t3-1, t4-1);
 }
 void snake_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 void snake_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 void snake_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 /*
@@ -104,8 +104,8 @@ void snake_draw_html(
 */
 }
 void snake_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int j,t;
 	int stride = win->stride;
@@ -115,14 +115,14 @@ void snake_draw_tui(
 	p[t<<2] = '@';
 }
 void snake_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("snake(%x,%x,%x)\n",win,act,sty);
 }
 void snake_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)snake_draw_cli(act, pin, win, sty);
@@ -133,8 +133,8 @@ void snake_draw(
 	else snake_draw_pixel(act, pin, win, sty);
 }
 void snake_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	u64 type = ev->what;
@@ -162,18 +162,18 @@ void snake_event(
 static void snake_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//snake_draw(act, pin, win, sty);
 }
 static void snake_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//snake_event(act, pin, win, sty, ev, 0);
@@ -188,18 +188,18 @@ static void snake_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void snake_search(struct actor* act)
+static void snake_search(struct entity* act)
 {
 }
-static void snake_modify(struct actor* act)
+static void snake_modify(struct entity* act)
 {
 }
-static void snake_delete(struct actor* act)
+static void snake_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void snake_create(struct actor* act)
+static void snake_create(struct entity* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = buf;
@@ -211,7 +211,7 @@ static void snake_create(struct actor* act)
 
 
 
-void snake_register(struct actor* p)
+void snake_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('s', 'n', 'a', 'k', 'e', 0, 0, 0);

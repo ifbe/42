@@ -62,7 +62,7 @@ int autocomplete(u8* buf, int len)
 
 	say("\n(matching: %.*s*)\n", len, buf);
 	say("	0101	haha	device	driver\n");
-	say("	system	artery	arena	actor\n");
+	say("	system	artery	supply	entity\n");
 	return 0;
 }
 

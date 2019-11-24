@@ -16,7 +16,7 @@ fmt:str2fv
 </artery>
 
 
-<arena>
+<supply>
 opengl{
 fmt:win
 title:"42"
@@ -24,10 +24,10 @@ width:1024
 height:1024
 depth:1024
 }
-</arena>
+</supply>
 
 
-<actor>
+<entity>
 ground{
 fmt:ground
 }
@@ -47,7 +47,7 @@ fmt:gl41data
 thewnd{
 fmt:gl41wnd0
 }
-</actor>
+</entity>
 
 
 <style>

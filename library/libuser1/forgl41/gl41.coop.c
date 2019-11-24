@@ -27,11 +27,11 @@ int gl41coop_start(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int gl41coop_delete(struct actor* act)
+int gl41coop_delete(struct entity* act)
 {
 	return 0;
 }
-int gl41coop_create(struct actor* act, void* addr)
+int gl41coop_create(struct entity* act, void* addr)
 {
 	return 0;
 }

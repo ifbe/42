@@ -3,13 +3,13 @@
 
 
 
-void tabbar_vbo_listtwig(struct actor* win, struct style* sty, struct actor* tmp, int t)
+void tabbar_vbo_listtwig(struct entity* win, struct style* sty, struct entity* tmp, int t)
 {
     int x,y,j,rgb;
     vec3 rr;
     vec3 tc, tr, tf;
     struct relation* rel;
-    struct actor* ac;
+    struct entity* ac;
     struct style* st;
 
     tc[0] = (2*t-7)/16.0;
@@ -69,15 +69,15 @@ void tabbar_vbo_listtwig(struct actor* win, struct style* sty, struct actor* tmp
     }
 }
 void tabbar_vbo_listroot(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
     int j,rgb;
     vec3 pc,pf;
     vec3 tc,tr,tf;
     struct relation* rel;
     struct style* st;
-    struct actor* aa;
+    struct entity* aa;
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
@@ -127,8 +127,8 @@ void tabbar_vbo_listroot(
     }
 }
 void tabbar_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	//if(0 == sty)sty = defaultstyle_vbo2d();
 
@@ -139,11 +139,11 @@ void tabbar_draw_vbo(
 
 
 
-void tabbar_pixel_listtwig(struct actor* win, struct style* sty, struct actor* tmp, int t)
+void tabbar_pixel_listtwig(struct entity* win, struct style* sty, struct entity* tmp, int t)
 {
     int x,y,j,rgb;
     struct relation* rel;
-    struct actor* ac;
+    struct entity* ac;
     struct style* st;
     int w = win->width;
     int h = win->height;
@@ -182,13 +182,13 @@ void tabbar_pixel_listtwig(struct actor* win, struct style* sty, struct actor* t
     }
 }
 void tabbar_pixel_listroot(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
     int j,rgb;
     struct relation* rel;
     struct style* st;
-    struct actor* aa;
+    struct entity* aa;
     int w = win->width;
     int h = win->height;
 
@@ -222,8 +222,8 @@ void tabbar_pixel_listroot(
     }
 }
 void tabbar_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
     tabbar_pixel_listroot(act, pin, win, sty);
 }
@@ -232,28 +232,28 @@ void tabbar_draw_pixel(
 
 
 void tabbar_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 void tabbar_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 void tabbar_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 void tabbar_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void tabbar_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -269,14 +269,14 @@ static void tabbar_draw(
 
 
 static int tabbar_event_child(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
     int x,y,j,k;
     short* t;
     struct relation* rel;
-    struct actor* tmp;
+    struct entity* tmp;
     struct style* st;
     if(act->x0 < 0)return 0;
 
@@ -331,8 +331,8 @@ found:
     return 1;
 }
 static int tabbar_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
     int x,y,ret;
@@ -365,18 +365,18 @@ static int tabbar_event(
 static void tabbar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//tabbar_draw(act, pin, win, sty);
 }
 static int tabbar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	return 0;//tabbar_event(act, pin, win, sty, ev, 0);
@@ -391,16 +391,16 @@ static void tabbar_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void tabbar_search(struct actor* act)
+static void tabbar_search(struct entity* act)
 {
 }
-static void tabbar_modify(struct actor* act)
+static void tabbar_modify(struct entity* act)
 {
 }
-static void tabbar_delete(struct actor* act)
+static void tabbar_delete(struct entity* act)
 {
 }
-static void tabbar_create(struct actor* act, void* str)
+static void tabbar_create(struct entity* act, void* str)
 {
     act->x0 = -1;
 }
@@ -408,7 +408,7 @@ static void tabbar_create(struct actor* act, void* str)
 
 
 
-void tabbar_register(struct actor* p)
+void tabbar_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('t', 'a', 'b', 'b', 'a', 'r', 0, 0);

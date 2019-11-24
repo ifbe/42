@@ -9,7 +9,7 @@ static int alive = 0;
 //
 static short* ibuf = 0;
 static int icur = 0;
-void* micphonelistener(struct arena* win)
+void* micphonelistener(struct supply* win)
 {
 	int j;
 	while(1){
@@ -47,11 +47,11 @@ int micphonestart()
 {
 	return 0;
 }
-int micphonedelete(struct arena* win)
+int micphonedelete(struct supply* win)
 {
 	return 0;
 }
-int micphonecreate(struct arena* win)
+int micphonecreate(struct supply* win)
 {
 	ibuf = memorycreate(0x100000, 0);
 	icur = 0;

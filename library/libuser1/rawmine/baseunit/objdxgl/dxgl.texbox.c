@@ -32,15 +32,15 @@ char* texbox_glsl_f =
 
 
 static void texbox_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void texbox_draw_vbo3d(
-	struct actor* act, struct style* part,
-	struct actor* win, struct style* geom,
-	struct actor* wrd, struct style* camg,
-	struct actor* ctx, struct style* none)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* ctx, struct style* none)
 {
 	void* vbuf;
 	void* ibuf;
@@ -60,13 +60,13 @@ static void texbox_draw_vbo3d(
 	src->ibuf_enq += 1;
 }
 static void texbox_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void texbox_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -80,19 +80,19 @@ static void texbox_draw_html(
 	win->len = len;
 }
 static void texbox_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void texbox_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("texbox(%x,%x,%x)\n",win,act,sty);
 }
 static void texbox_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -108,8 +108,8 @@ static void texbox_draw(
 	else texbox_draw_pixel(act, pin, win, sty);
 }
 static void texbox_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 }
@@ -125,15 +125,15 @@ static void texbox_event(
 static void texbox_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> ctx
-	struct actor* ctx;
+	struct entity* ctx;
 
 	//cam -> world
-	struct actor* cam;
-	struct actor* wrd;struct style* camg;
+	struct entity* cam;
+	struct entity* wrd;struct style* camg;
 
 	//world -> texbox
-	struct actor* win;struct style* geom;
-	struct actor* act;struct style* part;
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
 
 	if(stack){
 		ctx = stack[rsp-3]->pchip;
@@ -147,9 +147,9 @@ static void texbox_read(struct halfrel* self, struct halfrel* peer, struct halfr
 static void texbox_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//texbox_event(act, pin, win, sty, ev, 0);
@@ -159,7 +159,7 @@ static void texbox_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void texbox_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	if(0 == act)return;
 	if(0 == pin)return;
@@ -171,13 +171,13 @@ static void texbox_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void texbox_search(struct actor* act)
+static void texbox_search(struct entity* act)
 {
 }
-static void texbox_modify(struct actor* act)
+static void texbox_modify(struct entity* act)
 {
 }
-static void texbox_delete(struct actor* act)
+static void texbox_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(0 == act->buf){
@@ -185,7 +185,7 @@ static void texbox_delete(struct actor* act)
 		act->buf = 0;
 	}
 }
-static void texbox_create(struct actor* act, void* str)
+static void texbox_create(struct entity* act, void* str)
 {
 	int j;
 	struct glsrc* src;
@@ -231,7 +231,7 @@ static void texbox_create(struct actor* act, void* str)
 
 
 
-void texbox_register(struct actor* p)
+void texbox_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('t', 'e', 'x', 'b', 'o', 'x', 0, 0);

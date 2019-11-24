@@ -225,7 +225,7 @@ static const struct wl_shell_surface_listener shell_surface_listener = {
 
 
 
-void* uievent(struct arena* p)
+void* uievent(struct supply* p)
 {
 	struct wl_shm_pool* pool;
 	int ret;
@@ -313,7 +313,7 @@ void* uievent(struct arena* p)
 void windowread()
 {
 }
-void windowwrite(struct arena* p)
+void windowwrite(struct supply* p)
 {
 	wl_display_dispatch(display);
 	wl_surface_damage(surface, 0, 0, p->width, p->height);
@@ -332,10 +332,10 @@ void windowstart()
 void windowstop()
 {
 }
-void windowdelete(struct arena* w)
+void windowdelete(struct supply* w)
 {
 }
-void windowcreate(struct arena* w)
+void windowcreate(struct supply* w)
 {
 	u64 m = (u64)malloc(2048*1024*4 + 0x100000);
 	w->buf = m - (m&0xfffff) + 0x100000;

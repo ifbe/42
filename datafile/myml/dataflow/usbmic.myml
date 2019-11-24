@@ -5,11 +5,11 @@ fmt:dbghex
 </artery>
 
 
-<arena>
+<supply>
 usbmic{
 fmt:mic
 }
-</arena>
+</supply>
 
 
 <relation>

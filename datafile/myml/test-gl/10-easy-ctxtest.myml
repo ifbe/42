@@ -1,4 +1,4 @@
-<arena>
+<supply>
 opengl{
 fmt:easy
 title:"42"
@@ -6,14 +6,14 @@ width:1024
 height:1024
 depth:1024
 }
-</arena>
+</supply>
 
 
-<actor>
+<entity>
 test{
 fmt:test
 }
-</actor>
+</entity>
 
 
 <relation>

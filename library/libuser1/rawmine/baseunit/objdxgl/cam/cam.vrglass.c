@@ -4,10 +4,10 @@ void fixmatrix(float* m, struct fstyle* sty);
 
 
 
-static void vrglass_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void vrglass_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct actor* world;
+	struct entity* world;
 	struct fstyle* obb = 0;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -23,13 +23,13 @@ static void vrglass_search(struct actor* act, u32 foot, struct halfrel* self[], 
 		rel = samedstnextsrc(rel);
 	}
 }
-static void vrglass_modify(struct actor* act)
+static void vrglass_modify(struct entity* act)
 {
 }
-static void vrglass_delete(struct actor* act)
+static void vrglass_delete(struct entity* act)
 {
 }
-static void vrglass_create(struct actor* act, void* str)
+static void vrglass_create(struct entity* act, void* str)
 {
 	act->buf = memorycreate(0x1000, 0);
 }
@@ -38,8 +38,8 @@ static void vrglass_create(struct actor* act, void* str)
 
 
 static int vrglass_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	float y;
 	vec3 tc;
@@ -58,8 +58,8 @@ static int vrglass_draw_vbo(
 	return 0;
 }/*
 static int vrglass_event111(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int id;
@@ -171,8 +171,8 @@ static int vrglass_event111(
 	return 1;
 }*/
 static int vrglass_event(
-	struct actor* act, struct fstyle* pin,
-	struct actor* win, struct fstyle* sty,
+	struct entity* act, struct fstyle* pin,
+	struct entity* win, struct fstyle* sty,
 	struct event* ev, int len)
 {
 	short* t;
@@ -297,8 +297,8 @@ void vrglass_frustum(struct fstyle* frus, struct fstyle* obb)
 		frus->vn[3], frus->vf[3], frus->vl[3], frus->vr[3], frus->vb[3], frus->vt[3]);*/
 }
 static void vrglass_matrix(
-	struct actor* act, struct fstyle* frus,
-	struct actor* ctx, struct fstyle* area)
+	struct entity* act, struct fstyle* frus,
+	struct entity* ctx, struct fstyle* area)
 {
 	struct halfrel* self;
 	struct halfrel* peer;
@@ -336,11 +336,11 @@ static void vrglass_matrix(
 static void vrglass_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	//say("@vrglass_read\n");
 	if(ctx){
 		switch(ctx->type){
@@ -356,9 +356,9 @@ static void vrglass_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 static int vrglass_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	vrglass_event(act, &pin->fs, win, &sty->fs, ev, 0);
@@ -374,7 +374,7 @@ static void vrglass_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-void vrglass_register(struct actor* p)
+void vrglass_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('v', 'r', 'g', 'l', 'a', 's', 's', 0);

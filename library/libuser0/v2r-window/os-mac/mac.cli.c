@@ -8,10 +8,10 @@
 
 
 
-void windowread(struct arena* win)
+void windowread(struct supply* win)
 {
 	//draw frame
-	actorread_all(win);
+	entityread_all(win);
 }
 void windowwrite()
 {
@@ -28,10 +28,10 @@ void windowstart()
 void windowstop()
 {
 }
-void windowdelete(struct arena* w)
+void windowdelete(struct supply* w)
 {
 }
-void windowcreate(struct arena* w)
+void windowcreate(struct supply* w)
 {
 	w->type = _win_;
 	w->fmt = _cli_;

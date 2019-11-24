@@ -141,19 +141,19 @@ void content_create(void* addr)
 
 //-------------------chip-----------------
 	vsrc_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	resistor_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	finfet_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	hbridge_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	rectify_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 
 
@@ -161,283 +161,283 @@ void content_create(void* addr)
 //----------------------dxgl-----------------------
 //.cam
 	orthcam_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	firstperson_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	thirdperson_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	rtscam_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	freecam_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	vrglass_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 //.fbo
 	glass_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	mirror_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	portal_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	water_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 //.light
 	dirlight_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	spotlight_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	projector_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	pointlight_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 //.else
 	curtain_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	field_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	ground_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	particle_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	skydome_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	terrain_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	texball_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	texbox_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	weather_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 
 
 
 //---------------------algo----------------------
 	algorithm_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	bintree_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	bplus_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	graph_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 
 
 
 //----------------------game----------------------
 	the2048_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	chess_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	klotski_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	maze_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	ooxx_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	pegged_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	poker_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	rubikscube_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	snake_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	sudoku_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	tetris_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	weiqi_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	xiangqi_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 
 
 
 //--------------------hack-------------------------
 	browser_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	circuit_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	fs_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	pwmtool_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	rawdump_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	switch_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 
 
 
 //----------------------item-----------------------
 	clock_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	control_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	dancemat_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	dna_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	drone_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	geometry_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	house_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	human_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	mario_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	mobius_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	model_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	motor_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	piano_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	picture_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	rccar_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	screen_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	stair_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	tardis_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	texmix_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	theeye_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	tree_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 
 
 
 //----------------------test----------------------
 	calib3d_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	codeimg_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	doodle_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	example_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	fractal_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	oscillo_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	palette_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	planet_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 
 
 
 //------------------------tool--------------------
 	calculator_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	font_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	hex_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	qrcode_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	sketchpad_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	spectrum_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	terminal_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	video_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	voxel_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 
 
@@ -445,39 +445,39 @@ void content_create(void* addr)
 //-------------------menu------------------
 //.2d
 	corner_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	pointer_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 //.3d
 	camman_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	picker_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 //.body
 	tabbar_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 //.vkbd
 	vjoy_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	vkbd_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 //.else
 	login_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	overview_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	detail_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 
 	skillbar_register(tmp);
-	tmp += sizeof(struct actor);
+	tmp += sizeof(struct entity);
 }

@@ -3,7 +3,7 @@
 
 
 
-void windowwrite(struct arena* src)
+void windowwrite(struct supply* src)
 {
 	int x,y;
 	u8 bg=0,fg=0,c=0;
@@ -56,10 +56,10 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct arena* w)
+void windowdelete(struct supply* w)
 {
 }
-void windowcreate(struct arena* w)
+void windowcreate(struct supply* w)
 {
 	w->type = hex32('w','i','n',0);
 	w->fmt = hex32('t','u','i',0);

@@ -84,7 +84,7 @@ int stepcar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
     }
     return ret;
 }
-int stepcar_write(struct arena* win, struct style* sty, void* sc, void* sf, u8* buf, int len)
+int stepcar_write(struct supply* win, struct style* sty, void* sc, void* sf, u8* buf, int len)
 {
 	say("@stepcar_write\n");
     printmemory(buf, len);
@@ -107,13 +107,13 @@ int stepcar_write(struct arena* win, struct style* sty, void* sc, void* sf, u8* 
 
 	return 0;
 }
-int stepcar_delete(struct arena* win)
+int stepcar_delete(struct supply* win)
 {
 	int j;
 	for(j=0;j<9;j++)boardstop(table[j]);
 	return 0;
 }
-int stepcar_create(struct arena* win)
+int stepcar_create(struct supply* win)
 {
 	int j;
 	for(j=0;j<9;j++)table[j] = boardstart(name[j], 'o');

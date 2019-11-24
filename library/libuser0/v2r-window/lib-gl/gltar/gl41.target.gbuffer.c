@@ -16,17 +16,17 @@
 	#include <GL/glew.h>
 #endif
 int fbocreate(void*, int);
-void fullwindow_upload(struct arena* ogl, struct actor* ctx);
-void fullwindow_render(struct arena* ogl, int tmp, struct halfrel* src, struct halfrel* dst);
+void fullwindow_upload(struct supply* ogl, struct entity* ctx);
+void fullwindow_render(struct supply* ogl, int tmp, struct halfrel* src, struct halfrel* dst);
 
 
 
 
 int gl41fbog_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	struct arena* ogl;
-	struct arena* wnd;
-	struct actor* data;
+	struct supply* ogl;
+	struct supply* wnd;
+	struct entity* data;
 	struct relation* rel;
 	//say("@gl41fbog\n");
 
@@ -64,11 +64,11 @@ int gl41fbog_start(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int gl41fbog_delete(struct actor* act)
+int gl41fbog_delete(struct entity* act)
 {
 	return 0;
 }
-int gl41fbog_create(struct actor* act, void* addr)
+int gl41fbog_create(struct entity* act, void* addr)
 {
 	return 0;
 }

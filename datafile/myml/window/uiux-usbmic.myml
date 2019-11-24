@@ -1,4 +1,4 @@
-<arena>
+<supply>
 opengl{
 fmt:win
 title:"42"
@@ -9,10 +9,10 @@ depth:1024
 usbmic{
 fmt:mic
 }
-</arena>
+</supply>
 
 
-<actor>
+<entity>
 oscillo{
 fmt:oscillo
 }
@@ -29,7 +29,7 @@ fmt:gl41data
 thewnd{
 fmt:gl41wnd0
 }
-</actor>
+</entity>
 
 
 <style>

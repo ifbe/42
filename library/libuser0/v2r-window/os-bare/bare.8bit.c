@@ -6,7 +6,7 @@
 void windowread()
 {
 }
-void windowwrite(struct arena* src)
+void windowwrite(struct supply* src)
 {
 	int x,y;
 	u8* ibuf = src->buf;
@@ -25,10 +25,10 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct arena* win)
+void windowdelete(struct supply* win)
 {
 }
-void windowcreate(struct arena* win)
+void windowcreate(struct supply* win)
 {
 	win->type = hex32('w','i','n',0);
 	win->fmt = hex32('8','b','i','t');

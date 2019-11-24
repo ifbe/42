@@ -1,4 +1,4 @@
-<actor>
+<entity>
 V0{
 fmt:vsrc
 val:5v
@@ -11,7 +11,7 @@ val:500
 pcb{
 fmt:eeworld
 }
-</actor>
+</entity>
 
 
 <relation>

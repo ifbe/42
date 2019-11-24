@@ -23,18 +23,18 @@ static void puzzle_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void puzzle_search(struct actor* act)
+static void puzzle_search(struct entity* act)
 {
 }
-static void puzzle_modify(struct actor* act)
+static void puzzle_modify(struct entity* act)
 {
 }
-static void puzzle_delete(struct actor* act)
+static void puzzle_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void puzzle_create(struct actor* act)
+static void puzzle_create(struct entity* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = buffer;
@@ -44,7 +44,7 @@ static void puzzle_create(struct actor* act)
 
 
 
-void puzzle_register(struct actor* p)
+void puzzle_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('p', 'u', 'z', 'z', 'l', 'e', 0, 0);

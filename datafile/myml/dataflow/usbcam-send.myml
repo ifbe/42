@@ -16,11 +16,11 @@ fmt:dbghex
 </artery>
 
 
-<arena>
+<supply>
 usbcam{
 fmt:cam
 }
-</arena>
+</supply>
 
 
 <relation>

@@ -108,7 +108,7 @@ DWORD WINAPI trayworker()
 		DispatchMessage(&msg);
 	}
 }
-void traycreate(struct arena* win)
+void traycreate(struct supply* win)
 {
 	threadcreate(trayworker, win);
 }

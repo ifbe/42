@@ -25,10 +25,10 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct arena* w)
+void windowdelete(struct supply* w)
 {
 }
-void windowcreate(struct arena* w)
+void windowcreate(struct supply* w)
 {
 	w->type = hex32('w','i','n',0);
 	w->fmt = hex32('c','l','i',0);

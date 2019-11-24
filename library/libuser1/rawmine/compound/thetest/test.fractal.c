@@ -81,8 +81,8 @@ int manderbrot_check(double x, double y)
 	return j;
 }
 static void fractal_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 c;
 	int x,y;
@@ -118,8 +118,8 @@ static void fractal_draw_pixel(
 	}*/
 }
 static void fractal_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
@@ -173,29 +173,29 @@ static void fractal_draw_vbo3d(
 	src->vbuf_enq += 1;
 }
 static void fractal_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void fractal_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void fractal_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void fractal_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("fractal(%x,%x,%x)\n",win,act,sty);
 }
 static void fractal_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)fractal_draw_cli(act, pin, win, sty);
@@ -210,8 +210,8 @@ static void fractal_draw(
 	else fractal_draw_pixel(act, pin, win, sty);
 }
 static void fractal_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	//say("%llx,%llx\n",ev->why, ev->what);
@@ -247,18 +247,18 @@ static void fractal_event(
 static void fractal_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//fractal_draw(act, pin, win, sty);
 }
 static void fractal_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//fractal_event(act, pin, win, sty, ev, 0);
@@ -271,9 +271,9 @@ static void fractal_start(struct halfrel* self, struct halfrel* peer)
 	struct datapair* pair;
 	struct glsrc* src;
 	struct gldst* dst;
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 /*
 	//alloc
@@ -303,18 +303,18 @@ static void fractal_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void fractal_search(struct actor* act)
+static void fractal_search(struct entity* act)
 {
 }
-static void fractal_modify(struct actor* act)
+static void fractal_modify(struct entity* act)
 {
 }
-static void fractal_delete(struct actor* act)
+static void fractal_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void fractal_create(struct actor* act)
+static void fractal_create(struct entity* act)
 {
 	if(0 == act)return;
 	act->buf = memorycreate(16, 0);
@@ -323,7 +323,7 @@ static void fractal_create(struct actor* act)
 
 
 
-void fractal_register(struct actor* p)
+void fractal_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('f', 'r', 'a', 'c', 't', 'a', 'l', 0);

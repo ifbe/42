@@ -80,19 +80,19 @@ int test_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int test_search(struct actor* act)
+int test_search(struct entity* act)
 {
 	return 0;
 }
-int test_modify(struct actor* act)
+int test_modify(struct entity* act)
 {
 	return 0;
 }
-int test_delete(struct actor* act)
+int test_delete(struct entity* act)
 {
 	return 0;
 }
-int test_create(struct actor* act)
+int test_create(struct entity* act)
 {
 	int j;
 	u8* buf;

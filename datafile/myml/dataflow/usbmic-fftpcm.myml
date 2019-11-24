@@ -5,11 +5,11 @@ fmt:fftpcm
 </artery>
 
 
-<arena>
+<supply>
 usbmic{
 fmt:mic
 }
-</arena>
+</supply>
 
 
 <relation>

@@ -1,4 +1,4 @@
-<actor>
+<entity>
 resistor{
 fmt:resistor
 }
@@ -13,7 +13,7 @@ fmt:eeworld
 hoff{
 fmt:hoffdata
 }
-</actor>
+</entity>
 
 <relation>
 (board, 0, act, vcc) -> (vsrc, 0, act, vcc)

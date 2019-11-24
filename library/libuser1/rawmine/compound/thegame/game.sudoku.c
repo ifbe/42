@@ -38,8 +38,8 @@ int sudoku_import(char* file, u8* buf)
 
 
 static void sudoku_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 	int t1, t2, t3, t4;
@@ -83,8 +83,8 @@ static void sudoku_draw_pixel(
 	}
 }/*
 static void sudoku_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 rgb;
 	int x,y;
@@ -136,8 +136,8 @@ static void sudoku_draw_vbo2d(
 	}
 }*/
 static void sudoku_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 rgb;
 	int x,y;
@@ -193,13 +193,13 @@ static void sudoku_draw_vbo3d(
 	}
 }
 static void sudoku_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void sudoku_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 	u8* data = act->buf;
@@ -225,8 +225,8 @@ static void sudoku_draw_html(
 	htmlprintf(win, 2, "</div>\n");
 }
 static void sudoku_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y,j,k,ret,color;
 	int stride = win->stride;
@@ -256,8 +256,8 @@ static void sudoku_draw_tui(
 	}
 }
 static void sudoku_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 	u8* data = act->buf;
@@ -273,8 +273,8 @@ static void sudoku_draw_cli(
 	}
 }
 static void sudoku_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -290,8 +290,8 @@ static void sudoku_draw(
 	else sudoku_draw_pixel(act, pin, win, sty);
 }
 static void sudoku_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	u64 what = ev->what;
@@ -329,11 +329,11 @@ static void sudoku_event(
 static void sudoku_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	say("@sudoku_read:%llx,%llx,%llx\n",act,win,buf);
 
 	if(ctx){
@@ -344,9 +344,9 @@ static void sudoku_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 static void sudoku_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//sudoku_event(act, pin, win, sty, ev, 0);
@@ -361,18 +361,18 @@ static void sudoku_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void sudoku_search(struct actor* act, u8* buf)
+static void sudoku_search(struct entity* act, u8* buf)
 {
 }
-static void sudoku_modify(struct actor* act, u8* buf)
+static void sudoku_modify(struct entity* act, u8* buf)
 {
 }
-static void sudoku_delete(struct actor* act, u8* buf)
+static void sudoku_delete(struct entity* act, u8* buf)
 {
 	if(0 == act)return;
 	memorydelete(act->buf);
 }
-static void sudoku_create(struct actor* act, void* str)
+static void sudoku_create(struct entity* act, void* str)
 {
 	int ret;
 	void* buf;
@@ -399,7 +399,7 @@ static void sudoku_create(struct actor* act, void* str)
 
 
 
-void sudoku_register(struct actor* p)
+void sudoku_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('s', 'u', 'd', 'o', 'k', 'u', 0, 0);

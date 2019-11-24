@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
-void actorcreatefromfile(struct actor* act, char* name);
+void entitycreatefromfile(struct entity* act, char* name);
 
 
 
@@ -43,14 +43,14 @@ GLSL_VERSION
 
 
 void glasscamera(
-	struct actor* leaf, struct style* lf,
-	struct actor* twig, struct style* tf,
-	struct actor* root, struct style* rf)
+	struct entity* leaf, struct style* lf,
+	struct entity* twig, struct style* tf,
+	struct entity* root, struct style* rf)
 {/*
 	float x,y,z,t;
 	vec3 p,q;
 	struct relation* rel;
-	struct actor* fbo;
+	struct entity* fbo;
 	struct glsrc* src = (void*)(lf->foot[0]);
 	struct gldst* dst = (void*)(tf->foot[0]);
 
@@ -194,8 +194,8 @@ void glasscamera(
 
 
 static void glass_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -214,8 +214,8 @@ static void glass_draw_pixel(
 	}
 }
 static void glass_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
@@ -272,28 +272,28 @@ static void glass_draw_vbo(
 	//glasscamera(act, pin, 0, sty, win, 0);
 }
 static void glass_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void glass_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void glass_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void glass_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void glass_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)glass_draw_cli(act, pin, win, sty);
@@ -310,9 +310,9 @@ static void glass_draw(
 static void glass_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//glass_draw(act, pin, win, sty);
 }
@@ -328,9 +328,9 @@ static void glass_start(struct halfrel* self, struct halfrel* peer)
 	struct glsrc* src;
 	struct gldst* dst;
 
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 /*
 	//
@@ -366,31 +366,31 @@ static void glass_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void glass_search(struct actor* act)
+static void glass_search(struct entity* act)
 {
 }
-static void glass_modify(struct actor* act)
+static void glass_modify(struct entity* act)
 {
 }
-static void glass_delete(struct actor* act)
+static void glass_delete(struct entity* act)
 {
 	if(0 == act)return;
 	memorydelete(act->buf);
 	act->buf = 0;
 }
-static void glass_create(struct actor* act, void* str)
+static void glass_create(struct entity* act, void* str)
 {
 	void* win;
 	if(0 == act)return;
 
-	//win = actorcreate(_fbo_, 0);
+	//win = entitycreate(_fbo_, 0);
 	//if(win)relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
 }
 
 
 
 
-void glass_register(struct actor* p)
+void glass_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('g', 'l', 'a', 's', 's', 0, 0, 0);

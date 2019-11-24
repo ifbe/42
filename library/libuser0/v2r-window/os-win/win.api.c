@@ -34,7 +34,7 @@ int windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 {
 	MSG msg;
 	BITMAPINFO info;
-	struct arena* win = self->pchip;
+	struct supply* win = self->pchip;
 
 	//read context
 	rgbanode_read(win, 0);
@@ -76,11 +76,11 @@ int windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 {
 	return 0;
 }
-int windowstop(struct arena* win)
+int windowstop(struct supply* win)
 {
 	return 0;
 }
-int windowstart(struct arena* win)
+int windowstart(struct supply* win)
 {
 	return 0;
 }
@@ -102,7 +102,7 @@ int windowchange()
 	//SetWindowText(win, "hahahaha");
 	return 0;
 }
-int windowdelete(struct arena* win)
+int windowdelete(struct supply* win)
 {/*
 	PostThreadMessage(
 		uithread,
@@ -123,7 +123,7 @@ int windowdelete(struct arena* win)
 	if(alivecount == 0)eventwrite(0,0,0,0);
 	return 0;
 }
-int windowcreate(struct arena* win)
+int windowcreate(struct supply* win)
 {
 	HWND wnd;
 	HDC dc;
@@ -197,7 +197,7 @@ int windowcreate(struct arena* win)
 LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	u64 addr = GetWindowLongPtr(wnd, GWLP_USERDATA);
-	struct arena* win = (void*)addr;
+	struct supply* win = (void*)addr;
 	struct event ev;
 	switch (msg)
 	{

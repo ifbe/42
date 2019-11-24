@@ -28,7 +28,7 @@ static const pa_sample_spec ss =
 
 
 
-void* micphonelistener(struct arena* win)
+void* micphonelistener(struct supply* win)
 {
 	int ret,err;
 	pa_usec_t latency;
@@ -57,7 +57,7 @@ void* micphonelistener(struct arena* win)
 			{
 				struct halfrel* self = (void*)&orel->dstchip;
 				struct halfrel* peer = (void*)&orel->srcchip;
-				actorwrite(self, peer, ibuf + (1024*2*icur), 1024*2);
+				entitywrite(self, peer, ibuf + (1024*2*icur), 1024*2);
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}
@@ -98,12 +98,12 @@ void micphonestop()
 void micphonestart()
 {
 }
-void micphonedelete(struct arena* win)
+void micphonedelete(struct supply* win)
 {
 	alive = 0;
 	if(s_in)pa_simple_free(s_in);
 }
-void micphonecreate(struct arena* win)
+void micphonecreate(struct supply* win)
 {
 	int error;
 

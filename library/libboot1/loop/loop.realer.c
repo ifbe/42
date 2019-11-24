@@ -5,8 +5,8 @@ int input(void*, int);
 
 
 static int alive = 1;
-static struct arena* arena = 0;
-static struct actor* actor = 0;
+static struct supply* supply = 0;
+static struct entity* entity = 0;
 
 
 
@@ -17,7 +17,7 @@ int realer_event(void* realer, struct event* e)
 	struct halfrel self;
 	struct halfrel peer;
 	struct event ev;
-	struct arena* win;
+	struct supply* win;
 
 	ev.why = e->why;
 	ev.what = e->what;
@@ -36,7 +36,7 @@ int realer_event(void* realer, struct event* e)
 		//maybe gamepad
 		for(j=0;j<16;j++)
 		{
-			win = &arena[j];
+			win = &supply[j];
 			if(_win_ == win->type)
 			{
 				ev.where = (u64)win;
@@ -57,7 +57,7 @@ int realer_event(void* realer, struct event* e)
 		default:{
 			self.pchip = win;
 			peer.pchip = realer;
-			arenawrite(&self, &peer, 0, 0, &ev, 0);break;
+			supplywrite(&self, &peer, 0, 0, &ev, 0);break;
 		}
 	}
 	return 0;
@@ -65,23 +65,23 @@ int realer_event(void* realer, struct event* e)
 int realer_poll(void* realer)
 {
 	int j;
-	struct arena* win;
+	struct supply* win;
 	struct halfrel self;
 	struct halfrel peer;
 
 	peer.pchip = realer;
 	for(j=31;j>=0;j--)
 	{
-		win = &arena[j];
+		win = &supply[j];
 		if(0 == win->type)continue;
 
 		if(_win_ == win->type){
 			self.pchip = win;
-			arenaread(&self, &peer, 0, 0, 0, 0);
+			supplyread(&self, &peer, 0, 0, 0, 0);
 		}
 		if(_spk_ == win->type){
 			self.pchip = win;
-			arenaread(&self, &peer, 0, 0, 0, 0);
+			supplyread(&self, &peer, 0, 0, 0, 0);
 		}
 	}
 	return 0;
@@ -127,6 +127,6 @@ void freerealer()
 }
 void initrealer(void* addr)
 {
-	arena = addr + 0xc00000;
-	actor = addr + 0xe00000;
+	supply = addr + 0xc00000;
+	entity = addr + 0xe00000;
 }

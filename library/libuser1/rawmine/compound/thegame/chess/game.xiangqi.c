@@ -66,8 +66,8 @@ void* char2hanzi(int val)
 	return "";
 }
 void xiangqi_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 black, brown, red;
 	u32 chesscolor, fontcolor, temp;
@@ -189,8 +189,8 @@ void xiangqi_draw_pixel(
 	}//fory
 }/*
 static void xiangqi_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 	u32 chesscolor, fontcolor, temp;
@@ -280,8 +280,8 @@ static void xiangqi_draw_vbo2d(
 	}
 }*/
 static void xiangqi_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 	u32 chesscolor, fontcolor, temp;
@@ -375,8 +375,8 @@ static void xiangqi_draw_vbo(
 	}
 }
 static void xiangqi_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y,c;
 	int len = win->len;
@@ -397,8 +397,8 @@ static void xiangqi_draw_json(
 	win->len = len;
 }
 static void xiangqi_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 
@@ -423,8 +423,8 @@ static void xiangqi_draw_html(
 	htmlprintf(win, 2, "</div>\n");
 }
 static void xiangqi_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y,color;
 	int width = win->stride;
@@ -456,13 +456,13 @@ static void xiangqi_draw_tui(
 	}
 }
 static void xiangqi_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void xiangqi_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -508,8 +508,8 @@ int xiangqi_pickup(int x, int y, int turn)
 	return 0;
 }
 void xiangqi_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int x, y, ret;
@@ -610,11 +610,11 @@ void xiangqi_event(
 static void xiangqi_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	//say("@xiangqi_read:%llx,%llx,%llx\n",act,win,buf);
 
 	if(ctx){
@@ -625,9 +625,9 @@ static void xiangqi_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 static void xiangqi_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//xiangqi_event(act, pin, win, sty, ev, 0);
@@ -642,13 +642,13 @@ static void xiangqi_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void xiangqi_search(struct actor* act, u8* buf)
+static void xiangqi_search(struct entity* act, u8* buf)
 {
 }
-static void xiangqi_modify(struct actor* act, u8* buf)
+static void xiangqi_modify(struct entity* act, u8* buf)
 {
 }
-static void xiangqi_delete(struct actor* act, u8* buf)
+static void xiangqi_delete(struct entity* act, u8* buf)
 {
 	if(0 == act)return;
 	if((_COPY_ == act->type)&&(0 != act->buf))
@@ -657,7 +657,7 @@ static void xiangqi_delete(struct actor* act, u8* buf)
 	}
 	act->buf = 0;
 }
-static void xiangqi_create(struct actor* act, void* str)
+static void xiangqi_create(struct entity* act, void* str)
 {
 	int ret;
 	void* buf;
@@ -681,7 +681,7 @@ say("@xiangqi_create:%llx\n",str);
 
 
 
-void xiangqi_register(struct actor* p)
+void xiangqi_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('x', 'i', 'a', 'n', 'g', 'q', 'i', 0);

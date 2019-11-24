@@ -3,19 +3,19 @@
 
 
 
-int pcbnode_read(struct actor* win)
+int pcbnode_read(struct entity* win)
 {
 	return 0;
 }
-int pcbnode_write(struct actor* win)
+int pcbnode_write(struct entity* win)
 {
 	return 0;
 }
-int pcbnode_delete(struct actor* win)
+int pcbnode_delete(struct entity* win)
 {
 	return 0;
 }
-int pcbnode_create(struct actor* win, void* str)
+int pcbnode_create(struct entity* win, void* str)
 {
 	return 0;
 }

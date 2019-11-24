@@ -84,21 +84,21 @@ int ncmp(void*, void*, int);
 
 
 //
-static struct arena* arena = 0;
+static struct supply* supply = 0;
 static int winlen = 0;
 static struct style* pinid = 0;
 static int pinlen = 0;
-void* allocarena()
+void* allocsupply()
 {
 	int j;
-	struct arena* win;
+	struct supply* win;
 	for(j=0;j<0x100;j++)
 	{
-		if(0 == arena[j].type)break;
+		if(0 == supply[j].type)break;
 	}
 	if(j >= 0x100)return 0;
 
-	win = &arena[j];
+	win = &supply[j];
 	win->irel0 = win->ireln = 0;
 	win->orel0 = win->oreln = 0;
 	return win;
@@ -119,9 +119,9 @@ void* allocpinid()
 
 
 
-int arenaread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int supplyread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct arena* win = self->pchip;
+	struct supply* win = self->pchip;
 
 	switch(win->type){
 		case _win_:windowread(self, peer, arg, idx, buf, len);return 0;
@@ -139,9 +139,9 @@ int arenaread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, vo
 
 	return 0;
 }
-int arenawrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int supplywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct arena* win = self->pchip;
+	struct supply* win = self->pchip;
 
 	switch(win->type){
 		case _win_:windowwrite(self, peer, arg, idx, buf, len);return 0;
@@ -159,26 +159,26 @@ int arenawrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 
 	return 0;
 }
-int arenastop(struct halfrel* self, struct halfrel* peer)
+int supplystop(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int arenastart(struct halfrel* self, struct halfrel* peer)
+int supplystart(struct halfrel* self, struct halfrel* peer)
 {
-	struct arena* win;
+	struct supply* win;
 	if(0 == self)return 0;
 
 	win = (void*)(self->chip);
 	if(0 == win)return 0;
 
-	say("@arena_start\n");
+	say("@supply_start\n");
 	return 0;
 }
 
 
 
 
-int arenadelete(struct arena* win)
+int supplydelete(struct supply* win)
 {
 	if(win == 0)return 0;
 
@@ -196,23 +196,23 @@ int arenadelete(struct arena* win)
 	win->fmt = 0;
 	return 0;
 }
-void* arenacreate(u64 type, void* arg, int argc, u8** argv)
+void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 {
 	int j = 0;
-	struct arena* win;
-	struct arena* sub;
+	struct supply* win;
+	struct supply* sub;
 
 	//default
 	if(0 == type)
 	{
-		if(arena[0].type)return 0;
+		if(supply[0].type)return 0;
 		type = _win_;
 	}
 
 	//0: system object
 	if(_joy_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->type = _joy_;
@@ -222,7 +222,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	else if(_std_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->type = _std_;
@@ -232,7 +232,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	else if(_tray_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->type = _tray_;
@@ -244,7 +244,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	//
 	else if(_ahrs_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->type = _ahrs_;
@@ -256,7 +256,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	//
 	else if(_bdc_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->type = _car_;
@@ -266,7 +266,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	else if(_step_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->type = _car_;
@@ -278,7 +278,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	//micphone
 	else if(_mic_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->type = _mic_;
@@ -290,7 +290,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	//speaker
 	else if(_spk_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->type = _spk_;
@@ -302,7 +302,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	//video
 	else if(_cam_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->type = _cam_;
@@ -312,7 +312,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	else if(_cap_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->type = _cam_;
@@ -324,7 +324,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	//window
 	else if(_none_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->type = _win_;
@@ -334,7 +334,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	else if(_easy_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->type = _win_;
@@ -344,7 +344,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	else if(_win_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->type = _win_;
@@ -354,7 +354,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	else if(_coop_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->type = _win_;
@@ -364,7 +364,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	else if(_gl41fboc_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->fmt = win->type = _gl41fboc_;
@@ -373,7 +373,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	else if(_gl41fbod_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->fmt = win->type = _gl41fbod_;
@@ -382,7 +382,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	else if(_gl41fbog_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->fmt = win->type = _gl41fbog_;
@@ -391,7 +391,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	else if(_gl41wnd0_ == type)
 	{
-		win = allocarena();
+		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->fmt = win->type = _gl41wnd0_;
@@ -401,7 +401,7 @@ void* arenacreate(u64 type, void* arg, int argc, u8** argv)
 
 	return 0;
 }
-void* arenamodify(int argc, u8** argv)
+void* supplymodify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;
@@ -416,26 +416,26 @@ void* arenamodify(int argc, u8** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		arenacreate(name, argv[3], argc-3, &argv[3]);
+		supplycreate(name, argv[3], argc-3, &argv[3]);
 	}
 
 	return 0;
 }
-void* arenasearch(u8* buf, int len)
+void* supplysearch(u8* buf, int len)
 {
 	int j,k;
 	u8* p;
-	struct arena* win;
+	struct supply* win;
 	if(0 == buf)
 	{
 		for(j=0;j<0x100;j++)
 		{
-			win = &arena[j];
+			win = &supply[j];
 			if(0 == win->type)break;
 			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
 				&win->tier, &win->type, &win->fmt, &win->vfmt);
 		}
-		if(0 == j)say("empty arena\n");
+		if(0 == j)say("empty supply\n");
 	}
 	else
 	{
@@ -445,17 +445,17 @@ void* arenasearch(u8* buf, int len)
 		j = buf[j+1]-0x30;
 		if(j >= 10)j = 0;
 
-		if(0 == arena[j].type)return 0;
-		return &arena[j];
+		if(0 == supply[j].type)return 0;
+		return &supply[j];
 */
 		for(j=0;j<0x100;j++)
 		{
-			if(0 == arena[j].fmt)break;
-			p = (void*)(&arena[j].fmt);
+			if(0 == supply[j].fmt)break;
+			p = (void*)(&supply[j].fmt);
 
 			for(k=0;k<8;k++)
 			{
-				if((0 == p[k])|(0x20 >= buf[k]))return &arena[j];
+				if((0 == p[k])|(0x20 >= buf[k]))return &supply[j];
 				if(buf[k] != p[k])break;
 			}
 		}
@@ -466,29 +466,29 @@ void* arenasearch(u8* buf, int len)
 
 
 
-void freearena()
+void freesupply()
 {
-	//say("[c,e):freeing arena\n");
+	//say("[c,e):freeing supply\n");
 
 	freewindow();
 	freetray();
 	freestd();
 	freejoy();
 }
-void initarena(u8* addr)
+void initsupply(u8* addr)
 {
 	int j;
-	arena = (void*)(addr+0x000000);
+	supply = (void*)(addr+0x000000);
 	pinid = (void*)(addr+0x100000);
 
-#define max (0x100000/sizeof(struct arena))
+#define max (0x100000/sizeof(struct supply))
 	for(j=0;j<0x200000;j++)addr[j]=0;
-	for(j=0;j<max;j++)arena[j].tier = _win_;
+	for(j=0;j<max;j++)supply[j].tier = _win_;
 
-	initstd(arena);
-	initwindow(arena);
-	inittray(arena);
-	initjoy(arena);
+	initstd(supply);
+	initwindow(supply);
+	inittray(supply);
+	initjoy(supply);
 
-	//say("[c,e):inited arena\n");
+	//say("[c,e):inited supply\n");
 }

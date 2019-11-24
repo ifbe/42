@@ -407,19 +407,19 @@ struct element
 
 
 //
-int actorread(  struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
-int actorwrite( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
-int actorstop(  struct halfrel* self,struct halfrel* peer);
-int actorstart( struct halfrel* self,struct halfrel* peer);
-int actordelete(void*);
-void* actorcreate(u64 type, void* addr, int argc, u8** argv);
+int entityread(  struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int entitywrite( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int entitystop(  struct halfrel* self,struct halfrel* peer);
+int entitystart( struct halfrel* self,struct halfrel* peer);
+int entitydelete(void*);
+void* entitycreate(u64 type, void* addr, int argc, u8** argv);
 //
-int arenaread(  struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
-int arenawrite( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
-int arenastop(  struct halfrel* self,struct halfrel* peer);
-int arenastart( struct halfrel* self,struct halfrel* peer);
-int arenadelete(void*);
-void* arenacreate(u64 type, void* addr, int argc, u8** argv);
+int supplyread(  struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int supplywrite( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
+int supplystop(  struct halfrel* self,struct halfrel* peer);
+int supplystart( struct halfrel* self,struct halfrel* peer);
+int supplydelete(void*);
+void* supplycreate(u64 type, void* addr, int argc, u8** argv);
 //
 int arteryread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int arterywrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);

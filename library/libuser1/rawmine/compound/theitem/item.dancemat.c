@@ -4,8 +4,8 @@
 
 
 static void dancemat_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -32,10 +32,10 @@ static void dancemat_draw_pixel(
 	drawsolid_rect(win, 0x008000, cx-ww/4, cy-hh, cx+ww/4, cy-hh*3/4);
 }
 static void dancemat_draw_vbo3d(
-	struct actor* act, struct style* part,
-	struct actor* win, struct style* geom,
-	struct actor* wrd, struct style* camg,
-	struct actor* ctx, struct style* none)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* ctx, struct style* none)
 {
 	int x,y;
 	int j,cnt;
@@ -107,28 +107,28 @@ static void dancemat_draw_vbo3d(
 	}
 }
 static void dancemat_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void dancemat_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void dancemat_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void dancemat_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void dancemat_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)dancemat_draw_cli(act, pin, win, sty);
@@ -154,15 +154,15 @@ static void dancemat_draw(
 static void dancemat_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> ctx
-	struct actor* ctx;
+	struct entity* ctx;
 
 	//cam -> world
-	struct actor* cam;
-	struct actor* wrd;struct style* camg;
+	struct entity* cam;
+	struct entity* wrd;struct style* camg;
 
 	//world -> texball
-	struct actor* win;struct style* geom;
-	struct actor* act;struct style* part;
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
 
 	if(stack){
 		ctx = stack[rsp-3]->pchip;
@@ -186,18 +186,18 @@ static void dancemat_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void dancemat_search(struct actor* act)
+static void dancemat_search(struct entity* act)
 {
 }
-static void dancemat_modify(struct actor* act)
+static void dancemat_modify(struct entity* act)
 {
 }
-static void dancemat_delete(struct actor* act)
+static void dancemat_delete(struct entity* act)
 {
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void dancemat_create(struct actor* act)
+static void dancemat_create(struct entity* act)
 {
 	int x,y,j,k;
 	short* nbuf;
@@ -273,7 +273,7 @@ static void dancemat_create(struct actor* act)
 
 
 
-void dancemat_register(struct actor* p)
+void dancemat_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('d','a','n','c','e','m','a','t');

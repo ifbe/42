@@ -3,7 +3,7 @@
 
 
 
-void traycreate(struct arena* win)
+void traycreate(struct supply* win)
 {
 }
 void inittray()

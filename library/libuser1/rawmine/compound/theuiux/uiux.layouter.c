@@ -6,7 +6,7 @@ int obb_ray(struct fstyle* obb, vec3 ray[], vec3 out[]);
 
 
 
-int joystick2style(struct actor* win, struct fstyle* sty, int aaa, short* tmp)
+int joystick2style(struct entity* win, struct fstyle* sty, int aaa, short* tmp)
 {
 	float c,s;
 	float tx,ty,tz;
@@ -248,7 +248,7 @@ int joystick2style(struct actor* win, struct fstyle* sty, int aaa, short* tmp)
 
 	return 0;
 }
-int keyboard2style(struct actor* win, struct fstyle* sty, short* tmp)
+int keyboard2style(struct entity* win, struct fstyle* sty, short* tmp)
 {
 	int sign = -1;
 	if(_vbo_ == win->fmt)sign = 1;
@@ -286,7 +286,7 @@ int keyboard2style(struct actor* win, struct fstyle* sty, short* tmp)
 	}
 	return 0;
 }
-int actorinput_editor_target(struct actor* win, struct event* ev)
+int entityinput_editor_target(struct entity* win, struct event* ev)
 {
 	float c,s,tx,ty,norm;
 	struct relation* orel;
@@ -449,7 +449,7 @@ int actorinput_editor_target(struct actor* win, struct event* ev)
 
 
 /*
-int playwith3d_pick(struct actor* root, struct actor* twig, struct actor* act, int x, int y)
+int playwith3d_pick(struct entity* root, struct entity* twig, struct entity* act, int x, int y)
 {
 	int ret;
 	vec3 ray[2];
@@ -500,7 +500,7 @@ int playwith3d_pick(struct actor* root, struct actor* twig, struct actor* act, i
 	if(rel)relation_choose(twig, rel);
 	return 0;
 }
-int playwith3d_move(struct actor* root, struct actor* twig, int x0, int y0, int xn, int yn)
+int playwith3d_move(struct entity* root, struct entity* twig, int x0, int y0, int xn, int yn)
 {
 	int ret;
 	float dx, dy;
@@ -571,13 +571,13 @@ found:
 
 
 static int picker_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int flag;
 	vec3 tc;
 	struct relation* rel;
-	struct actor* www;
+	struct entity* www;
 	struct fstyle* sss;
 	//carvefrustum(win, &win->camera);
 	//carveline_prism4(win, 0xff00ff, win->target.vc, win->target.vr, win->target.vf, win->target.vu);
@@ -626,12 +626,12 @@ found:
 	return 0;
 }
 static int picker_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short* t;
-	struct actor* www = 0;
+	struct entity* www = 0;
 	struct relation* rel = win->orel0;
 	//say("@picker_swrite:%llx,%llx\n", ev->what, ev->why);
 
@@ -673,18 +673,18 @@ found:
 static void picker_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//picker_draw(act, pin, win, sty);
 }
 static int picker_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	return 0;//picker_event(act, pin, win, sty, ev, 0);
@@ -700,16 +700,16 @@ static void picker_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void picker_search(struct actor* act)
+static void picker_search(struct entity* act)
 {
 }
-static void picker_modify(struct actor* act)
+static void picker_modify(struct entity* act)
 {
 }
-static void picker_delete(struct actor* act)
+static void picker_delete(struct entity* act)
 {
 }
-static void picker_create(struct actor* act, void* addr)
+static void picker_create(struct entity* act, void* addr)
 {
     say("@picker_create\n");
 }
@@ -717,7 +717,7 @@ static void picker_create(struct actor* act, void* addr)
 
 
 
-void picker_register(struct actor* p)
+void picker_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('p', 'i', 'c', 'k', 'e', 'r', 0, 0);

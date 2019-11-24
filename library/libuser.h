@@ -756,7 +756,7 @@ struct element
 	//[80,ff]
 	u8 data[0x80];
 };
-struct arena
+struct supply
 {
 	//[00,1f]: wire
 	union{
@@ -786,8 +786,8 @@ struct arena
 	union{
 		u32 fbo;
 		u64 padd0;
-		u64 xlibfd;		//xlib
-		void* hwnd;		//winapi
+		u64 xlibfd;	//xlib
+		void* hwnd;	//winapi
 		void* sdlwnd;	//sdl
 		void* glwnd;
 	};
@@ -795,7 +795,7 @@ struct arena
 		u32 rbo;
 		u64 padd1;
 		void* xlibgc;	//xlib
-		void* hdc;		//winapi
+		void* hdc;	//winapi
 		void* sdlren;	//sdl
 	};
 	union{
@@ -833,11 +833,11 @@ struct arena
 
 	//[80,bf]: func
 	union{
-		int (*oncreate)(void* actor, void* url, int argc, u8** argv);
+		int (*oncreate)(void* entity, void* url, int argc, u8** argv);
 		char padding0[8];
 	};
 	union{
-		int (*ondelete)(void* actor);
+		int (*ondelete)(void* entity);
 		char padding1[8];
 	};
 	union{
@@ -889,7 +889,7 @@ struct arena
 	int zn;
 	int wn;
 };
-struct actor
+struct entity
 {
 	//[00,1f]: wire
 	union{
@@ -967,19 +967,19 @@ struct actor
 
 	//[80,bf]: func
 	union{
-		int (*oncreate)(void* actor, void* url, int argc, u8** argv);
+		int (*oncreate)(void* entity, void* url, int argc, u8** argv);
 		char padding0[8];
 	};
 	union{
-		int (*ondelete)(void* actor);
+		int (*ondelete)(void* entity);
 		char padding1[8];
 	};
 	union{
-		int (*onsearch)(void* actor, int flag, struct halfrel** self, struct halfrel** peer);
+		int (*onsearch)(void* entity, int flag, struct halfrel** self, struct halfrel** peer);
 		char padding2[8];
 	};
 	union{
-		int (*onmodify)(void* actor, void* buf);
+		int (*onmodify)(void* entity, void* buf);
 		char padding3[8];
 	};
 	union{
@@ -1029,136 +1029,136 @@ void* defaultstyle_vbo2d();
 
 
 //----------------------------------1d------------------------------------
-void gentui_rect(  struct actor* win, u32 rgb, int x0, int y0, int x1, int y1);
-void gentui_utf8(  struct actor* win, u32 rgb, int cx, int cy, u8* buf, int len);
-void gentui_str(   struct actor* win, u32 rgb, int cx, int cy, u8* str, int len);
-void gentui_text(  struct actor* win, u32 rgb, int cx, int cy, u8* str, int len);
-void gentui_decstr(struct actor* win, u32 rgb, int cx, int cy, int data);
+void gentui_rect(  struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1);
+void gentui_utf8(  struct entity* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
+void gentui_str(   struct entity* ctx, u32 rgb, int cx, int cy, u8* str, int len);
+void gentui_text(  struct entity* ctx, u32 rgb, int cx, int cy, u8* str, int len);
+void gentui_decstr(struct entity* ctx, u32 rgb, int cx, int cy, int data);
 
 
 
 
 //----------------------------------2d------------------------------------
-void drawaxis(          struct actor* win);
-void select_2d(         struct actor* win, u32 rgb, struct fstyle* sty, u32 flag);
+void drawaxis(          struct entity* ctx);
+void select_2d(         struct entity* ctx, u32 rgb, struct fstyle* sty, u32 flag);
 
-void drawline(          struct actor* win, u32 rgb, int x1, int y1, int x2, int y2);
-void drawline_arrow(    struct actor* win, u32 rgb, int x1, int y1, int x2, int y2);
-void drawbezier(        struct actor* win, u32 rgb, int ax, int ay, int bx, int by, int cx, int cy);
-void drawline_triangle( struct actor* win, u32 rgb, int x1, int y1, int x2, int y2, int x3, int y3);
-void drawline_rect(     struct actor* win, u32 rgb, int x1, int y1, int x2, int y2);
-void drawline_hexagon(  struct actor* win, u32 rgb, int cx, int cy, int rx, int ry);
-void drawline_circle(   struct actor* win, u32 rgb, int cx, int cy, int r);
-void drawline_oval(     struct actor* win, u32 rgb, int cx, int cy, int rx, int ry, int fx, int fy);
-void drawline_sector(   struct actor* win, u32 rgb, int cx, int cy, int radius, int start, int end);
+void drawline(          struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2);
+void drawline_arrow(    struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2);
+void drawbezier(        struct entity* ctx, u32 rgb, int ax, int ay, int bx, int by, int cx, int cy);
+void drawline_triangle( struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2, int x3, int y3);
+void drawline_rect(     struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2);
+void drawline_hexagon(  struct entity* ctx, u32 rgb, int cx, int cy, int rx, int ry);
+void drawline_circle(   struct entity* ctx, u32 rgb, int cx, int cy, int r);
+void drawline_oval(     struct entity* ctx, u32 rgb, int cx, int cy, int rx, int ry, int fx, int fy);
+void drawline_sector(   struct entity* ctx, u32 rgb, int cx, int cy, int radius, int start, int end);
 
-void drawsolid_triangle(struct actor* win, u32 rgb, int x1, int y1, int x2, int y2, int x3, int y3);
-void drawsolid_rect(    struct actor* win, u32 rgb, int x1, int y1, int x2, int y2);
-void drawsolid_circle(  struct actor* win, u32 rgb, int cx, int cy, int r);
-void drawsolid_oval(    struct actor* win, u32 rgb, int cx, int cy, int rx, int ry, int fx, int fy);
-void drawsolid_sector(  struct actor* win, u32 rgb, int cx, int cy, int radius, int start, int end);
+void drawsolid_triangle(struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2, int x3, int y3);
+void drawsolid_rect(    struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2);
+void drawsolid_circle(  struct entity* ctx, u32 rgb, int cx, int cy, int r);
+void drawsolid_oval(    struct entity* ctx, u32 rgb, int cx, int cy, int rx, int ry, int fx, int fy);
+void drawsolid_sector(  struct entity* ctx, u32 rgb, int cx, int cy, int radius, int start, int end);
 
-void drawicon_1(        struct actor* win, u32 rgb, int x0, int y0, int x1, int y1);
-void drawhyaline_rect(  struct actor* win, u32 rgb, int x1, int y1, int x2, int y2);
-void drawhyaline_circle(struct actor* win, u32 rgb, int cx, int cy, int r);
+void drawicon_1(        struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1);
+void drawhyaline_rect(  struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2);
+void drawhyaline_circle(struct entity* ctx, u32 rgb, int cx, int cy, int r);
 
-void drawascii(         struct actor* win, u32 rgb, int cx, int cy, u8 data);
-void drawbyte(          struct actor* win, u32 rgb, int cx, int cy, u8 data);
-void drawunicode(       struct actor* win, u32 rgb, int cx, int cy, u32 unicode);
-void drawutf8(          struct actor* win, u32 rgb, int cx, int cy, u8* buf, int len);
-void drawstring(        struct actor* win, u32 rgb, int cx, int cy, u8* buf, int len);
-void drawdecimal(       struct actor* win, u32 rgb, int cx, int cy, int data);
-void drawhexadecimal(   struct actor* win, u32 rgb, int cx, int cy, u64 data);
-void drawdouble(        struct actor* win, u32 rgb, int cx, int cy, double z);
+void drawascii(         struct entity* ctx, u32 rgb, int cx, int cy, u8 data);
+void drawbyte(          struct entity* ctx, u32 rgb, int cx, int cy, u8 data);
+void drawunicode(       struct entity* ctx, u32 rgb, int cx, int cy, u32 unicode);
+void drawutf8(          struct entity* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
+void drawstring(        struct entity* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
+void drawdecimal(       struct entity* ctx, u32 rgb, int cx, int cy, int data);
+void drawhexadecimal(   struct entity* ctx, u32 rgb, int cx, int cy, u64 data);
+void drawdouble(        struct entity* ctx, u32 rgb, int cx, int cy, double z);
 
-void drawascii_fit(     struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u8 data);
-void drawunicode_fit(   struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u32 unicode);
-void drawutf8_fit(      struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-void drawstring_fit(    struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-void drawdec_fit(       struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, int);
-void drawhex_fit(       struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u64);
+void drawascii_fit(     struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8 data);
+void drawunicode_fit(   struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u32 unicode);
+void drawutf8_fit(      struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+void drawstring_fit(    struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+void drawdec_fit(       struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, int);
+void drawhex_fit(       struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u64);
 
-void drawtext(          struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-void drawtext_reverse(  struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-void drawvt100(         struct actor* win, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+void drawtext(          struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+void drawtext_reverse(  struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+void drawvt100(         struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
 
 
 
 
 //-----------------------------3d--------------------------
-void carveaxis(               struct actor* ctx);
-void carvefrustum(            struct actor* ctx, struct fstyle* sty);
-void select_3d(               struct actor* ctx, u32 rgb, struct fstyle* sty, u32 flag);
+void carveaxis(               struct entity* ctx);
+void carvefrustum(            struct entity* ctx, struct fstyle* sty);
+void select_3d(               struct entity* ctx, u32 rgb, struct fstyle* sty, u32 flag);
 
-void carvepoint(              struct actor* ctx, u32 rgb, vec3 vc);
-void carvepoint_bezier(       struct actor* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
-void carvepoint_triangle(     struct actor* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carvepoint_rect(         struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carvepoint_circle(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carvepoint_cone(         struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carvepoint_cask(         struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carvepoint_cylinder(     struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carvepoint_dodecahedron( struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvepoint_icosahedron(  struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvepoint_sphere(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carvepoint(              struct entity* ctx, u32 rgb, vec3 vc);
+void carvepoint_bezier(       struct entity* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
+void carvepoint_triangle(     struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void carvepoint_rect(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carvepoint_circle(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carvepoint_cone(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void carvepoint_cask(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void carvepoint_cylinder(     struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void carvepoint_dodecahedron( struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carvepoint_icosahedron(  struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carvepoint_sphere(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
-void carveline(               struct actor* ctx, u32 rgb, vec3 va, vec3 vb);
-void carveline_shorter(       struct actor* ctx, u32 rgb, vec3 va, vec3 vb);
-void carveline_arrow(         struct actor* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vn);
-void carveline_bezier(        struct actor* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
-void carveline_special(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu, float sa, float da);
-void carveline_yshape(        struct actor* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carveline_triangle(      struct actor* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carveline_rect(          struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carveline_rectselect(    struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carveline_hexagon(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carveline_circle(        struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carveline_cone(          struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carveline_prism4(        struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveline_cylinder(      struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carveline_dodecahedron(  struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveline_icosahedron(   struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveline_sphere(        struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveline(               struct entity* ctx, u32 rgb, vec3 va, vec3 vb);
+void carveline_shorter(       struct entity* ctx, u32 rgb, vec3 va, vec3 vb);
+void carveline_arrow(         struct entity* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vn);
+void carveline_bezier(        struct entity* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
+void carveline_special(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu, float sa, float da);
+void carveline_yshape(        struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void carveline_triangle(      struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void carveline_rect(          struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carveline_rectselect(    struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carveline_hexagon(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void carveline_circle(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carveline_cone(          struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void carveline_prism4(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveline_cylinder(      struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void carveline_dodecahedron(  struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveline_icosahedron(   struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveline_sphere(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
-void carvesolid_triangle(     struct actor* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carvesolid_rect(         struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carvesolid_circle(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carvesolid_cone(         struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carvesolid_prism4(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvesolid_cask(         struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvesolid_cylinder(     struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvesolid_dodecahedron( struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvesolid_icosahedron(  struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvesolid_sphere(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvesolid_propeller(    struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu, int dir, int dt);
+void carvesolid_triangle(     struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void carvesolid_rect(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carvesolid_circle(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carvesolid_cone(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void carvesolid_prism4(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carvesolid_cask(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carvesolid_cylinder(     struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carvesolid_dodecahedron( struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carvesolid_icosahedron(  struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carvesolid_sphere(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carvesolid_propeller(    struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu, int dir, int dt);
 
-void carveopaque_triangle(    struct actor* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carveopaque_rect(        struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carveopaque_circle(      struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carveopaque_cone(        struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carveopaque_prism4(      struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveopaque_cask(        struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveopaque_cylinder(    struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveopaque_dodecahedron(struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveopaque_icosahedron( struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveopaque_sphere(      struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveopaque_triangle(    struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void carveopaque_rect(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carveopaque_circle(      struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carveopaque_cone(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void carveopaque_prism4(      struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveopaque_cask(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveopaque_cylinder(    struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveopaque_dodecahedron(struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveopaque_icosahedron( struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void carveopaque_sphere(      struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
-void carveascii(              struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
-void carveascii_center(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
-void carveunicode(            struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
-void carveunicode_center(     struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
-void carveutf8(               struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
-void carveutf8_center(        struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
+void carveascii(              struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
+void carveascii_center(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
+void carveunicode(            struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
+void carveunicode_center(     struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
+void carveutf8(               struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
+void carveutf8_center(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
 
-void carvedecimal(            struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void carvehexadecimal(        struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void carvestring(             struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carvestring_center(      struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carvetext_reverse(       struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carvefloat(              struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, float data);
-void carvedouble(             struct actor* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, double data);
+void carvedecimal(            struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
+void carvehexadecimal(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
+void carvestring(             struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void carvestring_center(      struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void carvetext_reverse(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void carvefloat(              struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, float data);
+void carvedouble(             struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, double data);
 
-void* alloc_winobj(struct actor*, int type);
+void* alloc_winobj(struct entity*, int type);
 
 
 
@@ -1255,19 +1255,19 @@ u64 timeread();
 #ifdef __cplusplus
 extern "C" {
 #endif
-int actorread(  struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
-int actorwrite( struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
-int actorstop(  struct halfrel* self, struct halfrel* peer);
-int actorstart( struct halfrel* self, struct halfrel* peer);
-int actordelete(struct actor*);
-void* actorcreate(u64 type, void* addr, int argc, u8** argv);
+int entityread(  struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
+int entitywrite( struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
+int entitystop(  struct halfrel* self, struct halfrel* peer);
+int entitystart( struct halfrel* self, struct halfrel* peer);
+int entitydelete(struct entity*);
+void* entitycreate(u64 type, void* addr, int argc, u8** argv);
 //
-int arenaread(  struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
-int arenawrite( struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
-int arenastop(  struct halfrel* self, struct halfrel* peer);
-int arenastart( struct halfrel* self, struct halfrel* peer);
-int arenadelete(struct arena*);
-void* arenacreate(u64 type, void* addr, int argc, u8** argv);
+int supplyread(  struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
+int supplywrite( struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
+int supplystop(  struct halfrel* self, struct halfrel* peer);
+int supplystart( struct halfrel* self, struct halfrel* peer);
+int supplydelete(struct supply*);
+void* supplycreate(u64 type, void* addr, int argc, u8** argv);
 //
 int arteryread( struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
 int arterywrite(struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
@@ -1322,7 +1322,7 @@ void* memorycreate(int, int);
 void* eventread();
 void* eventwrite(u64,u64,u64,u64);
 //
-int htmlprintf(struct actor*, int, char*, ...);
+int htmlprintf(struct entity*, int, char*, ...);
 int mysnprintf(void*, int, void*, ...);
 int myvsnprintf(void*, int, void*, __builtin_va_list);
 int printmemory(void*, int);

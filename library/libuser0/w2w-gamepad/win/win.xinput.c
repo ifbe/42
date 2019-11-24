@@ -110,7 +110,7 @@ void* gamepadthread(void* win)
 		sleep_us(10000);
 	}
 }
-void joycreate(struct arena* win)
+void joycreate(struct supply* win)
 {
 	threadcreate(gamepadthread, win);
 }

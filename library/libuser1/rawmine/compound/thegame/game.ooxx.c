@@ -10,8 +10,8 @@ static u8 data[3][3];
 
 
 static void ooxx_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x, y, cx, cy, ww, hh;
 	if(sty)
@@ -64,8 +64,8 @@ static void ooxx_draw_pixel(
 	}//fory
 }/*
 static void ooxx_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	vec3 tc,tr,tf;
 	if(0 == sty)sty = defaultstyle_vbo2d();
@@ -77,8 +77,8 @@ static void ooxx_draw_vbo2d(
 	carvesolid2d_rect(win, 0x444444, vc, vr, vf);
 }*/
 static void ooxx_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
@@ -87,13 +87,13 @@ static void ooxx_draw_vbo3d(
 	carvesolid_rect(win, 0x444444, vc, vr, vf);
 }
 static void ooxx_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void ooxx_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y;
 	char p[2];
@@ -120,13 +120,13 @@ static void ooxx_draw_html(
 	htmlprintf(win, 2, "</div>\n");
 }
 static void ooxx_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void ooxx_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u8 ch;
 	int x,y;
@@ -144,8 +144,8 @@ static void ooxx_draw_cli(
 	}
 }
 static void ooxx_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)ooxx_draw_cli(act, pin, win, sty);
@@ -160,8 +160,8 @@ static void ooxx_draw(
 	else ooxx_draw_pixel(act, pin, win, sty);
 }
 void ooxx_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	char val;
@@ -199,11 +199,11 @@ say("%d,%d\n",x,y);
 static void ooxx_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	say("@ooxx_read:%llx,%llx,%llx\n",act,win,buf);
 
 	if(ctx){
@@ -214,9 +214,9 @@ static void ooxx_read(struct halfrel* self, struct halfrel* peer, void* arg, int
 static void ooxx_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//ooxx_event(act, pin, win, sty, ev, 0);
@@ -231,18 +231,18 @@ static void ooxx_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void ooxx_search(struct actor* act)
+static void ooxx_search(struct entity* act)
 {
 }
-static void ooxx_modify(struct actor* act)
+static void ooxx_modify(struct entity* act)
 {
 }
-static void ooxx_delete(struct actor* act)
+static void ooxx_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void ooxx_create(struct actor* act)
+static void ooxx_create(struct entity* act)
 {
 	int x,y;
 	if(0 == act)return;
@@ -260,7 +260,7 @@ static void ooxx_create(struct actor* act)
 
 
 
-void ooxx_register(struct actor* p)
+void ooxx_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex32('o', 'o', 'x', 'x');

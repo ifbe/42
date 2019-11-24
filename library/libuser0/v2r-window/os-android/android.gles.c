@@ -17,8 +17,8 @@ void initobject(void*);
 void initshader(void*);
 void inittexture(void*);
 void initvertex(void*);
-int fbodelete(struct arena* win);
-int fbocreate(struct arena* win, char* arg);
+int fbodelete(struct supply* win);
+int fbocreate(struct supply* win, char* arg);
 void hostctx_create(void*);
 void hostctx_update(void*);
 void hostctx_render(void*);
@@ -33,12 +33,12 @@ static EGLDisplay display = EGL_NO_DISPLAY;
 static EGLContext context = EGL_NO_CONTEXT;
 static EGLSurface surface = EGL_NO_SURFACE;
 static struct android_app* theapp = 0;
-static struct arena* thewin = 0;
+static struct supply* thewin = 0;
 static int status = 0;
 
 
 
-void windowprepare(struct arena* win)
+void windowprepare(struct supply* win)
 {
 	int x,y,z;
 	display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
@@ -217,7 +217,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 					why[1] = 0x4070;
 					why[2] = (u64)thewin;
-					arenaevent((void*)why);
+					supplyevent((void*)why);
 				}
 			}
 			else
@@ -231,7 +231,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 				why[0] = x+(y<<16)+(why[0]<<48);
 				why[1] = a;
 				why[2] = (u64)thewin;
-				arenaevent((void*)why);
+				supplyevent((void*)why);
 			}
 		}
 		else if(AINPUT_SOURCE_TRACKBALL == source)
@@ -244,7 +244,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 
 
-void windowread(struct arena* win)
+void windowread(struct supply* win)
 {
 	u64 fmt = win->fmt;
 	if(status)
@@ -256,7 +256,7 @@ void windowread(struct arena* win)
 		}
 		else
 		{
-			arena_rootread(win, 0, 0, 0, 0, 0);
+			supply_rootread(win, 0, 0, 0, 0, 0);
 
 			hostctx_update(win);
 			hostctx_render(win);
@@ -276,7 +276,7 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct arena* win)
+void windowdelete(struct supply* win)
 {
 	if(_fbo_ == win->fmt)
 	{
@@ -286,7 +286,7 @@ void windowdelete(struct arena* win)
 	{
 	}
 }
-void windowcreate(struct arena* win)
+void windowcreate(struct supply* win)
 {
 	if(_fbo_ == win->fmt)
 	{

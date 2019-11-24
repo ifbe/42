@@ -591,8 +591,8 @@ void terminal_serverinput(struct uartterm* term, u8* buf, int len)
 	}
 }
 void terminal_clientinput(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev)
 {
 	int j;

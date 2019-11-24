@@ -3,18 +3,18 @@
 
 
 
-static void tree_search(struct actor* act)
+static void tree_search(struct entity* act)
 {
 }
-static void tree_modify(struct actor* act)
+static void tree_modify(struct entity* act)
 {
 }
-static void tree_delete(struct actor* act)
+static void tree_delete(struct entity* act)
 {
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void tree_create(struct actor* act)
+static void tree_create(struct entity* act)
 {
 	if(0 == act)return;
 	//if(_orig_ == act->type)act->buf = buffer;
@@ -25,8 +25,8 @@ static void tree_create(struct actor* act)
 
 
 static void tree_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -53,8 +53,8 @@ static void tree_draw_pixel(
 	drawsolid_rect(win, 0x008000, cx-ww/4, cy-hh, cx+ww/4, cy-hh*3/4);
 }/*
 static void tree_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	vec3 tc, tr, tf, tu, f;
 	if(0 == sty)sty = defaultstyle_vbo2d();
@@ -113,10 +113,10 @@ static void tree_draw_vbo2d(
 	carvesolid_prism4(win, 0x00ff00, tc, tr, tf, tu);
 }*/
 static void tree_draw_vbo3d(
-	struct actor* act, struct style* part,
-	struct actor* win, struct style* geom,
-	struct actor* wrd, struct style* camg,
-	struct actor* ctx, struct style* none)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* ctx, struct style* none)
 {
 	vec3 tc, tr, tf, tu, f;
 	float* vc = geom->f.vc;
@@ -201,28 +201,28 @@ static void tree_draw_vbo3d(
 	carvesolid_prism4(ctx, 0x00ff00, tc, tr, tf, tu);
 }
 static void tree_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void tree_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void tree_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void tree_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void tree_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)tree_draw_cli(act, pin, win, sty);
@@ -248,15 +248,15 @@ static void tree_draw(
 static void tree_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> ctx
-	struct actor* ctx;
+	struct entity* ctx;
 
 	//cam -> world
-	struct actor* cam;
-	struct actor* wrd;struct style* camg;
+	struct entity* cam;
+	struct entity* wrd;struct style* camg;
 
 	//world -> texball
-	struct actor* win;struct style* geom;
-	struct actor* act;struct style* part;
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
 
 	if(stack){
 		ctx = stack[rsp-3]->pchip;
@@ -280,7 +280,7 @@ static void tree_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-void tree_register(struct actor* p)
+void tree_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex32('t', 'r', 'e', 'e');

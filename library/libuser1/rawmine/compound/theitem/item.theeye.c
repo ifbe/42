@@ -19,23 +19,23 @@ static void theeye_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void theeye_search(struct actor* act)
+static void theeye_search(struct entity* act)
 {
 }
-static void theeye_modify(struct actor* act)
+static void theeye_modify(struct entity* act)
 {
 }
-static void theeye_delete(struct actor* act)
+static void theeye_delete(struct entity* act)
 {
 }
-static void theeye_create(struct actor* act, void* str)
+static void theeye_create(struct entity* act, void* str)
 {
 }
 
 
 
 
-void theeye_register(struct actor* p)
+void theeye_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('t', 'h', 'e', 'e', 'y', 'e', 0, 0);

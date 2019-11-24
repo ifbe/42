@@ -4,8 +4,8 @@
 
 
 static void switch_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -25,18 +25,18 @@ static void switch_draw_pixel(
 	drawline_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
 }
 static void switch_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void switch_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void switch_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -50,18 +50,18 @@ static void switch_draw_html(
 	win->len = len;
 }
 static void switch_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void switch_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void switch_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)switch_draw_cli(act, pin, win, sty);
@@ -72,8 +72,8 @@ static void switch_draw(
 	else switch_draw_pixel(act, pin, win, sty);
 }
 static void switch_data(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	u8* buf, int len)
 {
 	int j;
@@ -91,18 +91,18 @@ static void switch_data(
 static void switch_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//switch_draw(act, pin, win, sty);
 }
 static void switch_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//switch_data(act, pin, win, sty, buf, len);
 }
@@ -116,19 +116,19 @@ static void switch_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void switch_search(struct actor* act, u8* buf)
+static void switch_search(struct entity* act, u8* buf)
 {
 }
-static void switch_modify(struct actor* act, u8* buf)
+static void switch_modify(struct entity* act, u8* buf)
 {
 }
-static void switch_delete(struct actor* act, u8* buf)
+static void switch_delete(struct entity* act, u8* buf)
 {
 	if(0 == act)return;
 	if(0 != act->buf)memorydelete(act->buf);
 	act->buf = 0;
 }
-static void switch_create(struct actor* act, u8* buf)
+static void switch_create(struct entity* act, u8* buf)
 {
 	if(0 == act)return;
 	act->buf = memorycreate(0x100000, 0);
@@ -137,7 +137,7 @@ static void switch_create(struct actor* act, u8* buf)
 
 
 
-void switch_register(struct actor* p)
+void switch_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('s','w','i','t','c','h',0,0);

@@ -36,7 +36,7 @@ int speakerchoose()
 }
 int speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	struct arena* spk = (void*)(self->chip);
+	struct supply* spk = (void*)(self->chip);
 	if(0 == spk)return 0;
 	//say("spk=%llx\n",spk);
 
@@ -44,7 +44,7 @@ int speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	if(0 == rel)return 0;
 	//say("rel=%llx\n",rel);
 
-	struct actor* act = (void*)(rel->dstchip);
+	struct entity* act = (void*)(rel->dstchip);
 	if(0 == act)return 0;
 	//say("act=%llx\n",act);
 
@@ -102,11 +102,11 @@ void speakerstop()
 void speakerstart()
 {
 }
-void speakerdelete(struct arena* win)
+void speakerdelete(struct supply* win)
 {
 	if(s_out)pa_simple_free(s_out);
 }
-void speakercreate(struct arena* win)
+void speakercreate(struct supply* win)
 {
 	int error;
 

@@ -36,8 +36,8 @@ void piano_gen(short* pcm, float f)
 
 
 static void piano_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -75,8 +75,8 @@ static void piano_draw_pixel(
 	}
 }/*
 static void piano_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x;
 	vec3 tc,tr,tf,tu;
@@ -171,8 +171,8 @@ static void piano_draw_vbo2d(
 	carve2d_string(win, 0xffffff, tc, tr, tf, (u8*)"7040", 4);
 }*/
 static void piano_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x;
 	vec3 tc,tr,tf,tu;
@@ -222,13 +222,13 @@ static void piano_draw_vbo3d(
 	}
 }
 static void piano_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void piano_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -242,19 +242,19 @@ static void piano_draw_html(
 	win->len = len;
 }
 static void piano_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void piano_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("piano(%x,%x,%x)\n",win,act,sty);
 }
 static void piano_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -270,8 +270,8 @@ static void piano_draw(
 	else piano_draw_pixel(act, pin, win, sty);
 }
 static void piano_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int j,k;
@@ -352,18 +352,18 @@ static void piano_event(
 static void piano_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//piano_draw(act, pin, win, sty);
 }
 static void piano_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//piano_event(act, pin, win, sty, ev, 0);
@@ -378,18 +378,18 @@ static void piano_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void piano_search(struct actor* act)
+static void piano_search(struct entity* act)
 {
 }
-static void piano_modify(struct actor* act)
+static void piano_modify(struct entity* act)
 {
 }
-static void piano_delete(struct actor* act)
+static void piano_delete(struct entity* act)
 {
 	if(0 == act)return;
 	memorydelete(act->buf);
 }
-static void piano_create(struct actor* act)
+static void piano_create(struct entity* act)
 {
 	if(0 == act)return;
 
@@ -400,7 +400,7 @@ static void piano_create(struct actor* act)
 
 
 
-void piano_register(struct actor* p)
+void piano_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('p', 'i', 'a', 'n', 'o', 0, 0, 0);

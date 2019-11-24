@@ -15,8 +15,8 @@
 #else
 	#include <GL/glew.h>
 #endif
-void fullwindow_upload(struct arena* ogl, struct actor* ctx);
-void fullwindow_render(struct arena* ogl, int tmp, struct halfrel* src, struct halfrel* dst);
+void fullwindow_upload(struct supply* ogl, struct entity* ctx);
+void fullwindow_render(struct supply* ogl, int tmp, struct halfrel* src, struct halfrel* dst);
 
 
 
@@ -24,9 +24,9 @@ void fullwindow_render(struct arena* ogl, int tmp, struct halfrel* src, struct h
 int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//say("@gl41wnd0_read\n");
-	struct arena* ogl;
-	struct arena* wnd;
-	struct actor* ctx;
+	struct supply* ogl;
+	struct supply* wnd;
+	struct entity* ctx;
 	struct relation* rel;
 	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
 
@@ -43,7 +43,7 @@ int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 			//read ctx
 			stack[rsp+0] = (void*)(rel->src);
 			stack[rsp+1] = (void*)(rel->dst);
-			actorread(stack[rsp+1], stack[rsp+0], stack, rsp+2, 0, 0);
+			entityread(stack[rsp+1], stack[rsp+0], stack, rsp+2, 0, 0);
 
 			//upload ctx
 			fullwindow_upload(ogl, ctx);
@@ -61,7 +61,7 @@ int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 {
 	float x,y,x0,y0,xn,yn;
 	short* v;
-	struct actor* wnd;
+	struct entity* wnd;
 	struct fstyle* sty;
 	struct relation* rel;
 	struct event* ev;
@@ -102,7 +102,7 @@ found:
 	wnd->buf0 = rel;
 	stack[rsp+0] = (void*)(rel->src);
 	stack[rsp+1] = (void*)(rel->dst);
-	actorwrite(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, len);
+	entitywrite(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, len);
 	return 0;
 }
 int gl41wnd0_stop(struct halfrel* self, struct halfrel* peer)
@@ -113,11 +113,11 @@ int gl41wnd0_start(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int gl41wnd0_delete(struct actor* act)
+int gl41wnd0_delete(struct entity* act)
 {
 	return 0;
 }
-int gl41wnd0_create(struct actor* act, void* data)
+int gl41wnd0_create(struct entity* act, void* data)
 {
 	return 0;
 }

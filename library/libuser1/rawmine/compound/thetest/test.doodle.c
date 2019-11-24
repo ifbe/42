@@ -13,8 +13,8 @@ static u8 buffer[16];
 
 
 void doodle_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	float c,s,f;
 	int x0,y0,x1,y1;
@@ -60,8 +60,8 @@ void doodle_draw_pixel(
 	drawbezier(win, 0xffffff, x0, y0, x1, y1, px, py);
 }
 static void doodle_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	float a,c,s;
 	vec3 tc, tr, tf, tu, f;
@@ -122,13 +122,13 @@ static void doodle_draw_vbo(
 	carveline(win, 0xffffff, tc, tu);
 }
 static void doodle_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void doodle_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int len = win->len;
 	u8* buf = win->buf;
@@ -142,19 +142,19 @@ static void doodle_draw_html(
 	win->len = len;
 }
 static void doodle_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void doodle_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("doodle(%x,%x,%x)\n", act, pin, win, sty);
 }
 static void doodle_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)doodle_draw_cli(act, pin, win, sty);
@@ -165,8 +165,8 @@ static void doodle_draw(
 	else doodle_draw_pixel(act, pin, win, sty);
 }
 static void doodle_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	u64 what = ev->what;
@@ -184,18 +184,18 @@ static void doodle_event(
 static void doodle_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//doodle_draw(act, pin, win, sty);
 }
 static void doodle_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//doodle_event(act, pin, win, sty, ev, 0);
@@ -210,16 +210,16 @@ static void doodle_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void doodle_search(struct actor* act)
+static void doodle_search(struct entity* act)
 {
 }
-static void doodle_modify(struct actor* act)
+static void doodle_modify(struct entity* act)
 {
 }
-static void doodle_delete(struct actor* act)
+static void doodle_delete(struct entity* act)
 {
 }
-static void doodle_create(struct actor* act)
+static void doodle_create(struct entity* act)
 {
 	if(0 == act)return;
 	act->buf = ((void*)act) + 0x100;
@@ -228,7 +228,7 @@ static void doodle_create(struct actor* act)
 
 
 
-void doodle_register(struct actor* p)
+void doodle_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('d', 'o', 'o', 'd', 'l', 'e', 0, 0);

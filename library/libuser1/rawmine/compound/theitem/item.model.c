@@ -135,8 +135,8 @@ void sty_sty_mat(struct fstyle* src, struct fstyle* dst, mat4 mat)
 
 
 static void model_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	float* p;
 	float f;
@@ -185,8 +185,8 @@ static void model_draw_pixel(
 */
 }/*
 static void model_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	if(act->buf == 0)return;
 	if(0 == sty)sty = defaultstyle_vbo2d();
@@ -195,8 +195,8 @@ static void model_draw_vbo2d(
 	sty_sty_mat(&act->target, &sty->f, (void*)src->arg[0].data);
 }*/
 static void model_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	if(0 == act)return;
 	if(act->buf == 0)return;
@@ -205,29 +205,29 @@ static void model_draw_vbo3d(
 	sty_sty_mat(&pin->fs, &sty->fs, (void*)src->arg[0].data);
 }
 static void model_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void model_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void model_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void model_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	say("model(%x,%x,%x)\n",win,act,sty);
 }
 static void model_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -243,8 +243,8 @@ static void model_draw(
 	else model_draw_pixel(act, pin, win, sty);
 }
 static void model_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int j,ret;
@@ -270,7 +270,7 @@ static void model_event(
 				break;
 			}
 		}
-		//actorcreatefromfile(act, buffer);
+		//entitycreatefromfile(act, buffer);
 	}
 }
 
@@ -280,11 +280,11 @@ static void model_event(
 static void model_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	if(ctx){
 		if(_gl41data_ == ctx->type)model_draw_vbo3d(act,pin,ctx,sty);
 	}
@@ -293,9 +293,9 @@ static void model_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 static void model_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	//model_event(act, pin, win, sty, ev, 0);
@@ -306,7 +306,7 @@ static void model_stop(struct halfrel* self, struct halfrel* peer)
 static void model_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct glsrc* src;
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	if(0 == act)return;
 	if(0 == pin)return;
@@ -325,19 +325,19 @@ static void model_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void model_search(struct actor* act)
+static void model_search(struct entity* act)
 {
 }
-static void model_modify(struct actor* act)
+static void model_modify(struct entity* act)
 {
 }
-static void model_delete(struct actor* act)
+static void model_delete(struct entity* act)
 {
 	if(0 == act)return;
 	memorydelete(act->buf);
 	act->buf = 0;
 }
-static void model_create(struct actor* act, void* str)
+static void model_create(struct entity* act, void* str)
 {
 	int j;
 	float* tmp;
@@ -388,7 +388,7 @@ static void model_create(struct actor* act, void* str)
 
 
 
-void model_register(struct actor* p)
+void model_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('m', 'o', 'd', 'e', 'l', 0, 0, 0);

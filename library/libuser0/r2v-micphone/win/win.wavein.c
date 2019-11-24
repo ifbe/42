@@ -5,7 +5,7 @@
 
 
 
-static struct arena* working;
+static struct supply* working;
 static WAVEFORMATEX fmt;
 static int alive = 0;
 //
@@ -33,7 +33,7 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 			{
 				struct halfrel* self = (struct halfrel*)&orel->dstchip;
 				struct halfrel* peer = (struct halfrel*)&orel->srcchip;
-				actorwrite(self, peer, ibuf + (1024*2*icur), 1024*2);
+				entitywrite(self, peer, ibuf + (1024*2*icur), 1024*2);
 			}
 			orel = (struct relation*)samesrcnextdst(orel);
 		}
@@ -61,8 +61,8 @@ void micphonechoose()
 {
 }
 void micphoneread(
-	struct arena* win, struct style* sty,
-	struct actor* act, struct style* pin)
+	struct supply* win, struct style* sty,
+	struct entity* act, struct style* pin)
 {
 }
 void micphonewrite(int dev, int time, u8* buf, int len)
@@ -75,10 +75,10 @@ void micphonestop()
 void micphonestart()
 {
 }
-void micphonedelete(struct arena* win)
+void micphonedelete(struct supply* win)
 {
 }
-void micphonecreate(struct arena* win)
+void micphonecreate(struct supply* win)
 {
 	int j,ret;
 	working = win;

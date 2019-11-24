@@ -8,7 +8,7 @@
 
 
 
-void joystick_event(struct arena* win, void* p)
+void joystick_event(struct supply* win, void* p)
 {
 	struct event ev;
 //printf("orel=%llx\n",win->orel0);
@@ -30,7 +30,7 @@ void joystick_event(struct arena* win, void* p)
 		relationwrite(win, _dst_, 0, 0, &ev, 0);
 	}
 }
-void joystickthread(struct arena* win)
+void joystickthread(struct supply* win)
 {
 	u8 af,gf;
 	int av[3];
@@ -230,7 +230,7 @@ void joystickthread(struct arena* win)
 
 	close(fd);
 }
-void joycreate(struct arena* win)
+void joycreate(struct supply* win)
 {
 	threadcreate(joystickthread, win);
 }

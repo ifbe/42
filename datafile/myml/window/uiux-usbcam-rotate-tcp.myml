@@ -19,7 +19,7 @@ fmt:dbghex
 </artery>
 
 
-<arena>
+<supply>
 thewnd{
 fmt:gl41wnd0
 }
@@ -30,10 +30,10 @@ width:1024
 height:1024
 depth:1024
 }
-</arena>
+</supply>
 
 
-<actor>
+<entity>
 canvas{
 fmt:video
 }
@@ -47,7 +47,7 @@ fmt:3dworld
 thectx{
 fmt:gl41data
 }
-</actor>
+</entity>
 
 
 <style>

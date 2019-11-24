@@ -13,11 +13,11 @@ fmt:HTTP
 </artery>
 
 
-<actor>
+<entity>
 htmlroot{
 fmt:html
 }
-</actor>
+</entity>
 
 
 <relation>

@@ -5,16 +5,16 @@ void* devicesearch(void*, int);
 void* driversearch(void*, int);
 void* systemsearch(void*, int);
 void* arterysearch(void*, int);
-void* arenasearch(void*, int);
-void* actorsearch(void*, int);
+void* supplysearch(void*, int);
+void* entitysearch(void*, int);
 void* pwrclkmodify(int argc, void* argv);
 void* workermodify(int argc, void* argv);
 void* devicemodify(int argc, void* argv);
 void* drivermodify(int argc, void* argv);
 void* systemmodify(int argc, void* argv);
 void* arterymodify(int argc, void* argv);
-void* arenamodify(int argc, void* argv);
-void* actormodify(int argc, void* argv);
+void* supplymodify(int argc, void* argv);
+void* entitymodify(int argc, void* argv);
 //
 int event(void*, int);
 int node(void*, int);
@@ -47,9 +47,9 @@ void term_ls(u8* buf, int len)
 		say("----------------\n");
 		arterysearch(0, 0);
 		say("----------------\n");
-		arenasearch(0, 0);
+		supplysearch(0, 0);
 		say("----------------\n");
-		actorsearch(0, 0);
+		entitysearch(0, 0);
 		return;
 	}
 
@@ -60,8 +60,8 @@ void term_ls(u8* buf, int len)
 	else if(0 == ncmp(buf, "driver", 6))driversearch(0, 0);
 	else if(0 == ncmp(buf, "system", 6))systemsearch(0, 0);
 	else if(0 == ncmp(buf, "artery", 6))arterysearch(0, 0);
-	else if(0 == ncmp(buf, "arena", 5))arenasearch(0, 0);
-	else if(0 == ncmp(buf, "actor", 5))actorsearch(0, 0);
+	else if(0 == ncmp(buf, "supply", 6))supplysearch(0, 0);
+	else if(0 == ncmp(buf, "entity", 6))entitysearch(0, 0);
 	else say("ls(%s)\n", buf);
 }
 
@@ -116,8 +116,8 @@ int termwrite(u8* buf, int len)
 	else if(0 == ncmp(buf, "driver", 6))drivermodify(j, argv);
 	else if(0 == ncmp(buf, "system", 6))systemmodify(j, argv);
 	else if(0 == ncmp(buf, "artery", 6))arterymodify(j, argv);
-	else if(0 == ncmp(buf, "arena", 5))arenamodify(j, argv);
-	else if(0 == ncmp(buf, "actor", 5))actormodify(j, argv);
+	else if(0 == ncmp(buf, "supply", 6))supplymodify(j, argv);
+	else if(0 == ncmp(buf, "entity", 6))entitymodify(j, argv);
 
 finish:
 	term_prompt();

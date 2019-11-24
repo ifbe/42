@@ -83,7 +83,7 @@ void update_onedraw(struct gldst* dst, struct glsrc* src)
 	}
 //say("@update done\n");
 }
-void fullwindow_upload(struct arena* ogl, struct actor* ctx)
+void fullwindow_upload(struct supply* ogl, struct entity* ctx)
 {
 	int j;
 	struct datapair* mod;
@@ -217,13 +217,13 @@ void render_onedraw(struct datapair* cam, struct datapair* lit, struct datapair*
 		else glDrawArrays(GL_TRIANGLES, 0, src->vbuf_h);
 	}
 }
-void fullwindow_render(struct arena* ogl, int tmp, struct halfrel* src, struct halfrel* dst)
+void fullwindow_render(struct supply* ogl, int tmp, struct halfrel* src, struct halfrel* dst)
 {
 	int j;
 	int x0,y0,ww,hh;
-	struct arena* wnd = src->pchip;
+	struct supply* wnd = src->pchip;
 	struct fstyle* area = src->pfoot;
-	struct actor* ctx = dst->pchip;
+	struct entity* ctx = dst->pchip;
 	struct fstyle* frus = dst->pfoot;
 
 	struct datapair* cam = ctx->gl_camera;
@@ -273,18 +273,18 @@ void fullwindow_render(struct arena* ogl, int tmp, struct halfrel* src, struct h
 
 
 
-void fullwindow_write(struct arena* ogl, struct event* ev)
+void fullwindow_write(struct supply* ogl, struct event* ev)
 {
 	struct halfrel* stack[16];
 	//say("@fullwindow_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
 
 	relationwrite(ogl, _wnd_, stack, 0, ev, 0);
 }
-void fullwindow_read(struct arena* ogl)
+void fullwindow_read(struct supply* ogl)
 {
 	struct halfrel* stack[16];
 	struct relation* rel;
-	struct arena* wnd;
+	struct supply* wnd;
 	//say("@fullwindow_read\n");
 
 	rel = ogl->orel0;
@@ -301,16 +301,16 @@ void fullwindow_read(struct arena* ogl)
 				wnd->fbheight = ogl->fbheight;
 				stack[0+0] = (void*)(rel->src);
 				stack[0+1] = (void*)(rel->dst);
-				arenaread(stack[1], stack[0], stack, 0+2, 0, 0);
+				supplyread(stack[1], stack[0], stack, 0+2, 0, 0);
 		}
 
 		rel = samesrcnextdst(rel);
 	}
 }
-void fullwindow_delete(struct arena* ogl)
+void fullwindow_delete(struct supply* ogl)
 {
 }
-void fullwindow_create(struct arena* ogl)
+void fullwindow_create(struct supply* ogl)
 {
 	ogl->fmt = _full_;
 }

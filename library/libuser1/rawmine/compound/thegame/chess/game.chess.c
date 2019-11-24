@@ -9,8 +9,8 @@ static u8 buffer[8][8];
 
 
 static void chess_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 color;
 	int x, y, cx, cy, ww, hh;
@@ -50,8 +50,8 @@ static void chess_draw_pixel(
 	}
 }/*
 static void chess_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 rgb;
 	int x,y;
@@ -87,8 +87,8 @@ static void chess_draw_vbo2d(
 	}
 }*/
 static void chess_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u32 rgb;
 	int x,y;
@@ -125,13 +125,13 @@ static void chess_draw_vbo3d(
 	}
 }
 static void chess_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void chess_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int x,y,color;
 
@@ -159,13 +159,13 @@ static void chess_draw_html(
 	htmlprintf(win, 2, "</div>\n");
 }
 static void chess_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void chess_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u8 ch;
 	int x,y;
@@ -183,8 +183,8 @@ static void chess_draw_cli(
 	}
 }
 static void chess_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)chess_draw_cli(act, pin, win, sty);
@@ -205,11 +205,11 @@ static void chess_draw(
 static void chess_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 	say("@chess_read:%llx,%llx,%llx\n",act,win,buf);
 
 	if(ctx){
@@ -231,18 +231,18 @@ static void chess_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void chess_search(struct actor* act)
+static void chess_search(struct entity* act)
 {
 }
-static void chess_modify(struct actor* act)
+static void chess_modify(struct entity* act)
 {
 }
-static void chess_delete(struct actor* act)
+static void chess_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void chess_create(struct actor* act)
+static void chess_create(struct entity* act)
 {
 	int j,k;
 	if(0 == act)return;
@@ -288,7 +288,7 @@ static void chess_create(struct actor* act)
 
 
 
-void chess_register(struct actor* p)
+void chess_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('c', 'h', 'e', 's', 's', 0, 0, 0);

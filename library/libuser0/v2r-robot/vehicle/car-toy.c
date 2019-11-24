@@ -91,12 +91,12 @@ int toycar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
     }
     return 0;
 }
-void toycar_delete(struct arena* win)
+void toycar_delete(struct supply* win)
 {
     int j;
     for(j=0;j<12;j++)boardstop(table[j]);
 }
-void toycar_create(struct arena* win)
+void toycar_create(struct supply* win)
 {
     int j;
     for(j=0;j<12;j++)table[j] = boardstart(name[j], 'o');

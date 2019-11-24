@@ -5,7 +5,7 @@ fmt:poller
 </worker>
 
 
-<actor>
+<entity>
 cam0{
 fmt:freecam
 script:move
@@ -30,10 +30,10 @@ fmt:3dworld
 gldata{
 fmt:gl41data
 }
-</actor>
+</entity>
 
 
-<arena>
+<supply>
 glfbo{
 fmt:gl41fboc
 }
@@ -50,7 +50,7 @@ depth:1024
 gamepad{
 fmt:joy
 }
-</arena>
+</supply>
 
 
 <style>

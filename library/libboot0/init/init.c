@@ -4,11 +4,11 @@
 
 
 //libuser1
-void freeactor();
-void initactor(void*);
+void freeentity();
+void initentity(void*);
 //libuser0
-void freearena();
-void initarena(void*);
+void freesupply();
+void initsupply(void*);
 //libsoft1
 void freeartery();
 void initartery(void*);
@@ -30,8 +30,8 @@ void initpwrclk(void*);
 void death()
 {
 	//libuser
-	freeactor();
-	freearena();
+	freeentity();
+	freesupply();
 
 	//libsoft
 	freeartery();
@@ -60,6 +60,6 @@ void birth(void* addr)
 	initartery(addr+0xa00000);
 
 	//libuser
-	initarena( addr+0xc00000);
-	initactor( addr+0xe00000);
+	initsupply(addr+0xc00000);
+	initentity(addr+0xe00000);
 }

@@ -138,7 +138,7 @@ static int aidfont_fill(struct glsrc* src, int id)
 
 	return 0;
 }
-int ascii3d_vars(struct actor* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
+int ascii3d_vars(struct entity* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	struct datapair* mod;
 	struct glsrc* src;
@@ -170,7 +170,7 @@ int ascii3d_vars(struct actor* win, int id, float** vbuf, u16** ibuf, int vcnt, 
 
 
 
-void carveascii_test(struct actor* win, u32 rgb,
+void carveascii_test(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -225,7 +225,7 @@ void carveascii_test(struct actor* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-void carveascii(struct actor* win, u32 rgb,
+void carveascii(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8 dat)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -280,7 +280,7 @@ void carveascii(struct actor* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-void carveascii_center(struct actor* win, u32 rgb,
+void carveascii_center(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8 dat)
 {
 	vec3 tc;
@@ -293,7 +293,7 @@ void carveascii_center(struct actor* win, u32 rgb,
 
 
 
-void carveunicode(struct actor* win, u32 rgb,
+void carveunicode(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 unicode)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -350,7 +350,7 @@ void carveunicode(struct actor* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-void carveunicode_center(struct actor* win, u32 rgb,
+void carveunicode_center(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 unicode)
 {
 	vec3 tc;
@@ -363,14 +363,14 @@ void carveunicode_center(struct actor* win, u32 rgb,
 
 
 
-void carveutf8(struct actor* win, u32 rgb,
+void carveutf8(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
 	u32 unicode;
 	utf2unicode(buf, &unicode);
 	carveunicode(win, rgb, vc, vr, vf, unicode);
 }
-void carveutf8_center(struct actor* win, u32 rgb,
+void carveutf8_center(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
 	vec3 tc;
@@ -383,7 +383,7 @@ void carveutf8_center(struct actor* win, u32 rgb,
 
 
 
-void carvestring(struct actor* win, u32 rgb,
+void carvestring(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
 	int j,k;
@@ -427,7 +427,7 @@ void carvestring(struct actor* win, u32 rgb,
 		}
 	}
 }
-void carvestring_center(struct actor* win, u32 rgb,
+void carvestring_center(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
 	int j;
@@ -468,7 +468,7 @@ void carvestring_center(struct actor* win, u32 rgb,
 
 
 
-void carvedecimal(struct actor* win, u32 rgb,
+void carvedecimal(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 val)
 {
 	int j,len;
@@ -487,7 +487,7 @@ void carvedecimal(struct actor* win, u32 rgb,
 	}
 	carvestring(win, rgb, vc, vr, vf, str, len);
 }
-void carvehexadecimal(struct actor* win, u32 rgb,
+void carvehexadecimal(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 val)
 {
 	int j,len;
@@ -511,14 +511,14 @@ void carvehexadecimal(struct actor* win, u32 rgb,
 
 
 
-void carvefloat(struct actor* win, u32 rgb,
+void carvefloat(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, float data)
 {
 	u8 mystr[100];
 	float2decstr(data, mystr);
 	carvestring(win, rgb, vc, vr, vf, mystr, 0);
 }
-void carvedouble(struct actor* win, u32 rgb,
+void carvedouble(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, double data)
 {
 	u8 mystr[100];
@@ -529,12 +529,12 @@ void carvedouble(struct actor* win, u32 rgb,
 
 
 
-void carvetext2d(struct actor* win, u32 rgb,
+void carvetext2d(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf,
 	u8* buf, int len)
 {
 }
-void carvetext_reverse(struct actor* win, u32 rgb,
+void carvetext_reverse(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf,
 	u8* buf, int len)
 {

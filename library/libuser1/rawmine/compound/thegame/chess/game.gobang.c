@@ -23,18 +23,18 @@ static void gobang_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void gobang_search(struct actor* act)
+static void gobang_search(struct entity* act)
 {
 }
-static void gobang_modify(struct actor* act)
+static void gobang_modify(struct entity* act)
 {
 }
-static void gobang_delete(struct actor* act)
+static void gobang_delete(struct entity* act)
 {
 	if(0 == act)return;
 	if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void gobang_create(struct actor* act)
+static void gobang_create(struct entity* act)
 {
 	if(0 == act)return;
 	if(_orig_ == act->type)act->buf = buffer;
@@ -44,7 +44,7 @@ static void gobang_create(struct actor* act)
 
 
 
-void gobang_register(struct actor* p)
+void gobang_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('g', 'o', 'b', 'a', 'n', 'g', 0, 0);

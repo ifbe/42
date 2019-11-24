@@ -18,7 +18,7 @@ void* pollenv();
 
 static struct android_app* theapp = 0;
 static int status = 0;
-static struct arena* thewin = 0;
+static struct supply* thewin = 0;
 static ANativeWindow* native;
 
 
@@ -129,7 +129,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 					why[1] = 0x4070;
 					why[2] = (u64)thewin;
-					arenaevent((void*)why);
+					supplyevent((void*)why);
 				}
 			}
 			else
@@ -143,7 +143,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 				why[0] = x+(y<<16)+(why[0]<<48);
 				why[1] = a;
 				why[2] = (u64)thewin;
-				arenaevent((void*)why);
+				supplyevent((void*)why);
 			}
 		}
 		else if(AINPUT_SOURCE_TRACKBALL == source)
@@ -156,7 +156,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 
 
-void windowread(struct arena* win)
+void windowread(struct supply* win)
 {
 	ANativeWindow_Buffer buffer;
 	struct android_poll_source* source;
@@ -175,7 +175,7 @@ void windowread(struct arena* win)
 		thewin->stride = buffer.stride;
 
 		//read data
-		arena_rootread(thewin, 0, 0, 0, 0, 0);
+		supply_rootread(thewin, 0, 0, 0, 0, 0);
 
 		//write screen
 		ANativeWindow_unlockAndPost(native);
@@ -193,10 +193,10 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct arena* win)
+void windowdelete(struct supply* win)
 {
 }
-void windowcreate(struct arena* win)
+void windowcreate(struct supply* win)
 {
 	thewin = win;
 	win->fmt = hex64('r','g','b','a','8','8','8','8');

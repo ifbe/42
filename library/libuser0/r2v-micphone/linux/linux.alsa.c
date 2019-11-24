@@ -255,7 +255,7 @@ int soundstart()
 {
 	return 0;
 }
-int sounddelete(struct arena* w)
+int sounddelete(struct supply* w)
 {
 	//printf("@snd_pcm_close\n");
 	snd_pcm_close(capture_handle);
@@ -264,7 +264,7 @@ int sounddelete(struct arena* w)
 	alive = 0;
 	return 0;
 }
-int soundcreate(struct arena* w)
+int soundcreate(struct supply* w)
 {
 	unsigned int rate = w->width;
 	int ch = w->height;

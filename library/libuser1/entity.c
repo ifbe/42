@@ -60,19 +60,19 @@ int gl41coop_write(void*, void*, void*, int, void*, int);
 
 
 
-static struct actor* actor = 0;
+static struct entity* entity = 0;
 static int actlen = 0;
 static struct style* style = 0;
 static int stylen = 0;
-void* allocactor()
+void* allocentity()
 {
 	int j,max;
-	struct actor* act;
+	struct entity* act;
 
-	max = 0x100000 / sizeof(struct actor);
+	max = 0x100000 / sizeof(struct entity);
 	for(j=0;j<max;j++)
 	{
-		act = &actor[j];
+		act = &entity[j];
 		if(0 == act->type)return act;
 	}
 	return 0;
@@ -93,7 +93,7 @@ void* allocstyle()
 
 
 
-int actorinput_special(struct arena* win, struct style* sty, struct event* ev)
+int entityinput_special(struct supply* win, struct style* sty, struct event* ev)
 {
 	int val;
 	short* t;
@@ -126,7 +126,7 @@ int actorinput_special(struct arena* win, struct style* sty, struct event* ev)
 	}
 	return 0;
 }/*
-void actorinput_touch(struct arena* win, struct event* ev)
+void entityinput_touch(struct supply* win, struct event* ev)
 {
 	int x,y,z,btn;
 	if('p' != (ev->what & 0xff))return;
@@ -160,9 +160,9 @@ void actorinput_touch(struct arena* win, struct event* ev)
 
 
 
-int actorread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
+int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
 {
-	struct actor* act;
+	struct entity* act;
 	if(0 == self)return 0;
 
 	act = self->pchip;
@@ -180,9 +180,9 @@ int actorread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void
 	if(0 == act->onread)return 0;
 	return act->onread(self, peer, arg, idx, buf, len);
 }
-int actorwrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
+int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
 {
-	struct actor* act;
+	struct entity* act;
 	if(0 == self)return 0;
 
 	act = self->pchip;
@@ -200,9 +200,9 @@ int actorwrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 	if(0 == act->onwrite)return 0;
 	return act->onwrite(self, peer, arg, idx, buf, len);
 }
-int actorstop(struct halfrel* self, struct halfrel* peer)
+int entitystop(struct halfrel* self, struct halfrel* peer)
 {
-	struct actor* act;
+	struct entity* act;
 	if(0 == self)return 0;
 
 	act = (void*)(self->chip);
@@ -211,15 +211,15 @@ int actorstop(struct halfrel* self, struct halfrel* peer)
 	if(0 == act->onstop)return 0;
 	return act->onstop(self, peer);
 }
-int actorstart(struct halfrel* self, struct halfrel* peer)
+int entitystart(struct halfrel* self, struct halfrel* peer)
 {
-	struct actor* act;
+	struct entity* act;
 	if(0 == self)return 0;
 
 	act = (void*)(self->chip);
 	if(0 == act)return 0;
 
-	say("@actor_start\n");
+	say("@entity_start\n");
 	if(0 == act->onstart)return 0;
 	return act->onstart(self, peer);
 }
@@ -227,7 +227,7 @@ int actorstart(struct halfrel* self, struct halfrel* peer)
 
 
 
-int actordelete(struct actor* act)
+int entitydelete(struct entity* act)
 {
 	if(0 == act)return 0;
 	switch(act->type){
@@ -240,12 +240,12 @@ int actordelete(struct actor* act)
 
 	return 0;
 }
-void* actorcreate(u64 type, void* buf, int argc, u8** argv)
+void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 {
 	int j,k;
 	u8* src;
 	u8* dst;
-	struct actor* act;
+	struct entity* act;
 	say("%llx,%llx\n", type, buf);
 
 	if(0 == type)
@@ -261,14 +261,14 @@ void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 	//test
 	else if(_baby_ == type)
 	{
-		act = allocactor();
+		act = allocentity();
 		act->fmt = act->type = _baby_;
 		baby_create(act, buf, argc, argv);
 		return act;
 	}
 	else if(_test_ == type)
 	{
-		act = allocactor();
+		act = allocentity();
 		act->fmt = act->type = _test_;
 		test_create(act, buf, argc, argv);
 		return act;
@@ -277,7 +277,7 @@ void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 	//reality
 	else if(_reality_ == type)
 	{
-		act = allocactor();
+		act = allocentity();
 		act->fmt = act->type = _reality_;
 		reality_create(act, buf, argc, argv);
 		return act;
@@ -286,14 +286,14 @@ void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 	//circuit
 	else if(_eeworld_ == type)
 	{
-		act = allocactor();
+		act = allocentity();
 		act->fmt = act->type = _eeworld_;
 		eeworld_create(act, buf, argc, argv);
 		return act;
 	}
 	else if(_hoffdata_ == type)
 	{
-		act = allocactor();
+		act = allocentity();
 		act->fmt = act->type = _hoffdata_;
 		hoffdata_create(act, buf, argc, argv);
 		return act;
@@ -302,7 +302,7 @@ void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 	//html
 	else if(_html_ == type)
 	{
-		act = allocactor();
+		act = allocentity();
 		act->fmt = act->type = _html_;
 		htmlnode_create(act, buf, argc, argv);
 		return act;
@@ -311,21 +311,21 @@ void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 	//world
 	else if(_world3d_ == type)
 	{
-		act = allocactor();
+		act = allocentity();
 		act->fmt = act->type = _world3d_;
 		world3d_create(act, buf, argc, argv);
 		return act;
 	}
 	else if(_gl41data_ == type)
 	{
-		act = allocactor();
+		act = allocentity();
 		act->fmt = act->type = _gl41data_;
 		gl41data_create(act, buf, argc, argv);
 		return act;
 	}
 	else if(_gl41coop_ == type)
 	{
-		act = allocactor();
+		act = allocentity();
 		act->fmt = act->type = _gl41coop_;
 		gl41coop_create(act, buf, argc, argv);
 		return act;
@@ -337,17 +337,17 @@ void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 		k = 0;
 		for(j=0;j<256;j++)
 		{
-			if(0 == actor[j].type)
+			if(0 == entity[j].type)
 			{
 				if(0 == k)return 0;
 				break;
 			}
-			if(type == actor[j].fmt)
+			if(type == entity[j].fmt)
 			{
 				k = j;
-				if(_orig_ == actor[j].type)
+				if(_orig_ == entity[j].type)
 				{
-					act = &actor[j];
+					act = &entity[j];
 					break;
 				}
 			}
@@ -355,9 +355,9 @@ void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 
 		if(j != k)
 		{
-			src = (void*)&actor[k];
-			dst = (void*)&actor[j];
-			for(j=0;j<sizeof(struct actor);j++)dst[j] = src[j];
+			src = (void*)&entity[k];
+			dst = (void*)&entity[j];
+			for(j=0;j<sizeof(struct entity);j++)dst[j] = src[j];
 
 			act = (void*)dst;
 			act->irel0 = act->ireln = 0;
@@ -380,7 +380,7 @@ void* actorcreate(u64 type, void* buf, int argc, u8** argv)
 	else if(_copy_ == act->type)act->type = _COPY_;
 	return act;
 }
-void* actormodify(int argc, u8** argv)
+void* entitymodify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;
@@ -395,37 +395,37 @@ void* actormodify(int argc, u8** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		actorcreate(name, argv[3], argc-3, &argv[3]);
+		entitycreate(name, argv[3], argc-3, &argv[3]);
 	}
 
 	return 0;
 }
-void* actorsearch(u8* buf, int len)
+void* entitysearch(u8* buf, int len)
 {
 	int j,k;
 	u8* p;
-	struct actor* act;
+	struct entity* act;
 	if(0 == buf)
 	{
 		for(j=0;j<0x100;j++)
 		{
-			act = &actor[j];
+			act = &entity[j];
 			if(0 == act->fmt)break;
 			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
 				&act->tier, &act->type, &act->fmt, &act->fmt);
 		}
-		if(0 == j)say("empty actor\n");
+		if(0 == j)say("empty entity\n");
 	}
 	else
 	{
 		for(j=0;j<0x100;j++)
 		{
-			if(0 == actor[j].fmt)break;
-			p = (void*)(&actor[j].fmt);
+			if(0 == entity[j].fmt)break;
+			p = (void*)(&entity[j].fmt);
 
 			for(k=0;k<8;k++)
 			{
-				if((0 == p[k])|(0x20 >= buf[k]))return &actor[j];
+				if((0 == p[k])|(0x20 >= buf[k]))return &entity[j];
 				if(buf[k] != p[k])break;
 			}
 		}
@@ -436,28 +436,28 @@ void* actorsearch(u8* buf, int len)
 
 
 
-void freeactor()
+void freeentity()
 {
-	//say("[e,f):deleteing actor\n");
+	//say("[e,f):deleteing entity\n");
 	mine_free();
 	test_free();
 	baby_free();
 
 	style = 0;
-	actor = 0;
+	entity = 0;
 }
-void initactor(u8* addr)
+void initentity(u8* addr)
 {
 	int j;
-	actor = (void*)(addr+0x000000);
+	entity = (void*)(addr+0x000000);
 	style = (void*)(addr+0x100000);
 
-#define max (0x100000/sizeof(struct actor))
+#define max (0x100000/sizeof(struct entity))
 	for(j=0;j<0x200000;j++)addr[j] = 0;
-	for(j=0;j<max;j++)actor[j].tier = _act_;
+	for(j=0;j<max;j++)entity[j].tier = _act_;
 
 	baby_init(addr);
 	test_init(addr);
 	mine_init(addr);
-	//say("[e,f):createed actor\n");
+	//say("[e,f):createed entity\n");
 }

@@ -14,14 +14,14 @@ url:0.0.0.0:2080
 </artery>
 
 
-<arena>
+<supply>
 player1{
 fmt:joy
 }
 toycar{
 fmt:bdc
 }
-</arena>
+</supply>
 
 
 <relation>

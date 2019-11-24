@@ -6,7 +6,7 @@
 int eeworld_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct relation* rel;
-	struct actor* act = self->pchip;
+	struct entity* act = self->pchip;
 
 	rel = act->orel0;
 	while(1){
@@ -34,19 +34,19 @@ int eeworld_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int eeworld_search(struct actor* world)
+int eeworld_search(struct entity* world)
 {
 	return 0;
 }
-int eeworld_modify(struct actor* world)
+int eeworld_modify(struct entity* world)
 {
 	return 0;
 }
-int eeworld_delete(struct actor* world)
+int eeworld_delete(struct entity* world)
 {
 	return 0;
 }
-int eeworld_create(struct actor* world, void* str)
+int eeworld_create(struct entity* world, void* str)
 {
 	say("@eeworld_create\n");
 	return 0;

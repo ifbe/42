@@ -5,18 +5,18 @@ fmt:poller
 </worker>
 
 
-<actor>
+<entity>
 2048{
 fmt:2048
 }
-</actor>
+</entity>
 
 
-<arena>
+<supply>
 wnd{
 fmt:win
 }
-</arena>
+</supply>
 
 
 <style>

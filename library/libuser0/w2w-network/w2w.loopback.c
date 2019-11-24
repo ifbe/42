@@ -19,15 +19,15 @@ void loopback_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-void loopback_modify(struct arena* win)
+void loopback_modify(struct supply* win)
 {
 }
-void loopback_search(struct arena* win)
+void loopback_search(struct supply* win)
 {
 }
-void loopback_delete(struct arena* win)
+void loopback_delete(struct supply* win)
 {
 }
-void loopback_create(struct arena* win)
+void loopback_create(struct supply* win)
 {
 }

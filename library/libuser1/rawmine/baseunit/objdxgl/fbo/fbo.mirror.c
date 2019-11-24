@@ -32,10 +32,10 @@ GLSL_VERSION
 
 
 
-static void mirror_search(struct actor* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+static void mirror_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
-	struct actor* world;
+	struct entity* world;
 	struct fstyle* obb = 0;
 	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
 
@@ -51,13 +51,13 @@ static void mirror_search(struct actor* act, u32 foot, struct halfrel* self[], s
 		rel = samedstnextsrc(rel);
 	}
 }
-static void mirror_modify(struct actor* act)
+static void mirror_modify(struct entity* act)
 {
 }
-static void mirror_delete(struct actor* act)
+static void mirror_delete(struct entity* act)
 {
 }
-static void mirror_create(struct actor* act, void* str)
+static void mirror_create(struct entity* act, void* str)
 {
 	struct mirrbuf* mirr;
 	struct glsrc* src;
@@ -89,10 +89,10 @@ static void mirror_create(struct actor* act, void* str)
 
 
 static void mirror_draw_vbo(
-	struct actor* act, struct style* part,
-	struct actor* win, struct style* geom,
-	struct actor* wrd, struct style* camg,
-	struct actor* ctx, struct fstyle* none)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* ctx, struct fstyle* none)
 {
 	struct mirrbuf* mirr;
 	struct glsrc* src;
@@ -155,8 +155,8 @@ static void mirror_draw_vbo(
 	src->vbuf_enq += 1;
 }
 static void mirror_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
 	if(sty)
@@ -175,28 +175,28 @@ static void mirror_draw_pixel(
 	}
 }
 static void mirror_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void mirror_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void mirror_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void mirror_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void mirror_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)mirror_draw_cli(act, pin, win, sty);
@@ -310,16 +310,16 @@ void mirror_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 	frus->vt[3] = t;
 }
 static void mirror_matrix(
-	struct actor* act, struct fstyle* part,
-	struct actor* wrd, struct fstyle* geom,
+	struct entity* act, struct fstyle* part,
+	struct entity* wrd, struct fstyle* geom,
 
-	struct actor* mir, struct fstyle* frus,
-	struct actor* ctx, struct fstyle* none,
-	struct arena* fbo, struct fstyle* area,
+	struct entity* mir, struct fstyle* frus,
+	struct entity* ctx, struct fstyle* none,
+	struct supply* fbo, struct fstyle* area,
 
-	struct actor* cam, struct fstyle* camf)
-	//struct actor* ctx, struct fstyle* none,
-	//struct actor* wnd, struct fstyle* area)
+	struct entity* cam, struct fstyle* camf)
+	//struct entity* ctx, struct fstyle* none,
+	//struct entity* wnd, struct fstyle* area)
 {
 	struct mirrbuf* mirr = act->buf0;
 	if(0 == mirr)return;
@@ -355,28 +355,28 @@ static void mirror_matrix(
 static void mirror_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd -> ctx
-	struct arena* wnd;struct style* area;
-	struct actor* ctx;
+	struct supply* wnd;struct style* area;
+	struct entity* ctx;
 //ctx -> cam
-	struct actor* cam;
-	struct actor* wrd;struct style* camg;
+	struct entity* cam;
+	struct entity* wrd;struct style* camg;
 
 //fbo -> ctx
-	struct arena* fbo;struct style* rect;
-	//struct actor* ctx;
+	struct supply* fbo;struct style* rect;
+	//struct entity* ctx;
 //ctx -> mir
-	//struct actor* mir;
-	struct actor* wrl;struct style* mirg;
+	//struct entity* mir;
+	struct entity* wrl;struct style* mirg;
 
 //world -> mirror
-	struct actor* win;struct style* geom;
-	struct actor* act;struct style* part;
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
 
 	if(0 == stack)return;
 /*	if('f' == len){
 		act = self->pchip;
 		struct relation* rel = act->orel0;
-		arenaread((void*)(rel->dst), (void*)(rel->src), stack, rsp, 0, 0);
+		supplyread((void*)(rel->dst), (void*)(rel->src), stack, rsp, 0, 0);
 		fbo = rel->pdstchip;
 
 		struct mirrbuf* mirr = act->buf0;
@@ -427,7 +427,7 @@ static void mirror_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void mirror_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct actor* act = self->pchip;
+	struct entity* act = self->pchip;
 	struct style* pin = self->pfoot;
 	if(0 == act)return;
 	if(0 == pin)return;
@@ -439,7 +439,7 @@ static void mirror_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-void mirror_register(struct actor* p)
+void mirror_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('m', 'i', 'r', 'r', 'o', 'r', 0, 0);

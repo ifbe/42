@@ -40,7 +40,7 @@ int ahrs_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void* ahrs_thread(struct arena* win)
+static void* ahrs_thread(struct supply* win)
 {
 	vec4 tmp;
 	while(1){
@@ -53,11 +53,11 @@ static void* ahrs_thread(struct arena* win)
 
 
 
-int ahrs_delete(struct arena* win)
+int ahrs_delete(struct supply* win)
 {
 	return 0;
 }
-int ahrs_create(struct arena* win, void* str)
+int ahrs_create(struct supply* win, void* str)
 {
 	say("@ahrs_create\n");
 	threadcreate(ahrs_thread, win);

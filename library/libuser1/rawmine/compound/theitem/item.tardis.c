@@ -5,13 +5,13 @@
 
 
 static void tardis_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }/*
 static void tardis_draw_vbo2d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	if(0 == sty)sty = defaultstyle_vbo2d();
 
@@ -22,8 +22,8 @@ static void tardis_draw_vbo2d(
 	carvesolid2d_rect(win, 0xff, vc, vr ,vf);
 }*/
 static void tardis_draw_vbo3d(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	vec3 tc,tr,tf,tu;
 	float* vc = sty->f.vc;
@@ -46,28 +46,28 @@ static void tardis_draw_vbo3d(
 	carvesolid_prism4(win, 0x0000ff, tc, tr, tf, tu);
 }
 static void tardis_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void tardis_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void tardis_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void tardis_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void tardis_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)tardis_draw_cli(act, pin, win, sty);
@@ -88,9 +88,9 @@ static void tardis_draw(
 static void tardis_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//tardis_draw(act, pin, win, sty);
 }
@@ -107,18 +107,18 @@ static void tardis_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void tardis_search(struct actor* act)
+static void tardis_search(struct entity* act)
 {
 }
-static void tardis_modify(struct actor* act)
+static void tardis_modify(struct entity* act)
 {
 }
-static void tardis_delete(struct actor* act)
+static void tardis_delete(struct entity* act)
 {
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void tardis_create(struct actor* act)
+static void tardis_create(struct entity* act)
 {
 	if(0 == act)return;
 	//if(_orig_ == act->type)act->buf = buffer;
@@ -128,7 +128,7 @@ static void tardis_create(struct actor* act)
 
 
 
-void tardis_register(struct actor* p)
+void tardis_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('t', 'a', 'r', 'd', 'i', 's', 0, 0);

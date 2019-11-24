@@ -4,8 +4,8 @@
 
 
 void camman_debug(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {/*
 	vec3 tc,tr,tf;
 	tr[0] = 1.0 / 64;
@@ -60,14 +60,14 @@ void camman_debug(
 
 
 void camman_listcamera(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int y, rgb;
 	vec3 tc, tr, tf;
 	struct relation* rel;
-	struct actor* twig;
-	struct actor* leaf;
+	struct entity* twig;
+	struct entity* leaf;
 
 	rel = win->orel0;
 	while(1)
@@ -118,14 +118,14 @@ found:
 
 
 void camman_listlight(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int y, rgb;
 	vec3 tc, tr, tf;
 	struct relation* rel;
-	struct actor* twig;
-	struct actor* leaf;
+	struct entity* twig;
+	struct entity* leaf;
 
 	rel = win->orel0;
 	while(1)
@@ -176,8 +176,8 @@ found:
 
 
 static int camman_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	vec3 tc,tr,tf;
 
@@ -210,8 +210,8 @@ static int camman_draw(
 	return 0;
 }
 static int camman_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	int x,y,z,w;
@@ -240,18 +240,18 @@ static int camman_event(
 static void camman_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//camman_draw(act, pin, win, sty);
 }
 static int camman_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	return 0;//camman_event(act, pin, win, sty, ev, 0);
@@ -266,23 +266,23 @@ static void camman_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static void camman_search(struct actor* act)
+static void camman_search(struct entity* act)
 {
 }
-static void camman_modify(struct actor* act)
+static void camman_modify(struct entity* act)
 {
 }
-static void camman_delete(struct actor* act)
+static void camman_delete(struct entity* act)
 {
 }
-static void camman_create(struct actor* act)
+static void camman_create(struct entity* act)
 {
 }
 
 
 
 
-void camman_register(struct actor* p)
+void camman_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('c', 'a', 'm', 'm', 'a', 'n', 0, 0);

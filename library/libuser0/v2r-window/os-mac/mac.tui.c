@@ -66,7 +66,7 @@ static void attr(u8 bg, u8 fg)
 	}
 	else printf("\033[0m");
 }
-void windowdraw(struct arena* wnd)
+void windowdraw(struct supply* wnd)
 {
 	int x,y;
 	u8 ch,bg=0,fg=0;
@@ -119,7 +119,7 @@ void windowdraw(struct arena* wnd)
 
 void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct arena* win = self->pchip;
+	struct supply* win = self->pchip;
 
 	//read context
 	tuinode_read(win, 0);
@@ -164,10 +164,10 @@ void windowchange(int what)
 void windowlist()
 {
 }
-void windowdelete(struct arena* w)
+void windowdelete(struct supply* w)
 {
 }
-void windowcreate(struct arena* w)
+void windowcreate(struct supply* w)
 {
 	w->type = hex32('w','i','n',0);
 	w->fmt = hex32('t','u','i',0);;

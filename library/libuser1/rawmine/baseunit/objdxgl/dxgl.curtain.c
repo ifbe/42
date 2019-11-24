@@ -34,16 +34,16 @@ GLSL_VERSION
 
 
 
-static void curtain_search(struct actor* act)
+static void curtain_search(struct entity* act)
 {
 }
-static void curtain_modify(struct actor* act)
+static void curtain_modify(struct entity* act)
 {
 }
-static void curtain_delete(struct actor* act)
+static void curtain_delete(struct entity* act)
 {
 }
-static void curtain_create(struct actor* act, void* str)
+static void curtain_create(struct entity* act, void* str)
 {
 	struct glsrc* src = act->buf0 = memorycreate(0x1000, 0);
 	if(0 == src)return;
@@ -68,13 +68,13 @@ static void curtain_create(struct actor* act, void* str)
 
 
 static void curtain_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void curtain_draw_vbo(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	struct glsrc* src;
 	float (*vbuf)[6];
@@ -135,28 +135,28 @@ static void curtain_draw_vbo(
 	src->vbuf_enq += 1;
 }
 static void curtain_draw_json(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void curtain_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void curtain_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void curtain_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void curtain_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 	if(fmt == _cli_)curtain_draw_cli(act, pin, win, sty);
@@ -173,11 +173,11 @@ static void curtain_draw(
 static void curtain_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
-	struct actor* ctx = buf;
+	struct entity* ctx = buf;
 
 	if(ctx){
 		switch(ctx->type){
@@ -193,7 +193,7 @@ static void curtain_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void curtain_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	if(0 == act)return;
 	if(0 == pin)return;
@@ -205,7 +205,7 @@ static void curtain_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-void curtain_register(struct actor* p)
+void curtain_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('c', 'u', 'r', 't', 'a', 'i', 'n', 0);

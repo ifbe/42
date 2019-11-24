@@ -3,7 +3,7 @@
 
 
 
-void stdcreate(struct arena* win)
+void stdcreate(struct supply* win)
 {
 }
 void initstd()

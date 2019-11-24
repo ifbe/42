@@ -155,8 +155,8 @@ int relation_r(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _dri_:return driverread(self, peer, arg, idx, buf, len);
 		case _sys_:return systemread(self, peer, arg, idx, buf, len);
 		case _art_:return arteryread(self, peer, arg, idx, buf, len);
-		case _win_:return  arenaread(self, peer, arg, idx, buf, len);
-		case _act_:return  actorread(self, peer, arg, idx, buf, len);
+		case _win_:return  supplyread(self, peer, arg, idx, buf, len);
+		case _act_:return  entityread(self, peer, arg, idx, buf, len);
 	}
 	return 0;
 }
@@ -205,8 +205,8 @@ int relation_w(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _dri_:return driverwrite(self, peer, arg, idx, buf, len);
 		case _sys_:return systemwrite(self, peer, arg, idx, buf, len);
 		case _art_:return arterywrite(self, peer, arg, idx, buf, len);
-		case _win_:return  arenawrite(self, peer, arg, idx, buf, len);
-		case _act_:return  actorwrite(self, peer, arg, idx, buf, len);
+		case _win_:return  supplywrite(self, peer, arg, idx, buf, len);
+		case _act_:return  entitywrite(self, peer, arg, idx, buf, len);
 	}
 	return 0;
 }
@@ -257,8 +257,8 @@ int relation_d(struct halfrel* self, struct halfrel* peer)
 		case _dri_:return driverstop(self, peer);
 		case _sys_:return systemstop(self, peer);
 		case _art_:return arterystop(self, peer);
-		case _win_:return  arenastop(self, peer);
-		case _act_:return  actorstop(self, peer);
+		case _win_:return  supplystop(self, peer);
+		case _act_:return  entitystop(self, peer);
 	}
 	return 0;
 }
@@ -281,8 +281,8 @@ int relation_a(struct halfrel* self, struct halfrel* peer)
 		case _dri_:return driverstart(self, peer);
 		case _sys_:return systemstart(self, peer);
 		case _art_:return arterystart(self, peer);
-		case _win_:return  arenastart(self, peer);
-		case _act_:return  actorstart(self, peer);
+		case _win_:return  supplystart(self, peer);
+		case _act_:return  entitystart(self, peer);
 	}
 	return 0;
 }

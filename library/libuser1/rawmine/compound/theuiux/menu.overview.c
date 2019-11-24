@@ -2,7 +2,7 @@
 void* allocstyle();
 void* allocstyle();
 void draw8bit_rect(
-	struct actor* win, u32 rgb,
+	struct entity* win, u32 rgb,
 	int x0, int y0, int x1, int y1);
 
 
@@ -14,8 +14,8 @@ static struct device* dev = 0;
 static struct driver* dri = 0;
 static struct object* obj = 0;
 static struct element* ele = 0;
-static struct arena* arena = 0;
-static struct actor* actor = 0;
+static struct supply* supply = 0;
+static struct entity* entity = 0;
 
 
 
@@ -74,7 +74,7 @@ void defaultstyle_3d(struct fstyle* sty, int w, int h, int d)
 	sty->vc[1] = 0.0;
 	sty->vc[2] = 0.0;
 }
-int arenaactor(struct actor* win, struct actor* ccc, struct actor* act, struct actor* tmp)
+int supplyentity(struct entity* win, struct entity* ccc, struct entity* act, struct entity* tmp)
 {
 	int w,h;
 	struct style* sty;
@@ -115,7 +115,7 @@ int arenaactor(struct actor* win, struct actor* ccc, struct actor* act, struct a
 		}
 	}
 
-	actorcreate(0, act, 0, 0);
+	entitycreate(0, act, 0, 0);
 	relationcreate(act, pin, _act_, 0, ccc, sty, _win_, 0);
 	return 0;
 }*/
@@ -124,8 +124,8 @@ int arenaactor(struct actor* win, struct actor* ccc, struct actor* act, struct a
 
 
 void overview_draw_pixel(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	struct relation* rel;
 	u32 c,cursor;
@@ -152,10 +152,10 @@ void overview_draw_pixel(
 	drawline(win, 0x00ff00, 0, h*2/4, w-1, h*2/4);
 	drawline(win, 0xff0000, 0, h*3/4, w-1, h*3/4);
 */
-	//actor
+	//entity
 	for(j=0;j<128;j++)
 	{
-		c = actor[j].type & 0xff;
+		c = entity[j].type & 0xff;
 		if(0 == c)break;
 
 		if(j == cursor)c = 0xffff00ff;
@@ -169,16 +169,16 @@ void overview_draw_pixel(
 		x1 = (cx-1)+(x-7)*ww/8;
 		y1 = (cy-1)+(y-15)*hh/16;
 		drawhyaline_rect(win, c, x0, y0, x1, y1);
-		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&actor[j].fmt, 8);
+		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&entity[j].fmt, 8);
 	}
 
-	//arena
+	//supply
 	for(j=0;j<128;j++)
 	{
-		if(0 == arena[j].type)break;
+		if(0 == supply[j].type)break;
 
 		if(j+128 == cursor)c = 0xffff00ff;
-		//else if(win == &arena[j])c = 0xff808080;
+		//else if(win == &supply[j])c = 0xff808080;
 		else c = 0x80ffffff;
 
 		x = j%16;
@@ -188,7 +188,7 @@ void overview_draw_pixel(
 		x1 = (cx-1)+(x-7)*ww/8;
 		y1 = (cy-1)+(y-7)*hh/16;
 		drawhyaline_rect(win, c, x0, y0, x1, y1);
-		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&arena[j].fmt, 8);
+		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&supply[j].fmt, 8);
 	}
 
 	//artery
@@ -227,12 +227,12 @@ void overview_draw_pixel(
 		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&obj[j].type, 8);
 	}
 
-	//actor.irel
+	//entity.irel
 	for(j=0;j<128;j++)
 	{
-		if(0 == actor[j].fmt)continue;
+		if(0 == entity[j].fmt)continue;
 
-		rel = actor[j].irel0;
+		rel = entity[j].irel0;
 		while(1)
 		{
 			if(0 == rel)break;
@@ -257,8 +257,8 @@ void overview_draw_pixel(
 			}
 			else if(_win_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)arena;
-				k = k / sizeof(struct arena);
+				k = (void*)(rel->srcchip) - (void*)supply;
+				k = k / sizeof(struct supply);
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-15)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-31)*hh/32
@@ -266,8 +266,8 @@ void overview_draw_pixel(
 			}
 			else if(_act_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)actor;
-				k = k / sizeof(struct actor);
+				k = (void*)(rel->srcchip) - (void*)entity;
+				k = k / sizeof(struct entity);
 				drawline_arrow(win, 0xffffff,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-31)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-31)*hh/32
@@ -277,12 +277,12 @@ void overview_draw_pixel(
 		}
 	}
 
-	//arena.irel
+	//supply.irel
 	for(j=0;j<128;j++)
 	{
-		if(0 == arena[j].type)break;
+		if(0 == supply[j].type)break;
 
-		rel = arena[j].irel0;
+		rel = supply[j].irel0;
 		while(1)
 		{
 			if(0 == rel)break;
@@ -307,8 +307,8 @@ void overview_draw_pixel(
 			}
 			else if(_win_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)arena;
-				k = k / sizeof(struct arena);
+				k = (void*)(rel->srcchip) - (void*)supply;
+				k = k / sizeof(struct supply);
 				drawline_arrow(win, 0xffffff,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-15)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-15)*hh/32
@@ -316,8 +316,8 @@ void overview_draw_pixel(
 			}
 			else if(_act_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)actor;
-				k = k / sizeof(struct actor);
+				k = (void*)(rel->srcchip) - (void*)entity;
+				k = k / sizeof(struct entity);
 				drawline_arrow(win, 0xffc0ff,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-31)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-15)*hh/32
@@ -358,8 +358,8 @@ void overview_draw_pixel(
 			}
 			else if(_win_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)arena;
-				k = k / sizeof(struct arena);
+				k = (void*)(rel->srcchip) - (void*)supply;
+				k = k / sizeof(struct supply);
 				drawline_arrow(win, 0xffffff,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-15)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+ 1)*hh/32
@@ -367,8 +367,8 @@ void overview_draw_pixel(
 			}
 			else if(_act_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)actor;
-				k = k / sizeof(struct actor);
+				k = (void*)(rel->srcchip) - (void*)entity;
+				k = k / sizeof(struct entity);
 				drawline_arrow(win, 0xffc0ff,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-31)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+ 1)*hh/32
@@ -408,8 +408,8 @@ void overview_draw_pixel(
 			}
 			else if(_win_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)arena;
-				k = k / sizeof(struct arena);
+				k = (void*)(rel->srcchip) - (void*)supply;
+				k = k / sizeof(struct supply);
 				drawline_arrow(win, 0xffffff,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-15)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+17)*hh/32
@@ -417,8 +417,8 @@ void overview_draw_pixel(
 			}
 			else if(_act_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)actor;
-				k = k / sizeof(struct actor);
+				k = (void*)(rel->srcchip) - (void*)entity;
+				k = k / sizeof(struct entity);
 				drawline_arrow(win, 0xffc0ff,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)-31)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+17)*hh/32
@@ -429,10 +429,10 @@ void overview_draw_pixel(
 	}
 }
 void overview_draw_vbo(
-	struct actor* act, struct style* part,
-	struct actor* win, struct style* geom,
-	struct actor* wrd, struct style* camg,
-	struct actor* ctx, struct style* temp)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* ctx, struct style* temp)
 {
 	u32 bg,fg,cursor;
 	float r,f;
@@ -492,10 +492,10 @@ void overview_draw_vbo(
 	tr[2] = 0.0;
 	carveline2d(ctx, 0xff0000, tc, tr);
 */
-	//actor
+	//entity
 	for(j=0;j<128;j++)
 	{
-		k = actor[j].type & 0xff;
+		k = entity[j].type & 0xff;
 		if(0 == k)break;
 
 		if(j == cursor)
@@ -532,13 +532,13 @@ void overview_draw_vbo(
 		tf[0] = vf[0] / 32;
 		tf[1] = vf[1] / 32;
 		tf[2] = vf[2] / 32;
-		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&actor[j].fmt, 8);
+		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&entity[j].fmt, 8);
 	}
 
-	//arena
+	//supply
 	for(j=0;j<128;j++)
 	{
-		k = arena[j].type;
+		k = supply[j].type;
 		if(0 == k)break;
 		if(j+128 == cursor)
 		{
@@ -548,7 +548,7 @@ void overview_draw_vbo(
 		else
 		{
 			bg = 0x404040;
-			//if(ctx == &arena[j])fg = 0xffff00ff;
+			//if(ctx == &supply[j])fg = 0xffff00ff;
 			//else fg = 0x80ffffff;
 			fg = 0x80ffffff;
 		}
@@ -575,7 +575,7 @@ void overview_draw_vbo(
 		tf[0] = vf[0] / 32;
 		tf[1] = vf[1] / 32;
 		tf[2] = vf[2] / 32;
-		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&arena[j].fmt, 8);
+		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&supply[j].fmt, 8);
 	}
 
 	//artery
@@ -658,12 +658,12 @@ void overview_draw_vbo(
 		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&obj[j].type, 8);
 	}
 
-	//actor.irel
+	//entity.irel
 	for(j=0;j<128;j++)
 	{
-		if(0 == actor[j].fmt)continue;
+		if(0 == entity[j].fmt)continue;
 
-		rel = actor[j].irel0;
+		rel = entity[j].irel0;
 		while(1)
 		{
 			if(0 == rel)break;
@@ -706,8 +706,8 @@ void overview_draw_vbo(
 			}
 			else if(_win_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)arena;
-				k = k / sizeof(struct arena);
+				k = (void*)(rel->srcchip) - (void*)supply;
+				k = k / sizeof(struct supply);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (15-(k/16)*2)/32.0;
@@ -724,8 +724,8 @@ void overview_draw_vbo(
 			}
 			else if(_act_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)actor;
-				k = k / sizeof(struct actor);
+				k = (void*)(rel->srcchip) - (void*)entity;
+				k = k / sizeof(struct entity);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (31-(k/16)*2)/32.0;
@@ -744,12 +744,12 @@ void overview_draw_vbo(
 		}
 	}
 
-	//arena.irel
+	//supply.irel
 	for(j=0;j<128;j++)
 	{
-		if(0 == arena[j].type)break;
+		if(0 == supply[j].type)break;
 
-		rel = arena[j].irel0;
+		rel = supply[j].irel0;
 		while(1)
 		{
 			if(0 == rel)break;
@@ -792,8 +792,8 @@ void overview_draw_vbo(
 			}
 			else if(_win_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)arena;
-				k = k / sizeof(struct arena);
+				k = (void*)(rel->srcchip) - (void*)supply;
+				k = k / sizeof(struct supply);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (15-(k/16)*2)/32.0;
@@ -810,8 +810,8 @@ void overview_draw_vbo(
 			}
 			else if(_act_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)actor;
-				k = k / sizeof(struct actor);
+				k = (void*)(rel->srcchip) - (void*)entity;
+				k = k / sizeof(struct entity);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (31-(k/16)*2)/32.0;
@@ -879,8 +879,8 @@ void overview_draw_vbo(
 			}
 			else if(_win_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)arena;
-				k = k / sizeof(struct arena);
+				k = (void*)(rel->srcchip) - (void*)supply;
+				k = k / sizeof(struct supply);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (15-(k/16)*2)/32.0;
@@ -897,8 +897,8 @@ void overview_draw_vbo(
 			}
 			else if(_act_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)actor;
-				k = k / sizeof(struct actor);
+				k = (void*)(rel->srcchip) - (void*)entity;
+				k = k / sizeof(struct entity);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (31-(k/16)*2)/32.0;
@@ -966,8 +966,8 @@ void overview_draw_vbo(
 			}
 			else if(_win_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)arena;
-				k = k / sizeof(struct arena);
+				k = (void*)(rel->srcchip) - (void*)supply;
+				k = k / sizeof(struct supply);
 
 				r = vr[0]*((k%16)*4-30)/32.0;
 				f = vf[1]*(15-(k/16)*2)/32.0;
@@ -984,8 +984,8 @@ void overview_draw_vbo(
 			}
 			else if(_act_ == rel->srctype)
 			{
-				k = (void*)(rel->srcchip) - (void*)actor;
-				k = k / sizeof(struct actor);
+				k = (void*)(rel->srcchip) - (void*)entity;
+				k = k / sizeof(struct entity);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (31-(k/16)*2)/32.0;
@@ -1006,8 +1006,8 @@ void overview_draw_vbo(
 	}
 }
 void overview_draw_8bit(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {/*
 	int x,y;
 	int j,c;
@@ -1027,13 +1027,13 @@ void overview_draw_8bit(
 */
 }
 void overview_draw_html(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 void overview_draw_tui(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	int j,k,x,y;
 	int ww = ((win->stride)/2)&0xfffc;
@@ -1043,7 +1043,7 @@ void overview_draw_tui(
 /*
 	for(j=0;j<64;j++)
 	{
-		if(0 == actor[j].fmt)break;
+		if(0 == entity[j].fmt)break;
 
 		if(j == win->forez)k=1;
 		else k=2;
@@ -1054,18 +1054,18 @@ void overview_draw_tui(
 		y = hh + (y-4);
 
 		gentui_rect(win, k, x, y, x+7, y);
-		gentui_str(win, 0, x, y, (u8*)&actor[j].fmt, 8);
+		gentui_str(win, 0, x, y, (u8*)&entity[j].fmt, 8);
 	}
 */
 }
 void overview_draw_cli(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 static void overview_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	if(win->fmt == _cli_)overview_draw_cli(act, pin, win, 0);
 	else if(win->fmt == _tui_)overview_draw_tui(act, pin, win, 0);
@@ -1078,39 +1078,39 @@ static void overview_draw(
 
 
 
-void overview_drag(struct actor* win, int x0, int y0, int x1, int y1)
+void overview_drag(struct entity* win, int x0, int y0, int x1, int y1)
 {
 	int j;
 	struct object* obj_s;
 	struct object* obj_d;
 	struct element* ele_s;
 	struct element* ele_d;
-	struct arena* win_s;
-	struct arena* win_d;
-	struct actor* act_s;
-	struct actor* act_d;
+	struct supply* win_s;
+	struct supply* win_d;
+	struct entity* act_s;
+	struct entity* act_d;
 	say("(%d,%d)->(%d,%d)\n", x0, y0, x1, y1);
 
 	if(y0 < 8)
 	{
-		act_s = &actor[x0+(y0*16)];
+		act_s = &entity[x0+(y0*16)];
 
 		if((x0==x1)&&(y0==y1))
 		{
 			if(0 == act_s->type)return;
-			actorcreate(0, act_s, 0, 0);
+			entitycreate(0, act_s, 0, 0);
 		}
 		else if(y1 < 8)
 		{
-			act_d = &actor[x1+(y1*16)];
+			act_d = &entity[x1+(y1*16)];
 			if((act_d->type) && (act_s->type)){
 				relationcreate(
 					act_d, 0, _act_, 0,
 					act_s, 0, _act_, 0
 				);
 			}
-			else if(0 == act_s->type)actorcreate(act_d->fmt, 0, 0, 0);
-			else if(0 == act_d->type)actorcreate(act_s->fmt, 0, 0, 0);
+			else if(0 == act_s->type)entitycreate(act_d->fmt, 0, 0, 0);
+			else if(0 == act_d->type)entitycreate(act_s->fmt, 0, 0, 0);
 		}
 		else if(y1 < 16)
 		{
@@ -1124,24 +1124,24 @@ void overview_drag(struct actor* win, int x0, int y0, int x1, int y1)
 	}
 	else if(y0 < 16)
 	{
-		win_s = &arena[x0 + (y0-8)*16];
+		win_s = &supply[x0 + (y0-8)*16];
 
 		if((x0==x1)&&(y0==y1))
 		{
 			y1 = y1-8;
-			say("@arena:%d\n", (y1*16)+x1);
-			//arenacreate(0,0);
+			say("@supply:%d\n", (y1*16)+x1);
+			//supplycreate(0,0);
 		}
 		else if(y1 < 8)
 		{
-			act_d = &actor[x1 + (y1*16)];
+			act_d = &entity[x1 + (y1*16)];
 			if(0 == act_d->type)return;
 
-			//arenaactor(win, win_s, act_d, 0);
+			//supplyentity(win, win_s, act_d, 0);
 		}
 		else if(y1 < 16)
 		{
-			win_d = &arena[x1 + (y1-8)*16];
+			win_d = &supply[x1 + (y1-8)*16];
 			if((win_d->type) && (win_s->type)){
 				relationcreate(
 					win_d, 0, _win_, 0,
@@ -1149,10 +1149,10 @@ void overview_drag(struct actor* win, int x0, int y0, int x1, int y1)
 				);
 			}
 			else if(win_s->type){
-				if(_win_ == win_s->type)win_d = arenacreate(_coop_, win_s, 0, 0);
+				if(_win_ == win_s->type)win_d = supplycreate(_coop_, win_s, 0, 0);
 			}
 			else if(win_d->type){
-				if(_win_ == win_s->type)win_s = arenacreate(_coop_, win_d, 0, 0);
+				if(_win_ == win_s->type)win_s = supplycreate(_coop_, win_d, 0, 0);
 			}
 		}
 		else if(y1 < 24)
@@ -1170,12 +1170,12 @@ void overview_drag(struct actor* win, int x0, int y0, int x1, int y1)
 		}
 		else if(y1 < 8)
 		{
-			act_d = &actor[x1 + (y1*16)];
+			act_d = &entity[x1 + (y1*16)];
 			relationcreate(act_d, 0, _act_, 0, ele_s, 0, _art_, 0);
 		}
 		else if(y1 < 16)
 		{
-			win_d = &arena[x1 + (y1-8)*16];
+			win_d = &supply[x1 + (y1-8)*16];
 			relationcreate(win_d, 0, _win_, 0, ele_s, 0, _art_, 0);
 		}
 		else if(y1 < 24)
@@ -1201,12 +1201,12 @@ void overview_drag(struct actor* win, int x0, int y0, int x1, int y1)
 		}
 		else if(y1 < 8)
 		{
-			act_d = &actor[x1+(y1*16)];
+			act_d = &entity[x1+(y1*16)];
 			relationcreate(act_d, 0, _act_, 0, obj_s, 0, _sys_, 0);
 		}
 		else if(y1 < 16)
 		{
-			win_d = &arena[x1 + (y1-8)*16];
+			win_d = &supply[x1 + (y1-8)*16];
 			relationcreate(win_d, 0, _win_, 0, obj_s, 0, _sys_, 0);
 		}
 		else if(y1 < 24)
@@ -1220,8 +1220,8 @@ void overview_drag(struct actor* win, int x0, int y0, int x1, int y1)
 	}
 }
 static int overview_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short* t;
@@ -1284,26 +1284,26 @@ static int overview_event(
 	{
 		if((0xd == ev->why)|(0xa == ev->why))
 		{
-			arenalogin(win);
+			supplylogin(win);
 		}
 		else if(0x435b1b == ev->why)
 		{
-			arenanext(win);
+			supplynext(win);
 		}
 		else if(0x445b1b == ev->why)
 		{
-			arenaprev(win);
+			supplyprev(win);
 		}
 	}
 	else if(_kbd_ == ev->what)
 	{
 		if(0x4b == ev->why)
 		{
-			arenaprev(win);
+			supplyprev(win);
 		}
 		else if(0x4d == ev->why)
 		{
-			arenanext(win);
+			supplynext(win);
 		}
 	}
 	else if(joy_left == (ev->what & joy_mask))
@@ -1311,12 +1311,12 @@ static int overview_event(
 		t = (short*)&ev->why;
 		if(t[3] & joyl_left)
 		{
-			arenaprev(win);
+			supplyprev(win);
 			return 1;
 		}
 		if(t[3] & joyl_right)
 		{
-			arenanext(win);
+			supplynext(win);
 			return 1;
 		}
 	}
@@ -1325,7 +1325,7 @@ static int overview_event(
 		t = (short*)&ev->why;
 		if(t[3] & joyr_down)
 		{
-			arenalogin(win);
+			supplylogin(win);
 			return 1;
 		}
 	}*/
@@ -1338,15 +1338,15 @@ static int overview_event(
 static void overview_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> ctx
-	struct actor* ctx;
+	struct entity* ctx;
 
 	//cam -> world
-	struct actor* cam;
-	struct actor* wrd;struct style* camg;
+	struct entity* cam;
+	struct entity* wrd;struct style* camg;
 
 	//world -> texball
-	struct actor* win;struct style* geom;
-	struct actor* act;struct style* part;
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
 
 	if(stack){
 		ctx = stack[rsp-3]->pchip;
@@ -1360,9 +1360,9 @@ static void overview_read(struct halfrel* self, struct halfrel* peer, struct hal
 static int overview_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	return overview_event(act, pin, win, sty, ev, 0);
@@ -1378,16 +1378,16 @@ static void overview_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-void overview_search(struct actor* act)
+void overview_search(struct entity* act)
 {
 }
-void overview_modify(struct actor* act)
+void overview_modify(struct entity* act)
 {
 }
-void overview_delete(struct actor* act)
+void overview_delete(struct entity* act)
 {
 }
-void overview_create(struct actor* act, void* str)
+void overview_create(struct entity* act, void* str)
 {
     say("@overview_create\n");
 }
@@ -1395,7 +1395,7 @@ void overview_create(struct actor* act, void* str)
 
 
 
-void overview_register(struct actor* p)
+void overview_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex64('o', 'v', 'e', 'r', 'v', 'i', 'e', 'w');
@@ -1423,6 +1423,6 @@ void overview_init(void* addr)
 	obj = addr + 0x800000;
 	ele = addr + 0xa00000;
 
-	arena = addr + 0xc00000;
-	actor = addr + 0xe00000;
+	supply = addr + 0xc00000;
+	entity = addr + 0xe00000;
 }

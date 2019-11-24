@@ -3,7 +3,7 @@
 
 
 
-void vkbd_draw_pixel(struct actor* win, struct style* sty)
+void vkbd_draw_pixel(struct entity* win, struct style* sty)
 {
 	u8 ch[8];
 	int c,l,rgb;
@@ -65,7 +65,7 @@ void vkbd_draw_pixel(struct actor* win, struct style* sty)
         }
     }
 }
-void vkbd_draw_vbo(struct actor* win, struct style* sty)
+void vkbd_draw_vbo(struct entity* win, struct style* sty)
 {
 	u8 ch[8];
 	float j,k;
@@ -140,18 +140,18 @@ void vkbd_draw_vbo(struct actor* win, struct style* sty)
         }
     }
 }
-void vkbd_draw_html(struct actor* win, struct style* sty)
+void vkbd_draw_html(struct entity* win, struct style* sty)
 {
 }
-void vkbd_draw_tui(struct actor* win, struct style* sty)
+void vkbd_draw_tui(struct entity* win, struct style* sty)
 {
 }
-void vkbd_draw_cli(struct actor* win, struct style* sty)
+void vkbd_draw_cli(struct entity* win, struct style* sty)
 {
 }
 static void vkbd_draw(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty)
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 	u64 fmt = win->fmt;
 
@@ -162,8 +162,8 @@ static void vkbd_draw(
 	else vkbd_draw_pixel(win, sty);
 }
 static int vkbd_event(
-	struct actor* act, struct style* pin,
-	struct actor* win, struct style* sty,
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
 	short tmp[4];
@@ -193,18 +193,18 @@ static int vkbd_event(
 static void vkbd_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'draw' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	//vkbd_draw(act, pin, win, sty);
 }
 static int vkbd_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//if 'ev i' == self.foot
-	struct actor* act = (void*)(self->chip);
+	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct actor* win = (void*)(peer->chip);
+	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
 	return 0;//vkbd_event(act, pin, win, sty, ev, 0);
@@ -221,19 +221,19 @@ static int vkbd_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-static int vkbd_search(struct actor* win)
+static int vkbd_search(struct entity* win)
 {
 	return 0;
 }
-static int vkbd_modify(struct actor* win)
+static int vkbd_modify(struct entity* win)
 {
 	return 0;
 }
-static int vkbd_delete(struct actor* win)
+static int vkbd_delete(struct entity* win)
 {
 	return 0;
 }
-static int vkbd_create(struct actor* win, u8* str)
+static int vkbd_create(struct entity* win, u8* str)
 {
 	return 0;
 }
@@ -241,7 +241,7 @@ static int vkbd_create(struct actor* win, u8* str)
 
 
 
-void vkbd_register(struct actor* p)
+void vkbd_register(struct entity* p)
 {
 	p->type = _orig_;
 	p->fmt = hex32('v', 'k', 'b', 'd');

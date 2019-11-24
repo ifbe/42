@@ -18,7 +18,7 @@ static HANDLE output;
 
 
 
-DWORD WINAPI windowthread(struct arena* win)
+DWORD WINAPI windowthread(struct supply* win)
 {
 	int j,ret,tmp;
 	u64 x,y,w;
@@ -251,7 +251,7 @@ static void gotoxy(int x, int y)
 	pos.Y = bInfo.srWindow.Top + y;
 	SetConsoleCursorPosition(output, pos);
 }
-void windowdraw(struct arena* win)
+void windowdraw(struct supply* win)
 {
 	int x,y;
 	u8 ch, bg=0, fg=7;
@@ -306,7 +306,7 @@ void windowdraw(struct arena* win)
 
 void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct arena* win = self->pchip;
+	struct supply* win = self->pchip;
 
 	//read context
 	tuinode_read(win, 0);
@@ -333,10 +333,10 @@ void windowmodify()
 void windowsearch()
 {
 }
-void windowdelete(struct arena* w)
+void windowdelete(struct supply* w)
 {
 }
-void windowcreate(struct arena* w)
+void windowcreate(struct supply* w)
 {
 	int width,height;
 	CONSOLE_SCREEN_BUFFER_INFO bInfo;
