@@ -16,7 +16,7 @@ fmt:gl41wnd0
 
 <supply>
 opengl{
-fmt:win
+fmt:wnd
 title:"42"
 width:1024
 height:1024
@@ -27,14 +27,14 @@ depth:1024
 
 <relation>
 #gldata depends on world
-(gldata, 0, act, 0) -> (world, 0, act, 0)
+(gldata, 0, 0) -> (world, 0, 0)
 
 #glcoop depends on gldata
-(glcoop, 0, act, 0) -> (gldata, 0, act, 0)
+(glcoop, 0, 0) -> (gldata, 0, 0)
 
 #glwnd depends on gldata
-(glwnd, 0, act, 0) -> (gldata, 0, act, 0)
+(glwnd, 0, 0) -> (gldata, 0, 0)
 
 #opengl depends on glwnd
-(opengl, 0, win, 0) -> (glwnd, 0, act, 0)
+(opengl, 0, 0) -> (glwnd, 0, 0)
 </relation>

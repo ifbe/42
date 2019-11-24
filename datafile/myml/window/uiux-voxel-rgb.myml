@@ -7,7 +7,7 @@ fmt:fftrgb
 
 <supply>
 opengl{
-fmt:win
+fmt:wnd
 title:"42"
 width:1024
 height:1024
@@ -86,25 +86,25 @@ q:1.0, 1.0
 
 <relation>
 #voxel depends on usbcam
-(usbcam, 0, win, dst) -> (canvas, 0, act, yuv)
+(usbcam, 0, dst) -> (canvas, 0, yuv)
 
-(usbcam, 0, win, dst) -> (fftrgb, 0, art, src)
-(fftrgb, 0, art, dst) -> (voxel, 0, act, pcm)
+(usbcam, 0, dst) -> (fftrgb, 0, src)
+(fftrgb, 0, dst) -> (voxel, 0, pcm)
 
 #3dworld depends on inner objects
-(3dworld, vidgeom, act, 0) -> (canvas, vidhaha, act, 0)
-(3dworld, skygeom, act, 0) -> (voxel, skyhaha, act, 0)
-(3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
+(3dworld, vidgeom, 0) -> (canvas, vidhaha, 0)
+(3dworld, skygeom, 0) -> (voxel, skyhaha, 0)
+(3dworld, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glctx depends on scene
-(thectx, 0, act, 0) -> (3dworld, 0, act, 0)
+(thectx, 0, 0) -> (3dworld, 0, 0)
 
 #glwnd depends on ctx + cam
-(thewnd, 0, act, ctx) -> (thectx, 0, act, 0)
-(thewnd, freerect, act, mvp) -> (freecam, freefrus, act, 0)
+(thewnd, 0, ctx) -> (thectx, 0, 0)
+(thewnd, freerect, mvp) -> (freecam, freefrus, 0)
 
 #opengl depends on ctx + wnd
-(opengl, 0, win, ctx) -> (thectx, 0, act, 0)
-(opengl, 0, win, wnd) -> (thewnd, 0, act, 0)
+(opengl, 0, ctx) -> (thectx, 0, 0)
+(opengl, 0, wnd) -> (thewnd, 0, 0)
 
 </relation>

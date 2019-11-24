@@ -45,7 +45,7 @@ int rgbanode_read(struct supply* win, struct event* ev)
 	{
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype)
+		if(_ent_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
 			if(sty){if('#' == sty->i.uc[3])goto next;}
@@ -76,7 +76,7 @@ int rgbanode_write(struct supply* win, struct event* ev)
 	{
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype)
+		if(_ent_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
 			if(sty){if('#' == sty->i.uc[3])goto next;}

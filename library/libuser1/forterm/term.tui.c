@@ -84,7 +84,7 @@ int tuinode_read(struct entity* win, struct event* ev)
 	rel = win->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(_act_ == rel->dsttype){
+		if(_ent_ == rel->dsttype){
 			entityread((void*)rel->dst, (void*)rel->src, 0, 0, 0, 0);
 		}
 		rel = samesrcnextdst(rel);

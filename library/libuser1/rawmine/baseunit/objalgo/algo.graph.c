@@ -58,12 +58,12 @@ static void graph_draw_pixel(
 		p = "?";
 		if(i < olen)
 		{
-			if(orig[i].type == _win_)
+			if(orig[i].type == _sup_)
 			{
 				aa = orig[i].addr;
 				p = &(aa->fmt);
 			}
-			else if(orig[i].type == _act_)
+			else if(orig[i].type == _ent_)
 			{
 				bb = orig[i].addr;
 				p = &(bb->name);
@@ -151,8 +151,8 @@ static void graph_draw_vbo(
 		{
 			case _sys_:rgb = 0x0000ff;str = (void*)&tmp->type;break;
 			case _art_:rgb = 0xff0000;str = (void*)&tmp->type;break;
-			case _win_:rgb = 0xffff00;str = (void*)&tmp->fmt;break;
-			case _act_:rgb = 0x00ffff;str = (void*)&tmp->fmt;break;
+			case _sup_:rgb = 0xffff00;str = (void*)&tmp->fmt;break;
+			case _ent_:rgb = 0x00ffff;str = (void*)&tmp->fmt;break;
 			default:rgb = 0xff00ff;str = (void*)"????????";
 		}
 		carvestring_center(win, rgb, &vbuf[j*3], tr, tf, str, 8);
@@ -267,7 +267,7 @@ static void graph_traverse(struct entity* act, struct entity* this)
 	struct relation* orel;
 	int parent, child;
 
-	parent = graph_addnode(act, _win_, this);
+	parent = graph_addnode(act, _sup_, this);
 
 	irel = this->irel0;
 	while(1){

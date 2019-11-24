@@ -115,14 +115,14 @@ void parsexml_relation(u8* buf, int len)
 	}
 	else if(0 == ncmp(buf+a, "supply/", 6))
 	{
-		p = _win_;
+		p = _sup_;
 		a += 6;
 		win = supplyget(buf+a, b-a);
 		if(0 == win)return;
 	}
 	else if(0 == ncmp(buf+a, "entity/", 6))
 	{
-		p = _act_;
+		p = _ent_;
 		a += 6;
 		win = entityget(buf+a, b-a);
 		if(0 == win)return;
@@ -145,21 +145,21 @@ void parsexml_relation(u8* buf, int len)
 	}
 	else if(0 == ncmp(buf+m, "supply/", 6))
 	{
-		q = _win_;
+		q = _sup_;
 		m += 6;
 		act = supplyget(buf+m, n-m);
 		if(0 == act)return;
 	}
 	else if(0 == ncmp(buf+m, "entity/", 6))
 	{
-		q = _act_;
+		q = _ent_;
 		m += 6;
 		act = entityget(buf+m, n-m);
 		if(0 == act)return;
 	}
 	else return;
 
-	if((_win_ == p)&&(_act_ == q))
+	if((_sup_ == p)&&(_ent_ == q))
 	{
 		css = allocstyle();
 		pin = allocpinid();
@@ -169,7 +169,7 @@ void parsexml_relation(u8* buf, int len)
 
 		act->oncreate(act, 0);
 		act->onstart(win, css, act, pin);
-		relationcreate(win, css, _win_, act, pin, _act_);
+		relationcreate(win, css, _sup_, act, pin, _ent_);
 	}
 	else
 	{
@@ -227,12 +227,12 @@ void parsexml(u8* buf, int len)
 						//say("artery");
 						arterypost(buf+sb[sp], k+1-sb[sp]);
 					}
-					else if(_win_ == ret)
+					else if(_sup_ == ret)
 					{
 						//say("supply");
 						supplypost(buf+sb[sp], k+1-sb[sp]);
 					}
-					else if(_act_ == ret)
+					else if(_ent_ == ret)
 					{
 						//say("entity");
 						entitypost(buf+sb[sp], k+1-sb[sp]);
@@ -258,8 +258,8 @@ void parsexml(u8* buf, int len)
 					if(0 == ncmp(buf+j+1, "relation", 8))ret = _relation_;
 					else if(0 == ncmp(buf+j+1, "system", 6))ret = _fd_;
 					else if(0 == ncmp(buf+j+1, "artery", 6))ret = _art_;
-					else if(0 == ncmp(buf+j+1, "supply", 5))ret = _win_;
-					else if(0 == ncmp(buf+j+1, "entity", 5))ret = _act_;
+					else if(0 == ncmp(buf+j+1, "supply", 5))ret = _sup_;
+					else if(0 == ncmp(buf+j+1, "entity", 5))ret = _ent_;
 				}
 			}
 

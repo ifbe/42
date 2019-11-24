@@ -14,5 +14,5 @@ url:192.168.0.83:9999
 
 
 <relation>
-(std, 0, win, dst) -> (car, 0, sys, src)
+(std, 0, dst) -> (car, 0, src)
 </relation>

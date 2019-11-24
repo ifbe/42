@@ -9,5 +9,5 @@ fmt:bdc
 
 
 <relation>
-(std, 0, win, dst) -> (car, 0, win, src)
+(std, 0, dst) -> (car, 0, src)
 </relation>

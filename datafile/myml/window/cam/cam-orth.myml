@@ -4,7 +4,7 @@ fmt:vbo
 type:3d
 }
 window{
-fmt:win
+fmt:wnd
 title:"42"
 width:1024
 height:1024
@@ -62,13 +62,13 @@ p3{}
 
 
 <relation>
-(3dworld, 0, win, aid) -> (geomhelper, 0, act, 0)
-(3dworld, 0, win, aid) -> (fonthelper, 0, act, 0)
-(3dworld, haha, win, bg) -> (particle, p0, act, 0)
-(3dworld, ortho, win, cam) -> (rtscam, p0, act, geom)
+(3dworld, 0, aid) -> (geomhelper, 0, 0)
+(3dworld, 0, aid) -> (fonthelper, 0, 0)
+(3dworld, haha, bg) -> (particle, p0, 0)
+(3dworld, ortho, cam) -> (rtscam, p0, geom)
 
-(window, 0, win, vp) -> (3dworld, 0, win, out)
-(window, fullscreen, win, cam) -> (rtscam, 0, act, cam)
+(window, 0, vp) -> (3dworld, 0, out)
+(window, fullscreen, cam) -> (rtscam, 0, cam)
 
-(player1, 0, win, con) -> (rtscam, 0, act, con)
+(player1, 0, con) -> (rtscam, 0, con)
 </relation>

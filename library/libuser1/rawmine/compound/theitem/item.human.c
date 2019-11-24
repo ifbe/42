@@ -305,7 +305,7 @@ static int human_event(
 	while(1)
 	{
 		if(0 == rel)break;
-		if(_act_ == rel->srctype)
+		if(_ent_ == rel->srctype)
 		{
 			tmp[0] = sty->f.vc[0];
 			tmp[1] = sty->f.vc[1];

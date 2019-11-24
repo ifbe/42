@@ -6,8 +6,8 @@ typedef unsigned long long u64;
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 //
-#define _act_ hex32('a','c','t',0)
-#define _win_ hex32('w','i','n',0)
+#define _ent_ hex32('e','n','t',0)
+#define _sup_ hex32('s','u','p',0)
 #define _art_ hex32('a','r','t',0)
 #define _sys_ hex32('s','y','s',0)
 #define _dri_ hex32('d','r','i',0)

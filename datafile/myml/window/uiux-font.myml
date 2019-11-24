@@ -1,6 +1,6 @@
 <supply>
 opengl{
-fmt:win
+fmt:wnd
 title:"42"
 width:1024
 height:1024
@@ -79,19 +79,19 @@ q:1.0, 1.0
 <relation>
 
 #3dworld depends on inner objects
-(3dworld, skygeom, act, 0) -> (texball, skyhaha, act, 0)
-(3dworld, termgeom, act, 0) -> (font, termhaha, act, 0)
-(3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
+(3dworld, skygeom, 0) -> (texball, skyhaha, 0)
+(3dworld, termgeom, 0) -> (font, termhaha, 0)
+(3dworld, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glctx depends on scene
-(thectx, 0, act, 0) -> (3dworld, 0, act, 0)
+(thectx, 0, 0) -> (3dworld, 0, 0)
 
 #glwnd depends on ctx + cam
-(thewnd, 0, act, 0) -> (thectx, 0, act, 0)
-(thewnd, freerect, act, 0) -> (freecam, freefrus, act, 0)
+(thewnd, 0, 0) -> (thectx, 0, 0)
+(thewnd, freerect, 0) -> (freecam, freefrus, 0)
 
 #opengl depends on ctx + wnd
-(opengl, 0, win, ctx) -> (thectx, 0, act, 0)
-(opengl, 0, win, wnd) -> (thewnd, 0, act, 0)
+(opengl, 0, ctx) -> (thectx, 0, 0)
+(opengl, 0, wnd) -> (thewnd, 0, 0)
 
 </relation>

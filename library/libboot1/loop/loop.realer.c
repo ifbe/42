@@ -37,7 +37,7 @@ int realer_event(void* realer, struct event* e)
 		for(j=0;j<16;j++)
 		{
 			win = &supply[j];
-			if(_win_ == win->type)
+			if(_sup_ == win->type)
 			{
 				ev.where = (u64)win;
 				break;
@@ -75,7 +75,7 @@ int realer_poll(void* realer)
 		win = &supply[j];
 		if(0 == win->type)continue;
 
-		if(_win_ == win->type){
+		if(_sup_ == win->type){
 			self.pchip = win;
 			supplyread(&self, &peer, 0, 0, 0, 0);
 		}

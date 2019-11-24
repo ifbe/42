@@ -454,7 +454,7 @@ void initentity(u8* addr)
 
 #define max (0x100000/sizeof(struct entity))
 	for(j=0;j<0x200000;j++)addr[j] = 0;
-	for(j=0;j<max;j++)entity[j].tier = _act_;
+	for(j=0;j<max;j++)entity[j].tier = _ent_;
 
 	baby_init(addr);
 	test_init(addr);

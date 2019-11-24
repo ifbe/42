@@ -96,7 +96,7 @@ public:
 		while(1)
 		{
 			if(0 == orel)break;
-			if(_act_ == orel->dsttype)
+			if(_ent_ == orel->dsttype)
 			{
 				struct halfrel* self = (struct halfrel*)&orel->dstchip;
 				struct halfrel* peer = (struct halfrel*)&orel->srcchip;

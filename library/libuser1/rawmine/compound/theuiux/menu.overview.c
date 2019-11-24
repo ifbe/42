@@ -116,7 +116,7 @@ int supplyentity(struct entity* win, struct entity* ccc, struct entity* act, str
 	}
 
 	entitycreate(0, act, 0, 0);
-	relationcreate(act, pin, _act_, 0, ccc, sty, _win_, 0);
+	relationcreate(act, pin, _ent_, 0, ccc, sty, _sup_, 0);
 	return 0;
 }*/
 
@@ -255,7 +255,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-31)*hh/32
 				);
 			}
-			else if(_win_ == rel->srctype)
+			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(struct supply);
@@ -264,7 +264,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-31)*hh/32
 				);
 			}
-			else if(_act_ == rel->srctype)
+			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(struct entity);
@@ -305,7 +305,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-15)*hh/32
 				);
 			}
-			else if(_win_ == rel->srctype)
+			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(struct supply);
@@ -314,7 +314,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-15)*hh/32
 				);
 			}
-			else if(_act_ == rel->srctype)
+			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(struct entity);
@@ -356,7 +356,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+ 1)*hh/32
 				);
 			}
-			else if(_win_ == rel->srctype)
+			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(struct supply);
@@ -365,7 +365,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+ 1)*hh/32
 				);
 			}
-			else if(_act_ == rel->srctype)
+			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(struct entity);
@@ -406,7 +406,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+17)*hh/32
 				);
 			}
-			else if(_win_ == rel->srctype)
+			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(struct supply);
@@ -415,7 +415,7 @@ void overview_draw_pixel(
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+17)*hh/32
 				);
 			}
-			else if(_act_ == rel->srctype)
+			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(struct entity);
@@ -704,7 +704,7 @@ void overview_draw_vbo(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				carveline_shorter(ctx, 0x00ffff, tc, tr);
 			}
-			else if(_win_ == rel->srctype)
+			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(struct supply);
@@ -722,7 +722,7 @@ void overview_draw_vbo(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				carveline_shorter(ctx, 0xffff00, tc, tr);
 			}
-			else if(_act_ == rel->srctype)
+			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(struct entity);
@@ -790,7 +790,7 @@ void overview_draw_vbo(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				carveline_shorter(ctx, 0x40ffff, tc, tr);
 			}
-			else if(_win_ == rel->srctype)
+			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(struct supply);
@@ -808,7 +808,7 @@ void overview_draw_vbo(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				carveline_shorter(ctx, 0xffff40, tc, tr);
 			}
-			else if(_act_ == rel->srctype)
+			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(struct entity);
@@ -877,7 +877,7 @@ void overview_draw_vbo(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				carveline_shorter(ctx, 0xc0ffc0, tc, tr);
 			}
-			else if(_win_ == rel->srctype)
+			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(struct supply);
@@ -895,7 +895,7 @@ void overview_draw_vbo(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				carveline_shorter(ctx, 0xffffff, tc, tr);
 			}
-			else if(_act_ == rel->srctype)
+			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(struct entity);
@@ -964,7 +964,7 @@ void overview_draw_vbo(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				carveline_shorter(ctx, 0xc0ffc0, tc, tr);
 			}
-			else if(_win_ == rel->srctype)
+			else if(_sup_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)supply;
 				k = k / sizeof(struct supply);
@@ -982,7 +982,7 @@ void overview_draw_vbo(
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
 				carveline_shorter(ctx, 0xffffff, tc, tr);
 			}
-			else if(_act_ == rel->srctype)
+			else if(_ent_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)entity;
 				k = k / sizeof(struct entity);
@@ -1105,8 +1105,8 @@ void overview_drag(struct entity* win, int x0, int y0, int x1, int y1)
 			act_d = &entity[x1+(y1*16)];
 			if((act_d->type) && (act_s->type)){
 				relationcreate(
-					act_d, 0, _act_, 0,
-					act_s, 0, _act_, 0
+					act_d, 0, _ent_, 0,
+					act_s, 0, _ent_, 0
 				);
 			}
 			else if(0 == act_s->type)entitycreate(act_d->fmt, 0, 0, 0);
@@ -1144,15 +1144,15 @@ void overview_drag(struct entity* win, int x0, int y0, int x1, int y1)
 			win_d = &supply[x1 + (y1-8)*16];
 			if((win_d->type) && (win_s->type)){
 				relationcreate(
-					win_d, 0, _win_, 0,
-					win_s, 0, _win_, 0
+					win_d, 0, _sup_, 0,
+					win_s, 0, _sup_, 0
 				);
 			}
 			else if(win_s->type){
-				if(_win_ == win_s->type)win_d = supplycreate(_coop_, win_s, 0, 0);
+				if(_sup_ == win_s->type)win_d = supplycreate(_coop_, win_s, 0, 0);
 			}
 			else if(win_d->type){
-				if(_win_ == win_s->type)win_s = supplycreate(_coop_, win_d, 0, 0);
+				if(_sup_ == win_s->type)win_s = supplycreate(_coop_, win_d, 0, 0);
 			}
 		}
 		else if(y1 < 24)
@@ -1171,12 +1171,12 @@ void overview_drag(struct entity* win, int x0, int y0, int x1, int y1)
 		else if(y1 < 8)
 		{
 			act_d = &entity[x1 + (y1*16)];
-			relationcreate(act_d, 0, _act_, 0, ele_s, 0, _art_, 0);
+			relationcreate(act_d, 0, _ent_, 0, ele_s, 0, _art_, 0);
 		}
 		else if(y1 < 16)
 		{
 			win_d = &supply[x1 + (y1-8)*16];
-			relationcreate(win_d, 0, _win_, 0, ele_s, 0, _art_, 0);
+			relationcreate(win_d, 0, _sup_, 0, ele_s, 0, _art_, 0);
 		}
 		else if(y1 < 24)
 		{
@@ -1202,12 +1202,12 @@ void overview_drag(struct entity* win, int x0, int y0, int x1, int y1)
 		else if(y1 < 8)
 		{
 			act_d = &entity[x1+(y1*16)];
-			relationcreate(act_d, 0, _act_, 0, obj_s, 0, _sys_, 0);
+			relationcreate(act_d, 0, _ent_, 0, obj_s, 0, _sys_, 0);
 		}
 		else if(y1 < 16)
 		{
 			win_d = &supply[x1 + (y1-8)*16];
-			relationcreate(win_d, 0, _win_, 0, obj_s, 0, _sys_, 0);
+			relationcreate(win_d, 0, _sup_, 0, obj_s, 0, _sys_, 0);
 		}
 		else if(y1 < 24)
 		{

@@ -33,7 +33,7 @@ void windowdelete(struct supply* w)
 }
 void windowcreate(struct supply* w)
 {
-	w->type = _win_;
+	w->type = _sup_;
 	w->fmt = _cli_;
 
 	w->len = 0;

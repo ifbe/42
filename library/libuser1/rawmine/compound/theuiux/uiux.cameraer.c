@@ -73,7 +73,7 @@ void camman_listcamera(
 	while(1)
 	{
 		if(0 == rel)break;
-		if(_win_ == rel->dsttype)
+		if(_sup_ == rel->dsttype)
 		{
 			twig = (void*)(rel->dstchip);
 			//if(_cam3d_ == twig->fmt)goto found;
@@ -96,7 +96,7 @@ found:
 	{
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype)
+		if(_ent_ == rel->dsttype)
 		{
 			tc[0] = 1.0 - 0.25;
 			tc[1] = (15 - 2*y) / 32.0;
@@ -131,7 +131,7 @@ void camman_listlight(
 	while(1)
 	{
 		if(0 == rel)break;
-		if(_win_ == rel->dsttype)
+		if(_sup_ == rel->dsttype)
 		{
 			twig = (void*)(rel->dstchip);
 			//if(_lit3d_ == twig->fmt)goto found;
@@ -154,7 +154,7 @@ found:
 	{
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype)
+		if(_ent_ == rel->dsttype)
 		{
 			tc[0] = 1.0 - 0.25;
 			tc[1] = (-1 - 2*y) / 32.0;

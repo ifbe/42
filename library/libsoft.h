@@ -18,8 +18,8 @@ typedef float mat4[4][4];
 #define _dst_ hex32('d','s','t',0)
 #define _clk_ hex32('c','l','k',0)
 //
-#define _act_ hex32('a','c','t',0)
-#define _win_ hex32('w','i','n',0)
+#define _ent_ hex32('e','n','t',0)
+#define _sup_ hex32('s','u','p',0)
 #define _art_ hex32('a','r','t',0)
 #define _sys_ hex32('s','y','s',0)
 #define _dri_ hex32('d','r','i',0)

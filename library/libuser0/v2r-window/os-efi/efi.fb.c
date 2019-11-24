@@ -110,7 +110,7 @@ void windowcreate(struct supply* w)
 		if(pix->ReservedMask == 0)fmt = __bgra8880__;
 		else fmt = __bgra8888__;
 
-		w->type = __win__;
+		w->type = _sup_;
 		w->fmt = fmt;
 
 		w->width = w->stride = 1024;

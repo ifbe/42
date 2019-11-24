@@ -124,7 +124,7 @@ int supplyread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	struct supply* win = self->pchip;
 
 	switch(win->type){
-		case _win_:windowread(self, peer, arg, idx, buf, len);return 0;
+		case _wnd_:windowread(self, peer, arg, idx, buf, len);return 0;
 		case _spk_:speakerread(self, peer, arg, idx, buf, len);return 0;
 	}
 	switch(win->fmt){
@@ -144,7 +144,7 @@ int supplywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	struct supply* win = self->pchip;
 
 	switch(win->type){
-		case _win_:windowwrite(self, peer, arg, idx, buf, len);return 0;
+		case _wnd_:windowwrite(self, peer, arg, idx, buf, len);return 0;
 		case _spk_:speakerwrite(self, peer, arg, idx, buf, len);return 0;
 	}
 	switch(win->fmt){
@@ -206,7 +206,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 	if(0 == type)
 	{
 		if(supply[0].type)return 0;
-		type = _win_;
+		type = _sup_;
 	}
 
 	//0: system object
@@ -327,7 +327,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		win = allocsupply();
 		if(0 == win)return 0;
 
-		win->type = _win_;
+		win->type = _wnd_;
 		win->fmt = _none_;
 		windowcreate(win, arg, argc, argv);
 		return win;
@@ -337,17 +337,17 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		win = allocsupply();
 		if(0 == win)return 0;
 
-		win->type = _win_;
+		win->type = _wnd_;
 		win->fmt = _easy_;
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
-	else if(_win_ == type)
+	else if(_wnd_ == type)
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
 
-		win->type = _win_;
+		win->type = _wnd_;
 		win->fmt = hex64('b','g','r','a','8','8','8','8');
 		windowcreate(win, arg, argc, argv);
 		return win;
@@ -357,7 +357,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		win = allocsupply();
 		if(0 == win)return 0;
 
-		win->type = _win_;
+		win->type = _wnd_;
 		win->fmt = _coop_;
 		windowcreate(win, arg, argc, argv);
 		return win;
@@ -483,7 +483,7 @@ void initsupply(u8* addr)
 
 #define max (0x100000/sizeof(struct supply))
 	for(j=0;j<0x200000;j++)addr[j]=0;
-	for(j=0;j<max;j++)supply[j].tier = _win_;
+	for(j=0;j<max;j++)supply[j].tier = _sup_;
 
 	initstd(supply);
 	initwindow(supply);

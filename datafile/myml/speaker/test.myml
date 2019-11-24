@@ -13,5 +13,5 @@ fmt:test
 
 
 <relation>
-(speaker, 0, win, 0) -> (test, 0, act, 0)
+(speaker, 0, 0) -> (test, 0, 0)
 </relation>

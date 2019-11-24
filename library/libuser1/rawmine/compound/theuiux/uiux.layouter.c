@@ -487,7 +487,7 @@ int playwith3d_pick(struct entity* root, struct entity* twig, struct entity* act
 	{
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype)
+		if(_ent_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
 			ret = obb_ray(sty, ray, out);
@@ -551,7 +551,7 @@ int playwith3d_move(struct entity* root, struct entity* twig, int x0, int y0, in
 	{
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype)
+		if(_ent_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
 			goto found;
@@ -594,7 +594,7 @@ static int picker_draw(
 	{
 		if(0 == rel)break;
 
-		if(_win_ == rel->dsttype)
+		if(_sup_ == rel->dsttype)
 		{
 			www = (void*)(rel->dstchip);
 			//if(_fg3d_ == www->fmt)goto found;
@@ -611,7 +611,7 @@ found:
 	{
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype)
+		if(_ent_ == rel->dsttype)
 		{
 			sss = (void*)(rel->srcfoot);
 
@@ -639,7 +639,7 @@ static int picker_event(
 	{
 		if(0 == rel)break;
 
-		if(_win_ == rel->dsttype)
+		if(_sup_ == rel->dsttype)
 		{
 			www = (void*)(rel->dstchip);
 			//if(_fg3d_ == www->fmt)goto found;

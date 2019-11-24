@@ -384,7 +384,7 @@ static void glass_create(struct entity* act, void* str)
 	if(0 == act)return;
 
 	//win = entitycreate(_fbo_, 0);
-	//if(win)relationcreate(win, 0, _win_, 0, act, 0, _act_, 0);
+	//if(win)relationcreate(win, 0, _sup_, 0, act, 0, _ent_, 0);
 }
 
 

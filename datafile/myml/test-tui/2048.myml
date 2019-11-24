@@ -14,7 +14,7 @@ fmt:2048
 
 <supply>
 wnd{
-fmt:win
+fmt:wnd
 }
 </supply>
 

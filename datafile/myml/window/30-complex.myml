@@ -76,7 +76,7 @@ fmt:gl41wnd0
 
 <supply>
 opengl{
-fmt:win
+fmt:wnd
 title:"42"
 width:1024
 height:1024
@@ -244,44 +244,44 @@ p8{}
 
 <relation>
 #3dworld depends on inner objects
-(3dworld, sky, act, bg) -> (texball, p1, act, 0)
-(3dworld, gnd, act, bg) -> (terrain, p2, act, 0)
-(3dworld, rabb, act, bg) -> (rabbit, p3, act, 0)
-(3dworld, rtsgeom, act, cam) -> (rtscam, rtsmodl, act, geom)
-(3dworld, orthgeom, act, cam) -> (orthcam, orthmodl, act, geom)
-(3dworld, freegeom, act, cam) -> (freecam, freemodl, act, geom)
-(3dworld, vrgeom, act, cam) -> (vrcam, vrmodl, act, geom)
+(3dworld, sky, bg) -> (texball, p1, 0)
+(3dworld, gnd, bg) -> (terrain, p2, 0)
+(3dworld, rabb, bg) -> (rabbit, p3, 0)
+(3dworld, rtsgeom, cam) -> (rtscam, rtsmodl, geom)
+(3dworld, orthgeom, cam) -> (orthcam, orthmodl, geom)
+(3dworld, freegeom, cam) -> (freecam, freemodl, geom)
+(3dworld, vrgeom, cam) -> (vrcam, vrmodl, geom)
 
 #uiworld depends on inner objects
-(uiworld, 0, act, aid) -> (geomhelper, 0, act, 0)
-(uiworld, 0, act, aid) -> (fonthelper, 0, act, 0)
-(uiworld, ovv, act, ui) -> (overview, p4, act, 0)
-(uiworld, sty5, act, ui) -> (vjoy, p5, act, 0)
-(uiworld, sty6, act, ui) -> (vkbd, p6, act, 0)
-(uiworld, sty7, act, ui) -> (corner, p7, act, 0)
-(uiworld, sty8, act, ui) -> (pointer, p8, act, 0)
-(uiworld, uigeom, act, cam) -> (uicam, uimodl, act, geom)
+(uiworld, 0, aid) -> (geomhelper, 0, 0)
+(uiworld, 0, aid) -> (fonthelper, 0, 0)
+(uiworld, ovv, ui) -> (overview, p4, 0)
+(uiworld, sty5, ui) -> (vjoy, p5, 0)
+(uiworld, sty6, ui) -> (vkbd, p6, 0)
+(uiworld, sty7, ui) -> (corner, p7, 0)
+(uiworld, sty8, ui) -> (pointer, p8, 0)
+(uiworld, uigeom, cam) -> (uicam, uimodl, geom)
 
 #context depends on scene
-(glctx3d, 0, act, 0) -> (3dworld, 0, act, 0)
-(glctxui, 0, act, 0) -> (uiworld, 0, act, 0)
+(glctx3d, 0, 0) -> (3dworld, 0, 0)
+(glctxui, 0, 0) -> (uiworld, 0, 0)
 
 #viewport depends on ctx + cam
-(glviewbg, 0, act, 0) -> (glctx3d, 0, act, 0)
-(glviewbg, rtsrect, act, cam) -> (rtscam, rtsfrus, act, cam)
-(glviewbg, orthrect,act, cam) -> (orthcam, orthfrus, act, cam)
-(glviewbg, freerect, act, cam) -> (freecam, freefrus, act, cam)
-(glviewbg, vrrect, act, cam) -> (vrcam, vrfrus, act, cam)
+(glviewbg, 0, 0) -> (glctx3d, 0, 0)
+(glviewbg, rtsrect, cam) -> (rtscam, rtsfrus, cam)
+(glviewbg, orthrect,cam) -> (orthcam, orthfrus, cam)
+(glviewbg, freerect, cam) -> (freecam, freefrus, cam)
+(glviewbg, vrrect, cam) -> (vrcam, vrfrus, cam)
 
-(glviewfg, 0, act, 0) -> (glctxui, 0, act, 0)
-(glviewfg, uirect, act, 0) -> (uicam, uifrus, act, 0)
+(glviewfg, 0, 0) -> (glctxui, 0, 0)
+(glviewfg, uirect, 0) -> (uicam, uifrus, 0)
 
 #window depends on glview
-(glwnd, 0, act, 0) -> (glviewbg, 0, act, 0)
-(glwnd, 0, act, 0) -> (glviewfg, 0, act, 0)
+(glwnd, 0, 0) -> (glviewbg, 0, 0)
+(glwnd, 0, 0) -> (glviewfg, 0, 0)
 
 #opengl depends on worldcontexts + rendertargets
-(opengl, 0, win, 0) -> (glctx3d, 0, act, 0)
-(opengl, 0, win, 0) -> (glctxui, 0, act, 0)
-(opengl, 0, win, 0) -> (glwnd, 0, act, 0)
+(opengl, 0, 0) -> (glctx3d, 0, 0)
+(opengl, 0, 0) -> (glctxui, 0, 0)
+(opengl, 0, 0) -> (glwnd, 0, 0)
 </relation>

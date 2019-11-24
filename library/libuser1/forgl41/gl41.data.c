@@ -94,7 +94,7 @@ int gl41data_write_event(struct entity* ctx, struct entity* cam, struct halfrel*
 	rel = cam->irel0;
 	while(1){
 		if(0 == rel)break;
-		if(_act_ == rel->srctype){
+		if(_ent_ == rel->srctype){
 			//search for camera's world
 			world = rel->psrcchip;
 			if(_world3d_ == world->type){
@@ -116,7 +116,7 @@ int gl41data_read_matrix(struct entity* ctx, struct entity* cam, struct halfrel*
 	rel = cam->irel0;
 	while(1){
 		if(0 == rel)break;
-		if(_act_ == rel->srctype){
+		if(_ent_ == rel->srctype){
 			//search for camera's world
 			world = rel->psrcchip;
 			if(_world3d_ == world->type){
@@ -143,7 +143,7 @@ int gl41data_read_vertex(struct entity* glctx, struct entity* world, struct half
 	while(1){
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype){
+		if(_ent_ == rel->dsttype){
 			part = rel->pdstfoot;
 			geom = rel->psrcfoot;
 			if(geom){if('#' == geom->i.uc[3])goto next;}
@@ -184,7 +184,7 @@ int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 	while(1){
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype){
+		if(_ent_ == rel->dsttype){
 		if(stack[rsp-1]->flag == rel->srcflag){
 			//this is cam
 			cam = rel->pdstchip;
@@ -219,7 +219,7 @@ int gl41data_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 	while(1){
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype){
+		if(_ent_ == rel->dsttype){
 		if(stack[rsp-1]->flag == rel->srcflag){
 			cam = rel->pdstchip;
 			//get matrix

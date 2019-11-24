@@ -139,7 +139,7 @@ int detail_draw_vbo(struct entity* win, struct style* sty)
 
 		//name
 		tc[2] = -0.6;
-		if(_act_ == rel->srctype)
+		if(_ent_ == rel->srctype)
 		{
 			act = (void*)(rel->srcchip);
 			carvestring_center(win, 0, tc, tr, tf, (void*)(&act->fmt), 0);
@@ -194,7 +194,7 @@ int detail_draw_vbo(struct entity* win, struct style* sty)
 
 		//name
 		tc[2] = -0.6;
-		if(_act_ == rel->dsttype)
+		if(_ent_ == rel->dsttype)
 		{
 			act = (void*)(rel->dstchip);
 			carvestring_center(win, 0, tc, tr, tf, (void*)(&act->fmt), 0);
@@ -264,7 +264,7 @@ int detail_draw_pixel(struct entity* win, struct style* sty)
 
 		//ichip
 		drawsolid_rect(win, 0xffffff, cx-ww+2, cy+hh*(j-4)/8+2, cx-ww*3/4-2, cy+hh*(j-3)/8-2);
-		if(_act_ == rel->srctype)
+		if(_ent_ == rel->srctype)
 		{
 			act = (void*)(rel->srcchip);
 			drawstring_fit(win, 0x000000, cx-ww, cy+hh*(j-4)/8, cx-ww*3/4, cy+hh*(j-3)/8, (void*)(&act->fmt), 0);
@@ -289,7 +289,7 @@ int detail_draw_pixel(struct entity* win, struct style* sty)
 
 		//ochip
 		drawsolid_rect(win, 0xffffff, cx+ww*3/4+2, cy+hh*(j-4)/8+2, cx+ww-2, cy+hh*(j-3)/8-2);
-		if(_act_ == rel->dsttype)
+		if(_ent_ == rel->dsttype)
 		{
 			act = (void*)(rel->dstchip);
 			drawstring_fit(win, 0x000000, cx+ww*3/4, cy+hh*(j-4)/8, cx+ww, cy+hh*(j-3)/8, (void*)(&act->fmt), 0);

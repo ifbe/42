@@ -181,7 +181,7 @@ void* visionlistener(struct supply* win)
 		while(1)
 		{
 			if(0 == orel)break;
-			if(_act_ == orel->dsttype)
+			if(_ent_ == orel->dsttype)
 			{
 				struct halfrel* self = (void*)&orel->dstchip;
 				struct halfrel* peer = (void*)&orel->srcchip;

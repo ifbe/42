@@ -36,31 +36,31 @@ gl41wnd{
 fmt:gl41wnd
 }
 gl41{
-fmt:win
+fmt:wnd
 }
 </supply>
 
 
 <relation>
 #virt space: sky and cam
-(virt, 0, act, ctx) -> (texball, 0, act, glsl)
-(virt, 0, act, ctx) -> (freecam, 0, act, glsl)
-(virt, 0, act, mvp) -> (freecam, 0, act, mvp)
+(virt, 0, ctx) -> (texball, 0, glsl)
+(virt, 0, ctx) -> (freecam, 0, glsl)
+(virt, 0, mvp) -> (freecam, 0, mvp)
 
 #gl41 space: wnd
-(gl41, 0, act, 0) -> (gl41wnd, 0, act, 0)
+(gl41, 0, 0) -> (gl41wnd, 0, 0)
 
 #real space: display
-(real, 0, act, 0) -> (screen, 0, act, src)
+(real, 0, 0) -> (screen, 0, src)
 
 #superior space:
-(beyond, 0, act, ev) -> (handler, 0, act, 0)
-(beyond, 0, act, ev) -> (virt, 0, act, 0)
+(beyond, 0, ev) -> (handler, 0, 0)
+(beyond, 0, ev) -> (virt, 0, 0)
 
-(beyond, 0, act, ctx) -> (virt, 0, act, ctx)
-(beyond, 0, act, ctx) -> (gl41, 0, act, ctx)
+(beyond, 0, ctx) -> (virt, 0, ctx)
+(beyond, 0, ctx) -> (gl41, 0, ctx)
 
-(beyond, 0, act, 111) -> (virt, 0, act, mvp)
-(beyond, 0, act, 111) -> (gl41, 0, act, wnd)
-(beyond, 0, act, 111) -> (real, 0, act, img)
+(beyond, 0, 111) -> (virt, 0, mvp)
+(beyond, 0, 111) -> (gl41, 0, wnd)
+(beyond, 0, 111) -> (real, 0, img)
 </relation>

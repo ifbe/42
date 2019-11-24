@@ -53,14 +53,14 @@ typedef float mat4[4][4];
 #define _dst_ hex32('d','s','t',0)
 #define _clk_ hex32('c','l','k',0)
 //tier
-#define _act_ hex32('a','c','t',0)
-#define _win_ hex32('w','i','n',0)
+#define _ent_ hex32('e','n','t',0)
+#define _sup_ hex32('s','u','p',0)
 #define _art_ hex32('a','r','t',0)
 #define _sys_ hex32('s','y','s',0)
 #define _dri_ hex32('d','r','i',0)
 #define _dev_ hex32('d','e','v',0)
 #define _wrk_ hex32('w','r','k',0)
-//tier=_win_, type:
+//tier=_sup_, type:
 #define _ahrs_ hex32('a','h','r','s')
 #define _car_ hex32('c','a','r',0)
 #define _bdc_  hex32('b','d','c',0)
@@ -70,6 +70,7 @@ typedef float mat4[4][4];
 #define _spk_ hex32('s','p','k',0)
 //
 #define _cam_ hex32('c','a','m',0)
+#define _wnd_ hex32('w','n','d',0)
 #define _cap_ hex32('c','a','p',0)
 //
 #define _tray_ hex32('t','r','a','y')	//tray
@@ -78,13 +79,12 @@ typedef float mat4[4][4];
 #define _w2w_ hex32('w','2','w', 0)
 #define _khala_ hex64('k','h','a','l','a', 0, 0, 0)
 #define _loopback_ hex64('l','o','o','p','b', 'a', 'c', 'k')
-//tier=_win_, type=_win_, rfmt:
-#define _wnd_ hex32('w','n','d',0)
+//tier=_sup_, type=_sup_, rfmt:
 #define _none_ hex32('n','o','n','e')
 #define _easy_ hex32('e','a','s','y')
 #define _full_ hex32('f','u','l','l')
 #define _coop_ hex32('c','o','o','p')
-//tier=_win_, type=_ctx_, rfmt:
+//tier=_sup_, type=_ctx_, rfmt:
 #define _vbo_ hex32('v','b','o',0)
 #define _rgba_ hex32('r','g','b','a')
 #define _cli_ hex32('c','l','i',0)
@@ -95,7 +95,7 @@ typedef float mat4[4][4];
 #define _html_ hex32('h','t','m','l')
 #define _json_ hex32('j','s','o','n')
 #define _xml_  hex32('x','m','l',0)
-//tier=_act_, type:
+//tier=_ent_, type:
 #define _baby_ hex32('b','a','b','y')
 #define _test_ hex32('t','e','s','t')
 //

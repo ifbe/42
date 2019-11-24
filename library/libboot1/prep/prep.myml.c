@@ -267,12 +267,12 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 			if(nodename >= 0){
 				//say("haha:%llx,%llx\n", fmt, url);
 
-				chip[clen].tier = tier;		//_act_ _win_ _art_ _sys_ _dri_ _dev_ _wrk_
+				chip[clen].tier = tier;		//_ent_ _sup_ _art_ _sys_ _dri_ _dev_ _wrk_
 				chip[clen].type = fmt;
 				chip[clen].hash = hash;
 				switch(tier){
-					case _act_:chip[clen].addr = entitycreate(fmt, url, argc, argv);break;
-					case _win_:chip[clen].addr = supplycreate(fmt, url, argc, argv);break;
+					case _ent_:chip[clen].addr = entitycreate(fmt, url, argc, argv);break;
+					case _sup_:chip[clen].addr = supplycreate(fmt, url, argc, argv);break;
 					case _art_:chip[clen].addr = arterycreate(fmt, url, argc, argv);break;
 					case _sys_:chip[clen].addr = systemcreate(fmt, url, argc, argv);break;
 					case _dri_:chip[clen].addr = drivercreate(fmt, url, argc, argv);break;
@@ -483,13 +483,13 @@ void role_test1(u8* buf, int len)
 				}
 				if(0 == ncmp(buf+typename, "supply", 6)) {
 					clen = role_test_node(
-						_win_, 0, cbuf, clen,
+						_sup_, 0, cbuf, clen,
 						buf + typedata, j-typedata
 					);
 				}
 				if(0 == ncmp(buf+typename, "entity", 6)) {
 					clen = role_test_node(
-						_act_, 0, cbuf, clen,
+						_ent_, 0, cbuf, clen,
 						buf + typedata, j-typedata
 					);
 				}

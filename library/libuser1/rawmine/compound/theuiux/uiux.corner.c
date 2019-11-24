@@ -455,7 +455,7 @@ static int corner_event_twig(
 	rel = win->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(_win_ == rel->dsttype){
+		if(_sup_ == rel->dsttype){
 			ar = (void*)(rel->dstchip);
 			//if(_ui3d_ == ar->fmt)goto found;
 			//if(_ui2d_ == ar->fmt)goto found;
@@ -471,7 +471,7 @@ found:
 	while(1){
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype){
+		if(_ent_ == rel->dsttype){
 			if(x == y){
 				st = (void*)(rel->srcfoot);
 
@@ -631,7 +631,7 @@ static int corner_create(struct entity* act, u8* str)
 	ac->fmt = hex32('?','?','?', 0);
 
 	sty->i.uc[3] = 0;
-	relationcreate(ac, 0, _act_, 0, act, sty, _act_, 0);
+	relationcreate(ac, 0, _ent_, 0, act, sty, _ent_, 0);
 	return 0;
 }
 

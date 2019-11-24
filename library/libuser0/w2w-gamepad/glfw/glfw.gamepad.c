@@ -66,7 +66,7 @@ static void joystick_sendevent(struct xyzwpair* pair, int j)
 
 			systemwrite(self, peer, buf, 2);
 		}
-		else if(_act_ == rel->dsttype)
+		else if(_ent_ == rel->dsttype)
 		{
 			ev.why = *(u64*)(&pair->x0);
 			ev.what = joy_left;

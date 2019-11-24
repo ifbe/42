@@ -8,7 +8,7 @@ thewnd{
 fmt:gl41wnd0
 }
 opengl{
-fmt:win
+fmt:wnd
 title:"42"
 width:1024
 height:1024

@@ -1,6 +1,6 @@
 <supply>
 opengl{
-fmt:win
+fmt:wnd
 title:"42"
 width:1024
 height:1024
@@ -107,32 +107,32 @@ q:1.0, 1.0
 
 <relation>
 #3dworld depends on inner objects
-(3dworld, skygeom, act, 0) -> (texball, skyhaha, act, 0)
-(3dworld, freegeom, act, 0) -> (freecam, freemodl, act, 0)
+(3dworld, skygeom, 0) -> (texball, skyhaha, 0)
+(3dworld, freegeom, 0) -> (freecam, freemodl, 0)
 
 #uiworld depends on inner objects
-(uiworld, area, act, 0) -> (login, 0, act, 0)
-(uiworld, orthgeom, act, 0) -> (orthcam, orthmodl, act, 0)
+(uiworld, area, 0) -> (login, 0, 0)
+(uiworld, orthgeom, 0) -> (orthcam, orthmodl, 0)
 
 #glctx depends on scene
-(ctx000, 0, act, 0) -> (3dworld, 0, act, 0)
-(ctx111, 0, act, 0) -> (uiworld, 0, act, 0)
+(ctx000, 0, 0) -> (3dworld, 0, 0)
+(ctx111, 0, 0) -> (uiworld, 0, 0)
 
 #glview depends on ctx + cam
-(view00, 0, act, 0) -> (ctx000, 0, act, 0)
-(view00, freerect, act, 0) -> (freecam, freefrus, act, 0)
+(view00, 0, 0) -> (ctx000, 0, 0)
+(view00, freerect, 0) -> (freecam, freefrus, 0)
 
 #glview depends on ctx + cam
-(view11, 0, act, 0) -> (ctx111, 0, act, 0)
-(view11, orthrect, act, 0) -> (orthcam, orthfrus, act, 0)
+(view11, 0, 0) -> (ctx111, 0, 0)
+(view11, orthrect, 0) -> (orthcam, orthfrus, 0)
 
 #glwnd depends on view
-(thewnd, 0, act, 0) -> (view00, 0, act, 0)
-(thewnd, 0, act, 0) -> (view11, 0, act, 0)
+(thewnd, 0, 0) -> (view00, 0, 0)
+(thewnd, 0, 0) -> (view11, 0, 0)
 
 #opengl depends on ctx + wnd
-(opengl, 0, win, ctx) -> (ctx000, 0, act, 0)
-(opengl, 0, win, ctx) -> (ctx111, 0, act, 0)
-(opengl, 0, win, wnd) -> (thewnd, 0, act, 0)
+(opengl, 0, ctx) -> (ctx000, 0, 0)
+(opengl, 0, ctx) -> (ctx111, 0, 0)
+(opengl, 0, wnd) -> (thewnd, 0, 0)
 
 </relation>

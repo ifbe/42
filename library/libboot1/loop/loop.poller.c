@@ -37,7 +37,7 @@ int supplyevent(void* poller, struct event* e)
 		for(j=0;j<16;j++)
 		{
 			win = &supply[j];
-			if(_win_ == win->type)
+			if(_sup_ == win->type)
 			{
 				ev.where = (u64)win;
 				break;
@@ -75,7 +75,7 @@ int supplyread_all(void* poller)
 		win = &supply[j];
 		if(0 == win->type)continue;
 
-		if(_win_ == win->type){
+		if(_wnd_ == win->type){
 			self.pchip = win;
 			supplyread(&self, &peer, 0, 0, 0, 0);
 		}

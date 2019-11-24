@@ -46,7 +46,7 @@ int world3d_write(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 	{
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype)
+		if(_ent_ == rel->dsttype)
 		{
 			sty = (void*)(rel->srcfoot);
 			if(sty){if('#' == sty->i.uc[3])goto next;}
@@ -82,7 +82,7 @@ int world3d_start(struct halfrel* self, struct halfrel* peer)
 	{
 		if(0 == rel)break;
 
-		if(_act_ == rel->dsttype){
+		if(_ent_ == rel->dsttype){
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
 			entitystart(self, peer);

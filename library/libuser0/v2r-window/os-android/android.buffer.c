@@ -14,7 +14,7 @@ void freeentity();
 void initentity(void*);
 int entityevent(void*);
 //libuser0
-#define _win_ hex32('w','i','n',0)
+#define _sup_ hex32('w','i','n',0)
 void freesupply();
 void initsupply(void*);
 int supplyevent(void*);

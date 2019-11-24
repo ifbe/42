@@ -20,7 +20,7 @@ static int firstperson_draw(
 	{
 		if(0 == rel)return 0;
 
-		if(_act_ == rel->srctype)
+		if(_ent_ == rel->srctype)
 		{
 			tar = (void*)(rel->srcchip);
 			if(0 == tar)return 0;
