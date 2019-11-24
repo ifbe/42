@@ -157,7 +157,7 @@ static void dancemat_write_data(struct entity* ent, struct entity* src, u8* buf,
 
 	buf += 12;
 	len -= 12;
-	say("(len=%d)", len);
+	//say("(len=%d)", len);
 
 	nbuf = ent->nbuf;
 	if(0 == nbuf)return;
@@ -173,13 +173,19 @@ static void dancemat_write_data(struct entity* ent, struct entity* src, u8* buf,
 		if(data < 0)break;
 		if(data >= 32767)break;
 
-		nbuf[cnt] = data*128;
+		data *= 128;
+		switch(cnt&0x3){
+			case 0:
+			case 3:nbuf[cnt+0] = data;break;
+			case 1:nbuf[cnt+1] = data;break;
+			case 2:nbuf[cnt-1] = data;break;
+		}
 		cnt += 1;
 		k += j+1;
 
-		say("%d,", data);
+		//say("%d,", data);
 	}
-	say("<cnt=%d>\n", cnt);
+	//say("<cnt=%d>\n", cnt);
 }
 
 
