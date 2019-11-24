@@ -1177,13 +1177,13 @@ int double2hexstr(double, void*);
 int hexstr2double(void* src, void* dst);
 
 int data2decstr(u64 data,u8* str);
-int decstr2data(void* str, u64 data);
+int decstr2data(void* str, u64* data);
 
 int decstr2datastr(void* src, void* dst);
 int datastr2decstr(void* dst, void* src, int len);
 
 int data2hexstr(u64 data,u8* str);
-int hexstr2data(void* str, u64 data);
+int hexstr2data(void* str, u64* data);
 
 int datastr2hexstr(void* dst, void* src, int len);
 int hexstr2datastr(void* dst, void* src, int len);

@@ -146,6 +146,45 @@ static void dancemat_draw(
 
 
 
+static void dancemat_write_data(struct entity* ent, struct entity* src, u8* buf, int len)
+{
+	int j,k;
+	int cnt;
+	u64 data;
+	short* nbuf;
+	if(0 == buf)return;
+	if(0 != ncmp(buf, "FreeRunners:", 12))return;
+
+	buf += 12;
+	len -= 12;
+	say("(len=%d)", len);
+
+	nbuf = ent->nbuf;
+	if(0 == nbuf)return;
+
+	j = k = cnt = 0;
+	while(1){
+		if(k >= len)break;
+		if(cnt >= 144)break;
+
+		data = 0;
+		j = decstr2data(buf+k, &data);
+		if(j <= 0)break;
+		if(data < 0)break;
+		if(data >= 32767)break;
+
+		nbuf[cnt] = data*128;
+		cnt += 1;
+		k += j+1;
+
+		say("%d,", data);
+	}
+	say("<cnt=%d>\n", cnt);
+}
+
+
+
+
 //stack:
 //-4: wnd, area
 //-3: ctx
@@ -175,6 +214,12 @@ static void dancemat_read(struct halfrel* self, struct halfrel* peer, struct hal
 }
 static void dancemat_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	struct entity* act = self->pchip;
+	struct entity* src = peer->pchip;
+	switch(src->tier){
+		case _sys_:
+		case _art_:dancemat_write_data(act, src, buf, len);break;
+	}
 }
 static void dancemat_stop(struct halfrel* self, struct halfrel* peer)
 {
