@@ -1,19 +1,19 @@
 42:
 	the answer to life,the universe and everything~
 
-build:
-	cd project/none+x64+win+cli
-	make
+howto:
+	make -C project/none+x64+linux+glfw
+	./a.out datafile/myml/window/item-skygndrab.myml
 
 explain:
-	libboot0:	uart, cpu, memory...
-	libboot1:	stdin, stdout...
-	libhard0:	register config(ahci, xhci, ethernet...)
-	libhard1:	protocol stack(sata, usb, tcpip...)
-	libsoft0:	function interface(unified, simple, goodlook...)
-	libsoft1:	logic central(algorithm, science, network...)
-	libuser0:	medium of exchange(eye, win, ear, mic...)
-	libuser1:	inside the brain(memory contexts)
+	libboot0: pwrclk(power, clock, ...)
+	libboot1: worker(waiter, poller, ...)
+	libhard0: device
+	libhard1: driver
+	libsoft0: system
+	libsoft1: artery
+	libuser0: supply(mic, cam, spk, wnd, physx, grvity, ...)
+	libuser1: entity(world, scene, sky, tree, ...)
 
 
 

@@ -246,14 +246,11 @@ static void terrain_draw_pixel(
 	}
 }
 static void terrain_draw_vbo(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{/*
-	float* vc = sty->vc;
-	float* vr = sty->vr;
-	float* vf = sty->vf;
-	float* vu = sty->vu;
-*/
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* ctx, struct style* none)
+{
 	struct glsrc* src = act->buf;
 	if(0 == src)return;
 
@@ -318,7 +315,6 @@ static void terrain_draw(
 	else if(fmt == _tui_)terrain_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)terrain_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)terrain_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)terrain_draw_vbo(act, pin, win, sty);
 	else terrain_draw_pixel(act, pin, win, sty);
 }
 static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
@@ -360,18 +356,26 @@ static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int
 
 
 
-static void terrain_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void terrain_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	//say("@terrain_read:%llx,%llx,%llx\n",act,win,buf);
+	//wnd -> ctx
+	struct entity* ctx;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)terrain_draw_vbo(act,pin,ctx,sty);
+	//cam -> world
+	struct entity* cam;
+	struct entity* wrd;struct style* camg;
+
+	//world -> texball
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
+
+	if(stack){
+		ctx = stack[rsp-3]->pchip;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		terrain_draw_vbo(act,part, win,geom, wrd,camg, ctx,0);
 	}
 }
 static void terrain_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

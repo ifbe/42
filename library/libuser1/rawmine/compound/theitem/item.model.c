@@ -195,14 +195,16 @@ static void model_draw_vbo2d(
 	sty_sty_mat(&act->target, &sty->f, (void*)src->arg[0].data);
 }*/
 static void model_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* ctx, struct style* none)
 {
 	if(0 == act)return;
 	if(act->buf == 0)return;
 
 	struct glsrc* src = act->buf;
-	sty_sty_mat(&pin->fs, &sty->fs, (void*)src->arg[0].data);
+	sty_sty_mat(&part->fs, &geom->fs, (void*)src->arg[0].data);
 }
 static void model_draw_json(
 	struct entity* act, struct style* pin,
@@ -277,18 +279,27 @@ static void model_event(
 
 
 
-static void model_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void model_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	if(ctx){
-		if(_gl41data_ == ctx->type)model_draw_vbo3d(act,pin,ctx,sty);
+	//wnd -> ctx
+	struct entity* ctx;
+
+	//cam -> world
+	struct entity* cam;
+	struct entity* wrd;struct style* camg;
+
+	//world -> texball
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
+
+	if(stack){
+		ctx = stack[rsp-3]->pchip;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		model_draw_vbo3d(act,part, win,geom, wrd,camg, ctx,0);
 	}
-	//model_draw(act, pin, win, sty);
 }
 static void model_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -306,8 +317,8 @@ static void model_stop(struct halfrel* self, struct halfrel* peer)
 static void model_start(struct halfrel* self, struct halfrel* peer)
 {
 	struct glsrc* src;
-	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
+	struct entity* act = (void*)(self->chip);
 	if(0 == act)return;
 	if(0 == pin)return;
 
@@ -319,7 +330,7 @@ static void model_start(struct halfrel* self, struct halfrel* peer)
 	src->vbuf_enq = 42;
 
 	pin->data[0] = (u64)(act->buf);
-	say("@texball_start:%llx, %llx\n", pin->data[0], pin->data[1]);
+	say("@model_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 
