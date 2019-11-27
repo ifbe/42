@@ -76,9 +76,9 @@ static void freecam_create(struct entity* act, void* arg, int argc, u8** argv)
 		}
 	}
 
-	//
-	act->fx0 = 0;
-	act->fy0 = 0;
+	act->fx0 = 0.0;
+	act->fy0 = 0.0;
+	act->fz0 = 0.0;
 }
 
 
@@ -244,12 +244,11 @@ static int freecam_draw_vbo(
 	struct entity* wrl, struct style* frus,
 	struct entity* ctx, struct style* none)
 {
-	//float* vc = geom->vc;
-	//float* vr = geom->vr;
-	//float* vt = geom->vt;
-	//carveline_rect(ctx, 0, vc, vr, vt);
-
+	//frustum
 	carvefrustum(ctx, &geom->frus);
+
+	//ray from eye to far
+	carveline(ctx, 0, geom->frus.vc, &act->fx0);
 	return 0;
 }
 /*
@@ -625,46 +624,43 @@ static int freecam_event_frus(
 	}
 	return 0;
 }
-static int freecam_event2(
-	struct entity* act, struct style* frus,
-	struct entity* win, struct style* area,
+static int freecam_event_pick(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wnd, struct style* area,
 	struct event* ev, int len)
 {
-	float w,h,k;
+	float x,y,x0,y0,dx,dy;
 	vec4 dr;
 	short* t;
 	float* vc;
 	if(0x2b70 != ev->what)return 0;
+	//say("@freecam_event_pick:%llx,%llx,%llx,%llx,%llx,%llx\n",act,part,win,geom,wnd,area);
 
 	//get w,h
-	w = 1024;
-	h = 768;
+	x0 = area->fs.vc[0] * wnd->width;
+	y0 = area->fs.vc[1] * wnd->height;
+	dx = area->fs.vq[0] * wnd->width;
+	dy = area->fs.vq[1] * wnd->height;
+	//say("x=%f,y=%f,w=%f,h=%f\n", x0, y0, dx, dy);
+
+	//fix x,y
+	t = (void*)&ev->why;
+	x = t[0];
+	y = wnd->height - t[1];
 
 	//screen to ndc
-	t = (void*)&ev->why;
-	dr[0] = 2*t[0] / w - 1.0;
-	dr[1] = 1.0 - 2*t[1] / h;
-	dr[2] = -0.5;
+	dr[0] = 2*(x-x0) / dx - 1.0;
+	dr[1] = 2*(y-y0) / dy - 1.0;
+	dr[2] = 0.999999;
+	//say("%f,%f\n", dr[0],dr[1]);
 
 	//ndc to world
-	invmvp(dr, &frus->fs);
-	say("%f,%f,%f\n",dr[0],dr[1],dr[2]);
-
-	//direction
-	vc = frus->fs.vc;
-	dr[0] -= vc[0];
-	dr[1] -= vc[1];
-	dr[2] -= vc[2];
-	say("%f,%f,%f\n",dr[0],dr[1],dr[2]);
-
-	//(x, y, -1000)
-	k = (0-vc[2]) / dr[2];
-	dr[0] = vc[0] + dr[0] * k;
-	dr[1] = vc[1] + dr[1] * k;
-	say("%f,%f\n",dr[0],dr[1]);
-
+	invmvp(dr, &geom->frus);
 	act->fx0 = dr[0];
 	act->fy0 = dr[1];
+	act->fz0 = dr[2];
+	//say("%f,%f,%f\n", dr[0],dr[1],dr[2]);
 	return 0;
 }
 
@@ -765,10 +761,8 @@ void freecam_ratio(
 //-1: world, geom of cam
 static void freecam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam
+	//wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
-
-	//cam -> world
 	struct entity* wrd;struct style* camg;
 
 	//world -> this
@@ -791,8 +785,13 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, struct half
 		}
 	}
 }
-static int freecam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static int freecam_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
+	//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+
+	//world -> this
 	struct entity* wld;struct style* geom;
 	struct entity* act;struct style* part;
 	struct event* ev;
@@ -802,6 +801,11 @@ static int freecam_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 	ev = (void*)buf;
 	//say("%llx@freecam_write:%llx,%llx,%llx,%llx\n", act, ev->why, ev->what, ev->where, ev->when);
 
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		freecam_event_pick(act,part, wld,geom, wnd,area, ev, 0);
+	}
 	if('f' == act->data1){
 		freecam_event_frus(act,part, wld,geom, ev, 0);
 	}

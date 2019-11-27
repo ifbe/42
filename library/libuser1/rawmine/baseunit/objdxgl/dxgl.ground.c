@@ -25,21 +25,22 @@ static void ground_draw_pixel(
 	}
 }
 static void ground_draw_vbo(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
 	struct datapair* dst;
 	struct glsrc* src;
 	float (*vbuf)[6];
-	//carvesolid_rect(win, 0xffffff, vc, vr, vf);
+	//carvesolid_rect(ctx, 0xffffff, vc, vr, vf);
 
-	dst = (void*)(sty->data[0]);
+	dst = (void*)(geom->data[0]);
 	if(0 == dst)return;
-	src = (void*)(pin->data[0]);
+	src = (void*)(part->data[0]);
 	if(0 == src)return;
 	vbuf = (void*)(src->vbuf);
 	if(0 == vbuf)return;
@@ -117,25 +118,33 @@ static void ground_draw(
 	else if(fmt == _tui_)ground_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)ground_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)ground_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)ground_draw_vbo(act, pin, win, sty);
 	else ground_draw_pixel(act, pin, win, sty);
 }
 
 
 
 
-static void ground_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void ground_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	//say("@ground_read:%llx,%llx,%llx\n",act,win,buf);
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)ground_draw_vbo(act,pin,ctx,sty);
+	//cam -> world
+	struct entity* wrd;struct style* camg;
+
+	//world -> texball
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
+
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		if('v' == len){
+			ground_draw_vbo(act,part, win,geom, wnd,area);
+		}
 	}
 }
 static void ground_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
