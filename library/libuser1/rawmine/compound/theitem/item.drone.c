@@ -28,7 +28,7 @@ static void drone_draw_vbo(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
-	struct entity* ctx, struct style* temp)
+	struct entity* ctx, struct style* area)
 {
 	float dt;
     vec3 tc,tr,tf,tu;
@@ -236,26 +236,30 @@ void drone_write_euler(struct entity* act, float* f)
 
 
 
+//-4: wnd, area
+//-3: cam, 0
+//-2: cam, 0
+//-1: world, geom of cam
 static void drone_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> ctx
-	struct entity* ctx;
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
 	//cam -> world
-	struct entity* cam;
 	struct entity* wrd;struct style* camg;
 
 	//world -> texball
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
 
-	if(stack){
-		ctx = stack[rsp-3]->pchip;
+	if(0 == stack)return;
+	if('v' == len){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		drone_draw_vbo(act,part, win,geom, wrd,camg, ctx,0);
+		drone_draw_vbo(act,part, win,geom, wrd,camg, wnd,area);
 	}
 }
 static void drone_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

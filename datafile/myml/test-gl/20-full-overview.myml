@@ -15,9 +15,6 @@ fmt:orthcam
 world{
 fmt:3dworld
 }
-gldata{
-fmt:gl41data
-}
 
 screen{
 fmt:screen
@@ -89,11 +86,8 @@ t:0.0, 0.0, 0.1
 (world, aaaageom, 0) -> (cam0, aaaapart, 0)
 (world, viewgeom, 0) -> (overview, viewpart, 0)
 
-#gldata depends on world
-(gldata, 0, a0) -> (cam0, 0, 0)
-
 #glwnd depends on gldata
-(glwnd, aaaarect, 0) -> (gldata, 0, a0)
+(glwnd, aaaarect, 0) -> (cam0, 0, a0)
 
 #opengl depends on glwnd
 (opengl, 0, wnd) -> (glwnd, 0, togl)

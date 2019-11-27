@@ -817,18 +817,22 @@ struct supply
 	union{
 		u64 addr0;
 		void* buf0;
+		void* gl_camera;
 	};
 	union{
 		u64 addr1;
 		void* buf1;
+		void* gl_light;
 	};
 	union{
 		u64 addr2;
 		void* buf2;
+		void* gl_solid;
 	};
 	union{
 		u64 addr3;
 		void* buf3;
+		void* gl_opaque;
 	};
 
 	//[80,bf]: func

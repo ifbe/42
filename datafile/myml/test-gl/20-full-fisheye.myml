@@ -25,9 +25,6 @@ url:datafile/jpg/skysphere.jpg
 world{
 fmt:3dworld
 }
-gldata{
-fmt:gl41data
-}
 </entity>
 
 
@@ -146,17 +143,11 @@ q:0.3,0.3
 (world, ccccgeom, 0) -> (cam3, ccccpart, 0)
 (world, thisgeom, 0) -> (cam0, thispart, 0)
 
-#gldata depends on world
-(gldata, 0, a0) -> (cam1, 0, 0)
-(gldata, 0, a1) -> (cam2, 0, 0)
-(gldata, 0, a2) -> (cam3, 0, 0)
-(gldata, 0, kk) -> (cam0, 0, 0)
-
 #glwnd depends on gldata
-(glwnd, aaaarect, 0) -> (gldata, 0, a0)
-(glwnd, bbbbrect, 0) -> (gldata, 0, a1)
-(glwnd, ccccrect, 0) -> (gldata, 0, a2)
-(glwnd, thisrect, 0) -> (gldata, 0, kk)
+(glwnd, aaaarect, 0) -> (cam1, 0, a0)
+(glwnd, bbbbrect, 0) -> (cam2, 0, a1)
+(glwnd, ccccrect, 0) -> (cam3, 0, a2)
+(glwnd, thisrect, 0) -> (cam0, 0, kk)
 
 #opengl depends on glwnd
 (opengl, 0, wnd) -> (glwnd, 0, togl)

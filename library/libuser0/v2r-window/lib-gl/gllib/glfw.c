@@ -319,6 +319,7 @@ void windowopen_coop(struct supply* w, struct supply* r)
 
 void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	u64 t0,t1,t2,t3;
 	struct supply* ogl;
 	GLFWwindow* fw;
 	//say("@windowread\n");
@@ -340,9 +341,12 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		gl41wnd0_read(self, peer, arg, idx, buf, len);
 		return;
 	}
+t0 = ogl->addr3;
+
 	//0: context current
 	fw = ogl->glwnd;
 	glfwMakeContextCurrent(fw);
+t1 = timeread();
 
 	//1: render everything
 	switch(ogl->fmt){
@@ -351,14 +355,20 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _full_:
 		default:fullwindow_read(ogl);break;
 	}
+t2 = timeread();
 
 	//2: swap buffer
 	glfwSwapBuffers(fw);
+t3 = timeread();
 
 	//3: title
 	char str[64];
-	snprintf(str, 64, "%dx%d(%d,%d)", ogl->width, ogl->height, ogl->fbwidth, ogl->fbheight);
+	snprintf(str, 64, "(%dx%d)(%dx%d)(%lld,%lld,%lld,%lld)",
+		ogl->width, ogl->height, ogl->fbwidth, ogl->fbheight,
+		t1-t0, t2-t1, t3-t2, t3-t0
+	);
 	glfwSetWindowTitle(fw, str);
+ogl->addr3 = t3;
 
 	//4: poll event
 	if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}

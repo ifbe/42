@@ -153,25 +153,15 @@ void orthocam_shape2frustum(struct fstyle* s, struct fstyle* d)
 static void orthcam_matrix(
 	struct entity* act, struct style* part,
 	struct entity* wrd, struct style* geom,
-	struct entity* ctx, struct style* none,
-	struct supply* wnd, struct style* area)
+	struct entity* wnd, struct style* area)
 {
-	float dx,dy;
-	struct fstyle* rect = &area->fshape;
-	struct fstyle* shape = &geom->fshape;
+	void* mat = act->buf;
 	struct fstyle* frus = &geom->frus;
 
-	dx = rect->vq[0] * wnd->fbwidth;
-	dy = rect->vq[1] * wnd->fbheight;
-	frus->vb[3] = frus->vl[3] * dy / dx;
-	frus->vt[3] = frus->vr[3] * dy / dx;
-	orthocam_shape2frustum(shape, frus);
+	ortho_mvp(mat, frus);
+	mat4_transpose(mat);
 
-	float* mat = act->buf;
-	ortho_mvp((void*)mat, frus);
-	mat4_transpose((void*)mat);
-
-	struct glsrc* src = ctx->gl_camera;
+	struct glsrc* src = wnd->gl_camera;
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";
 	src->arg[0].data = mat;
@@ -180,18 +170,29 @@ static void orthcam_matrix(
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = frus->vc;
 }
+static void orthcam_ratio(
+	struct entity* wrd, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	float dx,dy;
+	struct fstyle* rect = &area->fshape;
+	struct fstyle* frus = &geom->frus;
+
+	dx = rect->vq[0] * wnd->fbwidth;
+	dy = rect->vq[1] * wnd->fbheight;
+	frus->vb[3] = frus->vl[3] * dy / dx;
+	frus->vt[3] = frus->vr[3] * dy / dx;
+}
 
 
 
 
 static void orthcam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> ctx
-	struct supply* wnd;struct style* area;
-	struct entity* ctx;
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
 	//cam -> world
-	struct entity* cam;
 	struct entity* wrd;struct style* camg;
 
 	//world -> tree
@@ -200,15 +201,14 @@ static void orthcam_read(struct halfrel* self, struct halfrel* peer, struct half
 
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		ctx = stack[rsp-3]->pchip;
-
-		cam = stack[rsp-2]->pchip;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		if('m' == len){
-			orthcam_matrix(act,part, win,geom, ctx,0, wnd,area);
+		if('v' == len){
+			orthcam_ratio(win, geom, wnd, area);
+			orthocam_shape2frustum(&geom->fshape, &geom->frustum);
+			orthcam_matrix(act,part, win,geom, wnd,area);
 		}
 	}
 }

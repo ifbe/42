@@ -16,21 +16,18 @@
 	#include <GL/glew.h>
 #endif
 int fbocreate(void*, int);
-void fullwindow_upload(struct supply* ogl, struct entity* ctx);
-void fullwindow_render(struct supply* ogl, int tmp, struct halfrel* src, struct halfrel* dst);
+int fullwindow_render(struct datapair* cam, struct datapair* lit, struct datapair* solid, struct datapair* opaque, struct supply* wnd, struct fstyle* area);
 
 
 
 
 int gl41fboc_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	struct supply* ogl;
 	struct supply* wnd;
-	struct entity* data;
+	struct fstyle* sty;
 	struct relation* rel;
-	say("@gl41fboc: %llx\n", self->pchip);
+	//say("@gl41fboc: %llx\n", self->pchip);
 
-	ogl = stack[rsp-2]->pchip;
 	wnd = stack[rsp-1]->pchip;
 	if(0 == wnd->fbo){
 		wnd->width = wnd->fbwidth = 1024;
@@ -42,11 +39,9 @@ int gl41fboc_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 	while(1){
 		if(0 == rel)break;
 
-		data = (void*)(rel->dstchip);
-		if(_gl41data_ == data->type){
-			glBindFramebuffer(GL_FRAMEBUFFER, wnd->fbo);
-			fullwindow_render(ogl, 0, (void*)(rel->src), (void*)(rel->dst));
-		}
+		sty = rel->psrcfoot;
+		glBindFramebuffer(GL_FRAMEBUFFER, wnd->fbo);
+		fullwindow_render(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque, wnd, sty);
 
 		rel = samesrcnextdst(rel);
 	}

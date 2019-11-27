@@ -161,18 +161,16 @@ static void texball_event(
 
 
 
-//stack:
 //-4: wnd, area
-//-3: ctx
+//-3: cam, 0
 //-2: cam, part of cam
 //-1: world, geom of cam
 static void texball_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> ctx
-	struct entity* ctx;
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
 	//cam -> world
-	struct entity* cam;
 	struct entity* wrd;struct style* camg;
 
 	//world -> texball
@@ -180,12 +178,14 @@ static void texball_read(struct halfrel* self, struct halfrel* peer, struct half
 	struct entity* act;struct style* part;
 
 	if(stack){
-		ctx = stack[rsp-3]->pchip;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		texball_draw_vbo3d(act,part, win,geom, wrd,camg, ctx,0);
+		if('v' == len){
+			texball_draw_vbo3d(act,part, win,geom, wrd,camg, wnd,area);
+		}
 	}
 }
 static void texball_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

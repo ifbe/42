@@ -29,10 +29,6 @@ fmt:freecam
 3dworld{
 fmt:3dworld
 }
-
-thectx{
-fmt:gl41data
-}
 </entity>
 
 
@@ -118,11 +114,8 @@ q:1.0, 1.0
 (3dworld, litgeom, 0) -> (light, lithaha, 0)
 (3dworld, freegeom, 0) -> (freecam, freemodl, 0)
 
-#glctx depends on scene
-(thectx, 0, a) -> (freecam, 0, 0)
-
-#glwnd depends on ctx + cam
-(thewnd, freerect, 0) -> (thectx, 0, a)
+#glwnd depends on cam
+(thewnd, freerect, 0) -> (freecam, 0, a)
 
 #opengl depends on wnd
 (opengl, 0, wnd) -> (thewnd, 0, 0)

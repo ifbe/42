@@ -281,24 +281,25 @@ static void model_event(
 
 static void model_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> ctx
-	struct entity* ctx;
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
 	//cam -> world
-	struct entity* cam;
 	struct entity* wrd;struct style* camg;
 
-	//world -> texball
+	//world -> model
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
 
 	if(stack){
-		ctx = stack[rsp-3]->pchip;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		model_draw_vbo3d(act,part, win,geom, wrd,camg, ctx,0);
+		if('v' == len){
+			model_draw_vbo3d(act,part, win,geom, wrd,camg, wnd,area);
+		}
 	}
 }
 static void model_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

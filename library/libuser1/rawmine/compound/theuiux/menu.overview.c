@@ -431,8 +431,7 @@ void overview_draw_pixel(
 void overview_draw_vbo(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
-	struct entity* wrd, struct style* camg,
-	struct entity* ctx, struct style* temp)
+	struct entity* ctx, struct style* area)
 {
 	u32 bg,fg,cursor;
 	float r,f;
@@ -1337,11 +1336,10 @@ static int overview_event(
 
 static void overview_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> ctx
-	struct entity* ctx;
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
 	//cam -> world
-	struct entity* cam;
 	struct entity* wrd;struct style* camg;
 
 	//world -> texball
@@ -1349,17 +1347,16 @@ static void overview_read(struct halfrel* self, struct halfrel* peer, struct hal
 	struct entity* act;struct style* part;
 
 	if(stack){
-		ctx = stack[rsp-3]->pchip;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		overview_draw_vbo(act,part, win,geom, wrd,camg, ctx,0);
+		overview_draw_vbo(act,part, win,geom, wnd,area);
 	}
 }
 static int overview_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
 	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
 	struct entity* win = (void*)(peer->chip);

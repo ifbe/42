@@ -2,6 +2,7 @@
 #define _tar_ hex32('t','a','r',0)
 void fixmatrix(float* m, struct fstyle* sty);
 void freecam_shape2frustum(struct fstyle* d, struct fstyle* s);
+void freecam_ratio(struct entity* wrd, struct style* geom, struct entity* wnd, struct style* area);
 
 
 
@@ -189,26 +190,16 @@ static int thirdperson_event(
 static void thirdperson_matrix(
 	struct entity* act, struct style* part,
 	struct entity* wrd, struct style* geom,
-	struct entity* ctx, struct style* none,
-	struct supply* wnd, struct style* area)
+	struct entity* wnd, struct style* area)
 {
-	struct fstyle* rect = &area->fshape;
-	struct fstyle* shape = &geom->fshape;
+	void* mat = act->buf;
 	struct fstyle* frus = &geom->frus;
-	float dx,dy;
 
-	dx = rect->vq[0] * wnd->fbwidth;
-	dy = rect->vq[1] * wnd->fbheight;
-	frus->vb[3] = frus->vl[3] * dy / dx;
-	frus->vt[3] = frus->vr[3] * dy / dx;
-	freecam_shape2frustum(shape, frus);
-
-	float* mat = act->buf;
-	fixmatrix((void*)mat, frus);
-	mat4_transpose((void*)mat);
+	fixmatrix(mat, frus);
+	mat4_transpose(mat);
 	//printmat4(m);
 
-	struct glsrc* src = ctx->gl_camera;
+	struct glsrc* src = wnd->gl_camera;
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";
 	src->arg[0].data = mat;
@@ -223,12 +214,10 @@ static void thirdperson_matrix(
 
 static void thirdperson_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> ctx
-	struct supply* wnd;struct style* area;
-	struct entity* ctx;
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
 	//cam -> world
-	struct entity* cam;
 	struct entity* wrd;struct style* camg;
 
 	//world -> this
@@ -237,18 +226,17 @@ static void thirdperson_read(struct halfrel* self, struct halfrel* peer, struct 
 
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		ctx = stack[rsp-3]->pchip;
-
-		cam = stack[rsp-2]->pchip;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		if('m' == len){
-			thirdperson_matrix(act,part, win,geom, ctx,0, wnd,area);
-		}
 		if('v' == len){
-			thirdperson_draw(act,part, win,geom, wrd,camg, ctx,0);
+			freecam_ratio(win, geom, wnd, area);
+			freecam_shape2frustum(&geom->fshape, &geom->frustum);
+			thirdperson_draw(act,part, win,geom, wrd,camg, wnd,area);
+		}
+		if('m' == len){
+			thirdperson_matrix(act,part, win,geom, wnd,area);
 		}
 	}
 }

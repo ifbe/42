@@ -191,18 +191,16 @@ static void dancemat_write_data(struct entity* ent, struct entity* src, u8* buf,
 
 
 
-//stack:
 //-4: wnd, area
 //-3: ctx
 //-2: cam, part of cam
 //-1: world, geom of cam
 static void dancemat_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> ctx
-	struct entity* ctx;
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
 	//cam -> world
-	struct entity* cam;
 	struct entity* wrd;struct style* camg;
 
 	//world -> texball
@@ -210,12 +208,14 @@ static void dancemat_read(struct halfrel* self, struct halfrel* peer, struct hal
 	struct entity* act;struct style* part;
 
 	if(stack){
-		ctx = stack[rsp-3]->pchip;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		dancemat_draw_vbo3d(act,part, win,geom, wrd,camg, ctx,0);
+		if('v' == len){
+			dancemat_draw_vbo3d(act,part, win,geom, wrd,camg, wnd,area);
+		}
 	}
 }
 static void dancemat_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

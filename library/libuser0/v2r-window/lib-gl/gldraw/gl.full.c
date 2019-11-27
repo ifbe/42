@@ -83,36 +83,31 @@ void update_onedraw(struct gldst* dst, struct glsrc* src)
 	}
 //say("@update done\n");
 }
-void fullwindow_upload(struct supply* ogl, struct entity* ctx)
+void fullwindow_upload(struct datapair* cam, struct datapair* lit, struct datapair* solid, struct datapair* opaque)
 {
 	int j;
-	struct datapair* mod;
 	//say("@fullwindow_upload: %llx,%llx,%.8s\n", ogl, ctx, &ctx->type);
 
+	//camera
+	//update_onedraw(&cam[0].dst, &cam[0].src);
+
 	//light
-	mod = ctx->gl_light;
-	update_onedraw(&mod[0].dst, &mod[0].src);
+	update_onedraw(&lit[0].dst, &lit[0].src);
 
 	//solid
-	mod = ctx->gl_solid;
-	if(0 == mod)return;
-
 	for(j=0;j<64;j++)
 	{
-		if(0 == mod[j].src.vbuf)continue;
+		if(0 == solid[j].src.vbuf)continue;
 		//say("%d\n",j);
-		update_onedraw(&mod[j].dst, &mod[j].src);
+		update_onedraw(&solid[j].dst, &solid[j].src);
 	}
 
 	//opaque
-	mod = ctx->gl_opaque;
-	if(0 == mod)return;
-
 	for(j=0;j<64;j++)
 	{
-		if(0 == mod[j].src.vbuf)continue;
+		if(0 == opaque[j].src.vbuf)continue;
 		//say("%d\n",j);
-		update_onedraw(&mod[j].dst, &mod[j].src);
+		update_onedraw(&opaque[j].dst, &opaque[j].src);
 	}
 }
 
@@ -217,24 +212,10 @@ void render_onedraw(struct datapair* cam, struct datapair* lit, struct datapair*
 		else glDrawArrays(GL_TRIANGLES, 0, src->vbuf_h);
 	}
 }
-void fullwindow_render(struct supply* ogl, int tmp, struct halfrel* src, struct halfrel* dst)
+void fullwindow_render(struct datapair* cam, struct datapair* lit, struct datapair* solid, struct datapair* opaque, struct supply* wnd, struct fstyle* area)
 {
 	int j;
 	int x0,y0,ww,hh;
-	struct supply* wnd = src->pchip;
-	struct fstyle* area = src->pfoot;
-	struct entity* ctx = dst->pchip;
-	struct fstyle* frus = dst->pfoot;
-
-	struct datapair* cam = ctx->gl_camera;
-	struct datapair* lit = ctx->gl_light;
-	struct datapair* solid = ctx->gl_solid;
-	struct datapair* opaque = ctx->gl_opaque;
-	//say("@fullwindow_render: %.4s, %.4s\n", &src->flag, &dst->flag);
-	//say("@fullwindow_render: %llx,%llx,%llx,%llx\n", ctx->gl_camera, ctx->gl_light, ctx->gl_solid, ctx->gl_opaque);
-
-
-	//
 	x0 = area->vc[0] * wnd->fbwidth;
 	y0 = area->vc[1] * wnd->fbheight;
 	ww = area->vq[0] * wnd->fbwidth;

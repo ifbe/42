@@ -723,8 +723,27 @@ void freecam_shape2frustum(struct fstyle* s, struct fstyle* d)
 static void freecam_matrix(
 	struct entity* act, struct style* part,
 	struct entity* wrd, struct style* geom,
-	struct entity* ctx, struct style* none,
-	struct supply* wnd, struct style* area)
+	struct entity* wnd, struct style* area)
+{
+	void* mat = act->buf0;
+	struct fstyle* frus = &geom->frus;
+
+	fixmatrix(mat, frus);
+	mat4_transpose(mat);
+	//printmat4(m);
+
+	struct glsrc* src = wnd->gl_camera;
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "cammvp";
+	src->arg[0].data = mat;
+
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "camxyz";
+	src->arg[1].data = frus->vc;
+}
+void freecam_ratio(
+	struct entity* wrd, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	float dx,dy;
 	struct fstyle* rect = &area->fshape;
@@ -735,39 +754,21 @@ static void freecam_matrix(
 	dy = rect->vq[1] * wnd->fbheight;
 	frus->vb[3] = frus->vl[3] * dy / dx;
 	frus->vt[3] = frus->vr[3] * dy / dx;
-	freecam_shape2frustum(shape, frus);
-
-	float* mat = act->buf0;
-	fixmatrix((void*)mat, frus);
-	mat4_transpose((void*)mat);
-	//printmat4(m);
-
-	struct glsrc* src = ctx->gl_camera;
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "cammvp";
-	src->arg[0].data = mat;
-
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "camxyz";
-	src->arg[1].data = frus->vc;
 }
 
 
 
 
-//stack:
 //-4: wnd, area
-//-3: ctx, 0
+//-3: cam, 0
 //-2: cam, part of cam
 //-1: world, geom of cam
 static void freecam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> ctx
-	struct supply* wnd;struct style* area;
-	struct entity* ctx;
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
 	//cam -> world
-	struct entity* cam;
 	struct entity* wrd;struct style* camg;
 
 	//world -> this
@@ -776,18 +777,17 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, struct half
 
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		ctx = stack[rsp-3]->pchip;
-
-		cam = stack[rsp-2]->pchip;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		if('m' == len){
-			freecam_matrix(act,part, win,geom, ctx,0, wnd,area);
-		}
 		if('v' == len){
-			freecam_draw_vbo(act,part, win,geom, wrd,camg, ctx,0);
+			freecam_ratio(win, geom, wnd, area);
+			freecam_shape2frustum(&geom->fshape, &geom->frustum);
+			freecam_draw_vbo(act,part, win,geom, wrd,camg, wnd, area);
+		}
+		if('m' == len){
+			freecam_matrix(act,part, win,geom, wnd, area);
 		}
 	}
 }

@@ -249,7 +249,7 @@ static void terrain_draw_vbo(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
-	struct entity* ctx, struct style* none)
+	struct entity* ctx, struct style* area)
 {
 	struct glsrc* src = act->buf;
 	if(0 == src)return;
@@ -358,24 +358,25 @@ static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int
 
 static void terrain_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> ctx
-	struct entity* ctx;
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
 	//cam -> world
-	struct entity* cam;
 	struct entity* wrd;struct style* camg;
 
-	//world -> texball
+	//world -> terrain
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
 
 	if(stack){
-		ctx = stack[rsp-3]->pchip;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		terrain_draw_vbo(act,part, win,geom, wrd,camg, ctx,0);
+		if('v' == len){
+			terrain_draw_vbo(act,part, win,geom, wrd,camg, wnd, area);
+		}
 	}
 }
 static void terrain_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
