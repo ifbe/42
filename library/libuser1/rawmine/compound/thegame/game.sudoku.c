@@ -136,23 +136,24 @@ static void sudoku_draw_vbo2d(
 	}
 }*/
 static void sudoku_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	u32 rgb;
 	int x,y;
 	vec3 tc, tr, tf, tu, f;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
 
 	u8* data = act->buf;
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
 		{
-			if((act->x0 == x)&&(act->y0 == y))rgb = 0xff0000;
+			if((act->ix0 == x)&&(act->iy0 == y))rgb = 0xff0000;
 			else if((x>2)&&(x<6)&&(y>2)&&(y<6))rgb = 0xcccccc;
 			else if((x<3)&&(y<3))rgb = 0x444444;
 			else if((x<3)&&(y>5))rgb = 0x444444;
@@ -175,7 +176,7 @@ static void sudoku_draw_vbo3d(
 			tu[0] = vu[0] * f[2];
 			tu[1] = vu[1] * f[2];
 			tu[2] = vu[2] * f[2];
-			carvesolid_prism4(win, rgb, tc, tr, tf, tu);
+			carvesolid_prism4(ctx, rgb, tc, tr, tf, tu);
 			if(data[y*9+x] != 0)
 			{
 				tc[0] += tu[0] + vu[0]*0.01;
@@ -187,7 +188,7 @@ static void sudoku_draw_vbo3d(
 				tf[0] = vf[0] / 9;
 				tf[1] = vf[1] / 9;
 				tf[2] = vf[2] / 9;
-				carveascii_center(win, ~rgb, tc, tr, tf, 0x30+data[y*9+x]);
+				carveascii_center(ctx, ~rgb, tc, tr, tf, 0x30+data[y*9+x]);
 			}
 		}
 	}
@@ -244,7 +245,7 @@ static void sudoku_draw_tui(
 			ret <<= 2;
 
 			//color
-			if( (act->x0 == x)&&(act->x0 == y) )color = 1;
+			if( (act->ix0 == x)&&(act->ix0 == y) )color = 1;
 			else if( ((x>2)&&(x<6)) && ((y<3)|(y>5)) )color = 2;
 			else if( ((y>2)&&(y<6)) && ((x<3)|(x>5)) )color = 2;
 			else color = 4;
@@ -300,25 +301,25 @@ static void sudoku_event(
 	{
 		if(key == 0x48)	//up
 		{
-			if(act->y0 < 1)return;
-			act->y0--;
+			if(act->iy0 < 1)return;
+			act->iy0--;
 		}
 		else if(key == 0x4b)	//left
 		{
-			if(act->x0 < 1)return;
-			act->x0--;
+			if(act->ix0 < 1)return;
+			act->ix0--;
 		}
 		else if(key == 0x4d)	//right
 		{
-			if(act->x0 < 0)return;
-			if(act->x0 >= 8)return;
-			act->x0++;
+			if(act->ix0 < 0)return;
+			if(act->ix0 >= 8)return;
+			act->ix0++;
 		}
 		else if(key == 0x50)	//down
 		{
-			if(act->y0 < 0)return;
-			if(act->y0 >= 8)return;
-			act->y0++;
+			if(act->iy0 < 0)return;
+			if(act->iy0 >= 8)return;
+			act->iy0++;
 		}
 	}
 }
@@ -326,20 +327,28 @@ static void sudoku_event(
 
 
 
-static void sudoku_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void sudoku_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	say("@sudoku_read:%llx,%llx,%llx\n",act,win,buf);
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)sudoku_draw_vbo3d(act,pin,ctx,sty);
+	//cam -> world
+	struct entity* wrd;struct style* camg;
+
+	//world -> this
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
+
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		if('v' == len){
+			sudoku_draw_vbo3d(act,part, win,geom, wnd,area);
+		}
 	}
-	//sudoku_draw(act, pin, win, sty);
 }
 static void sudoku_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -392,8 +401,8 @@ static void sudoku_create(struct entity* act, void* str)
 	for(ret=0;ret<81;ret+=9)printmemory(buf+ret, 9);
 
 	act->buf = buf;
-	act->x0 = 0;
-	act->y0 = 0;
+	act->ix0 = 0;
+	act->iy0 = 0;
 }
 
 

@@ -87,16 +87,17 @@ static void chess_draw_vbo2d(
 	}
 }*/
 static void chess_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	u32 rgb;
 	int x,y;
 	vec3 tc, tr, tf, tu, f;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
 	for(y=0;y<8;y++)
 	{
 		for(x=0;x<8;x++)
@@ -120,7 +121,7 @@ static void chess_draw_vbo3d(
 
 			if(((x+y+32)%2) != 0)rgb = 0x111111;
 			else rgb = 0xffffff;
-			carvesolid_prism4(win, rgb, tc, tr, tf, tu);
+			carvesolid_prism4(ctx, rgb, tc, tr, tf, tu);
 		}
 	}
 }
@@ -202,18 +203,25 @@ static void chess_draw(
 
 
 
-static void chess_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void chess_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	say("@chess_read:%llx,%llx,%llx\n",act,win,buf);
+	//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)chess_draw_vbo3d(act,pin,ctx,sty);
+	//world -> this
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
+
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		if('v' == len){
+			chess_draw_vbo3d(act,part, win,geom, wnd,area);
+		}
 	}
 	//chess_draw(act, pin, win, sty);
 }

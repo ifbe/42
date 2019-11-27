@@ -105,84 +105,20 @@ static void weiqi_draw_pixel(
 			);
 		}
 	}
-}/*
-static void weiqi_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	int x,y;
-	int j,rgb;
-	vec3 tc, tr, tf, tu, f;
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carvesolid2d_rect(win, 0xf9d65b, vc, vr, vf);
-
-	for(y=-9;y<10;y++)
-	{
-		f[0] = 18.0/19;
-		f[1] = y*2.0/19;
-		f[2] = 1.0/19/4;
-		tc[0] = vc[0] - f[0]*vr[0] + f[1]*vf[0];
-		tc[1] = vc[1] - f[0]*vr[1] + f[1]*vf[1];
-		tc[2] = vc[2] - f[0]*vr[2] + f[1]*vf[2];
-		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
-		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
-		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
-		carveline2d(win, 0x222222, tc, tr);
-	}
-	for(x=-9;x<10;x++)
-	{
-		f[0] = x*2.0/19;
-		f[1] = 18.0/19;
-		f[2] = 1.0/19/4;
-		tc[0] = vc[0] + f[0]*vr[0] - f[1]*vf[0];
-		tc[1] = vc[1] + f[0]*vr[1] - f[1]*vf[1];
-		tc[2] = vc[2] + f[0]*vr[2] - f[1]*vf[2];
-		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
-		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
-		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
-		carveline2d(win, 0x222222, tc, tr);
-	}
-
-	u8* data = act->buf;
-	tr[0] = vr[0]/19;
-	tr[1] = vr[1]/19;
-	tr[2] = vr[2]/19;
-	tf[0] = vf[0]/19;
-	tf[1] = vf[1]/19;
-	tf[2] = vf[2]/19;
-	for(y=-9;y<10;y++)
-	{
-		for(x=-9;x<10;x++)
-		{
-			j = data[19*(y+9) + x+9];
-			if('w' == j)rgb = 0xc0c0c0;
-			else if('b' == j)rgb = 0x404040;
-			else continue;
-
-			tc[0] = vc[0] + tr[0]*x*2 - tf[0]*y*2;
-			tc[1] = vc[1] + tr[1]*x*2 - tf[1]*y*2;
-			tc[2] = vc[2] + tr[2]*x*2 - tf[2]*y*2 - 0.1;
-			carvesolid2d_circle(win, rgb, tc, tr, tf);
-		}
-	}
-}*/
+}
 static void weiqi_draw_vbo(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	int x,y;
 	int j,k,rgb;
 	vec3 tc, tr, tf, tu, f;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carvesolid_rect(win, 0xf9d65b, vc, vr, vf);
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	carvesolid_rect(ctx, 0xf9d65b, vc, vr, vf);
 
 	for(y=-9;y<10;y++)
 	{
@@ -195,7 +131,7 @@ static void weiqi_draw_vbo(
 		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
 		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
 		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
-		carveline(win, 0x222222, tc, tr);
+		carveline(ctx, 0x222222, tc, tr);
 	}
 	for(x=-9;x<10;x++)
 	{
@@ -208,7 +144,7 @@ static void weiqi_draw_vbo(
 		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
 		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
 		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
-		carveline(win, 0x222222, tc, tr);
+		carveline(ctx, 0x222222, tc, tr);
 	}
 
 	u8* data = act->buf;
@@ -234,7 +170,7 @@ static void weiqi_draw_vbo(
 			tc[0] = vc[0] + tr[0]*x*2 - tf[0]*y*2 + tu[0];
 			tc[1] = vc[1] + tr[1]*x*2 - tf[1]*y*2 + tu[1];
 			tc[2] = vc[2] + tr[2]*x*2 - tf[2]*y*2 + tu[2];
-			carvesolid_sphere(win, rgb, tc, tr, tf, tu);
+			carvesolid_sphere(ctx, rgb, tc, tr, tf, tu);
 
 			k++;
 			//if(k>50)return;
@@ -391,20 +327,28 @@ static void weiqi_event(
 
 
 
-static void weiqi_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void weiqi_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	say("@weiqi_read:%llx,%llx,%llx\n",act,win,buf);
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)weiqi_draw_vbo(act,pin,ctx,sty);
+	//cam -> world
+	struct entity* wrd;struct style* camg;
+
+	//world -> this
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
+
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		if('v' == len){
+			weiqi_draw_vbo(act,part, win,geom, wnd,area);
+		}
 	}
-	//weiqi_draw(act, pin, win, sty);
 }
 static void weiqi_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

@@ -107,7 +107,7 @@ static void human_delete(struct entity* act)
 static void human_create(struct entity* act)
 {
 	if(0 == act)return;
-	act->z0 = 0;
+	act->fz0 = 0;
 }
 
 

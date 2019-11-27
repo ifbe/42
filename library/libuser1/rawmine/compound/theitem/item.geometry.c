@@ -54,8 +54,8 @@ static void geometry_draw_vbo3d(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	int dimen = act->w0;
-	int shape = act->wn;
+	int dimen = act->iw0;
+	int shape = act->iwn;
 	//say("%d,%d\n",dimen,shape);
 
 	if('q' == shape){
@@ -198,8 +198,8 @@ static void geometry_event(
 	if(_char_ == ev->what)
 	{
 		c = ev->why;
-		if((c>='0') && (c<='9'))act->w0 = c;
-		if((c>='a') && (c<='z'))act->wn = c;
+		if((c>='0') && (c<='9'))act->iw0 = c;
+		if((c>='a') && (c<='z'))act->iwn = c;
 	}
 }
 
@@ -255,8 +255,8 @@ static void geometry_create(struct entity* act, u8* buf)
 		dimen = buf[0];
 		shape = buf[1];
 	}
-	act->w0 = dimen;
-	act->wn = shape;
+	act->iw0 = dimen;
+	act->iwn = shape;
 }
 
 

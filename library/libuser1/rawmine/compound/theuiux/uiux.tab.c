@@ -117,7 +117,7 @@ void tabbar_vbo_listroot(
             aa = (void*)(rel->dstchip);
             carvestring_center(win, 0xffffff, tc, tr, tf, (void*)(&aa->fmt), 8);
 
-            if(j == act->x0)tabbar_vbo_listtwig(win, sty, aa, j);
+            if(j == act->ix0)tabbar_vbo_listtwig(win, sty, aa, j);
 
             j++;
             if(j == 8)break;
@@ -212,7 +212,7 @@ void tabbar_pixel_listroot(
                 (j+5)*w/16, h-1,
                 (void*)(&aa->fmt), 8);
 
-            if(j == act->x0)tabbar_pixel_listtwig(win, sty, aa, j);
+            if(j == act->ix0)tabbar_pixel_listtwig(win, sty, aa, j);
 
             j++;
             if(j == 8)break;
@@ -278,7 +278,7 @@ static int tabbar_event_child(
     struct relation* rel;
     struct entity* tmp;
     struct style* st;
-    if(act->x0 < 0)return 0;
+    if(act->ix0 < 0)return 0;
 
     j = 0;
     rel = win->orel0;
@@ -288,7 +288,7 @@ static int tabbar_event_child(
 
         if(_sup_ == rel->dsttype){
             tmp = (void*)(rel->dstchip);
-            if(j == act->x0)goto found;
+            if(j == act->ix0)goto found;
 
             j += 1;
             if(j >= 8)break;
@@ -349,11 +349,11 @@ static int tabbar_event(
         x -= 4;
 
         if( (y >= 31) && (x >= 0) && (x < 8) ){
-            if(act->x0 == x)act->x0 = -1;
-            else act->x0 = x;
+            if(act->ix0 == x)act->ix0 = -1;
+            else act->ix0 = x;
             return 1;
         }else{
-            act->x0 = -1;
+            act->ix0 = -1;
         }
     }
     return 0;
@@ -402,7 +402,7 @@ static void tabbar_delete(struct entity* act)
 }
 static void tabbar_create(struct entity* act, void* str)
 {
-    act->x0 = -1;
+    act->ix0 = -1;
 }
 
 

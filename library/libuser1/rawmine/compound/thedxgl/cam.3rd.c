@@ -150,11 +150,11 @@ static int thirdperson_event(
 
 	if(0x4070 == ev->what){
 		t = (void*)ev;
-		if(act->w0 != 0){
-			thirdperson_fixcam(obb, tar, t[0] - act->xn, t[1] - act->yn, 0);
+		if(act->iw0 != 0){
+			thirdperson_fixcam(obb, tar, t[0] - act->fxn, t[1] - act->fyn, 0);
 		}
-		act->xn = t[0];
-		act->yn = t[1];
+		act->fxn = t[0];
+		act->fyn = t[1];
 	}
 	if(0x2b70 == ev->what){
 		t = (void*)ev;
@@ -162,9 +162,9 @@ static int thirdperson_event(
 		switch(t[3]){
 			case 'l':
 			case 'r':{
-				act->w0 = 1;
-				act->x0 = act->xn = t[0];
-				act->y0 = act->yn = t[1];
+				act->iw0 = 1;
+				act->fx0 = act->fxn = t[0];
+				act->fy0 = act->fyn = t[1];
 				break;
 			}
 			case 'f':{
@@ -178,7 +178,7 @@ static int thirdperson_event(
 		}
 	}
 	if(0x2d70 == ev->what){
-		act->w0 = 0;
+		act->iw0 = 0;
 	}
 
 	return 0;

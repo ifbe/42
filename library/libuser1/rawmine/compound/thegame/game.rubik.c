@@ -156,16 +156,17 @@ static void rubikscube_draw_pixel(
 	}
 }
 static void rubikscube_draw_vbo(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	int x,y,rgb;
 	vec3 f;
 	vec3 tc, tr, tf, tu;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
 
 	u8 (*buf)[4][4] = act->buf;
 	if(0 == buf)return;
@@ -188,7 +189,7 @@ static void rubikscube_draw_vbo(
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
 			rgb = rubikcolor[(buf[0][y][x])%6];
-			carvesolid_rect(win, rgb, tc, tr, tf);
+			carvesolid_rect(ctx, rgb, tc, tr, tf);
 
 			//right
 			f[0] = 1.0;
@@ -204,7 +205,7 @@ static void rubikscube_draw_vbo(
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
 			rgb = rubikcolor[(buf[1][y][x])%6];
-			carvesolid_rect(win, rgb, tc, tr, tf);
+			carvesolid_rect(ctx, rgb, tc, tr, tf);
 		}
 	}
 
@@ -226,7 +227,7 @@ static void rubikscube_draw_vbo(
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
 			rgb = rubikcolor[(buf[2][y][x])%6];
-			carvesolid_rect(win, rgb, tc, tr, tf);
+			carvesolid_rect(ctx, rgb, tc, tr, tf);
 
 			//far
 			f[0] = 1.0 - (2.0*x+1.0)/level;
@@ -242,7 +243,7 @@ static void rubikscube_draw_vbo(
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
 			rgb = rubikcolor[(buf[3][y][x])%6];
-			carvesolid_rect(win, rgb, tc, tr, tf);
+			carvesolid_rect(ctx, rgb, tc, tr, tf);
 		}
 	}
 
@@ -264,7 +265,7 @@ static void rubikscube_draw_vbo(
 			tf[1] = -vf[1] / (level+0.5);
 			tf[2] = -vf[2] / (level+0.5);
 			rgb = rubikcolor[(buf[4][y][x])%6];
-			carvesolid_rect(win, rgb, tc, tr, tf);
+			carvesolid_rect(ctx, rgb, tc, tr, tf);
 
 			//upper
 			f[0] = (2.0*x+1.0)/level - 1.0;
@@ -280,7 +281,7 @@ static void rubikscube_draw_vbo(
 			tf[1] = vf[1] / (level+0.5);
 			tf[2] = vf[2] / (level+0.5);
 			rgb = rubikcolor[(buf[5][y][x])%6];
-			carvesolid_rect(win, rgb, tc, tr, tf);
+			carvesolid_rect(ctx, rgb, tc, tr, tf);
 		}
 	}
 }
@@ -323,7 +324,6 @@ static void rubikscube_draw(
 	else if(fmt == _tui_)rubikscube_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)rubikscube_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)rubikscube_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)rubikscube_draw_vbo(act, pin, win, sty);
 	else rubikscube_draw_pixel(act, pin, win, sty);
 }
 static void rubikscube_event(
@@ -342,18 +342,27 @@ static void rubikscube_event(
 
 
 
-static void rubikscube_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void rubikscube_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	say("@rubik_read:%llx,%llx,%llx\n",act,win,buf);
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)rubikscube_draw_vbo(act,pin,ctx,sty);
+	//cam -> world
+	struct entity* wrd;struct style* camg;
+
+	//world -> this
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
+
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		if('v' == len){
+			rubikscube_draw_vbo(act,part, win,geom, wnd,area);
+		}
 	}
 	//rubikscube_draw(act, pin, win, sty);
 }

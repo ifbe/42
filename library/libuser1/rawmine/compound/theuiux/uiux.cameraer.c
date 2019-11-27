@@ -102,7 +102,7 @@ found:
 			tc[1] = (15 - 2*y) / 32.0;
 			tc[2] = 0.0;
 
-			if(y == act->y0)rgb = 0xff00ff;
+			if(y == act->iy0)rgb = 0xff00ff;
 			else rgb = 0xffffff;
 			y += 1;
 
@@ -160,7 +160,7 @@ found:
 			tc[1] = (-1 - 2*y) / 32.0;
 			tc[2] = 0.0;
 
-			if(y == act->y0)rgb = 0xff00ff;
+			if(y == act->iy0)rgb = 0xff00ff;
 			else rgb = 0xffffff;
 			y += 1;
 
@@ -225,7 +225,7 @@ static int camman_event(
 		if((y >= 8) && (y <= 23)){
 			if(x <= 0)return 1;
 			if(x >= 7){
-				act->y0 = y-8;
+				act->iy0 = y-8;
 				return 1;
 			}
 		}

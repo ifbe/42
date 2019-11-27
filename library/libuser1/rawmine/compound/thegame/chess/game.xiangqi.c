@@ -187,110 +187,20 @@ void xiangqi_draw_pixel(
 			);
 		}//forx
 	}//fory
-}/*
-static void xiangqi_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	int x,y;
-	u32 chesscolor, fontcolor, temp;
-	vec3 tc, tr, tf, tu, f;
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carvesolid2d_rect(win, 0x8d6f25, vc, vr, vf);
-
-	for(y=-5;y<5;y++)
-	{
-		f[0] = 8.0/9;
-		f[1] = (2*y+1)/10.0;
-		f[2] = 0.0;
-		tc[0] = vc[0] - f[0]*vr[0] + f[1]*vf[0];
-		tc[1] = vc[1] - f[0]*vr[1] + f[1]*vf[1];
-		tc[2] = vc[2] - f[0]*vr[2] + f[1]*vf[2];
-		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
-		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
-		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
-		carveline2d(win, 0x222222, tc, tr);
-	}
-	for(x=-4;x<5;x++)
-	{
-		f[0] = x*2/9.0;
-		f[1] = -1.0/10.0;
-		f[2] = 0.0;
-		tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
-		tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
-		tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
-		f[1] = -9.0/10.0;
-		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
-		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
-		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
-		carveline2d(win, 0x222222, tc, tr);
-
-		f[1] = 1.0/10.0;
-		tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
-		tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
-		tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
-		f[1] = 9.0/10.0;
-		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
-		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
-		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
-		carveline2d(win, 0x222222, tc, tr);
-	}
-
-	for(y=0;y<10;y++)
-	{
-		for(x=0;x<9;x++)
-		{
-			//empty
-			if(data[y][x] < 'A')continue;
-
-			//>0x41
-			else if(data[y][x] <= 'Z')fontcolor = 0;
-
-			//>0x61
-			else if(data[y][x] <= 'z')fontcolor = 0xff0000;
-
-			f[0] = (x+x-8)/9.0;
-			f[1] = (y+y-9)/10.0;
-			f[2] = 1.0/20;
-			tc[0] = vc[0] + f[0]*vr[0] - f[1]*vf[0];
-			tc[1] = vc[1] + f[0]*vr[1] - f[1]*vf[1];
-			tc[2] = vc[2] + f[0]*vr[2] - f[1]*vf[2]-0.1;
-			tr[0] = vr[0] / 9.1;
-			tr[1] = vr[1] / 9.1;
-			tr[2] = vr[2] / 9.1;
-			tf[0] = vf[0] / 9.1;
-			tf[1] = vf[1] / 9.1;
-			tf[2] = vf[2] / 9.1;
-			carvesolid2d_circle(win, 0xf9d65b, tc, tr, tf);
-			tc[2] -= 0.1;
-			tr[0] = vr[0] / 18;
-			tr[1] = vr[1] / 18;
-			tr[2] = vr[2] / 18;
-			tf[0] = vf[0] / 18;
-			tf[1] = vf[1] / 18;
-			tf[2] = vf[2] / 18;
-			carve2d_utf8(win, fontcolor, tc, tr, tf,
-				(u8*)char2hanzi(data[y][x]), 0);
-		}
-	}
-}*/
+}
 static void xiangqi_draw_vbo(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	int x,y;
 	u32 chesscolor, fontcolor, temp;
 	vec3 tc, tr, tf, tu, f;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carvesolid_rect(win, 0x8d6f25, vc, vr, vf);
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	carvesolid_rect(ctx, 0x8d6f25, vc, vr, vf);
 
 	for(y=-5;y<5;y++)
 	{
@@ -303,7 +213,7 @@ static void xiangqi_draw_vbo(
 		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
 		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
 		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
-		carveline(win, 0x222222, tc, tr);
+		carveline(ctx, 0x222222, tc, tr);
 	}
 	for(x=-4;x<5;x++)
 	{
@@ -317,7 +227,7 @@ static void xiangqi_draw_vbo(
 		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
 		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
 		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
-		carveline(win, 0x222222, tc, tr);
+		carveline(ctx, 0x222222, tc, tr);
 
 		f[1] = 1.0/10.0;
 		tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
@@ -327,7 +237,7 @@ static void xiangqi_draw_vbo(
 		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
 		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
 		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
-		carveline(win, 0x222222, tc, tr);
+		carveline(ctx, 0x222222, tc, tr);
 	}
 
 	for(y=0;y<10;y++)
@@ -358,7 +268,7 @@ static void xiangqi_draw_vbo(
 			tu[0] = vu[0] / 20.0;
 			tu[1] = vu[1] / 20.0;
 			tu[2] = vu[2] / 20.0;
-			carvesolid_cylinder(win, 0xf9d65b, tc, tr, tf, tu);
+			carvesolid_cylinder(ctx, 0xf9d65b, tc, tr, tf, tu);
 
 			tc[0] += tu[0] + vu[0]*0.01;
 			tc[1] += tu[1] + vu[1]*0.01;
@@ -369,7 +279,7 @@ static void xiangqi_draw_vbo(
 			tf[0] = vf[0] / 8;
 			tf[1] = vf[1] / 8;
 			tf[2] = vf[2] / 8;
-			carveutf8_center(win, fontcolor, tc, tr, tf,
+			carveutf8_center(ctx, fontcolor, tc, tr, tf,
 				(u8*)char2hanzi(data[y][x]), 0);
 		}
 	}
@@ -546,11 +456,11 @@ void xiangqi_event(
 	{
 		if(key == 0x20)
 		{
-			ret = xiangqi_pickup(qx, qy, act->w0);
+			ret = xiangqi_pickup(qx, qy, act->iw0);
 			if(ret > 0)return;
 
 			//move?
-			xiangqi_move(data, &act->w0, px, py, qx, qy);
+			xiangqi_move(data, &act->iw0, px, py, qx, qy);
 		}
 		else if(key == 0x415b1b)
 		{
@@ -595,11 +505,11 @@ void xiangqi_event(
 		if(y > 9)return;
 
 		//pick?
-		ret = xiangqi_pickup(x, y, act->w0);
+		ret = xiangqi_pickup(x, y, act->iw0);
 		if(ret > 0)return;
 
 		//move?
-		xiangqi_move(data, &act->w0, px, py, x, y);
+		xiangqi_move(data, &act->iw0, px, py, x, y);
 		px = py = -1;
 	}
 }
@@ -607,20 +517,26 @@ void xiangqi_event(
 
 
 
-static void xiangqi_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void xiangqi_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	//say("@xiangqi_read:%llx,%llx,%llx\n",act,win,buf);
+	//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)xiangqi_draw_vbo(act,pin,ctx,sty);
+	//world -> this
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
+
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		if('v' == len){
+			xiangqi_draw_vbo(act,part, win,geom, wnd,area);
+		}
 	}
-	//xiangqi_draw(act, pin, win, sty);
 }
 static void xiangqi_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -672,9 +588,9 @@ say("@xiangqi_create:%llx\n",str);
 
 	for(ret=0;ret<90;ret+=9)printmemory(buf+ret, 9);
 
-	act->x0 = act->y0 = -1;
-	act->xn = act->yn = 0;
-	act->w0 = 0;
+	act->ix0 = act->iy0 = -1;
+	act->ixn = act->iyn = 0;
+	act->iw0 = 0;
 	act->buf = buf;
 }
 

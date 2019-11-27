@@ -146,7 +146,7 @@ void overview_draw_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	cursor = (act->x0) + (act->y0)*16;
+	cursor = (act->ix0) + (act->iy0)*16;
 /*
 	drawline(win, 0x0000ff, 0, h*1/4, w-1, h*1/4);
 	drawline(win, 0x00ff00, 0, h*2/4, w-1, h*2/4);
@@ -466,7 +466,7 @@ void overview_draw_vbo(
 	vr = geom->fshape.vr;
 	vf = geom->fshape.vf;
 	vt = geom->fshape.vt;
-	cursor = (act->x0) + (act->y0)*16;
+	cursor = (act->ix0) + (act->iy0)*16;
 
 /*
 	tc[0] = -1.0;
@@ -1249,8 +1249,8 @@ static int overview_event(
 			x = 4 + 4 * (x - (sty->f.vc[0])) / (sty->f.vr[0]);
 			y = 16 + 16 * (y - (sty->f.vc[1])) / (sty->f.vf[1]);
 		}
-		act->x0 = x;
-		act->y0 = y;
+		act->ix0 = x;
+		act->iy0 = y;
 /*
 		if('-' == k)
 		{

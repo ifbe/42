@@ -135,18 +135,19 @@ static void maze_draw_pixel(
 	}
 }
 static void maze_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	int x,y,z,w;
 	vec3 tc, tr, tf, tu, f;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
 	u8* buf = act->buf;
 
-	carvesolid_rect(win, 0, vc, vr, vf);
+	carvesolid_rect(ctx, 0, vc, vr, vf);
 	for(y=0;y<HEIGHT;y++)
 	{
 		for(x=0;x<WIDTH;x++)
@@ -166,7 +167,7 @@ static void maze_draw_vbo3d(
 				tf[0] = vu[0] / (WIDTH+HEIGHT);
 				tf[1] = vu[1] / (WIDTH+HEIGHT);
 				tf[2] = vu[2] / (WIDTH+HEIGHT);
-				carvesolid_rect(win, 0x808080, tc, tr, tf);
+				carvesolid_rect(ctx, 0x808080, tc, tr, tf);
 			}
 			else if((w&0x80) == 0x80)
 			{
@@ -181,7 +182,7 @@ static void maze_draw_vbo3d(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid_rect(win, 0xff0000, tc, tr, tf);
+				carvesolid_rect(ctx, 0xff0000, tc, tr, tf);
 			}
 
 			if((w&2) == 2)	//right
@@ -198,7 +199,7 @@ static void maze_draw_vbo3d(
 				tf[0] = vu[0] / (WIDTH+HEIGHT);
 				tf[1] = vu[1] / (WIDTH+HEIGHT);
 				tf[2] = vu[2] / (WIDTH+HEIGHT);
-				carvesolid_rect(win, 0x909090, tc, tr, tf);
+				carvesolid_rect(ctx, 0x909090, tc, tr, tf);
 			}
 			else if((w&0x80) == 0x80)
 			{
@@ -213,7 +214,7 @@ static void maze_draw_vbo3d(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid_rect(win, 0xff0000, tc, tr, tf);
+				carvesolid_rect(ctx, 0xff0000, tc, tr, tf);
 			}
 
 			if((w&4) == 4)	//down	//careful,different
@@ -230,7 +231,7 @@ static void maze_draw_vbo3d(
 				tf[0] = vu[0] / (WIDTH+HEIGHT);
 				tf[1] = vu[1] / (WIDTH+HEIGHT);
 				tf[2] = vu[2] / (WIDTH+HEIGHT);
-				carvesolid_rect(win, 0x707070, tc, tr, tf);
+				carvesolid_rect(ctx, 0x707070, tc, tr, tf);
 			}
 			else if((w&0x80) == 0x80)
 			{
@@ -245,7 +246,7 @@ static void maze_draw_vbo3d(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid_rect(win, 0xff0000, tc, tr, tf);
+				carvesolid_rect(ctx, 0xff0000, tc, tr, tf);
 			}
 
 			if((w&8) == 8)	//up	//careful,different
@@ -262,7 +263,7 @@ static void maze_draw_vbo3d(
 				tf[0] = vu[0] / (WIDTH+HEIGHT);
 				tf[1] = vu[1] / (WIDTH+HEIGHT);
 				tf[2] = vu[2] / (WIDTH+HEIGHT);
-				carvesolid_rect(win, 0x606060, tc, tr, tf);
+				carvesolid_rect(ctx, 0x606060, tc, tr, tf);
 			}
 			else if((w&0x80) == 0x80)
 			{
@@ -277,7 +278,7 @@ static void maze_draw_vbo3d(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid_rect(win, 0xff0000, tc, tr, tf);
+				carvesolid_rect(ctx, 0xff0000, tc, tr, tf);
 			}
 		}
 	}
@@ -363,10 +364,10 @@ static void maze_event(
 	{
 		switch(ev->why)
 		{
-			case 'a':act->x0 -= 1;break;
-			case 'd':act->x0 += 1;break;
-			case 's':act->y0 -= 1;break;
-			case 'w':act->y0 += 1;break;
+			case 'a':act->ix0 -= 1;break;
+			case 'd':act->ix0 += 1;break;
+			case 's':act->iy0 -= 1;break;
+			case 'w':act->iy0 += 1;break;
 		}
 	}
 }
@@ -374,18 +375,25 @@ static void maze_event(
 
 
 
-static void maze_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void maze_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	say("@maze_read:%llx,%llx,%llx\n",act,win,buf);
+	//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)maze_draw_vbo3d(act,pin,ctx,sty);
+	//world -> this
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
+
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		if('v' == len){
+			maze_draw_vbo3d(act,part, win,geom, wnd,area);
+		}
 	}
 	//maze_draw(act, pin, win, sty);
 }
@@ -429,8 +437,8 @@ static void maze_create(struct entity* act)
 	if(0 == act)return;
 	act->buf = memorycreate(WIDTH*HEIGHT, 0);
 
-	act->x0 = 31;
-	act->y0 = -31;
+	act->ix0 = 31;
+	act->iy0 = -31;
 
 	maze_generate(act->buf, WIDTH, HEIGHT);
 	maze_solve(act->buf, WIDTH, HEIGHT);

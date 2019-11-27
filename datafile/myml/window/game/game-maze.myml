@@ -1,34 +1,3 @@
-<supply>
-opengl{
-fmt:wnd
-title:"42"
-width:1024
-height:1024
-depth:1024
-}
-</supply>
-
-
-<entity>
-maze{
-fmt:maze
-}
-freecam{
-fmt:freecam
-}
-3dworld{
-fmt:3dworld
-}
-
-thectx{
-fmt:gl41data
-}
-thewnd{
-fmt:gl41wnd0
-}
-</entity>
-
-
 <style>
 skyhaha{
 }
@@ -46,14 +15,12 @@ c: 0.0, 0.0, 1200.0
 r: 1000.0, 0.0, 0.0
 t: 0.0, 1000.0, 0.0
 f: 0.0, 0.0, -1000.0
-}
-freefrus{
-l: 0.0, 0.0, 0.0, -1.0
-r: 0.0, 0.0, 0.0, 1.0
-b: 0.0, 0.0, 0.0, -1.0
-t: 0.0, 0.0, 0.0, 1.0
-n: 0.0, 0.0, 0.0, 1.0
-f: 0.0, 0.0, 0.0, 1000000000.0
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
 }
 freerect{
 c:0.0, 0.0
@@ -62,21 +29,49 @@ q:1.0, 1.0
 </style>
 
 
-<relation>
+<entity>
+maze{
+fmt:maze
+}
+freecam{
+fmt:freecam
+}
+3dworld{
+fmt:3dworld
+}
+</entity>
 
+
+<supply>
+thewnd{
+fmt:gl41wnd0
+}
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+dt:16ms
+}
+</worker>
+
+
+<relation>
 #3dworld depends on inner objects
 (3dworld, skygeom, 0) -> (maze, skyhaha, 0)
 (3dworld, freegeom, 0) -> (freecam, freemodl, 0)
 
-#glctx depends on scene
-(thectx, 0, 0) -> (3dworld, 0, gl41)
+#glwnd depends on cam
+(thewnd, freerect, mvp) -> (freecam, 0, 0)
 
-#glwnd depends on ctx + cam
-(thewnd, 0, ctx) -> (thectx, 0, 0)
-(thewnd, freerect, mvp) -> (freecam, freefrus, 0)
-
-#opengl depends on ctx + wnd
-(opengl, 0, ctx) -> (thectx, 0, 0)
+#opengl depends on wnd
 (opengl, 0, wnd) -> (thewnd, 0, 0)
-
 </relation>

@@ -115,18 +115,19 @@ static void the2048_draw_pixel(
 	}
 }
 static void the2048_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	u32 rgb;
 	int x,y;
 	u8 (*tab)[4];
 	vec3 tc, tr, tf, tu, f;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carvesolid_rect(win, 0x444444, vc, vr, vf);
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	carvesolid_rect(ctx, 0x444444, vc, vr, vf);
 
 	if(0 == act->buf)tab = ((void*)act) + 0x100;
 	else tab = (void*)(act->buf) + (act->len)*16;
@@ -153,7 +154,7 @@ static void the2048_draw_vbo3d(
 			tu[0] = vu[0]*f[2];
 			tu[1] = vu[1]*f[2];
 			tu[2] = vu[2]*f[2];
-			carvesolid_prism4(win, rgb, tc, tr, tf, tu);
+			carvesolid_prism4(ctx, rgb, tc, tr, tf, tu);
 
 			tc[0] += tu[0] + vu[0]*0.01;
 			tc[1] += tu[1] + vu[1]*0.01;
@@ -164,7 +165,7 @@ static void the2048_draw_vbo3d(
 			tf[0] = vf[0]/16;
 			tf[1] = vf[1]/16;
 			tf[2] = vf[2]/16;
-			carvedecimal(win, ~rgb, tc, tr, tf, val2048[tab[y][x]]);
+			carvedecimal(ctx, ~rgb, tc, tr, tf, val2048[tab[y][x]]);
 		}
 	}
 }
@@ -343,17 +344,30 @@ static void the2048_event(
 
 
 
-static void the2048_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void the2048_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	struct entity* act;struct style* part;
+	//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+	//world -> 2048
 	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
 	//say("@the2048_read\n");
 
 	act = self->pchip;part = self->pfoot;
 	win = peer->pchip;geom = peer->pfoot;
-	switch(win->fmt){
-	case _tui_:the2048_draw_tui(act, part, win, geom);break;
-	default:the2048_draw_pixel(act, part, win, geom);
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		if('v' == len){
+			the2048_draw_vbo3d(act,part, win,geom, wnd,area);
+		}
+	}
+	else{
+		switch(win->fmt){
+		case _tui_:the2048_draw_tui(act, part, win, geom);break;
+		default:the2048_draw_pixel(act, part, win, geom);
+		}
 	}
 }
 static void the2048_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

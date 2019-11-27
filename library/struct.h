@@ -1,3 +1,5 @@
+typedef float f32;
+typedef double f64;
 typedef char s8;
 typedef short s16;
 typedef int s32;
@@ -1109,14 +1111,38 @@ struct entity
 	int fbstride;
 
 	//[e0,ef]
-	int x0;
-	int y0;
-	int z0;
-	int w0;
+	union{
+		int ix0;
+		f32 fx0;
+	};
+	union{
+		int iy0;
+		f32 fy0;
+	};
+	union{
+		int iz0;
+		f32 fz0;
+	};
+	union{
+		int iw0;
+		f32 fw0;
+	};
 
 	//[f0,ff]
-	int xn;
-	int yn;
-	int zn;
-	int wn;
+	union{
+		int ixn;
+		f32 fxn;
+	};
+	union{
+		int iyn;
+		f32 fyn;
+	};
+	union{
+		int izn;
+		f32 fzn;
+	};
+	union{
+		int iwn;
+		f32 fwn;
+	};
 };

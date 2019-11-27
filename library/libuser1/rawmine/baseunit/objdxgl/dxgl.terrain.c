@@ -120,8 +120,8 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct entity* act, struct gl
 	{
 		for(x=0;x<256;x++)
 		{
-			x0 = x + act->x0;
-			y0 = y + act->y0;
+			x0 = x + act->fx0;
+			y0 = y + act->fy0;
 
 			//pixel ->  local xyz (->     world xyz)
 			//    0 ->       -1.0 (-> -127.5*1000.0)
@@ -262,8 +262,8 @@ static void terrain_draw_vbo(
 	if(0 == vbuf)return;
 	if(0 == ibuf)return;
 
-	if(0 == act->w0){
-		act->w0 = 42;
+	if(0 == act->iw0){
+		act->iw0 = 42;
 
 		terrain_generate(vbuf, ibuf, act, src);
 		src->vbuf_enq += 1;
@@ -280,8 +280,8 @@ static void terrain_draw_vbo(
 		mat[ 9] = 0.0;
 		mat[10] = 10.0*1000.0;
 		mat[11] = 0.0;
-		mat[12] = act->x0 * 1000.0;
-		mat[13] = act->y0 * 1000.0;
+		mat[12] = act->fx0 * 1000.0;
+		mat[13] = act->fy0 * 1000.0;
 		mat[14] = -10000.0;
 		mat[15] = 1.0;
 	}
@@ -329,28 +329,28 @@ static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	say("%f,%f,%f\n", v[0], v[1], v[2]);
 
 	x = v[0] / 1000.0;
-	act->xn = (int)x;
-	while(act->xn <= act->x0-64){
-		act->x0 -= 64;
-		act->w0 = 0;
+	act->fxn = (int)x;
+	while(act->fxn <= act->fx0-64){
+		act->fx0 -= 64;
+		act->iw0 = 0;
 	}
-	while(act->xn >= act->x0+64){
-		act->x0 += 64;
-		act->w0 = 0;
+	while(act->fxn >= act->fx0+64){
+		act->fx0 += 64;
+		act->iw0 = 0;
 	}
 
 	y = v[1] / 1000.0;
-	act->yn = (int)y;
-	while(act->yn <= act->y0-64){
-		act->y0 -= 64;
-		act->w0 = 0;
+	act->fyn = (int)y;
+	while(act->fyn <= act->fy0-64){
+		act->fy0 -= 64;
+		act->iw0 = 0;
 	}
-	while(act->yn >= act->y0+64){
-		act->y0 += 64;
-		act->w0 = 0;
+	while(act->fyn >= act->fy0+64){
+		act->fy0 += 64;
+		act->iw0 = 0;
 	}
 
-	say("%d,%d,%d,%d\n", act->x0, act->y0, act->xn, act->yn);
+	say("%f,%f,%f,%f\n", act->fx0, act->fy0, act->fxn, act->fyn);
 }
 
 
@@ -422,9 +422,9 @@ static void terrain_create(struct entity* act, void* str)
 	struct glsrc* src;
 	if(0 == act)return;
 
-	act->x0 = 0;
-	act->y0 = 0;
-	act->w0 = 0;
+	act->fx0 = 0.0;
+	act->fy0 = 0.0;
+	act->iw0 = 0.0;
 
 	src = act->buf = memorycreate(0x200, 0);
 	if(0 == src)return;

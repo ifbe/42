@@ -77,8 +77,8 @@ static void freecam_create(struct entity* act, void* arg, int argc, u8** argv)
 	}
 
 	//
-	act->x0 = 0;
-	act->y0 = 0;
+	act->fx0 = 0;
+	act->fy0 = 0;
 }
 
 
@@ -663,8 +663,8 @@ static int freecam_event2(
 	dr[1] = vc[1] + dr[1] * k;
 	say("%f,%f\n",dr[0],dr[1]);
 
-	act->x0 = dr[0];
-	act->y0 = dr[1];
+	act->fx0 = dr[0];
+	act->fy0 = dr[1];
 	return 0;
 }
 

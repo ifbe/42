@@ -33,7 +33,7 @@ static void mobius_draw_vbo3d(
 	tf[2] = vf[2]*0.75;
 	carveline_circle(win, 0xff0000, tc, tr, tf);
 
-	act->x0 = (timeread()/10000) % 360;
+	act->ix0 = (timeread()/10000) % 360;
 	for(j=0;j<180;j++)
 	{
 		a = j*PI/90;
