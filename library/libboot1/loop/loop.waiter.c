@@ -20,3 +20,13 @@ void waiter(void* waiter)
 		sleep_us(10*1000);
 	}
 }
+
+
+
+
+void waiter_delete(struct worker* wrk, u8* arg)
+{
+}
+void waiter_create(struct worker* wrk, u8* arg, int argc, u8** argv)
+{
+}

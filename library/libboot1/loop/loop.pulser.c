@@ -20,3 +20,13 @@ void pulser(struct worker* tmp)
 		if(dt < 16000)sleep_us(16000-dt);
 	}
 }
+
+
+
+
+void pulser_delete(struct worker* wrk, u8* arg)
+{
+}
+void pulser_create(struct worker* wrk, u8* arg, int argc, u8** argv)
+{
+}

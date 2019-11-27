@@ -6,14 +6,25 @@ void initstdrel(void*);
 int args_delete(void*);
 void args_create(int, u8**);
 //
-void waiter(void*);
-void initwaiter(void*);
-void pulser(void*);
+void initexiter(void*);
+void exiter_create(struct worker*, u8*, int, u8**);
+void exiter(void*);
+//
 void initpulser(void*);
-void poller(void*);
+void pulser_create(struct worker*, u8*, int, u8**);
+void pulser(void*);
+//
 void initpoller(void*);
-void realer(void*);
+void poller_create(struct worker*, u8*, int, u8**);
+void poller(void*);
+//
 void initrealer(void*);
+void realer_create(struct worker*, u8*, int, u8**);
+void realer(void*);
+//
+void initwaiter(void*);
+void waiter_create(struct worker*, u8*, int, u8**);
+void waiter(void*);
 
 
 
@@ -61,7 +72,7 @@ int workerdelete(void* addr)
 
 	return 0;
 }
-void* workercreate(u64 type, void* name, int argc, u8** argv)
+void* workercreate(u64 type, void* url, int argc, u8** argv)
 {
 	struct worker* tmp;
 
@@ -73,48 +84,55 @@ void* workercreate(u64 type, void* name, int argc, u8** argv)
 		}
 
 		switch(wrk->type){
-			case _waiter_:waiter(wrk);break;
+			case _exiter_:exiter(wrk);break;
 			case _pulser_:pulser(wrk);break;
 			case _poller_:poller(wrk);break;
 			case _realer_:realer(wrk);break;
+			case _waiter_:waiter(wrk);break;
 		}
 		return 0;
 	}
 
-	if(_waiter_ == type)
+	if(_exiter_ == type)
 	{
 		tmp = allocworker();
-		tmp->type = _waiter_;
+		tmp->type = _exiter_;
 
-		//waiter(tmp);
+		pulser_create(tmp, url, argc, argv);
 		return tmp;
 	}
-
 	if(_pulser_ == type)
 	{
 		tmp = allocworker();
 		tmp->type = _pulser_;
 
-		//pulser(tmp);
+		pulser_create(tmp, url, argc, argv);
 		return tmp;
 	}
-
 	if(_poller_ == type){
 		tmp = allocworker();
 		tmp->type = _poller_;
 
-		//poller(tmp);
+		poller_create(tmp, url, argc, argv);
 		return tmp;
 	}
-
 	if(_realer_ == type)
 	{
 		tmp = allocworker();
 		tmp->type = _realer_;
 
-		//realer(tmp);
+		realer_create(tmp, url, argc, argv);
 		return tmp;
 	}
+	if(_waiter_ == type)
+	{
+		tmp = allocworker();
+		tmp->type = _waiter_;
+
+		waiter_create(tmp, url, argc, argv);
+		return tmp;
+	}
+
 	return 0;
 }
 int workermodify(int argc, u8** argv)
