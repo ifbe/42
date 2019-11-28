@@ -647,7 +647,7 @@ static int freecam_event_pick(
 	//fix x,y
 	t = (void*)&ev->why;
 	x = t[0];
-	y = wnd->height - t[1];
+	y = wnd->height-1 - t[1];
 
 	//screen to ndc
 	dr[0] = 2*(x-x0) / dx - 1.0;
@@ -780,7 +780,7 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, struct half
 			freecam_shape2frustum(&geom->fshape, &geom->frustum);
 			freecam_draw_vbo(act,part, win,geom, wrd,camg, wnd, area);
 		}
-		if('m' == len){
+		if('?' == len){
 			freecam_matrix(act,part, win,geom, wnd, area);
 		}
 	}

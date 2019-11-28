@@ -134,7 +134,7 @@ q:0.333333, 0.333333
 
 <relation>
 #mirror depends on glfbo
-(mirror, 0, 0) -> (glfbo, mirrrect, 0)
+(mirror, 0, fbo) -> (glfbo, mirrrect, 0)
 
 #world depends on tree
 (world, skygeom, 0) -> (sky, skypart, 0)

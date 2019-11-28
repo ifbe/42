@@ -141,12 +141,28 @@ next:
 }
 int gl41data_read_matrix(struct entity* ctx, struct relation* wrd2cam, struct halfrel** stack, int rsp, void* buf, int len)
 {
+	struct relation* rel;
+	struct entity* camera;
+	struct entity* world;
 	//say("@gldata_read_matrix\n");
 
 	//first read mirror
+	camera = stack[rsp-2]->pchip;
+	world = stack[rsp-1]->pchip;
+	rel = world->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		if(rel == wrd2cam)goto next;
+		if(_ent_ == rel->dsttype){
+			entityread((void*)(rel->dst), (void*)(rel->src), stack, rsp, 0, '?');
+		}
+next:
+		rel = samesrcnextdst(rel);
+	}
 
 	//then read mvp
-	entityread((void*)(wrd2cam->dst), (void*)(wrd2cam->src), stack, rsp, 0, 'm');
+	entityread((void*)(wrd2cam->dst), (void*)(wrd2cam->src), stack, rsp, 0, '?');
 
 	return 0;
 }
@@ -181,8 +197,8 @@ found:
 	//stack: (ogl,0, wnd,0), (wnd,area, cam,0), (cam,0, world,geom)
 	stack[rsp+0] = (void*)(rel->dst);	//camera
 	stack[rsp+1] = (void*)(rel->src);	//world
-	gl41data_read_vertex(wnd, rel, stack, rsp+2, 0, 0);
-	gl41data_read_matrix(wnd, rel, stack, rsp+2, 0, 0);
+	if('v' == len)gl41data_read_vertex(wnd, rel, stack, rsp+2, 0, 0);
+	if('?' == len)gl41data_read_matrix(wnd, rel, stack, rsp+2, 0, 0);
 	return 0;
 }
 int gl41data_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)

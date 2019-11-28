@@ -24,27 +24,21 @@ int fullwindow_render(struct datapair* cam, struct datapair* lit, struct datapai
 int gl41fboc_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct supply* wnd;
+	struct supply* fbo;
 	struct fstyle* sty;
-	struct relation* rel;
 	//say("@gl41fboc: %llx\n", self->pchip);
 
-	wnd = stack[rsp-1]->pchip;
-	if(0 == wnd->fbo){
-		wnd->width = wnd->fbwidth = 1024;
-		wnd->height = wnd->fbheight = 1024;
-		fbocreate(wnd, 'c');
+	fbo = self->pchip;
+	sty = self->pfoot;
+	if(0 == fbo->fbo){
+		fbo->width = fbo->fbwidth = 1024;
+		fbo->height = fbo->fbheight = 1024;
+		fbocreate(fbo, 'c');
 	}
 
-	rel = wnd->orel0;
-	while(1){
-		if(0 == rel)break;
-
-		sty = rel->psrcfoot;
-		glBindFramebuffer(GL_FRAMEBUFFER, wnd->fbo);
-		fullwindow_render(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque, wnd, sty);
-
-		rel = samesrcnextdst(rel);
-	}
+	wnd = stack[rsp-4]->pchip;
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo->fbo);
+	fullwindow_render(fbo->gl_camera, fbo->gl_light, wnd->gl_solid, wnd->gl_opaque, fbo, sty);
 	return 0;
 }
 int gl41fboc_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
@@ -65,5 +59,14 @@ int gl41fboc_delete(struct entity* act)
 }
 int gl41fboc_create(struct entity* act, void* addr)
 {
+	int j;
+	u8* buf;
+
+	buf = act->gl_camera = memorycreate(0x10000, 0);
+	for(j=0;j<0x10000;j++)buf[j] = 0;
+
+	buf = act->gl_light = memorycreate(0x10000, 0);
+	for(j=0;j<0x10000;j++)buf[j] = 0;
+
 	return 0;
 }

@@ -316,8 +316,8 @@ static void mirror_matrix(
 	struct supply* fbo, struct style* area)
 {
 	//mirr frus from mirr position and cam position
-	struct fstyle* frus = &geom->fshape;
-	struct fstyle* shap = &geom->frustum;
+	struct fstyle* shap = &geom->fshape;
+	struct fstyle* frus = &geom->frustum;
 	mirror_frustum(frus, shap, camg->frus.vc);
 
 	//mirr mvp from mirr frus
@@ -325,7 +325,8 @@ static void mirror_matrix(
 	if(0 == mirr)return;
 	fixmatrix(mirr->mvp, frus);
 	mat4_transpose(mirr->mvp);
-
+//printstyle(shap);
+//printstyle(frus);
 	//
 	struct glsrc* src = fbo->gl_camera;
 	src->arg[0].fmt = 'm';
@@ -346,25 +347,47 @@ static void mirror_matrix(
 //-1: world, geom of cam
 static void mirror_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-//wnd -> cam
+//wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
-
-//cam -> world
 	struct entity* wrd;struct style* camg;
 
 //world -> mirror
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
 
-	if(0 == stack)return;
-	if('v' == len){
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-
-		win = peer->pchip;geom = peer->pfoot;
+#define _fbo_ hex32('f','b','o',0)
+	if(stack){
 		act = self->pchip;part = self->pfoot;
-		mirror_draw_vbo(act,part, win,geom, wrd,camg, wnd,area);
-		return;
+		win = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len){
+			mirror_draw_vbo(act,part, win,geom, wrd,camg, wnd,area);
+		}
+		if('?' == len){
+			struct relation* rel = act->orel0;
+			if(0 == rel)return;
+
+			struct supply* fbo = rel->pdstchip;
+			if(0 == fbo)return;
+
+			struct style* rect = rel->pdstfoot;
+			if(0 == fbo)return;
+
+			mirror_matrix(act,part, win,geom, wrd,camg, fbo,rect);
+			relationread(act,_fbo_, stack,rsp, buf,len);
+
+			struct mirrbuf* mirr = act->buf0;
+			if(0 == mirr)return;
+
+			struct glsrc* own = (void*)(mirr->data);
+			if(0 == own)return;
+
+			own->tex[0].glfd = fbo->tex0;
+			own->tex[0].name = "tex0";
+			own->tex[0].fmt = '!';
+			own->tex[0].enq += 1;
+		}
 	}
 /*	if(){
 		rel = act->orel0;
@@ -376,16 +399,6 @@ static void mirror_read(struct halfrel* self, struct halfrel* peer, struct halfr
 		mirror_matrix(act,part, win,geom, wrd,camg, fbo,area);
 		supply_read((void*)(rel->dst), (void*)(rel->src), stack,rsp, 0, 0);
 
-		struct mirrbuf* mirr = act->buf0;
-		if(0 == mirr)return;
-
-		struct glsrc* own = (void*)(mirr->data);
-		if(0 == own)return;
-
-		own->tex[0].glfd = fbo->tex0;
-		own->tex[0].name = "tex0";
-		own->tex[0].fmt = '!';
-		own->tex[0].enq += 1;
 	}*/
 }
 static void mirror_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

@@ -47,13 +47,13 @@ int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 			stack[rsp+1] = (void*)(rel->dst);
 
 			//get vertex
-			gl41data_read(stack[rsp-1], stack[rsp-2], stack, rsp+2, buf, len);
+			gl41data_read(stack[rsp-1], stack[rsp-2], stack, rsp+2, buf, 'v');
 
 			//upload
 			fullwindow_upload(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque);
 
-			//get extra
-			//gl41data_read(stack[rsp-1], stack[rsp-2], stack, rsp+2, buf, len);
+			//get fbo tex, get cam mvp
+			gl41data_read(stack[rsp-1], stack[rsp-2], stack, rsp+2, buf, '?');
 
 			//render
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
