@@ -4,9 +4,12 @@ out mediump vec4 FragColor;
 subroutine vec3 passtype();
 subroutine uniform passtype routine;
 
+uniform sampler2D tex0;
 uniform sampler2D suntex;
 uniform sampler2D sunimg;
-uniform sampler2D tex0;
+uniform vec3 sunrgb;
+uniform vec3 sunxyz;
+uniform vec3 sundir;
 uniform mat4 sunmvp;
 
 subroutine (passtype) vec3 rawcolor(){
@@ -26,10 +29,11 @@ subroutine (passtype) vec3 dirlight(){
 subroutine (passtype) vec3 spotlight(){
 	mediump vec4 tmp = sunmvp * vec4(vertex, 1.0);
 	tmp /= tmp.w;
-	if(tmp.x*tmp.x + tmp.y*tmp.y > 1.0)return vec3(0.5);
+	mediump float val = tmp.x*tmp.x + tmp.y*tmp.y;
+	if(val > 1.0)return vec3(0.2);
 	tmp = (tmp+1.0)*0.5;
-	if(tmp.z - texture(suntex, tmp.xy).r > 0.0001)return vec3(0.5);
-	return vec3(1.0);
+	if(tmp.z - texture(suntex, tmp.xy).r > 0.0001)return vec3(0.2);
+	return mix(sunrgb, vec3(0.2), val);
 }
 subroutine (passtype) vec3 projector(){
 	mediump vec4 tmp = sunmvp * vec4(vertex, 1.0);

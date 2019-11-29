@@ -43,19 +43,20 @@ static void pointlight_draw_pixel(
 {
 }
 static void pointlight_draw_vbo(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	struct sunbuf* sun;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vt = sty->f.vt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
 
 	sun = act->buf0;
 	if(0 == sun)return;
 
-	carveopaque_sphere(win, 0x80000000|sun->u_rgb, vc, vr, vf, vt);
+	carveopaque_sphere(ctx, 0x80000000|sun->u_rgb, vc, vr, vf, vt);
 }
 static void pointlight_draw_json(
 	struct entity* act, struct style* pin,
@@ -86,23 +87,19 @@ static void pointlight_draw(
 	else if(fmt == _tui_)pointlight_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)pointlight_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)pointlight_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)pointlight_draw_vbo(act, pin, win, sty);
 	else pointlight_draw_pixel(act, pin, win, sty);
 }
-
-
-
-
 void pointlight_light(
-	struct entity* act, struct fstyle* pin,
-	struct entity* win, struct fstyle* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	struct sunbuf* sun;
 	struct glsrc* src;
 
 	sun = act->buf0;
 	if(0 == sun)return;
-	src = win->gl_light;
+	src = wnd->gl_light;
 	if(0 == src)return;
 
 	src->routine_name = "passtype";
@@ -110,27 +107,35 @@ void pointlight_light(
 
 	src->arg[0].fmt = 'v';
 	src->arg[0].name = "sunxyz";
-	src->arg[0].data = sty->vc;
+	src->arg[0].data = geom->frus.vc;
 
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "sunrgb";
 	src->arg[1].data = sun->rgb;
 }
-static void pointlight_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
-{
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
 
-	if(ctx){
-		switch(ctx->type){
-			case _gl41data_:{
-				pointlight_light(act, &pin->fs, ctx, &sty->fs);
-				pointlight_draw_vbo(act, pin, ctx, sty);
-			}
+
+
+
+static void pointlight_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+
+//world -> spotlight
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
+
+#define _fbo_ hex32('f','b','o',0)
+	if(stack){
+		act = self->pchip;part = self->pfoot;
+		win = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len){
+			pointlight_light(act,part, win,geom, wnd,area);
+			pointlight_draw_vbo(act,part, win,geom, wnd,area);
 		}
 	}
 }

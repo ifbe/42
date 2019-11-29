@@ -73,16 +73,17 @@ static void curtain_draw_pixel(
 {
 }
 static void curtain_draw_vbo(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	struct glsrc* src;
 	float (*vbuf)[6];
 
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vt = sty->f.vt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
 
 	src = act->buf0;
 	if(0 == src)return;
@@ -163,26 +164,28 @@ static void curtain_draw(
 	else if(fmt == _tui_)curtain_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)curtain_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)curtain_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)curtain_draw_vbo(act, pin, win, sty);
 	else curtain_draw_pixel(act, pin, win, sty);
 }
 
 
 
 
-static void curtain_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void curtain_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
 
-	if(ctx){
-		switch(ctx->type){
-			case _gl41data_:curtain_draw_vbo(act, pin, ctx, sty);break;
-		}
+//world -> texball
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		win = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)curtain_draw_vbo(act,slot, win,geom, wnd,area);
 	}
 }
 static void curtain_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

@@ -106,19 +106,20 @@ static void spotlight_draw_pixel(
 {
 }
 static void spotlight_draw_vbo(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	struct sunbuf* sun;
 	struct glsrc* src;
 	float (*vbuf)[6];
 
 	vec3 tt;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vt = sty->f.vt;
-	carveline_rect(win, 0xffffff, vc, vr, vt);
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+	carveline_rect(ctx, 0xffffff, vc, vr, vt);
 
 
 	sun = act->buf0;
@@ -131,7 +132,7 @@ static void spotlight_draw_vbo(
 	tt[0] = - vf[0];
 	tt[1] = - vf[1];
 	tt[2] = - vf[2];
-	carvesolid_cone(win, sun->u_rgb, vc, vr, tt);
+	carvesolid_cone(ctx, sun->u_rgb, vc, vr, tt);
 
 
 	//depth fbo (for debug)
@@ -208,8 +209,47 @@ static void spotlight_draw(
 	else if(fmt == _tui_)spotlight_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)spotlight_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)spotlight_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)spotlight_draw_vbo(act, pin, win, sty);
 	else spotlight_draw_pixel(act, pin, win, sty);
+}
+void spotlight_light(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
+{
+	struct sunbuf* sun;
+	struct glsrc* own;
+	struct glsrc* src;
+
+	sun = act->buf0;
+	if(0 == sun)return;
+	own = (void*)(sun->data);
+	if(0 == own)return;
+	src = ctx->gl_light;
+	if(0 == src)return;
+
+	src->routine_name = "passtype";
+	src->routine_detail = "spotlight";
+
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "sunmvp";
+	src->arg[0].data = sun->mvp;
+
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "sunrgb";
+	src->arg[1].data = sun->rgb;
+
+	src->arg[2].fmt = 'v';
+	src->arg[2].name = "sunxyz";
+	src->arg[2].data = geom->frus.vc;
+
+	src->arg[3].fmt = 'v';
+	src->arg[3].name = "sundir";
+	src->arg[3].data = geom->frus.vf;
+
+	src->tex[0].glfd = own->tex[0].glfd;
+	src->tex[0].name = "suntex";
+	src->tex[0].fmt = '!';
+	src->tex[0].enq += 1;
 }
 
 
@@ -265,37 +305,20 @@ void spotlight_frustum(struct fstyle* d, struct fstyle* s)
 	//d->vf[3] = 1e20;
 }
 static void spotlight_matrix(
-	struct entity* act, struct fstyle* part,
-	struct entity* wrd, struct fstyle* geom,
-	struct entity* ctx, struct fstyle* frus,
-	struct supply* fbo, struct fstyle* area)
+	struct entity* act, struct style* part,
+	struct entity* wrd, struct style* geom,
+	struct supply* fbo, struct style* area)
 {
-	struct halfrel* self;
-	struct halfrel* peer;
-	struct fstyle* obb;
-
 	struct sunbuf* sun;
-	struct glsrc* own;
 	struct glsrc* src;
 
 	sun = act->buf0;
 	if(0 == sun)return;
-	own = (void*)(sun->data);
-	if(0 == own)return;
-	src = ctx->gl_camera;
+	src = fbo->gl_camera;
 	if(0 == src)return;
 
-
-	//
-	own->tex[0].glfd = fbo->tex0;
-
-
-	//
-	spotlight_search(act, 0, &self, &peer);
-	obb = peer->pfoot;
-
-	spotlight_frustum(frus, obb);
-	fixmatrix(sun->mvp, frus);
+	spotlight_frustum(&geom->frus, &geom->fs);
+	fixmatrix(sun->mvp, &geom->frus);
 	mat4_transpose(sun->mvp);
 
 	src->arg[0].fmt = 'm';
@@ -304,70 +327,52 @@ static void spotlight_matrix(
 
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
-	src->arg[1].data = obb->vc;
+	src->arg[1].data = &geom->frus.vc;
 }
-void spotlight_light(
-	struct entity* act, struct fstyle* pin,
-	struct entity* win, struct fstyle* sty)
+
+
+
+
+static void spotlight_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	struct sunbuf* sun;
-	struct glsrc* own;
-	struct glsrc* src;
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
 
-	sun = act->buf0;
-	if(0 == sun)return;
-	own = (void*)(sun->data);
-	if(0 == own)return;
-	src = win->gl_light;
-	if(0 == src)return;
+//world -> spotlight
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
 
-	src->routine_name = "passtype";
-	src->routine_detail = "spotlight";
-
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "sunmvp";
-	src->arg[0].data = sun->mvp;
-
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "sunrgb";
-	src->arg[1].data = sun->rgb;
-
-	src->arg[2].fmt = 'v';
-	src->arg[2].name = "sunxyz";
-	src->arg[2].data = sty->vc;
-
-	src->arg[3].fmt = 'v';
-	src->arg[3].name = "sundir";
-	src->arg[3].data = sty->vf;
-
-	src->tex[0].glfd = own->tex[0].glfd;
-	src->tex[0].name = "suntex";
-	src->tex[0].fmt = '!';
-	src->tex[0].enq += 1;
-}
-static void spotlight_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
-{
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-
-	if(ctx){
-		switch(ctx->type){
-			case _gl41data_:{
-				spotlight_light(act, &pin->fs, ctx, &sty->fs);
-				spotlight_draw_vbo(act, pin, ctx, sty);
-			}
+#define _fbo_ hex32('f','b','o',0)
+	if(stack){
+		act = self->pchip;part = self->pfoot;
+		win = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len){
+			spotlight_light(act,part, win,geom, wnd,area);
+			spotlight_draw_vbo(act,part, win,geom, wnd,area);
 		}
-	}
-	else{
-		switch(win->type){
-			case _gl41fbod_:
-			case _gl41fboc_:
-			case _gl41fbog_:
-			case _gl41wnd0_:spotlight_matrix(act, &pin->fs, win, &sty->fs, 0, 0, 0, 0);
+		if('?' == len){
+			struct relation* rel = act->orel0;
+			if(0 == rel)return;
+
+			struct supply* fbo = rel->pdstchip;
+			if(0 == fbo)return;
+
+			struct style* rect = rel->pdstfoot;
+			if(0 == fbo)return;
+
+			spotlight_matrix(act,part, win,geom, fbo,rect);
+			relationread(act,_fbo_, stack,rsp, buf,len);
+
+			struct sunbuf* sun = act->buf0;
+			if(0 == sun)return;
+
+			struct glsrc* own = (void*)(sun->data);
+			if(0 == own)return;
+
+			own->tex[0].glfd = fbo->tex0;
 		}
 	}
 }

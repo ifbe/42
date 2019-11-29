@@ -116,7 +116,7 @@ static void tree_draw_vbo3d(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
-	struct entity* ctx, struct style* none)
+	struct entity* ctx, struct style* area)
 {
 	vec3 tc, tr, tf, tu, f;
 	float* vc = geom->f.vc;
@@ -240,31 +240,26 @@ static void tree_draw(
 
 
 
-//stack:
 //-4: wnd, area
 //-3: ctx
 //-2: cam, part of cam
 //-1: world, geom of cam
 static void tree_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> ctx
-	struct entity* ctx;
-
-	//cam -> world
-	struct entity* cam;
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
 	struct entity* wrd;struct style* camg;
 
-	//world -> texball
+//world -> texball
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
 
 	if(stack){
-		ctx = stack[rsp-3]->pchip;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-
-		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		tree_draw_vbo3d(act,part, win,geom, wrd,camg, ctx,0);
+		win = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)tree_draw_vbo3d(act,part, win,geom, wrd,camg, wnd,area);
 	}
 }
 static void tree_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
