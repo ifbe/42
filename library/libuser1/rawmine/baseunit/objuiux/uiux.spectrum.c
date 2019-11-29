@@ -12,8 +12,9 @@ static void spectrum_draw_pixel(
 {
 }
 static void spectrum_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	int x,y;
 	int r,g,b;
@@ -22,11 +23,11 @@ static void spectrum_draw_vbo3d(
 	short* buf;
 
 	vec3 ta,tb;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carveline_prism4(win, 0xffff00, vc, vr, vf, vu);
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	carveline_prism4(ctx, 0xffff00, vc, vr, vf, vu);
 
 	tab = act->buf;
 	if(0 == tab)return;
@@ -51,7 +52,7 @@ static void spectrum_draw_vbo3d(
 			r = (x/100)*26+13;
 			g = ((x%100)/10)*26+13;
 			b = (x%10)*26+13;
-			carveline(win, (r<<16)|(g<<8)|b, ta, tb);
+			carveline(ctx, (r<<16)|(g<<8)|b, ta, tb);
 		}
 	}
 }
@@ -97,11 +98,6 @@ static void spectrum_draw(
 	else if(fmt == _tui_)spectrum_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)spectrum_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)spectrum_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)spectrum_draw_vbo2d(act, pin, win, sty);
-		//else spectrum_draw_vbo3d(act, pin, win, sty);
-	}
 	else spectrum_draw_pixel(act, pin, win, sty);
 }
 
@@ -126,16 +122,22 @@ void spectrum_data(struct entity* act, int type, void* buf, int len)
 
 
 
-static void spectrum_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void spectrum_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	if(ctx){
-		if(_gl41data_ == ctx->type)spectrum_draw_vbo3d(act,pin,ctx,sty);
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wor;struct style* camg;
+
+	//world -> spectrum
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		win = peer->pchip;geom = peer->pfoot;
+		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)spectrum_draw_vbo3d(act,slot, win,geom, wnd,area);
 	}
 }
 static void spectrum_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

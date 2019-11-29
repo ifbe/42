@@ -128,8 +128,7 @@ void video_draw_pixel(
 void video_draw_vbo3d(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
-	struct entity* wrd, struct style* camg,
-	struct entity* ctx, struct style* temp)
+	struct entity* ctx, struct style* area)
 {
 	float* vc = geom->fshape.vc;
 	float* vr = geom->fshape.vr;
@@ -245,24 +244,20 @@ void video_event(
 
 static void video_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> ctx
-	struct entity* ctx;
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wor;struct style* camg;
 
-	//cam -> world
-	struct entity* cam;
-	struct entity* wrd;struct style* camg;
-
-	//world -> texball
+	//world -> video
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
 
 	if(stack){
-		ctx = stack[rsp-3]->pchip;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-
-		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		video_draw_vbo3d(act,part, win,geom, wrd,camg, ctx,0);
+		win = peer->pchip;geom = peer->pfoot;
+		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)video_draw_vbo3d(act,part, win,geom, wnd,area);
 	}
 }
 static void video_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

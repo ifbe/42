@@ -140,19 +140,20 @@ static void oscillo_draw_vbo2d(
 	}
 }*/
 static void oscillo_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	int x,t;
 	float tmp,val;
 	vec3 ta,tb;
 	void** tab;
 	short* buf;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carveline_rect(win, 0xffff00, vc, vr, vf);
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	carveline_rect(ctx, 0xffff00, vc, vr, vf);
 
 	tab = act->buf;
 	if(0 == tab)return;
@@ -173,7 +174,7 @@ static void oscillo_draw_vbo3d(
 			tb[1] = ta[1] + vf[1] * val;
 			tb[2] = ta[2] + vf[2] * val;
 
-			carveline(win, 0xffffff, ta, tb);
+			carveline(ctx, 0xffffff, ta, tb);
 		}
 	}
 
@@ -353,16 +354,22 @@ void oscillo_data(struct entity* act, int type, void* buf, int len)
 
 
 
-static void oscillo_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void oscillo_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	if(ctx){
-		if(_gl41data_ == ctx->type)oscillo_draw_vbo3d(act,pin,ctx,sty);
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wor;struct style* camg;
+
+	//world -> oscillo
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		win = peer->pchip;geom = peer->pfoot;
+		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)oscillo_draw_vbo3d(act,slot, win,geom, wnd,area);
 	}
 }
 static void oscillo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
