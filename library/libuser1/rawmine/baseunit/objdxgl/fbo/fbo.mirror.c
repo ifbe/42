@@ -315,12 +315,12 @@ static void mirror_matrix(
 	struct entity* wrl, struct style* camg,
 	struct supply* fbo, struct style* area)
 {
-	//mirr frus from mirr position and cam position
+	//frus from shape and eye
 	struct fstyle* shap = &geom->fshape;
 	struct fstyle* frus = &geom->frustum;
 	mirror_frustum(frus, shap, camg->frus.vc);
 
-	//mirr mvp from mirr frus
+	//mvp from frus
 	struct mirrbuf* mirr = act->buf0;
 	if(0 == mirr)return;
 	fixmatrix(mirr->mvp, frus);
@@ -389,17 +389,6 @@ static void mirror_read(struct halfrel* self, struct halfrel* peer, struct halfr
 			own->tex[0].enq += 1;
 		}
 	}
-/*	if(){
-		rel = act->orel0;
-		fbo = rel->pdstchip;
-		fbo->gl_camera = wnd->gl_camera + 0x200;
-		fbo->gl_light = wnd->gl_light + 0x200;
-		fbo->gl_solid = wnd->gl_solid;
-		fbo->gl_opaque = wnd->gl_opaque;
-		mirror_matrix(act,part, win,geom, wrd,camg, fbo,area);
-		supply_read((void*)(rel->dst), (void*)(rel->src), stack,rsp, 0, 0);
-
-	}*/
 }
 static void mirror_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

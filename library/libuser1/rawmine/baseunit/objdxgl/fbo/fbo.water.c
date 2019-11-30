@@ -103,17 +103,18 @@ static void water_draw_pixel(
 	}
 }
 static void water_draw_vbo(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	struct waterbuf* water;
 	struct glsrc* src;
 	float (*vbuf)[6];
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carveline_rect(win, 0xffffff, vc, vr, vf);
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	carveline_rect(ctx, 0xffffff, vc, vr, vf);
 
 	water = act->buf0;
 	if(0 == water)return;
@@ -197,7 +198,6 @@ static void water_draw(
 	else if(fmt == _tui_)water_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)water_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)water_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)water_draw_vbo(act, pin, win, sty);
 	else water_draw_pixel(act, pin, win, sty);
 }
 
@@ -306,70 +306,78 @@ void water_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 	frus->vt[3] = t;
 }
 static void water_matrix(
-	struct entity* act, struct fstyle* frus,
-	struct entity* fbo, struct fstyle* area)
-{/*
-	struct halfrel* self;
-	struct halfrel* peer;
-	struct fstyle* obb;
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* wrl, struct style* camg,
+	struct supply* fbo, struct style* area)
+{
+	//frus from shape and eye
+	struct fstyle* shap = &geom->fshape;
+	struct fstyle* frus = &geom->frustum;
+	water_frustum(frus, shap, camg->frus.vc);
 
-	struct waterbuf* water;
-	struct glsrc* own;
-	struct glsrc* src;
-
-	//
-	water = act->buf0;
+	//mvp from frus
+	struct waterbuf* water = act->buf0;
 	if(0 == water)return;
-	own = (void*)(water->data);
-	if(0 == own)return;
-
-	own->tex[1].glfd = fbo->tex0;
-	own->tex[1].name = "reflect";
-	own->tex[1].fmt = '!';
-	own->tex[1].enq += 1;
-
-
-	//
-	src = fbo->gl_camera;
-	if(0 == src)return;
-
-	water_search(act, 0, &self, &peer);
-	obb = peer->pfoot;
-
-	vec3 cam = {2000.0, -2000.0, 2000.0};
-	water_frustum(frus, obb, cam);
 	fixmatrix(water->mvp, frus);
 	mat4_transpose(water->mvp);
 
+	//give arg(matrix and position) to fbo
+	struct glsrc* src = fbo->gl_camera;
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";
 	src->arg[0].data = water->mvp;
 
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
-	src->arg[1].data = obb->vc;*/
+	src->arg[1].data = frus->vc;
 }
 
 
 
 
-static void water_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void water_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	if(ctx){
-		if(_gl41data_ == ctx->type)water_draw_vbo(act,pin,ctx,sty);
-	}
-	else{
-		switch(win->type){
-			case _gl41fbod_:
-			case _gl41fboc_:
-			case _gl41fbog_:
-			case _gl41wnd0_:water_matrix(act, &pin->fs, win, &sty->fs);
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+
+//world -> mirror
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
+
+#define _fbo_ hex32('f','b','o',0)
+	if(stack){
+		act = self->pchip;part = self->pfoot;
+		win = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len){
+			water_draw_vbo(act,part, win,geom, wnd,area);
+		}
+		if('?' == len){
+			struct relation* rel = act->orel0;
+			if(0 == rel)return;
+
+			struct supply* fbo = rel->pdstchip;
+			if(0 == fbo)return;
+
+			struct style* rect = rel->pdstfoot;
+			if(0 == fbo)return;
+
+			water_matrix(act,part, win,geom, wrd,camg, fbo,rect);
+			relationread(act,_fbo_, stack,rsp, buf,len);
+
+			struct waterbuf* water = act->buf0;
+			if(0 == water)return;
+
+			struct glsrc* own = (void*)(water->data);
+			if(0 == own)return;
+
+			own->tex[0].glfd = fbo->tex0;
+			own->tex[0].name = "tex0";
+			own->tex[0].fmt = '!';
+			own->tex[0].enq += 1;
 		}
 	}
 }
