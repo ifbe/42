@@ -49,6 +49,7 @@ static void water_create(struct entity* act, void* str)
 	src = (void*)(water->data);
 	src->geometry = 3;
 	src->method = 'v';
+	src->opaque = 1;
 
 	//
 	src->vs = memorycreate(0x1000, 0);
@@ -342,7 +343,7 @@ static void water_read(struct halfrel* self, struct halfrel* peer, struct halfre
 	struct entity* wnd;struct style* area;
 	struct entity* wrd;struct style* camg;
 
-//world -> mirror
+//world -> water
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
 

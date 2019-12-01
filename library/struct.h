@@ -166,7 +166,7 @@ struct glsrc
 	//[e8,eb]
 	u8 method;		//'v'=glDrawArrays, 'i'=glDrawElements
 	u8 geometry;	//1=point, 2=line, *=trigon
-	u8 target;		//0=rtt, 1=background, 2=geometry, 3=alphatest, 4=transparent, 5=overlay
+	u8 opaque;		//0=solid, n=opaque
 };
 struct gldst
 {

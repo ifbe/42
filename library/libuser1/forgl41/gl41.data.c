@@ -41,20 +41,33 @@ void gl41data_after(struct entity* ctx)
 		mod[j].src.ibuf_enq += 1;
 	}
 }
-void* gl41data_alloc(struct entity* ctx)
+void* gl41data_alloc(struct entity* ctx, int type)
 {
 	int j;
-	struct datapair* pair = ctx->gl_solid;
-	if(0 == pair)return 0;
+	struct datapair* pair;
 
-	for(j=16;j<64;j++){
-		if(0 == pair[j].src.vbuf)return &pair[j];
+	if('s' == type){
+		pair = ctx->gl_solid;
+		if(0 == pair)return 0;
+
+		for(j=solidaid_max;j<64;j++){
+			if(0 == pair[j].src.vbuf)return &pair[j];
+		}
+	}
+	if('o' == type){
+		pair = ctx->gl_opaque;
+		if(0 == pair)return 0;
+
+		for(j=opaqueaid_max;j<64;j++){
+			if(0 == pair[j].src.vbuf)return &pair[j];
+		}
 	}
 	return 0;
 }
 void gl41data_copy(struct entity* ctx, struct style* geom, struct style* part)
 {
 	int j,k;
+	struct glsrc* data;
 	u8* src;
 	u8* dst;
 	if(0 == part)return;
@@ -64,10 +77,12 @@ void gl41data_copy(struct entity* ctx, struct style* geom, struct style* part)
 		src = (void*)(part->data[j]);
 		if(0 == src)return;
 
-		//data
+		//
 		dst = (void*)(geom->data[j]);
 		if(0 == dst){
-			dst = gl41data_alloc(ctx);
+			data = (void*)src;
+			if(data->opaque)dst = gl41data_alloc(ctx, 'o');
+			else dst = gl41data_alloc(ctx, 's');
 			if(0 == dst)return;
 
 			geom->data[j] = (u64)dst;
