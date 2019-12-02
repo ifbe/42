@@ -333,6 +333,37 @@ static void water_matrix(
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = frus->vc;
 }
+void water_reflect(
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* wrl, struct style* camg,
+	struct halfrel** stack, int rsp,
+	u8* buf, int len)
+{
+#define _fbo_ hex32('f','b','o',0)
+	struct relation* rel = act->orel0;
+	if(0 == rel)return;
+
+	struct supply* fbo = rel->pdstchip;
+	if(0 == fbo)return;
+
+	struct style* rect = rel->pdstfoot;
+	if(0 == fbo)return;
+
+	water_matrix(act,slot, win,geom, wrl,camg, fbo,rect);
+	relationread(act,_fbo_, stack,rsp, buf,len);
+
+	struct waterbuf* water = act->buf0;
+	if(0 == water)return;
+
+	struct glsrc* own = (void*)(water->data);
+	if(0 == own)return;
+
+	own->tex[0].glfd = fbo->tex0;
+	own->tex[0].name = "tex0";
+	own->tex[0].fmt = '!';
+	own->tex[0].enq += 1;
+}
 
 
 
@@ -347,7 +378,6 @@ static void water_read(struct halfrel* self, struct halfrel* peer, struct halfre
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
 
-#define _fbo_ hex32('f','b','o',0)
 	if(stack){
 		act = self->pchip;part = self->pfoot;
 		win = peer->pchip;geom = peer->pfoot;
@@ -357,28 +387,7 @@ static void water_read(struct halfrel* self, struct halfrel* peer, struct halfre
 			water_draw_vbo(act,part, win,geom, wnd,area);
 		}
 		if('?' == len){
-			struct relation* rel = act->orel0;
-			if(0 == rel)return;
-
-			struct supply* fbo = rel->pdstchip;
-			if(0 == fbo)return;
-
-			struct style* rect = rel->pdstfoot;
-			if(0 == fbo)return;
-
-			water_matrix(act,part, win,geom, wrd,camg, fbo,rect);
-			relationread(act,_fbo_, stack,rsp, buf,len);
-
-			struct waterbuf* water = act->buf0;
-			if(0 == water)return;
-
-			struct glsrc* own = (void*)(water->data);
-			if(0 == own)return;
-
-			own->tex[0].glfd = fbo->tex0;
-			own->tex[0].name = "tex0";
-			own->tex[0].fmt = '!';
-			own->tex[0].enq += 1;
+			water_reflect(act,part, win,geom, wrd,camg, stack,rsp, buf,len);
 		}
 	}
 }

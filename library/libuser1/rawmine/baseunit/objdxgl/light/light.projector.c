@@ -337,6 +337,34 @@ static void projector_matrix(
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = &geom->frus.vc;
 }
+void projector_shadowmap(
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* wrl, struct style* camg,
+	struct halfrel** stack, int rsp,
+	u8* buf, int len)
+{
+#define _fbo_ hex32('f','b','o',0)
+	struct relation* rel = act->orel0;
+	if(0 == rel)return;
+
+	struct supply* fbo = rel->pdstchip;
+	if(0 == fbo)return;
+
+	struct style* rect = rel->pdstfoot;
+	if(0 == fbo)return;
+
+	projector_matrix(act,slot, win,geom, fbo,rect);
+	relationread(act,_fbo_, stack,rsp, buf,len);
+
+	struct sunbuf* sun = act->buf0;
+	if(0 == sun)return;
+
+	struct glsrc* own = (void*)(sun->data);
+	if(0 == own)return;
+
+	own->tex[0].glfd = fbo->tex0;
+}
 
 
 
@@ -362,25 +390,7 @@ static void projector_read(struct halfrel* self, struct halfrel* peer, struct ha
 			projector_draw_vbo(act,part, win,geom, wnd,area);
 		}
 		if('?' == len){
-			struct relation* rel = act->orel0;
-			if(0 == rel)return;
-
-			struct supply* fbo = rel->pdstchip;
-			if(0 == fbo)return;
-
-			struct style* rect = rel->pdstfoot;
-			if(0 == fbo)return;
-
-			projector_matrix(act,part, win,geom, fbo,rect);
-			relationread(act,_fbo_, stack,rsp, buf,len);
-
-			struct sunbuf* sun = act->buf0;
-			if(0 == sun)return;
-
-			struct glsrc* own = (void*)(sun->data);
-			if(0 == own)return;
-
-			own->tex[0].glfd = fbo->tex0;
+			projector_shadowmap(act,part, win,geom, wrd,camg, stack,rsp, buf,len);
 		}
 	}
 }
