@@ -45,15 +45,24 @@
 #define _dri_ hex32('d','r','i',0)
 #define _dev_ hex32('d','e','v',0)
 #define _wrk_ hex32('w','r','k',0)
-//tier=_sup_, type:
+//physic
+#define _phys_ hex32('p','h','y','s')
+#define _gravity_ hex64('g','r','a','v','i','t','y',0)
+#define _collide_ hex64('c','o','l','l','i','d','e',0)
+//sensor
+#define _sensor_ hex64('s','e','n','s','o','r',0,0)
+#define _lidar_ hex64('l','i','d','a','r',0,0,0)
+#define _radar_ hex64('r','a','d','a','r',0,0,0)
 #define _ahrs_ hex32('a','h','r','s')
+#define _slam_ hex32('s','l','a','m')
+//motor
 #define _car_ hex32('c','a','r',0)
-#define _bdc_  hex32('b','d','c',0)
+#define _bdc_ hex32('b','d','c',0)
 #define _step_ hex32('s','t','e','p')
-//
+//sound
 #define _mic_ hex32('m','i','c',0)
 #define _spk_ hex32('s','p','k',0)
-//
+//light
 #define _cam_ hex32('c','a','m',0)
 #define _wnd_ hex32('w','n','d',0)
 #define _cap_ hex32('c','a','p',0)

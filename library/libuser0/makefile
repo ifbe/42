@@ -1,7 +1,12 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC -I.
 SRC = \
+evo-physic/phys.collide.c \
+evo-physic/phys.gravity.c \
 r2v-sensor/sensor.ahrs.c \
+r2v-sensor/sensor.slam.c \
+r2v-sensor/sensor.lidar.c \
+r2v-sensor/sensor.radar.c \
 v2r-gadget/1602/gadget.1602.c \
 v2r-gadget/12864/gadget.12864.c \
 v2r-robot/bionic/robot-arm.c \

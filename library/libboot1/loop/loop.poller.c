@@ -75,6 +75,10 @@ int supplyread_all(void* poller)
 		win = &supply[j];
 		if(0 == win->type)continue;
 
+		if(_phys_ == win->type){
+			self.pchip = win;
+			supplyread(&self, &peer, 0, 0, 0, 0);
+		}
 		if(_wnd_ == win->type){
 			self.pchip = win;
 			supplyread(&self, &peer, 0, 0, 0, 0);
