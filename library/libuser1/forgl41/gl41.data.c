@@ -120,10 +120,10 @@ void* gl41data_findworld(struct entity* cam)
 int gl41data_read_vertex(struct entity* glctx, struct relation* wrd2cam, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct relation* rel;
-	struct style* geom;
-	struct style* part;
 	struct entity* camera;
 	struct entity* world;
+	struct style* geom;
+	struct style* part;
 	//say("gldata_read_vertex\n");
 
 	gl41data_before(glctx);

@@ -182,6 +182,7 @@ rawmine/compound/theuiux/uiux.list.c \
 rawmine/compound/theuiux/uiux.nav.c \
 rawmine/compound/theuiux/uiux.tab.c \
 rawmine/compound/theuiux/uiux.tag.c \
+rawmine/scene/scene.c \
 rawmine/scene/scene.guide.c \
 rawmine/scene/scene.loading.c \
 rawmine/world/3dworld.c \

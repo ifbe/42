@@ -18,12 +18,6 @@ int test_read(void*, void*, void*, int, void*, int);
 int test_write(void*, void*, void*, int, void*, int);
 
 //
-int reality_create(void*, void*, int, u8**);
-int reality_delete(void*);
-int reality_write(void*, void*, void*, int, void*, int);
-int reality_read( void*, void*, void*, int, void*, int);
-
-//
 int htmlnode_create(void*, void*, int, u8**);
 int htmlnode_delete(void*);
 int htmlnode_write(void*, void*, void*, int, void*, int);
@@ -41,12 +35,25 @@ int hoffdata_create(void*, void*, int, u8**);
 int hoffdata_read(void*, void*, void*, int, void*, int);
 
 //
+int reality_create(void*, void*, int, u8**);
+int reality_delete(void*);
+int reality_write(void*, void*, void*, int, void*, int);
+int reality_read( void*, void*, void*, int, void*, int);
+
+//
+int scene3d_create(void*, void*, int, u8**);
+int scene3d_delete(void*, void*);
+int scene3d_start(void*, void*);
+int scene3d_stop(void*, void*);
+int scene3d_write(void*, void*, void*, int, void*, int);
+int scene3d_read(void*, void*, void*, int, void*, int);
 int world3d_create(void*, void*, int, u8**);
 int world3d_delete(void*, void*);
 int world3d_start(void*, void*);
 int world3d_stop(void*, void*);
 int world3d_write(void*, void*, void*, int, void*, int);
 int world3d_read(void*, void*, void*, int, void*, int);
+
 //gl41 helper
 int gl41data_create(void*, void*, int, u8**);
 int gl41data_delete(void*);
@@ -79,7 +86,7 @@ void* allocentity()
 }
 void* allocstyle()
 {
-#define maxlen 0x200
+#define maxlen (sizeof(struct style))
 	int j;
 	u8* buf;
 
@@ -171,8 +178,9 @@ int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 	switch(act->type){
 		case _gl41data_:return gl41data_read(self, peer, arg, idx, buf, len);
 		case _gl41coop_:return gl41coop_read(self, peer, arg, idx, buf, len);
-		case _reality_:return reality_read(self, peer, arg, idx, buf, len);
 		case _world3d_:return world3d_read(self, peer, arg, idx, buf, len);
+		case _scene3d_:return scene3d_read(self, peer, arg, idx, buf, len);
+		case _reality_:return reality_read(self, peer, arg, idx, buf, len);
 		case _eeworld_:return eeworld_read(self, peer, arg, idx, buf, len);
 		case _html_:return htmlnode_read(self, peer, arg, idx, buf, len);
 	}
@@ -191,8 +199,9 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 	switch(act->type){
 		case _gl41data_:return gl41data_write(self, peer, arg, idx, buf, len);
 		case _gl41coop_:return gl41coop_write(self, peer, arg, idx, buf, len);
-		case _reality_:return reality_write(self, peer, arg, idx, buf, len);
 		case _world3d_:return world3d_write(self, peer, arg, idx, buf, len);
+		case _scene3d_:return scene3d_write(self, peer, arg, idx, buf, len);
+		case _reality_:return reality_write(self, peer, arg, idx, buf, len);
 		case _eeworld_:return eeworld_write(self, peer, arg, idx, buf, len);
 		case _html_:return htmlnode_write(self, peer, arg, idx, buf, len);
 	}
@@ -274,15 +283,6 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		return act;
 	}
 
-	//reality
-	else if(_reality_ == type)
-	{
-		act = allocentity();
-		act->fmt = act->type = _reality_;
-		reality_create(act, buf, argc, argv);
-		return act;
-	}
-
 	//circuit
 	else if(_eeworld_ == type)
 	{
@@ -308,7 +308,23 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		return act;
 	}
 
+	//reality
+	else if(_reality_ == type)
+	{
+		act = allocentity();
+		act->fmt = act->type = _reality_;
+		reality_create(act, buf, argc, argv);
+		return act;
+	}
+
 	//world
+	else if(_scene3d_ == type)
+	{
+		act = allocentity();
+		act->fmt = act->type = _scene3d_;
+		scene3d_create(act, buf, argc, argv);
+		return act;
+	}
 	else if(_world3d_ == type)
 	{
 		act = allocentity();
@@ -316,6 +332,8 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		world3d_create(act, buf, argc, argv);
 		return act;
 	}
+
+	//render
 	else if(_gl41data_ == type)
 	{
 		act = allocentity();

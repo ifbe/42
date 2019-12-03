@@ -12,9 +12,11 @@
 	#define GLSL_VERSION "#version 410 core\n"
 #endif
 //
-#define _reality_  hex64('r','e','a','l','i','t','y', 0)
-#define _world3d_  hex64('3','d','w','o','r','l','d', 0)
-#define _eeworld_  hex64('e','e','w','o','r','l','d', 0)
+#define _reality_ hex64('r','e','a','l','i','t','y', 0)
+#define _eeworld_ hex64('e','e','w','o','r','l','d', 0)
+//
+#define _world3d_ hex64('3','d','w','o','r','l','d', 0)
+#define _scene3d_ hex64('3','d','s','c','e','n','e', 0)
 //
 #define _hoffdata_ hex64('h','o','f','f','d','a','t','a')
 //dxhelp

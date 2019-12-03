@@ -341,7 +341,7 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		gl41wnd0_read(self, peer, arg, idx, buf, len);
 		return;
 	}
-t0 = ogl->addr3;
+t0 = ogl->data3;
 
 	//0: context current
 	fw = ogl->glwnd;
@@ -368,7 +368,7 @@ t3 = timeread();
 		t1-t0, t2-t1, t3-t2, t3-t0
 	);
 	glfwSetWindowTitle(fw, str);
-ogl->addr3 = t3;
+ogl->data3 = t3;
 
 	//4: poll event
 	if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}

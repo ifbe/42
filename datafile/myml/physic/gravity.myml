@@ -1,3 +1,13 @@
+<entity>
+scene{
+fmt:3dscene
+}
+world{
+fmt:3dworld
+}
+</entity>
+
+
 <supply>
 gravity{
 fmt:gravity
@@ -10,3 +20,8 @@ poller{
 fmt:poller
 }
 </worker>
+
+
+<relation>
+(gravity, 0, 0) -> (scene, 0, 0)
+</relation>

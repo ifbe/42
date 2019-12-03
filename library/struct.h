@@ -316,14 +316,14 @@ struct fmotion{
 	vec4 x_displace;	//v		displace
 };
 struct imotion{
-	int ul[4];
-	int ur[4];
-	int un[4];
-	int uf[4];
-	int ub[4];
-	int ut[4];
-	int uq[4];
-	int uc[4];
+	int ja[4];
+	int jd[4];
+	int aa[4];
+	int ad[4];
+	int va[4];
+	int vd[4];
+	int xa[4];
+	int xd[4];
 };
 struct style
 {
@@ -345,37 +345,18 @@ struct style
 		//struct fmotion actualmotion;
 		struct fstyle frus;
 		struct fstyle frustum;
+	};
+
+	//[100, 17f]
+	union{
 		struct fmotion fm;
 		struct fmotion fmotion;
 		struct imotion im;
 		struct imotion imotion;
 	};
 
-	//[100, 1ff]
-	u64 data[16];
-/*
-	//[80, ff]: expect, motion state
-	union{
-		struct fstyle expectshape;
-		struct fmotion expectmotion;
-	};
-
-	//[00, 7f]: origin, css shape
-	union{
-		struct fstyle originshape;
-		struct fmotion originmotion;
-	};
-
-	//[80, ff]: target, motion state
-	union{
-		struct fstyle targetshape;
-		struct fmotion targetmotion;
-	};
-
-	//[200, 2ff]
-	struct kalman kal;
-	struct pidval pid;
-*/
+	//[180, 1ff]
+	u64 data[8];
 };
 
 
@@ -910,22 +891,22 @@ struct supply
 
 	//[60,7f]: memory
 	union{
-		u64 addr0;
+		u64 data0;
 		void* buf0;
 		void* gl_camera;
 	};
 	union{
-		u64 addr1;
+		u64 data1;
 		void* buf1;
 		void* gl_light;
 	};
 	union{
-		u64 addr2;
+		u64 data2;
 		void* buf2;
 		void* gl_solid;
 	};
 	union{
-		u64 addr3;
+		u64 data3;
 		void* buf3;
 		void* gl_opaque;
 	};
