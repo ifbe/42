@@ -65,15 +65,16 @@ static void rccar_draw_vbo2d(
 	}
 }*/
 static void rccar_draw_vbo(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	int x,y;
 	vec3 tc,tr,tf,tu;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
 
 	tr[0] = vr[0] * 3 / 4;
 	tr[1] = vr[1] * 3 / 4;
@@ -87,7 +88,7 @@ static void rccar_draw_vbo(
 	tc[0] = vc[0] + vu[0]/4;
 	tc[1] = vc[1] + vu[1]/4;
 	tc[2] = vc[2] + vu[2]/4;
-	carvesolid_prism4(win, 0x808080, tc, tr, tf, tu);
+	carvesolid_prism4(ctx, 0x808080, tc, tr, tf, tu);
 
 	tr[0] = vr[0] / 4;
 	tr[1] = vr[1] / 4;
@@ -101,7 +102,7 @@ static void rccar_draw_vbo(
 	tc[0] = vc[0] + vu[0]*0.75;
 	tc[1] = vc[1] + vu[1]*0.75;
 	tc[2] = vc[2] + vu[2]*0.75;
-	carvesolid_prism4(win, 0xc0c0c0, tc, tr, tf, tu);
+	carvesolid_prism4(ctx, 0xc0c0c0, tc, tr, tf, tu);
 
 	tr[0] = vr[0] / 16;
 	tr[1] = vr[1] / 16;
@@ -115,7 +116,7 @@ static void rccar_draw_vbo(
 	tc[0] = vc[0] + vf[0]/2 + vu[0]*0.75;
 	tc[1] = vc[1] + vf[1]/2 + vu[1]*0.75;
 	tc[2] = vc[2] + vf[2]/2 + vu[2]*0.75;
-	carvesolid_cask(win, 0xffffff, tc, tr, tu, tf);
+	carvesolid_cask(ctx, 0xffffff, tc, tr, tu, tf);
 
 	tr[0] = vf[0] / 4;
 	tr[1] = vf[1] / 4;
@@ -134,7 +135,7 @@ static void rccar_draw_vbo(
 			tc[0] = vc[0] + x*vr[0]*3/4 + y*vf[0]*3/4 + vu[0]/4;
 			tc[1] = vc[1] + x*vr[1]*3/4 + y*vf[1]*3/4 + vu[1]/4;
 			tc[2] = vc[2] + x*vr[2]*3/4 + y*vf[2]*3/4 + vu[2]/4;
-			carvesolid_cylinder(win, 0x202020, tc, tr, tf, tu);
+			carvesolid_cylinder(ctx, 0x202020, tc, tr, tf, tu);
 		}
 	}
 }
@@ -245,14 +246,25 @@ static void rccar_event(
 
 
 
-static void rccar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void rccar_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//rccar_draw(act, pin, win, sty);
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
+
+	//cam -> world
+	struct entity* wrd;struct style* camg;
+
+	//scene -> texball
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* part;
+
+	if(stack){
+		act = self->pchip;part = self->pfoot;
+		scn = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)rccar_draw_vbo(act,part, scn,geom, wnd,area);
+	}
 }
 static void rccar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -276,15 +288,10 @@ static void rccar_modify(struct entity* act)
 static void rccar_delete(struct entity* act)
 {
 	if(0 == act)return;
-	boardwrite(_car_, 0, "-", 0);
-	//if(_copy_ == act->type)memorydelete(act->buf);
 }
 static void rccar_create(struct entity* act)
 {
 	if(0 == act)return;
-	boardwrite(_car_, 0, "+", 0);
-	//if(_orig_ == act->type)act->buf = buffer;
-	//if(_copy_ == act->type)act->buf = memorycreate(256, 0);
 }
 
 

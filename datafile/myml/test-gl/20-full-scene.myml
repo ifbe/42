@@ -1,44 +1,53 @@
 <style>
+carslot{
+}
+cargeom{
+c: 1.0, 0.0, 1.0
+r: 1.0, 0.0, 0.0
+f: 0.0, 1.0, 0.0
+t: 0.0, 0.0, 1.0
+}
+
 dronslot{
 }
 drongeom{
-c: 0.0, 0.0, 1000.0
-r: 1000.0, 0.0, 0.0
-f: 0.0, 1000.0, 0.0
-t: 0.0, 0.0, 1000.0
+c:-1.0, 0.0, 10.0
+r: 0.25, 0.0, 0.0
+f: 0.0, 0.25, 0.0
+t: 0.0, 0.0, 0.25
 }
 
 skypart{
 }
 skygeom{
 c: 0.0, 0.0, 0.0
-r: 10000000.0, 0.0, 0.0
-f: 0.0, 10000000.0, 0.0
-t: 0.0, 0.0, 10000000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
 }
 
 gndpart{
 }
 gndgeom{
 c: 0.0, 0.0, 0.0
-r: 10000000.0, 0.0, 0.0
-f: 0.0, 10000000.0, 0.0
-t: 0.0, 0.0, 10000000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
 }
 
 aaaapart{
 }
 aaaageom{
-c: 0.0, -3000.0, 500.0
+c: 0.0, -8.0, 4.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
 
-L: 0.0, 0.0, 0.0,-1.0
-R: 0.0, 0.0, 0.0, 1.0
-B: 0.0, 0.0, 0.0,-1.0
-T: 0.0, 0.0, 0.0, 1.0
-N: 0.0, 0.0, 0.0, 1.0
+L: 0.0, 0.0, 0.0,-0.01
+R: 0.0, 0.0, 0.0, 0.01
+B: 0.0, 0.0, 0.0,-0.01
+T: 0.0, 0.0, 0.0, 0.01
+N: 0.0, 0.0, 0.0, 0.01
 F: 0.0, 0.0, 0.0, 1000000000.0
 }
 
@@ -53,19 +62,23 @@ q:1.0, 1.0
 drone{
 fmt:drone
 }
-cam0{
-fmt:freecam
+rccar{
+fmt:rccar
 }
+scene{
+fmt:3dscene
+}
+
 sky{
 fmt:texball
 url:datafile/jpg/skysphere.jpg
 }
 gnd{
 fmt:ground
-url:datafile/jpg/water.jpg
+url:datafile/jpg/wall.jpg
 }
-scene{
-fmt:3dscene
+cam0{
+fmt:freecam
 }
 world{
 fmt:3dworld
@@ -99,6 +112,7 @@ fmt:poller
 
 <relation>
 #scene depends on ???
+(scene, cargeom, 0) -> (rccar, carslot, 0)
 (scene, drongeom, 0) -> (drone, dronslot, 0)
 (gravity, 0, 0) -> (scene, 0, 0)
 

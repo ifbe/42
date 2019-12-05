@@ -248,18 +248,16 @@ static void drone_read(struct halfrel* self, struct halfrel* peer, struct halfre
 	//cam -> world
 	struct entity* wrd;struct style* camg;
 
-	//scene -> texball
+	//scene -> drone
 	struct entity* scn;struct style* geom;
 	struct entity* act;struct style* part;
 
-	if(0 == stack)return;
-	if('v' == len){
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-
-		scn = peer->pchip;geom = peer->pfoot;
+	if(stack){
 		act = self->pchip;part = self->pfoot;
-		drone_draw_vbo(act,part, scn,geom, wrd,camg, wnd,area);
+		scn = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)drone_draw_vbo(act,part, scn,geom, wrd,camg, wnd,area);
 	}
 }
 static void drone_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

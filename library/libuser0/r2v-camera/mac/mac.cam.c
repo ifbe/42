@@ -11,9 +11,11 @@ static u8* ibuf = 0;
 static int icur = 0;
 void* visionlistener(struct supply* win)
 {
+	int j;
 	while(1){
+		for(j=0;j<640*480*2;j++)ibuf[j] = getrandom()&0xff;
 		relationwrite(win, _dst_, 0, 0, ibuf, 640*480*2);
-		sleep_us(1000*1000);
+		sleep_us(16*1000);
 	}
 	return 0;
 }
