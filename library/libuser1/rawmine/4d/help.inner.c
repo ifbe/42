@@ -67,25 +67,28 @@ void switch_register(void*);
 //item
 void clock_register(void*);
 void control_register(void*);
-void dancemat_register(void*);
 void dna_register(void*);
-void drone_register(void*);
 void geometry_register(void*);
 void house_register(void*);
-void human_register(void*);
 void mario_register(void*);
 void mobius_register(void*);
 void model_register(void*);
 void motor_register(void*);
 void piano_register(void*);
 void picture_register(void*);
-void rccar_register(void*);
 void screen_register(void*);
 void stair_register(void*);
 void tardis_register(void*);
 void texmix_register(void*);
 void theeye_register(void*);
 void tree_register(void*);
+
+//robo
+void dancemat_register(void*);
+void drone_register(void*);
+void human_register(void*);
+void rccar_register(void*);
+void robodog_register(void*);
 
 //test
 void calib3d_register(void*);
@@ -323,22 +326,13 @@ void content_create(void* addr)
 	control_register(tmp);
 	tmp += sizeof(struct entity);
 
-	dancemat_register(tmp);
-	tmp += sizeof(struct entity);
-
 	dna_register(tmp);
-	tmp += sizeof(struct entity);
-
-	drone_register(tmp);
 	tmp += sizeof(struct entity);
 
 	geometry_register(tmp);
 	tmp += sizeof(struct entity);
 
 	house_register(tmp);
-	tmp += sizeof(struct entity);
-
-	human_register(tmp);
 	tmp += sizeof(struct entity);
 
 	mario_register(tmp);
@@ -359,9 +353,6 @@ void content_create(void* addr)
 	picture_register(tmp);
 	tmp += sizeof(struct entity);
 
-	rccar_register(tmp);
-	tmp += sizeof(struct entity);
-
 	screen_register(tmp);
 	tmp += sizeof(struct entity);
 
@@ -378,6 +369,25 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 	tree_register(tmp);
+	tmp += sizeof(struct entity);
+
+
+
+
+//----------------------robo----------------------
+	dancemat_register(tmp);
+	tmp += sizeof(struct entity);
+
+	drone_register(tmp);
+	tmp += sizeof(struct entity);
+
+	human_register(tmp);
+	tmp += sizeof(struct entity);
+
+	rccar_register(tmp);
+	tmp += sizeof(struct entity);
+
+	robodog_register(tmp);
 	tmp += sizeof(struct entity);
 
 

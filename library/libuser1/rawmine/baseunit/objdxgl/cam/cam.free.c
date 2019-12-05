@@ -778,10 +778,10 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, struct half
 		if('v' == len){
 			freecam_ratio(win, geom, wnd, area);
 			freecam_shape2frustum(&geom->fshape, &geom->frustum);
-			freecam_draw_vbo(act,part, win,geom, wrd,camg, wnd, area);
+			freecam_draw_vbo(act,part, win,geom, wrd,camg, wnd,area);
 		}
 		if('?' == len){
-			freecam_matrix(act,part, win,geom, wnd, area);
+			freecam_matrix(act,part, win,geom, wnd,area);
 		}
 	}
 }

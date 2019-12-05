@@ -235,7 +235,7 @@ static void thirdperson_read(struct halfrel* self, struct halfrel* peer, struct 
 			freecam_shape2frustum(&geom->fshape, &geom->frustum);
 			thirdperson_draw(act,part, win,geom, wrd,camg, wnd,area);
 		}
-		if('m' == len){
+		if('?' == len){
 			thirdperson_matrix(act,part, win,geom, wnd,area);
 		}
 	}
