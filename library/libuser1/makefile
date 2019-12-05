@@ -151,6 +151,7 @@ rawmine/compound/therobo/robo.dancemat.c \
 rawmine/compound/therobo/robo.dog.c \
 rawmine/compound/therobo/robo.drone.c \
 rawmine/compound/therobo/robo.human.c \
+rawmine/compound/therobo/robo.otto.c \
 rawmine/compound/therobo/robo.rccar.c \
 rawmine/compound/thetest/test.calib3d.c \
 rawmine/compound/thetest/test.codeimg.c \

@@ -134,19 +134,20 @@ static void human_draw_pixel(
 	}
 }
 static void human_draw_vbo(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	int j,k;
 	vec3 t0, t1;
 	float w,h;
 	float x,y,z,n;
 	vec3* bonevert;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carveline_circle(win, 0xff00ff, vc, vr, vf);
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	carveline_circle(ctx, 0xff00ff, vc, vr, vf);
 
 	j = (timeread()%1000000);
 	if(j < 250*1000){
@@ -179,51 +180,8 @@ static void human_draw_vbo(
 		t1[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
 		t1[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
 
-		carvesolid_bodypart(win, 0x008080, t0, t1);
+		carvesolid_bodypart(ctx, 0x008080, t0, t1);
 	}
-/*
-	x = bonevert[0][0];
-	y = bonevert[0][1];
-	z = bonevert[0][2];
-	act->camera.vc[0] = vc[0] + vr[0]*x + vf[0]*y + vu[0]*z;
-	act->camera.vc[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
-	act->camera.vc[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
-
-	x = vf[0];
-	y = vf[1];
-	z = vf[2];
-	n = squareroot(x*x + y*y + z*z);
-	act->camera.vn[0] = 100*x/n;
-	act->camera.vn[1] = 100*y/n;
-	act->camera.vn[2] = 100*z/n;
-
-	//
-	w = win->width;
-	h = win->height;
-	x = bonevert[0][0] - bonevert[1][0];
-	y = bonevert[0][1] - bonevert[1][1];
-	z = bonevert[0][2] - bonevert[1][2];
-	n = h/w*173.0 / squareroot(x*x + y*y + z*z);
-	act->camera.vt[0] = x*n;
-	act->camera.vt[1] = y*n;
-	act->camera.vt[2] = z*n;
-	act->camera.vb[0] =-x*n;
-	act->camera.vb[1] =-y*n;
-	act->camera.vb[2] =-z*n;
-
-	//right = cross(near, up)
-	vf = act->camera.vn;
-	vu = act->camera.vt;
-	x = vf[1] * vu[2] - vf[2] * vu[1];
-	y = vf[2] * vu[0] - vf[0] * vu[2];
-	z = vf[0] * vu[1] - vf[1] * vu[0];
-	n = 173.0 / squareroot(x*x + y*y + z*z);
-	act->camera.vr[0] = x*n;
-	act->camera.vr[1] = y*n;
-	act->camera.vr[2] = z*n;
-	act->camera.vl[0] =-x*n;
-	act->camera.vl[1] =-y*n;
-	act->camera.vl[2] =-z*n;*/
 }
 static void human_draw_json(
 	struct entity* act, struct style* pin,
@@ -254,7 +212,6 @@ static void human_draw(
 	else if(fmt == _tui_)human_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)human_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)human_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)human_draw_vbo(act, pin, win, sty);
 	else human_draw_pixel(act, pin, win, sty);
 }
 static int human_event(
@@ -380,20 +337,25 @@ static int human_event(
 
 
 
-static void human_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void human_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	//say("@human_read:%llx,%llx,%llx\n",act,win,buf);
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)human_draw_vbo(act,pin,ctx,sty);
+	//cam -> world
+	struct entity* wrd;struct style* camg;
+
+	//scene -> texball
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		scn = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)human_draw_vbo(act,slot, scn,geom, wnd,area);
 	}
-	//human_draw(act, pin, win, sty);
 }
 static int human_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

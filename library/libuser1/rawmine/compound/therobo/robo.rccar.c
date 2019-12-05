@@ -76,34 +76,52 @@ static void rccar_draw_vbo(
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
 
-	tr[0] = vr[0] * 3 / 4;
-	tr[1] = vr[1] * 3 / 4;
-	tr[2] = vr[2] * 3 / 4;
-	tf[0] = vf[0] * 3 / 4;
-	tf[1] = vf[1] * 3 / 4;
-	tf[2] = vf[2] * 3 / 4;
-	tu[0] = vu[0] / 8;
-	tu[1] = vu[1] / 8;
-	tu[2] = vu[2] / 8;
-	tc[0] = vc[0] + vu[0]/4;
-	tc[1] = vc[1] + vu[1]/4;
-	tc[2] = vc[2] + vu[2]/4;
-	carvesolid_prism4(ctx, 0x808080, tc, tr, tf, tu);
-
-	tr[0] = vr[0] / 4;
-	tr[1] = vr[1] / 4;
-	tr[2] = vr[2] / 4;
+	//wheel
 	tf[0] = vf[0] / 4;
 	tf[1] = vf[1] / 4;
 	tf[2] = vf[2] / 4;
 	tu[0] = vu[0] / 4;
 	tu[1] = vu[1] / 4;
 	tu[2] = vu[2] / 4;
-	tc[0] = vc[0] + vu[0]*0.75;
-	tc[1] = vc[1] + vu[1]*0.75;
-	tc[2] = vc[2] + vu[2]*0.75;
+	tr[0] = vr[0] / 8;
+	tr[1] = vr[1] / 8;
+	tr[2] = vr[2] / 8;
+	for(y=-1;y<2;y+=2)
+	{
+		for(x=-1;x<2;x+=2)
+		{
+			tc[0] = vc[0] + x*vr[0]*0.875 + y*vf[0]*3/4 + tu[0];
+			tc[1] = vc[1] + x*vr[1]*0.875 + y*vf[1]*3/4 + tu[1];
+			tc[2] = vc[2] + x*vr[2]*0.875 + y*vf[2]*3/4 + tu[2];
+			carvesolid_cylinder(ctx, 0x202020, tc, tf, tu, tr);
+		}
+	}
+
+	//board
+	tu[0] = vu[0] / 4;
+	tu[1] = vu[1] / 4;
+	tu[2] = vu[2] / 4;
+	tc[0] = vc[0] + vu[0]/2;
+	tc[1] = vc[1] + vu[1]/2;
+	tc[2] = vc[2] + vu[2]/2;
+	carvesolid_prism4(ctx, 0x808080, tc, vr, vf, tu);
+
+	//tank
+	tr[0] = vr[0] / 4;
+	tr[1] = vr[1] / 4;
+	tr[2] = vr[2] / 4;
+	tf[0] = vf[0] / 4;
+	tf[1] = vf[1] / 4;
+	tf[2] = vf[2] / 4;
+	tu[0] = vu[0] / 8;
+	tu[1] = vu[1] / 8;
+	tu[2] = vu[2] / 8;
+	tc[0] = vc[0] + vu[0]*0.875;
+	tc[1] = vc[1] + vu[1]*0.875;
+	tc[2] = vc[2] + vu[2]*0.875;
 	carvesolid_prism4(ctx, 0xc0c0c0, tc, tr, tf, tu);
 
+	//cask
 	tr[0] = vr[0] / 16;
 	tr[1] = vr[1] / 16;
 	tr[2] = vr[2] / 16;
@@ -113,31 +131,10 @@ static void rccar_draw_vbo(
 	tu[0] = vu[0] / 16;
 	tu[1] = vu[1] / 16;
 	tu[2] = vu[2] / 16;
-	tc[0] = vc[0] + vf[0]/2 + vu[0]*0.75;
-	tc[1] = vc[1] + vf[1]/2 + vu[1]*0.75;
-	tc[2] = vc[2] + vf[2]/2 + vu[2]*0.75;
+	tc[0] = vc[0] + vf[0]/2 + vu[0]*0.875;
+	tc[1] = vc[1] + vf[1]/2 + vu[1]*0.875;
+	tc[2] = vc[2] + vf[2]/2 + vu[2]*0.875;
 	carvesolid_cask(ctx, 0xffffff, tc, tr, tu, tf);
-
-	tr[0] = vf[0] / 4;
-	tr[1] = vf[1] / 4;
-	tr[2] = vf[2] / 4;
-	tf[0] = vu[0] / 4;
-	tf[1] = vu[1] / 4;
-	tf[2] = vu[2] / 4;
-	tu[0] = vr[0] / 4;
-	tu[1] = vr[1] / 4;
-	tu[2] = vr[2] / 4;
-
-	for(y=-1;y<2;y+=2)
-	{
-		for(x=-1;x<2;x+=2)
-		{
-			tc[0] = vc[0] + x*vr[0]*3/4 + y*vf[0]*3/4 + vu[0]/4;
-			tc[1] = vc[1] + x*vr[1]*3/4 + y*vf[1]*3/4 + vu[1]/4;
-			tc[2] = vc[2] + x*vr[2]*3/4 + y*vf[2]*3/4 + vu[2]/4;
-			carvesolid_cylinder(ctx, 0x202020, tc, tr, tf, tu);
-		}
-	}
 }
 static void rccar_draw_json(
 	struct entity* act, struct style* pin,

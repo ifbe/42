@@ -1,0 +1,110 @@
+<style>
+gndhaha{
+}
+gndgeom{
+c: 0.0, 0.0, 0.0
+r: 10000.0, 0.0, 0.0
+f: 0.0, 10000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+carhaha{
+}
+cargeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0, 1000
+f: 0.0, 1000.0, 0.0, 1000
+t: 0.0, 0.0, 1000.0, 1000
+}
+
+freemodl{
+}
+freegeom{
+c: 0.0, -4000.0, 4000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 866.0,-500.0
+t: 0.0, 500.0, 866.0
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<entity>
+gnd{
+fmt:ground
+}
+car{
+fmt:human
+}
+freecam{
+fmt:3rdcam
+}
+3dworld{
+fmt:3dworld
+}
+</entity>
+
+
+<supply>
+thewnd{
+fmt:gl41wnd0
+}
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<artery>
+reline{
+fmt:reline
+}
+str2fv{
+fmt:str2fv
+}
+</artery>
+
+
+<system>
+udphost{
+fmt:UDP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<relation>
+(car, 0, 0) -> (freecam, 0, tar)
+
+#3dworld depends on inner objects
+(3dworld, gndgeom, 0) -> (gnd, gndhaha, 0)
+(3dworld, cargeom, 0) -> (car, carhaha, 0)
+(3dworld, freegeom, 0) -> (freecam, freemodl, 0)
+
+#glwnd depends on cam
+(thewnd, freerect, mvp) -> (freecam, 0, 0)
+
+#opengl depends on wnd
+(opengl, 0, wnd) -> (thewnd, 0, 0)
+</relation>

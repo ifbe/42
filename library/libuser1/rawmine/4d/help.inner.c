@@ -87,6 +87,7 @@ void tree_register(void*);
 void dancemat_register(void*);
 void drone_register(void*);
 void human_register(void*);
+void otto_register(void*);
 void rccar_register(void*);
 void robodog_register(void*);
 
@@ -382,6 +383,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 	human_register(tmp);
+	tmp += sizeof(struct entity);
+
+	otto_register(tmp);
 	tmp += sizeof(struct entity);
 
 	rccar_register(tmp);

@@ -12,9 +12,99 @@ static void otto_draw_pixel(
 static void otto_draw_vbo(
 	struct entity* act, struct style* part,
 	struct entity* scn, struct style* geom,
-	struct entity* wrd, struct style* camg,
 	struct entity* ctx, struct style* area)
 {
+	vec3 tc,tr,tf,tt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+	carveline_prism4(ctx, 0xff00ff, vc,vr,vf,vt);
+
+	tc[0] = vc[0] + vt[0]*0.75;
+	tc[1] = vc[1] + vt[1]*0.75;
+	tc[2] = vc[2] + vt[2]*0.75;
+	tr[0] = vr[0]/2;
+	tr[1] = vr[1]/2;
+	tr[2] = vr[2]/2;
+	tf[0] = vf[0]/2;
+	tf[1] = vf[1]/2;
+	tf[2] = vf[2]/2;
+	tt[0] = vt[0]/4;
+	tt[1] = vt[1]/4;
+	tt[2] = vt[2]/4;
+	carvesolid_prism4(ctx, 0x808080, tc,tr,tf,tt);
+
+	//arm
+	tr[0] = vr[0]/8;
+	tr[1] = vr[1]/8;
+	tr[2] = vr[2]/8;
+	tf[0] = vf[0]/8;
+	tf[1] = vf[1]/8;
+	tf[2] = vf[2]/8;
+	tt[0] = vt[0]/4;
+	tt[1] = vt[1]/4;
+	tt[2] = vt[2]/4;
+
+	//l arm
+	tc[0] = vc[0] -vr[0]+tr[0] + vt[0]*0.5+tt[0];
+	tc[1] = vc[1] -vr[1]+tr[1] + vt[1]*0.5+tt[1];
+	tc[2] = vc[2] -vr[2]+tr[2] + vt[2]*0.5+tt[2];
+	carvesolid_prism4(ctx, 0x808080, tc,tr,tf,tt);
+
+	//r arm
+	tc[0] = vc[0] +vr[0]-tr[0] + vt[0]*0.5+tt[0];
+	tc[1] = vc[1] +vr[1]-tr[1] + vt[1]*0.5+tt[1];
+	tc[2] = vc[2] +vr[2]-tr[2] + vt[2]*0.5+tt[2];
+	carvesolid_prism4(ctx, 0x808080, tc,tr,tf,tt);
+
+
+	//arm
+	tr[0] = vr[0]/8;
+	tr[1] = vr[1]/8;
+	tr[2] = vr[2]/8;
+	tf[0] = vf[0]/8;
+	tf[1] = vf[1]/8;
+	tf[2] = vf[2]/8;
+	tt[0] = vt[0]/4;
+	tt[1] = vt[1]/4;
+	tt[2] = vt[2]/4;
+
+	//l leg
+	tc[0] = vc[0] - vr[0]*0.25 + vt[0]*0.25;
+	tc[1] = vc[1] - vr[1]*0.25 + vt[1]*0.25;
+	tc[2] = vc[2] - vr[2]*0.25 + vt[2]*0.25;
+	carvesolid_prism4(ctx, 0x808080, tc,tr,tf,tt);
+
+	//r leg
+	tc[0] = vc[0] + vr[0]*0.25 + vt[0]*0.25;
+	tc[1] = vc[1] + vr[1]*0.25 + vt[1]*0.25;
+	tc[2] = vc[2] + vr[2]*0.25 + vt[2]*0.25;
+	carvesolid_prism4(ctx, 0x808080, tc,tr,tf,tt);
+
+
+	//foot
+	tr[0] = vr[0]*0.375;
+	tr[1] = vr[1]*0.375;
+	tr[2] = vr[2]*0.375;
+	tf[0] = vf[0]/4;
+	tf[1] = vf[1]/4;
+	tf[2] = vf[2]/4;
+	tt[0] = vt[0]/64;
+	tt[1] = vt[1]/64;
+	tt[2] = vt[2]/64;
+
+	//l foot
+	tc[0] = vc[0] - vr[0]+tr[0] + tt[0];
+	tc[1] = vc[1] - vr[1]+tr[1] + tt[1];
+	tc[2] = vc[2] - vr[2]+tr[2] + tt[2];
+	carvesolid_prism4(ctx, 0x808080, tc, tr,tf,tt);
+
+	//l foot
+	tc[0] = vc[0] + vr[0]-tr[0] + tt[0];
+	tc[1] = vc[1] + vr[1]-tr[1] + tt[1];
+	tc[2] = vc[2] + vr[2]-tr[2] + tt[2];
+	carvesolid_prism4(ctx, 0x808080, tc, tr,tf,tt);
 }
 static void otto_draw_json(
 	struct entity* act, struct style* pin,
@@ -72,7 +162,7 @@ static void otto_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 		scn = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)otto_draw_vbo(act,part, scn,geom, wrd,camg, wnd,area);
+		if('v' == len)otto_draw_vbo(act,part, scn,geom, wnd,area);
 	}
 }
 static void otto_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
