@@ -1,4 +1,5 @@
 #include "libuser.h"
+#define GL41BUF buf0
 
 
 
@@ -118,15 +119,21 @@ static void fractal_draw_pixel(
 	}*/
 }
 static void fractal_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	struct glsrc* src = (void*)(pin->data[0]);
-	float (*vbuf)[6] = src->vbuf;
+	struct glsrc* src;
+	float (*vbuf)[6];
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+
+	src = act->GL41BUF;
+	if(0 == src)return;
+	vbuf = src->vbuf;
+	if(0 == vbuf)return;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -244,14 +251,22 @@ static void fractal_event(
 
 
 
-static void fractal_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void fractal_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//fractal_draw(act, pin, win, sty);
+	//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+	//scene -> codeimg
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	act = self->pchip;slot = self->pfoot;
+	scn = peer->pchip;geom = peer->pfoot;
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		if('v' == len)fractal_draw_vbo3d(act,slot, scn,geom, wnd,area);
+	}
 }
 static void fractal_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -268,36 +283,12 @@ static void fractal_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void fractal_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct datapair* pair;
-	struct glsrc* src;
-	struct gldst* dst;
 	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-/*
-	//alloc
-	pair = alloc_winobj(win, 's');
-	src = &pair->src;
-	dst = &pair->dst;
-	pin->foot[0] = (u64)src;
-	sty->foot[0] = (u64)dst;
+	if(0 == act)return;
+	if(0 == pin)return;
 
-	//
-	src->method = 'v';
-
-	//shader
-	src->vs = fractal_glsl_v;
-	src->fs = glsl_julia;
-	src->shader_enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len);
-*/
+	pin->data[0] = (u64)(act->GL41BUF);
 }
 
 
@@ -312,12 +303,30 @@ static void fractal_modify(struct entity* act)
 static void fractal_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
 }
 static void fractal_create(struct entity* act)
 {
+	struct glsrc* src;
 	if(0 == act)return;
-	act->buf = memorycreate(16, 0);
+
+	src = act->GL41BUF = memorycreate(0x200, 0);
+	if(0 == src)return;
+
+	//
+	src->geometry = 3;
+	src->method = 'v';
+
+	//shader
+	src->vs = fractal_glsl_v;
+	src->fs = glsl_julia;
+	src->shader_enq = 42;
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 }
 
 

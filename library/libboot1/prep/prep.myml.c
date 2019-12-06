@@ -358,6 +358,7 @@ int role_test_style(struct footlist foot[], int flen, u8* buf, int len)
 					case 'f':parsefv(sty->fshape.vf, 4, buf+propdata, 99);break;
 					case 'q':parsefv(sty->fshape.vq, 4, buf+propdata, 99);break;
 					case 'c':parsefv(sty->fshape.vc, 4, buf+propdata, 99);break;
+
 					case 'L':parsefv(sty->frustum.vl, 4, buf+propdata, 99);break;
 					case 'R':parsefv(sty->frustum.vr, 4, buf+propdata, 99);break;
 					case 'B':parsefv(sty->frustum.vb, 4, buf+propdata, 99);break;
@@ -366,6 +367,11 @@ int role_test_style(struct footlist foot[], int flen, u8* buf, int len)
 					case 'F':parsefv(sty->frustum.vf, 4, buf+propdata, 99);break;
 					case 'Q':parsefv(sty->frustum.vq, 4, buf+propdata, 99);break;
 					case 'C':parsefv(sty->frustum.vc, 4, buf+propdata, 99);break;
+
+					case 'j':parsefv(sty->fmotion.j_displace, 4, buf+propdata, 99);break;
+					case 'a':parsefv(sty->fmotion.a_displace, 4, buf+propdata, 99);break;
+					case 'v':parsefv(sty->fmotion.v_displace, 4, buf+propdata, 99);break;
+					case 'x':parsefv(sty->fmotion.x_displace, 4, buf+propdata, 99);break;
 				}
 			}
 			continue;

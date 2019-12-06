@@ -1,5 +1,6 @@
 #include "libuser.h"
-void entitycreatefromfile(struct entity* act, char* name);
+#define GL41BUF buf1
+#define RGBABUF buf0
 void scale_image(void* src, void* dst,
 	int sw, int sh, int sx1, int sy1, int sx2, int sy2,
 	int dw, int dh, int dx1, int dy1, int dx2, int dy2);
@@ -21,38 +22,26 @@ static float vbuf[6][5] = {
 
 
 
-/*
-char* codeimg_glsl2d_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"out mediump vec2 uvw;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = vec4(vertex, 1.0);\n"
-	"}\n";
-*/
+
 char* codeimg_glsl_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"uniform mat4 cammvp;\n"
-	"out mediump vec2 uvw;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec2 texuvw;\n"
+"uniform mat4 cammvp;\n"
+"out mediump vec2 uvw;\n"
+"void main(){\n"
+	"uvw = texuvw;\n"
+	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+"}\n";
+
 char* codeimg_glsl_f =
-	GLSL_VERSION
-	"uniform sampler2D tex0;\n"
-	"in mediump vec2 uvw;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"uniform sampler2D tex0;\n"
+"in mediump vec2 uvw;\n"
+"out mediump vec4 FragColor;\n"
+"void main(){\n"
+	"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
+"}\n";
 
 
 
@@ -196,86 +185,31 @@ static void codeimg_draw_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	u32* src = (u32*)(act->buf);
+	u32* src = (u32*)(act->RGBABUF);
 	u32* dst = (u32*)(win->buf);
 
 	scale_image(src, dst,
 		1024, 1024, 0, 0, 1024, 1024,
 		stride, height, cx-ww, cy-hh, cx+ww, cy+hh
 	);
-}/*
-static void codeimg_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	if(0 == sty)sty = defaultstyle_vbo2d();
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	if(0 == act->buf)return;
-
-	struct glsrc* src = (void*)(pin->foot[0]);
-	float (*vbuf)[6] = src->vbuf;
-
-	vbuf[0][0] = vc[0] - vr[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2];
-	vbuf[0][3] = 0.0;
-	vbuf[0][4] = 1.0;
-	vbuf[0][5] = 0.0;
-
-	vbuf[1][0] = vc[0] + vr[0] + vf[0];
-	vbuf[1][1] = vc[1] + vr[1] + vf[1];
-	vbuf[1][2] = vc[2] + vr[2] + vf[2];
-	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 0.0;
-	vbuf[1][5] = 0.0;
-
-	vbuf[2][0] = vc[0] - vr[0] + vf[0];
-	vbuf[2][1] = vc[1] - vr[1] + vf[1];
-	vbuf[2][2] = vc[2] - vr[2] + vf[2];
-	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 0.0;
-	vbuf[2][5] = 0.0;
-
-	vbuf[3][0] = vc[0] + vr[0] + vf[0];
-	vbuf[3][1] = vc[1] + vr[1] + vf[1];
-	vbuf[3][2] = vc[2] + vr[2] + vf[2];
-	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 0.0;
-	vbuf[3][5] = 0.0;
-
-	vbuf[4][0] = vc[0] - vr[0] - vf[0];
-	vbuf[4][1] = vc[1] - vr[1] - vf[1];
-	vbuf[4][2] = vc[2] - vr[2] - vf[2];
-	vbuf[4][3] = 0.0;
-	vbuf[4][4] = 1.0;
-	vbuf[4][5] = 0.0;
-
-	vbuf[5][0] = vc[0] + vr[0] - vf[0];
-	vbuf[5][1] = vc[1] + vr[1] - vf[1];
-	vbuf[5][2] = vc[2] + vr[2] - vf[2];
-	vbuf[5][3] = 1.0;
-	vbuf[5][4] = 1.0;
-	vbuf[5][5] = 0.0;
-
-	src->vbuf_enq += 1;
-}*/
+}
 static void codeimg_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	float (*vbuf)[6];
 	struct glsrc* src;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	if(0 == act->buf)return;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	if(0 == act->RGBABUF)return;
 
-	src = (void*)(pin->data[0]);
+	src = act->GL41BUF;
+	if(0 == src)return;
 	vbuf = src->vbuf;
+	if(0 == vbuf)return;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -351,11 +285,6 @@ static void codeimg_draw(
 	else if(fmt == _tui_)codeimg_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)codeimg_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)codeimg_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)codeimg_draw_vbo2d(act, pin, win, sty);
-		//else codeimg_draw_vbo3d(act, pin, win, sty);
-	}
 	else codeimg_draw_pixel(act, pin, win, sty);
 }
 static void codeimg_event(
@@ -363,110 +292,27 @@ static void codeimg_event(
 	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
-	int x,y;
-	int rr,gg,bb;
-	u32* img;
-	struct glsrc* src;
-	//say("@codeimg_write:%x,%x\n",ev->why,ev->what);
-
-	img = act->buf;
-	if(0 == img)return;
-
-	src = (void*)(pin->data[0]);
-	if(_char_ == ev->what)
-	{
-		switch(ev->why)
-		{
-			case '1':
-			{
-				for(y=0;y<1024;y++)
-				{
-					for(x=0;x<1024;x++)
-					{
-						rr = RED1(x,y);
-						gg = GREEN1(x,y);
-						bb = BLUE1(x,y);
-						img[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
-					}
-				}
-				src->tex[0].enq += 1;
-				break;
-			}
-			case '2':
-			{
-				for(y=0;y<1024;y++)
-				{
-					for(x=0;x<1024;x++)
-					{
-						rr = RED2(x,y);
-						gg = GREEN2(x,y);
-						bb = BLUE2(x,y);
-						img[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
-					}
-				}
-				src->tex[0].enq += 1;
-				break;
-			}
-			case '3':
-			{
-				for(y=0;y<1024;y++)
-				{
-					for(x=0;x<1024;x++)
-					{
-						rr = RED3(x,y);
-						gg = GREEN3(x,y);
-						bb = BLUE3(x,y);
-						img[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
-					}
-				}
-				src->tex[0].enq += 1;
-				break;
-			}
-			case '4':
-			{
-				for(y=0;y<1024;y++)
-				{
-					for(x=0;x<1024;x++)
-					{
-						rr = RED4(x,y);
-						gg = GREEN4(x,y);
-						bb = BLUE4(x,y);
-						img[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
-					}
-				}
-				src->tex[0].enq += 1;
-				break;
-			}
-			case '6':
-			{
-				for(y=0;y<1024;y++)
-				{
-					for(x=0;x<1024;x++)
-					{
-						rr = RED6(x,y);
-						gg = GREEN6(x,y);
-						bb = BLUE6(x,y);
-						img[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
-					}
-				}
-				src->tex[0].enq += 1;
-				break;
-			}
-		}
-	}
 }
 
 
 
 
-static void codeimg_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void codeimg_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//codeimg_draw(act, pin, win, sty);
+	//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+	//scene -> codeimg
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	act = self->pchip;slot = self->pfoot;
+	scn = peer->pchip;geom = peer->pfoot;
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		if('v' == len)codeimg_draw_vbo3d(act,slot, scn,geom, wnd,area);
+	}
 }
 static void codeimg_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -483,22 +329,52 @@ static void codeimg_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void codeimg_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct datapair* pair;
-	struct glsrc* src;
-	struct gldst* dst;
 	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-/*
-	//alloc
-	pair = alloc_winobj(win, 's');
-	src = &pair->src;
-	dst = &pair->dst;
-	pin->foot[0] = (u64)src;
-	sty->foot[0] = (u64)dst;
+	if(0 == act)return;
+	if(0 == pin)return;
 
-	//
+	pin->data[0] = (u64)(act->GL41BUF);
+}
+
+
+
+
+static void codeimg_search(struct entity* act)
+{
+}
+static void codeimg_modify(struct entity* act)
+{
+}
+static void codeimg_delete(struct entity* act)
+{
+	if(0 == act)return;
+}
+static void codeimg_create(struct entity* act)
+{
+	int x,y;
+	int rr,gg,bb;
+	u32* rgba;
+	struct glsrc* src;
+	if(0 == act)return;
+
+	//own
+	rgba = act->RGBABUF = memorycreate(1024*1024*4, 0);
+	act->width = 1024;
+	act->height = 1024;
+	for(y=0;y<1024;y++){
+		for(x=0;x<1024;x++){
+			rr = RED4(x,y);
+			gg = GREEN4(x,y);
+			bb = BLUE4(x,y);
+			rgba[(y*1024)+x] = 0xff000000 + (rr<<16) + (gg<<8) + bb;
+		}
+	}
+
+	//gl
+	src = act->GL41BUF = memorycreate(0x200, 0);
+	if(0 == src)return;
+
 	src->geometry = 3;
 	src->method = 'v';
 
@@ -515,41 +391,12 @@ static void codeimg_start(struct halfrel* self, struct halfrel* peer)
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 
 	//texture
-	src->tex_name[0] = "tex0";
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_data[0] = act->buf;
-	src->tex_w[0] = act->width;
-	src->tex_h[0] = act->height;
-	src->tex_enq[0] = 42;
-*/
-}
-
-
-
-
-static void codeimg_search(struct entity* act)
-{
-}
-static void codeimg_modify(struct entity* act)
-{
-}
-static void codeimg_delete(struct entity* act)
-{
-	if(0 == act)return;
-	if(0 != act->buf)memorydelete(act->buf);
-	act->buf = 0;
-}
-static void codeimg_create(struct entity* act)
-{
-	int x,y;
-	int rr,gg,bb;
-	u32* src;
-	if(0 == act)return;
-
-	src = memorycreate(1024*1024*4, 0);
-	act->buf = src;
-	act->width = 1024;
-	act->height = 1024;
+	src->tex[0].name = "tex0";
+	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].data = act->RGBABUF;
+	src->tex[0].w = act->width;
+	src->tex[0].h = act->height;
+	src->tex[0].enq = 42;
 }
 
 

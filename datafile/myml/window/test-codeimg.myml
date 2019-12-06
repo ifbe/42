@@ -1,0 +1,71 @@
+<style>
+viewpart{
+}
+viewgeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+aaaapart{
+}
+aaaageom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+t: 0.0, 1000.0, 0.0
+n: 0.0, 0.0, 1000.0
+f: 0.0, 0.0, -1000.0
+}
+aaaarect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<entity>
+overview{
+fmt:codeimg
+}
+cam0{
+fmt:orthcam
+}
+world{
+fmt:3dworld
+}
+</entity>
+
+
+<supply>
+glwnd{
+fmt:gl41wnd0
+}
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<relation>
+#world depends on overview
+(world, aaaageom, 0) -> (cam0, aaaapart, 0)
+(world, viewgeom, 0) -> (overview, viewpart, 0)
+
+#glwnd depends on gldata
+(glwnd, aaaarect, 0) -> (cam0, 0, a0)
+
+#opengl depends on glwnd
+(opengl, 0, wnd) -> (glwnd, 0, togl)
+</relation>
