@@ -69,62 +69,46 @@ static void calculator_draw_pixel(
 			);
 		}
 	}
-}/*
-static void calculator_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+}
+static void calculator_draw_vbo(
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
-	int x,y,rgb;
+	int j,x,y,rgb;
 	vec3 tc,tr,tf;
-	if(0 == sty)sty = defaultstyle_vbo2d();
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
 
-	tf[0] = vf[0] / 2;
-	tf[1] = vf[1] / 2;
-	tf[2] = vf[2] / 2;
-	tc[0] = vc[0] + vf[0]/2;
-	tc[1] = vc[1] + vf[1]/2;
-	tc[2] = vc[2] + vf[2]/2;
-	carvesolid2d_rect(win, 0x000020, tc, vr, tf);
-	tc[0] = vc[0] - vf[0]/2;
-	tc[1] = vc[1] - vf[1]/2;
-	tc[2] = vc[2] - vf[2]/2;
-	carvesolid2d_rect(win, 0x200000, tc, vr, tf);
+	for(j=0;j<3;j++){
+		tf[j] = vf[j] / 2;
+		tc[j] = vc[j] + vf[j]/2;
+	}
+	carvesolid_rect(ctx, 0x000020, tc, vr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] - vf[j]/2;
+	carvesolid_rect(ctx, 0x200000, tc, vr, tf);
 
 	//display
-	tr[0] = vr[0] / 8;
-	tr[1] = vr[1] / 8;
-	tr[2] = vr[2] / 8;
-	tf[0] = vf[0] / 8;
-	tf[1] = vf[1] / 8;
-	tf[2] = vf[2] / 8;
-	tc[0] = vc[0] + vf[0]*7/8;
-	tc[1] = vc[1] + vf[1]*7/8;
-	tc[2] = vc[2] + vf[2]*7/8 - 0.1;
-	carvestring2d_center(win, 0xffffff, tc, tr, tf, buffer, 0);
-	tc[0] = vc[0] + vf[0]*5/8;
-	tc[1] = vc[1] + vf[1]*5/8;
-	tc[2] = vc[2] + vf[2]*5/8 - 0.1;
-	carvestring2d_center(win, 0xffffff, tc, tr, tf, infix, 0);
-	tc[0] = vc[0] + vf[0]*3/8;
-	tc[1] = vc[1] + vf[1]*3/8;
-	tc[2] = vc[2] + vf[2]*3/8 - 0.1;
-	carvestring2d_center(win, 0xffffff, tc, tr, tf, postfix, 0);
-	tc[0] = vc[0] + vf[0]*1/8;
-	tc[1] = vc[1] + vf[1]*1/8;
-	tc[2] = vc[2] + vf[2]*1/8 - 0.1;
-	carvestring2d_center(win, 0xffffff, tc, tr, tf, result, 0);
+	for(j=0;j<3;j++){
+		tr[j] = vr[j] / 8;
+		tf[j] = vf[j] / 8;
+	}
+	for(j=0;j<3;j++)tc[j] = vc[j] + vf[j]*7/8 + vt[j]/64;
+	carvestring_center(ctx, 0xffffff, tc, tr, tf, buffer, 0);
+	for(j=0;j<3;j++)tc[j] = vc[j] + vf[j]*5/8 + vt[j]/64;
+	carvestring_center(ctx, 0xffffff, tc, tr, tf, infix, 0);
+	for(j=0;j<3;j++)tc[j] = vc[j] + vf[j]*3/8 + vt[j]/64;
+	carvestring_center(ctx, 0xffffff, tc, tr, tf, postfix, 0);
+	for(j=0;j<3;j++)tc[j] = vc[j] + vf[j]*1/8 + vt[j]/64;
+	carvestring_center(ctx, 0xffffff, tc, tr, tf, result, 0);
 
 	//keypad
-	tr[0] = vr[0] / 8;
-	tr[1] = vr[1] / 8;
-	tr[2] = vr[2] / 8;
-	tf[0] = vf[0] / 8;
-	tf[1] = vf[1] / 8;
-	tf[2] = vf[2] / 8;
+	for(j=0;j<3;j++){
+		tr[0] = vr[0] / 8;
+		tf[2] = vf[2] / 8;
+	}
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<8;x++)
@@ -133,23 +117,12 @@ static void calculator_draw_vbo2d(
 			if(x<4)rgb += (y<<4) + (x<<20);
 			else rgb += (x<<4) + (y<<20);
 
-			tc[0] = vc[0] + vr[0]*(2*x-7)/8 + vf[0]*(7-2*y)/8;
-			tc[1] = vc[1] + vr[1]*(2*x-7)/8 + vf[1]*(7-2*y)/8;
-			tc[2] = vc[2] + vr[2]*(2*x-7)/8 + vf[2]*(7-2*y)/8 - 0.1;
-			carvesolid2d_rect(win, rgb, tc, tr, tf);
-			tc[2] -= 0.1;
-			carve2d_ascii(win, 0xffffff, tc, tr, tf, table[y][x]);
+			for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*(2*x-7)/8 + vf[j]*(-2*y-1)/8 + vt[j]/32;
+			carvesolid_rect(ctx, rgb, tc, tr, tf);
+			for(j=0;j<3;j++)tc[j] += vt[j]/32;
+			carveascii_center(ctx, 0xffffff, tc, tr, tf, table[y][x]);
 		}
 	}
-}*/
-static void calculator_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
 }
 static void calculator_draw_json(
 	struct entity* act, struct style* pin,
@@ -254,14 +227,23 @@ static void calculator_event(
 
 
 
-static void calculator_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void calculator_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//calculator_draw(act, pin, win, sty);
+	//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+
+	//scene -> calc
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		scn = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)calculator_draw_vbo(act,slot, scn,geom, wnd,area);
+	}
 }
 static void calculator_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

@@ -201,10 +201,8 @@ static void terminal_event(
 
 static void terminal_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam
+	//wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
-
-	//cam -> world
 	struct entity* wrd;struct style* camg;
 
 	//scene -> terminal

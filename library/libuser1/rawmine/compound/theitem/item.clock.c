@@ -35,79 +35,25 @@ static void clock_draw_pixel(
 	{
 		drawdecimal(win, c[j], cx+64-(j*24), cy-8, p[j]);
 	}
-}/*
-static void clock_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u8 j;
-	float a,c,s;
-	vec3 tc, tr, tf, tu, f;
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	u64 date = dateread();
-	u8* p = (u8*)&date;
-	carvesolid2d_circle(win, 0x404040, vc, vr, vf);
-
-	a = PI/2 - (p[0]*PI*2.0/60.0);
-	c = cosine(a);
-	s = sine(a);
-	tr[0] = vc[0]+(vr[0]*c+vf[0]*s);
-	tr[1] = vc[1]+(vr[1]*c+vf[1]*s);
-	tr[2] = vc[2]+(vr[2]*c+vf[2]*s);
-	carveline2d(win, 0xff0000, vc, tr);
-
-	a = PI/2 - (p[1]*PI*2.0/60.0);
-	c = cosine(a);
-	s = sine(a);
-	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*3/4;
-	tr[1] = vc[1]+(vr[1]*c+vf[1]*s)*3/4;
-	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*3/4;
-	carveline2d(win, 0x00ff00, vc, tr);
-
-	a = PI/2 - (p[2]*PI*2.0/12.0);
-	c = cosine(a);
-	s = sine(a);
-	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*2/4;
-	tr[1] = vc[1]+(vr[1]*c+vf[1]*s)*2/4;
-	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*2/4;
-	carveline2d(win, 0x0000ff, vc, tr);
-
-	tr[0] = vr[0]/8;
-	tr[1] = vr[1]/8;
-	tr[2] = vr[2]/8;
-	tf[0] = vf[0]/8;
-	tf[1] = vf[1]/8;
-	tf[2] = vf[2]/8;
-	for(j=0;j<12;j++)
-	{
-		a = PI/2 - j*PI/6;
-		c = cosine(a);
-		s = sine(a);
-		tc[0] = vc[0] + c*vr[0]*7/8 + s*vf[0]*7/8;
-		tc[1] = vc[1] + c*vr[1]*7/8 + s*vf[1]*7/8;
-		tc[2] = vc[2] + c*vr[2]*7/8 + s*vf[2]*7/8 - 0.1;
-		carve2d_ascii(win, 0xffffff, tc, tr, tf, j<10 ? j+0x30 : j+0x37);
-	}
-}*/
+}
 static void clock_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	u8 j;
 	float a,c,s;
 	vec3 tc, tr, tf, tu;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	carvesolid_circle(ctx, 0x404040, vc, vr, vf);
+
 	u64 date = dateread();
 	u8* p = (u8*)&date;
-	carvesolid_circle(win, 0x404040, vc, vr, vf);
+	p[2] += 8;
+	if(p[2] >= 24)p[2] = 0;p[3] += 1;
 
 	a = PI/2 - (p[0]*PI*2.0/60.0);
 	c = cosine(a);
@@ -115,7 +61,7 @@ static void clock_draw_vbo3d(
 	tr[0] = vc[0]+(vr[0]*c+vf[0]*s);
 	tr[1] = vc[1]+(vr[1]*c+vf[1]*s);
 	tr[2] = vc[2]+(vr[2]*c+vf[2]*s);
-	carveline(win, 0xff0000, vc, tr);
+	carveline(ctx, 0xff0000, vc, tr);
 
 	a = PI/2 - (p[1]*PI*2.0/60.0);
 	c = cosine(a);
@@ -123,7 +69,7 @@ static void clock_draw_vbo3d(
 	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*3/4;
 	tr[1] = vc[1]+(vr[1]*c+vf[1]*s)*3/4;
 	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*3/4;
-	carveline(win, 0x00ff00, vc, tr);
+	carveline(ctx, 0x00ff00, vc, tr);
 
 	a = PI/2 - (p[2]*PI*2.0/12.0);
 	c = cosine(a);
@@ -131,7 +77,7 @@ static void clock_draw_vbo3d(
 	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*2/4;
 	tr[1] = vc[1]+(vr[1]*c+vf[1]*s)*2/4;
 	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*2/4;
-	carveline(win, 0x0000ff, vc, tr);
+	carveline(ctx, 0x0000ff, vc, tr);
 
 	tr[0] = vr[0]/8;
 	tr[1] = vr[1]/8;
@@ -147,7 +93,7 @@ static void clock_draw_vbo3d(
 		tc[0] = vc[0] + c*vr[0]*7/8 + s*vf[0]*7/8;
 		tc[1] = vc[1] + c*vr[1]*7/8 + s*vf[1]*7/8;
 		tc[2] = vc[2] + c*vr[2]*7/8 + s*vf[2]*7/8 + 1;
-		carveascii(win, 0xffffff, tc, tr, tf, j<10 ? j+0x30 : j+0x37);
+		carveascii_center(ctx, 0xffffff, tc, tr, tf, j<10 ? j+0x30 : j+0x37);
 	}
 }
 static void clock_draw_json(
@@ -194,25 +140,29 @@ static void clock_draw(
 	else if(fmt == _tui_)clock_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)clock_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)clock_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)clock_draw_vbo2d(act, pin, win, sty);
-		//else clock_draw_vbo3d(act, pin, win, sty);
-	}
 	else clock_draw_pixel(act, pin, win, sty);
 }
 
 
 
 
-static void clock_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void clock_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//clock_draw(act, pin, win, sty);
+	//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+
+	//scene -> terminal
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		scn = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)clock_draw_vbo3d(act,slot, scn,geom, wnd,area);
+	}
 }
 static void clock_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

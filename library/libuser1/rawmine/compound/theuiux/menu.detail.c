@@ -78,252 +78,133 @@ void carveentity(struct entity* win, int val, vec3 vc, vec3 vr, vec3 vf)
 
 
 
-int detail_draw_vbo(struct entity* win, struct style* sty)
+void detail_draw_vbo_node(struct entity* ctx, struct entity* one, vec3 vc, vec3 vr, vec3 vf)
 {
 	int j;
+	vec3 tr,tf;
+	for(j=0;j<3;j++){
+		tr[j] = vr[j]*2;
+		tf[j] = vf[j]*2;
+	}
+	carveline_circle(ctx, 0x404040, vc,tr,tf);
+	carvestring_center(ctx, 0xff0000, vc,vr,vf, (void*)&one->fmt, 8);
+}
+void detail_draw_vbo_foot(struct entity* ctx, void* aaa, void* bbb, vec3 src, vec3 dst, vec3 vr, vec3 vf, vec3 vt)
+{
+	int j;
+	vec3 tc,t0,tr,tf;
+	vec3 d1,d2,t1,t2;
+	carveline(ctx, 0xff0000, src, dst);
+
+	for(j=0;j<3;j++){
+		tc[j] = (src[j]+dst[j])/2;
+		tr[j] = vr[j]/16;
+		tf[j] = vf[j]/16;
+		d2[j] = d1[j] = (src[j]-dst[j])/3;
+	}
+	quaternion_operation(d1, vt, PI/12);
+	quaternion_operation(d2, vt,-PI/12);
+
+	for(j=0;j<3;j++){
+		t1[j] = tc[j] + d1[j];
+		t2[j] = tc[j] + d2[j];
+	}
+	carveline_triangle(ctx, 0xff0000, tc, t1, t2);
+	for(j=0;j<3;j++)t0[j] = (src[j]*2 + dst[j]*1)/3;
+	carvestring_center(ctx, 0xff0000, t0, tr, tf, aaa, 4);
+
+	for(j=0;j<3;j++){
+		t1[j] = tc[j] - d1[j];
+		t2[j] = tc[j] - d2[j];
+	}
+	carveline_triangle(ctx, 0xff0000, tc, t1, t2);
+	for(j=0;j<3;j++)t0[j] = (src[j]*1 + dst[j]*2)/3;
+	carvestring_center(ctx, 0xff0000, t0, tr, tf, bbb, 4);
+}
+int detail_draw_vbo(
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
+{
+	int j,k,cnt;
+	float a,c,s;
 	struct relation* rel;
-	struct entity* act;
-	vec3 tc, tr, tf;
+	struct halfrel* self[8];
+	struct halfrel* peer[8];
 
-	float* vc;
-	float* vr;
-	float* vf;
-	struct style tmp;
+	vec3 tc, tr, tf, tt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+	carveline_rect(ctx, 0xffffff, vc,vr,vf);
 
-	//1. prep
-	if(0 == sty)
-	{
-		sty = &tmp;
-		sty->f.vc[0] = 0.0;
-		sty->f.vc[1] = 0.0;
-		sty->f.vc[2] = -0.9;
-		sty->f.vr[0] = 1.0;
-		sty->f.vr[1] = 0.0;
-		sty->f.vr[2] = 0.0;
-		sty->f.vf[0] = 0.0;
-		sty->f.vf[1] = 1.0;
-		sty->f.vf[2] = 0.0;
+	for(j=0;j<3;j++){
+		tr[j] = vr[j]/16;
+		tf[j] = vf[j]/16;
 	}
-	vc = sty->f.vc;
-	vr = sty->f.vr;
-	vf = sty->f.vf;
+	detail_draw_vbo_node(ctx, act, vc,tr,tf);
 
-	//2. body
-	tr[0] = vr[0]/4;
-	tr[1] = vr[1]/4;
-	tr[2] = vr[2]/4;
-	tf[0] = vf[0]/2;
-	tf[1] = vf[1]/2;
-	tf[2] = vf[2]/2;
-	carveentity(win, 0, vc, tr, tf);
-
-	//3. irel
-	j = 0;
-	rel = win->irel0;
-	while(1)
-	{
-		if(j >= 8)break;
+	cnt = 0;
+	rel = act->orel0;
+	while(1){
 		if(0 == rel)break;
-
-		//item
-		tr[0] = 2.0/17;
-		tr[1] = 0.0;
-		tr[2] = 0.0;
-		tf[0] = 0.0;
-		tf[1] = 1.0/17;
-		tf[2] = 0.0;
-		tc[0] = -7.0/8;
-		tc[1] = (7-j*2)/16.0;
-		tc[2] = -0.5;
-		carvesolid_rect(win, 0xffffff, tc, tr, tf);
-
-		//name
-		tc[2] = -0.6;
-		if(_ent_ == rel->srctype)
-		{
-			act = (void*)(rel->srcchip);
-			carvestring_center(win, 0, tc, tr, tf, (void*)(&act->fmt), 0);
-		}
-
-		//arrow
-		tc[0] = -3.0/4;
-		tc[1] = (7-j*2)/16.0;
-		tc[2] = -0.5;
-		tr[0] = -1.0/4;
-		tr[1] = (7-j*2)/16.0;
-		tr[2] = -0.5;
-		carveline_arrow(win, 0x0000ff, tc, tr, sty->f.vt);
-
-		//foot
-		tc[0] = -23.0/32;
-		tc[1] = (7-j*2)/16.0;
-		tc[2] = -0.5;
-		tr[0] = 1.0/16;
-		tr[1] = 0;
-		tr[2] = 0;
-		tf[0] = 0;
-		tf[1] = 1.0/16;
-		tf[2] = 0;
-		carveascii(win, 0x00ff00, tc, tr, tf, 'o');
-		tc[0] = -19.0/32;
-		carveascii(win, 0x00ff00, tc, tr, tf, 'i');
-
-		j++;
-		rel = samedstnextsrc(rel);
-	}
-
-	//4. orel
-	j = 0;
-	rel = win->orel0;
-	while(1)
-	{
-		if(j >= 8)break;
-		if(0 == rel)break;
-
-		//item
-		tr[0] = 2.0/17;
-		tr[1] = 0.0;
-		tr[2] = 0.0;
-		tf[0] = 0.0;
-		tf[1] = 1.0/17;
-		tf[2] = 0.0;
-		tc[0] = 7.0/8;
-		tc[1] = (7-j*2)/16.0;
-		tc[2] = -0.5;
-		carvesolid_rect(win, 0xffffff, tc, tr, tf);
-
-		//name
-		tc[2] = -0.6;
-		if(_ent_ == rel->dsttype)
-		{
-			act = (void*)(rel->dstchip);
-			carvestring_center(win, 0, tc, tr, tf, (void*)(&act->fmt), 0);
-		}
-
-		//arrow
-		tc[0] = 1.0/4;
-		tc[1] = (7-j*2)/16.0;
-		tc[2] = -0.5;
-		tr[0] = 3.0/4;
-		tr[1] = (7-j*2)/16.0;
-		tr[2] = -0.5;
-		carveline_arrow(win, 0xff0000, tc, tr, sty->f.vt);
-
-		//foot
-		tc[0] = 19.0/32;
-		tc[1] = (7-j*2)/16.0;
-		tc[2] = -0.5;
-		tr[0] = 1.0/16;
-		tr[1] = 0;
-		tr[2] = 0;
-		tf[0] = 0;
-		tf[1] = 1.0/16;
-		tf[2] = 0;
-		carveascii(win, 0x00ff00, tc, tr, tf, 'o');
-		tc[0] = 23.0/32;
-		carveascii(win, 0x00ff00, tc, tr, tf, 'i');
-
-		j++;
+		if(cnt >= 8)break;
+		self[cnt] = (void*)(rel->src);
+		peer[cnt] = (void*)(rel->dst);
+		cnt++;
 		rel = samesrcnextdst(rel);
 	}
 
-	return 0;
-}
-int detail_draw_pixel(struct entity* win, struct style* sty)
-{
-	struct relation* rel;
-	struct entity* act;
-	int cx,cy,ww,hh, j;
-
-	//1. prep
-	if(sty)
-	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
-	}
-	else
-	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
-	}
-
-	//2. body
-	drawentity(win, 0, cx-ww/4, cy-hh/2, cx+ww/4, cy+hh/2);
-
-	//3. irel
-	j = 0;
-	rel = win->irel0;
-	while(1)
-	{
-		if(j >= 8)break;
+	rel = act->irel0;
+	while(1){
 		if(0 == rel)break;
-
-		//ichip
-		drawsolid_rect(win, 0xffffff, cx-ww+2, cy+hh*(j-4)/8+2, cx-ww*3/4-2, cy+hh*(j-3)/8-2);
-		if(_ent_ == rel->srctype)
-		{
-			act = (void*)(rel->srcchip);
-			drawstring_fit(win, 0x000000, cx-ww, cy+hh*(j-4)/8, cx-ww*3/4, cy+hh*(j-3)/8, (void*)(&act->fmt), 0);
-		}
-
-		//ofoot, ifoot
-		drawline_arrow(win,0x00ff00, cx-ww*3/4, cy+hh*(j+j-7)/16, cx-ww*1/4, cy+hh*(j+j-7)/16);
-		drawascii_fit(win, 0x00ff00, cx-ww*6/8, cy+hh*(j+j-8)/16, cx-ww*5/8, cy+hh*(j+j-6)/16, 'o');
-		drawascii_fit(win, 0x00ff00, cx-ww*5/8, cy+hh*(j+j-8)/16, cx-ww*4/8, cy+hh*(j+j-6)/16, 'i');
-
-		j++;
+		if(cnt >= 8)break;
+		self[cnt] = (void*)(rel->dst);
+		peer[cnt] = (void*)(rel->src);
+		cnt++;
 		rel = samedstnextsrc(rel);
 	}
 
-	//4. orel
-	j = 0;
-	rel = win->orel0;
-	while(1)
-	{
-		if(j >= 8)break;
-		if(0 == rel)break;
+	for(k=0;k<cnt;k++){
+		a = 2*PI*k/cnt;
+		c = cosine(a)/2;
+		s = sine(a)/2;
+		for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*c + vf[j]*s;
 
-		//ochip
-		drawsolid_rect(win, 0xffffff, cx+ww*3/4+2, cy+hh*(j-4)/8+2, cx+ww-2, cy+hh*(j-3)/8-2);
-		if(_ent_ == rel->dsttype)
-		{
-			act = (void*)(rel->dstchip);
-			drawstring_fit(win, 0x000000, cx+ww*3/4, cy+hh*(j-4)/8, cx+ww, cy+hh*(j-3)/8, (void*)(&act->fmt), 0);
-		}
-
-		//ofoot, ifoot
-		drawline_arrow(win,0x00ff00, cx+ww*1/4, cy+hh*(j+j-7)/16, cx+ww*3/4, cy+hh*(j+j-7)/16);
-		drawascii_fit(win, 0x00ff00, cx+ww*4/8, cy+hh*(j+j-8)/16, cx+ww*5/8, cy+hh*(j+j-6)/16, 'o');
-		drawascii_fit(win, 0x00ff00, cx+ww*5/8, cy+hh*(j+j-8)/16, cx+ww*6/8, cy+hh*(j+j-6)/16, 'i');
-
-		j++;
-		rel = samesrcnextdst(rel);
+		detail_draw_vbo_node(ctx, peer[k]->pchip, tc, tr, tf);
+		detail_draw_vbo_foot(ctx, &self[k]->flag, &peer[k]->flag, vc, tc, vr, vf, vt);
 	}
 	return 0;
 }
-static void detail_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+int detail_draw_pixel(
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom)
 {
-	if(_vbo_ == win->fmt)detail_draw_vbo(win, sty);
-	else detail_draw_pixel(win, sty);
+	return 0;
 }
 
 
 
 
-static void detail_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void detail_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//detail_draw(act, pin, win, sty);
+	//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+
+	//world -> overview
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;slot = self->pfoot;
+		if('v' == len)detail_draw_vbo(act,slot, win,geom, wnd,area);
+	}
 }
 static int detail_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

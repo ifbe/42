@@ -1336,13 +1336,11 @@ static int overview_event(
 
 static void overview_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam
+	//wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
-
-	//cam -> world
 	struct entity* wrd;struct style* camg;
 
-	//world -> texball
+	//world -> overview
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
 
@@ -1352,7 +1350,7 @@ static void overview_read(struct halfrel* self, struct halfrel* peer, struct hal
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		overview_draw_vbo(act,part, win,geom, wnd,area);
+		if('v' == len)overview_draw_vbo(act,part, win,geom, wnd,area);
 	}
 }
 static int overview_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
