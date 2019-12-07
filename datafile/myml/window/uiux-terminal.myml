@@ -1,4 +1,27 @@
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<entity>
+terminal{
+fmt:term
+}
+cam0{
+fmt:orthcam
+}
+world{
+fmt:3dworld
+}
+</entity>
+
+
 <supply>
+glwnd{
+fmt:gl41wnd0
+}
 opengl{
 fmt:wnd
 title:"42"
@@ -9,67 +32,26 @@ depth:1024
 </supply>
 
 
-<entity>
-texball{
-fmt:texball
-url:datafile/jpg/skysphere.jpg
-}
-terminal{
-fmt:term
-}
-
-freecam{
-fmt:freecam
-}
-3dworld{
-fmt:3dworld
-}
-
-thectx{
-fmt:gl41data
-}
-thewnd{
-fmt:gl41wnd0
-}
-</entity>
-
-
 <style>
-skyhaha{
+viewpart{
 }
-skygeom{
-c: 0.0, 0.0, 0.0
-r: 10000000.0, 0.0, 0.0
-f: 0.0, 10000000.0, 0.0
-t: 0.0, 0.0, 10000000.0
-}
-
-termhaha{
-}
-termgeom{
+viewgeom{
 c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
-t: 0.0, -1000.0, 0.0
-f: 0.0, 0.0, 1000.0
-}
-
-freemodl{
-}
-freegeom{
-c: 0.0, -1500.0, 0.0
-r: 1000.0, 0.0, 0.0
-t: 0.0, 0.0, 1000.0
 f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
 }
-freefrus{
-l: 0.0, 0.0, 0.0, -1.0
-r: 0.0, 0.0, 0.0, 1.0
-b: 0.0, 0.0, 0.0, -1.0
-t: 0.0, 0.0, 0.0, 1.0
-n: 0.0, 0.0, 0.0, 1.0
-f: 0.0, 0.0, 0.0, 1000000000.0
+
+aaaapart{
 }
-freerect{
+aaaageom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+t: 0.0, 1000.0, 0.0
+n: 0.0, 0.0, 1000.0
+f: 0.0, 0.0, -1000.0
+}
+aaaarect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
@@ -77,21 +59,13 @@ q:1.0, 1.0
 
 
 <relation>
+#world depends on terminal
+(world, aaaageom, 0) -> (cam0, aaaapart, 0)
+(world, viewgeom, 0) -> (terminal, viewpart, 0)
 
-#3dworld depends on inner objects
-(3dworld, skygeom, 0) -> (texball, skyhaha, 0)
-(3dworld, termgeom, 0) -> (terminal, termhaha, 0)
-(3dworld, freegeom, 0) -> (freecam, freemodl, 0)
+#glwnd depends on gldata
+(glwnd, aaaarect, 0) -> (cam0, 0, a0)
 
-#glctx depends on scene
-(thectx, 0, 0) -> (3dworld, 0, gl41)
-
-#glwnd depends on ctx + cam
-(thewnd, 0, ctx) -> (thectx, 0, 0)
-(thewnd, freerect, mvp) -> (freecam, freefrus, 0)
-
-#opengl depends on ctx + wnd
-(opengl, 0, ctx) -> (thectx, 0, 0)
-(opengl, 0, wnd) -> (thewnd, 0, 0)
-
+#opengl depends on glwnd
+(opengl, 0, wnd) -> (glwnd, 0, togl)
 </relation>

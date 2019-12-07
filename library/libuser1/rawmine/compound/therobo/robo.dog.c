@@ -4,6 +4,72 @@
 
 
 
+void robodog_calc(vec3 joint, vec3 vector, vec3 shaft, float rotate)
+{
+	quaternion_operation(vector, shaft, rotate);
+	vector[0] += joint[0];
+	vector[1] += joint[1];
+	vector[2] += joint[2];
+}
+void carvesolid_jointandpole(struct entity* ctx, u32 rgb, vec3 joint, vec3 target, vec3 shaft)
+{
+	int j;
+	vec3 tc,tr,tf,tu;
+	carveline(ctx, rgb, joint, target);
+
+	for(j=0;j<3;j++)tr[j] = target[j] - joint[j];
+	vec3_setlen(tr, 100);
+
+	vec3_cross(tf, tr, shaft);
+	vec3_setlen(tf, 100);
+
+	for(j=0;j<3;j++)tu[j] = shaft[j];
+	vec3_setlen(tu, 10);
+
+	carvesolid_cylinder(ctx, rgb, joint, tr,tf,tu);
+
+
+	for(j=0;j<3;j++){
+		tc[j] = (target[j]+joint[j])/2;
+		tr[j] = (target[j]-joint[j])/2;
+	}
+	vec3_setlen(tf, 50);
+	vec3_setlen(tu, 50);
+	carvesolid_prism4(ctx, rgb, tc,tr,tf,tu);
+}
+void robodog_leg(struct entity* ctx, float* f, int lr, vec3 joint, vec3 vector, vec3 shaft)
+{
+	int j;
+	vec3 tc;
+
+	//1:
+	robodog_calc(joint, vector, shaft, lr*f[0]);
+	carvesolid_jointandpole(ctx, 0x800000, joint, vector, shaft);
+
+	//2: 
+	for(j=0;j<3;j++){
+		tc[j] = shaft[j];
+		shaft[j] = (vector[j] - joint[j])*lr;
+		joint[j] = vector[j];
+	}
+	vec3_cross(vector, shaft, tc);
+	vec3_setlen(vector, 500);
+	robodog_calc(joint, vector, shaft, f[1]);
+	carvesolid_jointandpole(ctx, 0x008000, joint, vector, shaft);
+
+	//3: shaft unchanged
+	for(j=0;j<3;j++){
+		tc[j] = joint[j];
+		joint[j] = vector[j];
+		vector[j] = tc[j] - vector[j];
+	}
+	robodog_calc(joint, vector, shaft, f[2]);
+	carvesolid_jointandpole(ctx, 0x000080, joint, vector, shaft);
+}
+
+
+
+
 static void robodog_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -14,145 +80,59 @@ static void robodog_draw_vbo(
 	struct entity* scn, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
+	int j;
+	float* f;
 	vec3 tc,tr,tf,tt;
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
+	carveline_prism4(ctx, 0x404040, vc, vr, vf, vt);
+	for(j=0;j<3;j++)tf[j] = vc[j]+vf[j];
+	carveline_arrow(ctx, 0xffffff, vc, tf, vt);
 
 	//body
-	tc[0] = vc[0] + vt[0];
-	tc[1] = vc[1] + vt[1];
-	tc[2] = vc[2] + vt[2];
-	tr[0] = vr[0]*0.875;
-	tr[1] = vr[1]*0.875;
-	tr[2] = vr[2]*0.875;
-	tt[0] = vt[0]/16;
-	tt[1] = vt[1]/16;
-	tt[2] = vt[2]/16;
+	for(j=0;j<3;j++){
+		tt[j] = vt[j]/8;
+		tr[j] = vr[j]*0.5;
+		tc[j] = vc[j] +vt[j]-tt[j];
+	}
 	carvesolid_prism4(ctx, 0x202020, tc, tr, vf, tt);
 
+	f = act->buf0;
+	if(0 == f)return;
 
-	//
-	tr[0] = vr[0]/16;
-	tr[1] = vr[1]/16;
-	tr[2] = vr[2]/16;
-	tf[0] = vf[0]/16;
-	tf[1] = vf[1]/16;
-	tf[2] = vf[2]/16;
+	//left, near
+	for(j=0;j<3;j++){
+		tf[j] = vf[j];
+		tc[j] = vc[j] -vr[j]*0.5 -vf[j] +vt[j]*0.875;
+		tr[j] = -vr[j]/4;
+	}
+	robodog_leg(ctx, &f[0], 1, tc,tr,tf);
 
-	//l,b
-	tc[0] = vc[0] -vr[0]*0.875 -vf[0] +vt[0];
-	tc[1] = vc[1] -vr[1]*0.875 -vf[1] +vt[1];
-	tc[2] = vc[2] -vr[2]*0.875 -vf[2] +vt[2];
-	carvesolid_cylinder(ctx, 0x800000, tc, tr, tt, tf);
-	tc[0] = vc[0] -vr[0]+tr[0] -vf[0] +vt[0];
-	tc[1] = vc[1] -vr[1]+tr[1] -vf[1] +vt[1];
-	tc[2] = vc[2] -vr[2]+tr[2] -vf[2] +vt[2];
-	carvesolid_prism4(ctx, 0x800000, tc, tr, tf, tt);
+	//right, near
+	for(j=0;j<3;j++){
+		tf[j] = vf[j];
+		tc[j] = vc[j] +vr[j]*0.5 -vf[j] +vt[j]*0.875;
+		tr[j] = vr[j]/4;
+	}
+	robodog_leg(ctx, &f[3],-1, tc,tr,tf);
 
-	//r,b
-	tc[0] = vc[0] +vr[0]*0.875 -vf[0] +vt[0];
-	tc[1] = vc[1] +vr[1]*0.875 -vf[1] +vt[1];
-	tc[2] = vc[2] +vr[2]*0.875 -vf[2] +vt[2];
-	carvesolid_cylinder(ctx, 0x800000, tc, tr, tt, tf);
-	tc[0] = vc[0] +vr[0]-tr[0] -vf[0] +vt[0];
-	tc[1] = vc[1] +vr[1]-tr[1] -vf[1] +vt[1];
-	tc[2] = vc[2] +vr[2]-tr[2] -vf[2] +vt[2];
-	carvesolid_prism4(ctx, 0x800000, tc, tr, tf, tt);
+	//left, front
+	for(j=0;j<3;j++){
+		tf[j] = vf[j];
+		tc[j] = vc[j] -vr[j]*0.5 +vf[j] +vt[j]*0.875;
+		tr[j] = -vr[j]/4;
+	}
+	robodog_leg(ctx, &f[6], 1, tc,tr,tf);
 
-	//l,f
-	tc[0] = vc[0] -vr[0]*0.875 +vf[0] +vt[0];
-	tc[1] = vc[1] -vr[1]*0.875 +vf[1] +vt[1];
-	tc[2] = vc[2] -vr[2]*0.875 +vf[2] +vt[2];
-	carvesolid_cylinder(ctx, 0x800000, tc, tr, tt, tf);
-	tc[0] = vc[0] -vr[0]+tr[0] +vf[0] +vt[0];
-	tc[1] = vc[1] -vr[1]+tr[1] +vf[1] +vt[1];
-	tc[2] = vc[2] -vr[2]+tr[2] +vf[2] +vt[2];
-	carvesolid_prism4(ctx, 0x800000, tc, tr, tf, tt);
-
-	//r,f
-	tc[0] = vc[0] +vr[0]*0.875 +vf[0] +vt[0];
-	tc[1] = vc[1] +vr[1]*0.875 +vf[1] +vt[1];
-	tc[2] = vc[2] +vr[2]*0.875 +vf[2] +vt[2];
-	carvesolid_cylinder(ctx, 0x800000, tc, tr, tt, tf);
-	tc[0] = vc[0] +vr[0]-tr[0] +vf[0] +vt[0];
-	tc[1] = vc[1] +vr[1]-tr[1] +vf[1] +vt[1];
-	tc[2] = vc[2] +vr[2]-tr[2] +vf[2] +vt[2];
-	carvesolid_prism4(ctx, 0x800000, tc, tr, tf, tt);
-
-
-	//leg
-	tr[0] = vr[0]/16;
-	tr[1] = vr[1]/16;
-	tr[2] = vr[2]/16;
-	tf[0] = vf[0]/16;
-	tf[1] = vf[1]/16;
-	tf[2] = vf[2]/16;
-
-	//l,b
-	tt[0] = vt[0]/16;
-	tt[1] = vt[1]/16;
-	tt[2] = vt[2]/16;
-	tc[0] = vc[0] -vr[0] -vf[0] +vt[0];
-	tc[1] = vc[1] -vr[1] -vf[1] +vt[1];
-	tc[2] = vc[2] -vr[2] -vf[2] +vt[2];
-	carvesolid_cylinder(ctx, 0x008000, tc, tf, tt, tr);
-	tc[0] = vc[0] -vr[0] -vf[0] +vt[0]/2;
-	tc[1] = vc[1] -vr[1] -vf[1] +vt[1]/2;
-	tc[2] = vc[2] -vr[2] -vf[2] +vt[2]/2;
-	carvesolid_cylinder(ctx, 0x000080, tc, tf, tt, tr);
-
-	tt[0] = vt[0]/4;
-	tt[1] = vt[1]/4;
-	tt[2] = vt[2]/4;
-	tc[0] = vc[0] - vr[0] - vf[0] + vt[0]*0.75;
-	tc[1] = vc[1] - vr[1] - vf[1] + vt[1]*0.75;
-	tc[2] = vc[2] - vr[2] - vf[2] + vt[2]*0.75;
-	carvesolid_cylinder(ctx, 0x008000, tc, tr, tf, tt);
-	tc[0] = vc[0] - vr[0] - vf[0] + tt[0];
-	tc[1] = vc[1] - vr[1] - vf[1] + tt[1];
-	tc[2] = vc[2] - vr[2] - vf[2] + tt[2];
-	carvesolid_cylinder(ctx, 0x000080, tc, tr, tf, tt);
-
-	//r,b
-	tt[0] = vt[0]/4;
-	tt[1] = vt[1]/4;
-	tt[2] = vt[2]/4;
-	tc[0] = vc[0] + vr[0] - vf[0] + vt[0]*0.75;
-	tc[1] = vc[1] + vr[1] - vf[1] + vt[1]*0.75;
-	tc[2] = vc[2] + vr[2] - vf[2] + vt[2]*0.75;
-	carvesolid_cylinder(ctx, 0x008000, tc, tr, tf, tt);
-	tc[0] = vc[0] + vr[0] - vf[0] + tt[0];
-	tc[1] = vc[1] + vr[1] - vf[1] + tt[1];
-	tc[2] = vc[2] + vr[2] - vf[2] + tt[2];
-	carvesolid_cylinder(ctx, 0x000080, tc, tr, tf, tt);
-
-	//l,f
-	tt[0] = vt[0]/4;
-	tt[1] = vt[1]/4;
-	tt[2] = vt[2]/4;
-	tc[0] = vc[0] - vr[0] + vf[0] + vt[0]*0.75;
-	tc[1] = vc[1] - vr[1] + vf[1] + vt[1]*0.75;
-	tc[2] = vc[2] - vr[2] + vf[2] + vt[2]*0.75;
-	carvesolid_cylinder(ctx, 0x008000, tc, tr, tf, tt);
-	tc[0] = vc[0] - vr[0] + vf[0] + tt[0];
-	tc[1] = vc[1] - vr[1] + vf[1] + tt[1];
-	tc[2] = vc[2] - vr[2] + vf[2] + tt[2];
-	carvesolid_cylinder(ctx, 0x000080, tc, tr, tf, tt);
-
-	//r,f
-	tt[0] = vt[0]/4;
-	tt[1] = vt[1]/4;
-	tt[2] = vt[2]/4;
-	tc[0] = vc[0] + vr[0] + vf[0] + vt[0]*0.75;
-	tc[1] = vc[1] + vr[1] + vf[1] + vt[1]*0.75;
-	tc[2] = vc[2] + vr[2] + vf[2] + vt[2]*0.75;
-	carvesolid_cylinder(ctx, 0x008000, tc, tr, tf, tt);
-	tc[0] = vc[0] + vr[0] + vf[0] + tt[0];
-	tc[1] = vc[1] + vr[1] + vf[1] + tt[1];
-	tc[2] = vc[2] + vr[2] + vf[2] + tt[2];
-	carvesolid_cylinder(ctx, 0x000080, tc, tr, tf, tt);
+	//right, front
+	for(j=0;j<3;j++){
+		tf[j] = vf[j];
+		tc[j] = vc[j] +vr[j]*0.5 +vf[j] +vt[j]*0.875;
+		tr[j] = vr[j]/4;
+	}
+	robodog_leg(ctx, &f[9],-1, tc,tr,tf);
 }
 static void robodog_draw_json(
 	struct entity* act, struct style* pin,
@@ -203,18 +183,28 @@ static void robodog_read(struct halfrel* self, struct halfrel* peer, struct half
 
 	//scene -> robodog
 	struct entity* scn;struct style* geom;
-	struct entity* act;struct style* part;
+	struct entity* act;struct style* slot;
 
 	if(stack){
-		act = self->pchip;part = self->pfoot;
+		act = self->pchip;slot = self->pfoot;
 		scn = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)robodog_draw_vbo(act,part, scn,geom, wnd,area);
+		if('v' == len)robodog_draw_vbo(act,slot, scn,geom, wnd,area);
 	}
 }
 static void robodog_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	int j;
+	struct entity* act;
+	float* dst;
+	float* src;
+	say("robodog_write\n");
+
+	act = self->pchip;
+	dst = act->buf0;
+	src = buf;
+	for(j=0;j<12;j++)dst[j] = src[j];
 }
 static void robodog_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -237,11 +227,24 @@ static void robodog_delete(struct entity* act)
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void robodog_create(struct entity* act)
+static void robodog_create(struct entity* act, u8* url, int argc, u8** argv)
 {
+	float* f;
 	if(0 == act)return;
-	//if(_orig_ == act->type)act->buf = buffer;
-	//if(_copy_ == act->type)act->buf = memorycreate(256, 0);
+
+	f = act->buf0 = memorycreate(0x1000, 0);
+	f[ 0] = 0.0;
+	f[ 1] = PI/12;
+	f[ 2] = PI*0.7;
+	f[ 3] = 0.0;
+	f[ 4] = PI/12;
+	f[ 5] = PI*0.7;
+	f[ 6] = 0.0;
+	f[ 7] = PI/12;
+	f[ 8] = PI*0.7;
+	f[ 9] = 0.0;
+	f[10] = PI/12;
+	f[11] = PI*0.7;
 }
 
 

@@ -11,7 +11,7 @@ t: 0.0, 0.0, 1000.0
 doghaha{
 }
 doggeom{
-c: 0.0, 0.0, 1000.0
+c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0, 1000
 f: 0.0, 1000.0, 0.0, 1000
 t: 0.0, 0.0, 1000.0, 1000
@@ -47,7 +47,7 @@ dog{
 fmt:robodog
 }
 freecam{
-fmt:freecam
+fmt:3rdcam
 }
 3dworld{
 fmt:3dworld
@@ -95,6 +95,8 @@ fmt:poller
 
 
 <relation>
+(dog, 0, 0) -> (freecam, 0, tar)
+
 #3dworld depends on inner objects
 (3dworld, gndgeom, 0) -> (gnd, gndhaha, 0)
 (3dworld, doggeom, 0) -> (dog, doghaha, 0)
@@ -105,4 +107,7 @@ fmt:poller
 
 #opengl depends on wnd
 (opengl, 0, wnd) -> (thewnd, 0, 0)
+
+(str2fv, 0, dst) -> (dog, 0, 0)
+(udphost, 0, dst) -> (str2fv, 0, src)
 </relation>

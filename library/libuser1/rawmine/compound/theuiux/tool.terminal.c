@@ -81,41 +81,25 @@ static void terminal_draw_pixel(
 	}
 }
 static void terminal_draw_vbo(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	int ocur;
 	void* obuf;
-	float* vc;
-	float* vr;
-	float* vf;
 	vec3 tc, tr, tf;
-	struct style tmp;
-	if(0 == sty)
-	{
-		sty = &tmp;
-		sty->f.vc[0] = 0.0;
-		sty->f.vc[1] = 0.0;
-		sty->f.vc[2] = -0.9;
-		sty->f.vr[0] = 1.0;
-		sty->f.vr[1] = 0.0;
-		sty->f.vr[2] = 0.0;
-		sty->f.vf[0] = 0.0;
-		sty->f.vf[1] = 1.0;
-		sty->f.vf[2] = 0.0;
-	}
-	vc = sty->f.vc;
-	vr = sty->f.vr;
-	vf = sty->f.vf;
-	carveopaque_rect(win, 0x80808080, vc, vr, vf);
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	carveopaque_rect(ctx, 0x80808080, vc, vr, vf);
 
 	tc[0] = vc[0];
 	tc[1] = vc[1];
 	tc[2] = vc[2]+1;
 	obuf = getstdout();
 	ocur = getcurout();
-	carvetext_reverse(win, 0xffffff, tc, vr, vf, obuf, ocur);
-	//carvestring(win, 0xffffff, vc, vr, vf, obuf, ocur);
+	carvetext_reverse(ctx, 0xffffff, tc, vr, vf, obuf, ocur);
+	//carvestring(ctx, 0xffffff, vc, vr, vf, obuf, ocur);
 }
 static void terminal_draw_json(
 	struct entity* act, struct style* pin,
@@ -180,7 +164,6 @@ static void terminal_draw(
 	else if(fmt == _tui_)terminal_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)terminal_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)terminal_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)terminal_draw_vbo(act, pin, win, sty);
 	else terminal_draw_pixel(act, pin, win, sty);
 }
 static void terminal_event(
@@ -216,20 +199,25 @@ static void terminal_event(
 
 
 
-static void terminal_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void terminal_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	//say("@drone_read:%llx,%llx,%llx\n",act,win,buf);
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)terminal_draw_vbo(act,pin,ctx,sty);
+	//cam -> world
+	struct entity* wrd;struct style* camg;
+
+	//scene -> terminal
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		scn = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)terminal_draw_vbo(act,slot, scn,geom, wnd,area);
 	}
-	//terminal_draw(act, pin, win, sty);
 }
 static void terminal_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

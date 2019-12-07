@@ -546,12 +546,12 @@ void carvetext_reverse(struct entity* win, u32 rgb,
 	if(0 == buf)return;
 	if(0 == len)return;
 
-	n = 32.0 / vec3_len(vr);
+	n = 32.0 / vec3_getlen(vr);
 	tr[0] = vr[0] * n;
 	tr[1] = vr[1] * n;
 	tr[2] = vr[2] * n;
 
-	n = 32.0 / vec3_len(vf);
+	n = 32.0 / vec3_getlen(vf);
 	tf[0] = vf[0] * n;
 	tf[1] = vf[1] * n;
 	tf[2] = vf[2] * n;

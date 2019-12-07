@@ -377,10 +377,11 @@ void vec2_cross(vec2 d, vec2 s);
 float vec2_dot(vec2, vec2);
 float vec2_cosine(vec2, vec2);
 //
+float vec3_getlen(vec3 v);
+void vec3_setlen(vec3 v, float len);
 void vec3_normalize(vec3 v);
 void vec3_normalizeto(vec3 src, vec3 dst);
-void vec3_cross(vec3 d, vec3 s);
-float vec3_len(vec3 v);
+void vec3_cross(vec3 v, vec3 a, vec3 b);
 float vec3_dot(vec3, vec3);
 float vec3_cosine(vec3, vec3);
 //
