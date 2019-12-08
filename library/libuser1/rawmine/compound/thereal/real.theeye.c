@@ -5,6 +5,7 @@
 
 static void theeye_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	say("@theeye_read\n");
 }
 static void theeye_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

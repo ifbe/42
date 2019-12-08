@@ -80,8 +80,11 @@ void screen_register(void*);
 void stair_register(void*);
 void tardis_register(void*);
 void texmix_register(void*);
-void theeye_register(void*);
 void tree_register(void*);
+
+//real
+void theear_register(void*);
+void theeye_register(void*);
 
 //robo
 void dancemat_register(void*);
@@ -364,6 +367,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 	texmix_register(tmp);
+	tmp += sizeof(struct entity);
+
+	theear_register(tmp);
 	tmp += sizeof(struct entity);
 
 	theeye_register(tmp);

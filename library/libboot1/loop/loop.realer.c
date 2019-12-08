@@ -1,4 +1,6 @@
 #include "libuser.h"
+#define _theear_ hex64('t','h','e','e','a','r',0,0)
+#define _theeye_ hex64('t','h','e','e','y','e',0,0)
 int input(void*, int);
 
 
@@ -65,23 +67,23 @@ int realer_event(void* realer, struct event* e)
 int realer_poll(void* realer)
 {
 	int j;
-	struct supply* win;
+	struct entity* ent;
 	struct halfrel self;
 	struct halfrel peer;
 
 	peer.pchip = realer;
-	for(j=31;j>=0;j--)
+	for(j=255;j>=0;j--)
 	{
-		win = &supply[j];
-		if(0 == win->type)continue;
+		ent = &entity[j];
+		if(0 == ent->type)continue;
 
-		if(_sup_ == win->type){
-			self.pchip = win;
-			supplyread(&self, &peer, 0, 0, 0, 0);
+		if(_theear_ == ent->fmt){
+			self.pchip = ent;
+			entityread(&self, &peer, 0, 0, 0, 0);
 		}
-		if(_spk_ == win->type){
-			self.pchip = win;
-			supplyread(&self, &peer, 0, 0, 0, 0);
+		if(_theeye_ == ent->fmt){
+			self.pchip = ent;
+			entityread(&self, &peer, 0, 0, 0, 0);
 		}
 	}
 	return 0;
@@ -92,6 +94,7 @@ void realer(void* realer)
 	u64 t0;
 	u64 dt;
 	struct event* ev;
+	//say("@realer!!!!!!!\n");
 
 	//forever
 	while(alive)

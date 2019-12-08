@@ -145,8 +145,9 @@ rawmine/compound/theitem/item.screen.c \
 rawmine/compound/theitem/item.stair.c \
 rawmine/compound/theitem/item.tardis.c \
 rawmine/compound/theitem/item.texmix.c \
-rawmine/compound/theitem/item.theeye.c \
 rawmine/compound/theitem/item.tree.c \
+rawmine/compound/thereal/real.theear.c \
+rawmine/compound/thereal/real.theeye.c \
 rawmine/compound/therobo/robo.dancemat.c \
 rawmine/compound/therobo/robo.dog.c \
 rawmine/compound/therobo/robo.drone.c \
