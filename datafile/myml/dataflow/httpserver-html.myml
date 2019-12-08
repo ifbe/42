@@ -1,9 +1,11 @@
-<system>
-tcphost{
-fmt:TCP
-url:0.0.0.0:9999
+<entity>
+2048{
+fmt:2048
 }
-</system>
+htmlroot{
+fmt:html
+}
+</entity>
 
 
 <artery>
@@ -13,14 +15,16 @@ fmt:HTTP
 </artery>
 
 
-<entity>
-htmlroot{
-fmt:html
-}
-</entity>
 
+<system>
+tcphost{
+fmt:TCP
+url:0.0.0.0:9999
+}
+</system>
 
 <relation>
-(tcphost, 0, dst) -> (http, 0, src)
+(htmlroot, 0, dst) -> (2048, 0, 0)
 (http, 0, dst) -> (htmlroot, 0, src)
+(tcphost, 0, dst) -> (http, 0, src)
 </relation>

@@ -43,13 +43,9 @@ static void the2048_delete(struct entity* act, u8* buf)
 }
 static void the2048_create(struct entity* act, u8* buf)
 {
-	int j;
-	u8* p;
 	if(0 == act)return;
 
-	p = (u8*)act + 0x100;
-	for(j=0;j<0x100;j++)p[j] = 0;
-	act->buf = p;
+	act->buf = memorycreate(0x1000, 0);
 	act->len = 0;
 
 	new2048(act->buf);
@@ -129,8 +125,7 @@ static void the2048_draw_vbo3d(
 	float* vu = geom->f.vt;
 	carvesolid_rect(ctx, 0x444444, vc, vr, vf);
 
-	if(0 == act->buf)tab = ((void*)act) + 0x100;
-	else tab = (void*)(act->buf) + (act->len)*16;
+	tab = (void*)(act->buf) + (act->len)*16;
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
@@ -195,11 +190,12 @@ static void the2048_draw_html(
 	struct entity* win, struct style* sty)
 {
 	int x,y;
-	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
+	u8 (*tab)[4];
+	tab = (void*)(act->buf) + (act->len)*16;
 
 	//<head>
 	htmlprintf(win, 1,
-		".b2048{width:50%%;height:50%%;float:left;background-color:#000;text-align:center;}\n"
+		".b2048{width:100%%;height:100%%;float:left;background-color:#000;text-align:center;}\n"
 		".g2048{width:24.8%%;height:24.8%%;margin:0.1%%;float:left;}\n"
 	);
 
@@ -351,22 +347,23 @@ static void the2048_read(struct halfrel* self, struct halfrel* peer, struct half
 	struct entity* wrd;struct style* camg;
 	//world -> 2048
 	struct entity* win;struct style* geom;
-	struct entity* act;struct style* part;
+	struct entity* act;struct style* slot;
 	//say("@the2048_read\n");
 
-	act = self->pchip;part = self->pfoot;
+	act = self->pchip;slot = self->pfoot;
 	win = peer->pchip;geom = peer->pfoot;
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		if('v' == len){
-			the2048_draw_vbo3d(act,part, win,geom, wnd,area);
+			the2048_draw_vbo3d(act,slot, win,geom, wnd,area);
 		}
 	}
 	else{
 		switch(win->fmt){
-		case _tui_:the2048_draw_tui(act, part, win, geom);break;
-		default:the2048_draw_pixel(act, part, win, geom);
+		case _tui_:the2048_draw_tui(act,slot, win,geom);break;
+		case _html_:the2048_draw_html(act,slot, win,geom);break;
+		default:the2048_draw_pixel(act,slot, win,geom);
 		}
 	}
 }
@@ -374,7 +371,7 @@ static void the2048_write(struct halfrel* self, struct halfrel* peer, void* arg,
 {
 	struct entity* act;struct style* part;
 	struct entity* win;struct style* geom;
-	the2048_event(act, part, win, geom, buf, 0);
+	//the2048_event(act, part, win, geom, buf, 0);
 }
 static void the2048_stop(struct halfrel* self, struct halfrel* peer)
 {

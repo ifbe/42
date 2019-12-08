@@ -18,7 +18,7 @@ void background_html(struct entity* win)
 		"<meta charset=\"UTF-8\">\n"
 		"<style type=\"text/css\">\n"
 		"*{margin:0;padding:0;}\n"
-		"body{width:100%%;height:100%%;background-color:#808080;}\n"
+		"html,body{width:100%%;height:100%%;background-color:#808080;}\n"
 	);
 	ctx[2]->len = mysnprintf(
 		ctx[2]->buf, 0x10000,
@@ -44,6 +44,18 @@ void foreground_html(struct entity* win)
 		"</html>"
 	);
 }
+int htmlnode_traverse(struct entity* ent)
+{
+	struct relation* rel = ent->orel0;
+	while(1){
+		if(0 == rel)break;
+		if(_ent_ == rel->dsttype){
+			entityread((void*)(rel->dst), (void*)(rel->src), 0, 0, 0, 0);
+		}
+		rel = samesrcnextdst(rel);
+	}
+	return 0;
+}
 
 
 
@@ -57,6 +69,7 @@ int htmlnode_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 
 	win = self->pchip;
 	background_html(win);
+	htmlnode_traverse(win);
 	foreground_html(win);
 
 	ctx = win->ctx;
