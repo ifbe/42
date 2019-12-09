@@ -76,7 +76,6 @@ void model_register(void*);
 void motor_register(void*);
 void piano_register(void*);
 void picture_register(void*);
-void screen_register(void*);
 void stair_register(void*);
 void tardis_register(void*);
 void texmix_register(void*);
@@ -85,6 +84,8 @@ void tree_register(void*);
 //real
 void theear_register(void*);
 void theeye_register(void*);
+void screen_register(void*);
+void speaker_register(void*);
 
 //robo
 void dancemat_register(void*);
@@ -357,9 +358,6 @@ void content_create(void* addr)
 	picture_register(tmp);
 	tmp += sizeof(struct entity);
 
-	screen_register(tmp);
-	tmp += sizeof(struct entity);
-
 	stair_register(tmp);
 	tmp += sizeof(struct entity);
 
@@ -369,13 +367,23 @@ void content_create(void* addr)
 	texmix_register(tmp);
 	tmp += sizeof(struct entity);
 
+	tree_register(tmp);
+	tmp += sizeof(struct entity);
+
+
+
+
+//----------------------robo----------------------
 	theear_register(tmp);
 	tmp += sizeof(struct entity);
 
 	theeye_register(tmp);
 	tmp += sizeof(struct entity);
 
-	tree_register(tmp);
+	screen_register(tmp);
+	tmp += sizeof(struct entity);
+
+	speaker_register(tmp);
 	tmp += sizeof(struct entity);
 
 
