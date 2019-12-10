@@ -229,7 +229,7 @@ void fullwindow_render(struct datapair* cam, struct datapair* lit, struct datapa
 	glEnable(GL_DEPTH_TEST);
 	glPointSize(4.0);
 	glClearColor(0.1, 0.1, 0.1, 1.0);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClear(GL_DEPTH_BUFFER_BIT);
 
 	//solid
 	for(j=0;j<64;j++){

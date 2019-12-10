@@ -61,7 +61,7 @@ int pwrclkdelete(void* addr)
 	if(0 == addr)return 0;
 
 	tmp = addr;
-	say("workerdelete:%.8s\n", &tmp->type);
+	say("pwrclkdelete:%.8s\n", &tmp->type);
 
 	switch(tmp->type){
 		case _main_:

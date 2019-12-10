@@ -1,6 +1,7 @@
 #include "libuser.h"
-void fixmatrix(float* m, struct fstyle* sty);
 void invmvp(float* v, struct fstyle* sty);
+void fixmatrix(float* m, struct fstyle* sty);
+int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
 
 
 
@@ -241,7 +242,6 @@ void freecam_zoom(struct entity* win, float delta)
 static int freecam_draw_vbo(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
-	struct entity* wrl, struct style* frus,
 	struct entity* ctx, struct style* none)
 {
 	//frustum
@@ -761,56 +761,54 @@ void freecam_ratio(
 //-1: world, geom of cam
 static void freecam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam, cam -> world
+//wnd.area -> cam.gl41, cam.slot -> world.geom
 	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
+	struct entity* cam;struct style* gl41;
+	struct entity* act;struct style* slot;
+	struct entity* wrd;struct style* geom;
 
-	//world -> this
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* part;
+	wnd = peer->pchip;area = peer->pfoot;
+	cam = self->pchip;gl41 = self->pfoot;
+	freecam_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
+	act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
+	wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
 
-	if(stack){
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+	if('v' == len){
+		freecam_ratio(wrd, geom, wnd, area);
+		freecam_shape2frustum(&geom->fshape, &geom->frustum);
 
-		win = peer->pchip;geom = peer->pfoot;
-		act = self->pchip;part = self->pfoot;
-		if('v' == len){
-			freecam_ratio(win, geom, wnd, area);
-			freecam_shape2frustum(&geom->fshape, &geom->frustum);
-			freecam_draw_vbo(act,part, win,geom, wrd,camg, wnd,area);
-		}
-		if('?' == len){
-			freecam_matrix(act,part, win,geom, wnd,area);
-		}
+		gl41data_read(self, peer, stack, rsp+2, buf, len);
+		freecam_draw_vbo(act,slot, wrd,geom, wnd,area);
+	}
+	if('?' == len){
+		gl41data_read(self, peer, stack, rsp+2, buf, len);
+		freecam_matrix(act,slot, wrd,geom, wnd,area);
 	}
 }
 static int freecam_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam, cam -> world
+//wnd.area -> cam.gl41, cam.slot -> world.geom
 	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-
-	//world -> this
-	struct entity* wld;struct style* geom;
-	struct entity* act;struct style* part;
-	struct event* ev;
-
-	wld = peer->pchip;geom = peer->pfoot;
-	act = self->pchip;part = self->pfoot;
-	ev = (void*)buf;
+	struct entity* cam;struct style* gl41;
+	struct entity* act;struct style* slot;
+	struct entity* wrd;struct style* geom;
+	struct event* ev = (void*)buf;
 	//say("%llx@freecam_write:%llx,%llx,%llx,%llx\n", act, ev->why, ev->what, ev->where, ev->when);
 
+	wnd = peer->pchip;area = peer->pfoot;
+	cam = self->pchip;gl41 = self->pfoot;
+	freecam_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
+	act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
+	wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
+
 	if(stack){
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		freecam_event_pick(act,part, wld,geom, wnd,area, ev, 0);
+		freecam_event_pick(act,slot, wrd,geom, wnd,area, ev, 0);
 	}
 	if('f' == act->data1){
-		freecam_event_frus(act,part, wld,geom, ev, 0);
+		freecam_event_frus(act,slot, wrd,geom, ev, 0);
 	}
 	else{
-		freecam_event_obb(act,part, wld,geom, ev, 0);
+		freecam_event_obb(act,slot, wrd,geom, ev, 0);
 	}
 	return 0;
 }

@@ -33,25 +33,59 @@ N: 0.0, 0.0, 0.0, 1.0
 F: 0.0, 0.0, 0.0, 1000000000.0
 }
 
+btnslot{
+}
+btngeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+orthslot{
+}
+orthgeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+t: 0.0, 1000.0, 0.0
+n: 0.0, 0.0, 1000.0
+f: 0.0, 0.0, -1000.0
+}
+
 aaaarect{
 c:0.0, 0.0
 q:1.0, 1.0
+}
+bbbbrect{
+c:0.0, 0.0
+q:0.2, 0.2
 }
 </style>
 
 
 <entity>
-cam0{
-fmt:3rdcam
-}
-dancemat{
-fmt:dancemat
-}
 sky{
 fmt:texball
 url:datafile/jpg/warehouse.jpg
 }
-world{
+dancemat{
+fmt:dancemat
+}
+3rdcam{
+fmt:3rdcam
+}
+3dworld{
+fmt:3dworld
+}
+
+button{
+fmt:picture
+url:datafile/png/portal.png
+}
+orthcam{
+fmt:orthcam
+}
+uiworld{
 fmt:3dworld
 }
 </entity>
@@ -98,15 +132,25 @@ fmt:poller
 
 
 <relation>
-(dancemat, 0, 0) -> (cam0, 0, tar)
+#dancemat surround by 3rdcam
+(dancemat, 0, 0) -> (3rdcam, 0, tar)
 
-#world depends on tree
-(world, skygeom, 0) -> (sky, skypart, 0)
-(world, testgeom, 0) -> (dancemat, testpart, 0)
-(world, aaaageom, 0) -> (cam0, aaaapart, 0)
+#when orthcam event, send to button
+(orthcam, 0, ev) -> (button, 0, 0)
+(button, 0, ev) -> (tcpsrv, 0, src)
+
+#3dworld depends on ...
+(3dworld, skygeom, 0) -> (sky, skypart, 0)
+(3dworld, testgeom, 0) -> (dancemat, testpart, 0)
+(3dworld, aaaageom, 0) -> (3rdcam, aaaapart, 0)
+
+#uiworld depends on ...
+(uiworld, btngeom, 0) -> (button, btnslot, 0)
+(uiworld, orthgeom, 0) -> (orthcam, orthslot, 0)
 
 #glwnd depends on cam
-(glwnd, aaaarect, 0) -> (cam0, 0, a0)
+(glwnd, aaaarect, 0) -> (3rdcam, 0, 0)
+(glwnd, bbbbrect, 0) -> (orthcam, 0, 0)
 
 #opengl depends on glwnd
 (opengl, 0, wnd) -> (glwnd, 0, togl)

@@ -9,19 +9,6 @@ void yuyv2rgba(
 
 
 
-//opengl shader
-/*
-char* video_glsl2d_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"out mediump vec2 uv;\n"
-	"void main()\n"
-	"{\n"
-		"uv = texuvw;\n"
-		"gl_Position = vec4(vertex, 1.0);\n"
-	"}\n";
-*/
 char* video_glsl_v =
 	GLSL_VERSION
 	"layout(location = 0)in mediump vec3 vertex;\n"

@@ -405,12 +405,10 @@ void windowdelete(struct supply* ogl)
 		case _gl41fbod_:gl41fbod_delete(ogl, 0);break;
 		case _gl41fbog_:gl41fbog_delete(ogl, 0);break;
 		case _gl41wnd0_:gl41wnd0_delete(ogl, 0);break;
-		case _none_:nonewindow_delete(ogl);break;
-		case _easy_:easywindow_delete(ogl);break;
-		default:fullwindow_delete(ogl);break;
+		case _none_:nonewindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
+		case _easy_:easywindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
+		default:    fullwindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
 	}
-
-	glfwDestroyWindow(ogl->glwnd);
 }
 void windowcreate(struct supply* ogl, void* arg)
 {

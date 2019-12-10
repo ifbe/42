@@ -1,4 +1,6 @@
 #include "libuser.h"
+#define _ev_ hex16('e','v')
+#define CTXBUF buf0
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
 
 
@@ -20,9 +22,12 @@ GLSL_VERSION
 "in mediump vec2 uvw;\n"
 "out mediump vec4 FragColor;\n"
 "uniform sampler2D tex0;\n"
+"uniform mediump float angle;\n"
 "void main(){\n"
-	"mediump vec3 bgr = texture(tex0, uvw).bgr;\n"
-	"FragColor = vec4(bgr, 1.0);\n"
+	"mediump float x = cos(angle)*(uvw.x-0.5) - sin(angle)*(uvw.y-0.5);\n"
+	"mediump float y = sin(angle)*(uvw.x-0.5) + cos(angle)*(uvw.y-0.5);\n"
+	"mediump vec4 bgra = texture(tex0, vec2(x+0.5,y+0.5)).bgra;\n"
+	"FragColor = bgra;\n"
 "}\n";
 
 
@@ -52,7 +57,7 @@ static void picture_draw_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	if(0 == act->buf)return;
+	if(0 == act->CTXBUF)return;
 
 	xmax = act->width;
 	if(xmax >= ww*2)xmax = ww*2;
@@ -62,7 +67,7 @@ static void picture_draw_pixel(
 	for(y=0;y<ymax;y++)
 	{
 		dst = (win->buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
-		src = (act->buf) + 4*y*(act->width);
+		src = (act->CTXBUF) + 4*y*(act->width);
 		//say("y=%d,%llx,%llx\n",y,dst,src);
 		if('b' == ((win->fmt)&0xff))
 		{
@@ -77,76 +82,25 @@ static void picture_draw_pixel(
 			}
 		}
 	}
-}/*
-static void picture_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	if(0 == act->buf)return;
-
-	struct glsrc* src = (void*)(pin->foot[0]);
-	float (*vbuf)[6] = (void*)(src->vbuf);
-
-	vbuf[0][0] = vc[0] - vr[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2];
-	vbuf[0][3] = 0.0;
-	vbuf[0][4] = 1.0;
-	vbuf[0][5] = 0.0;
-
-	vbuf[1][0] = vc[0] + vr[0] + vf[0];
-	vbuf[1][1] = vc[1] + vr[1] + vf[1];
-	vbuf[1][2] = vc[2] + vr[2] + vf[2];
-	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 0.0;
-	vbuf[1][5] = 0.0;
-
-	vbuf[2][0] = vc[0] - vr[0] + vf[0];
-	vbuf[2][1] = vc[1] - vr[1] + vf[1];
-	vbuf[2][2] = vc[2] - vr[2] + vf[2];
-	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 0.0;
-	vbuf[2][5] = 0.0;
-
-	vbuf[3][0] = vc[0] + vr[0] + vf[0];
-	vbuf[3][1] = vc[1] + vr[1] + vf[1];
-	vbuf[3][2] = vc[2] + vr[2] + vf[2];
-	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 0.0;
-	vbuf[3][5] = 0.0;
-
-	vbuf[4][0] = vc[0] - vr[0] - vf[0];
-	vbuf[4][1] = vc[1] - vr[1] - vf[1];
-	vbuf[4][2] = vc[2] - vr[2] - vf[2];
-	vbuf[4][3] = 0.0;
-	vbuf[4][4] = 1.0;
-	vbuf[4][5] = 0.0;
-
-	vbuf[5][0] = vc[0] + vr[0] - vf[0];
-	vbuf[5][1] = vc[1] + vr[1] - vf[1];
-	vbuf[5][2] = vc[2] + vr[2] - vf[2];
-	vbuf[5][3] = 1.0;
-	vbuf[5][4] = 1.0;
-	vbuf[5][5] = 0.0;
-
-	src->vbuf_enq += 1;
-}*/
+}
 static void picture_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	if(0 == act->buf)return;
+	struct glsrc* src;
+	float (*vbuf)[6];
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	if(0 == act->CTXBUF)return;
 
-	struct glsrc* src = act->buf;
-	float (*vbuf)[6] = (void*)(src->vbuf);
+	act->fx0 = ((timeread()%5000000)/5000000.0)*tau;
+	//say("%f\n",act->fx0);
+
+	src = act->CTXBUF;
+	vbuf = (void*)(src->vbuf);
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -234,23 +188,30 @@ static void picture_draw(
 
 
 
-static void picture_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void picture_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	//say("@texball_read:%llx,%llx,%llx\n",act,win,buf);
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wor;struct style* camg;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)picture_draw_vbo3d(act,pin,ctx,sty);
+	//world -> video
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		scn = peer->pchip;geom = peer->pfoot;
+		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)picture_draw_vbo3d(act,slot, scn,geom, wnd,area);
 	}
 	//picture_draw(act, pin, win, sty);
 }
 static void picture_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	struct entity* ent = self->pchip;
+	say("@picture_write\n");
+	relationwrite(ent,_ev_, 0, 0, "calibrate\n", 10);
 }
 static void picture_stop(struct halfrel* self, struct halfrel* peer)
 {
@@ -262,7 +223,7 @@ static void picture_start(struct halfrel* self, struct halfrel* peer)
 	if(0 == act)return;
 	if(0 == pin)return;
 
-	pin->data[0] = (u64)(act->buf);
+	pin->data[0] = (u64)(act->CTXBUF);
 	say("@picture_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
@@ -278,8 +239,8 @@ static void picture_modify(struct entity* act)
 static void picture_delete(struct entity* act)
 {
 	if(0 == act)return;
-	memorydelete(act->buf);
-	act->buf = 0;
+	memorydelete(act->CTXBUF);
+	act->CTXBUF = 0;
 }
 static void picture_create(struct entity* act, void* str)
 {
@@ -287,17 +248,23 @@ static void picture_create(struct entity* act, void* str)
 	struct glsrc* src;
 	if(0 == act)return;
 
-	src = act->buf = memorycreate(0x200, 0);
+	src = act->CTXBUF = memorycreate(0x200, 0);
 	if(0 == src)return;
 
 	//property
 	src->geometry = 3;
 	src->method = 'v';
+	src->opaque = 1;
 
 	//shader
 	src->vs = picture_glsl_v;
 	src->fs = picture_glsl_f;
 	src->shader_enq = 42;
+
+	//arg
+	src->arg[0].fmt = 'f';
+	src->arg[0].name = "angle";
+	src->arg[0].data = &act->fx0;
 
 	//texture0
 	src->tex[0].fmt = hex32('r','g','b','a');

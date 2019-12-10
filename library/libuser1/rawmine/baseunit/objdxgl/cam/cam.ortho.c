@@ -1,5 +1,7 @@
 #include "libuser.h"
+#define _ev_ hex16('e','v')
 void ortho_mvp(mat4 m, struct fstyle* s);
+int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
 
 
 
@@ -39,8 +41,9 @@ static void orthcam_create(struct entity* act, void* arg)
 
 
 static int orthcam_draw_vbo(
-	struct entity* act, struct style* pin,
-	struct entity* ctx, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* scn, struct style* geom,
+	struct entity* ctx, struct style* area)
 {/*
 	vec3 tc,tf;
 	float* vc = sty->vc;
@@ -151,7 +154,7 @@ void orthocam_shape2frustum(struct fstyle* s, struct fstyle* d)
 	d->vf[3] = n;
 }
 static void orthcam_matrix(
-	struct entity* act, struct style* part,
+	struct entity* act, struct style* slot,
 	struct entity* wrd, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
@@ -189,41 +192,52 @@ static void orthcam_ratio(
 
 static void orthcam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam
+//wnd.area -> cam.gl41, cam.slot -> world.geom
 	struct entity* wnd;struct style* area;
+	struct entity* cam;struct style* gl41;
+	struct entity* act;struct style* slot;
+	struct entity* wrd;struct style* geom;
 
-	//cam -> world
-	struct entity* wrd;struct style* camg;
+	wnd = peer->pchip;area = peer->pfoot;
+	cam = self->pchip;gl41 = self->pfoot;
+	orthcam_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
+	act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
+	wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
 
-	//world -> tree
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* part;
+	if('v' == len){
+		orthcam_ratio(wrd, geom, wnd, area);
+		orthocam_shape2frustum(&geom->fshape, &geom->frustum);
 
-	if(stack){
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-
-		win = peer->pchip;geom = peer->pfoot;
-		act = self->pchip;part = self->pfoot;
-		if('v' == len){
-			orthcam_ratio(win, geom, wnd, area);
-			orthocam_shape2frustum(&geom->fshape, &geom->frustum);
-			orthcam_matrix(act,part, win,geom, wnd,area);
-		}
+		gl41data_read(self, peer, stack, rsp+2, buf, len);
+		orthcam_draw_vbo(act,slot, wrd,geom, wnd,area);
+	}
+	if('?' == len){
+		gl41data_read(self, peer, stack, rsp+2, buf, len);
+		orthcam_matrix(act,slot, wrd,geom, wnd,area);
 	}
 }
-static int orthcam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static int orthcam_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	struct entity* wld;struct style* geom;
-	struct entity* act;struct style* part;
-	struct event* ev;
-
-	wld = peer->pchip;geom = peer->pfoot;
-	act = self->pchip;part = self->pfoot;
-	ev = (void*)buf;
-
+//wnd.area -> cam.gl41, cam.slot -> world.geom
+	struct entity* wnd;struct style* area;
+	struct entity* cam;struct style* gl41;
+	struct entity* act;struct style* slot;
+	struct entity* wrd;struct style* geom;
+	struct event* ev = (void*)buf;
 	//say("%llx@freecam_write:%llx,%llx,%llx,%llx\n", act, ev->why, ev->what, ev->where, ev->when);
-	orthcam_event(act,part, wld,geom, ev, 0);
+
+	wnd = peer->pchip;area = peer->pfoot;
+	cam = self->pchip;gl41 = self->pfoot;
+	orthcam_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
+	act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
+	wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
+
+	if(0x2b70 == ev->what){
+		relationwrite(act,_ev_, stack,rsp, buf,len);
+	}
+	else{
+		orthcam_event(act,slot, wrd,geom, ev, 0);
+	}
 	return 0;
 }
 static void orthcam_stop(struct halfrel* self, struct halfrel* peer)

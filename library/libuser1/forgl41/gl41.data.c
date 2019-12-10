@@ -100,45 +100,23 @@ void gl41data_copy(struct entity* ctx, struct style* geom, struct style* part)
 
 
 
-void* gl41data_findworld(struct entity* cam)
+int gl41data_read_vertex(
+	struct entity* glctx, struct entity* cam, struct entity* actor, struct entity* world,
+	struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct relation* rel;
-	struct entity* world;
-	//say("@gldata_write_event\n");
-
-	rel = cam->irel0;
-	while(1){
-		if(0 == rel)break;
-		if(_ent_ == rel->srctype){
-			world = rel->psrcchip;
-			if(_world3d_ == world->type)return rel;
-		}
-		rel = samedstnextsrc(rel);
-	}
-	return 0;
-}
-int gl41data_read_vertex(struct entity* glctx, struct relation* wrd2cam, struct halfrel** stack, int rsp, void* buf, int len)
-{
-	struct relation* rel;
-	struct entity* camera;
-	struct entity* world;
 	struct style* geom;
 	struct style* part;
 	//say("gldata_read_vertex\n");
 
 	gl41data_before(glctx);
 
-	//first read camera
-	camera = stack[rsp-2]->pchip;
-	world = stack[rsp-1]->pchip;
-	entityread((void*)(wrd2cam->dst), (void*)(wrd2cam->src), stack, rsp, 0, 'v');
-
 	//second read other
 	rel = world->orel0;
 	while(1){
 		if(0 == rel)break;
 
-		if(rel == wrd2cam)goto next;
+		if(cam == rel->pdstchip)goto next;
 		if(_ent_ == rel->dsttype){
 			part = rel->pdstfoot;
 			geom = rel->psrcfoot;
@@ -154,66 +132,57 @@ next:
 	gl41data_after(glctx);
 	return 0;
 }
-int gl41data_read_matrix(struct entity* ctx, struct relation* wrd2cam, struct halfrel** stack, int rsp, void* buf, int len)
+int gl41data_read_matrix(
+	struct entity* glctx, struct entity* cam, struct entity* actor, struct entity* world,
+	struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct relation* rel;
-	struct entity* camera;
-	struct entity* world;
 	//say("@gldata_read_matrix\n");
 
-	//first read mirror
-	camera = stack[rsp-2]->pchip;
-	world = stack[rsp-1]->pchip;
 	rel = world->orel0;
 	while(1){
 		if(0 == rel)break;
 
-		if(rel == wrd2cam)goto next;
+		if(cam == rel->pdstchip)goto next;
 		if(_ent_ == rel->dsttype){
 			entityread((void*)(rel->dst), (void*)(rel->src), stack, rsp, 0, '?');
 		}
 next:
 		rel = samesrcnextdst(rel);
 	}
-
-	//then read mvp
-	entityread((void*)(wrd2cam->dst), (void*)(wrd2cam->src), stack, rsp, 0, '?');
-
 	return 0;
 }
 
 
 
 
-//stack[-4] = ogl, 0
-//stack[-3] = wnd, 0
-//stack[-2] = wnd, area
-//stack[-1] = cam, 0
+//stack[-6] = ogl, 0
+//stack[-5] = wnd, 0
+//stack[-4] = wnd, area
+//stack[-3] = cam, 0
+//stack[-2] = act, slot
+//stack[-1] = wrd, geom
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	int ret;
 	struct entity* wnd;
 	struct entity* cam;
-	struct relation* rel;
+	struct entity* actor;
+	struct entity* world;
 	//say("%d,%llx@gl41data_read: %.4s, %.4s\n", rsp, stack, &peer->flag, &self->flag);
 
-	wnd = self->pchip;
+	wnd = stack[rsp-4]->pchip;
 	if(0 == wnd)return 0;
-
-	//cam given by stack
-	cam = stack[rsp-1]->pchip;
+	cam = stack[rsp-3]->pchip;
 	if(0 == cam)return 0;
-
-	//from cam find world
-	rel = gl41data_findworld(cam);
-	if(0 == rel)return 0;
+	actor = stack[rsp-2]->pchip;
+	if(0 == actor)return 0;
+	world = stack[rsp-1]->pchip;
+	if(0 == world)return 0;
 
 found:
-	//stack: (ogl,0, wnd,0), (wnd,area, cam,0), (cam,0, world,geom)
-	stack[rsp+0] = (void*)(rel->dst);	//camera
-	stack[rsp+1] = (void*)(rel->src);	//world
-	if('v' == len)gl41data_read_vertex(wnd, rel, stack, rsp+2, 0, 0);
-	if('?' == len)gl41data_read_matrix(wnd, rel, stack, rsp+2, 0, 0);
+	if('v' == len)gl41data_read_vertex(wnd,cam, actor,world, stack, rsp, 0, 0);
+	if('?' == len)gl41data_read_matrix(wnd,cam, actor,world, stack, rsp, 0, 0);
 	return 0;
 }
 int gl41data_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
@@ -262,13 +231,8 @@ int gl41data_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 found:
 	wnd->buf = rel;
 	stack[rsp+0] = (void*)(rel->src);	//wnd,area
-	stack[rsp+1] = (void*)(rel->dst);	//cam,-
-
-	rel = gl41data_findworld(rel->pdstchip);
-	stack[rsp+2] = (void*)(rel->dst);	//cam,-
-	stack[rsp+3] = (void*)(rel->src);	//world,geom
-
-	entitywrite(stack[rsp+2], stack[rsp+3], stack, rsp+4, buf, len);
+	stack[rsp+1] = (void*)(rel->dst);	//cam,gl41
+	entitywrite(stack[rsp+1], stack[rsp+0], stack, rsp+4, buf, len);
 
 /*	struct entity* ctx;
 	struct entity* cam;

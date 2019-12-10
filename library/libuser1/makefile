@@ -99,6 +99,7 @@ rawmine/baseunit/objpack/pack.80211.c \
 rawmine/baseunit/objpack/pack.eth.c \
 rawmine/baseunit/objpack/pack.udp.c \
 rawmine/baseunit/objpack/pack.tcp.c \
+rawmine/baseunit/objuiux/uiux.button.c \
 rawmine/baseunit/objuiux/uiux.hex.c \
 rawmine/baseunit/objuiux/uiux.oscillo.c \
 rawmine/baseunit/objuiux/uiux.qrcode.c \
@@ -107,6 +108,7 @@ rawmine/baseunit/objuiux/uiux.video.c \
 rawmine/baseunit/objuiux/uiux.voxel.c \
 rawmine/baseunit/objuiux/uiux.joystick.c \
 rawmine/baseunit/objuiux/uiux.keyboard.c \
+rawmine/baseunit/objuiux/uiux.picture.c \
 rawmine/compound/thedxgl/cam.1rd.c \
 rawmine/compound/thedxgl/cam.3rd.c \
 rawmine/compound/thedxgl/cam.rts.c \
@@ -139,7 +141,6 @@ rawmine/compound/theitem/item.mobius.c \
 rawmine/compound/theitem/item.model.c \
 rawmine/compound/theitem/item.motor.c \
 rawmine/compound/theitem/item.piano.c \
-rawmine/compound/theitem/item.picture.c \
 rawmine/compound/theitem/item.planet.c \
 rawmine/compound/theitem/item.stair.c \
 rawmine/compound/theitem/item.tardis.c \

@@ -34,6 +34,9 @@ int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 	//say("@gl41wnd0_read\n");
 	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
 
+	glClearColor(0.1, 0.1, 0.1, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	//foreach camera: 
 	wnd = self->pchip;
 	rel = wnd->orel0;
@@ -47,13 +50,13 @@ int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 			stack[rsp+1] = (void*)(rel->dst);
 
 			//get vertex
-			gl41data_read(stack[rsp-1], stack[rsp-2], stack, rsp+2, buf, 'v');
+			entityread(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, 'v');
 
 			//upload
 			fullwindow_upload(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque);
 
 			//get fbo tex, get cam mvp
-			gl41data_read(stack[rsp-1], stack[rsp-2], stack, rsp+2, buf, '?');
+			entityread(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, '?');
 
 			//render
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -62,33 +65,6 @@ int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 
 		rel = samesrcnextdst(rel);
 	}
-/*
-	ogl = stack[rsp-2]->pchip;
-	wnd = stack[rsp-1]->pchip;
-
-	//
-	rel = wnd->orel0;
-	while(1){
-		if(0 == rel)break;
-
-		ctx = rel->pdstchip;
-		if(_gl41data_ == ctx->type){
-			//read ctx
-			stack[rsp+0] = (void*)(rel->src);
-			stack[rsp+1] = (void*)(rel->dst);
-			entityread(stack[rsp+1], stack[rsp+0], stack, rsp+2, 0, 0);
-
-			//upload ctx
-			fullwindow_upload(ogl, ctx);
-
-			//render all
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			fullwindow_render(ogl, 0, stack[rsp+0], stack[rsp+1]);
-		}
-
-		rel = samesrcnextdst(rel);
-	}
-*/
 	return 0;
 }
 int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)

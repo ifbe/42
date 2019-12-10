@@ -434,7 +434,7 @@ void overview_draw_vbo(
 	struct entity* ctx, struct style* area)
 {
 	u32 bg,fg,cursor;
-	float r,f;
+	float r,f,t;
 	int x,y,j,k;
 	struct relation* rel;
 	vec3 tc;
@@ -523,14 +523,9 @@ void overview_draw_vbo(
 		tf[1] = vf[1] / 33.0;
 		tf[2] = vf[2] / 33.0;
 		carvesolid_rect(ctx, bg, tc, tr, tf);
-
-		tc[2] += 0.01;
-		tr[0] = vr[0] / 32;
-		tr[1] = vr[1] / 32;
-		tr[2] = vr[2] / 32;
-		tf[0] = vf[0] / 32;
-		tf[1] = vf[1] / 32;
-		tf[2] = vf[2] / 32;
+		tc[0] += vt[0]*0.01;
+		tc[1] += vt[1]*0.01;
+		tc[2] += vt[2]*0.01;
 		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&entity[j].fmt, 8);
 	}
 
@@ -566,14 +561,9 @@ void overview_draw_vbo(
 		tf[1] = vf[1] / 33;
 		tf[2] = vf[2] / 33;
 		carvesolid_rect(ctx, bg, tc, tr, tf);
-
-		tc[2] += 0.01;
-		tr[0] = vr[0] / 32;
-		tr[1] = vr[1] / 32;
-		tr[2] = vr[2] / 32;
-		tf[0] = vf[0] / 32;
-		tf[1] = vf[1] / 32;
-		tf[2] = vf[2] / 32;
+		tc[0] += vt[0]*0.01;
+		tc[1] += vt[1]*0.01;
+		tc[2] += vt[2]*0.01;
 		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&supply[j].fmt, 8);
 	}
 
@@ -606,14 +596,9 @@ void overview_draw_vbo(
 		tf[1] = vf[1] / 33.0;
 		tf[2] = vf[2] / 33.0;
 		carvesolid_rect(ctx, bg, tc, tr, tf);
-
-		tc[2] += 0.01;
-		tr[0] = vr[0] / 32.0;
-		tr[1] = vr[1] / 32.0;
-		tr[2] = vr[2] / 32.0;
-		tf[0] = vf[0] / 32.0;
-		tf[1] = vf[1] / 32.0;
-		tf[2] = vf[2] / 32.0;
+		tc[0] += vt[0]*0.01;
+		tc[1] += vt[1]*0.01;
+		tc[2] += vt[2]*0.01;
 		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&ele[j].type, 8);
 	}
 
@@ -646,14 +631,9 @@ void overview_draw_vbo(
 		tf[1] = vf[1] / 33;
 		tf[2] = vf[2] / 33;
 		carvesolid_rect(ctx, bg, tc, tr, tf);
-
-		tc[2] += 0.01;
-		tr[0] = vr[0] / 32.0;
-		tr[1] = vr[1] / 32.0;
-		tr[2] = vr[2] / 32.0;
-		tf[0] = vf[0] / 32.0;
-		tf[1] = vf[1] / 32.0;
-		tf[2] = vf[2] / 32.0;
+		tc[0] += vt[0]*0.01;
+		tc[1] += vt[1]*0.01;
+		tc[2] += vt[2]*0.01;
 		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&obj[j].type, 8);
 	}
 

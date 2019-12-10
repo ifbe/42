@@ -3,6 +3,7 @@
 void fixmatrix(float* m, struct fstyle* sty);
 void freecam_shape2frustum(struct fstyle* d, struct fstyle* s);
 void freecam_ratio(struct entity* wrd, struct style* geom, struct entity* wnd, struct style* area);
+int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
 
 
 
@@ -57,7 +58,6 @@ static void thirdperson_create(struct entity* act, void* str)
 static int thirdperson_draw(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
-	struct entity* wrl, struct style* frus,
 	struct entity* ctx, struct style* none)
 {
 	carvefrustum(ctx, &geom->frus);
@@ -214,43 +214,47 @@ static void thirdperson_matrix(
 
 static void thirdperson_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam
+//wnd.area -> cam.gl41, cam.slot -> world.geom
 	struct entity* wnd;struct style* area;
+	struct entity* cam;struct style* gl41;
+	struct entity* act;struct style* slot;
+	struct entity* wrd;struct style* geom;
 
-	//cam -> world
-	struct entity* wrd;struct style* camg;
+	wnd = peer->pchip;area = peer->pfoot;
+	cam = self->pchip;gl41 = self->pfoot;
+	thirdperson_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
+	act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
+	wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
 
-	//world -> this
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* part;
+	if('v' == len){
+		freecam_ratio(wrd, geom, wnd, area);
+		freecam_shape2frustum(&geom->fshape, &geom->frustum);
 
-	if(stack){
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-
-		win = peer->pchip;geom = peer->pfoot;
-		act = self->pchip;part = self->pfoot;
-		if('v' == len){
-			freecam_ratio(win, geom, wnd, area);
-			freecam_shape2frustum(&geom->fshape, &geom->frustum);
-			thirdperson_draw(act,part, win,geom, wrd,camg, wnd,area);
-		}
-		if('?' == len){
-			thirdperson_matrix(act,part, win,geom, wnd,area);
-		}
+		gl41data_read(self, peer, stack, rsp+2, buf, len);
+		thirdperson_draw(act,slot, wrd,geom, wnd,area);
+	}
+	if('?' == len){
+		gl41data_read(self, peer, stack, rsp+2, buf, len);
+		thirdperson_matrix(act,slot, wrd,geom, wnd,area);
 	}
 }
-static int thirdperson_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static int thirdperson_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	struct entity* wld;struct style* geom;
-	struct entity* act;struct style* part;
-	struct event* ev;
+//wnd.area -> cam.gl41, cam.slot -> world.geom
+	struct entity* wnd;struct style* area;
+	struct entity* cam;struct style* gl41;
+	struct entity* act;struct style* slot;
+	struct entity* wrd;struct style* geom;
+	struct event* ev = (void*)buf;
+	//say("%llx@freecam_write:%llx,%llx,%llx,%llx\n", act, ev->why, ev->what, ev->where, ev->when);
 
-	wld = peer->pchip;geom = peer->pfoot;
-	act = self->pchip;part = self->pfoot;
-	ev = (void*)buf;
+	wnd = peer->pchip;area = peer->pfoot;
+	cam = self->pchip;gl41 = self->pfoot;
+	thirdperson_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
+	act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
+	wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
 
-	thirdperson_event(act, part, wld, geom, ev, 0);
+	thirdperson_event(act,slot, wrd,geom, ev,0);
 	return 0;
 }
 static void thirdperson_stop(struct halfrel* self, struct halfrel* peer)

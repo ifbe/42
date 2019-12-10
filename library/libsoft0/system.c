@@ -88,6 +88,7 @@ int systemwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		}
 		case _TCP_:{
 			oo = oo->tempobj;
+			if(0 == oo)return -1;
 		}
 		default:{
 			return writesocket(oo->selffd, 0, buf, len);

@@ -115,6 +115,7 @@ void spectrum_register(void*);
 void terminal_register(void*);
 void video_register(void*);
 void voxel_register(void*);
+void button_register(void*);
 
 //menu
 //.2d
@@ -465,6 +466,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 	voxel_register(tmp);
+	tmp += sizeof(struct entity);
+
+	button_register(tmp);
 	tmp += sizeof(struct entity);
 
 

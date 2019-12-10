@@ -430,38 +430,35 @@ void carvestring(struct entity* win, u32 rgb,
 void carvestring_center(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
-	int j;
-	vec3 tc;
-	vec3 tr;
-	vec3 tf;
+	float dx;
+	int j,k,cnt;
+	vec3 tc,tr,tf;
 
 	if(0 == buf)return;
-	if(0 == len)
-	{
+	if(0 == len){
 		while(buf[len] >= 0x20)len++;
+		if(0 == len)return;
+
+		cnt = len;
 	}
-	else
-	{
-		for(j=0;j<len;j++)
-		{
-			if(buf[j] < 0x20){len = j;break;}
+	else{
+		for(cnt=0;cnt<len;cnt++){
+			if(buf[cnt] <= 0x20)break;
 		}
 	}
-	if(len == 0)return;
+	dx = (len-cnt)/2.0;
 
 	//eachsize = 2*vr/len
-	tr[0] = vr[0]/8;
-	tr[1] = vr[1]/8;
-	tr[2] = vr[2]/8;
-	tf[0] = vf[0]*2;
-	tf[1] = vf[1]*2;
-	tf[2] = vf[2]*2;
+	tr[0] = 4*vr[0]/len;
+	tr[1] = 4*vr[1]/len;
+	tr[2] = 4*vr[2]/len;
+	tf[0] = 2*vf[0];
+	tf[1] = 2*vf[1];
+	tf[2] = 2*vf[2];
 	for(j=0;j<len;j++)
 	{
-		tc[0] = vc[0] + (vr[0]/4)*(2*j-len) - vf[0];
-		tc[1] = vc[1] + (vr[1]/4)*(2*j-len) - vf[1];
-		tc[2] = vc[2] + (vr[2]/4)*(2*j-len) - vf[2];
-		carveascii(win, rgb, tc, vr, tf, buf[j]);
+		for(k=0;k<3;k++)tc[k] = vc[k] -vr[k]+tr[k]*(j+dx)/2 -vf[k];
+		carveascii(win, rgb, tc, tr, tf, buf[j]);
 	}
 }
 
