@@ -1,7 +1,9 @@
 #include "libuser.h"
+#define CTXBUF buf0
 int windowread(int type, void* buf);
 int windowwrite(int type, void* buf);
 void parsevertfromstl(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len);
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 
@@ -131,6 +133,58 @@ void sty_sty_mat(struct fstyle* src, struct fstyle* dst, mat4 mat)
 
 	mat4_transpose(mat);
 }
+static void model_ctxforwnd(struct glsrc* src, char* str)
+{
+	float* tmp;
+	src->geometry = 3;
+	src->method = 'v';
+
+	//shader
+	src->vs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/model/vert.glsl", 0, src->vs, 0x1000);
+	src->fs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/model/frag.glsl", 0, src->fs, 0x1000);
+	src->shader_enq = 42;
+
+	//argument
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "objmat";
+	src->arg[0].data = memorycreate(4*4*4, 0);
+
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "KA";
+	tmp = src->arg[1].data = memorycreate(4*4, 0);
+	tmp[0] = tmp[1] = tmp[2] = 0.231250;
+
+	src->arg[2].fmt = 'v';
+	src->arg[2].name = "KD";
+	tmp = src->arg[2].data = memorycreate(4*4, 0);
+	tmp[0] = tmp[1] = tmp[2] = 0.277500;
+
+	src->arg[3].fmt = 'v';
+	src->arg[3].name = "KS";
+	tmp = src->arg[3].data = memorycreate(4*4, 0);
+	tmp[0] = tmp[1] = tmp[2] = 0.773911;
+
+	//vertex
+	src->vbuf_len = 0x1000000;
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+	openreadclose(str, 0, src->vbuf, src->vbuf_len);
+}
+static void model_draw_vbo3d(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* ctx, struct style* none)
+{
+	if(0 == act)return;
+	if(act->CTXBUF == 0)return;
+
+	struct glsrc* src = act->CTXBUF;
+	sty_sty_mat(&part->fs, &geom->fs, (void*)src->arg[0].data);
+
+	gl41data_insert(ctx, 's', src, 1);
+}
 
 
 
@@ -183,28 +237,6 @@ static void model_draw_pixel(
 		drawline(win, 0xffffff, v[1][0], v[1][1], v[2][0], v[2][1]);
 	}
 */
-}/*
-static void model_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	if(act->buf == 0)return;
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
-	struct glsrc* src = (void*)(pin->foot[0]);
-	sty_sty_mat(&act->target, &sty->f, (void*)src->arg[0].data);
-}*/
-static void model_draw_vbo3d(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wrd, struct style* camg,
-	struct entity* ctx, struct style* none)
-{
-	if(0 == act)return;
-	if(act->buf == 0)return;
-
-	struct glsrc* src = act->buf;
-	sty_sty_mat(&part->fs, &geom->fs, (void*)src->arg[0].data);
 }
 static void model_draw_json(
 	struct entity* act, struct style* pin,
@@ -324,14 +356,11 @@ static void model_start(struct halfrel* self, struct halfrel* peer)
 	if(0 == pin)return;
 
 	//vertex
-	src = act->buf;
+	src = act->CTXBUF;
 	parsevertfromstl(src, &pin->fs, src->vbuf, src->vbuf_len);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 4*6;
 	src->vbuf_enq = 42;
-
-	pin->data[0] = (u64)(act->buf);
-	say("@model_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 
@@ -346,55 +375,16 @@ static void model_modify(struct entity* act)
 static void model_delete(struct entity* act)
 {
 	if(0 == act)return;
-	memorydelete(act->buf);
-	act->buf = 0;
 }
 static void model_create(struct entity* act, void* str)
 {
-	int j;
-	float* tmp;
-	struct glsrc* src;
 	if(0 == act)return;
 
-	src = act->buf = memorycreate(0x200, 0);
-	if(0 == src)return;
+	act->CTXBUF = memorycreate(0x200, 0);
+	if(0 == act->CTXBUF)return;
 
-	//
-	src->geometry = 3;
-	src->method = 'v';
-
-	//shader
-	src->vs = memorycreate(0x1000, 0);
-	openreadclose("datafile/shader/model/vert.glsl", 0, src->vs, 0x1000);
-	src->fs = memorycreate(0x1000, 0);
-	openreadclose("datafile/shader/model/frag.glsl", 0, src->fs, 0x1000);
-	src->shader_enq = 42;
-
-	//argument
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "objmat";
-	src->arg[0].data = memorycreate(4*4*4, 0);
-
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "KA";
-	tmp = src->arg[1].data = memorycreate(4*4, 0);
-	tmp[0] = tmp[1] = tmp[2] = 0.231250;
-
-	src->arg[2].fmt = 'v';
-	src->arg[2].name = "KD";
-	tmp = src->arg[2].data = memorycreate(4*4, 0);
-	tmp[0] = tmp[1] = tmp[2] = 0.277500;
-
-	src->arg[3].fmt = 'v';
-	src->arg[3].name = "KS";
-	tmp = src->arg[3].data = memorycreate(4*4, 0);
-	tmp[0] = tmp[1] = tmp[2] = 0.773911;
-
-	//vertex
-	src->vbuf_len = 0x1000000;
-	src->vbuf = memorycreate(src->vbuf_len, 0);
 	if(0 == str)str = "datafile/stl/bunny-lowpoly.stl";
-	j = openreadclose(str, 0, src->vbuf, src->vbuf_len);
+	model_ctxforwnd(act->CTXBUF, str);
 }
 
 

@@ -1,10 +1,15 @@
 #include "libuser.h"
+#define _fbo_ hex32('f','b','o',0)
+
+
+#define CAMBUF buf0
+#define LITBUF buf1
+#define CTXBUF buf2
+#define OWNBUF buf3
 struct sunbuf{
 	mat4 mvp;
 	vec4 rgb;
 	u32 u_rgb;
-
-	u8 data[0];
 };
 
 
@@ -24,10 +29,7 @@ static void pointlight_create(struct entity* act, void* str)
 	struct sunbuf* sun;
 	if(0 == act)return;
 
-	sun = act->buf0 = memorycreate(0x1000, 0);
-	if(0 == sun)return;
-
-	//
+	sun = act->OWNBUF = memorycreate(0x1000, 0);
 	sun->u_rgb = 0x0000ff;
 	sun->rgb[0] = ((sun->u_rgb >>16) & 0xff) / 255.0;
 	sun->rgb[1] = ((sun->u_rgb >> 8) & 0xff) / 255.0;
@@ -53,7 +55,7 @@ static void pointlight_draw_vbo(
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
 
-	sun = act->buf0;
+	sun = act->OWNBUF;
 	if(0 == sun)return;
 
 	carveopaque_sphere(ctx, 0x80000000|sun->u_rgb, vc, vr, vf, vt);
@@ -97,9 +99,9 @@ void pointlight_light(
 	struct sunbuf* sun;
 	struct glsrc* src;
 
-	sun = act->buf0;
+	sun = act->OWNBUF;
 	if(0 == sun)return;
-	src = wnd->gl_light;
+	src = act->LITBUF;
 	if(0 == src)return;
 
 	src->routine_name = "passtype";
@@ -112,6 +114,8 @@ void pointlight_light(
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "sunrgb";
 	src->arg[1].data = sun->rgb;
+
+	wnd->gl_light[0] = act->LITBUF;
 }
 
 
@@ -127,7 +131,6 @@ static void pointlight_read(struct halfrel* self, struct halfrel* peer, struct h
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
 
-#define _fbo_ hex32('f','b','o',0)
 	if(stack){
 		act = self->pchip;part = self->pfoot;
 		win = peer->pchip;geom = peer->pfoot;

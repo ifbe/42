@@ -2,6 +2,7 @@
 #define _ev_ hex16('e','v')
 #define CTXBUF buf0
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 
@@ -31,57 +32,37 @@ GLSL_VERSION
 "}\n";
 
 
-
-
-
-static void picture_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+static void picture_ctxforwnd(struct glsrc* src, char* str, float* angle)
 {
-	u32 tmp;
-	u32* dst;
-	u32* src;
-	int x,y,xmax,ymax,stride;
-	int cx, cy, ww, hh;
-	if(sty)
-	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
-	}
-	else
-	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
-	}
-	if(0 == act->CTXBUF)return;
+	//property
+	src->geometry = 3;
+	src->method = 'v';
+	src->opaque = 1;
 
-	xmax = act->width;
-	if(xmax >= ww*2)xmax = ww*2;
-	ymax = act->height;
-	if(ymax >= hh*2)ymax = hh*2;
-	stride = win->stride;
-	for(y=0;y<ymax;y++)
-	{
-		dst = (win->buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
-		src = (act->CTXBUF) + 4*y*(act->width);
-		//say("y=%d,%llx,%llx\n",y,dst,src);
-		if('b' == ((win->fmt)&0xff))
-		{
-			for(x=0;x<xmax;x++)dst[x] = src[x];
-		}
-		else
-		{
-			for(x=0;x<xmax;x++)
-			{
-				tmp = src[x];
-				dst[x] = 0xff000000 | (tmp&0xff00) | ((tmp>>16)&0xff) | ((tmp&0xff)<<16);
-			}
-		}
-	}
+	//shader
+	src->vs = picture_glsl_v;
+	src->fs = picture_glsl_f;
+	src->shader_enq = 42;
+
+	//arg
+	src->arg[0].fmt = 'f';
+	src->arg[0].name = "angle";
+	src->arg[0].data = angle;
+
+	//texture0
+	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].name = "tex0";
+	src->tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(src, 0, str);
+	src->tex[0].enq = 42;
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+	src->vbuf_enq = 42;
 }
 static void picture_draw_vbo3d(
 	struct entity* act, struct style* slot,
@@ -145,6 +126,60 @@ static void picture_draw_vbo3d(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
+	gl41data_insert(ctx, 'o', act->CTXBUF, 1);
+}
+
+
+
+
+static void picture_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+	u32 tmp;
+	u32* dst;
+	u32* src;
+	int x,y,xmax,ymax,stride;
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
+	if(0 == act->CTXBUF)return;
+
+	xmax = act->width;
+	if(xmax >= ww*2)xmax = ww*2;
+	ymax = act->height;
+	if(ymax >= hh*2)ymax = hh*2;
+	stride = win->stride;
+	for(y=0;y<ymax;y++)
+	{
+		dst = (win->buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
+		src = (act->CTXBUF) + 4*y*(act->width);
+		//say("y=%d,%llx,%llx\n",y,dst,src);
+		if('b' == ((win->fmt)&0xff))
+		{
+			for(x=0;x<xmax;x++)dst[x] = src[x];
+		}
+		else
+		{
+			for(x=0;x<xmax;x++)
+			{
+				tmp = src[x];
+				dst[x] = 0xff000000 | (tmp&0xff00) | ((tmp>>16)&0xff) | ((tmp&0xff)<<16);
+			}
+		}
+	}
 }
 static void picture_draw_json(
 	struct entity* act, struct style* pin,
@@ -218,13 +253,6 @@ static void picture_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void picture_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	if(0 == act)return;
-	if(0 == pin)return;
-
-	pin->data[0] = (u64)(act->CTXBUF);
-	say("@picture_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 
@@ -244,43 +272,13 @@ static void picture_delete(struct entity* act)
 }
 static void picture_create(struct entity* act, void* str)
 {
-	int j;
-	struct glsrc* src;
 	if(0 == act)return;
 
-	src = act->CTXBUF = memorycreate(0x200, 0);
-	if(0 == src)return;
+	act->CTXBUF = memorycreate(0x200, 0);
+	if(0 == act->CTXBUF)return;
 
-	//property
-	src->geometry = 3;
-	src->method = 'v';
-	src->opaque = 1;
-
-	//shader
-	src->vs = picture_glsl_v;
-	src->fs = picture_glsl_f;
-	src->shader_enq = 42;
-
-	//arg
-	src->arg[0].fmt = 'f';
-	src->arg[0].name = "angle";
-	src->arg[0].data = &act->fx0;
-
-	//texture0
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "tex0";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";
-	loadtexfromfile(src, 0, str);
-	src->tex[0].enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
-	src->vbuf_enq = 42;
+	picture_ctxforwnd(act->CTXBUF, str, &act->fx0);
 }
 
 

@@ -1,5 +1,11 @@
 #include "libuser.h"
+#define _fbo_ hex32('f','b','o',0)
 void fixmatrix(void* m, struct fstyle* sty);
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+
+
+#define CAMBUF buf0
+#define CTXBUF buf1
 struct mirrbuf{
 	mat4 mvp;
 	u8 data[0];
@@ -28,6 +34,28 @@ GLSL_VERSION
 	"mediump vec3 c = 0.8*texture(tex0, uvw).rgb + vec3(0.2, 0.2, 0.2);\n"
 	"FragColor = vec4(c, 1.0);\n"
 "}\n";
+
+void mirror_forfbo(struct glsrc* src)
+{
+}
+void mirror_forwnd(struct glsrc* src)
+{
+	src->geometry = 3;
+	src->method = 'v';
+
+	//shader
+	src->vs = mirror_glsl_v;
+	src->fs = mirror_glsl_f;
+	src->shader_enq = 42;
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+	src->vbuf_enq = 0;
+}
 
 
 
@@ -63,26 +91,15 @@ static void mirror_create(struct entity* act, void* str)
 	struct glsrc* src;
 	if(0 == act)return;
 
-	mirr = act->buf0 = memorycreate(0x1000, 0);
+	mirr = act->CTXBUF = memorycreate(0x1000, 0);
 	if(0 == mirr)return;
-
-	//
 	src = (void*)(mirr->data);
-	src->geometry = 3;
-	src->method = 'v';
+	mirror_forwnd(src);
 
-	//shader
-	src->vs = mirror_glsl_v;
-	src->fs = mirror_glsl_f;
-	src->shader_enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
-	src->vbuf_enq = 0;
+	mirr = act->CAMBUF = memorycreate(0x1000, 0);
+	if(0 == mirr)return;
+	src = (void*)(mirr->data);
+	mirror_forfbo(src);
 }
 
 
@@ -103,7 +120,7 @@ static void mirror_draw_vbo(
 	float* vu = geom->f.vt;
 	//carvesolid_rect(win, 0x404040, vc, vr, vf);
 
-	mirr = act->buf0;
+	mirr = act->CTXBUF;
 	if(0 == mirr)return;
 	src = (void*)(mirr->data);
 	if(0 == src)return;
@@ -153,6 +170,7 @@ static void mirror_draw_vbo(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
+	gl41data_insert(wnd, 's', src, 1);
 }
 static void mirror_draw_pixel(
 	struct entity* act, struct style* pin,
@@ -321,43 +339,33 @@ static void mirror_matrix(
 	mirror_frustum(frus, shap, camg->frus.vc);
 
 	//mvp from frus
-	struct mirrbuf* mirr = act->buf0;
+	struct mirrbuf* mirr = act->CAMBUF;
 	if(0 == mirr)return;
 	fixmatrix(mirr->mvp, frus);
 	mat4_transpose(mirr->mvp);
 //printstyle(shap);
 //printstyle(frus);
 	//
-	struct glsrc* src = fbo->gl_camera;
+	struct glsrc* src = (void*)(mirr->data);
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";
 	src->arg[0].data = mirr->mvp;
-
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = frus->vc;
+	fbo->gl_camera[0] = (void*)(mirr->data);
 }
-void mirror_reflect(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* wrl, struct style* camg,
-	struct halfrel** stack, int rsp,
-	u8* buf, int len)
+void mirror_findfbo(struct entity* act, struct style* slot, struct supply** fbo, struct style** rect)
 {
-#define _fbo_ hex32('f','b','o',0)
 	struct relation* rel = act->orel0;
 	if(0 == rel)return;
 
-	struct supply* fbo = rel->pdstchip;
-	if(0 == fbo)return;
-
-	struct style* rect = rel->pdstfoot;
-	if(0 == fbo)return;
-
-	mirror_matrix(act,slot, win,geom, wrl,camg, fbo,rect);
-	relationread(act,_fbo_, stack,rsp, buf,len);
-
-	struct mirrbuf* mirr = act->buf0;
+	*fbo = rel->pdstchip;
+	*rect = rel->pdstfoot;
+}
+void mirror_update(struct entity* act, struct style* slot, struct supply* fbo, struct style* area)
+{
+	struct mirrbuf* mirr = act->CTXBUF;
 	if(0 == mirr)return;
 
 	struct glsrc* own = (void*)(mirr->data);
@@ -381,21 +389,29 @@ static void mirror_read(struct halfrel* self, struct halfrel* peer, struct halfr
 //wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
 	struct entity* wrd;struct style* camg;
-
 //world -> mirror
 	struct entity* win;struct style* geom;
-	struct entity* act;struct style* part;
+	struct entity* act;struct style* slot;
+//fbo,rect
+	struct supply* fbo;struct style* rect;
 
 	if(stack){
-		act = self->pchip;part = self->pfoot;
+		act = self->pchip;slot = self->pfoot;
 		win = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		if('v' == len){
-			mirror_draw_vbo(act,part, win,geom, wrd,camg, wnd,area);
+			mirror_draw_vbo(act,slot, win,geom, wrd,camg, wnd,area);
 		}
 		if('?' == len){
-			mirror_reflect(act,part, win,geom, wrd,camg, stack,rsp, buf,len);
+			fbo = 0;rect = 0;
+			mirror_findfbo(act,slot, &fbo,&rect);
+			if((0 == fbo)|(0 == rect))return;
+
+			mirror_matrix(act,slot, win,geom, wrd,camg, fbo,rect);
+			relationread(act,_fbo_, stack,rsp, buf,len);
+
+			mirror_update(act,slot, fbo,rect);
 		}
 	}
 }
@@ -407,13 +423,6 @@ static void mirror_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void mirror_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act = self->pchip;
-	struct style* pin = self->pfoot;
-	if(0 == act)return;
-	if(0 == pin)return;
-
-	struct mirrbuf* mirr = act->buf0;
-	pin->data[0] = (u64)(mirr->data);
 }
 
 

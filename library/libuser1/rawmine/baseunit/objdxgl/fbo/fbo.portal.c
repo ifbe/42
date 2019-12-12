@@ -1,12 +1,34 @@
 #include "libuser.h"
 void fixmatrix(void* m, struct fstyle* sty);
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+
+
 struct portalbuf{
 	mat4 mvp;
 	vec4 vc;
 	vec4 vq;
 	u8 data[0];
 };
+void portal_forwnd(struct glsrc* src)
+{
+	src->geometry = 3;
+	src->method = 'v';
+
+	//
+	src->vs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/portal/vert.glsl", 0, src->vs, 0x1000);
+	src->fs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/portal/frag.glsl", 0, src->fs, 0x1000);
+	src->shader_enq = 42;
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+}
 
 
 
@@ -40,26 +62,8 @@ static void portal_create(struct entity* act, void* str)
 
 	portal = act->buf0 = memorycreate(0x1000, 0);
 	if(0 == portal)return;
-
-
-	//
 	src = (void*)(portal->data);
-	src->geometry = 3;
-	src->method = 'v';
-
-	//
-	src->vs = memorycreate(0x1000, 0);
-	openreadclose("datafile/shader/portal/vert.glsl", 0, src->vs, 0x1000);
-	src->fs = memorycreate(0x1000, 0);
-	openreadclose("datafile/shader/portal/frag.glsl", 0, src->fs, 0x1000);
-	src->shader_enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	portal_forwnd(src);
 }
 
 
@@ -115,18 +119,19 @@ static void portal_draw_vbo_b(
 	carveline_arrow(win, 0xff0000, portal->vc, portal->vq, vt);
 }
 static void portal_draw_vbo(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	struct portalbuf* portal;
 	struct glsrc* src;
 	float (*vbuf)[6];
 
 	vec3 tc,tt;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vt = sty->f.vt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
 
 	carveline_rect(win, 0xffffff, vc, vr, vt);
 	tc[0] = vc[0] - vt[0];
@@ -191,6 +196,7 @@ static void portal_draw_vbo(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
+	gl41data_insert(ctx, 's', src, 1);
 }
 static void portal_draw_json(
 	struct entity* act, struct style* pin,
@@ -221,7 +227,6 @@ static void portal_draw(
 	else if(fmt == _tui_)portal_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)portal_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)portal_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)portal_draw_vbo(act, pin, win, sty);
 	else portal_draw_pixel(act, pin, win, sty);
 }
 
@@ -472,26 +477,6 @@ static void portal_matrix(
 
 static void portal_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	if(ctx){
-		if(_gl41data_ == ctx->type){
-			if('a' == self->flag)portal_draw_vbo(act,pin,ctx,sty);
-			if('b' == self->flag)portal_draw_vbo_b(act,pin,ctx,sty);
-		}
-	}
-	else{
-		switch(win->type){
-			case _gl41fbod_:
-			case _gl41fboc_:
-			case _gl41fbog_:
-			case _gl41wnd0_:portal_matrix(act, &pin->fs, win, &sty->fs, 0, 0, 0, 0, 0, 0);
-		}
-	}
 }
 static void portal_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -501,23 +486,6 @@ static void portal_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void portal_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act;
-	struct style* pin;
-	struct portalbuf* portal;
-
-	act = (void*)(self->chip);
-	if(0 == act)return;
-	pin = (void*)(self->foot);
-	if(0 == pin)return;
-
-	if(hex32('m','v','p',0) == self->flag){
-		say("portal_start: mvp\n");
-		return;
-	}
-	if('a' == self->flag){
-		portal = act->buf0;
-		pin->data[0] = (u64)(portal->data);
-	}
 }
 
 

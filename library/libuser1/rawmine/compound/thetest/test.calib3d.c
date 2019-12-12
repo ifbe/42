@@ -54,8 +54,8 @@ static void calib3d_draw_vbo(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	struct glsrc* src = (void*)(pin->data[0]);
-	src->vbuf_enq += 1;
+	//struct glsrc* src = (void*)(pin->data[0]);
+	//src->vbuf_enq += 1;
 	//say("@calib3d_draw_vbo\n");
 }
 static void calib3d_draw_json(

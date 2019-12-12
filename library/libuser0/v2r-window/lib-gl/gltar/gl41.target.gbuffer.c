@@ -16,7 +16,7 @@
 	#include <GL/glew.h>
 #endif
 int fbocreate(void*, int);
-int fullwindow_render(struct datapair* cam, struct datapair* lit, struct datapair* solid, struct datapair* opaque, struct supply* wnd, struct fstyle* area);
+int fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, struct supply* wnd, struct fstyle* area);
 
 
 

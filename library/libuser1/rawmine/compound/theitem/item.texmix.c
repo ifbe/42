@@ -3,17 +3,7 @@ void loadtexfromfile(struct glsrc* src, int idx, char* name);
 
 
 
-/*
-char* texmix_glsl2d_v =
-GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec2 texuvw;\n"
-"out mediump vec2 uvw;\n"
-"void main(){\n"
-	"uvw = texuvw;\n"
-	"gl_Position = vec4(vertex, 1.0);\n"
-"}\n";
-*/
+
 char* texmix_glsl_v =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 vertex;\n"
@@ -36,19 +26,6 @@ GLSL_VERSION
 	"mediump vec3 c1 = texture(tex1, uvw).bgr;\n"
 	"FragColor = vec4((c0+c1)*0.5, 1.0);\n"
 "}\n";
-/*
-char* texmix_glsl_f =
-	GLSL_VERSION
-	"uniform sampler2D tex0;\n"
-	"in mediump vec2 uvw;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"mediump vec4 tmp = texture(tex0, uvw);"
-		"if(tmp.a < 0.01)discard;"
-		"FragColor = tmp.bgra;\n"
-	"}\n";
-*/
 
 
 
@@ -102,64 +79,7 @@ static void texmix_draw_pixel(
 			}
 		}
 	}
-}/*
-static void texmix_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	if(0 == act->buf)return;
-
-	struct glsrc* src = (void*)(pin->foot[0]);
-	float (*vbuf)[6] = (void*)(src->vbuf);
-
-	vbuf[0][0] = vc[0] - vr[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2];
-	vbuf[0][3] = 0.0;
-	vbuf[0][4] = 1.0;
-	vbuf[0][5] = 0.0;
-
-	vbuf[1][0] = vc[0] + vr[0] + vf[0];
-	vbuf[1][1] = vc[1] + vr[1] + vf[1];
-	vbuf[1][2] = vc[2] + vr[2] + vf[2];
-	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 0.0;
-	vbuf[1][5] = 0.0;
-
-	vbuf[2][0] = vc[0] - vr[0] + vf[0];
-	vbuf[2][1] = vc[1] - vr[1] + vf[1];
-	vbuf[2][2] = vc[2] - vr[2] + vf[2];
-	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 0.0;
-	vbuf[2][5] = 0.0;
-
-	vbuf[3][0] = vc[0] + vr[0] + vf[0];
-	vbuf[3][1] = vc[1] + vr[1] + vf[1];
-	vbuf[3][2] = vc[2] + vr[2] + vf[2];
-	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 0.0;
-	vbuf[3][5] = 0.0;
-
-	vbuf[4][0] = vc[0] - vr[0] - vf[0];
-	vbuf[4][1] = vc[1] - vr[1] - vf[1];
-	vbuf[4][2] = vc[2] - vr[2] - vf[2];
-	vbuf[4][3] = 0.0;
-	vbuf[4][4] = 1.0;
-	vbuf[4][5] = 0.0;
-
-	vbuf[5][0] = vc[0] + vr[0] - vf[0];
-	vbuf[5][1] = vc[1] + vr[1] - vf[1];
-	vbuf[5][2] = vc[2] + vr[2] - vf[2];
-	vbuf[5][3] = 1.0;
-	vbuf[5][4] = 1.0;
-	vbuf[5][5] = 0.0;
-
-	src->vbuf_enq += 1;
-}*/
+}
 static void texmix_draw_vbo3d(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -282,13 +202,6 @@ static void texmix_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void texmix_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	if(0 == act)return;
-	if(0 == pin)return;
-
-	pin->data[0] = (u64)(act->buf);
-	say("@texmix_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 

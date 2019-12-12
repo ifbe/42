@@ -140,21 +140,22 @@ static int aidfont_fill(struct glsrc* src, int id)
 }
 int ascii3d_vars(struct entity* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
-	struct datapair* mod;
 	struct glsrc* src;
 	int vlen,ilen,ret;
 	if(0 == win)return -1;
+	if(0 == win->gl_opaque)return -2;
 
-	mod = win->gl_opaque;
-	if(0 == mod)return -2;
-
-	src = &mod[font3d0 + id].src;
+	src = win->gl_opaque[font3d0 + id];
+	if(0 == src){
+		src = win->gl_opaque[font3d0 + id] = memorycreate(0x200, 0);
+		if(0 == src)return -3;
+	}
 	if(0 == src->vbuf){
 		ret = aidfont_load();
-		if(ret < 0)return -3;
+		if(ret < 0)return -4;
 
 		ret = aidfont_fill(src, id);
-		if(ret < 0)return -4;
+		if(ret < 0)return -5;
 	}
 
 	vlen = src->vbuf_h;

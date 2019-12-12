@@ -16,7 +16,7 @@
 	#include <GL/glew.h>
 #endif
 int fbocreate(void*, int);
-int fullwindow_render(struct datapair* cam, struct datapair* lit, struct datapair* solid, struct datapair* opaque, struct supply* wnd, struct fstyle* area);
+int fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, struct supply* wnd, struct fstyle* area);
 
 
 
@@ -59,14 +59,7 @@ int gl41fboc_delete(struct entity* act)
 }
 int gl41fboc_create(struct entity* act, void* addr)
 {
-	int j;
-	u8* buf;
-
-	buf = act->gl_camera = memorycreate(0x10000, 0);
-	for(j=0;j<0x10000;j++)buf[j] = 0;
-
-	buf = act->gl_light = memorycreate(0x10000, 0);
-	for(j=0;j<0x10000;j++)buf[j] = 0;
-
+	act->gl_camera = memorycreate(0x10000, 0);
+	act->gl_light  = memorycreate(0x10000, 0);
 	return 0;
 }

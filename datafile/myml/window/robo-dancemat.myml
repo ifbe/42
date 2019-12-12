@@ -70,6 +70,8 @@ url:datafile/jpg/warehouse.jpg
 }
 dancemat{
 fmt:dancemat
+ballcolor:008000
+linecolor:800080
 }
 3rdcam{
 fmt:3rdcam

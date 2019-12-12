@@ -85,7 +85,7 @@ void easywindow_renderpeer(struct supply* win)
 	struct entity* act = (void*)(rel->dstchip);
 	if(0 == act)return;
 
-	struct datapair* pair = act->buf;
+	struct gl41data* pair = act->buf;
 	if(0 == pair)return;
 
 	struct glsrc* src = &pair->src;

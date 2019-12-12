@@ -1,46 +1,52 @@
 #include "libuser.h"
+#define OWNBUF buf0
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 
 
-static void ground_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+static void ground_ctxforwnd(struct glsrc* src, char* str)
 {
-	int cx, cy, ww, hh;
-	if(sty)
-	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
-	}
-	else
-	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
-	}
+	//
+	src->geometry = 3;
+	src->method = 'v';
+
+	//
+	src->vs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/ground/vert.glsl", 0, src->vs, 0x1000);
+	src->fs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/ground/frag.glsl", 0, src->fs, 0x1000);
+	src->shader_enq = 42;
+
+	//texture
+	src->tex[0].name = "tex0";
+	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(src, 0, str);
+	src->tex[0].enq = 42;
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 }
 static void ground_draw_vbo(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
+	struct glsrc* src;
+	float (*vbuf)[6];
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	struct datapair* dst;
-	struct glsrc* src;
-	float (*vbuf)[6];
 	//carvesolid_rect(ctx, 0xffffff, vc, vr, vf);
 
-	dst = (void*)(geom->data[0]);
-	if(0 == dst)return;
-	src = (void*)(part->data[0]);
+	src = act->OWNBUF;
 	if(0 == src)return;
 	vbuf = (void*)(src->vbuf);
 	if(0 == vbuf)return;
@@ -88,6 +94,31 @@ static void ground_draw_vbo(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
+	gl41data_insert(wnd, 's', act->OWNBUF, 1);
+}
+
+
+
+
+static void ground_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 }
 static void ground_draw_json(
 	struct entity* act, struct style* pin,
@@ -155,13 +186,6 @@ static void ground_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void ground_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	if(0 == act)return;
-	if(0 == pin)return;
-
-	pin->data[0] = (u64)(act->buf);
-	say("@ground_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 
@@ -178,38 +202,13 @@ static void ground_delete(struct entity* act)
 }
 static void ground_create(struct entity* act, void* str)
 {
-	int j;
-	struct glsrc* src;
 	if(0 == act)return;
 
-	src = act->buf = memorycreate(0x200, 0);
-	if(0 == src)return;
+	act->OWNBUF = memorycreate(0x200, 0);
+	if(0 == act->OWNBUF)return;
 
-	//
-	src->geometry = 3;
-	src->method = 'v';
-
-	//
-	src->vs = memorycreate(0x1000, 0);
-	openreadclose("datafile/shader/ground/vert.glsl", 0, src->vs, 0x1000);
-	src->fs = memorycreate(0x1000, 0);
-	openreadclose("datafile/shader/ground/frag.glsl", 0, src->fs, 0x1000);
-	src->shader_enq = 42;
-
-	//texture
-	src->tex[0].name = "tex0";
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/wall.jpg";
-	loadtexfromfile(src, 0, str);
-	src->tex[0].enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	ground_ctxforwnd(act->OWNBUF, str);
 }
 
 

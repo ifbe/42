@@ -1,12 +1,18 @@
 #include "libuser.h"
+#define _fbo_ hex32('f','b','o',0)
 void fixmatrix(void* m, struct fstyle* sty);
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
+
+#define CAMBUF buf0
+#define LITBUF buf1
+#define CTXBUF buf2
+#define OWNBUF buf3
 struct sunbuf{
 	mat4 mvp;
 	vec4 rgb;
-
-	u8 data[0];
+	u32 glfd;
 };
 
 
@@ -39,49 +45,81 @@ GLSL_VERSION
 "}\n";
 
 
-
-
-static void projector_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
-{
-	struct relation* rel;
-	struct entity* world;
-	struct fstyle* obb = 0;
-	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
-
-	rel = act->irel0;
-	while(1){
-		if(0 == rel)return;
-		world = (void*)(rel->srcchip);
-		if(_world3d_ == world->type){
-			self[0] = (void*)&rel->dstchip;
-			peer[0] = (void*)&rel->srcchip;
-			return;
-		}
-		rel = samedstnextsrc(rel);
-	}
-}
-static void projector_modify(struct entity* act)
+void projector_camforfbo(struct glsrc* src)
 {
 }
-static void projector_delete(struct entity* act)
+static void projector_camera(
+	struct entity* act, struct style* part,
+	struct entity* wrd, struct style* geom,
+	struct supply* fbo, struct style* area)
 {
+	struct sunbuf* sun = act->OWNBUF;
+	struct glsrc* src = act->CAMBUF;
+	if(0 == src)return;
+
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "cammvp";
+	src->arg[0].data = sun->mvp;
+
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "camxyz";
+	src->arg[1].data = &geom->frus.vc;
+
+	fbo->gl_camera[0] = act->CAMBUF;
 }
-static void projector_create(struct entity* act, void* str)
+
+
+void projector_litforwnd(struct glsrc* src)
+{
+	src->routine_name = "passtype";
+	src->routine_detail = "projector";
+
+	src->tex[1].name = "sunimg";
+	src->tex[1].fmt = hex32('r','g','b','a');
+	src->tex[1].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(src, 1, "datafile/jpg/cartoon.jpg");
+	src->tex[1].enq += 1;
+}
+void projector_light(
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	struct sunbuf* sun;
 	struct glsrc* src;
-	if(0 == act)return;
 
-	sun = act->buf0 = memorycreate(0x1000, 0);
+	sun = act->OWNBUF;
 	if(0 == sun)return;
+	src = act->LITBUF;
+	if(0 == src)return;
 
-	//
-	sun->rgb[0] = 1.0;
-	sun->rgb[1] = 1.0;
-	sun->rgb[2] = 1.0;
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "sunmvp";
+	src->arg[0].data = sun->mvp;
 
-	//
-	src = (void*)(sun->data);
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "sunrgb";
+	src->arg[1].data = sun->rgb;
+
+	src->arg[2].fmt = 'v';
+	src->arg[2].name = "sunxyz";
+	src->arg[2].data = geom->frus.vc;
+
+	src->arg[3].fmt = 'v';
+	src->arg[3].name = "sundir";
+	src->arg[3].data = geom->frus.vf;
+
+	src->tex[0].glfd = sun->glfd;
+	src->tex[0].name = "suntex";
+	src->tex[0].fmt = '!';
+	src->tex[0].enq += 1;
+
+	wnd->gl_light[0] = act->LITBUF;
+}
+
+
+void projector_ctxforwnd(struct glsrc* src)
+{
 	src->geometry = 3;
 	src->method = 'v';
 
@@ -96,15 +134,6 @@ static void projector_create(struct entity* act, void* str)
 	src->vbuf_h = 6;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf = memorycreate(src->vbuf_len, 0);
-}
-
-
-
-
-static void projector_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
 }
 static void projector_draw_vbo(
 	struct entity* act, struct style* slot,
@@ -128,9 +157,7 @@ static void projector_draw_vbo(
 	tt[2] = - vf[2];
 	carvesolid_cone(ctx, 0xffffff, vc, vr, tt);
 
-	sun = act->buf0;
-	if(0 == sun)return;
-	src = (void*)(sun->data);
+	src = act->CTXBUF;
 	if(0 == src)return;
 	vbuf = (void*)(src->vbuf);
 	if(0 == vbuf)return;
@@ -179,6 +206,65 @@ static void projector_draw_vbo(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
+	gl41data_insert(ctx, 's', act->CTXBUF, 1);
+}
+
+
+
+
+static void projector_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+{
+	struct relation* rel;
+	struct entity* world;
+	struct fstyle* obb = 0;
+	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)return;
+		world = (void*)(rel->srcchip);
+		if(_world3d_ == world->type){
+			self[0] = (void*)&rel->dstchip;
+			peer[0] = (void*)&rel->srcchip;
+			return;
+		}
+		rel = samedstnextsrc(rel);
+	}
+}
+static void projector_modify(struct entity* act)
+{
+}
+static void projector_delete(struct entity* act)
+{
+}
+static void projector_create(struct entity* act, void* str)
+{
+	struct sunbuf* sun;
+	if(0 == act)return;
+
+	sun = act->OWNBUF = memorycreate(0x400, 0);
+	sun->rgb[0] = 1.0;
+	sun->rgb[1] = 1.0;
+	sun->rgb[2] = 1.0;
+
+	//
+	act->CAMBUF = memorycreate(0x400, 0);
+	projector_camforfbo(act->CAMBUF);
+
+	act->LITBUF = memorycreate(0x400, 0);
+	projector_litforwnd(act->LITBUF);
+
+	act->CTXBUF = memorycreate(0x400, 0);
+	projector_ctxforwnd(act->CTXBUF);
+}
+
+
+
+
+static void projector_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
 }
 static void projector_draw_json(
 	struct entity* act, struct style* pin,
@@ -210,54 +296,6 @@ static void projector_draw(
 	else if(fmt == _html_)projector_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)projector_draw_json(act, pin, win, sty);
 	else projector_draw_pixel(act, pin, win, sty);
-}
-void projector_light(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* wnd, struct style* area)
-{
-	struct sunbuf* sun;
-	struct glsrc* own;
-	struct glsrc* src;
-
-	sun = act->buf0;
-	if(0 == sun)return;
-	own = (void*)(sun->data);
-	if(0 == own)return;
-	src = wnd->gl_light;
-	if(0 == src)return;
-
-	src->routine_name = "passtype";
-	src->routine_detail = "projector";
-
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "sunmvp";
-	src->arg[0].data = sun->mvp;
-
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "sunrgb";
-	src->arg[1].data = sun->rgb;
-
-	src->arg[2].fmt = 'v';
-	src->arg[2].name = "sunxyz";
-	src->arg[2].data = geom->frus.vc;
-
-	src->arg[3].fmt = 'v';
-	src->arg[3].name = "sundir";
-	src->arg[3].data = geom->frus.vf;
-
-	src->tex[0].glfd = own->tex[0].glfd;
-	src->tex[0].name = "suntex";
-	src->tex[0].fmt = '!';
-	src->tex[0].enq += 1;
-
-	if(0 == src->tex[1].name){
-		src->tex[1].name = "sunimg";
-		src->tex[1].fmt = hex32('r','g','b','a');
-		src->tex[1].data = memorycreate(2048*2048*4, 0);
-		loadtexfromfile(src, 1, "datafile/jpg/cartoon.jpg");
-	}
-	src->tex[1].enq += 1;
 }
 
 
@@ -314,56 +352,32 @@ void projector_frustum(struct fstyle* d, struct fstyle* s)
 }
 static void projector_matrix(
 	struct entity* act, struct style* part,
-	struct entity* wrd, struct style* geom,
-	struct supply* fbo, struct style* area)
+	struct entity* wrl, struct style* geom)
 {
-	struct sunbuf* sun;
-	struct glsrc* src;
-
-	sun = act->buf0;
+	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
-	src = fbo->gl_camera;
-	if(0 == src)return;
 
-	projector_frustum(&geom->frus, &geom->fs);
 	fixmatrix(sun->mvp, &geom->frus);
 	mat4_transpose(sun->mvp);
-
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "cammvp";
-	src->arg[0].data = sun->mvp;
-
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "camxyz";
-	src->arg[1].data = &geom->frus.vc;
 }
-void projector_shadowmap(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* wrl, struct style* camg,
-	struct halfrel** stack, int rsp,
-	u8* buf, int len)
+
+
+
+
+void projector_findfbo(struct entity* act, struct style* slot, struct supply** fbo, struct style** rect)
 {
-#define _fbo_ hex32('f','b','o',0)
 	struct relation* rel = act->orel0;
 	if(0 == rel)return;
 
-	struct supply* fbo = rel->pdstchip;
-	if(0 == fbo)return;
-
-	struct style* rect = rel->pdstfoot;
-	if(0 == fbo)return;
-
-	projector_matrix(act,slot, win,geom, fbo,rect);
-	relationread(act,_fbo_, stack,rsp, buf,len);
-
-	struct sunbuf* sun = act->buf0;
+	*fbo = rel->pdstchip;
+	*rect = rel->pdstfoot;
+}
+void projector_update(struct entity* act, struct style* slot, struct supply* fbo, struct style* area)
+{
+	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
 
-	struct glsrc* own = (void*)(sun->data);
-	if(0 == own)return;
-
-	own->tex[0].glfd = fbo->tex0;
+	sun->glfd = fbo->tex0;
 }
 
 
@@ -374,23 +388,33 @@ static void projector_read(struct halfrel* self, struct halfrel* peer, struct ha
 //wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
 	struct entity* wrd;struct style* camg;
-
-//world -> mirror
+//world -> projector
 	struct entity* win;struct style* geom;
-	struct entity* act;struct style* part;
+	struct entity* act;struct style* slot;
+//fbo,rect
+	struct supply* fbo;struct style* rect;
 
-#define _fbo_ hex32('f','b','o',0)
 	if(stack){
-		act = self->pchip;part = self->pfoot;
+		act = self->pchip;slot = self->pfoot;
 		win = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		if('v' == len){
-			projector_light(act,part, win,geom, wnd,area);
-			projector_draw_vbo(act,part, win,geom, wnd,area);
+			projector_frustum(&geom->frus, &geom->fs);
+			projector_matrix(act,slot, win,geom);
+
+			projector_light(act,slot, win,geom, wnd,area);
+			projector_draw_vbo(act,slot, win,geom, wnd,area);
 		}
 		if('?' == len){
-			projector_shadowmap(act,part, win,geom, wrd,camg, stack,rsp, buf,len);
+			fbo = 0;rect = 0;
+			projector_findfbo(act,slot, &fbo,&rect);
+			if((0 == fbo)|(0 == rect))return;
+
+			projector_camera(act,slot, win,geom, fbo,rect);
+			relationread(act,_fbo_, stack,rsp, buf,len);
+
+			projector_update(act,slot, fbo,rect);
 		}
 	}
 }
@@ -402,14 +426,6 @@ static void projector_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void projector_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	if(0 == act)return;
-	if(0 == pin)return;
-
-	struct sunbuf* sun = act->buf0;
-	pin->data[0] = (u64)(sun->data);
-	say("@projector_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 

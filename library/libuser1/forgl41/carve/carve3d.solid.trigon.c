@@ -114,6 +114,21 @@ static int trigon3d_fill(struct glsrc* src)
 }
 int trigon3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
+	struct glsrc* src;
+	int vlen,ilen,ret;
+	if(0 == win)return -1;
+	if(0 == win->gl_solid)return -2;
+
+	src = win->gl_solid[trigon3d];
+	if(0 == src){
+		src = win->gl_solid[trigon3d] = memorycreate(0x200, 0);
+		if(0 == src)return -3;
+	}
+	if(0 == src->vbuf){
+		ret = trigon3d_fill(src);
+		if(ret < 0)return -4;
+	}
+/*
 	struct datapair* mod;
 	struct glsrc* src;
 	int vlen,ilen,ret;
@@ -127,7 +142,7 @@ int trigon3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int 
 		ret = trigon3d_fill(src);
 		if(ret < 0)return -3;
 	}
-
+*/
 	vlen = src->vbuf_h;
 	ilen = src->ibuf_h;
 	*vbuf = (src->vbuf) + (36*vlen);

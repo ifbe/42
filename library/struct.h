@@ -187,7 +187,7 @@ struct gldst
 	//
 	u32 vao;
 };
-struct datapair
+struct gl41data
 {
 	//[000,1bf]
 	struct glsrc src;
@@ -356,7 +356,9 @@ struct style
 	};
 
 	//[180, 1ff]
-	u64 data[8];
+	union{
+		struct fmotion expect;
+	};
 };
 
 
@@ -893,22 +895,22 @@ struct supply
 	union{
 		u64 data0;
 		void* buf0;
-		void* gl_camera;
+		struct gl41data** gl_camera;
 	};
 	union{
 		u64 data1;
 		void* buf1;
-		void* gl_light;
+		struct gl41data** gl_light;
 	};
 	union{
 		u64 data2;
 		void* buf2;
-		void* gl_solid;
+		struct gl41data** gl_solid;
 	};
 	union{
 		u64 data3;
 		void* buf3;
-		void* gl_opaque;
+		struct gl41data** gl_opaque;
 	};
 
 	//[80,bf]: func
@@ -1024,25 +1026,25 @@ struct entity
 		u64 data0;
 		void* buf0;
 		void* vbuf;		//vert buf
-		void* gl_camera;
+		void** gl_camera;
 	};
 	union{
 		u64 data1;
 		void* buf1;
 		void* ibuf;		//indx buf
-		void* gl_light;
+		void** gl_light;
 	};
 	union{
 		u64 data2;
 		void* buf2;
 		void* nbuf;		//node list
-		void* gl_solid;
+		void** gl_solid;
 	};
 	union{
 		u64 data3;
 		void* buf3;
 		void* wbuf;		//wire list
-		void* gl_opaque;
+		void** gl_opaque;
 	};
 
 	//[80,bf]: func

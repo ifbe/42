@@ -196,13 +196,6 @@ static void curtain_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void curtain_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	if(0 == act)return;
-	if(0 == pin)return;
-
-	struct sunbuf* sun = act->buf0;
-	pin->data[0] = (u64)(act->buf0);
 }
 
 

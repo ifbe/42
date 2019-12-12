@@ -97,7 +97,7 @@ int test_create(struct entity* act)
 	int j;
 	u8* buf;
 	short* pcm;
-	struct datapair* pair;
+	struct gl41data* pair;
 	struct glsrc* src;
 
 	act->buf = memorycreate(0x1000, 0);

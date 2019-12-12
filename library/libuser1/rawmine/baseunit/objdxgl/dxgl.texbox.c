@@ -159,13 +159,6 @@ static void texbox_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void texbox_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	if(0 == act)return;
-	if(0 == pin)return;
-
-	pin->data[0] = (u64)(act->buf);
-	say("@texbox_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 

@@ -52,18 +52,19 @@ static int point3d_fill(struct glsrc* src)
 }
 int point3d_vars(struct entity* win, int unused, float** vbuf, int vcnt)
 {
-	struct datapair* mod;
 	struct glsrc* src;
 	int vlen,ret;
 	if(0 == win)return -1;
+	if(0 == win->gl_solid)return -2;
 
-	mod = win->gl_solid;
-	if(0 == mod)return -2;
-
-	src = &mod[point3d].src;
+	src = win->gl_solid[point3d];
+	if(0 == src){
+		src = win->gl_solid[point3d] = memorycreate(0x200, 0);
+		if(0 == src)return -3;
+	}
 	if(0 == src->vbuf){
 		ret = point3d_fill(src);
-		if(ret < 0)return -3;
+		if(ret < 0)return -4;
 	}
 
 	vlen = src->vbuf_h;

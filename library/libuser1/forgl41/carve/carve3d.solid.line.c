@@ -64,18 +64,19 @@ static int line3d_fill(struct glsrc* src)
 }
 int line3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
-	struct datapair* mod;
 	struct glsrc* src;
 	int vlen,ilen,ret;
 	if(0 == win)return -1;
+	if(0 == win->gl_solid)return -2;
 
-	mod = win->gl_solid;
-	if(0 == mod)return -2;
-
-	src = &mod[line3d].src;
+	src = win->gl_solid[line3d];
+	if(0 == src){
+		src = win->gl_solid[line3d] = memorycreate(0x200, 0);
+		if(0 == src)return -3;
+	}
 	if(0 == src->vbuf){
 		ret = line3d_fill(src);
-		if(ret < 0)return -3;
+		if(ret < 0)return -4;
 	}
 
 	vlen = src->vbuf_h;

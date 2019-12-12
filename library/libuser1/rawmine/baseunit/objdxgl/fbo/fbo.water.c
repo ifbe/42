@@ -1,11 +1,53 @@
 #include "libuser.h"
+#define _fbo_ hex32('f','b','o',0)
 void fixmatrix(void* m, struct fstyle* sty);
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+
+
+#define CAMBUF buf0
+#define CTXBUF buf1
 struct waterbuf{
 	mat4 mvp;
 	float time;
 	u8 data[0];
 };
+void water_forfbo(struct glsrc* src)
+{
+}
+void water_forwnd(struct glsrc* src, struct waterbuf* water, char* str)
+{
+	src->geometry = 3;
+	src->method = 'v';
+	src->opaque = 1;
+
+	//
+	src->vs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/water/vert.glsl", 0, src->vs, 0x1000);
+	src->fs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/water/frag.glsl", 0, src->fs, 0x1000);
+	src->shader_enq = 42;
+
+	//argument
+	src->arg[0].name = "time";
+	src->arg[0].data = &water->time;
+	src->arg[0].fmt = 'f';
+
+	//texture0
+	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].name = "dudvmap";
+	src->tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(src, 0, str);
+	src->tex[0].enq = 42;
+
+	//vertex
+	src->vbuf = memorycreate(4*6*6, 0);
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+}
 
 
 
@@ -35,49 +77,22 @@ static void water_modify(struct entity* act)
 static void water_delete(struct entity* act)
 {
 }
-static void water_create(struct entity* act, void* str)
+static void water_create(struct entity* act, char* str)
 {
 	struct waterbuf* water;
 	struct glsrc* src;
 	if(0 == act)return;
 
-	water = act->buf0 = memorycreate(0x1000, 0);
+	water = act->CTXBUF = memorycreate(0x1000, 0);
 	if(0 == water)return;
-
-
-	//
 	src = (void*)(water->data);
-	src->geometry = 3;
-	src->method = 'v';
-	src->opaque = 1;
-
-	//
-	src->vs = memorycreate(0x1000, 0);
-	openreadclose("datafile/shader/water/vert.glsl", 0, src->vs, 0x1000);
-	src->fs = memorycreate(0x1000, 0);
-	openreadclose("datafile/shader/water/frag.glsl", 0, src->fs, 0x1000);
-	src->shader_enq = 42;
-
-	//argument
-	src->arg[0].name = "time";
-	src->arg[0].data = &water->time;
-	src->arg[0].fmt = 'f';
-
-	//texture0
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "dudvmap";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/dudvmap.jpg";
-	loadtexfromfile(src, 0, str);
-	src->tex[0].enq = 42;
+	water_forwnd(src, water, str);
 
-	//vertex
-	src->vbuf = memorycreate(4*6*6, 0);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	water = act->CAMBUF = memorycreate(0x1000, 0);
+	if(0 == water)return;
+	src = (void*)(water->data);
+	water_forfbo(src);
 }
 
 
@@ -169,6 +184,7 @@ static void water_draw_vbo(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
+	gl41data_insert(ctx, 'o', src, 1);
 }
 static void water_draw_json(
 	struct entity* act, struct style* pin,
@@ -318,42 +334,32 @@ static void water_matrix(
 	water_frustum(frus, shap, camg->frus.vc);
 
 	//mvp from frus
-	struct waterbuf* water = act->buf0;
+	struct waterbuf* water = act->CAMBUF;
 	if(0 == water)return;
 	fixmatrix(water->mvp, frus);
 	mat4_transpose(water->mvp);
 
 	//give arg(matrix and position) to fbo
-	struct glsrc* src = fbo->gl_camera;
+	struct glsrc* src = (void*)(water->data);
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";
 	src->arg[0].data = water->mvp;
-
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = frus->vc;
+	fbo->gl_camera = (void*)(water->data);
 }
-void water_reflect(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* wrl, struct style* camg,
-	struct halfrel** stack, int rsp,
-	u8* buf, int len)
+void water_findfbo(struct entity* act, struct style* slot, struct supply** fbo, struct style** rect)
 {
-#define _fbo_ hex32('f','b','o',0)
 	struct relation* rel = act->orel0;
 	if(0 == rel)return;
 
-	struct supply* fbo = rel->pdstchip;
-	if(0 == fbo)return;
-
-	struct style* rect = rel->pdstfoot;
-	if(0 == fbo)return;
-
-	water_matrix(act,slot, win,geom, wrl,camg, fbo,rect);
-	relationread(act,_fbo_, stack,rsp, buf,len);
-
-	struct waterbuf* water = act->buf0;
+	*fbo = rel->pdstchip;
+	*rect = rel->pdstfoot;
+}
+void water_update(struct entity* act, struct style* slot, struct supply* fbo, struct style* area)
+{
+	struct waterbuf* water = act->CTXBUF;
 	if(0 == water)return;
 
 	struct glsrc* own = (void*)(water->data);
@@ -373,21 +379,29 @@ static void water_read(struct halfrel* self, struct halfrel* peer, struct halfre
 //wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
 	struct entity* wrd;struct style* camg;
-
 //world -> water
 	struct entity* win;struct style* geom;
-	struct entity* act;struct style* part;
+	struct entity* act;struct style* slot;
+//fbo,rect
+	struct supply* fbo;struct style* rect;
 
 	if(stack){
-		act = self->pchip;part = self->pfoot;
+		act = self->pchip;slot = self->pfoot;
 		win = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		if('v' == len){
-			water_draw_vbo(act,part, win,geom, wnd,area);
+			water_draw_vbo(act,slot, win,geom, wnd,area);
 		}
 		if('?' == len){
-			water_reflect(act,part, win,geom, wrd,camg, stack,rsp, buf,len);
+			fbo = 0;rect = 0;
+			water_findfbo(act,slot, &fbo,&rect);
+			if((0 == fbo)|(0 == rect))return;
+
+			water_matrix(act,slot, win,geom, wrd,camg, fbo,rect);
+			relationread(act,_fbo_, stack,rsp, buf,len);
+
+			water_update(act,slot, fbo,rect);
 		}
 	}
 }
@@ -399,17 +413,6 @@ static void water_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void water_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	if(0 == act)return;
-	if(0 == pin)return;
-	if(hex32('m','v','p',0) == self->flag){
-		say("water_start: mvp\n");
-		return;
-	}
-
-	struct waterbuf* water = act->buf0;
-	pin->data[0] = (u64)(water->data);
 }
 
 

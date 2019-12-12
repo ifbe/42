@@ -1,6 +1,9 @@
 #include "libuser.h"
+#define CTXBUF buf0
+#define DATBUF buf1
 #define _cam_ hex32('c','a','m',0)
 #define _yuv_ hex32('y','u','v',0)
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 void yuyv2rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3
@@ -43,6 +46,91 @@ char* video_hlsl_v = 0;
 char* video_hlsl_t = 0;
 char* video_hlsl_g = 0;
 char* video_hlsl_f = 0;
+static void video_ctxforwnd(struct glsrc* src)
+{
+	src->geometry = 3;
+	src->method = 'v';
+
+	//shader
+	src->vs = video_glsl_v;
+	src->fs = video_glsl_f;
+	src->shader_enq = 42;
+
+	//texture
+	src->tex[0].name = "tex0";
+	src->tex[0].data = memorycreate(1024*1024*4, 0);
+	src->tex[0].fmt = hex32('r','g','b','a');
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+}
+void video_draw_vbo3d(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
+{
+	float* vc = geom->fshape.vc;
+	float* vr = geom->fshape.vr;
+	float* vf = geom->fshape.vf;
+	float* vt = geom->fshape.vt;
+
+	struct glsrc* data = act->CTXBUF;
+	float (*vbuf)[6] = data->vbuf;
+
+	vbuf[0][0] = vc[0] - vr[0] - vf[0];
+	vbuf[0][1] = vc[1] - vr[1] - vf[1];
+	vbuf[0][2] = vc[2] - vr[2] - vf[2];
+	vbuf[0][3] = 0.0;
+	vbuf[0][4] = 1.0;
+	vbuf[0][5] = 0.0;
+
+	vbuf[1][0] = vc[0] + vr[0] + vf[0];
+	vbuf[1][1] = vc[1] + vr[1] + vf[1];
+	vbuf[1][2] = vc[2] + vr[2] + vf[2];
+	vbuf[1][3] = 1.0;
+	vbuf[1][4] = 0.0;
+	vbuf[1][5] = 0.0;
+
+	vbuf[2][0] = vc[0] - vr[0] + vf[0];
+	vbuf[2][1] = vc[1] - vr[1] + vf[1];
+	vbuf[2][2] = vc[2] - vr[2] + vf[2];
+	vbuf[2][3] = 0.0;
+	vbuf[2][4] = 0.0;
+	vbuf[2][5] = 0.0;
+
+	vbuf[3][0] = vc[0] + vr[0] + vf[0];
+	vbuf[3][1] = vc[1] + vr[1] + vf[1];
+	vbuf[3][2] = vc[2] + vr[2] + vf[2];
+	vbuf[3][3] = 1.0;
+	vbuf[3][4] = 0.0;
+	vbuf[3][5] = 0.0;
+
+	vbuf[4][0] = vc[0] - vr[0] - vf[0];
+	vbuf[4][1] = vc[1] - vr[1] - vf[1];
+	vbuf[4][2] = vc[2] - vr[2] - vf[2];
+	vbuf[4][3] = 0.0;
+	vbuf[4][4] = 1.0;
+	vbuf[4][5] = 0.0;
+
+	vbuf[5][0] = vc[0] + vr[0] - vf[0];
+	vbuf[5][1] = vc[1] + vr[1] - vf[1];
+	vbuf[5][2] = vc[2] + vr[2] - vf[2];
+	vbuf[5][3] = 1.0;
+	vbuf[5][4] = 1.0;
+	vbuf[5][5] = 0.0;
+
+	//video_update(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
+	data->tex[0].w = 640;
+	data->tex[0].h = 480;
+	data->tex[0].enq += 1;
+
+	data->vbuf_enq += 1;
+	gl41data_insert(ctx, 's', act->CTXBUF, 1);
+}
 
 
 
@@ -111,69 +199,6 @@ void video_draw_pixel(
 		  src, 0, 640, 480,     0,     0,     0,     0,
 		  dst, 0,   w,   h, cx-ww, cy-hh, cx+ww, cy+hh
 	);
-}
-void video_draw_vbo3d(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
-{
-	float* vc = geom->fshape.vc;
-	float* vr = geom->fshape.vr;
-	float* vf = geom->fshape.vf;
-	float* vt = geom->fshape.vt;
-
-	struct glsrc* data = act->buf;
-	float (*vbuf)[6] = data->vbuf;
-
-	vbuf[0][0] = vc[0] - vr[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2];
-	vbuf[0][3] = 0.0;
-	vbuf[0][4] = 1.0;
-	vbuf[0][5] = 0.0;
-
-	vbuf[1][0] = vc[0] + vr[0] + vf[0];
-	vbuf[1][1] = vc[1] + vr[1] + vf[1];
-	vbuf[1][2] = vc[2] + vr[2] + vf[2];
-	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 0.0;
-	vbuf[1][5] = 0.0;
-
-	vbuf[2][0] = vc[0] - vr[0] + vf[0];
-	vbuf[2][1] = vc[1] - vr[1] + vf[1];
-	vbuf[2][2] = vc[2] - vr[2] + vf[2];
-	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 0.0;
-	vbuf[2][5] = 0.0;
-
-	vbuf[3][0] = vc[0] + vr[0] + vf[0];
-	vbuf[3][1] = vc[1] + vr[1] + vf[1];
-	vbuf[3][2] = vc[2] + vr[2] + vf[2];
-	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 0.0;
-	vbuf[3][5] = 0.0;
-
-	vbuf[4][0] = vc[0] - vr[0] - vf[0];
-	vbuf[4][1] = vc[1] - vr[1] - vf[1];
-	vbuf[4][2] = vc[2] - vr[2] - vf[2];
-	vbuf[4][3] = 0.0;
-	vbuf[4][4] = 1.0;
-	vbuf[4][5] = 0.0;
-
-	vbuf[5][0] = vc[0] + vr[0] - vf[0];
-	vbuf[5][1] = vc[1] + vr[1] - vf[1];
-	vbuf[5][2] = vc[2] + vr[2] - vf[2];
-	vbuf[5][3] = 1.0;
-	vbuf[5][4] = 1.0;
-	vbuf[5][5] = 0.0;
-
-	data->vbuf_enq += 1;
-
-
-	//video_update(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
-	data->tex[0].w = 640;
-	data->tex[0].h = 480;
-	data->tex[0].enq += 1;
 }
 void video_draw_json(
 	struct entity* act, struct style* pin,
@@ -255,7 +280,7 @@ static void video_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	if(_yuv_ == self->flag){
 		say("@video_write.yuv: %llx,%x,%llx,%x\n", arg, idx, buf, len);
 
-		data = act->buf;
+		data = act->DATBUF;
 		if(0 == data)return;
 		if(0 == data->tex[0].data)return;
 
@@ -267,13 +292,6 @@ static void video_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void video_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	if(0 == act)return;
-	if(0 == pin)return;
-
-	pin->data[0] = (u64)(act->buf);
-	say("@video_start:%llx, %llx\n", pin->data[0], pin->data[1]);
 }
 
 
@@ -288,11 +306,6 @@ static void video_modify(struct entity* act)
 static void video_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(act->buf)
-	{
-		memorydelete(act->buf);
-		act->buf = 0;
-	}
 }
 static void video_create(struct entity* act)
 {
@@ -300,28 +313,10 @@ static void video_create(struct entity* act)
 	struct glsrc* src;
 	if(0 == act)return;
 
-	src = act->buf = memorycreate(0x200, 0);
+	src = act->CTXBUF = memorycreate(0x200, 0);
 	if(0 == src)return;
 
-	src->geometry = 3;
-	src->method = 'v';
-
-	//shader
-	src->vs = video_glsl_v;
-	src->fs = video_glsl_f;
-	src->shader_enq = 42;
-
-	//texture
-	src->tex[0].name = "tex0";
-	src->tex[0].data = memorycreate(1024*1024*4, 0);
-	src->tex[0].fmt = hex32('r','g','b','a');
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	video_ctxforwnd(act->CTXBUF);
 }
 
 

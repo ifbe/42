@@ -1,6 +1,8 @@
 #include "libuser.h"
 #define _ev_ hex16('e','v')
-void ortho_mvp(mat4 m, struct fstyle* s);
+#define MATBUF buf0
+#define CAMBUF buf1
+int ortho_mvp(mat4 m, struct fstyle* s);
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
 
 
@@ -34,12 +36,28 @@ static void orthcam_delete(struct entity* act)
 static void orthcam_create(struct entity* act, void* arg)
 {
     say("@orthcam_create\n");
-	act->buf = memorycreate(64, 0);
+	act->MATBUF = memorycreate(64, 0);
+	act->CAMBUF = memorycreate(0x200, 0);
 }
 
 
 
 
+static void orthcam_camera(
+	struct entity* act, struct style* slot,
+	struct entity* wrd, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	struct fstyle* frus = &geom->frus;
+	struct glsrc* src = act->CAMBUF;
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "cammvp";
+	src->arg[0].data = act->MATBUF;
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "camxyz";
+	src->arg[1].data = frus->vc;
+	wnd->gl_camera[0] = act->CAMBUF;
+}
 static int orthcam_draw_vbo(
 	struct entity* act, struct style* slot,
 	struct entity* scn, struct style* geom,
@@ -89,6 +107,19 @@ static int orthcam_event(
 
 
 
+static void orthcam_ratio(
+	struct entity* wrd, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	float dx,dy;
+	struct fstyle* rect = &area->fshape;
+	struct fstyle* frus = &geom->frus;
+
+	dx = rect->vq[0] * wnd->fbwidth;
+	dy = rect->vq[1] * wnd->fbheight;
+	frus->vb[3] = frus->vl[3] * dy / dx;
+	frus->vt[3] = frus->vr[3] * dy / dx;
+}
 void orthocam_shape2frustum(struct fstyle* s, struct fstyle* d)
 {
 	float a,b,c;
@@ -155,42 +186,19 @@ void orthocam_shape2frustum(struct fstyle* s, struct fstyle* d)
 }
 static void orthcam_matrix(
 	struct entity* act, struct style* slot,
-	struct entity* wrd, struct style* geom,
-	struct entity* wnd, struct style* area)
+	struct entity* wrd, struct style* geom)
 {
-	void* mat = act->buf;
 	struct fstyle* frus = &geom->frus;
+	void* mat = act->MATBUF;
 
 	ortho_mvp(mat, frus);
 	mat4_transpose(mat);
-
-	struct glsrc* src = wnd->gl_camera;
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "cammvp";
-	src->arg[0].data = mat;
-
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "camxyz";
-	src->arg[1].data = frus->vc;
-}
-static void orthcam_ratio(
-	struct entity* wrd, struct style* geom,
-	struct entity* wnd, struct style* area)
-{
-	float dx,dy;
-	struct fstyle* rect = &area->fshape;
-	struct fstyle* frus = &geom->frus;
-
-	dx = rect->vq[0] * wnd->fbwidth;
-	dy = rect->vq[1] * wnd->fbheight;
-	frus->vb[3] = frus->vl[3] * dy / dx;
-	frus->vt[3] = frus->vr[3] * dy / dx;
 }
 
 
 
 
-static void orthcam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void orthcam_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
 	struct entity* wnd;struct style* area;
@@ -207,13 +215,41 @@ static void orthcam_read(struct halfrel* self, struct halfrel* peer, struct half
 	if('v' == len){
 		orthcam_ratio(wrd, geom, wnd, area);
 		orthocam_shape2frustum(&geom->fshape, &geom->frustum);
+		orthcam_matrix(act,slot, wrd,geom);
 
 		gl41data_read(self, peer, stack, rsp+2, buf, len);
 		orthcam_draw_vbo(act,slot, wrd,geom, wnd,area);
 	}
 	if('?' == len){
 		gl41data_read(self, peer, stack, rsp+2, buf, len);
-		orthcam_matrix(act,slot, wrd,geom, wnd,area);
+		orthcam_camera(act,slot, wrd,geom, wnd,area);
+	}
+}
+static void orthcam_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+//world -> texball
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;slot = self->pfoot;
+		if('v' == len)orthcam_draw_vbo(act,slot, wrd,geom, wnd,area);
+	}
+}
+static void orthcam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	struct entity* ent = peer->pchip;
+
+	switch(ent->fmt){
+		case _gl41wnd0_:orthcam_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		default:        orthcam_read_bycam(self, peer, stack, rsp, buf, len);break;
 	}
 }
 static int orthcam_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)

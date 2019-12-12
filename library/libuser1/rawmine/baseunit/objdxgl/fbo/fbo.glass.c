@@ -1,6 +1,11 @@
 #include "libuser.h"
+#define _fbo_ hex32('f','b','o',0)
 void fixmatrix(void* m, struct fstyle* sty);
-#define PI 3.1415926535897932384626433832795028841971693993151
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+
+
+#define CAMBUF buf0
+#define CTXBUF buf1
 struct glassbuf{
 	mat4 mvp;
 	u8 data[0];
@@ -31,6 +36,64 @@ GLSL_VERSION
 	"mediump vec3 c = texture(tex0, uvw).rgb * vec3(1.0, 0.8, 0.6);\n"
 	"FragColor = vec4(c, 0.5);\n"
 "}\n";
+
+void glass_forfbo(struct glsrc* src)
+{
+}
+void glass_forwnd(struct glsrc* src)
+{
+	src->geometry = 3;
+	src->method = 'v';
+	src->opaque = 1;
+
+	//
+	src->vs = glass_glsl_v;
+	src->fs = glass_glsl_f;
+	src->shader_enq = 42;
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+	src->vbuf_enq = 0;
+
+	//texture
+	src->tex[0].name = "tex0";
+}
+
+
+
+
+static void glass_search(struct entity* act)
+{
+}
+static void glass_modify(struct entity* act)
+{
+}
+static void glass_delete(struct entity* act)
+{
+	if(0 == act)return;
+	memorydelete(act->buf);
+	act->buf = 0;
+}
+static void glass_create(struct entity* act, void* str)
+{
+	struct glassbuf* glass;
+	struct glsrc* src;
+	if(0 == act)return;
+
+	glass = act->CTXBUF = memorycreate(0x1000, 0);
+	if(0 == glass)return;
+	src = (void*)(glass->data);
+	glass_forwnd(src);
+
+	glass = act->CAMBUF = memorycreate(0x1000, 0);
+	if(0 == glass)return;
+	src = (void*)(glass->data);
+	glass_forfbo(src);
+}
 
 
 
@@ -68,7 +131,7 @@ static void glass_draw_vbo(
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
 
-	glass = act->buf0;
+	glass = act->CTXBUF;
 	if(0 == glass)return;
 	src = (void*)(glass->data);
 	if(0 == src)return;
@@ -118,6 +181,7 @@ static void glass_draw_vbo(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
+	gl41data_insert(ctx, 'o', src, 1);
 }
 static void glass_draw_json(
 	struct entity* act, struct style* pin,
@@ -267,42 +331,32 @@ static void glass_matrix(
 	glass_frustum(frus, shap, camg->frus.vc);
 
 	//mvp from frus
-	struct glassbuf* glass = act->buf0;
+	struct glassbuf* glass = act->CAMBUF;
 	if(0 == glass)return;
 	fixmatrix(glass->mvp, frus);
 	mat4_transpose(glass->mvp);
 
 	//give arg(matrix and position) to fbo
-	struct glsrc* src = fbo->gl_camera;
+	struct glsrc* src = (void*)(glass->data);
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";
 	src->arg[0].data = glass->mvp;
-
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = frus->vc;
+	fbo->gl_camera[0] = (void*)(glass->data);
 }
-void glass_reflect(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* wrl, struct style* camg,
-	struct halfrel** stack, int rsp,
-	u8* buf, int len)
+void glass_findfbo(struct entity* act, struct style* slot, struct supply** fbo, struct style** rect)
 {
-#define _fbo_ hex32('f','b','o',0)
 	struct relation* rel = act->orel0;
 	if(0 == rel)return;
 
-	struct supply* fbo = rel->pdstchip;
-	if(0 == fbo)return;
-
-	struct style* rect = rel->pdstfoot;
-	if(0 == fbo)return;
-
-	glass_matrix(act,slot, win,geom, wrl,camg, fbo,rect);
-	relationread(act,_fbo_, stack,rsp, buf,len);
-
-	struct glassbuf* glass = act->buf0;
+	*fbo = rel->pdstchip;
+	*rect = rel->pdstfoot;
+}
+void glass_update(struct entity* act, struct style* slot, struct supply* fbo, struct style* rect)
+{
+	struct glassbuf* glass = act->CTXBUF;
 	if(0 == glass)return;
 
 	struct glsrc* own = (void*)(glass->data);
@@ -322,21 +376,29 @@ static void glass_read(struct halfrel* self, struct halfrel* peer, struct halfre
 //wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
 	struct entity* wrd;struct style* camg;
-
 //world -> glass
 	struct entity* win;struct style* geom;
-	struct entity* act;struct style* part;
+	struct entity* act;struct style* slot;
+//fbo,rect
+	struct supply* fbo;struct style* rect;
 
 	if(stack){
-		act = self->pchip;part = self->pfoot;
+		act = self->pchip;slot = self->pfoot;
 		win = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		if('v' == len){
-			glass_draw_vbo(act,part, win,geom, wnd,area);
+			glass_draw_vbo(act,slot, win,geom, wnd,area);
 		}
 		if('?' == len){
-			glass_reflect(act,part, win,geom, wrd,camg, stack,rsp, buf,len);
+			fbo = 0;rect = 0;
+			glass_findfbo(act,slot, &fbo,&rect);
+			if((0 == fbo)|(0 == rect))return;
+
+			glass_matrix(act,slot, win,geom, wrd,camg, fbo,rect);
+			relationread(act,_fbo_, stack,rsp, buf,len);
+
+			glass_update(act,slot, fbo,rect);
 		}
 	}
 }
@@ -348,65 +410,7 @@ static void glass_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void glass_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	if(0 == act)return;
-	if(0 == pin)return;
-	if(hex32('m','v','p',0) == self->flag){
-		say("glass_start: mvp\n");
-		return;
-	}
-
-	struct glassbuf* glass = act->buf0;
-	pin->data[0] = (u64)(glass->data);
-}
-
-
-
-
-static void glass_search(struct entity* act)
-{
-}
-static void glass_modify(struct entity* act)
-{
-}
-static void glass_delete(struct entity* act)
-{
-	if(0 == act)return;
-	memorydelete(act->buf);
-	act->buf = 0;
-}
-static void glass_create(struct entity* act, void* str)
-{
-	struct glassbuf* glass;
-	struct glsrc* src;
-	if(0 == act)return;
-
-	glass = act->buf0 = memorycreate(0x1000, 0);
-	if(0 == glass)return;
-
-
-	//
-	src = (void*)(glass->data);
-	src->geometry = 3;
-	src->method = 'v';
-	src->opaque = 1;
-
-	//
-	src->vs = glass_glsl_v;
-	src->fs = glass_glsl_f;
-	src->shader_enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
-	src->vbuf_enq = 0;
-
-	//texture
-	src->tex[0].name = "tex0";
+	say("glass_start: %.4s\n",self->flag);
 }
 
 

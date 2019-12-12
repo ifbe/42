@@ -1,4 +1,5 @@
 #include "libuser.h"
+#define CTXBUF buf0
 void entitycreatefromfile(struct entity* act, char* name);
 void carveskydome(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
@@ -33,7 +34,7 @@ char* skydome_glsl_f =
 static void skydome_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
-{
+{/*
 	u32 tmp;
 	u32* dst;
 	u32* src;
@@ -53,7 +54,6 @@ static void skydome_draw_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	if(0 == act->buf)return;
 
 	xmax = act->width;
 	if(xmax >= ww*2)xmax = ww*2;
@@ -77,7 +77,7 @@ static void skydome_draw_pixel(
 				dst[x] = 0xff000000 | (tmp&0xff00) | ((tmp>>16)&0xff) | ((tmp&0xff)<<16);
 			}
 		}
-	}
+	}*/
 }
 static void skydome_draw_vbo(
 	struct entity* act, struct style* pin,
@@ -90,9 +90,10 @@ static void skydome_draw_vbo(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	if(0 == act->buf)return;
 
-	src = (void*)(pin->data[0]);
+	src = act->CTXBUF;
+	if(0 == src)return;
+
 	vbuf = (void*)(src->vbuf);
 	ibuf = (void*)(src->ibuf);
 	carveskydome(vbuf, ibuf, vc, vr, vf, vu);
@@ -164,14 +165,6 @@ static void skydome_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void skydome_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct datapair* pair;
-	struct glsrc* src;
-	struct gldst* dst;
-
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
 /*
 	//
 	pair = alloc_winobj(win, 's');
@@ -224,13 +217,11 @@ static void skydome_modify(struct entity* act)
 static void skydome_delete(struct entity* act)
 {
 	if(0 == act)return;
-	memorydelete(act->buf);
-	act->buf = 0;
 }
 static void skydome_create(struct entity* act)
 {
 	if(0 == act)return;
-	//entitycreatefromfile(act, "jpg/skydome.jpg");
+	act->CTXBUF = memorycreate(0x400, 0);
 }
 
 

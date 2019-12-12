@@ -1,10 +1,36 @@
 #include "libuser.h"
+#define CTXBUF buf0
+#define MATBUF buf1
 #define _tar_ hex32('t','a','r',0)
 void fixmatrix(float* m, struct fstyle* sty);
 void freecam_shape2frustum(struct fstyle* d, struct fstyle* s);
 void freecam_ratio(struct entity* wrd, struct style* geom, struct entity* wnd, struct style* area);
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
 
+
+
+
+static void thirdperson_camforwnd(struct glsrc* src)
+{
+}
+static void thirdperson_camera(
+	struct entity* act, struct style* part,
+	struct entity* wrd, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	struct glsrc* src = act->CTXBUF;
+	struct fstyle* frus = &geom->frus;
+
+	src->arg[0].fmt = 'm';
+	src->arg[0].name = "cammvp";
+	src->arg[0].data = act->MATBUF;
+
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "camxyz";
+	src->arg[1].data = frus->vc;
+
+	wnd->gl_camera[0] = act->CTXBUF;
+}
 
 
 
@@ -49,7 +75,10 @@ static void thirdperson_delete(struct entity* act)
 static void thirdperson_create(struct entity* act, void* str)
 {
 	if(0 == act)return;
-	act->buf = memorycreate(64, 0);
+	act->MATBUF = memorycreate(64, 0);
+
+	act->CTXBUF = memorycreate(0x200, 0);
+	thirdperson_camforwnd(act->CTXBUF);
 }
 
 
@@ -189,30 +218,20 @@ static int thirdperson_event(
 
 static void thirdperson_matrix(
 	struct entity* act, struct style* part,
-	struct entity* wrd, struct style* geom,
-	struct entity* wnd, struct style* area)
+	struct entity* wrd, struct style* geom)
 {
-	void* mat = act->buf;
+	void* mat = act->MATBUF;
 	struct fstyle* frus = &geom->frus;
 
 	fixmatrix(mat, frus);
 	mat4_transpose(mat);
 	//printmat4(m);
-
-	struct glsrc* src = wnd->gl_camera;
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "cammvp";
-	src->arg[0].data = mat;
-
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "camxyz";
-	src->arg[1].data = frus->vc;
 }
 
 
 
 
-static void thirdperson_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void thirdperson_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
 	struct entity* wnd;struct style* area;
@@ -229,13 +248,44 @@ static void thirdperson_read(struct halfrel* self, struct halfrel* peer, struct 
 	if('v' == len){
 		freecam_ratio(wrd, geom, wnd, area);
 		freecam_shape2frustum(&geom->fshape, &geom->frustum);
+		thirdperson_matrix(act,slot, wrd,geom);
 
 		gl41data_read(self, peer, stack, rsp+2, buf, len);
 		thirdperson_draw(act,slot, wrd,geom, wnd,area);
 	}
 	if('?' == len){
 		gl41data_read(self, peer, stack, rsp+2, buf, len);
-		thirdperson_matrix(act,slot, wrd,geom, wnd,area);
+		thirdperson_camera(act,slot, wrd,geom, wnd,area);
+	}
+}
+static void thirdperson_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+//world -> texball
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;slot = self->pfoot;
+		if('v' == len)thirdperson_draw(act,slot, wrd,geom, wnd,area);
+	}
+}
+
+
+
+
+static void thirdperson_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	struct entity* ent = peer->pchip;
+	switch(ent->fmt){
+		case _gl41wnd0_:thirdperson_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		default:        thirdperson_read_bycam(self, peer, stack, rsp, buf, len);break;
 	}
 }
 static int thirdperson_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)

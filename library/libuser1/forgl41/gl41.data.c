@@ -6,41 +6,79 @@
 void gl41data_before(struct entity* ctx)
 {
 	int j;
-	struct datapair* mod;
+	struct glsrc* src;
 
-	mod = ctx->gl_solid;
-	for(j=0;j<solidaid_max;j++)
-	{
-		mod[j].src.vbuf_h = 0;
-		mod[j].src.ibuf_h = 0;
+	//solid clear myown, forget other
+	for(j=0;j<solidaid_max;j++){
+		src = ctx->gl_solid[j];
+		if(0 == src)continue;
+
+		src->vbuf_h = 0;
+		src->ibuf_h = 0;
+	}
+	for(;j<64;j++){
+		ctx->gl_solid[j] = 0;
 	}
 
-	mod = ctx->gl_opaque;
-	for(j=0;j<opaqueaid_max;j++)
-	{
-		mod[j].src.vbuf_h = 0;
-		mod[j].src.ibuf_h = 0;
+	//opaque: clear myown, forget other
+	for(j=0;j<opaqueaid_max;j++){
+		src = ctx->gl_opaque[j];
+		if(0 == src)continue;
+
+		src->vbuf_h = 0;
+		src->ibuf_h = 0;
+	}
+	for(;j<64;j++){
+		ctx->gl_opaque[j] = 0;
 	}
 }
 void gl41data_after(struct entity* ctx)
 {
 	int j;
-	struct datapair* mod;
+	struct glsrc* src;
 
-	mod = ctx->gl_solid;
+	//solid: enqueue
 	for(j=0;j<solidaid_max;j++)
 	{
-		mod[j].src.vbuf_enq += 1;
-		mod[j].src.ibuf_enq += 1;
+		src = ctx->gl_solid[j];
+		if(0 == src)continue;
+
+		src->vbuf_enq += 1;
+		src->ibuf_enq += 1;
 	}
 
-	mod = ctx->gl_opaque;
+	//opaque: enqueue
 	for(j=0;j<opaqueaid_max;j++)
 	{
-		mod[j].src.vbuf_enq += 1;
-		mod[j].src.ibuf_enq += 1;
+		src = ctx->gl_opaque[j];
+		if(0 == src)continue;
+
+		src->vbuf_enq += 1;
+		src->ibuf_enq += 1;
 	}
 }
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt)
+{
+	int j;
+	//say("@gl41data_insert:%llx,%x,%llx,%x\n", ctx,type,src,cnt);
+
+	if('s' == type){
+		for(j=solidaid_max;j<64;j++){
+			if(0 == ctx->gl_solid[j]){
+				ctx->gl_solid[j] = src;
+				break;
+			}
+		}
+	}
+	if('o' == type){
+		for(j=opaqueaid_max;j<64;j++){
+			if(0 == ctx->gl_opaque[j]){
+				ctx->gl_opaque[j] = src;
+				break;
+			}
+		}
+	}
+}/*
 void* gl41data_alloc(struct entity* ctx, int type)
 {
 	int j;
@@ -95,7 +133,7 @@ void gl41data_copy(struct entity* ctx, struct style* geom, struct style* part)
 	}
 //struct datapair* srcpair = (void*)src;
 //say("6666@method=%x, geom=%x, ibuf_h=%x\n", srcpair->src.method, srcpair->src.geometry, srcpair->src.ibuf_h);
-}
+}*/
 
 
 
@@ -105,8 +143,6 @@ int gl41data_read_vertex(
 	struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct relation* rel;
-	struct style* geom;
-	struct style* part;
 	//say("gldata_read_vertex\n");
 
 	gl41data_before(glctx);
@@ -118,12 +154,9 @@ int gl41data_read_vertex(
 
 		if(cam == rel->pdstchip)goto next;
 		if(_ent_ == rel->dsttype){
-			part = rel->pdstfoot;
-			geom = rel->psrcfoot;
-			if(geom){if('#' == geom->i.uc[3])goto next;}
-
-			entityread((void*)(rel->dst), (void*)(rel->src), stack, rsp, 0, 'v');
-			gl41data_copy(glctx, geom, part);
+			stack[rsp+0] = (void*)(rel->src);
+			stack[rsp+1] = (void*)(rel->dst);
+			entityread(stack[rsp+1], stack[rsp+0], stack, rsp, 0, 'v');
 		}
 next:
 		rel = samesrcnextdst(rel);
@@ -145,7 +178,9 @@ int gl41data_read_matrix(
 
 		if(cam == rel->pdstchip)goto next;
 		if(_ent_ == rel->dsttype){
-			entityread((void*)(rel->dst), (void*)(rel->src), stack, rsp, 0, '?');
+			stack[rsp+0] = (void*)(rel->src);
+			stack[rsp+1] = (void*)(rel->dst);
+			entityread(stack[rsp+1], stack[rsp+0], stack, rsp, 0, '?');
 		}
 next:
 		rel = samesrcnextdst(rel);
@@ -286,20 +321,9 @@ int gl41data_delete(struct entity* win)
 }
 int gl41data_create(struct entity* act, void* flag)
 {
-	int j;
-	u8* buf;
-
-	buf = act->gl_camera = memorycreate(0x10000, 0);
-	for(j=0;j<0x10000;j++)buf[j] = 0;
-
-	buf = act->gl_light = memorycreate(0x10000, 0);
-	for(j=0;j<0x10000;j++)buf[j] = 0;
-
-	buf = act->gl_solid = memorycreate(0x10000, 0);
-	for(j=0;j<0x10000;j++)buf[j] = 0;
-
-	buf = act->gl_opaque = memorycreate(0x10000, 0);
-	for(j=0;j<0x10000;j++)buf[j] = 0;
-
+	act->gl_camera = memorycreate(0x10000, 0);
+	act->gl_light  = memorycreate(0x10000, 0);
+	act->gl_solid  = memorycreate(0x10000, 0);
+	act->gl_opaque = memorycreate(0x10000, 0);
 	return 0;
 }

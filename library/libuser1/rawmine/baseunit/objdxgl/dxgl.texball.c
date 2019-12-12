@@ -1,6 +1,8 @@
 #include "libuser.h"
+#define CTXBUF buf0
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
 void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 
@@ -31,10 +33,76 @@ char* texball_glsl_f =
 
 
 
+
+void texball_ctxforwnd(struct glsrc* src, char* str)
+{
+	//
+	src->geometry = 3;
+	src->method = 'i';
+
+	//shader
+	src->vs = texball_glsl_v;
+	src->fs = texball_glsl_f;
+	src->shader_enq = 42;
+
+	//texture
+	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].name = "tex0";
+	src->tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(src, 0, str);
+	src->tex[0].enq = 42;
+	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
+
+#define accx 64
+#define accy 63
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 4*6;
+	src->vbuf_h = accx*accy+(accx-1)*2;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+	src->vbuf_enq = 0;
+
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = accy*(accx-1)*2;
+	src->ibuf_len = (src->ibuf_w) * (src->ibuf_h);
+	src->ibuf = memorycreate(src->ibuf_len, 0);
+	src->ibuf_enq = 0;
+}
+static void texball_draw_vbo3d(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* ctx, struct style* none)
+{
+	void* vbuf;
+	void* ibuf;
+	struct glsrc* src;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+
+	src = act->CTXBUF;
+	if(0 == src)return;
+
+	vbuf = (void*)(src->vbuf);
+	ibuf = (void*)(src->ibuf);
+	carveplanet(vbuf, ibuf, vc, vr, vf, vu);
+	src->vbuf_enq += 1;
+	src->ibuf_enq += 1;
+
+	gl41data_insert(ctx, 's', src, 1);
+}
+
+
+
+
 static void texball_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
-{
+{/*
 	u32 tmp;
 	u32* dst;
 	u32* src;
@@ -54,7 +122,6 @@ static void texball_draw_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	if(0 == act->buf)return;
 
 	xmax = act->width;
 	if(xmax >= ww*2)xmax = ww*2;
@@ -78,30 +145,7 @@ static void texball_draw_pixel(
 				dst[x] = 0xff000000 | (tmp&0xff00) | ((tmp>>16)&0xff) | ((tmp&0xff)<<16);
 			}
 		}
-	}
-}
-static void texball_draw_vbo3d(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wrd, struct style* camg,
-	struct entity* ctx, struct style* none)
-{
-	void* vbuf;
-	void* ibuf;
-	struct glsrc* src;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
-
-	src = act->buf;
-	if(0 == src)return;
-
-	vbuf = (void*)(src->vbuf);
-	ibuf = (void*)(src->ibuf);
-	carveplanet(vbuf, ibuf, vc, vr, vf, vu);
-	src->vbuf_enq += 1;
-	src->ibuf_enq += 1;
+	}*/
 }
 static void texball_draw_json(
 	struct entity* act, struct style* pin,
@@ -167,16 +211,13 @@ static void texball_event(
 //-1: world, geom of cam
 static void texball_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam
+//wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
-
-	//cam -> world
 	struct entity* wrd;struct style* camg;
-
-	//world -> texball
+//world -> texball
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
-
+//say("@texball_read\n");
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
@@ -203,13 +244,7 @@ static void texball_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void texball_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	if(0 == act)return;
-	if(0 == pin)return;
-
-	pin->data[0] = (u64)(act->buf);
-	say("@texball_start:%llx, %llx\n", pin->data[0], pin->data[1]);
+	say("@texball_start\n");
 }
 
 
@@ -224,54 +259,17 @@ static void texball_modify(struct entity* act)
 static void texball_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(0 == act->buf){
-		memorydelete(act->buf);
-		act->buf = 0;
-	}
 }
 static void texball_create(struct entity* act, void* str)
 {
-	int j;
-	struct glsrc* src;
+	void* ctx;
 	if(0 == act)return;
 
-	src = act->buf = memorycreate(0x200, 0);
-	if(0 == src)return;
+	ctx = act->CTXBUF = memorycreate(0x200, 0);
+	if(0 == ctx)return;
 
-	//
-	src->geometry = 3;
-	src->method = 'i';
-
-	//shader
-	src->vs = texball_glsl_v;
-	src->fs = texball_glsl_f;
-	src->shader_enq = 42;
-
-	//texture
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "tex0";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/earth.jpg";
-	loadtexfromfile(src, 0, str);
-	src->tex[0].enq = 42;
-	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
-
-#define accx 64
-#define accy 63
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*6;
-	src->vbuf_h = accx*accy+(accx-1)*2;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
-	src->vbuf_enq = 0;
-
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = accy*(accx-1)*2;
-	src->ibuf_len = (src->ibuf_w) * (src->ibuf_h);
-	src->ibuf = memorycreate(src->ibuf_len, 0);
-	src->ibuf_enq = 0;
+	texball_ctxforwnd(ctx, str);
 }
 
 

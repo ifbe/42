@@ -83,7 +83,7 @@ void update_onedraw(struct gldst* dst, struct glsrc* src)
 	}
 //say("@update done\n");
 }
-void fullwindow_upload(struct datapair* cam, struct datapair* lit, struct datapair* solid, struct datapair* opaque)
+void fullwindow_upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque)
 {
 	int j;
 	//say("@fullwindow_upload: %llx,%llx,%.8s\n", ogl, ctx, &ctx->type);
@@ -92,22 +92,24 @@ void fullwindow_upload(struct datapair* cam, struct datapair* lit, struct datapa
 	//update_onedraw(&cam[0].dst, &cam[0].src);
 
 	//light
-	update_onedraw(&lit[0].dst, &lit[0].src);
+	if(lit[0])update_onedraw(&lit[0]->dst, &lit[0]->src);
 
 	//solid
 	for(j=0;j<64;j++)
 	{
-		if(0 == solid[j].src.vbuf)continue;
+		if(0 == solid[j])continue;
+		if(0 == solid[j]->src.vbuf)continue;
 		//say("%d\n",j);
-		update_onedraw(&solid[j].dst, &solid[j].src);
+		update_onedraw(&solid[j]->dst, &solid[j]->src);
 	}
 
 	//opaque
 	for(j=0;j<64;j++)
 	{
-		if(0 == opaque[j].src.vbuf)continue;
+		if(0 == opaque[j])continue;
+		if(0 == opaque[j]->src.vbuf)continue;
 		//say("%d\n",j);
-		update_onedraw(&opaque[j].dst, &opaque[j].src);
+		update_onedraw(&opaque[j]->dst, &opaque[j]->src);
 	}
 }
 
@@ -150,7 +152,7 @@ void updatearg(u32 shader, struct glsrc* src)
 		}//switch
 	}//for
 }
-void render_onedraw(struct datapair* cam, struct datapair* lit, struct datapair* data)
+void render_onedraw(struct gl41data* cam, struct gl41data* lit, struct gl41data* data)
 {
 	int j,k;
 	u32 fmt;
@@ -166,18 +168,20 @@ void render_onedraw(struct datapair* cam, struct datapair* lit, struct datapair*
 
 	//1.argument
 	updatearg(dst->shader, src);
-	updatearg(dst->shader, &lit->src);
-	updatearg(dst->shader, &cam->src);
+	if(lit)updatearg(dst->shader, &lit->src);
+	if(cam)updatearg(dst->shader, &cam->src);
 
 	//2.texture
 	k = 0;
-	for(j=0;j<4;j++){
-		if(0 == lit->src.tex[j].name)continue;
-		if(0 == lit->src.tex[j].data)continue;
-		glActiveTexture(GL_TEXTURE0 + k);
-		glBindTexture(GL_TEXTURE_2D, lit->src.tex[j].glfd);
-		glUniform1i(glGetUniformLocation(dst->shader, lit->src.tex[j].name), k);
-		k++;
+	if(lit){
+		for(j=0;j<4;j++){
+			if(0 == lit->src.tex[j].name)continue;
+			if(0 == lit->src.tex[j].data)continue;
+			glActiveTexture(GL_TEXTURE0 + k);
+			glBindTexture(GL_TEXTURE_2D, lit->src.tex[j].glfd);
+			glUniform1i(glGetUniformLocation(dst->shader, lit->src.tex[j].name), k);
+			k++;
+		}
 	}
 	for(j=0;j<4;j++)
 	{
@@ -212,7 +216,7 @@ void render_onedraw(struct datapair* cam, struct datapair* lit, struct datapair*
 		else glDrawArrays(GL_TRIANGLES, 0, src->vbuf_h);
 	}
 }
-void fullwindow_render(struct datapair* cam, struct datapair* lit, struct datapair* solid, struct datapair* opaque, struct supply* wnd, struct fstyle* area)
+void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, struct supply* wnd, struct fstyle* area)
 {
 	int j;
 	int x0,y0,ww,hh;
@@ -233,8 +237,9 @@ void fullwindow_render(struct datapair* cam, struct datapair* lit, struct datapa
 
 	//solid
 	for(j=0;j<64;j++){
-		if(0 == solid[j].src.vbuf)continue;
-		render_onedraw(cam, lit, &solid[j]);
+		if(0 == solid[j])continue;
+		if(0 == solid[j]->src.vbuf)continue;
+		render_onedraw(cam[0], lit[0], solid[j]);
 	}
 
 	//opaque
@@ -243,8 +248,9 @@ void fullwindow_render(struct datapair* cam, struct datapair* lit, struct datapa
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	for(j=0;j<64;j++){
-		if(0 == opaque[j].src.vbuf)continue;
-		render_onedraw(cam, lit, &opaque[j]);
+		if(0 == opaque[j])continue;
+		if(0 == opaque[j]->src.vbuf)continue;
+		render_onedraw(cam[0], lit[0], opaque[j]);
 	}
 
 	glDisable(GL_BLEND);

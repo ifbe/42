@@ -1,4 +1,6 @@
 #include "libuser.h"
+#define MATBUF buf0
+#define CAMBUF buf1
 void fixmatrix(float* m, struct fstyle* sty);
 
 
@@ -31,7 +33,7 @@ static void vrglass_delete(struct entity* act)
 }
 static void vrglass_create(struct entity* act, void* str)
 {
-	act->buf = memorycreate(0x1000, 0);
+	act->MATBUF = memorycreate(0x1000, 0);
 }
 
 
@@ -297,37 +299,25 @@ void vrglass_frustum(struct fstyle* frus, struct fstyle* obb)
 		frus->vn[3], frus->vf[3], frus->vl[3], frus->vr[3], frus->vb[3], frus->vt[3]);*/
 }
 static void vrglass_matrix(
-	struct entity* act, struct fstyle* frus,
-	struct entity* ctx, struct fstyle* area)
+	struct entity* act, struct style* part,
+	struct entity* wrd, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
-	struct halfrel* self;
-	struct halfrel* peer;
-	struct fstyle* obb;
-	float dx,dy;
-	//say("@vrglass_matrix\n");
+	struct fstyle* frus = &geom->frus;
 
-	dx = area->vq[0] * ctx->fbwidth;
-	dy = area->vq[1] * ctx->fbheight;
-	frus->vb[3] = frus->vl[3] * dy / dx;
-	frus->vt[3] = frus->vr[3] * dy / dx;
-	vrglass_search(act, 0, &self, &peer);
-
-	obb = peer->pfoot;
-	vrglass_frustum(frus, obb);
-
-	float* mat = act->buf;
+	float* mat = act->MATBUF;
 	fixmatrix((void*)mat, frus);
 	mat4_transpose((void*)mat);
 	//printmat4(mat);
 
-	struct glsrc* src = ctx->gl_camera;
+	struct glsrc* src = act->CAMBUF;
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";
 	src->arg[0].data = mat;
-
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
-	src->arg[1].data = obb->vq;
+	src->arg[1].data = frus->vq;
+	wnd->gl_camera[0] = act->CAMBUF;
 }
 
 
@@ -335,23 +325,6 @@ static void vrglass_matrix(
 
 static void vrglass_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	//say("@vrglass_read\n");
-	if(ctx){
-		switch(ctx->type){
-			case _gl41data_:vrglass_draw_vbo(act,pin,ctx,sty);
-		}
-	}
-	else{
-		switch(win->type){
-			case _gl41wnd0_:vrglass_matrix(act, &pin->fs, win, &sty->fs);
-		}
-	}
 }
 static int vrglass_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

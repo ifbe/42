@@ -18,8 +18,8 @@
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
 int gl41data_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
 //
-int fullwindow_upload(struct datapair* cam, struct datapair* lit, struct datapair* solid, struct datapair* opaque);
-int fullwindow_render(struct datapair* cam, struct datapair* lit, struct datapair* solid, struct datapair* opaque, struct supply* wnd, struct fstyle* area);
+int fullwindow_upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque);
+int fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, struct supply* wnd, struct fstyle* area);
 
 
 
@@ -48,16 +48,16 @@ int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 		if(sty){
 			stack[rsp+0] = (void*)(rel->src);
 			stack[rsp+1] = (void*)(rel->dst);
-
+//say("@read v\n");
 			//get vertex
 			entityread(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, 'v');
-
+//say("@upload\n");
 			//upload
 			fullwindow_upload(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque);
-
+//say("@read ?\n");
 			//get fbo tex, get cam mvp
 			entityread(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, '?');
-
+//say("@render\n");
 			//render
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			fullwindow_render(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque, wnd, sty);
@@ -86,20 +86,9 @@ int gl41wnd0_delete(struct supply* act)
 }
 int gl41wnd0_create(struct supply* act, void* data)
 {
-	int j;
-	u8* buf;
-
-	buf = act->gl_camera = memorycreate(0x10000, 0);
-	for(j=0;j<0x10000;j++)buf[j] = 0;
-
-	buf = act->gl_light = memorycreate(0x10000, 0);
-	for(j=0;j<0x10000;j++)buf[j] = 0;
-
-	buf = act->gl_solid = memorycreate(0x10000, 0);
-	for(j=0;j<0x10000;j++)buf[j] = 0;
-
-	buf = act->gl_opaque = memorycreate(0x10000, 0);
-	for(j=0;j<0x10000;j++)buf[j] = 0;
-
+	act->gl_camera = memorycreate(0x10000, 0);
+	act->gl_light  = memorycreate(0x10000, 0);
+	act->gl_solid  = memorycreate(0x10000, 0);
+	act->gl_opaque = memorycreate(0x10000, 0);
 	return 0;
 }

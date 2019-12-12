@@ -96,14 +96,14 @@ static void dancemat_draw_vbo3d(
 		vbuf[x*3+0] += nbuf[x] * vu[0]/32768.0;
 		vbuf[x*3+1] += nbuf[x] * vu[1]/32768.0;
 		vbuf[x*3+2] += nbuf[x] * vu[2]/32768.0;
-		carvesolid_sphere(ctx, 0x808080, &vbuf[x*3], tr, tf, tu);
+		carvesolid_sphere(ctx, act->ix0, &vbuf[x*3], tr, tf, tu);
 	}
 
 	ibuf = act->ibuf;
 	for(j=0;j<200+48;j++){
 		x = ibuf[j*2+0];
 		y = ibuf[j*2+1];
-		carveline(ctx, 0xff0000, &vbuf[x*3], &vbuf[y*3]);
+		carveline(ctx, act->iy0, &vbuf[x*3], &vbuf[y*3]);
 	}
 }
 static void dancemat_draw_json(
@@ -197,10 +197,8 @@ static void dancemat_write_data(struct entity* ent, struct entity* src, u8* buf,
 //-1: world, geom of cam
 static void dancemat_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam
+	//wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
-
-	//cam -> world
 	struct entity* wrd;struct style* camg;
 
 	//world -> texball
@@ -248,12 +246,30 @@ static void dancemat_delete(struct entity* act)
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void dancemat_create(struct entity* act)
+static void dancemat_create(struct entity* act, u8* arg, int argc, u8** argv)
 {
+	u64 tmp;
 	int x,y,j,k;
 	short* nbuf;
 	short* ibuf;
 	if(0 == act)return;
+
+	act->ix0 = 0x808080;
+	act->iy0 = 0xff0000;
+	for(j=0;j<argc;j++){
+		if(0 == ncmp(argv[j], "ballcolor:", 10)){
+			k = 10;
+			while(0x20 == argv[j][k])k++;
+			hexstr2data(argv[j]+k, &tmp);
+			act->ix0 = tmp;
+		}
+		if(0 == ncmp(argv[j], "linecolor:", 10)){
+			k = 10;
+			while(0x20 == argv[j][k])k++;
+			hexstr2data(argv[j]+k, &tmp);
+			act->iy0 = tmp;
+		}
+	}
 
 	act->vbuf = memorycreate(0x1000, 0);
 
