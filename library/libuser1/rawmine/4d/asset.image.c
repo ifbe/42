@@ -41,7 +41,7 @@ void loadimgfromjpg(u8* buf, int len, int* width, int* height, int* depth, int* 
 		buf[ret*4+0] = rgb[ret*3+2];
 		buf[ret*4+1] = rgb[ret*3+1];
 		buf[ret*4+2] = rgb[ret*3+0];
-		buf[ret*4+3] = 0;
+		buf[ret*4+3] = 0xff;
 	}
 
 	*width = njGetWidth();

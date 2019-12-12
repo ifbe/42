@@ -46,6 +46,14 @@ subroutine (passtype) vec3 projector(){
 	if(tmp.z - texture(suntex, tmp.xy).r > 0.0001)return vec3(0.5);
 	return texture(sunimg, tmp.xy).bgr;
 }
+subroutine (passtype) vec3 pointlight(){
+	mediump float dx = (sunxyz-vertex).x;
+	mediump float dy = (sunxyz-vertex).y;
+	mediump float dz = (sunxyz-vertex).z;
+	mediump float sq = 100000000.0 - (dx*dx+dy*dy+dz*dz);
+	if(sq < 0.0)sq = 0.0;
+	return sunrgb * sq/100000000.0;
+}
 void main(){
 	mediump float x = mod(abs(vertex.x), 1000.0) / 1000.0;
 	mediump float y = mod(abs(vertex.y), 1000.0) / 1000.0;

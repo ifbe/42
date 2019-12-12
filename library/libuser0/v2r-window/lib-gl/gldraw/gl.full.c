@@ -64,19 +64,18 @@ void update_onedraw(struct gldst* dst, struct glsrc* src)
 	for(j=0;j<4;j++){
 		if(dst->tex_deq[j] == src->tex[j].enq)continue;
 
-		buf0 = (void*)(src->tex[j].data);
-		if(0 != buf0)
-		{
-			fmt = src->tex[j].fmt;
-			if('!' == fmt){
-				dst->tex[j] = src->tex[j].glfd;
-			}
-			else{
+		fmt = src->tex[j].fmt;
+		if('!' == fmt){
+			dst->tex[j] = src->tex[j].glfd;
+		}
+		else{
+			buf0 = (void*)(src->tex[j].data);
+			if(0 != buf0){
 				w = src->tex[j].w;
 				h = src->tex[j].h;
 				dst->tex[j] = uploadtexture(dst, dst->tex[j], buf0, fmt, w, h);
+				//say("texture:(%llx,%x,%x,%x)->%x\n", buf0, fmt, w, h, fd);
 			}
-			//say("texture:(%llx,%x,%x,%x)->%x\n", buf0, fmt, w, h, fd);
 		}
 
 		dst->tex_deq[j] = src->tex[j].enq;
@@ -177,8 +176,9 @@ void render_onedraw(struct gl41data* cam, struct gl41data* lit, struct gl41data*
 		for(j=0;j<4;j++){
 			if(0 == lit->src.tex[j].name)continue;
 			if(0 == lit->src.tex[j].data)continue;
+
 			glActiveTexture(GL_TEXTURE0 + k);
-			glBindTexture(GL_TEXTURE_2D, lit->src.tex[j].glfd);
+			glBindTexture(GL_TEXTURE_2D, lit->dst.tex[j]);
 			glUniform1i(glGetUniformLocation(dst->shader, lit->src.tex[j].name), k);
 			k++;
 		}

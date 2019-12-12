@@ -44,7 +44,7 @@ GLSL_VERSION
 static void dirlight_camforfbo(struct glsrc* src)
 {
 }
-void dirlight_camera(
+static void dirlight_camera(
 	struct entity* act, struct style* slot,
 	struct entity* wrd, struct style* geom,
 	struct supply* fbo, struct style* area)
@@ -63,13 +63,13 @@ void dirlight_camera(
 }
 
 
-void dirlight_litforwnd(struct glsrc* src)
+static void dirlight_litforwnd(struct glsrc* src)
 {
 	src->routine_name = "passtype";
 	src->routine_detail = "dirlight";
 
 }
-void dirlight_light(
+static void dirlight_light(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -103,7 +103,7 @@ void dirlight_light(
 }
 
 
-void dirlight_ctxforwnd(struct glsrc* src)
+static void dirlight_ctxforwnd(struct glsrc* src)
 {
 	src->geometry = 3;
 	src->method = 'v';

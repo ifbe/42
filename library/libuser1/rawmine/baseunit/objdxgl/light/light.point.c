@@ -29,11 +29,13 @@ static void pointlight_create(struct entity* act, void* str)
 	struct sunbuf* sun;
 	if(0 == act)return;
 
-	sun = act->OWNBUF = memorycreate(0x1000, 0);
+	sun = act->OWNBUF = memorycreate(0x400, 0);
 	sun->u_rgb = 0x0000ff;
 	sun->rgb[0] = ((sun->u_rgb >>16) & 0xff) / 255.0;
 	sun->rgb[1] = ((sun->u_rgb >> 8) & 0xff) / 255.0;
 	sun->rgb[2] = ((sun->u_rgb >> 0) & 0xff) / 255.0;
+
+	act->LITBUF = memorycreate(0x400, 0);
 }
 
 
@@ -91,7 +93,7 @@ static void pointlight_draw(
 	else if(fmt == _json_)pointlight_draw_json(act, pin, win, sty);
 	else pointlight_draw_pixel(act, pin, win, sty);
 }
-void pointlight_light(
+static void pointlight_light(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -109,7 +111,7 @@ void pointlight_light(
 
 	src->arg[0].fmt = 'v';
 	src->arg[0].name = "sunxyz";
-	src->arg[0].data = geom->frus.vc;
+	src->arg[0].data = geom->fs.vc;
 
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "sunrgb";

@@ -45,7 +45,7 @@ GLSL_VERSION
 "}\n";
 
 
-void projector_camforfbo(struct glsrc* src)
+static void projector_camforfbo(struct glsrc* src)
 {
 }
 static void projector_camera(
@@ -69,7 +69,7 @@ static void projector_camera(
 }
 
 
-void projector_litforwnd(struct glsrc* src)
+static void projector_litforwnd(struct glsrc* src)
 {
 	src->routine_name = "passtype";
 	src->routine_detail = "projector";
@@ -78,7 +78,7 @@ void projector_litforwnd(struct glsrc* src)
 	src->tex[1].fmt = hex32('r','g','b','a');
 	src->tex[1].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(src, 1, "datafile/jpg/cartoon.jpg");
-	src->tex[1].enq += 1;
+	src->tex[1].enq = 42;
 }
 void projector_light(
 	struct entity* act, struct style* slot,
@@ -118,7 +118,7 @@ void projector_light(
 }
 
 
-void projector_ctxforwnd(struct glsrc* src)
+static void projector_ctxforwnd(struct glsrc* src)
 {
 	src->geometry = 3;
 	src->method = 'v';
@@ -150,7 +150,6 @@ static void projector_draw_vbo(
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
 	carveline_rect(ctx, 0xffffff, vc, vr, vt);
-
 
 	tt[0] = - vf[0];
 	tt[1] = - vf[1];

@@ -62,6 +62,8 @@ static void spotlight_camera(
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = &geom->frus.vc;
+
+	fbo->gl_camera[0] = act->CAMBUF;
 }
 
 
@@ -70,7 +72,7 @@ static void spotlight_litforwnd(struct glsrc* src)
 	src->routine_name = "passtype";
 	src->routine_detail = "spotlight";
 }
-void spotlight_light(
+static void spotlight_light(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -104,7 +106,7 @@ void spotlight_light(
 	src->tex[0].fmt = '!';
 	src->tex[0].enq += 1;
 
-	ctx->gl_light[0] = ctx->LITBUF;
+	ctx->gl_light[0] = act->LITBUF;
 }
 
 
@@ -247,10 +249,10 @@ static void spotlight_create(struct entity* act, void* str)
 	spotlight_camforfbo(act->CAMBUF);
 
 	act->LITBUF = memorycreate(0x400, 0);
-	spotlight_camforfbo(act->LITBUF);
+	spotlight_litforwnd(act->LITBUF);
 
 	act->CTXBUF = memorycreate(0x400, 0);
-	spotlight_camforfbo(act->CTXBUF);
+	spotlight_ctxforwnd(act->CTXBUF);
 }
 
 

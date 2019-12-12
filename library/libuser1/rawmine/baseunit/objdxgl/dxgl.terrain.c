@@ -1,6 +1,8 @@
 #include "libuser.h"
-#define PI 3.1415926535897932384626433832795028841971693993151
+#define DEPBUF buf0
+#define CTXBUF buf1
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 
@@ -110,12 +112,12 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct entity* act, struct gl
 	float f;
 	int x,y,j;
 	int x0,y0,x1,y1;
-	u8* rgba = src->tex[0].data;
 	int w = src->tex[0].w;
 	int h = src->tex[0].h;
 	float cx = (w-1) / 2.0;
 	float cy = (h-1) / 2.0;
 
+	u8* rgba = src->tex[0].data;
 	for(y=0;y<256;y++)
 	{
 		for(x=0;x<256;x++)
@@ -207,7 +209,7 @@ void terrain_locate(vec4 v, struct entity* act)
 	//
 	float val;
 	float max;
-	u8* rgba = act->buf;
+	u8* rgba = act->DEPBUF;
 	max = rgba[(w*y0 + x0)*4];
 	val = rgba[(w*y0 + x1)*4];
 	if(val > max)max = val;
@@ -220,102 +222,6 @@ void terrain_locate(vec4 v, struct entity* act)
 
 edge:
 	v[2] = 0.0;
-}
-
-
-
-
-static void terrain_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	int cx, cy, ww, hh;
-	if(sty)
-	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
-	}
-	else
-	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
-	}
-}
-static void terrain_draw_vbo(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wrd, struct style* camg,
-	struct entity* ctx, struct style* area)
-{
-	struct glsrc* src = act->buf;
-	if(0 == src)return;
-
-	float* mat = src->arg[0].data;
-	if(0 == mat)return;
-
-	void* vbuf = src->vbuf;
-	void* ibuf = src->ibuf;
-	if(0 == vbuf)return;
-	if(0 == ibuf)return;
-
-	if(0 == act->iw0){
-		act->iw0 = 42;
-
-		terrain_generate(vbuf, ibuf, act, src);
-		src->vbuf_enq += 1;
-
-		mat[ 0] = 127.5*1000.0;
-		mat[ 1] = 0.0;
-		mat[ 2] = 0.0;
-		mat[ 3] = 0.0;
-		mat[ 4] = 0.0;
-		mat[ 5] = 127.5*1000.0;
-		mat[ 6] = 0.0;
-		mat[ 7] = 0.0;
-		mat[ 8] = 0.0;
-		mat[ 9] = 0.0;
-		mat[10] = 10.0*1000.0;
-		mat[11] = 0.0;
-		mat[12] = act->fx0 * 1000.0;
-		mat[13] = act->fy0 * 1000.0;
-		mat[14] = -10000.0;
-		mat[15] = 1.0;
-	}
-}
-static void terrain_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void terrain_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void terrain_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void terrain_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void terrain_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)terrain_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)terrain_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)terrain_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)terrain_draw_json(act, pin, win, sty);
-	else terrain_draw_pixel(act, pin, win, sty);
 }
 static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
@@ -356,12 +262,150 @@ static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int
 
 
 
+void terrain_ctxforwnd(struct glsrc* src, char* str)
+{
+	src->method = 'i';
+	src->geometry = 3;
+
+	//shader
+	src->vs = terrain_glsl_v;
+	src->gs = terrain_glsl_g;
+	src->fs = terrain_glsl_f;
+	src->shader_enq = 42;
+
+	//argument
+	src->arg[0].name = "objmat";
+	src->arg[0].data = memorycreate(4*4*4, 0);
+	src->arg[0].fmt = 'm';
+
+	//texture
+	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].name = "tex0";
+	src->tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(src, 0, str);
+	src->tex[0].enq = 42;
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 4*6;
+	src->vbuf_h = 256*255;
+	src->vbuf_len = (src->vbuf_w) * 256*256;
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+	src->vbuf_enq = 42;
+
+	//index
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = 254*254*2;
+	src->ibuf_len = (src->ibuf_w) * 256*256*2;
+	src->ibuf = memorycreate(src->ibuf_len, 0);
+	src->ibuf_enq = 42;
+}
+static void terrain_draw_vbo(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* ctx, struct style* area)
+{
+	struct glsrc* src = act->CTXBUF;
+	if(0 == src)return;
+
+	float* mat = src->arg[0].data;
+	if(0 == mat)return;
+
+	void* vbuf = src->vbuf;
+	void* ibuf = src->ibuf;
+	if(0 == vbuf)return;
+	if(0 == ibuf)return;
+
+	if(0 == act->iw0){
+		act->iw0 = 42;
+
+		terrain_generate(vbuf, ibuf, act, src);
+		src->vbuf_enq += 1;
+
+		mat[ 0] = 127.5*1000.0;
+		mat[ 1] = 0.0;
+		mat[ 2] = 0.0;
+		mat[ 3] = 0.0;
+		mat[ 4] = 0.0;
+		mat[ 5] = 127.5*1000.0;
+		mat[ 6] = 0.0;
+		mat[ 7] = 0.0;
+		mat[ 8] = 0.0;
+		mat[ 9] = 0.0;
+		mat[10] = 10.0*1000.0;
+		mat[11] = 0.0;
+		mat[12] = act->fx0 * 1000.0;
+		mat[13] = act->fy0 * 1000.0;
+		mat[14] = -10000.0;
+		mat[15] = 1.0;
+	}
+	gl41data_insert(ctx, 's', act->CTXBUF, 1);
+}
+
+
+
+
+static void terrain_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
+}
+static void terrain_draw_json(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void terrain_draw_html(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void terrain_draw_tui(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void terrain_draw_cli(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void terrain_draw(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+	u64 fmt = win->fmt;
+	if(fmt == _cli_)terrain_draw_cli(act, pin, win, sty);
+	else if(fmt == _tui_)terrain_draw_tui(act, pin, win, sty);
+	else if(fmt == _html_)terrain_draw_html(act, pin, win, sty);
+	else if(fmt == _json_)terrain_draw_json(act, pin, win, sty);
+	else terrain_draw_pixel(act, pin, win, sty);
+}
+
+
+
+
 static void terrain_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam
+	//wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
-
-	//cam -> world
 	struct entity* wrd;struct style* camg;
 
 	//world -> terrain
@@ -401,16 +445,10 @@ static void terrain_modify(struct entity* act)
 static void terrain_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(0 == act->buf){
-		memorydelete(act->buf);
-		act->buf = 0;
-	}
 }
 static void terrain_create(struct entity* act, void* str)
 {
-	int j;
 	int x,y,c;
-	u8* buf;
 	u8* rgba;
 	struct glsrc* src;
 	if(0 == act)return;
@@ -419,34 +457,17 @@ static void terrain_create(struct entity* act, void* str)
 	act->fy0 = 0.0;
 	act->iw0 = 0.0;
 
-	src = act->buf = memorycreate(0x200, 0);
+	src = act->CTXBUF = memorycreate(0x200, 0);
 	if(0 == src)return;
 
-	//
-	src->method = 'i';
-	src->geometry = 3;
-
-	//shader
-	src->vs = terrain_glsl_v;
-	src->gs = terrain_glsl_g;
-	src->fs = terrain_glsl_f;
-	src->shader_enq = 42;
-
-	//argument
-	src->arg[0].name = "objmat";
-	src->arg[0].data = memorycreate(4*4*4, 0);
-	src->arg[0].fmt = 'm';
-
-	//texture
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "tex0";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";
-	loadtexfromfile(src, 0, str);
+	terrain_ctxforwnd(src, str);
+
 	if((0 == src->tex[0].w) | (0 == src->tex[0].h))
 	{
 		src->tex[0].w = 2048;
 		src->tex[0].h = 2048;
+		if(0 == src->tex[0].data)src->tex[0].data = memorycreate(2048*2048*4, 0);
 
 		rgba = src->tex[0].data;
 		for(y=0;y<2048;y++)
@@ -459,23 +480,6 @@ static void terrain_create(struct entity* act, void* str)
 			}
 		}
 	}
-	src->tex[0].enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*6;
-	src->vbuf_h = 256*255;
-	src->vbuf_len = (src->vbuf_w) * 256*256;
-	src->vbuf = memorycreate(src->vbuf_len, 0);
-	src->vbuf_enq = 42;
-
-	//index
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 254*254*2;
-	src->ibuf_len = (src->ibuf_w) * 256*256*2;
-	src->ibuf = memorycreate(src->ibuf_len, 0);
-	src->ibuf_enq = 42;
 }
 
 

@@ -1,6 +1,5 @@
 #include "libuser.h"
 #define CTXBUF buf0
-#define DATBUF buf1
 #define _cam_ hex32('c','a','m',0)
 #define _yuv_ hex32('y','u','v',0)
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
@@ -280,7 +279,7 @@ static void video_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	if(_yuv_ == self->flag){
 		say("@video_write.yuv: %llx,%x,%llx,%x\n", arg, idx, buf, len);
 
-		data = act->DATBUF;
+		data = act->CTXBUF;
 		if(0 == data)return;
 		if(0 == data->tex[0].data)return;
 

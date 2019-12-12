@@ -772,7 +772,7 @@ static void freecam_read_bywnd(struct halfrel* self, struct halfrel* peer, struc
 	struct entity* cam;struct style* gl41;
 	struct entity* act;struct style* slot;
 	struct entity* wrd;struct style* geom;
-say("@freecam_read_bywnd:%c\n",len);
+//say("@freecam_read_bywnd:%c\n",len);
 	wnd = peer->pchip;area = peer->pfoot;
 	cam = self->pchip;gl41 = self->pfoot;
 	freecam_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
@@ -789,11 +789,9 @@ say("@freecam_read_bywnd:%c\n",len);
 	}
 	if('?' == len){
 		gl41data_read(self, peer, stack, rsp+2, buf, len);
-		say("before freecam_camera\n");
 		freecam_camera(act,slot, wrd,geom, wnd,area);
-		say("after freecam_camera\n");
 	}
-say("@freecam_read_bywnd.end\n");
+//say("@freecam_read_bywnd.end\n");
 }
 static void freecam_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
@@ -803,7 +801,7 @@ static void freecam_read_bycam(struct halfrel* self, struct halfrel* peer, struc
 //world -> texball
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* slot;
-say("@freecam_read_byeye:%c\n",len);
+//say("@freecam_read_byeye:%c\n",len);
 
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
@@ -813,7 +811,7 @@ say("@freecam_read_byeye:%c\n",len);
 		act = self->pchip;slot = self->pfoot;
 		if('v' == len)freecam_draw_vbo(act,slot, wrd,geom, wnd,area);
 	}
-say("@freecam_read_byeye.end\n");
+//say("@freecam_read_byeye.end\n");
 }
 
 
@@ -822,12 +820,12 @@ say("@freecam_read_byeye.end\n");
 static void freecam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct entity* ent = peer->pchip;
-say("@freecam_read\n");
+//say("@freecam_read\n");
 	switch(ent->fmt){
 		case _gl41wnd0_:freecam_read_bywnd(self, peer, stack, rsp, buf, len);break;
 		default:        freecam_read_bycam(self, peer, stack, rsp, buf, len);break;
 	}
-say("@freecam_read.end\n");
+//say("@freecam_read.end\n");
 }
 static int freecam_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
