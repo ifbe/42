@@ -99,6 +99,8 @@ rawmine/baseunit/objpack/pack.80211.c \
 rawmine/baseunit/objpack/pack.eth.c \
 rawmine/baseunit/objpack/pack.udp.c \
 rawmine/baseunit/objpack/pack.tcp.c \
+rawmine/baseunit/objslal/mic.mono.c \
+rawmine/baseunit/objslal/mic.stereo.c \
 rawmine/baseunit/objuiux/uiux.button.c \
 rawmine/baseunit/objuiux/uiux.hex.c \
 rawmine/baseunit/objuiux/uiux.oscillo.c \

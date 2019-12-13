@@ -12,10 +12,17 @@ struct waterbuf{
 	float time;
 	u8 data[0];
 };
-void water_forfbo(struct glsrc* src)
+
+
+
+
+void water_camforfbo(struct glsrc* src)
 {
 }
-void water_forwnd(struct glsrc* src, struct waterbuf* water, char* str)
+
+
+
+void water_ctxforwnd(struct glsrc* src, struct waterbuf* water, char* str)
 {
 	src->geometry = 3;
 	src->method = 'v';
@@ -48,76 +55,6 @@ void water_forwnd(struct glsrc* src, struct waterbuf* water, char* str)
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 }
-
-
-
-
-static void water_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
-{
-	struct relation* rel;
-	struct entity* world;
-	struct fstyle* obb = 0;
-	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
-
-	rel = act->irel0;
-	while(1){
-		if(0 == rel)return;
-		world = (void*)(rel->srcchip);
-		if(_world3d_ == world->type){
-			self[0] = (void*)&rel->dstchip;
-			peer[0] = (void*)&rel->srcchip;
-			return;
-		}
-		rel = samedstnextsrc(rel);
-	}
-}
-static void water_modify(struct entity* act)
-{
-}
-static void water_delete(struct entity* act)
-{
-}
-static void water_create(struct entity* act, char* str)
-{
-	struct waterbuf* water;
-	struct glsrc* src;
-	if(0 == act)return;
-
-	water = act->CTXBUF = memorycreate(0x1000, 0);
-	if(0 == water)return;
-	src = (void*)(water->data);
-	if(0 == str)str = "datafile/jpg/dudvmap.jpg";
-	water_forwnd(src, water, str);
-
-	water = act->CAMBUF = memorycreate(0x1000, 0);
-	if(0 == water)return;
-	src = (void*)(water->data);
-	water_forfbo(src);
-}
-
-
-
-
-static void water_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	int cx, cy, ww, hh;
-	if(sty)
-	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
-	}
-	else
-	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
-	}
-}
 static void water_draw_vbo(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
@@ -132,7 +69,7 @@ static void water_draw_vbo(
 	float* vu = geom->f.vt;
 	carveline_rect(ctx, 0xffffff, vc, vr, vf);
 
-	water = act->buf0;
+	water = act->CTXBUF;
 	if(0 == water)return;
 	src = (void*)(water->data);
 	if(0 == src)return;
@@ -185,6 +122,76 @@ static void water_draw_vbo(
 
 	src->vbuf_enq += 1;
 	gl41data_insert(ctx, 'o', src, 1);
+}
+
+
+
+
+static void water_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+{
+	struct relation* rel;
+	struct entity* world;
+	struct fstyle* obb = 0;
+	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
+
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)return;
+		world = (void*)(rel->srcchip);
+		if(_world3d_ == world->type){
+			self[0] = (void*)&rel->dstchip;
+			peer[0] = (void*)&rel->srcchip;
+			return;
+		}
+		rel = samedstnextsrc(rel);
+	}
+}
+static void water_modify(struct entity* act)
+{
+}
+static void water_delete(struct entity* act)
+{
+}
+static void water_create(struct entity* act, char* str)
+{
+	struct waterbuf* water;
+	struct glsrc* src;
+	if(0 == act)return;
+
+	water = act->CTXBUF = memorycreate(0x1000, 0);
+	if(0 == water)return;
+	src = (void*)(water->data);
+	if(0 == str)str = "datafile/jpg/dudvmap.jpg";
+	water_ctxforwnd(src, water, str);
+
+	water = act->CAMBUF = memorycreate(0x1000, 0);
+	if(0 == water)return;
+	src = (void*)(water->data);
+	water_camforfbo(src);
+}
+
+
+
+
+static void water_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 }
 static void water_draw_json(
 	struct entity* act, struct style* pin,
@@ -347,7 +354,7 @@ static void water_matrix(
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = frus->vc;
-	fbo->gl_camera = (void*)(water->data);
+	fbo->gl_camera[0] = (void*)(water->data);
 }
 void water_findfbo(struct entity* act, struct style* slot, struct supply** fbo, struct style** rect)
 {

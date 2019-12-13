@@ -6,6 +6,9 @@ void finfet_register(void*);
 void hbridge_register(void*);
 void rectify_register(void*);
 
+//slal
+void monomic_register(void*);
+
 //dxgl
 //.cam
 void orthcam_register(void*);
@@ -162,6 +165,13 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 	rectify_register(tmp);
+	tmp += sizeof(struct entity);
+
+
+
+
+//----------------------slal-----------------------
+	monomic_register(tmp);
 	tmp += sizeof(struct entity);
 
 

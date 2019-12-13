@@ -37,10 +37,13 @@ GLSL_VERSION
 	"FragColor = vec4(c, 0.5);\n"
 "}\n";
 
-void glass_forfbo(struct glsrc* src)
+
+void glass_camforfbo(struct glsrc* src)
 {
 }
-void glass_forwnd(struct glsrc* src)
+
+
+void glass_ctxforwnd(struct glsrc* src)
 {
 	src->geometry = 3;
 	src->method = 'v';
@@ -61,62 +64,6 @@ void glass_forwnd(struct glsrc* src)
 
 	//texture
 	src->tex[0].name = "tex0";
-}
-
-
-
-
-static void glass_search(struct entity* act)
-{
-}
-static void glass_modify(struct entity* act)
-{
-}
-static void glass_delete(struct entity* act)
-{
-	if(0 == act)return;
-	memorydelete(act->buf);
-	act->buf = 0;
-}
-static void glass_create(struct entity* act, void* str)
-{
-	struct glassbuf* glass;
-	struct glsrc* src;
-	if(0 == act)return;
-
-	glass = act->CTXBUF = memorycreate(0x1000, 0);
-	if(0 == glass)return;
-	src = (void*)(glass->data);
-	glass_forwnd(src);
-
-	glass = act->CAMBUF = memorycreate(0x1000, 0);
-	if(0 == glass)return;
-	src = (void*)(glass->data);
-	glass_forfbo(src);
-}
-
-
-
-
-static void glass_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	int cx, cy, ww, hh;
-	if(sty)
-	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
-	}
-	else
-	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
-	}
 }
 static void glass_draw_vbo(
 	struct entity* act, struct style* slot,
@@ -182,6 +129,62 @@ static void glass_draw_vbo(
 
 	src->vbuf_enq += 1;
 	gl41data_insert(ctx, 'o', src, 1);
+}
+
+
+
+
+static void glass_search(struct entity* act)
+{
+}
+static void glass_modify(struct entity* act)
+{
+}
+static void glass_delete(struct entity* act)
+{
+	if(0 == act)return;
+	memorydelete(act->buf);
+	act->buf = 0;
+}
+static void glass_create(struct entity* act, void* str)
+{
+	struct glassbuf* glass;
+	struct glsrc* src;
+	if(0 == act)return;
+
+	glass = act->CTXBUF = memorycreate(0x1000, 0);
+	if(0 == glass)return;
+	src = (void*)(glass->data);
+	glass_ctxforwnd(src);
+
+	glass = act->CAMBUF = memorycreate(0x1000, 0);
+	if(0 == glass)return;
+	src = (void*)(glass->data);
+	glass_camforfbo(src);
+}
+
+
+
+
+static void glass_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
 }
 static void glass_draw_json(
 	struct entity* act, struct style* pin,
@@ -410,7 +413,6 @@ static void glass_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void glass_start(struct halfrel* self, struct halfrel* peer)
 {
-	say("glass_start: %.4s\n",self->flag);
 }
 
 

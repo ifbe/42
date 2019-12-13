@@ -1,15 +1,15 @@
-<supply>
-speaker{
-fmt:spk
-}
-</supply>
-
-
 <entity>
 test{
 fmt:test
 }
 </entity>
+
+
+<supply>
+speaker{
+fmt:spk
+}
+</supply>
 
 
 <relation>
