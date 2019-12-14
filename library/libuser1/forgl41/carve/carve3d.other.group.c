@@ -5,7 +5,7 @@
 
 
 
-void carvedrone_node(struct entity* win, u32 rgb,
+void carvedrone_node(struct entity* ctx, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	float j;
@@ -35,11 +35,11 @@ void carvedrone_node(struct entity* win, u32 rgb,
 	t2[0] = v2[0];
 	t2[1] = v2[1];
 	t2[2] = v2[2];
-	carveline_yshape(win, 0x204020, t0, t1, t2);
+	carveline_yshape(ctx, 0x204020, t0, t1, t2);
 	t0[2] += 16.0;
 	t1[2] += 16.0;
 	t2[2] += 16.0;
-	carveline_yshape(win, 0x204020, t0, t1, t2);
+	carveline_yshape(ctx, 0x204020, t0, t1, t2);
 
 	t0[0] = (v0[0]+v1[0])/2;
 	t0[1] = (v0[1]+v1[1])/2;
@@ -50,11 +50,11 @@ void carvedrone_node(struct entity* win, u32 rgb,
 	t2[0] = (v2[0]+v0[0])/2;
 	t2[1] = (v2[1]+v0[1])/2;
 	t2[2] = (v2[2]+v0[2])/2;
-	carveline_yshape(win, 0xffffff, t0, t1, t2);
+	carveline_yshape(ctx, 0xffffff, t0, t1, t2);
 	t0[2] += 16.0;
 	t1[2] += 16.0;
 	t2[2] += 16.0;
-	carveline_yshape(win, 0xffffff, t0, t1, t2);
+	carveline_yshape(ctx, 0xffffff, t0, t1, t2);
 
 	t0[0] = v0[0];
 	t0[1] = v0[1];
@@ -65,11 +65,11 @@ void carvedrone_node(struct entity* win, u32 rgb,
 	t2[0] = v2[0];
 	t2[1] = v2[1];
 	t2[2] = v2[2];
-	carvesolid_triangle(win, 0x808080, t0, t1, t2);
+	carvesolid_triangle(ctx, 0x808080, t0, t1, t2);
 	t0[2] += 16.0;
 	t1[2] += 16.0;
 	t2[2] += 16.0;
-	carvesolid_triangle(win, 0x808080, t0, t1, t2);
+	carvesolid_triangle(ctx, 0x808080, t0, t1, t2);
 
 	t0[0] = (v0[0]+v1[0])/2;
 	t0[1] = (v0[1]+v1[1])/2;
@@ -80,23 +80,23 @@ void carvedrone_node(struct entity* win, u32 rgb,
 	t2[0] = 0.0;
 	t2[1] = 0.0;
 	t2[2] = 0.8;
-	carvesolid_rect(win, 0x604020, t0, t1, t2);
+	carvesolid_rect(ctx, 0x604020, t0, t1, t2);
 	t0[0] = (v2[0]+v1[0])/2;
 	t0[1] = (v2[1]+v1[1])/2;
 	t0[2] = (v2[2]+v1[2])/2+8.0;
 	t1[0] = (v2[0]-v1[0])/2;
 	t1[1] = (v2[1]-v1[1])/2;
 	t1[2] = (v2[2]-v1[2])/2;
-	carvesolid_rect(win, 0x206040, t0, t1, t2);
+	carvesolid_rect(ctx, 0x206040, t0, t1, t2);
 	t0[0] = (v0[0]+v2[0])/2;
 	t0[1] = (v0[1]+v2[1])/2;
 	t0[2] = (v0[2]+v2[2])/2+8.0;
 	t1[0] = (v0[0]-v2[0])/2;
 	t1[1] = (v0[1]-v2[1])/2;
 	t1[2] = (v0[2]-v2[2])/2;
-	carvesolid_rect(win, 0x204060, t0, t1, t2);
+	carvesolid_rect(ctx, 0x204060, t0, t1, t2);
 }
-void carvedrone(struct entity* win, u32 rgb,
+void carvedrone(struct entity* ctx, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
 	int x,y;
@@ -141,7 +141,7 @@ void carvedrone(struct entity* win, u32 rgb,
 			tr[0] = 0.95*vr[0];
 			tr[1] = 0.95*vr[1];
 			tr[2] = 0.95*vr[2];
-			carvedrone_node(win, rgb, tt, tr, vu);
+			carvedrone_node(ctx, rgb, tt, tr, vu);
 
 			tc[0] = tt[0]+(vr[0]-xx[0])/2;
 			tc[1] = tt[1]+(vr[1]-xx[1])/2;
@@ -149,7 +149,7 @@ void carvedrone(struct entity* win, u32 rgb,
 			tr[0] = -0.95*vr[0];
 			tr[1] = -0.95*vr[1];
 			tr[2] = -0.95*vr[2];
-			carvedrone_node(win, rgb, tc, tr, vu);
+			carvedrone_node(ctx, rgb, tc, tr, vu);
 		}
 	}
 }
@@ -196,7 +196,7 @@ void carvesolid_propeller(struct entity* ctx, u32 rgb,
 
 
 
-void carvesnowman(struct entity* win, u32 rgb, vec3 vc)
+void carvesnowman(struct entity* ctx, u32 rgb, vec3 vc)
 {
 	vec3 tc;
 	vec3 tr;
@@ -216,14 +216,14 @@ void carvesnowman(struct entity* win, u32 rgb, vec3 vc)
 	tu[0] = 0.0;
 	tu[1] = 0.0;
 	tu[2] = 16.0;
-	carvesolid_sphere(win, 0xffffff, tc, tr, tf, tu);
+	carvesolid_sphere(ctx, 0xffffff, tc, tr, tf, tu);
 
 	//body
 	tc[2] = vc[2]+32.0;
 	tr[0] = 32.0;
 	tf[1] = 32.0;
 	tu[2] = 32.0;
-	carvesolid_sphere(win, 0xffffff, tc, tr, tf, tu);
+	carvesolid_sphere(ctx, 0xffffff, tc, tr, tf, tu);
 
 	//left hand
 	tc[0] = vc[0]-28.0;
@@ -232,13 +232,13 @@ void carvesnowman(struct entity* win, u32 rgb, vec3 vc)
 	tr[0] = 8.0;
 	tf[1] = 8.0;
 	tu[2] = 8.0;
-	carvesolid_sphere(win, 0xffffff, tc, tr, tf, tu);
+	carvesolid_sphere(ctx, 0xffffff, tc, tr, tf, tu);
 
 	//right hand
 	tc[0] = vc[0]+28.0;
 	tc[1] = vc[1];
 	tc[2] = vc[2]+28.0+32.0;
-	carvesolid_sphere(win, 0xffffff, tc, tr, tf, tu);
+	carvesolid_sphere(ctx, 0xffffff, tc, tr, tf, tu);
 }
 void carveskydome(float vbuf[][6], u16* ibuf,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
@@ -629,7 +629,7 @@ void carveskybox(float vbuf[][6], u16* ibuf,
 
 
 
-void carvesolid_bodypart(struct entity* win, u32 rgb, vec3 t0, vec3 t1)
+void carvesolid_bodypart(struct entity* ctx, u32 rgb, vec3 t0, vec3 t1)
 {
 	float n;
 	vec3 tc, tr, tf, tu;
@@ -668,107 +668,91 @@ void carvesolid_bodypart(struct entity* win, u32 rgb, vec3 t0, vec3 t1)
 	tf[1] *= n;
 	tf[2] *= n;
 
-	carvesolid_cylinder(win, rgb, tc, tr, tf, tu);
+	carvesolid_cylinder(ctx, rgb, tc, tr, tf, tu);
 }
 
 
 
 
-void carvearrorkey(struct entity* win, u32 rgb,
+void carvearrorkey(struct entity* ctx, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf,
 	u8* buf, int t)
 {
+	int j;
 	u32 c;
 	vec3 tc;
 	vec3 tr;
 	vec3 tf;
+	carveopaque_rect(ctx, 0x80808080, vc,vr,vf);
 
-	carveopaque_circle(win, 0x7f404040, vc, vr, vf);
-	tr[0] = vr[0]/3;
-	tr[1] = vr[1]/3;
-	tr[2] = vr[2]/3;
-	tf[0] = vf[0]/3;
-	tf[1] = vf[1]/3;
-	tf[2] = vf[2]/3;
+	//carveopaque_circle(ctx, 0x7f404040, vc, vr, vf);
+	for(j=0;j<4;j++){
+		tr[j] = vr[j]/4;
+		tf[j] = vf[j]/4;
+	}
 
 	//x-: left
 	if(buf[0]&0x80)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	tc[0] = vc[0]-vr[0]*2/3;
-	tc[1] = vc[1]-vr[1]*2/3;
-	tc[2] = vc[2]-vr[2]*2/3-0.1;
-	carveopaque_circle(win, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(t-2)/4 -vf[j]*1/4;
+	carveopaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += 0.1;
-	carveascii(win, 0xffffff, tc, tr, tf, buf[0]&0x7f);
+	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[0]&0x7f);
 		
 
 	//x+: right
 	if(buf[1]&0x80)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	tc[0] = vc[0]+vr[0]*2/3;
-	tc[1] = vc[1]+vr[1]*2/3;
-	tc[2] = vc[2]+vr[2]*2/3-0.1;
-	carveopaque_circle(win, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(t+2)/4 -vf[j]*1/4;
+	carveopaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += 0.1;
-	carveascii(win, 0xffffff, tc, tr, tf, buf[1]&0x7f);
+	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[1]&0x7f);
 
 	//y-: near
 	if(buf[2]&0x80)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	tc[0] = vc[0]-vf[0]*2/3;
-	tc[1] = vc[1]-vf[1]*2/3;
-	tc[2] = vc[2]-vf[2]*2/3-0.1;
-	carveopaque_circle(win, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*t/4 -vf[j]*3/4;
+	carveopaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += -0.1;
-	carveascii(win, 0xffffff, tc, tr, tf, buf[2]&0x7f);
+	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[2]&0x7f);
 
 	//y+: far
 	if(buf[3]&0x80)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	tc[0] = vc[0]+vf[0]*2/3;
-	tc[1] = vc[1]+vf[1]*2/3;
-	tc[2] = vc[2]+vf[2]*2/3-0.1;
-	carveopaque_circle(win, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*t/4 +vf[j]*1/4;
+	carveopaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += 0.1;
-	carveascii(win, 0xffffff, tc, tr, tf, buf[3]&0x7f);
+	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[3]&0x7f);
 
 	//z-: trigger
 	if(buf[4]&0x80)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	tc[0] = vc[0]-vr[0]*2/3+vf[0]*4/3;
-	tc[1] = vc[1]-vr[1]*2/3+vf[1]*4/3;
-	tc[2] = vc[2]-vr[2]*2/3+vf[2]*4/3-0.1;
-	carveopaque_circle(win, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(t-2)/4 +vf[j]*3/4;
+	carveopaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += 0.1;
-	carveascii(win, 0xffffff, tc, tr, tf, buf[4]&0x7f);
+	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[4]&0x7f);
 
 	//z+: bumper
 	if(buf[5]&0x80)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	tc[0] = vc[0]+vr[0]*2/3+vf[0]*4/3;
-	tc[1] = vc[1]+vr[1]*2/3+vf[1]*4/3;
-	tc[2] = vc[2]+vr[2]*2/3+vf[2]*4/3-0.1;
-	carveopaque_circle(win, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(t+2)/4 +vf[j]*3/4;
+	carveopaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += 0.1;
-	carveascii(win, 0xffffff, tc, tr, tf, buf[5]&0x7f);
+	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[5]&0x7f);
 
 	//press
 	if(buf[6]&0x80)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	tc[0] = vc[0];
-	tc[1] = vc[1];
-	tc[2] = vc[2]-0.1;
-	carveopaque_circle(win, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*t/4 -vf[j]*1/4;
+	carveopaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += 0.1;
-	carveascii(win, 0xffffff, tc, tr, tf, buf[6]&0x7f);
+	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[6]&0x7f);
 
 	//select or start
 	if(buf[7]&0x80)c = 0x7fff00ff;
 	else c = 0x7f808080;
-	tc[0] = vc[0]+vr[0]*t*4/3+vf[0]*2/3;
-	tc[1] = vc[1]+vr[1]*t*4/3+vf[1]*2/3;
-	tc[2] = vc[2]+vr[2]*t*4/3+vf[2]*2/3-0.1;
-	carveopaque_circle(win, c, tc, tr, tf);
+	for(j=0;j<3;j++)tc[j] = vc[j] -vr[j]*t*3/4 +vf[j]*1/4;
+	carveopaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += 0.1;
-	carveascii(win, 0xffffff, tc, tr, tf, buf[7]&0x7f);
+	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[7]&0x7f);
 }

@@ -1,4 +1,41 @@
 #include "libuser.h"
+void gl41data_before(struct entity* wnd);
+void gl41data_after(struct entity* wnd);
+void gl41data_tmpcam(struct entity* wnd);
+
+
+
+
+static int vkbd_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+{
+	struct relation* rel;
+	struct entity* world;
+
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)break;
+		world = (void*)(rel->srcchip);
+		if(_world3d_ == world->type){
+			self[0] = (void*)&rel->dstchip;
+			peer[0] = (void*)&rel->srcchip;
+			return 1;
+		}
+		rel = samedstnextsrc(rel);
+	}
+	return 0;
+}
+static int vkbd_modify(struct entity* win)
+{
+	return 0;
+}
+static int vkbd_delete(struct entity* win)
+{
+	return 0;
+}
+static int vkbd_create(struct entity* win, u8* str)
+{
+	return 0;
+}
 
 
 
@@ -65,61 +102,32 @@ void vkbd_draw_pixel(struct entity* win, struct style* sty)
         }
     }
 }
-void vkbd_draw_vbo(struct entity* win, struct style* sty)
+void vkbd_draw_vbo(
+	struct entity* act, struct style* part,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
-	u8 ch[8];
-	float j,k;
-	vec3 vc;
-	vec3 vr;
-	vec3 vf;
-	int x,y,c,rgb;
-	int w = win->width;
-	int h = win->height;
-/*
-	if(win->vkbdw < 0)return;
-	c = win->vkbdw;
-	if(('j' == c)|('k' == c))
-	{
-		vc[0] = 0.0;
-		vc[1] = -0.75;
-		vc[2] = -0.5;
-		vr[0] = 1.0;
-		vr[1] = 0.0;
-		vr[2] = 0.0;
-		vf[0] = 0.0;
-		vf[1] = 0.25;
-		vf[2] = 0.0;
-		carvesolid2d_rect(win, 0x202020, vc, vr, vf);
-	}
-*/
-    if(w<h)x = w/17;
-    else x = h/17;
-    j = (float)x / (float)w;
-    k = (float)x / (float)h;
+	int x,y,j;
+    int c,rgb;
+	vec3 tc,tr,tf;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+    //carveopaque_rect(wnd, 0x800000ff, vc, vr, vf);
 
     for(y=0;y<8;y++)
     {
         for(x=0;x<16;x++)
         {
+            for(j=0;j<3;j++){
+                tr[j] = vr[j]/17;
+                tf[j] = vf[j]/8.5;
+                tc[j] = vc[j] + vr[j]*(x-7.5)/8.0 + vf[j]*(y-3.5)/4.0;
+            }
+            carveopaque_rect(wnd, 0x80808080, tc, tr, tf);
+
             c = x+(y<<4);
-            //if(c == (win->vkbdz))rgb = 0xff00ff;
-            //else rgb = 0x808080;
-			rgb = 0x80808080;
-
-            vc[0] = (x-7.5)/8.0;
-            vc[1] = (y-15.5)/16.0;
-            vc[2] = -0.9;
-            vr[0] = 1.0/17;
-            vr[1] = 0.0;
-            vr[2] = 0.0;
-            vf[0] = 0.0;
-            vf[1] = 0.5/17;
-            vf[2] = 0.0;
-            carveopaque_rect(win, rgb, vc, vr, vf);
-
-            vc[2] = -0.91;
-            vr[0] = j;
-            vf[1] = k/2;
             if((0==c)|(7==c)|(8==c)|(9==c)|(0xa==c)|(0xd==c))
             {
                 if(0x0 == c)c = '0';
@@ -128,15 +136,9 @@ void vkbd_draw_vbo(struct entity* win, struct style* sty)
                 else if(0x9 == c)c = 't';
                 else if(0xa == c)c = 'n';
                 else if(0xd == c)c = 'r';
-                vc[0] = (x-7.5)/8.0+j;
-                vc[1] = (y-15.5)/16.0;
-                carveascii(win, 0xffffff, vc, vr, vf, c);
-                c = '\\';
             }
 
-            vc[0] = (x-7.5)/8.0;
-            vc[1] = (y-15.5)/16.0;
-            carveascii(win, 0xffffff, vc, vr, vf, c);
+            carveascii_center(wnd, 0xffffff, tc, tr, tf, c);
         }
     }
 }
@@ -158,7 +160,6 @@ static void vkbd_draw(
 	if(fmt == _cli_)vkbd_draw_cli(win, sty);
 	else if(fmt == _tui_)vkbd_draw_tui(win, sty);
 	else if(fmt == _html_)vkbd_draw_html(win, sty);
-	else if(fmt == _vbo_)vkbd_draw_vbo(win, sty);
 	else vkbd_draw_pixel(win, sty);
 }
 static int vkbd_event(
@@ -190,14 +191,42 @@ static int vkbd_event(
 
 
 
-static void vkbd_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void vkbd_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//vkbd_draw(act, pin, win, sty);
+//wnd.area -> cam.gl41, cam.slot -> world.geom
+    int ret;
+	struct entity* wnd;struct style* area;
+	struct entity* cam;struct style* gl41;
+	struct entity* act;struct style* slot;
+	struct entity* wrd;struct style* geom;
+
+	wnd = peer->pchip;area = peer->pfoot;
+	cam = self->pchip;gl41 = self->pfoot;
+	ret = vkbd_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
+    if(ret > 0){
+	    act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
+    	wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
+        vkbd_draw_vbo(act, slot, wrd,geom, wnd,area);
+        return;
+    }
+    else{
+        struct fstyle fs;
+        fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+        fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+        fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+        gl41data_before(wnd);
+        vkbd_draw_vbo(cam, 0, 0,(void*)&fs, wnd,area);
+        gl41data_after(wnd);
+
+        gl41data_tmpcam(wnd);
+    }
+}
+static void vkbd_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+{
+	struct entity* ent = peer->pchip;
+	switch(ent->fmt){
+		case _gl41wnd0_:vkbd_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
 }
 static int vkbd_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
@@ -214,26 +243,6 @@ static int vkbd_stop(struct halfrel* self, struct halfrel* peer)
 	return 0;
 }
 static int vkbd_start(struct halfrel* self, struct halfrel* peer)
-{
-	return 0;
-}
-
-
-
-
-static int vkbd_search(struct entity* win)
-{
-	return 0;
-}
-static int vkbd_modify(struct entity* win)
-{
-	return 0;
-}
-static int vkbd_delete(struct entity* win)
-{
-	return 0;
-}
-static int vkbd_create(struct entity* win, u8* str)
 {
 	return 0;
 }

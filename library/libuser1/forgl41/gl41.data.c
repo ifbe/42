@@ -3,6 +3,37 @@
 
 
 
+void gl41data_tmpcam(struct entity* wnd)
+{
+    int x,y;
+    void* trick = wnd->gl_camera;
+    struct gl41data* data = trick + 0x400;
+    float (*m)[4] = trick + 0x800;
+    float* v = trick + 0xc00;
+    for(y=0;y<4;y++){
+        for(x=0;x<4;x++){
+            if(x == y)m[y][x] = 1.0;
+            else m[y][x] = 0.0;
+        }
+        v[y] = 0.0;
+    }
+
+    data->src.arg[0].fmt = 'm';
+    data->src.arg[0].name = "cammvp";
+    data->src.arg[0].data = m;
+    data->src.arg[1].fmt = 'v';
+    data->src.arg[1].name = "camxyz";
+    data->src.arg[1].data = v;
+    wnd->gl_camera[0] = data;
+}
+void gl41data_tmplit(struct entity* wnd)
+{
+    int x,y;
+    void* trick = wnd->gl_light;
+    struct gl41data* data = trick + 0x400;
+    float (*m)[4] = trick + 0x800;
+    float* v = trick + 0xc00;
+}
 void gl41data_before(struct entity* ctx)
 {
 	int j;
