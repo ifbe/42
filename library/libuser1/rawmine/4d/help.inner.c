@@ -1,13 +1,17 @@
 #include "libuser.h"
-//chip
-void vsrc_register(void*);
-void resistor_register(void*);
+//chip.baseunit
 void finfet_register(void*);
+void resistor_register(void*);
+void vsrc_register(void*);
+//chip.compound
+void nand_register(void*);
+void nor_register(void*);
 void hbridge_register(void*);
 void rectify_register(void*);
 
 //slal
 void monomic_register(void*);
+void stereo_register(void*);
 
 //dxgl
 //.cam
@@ -151,7 +155,7 @@ void content_create(void* addr)
 
 
 
-//-------------------chip-----------------
+//-------------------chip.baseunit-----------------
 	vsrc_register(tmp);
 	tmp += sizeof(struct entity);
 
@@ -159,6 +163,16 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 	finfet_register(tmp);
+	tmp += sizeof(struct entity);
+
+
+
+
+//-------------------chip.baseunit-----------------
+	nand_register(tmp);
+	tmp += sizeof(struct entity);
+
+	nor_register(tmp);
 	tmp += sizeof(struct entity);
 
 	hbridge_register(tmp);
@@ -172,6 +186,9 @@ void content_create(void* addr)
 
 //----------------------slal-----------------------
 	monomic_register(tmp);
+	tmp += sizeof(struct entity);
+
+	stereo_register(tmp);
 	tmp += sizeof(struct entity);
 
 

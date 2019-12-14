@@ -1,0 +1,24 @@
+<entity>
+stereo{
+fmt:stereo
+}
+</entity>
+
+
+<supply>
+speaker{
+fmt:spk
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<relation>
+(speaker, 0, 0) -> (stereo, 0, 0)
+</relation>

@@ -7,12 +7,7 @@ static void chippin_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-}/*
-static void chippin_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}*/
+}
 static void chippin_draw_vbo3d(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -47,11 +42,6 @@ static void chippin_draw(
 	else if(fmt == _tui_)chippin_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)chippin_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)chippin_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)chippin_draw_vbo2d(act, pin, win, sty);
-		//else chippin_draw_vbo3d(act, pin, win, sty);
-	}
 	else chippin_draw_pixel(act, pin, win, sty);
 }
 
