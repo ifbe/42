@@ -46,11 +46,6 @@ rawmine/baseunit/objchip/chip.resistor.c \
 rawmine/baseunit/objchip/chip.bjt.c \
 rawmine/baseunit/objchip/chip.finfet.c \
 rawmine/baseunit/objchip/chip.diode.c \
-rawmine/baseunit/objchip/chip.ff.c \
-rawmine/baseunit/objchip/chip.and.c \
-rawmine/baseunit/objchip/chip.xor.c \
-rawmine/baseunit/objchip/chip.hbridge.c \
-rawmine/baseunit/objchip/chip.rectifier.c \
 rawmine/baseunit/objcode/code.call.c \
 rawmine/baseunit/objcode/code.for.c \
 rawmine/baseunit/objcode/code.if.c \
@@ -111,6 +106,13 @@ rawmine/baseunit/objuiux/uiux.voxel.c \
 rawmine/baseunit/objuiux/uiux.joystick.c \
 rawmine/baseunit/objuiux/uiux.keyboard.c \
 rawmine/baseunit/objuiux/uiux.picture.c \
+rawmine/compound/thechip/chip.nand.c \
+rawmine/compound/thechip/chip.and.c \
+rawmine/compound/thechip/chip.nor.c \
+rawmine/compound/thechip/chip.or.c \
+rawmine/compound/thechip/chip.hbridge.c \
+rawmine/compound/thechip/chip.rectifier.c \
+rawmine/compound/thechip/chip.flipflop.c \
 rawmine/compound/thedxgl/cam.1rd.c \
 rawmine/compound/thedxgl/cam.3rd.c \
 rawmine/compound/thedxgl/cam.rts.c \

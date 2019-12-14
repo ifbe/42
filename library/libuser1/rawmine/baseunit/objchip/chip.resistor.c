@@ -7,16 +7,21 @@ static void resistor_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-}/*
-static void resistor_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+}
+static void resistor_draw_vbo(
+	struct entity* act, struct style* slot,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
-}*/
-static void resistor_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
+	int j;
+	vec3 tc,tr,tf,tt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+
+	for(j=0;j<3;j++)tc[j] = vc[j];
+	carvesolid_prism4(wnd, 0x808080, vc, vr, vf, vt);
 }
 static void resistor_draw_json(
 	struct entity* act, struct style* pin,
@@ -47,30 +52,30 @@ static void resistor_draw(
 	else if(fmt == _tui_)resistor_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)resistor_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)resistor_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)resistor_draw_vbo2d(act, pin, win, sty);
-		//else resistor_draw_vbo3d(act, pin, win, sty);
-	}
 	else resistor_draw_pixel(act, pin, win, sty);
 }
 
 
 
 
-static void resistor_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void resistor_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* tmp = buf;
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+//world -> resistor
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* slot;
 
-	switch(tmp->type){
-		case _hoffdata_:say("@resistor_read:%llx %.4s <-> %llx %.4s\n", act, &self->flag, win, &peer->flag);break;
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		win = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len){
+			resistor_draw_vbo(act,slot, win,geom, wnd,area);
+		}
 	}
-	//resistor_draw(act, pin, win, sty);
 }
 static void resistor_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
