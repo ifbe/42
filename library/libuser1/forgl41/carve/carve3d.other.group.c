@@ -686,7 +686,7 @@ void carvearrorkey(struct entity* ctx, u32 rgb,
 	carveopaque_rect(ctx, 0x80808080, vc,vr,vf);
 
 	//carveopaque_circle(ctx, 0x7f404040, vc, vr, vf);
-	for(j=0;j<4;j++){
+	for(j=0;j<3;j++){
 		tr[j] = vr[j]/4;
 		tf[j] = vf[j]/4;
 	}
