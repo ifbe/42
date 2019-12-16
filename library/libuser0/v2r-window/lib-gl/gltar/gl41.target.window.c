@@ -34,11 +34,12 @@ int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 	//say("@gl41wnd0_read\n");
 	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
 
+	wnd = self->pchip;
+	glViewport(0, 0, wnd->fbwidth, wnd->fbheight);
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//foreach camera: 
-	wnd = self->pchip;
 	rel = wnd->orel0;
 	while(1){
 		if(0 == rel)break;

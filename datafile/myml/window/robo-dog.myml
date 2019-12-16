@@ -36,6 +36,10 @@ freerect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
+thatrect{
+c:0.0, 0.3
+q:0.3, 0.4
+}
 </style>
 
 
@@ -51,6 +55,9 @@ fmt:3rdcam
 }
 3dworld{
 fmt:3dworld
+}
+slider{
+fmt:slider
 }
 </entity>
 
@@ -95,6 +102,7 @@ fmt:poller
 
 
 <relation>
+(dog, 0, int) -> (slider, 0, ev)
 (dog, 0, 0) -> (freecam, 0, tar)
 
 #3dworld depends on inner objects
@@ -103,7 +111,8 @@ fmt:poller
 (3dworld, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
-(thewnd, freerect, mvp) -> (freecam, 0, 0)
+(thewnd, freerect, 0) -> (freecam, 0, 0)
+(thewnd, thatrect, 0) -> (slider, 0, 0)
 
 #opengl depends on wnd
 (opengl, 0, wnd) -> (thewnd, 0, 0)

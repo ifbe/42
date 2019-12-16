@@ -1,0 +1,197 @@
+#include "libuser.h"
+#define LISTBUF buf0
+void gl41data_before(struct entity* wnd);
+void gl41data_after(struct entity* wnd);
+void gl41data_tmpcam(struct entity* wnd);
+
+
+
+
+static int slider_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+{
+	struct relation* rel;
+	struct entity* world;
+
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)break;
+		world = (void*)(rel->srcchip);
+		if(_world3d_ == world->type){
+			self[0] = (void*)&rel->dstchip;
+			peer[0] = (void*)&rel->srcchip;
+			return 1;
+		}
+		rel = samedstnextsrc(rel);
+	}
+	return 0;
+}
+static int slider_modify(struct entity* act)
+{
+	return 0;
+}
+static int slider_delete(struct entity* act)
+{
+	return 0;
+}
+static int slider_create(struct entity* act, u8* str)
+{
+	int j;
+	int* list;
+
+	list = act->LISTBUF = memorycreate(0x1000, 0);
+	for(j=0;j<12;j++)list[j] = 50;
+	return 0;
+}
+
+
+
+
+
+void slider_draw_vbo(
+	struct entity* act, struct style* part,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	int x,y,j;
+	int c,rgb;
+	vec3 tc,tr,tf;
+	int* list;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+	carveopaque_rect(wnd, 0x80404040, vc, vr, vf);
+
+	list = act->LISTBUF;
+	for(y=0;y<12;y++){
+		for(j=0;j<3;j++){
+			tc[j] = vc[j] -vr[j]*0.8 +vf[j]*(5.5-y)/6;
+			tr[j] = tc[j] +vr[j]*1.6;
+		}
+		carveline(wnd, 0, tc, tr);
+
+		for(j=0;j<3;j++){
+			tc[j] = vc[j] +vr[j]*0.8*(list[y]-50)/50.0 +vf[j]*(5.5-y)/6;
+			tr[j] = vr[j]/20;
+			tf[j] = vf[j]/20;
+		}
+		carveopaque_rect(wnd, 0x80808080, tc,tr,tf);
+		carveascii_center(wnd, 0xffffff, tc,tr,tf, 0x30 + list[y]/10);
+	}
+}
+void slider_event(struct entity* act, int x, int y)
+{
+	int* list = act->LISTBUF;
+	say("%d,%d\n", x, y);
+
+	list[y] = x;
+	relationwrite(act, _ev_, 0, 0, list, 12);
+}
+
+
+
+
+static void slider_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+//wnd.area -> cam.gl41, cam.slot -> world.geom
+	int ret;
+	struct entity* wnd;struct style* area;
+	struct entity* cam;struct style* gl41;
+	wnd = peer->pchip;area = peer->pfoot;
+	cam = self->pchip;gl41 = self->pfoot;
+
+	ret = slider_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
+	if(ret > 0){
+		struct entity* act;struct style* slot;
+		struct entity* wrd;struct style* geom;
+		act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
+		wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
+		slider_draw_vbo(act, slot, wrd,geom, wnd,area);
+	}
+	else{
+		struct fstyle fs;
+		fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+		fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+		fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+		gl41data_before(wnd);
+		slider_draw_vbo(cam, 0, 0,(void*)&fs, wnd,area);
+		gl41data_after(wnd);
+
+		gl41data_tmpcam(wnd);
+	}
+}
+static void slider_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	struct entity* wnd;struct style* area;
+	struct entity* cam;struct style* gl41;
+	wnd = peer->pchip;area = peer->pfoot;
+	cam = self->pchip;gl41 = self->pfoot;
+	//say("@slider_write_bywnd\n");
+
+	struct event* ev = buf;
+	if('p' == (ev->what&0xff)){
+		int ww,hh,x0,y0,dx,dy;
+		ww = wnd->width;hh = wnd->height;
+		x0 = ww * area->fs.vc[0];y0 = hh * area->fs.vc[1];
+		dx = ww * area->fs.vq[0];dy = hh * area->fs.vq[1];
+
+		short* aa = buf;
+		int x = (aa[0]-x0)*10000/dx;
+		int y = (hh-1-aa[1]-y0)*12/dy;
+		x = (x-1000)/80;
+		if(x<0)x = 0;
+		if(x>100)x = 100;
+		y = 11-y;
+
+		if(0x2b70 == ev->what)cam->iw0 = 1;
+		if(0x2d70 == ev->what)cam->iw0 = 0;
+		if((y>=0)&&(y<=11)&&cam->iw0)slider_event(cam, x, y);
+	}
+}
+
+
+
+
+static int slider_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+{
+	struct entity* ent = peer->pchip;
+	switch(ent->fmt){
+		case _gl41wnd0_:slider_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
+	return 0;
+}
+static int slider_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+{
+	struct entity* ent = peer->pchip;
+	switch(ent->fmt){
+		case _gl41wnd0_:slider_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
+	return 0;
+}
+static int slider_stop(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+static int slider_start(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+
+
+
+
+void slider_register(struct entity* p)
+{
+	p->type = _orig_;
+	p->fmt = hex64('s','l','i','d','e','r', 0, 0);
+
+	p->oncreate = (void*)slider_create;
+	p->ondelete = (void*)slider_delete;
+	p->onsearch = (void*)slider_search;
+	p->onmodify = (void*)slider_modify;
+
+	p->onstart = (void*)slider_start;
+	p->onstop  = (void*)slider_stop;
+	p->onread  = (void*)slider_read;
+	p->onwrite = (void*)slider_write;
+}

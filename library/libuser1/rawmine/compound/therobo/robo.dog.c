@@ -1,5 +1,5 @@
 #include "libuser.h"
-#define PI 3.1415926535897932384626433832795028841971693993151
+#define _int_ hex32('i','n','t',0)
 
 
 
@@ -169,6 +169,22 @@ static void robodog_draw(
 
 
 
+void robodog_write_float(struct entity* act, float* src, int len)
+{
+	int j;
+	float* dst = act->buf0;
+	for(j=0;j<12;j++)dst[j] = src[j];
+}
+void robodog_write_int(struct entity* act, int* src, int len)
+{
+	int j;
+	float* dst = act->buf0;
+	for(j=0;j<12;j++)dst[j] = src[j]*PI/50.0;
+}
+
+
+
+
 //-4: wnd, area
 //-3: cam, 0
 //-2: cam, 0
@@ -195,16 +211,12 @@ static void robodog_read(struct halfrel* self, struct halfrel* peer, struct half
 }
 static void robodog_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	int j;
 	struct entity* act;
-	float* dst;
-	float* src;
 	say("robodog_write\n");
 
 	act = self->pchip;
-	dst = act->buf0;
-	src = buf;
-	for(j=0;j<12;j++)dst[j] = src[j];
+	if(_int_ == self->flag)robodog_write_int(act,buf,len);
+	else robodog_write_float(act,buf,len);
 }
 static void robodog_stop(struct halfrel* self, struct halfrel* peer)
 {

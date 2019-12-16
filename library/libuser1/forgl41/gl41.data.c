@@ -109,62 +109,7 @@ void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt)
 			}
 		}
 	}
-}/*
-void* gl41data_alloc(struct entity* ctx, int type)
-{
-	int j;
-	struct datapair* pair;
-
-	if('s' == type){
-		pair = ctx->gl_solid;
-		if(0 == pair)return 0;
-
-		for(j=solidaid_max;j<64;j++){
-			if(0 == pair[j].src.vbuf)return &pair[j];
-		}
-	}
-	if('o' == type){
-		pair = ctx->gl_opaque;
-		if(0 == pair)return 0;
-
-		for(j=opaqueaid_max;j<64;j++){
-			if(0 == pair[j].src.vbuf)return &pair[j];
-		}
-	}
-	return 0;
 }
-void gl41data_copy(struct entity* ctx, struct style* geom, struct style* part)
-{
-	int j,k;
-	struct glsrc* data;
-	u8* src;
-	u8* dst;
-	if(0 == part)return;
-	if(0 == geom)return;
-
-	for(j=0;j<4;j++){
-		src = (void*)(part->data[j]);
-		if(0 == src)return;
-
-		//
-		dst = (void*)(geom->data[j]);
-		if(0 == dst){
-			data = (void*)src;
-			if(data->opaque)dst = gl41data_alloc(ctx, 'o');
-			else dst = gl41data_alloc(ctx, 's');
-			if(0 == dst)return;
-
-			geom->data[j] = (u64)dst;
-			say("new: %llx\n", src, dst);
-		}
-
-		//copy
-		for(k=0;k<sizeof(struct glsrc);k++)dst[k] = src[k];
-		//printmemory(dst, 0x200);
-	}
-//struct datapair* srcpair = (void*)src;
-//say("6666@method=%x, geom=%x, ibuf_h=%x\n", srcpair->src.method, srcpair->src.geometry, srcpair->src.ibuf_h);
-}*/
 
 
 
@@ -270,8 +215,6 @@ int gl41data_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 
 	if(0x4070 == ev->what){
 		rel = wnd->oreln;
-		if(0 == rel)return 0;
-
 		while(1){
 			if(0 == rel)return 0;
 			sty = rel->psrcfoot;
@@ -282,7 +225,7 @@ int gl41data_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 
 			v = (short*)ev;
 			x = v[0];
-			y = wnd->height-v[1];
+			y = (wnd->height-1) - v[1];
 			if( (x>x0) && (x<xn) && (y>y0) && (y<yn) )goto found;
 			rel = samesrcprevdst(rel);
 		}
@@ -290,7 +233,7 @@ int gl41data_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 	}
 	else{
 		rel = wnd->buf;
-		if(0 == rel)rel = wnd->orel0;
+		if(0 == rel)rel = wnd->oreln;
 		if(0 == rel)return 0;
 	}
 
@@ -299,31 +242,6 @@ found:
 	stack[rsp+0] = (void*)(rel->src);	//wnd,area
 	stack[rsp+1] = (void*)(rel->dst);	//cam,gl41
 	entitywrite(stack[rsp+1], stack[rsp+0], stack, rsp+4, buf, len);
-
-/*	struct entity* ctx;
-	struct entity* cam;
-	struct relation* rel;
-	//say("@gl41data_write\n");
-
-	ctx = self->pchip;
-	if(0 == ctx)return 0;
-
-	rel = ctx->orel0;
-	while(1){
-		if(0 == rel)break;
-
-		if(_ent_ == rel->dsttype){
-		if(stack[rsp-1]->flag == rel->srcflag){
-			cam = rel->pdstchip;
-			//get matrix
-			stack[rsp+0] = (void*)(rel->src);
-			stack[rsp+1] = (void*)(rel->dst);
-			gl41data_write_event(ctx, cam, stack, rsp+2, buf, len);
-		}//found camera
-		}//correct type
-
-		rel = samesrcnextdst(rel);
-	}*/
 	return 0;
 }
 int gl41data_stop(struct halfrel* self, struct halfrel* peer)

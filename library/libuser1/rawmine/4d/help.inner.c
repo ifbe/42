@@ -132,6 +132,7 @@ void pointer_register(void*);
 void camman_register(void*);
 void picker_register(void*);
 //.body
+void slider_register(void*);
 void tabbar_register(void*);
 //.vkbd
 void vjoy_register(void*);
@@ -517,6 +518,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 //.body
+	slider_register(tmp);
+	tmp += sizeof(struct entity);
+
 	tabbar_register(tmp);
 	tmp += sizeof(struct entity);
 

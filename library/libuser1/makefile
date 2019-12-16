@@ -114,6 +114,7 @@ rawmine/baseunit/objuiux/uiux.voxel.c \
 rawmine/baseunit/objuiux/uiux.joystick.c \
 rawmine/baseunit/objuiux/uiux.keyboard.c \
 rawmine/baseunit/objuiux/uiux.picture.c \
+rawmine/baseunit/objuiux/uiux.slider.c \
 rawmine/compound/thechip/chip.acdc.hbridge.c \
 rawmine/compound/thechip/chip.acdc.rectifier.c \
 rawmine/compound/thechip/chip.gate.nand.c \
