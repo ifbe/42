@@ -434,6 +434,25 @@ int tlsmaster_start(struct halfrel* self, struct halfrel* peer);
 int tlsmaster_stop( struct halfrel* self, struct halfrel* peer);
 int tlsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tlsmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+//fuckgfw
+int fuckgfwclient_create(struct element* ele, void* url, int argc, u8** argv);
+int fuckgfwclient_delete(struct element* ele, void* url);
+int fuckgfwclient_start(struct halfrel* self, struct halfrel* peer);
+int fuckgfwclient_stop( struct halfrel* self, struct halfrel* peer);
+int fuckgfwclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int fuckgfwclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int fuckgfwserver_create(struct element* ele, void* url, int argc, u8** argv);
+int fuckgfwserver_delete(struct element* ele, void* url);
+int fuckgfwserver_start(struct halfrel* self, struct halfrel* peer);
+int fuckgfwserver_stop( struct halfrel* self, struct halfrel* peer);
+int fuckgfwserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int fuckgfwserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int fuckgfwmaster_create(struct element* ele, void* url, int argc, u8** argv);
+int fuckgfwmaster_delete(struct element* ele, void* url);
+int fuckgfwmaster_start(struct halfrel* self, struct halfrel* peer);
+int fuckgfwmaster_stop( struct halfrel* self, struct halfrel* peer);
+int fuckgfwmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int fuckgfwmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.serve
 int serveclient_create(struct element* ele, void* url, int argc, u8** argv);
 int serveclient_delete(struct element* ele, void* url);
@@ -534,6 +553,9 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _SOCKS_:socksmaster_read(self, peer, arg, idx, buf, len);break;
 		case _Socks_:socksserver_read(self, peer, arg, idx, buf, len);break;
 		case _socks_:socksclient_read(self, peer, arg, idx, buf, len);break;
+		case _FUCKGFW_:fuckgfwmaster_read(self, peer, arg, idx, buf, len);break;
+		case _Fuckgfw_:fuckgfwserver_read(self, peer, arg, idx, buf, len);break;
+		case _fuckgfw_:fuckgfwclient_read(self, peer, arg, idx, buf, len);break;
 
 		case _HTTP_:httpmaster_read(self, peer, arg, idx, buf, len);break;
 		case _Http_:httpserver_read(self, peer, arg, idx, buf, len);break;
@@ -595,7 +617,10 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _SOCKS_:return socksmaster_write(self, peer, arg, idx, buf, len);break;
 		case _Socks_:return socksserver_write(self, peer, arg, idx, buf, len);break;
 		case _socks_:return socksclient_write(self, peer, arg, idx, buf, len);break;
-	
+		case _FUCKGFW_:return fuckgfwmaster_write(self, peer, arg, idx, buf, len);break;
+		case _Fuckgfw_:return fuckgfwserver_write(self, peer, arg, idx, buf, len);break;
+		case _fuckgfw_:return fuckgfwclient_write(self, peer, arg, idx, buf, len);break;
+
 		case _HTTP_:return httpmaster_write(self, peer, arg, idx, buf, len);break;
 		case _Http_:return httpserver_write(self, peer, arg, idx, buf, len);break;
 		case _http_:return httpclient_write(self, peer, arg, idx, buf, len);break;
@@ -982,7 +1007,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _HACK_;
-		if(url)hackserver_create(e, url, argc, argv);
+		hackserver_create(e, url, argc, argv);
 		return e;
 	}
 	if(_hack_ == type)
@@ -991,7 +1016,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _hack_;
-		if(url)hackclient_create(e, url, argc, argv);
+		hackclient_create(e, url, argc, argv);
 		return e;
 	}
 	if(_PROXY_ == type)
@@ -1000,7 +1025,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _PROXY_;
-		if(url)proxymaster_create(e, url, argc, argv);
+		proxymaster_create(e, url, argc, argv);
 		return e;
 	}
 	if(_Proxy_ == type)
@@ -1009,7 +1034,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _Proxy_;
-		if(url)proxyserver_create(e, url, argc, argv);
+		proxyserver_create(e, url, argc, argv);
 		return e;
 	}
 	if(_proxy_ == type)
@@ -1018,7 +1043,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _proxy_;
-		if(url)proxyclient_create(e, url, argc, argv);
+		proxyclient_create(e, url, argc, argv);
 		return e;
 	}
 	if(_SOCKS_ == type)
@@ -1027,7 +1052,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _SOCKS_;
-		if(url)socksmaster_create(e, url, argc, argv);
+		socksmaster_create(e, url, argc, argv);
 		return e;
 	}
 	if(_Socks_ == type)
@@ -1036,7 +1061,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _Socks_;
-		if(url)socksserver_create(e, url, argc, argv);
+		socksserver_create(e, url, argc, argv);
 		return e;
 	}
 	if(_socks_ == type)
@@ -1045,7 +1070,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _socks_;
-		if(url)socksclient_create(e, url, argc, argv);
+		socksclient_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -1056,7 +1081,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _Dns_;
-		if(url)dnsserver_create(e, url, argc, argv);
+		dnsserver_create(e, url, argc, argv);
 		return e;
 	}
 	if(_dns_ == type)
@@ -1065,7 +1090,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _dns_;
-		if(url)dnsclient_create(e, url, argc, argv);
+		dnsclient_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -1076,7 +1101,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _tftp_;
-		if(url)tftpclient_create(e, url, argc, argv);
+		tftpclient_create(e, url, argc, argv);
 		return e;
 	}
 	if(_Tftp_ == type)
@@ -1085,7 +1110,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _Tftp_;
-		if(url)tftpserver_create(e, url, argc, argv);
+		tftpserver_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -1096,7 +1121,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _QUIC_;
-		if(url)quicmaster_create(e, url, argc, argv);
+		quicmaster_create(e, url, argc, argv);
 		return e;
 	}
 	if(_Quic_ == type)
@@ -1105,7 +1130,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _Quic_;
-		if(url)quicserver_create(e, url, argc, argv);
+		quicserver_create(e, url, argc, argv);
 		return e;
 	}
 	if(_quic_ == type)
@@ -1114,7 +1139,39 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _quic_;
-		if(url)quicclient_create(e, url, argc, argv);
+		quicclient_create(e, url, argc, argv);
+		return e;
+	}
+
+	//fuckgfw: master,server,client
+	if(_FUCKGFW_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _FUCKGFW_;
+		fuckgfwmaster_create(e, url, argc, argv);
+
+		return e;
+	}
+	if(_Fuckgfw_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _Fuckgfw_;
+		fuckgfwserver_create(e, url, argc, argv);
+
+		return e;
+	}
+	if(_fuckgfw_ == type)
+	{
+		e = allocelement();
+		if(0 == e)return 0;
+
+		e->type = _fuckgfw_;
+		fuckgfwclient_create(e, url, argc, argv);
+
 		return e;
 	}
 
@@ -1125,7 +1182,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _SERVE_;
-		if(url)servemaster_create(e, url, argc, argv);
+		servemaster_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1135,7 +1192,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _Serve_;
-		if(url)serveserver_create(e, url, argc, argv);
+		serveserver_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1145,7 +1202,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _serve_;
-		if(url)serveclient_create(e, url, argc, argv);
+		serveclient_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1157,7 +1214,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _SSH_;
-		if(url)sshmaster_create(e, url, argc, argv);
+		sshmaster_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1167,7 +1224,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _Ssh_;
-		if(url)sshserver_create(e, url, argc, argv);
+		sshserver_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1177,7 +1234,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _ssh_;
-		if(url)sshclient_create(e, url, argc, argv);
+		sshclient_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1189,7 +1246,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _TELNET_;
-		if(url)telnetmaster_create(e, url, argc, argv);
+		telnetmaster_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1199,7 +1256,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _Telnet_;
-		if(url)telnetserver_create(e, url, argc, argv);
+		telnetserver_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1209,7 +1266,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _telnet_;
-		if(url)telnetclient_create(e, url, argc, argv);
+		telnetclient_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1221,7 +1278,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _HTTP_;
-		if(url)httpmaster_create(e, url, argc, argv);
+		httpmaster_create(e, url, argc, argv);
 		return e;
 	}
 	if(_Http_ == type)
@@ -1230,7 +1287,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _Http_;
-		if(url)httpserver_create(e, url, argc, argv);
+		httpserver_create(e, url, argc, argv);
 		return e;
 	}
 	if(_http_ == type)
@@ -1239,7 +1296,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _http_;
-		if(url)httpclient_create(e, url, argc, argv);
+		httpclient_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1251,7 +1308,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _WS_;
-		if(url)wsmaster_create(e, url, argc, argv);
+		wsmaster_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1261,7 +1318,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _Ws_;
-		if(url)wsserver_create(e, url, argc, argv);
+		wsserver_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1271,7 +1328,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _ws_;
-		if(url)wsclient_create(e, url, argc, argv);
+		wsclient_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1283,7 +1340,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _TLS_;
-		if(url)tlsmaster_create(e, url, argc, argv);
+		tlsmaster_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1293,7 +1350,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _Tls_;
-		if(url)tlsserver_create(e, url, argc, argv);
+		tlsserver_create(e, url, argc, argv);
 
 		return e;
 	}
@@ -1303,7 +1360,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		if(0 == e)return 0;
 
 		e->type = _tls_;
-		if(url)tlsclient_create(e, url, argc, argv);
+		tlsclient_create(e, url, argc, argv);
 
 		return e;
 	}

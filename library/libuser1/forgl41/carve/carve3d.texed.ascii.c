@@ -284,11 +284,14 @@ void carveascii(struct entity* win, u32 rgb,
 void carveascii_center(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8 dat)
 {
-	vec3 tc;
-	tc[0] = vc[0] - vr[0]/4 - vf[0]/2;
-	tc[1] = vc[1] - vr[1]/4 - vf[1]/2;
-	tc[2] = vc[2] - vr[2]/4 - vf[2]/2;
-	carveascii(win, rgb, tc, vr, vf, dat);
+	int j;
+	vec3 tc,tr,tf;
+	for(j=0;j<3;j++){
+		tr[j] = vr[j]*2;
+		tf[j] = vf[j]*2;
+		tc[j] = vc[j] - vr[j]/2 - vf[j];
+	}
+	carveascii(win, rgb, tc, tr, tf, dat);
 }
 
 

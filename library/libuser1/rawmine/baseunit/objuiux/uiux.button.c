@@ -1,5 +1,4 @@
 #include "libuser.h"
-#define _ev_ hex16('e','v')
 #define STRBUF buf0
 
 

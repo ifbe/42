@@ -39,6 +39,7 @@
 #define _src_ hex32('s','r','c',0)
 #define _dst_ hex32('d','s','t',0)
 #define _clk_ hex32('c','l','k',0)
+#define  _ev_ hex32('e','v', 0, 0)
 //tier
 #define _ent_ hex32('e','n','t',0)
 #define _sup_ hex32('s','u','p',0)

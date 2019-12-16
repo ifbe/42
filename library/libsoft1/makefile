@@ -160,6 +160,7 @@ libflow/4.tcp/tcp.proxy.c \
 libflow/4.tcp/tcp.rdp.c \
 libflow/4.tcp/tcp.rtmp.c \
 libflow/4.tcp/tcp.serve.c \
+libflow/4.tcp/tcp.fuckgfw.c \
 libflow/4.tcp/tcp.sql.c \
 libflow/4.tcp/tcp.socks.c \
 libflow/4.tcp/tcp.ssh.c \

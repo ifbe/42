@@ -1,5 +1,4 @@
 #include "libuser.h"
-#define _ev_ hex16('e','v')
 #define MATBUF buf0
 #define CAMBUF buf1
 int ortho_mvp(mat4 m, struct fstyle* s);

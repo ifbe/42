@@ -1,5 +1,4 @@
 #include "libuser.h"
-#define _ev_ hex16('e','v')
 #define CTXBUF buf0
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);

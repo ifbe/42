@@ -138,71 +138,46 @@ void vjoy_draw(
 	else if(fmt == _html_)vjoy_draw_html(win, sty);
 	else vjoy_draw_pixel(win, sty);
 }
-int vjoy_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
-	struct event* ev, int len)
+int vjoy_event(struct entity* act, int x, int y, int z)
 {
-	short tmp[4];
-	int x,y,w,h,ret;
-    //say("vjoy_joystick_write\n");
-	//if(win->vjoyw <= 0)return 0;
+	int val;
+	short* tmp;
+	struct event ev;
+	//say("%d,%d, z\n", x, y, z);
 
-	x = (ev->why)&0xffff;
-	y = ((ev->why)>>16)&0xffff;
-	if(y < h*3/4)return 0;
-
-	w = win->width;
-	h = win->height;
-	if('p' == (ev->what&0xff))
-	{
-		y = (h-y)*16/h;
-		if(x*2 < w)
-		{
-			x = x*16/h;
-			if((0==x)&&(1==y))ret = joyl_left;
-			else if((2==x)&&(1==y))ret = joyl_right;
-			else if((1==x)&&(0==y))ret = joyl_down;
-			else if((1==x)&&(2==y))ret = joyl_up;
-			else if((0==x)&&(3==y))ret = joyl_trigger;
-			else if((2==x)&&(3==y))ret = joyl_bumper;
-			else if((1==x)&&(1==y))ret = joyl_thumb;
-			else if((3==x)&&(2==y))ret = joyl_select;
-			else ret = 0;
-			if(ret)
-			{
-				if(hex32('p','-',0,0) != ev->what)return 1;
-
-				tmp[0] = tmp[1] = tmp[2] = 0;
-				tmp[3] = ret;
-				eventwrite(*(u64*)tmp, joy_left, (u64)win, 0);
-				return 1;
-			}
+	ev.when = 0;
+	ev.where = 0;
+	ev.what = joy_left;
+	ev.why = 0;
+	tmp = (void*)&ev;
+	val = x + y*4;
+	if('l' == z){
+		switch(val){
+		case  1:tmp[3] = joyl_down;break;
+		case  4:tmp[3] = joyl_left;break;
+		case  5:tmp[3] = joyl_thumb;break;
+		case  6:tmp[3] = joyl_right;break;
+		case  9:tmp[3] = joyl_up;break;
+		case 11:tmp[3] = joyl_select;break;
+		case 12:tmp[3] = joyl_trigger;break;
+		case 14:tmp[3] = joyl_bumper;break;
+		default:return 0;
 		}
-		else
-		{
-			x = w-x;
-			x = x*16/h;
-			if((2==x)&&(y==1))ret = joyr_left;
-			else if((0==x)&&(1==y))ret = joyr_right;
-			else if((1==x)&&(y==0))ret = joyr_down;
-			else if((1==x)&&(y==2))ret = joyr_up;
-			else if((2==x)&&(y==3))ret = joyr_trigger;
-			else if((0==x)&&(y==3))ret = joyr_bumper;
-			else if((1==x)&&(y==1))ret = joyr_thumb;
-			else if((3==x)&&(y==2))ret = joyr_start;
-			else ret = 0;
-
-			if(ret)
-			{
-				if(hex32('p','-',0,0) != ev->what)return 1;
-
-				tmp[0] = tmp[1] = tmp[2] = 0;
-				tmp[3] = ret;
-				eventwrite(*(u64*)tmp, joy_right, (u64)win, 0);
-				return 1;
-			}
+		relationwrite(act, _ev_, 0, 0, &ev, 0x20);
+	}
+	if('r' == z){
+		switch(val){
+		case  2:tmp[3] = joyr_down;break;
+		case  5:tmp[3] = joyr_left;break;
+		case  6:tmp[3] = joyr_thumb;break;
+		case  7:tmp[3] = joyr_right;break;
+		case  8:tmp[3] = joyr_start;break;
+		case 10:tmp[3] = joyr_up;break;
+		case 13:tmp[3] = joyr_trigger;break;
+		case 15:tmp[3] = joyr_bumper;break;
+		default:return 0;
 		}
+		relationwrite(act, _ev_, 0, 0, &ev, 0x20);
 	}
 	return 0;
 }
@@ -210,23 +185,22 @@ int vjoy_event(
 
 
 
-static void vjoy_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static void vjoy_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
     int ret;
 	struct entity* wnd;struct style* area;
 	struct entity* cam;struct style* gl41;
-	struct entity* act;struct style* slot;
-	struct entity* wrd;struct style* geom;
-
 	wnd = peer->pchip;area = peer->pfoot;
 	cam = self->pchip;gl41 = self->pfoot;
+
 	ret = vjoy_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
     if(ret > 0){
+		struct entity* act;struct style* slot;
+		struct entity* wrd;struct style* geom;
 	    act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
     	wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
         vjoy_draw_vbo(act, slot, wrd,geom, wnd,area);
-        return;
     }
     else{
         struct fstyle fs;
@@ -240,15 +214,57 @@ static void vjoy_read(struct halfrel* self, struct halfrel* peer, struct halfrel
         gl41data_tmpcam(wnd);
     }
 }
-static int vjoy_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void vjoy_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	return 0;//vjoy_event(act, pin, win, sty, ev, 0);
+	struct entity* wnd;struct style* area;
+	struct entity* cam;struct style* gl41;
+	wnd = peer->pchip;area = peer->pfoot;
+	cam = self->pchip;gl41 = self->pfoot;
+
+	struct event* ev = buf;
+	if('p' == (ev->what&0xff)){
+		int ww,hh,x0,y0,dx,dy;
+		ww = wnd->width;hh = wnd->height;
+		x0 = ww * area->fs.vc[0];y0 = hh * area->fs.vc[1];
+		dx = ww * area->fs.vq[0];dy = hh * area->fs.vq[1];
+
+		short* aa = buf;
+		int x = aa[0] - x0;
+		int y = (hh-1-aa[1]) - y0;
+		int z = -1;
+		if(x<dy){
+			x = x*4/dy;
+			y = y*4/dy;
+			z = 'l';
+			vjoy_event(cam, x, y, z);
+		}
+		if(x > dx-dy){
+			x = (x-dx+dy)*4/dy;
+			y = y*4/dy;
+			z = 'r';
+			vjoy_event(cam, x, y, z);
+		}
+	}
+}
+
+
+
+
+static int vjoy_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+{
+	struct entity* ent = peer->pchip;
+	switch(ent->fmt){
+		case _gl41wnd0_:vjoy_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
+	return 0;
+}
+static int vjoy_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+{
+	struct entity* ent = peer->pchip;
+	switch(ent->fmt){
+		case _gl41wnd0_:vjoy_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
+	return 0;
 }
 static int vjoy_stop(struct halfrel* self, struct halfrel* peer)
 {

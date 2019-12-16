@@ -27,6 +27,13 @@ depth:1024
 </supply>
 
 
+<artery>
+dbg{
+fmt:dbghex
+}
+</artery>
+
+
 <worker>
 poller{
 fmt:poller
@@ -35,6 +42,8 @@ fmt:poller
 
 
 <relation>
+(vjoy, 0, ev) -> (dbg, 0, 0)
+
 #glwnd depends on gldata
 (glwnd, rect, 0) -> (vjoy, 0, 0)
 
