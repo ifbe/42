@@ -120,8 +120,8 @@ void windowcreate(struct supply* w)
 
 
 	//
-	w->type = _sup_;
-	w->fmt = hex64('b','g','r','a','8','8','8','8');
+	w->fmt = _rgba_;
+	w->vfmt = hex64('b','g','r','a','8','8','8','8');
 
 	w->width  = xmax;
 	w->height = ymax;

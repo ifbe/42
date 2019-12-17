@@ -401,7 +401,6 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		if(0 == win)return 0;
 
 		win->type = _wnd_;
-		win->fmt = hex64('b','g','r','a','8','8','8','8');
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}

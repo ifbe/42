@@ -245,12 +245,13 @@ static void vkbd_write_bywnd(struct halfrel* self, struct halfrel* peer, struct 
 		y = cam->iy0 =  8*(y-y0)/dy;
 		//say("%d,%d\n", x, y);
 
-		u8 tmp[8];
+		struct event tmp;
 		if(0x2b70 == ev->what)cam->iw0 = 1;
 		if(0x2d70 == ev->what){
 			cam->iw0 = 0;
-			tmp[0] = x + y*16;
-			relationwrite(cam, _ev_, 0, 0, tmp, 1);
+			tmp.why = x + y*16;
+			tmp.what = _char_;
+			relationwrite(cam, _ev_, 0, 0, &tmp, 0x20);
 		}
 	}
 }

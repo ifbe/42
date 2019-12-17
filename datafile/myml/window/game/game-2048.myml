@@ -11,7 +11,7 @@ t: 0.0, 0.0, 1000.0
 freemodl{
 }
 freegeom{
-c: 0.0, 0.0, 1200.0
+c: 0.0, -100.0, 1200.0
 r: 1000.0, 0.0, 0.0
 t: 0.0, 1000.0, 0.0
 f: 0.0, 0.0, -1000.0
@@ -26,6 +26,10 @@ freerect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
+vkbdrect{
+c:0.0, 0.0
+q:1.0, 0.333333333
+}
 </style>
 
 
@@ -34,10 +38,13 @@ q:1.0, 1.0
 fmt:2048
 }
 freecam{
-fmt:freecam
+fmt:3rdcam
 }
 3dworld{
 fmt:3dworld
+}
+vkbd{
+fmt:vkbd
 }
 </entity>
 
@@ -65,12 +72,16 @@ dt:16ms
 
 
 <relation>
+(2048, 0, ch) -> (vkbd, 0, ev)
+(2048, 0, 0) -> (freecam, 0, tar)
+
 #3dworld depends on inner objects
 (3dworld, skygeom, 0) -> (2048, skyhaha, 0)
 (3dworld, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
-(thewnd, freerect, mvp) -> (freecam, 0, 0)
+(thewnd, freerect, 0) -> (freecam, 0, 0)
+(thewnd, vkbdrect, 0) -> (vkbd, 0, 0)
 
 #opengl depends on wnd
 (opengl, 0, wnd) -> (thewnd, 0, 0)

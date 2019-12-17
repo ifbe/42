@@ -340,6 +340,9 @@ void windowcreate(struct supply* w)
 	u64 m = (u64)malloc(2048*1024*4 + 0x100000);
 	w->buf = m - (m&0xfffff) + 0x100000;
 
+	w->fmt = _rgba_;
+	w->vfmt = hex64('b','g','r','a','8','8','8','8');
+
 	w->width = w->stride = 512;
 	w->height = 512;
 	w->thread = startthread(uievent, w);

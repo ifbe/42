@@ -56,7 +56,7 @@ static void the2048_create(struct entity* act, u8* buf)
 
 static void the2048_draw_pixel(
 	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* wnd, struct style* sty)
 {
 	u32 color;
 	int x,y,x0,y0,x1,y1;
@@ -72,10 +72,10 @@ static void the2048_draw_pixel(
 	}
 	else
 	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
+		cx = wnd->width/2;
+		cy = wnd->height/2;
+		ww = wnd->width/2;
+		hh = wnd->height/2;
 	}
 
 	//cubies
@@ -85,7 +85,7 @@ static void the2048_draw_pixel(
 		{
 			//color
 			color = color2048[tab[y][x]];
-			if(0x626772  == (win->fmt&0xffffff) )	//bgra->rgba
+			if(0x626772  == (wnd->vfmt&0xffffff) )	//bgra->rgba
 			{
 				color = 0xff000000
 					+ ((color&0xff)<<16)
@@ -98,11 +98,11 @@ static void the2048_draw_pixel(
 			y0 = (cy+1) + (y-2)*hh/2;
 			x1 = (cx-1) + (x-1)*ww/2;
 			y1 = (cy-1) + (y-1)*hh/2;
-			drawsolid_rect(win, color, x0, y0, x1, y1);
+			drawsolid_rect(wnd, color, x0, y0, x1, y1);
 
 			if(len2048[tab[y][x]] == 0)continue;
 			drawdec_fit(
-				win, 0,
+				wnd, 0,
 				x0, y0*3/4+y1/4,
 				x1, y0/4+y1*3/4,
 				val2048[tab[y][x]]
@@ -294,30 +294,22 @@ static void the2048_move(struct entity* act, int op)
 
 	new2048(q);
 }
-static void the2048_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
-	struct event* ev, int len)
+static void the2048_event(struct entity* act, struct event* ev)
 {
 	int k;
 	short* s;
 	//say("%llx,%llx,%llx\n", act, pin, ev);
-	//say("%x,%x,%x\n",ev->why, ev->what, ev->where);
+	say("%x,%x,%x\n",ev->why, ev->what, ev->where);
 
 	if(_char_ == ev->what)
 	{
-		k = ev->why;
-		if(k == 0x8)
-		{
-			act->len = ((act->len)+15)%16;
-			return;
+		switch(ev->why){
+		case 0x8:act->len = ((act->len)+15)%16;break;
+		case 'w':the2048_move(act, 'f');break;
+		case 's':the2048_move(act, 'n');break;
+		case 'd':the2048_move(act, 'r');break;
+		case 'a':the2048_move(act, 'l');break;
 		}
-
-		k = (k>>16)&0xff;
-		if(0x41 == k)the2048_move(act, 'f');
-		else if(0x42 == k)the2048_move(act, 'n');
-		else if(0x43 == k)the2048_move(act, 'r');
-		else if(0x44 == k)the2048_move(act, 'l');
 	}
 	else if(_kbd_ == ev->what)
 	{
@@ -363,15 +355,14 @@ static void the2048_read(struct halfrel* self, struct halfrel* peer, struct half
 		switch(win->fmt){
 		case _tui_:the2048_draw_tui(act,slot, win,geom);break;
 		case _html_:the2048_draw_html(act,slot, win,geom);break;
-		default:the2048_draw_pixel(act,slot, win,geom);
+		case _rgba_:the2048_draw_pixel(act,slot, win,geom);break;
 		}
 	}
 }
 static void the2048_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct entity* act;struct style* part;
-	struct entity* win;struct style* geom;
-	//the2048_event(act, part, win, geom, buf, 0);
+	struct entity* act = self->pchip;
+	the2048_event(act, buf);
 }
 static void the2048_stop(struct halfrel* self, struct halfrel* peer)
 {

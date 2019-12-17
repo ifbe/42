@@ -179,7 +179,8 @@ void windowdelete(struct supply* wnd)
 void windowcreate(struct supply* wnd)
 {
 	//data
-	wnd->fmt = hex64('r','g','b','a','8','8','8','8');
+	wnd->fmt = _rgba_;
+	wnd->vfmt = hex64('r','g','b','a','8','8','8','8');
 
 	wnd->width= wnd->stride = 1024;
 	wnd->height = 768;

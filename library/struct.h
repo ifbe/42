@@ -995,7 +995,7 @@ struct entity
 	u64 tier;
 	u64 type;
 	u64 fmt;
-	u64 name0;
+	u64 vfmt;
 
 	//[40,5f]: fd
 	union{

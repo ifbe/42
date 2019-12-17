@@ -273,18 +273,11 @@ void windowdelete(struct supply* win)
 void windowcreate(struct supply* win)
 {
 	int j;
-	win->type = hex32('w', 'i', 'n', 0);
-	win->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
+	win->fmt = _rgba_;
+	win->vfmt = hex64('b','g','r','a','8','8','8','8');
 
 	win->width = win->stride = 1024;
 	win->height = 768;
-
-/*	for(j=0;j<16;j++)
-	{
-		win->input[j].w0 = 0xffff;
-		win->input[j].w0 = 0xffff;
-	}*/
-
 
 	//
 	win->buf = malloc(0x1000000);

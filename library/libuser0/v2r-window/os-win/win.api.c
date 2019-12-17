@@ -130,7 +130,9 @@ int windowcreate(struct supply* win)
 	int j;
 	if(0 == win)return 0;
 
-	win->fmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
+	win->fmt = _rgba_;
+	win->vfmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
+
 	win->width = win->stride = 1024;
 	win->height = 768;
 
