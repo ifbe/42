@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define _mic_ hex32('m','i','c',0)
 #define _pcm_ hex32('p','c','m',0)
-#define slice 16
+#define SLICE 16
 //libsoft1
 void fft(float* real, float* imag, int k);
 void ifft(float* real, float* imag, int k);
@@ -93,52 +93,6 @@ static void oscillo_draw_pixel(
 	drawdecimal(win, 0xffffff, cx, cy, that);
 */
 }
-/*
-static void oscillo_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	int x;
-	float a,c,s;
-	vec3 tc, tr, tf, tu;
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-
-	short* pcmbuf = (act->buf)+0x80000;
-	for(x=0;x<1024*16;x++)
-	{
-		tc[0] = vc[0] + vr[0] * (x/8192.0 - 1.0);
-		tc[1] = vc[1] + vr[1] * (x/8192.0 - 1.0);
-		tc[2] = vc[2] + vr[2] * (x/8192.0 - 1.0);
-		tr[0] = tc[0] + vf[0]*pcmbuf[x]/16384.0;
-		tr[1] = tc[1] + vf[1]*pcmbuf[x]/16384.0;
-		tr[2] = tc[2] + vf[2]*pcmbuf[x]/16384.0;
-		carveline2d(win, 0xffffff, tc, tr);
-	}
-
-	struct perframe* frame = act->buf;
-	float* real = frame[cur].real;
-	float* imag = frame[cur].imag;
-	float* amp = frame[cur].amp;
-	for(x=0;x<512;x++)
-	{
-		a = x*tau/512;
-		c = cosine(a);
-		s = sine(a);
-
-		tc[0] = vc[0] + vr[0] * (x-256) / 256;
-		tc[1] = vc[1] + vr[1] * (x-256) / 256;
-		tc[2] = vc[2] + vr[2] * (x-256) / 256;
-		tr[0] = tc[0] + vf[0]*amp[x]*10;
-		tr[1] = tc[1] + vf[1]*amp[x]*10;
-		tr[2] = tc[2] + vf[2]*amp[x]*10;
-		carveline2d(win, 0xff0000, tc, tr);
-	}
-}*/
 static void oscillo_draw_vbo3d(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
@@ -159,12 +113,12 @@ static void oscillo_draw_vbo3d(
 	if(0 == tab)return;
 	//printmemory(tab, 8*4);
 
-	for(t=0;t<slice;t++){
+	for(t=0;t<SLICE;t++){
 		buf = tab[t];
 		if(0 == buf)break;
 
 		for(x=0;x<1024;x++){
-			tmp = (t*1024 + x)/(slice*512.0) - 1.0;
+			tmp = (t*1024 + x)/(SLICE*512.0) - 1.0;
 			ta[0] = vc[0] + vr[0] * tmp;
 			ta[1] = vc[1] + vr[1] * tmp;
 			ta[2] = vc[2] + vr[2] * tmp;
@@ -257,88 +211,10 @@ static void oscillo_draw_cli(
 {
 	say("oscillo(%x,%x,%x)\n",win,act,sty);
 }
-static void oscillo_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(0 == act->buf)return;
-
-	if(fmt == _cli_)oscillo_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)oscillo_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)oscillo_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)oscillo_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)oscillo_draw_vbo2d(act, pin, win, sty);
-		//else oscillo_draw_vbo3d(act, pin, win, sty);
-	}
-	else oscillo_draw_pixel(act, pin, win, sty);
-}
 
 
 
-/*
-static void oscillo_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
-	struct event* ev)
-{
-	int j,k;
-	if(_char_ == ev->what)
-	{
-		k = ev->why;
-		if((k>='0')&&(k<='9'))haha=k;
-	}
-}
-static void oscillo_update(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
-	u8* buf, int len)
-{
-	int j,k;
-	float f;
-	float* real;
-	float* imag;
-	float* amp;
-	struct perframe* frame = act->buf;
-	short* pcmbuf = (act->buf)+0x80000+(cur*1024*2);
-	short* pcmin = (void*)buf;
 
-	soundwrite(0,0,buf,1024*2);
-say("%llx, %x\n", buf, len);
-
-	cur = (cur+1) % 16;
-	real = frame[cur].real;
-	imag = frame[cur].imag;
-	amp = frame[cur].amp;
-
-	for(j=0;j<1024;j++)
-	{
-		pcmbuf[j] = pcmin[j];
-		real[j] = (float)pcmbuf[j] / 32768.0;
-		imag[j] = 0.0;
-	}
-	fft(real, imag, 10);
-	//say("%f,%f\n",real[0],imag[0]);
-
-	k = 0;
-	f = 0.0;
-	for(j=0;j<512;j++)
-	{
-		amp[j] = squareroot(real[j]*real[j] + imag[j]*imag[j]) / 1024;
-		if(j < 1)continue;
-
-		if(amp[j] > f)
-		{
-			k = j;
-			f = amp[j];
-			//say("%f,%f\n",real[j],imag[j]);
-		}
-	}
-	//say("k=%d\n",k);
-	that = k*44100/1024;
-}*/
 void oscillo_data(struct entity* act, int type, void* buf, int len)
 {
 	int idx;
@@ -348,7 +224,7 @@ void oscillo_data(struct entity* act, int type, void* buf, int len)
 	idx = act->len;
 	tab = act->buf;
 	tab[idx] = buf;
-	act->len = (idx+1) % slice;
+	act->len = (idx+1) % SLICE;
 }
 
 
@@ -409,10 +285,22 @@ static void oscillo_modify(struct entity* act)
 static void oscillo_delete(struct entity* act)
 {
 }
-static void oscillo_create(struct entity* act)
+static void oscillo_create(struct entity* act, u8* arg)
 {
-	act->buf = memorycreate(0x1000, 0);
+	int j;
+	void* buf;
+	void** tab;
+
 	act->len = 0;
+	tab = act->buf = memorycreate(0x1000, 0);
+
+	if(arg){
+		buf = act->buf0 = memorycreate(0x100000, 0);
+		openreadclose(arg, 0, buf, 0x100000);
+
+		for(j=0;j<SLICE;j++)tab[j] = buf+44 + j*1024;
+		act->len = SLICE;
+	}
 }
 
 

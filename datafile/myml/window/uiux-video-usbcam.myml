@@ -40,10 +40,6 @@ fmt:freecam
 3dworld{
 fmt:3dworld
 }
-
-thectx{
-fmt:gl41data
-}
 </entity>
 
 

@@ -1,0 +1,99 @@
+<style>
+skyhaha{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 640.0, 0.0, 0.0
+f: 0.0, 480.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+freemodl{
+}
+freegeom{
+c: 0.0, 0.0, 640.0
+r: 640.0, 0.0, 0.0
+t: 0.0, 640.0, 0.0
+f: 0.0, 0.0, -640.0
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<entity>
+canvas{
+fmt:oscillo
+}
+freecam{
+fmt:freecam
+}
+3dworld{
+fmt:3dworld
+}
+</entity>
+
+
+<supply>
+thewnd{
+fmt:gl41wnd0
+}
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<artery>
+recut{
+fmt:recut
+}
+dbghex{
+fmt:dbghex
+}
+</artery>
+
+
+<system>
+server{
+fmt:TCP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<relation>
+#canvas depends on usbcam
+(server, 0, dst) -> (recut, 0, src)
+(recut, 0, dst) -> (canvas, 0, yuv)
+
+#3dworld depends on inner objects
+(3dworld, skygeom, 0) -> (canvas, skyhaha, 0)
+(3dworld, freegeom, 0) -> (freecam, freemodl, 0)
+
+#glwnd depends on ctx + cam
+(thewnd, freerect, 0) -> (freecam, 0, 0)
+
+#opengl depends on wnd
+(opengl, 0, wnd) -> (thewnd, 0, 0)
+</relation>
