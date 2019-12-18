@@ -56,12 +56,96 @@ static struct fstyle sty = {
 	.vc = { 0.0, -s60*4, s30*4, 0.0},
 };
 static mat4 cammvp;
+void test_prepgl(struct glsrc* src)
+{
+	src->vs = vshader;
+	src->fs = fshader;
+	src->shader_enq = 1;
+
+	fixmatrix(cammvp, &sty);
+	mat4_transpose(cammvp);
+
+	src->arg[0].data = cammvp;
+	src->arg[0].name = "cammvp";
+	src->arg[0].fmt = 'm';
+
+	src->vbuf = vbuf;
+	src->vbuf_len = 4*6*8;
+	src->vbuf_enq = 1;
+
+	src->ibuf = ibuf;
+	src->ibuf_len = 2*3*2*6;
+	src->ibuf_enq = 1;
+}
+void test_tickgl(struct entity* ent, struct supply* sup)
+{
+	float a = 2*PI*(timeread()%5000000)/5000000.0;
+	float c = cosine(a);
+	float s = sine(a);
+
+	sty.vc[0] = 4*c;
+	sty.vc[1] = 4*s;
+	sty.vc[2] = 2.0;
+
+	sty.vn[0] = -sty.vc[0];
+	sty.vn[1] = -sty.vc[1];
+	sty.vn[2] = -sty.vc[2];
+	vec3_normalize(sty.vn);
+	sty.vf[0] = sty.vn[0];
+	sty.vf[1] = sty.vn[1];
+	sty.vf[2] = sty.vn[2];
+
+	sty.vr[0] = -s;
+	sty.vr[1] = c;
+	sty.vr[2] = 0;
+	sty.vl[0] = -sty.vr[0];
+	sty.vl[1] = -sty.vr[1];
+	sty.vl[2] = -sty.vr[2];
+
+	vec3_cross(sty.vt, sty.vr, sty.vf);
+	vec3_normalize(sty.vt);
+	sty.vb[0] = -sty.vt[0];
+	sty.vb[1] = -sty.vt[1];
+	sty.vb[2] = -sty.vt[2];
+
+	fixmatrix(cammvp, &sty);
+	mat4_transpose(cammvp);
+
+	sup->glsolid = ent->buf0;
+}
+
+
+
+
+void test_preppcm(struct pcmdata* pcm)
+{
+	int j;
+	short* buf;
+	pcm->fmt = hex32('s','1','6',0);
+	pcm->chan = 1;
+	pcm->rate = 44100;
+
+	buf = pcm->buf;
+	for(j=0;j<44100;j++)buf[j] = (short)(4096.0*sine(j*tau/100));
+}
+void test_tickpcm(struct entity* ent, struct supply* sup)
+{
+	sup->pcmdata = ent->buf1;
+}
+
 
 
 
 
 int test_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	struct entity* ent = self->pchip;
+	struct supply* sup = peer->pchip;
+
+	switch(sup->fmt){
+	case _easy_:test_tickgl(ent,sup);break;
+	case _pcm_:test_tickpcm(ent,sup);break;
+	}
 	return 0;
 }
 int test_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
@@ -94,44 +178,12 @@ int test_delete(struct entity* act)
 }
 int test_create(struct entity* act)
 {
-	int j;
-	u8* buf;
-	short* pcm;
-	struct gl41data* pair;
-	struct glsrc* src;
+	act->buf0 = memorycreate(0x1000, 0);
+	test_prepgl(act->buf0);
 
-	act->buf = memorycreate(0x1000, 0);
-	if(0 == act->buf)return 0;
+	act->buf1 = memorycreate(0x20000, 0);
+	test_preppcm(act->buf1);
 
-	buf = act->buf;
-	for(j=0;j<0x1000;j++)buf[j] = 0;
-
-	pair = act->buf;
-	src = &pair->src;
-
-	src->vs = vshader;
-	src->fs = fshader;
-	src->shader_enq = 1;
-
-
-	fixmatrix(cammvp, &sty);
-	mat4_transpose(cammvp);
-	src->arg[0].data = cammvp;
-
-	src->vbuf = vbuf;
-	src->vbuf_len = 4*6*8;
-	src->vbuf_enq = 1;
-
-	src->ibuf = ibuf;
-	src->ibuf_len = 2*3*2*6;
-	src->ibuf_enq = 1;
-
-
-	act->ctx = memorycreate(0x20000, 0);
-	if(0 == act->ctx)return 0;
-
-	pcm = act->ctx;
-	for(j=0;j<44100;j++)pcm[j] = (short)(4096.0*sine(j*tau/100));
 	return 0;
 }
 

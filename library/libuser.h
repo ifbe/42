@@ -68,7 +68,9 @@
 //light
 #define _cam_ hex32('c','a','m',0)
 #define _wnd_ hex32('w','n','d',0)
+//
 #define _cap_ hex32('c','a','p',0)
+#define _holo_ hex32('h','o','l','o')
 //
 #define _tray_ hex32('t','r','a','y')	//tray
 #define _std_ hex32('s','t','d', 0)		//cmdline
@@ -95,6 +97,8 @@
 //tier=_ent_, type:
 #define _baby_ hex32('b','a','b','y')
 #define _test_ hex32('t','e','s','t')
+#define _pcm_ hex32('p','c','m',0)
+#define _ctx_ hex32('c','t','x',0)
 //
 #define _orig_ hex32('o','r','i','g')
 #define _ORIG_ hex32('O','R','I','G')

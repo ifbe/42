@@ -79,15 +79,8 @@ void easywindow_renderself()
 }
 void easywindow_renderpeer(struct supply* win)
 {
-	struct relation* rel = win->orel0;
-	if(0 == rel)return;
-
-	struct entity* act = (void*)(rel->dstchip);
-	if(0 == act)return;
-
-	struct gl41data* pair = act->buf;
+	struct gl41data* pair = win->glsolid;
 	if(0 == pair)return;
-
 	struct glsrc* src = &pair->src;
 	struct gldst* dst = &pair->dst;
 	//say("src=%llx,dst=%llx\n", src, dst);
@@ -99,7 +92,9 @@ void easywindow_renderpeer(struct supply* win)
 		dst->shader_deq = src->shader_enq;
 	}
 	glUseProgram(dst->shader);
-	glUniformMatrix4fv(glGetUniformLocation(dst->shader, "cammvp"), 1, GL_FALSE, src->arg[0].data);
+
+	//arg
+	glUniformMatrix4fv(glGetUniformLocation(dst->shader, src->arg[0].name), 1, GL_FALSE, src->arg[0].data);
 
 	//vao
 	if(0 == dst->vao)glGenVertexArrays(1, &dst->vao);
@@ -156,8 +151,9 @@ void easywindow_read(struct supply* win)
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	if(0 == win->orel0)easywindow_renderself();
-	else easywindow_renderpeer(win);
+	if(win->orel0)relationread(win, _ctx_, 0, 0, 0, 0);
+	if(win->glsolid)easywindow_renderpeer(win);
+	else easywindow_renderself();
 }
 void easywindow_delete(struct supply* win)
 {

@@ -12,6 +12,13 @@ fmt:spk
 </supply>
 
 
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <relation>
-(speaker, 0, 0) -> (test, 0, 0)
+(speaker, 0, ctx) -> (test, 0, 0)
 </relation>

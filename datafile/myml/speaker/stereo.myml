@@ -20,5 +20,5 @@ fmt:poller
 
 
 <relation>
-(speaker, 0, 0) -> (stereo, 0, 0)
+(speaker, 0, ctx) -> (stereo, 0, 0)
 </relation>

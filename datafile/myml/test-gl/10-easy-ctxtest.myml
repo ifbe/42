@@ -1,3 +1,10 @@
+<entity>
+test{
+fmt:test
+}
+</entity>
+
+
 <supply>
 opengl{
 fmt:easy
@@ -9,13 +16,13 @@ depth:1024
 </supply>
 
 
-<entity>
-test{
-fmt:test
+<worker>
+poller{
+fmt:poller
 }
-</entity>
+</worker>
 
 
 <relation>
-(opengl, 0, 0) -> (test, 0, 0)
+(opengl, 0, ctx) -> (test, 0, 0)
 </relation>

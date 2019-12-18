@@ -7,3 +7,10 @@ height:1024
 depth:1024
 }
 </supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>

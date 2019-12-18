@@ -183,6 +183,8 @@ int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 		case _reality_:return reality_read(self, peer, arg, idx, buf, len);
 		case _eeworld_:return eeworld_read(self, peer, arg, idx, buf, len);
 		case _html_:return htmlnode_read(self, peer, arg, idx, buf, len);
+		case _test_:return test_read(self, peer, arg, idx, buf, len);
+		case _baby_:return baby_read(self, peer, arg, idx, buf, len);
 	}
 
 	if(0 == act->onread)return 0;
@@ -204,6 +206,8 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 		case _reality_:return reality_write(self, peer, arg, idx, buf, len);
 		case _eeworld_:return eeworld_write(self, peer, arg, idx, buf, len);
 		case _html_:return htmlnode_write(self, peer, arg, idx, buf, len);
+		case _test_:return test_write(self, peer, arg, idx, buf, len);
+		case _baby_:return baby_write(self, peer, arg, idx, buf, len);
 	}
 
 	if(0 == act->onwrite)return 0;
