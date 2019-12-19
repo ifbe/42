@@ -63,10 +63,6 @@ void asset_delete()
 
 
 
-
-
-
-
 void loadtexfromfile(struct glsrc* src, int idx, char* name)
 {
 	int w,h,d,s;
@@ -95,120 +91,6 @@ void loadtexfromfile(struct glsrc* src, int idx, char* name)
 
 	src->tex[idx].w = w;
 	src->tex[idx].h = h;
-}/*
-void entitycreatefromfile(struct entity* act, char* name)
-{
-	int len;
-	u8* tmp;
-	u8* buf;
-	//u8 str[256];
-	if(0 == act)return;
-
-	tmp = getsuffix(name);
-	if(0 == tmp)return;
-
-	//mysnprintf(str, 256, "%s/%s", "datafile", name);
-
-	buf = act->buf;
-	if(0 == buf)buf = memorycreate(0x1000000, 0);
-
-	len = openreadclose(name, 0, buf, 0x1000000);
-	if(len <= 0)
-	{
-		say("len=%d, %s\n", len, name);
-		return;
-	}
-
-	if(0 == tmp[0])return;
-	else if(0 == ncmp(tmp, "jpg", 3))loadimgfromjpg(buf, len, &act->width, &act->height, &act->depth, &act->stride);
-	else if(0 == ncmp(tmp, "png", 3))loadimgfrompng(buf, len, &act->width, &act->height, &act->depth, &act->stride);
-	else if(0 == ncmp(tmp, "obj", 3))entitycreatefromobj(act, buf, len);
-	else if(0 == ncmp(tmp, "stl", 3))entitycreatefromstl(act, buf, len);
-	else if(0 == ncmp(tmp, "mp3", 3))entitycreatefrommp3(act, buf, len);
-	else if(0 == ncmp(tmp, "ogg", 3))entitycreatefromogg(act, buf, len);
-	else if(0 == ncmp(tmp, "wav", 3))entitycreatefromwav(act, buf, len);
-}
-void* alloc_winobj(struct entity* win, int type)
-{
-	int j;
-	struct datapair* mod;
-
-	if('s' == type)
-	{
-		mod = win->gl_solid;
-
-		for(j=solidaid_max;j<128;j++)
-		{
-			if(mod[j].src.vs)continue;
-			if(mod[j].src.vbuf)continue;
-			return &mod[j];
-		}
-	}
-
-	if('o' == type)
-	{
-		mod = win->gl_opaque;
-
-		for(j=opaqueaid_max;j<128;j++)
-		{
-			if(mod[j].src.vs)continue;
-			if(mod[j].src.vbuf)continue;
-			return &mod[j];
-		}
-	}
-	return 0;
-}*/
-
-
-
-/*
-void* defaultstyle_vbo2d()
-{
-	return &def2d;
-}
-void createstyle_vbo2d()
-{
-	def2d.vc[0] = 0.0;
-	def2d.vc[1] = 0.0;
-	def2d.vc[2] = 0.0;
-
-	def2d.vr[0] = 1.0;
-	def2d.vr[1] = 0.0;
-	def2d.vr[2] = 0.0;
-
-	def2d.vf[0] = 0.0;
-	def2d.vf[1] = 1.0;
-	def2d.vf[2] = 0.0;
-
-	def2d.vt[0] = 0.0;
-	def2d.vt[1] = 0.0;
-	def2d.vt[2] = 1.0;
-}*/
-
-
-
-
-void* defaultstyle_vbo3d()
-{
-	return &def3d;
-}
-void createstyle_vbo3d()
-{
-	def3d.vc[0] = 0.0;
-	def3d.vc[1] = 0.0;
-	def3d.vc[2] = 0.0;
-
-	def3d.vr[0] = 512.0;
-	def3d.vr[1] = 0.0;
-	def3d.vr[2] = 0.0;
-
-	def3d.vf[0] = 0.0;
-	def3d.vf[1] = 512.0;
-	def3d.vf[2] = 0.0;
-
-	def3d.vt[0] = 0.0;
-	def3d.vt[1] = 0.0;
-	def3d.vt[2] = 512.0;
 }
 
 
@@ -216,9 +98,6 @@ void createstyle_vbo3d()
 
 void lib4d_create(void* addr)
 {
-	//createstyle_vbo2d();
-	createstyle_vbo3d();
-
 	asset_create();
 
 	content_create(addr);

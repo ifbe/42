@@ -11,7 +11,7 @@ t: 0.0, 0.0, 10000000.0
 treehaha{
 }
 treegeom{
-c: 0.0, 0.0, 0.0
+c:-1000.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
@@ -20,10 +20,10 @@ t: 0.0, 0.0, 1000.0
 mirrhaha{
 }
 mirrgeom{
-c: 0.0, 0.0, 0.0
+c: 0.0, 2000.0, 0.0
 r: 2000.0, 0.0, 0.0
-f: 0.0, 2000.0, 0.0
-t: 0.0, 0.0, 2000.0
+t: 0.0,-2000.0, 0.0
+f: 0.0, 0.0, 2000.0
 L: 0.0, 0.0, 0.0,-1.0
 R: 0.0, 0.0, 0.0, 1.0
 B: 0.0, 0.0, 0.0,-1.0
@@ -36,17 +36,36 @@ c:0.0, 0.0
 q:1.0, 1.0
 }
 
-freemodl{
+mi22haha{
 }
-freegeom{
-r: 1.0, 0.0, 0.0
-f: 0.0, 0.707, -0.707
-t: 0.0, 0.707, 0.707
-c: 2000.0,-2000.0, 2000.0
+mi22geom{
+c: 0.0,-2000.0, 0.0
+r:-2000.0, 0.0, 0.0
+t: 0.0, 2000.0, 0.0
+f: 0.0, 0.0, 2000.0
 L: 0.0, 0.0, 0.0,-1.0
 R: 0.0, 0.0, 0.0, 1.0
 B: 0.0, 0.0, 0.0,-1.0
 T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000000.0
+}
+mi22rect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+
+freemodl{
+}
+freegeom{
+r: 1.0, 0.0, 0.0
+f: 0.0, 1.0, 0.0
+t: 0.0, 0.0, 1.0
+c: 1000.0, -1000.0, 1000.0
+L: 0.0, 0.0, 0.0,-0.7
+R: 0.0, 0.0, 0.0, 0.7
+B: 0.0, 0.0, 0.0,-0.7
+T: 0.0, 0.0, 0.0, 0.7
 N: 0.0, 0.0, 0.0, 1.0
 F: 0.0, 0.0, 0.0, 1000000000000.0
 }
@@ -68,6 +87,9 @@ fmt:tree
 mirror{
 fmt:mirror
 }
+mirr22{
+fmt:mirror
+}
 freecam{
 fmt:freecam
 }
@@ -78,7 +100,10 @@ fmt:3dworld
 
 
 <supply>
-thefbo{
+1stfbo{
+fmt:gl41fboc
+}
+2ndfbo{
 fmt:gl41fboc
 }
 thewnd{
@@ -103,12 +128,14 @@ fmt:poller
 
 <relation>
 #mirror depends on glfbo
-(mirror, 0, fbo) -> (thefbo, mirrrect, mvp)
+(mirror, 0, fbo) -> (1stfbo, mirrrect, mvp)
+(mirr22, 0, fbo) -> (2ndfbo, mi22rect, mvp)
 
 #3dworld depends on inner objects
 (3dworld, skygeom, 0) -> (texball, skyhaha, 0)
 (3dworld, treegeom, 0) -> (tree, treehaha, 0)
 (3dworld, mirrgeom, 0) -> (mirror, mirrhaha, 0)
+(3dworld, mi22geom, 0) -> (mirr22, mi22haha, 0)
 (3dworld, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam

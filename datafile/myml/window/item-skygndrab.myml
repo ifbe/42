@@ -11,10 +11,10 @@ t: 0.0, 0.0, 10000000.0
 gndhaha{
 }
 gndgeom{
-c: 0.0, 0.0, 0.0
-r: 10000000.0, 0.0, 0.0
-f: 0.0, 10000000.0, 0.0
-t: 0.0, 0.0, 10000000.0
+c: 0.0, 0.0, -10000.0
+r: 100000.0, 0.0, 0.0
+f: 0.0, 100000.0, 0.0
+t: 0.0, 0.0, 10000.0
 }
 
 rabhaha{
@@ -64,6 +64,8 @@ url:datafile/jpg/skysphere.jpg
 }
 terrain{
 fmt:terrain
+rgb:datafile/jpg/cartoon.jpg
+dep:datafile/jpg/cartoon.jpg
 }
 rabbit{
 fmt:model

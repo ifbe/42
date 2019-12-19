@@ -1,7 +1,10 @@
 #include "libuser.h"
 #define DEPBUF buf0
-#define CTXBUF buf1
-void loadtexfromfile(struct glsrc* src, int idx, char* name);
+#define RGBBUF buf1
+#define CTXBUF buf2
+#define RGBTEX 0
+#define DEPTEX 1
+void loadtexfromfile(struct glsrc* src, int idx, u8* name);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
@@ -59,7 +62,7 @@ GLSL_VERSION
 "in mediump vec3 texuvw;\n"
 "in mediump vec3 normal;\n"
 "out mediump vec4 FragColor;\n"
-"uniform sampler2D tex0;\n"
+"uniform sampler2D rgbtex;\n"
 "uniform mediump vec3 camxyz;\n"
 
 "mediump vec3 dirsun0 = vec3(1.0, 1.0, 1.0);\n"
@@ -97,27 +100,61 @@ GLSL_VERSION
 	"return ret + LS*KS*pow(NH, 25.0);\n"
 "}\n"
 "void main(){\n"
-	"mediump vec3 c = texture(tex0, texuvw.xy).bgr;\n"
+	"mediump vec3 c = texture(rgbtex, texuvw.xy).bgr;\n"
 	"c += sun0() / 6.0;\n"
 	"c += sun1() / 6.0;\n"
 	"c = vec3(clamp(c.x, 0.0, 1.0), clamp(c.y, 0.0, 1.0), clamp(c.z, 0.0, 1.0));\n"
 	"FragColor = vec4(c, 1.0);\n"
 "}\n";
 
+void copyname(u8* dst, u8* src)
+{
+	int j;
+	while(0x20 == *src)src++;
+	for(j=0;j<256;j++){
+		if(src[j] < 0x20)break;
+		dst[j] = src[j];
+	}
+	dst[j] = 0;
+}
+
 
 
 
 void terrain_generate(float (*vbuf)[6], u16* ibuf, struct entity* act, struct glsrc* src)
 {
-	float f;
 	int x,y,j;
-	int x0,y0,x1,y1;
-	int w = src->tex[0].w;
-	int h = src->tex[0].h;
+	int cx,cy,px,py;
+	int w = src->tex[DEPTEX].w;
+	int h = src->tex[DEPTEX].h;
+	u8* rgba = src->tex[DEPTEX].data;
+
+	//cx,cy is integer
+	cx = w * act->fx0;
+	cy = h * act->fy0;
+	for(y=0;y<255;y++){
+		for(x=0;x<255;x++){
+			//xyz[-1,1]
+			px = cx+x-127;
+			py = cy+y-127;
+			vbuf[y*256+x][0] = (float)px/w*2 - 1.0;
+			vbuf[y*256+x][1] = (float)py/h*2 - 1.0;
+
+			//jpg inverts y?
+			py = h-1-py;
+			if((px < 0) | (px >= w) | (py < 0) | (py >= h))vbuf[y*256+x][2] = 0.0;
+			vbuf[y*256+x][2] = rgba[(w*py+px)*4]/255.0;
+
+			//uv[0,1]
+			vbuf[y*256+x][3] = (float)px/w;
+			vbuf[y*256+x][4] = (float)py/h;
+			vbuf[y*256+x][5] = 0.0;
+
+		}
+	}
+/*
 	float cx = (w-1) / 2.0;
 	float cy = (h-1) / 2.0;
-
-	u8* rgba = src->tex[0].data;
 	for(y=0;y<256;y++)
 	{
 		for(x=0;x<256;x++)
@@ -133,7 +170,7 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct entity* act, struct gl
 			vbuf[y*256+x][0] = x/127.5 - 1.0;
 			vbuf[y*256+x][1] = y/127.5 - 1.0;
 
-			//local ->        world ->               uv
+			//local ->        image ->               uv
 			//    0 ->   0-127.5+cx -> (cx-127.5)/(w-1)
 			//  127 -> 127-127.5+cx -> (cx  -0.5)/(w-1)
 			//  128 -> 128-127.5+cx -> (cx  +0.5)/(w-1)
@@ -145,7 +182,7 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct entity* act, struct gl
 			else f = rgba[(w*y1 + x1) * 4] / 255.0;
 			vbuf[y*256+x][2] = f;
 
-			//local ->        world ->               uv
+			//local ->        image ->               uv
 			//    0 ->   0-127.5+cx -> (cx-127.5)/(w-1)
 			//  127 -> 127-127.5+cx -> (cx  -0.5)/(w-1)
 			//  128 -> 128-127.5+cx -> (cx  +0.5)/(w-1)
@@ -154,7 +191,7 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct entity* act, struct gl
 			vbuf[y*256+x][4] = 1.0 - (y0-127.5+cy) / (h-1);
 			vbuf[y*256+x][5] = 0.0;
 		}
-	}
+	}*/
 
 	j = 0;
 	for(y=0;y<254;y++)
@@ -172,7 +209,7 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct entity* act, struct gl
 			j += 6;
 		}
 	}
-}
+}/*
 void terrain_locate(vec4 v, struct entity* act)
 {
 	//geometry
@@ -257,12 +294,12 @@ static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int
 	}
 
 	say("%f,%f,%f,%f\n", act->fx0, act->fy0, act->fxn, act->fyn);
-}
+}*/
 
 
 
 
-void terrain_ctxforwnd(struct glsrc* src, char* str)
+void terrain_ctxforwnd(struct glsrc* src, u8* rgbfile, u8* depfile)
 {
 	src->method = 'i';
 	src->geometry = 3;
@@ -279,11 +316,14 @@ void terrain_ctxforwnd(struct glsrc* src, char* str)
 	src->arg[0].fmt = 'm';
 
 	//texture
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "tex0";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(src, 0, str);
-	src->tex[0].enq = 42;
+	src->tex[RGBTEX].fmt = hex32('r','g','b','a');
+	src->tex[RGBTEX].name = "rgbtex";
+	src->tex[RGBTEX].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(src, RGBTEX, rgbfile);
+	src->tex[RGBTEX].enq = 42;
+
+	src->tex[DEPTEX].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(src, DEPTEX, depfile);
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_33;
@@ -307,38 +347,54 @@ static void terrain_draw_vbo(
 	struct entity* wrd, struct style* camg,
 	struct entity* ctx, struct style* area)
 {
-	struct glsrc* src = act->CTXBUF;
-	if(0 == src)return;
+	struct glsrc* src;
+	float* mat;
+	void* vbuf;
+	void* ibuf;
 
-	float* mat = src->arg[0].data;
-	if(0 == mat)return;
+	float w = vec3_getlen(geom->fs.vr);
+	float h = vec3_getlen(geom->fs.vf);
+	float x = camg->frus.vc[0]/w/2 + 0.5;
+	float y = camg->frus.vc[1]/h/2 + 0.5;
+	float dx = x - act->fx0;
+	float dy = y - act->fy0;
+	if(dx<0)dx = -dx;
+	if(dy<0)dy = -dy;
+	//say("x=%f,y=%f,dx=%f,dy=%f\n",x,y,dx,dy);
 
-	void* vbuf = src->vbuf;
-	void* ibuf = src->ibuf;
-	if(0 == vbuf)return;
-	if(0 == ibuf)return;
+	if((dx > 1.0/16)|(dy > 1.0/16)){
+		act->fx0 = x;
+		act->fy0 = y;
 
-	if(0 == act->iw0){
-		act->iw0 = 42;
+		src = act->CTXBUF;
+		if(0 == src)return;
 
+		//x0,y0,z0,dx,dy,dz -> ndc
+		vbuf = src->vbuf;
+		if(0 == vbuf)return;
+		ibuf = src->ibuf;
+		if(0 == ibuf)return;
 		terrain_generate(vbuf, ibuf, act, src);
 		src->vbuf_enq += 1;
 
-		mat[ 0] = 127.5*1000.0;
-		mat[ 1] = 0.0;
-		mat[ 2] = 0.0;
+		//ndc -> geom
+		mat = src->arg[0].data;
+		if(0 == mat)return;
+		mat[ 0] = geom->fs.vr[0];
+		mat[ 1] = geom->fs.vr[1];
+		mat[ 2] = geom->fs.vr[2];
 		mat[ 3] = 0.0;
-		mat[ 4] = 0.0;
-		mat[ 5] = 127.5*1000.0;
-		mat[ 6] = 0.0;
+		mat[ 4] = geom->fs.vf[0];
+		mat[ 5] = geom->fs.vf[1];
+		mat[ 6] = geom->fs.vf[2];
 		mat[ 7] = 0.0;
-		mat[ 8] = 0.0;
-		mat[ 9] = 0.0;
-		mat[10] = 10.0*1000.0;
+		mat[ 8] = geom->fs.vt[0];
+		mat[ 9] = geom->fs.vt[1];
+		mat[10] = geom->fs.vt[2];
 		mat[11] = 0.0;
-		mat[12] = act->fx0 * 1000.0;
-		mat[13] = act->fy0 * 1000.0;
-		mat[14] = -10000.0;
+		mat[12] = geom->fs.vc[0];
+		mat[13] = geom->fs.vc[1];
+		mat[14] = geom->fs.vc[2];
 		mat[15] = 1.0;
 	}
 	gl41data_insert(ctx, 's', act->CTXBUF, 1);
@@ -446,30 +502,41 @@ static void terrain_delete(struct entity* act)
 {
 	if(0 == act)return;
 }
-static void terrain_create(struct entity* act, void* str)
+static void terrain_create(struct entity* act, void* arg, int argc, u8** argv)
 {
-	int x,y,c;
-	u8* rgba;
+	int j,k;
 	struct glsrc* src;
+	u8 rgbpath[256] = {0};
+	u8 deppath[256] = {0};
 	if(0 == act)return;
 
-	act->fx0 = 0.0;
-	act->fy0 = 0.0;
-	act->iw0 = 0.0;
+	act->fx0 = -2.0;
+	act->fy0 = -2.0;
+	act->fz0 = -2.0;
+	for(j=1;j<argc;j++){
+		//say("%.6s\n",argv[j]);
+		if(0 == ncmp(argv[j], "rgb:", 4)){copyname(rgbpath, argv[j]+4);continue;}
+		if(0 == ncmp(argv[j], "dep:", 4)){copyname(deppath, argv[j]+4);continue;}
+	}
+
+	if(0 == arg)arg = "datafile/jpg/cartoon.jpg";
+	if(0 == rgbpath[0])copyname(rgbpath, arg);
+	if(0 == deppath[0])copyname(deppath, arg);
 
 	src = act->CTXBUF = memorycreate(0x200, 0);
 	if(0 == src)return;
+	terrain_ctxforwnd(src, rgbpath, deppath);
 
-	if(0 == str)str = "datafile/jpg/cartoon.jpg";
-	terrain_ctxforwnd(src, str);
 
-	if((0 == src->tex[0].w) | (0 == src->tex[0].h))
+	int x,y;
+	u8* rgba;
+	if((0 == src->tex[DEPTEX].w) | (0 == src->tex[DEPTEX].h))
 	{
-		src->tex[0].w = 2048;
-		src->tex[0].h = 2048;
-		if(0 == src->tex[0].data)src->tex[0].data = memorycreate(2048*2048*4, 0);
+		src->tex[DEPTEX].w = 2048;
+		src->tex[DEPTEX].h = 2048;
+		if(0 == src->tex[DEPTEX].data)src->tex[DEPTEX].data = memorycreate(2048*2048*4, 0);
 
-		rgba = src->tex[0].data;
+		rgba = src->tex[DEPTEX].data;
 		for(y=0;y<2048;y++)
 		{
 			for(x=0;x<2048;x++)
