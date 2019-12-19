@@ -124,6 +124,7 @@ void test_preppcm(struct pcmdata* pcm)
 	pcm->fmt = hex32('s','1','6',0);
 	pcm->chan = 1;
 	pcm->rate = 44100;
+	pcm->count = 65536;
 
 	buf = pcm->buf;
 	for(j=0;j<44100;j++)buf[j] = (short)(4096.0*sine(j*tau/100));

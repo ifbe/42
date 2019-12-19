@@ -11,7 +11,7 @@ int speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	struct pcmdata* pcm = spk->pcmdata;
 	if(0 == pcm)return 0;
 
-	say("fmt=%x,chan=%d,rate=%d,buf=%llx\n", pcm->fmt, pcm->chan, pcm->rate, pcm->buf);
+	say("fmt=%x,chan=%d,rate=%d,count=%d,buf=%llx\n", pcm->fmt, pcm->chan, pcm->rate, pcm->count, pcm->buf);
 	return 0;
 }
 int speakerwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

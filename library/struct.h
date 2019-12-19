@@ -115,6 +115,7 @@ struct pcmdata
 	int fmt;
 	int chan;
 	int rate;
+	int count;
 	short buf[0];
 };
 struct glsrc
@@ -902,27 +903,32 @@ struct supply
 	union{
 		u64 data0;
 		void* buf0;
-		void* pcmmic;
+		struct pcmdata* pcmmic;
+		struct pcmdata** pcm_mic;
 		struct gl41data* glcam;
 		struct gl41data** gl_camera;
 	};
 	union{
 		u64 data1;
 		void* buf1;
-		void* pcmwall;
+		struct pcmdata* pcmwall;
+		struct pcmdata** pcm_wall;
 		struct gl41data* gllit;
 		struct gl41data** gl_light;
 	};
 	union{
 		u64 data2;
 		void* buf2;
-		void* pcmdata;
+		struct pcmdata* pcmdata;
+		struct pcmdata** pcm_data;
 		struct gl41data* glsolid;
 		struct gl41data** gl_solid;
 	};
 	union{
 		u64 data3;
 		void* buf3;
+		struct pcmdata* pcmwhat;
+		struct pcmdata** pcm_what;
 		struct gl41data* glopaque;
 		struct gl41data** gl_opaque;
 	};

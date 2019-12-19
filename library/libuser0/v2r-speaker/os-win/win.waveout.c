@@ -46,21 +46,19 @@ void speakerchoose()
 }
 void speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct supply* spk = (void*)(self->chip);
+	struct supply* spk;
+	struct pcmdata* pcm;
+
+	spk = (void*)(self->chip);
 	if(0 == spk)return;
-	//say("spk=%llx\n",spk);
 
-	struct relation* rel = spk->orel0;
-	if(0 == rel)return;
-	//say("rel=%llx\n",rel);
-
-	struct entity* act = (void*)(rel->dstchip);
-	if(0 == act)return;
-	//say("act=%llx\n",act);
+	if(spk->orel0)relationread(spk, _ctx_, 0, 0, 0, 0);
+	pcm = spk->pcmdata;
+	if(0 == pcm)return;
 
 	ZeroMemory(&headout[ocur], sizeof(WAVEHDR));
-	headout[ocur].lpData = act->ctx;
-	headout[ocur].dwBufferLength = 40000*2;
+	headout[ocur].lpData = (void*)(pcm->buf);
+	headout[ocur].dwBufferLength = pcm->count*2;
 	headout[ocur].dwFlags = 0L;
 	headout[ocur].dwLoops = 0L;
 	waveOutPrepareHeader(waveout, &headout[ocur], sizeof(WAVEHDR));
