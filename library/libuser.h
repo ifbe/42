@@ -120,8 +120,6 @@
 #define _ws_ hex32('w','s',0,0)
 //
 #define _drag_ hex32('d','r','a','g')
-#define _joy_ hex32('j','o','y',0)
-#define _kbd_ hex32('k','b','d',0)
 #define _char_ hex32('c','h','a','r')
 #define _i2c_ hex32('i','2','c',0)
 //
@@ -136,6 +134,13 @@
 #define gamepad2 14
 #define gamepad3 15
 //
+#define _kbd_ hex32('k','b','d',0)
+#define kbd_up 0x48
+#define kbd_down 0x50
+#define kbd_left 0x4b
+#define kbd_right 0x4d
+//
+#define _joy_ hex32('j','o','y',0)
 #define joy_mask  0xff00ff
 #define joy_left  hex32('j', 0 ,'l', 0 )
 #define joy_right hex32('j', 0 ,'r', 0 )
@@ -329,6 +334,7 @@ void carveutf8_center(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec
 
 void carvedecimal(            struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
 void carvehexadecimal(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
+void carvehex8_center(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
 void carvestring(             struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 void carvestring_center(      struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 void carvetext_reverse(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);

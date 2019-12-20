@@ -30,8 +30,8 @@ q:1.0, 1.0
 
 
 <entity>
-mobius{
-fmt:mobius
+motor{
+fmt:motor
 }
 freecam{
 fmt:freecam
@@ -65,7 +65,7 @@ fmt:poller
 
 <relation>
 #3dworld depends on inner objects
-(3dworld, skygeom, 0) -> (mobius, skyhaha, 0)
+(3dworld, skygeom, 0) -> (motor, skyhaha, 0)
 (3dworld, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on ctx + cam

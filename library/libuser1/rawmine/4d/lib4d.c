@@ -1,5 +1,6 @@
 #include "libuser.h"
 void content_create(void*);
+void hexedit_init(void*);
 void overview_init(void*);
 //
 void* getsuffix(void* p);
@@ -101,6 +102,8 @@ void lib4d_create(void* addr)
 	asset_create();
 
 	content_create(addr);
+
+	hexedit_init(addr);
 
 	overview_init(addr);
 }

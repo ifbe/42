@@ -100,6 +100,11 @@ static void callback_keyboard(GLFWwindow* fw, int key, int scan, int action, int
 		e.why = 0xd;
 		e.what = _char_;
 	}
+	else if(0x102 == key)
+	{
+		e.why = '\t';
+		e.what = _char_;
+	}
 	else if(0x103 == key)
 	{
 		e.why = 0x8;

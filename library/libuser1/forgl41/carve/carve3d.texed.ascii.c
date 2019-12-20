@@ -497,16 +497,28 @@ void carvehexadecimal(struct entity* win, u32 rgb,
 	for(len=0;len<8;len++)
 	{
 		if(0 == val)break;
-		str[len] = 0x30 + (val&0xf);
-		if(str[len] > 0x39)str[len] += 7;
+		str[7-len] = 0x30 + (val&0xf);
+		if(str[7-len] > 0x39)str[7-len] += 7;
 		val = val>>4;
 	}
 	if(len == 0)
 	{
 		len = 1;
-		str[0] = '0';
+		str[7] = '0';
 	}
-	carvestring(win, rgb, vc, vr, vf, str, len);
+	carvestring(win, rgb, vc, vr, vf, str+8-len, len);
+}
+void carvehex8_center(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, u32 val)
+{
+	int j;
+	vec3 tc,tr,tf;
+	for(j=0;j<3;j++){
+		tc[j] = vc[j]-vr[j]-vf[j];
+		tr[j] = vr[j]*2;
+		tf[j] = vf[j]*2;
+	}
+	carvehexadecimal(win,rgb,tc,tr,tf,val);
 }
 
 

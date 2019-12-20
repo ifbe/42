@@ -1,4 +1,9 @@
 #include "libuser.h"
+#define CTXBUF buf0
+void gl41data_before(struct entity* wnd);
+void gl41data_after(struct entity* wnd);
+void gl41data_tmpcam(struct entity* wnd);
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
 
 
@@ -26,71 +31,51 @@ GLSL_VERSION
 	"mediump vec3 c1 = texture(tex1, uvw).bgr;\n"
 	"FragColor = vec4((c0+c1)*0.5, 1.0);\n"
 "}\n";
-
-
-
-
-
-static void texmix_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+void texmix_ctxforwnd(struct glsrc* src)
 {
-	u32 tmp;
-	u32* dst;
-	u32* src;
-	int x,y,xmax,ymax,stride;
-	int cx, cy, ww, hh;
-	if(sty)
-	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
-	}
-	else
-	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
-	}
-	if(0 == act->buf)return;
+	//property
+	src->geometry = 3;
+	src->method = 'v';
 
-	xmax = act->width;
-	if(xmax >= ww*2)xmax = ww*2;
-	ymax = act->height;
-	if(ymax >= hh*2)ymax = hh*2;
-	stride = win->stride;
-	for(y=0;y<ymax;y++)
-	{
-		dst = (win->buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
-		src = (act->buf) + 4*y*(act->width);
-		//say("y=%d,%llx,%llx\n",y,dst,src);
-		if('b' == ((win->fmt)&0xff))
-		{
-			for(x=0;x<xmax;x++)dst[x] = src[x];
-		}
-		else
-		{
-			for(x=0;x<xmax;x++)
-			{
-				tmp = src[x];
-				dst[x] = 0xff000000 | (tmp&0xff00) | ((tmp>>16)&0xff) | ((tmp&0xff)<<16);
-			}
-		}
-	}
+	//shader
+	src->vs = texmix_glsl_v;
+	src->fs = texmix_glsl_f;
+	src->shader_enq = 42;
+
+	//texture0
+	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].name = "tex0";
+	src->tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(src, 0, "datafile/jpg/test.jpg");
+	src->tex[0].enq = 42;
+
+	//texture1
+	src->tex[1].fmt = hex32('r','g','b','a');
+	src->tex[1].name = "tex1";
+	src->tex[1].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(src, 1, "datafile/jpg/cartoon.jpg");
+	src->tex[1].enq = 42;
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+	src->vbuf_enq = 42;
 }
 static void texmix_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* scn, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	if(0 == act->buf)return;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	if(0 == act->CTXBUF)return;
 
-	struct glsrc* src = act->buf;
+	struct glsrc* src = act->CTXBUF;
 	float (*vbuf)[6] = (void*)(src->vbuf);
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
@@ -136,6 +121,53 @@ static void texmix_draw_vbo3d(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
+	gl41data_insert(ctx, 's', src, 1);
+}
+
+
+
+
+static int texmix_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+{
+	struct relation* rel;
+	struct entity* world;
+
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)break;
+		world = (void*)(rel->srcchip);
+		if(_world3d_ == world->type){
+			self[0] = (void*)&rel->dstchip;
+			peer[0] = (void*)&rel->srcchip;
+			return 1;
+		}
+		rel = samedstnextsrc(rel);
+	}
+	return 0;
+}
+static void texmix_modify(struct entity* act)
+{
+}
+static void texmix_delete(struct entity* act)
+{
+	if(0 == act)return;
+}
+static void texmix_create(struct entity* act, void* str)
+{
+	if(0 == act)return;
+
+	act->CTXBUF = memorycreate(0x200, 0);
+	texmix_ctxforwnd(act->CTXBUF);
+}
+
+
+
+
+
+static void texmix_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
 }
 static void texmix_draw_json(
 	struct entity* act, struct style* pin,
@@ -168,31 +200,68 @@ static void texmix_draw(
 	else if(fmt == _tui_)texmix_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)texmix_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)texmix_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)texmix_draw_vbo2d(act, pin, win, sty);
-		//else texmix_draw_vbo3d(act, pin, win, sty);
-	}
-	else texmix_draw_pixel(act, pin, win, sty);
 }
 
 
 
 
-static void texmix_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void texmix_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	//say("@texball_read:%llx,%llx,%llx\n",act,win,buf);
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+//world -> texball
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* slot;
+//say("@freecam_read_byeye:%c\n",len);
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)texmix_draw_vbo3d(act,pin,ctx,sty);
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;slot = self->pfoot;
+		if('v' == len)texmix_draw_vbo3d(act,slot, wrd,geom, wnd,area);
 	}
-	//texmix_draw(act, pin, win, sty);
+//say("@freecam_read_byeye.end\n");
+}
+static void texmix_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+//wnd.area -> cam.gl41, cam.slot -> world.geom
+	int ret;
+	struct entity* wnd;struct style* area;
+	struct entity* cam;struct style* gl41;
+	wnd = peer->pchip;area = peer->pfoot;
+	cam = self->pchip;gl41 = self->pfoot;
+
+	ret = texmix_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
+	if(ret > 0){
+		struct entity* act;struct style* slot;
+		struct entity* wrd;struct style* geom;
+		act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
+		wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
+		texmix_draw_vbo3d(act, slot, wrd,geom, wnd,area);
+	}
+	else{
+		struct fstyle fs;
+		fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+		fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+		fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+		gl41data_before(wnd);
+		texmix_draw_vbo3d(cam, 0, 0,(void*)&fs, wnd,area);
+		gl41data_after(wnd);
+
+		gl41data_tmpcam(wnd);
+	}
+}
+static int texmix_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+{
+	struct entity* ent = peer->pchip;
+	switch(ent->fmt){
+		case _gl41wnd0_:texmix_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		default:        texmix_read_bycam(self, peer, stack, rsp, buf, len);break;
+	}
+	return 0;
 }
 static void texmix_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -202,62 +271,6 @@ static void texmix_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void texmix_start(struct halfrel* self, struct halfrel* peer)
 {
-}
-
-
-
-
-static void texmix_search(struct entity* act)
-{
-}
-static void texmix_modify(struct entity* act)
-{
-}
-static void texmix_delete(struct entity* act)
-{
-	if(0 == act)return;
-	memorydelete(act->buf);
-	act->buf = 0;
-}
-static void texmix_create(struct entity* act, void* str)
-{
-	int j;
-	struct glsrc* src;
-	if(0 == act)return;
-
-	src = act->buf = memorycreate(0x200, 0);
-	if(0 == src)return;
-
-	//property
-	src->geometry = 3;
-	src->method = 'v';
-
-	//shader
-	src->vs = texmix_glsl_v;
-	src->fs = texmix_glsl_f;
-	src->shader_enq = 42;
-
-	//texture0
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "tex0";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(src, 0, "datafile/jpg/test.jpg");
-	src->tex[0].enq = 42;
-
-	//texture1
-	src->tex[1].fmt = hex32('r','g','b','a');
-	src->tex[1].name = "tex1";
-	src->tex[1].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(src, 1, "datafile/jpg/cartoon.jpg");
-	src->tex[1].enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
-	src->vbuf_enq = 42;
 }
 
 

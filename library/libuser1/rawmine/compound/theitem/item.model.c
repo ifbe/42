@@ -320,17 +320,17 @@ static void model_read(struct halfrel* self, struct halfrel* peer, struct halfre
 	struct entity* wrd;struct style* camg;
 
 	//world -> model
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* part;
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
 
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
-		win = peer->pchip;geom = peer->pfoot;
-		act = self->pchip;part = self->pfoot;
+		scn = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;slot = self->pfoot;
 		if('v' == len){
-			model_draw_vbo3d(act,part, win,geom, wrd,camg, wnd,area);
+			model_draw_vbo3d(act,slot, scn,geom, wrd,camg, wnd,area);
 		}
 	}
 }

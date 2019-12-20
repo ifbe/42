@@ -115,7 +115,7 @@ void planet_register(void*);
 //tool
 void calculator_register(void*);
 void font_register(void*);
-void hex_register(void*);
+void hexedit_register(void*);
 void qrcode_register(void*);
 void sketchpad_register(void*);
 void spectrum_register(void*);
@@ -475,7 +475,7 @@ void content_create(void* addr)
 	font_register(tmp);
 	tmp += sizeof(struct entity);
 
-	hex_register(tmp);
+	hexedit_register(tmp);
 	tmp += sizeof(struct entity);
 
 	qrcode_register(tmp);

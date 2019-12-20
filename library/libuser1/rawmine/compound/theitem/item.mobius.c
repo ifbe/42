@@ -10,17 +10,18 @@ static void mobius_draw_pixel(
 {
 }
 static void mobius_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
-	int j;
+	int j,rgb;
 	float a,c,s;
 	float x,y,z,n;
 	vec3 tc,tr,tf,tu;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
 
 	tc[0] = vc[0] + vu[0];
 	tc[1] = vc[1] + vu[1];
@@ -31,7 +32,7 @@ static void mobius_draw_vbo3d(
 	tf[0] = vf[0]*0.75;
 	tf[1] = vf[1]*0.75;
 	tf[2] = vf[2]*0.75;
-	carveline_circle(win, 0xff0000, tc, tr, tf);
+	carveline_circle(wnd, 0xff0000, tc, tr, tf);
 
 	act->ix0 = (timeread()/10000) % 360;
 	for(j=0;j<180;j++)
@@ -73,71 +74,10 @@ static void mobius_draw_vbo3d(
 		tu[0] = x * n;
 		tu[1] = y * n;
 		tu[2] = z * n;
-/*
-		if((act->x0 < 180) && (j == act->x0))
-		{
-			act->camera.vc[0] = tc[0] + tf[0] + tu[0]*10;
-			act->camera.vc[1] = tc[1] + tf[1] + tu[1]*10;
-			act->camera.vc[2] = tc[2] + tf[2] + tu[2]*10;
 
-			act->camera.vt[0] = 2*tu[0];
-			act->camera.vt[1] = 2*tu[1];
-			act->camera.vt[2] = 2*tu[2];
-			act->camera.vb[0] =-2*tu[0];
-			act->camera.vb[1] =-2*tu[1];
-			act->camera.vb[2] =-2*tu[2];
-
-			n = squareroot(tf[0]*tf[0] + tf[1]*tf[1] + tf[2]*tf[2]);
-			act->camera.vn[0] = tf[0] / n;
-			act->camera.vn[1] = tf[1] / n;
-			act->camera.vn[2] = tf[2] / n;
-
-			n = squareroot(tr[0]*tr[0] + tr[1]*tr[1] + tr[2]*tr[2]);
-			act->camera.vr[0] = 2*tr[0] / n;
-			act->camera.vr[1] = 2*tr[1] / n;
-			act->camera.vr[2] = 2*tr[2] / n;
-			act->camera.vl[0] =-2*tr[0] / n;
-			act->camera.vl[1] =-2*tr[1] / n;
-			act->camera.vl[2] =-2*tr[2] / n;
-
-			tc[0] += tu[0]*10;
-			tc[1] += tu[1]*10;
-			tc[2] += tu[2]*10;
-			carvesolid_prism4(win, 0xff0000, tc, tr, tf, tu);
-		}
-		else if((act->x0 >= 180) && (j+180 == act->x0))
-		{
-			act->camera.vc[0] = tc[0] + tf[0] - tu[0]*10;
-			act->camera.vc[1] = tc[1] + tf[1] - tu[1]*10;
-			act->camera.vc[2] = tc[2] + tf[2] - tu[2]*10;
-
-			act->camera.vt[0] =-2*tu[0];
-			act->camera.vt[1] =-2*tu[1];
-			act->camera.vt[2] =-2*tu[2];
-			act->camera.vb[0] = 2*tu[0];
-			act->camera.vb[1] = 2*tu[1];
-			act->camera.vb[2] = 2*tu[2];
-
-			n = squareroot(tf[0]*tf[0] + tf[1]*tf[1] + tf[2]*tf[2]);
-			act->camera.vn[0] = tf[0] / n;
-			act->camera.vn[1] = tf[1] / n;
-			act->camera.vn[2] = tf[2] / n;
-
-			n = squareroot(tr[0]*tr[0] + tr[1]*tr[1] + tr[2]*tr[2]);
-			act->camera.vr[0] =-2*tr[0] / n;
-			act->camera.vr[1] =-2*tr[1] / n;
-			act->camera.vr[2] =-2*tr[2] / n;
-			act->camera.vl[0] = 2*tr[0] / n;
-			act->camera.vl[1] = 2*tr[1] / n;
-			act->camera.vl[2] = 2*tr[2] / n;
-
-			tc[0] -= tu[0]*10;
-			tc[1] -= tu[1]*10;
-			tc[2] -= tu[2]*10;
-			carvesolid_prism4(win, 0xff0000, tc, tr, tf, tu);
-		}
-		else carvesolid_prism4(win, 0x808080, tc, tr, tf, tu);
-*/
+		if(j == act->ix0)rgb = 0xff0000;
+		else rgb = 0x808080;
+		carvesolid_prism4(wnd, rgb, tc, tr, tf, tu);
 	}
 }
 static void mobius_draw_json(
@@ -180,22 +120,29 @@ static void mobius_draw(
 
 
 
-static void mobius_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void mobius_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	//say("@drone_read:%llx,%llx,%llx\n",act,win,buf);
+	//wnd -> cam
+	struct entity* wnd;struct style* area;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)mobius_draw_vbo3d(act,pin,ctx,sty);
+	//cam -> world
+	struct entity* wrd;struct style* camg;
+
+	//world -> model
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		scn = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;slot = self->pfoot;
+		if('v' == len)mobius_draw_vbo3d(act,slot, scn,geom, wnd,area);
 	}
 	//mobius_draw(act, pin, win, sty);
 }
-static void mobius_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void mobius_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 }
 static void mobius_stop(struct halfrel* self, struct halfrel* peer)

@@ -429,7 +429,7 @@ void overview_draw_pixel(
 	}
 }
 void overview_draw_vbo(
-	struct entity* act, struct style* part,
+	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
@@ -1321,16 +1321,16 @@ static void overview_read(struct halfrel* self, struct halfrel* peer, struct hal
 	struct entity* wrd;struct style* camg;
 
 	//world -> overview
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* part;
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
 
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
-		win = peer->pchip;geom = peer->pfoot;
-		act = self->pchip;part = self->pfoot;
-		if('v' == len)overview_draw_vbo(act,part, win,geom, wnd,area);
+		scn = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;slot = self->pfoot;
+		if('v' == len)overview_draw_vbo(act,slot, scn,geom, wnd,area);
 	}
 }
 static int overview_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

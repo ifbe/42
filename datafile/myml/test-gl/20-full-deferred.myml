@@ -24,6 +24,10 @@ N: 0.0, 0.0, 0.0, 1.0
 F: 0.0, 0.0, 0.0, 1000000000.0
 }
 
+gbufrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
 aaaarect{
 c:0.0, 0.0
 q:1.0, 1.0
@@ -43,7 +47,7 @@ world{
 fmt:3dworld
 }
 mixer{
-fmt:mixer
+fmt:texmix
 }
 </entity>
 
@@ -78,7 +82,7 @@ fmt:poller
 (world, aaaageom, 0) -> (cam0, aaaapart, 0)
 
 #gbuffer depends on cam0
-(gbuffer, 0, 0) -> (cam0, 0, 0)
+(gbuffer, gbufrect, 0) -> (cam0, 0, 0)
 
 #mixer depends on gbuffer
 (mixer, 0, fbo) -> (gbuffer, 0, 0)
