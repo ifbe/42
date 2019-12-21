@@ -1,6 +1,45 @@
+<style>
+viewpart{
+}
+viewgeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+aaaapart{
+}
+aaaageom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+t: 0.0, 1000.0, 0.0
+n: 0.0, 0.0, 1000.0
+f: 0.0, 0.0, -1000.0
+}
+aaaarect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+
+scrxyz{
+c:0.0, 3.0, 1.0
+r:1920, 0.0, 0.0
+t:0.0, 1080, 0.0
+f:0.0, 0.1, 0.0
+}
+eyexyz{
+c:0.0, 0.0, 1.6
+r:0.1, 0.0, 0.0
+f:0.0, 0.1, 0.0
+t:0.0, 0.0, 0.1
+}
+</style>
+
+
 <entity>
-overview{
-fmt:overview
+qrcode{
+fmt:qrcode
 }
 cam0{
 fmt:orthcam
@@ -42,49 +81,10 @@ fmt:poller
 </worker>
 
 
-<style>
-viewpart{
-}
-viewgeom{
-c: 0.0, 0.0, 0.0
-r: 1000.0, 0.0, 0.0
-f: 0.0, 1000.0, 0.0
-t: 0.0, 0.0, 1000.0
-}
-
-aaaapart{
-}
-aaaageom{
-c: 0.0, 0.0, 0.0
-r: 1000.0, 0.0, 0.0
-t: 0.0, 1000.0, 0.0
-n: 0.0, 0.0, 1000.0
-f: 0.0, 0.0, -1000.0
-}
-aaaarect{
-c:0.0, 0.0
-q:1.0, 1.0
-}
-
-scrxyz{
-c:0.0, 3.0, 1.0
-r:1920, 0.0, 0.0
-t:0.0, 1080, 0.0
-f:0.0, 0.1, 0.0
-}
-eyexyz{
-c:0.0, 0.0, 1.6
-r:0.1, 0.0, 0.0
-f:0.0, 0.1, 0.0
-t:0.0, 0.0, 0.1
-}
-</style>
-
-
 <relation>
-#world depends on overview
+#world depends on qrcode
 (world, aaaageom, 0) -> (cam0, aaaapart, 0)
-(world, viewgeom, 0) -> (overview, viewpart, 0)
+(world, viewgeom, 0) -> (qrcode, viewpart, 0)
 
 #glwnd depends on gldata
 (glwnd, aaaarect, 0) -> (cam0, 0, a0)

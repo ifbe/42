@@ -10,8 +10,9 @@ static void field_draw_pixel(
 {
 }
 static void field_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	int x,y,z;
 	float tx,ty,tl;
@@ -20,11 +21,11 @@ static void field_draw_vbo3d(
 	float* vec;
 
 	vec3 ta,tb;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vt = sty->f.vt;
-	carveline_prism4(win, 0xffffff, vc, vr, vf, vt);
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+	carveline_prism4(wnd, 0xffffff, vc, vr, vf, vt);
 
 	vec = act->buf;
 	for(z=0;z<20;z++){
@@ -50,7 +51,7 @@ static void field_draw_vbo3d(
 		tb[1] = ta[1] + dy + ta[0]/1000;
 		tb[2] = ta[2] + dz;
 
-		carveline_arrow(win, 0x007f7f, ta, tb, vt);
+		carveline_arrow(wnd, 0x007f7f, ta, tb, vt);
 
 
 		//particle
@@ -68,7 +69,7 @@ static void field_draw_vbo3d(
 		vec[(z*20*20 + y*20 + x)*3 + 1] += dy + ta[0]/1000;
 		vec[(z*20*20 + y*20 + x)*3 + 2] += dz;
 
-		carvepoint(win, 0xffffff, ta);
+		carvepoint(wnd, 0xffffff, ta);
 	}
 	}
 	}
@@ -103,31 +104,28 @@ static void field_draw(
 	else if(fmt == _tui_)field_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)field_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)field_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)field_draw_vbo2d(act, pin, win, sty);
-		//else field_draw_vbo3d(act, pin, win, sty);
-	}
-	else field_draw_pixel(act, pin, win, sty);
 }
 
 
 
 
-static void field_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void field_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	//say("@texball_read:%llx,%llx,%llx\n",act,win,buf);
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wor;struct style* camg;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)field_draw_vbo3d(act,pin,ctx,sty);
+	//world -> video
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		scn = peer->pchip;geom = peer->pfoot;
+		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)field_draw_vbo3d(act,slot, scn,geom, wnd,area);
 	}
-	//field_draw(act, pin, win, sty);
 }
 static void field_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

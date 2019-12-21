@@ -1,5 +1,8 @@
 #include "libuser.h"
+#define F32BUF buf0
+#define CTXBUF buf1
 #define COUNT (0x100000/36)
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 
@@ -51,6 +54,29 @@ GLSL_VERSION
 	"FragColor = vec4(colour, 1.0);\n"
 "}\n";
 
+void particle_ctxforwnd(struct glsrc* src, float* vbuf)
+{
+	src->geometry = 1;
+	src->method = 'v';
+
+	//shader
+	src->vs = particle_glsl_v;
+	src->gs = particle_glsl_g;
+	src->fs = particle_glsl_f;
+	src->shader_enq = 42;
+
+	//argument
+	src->arg[0].name = "objmat";
+	src->arg[0].data = memorycreate(4*4*4, 0);
+	src->arg[0].fmt = 'm';
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf_w = 4*9;
+	src->vbuf_h = COUNT;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = vbuf;
+}
 
 
 
@@ -58,15 +84,11 @@ static void particle_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-}/*
-static void particle_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}*/
+}
 static void particle_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	int j;
 	float x,y,z;
@@ -74,14 +96,14 @@ static void particle_draw_vbo3d(
 	float* mat;
 	float* buf;
 
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	//carveline_prism4(win, 0xffffff, vc, vr, vf, vu);
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	//carveline_prism4(wnd, 0xffffff, vc, vr, vf, vu);
 
 
-	src = act->buf;
+	src = act->CTXBUF;
 	if(0 == src)return;
 
 	mat = (void*)src->arg[0].data;
@@ -92,21 +114,21 @@ static void particle_draw_vbo3d(
 
 
 	//update matrix
-	mat[ 0] = sty->f.vr[0];
-	mat[ 1] = sty->f.vr[1];
-	mat[ 2] = sty->f.vr[2];
+	mat[ 0] = geom->f.vr[0];
+	mat[ 1] = geom->f.vr[1];
+	mat[ 2] = geom->f.vr[2];
 	mat[ 3] = 0.0;
-	mat[ 4] = sty->f.vf[0];
-	mat[ 5] = sty->f.vf[1];
-	mat[ 6] = sty->f.vf[2];
+	mat[ 4] = geom->f.vf[0];
+	mat[ 5] = geom->f.vf[1];
+	mat[ 6] = geom->f.vf[2];
 	mat[ 7] = 0.0;
-	mat[ 8] = sty->f.vt[0];
-	mat[ 9] = sty->f.vt[1];
-	mat[10] = sty->f.vt[2];
+	mat[ 8] = geom->f.vt[0];
+	mat[ 9] = geom->f.vt[1];
+	mat[10] = geom->f.vt[2];
 	mat[11] = 0.0;
-	mat[12] = sty->f.vc[0];
-	mat[13] = sty->f.vc[1];
-	mat[14] = sty->f.vc[2];
+	mat[12] = geom->f.vc[0];
+	mat[13] = geom->f.vc[1];
+	mat[14] = geom->f.vc[2];
 	mat[15] = 1.0;
 
 
@@ -129,6 +151,7 @@ static void particle_draw_vbo3d(
 		buf[9*j + 2] = z;
 	}
 	src->vbuf_enq += 1;
+	gl41data_insert(wnd, 's', act->CTXBUF, 1);
 }
 static void particle_draw_json(
 	struct entity* act, struct style* pin,
@@ -160,31 +183,28 @@ static void particle_draw(
 	else if(fmt == _tui_)particle_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)particle_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)particle_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)particle_draw_vbo2d(act, pin, win, sty);
-		//else particle_draw_vbo3d(act, pin, win, sty);
-	}
-	else particle_draw_pixel(act, pin, win, sty);
 }
 
 
 
 
-static void particle_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void particle_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	//say("@texball_read:%llx,%llx,%llx\n",act,win,buf);
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wor;struct style* camg;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)particle_draw_vbo3d(act,pin,ctx,sty);
+	//world -> video
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		scn = peer->pchip;geom = peer->pfoot;
+		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)particle_draw_vbo3d(act,slot, scn,geom, wnd,area);
 	}
-	//particle_draw(act, pin, win, sty);
 }
 static void particle_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -208,11 +228,6 @@ static void particle_modify(struct entity* act)
 static void particle_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(act->buf)
-	{
-		memorydelete(act->buf);
-		act->buf = 0;
-	}
 }
 static void particle_create(struct entity* act)
 {
@@ -222,7 +237,7 @@ static void particle_create(struct entity* act)
 	if(0 == act)return;
 
 
-	vbuf = memorycreate(4*9 * COUNT, 0);
+	vbuf = act->F32BUF = memorycreate(4*9 * COUNT, 0);
 	if(0 == vbuf)return;
 	for(j=0;j<COUNT;j++)
 	{
@@ -243,30 +258,8 @@ static void particle_create(struct entity* act)
 	}
 
 
-	src = act->buf = memorycreate(0x200, 0);
-	if(0 == src)return;
-
-	//
-	src->geometry = 1;
-	src->method = 'v';
-
-	//shader
-	src->vs = particle_glsl_v;
-	src->gs = particle_glsl_g;
-	src->fs = particle_glsl_f;
-	src->shader_enq = 42;
-
-	//argument
-	src->arg[0].name = "objmat";
-	src->arg[0].data = memorycreate(4*4*4, 0);
-	src->arg[0].fmt = 'm';
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*9;
-	src->vbuf_h = COUNT;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = vbuf;
+	src = act->CTXBUF = memorycreate(0x200, 0);
+	particle_ctxforwnd(src, vbuf);
 }
 
 

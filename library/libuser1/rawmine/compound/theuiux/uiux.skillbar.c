@@ -1,5 +1,6 @@
 #include "libuser.h"
-void loadtexfromfile(struct glsrc* src, int idx, char* name);
+void loadtexfromfile(struct glsrc* src, int idx, u8* name);
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 
@@ -70,6 +71,32 @@ static void vertex_gen(float (*vbuf)[6], float x, float y, vec3 vc, vec3 vr, vec
 	vbuf[t+5][4] = (y+1)/16.0;
 	vbuf[t+5][5] = 0.0;
 }
+void skillbar_ctxforwnd(struct glsrc* src, u8* str)
+{
+	//property
+	src->geometry = 3;
+	src->method = 'v';
+
+	//shader
+	src->vs = skillbar_glsl_v;
+	src->fs = skillbar_glsl_f;
+	src->shader_enq = 42;
+
+	//texture0
+	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].name = "tex0";
+	src->tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(src, 0, str);
+	src->tex[0].enq = 42;
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 0;
+	src->vbuf_len = (src->vbuf_w) * 6*16*16;
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+	src->vbuf_enq = 42;
+}
 
 
 
@@ -124,18 +151,17 @@ static void skillbar_draw_pixel(
 	}
 }
 static void skillbar_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	int x,y,k,t;
 	vec3 tc, tr, tf;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	if(0 == act->buf)return;
-
-	carveline_rect(win, 0xff00ff, vc, vr, vf);
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	carveline_rect(wnd, 0xff00ff, vc, vr, vf);
 
 	struct glsrc* src = act->buf;
 	float (*vbuf)[6] = (void*)(src->vbuf);
@@ -154,7 +180,7 @@ static void skillbar_draw_vbo3d(
 			tc[0] = vc[0] + vr[0]*(2*x+1)/28.0 + vf[0]*(2*y-23)/24.0;
 			tc[1] = vc[1] + vr[1]*(2*x+1)/28.0 + vf[1]*(2*y-23)/24.0;
 			tc[2] = vc[2] + vr[2]*(2*x+1)/28.0 + vf[2]*(2*y-23)/24.0;
-			carveline_rectselect(win, 0xff00ff, tc, tr, tf);
+			carveline_rectselect(wnd, 0xff00ff, tc, tr, tf);
 
 			vertex_gen(&vbuf[t+0], k%16, k/16, tc, tr, tf);
 			k ++;
@@ -166,7 +192,7 @@ static void skillbar_draw_vbo3d(
 			tc[0] = vc[0] + vr[0]*(2*x+21)/24.0 + vf[0]*(2*y-11)/24.0;
 			tc[1] = vc[1] + vr[1]*(2*x+21)/24.0 + vf[1]*(2*y-11)/24.0;
 			tc[2] = vc[2] + vr[2]*(2*x+21)/24.0 + vf[2]*(2*y-11)/24.0;
-			carveline_rectselect(win, 0xff00ff, tc, tr, tf);
+			carveline_rectselect(wnd, 0xff00ff, tc, tr, tf);
 
 			vertex_gen(&vbuf[t+0], k%16, k/16, tc, tr, tf);
 			k ++;
@@ -176,6 +202,7 @@ static void skillbar_draw_vbo3d(
 
 	src->vbuf_h = 6*12*6;
 	src->vbuf_enq += 1;
+	gl41data_insert(wnd, 's', src, 1);
 }
 static void skillbar_draw_json(
 	struct entity* act, struct style* pin,
@@ -208,31 +235,28 @@ static void skillbar_draw(
 	else if(fmt == _tui_)skillbar_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)skillbar_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)skillbar_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)skillbar_draw_vbo2d(act, pin, win, sty);
-		//else skillbar_draw_vbo3d(act, pin, win, sty);
-	}
-	else skillbar_draw_pixel(act, pin, win, sty);
 }
 
 
 
 
-static void skillbar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void skillbar_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	//say("@texball_read:%llx,%llx,%llx\n",act,win,buf);
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wor;struct style* camg;
 
-	if(ctx){
-		if(_gl41data_ == ctx->type)skillbar_draw_vbo3d(act,pin,ctx,sty);
+	//world -> video
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		scn = peer->pchip;geom = peer->pfoot;
+		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)skillbar_draw_vbo3d(act,slot, scn,geom, wnd,area);
 	}
-	//skillbar_draw(act, pin, win, sty);
 }
 static void skillbar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -266,32 +290,8 @@ static void skillbar_create(struct entity* act, void* str)
 	if(0 == act)return;
 
 	src = act->buf = memorycreate(0x200, 0);
-	if(0 == src)return;
-
-	//property
-	src->geometry = 3;
-	src->method = 'v';
-
-	//shader
-	src->vs = skillbar_glsl_v;
-	src->fs = skillbar_glsl_f;
-	src->shader_enq = 42;
-
-	//texture0
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "tex0";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";
-	loadtexfromfile(src, 0, str);
-	src->tex[0].enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 0;
-	src->vbuf_len = (src->vbuf_w) * 6*16*16;
-	src->vbuf = memorycreate(src->vbuf_len, 0);
-	src->vbuf_enq = 42;
+	skillbar_ctxforwnd(src, str);
 }
 
 

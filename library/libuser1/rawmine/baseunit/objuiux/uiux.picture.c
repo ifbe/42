@@ -24,9 +24,7 @@ GLSL_VERSION
 "uniform sampler2D tex0;\n"
 "uniform mediump float angle;\n"
 "void main(){\n"
-	"mediump float x = cos(angle)*(uvw.x-0.5) - sin(angle)*(uvw.y-0.5);\n"
-	"mediump float y = sin(angle)*(uvw.x-0.5) + cos(angle)*(uvw.y-0.5);\n"
-	"mediump vec4 bgra = texture(tex0, vec2(x+0.5,y+0.5)).bgra;\n"
+	"mediump vec4 bgra = texture(tex0, uvw).bgra;\n"
 	"FragColor = bgra;\n"
 "}\n";
 
@@ -42,12 +40,12 @@ static void picture_ctxforwnd(struct glsrc* src, char* str, float* angle)
 	src->vs = picture_glsl_v;
 	src->fs = picture_glsl_f;
 	src->shader_enq = 42;
-
+/*
 	//arg
 	src->arg[0].fmt = 'f';
 	src->arg[0].name = "angle";
 	src->arg[0].data = angle;
-
+*/
 	//texture0
 	src->tex[0].fmt = hex32('r','g','b','a');
 	src->tex[0].name = "tex0";
@@ -75,10 +73,10 @@ static void picture_draw_vbo3d(
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
 	if(0 == act->CTXBUF)return;
-
+/*
 	act->fx0 = ((timeread()%5000000)/5000000.0)*tau;
 	//say("%f\n",act->fx0);
-
+*/
 	src = act->CTXBUF;
 	vbuf = (void*)(src->vbuf);
 

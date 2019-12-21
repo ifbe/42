@@ -12,8 +12,9 @@ static void voxel_draw_pixel(
 {
 }
 static void voxel_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	int x,y,z;
 	int r,g,b;
@@ -22,11 +23,11 @@ static void voxel_draw_vbo3d(
 	short* buf;
 
 	vec3 tc,tr,tf,tu;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carveline_prism4(win, 0xffff00, vc, vr, vf, vu);
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	carveline_prism4(wnd, 0xffff00, vc, vr, vf, vu);
 
 	tab = act->buf;
 	if(0 == tab)return;
@@ -61,7 +62,7 @@ static void voxel_draw_vbo3d(
 		r = z*26+13;
 		g = y*26+13;
 		b = x*26+13;
-		carvesolid_prism4(win, (r<<16)|(g<<8)|b, tc, tr, tf, tu);
+		carvesolid_prism4(wnd, (r<<16)|(g<<8)|b, tc, tr, tf, tu);
 	}
 	}
 	}
@@ -108,12 +109,6 @@ static void voxel_draw(
 	else if(fmt == _tui_)voxel_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)voxel_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)voxel_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)voxel_draw_vbo2d(act, pin, win, sty);
-		//else voxel_draw_vbo3d(act, pin, win, sty);
-	}
-	else voxel_draw_pixel(act, pin, win, sty);
 }
 
 
@@ -137,16 +132,22 @@ void voxel_data(struct entity* act, int type, void* buf, int len)
 
 
 
-static void voxel_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void voxel_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	if(ctx){
-		if(_gl41data_ == ctx->type)voxel_draw_vbo3d(act,pin,ctx,sty);
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wor;struct style* camg;
+
+	//world -> video
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		scn = peer->pchip;geom = peer->pfoot;
+		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)voxel_draw_vbo3d(act,slot, scn,geom, wnd,area);
 	}
 }
 static void voxel_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

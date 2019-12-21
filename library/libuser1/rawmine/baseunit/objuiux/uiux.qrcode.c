@@ -51,22 +51,22 @@ static void qrcode_draw_pixel(
 		}
 //say("\n");
 	}
-}/*
-static void qrcode_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+}
+static void qrcode_draw_vbo(
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	u32 rgb;
 	int x,y,w,h;
 	u8 (*tab)[4];
 	vec3 tc, tr, tf, tu, f;
-	if(0 == sty)sty = defaultstyle_vbo2d();
 
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carvesolid2d_rect(win, 0x444444, vc, vr, vf);
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+	//carveopaque_rect(ctx, 0x444444, vc, vr, vf);
 
 	tr[0] = vr[0] / 49;
 	tr[1] = vr[1] / 49;
@@ -84,19 +84,9 @@ static void qrcode_draw_vbo2d(
 			tc[0] = vc[0] + (x-24)*vr[0]*2/49 + (y-24)*vf[0]*2/49;
 			tc[1] = vc[1] + (x-24)*vr[1]*2/49 + (y-24)*vf[1]*2/49;
 			tc[2] = vc[2] + (x-24)*vr[2]*2/49 + (y-24)*vf[2]*2/49 - 0.1;
-			carvesolid2d_rect(win, rgb, tc, tr, tf);
+			carvesolid_rect(ctx, rgb, tc, tr, tf);
 		}
 	}
-}*/
-static void qrcode_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carvesolid_rect(win, 0x444444, vc, vr, vf);
 }
 static void qrcode_draw_json(
 	struct entity* act, struct style* pin,
@@ -158,25 +148,37 @@ static void qrcode_draw(
 	else if(fmt == _tui_)qrcode_draw_tui(act, pin, win, sty);
 	else if(fmt == _html_)qrcode_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)qrcode_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)qrcode_draw_vbo2d(act, pin, win, sty);
-		//else qrcode_draw_vbo3d(act, pin, win, sty);
-	}
-	else qrcode_draw_pixel(act, pin, win, sty);
 }
 
 
 
 
-static void qrcode_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void qrcode_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//qrcode_draw(act, pin, win, sty);
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wor;struct style* camg;
+
+//world -> button
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		scn = peer->pchip;geom = peer->pfoot;
+		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)qrcode_draw_vbo(act,slot, scn,geom, wnd,area);
+	}
+}
+static void qrcode_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+{
+	struct entity* ent = self->pchip;
+	struct entity* sup = peer->pchip;
+	switch(sup->fmt){
+		case _rgba_:qrcode_draw_pixel(ent, self->pfoot, sup, peer->pfoot);break;
+		default:    qrcode_read_bycam(self, peer, stack, rsp, buf, len);break;
+	}
 }
 static void qrcode_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
