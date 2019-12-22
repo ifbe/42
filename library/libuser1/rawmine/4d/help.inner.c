@@ -53,7 +53,7 @@ void graph_register(void*);
 //.biology
 void dna_register(void*);
 //.circuit
-void rs274x_register(void*);
+void gerber_register(void*);
 //.model
 void model_register(void*);
 void geometry_register(void*);
@@ -412,7 +412,7 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 //.circuit
-	rs274x_register(tmp);
+	gerber_register(tmp);
 	tmp += sizeof(struct entity);
 
 //.model

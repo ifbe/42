@@ -31,7 +31,8 @@ q:1.0, 1.0
 
 <entity>
 rs274x{
-fmt:rs274x
+fmt:gerber
+url:/Users/ifbe/Desktop/test.GTL
 }
 cam0{
 fmt:freecam
