@@ -1,5 +1,4 @@
 #include "libuser.h"
-#define PI 3.1415926535897932384626433832795028841971693993151
 
 
 
@@ -8,42 +7,6 @@ static void tardis_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-}/*
-static void tardis_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carvesolid2d_rect(win, 0xff, vc, vr ,vf);
-}*/
-static void tardis_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	vec3 tc,tr,tf,tu;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-
-	tc[0] = vc[0] + vu[0]/2;
-	tc[1] = vc[1] + vu[1]/2;
-	tc[2] = vc[2] + vu[2]/2;
-	tr[0] = vr[0]/2;
-	tr[1] = vr[1]/2;
-	tr[2] = vr[2]/2;
-	tf[0] = vf[0]/2;
-	tf[1] = vf[1]/2;
-	tf[2] = vf[2]/2;
-	tu[0] = vu[0]/2;
-	tu[1] = vu[1]/2;
-	tu[2] = vu[2]/2;
-	carvesolid_prism4(win, 0x0000ff, tc, tr, tf, tu);
 }
 static void tardis_draw_json(
 	struct entity* act, struct style* pin,
@@ -65,34 +28,79 @@ static void tardis_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void tardis_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+
+
+
+
+static void tardis_draw_vbo3d(
+	struct entity* act, struct style* slot,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)tardis_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)tardis_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)tardis_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)tardis_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)tardis_draw_vbo2d(act, pin, win, sty);
-		//else tardis_draw_vbo3d(act, pin, win, sty);
+	int j;
+	vec3 tc,tr,tf,tt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+	carvesolid_rect(wnd, 0, vc, vr, vf);
+
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] + vt[j]/2;
+		tr[j] = vr[j]/2;
+		tf[j] = vf[j]/2;
+		tt[j] = vt[j]/2;
 	}
-	else tardis_draw_pixel(act, pin, win, sty);
+	carvesolid_prism4(wnd, 0x0000ff, tc, tr, tf, tt);
+}
+static void tardis_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wor;struct style* camg;
+
+	//world -> tardis
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		win = peer->pchip;geom = peer->pfoot;
+		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)tardis_draw_vbo3d(act,slot, win,geom, wnd,area);
+	}
 }
 
 
 
 
-static void tardis_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void tardis_pcm(struct entity* ent, struct supply* sup)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//tardis_draw(act, pin, win, sty);
+	int j;
+	struct pcmdata* pcm;
+	if(0 == ent->buf0)return;
+//say("@tardis_pcm\n");
+	pcm = ent->buf0 + 44 - 0x10;
+	pcm->fmt = hex32('s','1','6',0);
+	pcm->chan = 1;
+	pcm->rate = 44100;
+	pcm->count = 65536;
+	sup->pcmdata = pcm;
+}
+
+
+
+
+static void tardis_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	struct entity* ent = self->pchip;
+	struct supply* sup = peer->pchip;
+//say("fmt=%.8s\n", &sup->fmt);
+	switch(sup->fmt){
+		case _pcm_:tardis_pcm(ent, sup);break;
+		default:tardis_read_bycam(self, peer, stack, rsp, buf, len);break;
+	}
 }
 static void tardis_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -118,11 +126,15 @@ static void tardis_delete(struct entity* act)
 	if(0 == act)return;
 	//if(_copy_ == act->type)memorydelete(act->buf);
 }
-static void tardis_create(struct entity* act)
+static void tardis_create(struct entity* act, void* arg)
 {
 	if(0 == act)return;
-	//if(_orig_ == act->type)act->buf = buffer;
-	//if(_copy_ == act->type)act->buf = memorycreate(256, 0);
+
+	act->buf0 = memorycreate(0x100000, 0);
+	if(0 == act->buf0)return;
+
+	if(0 == arg)arg = "datafile/wav/tardis.wav";
+	openreadclose(arg, 0, act->buf0, 0x100000);
 }
 
 

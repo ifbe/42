@@ -33,7 +33,7 @@ q:1.0, 1.0
 <entity>
 canvas{
 fmt:oscillo
-url:datafile/wav/tardis.wav
+url:datafile/wav/cat.wav
 }
 freecam{
 fmt:freecam

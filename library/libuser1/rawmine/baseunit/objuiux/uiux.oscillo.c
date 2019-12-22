@@ -231,7 +231,7 @@ void oscillo_pcm(struct entity* ent, struct supply* sup)
 	int j;
 	struct pcmdata* pcm;
 	if(0 == ent->buf0)return;
-say("@oscillo_pcm\n");
+//say("@oscillo_pcm\n");
 	pcm = ent->buf0 + 44 - 0x10;
 	pcm->fmt = hex32('s','1','6',0);
 	pcm->chan = 1;
@@ -265,7 +265,7 @@ static void oscillo_read(struct halfrel* self, struct halfrel* peer, struct half
 {
 	struct entity* ent = self->pchip;
 	struct supply* sup = peer->pchip;
-say("fmt=%.8s\n", &sup->fmt);
+//say("fmt=%.8s\n", &sup->fmt);
 	switch(sup->fmt){
 		case _gl41wnd0_:break;
 		case _pcm_:oscillo_pcm(ent, sup);break;
