@@ -1,6 +1,7 @@
 #include "libuser.h"
 #define GL41BUF buf1
 #define RGBABUF buf0
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 void scale_image(void* src, void* dst,
 	int sw, int sh, int sx1, int sy1, int sx2, int sy2,
 	int dw, int dh, int dx1, int dy1, int dx2, int dy2);
@@ -254,6 +255,7 @@ static void codeimg_draw_vbo3d(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
+	gl41data_insert(wnd, 's', src, 1);
 }
 static void codeimg_draw_json(
 	struct entity* act, struct style* pin,

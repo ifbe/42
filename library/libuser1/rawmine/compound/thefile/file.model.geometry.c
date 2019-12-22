@@ -14,52 +14,23 @@ static void geometry_draw_pixel(
 	if(ww > hh)ww = hh;
 	if(hh > ww)hh = ww;
 	drawsolid_rect(win, 0x808080, cx-ww, cy-hh, cx+ww, cy+hh);
-}/*
-static void geometry_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	vec3 tr, tf;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	float n = (win->height) * vf[1] / (win->width) / vr[0];
-	if(n < 1.0)
-	{
-		tr[0] = vr[0] * n;
-		tr[1] = vr[1] * n;
-		tr[2] = vr[2] * n;
-		tf[0] = vf[0];
-		tf[1] = vf[1];
-		tf[2] = vf[2];
-	}
-	else
-	{
-		tr[0] = vr[0];
-		tr[1] = vr[1];
-		tr[2] = vr[2];
-		tf[0] = vf[0] / n;
-		tf[1] = vf[1] / n;
-		tf[2] = vf[2] / n;
-	}
-	carveopaque2d_rect(win, 0x80808080, vc, tr, tf);
-}*/
+}
 static void geometry_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	vec3 t1,t2;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
 	int dimen = act->iw0;
 	int shape = act->iwn;
 	//say("%d,%d\n",dimen,shape);
 
 	if('q' == shape){
-		carvepoint(win, 0x808080, vc);
+		carvepoint(wnd, 0x808080, vc);
 		return;
 	}
 
@@ -72,7 +43,7 @@ static void geometry_draw_vbo3d(
 		t2[2] = vc[2] + vr[2];
 		switch(dimen){
 			case '1':
-			case '2':carveline(win, 0x808080, t1, t2);break;
+			case '2':carveline(wnd, 0x808080, t1, t2);break;
 		}
 		return;
 	}
@@ -85,70 +56,70 @@ static void geometry_draw_vbo3d(
 		t2[1] = vc[1] + vf[1];
 		t2[2] = vc[2] + vf[2];
 		switch(dimen){
-			case '1':carvepoint_triangle( win, 0x00808080, vc, t1, t2);break;
-			case '2':carveline_triangle(  win, 0x00808080, vc, t1, t2);break;
-			case '3':carvesolid_triangle( win, 0x00808080, vc, t1, t2);break;
-			case '4':carveopaque_triangle(win, 0x80808080, vc, t1, t2);break;
+			case '1':carvepoint_triangle( wnd, 0x00808080, vc, t1, t2);break;
+			case '2':carveline_triangle(  wnd, 0x00808080, vc, t1, t2);break;
+			case '3':carvesolid_triangle( wnd, 0x00808080, vc, t1, t2);break;
+			case '4':carveopaque_triangle(wnd, 0x80808080, vc, t1, t2);break;
 		}
 		return;
 	}
 
 	if('r' == shape){
 		switch(dimen){
-			case '1':carvepoint_rect( win, 0x00808080, vc, vr, vf);break;
-			case '2':carveline_rect(  win, 0x00808080, vc, vr, vf);break;
-			case '3':carvesolid_rect( win, 0x00808080, vc, vr, vf);break;
-			case '4':carveopaque_rect(win, 0x80808080, vc, vr, vf);break;
+			case '1':carvepoint_rect( wnd, 0x00808080, vc, vr, vf);break;
+			case '2':carveline_rect(  wnd, 0x00808080, vc, vr, vf);break;
+			case '3':carvesolid_rect( wnd, 0x00808080, vc, vr, vf);break;
+			case '4':carveopaque_rect(wnd, 0x80808080, vc, vr, vf);break;
 		}
 		return;
 	}
 
 	if('p' == shape){
 		switch(dimen){
-			//case '1':carvepoint_prism4( win, 0x808080, vc, vr, vf, vu);break;
-			case '2':carveline_prism4(  win, 0x00808080, vc, vr, vf, vu);break;
-			case '3':carvesolid_prism4( win, 0x00808080, vc, vr, vf, vu);break;
-			case '4':carveopaque_prism4(win, 0x80808080, vc, vr, vf, vu);break;
+			//case '1':carvepoint_prism4( wnd, 0x808080, vc, vr, vf, vu);break;
+			case '2':carveline_prism4(  wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '3':carvesolid_prism4( wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '4':carveopaque_prism4(wnd, 0x80808080, vc, vr, vf, vu);break;
 		}
 		return;
 	}
 
 	if('d' == shape){
 		switch(dimen){
-			case '1':carvepoint_dodecahedron( win, 0x00808080, vc, vr, vf, vu);break;
-			case '2':carveline_dodecahedron(  win, 0x00808080, vc, vr, vf, vu);break;
-			case '3':carvesolid_dodecahedron( win, 0x00808080, vc, vr, vf, vu);break;
-			case '4':carveopaque_dodecahedron(win, 0x80808080, vc, vr, vf, vu);break;
+			case '1':carvepoint_dodecahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '2':carveline_dodecahedron(  wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '3':carvesolid_dodecahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '4':carveopaque_dodecahedron(wnd, 0x80808080, vc, vr, vf, vu);break;
 		}
 		return;
 	}
 
 	if('i' == shape){
 		switch(dimen){
-			case '1':carvepoint_icosahedron( win, 0x00808080, vc, vr, vf, vu);break;
-			case '2':carveline_icosahedron(  win, 0x00808080, vc, vr, vf, vu);break;
-			case '3':carvesolid_icosahedron( win, 0x00808080, vc, vr, vf, vu);break;
-			case '4':carveopaque_icosahedron(win, 0x80808080, vc, vr, vf, vu);break;
+			case '1':carvepoint_icosahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '2':carveline_icosahedron(  wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '3':carvesolid_icosahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '4':carveopaque_icosahedron(wnd, 0x80808080, vc, vr, vf, vu);break;
 		}
 		return;
 	}
 
 	if('c' == shape){
 		switch(dimen){
-			//case '1':carvepoint_cylinder( win, 0x808080, vc, vr, vf, vu);break;
-			//case '2':carveline_cylinder(  win, 0x808080, vc, vr, vf, vu);break;
-			case '3':carvesolid_cylinder( win, 0x00808080, vc, vr, vf, vu);break;
-			case '4':carveopaque_cylinder(win, 0x80808080, vc, vr, vf, vu);break;
+			//case '1':carvepoint_cylinder( wnd, 0x808080, vc, vr, vf, vu);break;
+			//case '2':carveline_cylinder(  wnd, 0x808080, vc, vr, vf, vu);break;
+			case '3':carvesolid_cylinder( wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '4':carveopaque_cylinder(wnd, 0x80808080, vc, vr, vf, vu);break;
 		}
 		return;
 	}
 
 	if('s' == shape){
 		switch(dimen){
-			case '1':carvepoint_sphere( win, 0x00808080, vc, vr, vf, vu);break;
-			case '2':carveline_sphere(  win, 0x00808080, vc, vr, vf, vu);break;
-			case '3':carvesolid_sphere( win, 0x00808080, vc, vr, vf, vu);break;
-			case '4':carveopaque_sphere(win, 0x80808080, vc, vr, vf, vu);break;
+			case '1':carvepoint_sphere( wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '2':carveline_sphere(  wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '3':carvesolid_sphere( wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '4':carveopaque_sphere(wnd, 0x80808080, vc, vr, vf, vu);break;
 		}
 		return;
 	}
@@ -206,18 +177,23 @@ static void geometry_event(
 
 
 
-static void geometry_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void geometry_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	if(ctx){
-		if(_gl41data_ == ctx->type)geometry_draw_vbo3d(act,pin,ctx,sty);
+	//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+
+	//scene -> terminal
+	struct entity* scn;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		scn = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)geometry_draw_vbo3d(act,slot, scn,geom, wnd,area);
 	}
-	//geometry_draw(act, pin, win, sty);
 }
 static void geometry_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

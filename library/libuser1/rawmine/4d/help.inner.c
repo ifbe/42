@@ -9,18 +9,19 @@ void nor_register(void*);
 void hbridge_register(void*);
 void rectify_register(void*);
 
-//slal
+//mic
 void monomic_register(void*);
 void stereo_register(void*);
 
-//dxgl
-//.cam
+//cam
 void orthcam_register(void*);
 void firstperson_register(void*);
 void thirdperson_register(void*);
 void rtscam_register(void*);
 void freecam_register(void*);
 void vrglass_register(void*);
+
+//dxgl
 //.fbo
 void glass_register(void*);
 void mirror_register(void*);
@@ -48,6 +49,19 @@ void bintree_register(void*);
 void bplus_register(void*);
 void graph_register(void*);
 
+//file
+//.biology
+void dna_register(void*);
+//.circuit
+void rs274x_register(void*);
+//.model
+void model_register(void*);
+void geometry_register(void*);
+//.program
+void cpure_register(void*);
+//.other
+void hexedit_register(void*);
+
 //game
 void the2048_register(void*);
 void chess_register(void*);
@@ -74,12 +88,9 @@ void switch_register(void*);
 //item
 void clock_register(void*);
 void control_register(void*);
-void dna_register(void*);
-void geometry_register(void*);
 void house_register(void*);
 void mario_register(void*);
 void mobius_register(void*);
-void model_register(void*);
 void motor_register(void*);
 void piano_register(void*);
 void picture_register(void*);
@@ -115,7 +126,6 @@ void planet_register(void*);
 //tool
 void calculator_register(void*);
 void font_register(void*);
-void hexedit_register(void*);
 void qrcode_register(void*);
 void sketchpad_register(void*);
 void spectrum_register(void*);
@@ -185,7 +195,7 @@ void content_create(void* addr)
 
 
 
-//----------------------slal-----------------------
+//----------------------mic-----------------------
 	monomic_register(tmp);
 	tmp += sizeof(struct entity);
 
@@ -195,8 +205,7 @@ void content_create(void* addr)
 
 
 
-//----------------------dxgl-----------------------
-//.cam
+//----------------------cam------------------------
 	orthcam_register(tmp);
 	tmp += sizeof(struct entity);
 
@@ -215,6 +224,10 @@ void content_create(void* addr)
 	vrglass_register(tmp);
 	tmp += sizeof(struct entity);
 
+
+
+
+//----------------------dxgl-----------------------
 //.fbo
 	glass_register(tmp);
 	tmp += sizeof(struct entity);
@@ -360,12 +373,6 @@ void content_create(void* addr)
 	control_register(tmp);
 	tmp += sizeof(struct entity);
 
-	dna_register(tmp);
-	tmp += sizeof(struct entity);
-
-	geometry_register(tmp);
-	tmp += sizeof(struct entity);
-
 	house_register(tmp);
 	tmp += sizeof(struct entity);
 
@@ -373,9 +380,6 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 	mobius_register(tmp);
-	tmp += sizeof(struct entity);
-
-	model_register(tmp);
 	tmp += sizeof(struct entity);
 
 	motor_register(tmp);
@@ -402,7 +406,35 @@ void content_create(void* addr)
 
 
 
-//----------------------robo----------------------
+//----------------------file----------------------
+//.biology
+	dna_register(tmp);
+	tmp += sizeof(struct entity);
+
+//.circuit
+	rs274x_register(tmp);
+	tmp += sizeof(struct entity);
+
+//.model
+	geometry_register(tmp);
+	tmp += sizeof(struct entity);
+
+	model_register(tmp);
+	tmp += sizeof(struct entity);
+
+//.program
+	cpure_register(tmp);
+	tmp += sizeof(struct entity);
+
+//.else
+	hexedit_register(tmp);
+	tmp += sizeof(struct entity);
+
+
+
+
+
+//----------------------real----------------------
 	theear_register(tmp);
 	tmp += sizeof(struct entity);
 
@@ -473,9 +505,6 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 	font_register(tmp);
-	tmp += sizeof(struct entity);
-
-	hexedit_register(tmp);
 	tmp += sizeof(struct entity);
 
 	qrcode_register(tmp);

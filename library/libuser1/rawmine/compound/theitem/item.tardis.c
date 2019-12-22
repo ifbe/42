@@ -38,6 +38,7 @@ static void tardis_draw_vbo3d(
 	struct entity* wnd, struct style* area)
 {
 	int j;
+	int time;
 	vec3 tc,tr,tf,tt;
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
@@ -51,7 +52,9 @@ static void tardis_draw_vbo3d(
 		tf[j] = vf[j]/2;
 		tt[j] = vt[j]/2;
 	}
-	carvesolid_prism4(wnd, 0x0000ff, tc, tr, tf, tt);
+	time = (timeread()%1000000)*512/1000000;
+	if(time>255)time = 511-time;
+	carveopaque_prism4(wnd, 0x0000ff|(time<<24), tc, tr, tf, tt);
 }
 static void tardis_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {

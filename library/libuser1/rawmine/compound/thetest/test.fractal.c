@@ -1,5 +1,6 @@
 #include "libuser.h"
 #define GL41BUF buf0
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 
@@ -178,6 +179,7 @@ static void fractal_draw_vbo3d(
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
+	gl41data_insert(wnd, 's', src, 1);
 }
 static void fractal_draw_json(
 	struct entity* act, struct style* pin,
