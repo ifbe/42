@@ -36,17 +36,16 @@ int speakerchoose()
 }
 int speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	struct supply* spk = (void*)(self->chip);
+	struct supply* spk;
+	struct pcmdata* pcm;
+
+	spk = (void*)(self->chip);
 	if(0 == spk)return 0;
-	//say("spk=%llx\n",spk);
 
-	struct relation* rel = spk->orel0;
-	if(0 == rel)return 0;
-	//say("rel=%llx\n",rel);
+	if(spk->orel0)relationread(spk, _ctx_, 0, 0, 0, 0);
+	pcm = spk->pcmdata;
+	if(0 == pcm)return 0;
 
-	struct entity* act = (void*)(rel->dstchip);
-	if(0 == act)return 0;
-	//say("act=%llx\n",act);
 
 	int ret,err;
 	pa_usec_t latency;
@@ -58,7 +57,7 @@ int speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	}
 	fprintf(stderr, "Out: %0.0f usec\n", (float)latency);
 
-	ret = pa_simple_write(s_out, act->ctx, 40000*2, &err);
+	ret = pa_simple_write(s_out, pcm->buf, pcm->count*2, &err);
 	if(ret < 0){
 		printf("error@pa_simple_write:%s\n", pa_strerror(err));
 		return 0;

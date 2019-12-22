@@ -226,11 +226,24 @@ void oscillo_data(struct entity* act, int type, void* buf, int len)
 	tab[idx] = buf;
 	act->len = (idx+1) % SLICE;
 }
+void oscillo_pcm(struct entity* ent, struct supply* sup)
+{
+	int j;
+	struct pcmdata* pcm;
+	if(0 == ent->buf0)return;
+say("@oscillo_pcm\n");
+	pcm = ent->buf0 + 44 - 0x10;
+	pcm->fmt = hex32('s','1','6',0);
+	pcm->chan = 1;
+	pcm->rate = 44100;
+	pcm->count = 65536;
+	sup->pcmdata = pcm;
+}
 
 
 
 
-static void oscillo_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void oscillo_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
@@ -246,6 +259,17 @@ static void oscillo_read(struct halfrel* self, struct halfrel* peer, struct half
 		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		if('v' == len)oscillo_draw_vbo3d(act,slot, win,geom, wnd,area);
+	}
+}
+static void oscillo_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	struct entity* ent = self->pchip;
+	struct supply* sup = peer->pchip;
+say("fmt=%.8s\n", &sup->fmt);
+	switch(sup->fmt){
+		case _gl41wnd0_:break;
+		case _pcm_:oscillo_pcm(ent, sup);break;
+		default:oscillo_read_bycam(self, peer, stack, rsp, buf, len);break;
 	}
 }
 static void oscillo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

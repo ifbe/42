@@ -58,7 +58,7 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lglfw3 -lGLEW -lGLU -lGL -lpulse -lpulse-simple -lpthread -lX11 -lm -ldl
+	-lglfw -lGLEW -lGLU -lGL -lpulse -lpulse-simple -lpthread -lX11 -lm -ldl
 clean:
 	rm -f *.o *.a *.so
 	make -C $(library) clean

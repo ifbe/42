@@ -1,0 +1,25 @@
+<entity>
+oscillo{
+fmt:oscillo
+url:datafile/wav/tardis.wav
+}
+</entity>
+
+
+<supply>
+speaker{
+fmt:spk
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<relation>
+(speaker, 0, ctx) -> (oscillo, 0, 0)
+</relation>
