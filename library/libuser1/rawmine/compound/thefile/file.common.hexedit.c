@@ -45,6 +45,15 @@ static void hexedit_create(struct entity* act, void* arg, int argc, u8** argv)
 	act->iy0 = 0;
 	act->iz0 = 0;
 	act->iw0 = 0;
+
+	act->ixn = 0;
+	act->iyn = 0;
+
+	if(0 == arg)act->buf0 = universe;
+	else{
+		act->buf0 = memorycreate(0x100000, 0);
+		openreadclose(arg, 0, act->buf0, 0x100000);
+	}
 }
 
 
@@ -131,8 +140,7 @@ static void hexedit_draw_vbo(
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	u8 ch;
-	int x,y,j;
+	int x,y,j,rgb;
 	vec3 tc,tr,tf;
 	float* vc = geom->fshape.vc;
 	float* vr = geom->fshape.vr;
@@ -140,6 +148,8 @@ static void hexedit_draw_vbo(
 	float* vt = geom->fshape.vt;
 	//carvesolid_rect(wnd, 0x00ff00, vc,vr,vf);
 
+	u8 ch;
+	u8* buf = act->buf0;
 	for(y=0;y<32;y++){
 		for(x=0;x<32;x++){
 			for(j=0;j<3;j++){
@@ -149,9 +159,11 @@ static void hexedit_draw_vbo(
 			}
 			carveline_rect(wnd, 0xff0000, tc,tr,tf);
 
-			ch = universe[act->iz0 + y*32 + x];
-			if(act->iw0)carveascii_center(wnd, 0xffffff, tc,tr,tf,ch);
-			else carvehex8_center(wnd, 0xffffff, tc,tr,tf,ch);
+			ch = buf[act->iz0 + y*32 + x];
+			if((x == act->ixn)&&(y == act->iyn))rgb = 0x00ff00;
+			else rgb = 0xffffff;
+			if(act->iw0)carveascii_center(wnd, rgb, tc,tr,tf,ch);
+			else carvehex8_center(wnd, rgb, tc,tr,tf,ch);
 		}
 	}
 }
@@ -197,16 +209,20 @@ static void hexedit_draw(
 	else if(fmt == _html_)hexedit_draw_html(act, pin, win, sty);
 	else if(fmt == _json_)hexedit_draw_json(act, pin, win, sty);
 }
-static void hexedit_event(struct entity* act, struct event* ev)
+static void hexedit_event(
+	struct entity* act, struct style* slot,
+	struct supply* wnd, struct style* area,
+	struct event* ev)
 {
 	int j,ret;
 	u64 type = ev->what;
 	u64 key = ev->why;
-	say("%x,%x\n",type,key);
+	//say("%x,%x\n",type,key);
 
 	if(_char_ == type){
 		if('	' == key)act->iw0 ^= 1;
 	}
+
 	if(_kbd_ == type){
 	switch(key){
 		case kbd_up:{
@@ -228,6 +244,20 @@ static void hexedit_event(struct entity* act, struct event* ev)
 	}//switch(key)
 	say("%x\n",act->iz0);
 	}//if(kbd)
+
+	if(0x4070 == type){
+		int w = wnd->width;
+		int h = wnd->height;
+		int x0 = w*area->fs.vc[0];
+		int y0 = h*area->fs.vc[1];
+		int dx = w*area->fs.vq[0];
+		int dy = h*area->fs.vq[1];
+
+		short* t = (void*)ev;
+		act->ixn = (t[0]-x0)*32/dx;
+		act->iyn = (t[1]-y0)*32/dy;
+		//say("%d,%d\n",act->ixn,act->iyn);
+	}
 }
 
 
@@ -284,8 +314,8 @@ static void hexedit_read_bywnd(struct halfrel* self, struct halfrel* peer, struc
 }
 static int hexedit_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	struct entity* ent = peer->pchip;
-	switch(ent->fmt){
+	struct entity* sup = peer->pchip;
+	switch(sup->fmt){
 		case _gl41wnd0_:hexedit_read_bywnd(self, peer, stack, rsp, buf, len);break;
 		default:        hexedit_read_bycam(self, peer, stack, rsp, buf, len);break;
 	}
@@ -294,7 +324,10 @@ static int hexedit_read(struct halfrel* self, struct halfrel* peer, struct halfr
 static void hexedit_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct entity* ent = self->pchip;
-	hexedit_event(ent, buf);
+	struct supply* sup = peer->pchip;
+	switch(sup->fmt){
+		case _gl41wnd0_:hexedit_event(ent, self->pfoot, sup, peer->pfoot, buf);break;
+	}
 }
 static void hexedit_stop(struct halfrel* self, struct halfrel* peer)
 {

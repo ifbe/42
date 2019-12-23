@@ -51,5 +51,7 @@ int parse_macho(u8* addr)
 		head->cpusubtype,
 		head->filetype
 	);
+
+	say("entrypoint@%x\n", *(u32*)(addr+0x600));
 	return 0;
 }

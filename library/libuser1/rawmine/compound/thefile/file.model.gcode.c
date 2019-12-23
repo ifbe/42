@@ -5,7 +5,7 @@
 
 
 
-int gcode_parse(float* vbuf, int vlen, u8* str, int len)
+int gcode_line(float* vbuf, int vlen, u8* str, int len)
 {
 	int j;
 	int x,y,z;
@@ -44,6 +44,25 @@ int gcode_parse(float* vbuf, int vlen, u8* str, int len)
 	say("%f,%f,%f\n", vbuf[3*vlen+0], vbuf[3*vlen+1], vbuf[3*vlen+2]);
 	return 1;
 }
+int gcode_parse(float* dst, u8* buf)
+{
+	int j,k,cnt;
+	k = cnt = 0;
+	for(j=0;j<0x100000;j++){
+		if('\n' > buf[j])break;
+		if('\r' == buf[j]){
+			cnt += gcode_line(dst, cnt, buf+k, j-k);
+			j += 1;
+			k = j+1;
+			continue;
+		}
+		if('\n' == buf[j]){
+			cnt += gcode_line(dst, cnt, buf+k, j-k);
+			k = j+1;
+		}
+	}
+	return cnt;
+}
 
 
 
@@ -60,7 +79,7 @@ static void gcode_delete(struct entity* act)
 }
 static void gcode_create(struct entity* act, void* arg)
 {
-	int j,k,cnt;
+	int cnt;
 	u8* buf;
 	float* dst;
 	if(0 == act)return;
@@ -71,21 +90,8 @@ static void gcode_create(struct entity* act, void* arg)
 		//printmemory(buf, 0x100);
 
 		dst = act->DSTBUF = memorycreate(0x100000, 0);
+		cnt = gcode_parse(dst, buf);
 
-		k = cnt = 0;
-		for(j=0;j<0x100000;j++){
-			if('\n' > buf[j])break;
-			if('\r' == buf[j]){
-				cnt += gcode_parse(dst, cnt, buf+k, j-k);
-				j += 1;
-				k = j+1;
-				continue;
-			}
-			if('\n' == buf[j]){
-				cnt += gcode_parse(dst, cnt, buf+k, j-k);
-				k = j+1;
-			}
-		}
 		act->len = cnt;
 		say("len=%x\n", 12*cnt);
 	}
