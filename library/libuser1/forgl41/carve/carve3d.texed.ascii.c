@@ -126,7 +126,7 @@ static int aidfont_fill(struct glsrc* src, int id)
 	}
 
 	if(0 == src->vbuf){
-		src->vbuf_len = 0x200000;
+		src->vbuf_len = 65536*4*9;
 		src->vbuf = memorycreate(src->vbuf_len, 0);
 		if(0 == src->vbuf)return -1;
 

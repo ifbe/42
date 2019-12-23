@@ -55,6 +55,7 @@ void dna_register(void*);
 //.circuit
 void gerber_register(void*);
 //.model
+void gcode_register(void*);
 void model_register(void*);
 void geometry_register(void*);
 //.program
@@ -416,6 +417,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 //.model
+	gcode_register(tmp);
+	tmp += sizeof(struct entity);
+
 	geometry_register(tmp);
 	tmp += sizeof(struct entity);
 

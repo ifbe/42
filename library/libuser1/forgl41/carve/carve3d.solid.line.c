@@ -50,7 +50,7 @@ static int line3d_fill(struct glsrc* src)
 	}
 
 	if(0 == src->vbuf){
-		src->vbuf_len = 0x100000;
+		src->vbuf_len = 65536*4*6;
 		src->vbuf = memorycreate(src->vbuf_len, 0);
 		if(0 == src->vbuf)return -2;
 

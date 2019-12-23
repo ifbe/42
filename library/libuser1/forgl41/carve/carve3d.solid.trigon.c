@@ -100,7 +100,7 @@ static int trigon3d_fill(struct glsrc* src)
 	}
 
 	if(0 == src->vbuf){
-		src->vbuf_len = 0x1000000;
+		src->vbuf_len = 65536*4*9;		//65535*4*9
 		src->vbuf = memorycreate(src->vbuf_len, 0);
 		if(0 == src->vbuf)return -1;
 

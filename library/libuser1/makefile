@@ -126,7 +126,6 @@ rawmine/compound/thedxgl/cam.3rd.c \
 rawmine/compound/thedxgl/cam.rts.c \
 rawmine/compound/thefile/file.common.folder.c \
 rawmine/compound/thefile/file.common.hexedit.c \
-rawmine/compound/thefile/file.common.textedit.c \
 rawmine/compound/thefile/file.biology.dna.c \
 rawmine/compound/thefile/file.biology.fasta.c \
 rawmine/compound/thefile/file.circuit.gerber.c \
@@ -136,9 +135,13 @@ rawmine/compound/thefile/file.model.gcode.c \
 rawmine/compound/thefile/file.model.geometry.c \
 rawmine/compound/thefile/file.model.scad.c \
 rawmine/compound/thefile/file.model.stl.c \
-rawmine/compound/thefile/file.program.cpure.c \
-rawmine/compound/thefile/file.program.cplus.c \
-rawmine/compound/thefile/file.program.java.c \
+rawmine/compound/thefile/file.program.arm64.c \
+rawmine/compound/thefile/file.program.mips64.c \
+rawmine/compound/thefile/file.program.x86_64.c \
+rawmine/compound/thefile/file.text.editor.c \
+rawmine/compound/thefile/file.text.cpure.c \
+rawmine/compound/thefile/file.text.cplus.c \
+rawmine/compound/thefile/file.text.java.c \
 rawmine/compound/thegame/chess/game.chess.c \
 rawmine/compound/thegame/chess/game.gobang.c \
 rawmine/compound/thegame/chess/game.kriegspiel.c \

@@ -78,6 +78,7 @@ static void gerber_create(struct entity* act, void* arg)
 			}
 		}
 		act->len = cnt;
+		say("len=%x\n", 12*cnt);
 	}
 }
 
