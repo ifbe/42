@@ -139,8 +139,8 @@ linuxsdl:target linux
 macos:
 	$(compiler) $(cflag) w2w-cmdline/mac/mac.stdio.c
 	$(compiler) $(cflag) w2w-systray/mac/mac.tray.c
-	$(compiler) $(cflag) r2v-micphone/mac/mac.mic.c
-	$(compiler) $(cflag) v2r-speaker/os-mac/mac.spk.c
+	$(compiler) $(cflag) r2v-micphone/mac/mac.aqin.c
+	$(compiler) $(cflag) v2r-speaker/os-mac/mac.aqout.c
 	$(compiler) $(cflag) r2v-camera/mac/mac.cam.c
 
 .PHONY:maccli

@@ -37,8 +37,8 @@ static void spectrum_draw_vbo3d(
 		buf = tab[y];
 		if(0 == buf)break;
 
-		for(x=0;x<1024;x++){
-			dx = x / 512.0 - 1.0;
+		for(x=0;x<512;x++){
+			dx = (x-255.5) / 255.5;
 			dy = y*2.0/slice-1.0;
 			ta[0] = vc[0] + vr[0] * dx + vf[0] * dy;
 			ta[1] = vc[1] + vr[1] * dx + vf[1] * dy;

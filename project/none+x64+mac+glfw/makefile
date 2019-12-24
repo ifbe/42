@@ -42,7 +42,7 @@ dylib:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lGLEW -lglfw -lc -lm -framework OpenGL
+	-lGLEW -lglfw -lc -lm -framework OpenGL -framework AudioToolbox
 program:
 	clang \
 	$(library)/libboot0/*.o \
@@ -53,7 +53,7 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lGLEW -lglfw -lm -framework OpenGL
+	-lGLEW -lglfw -lm -framework OpenGL -framework AudioToolbox
 clean:
 	rm -f *.o *.a *.dylib
 	make -C $(library) clean

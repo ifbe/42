@@ -876,6 +876,7 @@ struct supply
 		void* hwnd;	//winapi
 		void* sdlwnd;	//sdl
 		void* glwnd;
+		void* aqref;
 	};
 	union{
 		u32 rbo;
@@ -883,6 +884,7 @@ struct supply
 		void* xlibgc;	//xlib
 		void* hdc;	//winapi
 		void* sdlren;	//sdl
+		void* aqctx;
 	};
 	union{
 		u32 tex0;
