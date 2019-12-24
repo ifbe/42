@@ -81,7 +81,7 @@ int micphonecreate(struct supply* win)
 	}
 
 	win->aqref = aq;
-	status = AudioQueueSetParameter(aq, kAudioQueueParam_Volume, 0.5);
+	status = AudioQueueSetParameter(aq, kAudioQueueParam_Volume, 1.0);
 	printf ("Volume status: %d\n", status);
 
 	status = AudioQueueStart(aq, NULL);

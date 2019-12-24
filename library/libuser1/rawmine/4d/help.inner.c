@@ -48,6 +48,7 @@ void algorithm_register(void*);
 void bintree_register(void*);
 void bplus_register(void*);
 void graph_register(void*);
+void mnist_register(void*);
 
 //file
 //.biology
@@ -297,6 +298,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 	graph_register(tmp);
+	tmp += sizeof(struct entity);
+
+	mnist_register(tmp);
 	tmp += sizeof(struct entity);
 
 

@@ -40,6 +40,7 @@ rawmine/baseunit/objalgo/algo.bplus.c \
 rawmine/baseunit/objalgo/algo.graph.c \
 rawmine/baseunit/objalgo/algo.link.c \
 rawmine/baseunit/objalgo/algo.sort.c \
+rawmine/baseunit/objalgo/algo.mnist.c \
 rawmine/baseunit/objchip/chip.common.battery.c \
 rawmine/baseunit/objchip/chip.common.capacitor.c \
 rawmine/baseunit/objchip/chip.common.inductor.c \

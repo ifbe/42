@@ -1,0 +1,45 @@
+<style>
+rect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<entity>
+mnist{
+fmt:mnist
+image:/Users/ifbe/Desktop/mnist/t10k-images-idx3-ubyte
+label:/Users/ifbe/Desktop/mnist/t10k-labels-idx1-ubyte
+}
+</entity>
+
+
+<supply>
+glwnd{
+fmt:gl41wnd0
+}
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<relation>
+#glwnd depends on gldata
+(glwnd, rect, 0) -> (mnist, 0, 0)
+
+#opengl depends on glwnd
+(opengl, 0, wnd) -> (glwnd, 0, togl)
+</relation>
