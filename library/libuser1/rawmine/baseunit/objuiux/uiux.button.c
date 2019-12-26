@@ -4,7 +4,29 @@
 
 
 
-void button_draw_vbo3d(
+void button_draw_pixel(
+	struct entity* act, struct style* part,
+	struct entity* ctx, struct style* area)
+{
+	int x,y;
+	int time;
+	int w = ctx->width;
+	int h = ctx->height;
+	u32* pix = ctx->buf;
+
+	time = 511*(timeread()%1000000)/1000000;
+	if(time > 255)time = 511-time;
+	for(y=0;y<8;y++){
+	for(x=0;x<8;x++){
+		pix[y*w+x] = (0x010000*time) | (0x001f00*y) | (0x00001f*x);
+	}
+	}
+}
+
+
+
+
+void button_draw_vbo(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -19,11 +41,7 @@ void button_draw_vbo3d(
 	carveopaque_rect(ctx, 0x40ffd010, tc, vr, vf);
 	carvestring_center(ctx, 0xff0000, vc, vr ,vf, act->STRBUF, 0);
 }
-
-
-
-
-static void button_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void button_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
@@ -38,8 +56,19 @@ static void button_read(struct halfrel* self, struct halfrel* peer, struct halfr
 		win = peer->pchip;geom = peer->pfoot;
 		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)button_draw_vbo3d(act,part, win,geom, wnd,area);
+		if('v' == len)button_draw_vbo(act,part, win,geom, wnd,area);
 	}
+}
+
+
+
+
+static void button_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+{
+	struct entity* ent = self->pchip;
+	struct entity* sup = peer->pchip;
+	if(_rgba_ == sup->fmt)button_draw_pixel(ent, self->pfoot, sup, peer->pfoot);
+	else button_read_bycam(self, peer, arg, idx, buf, len);
 }
 static void button_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

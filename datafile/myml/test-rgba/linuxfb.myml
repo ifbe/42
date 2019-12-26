@@ -1,15 +1,15 @@
 <style>
 where{
-c:256,256,0
-r:256,0,0
-f:0,256,0
+c:32,32,0
+r:32,0,0
+f:0,32,0
 }
 </style>
 
 
 <entity>
-2048{
-fmt:2048
+button{
+fmt:button
 }
 </entity>
 
@@ -17,6 +17,7 @@ fmt:2048
 <supply>
 wnd{
 fmt:wnd
+url:/dev/fb1
 }
 </supply>
 
@@ -29,5 +30,5 @@ fmt:poller
 
 
 <relation>
-(wnd, where, 0) -> (2048, 0, 0)
+(wnd, where, 0) -> (button, 0, 0)
 </relation>

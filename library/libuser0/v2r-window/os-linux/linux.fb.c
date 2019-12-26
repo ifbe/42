@@ -43,7 +43,10 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 			    (canvas[x*4+0]>>3)
 			+ ( (canvas[x*4+1]>>2) <<  5 )
 			+ ( (canvas[x*4+2]>>3) << 11 );
+			//*(u16*)(canvas+x*2) = 0x4567;
 		}
+		lseek(fbfd, 0, SEEK_SET);
+		write(fbfd, canvas, xmax*ymax*2);
 	}
 	else if(24 == bpp)
 	{
@@ -79,12 +82,13 @@ void windowdelete(struct supply* w)
 {
 	if(fbfd != -1)close(fbfd);
 }
-void windowcreate(struct supply* w)
+void windowcreate(struct supply* sup, void* arg)
 {
 	int j;
+	if(0 == arg)arg = "/dev/fb0";
 
 	//目的地
-	fbfd = open("/dev/fb0",O_RDWR);
+	fbfd = open(arg, O_RDWR);
 	if(fbfd < 0)
 	{
 		printf("chmod /dev/fb0, or sudo!\n");
@@ -120,14 +124,14 @@ void windowcreate(struct supply* w)
 
 
 	//
-	w->fmt = _rgba_;
-	w->vfmt = hex64('b','g','r','a','8','8','8','8');
+	sup->fmt = _rgba_;
+	sup->vfmt = hex64('b','g','r','a','8','8','8','8');
 
-	w->width  = xmax;
-	w->height = ymax;
-	w->stride = fboneline/4;
+	sup->width  = xmax;
+	sup->height = ymax;
+	sup->stride = fboneline/4;
 
-	w->buf = malloc(2048*1024*4);
+	sup->buf = malloc(2048*1024*4);
 	//for(j=0;j<16;j++)w->input[j].id = 0xffff;
 }
 
