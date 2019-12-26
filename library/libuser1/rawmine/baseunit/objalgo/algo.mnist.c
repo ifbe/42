@@ -5,7 +5,7 @@
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
 void gl41data_tmpcam(struct entity* wnd);
-void copypath(u8* path, u8* data)
+static void copypath(u8* path, u8* data)
 {
 	int j;
 	for(j=0;j<127;j++){

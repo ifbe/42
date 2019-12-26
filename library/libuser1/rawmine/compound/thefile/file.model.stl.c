@@ -4,6 +4,15 @@ int windowread(int type, void* buf);
 int windowwrite(int type, void* buf);
 void parsevertfromstl(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+static void copypath(u8* path, u8* data)
+{
+	int j;
+	for(j=0;j<127;j++){
+		if(data[j] < 0x20)break;
+		path[j] = data[j];
+	}
+	path[j] = 0;
+}
 
 
 
@@ -133,7 +142,7 @@ void sty_sty_mat(struct fstyle* src, struct fstyle* dst, mat4 mat)
 
 	mat4_transpose(mat);
 }
-static void model_ctxforwnd(struct glsrc* src, char* str)
+static void model_ctxforwnd(struct glsrc* src, char* str, char* vs, char* fs)
 {
 	float* tmp;
 	src->geometry = 3;
@@ -141,9 +150,9 @@ static void model_ctxforwnd(struct glsrc* src, char* str)
 
 	//shader
 	src->vs = memorycreate(0x1000, 0);
-	openreadclose("datafile/shader/model/vert.glsl", 0, src->vs, 0x1000);
+	openreadclose(vs, 0, src->vs, 0x1000);
 	src->fs = memorycreate(0x1000, 0);
-	openreadclose("datafile/shader/model/frag.glsl", 0, src->fs, 0x1000);
+	openreadclose(fs, 0, src->fs, 0x1000);
 	src->shader_enq = 42;
 
 	//argument
@@ -259,23 +268,10 @@ static void model_draw_cli(
 {
 	say("model(%x,%x,%x)\n",win,act,sty);
 }
-static void model_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)model_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)model_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)model_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)model_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)model_draw_vbo2d(act, pin, win, sty);
-		//else model_draw_vbo3d(act, pin, win, sty);
-	}
-	else model_draw_pixel(act, pin, win, sty);
-}
+
+
+
 static void model_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
@@ -376,15 +372,32 @@ static void model_delete(struct entity* act)
 {
 	if(0 == act)return;
 }
-static void model_create(struct entity* act, void* str)
+static void model_create(struct entity* act, void* str, int argc, u8** argv)
 {
+	int j;
+	u8 vspath[128];
+	u8 fspath[128];
+	char* vs = 0;
+	char* fs = 0;
+	char* stl = 0;
 	if(0 == act)return;
 
-	act->CTXBUF = memorycreate(0x200, 0);
-	if(0 == act->CTXBUF)return;
-
+	for(j=0;j<argc;j++){
+		if(0 == ncmp(argv[j], "vs:", 3)){
+			copypath(vspath, argv[j]+3);
+			vs = (void*)vspath;
+		}
+		if(0 == ncmp(argv[j], "fs:", 3)){
+			copypath(fspath, argv[j]+3);
+			fs = (void*)fspath;
+		}
+	}
+	if(0 == vs)vs = "datafile/shader/model/vert.glsl";
+	if(0 == fs)fs = "datafile/shader/model/frag.glsl";
 	if(0 == str)str = "datafile/stl/bunny-lowpoly.stl";
-	model_ctxforwnd(act->CTXBUF, str);
+
+	act->CTXBUF = memorycreate(0x200, 0);
+	if(act->CTXBUF)model_ctxforwnd(act->CTXBUF, str, vs, fs);
 }
 
 

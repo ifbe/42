@@ -8,28 +8,26 @@ void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 char* texball_glsl_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"uniform mat4 cammvp;\n"
-	"out mediump vec2 uvw;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec2 texuvw;\n"
+"uniform mat4 cammvp;\n"
+"out mediump vec2 uvw;\n"
+"void main(){\n"
+	"uvw = texuvw;\n"
+	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+"}\n";
 char* texball_glsl_t = 0;
 char* texball_glsl_g = 0;
 char* texball_glsl_f = 
-	GLSL_VERSION
-	"in mediump vec2 uvw;\n"
-	"out mediump vec4 FragColor;\n"
-	"uniform sampler2D tex0;\n"
-	"void main()\n"
-	"{\n"
-		"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
-		//"FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"in mediump vec2 uvw;\n"
+"out mediump vec4 FragColor;\n"
+"uniform sampler2D tex0;\n"
+"void main(){\n"
+	"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
+	//"FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
+"}\n";
 
 
 
@@ -209,7 +207,7 @@ static void texball_event(
 //-3: cam, 0
 //-2: cam, part of cam
 //-1: world, geom of cam
-static void texball_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void texball_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
@@ -227,6 +225,18 @@ static void texball_read(struct halfrel* self, struct halfrel* peer, struct half
 		if('v' == len){
 			texball_draw_vbo3d(act,part, win,geom, wrd,camg, wnd,area);
 		}
+	}
+}
+static void texball_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+}
+static void texball_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	struct supply* sup = peer->pchip;
+	switch(sup->fmt){
+		case _gl41fbog_:
+		case _gl41wnd0_:texball_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		default:        texball_read_bycam(self, peer, stack, rsp, buf, len);break;
 	}
 }
 static void texball_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

@@ -28,9 +28,8 @@ GLSL_VERSION
 "uniform sampler2D tex0;\n"
 "uniform sampler2D tex1;\n"
 "void main(){\n"
-	"mediump vec3 c0 = texture(tex0, uvw).bgr;\n"
-	"mediump vec3 c1 = texture(tex1, uvw).bgr;\n"
-	"FragColor = vec4((c0+c1)*0.5, 1.0);\n"
+	"if((uvw.x < 0.5)&&(uvw.y < 0.5))FragColor = vec4(texture(tex0, vec2(uvw.x*2.0, uvw.y*2.0)).rgb, 1.0);\n"
+	"if((uvw.x > 0.5)&&(uvw.y > 0.5))FragColor = vec4(texture(tex1, vec2(uvw.x*2.0-1.0, uvw.y*2.0-1.0)).rgb, 1.0);\n"
 "}\n";
 
 
@@ -73,7 +72,7 @@ static void gbuffer_readfrom_gbuffer(struct entity* ent, struct glsrc* src)
 	src->tex[1].glfd = sup->tex1;
 	src->tex[1].name = "tex1";
 	src->tex[1].fmt = '!';
-	say("%d,%d\n", src->tex[0].glfd, src->tex[1].glfd);
+	//say("%d,%d\n", src->tex[0].glfd, src->tex[1].glfd);
 }
 static void gbuffer_draw_vbo3d(
 	struct entity* act, struct style* slot,
@@ -90,47 +89,49 @@ static void gbuffer_draw_vbo3d(
 	float (*vbuf)[6] = (void*)(src->vbuf);
 
 	gbuffer_readfrom_gbuffer(act, src);
+	src->tex[0].enq += 1;
+	src->tex[1].enq += 1;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
 	vbuf[0][2] = vc[2] - vr[2] - vf[2];
 	vbuf[0][3] = 0.0;
-	vbuf[0][4] = 1.0;
+	vbuf[0][4] = 0.0;
 	vbuf[0][5] = 0.0;
 
 	vbuf[1][0] = vc[0] + vr[0] + vf[0];
 	vbuf[1][1] = vc[1] + vr[1] + vf[1];
 	vbuf[1][2] = vc[2] + vr[2] + vf[2];
 	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 0.0;
+	vbuf[1][4] = 1.0;
 	vbuf[1][5] = 0.0;
 
 	vbuf[2][0] = vc[0] - vr[0] + vf[0];
 	vbuf[2][1] = vc[1] - vr[1] + vf[1];
 	vbuf[2][2] = vc[2] - vr[2] + vf[2];
 	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 0.0;
+	vbuf[2][4] = 1.0;
 	vbuf[2][5] = 0.0;
 
 	vbuf[3][0] = vc[0] + vr[0] + vf[0];
 	vbuf[3][1] = vc[1] + vr[1] + vf[1];
 	vbuf[3][2] = vc[2] + vr[2] + vf[2];
 	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 0.0;
+	vbuf[3][4] = 1.0;
 	vbuf[3][5] = 0.0;
 
 	vbuf[4][0] = vc[0] - vr[0] - vf[0];
 	vbuf[4][1] = vc[1] - vr[1] - vf[1];
 	vbuf[4][2] = vc[2] - vr[2] - vf[2];
 	vbuf[4][3] = 0.0;
-	vbuf[4][4] = 1.0;
+	vbuf[4][4] = 0.0;
 	vbuf[4][5] = 0.0;
 
 	vbuf[5][0] = vc[0] + vr[0] - vf[0];
 	vbuf[5][1] = vc[1] + vr[1] - vf[1];
 	vbuf[5][2] = vc[2] + vr[2] - vf[2];
 	vbuf[5][3] = 1.0;
-	vbuf[5][4] = 1.0;
+	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;

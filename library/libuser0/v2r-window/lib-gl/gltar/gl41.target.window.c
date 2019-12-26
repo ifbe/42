@@ -35,6 +35,7 @@ int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
 
 	wnd = self->pchip;
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, wnd->fbwidth, wnd->fbheight);
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

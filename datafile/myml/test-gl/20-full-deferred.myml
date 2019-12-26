@@ -1,7 +1,7 @@
 <style>
-skypart{
+treepart{
 }
-skygeom{
+treegeom{
 c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
@@ -11,7 +11,7 @@ t: 0.0, 0.0, 1000.0
 aaaapart{
 }
 aaaageom{
-c: 0.0, -3000.0, 1000.0
+c: 0.0, -2000.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
@@ -39,9 +39,11 @@ q:1.0, 1.0
 cam0{
 fmt:freecam
 }
-sky{
-fmt:texbox
-url:datafile/jpg/wall.jpg
+tree{
+fmt:model
+url:datafile/stl/bunny-lowpoly.stl
+vs:datafile/shader/gbuffer/vert.glsl
+fs:datafile/shader/gbuffer/frag.glsl
 }
 world{
 fmt:3dworld
@@ -78,7 +80,7 @@ fmt:poller
 
 <relation>
 #world depends on tree
-(world, skygeom, 0) -> (sky, skypart, 0)
+(world, treegeom, 0) -> (tree, treepart, 0)
 (world, aaaageom, 0) -> (cam0, aaaapart, 0)
 
 #gbuffer depends on cam0

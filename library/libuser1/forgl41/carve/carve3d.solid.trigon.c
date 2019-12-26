@@ -26,6 +26,8 @@ GLSL_VERSION
 "in mediump vec3 normal;\n"
 "in mediump vec3 colour;\n"
 "out mediump vec4 FragColor;\n"
+//"layout(location = 0)out mediump vec4 outxyz\n;"
+//"layout(location = 1)out mediump vec4 outuvw\n;"
 "uniform mediump vec3 camxyz;\n"
 
 "mediump vec3 dirsun0 = vec3(1.0, 1.0, 1.0);\n"
@@ -72,6 +74,8 @@ GLSL_VERSION
 	"c += sun1() / 2.0;\n"
 	"c = vec3(clamp(c.x, 0.0, 1.0), clamp(c.y, 0.0, 1.0), clamp(c.z, 0.0, 1.0));\n"
 	"FragColor = vec4(c, 1.0);\n"
+	//"outxyz = vec4(vertex, 1.0);\n"
+	//"outuvw = vec4(normal, 1.0);\n"
 "}\n";
 
 

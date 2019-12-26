@@ -822,6 +822,7 @@ static void freecam_read(struct halfrel* self, struct halfrel* peer, struct half
 	struct entity* ent = peer->pchip;
 //say("@freecam_read\n");
 	switch(ent->fmt){
+		case _gl41fbog_:
 		case _gl41wnd0_:freecam_read_bywnd(self, peer, stack, rsp, buf, len);break;
 		default:        freecam_read_bycam(self, peer, stack, rsp, buf, len);break;
 	}
