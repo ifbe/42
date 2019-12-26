@@ -26,14 +26,14 @@ int gl41fbog_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 	struct supply* wnd;
 	struct fstyle* sty;
 	struct relation* rel;
-	//say("@gl41fbog\n");
-
-	wnd = stack[rsp-1]->pchip;
+say("@gl41fbog\n");
+	wnd = self->pchip;
 	if(0 == wnd->fbo){
 		wnd->width = wnd->fbwidth = 1024;
 		wnd->height = wnd->fbheight = 1024;
 		fbocreate(wnd, 'g');
 	}
+return 0;
 
 	rel = wnd->orel0;
 	while(1){

@@ -89,16 +89,13 @@ void switch_register(void*);
 
 //item
 void clock_register(void*);
-void control_register(void*);
 void house_register(void*);
 void mario_register(void*);
 void mobius_register(void*);
 void motor_register(void*);
 void piano_register(void*);
-void picture_register(void*);
 void stair_register(void*);
 void tardis_register(void*);
-void texmix_register(void*);
 void tree_register(void*);
 
 //real
@@ -121,20 +118,33 @@ void codeimg_register(void*);
 void doodle_register(void*);
 void example_register(void*);
 void fractal_register(void*);
-void oscillo_register(void*);
 void palette_register(void*);
 void planet_register(void*);
+
+//uiux
+void skillbar_register(void*);
+void tabbar_register(void*);
+void gbuffer_register(void*);
+void oscillo_register(void*);
+void picture_register(void*);
+void qrcode_register(void*);
+void spectrum_register(void*);
+void texmix_register(void*);
+void video_register(void*);
+void voxel_register(void*);
+
+//vkbd
+void button_register(void*);
+void control_register(void*);
+void slider_register(void*);
+void vjoy_register(void*);
+void vkbd_register(void*);
 
 //tool
 void calculator_register(void*);
 void font_register(void*);
-void qrcode_register(void*);
 void sketchpad_register(void*);
-void spectrum_register(void*);
 void terminal_register(void*);
-void video_register(void*);
-void voxel_register(void*);
-void button_register(void*);
 
 //menu
 //.2d
@@ -143,17 +153,10 @@ void pointer_register(void*);
 //.3d
 void camman_register(void*);
 void picker_register(void*);
-//.body
-void slider_register(void*);
-void tabbar_register(void*);
-//.vkbd
-void vjoy_register(void*);
-void vkbd_register(void*);
 //.else
 void login_register(void*);
 void overview_register(void*);
 void detail_register(void*);
-void skillbar_register(void*);
 
 
 
@@ -375,9 +378,6 @@ void content_create(void* addr)
 	clock_register(tmp);
 	tmp += sizeof(struct entity);
 
-	control_register(tmp);
-	tmp += sizeof(struct entity);
-
 	house_register(tmp);
 	tmp += sizeof(struct entity);
 
@@ -393,16 +393,10 @@ void content_create(void* addr)
 	piano_register(tmp);
 	tmp += sizeof(struct entity);
 
-	picture_register(tmp);
-	tmp += sizeof(struct entity);
-
 	stair_register(tmp);
 	tmp += sizeof(struct entity);
 
 	tardis_register(tmp);
-	tmp += sizeof(struct entity);
-
-	texmix_register(tmp);
 	tmp += sizeof(struct entity);
 
 	tree_register(tmp);
@@ -496,9 +490,6 @@ void content_create(void* addr)
 	fractal_register(tmp);
 	tmp += sizeof(struct entity);
 
-	oscillo_register(tmp);
-	tmp += sizeof(struct entity);
-
 	palette_register(tmp);
 	tmp += sizeof(struct entity);
 
@@ -515,16 +506,32 @@ void content_create(void* addr)
 	font_register(tmp);
 	tmp += sizeof(struct entity);
 
-	qrcode_register(tmp);
+	sketchpad_register(tmp);
 	tmp += sizeof(struct entity);
 
-	sketchpad_register(tmp);
+	terminal_register(tmp);
+	tmp += sizeof(struct entity);
+
+
+
+
+//-------------------uiux------------------
+	gbuffer_register(tmp);
+	tmp += sizeof(struct entity);
+
+	oscillo_register(tmp);
+	tmp += sizeof(struct entity);
+
+	picture_register(tmp);
+	tmp += sizeof(struct entity);
+
+	qrcode_register(tmp);
 	tmp += sizeof(struct entity);
 
 	spectrum_register(tmp);
 	tmp += sizeof(struct entity);
 
-	terminal_register(tmp);
+	texmix_register(tmp);
 	tmp += sizeof(struct entity);
 
 	video_register(tmp);
@@ -533,7 +540,30 @@ void content_create(void* addr)
 	voxel_register(tmp);
 	tmp += sizeof(struct entity);
 
+
+
+
+//-------------------vkbd------------------
+//.bar
+	skillbar_register(tmp);
+	tmp += sizeof(struct entity);
+
+	tabbar_register(tmp);
+	tmp += sizeof(struct entity);
+//.else
 	button_register(tmp);
+	tmp += sizeof(struct entity);
+
+	control_register(tmp);
+	tmp += sizeof(struct entity);
+
+	slider_register(tmp);
+	tmp += sizeof(struct entity);
+
+	vjoy_register(tmp);
+	tmp += sizeof(struct entity);
+
+	vkbd_register(tmp);
 	tmp += sizeof(struct entity);
 
 
@@ -554,20 +584,6 @@ void content_create(void* addr)
 	picker_register(tmp);
 	tmp += sizeof(struct entity);
 
-//.body
-	slider_register(tmp);
-	tmp += sizeof(struct entity);
-
-	tabbar_register(tmp);
-	tmp += sizeof(struct entity);
-
-//.vkbd
-	vjoy_register(tmp);
-	tmp += sizeof(struct entity);
-
-	vkbd_register(tmp);
-	tmp += sizeof(struct entity);
-
 //.else
 	login_register(tmp);
 	tmp += sizeof(struct entity);
@@ -576,8 +592,5 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 	detail_register(tmp);
-	tmp += sizeof(struct entity);
-
-	skillbar_register(tmp);
 	tmp += sizeof(struct entity);
 }

@@ -47,7 +47,7 @@ world{
 fmt:3dworld
 }
 mixer{
-fmt:texmix
+fmt:gbuffer
 }
 </entity>
 
@@ -85,7 +85,7 @@ fmt:poller
 (gbuffer, gbufrect, 0) -> (cam0, 0, 0)
 
 #mixer depends on gbuffer
-(mixer, 0, fbo) -> (gbuffer, 0, 0)
+(mixer, 0, fbog) -> (gbuffer, 0, 0)
 
 #glwnd depends on mixer
 (glwnd, aaaarect, 0) -> (mixer, 0, wnd)

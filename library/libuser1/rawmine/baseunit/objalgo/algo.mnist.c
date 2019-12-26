@@ -167,6 +167,7 @@ void mnist_draw_vbo(
 			result[y] += weigh[28*28*y + x] * image[16+id*28*28+x];
 		}
 		result[y] /= 28*28*255;
+		if(result[y] < 0.0)result[y] = 0.0;		//ReLU
 
 		if(result[predict] < result[y])predict = y;
 	}
