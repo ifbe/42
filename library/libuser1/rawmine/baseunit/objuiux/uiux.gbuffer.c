@@ -27,9 +27,13 @@ GLSL_VERSION
 "out mediump vec4 FragColor;\n"
 "uniform sampler2D tex0;\n"
 "uniform sampler2D tex1;\n"
+"uniform sampler2D tex2;\n"
+"uniform sampler2D tex3;\n"
 "void main(){\n"
-	"if((uvw.x < 0.5)&&(uvw.y < 0.5))FragColor = vec4(texture(tex0, vec2(uvw.x*2.0, uvw.y*2.0)).rgb, 1.0);\n"
-	"if((uvw.x > 0.5)&&(uvw.y > 0.5))FragColor = vec4(texture(tex1, vec2(uvw.x*2.0-1.0, uvw.y*2.0-1.0)).rgb, 1.0);\n"
+	"if((uvw.x < 0.5)&&(uvw.y < 0.5))FragColor = vec4(texture(tex0, vec2(uvw.x*2.0-0.0, uvw.y*2.0-0.0)).rgb, 1.0);\n"
+	"if((uvw.x > 0.5)&&(uvw.y < 0.5))FragColor = vec4(texture(tex1, vec2(uvw.x*2.0-1.0, uvw.y*2.0-0.0)).rgb, 1.0);\n"
+	"if((uvw.x < 0.5)&&(uvw.y > 0.5))FragColor = vec4(texture(tex2, vec2(uvw.x*2.0-0.0, uvw.y*2.0-1.0)).rgb, 1.0);\n"
+	"if((uvw.x > 0.5)&&(uvw.y > 0.5))FragColor = vec4(texture(tex3, vec2(uvw.x*2.0-1.0, uvw.y*2.0-1.0)).rgb, 1.0);\n"
 "}\n";
 
 
@@ -66,13 +70,26 @@ static void gbuffer_readfrom_gbuffer(struct entity* ent, struct glsrc* src)
 	struct supply* sup = rel->pdstchip;
 	supplyread((void*)(rel->dst), (void*)(rel->src), 0, 0, 0, 0);
 
-	src->tex[0].glfd = sup->tex0;
+	src->tex[0].glfd = sup->tex[0];
 	src->tex[0].name = "tex0";
 	src->tex[0].fmt = '!';
-	src->tex[1].glfd = sup->tex1;
+	src->tex[0].enq += 1;
+
+	src->tex[1].glfd = sup->tex[1];
 	src->tex[1].name = "tex1";
 	src->tex[1].fmt = '!';
-	//say("%d,%d\n", src->tex[0].glfd, src->tex[1].glfd);
+	src->tex[1].enq += 1;
+
+	src->tex[2].glfd = sup->tex[2];
+	src->tex[2].name = "tex2";
+	src->tex[2].fmt = '!';
+	src->tex[2].enq += 1;
+
+	src->tex[3].glfd = sup->tex[3];
+	src->tex[3].name = "tex3";
+	src->tex[3].fmt = '!';
+	src->tex[3].enq += 1;
+	//say("%d,%d,%d,%d\n", src->tex[0].glfd, src->tex[1].glfd, src->tex[2].glfd, src->tex[3].glfd);
 }
 static void gbuffer_draw_vbo3d(
 	struct entity* act, struct style* slot,
@@ -89,8 +106,6 @@ static void gbuffer_draw_vbo3d(
 	float (*vbuf)[6] = (void*)(src->vbuf);
 
 	gbuffer_readfrom_gbuffer(act, src);
-	src->tex[0].enq += 1;
-	src->tex[1].enq += 1;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];

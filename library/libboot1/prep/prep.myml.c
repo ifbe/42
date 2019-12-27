@@ -23,6 +23,18 @@ struct footlist{
 
 
 
+int copypath(u8* path, u8* str)
+{
+	int j;
+	while(0x20 == *str)str++;
+
+	for(j=0;j<127;j++){
+		if(str[j] < 0x20)break;
+		path[j] = str[j];
+	}
+	path[j] = 0;
+	return j;
+}
 int parsefmt(u8* buf, u8* str)
 {
 	int j,k;
@@ -191,12 +203,10 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 
 	int argc = 0;
 	u8* argv[16];
+	u8 url[128];
 
 	u64 hash = 0;
-	u8* tmp = 0;
-
 	u64 fmt = 0;
-	u8* url = 0;
 
 	for(j=0;j<=len;j++) {
 		k = buf[j];
@@ -238,17 +248,7 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 					//say("%llx\n", fmt);
 				}
 				if(0 == ncmp(buf+propname, "url", 3)){
-					url = buf+propdata;
-					while(*url == 0x20)url++;
-
-					tmp = url;
-					while(1){
-						if((*tmp == 0xa) | (*tmp == 0xd)){
-							*tmp = 0;
-							break;
-						}
-						tmp++;
-					}
+					copypath(url, buf+propdata);
 				}
 			}
 			continue;
@@ -287,7 +287,6 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 			}//if innode
 
 			fmt = 0;
-			url = 0;
 		}//if }
 	}//for
 

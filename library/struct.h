@@ -895,7 +895,7 @@ struct supply
 		void* sdltex;	//sdl
 	};
 	union{
-		u32 tex1;
+		u32* tex;
 		u64 padd3;
 		u64 addr;
 		void* buf;

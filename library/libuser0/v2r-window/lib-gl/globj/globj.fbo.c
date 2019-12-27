@@ -19,25 +19,11 @@
 
 
 
-int fbodelete(struct supply* target)
+int fbocreate_d(struct supply* tar, int arg)
 {
-	if(target->tex1)glDeleteTextures(1, &target->tex1);
-	if(target->tex0)glDeleteTextures(1, &target->tex0);
-	if(target->rbo)glDeleteRenderbuffers(1, &target->rbo);
-	if(target->fbo)glDeleteFramebuffers(1, &target->fbo);
-	return 0;
-}
-int fbocreate(struct supply* target, int arg)
-{
-	//frame buffer
-	glGenFramebuffers(1, &target->fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, target->fbo);
-
-switch(arg){
-case 'd':{
 	//depth buffer
-	glGenTextures(1, &target->tex0);
-	glBindTexture(GL_TEXTURE_2D, target->tex0);
+	glGenTextures(1, &tar->tex0);
+	glBindTexture(GL_TEXTURE_2D, tar->tex0);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -45,9 +31,9 @@ case 'd':{
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 #ifdef __ANDROID__
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, target->tex0, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tar->tex0, 0);
 #else
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, target->tex0, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tar->tex0, 0);
 #endif
 
 	//No color buffer is drawn to
@@ -55,19 +41,20 @@ case 'd':{
 
 	// Always check that our framebuffer is ok
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fbod!!!\n");
-	break;
+	return 0;
 }//d
 
-case 'c':{
+int fbocreate_c(struct supply* tar, int arg)
+{
 	//render buffer: without this, depth wrong
-	glGenRenderbuffers(1, &target->rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, target->rbo);
+	glGenRenderbuffers(1, &tar->rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, tar->rbo);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, target->rbo);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, tar->rbo);
 
 	//color buffer
-	glGenTextures(1, &target->tex0);
-	glBindTexture(GL_TEXTURE_2D, target->tex0);
+	glGenTextures(1, &tar->tex0);
+	glBindTexture(GL_TEXTURE_2D, tar->tex0);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -75,9 +62,9 @@ case 'c':{
 	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 #ifdef __ANDROID__
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, target->tex0, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tar->tex0, 0);
 #else
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, target->tex0, 0);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, tar->tex0, 0);
 #endif
 
 	//1 drawbuffer
@@ -86,53 +73,69 @@ case 'c':{
 
 	//check
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fboc!!!\n");
-	break;
+	return 0;
 }//c
 
-case 'g':{
+int fbocreate_g(struct supply* tar, int arg)
+{
+	int j;
+	GLenum gbuffer[4];
+	tar->tex = memorycreate(0x100, 0);
+
 	//render buffer: without this, depth wrong
-	glGenRenderbuffers(1, &target->rbo);
-	glBindRenderbuffer(GL_RENDERBUFFER, target->rbo);
+	glGenRenderbuffers(1, &tar->rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, tar->rbo);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, target->rbo);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, tar->rbo);
 
-	//geometry buffer
-	glGenTextures(1, &target->tex0);
-	glBindTexture(GL_TEXTURE_2D, target->tex0);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-#ifdef __ANDROID__
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, target->tex0, 0);
-#else
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, target->tex0, 0);
-#endif
-
-	glGenTextures(1, &target->tex1);
-	glBindTexture(GL_TEXTURE_2D, target->tex1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	for(j=0;j<4;j++){
+		//geometry buffer
+		glGenTextures(1, &tar->tex[j]);
+		glBindTexture(GL_TEXTURE_2D, tar->tex[j]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1024, 1024, 0, GL_RGB, GL_UNSIGNED_BYTE, 0);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 #ifdef __ANDROID__
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, target->tex1, 0);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+j, GL_TEXTURE_2D, tar->tex[j], 0);
 #else
-	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, target->tex1, 0);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0+j, tar->tex[j], 0);
 #endif
 
-	//2 drawbuffer
-	GLenum DrawBuffers[2] = {GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT0};
-	glDrawBuffers(2, DrawBuffers);
+		gbuffer[j] = GL_COLOR_ATTACHMENT0+j;
+	}
+	glDrawBuffers(4, gbuffer);
 
 	//check
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fbog!!!\n");
-	break;
-}//g
-}//switch
-return 0;
+	return 0;
+}
+int fbocreate(struct supply* tar, int arg)
+{
+	//frame buffer
+	glGenFramebuffers(1, &tar->fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, tar->fbo);
+
+	switch(arg){
+	case 'c':fbocreate_c(tar, arg);break;
+	case 'd':fbocreate_d(tar, arg);break;
+	case 'g':fbocreate_g(tar, arg);break;
+	}
+	return 0;
+}
+int fbodelete(struct supply* tar)
+{
+	int j;
+	if(tar->tex){
+		for(j=0;j<4;j++){
+			if(tar->tex[j])glDeleteTextures(1, &tar->tex[j]);
+		}
+		free(tar->tex);
+	}
+	if(tar->tex0)glDeleteTextures(1, &tar->tex0);
+	if(tar->rbo)glDeleteRenderbuffers(1, &tar->rbo);
+	if(tar->fbo)glDeleteFramebuffers(1, &tar->fbo);
+	return 0;
 }
