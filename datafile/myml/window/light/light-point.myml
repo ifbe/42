@@ -62,7 +62,7 @@ ground{
 fmt:ground
 }
 tree{
-fmt:model
+fmt:stl3d
 url:datafile/stl/spider-lowpoly.stl
 }
 light{

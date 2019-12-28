@@ -86,7 +86,7 @@ cur2{
 fmt:curtain
 }
 test{
-fmt:model
+fmt:stl3d
 url:datafile/stl/spider-lowpoly.stl
 }
 light{

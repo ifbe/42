@@ -203,7 +203,9 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 
 	int argc = 0;
 	u8* argv[16];
-	u8 url[128];
+
+	u8* url = 0;
+	u8 tmp[128];
 
 	u64 hash = 0;
 	u64 fmt = 0;
@@ -212,15 +214,15 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 		k = buf[j];
 
 		if( (j == len) | ('\n' == k) ) {
-
 			str = -1;
 			continue;
 		}
 
 		if('#' == k){
 			while('\n' != buf[j])j++;
-			j++;
+			str = -1;
 			k = buf[j];
+			continue;
 		}
 
 		if(	((k >= '0') && (k <= '9')) |
@@ -248,7 +250,8 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 					//say("%llx\n", fmt);
 				}
 				if(0 == ncmp(buf+propname, "url", 3)){
-					copypath(url, buf+propdata);
+					copypath(tmp, buf+propdata);
+					url = tmp;
 				}
 			}
 			continue;

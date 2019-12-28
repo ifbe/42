@@ -7,7 +7,7 @@ gnd{
 fmt:ground
 }
 dog{
-fmt:model
+fmt:stl3d
 url:datafile/stl/dog-lowpoly.stl
 }
 left{

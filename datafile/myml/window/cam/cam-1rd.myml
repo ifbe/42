@@ -36,7 +36,7 @@ fmt:terrain
 url:datafile/jpg/cartoon.jpg
 }
 rabbit{
-fmt:model
+fmt:stl3d
 }
 rtscam{
 fmt:1rdcam

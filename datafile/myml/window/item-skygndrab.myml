@@ -68,7 +68,7 @@ rgb:datafile/jpg/cartoon.jpg
 dep:datafile/jpg/cartoon.jpg
 }
 rabbit{
-fmt:model
+fmt:stl3d
 url:datafile/stl/dog-lowpoly.stl
 #url:datafile/stl/bunny-lowpoly.stl
 #url:datafile/stl/gengar-lowpoly.stl

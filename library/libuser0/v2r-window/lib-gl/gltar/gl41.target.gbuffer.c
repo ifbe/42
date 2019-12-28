@@ -39,7 +39,7 @@ int gl41fbog_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 
 	glBindFramebuffer(GL_FRAMEBUFFER, wnd->fbo);
 	glViewport(0, 0, wnd->fbwidth, wnd->fbheight);
-	glClearColor(0.5, 0.5, 0.5, 1.0);
+	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	stack = (void*)tmp;

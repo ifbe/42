@@ -137,12 +137,13 @@ rawmine/compound/thefile/file.common.folder.c \
 rawmine/compound/thefile/file.common.hexedit.c \
 rawmine/compound/thefile/file.biology.dna.c \
 rawmine/compound/thefile/file.biology.fasta.c \
-rawmine/compound/thefile/file.circuit.gerber.c \
 rawmine/compound/thefile/file.circuit.pcb.c \
 rawmine/compound/thefile/file.circuit.schematic.c \
-rawmine/compound/thefile/file.model.gcode.c \
+rawmine/compound/thefile/file.factory.gcode.c \
+rawmine/compound/thefile/file.factory.gerber.c \
 rawmine/compound/thefile/file.model.geometry.c \
 rawmine/compound/thefile/file.model.scad.c \
+rawmine/compound/thefile/file.model.obj.c \
 rawmine/compound/thefile/file.model.stl.c \
 rawmine/compound/thefile/file.program.arm64.c \
 rawmine/compound/thefile/file.program.mips64.c \

@@ -1,8 +1,7 @@
 #include "libuser.h"
-#define CTXBUF buf0
-int windowread(int type, void* buf);
-int windowwrite(int type, void* buf);
-void parsevertfromstl(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len);
+#define OBJBUF buf0
+#define CTXBUF buf1
+void parsevertfromobj(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
@@ -142,7 +141,7 @@ static void sty_sty_mat(struct fstyle* src, struct fstyle* dst, mat4 mat)
 
 	mat4_transpose(mat);
 }
-static void stl3d_ctxforwnd(struct glsrc* src, char* str, char* vs, char* fs)
+static void obj3d_ctxforwnd(struct glsrc* src, char* vs, char* fs)
 {
 	float* tmp;
 	src->geometry = 3;
@@ -178,9 +177,8 @@ static void stl3d_ctxforwnd(struct glsrc* src, char* str, char* vs, char* fs)
 	//vertex
 	src->vbuf_len = 0x1000000;
 	src->vbuf = memorycreate(src->vbuf_len, 0);
-	openreadclose(str, 0, src->vbuf, src->vbuf_len);
 }
-static void stl3d_draw_vbo3d(
+static void obj3d_draw_vbo3d(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
@@ -197,7 +195,7 @@ static void stl3d_draw_vbo3d(
 
 
 
-static void stl3d_draw_pixel(
+static void obj3d_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -247,32 +245,32 @@ static void stl3d_draw_pixel(
 	}
 */
 }
-static void stl3d_draw_json(
+static void obj3d_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 }
-static void stl3d_draw_html(
+static void obj3d_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 }
-static void stl3d_draw_tui(
+static void obj3d_draw_tui(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 }
-static void stl3d_draw_cli(
+static void obj3d_draw_cli(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	say("stl3d(%x,%x,%x)\n",win,act,sty);
+	say("obj3d(%x,%x,%x)\n",win,act,sty);
 }
 
 
 
 
-static void stl3d_event(
+static void obj3d_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
 	struct event* ev, int len)
@@ -286,28 +284,12 @@ static void stl3d_event(
 		int x = key&0xffff;
 		int y = (key>>16)&0xffff;
 	}
-	else if(_drag_ == type)
-	{
-		char buffer[0x1000];
-		ret = windowread(type, buffer);
-		say("%s", buffer);
-
-		for(j=0;j<ret;j++)
-		{
-			if(buffer[j] < 0x20)
-			{
-				buffer[j] = 0;
-				break;
-			}
-		}
-		//entitycreatefromfile(act, buffer);
-	}
 }
 
 
 
 
-static void stl3d_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void obj3d_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> cam
 	struct entity* wnd;struct style* area;
@@ -315,7 +297,7 @@ static void stl3d_read(struct halfrel* self, struct halfrel* peer, struct halfre
 	//cam -> world
 	struct entity* wrd;struct style* camg;
 
-	//world -> stl3d
+	//world -> obj3d
 	struct entity* scn;struct style* geom;
 	struct entity* act;struct style* slot;
 
@@ -326,11 +308,11 @@ static void stl3d_read(struct halfrel* self, struct halfrel* peer, struct halfre
 		scn = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
 		if('v' == len){
-			stl3d_draw_vbo3d(act,slot, scn,geom, wrd,camg, wnd,area);
+			obj3d_draw_vbo3d(act,slot, scn,geom, wrd,camg, wnd,area);
 		}
 	}
 }
-static void stl3d_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void obj3d_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	//if 'ev i' == self.foot
 	struct entity* act = (void*)(self->chip);
@@ -338,48 +320,51 @@ static void stl3d_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	struct entity* win = (void*)(peer->chip);
 	struct style* sty = (void*)(peer->foot);
 	struct event* ev = (void*)buf;
-	//stl3d_event(act, pin, win, sty, ev, 0);
+	//obj3d_event(act, pin, win, sty, ev, 0);
 }
-static void stl3d_stop(struct halfrel* self, struct halfrel* peer)
+static void obj3d_stop(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void stl3d_start(struct halfrel* self, struct halfrel* peer)
+static void obj3d_start(struct halfrel* self, struct halfrel* peer)
 {
+	struct str* tmp;
 	struct glsrc* src;
 	struct style* pin = (void*)(self->foot);
 	struct entity* act = (void*)(self->chip);
 	if(0 == act)return;
 	if(0 == pin)return;
 
+	tmp = act->OBJBUF;
+
 	//vertex
 	src = act->CTXBUF;
-	parsevertfromstl(src, &pin->fs, src->vbuf, src->vbuf_len);
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*6;
+	parsevertfromobj(src, &pin->fs, tmp->buf, tmp->len);
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf_w = 4*9;
 	src->vbuf_enq = 42;
 }
 
 
 
 
-static void stl3d_search(struct entity* act)
+static void obj3d_search(struct entity* act)
 {
 }
-static void stl3d_modify(struct entity* act)
+static void obj3d_modify(struct entity* act)
 {
 }
-static void stl3d_delete(struct entity* act)
+static void obj3d_delete(struct entity* act)
 {
 	if(0 == act)return;
 }
-static void stl3d_create(struct entity* act, void* str, int argc, u8** argv)
+static void obj3d_create(struct entity* act, void* arg, int argc, u8** argv)
 {
 	int j;
+	struct str* tmp;
 	u8 vspath[128];
 	u8 fspath[128];
 	char* vs = 0;
 	char* fs = 0;
-	char* stl = 0;
 	if(0 == act)return;
 
 	for(j=0;j<argc;j++){
@@ -394,27 +379,30 @@ static void stl3d_create(struct entity* act, void* str, int argc, u8** argv)
 	}
 	if(0 == vs)vs = "datafile/shader/model/vert.glsl";
 	if(0 == fs)fs = "datafile/shader/model/frag.glsl";
-	if(0 == str)str = "datafile/stl/bunny-lowpoly.stl";
-
 	act->CTXBUF = memorycreate(0x200, 0);
-	if(act->CTXBUF)stl3d_ctxforwnd(act->CTXBUF, str, vs, fs);
+	if(act->CTXBUF)obj3d_ctxforwnd(act->CTXBUF, vs, fs);
+
+	if(0 == arg)arg = "datafile/stl/bunny-lowpoly.stl";
+	tmp = act->OBJBUF = memorycreate(0x10000, 0);
+	tmp->len = 0x1000;
+	openreadclose(arg, 0, tmp->buf, tmp->len);
 }
 
 
 
 
-void stl3d_register(struct entity* p)
+void obj3d_register(struct entity* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s','t','l','3','d', 0, 0, 0);
+	p->fmt = hex64('o', 'b', 'j', '3', 'd', 0, 0, 0);
 
-	p->oncreate = (void*)stl3d_create;
-	p->ondelete = (void*)stl3d_delete;
-	p->onsearch = (void*)stl3d_search;
-	p->onmodify = (void*)stl3d_modify;
+	p->oncreate = (void*)obj3d_create;
+	p->ondelete = (void*)obj3d_delete;
+	p->onsearch = (void*)obj3d_search;
+	p->onmodify = (void*)obj3d_modify;
 
-	p->onstart = (void*)stl3d_start;
-	p->onstop  = (void*)stl3d_stop;
-	p->onread  = (void*)stl3d_read;
-	p->onwrite = (void*)stl3d_write;
+	p->onstart = (void*)obj3d_start;
+	p->onstop  = (void*)obj3d_stop;
+	p->onread  = (void*)obj3d_read;
+	p->onwrite = (void*)obj3d_write;
 }

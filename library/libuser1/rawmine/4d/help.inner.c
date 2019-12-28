@@ -53,12 +53,13 @@ void mnist_register(void*);
 //file
 //.biology
 void dna_register(void*);
-//.circuit
+//.factory
+void gcode_register(void*);
 void gerber_register(void*);
 //.model
-void gcode_register(void*);
-void model_register(void*);
 void geometry_register(void*);
+void obj3d_register(void*);
+void stl3d_register(void*);
 //.program
 void cpure_register(void*);
 //.other
@@ -410,18 +411,21 @@ void content_create(void* addr)
 	dna_register(tmp);
 	tmp += sizeof(struct entity);
 
-//.circuit
+//.factory
+	gcode_register(tmp);
+	tmp += sizeof(struct entity);
+
 	gerber_register(tmp);
 	tmp += sizeof(struct entity);
 
 //.model
-	gcode_register(tmp);
-	tmp += sizeof(struct entity);
-
 	geometry_register(tmp);
 	tmp += sizeof(struct entity);
 
-	model_register(tmp);
+	obj3d_register(tmp);
+	tmp += sizeof(struct entity);
+
+	stl3d_register(tmp);
 	tmp += sizeof(struct entity);
 
 //.program

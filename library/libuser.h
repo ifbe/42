@@ -347,29 +347,32 @@ void* alloc_winobj(struct entity*, int type);
 
 
 //libsoft1
+int data2decstr(u64 data,u8* str);
+int data2hexstr(u64 data,u8* str);
 int float2decstr(float, void*);
-int decstr2float(void* src, void* dst);
-
 int float2hexstr(float, void*);
-int hexstr2float(void* src, void* dst);
-
 int double2decstr(double, void*);
+int double2hexstr(double, void*);
+
+int decstr2u16(void* str, u16* data);
+int decstr2u32(void* str, u32* data);
+int decstr2u64(void* str, u64* data);
+int decstr2data(void* str, u64* data);
+int decstr2float(void* src, void* dst);
 int decstr2double(void* src, void* dst);
 
-int double2hexstr(double, void*);
+int hexstr2u16(void* str, u16* data);
+int hexstr2u32(void* str, u32* data);
+int hexstr2u64(void* str, u64* data);
+int hexstr2data(void* str, u64* data);
+int hexstr2float(void* src, void* dst);
 int hexstr2double(void* src, void* dst);
 
-int data2decstr(u64 data,u8* str);
-int decstr2data(void* str, u64* data);
-
-int decstr2datastr(void* src, void* dst);
 int datastr2decstr(void* dst, void* src, int len);
-
-int data2hexstr(u64 data,u8* str);
-int hexstr2data(void* str, u64* data);
-
-int datastr2hexstr(void* dst, void* src, int len);
+int decstr2datastr(void* dst, void* src, int len);
 int hexstr2datastr(void* dst, void* src, int len);
+int datastr2hexstr(void* dst, void* src, int len);
+
 //
 int openreadclose(void*, int, void*, int);
 int openwriteclose(void*, int, void*, int);

@@ -8,7 +8,45 @@ void say(char*, ...);
 
 
 
-//
+int decstr2u16(u8* src, u32* dst)
+{
+	int j;
+	u16 tmp = 0;
+	for(j=0;j<5;j++){
+		if(src[j]<0x30)break;
+		if(src[j]>0x39)break;
+		tmp = tmp*10;
+		tmp += src[j]-0x30;
+	}
+	*dst = tmp;
+	return j;
+}
+int decstr2u32(u8* src, u32* dst)
+{
+	int j;
+	u32 tmp = 0;
+	for(j=0;j<10;j++){
+		if(src[j]<0x30)break;
+		if(src[j]>0x39)break;
+		tmp = tmp*10;
+		tmp += src[j]-0x30;
+	}
+	*dst = tmp;
+	return j;
+}
+int decstr2u64(u8* src, u64* dst)
+{
+	int j;
+	u64 tmp = 0;
+	for(j=0;j<20;j++){
+		if(src[j]<0x30)break;
+		if(src[j]>0x39)break;
+		tmp = tmp*10;
+		tmp += src[j]-0x30;
+	}
+	*dst = tmp;
+	return j;
+}
 int decstr2data(u8* src, void* dst)
 {
 	int j;
@@ -26,9 +64,125 @@ int decstr2data(u8* src, void* dst)
 	//say("data=%llx\n", data);
 
 	if(data>0xffffffff)*(u64*)dst = data;
-	else *(u32*)dst = data&0xffffffff;
+	else if(data>0xffff)*(u32*)dst = data;
+	else if(data>0xff)*(u16*)dst = data;
+	else *(u8*)dst = data;
 	return j;
 }
+int decstr2float(u8* src, float* data)
+{
+	int j;
+	float flag;
+	float temp;
+	float asdf;
+
+stage0:
+	if('-' != src[0])flag = 1.0;
+	else{
+		flag = -1.0;
+		src += 1;
+	}
+
+stage1:
+	temp = 0.0;
+	for(j=0;j<20;j++)
+	{
+		if((src[j] >= '0') && (src[j] <= '9'))
+		{
+			temp = (temp*10) + src[j] - 0x30;
+		}
+		else if(src[j] == '.')
+		{
+			j++;
+			*data = temp;
+			goto stage2;
+		}
+		else
+		{
+			*data = temp;
+			goto byebye;
+		}
+	}
+
+stage2:
+	asdf = 0.1;
+	for(;j<30;j++)
+	{
+		if((src[j] >= '0') && (src[j] <= '9'))
+		{
+			*data += (src[j]-0x30)*asdf;
+			asdf *= 0.1;
+		}
+		else break;
+	}
+
+byebye:
+	if(flag > 0.0){
+		return j;
+	}
+
+	*data *= -1.0;
+	return j+1;
+}
+int decstr2double(u8* src, double* data)
+{
+	int j;
+	double flag;
+	double temp;
+	double asdf;
+
+stage0:
+	if('-' != src[0])flag = 1.0;
+	else{
+		flag = -1.0;
+		src += 1;
+	}
+
+stage1:
+	temp = 0.0;
+	for(j=0;j<20;j++)
+	{
+		if((src[j] >= '0') && (src[j] <= '9'))
+		{
+			temp = (temp*10) + src[j] - 0x30;
+		}
+		else if(src[j] == '.')
+		{
+			j++;
+			*data = temp;
+			goto stage2;
+		}
+		else
+		{
+			*data = temp;
+			goto byebye;
+		}
+	}
+
+stage2:
+	asdf = 0.1;
+	for(;j<30;j++)
+	{
+		if((src[j] >= '0') && (src[j] <= '9'))
+		{
+			*data += (src[j]-0x30)*asdf;
+			asdf *= 0.1;
+		}
+		else break;
+	}
+
+byebye:
+	if(flag > 0.0){
+		return j;
+	}
+
+	*data *= -1.0;
+	return j+1;
+}
+
+
+
+
 int data2decstr(long long data, u8* str)
 {
 	int j,k,f;
@@ -55,28 +209,108 @@ int data2decstr(long long data, u8* str)
 		str++;
 	}
 	return k;
-/*
-	int j,max;
-	u64 temp;
+}
+int float2decstr(float data, u8* str)
+{
+	float temp;
+	int offset;
+	int count;
 
-	max = 0;
-	temp = data;
-	for(j=0;j<0x10;j++)
+	//符号部分
+	offset=0;
+	if(data<0)
 	{
-		max++;
-		temp /= 10;
-		if(temp == 0)break;
+		str[0]='-';
+		offset+=1;
+
+		data=-data;
 	}
 
-	temp = data;
-	for(j=1;j<=max;j++)
+	//整数部分
+	offset+=data2decstr( (u64)data , str+offset );
+
+	//小数点
+	str[offset]='.';
+	offset++;
+
+	//小数部分
+	temp=(float)(u64)data;
+	temp=data-temp;
+
+	if(temp<0.0000000000000000000000000000000001)
 	{
-		string[max-j] = (temp%10)+0x30;
-		temp/=10;
+		//特别小
+		str[offset]=0x30;
+		offset++;
+	}
+	else
+	{
+		//一般小数
+		while(temp<0.1)
+		{
+			temp*=10;
+			str[offset]=0x30;
+			offset++;
+		}
+		temp=temp*10000000;
+		count=data2decstr( (u64)temp , str+offset );
+		offset+=count;
 	}
 
-	return max;
-*/
+	//0
+	str[offset]=0;
+	return offset;
+}
+int double2decstr(double data, u8* str)
+{
+	double temp;
+	int offset;
+	int count;
+
+	//符号部分
+	offset=0;
+	if(data<0)
+	{
+		str[0]='-';
+		offset+=1;
+
+		data=-data;
+	}
+
+	//整数部分
+	offset+=data2decstr( (u64)data , str+offset );
+
+	//小数点
+	str[offset]='.';
+	offset++;
+
+	//小数部分
+	temp=(double)(u64)data;
+	temp=data-temp;
+
+	if(temp<0.0000000000000000000000000000000001)
+	{
+		//特别小
+		str[offset]=0x30;
+		offset++;
+	}
+	else
+	{
+		//一般小数
+		while(temp<0.1)
+		{
+			temp*=10;
+			str[offset]=0x30;
+			offset++;
+		}
+		temp=temp*10000000;
+		count=data2decstr( (u64)temp , str+offset );
+		offset+=count;
+	}
+
+	//0
+	str[offset]=0;
+	return offset;
 }
 
 
@@ -156,228 +390,6 @@ int data2hexstr(u64 data,u8* str)
 		str[max-j] = temp;
 	}
 	return max;
-}
-
-
-
-
-//float类型转换成10进制字符串
-int float2decstr(float data, u8* str)
-{
-	float temp;
-	int offset;
-	int count;
-
-	//符号部分
-	offset=0;
-	if(data<0)
-	{
-		str[0]='-';
-		offset+=1;
-
-		data=-data;
-	}
-
-	//整数部分
-	offset+=data2decstr( (u64)data , str+offset );
-
-	//小数点
-	str[offset]='.';
-	offset++;
-
-	//小数部分
-	temp=(float)(u64)data;
-	temp=data-temp;
-
-	if(temp<0.0000000000000000000000000000000001)
-	{
-		//特别小
-		str[offset]=0x30;
-		offset++;
-	}
-	else
-	{
-		//一般小数
-		while(temp<0.1)
-		{
-			temp*=10;
-			str[offset]=0x30;
-			offset++;
-		}
-		temp=temp*10000000;
-		count=data2decstr( (u64)temp , str+offset );
-		offset+=count;
-	}
-
-	//0
-	str[offset]=0;
-	return offset;
-}
-int decstr2float(u8* src, float* data)
-{
-	int j;
-	float flag;
-	float temp;
-	float asdf;
-
-stage0:
-	if('-' != src[0])flag = 1.0;
-	else{
-		flag = -1.0;
-		src += 1;
-	}
-
-stage1:
-	temp = 0.0;
-	for(j=0;j<20;j++)
-	{
-		if((src[j] >= '0') && (src[j] <= '9'))
-		{
-			temp = (temp*10) + src[j] - 0x30;
-		}
-		else if(src[j] == '.')
-		{
-			j++;
-			*data = temp;
-			goto stage2;
-		}
-		else
-		{
-			*data = temp;
-			goto byebye;
-		}
-	}
-
-stage2:
-	asdf = 0.1;
-	for(;j<30;j++)
-	{
-		if((src[j] >= '0') && (src[j] <= '9'))
-		{
-			*data += (src[j]-0x30)*asdf;
-			asdf *= 0.1;
-		}
-		else break;
-	}
-
-byebye:
-	if(flag > 0.0){
-		return j;
-	}
-
-	*data *= -1.0;
-	return j+1;
-}
-
-
-
-
-//double类型转换成10进制字符串
-int double2decstr(double data, u8* str)
-{
-	double temp;
-	int offset;
-	int count;
-
-	//符号部分
-	offset=0;
-	if(data<0)
-	{
-		str[0]='-';
-		offset+=1;
-
-		data=-data;
-	}
-
-	//整数部分
-	offset+=data2decstr( (u64)data , str+offset );
-
-	//小数点
-	str[offset]='.';
-	offset++;
-
-	//小数部分
-	temp=(double)(u64)data;
-	temp=data-temp;
-
-	if(temp<0.0000000000000000000000000000000001)
-	{
-		//特别小
-		str[offset]=0x30;
-		offset++;
-	}
-	else
-	{
-		//一般小数
-		while(temp<0.1)
-		{
-			temp*=10;
-			str[offset]=0x30;
-			offset++;
-		}
-		temp=temp*10000000;
-		count=data2decstr( (u64)temp , str+offset );
-		offset+=count;
-	}
-
-	//0
-	str[offset]=0;
-	return offset;
-}
-int decstr2double(u8* src, double* data)
-{
-	int j;
-	double flag;
-	double temp;
-	double asdf;
-
-stage0:
-	if('-' != src[0])flag = 1.0;
-	else{
-		flag = -1.0;
-		src += 1;
-	}
-
-stage1:
-	temp = 0.0;
-	for(j=0;j<20;j++)
-	{
-		if((src[j] >= '0') && (src[j] <= '9'))
-		{
-			temp = (temp*10) + src[j] - 0x30;
-		}
-		else if(src[j] == '.')
-		{
-			j++;
-			*data = temp;
-			goto stage2;
-		}
-		else
-		{
-			*data = temp;
-			goto byebye;
-		}
-	}
-
-stage2:
-	asdf = 0.1;
-	for(;j<30;j++)
-	{
-		if((src[j] >= '0') && (src[j] <= '9'))
-		{
-			*data += (src[j]-0x30)*asdf;
-			asdf *= 0.1;
-		}
-		else break;
-	}
-
-byebye:
-	if(flag > 0.0){
-		return j;
-	}
-
-	*data *= -1.0;
-	return j+1;
 }
 
 
