@@ -99,19 +99,6 @@ static void pwmtool_draw_cli(
 {
 	say("pwmtool(%x,%x,%x)\n",win,act,sty);
 }
-static void pwmtool_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)pwmtool_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)pwmtool_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)pwmtool_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)pwmtool_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)pwmtool_draw_vbo(act, pin, win, sty);
-	else pwmtool_draw_pixel(act, pin, win, sty);
-}
 
 
 

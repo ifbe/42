@@ -205,7 +205,6 @@ rawmine/compound/theuiux/hack.filesystem.c \
 rawmine/compound/theuiux/hack.monitor.c \
 rawmine/compound/theuiux/hack.pwmtool.c \
 rawmine/compound/theuiux/hack.sketchpad.c \
-rawmine/compound/theuiux/hack.switcher.c \
 rawmine/compound/theuiux/hack.wireshark.c \
 rawmine/compound/theuiux/tool.calculator.c \
 rawmine/compound/theuiux/tool.font.c \

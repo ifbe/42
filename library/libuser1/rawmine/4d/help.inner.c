@@ -86,7 +86,6 @@ void circuit_register(void*);
 void fs_register(void*);
 void pwmtool_register(void*);
 void rawdump_register(void*);
-void switch_register(void*);
 
 //item
 void clock_register(void*);
@@ -369,9 +368,6 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 	rawdump_register(tmp);
-	tmp += sizeof(struct entity);
-
-	switch_register(tmp);
 	tmp += sizeof(struct entity);
 
 

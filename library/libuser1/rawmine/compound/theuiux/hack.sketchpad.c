@@ -1,4 +1,7 @@
 #include "libuser.h"
+#define CTXBUF buf0
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+//
 double calculator(void* postfix, u64 x, u64 y);
 double sketchpad(void*, double, double);
 double closestvalue(double first, double second);
@@ -38,49 +41,103 @@ static double scale = 0.0;
 
 
 
-/*
-char* sketchpad_glsl2d_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 texuvw;\n"
-	"out mediump vec3 uvw;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = vec4(vertex, 1.0);\n"
-	"}\n";
-*/
-char* sketchpad_glsl_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec3 texuvw;\n"
-	"uniform mat4 cammvp;\n"
-	"out mediump vec3 uvw;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
-	"}\n";
-char* sketchpad_glsl_f =
-	GLSL_VERSION
-	"in mediump vec3 uvw;\n"
-	"out mediump vec4 FragColor;\n"
-	"float fun(float x, float y){\n"
-		"return x*x-y;\n"
-	"}\n"
-	"void main(){\n"
-		"mediump float dx=uvw.z;\n"
-		"mediump float dy=uvw.z;\n"
-		"mediump float xx = fun(uvw.x-dx,uvw.y) * fun(uvw.x+dx,uvw.y);\n"
-		"mediump float yy = fun(uvw.x,uvw.y-dy) * fun(uvw.x,uvw.y+dy);\n"
-		"if(xx<0||yy<0)FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
-		"else FragColor = vec4(0.0, 0.0, 0.0, 1.0);\n"
-		//"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
-	"}\n";
 
+static void copypath(u8* path, u8* data)
+{
+	int j;
+	for(j=0;j<127;j++){
+		if(data[j] < 0x20)break;
+		path[j] = data[j];
+	}
+	path[j] = 0;
+}
+static void sketchpad_ctxforwnd(struct glsrc* src, char* vs, char* fs)
+{
+	src->geometry = 3;
+	src->method = 'v';
 
+	//shader
+	src->vs = memorycreate(0x1000, 0);
+	openreadclose(vs, 0, src->vs, 0x1000);
+	src->fs = memorycreate(0x1000, 0);
+	openreadclose(fs, 0, src->fs, 0x1000);
+	src->shader_enq = 42;
 
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+}
+static void sketchpad_draw_vbo(
+	struct entity* act, struct style* slot,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	float x0,y0,xn,yn;
+	float cx,cy,dx,dy;
+	struct glsrc* src;
+	float (*vbuf)[6];
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
 
+	src = act->CTXBUF;
+	if(0 == src)return;
+	vbuf = src->vbuf;
+	if(0 == vbuf)return;
+	x0 = act->fx0;
+	y0 = act->fy0;
+	xn = act->fxn;
+	yn = act->fyn;
+	cx = (x0+xn)/2;
+	cy = (y0+yn)/2;
+	dx = (xn-x0)/2;
+	dy = dx * vec3_getlen(vf) / vec3_getlen(vr);
+	y0 = act->fy0 = cy-dy;
+	yn = act->fyn = cy+dy;
+
+	vbuf[0][0] = vc[0] - vr[0] - vf[0];
+	vbuf[0][1] = vc[1] - vr[1] - vf[1];
+	vbuf[0][2] = vc[2] - vr[2] - vf[2];
+	vbuf[0][3] = x0;
+	vbuf[0][4] = y0;
+
+	vbuf[1][0] = vc[0] + vr[0] + vf[0];
+	vbuf[1][1] = vc[1] + vr[1] + vf[1];
+	vbuf[1][2] = vc[2] + vr[2] + vf[2];
+	vbuf[1][3] = xn;
+	vbuf[1][4] = yn;
+
+	vbuf[2][0] = vc[0] - vr[0] + vf[0];
+	vbuf[2][1] = vc[1] - vr[1] + vf[1];
+	vbuf[2][2] = vc[2] - vr[2] + vf[2];
+	vbuf[2][3] = x0;
+	vbuf[2][4] = yn;
+
+	vbuf[3][0] = vc[0] + vr[0] + vf[0];
+	vbuf[3][1] = vc[1] + vr[1] + vf[1];
+	vbuf[3][2] = vc[2] + vr[2] + vf[2];
+	vbuf[3][3] = xn;
+	vbuf[3][4] = yn;
+
+	vbuf[4][0] = vc[0] - vr[0] - vf[0];
+	vbuf[4][1] = vc[1] - vr[1] - vf[1];
+	vbuf[4][2] = vc[2] - vr[2] - vf[2];
+	vbuf[4][3] = x0;
+	vbuf[4][4] = y0;
+
+	vbuf[5][0] = vc[0] + vr[0] - vf[0];
+	vbuf[5][1] = vc[1] + vr[1] - vf[1];
+	vbuf[5][2] = vc[2] + vr[2] - vf[2];
+	vbuf[5][3] = xn;
+	vbuf[5][4] = y0;
+
+	src->vbuf_enq += 1;
+	gl41data_insert(wnd, 's', act->CTXBUF, 1);
+}
 /*
 static void wangge(struct entity* win)
 {
@@ -279,70 +336,6 @@ skipthese:
 	drawstring(win, 0xcccccc, cx-ww, cy-hh+16, infix, 0);
 	drawstring(win, 0xcccccc, cx-ww, cy-hh+32, postfix, 0);
 	drawstring(win, 0xcccccc, cx-ww, cy-hh+48, result, 0);
-}/*
-static void sketchpad_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	if(0 == sty)sty = defaultstyle_vbo2d();
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	float* tc = act->target.vc;
-	float* tr = act->target.vr;
-	float* tf = act->target.vf;
-	struct glsrc* src = (void*)(pin->foot[0]);
-	float (*vbuf)[6] = src->vbuf;
-
-	vbuf[0][0] = vc[0] - vr[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2];
-	vbuf[0][3] = tc[0] - tr[0];
-	vbuf[0][4] = tc[1] - tf[1];
-	vbuf[0][5] = 2*tr[0] / (win->width);
-
-	vbuf[1][0] = vc[0] + vr[0] + vf[0];
-	vbuf[1][1] = vc[1] + vr[1] + vf[1];
-	vbuf[1][2] = vc[2] + vr[2] + vf[2];
-	vbuf[1][3] = tc[0] + tr[0];
-	vbuf[1][4] = tc[1] + tf[1];
-	vbuf[1][5] = 2*tr[0] / (win->width);
-
-	vbuf[2][0] = vc[0] - vr[0] + vf[0];
-	vbuf[2][1] = vc[1] - vr[1] + vf[1];
-	vbuf[2][2] = vc[2] - vr[2] + vf[2];
-	vbuf[2][3] = tc[0] - tr[0];
-	vbuf[2][4] = tc[1] + tf[1];
-	vbuf[2][5] = 2*tr[0] / (win->width);
-
-	vbuf[3][0] = vc[0] + vr[0] + vf[0];
-	vbuf[3][1] = vc[1] + vr[1] + vf[1];
-	vbuf[3][2] = vc[2] + vr[2] + vf[2];
-	vbuf[3][3] = tc[0] + tr[0];
-	vbuf[3][4] = tc[1] + tf[1];
-	vbuf[3][5] = 2*tr[0] / (win->width);
-
-	vbuf[4][0] = vc[0] - vr[0] - vf[0];
-	vbuf[4][1] = vc[1] - vr[1] - vf[1];
-	vbuf[4][2] = vc[2] - vr[2] - vf[2];
-	vbuf[4][3] = tc[0] - tr[0];
-	vbuf[4][4] = tc[1] - tf[1];
-	vbuf[4][5] = 2*tr[0] / (win->width);
-
-	vbuf[5][0] = vc[0] + vr[0] - vf[0];
-	vbuf[5][1] = vc[1] + vr[1] - vf[1];
-	vbuf[5][2] = vc[2] + vr[2] - vf[2];
-	vbuf[5][3] = tc[0] + tr[0];
-	vbuf[5][4] = tc[1] - tf[1];
-	vbuf[5][5] = 2*tr[0] / (win->width);
-
-	src->vbuf_enq += 1;
-}*/
-static void sketchpad_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
 }
 static void sketchpad_draw_json(
 	struct entity* act, struct style* pin,
@@ -425,23 +418,6 @@ static void sketchpad_draw_cli(
 	struct entity* win, struct style* sty)
 {
 	say("sketchpad(%x,%x,%x)\n",win,act,sty);
-}
-static void sketchpad_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)sketchpad_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)sketchpad_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)sketchpad_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)sketchpad_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)sketchpad_draw_vbo2d(act, pin, win, sty);
-		//else sketchpad_draw_vbo3d(act, pin, win, sty);
-	}
-	else sketchpad_draw_pixel(act, pin, win, sty);
 }
 static void sketchpad_event(
 	struct entity* act, struct style* pin,
@@ -550,14 +526,23 @@ static void sketchpad_event(
 
 
 
-static void sketchpad_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void sketchpad_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//sketchpad_draw(act, pin, win, sty);
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wor;struct style* camg;
+
+	//world -> sketchpad
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
+
+	if(stack){
+		act = self->pchip;part = self->pfoot;
+		win = peer->pchip;geom = peer->pfoot;
+		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)sketchpad_draw_vbo(act,part, win,geom, wnd,area);
+	}
 }
 static void sketchpad_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -574,49 +559,6 @@ static void sketchpad_stop(struct halfrel* self, struct halfrel* peer)
 }
 static void sketchpad_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct datapair* pair;
-	struct glsrc* src;
-	struct gldst* dst;
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-/*
-	//alloc
-	pair = alloc_winobj(win, 's');
-	src = &pair->src;
-	dst = &pair->dst;
-	pin->foot[0] = (u64)src;
-	sty->foot[0] = (u64)dst;
-
-	//
-	src->geometry = 3;
-	src->method = 'v';
-
-	//shader
-	src->vs = sketchpad_glsl_v;
-	src->fs = sketchpad_glsl_f;
-	src->shader_enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
-
-
-	//
-	act->target.vc[0] = 0.0;
-	act->target.vc[1] = 0.0;
-	act->target.vr[0] = 1.0;
-	act->target.vf[1] = 1.0;
-
-	//
-	centerx = 0.00;
-	centery = 0.00;
-	scale = 1.00;
-*/
 }
 
 
@@ -631,12 +573,45 @@ static void sketchpad_modify(struct entity* act)
 static void sketchpad_delete(struct entity* act)
 {
 	if(0 == act)return;
-	memorydelete(act->buf);
 }
-static void sketchpad_create(struct entity* act)
+static void sketchpad_create(struct entity* act, void* str, int argc, u8** argv)
 {
+	int j;
+	u8 vspath[128];
+	u8 fspath[128];
+	char* vs = 0;
+	char* fs = 0;
+	char* stl = 0;
 	if(0 == act)return;
+
+	for(j=0;j<argc;j++){
+		if(0 == ncmp(argv[j], "vs:", 3)){
+			copypath(vspath, argv[j]+3);
+			vs = (void*)vspath;
+		}
+		if(0 == ncmp(argv[j], "fs:", 3)){
+			copypath(fspath, argv[j]+3);
+			fs = (void*)fspath;
+		}
+	}
+	if(0 == vs)vs = "datafile/shader/sketchpad/vert.glsl";
+	if(0 == fs)fs = "datafile/shader/sketchpad/frag.glsl";
+
+	act->CTXBUF = memorycreate(0x200, 0);
+	sketchpad_ctxforwnd(act->CTXBUF, vs, fs);
+
 	act->buf = databuf = memorycreate(0x100000, 0);
+
+	//
+	act->fx0 =-9.0;
+	act->fy0 =-9.0;
+	act->fxn = 9.0;
+	act->fyn = 9.0;
+
+	//
+	centerx = 0.00;
+	centery = 0.00;
+	scale = 1.00;
 }
 
 
