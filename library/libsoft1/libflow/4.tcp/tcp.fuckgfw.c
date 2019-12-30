@@ -24,11 +24,11 @@ int fuckgfwclient_start(struct halfrel* self, struct halfrel* peer)
 	say("@fuckgfwclient_start: %.4s\n", &self->flag);
 	return 0;
 }
-int fuckgfwclient_delete(struct element* ele)
+int fuckgfwclient_delete(struct artery* ele)
 {
 	return 0;
 }
-int fuckgfwclient_create(struct element* ele, u8* url)
+int fuckgfwclient_create(struct artery* ele, u8* url)
 {
 	say("@fuckgfwclient_create\n");
 	return 0;
@@ -43,7 +43,7 @@ int fuckgfwserver_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 }
 int fuckgfwserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct element* ele = self->pchip;
+	struct artery* ele = self->pchip;
 	if(_src_ == self->flag){
 /*
 		//type, id = decrypt(buf, len)
@@ -75,11 +75,11 @@ int fuckgfwserver_start(struct halfrel* self, struct halfrel* peer)
 	say("@fuckgfwserver_start: %.4s\n", &self->flag);
 	return 0;
 }
-int fuckgfwserver_delete(struct element* ele)
+int fuckgfwserver_delete(struct artery* ele)
 {
 	return 0;
 }
-int fuckgfwserver_create(struct element* ele, u8* url)
+int fuckgfwserver_create(struct artery* ele, u8* url)
 {
 	say("@fuckgfwserver_create\n");
 	ele->stage1 = 0;
@@ -98,8 +98,8 @@ int fuckgfwmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	struct object* TCP;		//parent
 	struct object* Tcp;		//child
 
-	struct element* FUCKGFW;	//master
-	struct element* Fuckgfw;	//server
+	struct artery* FUCKGFW;	//master
+	struct artery* Fuckgfw;	//server
 
 	//parent, child
 	TCP = (void*)(peer->chip);
@@ -126,11 +126,11 @@ int fuckgfwmaster_start(struct halfrel* self, struct halfrel* peer)
 	say("@fuckgfwmaster_start\n");
 	return 0;
 }
-int fuckgfwmaster_delete(struct element* ele)
+int fuckgfwmaster_delete(struct artery* ele)
 {
 	return 0;
 }
-int fuckgfwmaster_create(struct element* ele, u8* url)
+int fuckgfwmaster_create(struct artery* ele, u8* url)
 {
 	say("@fuckgfwmaster\n");
 	return 0;

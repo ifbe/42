@@ -5,7 +5,7 @@ int termwrite(void*, int);
 
 
 int hackclient_write(
-	struct element* ele, void* sty,
+	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
@@ -15,11 +15,11 @@ int hackclient_read()
 {
 	return 0;
 }
-int hackclient_delete(struct element* ele)
+int hackclient_delete(struct artery* ele)
 {
 	return 0;
 }
-int hackclient_create(struct element* ele, u8* url)
+int hackclient_create(struct artery* ele, u8* url)
 {
 	return 0;
 }
@@ -28,7 +28,7 @@ int hackclient_create(struct element* ele, u8* url)
 
 
 int hackserver_write(
-	struct element* ele, void* sty,
+	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
@@ -39,11 +39,11 @@ int hackserver_read()
 {
 	return 0;
 }
-int hackserver_delete(struct element* ele)
+int hackserver_delete(struct artery* ele)
 {
 	return 0;
 }
-int hackserver_create(struct element* ele, u8* url)
+int hackserver_create(struct artery* ele, u8* url)
 {
 	return 0;
 }

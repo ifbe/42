@@ -13,7 +13,7 @@ int recut_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 {
 	int j,ret;
 	u8* mem;
-	struct element* ele;
+	struct artery* ele;
 
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
@@ -51,7 +51,7 @@ int recut_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int recut_create(struct element* ele, u8* url)
+int recut_create(struct artery* ele, u8* url)
 {
 	say("@recut_create\n");
 	ele->buf0 = memorycreate(0x100000, 0);

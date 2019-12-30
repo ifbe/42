@@ -12,7 +12,7 @@ int pump_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	int ret;
 	u8 tmp[0x1000];
 
-	struct element* ele = (void*)(self->chip);
+	struct artery* ele = (void*)(self->chip);
 	if(0 == ele)return 0;
 
 	say("@pump.%4s\n", &self->flag);
@@ -35,7 +35,7 @@ int pump_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int pump_create(struct element* ele, u8* url)
+int pump_create(struct artery* ele, u8* url)
 {
 	say("@pump_create\n");
 	return 1;

@@ -63,7 +63,7 @@ int httpclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int i
 int httpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int j,k;
-	struct element* ele;
+	struct artery* ele;
 	say("@httpclient_write: %llx, %.4s, %x\n", self->pchip, &self->flag, len);
     if(len>0)printmemory(buf, len<16?len:16);
 
@@ -122,7 +122,7 @@ int httpclient_stop(struct halfrel* self, struct halfrel* peer, void* arg, int i
 }
 int httpclient_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct element* ele;
+	struct artery* ele;
 	struct object* obj;
 	say("@httpclient_start: %.4s\n", &self->flag);
 
@@ -133,11 +133,11 @@ int httpclient_start(struct halfrel* self, struct halfrel* peer)
 	}
 	return 0;
 }
-int httpclient_delete(struct element* ele)
+int httpclient_delete(struct artery* ele)
 {
 	return 0;
 }
-int httpclient_create(struct element* ele, u8* url)
+int httpclient_create(struct artery* ele, u8* url)
 {
 	int j;
 	u8* buf;
@@ -223,11 +223,11 @@ int httpserver_start(struct halfrel* self, struct halfrel* peer)
 	say("@httpserver_start: %.4s\n", &self->flag);
 	return 0;
 }
-int httpserver_delete(struct element* ele)
+int httpserver_delete(struct artery* ele)
 {
 	return 0;
 }
-int httpserver_create(struct element* ele, u8* url)
+int httpserver_create(struct artery* ele, u8* url)
 {
 	return 0;
 }
@@ -243,7 +243,7 @@ int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 	struct httpparsed p;
 	struct relation* rel;
 	struct object* obj;
-	struct element* ele;
+	struct artery* ele;
 
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
@@ -345,11 +345,11 @@ int httpmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int i
 {
 	return 0;
 }
-int httpmaster_delete(struct element* ele)
+int httpmaster_delete(struct artery* ele)
 {
 	return 0;
 }
-int httpmaster_create(struct element* ele, u8* url)
+int httpmaster_create(struct artery* ele, u8* url)
 {
 	return 0;
 }

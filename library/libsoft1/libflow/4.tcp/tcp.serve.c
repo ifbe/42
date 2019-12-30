@@ -18,7 +18,7 @@ void serve_gettype(u8* src, u8* dst)
 
 
 int serveclient_write(
-	struct element* ele, void* sty,
+	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
@@ -29,11 +29,11 @@ int serveclient_read()
 {
 	return 0;
 }
-int serveclient_delete(struct element* ele)
+int serveclient_delete(struct artery* ele)
 {
 	return 0;
 }
-int serveclient_create(struct element* ele, u8* url)
+int serveclient_create(struct artery* ele, u8* url)
 {
 	int j,k;
 	void* obj;
@@ -66,7 +66,7 @@ int serveclient_create(struct element* ele, u8* url)
 
 
 int serveserver_write(
-	struct element* ele, void* sty,
+	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
@@ -74,17 +74,17 @@ int serveserver_write(
 	return 0;
 }
 int serveserver_read(
-	struct element* ele, void* sty,
+	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
 	return 0;
 }
-int serveserver_delete(struct element* ele)
+int serveserver_delete(struct artery* ele)
 {
 	return 0;
 }
-int serveserver_create(struct element* ele, u8* url)
+int serveserver_create(struct artery* ele, u8* url)
 {
 	return 0;
 }
@@ -93,7 +93,7 @@ int serveserver_create(struct element* ele, u8* url)
 
 
 int servemaster_write(
-	struct element* ele, void* sty,
+	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
@@ -216,11 +216,11 @@ int servemaster_read()
 {
 	return 0;
 }
-int servemaster_delete(struct element* ele)
+int servemaster_delete(struct artery* ele)
 {
 	return 0;
 }
-int servemaster_create(struct element* ele, u8* url)
+int servemaster_create(struct artery* ele, u8* url)
 {
 	return 0;
 }

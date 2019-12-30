@@ -9,7 +9,7 @@ int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
 int str2fv_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	float f[10];
-	struct element* ele;
+	struct artery* ele;
 	say("@str2fv_read\n");
 
 	ele = (void*)(self->chip);
@@ -22,7 +22,7 @@ int str2fv_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 {
 	int cnt;
 	float tmp[9];
-	struct element* ele;
+	struct artery* ele;
 	say("@str2fv_write:%d\n", len);
 	//printmemory(buf, len);
 
@@ -44,7 +44,7 @@ int str2fv_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int str2fv_create(struct element* ele, u8* url)
+int str2fv_create(struct artery* ele, u8* url)
 {
 	say("@str2fv_create\n");
 	ele->buf0 = memorycreate(0x1000, 0);

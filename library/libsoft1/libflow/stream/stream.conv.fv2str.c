@@ -40,7 +40,7 @@ int fv2str_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int fv2str_create(struct element* ele, u8* url)
+int fv2str_create(struct artery* ele, u8* url)
 {
 	say("@fv2str_create\n");
 	return 1;

@@ -145,14 +145,14 @@ int dns_write_answer(u8* buf, int len)
 
 
 int dnsclient_read(
-	struct element* ele, void* sty,
+	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
 	return 0;
 }
 int dnsclient_write(
-	struct element* ele, void* sty,
+	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
@@ -179,11 +179,11 @@ int dnsclient_write(
 	say("}\n");
 	return 0;
 }
-int dnsclient_delete(struct element* ele)
+int dnsclient_delete(struct artery* ele)
 {
 	return 0;
 }
-int dnsclient_create(struct element* ele, u8* url)
+int dnsclient_create(struct artery* ele, u8* url)
 {
 	int ret;
 	void* obj;
@@ -206,14 +206,14 @@ int dnsclient_create(struct element* ele, u8* url)
 
 
 int dnsserver_read(
-	struct element* ele, void* sty,
+	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
 	return 0;
 }
 int dnsserver_write(
-	struct element* ele, void* sty,
+	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
@@ -221,11 +221,11 @@ int dnsserver_write(
 	printmemory(buf, len);
 	return 0;
 }
-int dnsserver_delete(struct element* ele)
+int dnsserver_delete(struct artery* ele)
 {
 	return 0;
 }
-int dnsserver_create(struct element* ele, u8* url)
+int dnsserver_create(struct artery* ele, u8* url)
 {
 	return 0;
 }

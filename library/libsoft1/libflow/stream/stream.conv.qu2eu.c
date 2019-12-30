@@ -17,7 +17,7 @@ int qu2eu_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 {
 	vec4 e;
 	float* q;
-	struct element* ele;
+	struct artery* ele;
 
 	ele = (void*)(self->chip);
 	if(0 == ele)return 0;
@@ -41,7 +41,7 @@ int qu2eu_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int qu2eu_create(struct element* ele, u8* url)
+int qu2eu_create(struct artery* ele, u8* url)
 {
 	say("@qu2eu_create\n");
 	return 1;

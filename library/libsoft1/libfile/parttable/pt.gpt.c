@@ -145,7 +145,7 @@ int gptclient_start(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
 	struct object* obj;
-	struct element* ele;
+	struct artery* ele;
 	u8* src;
 	u8* dst;
 
@@ -160,7 +160,7 @@ int gptclient_start(struct halfrel* self, struct halfrel* peer)
 	parse_gpt(src, dst);
 	return 0;
 }
-int gptclient_delete(struct element* ele)
+int gptclient_delete(struct artery* ele)
 {
 	if(ele->buf0){
 		memorydelete(ele->buf0);
@@ -172,7 +172,7 @@ int gptclient_delete(struct element* ele)
 	}
 	return 0;
 }
-int gptclient_create(struct element* ele, u8* url)
+int gptclient_create(struct artery* ele, u8* url)
 {
 	ele->buf0 = memorycreate(0x10000, 0);
 	ele->buf1 = memorycreate(0x10000, 0);

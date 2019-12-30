@@ -451,13 +451,13 @@ void fat_delete()
 
 
 int fatclient_write(
-	struct element* ele, void* sty,
+	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
 	return 0;
 }
-int fatclient_create(struct element* ele, u8* url)
+int fatclient_create(struct artery* ele, u8* url)
 {
 	return 0;
 }

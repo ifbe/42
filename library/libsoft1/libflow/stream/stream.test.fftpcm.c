@@ -14,7 +14,7 @@ int fftpcm_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 {
 	int j;
 	float tmp,max;
-	struct element* ele;
+	struct artery* ele;
 	short* pcm;
 	float* real;
 	float* imag;
@@ -65,11 +65,11 @@ int fftpcm_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int fftpcm_delete(struct element* ele)
+int fftpcm_delete(struct artery* ele)
 {
 	return 0;
 }
-int fftpcm_create(struct element* ele, u8* url)
+int fftpcm_create(struct artery* ele, u8* url)
 {
 	say("@fftpcm_create\n");
 	ele->buf0 = memorycreate(0x100000, 0);

@@ -11,11 +11,11 @@ int quicclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 {
 	return 0;
 }
-int quicclient_delete(struct element* ele)
+int quicclient_delete(struct artery* ele)
 {
 	return 0;
 }
-int quicclient_create(struct element* ele, u8* url)
+int quicclient_create(struct artery* ele, u8* url)
 {
 	return 0;
 }
@@ -31,11 +31,11 @@ int quicserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 {
 	return 0;
 }
-int quicserver_delete(struct element* ele)
+int quicserver_delete(struct artery* ele)
 {
 	return 0;
 }
-int quicserver_create(struct element* ele, u8* url)
+int quicserver_create(struct artery* ele, u8* url)
 {
 	return 0;
 }
@@ -48,7 +48,7 @@ int quicmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 	int ret;
 	u8* tmp;
 	u8 str[30];
-	struct element* ele = self->pchip;
+	struct artery* ele = self->pchip;
 
 	//who
 	tmp = arg;
@@ -78,11 +78,11 @@ int quicmaster_read()
 {
 	return 0;
 }
-int quicmaster_delete(struct element* ele)
+int quicmaster_delete(struct artery* ele)
 {
 	return 0;
 }
-int quicmaster_create(struct element* ele, u8* url)
+int quicmaster_create(struct artery* ele, u8* url)
 {
 	return 0;
 }

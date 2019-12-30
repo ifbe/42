@@ -122,9 +122,11 @@ void fractal_register(void*);
 void palette_register(void*);
 void planet_register(void*);
 
-//uiux
+//bar
 void skillbar_register(void*);
 void tabbar_register(void*);
+
+//uiux
 void gbuffer_register(void*);
 void oscillo_register(void*);
 void picture_register(void*);
@@ -547,14 +549,17 @@ void content_create(void* addr)
 
 
 
-//-------------------vkbd------------------
-//.bar
+//-------------------bar-------------------
 	skillbar_register(tmp);
 	tmp += sizeof(struct entity);
 
 	tabbar_register(tmp);
 	tmp += sizeof(struct entity);
-//.else
+
+
+
+
+//-------------------vkbd------------------
 	button_register(tmp);
 	tmp += sizeof(struct entity);
 

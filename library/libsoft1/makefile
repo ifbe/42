@@ -44,6 +44,9 @@ libalgo/linear/linear.stack.c \
 libalgo/matching/match.bm.c \
 libalgo/matching/match.kmp.c \
 libalgo/matching/match.rough.c \
+libalgo/neural/neural.ann.c \
+libalgo/neural/neural.cnn.c \
+libalgo/neural/neural.rnn.c \
 libalgo/notation/nota.calc.c \
 libalgo/notation/nota.postfix.c \
 libalgo/notation/nota.prefix.c \

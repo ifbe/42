@@ -8,7 +8,7 @@
 int reline_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	float f[10];
-	struct element* ele;
+	struct artery* ele;
 	say("@reline_read\n");
 
 	ele = (void*)(self->chip);
@@ -21,7 +21,7 @@ int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 {
 	int j,k,cur;
 	u8* tmp;
-	struct element* ele;
+	struct artery* ele;
 	//say("@reline_write:%.4s\n", &self->flag);
 
 	ele = (void*)(self->chip);
@@ -90,7 +90,7 @@ int reline_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int reline_create(struct element* ele, u8* url)
+int reline_create(struct artery* ele, u8* url)
 {
 	say("@reline_create\n");
 	ele->buf0 = memorycreate(0x1000, 0);

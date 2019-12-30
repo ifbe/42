@@ -35,11 +35,11 @@ int proxyclient_start(struct halfrel* self, struct halfrel* peer)
 	say("@proxyclient_start: %.4s\n", &self->flag);
 	return 0;
 }
-int proxyclient_delete(struct element* ele)
+int proxyclient_delete(struct artery* ele)
 {
 	return 0;
 }
-int proxyclient_create(struct element* ele, u8* url)
+int proxyclient_create(struct artery* ele, u8* url)
 {
 	say("@proxyclient_create\n");
     ele->stage1 = 0;
@@ -55,7 +55,7 @@ int proxyserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int 
 }
 int proxyserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct element* ele;
+	struct artery* ele;
 	say("@proxyserver_write: chip=%llx, foot=%.4s, len=%d\n", self->chip, &self->flag, len);
     printmemory(buf, len<16?len:16);
 
@@ -92,11 +92,11 @@ int proxyserver_start(struct halfrel* self, struct halfrel* peer)
 	say("@proxyserver_start: %.4s\n", &self->flag);
 	return 0;
 }
-int proxyserver_delete(struct element* ele)
+int proxyserver_delete(struct artery* ele)
 {
 	return 0;
 }
-int proxyserver_create(struct element* ele, u8* url)
+int proxyserver_create(struct artery* ele, u8* url)
 {
 	say("@proxyserver_create\n");
 	ele->stage1 = 0;
@@ -120,9 +120,9 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 	struct object* Tcp;			//child
 	struct object* client;		//client
 
-	struct element* ele;		//master
-	struct element* Proxy;		//server
-	struct element* socks;
+	struct artery* ele;		//master
+	struct artery* Proxy;		//server
+	struct artery* socks;
 
 	say("@proxymaster_write: chip=%llx, foot=%.4s, len=%d\n", self->chip, &self->flag, len);
     printmemory(buf, len<16?len:16);
@@ -226,11 +226,11 @@ int proxymaster_start(struct halfrel* self, struct halfrel* peer)
 	say("@proxymaster_start\n");
 	return 0;
 }
-int proxymaster_delete(struct element* ele)
+int proxymaster_delete(struct artery* ele)
 {
 	return 0;
 }
-int proxymaster_create(struct element* ele, u8* url)
+int proxymaster_create(struct artery* ele, u8* url)
 {
 	int j,k;
 	say("@proxymaster.create\n");

@@ -22,11 +22,11 @@ int gcodeclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 	}
 	return 0;
 }
-int gcodeclient_delete(struct element* ele)
+int gcodeclient_delete(struct artery* ele)
 {
 	return 0;
 }
-int gcodeclient_create(struct element* ele, u8* url)
+int gcodeclient_create(struct artery* ele, u8* url)
 {
 	return 0;
 }
@@ -43,11 +43,11 @@ int gcodeserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 {
 	return 0;
 }
-int gcodeserver_delete(struct element* ele)
+int gcodeserver_delete(struct artery* ele)
 {
 	return 0;
 }
-int gcodeserver_create(struct element* ele, u8* url)
+int gcodeserver_create(struct artery* ele, u8* url)
 {
 	return 0;
 }

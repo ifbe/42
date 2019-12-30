@@ -772,7 +772,7 @@ struct object
 	//[0xc0,0xff]
 	u8 data[0x40];
 };
-struct element
+struct artery
 {
 	//[00,1f]: wire
 	union{

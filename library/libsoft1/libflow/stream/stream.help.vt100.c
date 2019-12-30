@@ -30,11 +30,11 @@ int vt100_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int vt100_delete(struct element* ele)
+int vt100_delete(struct artery* ele)
 {
 	return 0;
 }
-int vt100_create(struct element* ele, u8* url)
+int vt100_create(struct artery* ele, u8* url)
 {
 	say("@vt100_create\n");
 	return 1;

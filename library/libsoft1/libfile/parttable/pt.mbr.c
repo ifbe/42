@@ -126,7 +126,7 @@ int mbrclient_start(struct halfrel* self, struct halfrel* peer)
 	u8 src[0x200];
 	u8 dst[0x200];
 	struct object* obj;
-	struct element* ele;
+	struct artery* ele;
 
 	obj = peer->pchip;
 	ele = self->pchip;
@@ -134,5 +134,13 @@ int mbrclient_start(struct halfrel* self, struct halfrel* peer)
 	ret = readfile(obj, obj->selffd, "", 0, src, 0x4800);
 
 	parse_mbr(src, dst);
+	return 0;
+}
+
+
+
+
+int mbrclient_create()
+{
 	return 0;
 }

@@ -11,11 +11,11 @@ int tftpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 {
 	return 0;
 }
-int tftpclient_delete(struct element* ele)
+int tftpclient_delete(struct artery* ele)
 {
 	return 0;
 }
-int tftpclient_create(struct element* ele, u8* url)
+int tftpclient_create(struct artery* ele, u8* url)
 {
 	return 0;
 }
@@ -32,7 +32,7 @@ int tftpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 	int ret;
 	u8* tmp;
 	u8 str[30];
-	struct element* ele = self->pchip;
+	struct artery* ele = self->pchip;
 
 	//who
 	tmp = arg;
@@ -58,11 +58,11 @@ int tftpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 	relationwrite(ele, _src_, 0, 0, buf,len);
 	return 0;
 }
-int tftpserver_delete(struct element* ele)
+int tftpserver_delete(struct artery* ele)
 {
 	return 0;
 }
-int tftpserver_create(struct element* ele, u8* url)
+int tftpserver_create(struct artery* ele, u8* url)
 {
 	return 0;
 }

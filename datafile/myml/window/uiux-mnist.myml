@@ -29,6 +29,13 @@ depth:1024
 </supply>
 
 
+<artery>
+neural{
+fmt:ann
+}
+</artery>
+
+
 <worker>
 poller{
 fmt:poller
@@ -37,6 +44,8 @@ fmt:poller
 
 
 <relation>
+(mnist, 0, ann) -> (neural, 0, 0)
+
 #glwnd depends on gldata
 (glwnd, rect, 0) -> (mnist, 0, 0)
 

@@ -11,7 +11,7 @@ int rotate_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 {
 	int x,y;
 	u8 yy,uu,vv;
-	struct element* ele = self->pchip;
+	struct artery* ele = self->pchip;
 	u8* dst = ele->buf0;
 	u8* src = buf;
 	u8* d8;
@@ -42,11 +42,11 @@ int rotate_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int rotate_delete(struct element* ele)
+int rotate_delete(struct artery* ele)
 {
 	return 0;
 }
-int rotate_create(struct element* ele, u8* url)
+int rotate_create(struct artery* ele, u8* url)
 {
 	say("@rotate_create\n");
 	ele->buf0 = memorycreate(0x100000, 0);

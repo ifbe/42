@@ -70,7 +70,7 @@ int telnetclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int
 }
 int telnetclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	struct element* ele = self->pchip;
+	struct artery* ele = self->pchip;
 	switch(ele->stage1)
 	{
 		case 1:relationwrite(ele, _src_, 0, 0, cpacket1, sizeof(cpacket1));break;
@@ -92,17 +92,17 @@ int telnetclient_stop(struct halfrel* self, struct halfrel* peer)
 }
 int telnetclient_start(struct halfrel* self, struct halfrel* peer)
 {
-	struct element* ele = self->pchip;
+	struct artery* ele = self->pchip;
 	relationwrite(ele, _src_, 0, 0, cpacket0, sizeof(cpacket0));
 
 	ele->stage1 = 1;
 	return 0;
 }
-int telnetclient_delete(struct element* ele)
+int telnetclient_delete(struct artery* ele)
 {
 	return 0;
 }
-int telnetclient_create(struct element* ele, u8* url)
+int telnetclient_create(struct artery* ele, u8* url)
 {
 	ele->stage1 = 0;
 	return 0;
@@ -117,7 +117,7 @@ int telnetserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int
 }
 int telnetserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	struct element* ele = self->pchip;
+	struct artery* ele = self->pchip;
 	printmemory(buf, len);
 
 	switch(ele->stage1)
@@ -132,11 +132,11 @@ int telnetserver_write(struct halfrel* self, struct halfrel* peer, void* arg, in
 	ele->stage1 += 1;
 	return 0;
 }
-int telnetserver_delete(struct element* ele)
+int telnetserver_delete(struct artery* ele)
 {
 	return 0;
 }
-int telnetserver_create(struct element* ele, u8* url)
+int telnetserver_create(struct artery* ele, u8* url)
 {
 	return 0;
 }
@@ -150,7 +150,7 @@ int telnetmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int
 }
 int telnetmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	struct element* ele;
+	struct artery* ele;
 	struct object* obj;
 	struct relation* rel;
 
@@ -164,11 +164,11 @@ int telnetmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, in
 	arterywrite(self, peer, arg, idx, buf, len);
 	return 0;
 }
-int telnetmaster_delete(struct element* ele)
+int telnetmaster_delete(struct artery* ele)
 {
 	return 0;
 }
-int telnetmaster_create(struct element* ele, u8* url)
+int telnetmaster_create(struct artery* ele, u8* url)
 {
 	return 0;
 }

@@ -225,7 +225,7 @@ void mahonyupdate9(
 int mahony_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	float f[10];
-	struct element* ele;
+	struct artery* ele;
 	say("@mahony_read\n");
 
 	ele = (void*)(self->chip);
@@ -237,7 +237,7 @@ int mahony_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 int mahony_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	float* f;
-	struct element* ele;
+	struct artery* ele;
 	say("@mahony_write\n");
 
 	ele = (void*)(self->chip);
@@ -267,11 +267,11 @@ int mahony_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int mahony_delete(struct element* ele)
+int mahony_delete(struct artery* ele)
 {
 	return 0;
 }
-int mahony_create(struct element* ele, u8* url)
+int mahony_create(struct artery* ele, u8* url)
 {
 	say("@mahony_create\n");
 

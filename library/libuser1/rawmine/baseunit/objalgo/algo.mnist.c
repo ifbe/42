@@ -1,4 +1,5 @@
 #include "libuser.h"
+#define _ann_ hex32('a','n','n', 0)
 #define IMAGE buf0
 #define LABEL buf1
 #define WEIGH buf2
@@ -50,7 +51,6 @@ static int mnist_create(struct entity* act, void* arg, int argc, u8** argv)
 	u8 path[128];
 	u8* image = 0;
 	u8* label = 0;
-	float* weigh;
 	for(j=1;j<argc;j++){
 		if(0 == ncmp(argv[j], "image:", 6))image = argv[j]+6;
 		if(0 == ncmp(argv[j], "label:", 6))label = argv[j]+6;
@@ -66,9 +66,6 @@ static int mnist_create(struct entity* act, void* arg, int argc, u8** argv)
 	act->buf1 = memorycreate(0x10000, 0);
 	openreadclose(path, 0, act->buf1, 0x10000);
 
-	weigh = act->buf2 = memorycreate(4*28*28*10, 0);
-	for(j=0;j<28*28*10;j++)weigh[j] = (getrandom()&0xfff)/1024.0;
-
 	act->ix0 = act->iy0 = act->iz0 = 0;
 	return 0;
 }
@@ -76,34 +73,12 @@ static int mnist_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 
-void mnist_draw_pixel(struct entity* win, struct style* sty)
+void mnist_draw_vbo_lt(struct entity* wnd, u8* img, int id, float* vc, float* vr, float* vf, float* vt)
 {
-}
-void mnist_draw_vbo(
-	struct entity* act, struct style* part,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
-{
-	int x,y,z;
-	int j,id;
+	int x,y,j;
 	vec3 tc,tr,tf;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
-	carveline_rect(wnd, 0x808080, vc, vr, vf);
-
-	id = act->iz0;
-	for(j=0;j<3;j++){
-		tr[j] = vr[j]/16;
-		tf[j] = vf[j]/16;
-		tc[j] = vc[j] -vr[j] +vf[j]-tf[j]+vt[j]/100.0;
-	}
-	carvehexadecimal(wnd, 0xffffff, tc, tr, tf, id);
 
 	//left, top: image
-	u8* image = act->buf0;
-	if(0 == image)return;
 	for(y=0;y<28;y++){
 	for(x=0;x<28;x++){
 		for(j=0;j<3;j++){
@@ -111,12 +86,39 @@ void mnist_draw_vbo(
 			tf[j] = vf[j]/28/2;
 			tc[j] = vc[j] -vr[j]+tr[j]*(2*x+1) +vf[j]-tf[j]*(2*y+1);
 		}
-		carvesolid_rect(wnd, 0x010101*image[16+x+y*28+id*28*28], tc, tr, tf);
+		carvesolid_rect(wnd, 0x010101*img[x+y*28], tc, tr, tf);
 	}
 	}
+	for(j=0;j<3;j++){
+		tr[j] = vr[j]/16;
+		tf[j] = vf[j]/16;
+		tc[j] = vc[j] -vr[j] +vf[j]-tf[j]+vt[j]/100.0;
+	}
+	carvehexadecimal(wnd, 0xffffff, tc, tr, tf, id);
+}
+void mnist_draw_vbo_lb(struct entity* wnd, int val, float* vc, float* vr, float* vf, float* vt)
+{
+	int y,j;
+	vec3 tc,tr,tf;
+
+	//left, bot: label
+	for(y=0;y<10;y++){
+		for(j=0;j<3;j++){
+			tr[j] = vr[j]/10;
+			tf[j] = vf[j]/10;
+			tc[j] = vc[j] -vr[j]/2 -tf[j]*(y+1);
+		}
+		//carvesolid_rect(wnd, 0x400000, tc, tr, tf);
+		if(y == val)carvefloat(wnd, 0xff0000, tc, tr, tf, 1.0);
+		else carvefloat(wnd, 0xffffff, tc, tr, tf, 0.0);
+	}
+}
+void mnist_draw_vbo_rt(struct entity* wnd, float* weight, float* vc, float* vr, float* vf, float* vt)
+{
+	int x,y,j;
+	vec3 tc,tr,tf;
 
 	//right,top: weight
-	float* weigh = act->buf2;
 	for(y=1;y<10;y++){
 		for(j=0;j<3;j++){
 			tr[j] = vr[j]/4;
@@ -127,6 +129,8 @@ void mnist_draw_vbo(
 		for(j=0;j<3;j++)tc[j] += vt[j]/1000000.0;
 		carveascii_center(wnd, 0, tc,tr,tf, 0x30+y);
 	}
+if(0 == weight)return;
+
 	for(y=0;y<28;y++){
 	for(x=0;x<28;x++){
 		for(j=0;j<3;j++){
@@ -134,64 +138,70 @@ void mnist_draw_vbo(
 			tf[j] = vf[j]/28/4;
 			tc[j] = vc[j] +tr[j]*(2*x+1) +vf[j]/2-tf[j]*(2*y+1);
 		}
-		carvesolid_rect(wnd, (int)(255*weigh[x+y*28])*0x010101, tc, tr, tf);
+		carvesolid_rect(wnd, (int)(255*weight[x+y*28])*0x010101, tc, tr, tf);
 	}
+	}
+}
+void mnist_draw_vbo_rb(struct entity* wnd, float* result, float* vc, float* vr, float* vf, float* vt)
+{
+	int x,y,j;
+	vec3 tc,tr,tf;
+
+	x = 0;
+	for(y=0;y<10;y++){
+		if(result[x] < result[y])x = y;
 	}
 
 	//left, bot: label
-	u8* label = act->buf1;
-	if(0 == label)return;
-
-	float value[10];
-	for(j=0;j<10;j++)value[j] = 0.0;
-
-	int actual = label[8+id];
-	value[actual] = 1.0;
-	for(y=0;y<10;y++){
-		for(j=0;j<3;j++){
-			tr[j] = vr[j]/10;
-			tf[j] = vf[j]/10;
-			tc[j] = vc[j] -vr[j]/2 -tf[j]*(y+1);
-		}
-		//carvesolid_rect(wnd, 0x400000, tc, tr, tf);
-		if(y == actual)carvefloat(wnd, 0xff0000, tc, tr, tf, value[y]);
-		else carvefloat(wnd, 0xffffff, tc, tr, tf, value[y]);
-	}
-
-	//right,bot: result
-	int predict = 0;
-	float result[10];
-	for(y=0;y<10;y++){
-		result[y] = 0;
-		for(x=0;x<28*28;x++){
-			result[y] += weigh[28*28*y + x] * image[16+id*28*28+x];
-		}
-		result[y] /= 28*28*255;
-		if(result[y] < 0.0)result[y] = 0.0;		//ReLU
-
-		if(result[predict] < result[y])predict = y;
-	}
 	for(y=0;y<10;y++){
 		for(j=0;j<3;j++){
 			tr[j] = vr[j]/10;
 			tf[j] = vf[j]/10;
 			tc[j] = vc[j] +vr[j]/2 -tf[j]*(y+1);
 		}
-		if(y == predict)carvefloat(wnd, 0xff0000, tc, tr, tf, result[y]);
+		//carvesolid_rect(wnd, 0x400000, tc, tr, tf);
+		if(y == x)carvefloat(wnd, 0xff0000, tc, tr, tf, result[y]);
 		else carvefloat(wnd, 0xffffff, tc, tr, tf, result[y]);
 	}
+}
+void mnist_draw_vbo(
+	struct entity* act, struct style* part,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	int x,y,z;
+	vec3 tc,tr,tf;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+	carveline_rect(wnd, 0x808080, vc, vr, vf);
 
-	if(0 == act->iw0)return;
-	act->iz0 = (act->iz0+1)%10000;
+	int j;
+	int id = act->iz0;
+	u8* image = act->buf0;
+	u8* label = act->buf1;
+	if(0 == image)return;
+	if(0 == label)return;
+	mnist_draw_vbo_lt(wnd, &image[16+id*28*28], id, vc,vr,vf,vt);
+	mnist_draw_vbo_lb(wnd, label[8+id], vc,vr,vf,vt);
 
-	//update
-	float delta[10];
-	for(j=0;j<10;j++){
-		delta[j] = value[j] - result[j];
-		//say("%d:%f\n",j,delta[j]);
+	float* weight = act->buf2;
+	float* result = act->buf3;
+	if(0 == weight)return;
+	if(0 == result)return;
+	if(act->iw0)relationwrite(act, _ann_, 0, 0, &image[16+id*28*28], label[8+id]);
+	else relationread(act, _ann_, 0, 0, &image[16+id*28*28], label[8+id]);
+	mnist_draw_vbo_rt(wnd, weight, vc,vr,vf,vt);
+	mnist_draw_vbo_rb(wnd, result, vc,vr,vf,vt);
 
-		for(x=0;x<28*28;x++)weigh[28*28*j + x] += delta[j]*image[16+x+id*28*28]/255.0/2.0;
+	//update weight
+	if(act->iw0){
+		act->iz0 = (act->iz0+1)%10000;
 	}
+}
+void mnist_draw_pixel(struct entity* win, struct style* sty)
+{
 }
 void mnist_draw_html(struct entity* win, struct style* sty)
 {
@@ -288,6 +298,14 @@ static int mnist_stop(struct halfrel* self, struct halfrel* peer)
 }
 static int mnist_start(struct halfrel* self, struct halfrel* peer)
 {
+	struct entity* ent;
+	struct artery* art;
+	if(_ann_ == self->flag){
+		ent = self->pchip;
+		art = peer->pchip;
+		ent->buf2 = art->buf0;
+		ent->buf3 = art->buf1;
+	}
 	return 0;
 }
 

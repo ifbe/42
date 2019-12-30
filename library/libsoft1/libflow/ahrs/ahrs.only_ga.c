@@ -112,10 +112,10 @@ int easyag_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-void easyag_delete(struct element* ele)
+void easyag_delete(struct artery* ele)
 {
 }
-void easyag_create(struct element* ele, u8* url)
+void easyag_create(struct artery* ele, u8* url)
 {
 	qw = 1.0;
 	qx = qy = qz = 0;

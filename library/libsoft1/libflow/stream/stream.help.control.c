@@ -11,7 +11,7 @@ int control_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 int control_write(struct halfrel* self, struct halfrel* peer, u8* arg, int idx, void* buf, int len)
 {
 	int j;
-	struct element* ele;
+	struct artery* ele;
 	say("@control_write\n");
 
 	for(j=0;j<256;j++){if(arg[j] <= 0x20)break;}
@@ -33,11 +33,11 @@ int control_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int control_delete(struct element* ele)
+int control_delete(struct artery* ele)
 {
 	return 0;
 }
-int control_create(struct element* ele, u8* url)
+int control_create(struct artery* ele, u8* url)
 {
 	say("@control_create\n");
 

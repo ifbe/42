@@ -8,7 +8,7 @@
 int reorder_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	float f[10];
-	struct element* ele;
+	struct artery* ele;
 	say("@reorder_read\n");
 
 	ele = (void*)(self->chip);
@@ -19,7 +19,7 @@ int reorder_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 }
 int reorder_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct element* ele;
+	struct artery* ele;
 	say("@reorder_write:%d\n", len);
 
 	ele = (void*)(self->chip);
@@ -39,7 +39,7 @@ int reorder_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int reorder_create(struct element* ele, u8* url)
+int reorder_create(struct artery* ele, u8* url)
 {
 	say("@reorder_create\n");
 	return 1;

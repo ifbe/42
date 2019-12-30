@@ -32,7 +32,7 @@ int dbgf32_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int dbgf32_create(struct element* ele, u8* url)
+int dbgf32_create(struct artery* ele, u8* url)
 {
 	say("@dbgf32_create\n");
 	return 1;

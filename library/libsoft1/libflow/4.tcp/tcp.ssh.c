@@ -533,7 +533,7 @@ int sshclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 {
 	int ret;
 	u8 tmp[0x1000];
-	struct element* ele;
+	struct artery* ele;
 	say("@sshclient_write\n");
 	printmemory(buf, len);
 
@@ -590,11 +590,11 @@ int sshclient_start(struct halfrel* self, struct halfrel* peer)
 	ret = relationwrite(self->pchip, _src_, 0, 0, buf, ret);
 	return 0;
 }
-int sshclient_delete(struct element* ele)
+int sshclient_delete(struct artery* ele)
 {
 	return 0;
 }
-int sshclient_create(struct element* ele, u8* url)
+int sshclient_create(struct artery* ele, u8* url)
 {
 	ele->stage1 = 0;
 	return 0;
@@ -781,7 +781,7 @@ int sshserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 {
 	int ret;
 	u8 tmp[0x1000];
-	struct element* ele;
+	struct artery* ele;
 	say("@sshserver_write\n");
 	printmemory(buf, len);
 
@@ -817,11 +817,11 @@ int sshserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	ele->stage1 += 1;
 	return 0;
 }
-int sshserver_delete(struct element* ele)
+int sshserver_delete(struct artery* ele)
 {
 	return 0;
 }
-int sshserver_create(struct element* ele, u8* url)
+int sshserver_create(struct artery* ele, u8* url)
 {
 	ele->stage1 = 0;
 	return 0;
@@ -851,7 +851,7 @@ int sshmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	int ret;
 	u8 tmp[0x100];
 	struct object* obj;
-	struct element* ele;
+	struct artery* ele;
 	say("@sshmaster_write\n");
 	printmemory(buf, len);
 
@@ -877,11 +877,11 @@ int sshmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	relationcreate(ele, 0, _art_, _src_, obj, 0, _sys_, _dst_);
 	return 0;
 }
-int sshmaster_delete(struct element* ele)
+int sshmaster_delete(struct artery* ele)
 {
 	return 0;
 }
-int sshmaster_create(struct element* ele, u8* url)
+int sshmaster_create(struct artery* ele, u8* url)
 {
 	return 0;
 }

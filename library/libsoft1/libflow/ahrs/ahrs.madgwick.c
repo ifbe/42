@@ -240,7 +240,7 @@ void madgwickupdate9(
 int madgwick_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	float f[10];
-	struct element* ele;
+	struct artery* ele;
 	say("@madgwick_read\n");
 
 	ele = (void*)(self->chip);
@@ -252,7 +252,7 @@ int madgwick_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 int madgwick_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	float* f;
-	struct element* ele;
+	struct artery* ele;
 	say("@madgwick_write\n");
 
 	ele = (void*)(self->chip);
@@ -282,11 +282,11 @@ int madgwick_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int madgwick_delete(struct element* ele)
+int madgwick_delete(struct artery* ele)
 {
 	return 0;
 }
-int madgwick_create(struct element* ele, u8* url)
+int madgwick_create(struct artery* ele, u8* url)
 {
 	say("@madgwick_create\n");
 

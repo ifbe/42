@@ -6,7 +6,7 @@
 int goslow_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	float f[10];
-	struct element* ele;
+	struct artery* ele;
 	say("@goslow_read\n");
 
 	ele = self->pchip;
@@ -18,7 +18,7 @@ int goslow_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 int goslow_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	int j;
-	struct element* ele = self->pchip;
+	struct artery* ele = self->pchip;
 	if(0 == ele)return 0;
 
 	j = ele->stage1;
@@ -43,7 +43,7 @@ int goslow_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int goslow_create(struct element* ele, u8* url)
+int goslow_create(struct artery* ele, u8* url)
 {
 	say("@goslow_create\n");
 	ele->stage1 = 0;

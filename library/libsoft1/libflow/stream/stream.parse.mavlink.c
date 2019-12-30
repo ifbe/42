@@ -56,11 +56,11 @@ int mavlinkclient_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	say("crc=%x\n", crc_calculate(buf+1, 9+tmp));
 	return 0;
 }
-int mavlinkclient_delete(struct element* ele)
+int mavlinkclient_delete(struct artery* ele)
 {
 	return 0;
 }
-int mavlinkclient_create(struct element* ele, u8* url)
+int mavlinkclient_create(struct artery* ele, u8* url)
 {
 	say("@mavlinkclient_create\n");
 	return 0;
@@ -78,11 +78,11 @@ int mavlinkserver_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 {
 	return 0;
 }
-int mavlinkserver_delete(struct element* ele)
+int mavlinkserver_delete(struct artery* ele)
 {
 	return 0;
 }
-int mavlinkserver_create(struct element* ele, u8* url)
+int mavlinkserver_create(struct artery* ele, u8* url)
 {
 	say("@mavlinkserver_create\n");
 	return 0;

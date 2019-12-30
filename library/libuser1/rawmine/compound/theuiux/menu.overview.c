@@ -13,7 +13,7 @@ static struct worker* wrk = 0;
 static struct device* dev = 0;
 static struct driver* dri = 0;
 static struct object* obj = 0;
-static struct element* ele = 0;
+static struct artery* ele = 0;
 static struct supply* supply = 0;
 static struct entity* entity = 0;
 
@@ -249,7 +249,7 @@ void overview_draw_pixel(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct element);
+				k = k / sizeof(struct artery);
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+ 1)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-31)*hh/32
@@ -299,7 +299,7 @@ void overview_draw_pixel(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct element);
+				k = k / sizeof(struct artery);
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+ 1)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)-15)*hh/32
@@ -350,7 +350,7 @@ void overview_draw_pixel(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct element);
+				k = k / sizeof(struct artery);
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+ 1)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+ 1)*hh/32
@@ -400,7 +400,7 @@ void overview_draw_pixel(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct element);
+				k = k / sizeof(struct artery);
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+ 1)*hh/32,
 					cx+(4*(j%16)-31)*ww/32, cy+(2*(j/16)+17)*hh/32
@@ -668,7 +668,7 @@ void overview_draw_vbo(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct element);
+				k = k / sizeof(struct artery);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (-1-(k/16)*2)/32.0;
@@ -754,7 +754,7 @@ void overview_draw_vbo(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct element);
+				k = k / sizeof(struct artery);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (-1-(k/16)*2)/32.0;
@@ -841,7 +841,7 @@ void overview_draw_vbo(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct element);
+				k = k / sizeof(struct artery);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (-1-(k/16)*2)/32.0;
@@ -928,7 +928,7 @@ void overview_draw_vbo(
 			else if(_art_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)ele;
-				k = k / sizeof(struct element);
+				k = k / sizeof(struct artery);
 
 				r = ((k%16)*4-30)/32.0;
 				f = (-1-(k/16)*2)/32.0;
@@ -1062,8 +1062,8 @@ void overview_drag(struct entity* win, int x0, int y0, int x1, int y1)
 	int j;
 	struct object* obj_s;
 	struct object* obj_d;
-	struct element* ele_s;
-	struct element* ele_d;
+	struct artery* ele_s;
+	struct artery* ele_d;
 	struct supply* win_s;
 	struct supply* win_d;
 	struct entity* act_s;

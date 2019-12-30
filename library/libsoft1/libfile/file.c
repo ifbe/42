@@ -321,7 +321,7 @@ int fileclient_start(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
 	u64 type;
-	struct element* ele = self->pchip;
+	struct artery* ele = self->pchip;
 	struct object* obj = peer->pchip;
 	void* buf = memorycreate(0x1000, 0);
 
@@ -334,7 +334,7 @@ int fileclient_start(struct halfrel* self, struct halfrel* peer)
 	say("filetype = %.8s\n", &type);
 	return 0;
 }
-int fileclient_delete(struct element* ele)
+int fileclient_delete(struct artery* ele)
 {
 	if(ele->buf0){
 		memorydelete(ele->buf0);
@@ -342,7 +342,7 @@ int fileclient_delete(struct element* ele)
 	}
 	return 0;
 }
-int fileclient_create(struct element* ele, u8* url)
+int fileclient_create(struct artery* ele, u8* url)
 {
 	ele->buf0 = memorycreate(0x1000, 0);
 	return 0;

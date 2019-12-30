@@ -96,7 +96,7 @@ int wsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	int ret;
 	u8 tmp[0x1000];
 	struct relation* orel;
-	struct element* ele = self->pchip;
+	struct artery* ele = self->pchip;
 	say("@wsclient_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
     printmemory(buf, len<16?len:16);
 
@@ -148,13 +148,13 @@ int wsclient_start(struct halfrel* self, struct halfrel* peer)
 	}
 	return 0;
 }
-int wsclient_delete(struct element* ele)
+int wsclient_delete(struct artery* ele)
 {
 	//unlink
 	//delete
 	return 0;
 }
-int wsclient_create(struct element* ele, u8* url)
+int wsclient_create(struct artery* ele, u8* url)
 {
 	ele->stage1 = 0;
 	return 1;
@@ -373,7 +373,7 @@ int wsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 {
 	int ret;
 	u8 tmp[0x1000];
-	struct element* ele = self->pchip;
+	struct artery* ele = self->pchip;
 	say("@wsserver_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
     printmemory(buf, len<16?len:16);
 
@@ -422,11 +422,11 @@ int wsserver_start(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int wsserver_delete(struct element* ele)
+int wsserver_delete(struct artery* ele)
 {
 	return 0;
 }
-int wsserver_create(struct element* ele, u8* url)
+int wsserver_create(struct artery* ele, u8* url)
 {
 	ele->stage1 = 0;
 	return 0;
@@ -444,12 +444,12 @@ int wsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	struct object* obj;		//parent
 	struct object* Tcp;		//child
 
-	struct element* ele;	//master
-	struct element* Ws;		//server
+	struct artery* ele;	//master
+	struct artery* Ws;		//server
 
 	struct relation* rel;
 	struct object* ptmx;
-	struct element* echo;
+	struct artery* echo;
 	say("@wsserver_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
     printmemory(buf, len<16?len:16);
 
@@ -502,11 +502,11 @@ int wsmaster_start(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int wsmaster_delete(struct element* ele)
+int wsmaster_delete(struct artery* ele)
 {
 	return 0;
 }
-int wsmaster_create(struct element* ele, u8* url)
+int wsmaster_create(struct artery* ele, u8* url)
 {
 	if(0 == url)goto none;
 	if(0 == ncmp(url, "echo", 4)){

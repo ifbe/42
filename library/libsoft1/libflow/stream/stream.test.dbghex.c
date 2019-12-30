@@ -25,7 +25,7 @@ int dbghex_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int dbghex_create(struct element* ele, u8* url)
+int dbghex_create(struct artery* ele, u8* url)
 {
 	say("@dbghex_create\n");
 	return 1;

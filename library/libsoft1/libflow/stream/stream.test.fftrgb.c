@@ -13,7 +13,7 @@ int fftrgb_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	int yy,uu,vv;
 	int rr,gg,bb;
 	u8* yuv;
-	struct element* ele;
+	struct artery* ele;
 
 	int* tmp;	//buf0
 	short* pcm;	//buf3
@@ -73,11 +73,11 @@ int fftrgb_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int fftrgb_delete(struct element* ele)
+int fftrgb_delete(struct artery* ele)
 {
 	return 0;
 }
-int fftrgb_create(struct element* ele, u8* url)
+int fftrgb_create(struct artery* ele, u8* url)
 {
 	say("@fftrgb_create\n");
 	ele->buf0 = memorycreate(0x100000, 0);

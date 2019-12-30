@@ -42,7 +42,7 @@ int socksclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 {
     int j,port;
     u8 tmp[256];
-    struct element* ele;
+    struct artery* ele;
     struct socks5_request* req;
 	say("@socksclient_write: %llx, %.4s, %x\n", self->pchip, &self->flag, len);
     if(len>0)printmemory(buf, len<16?len:16);
@@ -110,7 +110,7 @@ int socksclient_stop(struct halfrel* self, struct halfrel* peer)
 }
 int socksclient_start(struct halfrel* self, struct halfrel* peer)
 {
-    struct element* ele;
+    struct artery* ele;
     struct object* obj;
 	say("@socksclient_start: %.4s\n", &self->flag);
 
@@ -120,11 +120,11 @@ int socksclient_start(struct halfrel* self, struct halfrel* peer)
     }
     return 0;
 }
-int socksclient_delete(struct element* ele)
+int socksclient_delete(struct artery* ele)
 {
 	return 0;
 }
-int socksclient_create(struct element* ele, char* url)
+int socksclient_create(struct artery* ele, char* url)
 {
     int j,port;
     struct socks5_request* req;
@@ -189,11 +189,11 @@ int socksserver_start(struct halfrel* self, struct halfrel* peer)
 	say("@socksserver_start: %.4s\n", &self->flag);
 	return 0;
 }
-int socksserver_delete(struct element* ele)
+int socksserver_delete(struct artery* ele)
 {
 	return 0;
 }
-int socksserver_create(struct element* ele, u8* url)
+int socksserver_create(struct artery* ele, u8* url)
 {
 	say("@socksserver_create\n");
 	return 0;
@@ -266,11 +266,11 @@ int socksmaster_start(struct halfrel* self, struct halfrel* peer)
 	say("@socksmaster_start\n");
 	return 0;
 }
-int socksmaster_delete(struct element* ele)
+int socksmaster_delete(struct artery* ele)
 {
 	return 0;
 }
-int socksmaster_create(struct element* ele, u8* url)
+int socksmaster_create(struct artery* ele, u8* url)
 {
 	say("@socksmaster_create\n");
 	return 0;

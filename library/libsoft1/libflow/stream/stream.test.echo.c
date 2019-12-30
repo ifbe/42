@@ -6,7 +6,7 @@
 int echo_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	float f[10];
-	struct element* ele;
+	struct artery* ele;
 	say("@echo_read\n");
 
 	ele = (void*)(self->chip);
@@ -17,7 +17,7 @@ int echo_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, vo
 }
 int echo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct element* ele;
+	struct artery* ele;
 	say("@echo_write\n");
 
 	ele = (void*)(self->chip);
@@ -37,7 +37,7 @@ int echo_start(struct halfrel* self, struct halfrel* peer)
 
 
 
-int echo_create(struct element* ele, u8* url)
+int echo_create(struct artery* ele, u8* url)
 {
 	say("@echo_create\n");
 	return 1;

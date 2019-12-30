@@ -41,6 +41,12 @@ rawmine/baseunit/objalgo/algo.graph.c \
 rawmine/baseunit/objalgo/algo.link.c \
 rawmine/baseunit/objalgo/algo.sort.c \
 rawmine/baseunit/objalgo/algo.mnist.c \
+rawmine/baseunit/objbar/bar.health.c \
+rawmine/baseunit/objbar/bar.list.c \
+rawmine/baseunit/objbar/bar.nav.c \
+rawmine/baseunit/objbar/bar.skill.c \
+rawmine/baseunit/objbar/bar.tab.c \
+rawmine/baseunit/objbar/bar.tag.c \
 rawmine/baseunit/objchip/chip.common.battery.c \
 rawmine/baseunit/objchip/chip.common.capacitor.c \
 rawmine/baseunit/objchip/chip.common.inductor.c \
@@ -102,11 +108,6 @@ rawmine/baseunit/objpack/pack.80211.c \
 rawmine/baseunit/objpack/pack.eth.c \
 rawmine/baseunit/objpack/pack.udp.c \
 rawmine/baseunit/objpack/pack.tcp.c \
-rawmine/baseunit/objuiux/uiux.bar.list.c \
-rawmine/baseunit/objuiux/uiux.bar.nav.c \
-rawmine/baseunit/objuiux/uiux.bar.skill.c \
-rawmine/baseunit/objuiux/uiux.bar.tab.c \
-rawmine/baseunit/objuiux/uiux.bar.tag.c \
 rawmine/baseunit/objuiux/uiux.gbuffer.c \
 rawmine/baseunit/objuiux/uiux.oscillo.c \
 rawmine/baseunit/objuiux/uiux.picture.c \
