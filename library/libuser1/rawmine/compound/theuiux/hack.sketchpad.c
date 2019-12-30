@@ -75,29 +75,24 @@ static void sketchpad_draw_vbo(
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	float x0,y0,xn,yn;
-	float cx,cy,dx,dy;
-	struct glsrc* src;
-	float (*vbuf)[6];
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
 
-	src = act->CTXBUF;
+	float cx = slot->f.vc[0];
+	float cy = slot->f.vc[1];
+	float dx = slot->f.vr[0];
+	float dy = slot->f.vf[1] = dx * vec3_getlen(vf) / vec3_getlen(vr);
+	float x0 = cx-dx;
+	float y0 = cy-dy;
+	float xn = cx+dx;
+	float yn = cy+dy;
+
+	struct glsrc* src = act->CTXBUF;
 	if(0 == src)return;
-	vbuf = src->vbuf;
+	float (*vbuf)[6] = src->vbuf;
 	if(0 == vbuf)return;
-	x0 = act->fx0;
-	y0 = act->fy0;
-	xn = act->fxn;
-	yn = act->fyn;
-	cx = (x0+xn)/2;
-	cy = (y0+yn)/2;
-	dx = (xn-x0)/2;
-	dy = dx * vec3_getlen(vf) / vec3_getlen(vr);
-	y0 = act->fy0 = cy-dy;
-	yn = act->fyn = cy+dy;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -601,14 +596,6 @@ static void sketchpad_create(struct entity* act, void* str, int argc, u8** argv)
 	sketchpad_ctxforwnd(act->CTXBUF, vs, fs);
 
 	act->buf = databuf = memorycreate(0x100000, 0);
-
-	//
-	act->fx0 =-9.0;
-	act->fy0 =-9.0;
-	act->fxn = 9.0;
-	act->fyn = 9.0;
-
-	//
 	centerx = 0.00;
 	centery = 0.00;
 	scale = 1.00;

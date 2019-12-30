@@ -1,23 +1,26 @@
 <style>
-viewpart{
+itempart{
+c: 0.0, 0.0, 0.0
+r: 10.0, 0.0, 0.0
+f: 0.0, 10.0, 0.0
 }
-viewgeom{
+itemgeom{
 c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
 }
 
-aaaapart{
+viewpart{
 }
-aaaageom{
+viewgeom{
 c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
 t: 0.0, 1000.0, 0.0
 n: 0.0, 0.0, 1000.0
 f: 0.0, 0.0, -1000.0
 }
-aaaarect{
+viewrect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
@@ -60,11 +63,11 @@ fmt:poller
 
 <relation>
 #world depends on sketch
-(world, aaaageom, 0) -> (cam0, aaaapart, 0)
-(world, viewgeom, 0) -> (sketch, viewpart, 0)
+(world, itemgeom, 0) -> (sketch, itempart, 0)
+(world, viewgeom, 0) -> (cam0, viewpart, 0)
 
 #glwnd depends on gldata
-(glwnd, aaaarect, 0) -> (cam0, 0, a0)
+(glwnd, viewrect, 0) -> (cam0, 0, a0)
 
 #opengl depends on glwnd
 (opengl, 0, wnd) -> (glwnd, 0, togl)
