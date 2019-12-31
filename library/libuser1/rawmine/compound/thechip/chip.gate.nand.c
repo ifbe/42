@@ -1,4 +1,114 @@
 #include "libuser.h"
+void carvepmos(struct entity* wnd, vec3 vc, vec3 vr, vec3 vf, vec3 vt)
+{
+	int j,k;
+	vec3 t1,t2;
+	vec3 tc,tr,tf;
+
+	//gate
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j];
+		tr[j] = vc[j] -vr[j]*9/16;
+	}
+	carveline(wnd, 0xffffff, tc,tr);
+
+	for(j=0;j<3;j++){
+		t1[j] = vc[j] -vr[j]*9/16 -vf[j]/4;
+		t2[j] = vc[j] -vr[j]*9/16 +vf[j]/4;
+	}
+	carveline(wnd, 0xffffff, t1, t2);
+
+	//p,n,p
+	for(k=0;k<3;k++){
+		for(j=0;j<3;j++){
+			t1[j] = vc[j] -vr[j]/2 + vf[j]*(3*k-4)/16;
+			t2[j] = t1[j] +vf[j]*2/16;
+		}
+		carveline(wnd, 0xffffff, t1,t2);
+	}
+
+	//s,d,b
+	for(k=-1;k<2;k+=2){
+		for(j=0;j<3;j++){
+			t1[j] = vc[j] - vr[j]/2 + vf[j]*k*3/16;
+			t2[j] = vc[j] + vf[j]*k*3/16;
+		}
+		carveline(wnd, 0xffffff, t1,t2);
+	}
+	for(j=0;j<3;j++){
+		t1[j] = vc[j] - vr[j]/2;
+		t2[j] = vc[j];
+	}
+	carveline_arrow(wnd, 0xffffff, t1, t2, vt);
+
+	//s,d
+	for(j=0;j<3;j++){
+		t1[j] = vc[j];
+		t2[j] = vc[j] + vf[j];
+	}
+	carveline(wnd, 0xffffff, t1,t2);
+
+	for(j=0;j<3;j++){
+		t1[j] = vc[j] - vf[j]*3/16;
+		t2[j] = vc[j] - vf[j];
+	}
+	carveline(wnd, 0xffffff, t1,t2);
+}
+void carvenmos(struct entity* wnd, vec3 vc, vec3 vr, vec3 vf, vec3 vt)
+{
+	int j,k;
+	vec3 t1,t2;
+	vec3 tc,tr,tf;
+
+	//gate
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j];
+		tr[j] = vc[j] -vr[j]*9/16;
+	}
+	carveline(wnd, 0xffffff, tc,tr);
+
+	for(j=0;j<3;j++){
+		t1[j] = vc[j] -vr[j]*9/16 -vf[j]/4;
+		t2[j] = vc[j] -vr[j]*9/16 +vf[j]/4;
+	}
+	carveline(wnd, 0xffffff, t1, t2);
+
+	//p,n,p
+	for(k=0;k<3;k++){
+		for(j=0;j<3;j++){
+			t1[j] = vc[j] -vr[j]/2 + vf[j]*(3*k-4)/16;
+			t2[j] = t1[j] +vf[j]*2/16;
+		}
+		carveline(wnd, 0xffffff, t1,t2);
+	}
+
+	//s,d,b
+	for(k=-1;k<2;k+=2){
+		for(j=0;j<3;j++){
+			t1[j] = vc[j] - vr[j]/2 + vf[j]*k*3/16;
+			t2[j] = vc[j] + vf[j]*k*3/16;
+		}
+		carveline(wnd, 0xffffff, t1,t2);
+	}
+	for(j=0;j<3;j++){
+		t1[j] = vc[j] - vr[j]/2;
+		t2[j] = vc[j];
+	}
+	carveline_arrow(wnd, 0xffffff, t2, t1, vt);
+
+	//s,d
+	for(j=0;j<3;j++){
+		t1[j] = vc[j] + vf[j]*3/16;
+		t2[j] = vc[j] + vf[j];
+	}
+	carveline(wnd, 0xffffff, t1,t2);
+
+	for(j=0;j<3;j++){
+		t1[j] = vc[j];
+		t2[j] = vc[j] - vf[j];
+	}
+	carveline(wnd, 0xffffff, t1,t2);
+}
 
 
 
@@ -28,12 +138,76 @@ static void nand_draw_vbo(
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
-	vec3 tc,tr,tf,tu;
+	int j;
+	vec3 tc,tr,tf,tt;
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
-	carveline_prism4(ctx, 0xffffff, vc, vr, vf, vu);
+	float* vt = geom->f.vt;
+	carveline_rect(ctx, 0xffffff, vc, vr, vf);
+
+	//p1
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]/2 +vf[j]/2;
+		tr[j] = vr[j]/4;
+		tf[j] = vf[j]/4;
+	}
+	carvepmos(ctx, tc,tr,tf,vt);
+
+	//p2
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vr[j]/2 +vf[j]/2;
+		tr[j] = vr[j]/4;
+		tf[j] = vf[j]/4;
+	}
+	carvepmos(ctx, tc,tr,tf,vt);
+
+	//n1
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vf[j]*1/4;
+		tr[j] = vr[j]/4;
+		tf[j] = vf[j]/4;
+	}
+	carvenmos(ctx, tc,tr,tf,vt);
+
+	//n2
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vf[j]*3/4;
+		tr[j] = vr[j]/4;
+		tf[j] = vf[j]/4;
+	}
+	carvenmos(ctx, tc,tr,tf,vt);
+
+	//o
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] - vr[j]/2;
+		tr[j] = vc[j] + vr[j];
+	}
+	carveline(ctx, 0xffffff, tc,tr);
+
+	//
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]/2 +vf[j];
+		tr[j] = tc[j] -vf[j]/4;
+	}
+	carveline(ctx, 0xffffff, tc,tr);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vr[j]/2 +vf[j];
+		tr[j] = tc[j] -vf[j]/4;
+	}
+	carveline(ctx, 0xffffff, tc,tr);
+
+	//
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]/2;
+		tr[j] = tc[j] +vf[j]/4;
+	}
+	carveline(ctx, 0xffffff, tc,tr);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vr[j]/2;
+		tr[j] = tc[j] +vf[j]/4;
+	}
+	carveline(ctx, 0xffffff, tc,tr);
 }
 static void nand_draw_json(
 	struct entity* act, struct style* pin,
