@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define MATBUF buf0
 #define CAMBUF buf1
-void fixmatrix(float* m, struct fstyle* sty);
+void fixmatrix_transpose(float* m, struct fstyle* sty);
 
 
 
@@ -306,8 +306,7 @@ static void vrglass_matrix(
 	struct fstyle* frus = &geom->frus;
 
 	float* mat = act->MATBUF;
-	fixmatrix((void*)mat, frus);
-	mat4_transpose((void*)mat);
+	fixmatrix_transpose((void*)mat, frus);
 	//printmat4(mat);
 
 	struct glsrc* src = act->CAMBUF;

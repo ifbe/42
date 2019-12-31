@@ -1,5 +1,5 @@
 #include "libuser.h"
-void fixmatrix(float* m, struct fstyle* sty);
+void fixmatrix_transpose(float* m, struct fstyle* sty);
 
 
 
@@ -163,8 +163,7 @@ static void rtscam_matrix(
 
 	float* m = act->buf;
 	rtscam_frustum(&frustum->f, s);
-	fixmatrix(m, &frustum->f);
-	mat4_transpose((void*)m);
+	fixmatrix_transpose(m, &frustum->f);
 	//printmat4(m);
 
 

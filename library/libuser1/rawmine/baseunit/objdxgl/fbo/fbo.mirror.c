@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
-void fixmatrix(void* m, struct fstyle* sty);
+void fixmatrix_transpose(void* m, struct fstyle* sty);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
@@ -341,8 +341,7 @@ static void mirror_matrix(
 	//mvp from frus
 	struct mirrbuf* mirr = act->CAMBUF;
 	if(0 == mirr)return;
-	fixmatrix(mirr->mvp, frus);
-	mat4_transpose(mirr->mvp);
+	fixmatrix_transpose(mirr->mvp, frus);
 //printstyle(shap);
 //printstyle(frus);
 	//

@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
-void fixmatrix(void* m, struct fstyle* sty);
+void fixmatrix_transpose(void* m, struct fstyle* sty);
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
@@ -356,8 +356,7 @@ static void projector_matrix(
 	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
 
-	fixmatrix(sun->mvp, &geom->frus);
-	mat4_transpose(sun->mvp);
+	fixmatrix_transpose(sun->mvp, &geom->frus);
 }
 
 

@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
-void fixmatrix(void* m, struct fstyle* sty);
+void fixmatrix_transpose(void* m, struct fstyle* sty);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
@@ -336,8 +336,7 @@ static void glass_matrix(
 	//mvp from frus
 	struct glassbuf* glass = act->CAMBUF;
 	if(0 == glass)return;
-	fixmatrix(glass->mvp, frus);
-	mat4_transpose(glass->mvp);
+	fixmatrix_transpose(glass->mvp, frus);
 
 	//give arg(matrix and position) to fbo
 	struct glsrc* src = (void*)(glass->data);

@@ -2,7 +2,7 @@
 #define MATBUF buf0
 #define CAMBUF buf1
 void invmvp(float* v, struct fstyle* sty);
-void fixmatrix(float* m, struct fstyle* sty);
+void fixmatrix_transpose(float* m, struct fstyle* sty);
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
 
 
@@ -740,8 +740,7 @@ static void freecam_matrix(
 	struct fstyle* frus = &geom->frus;
 	void* mat = act->MATBUF;
 
-	fixmatrix(mat, frus);
-	mat4_transpose(mat);
+	fixmatrix_transpose(mat, frus);
 	//printmat4(m);
 }
 static void freecam_camera(

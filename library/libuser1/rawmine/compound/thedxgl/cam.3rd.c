@@ -2,7 +2,7 @@
 #define CTXBUF buf0
 #define MATBUF buf1
 #define _tar_ hex32('t','a','r',0)
-void fixmatrix(float* m, struct fstyle* sty);
+void fixmatrix_transpose(float* m, struct fstyle* sty);
 void freecam_shape2frustum(struct fstyle* d, struct fstyle* s);
 void freecam_ratio(struct entity* wrd, struct style* geom, struct entity* wnd, struct style* area);
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
@@ -216,21 +216,6 @@ static int thirdperson_event(
 
 
 
-static void thirdperson_matrix(
-	struct entity* act, struct style* part,
-	struct entity* wrd, struct style* geom)
-{
-	void* mat = act->MATBUF;
-	struct fstyle* frus = &geom->frus;
-
-	fixmatrix(mat, frus);
-	mat4_transpose(mat);
-	//printmat4(m);
-}
-
-
-
-
 static void thirdperson_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
@@ -248,7 +233,7 @@ static void thirdperson_read_bywnd(struct halfrel* self, struct halfrel* peer, s
 	if('v' == len){
 		freecam_ratio(wrd, geom, wnd, area);
 		freecam_shape2frustum(&geom->fshape, &geom->frustum);
-		thirdperson_matrix(act,slot, wrd,geom);
+		fixmatrix_transpose(act->MATBUF, &geom->frus);
 
 		gl41data_read(self, peer, stack, rsp+2, buf, len);
 		thirdperson_draw(act,slot, wrd,geom, wnd,area);

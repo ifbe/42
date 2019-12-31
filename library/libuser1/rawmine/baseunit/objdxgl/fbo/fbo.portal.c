@@ -1,5 +1,5 @@
 #include "libuser.h"
-void fixmatrix(void* m, struct fstyle* sty);
+void fixmatrix_transpose(void* m, struct fstyle* sty);
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
@@ -460,8 +460,7 @@ static void portal_matrix(
 	portal->vq[1] = frus->vc[1] + frus->vn[1]*frus->vn[3];
 	portal->vq[2] = frus->vc[2] + frus->vn[2]*frus->vn[3];
 
-	fixmatrix(portal->mvp, frus);
-	mat4_transpose(portal->mvp);
+	fixmatrix_transpose(portal->mvp, frus);
 
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";

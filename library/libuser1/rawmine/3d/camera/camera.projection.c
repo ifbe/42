@@ -95,19 +95,24 @@ void fixorie(mat4 orie)
 	orie[3][2] = 0.0;
 	orie[3][3] = 1.0;
 }
-void fixmatrix(mat4 m, struct fstyle* sty)
+void fixmatrix(mat4 mat, struct fstyle* sty)
 {
 	mat4 t;
-	fixproj(m, sty);
+	fixproj(mat, sty);
 
 	//fixorie(t);
-	//mat4_multiply(m, t);
+	//mat4_multiply(mat, t);
 
 	//fixproj(t, sty);
-	//mat4_multiply(m, t);
+	//mat4_multiply(mat, t);
 
 	fixview(t, sty);
-	mat4_multiply(m, t);
+	mat4_multiply(mat, t);
+}
+void fixmatrix_transpose(mat4 mat, struct fstyle* sty)
+{
+	fixmatrix(mat, sty);
+	mat4_transpose(mat);
 }
 
 

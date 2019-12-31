@@ -236,6 +236,8 @@ fordx12/dx12.draw.c \
 fordx12/dx12.fbo.c \
 forelec/elec.sch.c \
 forelec/elec.pcb.c \
+forevent/event.3rd.c \
+forevent/event.pick.c \
 forhtml/html.data.c \
 forhtml/html.help.c \
 forfile/json.base.c \
