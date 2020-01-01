@@ -1,7 +1,8 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
-
-
+//
+#define ONOFF iw0
+//
 #define CAMBUF buf0
 #define LITBUF buf1
 #define CTXBUF buf2
@@ -36,6 +37,8 @@ static void pointlight_create(struct entity* act, void* str)
 	sun->rgb[2] = ((sun->u_rgb >> 0) & 0xff) / 255.0;
 
 	act->LITBUF = memorycreate(0x400, 0);
+
+	act->ONOFF = 1;
 }
 
 
@@ -51,15 +54,12 @@ static void pointlight_draw_vbo(
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
-	struct sunbuf* sun;
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-
-	sun = act->OWNBUF;
+	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
-
 	carveopaque_sphere(ctx, 0x80000000|sun->u_rgb, vc, vr, vf, vt);
 }
 static void pointlight_draw_json(
@@ -139,6 +139,7 @@ static void pointlight_read(struct halfrel* self, struct halfrel* peer, struct h
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		if('v' == len){
+			if(0 == act->ONOFF)return;
 			pointlight_light(act,part, win,geom, wnd,area);
 			pointlight_draw_vbo(act,part, win,geom, wnd,area);
 		}
@@ -146,6 +147,12 @@ static void pointlight_read(struct halfrel* self, struct halfrel* peer, struct h
 }
 static void pointlight_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	struct entity* ent = self->pchip;
+	u8* in = buf;
+	say("@pointlight_write:%x\n",in[0]);
+
+	if('0' == in[0])ent->ONOFF = 0;
+	if('1' == in[0])ent->ONOFF = 1;
 }
 static void pointlight_stop(struct halfrel* self, struct halfrel* peer)
 {

@@ -39,7 +39,11 @@ void gl41data_before(struct entity* ctx)
 	int j;
 	struct glsrc* src;
 
-	//solid clear myown, forget other
+	//camera,light: forget all
+	ctx->gl_camera[0] = 0;
+	ctx->gl_light[0] = 0;
+
+	//solid: clear myown, forget other
 	for(j=0;j<solidaid_max;j++){
 		src = ctx->gl_solid[j];
 		if(0 == src)continue;

@@ -74,6 +74,9 @@ fmt:freecam
 3dworld{
 fmt:3dworld
 }
+not{
+fmt:not
+}
 </entity>
 
 
@@ -90,6 +93,9 @@ title:"42"
 width:1024
 height:1024
 depth:1024
+}
+std{
+fmt:std
 }
 </supply>
 
@@ -116,4 +122,7 @@ fmt:poller
 
 #opengl depends on wnd
 (opengl, 0, wnd) -> (thewnd, 0, 0)
+
+(not, 0, o) -> (light, 0, 0)
+(std, 0, dst) -> (not, 0, 0)
 </relation>
