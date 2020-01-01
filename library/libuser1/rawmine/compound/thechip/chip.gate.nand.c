@@ -175,6 +175,25 @@ static void nand_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 }
 static void nand_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
+	u8 tmp;
+	struct entity* ent = self->pchip;
+	say("@nandgate_write:%x\n",buf[0]);
+
+	if('a' == self->flag){
+		if('0' == buf[0])ent->ix0 = 0;
+		else if('1' == buf[0])ent->ix0 = 1;
+		else return;
+	}
+	else if('b' == self->flag){
+		if('0' == buf[0])ent->iy0 = 0;
+		else if('1' == buf[0])ent->iy0 = 1;
+		else return;
+	}
+	else return;
+
+	ent->iz0 = !(ent->ix0 && ent->iy0);
+	tmp = ent->iz0 + 0x30;
+	relationwrite(ent, 'o', 0, 0, &tmp, 1);
 }
 static void nand_stop(struct halfrel* self, struct halfrel* peer)
 {

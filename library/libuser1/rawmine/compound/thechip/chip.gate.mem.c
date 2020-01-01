@@ -183,6 +183,15 @@ static void mem_read(struct halfrel* self, struct halfrel* peer, struct halfrel*
 }
 static void mem_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
+	u8 tmp;
+	struct entity* ent = self->pchip;
+	say("@memgate_write:%x\n",buf[0]);
+
+	if('0' == buf[0])ent->ix0 = 0;
+	else if('1' == buf[0])ent->ix0 = 1;
+	else return;
+
+	ent->iy0 = !ent->ix0;
 }
 static void mem_stop(struct halfrel* self, struct halfrel* peer)
 {
