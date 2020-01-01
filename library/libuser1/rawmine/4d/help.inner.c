@@ -6,6 +6,8 @@ void vsrc_register(void*);
 //chip.compound
 void nand_register(void*);
 void nor_register(void*);
+void not_register(void*);
+void mem_register(void*);
 void hbridge_register(void*);
 void rectify_register(void*);
 
@@ -191,6 +193,12 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 	nor_register(tmp);
+	tmp += sizeof(struct entity);
+
+	not_register(tmp);
+	tmp += sizeof(struct entity);
+
+	mem_register(tmp);
 	tmp += sizeof(struct entity);
 
 	hbridge_register(tmp);

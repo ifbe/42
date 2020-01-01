@@ -231,7 +231,8 @@ void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41
 	//
 	glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_DEPTH_TEST);
-	glPointSize(4.0);
+	glPointSize(4.0*wnd->fbwidth/wnd->width);
+	glLineWidth(4.0*wnd->fbwidth/wnd->width);
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_DEPTH_BUFFER_BIT);
 

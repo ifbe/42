@@ -1,3 +1,5 @@
+#ifndef _STRUCT_H 
+#define _STRUCT_H
 typedef float f32;
 typedef double f64;
 typedef char s8;
@@ -1151,3 +1153,4 @@ struct entity
 		f32 fwn;
 	};
 };
+#endif

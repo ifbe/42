@@ -1,0 +1,187 @@
+#include "libuser.h"
+void carveline_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void carveline_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+
+
+
+
+static void not_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
+}
+static void not_draw_vbo(
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
+{
+	int j;
+	vec3 tc,tr,tf,tt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+	//carveline_rect(ctx, 0x404040, vc, vr, vf);
+
+	//vcc
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j] +vf[j];
+		tr[j] = vc[j] +vr[j] +vf[j];
+	}
+	carveline(ctx, 0xff0000, tc, tr);
+
+	//gnd
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j] -vf[j];
+		tr[j] = vc[j] +vr[j] -vf[j];
+	}
+	carveline(ctx, 0x0000ff, tc, tr);
+
+	//+
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vf[j];
+		tr[j] = tc[j] -tf[j]/2;
+	}
+	carveline(ctx, 0xff0000, tc,tr);
+
+	//-
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vf[j];
+		tr[j] = tc[j] +tf[j]/2;
+	}
+	carveline(ctx, 0x0000ff, tc,tr);
+
+	u32 pcolor = act->ix0 ? 0xffffff : 0xff0000;
+	u32 ncolor = act->ix0 ? 0x0000ff : 0xffffff;
+	u32 icolor = act->ix0 ? 0xff0000 : 0x0000ff;
+	u32 ocolor = act->iy0 ? 0xff0000 : 0x0000ff;
+
+	//p
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vf[j]/2;
+		tr[j] = vr[j]/2;
+		tf[j] = vf[j]/2;
+	}
+	carveline_pmos(ctx, icolor, pcolor, tc,tr,tf,vt);
+
+	//n
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vf[j]/2;
+		tr[j] = vr[j]/2;
+		tf[j] = vf[j]/2;
+	}
+	carveline_nmos(ctx, icolor, ncolor, tc,tr,tf,vt);
+
+	//i
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]/2 -vf[j]/2;
+		tr[j] = tc[j] +vf[j];
+	}
+	carveline(ctx, icolor, tc,tr);
+
+	//o
+	for(j=0;j<3;j++)tc[j] = vc[j]+vr[j];
+	carveline(ctx, ocolor, vc,tc);
+}
+static void not_draw_json(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void not_draw_html(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void not_draw_tui(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void not_draw_cli(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+
+
+
+
+static void not_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+{
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+//world -> not
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		win = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len)not_draw_vbo(act,slot, win,geom, wnd,area);
+	}
+}
+static void not_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+{
+}
+static void not_stop(struct halfrel* self, struct halfrel* peer)
+{
+}
+static void not_start(struct halfrel* self, struct halfrel* peer)
+{
+}
+
+
+
+
+static void not_search(struct entity* act, u8* buf)
+{
+}
+static void not_modify(struct entity* act, u8* buf)
+{
+}
+static void not_delete(struct entity* act, u8* buf)
+{
+}
+static void not_create(struct entity* act, u8* buf)
+{
+	act->ix0 = getrandom()&1;
+	act->iy0 = !act->ix0;
+}
+
+
+
+
+void not_register(struct entity* p)
+{
+	p->type = _orig_;
+	p->fmt = hex32('n','o','t', 0);
+
+	p->oncreate = (void*)not_create;
+	p->ondelete = (void*)not_delete;
+	p->onsearch = (void*)not_search;
+	p->onmodify = (void*)not_modify;
+
+	p->onstart = (void*)not_start;
+	p->onstop  = (void*)not_stop;
+	p->onread  = (void*)not_read;
+	p->onwrite = (void*)not_write;
+}

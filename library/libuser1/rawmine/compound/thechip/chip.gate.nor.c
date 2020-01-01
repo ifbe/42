@@ -1,4 +1,6 @@
 #include "libuser.h"
+void carveline_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void carveline_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
 
 
 
@@ -28,12 +30,107 @@ static void nor_draw_vbo(
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
-	vec3 tc,tr,tf,tu;
+	int j;
+	vec3 tc,tr,tf,tt;
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
-	carveline_prism4(ctx, 0xffffff, vc, vr, vf, vu);
+	float* vt = geom->f.vt;
+	//carveline_rect(ctx, 0x404040, vc, vr, vf);
+
+	//vcc
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j] +vf[j];
+		tr[j] = vc[j] +vr[j] +vf[j];
+	}
+	carveline(ctx, 0xff0000, tc, tr);
+
+	//gnd
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j] -vf[j];
+		tr[j] = vc[j] +vr[j] -vf[j];
+	}
+	carveline(ctx, 0x0000ff, tc, tr);
+
+	//-
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]/2 -vf[j];
+		tr[j] = tc[j] +vf[j]/4;
+	}
+	carveline(ctx, 0x0000ff, tc,tr);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vr[j]/2 -vf[j];
+		tr[j] = tc[j] +vf[j]/4;
+	}
+	carveline(ctx, 0x0000ff, tc,tr);
+
+
+	u8 pstatus[2];
+	u8 nstatus[2];
+	if(act->ix0){pstatus[0] = 0;nstatus[0] = 1;}
+	else        {pstatus[0] = 1;nstatus[0] = 0;}
+	if(act->iy0){pstatus[1] = 0;nstatus[1] = 1;}
+	else        {pstatus[1] = 1;nstatus[1] = 0;}
+	//say("%d,%d,%d,%d,%d,%d\n",act->ix0,act->iy0, pstatus[0],pstatus[1], nstatus[0],nstatus[1]);
+
+	u32 xcolor = act->ix0 ? 0xff0000 : 0x0000ff;
+	u32 ycolor = act->iy0 ? 0xff0000 : 0x0000ff;
+	u32 ocolor = act->iz0 ? 0xff0000 : 0x0000ff;
+	u32 pcolor[2] = {0xffffff, 0xffffff};
+	u32 ncolor[2] = {0xffffff, 0xffffff};
+	if(nstatus[0])ncolor[0] = 0x0000ff;
+	if(nstatus[1])ncolor[1] = 0x0000ff;
+	if(pstatus[0])pcolor[0] = 0xff0000;
+	if(pstatus[0]&&pstatus[1])pcolor[1] = 0xff0000;
+
+	//p1
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vf[j]*3/4;
+		tr[j] = vr[j]/4;
+		tf[j] = vf[j]/4;
+	}
+	carveline_pmos(ctx, xcolor, pcolor[0], tc,tr,tf,vt);
+
+	//p2
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vf[j]*1/4;
+		tr[j] = vr[j]/4;
+		tf[j] = vf[j]/4;
+	}
+	carveline_pmos(ctx, ycolor, pcolor[1], tc,tr,tf,vt);
+
+	//n1
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]/2 -vf[j]/2;
+		tr[j] = vr[j]/4;
+		tf[j] = vf[j]/4;
+	}
+	carveline_nmos(ctx, xcolor, ncolor[0], tc,tr,tf,vt);
+
+	//n2
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vr[j]/2 -vf[j]/2;
+		tr[j] = vr[j]/4;
+		tf[j] = vf[j]/4;
+	}
+	carveline_nmos(ctx, ycolor, ncolor[1], tc,tr,tf,vt);
+
+	//o
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] - vr[j]/2;
+		tr[j] = vc[j] + vr[j];
+	}
+	carveline(ctx, ocolor, tc,tr);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]/2;
+		tr[j] = tc[j] -vf[j]/4;
+	}
+	carveline(ctx, ocolor, tc,tr);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vr[j]/2;
+		tr[j] = tc[j] -vf[j]/4;
+	}
+	carveline(ctx, ocolor, tc,tr);
 }
 static void nor_draw_json(
 	struct entity* act, struct style* pin,
@@ -54,17 +151,6 @@ static void nor_draw_cli(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-}
-static void nor_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)nor_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)nor_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)nor_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)nor_draw_json(act, pin, win, sty);
-	else nor_draw_pixel(act, pin, win, sty);
 }
 
 
@@ -111,6 +197,9 @@ static void nor_delete(struct entity* act, u8* buf)
 }
 static void nor_create(struct entity* act, u8* buf)
 {
+	act->ix0 = getrandom()&1;
+	act->iy0 = getrandom()&1;
+	act->iz0 = !(act->ix0 | act->iy0);
 }
 
 

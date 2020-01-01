@@ -1,4 +1,6 @@
 #include "struct.h"
+#include "carve.h"
+#include "draw.h"
 #define PI 3.1415926535897932384626433832795028841971693993151
 #define tau PI*2
 //
@@ -209,141 +211,12 @@
 
 
 
-void* defaultstyle_vbo2d();
-
-
 //----------------------------------1d------------------------------------
 void gentui_rect(  struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1);
 void gentui_utf8(  struct entity* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
 void gentui_str(   struct entity* ctx, u32 rgb, int cx, int cy, u8* str, int len);
 void gentui_text(  struct entity* ctx, u32 rgb, int cx, int cy, u8* str, int len);
 void gentui_decstr(struct entity* ctx, u32 rgb, int cx, int cy, int data);
-
-
-
-
-//----------------------------------2d------------------------------------
-void drawaxis(          struct entity* ctx);
-void select_2d(         struct entity* ctx, u32 rgb, struct fstyle* sty, u32 flag);
-
-void drawline(          struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2);
-void drawline_arrow(    struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2);
-void drawbezier(        struct entity* ctx, u32 rgb, int ax, int ay, int bx, int by, int cx, int cy);
-void drawline_triangle( struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2, int x3, int y3);
-void drawline_rect(     struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2);
-void drawline_hexagon(  struct entity* ctx, u32 rgb, int cx, int cy, int rx, int ry);
-void drawline_circle(   struct entity* ctx, u32 rgb, int cx, int cy, int r);
-void drawline_oval(     struct entity* ctx, u32 rgb, int cx, int cy, int rx, int ry, int fx, int fy);
-void drawline_sector(   struct entity* ctx, u32 rgb, int cx, int cy, int radius, int start, int end);
-
-void drawsolid_triangle(struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2, int x3, int y3);
-void drawsolid_rect(    struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2);
-void drawsolid_circle(  struct entity* ctx, u32 rgb, int cx, int cy, int r);
-void drawsolid_oval(    struct entity* ctx, u32 rgb, int cx, int cy, int rx, int ry, int fx, int fy);
-void drawsolid_sector(  struct entity* ctx, u32 rgb, int cx, int cy, int radius, int start, int end);
-
-void drawicon_1(        struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1);
-void drawhyaline_rect(  struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2);
-void drawhyaline_circle(struct entity* ctx, u32 rgb, int cx, int cy, int r);
-
-void drawascii(         struct entity* ctx, u32 rgb, int cx, int cy, u8 data);
-void drawbyte(          struct entity* ctx, u32 rgb, int cx, int cy, u8 data);
-void drawunicode(       struct entity* ctx, u32 rgb, int cx, int cy, u32 unicode);
-void drawutf8(          struct entity* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
-void drawstring(        struct entity* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
-void drawdecimal(       struct entity* ctx, u32 rgb, int cx, int cy, int data);
-void drawhexadecimal(   struct entity* ctx, u32 rgb, int cx, int cy, u64 data);
-void drawdouble(        struct entity* ctx, u32 rgb, int cx, int cy, double z);
-
-void drawascii_fit(     struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8 data);
-void drawunicode_fit(   struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u32 unicode);
-void drawutf8_fit(      struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-void drawstring_fit(    struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-void drawdec_fit(       struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, int);
-void drawhex_fit(       struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u64);
-
-void drawtext(          struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-void drawtext_reverse(  struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-void drawvt100(         struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-
-
-
-
-//-----------------------------3d--------------------------
-void carveaxis(               struct entity* ctx);
-void carvefrustum(            struct entity* ctx, struct fstyle* sty);
-void select_3d(               struct entity* ctx, u32 rgb, struct fstyle* sty, u32 flag);
-
-void carvepoint(              struct entity* ctx, u32 rgb, vec3 vc);
-void carvepoint_bezier(       struct entity* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
-void carvepoint_triangle(     struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carvepoint_rect(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carvepoint_circle(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carvepoint_cone(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carvepoint_cask(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carvepoint_cylinder(     struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carvepoint_dodecahedron( struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvepoint_icosahedron(  struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvepoint_sphere(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-
-void carveline(               struct entity* ctx, u32 rgb, vec3 va, vec3 vb);
-void carveline_shorter(       struct entity* ctx, u32 rgb, vec3 va, vec3 vb);
-void carveline_arrow(         struct entity* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vn);
-void carveline_bezier(        struct entity* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
-void carveline_special(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu, float sa, float da);
-void carveline_yshape(        struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carveline_triangle(      struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carveline_rect(          struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carveline_rectselect(    struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carveline_hexagon(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carveline_circle(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carveline_cone(          struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carveline_prism4(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveline_cylinder(      struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carveline_dodecahedron(  struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveline_icosahedron(   struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveline_sphere(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-
-void carvesolid_triangle(     struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carvesolid_rect(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carvesolid_circle(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carvesolid_cone(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carvesolid_prism4(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvesolid_cask(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvesolid_cylinder(     struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvesolid_dodecahedron( struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvesolid_icosahedron(  struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvesolid_sphere(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvesolid_propeller(    struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu, int dir, int dt);
-
-void carveopaque_triangle(    struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carveopaque_rect(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carveopaque_circle(      struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carveopaque_cone(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carveopaque_prism4(      struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveopaque_cask(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveopaque_cylinder(    struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveopaque_dodecahedron(struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveopaque_icosahedron( struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carveopaque_sphere(      struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-
-void carveascii(              struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
-void carveascii_center(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
-void carveunicode(            struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
-void carveunicode_center(     struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
-void carveutf8(               struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
-void carveutf8_center(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
-
-void carvedecimal(            struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void carvehexadecimal(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void carvehex8_center(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void carvestring(             struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carvestring_center(      struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carvetext_reverse(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carvefloat(              struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, float data);
-void carvedouble(             struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, double data);
-
-void* alloc_winobj(struct entity*, int type);
 
 
 

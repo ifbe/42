@@ -127,6 +127,8 @@ rawmine/compound/thechip/chip.gate.nand.c \
 rawmine/compound/thechip/chip.gate.and.c \
 rawmine/compound/thechip/chip.gate.nor.c \
 rawmine/compound/thechip/chip.gate.or.c \
+rawmine/compound/thechip/chip.gate.not.c \
+rawmine/compound/thechip/chip.gate.mem.c \
 rawmine/compound/thechip/chip.flipflop.d.c \
 rawmine/compound/thechip/chip.flipflop.jk.c \
 rawmine/compound/thechip/chip.ram.dynamic.c \
@@ -253,6 +255,7 @@ forgl41/carve/carve3d.solid.line.c \
 forgl41/carve/carve3d.solid.trigon.c \
 forgl41/carve/carve3d.texed.ascii.c \
 forgl41/carve/carve3d.texed.ascii.c \
+forgl41/carve/carve3d.other.circuit.c \
 forgl41/carve/carve3d.other.group.c \
 forgl41/carve/carve3d.other.helper.c \
 forgl41/gl41.coop.c \

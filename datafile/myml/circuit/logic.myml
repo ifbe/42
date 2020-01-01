@@ -2,7 +2,34 @@
 nandslot{
 }
 nandgeom{
-c: 0.0, 0.0, 0.0
+c:-1500.0, 0.0, 0.0
+r: 500.0, 0.0, 0.0
+f: 0.0, 500.0, 0.0
+t: 0.0, 0.0, 500.0
+}
+
+norslot{
+}
+norgeom{
+c:-500.0, 0.0, 0.0
+r: 500.0, 0.0, 0.0
+f: 0.0, 500.0, 0.0
+t: 0.0, 0.0, 500.0
+}
+
+notslot{
+}
+notgeom{
+c: 500.0, 0.0, 0.0
+r: 500.0, 0.0, 0.0
+f: 0.0, 500.0, 0.0
+t: 0.0, 0.0, 500.0
+}
+
+memslot{
+}
+memgeom{
+c: 1500.0, 0.0, 0.0
 r: 500.0, 0.0, 0.0
 f: 0.0, 500.0, 0.0
 t: 0.0, 0.0, 500.0
@@ -11,7 +38,7 @@ t: 0.0, 0.0, 500.0
 camslot{
 }
 camgeom{
-c: 0.0, 0.0, 1000.0
+c: 0.0, 0.0, 2000.0
 r: 1.0, 0.0, 0.0
 t: 0.0, 1.0, 0.0
 f: 0.0, 0.0,-1.0
@@ -33,6 +60,15 @@ q: 1.0, 1.0
 <entity>
 nand{
 fmt:nand
+}
+nor{
+fmt:nor
+}
+not{
+fmt:not
+}
+mem{
+fmt:mem
 }
 
 cam{
@@ -63,8 +99,11 @@ fmt:poller
 
 <relation>
 (pcb, nandgeom, 0) -> (nand, nandslot, 0)
-(pcb, camgeom, 0) -> (cam, camslot, 0)
+(pcb, norgeom, 0) -> (nor, norslot, 0)
+(pcb, notgeom, 0) -> (not, notslot, 0)
+(pcb, memgeom, 0) -> (mem, memslot, 0)
 
+(pcb, camgeom, 0) -> (cam, camslot, 0)
 (glwnd, rect, 0) -> (cam, 0, 0)
 (opengl, 0, wnd) -> (glwnd, 0, 0)
 </relation>
