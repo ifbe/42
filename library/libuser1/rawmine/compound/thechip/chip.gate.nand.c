@@ -115,6 +115,20 @@ static void nand_draw_vbo(
 	}
 	carveline_nmos(ctx, ycolor, ncolor[1], tc,tr,tf,vt);
 
+	//a
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j] -vf[j]*1/4;
+		tr[j] = tc[j] +vr[j];
+	}
+	carveline(ctx, xcolor, tc,tr);
+
+	//b
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j] -vf[j]*3/4;
+		tr[j] = tc[j] +vr[j];
+	}
+	carveline(ctx, ycolor, tc,tr);
+
 	//o
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] - vr[j]/2;
