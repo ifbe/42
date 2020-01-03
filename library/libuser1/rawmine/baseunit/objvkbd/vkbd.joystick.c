@@ -2,6 +2,8 @@
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
 void gl41data_tmpcam(struct entity* wnd);
+void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+//
 void drawarrorkey2d(void*, u32, int x0, int y0, int x1, int y1, u8*, int);
 void carvearrorkey(void*, u32, vec3 vc, vec3 vr, vec3 vf, u8*, int);
 

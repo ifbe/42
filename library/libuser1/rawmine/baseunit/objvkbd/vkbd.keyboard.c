@@ -2,6 +2,7 @@
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
 void gl41data_tmpcam(struct entity* wnd);
+void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 
@@ -226,32 +227,27 @@ static void vkbd_read_bywnd(struct halfrel* self, struct halfrel* peer, struct h
 static void vkbd_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct entity* wnd;struct style* area;
-	struct entity* cam;struct style* gl41;
+	struct entity* ent;struct style* gl41;
 	wnd = peer->pchip;area = peer->pfoot;
-	cam = self->pchip;gl41 = self->pfoot;
-	//say("@vkbd_write_bywnd\n");
+	ent = self->pchip;gl41 = self->pfoot;
 
 	struct event* ev = buf;
 	if('p' == (ev->what&0xff)){
-		int ww,hh,x0,y0,dx,dy;
-		ww = wnd->width;hh = wnd->height;
-		x0 = ww * area->fs.vc[0];y0 = hh * area->fs.vc[1];
-		dx = ww * area->fs.vq[0];dy = hh * area->fs.vq[1];
+		vec3 xyz;
+		gl41data_convert(wnd, area, ev, xyz);
+		ent->ix0 = xyz[0] * 16;
+		ent->iy0 = xyz[1] * 8;
 
-		short* aa = buf;
-		int x = aa[0];
-		int y = hh-1-aa[1];
-		x = cam->ix0 = 16*(x-x0)/dx;
-		y = cam->iy0 =  8*(y-y0)/dy;
-		//say("%d,%d\n", x, y);
-
-		struct event tmp;
-		if(0x2b70 == ev->what)cam->iw0 = 1;
+		if(0x2b70 == ev->what)ent->iw0 = 1;
 		if(0x2d70 == ev->what){
-			cam->iw0 = 0;
+			ent->iw0 = 0;
+
+			struct event tmp;
+			int x = ent->ix0;
+			int y = ent->iy0;
 			tmp.why = x + y*16;
 			tmp.what = _char_;
-			relationwrite(cam, _ev_, 0, 0, &tmp, 0x20);
+			relationwrite(ent, _ev_, 0, 0, &tmp, 0x20);
 		}
 	}
 }

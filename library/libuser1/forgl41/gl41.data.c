@@ -3,6 +3,22 @@
 
 
 
+void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v)
+{
+	float w = wnd->width;
+	float h = wnd->height;
+	float x0 = w * area->fs.vc[0];
+	float y0 = h * area->fs.vc[1];
+	float dx = w * area->fs.vq[0];
+	float dy = h * area->fs.vq[1];
+	short* t = (void*)ev;
+	v[0] = (t[0]     - x0) / dx;
+	v[1] = (h-1-t[1] - y0) / dy;
+}
+
+
+
+
 void gl41data_tmpcam(struct entity* wnd)
 {
     int x,y;

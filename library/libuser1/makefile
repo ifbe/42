@@ -108,6 +108,8 @@ rawmine/baseunit/objpack/pack.80211.c \
 rawmine/baseunit/objpack/pack.eth.c \
 rawmine/baseunit/objpack/pack.udp.c \
 rawmine/baseunit/objpack/pack.tcp.c \
+rawmine/baseunit/objtab/tab.karnaugh.c \
+rawmine/baseunit/objtab/tab.truth.c \
 rawmine/baseunit/objuiux/uiux.gbuffer.c \
 rawmine/baseunit/objuiux/uiux.oscillo.c \
 rawmine/baseunit/objuiux/uiux.picture.c \

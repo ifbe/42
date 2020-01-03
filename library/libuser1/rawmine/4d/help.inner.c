@@ -14,6 +14,10 @@ void dff_register(void*);
 void hbridge_register(void*);
 void rectify_register(void*);
 
+//table
+void karnaugh_register(void*);
+void truth_register(void*);
+
 //mic
 void monomic_register(void*);
 void stereo_register(void*);
@@ -217,6 +221,16 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 	rectify_register(tmp);
+	tmp += sizeof(struct entity);
+
+
+
+
+//----------------------tab-----------------------
+	karnaugh_register(tmp);
+	tmp += sizeof(struct entity);
+
+	truth_register(tmp);
 	tmp += sizeof(struct entity);
 
 
