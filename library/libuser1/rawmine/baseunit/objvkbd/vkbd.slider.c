@@ -37,10 +37,10 @@ static int slider_delete(struct entity* act)
 static int slider_create(struct entity* act, u8* str)
 {
 	int j;
-	int* list;
-
-	list = act->LISTBUF = memorycreate(0x1000, 0);
+	int* list = act->LISTBUF = memorycreate(0x1000, 0);
 	for(j=0;j<12;j++)list[j] = 50;
+
+	act->iw0 = -1;
 	return 0;
 }
 
@@ -124,29 +124,23 @@ static void slider_read_bywnd(struct halfrel* self, struct halfrel* peer, struct
 static void slider_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct entity* wnd;struct style* area;
-	struct entity* cam;struct style* gl41;
+	struct entity* ent;struct style* gl41;
 	wnd = peer->pchip;area = peer->pfoot;
-	cam = self->pchip;gl41 = self->pfoot;
-	//say("@slider_write_bywnd\n");
+	ent = self->pchip;gl41 = self->pfoot;
 
 	struct event* ev = buf;
 	if('p' == (ev->what&0xff)){
-		int ww,hh,x0,y0,dx,dy;
-		ww = wnd->width;hh = wnd->height;
-		x0 = ww * area->fs.vc[0];y0 = hh * area->fs.vc[1];
-		dx = ww * area->fs.vq[0];dy = hh * area->fs.vq[1];
+		vec3 xyz;
+		gl41data_convert(wnd, area, ev, xyz);
 
-		short* aa = buf;
-		int x = (aa[0]-x0)*10000/dx;
-		int y = (hh-1-aa[1]-y0)*12/dy;
-		x = (x-1000)/80;
-		if(x<0)x = 0;
-		if(x>100)x = 100;
-		y = 11-y;
+		int y = 12*(1.0-xyz[1]);
+		if(0x2b70 == ev->what)ent->iw0 = y;
+		if(0x2d70 == ev->what)ent->iw0 = -1;
 
-		if(0x2b70 == ev->what)cam->iw0 = 1;
-		if(0x2d70 == ev->what)cam->iw0 = 0;
-		if((y>=0)&&(y<=11)&&cam->iw0)slider_event(cam, x, y);
+		int x = 120*xyz[0]-10;
+		if(x < 0)x = 0;
+		if(x > 100)x = 100;
+		slider_event(ent, x, ent->iw0);
 	}
 }
 
