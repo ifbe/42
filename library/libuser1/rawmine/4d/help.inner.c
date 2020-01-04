@@ -114,6 +114,7 @@ void screen_register(void*);
 void speaker_register(void*);
 
 //robo
+void balance_register(void*);
 void dancemat_register(void*);
 void drone_register(void*);
 void human_register(void*);
@@ -489,6 +490,9 @@ void content_create(void* addr)
 
 
 //----------------------robo----------------------
+	balance_register(tmp);
+	tmp += sizeof(struct entity);
+
 	dancemat_register(tmp);
 	tmp += sizeof(struct entity);
 

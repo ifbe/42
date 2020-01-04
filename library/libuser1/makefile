@@ -196,6 +196,7 @@ rawmine/compound/thereal/real.theear.c \
 rawmine/compound/thereal/real.theeye.c \
 rawmine/compound/thereal/real.screen.c \
 rawmine/compound/thereal/real.speaker.c \
+rawmine/compound/therobo/robo.balance.c \
 rawmine/compound/therobo/robo.dancemat.c \
 rawmine/compound/therobo/robo.dog.c \
 rawmine/compound/therobo/robo.drone.c \
