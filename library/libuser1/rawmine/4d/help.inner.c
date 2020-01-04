@@ -8,6 +8,8 @@ void nand_register(void*);
 void nor_register(void*);
 void xor_register(void*);
 void xnor_register(void*);
+void autocmos_register(void*);
+//
 void not_register(void*);
 void mem_register(void*);
 void dff_register(void*);
@@ -207,6 +209,9 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 	xnor_register(tmp);
+	tmp += sizeof(struct entity);
+
+	autocmos_register(tmp);
 	tmp += sizeof(struct entity);
 
 	not_register(tmp);

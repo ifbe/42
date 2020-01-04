@@ -1,4 +1,9 @@
 #include "libuser.h"
+void gl41data_before(struct entity* wnd);
+void gl41data_after(struct entity* wnd);
+void gl41data_tmpcam(struct entity* wnd);
+void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+//
 void postfix2binarytree(void* postfix, void* out);
 void infix2postfix(void* infix, void* postfix);
 double calculator(void* postfix, u64 x, u64 y);
@@ -14,9 +19,9 @@ static u8 result[128];
 //
 static u8 table[4][8] = {
 '0', '1', '2', '3', '+', '-', '*', '/',
-'4', '5', '6', '7', '^', '%', '!', ' ',
+'4', '5', '6', '7', '|', '%', '!', '^',
 '8', '9', 'a', 'b', '<', '>', '(', ')',
-'c', 'd', 'e', 'f', '.', ' ', '`', '=',
+'c', 'd', 'e', 'f', '.', ' ', 0xd, '=',
 };
 
 
@@ -158,68 +163,75 @@ static void calculator_draw_cli(
 	say("postfix:%s\n", postfix);
 	say("result:%s\n", result);
 }
-static void calculator_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)calculator_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)calculator_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)calculator_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)calculator_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
+
+
+
+void calculator_char(struct entity* ent, struct style* slot, int key)
+{
+	int j;
+	double final;
+	if(0x8 == key)
 	{
-		//if(_2d_ == win->vfmt)calculator_draw_vbo2d(act, pin, win, sty);
-		//else calculator_draw_vbo3d(act, pin, win, sty);
+		if(count <= 0)return;
+
+		count--;
+		buffer[count] = 0x20;
 	}
-	else calculator_draw_pixel(act, pin, win, sty);
+	else if(0xd == key)
+	{
+		//清空输入区
+		for(j=0;j<count;j++)
+		{
+			infix[j] = buffer[j];
+			buffer[j] = 0x20;
+		}
+		infix[count] = 0;
+		count=0;
+		say("buffer:%s\n", infix);
+
+		infix2postfix(infix, postfix);
+		say("postfix:%s\n", postfix);
+
+		final = calculator(postfix, 0, 0);
+		double2decstr(final, result);
+		say("result:%s\n", result);
+	}
+	else
+	{
+		if(count<128)
+		{
+			buffer[count] = key;
+			count++;
+		}
+	}
 }
 static void calculator_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
-	double final;
-	int x,y,ret;
-	u64 type = ev->what;
-	u64 key = ev->why;
+	if(_char_ == ev->what)calculator_char(act,pin, ev->why);
+}
+static void calculator_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	struct entity* wnd;struct style* area;
+	struct entity* ent;struct style* gl41;
+	wnd = peer->pchip;area = peer->pfoot;
+	ent = self->pchip;gl41 = self->pfoot;
 
-	if(_char_ == type)
-	{
-		if(0x8 == key)
-		{
-			if(count <= 0)return;
+	struct event* ev = buf;
+	if('p' == (ev->what&0xff)){
+		vec3 xyz;
+		gl41data_convert(wnd, area, ev, xyz);
+		//say("%f,%f\n",xyz[0], xyz[1]);
 
-			count--;
-			buffer[count] = 0x20;
-		}
-		else if(0xd == key)
-		{
-			//清空输入区
-			for(ret=0;ret<count;ret++)
-			{
-				infix[ret] = buffer[ret];
-				buffer[ret] = 0x20;
-			}
-			infix[count] = 0;
-			count=0;
-			say("buffer:%s\n", infix);
-
-			infix2postfix(infix, postfix);
-			say("postfix:%s\n", postfix);
-
-			final = calculator(postfix, 0, 0);
-			double2decstr(final, result);
-			say("result:%s\n", result);
-		}
-		else
-		{
-			if(count<128)
-			{
-				buffer[count] = key;
-				count++;
-			}
+		if(0x2b70 == ev->what){
+			int x = (int)(xyz[0]*8);
+			int y = (int)(xyz[1]*8);
+			y = 3-y;
+			//say("%d,%d\n",x,y);
+			if((y>=0)&&(y<=3))calculator_char(ent,gl41, table[y][x]);
 		}
 	}
 }
@@ -227,7 +239,7 @@ static void calculator_event(
 
 
 
-static void calculator_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void calculator_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
@@ -245,15 +257,44 @@ static void calculator_read(struct halfrel* self, struct halfrel* peer, struct h
 		if('v' == len)calculator_draw_vbo(act,slot, scn,geom, wnd,area);
 	}
 }
-static void calculator_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void calculator_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//calculator_event(act, pin, win, sty, ev, 0);
+//wnd.area -> cam.gl41, cam.slot -> world.geom
+	struct entity* wnd;struct style* area;
+	struct entity* cam;struct style* gl41;
+	wnd = peer->pchip;area = peer->pfoot;
+	cam = self->pchip;gl41 = self->pfoot;
+
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-1.0;
+	gl41data_before(wnd);
+	calculator_draw_vbo(cam, 0, 0,(void*)&fs, wnd,area);
+	gl41data_after(wnd);
+
+	gl41data_tmpcam(wnd);
+}
+
+
+
+
+static int calculator_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+{
+	struct entity* ent = peer->pchip;
+	switch(ent->fmt){
+		case _gl41wnd0_:calculator_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		default:        calculator_read_bycam(self, peer, stack, rsp, buf, len);break;
+	}
+	return 0;
+}
+static void calculator_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	struct entity* sup = peer->pchip;
+	switch(sup->fmt){
+		case _gl41wnd0_:calculator_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
 }
 static void calculator_stop(struct halfrel* self, struct halfrel* peer)
 {
