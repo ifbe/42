@@ -1,4 +1,5 @@
 #include "libuser.h"
+#define _truthtable_ hex32('t','r','u','e')
 void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
@@ -44,16 +45,50 @@ static int karnaugh_create(struct entity* act, u8* str)
 
 
 
+void karnaugh_draw_vbo_4x4(struct entity* wnd, struct entity* act, vec3 vc, vec3 vr, vec3 vf)
+{
+	int x,y,j,rgb;
+	vec3 tc,tr,tf;
+	u8 ch[4];
+	u8* out = (void*)&act->data0;
+
+	for(j=0;j<3;j++){
+		tr[j] = vr[j]/4.1;
+		tf[j] = vf[j]/4.1;
+	}
+	for(y=0;y<4;y++){
+		ch[0] = '0' + out[y*4 +0];
+		ch[1] = '0' + out[y*4 +1];
+		ch[2] = '0' + out[y*4 +2];
+		ch[3] = '0' + out[y*4 +3];
+		for(x=0;x<4;x++){
+			for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(2*x-3)/4 +vf[j]*(3-2*y)/4;
+			if((x == act->ix0)&&(y == act->iy0))rgb = 0xff00ff;
+			else rgb = 0xffffff;
+			carveline_rect(wnd, 0xffffff, tc, tr, tf);
+			carveascii_center(wnd, rgb, tc, tr, tf, ch[x]);
+		}
+	}
+
+	//choose
+	j = 0;
+	for(j=0;j<16;j++){if(0 == out[j])break;}
+	if(j == 16){
+		for(j=0;j<3;j++){
+			tr[j] = vr[j]*0.95;
+			tf[j] = vf[j]*0.95;
+		}
+		carveline_rectround(wnd, 0xff00ff, vc,tr,tf);
+	}
+}
 void karnaugh_draw_vbo(
 	struct entity* act, struct style* part,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	u8* out;
-	u8 ch[4];
-	char* str[4] = {"00", "01", "11", "10"};
-	int x,y,j,rgb;
+	int x,y,j;
 	vec3 tc,tr,tf;
+	char* str[4] = {"00", "01", "11", "10"};
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
@@ -61,29 +96,7 @@ void karnaugh_draw_vbo(
 	for(j=0;j<3;j++)tc[j] = vc[j] -vt[j]/100.0;
 	carveopaque_rect(wnd, 0x80000080, tc, vr, vf);
 
-	out = (void*)&act->data0;
-	for(j=0;j<3;j++){
-		tr[j] = vr[j]/5.1;
-		tf[j] = vf[j]/5.1;
-	}
-	for(y=0;y<5;y++){
-		if(y>0){
-			ch[0] = '0' + out[(y-1)*4 +0];
-			ch[1] = '0' + out[(y-1)*4 +1];
-			ch[2] = '0' + out[(y-1)*4 +2];
-			ch[3] = '0' + out[(y-1)*4 +3];
-		}
-		for(x=0;x<5;x++){
-			for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(2*x-4)/5 +vf[j]*(4-2*y)/5;
-			if(x>0&&y>0){
-				if((x == act->ix0)&&(y == act->iy0))rgb = 0xff00ff;
-				else rgb = 0xffffff;
-				carveline_rect(wnd, 0xff0000, tc, tr, tf);
-				carveascii_center(wnd, rgb, tc, tr, tf, ch[x-1]);
-			}
-		}
-	}
-
+	//frame
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vr[j] +vf[j];
 		tr[j] = tc[j] +vr[j]*2/5 -vf[j]*2/5;
@@ -115,6 +128,14 @@ void karnaugh_draw_vbo(
 		for(j=0;j<3;j++)tc[j] = vc[j] -vr[j]*4/5 +vf[j]*(2-2*y)/5;
 		carvestring_center(wnd, 0xffffff, tc, tr, tf, (u8*)str[y], 2);
 	}
+
+	//4x4
+	for(j=0;j<3;j++){
+		tr[j] = vr[j]*4/5;
+		tf[j] = vf[j]*4/5;
+		tc[j] = vc[j] +vr[j]/5 -tf[j]/5;
+	}
+	karnaugh_draw_vbo_4x4(wnd, act, tc, tr, tf);
 }
 void karnaugh_draw_pixel(struct entity* win, struct style* sty)
 {
@@ -173,16 +194,41 @@ static void karnaugh_write_bywnd(struct halfrel* self, struct halfrel* peer, str
 	if('p' == (ev->what&0xff)){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);
-		ent->ix0 = (int)(5*xyz[0]);
-		ent->iy0 = (int)(5*(1.0-xyz[1]));
+		ent->ix0 = (int)(5*xyz[0]) -1;
+		ent->iy0 = (int)(5*(1.0-xyz[1])) -1;
 
 		if(0x2b70 == ev->what){
 			u8* out = (void*)&ent->data0;
-			int x = ent->ix0 -1;
-			int y = ent->iy0 -1;
+			int x = ent->ix0;
+			int y = ent->iy0;
 			if((x >= 0)&&(x <= 3)&&(y >= 0)&&(y <= 3))out[y*4+x] ^= 1;
+			relationwrite(ent, _truthtable_, 0, 0, out, 16);
 		}
 	}
+}
+static int karnaugh_write_bytruthtable(struct entity* ent, u8* i)
+{
+	u8* o = (void*)&ent->data0;
+	printmemory(i, 16);
+
+	o[0] = i[0];
+	o[1] = i[1];
+	o[3] = i[2];
+	o[2] = i[3];
+	o[4] = i[4];
+	o[5] = i[5];
+	o[7] = i[6];
+	o[6] = i[7];
+
+	o[12] = i[8];
+	o[13] = i[9];
+	o[15] = i[10];
+	o[14] = i[11];
+	o[ 8] = i[12];
+	o[ 9] = i[13];
+	o[11] = i[14];
+	o[10] = i[15];
+	return 0;
 }
 
 
@@ -198,8 +244,16 @@ static int karnaugh_read(struct halfrel* self, struct halfrel* peer, struct half
 }
 static int karnaugh_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
-	struct entity* ent = peer->pchip;
-	switch(ent->fmt){
+	struct entity* ent;
+	struct entity* sup;
+
+	ent = self->pchip;
+	if(_truthtable_ == self->flag){
+		return karnaugh_write_bytruthtable(ent, buf);
+	}
+
+	sup = peer->pchip;
+	switch(sup->fmt){
 		case _gl41wnd0_:karnaugh_write_bywnd(self, peer, stack, rsp, buf, len);break;
 	}
 	return 0;

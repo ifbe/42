@@ -95,14 +95,14 @@ int line3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int vc
 void carveline(struct entity* win, u32 rgb,
 	vec3 va, vec3 vb)
 {
-	float bb = (float)(rgb&0xff) / 255.0;
-	float gg = (float)((rgb>>8)&0xff) / 255.0;
-	float rr = (float)((rgb>>16)&0xff) / 255.0;
-
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 2, 1);
 	if(vlen < 0)return;
+
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
 
 	vbuf[ 0] = va[0];
 	vbuf[ 1] = va[1];
@@ -142,16 +142,14 @@ void carveline_shorter(struct entity* win, u32 rgb,
 void carveline_arrow(struct entity* win, u32 rgb,
 	vec3 va, vec3 vb, vec3 vn)
 {
-	vec3 tx;
-	vec3 ty;
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 4, 3);
 	if(vlen < 0)return;
+
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	vbuf[ 0] = va[0];
 	vbuf[ 1] = va[1];
@@ -168,6 +166,7 @@ void carveline_arrow(struct entity* win, u32 rgb,
 	vbuf[11] = bb;
 
 	//tx = va - vb, ty = rotate(tx,30)
+	vec3 tx, ty;
 	ty[0] = tx[0] = va[0] - vb[0];
 	ty[1] = tx[1] = va[1] - vb[1];
 	ty[2] = tx[2] = va[2] - vb[2];
@@ -197,17 +196,16 @@ void carveline_arrow(struct entity* win, u32 rgb,
 void carveline_bezier(struct entity* win, u32 rgb,
 	vec3 va, vec3 vb, vec3 vt)
 {
-	int j;
-	float t;
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc + 1, acc);
 	if(vlen < 0)return;
 
+	int j;
+	float t;
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
 	for(j=0;j<=acc;j++)
 	{
 		t = (float)j / acc;
@@ -229,17 +227,16 @@ void carveline_special(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu,
 	float sa, float da)
 {
-	int j;
-	float s,t;
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc + 1, acc);
 	if(vlen < 0)return;
 
+	int j;
+	float s,t;
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
 	for(j=0;j<=acc;j++)
 	{
 		s = j * da / acc;
@@ -265,14 +262,14 @@ void carveline_special(struct entity* win, u32 rgb,
 void carveline_yshape(struct entity* win, u32 rgb,
 	vec3 v0, vec3 v1, vec3 v2)
 {
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 4, 3);
 	if(vlen < 0)return;
+
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
@@ -312,14 +309,14 @@ void carveline_yshape(struct entity* win, u32 rgb,
 void carveline_triangle(struct entity* win, u32 rgb,
 	vec3 v0, vec3 v1, vec3 v2)
 {
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 3, 3);
 	if(vlen < 0)return;
+
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
@@ -356,14 +353,14 @@ void carveline_triangle(struct entity* win, u32 rgb,
 void carveline_rect(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 4, 4);
 	if(vlen < 0)return;
+
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	vbuf[ 0] = vc[0] - vr[0] - vf[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1];
@@ -402,19 +399,68 @@ void carveline_rect(struct entity* win, u32 rgb,
 	ibuf[6] = vlen+0;
 	ibuf[7] = vlen+2;
 }
-void carveline_rectselect(struct entity* win, u32 rgb,
+void carveline_rectround(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 8, 8);
+	if(vlen < 0)return;
+
 	int j;
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
+	for(j=0;j<72;j+=6){
+		vbuf[j+3] = rr;
+		vbuf[j+4] = gg;
+		vbuf[j+5] = bb;
+	}
 
+	for(j=0;j<3;j++){
+		//lb
+		vbuf[ 0+j] = vc[j] -vr[j]     -vf[j]*0.9;
+		vbuf[ 6+j] = vc[j] -vr[j]*0.9 -vf[j];
+		//rb
+		vbuf[12+j] = vc[j] +vr[j]*0.9 -vf[j];
+		vbuf[18+j] = vc[j] +vr[j]     -vf[j]*0.9;
+		//rt
+		vbuf[24+j] = vc[j] +vr[j]     +vf[j]*0.9;
+		vbuf[30+j] = vc[j] +vr[j]*0.9 +vf[j];
+		//lt
+		vbuf[36+j] = vc[j] -vr[j]*0.9 +vf[j];
+		vbuf[42+j] = vc[j] -vr[j]     +vf[j]*0.9;
+	}
+
+	ibuf[ 0] = vlen;
+	ibuf[ 1] = vlen+1;
+	ibuf[ 2] = vlen+1;
+	ibuf[ 3] = vlen+2;
+	ibuf[ 4] = vlen+2;
+	ibuf[ 5] = vlen+3;
+	ibuf[ 6] = vlen+3;
+	ibuf[ 7] = vlen+4;
+	ibuf[ 8] = vlen+4;
+	ibuf[ 9] = vlen+5;
+	ibuf[10] = vlen+5;
+	ibuf[11] = vlen+6;
+	ibuf[12] = vlen+6;
+	ibuf[13] = vlen+7;
+	ibuf[14] = vlen+7;
+	ibuf[15] = vlen+0;
+}
+void carveline_rectselect(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf)
+{
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 12, 8);
 	if(vlen < 0)return;
 
+	int j;
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
 	for(j=0;j<72;j+=6){
 		vbuf[j+3] = rr;
 		vbuf[j+4] = gg;
@@ -426,52 +472,52 @@ void carveline_rectselect(struct entity* win, u32 rgb,
 	vbuf[ 1] = vc[1] - vr[1] - vf[1];
 	vbuf[ 2] = vc[2] - vr[2] - vf[2];
 
-	vbuf[ 6] = vc[0] - vr[0] - vf[0]/2;
-	vbuf[ 7] = vc[1] - vr[1] - vf[1]/2;
-	vbuf[ 8] = vc[2] - vr[2] - vf[2]/2;
+	vbuf[ 6] = vbuf[0] + vf[0]/2;
+	vbuf[ 7] = vbuf[1] + vf[1]/2;
+	vbuf[ 8] = vbuf[2] + vf[2]/2;
 
-	vbuf[12] = vc[0] - vr[0]/2 - vf[0];
-	vbuf[13] = vc[1] - vr[1]/2 - vf[1];
-	vbuf[14] = vc[2] - vr[2]/2 - vf[2];
+	vbuf[12] = vbuf[0] + vr[0]/2;
+	vbuf[13] = vbuf[1] + vr[1]/2;
+	vbuf[14] = vbuf[2] + vr[2]/2;
 
 	//right bot
 	vbuf[18] = vc[0] + vr[0] - vf[0];
 	vbuf[19] = vc[1] + vr[1] - vf[1];
 	vbuf[20] = vc[2] + vr[2] - vf[2];
 
-	vbuf[24] = vc[0] + vr[0] - vf[0]/2;
-	vbuf[25] = vc[1] + vr[1] - vf[1]/2;
-	vbuf[26] = vc[2] + vr[2] - vf[2]/2;
+	vbuf[24] = vbuf[18] + vf[0]/2;
+	vbuf[25] = vbuf[19] + vf[1]/2;
+	vbuf[26] = vbuf[20] + vf[2]/2;
 
-	vbuf[30] = vc[0] + vr[0]/2 - vf[0];
-	vbuf[31] = vc[1] + vr[1]/2 - vf[1];
-	vbuf[32] = vc[2] + vr[2]/2 - vf[2];
+	vbuf[30] = vbuf[18] - vr[0]/2;
+	vbuf[31] = vbuf[19] - vr[1]/2;
+	vbuf[32] = vbuf[20] - vr[2]/2;
 
 	//left top
 	vbuf[36] = vc[0] - vr[0] + vf[0];
 	vbuf[37] = vc[1] - vr[1] + vf[1];
 	vbuf[38] = vc[2] - vr[2] + vf[2];
 
-	vbuf[42] = vc[0] - vr[0] + vf[0]/2;
-	vbuf[43] = vc[1] - vr[1] + vf[1]/2;
-	vbuf[44] = vc[2] - vr[2] + vf[2]/2;
+	vbuf[42] = vbuf[36] - vf[0]/2;
+	vbuf[43] = vbuf[37] - vf[1]/2;
+	vbuf[44] = vbuf[38] - vf[2]/2;
 
-	vbuf[48] = vc[0] - vr[0]/2 + vf[0];
-	vbuf[49] = vc[1] - vr[1]/2 + vf[1];
-	vbuf[50] = vc[2] - vr[2]/2 + vf[2];
+	vbuf[48] = vbuf[36] + vr[0]/2;
+	vbuf[49] = vbuf[37] + vr[1]/2;
+	vbuf[50] = vbuf[38] + vr[2]/2;
 
 	//right top
 	vbuf[54] = vc[0] + vr[0] + vf[0];
 	vbuf[55] = vc[1] + vr[1] + vf[1];
 	vbuf[56] = vc[2] + vr[2] + vf[2];
 
-	vbuf[60] = vc[0] + vr[0] + vf[0]/2;
-	vbuf[61] = vc[1] + vr[1] + vf[1]/2;
-	vbuf[62] = vc[2] + vr[2] + vf[2]/2;
+	vbuf[60] = vbuf[54] - vf[0]/2;
+	vbuf[61] = vbuf[55] - vf[1]/2;
+	vbuf[62] = vbuf[56] - vf[2]/2;
 
-	vbuf[66] = vc[0] + vr[0]/2 + vf[0];
-	vbuf[67] = vc[1] + vr[1]/2 + vf[1];
-	vbuf[68] = vc[2] + vr[2]/2 + vf[2];
+	vbuf[66] = vbuf[54] - vr[0]/2;
+	vbuf[67] = vbuf[55] - vr[1]/2;
+	vbuf[68] = vbuf[56] - vr[2]/2;
 
 	ibuf[ 0] = vlen;
 	ibuf[ 1] = vlen+1;
@@ -500,15 +546,15 @@ void carveline_rectselect(struct entity* win, u32 rgb,
 void carveline_hexagon(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
-	float v[4];
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 6, 6);
 	if(vlen < 0)return;
+
+	float v[4];
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	//0
 	vbuf[ 0] = vc[0] + vr[0];
@@ -584,6 +630,11 @@ void carveline_circle(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 #define lineacc (acc*2)
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, lineacc, lineacc);
+	if(vlen < 0)return;
+
 	int j;
 	float c,s;
 	float q[4];
@@ -591,11 +642,6 @@ void carveline_circle(struct entity* win, u32 rgb,
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, lineacc, lineacc);
-	if(vlen < 0)return;
 
 	for(j=0;j<lineacc;j++)
 	{
@@ -632,6 +678,11 @@ void carveline_pyramid6()
 void carveline_cone(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc + 2, acc * 3);
+	if(vlen < 0)return;
+
 	int a,b,j,k;
 	float s,t;
 	float r[4];
@@ -639,11 +690,6 @@ void carveline_cone(struct entity* win, u32 rgb,
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc + 2, acc * 3);
-	if(vlen < 0)return;
 
 	for(j=0;j<acc;j++)
 	{
@@ -701,14 +747,14 @@ void carveline_prism3()
 void carveline_prism4(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	float* vbuf;
 	u16* ibuf;
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 8, 12);
 	if(vlen < 0)return;
+
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	vbuf[ 0] = vc[0] - vr[0] - vf[0] - vu[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1] - vu[1];
@@ -805,6 +851,11 @@ void carveline_cask()
 void carveline_cylinder(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc * 2, acc * 3);
+	if(vlen < 0)return;
+
 	int a,b,j,k;
 	float s,t;
 	float r[4];
@@ -812,12 +863,6 @@ void carveline_cylinder(struct entity* win, u32 rgb,
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc * 2, acc * 3);
-	if(vlen < 0)return;
-
 	for(j=0;j<acc;j++)
 	{
 		r[0] = vr[0];
@@ -864,6 +909,11 @@ void carveline_octahedron()
 void carveline_dodecahedron(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 20, 30);
+	if(vlen < 0)return;
+
 	int j;
 	float a = 1.618;
 	float b = 1.0/1.618;
@@ -871,12 +921,6 @@ void carveline_dodecahedron(struct entity* win, u32 rgb,
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 20, 30);
-	if(vlen < 0)return;
-
 	for(j=0;j<20*6;j+=6)
 	{
 		vbuf[j + 3] = rr;
@@ -1043,6 +1087,11 @@ void carveline_dodecahedron(struct entity* win, u32 rgb,
 void carveline_icosahedron(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 12, 30);
+	if(vlen < 0)return;
+
 	int j;
 	float m = 0.52573111211913360602566908484788;
 	float n = 0.85065080835203993218154049706301;
@@ -1050,12 +1099,6 @@ void carveline_icosahedron(struct entity* win, u32 rgb,
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 12, 30);
-	if(vlen < 0)return;
-
 	for(j=0;j<12*6;j++)
 	{
 		vbuf[j + 3] = rr;
@@ -1185,6 +1228,11 @@ void carveline_sphere(struct entity* win, u32 rgb,
 {
 #define accx (acc)
 #define accy (acc|0x1)
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, accx*accy+2, accx*accy+accx*(accy+1));
+	if(vlen < 0)return;
+
 	int j,k,a,b;
 	float c,s;
 	vec3 tc, tr, tf;
@@ -1192,12 +1240,6 @@ void carveline_sphere(struct entity* win, u32 rgb,
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, accx*accy+2, accx*accy+accx*(accy+1));
-	if(vlen < 0)return;
-
 	for(k=0;k<accy;k++)
 	{
 		s = (2*k-accy+1)*PI/(2*accy+2);

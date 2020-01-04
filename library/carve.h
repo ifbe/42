@@ -27,6 +27,7 @@ void carveline_special(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec
 void carveline_yshape(        struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
 void carveline_triangle(      struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
 void carveline_rect(          struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void carveline_rectround(     struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 void carveline_rectselect(    struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 void carveline_hexagon(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
 void carveline_circle(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);

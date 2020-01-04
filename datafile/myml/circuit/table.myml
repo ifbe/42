@@ -42,6 +42,8 @@ fmt:poller
 
 
 <relation>
+(karnaugh, 0, true) -> (truthtable, 0, karn)
+
 #glwnd depends on gldata
 (glwnd, rect, 0) -> (karnaugh, 0, 0)
 (glwnd, area, 0) -> (truthtable, 0, 0)
