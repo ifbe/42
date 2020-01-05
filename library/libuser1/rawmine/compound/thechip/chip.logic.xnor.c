@@ -5,27 +5,7 @@ void carveline_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, ve
 
 
 
-static void xnor_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	int cx, cy, ww, hh;
-	if(sty)
-	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
-	}
-	else
-	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
-	}
-}
-static void xnor_draw_vbo(
+static void xnor_draw_vbo_12t(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -177,6 +157,180 @@ static void xnor_draw_vbo(
 	}
 	carveline(ctx, ocolor, tc,tr);
 }
+static void xnor_draw_vbo(
+	struct entity* ent, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
+{
+	int j;
+	vec3 tc,tr,tf,tt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+	carveline_rect(ctx, 0x404040, vc, vr, vf);
+
+	u32 acolor = ent->ix0 ? 0xff0000 : 0x0000ff;
+	u32 bcolor = ent->iy0 ? 0xff0000 : 0x0000ff;
+	u32 xcolor = ent->iy0 ? 0x0000ff : 0xff0000;
+	u32 ocolor = ent->iz0 ? 0xff0000 : 0x0000ff;
+
+	//b
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]*7/8 +vf[j]/4;
+		tr[j] = tc[j] -vf[j];
+	}
+	carveline(ctx, bcolor, tc,tr);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]*7/8 -vf[j]*3/4;
+		tr[j] = tc[j] +vr[j]*6/4;
+	}
+	carveline(ctx, bcolor, tc,tr);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vf[j]*3/4;
+		tr[j] = tc[j] +vf[j]*1/4;
+	}
+	carveline(ctx, bcolor, tc,tr);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vr[j]*5/8 -vf[j]*3/4;
+		tr[j] = tc[j] +vf[j]*1/4;
+	}
+	carveline(ctx, bcolor, tc,tr);
+
+	//left
+	u32 left_p = 0xffffff;
+	u32 left_n = 0xffffff;
+	if(ent->iy0)left_n = 0x0000ff;
+	else left_p = 0xff0000;
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]*5/8 +vf[j]*1/4;
+		tr[j] = vr[j]/4;
+		tf[j] = vf[j]/4;
+	}
+	carveline_pmos(ctx, bcolor, left_p, tc,tr,tf,vt);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]*5/8 -vf[j]*1/4;
+	}
+	carveline_nmos(ctx, bcolor, left_n, tc,tr,tf,vt);
+
+	//not b
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]*5/8;
+		tr[j] = tc[j] +vr[j]/8;
+	}
+	carveline(ctx, xcolor, tc,tr);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]/2;
+		tr[j] = tc[j] +vf[j]/2;
+	}
+	carveline(ctx, xcolor, tc,tr);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]/2 +vf[j]/2;
+		tr[j] = tc[j] +vr[j]*9/8;
+	}
+	carveline(ctx, xcolor, tc,tr);
+
+	//tg
+	u32 tg_p = 0xffffff;
+	u32 tg_n = 0xffffff;
+	if(ent->iy0){
+		if(ent->ix0)tg_p = tg_n = 0xff0000;
+		else tg_p = tg_n = 0x0000ff;
+	}
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vf[j]/4;
+		tr[j] =-vf[j]/4;
+		tf[j] = vr[j]/4;
+	}
+	carveline_pmos(ctx, xcolor, tg_p, tc,tr,tf,vt);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vf[j]/4;
+		tr[j] = vf[j]/4;
+		tf[j] =-vr[j]/4;
+	}
+	carveline_nmos(ctx, bcolor, tg_n, tc,tr,tf,vt);
+
+	//a
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vr[j]/4 -vf[j]/4;
+		tr[j] = tc[j] +vf[j]/2;
+	}
+	carveline(ctx, acolor, tc,tr);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vr[j]*3/8 -vf[j]/4;
+		tr[j] = tc[j] +vf[j]/2;
+	}
+	carveline(ctx, acolor, tc,tr);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vr[j]/4;
+		tr[j] = tc[j] +vr[j]/8;
+	}
+	carveline(ctx, acolor, tc,tr);
+
+	//right
+	u32 right_p = 0xffffff;
+	u32 right_n = 0xffffff;
+	if(0 == ent->iy0){
+		if(ent->ix0)right_n = 0x0000ff;
+		else right_p = 0xff0000;
+	}
+	else{
+		if(ent->ix0)right_n = 0xff0000;
+		else right_p = 0x0000ff;
+	}
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vr[j]*5/8 +vf[j]*1/4;
+		tr[j] = vr[j]/4;
+		tf[j] = vf[j]/4;
+	}
+	carveline_pmos(ctx, acolor, right_p, tc,tr,tf,vt);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vr[j]*5/8 -vf[j]*1/4;
+	}
+	carveline_nmos(ctx, acolor, right_n, tc,tr,tf,vt);
+
+	//out
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vr[j]*5/8;
+		tr[j] = tc[j] +vr[j]*3/8;
+	}
+	carveline(ctx, ocolor, tc,tr);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vr[j]*6/8;
+		tr[j] = tc[j] +vf[j]*3/4;
+	}
+	carveline(ctx, ocolor, tc,tr);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]/4 +vf[j]*3/4;
+		tr[j] = tc[j] +vr[j];
+	}
+	carveline(ctx, ocolor, tc,tr);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]/4 -vf[j]/4;
+		tr[j] = tc[j] +vf[j];
+	}
+	carveline(ctx, ocolor, tc,tr);
+}
+static void xnor_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
+}
 static void xnor_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -220,8 +374,19 @@ static void xnor_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 }
 static void xnor_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	struct entity* ent = self->pchip;
-	say("@xnorgate_write:%x\n",buf[0]);
+	u8 tmp;
+	struct entity* ent;
+	//say("@xorgate_write:%x\n",buf[0]);
+
+	ent = self->pchip;
+	if(_src_ == self->flag){
+		tmp = buf[0] - 0x30;
+		if((tmp >= 0)&&(tmp <= 3)){
+			ent->ix0 = (tmp>>0)&1;
+			ent->iy0 = (tmp>>1)&1;
+			ent->iz0 = !(ent->ix0 ^ ent->iy0);
+		}
+	}
 }
 static void xnor_stop(struct halfrel* self, struct halfrel* peer)
 {

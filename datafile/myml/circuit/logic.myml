@@ -138,10 +138,8 @@ fmt:poller
 
 
 <relation>
-(std, 0, dst) -> (nand, 0, a)
-(nand, 0, o) -> (nor, 0, b)
-(nor, 0, o) -> (not, 0, i)
-(not, 0, o) -> (mem, 0, l)
+(std, 0, dst) -> (xor, 0, src)
+(std, 0, dst) -> (xnor, 0, src)
 
 (pcb, notgeom, 0) -> (not, notslot, 0)
 (pcb, memgeom, 0) -> (mem, memslot, 0)
