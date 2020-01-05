@@ -132,6 +132,8 @@ rawmine/compound/thechip/chip.logic.nor.c \
 rawmine/compound/thechip/chip.logic.or.c \
 rawmine/compound/thechip/chip.logic.xor.c \
 rawmine/compound/thechip/chip.logic.xnor.c \
+rawmine/compound/thechip/chip.adder.half.c \
+rawmine/compound/thechip/chip.adder.full.c \
 rawmine/compound/thechip/chip.logic.autocmos.c \
 rawmine/compound/thechip/chip.flipflop.dff.c \
 rawmine/compound/thechip/chip.flipflop.jkff.c \

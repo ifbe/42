@@ -3,6 +3,9 @@
 void finfet_register(void*);
 void resistor_register(void*);
 void vsrc_register(void*);
+//
+void halfadd_register(void*);
+void fulladd_register(void*);
 //chip.compound
 void nand_register(void*);
 void nor_register(void*);
@@ -209,6 +212,12 @@ void content_create(void* addr)
 	tmp += sizeof(struct entity);
 
 	xnor_register(tmp);
+	tmp += sizeof(struct entity);
+
+	fulladd_register(tmp);
+	tmp += sizeof(struct entity);
+
+	halfadd_register(tmp);
 	tmp += sizeof(struct entity);
 
 	autocmos_register(tmp);
