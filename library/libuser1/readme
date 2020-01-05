@@ -1,10 +1,22 @@
-raw:
-	real world of here
-	real world of there
-	virt world of emulate
-	virt world of gaming
-	work world of schematic
-	work world of printboard
-for:
-	some structure from world to wormhole
-	some structure from wormhole to world
+rawbaby:
+	just to confirm that function call be called
+rawtest:
+	basic context for testing different supply
+rawkirk:
+	he knows how to pilot
+rawlara:
+	she knows how to explore
+rawmine:
+	baseunit: simple units
+	compound: complex units, or container of baseunit
+	scene: complete something, or container of baseunit/compound
+	world: concept of the whole, or container of baseunit/compound/scene
+
+fordx11:
+	dx11 carvexxx helper function
+forgl41:
+	gl41 carvexxx helper function
+forrgba:
+	raw w*h*4 bitmap draw helperfunction
+forhtml:
+	html helper function

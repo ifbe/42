@@ -30,9 +30,6 @@ int eeworld_start(void*, void*);
 int eeworld_stop(void*, void*);
 int eeworld_write(void*, void*, void*, int, void*, int);
 int eeworld_read(void*, void*, void*, int, void*, int);
-//hoff helper
-int hoffdata_create(void*, void*, int, u8**);
-int hoffdata_read(void*, void*, void*, int, void*, int);
 
 //
 int reality_create(void*, void*, int, u8**);
@@ -301,13 +298,6 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		act = allocentity();
 		act->fmt = act->type = _eeworld_;
 		eeworld_create(act, buf, argc, argv);
-		return act;
-	}
-	else if(_hoffdata_ == type)
-	{
-		act = allocentity();
-		act->fmt = act->type = _hoffdata_;
-		hoffdata_create(act, buf, argc, argv);
 		return act;
 	}
 
