@@ -9,8 +9,6 @@ void createserial();
 void boarddelete();
 void boardcreate();
 //
-int memorydelete(void*);
-void* memorycreate(int size, int flag);
 void death();
 void birth(void*);
 //

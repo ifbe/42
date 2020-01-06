@@ -98,7 +98,8 @@ void* workercreate(u64 type, void* url, int argc, u8** argv)
 		tmp = allocworker();
 		tmp->type = _exiter_;
 
-		pulser_create(tmp, url, argc, argv);
+		exiter_create(tmp, url, argc, argv);
+		if(tmp != wrk)threadcreate(exiter, wrk);
 		return tmp;
 	}
 	if(_pulser_ == type)

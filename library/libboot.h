@@ -97,7 +97,12 @@ int relationstart(struct halfrel* self,struct halfrel* peer);
 int relationdelete(struct relation* rel);
 void* relationcreate(void*,void*,u32,u32,void*,void*,u32,u32);
 //
+int memorydelete(void*);
+void* memorycreate(int size, int flag);
+int threaddelete(void*);
+void* threadcreate(void*, void*);
+//
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
-void printmemory(void*, int);
-void say(void*, ...);
+int printmemory(void*, int);
+int say(void*, ...);

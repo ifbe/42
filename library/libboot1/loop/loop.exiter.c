@@ -3,9 +3,9 @@
 
 
 
-void exiter(void* waiter)
+void exiter(void* exiter)
 {
-	say("@waiter, byebye!\n");
+	say("@exiter, byebye!\n");
 }
 
 
