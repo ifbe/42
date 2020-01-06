@@ -1,27 +1,36 @@
 <style>
 a0geom{
-c: 0.0, 0.0, 0.0
+c: -1500.0, 0.0, 0.0
 r: 400.0, 0.0, 0.0
 f: 0.0, 400.0, 0.0
 t: 0.0, 0.0, 400.0
 }
 a1geom{
-c: 1000.0, 0.0, 0.0
+c: -500.0, 0.0, 0.0
 r: 400.0, 0.0, 0.0
 f: 0.0, 400.0, 0.0
 t: 0.0, 0.0, 400.0
 }
 a2geom{
-c: 2000.0, 0.0, 0.0
+c: 500.0, 0.0, 0.0
 r: 400.0, 0.0, 0.0
 f: 0.0, 400.0, 0.0
 t: 0.0, 0.0, 400.0
 }
 a3geom{
-c: 3000.0, 0.0, 0.0
+c: 1500.0, 0.0, 0.0
 r: 400.0, 0.0, 0.0
 f: 0.0, 400.0, 0.0
 t: 0.0, 0.0, 400.0
+}
+
+s chslot{
+}
+schgeom{
+c: 0.0, 0.0, -1.0
+r: 2000.0, 0.0, 0.0
+f: 0.0, 2000.0, 0.0
+t: 0.0, 0.0, 1.0
 }
 
 camslot{
@@ -59,11 +68,14 @@ fmt:fulladd
 a3{
 fmt:fulladd
 }
+sch{
+fmt:sch
+}
 
 cam{
 fmt:freecam
 }
-pcb{
+world{
 fmt:3dworld
 }
 </entity>
@@ -92,12 +104,13 @@ fmt:poller
 <relation>
 (std, 0, dst) -> (a0, 0, src)
 
-(pcb, a0geom, 0) -> (a0, 0, 0)
-(pcb, a1geom, 0) -> (a1, 0, 0)
-(pcb, a2geom, 0) -> (a2, 0, 0)
-(pcb, a3geom, 0) -> (a3, 0, 0)
+(sch, a0geom, 0) -> (a0, 0, 0)
+(sch, a1geom, 0) -> (a1, 0, 0)
+(sch, a2geom, 0) -> (a2, 0, 0)
+(sch, a3geom, 0) -> (a3, 0, 0)
 
-(pcb, camgeom, 0) -> (cam, camslot, 0)
+(world, schgeom, 0) -> (sch, schslot, 0)
+(world, camgeom, 0) -> (cam, camslot, 0)
 (glwnd, rect, 0) -> (cam, 0, 0)
 (opengl, 0, wnd) -> (glwnd, 0, 0)
 </relation>

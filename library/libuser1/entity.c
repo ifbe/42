@@ -18,24 +18,24 @@ int test_read(void*, void*, void*, int, void*, int);
 int test_write(void*, void*, void*, int, void*, int);
 
 //
-int htmlnode_create(void*, void*, int, u8**);
-int htmlnode_delete(void*);
-int htmlnode_write(void*, void*, void*, int, void*, int);
-int htmlnode_read( void*, void*, void*, int, void*, int);
-
-//
+int sch_create(void*, void*, int, u8**);
+int sch_delete(void*, void*);
+int sch_start(void*, void*);
+int sch_stop(void*, void*);
+int sch_write(void*, void*, void*, int, void*, int);
+int sch_read(void*, void*, void*, int, void*, int);
+int pcb_create(void*, void*, int, u8**);
+int pcb_delete(void*, void*);
+int pcb_start(void*, void*);
+int pcb_stop(void*, void*);
+int pcb_write(void*, void*, void*, int, void*, int);
+int pcb_read(void*, void*, void*, int, void*, int);
 int eeworld_create(void*, void*, int, u8**);
 int eeworld_delete(void*, void*);
 int eeworld_start(void*, void*);
 int eeworld_stop(void*, void*);
 int eeworld_write(void*, void*, void*, int, void*, int);
 int eeworld_read(void*, void*, void*, int, void*, int);
-
-//
-int reality_create(void*, void*, int, u8**);
-int reality_delete(void*);
-int reality_write(void*, void*, void*, int, void*, int);
-int reality_read( void*, void*, void*, int, void*, int);
 
 //
 int scene3d_create(void*, void*, int, u8**);
@@ -50,6 +50,18 @@ int world3d_start(void*, void*);
 int world3d_stop(void*, void*);
 int world3d_write(void*, void*, void*, int, void*, int);
 int world3d_read(void*, void*, void*, int, void*, int);
+
+//
+int htmlnode_create(void*, void*, int, u8**);
+int htmlnode_delete(void*);
+int htmlnode_write(void*, void*, void*, int, void*, int);
+int htmlnode_read( void*, void*, void*, int, void*, int);
+
+//
+int reality_create(void*, void*, int, u8**);
+int reality_delete(void*);
+int reality_write(void*, void*, void*, int, void*, int);
+int reality_read( void*, void*, void*, int, void*, int);
 
 //gl41 helper
 int gl41data_create(void*, void*, int, u8**);
@@ -102,7 +114,7 @@ void* allocstyle()
 
 
 
-
+/*
 int entityinput_special(struct supply* win, struct style* sty, struct event* ev)
 {
 	int val;
@@ -135,7 +147,7 @@ int entityinput_special(struct supply* win, struct style* sty, struct event* ev)
 		return 1;
 	}
 	return 0;
-}/*
+}
 void entityinput_touch(struct supply* win, struct event* ev)
 {
 	int x,y,z,btn;
@@ -184,8 +196,10 @@ int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 		case _gl41coop_:return gl41coop_read(self, peer, arg, idx, buf, len);
 		case _world3d_:return world3d_read(self, peer, arg, idx, buf, len);
 		case _scene3d_:return scene3d_read(self, peer, arg, idx, buf, len);
-		case _reality_:return reality_read(self, peer, arg, idx, buf, len);
 		case _eeworld_:return eeworld_read(self, peer, arg, idx, buf, len);
+		case _sch_:return sch_read(self, peer, arg, idx, buf, len);
+		case _pcb_:return pcb_read(self, peer, arg, idx, buf, len);
+		case _reality_:return reality_read(self, peer, arg, idx, buf, len);
 		case _html_:return htmlnode_read(self, peer, arg, idx, buf, len);
 		case _test_:return test_read(self, peer, arg, idx, buf, len);
 		case _baby_:return baby_read(self, peer, arg, idx, buf, len);
@@ -208,8 +222,10 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 		case _gl41coop_:return gl41coop_write(self, peer, arg, idx, buf, len);
 		case _world3d_:return world3d_write(self, peer, arg, idx, buf, len);
 		case _scene3d_:return scene3d_write(self, peer, arg, idx, buf, len);
-		case _reality_:return reality_write(self, peer, arg, idx, buf, len);
 		case _eeworld_:return eeworld_write(self, peer, arg, idx, buf, len);
+		case _sch_:return sch_write(self, peer, arg, idx, buf, len);
+		case _pcb_:return pcb_write(self, peer, arg, idx, buf, len);
+		case _reality_:return reality_write(self, peer, arg, idx, buf, len);
 		case _html_:return htmlnode_write(self, peer, arg, idx, buf, len);
 		case _test_:return test_write(self, peer, arg, idx, buf, len);
 		case _baby_:return baby_write(self, peer, arg, idx, buf, len);
@@ -292,15 +308,6 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		return act;
 	}
 
-	//circuit
-	else if(_eeworld_ == type)
-	{
-		act = allocentity();
-		act->fmt = act->type = _eeworld_;
-		eeworld_create(act, buf, argc, argv);
-		return act;
-	}
-
 	//html
 	else if(_html_ == type)
 	{
@@ -316,6 +323,29 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		act = allocentity();
 		act->fmt = act->type = _reality_;
 		reality_create(act, buf, argc, argv);
+		return act;
+	}
+
+	//circuit
+	else if(_sch_ == type)
+	{
+		act = allocentity();
+		act->fmt = act->type = _sch_;
+		sch_create(act, buf, argc, argv);
+		return act;
+	}
+	else if(_pcb_ == type)
+	{
+		act = allocentity();
+		act->fmt = act->type = _pcb_;
+		pcb_create(act, buf, argc, argv);
+		return act;
+	}
+	else if(_eeworld_ == type)
+	{
+		act = allocentity();
+		act->fmt = act->type = _eeworld_;
+		eeworld_create(act, buf, argc, argv);
 		return act;
 	}
 
