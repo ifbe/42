@@ -20,7 +20,7 @@ static void ground_ctxforwnd(struct glsrc* src, char* str, char* vs, char* fs)
 	//
 	src->geometry = 3;
 	src->method = 'v';
-
+//say("%s\n%s\n%s\n",str,vs,fs);
 	//
 	src->vs = memorycreate(0x1000, 0);
 	openreadclose(vs, 0, src->vs, 0x1000);
@@ -167,17 +167,6 @@ static void ground_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void ground_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)ground_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)ground_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)ground_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)ground_draw_json(act, pin, win, sty);
-	else ground_draw_pixel(act, pin, win, sty);
-}
 
 
 
@@ -234,10 +223,10 @@ static void ground_create(struct entity* act, void* str, int argc, u8** argv)
 	u8 fspath[128];
 	char* vs = 0;
 	char* fs = 0;
-	char* stl = 0;
 	if(0 == act)return;
 
 	for(j=0;j<argc;j++){
+		//say("%d:%.8s\n", j, argv[j]);
 		if(0 == ncmp(argv[j], "vs:", 3)){
 			copypath(vspath, argv[j]+3);
 			vs = (void*)vspath;

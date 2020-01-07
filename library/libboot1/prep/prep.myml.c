@@ -287,6 +287,7 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 				clen += 1;
 
 				argc = 0;
+				url = 0;
 			}//if innode
 
 			fmt = 0;

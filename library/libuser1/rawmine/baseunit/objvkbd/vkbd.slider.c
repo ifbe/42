@@ -66,10 +66,11 @@ void slider_draw_vbo(
 	list = act->LISTBUF;
 	for(y=0;y<12;y++){
 		for(j=0;j<3;j++){
-			tc[j] = vc[j] -vr[j]*0.8 +vf[j]*(5.5-y)/6;
-			tr[j] = tc[j] +vr[j]*1.6;
+			tc[j] = vc[j] +vf[j]*(5.5-y)/6 - vt[j]/100.0;
+			tr[j] = vr[j] * 0.8;
+			tf[j] = vf[j] / 80;
 		}
-		carveline(wnd, 0, tc, tr);
+		carvesolid_rect(wnd, 0, tc,tr,tf);
 
 		for(j=0;j<3;j++){
 			tc[j] = vc[j] +vr[j]*0.8*(list[y]-50)/50.0 +vf[j]*(5.5-y)/6;
@@ -114,6 +115,7 @@ static void slider_read_bywnd(struct halfrel* self, struct halfrel* peer, struct
 		fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
 		fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
 		fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+		fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-1.0;
 		gl41data_before(wnd);
 		slider_draw_vbo(cam, 0, 0,(void*)&fs, wnd,area);
 		gl41data_after(wnd);

@@ -1,4 +1,13 @@
 <style>
+skyhaha{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 1000000.0, 0.0, 0.0
+f: 0.0, 1000000.0, 0.0
+t: 0.0, 0.0, 1000000.0
+}
+
 gndhaha{
 }
 gndgeom{
@@ -44,6 +53,9 @@ q:0.3, 0.4
 
 
 <entity>
+sky{
+fmt:texball
+}
 gnd{
 fmt:ground
 }
@@ -106,6 +118,7 @@ fmt:poller
 (dog, 0, 0) -> (freecam, 0, tar)
 
 #3dworld depends on inner objects
+(3dworld, skygeom, 0) -> (sky, skyhaha, 0)
 (3dworld, gndgeom, 0) -> (gnd, gndhaha, 0)
 (3dworld, doggeom, 0) -> (dog, doghaha, 0)
 (3dworld, freegeom, 0) -> (freecam, freemodl, 0)

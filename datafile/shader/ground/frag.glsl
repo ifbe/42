@@ -55,8 +55,8 @@ subroutine (passtype) vec3 pointlight(){
 	return sunrgb * sq/100000000.0;
 }
 void main(){
-	mediump float x = mod(abs(vertex.x), 1000.0) / 1000.0;
-	mediump float y = mod(abs(vertex.y), 1000.0) / 1000.0;
+	mediump float x = mod(vertex.x, 1000.0) / 1000.0;
+	mediump float y = mod(-vertex.y, 1000.0) / 1000.0;
 	vec3 bgr = texture(tex0, vec2(x,y)).bgr;
 	FragColor = vec4(routine() * bgr, 1.0);
 }

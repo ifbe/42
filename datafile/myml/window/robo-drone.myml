@@ -1,4 +1,13 @@
 <style>
+skyhaha{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 1000000.0, 0.0, 0.0
+f: 0.0, 1000000.0, 0.0
+t: 0.0, 0.0, 1000000.0
+}
+
 gndhaha{
 }
 gndgeom{
@@ -7,9 +16,10 @@ r: 10000.0, 0.0, 0.0
 f: 0.0, 10000.0, 0.0
 t: 0.0, 0.0, 1000.0
 }
-skyhaha{
+
+itemhaha{
 }
-skygeom{
+itemgeom{
 c: 0.0, 0.0, 1000.0
 r: 1000.0, 0.0, 0.0, 1000
 f: 0.0, 1000.0, 0.0, 1000
@@ -19,7 +29,7 @@ t: 0.0, 0.0, 1000.0, 1000
 freemodl{
 }
 freegeom{
-c: 0.0, -2000.0, 2000.0
+c: 0.0, -4000.0, 4000.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 866.0,-500.0
 t: 0.0, 500.0, 866.0
@@ -39,8 +49,13 @@ q:1.0, 1.0
 
 
 <entity>
+sky{
+fmt:texball
+url:datafile/jpg/skysphere.jpg
+}
 ground{
 fmt:ground
+url:datafile/jpg/cartoon.jpg
 }
 drone{
 fmt:drone
@@ -95,8 +110,9 @@ fmt:poller
 
 <relation>
 #3dworld depends on inner objects
+(3dworld, skygeom, 0) -> (sky, skyhaha, 0)
 (3dworld, gndgeom, 0) -> (ground, gndhaha, 0)
-(3dworld, skygeom, 0) -> (drone, skyhaha, 0)
+(3dworld, itemgeom, 0) -> (drone, itemhaha, 0)
 (3dworld, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
