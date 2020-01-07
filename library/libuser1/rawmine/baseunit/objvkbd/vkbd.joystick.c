@@ -190,31 +190,21 @@ int vjoy_event(struct entity* act, int x, int y, int z)
 static void vjoy_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
-    int ret;
 	struct entity* wnd;struct style* area;
 	struct entity* cam;struct style* gl41;
 	wnd = peer->pchip;area = peer->pfoot;
 	cam = self->pchip;gl41 = self->pfoot;
 
-	ret = vjoy_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
-    if(ret > 0){
-		struct entity* act;struct style* slot;
-		struct entity* wrd;struct style* geom;
-	    act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
-    	wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
-        vjoy_draw_vbo(act, slot, wrd,geom, wnd,area);
-    }
-    else{
-        struct fstyle fs;
-        fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
-        fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-        fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-        gl41data_before(wnd);
-        vjoy_draw_vbo(cam, 0, 0,(void*)&fs, wnd,area);
-        gl41data_after(wnd);
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-1.0;
 
-        gl41data_tmpcam(wnd);
-    }
+	gl41data_before(wnd);
+	vjoy_draw_vbo(cam, 0, 0,(void*)&fs, wnd,area);
+	gl41data_tmpcam(wnd);
+	gl41data_after(wnd);
 }
 static void vjoy_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {

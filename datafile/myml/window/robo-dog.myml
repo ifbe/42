@@ -55,9 +55,11 @@ q:0.3, 0.4
 <entity>
 sky{
 fmt:texball
+url:datafile/jpg/skysphere.jpg
 }
 gnd{
 fmt:ground
+url:datafile/jpg/grass.jpg
 }
 dog{
 fmt:robodog
