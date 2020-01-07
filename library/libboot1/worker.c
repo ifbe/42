@@ -78,12 +78,11 @@ void* workercreate(u64 type, void* url, int argc, u8** argv)
 
 	if(0 == type){
 		args_create(argc, argv);
-		if(0 == wrk->type){
-			tmp = allocworker();
-			tmp->type = _waiter_;
-		}
 
-		switch(wrk->type){
+		type = wrk->type;
+		if(0 == type)type = _waiter_;
+
+		switch(type){
 			case _exiter_:exiter(wrk);break;
 			case _pulser_:pulser(wrk);break;
 			case _poller_:poller(wrk);break;

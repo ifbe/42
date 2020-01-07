@@ -1023,23 +1023,27 @@ struct entity
 
 	//[40,5f]: fd
 	union{
+		u64 fd0;
 		u64 fd;
 		void* win;
 		void* ctx;
 		int vlen;
 	};
 	union{
+		u64 fd1;
 		u64 dc;
 		u64 gc;
 		void* er;
 		int ilen;
 	};
 	union{
+		u64 fd2;
 		u64 len;
 		void* idx;
 		int nlen;
 	};
 	union{
+		u64 fd3;
 		u64 addr;
 		void* buf;
 		int wlen;

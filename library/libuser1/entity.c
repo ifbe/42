@@ -111,6 +111,42 @@ void* allocstyle()
 	stylen += maxlen;
 	return buf;
 }
+void* entitycreate_clone(u64 fmt, u8* arg, int argc, u8** argv)
+{
+	int j;
+	u8* src;
+	u8* dst;
+	struct entity* ent;
+	struct entity* tmp = 0x100000 + (void*)entity;
+
+	for(j=1;j<256;j++){
+		tmp = &tmp[-1];		//prev
+		if(fmt == tmp->fmt)goto found;
+	}
+	return 0;
+
+found:
+	ent = allocentity();
+	dst = (void*)ent;
+	for(j=0;j<sizeof(struct entity);j++)dst[j] = 0;
+
+	ent->tier = tmp->tier;
+	ent->type = tmp->type;
+	ent->fmt  = tmp->fmt;
+	ent->vfmt = tmp->vfmt;
+
+	ent->oncreate = tmp->oncreate;
+	ent->ondelete = tmp->ondelete;
+	ent->onsearch = tmp->onsearch;
+	ent->onmodify = tmp->onmodify;
+	ent->onstart  = tmp->onstart;
+	ent->onstop   = tmp->onstop;
+	ent->onread   = tmp->onread;
+	ent->onwrite  = tmp->onwrite;
+
+	ent->oncreate(ent, arg, argc, argv);
+	return ent;
+}
 
 
 
@@ -276,12 +312,9 @@ int entitydelete(struct entity* act)
 }
 void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 {
-	int j,k;
-	u8* src;
-	u8* dst;
 	struct entity* act;
 	say("%llx,%llx\n", type, buf);
-
+/*
 	if(0 == type)
 	{
 		act = buf;
@@ -291,9 +324,9 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 
 		act->oncreate(act, 0, argc, argv);
 	}
-
+*/
 	//test
-	else if(_baby_ == type)
+	if(_baby_ == type)
 	{
 		act = allocentity();
 		act->fmt = act->type = _baby_;
@@ -391,53 +424,7 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	}
 
 	//
-	else
-	{
-		k = 0;
-		for(j=0;j<256;j++)
-		{
-			if(0 == entity[j].type)
-			{
-				if(0 == k)return 0;
-				break;
-			}
-			if(type == entity[j].fmt)
-			{
-				k = j;
-				if(_orig_ == entity[j].type)
-				{
-					act = &entity[j];
-					break;
-				}
-			}
-		}
-
-		if(j != k)
-		{
-			src = (void*)&entity[k];
-			dst = (void*)&entity[j];
-			for(j=0;j<sizeof(struct entity);j++)dst[j] = src[j];
-
-			act = (void*)dst;
-			act->irel0 = act->ireln = 0;
-			act->orel0 = act->oreln = 0;
-
-			act->fd = 0;
-			act->dc = 0;
-			act->idx = 0;
-			act->buf = 0;
-
-			//act->tier
-			act->type = _copy_;
-			//act->fmt
-		}
-
-		act->oncreate(act, buf, argc, argv);
-	}
-
-	if(_orig_ == act->type)act->type = _ORIG_;
-	else if(_copy_ == act->type)act->type = _COPY_;
-	return act;
+	return entitycreate_clone(type, buf, argc, argv);
 }
 void* entitymodify(int argc, u8** argv)
 {

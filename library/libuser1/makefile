@@ -151,7 +151,7 @@ rawmine/compound/thefile/file.common.folder.c \
 rawmine/compound/thefile/file.common.hexedit.c \
 rawmine/compound/thefile/file.biology.dna.c \
 rawmine/compound/thefile/file.biology.fasta.c \
-rawmine/compound/thefile/file.circuit.pcb.c \
+rawmine/compound/thefile/file.circuit.printboard.c \
 rawmine/compound/thefile/file.circuit.schematic.c \
 rawmine/compound/thefile/file.factory.gcode.c \
 rawmine/compound/thefile/file.factory.gerber.c \
@@ -231,12 +231,10 @@ rawmine/compound/theuiux/uiux.pointer.c \
 rawmine/compound/theuiux/uiux.corner.c \
 rawmine/compound/theuiux/uiux.cameraer.c \
 rawmine/compound/theuiux/uiux.layouter.c \
-rawmine/scene/scene.c \
-rawmine/scene/e.pcb.c \
-rawmine/scene/e.sch.c \
-rawmine/scene/e.wafer.c \
-rawmine/scene/ui.guide.c \
-rawmine/scene/ui.loading.c \
+rawmine/scene/scene.3d.c \
+rawmine/scene/scene.ee.c \
+rawmine/scene/scene.nn.c \
+rawmine/scene/scene.ui.c \
 rawmine/world/3dworld.c \
 rawmine/world/realworld.c \
 rawmine/world/eeworld.c \
