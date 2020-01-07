@@ -4,6 +4,7 @@
 void invmvp(float* v, struct fstyle* sty);
 void fixmatrix_transpose(float* m, struct fstyle* sty);
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
+int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 
@@ -633,36 +634,22 @@ static int freecam_event_pick(
 	struct entity* wnd, struct style* area,
 	struct event* ev, int len)
 {
-	float x,y,x0,y0,dx,dy;
-	vec4 dr;
-	short* t;
-	float* vc;
+	vec4 xyz;
 	if(0x2b70 != ev->what)return 0;
 	//say("@freecam_event_pick:%llx,%llx,%llx,%llx,%llx,%llx\n",act,part,win,geom,wnd,area);
 
-	//get w,h
-	x0 = area->fs.vc[0] * wnd->width;
-	y0 = area->fs.vc[1] * wnd->height;
-	dx = area->fs.vq[0] * wnd->width;
-	dy = area->fs.vq[1] * wnd->height;
-	//say("x=%f,y=%f,w=%f,h=%f\n", x0, y0, dx, dy);
-
-	//fix x,y
-	t = (void*)&ev->why;
-	x = t[0];
-	y = wnd->height-1 - t[1];
-
 	//screen to ndc
-	dr[0] = 2*(x-x0) / dx - 1.0;
-	dr[1] = 2*(y-y0) / dy - 1.0;
-	dr[2] = 0.999999;
+	gl41data_convert(wnd, area, ev, xyz);
+	xyz[0] = 2*xyz[0] - 1.0;
+	xyz[1] = 2*xyz[1] - 1.0;
+	xyz[2] = 0.999999;
 	//say("%f,%f\n", dr[0],dr[1]);
 
 	//ndc to world
-	invmvp(dr, &geom->frus);
-	act->fx0 = dr[0];
-	act->fy0 = dr[1];
-	act->fz0 = dr[2];
+	invmvp(xyz, &geom->frus);
+	act->fx0 = xyz[0];
+	act->fy0 = xyz[1];
+	act->fz0 = xyz[2];
 	//say("%f,%f,%f\n", dr[0],dr[1],dr[2]);
 	return 0;
 }
@@ -762,8 +749,26 @@ static void freecam_camera(
 
 
 
-//-2: wnd, area
-//-1: cam, 0
+static void freecam_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+//world -> texball
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* slot;
+//say("@freecam_read_byeye:%c\n",len);
+
+	if(stack){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;slot = self->pfoot;
+		if('v' == len)freecam_draw_vbo(act,slot, wrd,geom, wnd,area);
+	}
+//say("@freecam_read_byeye.end\n");
+}
 static void freecam_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
@@ -792,42 +797,7 @@ static void freecam_read_bywnd(struct halfrel* self, struct halfrel* peer, struc
 	}
 //say("@freecam_read_bywnd.end\n");
 }
-static void freecam_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
-{
-//wnd -> cam, cam -> world
-	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-//world -> texball
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-//say("@freecam_read_byeye:%c\n",len);
-
-	if(stack){
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-
-		win = peer->pchip;geom = peer->pfoot;
-		act = self->pchip;slot = self->pfoot;
-		if('v' == len)freecam_draw_vbo(act,slot, wrd,geom, wnd,area);
-	}
-//say("@freecam_read_byeye.end\n");
-}
-
-
-
-
-static void freecam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
-{
-	struct entity* ent = peer->pchip;
-//say("@freecam_read\n");
-	switch(ent->fmt){
-		case _gl41fbog_:
-		case _gl41wnd0_:freecam_read_bywnd(self, peer, stack, rsp, buf, len);break;
-		default:        freecam_read_bycam(self, peer, stack, rsp, buf, len);break;
-	}
-//say("@freecam_read.end\n");
-}
-static int freecam_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static int freecam_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
 	struct entity* wnd;struct style* area;
@@ -853,6 +823,25 @@ static int freecam_write(struct halfrel* self, struct halfrel* peer, struct half
 		freecam_event_obb(act,slot, wrd,geom, ev, 0);
 	}
 	return 0;
+}
+
+
+
+
+static void freecam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	struct entity* ent = peer->pchip;
+//say("@freecam_read\n");
+	switch(ent->fmt){
+		case _gl41fbog_:
+		case _gl41wnd0_:freecam_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		default:        freecam_read_bycam(self, peer, stack, rsp, buf, len);break;
+	}
+//say("@freecam_read.end\n");
+}
+static int freecam_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	return freecam_write_bywnd(self,peer, stack,rsp, buf,len);
 }
 static void freecam_stop(struct halfrel* self, struct halfrel* peer)
 {

@@ -107,6 +107,7 @@ void* workercreate(u64 type, void* url, int argc, u8** argv)
 		tmp->type = _pulser_;
 
 		pulser_create(tmp, url, argc, argv);
+		if(tmp != wrk)threadcreate(pulser, wrk);
 		return tmp;
 	}
 	if(_poller_ == type){
@@ -114,6 +115,7 @@ void* workercreate(u64 type, void* url, int argc, u8** argv)
 		tmp->type = _poller_;
 
 		poller_create(tmp, url, argc, argv);
+		if(tmp != wrk)threadcreate(poller, wrk);
 		return tmp;
 	}
 	if(_realer_ == type)
@@ -122,6 +124,7 @@ void* workercreate(u64 type, void* url, int argc, u8** argv)
 		tmp->type = _realer_;
 
 		realer_create(tmp, url, argc, argv);
+		if(tmp != wrk)threadcreate(realer, wrk);
 		return tmp;
 	}
 	if(_waiter_ == type)
@@ -130,6 +133,7 @@ void* workercreate(u64 type, void* url, int argc, u8** argv)
 		tmp->type = _waiter_;
 
 		waiter_create(tmp, url, argc, argv);
+		if(tmp != wrk)threadcreate(waiter, wrk);
 		return tmp;
 	}
 

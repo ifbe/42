@@ -248,8 +248,12 @@ fordx11/dx11.draw.wnd.c \
 fordx12/dx12.ctx.c \
 fordx12/dx12.draw.c \
 fordx12/dx12.fbo.c \
-forevent/event.3rd.c \
-forevent/event.pick.c \
+forevent/event.rpg.1rd.c \
+forevent/event.rpg.3rd.c \
+forevent/event.pick.ray.c \
+forevent/event.pick.area.c \
+forevent/event.cam.free.c \
+forevent/event.cam.frus.c \
 forhtml/html.data.c \
 forhtml/html.help.c \
 forfile/json.base.c \
