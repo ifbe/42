@@ -1,0 +1,69 @@
+<style>
+gearslot{
+}
+geargeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+camslot{
+}
+camgeom{
+c: 0.0, 0.0, 2000.0
+r: 1.0, 0.0, 0.0
+t: 0.0, 1.0, 0.0
+f: 0.0, 0.0,-1.0
+L: 0.0, 0.0, 0.0,-1
+R: 0.0, 0.0, 0.0, 1
+B: 0.0, 0.0, 0.0,-1
+T: 0.0, 0.0, 0.0, 1
+N: 0.0, 0.0, 0.0, 1
+F: 0.0, 0.0, 0.0, 10000000.0
+}
+
+rect{
+c: 0.0, 0.0
+q: 1.0, 1.0
+}
+</style>
+
+
+<entity>
+gear{
+fmt:planetar
+}
+cam{
+fmt:freecam
+}
+world{
+fmt:3dworld
+}
+</entity>
+
+
+<supply>
+glwnd{
+fmt:gl41wnd0
+}
+opengl{
+fmt:wnd
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<relation>
+(world, geargeom, 0) -> (gear, gearslot, 0)
+(world, camgeom, 0) -> (cam, camslot, 0)
+
+(glwnd, rect, 0) -> (cam, 0, 0)
+(opengl, 0, wnd) -> (glwnd, 0, 0)
+</relation>

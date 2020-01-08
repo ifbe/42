@@ -5,6 +5,9 @@ void h2o_register(void*);
 void diamond_register(void*);
 void graphene_register(void*);
 
+//gear
+void planetary_register(void*);
+
 //chip.baseunit
 void finfet_register(void*);
 void resistor_register(void*);
@@ -190,6 +193,13 @@ void content_delete()
 void content_create(void* addr)
 {
 	void* tmp = addr +0x100000 -sizeof(struct entity);
+
+
+
+
+//----------------------chem--------------------
+	planetary_register(tmp);
+	tmp -= sizeof(struct entity);
 
 
 

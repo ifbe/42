@@ -896,6 +896,63 @@ void carveline_cylinder(struct entity* win, u32 rgb,
 		ibuf[a+5] = vlen + 1 + j*2;
 	}
 }
+void carveline_gear(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, int teethcount)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, teethcount*4, teethcount*4);
+	if(vlen < 0)return;
+
+	int j,k;
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
+	for(j=0;j<teethcount*4;j++){
+		vbuf[j*6 + 3] = rr;
+		vbuf[j*6 + 4] = gg;
+		vbuf[j*6 + 5] = bb;
+	}
+
+	float a,c,s;
+	vec3 tc,tr,tf;
+	for(k=0;k<teethcount;k++){
+		a = (k*4-1)*tau/(teethcount*4);
+		c = cosine(a);
+		s = sine(a);
+		for(j=0;j<3;j++){
+			vbuf[k*6*4 +0 +j] = vc[j] +vr[j]*c*0.9 + vf[j]*s*0.9;
+			vbuf[k*6*4 +6 +j] = vc[j] +vr[j]*c + vf[j]*s;
+		}
+
+		a = (k*4+1)*tau/(teethcount*4);
+		c = cosine(a);
+		s = sine(a);
+		for(j=0;j<3;j++){
+			vbuf[k*6*4 +12 +j] = vc[j] +vr[j]*c + vf[j]*s;
+			vbuf[k*6*4 +18 +j] = vc[j] +vr[j]*c*0.9 + vf[j]*s*0.9;
+		}
+	}
+
+	for(j=0;j<teethcount*4;j++){
+		ibuf[j*2 + 0] = vlen + j+0;
+		ibuf[j*2 + 1] = vlen + (j+1)%(teethcount*4);
+	}
+}
+void carveline_rotategear(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, int teethcount, float a)
+{
+	int j;
+	vec3 tr,tf;
+	float c = cosine(a);
+	float s = sine(a);
+	for(j=0;j<3;j++){
+		tr[j] = vr[j]*c + vf[j]*s;
+		tf[j] = vf[j]*c - vr[j]*s;
+	}
+	carveline_gear(win, rgb, vc, tr, tf, teethcount);
+}
+
 
 
 
