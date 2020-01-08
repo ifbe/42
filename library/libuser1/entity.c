@@ -78,6 +78,10 @@ int event3rd_create(void*, void*, int, u8**);
 int event3rd_delete(void*);
 int event3rd_read( void*, void*, void*, int, void*, int);
 int event3rd_write(void*, void*, void*, int, void*, int);
+int clickray_create(void*, void*, int, u8**);
+int clickray_delete(void*);
+int clickray_read( void*, void*, void*, int, void*, int);
+int clickray_write(void*, void*, void*, int, void*, int);
 
 
 
@@ -227,6 +231,7 @@ int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 	if(0 == act)return 0;
 
 	switch(act->type){
+		case _clickray_:return clickray_read(self, peer, arg, idx, buf, len);
 		case _event3rd_:return event3rd_read(self, peer, arg, idx, buf, len);
 		case _gl41data_:return gl41data_read(self, peer, arg, idx, buf, len);
 		case _gl41coop_:return gl41coop_read(self, peer, arg, idx, buf, len);
@@ -253,6 +258,7 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 	if(0 == act)return 0;
 
 	switch(act->type){
+		case _clickray_:return clickray_write(self, peer, arg, idx, buf, len);
 		case _event3rd_:return event3rd_write(self, peer, arg, idx, buf, len);
 		case _gl41data_:return gl41data_write(self, peer, arg, idx, buf, len);
 		case _gl41coop_:return gl41coop_write(self, peer, arg, idx, buf, len);
@@ -415,6 +421,13 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	}
 
 	//event
+	else if(_clickray_ == type)
+	{
+		act = allocentity();
+		act->fmt = act->type = _clickray_;
+		clickray_create(act, buf, argc, argv);
+		return act;
+	}
 	else if(_event3rd_ == type)
 	{
 		act = allocentity();

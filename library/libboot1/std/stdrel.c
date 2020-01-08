@@ -429,7 +429,7 @@ void relation_choose(struct item* item, struct relation* rel)
 		return;
 	}
 }
-void* relation_search(struct item* item, u32 foottype)
+int relation_search(struct item* item, u32 foottype, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
 
@@ -438,7 +438,11 @@ void* relation_search(struct item* item, u32 foottype)
 	{
 		if(0 == rel)break;
 
-		if(foottype == rel->dstflag)return rel;
+		if(foottype == rel->srcflag){
+			self[0] = (void*)(rel->src);
+			peer[0] = (void*)(rel->dst);
+			return 1;
+		}
 
 		rel = samesrcnextdst(rel);
 	}
@@ -448,7 +452,11 @@ void* relation_search(struct item* item, u32 foottype)
 	{
 		if(0 == rel)break;
 
-		if(foottype == rel->srcflag)return rel;
+		if(foottype == rel->dstflag){
+			self[0] = (void*)(rel->dst);
+			peer[0] = (void*)(rel->src);
+			return 1;
+		}
 
 		rel = samedstnextsrc(rel);
 	}

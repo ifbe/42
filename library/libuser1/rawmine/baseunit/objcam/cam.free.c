@@ -1,6 +1,7 @@
 #include "libuser.h"
 #define MATBUF buf0
 #define CAMBUF buf1
+#define EVTYPE iw0
 void invmvp(float* v, struct fstyle* sty);
 void fixmatrix_transpose(float* m, struct fstyle* sty);
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
@@ -69,10 +70,10 @@ static void freecam_create(struct entity* act, void* arg, int argc, u8** argv)
 	for(j=0;j<argc;j++){
 		if(0 == ncmp(argv[j], "script:", 7)){
 			if('f' == argv[j][7]){
-				act->data1 = 'f';	//frus
+				act->EVTYPE = 'f';	//frus
 			}
 			else{
-				act->data1 = 0;
+				act->EVTYPE = 0;
 			}
 		}
 	}
@@ -628,31 +629,6 @@ static int freecam_event_frus(
 	}
 	return 0;
 }
-static int freecam_event_pick(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wnd, struct style* area,
-	struct event* ev, int len)
-{
-	vec4 xyz;
-	if(0x2b70 != ev->what)return 0;
-	//say("@freecam_event_pick:%llx,%llx,%llx,%llx,%llx,%llx\n",act,part,win,geom,wnd,area);
-
-	//screen to ndc
-	gl41data_convert(wnd, area, ev, xyz);
-	xyz[0] = 2*xyz[0] - 1.0;
-	xyz[1] = 2*xyz[1] - 1.0;
-	xyz[2] = 0.999999;
-	//say("%f,%f\n", dr[0],dr[1]);
-
-	//ndc to world
-	invmvp(xyz, &geom->frus);
-	act->fx0 = xyz[0];
-	act->fy0 = xyz[1];
-	act->fz0 = xyz[2];
-	//say("%f,%f,%f\n", dr[0],dr[1],dr[2]);
-	return 0;
-}
 
 
 
@@ -771,15 +747,17 @@ static void freecam_read_bycam(struct halfrel* self, struct halfrel* peer, struc
 }
 static void freecam_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-//wnd.area -> cam.gl41, cam.slot -> world.geom
+//say("@freecam_read_bywnd:%c\n",len);
+//wnd.area -> cam.gl41
 	struct entity* wnd;struct style* area;
 	struct entity* cam;struct style* gl41;
-	struct entity* act;struct style* slot;
-	struct entity* wrd;struct style* geom;
-//say("@freecam_read_bywnd:%c\n",len);
 	wnd = peer->pchip;area = peer->pfoot;
 	cam = self->pchip;gl41 = self->pfoot;
 	freecam_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
+
+//cam.slot -> world.geom
+	struct entity* act;struct style* slot;
+	struct entity* wrd;struct style* geom;
 	act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
 	wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
 
@@ -799,24 +777,27 @@ static void freecam_read_bywnd(struct halfrel* self, struct halfrel* peer, struc
 }
 static int freecam_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-//wnd.area -> cam.gl41, cam.slot -> world.geom
+//wnd.area -> cam.gl41
 	struct entity* wnd;struct style* area;
 	struct entity* cam;struct style* gl41;
-	struct entity* act;struct style* slot;
-	struct entity* wrd;struct style* geom;
-	struct event* ev = (void*)buf;
-	//say("%llx@freecam_write:%llx,%llx,%llx,%llx\n", act, ev->why, ev->what, ev->where, ev->when);
-
 	wnd = peer->pchip;area = peer->pfoot;
 	cam = self->pchip;gl41 = self->pfoot;
 	freecam_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
+
+//cam.slot -> world.geom
+	struct entity* act;struct style* slot;
+	struct entity* wrd;struct style* geom;
 	act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
 	wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
+//printmemory(stack,rsp*8);
 
+	struct event* ev = (void*)buf;
+	//say("%llx@freecam_write:%llx,%llx,%llx,%llx\n", act, ev->why, ev->what, ev->where, ev->when);
 	if(stack){
-		freecam_event_pick(act,slot, wrd,geom, wnd,area, ev, 0);
+		relationwrite(cam,_ev_, stack,rsp+2, buf,len);
 	}
-	if('f' == act->data1){
+
+	if('f' == act->EVTYPE){
 		freecam_event_frus(act,slot, wrd,geom, ev, 0);
 	}
 	else{

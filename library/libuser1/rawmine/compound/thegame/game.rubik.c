@@ -368,13 +368,7 @@ static void rubikscube_read(struct halfrel* self, struct halfrel* peer, struct h
 }
 static void rubikscube_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//rubikscube_event(act, pin, win, sty, ev, 0);
+	say("@rubik_write\n");
 }
 static void rubikscube_stop(struct halfrel* self, struct halfrel* peer)
 {

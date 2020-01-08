@@ -15,9 +15,6 @@
 #else
 	#include <GL/glew.h>
 #endif
-int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
-int gl41data_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
-//
 int fullwindow_upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque);
 int fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, struct supply* wnd, struct fstyle* area);
 
@@ -72,7 +69,50 @@ int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 }
 int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	gl41data_write(self, peer, stack, rsp, buf, len);
+	float x,y,x0,y0,xn,yn;
+	short* v;
+	struct relation* rel;
+	struct event* ev;
+
+	struct supply* wnd;
+	struct fstyle* sty;
+	struct entity* cam;
+
+	ev = buf;
+	//say("@gl41wnd0_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
+
+	wnd = self->pchip;
+	if(0 == wnd)return 0;
+
+	if(0x4070 == ev->what){
+		rel = wnd->oreln;
+		while(1){
+			if(0 == rel)return 0;
+			sty = rel->psrcfoot;
+			x0 = sty->vc[0] * wnd->width;
+			y0 = sty->vc[1] * wnd->height;
+			xn = sty->vq[0] * wnd->width + x0;
+			yn = sty->vq[1] * wnd->height + y0;
+
+			v = (short*)ev;
+			x = v[0];
+			y = (wnd->height-1) - v[1];
+			if( (x>x0) && (x<xn) && (y>y0) && (y<yn) )goto found;
+			rel = samesrcprevdst(rel);
+		}
+		return 0;
+	}
+	else{
+		rel = wnd->buf;
+		if(0 == rel)rel = wnd->oreln;
+		if(0 == rel)return 0;
+	}
+
+found:
+	wnd->buf = rel;
+	stack[rsp+0] = (void*)(rel->src);	//wnd,area
+	stack[rsp+1] = (void*)(rel->dst);	//cam,gl41
+	entitywrite(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, len);
 	return 0;
 }
 int gl41wnd0_stop(struct halfrel* self, struct halfrel* peer)

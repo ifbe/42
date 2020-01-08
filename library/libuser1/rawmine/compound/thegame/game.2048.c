@@ -361,7 +361,10 @@ static void the2048_read(struct halfrel* self, struct halfrel* peer, struct half
 }
 static void the2048_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct entity* act = self->pchip;
+	struct entity* act;
+	say("@the2048_write\n");
+
+	act = self->pchip;
 	the2048_event(act, buf);
 }
 static void the2048_stop(struct halfrel* self, struct halfrel* peer)

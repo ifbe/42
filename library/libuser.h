@@ -14,6 +14,7 @@
 	#define GLSL_VERSION "#version 410 core\n"
 #endif
 //
+#define _clickray_ hex64('c','l','i','c','k','r','a','y')
 #define _event3rd_ hex64('e','v','e','n','t','3','r','d')
 //
 #define _reality_ hex64('r','e','a','l','i','t','y', 0)
