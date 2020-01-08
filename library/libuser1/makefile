@@ -47,6 +47,10 @@ rawmine/baseunit/objbar/bar.nav.c \
 rawmine/baseunit/objbar/bar.skill.c \
 rawmine/baseunit/objbar/bar.tab.c \
 rawmine/baseunit/objbar/bar.tag.c \
+rawmine/baseunit/objchem/chem.ch4.c \
+rawmine/baseunit/objchem/chem.h2o.c \
+rawmine/baseunit/objchem/chem.diamond.c \
+rawmine/baseunit/objchem/chem.graphene.c \
 rawmine/baseunit/objchip/chip.common.battery.c \
 rawmine/baseunit/objchip/chip.common.capacitor.c \
 rawmine/baseunit/objchip/chip.common.inductor.c \
