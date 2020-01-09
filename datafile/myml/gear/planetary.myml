@@ -1,17 +1,8 @@
 <style>
-g0slot{
+gearslot{
 }
-g0geom{
-c:-950.0, 0.0, 0.0
-r: 1000.0, 0.0, 0.0
-f: 0.0, 1000.0, 0.0
-t: 0.0, 0.0, 1000.0
-}
-
-g1slot{
-}
-g1geom{
-c: 950.0, 0.0, 0.0
+geargeom{
+c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
@@ -40,20 +31,11 @@ q: 1.0, 1.0
 
 
 <entity>
-event{
-fmt:clickray
-}
-g0{
-fmt:spurgear
-}
-g1{
-fmt:spurgear
+gear{
+fmt:planetar
 }
 cam{
 fmt:freecam
-}
-scene{
-fmt:3dscene
 }
 world{
 fmt:3dworld
@@ -79,15 +61,7 @@ fmt:poller
 
 
 <relation>
-(event, 0, cam) -> (cam, 0, ev)
-(event, 0, tar) -> (scene, 0, ray)
-
-(g0, 0, gear) -> (g1, 0, gear)
-
-(scene, g0geom, 0) -> (g0, g0slot, 0)
-(scene, g1geom, 0) -> (g1, g1slot, 0)
-
-(world, 0, 0) -> (scene, 0, 0)
+(world, geargeom, 0) -> (gear, gearslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)
 
 (glwnd, rect, 0) -> (cam, 0, 0)

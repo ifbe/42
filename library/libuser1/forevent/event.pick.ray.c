@@ -26,7 +26,7 @@ static int clickray_send(struct entity* handler, vec3 ray[])
 		sty = rel->psrcfoot;
 		ret = obb_ray(&sty->fs, ray, out);
 		if(ret){
-			entitywrite((void*)(rel->dst), (void*)(rel->src), 0, 0, ray, 0);
+			entitywrite((void*)(rel->dst), (void*)(rel->src), sty, 0, ray, 0);
 			return 1;
 		}
 		rel = samesrcnextdst(rel);
@@ -41,8 +41,6 @@ static int clickray_convert(
 	struct entity* wnd, struct style* area,
 	struct event* ev, float* xyz)
 {
-	if(0x2b70 != ev->what)return 0;
-
 	//screen to ndc
 	gl41data_convert(wnd, area, ev, xyz);
 	xyz[0] = 2*xyz[0] - 1.0;
@@ -76,6 +74,10 @@ int clickray_delete(struct entity* act)
 }
 int clickray_create(struct entity* act, void* flag)
 {
+	act->ix0 = 0;
+	act->iy0 = 0;
+	act->iz0 = 0;
+	act->iw0 = 0;
 	return 0;
 }
 
@@ -86,25 +88,39 @@ int clickray_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 {
 	return 0;
 }
-int clickray_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int clickray_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct event* ev, int len)
 {
-	int ret;
-	vec3 ray[2];
-	struct entity* wrd = stack[rsp-1]->pchip;
-	struct style* geom = stack[rsp-1]->pfoot;
-	struct entity* act = stack[rsp-2]->pchip;
-	struct style* slot = stack[rsp-2]->pfoot;
-	//struct entity* cam = stack[rsp-3]->pchip;
-	//struct style* gl41 = stack[rsp-3]->pfoot;
-	struct entity* wnd = stack[rsp-4]->pchip;
-	struct style* area = stack[rsp-4]->pfoot;
-	ret = clickray_convert(act,slot, wrd,geom, wnd,area, buf,ray[1]);
-	if(ret <= 0)return 0;
+	struct entity* ent = self->pchip;
+	if(0 == ent)return 0;
 
-	ray[0][0] = geom->fs.vc[0];
-	ray[0][1] = geom->fs.vc[1];
-	ray[0][2] = geom->fs.vc[2];
-	clickray_send(self->pchip, ray);
+	if(0x2d70 == ev->what){		//mouse up
+		ent->iw0 = 0;
+		return 0;
+	}
+	if(0x2b70 == ev->what){		//mouse down
+		ent->iw0 = 1;
+	}
+	if('p' == (ev->what&0xff)){
+		if(0 == ent->iw0)return 0;
+
+		int ret;
+		vec3 ray[2];
+		struct entity* wrd = stack[rsp-1]->pchip;
+		struct style* geom = stack[rsp-1]->pfoot;
+		struct entity* act = stack[rsp-2]->pchip;
+		struct style* slot = stack[rsp-2]->pfoot;
+		//struct entity* cam = stack[rsp-3]->pchip;
+		//struct style* gl41 = stack[rsp-3]->pfoot;
+		struct entity* wnd = stack[rsp-4]->pchip;
+		struct style* area = stack[rsp-4]->pfoot;
+		ret = clickray_convert(act,slot, wrd,geom, wnd,area, ev,ray[1]);
+		if(ret <= 0)return 0;
+
+		ray[0][0] = geom->fs.vc[0];
+		ray[0][1] = geom->fs.vc[1];
+		ray[0][2] = geom->fs.vc[2];
+		clickray_send(self->pchip, ray);
+	}
 	return 0;
 }
 int clickray_stop(struct halfrel* self, struct halfrel* peer)

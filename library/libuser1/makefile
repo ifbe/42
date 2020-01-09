@@ -89,6 +89,11 @@ rawmine/baseunit/objdxgl/dxgl.terrain.c \
 rawmine/baseunit/objdxgl/dxgl.texball.c \
 rawmine/baseunit/objdxgl/dxgl.texbox.c \
 rawmine/baseunit/objdxgl/dxgl.weather.c \
+rawmine/baseunit/objgear/gear.bevel.c \
+rawmine/baseunit/objgear/gear.helical.c \
+rawmine/baseunit/objgear/gear.hypoid.c \
+rawmine/baseunit/objgear/gear.spur.c \
+rawmine/baseunit/objgear/gear.worm.c \
 rawmine/baseunit/objhtml/html.a.c \
 rawmine/baseunit/objhtml/html.audio.c \
 rawmine/baseunit/objhtml/html.button.c \

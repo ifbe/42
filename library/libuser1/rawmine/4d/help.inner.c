@@ -6,6 +6,7 @@ void diamond_register(void*);
 void graphene_register(void*);
 
 //gear
+void spurgear_register(void*);
 void planetary_register(void*);
 
 //chip.baseunit
@@ -197,7 +198,10 @@ void content_create(void* addr)
 
 
 
-//----------------------chem--------------------
+//----------------------gear--------------------
+	spurgear_register(tmp);
+	tmp -= sizeof(struct entity);
+
 	planetary_register(tmp);
 	tmp -= sizeof(struct entity);
 
