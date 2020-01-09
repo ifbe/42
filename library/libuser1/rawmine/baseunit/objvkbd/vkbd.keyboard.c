@@ -51,58 +51,58 @@ void vkbd_draw_pixel(struct entity* win, struct style* sty)
 	int h = win->height;
 	//if(win->vkbdw < 0)return;
 
-    //drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
+	//drawsolid_rect(win, 0x202020, 0, h*3/4, w, h);
 
-    for(y=0;y<8;y++)
-    {
-        for(x=0;x<16;x++)
-        {
-            l = 2;
-            c = x+(y<<4);
-            //if(c == (win->vkbdz))rgb = 0xffff00ff;
-            //else rgb = 0x20808080;
+	for(y=0;y<8;y++)
+	{
+		for(x=0;x<16;x++)
+		{
+			l = 2;
+			c = x+(y<<4);
+			//if(c == (win->vkbdz))rgb = 0xffff00ff;
+			//else rgb = 0x20808080;
 
-            //joystick area
-            if((y>8)&&(y<15))
-            {
-                if((x>0)&&(x<7))continue;
-                if((x>8)&&(x<15))continue;
-            }
+			//joystick area
+			if((y>8)&&(y<15))
+			{
+				if((x>0)&&(x<7))continue;
+				if((x>8)&&(x<15))continue;
+			}
 
-            if(0x0 == c)c = hex32('\\','0',0,0);
-            else if(0x7 == c)c = hex32('\\','a',0,0);
-            else if(0x8 == c)c = hex32('\\','b',0,0);
-            else if(0x9 == c)c = hex32('\\','t',0,0);
-            else if(0xa == c)c = hex32('\\','n',0,0);
-            else if(0xd == c)c = hex32('\\','r',0,0);
-            else if(0xf0 <= c)
-            {
-                if(0xfa <= c)
-                {
-                    l = 3;
-                    c = ((c-0xfa)<<16) + hex32('f','1','0',0);
-                }
-                else
-                {
-                    l = 2;
-                    c = ((c-0xf0)<<8) + hex32('f','0',0,0);
-                }
-            }
-            else if(0x80 <= c)
-            {
-                l = 1;
-                c = ' ';
-            }
-            else l = 1;
+			if(0x0 == c)c = hex32('\\','0',0,0);
+			else if(0x7 == c)c = hex32('\\','a',0,0);
+			else if(0x8 == c)c = hex32('\\','b',0,0);
+			else if(0x9 == c)c = hex32('\\','t',0,0);
+			else if(0xa == c)c = hex32('\\','n',0,0);
+			else if(0xd == c)c = hex32('\\','r',0,0);
+			else if(0xf0 <= c)
+			{
+				if(0xfa <= c)
+				{
+					l = 3;
+					c = ((c-0xfa)<<16) + hex32('f','1','0',0);
+				}
+				else
+				{
+					l = 2;
+					c = ((c-0xf0)<<8) + hex32('f','0',0,0);
+				}
+			}
+			else if(0x80 <= c)
+			{
+				l = 1;
+				c = ' ';
+			}
+			else l = 1;
 
-            x0 = (x*w/16)+1;
-            y0 = h+1-((y+1)*h/32)+1;
-            x1 = ((x+1)*w/16)-1;
-            y1 = h-1-(y*h/32);
-            drawhyaline_rect(win, 0x7fffffff, x0, y0, x1, y1);
-	        drawstring_fit(win, rgb, x0, y0, x1, y1, (u8*)&c, l);
-        }
-    }
+			x0 = (x*w/16)+1;
+			y0 = h+1-((y+1)*h/32)+1;
+			x1 = ((x+1)*w/16)-1;
+			y1 = h-1-(y*h/32);
+			drawhyaline_rect(win, 0x7fffffff, x0, y0, x1, y1);
+			drawstring_fit(win, rgb, x0, y0, x1, y1, (u8*)&c, l);
+		}
+	}
 }
 void vkbd_draw_vbo(
 	struct entity* act, struct style* part,
@@ -110,41 +110,41 @@ void vkbd_draw_vbo(
 	struct entity* wnd, struct style* area)
 {
 	int x,y,j;
-    int c,rgb;
+	int c,rgb;
 	vec3 tc,tr,tf;
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-    //carveopaque_rect(wnd, 0x800000ff, vc, vr, vf);
+	//gl41opaque_rect(wnd, 0x800000ff, vc, vr, vf);
 
-    for(y=0;y<8;y++)
-    {
-        for(x=0;x<16;x++)
-        {
-            for(j=0;j<3;j++){
-                tr[j] = vr[j]/17;
-                tf[j] = vf[j]/8.5;
-                tc[j] = vc[j] + vr[j]*(x-7.5)/8.0 + vf[j]*(y-3.5)/4.0;
-            }
+	for(y=0;y<8;y++)
+	{
+		for(x=0;x<16;x++)
+		{
+			for(j=0;j<3;j++){
+				tr[j] = vr[j]/17;
+				tf[j] = vf[j]/8.5;
+				tc[j] = vc[j] + vr[j]*(x-7.5)/8.0 + vf[j]*(y-3.5)/4.0;
+			}
 			rgb = 0x80808080;
 			if((act->iw0)&&(x == act->ix0)&&(y == act->iy0))rgb = 0x80ff0000;
-            carveopaque_rect(wnd, rgb, tc, tr, tf);
+			gl41opaque_rect(wnd, rgb, tc, tr, tf);
 
-            c = x+(y<<4);
-            if((0==c)|(7==c)|(8==c)|(9==c)|(0xa==c)|(0xd==c))
-            {
-                if(0x0 == c)c = '0';
-                else if(0x7 == c)c = 'a';
-                else if(0x8 == c)c = 'b';
-                else if(0x9 == c)c = 't';
-                else if(0xa == c)c = 'n';
-                else if(0xd == c)c = 'r';
-            }
+			c = x+(y<<4);
+			if((0==c)|(7==c)|(8==c)|(9==c)|(0xa==c)|(0xd==c))
+			{
+				if(0x0 == c)c = '0';
+				else if(0x7 == c)c = 'a';
+				else if(0x8 == c)c = 'b';
+				else if(0x9 == c)c = 't';
+				else if(0xa == c)c = 'n';
+				else if(0xd == c)c = 'r';
+			}
 
-            carveascii_center(wnd, 0xffffff, tc, tr, tf, c);
-        }
-    }
+			carveascii_center(wnd, 0xffffff, tc, tr, tf, c);
+		}
+	}
 }
 void vkbd_draw_html(struct entity* win, struct style* sty)
 {
@@ -173,7 +173,7 @@ static int vkbd_event(
 {
 	short tmp[4];
 	int x,y,w,h,ret;
-    //say("vkbd_keyboard_write\n");
+	//say("vkbd_keyboard_write\n");
 	//if(win->vkbdw <= 0)return 0;
 
 	w = win->width;

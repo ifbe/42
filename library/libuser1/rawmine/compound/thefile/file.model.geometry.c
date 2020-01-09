@@ -15,7 +15,7 @@ static void geometry_draw_pixel(
 	if(hh > ww)hh = ww;
 	drawsolid_rect(win, 0x808080, cx-ww, cy-hh, cx+ww, cy+hh);
 }
-static void geometry_draw_vbo3d(
+static void geometry_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -59,7 +59,7 @@ static void geometry_draw_vbo3d(
 			case '1':carvepoint_triangle( wnd, 0x00808080, vc, t1, t2);break;
 			case '2':carveline_triangle(  wnd, 0x00808080, vc, t1, t2);break;
 			case '3':carvesolid_triangle( wnd, 0x00808080, vc, t1, t2);break;
-			case '4':carveopaque_triangle(wnd, 0x80808080, vc, t1, t2);break;
+			case '4':gl41opaque_triangle(wnd, 0x80808080, vc, t1, t2);break;
 		}
 		return;
 	}
@@ -69,7 +69,7 @@ static void geometry_draw_vbo3d(
 			case '1':carvepoint_rect( wnd, 0x00808080, vc, vr, vf);break;
 			case '2':carveline_rect(  wnd, 0x00808080, vc, vr, vf);break;
 			case '3':carvesolid_rect( wnd, 0x00808080, vc, vr, vf);break;
-			case '4':carveopaque_rect(wnd, 0x80808080, vc, vr, vf);break;
+			case '4':gl41opaque_rect(wnd, 0x80808080, vc, vr, vf);break;
 		}
 		return;
 	}
@@ -79,7 +79,7 @@ static void geometry_draw_vbo3d(
 			//case '1':carvepoint_prism4( wnd, 0x808080, vc, vr, vf, vu);break;
 			case '2':carveline_prism4(  wnd, 0x00808080, vc, vr, vf, vu);break;
 			case '3':carvesolid_prism4( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '4':carveopaque_prism4(wnd, 0x80808080, vc, vr, vf, vu);break;
+			case '4':gl41opaque_prism4(wnd, 0x80808080, vc, vr, vf, vu);break;
 		}
 		return;
 	}
@@ -89,7 +89,7 @@ static void geometry_draw_vbo3d(
 			case '1':carvepoint_dodecahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
 			case '2':carveline_dodecahedron(  wnd, 0x00808080, vc, vr, vf, vu);break;
 			case '3':carvesolid_dodecahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '4':carveopaque_dodecahedron(wnd, 0x80808080, vc, vr, vf, vu);break;
+			case '4':gl41opaque_dodecahedron(wnd, 0x80808080, vc, vr, vf, vu);break;
 		}
 		return;
 	}
@@ -99,7 +99,7 @@ static void geometry_draw_vbo3d(
 			case '1':carvepoint_icosahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
 			case '2':carveline_icosahedron(  wnd, 0x00808080, vc, vr, vf, vu);break;
 			case '3':carvesolid_icosahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '4':carveopaque_icosahedron(wnd, 0x80808080, vc, vr, vf, vu);break;
+			case '4':gl41opaque_icosahedron(wnd, 0x80808080, vc, vr, vf, vu);break;
 		}
 		return;
 	}
@@ -109,7 +109,7 @@ static void geometry_draw_vbo3d(
 			//case '1':carvepoint_cylinder( wnd, 0x808080, vc, vr, vf, vu);break;
 			//case '2':carveline_cylinder(  wnd, 0x808080, vc, vr, vf, vu);break;
 			case '3':carvesolid_cylinder( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '4':carveopaque_cylinder(wnd, 0x80808080, vc, vr, vf, vu);break;
+			case '4':gl41opaque_cylinder(wnd, 0x80808080, vc, vr, vf, vu);break;
 		}
 		return;
 	}
@@ -119,7 +119,7 @@ static void geometry_draw_vbo3d(
 			case '1':carvepoint_sphere( wnd, 0x00808080, vc, vr, vf, vu);break;
 			case '2':carveline_sphere(  wnd, 0x00808080, vc, vr, vf, vu);break;
 			case '3':carvesolid_sphere( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '4':carveopaque_sphere(wnd, 0x80808080, vc, vr, vf, vu);break;
+			case '4':gl41opaque_sphere(wnd, 0x80808080, vc, vr, vf, vu);break;
 		}
 		return;
 	}
@@ -143,22 +143,6 @@ static void geometry_draw_cli(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-}
-static void geometry_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)geometry_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)geometry_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)geometry_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)geometry_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)geometry_draw_vbo2d(act, pin, win, sty);
-		//else geometry_draw_vbo3d(act, pin, win, sty);
-	}
-	else geometry_draw_pixel(act, pin, win, sty);
 }
 static void geometry_event(
 	struct entity* act, struct style* pin,
@@ -192,7 +176,7 @@ static void geometry_read(struct halfrel* self, struct halfrel* peer, struct hal
 		scn = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)geometry_draw_vbo3d(act,slot, scn,geom, wnd,area);
+		if('v' == len)geometry_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
 }
 static void geometry_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

@@ -92,19 +92,14 @@ int opaque3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int 
 
 
 
-void carveopaque_triangle(struct entity* win, u32 rgba,
-	vec3 v0, vec3 v1, vec3 v2)
+void carveopaque_triangle(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 v0, vec3 v1, vec3 v2, u32 rgba)
 {
 	u8* t = (void*)&rgba;
 	float bb = (float)t[0] / 255.0;
 	float gg = (float)t[1] / 255.0;
 	float rr = (float)t[2] / 255.0;
 	float aa = (float)t[3] / 255.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, 3, 1);
-	if(vlen < 0)return;
 
 	vec3 n;
 	n[0] = (v1[1]-v0[1])*(v2[2]-v0[2]) - (v1[2]-v0[2])*(v2[1]-v0[1]);
@@ -154,19 +149,28 @@ void carveopaque_triangle(struct entity* win, u32 rgba,
 	ibuf[1] = vlen + 1;
 	ibuf[2] = vlen + 2;
 }
-void carveopaque_rect(struct entity* win, u32 rgba,
-	vec3 vc, vec3 vr, vec3 vf)
+void gl41opaque_triangle(struct entity* win, u32 rgba,
+	vec3 v0, vec3 v1, vec3 v2)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, 3, 1);
+	if(vlen < 0)return;
+
+	carveopaque_triangle(vbuf,vlen, ibuf,0, v0,v1,v2, rgba);
+}
+
+
+
+
+void carveopaque_rect(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, u32 rgba)
 {
 	u8* t = (void*)&rgba;
 	float bb = (float)t[0] / 255.0;
 	float gg = (float)t[1] / 255.0;
 	float rr = (float)t[2] / 255.0;
 	float aa = (float)t[3] / 255.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, 4, 2);
-	if(vlen < 0)return;
 
 	vec3 n;
 	n[0] = vr[1]*vf[2] - vr[2]*vf[1];
@@ -234,8 +238,22 @@ void carveopaque_rect(struct entity* win, u32 rgba,
 	ibuf[4] = vlen + 2;
 	ibuf[5] = vlen + 3;
 }
-void carveopaque_circle(struct entity* win, u32 rgba,
+void gl41opaque_rect(struct entity* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, 4, 2);
+	if(vlen < 0)return;
+
+	carveopaque_rect(vbuf,vlen, ibuf,0, vc,vr,vf, rgba);
+}
+
+
+
+
+void carveopaque_circle(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, u32 rgba)
 {
 	u8* t = (void*)&rgba;
 	float bb = (float)t[0] / 255.0;
@@ -246,10 +264,6 @@ void carveopaque_circle(struct entity* win, u32 rgba,
 #define circieacc (acc*2)
 	int a,b,j;
 	float c,s;
-	float* vbuf;
-	u16* ibuf;
-	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, circieacc+1, circieacc);
-	if(vlen < 0)return;
 
 	vec3 n;
 	n[0] = vr[1]*vf[2] - vr[2]*vf[1];
@@ -296,24 +310,38 @@ void carveopaque_circle(struct entity* win, u32 rgba,
 	vbuf[a+10] = bb;
 	vbuf[a+11] = aa;
 }
+void gl41opaque_circle(struct entity* win, u32 rgba,
+	vec3 vc, vec3 vr, vec3 vf)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, circieacc+1, circieacc);
+	if(vlen < 0)return;
+
+	carveopaque_circle(vbuf,vlen, ibuf,0, vc,vr,vf, rgba);
+}
 
 
 
 
-void carveopaque_pyramid3()
+void gl41opaque_pyramid3()
 {
 }
-void carveopaque_pyramid4()
+void gl41opaque_pyramid4()
 {
 }
-void carveopaque_pyramid5()
+void gl41opaque_pyramid5()
 {
 }
-void carveopaque_pyramid6()
+void gl41opaque_pyramid6()
 {
 }
-void carveopaque_cone(struct entity* win, u32 rgba,
-	vec3 vc, vec3 vr, vec3 vu)
+
+
+
+
+void carveopaque_cone(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vu, u32 rgba)
 {
 	u8* t = (void*)&rgba;
 	float bb = (float)t[0] / 255.0;
@@ -324,11 +352,6 @@ void carveopaque_cone(struct entity* win, u32 rgba,
 	int a,b,j;
 	float f;
 	float r[4];
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, acc + 1, acc);
-	if(vlen < 0)return;
 
 	for(j=0;j<acc;j++)
 	{
@@ -372,15 +395,29 @@ void carveopaque_cone(struct entity* win, u32 rgba,
 	vbuf[a+10] = bb;
 	vbuf[a+11] = aa;
 }
+void gl41opaque_cone(struct entity* win, u32 rgba,
+	vec3 vc, vec3 vr, vec3 vt)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, acc + 1, acc);
+	if(vlen < 0)return;
+
+	carveopaque_cone(vbuf,vlen, ibuf,0, vc,vr,vt, rgba);
+}
 
 
 
 
-void carveopaque_prism3()
+void gl41opaque_prism3()
 {
 }
-void carveopaque_prism4(struct entity* win, u32 rgba,
-	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+
+
+
+
+void carveopaque_prism4(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgba)
 {
 	u8* t = (void*)&rgba;
 	float bb = (float)t[0] / 255.0;
@@ -389,11 +426,6 @@ void carveopaque_prism4(struct entity* win, u32 rgba,
 	float aa = (float)t[3] / 255.0;
 
 	int j;
-	float* vbuf;
-	u16* ibuf;
-	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, 24, 12);
-	if(vlen < 0)return;
-
 	for(j=0;j<24*12;j+=12)
 	{
 		vbuf[j+ 8] = rr;
@@ -554,14 +586,32 @@ void carveopaque_prism4(struct entity* win, u32 rgba,
 	ibuf[34] = vlen + 0 + 18;
 	ibuf[35] = vlen + 0 + 21;
 }
-void carveopaque_prism5()
-{
-}
-void carveopaque_prism6()
-{
-}
-void carveopaque_cask(struct entity* win, u32 rgba,
+void gl41opaque_prism4(struct entity* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, 24, 12);
+	if(vlen < 0)return;
+
+	carveopaque_prism4(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgba);
+}
+
+
+
+
+void gl41opaque_prism5()
+{
+}
+void gl41opaque_prism6()
+{
+}
+
+
+
+
+void carveopaque_cask(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgba)
 {
 	u8* t = (void*)&rgba;
 	float bb = (float)t[0] / 255.0;
@@ -572,11 +622,6 @@ void carveopaque_cask(struct entity* win, u32 rgba,
 	int a,b,j;
 	float c,s;
 	vec3 vv;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, acc * 2, acc * 2);
-	if(vlen < 0)return;
 
 	for(j=0;j<acc;j++)
 	{
@@ -624,17 +669,27 @@ void carveopaque_cask(struct entity* win, u32 rgba,
 		ibuf[b+5] = vlen + 1 + j*2;
 	}
 }
-void carveopaque_cylinder(struct entity* win, u32 rgb,
+void gl41opaque_cask(struct entity* win, u32 rgba,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, acc * 2, acc * 2);
+	if(vlen < 0)return;
+
+	carveopaque_cask(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgba);
+}
+void gl41opaque_cylinder(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	vec3 tc;
 	vec3 tf;
-	carveopaque_cask(win, rgb, vc, vr, vf, vu);
+	gl41opaque_cask(win, rgb, vc, vr, vf, vu);
 
 	tc[0] = vc[0]+vu[0];
 	tc[1] = vc[1]+vu[1];
 	tc[2] = vc[2]+vu[2];
-	carveopaque_circle(win, rgb, tc, vr, vf);
+	gl41opaque_circle(win, rgb, tc, vr, vf);
 
 	tc[0] = vc[0]-vu[0];
 	tc[1] = vc[1]-vu[1];
@@ -642,20 +697,24 @@ void carveopaque_cylinder(struct entity* win, u32 rgb,
 	tf[0] = -vf[0];
 	tf[1] = -vf[1];
 	tf[2] = -vf[2];
-	carveopaque_circle(win, rgb, tc, vr, tf);
+	gl41opaque_circle(win, rgb, tc, vr, tf);
 }
 
 
 
 
-void carveopaque_tetrahedron()
+void gl41opaque_tetrahedron()
 {
 }
-void carveopaque_octahedron()
+void gl41opaque_octahedron()
 {
 }
-void carveopaque_dodecahedron(struct entity* win, u32 rgba,
-	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+
+
+
+
+void carveopaque_dodecahedron(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgba)
 {
 	u8* t = (void*)&rgba;
 	float bb = (float)t[0] / 255.0;
@@ -666,11 +725,6 @@ void carveopaque_dodecahedron(struct entity* win, u32 rgba,
 	int j;
 	float a = 1.618;
 	float b = 1.0/1.618;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, 20, 36);
-	if(vlen < 0)return;
 
 	//(+-1, +-1, +-1)
 	vbuf[0*12 + 0] = vc[0]-vr[0]-vf[0]-vu[0];
@@ -894,8 +948,22 @@ void carveopaque_dodecahedron(struct entity* win, u32 rgba,
 	ibuf[106] = vlen+11;
 	ibuf[107] = vlen+7;
 }
-void carveopaque_icosahedron(struct entity* win, u32 rgba,
+void gl41opaque_dodecahedron(struct entity* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, 20, 36);
+	if(vlen < 0)return;
+
+	carveopaque_dodecahedron(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgba);
+}
+
+
+
+
+void carveopaque_icosahedron(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgba)
 {
 	u8* t = (void*)&rgba;
 	float bb = (float)t[0] / 255.0;
@@ -906,11 +974,6 @@ void carveopaque_icosahedron(struct entity* win, u32 rgba,
 	int j;
 	float m = 0.52573111211913360602566908484788;
 	float n = 0.85065080835203993218154049706301;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, 12, 20);
-	if(vlen < 0)return;
 
 	//(+-m, 0, +-n)
 	vbuf[0*12 + 0] = vc[0] - m*vr[0] - n*vu[0];
@@ -1054,8 +1117,22 @@ void carveopaque_icosahedron(struct entity* win, u32 rgba,
 	ibuf[58] = vlen+9;
 	ibuf[59] = vlen+1;
 }
-void carveopaque_sphere(struct entity* win, u32 rgba,
+void gl41opaque_icosahedron(struct entity* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, 12, 20);
+	if(vlen < 0)return;
+
+	carveopaque_icosahedron(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgba);
+}
+
+
+
+
+void carveopaque_sphere(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgba)
 {
 	u8* t = (void*)&rgba;
 	float bb = (float)t[0] / 255.0;
@@ -1068,11 +1145,6 @@ void carveopaque_sphere(struct entity* win, u32 rgba,
 	int a,b,j,k;
 	float c,s;
 	vec3 tc, tr, tf;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, accx*accy+2, accx*accy*2);
-	if(vlen < 0)return;
 
 	for(k=0;k<accy;k++)
 	{
@@ -1158,17 +1230,36 @@ void carveopaque_sphere(struct entity* win, u32 rgba,
 		ibuf[b + (6*j) + 5] = vlen+accx*(accy-1)+(j+1)%accx;
 	}
 }
-void carveopaque_tokamak(struct entity* win, u32 rgba,
-	vec3 vc, vec3 vr, vec3 vu)
+void gl41opaque_sphere(struct entity* win, u32 rgba,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, accx*accy+2, accx*accy*2);
+	if(vlen < 0)return;
+
+	carveopaque_sphere(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgba);
+}
+
+
+
+
+void carveopaque_tokamak(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgba)
 {
 	u8* t = (void*)&rgba;
 	float bb = (float)t[0] / 255.0;
 	float gg = (float)t[1] / 255.0;
 	float rr = (float)t[2] / 255.0;
 	float aa = (float)t[3] / 255.0;
-
+}
+void gl41opaque_tokamak(struct entity* win, u32 rgba,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
 	float* vbuf;
 	u16* ibuf;
 	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, acc*acc*2, acc*acc);
 	if(vlen < 0)return;
+
+	carveopaque_tokamak(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgba);
 }

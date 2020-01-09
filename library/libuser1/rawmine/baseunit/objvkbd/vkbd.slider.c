@@ -61,7 +61,7 @@ void slider_draw_vbo(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carveopaque_rect(wnd, 0x80404040, vc, vr, vf);
+	gl41opaque_rect(wnd, 0x80404040, vc, vr, vf);
 
 	list = act->LISTBUF;
 	for(y=0;y<12;y++){
@@ -77,7 +77,7 @@ void slider_draw_vbo(
 			tr[j] = vr[j]/20;
 			tf[j] = vf[j]/20;
 		}
-		carveopaque_rect(wnd, 0x80808080, tc,tr,tf);
+		gl41opaque_rect(wnd, 0x80808080, tc,tr,tf);
 		carveascii_center(wnd, 0xffffff, tc,tr,tf, 0x30 + list[y]/10);
 	}
 }

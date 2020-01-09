@@ -91,7 +91,7 @@ static void terminal_draw_vbo(
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
-	carveopaque_rect(ctx, 0x80808080, vc, vr, vf);
+	gl41opaque_rect(ctx, 0x80808080, vc, vr, vf);
 
 	tc[0] = vc[0];
 	tc[1] = vc[1];

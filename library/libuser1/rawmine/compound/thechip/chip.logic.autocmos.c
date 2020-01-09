@@ -65,7 +65,7 @@ static void autocmos_draw_vbo(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carveopaque_rect(ctx, 0x40404040, vc, vr, vf);
+	gl41opaque_rect(ctx, 0x40404040, vc, vr, vf);
 
 	//vcc
 	for(j=0;j<3;j++){

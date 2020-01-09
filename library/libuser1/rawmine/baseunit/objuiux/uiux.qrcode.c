@@ -66,7 +66,7 @@ static void qrcode_draw_vbo(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	//carveopaque_rect(ctx, 0x444444, vc, vr, vf);
+	//gl41opaque_rect(ctx, 0x444444, vc, vr, vf);
 
 	tr[0] = vr[0] / 49;
 	tr[1] = vr[1] / 49;

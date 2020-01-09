@@ -616,7 +616,7 @@ found:
 			sss = (void*)(rel->srcfoot);
 
 			if(0 == flag)carveline_prism4(win, 0xffffff, sss->vc, sss->vr, sss->vf, sss->vt);
-			else carveopaque_prism4(win, 0xffffff, sss->vc, sss->vr, sss->vf, sss->vt);
+			else gl41opaque_prism4(win, 0xffffff, sss->vc, sss->vr, sss->vf, sss->vt);
 
 			flag ++;
 		}

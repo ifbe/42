@@ -36,7 +36,7 @@ static void vsrc_draw_vbo(
 	carvesolid_cylinder(wnd, 0xc00000, tc, vr, vt, tf);
 
 	//middle
-	carveopaque_cylinder(wnd, 0x80808080, vc, vr, vt, vf);
+	gl41opaque_cylinder(wnd, 0x80808080, vc, vr, vt, vf);
 	time = timeread()%1000000;
 	for(j=0;j<3;j++)tc[j] = vc[j] + vf[j]*(time/500000.0 - 1.0);
 	carvesolid_circle(wnd, (time/4000)<<16, tc,vr,vt);

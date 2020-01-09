@@ -113,7 +113,7 @@ static void portal_draw_vbo_b(
 	tt[2] = vc[2] - vt[2] + vf[2];
 	carveline_arrow(win, 0xffffff, tc, tt, vt);
 
-	carveopaque_circle(win, 0x80ffffff, vc, vr, vt);
+	gl41opaque_circle(win, 0x80ffffff, vc, vr, vt);
 	portal = act->buf0;
 	if(0 == portal)return;
 	carveline_arrow(win, 0xff0000, portal->vc, portal->vq, vt);

@@ -60,7 +60,7 @@ static void pointlight_draw_vbo(
 	float* vt = geom->f.vt;
 	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
-	carveopaque_sphere(ctx, 0x80000000|sun->u_rgb, vc, vr, vf, vt);
+	gl41opaque_sphere(ctx, 0x80000000|sun->u_rgb, vc, vr, vf, vt);
 }
 static void pointlight_draw_json(
 	struct entity* act, struct style* pin,

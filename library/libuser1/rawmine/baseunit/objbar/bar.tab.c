@@ -21,7 +21,7 @@ void tabbar_vbo_listtwig(struct entity* win, struct style* sty, struct entity* t
     tf[0] = 0.0;
     tf[1] = 0.25;
     tf[2] = 0.0;
-    carveopaque_rect(win, 0x7f808080, tc, tr, tf);
+    gl41opaque_rect(win, 0x7f808080, tc, tr, tf);
 
     tc[0] = 0.0;
     tc[1] = 0.0;
@@ -32,7 +32,7 @@ void tabbar_vbo_listtwig(struct entity* win, struct style* sty, struct entity* t
     tf[0] = 0.0;
     tf[1] = 0.5;
     tf[2] = 0.0;
-    carveopaque_rect(win, 0x7f808080, tc, tr, tf);
+    gl41opaque_rect(win, 0x7f808080, tc, tr, tf);
 
     tr[0] = 1.0/18;
     tr[1] = 0.0;
@@ -54,7 +54,7 @@ void tabbar_vbo_listtwig(struct entity* win, struct style* sty, struct entity* t
             y = j/8;
             tc[0] = (2*x-7)/16.0;
             tc[1] = (7-2*y)/16.0;
-            carveopaque_rect(win, 0x7fffffff, tc, tr, tf);
+            gl41opaque_rect(win, 0x7fffffff, tc, tr, tf);
 
             ac = (void*)(rel->dstchip);
             st = (void*)(rel->srcfoot);
@@ -107,7 +107,7 @@ void tabbar_vbo_listroot(
             tr[0] = vr[0] / 2 / 8.1;
             tr[1] = vr[1] / 2 / 8.1;
             tr[2] = vr[2] / 2 / 8.1;
-            carveopaque_rect(win, 0x7f000080, tc, tr, tf);
+            gl41opaque_rect(win, 0x7f000080, tc, tr, tf);
 
             tc[2] -= 0.1;
             tr[0] = vr[0] / 2 / 16;

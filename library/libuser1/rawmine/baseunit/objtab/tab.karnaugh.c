@@ -94,7 +94,7 @@ void karnaugh_draw_vbo(
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
 	for(j=0;j<3;j++)tc[j] = vc[j] -vt[j]/100.0;
-	carveopaque_rect(wnd, 0x80000080, tc, vr, vf);
+	gl41opaque_rect(wnd, 0x80000080, tc, vr, vf);
 
 	//frame
 	for(j=0;j<3;j++){

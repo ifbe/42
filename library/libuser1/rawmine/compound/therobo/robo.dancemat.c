@@ -49,7 +49,7 @@ static void dancemat_draw_vbo3d(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carveopaque_rect(ctx, 0x80202020, vc, vr, vf);
+	gl41opaque_rect(ctx, 0x80202020, vc, vr, vf);
 
 #define sixplus3sqrt2 10.242640687119286
 	cnt = 0;

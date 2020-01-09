@@ -312,7 +312,7 @@ void corner_vbo_popup(
 		tc[0] = -7.0/8;
 		tc[1] = (-31+j*2)/32.0;
 		tr[0] = 1.0/8;
-		carveopaque_rect(win, 0x3f000080, tc, tr, tf);
+		gl41opaque_rect(win, 0x3f000080, tc, tr, tf);
 
 		tr[0] = 1.0/32;
 		carvestring_center(win, 0xffffff, tc, tr, tf, (void*)"test", 8);

@@ -55,7 +55,7 @@ url:datafile/jpg/skysphere.jpg
 }
 ground{
 fmt:ground
-url:datafile/jpg/cartoon.jpg
+url:datafile/jpg/grass.jpg
 }
 drone{
 fmt:drone
