@@ -50,13 +50,13 @@ static void calib3d_draw_pixel(
 		hh = win->height/2;
 	}
 }
-static void calib3d_draw_vbo(
+static void calib3d_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 	//struct glsrc* src = (void*)(pin->data[0]);
 	//src->vbuf_enq += 1;
-	//say("@calib3d_draw_vbo\n");
+	//say("@calib3d_draw_gl41\n");
 }
 static void calib3d_draw_json(
 	struct entity* act, struct style* pin,
@@ -77,18 +77,6 @@ static void calib3d_draw_cli(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-}
-static void calib3d_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)calib3d_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)calib3d_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)calib3d_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)calib3d_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)calib3d_draw_vbo(act, pin, win, sty);
-	else calib3d_draw_pixel(act, pin, win, sty);
 }
 
 

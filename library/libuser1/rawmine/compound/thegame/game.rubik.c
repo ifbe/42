@@ -155,7 +155,7 @@ static void rubikscube_draw_pixel(
 		}
 	}
 }
-static void rubikscube_draw_vbo(
+static void rubikscube_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -360,9 +360,7 @@ static void rubikscube_read(struct halfrel* self, struct halfrel* peer, struct h
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		if('v' == len){
-			rubikscube_draw_vbo(act,part, win,geom, wnd,area);
-		}
+		if('v' == len)rubikscube_draw_gl41(act,part, win,geom, wnd,area);
 	}
 	//rubikscube_draw(act, pin, win, sty);
 }

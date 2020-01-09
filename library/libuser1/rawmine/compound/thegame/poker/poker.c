@@ -54,7 +54,7 @@ static void poker_draw_pixel(
 */
 	}
 }
-static void poker_draw_vbo(
+static void poker_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -88,30 +88,12 @@ static void poker_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void poker_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)poker_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)poker_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)poker_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)poker_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)poker_draw_vbo(act, pin, win, sty);
-	else poker_draw_pixel(act, pin, win, sty);
-}
 
 
 
 
 static void poker_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//poker_draw(act, pin, win, sty);
 }
 static void poker_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

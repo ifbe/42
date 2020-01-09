@@ -194,7 +194,7 @@ static void codeimg_draw_pixel(
 		stride, height, cx-ww, cy-hh, cx+ww, cy+hh
 	);
 }
-static void codeimg_draw_vbo3d(
+static void codeimg_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -313,7 +313,7 @@ static void codeimg_read(struct halfrel* self, struct halfrel* peer, struct half
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		if('v' == len)codeimg_draw_vbo3d(act,slot, scn,geom, wnd,area);
+		if('v' == len)codeimg_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
 }
 static void codeimg_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

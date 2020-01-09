@@ -52,7 +52,7 @@ static void qrcode_draw_pixel(
 //say("\n");
 	}
 }
-static void qrcode_draw_vbo(
+static void qrcode_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -168,7 +168,7 @@ static void qrcode_read_bycam(struct halfrel* self, struct halfrel* peer, struct
 		scn = peer->pchip;geom = peer->pfoot;
 		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)qrcode_draw_vbo(act,slot, scn,geom, wnd,area);
+		if('v' == len)qrcode_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
 }
 static void qrcode_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)

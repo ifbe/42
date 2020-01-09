@@ -8,7 +8,7 @@ static void resistor_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void resistor_draw_vbo(
+static void resistor_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -73,7 +73,7 @@ static void resistor_read(struct halfrel* self, struct halfrel* peer, struct hal
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		if('v' == len){
-			resistor_draw_vbo(act,slot, win,geom, wnd,area);
+			resistor_draw_gl41(act,slot, win,geom, wnd,area);
 		}
 	}
 }

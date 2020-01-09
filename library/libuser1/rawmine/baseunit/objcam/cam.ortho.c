@@ -57,7 +57,7 @@ static void orthcam_camera(
 	src->arg[1].data = frus->vc;
 	wnd->gl_camera[0] = act->CAMBUF;
 }
-static int orthcam_draw_vbo(
+static int orthcam_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* scn, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -217,7 +217,7 @@ static void orthcam_read_bywnd(struct halfrel* self, struct halfrel* peer, struc
 		orthcam_matrix(act,slot, wrd,geom);
 
 		gl41data_read(self, peer, stack, rsp+2, buf, len);
-		orthcam_draw_vbo(act,slot, wrd,geom, wnd,area);
+		orthcam_draw_gl41(act,slot, wrd,geom, wnd,area);
 	}
 	if('?' == len){
 		gl41data_read(self, peer, stack, rsp+2, buf, len);
@@ -239,7 +239,7 @@ static void orthcam_read_bycam(struct halfrel* self, struct halfrel* peer, struc
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len)orthcam_draw_vbo(act,slot, wrd,geom, wnd,area);
+		if('v' == len)orthcam_draw_gl41(act,slot, wrd,geom, wnd,area);
 	}
 }
 static void orthcam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)

@@ -91,7 +91,7 @@ static void gbuffer_readfrom_gbuffer(struct entity* ent, struct glsrc* src)
 	src->tex[3].enq += 1;
 	//say("%d,%d,%d,%d\n", src->tex[0].glfd, src->tex[1].glfd, src->tex[2].glfd, src->tex[3].glfd);
 }
-static void gbuffer_draw_vbo3d(
+static void gbuffer_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* scn, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -219,17 +219,6 @@ static void gbuffer_draw_cli(
 {
 	say("gbuffer(%x,%x,%x)\n",win,act,sty);
 }
-static void gbuffer_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)gbuffer_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)gbuffer_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)gbuffer_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)gbuffer_draw_json(act, pin, win, sty);
-}
 
 
 
@@ -250,38 +239,26 @@ static void gbuffer_read_bycam(struct halfrel* self, struct halfrel* peer, struc
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len)gbuffer_draw_vbo3d(act,slot, wrd,geom, wnd,area);
+		if('v' == len)gbuffer_draw_gl41(act,slot, wrd,geom, wnd,area);
 	}
 //say("@freecam_read_byeye.end\n");
 }
 static void gbuffer_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
-	int ret;
 	struct entity* wnd;struct style* area;
 	struct entity* cam;struct style* gl41;
 	wnd = peer->pchip;area = peer->pfoot;
 	cam = self->pchip;gl41 = self->pfoot;
 
-	ret = gbuffer_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
-	if(ret > 0){
-		struct entity* act;struct style* slot;
-		struct entity* wrd;struct style* geom;
-		act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
-		wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
-		gbuffer_draw_vbo3d(act, slot, wrd,geom, wnd,area);
-	}
-	else{
-		struct fstyle fs;
-		fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
-		fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-		fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-		gl41data_before(wnd);
-		gbuffer_draw_vbo3d(cam, 0, 0,(void*)&fs, wnd,area);
-		gl41data_after(wnd);
-
-		gl41data_tmpcam(wnd);
-	}
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	gl41data_before(wnd);
+	gbuffer_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
+	gl41data_tmpcam(wnd);
+	gl41data_after(wnd);
 }
 static int gbuffer_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {

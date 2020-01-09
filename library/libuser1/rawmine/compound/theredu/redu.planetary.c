@@ -19,7 +19,7 @@ static void planetary_create(struct entity* act, u8* buf)
 
 
 
-static void planetary_draw_vbo(
+static void planetary_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -105,7 +105,7 @@ static void planetary_read(struct halfrel* self, struct halfrel* peer, struct ha
 		struct entity* wrd;struct style* camg;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		if('v' == len)planetary_draw_vbo(act,slot, win,geom, wnd,area);
+		if('v' == len)planetary_draw_gl41(act,slot, win,geom, wnd,area);
 	}
 }
 static void planetary_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

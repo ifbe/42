@@ -25,46 +25,8 @@ static void rccar_draw_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-}/*
-static void rccar_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	int x,y;
-	vec3 tc,tr,tf,tu;
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-
-	tr[0] = vr[0] * 3 / 4;
-	tr[1] = vr[1] * 3 / 4;
-	tr[2] = vr[2] * 3 / 4;
-	tf[0] = vf[0] * 3 / 4;
-	tf[1] = vf[1] * 3 / 4;
-	tf[2] = vf[2] * 3 / 4;
-	carvesolid2d_rect(win, 0x808080, vc, tr, tf);
-
-	tr[0] = vr[0] / 4;
-	tr[1] = vr[1] / 4;
-	tr[2] = vr[2] / 4;
-	tf[0] = vf[0] / 4;
-	tf[1] = vf[1] / 4;
-	tf[2] = vf[2] / 4;
-	for(y=-1;y<2;y+=2)
-	{
-		for(x=-1;x<2;x+=2)
-		{
-			tc[0] = vc[0] + x*vr[0]*3/4 + y*vf[0]*3/4;
-			tc[1] = vc[1] + x*vr[1]*3/4 + y*vf[1]*3/4;
-			tc[2] = vc[2] + x*vr[2]*3/4 + y*vf[2]*3/4;
-			carvesolid2d_rect(win, 0x202020, tc, tr, tf);
-		}
-	}
-}*/
-static void rccar_draw_vbo(
+}
+static void rccar_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -156,22 +118,6 @@ static void rccar_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void rccar_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)rccar_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)rccar_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)rccar_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)rccar_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)rccar_draw_vbo2d(act, pin, win, sty);
-		//else rccar_draw_vbo(act, pin, win, sty);
-	}
-	else rccar_draw_pixel(act, pin, win, sty);
-}
 
 
 
@@ -260,7 +206,7 @@ static void rccar_read(struct halfrel* self, struct halfrel* peer, struct halfre
 		scn = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)rccar_draw_vbo(act,part, scn,geom, wnd,area);
+		if('v' == len)rccar_draw_gl41(act,part, scn,geom, wnd,area);
 	}
 }
 static void rccar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

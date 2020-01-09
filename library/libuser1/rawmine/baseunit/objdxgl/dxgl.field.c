@@ -9,7 +9,7 @@ static void field_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void field_draw_vbo3d(
+static void field_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -69,7 +69,7 @@ static void field_draw_vbo3d(
 		vec[(z*20*20 + y*20 + x)*3 + 1] += dy + ta[0]/1000;
 		vec[(z*20*20 + y*20 + x)*3 + 2] += dz;
 
-		carvepoint(wnd, 0xffffff, ta);
+		gl41point(wnd, 0xffffff, ta);
 	}
 	}
 	}
@@ -124,7 +124,7 @@ static void field_read(struct halfrel* self, struct halfrel* peer, struct halfre
 		scn = peer->pchip;geom = peer->pfoot;
 		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)field_draw_vbo3d(act,slot, scn,geom, wnd,area);
+		if('v' == len)field_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
 }
 static void field_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

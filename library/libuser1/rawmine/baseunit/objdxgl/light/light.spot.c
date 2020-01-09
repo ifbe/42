@@ -127,7 +127,7 @@ static void spotlight_ctxforwnd(struct glsrc* src)
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 }
-static void spotlight_draw_vbo(
+static void spotlight_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -400,7 +400,7 @@ static void spotlight_read(struct halfrel* self, struct halfrel* peer, struct ha
 			spotlight_matrix(act,slot, win,geom);
 
 			spotlight_light(act,slot, win,geom, wnd,area);
-			spotlight_draw_vbo(act,slot, win,geom, wnd,area);
+			spotlight_draw_gl41(act,slot, win,geom, wnd,area);
 		}
 		if('?' == len){
 			fbo = 0;rect = 0;

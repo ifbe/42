@@ -244,7 +244,7 @@ void freecam_zoom(struct entity* win, float delta)
 
 
 
-static int freecam_draw_vbo(
+static int freecam_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* none)
@@ -741,7 +741,7 @@ static void freecam_read_bycam(struct halfrel* self, struct halfrel* peer, struc
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len)freecam_draw_vbo(act,slot, wrd,geom, wnd,area);
+		if('v' == len)freecam_draw_gl41(act,slot, wrd,geom, wnd,area);
 	}
 //say("@freecam_read_byeye.end\n");
 }
@@ -767,7 +767,7 @@ static void freecam_read_bywnd(struct halfrel* self, struct halfrel* peer, struc
 		freecam_matrix(act,slot, wrd,geom);
 
 		gl41data_read(self, peer, stack, rsp+2, buf, len);
-		freecam_draw_vbo(act,slot, wrd,geom, wnd,area);
+		freecam_draw_gl41(act,slot, wrd,geom, wnd,area);
 	}
 	if('?' == len){
 		gl41data_read(self, peer, stack, rsp+2, buf, len);

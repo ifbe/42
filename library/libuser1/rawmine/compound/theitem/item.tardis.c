@@ -32,7 +32,7 @@ static void tardis_draw_cli(
 
 
 
-static void tardis_draw_vbo3d(
+static void tardis_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -71,7 +71,7 @@ static void tardis_read_bycam(struct halfrel* self, struct halfrel* peer, struct
 		win = peer->pchip;geom = peer->pfoot;
 		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)tardis_draw_vbo3d(act,slot, win,geom, wnd,area);
+		if('v' == len)tardis_draw_gl41(act,slot, win,geom, wnd,area);
 	}
 }
 

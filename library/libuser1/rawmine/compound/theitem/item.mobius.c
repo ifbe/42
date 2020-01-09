@@ -9,7 +9,7 @@ static void mobius_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void mobius_draw_vbo3d(
+static void mobius_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -100,22 +100,6 @@ static void mobius_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void mobius_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)mobius_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)mobius_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)mobius_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)mobius_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)mobius_draw_vbo2d(act, pin, win, sty);
-		//else mobius_draw_vbo3d(act, pin, win, sty);
-	}
-	else mobius_draw_pixel(act, pin, win, sty);
-}
 
 
 
@@ -138,7 +122,7 @@ static void mobius_read(struct halfrel* self, struct halfrel* peer, struct halfr
 
 		scn = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len)mobius_draw_vbo3d(act,slot, scn,geom, wnd,area);
+		if('v' == len)mobius_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
 	//mobius_draw(act, pin, win, sty);
 }

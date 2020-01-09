@@ -78,7 +78,7 @@ void carveentity(struct entity* win, int val, vec3 vc, vec3 vr, vec3 vf)
 
 
 
-void detail_draw_vbo_node(struct entity* ctx, struct entity* one, vec3 vc, vec3 vr, vec3 vf)
+void detail_draw_gl41_node(struct entity* ctx, struct entity* one, vec3 vc, vec3 vr, vec3 vf)
 {
 	int j;
 	vec3 tr,tf;
@@ -89,7 +89,7 @@ void detail_draw_vbo_node(struct entity* ctx, struct entity* one, vec3 vc, vec3 
 	carveline_circle(ctx, 0x404040, vc,tr,tf);
 	carvestring_center(ctx, 0xff0000, vc,vr,vf, (void*)&one->fmt, 8);
 }
-void detail_draw_vbo_foot(struct entity* ctx, void* aaa, void* bbb, vec3 src, vec3 dst, vec3 vr, vec3 vf, vec3 vt)
+void detail_draw_gl41_foot(struct entity* ctx, void* aaa, void* bbb, vec3 src, vec3 dst, vec3 vr, vec3 vf, vec3 vt)
 {
 	int j;
 	vec3 tc,t0,tr,tf;
@@ -121,7 +121,7 @@ void detail_draw_vbo_foot(struct entity* ctx, void* aaa, void* bbb, vec3 src, ve
 	for(j=0;j<3;j++)t0[j] = (src[j]*1 + dst[j]*2)/3;
 	carvestring_center(ctx, 0xff0000, t0, tr, tf, bbb, 4);
 }
-int detail_draw_vbo(
+int detail_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -143,7 +143,7 @@ int detail_draw_vbo(
 		tr[j] = vr[j]/16;
 		tf[j] = vf[j]/16;
 	}
-	detail_draw_vbo_node(ctx, act, vc,tr,tf);
+	detail_draw_gl41_node(ctx, act, vc,tr,tf);
 
 	cnt = 0;
 	rel = act->orel0;
@@ -172,8 +172,8 @@ int detail_draw_vbo(
 		s = sine(a)/2;
 		for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*c + vf[j]*s;
 
-		detail_draw_vbo_node(ctx, peer[k]->pchip, tc, tr, tf);
-		detail_draw_vbo_foot(ctx, &self[k]->flag, &peer[k]->flag, vc, tc, vr, vf, vt);
+		detail_draw_gl41_node(ctx, peer[k]->pchip, tc, tr, tf);
+		detail_draw_gl41_foot(ctx, &self[k]->flag, &peer[k]->flag, vc, tc, vr, vf, vt);
 	}
 	return 0;
 }
@@ -203,7 +203,7 @@ static void detail_read(struct halfrel* self, struct halfrel* peer, struct halfr
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len)detail_draw_vbo(act,slot, win,geom, wnd,area);
+		if('v' == len)detail_draw_gl41(act,slot, win,geom, wnd,area);
 	}
 }
 static int detail_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

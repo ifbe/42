@@ -49,7 +49,7 @@ static void pointlight_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void pointlight_draw_vbo(
+static void pointlight_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -141,7 +141,7 @@ static void pointlight_read(struct halfrel* self, struct halfrel* peer, struct h
 		if('v' == len){
 			if(0 == act->ONOFF)return;
 			pointlight_light(act,part, win,geom, wnd,area);
-			pointlight_draw_vbo(act,part, win,geom, wnd,area);
+			pointlight_draw_gl41(act,part, win,geom, wnd,area);
 		}
 	}
 }

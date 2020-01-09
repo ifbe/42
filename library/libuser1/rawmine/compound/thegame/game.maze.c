@@ -134,7 +134,7 @@ static void maze_draw_pixel(
 		}
 	}
 }
-static void maze_draw_vbo3d(
+static void maze_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -339,22 +339,6 @@ static void maze_draw_cli(
 	}
 	say("\n\n\n\n");
 }
-static void maze_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)maze_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)maze_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)maze_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)maze_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)maze_draw_vbo2d(act, pin, win, sty);
-		//else maze_draw_vbo3d(act, pin, win, sty);
-	}
-	else maze_draw_pixel(act, pin, win, sty);
-}
 static void maze_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
@@ -391,9 +375,7 @@ static void maze_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		if('v' == len){
-			maze_draw_vbo3d(act,part, win,geom, wnd,area);
-		}
+		if('v' == len)maze_draw_gl41(act,part, win,geom, wnd,area);
 	}
 	//maze_draw(act, pin, win, sty);
 }

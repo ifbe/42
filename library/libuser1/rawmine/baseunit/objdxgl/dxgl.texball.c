@@ -68,7 +68,7 @@ void texball_ctxforwnd(struct glsrc* src, char* str)
 	src->ibuf = memorycreate(src->ibuf_len, 0);
 	src->ibuf_enq = 0;
 }
-static void texball_draw_vbo3d(
+static void texball_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
@@ -176,23 +176,6 @@ static void texball_draw_cli(
 {
 	say("texball(%x,%x,%x)\n",win,act,sty);
 }
-static void texball_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)texball_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)texball_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)texball_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)texball_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)texball_draw_vbo2d(act, pin, win, sty);
-		//else texball_draw_vbo3d(act, pin, win, sty);
-	}
-	else texball_draw_pixel(act, pin, win, sty);
-}
 static void texball_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
@@ -222,9 +205,7 @@ static void texball_read_bycam(struct halfrel* self, struct halfrel* peer, struc
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		if('v' == len){
-			texball_draw_vbo3d(act,part, win,geom, wrd,camg, wnd,area);
-		}
+		if('v' == len)texball_draw_gl41(act,part, win,geom, wrd,camg, wnd,area);
 	}
 }
 static void texball_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)

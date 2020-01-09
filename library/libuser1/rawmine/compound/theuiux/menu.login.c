@@ -9,14 +9,13 @@ static void login_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void login_draw_vbo(
+static void login_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
 	vec3 tc,tr,tf;
-	//if(0 == sty)sty = defaultstyle_vbo3d();
-//say("@login_draw_vbo:%llx,%llx\n",act,ctx);
+//say("@login_draw_gl41:%llx,%llx\n",act,ctx);
 
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
@@ -118,7 +117,7 @@ static void login_read(struct halfrel* self, struct halfrel* peer, struct halfre
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len)login_draw_vbo(act,slot, win,geom, wnd,area);
+		if('v' == len)login_draw_gl41(act,slot, win,geom, wnd,area);
 	}
 }
 static void login_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

@@ -3,7 +3,7 @@
 
 
 
-void tabbar_vbo_listtwig(struct entity* win, struct style* sty, struct entity* tmp, int t)
+void tabbar_gl41_listtwig(struct entity* win, struct style* sty, struct entity* tmp, int t)
 {
     int x,y,j,rgb;
     vec3 rr;
@@ -68,7 +68,7 @@ void tabbar_vbo_listtwig(struct entity* win, struct style* sty, struct entity* t
         rel = samesrcnextdst(rel);
     }
 }
-void tabbar_vbo_listroot(
+void tabbar_gl41_listroot(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -117,7 +117,7 @@ void tabbar_vbo_listroot(
             aa = (void*)(rel->dstchip);
             carvestring_center(win, 0xffffff, tc, tr, tf, (void*)(&aa->fmt), 8);
 
-            if(j == act->ix0)tabbar_vbo_listtwig(win, sty, aa, j);
+            if(j == act->ix0)tabbar_gl41_listtwig(win, sty, aa, j);
 
             j++;
             if(j == 8)break;
@@ -126,14 +126,11 @@ void tabbar_vbo_listroot(
         rel = samesrcnextdst(rel);
     }
 }
-void tabbar_draw_vbo(
+void tabbar_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	//if(0 == sty)sty = defaultstyle_vbo2d();
-
-    //root
-    tabbar_vbo_listroot(act, pin, win, sty);
+	tabbar_gl41_listroot(act, pin, win, sty);
 }
 
 
@@ -250,19 +247,6 @@ void tabbar_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-}
-static void tabbar_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(_cli_ == fmt)tabbar_draw_cli(act, pin, win, sty);
-	else if(_tui_ == fmt)tabbar_draw_tui(act, pin, win, sty);
-	else if(_html_ == fmt)tabbar_draw_html(act, pin, win, sty);
-	else if(_json_ == fmt)tabbar_draw_json(act, pin, win, sty);
-	else if(_vbo_ == fmt)tabbar_draw_vbo(act, pin, win, sty);
-	else tabbar_draw_pixel(act, pin, win, sty);
 }
 
 

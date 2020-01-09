@@ -42,13 +42,13 @@ static void spectrum_draw_pixel(
 		hh = win->height/2;
 	}
 }
-static void spectrum_draw_vbo(
+static void spectrum_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 	struct glsrc* src = (void*)(pin->data[0]);
 	src->vbuf_enq += 1;
-	//say("@spectrum_draw_vbo\n");
+	//say("@spectrum_draw_gl41\n");
 }
 static void spectrum_draw_json(
 	struct entity* act, struct style* pin,
@@ -69,18 +69,6 @@ static void spectrum_draw_cli(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-}
-static void spectrum_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)spectrum_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)spectrum_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)spectrum_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)spectrum_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)spectrum_draw_vbo(act, pin, win, sty);
-	else spectrum_draw_pixel(act, pin, win, sty);
 }
 
 

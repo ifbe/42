@@ -30,7 +30,7 @@ static void house_draw_pixel(
 	drawline_rect(win, 0x404040, cx-ww*5/6, cy-hh*1/6, cx-ww*3/6, cy+hh*1/6);
 	drawline_rect(win, 0x404040, cx+ww*3/6, cy-hh*1/6, cx+ww*5/6, cy+hh*1/6);
 }
-static void house_draw_vbo(
+static void house_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -154,30 +154,12 @@ static void house_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void house_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)house_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)house_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)house_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)house_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)house_draw_vbo(act, pin, win, sty);
-	else house_draw_pixel(act, pin, win, sty);
-}
 
 
 
 
 static void house_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//house_draw(act, pin, win, sty);
 }
 static void house_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

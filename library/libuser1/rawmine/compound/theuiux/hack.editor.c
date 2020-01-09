@@ -12,7 +12,7 @@ static void editor_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void editor_draw_vbo(
+static void editor_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -47,19 +47,6 @@ static void editor_draw_cli(
 	struct entity* win, struct style* sty)
 {
 	say("editor(%x,%x,%x)\n",win,act,sty);
-}
-static void editor_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)editor_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)editor_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)editor_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)editor_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)editor_draw_vbo(act, pin, win, sty);
-	else editor_draw_pixel(act, pin, win, sty);
 }
 
 

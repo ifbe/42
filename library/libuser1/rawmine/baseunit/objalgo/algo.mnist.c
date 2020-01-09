@@ -73,7 +73,7 @@ static int mnist_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 
-void mnist_draw_vbo_lt(struct entity* wnd, u8* img, int id, float* vc, float* vr, float* vf, float* vt)
+void mnist_draw_gl41_lt(struct entity* wnd, u8* img, int id, float* vc, float* vr, float* vf, float* vt)
 {
 	int x,y,j;
 	vec3 tc,tr,tf;
@@ -96,7 +96,7 @@ void mnist_draw_vbo_lt(struct entity* wnd, u8* img, int id, float* vc, float* vr
 	}
 	carvehexadecimal(wnd, 0xffffff, tc, tr, tf, id);
 }
-void mnist_draw_vbo_lb(struct entity* wnd, int val, float* vc, float* vr, float* vf, float* vt)
+void mnist_draw_gl41_lb(struct entity* wnd, int val, float* vc, float* vr, float* vf, float* vt)
 {
 	int y,j;
 	vec3 tc,tr,tf;
@@ -113,7 +113,7 @@ void mnist_draw_vbo_lb(struct entity* wnd, int val, float* vc, float* vr, float*
 		else carvefloat(wnd, 0xffffff, tc, tr, tf, 0.0);
 	}
 }
-void mnist_draw_vbo_rt(struct entity* wnd, float* weight, float* vc, float* vr, float* vf, float* vt)
+void mnist_draw_gl41_rt(struct entity* wnd, float* weight, float* vc, float* vr, float* vf, float* vt)
 {
 	int x,y,j;
 	vec3 tc,tr,tf;
@@ -142,7 +142,7 @@ if(0 == weight)return;
 	}
 	}
 }
-void mnist_draw_vbo_rb(struct entity* wnd, float* result, float* vc, float* vr, float* vf, float* vt)
+void mnist_draw_gl41_rb(struct entity* wnd, float* result, float* vc, float* vr, float* vf, float* vt)
 {
 	int x,y,j;
 	vec3 tc,tr,tf;
@@ -164,7 +164,7 @@ void mnist_draw_vbo_rb(struct entity* wnd, float* result, float* vc, float* vr, 
 		else carvefloat(wnd, 0xffffff, tc, tr, tf, result[y]);
 	}
 }
-void mnist_draw_vbo(
+void mnist_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -183,8 +183,8 @@ void mnist_draw_vbo(
 	u8* label = act->buf1;
 	if(0 == image)return;
 	if(0 == label)return;
-	mnist_draw_vbo_lt(wnd, &image[16+id*28*28], id, vc,vr,vf,vt);
-	mnist_draw_vbo_lb(wnd, label[8+id], vc,vr,vf,vt);
+	mnist_draw_gl41_lt(wnd, &image[16+id*28*28], id, vc,vr,vf,vt);
+	mnist_draw_gl41_lb(wnd, label[8+id], vc,vr,vf,vt);
 
 	float* weight = act->buf2;
 	float* result = act->buf3;
@@ -192,8 +192,8 @@ void mnist_draw_vbo(
 	if(0 == result)return;
 	if(act->iw0)relationwrite(act, _ann_, 0, 0, &image[16+id*28*28], label[8+id]);
 	else relationread(act, _ann_, 0, 0, &image[16+id*28*28], label[8+id]);
-	mnist_draw_vbo_rt(wnd, weight, vc,vr,vf,vt);
-	mnist_draw_vbo_rb(wnd, result, vc,vr,vf,vt);
+	mnist_draw_gl41_rt(wnd, weight, vc,vr,vf,vt);
+	mnist_draw_gl41_rb(wnd, result, vc,vr,vf,vt);
 
 	//update weight
 	if(act->iw0){
@@ -226,32 +226,20 @@ static int mnist_event(
 static void mnist_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
-	int ret;
 	struct entity* wnd;struct style* area;
 	struct entity* cam;struct style* gl41;
 	wnd = peer->pchip;area = peer->pfoot;
 	cam = self->pchip;gl41 = self->pfoot;
 
-	ret = mnist_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
-	if(ret > 0){
-		struct entity* act;struct style* slot;
-		struct entity* wrd;struct style* geom;
-		act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
-		wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
-		mnist_draw_vbo(act, slot, wrd,geom, wnd,area);
-	}
-	else{
-		struct fstyle fs;
-		fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
-		fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-		fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-		fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-1.0;
-		gl41data_before(wnd);
-		mnist_draw_vbo(cam, 0, 0,(void*)&fs, wnd,area);
-		gl41data_after(wnd);
-
-		gl41data_tmpcam(wnd);
-	}
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-1.0;
+	gl41data_before(wnd);
+	mnist_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
+	gl41data_tmpcam(wnd);
+	gl41data_after(wnd);
 }
 static void mnist_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {

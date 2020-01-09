@@ -23,7 +23,7 @@ static void and_draw_pixel(
 		hh = win->height/2;
 	}
 }
-static void and_draw_vbo(
+static void and_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -55,17 +55,6 @@ static void and_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void and_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)and_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)and_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)and_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)and_draw_json(act, pin, win, sty);
-	else and_draw_pixel(act, pin, win, sty);
-}
 
 
 
@@ -84,7 +73,7 @@ static void and_read(struct halfrel* self, struct halfrel* peer, struct halfrel*
 		win = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)and_draw_vbo(act,slot, win,geom, wnd,area);
+		if('v' == len)and_draw_gl41(act,slot, win,geom, wnd,area);
 	}
 }
 static void and_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)

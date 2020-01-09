@@ -23,7 +23,7 @@ static void jkff_draw_pixel(
 		hh = win->height/2;
 	}
 }
-static void jkff_draw_vbo(
+static void jkff_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -84,7 +84,7 @@ static void jkff_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 		win = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)jkff_draw_vbo(act,slot, win,geom, wnd,area);
+		if('v' == len)jkff_draw_gl41(act,slot, win,geom, wnd,area);
 	}
 }
 static void jkff_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)

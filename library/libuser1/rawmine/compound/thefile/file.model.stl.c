@@ -180,7 +180,7 @@ static void stl3d_ctxforwnd(struct glsrc* src, char* str, char* vs, char* fs)
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 	openreadclose(str, 0, src->vbuf, src->vbuf_len);
 }
-static void stl3d_draw_vbo3d(
+static void stl3d_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
@@ -325,9 +325,7 @@ static void stl3d_read(struct halfrel* self, struct halfrel* peer, struct halfre
 
 		scn = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len){
-			stl3d_draw_vbo3d(act,slot, scn,geom, wrd,camg, wnd,area);
-		}
+		if('v' == len)stl3d_draw_gl41(act,slot, scn,geom, wrd,camg, wnd,area);
 	}
 }
 static void stl3d_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

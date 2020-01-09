@@ -3,7 +3,7 @@
 
 
 
-static void cpure_draw_vbo3d(
+static void cpure_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -33,7 +33,7 @@ static void cpure_read(struct halfrel* self, struct halfrel* peer, struct halfre
 		scn = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)cpure_draw_vbo3d(act,slot, scn,geom, wnd,area);
+		if('v' == len)cpure_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
 }
 static void cpure_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

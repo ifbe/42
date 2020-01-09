@@ -120,7 +120,7 @@ static void dirlight_ctxforwnd(struct glsrc* src)
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 }
-static void dirlight_draw_vbo(
+static void dirlight_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -406,7 +406,7 @@ static void dirlight_read(struct halfrel* self, struct halfrel* peer, struct hal
 			dirlight_sty2cam(&geom->frus, &geom->fs);
 			dirlight_matrix(act,slot, win,geom);
 
-			dirlight_draw_vbo(act,slot, win,geom, wnd,area);
+			dirlight_draw_gl41(act,slot, win,geom, wnd,area);
 			dirlight_light(act,slot, win,geom, wnd,area);
 		}
 		if('?' == len){

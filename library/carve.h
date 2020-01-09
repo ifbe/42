@@ -7,17 +7,17 @@ void carveaxis(               struct entity* ctx);
 void carvefrustum(            struct entity* ctx, struct fstyle* sty);
 void select_3d(               struct entity* ctx, u32 rgb, struct fstyle* sty, u32 flag);
 
-void carvepoint(              struct entity* ctx, u32 rgb, vec3 vc);
-void carvepoint_bezier(       struct entity* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
-void carvepoint_triangle(     struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
-void carvepoint_rect(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carvepoint_circle(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
-void carvepoint_cone(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carvepoint_cask(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carvepoint_cylinder(     struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
-void carvepoint_dodecahedron( struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvepoint_icosahedron(  struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void carvepoint_sphere(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41point(              struct entity* ctx, u32 rgb, vec3 vc);
+void gl41point_bezier(       struct entity* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
+void gl41point_triangle(     struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void gl41point_rect(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void gl41point_circle(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void gl41point_cone(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void gl41point_cask(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void gl41point_cylinder(     struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu);
+void gl41point_dodecahedron( struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41point_icosahedron(  struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41point_sphere(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
 void carveline(               struct entity* ctx, u32 rgb, vec3 va, vec3 vb);
 void carveline_shorter(       struct entity* ctx, u32 rgb, vec3 va, vec3 vb);

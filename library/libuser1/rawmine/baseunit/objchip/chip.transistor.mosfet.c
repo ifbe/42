@@ -8,7 +8,7 @@ static void mosfet_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void mosfet_draw_vbo3d(
+static void mosfet_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {

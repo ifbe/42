@@ -75,7 +75,7 @@ static void calculator_draw_pixel(
 		}
 	}
 }
-static void calculator_draw_vbo(
+static void calculator_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -254,7 +254,7 @@ static void calculator_read_bycam(struct halfrel* self, struct halfrel* peer, st
 		scn = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)calculator_draw_vbo(act,slot, scn,geom, wnd,area);
+		if('v' == len)calculator_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
 }
 static void calculator_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
@@ -271,7 +271,7 @@ static void calculator_read_bywnd(struct halfrel* self, struct halfrel* peer, st
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-1.0;
 	gl41data_before(wnd);
-	calculator_draw_vbo(cam, 0, 0,(void*)&fs, wnd,area);
+	calculator_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
 	gl41data_after(wnd);
 
 	gl41data_tmpcam(wnd);

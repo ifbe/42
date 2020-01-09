@@ -106,7 +106,7 @@ static void weiqi_draw_pixel(
 		}
 	}
 }
-static void weiqi_draw_vbo(
+static void weiqi_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -244,23 +244,10 @@ static void weiqi_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void weiqi_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)weiqi_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)weiqi_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)weiqi_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)weiqi_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)weiqi_draw_vbo2d(act, pin, win, sty);
-		//else weiqi_draw_vbo(act, pin, win, sty);
-	}
-	else weiqi_draw_pixel(act, pin, win, sty);
-}
+
+
+
 static void weiqi_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
@@ -345,9 +332,7 @@ static void weiqi_read(struct halfrel* self, struct halfrel* peer, struct halfre
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		if('v' == len){
-			weiqi_draw_vbo(act,part, win,geom, wnd,area);
-		}
+		if('v' == len)weiqi_draw_gl41(act,part, win,geom, wnd,area);
 	}
 }
 static void weiqi_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

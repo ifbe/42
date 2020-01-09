@@ -46,7 +46,7 @@ static void pegged_draw_pixel(
 		}
 	}
 }
-static void pegged_draw_vbo(
+static void pegged_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -132,30 +132,12 @@ static void pegged_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void pegged_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)pegged_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)pegged_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)pegged_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)pegged_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)pegged_draw_vbo(act, pin, win, sty);
-	else pegged_draw_pixel(act, pin, win, sty);
-}
 
 
 
 
 static void pegged_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	pegged_draw(act, pin, win, sty);
 }
 static void pegged_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

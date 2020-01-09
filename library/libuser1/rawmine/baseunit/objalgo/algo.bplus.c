@@ -127,7 +127,7 @@ static void bplus_draw_pixel(
 //printmemory(node, 0x800);
 	printnode(win, right, cx, 1, cx, cy, ww, hh);
 }
-static void bplus_draw_vbo(
+static void bplus_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -163,19 +163,10 @@ static void bplus_draw_cli(
 {
 	say("tree(%x,%x,%x)\n",win,act,sty);
 }
-static void bplus_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)bplus_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)bplus_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)bplus_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)bplus_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)bplus_draw_vbo(act, pin, win, sty);
-	else bplus_draw_pixel(act, pin, win, sty);
-}
+
+
+
 static void bplus_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,

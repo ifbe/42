@@ -89,7 +89,7 @@ static void portal_draw_pixel(
 		hh = win->height/2;
 	}
 }
-static void portal_draw_vbo_b(
+static void portal_draw_gl41_b(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -118,7 +118,7 @@ static void portal_draw_vbo_b(
 	if(0 == portal)return;
 	carveline_arrow(win, 0xff0000, portal->vc, portal->vq, vt);
 }
-static void portal_draw_vbo(
+static void portal_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)

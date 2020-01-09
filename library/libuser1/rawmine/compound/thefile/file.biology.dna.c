@@ -8,20 +8,8 @@ static void dna_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-}/*
-static void dna_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carvesolid2d_rect(win, 0x404040, vc, vr ,vf);
-}*/
-static void dna_draw_vbo3d(
+}
+static void dna_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -107,34 +95,12 @@ static void dna_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void dna_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)dna_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)dna_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)dna_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)dna_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)dna_draw_vbo2d(act, pin, win, sty);
-		//else dna_draw_vbo3d(act, pin, win, sty);
-	}
-	else dna_draw_pixel(act, pin, win, sty);
-}
 
 
 
 
 static void dna_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//dna_draw(act, pin, win, sty);
 }
 static void dna_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

@@ -30,7 +30,7 @@ static void example_draw_pixel(
 	drawsolid_rect(win, bg, cx-ww, cy-hh, cx+ww, cy+hh);
 	drawhexadecimal(win, fg, cx, cy, bg);
 }
-static void example_draw_vbo(
+static void example_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -53,7 +53,7 @@ static void example_draw_vbo(
 	tc[0] = vc[0]-vr[0]/2-vf[0]/2+vu[0]/2;
 	tc[1] = vc[1]-vr[1]/2-vf[1]/2+vu[1]/2;
 	tc[2] = vc[2]-vr[2]/2-vf[2]/2+vu[2]/2,
-	carvepoint_sphere(win, 0xffffff, tc, tr, tf, tu);
+	gl41point_sphere(win, 0xffffff, tc, tr, tf, tu);
 
 	tc[0] = vc[0]+vr[0]/2-vf[0]/2+vu[0]/2;
 	tc[1] = vc[1]+vr[1]/2-vf[1]/2+vu[1]/2;
@@ -68,7 +68,7 @@ static void example_draw_vbo(
 	tc[0] = vc[0]-vr[0]/2-vf[0]/2+vu[0]*3/2;
 	tc[1] = vc[1]-vr[1]/2-vf[1]/2+vu[1]*3/2;
 	tc[2] = vc[2]-vr[2]/2-vf[2]/2+vu[2]*3/2;
-	carvepoint_sphere(win, 0xffffff, tc, tr, tf, tu);
+	gl41point_sphere(win, 0xffffff, tc, tr, tf, tu);
 
 	tc[0] = vc[0]+vr[0]/2-vf[0]/2+vu[0]*3/2;
 	tc[1] = vc[1]+vr[1]/2-vf[1]/2+vu[1]*3/2;
@@ -110,30 +110,12 @@ static void example_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void example_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)example_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)example_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)example_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)example_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)example_draw_vbo(act, pin, win, sty);
-	else example_draw_pixel(act, pin, win, sty);
-}
 
 
 
 
 static void example_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//example_draw(act, pin, win, sty);
 }
 static void example_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

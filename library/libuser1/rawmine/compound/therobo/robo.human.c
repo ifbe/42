@@ -133,7 +133,7 @@ static void human_draw_pixel(
 		hh = win->height/2;
 	}
 }
-static void human_draw_vbo(
+static void human_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -337,12 +337,10 @@ static int human_event(
 
 
 
-static void human_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static int human_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam
+	//wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
-
-	//cam -> world
 	struct entity* wrd;struct style* camg;
 
 	//scene -> texball
@@ -354,18 +352,13 @@ static void human_read(struct halfrel* self, struct halfrel* peer, struct halfre
 		scn = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)human_draw_vbo(act,slot, scn,geom, wnd,area);
+		if('v' == len)human_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
+	return 0;
 }
 static int human_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	return human_event(act, pin, win, sty, ev, 0);
+	return 0;
 }
 static void human_stop(struct halfrel* self, struct halfrel* peer)
 {

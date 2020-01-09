@@ -52,12 +52,11 @@ static void tree_draw_pixel(
 	drawsolid_rect(win, 0x008000, cx-ww/2, cy-hh*3/4, cx+ww/2, cy-hh/2);
 	drawsolid_rect(win, 0x008000, cx-ww/4, cy-hh, cx+ww/4, cy-hh*3/4);
 }/*
-static void tree_draw_vbo2d(
+static void tree_draw_d(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 	vec3 tc, tr, tf, tu, f;
-	if(0 == sty)sty = defaultstyle_vbo2d();
 
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
@@ -112,7 +111,7 @@ static void tree_draw_vbo2d(
 	tr[2] = vr[2]*1/4;
 	carvesolid_prism4(win, 0x00ff00, tc, tr, tf, tu);
 }*/
-static void tree_draw_vbo3d(
+static void tree_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
@@ -220,22 +219,6 @@ static void tree_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void tree_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)tree_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)tree_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)tree_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)tree_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)tree_draw_vbo2d(act, pin, win, sty);
-		//else tree_draw_vbo3d(act, pin, win, sty);
-	}
-	else tree_draw_pixel(act, pin, win, sty);
-}
 
 
 
@@ -259,7 +242,7 @@ static void tree_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 		win = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)tree_draw_vbo3d(act,part, win,geom, wrd,camg, wnd,area);
+		if('v' == len)tree_draw_gl41(act,part, win,geom, wrd,camg, wnd,area);
 	}
 }
 static void tree_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

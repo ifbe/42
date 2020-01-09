@@ -137,7 +137,7 @@ static void bintree_draw_pixel(
 
 	printnode(win, right, cx, 1, cx, cy, ww, hh);
 }
-static void bintree_draw_vbo(
+static void bintree_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -173,19 +173,10 @@ static void bintree_draw_cli(
 {
 	say("tree(%x,%x,%x)\n",win,act,sty);
 }
-static void bintree_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)bintree_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)bintree_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)bintree_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)bintree_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)bintree_draw_vbo(act, pin, win, sty);
-	else bintree_draw_pixel(act, pin, win, sty);
-}
+
+
+
 static void bintree_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,

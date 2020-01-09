@@ -36,7 +36,7 @@ static void texbox_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void texbox_draw_vbo3d(
+static void texbox_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
@@ -90,23 +90,6 @@ static void texbox_draw_cli(
 {
 	say("texbox(%x,%x,%x)\n",win,act,sty);
 }
-static void texbox_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)texbox_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)texbox_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)texbox_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)texbox_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)texbox_draw_vbo2d(act, pin, win, sty);
-		//else texbox_draw_vbo3d(act, pin, win, sty);
-	}
-	else texbox_draw_pixel(act, pin, win, sty);
-}
 static void texbox_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
@@ -141,7 +124,7 @@ static void texbox_read(struct halfrel* self, struct halfrel* peer, struct halfr
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		texbox_draw_vbo3d(act,part, win,geom, wrd,camg, ctx,0);
+		texbox_draw_gl41(act,part, win,geom, wrd,camg, ctx,0);
 	}
 }
 static void texbox_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

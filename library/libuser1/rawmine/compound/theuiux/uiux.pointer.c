@@ -15,7 +15,7 @@ void pointer_draw_html(struct entity* win, struct style* sty)
 void pointer_draw_json(struct entity* win, struct style* sty)
 {
 }
-void pointer_draw_vbo(struct entity* win, struct style* sty)
+void pointer_draw_gl41(struct entity* win, struct style* sty)
 {/*
 	int j;
 	float x0,y0,x1,y1;
@@ -60,31 +60,13 @@ void pointer_draw_pixel(struct entity* win, struct style* sty)
 		drawline_arrow(win, 0xff00ff, x0, y0, x1, y1);
 	}*/
 }
-static int pointer_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+
+
+
+
+static int pointer_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)pointer_draw_cli(win, sty);
-	else if(fmt == _tui_)pointer_draw_tui(win, sty);
-	else if(fmt == _html_)pointer_draw_html(win, sty);
-	else if(fmt == _json_)pointer_draw_json(win, sty);
-	else if(fmt == _vbo_)pointer_draw_vbo(win, sty);
-	else pointer_draw_pixel(win, sty);
 	return 0;
-}
-
-
-
-
-static void pointer_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
-{
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//pointer_draw(act, pin, win, sty);
 }
 static int pointer_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

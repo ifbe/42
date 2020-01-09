@@ -59,7 +59,7 @@ static void pwmtool_draw_pixel(
 		draw_pwm(win,0xffffff,x0,x1,x2,x3,y0,y1);
 	}
 }
-static void pwmtool_draw_vbo(
+static void pwmtool_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {

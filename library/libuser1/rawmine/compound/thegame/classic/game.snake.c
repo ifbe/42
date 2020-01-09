@@ -66,7 +66,7 @@ void snake_draw_pixel(
 	t4 = cy-hh + (buf[0].y+1) * 2 * hh / HEIGHT;
 	drawsolid_rect(win, 0x00ff00, t1+1, t2+1, t3-1, t4-1);
 }
-void snake_draw_vbo(
+void snake_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -120,18 +120,10 @@ void snake_draw_cli(
 {
 	say("snake(%x,%x,%x)\n",win,act,sty);
 }
-void snake_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)snake_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)snake_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)snake_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)snake_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)snake_draw_vbo(act, pin, win, sty);
-	else snake_draw_pixel(act, pin, win, sty);
-}
+
+
+
+
 void snake_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
@@ -161,22 +153,9 @@ void snake_event(
 
 static void snake_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//snake_draw(act, pin, win, sty);
 }
 static void snake_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//snake_event(act, pin, win, sty, ev, 0);
 }
 static void snake_stop(struct halfrel* self, struct halfrel* peer)
 {

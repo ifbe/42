@@ -62,21 +62,8 @@ static void ooxx_draw_pixel(
 			}
 		}//forx
 	}//fory
-}/*
-static void ooxx_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	vec3 tc,tr,tf;
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carvesolid2d_rect(win, 0x444444, vc, vr, vf);
-}*/
-static void ooxx_draw_vbo3d(
+}
+static void ooxx_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -143,22 +130,10 @@ static void ooxx_draw_cli(
 		say("\n");
 	}
 }
-static void ooxx_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)ooxx_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)ooxx_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)ooxx_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)ooxx_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)ooxx_draw_vbo2d(act, pin, win, sty);
-		//else ooxx_draw_vbo3d(act, pin, win, sty);
-	}
-	else ooxx_draw_pixel(act, pin, win, sty);
-}
+
+
+
+
 void ooxx_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
@@ -198,18 +173,6 @@ say("%d,%d\n",x,y);
 
 static void ooxx_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	say("@ooxx_read:%llx,%llx,%llx\n",act,win,buf);
-
-	if(ctx){
-		if(_gl41data_ == ctx->type)ooxx_draw_vbo3d(act,pin,ctx,sty);
-	}
-	//ooxx_draw(act, pin, win, sty);
 }
 static void ooxx_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

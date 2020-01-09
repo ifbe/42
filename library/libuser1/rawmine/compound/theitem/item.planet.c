@@ -62,56 +62,8 @@ static void planet_draw_pixel(
 		y = cy + l*sine(tau*t/data[j].period);
 		drawsolid_circle(win, c, x, y, r);
 	}
-}/*
-static void planet_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	int j;
-	float l, r;
-	float a, c, s;
-	vec3 tc, tr, tf, tu, f;
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	u64 t = timeread() / 10000;
-
-	for(j=0;j<9;j++)
-	{
-		l = data[j].distance/data[8].distance;
-		tr[0] = vr[0]*l;
-		tr[1] = vr[1]*l;
-		tr[2] = vr[2]*l;
-		tf[0] = vf[0]*l;
-		tf[1] = vf[1]*l;
-		tf[2] = vf[2]*l;
-		carveline2d_circle(win, 0x404040, vc, tr, tf);
-
-		r = data[j].diameter/data[8].distance/2;
-		//if(j>0)r *= 1024;
-		tr[0] = vr[0]*r;
-		tr[1] = vr[1]*r;
-		tr[2] = vr[2]*r;
-		tf[0] = vf[0]*r;
-		tf[1] = vf[1]*r;
-		tf[2] = vf[2]*r;
-		tu[0] = vu[0]*r;
-		tu[1] = vu[1]*r;
-		tu[2] = vu[2]*r;
-
-		a = tau*t/data[j].period;
-		c = cosine(a);
-		s = sine(a);
-		tc[0] = vc[0] + (vr[0]*c + vf[0]*s)*l;
-		tc[1] = vc[1] + (vr[1]*c + vf[1]*s)*l;
-		tc[2] = vc[2] + (vr[2]*c + vf[2]*s)*l;
-		carvesolid2d_sphere(win, data[j].color, tc, tr, tf, tu);
-	}
-}*/
-static void planet_draw_vbo3d(
+}
+static void planet_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -187,34 +139,12 @@ static void planet_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void planet_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)planet_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)planet_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)planet_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)planet_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)planet_draw_vbo2d(act, pin, win, sty);
-		//else planet_draw_vbo3d(act, pin, win, sty);
-	}
-	else planet_draw_pixel(act, pin, win, sty);
-}
 
 
 
 
 static void planet_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//planet_draw(act, pin, win, sty);
 }
 static void planet_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

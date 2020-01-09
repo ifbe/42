@@ -77,65 +77,8 @@ static void mario_draw_pixel(
 			}
 		}
 	}
-}/*
-static void mario_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	if(0 == act->buf)return;
-
-	struct glsrc* src = (void*)(pin->foot[0]);
-	float (*vbuf)[6] = (void*)(src->vbuf);
-
-	vbuf[0][0] = vc[0] - vr[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2];
-	vbuf[0][3] = 0.0;
-	vbuf[0][4] = 1.0;
-	vbuf[0][5] = 0.0;
-
-	vbuf[1][0] = vc[0] + vr[0] + vf[0];
-	vbuf[1][1] = vc[1] + vr[1] + vf[1];
-	vbuf[1][2] = vc[2] + vr[2] + vf[2];
-	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 0.0;
-	vbuf[1][5] = 0.0;
-
-	vbuf[2][0] = vc[0] - vr[0] + vf[0];
-	vbuf[2][1] = vc[1] - vr[1] + vf[1];
-	vbuf[2][2] = vc[2] - vr[2] + vf[2];
-	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 0.0;
-	vbuf[2][5] = 0.0;
-
-	vbuf[3][0] = vc[0] + vr[0] + vf[0];
-	vbuf[3][1] = vc[1] + vr[1] + vf[1];
-	vbuf[3][2] = vc[2] + vr[2] + vf[2];
-	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 0.0;
-	vbuf[3][5] = 0.0;
-
-	vbuf[4][0] = vc[0] - vr[0] - vf[0];
-	vbuf[4][1] = vc[1] - vr[1] - vf[1];
-	vbuf[4][2] = vc[2] - vr[2] - vf[2];
-	vbuf[4][3] = 0.0;
-	vbuf[4][4] = 1.0;
-	vbuf[4][5] = 0.0;
-
-	vbuf[5][0] = vc[0] + vr[0] - vf[0];
-	vbuf[5][1] = vc[1] + vr[1] - vf[1];
-	vbuf[5][2] = vc[2] + vr[2] - vf[2];
-	vbuf[5][3] = 1.0;
-	vbuf[5][4] = 1.0;
-	vbuf[5][5] = 0.0;
-
-	src->vbuf_enq += 1;
-}*/
-static void mario_draw_vbo3d(
+}
+static void mario_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -400,41 +343,12 @@ static void mario_draw_cli(
 {
 	say("mario(%x,%x,%x)\n",win,act,sty);
 }
-static void mario_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)mario_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)mario_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)mario_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)mario_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)mario_draw_vbo2d(act, pin, win, sty);
-		//else mario_draw_vbo3d(act, pin, win, sty);
-	}
-	else mario_draw_pixel(act, pin, win, sty);
-}
 
 
 
 
 static void mario_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	//say("@texball_read:%llx,%llx,%llx\n",act,win,buf);
-
-	if(ctx){
-		if(_gl41data_ == ctx->type)mario_draw_vbo3d(act,pin,ctx,sty);
-	}
-	//mario_draw(act, pin, win, sty);
 }
 static void mario_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

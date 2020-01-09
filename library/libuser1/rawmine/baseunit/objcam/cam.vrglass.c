@@ -39,7 +39,7 @@ static void vrglass_create(struct entity* act, void* str)
 
 
 
-static int vrglass_draw_vbo(
+static int vrglass_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {

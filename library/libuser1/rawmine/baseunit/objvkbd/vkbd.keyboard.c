@@ -104,7 +104,7 @@ void vkbd_draw_pixel(struct entity* win, struct style* sty)
 		}
 	}
 }
-void vkbd_draw_vbo(
+void vkbd_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -210,7 +210,7 @@ static void vkbd_read_bywnd(struct halfrel* self, struct halfrel* peer, struct h
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-1.0;
 
 	gl41data_before(wnd);
-	vkbd_draw_vbo(cam, 0, 0,(void*)&fs, wnd,area);
+	vkbd_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
 	gl41data_tmpcam(wnd);
 	gl41data_after(wnd);
 }

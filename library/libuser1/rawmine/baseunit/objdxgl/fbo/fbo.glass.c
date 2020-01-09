@@ -65,7 +65,7 @@ void glass_ctxforwnd(struct glsrc* src)
 	//texture
 	src->tex[0].name = "tex0";
 }
-static void glass_draw_vbo(
+static void glass_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -390,7 +390,7 @@ static void glass_read(struct halfrel* self, struct halfrel* peer, struct halfre
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		if('v' == len){
-			glass_draw_vbo(act,slot, win,geom, wnd,area);
+			glass_draw_gl41(act,slot, win,geom, wnd,area);
 		}
 		if('?' == len){
 			fbo = 0;rect = 0;

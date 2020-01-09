@@ -55,7 +55,7 @@ static void palette_draw_pixel(
 	pal = (red<<16)+(green<<8)+blue;
 	drawhexadecimal(win, pal, cx, cy, pal);
 }
-static void palette_draw_vbo(
+static void palette_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -91,18 +91,6 @@ static void palette_draw_cli(
 {
 	say("palette(%x,%x,%x)\n",win,act,sty);
 	say("r=%02x,g=%02x,b=%02x\n",red,green,blue);
-}
-static void palette_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)palette_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)palette_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)palette_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)palette_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)palette_draw_vbo(act, pin, win, sty);
-	else palette_draw_pixel(act, pin, win, sty);
 }
 static void palette_event(
 	struct entity* act, struct style* pin,

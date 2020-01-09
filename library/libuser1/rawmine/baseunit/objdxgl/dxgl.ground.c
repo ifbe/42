@@ -42,7 +42,7 @@ static void ground_ctxforwnd(struct glsrc* src, char* str, char* vs, char* fs)
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 }
-static void ground_draw_vbo(
+static void ground_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -189,9 +189,7 @@ static void ground_read(struct halfrel* self, struct halfrel* peer, struct halfr
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		if('v' == len){
-			ground_draw_vbo(act,part, win,geom, wnd,area);
-		}
+		if('v' == len)ground_draw_gl41(act,part, win,geom, wnd,area);
 	}
 }
 static void ground_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

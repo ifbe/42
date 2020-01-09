@@ -6,7 +6,7 @@ int ui2d_cwrite(struct entity* win, struct style* sty, struct entity* sc, struct
 
 
 
-void corner_vbo_drag_lefttop(
+void corner_gl41_drag_lefttop(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
 	float x, float y)
@@ -25,7 +25,7 @@ void corner_vbo_drag_lefttop(
 	carveline_rect(win, 0xffffff, tc, tr, tf);
 	carvesolid_circle(win, 0xffffff, tc, tr, tf);
 }
-void corner_vbo_drag_righttop(
+void corner_gl41_drag_righttop(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
 	float x, float y)
@@ -59,7 +59,7 @@ void corner_vbo_drag_righttop(
 	tf[2] = -0.99;
 	carvesolid_triangle(win, 0xffff00, tc, tr, tf);
 }
-void corner_vbo_drag_leftbot(
+void corner_gl41_drag_leftbot(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
 	float x, float y)
@@ -85,7 +85,7 @@ void corner_vbo_drag_leftbot(
 	tf[1] = 1.0+tc[1];
 	carvesolid_rect(win, 0x404040, tc, tr, tf);
 }
-void corner_vbo_drag_rightbot(
+void corner_gl41_drag_rightbot(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
 	float x0, float y0, float xn, float yn)
@@ -106,7 +106,7 @@ void corner_vbo_drag_rightbot(
 	tc[1] = -1.0;
 	carvesolid_triangle(win, 0x000000, tc, tr, tf);
 }
-void corner_vbo_drag(
+void corner_gl41_drag(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -136,13 +136,13 @@ void corner_vbo_drag(
 
 	if(y0 < c){
 		if(x0 < c){
-			corner_vbo_drag_lefttop(
+			corner_gl41_drag_lefttop(
 				act, pin, win, sty,
 				xn/w - 1.0, 1.0 - yn/h
 			);
 		}
 		else if(x0+c > w){
-			corner_vbo_drag_righttop(
+			corner_gl41_drag_righttop(
 				act, pin, win, sty,
 				2.0*xn/w - 1.0, 1.0 - 2.0*yn/h
 			);
@@ -150,7 +150,7 @@ void corner_vbo_drag(
 	}
 	else if(y0+c > h){
 		if(x0 < c){
-			corner_vbo_drag_leftbot(
+			corner_gl41_drag_leftbot(
 				act, pin, win, sty,
 				xn/w - 1.0, -yn/h
 			);
@@ -160,7 +160,7 @@ void corner_vbo_drag(
 			x0 = 2*x0/w - 1.0;
 			y0 = ((xn-w)*(xn-w)/(yn-h) + (yn+h)) / 2.0;
 			y0 = 1.0 - 2*y0/h;
-			corner_vbo_drag_rightbot(
+			corner_gl41_drag_rightbot(
 				act, pin, win, sty,
 				x0, y0, 2.0*xn/w - 1.0, 1.0 - 2.0*yn/h
 			);
@@ -172,7 +172,7 @@ void corner_vbo_drag(
 
 
 
-void corver_vbo_hover(
+void corver_gl41_hover(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -283,7 +283,7 @@ void corver_vbo_hover(
 
 
 
-void corner_vbo_popup(
+void corner_gl41_popup(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -322,15 +322,15 @@ void corner_vbo_popup(
 
 
 
-void corner_draw_vbo(
+void corner_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	corver_vbo_hover(act, pin, win, sty);
+	corver_gl41_hover(act, pin, win, sty);
 
-	corner_vbo_drag(act, pin, win, sty);
+	corner_gl41_drag(act, pin, win, sty);
 
-	corner_vbo_popup(act, pin, win, sty);
+	corner_gl41_popup(act, pin, win, sty);
 }
 void corner_draw_pixel(
 	struct entity* act, struct style* pin,
@@ -412,17 +412,6 @@ void corner_draw_pixel(
 		}
 	}
 */
-}
-static int corner_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	switch(win->fmt)
-	{
-		case _vbo_:corner_draw_vbo(act, pin, win, sty);break;
-		default:corner_draw_pixel(act, pin, win, sty);
-	}
-	return 0;
 }
 
 
@@ -579,24 +568,13 @@ static int corner_event(
 
 
 
-static void corner_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static int corner_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//corner_draw(act, pin, win, sty);
+	return 0;
 }
 static int corner_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	return 0;//corner_event(act, pin, win, sty, ev, 0);
+	return 0;
 }
 static int corner_stop(struct halfrel* self, struct halfrel* peer)
 {

@@ -79,7 +79,7 @@ static void font_draw_pixel(
 	drawsolid_rect(win, 0x0000ff, cx-32, cy-16, cx-1, cy-1);
 	drawhexadecimal(win, 0xff0000, cx-32, cy-16, chosen);
 }
-static void font_draw_vbo(
+static void font_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -183,19 +183,10 @@ static void font_draw_cli(
 		say("\n");
 	}
 }
-static void font_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)font_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)font_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)font_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)font_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)font_draw_vbo(act, pin, win, sty);
-	else font_draw_pixel(act, pin, win, sty);
-}
+
+
+
 static void font_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
@@ -229,28 +220,9 @@ static void font_event(
 
 static void font_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	//say("@drone_read:%llx,%llx,%llx\n",act,win,buf);
-
-	if(ctx){
-		if(_gl41data_ == ctx->type)font_draw_vbo(act,pin,ctx,sty);
-	}
-	//font_draw(act, pin, win, sty);
 }
 static void font_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//font_event(act, pin, win, sty, ev, 0);
 }
 static void font_stop(struct halfrel* self, struct halfrel* peer)
 {

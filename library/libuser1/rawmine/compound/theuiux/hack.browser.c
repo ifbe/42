@@ -44,7 +44,7 @@ static void browser_draw_pixel(
 	drawline_rect(win, 0x404040, x0, y0, x1, y1);
 	drawtext(win, 0x000000, x0, y0, x1, y1, dat->buf, dat->len);
 }
-static void browser_draw_vbo(
+static void browser_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -97,19 +97,6 @@ static void browser_draw_cli(
 	struct entity* win, struct style* sty)
 {
 	say("browser(%x,%x,%x)\n",win,act,sty);
-}
-static void browser_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(_cli_ == fmt)browser_draw_cli(act, pin, win, sty);
-	else if(_tui_ == fmt)browser_draw_tui(act, pin, win, sty);
-	else if(_html_ == fmt)browser_draw_html(act, pin, win, sty);
-	else if(_json_ == fmt)browser_draw_json(act, pin, win, sty);
-	else if(_vbo_ == fmt)browser_draw_vbo(act, pin, win, sty);
-	else browser_draw_pixel(act, pin, win, sty);
 }
 
 

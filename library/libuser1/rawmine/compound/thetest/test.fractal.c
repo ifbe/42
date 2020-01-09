@@ -119,7 +119,7 @@ static void fractal_draw_pixel(
 		}
 	}*/
 }
-static void fractal_draw_vbo3d(
+static void fractal_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -202,22 +202,10 @@ static void fractal_draw_cli(
 {
 	say("fractal(%x,%x,%x)\n",win,act,sty);
 }
-static void fractal_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)fractal_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)fractal_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)fractal_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)fractal_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)fractal_draw_vbo2d(act, pin, win, sty);
-		//else fractal_draw_vbo3d(act, pin, win, sty);
-	}
-	else fractal_draw_pixel(act, pin, win, sty);
-}
+
+
+
+
 static void fractal_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
@@ -267,7 +255,7 @@ static void fractal_read(struct halfrel* self, struct halfrel* peer, struct half
 	if(stack){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		if('v' == len)fractal_draw_vbo3d(act,slot, scn,geom, wnd,area);
+		if('v' == len)fractal_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
 }
 static void fractal_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

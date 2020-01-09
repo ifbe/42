@@ -135,7 +135,7 @@ static void projector_ctxforwnd(struct glsrc* src)
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 }
-static void projector_draw_vbo(
+static void projector_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -402,7 +402,7 @@ static void projector_read(struct halfrel* self, struct halfrel* peer, struct ha
 			projector_matrix(act,slot, win,geom);
 
 			projector_light(act,slot, win,geom, wnd,area);
-			projector_draw_vbo(act,slot, win,geom, wnd,area);
+			projector_draw_gl41(act,slot, win,geom, wnd,area);
 		}
 		if('?' == len){
 			fbo = 0;rect = 0;

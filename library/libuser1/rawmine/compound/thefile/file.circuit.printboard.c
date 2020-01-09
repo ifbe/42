@@ -3,7 +3,7 @@
 
 
 
-static void pcb_draw_vbo(
+static void pcb_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -29,7 +29,7 @@ void pcb_read_board(struct halfrel* self, struct halfrel* peer, struct halfrel**
 	win = peer->pchip;geom = peer->pfoot;
 	wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 	wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-	pcb_draw_vbo(act,slot, win,geom, wnd,area);
+	pcb_draw_gl41(act,slot, win,geom, wnd,area);
 }
 int pcb_read_child(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {

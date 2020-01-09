@@ -77,7 +77,7 @@ static void graph_draw_pixel(
 		);
 	}*/
 }
-static void graph_draw_vbo(
+static void graph_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -187,18 +187,6 @@ static void graph_draw_cli(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-}
-static void graph_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)graph_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)graph_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)graph_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)graph_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)graph_draw_vbo(act, pin, win, sty);
-	else graph_draw_pixel(act, pin, win, sty);
 }
 
 
@@ -325,25 +313,9 @@ say("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
 
 static void graph_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	if(ctx){
-		if(_gl41data_ == ctx->type)graph_draw_vbo(act,pin,ctx,sty);
-	}
 }
 static void graph_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//graph_event(act, pin, win, sty, ev, 0);
 }
 static void graph_stop(struct halfrel* self, struct halfrel* peer)
 {

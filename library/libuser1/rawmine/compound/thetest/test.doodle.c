@@ -59,7 +59,7 @@ void doodle_draw_pixel(
 
 	drawbezier(win, 0xffffff, x0, y0, x1, y1, px, py);
 }
-static void doodle_draw_vbo(
+static void doodle_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -152,18 +152,6 @@ static void doodle_draw_cli(
 {
 	say("doodle(%x,%x,%x)\n", act, pin, win, sty);
 }
-static void doodle_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)doodle_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)doodle_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)doodle_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)doodle_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)doodle_draw_vbo(act, pin, win, sty);
-	else doodle_draw_pixel(act, pin, win, sty);
-}
 static void doodle_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
@@ -183,22 +171,9 @@ static void doodle_event(
 
 static void doodle_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//doodle_draw(act, pin, win, sty);
 }
 static void doodle_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//doodle_event(act, pin, win, sty, ev, 0);
 }
 static void doodle_stop(struct halfrel* self, struct halfrel* peer)
 {

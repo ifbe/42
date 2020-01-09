@@ -35,7 +35,7 @@ void navmenu_draw_html(struct entity* win)
 void navmenu_draw_json(struct entity* win)
 {
 }
-void navmenu_draw_vbo(struct entity* win)
+void navmenu_draw_gl41(struct entity* win)
 {
 	struct style sty;
 	vec3 vc;
@@ -227,16 +227,10 @@ void navmenu_draw_pixel(struct entity* win)
 	drawstring_fit(win, 0xffffff, w/4, h/16, w*3/4, h/8, nametab[tmp], 0);
 */
 }
-void navmenu_draw(struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(_cli_ == fmt)navmenu_draw_cli(win);
-	else if(_tui_ == fmt)navmenu_draw_tui(win);
-	else if(_html_ == fmt)navmenu_draw_html(win);
-	else if(_json_ == fmt)navmenu_draw_json(win);
-	else if(_vbo_ == fmt)navmenu_draw_vbo(win);
-	else navmenu_draw_pixel(win);
-}
+
+
+
+
 int navmenu_event(struct entity* win, struct style* sty, struct event* ev)
 {
 	short* t;

@@ -48,45 +48,8 @@ static void chess_draw_pixel(
 			);
 		}
 	}
-}/*
-static void chess_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u32 rgb;
-	int x,y;
-	vec3 tc, tr, tf, tu, f;
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	for(y=0;y<8;y++)
-	{
-		for(x=0;x<8;x++)
-		{
-			f[0] = (x+x-7)/8.0;
-			f[1] = (7-y-y)/8.0;
-			f[2] = 0.01;
-			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
-			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
-			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
-
-			tr[0] = vr[0]/8.1;
-			tr[1] = vr[1]/8.1;
-			tr[2] = vr[2]/8.1;
-			tf[0] = vf[0]/8.1;
-			tf[1] = vf[1]/8.1;
-			tf[2] = vf[2]/8.1;
-
-			if(((x+y+32)%2) != 0)rgb = 0x111111;
-			else rgb = 0xffffff;
-			carvesolid2d_rect(win, rgb, tc, tr, tf);
-		}
-	}
-}*/
-static void chess_draw_vbo3d(
+}
+static void chess_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -183,22 +146,6 @@ static void chess_draw_cli(
 		say("\n");
 	}
 }
-static void chess_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)chess_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)chess_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)chess_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)chess_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)chess_draw_vbo2d(act, pin, win, sty);
-		//else chess_draw_vbo3d(act, pin, win, sty);
-	}
-	else chess_draw_pixel(act, pin, win, sty);
-}
 
 
 
@@ -219,11 +166,8 @@ static void chess_read(struct halfrel* self, struct halfrel* peer, struct halfre
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		if('v' == len){
-			chess_draw_vbo3d(act,part, win,geom, wnd,area);
-		}
+		if('v' == len)chess_draw_gl41(act,part, win,geom, wnd,area);
 	}
-	//chess_draw(act, pin, win, sty);
 }
 static void chess_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

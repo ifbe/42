@@ -67,7 +67,7 @@ static void video_ctxforwnd(struct glsrc* src)
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 }
-void video_draw_vbo3d(
+void video_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -226,23 +226,6 @@ void video_draw_cli(
 	u8* src = act->idx;
 	say("src@%llx\n", src);
 }
-static void video_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)video_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)video_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)video_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)video_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)video_draw_vbo2d(act, pin, win, sty);
-		//else video_draw_vbo3d(act, pin, win, sty);
-	}
-	else video_draw_pixel(act, pin, win, sty);
-}
 void video_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
@@ -268,7 +251,7 @@ static void video_read(struct halfrel* self, struct halfrel* peer, struct halfre
 		win = peer->pchip;geom = peer->pfoot;
 		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)video_draw_vbo3d(act,part, win,geom, wnd,area);
+		if('v' == len)video_draw_gl41(act,part, win,geom, wnd,area);
 	}
 }
 static void video_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

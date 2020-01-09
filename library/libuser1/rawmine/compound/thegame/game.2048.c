@@ -110,7 +110,7 @@ static void the2048_draw_pixel(
 		}
 	}
 }
-static void the2048_draw_vbo3d(
+static void the2048_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -261,17 +261,6 @@ static void the2048_draw_cli(
 		val2048[tab[3][3]]
 	);
 }
-static void the2048_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)the2048_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)the2048_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)the2048_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)the2048_draw_json(act, pin, win, sty);
-}
 
 
 
@@ -334,10 +323,6 @@ static void the2048_event(struct entity* act, struct event* ev)
 
 static void the2048_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam, cam -> world
-	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-	//world -> 2048
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* slot;
 	//say("@the2048_read\n");
@@ -345,10 +330,13 @@ static void the2048_read(struct halfrel* self, struct halfrel* peer, struct half
 	act = self->pchip;slot = self->pfoot;
 	win = peer->pchip;geom = peer->pfoot;
 	if(stack){
+		//wnd -> cam, cam -> world
+		struct entity* wnd;struct style* area;
+		struct entity* wrd;struct style* camg;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		if('v' == len){
-			the2048_draw_vbo3d(act,slot, win,geom, wnd,area);
+			the2048_draw_gl41(act,slot, win,geom, wnd,area);
 		}
 	}
 	else{

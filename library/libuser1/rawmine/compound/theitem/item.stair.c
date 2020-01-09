@@ -7,34 +7,8 @@ static void stair_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-}/*
-static void stair_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	int j;
-	vec3 tc, tr, tf, tu;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-	carveline2d_rect(win, 0xffffff, vc, vr, vf);
-
-	tr[0] = vr[0]/8;
-	tr[1] = vr[1]/8;
-	tr[2] = vr[2]/8;
-	tf[0] = vf[0]/8;
-	tf[1] = vf[1]/8;
-	tf[2] = vf[2]/8;
-	for(j=-7;j<8;j+=2)
-	{
-		tc[0] = vc[0] + vr[0]*j/8 + vf[0]*j/8;
-		tc[1] = vc[1] + vr[1]*j/8 + vf[1]*j/8;
-		tc[2] = vc[2] + vr[2]*j/8 + vf[2]*j/8;
-		carvesolid2d_rect(win, 0x808080, tc, tr, tf);
-	}
-}*/
-static void stair_draw_vbo3d(
+}
+static void stair_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -91,40 +65,12 @@ static void stair_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void stair_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)stair_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)stair_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)stair_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)stair_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)stair_draw_vbo2d(act, pin, win, sty);
-		//else stair_draw_vbo3d(act, pin, win, sty);
-	}
-	else stair_draw_pixel(act, pin, win, sty);
-}
 
 
 
 
 static void stair_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct entity* ctx = buf;
-	//say("@drone_read:%llx,%llx,%llx\n",act,win,buf);
-
-	if(ctx){
-		if(_gl41data_ == ctx->type)stair_draw_vbo3d(act,pin,ctx,sty);
-	}
-	//stair_draw(act, pin, win, sty);
 }
 static void stair_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

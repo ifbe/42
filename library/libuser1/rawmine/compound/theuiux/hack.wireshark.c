@@ -35,7 +35,7 @@ static void rawdump_draw_pixel(
 	}
 	drawline_rect(win, 0xffffff, cx-ww, cy-hh, cx+ww-1, cy+hh-1);
 }
-static void rawdump_draw_vbo(
+static void rawdump_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -69,18 +69,6 @@ static void rawdump_draw_cli(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-}
-static void rawdump_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)rawdump_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)rawdump_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)rawdump_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)rawdump_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)rawdump_draw_vbo(act, pin, win, sty);
-	else rawdump_draw_pixel(act, pin, win, sty);
 }
 
 

@@ -8,7 +8,7 @@ static void sokoban_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void sokoban_draw_vbo(
+static void sokoban_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -33,31 +33,12 @@ static void sokoban_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void sokoban_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)sokoban_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)sokoban_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)sokoban_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)sokoban_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)sokoban_draw_vbo(act, pin, win, sty);
-	else sokoban_draw_pixel(act, pin, win, sty);
-}
 
 
 
 
 static void sokoban_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//sokoban_draw(act, pin, win, sty);
 }
 static void sokoban_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

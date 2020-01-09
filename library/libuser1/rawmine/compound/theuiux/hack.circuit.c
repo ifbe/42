@@ -69,7 +69,7 @@ static void circuit_draw_pixel(
 		}
 	}
 }
-static void circuit_draw_vbo(
+static void circuit_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -158,31 +158,12 @@ static void circuit_draw_cli(
 {
 	say("circuit(%x,%x,%x)\n",win,act,sty);
 }
-static void circuit_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)circuit_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)circuit_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)circuit_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)circuit_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)circuit_draw_vbo(act, pin, win, sty);
-	else circuit_draw_pixel(act, pin, win, sty);
-}
 
 
 
 
 static void circuit_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//circuit_draw(act, pin, win, sty);
 }
 static void circuit_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

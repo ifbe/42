@@ -8,7 +8,7 @@ static void wire_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void wire_draw_vbo3d(
+static void wire_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {

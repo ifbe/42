@@ -55,7 +55,7 @@ static void klotski_draw_pixel(
 		}
 	}
 }
-static void klotski_draw_vbo(
+static void klotski_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -106,30 +106,12 @@ static void klotski_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void klotski_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)klotski_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)klotski_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)klotski_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)klotski_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)klotski_draw_vbo(act, pin, win, sty);
-	else klotski_draw_pixel(act, pin, win, sty);
-}
 
 
 
 
 static void klotski_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//klotski_draw(act, pin, win, sty);
 }
 static void klotski_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

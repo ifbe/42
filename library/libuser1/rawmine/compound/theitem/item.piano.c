@@ -170,7 +170,7 @@ static void piano_draw_vbo2d(
 	tc[2] = vc[2] + vr[2]*16/20 + vf[2]/64 - 0.01;
 	carve2d_string(win, 0xffffff, tc, tr, tf, (u8*)"7040", 4);
 }*/
-static void piano_draw_vbo3d(
+static void piano_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -189,7 +189,7 @@ static void piano_draw_vbo3d(
 	tu[0] = vu[0]/2;
 	tu[1] = vu[1]/2;
 	tu[2] = vu[2]/2;
-    carvesolid_prism4(win, 0x202020, tc, vr, tf, tu);
+	carvesolid_prism4(win, 0x202020, tc, vr, tf, tu);
 
 	tr[0] = vr[0] / 7 / 11;
 	tr[1] = vr[1] / 7 / 11;
@@ -251,23 +251,6 @@ static void piano_draw_cli(
 	struct entity* win, struct style* sty)
 {
 	say("piano(%x,%x,%x)\n",win,act,sty);
-}
-static void piano_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)piano_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)piano_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)piano_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)piano_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)piano_draw_vbo2d(act, pin, win, sty);
-		//else piano_draw_vbo3d(act, pin, win, sty);
-	}
-	else piano_draw_pixel(act, pin, win, sty);
 }
 static void piano_event(
 	struct entity* act, struct style* pin,
@@ -351,22 +334,9 @@ static void piano_event(
 
 static void piano_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//piano_draw(act, pin, win, sty);
 }
 static void piano_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//piano_event(act, pin, win, sty, ev, 0);
 }
 static void piano_stop(struct halfrel* self, struct halfrel* peer)
 {

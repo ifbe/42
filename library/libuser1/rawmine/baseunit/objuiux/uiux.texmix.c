@@ -46,7 +46,7 @@ void texmix_ctxforwnd(struct glsrc* src)
 	src->tex[0].fmt = hex32('r','g','b','a');
 	src->tex[0].name = "tex0";
 	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(src, 0, "datafile/jpg/test.jpg");
+	loadtexfromfile(src, 0, "datafile/jpg/wall.jpg");
 	src->tex[0].enq = 42;
 
 	//texture1
@@ -64,7 +64,7 @@ void texmix_ctxforwnd(struct glsrc* src)
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 	src->vbuf_enq = 42;
 }
-static void texmix_draw_vbo3d(
+static void texmix_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* scn, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -190,17 +190,6 @@ static void texmix_draw_cli(
 {
 	say("texmix(%x,%x,%x)\n",win,act,sty);
 }
-static void texmix_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)texmix_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)texmix_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)texmix_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)texmix_draw_json(act, pin, win, sty);
-}
 
 
 
@@ -221,38 +210,26 @@ static void texmix_read_bycam(struct halfrel* self, struct halfrel* peer, struct
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len)texmix_draw_vbo3d(act,slot, wrd,geom, wnd,area);
+		if('v' == len)texmix_draw_gl41(act,slot, wrd,geom, wnd,area);
 	}
 //say("@freecam_read_byeye.end\n");
 }
 static void texmix_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
-	int ret;
 	struct entity* wnd;struct style* area;
 	struct entity* cam;struct style* gl41;
 	wnd = peer->pchip;area = peer->pfoot;
 	cam = self->pchip;gl41 = self->pfoot;
 
-	ret = texmix_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
-	if(ret > 0){
-		struct entity* act;struct style* slot;
-		struct entity* wrd;struct style* geom;
-		act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
-		wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
-		texmix_draw_vbo3d(act, slot, wrd,geom, wnd,area);
-	}
-	else{
-		struct fstyle fs;
-		fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
-		fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-		fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-		gl41data_before(wnd);
-		texmix_draw_vbo3d(cam, 0, 0,(void*)&fs, wnd,area);
-		gl41data_after(wnd);
-
-		gl41data_tmpcam(wnd);
-	}
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	gl41data_before(wnd);
+	texmix_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
+	gl41data_tmpcam(wnd);
+	gl41data_after(wnd);
 }
 static int texmix_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {

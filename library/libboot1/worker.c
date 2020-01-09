@@ -115,7 +115,7 @@ void* workercreate(u64 type, void* url, int argc, u8** argv)
 		tmp->type = _poller_;
 
 		poller_create(tmp, url, argc, argv);
-		if(tmp != wrk)threadcreate(poller, wrk);
+		//if(tmp != wrk)threadcreate(poller, wrk);
 		return tmp;
 	}
 	if(_realer_ == type)

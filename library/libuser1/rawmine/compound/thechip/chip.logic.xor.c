@@ -5,7 +5,7 @@ void carveline_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, ve
 
 
 
-static void xor_draw_vbo_12t(
+static void xor_draw_gl41_12t(
 	struct entity* ent, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -157,7 +157,7 @@ static void xor_draw_vbo_12t(
 	}
 	carveline(ctx, ocolor, tc,tr);
 }
-static void xor_draw_vbo(
+static void xor_draw_gl41(
 	struct entity* ent, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -369,7 +369,7 @@ static void xor_read(struct halfrel* self, struct halfrel* peer, struct halfrel*
 		win = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)xor_draw_vbo(ent,slot, win,geom, wnd,area);
+		if('v' == len)xor_draw_gl41(ent,slot, win,geom, wnd,area);
 	}
 }
 static void xor_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)

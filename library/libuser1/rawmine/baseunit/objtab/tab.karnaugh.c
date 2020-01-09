@@ -45,7 +45,7 @@ static int karnaugh_create(struct entity* act, u8* str)
 
 
 
-void karnaugh_draw_vbo_4x4(struct entity* wnd, struct entity* act, vec3 vc, vec3 vr, vec3 vf)
+void karnaugh_draw_gl41_4x4(struct entity* wnd, struct entity* act, vec3 vc, vec3 vr, vec3 vf)
 {
 	int x,y,j,rgb;
 	vec3 tc,tr,tf;
@@ -81,7 +81,7 @@ void karnaugh_draw_vbo_4x4(struct entity* wnd, struct entity* act, vec3 vc, vec3
 		carveline_rectround(wnd, 0xff00ff, vc,tr,tf);
 	}
 }
-void karnaugh_draw_vbo(
+void karnaugh_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -135,7 +135,7 @@ void karnaugh_draw_vbo(
 		tf[j] = vf[j]*4/5;
 		tc[j] = vc[j] +vr[j]/5 -tf[j]/5;
 	}
-	karnaugh_draw_vbo_4x4(wnd, act, tc, tr, tf);
+	karnaugh_draw_gl41_4x4(wnd, act, tc, tr, tf);
 }
 void karnaugh_draw_pixel(struct entity* win, struct style* sty)
 {
@@ -168,7 +168,7 @@ static void karnaugh_read_bywnd(struct halfrel* self, struct halfrel* peer, stru
 		struct entity* wrd;struct style* geom;
 		act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
 		wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
-		karnaugh_draw_vbo(act, slot, wrd,geom, wnd,area);
+		karnaugh_draw_gl41(act, slot, wrd,geom, wnd,area);
     }
     else{
 		struct fstyle fs;
@@ -177,7 +177,7 @@ static void karnaugh_read_bywnd(struct halfrel* self, struct halfrel* peer, stru
 		fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 		fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-1.0;
 		gl41data_before(wnd);
-		karnaugh_draw_vbo(cam, 0, 0,(void*)&fs, wnd,area);
+		karnaugh_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
 		gl41data_after(wnd);
 
 		gl41data_tmpcam(wnd);

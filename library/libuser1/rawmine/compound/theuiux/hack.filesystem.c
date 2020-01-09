@@ -45,7 +45,7 @@ static void fs_draw_pixel(
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 	drawtext(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh, fsbuf, 0x1000);
 }
-static void fs_draw_vbo(
+static void fs_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -80,19 +80,10 @@ static void fs_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void fs_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)fs_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)fs_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)fs_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)fs_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)fs_draw_vbo(act, pin, win, sty);
-	else fs_draw_pixel(act, pin, win, sty);
-}
+
+
+
 static void fs_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
@@ -122,22 +113,9 @@ static void fs_event(
 
 static void fs_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//fs_draw(act, pin, win, sty);
 }
 static void fs_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//fs_event(act, pin, win, sty, ev, 0);
 }
 static void fs_stop(struct halfrel* self, struct halfrel* peer)
 {

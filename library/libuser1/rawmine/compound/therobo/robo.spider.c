@@ -9,7 +9,7 @@ static void spider_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void spider_draw_vbo(
+static void spider_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* scn, struct style* geom,
 	struct entity* wrd, struct style* camg,
@@ -36,17 +36,6 @@ static void spider_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void spider_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)spider_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)spider_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)spider_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)spider_draw_json(act, pin, win, sty);
-	else spider_draw_pixel(act, pin, win, sty);
-}
 
 
 
@@ -57,10 +46,8 @@ static void spider_draw(
 //-1: world, geom of cam
 static void spider_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam
+	//wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
-
-	//cam -> world
 	struct entity* wrd;struct style* camg;
 
 	//scene -> spider
@@ -72,7 +59,7 @@ static void spider_read(struct halfrel* self, struct halfrel* peer, struct halfr
 		scn = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)spider_draw_vbo(act,part, scn,geom, wrd,camg, wnd,area);
+		if('v' == len)spider_draw_gl41(act,part, scn,geom, wrd,camg, wnd,area);
 	}
 }
 static void spider_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

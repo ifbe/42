@@ -70,7 +70,7 @@ static void sketchpad_ctxforwnd(struct glsrc* src, char* vs, char* fs)
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 }
-static void sketchpad_draw_vbo(
+static void sketchpad_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -536,7 +536,7 @@ static void sketchpad_read(struct halfrel* self, struct halfrel* peer, struct ha
 		win = peer->pchip;geom = peer->pfoot;
 		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)sketchpad_draw_vbo(act,part, win,geom, wnd,area);
+		if('v' == len)sketchpad_draw_gl41(act,part, win,geom, wnd,area);
 	}
 }
 static void sketchpad_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

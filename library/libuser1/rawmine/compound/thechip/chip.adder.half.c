@@ -5,7 +5,7 @@ void carveline_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, ve
 
 
 
-static void halfadd_draw_vbo(
+static void halfadd_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -65,7 +65,7 @@ static void halfadd_read(struct halfrel* self, struct halfrel* peer, struct half
 		win = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)halfadd_draw_vbo(act,slot, win,geom, wnd,area);
+		if('v' == len)halfadd_draw_gl41(act,slot, win,geom, wnd,area);
 	}
 }
 static void halfadd_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)

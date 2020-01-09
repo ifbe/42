@@ -87,7 +87,7 @@ static void tetris_draw_pixel(
 		cx+(that.x4-15)*ww, cy+(that.y4-19)*hh);
 */
 }
-static void tetris_draw_vbo(
+static void tetris_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -199,19 +199,10 @@ static void tetris_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void tetris_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)tetris_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)tetris_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)tetris_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)tetris_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)tetris_draw_vbo(act, pin, win, sty);
-	else tetris_draw_pixel(act, pin, win, sty);
-}
+
+
+
 static void tetris_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,

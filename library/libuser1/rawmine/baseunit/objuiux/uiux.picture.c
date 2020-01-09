@@ -61,7 +61,7 @@ static void picture_ctxforwnd(struct glsrc* src, char* str, float* angle)
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 	src->vbuf_enq = 42;
 }
-static void picture_draw_vbo3d(
+static void picture_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -199,23 +199,6 @@ static void picture_draw_cli(
 {
 	say("picture(%x,%x,%x)\n",win,act,sty);
 }
-static void picture_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)picture_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)picture_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)picture_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)picture_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)picture_draw_vbo2d(act, pin, win, sty);
-		//else picture_draw_vbo3d(act, pin, win, sty);
-	}
-	else picture_draw_pixel(act, pin, win, sty);
-}
 
 
 
@@ -235,7 +218,7 @@ static void picture_read(struct halfrel* self, struct halfrel* peer, struct half
 		scn = peer->pchip;geom = peer->pfoot;
 		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)picture_draw_vbo3d(act,slot, scn,geom, wnd,area);
+		if('v' == len)picture_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
 	//picture_draw(act, pin, win, sty);
 }

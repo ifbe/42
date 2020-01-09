@@ -45,7 +45,7 @@ static int truth_create(struct entity* act, u8* str)
 
 
 
-void truth_draw_vbo(
+void truth_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -123,7 +123,7 @@ static void truth_read_bywnd(struct halfrel* self, struct halfrel* peer, struct 
 		struct entity* wrd;struct style* geom;
 		act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
 		wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
-		truth_draw_vbo(act, slot, wrd,geom, wnd,area);
+		truth_draw_gl41(act, slot, wrd,geom, wnd,area);
     }
     else{
 		struct fstyle fs;
@@ -132,10 +132,9 @@ static void truth_read_bywnd(struct halfrel* self, struct halfrel* peer, struct 
 		fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 		fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-1.0;
 		gl41data_before(wnd);
-		truth_draw_vbo(cam, 0, 0,(void*)&fs, wnd,area);
-		gl41data_after(wnd);
-
+		truth_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
 		gl41data_tmpcam(wnd);
+		gl41data_after(wnd);
     }
 }
 static void truth_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)

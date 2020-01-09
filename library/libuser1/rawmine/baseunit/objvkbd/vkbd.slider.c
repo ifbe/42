@@ -48,7 +48,7 @@ static int slider_create(struct entity* act, u8* str)
 
 
 
-void slider_draw_vbo(
+void slider_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -108,7 +108,7 @@ static void slider_read_bywnd(struct halfrel* self, struct halfrel* peer, struct
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-1.0;
 
 	gl41data_before(wnd);
-	slider_draw_vbo(cam, 0, 0,(void*)&fs, wnd,area);
+	slider_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
 	gl41data_tmpcam(wnd);
 	gl41data_after(wnd);
 }

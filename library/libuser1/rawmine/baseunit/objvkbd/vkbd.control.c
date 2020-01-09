@@ -52,7 +52,7 @@ static void control_draw_pixel(
 	drawsolid_circle(win, 0xc0c0c0, cx-ww/2, cy+hh/2, ww/4);
 	drawsolid_circle(win, 0xc0c0c0, cx+ww/2, cy+hh/2, ww/4);
 }
-static void control_draw_vbo(
+static void control_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -142,18 +142,10 @@ static void control_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void control_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)control_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)control_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)control_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)control_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)control_draw_vbo(act, pin, win, sty);
-	else control_draw_pixel(act, pin, win, sty);
-}
+
+
+
+
 static void control_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,

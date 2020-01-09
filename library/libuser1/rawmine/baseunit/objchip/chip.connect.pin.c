@@ -8,7 +8,7 @@ static void chippin_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void chippin_draw_vbo3d(
+static void chippin_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -33,29 +33,12 @@ static void chippin_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void chippin_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)chippin_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)chippin_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)chippin_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)chippin_draw_json(act, pin, win, sty);
-	else chippin_draw_pixel(act, pin, win, sty);
-}
 
 
 
 
 static void chippin_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//chippin_draw(act, pin, win, sty);
 }
 static void chippin_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {

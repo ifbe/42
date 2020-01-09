@@ -54,7 +54,7 @@ static void algorithm_draw_pixel(
 	);
 */
 }
-static void algorithm_draw_vbo(
+static void algorithm_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -90,19 +90,10 @@ static void algorithm_draw_cli(
 {
 	say("algorithm(%x,%x,%x)\n",win,act,sty);
 }
-static void algorithm_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)algorithm_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)algorithm_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)algorithm_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)algorithm_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)algorithm_draw_vbo(act, pin, win, sty);
-	else algorithm_draw_pixel(act, pin, win, sty);
-}
+
+
+
 static void algorithm_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,

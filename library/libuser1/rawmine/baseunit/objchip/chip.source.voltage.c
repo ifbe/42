@@ -8,7 +8,7 @@ static void vsrc_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void vsrc_draw_vbo(
+static void vsrc_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -90,9 +90,7 @@ static void vsrc_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 		win = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len){
-			vsrc_draw_vbo(act,slot, win,geom, wnd,area);
-		}
+		if('v' == len)vsrc_draw_gl41(act,slot, win,geom, wnd,area);
 	}
 }
 static void vsrc_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

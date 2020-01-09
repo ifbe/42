@@ -55,7 +55,7 @@ void water_ctxforwnd(struct glsrc* src, struct waterbuf* water, char* str)
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 }
-static void water_draw_vbo(
+static void water_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -397,7 +397,7 @@ static void water_read(struct halfrel* self, struct halfrel* peer, struct halfre
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		if('v' == len){
-			water_draw_vbo(act,slot, win,geom, wnd,area);
+			water_draw_gl41(act,slot, win,geom, wnd,area);
 		}
 		if('?' == len){
 			fbo = 0;rect = 0;

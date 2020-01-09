@@ -105,7 +105,7 @@ static void mirror_create(struct entity* act, void* str)
 
 
 
-static void mirror_draw_vbo(
+static void mirror_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
@@ -400,7 +400,7 @@ static void mirror_read(struct halfrel* self, struct halfrel* peer, struct halfr
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		if('v' == len){
-			mirror_draw_vbo(act,slot, win,geom, wrd,camg, wnd,area);
+			mirror_draw_gl41(act,slot, win,geom, wrd,camg, wnd,area);
 		}
 		if('?' == len){
 			fbo = 0;rect = 0;

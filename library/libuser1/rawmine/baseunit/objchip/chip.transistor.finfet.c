@@ -7,12 +7,7 @@ static void finfet_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-}/*
-static void finfet_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}*/
+}
 static void finfet_draw_vbo3d(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)

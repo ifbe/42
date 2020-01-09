@@ -9,7 +9,7 @@ static void motor_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void motor_draw_vbo(
+static void motor_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -151,7 +151,7 @@ static void motor_read(struct halfrel* self, struct halfrel* peer, struct halfre
 
 		scn = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len)motor_draw_vbo(act,slot, scn,geom, wnd,area);
+		if('v' == len)motor_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
 }
 static void motor_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)

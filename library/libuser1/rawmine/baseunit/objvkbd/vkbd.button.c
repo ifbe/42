@@ -26,7 +26,7 @@ void button_draw_pixel(
 
 
 
-void button_draw_vbo(
+void button_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -56,7 +56,7 @@ static void button_read_bycam(struct halfrel* self, struct halfrel* peer, struct
 		win = peer->pchip;geom = peer->pfoot;
 		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)button_draw_vbo(act,part, win,geom, wnd,area);
+		if('v' == len)button_draw_gl41(act,part, win,geom, wnd,area);
 	}
 }
 

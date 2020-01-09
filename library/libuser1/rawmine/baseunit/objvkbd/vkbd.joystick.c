@@ -75,7 +75,7 @@ void vjoy_draw_pixel(struct entity* win, struct style* sty)
 	ch[7] = '+';
 	drawarrorkey2d(win, 0xff00ff, w-h*3/16, h*13/16, w, h, ch, -1);
 }
-void vjoy_draw_vbo(
+void vjoy_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -202,7 +202,7 @@ static void vjoy_read_bywnd(struct halfrel* self, struct halfrel* peer, struct h
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-1.0;
 
 	gl41data_before(wnd);
-	vjoy_draw_vbo(cam, 0, 0,(void*)&fs, wnd,area);
+	vjoy_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
 	gl41data_tmpcam(wnd);
 	gl41data_after(wnd);
 }

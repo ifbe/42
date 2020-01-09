@@ -81,61 +81,8 @@ static void sudoku_draw_pixel(
 			}
 		}
 	}
-}/*
-static void sudoku_draw_vbo2d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u32 rgb;
-	int x,y;
-	vec3 tc, tr, tf, tu, f;
-	if(0 == sty)sty = defaultstyle_vbo2d();
-
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-
-	u8* data = act->buf;
-	for(y=0;y<9;y++)
-	{
-		for(x=0;x<9;x++)
-		{
-			if((x>2)&&(x<6)&&(y>2)&&(y<6))rgb = 0xcccccc;
-			else if((x<3)&&(y<3))rgb = 0x444444;
-			else if((x<3)&&(y>5))rgb = 0x444444;
-			else if((x>5)&&(y<3))rgb = 0x444444;
-			else if((x>5)&&(y>5))rgb = 0x444444;
-			else rgb = 0x888888;
-
-			f[0] = (x+x+1)/9.0 - 1.0;
-			f[1] = 1.0 - (y+y+1)/9.0;
-			f[2] = 1.0/36;
-			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0];
-			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1];
-			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2];
-			tr[0] = vr[0] / 10;
-			tr[1] = vr[1] / 10;
-			tr[2] = vr[2] / 10;
-			tf[0] = vf[0] / 10;
-			tf[1] = vf[1] / 10;
-			tf[2] = vf[2] / 10;
-			carvesolid2d_rect(win, rgb, tc, tr, tf);
-			if(data[y*9+x] != 0)
-			{
-				tc[2] -= 0.1;
-				tr[0] = vr[0] / 18;
-				tr[1] = vr[1] / 18;
-				tr[2] = vr[2] / 18;
-				tf[0] = vf[0] / 18;
-				tf[1] = vf[1] / 18;
-				tf[2] = vf[2] / 18;
-				carve2d_ascii(win, ~rgb, tc, tr, tf, 0x30+data[y*9+x]);
-			}
-		}
-	}
-}*/
-static void sudoku_draw_vbo3d(
+}
+static void sudoku_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -273,23 +220,10 @@ static void sudoku_draw_cli(
 		say("\n");
 	}
 }
-static void sudoku_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)sudoku_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)sudoku_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)sudoku_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)sudoku_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)sudoku_draw_vbo2d(act, pin, win, sty);
-		//else sudoku_draw_vbo3d(act, pin, win, sty);
-	}
-	else sudoku_draw_pixel(act, pin, win, sty);
-}
+
+
+
 static void sudoku_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
@@ -345,9 +279,7 @@ static void sudoku_read(struct halfrel* self, struct halfrel* peer, struct halfr
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		if('v' == len){
-			sudoku_draw_vbo3d(act,part, win,geom, wnd,area);
-		}
+		if('v' == len)sudoku_draw_gl41(act,part, win,geom, wnd,area);
 	}
 }
 static void sudoku_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

@@ -31,7 +31,7 @@ static void dancemat_draw_pixel(
 	drawsolid_rect(win, 0x008000, cx-ww/2, cy-hh*3/4, cx+ww/2, cy-hh/2);
 	drawsolid_rect(win, 0x008000, cx-ww/4, cy-hh, cx+ww/4, cy-hh*3/4);
 }
-static void dancemat_draw_vbo3d(
+static void dancemat_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
@@ -126,22 +126,6 @@ static void dancemat_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void dancemat_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)dancemat_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)dancemat_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)dancemat_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)dancemat_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)dancemat_draw_vbo2d(act, pin, win, sty);
-		//else dancemat_draw_vbo3d(act, pin, win, sty);
-	}
-	else dancemat_draw_pixel(act, pin, win, sty);
-}
 
 
 
@@ -212,7 +196,7 @@ static void dancemat_read(struct halfrel* self, struct halfrel* peer, struct hal
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
 		if('v' == len){
-			dancemat_draw_vbo3d(act,part, win,geom, wrd,camg, wnd,area);
+			dancemat_draw_gl41(act,part, win,geom, wrd,camg, wnd,area);
 		}
 	}
 }

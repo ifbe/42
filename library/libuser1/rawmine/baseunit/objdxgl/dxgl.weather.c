@@ -35,7 +35,7 @@ static void weather_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void weather_draw_vbo3d(
+static void weather_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -55,7 +55,7 @@ static void weather_draw_vbo3d(
 				tc[0] = vc[0] + vr[0]*x/16 + vf[0]*y/16 + vu[0]*z/16;
 				tc[1] = vc[1] + vr[1]*x/16 + vf[1]*y/16 + vu[1]*z/16;
 				tc[2] = vc[2] + vr[2]*x/16 + vf[2]*y/16 + vu[2]*z/16;
-				carvepoint(win, 0xffffff, tc);
+				gl41point(win, 0xffffff, tc);
 			}
 		}
 	}
@@ -81,34 +81,12 @@ static void weather_draw_cli(
 {
 	say("weather(%x,%x,%x)\n",win,act,sty);
 }
-static void weather_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)weather_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)weather_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)weather_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)weather_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)weather_draw_vbo2d(act, pin, win, sty);
-		//else weather_draw_vbo3d(act, pin, win, sty);
-	}
-	else weather_draw_pixel(act, pin, win, sty);
-}
 
 
 
 
 static void weather_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//weather_draw(act, pin, win, sty);
 }
 static void weather_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {

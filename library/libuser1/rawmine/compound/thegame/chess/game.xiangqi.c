@@ -188,7 +188,7 @@ void xiangqi_draw_pixel(
 		}//forx
 	}//fory
 }
-static void xiangqi_draw_vbo(
+static void xiangqi_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -370,23 +370,6 @@ static void xiangqi_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void xiangqi_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)xiangqi_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)xiangqi_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)xiangqi_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)xiangqi_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)xiangqi_draw_vbo2d(act, pin, win, sty);
-		//else xiangqi_draw_vbo(act, pin, win, sty);
-	}
-	else xiangqi_draw_pixel(act, pin, win, sty);
-}
 
 
 
@@ -533,9 +516,7 @@ static void xiangqi_read(struct halfrel* self, struct halfrel* peer, struct half
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		if('v' == len){
-			xiangqi_draw_vbo(act,part, win,geom, wnd,area);
-		}
+		if('v' == len)xiangqi_draw_gl41(act,part, win,geom, wnd,area);
 	}
 }
 static void xiangqi_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

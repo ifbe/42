@@ -428,7 +428,7 @@ void overview_draw_pixel(
 		}
 	}
 }
-void overview_draw_vbo(
+void overview_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -1042,17 +1042,6 @@ void overview_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void overview_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	if(win->fmt == _cli_)overview_draw_cli(act, pin, win, 0);
-	else if(win->fmt == _tui_)overview_draw_tui(act, pin, win, 0);
-	//else if(win->fmt == _vbo_)overview_draw_vbo(act, pin, win, 0);
-	else if(win->fmt == _html_)overview_draw_html(act, pin, win, 0);
-	else if(win->fmt == _8bit_)overview_draw_8bit(act, pin, win, 0);
-	else overview_draw_pixel(act, pin, win, 0);
-}
 
 
 
@@ -1330,7 +1319,7 @@ static void overview_read(struct halfrel* self, struct halfrel* peer, struct hal
 
 		scn = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len)overview_draw_vbo(act,slot, scn,geom, wnd,area);
+		if('v' == len)overview_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
 }
 static int overview_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

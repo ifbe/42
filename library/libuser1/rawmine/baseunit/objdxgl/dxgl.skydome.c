@@ -79,7 +79,7 @@ static void skydome_draw_pixel(
 		}
 	}*/
 }
-static void skydome_draw_vbo(
+static void skydome_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -130,19 +130,6 @@ static void skydome_draw_cli(
 	struct entity* win, struct style* sty)
 {
 	say("skydome(%x,%x,%x)\n",win,act,sty);
-}
-static void skydome_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-
-	if(fmt == _cli_)skydome_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)skydome_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)skydome_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)skydome_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)skydome_draw_vbo(act, pin, win, sty);
-	else skydome_draw_pixel(act, pin, win, sty);
 }
 
 

@@ -341,7 +341,7 @@ void terrain_ctxforwnd(struct glsrc* src, u8* rgbfile, u8* depfile)
 	src->ibuf = memorycreate(src->ibuf_len, 0);
 	src->ibuf_enq = 42;
 }
-static void terrain_draw_vbo(
+static void terrain_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
@@ -474,9 +474,7 @@ static void terrain_read(struct halfrel* self, struct halfrel* peer, struct half
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		if('v' == len){
-			terrain_draw_vbo(act,part, win,geom, wrd,camg, wnd, area);
-		}
+		if('v' == len)terrain_draw_gl41(act,part, win,geom, wrd,camg, wnd, area);
 	}
 }
 static void terrain_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

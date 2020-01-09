@@ -178,7 +178,7 @@ static void obj3d_ctxforwnd(struct glsrc* src, char* vs, char* fs)
 	src->vbuf_len = 0x1000000;
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 }
-static void obj3d_draw_vbo3d(
+static void obj3d_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
@@ -307,9 +307,7 @@ static void obj3d_read(struct halfrel* self, struct halfrel* peer, struct halfre
 
 		scn = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len){
-			obj3d_draw_vbo3d(act,slot, scn,geom, wrd,camg, wnd,area);
-		}
+		if('v' == len)obj3d_draw_gl41(act,slot, scn,geom, wrd,camg, wnd,area);
 	}
 }
 static void obj3d_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
