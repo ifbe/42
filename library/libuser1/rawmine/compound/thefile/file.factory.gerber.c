@@ -197,7 +197,7 @@ static void gerber_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carveline_rect(ctx, 0xffffff, vc, vr, vf);
+	gl41line_rect(ctx, 0xffffff, vc, vr, vf);
 
 	int cnt = act->len;
 	float* buf = act->DSTBUF;
@@ -209,7 +209,7 @@ static void gerber_draw_gl41(
 	tr[0] = (buf[(cnt+1)*stride+0] - buf[(cnt+0)*stride+0])/2;
 	tf[1] = (buf[(cnt+1)*stride+1] - buf[(cnt+0)*stride+1])/2;
 	//say("%f,%f,%f,  %f,%f,%f,  %f,%f,%f\n", tc[0],tc[1],tc[2], tr[0],tr[1],tr[2], tf[0],tf[1],tf[2]);
-	carvesolid_rect(ctx, 0x004000, tc, tr, tf);
+	gl41solid_rect(ctx, 0x004000, tc, tr, tf);
 
 	for(j=0;j<cnt-1;j++){
 		if(buf[j*stride+3] < 0.5)rgb = 0;
@@ -217,7 +217,7 @@ static void gerber_draw_gl41(
 		else if(buf[j*stride+3] < 2.5)rgb = 0x00ff00;
 		else if(buf[j*stride+3] < 3.5)rgb = 0x0000ff;
 		else rgb = 0xffffff;
-		carveline(ctx, rgb, &buf[(j+0)*stride], &buf[(j+1)*stride]);
+		gl41line(ctx, rgb, &buf[(j+0)*stride], &buf[(j+1)*stride]);
 	}
 }
 

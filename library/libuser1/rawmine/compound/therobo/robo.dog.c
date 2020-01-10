@@ -11,11 +11,11 @@ void robodog_calc(vec3 joint, vec3 vector, vec3 shaft, float rotate)
 	vector[1] += joint[1];
 	vector[2] += joint[2];
 }
-void carvesolid_jointandpole(struct entity* ctx, u32 rgb, vec3 joint, vec3 target, vec3 shaft)
+void gl41solid_jointandpole(struct entity* ctx, u32 rgb, vec3 joint, vec3 target, vec3 shaft)
 {
 	int j;
 	vec3 tc,tr,tf,tu;
-	carveline(ctx, rgb, joint, target);
+	gl41line(ctx, rgb, joint, target);
 
 	for(j=0;j<3;j++)tr[j] = target[j] - joint[j];
 	vec3_setlen(tr, 100);
@@ -26,7 +26,7 @@ void carvesolid_jointandpole(struct entity* ctx, u32 rgb, vec3 joint, vec3 targe
 	for(j=0;j<3;j++)tu[j] = shaft[j];
 	vec3_setlen(tu, 10);
 
-	carvesolid_cylinder(ctx, rgb, joint, tr,tf,tu);
+	gl41solid_cylinder(ctx, rgb, joint, tr,tf,tu);
 
 
 	for(j=0;j<3;j++){
@@ -35,7 +35,7 @@ void carvesolid_jointandpole(struct entity* ctx, u32 rgb, vec3 joint, vec3 targe
 	}
 	vec3_setlen(tf, 50);
 	vec3_setlen(tu, 50);
-	carvesolid_prism4(ctx, rgb, tc,tr,tf,tu);
+	gl41solid_prism4(ctx, rgb, tc,tr,tf,tu);
 }
 void robodog_leg(struct entity* ctx, float* f, int lr, vec3 joint, vec3 vector, vec3 shaft)
 {
@@ -44,7 +44,7 @@ void robodog_leg(struct entity* ctx, float* f, int lr, vec3 joint, vec3 vector, 
 
 	//1:
 	robodog_calc(joint, vector, shaft, lr*f[0]);
-	carvesolid_jointandpole(ctx, 0x800000, joint, vector, shaft);
+	gl41solid_jointandpole(ctx, 0x800000, joint, vector, shaft);
 
 	//2: 
 	for(j=0;j<3;j++){
@@ -55,7 +55,7 @@ void robodog_leg(struct entity* ctx, float* f, int lr, vec3 joint, vec3 vector, 
 	vec3_cross(vector, shaft, tc);
 	vec3_setlen(vector, 500);
 	robodog_calc(joint, vector, shaft, f[1]);
-	carvesolid_jointandpole(ctx, 0x008000, joint, vector, shaft);
+	gl41solid_jointandpole(ctx, 0x008000, joint, vector, shaft);
 
 	//3: shaft unchanged
 	for(j=0;j<3;j++){
@@ -64,7 +64,7 @@ void robodog_leg(struct entity* ctx, float* f, int lr, vec3 joint, vec3 vector, 
 		vector[j] = tc[j] - vector[j];
 	}
 	robodog_calc(joint, vector, shaft, f[2]);
-	carvesolid_jointandpole(ctx, 0x000080, joint, vector, shaft);
+	gl41solid_jointandpole(ctx, 0x000080, joint, vector, shaft);
 }
 
 
@@ -87,9 +87,9 @@ static void robodog_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carveline_prism4(ctx, 0x404040, vc, vr, vf, vt);
+	gl41line_prism4(ctx, 0x404040, vc, vr, vf, vt);
 	for(j=0;j<3;j++)tf[j] = vc[j]+vf[j];
-	carveline_arrow(ctx, 0xffffff, vc, tf, vt);
+	gl41line_arrow(ctx, 0xffffff, vc, tf, vt);
 
 	//body
 	for(j=0;j<3;j++){
@@ -97,7 +97,7 @@ static void robodog_draw_gl41(
 		tr[j] = vr[j]*0.5;
 		tc[j] = vc[j] +vt[j]-tt[j];
 	}
-	carvesolid_prism4(ctx, 0x202020, tc, tr, vf, tt);
+	gl41solid_prism4(ctx, 0x202020, tc, tr, vf, tt);
 
 	f = act->buf0;
 	if(0 == f)return;

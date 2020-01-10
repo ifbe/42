@@ -67,7 +67,7 @@ static void water_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carveline_rect(ctx, 0xffffff, vc, vr, vf);
+	gl41line_rect(ctx, 0xffffff, vc, vr, vf);
 
 	water = act->CTXBUF;
 	if(0 == water)return;

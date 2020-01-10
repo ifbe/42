@@ -87,7 +87,7 @@ static void font_draw_gl41(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	carveline_rect(win, 0xffffff, vc, vr, vf);
+	gl41line_rect(win, 0xffffff, vc, vr, vf);
 	carveascii_test(win, 0xffffff, vc, vr, vf);
 /*
 	int x,y,dx,dy;

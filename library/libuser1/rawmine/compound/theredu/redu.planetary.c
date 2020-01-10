@@ -33,13 +33,13 @@ static void planetary_draw_gl41(
 	float* vt = geom->f.vt;
 
 	r = tau*(timeread()%10000000)/10000000.0;
-	carveline_rotategear(ctx, 0x444444, vc, vr, vf, 48, r*18/48.0);
+	gl41line_rotategear(ctx, 0x444444, vc, vr, vf, 48, r*18/48.0);
 
 	for(j=0;j<3;j++){
 		tr[j] = vr[j]/4;
 		tf[j] = vf[j]/4;
 	}
-	carvesolid_rotategear(ctx, 0x808080, vc, tr, tf, vt, 12, -r*18/12.0+tau/24);
+	gl41solid_rotategear(ctx, 0x808080, vc, tr, tf, vt, 12, -r*18/12.0+tau/24);
 
 	//planet 0
 	for(j=0;j<3;j++){
@@ -47,21 +47,21 @@ static void planetary_draw_gl41(
 		tr[j] = vr[j]*0.35;
 		tf[j] = vf[j]*0.35;
 	}
-	carvesolid_rotategear(ctx, 0x808080, tc, tr, tf, vt, 18, r);
+	gl41solid_rotategear(ctx, 0x808080, tc, tr, tf, vt, 18, r);
 
 	//planet 1
 	a = 120*PI/180;
 	c = cosine(a)*0.575;
 	s = sine(a)*0.575;
 	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*c + vf[j]*s;
-	carvesolid_rotategear(ctx, 0x808080, tc, tr, tf, vt, 18, r);
+	gl41solid_rotategear(ctx, 0x808080, tc, tr, tf, vt, 18, r);
 
 	//planet 2
 	a = 240*PI/180;
 	c = cosine(a)*0.575;
 	s = sine(a)*0.575;
 	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*c + vf[j]*s;
-	carvesolid_rotategear(ctx, 0x808080, tc, tr, tf, vt, 18, r);
+	gl41solid_rotategear(ctx, 0x808080, tc, tr, tf, vt, 18, r);
 }
 static void planetary_draw_pixel(
 	struct entity* act, struct style* pin,

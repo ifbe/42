@@ -10,7 +10,7 @@ void select_3d(struct entity* win, u32 rgb, struct fstyle* sty, u32 flag)
 	float* vr = sty->vr;
 	float* vf = sty->vf;
 	float* vu = sty->vt;
-	carveline_prism4(win, rgb, vc, vr, vf, vu);
+	gl41line_prism4(win, rgb, vc, vr, vf, vu);
 }
 void carveaxis(struct entity* win)
 {
@@ -21,21 +21,21 @@ void carveaxis(struct entity* win)
 	vb[0] = 10000.0;
 	vb[1] = 0.0;
 	vb[2] = 0.0;
-	carveline(win, 0xff0000, va, vb);
+	gl41line(win, 0xff0000, va, vb);
 	va[0] = 0.0;
 	va[1] = -10000.0;
 	va[2] = 0.0;
 	vb[0] = 0.0;
 	vb[1] = 10000.0;
 	vb[2] = 0.0;
-	carveline(win, 0x00ff00, va, vb);
+	gl41line(win, 0x00ff00, va, vb);
 	va[0] = 0.0;
 	va[1] = 0.0;
 	va[2] = -10000.0;
 	vb[0] = 0.0;
 	vb[1] = 0.0;
 	vb[2] = 10000.0;
-	carveline(win, 0x0000ff, va, vb);
+	gl41line(win, 0x0000ff, va, vb);
 }
 void carvefrustum(struct entity* ctx, struct fstyle* frus)
 {
@@ -80,20 +80,20 @@ void carvefrustum(struct entity* ctx, struct fstyle* frus)
 	rtf[1] = vc[1] + (rtn[1]-vc[1])*1000;
 	rtf[2] = vc[2] + (rtn[2]-vc[2])*1000;
 
-	carveline(ctx, 0, lbn, rbn);
-	carveline(ctx, 0, ltn, rtn);
-	carveline(ctx, 0, lbn, ltn);
-	carveline(ctx, 0, rbn, rtn);
+	gl41line(ctx, 0, lbn, rbn);
+	gl41line(ctx, 0, ltn, rtn);
+	gl41line(ctx, 0, lbn, ltn);
+	gl41line(ctx, 0, rbn, rtn);
 
-	carveline(ctx, 0, lbf, rbf);
-	carveline(ctx, 0, ltf, rtf);
-	carveline(ctx, 0, lbf, ltf);
-	carveline(ctx, 0, rbf, rtf);
+	gl41line(ctx, 0, lbf, rbf);
+	gl41line(ctx, 0, ltf, rtf);
+	gl41line(ctx, 0, lbf, ltf);
+	gl41line(ctx, 0, rbf, rtf);
 
-	carveline(ctx, 0, lbn, lbf);
-	carveline(ctx, 0, rbn, rbf);
-	carveline(ctx, 0, ltn, ltf);
-	carveline(ctx, 0, rtn, rtf);
+	gl41line(ctx, 0, lbn, lbf);
+	gl41line(ctx, 0, rbn, rbf);
+	gl41line(ctx, 0, ltn, ltf);
+	gl41line(ctx, 0, rtn, rtf);
 	//say("(%f,%f,%f)->(%f,%f,%f)\n",lbf[0],lbf[1],lbf[2],rtf[0],rtf[1],rtf[2]);
 	//say("(%f,%f,%f)->(%f,%f,%f)->(%f,%f,%f)\n",vc[0],vc[1],vc[2],lbn[0],lbn[1],lbn[2],rtn[0],rtn[1],rtn[2]);
 	//say("(%f,%f,%f)->(%f,%f,%f)->(%f,%f,%f)\n",vc[0],vc[1],vc[2],lbf[0],lbf[1],lbf[2],rtf[0],rtf[1],rtf[2]);
@@ -117,7 +117,7 @@ void carvefrustum(struct entity* win, struct fstyle* sty)
 	tf[0] = (vu[0] - vb[0])/2;
 	tf[1] = (vu[1] - vb[1])/2;
 	tf[2] = (vu[2] - vb[2])/2;
-	carveline_rect(win, 0xff0000, tc, tr, tf);
+	gl41line_rect(win, 0xff0000, tc, tr, tf);
 
 	tc[0] = vc[0] + (vn[0] + (vl[0] + vr[0])/2 + (vb[0] + vu[0])/2)*1000;
 	tc[1] = vc[1] + (vn[1] + (vl[1] + vr[1])/2 + (vb[1] + vu[1])/2)*1000;
@@ -128,27 +128,27 @@ void carvefrustum(struct entity* win, struct fstyle* sty)
 	tf[0] = (vu[0] - vb[0])*500;
 	tf[1] = (vu[1] - vb[1])*500;
 	tf[2] = (vu[2] - vb[2])*500;
-	carveline_rect(win, 0xffffff, tc, tr, tf);
+	gl41line_rect(win, 0xffffff, tc, tr, tf);
 
 	tc[0] = vc[0] + (vn[0] + vl[0] + vb[0])*1000.0;
 	tc[1] = vc[1] + (vn[1] + vl[1] + vb[1])*1000.0;
 	tc[2] = vc[2] + (vn[2] + vl[2] + vb[2])*1000.0;
-	carveline(win, 0xffffff, vc, tc);
+	gl41line(win, 0xffffff, vc, tc);
 
 	tc[0] = vc[0] + (vn[0] + vr[0] + vb[0])*1000.0;
 	tc[1] = vc[1] + (vn[1] + vr[1] + vb[1])*1000.0;
 	tc[2] = vc[2] + (vn[2] + vr[2] + vb[2])*1000.0;
-	carveline(win, 0xffffff, vc, tc);
+	gl41line(win, 0xffffff, vc, tc);
 
 	tc[0] = vc[0] + (vn[0] + vl[0] + vu[0])*1000.0;
 	tc[1] = vc[1] + (vn[1] + vl[1] + vu[1])*1000.0;
 	tc[2] = vc[2] + (vn[2] + vl[2] + vu[2])*1000.0;
-	carveline(win, 0xffffff, vc, tc);
+	gl41line(win, 0xffffff, vc, tc);
 
 	tc[0] = vc[0] + (vn[0] + vr[0] + vu[0])*1000.0;
 	tc[1] = vc[1] + (vn[1] + vr[1] + vu[1])*1000.0;
 	tc[2] = vc[2] + (vn[2] + vr[2] + vu[2])*1000.0;
-	carveline(win, 0xffffff, vc, tc);
+	gl41line(win, 0xffffff, vc, tc);
 }
 void carvecamera(struct entity* win, struct entity* w)
 {
@@ -234,23 +234,23 @@ void carvecamera(struct entity* win, struct entity* w)
 	vv[2] = 0.0;
 
 	//rect near
-	carveline(win, 0xffffff, va0, vb0);
-	carveline(win, 0xffffff, va0, vc0);
-	carveline(win, 0xffffff, vb0, vd0);
-	carveline(win, 0xffffff, vc0, vd0);
+	gl41line(win, 0xffffff, va0, vb0);
+	gl41line(win, 0xffffff, va0, vc0);
+	gl41line(win, 0xffffff, vb0, vd0);
+	gl41line(win, 0xffffff, vc0, vd0);
 
 	//rect far
-	carveline(win, 0xffffff, va1, vb1);
-	carveline(win, 0xffffff, va1, vc1);
-	carveline(win, 0xffffff, vb1, vd1);
-	carveline(win, 0xffffff, vc1, vd1);
+	gl41line(win, 0xffffff, va1, vb1);
+	gl41line(win, 0xffffff, va1, vc1);
+	gl41line(win, 0xffffff, vb1, vd1);
+	gl41line(win, 0xffffff, vc1, vd1);
 
 	//frame
-	carveline(win, 0xffffff, va0, va1);
-	carveline(win, 0xffffff, vb0, vb1);
-	carveline(win, 0xffffff, vc0, vc1);
-	carveline(win, 0xffffff, vd0, vd1);
+	gl41line(win, 0xffffff, va0, va1);
+	gl41line(win, 0xffffff, vb0, vb1);
+	gl41line(win, 0xffffff, vc0, vc1);
+	gl41line(win, 0xffffff, vd0, vd1);
 
 	//ray
-	carveline(win, 0xffffff, va, vv);
+	gl41line(win, 0xffffff, va, vv);
 }*/

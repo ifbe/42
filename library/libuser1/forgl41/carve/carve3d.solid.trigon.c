@@ -160,18 +160,13 @@ int trigon3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int 
 
 
 
-void carvesolid_triangle(struct entity* win, u32 rgb,
-	vec3 v0, vec3 v1, vec3 v2)
+void carvesolid_triangle(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 v0, vec3 v1, vec3 v2, u32 rgb)
 {
 	vec3 n;
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, 3, 1);
-	if(vlen < 0)return;
 
 	n[0] = (v1[1]-v0[1])*(v2[2]-v0[2]) - (v1[2]-v0[2])*(v2[1]-v0[1]);
 	n[1] = (v1[2]-v0[2])*(v2[0]-v0[0]) - (v1[0]-v0[0])*(v2[2]-v0[2]);
@@ -211,18 +206,27 @@ void carvesolid_triangle(struct entity* win, u32 rgb,
 	ibuf[1] = vlen + 1;
 	ibuf[2] = vlen + 2;
 }
-void carvesolid_rect(struct entity* win, u32 rgb,
-	vec3 vc, vec3 vr, vec3 vf)
+void gl41solid_triangle(struct entity* win, u32 rgb,
+	vec3 v0, vec3 v1, vec3 v2)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, 3, 1);
+	if(vlen < 0)return;
+
+	carvesolid_triangle(vbuf,vlen, ibuf,0, v0,v1,v2, rgb);
+}
+
+
+
+
+void carvesolid_rect(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, u32 rgb)
 {
 	vec3 n;
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, 4, 2);
-	if(vlen < 0)return;
 
 	n[0] = vr[1]*vf[2] - vr[2]*vf[1];
 	n[1] = vr[2]*vf[0] - vr[0]*vf[2];
@@ -277,21 +281,30 @@ void carvesolid_rect(struct entity* win, u32 rgb,
 	ibuf[4] = vlen + 2;
 	ibuf[5] = vlen + 3;
 }
-void carvesolid_circle(struct entity* win, u32 rgb,
+void gl41solid_rect(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
+	float* vbuf;
+	u16* ibuf;
+	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, 4, 2);
+	if(vlen < 0)return;
+
+	carvesolid_rect(vbuf,vlen, ibuf,0, vc,vr,vf, rgb);
+}
+
+
+
+
 #define circieacc (acc*2)
+void carvesolid_circle(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, u32 rgb)
+{
 	int a,b,j;
 	float c,s;
 	vec3 vu;
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, circieacc+1, circieacc);
-	if(vlen < 0)return;
 
 	vu[0] = vr[1]*vf[2] - vr[2]*vf[1];
 	vu[1] = vr[2]*vf[0] - vr[0]*vf[2];
@@ -331,24 +344,38 @@ void carvesolid_circle(struct entity* win, u32 rgb,
 	vbuf[a+7] = vu[1];
 	vbuf[a+8] = vu[2];
 }
+void gl41solid_circle(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, circieacc+1, circieacc);
+	if(vlen < 0)return;
+
+	carvesolid_circle(vbuf,vlen, ibuf,0, vc,vr,vf, rgb);
+}
 
 
 
 
-void carvesolid_pyramid3()
+void gl41solid_pyramid3()
 {
 }
-void carvesolid_pyramid4()
+void gl41solid_pyramid4()
 {
 }
-void carvesolid_pyramid5()
+void gl41solid_pyramid5()
 {
 }
-void carvesolid_pyramid6()
+void gl41solid_pyramid6()
 {
 }
-void carvesolid_cone(struct entity* win, u32 rgb,
-	vec3 vc, vec3 vr, vec3 vu)
+
+
+
+
+void carvesolid_cone(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vu, u32 rgb)
 {
 	int a,b,j;
 	float f;
@@ -357,11 +384,6 @@ void carvesolid_cone(struct entity* win, u32 rgb,
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, acc + 1, acc);
-	if(vlen < 0)return;
 
 	for(j=0;j<acc;j++)
 	{
@@ -399,95 +421,34 @@ void carvesolid_cone(struct entity* win, u32 rgb,
 	vbuf[a+ 7] = vu[1];
 	vbuf[a+ 8] = vu[2];
 }
-/*
-void carvesolid_cone(struct entity* win, u32 rgb,
+void gl41solid_cone(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
 {
-	int a,b,j;
-	float s,t;
-	float r[4];
-
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	float* vbuf;
 	u16* ibuf;
-	int vlen = trigon3d_vars(win, trigon3d, &vbuf, &ibuf, acc + 2, acc * 2);
+	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, acc + 1, acc);
 	if(vlen < 0)return;
 
-	for(j=0;j<acc;j++)
-	{
-		r[0] = vr[0];
-		r[1] = vr[1];
-		r[2] = vr[2];
-		quaternion_operation(r, vu, j*tau/acc);
-
-		a = j*9;
-		b = j*6;
-
-		vbuf[a+0] = vc[0] + r[0];
-		vbuf[a+1] = vc[1] + r[1];
-		vbuf[a+2] = vc[2] + r[2];
-		vbuf[a+3] = rr;
-		vbuf[a+4] = gg;
-		vbuf[a+5] = bb;
-		vbuf[a+6] = vbuf[a+0] - vc[0] + vu[0];
-		vbuf[a+7] = vbuf[a+1] - vc[1] + vu[1];
-		vbuf[a+8] = vbuf[a+2] - vc[2] + vu[2];
-
-		//bottom
-		ibuf[b+0] = vlen+acc;
-		ibuf[b+1] = vlen+j;
-		ibuf[b+2] = vlen+(j+1)%acc;
-
-		//upper
-		ibuf[b+3] = vlen+acc+1;
-		ibuf[b+4] = vlen+j;
-		ibuf[b+5] = vlen+(j+1)%acc;
-	}
-
-	a = acc*9;
-
-	vbuf[a+ 0] = vc[0];
-	vbuf[a+ 1] = vc[1];
-	vbuf[a+ 2] = vc[2];
-	vbuf[a+ 3] = rr;
-	vbuf[a+ 4] = gg;
-	vbuf[a+ 5] = bb;
-	vbuf[a+ 6] = -vu[0];
-	vbuf[a+ 7] = -vu[1];
-	vbuf[a+ 8] = -vu[2];
-
-	vbuf[a+ 9] = vc[0]+vu[0];
-	vbuf[a+10] = vc[1]+vu[1];
-	vbuf[a+11] = vc[2]+vu[2];
-	vbuf[a+12] = rr;
-	vbuf[a+13] = gg;
-	vbuf[a+14] = bb;
-	vbuf[a+15] = vu[0];
-	vbuf[a+16] = vu[1];
-	vbuf[a+18] = vu[2];
-}*/
+	carvesolid_cone(vbuf,vlen, ibuf,0, vc,vr,vu, rgb);
+}
 
 
 
 
-void carvesolid_prism3()
+void gl41solid_prism3()
 {
 }
-void carvesolid_prism4(struct entity* win, u32 rgb,
-	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+
+
+
+
+void carvesolid_prism4(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgb)
 {
 	int j;
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, 24, 12);
-	if(vlen < 0)return;
 
 	for(j=0;j<24*9;j+=9)
 	{
@@ -648,14 +609,33 @@ void carvesolid_prism4(struct entity* win, u32 rgb,
 	ibuf[34] = vlen + 0 + 18;
 	ibuf[35] = vlen + 0 + 21;
 }
-void carvesolid_prism5()
-{
-}
-void carvesolid_prism6()
-{
-}
-void carvesolid_cask(struct entity* win, u32 rgb,
+void gl41solid_prism4(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, 24, 12);
+	if(vlen < 0)return;
+
+
+	carvesolid_prism4(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgb);
+}
+
+
+
+
+void gl41solid_prism5()
+{
+}
+void gl41solid_prism6()
+{
+}
+
+
+
+
+void carvesolid_cask(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgb)
 {
 	int a,b,j;
 	float c,s;
@@ -664,11 +644,6 @@ void carvesolid_cask(struct entity* win, u32 rgb,
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, acc * 2, acc * 2);
-	if(vlen < 0)return;
 
 	for(j=0;j<acc;j++)
 	{
@@ -710,17 +685,28 @@ void carvesolid_cask(struct entity* win, u32 rgb,
 		ibuf[b+5] = vlen + 1 + j*2;
 	}
 }
-void carvesolid_cylinder(struct entity* win, u32 rgb,
+void gl41solid_cask(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, acc * 2, acc * 2);
+	if(vlen < 0)return;
+
+
+	carvesolid_cask(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgb);
+}
+void gl41solid_cylinder(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	vec3 tc;
 	vec3 tf;
-	carvesolid_cask(win, rgb, vc, vr, vf, vu);
+	gl41solid_cask(win, rgb, vc, vr, vf, vu);
 
 	tc[0] = vc[0]+vu[0];
 	tc[1] = vc[1]+vu[1];
 	tc[2] = vc[2]+vu[2];
-	carvesolid_circle(win, rgb, tc, vr, vf);
+	gl41solid_circle(win, rgb, tc, vr, vf);
 
 	tc[0] = vc[0]-vu[0];
 	tc[1] = vc[1]-vu[1];
@@ -728,20 +714,15 @@ void carvesolid_cylinder(struct entity* win, u32 rgb,
 	tf[0] = -vf[0];
 	tf[1] = -vf[1];
 	tf[2] = -vf[2];
-	carvesolid_circle(win, rgb, tc, vr, tf);
+	gl41solid_circle(win, rgb, tc, vr, tf);
 }
 
 
 
 
-void carvesolid_gear(struct entity* win, u32 rgb,
-	vec3 vc, vec3 vr, vec3 vf, vec3 vt, int teethcount)
+void carvesolid_gear(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vt, int teethcount, u32 rgb)
 {
-	float* vbuf;
-	u16* ibuf;
-	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, teethcount*4+1, teethcount*4);
-	if(vlen < 0)return;
-
 	int j,k;
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
@@ -796,7 +777,17 @@ void carvesolid_gear(struct entity* win, u32 rgb,
 		ibuf[j*3*4 +11] = vlen + teethcount*4;
 	}
 }
-void carvesolid_rotategear(struct entity* win, u32 rgb,
+void gl41solid_gear(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vt, int teethcount)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, teethcount*4+1, teethcount*4);
+	if(vlen < 0)return;
+
+	carvesolid_gear(vbuf,vlen, ibuf,0, vc,vr,vf,vt, teethcount, rgb);
+}
+void gl41solid_rotategear(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vt, int teethcount, float a)
 {
 	int j;
@@ -807,20 +798,24 @@ void carvesolid_rotategear(struct entity* win, u32 rgb,
 		tr[j] = vr[j]*c + vf[j]*s;
 		tf[j] = vf[j]*c - vr[j]*s;
 	}
-	carvesolid_gear(win, rgb, vc, tr, tf, vt, teethcount);
+	gl41solid_gear(win, rgb, vc, tr, tf, vt, teethcount);
 }
 
 
 
 
-void carvesolid_tetrahedron()
+void gl41solid_tetrahedron()
 {
 }
-void carvesolid_octahedron()
+void gl41solid_octahedron()
 {
 }
-void carvesolid_dodecahedron(struct entity* win, u32 rgb,
-	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+
+
+
+
+void carvesolid_dodecahedron(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgb)
 {
 	int j;
 	float a = 1.618;
@@ -829,11 +824,6 @@ void carvesolid_dodecahedron(struct entity* win, u32 rgb,
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, 20, 36);
-	if(vlen < 0)return;
 
 	//(+-1, +-1, +-1)
 	vbuf[ 0] = vc[0]-vr[0]-vf[0]-vu[0];
@@ -1055,8 +1045,22 @@ void carvesolid_dodecahedron(struct entity* win, u32 rgb,
 	ibuf[106] = vlen+11;
 	ibuf[107] = vlen+7;
 }
-void carvesolid_icosahedron(struct entity* win, u32 rgb,
+void gl41solid_dodecahedron(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, 20, 36);
+	if(vlen < 0)return;
+
+	carvesolid_dodecahedron(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgb);
+}
+
+
+
+
+void carvesolid_icosahedron(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgb)
 {
 	int j;
 	float m = 0.52573111211913360602566908484788;
@@ -1065,11 +1069,6 @@ void carvesolid_icosahedron(struct entity* win, u32 rgb,
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, 12, 20);
-	if(vlen < 0)return;
 
 	//(+-m, 0, +-n)
 	vbuf[ 0] = vc[0] - m*vr[0] - n*vu[0];
@@ -1212,11 +1211,25 @@ void carvesolid_icosahedron(struct entity* win, u32 rgb,
 	ibuf[58] = vlen+9;
 	ibuf[59] = vlen+1;
 }
-void carvesolid_sphere(struct entity* win, u32 rgb,
+void gl41solid_icosahedron(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
+	float* vbuf;
+	u16* ibuf;
+	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, 12, 20);
+	if(vlen < 0)return;
+
+	carvesolid_icosahedron(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgb);
+}
+
+
+
+
 #define accx (acc)
 #define accy (acc|0x1)
+void carvesolid_sphere(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgb)
+{
 	int a,b,j,k;
 	float c,s;
 	vec3 tc, tr, tf;
@@ -1224,11 +1237,6 @@ void carvesolid_sphere(struct entity* win, u32 rgb,
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	float* vbuf;
-	u16* ibuf;
-	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, accx*accy+2, accx*accy*2);
-	if(vlen < 0)return;
 
 	for(k=0;k<accy;k++)
 	{
@@ -1307,15 +1315,34 @@ void carvesolid_sphere(struct entity* win, u32 rgb,
 		ibuf[b + (6*j) + 5] = vlen+accx*(accy-1)+(j+1)%accx;
 	}
 }
-void carvesolid_tokamak(struct entity* win, u32 rgb,
-	vec3 vc, vec3 vr, vec3 vu)
+void gl41solid_sphere(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, accx*accy+2, accx*accy*2);
+	if(vlen < 0)return;
+
+	carvesolid_sphere(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgb);
+}
+
+
+
+
+void carvesolid_tokamak(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vu, u32 rgb)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
 	float gg = (float)((rgb>>8)&0xff) / 256.0;
 	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
+}
+void gl41solid_tokamak(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vu)
+{
 	float* vbuf;
 	u16* ibuf;
 	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, acc*acc*2, acc*acc);
 	if(vlen < 0)return;
+
+	carvesolid_tokamak(vbuf,vlen, ibuf,0, vc,vr,vu, rgb);
 }

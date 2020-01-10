@@ -3,7 +3,7 @@
 
 
 
-void carveline_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt)
+void gl41line_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt)
 {
 	int j,k;
 	vec3 t1,t2;
@@ -14,13 +14,13 @@ void carveline_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, ve
 		tc[j] = vc[j] -vr[j];
 		tr[j] = vc[j] -vr[j]*9/16;
 	}
-	carveline(wnd, irgb, tc,tr);
+	gl41line(wnd, irgb, tc,tr);
 
 	for(j=0;j<3;j++){
 		t1[j] = vc[j] -vr[j]*9/16 -vf[j]/4;
 		t2[j] = vc[j] -vr[j]*9/16 +vf[j]/4;
 	}
-	carveline(wnd, irgb, t1, t2);
+	gl41line(wnd, irgb, t1, t2);
 
 	//p,n,p
 	for(k=0;k<3;k++){
@@ -28,7 +28,7 @@ void carveline_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, ve
 			t1[j] = vc[j] -vr[j]/2 + vf[j]*(3*k-4)/16;
 			t2[j] = t1[j] +vf[j]*2/16;
 		}
-		carveline(wnd, orgb, t1,t2);
+		gl41line(wnd, orgb, t1,t2);
 	}
 
 	//s,d,b
@@ -37,28 +37,28 @@ void carveline_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, ve
 			t1[j] = vc[j] - vr[j]/2 + vf[j]*k*3/16;
 			t2[j] = vc[j] + vf[j]*k*3/16;
 		}
-		carveline(wnd, orgb, t1,t2);
+		gl41line(wnd, orgb, t1,t2);
 	}
 	for(j=0;j<3;j++){
 		t1[j] = vc[j] - vr[j]/2;
 		t2[j] = vc[j];
 	}
-	carveline_arrow(wnd, orgb, t1, t2, vt);
+	gl41line_arrow(wnd, orgb, t1, t2, vt);
 
 	//s,d
 	for(j=0;j<3;j++){
 		t1[j] = vc[j];
 		t2[j] = vc[j] + vf[j];
 	}
-	carveline(wnd, orgb, t1,t2);
+	gl41line(wnd, orgb, t1,t2);
 
 	for(j=0;j<3;j++){
 		t1[j] = vc[j] - vf[j]*3/16;
 		t2[j] = vc[j] - vf[j];
 	}
-	carveline(wnd, orgb, t1,t2);
+	gl41line(wnd, orgb, t1,t2);
 }
-void carveline_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt)
+void gl41line_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt)
 {
 	int j,k;
 	vec3 t1,t2;
@@ -69,13 +69,13 @@ void carveline_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, ve
 		tc[j] = vc[j] -vr[j];
 		tr[j] = vc[j] -vr[j]*9/16;
 	}
-	carveline(wnd, irgb, tc,tr);
+	gl41line(wnd, irgb, tc,tr);
 
 	for(j=0;j<3;j++){
 		t1[j] = vc[j] -vr[j]*9/16 -vf[j]/4;
 		t2[j] = vc[j] -vr[j]*9/16 +vf[j]/4;
 	}
-	carveline(wnd, irgb, t1, t2);
+	gl41line(wnd, irgb, t1, t2);
 
 	//p,n,p
 	for(k=0;k<3;k++){
@@ -83,7 +83,7 @@ void carveline_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, ve
 			t1[j] = vc[j] -vr[j]/2 + vf[j]*(3*k-4)/16;
 			t2[j] = t1[j] +vf[j]*2/16;
 		}
-		carveline(wnd, orgb, t1,t2);
+		gl41line(wnd, orgb, t1,t2);
 	}
 
 	//s,d,b
@@ -92,24 +92,24 @@ void carveline_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, ve
 			t1[j] = vc[j] - vr[j]/2 + vf[j]*k*3/16;
 			t2[j] = vc[j] + vf[j]*k*3/16;
 		}
-		carveline(wnd, orgb, t1,t2);
+		gl41line(wnd, orgb, t1,t2);
 	}
 	for(j=0;j<3;j++){
 		t1[j] = vc[j] - vr[j]/2;
 		t2[j] = vc[j];
 	}
-	carveline_arrow(wnd, orgb, t2, t1, vt);
+	gl41line_arrow(wnd, orgb, t2, t1, vt);
 
 	//s,d
 	for(j=0;j<3;j++){
 		t1[j] = vc[j] + vf[j]*3/16;
 		t2[j] = vc[j] + vf[j];
 	}
-	carveline(wnd, orgb, t1,t2);
+	gl41line(wnd, orgb, t1,t2);
 
 	for(j=0;j<3;j++){
 		t1[j] = vc[j];
 		t2[j] = vc[j] - vf[j];
 	}
-	carveline(wnd, orgb, t1,t2);
+	gl41line(wnd, orgb, t1,t2);
 }

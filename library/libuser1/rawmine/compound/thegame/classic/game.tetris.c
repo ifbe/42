@@ -116,7 +116,7 @@ static void tetris_draw_gl41(
 			tu[0] = vu[0] * f[2];
 			tu[1] = vu[1] * f[2];
 			tu[2] = vu[2] * f[2];
-			carvesolid_prism4(win, 0xffffff, tc, tr, tf ,tu);
+			gl41solid_prism4(win, 0xffffff, tc, tr, tf ,tu);
 		}
 	}
 }

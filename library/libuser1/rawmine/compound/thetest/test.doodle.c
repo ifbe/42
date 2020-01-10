@@ -69,7 +69,7 @@ static void doodle_draw_gl41(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	carvesolid_circle(win, 0x00ffff, vc, vr, vf);
+	gl41solid_circle(win, 0x00ffff, vc, vr, vf);
 
 	tr[0] = vr[0]/2;
 	tr[1] = vr[1]/2;
@@ -81,12 +81,12 @@ static void doodle_draw_gl41(
 	tc[0] = vc[0]-vr[0]/2+vu[0]/8;
 	tc[1] = vc[1]-vr[1]/2+vu[1]/8;
 	tc[2] = vc[2]-vr[2]/2+vu[2]/8,
-	carvesolid_circle(win, 0x404040, tc, tr, tf);
+	gl41solid_circle(win, 0x404040, tc, tr, tf);
 
 	tc[0] = vc[0]+vr[0]/2+vu[0]/8;
 	tc[1] = vc[1]+vr[1]/2+vu[1]/8;
 	tc[2] = vc[2]+vr[2]/2+vu[2]/8;
-	carvesolid_circle(win, 0x404040, tc, tr, tf);
+	gl41solid_circle(win, 0x404040, tc, tr, tf);
 
 	tr[0] = vr[0]/4;
 	tr[1] = vr[1]/4;
@@ -101,12 +101,12 @@ static void doodle_draw_gl41(
 	tc[0] = vc[0]-vr[0]/2+(vr[0]*c+vf[0]*s)/4+vu[0]/4;
 	tc[1] = vc[1]-vr[1]/2+(vr[1]*c+vf[1]*s)/4+vu[1]/4;
 	tc[2] = vc[2]-vr[2]/2+(vr[2]*c+vf[2]*s)/4+vu[2]/4;
-	carvesolid_circle(win, 0xff0000, tc, tr, tf);
+	gl41solid_circle(win, 0xff0000, tc, tr, tf);
 
 	tu[0] = px;
 	tu[1] = py;
 	tu[2] = 0.0;
-	carveline(win, 0xffffff, tc, tu);
+	gl41line(win, 0xffffff, tc, tu);
 
 	a = arctan2(py-vc[1]-vr[0], px-vc[0]-vr[1]);
 	c = cosine(a);
@@ -114,12 +114,12 @@ static void doodle_draw_gl41(
 	tc[0] = vc[0]+vr[0]/2+(vr[0]*c+vf[0]*s)/4+vu[0]/4;
 	tc[1] = vc[1]+vr[1]/2+(vr[1]*c+vf[1]*s)/4+vu[1]/4;
 	tc[2] = vc[2]+vr[2]/2+(vr[2]*c+vf[2]*s)/4+vu[2]/4;
-	carvesolid_circle(win, 0xff0000, tc, tr, tf);
+	gl41solid_circle(win, 0xff0000, tc, tr, tf);
 
 	tu[0] = px;
 	tu[1] = py;
 	tu[2] = 0.0;
-	carveline(win, 0xffffff, tc, tu);
+	gl41line(win, 0xffffff, tc, tu);
 }
 static void doodle_draw_json(
 	struct entity* act, struct style* pin,

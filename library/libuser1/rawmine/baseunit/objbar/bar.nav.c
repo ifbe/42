@@ -102,9 +102,9 @@ void navmenu_draw_gl41(struct entity* win)
 				rgb = 0x404040 + (rgb<<16) + (rgb<<8) + rgb;
 			}
 		}
-		carvesolid2d_rect(win, rgb, vc, vr, vf);
+		gl41solid2d_rect(win, rgb, vc, vr, vf);
 		vc[2] = -0.51;
-		carveline2d_rect(win, 0xff00ff, vc, vr, vf);
+		gl41line2d_rect(win, 0xff00ff, vc, vr, vf);
 
 		if((x >= tmp-1)&&(x <= tmp+1))
 		{
@@ -134,7 +134,7 @@ void navmenu_draw_gl41(struct entity* win)
 	vf[0] = 0.0;
 	vf[1] = 1.0/16;
 	vf[2] = 0.0;
-	carveline2d_rect(win, 0xffffff, vc, vr, vf);
+	gl41line2d_rect(win, 0xffffff, vc, vr, vf);
 	vr[0] /= 4.0;
 	carvestring2d_center(win, 0xffffff, vc, vr, vf, nametab[tmp], 0);
 */

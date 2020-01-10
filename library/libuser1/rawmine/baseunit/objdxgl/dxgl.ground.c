@@ -53,7 +53,7 @@ static void ground_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	//carvesolid_rect(ctx, 0xffffff, vc, vr, vf);
+	//gl41solid_rect(ctx, 0xffffff, vc, vr, vf);
 
 	src = act->OWNBUF;
 	if(0 == src)return;

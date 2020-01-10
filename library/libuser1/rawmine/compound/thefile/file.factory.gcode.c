@@ -109,13 +109,13 @@ static void gcode_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carveline_rect(ctx, 0x404040, vc, vr, vf);
+	gl41line_rect(ctx, 0x404040, vc, vr, vf);
 
 	int j;
 	int cnt = act->len;
 	float* buf = act->DSTBUF;
 	for(j=0;j<cnt-1;j++){
-		carveline(ctx, 0xff00ff, &buf[j*3], &buf[j*3+3]);
+		gl41line(ctx, 0xff00ff, &buf[j*3], &buf[j*3+3]);
 	}
 }
 

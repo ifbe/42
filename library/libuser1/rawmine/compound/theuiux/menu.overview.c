@@ -475,21 +475,21 @@ void overview_draw_gl41(
 	tr[0] = 1.0;
 	tr[1] = 0.5;
 	tr[2] = 0.0;
-	carveline2d(ctx, 0x0000ff, tc, tr);
+	gl41line2d(ctx, 0x0000ff, tc, tr);
 	tc[0] = -1.0;
 	tc[1] = 0.0;
 	tc[2] = 0.0;
 	tr[0] = 1.0;
 	tr[1] = 0.0;
 	tr[2] = 0.0;
-	carveline2d(ctx, 0x00ff00, tc, tr);
+	gl41line2d(ctx, 0x00ff00, tc, tr);
 	tc[0] = -1.0;
 	tc[1] = -0.5;
 	tc[2] = 0.0;
 	tr[0] = 1.0;
 	tr[1] = -0.5;
 	tr[2] = 0.0;
-	carveline2d(ctx, 0xff0000, tc, tr);
+	gl41line2d(ctx, 0xff0000, tc, tr);
 */
 	//entity
 	for(j=0;j<128;j++)
@@ -522,7 +522,7 @@ void overview_draw_gl41(
 		tf[0] = vf[0] / 33.0;
 		tf[1] = vf[1] / 33.0;
 		tf[2] = vf[2] / 33.0;
-		carvesolid_rect(ctx, bg, tc, tr, tf);
+		gl41solid_rect(ctx, bg, tc, tr, tf);
 		tc[0] += vt[0]*0.01;
 		tc[1] += vt[1]*0.01;
 		tc[2] += vt[2]*0.01;
@@ -560,7 +560,7 @@ void overview_draw_gl41(
 		tf[0] = vf[0] / 33;
 		tf[1] = vf[1] / 33;
 		tf[2] = vf[2] / 33;
-		carvesolid_rect(ctx, bg, tc, tr, tf);
+		gl41solid_rect(ctx, bg, tc, tr, tf);
 		tc[0] += vt[0]*0.01;
 		tc[1] += vt[1]*0.01;
 		tc[2] += vt[2]*0.01;
@@ -595,7 +595,7 @@ void overview_draw_gl41(
 		tf[0] = vf[0] / 33.0;
 		tf[1] = vf[1] / 33.0;
 		tf[2] = vf[2] / 33.0;
-		carvesolid_rect(ctx, bg, tc, tr, tf);
+		gl41solid_rect(ctx, bg, tc, tr, tf);
 		tc[0] += vt[0]*0.01;
 		tc[1] += vt[1]*0.01;
 		tc[2] += vt[2]*0.01;
@@ -630,7 +630,7 @@ void overview_draw_gl41(
 		tf[0] = vf[0] / 33;
 		tf[1] = vf[1] / 33;
 		tf[2] = vf[2] / 33;
-		carvesolid_rect(ctx, bg, tc, tr, tf);
+		gl41solid_rect(ctx, bg, tc, tr, tf);
 		tc[0] += vt[0]*0.01;
 		tc[1] += vt[1]*0.01;
 		tc[2] += vt[2]*0.01;
@@ -663,7 +663,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0x0000ff, tc, tr);
+				gl41line_shorter(ctx, 0x0000ff, tc, tr);
 			}
 			else if(_art_ == rel->srctype)
 			{
@@ -681,7 +681,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0x00ffff, tc, tr);
+				gl41line_shorter(ctx, 0x00ffff, tc, tr);
 			}
 			else if(_sup_ == rel->srctype)
 			{
@@ -699,7 +699,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0xffff00, tc, tr);
+				gl41line_shorter(ctx, 0xffff00, tc, tr);
 			}
 			else if(_ent_ == rel->srctype)
 			{
@@ -717,7 +717,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0xff0000, tc, tr);
+				gl41line_shorter(ctx, 0xff0000, tc, tr);
 			}
 			rel = samedstnextsrc(rel);
 		}
@@ -749,7 +749,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0x4040ff, tc, tr);
+				gl41line_shorter(ctx, 0x4040ff, tc, tr);
 			}
 			else if(_art_ == rel->srctype)
 			{
@@ -767,7 +767,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0x40ffff, tc, tr);
+				gl41line_shorter(ctx, 0x40ffff, tc, tr);
 			}
 			else if(_sup_ == rel->srctype)
 			{
@@ -785,7 +785,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0xffff40, tc, tr);
+				gl41line_shorter(ctx, 0xffff40, tc, tr);
 			}
 			else if(_ent_ == rel->srctype)
 			{
@@ -803,7 +803,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0xff4040, tc, tr);
+				gl41line_shorter(ctx, 0xff4040, tc, tr);
 			}
 
 			rel = samedstnextsrc(rel);
@@ -836,7 +836,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0xc0ffc0, tc, tr);
+				gl41line_shorter(ctx, 0xc0ffc0, tc, tr);
 			}
 			else if(_art_ == rel->srctype)
 			{
@@ -854,7 +854,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0xc0ffc0, tc, tr);
+				gl41line_shorter(ctx, 0xc0ffc0, tc, tr);
 			}
 			else if(_sup_ == rel->srctype)
 			{
@@ -872,7 +872,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0xffffff, tc, tr);
+				gl41line_shorter(ctx, 0xffffff, tc, tr);
 			}
 			else if(_ent_ == rel->srctype)
 			{
@@ -890,7 +890,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0xffc0ff, tc, tr);
+				gl41line_shorter(ctx, 0xffc0ff, tc, tr);
 			}
 
 			rel = samedstnextsrc(rel);
@@ -923,7 +923,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0xc0ffc0, tc, tr);
+				gl41line_shorter(ctx, 0xc0ffc0, tc, tr);
 			}
 			else if(_art_ == rel->srctype)
 			{
@@ -941,7 +941,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0xc0ffc0, tc, tr);
+				gl41line_shorter(ctx, 0xc0ffc0, tc, tr);
 			}
 			else if(_sup_ == rel->srctype)
 			{
@@ -959,7 +959,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0xffffff, tc, tr);
+				gl41line_shorter(ctx, 0xffffff, tc, tr);
 			}
 			else if(_ent_ == rel->srctype)
 			{
@@ -977,7 +977,7 @@ void overview_draw_gl41(
 				tr[0] = vc[0] + vr[0]*r + vf[0]*f;
 				tr[1] = vc[1] + vr[1]*r + vf[1]*f;
 				tr[2] = vc[2] + vr[2]*r + vf[2]*f + 0.01;
-				carveline_shorter(ctx, 0xffc0ff, tc, tr);
+				gl41line_shorter(ctx, 0xffc0ff, tc, tr);
 			}
 
 			rel = samedstnextsrc(rel);

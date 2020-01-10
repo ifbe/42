@@ -200,7 +200,7 @@ static void xiangqi_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carvesolid_rect(ctx, 0x8d6f25, vc, vr, vf);
+	gl41solid_rect(ctx, 0x8d6f25, vc, vr, vf);
 
 	for(y=-5;y<5;y++)
 	{
@@ -213,7 +213,7 @@ static void xiangqi_draw_gl41(
 		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
 		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
 		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
-		carveline(ctx, 0x222222, tc, tr);
+		gl41line(ctx, 0x222222, tc, tr);
 	}
 	for(x=-4;x<5;x++)
 	{
@@ -227,7 +227,7 @@ static void xiangqi_draw_gl41(
 		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
 		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
 		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
-		carveline(ctx, 0x222222, tc, tr);
+		gl41line(ctx, 0x222222, tc, tr);
 
 		f[1] = 1.0/10.0;
 		tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
@@ -237,7 +237,7 @@ static void xiangqi_draw_gl41(
 		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
 		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
 		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
-		carveline(ctx, 0x222222, tc, tr);
+		gl41line(ctx, 0x222222, tc, tr);
 	}
 
 	for(y=0;y<10;y++)
@@ -268,7 +268,7 @@ static void xiangqi_draw_gl41(
 			tu[0] = vu[0] / 20.0;
 			tu[1] = vu[1] / 20.0;
 			tu[2] = vu[2] / 20.0;
-			carvesolid_cylinder(ctx, 0xf9d65b, tc, tr, tf, tu);
+			gl41solid_cylinder(ctx, 0xf9d65b, tc, tr, tf, tu);
 
 			tc[0] += tu[0] + vu[0]*0.01;
 			tc[1] += tu[1] + vu[1]*0.01;

@@ -1,6 +1,6 @@
 #include "libuser.h"
-void carveline_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
-void carveline_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41line_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41line_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
 
 
 
@@ -36,35 +36,35 @@ static void not_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	//carveline_rect(ctx, 0x404040, vc, vr, vf);
+	//gl41line_rect(ctx, 0x404040, vc, vr, vf);
 
 	//vcc
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vr[j] +vf[j];
 		tr[j] = vc[j] +vr[j] +vf[j];
 	}
-	carveline(ctx, 0xff0000, tc, tr);
+	gl41line(ctx, 0xff0000, tc, tr);
 
 	//gnd
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vr[j] -vf[j];
 		tr[j] = vc[j] +vr[j] -vf[j];
 	}
-	carveline(ctx, 0x0000ff, tc, tr);
+	gl41line(ctx, 0x0000ff, tc, tr);
 
 	//+
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] +vf[j];
 		tr[j] = tc[j] -tf[j]/2;
 	}
-	carveline(ctx, 0xff0000, tc,tr);
+	gl41line(ctx, 0xff0000, tc,tr);
 
 	//-
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vf[j];
 		tr[j] = tc[j] +tf[j]/2;
 	}
-	carveline(ctx, 0x0000ff, tc,tr);
+	gl41line(ctx, 0x0000ff, tc,tr);
 
 	u32 pcolor = act->ix0 ? 0xffffff : 0xff0000;
 	u32 ncolor = act->ix0 ? 0x0000ff : 0xffffff;
@@ -77,7 +77,7 @@ static void not_draw_gl41(
 		tr[j] = vr[j]/2;
 		tf[j] = vf[j]/2;
 	}
-	carveline_pmos(ctx, icolor, pcolor, tc,tr,tf,vt);
+	gl41line_pmos(ctx, icolor, pcolor, tc,tr,tf,vt);
 
 	//n
 	for(j=0;j<3;j++){
@@ -85,18 +85,18 @@ static void not_draw_gl41(
 		tr[j] = vr[j]/2;
 		tf[j] = vf[j]/2;
 	}
-	carveline_nmos(ctx, icolor, ncolor, tc,tr,tf,vt);
+	gl41line_nmos(ctx, icolor, ncolor, tc,tr,tf,vt);
 
 	//i
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vr[j]/2 -vf[j]/2;
 		tr[j] = tc[j] +vf[j];
 	}
-	carveline(ctx, icolor, tc,tr);
+	gl41line(ctx, icolor, tc,tr);
 
 	//o
 	for(j=0;j<3;j++)tc[j] = vc[j]+vr[j];
-	carveline(ctx, ocolor, vc,tc);
+	gl41line(ctx, ocolor, vc,tc);
 }
 static void not_draw_json(
 	struct entity* act, struct style* pin,

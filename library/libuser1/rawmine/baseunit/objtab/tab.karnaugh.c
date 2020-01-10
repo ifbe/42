@@ -65,7 +65,7 @@ void karnaugh_draw_gl41_4x4(struct entity* wnd, struct entity* act, vec3 vc, vec
 			for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(2*x-3)/4 +vf[j]*(3-2*y)/4;
 			if((x == act->ix0)&&(y == act->iy0))rgb = 0xff00ff;
 			else rgb = 0xffffff;
-			carveline_rect(wnd, 0xffffff, tc, tr, tf);
+			gl41line_rect(wnd, 0xffffff, tc, tr, tf);
 			carveascii_center(wnd, rgb, tc, tr, tf, ch[x]);
 		}
 	}
@@ -78,7 +78,7 @@ void karnaugh_draw_gl41_4x4(struct entity* wnd, struct entity* act, vec3 vc, vec
 			tr[j] = vr[j]*0.95;
 			tf[j] = vf[j]*0.95;
 		}
-		carveline_rectround(wnd, 0xff00ff, vc,tr,tf);
+		gl41line_rectround(wnd, 0xff00ff, vc,tr,tf);
 	}
 }
 void karnaugh_draw_gl41(
@@ -101,7 +101,7 @@ void karnaugh_draw_gl41(
 		tc[j] = vc[j] -vr[j] +vf[j];
 		tr[j] = tc[j] +vr[j]*2/5 -vf[j]*2/5;
 	}
-	carveline(wnd, 0xff0000, tc,tr);
+	gl41line(wnd, 0xff0000, tc,tr);
 
 	for(j=0;j<3;j++){
 		tr[j] = vr[j]/5;

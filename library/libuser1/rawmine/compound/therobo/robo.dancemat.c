@@ -96,14 +96,14 @@ static void dancemat_draw_gl41(
 		vbuf[x*3+0] += nbuf[x] * vu[0]/32768.0;
 		vbuf[x*3+1] += nbuf[x] * vu[1]/32768.0;
 		vbuf[x*3+2] += nbuf[x] * vu[2]/32768.0;
-		carvesolid_sphere(ctx, act->ix0, &vbuf[x*3], tr, tf, tu);
+		gl41solid_sphere(ctx, act->ix0, &vbuf[x*3], tr, tf, tu);
 	}
 
 	ibuf = act->ibuf;
 	for(j=0;j<200+48;j++){
 		x = ibuf[j*2+0];
 		y = ibuf[j*2+1];
-		carveline(ctx, act->iy0, &vbuf[x*3], &vbuf[y*3]);
+		gl41line(ctx, act->iy0, &vbuf[x*3], &vbuf[y*3]);
 	}
 }
 static void dancemat_draw_json(

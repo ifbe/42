@@ -84,7 +84,7 @@ static void qrcode_draw_gl41(
 			tc[0] = vc[0] + (x-24)*vr[0]*2/49 + (y-24)*vf[0]*2/49;
 			tc[1] = vc[1] + (x-24)*vr[1]*2/49 + (y-24)*vf[1]*2/49;
 			tc[2] = vc[2] + (x-24)*vr[2]*2/49 + (y-24)*vf[2]*2/49 - 0.1;
-			carvesolid_rect(ctx, rgb, tc, tr, tf);
+			gl41solid_rect(ctx, rgb, tc, tr, tf);
 		}
 	}
 }

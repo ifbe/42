@@ -3,8 +3,8 @@ void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
 void gl41data_tmpcam(struct entity* wnd);
 void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
-void carveline_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
-void carveline_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41line_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41line_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
 
 
 
@@ -72,14 +72,14 @@ static void autocmos_draw_gl41(
 		tc[j] = vc[j] -vr[j] +vf[j];
 		tr[j] = vc[j] +vr[j] +vf[j];
 	}
-	carveline(ctx, 0xff0000, tc, tr);
+	gl41line(ctx, 0xff0000, tc, tr);
 
 	//gnd
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vr[j] -vf[j];
 		tr[j] = vc[j] +vr[j] -vf[j];
 	}
-	carveline(ctx, 0x0000ff, tc, tr);
+	gl41line(ctx, 0x0000ff, tc, tr);
 
 	//nmos
 	w = act->ix0;
@@ -93,7 +93,7 @@ static void autocmos_draw_gl41(
 			for(j=0;j<3;j++){
 				tc[j] = vc[j] +vr[j]*(x*2-w+1)/w -vf[j]+vf[j]*(2*y+1)/h/2;
 			}
-			carveline_nmos(ctx, 0xffffff, 0xffffff, tc,tr,tf,vt);
+			gl41line_nmos(ctx, 0xffffff, 0xffffff, tc,tr,tf,vt);
 		}
 	}
 
@@ -109,7 +109,7 @@ static void autocmos_draw_gl41(
 			for(j=0;j<3;j++){
 				tc[j] = vc[j] +vr[j]*(x*2-w+1)/w +vf[j]-vf[j]*(2*y+1)/h/2;
 			}
-			carveline_pmos(ctx, 0xffffff, 0xffffff, tc,tr,tf,vt);
+			gl41line_pmos(ctx, 0xffffff, 0xffffff, tc,tr,tf,vt);
 		}
 	}
 }

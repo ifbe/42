@@ -30,7 +30,7 @@ static void ch4_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carveline_prism4(ctx, 0x444444, vc, vr, vf, vt);
+	gl41line_prism4(ctx, 0x444444, vc, vr, vf, vt);
 
 	//carbon
 	for(j=0;j<3;j++){
@@ -38,7 +38,7 @@ static void ch4_draw_gl41(
 		tf[j] = vf[j]/4;
 		tt[j] = vt[j]/4;
 	}
-	carvesolid_sphere(ctx, 0x808080, vc, tr, tf, tt);
+	gl41solid_sphere(ctx, 0x808080, vc, tr, tf, tt);
 
 	for(j=0;j<3;j++){
 		tr[j] = vr[j]/8;
@@ -46,7 +46,7 @@ static void ch4_draw_gl41(
 		tt[j] = vt[j]/8;
 		tc[j] = vc[j] +vt[j]-tt[j];
 	}
-	carvesolid_sphere(ctx, 0x808080, tc, tr, tf, tt);
+	gl41solid_sphere(ctx, 0x808080, tc, tr, tf, tt);
 }
 static void ch4_draw_pixel(
 	struct entity* act, struct style* pin,

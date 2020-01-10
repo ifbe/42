@@ -36,7 +36,7 @@ static void balance_draw_gl41(
 	float* vr = geom->fshape.vr;
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
-	carveline_prism4(ctx, 0xffffff, vc, vr, vf, vt);
+	gl41line_prism4(ctx, 0xffffff, vc, vr, vf, vt);
 
 	//board
 	for(j=0;j<3;j++){
@@ -47,7 +47,7 @@ static void balance_draw_gl41(
 	}
 	quaternion_operation(tf, vr, -act->fy0);
 	quaternion_operation(tt, vr, -act->fy0);
-	carvesolid_prism4(ctx, 0x808080, tc,tr,tf,tt);
+	gl41solid_prism4(ctx, 0x808080, tc,tr,tf,tt);
 
 	//left wheel
 	for(j=0;j<3;j++){
@@ -56,7 +56,7 @@ static void balance_draw_gl41(
 		tr[j] = vr[j]/8;
 		tc[j] = vc[j] -vr[j]+tr[j] +tt[j];
 	}
-	carvesolid_cylinder(ctx, 0x404040, tc, tf, tt, tr);
+	gl41solid_cylinder(ctx, 0x404040, tc, tf, tt, tr);
 
 	//right wheel
 	for(j=0;j<3;j++){
@@ -65,7 +65,7 @@ static void balance_draw_gl41(
 		tr[j] = vr[j]/8;
 		tc[j] = vc[j] +vr[j]-tr[j] +tt[j];
 	}
-	carvesolid_cylinder(ctx, 0x404040, tc, tf, tt, tr);
+	gl41solid_cylinder(ctx, 0x404040, tc, tf, tt, tr);
 }
 static void balance_draw_json(
 	struct entity* act, struct style* pin,

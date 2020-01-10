@@ -161,7 +161,7 @@ static void skillbar_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carveline_rect(wnd, 0xff00ff, vc, vr, vf);
+	gl41line_rect(wnd, 0xff00ff, vc, vr, vf);
 
 	struct glsrc* src = act->buf;
 	float (*vbuf)[6] = (void*)(src->vbuf);
@@ -180,7 +180,7 @@ static void skillbar_draw_gl41(
 			tc[0] = vc[0] + vr[0]*(2*x+1)/28.0 + vf[0]*(2*y-23)/24.0;
 			tc[1] = vc[1] + vr[1]*(2*x+1)/28.0 + vf[1]*(2*y-23)/24.0;
 			tc[2] = vc[2] + vr[2]*(2*x+1)/28.0 + vf[2]*(2*y-23)/24.0;
-			carveline_rectselect(wnd, 0xff00ff, tc, tr, tf);
+			gl41line_rectselect(wnd, 0xff00ff, tc, tr, tf);
 
 			vertex_gen(&vbuf[t+0], k%16, k/16, tc, tr, tf);
 			k ++;
@@ -192,7 +192,7 @@ static void skillbar_draw_gl41(
 			tc[0] = vc[0] + vr[0]*(2*x+21)/24.0 + vf[0]*(2*y-11)/24.0;
 			tc[1] = vc[1] + vr[1]*(2*x+21)/24.0 + vf[1]*(2*y-11)/24.0;
 			tc[2] = vc[2] + vr[2]*(2*x+21)/24.0 + vf[2]*(2*y-11)/24.0;
-			carveline_rectselect(wnd, 0xff00ff, tc, tr, tf);
+			gl41line_rectselect(wnd, 0xff00ff, tc, tr, tf);
 
 			vertex_gen(&vbuf[t+0], k%16, k/16, tc, tr, tf);
 			k ++;

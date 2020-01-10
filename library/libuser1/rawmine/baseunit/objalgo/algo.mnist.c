@@ -86,7 +86,7 @@ void mnist_draw_gl41_lt(struct entity* wnd, u8* img, int id, float* vc, float* v
 			tf[j] = vf[j]/28/2;
 			tc[j] = vc[j] -vr[j]+tr[j]*(2*x+1) +vf[j]-tf[j]*(2*y+1);
 		}
-		carvesolid_rect(wnd, 0x010101*img[x+y*28], tc, tr, tf);
+		gl41solid_rect(wnd, 0x010101*img[x+y*28], tc, tr, tf);
 	}
 	}
 	for(j=0;j<3;j++){
@@ -108,7 +108,7 @@ void mnist_draw_gl41_lb(struct entity* wnd, int val, float* vc, float* vr, float
 			tf[j] = vf[j]/10;
 			tc[j] = vc[j] -vr[j]/2 -tf[j]*(y+1);
 		}
-		//carvesolid_rect(wnd, 0x400000, tc, tr, tf);
+		//gl41solid_rect(wnd, 0x400000, tc, tr, tf);
 		if(y == val)carvefloat(wnd, 0xff0000, tc, tr, tf, 1.0);
 		else carvefloat(wnd, 0xffffff, tc, tr, tf, 0.0);
 	}
@@ -125,7 +125,7 @@ void mnist_draw_gl41_rt(struct entity* wnd, float* weight, float* vc, float* vr,
 			tf[j] = vf[j]/4;
 			tc[j] = vc[j] +vr[j]/4+tr[j]*y/4.5 +vf[j]/4+tf[j]*y/4.5 -vt[j]*y/100.0;
 		}
-		carvesolid_rect(wnd, 0x101010*(12-y), tc,tr,tf);
+		gl41solid_rect(wnd, 0x101010*(12-y), tc,tr,tf);
 		for(j=0;j<3;j++)tc[j] += vt[j]/1000000.0;
 		carveascii_center(wnd, 0, tc,tr,tf, 0x30+y);
 	}
@@ -138,7 +138,7 @@ if(0 == weight)return;
 			tf[j] = vf[j]/28/4;
 			tc[j] = vc[j] +tr[j]*(2*x+1) +vf[j]/2-tf[j]*(2*y+1);
 		}
-		carvesolid_rect(wnd, (int)(255*weight[x+y*28])*0x010101, tc, tr, tf);
+		gl41solid_rect(wnd, (int)(255*weight[x+y*28])*0x010101, tc, tr, tf);
 	}
 	}
 }
@@ -159,7 +159,7 @@ void mnist_draw_gl41_rb(struct entity* wnd, float* result, float* vc, float* vr,
 			tf[j] = vf[j]/10;
 			tc[j] = vc[j] +vr[j]/2 -tf[j]*(y+1);
 		}
-		//carvesolid_rect(wnd, 0x400000, tc, tr, tf);
+		//gl41solid_rect(wnd, 0x400000, tc, tr, tf);
 		if(y == x)carvefloat(wnd, 0xff0000, tc, tr, tf, result[y]);
 		else carvefloat(wnd, 0xffffff, tc, tr, tf, result[y]);
 	}
@@ -175,7 +175,7 @@ void mnist_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carveline_rect(wnd, 0x808080, vc, vr, vf);
+	gl41line_rect(wnd, 0x808080, vc, vr, vf);
 
 	int j;
 	int id = act->iz0;

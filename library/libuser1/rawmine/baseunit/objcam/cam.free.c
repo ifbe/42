@@ -253,7 +253,7 @@ static int freecam_draw_gl41(
 	carvefrustum(ctx, &geom->frus);
 
 	//ray from eye to far
-	carveline(ctx, 0, geom->frus.vc, &act->fx0);
+	gl41line(ctx, 0, geom->frus.vc, &act->fx0);
 	return 0;
 }
 /*

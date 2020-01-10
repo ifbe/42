@@ -189,7 +189,7 @@ static void rubikscube_draw_gl41(
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
 			rgb = rubikcolor[(buf[0][y][x])%6];
-			carvesolid_rect(ctx, rgb, tc, tr, tf);
+			gl41solid_rect(ctx, rgb, tc, tr, tf);
 
 			//right
 			f[0] = 1.0;
@@ -205,7 +205,7 @@ static void rubikscube_draw_gl41(
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
 			rgb = rubikcolor[(buf[1][y][x])%6];
-			carvesolid_rect(ctx, rgb, tc, tr, tf);
+			gl41solid_rect(ctx, rgb, tc, tr, tf);
 		}
 	}
 
@@ -227,7 +227,7 @@ static void rubikscube_draw_gl41(
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
 			rgb = rubikcolor[(buf[2][y][x])%6];
-			carvesolid_rect(ctx, rgb, tc, tr, tf);
+			gl41solid_rect(ctx, rgb, tc, tr, tf);
 
 			//far
 			f[0] = 1.0 - (2.0*x+1.0)/level;
@@ -243,7 +243,7 @@ static void rubikscube_draw_gl41(
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
 			rgb = rubikcolor[(buf[3][y][x])%6];
-			carvesolid_rect(ctx, rgb, tc, tr, tf);
+			gl41solid_rect(ctx, rgb, tc, tr, tf);
 		}
 	}
 
@@ -265,7 +265,7 @@ static void rubikscube_draw_gl41(
 			tf[1] = -vf[1] / (level+0.5);
 			tf[2] = -vf[2] / (level+0.5);
 			rgb = rubikcolor[(buf[4][y][x])%6];
-			carvesolid_rect(ctx, rgb, tc, tr, tf);
+			gl41solid_rect(ctx, rgb, tc, tr, tf);
 
 			//upper
 			f[0] = (2.0*x+1.0)/level - 1.0;
@@ -281,7 +281,7 @@ static void rubikscube_draw_gl41(
 			tf[1] = vf[1] / (level+0.5);
 			tf[2] = vf[2] / (level+0.5);
 			rgb = rubikcolor[(buf[5][y][x])%6];
-			carvesolid_rect(ctx, rgb, tc, tr, tf);
+			gl41solid_rect(ctx, rgb, tc, tr, tf);
 		}
 	}
 }

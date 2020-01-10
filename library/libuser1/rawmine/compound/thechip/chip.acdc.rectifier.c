@@ -60,7 +60,7 @@ static void rectify_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carveline_prism4(ctx, 0xffffff, vc, vr, vf, vu);
+	gl41line_prism4(ctx, 0xffffff, vc, vr, vf, vu);
 
 	time = timeread() / 1000;
 	a = time * PI / 1000;
@@ -75,7 +75,7 @@ static void rectify_draw_gl41(
 		tf[j] = vf[j]/2;
 		tu[j] = vu[j]/16;
 	}
-	carvesolid_prism4(ctx, 0x444444, vc, tr, tf, tu);
+	gl41solid_prism4(ctx, 0x444444, vc, tr, tf, tu);
 
 	//3 inputs
 	for(j=0;j<3;j++){
@@ -90,7 +90,7 @@ static void rectify_draw_gl41(
 		else rgb = 0xff;
 
 		for(j=0;j<3;j++)tc[j] = vc[j] - vr[j]/2 + y*vf[j]/2 + a*vu[j]/2;
-		carvesolid_sphere(ctx, rgb, tc, tr, tf, tu);
+		gl41solid_sphere(ctx, rgb, tc, tr, tf, tu);
 	}
 	for(y=-1;y<2;y++)
 	{
@@ -98,7 +98,7 @@ static void rectify_draw_gl41(
 			tc[j] = vc[j] - vr[j]/2 + y*vf[j]/2 - vu[j]/2;
 			tu[j] = tc[j] + vu[j];
 		}
-		carveline(ctx, 0xffffff, tc, tu);
+		gl41line(ctx, 0xffffff, tc, tu);
 	}
 
 	//6 diodes
@@ -115,14 +115,14 @@ static void rectify_draw_gl41(
 				tc[j] = vc[j] + z*vr[j]/16 + y*vf[j]/2 + z*vu[j]/2;
 				tu[j] = vr[j] / 32;
 			}
-			carvesolid_cylinder(ctx, 0x808080, tc, tr, tf, tu);
+			gl41solid_cylinder(ctx, 0x808080, tc, tr, tf, tu);
 
 			//+
 			for(j=0;j<3;j++){
 				tc[j] -= z*vr[j]/3.6;
 				tu[j] = vr[j] / 4;
 			}
-			carvesolid_cylinder(ctx, 0x404040, tc, tr, tf, tu);
+			gl41solid_cylinder(ctx, 0x404040, tc, tr, tf, tu);
 
 			a = s[y+1];
 			rgb = 0xffffff;
@@ -140,7 +140,7 @@ static void rectify_draw_gl41(
 				tc[j] = vc[j] - vr[j]/2 + y*vf[j]/2 + z*vu[j]/2;
 				tu[j] = tc[j] + vr[j];
 			}
-			carveline(ctx, rgb, tc, tu);
+			gl41line(ctx, rgb, tc, tu);
 		}
 	}
 
@@ -151,9 +151,9 @@ static void rectify_draw_gl41(
 		tu[j] = vu[j]/8;
 		tc[j] = vc[j] + vr[j]/2 + s[chosen[0]]*vu[j]/2;
 	}
-	carvesolid_sphere(ctx, 0xff0000, tc, tr, tf, tu);
+	gl41solid_sphere(ctx, 0xff0000, tc, tr, tf, tu);
 	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]/2 + s[chosen[1]]*vu[j]/2;
-	carvesolid_sphere(ctx, 0x0000ff, tc, tr, tf, tu);
+	gl41solid_sphere(ctx, 0x0000ff, tc, tr, tf, tu);
 
 	for(z=-1;z<2;z+=2)
 	{
@@ -161,7 +161,7 @@ static void rectify_draw_gl41(
 			tc[j] = vc[j] + vr[j]/2 - vf[j]/2 + z*vu[j]/2;
 			tu[j] = tc[j] + vf[j];
 		}
-		carveline(ctx, 0xffffff, tc, tu);
+		gl41line(ctx, 0xffffff, tc, tu);
 	}
 }
 static void rectify_draw_json(

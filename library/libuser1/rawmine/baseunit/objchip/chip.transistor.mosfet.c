@@ -43,7 +43,7 @@ static void mosfet_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carveline_rect(wnd, 0xffffff, vc,vr,vf);
+	gl41line_rect(wnd, 0xffffff, vc,vr,vf);
 }
 static void mosfet_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {

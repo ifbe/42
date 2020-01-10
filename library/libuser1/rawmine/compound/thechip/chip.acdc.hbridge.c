@@ -36,13 +36,13 @@ static void hbridge_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carveline_prism4(ctx, 0xffffff, vc, vr, vf, vu);
+	gl41line_prism4(ctx, 0xffffff, vc, vr, vf, vu);
 
 	//board
 	for(j=0;j<3;j++)tc[j] = vc[j] - vu[j];
-	carvesolid_rect(ctx, 0x0000ff, tc, vr, vf);
+	gl41solid_rect(ctx, 0x0000ff, tc, vr, vf);
 	for(j=0;j<3;j++)tc[j] = vc[j] + vu[j];
-	carvesolid_rect(ctx, 0xff0000, tc, vr, vf);
+	gl41solid_rect(ctx, 0xff0000, tc, vr, vf);
 
 	//6 mosfets
 	for(z=-1;z<2;z+=2)
@@ -61,7 +61,7 @@ static void hbridge_draw_gl41(
 				tf[j] = vf[j]/8;
 				tu[j] = vu[j]/8;
 			}
-			carvesolid_prism4(ctx, rgb, tc, tr, tf, tu);
+			gl41solid_prism4(ctx, rgb, tc, tr, tf, tu);
 
 			//g
 			for(j=0;j<3;j++){
@@ -70,17 +70,17 @@ static void hbridge_draw_gl41(
 			}
 			if(gate[y+1][(z+1)/2] == 1)rgb = 0xff0000;
 			else rgb = 0xffffff;
-			carveline(ctx, rgb, tc, tu);
+			gl41line(ctx, rgb, tc, tu);
 
 			//d,s
 			for(j=0;j<3;j++)tu[j] = tc[j] - s*vu[j]/2;
-			carveline(ctx, 0xffffff, tc, tu);
+			gl41line(ctx, 0xffffff, tc, tu);
 
 			//d,s
 			for(j=0;j<3;j++)tu[j] = tc[j] + s*vu[j]/2;
 			if(s>0.0)rgb = 0xff0000;
 			else rgb = 0x0000ff;
-			carveline(ctx, rgb, tc, tu);
+			gl41line(ctx, rgb, tc, tu);
 		}
 	}
 
@@ -94,7 +94,7 @@ static void hbridge_draw_gl41(
 		rgb = 0xffffff;
 		if((gate[y+1][0] > 0)&&(gate[y+1][1] < 1))rgb = 0x0000ff;
 		if((gate[y+1][0] < 1)&&(gate[y+1][1] > 0))rgb = 0xff0000;
-		carveline(ctx, rgb, tc, tu);
+		gl41line(ctx, rgb, tc, tu);
 	}
 }
 static void hbridge_draw_json(

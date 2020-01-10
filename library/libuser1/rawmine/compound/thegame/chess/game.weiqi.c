@@ -118,7 +118,7 @@ static void weiqi_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carvesolid_rect(ctx, 0xf9d65b, vc, vr, vf);
+	gl41solid_rect(ctx, 0xf9d65b, vc, vr, vf);
 
 	for(y=-9;y<10;y++)
 	{
@@ -131,7 +131,7 @@ static void weiqi_draw_gl41(
 		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
 		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
 		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
-		carveline(ctx, 0x222222, tc, tr);
+		gl41line(ctx, 0x222222, tc, tr);
 	}
 	for(x=-9;x<10;x++)
 	{
@@ -144,7 +144,7 @@ static void weiqi_draw_gl41(
 		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
 		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
 		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
-		carveline(ctx, 0x222222, tc, tr);
+		gl41line(ctx, 0x222222, tc, tr);
 	}
 
 	u8* data = act->buf;
@@ -170,7 +170,7 @@ static void weiqi_draw_gl41(
 			tc[0] = vc[0] + tr[0]*x*2 - tf[0]*y*2 + tu[0];
 			tc[1] = vc[1] + tr[1]*x*2 - tf[1]*y*2 + tu[1];
 			tc[2] = vc[2] + tr[2]*x*2 - tf[2]*y*2 + tu[2];
-			carvesolid_sphere(ctx, rgb, tc, tr, tf, tu);
+			gl41solid_sphere(ctx, rgb, tc, tr, tf, tu);
 
 			k++;
 			//if(k>50)return;

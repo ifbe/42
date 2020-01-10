@@ -18,7 +18,7 @@ static void stair_draw_gl41(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	carveline_prism4(win, 0xffffff, vc, vr, vf, vu);
+	gl41line_prism4(win, 0xffffff, vc, vr, vf, vu);
 
 	tr[0] = vr[0]/2;
 	tr[1] = vr[1]/2;
@@ -35,14 +35,14 @@ static void stair_draw_gl41(
 		tc[0] = vc[0] + vr[0]/2 + vf[0]*(z-8)/8 + vu[0]*z/16;
 		tc[1] = vc[1] + vr[1]/2 + vf[1]*(z-8)/8 + vu[1]*z/16;
 		tc[2] = vc[2] + vr[2]/2 + vf[2]*(z-8)/8 + vu[2]*z/16;
-		carvesolid_prism4(win, 0x808080, tc, tr, tf, tu);
+		gl41solid_prism4(win, 0x808080, tc, tr, tf, tu);
 	}
 	for(z=1;z<16;z+=2)
 	{
 		tc[0] = vc[0] - vr[0]/2 + vf[0]*(z-8)/8 - vu[0]*z/16;
 		tc[1] = vc[1] - vr[1]/2 + vf[1]*(z-8)/8 - vu[1]*z/16;
 		tc[2] = vc[2] - vr[2]/2 + vf[2]*(z-8)/8 - vu[2]*z/16;
-		carvesolid_prism4(win, 0x808080, tc, tr, tf, tu);
+		gl41solid_prism4(win, 0x808080, tc, tr, tf, tu);
 	}
 }
 static void stair_draw_json(

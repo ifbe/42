@@ -71,7 +71,7 @@ static void ooxx_draw_gl41(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	carvesolid_rect(win, 0x444444, vc, vr, vf);
+	gl41solid_rect(win, 0x444444, vc, vr, vf);
 }
 static void ooxx_draw_json(
 	struct entity* act, struct style* pin,

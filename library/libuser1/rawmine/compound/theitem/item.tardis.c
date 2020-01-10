@@ -44,7 +44,7 @@ static void tardis_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carvesolid_rect(wnd, 0, vc, vr, vf);
+	gl41solid_rect(wnd, 0, vc, vr, vf);
 
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] + vt[j]/2;

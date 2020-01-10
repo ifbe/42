@@ -41,7 +41,7 @@ void pointer_draw_gl41(struct entity* win, struct style* sty)
 		vr[0] = x1;
 		vr[1] = y1;
 		vr[2] = -0.99;
-		carveline2d_arrow(win, 0xff00ff, vc, vr);
+		gl41line2d_arrow(win, 0xff00ff, vc, vr);
 	}
 */
 }

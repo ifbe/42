@@ -92,7 +92,7 @@ static void mario_draw_gl41(
 	struct glsrc* src = act->buf;
 	float (*vbuf)[6] = (void*)(src->vbuf);
 
-	carveline_rect(win, 0xffffff, vc, vr, vf);
+	gl41line_rect(win, 0xffffff, vc, vr, vf);
 	for(x=0;x<16;x++){
 		t = (0+x)*6;
 

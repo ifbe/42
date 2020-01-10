@@ -62,7 +62,7 @@ static void tree_draw_d(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	//carvesolid_rect(win, 0x6a4b23, vc, vr, vf);
+	//gl41solid_rect(win, 0x6a4b23, vc, vr, vf);
 
 	tc[0] = vc[0]-vf[0]/2;
 	tc[1] = vc[1]-vf[1]/2;
@@ -73,7 +73,7 @@ static void tree_draw_d(
 	tf[0] = vf[0]/2;
 	tf[1] = vf[1]/2;
 	tf[2] = vf[2]/2;
-	carvesolid2d_rect(win, 0x404040, tc, tr, tf);
+	gl41solid2d_rect(win, 0x404040, tc, tr, tf);
 
 	tf[0] = vf[0]/8;
 	tf[1] = vf[1]/8;
@@ -85,7 +85,7 @@ static void tree_draw_d(
 	tr[0] = vr[0]*4/4;
 	tr[1] = vr[1]*4/4;
 	tr[2] = vr[2]*4/4;
-	carvesolid2d_rect(win, 0x00ff00, tc, tr, tf);
+	gl41solid2d_rect(win, 0x00ff00, tc, tr, tf);
 
 	tc[0] = vc[0]+vf[0]*3/8;
 	tc[1] = vc[1]+vf[1]*3/8;
@@ -93,7 +93,7 @@ static void tree_draw_d(
 	tr[0] = vr[0]*3/4;
 	tr[1] = vr[1]*3/4;
 	tr[2] = vr[2]*3/4;
-	carvesolid2d_rect(win, 0x00ff00, tc, tr, tf);
+	gl41solid2d_rect(win, 0x00ff00, tc, tr, tf);
 
 	tc[0] = vc[0]+vf[0]*5/8;
 	tc[1] = vc[1]+vf[1]*5/8;
@@ -101,7 +101,7 @@ static void tree_draw_d(
 	tr[0] = vr[0]*2/4;
 	tr[1] = vr[1]*2/4;
 	tr[2] = vr[2]*2/4;
-	carvesolid2d_rect(win, 0x00ff00, tc, tr, tf);
+	gl41solid2d_rect(win, 0x00ff00, tc, tr, tf);
 
 	tc[0] = vc[0]+vf[0]*7/8;
 	tc[1] = vc[1]+vf[1]*7/8;
@@ -109,7 +109,7 @@ static void tree_draw_d(
 	tr[0] = vr[0]*1/4;
 	tr[1] = vr[1]*1/4;
 	tr[2] = vr[2]*1/4;
-	carvesolid_prism4(win, 0x00ff00, tc, tr, tf, tu);
+	gl41solid_prism4(win, 0x00ff00, tc, tr, tf, tu);
 }*/
 static void tree_draw_gl41(
 	struct entity* act, struct style* part,
@@ -122,12 +122,12 @@ static void tree_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	//carvesolid_rect(ctx, 0x6a4b23, vc, vr, vf);
+	//gl41solid_rect(ctx, 0x6a4b23, vc, vr, vf);
 /*
 	tc[0] = vc[0]-vu[0];
 	tc[1] = vc[1]-vu[1];
 	tc[2] = vc[2]-vu[2];
-	carvesolid_cone(ctx, 0x6a4b23, tc, vr, vu);
+	gl41solid_cone(ctx, 0x6a4b23, tc, vr, vu);
 */
 	tc[0] = vc[0]+vu[0]/4;
 	tc[1] = vc[1]+vu[1]/4;
@@ -141,7 +141,7 @@ static void tree_draw_gl41(
 	tu[0] = vu[0]/4;
 	tu[1] = vu[1]/4;
 	tu[2] = vu[2]/4;
-	carvesolid_prism4(ctx, 0x404040, tc, tr, tf, tu);
+	gl41solid_prism4(ctx, 0x404040, tc, tr, tf, tu);
 
 	tc[0] = vc[0]+vu[0]*9/16;
 	tc[1] = vc[1]+vu[1]*9/16;
@@ -155,7 +155,7 @@ static void tree_draw_gl41(
 	tu[0] = vu[0]/16;
 	tu[1] = vu[1]/16;
 	tu[2] = vu[2]/16;
-	carvesolid_prism4(ctx, 0x00ff00, tc, tr, tf, tu);
+	gl41solid_prism4(ctx, 0x00ff00, tc, tr, tf, tu);
 
 	tc[0] = vc[0]+vu[0]*11/16;
 	tc[1] = vc[1]+vu[1]*11/16;
@@ -169,7 +169,7 @@ static void tree_draw_gl41(
 	tu[0] = vu[0]/16;
 	tu[1] = vu[1]/16;
 	tu[2] = vu[2]/16;
-	carvesolid_prism4(ctx, 0x00ff00, tc, tr, tf, tu);
+	gl41solid_prism4(ctx, 0x00ff00, tc, tr, tf, tu);
 
 	tc[0] = vc[0]+vu[0]*13/16;
 	tc[1] = vc[1]+vu[1]*13/16;
@@ -183,7 +183,7 @@ static void tree_draw_gl41(
 	tu[0] = vu[0]/16;
 	tu[1] = vu[1]/16;
 	tu[2] = vu[2]/16;
-	carvesolid_prism4(ctx, 0x00ff00, tc, tr, tf, tu);
+	gl41solid_prism4(ctx, 0x00ff00, tc, tr, tf, tu);
 
 	tc[0] = vc[0]+vu[0]*15/16;
 	tc[1] = vc[1]+vu[1]*15/16;
@@ -197,7 +197,7 @@ static void tree_draw_gl41(
 	tu[0] = vu[0]/16;
 	tu[1] = vu[1]/16;
 	tu[2] = vu[2]/16;
-	carvesolid_prism4(ctx, 0x00ff00, tc, tr, tf, tu);
+	gl41solid_prism4(ctx, 0x00ff00, tc, tr, tf, tu);
 }
 static void tree_draw_json(
 	struct entity* act, struct style* pin,

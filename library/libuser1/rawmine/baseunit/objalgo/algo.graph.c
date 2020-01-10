@@ -92,7 +92,7 @@ static void graph_draw_gl41(
 	struct pair* wire = act->wbuf;
 	float* vbuf = act->vbuf;
 	float* ibuf = act->ibuf;
-	//carveline_prism4(win, 0x00ff00, sty->vc, sty->vr, sty->vf, sty->vu);
+	//gl41line_prism4(win, 0x00ff00, sty->vc, sty->vr, sty->vf, sty->vu);
 
 	if(vbuf)
 	{
@@ -118,7 +118,7 @@ static void graph_draw_gl41(
 		j = wire[i].parent;
 		k = wire[i].child;
 
-		carveline_arrow(win, 0xffffff, &vbuf[j*3], &vbuf[k*3], sty->f.vt);
+		gl41line_arrow(win, 0xffffff, &vbuf[j*3], &vbuf[k*3], sty->f.vt);
 	}
 
 	//tr[0] = win->camera.vr[0];

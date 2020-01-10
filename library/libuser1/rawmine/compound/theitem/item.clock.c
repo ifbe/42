@@ -48,7 +48,7 @@ static void clock_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carvesolid_circle(ctx, 0x404040, vc, vr, vf);
+	gl41solid_circle(ctx, 0x404040, vc, vr, vf);
 
 	u64 date = dateread();
 	u8* p = (u8*)&date;
@@ -61,7 +61,7 @@ static void clock_draw_gl41(
 	tr[0] = vc[0]+(vr[0]*c+vf[0]*s);
 	tr[1] = vc[1]+(vr[1]*c+vf[1]*s);
 	tr[2] = vc[2]+(vr[2]*c+vf[2]*s);
-	carveline(ctx, 0xff0000, vc, tr);
+	gl41line(ctx, 0xff0000, vc, tr);
 
 	a = PI/2 - (p[1]*PI*2.0/60.0);
 	c = cosine(a);
@@ -69,7 +69,7 @@ static void clock_draw_gl41(
 	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*3/4;
 	tr[1] = vc[1]+(vr[1]*c+vf[1]*s)*3/4;
 	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*3/4;
-	carveline(ctx, 0x00ff00, vc, tr);
+	gl41line(ctx, 0x00ff00, vc, tr);
 
 	a = PI/2 - (p[2]*PI*2.0/12.0);
 	c = cosine(a);
@@ -77,7 +77,7 @@ static void clock_draw_gl41(
 	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*2/4;
 	tr[1] = vc[1]+(vr[1]*c+vf[1]*s)*2/4;
 	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*2/4;
-	carveline(ctx, 0x0000ff, vc, tr);
+	gl41line(ctx, 0x0000ff, vc, tr);
 
 	tr[0] = vr[0]/8;
 	tr[1] = vr[1]/8;

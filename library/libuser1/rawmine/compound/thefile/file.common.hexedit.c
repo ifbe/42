@@ -146,7 +146,7 @@ static void hexedit_draw_gl41(
 	float* vr = geom->fshape.vr;
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
-	//carvesolid_rect(wnd, 0x00ff00, vc,vr,vf);
+	//gl41solid_rect(wnd, 0x00ff00, vc,vr,vf);
 
 	u8 ch;
 	u8* buf = act->buf0;
@@ -157,7 +157,7 @@ static void hexedit_draw_gl41(
 				tf[j] = vf[j]/32;
 				tc[j] = vc[j] + tr[j]*(2*x-31) + tf[j]*(31-2*y);
 			}
-			carveline_rect(wnd, 0xff0000, tc,tr,tf);
+			gl41line_rect(wnd, 0xff0000, tc,tr,tf);
 
 			ch = buf[act->iz0 + y*32 + x];
 			if((x == act->ixn)&&(y == act->iyn))rgb = 0x00ff00;

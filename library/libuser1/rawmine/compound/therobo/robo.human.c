@@ -1,5 +1,5 @@
 #include "libuser.h"
-void carvesolid_bodypart(struct entity*, u32, vec3, vec3);
+void gl41solid_bodypart(struct entity*, u32, vec3, vec3);
 
 
 
@@ -147,7 +147,7 @@ static void human_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carveline_circle(ctx, 0xff00ff, vc, vr, vf);
+	gl41line_circle(ctx, 0xff00ff, vc, vr, vf);
 
 	j = (timeread()%1000000);
 	if(j < 250*1000){
@@ -180,7 +180,7 @@ static void human_draw_gl41(
 		t1[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
 		t1[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
 
-		carvesolid_bodypart(ctx, 0x008080, t0, t1);
+		gl41solid_bodypart(ctx, 0x008080, t0, t1);
 	}
 }
 static void human_draw_json(

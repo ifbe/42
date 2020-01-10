@@ -88,7 +88,7 @@ static void circuit_draw_gl41(
 	tc[0] = vc[0] + 3*tu[0];
 	tc[1] = vc[1] + 3*tu[1];
 	tc[2] = vc[2] + 3*tu[2];
-	carvesolid_prism4(win, 0x808080, tc, vr, vf, tu);
+	gl41solid_prism4(win, 0x808080, tc, vr, vf, tu);
 	for(z=0;z<2;z++)
 	{
 		for(y=0;y<HEIGHT;y++)
@@ -122,7 +122,7 @@ static void circuit_draw_gl41(
 				tc[0] += (z*4+1)*tu[0];
 				tc[1] += (z*4+1)*tu[1];
 				tc[2] += (z*4+1)*tu[2];
-				carvesolid_prism4(win, c, tc, tr, tf, tu);
+				gl41solid_prism4(win, c, tc, tr, tf, tu);
 			}
 		}
 	}

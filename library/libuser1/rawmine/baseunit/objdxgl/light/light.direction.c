@@ -136,7 +136,7 @@ static void dirlight_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carveline_rect(ctx, 0xffffff, vc, vr, vt);
+	gl41line_rect(ctx, 0xffffff, vc, vr, vt);
 
 	//light ray (for debug)
 	sun = act->OWNBUF;
@@ -150,7 +150,7 @@ static void dirlight_draw_gl41(
 			tb[0] = ta[0] - vf[0];
 			tb[1] = ta[1] - vf[1];
 			tb[2] = ta[2] - vf[2];
-			carveline(ctx, sun->u_rgb, ta, tb);
+			gl41line(ctx, sun->u_rgb, ta, tb);
 		}
 	}
 

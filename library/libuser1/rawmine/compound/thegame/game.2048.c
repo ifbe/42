@@ -123,7 +123,7 @@ static void the2048_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carvesolid_rect(ctx, 0x444444, vc, vr, vf);
+	gl41solid_rect(ctx, 0x444444, vc, vr, vf);
 
 	tab = (void*)(act->buf) + (act->len)*16;
 	for(y=0;y<4;y++)
@@ -149,7 +149,7 @@ static void the2048_draw_gl41(
 			tu[0] = vu[0]*f[2];
 			tu[1] = vu[1]*f[2];
 			tu[2] = vu[2]*f[2];
-			carvesolid_prism4(ctx, rgb, tc, tr, tf, tu);
+			gl41solid_prism4(ctx, rgb, tc, tr, tf, tu);
 
 			tc[0] += tu[0] + vu[0]*0.01;
 			tc[1] += tu[1] + vu[1]*0.01;

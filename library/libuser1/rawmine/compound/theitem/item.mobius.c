@@ -32,7 +32,7 @@ static void mobius_draw_gl41(
 	tf[0] = vf[0]*0.75;
 	tf[1] = vf[1]*0.75;
 	tf[2] = vf[2]*0.75;
-	carveline_circle(wnd, 0xff0000, tc, tr, tf);
+	gl41line_circle(wnd, 0xff0000, tc, tr, tf);
 
 	act->ix0 = (timeread()/10000) % 360;
 	for(j=0;j<180;j++)
@@ -77,7 +77,7 @@ static void mobius_draw_gl41(
 
 		if(j == act->ix0)rgb = 0xff0000;
 		else rgb = 0x808080;
-		carvesolid_prism4(wnd, rgb, tc, tr, tf, tu);
+		gl41solid_prism4(wnd, rgb, tc, tr, tf, tu);
 	}
 }
 static void mobius_draw_json(

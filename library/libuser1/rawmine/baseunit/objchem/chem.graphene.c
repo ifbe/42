@@ -30,14 +30,14 @@ static void graphene_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carveline_prism4(ctx, 0x444444, vc, vr, vf, vt);
+	gl41line_prism4(ctx, 0x444444, vc, vr, vf, vt);
 
 	for(j=0;j<3;j++){
 		tr[j] = vr[j]/4;
 		tf[j] = vf[j]/4;
 		tt[j] = vt[j]/4;
 	}
-	carvesolid_sphere(ctx, 0x808080, vc, tr, tf, tt);
+	gl41solid_sphere(ctx, 0x808080, vc, tr, tf, tt);
 }
 static void graphene_draw_pixel(
 	struct entity* act, struct style* pin,

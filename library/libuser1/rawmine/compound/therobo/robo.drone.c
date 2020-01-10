@@ -31,111 +31,111 @@ static void drone_draw_gl41(
 	struct entity* ctx, struct style* area)
 {
 	float dt;
-    vec3 tc,tr,tf,tu;
+	vec3 tc,tr,tf,tu;
 	vec3 kc,kr,kf,ku;
 	float* vc = geom->fshape.vc;
 	float* vr = geom->fshape.vr;
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
-	carveline_rect(ctx, 0xffffff, vc, vr, vf);
+	gl41line_rect(ctx, 0xffffff, vc, vr, vf);
 
-    tu[0] = vt[0] / 64;
-    tu[1] = vt[1] / 64;
-    tu[2] = vt[2] / 64;
+	tu[0] = vt[0] / 64;
+	tu[1] = vt[1] / 64;
+	tu[2] = vt[2] / 64;
 
-    //center
-    tr[0] = vr[0] / 4;
-    tr[1] = vr[1] / 4;
-    tr[2] = vr[2] / 4;
-    tf[0] = vf[0] / 4;
-    tf[1] = vf[1] / 4;
-    tf[2] = vf[2] / 4;
-    carvesolid_prism4(ctx, 0xffffff, vc, tr, tf, tu);
+	//center
+	tr[0] = vr[0] / 4;
+	tr[1] = vr[1] / 4;
+	tr[2] = vr[2] / 4;
+	tf[0] = vf[0] / 4;
+	tf[1] = vf[1] / 4;
+	tf[2] = vf[2] / 4;
+	gl41solid_prism4(ctx, 0xffffff, vc, tr, tf, tu);
 
-    //pie
-    tr[0] = vr[0] + vf[0];
-    tr[1] = vr[1] + vf[1];
-    tr[2] = vr[2] + vf[2];
-    tf[0] = (vf[0] - vr[0]) / 16;
-    tf[1] = (vf[1] - vr[1]) / 16;
-    tf[2] = (vf[2] - vr[2]) / 16;
-    carvesolid_prism4(ctx, 0xfedcba, vc, tr, tf, tu);
+	//pie
+	tr[0] = vr[0] + vf[0];
+	tr[1] = vr[1] + vf[1];
+	tr[2] = vr[2] + vf[2];
+	tf[0] = (vf[0] - vr[0]) / 16;
+	tf[1] = (vf[1] - vr[1]) / 16;
+	tf[2] = (vf[2] - vr[2]) / 16;
+	gl41solid_prism4(ctx, 0xfedcba, vc, tr, tf, tu);
 
-    //na
-    tr[0] = (vr[0] + vf[0]) / 16;
-    tr[1] = (vr[1] + vf[1]) / 16;
-    tr[2] = (vr[2] + vf[2]) / 16;
-    tf[0] = vf[0] - vr[0];
-    tf[1] = vf[1] - vr[1];
-    tf[2] = vf[2] - vr[2];
-    carvesolid_prism4(ctx, 0xfedcba, vc, tr, tf, tu);
+	//na
+	tr[0] = (vr[0] + vf[0]) / 16;
+	tr[1] = (vr[1] + vf[1]) / 16;
+	tr[2] = (vr[2] + vf[2]) / 16;
+	tf[0] = vf[0] - vr[0];
+	tf[1] = vf[1] - vr[1];
+	tf[2] = vf[2] - vr[2];
+	gl41solid_prism4(ctx, 0xfedcba, vc, tr, tf, tu);
 
 
-    kr[0] = vr[0] / 4;
-    kr[1] = vr[1] / 4;
-    kr[2] = vr[2] / 4;
-    kf[0] = vf[0] / 4;
-    kf[1] = vf[1] / 4;
-    kf[2] = vf[2] / 4;
+	kr[0] = vr[0] / 4;
+	kr[1] = vr[1] / 4;
+	kr[2] = vr[2] / 4;
+	kf[0] = vf[0] / 4;
+	kf[1] = vf[1] / 4;
+	kf[2] = vf[2] / 4;
 	ku[0] = vt[0] / 4;
 	ku[1] = vt[1] / 4;
 	ku[2] = vt[2] / 4;
 
-    tr[0] = vr[0] / 32;
-    tr[1] = vr[1] / 32;
-    tr[2] = vr[2] / 32;
-    tf[0] = vf[0] / 32;
-    tf[1] = vf[1] / 32;
-    tf[2] = vf[2] / 32;
-    tu[0] = vt[0] / 32;
-    tu[1] = vt[1] / 32;
-    tu[2] = vt[2] / 32;
+	tr[0] = vr[0] / 32;
+	tr[1] = vr[1] / 32;
+	tr[2] = vr[2] / 32;
+	tf[0] = vf[0] / 32;
+	tf[1] = vf[1] / 32;
+	tf[2] = vf[2] / 32;
+	tu[0] = vt[0] / 32;
+	tu[1] = vt[1] / 32;
+	tu[2] = vt[2] / 32;
 
 	dt = timeread() % 1000000;
 
-    //rf, motor1
-    tc[0] = vc[0] + vr[0] + vf[0];
-    tc[1] = vc[1] + vr[1] + vf[1];
-    tc[2] = vc[2] + vr[2] + vf[2];
-    carvesolid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
-    tc[0] = vc[0] + vr[0] + vf[0] + tu[0];
-    tc[1] = vc[1] + vr[1] + vf[1] + tu[1];
-    tc[2] = vc[2] + vr[2] + vf[2] + tu[2];
+	//rf, motor1
+	tc[0] = vc[0] + vr[0] + vf[0];
+	tc[1] = vc[1] + vr[1] + vf[1];
+	tc[2] = vc[2] + vr[2] + vf[2];
+	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
+	tc[0] = vc[0] + vr[0] + vf[0] + tu[0];
+	tc[1] = vc[1] + vr[1] + vf[1] + tu[1];
+	tc[2] = vc[2] + vr[2] + vf[2] + tu[2];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '1');
-	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1, dt);
+	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1, dt);
 
-    //ln, motor2
-    tc[0] = vc[0] - vr[0] - vf[0];
-    tc[1] = vc[1] - vr[1] - vf[1];
-    tc[2] = vc[2] - vr[2] - vf[2];
-    carvesolid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
-    tc[0] = vc[0] - vr[0] - vf[0] + tu[0];
-    tc[1] = vc[1] - vr[1] - vf[1] + tu[1];
-    tc[2] = vc[2] - vr[2] - vf[2] + tu[2];
+	//ln, motor2
+	tc[0] = vc[0] - vr[0] - vf[0];
+	tc[1] = vc[1] - vr[1] - vf[1];
+	tc[2] = vc[2] - vr[2] - vf[2];
+	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
+	tc[0] = vc[0] - vr[0] - vf[0] + tu[0];
+	tc[1] = vc[1] - vr[1] - vf[1] + tu[1];
+	tc[2] = vc[2] - vr[2] - vf[2] + tu[2];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '2');
-	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1, dt);
+	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1, dt);
 
-    //lf, motor3
-    tc[0] = vc[0] - vr[0] + vf[0];
-    tc[1] = vc[1] - vr[1] + vf[1];
-    tc[2] = vc[2] - vr[2] + vf[2];
-    carvesolid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
-    tc[0] = vc[0] - vr[0] + vf[0] + tu[0];
-    tc[1] = vc[1] - vr[1] + vf[1] + tu[1];
-    tc[2] = vc[2] - vr[2] + vf[2] + tu[2];
+	//lf, motor3
+	tc[0] = vc[0] - vr[0] + vf[0];
+	tc[1] = vc[1] - vr[1] + vf[1];
+	tc[2] = vc[2] - vr[2] + vf[2];
+	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
+	tc[0] = vc[0] - vr[0] + vf[0] + tu[0];
+	tc[1] = vc[1] - vr[1] + vf[1] + tu[1];
+	tc[2] = vc[2] - vr[2] + vf[2] + tu[2];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '3');
-	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1, dt);
+	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1, dt);
 
-    //rn, motor4
-    tc[0] = vc[0] + vr[0] - vf[0];
-    tc[1] = vc[1] + vr[1] - vf[1];
-    tc[2] = vc[2] + vr[2] - vf[2];
-    carvesolid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
-    tc[0] = vc[0] + vr[0] - vf[0] + tu[0];
-    tc[1] = vc[1] + vr[1] - vf[1] + tu[1];
-    tc[2] = vc[2] + vr[2] - vf[2] + tu[2];
+	//rn, motor4
+	tc[0] = vc[0] + vr[0] - vf[0];
+	tc[1] = vc[1] + vr[1] - vf[1];
+	tc[2] = vc[2] + vr[2] - vf[2];
+	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
+	tc[0] = vc[0] + vr[0] - vf[0] + tu[0];
+	tc[1] = vc[1] + vr[1] - vf[1] + tu[1];
+	tc[2] = vc[2] + vr[2] - vf[2] + tu[2];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '4');
-	carvesolid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1, dt);
+	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1, dt);
 }
 static void drone_draw_json(
 	struct entity* act, struct style* pin,

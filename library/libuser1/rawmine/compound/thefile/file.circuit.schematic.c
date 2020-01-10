@@ -14,7 +14,7 @@ static void sch_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carvesolid_rect(ctx, 0x404040, vc, vr, vf);
+	gl41solid_rect(ctx, 0x404040, vc, vr, vf);
 }
 void sch_read_board(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {

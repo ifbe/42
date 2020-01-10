@@ -14,7 +14,7 @@ static void pcb_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carvesolid_rect(ctx, 0x404000, vc, vr, vf);
+	gl41solid_rect(ctx, 0x404000, vc, vr, vf);
 }
 void pcb_read_board(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {

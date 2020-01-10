@@ -55,7 +55,7 @@ static void browser_draw_gl41(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	carvesolid_rect(win, 0xffffff, vc, vr, vf);
+	gl41solid_rect(win, 0xffffff, vc, vr, vf);
 
 	//address
 	tc[0] = vc[0] + vf[0]*0.95 + vu[0]*0.001;
@@ -64,7 +64,7 @@ static void browser_draw_gl41(
 	tf[0] = vf[0]*0.02;
 	tf[1] = vf[1]*0.02;
 	tf[2] = vf[2]*0.02;
-	carvesolid_rect(win, 0xc0c0c0, tc, vr, tf);
+	gl41solid_rect(win, 0xc0c0c0, tc, vr, tf);
 
 	tc[0] = vc[0] - vr[0] + vf[0]*0.95 + vu[0]*0.002;
 	tc[1] = vc[1] - vr[1] + vf[1]*0.95 + vu[1]*0.002;

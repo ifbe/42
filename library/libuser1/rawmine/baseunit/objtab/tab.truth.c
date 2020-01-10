@@ -85,7 +85,7 @@ void truth_draw_gl41(
 			for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(x*2-7)/8 + vf[j]*(16-2*y)/17;
 			if((x == act->ix0)&&(y == act->iy0))rgb = 0xff00ff;
 			else rgb = 0x808080;
-			carveline_rect(wnd, rgb, tc, tr, tf);
+			gl41line_rect(wnd, rgb, tc, tr, tf);
 			if(4 == x)continue;
 			if(6 <= x)continue;
 			carveascii_center(wnd, rgb, tc, tr, tf, ch[x]);

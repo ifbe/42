@@ -70,7 +70,7 @@ void slider_draw_gl41(
 			tr[j] = vr[j] * 0.8;
 			tf[j] = vf[j] / 80;
 		}
-		carvesolid_rect(wnd, 0, tc,tr,tf);
+		gl41solid_rect(wnd, 0, tc,tr,tf);
 
 		for(j=0;j<3;j++){
 			tc[j] = vc[j] +vr[j]*0.8*(list[y]-50)/50.0 +vf[j]*(5.5-y)/6;

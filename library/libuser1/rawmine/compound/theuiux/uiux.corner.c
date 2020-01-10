@@ -22,8 +22,8 @@ void corner_gl41_drag_lefttop(
 	tf[0] = 0.0;
 	tf[1] = tc[1]-1.0;
 	tf[2] = 0.0;
-	carveline_rect(win, 0xffffff, tc, tr, tf);
-	carvesolid_circle(win, 0xffffff, tc, tr, tf);
+	gl41line_rect(win, 0xffffff, tc, tr, tf);
+	gl41solid_circle(win, 0xffffff, tc, tr, tf);
 }
 void corner_gl41_drag_righttop(
 	struct entity* act, struct style* pin,
@@ -42,22 +42,22 @@ void corner_gl41_drag_righttop(
 	tf[0] = 1.0;
 	tf[1] = -1.0;
 	tf[2] = -0.99;
-	carvesolid_triangle(win, 0x0000ff, tc, tr, tf);
+	gl41solid_triangle(win, 0x0000ff, tc, tr, tf);
 
 	tf[0] = -1.0;
 	tf[1] = 1.0;
 	tf[2] = -0.99;
-	carvesolid_triangle(win, 0x00ffff, tc, tr, tf);
+	gl41solid_triangle(win, 0x00ffff, tc, tr, tf);
 
 	tr[0] = 1.0;
 	tr[1] = 1.0;
 	tr[2] = -0.99;
-	carvesolid_triangle(win, 0xff0000, tc, tr, tf);
+	gl41solid_triangle(win, 0xff0000, tc, tr, tf);
 
 	tf[0] = 1.0;
 	tf[1] = -1.0;
 	tf[2] = -0.99;
-	carvesolid_triangle(win, 0xffff00, tc, tr, tf);
+	gl41solid_triangle(win, 0xffff00, tc, tr, tf);
 }
 void corner_gl41_drag_leftbot(
 	struct entity* act, struct style* pin,
@@ -75,7 +75,7 @@ void corner_gl41_drag_leftbot(
 	tf[0] = 0.0;
 	tf[1] = 1.0;
 	tf[2] = 0.0;
-	carvesolid_rect(win, 0x404040, tc, tr, tf);
+	gl41solid_rect(win, 0x404040, tc, tr, tf);
 
 	tc[0] = 0.0;
 	tc[1] = y;
@@ -83,7 +83,7 @@ void corner_gl41_drag_leftbot(
 	tr[1] = 0.0;
 	tf[0] = 0.0;
 	tf[1] = 1.0+tc[1];
-	carvesolid_rect(win, 0x404040, tc, tr, tf);
+	gl41solid_rect(win, 0x404040, tc, tr, tf);
 }
 void corner_gl41_drag_rightbot(
 	struct entity* act, struct style* pin,
@@ -101,10 +101,10 @@ void corner_gl41_drag_rightbot(
 	tc[0] = xn;
 	tc[1] = yn;
 	tc[2] = -0.9;
-	carvesolid_triangle(win, 0x808080, tc, tr, tf);
+	gl41solid_triangle(win, 0x808080, tc, tr, tf);
 	tc[0] = 1.0;
 	tc[1] = -1.0;
-	carvesolid_triangle(win, 0x000000, tc, tr, tf);
+	gl41solid_triangle(win, 0x000000, tc, tr, tf);
 }
 void corner_gl41_drag(
 	struct entity* act, struct style* pin,
@@ -215,7 +215,7 @@ void corver_gl41_hover(
 		vc[0] = 1.0;
 		vc[1] = -1.0;
 		vc[2] = -0.99;
-		carvesolid2d_circle(win, 0x0000ff, vc, vr, vf);
+		gl41solid2d_circle(win, 0x0000ff, vc, vr, vf);
 	}
 
 	//left, bot
@@ -235,7 +235,7 @@ void corver_gl41_hover(
 		vc[0] = -1.0;
 		vc[1] = -1.0;
 		vc[2] = -0.99;
-		carvesolid2d_circle(win, 0xff0000, vc, vr, vf);
+		gl41solid2d_circle(win, 0xff0000, vc, vr, vf);
 	}
 
 	//left, top
@@ -255,7 +255,7 @@ void corver_gl41_hover(
 		vc[0] = -1.0;
 		vc[1] = 1.0;
 		vc[2] = -0.99;
-		carvesolid2d_circle(win, 0x00ffff, vc, vr, vf);
+		gl41solid2d_circle(win, 0x00ffff, vc, vr, vf);
 	}
 
 	//right, top
@@ -275,7 +275,7 @@ void corver_gl41_hover(
 		vc[0] = 1.0;
 		vc[1] = 1.0;
 		vc[2] = -0.99;
-		carvesolid2d_circle(win, 0xffff00, vc, vr, vf);
+		gl41solid2d_circle(win, 0xffff00, vc, vr, vf);
 	}
 */
 }

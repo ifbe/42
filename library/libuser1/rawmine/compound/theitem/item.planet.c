@@ -86,7 +86,7 @@ static void planet_draw_gl41(
 		tf[0] = vf[0]*l;
 		tf[1] = vf[1]*l;
 		tf[2] = vf[2]*l;
-		carveline_circle(win, 0x404040, vc, tr, tf);
+		gl41line_circle(win, 0x404040, vc, tr, tf);
 
 		r = data[j].diameter/data[8].distance/2;
 		//if(j>0)r *= 1024;
@@ -106,7 +106,7 @@ static void planet_draw_gl41(
 		tc[0] = vc[0] + (vr[0]*c + vf[0]*s)*l;
 		tc[1] = vc[1] + (vr[1]*c + vf[1]*s)*l;
 		tc[2] = vc[2] + (vr[2]*c + vf[2]*s)*l;
-		carvesolid_sphere(win, data[j].color, tc, tr, tf, tu);
+		gl41solid_sphere(win, data[j].color, tc, tr, tf, tu);
 	}
 }
 static void planet_draw_json(

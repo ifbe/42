@@ -100,7 +100,7 @@ static void particle_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	//carveline_prism4(wnd, 0xffffff, vc, vr, vf, vu);
+	//gl41line_prism4(wnd, 0xffffff, vc, vr, vf, vu);
 
 
 	src = act->CTXBUF;

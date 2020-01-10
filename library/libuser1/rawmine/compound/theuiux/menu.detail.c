@@ -37,7 +37,7 @@ void carveentity(struct entity* win, int val, vec3 vc, vec3 vr, vec3 vf)
 	int x,y;
 	void* buf;
 	vec3 tc,tr,tf,tu;
-	carveline_rect(win, 0xffffff, vc, vr, vf);
+	gl41line_rect(win, 0xffffff, vc, vr, vf);
 
 	for(y=0;y<4;y++)
 	{
@@ -52,7 +52,7 @@ void carveentity(struct entity* win, int val, vec3 vc, vec3 vr, vec3 vf)
 			tf[0] = 0.0;
 			tf[1] = vf[1]/4.1;
 			tf[2] = 0.0;
-			carvesolid_rect(win, 0xffffff, tc, tr, tf);
+			gl41solid_rect(win, 0xffffff, tc, tr, tf);
 
 			if(y)continue;
 			switch(x)
@@ -86,7 +86,7 @@ void detail_draw_gl41_node(struct entity* ctx, struct entity* one, vec3 vc, vec3
 		tr[j] = vr[j]*2;
 		tf[j] = vf[j]*2;
 	}
-	carveline_circle(ctx, 0x404040, vc,tr,tf);
+	gl41line_circle(ctx, 0x404040, vc,tr,tf);
 	carvestring_center(ctx, 0xff0000, vc,vr,vf, (void*)&one->fmt, 8);
 }
 void detail_draw_gl41_foot(struct entity* ctx, void* aaa, void* bbb, vec3 src, vec3 dst, vec3 vr, vec3 vf, vec3 vt)
@@ -94,7 +94,7 @@ void detail_draw_gl41_foot(struct entity* ctx, void* aaa, void* bbb, vec3 src, v
 	int j;
 	vec3 tc,t0,tr,tf;
 	vec3 d1,d2,t1,t2;
-	carveline(ctx, 0xff0000, src, dst);
+	gl41line(ctx, 0xff0000, src, dst);
 
 	for(j=0;j<3;j++){
 		tc[j] = (src[j]+dst[j])/2;
@@ -109,7 +109,7 @@ void detail_draw_gl41_foot(struct entity* ctx, void* aaa, void* bbb, vec3 src, v
 		t1[j] = tc[j] + d1[j];
 		t2[j] = tc[j] + d2[j];
 	}
-	carveline_triangle(ctx, 0xff0000, tc, t1, t2);
+	gl41line_triangle(ctx, 0xff0000, tc, t1, t2);
 	for(j=0;j<3;j++)t0[j] = (src[j]*2 + dst[j]*1)/3;
 	carvestring_center(ctx, 0xff0000, t0, tr, tf, aaa, 4);
 
@@ -117,7 +117,7 @@ void detail_draw_gl41_foot(struct entity* ctx, void* aaa, void* bbb, vec3 src, v
 		t1[j] = tc[j] - d1[j];
 		t2[j] = tc[j] - d2[j];
 	}
-	carveline_triangle(ctx, 0xff0000, tc, t1, t2);
+	gl41line_triangle(ctx, 0xff0000, tc, t1, t2);
 	for(j=0;j<3;j++)t0[j] = (src[j]*1 + dst[j]*2)/3;
 	carvestring_center(ctx, 0xff0000, t0, tr, tf, bbb, 4);
 }
@@ -137,7 +137,7 @@ int detail_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carveline_rect(ctx, 0xffffff, vc,vr,vf);
+	gl41line_rect(ctx, 0xffffff, vc,vr,vf);
 
 	for(j=0;j<3;j++){
 		tr[j] = vr[j]/16;

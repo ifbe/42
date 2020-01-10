@@ -147,7 +147,7 @@ static void maze_draw_gl41(
 	float* vu = geom->f.vt;
 	u8* buf = act->buf;
 
-	carvesolid_rect(ctx, 0, vc, vr, vf);
+	gl41solid_rect(ctx, 0, vc, vr, vf);
 	for(y=0;y<HEIGHT;y++)
 	{
 		for(x=0;x<WIDTH;x++)
@@ -167,7 +167,7 @@ static void maze_draw_gl41(
 				tf[0] = vu[0] / (WIDTH+HEIGHT);
 				tf[1] = vu[1] / (WIDTH+HEIGHT);
 				tf[2] = vu[2] / (WIDTH+HEIGHT);
-				carvesolid_rect(ctx, 0x808080, tc, tr, tf);
+				gl41solid_rect(ctx, 0x808080, tc, tr, tf);
 			}
 			else if((w&0x80) == 0x80)
 			{
@@ -182,7 +182,7 @@ static void maze_draw_gl41(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid_rect(ctx, 0xff0000, tc, tr, tf);
+				gl41solid_rect(ctx, 0xff0000, tc, tr, tf);
 			}
 
 			if((w&2) == 2)	//right
@@ -199,7 +199,7 @@ static void maze_draw_gl41(
 				tf[0] = vu[0] / (WIDTH+HEIGHT);
 				tf[1] = vu[1] / (WIDTH+HEIGHT);
 				tf[2] = vu[2] / (WIDTH+HEIGHT);
-				carvesolid_rect(ctx, 0x909090, tc, tr, tf);
+				gl41solid_rect(ctx, 0x909090, tc, tr, tf);
 			}
 			else if((w&0x80) == 0x80)
 			{
@@ -214,7 +214,7 @@ static void maze_draw_gl41(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid_rect(ctx, 0xff0000, tc, tr, tf);
+				gl41solid_rect(ctx, 0xff0000, tc, tr, tf);
 			}
 
 			if((w&4) == 4)	//down	//careful,different
@@ -231,7 +231,7 @@ static void maze_draw_gl41(
 				tf[0] = vu[0] / (WIDTH+HEIGHT);
 				tf[1] = vu[1] / (WIDTH+HEIGHT);
 				tf[2] = vu[2] / (WIDTH+HEIGHT);
-				carvesolid_rect(ctx, 0x707070, tc, tr, tf);
+				gl41solid_rect(ctx, 0x707070, tc, tr, tf);
 			}
 			else if((w&0x80) == 0x80)
 			{
@@ -246,7 +246,7 @@ static void maze_draw_gl41(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid_rect(ctx, 0xff0000, tc, tr, tf);
+				gl41solid_rect(ctx, 0xff0000, tc, tr, tf);
 			}
 
 			if((w&8) == 8)	//up	//careful,different
@@ -263,7 +263,7 @@ static void maze_draw_gl41(
 				tf[0] = vu[0] / (WIDTH+HEIGHT);
 				tf[1] = vu[1] / (WIDTH+HEIGHT);
 				tf[2] = vu[2] / (WIDTH+HEIGHT);
-				carvesolid_rect(ctx, 0x606060, tc, tr, tf);
+				gl41solid_rect(ctx, 0x606060, tc, tr, tf);
 			}
 			else if((w&0x80) == 0x80)
 			{
@@ -278,7 +278,7 @@ static void maze_draw_gl41(
 				tf[0] = vf[0] / HEIGHT/2;
 				tf[1] = vf[1] / HEIGHT/2;
 				tf[2] = vf[2] / HEIGHT/2;
-				carvesolid_rect(ctx, 0xff0000, tc, tr, tf);
+				gl41solid_rect(ctx, 0xff0000, tc, tr, tf);
 			}
 		}
 	}

@@ -21,7 +21,7 @@ static void dna_draw_gl41(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	carveline_prism4(win, 0xffffff, vc, vr ,vf, vu);
+	gl41line_prism4(win, 0xffffff, vc, vr ,vf, vu);
 
 	tf[0] = vf[0] / 16;
 	tf[1] = vf[1] / 16;
@@ -41,12 +41,12 @@ static void dna_draw_gl41(
 		tr[0] = vr[0] / 16;
 		tr[1] = vr[1] / 16;
 		tr[2] = vr[2] / 16;
-		carvesolid_sphere(win, 0xff0000, tc, tr, tf, tu);
+		gl41solid_sphere(win, 0xff0000, tc, tr, tf, tu);
 
 		tc[0] = vc[0] - vr[0]*c - vf[0]*s + vu[0]*z/6.0;
 		tc[1] = vc[1] - vr[1]*c - vf[1]*s + vu[1]*z/6.0;
 		tc[2] = vc[2] - vr[2]*c - vf[2]*s + vu[2]*z/6.0;
-		carvesolid_sphere(win, 0x0000ff, tc, tr, tf, tu);
+		gl41solid_sphere(win, 0x0000ff, tc, tr, tf, tu);
 	}
 
 	for(z=-6;z<=5;z++)
@@ -64,7 +64,7 @@ static void dna_draw_gl41(
 		tr[0] = vc[0] + vr[0]*C + vf[0]*S + vu[0]*(z+1)/6.0;
 		tr[1] = vc[1] + vr[1]*C + vf[1]*S + vu[1]*(z+1)/6.0;
 		tr[2] = vc[2] + vr[2]*C + vf[2]*S + vu[2]*(z+1)/6.0;
-		carveline(win, 0xff0000, tc, tr);
+		gl41line(win, 0xff0000, tc, tr);
 
 		tc[0] = vc[0] - vr[0]*c - vf[0]*s + vu[0]*z/6.0;
 		tc[1] = vc[1] - vr[1]*c - vf[1]*s + vu[1]*z/6.0;
@@ -72,7 +72,7 @@ static void dna_draw_gl41(
 		tr[0] = vc[0] - vr[0]*C - vf[0]*S + vu[0]*(z+1)/6.0;
 		tr[1] = vc[1] - vr[1]*C - vf[1]*S + vu[1]*(z+1)/6.0;
 		tr[2] = vc[2] - vr[2]*C - vf[2]*S + vu[2]*(z+1)/6.0;
-		carveline(win, 0x0000ff, tc, tr);
+		gl41line(win, 0x0000ff, tc, tr);
 	}
 }
 static void dna_draw_json(

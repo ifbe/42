@@ -100,23 +100,23 @@ static void portal_draw_gl41_b(
 	float* vf = sty->f.vf;
 	float* vt = sty->f.vt;
 
-	carveline_rect(win, 0xffffff, vc, vr, vt);
+	gl41line_rect(win, 0xffffff, vc, vr, vt);
 	tc[0] = vc[0] - vt[0];
 	tc[1] = vc[1] - vt[1];
 	tc[2] = vc[2] - vt[2];
-	carvesolid_rect(win, 0x3f0000, tc, vr, vf);
+	gl41solid_rect(win, 0x3f0000, tc, vr, vf);
 	tc[0] = vc[0] - vt[0] - vf[0];
 	tc[1] = vc[1] - vt[1] - vf[1];
 	tc[2] = vc[2] - vt[2] - vf[2];
 	tt[0] = vc[0] - vt[0] + vf[0];
 	tt[1] = vc[1] - vt[1] + vf[1];
 	tt[2] = vc[2] - vt[2] + vf[2];
-	carveline_arrow(win, 0xffffff, tc, tt, vt);
+	gl41line_arrow(win, 0xffffff, tc, tt, vt);
 
 	gl41opaque_circle(win, 0x80ffffff, vc, vr, vt);
 	portal = act->buf0;
 	if(0 == portal)return;
-	carveline_arrow(win, 0xff0000, portal->vc, portal->vq, vt);
+	gl41line_arrow(win, 0xff0000, portal->vc, portal->vq, vt);
 }
 static void portal_draw_gl41(
 	struct entity* act, struct style* slot,
@@ -133,18 +133,18 @@ static void portal_draw_gl41(
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
 
-	carveline_rect(win, 0xffffff, vc, vr, vt);
+	gl41line_rect(win, 0xffffff, vc, vr, vt);
 	tc[0] = vc[0] - vt[0];
 	tc[1] = vc[1] - vt[1];
 	tc[2] = vc[2] - vt[2];
-	carvesolid_rect(win, 0x00003f, tc, vr, vf);
+	gl41solid_rect(win, 0x00003f, tc, vr, vf);
 	tc[0] = vc[0] - vt[0] - vf[0];
 	tc[1] = vc[1] - vt[1] - vf[1];
 	tc[2] = vc[2] - vt[2] - vf[2];
 	tt[0] = vc[0] - vt[0] + vf[0];
 	tt[1] = vc[1] - vt[1] + vf[1];
 	tt[2] = vc[2] - vt[2] + vf[2];
-	carveline_arrow(win, 0xffffff, tc, tt, vt);
+	gl41line_arrow(win, 0xffffff, tc, tt, vt);
 
 	portal = act->buf0;
 	if(0 == portal)return;

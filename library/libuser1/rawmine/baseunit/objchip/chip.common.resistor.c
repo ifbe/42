@@ -21,7 +21,7 @@ static void resistor_draw_gl41(
 	float* vt = geom->f.vt;
 
 	for(j=0;j<3;j++)tc[j] = vc[j];
-	carvesolid_prism4(wnd, 0x808080, vc, vr, vf, vt);
+	gl41solid_prism4(wnd, 0x808080, vc, vr, vf, vt);
 }
 static void resistor_draw_json(
 	struct entity* act, struct style* pin,

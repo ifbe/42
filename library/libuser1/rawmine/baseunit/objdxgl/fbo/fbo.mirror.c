@@ -118,7 +118,7 @@ static void mirror_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	//carvesolid_rect(win, 0x404040, vc, vr, vf);
+	//gl41solid_rect(win, 0x404040, vc, vr, vf);
 
 	mirr = act->CTXBUF;
 	if(0 == mirr)return;

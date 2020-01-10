@@ -92,7 +92,7 @@ void tabbar_gl41_listroot(
     tf[0] = vf[0] / 32;
     tf[1] = vf[1] / 32;
     tf[2] = vf[2] / 32;
-	carveline_rect(win, 0xff0000, tc, tr, tf);
+	gl41line_rect(win, 0xff0000, tc, tr, tf);
 
     j = 0;
     rel = win->orel0;

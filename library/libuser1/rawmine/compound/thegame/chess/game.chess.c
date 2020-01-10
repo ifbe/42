@@ -84,7 +84,7 @@ static void chess_draw_gl41(
 
 			if(((x+y+32)%2) != 0)rgb = 0x111111;
 			else rgb = 0xffffff;
-			carvesolid_prism4(ctx, rgb, tc, tr, tf, tu);
+			gl41solid_prism4(ctx, rgb, tc, tr, tf, tu);
 		}
 	}
 }

@@ -149,12 +149,12 @@ static void projector_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carveline_rect(ctx, 0xffffff, vc, vr, vt);
+	gl41line_rect(ctx, 0xffffff, vc, vr, vt);
 
 	tt[0] = - vf[0];
 	tt[1] = - vf[1];
 	tt[2] = - vf[2];
-	carvesolid_cone(ctx, 0xffffff, vc, vr, tt);
+	gl41solid_cone(ctx, 0xffffff, vc, vr, tt);
 
 	src = act->CTXBUF;
 	if(0 == src)return;

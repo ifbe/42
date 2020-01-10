@@ -21,7 +21,7 @@ static void motor_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carveline_circle(ctx, 0xffffff, vc, vr, vf);
+	gl41line_circle(ctx, 0xffffff, vc, vr, vf);
 
 	tr[0] = vr[0]/2;
 	tr[1] = vr[1]/2;
@@ -32,7 +32,7 @@ static void motor_draw_gl41(
 	tu[0] = vu[0]/2;
 	tu[1] = vu[1]/2;
 	tu[2] = vu[2]/2;
-	carveline_circle(ctx, 0xffffff, vc, tr, tf);
+	gl41line_circle(ctx, 0xffffff, vc, tr, tf);
 
 	tr[0] = vr[0]/4;
 	tr[1] = vr[1]/4;
@@ -40,11 +40,11 @@ static void motor_draw_gl41(
 	tc[0] = vc[0] - vf[0]/2;
 	tc[1] = vc[1] - vf[1]/2;
 	tc[2] = vc[2] - vf[2]/2;
-	carvesolid_rect(ctx, 0x0000ff, tc, tr, tu);
+	gl41solid_rect(ctx, 0x0000ff, tc, tr, tu);
 	tc[0] = vc[0] + vf[0]/2;
 	tc[1] = vc[1] + vf[1]/2;
 	tc[2] = vc[2] + vf[2]/2;
-	carvesolid_rect(ctx, 0x0000ff, tc, tr, tu);
+	gl41solid_rect(ctx, 0x0000ff, tc, tr, tu);
 
 	tr[0] = vr[0]/8 + vf[0]*1.732/8;
 	tr[1] = vr[1]/8 + vf[1]*1.732/8;
@@ -52,11 +52,11 @@ static void motor_draw_gl41(
 	tc[0] = vc[0] + vr[0]*1.732/4 - vf[0]*0.25;
 	tc[1] = vc[1] + vr[1]*1.732/4 - vf[1]*0.25;
 	tc[2] = vc[2] + vr[2]*1.732/4 - vf[2]*0.25;
-	carvesolid_rect(ctx, 0x00ff00, tc, tr, tu);
+	gl41solid_rect(ctx, 0x00ff00, tc, tr, tu);
 	tc[0] = vc[0] - vr[0]*1.732/4 + vf[0]*0.25;
 	tc[1] = vc[1] - vr[1]*1.732/4 + vf[1]*0.25;
 	tc[2] = vc[2] - vr[2]*1.732/4 + vf[2]*0.25;
-	carvesolid_rect(ctx, 0x00ff00, tc, tr, tu);
+	gl41solid_rect(ctx, 0x00ff00, tc, tr, tu);
 
 	tr[0] = vr[0]/8 - vf[0]*1.732/8;
 	tr[1] = vr[1]/8 - vf[1]*1.732/8;
@@ -64,11 +64,11 @@ static void motor_draw_gl41(
 	tc[0] = vc[0] - vr[0]*1.732/4 - vf[0]*0.25;
 	tc[1] = vc[1] - vr[1]*1.732/4 - vf[1]*0.25;
 	tc[2] = vc[2] - vr[2]*1.732/4 - vf[2]*0.25;
-	carvesolid_rect(ctx, 0xff0000, tc, tr, tu);
+	gl41solid_rect(ctx, 0xff0000, tc, tr, tu);
 	tc[0] = vc[0] + vr[0]*1.732/4 + vf[0]*0.25;
 	tc[1] = vc[1] + vr[1]*1.732/4 + vf[1]*0.25;
 	tc[2] = vc[2] + vr[2]*1.732/4 + vf[2]*0.25;
-	carvesolid_rect(ctx, 0xff0000, tc, tr, tu);
+	gl41solid_rect(ctx, 0xff0000, tc, tr, tu);
 
 
 
@@ -79,24 +79,24 @@ static void motor_draw_gl41(
 	v1[0] = vc[0] + (vf[0]/2)*s;
 	v1[1] = vc[1] + (vf[1]/2)*s;
 	v1[2] = vc[2] + (vf[2]/2)*s;
-	carveline(ctx, 0x0000ff, vc, v1);
+	gl41line(ctx, 0x0000ff, vc, v1);
 
 	s = sine(a+PI*2/3);
 	v2[0] = vc[0] + (vr[0]*1.732/4 - vf[0]*0.25)*s;
 	v2[1] = vc[1] + (vr[1]*1.732/4 - vf[1]*0.25)*s;
 	v2[2] = vc[2] + (vr[2]*1.732/4 - vf[2]*0.25)*s;
-	carveline(ctx, 0x00ff00, vc, v2);
+	gl41line(ctx, 0x00ff00, vc, v2);
 
 	s = sine(a+PI*4/3);
 	v3[0] = vc[0] - (vr[0]*1.732/4 + vf[0]*0.25)*s;
 	v3[1] = vc[1] - (vr[1]*1.732/4 + vf[1]*0.25)*s;
 	v3[2] = vc[2] - (vr[2]*1.732/4 + vf[2]*0.25)*s;
-	carveline(ctx, 0xff0000, vc, v3);
+	gl41line(ctx, 0xff0000, vc, v3);
 
 	tc[0] = v1[0] + v2[0] + v3[0] - vc[0]*2;
 	tc[1] = v1[1] + v2[1] + v3[1] - vc[1]*2;
 	tc[2] = v1[2] + v2[2] + v3[2] - vc[2]*2;
-	carveline(ctx, 0xffffff, vc, tc);
+	gl41line(ctx, 0xffffff, vc, tc);
 
 }
 static void motor_draw_json(

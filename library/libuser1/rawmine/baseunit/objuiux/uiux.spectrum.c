@@ -27,7 +27,7 @@ static void spectrum_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carveline_prism4(ctx, 0xffff00, vc, vr, vf, vu);
+	gl41line_prism4(ctx, 0xffff00, vc, vr, vf, vu);
 
 	tab = act->buf;
 	if(0 == tab)return;
@@ -52,7 +52,7 @@ static void spectrum_draw_gl41(
 			r = (x/100)*26+13;
 			g = ((x%100)/10)*26+13;
 			b = (x%10)*26+13;
-			carveline(ctx, (r<<16)|(g<<8)|b, ta, tb);
+			gl41line(ctx, (r<<16)|(g<<8)|b, ta, tb);
 		}
 	}
 }

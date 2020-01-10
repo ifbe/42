@@ -91,9 +91,9 @@ static void calculator_draw_gl41(
 		tf[j] = vf[j] / 2;
 		tc[j] = vc[j] + vf[j]/2;
 	}
-	carvesolid_rect(ctx, 0x000020, tc, vr, tf);
+	gl41solid_rect(ctx, 0x000020, tc, vr, tf);
 	for(j=0;j<3;j++)tc[j] = vc[j] - vf[j]/2;
-	carvesolid_rect(ctx, 0x200000, tc, vr, tf);
+	gl41solid_rect(ctx, 0x200000, tc, vr, tf);
 
 	//display
 	for(j=0;j<3;j++){
@@ -123,7 +123,7 @@ static void calculator_draw_gl41(
 			else rgb += (x<<4) + (y<<20);
 
 			for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*(2*x-7)/8 + vf[j]*(-2*y-1)/8 + vt[j]/32;
-			carvesolid_rect(ctx, rgb, tc, tr, tf);
+			gl41solid_rect(ctx, rgb, tc, tr, tf);
 			for(j=0;j<3;j++)tc[j] += vt[j]/32;
 			carveascii_center(ctx, 0xffffff, tc, tr, tf, table[y][x]);
 		}

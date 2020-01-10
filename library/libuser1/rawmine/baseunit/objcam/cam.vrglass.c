@@ -55,7 +55,7 @@ static int vrglass_draw_gl41(
 		tc[0] = vc[0] + vf[0]*y;
 		tc[1] = vc[1] + vf[1]*y;
 		tc[2] = vc[2] + vf[2]*y;
-		carveline_rect(win, 0xff0000, tc, vr, vt);
+		gl41line_rect(win, 0xff0000, tc, vr, vt);
 	}
 	return 0;
 }/*

@@ -73,7 +73,7 @@ static int orthcam_draw_gl41(
 	tf[0] = vf[0] / 2;
 	tf[1] = vf[1] / 2;
 	tf[2] = vf[2] / 2;
-	carvesolid_prism4(ctx, 0x800000, tc, vr, vu, tf);
+	gl41solid_prism4(ctx, 0x800000, tc, vr, vu, tf);
 
 	sty->vn[0] = sty->vf[0];
 	sty->vn[1] = sty->vf[1];

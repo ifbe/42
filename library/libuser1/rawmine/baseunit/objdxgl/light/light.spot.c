@@ -141,7 +141,7 @@ static void spotlight_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carveline_rect(ctx, 0xffffff, vc, vr, vt);
+	gl41line_rect(ctx, 0xffffff, vc, vr, vt);
 
 
 	sun = act->OWNBUF;
@@ -154,7 +154,7 @@ static void spotlight_draw_gl41(
 	tt[0] = - vf[0];
 	tt[1] = - vf[1];
 	tt[2] = - vf[2];
-	carvesolid_cone(ctx, sun->u_rgb, vc, vr, tt);
+	gl41solid_cone(ctx, sun->u_rgb, vc, vr, tt);
 
 
 	//depth fbo (for debug)

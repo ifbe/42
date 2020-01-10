@@ -30,7 +30,7 @@ static void h2o_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carveline_prism4(ctx, 0x444444, vc, vr, vf, vt);
+	gl41line_prism4(ctx, 0x444444, vc, vr, vf, vt);
 
 	//oxygen
 	for(j=0;j<3;j++){
@@ -38,7 +38,7 @@ static void h2o_draw_gl41(
 		tf[j] = vf[j]/4;
 		tt[j] = vt[j]/4;
 	}
-	carvesolid_sphere(ctx, 0x808080, vc, tr, tf, tt);
+	gl41solid_sphere(ctx, 0x808080, vc, tr, tf, tt);
 
 	//hydrogen
 	for(j=0;j<3;j++){
@@ -47,13 +47,13 @@ static void h2o_draw_gl41(
 		tt[j] = vt[j]/8;
 		tc[j] = vc[j] +vr[j]-tr[j];
 	}
-	carvesolid_sphere(ctx, 0x808080, tc, tr, tf, tt);
+	gl41solid_sphere(ctx, 0x808080, tc, tr, tf, tt);
 
 	//hydrogen
 	for(j=0;j<3;j++)tc[j] = vr[j]-tr[j];
 	quaternion_operation(tc, vt, PI*(104+28.0/60)/180);
 	for(j=0;j<3;j++)tc[j] += vc[j];
-	carvesolid_sphere(ctx, 0x808080, tc, tr, tf, tt);
+	gl41solid_sphere(ctx, 0x808080, tc, tr, tf, tt);
 }
 static void h2o_draw_pixel(
 	struct entity* act, struct style* pin,

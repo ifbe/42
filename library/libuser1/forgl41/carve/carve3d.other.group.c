@@ -35,11 +35,11 @@ void carvedrone_node(struct entity* ctx, u32 rgb,
 	t2[0] = v2[0];
 	t2[1] = v2[1];
 	t2[2] = v2[2];
-	carveline_yshape(ctx, 0x204020, t0, t1, t2);
+	gl41line_yshape(ctx, 0x204020, t0, t1, t2);
 	t0[2] += 16.0;
 	t1[2] += 16.0;
 	t2[2] += 16.0;
-	carveline_yshape(ctx, 0x204020, t0, t1, t2);
+	gl41line_yshape(ctx, 0x204020, t0, t1, t2);
 
 	t0[0] = (v0[0]+v1[0])/2;
 	t0[1] = (v0[1]+v1[1])/2;
@@ -50,11 +50,11 @@ void carvedrone_node(struct entity* ctx, u32 rgb,
 	t2[0] = (v2[0]+v0[0])/2;
 	t2[1] = (v2[1]+v0[1])/2;
 	t2[2] = (v2[2]+v0[2])/2;
-	carveline_yshape(ctx, 0xffffff, t0, t1, t2);
+	gl41line_yshape(ctx, 0xffffff, t0, t1, t2);
 	t0[2] += 16.0;
 	t1[2] += 16.0;
 	t2[2] += 16.0;
-	carveline_yshape(ctx, 0xffffff, t0, t1, t2);
+	gl41line_yshape(ctx, 0xffffff, t0, t1, t2);
 
 	t0[0] = v0[0];
 	t0[1] = v0[1];
@@ -65,11 +65,11 @@ void carvedrone_node(struct entity* ctx, u32 rgb,
 	t2[0] = v2[0];
 	t2[1] = v2[1];
 	t2[2] = v2[2];
-	carvesolid_triangle(ctx, 0x808080, t0, t1, t2);
+	gl41solid_triangle(ctx, 0x808080, t0, t1, t2);
 	t0[2] += 16.0;
 	t1[2] += 16.0;
 	t2[2] += 16.0;
-	carvesolid_triangle(ctx, 0x808080, t0, t1, t2);
+	gl41solid_triangle(ctx, 0x808080, t0, t1, t2);
 
 	t0[0] = (v0[0]+v1[0])/2;
 	t0[1] = (v0[1]+v1[1])/2;
@@ -80,21 +80,21 @@ void carvedrone_node(struct entity* ctx, u32 rgb,
 	t2[0] = 0.0;
 	t2[1] = 0.0;
 	t2[2] = 0.8;
-	carvesolid_rect(ctx, 0x604020, t0, t1, t2);
+	gl41solid_rect(ctx, 0x604020, t0, t1, t2);
 	t0[0] = (v2[0]+v1[0])/2;
 	t0[1] = (v2[1]+v1[1])/2;
 	t0[2] = (v2[2]+v1[2])/2+8.0;
 	t1[0] = (v2[0]-v1[0])/2;
 	t1[1] = (v2[1]-v1[1])/2;
 	t1[2] = (v2[2]-v1[2])/2;
-	carvesolid_rect(ctx, 0x206040, t0, t1, t2);
+	gl41solid_rect(ctx, 0x206040, t0, t1, t2);
 	t0[0] = (v0[0]+v2[0])/2;
 	t0[1] = (v0[1]+v2[1])/2;
 	t0[2] = (v0[2]+v2[2])/2+8.0;
 	t1[0] = (v0[0]-v2[0])/2;
 	t1[1] = (v0[1]-v2[1])/2;
 	t1[2] = (v0[2]-v2[2])/2;
-	carvesolid_rect(ctx, 0x204060, t0, t1, t2);
+	gl41solid_rect(ctx, 0x204060, t0, t1, t2);
 }
 void carvedrone(struct entity* ctx, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
@@ -157,7 +157,7 @@ void carvedrone(struct entity* ctx, u32 rgb,
 
 
 
-void carvesolid_propeller(struct entity* ctx, u32 rgb,
+void gl41solid_propeller(struct entity* ctx, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vt, int dir, int dt)
 {
 	float a;
@@ -182,7 +182,7 @@ void carvesolid_propeller(struct entity* ctx, u32 rgb,
 	tf[0] = ff[0]/8 + dir*vt[0]/8;
 	tf[1] = ff[1]/8 + dir*vt[1]/8;
 	tf[2] = ff[2]/8 + dir*vt[2]/8;
-	carvesolid_circle(ctx, rgb, tc, rr, tf);
+	gl41solid_circle(ctx, rgb, tc, rr, tf);
 
 	tc[0] = vc[0] - rr[0];
 	tc[1] = vc[1] - rr[1];
@@ -190,7 +190,7 @@ void carvesolid_propeller(struct entity* ctx, u32 rgb,
 	tf[0] = ff[0]/8 - dir*vt[0]/8;
 	tf[1] = ff[1]/8 - dir*vt[1]/8;
 	tf[2] = ff[2]/8 - dir*vt[2]/8;
-	carvesolid_circle(ctx, rgb, tc, rr, tf);
+	gl41solid_circle(ctx, rgb, tc, rr, tf);
 }
 
 
@@ -216,14 +216,14 @@ void carvesnowman(struct entity* ctx, u32 rgb, vec3 vc)
 	tu[0] = 0.0;
 	tu[1] = 0.0;
 	tu[2] = 16.0;
-	carvesolid_sphere(ctx, 0xffffff, tc, tr, tf, tu);
+	gl41solid_sphere(ctx, 0xffffff, tc, tr, tf, tu);
 
 	//body
 	tc[2] = vc[2]+32.0;
 	tr[0] = 32.0;
 	tf[1] = 32.0;
 	tu[2] = 32.0;
-	carvesolid_sphere(ctx, 0xffffff, tc, tr, tf, tu);
+	gl41solid_sphere(ctx, 0xffffff, tc, tr, tf, tu);
 
 	//left hand
 	tc[0] = vc[0]-28.0;
@@ -232,13 +232,13 @@ void carvesnowman(struct entity* ctx, u32 rgb, vec3 vc)
 	tr[0] = 8.0;
 	tf[1] = 8.0;
 	tu[2] = 8.0;
-	carvesolid_sphere(ctx, 0xffffff, tc, tr, tf, tu);
+	gl41solid_sphere(ctx, 0xffffff, tc, tr, tf, tu);
 
 	//right hand
 	tc[0] = vc[0]+28.0;
 	tc[1] = vc[1];
 	tc[2] = vc[2]+28.0+32.0;
-	carvesolid_sphere(ctx, 0xffffff, tc, tr, tf, tu);
+	gl41solid_sphere(ctx, 0xffffff, tc, tr, tf, tu);
 }
 void carveskydome(float vbuf[][6], u16* ibuf,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
@@ -629,7 +629,7 @@ void carveskybox(float vbuf[][6], u16* ibuf,
 
 
 
-void carvesolid_bodypart(struct entity* ctx, u32 rgb, vec3 t0, vec3 t1)
+void gl41solid_bodypart(struct entity* ctx, u32 rgb, vec3 t0, vec3 t1)
 {
 	float n;
 	vec3 tc, tr, tf, tu;
@@ -668,7 +668,7 @@ void carvesolid_bodypart(struct entity* ctx, u32 rgb, vec3 t0, vec3 t1)
 	tf[1] *= n;
 	tf[2] *= n;
 
-	carvesolid_cylinder(ctx, rgb, tc, tr, tf, tu);
+	gl41solid_cylinder(ctx, rgb, tc, tr, tf, tu);
 }
 
 

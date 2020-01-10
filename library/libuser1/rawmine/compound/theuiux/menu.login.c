@@ -21,7 +21,7 @@ static void login_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carvesolid_rect(ctx, 0x808080, vc, vr ,vf);
+	gl41solid_rect(ctx, 0x808080, vc, vr ,vf);
 
 	tc[0] = vc[0] + vf[0]/2;
 	tc[1] = vc[1] + vf[1]/2;
@@ -43,7 +43,7 @@ static void login_draw_gl41(
 	tf[0] = vf[0] / 16;
 	tf[1] = vf[1] / 16;
 	tf[2] = vf[2] / 16;
-	carvesolid_rect(ctx, 0x202020, tc, tr, tf);
+	gl41solid_rect(ctx, 0x202020, tc, tr, tf);
 	tc[2] += 1.0;
 	tr[0] /= 8;
 	tr[1] /= 8;
@@ -59,7 +59,7 @@ static void login_draw_gl41(
 	tf[0] = vf[0] / 16;
 	tf[1] = vf[1] / 16;
 	tf[2] = vf[2] / 16;
-	carvesolid_rect(ctx, 0x202020, tc, tr, tf);
+	gl41solid_rect(ctx, 0x202020, tc, tr, tf);
 	tc[2] += 1.0;
 	tr[0] /= 8;
 	tr[1] /= 8;

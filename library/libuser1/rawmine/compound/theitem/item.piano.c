@@ -97,7 +97,7 @@ static void piano_draw_vbo2d(
 		tc[0] = vc[0] + vr[0]*(x-34.5)/35 - vf[0]/4;
 		tc[1] = vc[1] + vr[1]*(x-34.5)/35 - vf[1]/4;
 		tc[2] = vc[2] + vr[2]*(x-34.5)/35 - vf[2]/4;
-		carvesolid2d_rect(win, 0xfffffff, tc, tr, tf);
+		gl41solid2d_rect(win, 0xfffffff, tc, tr, tf);
 	}
 
 	tr[0] = vr[0] / 7 / 20;
@@ -113,7 +113,7 @@ static void piano_draw_vbo2d(
 		tc[0] = vc[0] + vr[0]*(x-35)/35 - vf[0]/8;
 		tc[1] = vc[1] + vr[1]*(x-35)/35 - vf[1]/8;
 		tc[2] = vc[2] + vr[2]*(x-35)/35 - vf[2]/8 - 0.1;
-		carvesolid2d_rect(win, 0x202020, tc, tr, tf);
+		gl41solid2d_rect(win, 0x202020, tc, tr, tf);
 	}
 
 	tc[0] = vc[0] + vr[0]*3/35 + vf[0]/4;
@@ -125,7 +125,7 @@ static void piano_draw_vbo2d(
 	tf[0] = vf[0] / 4;
 	tf[1] = vf[1] / 4;
 	tf[2] = vf[2] / 4;
-	carvesolid2d_rect(win, 0x404040, tc, tr, tf);
+	gl41solid2d_rect(win, 0x404040, tc, tr, tf);
 
 	tr[0] = vr[0] / 64;
 	tr[1] = vr[1] / 64;
@@ -189,7 +189,7 @@ static void piano_draw_gl41(
 	tu[0] = vu[0]/2;
 	tu[1] = vu[1]/2;
 	tu[2] = vu[2]/2;
-	carvesolid_prism4(win, 0x202020, tc, vr, tf, tu);
+	gl41solid_prism4(win, 0x202020, tc, vr, tf, tu);
 
 	tr[0] = vr[0] / 7 / 11;
 	tr[1] = vr[1] / 7 / 11;
@@ -202,7 +202,7 @@ static void piano_draw_gl41(
 		tc[0] = vc[0] + vr[0]*(x-34.5)/35 - vf[0]/4 + vu[0]/2;
 		tc[1] = vc[1] + vr[1]*(x-34.5)/35 - vf[1]/4 + vu[1]/2;
 		tc[2] = vc[2] + vr[2]*(x-34.5)/35 - vf[2]/4 + vu[2]/2;
-		carvesolid_rect(win, 0xfffffff, tc, tr, tf);
+		gl41solid_rect(win, 0xfffffff, tc, tr, tf);
 	}
 
 	tr[0] = vr[0] / 7 / 20;
@@ -218,7 +218,7 @@ static void piano_draw_gl41(
 		tc[0] = vc[0] + vr[0]*(x-35)/35 - vf[0]/8 + vu[0]*0.51;
 		tc[1] = vc[1] + vr[1]*(x-35)/35 - vf[1]/8 + vu[1]*0.51;
 		tc[2] = vc[2] + vr[2]*(x-35)/35 - vf[2]/8 + vu[2]*0.51;
-		carvesolid_rect(win, 0x202020, tc, tr, tf);
+		gl41solid_rect(win, 0x202020, tc, tr, tf);
 	}
 }
 static void piano_draw_json(

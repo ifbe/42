@@ -1,6 +1,6 @@
 #include "libuser.h"
-void carveline_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
-void carveline_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41line_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
+void gl41line_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
 
 
 
@@ -36,35 +36,35 @@ static void mem_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	//carveline_rect(ctx, 0x404040, vc, vr, vf);
+	//gl41line_rect(ctx, 0x404040, vc, vr, vf);
 
 	//vcc
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vr[j] +vf[j];
 		tr[j] = vc[j] +vr[j] +vf[j];
 	}
-	carveline(ctx, 0xff0000, tc, tr);
+	gl41line(ctx, 0xff0000, tc, tr);
 
 	//gnd
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vr[j] -vf[j];
 		tr[j] = vc[j] +vr[j] -vf[j];
 	}
-	carveline(ctx, 0x0000ff, tc, tr);
+	gl41line(ctx, 0x0000ff, tc, tr);
 
 	//+
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] +vf[j];
 		tr[j] = tc[j] -tf[j]/2;
 	}
-	carveline(ctx, 0xff0000, tc,tr);
+	gl41line(ctx, 0xff0000, tc,tr);
 
 	//-
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vf[j];
 		tr[j] = tc[j] +tf[j]/2;
 	}
-	carveline(ctx, 0x0000ff, tc,tr);
+	gl41line(ctx, 0x0000ff, tc,tr);
 
 	u32 lcolor[2] = {0xffffff, 0xffffff};
 	u32 rcolor[2] = {0xffffff, 0xffffff};
@@ -80,7 +80,7 @@ static void mem_draw_gl41(
 		tr[j] = vr[j]/4;
 		tf[j] = vf[j]/4;
 	}
-	carveline_pmos(ctx, gcolor[0], lcolor[0], tc,tr,tf,vt);
+	gl41line_pmos(ctx, gcolor[0], lcolor[0], tc,tr,tf,vt);
 
 	//l.n
 	for(j=0;j<3;j++){
@@ -88,24 +88,24 @@ static void mem_draw_gl41(
 		tr[j] = vr[j]/4;
 		tf[j] = vf[j]/4;
 	}
-	carveline_nmos(ctx, gcolor[0], lcolor[1], tc,tr,tf,vt);
+	gl41line_nmos(ctx, gcolor[0], lcolor[1], tc,tr,tf,vt);
 
 	//l.g
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] - vr[j]*3/4 - vf[j]/2;
 		tr[j] = tc[j] + vf[j];
 	}
-	carveline(ctx, gcolor[0], tc, tr);
+	gl41line(ctx, gcolor[0], tc, tr);
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] + vr[j]/2 - vf[j]/4;
 		tr[j] = tc[j] + vf[j]/2;
 	}
-	carveline(ctx, gcolor[0], tc, tr);
+	gl41line(ctx, gcolor[0], tc, tr);
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] +vf[j]/8 -vr[j]*3/4;
 		tr[j] = vc[j] +vf[j]/8 +vr[j]/2;
 	}
-	carveline(ctx, gcolor[0], tc, tr);
+	gl41line(ctx, gcolor[0], tc, tr);
 
 	//r.p
 	for(j=0;j<3;j++){
@@ -113,7 +113,7 @@ static void mem_draw_gl41(
 		tr[j] = vr[j]/4;
 		tf[j] = vf[j]/4;
 	}
-	carveline_pmos(ctx, gcolor[1], rcolor[0], tc,tr,tf,vt);
+	gl41line_pmos(ctx, gcolor[1], rcolor[0], tc,tr,tf,vt);
 
 	//r.n
 	for(j=0;j<3;j++){
@@ -121,24 +121,24 @@ static void mem_draw_gl41(
 		tr[j] = vr[j]/4;
 		tf[j] = vf[j]/4;
 	}
-	carveline_nmos(ctx, gcolor[1], rcolor[1], tc,tr,tf,vt);
+	gl41line_nmos(ctx, gcolor[1], rcolor[1], tc,tr,tf,vt);
 
 	//l.g
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] +vr[j]*1/4 -vf[j]/2;
 		tr[j] = tc[j] +vf[j];
 	}
-	carveline(ctx, gcolor[1], tc, tr);
+	gl41line(ctx, gcolor[1], tc, tr);
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vr[j]/2 -vf[j]/4;
 		tr[j] = tc[j] +vf[j]/2;
 	}
-	carveline(ctx, gcolor[1], tc, tr);
+	gl41line(ctx, gcolor[1], tc, tr);
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vf[j]/8 -vr[j]/2;
 		tr[j] = vc[j] -vf[j]/8 +vr[j]*1/4;
 	}
-	carveline(ctx, gcolor[1], tc, tr);
+	gl41line(ctx, gcolor[1], tc, tr);
 }
 static void mem_draw_json(
 	struct entity* act, struct style* pin,

@@ -43,7 +43,7 @@ static void geometry_draw_gl41(
 		t2[2] = vc[2] + vr[2];
 		switch(dimen){
 			case '1':
-			case '2':carveline(wnd, 0x808080, t1, t2);break;
+			case '2':gl41line(wnd, 0x808080, t1, t2);break;
 		}
 		return;
 	}
@@ -57,8 +57,8 @@ static void geometry_draw_gl41(
 		t2[2] = vc[2] + vf[2];
 		switch(dimen){
 			case '1':gl41point_triangle( wnd, 0x00808080, vc, t1, t2);break;
-			case '2':carveline_triangle(  wnd, 0x00808080, vc, t1, t2);break;
-			case '3':carvesolid_triangle( wnd, 0x00808080, vc, t1, t2);break;
+			case '2':gl41line_triangle(  wnd, 0x00808080, vc, t1, t2);break;
+			case '3':gl41solid_triangle( wnd, 0x00808080, vc, t1, t2);break;
 			case '4':gl41opaque_triangle(wnd, 0x80808080, vc, t1, t2);break;
 		}
 		return;
@@ -67,8 +67,8 @@ static void geometry_draw_gl41(
 	if('r' == shape){
 		switch(dimen){
 			case '1':gl41point_rect( wnd, 0x00808080, vc, vr, vf);break;
-			case '2':carveline_rect(  wnd, 0x00808080, vc, vr, vf);break;
-			case '3':carvesolid_rect( wnd, 0x00808080, vc, vr, vf);break;
+			case '2':gl41line_rect(  wnd, 0x00808080, vc, vr, vf);break;
+			case '3':gl41solid_rect( wnd, 0x00808080, vc, vr, vf);break;
 			case '4':gl41opaque_rect(wnd, 0x80808080, vc, vr, vf);break;
 		}
 		return;
@@ -77,8 +77,8 @@ static void geometry_draw_gl41(
 	if('p' == shape){
 		switch(dimen){
 			//case '1':gl41point_prism4( wnd, 0x808080, vc, vr, vf, vu);break;
-			case '2':carveline_prism4(  wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '3':carvesolid_prism4( wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '2':gl41line_prism4(  wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '3':gl41solid_prism4( wnd, 0x00808080, vc, vr, vf, vu);break;
 			case '4':gl41opaque_prism4(wnd, 0x80808080, vc, vr, vf, vu);break;
 		}
 		return;
@@ -87,8 +87,8 @@ static void geometry_draw_gl41(
 	if('d' == shape){
 		switch(dimen){
 			case '1':gl41point_dodecahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '2':carveline_dodecahedron(  wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '3':carvesolid_dodecahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '2':gl41line_dodecahedron(  wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '3':gl41solid_dodecahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
 			case '4':gl41opaque_dodecahedron(wnd, 0x80808080, vc, vr, vf, vu);break;
 		}
 		return;
@@ -97,8 +97,8 @@ static void geometry_draw_gl41(
 	if('i' == shape){
 		switch(dimen){
 			case '1':gl41point_icosahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '2':carveline_icosahedron(  wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '3':carvesolid_icosahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '2':gl41line_icosahedron(  wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '3':gl41solid_icosahedron( wnd, 0x00808080, vc, vr, vf, vu);break;
 			case '4':gl41opaque_icosahedron(wnd, 0x80808080, vc, vr, vf, vu);break;
 		}
 		return;
@@ -107,8 +107,8 @@ static void geometry_draw_gl41(
 	if('c' == shape){
 		switch(dimen){
 			//case '1':gl41point_cylinder( wnd, 0x808080, vc, vr, vf, vu);break;
-			//case '2':carveline_cylinder(  wnd, 0x808080, vc, vr, vf, vu);break;
-			case '3':carvesolid_cylinder( wnd, 0x00808080, vc, vr, vf, vu);break;
+			//case '2':gl41line_cylinder(  wnd, 0x808080, vc, vr, vf, vu);break;
+			case '3':gl41solid_cylinder( wnd, 0x00808080, vc, vr, vf, vu);break;
 			case '4':gl41opaque_cylinder(wnd, 0x80808080, vc, vr, vf, vu);break;
 		}
 		return;
@@ -117,8 +117,8 @@ static void geometry_draw_gl41(
 	if('s' == shape){
 		switch(dimen){
 			case '1':gl41point_sphere( wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '2':carveline_sphere(  wnd, 0x00808080, vc, vr, vf, vu);break;
-			case '3':carvesolid_sphere( wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '2':gl41line_sphere(  wnd, 0x00808080, vc, vr, vf, vu);break;
+			case '3':gl41solid_sphere( wnd, 0x00808080, vc, vr, vf, vu);break;
 			case '4':gl41opaque_sphere(wnd, 0x80808080, vc, vr, vf, vu);break;
 		}
 		return;

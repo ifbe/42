@@ -49,7 +49,7 @@ static void spurgear_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carvesolid_rotategear(ctx, 0x444444, vc, vr, vf, vt, 32, act->fz0);
+	gl41solid_rotategear(ctx, 0x444444, vc, vr, vf, vt, 32, act->fz0);
 }
 static void spurgear_draw_pixel(
 	struct entity* act, struct style* pin,

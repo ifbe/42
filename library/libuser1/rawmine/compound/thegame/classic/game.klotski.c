@@ -63,7 +63,7 @@ static void klotski_draw_gl41(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	carvesolid_rect(win, 0xffffff, vc, vr, vf);
+	gl41solid_rect(win, 0xffffff, vc, vr, vf);
 }
 static void klotski_draw_json(
 	struct entity* act, struct style* pin,

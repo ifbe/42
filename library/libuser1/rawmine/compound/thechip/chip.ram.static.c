@@ -33,7 +33,7 @@ static void sram_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carveline_prism4(ctx, 0xffffff, vc, vr, vf, vu);
+	gl41line_prism4(ctx, 0xffffff, vc, vr, vf, vu);
 }
 static void sram_draw_json(
 	struct entity* act, struct style* pin,

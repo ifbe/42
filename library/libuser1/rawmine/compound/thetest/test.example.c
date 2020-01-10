@@ -58,12 +58,12 @@ static void example_draw_gl41(
 	tc[0] = vc[0]+vr[0]/2-vf[0]/2+vu[0]/2;
 	tc[1] = vc[1]+vr[1]/2-vf[1]/2+vu[1]/2;
 	tc[2] = vc[2]+vr[2]/2-vf[2]/2+vu[2]/2;
-	carveline_sphere(win, 0xffffff, tc, tr, tf, tu);
+	gl41line_sphere(win, 0xffffff, tc, tr, tf, tu);
 
 	tc[0] = vc[0]-vr[0]/2+vf[0]/2+vu[0]/2;
 	tc[1] = vc[1]-vr[1]/2+vf[1]/2+vu[1]/2;
 	tc[2] = vc[2]-vr[2]/2+vf[2]/2+vu[2]/2;
-	carvesolid_sphere(win, 0xff00ff, tc, tr, tf, tu);
+	gl41solid_sphere(win, 0xff00ff, tc, tr, tf, tu);
 
 	tc[0] = vc[0]-vr[0]/2-vf[0]/2+vu[0]*3/2;
 	tc[1] = vc[1]-vr[1]/2-vf[1]/2+vu[1]*3/2;
@@ -73,12 +73,12 @@ static void example_draw_gl41(
 	tc[0] = vc[0]+vr[0]/2-vf[0]/2+vu[0]*3/2;
 	tc[1] = vc[1]+vr[1]/2-vf[1]/2+vu[1]*3/2;
 	tc[2] = vc[2]+vr[2]/2-vf[2]/2+vu[2]*3/2;
-	carveline_sphere(win, 0xffffff, tc, tr, tf, tu);
+	gl41line_sphere(win, 0xffffff, tc, tr, tf, tu);
 
 	tc[0] = vc[0]-vr[0]/2+vf[0]/2+vu[0]*3/2;
 	tc[1] = vc[1]-vr[1]/2+vf[1]/2+vu[1]*3/2;
 	tc[2] = vc[2]-vr[2]/2+vf[2]/2+vu[2]*3/2;
-	carvesolid_sphere(win, 0x87cefa, tc, tr, tf, tu);
+	gl41solid_sphere(win, 0x87cefa, tc, tr, tf, tu);
 }
 static void example_draw_json(
 	struct entity* act, struct style* pin,

@@ -26,7 +26,7 @@ static void finfet_draw_vbo3d(
 	tu[0] = vu[0] / 8;
 	tu[1] = vu[1] / 8;
 	tu[2] = vu[2] / 8;
-	carvesolid_prism4(win, 0x404040, tc, vr, vf, tu);
+	gl41solid_prism4(win, 0x404040, tc, vr, vf, tu);
 
 	//body.fin
 	tf[0] = vf[0] / 16;
@@ -40,7 +40,7 @@ static void finfet_draw_vbo3d(
 		tc[0] = vc[0] + y*vf[0]/2 + vu[0]/2;
 		tc[1] = vc[1] + y*vf[1]/2 + vu[1]/2;
 		tc[2] = vc[2] + y*vf[2]/2 + vu[2]/2;
-		carvesolid_prism4(win, 0x404040, tc, vr, tf, tu);
+		gl41solid_prism4(win, 0x404040, tc, vr, tf, tu);
 	}
 
 	//oxide
@@ -55,7 +55,7 @@ static void finfet_draw_vbo3d(
 		tc[0] = vc[0] + y*vf[0]/4 + vu[0]*3/8;
 		tc[1] = vc[1] + y*vf[1]/4 + vu[1]*3/8;
 		tc[2] = vc[2] + y*vf[2]/4 + vu[2]*3/8;
-		carvesolid_prism4(win, 0x0000ff, tc, vr, tf, tu);
+		gl41solid_prism4(win, 0x0000ff, tc, vr, tf, tu);
 	}
 
 	//metal.upper
@@ -68,7 +68,7 @@ static void finfet_draw_vbo3d(
 	tu[0] = vu[0]/8;
 	tu[1] = vu[1]/8;
 	tu[2] = vu[2]/8;
-	carvesolid_prism4(win, 0xff0000, tc, tr, vf, tu);
+	gl41solid_prism4(win, 0xff0000, tc, tr, vf, tu);
 
 	//metal.bottom
 	tf[0] = vf[0] * 3 / 16;
@@ -82,7 +82,7 @@ static void finfet_draw_vbo3d(
 		tc[0] = vc[0] + y*vf[0]/4 + vu[0]*5/8;
 		tc[1] = vc[1] + y*vf[1]/4 + vu[1]*5/8;
 		tc[2] = vc[2] + y*vf[2]/4 + vu[2]*5/8;
-		carvesolid_prism4(win, 0xff0000, tc, tr, tf, tu);
+		gl41solid_prism4(win, 0xff0000, tc, tr, tf, tu);
 	}
 }
 static void finfet_draw_json(

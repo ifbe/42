@@ -19,7 +19,7 @@ static void otto_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carveline_prism4(ctx, 0xff00ff, vc,vr,vf,vt);
+	gl41line_prism4(ctx, 0xff00ff, vc,vr,vf,vt);
 
 	tc[0] = vc[0] + vt[0]*0.75;
 	tc[1] = vc[1] + vt[1]*0.75;
@@ -33,7 +33,7 @@ static void otto_draw_gl41(
 	tt[0] = vt[0]/4;
 	tt[1] = vt[1]/4;
 	tt[2] = vt[2]/4;
-	carvesolid_prism4(ctx, 0x808080, tc,tr,tf,tt);
+	gl41solid_prism4(ctx, 0x808080, tc,tr,tf,tt);
 
 	//arm
 	tr[0] = vr[0]/8;
@@ -50,13 +50,13 @@ static void otto_draw_gl41(
 	tc[0] = vc[0] -vr[0]+tr[0] + vt[0]*0.5+tt[0];
 	tc[1] = vc[1] -vr[1]+tr[1] + vt[1]*0.5+tt[1];
 	tc[2] = vc[2] -vr[2]+tr[2] + vt[2]*0.5+tt[2];
-	carvesolid_prism4(ctx, 0x808080, tc,tr,tf,tt);
+	gl41solid_prism4(ctx, 0x808080, tc,tr,tf,tt);
 
 	//r arm
 	tc[0] = vc[0] +vr[0]-tr[0] + vt[0]*0.5+tt[0];
 	tc[1] = vc[1] +vr[1]-tr[1] + vt[1]*0.5+tt[1];
 	tc[2] = vc[2] +vr[2]-tr[2] + vt[2]*0.5+tt[2];
-	carvesolid_prism4(ctx, 0x808080, tc,tr,tf,tt);
+	gl41solid_prism4(ctx, 0x808080, tc,tr,tf,tt);
 
 
 	//arm
@@ -74,13 +74,13 @@ static void otto_draw_gl41(
 	tc[0] = vc[0] - vr[0]*0.25 + vt[0]*0.25;
 	tc[1] = vc[1] - vr[1]*0.25 + vt[1]*0.25;
 	tc[2] = vc[2] - vr[2]*0.25 + vt[2]*0.25;
-	carvesolid_prism4(ctx, 0x808080, tc,tr,tf,tt);
+	gl41solid_prism4(ctx, 0x808080, tc,tr,tf,tt);
 
 	//r leg
 	tc[0] = vc[0] + vr[0]*0.25 + vt[0]*0.25;
 	tc[1] = vc[1] + vr[1]*0.25 + vt[1]*0.25;
 	tc[2] = vc[2] + vr[2]*0.25 + vt[2]*0.25;
-	carvesolid_prism4(ctx, 0x808080, tc,tr,tf,tt);
+	gl41solid_prism4(ctx, 0x808080, tc,tr,tf,tt);
 
 
 	//foot
@@ -98,13 +98,13 @@ static void otto_draw_gl41(
 	tc[0] = vc[0] - vr[0]+tr[0] + tt[0];
 	tc[1] = vc[1] - vr[1]+tr[1] + tt[1];
 	tc[2] = vc[2] - vr[2]+tr[2] + tt[2];
-	carvesolid_prism4(ctx, 0x808080, tc, tr,tf,tt);
+	gl41solid_prism4(ctx, 0x808080, tc, tr,tf,tt);
 
 	//l foot
 	tc[0] = vc[0] + vr[0]-tr[0] + tt[0];
 	tc[1] = vc[1] + vr[1]-tr[1] + tt[1];
 	tc[2] = vc[2] + vr[2]-tr[2] + tt[2];
-	carvesolid_prism4(ctx, 0x808080, tc, tr,tf,tt);
+	gl41solid_prism4(ctx, 0x808080, tc, tr,tf,tt);
 }
 static void otto_draw_json(
 	struct entity* act, struct style* pin,

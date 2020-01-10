@@ -25,7 +25,7 @@ static void field_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	carveline_prism4(wnd, 0xffffff, vc, vr, vf, vt);
+	gl41line_prism4(wnd, 0xffffff, vc, vr, vf, vt);
 
 	vec = act->buf;
 	for(z=0;z<20;z++){
@@ -51,7 +51,7 @@ static void field_draw_gl41(
 		tb[1] = ta[1] + dy + ta[0]/1000;
 		tb[2] = ta[2] + dz;
 
-		carveline_arrow(wnd, 0x007f7f, ta, tb, vt);
+		gl41line_arrow(wnd, 0x007f7f, ta, tb, vt);
 
 
 		//particle

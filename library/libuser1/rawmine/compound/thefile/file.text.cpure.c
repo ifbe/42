@@ -12,7 +12,7 @@ static void cpure_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carveline_rect(ctx, 0x404040, vc, vr, vf);
+	gl41line_rect(ctx, 0x404040, vc, vr, vf);
 }
 
 

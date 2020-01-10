@@ -55,7 +55,7 @@ static void rccar_draw_gl41(
 			tc[0] = vc[0] + x*vr[0]*0.875 + y*vf[0]*3/4 + tu[0];
 			tc[1] = vc[1] + x*vr[1]*0.875 + y*vf[1]*3/4 + tu[1];
 			tc[2] = vc[2] + x*vr[2]*0.875 + y*vf[2]*3/4 + tu[2];
-			carvesolid_cylinder(ctx, 0x202020, tc, tf, tu, tr);
+			gl41solid_cylinder(ctx, 0x202020, tc, tf, tu, tr);
 		}
 	}
 
@@ -66,7 +66,7 @@ static void rccar_draw_gl41(
 	tc[0] = vc[0] + vu[0]/2;
 	tc[1] = vc[1] + vu[1]/2;
 	tc[2] = vc[2] + vu[2]/2;
-	carvesolid_prism4(ctx, 0x808080, tc, vr, vf, tu);
+	gl41solid_prism4(ctx, 0x808080, tc, vr, vf, tu);
 
 	//tank
 	tr[0] = vr[0] / 4;
@@ -81,7 +81,7 @@ static void rccar_draw_gl41(
 	tc[0] = vc[0] + vu[0]*0.875;
 	tc[1] = vc[1] + vu[1]*0.875;
 	tc[2] = vc[2] + vu[2]*0.875;
-	carvesolid_prism4(ctx, 0xc0c0c0, tc, tr, tf, tu);
+	gl41solid_prism4(ctx, 0xc0c0c0, tc, tr, tf, tu);
 
 	//cask
 	tr[0] = vr[0] / 16;
@@ -96,7 +96,7 @@ static void rccar_draw_gl41(
 	tc[0] = vc[0] + vf[0]/2 + vu[0]*0.875;
 	tc[1] = vc[1] + vf[1]/2 + vu[1]*0.875;
 	tc[2] = vc[2] + vf[2]/2 + vu[2]*0.875;
-	carvesolid_cask(ctx, 0xffffff, tc, tr, tu, tf);
+	gl41solid_cask(ctx, 0xffffff, tc, tr, tu, tf);
 }
 static void rccar_draw_json(
 	struct entity* act, struct style* pin,

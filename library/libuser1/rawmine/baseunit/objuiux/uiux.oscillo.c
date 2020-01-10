@@ -107,7 +107,7 @@ static void oscillo_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carveline_rect(ctx, 0xffff00, vc, vr, vf);
+	gl41line_rect(ctx, 0xffff00, vc, vr, vf);
 
 	tab = act->buf;
 	if(0 == tab)return;
@@ -128,7 +128,7 @@ static void oscillo_draw_gl41(
 			tb[1] = ta[1] + vf[1] * val;
 			tb[2] = ta[2] + vf[2] * val;
 
-			carveline(ctx, 0xffffff, ta, tb);
+			gl41line(ctx, 0xffffff, ta, tb);
 		}
 	}
 
@@ -160,7 +160,7 @@ static void oscillo_draw_gl41(
 		tr[0] = vc[0] + vr[0]*c + vf[0]*s;
 		tr[1] = vc[1] + vr[1]*c + vf[1]*s;
 		tr[2] = vc[2] + vr[2]*c + vf[2]*s;
-		carveline(win, 0xffffff, tc, tr);
+		gl41line(win, 0xffffff, tc, tr);
 	}*/
 }
 static void oscillo_draw_json(

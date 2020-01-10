@@ -76,7 +76,7 @@ static void pegged_draw_gl41(
 			tf[0] = vf[0] / 7;
 			tf[1] = vf[1] / 7;
 			tf[2] = vf[2] / 7;
-			carveline_rect(win, 0x808080, tc, tr, tf);
+			gl41line_rect(win, 0x808080, tc, tr, tf);
 
 			tr[0] = vr[0] / 14;
 			tr[1] = vr[1] / 14;
@@ -87,7 +87,7 @@ static void pegged_draw_gl41(
 			tu[0] = vu[0] / 14;
 			tu[1] = vu[1] / 14;
 			tu[2] = vu[2] / 14;
-			carvesolid_sphere(win, 0xffffff, tc, tr, tf, tu);
+			gl41solid_sphere(win, 0xffffff, tc, tr, tf, tu);
 		}
 	}
 }

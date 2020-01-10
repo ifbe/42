@@ -27,7 +27,7 @@ static void voxel_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	carveline_prism4(wnd, 0xffff00, vc, vr, vf, vu);
+	gl41line_prism4(wnd, 0xffff00, vc, vr, vf, vu);
 
 	tab = act->buf;
 	if(0 == tab)return;
@@ -62,7 +62,7 @@ static void voxel_draw_gl41(
 		r = z*26+13;
 		g = y*26+13;
 		b = x*26+13;
-		carvesolid_prism4(wnd, (r<<16)|(g<<8)|b, tc, tr, tf, tu);
+		gl41solid_prism4(wnd, (r<<16)|(g<<8)|b, tc, tr, tf, tu);
 	}
 	}
 	}
