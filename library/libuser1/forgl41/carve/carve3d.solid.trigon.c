@@ -617,7 +617,6 @@ void gl41solid_prism4(struct entity* win, u32 rgb,
 	int vlen = trigon3d_vars(win, 0, &vbuf, &ibuf, 24, 12);
 	if(vlen < 0)return;
 
-
 	carvesolid_prism4(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgb);
 }
 

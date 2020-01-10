@@ -3,87 +3,118 @@
 
 
 
+static void finfet_draw_gl41(
+	struct entity* act, struct style* slot,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	int y,j;
+	vec3 tc,tr,tf,tu;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vu = geom->f.vt;
+
+	//body.base
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] + vu[j]/8;
+		tu[j] = vu[j] / 8;
+	}
+	gl41solid_prism4(wnd, 0x404040, tc, vr, vf, tu);
+
+	//d
+	for(j=0;j<3;j++){
+		tr[j] = vr[j]/3;
+		tf[j] = vf[j] / 16;
+		tu[j] = vu[j] / 4;
+	}
+	for(y=-1;y<2;y++)
+	{
+		for(j=0;j<3;j++)tc[j] = vc[j] -vr[j]+tr[j] +y*vf[j]/2 +vu[j]/2;
+		gl41solid_prism4(wnd, 0x404040, tc, tr, tf, tu);
+	}
+
+	//s
+	for(y=-1;y<2;y++)
+	{
+		for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]-tr[j] +y*vf[j]/2 +vu[j]/2;
+		gl41solid_prism4(wnd, 0x404040, tc, tr, tf, tu);
+	}
+
+	//magic
+	for(y=-1;y<2;y++)
+	{
+		for(j=0;j<3;j++)tc[j] = vc[j] +y*vf[j]/2 +vu[j]/2;
+		gl41solid_prism4(wnd, 0x808080, tc, tr, tf, tu);
+	}
+
+	//oxide
+	for(j=0;j<3;j++){
+		tr[j] = vr[j] * 3 / 4;
+		tf[j] = vf[j] * 3 / 32;
+		tu[j] = vu[j] / 64;
+	}
+	for(y=-1;y<2;y++){
+		for(j=0;j<3;j++)tc[j] = vc[j] +y*vf[j]/2 +vu[j]*3/4+tu[j];
+		gl41opaque_prism4(wnd, 0x800000ff, tc,tr,tf,tu);
+	}
+	for(j=0;j<3;j++){
+		tr[j] = vr[j] * 3 / 4;
+		tf[j] = vf[j] / 64;
+		tu[j] = vu[j] / 4;
+	}
+	for(y=-1;y<2;y++){
+		for(j=0;j<3;j++)tc[j] = vc[j] +y*vf[j]/2-vf[j]/16-tf[j] +vu[j]*1/2;
+		gl41opaque_prism4(wnd, 0x800000ff, tc,tr,tf,tu);
+		for(j=0;j<3;j++)tc[j] = vc[j] +y*vf[j]/2+vf[j]/16+tf[j] +vu[j]*1/2;
+		gl41opaque_prism4(wnd, 0x800000ff, tc,tr,tf,tu);
+	}
+
+	//gate.upper
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] + vu[j]*7/8;
+		tr[j] = vr[j]/2;
+		tu[j] = vu[j]/8;
+	}
+	gl41opaque_prism4(wnd, 0x80ff0000, tc, tr, vf, tu);
+
+	//gate.bottom
+	for(j=0;j<3;j++){
+		tf[j] = vf[j] * 3 / 16;
+		tu[j] = vu[j] / 4;
+	}
+	for(y=-3;y<4;y+=2)
+	{
+		for(j=0;j<3;j++)tc[j] = vc[j] + y*vf[j]/4 + vu[j]/2;
+		gl41opaque_prism4(wnd, 0x80ff0000, tc, tr, tf, tu);
+	}
+}
+static void finfet_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* slot;
+	win = peer->pchip;geom = peer->pfoot;
+	act = self->pchip;slot = self->pfoot;
+	if(stack && ('v' == len)){
+		struct entity* wnd;struct style* area;
+		struct entity* wrd;struct style* camg;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		finfet_draw_gl41(act,slot, wrd,geom, wnd,area);
+	}
+}
+static void finfet_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+}
+
+
+
+
 static void finfet_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-}
-static void finfet_draw_vbo3d(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	int y;
-	vec3 tc,tr,tf,tu;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-
-	//body.base
-	tc[0] = vc[0] + vu[0]/8;
-	tc[1] = vc[1] + vu[1]/8;
-	tc[2] = vc[2] + vu[2]/8;
-	tu[0] = vu[0] / 8;
-	tu[1] = vu[1] / 8;
-	tu[2] = vu[2] / 8;
-	gl41solid_prism4(win, 0x404040, tc, vr, vf, tu);
-
-	//body.fin
-	tf[0] = vf[0] / 16;
-	tf[1] = vf[1] / 16;
-	tf[2] = vf[2] / 16;
-	tu[0] = vu[0] / 4;
-	tu[1] = vu[1] / 4;
-	tu[2] = vu[2] / 4;
-	for(y=-1;y<2;y++)
-	{
-		tc[0] = vc[0] + y*vf[0]/2 + vu[0]/2;
-		tc[1] = vc[1] + y*vf[1]/2 + vu[1]/2;
-		tc[2] = vc[2] + y*vf[2]/2 + vu[2]/2;
-		gl41solid_prism4(win, 0x404040, tc, vr, tf, tu);
-	}
-
-	//oxide
-	tf[0] = vf[0] * 3 / 16;
-	tf[1] = vf[1] * 3 / 16;
-	tf[2] = vf[2] * 3 / 16;
-	tu[0] = vu[0] / 8;
-	tu[1] = vu[1] / 8;
-	tu[2] = vu[2] / 8;
-	for(y=-3;y<4;y+=2)
-	{
-		tc[0] = vc[0] + y*vf[0]/4 + vu[0]*3/8;
-		tc[1] = vc[1] + y*vf[1]/4 + vu[1]*3/8;
-		tc[2] = vc[2] + y*vf[2]/4 + vu[2]*3/8;
-		gl41solid_prism4(win, 0x0000ff, tc, vr, tf, tu);
-	}
-
-	//metal.upper
-	tc[0] = vc[0] + vu[0]*7/8;
-	tc[1] = vc[1] + vu[1]*7/8;
-	tc[2] = vc[2] + vu[2]*7/8;
-	tr[0] = vr[0]/4;
-	tr[1] = vr[1]/4;
-	tr[2] = vr[2]/4;
-	tu[0] = vu[0]/8;
-	tu[1] = vu[1]/8;
-	tu[2] = vu[2]/8;
-	gl41solid_prism4(win, 0xff0000, tc, tr, vf, tu);
-
-	//metal.bottom
-	tf[0] = vf[0] * 3 / 16;
-	tf[1] = vf[1] * 3 / 16;
-	tf[2] = vf[2] * 3 / 16;
-	tu[0] = vu[0] / 8;
-	tu[1] = vu[1] / 8;
-	tu[2] = vu[2] / 8;
-	for(y=-3;y<4;y+=2)
-	{
-		tc[0] = vc[0] + y*vf[0]/4 + vu[0]*5/8;
-		tc[1] = vc[1] + y*vf[1]/4 + vu[1]*5/8;
-		tc[2] = vc[2] + y*vf[2]/4 + vu[2]*5/8;
-		gl41solid_prism4(win, 0xff0000, tc, tr, tf, tu);
-	}
 }
 static void finfet_draw_json(
 	struct entity* act, struct style* pin,
@@ -111,12 +142,11 @@ static void finfet_draw_cli(
 
 static void finfet_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//finfet_draw(act, pin, win, sty);
+	struct supply* sup = peer->pchip;
+	switch(sup->fmt){
+	case _gl41wnd0_:finfet_read_bywnd(self,peer, arg,idx, buf,len);break;
+	default:        finfet_read_bycam(self,peer, arg,idx, buf,len);break;
+	}
 }
 static void finfet_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {

@@ -72,7 +72,7 @@ static void mosfet_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 	struct supply* sup = peer->pchip;
 	switch(sup->fmt){
 	case _gl41wnd0_:mosfet_read_bywnd(self,peer, arg,idx, buf,len);break;
-	default:	mosfet_read_bycam(self,peer, arg,idx, buf,len);break;
+	default:        mosfet_read_bycam(self,peer, arg,idx, buf,len);break;
 	}
 }
 static void mosfet_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
