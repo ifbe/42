@@ -1,24 +1,17 @@
 <style>
-a0geom{
-c: -1500.0, 0.0, 0.0
-r: 400.0, 0.0, 0.0
-f: 0.0, 400.0, 0.0
-t: 0.0, 0.0, 400.0
+a0slot{
 }
-a1geom{
+a0geom{
 c: -500.0, 0.0, 0.0
 r: 400.0, 0.0, 0.0
 f: 0.0, 400.0, 0.0
 t: 0.0, 0.0, 400.0
 }
-a2geom{
-c: 500.0, 0.0, 0.0
-r: 400.0, 0.0, 0.0
-f: 0.0, 400.0, 0.0
-t: 0.0, 0.0, 400.0
+
+a1slot{
 }
-a3geom{
-c: 1500.0, 0.0, 0.0
+a1geom{
+c: 500.0, 0.0, 0.0
 r: 400.0, 0.0, 0.0
 f: 0.0, 400.0, 0.0
 t: 0.0, 0.0, 400.0
@@ -57,16 +50,10 @@ q: 1.0, 1.0
 
 <entity>
 a0{
-fmt:fulladd
+fmt:mosfet
 }
 a1{
-fmt:fulladd
-}
-a2{
-fmt:fulladd
-}
-a3{
-fmt:fulladd
+fmt:mosfet
 }
 sch{
 fmt:sch
@@ -102,15 +89,12 @@ fmt:poller
 
 
 <relation>
-(std, 0, dst) -> (a0, 0, src)
-
-(sch, a0geom, 0) -> (a0, 0, 0)
-(sch, a1geom, 0) -> (a1, 0, 0)
-(sch, a2geom, 0) -> (a2, 0, 0)
-(sch, a3geom, 0) -> (a3, 0, 0)
+(sch, a0geom, 0) -> (a0, a0slot, 0)
+(sch, a1geom, 0) -> (a1, a1slot, 0)
 
 (world, schgeom, 0) -> (sch, schslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)
+
 (glwnd, rect, 0) -> (cam, 0, 0)
 (opengl, 0, wnd) -> (glwnd, 0, 0)
 </relation>

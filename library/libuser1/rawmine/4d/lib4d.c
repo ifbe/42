@@ -1,5 +1,4 @@
 #include "libuser.h"
-void content_create(void*);
 void hexedit_init(void*);
 void overview_init(void*);
 //
@@ -100,8 +99,6 @@ void loadtexfromfile(struct glsrc* src, int idx, char* name)
 void lib4d_create(void* addr)
 {
 	asset_create();
-
-	content_create(addr);
 
 	hexedit_init(addr);
 

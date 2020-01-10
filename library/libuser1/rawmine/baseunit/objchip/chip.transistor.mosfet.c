@@ -8,17 +8,6 @@ static void mosfet_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void mosfet_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	int j;
-	vec3 tc,tr,tf,tu;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-}
 static void mosfet_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -39,16 +28,40 @@ static void mosfet_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void mosfet_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+
+
+
+
+static void mosfet_draw_gl41(
+	struct entity* act, struct style* slot,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)mosfet_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)mosfet_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)mosfet_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)mosfet_draw_json(act, pin, win, sty);
-	else mosfet_draw_pixel(act, pin, win, sty);
+	int j;
+	vec3 tc,tr,tf,tu;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+	carveline_rect(wnd, 0xffffff, vc,vr,vf);
+}
+static void mosfet_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* slot;
+	win = peer->pchip;geom = peer->pfoot;
+	act = self->pchip;slot = self->pfoot;
+	if(stack && ('v' == len)){
+		struct entity* wnd;struct style* area;
+		struct entity* wrd;struct style* camg;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		mosfet_draw_gl41(act,slot, wrd,geom, wnd,area);
+	}
+}
+static void mosfet_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
 }
 
 
@@ -56,6 +69,11 @@ static void mosfet_draw(
 
 static void mosfet_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
+	struct supply* sup = peer->pchip;
+	switch(sup->fmt){
+	case _gl41wnd0_:mosfet_read_bywnd(self,peer, arg,idx, buf,len);break;
+	default:	mosfet_read_bycam(self,peer, arg,idx, buf,len);break;
+	}
 }
 static void mosfet_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
@@ -79,8 +97,12 @@ static void mosfet_modify(struct entity* act, u8* buf)
 static void mosfet_delete(struct entity* act, u8* buf)
 {
 }
-static void mosfet_create(struct entity* act, u8* buf)
+static void mosfet_create(struct entity* act, void* arg, int argc, u8** argv)
 {
+	act->ix0 = 0;	//D
+	act->iy0 = 0;	//S
+	act->iz0 = 0;	//G
+	act->iw0 = 0;	//B
 }
 
 

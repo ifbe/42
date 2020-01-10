@@ -156,32 +156,20 @@ void karnaugh_draw_cli(struct entity* win, struct style* sty)
 static void karnaugh_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
-	int ret;
 	struct entity* wnd;struct style* area;
 	struct entity* cam;struct style* gl41;
 	wnd = peer->pchip;area = peer->pfoot;
 	cam = self->pchip;gl41 = self->pfoot;
 
-	ret = karnaugh_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
-	if(ret > 0){
-		struct entity* act;struct style* slot;
-		struct entity* wrd;struct style* geom;
-		act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
-		wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
-		karnaugh_draw_gl41(act, slot, wrd,geom, wnd,area);
-    }
-    else{
-		struct fstyle fs;
-		fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
-		fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-		fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-		fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-1.0;
-		gl41data_before(wnd);
-		karnaugh_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
-		gl41data_after(wnd);
-
-		gl41data_tmpcam(wnd);
-    }
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-1.0;
+	gl41data_before(wnd);
+	karnaugh_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
+	gl41data_tmpcam(wnd);
+	gl41data_after(wnd);
 }
 static void karnaugh_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
