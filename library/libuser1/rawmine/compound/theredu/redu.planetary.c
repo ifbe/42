@@ -111,10 +111,10 @@ static void planetary_read(struct halfrel* self, struct halfrel* peer, struct ha
 static void planetary_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void planetary_stop(struct halfrel* self, struct halfrel* peer)
+static void planetary_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void planetary_start(struct halfrel* self, struct halfrel* peer)
+static void planetary_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -131,8 +131,8 @@ void planetary_register(struct entity* p)
 	p->onsearch = (void*)planetary_search;
 	p->onmodify = (void*)planetary_modify;
 
-	p->onstart = (void*)planetary_start;
-	p->onstop  = (void*)planetary_stop;
+	p->onlinkup = (void*)planetary_linkup;
+	p->ondiscon = (void*)planetary_discon;
 	p->onread  = (void*)planetary_read;
 	p->onwrite = (void*)planetary_write;
 }

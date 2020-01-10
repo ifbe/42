@@ -320,57 +320,57 @@ extern "C" {
 #endif
 int entityread(  struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
 int entitywrite( struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
-int entitystop(  struct halfrel* self, struct halfrel* peer);
-int entitystart( struct halfrel* self, struct halfrel* peer);
+int entitydiscon(struct halfrel* self, struct halfrel* peer);
+int entitylinkup(struct halfrel* self, struct halfrel* peer);
 int entitydelete(struct entity*);
 void* entitycreate(u64 type, void* addr, int argc, u8** argv);
 //
 int supplyread(  struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
 int supplywrite( struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
-int supplystop(  struct halfrel* self, struct halfrel* peer);
-int supplystart( struct halfrel* self, struct halfrel* peer);
+int supplydiscon(struct halfrel* self, struct halfrel* peer);
+int supplylinkup(struct halfrel* self, struct halfrel* peer);
 int supplydelete(struct supply*);
 void* supplycreate(u64 type, void* addr, int argc, u8** argv);
 //
 int arteryread( struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
 int arterywrite(struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
-int arterystop( struct halfrel* self, struct halfrel* peer);
-int arterystart(struct halfrel* self, struct halfrel* peer);
+int arterydiscon(struct halfrel* self, struct halfrel* peer);
+int arterylinkup(struct halfrel* self, struct halfrel* peer);
 int arterydelete(void*);
 void* arterycreate(u64 type, void* addr, int argc, u8** argv);
 //
 int systemread( struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
 int systemwrite(struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
-int systemstop( struct halfrel* self, struct halfrel* peer);
-int systemstart(struct halfrel* self, struct halfrel* peer);
+int systemdiscon(struct halfrel* self, struct halfrel* peer);
+int systemlinkup(struct halfrel* self, struct halfrel* peer);
 int systemdelete(void*);
 void* systemcreate(u64 type, void* addr, int argc, u8** argv);
 //
 int driverread( struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
 int driverwrite(struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
-int driverstop( struct halfrel* self, struct halfrel* peer);
-int driverstart(struct halfrel* self, struct halfrel* peer);
+int driverdiscon(struct halfrel* self, struct halfrel* peer);
+int driverlinkup(struct halfrel* self, struct halfrel* peer);
 int driverdelete(void*);
 void* drivercreate(u64 type, void* addr, int argc, u8** argv);
 //
 int deviceread( struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
 int devicewrite(struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
-int devicestop( struct halfrel* self, struct halfrel* peer);
-int devicestart(struct halfrel* self, struct halfrel* peer);
+int devicediscon(struct halfrel* self, struct halfrel* peer);
+int devicelinkup(struct halfrel* self, struct halfrel* peer);
 int devicedelete(void*);
 void* devicecreate(u64 type, void* addr, int argc, u8** argv);
 //
 int workerread( struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
 int workerwrite(struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
-int workerstop( struct halfrel* self, struct halfrel* peer);
-int workerstart(struct halfrel* self, struct halfrel* peer);
+int workerdiscon(struct halfrel* self, struct halfrel* peer);
+int workerlinkup(struct halfrel* self, struct halfrel* peer);
 int workerdelete(void*);
 void* workercreate(u64 type, void* addr, int argc, u8** argv);
 //
 int relationread( void* item, int foot, void* arg, int idx, void* buf, int len);
 int relationwrite(void* item, int foot, void* arg, int idx, void* buf, int len);
-int relationstop( struct halfrel* self, struct halfrel* peer);
-int relationstart(struct halfrel* self, struct halfrel* peer);
+int relationdiscon(struct halfrel* self, struct halfrel* peer);
+int relationlinkup(struct halfrel* self, struct halfrel* peer);
 int relationdelete(void*);
 void* relationcreate(void*,void*,int,int,void*,void*,int,int);
 void* samesrcprevdst(void*);

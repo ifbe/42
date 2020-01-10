@@ -79,10 +79,10 @@ static void and_read(struct halfrel* self, struct halfrel* peer, struct halfrel*
 static void and_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void and_stop(struct halfrel* self, struct halfrel* peer)
+static void and_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void and_start(struct halfrel* self, struct halfrel* peer)
+static void and_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -115,8 +115,8 @@ void and_register(struct entity* p)
 	p->onsearch = (void*)and_search;
 	p->onmodify = (void*)and_modify;
 
-	p->onstart = (void*)and_start;
-	p->onstop  = (void*)and_stop;
+	p->onlinkup = (void*)and_linkup;
+	p->ondiscon = (void*)and_discon;
 	p->onread  = (void*)and_read;
 	p->onwrite = (void*)and_write;
 }

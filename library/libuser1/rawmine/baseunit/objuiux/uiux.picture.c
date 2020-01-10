@@ -228,10 +228,10 @@ static void picture_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	say("@picture_write\n");
 	relationwrite(ent,_ev_, 0, 0, "calibrate\n", 10);
 }
-static void picture_stop(struct halfrel* self, struct halfrel* peer)
+static void picture_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void picture_start(struct halfrel* self, struct halfrel* peer)
+static void picture_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -274,8 +274,8 @@ void picture_register(struct entity* p)
 	p->onsearch = (void*)picture_search;
 	p->onmodify = (void*)picture_modify;
 
-	p->onstart = (void*)picture_start;
-	p->onstop  = (void*)picture_stop;
+	p->onlinkup = (void*)picture_linkup;
+	p->ondiscon = (void*)picture_discon;
 	p->onread  = (void*)picture_read;
 	p->onwrite = (void*)picture_write;
 }

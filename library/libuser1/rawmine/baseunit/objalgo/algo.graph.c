@@ -317,10 +317,10 @@ static void graph_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 static void graph_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void graph_stop(struct halfrel* self, struct halfrel* peer)
+static void graph_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void graph_start(struct halfrel* self, struct halfrel* peer)
+static void graph_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	int j;
 	struct entity* act = (void*)(self->chip);
@@ -405,8 +405,8 @@ void graph_register(struct entity* p)
 	p->onsearch = (void*)graph_search;
 	p->onmodify = (void*)graph_modify;
 
-	p->onstart = (void*)graph_start;
-	p->onstop  = (void*)graph_stop;
+	p->onlinkup = (void*)graph_linkup;
+	p->ondiscon = (void*)graph_discon;
 	p->onread  = (void*)graph_read;
 	p->onwrite = (void*)graph_write;
 }

@@ -11,11 +11,11 @@ int areapick_write(struct halfrel* self, struct halfrel* peer, void* arg, int rs
 {
 	return 0;
 }
-int areapick_stop(struct halfrel* self, struct halfrel* peer)
+int areapick_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int areapick_start(struct halfrel* self, struct halfrel* peer)
+int areapick_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

@@ -75,10 +75,10 @@ static void stair_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 static void stair_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void stair_stop(struct halfrel* self, struct halfrel* peer)
+static void stair_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void stair_start(struct halfrel* self, struct halfrel* peer)
+static void stair_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -116,8 +116,8 @@ void stair_register(struct entity* p)
 	p->onsearch = (void*)stair_search;
 	p->onmodify = (void*)stair_modify;
 
-	p->onstart = (void*)stair_start;
-	p->onstop  = (void*)stair_stop;
+	p->onlinkup = (void*)stair_linkup;
+	p->ondiscon = (void*)stair_discon;
 	p->onread  = (void*)stair_read;
 	p->onwrite = (void*)stair_write;
 }

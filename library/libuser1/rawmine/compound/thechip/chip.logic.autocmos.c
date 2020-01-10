@@ -166,10 +166,10 @@ static void autocmos_write(struct halfrel* self, struct halfrel* peer, void* arg
 	struct entity* ent = self->pchip;
 	//say("@autocmos_write:%x\n",buf[0]);
 }
-static void autocmos_stop(struct halfrel* self, struct halfrel* peer)
+static void autocmos_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void autocmos_start(struct halfrel* self, struct halfrel* peer)
+static void autocmos_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -206,8 +206,8 @@ void autocmos_register(struct entity* p)
 	p->onsearch = (void*)autocmos_search;
 	p->onmodify = (void*)autocmos_modify;
 
-	p->onstart = (void*)autocmos_start;
-	p->onstop  = (void*)autocmos_stop;
+	p->onlinkup = (void*)autocmos_linkup;
+	p->ondiscon = (void*)autocmos_discon;
 	p->onread  = (void*)autocmos_read;
 	p->onwrite = (void*)autocmos_write;
 }

@@ -173,10 +173,10 @@ static void chess_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 {
 	//say("@chess:%x,%x\n", ev->why, ev->what);
 }
-static void chess_stop(struct halfrel* self, struct halfrel* peer)
+static void chess_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void chess_start(struct halfrel* self, struct halfrel* peer)
+static void chess_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -250,8 +250,8 @@ void chess_register(struct entity* p)
 	p->onsearch = (void*)chess_search;
 	p->onmodify = (void*)chess_modify;
 
-	p->onstart = (void*)chess_start;
-	p->onstop  = (void*)chess_stop;
+	p->onlinkup = (void*)chess_linkup;
+	p->ondiscon = (void*)chess_discon;
 	p->onread  = (void*)chess_read;
 	p->onwrite = (void*)chess_write;
 }

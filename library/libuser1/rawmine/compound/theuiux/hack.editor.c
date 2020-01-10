@@ -64,10 +64,10 @@ static void editor_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 static void editor_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void editor_stop(struct halfrel* self, struct halfrel* peer)
+static void editor_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void editor_start(struct halfrel* self, struct halfrel* peer)
+static void editor_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -105,8 +105,8 @@ void editor_register(struct entity* p)
 	p->onsearch = (void*)editor_search;
 	p->onmodify = (void*)editor_modify;
 
-	p->onstart = (void*)editor_start;
-	p->onstop  = (void*)editor_stop;
+	p->onlinkup = (void*)editor_linkup;
+	p->ondiscon = (void*)editor_discon;
 	p->onread  = (void*)editor_read;
 	p->onwrite = (void*)editor_write;
 }

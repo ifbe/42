@@ -13,10 +13,10 @@ static void brick_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 static void brick_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void brick_stop(struct halfrel* self, struct halfrel* peer)
+static void brick_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void brick_start(struct halfrel* self, struct halfrel* peer)
+static void brick_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -54,8 +54,8 @@ void brick_register(struct entity* p)
 	p->onsearch = (void*)brick_search;
 	p->onmodify = (void*)brick_modify;
 
-	p->onstart = (void*)brick_start;
-	p->onstop  = (void*)brick_stop;
+	p->onlinkup = (void*)brick_linkup;
+	p->ondiscon = (void*)brick_discon;
 	p->onread  = (void*)brick_read;
 	p->onwrite = (void*)brick_write;
 }

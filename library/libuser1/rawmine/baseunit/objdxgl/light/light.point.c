@@ -154,10 +154,10 @@ static void pointlight_write(struct halfrel* self, struct halfrel* peer, void* a
 	if('0' == in[0])ent->ONOFF = 0;
 	if('1' == in[0])ent->ONOFF = 1;
 }
-static void pointlight_stop(struct halfrel* self, struct halfrel* peer)
+static void pointlight_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void pointlight_start(struct halfrel* self, struct halfrel* peer)
+static void pointlight_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -174,8 +174,8 @@ void pointlight_register(struct entity* p)
 	p->onsearch = (void*)pointlight_search;
 	p->onmodify = (void*)pointlight_modify;
 
-	p->onstart = (void*)pointlight_start;
-	p->onstop  = (void*)pointlight_stop;
+	p->onlinkup = (void*)pointlight_linkup;
+	p->ondiscon = (void*)pointlight_discon;
 	p->onread  = (void*)pointlight_read;
 	p->onwrite = (void*)pointlight_write;
 }

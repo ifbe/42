@@ -388,10 +388,10 @@ static void xnor_write(struct halfrel* self, struct halfrel* peer, void* arg, in
 		}
 	}
 }
-static void xnor_stop(struct halfrel* self, struct halfrel* peer)
+static void xnor_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void xnor_start(struct halfrel* self, struct halfrel* peer)
+static void xnor_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -427,8 +427,8 @@ void xnor_register(struct entity* p)
 	p->onsearch = (void*)xnor_search;
 	p->onmodify = (void*)xnor_modify;
 
-	p->onstart = (void*)xnor_start;
-	p->onstop  = (void*)xnor_stop;
+	p->onlinkup = (void*)xnor_linkup;
+	p->ondiscon = (void*)xnor_discon;
 	p->onread  = (void*)xnor_read;
 	p->onwrite = (void*)xnor_write;
 }

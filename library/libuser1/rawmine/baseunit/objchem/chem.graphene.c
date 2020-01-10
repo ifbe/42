@@ -87,10 +87,10 @@ static void graphene_read(struct halfrel* self, struct halfrel* peer, struct hal
 static void graphene_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void graphene_stop(struct halfrel* self, struct halfrel* peer)
+static void graphene_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void graphene_start(struct halfrel* self, struct halfrel* peer)
+static void graphene_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -107,8 +107,8 @@ void graphene_register(struct entity* p)
 	p->onsearch = (void*)graphene_search;
 	p->onmodify = (void*)graphene_modify;
 
-	p->onstart = (void*)graphene_start;
-	p->onstop  = (void*)graphene_stop;
+	p->onlinkup = (void*)graphene_linkup;
+	p->ondiscon = (void*)graphene_discon;
 	p->onread  = (void*)graphene_read;
 	p->onwrite = (void*)graphene_write;
 }

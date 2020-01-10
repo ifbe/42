@@ -11,11 +11,11 @@ int event3rd_write(struct halfrel* self, struct halfrel* peer, void* arg, int rs
 {
 	return 0;
 }
-int event3rd_stop(struct halfrel* self, struct halfrel* peer)
+int event3rd_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int event3rd_start(struct halfrel* self, struct halfrel* peer)
+int event3rd_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

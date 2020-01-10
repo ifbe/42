@@ -90,10 +90,10 @@ static void sram_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 static void sram_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void sram_stop(struct halfrel* self, struct halfrel* peer)
+static void sram_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void sram_start(struct halfrel* self, struct halfrel* peer)
+static void sram_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -126,8 +126,8 @@ void sram_register(struct entity* p)
 	p->onsearch = (void*)sram_search;
 	p->onmodify = (void*)sram_modify;
 
-	p->onstart = (void*)sram_start;
-	p->onstop  = (void*)sram_stop;
+	p->onlinkup = (void*)sram_linkup;
+	p->ondiscon = (void*)sram_discon;
 	p->onread  = (void*)sram_read;
 	p->onwrite = (void*)sram_write;
 }

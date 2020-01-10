@@ -197,10 +197,10 @@ static void browser_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	//if(len)browser_data(act, pin, buf, len);
 	//else browser_event(act, pin, win, sty, ev);
 }
-static void browser_stop(struct halfrel* self, struct halfrel* peer)
+static void browser_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void browser_start(struct halfrel* self, struct halfrel* peer)
+static void browser_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -246,8 +246,8 @@ void browser_register(struct entity* p)
 	p->onsearch = (void*)browser_search;
 	p->onmodify = (void*)browser_modify;
 
-	p->onstart = (void*)browser_start;
-	p->onstop  = (void*)browser_stop;
+	p->onlinkup = (void*)browser_linkup;
+	p->ondiscon = (void*)browser_discon;
 	p->onread  = (void*)browser_read;
 	p->onwrite = (void*)browser_write;
 }

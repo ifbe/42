@@ -313,11 +313,11 @@ int file_check(u8* buf, int len)
 
 
 
-int fileclient_stop(struct halfrel* self, struct halfrel* peer)
+int fileclient_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int fileclient_start(struct halfrel* self, struct halfrel* peer)
+int fileclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
 	u64 type;

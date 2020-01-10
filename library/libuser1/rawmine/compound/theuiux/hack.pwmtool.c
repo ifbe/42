@@ -115,10 +115,10 @@ static void pwmtool_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 static void pwmtool_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void pwmtool_stop(struct halfrel* self, struct halfrel* peer)
+static void pwmtool_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void pwmtool_start(struct halfrel* self, struct halfrel* peer)
+static void pwmtool_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -159,8 +159,8 @@ void pwmtool_register(struct entity* p)
 	p->onsearch = (void*)pwmtool_search;
 	p->onmodify = (void*)pwmtool_modify;
 
-	p->onstart = (void*)pwmtool_start;
-	p->onstop  = (void*)pwmtool_stop;
+	p->onlinkup = (void*)pwmtool_linkup;
+	p->ondiscon = (void*)pwmtool_discon;
 	p->onread  = (void*)pwmtool_read;
 	p->onwrite = (void*)pwmtool_write;
 }

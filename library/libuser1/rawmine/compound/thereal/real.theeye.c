@@ -10,10 +10,10 @@ static void theeye_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 static void theeye_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void theeye_stop(struct halfrel* self, struct halfrel* peer)
+static void theeye_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void theeye_start(struct halfrel* self, struct halfrel* peer)
+static void theeye_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -46,8 +46,8 @@ void theeye_register(struct entity* p)
 	p->onsearch = (void*)theeye_search;
 	p->onmodify = (void*)theeye_modify;
 
-	p->onstart = (void*)theeye_start;
-	p->onstop  = (void*)theeye_stop;
+	p->onlinkup = (void*)theeye_linkup;
+	p->ondiscon = (void*)theeye_discon;
 	p->onread  = (void*)theeye_read;
 	p->onwrite = (void*)theeye_write;
 }

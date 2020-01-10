@@ -168,10 +168,10 @@ static void circuit_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 static void circuit_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void circuit_stop(struct halfrel* self, struct halfrel* peer)
+static void circuit_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void circuit_start(struct halfrel* self, struct halfrel* peer)
+static void circuit_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -238,8 +238,8 @@ void circuit_register(struct entity* p)
 	p->onsearch = (void*)circuit_search;
 	p->onmodify = (void*)circuit_modify;
 
-	p->onstart = (void*)circuit_start;
-	p->onstop  = (void*)circuit_stop;
+	p->onlinkup = (void*)circuit_linkup;
+	p->ondiscon = (void*)circuit_discon;
 	p->onread  = (void*)circuit_read;
 	p->onwrite = (void*)circuit_write;
 }

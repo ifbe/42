@@ -10,10 +10,10 @@ static void theear_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 static void theear_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void theear_stop(struct halfrel* self, struct halfrel* peer)
+static void theear_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void theear_start(struct halfrel* self, struct halfrel* peer)
+static void theear_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -46,8 +46,8 @@ void theear_register(struct entity* p)
 	p->onsearch = (void*)theear_search;
 	p->onmodify = (void*)theear_modify;
 
-	p->onstart = (void*)theear_start;
-	p->onstop  = (void*)theear_stop;
+	p->onlinkup = (void*)theear_linkup;
+	p->ondiscon = (void*)theear_discon;
 	p->onread  = (void*)theear_read;
 	p->onwrite = (void*)theear_write;
 }

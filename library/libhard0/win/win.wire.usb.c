@@ -10,10 +10,10 @@ int usb_read()
 int usb_write()
 {
 }
-int usb_start()
+int usb_linkup()
 {
 }
-int usb_stop()
+int usb_discon()
 {
 }
 int usb_create()

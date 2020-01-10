@@ -201,11 +201,11 @@ static int truth_write(struct halfrel* self, struct halfrel* peer, struct halfre
 	}
 	return 0;
 }
-static int truth_stop(struct halfrel* self, struct halfrel* peer)
+static int truth_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int truth_start(struct halfrel* self, struct halfrel* peer)
+static int truth_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -223,8 +223,8 @@ void truth_register(struct entity* p)
 	p->onsearch = (void*)truth_search;
 	p->onmodify = (void*)truth_modify;
 
-	p->onstart = (void*)truth_start;
-	p->onstop  = (void*)truth_stop;
+	p->onlinkup = (void*)truth_linkup;
+	p->ondiscon = (void*)truth_discon;
 	p->onread  = (void*)truth_read;
 	p->onwrite = (void*)truth_write;
 }

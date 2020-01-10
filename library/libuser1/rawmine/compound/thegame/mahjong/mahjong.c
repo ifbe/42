@@ -13,10 +13,10 @@ static void mahjong_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 static void mahjong_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void mahjong_stop(struct halfrel* self, struct halfrel* peer)
+static void mahjong_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mahjong_start(struct halfrel* self, struct halfrel* peer)
+static void mahjong_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -54,8 +54,8 @@ void mahjong_register(struct entity* p)
 	p->onsearch = (void*)mahjong_search;
 	p->onmodify = (void*)mahjong_modify;
 
-	p->onstart = (void*)mahjong_start;
-	p->onstop  = (void*)mahjong_stop;
+	p->onlinkup = (void*)mahjong_linkup;
+	p->ondiscon = (void*)mahjong_discon;
 	p->onread  = (void*)mahjong_read;
 	p->onwrite = (void*)mahjong_write;
 }

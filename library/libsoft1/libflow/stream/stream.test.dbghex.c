@@ -13,11 +13,11 @@ int dbghex_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	printmemory(buf, len<16 ? len : 16);
 	return 0;
 }
-int dbghex_stop(struct halfrel* self, struct halfrel* peer)
+int dbghex_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int dbghex_start(struct halfrel* self, struct halfrel* peer)
+int dbghex_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

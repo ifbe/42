@@ -46,12 +46,12 @@ int uart_change()
 {
 	return 0;
 }
-int uart_stop(int fd)
+int uart_delete(int fd)
 {
 	close(fd);
 	return 0;
 }
-int uart_start(char* p, int speed)
+int uart_create(char* p, int speed)
 {
 	int fd = open(p , O_RDWR|O_NOCTTY|O_NDELAY);
 	if(fd <= 0)

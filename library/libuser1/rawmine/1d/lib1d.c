@@ -18,10 +18,10 @@ void lib1d_list()
 void lib1d_choose()
 {
 }
-void lib1d_stop()
+void lib1d_discon()
 {
 }
-void lib1d_start()
+void lib1d_linkup()
 {
 }
 void lib1d_delete()

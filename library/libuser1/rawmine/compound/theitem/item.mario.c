@@ -353,10 +353,10 @@ static void mario_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 static void mario_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void mario_stop(struct halfrel* self, struct halfrel* peer)
+static void mario_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mario_start(struct halfrel* self, struct halfrel* peer)
+static void mario_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -423,8 +423,8 @@ void mario_register(struct entity* p)
 	p->onsearch = (void*)mario_search;
 	p->onmodify = (void*)mario_modify;
 
-	p->onstart = (void*)mario_start;
-	p->onstop  = (void*)mario_stop;
+	p->onlinkup = (void*)mario_linkup;
+	p->ondiscon = (void*)mario_discon;
 	p->onread  = (void*)mario_read;
 	p->onwrite = (void*)mario_write;
 }

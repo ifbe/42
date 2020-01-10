@@ -191,10 +191,10 @@ static void curtain_read(struct halfrel* self, struct halfrel* peer, struct half
 static void curtain_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void curtain_stop(struct halfrel* self, struct halfrel* peer)
+static void curtain_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void curtain_start(struct halfrel* self, struct halfrel* peer)
+static void curtain_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -211,8 +211,8 @@ void curtain_register(struct entity* p)
 	p->onsearch = (void*)curtain_search;
 	p->onmodify = (void*)curtain_modify;
 
-	p->onstart = (void*)curtain_start;
-	p->onstop  = (void*)curtain_stop;
+	p->onlinkup = (void*)curtain_linkup;
+	p->ondiscon = (void*)curtain_discon;
 	p->onread  = (void*)curtain_read;
 	p->onwrite = (void*)curtain_write;
 }

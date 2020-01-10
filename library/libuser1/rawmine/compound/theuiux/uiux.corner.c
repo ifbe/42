@@ -576,11 +576,11 @@ static int corner_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 {
 	return 0;
 }
-static int corner_stop(struct halfrel* self, struct halfrel* peer)
+static int corner_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int corner_start(struct halfrel* self, struct halfrel* peer)
+static int corner_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -626,8 +626,8 @@ void corner_register(struct entity* p)
 	p->onsearch = (void*)corner_search;
 	p->onmodify = (void*)corner_modify;
 
-	p->onstart = (void*)corner_start;
-	p->onstop  = (void*)corner_stop;
+	p->onlinkup = (void*)corner_linkup;
+	p->ondiscon = (void*)corner_discon;
 	p->onread  = (void*)corner_read;
 	p->onwrite = (void*)corner_write;
 }

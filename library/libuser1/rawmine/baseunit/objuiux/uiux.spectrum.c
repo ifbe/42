@@ -151,12 +151,12 @@ static void spectrum_write(struct halfrel* self, struct halfrel* peer, void* arg
 		spectrum_data(act, 0, buf, len);
 	}
 }
-static void spectrum_stop(struct halfrel* self, struct halfrel* peer)
+static void spectrum_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void spectrum_start(struct halfrel* self, struct halfrel* peer)
+static void spectrum_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@spectrum_start\n");
+	say("@spectrum_linkup\n");
 }
 
 
@@ -190,8 +190,8 @@ void spectrum_register(struct entity* p)
 	p->onsearch = (void*)spectrum_search;
 	p->onmodify = (void*)spectrum_modify;
 
-	p->onstart = (void*)spectrum_start;
-	p->onstop  = (void*)spectrum_stop;
+	p->onlinkup = (void*)spectrum_linkup;
+	p->ondiscon = (void*)spectrum_discon;
 	p->onread  = (void*)spectrum_read;
 	p->onwrite = (void*)spectrum_write;
 }

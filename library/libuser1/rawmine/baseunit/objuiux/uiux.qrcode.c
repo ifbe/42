@@ -183,10 +183,10 @@ static void qrcode_read(struct halfrel* self, struct halfrel* peer, struct halfr
 static void qrcode_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void qrcode_stop(struct halfrel* self, struct halfrel* peer)
+static void qrcode_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void qrcode_start(struct halfrel* self, struct halfrel* peer)
+static void qrcode_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -227,8 +227,8 @@ void qrcode_register(struct entity* p)
 	p->onsearch = (void*)qrcode_search;
 	p->onmodify = (void*)qrcode_modify;
 
-	p->onstart  = (void*)qrcode_start;
-	p->onstop   = (void*)qrcode_stop;
+	p->onlinkup = (void*)qrcode_linkup;
+	p->ondiscon = (void*)qrcode_discon;
 	p->onread  = (void*)qrcode_read;
 	p->onwrite = (void*)qrcode_write;
 }

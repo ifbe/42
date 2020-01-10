@@ -102,11 +102,11 @@ int uart_choose()
 {
 	return 0;
 }
-int uart_stop(int hcom)
+int uart_delete(int hcom)
 {
 	say("!!!this func is wrong!!!\n");
 }
-int uart_start(char* p, int speed)
+int uart_create(char* p, int speed)
 {
 	//
 	int ret;

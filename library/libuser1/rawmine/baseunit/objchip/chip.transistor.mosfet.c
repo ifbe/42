@@ -78,10 +78,10 @@ static void mosfet_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 static void mosfet_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void mosfet_stop(struct halfrel* self, struct halfrel* peer)
+static void mosfet_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mosfet_start(struct halfrel* self, struct halfrel* peer)
+static void mosfet_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -118,8 +118,8 @@ void mosfet_register(struct entity* p)
 	p->onsearch = (void*)mosfet_search;
 	p->onmodify = (void*)mosfet_modify;
 
-	p->onstart = (void*)mosfet_start;
-	p->onstop  = (void*)mosfet_stop;
+	p->onlinkup = (void*)mosfet_linkup;
+	p->ondiscon = (void*)mosfet_discon;
 	p->onread  = (void*)mosfet_read;
 	p->onwrite = (void*)mosfet_write;
 }

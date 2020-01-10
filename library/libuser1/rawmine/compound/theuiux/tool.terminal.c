@@ -227,10 +227,10 @@ static void terminal_write(struct halfrel* self, struct halfrel* peer, void* arg
 	struct event* ev = (void*)buf;
 	//terminal_event(act, pin, win, sty, ev, 0);
 }
-static void terminal_stop(struct halfrel* self, struct halfrel* peer)
+static void terminal_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void terminal_start(struct halfrel* self, struct halfrel* peer)
+static void terminal_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -290,8 +290,8 @@ void terminal_register(struct entity* p)
 	p->onsearch = (void*)terminal_search;
 	p->onmodify = (void*)terminal_modify;
 
-	p->onstart = (void*)terminal_start;
-	p->onstop  = (void*)terminal_stop;
+	p->onlinkup = (void*)terminal_linkup;
+	p->ondiscon = (void*)terminal_discon;
 	p->onread  = (void*)terminal_read;
 	p->onwrite = (void*)terminal_write;
 }

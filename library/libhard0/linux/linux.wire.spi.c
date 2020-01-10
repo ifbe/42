@@ -98,7 +98,7 @@ int spi_stop(int fd, int dev, int reg, int len)
 {
 	return 0;
 }
-int spi_start(int fd, int dev, int reg, int len)
+int spi_linkup(int fd, int dev, int reg, int len)
 {
 	return 0;
 }

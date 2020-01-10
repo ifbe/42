@@ -90,10 +90,10 @@ static void jkff_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 static void jkff_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void jkff_stop(struct halfrel* self, struct halfrel* peer)
+static void jkff_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void jkff_start(struct halfrel* self, struct halfrel* peer)
+static void jkff_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -126,8 +126,8 @@ void jkff_register(struct entity* p)
 	p->onsearch = (void*)jkff_search;
 	p->onmodify = (void*)jkff_modify;
 
-	p->onstart = (void*)jkff_start;
-	p->onstop  = (void*)jkff_stop;
+	p->onlinkup = (void*)jkff_linkup;
+	p->ondiscon = (void*)jkff_discon;
 	p->onread  = (void*)jkff_read;
 	p->onwrite = (void*)jkff_write;
 }

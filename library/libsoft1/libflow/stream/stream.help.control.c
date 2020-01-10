@@ -21,11 +21,11 @@ int control_write(struct halfrel* self, struct halfrel* peer, u8* arg, int idx, 
 	relationwrite(self->pchip, _src_, "text/html", 0, ele->buf0, ele->len);
 	return 0;
 }
-int control_stop(struct halfrel* self, struct halfrel* peer)
+int control_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int control_start(struct halfrel* self, struct halfrel* peer)
+int control_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

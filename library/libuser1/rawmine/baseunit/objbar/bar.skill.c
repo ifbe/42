@@ -261,10 +261,10 @@ static void skillbar_read(struct halfrel* self, struct halfrel* peer, struct hal
 static void skillbar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void skillbar_stop(struct halfrel* self, struct halfrel* peer)
+static void skillbar_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void skillbar_start(struct halfrel* self, struct halfrel* peer)
+static void skillbar_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -307,8 +307,8 @@ void skillbar_register(struct entity* p)
 	p->onsearch = (void*)skillbar_search;
 	p->onmodify = (void*)skillbar_modify;
 
-	p->onstart = (void*)skillbar_start;
-	p->onstop  = (void*)skillbar_stop;
+	p->onlinkup = (void*)skillbar_linkup;
+	p->ondiscon = (void*)skillbar_discon;
 	p->onread  = (void*)skillbar_read;
 	p->onwrite = (void*)skillbar_write;
 }

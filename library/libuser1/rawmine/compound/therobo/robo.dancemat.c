@@ -209,10 +209,10 @@ static void dancemat_write(struct halfrel* self, struct halfrel* peer, void* arg
 		case _art_:dancemat_write_data(act, src, buf, len);break;
 	}
 }
-static void dancemat_stop(struct halfrel* self, struct halfrel* peer)
+static void dancemat_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void dancemat_start(struct halfrel* self, struct halfrel* peer)
+static void dancemat_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -334,8 +334,8 @@ void dancemat_register(struct entity* p)
 	p->onsearch = (void*)dancemat_search;
 	p->onmodify = (void*)dancemat_modify;
 
-	p->onstart = (void*)dancemat_start;
-	p->onstop  = (void*)dancemat_stop;
+	p->onlinkup = (void*)dancemat_linkup;
+	p->ondiscon = (void*)dancemat_discon;
 	p->onread  = (void*)dancemat_read;
 	p->onwrite = (void*)dancemat_write;
 }

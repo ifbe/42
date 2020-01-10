@@ -269,10 +269,10 @@ static void video_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 		video_update(data->tex[0].data, 1024*1024*4, buf, 640*480*2);
 	}
 }
-static void video_stop(struct halfrel* self, struct halfrel* peer)
+static void video_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void video_start(struct halfrel* self, struct halfrel* peer)
+static void video_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -314,8 +314,8 @@ void video_register(struct entity* p)
 	p->onsearch = (void*)video_search;
 	p->onmodify = (void*)video_modify;
 
-	p->onstart = (void*)video_start;
-	p->onstop  = (void*)video_stop;
+	p->onlinkup = (void*)video_linkup;
+	p->ondiscon = (void*)video_discon;
 	p->onread  = (void*)video_read;
 	p->onwrite = (void*)video_write;
 }

@@ -123,10 +123,10 @@ static void login_read(struct halfrel* self, struct halfrel* peer, struct halfre
 static void login_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void login_stop(struct halfrel* self, struct halfrel* peer)
+static void login_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void login_start(struct halfrel* self, struct halfrel* peer)
+static void login_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -164,8 +164,8 @@ void login_register(struct entity* p)
 	p->onsearch = (void*)login_search;
 	p->onmodify = (void*)login_modify;
 
-	p->onstart = (void*)login_start;
-	p->onstop  = (void*)login_stop;
+	p->onlinkup = (void*)login_linkup;
+	p->ondiscon = (void*)login_discon;
 	p->onread  = (void*)login_read;
 	p->onwrite = (void*)login_write;
 }

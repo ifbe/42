@@ -345,10 +345,10 @@ static void weiqi_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	struct event* ev = (void*)buf;
 	//weiqi_event(act, pin, win, sty, ev, 0);
 }
-static void weiqi_stop(struct halfrel* self, struct halfrel* peer)
+static void weiqi_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void weiqi_start(struct halfrel* self, struct halfrel* peer)
+static void weiqi_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	turn = 0;
 	px = py = 0;
@@ -402,8 +402,8 @@ void weiqi_register(struct entity* p)
 	p->onsearch = (void*)weiqi_search;
 	p->onmodify = (void*)weiqi_modify;
 
-	p->onstart = (void*)weiqi_start;
-	p->onstop  = (void*)weiqi_stop;
+	p->onlinkup = (void*)weiqi_linkup;
+	p->ondiscon = (void*)weiqi_discon;
 	p->onread  = (void*)weiqi_read;
 	p->onwrite = (void*)weiqi_write;
 }

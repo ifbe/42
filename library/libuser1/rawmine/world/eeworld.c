@@ -21,13 +21,13 @@ int eeworld_write(struct halfrel* self, struct halfrel* peer, void* buf, int len
 {
 	return 0;
 }
-int eeworld_stop(struct halfrel* self, struct halfrel* peer)
+int eeworld_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int eeworld_start(struct halfrel* self, struct halfrel* peer)
+int eeworld_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@eeworld_start\n");
+	say("@eeworld_linkup\n");
 	return 0;
 }
 

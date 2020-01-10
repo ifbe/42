@@ -29,10 +29,10 @@ int usb_choose()
 
 
 
-void usb_start(char* p)
+void usb_linkup(char* p)
 {
 }
-void usb_stop()
+void usb_discon()
 {
 }
 

@@ -419,10 +419,10 @@ static void projector_read(struct halfrel* self, struct halfrel* peer, struct ha
 static void projector_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void projector_stop(struct halfrel* self, struct halfrel* peer)
+static void projector_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void projector_start(struct halfrel* self, struct halfrel* peer)
+static void projector_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -439,8 +439,8 @@ void projector_register(struct entity* p)
 	p->onsearch = (void*)projector_search;
 	p->onmodify = (void*)projector_modify;
 
-	p->onstart = (void*)projector_start;
-	p->onstop  = (void*)projector_stop;
+	p->onlinkup = (void*)projector_linkup;
+	p->ondiscon = (void*)projector_discon;
 	p->onread  = (void*)projector_read;
 	p->onwrite = (void*)projector_write;
 }

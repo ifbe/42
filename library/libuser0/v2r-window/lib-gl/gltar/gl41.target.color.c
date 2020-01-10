@@ -45,11 +45,11 @@ int gl41fboc_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 {
 	return 0;
 }
-int gl41fboc_stop(struct halfrel* self, struct halfrel* peer)
+int gl41fboc_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int gl41fboc_start(struct halfrel* self, struct halfrel* peer)
+int gl41fboc_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

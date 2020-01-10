@@ -39,12 +39,12 @@ int uart_choose()
 {
 	return 0;
 }
-int uart_stop(int fd)
+int uart_delete(int fd)
 {
 	close(fd);
 	return 0;
 }
-int uart_start(char* path, int speed)
+int uart_create(char* path, int speed)
 {
 	struct termios options;
 	int fd = open(path , O_RDWR|O_NOCTTY|O_NDELAY);

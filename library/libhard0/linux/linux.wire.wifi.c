@@ -43,10 +43,10 @@ int wifi_choose()
 
 
 
-void wifi_start(char* p)
+void wifi_linkup(char* p)
 {
 }
-void wifi_stop()
+void wifi_discon()
 {
 }
 

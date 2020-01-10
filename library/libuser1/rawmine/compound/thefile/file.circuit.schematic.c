@@ -61,13 +61,13 @@ int sch_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack
 {
 	return 0;
 }
-int sch_stop(struct halfrel* self, struct halfrel* peer)
+int sch_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int sch_start(struct halfrel* self, struct halfrel* peer)
+int sch_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@sch_start\n");
+	say("@sch_linkup\n");
 	return 0;
 }
 

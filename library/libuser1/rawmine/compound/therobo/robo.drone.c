@@ -266,10 +266,10 @@ static void drone_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	struct style* pin = (void*)(self->foot);
 	drone_write_euler(act, buf);
 }
-static void drone_stop(struct halfrel* self, struct halfrel* peer)
+static void drone_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void drone_start(struct halfrel* self, struct halfrel* peer)
+static void drone_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -307,8 +307,8 @@ void drone_register(struct entity* p)
 	p->onsearch = (void*)drone_search;
 	p->onmodify = (void*)drone_modify;
 
-	p->onstart = (void*)drone_start;
-	p->onstop  = (void*)drone_stop;
+	p->onlinkup = (void*)drone_linkup;
+	p->ondiscon = (void*)drone_discon;
 	p->onread  = (void*)drone_read;
 	p->onwrite = (void*)drone_write;
 }

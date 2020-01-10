@@ -253,14 +253,14 @@ int mahony_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	relationwrite(ele, _dst_, 0, 0, q, 4);
 	return 0;
 }
-int mahony_stop(struct halfrel* self, struct halfrel* peer)
+int mahony_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@mahony_stop\n");
+	say("@mahony_discon\n");
 	return 0;
 }
-int mahony_start(struct halfrel* self, struct halfrel* peer)
+int mahony_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@mahony_start\n");
+	say("@mahony_linkup\n");
 	return 0;
 }
 

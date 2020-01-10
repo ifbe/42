@@ -80,7 +80,7 @@ int i2c_stop(int fd, int dev, int reg, int len)
 {
 	return 0;
 }
-int i2c_start(int fd, int dev, int reg, int len)
+int i2c_linkup(int fd, int dev, int reg, int len)
 {
 	return 0;
 }

@@ -53,11 +53,11 @@ int fftpcm_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	relationwrite(ele, _dst_, 0, 0, pcm, 1024*2);
 	return 0;
 }
-int fftpcm_stop(struct halfrel* self, struct halfrel* peer)
+int fftpcm_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int fftpcm_start(struct halfrel* self, struct halfrel* peer)
+int fftpcm_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

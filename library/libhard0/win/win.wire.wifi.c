@@ -21,10 +21,10 @@ int wifi_read()
 int wifi_write()
 {
 }
-int wifi_start()
+int wifi_linkup()
 {
 }
-int wifi_stop()
+int wifi_discon()
 {
 }
 int wifi_create()

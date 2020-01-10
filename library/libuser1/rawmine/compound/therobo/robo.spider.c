@@ -65,10 +65,10 @@ static void spider_read(struct halfrel* self, struct halfrel* peer, struct halfr
 static void spider_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void spider_stop(struct halfrel* self, struct halfrel* peer)
+static void spider_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void spider_start(struct halfrel* self, struct halfrel* peer)
+static void spider_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -106,8 +106,8 @@ void spider_register(struct entity* p)
 	p->onsearch = (void*)spider_search;
 	p->onmodify = (void*)spider_modify;
 
-	p->onstart = (void*)spider_start;
-	p->onstop  = (void*)spider_stop;
+	p->onlinkup = (void*)spider_linkup;
+	p->ondiscon = (void*)spider_discon;
 	p->onread  = (void*)spider_read;
 	p->onwrite = (void*)spider_write;
 }

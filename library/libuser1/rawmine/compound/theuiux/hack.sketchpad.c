@@ -549,10 +549,10 @@ static void sketchpad_write(struct halfrel* self, struct halfrel* peer, void* ar
 	struct event* ev = (void*)buf;
 	//sketchpad_event(act, pin, win, sty, ev, 0);
 }
-static void sketchpad_stop(struct halfrel* self, struct halfrel* peer)
+static void sketchpad_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void sketchpad_start(struct halfrel* self, struct halfrel* peer)
+static void sketchpad_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -614,8 +614,8 @@ void sketchpad_register(struct entity* p)
 	p->onsearch = (void*)sketchpad_search;
 	p->onmodify = (void*)sketchpad_modify;
 
-	p->onstart = (void*)sketchpad_start;
-	p->onstop  = (void*)sketchpad_stop;
+	p->onlinkup = (void*)sketchpad_linkup;
+	p->ondiscon = (void*)sketchpad_discon;
 	p->onread  = (void*)sketchpad_read;
 	p->onwrite = (void*)sketchpad_write;
 }

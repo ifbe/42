@@ -326,10 +326,10 @@ static void codeimg_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	struct event* ev = (void*)buf;
 	//codeimg_event(act, pin, win, sty, ev, 0);
 }
-static void codeimg_stop(struct halfrel* self, struct halfrel* peer)
+static void codeimg_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void codeimg_start(struct halfrel* self, struct halfrel* peer)
+static void codeimg_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -408,8 +408,8 @@ void codeimg_register(struct entity* p)
 	p->onsearch = (void*)codeimg_search;
 	p->onmodify = (void*)codeimg_modify;
 
-	p->onstart = (void*)codeimg_start;
-	p->onstop  = (void*)codeimg_stop;
+	p->onlinkup = (void*)codeimg_linkup;
+	p->ondiscon = (void*)codeimg_discon;
 	p->onread  = (void*)codeimg_read;
 	p->onwrite = (void*)codeimg_write;
 }

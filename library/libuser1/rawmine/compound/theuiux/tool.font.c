@@ -224,10 +224,10 @@ static void font_read(struct halfrel* self, struct halfrel* peer, void* arg, int
 static void font_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void font_stop(struct halfrel* self, struct halfrel* peer)
+static void font_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void font_start(struct halfrel* self, struct halfrel* peer)
+static void font_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -265,8 +265,8 @@ void font_register(struct entity* p)
 	p->onsearch = (void*)font_search;
 	p->onmodify = (void*)font_modify;
 
-	p->onstart = (void*)font_start;
-	p->onstop  = (void*)font_stop;
+	p->onlinkup = (void*)font_linkup;
+	p->ondiscon = (void*)font_discon;
 	p->onread  = (void*)font_read;
 	p->onwrite = (void*)font_write;
 }

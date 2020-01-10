@@ -15,10 +15,10 @@ void lib3d_list()
 void lib3d_choose()
 {
 }
-void lib3d_stop()
+void lib3d_discon()
 {
 }
-void lib3d_start()
+void lib3d_linkup()
 {
 }
 void lib3d_delete()

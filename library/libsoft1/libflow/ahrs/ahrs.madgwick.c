@@ -268,14 +268,14 @@ int madgwick_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	relationwrite(ele, _dst_, 0, 0, q, 4);
 	return 0;
 }
-int madgwick_stop(struct halfrel* self, struct halfrel* peer)
+int madgwick_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@madgwick_stop\n");
+	say("@madgwick_discon\n");
 	return 0;
 }
-int madgwick_start(struct halfrel* self, struct halfrel* peer)
+int madgwick_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@madgwick_start\n");
+	say("@madgwick_linkup\n");
 	return 0;
 }
 

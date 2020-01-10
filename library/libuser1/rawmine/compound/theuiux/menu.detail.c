@@ -210,12 +210,12 @@ static int detail_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 {
 	return 1;
 }
-static void detail_stop(struct halfrel* self, struct halfrel* peer)
+static void detail_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void detail_start(struct halfrel* self, struct halfrel* peer)
+static void detail_linkup(struct halfrel* self, struct halfrel* peer)
 {
-    say("@detail_start\n");
+    say("@detail_linkup\n");
 }
 
 
@@ -248,8 +248,8 @@ void detail_register(struct entity* p)
 	p->onsearch = (void*)detail_search;
 	p->onmodify = (void*)detail_modify;
 
-	p->onstart = (void*)detail_start;
-	p->onstop  = (void*)detail_stop;
+	p->onlinkup = (void*)detail_linkup;
+	p->ondiscon = (void*)detail_discon;
 	p->onread  = (void*)detail_read;
 	p->onwrite = (void*)detail_write;
 }

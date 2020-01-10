@@ -338,10 +338,10 @@ static void piano_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 static void piano_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void piano_stop(struct halfrel* self, struct halfrel* peer)
+static void piano_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void piano_start(struct halfrel* self, struct halfrel* peer)
+static void piano_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -380,8 +380,8 @@ void piano_register(struct entity* p)
 	p->onsearch = (void*)piano_search;
 	p->onmodify = (void*)piano_modify;
 
-	p->onstart = (void*)piano_start;
-	p->onstop  = (void*)piano_stop;
+	p->onlinkup = (void*)piano_linkup;
+	p->ondiscon = (void*)piano_discon;
 	p->onread  = (void*)piano_read;
 	p->onwrite = (void*)piano_write;
 }

@@ -157,10 +157,10 @@ static void snake_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 static void snake_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void snake_stop(struct halfrel* self, struct halfrel* peer)
+static void snake_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void snake_start(struct halfrel* self, struct halfrel* peer)
+static void snake_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -200,8 +200,8 @@ void snake_register(struct entity* p)
 	p->onsearch = (void*)snake_search;
 	p->onmodify = (void*)snake_modify;
 
-	p->onstart = (void*)snake_start;
-	p->onstop  = (void*)snake_stop;
+	p->onlinkup = (void*)snake_linkup;
+	p->ondiscon = (void*)snake_discon;
 	p->onread  = (void*)snake_read;
 	p->onwrite = (void*)snake_write;
 }

@@ -103,10 +103,10 @@ static void h2o_read(struct halfrel* self, struct halfrel* peer, struct halfrel*
 static void h2o_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void h2o_stop(struct halfrel* self, struct halfrel* peer)
+static void h2o_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void h2o_start(struct halfrel* self, struct halfrel* peer)
+static void h2o_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -123,8 +123,8 @@ void h2o_register(struct entity* p)
 	p->onsearch = (void*)h2o_search;
 	p->onmodify = (void*)h2o_modify;
 
-	p->onstart = (void*)h2o_start;
-	p->onstop  = (void*)h2o_stop;
+	p->onlinkup = (void*)h2o_linkup;
+	p->ondiscon = (void*)h2o_discon;
 	p->onread  = (void*)h2o_read;
 	p->onwrite = (void*)h2o_write;
 }

@@ -87,10 +87,10 @@ static void diamond_read(struct halfrel* self, struct halfrel* peer, struct half
 static void diamond_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void diamond_stop(struct halfrel* self, struct halfrel* peer)
+static void diamond_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void diamond_start(struct halfrel* self, struct halfrel* peer)
+static void diamond_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -107,8 +107,8 @@ void diamond_register(struct entity* p)
 	p->onsearch = (void*)diamond_search;
 	p->onmodify = (void*)diamond_modify;
 
-	p->onstart = (void*)diamond_start;
-	p->onstop  = (void*)diamond_stop;
+	p->onlinkup = (void*)diamond_linkup;
+	p->ondiscon = (void*)diamond_discon;
 	p->onread  = (void*)diamond_read;
 	p->onwrite = (void*)diamond_write;
 }

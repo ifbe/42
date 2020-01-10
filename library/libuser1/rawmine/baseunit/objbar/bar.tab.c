@@ -365,10 +365,10 @@ static int tabbar_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	struct event* ev = (void*)buf;
 	return 0;//tabbar_event(act, pin, win, sty, ev, 0);
 }
-static void tabbar_stop(struct halfrel* self, struct halfrel* peer)
+static void tabbar_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void tabbar_start(struct halfrel* self, struct halfrel* peer)
+static void tabbar_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -402,8 +402,8 @@ void tabbar_register(struct entity* p)
 	p->onsearch = (void*)tabbar_search;
 	p->onmodify = (void*)tabbar_modify;
 
-	p->onstart = (void*)tabbar_start;
-	p->onstop  = (void*)tabbar_stop;
+	p->onlinkup = (void*)tabbar_linkup;
+	p->ondiscon = (void*)tabbar_discon;
 	p->onread  = (void*)tabbar_read;
 	p->onwrite = (void*)tabbar_write;
 }

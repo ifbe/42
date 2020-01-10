@@ -361,10 +361,10 @@ static void fulladd_write(struct halfrel* self, struct halfrel* peer, void* arg,
 		}
 	}
 }
-static void fulladd_stop(struct halfrel* self, struct halfrel* peer)
+static void fulladd_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void fulladd_start(struct halfrel* self, struct halfrel* peer)
+static void fulladd_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -403,8 +403,8 @@ void fulladd_register(struct entity* p)
 	p->onsearch = (void*)fulladd_search;
 	p->onmodify = (void*)fulladd_modify;
 
-	p->onstart = (void*)fulladd_start;
-	p->onstop  = (void*)fulladd_stop;
+	p->onlinkup = (void*)fulladd_linkup;
+	p->ondiscon = (void*)fulladd_discon;
 	p->onread  = (void*)fulladd_read;
 	p->onwrite = (void*)fulladd_write;
 }

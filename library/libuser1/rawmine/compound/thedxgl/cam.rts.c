@@ -210,12 +210,12 @@ static int rtscam_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	struct event* ev = (void*)buf;
 	return 0;//rtscam_event(act, pin, win, sty, ev, 0);
 }
-static void rtscam_stop(struct halfrel* self, struct halfrel* peer)
+static void rtscam_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void rtscam_start(struct halfrel* self, struct halfrel* peer)
+static void rtscam_linkup(struct halfrel* self, struct halfrel* peer)
 {
-    say("@rtscam_start\n");
+    say("@rtscam_linkup\n");
 }
 
 
@@ -248,8 +248,8 @@ void rtscam_register(struct entity* p)
 	p->onsearch = (void*)rtscam_search;
 	p->onmodify = (void*)rtscam_modify;
 
-	p->onstart = (void*)rtscam_start;
-	p->onstop  = (void*)rtscam_stop;
+	p->onlinkup = (void*)rtscam_linkup;
+	p->ondiscon = (void*)rtscam_discon;
 	p->onread  = (void*)rtscam_read;
 	p->onwrite = (void*)rtscam_write;
 }

@@ -292,10 +292,10 @@ static void sudoku_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 	struct event* ev = (void*)buf;
 	//sudoku_event(act, pin, win, sty, ev, 0);
 }
-static void sudoku_stop(struct halfrel* self, struct halfrel* peer)
+static void sudoku_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void sudoku_start(struct halfrel* self, struct halfrel* peer)
+static void sudoku_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -350,8 +350,8 @@ void sudoku_register(struct entity* p)
 	p->onsearch = (void*)sudoku_search;
 	p->onmodify = (void*)sudoku_modify;
 
-	p->onstart = (void*)sudoku_start;
-	p->onstop  = (void*)sudoku_stop;
+	p->onlinkup = (void*)sudoku_linkup;
+	p->ondiscon = (void*)sudoku_discon;
 	p->onread  = (void*)sudoku_read;
 	p->onwrite = (void*)sudoku_write;
 }

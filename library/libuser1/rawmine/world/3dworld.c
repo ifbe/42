@@ -64,34 +64,14 @@ next:
 	return ret;
 */
 }
-int world3d_stop(struct halfrel* self, struct halfrel* peer)
+int world3d_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int world3d_start(struct halfrel* self, struct halfrel* peer)
+int world3d_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@world3d_start\n");
+	say("@world3d_linkup\n");
 	return 0;
-/*
-	struct halfrel* self;
-	struct halfrel* peer;
-	struct relation* rel;
-
-	rel = twig->orel0;
-	while(1)
-	{
-		if(0 == rel)break;
-
-		if(_ent_ == rel->dsttype){
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			entitystart(self, peer);
-		}
-
-		rel = samesrcnextdst(rel);
-	}
-	return 0;
-*/
 }
 
 

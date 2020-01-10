@@ -248,10 +248,10 @@ static void tree_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 static void tree_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void tree_stop(struct halfrel* self, struct halfrel* peer)
+static void tree_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void tree_start(struct halfrel* self, struct halfrel* peer)
+static void tree_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -268,8 +268,8 @@ void tree_register(struct entity* p)
 	p->onsearch = (void*)tree_search;
 	p->onmodify = (void*)tree_modify;
 
-	p->onstart = (void*)tree_start;
-	p->onstop  = (void*)tree_stop;
+	p->onlinkup = (void*)tree_linkup;
+	p->ondiscon = (void*)tree_discon;
 	p->onread  = (void*)tree_read;
 	p->onwrite = (void*)tree_write;
 }

@@ -161,12 +161,12 @@ static void voxel_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 		voxel_data(act, 0, buf, len);
 	}
 }
-static void voxel_stop(struct halfrel* self, struct halfrel* peer)
+static void voxel_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void voxel_start(struct halfrel* self, struct halfrel* peer)
+static void voxel_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@voxel_start\n");
+	say("@voxel_linkup\n");
 }
 
 
@@ -200,8 +200,8 @@ void voxel_register(struct entity* p)
 	p->onsearch = (void*)voxel_search;
 	p->onmodify = (void*)voxel_modify;
 
-	p->onstart = (void*)voxel_start;
-	p->onstop  = (void*)voxel_stop;
+	p->onlinkup = (void*)voxel_linkup;
+	p->ondiscon = (void*)voxel_discon;
 	p->onread  = (void*)voxel_read;
 	p->onwrite = (void*)voxel_write;
 }

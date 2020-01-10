@@ -61,11 +61,11 @@ int fftrgb_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	relationwrite(ele, _dst_, 0, 0, pcm, 1024*2);
 	return 0;
 }
-int fftrgb_stop(struct halfrel* self, struct halfrel* peer)
+int fftrgb_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int fftrgb_start(struct halfrel* self, struct halfrel* peer)
+int fftrgb_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

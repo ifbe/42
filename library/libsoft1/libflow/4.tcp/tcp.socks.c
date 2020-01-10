@@ -103,16 +103,16 @@ int socksclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int
     }//switch
 	return 0;
 }
-int socksclient_stop(struct halfrel* self, struct halfrel* peer)
+int socksclient_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksclient_stop: %.4s\n", &self->flag);
+	say("@socksclient_discon: %.4s\n", &self->flag);
 	return 0;
 }
-int socksclient_start(struct halfrel* self, struct halfrel* peer)
+int socksclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
     struct artery* ele;
     struct object* obj;
-	say("@socksclient_start: %.4s\n", &self->flag);
+	say("@socksclient_linkup: %.4s\n", &self->flag);
 
     if(_src_ == self->flag){
 		obj = peer->pchip;
@@ -179,14 +179,14 @@ int socksserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int
     }
 	return 0;
 }
-int socksserver_stop(struct halfrel* self, struct halfrel* peer)
+int socksserver_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksserver_stop: %.4s\n", &self->flag);
+	say("@socksserver_discon: %.4s\n", &self->flag);
 	return 0;
 }
-int socksserver_start(struct halfrel* self, struct halfrel* peer)
+int socksserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksserver_start: %.4s\n", &self->flag);
+	say("@socksserver_linkup: %.4s\n", &self->flag);
 	return 0;
 }
 int socksserver_delete(struct artery* ele)
@@ -257,13 +257,13 @@ say("4\n");
     relationwrite(self->pchip, _src_, arg, idx, socks5_server1, 10);
 	return 0;
 }
-int socksmaster_stop(struct halfrel* self, struct halfrel* peer)
+int socksmaster_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int socksmaster_start(struct halfrel* self, struct halfrel* peer)
+int socksmaster_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@socksmaster_start\n");
+	say("@socksmaster_linkup\n");
 	return 0;
 }
 int socksmaster_delete(struct artery* ele)

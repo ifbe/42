@@ -338,10 +338,10 @@ static void stl3d_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	struct event* ev = (void*)buf;
 	//stl3d_event(act, pin, win, sty, ev, 0);
 }
-static void stl3d_stop(struct halfrel* self, struct halfrel* peer)
+static void stl3d_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void stl3d_start(struct halfrel* self, struct halfrel* peer)
+static void stl3d_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct glsrc* src;
 	struct style* pin = (void*)(self->foot);
@@ -411,8 +411,8 @@ void stl3d_register(struct entity* p)
 	p->onsearch = (void*)stl3d_search;
 	p->onmodify = (void*)stl3d_modify;
 
-	p->onstart = (void*)stl3d_start;
-	p->onstop  = (void*)stl3d_stop;
+	p->onlinkup = (void*)stl3d_linkup;
+	p->ondiscon = (void*)stl3d_discon;
 	p->onread  = (void*)stl3d_read;
 	p->onwrite = (void*)stl3d_write;
 }

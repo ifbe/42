@@ -20,11 +20,11 @@ int dbgf32_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	}
 	return 0;
 }
-int dbgf32_stop(struct halfrel* self, struct halfrel* peer)
+int dbgf32_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int dbgf32_start(struct halfrel* self, struct halfrel* peer)
+int dbgf32_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

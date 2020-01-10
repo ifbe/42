@@ -19,11 +19,11 @@ int gl41coop_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 {
 	return 0;
 }
-int gl41coop_stop(struct halfrel* self, struct halfrel* peer)
+int gl41coop_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int gl41coop_start(struct halfrel* self, struct halfrel* peer)
+int gl41coop_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

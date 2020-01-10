@@ -275,12 +275,12 @@ static int orthcam_write(struct halfrel* self, struct halfrel* peer, struct half
 	}
 	return 0;
 }
-static void orthcam_stop(struct halfrel* self, struct halfrel* peer)
+static void orthcam_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void orthcam_start(struct halfrel* self, struct halfrel* peer)
+static void orthcam_linkup(struct halfrel* self, struct halfrel* peer)
 {
-    say("@orthcam_start\n");
+    say("@orthcam_linkup\n");
 }
 
 
@@ -296,8 +296,8 @@ void orthcam_register(struct entity* p)
 	p->onsearch = (void*)orthcam_search;
 	p->onmodify = (void*)orthcam_modify;
 
-	p->onstart = (void*)orthcam_start;
-	p->onstop  = (void*)orthcam_stop;
+	p->onlinkup = (void*)orthcam_linkup;
+	p->ondiscon = (void*)orthcam_discon;
 	p->onread  = (void*)orthcam_read;
 	p->onwrite = (void*)orthcam_write;
 }

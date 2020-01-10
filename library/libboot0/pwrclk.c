@@ -147,12 +147,12 @@ int pwrclkwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 {
 	return 0;
 }
-int pwrclkstop(struct halfrel* self, struct halfrel* peer)
+int pwrclkdiscon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int pwrclkstart(struct halfrel* self, struct halfrel* peer)
+int pwrclklinkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@pwrclkstart\n");
+	say("@pwrclklinkup\n");
 	return 0;
 }

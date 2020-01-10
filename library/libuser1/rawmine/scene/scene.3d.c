@@ -29,7 +29,7 @@ int scene3d_write(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 {
 	return 0;
 }
-int scene3d_stop(struct halfrel* self, struct halfrel* peer)
+int scene3d_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

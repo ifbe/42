@@ -96,10 +96,10 @@ static void ch4_read(struct halfrel* self, struct halfrel* peer, struct halfrel*
 static void ch4_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void ch4_stop(struct halfrel* self, struct halfrel* peer)
+static void ch4_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void ch4_start(struct halfrel* self, struct halfrel* peer)
+static void ch4_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -116,8 +116,8 @@ void ch4_register(struct entity* p)
 	p->onsearch = (void*)ch4_search;
 	p->onmodify = (void*)ch4_modify;
 
-	p->onstart = (void*)ch4_start;
-	p->onstop  = (void*)ch4_stop;
+	p->onlinkup = (void*)ch4_linkup;
+	p->ondiscon = (void*)ch4_discon;
 	p->onread  = (void*)ch4_read;
 	p->onwrite = (void*)ch4_write;
 }

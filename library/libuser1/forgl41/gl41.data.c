@@ -220,11 +220,11 @@ int gl41data_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 {
 	return 0;
 }
-int gl41data_stop(struct halfrel* self, struct halfrel* peer)
+int gl41data_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int gl41data_start(struct halfrel* self, struct halfrel* peer)
+int gl41data_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

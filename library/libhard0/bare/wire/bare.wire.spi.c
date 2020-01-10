@@ -32,11 +32,11 @@ int spi_choose(int num,char* p)
 
 
 
-int spi_start(char* p)
+int spi_linkup(char* p)
 {
 	return 0;
 }
-int spi_stop()
+int spi_discon()
 {
 	return 0;
 }

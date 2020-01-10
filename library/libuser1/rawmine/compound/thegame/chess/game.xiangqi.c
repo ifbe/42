@@ -529,10 +529,10 @@ static void xiangqi_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	struct event* ev = (void*)buf;
 	//xiangqi_event(act, pin, win, sty, ev, 0);
 }
-static void xiangqi_stop(struct halfrel* self, struct halfrel* peer)
+static void xiangqi_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void xiangqi_start(struct halfrel* self, struct halfrel* peer)
+static void xiangqi_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -588,8 +588,8 @@ void xiangqi_register(struct entity* p)
 	p->onsearch = (void*)xiangqi_search;
 	p->onmodify = (void*)xiangqi_modify;
 
-	p->onstart = (void*)xiangqi_start;
-	p->onstop  = (void*)xiangqi_stop;
+	p->onlinkup = (void*)xiangqi_linkup;
+	p->ondiscon = (void*)xiangqi_discon;
 	p->onread  = (void*)xiangqi_read;
 	p->onwrite = (void*)xiangqi_write;
 }

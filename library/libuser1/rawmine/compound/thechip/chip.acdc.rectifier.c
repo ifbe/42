@@ -219,10 +219,10 @@ static void rectify_read(struct halfrel* self, struct halfrel* peer, struct half
 static void rectify_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void rectify_stop(struct halfrel* self, struct halfrel* peer)
+static void rectify_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void rectify_start(struct halfrel* self, struct halfrel* peer)
+static void rectify_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -255,8 +255,8 @@ void rectify_register(struct entity* p)
 	p->onsearch = (void*)rectify_search;
 	p->onmodify = (void*)rectify_modify;
 
-	p->onstart = (void*)rectify_start;
-	p->onstop  = (void*)rectify_stop;
+	p->onlinkup = (void*)rectify_linkup;
+	p->ondiscon = (void*)rectify_discon;
 	p->onread  = (void*)rectify_read;
 	p->onwrite = (void*)rectify_write;
 }

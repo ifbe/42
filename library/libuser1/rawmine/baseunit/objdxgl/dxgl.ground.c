@@ -195,10 +195,10 @@ static void ground_read(struct halfrel* self, struct halfrel* peer, struct halfr
 static void ground_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void ground_stop(struct halfrel* self, struct halfrel* peer)
+static void ground_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void ground_start(struct halfrel* self, struct halfrel* peer)
+static void ground_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -255,8 +255,8 @@ void ground_register(struct entity* p)
 	p->onsearch = (void*)ground_search;
 	p->onmodify = (void*)ground_modify;
 
-	p->onstart = (void*)ground_start;
-	p->onstop  = (void*)ground_stop;
+	p->onlinkup = (void*)ground_linkup;
+	p->ondiscon = (void*)ground_discon;
 	p->onread  = (void*)ground_read;
 	p->onwrite = (void*)ground_write;
 }

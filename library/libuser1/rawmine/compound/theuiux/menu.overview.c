@@ -1331,12 +1331,12 @@ static int overview_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	struct event* ev = (void*)buf;
 	return overview_event(act, pin, win, sty, ev, 0);
 }
-static void overview_stop(struct halfrel* self, struct halfrel* peer)
+static void overview_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void overview_start(struct halfrel* self, struct halfrel* peer)
+static void overview_linkup(struct halfrel* self, struct halfrel* peer)
 {
-    say("@overview_start\n");
+    say("@overview_linkup\n");
 }
 
 
@@ -1369,8 +1369,8 @@ void overview_register(struct entity* p)
 	p->onsearch = (void*)overview_search;
 	p->onmodify = (void*)overview_modify;
 
-	p->onstart = (void*)overview_start;
-	p->onstop  = (void*)overview_stop;
+	p->onlinkup = (void*)overview_linkup;
+	p->ondiscon = (void*)overview_discon;
 	p->onread  = (void*)overview_read;
 	p->onwrite = (void*)overview_write;
 }

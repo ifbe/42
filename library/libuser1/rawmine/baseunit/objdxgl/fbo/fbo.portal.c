@@ -480,10 +480,10 @@ static void portal_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 static void portal_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void portal_stop(struct halfrel* self, struct halfrel* peer)
+static void portal_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void portal_start(struct halfrel* self, struct halfrel* peer)
+static void portal_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -500,8 +500,8 @@ void portal_register(struct entity* p)
 	p->onsearch = (void*)portal_search;
 	p->onmodify = (void*)portal_modify;
 
-	p->onstart = (void*)portal_start;
-	p->onstop  = (void*)portal_stop;
+	p->onlinkup = (void*)portal_linkup;
+	p->ondiscon = (void*)portal_discon;
 	p->onread  = (void*)portal_read;
 	p->onwrite = (void*)portal_write;
 }

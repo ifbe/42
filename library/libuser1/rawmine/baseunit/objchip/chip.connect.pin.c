@@ -43,10 +43,10 @@ static void chippin_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 static void chippin_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void chippin_stop(struct halfrel* self, struct halfrel* peer)
+static void chippin_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void chippin_start(struct halfrel* self, struct halfrel* peer)
+static void chippin_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -79,8 +79,8 @@ void chippin_register(struct entity* p)
 	p->onsearch = (void*)chippin_search;
 	p->onmodify = (void*)chippin_modify;
 
-	p->onstart = (void*)chippin_start;
-	p->onstop  = (void*)chippin_stop;
+	p->onlinkup = (void*)chippin_linkup;
+	p->ondiscon = (void*)chippin_discon;
 	p->onread  = (void*)chippin_read;
 	p->onwrite = (void*)chippin_write;
 }

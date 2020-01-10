@@ -947,11 +947,11 @@ struct supply
 		char padding1[8];
 	};
 	union{
-		int (*onstart)(void* self, void* peer);
+		int (*onlinkup)(void* self, void* peer);
 		char padding2[8];
 	};
 	union{
-		int (*onstop)(void* self, void* peer);
+		int (*ondiscon)(void* self, void* peer);
 		char padding3[8];
 	};
 	union{
@@ -1093,11 +1093,11 @@ struct entity
 		char padding3[8];
 	};
 	union{
-		int (*onstart)(void* self, void* peer);
+		int (*onlinkup)(void* self, void* peer);
 		char padding4[8];
 	};
 	union{
-		int (*onstop)(void* self, void* peer);
+		int (*ondiscon)(void* self, void* peer);
 		char padding5[8];
 	};
 	union{

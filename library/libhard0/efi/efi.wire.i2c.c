@@ -32,10 +32,10 @@ int i2c_choose(int num,char* p)
 
 
 
-void i2c_start(char* p)
+void i2c_linkup(char* p)
 {
 }
-void i2c_stop()
+void i2c_discon()
 {
 }
 

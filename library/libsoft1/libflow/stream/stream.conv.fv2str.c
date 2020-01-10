@@ -28,11 +28,11 @@ int fv2str_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	}
 	return relationwrite((void*)(self->chip), _dst_, 0, 0, tmp, cnt);
 }
-int fv2str_stop(struct halfrel* self, struct halfrel* peer)
+int fv2str_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int fv2str_start(struct halfrel* self, struct halfrel* peer)
+int fv2str_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

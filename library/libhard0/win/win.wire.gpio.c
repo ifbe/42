@@ -10,10 +10,10 @@ int gpio_read()
 int gpio_write()
 {
 }
-int gpio_start()
+int gpio_linkup()
 {
 }
-int gpio_stop()
+int gpio_discon()
 {
 }
 int gpio_create()

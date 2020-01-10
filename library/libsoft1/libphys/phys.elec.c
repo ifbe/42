@@ -27,10 +27,10 @@ void electrical_list()
 void electrical_choose()
 {
 }
-void electrical_start()
+void electrical_linkup()
 {
 }
-void electrical_stop()
+void electrical_discon()
 {
 }
 void electrical_create(u8* softaddr, u64* p)

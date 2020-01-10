@@ -193,10 +193,10 @@ static void mem_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 
 	ent->iy0 = !ent->ix0;
 }
-static void mem_stop(struct halfrel* self, struct halfrel* peer)
+static void mem_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mem_start(struct halfrel* self, struct halfrel* peer)
+static void mem_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -231,8 +231,8 @@ void mem_register(struct entity* p)
 	p->onsearch = (void*)mem_search;
 	p->onmodify = (void*)mem_modify;
 
-	p->onstart = (void*)mem_start;
-	p->onstop  = (void*)mem_stop;
+	p->onlinkup = (void*)mem_linkup;
+	p->ondiscon = (void*)mem_discon;
 	p->onread  = (void*)mem_read;
 	p->onwrite = (void*)mem_write;
 }

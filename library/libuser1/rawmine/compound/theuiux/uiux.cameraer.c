@@ -256,10 +256,10 @@ static int camman_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	struct event* ev = (void*)buf;
 	return 0;//camman_event(act, pin, win, sty, ev, 0);
 }
-static void camman_stop(struct halfrel* self, struct halfrel* peer)
+static void camman_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void camman_start(struct halfrel* self, struct halfrel* peer)
+static void camman_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -292,8 +292,8 @@ void camman_register(struct entity* p)
 	p->onsearch = (void*)camman_search;
 	p->onmodify = (void*)camman_modify;
 
-	p->onstart = (void*)camman_start;
-	p->onstop  = (void*)camman_stop;
+	p->onlinkup = (void*)camman_linkup;
+	p->ondiscon = (void*)camman_discon;
 	p->onread  = (void*)camman_read;
 	p->onwrite = (void*)camman_write;
 }

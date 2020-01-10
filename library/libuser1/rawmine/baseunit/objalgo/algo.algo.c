@@ -152,10 +152,10 @@ static void algorithm_write(struct halfrel* self, struct halfrel* peer, void* ar
 	struct event* ev = (void*)buf;
 	//algorithm_event(act, pin, win, sty, ev, 0);
 }
-static void algorithm_stop(struct halfrel* self, struct halfrel* peer)
+static void algorithm_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void algorithm_start(struct halfrel* self, struct halfrel* peer)
+static void algorithm_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -193,8 +193,8 @@ void algorithm_register(struct entity* p)
 	p->onsearch = (void*)algorithm_search;
 	p->onmodify = (void*)algorithm_modify;
 
-	p->onstart = (void*)algorithm_start;
-	p->onstop  = (void*)algorithm_stop;
+	p->onlinkup = (void*)algorithm_linkup;
+	p->ondiscon = (void*)algorithm_discon;
 	p->onread  = (void*)algorithm_read;
 	p->onwrite = (void*)algorithm_write;
 }

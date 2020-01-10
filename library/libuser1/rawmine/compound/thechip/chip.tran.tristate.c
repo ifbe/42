@@ -90,10 +90,10 @@ static void tristate_read(struct halfrel* self, struct halfrel* peer, struct hal
 static void tristate_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void tristate_stop(struct halfrel* self, struct halfrel* peer)
+static void tristate_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void tristate_start(struct halfrel* self, struct halfrel* peer)
+static void tristate_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -126,8 +126,8 @@ void tristate_register(struct entity* p)
 	p->onsearch = (void*)tristate_search;
 	p->onmodify = (void*)tristate_modify;
 
-	p->onstart = (void*)tristate_start;
-	p->onstop  = (void*)tristate_stop;
+	p->onlinkup = (void*)tristate_linkup;
+	p->ondiscon = (void*)tristate_discon;
 	p->onread  = (void*)tristate_read;
 	p->onwrite = (void*)tristate_write;
 }

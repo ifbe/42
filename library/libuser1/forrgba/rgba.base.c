@@ -93,11 +93,11 @@ next:
 	//if('p' == (ev->what&0xff))entityinput_touch(win, ev);
 	return ret;
 }
-int rgbanode_stop(struct supply* win, struct style* sty)
+int rgbanode_discon(struct supply* win, struct style* sty)
 {
 	return 0;
 }
-int rgbanode_start(struct supply* twig, void* tf, struct supply* root, void* rf)
+int rgbanode_linkup(struct supply* twig, void* tf, struct supply* root, void* rf)
 {
 	return 0;
 }

@@ -13,10 +13,10 @@ static void kriegspiel_read(struct halfrel* self, struct halfrel* peer, void* ar
 static void kriegspiel_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void kriegspiel_stop(struct halfrel* self, struct halfrel* peer)
+static void kriegspiel_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void kriegspiel_start(struct halfrel* self, struct halfrel* peer)
+static void kriegspiel_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -54,8 +54,8 @@ void kriegspiel_register(struct entity* p)
 	p->onsearch = (void*)kriegspiel_search;
 	p->onmodify = (void*)kriegspiel_modify;
 
-	p->onstart = (void*)kriegspiel_start;
-	p->onstop  = (void*)kriegspiel_stop;
+	p->onlinkup = (void*)kriegspiel_linkup;
+	p->ondiscon = (void*)kriegspiel_discon;
 	p->onread  = (void*)kriegspiel_read;
 	p->onwrite = (void*)kriegspiel_write;
 }

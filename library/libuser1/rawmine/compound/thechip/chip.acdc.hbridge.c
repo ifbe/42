@@ -152,10 +152,10 @@ static void hbridge_read(struct halfrel* self, struct halfrel* peer, struct half
 static void hbridge_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void hbridge_stop(struct halfrel* self, struct halfrel* peer)
+static void hbridge_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void hbridge_start(struct halfrel* self, struct halfrel* peer)
+static void hbridge_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -188,8 +188,8 @@ void hbridge_register(struct entity* p)
 	p->onsearch = (void*)hbridge_search;
 	p->onmodify = (void*)hbridge_modify;
 
-	p->onstart = (void*)hbridge_start;
-	p->onstop  = (void*)hbridge_stop;
+	p->onlinkup = (void*)hbridge_linkup;
+	p->ondiscon = (void*)hbridge_discon;
 	p->onread  = (void*)hbridge_read;
 	p->onwrite = (void*)hbridge_write;
 }

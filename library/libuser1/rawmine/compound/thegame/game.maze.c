@@ -389,10 +389,10 @@ static void maze_write(struct halfrel* self, struct halfrel* peer, void* arg, in
 	struct event* ev = (void*)buf;
 	//maze_event(act, pin, win, sty, ev, 0);
 }
-static void maze_stop(struct halfrel* self, struct halfrel* peer)
+static void maze_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void maze_start(struct halfrel* self, struct halfrel* peer)
+static void maze_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -439,8 +439,8 @@ void maze_register(struct entity* p)
 	p->onsearch = (void*)maze_search;
 	p->onmodify = (void*)maze_modify;
 
-	p->onstart = (void*)maze_start;
-	p->onstop  = (void*)maze_stop;
+	p->onlinkup = (void*)maze_linkup;
+	p->ondiscon = (void*)maze_discon;
 	p->onread  = (void*)maze_read;
 	p->onwrite = (void*)maze_write;
 }

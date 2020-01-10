@@ -33,17 +33,6 @@ static void wire_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void wire_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)wire_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)wire_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)wire_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)wire_draw_json(act, pin, win, sty);
-	else wire_draw_pixel(act, pin, win, sty);
-}
 
 
 
@@ -60,10 +49,10 @@ static void wire_read(struct halfrel* self, struct halfrel* peer, void* arg, int
 static void wire_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void wire_stop(struct halfrel* self, struct halfrel* peer)
+static void wire_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void wire_start(struct halfrel* self, struct halfrel* peer)
+static void wire_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -96,8 +85,8 @@ void wire_register(struct entity* p)
 	p->onsearch = (void*)wire_search;
 	p->onmodify = (void*)wire_modify;
 
-	p->onstart = (void*)wire_start;
-	p->onstop  = (void*)wire_stop;
+	p->onlinkup = (void*)wire_linkup;
+	p->ondiscon = (void*)wire_discon;
 	p->onread  = (void*)wire_read;
 	p->onwrite = (void*)wire_write;
 }

@@ -39,11 +39,11 @@ int recut_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	ele->len = ret;
 	return 0;
 }
-int recut_stop(struct halfrel* self, struct halfrel* peer)
+int recut_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int recut_start(struct halfrel* self, struct halfrel* peer)
+int recut_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

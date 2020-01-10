@@ -3,16 +3,16 @@
 #define _lsm9ds1_ hex64('l','s','m','9','d','s','1',0)
 int lsm9ds1_create(struct driver* ele, void* url, int argc, u8** argv);
 int lsm9ds1_delete(struct driver* ele);
-int lsm9ds1_start( struct halfrel* self, struct halfrel* peer);
-int lsm9ds1_stop(  struct halfrel* self, struct halfrel* peer);
+int lsm9ds1_linkup(struct halfrel* self, struct halfrel* peer);
+int lsm9ds1_discon(struct halfrel* self, struct halfrel* peer);
 int lsm9ds1_write( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int lsm9ds1_read(  struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 #define _mpu9250_ hex64('m','p','u','9','2','5','0',0)
 int mpu9250_create(struct driver* ele, void* url, int argc, u8** argv);
 int mpu9250_delete(struct driver* ele);
-int mpu9250_start( struct halfrel* self, struct halfrel* peer);
-int mpu9250_stop(  struct halfrel* self, struct halfrel* peer);
+int mpu9250_linkup(struct halfrel* self, struct halfrel* peer);
+int mpu9250_discon(struct halfrel* self, struct halfrel* peer);
 int mpu9250_write( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int mpu9250_read(  struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 
@@ -52,23 +52,23 @@ int driverread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	}
 	return 0;
 }
-int driverstop(struct halfrel* self, struct halfrel* peer)
+int driverdiscon(struct halfrel* self, struct halfrel* peer)
 {
 	struct driver* ele = (void*)(self->chip);
-	say("@driverstop\n");
+	say("@driverdiscon\n");
 	switch(ele->type){
-		case _mpu9250_:return mpu9250_stop(self, peer);break;
-		case _lsm9ds1_:return lsm9ds1_stop(self, peer);break;
+		case _mpu9250_:return mpu9250_discon(self, peer);break;
+		case _lsm9ds1_:return lsm9ds1_discon(self, peer);break;
 	}
 	return 0;
 }
-int driverstart(struct halfrel* self, struct halfrel* peer)
+int driverlinkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct driver* ele = (void*)(self->chip);
-	say("@driverstart\n");
+	say("@driverlinkup\n");
 	switch(ele->type){
-		case _mpu9250_:return mpu9250_start(self, peer);break;
-		case _lsm9ds1_:return lsm9ds1_start(self, peer);break;
+		case _mpu9250_:return mpu9250_linkup(self, peer);break;
+		case _lsm9ds1_:return lsm9ds1_linkup(self, peer);break;
 	}
 	return 0;
 }

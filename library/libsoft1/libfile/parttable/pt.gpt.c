@@ -137,11 +137,11 @@ int gptclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 {
 	return 0;
 }
-int gptclient_stop(struct halfrel* self, struct halfrel* peer)
+int gptclient_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int gptclient_start(struct halfrel* self, struct halfrel* peer)
+int gptclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
 	struct object* obj;

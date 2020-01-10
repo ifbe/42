@@ -90,10 +90,10 @@ static void dram_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 static void dram_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void dram_stop(struct halfrel* self, struct halfrel* peer)
+static void dram_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void dram_start(struct halfrel* self, struct halfrel* peer)
+static void dram_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -126,8 +126,8 @@ void dram_register(struct entity* p)
 	p->onsearch = (void*)dram_search;
 	p->onmodify = (void*)dram_modify;
 
-	p->onstart = (void*)dram_start;
-	p->onstop  = (void*)dram_stop;
+	p->onlinkup = (void*)dram_linkup;
+	p->ondiscon = (void*)dram_discon;
 	p->onread  = (void*)dram_read;
 	p->onwrite = (void*)dram_write;
 }

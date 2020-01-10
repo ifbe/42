@@ -39,10 +39,10 @@ static void cpure_read(struct halfrel* self, struct halfrel* peer, struct halfre
 static void cpure_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void cpure_stop(struct halfrel* self, struct halfrel* peer)
+static void cpure_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void cpure_start(struct halfrel* self, struct halfrel* peer)
+static void cpure_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -80,8 +80,8 @@ void cpure_register(struct entity* p)
 	p->onsearch = (void*)cpure_search;
 	p->onmodify = (void*)cpure_modify;
 
-	p->onstart = (void*)cpure_start;
-	p->onstop  = (void*)cpure_stop;
+	p->onlinkup = (void*)cpure_linkup;
+	p->ondiscon = (void*)cpure_discon;
 	p->onread  = (void*)cpure_read;
 	p->onwrite = (void*)cpure_write;
 }

@@ -164,10 +164,10 @@ static void house_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 static void house_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void house_stop(struct halfrel* self, struct halfrel* peer)
+static void house_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void house_start(struct halfrel* self, struct halfrel* peer)
+static void house_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -205,8 +205,8 @@ void house_register(struct entity* p)
 	p->onsearch = (void*)house_search;
 	p->onmodify = (void*)house_modify;
 
-	p->onstart = (void*)house_start;
-	p->onstop  = (void*)house_stop;
+	p->onlinkup = (void*)house_linkup;
+	p->ondiscon = (void*)house_discon;
 	p->onread  = (void*)house_read;
 	p->onwrite = (void*)house_write;
 }

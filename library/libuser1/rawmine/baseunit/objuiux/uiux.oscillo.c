@@ -289,12 +289,12 @@ static void oscillo_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	}
 */
 }
-static void oscillo_stop(struct halfrel* self, struct halfrel* peer)
+static void oscillo_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void oscillo_start(struct halfrel* self, struct halfrel* peer)
+static void oscillo_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@oscillo_start\n");
+	say("@oscillo_linkup\n");
 }
 
 
@@ -340,8 +340,8 @@ void oscillo_register(struct entity* p)
 	p->onsearch = (void*)oscillo_search;
 	p->onmodify = (void*)oscillo_modify;
 
-	p->onstart = (void*)oscillo_start;
-	p->onstop  = (void*)oscillo_stop;
+	p->onlinkup = (void*)oscillo_linkup;
+	p->ondiscon = (void*)oscillo_discon;
 	p->onread  = (void*)oscillo_read;
 	p->onwrite = (void*)oscillo_write;
 }

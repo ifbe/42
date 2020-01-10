@@ -10,10 +10,10 @@ int i2c_read()
 int i2c_write()
 {
 }
-int i2c_start()
+int i2c_linkup()
 {
 }
-int i2c_stop()
+int i2c_discon()
 {
 }
 int i2c_create()

@@ -355,10 +355,10 @@ static void the2048_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	act = self->pchip;
 	the2048_event(act, buf);
 }
-static void the2048_stop(struct halfrel* self, struct halfrel* peer)
+static void the2048_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void the2048_start(struct halfrel* self, struct halfrel* peer)
+static void the2048_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -375,8 +375,8 @@ void the2048_register(struct entity* p)
 	p->onsearch = (void*)the2048_search;
 	p->onmodify = (void*)the2048_modify;
 
-	p->onstart = (void*)the2048_start;
-	p->onstop  = (void*)the2048_stop;
+	p->onlinkup = (void*)the2048_linkup;
+	p->ondiscon = (void*)the2048_discon;
 	p->onread  = (void*)the2048_read;
 	p->onwrite = (void*)the2048_write;
 }

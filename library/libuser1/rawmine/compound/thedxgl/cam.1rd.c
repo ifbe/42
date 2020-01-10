@@ -155,12 +155,12 @@ static void firstperson_read(struct halfrel* self, struct halfrel* peer, void* a
 static void firstperson_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void firstperson_stop(struct halfrel* self, struct halfrel* peer)
+static void firstperson_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void firstperson_start(struct halfrel* self, struct halfrel* peer)
+static void firstperson_linkup(struct halfrel* self, struct halfrel* peer)
 {
-    say("@firstperson_start\n");
+    say("@firstperson_linkup\n");
 }
 
 
@@ -193,8 +193,8 @@ void firstperson_register(struct entity* p)
 	p->onsearch = (void*)firstperson_search;
 	p->onmodify = (void*)firstperson_modify;
 
-	p->onstart = (void*)firstperson_start;
-	p->onstop  = (void*)firstperson_stop;
+	p->onlinkup = (void*)firstperson_linkup;
+	p->ondiscon = (void*)firstperson_discon;
 	p->onread  = (void*)firstperson_read;
 	p->onwrite = (void*)firstperson_write;
 }

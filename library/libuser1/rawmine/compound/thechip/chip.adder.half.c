@@ -82,10 +82,10 @@ static void halfadd_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	tmp = ent->iy0 + 0x30;
 	relationwrite(ent, 'o', 0, 0, &tmp, 1);
 }
-static void halfadd_stop(struct halfrel* self, struct halfrel* peer)
+static void halfadd_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void halfadd_start(struct halfrel* self, struct halfrel* peer)
+static void halfadd_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -120,8 +120,8 @@ void halfadd_register(struct entity* p)
 	p->onsearch = (void*)halfadd_search;
 	p->onmodify = (void*)halfadd_modify;
 
-	p->onstart = (void*)halfadd_start;
-	p->onstop  = (void*)halfadd_stop;
+	p->onlinkup = (void*)halfadd_linkup;
+	p->ondiscon = (void*)halfadd_discon;
 	p->onread  = (void*)halfadd_read;
 	p->onwrite = (void*)halfadd_write;
 }

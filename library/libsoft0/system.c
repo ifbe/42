@@ -19,8 +19,8 @@ int writeshell(int, int, void*, int);
 //uart
 int inituart(void*);
 int freeuart();
-int uart_stop(int);
-int uart_start(void*, int);
+int uart_delete(int);
+int uart_create(void*, int);
 int uart_read( int, int, void*, int);
 int uart_write(int, int, void*, int);
 //socket
@@ -96,14 +96,14 @@ int systemwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	}
 	return 0;
 }
-int systemstop(struct halfrel* self, struct halfrel* peer)
+int systemdiscon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@systemstop\n");
+	say("@system_discon\n");
 	return 0;
 }
-int systemstart(struct halfrel* self, struct halfrel* peer)
+int systemlinkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@systemstart\n");
+	say("@system_linkupn");
 	return 0;
 }
 
@@ -124,14 +124,14 @@ int systemdelete(void* addr)
 	//del irel, orel
 	rel = oo->irel0;
 	if(0 != rel){
-		relationstop((void*)&rel->srcchip, (void*)&rel->dstchip);
+		relationdiscon((void*)&rel->srcchip, (void*)&rel->dstchip);
 		relationdelete(rel);
 	}
 	oo->irel0 = oo->ireln = 0;
 
 	rel = oo->orel0;
 	if(0 != rel){
-		relationstop((void*)&rel->srcchip, (void*)&rel->dstchip);
+		relationdiscon((void*)&rel->srcchip, (void*)&rel->dstchip);
 		relationdelete(rel);
 	}
 	oo->orel0 = oo->oreln = 0;
@@ -148,7 +148,7 @@ int systemdelete(void* addr)
 		break;
 	}
 	case _uart_:{
-		uart_stop(fd);
+		uart_delete(fd);
 		break;
 	}
 	default:{
@@ -225,7 +225,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 		parseuart(host, &port, name);
 		say("parse: %s, %d\n", host, port);
 
-		fd = uart_start(host, port);
+		fd = uart_create(host, port);
 		if(fd <= 0)return 0;
 
 		obj[fd].type = _uart_;

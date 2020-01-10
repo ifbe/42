@@ -11,11 +11,11 @@ int camfrus_write(struct halfrel* self, struct halfrel* peer, void* arg, int rsp
 {
 	return 0;
 }
-int camfrus_stop(struct halfrel* self, struct halfrel* peer)
+int camfrus_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int camfrus_start(struct halfrel* self, struct halfrel* peer)
+int camfrus_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

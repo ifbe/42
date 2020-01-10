@@ -82,13 +82,13 @@ int lsm9ds1_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 	}
 	return 0;
 }
-int lsm9ds1_stop(struct halfrel* self, struct halfrel* peer)
+int lsm9ds1_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int lsm9ds1_start(struct halfrel* self, struct halfrel* peer)
+int lsm9ds1_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@lsm9ds1_start\n");
+	say("@lsm9ds1_linkup\n");
 	return 0;
 }
 

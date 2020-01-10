@@ -90,11 +90,11 @@ int gravity_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 	say("@gravity_write\n");
 	return 0;
 }
-int gravity_stop(struct halfrel* self, struct halfrel* peer)
+int gravity_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int gravity_start(struct halfrel* self, struct halfrel* peer)
+int gravity_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

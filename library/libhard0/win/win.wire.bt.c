@@ -10,10 +10,10 @@ int bt_read()
 int bt_write()
 {
 }
-int bt_start()
+int bt_linkup()
 {
 }
-int bt_stop()
+int bt_discon()
 {
 }
 int bt_create()

@@ -360,10 +360,10 @@ static int human_write(struct halfrel* self, struct halfrel* peer, void* arg, in
 {
 	return 0;
 }
-static void human_stop(struct halfrel* self, struct halfrel* peer)
+static void human_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void human_start(struct halfrel* self, struct halfrel* peer)
+static void human_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -380,8 +380,8 @@ void human_register(struct entity* p)
 	p->onsearch = (void*)human_search;
 	p->onmodify = (void*)human_modify;
 
-	p->onstart  = (void*)human_start;
-	p->onstop   = (void*)human_stop;
+	p->onlinkup = (void*)human_linkup;
+	p->ondiscon = (void*)human_discon;
 	p->onread  = (void*)human_read;
 	p->onwrite = (void*)human_write;
 }

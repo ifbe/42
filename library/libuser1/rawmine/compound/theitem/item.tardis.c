@@ -108,10 +108,10 @@ static void tardis_read(struct halfrel* self, struct halfrel* peer, struct halfr
 static void tardis_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void tardis_stop(struct halfrel* self, struct halfrel* peer)
+static void tardis_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void tardis_start(struct halfrel* self, struct halfrel* peer)
+static void tardis_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -153,8 +153,8 @@ void tardis_register(struct entity* p)
 	p->onsearch = (void*)tardis_search;
 	p->onmodify = (void*)tardis_modify;
 
-	p->onstart = (void*)tardis_start;
-	p->onstop  = (void*)tardis_stop;
+	p->onlinkup = (void*)tardis_linkup;
+	p->ondiscon = (void*)tardis_discon;
 	p->onread  = (void*)tardis_read;
 	p->onwrite = (void*)tardis_write;
 }

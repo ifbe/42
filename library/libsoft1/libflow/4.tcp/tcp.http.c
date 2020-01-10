@@ -115,16 +115,16 @@ int httpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 
 	return 0;
 }
-int httpclient_stop(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int httpclient_discon(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	say("@httpclient_stop: %.4s\n", &self->flag);
+	say("@httpclient_discon: %.4s\n", &self->flag);
 	return 0;
 }
-int httpclient_start(struct halfrel* self, struct halfrel* peer)
+int httpclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct artery* ele;
 	struct object* obj;
-	say("@httpclient_start: %.4s\n", &self->flag);
+	say("@httpclient_linkup: %.4s\n", &self->flag);
 
 	ele = self->pchip;
 	if(_src_ == self->flag){
@@ -213,14 +213,14 @@ int httpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 	system_leafwrite(ele->obj, 0, ele, sty, buf, len);*/
 	return 0;
 }
-int httpserver_stop(struct halfrel* self, struct halfrel* peer)
+int httpserver_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@httpserver_stop: %.4s\n", &self->flag);
+	say("@httpserver_discon: %.4s\n", &self->flag);
 	return 0;
 }
-int httpserver_start(struct halfrel* self, struct halfrel* peer)
+int httpserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@httpserver_start: %.4s\n", &self->flag);
+	say("@httpserver_linkup: %.4s\n", &self->flag);
 	return 0;
 }
 int httpserver_delete(struct artery* ele)

@@ -34,11 +34,11 @@ int collide_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 	say("@collide_write\n");
 	return 0;
 }
-int collide_stop(struct halfrel* self, struct halfrel* peer)
+int collide_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int collide_start(struct halfrel* self, struct halfrel* peer)
+int collide_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

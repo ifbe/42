@@ -257,10 +257,10 @@ static void tetris_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 	struct event* ev = (void*)buf;
 	//tetris_event(act, pin, win, sty, ev, 0);
 }
-static void tetris_stop(struct halfrel* self, struct halfrel* peer)
+static void tetris_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void tetris_start(struct halfrel* self, struct halfrel* peer)
+static void tetris_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -300,8 +300,8 @@ void tetris_register(struct entity* p)
 	p->onsearch = (void*)tetris_search;
 	p->onmodify = (void*)tetris_modify;
 
-	p->onstart = (void*)tetris_start;
-	p->onstop  = (void*)tetris_stop;
+	p->onlinkup = (void*)tetris_linkup;
+	p->ondiscon = (void*)tetris_discon;
 	p->onread  = (void*)tetris_read;
 	p->onwrite = (void*)tetris_write;
 }

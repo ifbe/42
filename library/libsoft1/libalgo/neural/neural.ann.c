@@ -57,13 +57,13 @@ int ann_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8
 	}
 	return 0;
 }
-int ann_stop(struct halfrel* self, struct halfrel* peer)
+int ann_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int ann_start(struct halfrel* self, struct halfrel* peer)
+int ann_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@ann_start\n");
+	say("@ann_linkup\n");
 	return 0;
 }
 

@@ -188,10 +188,10 @@ static void geometry_write(struct halfrel* self, struct halfrel* peer, void* arg
 	//geometry_event(act, pin, win, sty, ev, 0);
 	struct event* ev = (void*)buf;
 }
-static void geometry_stop(struct halfrel* self, struct halfrel* peer)
+static void geometry_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void geometry_start(struct halfrel* self, struct halfrel* peer)
+static void geometry_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -232,8 +232,8 @@ void geometry_register(struct entity* p)
 	p->onsearch = (void*)geometry_search;
 	p->onmodify = (void*)geometry_modify;
 
-	p->onstart = (void*)geometry_start;
-	p->onstop  = (void*)geometry_stop;
+	p->onlinkup = (void*)geometry_linkup;
+	p->ondiscon = (void*)geometry_discon;
 	p->onread  = (void*)geometry_read;
 	p->onwrite = (void*)geometry_write;
 }

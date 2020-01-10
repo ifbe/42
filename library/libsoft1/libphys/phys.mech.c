@@ -27,10 +27,10 @@ void mechanical_list()
 void mechanical_choose()
 {
 }
-void mechanical_start()
+void mechanical_linkup()
 {
 }
-void mechanical_stop()
+void mechanical_discon()
 {
 }
 void mechanical_create(u8* softaddr, u64* p)

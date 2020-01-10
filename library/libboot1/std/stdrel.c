@@ -251,18 +251,18 @@ int relationwrite(void* chip, int foot, void* arg, int idx, void* buf, int len)
 int relation_d(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->type){
-		case _pwr_:return pwrclkstop(self, peer);
-		case _wrk_:return workerstop(self, peer);
-		case _dev_:return devicestop(self, peer);
-		case _dri_:return driverstop(self, peer);
-		case _sys_:return systemstop(self, peer);
-		case _art_:return arterystop(self, peer);
-		case _sup_:return supplystop(self, peer);
-		case _ent_:return entitystop(self, peer);
+		case _pwr_:return pwrclkdiscon(self, peer);
+		case _wrk_:return workerdiscon(self, peer);
+		case _dev_:return devicediscon(self, peer);
+		case _dri_:return driverdiscon(self, peer);
+		case _sys_:return systemdiscon(self, peer);
+		case _art_:return arterydiscon(self, peer);
+		case _sup_:return supplydiscon(self, peer);
+		case _ent_:return entitydiscon(self, peer);
 	}
 	return 0;
 }
-int relationstop(struct halfrel* self, struct halfrel* peer)
+int relationdiscon(struct halfrel* self, struct halfrel* peer)
 {
 	relation_d(self, peer);
 	relation_d(peer, self);
@@ -275,18 +275,18 @@ int relationstop(struct halfrel* self, struct halfrel* peer)
 int relation_a(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->type){
-		case _pwr_:return pwrclkstart(self, peer);
-		case _wrk_:return workerstart(self, peer);
-		case _dev_:return devicestart(self, peer);
-		case _dri_:return driverstart(self, peer);
-		case _sys_:return systemstart(self, peer);
-		case _art_:return arterystart(self, peer);
-		case _sup_:return supplystart(self, peer);
-		case _ent_:return entitystart(self, peer);
+		case _pwr_:return pwrclklinkup(self, peer);
+		case _wrk_:return workerlinkup(self, peer);
+		case _dev_:return devicelinkup(self, peer);
+		case _dri_:return driverlinkup(self, peer);
+		case _sys_:return systemlinkup(self, peer);
+		case _art_:return arterylinkup(self, peer);
+		case _sup_:return supplylinkup(self, peer);
+		case _ent_:return entitylinkup(self, peer);
 	}
 	return 0;
 }
-int relationstart(struct halfrel* self, struct halfrel* peer)
+int relationlinkup(struct halfrel* self, struct halfrel* peer)
 {
 	relation_a(self, peer);
 	relation_a(peer, self);

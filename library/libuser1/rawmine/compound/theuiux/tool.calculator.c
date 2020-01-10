@@ -296,10 +296,10 @@ static void calculator_write(struct halfrel* self, struct halfrel* peer, struct 
 		case _gl41wnd0_:calculator_write_bywnd(self, peer, stack, rsp, buf, len);break;
 	}
 }
-static void calculator_stop(struct halfrel* self, struct halfrel* peer)
+static void calculator_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void calculator_start(struct halfrel* self, struct halfrel* peer)
+static void calculator_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -343,8 +343,8 @@ void calculator_register(struct entity* p)
 	p->onsearch = (void*)calculator_search;
 	p->onmodify = (void*)calculator_modify;
 
-	p->onstart = (void*)calculator_start;
-	p->onstop  = (void*)calculator_stop;
+	p->onlinkup = (void*)calculator_linkup;
+	p->ondiscon = (void*)calculator_discon;
 	p->onread  = (void*)calculator_read;
 	p->onwrite = (void*)calculator_write;
 }

@@ -120,10 +120,10 @@ static void example_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 static void example_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void example_stop(struct halfrel* self, struct halfrel* peer)
+static void example_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void example_start(struct halfrel* self, struct halfrel* peer)
+static void example_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -158,8 +158,8 @@ void example_register(struct entity* p)
 	p->onsearch = (void*)example_search;
 	p->onmodify = (void*)example_modify;
 
-	p->onstart = (void*)example_start;
-	p->onstop  = (void*)example_stop;
+	p->onlinkup = (void*)example_linkup;
+	p->ondiscon = (void*)example_discon;
 	p->onread  = (void*)example_read;
 	p->onwrite = (void*)example_read;
 }

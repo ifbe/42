@@ -31,11 +31,11 @@ int wifi_choose()
 
 
 
-int wifi_start(char* p)
+int wifi_linkup(char* p)
 {
 	return 0;
 }
-int wifi_stop()
+int wifi_discon()
 {
 	return 0;
 }

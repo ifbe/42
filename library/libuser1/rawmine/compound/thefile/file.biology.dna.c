@@ -105,10 +105,10 @@ static void dna_read(struct halfrel* self, struct halfrel* peer, void* arg, int 
 static void dna_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void dna_stop(struct halfrel* self, struct halfrel* peer)
+static void dna_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void dna_start(struct halfrel* self, struct halfrel* peer)
+static void dna_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -146,8 +146,8 @@ void dna_register(struct entity* p)
 	p->onsearch = (void*)dna_search;
 	p->onmodify = (void*)dna_modify;
 
-	p->onstart = (void*)dna_start;
-	p->onstop  = (void*)dna_stop;
+	p->onlinkup = (void*)dna_linkup;
+	p->ondiscon = (void*)dna_discon;
 	p->onread  = (void*)dna_read;
 	p->onwrite = (void*)dna_write;
 }

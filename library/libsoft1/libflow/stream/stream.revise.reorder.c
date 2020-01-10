@@ -27,11 +27,11 @@ int reorder_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 
 	return 0;
 }
-int reorder_stop(struct halfrel* self, struct halfrel* peer)
+int reorder_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int reorder_start(struct halfrel* self, struct halfrel* peer)
+int reorder_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

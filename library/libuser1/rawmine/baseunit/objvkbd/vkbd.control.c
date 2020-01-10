@@ -180,10 +180,10 @@ static void control_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	struct event* ev = (void*)buf;
 	//control_event(act, pin, win, sty, ev, 0);
 }
-static void control_stop(struct halfrel* self, struct halfrel* peer)
+static void control_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void control_start(struct halfrel* self, struct halfrel* peer)
+static void control_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -227,8 +227,8 @@ void control_register(struct entity* p)
 	p->onsearch = (void*)control_search;
 	p->onmodify = (void*)control_modify;
 
-	p->onstart = (void*)control_start;
-	p->onstop  = (void*)control_stop;
+	p->onlinkup = (void*)control_linkup;
+	p->ondiscon = (void*)control_discon;
 	p->onread  = (void*)control_read;
 	p->onwrite = (void*)control_write;
 }

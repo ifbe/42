@@ -480,10 +480,10 @@ static void terrain_read(struct halfrel* self, struct halfrel* peer, struct half
 static void terrain_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void terrain_stop(struct halfrel* self, struct halfrel* peer)
+static void terrain_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void terrain_start(struct halfrel* self, struct halfrel* peer)
+static void terrain_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -560,8 +560,8 @@ void terrain_register(struct entity* p)
 	p->onsearch = (void*)terrain_search;
 	p->onmodify = (void*)terrain_modify;
 
-	p->onstart = (void*)terrain_start;
-	p->onstop  = (void*)terrain_stop;
+	p->onlinkup = (void*)terrain_linkup;
+	p->ondiscon = (void*)terrain_discon;
 	p->onread  = (void*)terrain_read;
 	p->onwrite = (void*)terrain_write;
 }

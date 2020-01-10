@@ -317,10 +317,10 @@ static void hexedit_write(struct halfrel* self, struct halfrel* peer, void* arg,
 		case _gl41wnd0_:hexedit_event(ent, self->pfoot, sup, peer->pfoot, buf);break;
 	}
 }
-static void hexedit_stop(struct halfrel* self, struct halfrel* peer)
+static void hexedit_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void hexedit_start(struct halfrel* self, struct halfrel* peer)
+static void hexedit_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -337,8 +337,8 @@ void hexedit_register(struct entity* p)
 	p->onsearch = (void*)hexedit_search;
 	p->onmodify = (void*)hexedit_modify;
 
-	p->onstart = (void*)hexedit_start;
-	p->onstop  = (void*)hexedit_stop;
+	p->onlinkup = (void*)hexedit_linkup;
+	p->ondiscon = (void*)hexedit_discon;
 	p->onread  = (void*)hexedit_read;
 	p->onwrite = (void*)hexedit_write;
 }

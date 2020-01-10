@@ -131,10 +131,10 @@ static void balance_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	struct style* pin = (void*)(self->foot);
 	balance_write_euler(act, buf);
 }
-static void balance_stop(struct halfrel* self, struct halfrel* peer)
+static void balance_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void balance_start(struct halfrel* self, struct halfrel* peer)
+static void balance_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -171,8 +171,8 @@ void balance_register(struct entity* p)
 	p->onsearch = (void*)balance_search;
 	p->onmodify = (void*)balance_modify;
 
-	p->onstart = (void*)balance_start;
-	p->onstop  = (void*)balance_stop;
+	p->onlinkup = (void*)balance_linkup;
+	p->ondiscon = (void*)balance_discon;
 	p->onread  = (void*)balance_read;
 	p->onwrite = (void*)balance_write;
 }

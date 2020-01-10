@@ -280,11 +280,11 @@ static int mnist_write(struct halfrel* self, struct halfrel* peer, struct halfre
 	}
 	return 0;
 }
-static int mnist_stop(struct halfrel* self, struct halfrel* peer)
+static int mnist_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int mnist_start(struct halfrel* self, struct halfrel* peer)
+static int mnist_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct entity* ent;
 	struct artery* art;
@@ -310,8 +310,8 @@ void mnist_register(struct entity* p)
 	p->onsearch = (void*)mnist_search;
 	p->onmodify = (void*)mnist_modify;
 
-	p->onstart = (void*)mnist_start;
-	p->onstop  = (void*)mnist_stop;
+	p->onlinkup = (void*)mnist_linkup;
+	p->ondiscon = (void*)mnist_discon;
 	p->onread  = (void*)mnist_read;
 	p->onwrite = (void*)mnist_write;
 }

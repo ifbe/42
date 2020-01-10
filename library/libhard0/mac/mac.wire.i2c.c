@@ -15,10 +15,10 @@ void i2c_list()
 void i2c_choose()
 {
 }
-void i2c_stop()
+void i2c_discon()
 {
 }
-void i2c_start()
+void i2c_linkup()
 {
 }
 void i2c_delete()

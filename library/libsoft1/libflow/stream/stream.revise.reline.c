@@ -78,11 +78,11 @@ int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 
 	return 0;
 }
-int reline_stop(struct halfrel* self, struct halfrel* peer)
+int reline_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int reline_start(struct halfrel* self, struct halfrel* peer)
+int reline_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

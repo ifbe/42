@@ -25,11 +25,11 @@ int echo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 
 	return relationwrite(ele, _src_, 0, 0, buf, len);
 }
-int echo_stop(struct halfrel* self, struct halfrel* peer)
+int echo_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int echo_start(struct halfrel* self, struct halfrel* peer)
+int echo_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

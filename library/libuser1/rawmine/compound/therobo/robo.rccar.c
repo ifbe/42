@@ -212,10 +212,10 @@ static void rccar_read(struct halfrel* self, struct halfrel* peer, struct halfre
 static void rccar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void rccar_stop(struct halfrel* self, struct halfrel* peer)
+static void rccar_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void rccar_start(struct halfrel* self, struct halfrel* peer)
+static void rccar_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -250,8 +250,8 @@ void rccar_register(struct entity* p)
 	p->onsearch = (void*)rccar_search;
 	p->onmodify = (void*)rccar_modify;
 
-	p->onstart = (void*)rccar_start;
-	p->onstop  = (void*)rccar_stop;
+	p->onlinkup = (void*)rccar_linkup;
+	p->ondiscon = (void*)rccar_discon;
 	p->onread  = (void*)rccar_read;
 	p->onwrite = (void*)rccar_write;
 }

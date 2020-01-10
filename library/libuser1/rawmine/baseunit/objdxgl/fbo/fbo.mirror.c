@@ -417,10 +417,10 @@ static void mirror_read(struct halfrel* self, struct halfrel* peer, struct halfr
 static void mirror_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void mirror_stop(struct halfrel* self, struct halfrel* peer)
+static void mirror_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mirror_start(struct halfrel* self, struct halfrel* peer)
+static void mirror_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -437,8 +437,8 @@ void mirror_register(struct entity* p)
 	p->onsearch = (void*)mirror_search;
 	p->onmodify = (void*)mirror_modify;
 
-	p->onstart = (void*)mirror_start;
-	p->onstop  = (void*)mirror_stop;
+	p->onlinkup = (void*)mirror_linkup;
+	p->ondiscon = (void*)mirror_discon;
 	p->onread  = (void*)mirror_read;
 	p->onwrite = (void*)mirror_write;
 }

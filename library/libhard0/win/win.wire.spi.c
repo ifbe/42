@@ -10,10 +10,10 @@ int spi_read()
 int spi_write()
 {
 }
-int spi_start()
+int spi_linkup()
 {
 }
-int spi_stop()
+int spi_discon()
 {
 }
 int spi_create()

@@ -258,11 +258,11 @@ static int vjoy_write(struct halfrel* self, struct halfrel* peer, struct halfrel
 	}
 	return 0;
 }
-static int vjoy_stop(struct halfrel* self, struct halfrel* peer)
+static int vjoy_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int vjoy_start(struct halfrel* self, struct halfrel* peer)
+static int vjoy_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -280,8 +280,8 @@ void vjoy_register(struct entity* p)
 	p->onsearch = (void*)vjoy_search;
 	p->onmodify = (void*)vjoy_modify;
 
-	p->onstart = (void*)vjoy_start;
-	p->onstop  = (void*)vjoy_stop;
+	p->onlinkup = (void*)vjoy_linkup;
+	p->ondiscon = (void*)vjoy_discon;
 	p->onread  = (void*)vjoy_read;
 	p->onwrite = (void*)vjoy_write;
 }

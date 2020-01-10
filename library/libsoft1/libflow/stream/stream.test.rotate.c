@@ -30,11 +30,11 @@ int rotate_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	relationwrite(ele, _dst_, 0, 0, dst, 640*480*2);
 	return 0;
 }
-int rotate_stop(struct halfrel* self, struct halfrel* peer)
+int rotate_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int rotate_start(struct halfrel* self, struct halfrel* peer)
+int rotate_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

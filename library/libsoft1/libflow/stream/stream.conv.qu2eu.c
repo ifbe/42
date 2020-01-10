@@ -29,11 +29,11 @@ int qu2eu_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 
 	return relationwrite(ele, _dst_, 0, 0, e, 3);
 }
-int qu2eu_stop(struct halfrel* self, struct halfrel* peer)
+int qu2eu_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int qu2eu_start(struct halfrel* self, struct halfrel* peer)
+int qu2eu_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

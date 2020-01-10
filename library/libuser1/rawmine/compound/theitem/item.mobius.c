@@ -129,10 +129,10 @@ static void mobius_read(struct halfrel* self, struct halfrel* peer, struct halfr
 static void mobius_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 }
-static void mobius_stop(struct halfrel* self, struct halfrel* peer)
+static void mobius_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mobius_start(struct halfrel* self, struct halfrel* peer)
+static void mobius_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -170,8 +170,8 @@ void mobius_register(struct entity* p)
 	p->onsearch = (void*)mobius_search;
 	p->onmodify = (void*)mobius_modify;
 
-	p->onstart = (void*)mobius_start;
-	p->onstop  = (void*)mobius_stop;
+	p->onlinkup = (void*)mobius_linkup;
+	p->ondiscon = (void*)mobius_discon;
 	p->onread  = (void*)mobius_read;
 	p->onwrite = (void*)mobius_write;
 }

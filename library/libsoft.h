@@ -149,36 +149,36 @@
 //
 int entityread(  struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int entitywrite( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
-int entitystop(  struct halfrel* self,struct halfrel* peer);
-int entitystart( struct halfrel* self,struct halfrel* peer);
+int entitydiscon(struct halfrel* self,struct halfrel* peer);
+int entitylinkup(struct halfrel* self,struct halfrel* peer);
 int entitydelete(void*);
 void* entitycreate(u64 type, void* addr, int argc, u8** argv);
 //
 int supplyread(  struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int supplywrite( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
-int supplystop(  struct halfrel* self,struct halfrel* peer);
-int supplystart( struct halfrel* self,struct halfrel* peer);
+int supplydiscon(struct halfrel* self,struct halfrel* peer);
+int supplylinkup(struct halfrel* self,struct halfrel* peer);
 int supplydelete(void*);
 void* supplycreate(u64 type, void* addr, int argc, u8** argv);
 //
 int arteryread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int arterywrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
-int arterystop( struct halfrel* self,struct halfrel* peer);
-int arterystart(struct halfrel* self,struct halfrel* peer);
+int arterydiscon(struct halfrel* self,struct halfrel* peer);
+int arterylinkup(struct halfrel* self,struct halfrel* peer);
 int arterydelete(void*);
 void* arterycreate(u64 type, void* addr, int argc, u8** argv);
 //
 int systemread( struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
 int systemwrite(struct halfrel* self,struct halfrel* peer,void* arg,int idx,void* buf,int len);
-int systemstop( struct halfrel* self,struct halfrel* peer);
-int systemstart(struct halfrel* self,struct halfrel* peer);
+int systemdiscon(struct halfrel* self,struct halfrel* peer);
+int systemlinkup(struct halfrel* self,struct halfrel* peer);
 int systemdelete(void*);
 void* systemcreate(u64 type, void* addr, int argc, u8** argv);
 //
 int relationread( void* item, int foot, void* arg, int idx, void* buf, int len);
 int relationwrite(void* item, int foot, void* arg, int idx, void* buf, int len);
-int relationstop( struct halfrel* self,struct halfrel* peer);
-int relationstart(struct halfrel* self,struct halfrel* peer);
+int relationdiscon(struct halfrel* self,struct halfrel* peer);
+int relationlinkup(struct halfrel* self,struct halfrel* peer);
 int relationdelete(void*);
 void* relationcreate(void*,void*,int,int,void*,void*,int,int);
 void* samesrcprevdst(void*);

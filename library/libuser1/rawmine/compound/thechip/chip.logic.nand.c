@@ -209,10 +209,10 @@ static void nand_write(struct halfrel* self, struct halfrel* peer, void* arg, in
 	tmp = ent->iz0 + 0x30;
 	relationwrite(ent, 'o', 0, 0, &tmp, 1);
 }
-static void nand_stop(struct halfrel* self, struct halfrel* peer)
+static void nand_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void nand_start(struct halfrel* self, struct halfrel* peer)
+static void nand_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -248,8 +248,8 @@ void nand_register(struct entity* p)
 	p->onsearch = (void*)nand_search;
 	p->onmodify = (void*)nand_modify;
 
-	p->onstart = (void*)nand_start;
-	p->onstop  = (void*)nand_stop;
+	p->onlinkup = (void*)nand_linkup;
+	p->ondiscon = (void*)nand_discon;
 	p->onread  = (void*)nand_read;
 	p->onwrite = (void*)nand_write;
 }

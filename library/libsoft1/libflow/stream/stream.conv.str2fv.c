@@ -32,11 +32,11 @@ int str2fv_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	cnt = parsefv(tmp, 9, buf, len);
 	return relationwrite(ele, _dst_, 0, 0, tmp, cnt);
 }
-int str2fv_stop(struct halfrel* self, struct halfrel* peer)
+int str2fv_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int str2fv_start(struct halfrel* self, struct halfrel* peer)
+int str2fv_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

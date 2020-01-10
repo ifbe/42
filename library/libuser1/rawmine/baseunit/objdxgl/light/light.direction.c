@@ -424,10 +424,10 @@ static void dirlight_read(struct halfrel* self, struct halfrel* peer, struct hal
 static void dirlight_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void dirlight_stop(struct halfrel* self, struct halfrel* peer)
+static void dirlight_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void dirlight_start(struct halfrel* self, struct halfrel* peer)
+static void dirlight_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -444,8 +444,8 @@ void dirlight_register(struct entity* p)
 	p->onsearch = (void*)dirlight_search;
 	p->onmodify = (void*)dirlight_modify;
 
-	p->onstart = (void*)dirlight_start;
-	p->onstop  = (void*)dirlight_stop;
+	p->onlinkup = (void*)dirlight_linkup;
+	p->ondiscon = (void*)dirlight_discon;
 	p->onread  = (void*)dirlight_read;
 	p->onwrite = (void*)dirlight_write;
 }

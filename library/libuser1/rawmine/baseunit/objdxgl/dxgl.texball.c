@@ -230,12 +230,12 @@ static void texball_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	struct event* ev = (void*)buf;
 	//texball_event(act, pin, win, sty, ev, 0);
 }
-static void texball_stop(struct halfrel* self, struct halfrel* peer)
+static void texball_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void texball_start(struct halfrel* self, struct halfrel* peer)
+static void texball_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@texball_start\n");
+	say("@texball_linkup\n");
 }
 
 
@@ -276,8 +276,8 @@ void texball_register(struct entity* p)
 	p->onsearch = (void*)texball_search;
 	p->onmodify = (void*)texball_modify;
 
-	p->onstart = (void*)texball_start;
-	p->onstop  = (void*)texball_stop;
+	p->onlinkup = (void*)texball_linkup;
+	p->ondiscon = (void*)texball_discon;
 	p->onread  = (void*)texball_read;
 	p->onwrite = (void*)texball_write;
 }

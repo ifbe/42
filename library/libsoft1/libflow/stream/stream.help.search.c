@@ -19,11 +19,11 @@ int search_write(struct halfrel* self, struct halfrel* peer, u8* arg, int idx, v
 	relationwrite(self->pchip, _src_, 0, 0, arg, j);
 	return 0;
 }
-int search_stop(struct halfrel* self, struct halfrel* peer)
+int search_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int search_start(struct halfrel* self, struct halfrel* peer)
+int search_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

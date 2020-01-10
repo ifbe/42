@@ -205,10 +205,10 @@ static void bplus_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	struct event* ev = (void*)buf;
 	//bplus_event(act, pin, win, sty, ev, 0);
 }
-static void bplus_stop(struct halfrel* self, struct halfrel* peer)
+static void bplus_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void bplus_start(struct halfrel* self, struct halfrel* peer)
+static void bplus_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -246,8 +246,8 @@ void bplus_register(struct entity* p)
 	p->onsearch = (void*)bplus_search;
 	p->onmodify = (void*)bplus_modify;
 
-	p->onstart = (void*)bplus_start;
-	p->onstop  = (void*)bplus_stop;
+	p->onlinkup = (void*)bplus_linkup;
+	p->ondiscon = (void*)bplus_discon;
 	p->onread  = (void*)bplus_read;
 	p->onwrite = (void*)bplus_write;
 }

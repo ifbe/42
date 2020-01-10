@@ -120,7 +120,7 @@ void parse_mbr(u8* src, u8* dst)
 
 
 
-int mbrclient_start(struct halfrel* self, struct halfrel* peer)
+int mbrclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
 	u8 src[0x200];

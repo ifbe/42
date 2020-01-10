@@ -14,14 +14,14 @@ int fuckgfwclient_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 
 	return 0;
 }
-int fuckgfwclient_stop(struct halfrel* self, struct halfrel* peer)
+int fuckgfwclient_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fuckgfwclient_stop: %.4s\n", &self->flag);
+	say("@fuckgfwclient_discon: %.4s\n", &self->flag);
 	return 0;
 }
-int fuckgfwclient_start(struct halfrel* self, struct halfrel* peer)
+int fuckgfwclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fuckgfwclient_start: %.4s\n", &self->flag);
+	say("@fuckgfwclient_linkup: %.4s\n", &self->flag);
 	return 0;
 }
 int fuckgfwclient_delete(struct artery* ele)
@@ -65,14 +65,14 @@ int fuckgfwserver_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	}
 	return 0;
 }
-int fuckgfwserver_stop(struct halfrel* self, struct halfrel* peer)
+int fuckgfwserver_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fuckgfwserver_stop: %.4s\n", &self->flag);
+	say("@fuckgfwserver_discon: %.4s\n", &self->flag);
 	return 0;
 }
-int fuckgfwserver_start(struct halfrel* self, struct halfrel* peer)
+int fuckgfwserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fuckgfwserver_start: %.4s\n", &self->flag);
+	say("@fuckgfwserver_linkup: %.4s\n", &self->flag);
 	return 0;
 }
 int fuckgfwserver_delete(struct artery* ele)
@@ -117,13 +117,13 @@ int fuckgfwmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	relationcreate(Fuckgfw, 0, _art_, _src_, Tcp, 0, _sys_, _dst_);
 	return 0;
 }
-int fuckgfwmaster_stop(struct halfrel* self, struct halfrel* peer)
+int fuckgfwmaster_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int fuckgfwmaster_start(struct halfrel* self, struct halfrel* peer)
+int fuckgfwmaster_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fuckgfwmaster_start\n");
+	say("@fuckgfwmaster_linkup\n");
 	return 0;
 }
 int fuckgfwmaster_delete(struct artery* ele)

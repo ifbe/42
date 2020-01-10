@@ -245,10 +245,10 @@ static void gerber_read(struct halfrel* self, struct halfrel* peer, struct halfr
 static void gerber_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void gerber_stop(struct halfrel* self, struct halfrel* peer)
+static void gerber_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void gerber_start(struct halfrel* self, struct halfrel* peer)
+static void gerber_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -265,8 +265,8 @@ void gerber_register(struct entity* p)
 	p->onsearch = (void*)gerber_search;
 	p->onmodify = (void*)gerber_modify;
 
-	p->onstart = (void*)gerber_start;
-	p->onstop  = (void*)gerber_stop;
+	p->onlinkup = (void*)gerber_linkup;
+	p->ondiscon = (void*)gerber_discon;
 	p->onread  = (void*)gerber_read;
 	p->onwrite = (void*)gerber_write;
 }

@@ -243,10 +243,10 @@ static int texmix_read(struct halfrel* self, struct halfrel* peer, struct halfre
 static void texmix_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void texmix_stop(struct halfrel* self, struct halfrel* peer)
+static void texmix_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void texmix_start(struct halfrel* self, struct halfrel* peer)
+static void texmix_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -263,8 +263,8 @@ void texmix_register(struct entity* p)
 	p->onsearch = (void*)texmix_search;
 	p->onmodify = (void*)texmix_modify;
 
-	p->onstart = (void*)texmix_start;
-	p->onstop  = (void*)texmix_stop;
+	p->onlinkup = (void*)texmix_linkup;
+	p->ondiscon = (void*)texmix_discon;
 	p->onread  = (void*)texmix_read;
 	p->onwrite = (void*)texmix_write;
 }

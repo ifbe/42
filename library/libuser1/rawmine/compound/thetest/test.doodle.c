@@ -175,10 +175,10 @@ static void doodle_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 static void doodle_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void doodle_stop(struct halfrel* self, struct halfrel* peer)
+static void doodle_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void doodle_start(struct halfrel* self, struct halfrel* peer)
+static void doodle_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -213,8 +213,8 @@ void doodle_register(struct entity* p)
 	p->onsearch = (void*)doodle_search;
 	p->onmodify = (void*)doodle_modify;
 
-	p->onstart = (void*)doodle_start;
-	p->onstop  = (void*)doodle_stop;
+	p->onlinkup = (void*)doodle_linkup;
+	p->ondiscon = (void*)doodle_discon;
 	p->onread  = (void*)doodle_read;
 	p->onwrite = (void*)doodle_write;
 }

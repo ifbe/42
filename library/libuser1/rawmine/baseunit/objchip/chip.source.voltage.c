@@ -96,10 +96,10 @@ static void vsrc_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 static void vsrc_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void vsrc_stop(struct halfrel* self, struct halfrel* peer)
+static void vsrc_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void vsrc_start(struct halfrel* self, struct halfrel* peer)
+static void vsrc_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -132,8 +132,8 @@ void vsrc_register(struct entity* p)
 	p->onsearch = (void*)vsrc_search;
 	p->onmodify = (void*)vsrc_modify;
 
-	p->onstart = (void*)vsrc_start;
-	p->onstop  = (void*)vsrc_stop;
+	p->onlinkup = (void*)vsrc_linkup;
+	p->ondiscon = (void*)vsrc_discon;
 	p->onread  = (void*)vsrc_read;
 	p->onwrite = (void*)vsrc_write;
 }

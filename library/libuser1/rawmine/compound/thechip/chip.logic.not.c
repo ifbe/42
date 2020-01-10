@@ -153,10 +153,10 @@ static void not_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 	tmp = ent->iy0 + 0x30;
 	relationwrite(ent, 'o', 0, 0, &tmp, 1);
 }
-static void not_stop(struct halfrel* self, struct halfrel* peer)
+static void not_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void not_start(struct halfrel* self, struct halfrel* peer)
+static void not_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -191,8 +191,8 @@ void not_register(struct entity* p)
 	p->onsearch = (void*)not_search;
 	p->onmodify = (void*)not_modify;
 
-	p->onstart = (void*)not_start;
-	p->onstop  = (void*)not_stop;
+	p->onlinkup = (void*)not_linkup;
+	p->ondiscon = (void*)not_discon;
 	p->onread  = (void*)not_read;
 	p->onwrite = (void*)not_write;
 }

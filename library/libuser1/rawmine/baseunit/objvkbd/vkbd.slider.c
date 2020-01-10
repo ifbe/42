@@ -154,11 +154,11 @@ static int slider_write(struct halfrel* self, struct halfrel* peer, struct halfr
 	}
 	return 0;
 }
-static int slider_stop(struct halfrel* self, struct halfrel* peer)
+static int slider_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int slider_start(struct halfrel* self, struct halfrel* peer)
+static int slider_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -176,8 +176,8 @@ void slider_register(struct entity* p)
 	p->onsearch = (void*)slider_search;
 	p->onmodify = (void*)slider_modify;
 
-	p->onstart = (void*)slider_start;
-	p->onstop  = (void*)slider_stop;
+	p->onlinkup = (void*)slider_linkup;
+	p->ondiscon = (void*)slider_discon;
 	p->onread  = (void*)slider_read;
 	p->onwrite = (void*)slider_write;
 }

@@ -137,10 +137,10 @@ static void texbox_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 	struct event* ev = (void*)buf;
 	//texbox_event(act, pin, win, sty, ev, 0);
 }
-static void texbox_stop(struct halfrel* self, struct halfrel* peer)
+static void texbox_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void texbox_start(struct halfrel* self, struct halfrel* peer)
+static void texbox_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -217,8 +217,8 @@ void texbox_register(struct entity* p)
 	p->onsearch = (void*)texbox_search;
 	p->onmodify = (void*)texbox_modify;
 
-	p->onstart = (void*)texbox_start;
-	p->onstop  = (void*)texbox_stop;
+	p->onlinkup = (void*)texbox_linkup;
+	p->ondiscon = (void*)texbox_discon;
 	p->onread  = (void*)texbox_read;
 	p->onwrite = (void*)texbox_write;
 }

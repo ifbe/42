@@ -157,10 +157,10 @@ static void motor_read(struct halfrel* self, struct halfrel* peer, struct halfre
 static void motor_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 }
-static void motor_stop(struct halfrel* self, struct halfrel* peer)
+static void motor_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void motor_start(struct halfrel* self, struct halfrel* peer)
+static void motor_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -198,8 +198,8 @@ void motor_register(struct entity* p)
 	p->onsearch = (void*)motor_search;
 	p->onmodify = (void*)motor_modify;
 
-	p->onstart = (void*)motor_start;
-	p->onstop  = (void*)motor_stop;
+	p->onlinkup = (void*)motor_linkup;
+	p->ondiscon = (void*)motor_discon;
 	p->onread  = (void*)motor_read;
 	p->onwrite = (void*)motor_write;
 }

@@ -105,22 +105,6 @@ static void finfet_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void finfet_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)finfet_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)finfet_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)finfet_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)finfet_draw_json(act, pin, win, sty);
-	else if(fmt == _vbo_)
-	{
-		//if(_2d_ == win->vfmt)finfet_draw_vbo2d(act, pin, win, sty);
-		//else finfet_draw_vbo3d(act, pin, win, sty);
-	}
-	else finfet_draw_pixel(act, pin, win, sty);
-}
 
 
 
@@ -137,10 +121,10 @@ static void finfet_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 static void finfet_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void finfet_stop(struct halfrel* self, struct halfrel* peer)
+static void finfet_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void finfet_start(struct halfrel* self, struct halfrel* peer)
+static void finfet_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -173,8 +157,8 @@ void finfet_register(struct entity* p)
 	p->onsearch = (void*)finfet_search;
 	p->onmodify = (void*)finfet_modify;
 
-	p->onstart = (void*)finfet_start;
-	p->onstop  = (void*)finfet_stop;
+	p->onlinkup = (void*)finfet_linkup;
+	p->ondiscon = (void*)finfet_discon;
 	p->onread  = (void*)finfet_read;
 	p->onwrite = (void*)finfet_write;
 }

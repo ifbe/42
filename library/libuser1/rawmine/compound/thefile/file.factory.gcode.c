@@ -143,10 +143,10 @@ static void gcode_read(struct halfrel* self, struct halfrel* peer, struct halfre
 static void gcode_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void gcode_stop(struct halfrel* self, struct halfrel* peer)
+static void gcode_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void gcode_start(struct halfrel* self, struct halfrel* peer)
+static void gcode_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -163,8 +163,8 @@ void gcode_register(struct entity* p)
 	p->onsearch = (void*)gcode_search;
 	p->onmodify = (void*)gcode_modify;
 
-	p->onstart = (void*)gcode_start;
-	p->onstop  = (void*)gcode_stop;
+	p->onlinkup = (void*)gcode_linkup;
+	p->ondiscon = (void*)gcode_discon;
 	p->onread  = (void*)gcode_read;
 	p->onwrite = (void*)gcode_write;
 }

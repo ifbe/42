@@ -90,10 +90,10 @@ static void tg_read(struct halfrel* self, struct halfrel* peer, struct halfrel**
 static void tg_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void tg_stop(struct halfrel* self, struct halfrel* peer)
+static void tg_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void tg_start(struct halfrel* self, struct halfrel* peer)
+static void tg_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -126,8 +126,8 @@ void tg_register(struct entity* p)
 	p->onsearch = (void*)tg_search;
 	p->onmodify = (void*)tg_modify;
 
-	p->onstart = (void*)tg_start;
-	p->onstop  = (void*)tg_stop;
+	p->onlinkup = (void*)tg_linkup;
+	p->ondiscon = (void*)tg_discon;
 	p->onread  = (void*)tg_read;
 	p->onwrite = (void*)tg_write;
 }

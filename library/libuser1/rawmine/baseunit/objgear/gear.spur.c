@@ -140,10 +140,10 @@ static void spurgear_write(struct halfrel* self, struct halfrel* peer, void* arg
 	if(_gear_ == self->flag)spurgear_write_gear(gear, buf);
 	else spurgear_write_ray(gear, arg, buf);
 }
-static void spurgear_stop(struct halfrel* self, struct halfrel* peer)
+static void spurgear_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void spurgear_start(struct halfrel* self, struct halfrel* peer)
+static void spurgear_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -160,8 +160,8 @@ void spurgear_register(struct entity* p)
 	p->onsearch = (void*)spurgear_search;
 	p->onmodify = (void*)spurgear_modify;
 
-	p->onstart = (void*)spurgear_start;
-	p->onstop  = (void*)spurgear_stop;
+	p->onlinkup = (void*)spurgear_linkup;
+	p->ondiscon = (void*)spurgear_discon;
 	p->onread  = (void*)spurgear_read;
 	p->onwrite = (void*)spurgear_write;
 }

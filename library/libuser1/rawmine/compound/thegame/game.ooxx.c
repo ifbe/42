@@ -184,10 +184,10 @@ static void ooxx_write(struct halfrel* self, struct halfrel* peer, void* arg, in
 	struct event* ev = (void*)buf;
 	//ooxx_event(act, pin, win, sty, ev, 0);
 }
-static void ooxx_stop(struct halfrel* self, struct halfrel* peer)
+static void ooxx_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void ooxx_start(struct halfrel* self, struct halfrel* peer)
+static void ooxx_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -233,8 +233,8 @@ void ooxx_register(struct entity* p)
 	p->onsearch = (void*)ooxx_search;
 	p->onmodify = (void*)ooxx_modify;
 
-	p->onstart = (void*)ooxx_start;
-	p->onstop  = (void*)ooxx_stop;
+	p->onlinkup = (void*)ooxx_linkup;
+	p->ondiscon = (void*)ooxx_discon;
 	p->onread  = (void*)ooxx_read;
 	p->onwrite = (void*)ooxx_write;
 }

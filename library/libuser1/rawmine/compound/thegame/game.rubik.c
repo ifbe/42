@@ -368,10 +368,10 @@ static void rubikscube_write(struct halfrel* self, struct halfrel* peer, void* a
 {
 	say("@rubik_write\n");
 }
-static void rubikscube_stop(struct halfrel* self, struct halfrel* peer)
+static void rubikscube_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void rubikscube_start(struct halfrel* self, struct halfrel* peer)
+static void rubikscube_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -428,8 +428,8 @@ void rubikscube_register(struct entity* p)
 	p->onsearch = (void*)rubikscube_search;
 	p->onmodify = (void*)rubikscube_modify;
 
-	p->onstart = (void*)rubikscube_start;
-	p->onstop  = (void*)rubikscube_stop;
+	p->onlinkup = (void*)rubikscube_linkup;
+	p->ondiscon = (void*)rubikscube_discon;
 	p->onread  = (void*)rubikscube_read;
 	p->onwrite = (void*)rubikscube_write;
 }

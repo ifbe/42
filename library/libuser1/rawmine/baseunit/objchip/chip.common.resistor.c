@@ -43,17 +43,6 @@ static void resistor_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void resistor_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)resistor_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)resistor_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)resistor_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)resistor_draw_json(act, pin, win, sty);
-	else resistor_draw_pixel(act, pin, win, sty);
-}
 
 
 
@@ -80,10 +69,10 @@ static void resistor_read(struct halfrel* self, struct halfrel* peer, struct hal
 static void resistor_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void resistor_stop(struct halfrel* self, struct halfrel* peer)
+static void resistor_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void resistor_start(struct halfrel* self, struct halfrel* peer)
+static void resistor_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -116,8 +105,8 @@ void resistor_register(struct entity* p)
 	p->onsearch = (void*)resistor_search;
 	p->onmodify = (void*)resistor_modify;
 
-	p->onstart = (void*)resistor_start;
-	p->onstop  = (void*)resistor_stop;
+	p->onlinkup = (void*)resistor_linkup;
+	p->ondiscon = (void*)resistor_discon;
 	p->onread  = (void*)resistor_read;
 	p->onwrite = (void*)resistor_write;
 }

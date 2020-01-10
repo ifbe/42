@@ -455,7 +455,7 @@ static int freecam_event(
 			win->camera.vc[1] = win->target.vc[1] - win->camera.vn[1];
 			win->camera.vc[2] = win->target.vc[2] - win->camera.vn[2];
 		}
-		if(t[3] & joyr_start)		//w+
+		if(t[3] & joyr_linkup)		//w+
 		{
 			return 0;
 		}
@@ -824,12 +824,12 @@ static int freecam_write(struct halfrel* self, struct halfrel* peer, struct half
 {
 	return freecam_write_bywnd(self,peer, stack,rsp, buf,len);
 }
-static void freecam_stop(struct halfrel* self, struct halfrel* peer)
+static void freecam_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void freecam_start(struct halfrel* self, struct halfrel* peer)
+static void freecam_linkup(struct halfrel* self, struct halfrel* peer)
 {
-    say("@freecam_start\n");
+    say("@freecam_linkup\n");
 }
 
 
@@ -845,8 +845,8 @@ void freecam_register(struct entity* p)
 	p->onsearch = (void*)freecam_search;
 	p->onmodify = (void*)freecam_modify;
 
-	p->onstart = (void*)freecam_start;
-	p->onstop  = (void*)freecam_stop;
+	p->onlinkup = (void*)freecam_linkup;
+	p->ondiscon = (void*)freecam_discon;
 	p->onread  = (void*)freecam_read;
 	p->onwrite = (void*)freecam_write;
 }

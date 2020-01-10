@@ -175,10 +175,10 @@ static void palette_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	struct event* ev = (void*)buf;
 	//palette_event(act, pin, win, sty, ev, 0);
 }
-static void palette_stop(struct halfrel* self, struct halfrel* peer)
+static void palette_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void palette_start(struct halfrel* self, struct halfrel* peer)
+static void palette_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -216,8 +216,8 @@ void palette_register(struct entity* p)
 	p->onsearch = (void*)palette_search;
 	p->onmodify = (void*)palette_modify;
 
-	p->onstart = (void*)palette_start;
-	p->onstop  = (void*)palette_stop;
+	p->onlinkup = (void*)palette_linkup;
+	p->ondiscon = (void*)palette_discon;
 	p->onread  = (void*)palette_read;
 	p->onwrite = (void*)palette_write;
 }

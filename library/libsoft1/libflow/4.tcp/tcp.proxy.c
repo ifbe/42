@@ -21,18 +21,18 @@ int proxyclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int 
 int proxyclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	say("@proxyclient_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
-    printmemory(buf, len<16?len:16);
+	printmemory(buf, len<16?len:16);
 
 	return 0;
 }
-int proxyclient_stop(struct halfrel* self, struct halfrel* peer)
+int proxyclient_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyclient_stop: %.4s\n", &self->flag);
+	say("@proxyclient_discon: %.4s\n", &self->flag);
 	return 0;
 }
-int proxyclient_start(struct halfrel* self, struct halfrel* peer)
+int proxyclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyclient_start: %.4s\n", &self->flag);
+	say("@proxyclient_linkup: %.4s\n", &self->flag);
 	return 0;
 }
 int proxyclient_delete(struct artery* ele)
@@ -42,7 +42,7 @@ int proxyclient_delete(struct artery* ele)
 int proxyclient_create(struct artery* ele, u8* url)
 {
 	say("@proxyclient_create\n");
-    ele->stage1 = 0;
+	ele->stage1 = 0;
 	return 0;
 }
 
@@ -57,13 +57,13 @@ int proxyserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 {
 	struct artery* ele;
 	say("@proxyserver_write: chip=%llx, foot=%.4s, len=%d\n", self->chip, &self->flag, len);
-    printmemory(buf, len<16?len:16);
+printmemory(buf, len<16?len:16);
 
 	ele = self->pchip;
-    if('c' == self->flag){		//client
-        relationwrite(ele, 's', 0, 0, buf, len);
-    }
-    if('s' == self->flag){		//server
+	if('c' == self->flag){		//client
+		relationwrite(ele, 's', 0, 0, buf, len);
+	}
+	if('s' == self->flag){		//server
 		if(0 == len){			//server ready
 			if(ele->buf0){
 				//this is http proxy: send cached request directly
@@ -79,17 +79,17 @@ int proxyserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 		else{
 			relationwrite(ele, 'c', 0, 0, buf, len);
 		}
-    }
+	}
 	return 0;
 }
-int proxyserver_stop(struct halfrel* self, struct halfrel* peer)
+int proxyserver_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyserver_stop: %.4s\n", &self->flag);
+	say("@proxyserver_discon: %.4s\n", &self->flag);
 	return 0;
 }
-int proxyserver_start(struct halfrel* self, struct halfrel* peer)
+int proxyserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxyserver_start: %.4s\n", &self->flag);
+	say("@proxyserver_linkup: %.4s\n", &self->flag);
 	return 0;
 }
 int proxyserver_delete(struct artery* ele)
@@ -125,7 +125,7 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 	struct artery* socks;
 
 	say("@proxymaster_write: chip=%llx, foot=%.4s, len=%d\n", self->chip, &self->flag, len);
-    printmemory(buf, len<16?len:16);
+	printmemory(buf, len<16?len:16);
 
 
 //0: CONNECT or GET ?
@@ -152,16 +152,16 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 	obj = (void*)(peer->chip);
 	if(0 == obj)return 0;
 	Tcp = obj->tempobj;
-    if(0 == Tcp)return 0;
+	if(0 == Tcp)return 0;
 
 	//master, servant
 	ele = self->pchip;
 	if(0 == ele)return 0;
-    Proxy = arterycreate(_Proxy_, 0, 0, 0);
-    if(0 == Proxy)return 0;
+	Proxy = arterycreate(_Proxy_, 0, 0, 0);
+	if(0 == Proxy)return 0;
 
 	//child -> servant
-    relationcreate(Proxy, 0, _art_, 'c', Tcp, 0, _sys_, _dst_);
+	relationcreate(Proxy, 0, _art_, 'c', Tcp, 0, _sys_, _dst_);
 
 
 //2: copy host
@@ -198,7 +198,7 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 			//fake ready from tcpclient to socksclient
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
-			relationstart(self, peer);
+			relationlinkup(self, peer);
 			break;
 		}//socks
 		default:{
@@ -217,13 +217,13 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 
 	return 0;
 }
-int proxymaster_stop(struct halfrel* self, struct halfrel* peer)
+int proxymaster_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int proxymaster_start(struct halfrel* self, struct halfrel* peer)
+int proxymaster_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@proxymaster_start\n");
+	say("@proxymaster_linkup\n");
 	return 0;
 }
 int proxymaster_delete(struct artery* ele)

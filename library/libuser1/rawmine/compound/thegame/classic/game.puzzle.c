@@ -13,10 +13,10 @@ static void puzzle_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 static void puzzle_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void puzzle_stop(struct halfrel* self, struct halfrel* peer)
+static void puzzle_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void puzzle_start(struct halfrel* self, struct halfrel* peer)
+static void puzzle_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -54,8 +54,8 @@ void puzzle_register(struct entity* p)
 	p->onsearch = (void*)puzzle_search;
 	p->onmodify = (void*)puzzle_modify;
 
-	p->onstart = (void*)puzzle_start;
-	p->onstop  = (void*)puzzle_stop;
+	p->onlinkup = (void*)puzzle_linkup;
+	p->ondiscon = (void*)puzzle_discon;
 	p->onread  = (void*)puzzle_read;
 	p->onwrite = (void*)puzzle_write;
 }

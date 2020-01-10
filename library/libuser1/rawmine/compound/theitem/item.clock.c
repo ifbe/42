@@ -167,10 +167,10 @@ static void clock_read(struct halfrel* self, struct halfrel* peer, struct halfre
 static void clock_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void clock_stop(struct halfrel* self, struct halfrel* peer)
+static void clock_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void clock_start(struct halfrel* self, struct halfrel* peer)
+static void clock_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -208,8 +208,8 @@ void clock_register(struct entity* p)
 	p->onsearch = (void*)clock_search;
 	p->onmodify = (void*)clock_modify;
 
-	p->onstart = (void*)clock_start;
-	p->onstop  = (void*)clock_stop;
+	p->onlinkup = (void*)clock_linkup;
+	p->ondiscon = (void*)clock_discon;
 	p->onread  = (void*)clock_read;
 	p->onwrite = (void*)clock_write;
 }

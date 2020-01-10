@@ -12,13 +12,13 @@ int reality_write(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 {
 	return 0;
 }
-int reality_stop(struct halfrel* self, struct halfrel* peer)
+int reality_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int reality_start(struct halfrel* self, struct halfrel* peer)
+int reality_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@reality_start\n");
+	say("@reality_linkup\n");
 	return 0;
 }
 

@@ -27,13 +27,13 @@ void ahrs_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	e[2] = arctan2(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
 	say("@ahrs_write:%f,%f,%f,%f -> %f,%f,%f\n", qx,qy,qz,qw, e[0],e[1],e[2]);
 }
-int ahrs_stop(struct halfrel* self, struct halfrel* peer)
+int ahrs_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int ahrs_start(struct halfrel* self, struct halfrel* peer)
+int ahrs_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@ahrs_start\n");
+	say("@ahrs_linkup\n");
 	return 0;
 }
 

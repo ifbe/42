@@ -76,10 +76,10 @@ static void button_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 	say("@button_write\n");
 	relationwrite(ent,_ev_, 0, 0, "calibrate\n", 10);
 }
-static void button_stop(struct halfrel* self, struct halfrel* peer)
+static void button_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void button_start(struct halfrel* self, struct halfrel* peer)
+static void button_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -125,8 +125,8 @@ void button_register(struct entity* p)
 	p->onsearch = (void*)button_search;
 	p->onmodify = (void*)button_modify;
 
-	p->onstart = (void*)button_start;
-	p->onstop  = (void*)button_stop;
+	p->onlinkup = (void*)button_linkup;
+	p->ondiscon = (void*)button_discon;
 	p->onread  = (void*)button_read;
 	p->onwrite = (void*)button_write;
 }

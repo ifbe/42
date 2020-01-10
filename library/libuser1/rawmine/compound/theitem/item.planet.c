@@ -149,10 +149,10 @@ static void planet_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 static void planet_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void planet_stop(struct halfrel* self, struct halfrel* peer)
+static void planet_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void planet_start(struct halfrel* self, struct halfrel* peer)
+static void planet_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -187,8 +187,8 @@ void planet_register(struct entity* p)
 	p->onsearch = (void*)planet_search;
 	p->onmodify = (void*)planet_modify;
 
-	p->onstart = (void*)planet_start;
-	p->onstop  = (void*)planet_stop;
+	p->onlinkup = (void*)planet_linkup;
+	p->ondiscon = (void*)planet_discon;
 	p->onread  = (void*)planet_read;
 	p->onwrite = (void*)planet_write;
 }

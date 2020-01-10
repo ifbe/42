@@ -168,10 +168,10 @@ static void otto_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 static void otto_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void otto_stop(struct halfrel* self, struct halfrel* peer)
+static void otto_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void otto_start(struct halfrel* self, struct halfrel* peer)
+static void otto_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -209,8 +209,8 @@ void otto_register(struct entity* p)
 	p->onsearch = (void*)otto_search;
 	p->onmodify = (void*)otto_modify;
 
-	p->onstart = (void*)otto_start;
-	p->onstop  = (void*)otto_stop;
+	p->onlinkup = (void*)otto_linkup;
+	p->ondiscon = (void*)otto_discon;
 	p->onread  = (void*)otto_read;
 	p->onwrite = (void*)otto_write;
 }

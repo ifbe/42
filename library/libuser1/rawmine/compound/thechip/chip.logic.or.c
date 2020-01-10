@@ -90,10 +90,10 @@ static void or_read(struct halfrel* self, struct halfrel* peer, struct halfrel**
 static void or_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void or_stop(struct halfrel* self, struct halfrel* peer)
+static void or_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void or_start(struct halfrel* self, struct halfrel* peer)
+static void or_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -126,8 +126,8 @@ void or_register(struct entity* p)
 	p->onsearch = (void*)or_search;
 	p->onmodify = (void*)or_modify;
 
-	p->onstart = (void*)or_start;
-	p->onstop  = (void*)or_stop;
+	p->onlinkup = (void*)or_linkup;
+	p->ondiscon = (void*)or_discon;
 	p->onread  = (void*)or_read;
 	p->onwrite = (void*)or_write;
 }

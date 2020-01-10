@@ -49,13 +49,13 @@ int workerwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 {
 	return 0;
 }
-int workerstop(struct halfrel* self, struct halfrel* peer)
+int workerdiscon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int workerstart(struct halfrel* self, struct halfrel* peer)
+int workerlinkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@workerstart\n");
+	say("@workerlinkup\n");
 	return 0;
 }
 

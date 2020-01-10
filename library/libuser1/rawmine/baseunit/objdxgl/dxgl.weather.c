@@ -91,10 +91,10 @@ static void weather_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 static void weather_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void weather_stop(struct halfrel* self, struct halfrel* peer)
+static void weather_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void weather_start(struct halfrel* self, struct halfrel* peer)
+static void weather_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct datapair* pair;
 	struct glsrc* src;
@@ -163,8 +163,8 @@ void weather_register(struct entity* p)
 	p->onsearch = (void*)weather_search;
 	p->onmodify = (void*)weather_modify;
 
-	p->onstart = (void*)weather_start;
-	p->onstop  = (void*)weather_stop;
+	p->onlinkup = (void*)weather_linkup;
+	p->ondiscon = (void*)weather_discon;
 	p->onread  = (void*)weather_read;
 	p->onwrite = (void*)weather_write;
 }

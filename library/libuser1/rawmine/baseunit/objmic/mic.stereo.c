@@ -12,10 +12,10 @@ static void stereo_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 static void stereo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void stereo_stop(struct halfrel* self, struct halfrel* peer)
+static void stereo_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void stereo_start(struct halfrel* self, struct halfrel* peer)
+static void stereo_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -48,8 +48,8 @@ void stereo_register(struct entity* p)
 	p->onsearch = (void*)stereo_search;
 	p->onmodify = (void*)stereo_modify;
 
-	p->onstart = (void*)stereo_start;
-	p->onstop  = (void*)stereo_stop;
+	p->onlinkup = (void*)stereo_linkup;
+	p->ondiscon = (void*)stereo_discon;
 	p->onread  = (void*)stereo_read;
 	p->onwrite = (void*)stereo_write;
 }

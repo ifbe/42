@@ -130,10 +130,10 @@ static void field_read(struct halfrel* self, struct halfrel* peer, struct halfre
 static void field_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void field_stop(struct halfrel* self, struct halfrel* peer)
+static void field_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void field_start(struct halfrel* self, struct halfrel* peer)
+static void field_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	int x,y,z;
 	float ax,ay,az;
@@ -192,8 +192,8 @@ void field_register(struct entity* p)
 	p->onsearch = (void*)field_search;
 	p->onmodify = (void*)field_modify;
 
-	p->onstart = (void*)field_start;
-	p->onstop  = (void*)field_stop;
+	p->onlinkup = (void*)field_linkup;
+	p->ondiscon = (void*)field_discon;
 	p->onread  = (void*)field_read;
 	p->onwrite = (void*)field_write;
 }

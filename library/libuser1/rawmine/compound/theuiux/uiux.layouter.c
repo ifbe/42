@@ -689,12 +689,12 @@ static int picker_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	struct event* ev = (void*)buf;
 	return 0;//picker_event(act, pin, win, sty, ev, 0);
 }
-static void picker_stop(struct halfrel* self, struct halfrel* peer)
+static void picker_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void picker_start(struct halfrel* self, struct halfrel* peer)
+static void picker_linkup(struct halfrel* self, struct halfrel* peer)
 {
-    say("@picker_start\n");
+    say("@picker_linkup\n");
 }
 
 
@@ -727,8 +727,8 @@ void picker_register(struct entity* p)
 	p->onsearch = (void*)picker_search;
 	p->onmodify = (void*)picker_modify;
 
-	p->onstart = (void*)picker_start;
-	p->onstop  = (void*)picker_stop;
+	p->onlinkup = (void*)picker_linkup;
+	p->ondiscon = (void*)picker_discon;
 	p->onread  = (void*)picker_read;
 	p->onwrite = (void*)picker_write;
 }

@@ -414,10 +414,10 @@ static void water_read(struct halfrel* self, struct halfrel* peer, struct halfre
 static void water_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void water_stop(struct halfrel* self, struct halfrel* peer)
+static void water_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void water_start(struct halfrel* self, struct halfrel* peer)
+static void water_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -434,8 +434,8 @@ void water_register(struct entity* p)
 	p->onsearch = (void*)water_search;
 	p->onmodify = (void*)water_modify;
 
-	p->onstart = (void*)water_start;
-	p->onstop  = (void*)water_stop;
+	p->onlinkup = (void*)water_linkup;
+	p->ondiscon = (void*)water_discon;
 	p->onread  = (void*)water_read;
 	p->onwrite = (void*)water_write;
 }

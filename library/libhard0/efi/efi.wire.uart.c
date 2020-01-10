@@ -23,11 +23,11 @@ int uart_choose(char* p, int speed)
 {
 	return 0;
 }
-int uart_stop()
+int uart_discon()
 {
 	return 0;
 }
-int uart_start(char* p)
+int uart_linkup(char* p)
 {
 	return 0;
 }

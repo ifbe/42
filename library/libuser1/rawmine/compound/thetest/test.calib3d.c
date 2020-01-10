@@ -133,10 +133,10 @@ static void calib3d_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	}
 */
 }
-static void calib3d_stop(struct halfrel* self, struct halfrel* peer)
+static void calib3d_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void calib3d_start(struct halfrel* self, struct halfrel* peer)
+static void calib3d_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct datapair* pair;
 	struct glsrc* src;
@@ -249,8 +249,8 @@ void calib3d_register(struct entity* p)
 	p->onsearch = (void*)calib3d_search;
 	p->onmodify = (void*)calib3d_modify;
 
-	p->onstart = (void*)calib3d_start;
-	p->onstop  = (void*)calib3d_stop;
+	p->onlinkup = (void*)calib3d_linkup;
+	p->ondiscon = (void*)calib3d_discon;
 	p->onread  = (void*)calib3d_read;
 	p->onwrite = (void*)calib3d_write;
 }

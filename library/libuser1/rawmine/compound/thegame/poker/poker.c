@@ -98,10 +98,10 @@ static void poker_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 static void poker_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void poker_stop(struct halfrel* self, struct halfrel* peer)
+static void poker_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void poker_start(struct halfrel* self, struct halfrel* peer)
+static void poker_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -139,8 +139,8 @@ void poker_register(struct entity* p)
 	p->onsearch = (void*)poker_search;
 	p->onmodify = (void*)poker_modify;
 
-	p->onstart = (void*)poker_start;
-	p->onstop  = (void*)poker_stop;
+	p->onlinkup = (void*)poker_linkup;
+	p->ondiscon = (void*)poker_discon;
 	p->onread  = (void*)poker_read;
 	p->onwrite = (void*)poker_write;
 }

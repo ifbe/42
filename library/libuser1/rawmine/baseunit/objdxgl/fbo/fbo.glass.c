@@ -407,10 +407,10 @@ static void glass_read(struct halfrel* self, struct halfrel* peer, struct halfre
 static void glass_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void glass_stop(struct halfrel* self, struct halfrel* peer)
+static void glass_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void glass_start(struct halfrel* self, struct halfrel* peer)
+static void glass_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -427,8 +427,8 @@ void glass_register(struct entity* p)
 	p->onsearch = (void*)glass_search;
 	p->onmodify = (void*)glass_modify;
 
-	p->onstart = (void*)glass_start;
-	p->onstop  = (void*)glass_stop;
+	p->onlinkup = (void*)glass_linkup;
+	p->ondiscon = (void*)glass_discon;
 	p->onread  = (void*)glass_read;
 	p->onwrite = (void*)glass_write;
 }

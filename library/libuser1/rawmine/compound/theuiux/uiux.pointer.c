@@ -72,11 +72,11 @@ static int pointer_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 {
 	return 0;
 }
-static int pointer_stop(struct halfrel* self, struct halfrel* peer)
+static int pointer_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int pointer_start(struct halfrel* self, struct halfrel* peer)
+static int pointer_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -114,8 +114,8 @@ void pointer_register(struct entity* p)
 	p->onsearch = (void*)pointer_search;
 	p->onmodify = (void*)pointer_modify;
 
-	p->onstart = (void*)pointer_start;
-	p->onstop  = (void*)pointer_stop;
+	p->onlinkup = (void*)pointer_linkup;
+	p->ondiscon = (void*)pointer_discon;
 	p->onread  = (void*)pointer_read;
 	p->onwrite = (void*)pointer_write;
 }

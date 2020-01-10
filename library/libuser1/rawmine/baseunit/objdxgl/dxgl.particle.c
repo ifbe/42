@@ -209,10 +209,10 @@ static void particle_read(struct halfrel* self, struct halfrel* peer, struct hal
 static void particle_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void particle_stop(struct halfrel* self, struct halfrel* peer)
+static void particle_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void particle_start(struct halfrel* self, struct halfrel* peer)
+static void particle_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -275,8 +275,8 @@ void particle_register(struct entity* p)
 	p->onsearch = (void*)particle_search;
 	p->onmodify = (void*)particle_modify;
 
-	p->onstart = (void*)particle_start;
-	p->onstop  = (void*)particle_stop;
+	p->onlinkup = (void*)particle_linkup;
+	p->ondiscon = (void*)particle_discon;
 	p->onread  = (void*)particle_read;
 	p->onwrite = (void*)particle_write;
 }

@@ -115,11 +115,11 @@ found:
 	entitywrite(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, len);
 	return 0;
 }
-int gl41wnd0_stop(struct halfrel* self, struct halfrel* peer)
+int gl41wnd0_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int gl41wnd0_start(struct halfrel* self, struct halfrel* peer)
+int gl41wnd0_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

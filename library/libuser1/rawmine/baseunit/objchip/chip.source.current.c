@@ -43,10 +43,10 @@ static void isrc_read(struct halfrel* self, struct halfrel* peer, void* arg, int
 static void isrc_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void isrc_stop(struct halfrel* self, struct halfrel* peer)
+static void isrc_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void isrc_start(struct halfrel* self, struct halfrel* peer)
+static void isrc_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -80,8 +80,8 @@ void isrc_register(struct entity* p)
 	p->onsearch = (void*)isrc_search;
 	p->onmodify = (void*)isrc_modify;
 
-	p->onstart = (void*)isrc_start;
-	p->onstop  = (void*)isrc_stop;
+	p->onlinkup = (void*)isrc_linkup;
+	p->ondiscon = (void*)isrc_discon;
 	p->onread  = (void*)isrc_read;
 	p->onwrite = (void*)isrc_write;
 }

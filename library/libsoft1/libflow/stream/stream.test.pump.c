@@ -23,11 +23,11 @@ int pump_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	}
 	return 0;
 }
-int pump_stop(struct halfrel* self, struct halfrel* peer)
+int pump_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int pump_start(struct halfrel* self, struct halfrel* peer)
+int pump_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

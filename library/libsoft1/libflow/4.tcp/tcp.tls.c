@@ -982,11 +982,11 @@ int tlsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	ele->stage1 += 1;
 	return 0;
 }
-int tlsclient_stop(struct halfrel* self, struct halfrel* peer)
+int tlsclient_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tlsclient_start(struct halfrel* self, struct halfrel* peer)
+int tlsclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
 	u8 tmp[0x1000];

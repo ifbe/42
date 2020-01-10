@@ -268,10 +268,10 @@ static void fractal_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	struct event* ev = (void*)buf;
 	//fractal_event(act, pin, win, sty, ev, 0);
 }
-static void fractal_stop(struct halfrel* self, struct halfrel* peer)
+static void fractal_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void fractal_start(struct halfrel* self, struct halfrel* peer)
+static void fractal_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -326,8 +326,8 @@ void fractal_register(struct entity* p)
 	p->onsearch = (void*)fractal_search;
 	p->onmodify = (void*)fractal_modify;
 
-	p->onstart = (void*)fractal_start;
-	p->onstop  = (void*)fractal_stop;
+	p->onlinkup = (void*)fractal_linkup;
+	p->ondiscon = (void*)fractal_discon;
 	p->onread  = (void*)fractal_read;
 	p->onwrite = (void*)fractal_write;
 }

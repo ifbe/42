@@ -47,11 +47,11 @@ int bt_choose()
 
 
 
-int bt_start(char* p)
+int bt_linkup(char* p)
 {
 	return 0;
 }
-int bt_stop()
+int bt_discon()
 {
 	return 0;
 }

@@ -417,10 +417,10 @@ static void spotlight_read(struct halfrel* self, struct halfrel* peer, struct ha
 static void spotlight_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void spotlight_stop(struct halfrel* self, struct halfrel* peer)
+static void spotlight_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void spotlight_start(struct halfrel* self, struct halfrel* peer)
+static void spotlight_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -437,8 +437,8 @@ void spotlight_register(struct entity* p)
 	p->onsearch = (void*)spotlight_search;
 	p->onmodify = (void*)spotlight_modify;
 
-	p->onstart = (void*)spotlight_start;
-	p->onstop  = (void*)spotlight_stop;
+	p->onlinkup = (void*)spotlight_linkup;
+	p->ondiscon = (void*)spotlight_discon;
 	p->onread  = (void*)spotlight_read;
 	p->onwrite = (void*)spotlight_write;
 }

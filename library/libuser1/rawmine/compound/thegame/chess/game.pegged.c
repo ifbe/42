@@ -142,10 +142,10 @@ static void pegged_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 static void pegged_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void pegged_stop(struct halfrel* self, struct halfrel* peer)
+static void pegged_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void pegged_start(struct halfrel* self, struct halfrel* peer)
+static void pegged_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -194,8 +194,8 @@ void pegged_register(struct entity* p)
 	p->onsearch = (void*)pegged_search;
 	p->onmodify = (void*)pegged_modify;
 
-	p->onstart = (void*)pegged_start;
-	p->onstop  = (void*)pegged_stop;
+	p->onlinkup = (void*)pegged_linkup;
+	p->ondiscon = (void*)pegged_discon;
 	p->onread  = (void*)pegged_read;
 	p->onwrite = (void*)pegged_write;
 }

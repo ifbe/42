@@ -133,11 +133,11 @@ int wsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	}
 	return 0;
 }
-int wsclient_stop(struct halfrel* self, struct halfrel* peer)
+int wsclient_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int wsclient_start(struct halfrel* self, struct halfrel* peer)
+int wsclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
 	u8 tmp[0x100];
@@ -414,11 +414,11 @@ int wsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	}
 	return 0;
 }
-int wsserver_stop(struct halfrel* self, struct halfrel* peer)
+int wsserver_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int wsserver_start(struct halfrel* self, struct halfrel* peer)
+int wsserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -494,11 +494,11 @@ int wsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	}//switch
 	return 0;
 }
-int wsmaster_stop(struct halfrel* self, struct halfrel* peer)
+int wsmaster_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int wsmaster_start(struct halfrel* self, struct halfrel* peer)
+int wsmaster_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

@@ -90,10 +90,10 @@ static void mux_read(struct halfrel* self, struct halfrel* peer, struct halfrel*
 static void mux_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void mux_stop(struct halfrel* self, struct halfrel* peer)
+static void mux_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void mux_start(struct halfrel* self, struct halfrel* peer)
+static void mux_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -126,8 +126,8 @@ void mux_register(struct entity* p)
 	p->onsearch = (void*)mux_search;
 	p->onmodify = (void*)mux_modify;
 
-	p->onstart = (void*)mux_start;
-	p->onstop  = (void*)mux_stop;
+	p->onlinkup = (void*)mux_linkup;
+	p->ondiscon = (void*)mux_discon;
 	p->onread  = (void*)mux_read;
 	p->onwrite = (void*)mux_write;
 }

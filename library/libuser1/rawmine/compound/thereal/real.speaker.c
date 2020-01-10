@@ -9,10 +9,10 @@ static void speaker_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 static void speaker_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void speaker_stop(struct halfrel* self, struct halfrel* peer)
+static void speaker_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void speaker_start(struct halfrel* self, struct halfrel* peer)
+static void speaker_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -45,8 +45,8 @@ void speaker_register(struct entity* p)
 	p->onsearch = (void*)speaker_search;
 	p->onmodify = (void*)speaker_modify;
 
-	p->onstart = (void*)speaker_start;
-	p->onstop  = (void*)speaker_stop;
+	p->onlinkup = (void*)speaker_linkup;
+	p->ondiscon = (void*)speaker_discon;
 	p->onread  = (void*)speaker_read;
 	p->onwrite = (void*)speaker_write;
 }

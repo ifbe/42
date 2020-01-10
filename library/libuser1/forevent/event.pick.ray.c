@@ -123,11 +123,11 @@ int clickray_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 	}
 	return 0;
 }
-int clickray_stop(struct halfrel* self, struct halfrel* peer)
+int clickray_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int clickray_start(struct halfrel* self, struct halfrel* peer)
+int clickray_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

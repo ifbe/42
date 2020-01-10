@@ -320,10 +320,10 @@ static void obj3d_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 	struct event* ev = (void*)buf;
 	//obj3d_event(act, pin, win, sty, ev, 0);
 }
-static void obj3d_stop(struct halfrel* self, struct halfrel* peer)
+static void obj3d_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void obj3d_start(struct halfrel* self, struct halfrel* peer)
+static void obj3d_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct str* tmp;
 	struct glsrc* src;
@@ -399,8 +399,8 @@ void obj3d_register(struct entity* p)
 	p->onsearch = (void*)obj3d_search;
 	p->onmodify = (void*)obj3d_modify;
 
-	p->onstart = (void*)obj3d_start;
-	p->onstop  = (void*)obj3d_stop;
+	p->onlinkup = (void*)obj3d_linkup;
+	p->ondiscon = (void*)obj3d_discon;
 	p->onread  = (void*)obj3d_read;
 	p->onwrite = (void*)obj3d_write;
 }

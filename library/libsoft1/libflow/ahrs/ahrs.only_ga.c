@@ -98,14 +98,14 @@ int easyag_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	relationwrite((void*)self->chip, _dst_, 0, 0, q, 4);
 	return 0;
 }
-int easyag_stop(struct halfrel* self, struct halfrel* peer)
+int easyag_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@easyag_stop\n");
+	say("@easyag_discon\n");
 	return 0;
 }
-int easyag_start(struct halfrel* self, struct halfrel* peer)
+int easyag_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@easyag_start\n");
+	say("@easyag_linkup\n");
 	return 0;
 }
 

@@ -43,10 +43,10 @@ static void sokoban_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 static void sokoban_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void sokoban_stop(struct halfrel* self, struct halfrel* peer)
+static void sokoban_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void sokoban_start(struct halfrel* self, struct halfrel* peer)
+static void sokoban_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -83,8 +83,8 @@ void sokoban_register(struct entity* p)
 	p->onsearch = (void*)sokoban_search;
 	p->onmodify = (void*)sokoban_modify;
 
-	p->onstart = (void*)sokoban_start;
-	p->onstop  = (void*)sokoban_stop;
+	p->onlinkup = (void*)sokoban_linkup;
+	p->ondiscon = (void*)sokoban_discon;
 	p->onread  = (void*)sokoban_read;
 	p->onwrite = (void*)sokoban_write;
 }

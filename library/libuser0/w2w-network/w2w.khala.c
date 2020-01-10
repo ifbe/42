@@ -9,10 +9,10 @@ void khala_read(struct halfrel* self, struct halfrel* peer)
 void khala_write(struct halfrel* self, struct halfrel* peer)
 {
 }
-void khala_stop(struct halfrel* self, struct halfrel* peer)
+void khala_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-void khala_start(struct halfrel* self, struct halfrel* peer)
+void khala_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 

@@ -218,10 +218,10 @@ static void robodog_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	if(_int_ == self->flag)robodog_write_int(act,buf,len);
 	else robodog_write_float(act,buf,len);
 }
-static void robodog_stop(struct halfrel* self, struct halfrel* peer)
+static void robodog_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void robodog_start(struct halfrel* self, struct halfrel* peer)
+static void robodog_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -272,8 +272,8 @@ void robodog_register(struct entity* p)
 	p->onsearch = (void*)robodog_search;
 	p->onmodify = (void*)robodog_modify;
 
-	p->onstart = (void*)robodog_start;
-	p->onstop  = (void*)robodog_stop;
+	p->onlinkup = (void*)robodog_linkup;
+	p->ondiscon = (void*)robodog_discon;
 	p->onread  = (void*)robodog_read;
 	p->onwrite = (void*)robodog_write;
 }

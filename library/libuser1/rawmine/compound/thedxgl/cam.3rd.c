@@ -292,10 +292,10 @@ static int thirdperson_write(struct halfrel* self, struct halfrel* peer, struct 
 	thirdperson_event(act,slot, wrd,geom, ev,0);
 	return 0;
 }
-static void thirdperson_stop(struct halfrel* self, struct halfrel* peer)
+static void thirdperson_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void thirdperson_start(struct halfrel* self, struct halfrel* peer)
+static void thirdperson_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -312,8 +312,8 @@ void thirdperson_register(struct entity* p)
 	p->onsearch = (void*)thirdperson_search;
 	p->onmodify = (void*)thirdperson_modify;
 
-	p->onstart = (void*)thirdperson_start;
-	p->onstop  = (void*)thirdperson_stop;
+	p->onlinkup = (void*)thirdperson_linkup;
+	p->ondiscon = (void*)thirdperson_discon;
 	p->onread  = (void*)thirdperson_read;
 	p->onwrite = (void*)thirdperson_write;
 }

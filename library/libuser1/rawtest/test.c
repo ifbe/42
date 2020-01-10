@@ -153,11 +153,11 @@ int test_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 {
 	return 0;
 }
-int test_stop(struct halfrel* self, struct halfrel* peer)
+int test_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int test_start(struct halfrel* self, struct halfrel* peer)
+int test_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

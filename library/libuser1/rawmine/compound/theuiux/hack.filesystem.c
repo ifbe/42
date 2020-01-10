@@ -117,10 +117,10 @@ static void fs_read(struct halfrel* self, struct halfrel* peer, void* arg, int i
 static void fs_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void fs_stop(struct halfrel* self, struct halfrel* peer)
+static void fs_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void fs_start(struct halfrel* self, struct halfrel* peer)
+static void fs_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -158,8 +158,8 @@ void fs_register(struct entity* p)
 	p->onsearch = (void*)fs_search;
 	p->onmodify = (void*)fs_modify;
 
-	p->onstart = (void*)fs_start;
-	p->onstop  = (void*)fs_stop;
+	p->onlinkup = (void*)fs_linkup;
+	p->ondiscon = (void*)fs_discon;
 	p->onread  = (void*)fs_read;
 	p->onwrite = (void*)fs_write;
 }

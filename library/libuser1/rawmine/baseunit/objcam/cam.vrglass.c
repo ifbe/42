@@ -336,10 +336,10 @@ static int vrglass_write(struct halfrel* self, struct halfrel* peer, void* arg, 
 	vrglass_event(act, &pin->fs, win, &sty->fs, ev, 0);
 	return 0;
 }
-static void vrglass_stop(struct halfrel* self, struct halfrel* peer)
+static void vrglass_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void vrglass_start(struct halfrel* self, struct halfrel* peer)
+static void vrglass_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -356,8 +356,8 @@ void vrglass_register(struct entity* p)
 	p->onsearch = (void*)vrglass_search;
 	p->onmodify = (void*)vrglass_modify;
 
-	p->onstart = (void*)vrglass_start;
-	p->onstop  = (void*)vrglass_stop;
+	p->onlinkup = (void*)vrglass_linkup;
+	p->ondiscon = (void*)vrglass_discon;
 	p->onread  = (void*)vrglass_read;
 	p->onwrite = (void*)vrglass_write;
 }

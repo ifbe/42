@@ -29,11 +29,11 @@ void radar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 void radar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-int radar_stop(struct halfrel* self, struct halfrel* peer)
+int radar_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int radar_start(struct halfrel* self, struct halfrel* peer)
+int radar_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

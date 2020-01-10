@@ -86,11 +86,11 @@ int telnetclient_write(struct halfrel* self, struct halfrel* peer, void* arg, in
 	ele->stage1 += 1;
 	return 0;
 }
-int telnetclient_stop(struct halfrel* self, struct halfrel* peer)
+int telnetclient_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int telnetclient_start(struct halfrel* self, struct halfrel* peer)
+int telnetclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct artery* ele = self->pchip;
 	relationwrite(ele, _src_, 0, 0, cpacket0, sizeof(cpacket0));

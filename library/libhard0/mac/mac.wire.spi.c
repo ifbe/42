@@ -10,10 +10,10 @@ void spi_list()
 void spi_choose()
 {
 }
-void spi_stop()
+void spi_discon()
 {
 }
-void spi_start()
+void spi_linkup()
 {
 }
 void spi_delete()

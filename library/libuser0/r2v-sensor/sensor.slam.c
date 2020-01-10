@@ -31,11 +31,11 @@ int slam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 {
 	return 0;
 }
-int slam_stop(struct halfrel* self, struct halfrel* peer)
+int slam_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int slam_start(struct halfrel* self, struct halfrel* peer)
+int slam_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

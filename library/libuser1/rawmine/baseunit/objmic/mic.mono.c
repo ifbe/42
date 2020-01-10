@@ -12,10 +12,10 @@ static void monomic_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 static void monomic_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void monomic_stop(struct halfrel* self, struct halfrel* peer)
+static void monomic_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void monomic_start(struct halfrel* self, struct halfrel* peer)
+static void monomic_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -48,8 +48,8 @@ void monomic_register(struct entity* p)
 	p->onsearch = (void*)monomic_search;
 	p->onmodify = (void*)monomic_modify;
 
-	p->onstart = (void*)monomic_start;
-	p->onstop  = (void*)monomic_stop;
+	p->onlinkup = (void*)monomic_linkup;
+	p->ondiscon = (void*)monomic_discon;
 	p->onread  = (void*)monomic_read;
 	p->onwrite = (void*)monomic_write;
 }

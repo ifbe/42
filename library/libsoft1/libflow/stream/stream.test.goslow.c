@@ -31,11 +31,11 @@ int goslow_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	ele->stage1 = (j + 1) % 8;
 	return 0;
 }
-int goslow_stop(struct halfrel* self, struct halfrel* peer)
+int goslow_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int goslow_start(struct halfrel* self, struct halfrel* peer)
+int goslow_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }

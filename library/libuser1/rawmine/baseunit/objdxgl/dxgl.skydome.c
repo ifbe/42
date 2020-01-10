@@ -147,10 +147,10 @@ static void skydome_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 static void skydome_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void skydome_stop(struct halfrel* self, struct halfrel* peer)
+static void skydome_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void skydome_start(struct halfrel* self, struct halfrel* peer)
+static void skydome_linkup(struct halfrel* self, struct halfrel* peer)
 {
 /*
 	//
@@ -224,8 +224,8 @@ void skydome_register(struct entity* p)
 	p->onsearch = (void*)skydome_search;
 	p->onmodify = (void*)skydome_modify;
 
-	p->onstart = (void*)skydome_start;
-	p->onstop  = (void*)skydome_stop;
+	p->onlinkup = (void*)skydome_linkup;
+	p->ondiscon = (void*)skydome_discon;
 	p->onread  = (void*)skydome_read;
 	p->onwrite = (void*)skydome_write;
 }

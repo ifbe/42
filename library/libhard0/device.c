@@ -59,13 +59,13 @@ int devicewrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	}
 	return 0;
 }
-int devicestop(struct halfrel* self, struct halfrel* peer)
+int devicediscon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int devicestart(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int devicelinkup(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
-	say("@devicestart\n");
+	say("@devicelinkup\n");
 	return 0;
 }
 

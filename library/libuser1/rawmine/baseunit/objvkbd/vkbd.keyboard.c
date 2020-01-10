@@ -261,11 +261,11 @@ static int vkbd_write(struct halfrel* self, struct halfrel* peer, struct halfrel
 	}
 	return 0;
 }
-static int vkbd_stop(struct halfrel* self, struct halfrel* peer)
+static int vkbd_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int vkbd_start(struct halfrel* self, struct halfrel* peer)
+static int vkbd_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -283,8 +283,8 @@ void vkbd_register(struct entity* p)
 	p->onsearch = (void*)vkbd_search;
 	p->onmodify = (void*)vkbd_modify;
 
-	p->onstart = (void*)vkbd_start;
-	p->onstop  = (void*)vkbd_stop;
+	p->onlinkup = (void*)vkbd_linkup;
+	p->ondiscon = (void*)vkbd_discon;
 	p->onread  = (void*)vkbd_read;
 	p->onwrite = (void*)vkbd_write;
 }

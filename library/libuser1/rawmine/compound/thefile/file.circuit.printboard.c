@@ -61,13 +61,13 @@ int pcb_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack
 {
 	return 0;
 }
-int pcb_stop(struct halfrel* self, struct halfrel* peer)
+int pcb_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int pcb_start(struct halfrel* self, struct halfrel* peer)
+int pcb_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@pcb_start\n");
+	say("@pcb_linkup\n");
 	return 0;
 }
 

@@ -226,10 +226,10 @@ static void dff_read(struct halfrel* self, struct halfrel* peer, struct halfrel*
 static void dff_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 }
-static void dff_stop(struct halfrel* self, struct halfrel* peer)
+static void dff_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void dff_start(struct halfrel* self, struct halfrel* peer)
+static void dff_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -262,8 +262,8 @@ void dff_register(struct entity* p)
 	p->onsearch = (void*)dff_search;
 	p->onmodify = (void*)dff_modify;
 
-	p->onstart = (void*)dff_start;
-	p->onstop  = (void*)dff_stop;
+	p->onlinkup = (void*)dff_linkup;
+	p->ondiscon = (void*)dff_discon;
 	p->onread  = (void*)dff_read;
 	p->onwrite = (void*)dff_write;
 }

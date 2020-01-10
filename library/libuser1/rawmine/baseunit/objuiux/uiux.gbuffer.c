@@ -272,10 +272,10 @@ static int gbuffer_read(struct halfrel* self, struct halfrel* peer, struct halfr
 static void gbuffer_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void gbuffer_stop(struct halfrel* self, struct halfrel* peer)
+static void gbuffer_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void gbuffer_start(struct halfrel* self, struct halfrel* peer)
+static void gbuffer_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -292,8 +292,8 @@ void gbuffer_register(struct entity* p)
 	p->onsearch = (void*)gbuffer_search;
 	p->onmodify = (void*)gbuffer_modify;
 
-	p->onstart = (void*)gbuffer_start;
-	p->onstop  = (void*)gbuffer_stop;
+	p->onlinkup = (void*)gbuffer_linkup;
+	p->ondiscon = (void*)gbuffer_discon;
 	p->onread  = (void*)gbuffer_read;
 	p->onwrite = (void*)gbuffer_write;
 }

@@ -169,7 +169,7 @@ void role_test_relation(
 						(void*)dst.chip, (void*)dst.foot, dst.type, dst.flag,
 						(void*)src.chip, (void*)src.foot, src.type, src.flag
 					);
-					relationstart((void*)&rel->srcchip, (void*)&rel->dstchip);
+					relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
 				}
 //say("***\n");
 				wirellll = wirerrrr = -1;

@@ -246,11 +246,11 @@ static int karnaugh_write(struct halfrel* self, struct halfrel* peer, struct hal
 	}
 	return 0;
 }
-static int karnaugh_stop(struct halfrel* self, struct halfrel* peer)
+static int karnaugh_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-static int karnaugh_start(struct halfrel* self, struct halfrel* peer)
+static int karnaugh_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -268,8 +268,8 @@ void karnaugh_register(struct entity* p)
 	p->onsearch = (void*)karnaugh_search;
 	p->onmodify = (void*)karnaugh_modify;
 
-	p->onstart = (void*)karnaugh_start;
-	p->onstop  = (void*)karnaugh_stop;
+	p->onlinkup = (void*)karnaugh_linkup;
+	p->ondiscon = (void*)karnaugh_discon;
 	p->onread  = (void*)karnaugh_read;
 	p->onwrite = (void*)karnaugh_write;
 }

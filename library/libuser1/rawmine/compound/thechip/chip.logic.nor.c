@@ -209,10 +209,10 @@ static void nor_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 	tmp = ent->iz0 + 0x30;
 	relationwrite(ent, 'o', 0, 0, &tmp, 1);
 }
-static void nor_stop(struct halfrel* self, struct halfrel* peer)
+static void nor_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void nor_start(struct halfrel* self, struct halfrel* peer)
+static void nor_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -248,8 +248,8 @@ void nor_register(struct entity* p)
 	p->onsearch = (void*)nor_search;
 	p->onmodify = (void*)nor_modify;
 
-	p->onstart = (void*)nor_start;
-	p->onstop  = (void*)nor_stop;
+	p->onlinkup = (void*)nor_linkup;
+	p->ondiscon = (void*)nor_discon;
 	p->onread  = (void*)nor_read;
 	p->onwrite = (void*)nor_write;
 }

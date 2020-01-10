@@ -388,10 +388,10 @@ static void xor_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 		}
 	}
 }
-static void xor_stop(struct halfrel* self, struct halfrel* peer)
+static void xor_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void xor_start(struct halfrel* self, struct halfrel* peer)
+static void xor_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -427,8 +427,8 @@ void xor_register(struct entity* p)
 	p->onsearch = (void*)xor_search;
 	p->onmodify = (void*)xor_modify;
 
-	p->onstart = (void*)xor_start;
-	p->onstop  = (void*)xor_stop;
+	p->onlinkup = (void*)xor_linkup;
+	p->ondiscon = (void*)xor_discon;
 	p->onread  = (void*)xor_read;
 	p->onwrite = (void*)xor_write;
 }

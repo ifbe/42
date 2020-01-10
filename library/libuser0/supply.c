@@ -180,19 +180,20 @@ int supplywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 
 	return 0;
 }
-int supplystop(struct halfrel* self, struct halfrel* peer)
+int supplydiscon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int supplystart(struct halfrel* self, struct halfrel* peer)
+int supplylinkup(struct halfrel* self, struct halfrel* peer)
 {
+	say("@supplylinkup\n");
+
 	struct supply* win;
 	if(0 == self)return 0;
 
 	win = (void*)(self->chip);
 	if(0 == win)return 0;
 
-	say("@supply_start\n");
 	return 0;
 }
 

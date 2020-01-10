@@ -116,10 +116,10 @@ static void klotski_read(struct halfrel* self, struct halfrel* peer, void* arg, 
 static void klotski_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void klotski_stop(struct halfrel* self, struct halfrel* peer)
+static void klotski_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void klotski_start(struct halfrel* self, struct halfrel* peer)
+static void klotski_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -169,8 +169,8 @@ void klotski_register(struct entity* p)
 	p->onsearch = (void*)klotski_search;
 	p->onmodify = (void*)klotski_modify;
 
-	p->onstart = (void*)klotski_start;
-	p->onstop  = (void*)klotski_stop;
+	p->onlinkup = (void*)klotski_linkup;
+	p->ondiscon = (void*)klotski_discon;
 	p->onread  = (void*)klotski_read;
 	p->onwrite = (void*)klotski_write;
 }

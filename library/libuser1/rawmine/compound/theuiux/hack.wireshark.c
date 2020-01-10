@@ -92,10 +92,10 @@ static void rawdump_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	struct event* ev = (void*)buf;
 	//if(len)queuepacket(act->buf, act->idx, buf, len);
 }
-static void rawdump_stop(struct halfrel* self, struct halfrel* peer)
+static void rawdump_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void rawdump_start(struct halfrel* self, struct halfrel* peer)
+static void rawdump_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -134,8 +134,8 @@ void rawdump_register(struct entity* p)
 	p->onsearch = (void*)rawdump_search;
 	p->onmodify = (void*)rawdump_modify;
 
-	p->onstart = (void*)rawdump_start;
-	p->onstop  = (void*)rawdump_stop;
+	p->onlinkup = (void*)rawdump_linkup;
+	p->ondiscon = (void*)rawdump_discon;
 	p->onread  = (void*)rawdump_read;
 	p->onwrite = (void*)rawdump_write;
 }

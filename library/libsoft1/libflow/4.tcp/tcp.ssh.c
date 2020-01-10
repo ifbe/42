@@ -576,15 +576,15 @@ int sshclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	ele->stage1 += 1;
 	return 0;
 }
-int sshclient_stop(struct halfrel* self, struct halfrel* peer)
+int sshclient_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int sshclient_start(struct halfrel* self, struct halfrel* peer)
+int sshclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
 	u8 buf[0x100];
-	say("@sshclient_start\n");
+	say("@sshclient_linkup\n");
 
 	ret = secureshell_clientwrite_handshake(buf, 0x100);
 	ret = relationwrite(self->pchip, _src_, 0, 0, buf, ret);

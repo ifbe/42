@@ -13,10 +13,10 @@ static void gobang_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 static void gobang_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 }
-static void gobang_stop(struct halfrel* self, struct halfrel* peer)
+static void gobang_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void gobang_start(struct halfrel* self, struct halfrel* peer)
+static void gobang_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -54,8 +54,8 @@ void gobang_register(struct entity* p)
 	p->onsearch = (void*)gobang_search;
 	p->onmodify = (void*)gobang_modify;
 
-	p->onstart = (void*)gobang_start;
-	p->onstop  = (void*)gobang_stop;
+	p->onlinkup = (void*)gobang_linkup;
+	p->ondiscon = (void*)gobang_discon;
 	p->onread  = (void*)gobang_read;
 	p->onwrite = (void*)gobang_write;
 }

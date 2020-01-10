@@ -240,10 +240,10 @@ static void bintree_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	struct event* ev = (void*)buf;
 	//bintree_event(act, pin, win, sty, ev, 0);
 }
-static void bintree_start(struct halfrel* self, struct halfrel* peer)
+static void bintree_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void bintree_stop(struct halfrel* self, struct halfrel* peer)
+static void bintree_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
 
@@ -281,8 +281,8 @@ void bintree_register(struct entity* p)
 	p->onsearch = (void*)bintree_search;
 	p->onmodify = (void*)bintree_modify;
 
-	p->onstart = (void*)bintree_start;
-	p->onstop  = (void*)bintree_stop;
+	p->onlinkup = (void*)bintree_linkup;
+	p->ondiscon = (void*)bintree_discon;
 	p->onread  = (void*)bintree_read;
 	p->onwrite = (void*)bintree_write;
 }

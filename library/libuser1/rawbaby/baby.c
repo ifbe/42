@@ -13,14 +13,14 @@ int baby_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u
 	say("@baby_write: crying\n");
 	return 0;
 }
-int baby_stop(struct halfrel* self, struct halfrel* peer)
+int baby_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@baby_stop: crying\n");
+	say("@baby_discon: crying\n");
 	return 0;
 }
-int baby_start(struct halfrel* self, struct halfrel* peer)
+int baby_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@baby_start: crying\n");
+	say("@baby_linkup: crying\n");
 	return 0;
 }
 

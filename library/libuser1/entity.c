@@ -20,34 +20,34 @@ int test_write(void*, void*, void*, int, void*, int);
 //
 int sch_create(void*, void*, int, u8**);
 int sch_delete(void*, void*);
-int sch_start(void*, void*);
-int sch_stop(void*, void*);
+int sch_linkup(void*, void*);
+int sch_discon(void*, void*);
 int sch_write(void*, void*, void*, int, void*, int);
 int sch_read(void*, void*, void*, int, void*, int);
 int pcb_create(void*, void*, int, u8**);
 int pcb_delete(void*, void*);
-int pcb_start(void*, void*);
-int pcb_stop(void*, void*);
+int pcb_linkup(void*, void*);
+int pcb_discon(void*, void*);
 int pcb_write(void*, void*, void*, int, void*, int);
 int pcb_read(void*, void*, void*, int, void*, int);
 int eeworld_create(void*, void*, int, u8**);
 int eeworld_delete(void*, void*);
-int eeworld_start(void*, void*);
-int eeworld_stop(void*, void*);
+int eeworld_linkup(void*, void*);
+int eeworld_discon(void*, void*);
 int eeworld_write(void*, void*, void*, int, void*, int);
 int eeworld_read(void*, void*, void*, int, void*, int);
 
 //
 int scene3d_create(void*, void*, int, u8**);
 int scene3d_delete(void*, void*);
-int scene3d_start(void*, void*);
-int scene3d_stop(void*, void*);
+int scene3d_linkup(void*, void*);
+int scene3d_discon(void*, void*);
 int scene3d_write(void*, void*, void*, int, void*, int);
 int scene3d_read(void*, void*, void*, int, void*, int);
 int world3d_create(void*, void*, int, u8**);
 int world3d_delete(void*, void*);
-int world3d_start(void*, void*);
-int world3d_stop(void*, void*);
+int world3d_linkup(void*, void*);
+int world3d_discon(void*, void*);
 int world3d_write(void*, void*, void*, int, void*, int);
 int world3d_read(void*, void*, void*, int, void*, int);
 
@@ -143,8 +143,8 @@ found:
 	ent->ondelete = tmp->ondelete;
 	ent->onsearch = tmp->onsearch;
 	ent->onmodify = tmp->onmodify;
-	ent->onstart  = tmp->onstart;
-	ent->onstop   = tmp->onstop;
+	ent->onlinkup  = tmp->onlinkup;
+	ent->ondiscon   = tmp->ondiscon;
 	ent->onread   = tmp->onread;
 	ent->onwrite  = tmp->onwrite;
 
@@ -155,39 +155,6 @@ found:
 
 
 /*
-int entityinput_special(struct supply* win, struct style* sty, struct event* ev)
-{
-	int val;
-	short* t;
-
-	val = 0;
-	if(_char_ == ev->what)
-	{
-		if(0x1b == ev->why)val = 'r';
-	}
-	else if(_kbd_ == ev->what)
-	{
-		if(0xfb == ev->why)val = 'l';
-		else if(0xfc == ev->why)val = 'r';
-	}
-	else if(joy_left == (ev->what & joy_mask))
-	{
-		t = (short*)ev;
-		if(t[3] & joyl_select)val = 'l';
-	}
-	else if(joy_right == (ev->what & joy_mask))
-	{
-		t = (short*)ev;
-		if(t[3] & joyr_start)val = 'r';
-	}
-
-	if(('l' == val)|('r' == val))
-	{
-		//win->forew = 0x80;
-		return 1;
-	}
-	return 0;
-}
 void entityinput_touch(struct supply* win, struct event* ev)
 {
 	int x,y,z,btn;
@@ -276,7 +243,7 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 	if(0 == act->onwrite)return 0;
 	return act->onwrite(self, peer, arg, idx, buf, len);
 }
-int entitystop(struct halfrel* self, struct halfrel* peer)
+int entitydiscon(struct halfrel* self, struct halfrel* peer)
 {
 	struct entity* act;
 	if(0 == self)return 0;
@@ -284,10 +251,10 @@ int entitystop(struct halfrel* self, struct halfrel* peer)
 	act = (void*)(self->chip);
 	if(0 == act)return 0;
 
-	if(0 == act->onstop)return 0;
-	return act->onstop(self, peer);
+	if(0 == act->ondiscon)return 0;
+	return act->ondiscon(self, peer);
 }
-int entitystart(struct halfrel* self, struct halfrel* peer)
+int entitylinkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct entity* act;
 	if(0 == self)return 0;
@@ -295,9 +262,9 @@ int entitystart(struct halfrel* self, struct halfrel* peer)
 	act = (void*)(self->chip);
 	if(0 == act)return 0;
 
-	say("@entity_start\n");
-	if(0 == act->onstart)return 0;
-	return act->onstart(self, peer);
+	say("@entity_linkup\n");
+	if(0 == act->onlinkup)return 0;
+	return act->onlinkup(self, peer);
 }
 
 

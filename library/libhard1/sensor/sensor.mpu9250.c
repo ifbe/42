@@ -287,14 +287,14 @@ int mpu9250_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 	}
 	return 0;
 }
-int mpu9250_stop(struct halfrel* self, struct halfrel* peer)
+int mpu9250_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int mpu9250_start(struct halfrel* self, struct halfrel* peer)
+int mpu9250_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct driver* it;
-	say("@mpu9250_start: %.4s\n", &self->flag);
+	say("@mpu9250_linkup: %.4s\n", &self->flag);
 
 	it = (void*)(self->chip);
 	if(0 == it)return 0;
