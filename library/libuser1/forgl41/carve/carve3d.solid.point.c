@@ -77,12 +77,14 @@ int point3d_vars(struct entity* win, int unused, float** vbuf, int vcnt)
 
 
 
-void carvepoint(float* vbuf, int vlen, vec3 vc, u32 rgb)
+void gl41point(struct entity* win, u32 rgb, vec3 vc)
 {
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
+	float* vbuf;
+	point3d_vars(win, 0, &vbuf, 1);
 
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
 	vbuf[0] = vc[0];
 	vbuf[1] = vc[1];
 	vbuf[2] = vc[2];
@@ -90,26 +92,15 @@ void carvepoint(float* vbuf, int vlen, vec3 vc, u32 rgb)
 	vbuf[4] = gg;
 	vbuf[5] = bb;
 }
-void gl41point(struct entity* win, u32 rgb, vec3 vc)
-{
-	float* vbuf;
-	point3d_vars(win, 0, &vbuf, 1);
-
-	carvepoint(vbuf,0, vc, rgb);
-}
 
 
 
 
 void carvepoint_bezier(float* vbuf, int vlen,
-	vec3 va, vec3 vb, vec3 vt, u32 rgb)
+	vec3 va, vec3 vb, vec3 vt)
 {
 	int j;
 	float t;
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	for(j=0;j<=acc;j++)
 	{
 		t = (float)j / acc;
@@ -117,9 +108,6 @@ void carvepoint_bezier(float* vbuf, int vlen,
 		vbuf[6*j+0] = (1.0-t)*(1.0-t)*va[0] + 2*t*(1.0-t)*vt[0] + t*t*vb[0];
 		vbuf[6*j+1] = (1.0-t)*(1.0-t)*va[1] + 2*t*(1.0-t)*vt[1] + t*t*vb[1];
 		vbuf[6*j+2] = (1.0-t)*(1.0-t)*va[2] + 2*t*(1.0-t)*vt[2] + t*t*vb[2];
-		vbuf[6*j+3] = rr;
-		vbuf[6*j+4] = gg;
-		vbuf[6*j+5] = bb;
 	}
 }
 void gl41point_bezier(struct entity* win, u32 rgb,
@@ -128,7 +116,16 @@ void gl41point_bezier(struct entity* win, u32 rgb,
 	float* vbuf;
 	point3d_vars(win, 0, &vbuf, acc);
 
-	carvepoint_bezier(vbuf,0, va,vb,vt, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*acc;j+=6){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carvepoint_bezier(vbuf,0, va,vb,vt);
 }
 
 
@@ -147,15 +144,11 @@ void gl41point_rect(struct entity* win, u32 rgb,
 
 
 void carvepoint_circle(float* vbuf, int vlen,
-	vec3 vc, vec3 vr, vec3 vu, u32 rgb)
+	vec3 vc, vec3 vr, vec3 vu)
 {
 	int j,k;
 	float s,t;
 	float r[4];
-
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	for(j=0;j<acc;j++)
 	{
@@ -167,9 +160,6 @@ void carvepoint_circle(float* vbuf, int vlen,
 		vbuf[6*j+0] = vc[0] + r[0];
 		vbuf[6*j+1] = vc[1] + r[1];
 		vbuf[6*j+2] = vc[2] + r[2];
-		vbuf[6*j+3] = rr;
-		vbuf[6*j+4] = gg;
-		vbuf[6*j+5] = bb;
 	}
 }
 void gl41point_circle(struct entity* win, u32 rgb,
@@ -178,7 +168,16 @@ void gl41point_circle(struct entity* win, u32 rgb,
 	float* vbuf;
 	point3d_vars(win, 0, &vbuf, acc);
 
-	carvepoint_circle(vbuf,0, vc,vr,vu, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*acc;j+=6){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carvepoint_circle(vbuf,0, vc,vr,vu);
 }
 
 
@@ -201,15 +200,11 @@ void gl41point_pyramid6()
 
 
 void carvepoint_cone(float* vbuf, int vlen,
-	vec3 vc, vec3 vr, vec3 vu, u32 rgb)
+	vec3 vc, vec3 vr, vec3 vu)
 {
 	int j,k;
 	float s,t;
 	float r[4];
-
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	for(j=0;j<acc;j++)
 	{
@@ -221,9 +216,6 @@ void carvepoint_cone(float* vbuf, int vlen,
 		vbuf[6*j+0] = vc[0] + r[0];
 		vbuf[6*j+1] = vc[1] + r[1];
 		vbuf[6*j+2] = vc[2] + r[2];
-		vbuf[6*j+3] = rr;
-		vbuf[6*j+4] = gg;
-		vbuf[6*j+5] = bb;
 	}
 
 	j = acc*6;
@@ -231,16 +223,10 @@ void carvepoint_cone(float* vbuf, int vlen,
 	vbuf[j+ 0] = vc[0];
 	vbuf[j+ 1] = vc[1];
 	vbuf[j+ 2] = vc[2];
-	vbuf[j+ 3] = rr;
-	vbuf[j+ 4] = gg;
-	vbuf[j+ 5] = bb;
 
 	vbuf[j+ 6] = vc[0]+vu[0];
 	vbuf[j+ 7] = vc[1]+vu[1];
 	vbuf[j+ 8] = vc[2]+vu[2];
-	vbuf[j+ 9] = rr;
-	vbuf[j+10] = gg;
-	vbuf[j+11] = bb;
 }
 void gl41point_cone(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
@@ -248,7 +234,16 @@ void gl41point_cone(struct entity* win, u32 rgb,
 	float* vbuf;
 	point3d_vars(win, 0, &vbuf, acc+2);
 
-	carvepoint_cone(vbuf,0, vc,vr,vu, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*(acc+2);j+=6){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carvepoint_cone(vbuf,0, vc,vr,vu);
 }
 
 
@@ -275,16 +270,12 @@ void gl41point_cask(struct entity* win, u32 rgb,
 
 
 void carvepoint_cylinder(float* vbuf, int vlen,
-	vec3 vc, vec3 vr, vec3 vu, u32 rgb)
+	vec3 vc, vec3 vr, vec3 vu)
 {
 	int j,k;
 	float s,t;
 	float q[4];
 	float r[4];
-
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	for(j=0;j<acc;j++)
 	{
@@ -301,16 +292,10 @@ void carvepoint_cylinder(float* vbuf, int vlen,
 		vbuf[k+ 0] = vc[0] - vu[0] + r[0];
 		vbuf[k+ 1] = vc[1] - vu[1] + r[1];
 		vbuf[k+ 2] = vc[2] - vu[2] + r[2];
-		vbuf[k+ 3] = rr;
-		vbuf[k+ 4] = gg;
-		vbuf[k+ 5] = bb;
 
 		vbuf[k+ 6] = vc[0] + vu[0] + r[0];
 		vbuf[k+ 7] = vc[1] + vu[1] + r[1];
 		vbuf[k+ 8] = vc[2] + vu[2] + r[2];
-		vbuf[k+ 9] = rr;
-		vbuf[k+10] = gg;
-		vbuf[k+11] = bb;
 	}
 }
 void gl41point_cylinder(struct entity* win, u32 rgb,
@@ -319,7 +304,16 @@ void gl41point_cylinder(struct entity* win, u32 rgb,
 	float* vbuf;
 	point3d_vars(win, 0, &vbuf, acc*2);
 
-	carvepoint_cylinder(vbuf,0, vc,vr,vu, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*(acc*2);j+=6){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carvepoint_cylinder(vbuf,0, vc,vr,vu);
 }
 
 
@@ -336,22 +330,10 @@ void gl41point_octahedron()
 
 
 void carvepoint_dodecahedron(float* vbuf, int vlen,
-	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgb)
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
-	int j;
 	float a = 1.618;
 	float b = 1.0/1.618;
-
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	for(j=0;j<20*6;j+=6)
-	{
-		vbuf[j + 3] = rr;
-		vbuf[j + 4] = gg;
-		vbuf[j + 5] = bb;
-	}
 
 	//(+-1, +-1, +-1)
 	vbuf[  0] = vc[0]-vr[0]-vf[0]-vu[0];
@@ -443,29 +425,26 @@ void gl41point_dodecahedron(struct entity* win, u32 rgb,
 	float* vbuf;
 	point3d_vars(win, 0, &vbuf, 20);
 
-	carvepoint_dodecahedron(vbuf,0, vc,vr,vf,vu, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*20;j+=6){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carvepoint_dodecahedron(vbuf,0, vc,vr,vf,vu);
 }
 
 
 
 
 void carvepoint_icosahedron(float* vbuf, int vlen,
-	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgb)
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
-	int j;
 	float m = 0.52573111211913360602566908484788;
 	float n = 0.85065080835203993218154049706301;
-
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
-	for(j=0;j<12*6;j+=6)
-	{
-		vbuf[j + 0] = rr;
-		vbuf[j + 1] = gg;
-		vbuf[j + 2] = bb;
-	}
 
 	//(+-m, 0, +-n)
 	vbuf[ 0] = vc[0] - m*vr[0] - n*vu[0];
@@ -524,24 +503,29 @@ void gl41point_icosahedron(struct entity* win, u32 rgb,
 	float* vbuf;
 	point3d_vars(win, 0, &vbuf, 12);
 
-	carvepoint_icosahedron(vbuf,0, vc,vr,vf,vu, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*12;j+=6){
+		vbuf[j + 0] = rr;
+		vbuf[j + 1] = gg;
+		vbuf[j + 2] = bb;
+	}
+	carvepoint_icosahedron(vbuf,0, vc,vr,vf,vu);
 }
 
 
 
 
-void carvepoint_sphere(float* vbuf, int vlen,
-	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgb)
-{
 #define accx (acc*2)
 #define accy (acc*2+1)
+void carvepoint_sphere(float* vbuf, int vlen,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
 	int j,k,a;
 	float c,s;
 	vec3 tc, tr, tf;
-
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	for(k=0;k<accy;k++)
 	{
@@ -569,10 +553,6 @@ void carvepoint_sphere(float* vbuf, int vlen,
 			vbuf[a+0] = tc[0] + tr[0]*c + tf[0]*s;
 			vbuf[a+1] = tc[1] + tr[1]*c + tf[1]*s;
 			vbuf[a+2] = tc[2] + tr[2]*c + tf[2]*s;
-
-			vbuf[a+3] = rr;
-			vbuf[a+4] = gg;
-			vbuf[a+5] = bb;
 		}
 	}
 
@@ -581,16 +561,10 @@ void carvepoint_sphere(float* vbuf, int vlen,
 	vbuf[a+ 0] = vc[0]-vu[0];
 	vbuf[a+ 1] = vc[1]-vu[1];
 	vbuf[a+ 2] = vc[2]-vu[2];
-	vbuf[a+ 3] = rr;
-	vbuf[a+ 4] = gg;
-	vbuf[a+ 5] = bb;
 
 	vbuf[a+ 6] = vc[0]+vu[0];
 	vbuf[a+ 7] = vc[1]+vu[1];
 	vbuf[a+ 8] = vc[2]+vu[2];
-	vbuf[a+ 9] = rr;
-	vbuf[a+10] = gg;
-	vbuf[a+11] = bb;
 }
 void gl41point_sphere(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
@@ -598,5 +572,14 @@ void gl41point_sphere(struct entity* win, u32 rgb,
 	float* vbuf;
 	point3d_vars(win, 0, &vbuf, accx*accy+2);
 
-	carvepoint_sphere(vbuf,0, vc,vr,vf,vu, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*(accx*accy+2);j+=6){
+		vbuf[j + 0] = rr;
+		vbuf[j + 1] = gg;
+		vbuf[j + 2] = bb;
+	}
+	carvepoint_sphere(vbuf,0, vc,vr,vf,vu);
 }

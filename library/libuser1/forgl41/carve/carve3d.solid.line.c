@@ -93,25 +93,15 @@ int line3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int vc
 
 
 void carveline(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 va, vec3 vb, u32 rgb)
+	vec3 va, vec3 vb)
 {
-	float bb = (float)(rgb&0xff) / 255.0;
-	float gg = (float)((rgb>>8)&0xff) / 255.0;
-	float rr = (float)((rgb>>16)&0xff) / 255.0;
-
 	vbuf[ 0] = va[0];
 	vbuf[ 1] = va[1];
 	vbuf[ 2] = va[2];
-	vbuf[ 3] = rr;
-	vbuf[ 4] = gg;
-	vbuf[ 5] = bb;
 
 	vbuf[ 6] = vb[0];
 	vbuf[ 7] = vb[1];
 	vbuf[ 8] = vb[2];
-	vbuf[ 9] = rr;
-	vbuf[10] = gg;
-	vbuf[11] = bb;
 
 	ibuf[0] = vlen;
 	ibuf[1] = vlen+1;
@@ -124,7 +114,16 @@ void gl41line(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 2, 1);
 	if(vlen < 0)return;
 
-	carveline(vbuf,vlen, ibuf,0, va,vb, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*2;j+=6){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carveline(vbuf,vlen, ibuf,0, va,vb);
 }
 void gl41line_shorter(struct entity* win, u32 rgb,
 	vec3 va, vec3 vb)
@@ -149,25 +148,15 @@ void gl41line_shorter(struct entity* win, u32 rgb,
 
 
 void carveline_arrow(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 va, vec3 vb, vec3 vn, u32 rgb)
+	vec3 va, vec3 vb, vec3 vn)
 {
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	vbuf[ 0] = va[0];
 	vbuf[ 1] = va[1];
 	vbuf[ 2] = va[2];
-	vbuf[ 3] = rr;
-	vbuf[ 4] = gg;
-	vbuf[ 5] = bb;
 
 	vbuf[ 6] = vb[0];
 	vbuf[ 7] = vb[1];
 	vbuf[ 8] = vb[2];
-	vbuf[ 9] = rr;
-	vbuf[10] = gg;
-	vbuf[11] = bb;
 
 	//tx = va - vb, ty = rotate(tx,30)
 	vec3 tx, ty;
@@ -179,16 +168,10 @@ void carveline_arrow(float* vbuf, int vlen, u16* ibuf, int ilen,
 	vbuf[12] = vb[0] + (halfsqrt3 * tx[0] + 0.5 * ty[0]) / 8;
 	vbuf[13] = vb[1] + (halfsqrt3 * tx[1] + 0.5 * ty[1]) / 8;
 	vbuf[14] = vb[2] + (halfsqrt3 * tx[2] + 0.5 * ty[2]) / 8;
-	vbuf[15] = rr;
-	vbuf[16] = gg;
-	vbuf[17] = bb;
 
 	vbuf[18] = vb[0] + (halfsqrt3 * tx[0] - 0.5 * ty[0]) / 8;
 	vbuf[19] = vb[1] + (halfsqrt3 * tx[1] - 0.5 * ty[1]) / 8;
 	vbuf[20] = vb[2] + (halfsqrt3 * tx[2] - 0.5 * ty[2]) / 8;
-	vbuf[21] = rr;
-	vbuf[22] = gg;
-	vbuf[23] = bb;
 
 	ibuf[0] = vlen;
 	ibuf[1] = vlen+1;
@@ -205,20 +188,26 @@ void gl41line_arrow(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 4, 3);
 	if(vlen < 0)return;
 
-	carveline_arrow(vbuf,vlen, ibuf,0, va,vb,vn, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*4;j+=6){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carveline_arrow(vbuf,vlen, ibuf,0, va,vb,vn);
 }
 
 
 
 
 void carveline_bezier(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 va, vec3 vb, vec3 vt, u32 rgb)
+	vec3 va, vec3 vb, vec3 vt)
 {
 	int j;
 	float t;
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
 	for(j=0;j<=acc;j++)
 	{
 		t = (float)j / acc;
@@ -226,10 +215,6 @@ void carveline_bezier(float* vbuf, int vlen, u16* ibuf, int ilen,
 		vbuf[6*j+0] = (1.0-t)*(1.0-t)*va[0] + 2*t*(1.0-t)*vt[0] + t*t*vb[0];
 		vbuf[6*j+1] = (1.0-t)*(1.0-t)*va[1] + 2*t*(1.0-t)*vt[1] + t*t*vb[1];
 		vbuf[6*j+2] = (1.0-t)*(1.0-t)*va[2] + 2*t*(1.0-t)*vt[2] + t*t*vb[2];
-
-		vbuf[6*j+3] = rr;
-		vbuf[6*j+4] = gg;
-		vbuf[6*j+5] = bb;
 
 		if(j >= acc)break;
 		ibuf[2*j+0] = vlen + j;
@@ -244,21 +229,27 @@ void gl41line_bezier(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc + 1, acc);
 	if(vlen < 0)return;
 
-	carveline_bezier(vbuf,vlen, ibuf,0, va,vb,vt, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*(acc+1);j+=6){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carveline_bezier(vbuf,vlen, ibuf,0, va,vb,vt);
 }
 
 
 
 
 void carveline_special(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vu, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vu,
 	float sa, float da)
 {
 	int j;
 	float s,t;
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
 	for(j=0;j<=acc;j++)
 	{
 		s = j * da / acc;
@@ -267,10 +258,6 @@ void carveline_special(float* vbuf, int vlen, u16* ibuf, int ilen,
 		vbuf[6*j + 0] = t * cosine(sa+s);
 		vbuf[6*j + 1] = t * sine(sa+s);
 		vbuf[6*j + 2] = vu[2] * j / acc;
-
-		vbuf[6*j + 3] = rr;
-		vbuf[6*j + 4] = gg;
-		vbuf[6*j + 5] = bb;
 
 		if(j >= acc)break;
 		ibuf[2*j + 0] = vlen + j;
@@ -286,46 +273,39 @@ void gl41line_special(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc + 1, acc);
 	if(vlen < 0)return;
 
-	carveline_special(vbuf,vlen, ibuf,0, vc,vr,vu,rgb, sa,da);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*(acc+1);j+=6){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carveline_special(vbuf,vlen, ibuf,0, vc,vr,vu, sa,da);
 }
 
 
 
 
 void carveline_yshape(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 v0, vec3 v1, vec3 v2, u32 rgb)
+	vec3 v0, vec3 v1, vec3 v2)
 {
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
 	vbuf[ 2] = v0[2];
-	vbuf[ 3] = rr;
-	vbuf[ 4] = gg;
-	vbuf[ 5] = bb;
 
 	vbuf[ 6] = v1[0];
 	vbuf[ 7] = v1[1];
 	vbuf[ 8] = v1[2];
-	vbuf[ 9] = rr;
-	vbuf[10] = gg;
-	vbuf[11] = bb;
 
 	vbuf[12] = v2[0];
 	vbuf[13] = v2[1];
 	vbuf[14] = v2[2];
-	vbuf[15] = rr;
-	vbuf[16] = gg;
-	vbuf[17] = bb;
 
 	vbuf[18] = (v0[0]+v1[0]+v2[0])/3;
 	vbuf[19] = (v0[1]+v1[1]+v2[1])/3;
 	vbuf[20] = (v0[2]+v1[2]+v2[2])/3;
-	vbuf[21] = rr;
-	vbuf[22] = gg;
-	vbuf[23] = bb;
 
 	ibuf[0] = vlen+0;
 	ibuf[1] = vlen+3;
@@ -342,39 +322,35 @@ void gl41line_yshape(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 4, 3);
 	if(vlen < 0)return;
 
-	carveline_yshape(vbuf,vlen, ibuf,0, v0,v1,v2, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*4;j+=6){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carveline_yshape(vbuf,vlen, ibuf,0, v0,v1,v2);
 }
 
 
 
 
 void carveline_triangle(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 v0, vec3 v1, vec3 v2, u32 rgb)
+	vec3 v0, vec3 v1, vec3 v2)
 {
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	vbuf[ 0] = v0[0];
 	vbuf[ 1] = v0[1];
 	vbuf[ 2] = v0[2];
-	vbuf[ 3] = rr;
-	vbuf[ 4] = gg;
-	vbuf[ 5] = bb;
 
 	vbuf[ 6] = v1[0];
 	vbuf[ 7] = v1[1];
 	vbuf[ 8] = v1[2];
-	vbuf[ 9] = rr;
-	vbuf[10] = gg;
-	vbuf[11] = bb;
 
 	vbuf[12] = v2[0];
 	vbuf[13] = v2[1];
 	vbuf[14] = v2[2];
-	vbuf[15] = rr;
-	vbuf[16] = gg;
-	vbuf[17] = bb;
 
 	ibuf[0] = vlen;
 	ibuf[1] = vlen+1;
@@ -391,46 +367,39 @@ void gl41line_triangle(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 3, 3);
 	if(vlen < 0)return;
 
-	carveline_triangle(vbuf,vlen, ibuf,0, v0,v1,v2, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*3;j+=6){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carveline_triangle(vbuf,vlen, ibuf,0, v0,v1,v2);
 }
 
 
 
 
 void carveline_rect(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vf, u32 rgb)
+	vec3 vc, vec3 vr, vec3 vf)
 {
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	vbuf[ 0] = vc[0] - vr[0] - vf[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1];
 	vbuf[ 2] = vc[2] - vr[2] - vf[2];
-	vbuf[ 3] = rr;
-	vbuf[ 4] = gg;
-	vbuf[ 5] = bb;
 
 	vbuf[ 6] = vc[0] + vr[0] - vf[0];
 	vbuf[ 7] = vc[1] + vr[1] - vf[1];
 	vbuf[ 8] = vc[2] + vr[2] - vf[2];
-	vbuf[ 9] = rr;
-	vbuf[10] = gg;
-	vbuf[11] = bb;
 
 	vbuf[12] = vc[0] - vr[0] + vf[0];
 	vbuf[13] = vc[1] - vr[1] + vf[1];
 	vbuf[14] = vc[2] - vr[2] + vf[2];
-	vbuf[15] = rr;
-	vbuf[16] = gg;
-	vbuf[17] = bb;
 
 	vbuf[18] = vc[0] + vr[0] + vf[0];
 	vbuf[19] = vc[1] + vr[1] + vf[1];
 	vbuf[20] = vc[2] + vr[2] + vf[2];
-	vbuf[21] = rr;
-	vbuf[22] = gg;
-	vbuf[23] = bb;
 
 	ibuf[0] = vlen;
 	ibuf[1] = vlen+1;
@@ -449,25 +418,25 @@ void gl41line_rect(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 4, 4);
 	if(vlen < 0)return;
 
-	carveline_rect(vbuf,vlen, ibuf,0, vc,vr,vf, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*4;j+=6){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carveline_rect(vbuf,vlen, ibuf,0, vc,vr,vf);
 }
 
 
 
 
 void carveline_rectround(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vf, u32 rgb)
+	vec3 vc, vec3 vr, vec3 vf)
 {
 	int j;
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-	for(j=0;j<72;j+=6){
-		vbuf[j+3] = rr;
-		vbuf[j+4] = gg;
-		vbuf[j+5] = bb;
-	}
-
 	for(j=0;j<3;j++){
 		//lb
 		vbuf[ 0+j] = vc[j] -vr[j]     -vf[j]*0.9;
@@ -508,25 +477,24 @@ void gl41line_rectround(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 8, 8);
 	if(vlen < 0)return;
 
-	carveline_rectround(vbuf,vlen, ibuf,0, vc,vr,vf, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*8;j+=6){
+		vbuf[j+3] = rr;
+		vbuf[j+4] = gg;
+		vbuf[j+5] = bb;
+	}
+	carveline_rectround(vbuf,vlen, ibuf,0, vc,vr,vf);
 }
 
 
 
 
 void carveline_rectselect(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vf, u32 rgb)
+	vec3 vc, vec3 vr, vec3 vf)
 {
-	int j;
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-	for(j=0;j<72;j+=6){
-		vbuf[j+3] = rr;
-		vbuf[j+4] = gg;
-		vbuf[j+5] = bb;
-	}
-
 	//left bot
 	vbuf[ 0] = vc[0] - vr[0] - vf[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1];
@@ -607,36 +575,35 @@ void gl41line_rectselect(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 12, 8);
 	if(vlen < 0)return;
 
-	carveline_rectselect(vbuf,vlen, ibuf,0, vc,vr,vf, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*12;j+=6){
+		vbuf[j+3] = rr;
+		vbuf[j+4] = gg;
+		vbuf[j+5] = bb;
+	}
+	carveline_rectselect(vbuf,vlen, ibuf,0, vc,vr,vf);
 }
 
 
 
 
 void carveline_hexagon(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vu, u32 rgb)
+	vec3 vc, vec3 vr, vec3 vu)
 {
-	float v[4];
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	//0
 	vbuf[ 0] = vc[0] + vr[0];
 	vbuf[ 1] = vc[1] + vr[1];
 	vbuf[ 2] = vc[2] + vr[2];
-	vbuf[ 3] = rr;
-	vbuf[ 4] = gg;
-	vbuf[ 5] = bb;
 
 	//180
 	vbuf[18] = vc[0] - vr[0];
 	vbuf[19] = vc[1] - vr[1];
 	vbuf[20] = vc[2] - vr[2];
-	vbuf[21] = rr;
-	vbuf[22] = gg;
-	vbuf[23] = bb;
 
+	float v[4];
 	v[0] = vr[0];
 	v[1] = vr[1];
 	v[2] = vr[2];
@@ -646,17 +613,11 @@ void carveline_hexagon(float* vbuf, int vlen, u16* ibuf, int ilen,
 	vbuf[ 6] = vc[0] + v[0];
 	vbuf[ 7] = vc[1] + v[1];
 	vbuf[ 8] = vc[2] + v[2];
-	vbuf[ 9] = rr;
-	vbuf[10] = gg;
-	vbuf[11] = bb;
 
 	//240
 	vbuf[24] = vc[0] - v[0];
 	vbuf[25] = vc[1] - v[1];
 	vbuf[26] = vc[2] - v[2];
-	vbuf[27] = rr;
-	vbuf[28] = gg;
-	vbuf[29] = bb;
 
 	v[0] -= vr[0];
 	v[1] -= vr[1];
@@ -666,17 +627,11 @@ void carveline_hexagon(float* vbuf, int vlen, u16* ibuf, int ilen,
 	vbuf[12] = vc[0] + v[0];
 	vbuf[13] = vc[1] + v[1];
 	vbuf[14] = vc[2] + v[2];
-	vbuf[15] = rr;
-	vbuf[16] = gg;
-	vbuf[17] = bb;
 
 	//300
 	vbuf[30] = vc[0] - v[0];
 	vbuf[31] = vc[1] - v[1];
 	vbuf[32] = vc[2] - v[2];
-	vbuf[33] = rr;
-	vbuf[34] = gg;
-	vbuf[35] = bb;
 
 	ibuf[0] = vlen;
 	ibuf[1] = vlen+1;
@@ -699,23 +654,28 @@ void gl41line_hexagon(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 6, 6);
 	if(vlen < 0)return;
 
-	carveline_hexagon(vbuf,vlen, ibuf,0, vc,vr,vu, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*6;j+=6){
+		vbuf[j+3] = rr;
+		vbuf[j+4] = gg;
+		vbuf[j+5] = bb;
+	}
+	carveline_hexagon(vbuf,vlen, ibuf,0, vc,vr,vu);
 }
 
 
 
 
-void carveline_circle(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vf, u32 rgb)
-{
 #define lineacc (acc*2)
+void carveline_circle(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf)
+{
 	int j;
 	float c,s;
 	float q[4];
-
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	for(j=0;j<lineacc;j++)
 	{
@@ -724,10 +684,6 @@ void carveline_circle(float* vbuf, int vlen, u16* ibuf, int ilen,
 		vbuf[6*j+0] = vc[0] + vr[0]*c + vf[0]*s;
 		vbuf[6*j+1] = vc[1] + vr[1]*c + vf[1]*s;
 		vbuf[6*j+2] = vc[2] + vr[2]*c + vf[2]*s;
-
-		vbuf[6*j+3] = rr;
-		vbuf[6*j+4] = gg;
-		vbuf[6*j+5] = bb;
 
 		ibuf[2*j+0] = vlen+j;
 		ibuf[2*j+1] = vlen+(j+1)%lineacc;
@@ -741,7 +697,16 @@ void gl41line_circle(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, lineacc, lineacc);
 	if(vlen < 0)return;
 
-	carveline_circle(vbuf,vlen, ibuf,0, vc,vr,vf, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*lineacc;j+=6){
+		vbuf[j+3] = rr;
+		vbuf[j+4] = gg;
+		vbuf[j+5] = bb;
+	}
+	carveline_circle(vbuf,vlen, ibuf,0, vc,vr,vf);
 }
 
 
@@ -764,15 +729,11 @@ void carveline_pyramid6()
 
 
 void carveline_cone(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vu, u32 rgb)
+	vec3 vc, vec3 vr, vec3 vu)
 {
 	int a,b,j,k;
 	float s,t;
 	float r[4];
-
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
 
 	for(j=0;j<acc;j++)
 	{
@@ -786,10 +747,6 @@ void carveline_cone(float* vbuf, int vlen, u16* ibuf, int ilen,
 		vbuf[a+0] = vc[0] + r[0];
 		vbuf[a+1] = vc[1] + r[1];
 		vbuf[a+2] = vc[2] + r[2];
-
-		vbuf[a+3] = rr;
-		vbuf[a+4] = gg;
-		vbuf[a+5] = bb;
 
 		//bottom
 		ibuf[a+0] = vlen+acc;
@@ -809,16 +766,10 @@ void carveline_cone(float* vbuf, int vlen, u16* ibuf, int ilen,
 	vbuf[a+0] = vc[0];
 	vbuf[a+1] = vc[1];
 	vbuf[a+2] = vc[2];
-	vbuf[a+0] = rr;
-	vbuf[a+1] = gg;
-	vbuf[a+2] = bb;
 
 	vbuf[a+3] = vc[0]+vu[0];
 	vbuf[a+4] = vc[1]+vu[1];
 	vbuf[a+5] = vc[2]+vu[2];
-	vbuf[a+3] = rr;
-	vbuf[a+4] = gg;
-	vbuf[a+5] = bb;
 }
 void gl41line_cone(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vu)
@@ -828,7 +779,16 @@ void gl41line_cone(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc + 2, acc * 3);
 	if(vlen < 0)return;
 
-	carveline_cone(vbuf,vlen, ibuf,0, vc,vr,vu, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*(acc+2);j+=6){
+		vbuf[j+3] = rr;
+		vbuf[j+4] = gg;
+		vbuf[j+5] = bb;
+	}
+	carveline_cone(vbuf,vlen, ibuf,0, vc,vr,vu);
 }
 
 
@@ -842,67 +802,39 @@ void carveline_prism3()
 
 
 void carveline_prism4(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgb)
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-
 	vbuf[ 0] = vc[0] - vr[0] - vf[0] - vu[0];
 	vbuf[ 1] = vc[1] - vr[1] - vf[1] - vu[1];
 	vbuf[ 2] = vc[2] - vr[2] - vf[2] - vu[2];
-	vbuf[ 3] = rr;
-	vbuf[ 4] = gg;
-	vbuf[ 5] = bb;
 
 	vbuf[ 6] = vc[0] + vr[0] - vf[0] - vu[0];
 	vbuf[ 7] = vc[1] + vr[1] - vf[1] - vu[1];
 	vbuf[ 8] = vc[2] + vr[2] - vf[2] - vu[2];
-	vbuf[ 9] = rr;
-	vbuf[10] = gg;
-	vbuf[11] = bb;
 
 	vbuf[12] = vc[0] - vr[0] + vf[0] - vu[0];
 	vbuf[13] = vc[1] - vr[1] + vf[1] - vu[1];
 	vbuf[14] = vc[2] - vr[2] + vf[2] - vu[2];
-	vbuf[15] = rr;
-	vbuf[16] = gg;
-	vbuf[17] = bb;
 
 	vbuf[18] = vc[0] + vr[0] + vf[0] - vu[0];
 	vbuf[19] = vc[1] + vr[1] + vf[1] - vu[1];
 	vbuf[20] = vc[2] + vr[2] + vf[2] - vu[2];
-	vbuf[21] = rr;
-	vbuf[22] = gg;
-	vbuf[23] = bb;
 
 	vbuf[24] = vc[0] - vr[0] - vf[0] + vu[0];
 	vbuf[25] = vc[1] - vr[1] - vf[1] + vu[1];
 	vbuf[26] = vc[2] - vr[2] - vf[2] + vu[2];
-	vbuf[27] = rr;
-	vbuf[28] = gg;
-	vbuf[29] = bb;
 
 	vbuf[30] = vc[0] + vr[0] - vf[0] + vu[0];
 	vbuf[31] = vc[1] + vr[1] - vf[1] + vu[1];
 	vbuf[32] = vc[2] + vr[2] - vf[2] + vu[2];
-	vbuf[33] = rr;
-	vbuf[34] = gg;
-	vbuf[35] = bb;
 
 	vbuf[36] = vc[0] - vr[0] + vf[0] + vu[0];
 	vbuf[37] = vc[1] - vr[1] + vf[1] + vu[1];
 	vbuf[38] = vc[2] - vr[2] + vf[2] + vu[2];
-	vbuf[39] = rr;
-	vbuf[40] = gg;
-	vbuf[41] = bb;
 
 	vbuf[42] = vc[0] + vr[0] + vf[0] + vu[0];
 	vbuf[43] = vc[1] + vr[1] + vf[1] + vu[1];
 	vbuf[44] = vc[2] + vr[2] + vf[2] + vu[2];
-	vbuf[45] = rr;
-	vbuf[46] = gg;
-	vbuf[47] = bb;
 
 	ibuf[ 0] = vlen+0;
 	ibuf[ 1] = vlen+1;
@@ -939,7 +871,16 @@ void gl41line_prism4(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 8, 12);
 	if(vlen < 0)return;
 
-	carveline_prism4(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*8;j+=6){
+		vbuf[j+3] = rr;
+		vbuf[j+4] = gg;
+		vbuf[j+5] = bb;
+	}
+	carveline_prism4(vbuf,vlen, ibuf,0, vc,vr,vf,vu);
 }
 
 
@@ -959,15 +900,12 @@ void carveline_cask()
 
 
 void carveline_cylinder(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vu, u32 rgb)
+	vec3 vc, vec3 vr, vec3 vu)
 {
 	int a,b,j,k;
 	float s,t;
 	float r[4];
 
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
 	for(j=0;j<acc;j++)
 	{
 		r[0] = vr[0];
@@ -980,16 +918,10 @@ void carveline_cylinder(float* vbuf, int vlen, u16* ibuf, int ilen,
 		vbuf[a+ 0] = vc[0] - vu[0] + r[0];
 		vbuf[a+ 1] = vc[1] - vu[1] + r[1];
 		vbuf[a+ 2] = vc[2] - vu[2] + r[2];
-		vbuf[a+ 3] = rr;
-		vbuf[a+ 4] = gg;
-		vbuf[a+ 5] = bb;
 
 		vbuf[a+ 6] = vc[0] + vu[0] + r[0];
 		vbuf[a+ 7] = vc[1] + vu[1] + r[1];
 		vbuf[a+ 8] = vc[2] + vu[2] + r[2];
-		vbuf[a+ 9] = rr;
-		vbuf[a+10] = gg;
-		vbuf[a+11] = bb;
 
 		ibuf[a+0] = vlen + j*2;
 		ibuf[a+1] = vlen + ((j+1)%acc)*2;
@@ -1009,25 +941,25 @@ void gl41line_cylinder(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc * 2, acc * 3);
 	if(vlen < 0)return;
 
-	carveline_cylinder(vbuf,vlen,ibuf,0, vc,vr,vu, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*(acc*2);j+=6){
+		vbuf[j+3] = rr;
+		vbuf[j+4] = gg;
+		vbuf[j+5] = bb;
+	}
+	carveline_cylinder(vbuf,vlen,ibuf,0, vc,vr,vu);
 }
 
 
 
 
 void carveline_gear(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vf, u32 rgb, int teethcount)
+	vec3 vc, vec3 vr, vec3 vf, int teethcount)
 {
 	int j,k;
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-	for(j=0;j<teethcount*4;j++){
-		vbuf[j*6 + 3] = rr;
-		vbuf[j*6 + 4] = gg;
-		vbuf[j*6 + 5] = bb;
-	}
-
 	float a,c,s;
 	vec3 tc,tr,tf;
 	for(k=0;k<teethcount;k++){
@@ -1061,7 +993,16 @@ void gl41line_gear(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, teethcount*4, teethcount*4);
 	if(vlen < 0)return;
 
-	carveline_gear(vbuf,vlen, ibuf,0, vc,vr,vf, rgb, teethcount);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*(teethcount*4);j+=6){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carveline_gear(vbuf,vlen, ibuf,0, vc,vr,vf, teethcount);
 }
 void gl41line_rotategear(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, int teethcount, float a)
@@ -1092,21 +1033,10 @@ void carveline_octahedron()
 
 
 void carveline_dodecahedron(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgb)
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
-	int j;
 	float a = 1.618;
 	float b = 1.0/1.618;
-
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-	for(j=0;j<20*6;j+=6)
-	{
-		vbuf[j + 3] = rr;
-		vbuf[j + 4] = gg;
-		vbuf[j + 5] = bb;
-	}
 
 	//(+-1, +-1, +-1)
 	vbuf[  0] = vc[0]-vr[0]-vf[0]-vu[0];
@@ -1272,28 +1202,26 @@ void gl41line_dodecahedron(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 20, 30);
 	if(vlen < 0)return;
 
-	carveline_dodecahedron(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*20;j+=6){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carveline_dodecahedron(vbuf,vlen, ibuf,0, vc,vr,vf,vu);
 }
 
 
 
 
 void carveline_icosahedron(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgb)
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
-	int j;
 	float m = 0.52573111211913360602566908484788;
 	float n = 0.85065080835203993218154049706301;
-
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
-	for(j=0;j<12*6;j++)
-	{
-		vbuf[j + 3] = rr;
-		vbuf[j + 4] = gg;
-		vbuf[j + 5] = bb;
-	}
 
 	//(+-m, 0, +-n)
 	vbuf[ 0] = vc[0] - m*vr[0] - n*vu[0];
@@ -1420,24 +1348,30 @@ void gl41line_icosahedron(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, 12, 30);
 	if(vlen < 0)return;
 
-	carveline_icosahedron(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*12;j++){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carveline_icosahedron(vbuf,vlen, ibuf,0, vc,vr,vf,vu);
 }
 
 
 
 
-void carveline_sphere(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vf, vec3 vu, u32 rgb)
-{
 #define accx (acc)
 #define accy (acc|0x1)
+void carveline_sphere(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
 	int j,k,a,b;
 	float c,s;
 	vec3 tc, tr, tf;
 
-	float bb = (float)(rgb&0xff) / 256.0;
-	float gg = (float)((rgb>>8)&0xff) / 256.0;
-	float rr = (float)((rgb>>16)&0xff) / 256.0;
 	for(k=0;k<accy;k++)
 	{
 		s = (2*k-accy+1)*PI/(2*accy+2);
@@ -1467,10 +1401,6 @@ void carveline_sphere(float* vbuf, int vlen, u16* ibuf, int ilen,
 			vbuf[a+1] = tc[1] + tr[1]*c + tf[1]*s;
 			vbuf[a+2] = tc[2] + tr[2]*c + tf[2]*s;
 
-			vbuf[a+3] = rr;
-			vbuf[a+4] = gg;
-			vbuf[a+5] = bb;
-
 			ibuf[b+0] = vlen+(k*accx)+j;
 			ibuf[b+1] = vlen+(k*accx)+(j+1)%accx;
 		}
@@ -1481,17 +1411,10 @@ void carveline_sphere(float* vbuf, int vlen, u16* ibuf, int ilen,
 	vbuf[a+ 0] = vc[0]-vu[0];
 	vbuf[a+ 1] = vc[1]-vu[1];
 	vbuf[a+ 2] = vc[2]-vu[2];
-	vbuf[a+ 3] = rr;
-	vbuf[a+ 4] = gg;
-	vbuf[a+ 5] = bb;
 
 	vbuf[a+ 6] = vc[0]+vu[0];
 	vbuf[a+ 7] = vc[1]+vu[1];
 	vbuf[a+ 8] = vc[2]+vu[2];
-	vbuf[a+ 9] = rr;
-	vbuf[a+10] = gg;
-	vbuf[a+11] = bb;
-
 
 	for(k=0;k<accx;k++)
 	{
@@ -1520,5 +1443,14 @@ void gl41line_sphere(struct entity* win, u32 rgb,
 	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, accx*accy+2, accx*accy+accx*(accy+1));
 	if(vlen < 0)return;
 
-	carveline_sphere(vbuf,vlen, ibuf,0, vc,vr,vf,vu, rgb);
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*(accx*accy+2);j++){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carveline_sphere(vbuf,vlen, ibuf,0, vc,vr,vf,vu);
 }
