@@ -4,8 +4,18 @@ int openreadclose(void*, int, void*, int);
 
 
 
-int control_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int control_read(struct halfrel* self, struct halfrel* peer, u8* arg, int idx, void** buf, int len)
 {
+	struct artery* art;
+	struct str* str;
+	say("@control\n");
+
+	art = self->pchip;
+	str = (void*)art->data;
+	str->len = 1;
+	str->buf[0] = '!';
+
+	buf[0] = str;
 	return 0;
 }
 int control_write(struct halfrel* self, struct halfrel* peer, u8* arg, int idx, void* buf, int len)

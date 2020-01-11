@@ -235,69 +235,58 @@ int httpserver_create(struct artery* ele, u8* url)
 
 
 
-int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int httpmaster_write_bydst(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	int j,k,ret;
-	u8 tmp[0x1000];
-	struct str* s[16];
+	int ret;
+	u8 tmp[0x400];
+	struct artery* art = self->pchip;
+
+	//if stillgoing, store
+
+	//if finished, send
+	if(0 == arg)arg = "text/plain";
+	ret = mysnprintf(tmp, 0x1000,
+		"HTTP/1.1 200 OK\r\n"
+		"Content-type: %s\r\n"
+		"Content-Length: %d\r\n"
+		"\r\n",
+		arg, len
+	);
+	relationwrite(art, _src_, 0, 0, tmp, ret);
+	relationwrite(art, _src_, 0, 0, buf, len);
+	return 0;
+}
+int httpmaster_write_bysrc(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+{
 	struct httpparsed p;
-	struct relation* rel;
-	struct object* obj;
-	struct artery* ele;
 
-	ele = (void*)(self->chip);
-	if(0 == ele)return 0;
-
-	//say("foot=%.4s\n", &self->flag);
-	if(_dst_ == self->flag){
-		if(0 == arg)arg = "text/plain";
-		ret = mysnprintf(tmp, 0x1000,
-			"HTTP/1.1 200 OK\r\n"
-			"Content-type: %s\r\n"
-			"Content-Length: %d\r\n"
-			"\r\n",
-			arg, len
-		);
-		relationwrite(ele, _src_, 0, 0, tmp, ret);
-		relationwrite(ele, _src_, 0, 0, buf, len);
-		return 0;
-	}
-
-/*
-	//https
-	if(0x16 == buf[0])
-	{
-		e = arterycreate(_Tls_, 0);
-		if(e)
-		{
-			relationcreate(e, 0, _art_, 0, obj, 0, _fd_, 0);
-			tlsserver_write(e, sty, obj, pin, buf, len);
-		}
-		return 0;
-	}
-*/
 	//parse
 	httpparser(buf, len, &p);
 
 	//websocket
 	if((0 != p.Connection)&&(0 != p.Upgrade))
 	{
-		obj = (void*)(peer->chip);
-		if(0 == obj)return 0;
-
-		obj = obj->tempobj;
-		ele = arterycreate(_Ws_, 0, 0, 0);
-		rel = relationcreate(ele, 0, _art_, _src_, obj, 0, _sys_, _dst_);
-
+		struct object* TCP = peer->pchip;
+		if(0 == TCP)return 0;
+		struct object* Tcp = TCP->tempobj;
+		if(0 == Tcp)return 0;
+		struct artery* Ws = arterycreate(_Ws_, 0, 0, 0);
+		if(0 == Ws)return 0;
+		struct relation* rel = relationcreate(Ws, 0, _art_, _src_, Tcp, 0, _sys_, _dst_);
+		if(0 == rel)return 0;
 		self = (void*)&rel->dstchip;
 		peer = (void*)&rel->srcchip;
 		arterywrite(self, peer, 0, 0, buf, len);
 		return 0;
 	}
 
-	if(ele->orel0){
+	int j,ret;
+	u8 tmp[0x400];
+	struct artery* art = self->pchip;
+	if(art->orel0){
+		struct str* s[16];
 		for(j=0;j<4;j++)s[j] = 0;
-		relationread(ele, _dst_, p.GET, 0, s, 4);
+		relationread(art, _dst_, p.GET, 0, s, 4);
 
 		len = 0;
 		for(j=0;j<4;j++){
@@ -310,27 +299,28 @@ int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 			"\r\n",
 			"text/html", len
 		);
-		relationwrite(ele, _src_, 0, 0, tmp, ret);
+		relationwrite(art, _src_, 0, 0, tmp, ret);
 
 		for(j=0;j<4;j++){
-			if(s[j]){
-				relationwrite(ele, _src_, 0, 0, s[j]->buf, s[j]->len);
-			}
+			if(s[j])relationwrite(art, _src_, 0, 0, s[j]->buf, s[j]->len);
 		}
-		
 		return 0;
 	}
-
-	if(p.GET){
-		ret = mysnprintf(tmp, 0x1000,
-			"HTTP/1.1 200 OK\r\n"
-			"Content-type: text/plain\r\n"
-			"Content-Length: %d\r\n"
-			"\r\n",
-			len
-		);
-		relationwrite(ele, _src_, 0, 0, tmp, ret);
-		relationwrite(ele, _src_, 0, 0, buf, len);
+	else{
+		if(p.GET){
+			ret = mysnprintf(tmp, 0x1000,
+				"HTTP/1.1 200 OK\r\n"
+				"Content-type: text/plain\r\n"
+				"Content-Length: %d\r\n"
+				"\r\n",
+				len
+			);
+			relationwrite(art, _src_, 0, 0, tmp, ret);
+			relationwrite(art, _src_, 0, 0, buf, len);
+		}
+		else{
+			say("unknown: POST\n");
+		}
 	}
 
 	//close or not
@@ -339,6 +329,13 @@ int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 		if(0 == ncmp(p.Connection, "keep-alive", 10))return 0;
 	}
 	//systemdelete(obj);
+	return 0;
+}
+int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+{
+	say("foot=%.4s\n", &self->flag);
+	if(_dst_ == self->flag)return httpmaster_write_bydst(self,peer, arg,idx, buf,len);
+	else return httpmaster_write_bysrc(self,peer, arg,idx, buf,len);
 	return 0;
 }
 int httpmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

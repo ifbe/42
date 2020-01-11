@@ -3,8 +3,23 @@
 
 
 
-int search_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int search_read(struct halfrel* self, struct halfrel* peer, u8* arg, int idx, void** buf, int len)
 {
+	int j;
+	struct artery* art;
+	struct str* str;
+	say("@search\n");
+
+	art = self->pchip;
+	str = (void*)art->data;
+
+	for(j=0;j<8;j++){
+		if(arg[j] <= 0x20)break;
+		str->buf[j] = arg[j];
+	}
+	str->len = j;
+
+	buf[0] = str;
 	return 0;
 }
 int search_write(struct halfrel* self, struct halfrel* peer, u8* arg, int idx, void* buf, int len)

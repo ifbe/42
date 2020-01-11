@@ -821,19 +821,23 @@ struct artery
 	//[60,7f]: memory
 	union{
 		u64 addr0;
+		u64 data0;
 		void* buf0;
 	};
 	union{
 		u64 addr1;
+		u64 data1;
 		void* buf1;
 	};
 	union{
 		u64 len;
 		u64 addr2;
+		u64 data2;
 		void* buf2;
 	};
 	union{
 		u64 addr3;
+		u64 data3;
 		void* buf3;
 	};
 

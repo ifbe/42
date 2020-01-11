@@ -42,7 +42,7 @@ dylib:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lSDL2 -lm -lc
+	-lSDL2 -framework AudioToolbox -lm -lc
 program:
 	gcc \
 	$(library)/libboot0/*.o \
@@ -53,7 +53,7 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lSDL2 -lm
+	-lSDL2 -framework AudioToolbox -lm
 clean:
 	make -C $(library) clean
 	rm -f *.o

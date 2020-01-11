@@ -103,7 +103,7 @@ int systemdiscon(struct halfrel* self, struct halfrel* peer)
 }
 int systemlinkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@system_linkupn");
+	say("@system_linkup\n");
 	return 0;
 }
 
