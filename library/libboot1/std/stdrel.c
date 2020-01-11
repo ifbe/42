@@ -386,7 +386,7 @@ void* relationcreate(
 
 	return ww;
 }
-void relation_choose(struct item* item, struct relation* rel)
+void relationchoose(struct item* item, struct relation* rel)
 {
 	struct relation* prev;
 	struct relation* next;
@@ -429,7 +429,7 @@ void relation_choose(struct item* item, struct relation* rel)
 		return;
 	}
 }
-int relation_search(struct item* item, u32 foottype, struct halfrel* self[], struct halfrel* peer[])
+int relationsearch(struct item* item, u32 foottype, struct halfrel* self[], struct halfrel* peer[])
 {
 	struct relation* rel;
 

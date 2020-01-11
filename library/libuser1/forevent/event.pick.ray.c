@@ -3,7 +3,7 @@
 int invmvp(float* v, struct fstyle* sty);
 int obb_ray(struct fstyle* sty, vec3 ray[], vec3 out[]);
 int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
-int relation_search(void* item, u32 foottype, struct halfrel* self[], struct halfrel* peer[]);
+int relationsearch(void* item, u32 foottype, struct halfrel* self[], struct halfrel* peer[]);
 
 
 
@@ -13,7 +13,7 @@ static int clickray_send(struct entity* handler, vec3 ray[])
 	int ret;
 	struct halfrel* self[2];
 	struct halfrel* peer[2];
-	ret = relation_search(handler, _tar_, self, peer);
+	ret = relationsearch(handler, _tar_, self, peer);
 //say("clickray_send:%d\n", ret);
 	if(ret <= 0)return 0;
 

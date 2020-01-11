@@ -2,6 +2,7 @@
 #define MATBUF buf0
 #define CAMBUF buf1
 #define EVTYPE iw0
+#define EVSEND 666666
 void invmvp(float* v, struct fstyle* sty);
 void fixmatrix_transpose(float* m, struct fstyle* sty);
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
@@ -67,13 +68,11 @@ static void freecam_create(struct entity* act, void* arg, int argc, u8** argv)
     say("@freecam_create\n");
 
 	//script
+	act->EVTYPE = 0;
 	for(j=0;j<argc;j++){
 		if(0 == ncmp(argv[j], "script:", 7)){
 			if('f' == argv[j][7]){
 				act->EVTYPE = 'f';	//frus
-			}
-			else{
-				act->EVTYPE = 0;
 			}
 		}
 	}
@@ -792,16 +791,13 @@ static int freecam_write_bywnd(struct halfrel* self, struct halfrel* peer, struc
 //printmemory(stack,rsp*8);
 
 	struct event* ev = (void*)buf;
-	//say("%llx@freecam_write:%llx,%llx,%llx,%llx\n", act, ev->why, ev->what, ev->where, ev->when);
-	if(stack){
-		relationwrite(cam,_ev_, stack,rsp+2, buf,len);
+	switch(act->EVTYPE){
+	case EVSEND:{
+		if(stack)relationwrite(cam,_ev_, stack,rsp+2, buf,len);
+		break;
 	}
-
-	if('f' == act->EVTYPE){
-		freecam_event_frus(act,slot, wrd,geom, ev, 0);
-	}
-	else{
-		freecam_event_obb(act,slot, wrd,geom, ev, 0);
+	case 'f':return freecam_event_frus(act,slot, wrd,geom, ev, 0);break;
+	case 0:return freecam_event_obb(act,slot, wrd,geom, ev, 0);break;
 	}
 	return 0;
 }
@@ -830,6 +826,10 @@ static void freecam_discon(struct halfrel* self, struct halfrel* peer)
 static void freecam_linkup(struct halfrel* self, struct halfrel* peer)
 {
     say("@freecam_linkup\n");
+	if(_ev_ == self->flag){
+		struct entity* cam = self->pchip;
+		cam->EVTYPE = EVSEND;
+	}
 }
 
 

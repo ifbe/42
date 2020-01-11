@@ -371,6 +371,8 @@ int relationread( void* item, int foot, void* arg, int idx, void* buf, int len);
 int relationwrite(void* item, int foot, void* arg, int idx, void* buf, int len);
 int relationdiscon(struct halfrel* self, struct halfrel* peer);
 int relationlinkup(struct halfrel* self, struct halfrel* peer);
+int relationsearch(void*, u32 foot, struct halfrel** self, struct halfrel** peer);
+int relationmodify(void*, u32 foot);
 int relationdelete(void*);
 void* relationcreate(void*,void*,int,int,void*,void*,int,int);
 void* samesrcprevdst(void*);
