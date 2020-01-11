@@ -1,16 +1,8 @@
 #include "libuser.h"
 #define OWNBUF buf0
+int copypath(u8* path, u8* data);
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
-static void copypath(u8* path, u8* data)
-{
-	int j;
-	for(j=0;j<127;j++){
-		if(data[j] < 0x20)break;
-		path[j] = data[j];
-	}
-	path[j] = 0;
-}
 
 
 

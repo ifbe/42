@@ -3,18 +3,10 @@
 #define IMAGE buf0
 #define LABEL buf1
 #define WEIGH buf2
+int copypath(u8* path, u8* data);
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
 void gl41data_tmpcam(struct entity* wnd);
-static void copypath(u8* path, u8* data)
-{
-	int j;
-	for(j=0;j<127;j++){
-		if(data[j] < 0x20)break;
-		path[j] = data[j];
-	}
-	path[j] = 0;
-}
 
 
 

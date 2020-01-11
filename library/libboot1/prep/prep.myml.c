@@ -1,6 +1,8 @@
 #include "libuser.h"
-int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
 void* allocstyle();
+//
+int copypath(u8* path, u8* data);
+int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
 //
 int openreadclose(void*,int,void*,int);
 int openwriteclose(void*,int,void*,int);
@@ -23,18 +25,6 @@ struct footlist{
 
 
 
-int copypath(u8* path, u8* str)
-{
-	int j;
-	while(0x20 == *str)str++;
-
-	for(j=0;j<127;j++){
-		if(str[j] < 0x20)break;
-		path[j] = str[j];
-	}
-	path[j] = 0;
-	return j;
-}
 int parsefmt(u8* buf, u8* str)
 {
 	int j,k;

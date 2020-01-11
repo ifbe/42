@@ -38,3 +38,17 @@ void movsb(u8* rdi, u8* rsi, int rcx)
 		}
 	}
 }
+
+
+
+
+int copypath(u8* path, u8* data)
+{
+	int j;
+	for(j=0;j<127;j++){
+		if(data[j] < 0x20)break;
+		path[j] = data[j];
+	}
+	path[j] = 0;
+	return j;
+}

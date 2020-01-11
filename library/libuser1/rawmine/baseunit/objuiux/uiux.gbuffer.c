@@ -5,49 +5,24 @@ void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
 void gl41data_tmpcam(struct entity* wnd);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
-void loadtexfromfile(struct glsrc* src, int idx, char* name);
+//
+int copypath(u8* path, u8* data);
+int loadtexfromfile(struct glsrc* src, int idx, char* name);
 
 
 
 
-char* gbuffer_glsl_v =
-GLSL_VERSION
-"layout(location = 0)in mediump vec3 vertex;\n"
-"layout(location = 1)in mediump vec2 texuvw;\n"
-"out mediump vec2 uvw;\n"
-"uniform mat4 cammvp;\n"
-"void main(){\n"
-	"uvw = texuvw;\n"
-	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
-"}\n";
-
-char* gbuffer_glsl_f =
-GLSL_VERSION
-"in mediump vec2 uvw;\n"
-"out mediump vec4 FragColor;\n"
-"uniform sampler2D tex0;\n"
-"uniform sampler2D tex1;\n"
-"uniform sampler2D tex2;\n"
-"uniform sampler2D tex3;\n"
-"void main(){\n"
-	"if((uvw.x < 0.5)&&(uvw.y < 0.5))FragColor = vec4(texture(tex0, vec2(uvw.x*2.0-0.0, uvw.y*2.0-0.0)).rgb, 1.0);\n"
-	"if((uvw.x > 0.5)&&(uvw.y < 0.5))FragColor = vec4(texture(tex1, vec2(uvw.x*2.0-1.0, uvw.y*2.0-0.0)).rgb, 1.0);\n"
-	"if((uvw.x < 0.5)&&(uvw.y > 0.5))FragColor = vec4(texture(tex2, vec2(uvw.x*2.0-0.0, uvw.y*2.0-1.0)).rgb, 1.0);\n"
-	"if((uvw.x > 0.5)&&(uvw.y > 0.5))FragColor = vec4(texture(tex3, vec2(uvw.x*2.0-1.0, uvw.y*2.0-1.0)).rgb, 1.0);\n"
-"}\n";
-
-
-
-
-void gbuffer_ctxforwnd(struct glsrc* src)
+void gbuffer_ctxforwnd(struct glsrc* src, char* vs, char* fs)
 {
 	//property
 	src->geometry = 3;
 	src->method = 'v';
 
 	//shader
-	src->vs = gbuffer_glsl_v;
-	src->fs = gbuffer_glsl_f;
+	src->vs = memorycreate(0x1000, 0);
+	openreadclose(vs, 0, src->vs, 0x1000);
+	src->fs = memorycreate(0x1000, 0);
+	openreadclose(fs, 0, src->fs, 0x1000);
 	src->shader_enq = 42;
 
 	//vertex
@@ -181,12 +156,31 @@ static void gbuffer_delete(struct entity* act)
 {
 	if(0 == act)return;
 }
-static void gbuffer_create(struct entity* act, void* str)
+static void gbuffer_create(struct entity* act, void* arg, int argc, u8** argv)
 {
+	int j;
+	u8 vspath[128];
+	u8 fspath[128];
+	char* vs = 0;
+	char* fs = 0;
 	if(0 == act)return;
 
+	for(j=0;j<argc;j++){
+		//say("%d:%.8s\n", j, argv[j]);
+		if(0 == ncmp(argv[j], "vs:", 3)){
+			copypath(vspath, argv[j]+3);
+			vs = (void*)vspath;
+		}
+		if(0 == ncmp(argv[j], "fs:", 3)){
+			copypath(fspath, argv[j]+3);
+			fs = (void*)fspath;
+		}
+	}
+	if(0 == vs)vs = "datafile/shader/deferred/vert.glsl";
+	if(0 == fs)fs = "datafile/shader/deferred/frag.glsl";
+
 	act->CTXBUF = memorycreate(0x200, 0);
-	gbuffer_ctxforwnd(act->CTXBUF);
+	gbuffer_ctxforwnd(act->CTXBUF, vs, fs);
 }
 
 

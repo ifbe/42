@@ -20,7 +20,7 @@ t: 0.0, 0.0, 10000.0
 aaaapart{
 }
 aaaageom{
-c: 0.0, -3000.0, 2000.0
+c: 0.0, -4000.0, 5000.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 707.0,-707.0
 t: 0.0, 707.0, 707.0
@@ -67,6 +67,7 @@ fmt:3dworld
 }
 mixer{
 fmt:gbuffer
+fs:datafile/shader/deferred/test.glsl
 }
 </entity>
 

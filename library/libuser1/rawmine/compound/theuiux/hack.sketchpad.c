@@ -1,5 +1,6 @@
 #include "libuser.h"
 #define CTXBUF buf0
+int copypath(u8* path, u8* data);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 //
 double calculator(void* postfix, u64 x, u64 y);
@@ -42,15 +43,6 @@ static double scale = 0.0;
 
 
 
-static void copypath(u8* path, u8* data)
-{
-	int j;
-	for(j=0;j<127;j++){
-		if(data[j] < 0x20)break;
-		path[j] = data[j];
-	}
-	path[j] = 0;
-}
 static void sketchpad_ctxforwnd(struct glsrc* src, char* vs, char* fs)
 {
 	src->geometry = 3;

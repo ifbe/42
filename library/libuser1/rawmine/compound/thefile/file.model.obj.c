@@ -1,21 +1,13 @@
 #include "libuser.h"
 #define OBJBUF buf0
 #define CTXBUF buf1
+int copypath(u8* path, u8* data);
 void parsevertfromobj(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 
 
-static void copypath(u8* path, u8* data)
-{
-	int j;
-	for(j=0;j<127;j++){
-		if(data[j] < 0x20)break;
-		path[j] = data[j];
-	}
-	path[j] = 0;
-}
 static void sty_sty_mat(struct fstyle* src, struct fstyle* dst, mat4 mat)
 {
 	float x,y,z,max;
