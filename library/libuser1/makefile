@@ -131,6 +131,8 @@ rawmine/baseunit/objvkbd/vkbd.keyboard.c \
 rawmine/baseunit/objvkbd/vkbd.slider.c \
 rawmine/compound/thechip/chip.acdc.hbridge.c \
 rawmine/compound/thechip/chip.acdc.rectifier.c \
+rawmine/compound/thechip/chip.fet.pmos.c \
+rawmine/compound/thechip/chip.fet.nmos.c \
 rawmine/compound/thechip/chip.logic.not.c \
 rawmine/compound/thechip/chip.logic.nand.c \
 rawmine/compound/thechip/chip.logic.and.c \

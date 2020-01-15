@@ -9,11 +9,15 @@ void mine_init(void*);
 //
 int baby_create(void*, void*, int, u8**);
 int baby_delete(void*, void*);
+int baby_linkup(void*, void*);
+int baby_discon(void*, void*);
 int baby_read(void*, void*, void*, int, void*, int);
 int baby_write(void*, void*, void*, int, void*, int);
 //
 int test_create(void*, void*, int, u8**);
 int test_delete(void*, void*);
+int test_linkup(void*, void*);
+int test_discon(void*, void*);
 int test_read(void*, void*, void*, int, void*, int);
 int test_write(void*, void*, void*, int, void*, int);
 
@@ -54,32 +58,44 @@ int world3d_read(void*, void*, void*, int, void*, int);
 //
 int htmlnode_create(void*, void*, int, u8**);
 int htmlnode_delete(void*);
+int htmlnode_linkup(void*, void*);
+int htmlnode_discon(void*, void*);
 int htmlnode_write(void*, void*, void*, int, void*, int);
 int htmlnode_read( void*, void*, void*, int, void*, int);
 
 //
 int reality_create(void*, void*, int, u8**);
 int reality_delete(void*);
+int reality_linkup(void*, void*);
+int reality_discon(void*, void*);
 int reality_write(void*, void*, void*, int, void*, int);
 int reality_read( void*, void*, void*, int, void*, int);
 
 //gl41 helper
 int gl41data_create(void*, void*, int, u8**);
 int gl41data_delete(void*);
+int gl41data_linkup(void*, void*);
+int gl41data_discon(void*, void*);
 int gl41data_read( void*, void*, void*, int, void*, int);
 int gl41data_write(void*, void*, void*, int, void*, int);
 int gl41coop_create(void*, void*, int, u8**);
 int gl41coop_delete(void*);
+int gl41coop_linkup(void*, void*);
+int gl41coop_discon(void*, void*);
 int gl41coop_read( void*, void*, void*, int, void*, int);
 int gl41coop_write(void*, void*, void*, int, void*, int);
 
 //event
 int event3rd_create(void*, void*, int, u8**);
 int event3rd_delete(void*);
+int event3rd_linkup(void*, void*);
+int event3rd_discon(void*, void*);
 int event3rd_read( void*, void*, void*, int, void*, int);
 int event3rd_write(void*, void*, void*, int, void*, int);
 int clickray_create(void*, void*, int, u8**);
 int clickray_delete(void*);
+int clickray_linkup(void*, void*);
+int clickray_discon(void*, void*);
 int clickray_read( void*, void*, void*, int, void*, int);
 int clickray_write(void*, void*, void*, int, void*, int);
 
@@ -193,7 +209,6 @@ int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 {
 	struct entity* act;
 	if(0 == self)return 0;
-
 	act = self->pchip;
 	if(0 == act)return 0;
 
@@ -205,9 +220,9 @@ int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 		case _world3d_:return world3d_read(self, peer, arg, idx, buf, len);
 		case _scene3d_:return scene3d_read(self, peer, arg, idx, buf, len);
 		case _eeworld_:return eeworld_read(self, peer, arg, idx, buf, len);
+		case _reality_:return reality_read(self, peer, arg, idx, buf, len);
 		case _sch_:return sch_read(self, peer, arg, idx, buf, len);
 		case _pcb_:return pcb_read(self, peer, arg, idx, buf, len);
-		case _reality_:return reality_read(self, peer, arg, idx, buf, len);
 		case _html_:return htmlnode_read(self, peer, arg, idx, buf, len);
 		case _test_:return test_read(self, peer, arg, idx, buf, len);
 		case _baby_:return baby_read(self, peer, arg, idx, buf, len);
@@ -220,7 +235,6 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 {
 	struct entity* act;
 	if(0 == self)return 0;
-
 	act = self->pchip;
 	if(0 == act)return 0;
 
@@ -232,9 +246,9 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 		case _world3d_:return world3d_write(self, peer, arg, idx, buf, len);
 		case _scene3d_:return scene3d_write(self, peer, arg, idx, buf, len);
 		case _eeworld_:return eeworld_write(self, peer, arg, idx, buf, len);
+		case _reality_:return reality_write(self, peer, arg, idx, buf, len);
 		case _sch_:return sch_write(self, peer, arg, idx, buf, len);
 		case _pcb_:return pcb_write(self, peer, arg, idx, buf, len);
-		case _reality_:return reality_write(self, peer, arg, idx, buf, len);
 		case _html_:return htmlnode_write(self, peer, arg, idx, buf, len);
 		case _test_:return test_write(self, peer, arg, idx, buf, len);
 		case _baby_:return baby_write(self, peer, arg, idx, buf, len);
@@ -247,9 +261,25 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 {
 	struct entity* act;
 	if(0 == self)return 0;
-
-	act = (void*)(self->chip);
+	act = self->pchip;
 	if(0 == act)return 0;
+
+	//say("@entity_discon\n");
+	switch(act->type){
+		case _clickray_:return clickray_discon(self, peer);
+		case _event3rd_:return event3rd_discon(self, peer);
+		case _gl41data_:return gl41data_discon(self, peer);
+		case _gl41coop_:return gl41coop_discon(self, peer);
+		case _world3d_:return world3d_discon(self, peer);
+		case _scene3d_:return scene3d_discon(self, peer);
+		case _eeworld_:return eeworld_discon(self, peer);
+		case _reality_:return reality_discon(self, peer);
+		case _sch_:return sch_discon(self, peer);
+		case _pcb_:return pcb_discon(self, peer);
+		case _html_:return htmlnode_discon(self, peer);
+		case _test_:return test_discon(self, peer);
+		case _baby_:return baby_discon(self, peer);
+	}
 
 	if(0 == act->ondiscon)return 0;
 	return act->ondiscon(self, peer);
@@ -258,11 +288,26 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct entity* act;
 	if(0 == self)return 0;
-
-	act = (void*)(self->chip);
+	act = self->pchip;
 	if(0 == act)return 0;
 
-	say("@entity_linkup\n");
+	//say("@entity_linkup\n");
+	switch(act->type){
+		case _clickray_:return clickray_linkup(self, peer);
+		case _event3rd_:return event3rd_linkup(self, peer);
+		case _gl41data_:return gl41data_linkup(self, peer);
+		case _gl41coop_:return gl41coop_linkup(self, peer);
+		case _world3d_:return world3d_linkup(self, peer);
+		case _scene3d_:return scene3d_linkup(self, peer);
+		case _eeworld_:return eeworld_linkup(self, peer);
+		case _reality_:return reality_linkup(self, peer);
+		case _sch_:return sch_linkup(self, peer);
+		case _pcb_:return pcb_linkup(self, peer);
+		case _html_:return htmlnode_linkup(self, peer);
+		case _test_:return test_linkup(self, peer);
+		case _baby_:return baby_linkup(self, peer);
+	}
+
 	if(0 == act->onlinkup)return 0;
 	return act->onlinkup(self, peer);
 }

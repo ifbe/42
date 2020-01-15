@@ -82,6 +82,18 @@ int htmlnode_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 	relationwrite(self->pchip, _src_, "text/html", 0, "htmlnode_read\n", 14);
 	return 0;
 }
+int htmlnode_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int htmlnode_linkup(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+
+
+
+
 int htmlnode_delete(struct entity* win)
 {
 	return 0;

@@ -33,9 +33,9 @@ int scene3d_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int scene3d_start(struct halfrel* self, struct halfrel* peer)
+int scene3d_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@scene3d_start\n");
+	say("@scene3d_linkup\n");
 	return 0;
 }
 

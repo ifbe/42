@@ -27,6 +27,9 @@ void finfet_register(void*);
 void resistor_register(void*);
 void vsrc_register(void*);
 //
+void pmos_register(void*);
+void nmos_register(void*);
+//
 void halfadd_register(void*);
 void fulladd_register(void*);
 //chip.compound
@@ -254,6 +257,12 @@ void content_create(void* addr)
 
 
 //-------------------chip.baseunit-----------------
+	pmos_register(tmp);
+	tmp -= sizeof(struct entity);
+
+	nmos_register(tmp);
+	tmp -= sizeof(struct entity);
+
 	nand_register(tmp);
 	tmp -= sizeof(struct entity);
 
