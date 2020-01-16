@@ -44,8 +44,8 @@ static void nmos_draw_cli(
 
 static u32 nmos_color(int val)
 {
-	if(1 == val)return 0xff0000;
-	if(-1== val)return 0x0000ff;
+	if(val < 0)return 0x0000ff;
+	if(val > 0)return 0xff0000;
 	return 0xffffff;
 }
 static void nmos_draw_gl41(
