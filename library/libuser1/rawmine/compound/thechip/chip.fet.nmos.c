@@ -59,7 +59,7 @@ static void nmos_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	gl41line_rect(wnd, 0xffffff, vc, vr, vf);
+	//gl41line_rect(wnd, 0xffffff, vc, vr, vf);
 
 	u32 dcolor = nmos_color(ent->Dvalue);
 	u32 scolor = nmos_color(ent->Svalue);
@@ -142,33 +142,60 @@ static void nmos_read_bycam(struct halfrel* self, struct halfrel* peer, struct h
 
 
 
+static void nmos_read_D(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+{
+	struct entity* mos = self->pchip;
+	if(mos->Gvalue <= 0)return;
+
+	if(0 == mos->Scount){
+		buf[0] = 'n';
+		return;
+	}
+	if((0 == mos->Dvalue)&&(0 != mos->Svalue)){
+		mos->Dvalue = mos->Svalue;
+		if(mos->Svalue > 0)buf[0] = 'p';
+		if(mos->Dvalue < 0)buf[0] = 'n';
+	}
+}
 static void nmos_write_D(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+{
+	struct entity* mos = self->pchip;
+	switch(buf[0]){
+		case 'p':mos->Dvalue = 1;break;
+		case 'n':mos->Dvalue =-1;break;
+		default:mos->Dvalue = 0;
+	}
+}
+static void nmos_read_S(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
 }
 static void nmos_write_S(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
+	struct entity* mos = self->pchip;
+	switch(buf[0]){
+		case 'p':mos->Svalue = 1;break;
+		case 'n':mos->Svalue =-1;break;
+		default:mos->Svalue = 0;
+	}
 }
-static void nmos_write_B(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static void nmos_read_G(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
 }
 static void nmos_write_G(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
-	u8 tmp[2];
-	struct entity* mos;
-	say("@nmos_write_G:%c\n",buf[0]);
+	struct entity* mos = self->pchip;
+	switch(buf[0]){
+		case 'p':mos->Gvalue = 1;break;
+		case 'n':mos->Gvalue =-1;break;
+		default:mos->Gvalue = 0;
+	}
 
-	mos = self->pchip;
 	if(0 == mos->Scount){
-		if('1' == buf[0]){
-			mos->Gvalue = 1;
+		if(mos->Gvalue > 0){
 			mos->Dvalue = -1;
 
-			tmp[0] = '0';
-			relationwrite(mos, 'D', 0, 0, tmp, 1);
-		}
-		if('0' == buf[0]){
-			mos->Gvalue = -1;
-			mos->Dvalue = 0;
+			u8 tmp = 'n';
+			relationwrite(mos, 'D', stack, rsp, &tmp, 1);
 		}
 	}
 }
@@ -178,10 +205,17 @@ static void nmos_write_G(struct halfrel* self, struct halfrel* peer, struct half
 
 static void nmos_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
-	nmos_read_bycam(self,peer, stack,rsp, buf,len);
+	switch(self->flag){
+		case 'D':nmos_read_D(self,peer, stack,rsp, buf,len);return;
+		case 'S':nmos_read_S(self,peer, stack,rsp, buf,len);return;
+		//case 'B':nmos_read_B(self,peer, stack,rsp, buf,len);return;
+		case 'G':nmos_read_G(self,peer, stack,rsp, buf,len);return;
+		default: nmos_read_bycam(self,peer, stack,rsp, buf,len);
+	}
 }
 static void nmos_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
+	say("nmos_write: %.4s\n", &self->flag);
 	switch(self->flag){
 		case 'D':nmos_write_D(self,peer, stack,rsp, buf,len);return;
 		case 'S':nmos_write_S(self,peer, stack,rsp, buf,len);return;

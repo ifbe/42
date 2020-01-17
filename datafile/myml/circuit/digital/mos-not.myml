@@ -2,7 +2,7 @@
 n0slot{
 }
 n0geom{
-c: 0.0, -500.0, 0.0
+c: 1000.0, -500.0, 0.0
 r: 400.0, 0.0, 0.0
 f: 0.0, 400.0, 0.0
 t: 0.0, 0.0, 400.0
@@ -11,7 +11,7 @@ t: 0.0, 0.0, 400.0
 p0slot{
 }
 p0geom{
-c: 0.0, 500.0, 0.0
+c: 1000.0, 500.0, 0.0
 r: 400.0, 0.0, 0.0
 f: 0.0, 400.0, 0.0
 t: 0.0, 0.0, 400.0
@@ -20,9 +20,18 @@ t: 0.0, 0.0, 400.0
 schslot{
 }
 schgeom{
-c: 0.0, 0.0, -1.0
-r: 2000.0, 0.0, 0.0
-f: 0.0, 2000.0, 0.0
+c: 1000.0, 0.0, -1.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1.0
+}
+
+notslot{
+}
+notgeom{
+c: -1000.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1.0
 }
 
@@ -57,9 +66,12 @@ fmt:pmos
 }
 sch{
 fmt:sch
-url:datafile/wiring/not.wire
+url:datafile/wiring/mos-not.wire
 }
 
+not{
+fmt:not
+}
 cam{
 fmt:freecam
 }
@@ -90,6 +102,7 @@ fmt:poller
 
 
 <relation>
+(std, 0, dst) -> (not, 0, ev)
 (std, 0, dst) -> (sch, 0, ev)
 
 (sch, 0, a) -> (pmos, 0, G)
@@ -100,6 +113,7 @@ fmt:poller
 (world, p0geom, 0) -> (pmos, p0slot, 0)
 (world, n0geom, 0) -> (nmos, n0slot, 0)
 (world, schgeom, 0) -> (sch, schslot, 0)
+(world, notgeom, 0) -> (not, notslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)
 
 (glwnd, rect, 0) -> (cam, 0, 0)

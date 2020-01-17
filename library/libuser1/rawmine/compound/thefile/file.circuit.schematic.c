@@ -59,24 +59,134 @@ u32 sch_color(int val)
 	if(val > 0)return 0xff0000;
 	return 0xffffff;
 }
+void broadcast_except(struct halfrel* self, void* except, void* stack, int rsp, u8* buf, int len)
+{
+	struct entity* ent;
+	struct relation* rel;
+	if(rsp>3)return;
+
+	ent = self->pchip;
+say("rsp=%d\n",rsp);
+
+	rel = ent->orel0;
+	while(1){
+		if(0 == rel)break;
+		if((rel->srcflag == self->flag) && (rel->dst != except)){
+			entitywrite((void*)(rel->dst), (void*)(rel->src), stack, rsp, buf, len);
+		}
+		rel = samesrcnextdst(rel);
+	}
+
+	rel = ent->irel0;
+	while(1){
+		if(0 == rel)break;
+		if((rel->dstflag == self->flag)&&(rel->src != except)){
+			entitywrite((void*)(rel->src), (void*)(rel->dst), stack, rsp, buf, len);
+		}
+		rel = samedstnextsrc(rel);
+	}
+}
+
+
+
+
+void sch_simple(struct entity* ent, struct wireindex* sts)
+{
+	u8 any = 0;
+	u8 positive = 'p';
+	u8 negative = 'n';
+
+	if(sts[0].val <= 0){
+		sts[0].val = 1;
+		relationwrite(ent, 'a', 0, 0, &positive, 1);
+	}
+	else{
+		sts[0].val = -1;
+		relationwrite(ent, 'a', 0, 0, &negative, 1);
+	}
+}
+void sch_complex(struct entity* ent, struct wireindex* sts, u8* buf, int len)
+{
+	int j;
+	u8 any = 0;
+	u8 positive = 'p';
+	u8 negative = 'n';
+
+	//step0: clear
+	for(j=0;j<16;j++){
+		if(0 == sts[j].cnt)break;
+		sts[j].val = 0;
+	}
+	relationwrite(ent, 'a', 0, 0, &any, 0);
+	relationwrite(ent, 'b', 0, 0, &any, 0);
+	relationwrite(ent, 'c', 0, 0, &any, 0);
+	relationwrite(ent, 'd', 0, 0, &any, 0);
+
+	//step1: send
+	switch(buf[0]){
+	case '0':{
+		sts[0].val = -1;
+		relationwrite(ent, 'a', 0, 0, &negative, 0);
+		sts[1].val = -1;
+		relationwrite(ent, 'b', 0, 0, &negative, 0);
+		break;
+	}
+	case '1':{
+		sts[0].val = 1;
+		relationwrite(ent, 'a', 0, 0, &positive, 0);
+		sts[1].val = -1;
+		relationwrite(ent, 'b', 0, 0, &negative, 0);
+		break;
+	}
+	case '2':{
+		sts[0].val = -1;
+		relationwrite(ent, 'a', 0, 0, &negative, 0);
+		sts[1].val = 1;
+		relationwrite(ent, 'b', 0, 0, &positive, 0);
+		break;
+	}
+	case '3':{
+		sts[0].val = 1;
+		relationwrite(ent, 'a', 0, 0, &positive, 0);
+		sts[1].val = 1;
+		relationwrite(ent, 'b', 0, 0, &positive, 0);
+		break;
+	}
+	}
+
+	//step2: read
+	u8 val;
+	for(j=1;j<16;j++){
+		if(0 == sts[j].cnt)break;
+		val = 0;
+		relationread(ent, 'a'+j, 0, 0, &val, 1);
+		if('p' == val)sts[j].val = 1;
+		if('n' == val)sts[j].val =-1;
+	}
+}
+
+
+
+
 static void sch_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	int j,k;
-	vec3 tc,tr,tf,tt;
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
 	gl41solid_rect(wnd, 0x404040, vc, vr, vf);
 
-	int off,cnt,rgb;
 	struct wireindex* sts = act->buf0;
 	if(0 == sts)return;
 	float* dat = act->buf1;
 	if(0 == dat)return;
+
+	int j,k;
+	int off,cnt,rgb;
+	vec3 ta,tb;
 	for(k=0;k<0x10000/sizeof(struct wireindex);k++){
 		cnt = sts[k].cnt;
 		if(0 == cnt)break;
@@ -85,7 +195,13 @@ static void sch_draw_gl41(
 		rgb = sch_color(sts[k].val);
 		for(j=6*off;j<6*(off+cnt);j+=6){
 			//say("j=%d\n",j);
-			gl41line(wnd, rgb, &dat[j+0], &dat[j+3]);
+			ta[0] = vc[0]+dat[j+0];
+			ta[1] = vc[1]+dat[j+1];
+			ta[2] = vc[2]+dat[j+2];
+			tb[0] = vc[0]+dat[j+3];
+			tb[1] = vc[1]+dat[j+4];
+			tb[2] = vc[2]+dat[j+5];
+			gl41line(wnd, rgb, ta, tb);
 		}
 	}
 }
@@ -133,17 +249,32 @@ int sch_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack,
 int sch_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
 	struct entity* ent = self->pchip;
+	if(0 == ent)return 0;
 	struct wireindex* sts = ent->buf0;
+	if(0 == sts)return 0;
+say("sch_write: %.4s\n", &self->flag);
 	switch(self->flag){
 		case _ev_:{
-			if('1' == buf[0])sts[0].val = 1;
-			if('0' == buf[0])sts[0].val = -1;
-			relationwrite(ent, 'a', 0, 0, buf, 0);
+			if('a' == buf[0])sch_simple(ent, sts);
+			else sch_complex(ent, sts, buf, len);
 			break;
 		}
 		case 'b':{
-			if('1' == buf[0])sts[1].val = 1;
-			if('0' == buf[0])sts[1].val = -1;
+			if('p' == buf[0])sts[1].val = 1;
+			if('n' == buf[0])sts[1].val =-1;
+			broadcast_except(self, peer, stack, rsp+1, buf, 1);
+			break;
+		}
+		case 'c':{
+			if('p' == buf[0])sts[2].val = 1;
+			if('n' == buf[0])sts[2].val =-1;
+			broadcast_except(self, peer, stack, rsp+1, buf, 1);
+			break;
+		}
+		case 'd':{
+			if('p' == buf[0])sts[3].val = 1;
+			if('n' == buf[0])sts[3].val =-1;
+			broadcast_except(self, peer, stack, rsp+1, buf, 1);
 			break;
 		}
 	}

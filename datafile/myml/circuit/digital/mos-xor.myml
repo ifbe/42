@@ -1,0 +1,188 @@
+<style>
+lnslot{
+}
+lngeom{
+c: 500.0, -500.0, 0.0
+r: 250.0, 0.0, 0.0
+f: 0.0, 250.0, 0.0
+t: 0.0, 0.0, 250.0
+}
+
+lpslot{
+}
+lpgeom{
+c: 500.0, 500.0, 0.0
+r: 250.0, 0.0, 0.0
+f: 0.0, 250.0, 0.0
+t: 0.0, 0.0, 250.0
+}
+
+tnslot{
+}
+tngeom{
+c: 1000.0, -125.0, 0.0
+f:-250.0, 0.0, 0.0
+r: 0.0, 250.0, 0.0
+t: 0.0, 0.0, 250.0
+}
+
+tpslot{
+}
+tpgeom{
+c: 1000.0, 125.0, 0.0
+f: 250.0, 0.0, 0.0
+r: 0.0,-250.0, 0.0
+t: 0.0, 0.0, 250.0
+}
+
+rnslot{
+}
+rngeom{
+c: 1500.0, -500.0, 0.0
+r: 250.0, 0.0, 0.0
+f: 0.0, 250.0, 0.0
+t: 0.0, 0.0, 250.0
+}
+
+rpslot{
+}
+rpgeom{
+c: 1500.0, 500.0, 0.0
+r: 250.0, 0.0, 0.0
+f: 0.0, 250.0, 0.0
+t: 0.0, 0.0, 250.0
+}
+
+schslot{
+}
+schgeom{
+c: 1000.0, 0.0, -1.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1.0
+}
+
+xorslot{
+}
+xorgeom{
+c: -1000.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1.0
+}
+
+camslot{
+}
+camgeom{
+c: 0.0, 0.0, 2000.0
+r: 1.0, 0.0, 0.0
+t: 0.0, 1.0, 0.0
+f: 0.0, 0.0,-1.0
+L: 0.0, 0.0, 0.0,-1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0,-1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 10000000000.0
+}
+
+rect{
+c: 0.0, 0.0
+q: 1.0, 1.0
+}
+</style>
+
+
+<entity>
+ln{
+fmt:nmos
+}
+lp{
+fmt:pmos
+}
+tn{
+fmt:nmos
+}
+tp{
+fmt:pmos
+}
+rn{
+fmt:nmos
+}
+rp{
+fmt:pmos
+}
+sch{
+fmt:sch
+url:datafile/wiring/mos-xor.wire
+}
+
+xor{
+fmt:xor
+}
+cam{
+fmt:freecam
+}
+world{
+fmt:3dworld
+}
+</entity>
+
+
+<supply>
+glwnd{
+fmt:gl41wnd0
+}
+opengl{
+fmt:wnd
+}
+std{
+fmt:std
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<relation>
+(std, 0, dst) -> (xor, 0, src)
+(std, 0, dst) -> (sch, 0, ev)
+
+(sch, 0, a) -> (lp, 0, G)
+(sch, 0, a) -> (ln, 0, G)
+(sch, 0, a) -> (tp, 0, G)
+(sch, 0, a) -> (rp, 0, S)
+
+(sch, 0, b) -> (rp, 0, G)
+(sch, 0, b) -> (rn, 0, G)
+(sch, 0, b) -> (tp, 0, S)
+(sch, 0, b) -> (tn, 0, S)
+
+(sch, 0, c) -> (lp, 0, D)
+(sch, 0, c) -> (ln, 0, D)
+(sch, 0, c) -> (tn, 0, G)
+(sch, 0, c) -> (rn, 0, S)
+
+(sch, 0, d) -> (rp, 0, D)
+(sch, 0, d) -> (rn, 0, D)
+(sch, 0, d) -> (tp, 0, D)
+(sch, 0, d) -> (tn, 0, D)
+
+(world, lpgeom, 0) -> (lp, lpslot, 0)
+(world, lngeom, 0) -> (ln, lnslot, 0)
+(world, tpgeom, 0) -> (tp, tpslot, 0)
+(world, tngeom, 0) -> (tn, tnslot, 0)
+(world, rpgeom, 0) -> (rp, rpslot, 0)
+(world, rngeom, 0) -> (rn, rnslot, 0)
+(world, schgeom, 0) -> (sch, schslot, 0)
+(world, xorgeom, 0) -> (xor, xorslot, 0)
+(world, camgeom, 0) -> (cam, camslot, 0)
+
+(glwnd, rect, 0) -> (cam, 0, 0)
+(opengl, 0, wnd) -> (glwnd, 0, 0)
+</relation>

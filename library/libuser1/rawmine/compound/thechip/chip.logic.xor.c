@@ -58,8 +58,8 @@ static void xor_draw_gl41_12t(
 
 	u32 acolor = ent->ix0 ? 0xff0000 : 0x0000ff;
 	u32 xcolor = ent->ix0 ? 0x0000ff : 0xff0000;	//x=a'
-	u32 bcolor = ent->iy0 ? 0xff0000 : 0x0000ff;
-	u32 ycolor = ent->iy0 ? 0x0000ff : 0xff0000;	//y=b'
+	u32 bcolor = ent->ix0 ? 0xff0000 : 0x0000ff;
+	u32 ycolor = ent->ix0 ? 0x0000ff : 0xff0000;	//y=b'
 	u32 ocolor = ent->iz0 ? 0xff0000 : 0x0000ff;
 	u32 mcolor[8] = {
 		0xffffff, 0xffffff,
@@ -69,17 +69,17 @@ static void xor_draw_gl41_12t(
 	};
 	if(1 == ent->ix0){
 		mcolor[0] = 0xff0000;
-		if(0 == ent->iy0)mcolor[2] = 0xff0000;
+		if(0 == ent->ix0)mcolor[2] = 0xff0000;
 	}
 	if(0 == ent->ix0){
 		mcolor[1] = 0xff0000;
-		if(1 == ent->iy0)mcolor[3] = 0xff0000;
+		if(1 == ent->ix0)mcolor[3] = 0xff0000;
 	}
-	if(1 == ent->iy0){
+	if(1 == ent->ix0){
 		mcolor[6] = 0x0000ff;
 		if(1 == ent->ix0)mcolor[4] = 0x0000ff;
 	}
-	if(0 == ent->iy0){
+	if(0 == ent->ix0){
 		mcolor[7] = 0x0000ff;
 		if(0 == ent->ix0)mcolor[5] = 0x0000ff;
 	}
@@ -170,9 +170,9 @@ static void xor_draw_gl41(
 	float* vt = geom->f.vt;
 	gl41line_rect(ctx, 0x404040, vc, vr, vf);
 
-	u32 acolor = ent->ix0 ? 0xff0000 : 0x0000ff;
-	u32 bcolor = ent->iy0 ? 0xff0000 : 0x0000ff;
-	u32 xcolor = ent->iy0 ? 0x0000ff : 0xff0000;
+	u32 acolor = ent->iy0 ? 0xff0000 : 0x0000ff;
+	u32 bcolor = ent->ix0 ? 0xff0000 : 0x0000ff;
+	u32 xcolor = ent->ix0 ? 0x0000ff : 0xff0000;
 	u32 ocolor = ent->iz0 ? 0xff0000 : 0x0000ff;
 
 	//b
@@ -200,7 +200,7 @@ static void xor_draw_gl41(
 	//left
 	u32 left_p = 0xffffff;
 	u32 left_n = 0xffffff;
-	if(ent->iy0)left_n = 0x0000ff;
+	if(ent->ix0)left_n = 0x0000ff;
 	else left_p = 0xff0000;
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vr[j]*5/8 +vf[j]*1/4;
@@ -233,8 +233,8 @@ static void xor_draw_gl41(
 	//tg
 	u32 tg_p = 0xffffff;
 	u32 tg_n = 0xffffff;
-	if(0 == ent->iy0){
-		if(ent->ix0)tg_p = tg_n = 0xff0000;
+	if(0 == ent->ix0){
+		if(ent->iy0)tg_p = tg_n = 0xff0000;
 		else tg_p = tg_n = 0x0000ff;
 	}
 	for(j=0;j<3;j++){
@@ -270,12 +270,12 @@ static void xor_draw_gl41(
 	//right
 	u32 right_p = 0xffffff;
 	u32 right_n = 0xffffff;
-	if(ent->iy0){
-		if(ent->ix0)right_n = 0x0000ff;
+	if(ent->ix0){
+		if(ent->iy0)right_n = 0x0000ff;
 		else right_p = 0xff0000;
 	}
 	else{
-		if(ent->ix0)right_n = 0xff0000;
+		if(ent->iy0)right_n = 0xff0000;
 		else right_p = 0x0000ff;
 	}
 	for(j=0;j<3;j++){

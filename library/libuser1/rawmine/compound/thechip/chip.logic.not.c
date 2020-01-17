@@ -145,7 +145,8 @@ static void not_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 	struct entity* ent = self->pchip;
 	say("@notgate_write:%x\n",buf[0]);
 
-	if('0' == buf[0])ent->ix0 = 0;
+	if('a' == buf[0])ent->ix0 ^= 1;
+	else if('0' == buf[0])ent->ix0 = 0;
 	else if('1' == buf[0])ent->ix0 = 1;
 	else return;
 
