@@ -149,6 +149,7 @@ static void nmos_read_D(struct halfrel* self, struct halfrel* peer, struct halfr
 
 	if(0 == mos->Scount){
 		buf[0] = 'n';
+		mos->Dvalue = 0;
 		return;
 	}
 	if((0 == mos->Dvalue)&&(0 != mos->Svalue)){

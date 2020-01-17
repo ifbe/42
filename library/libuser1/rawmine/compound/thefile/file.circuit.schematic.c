@@ -156,12 +156,33 @@ void sch_complex(struct entity* ent, struct wireindex* sts, u8* buf, int len)
 
 	//step2: read
 	u8 val;
-	for(j=1;j<16;j++){
+	int k,err=0;
+	for(j=0;j<16;j++){
 		if(0 == sts[j].cnt)break;
-		val = 0;
-		relationread(ent, 'a'+j, 0, 0, &val, 1);
-		if('p' == val)sts[j].val = 1;
-		if('n' == val)sts[j].val =-1;
+		if(0 == sts[j].val)err++;
+	}
+	while(1){
+		k = 0;
+		for(j=1;j<16;j++){
+			if(0 == sts[j].cnt)break;
+			if(0 != sts[j].val)continue;
+
+			val = 0;
+			relationread(ent, 'a'+j, 0, 0, &val, 1);
+			if(0 == val)k += 1;
+			else if('p' == val){
+				sts[j].val = 1;
+				relationwrite(ent, 'a'+j, 0, 0, &positive, 1);
+			}
+			else if('n' == val){
+				sts[j].val =-1;
+				relationwrite(ent, 'a'+j, 0, 0, &negative, 1);
+			}
+		}
+		say("k=%d,err=%d\n", k,err);
+		if(k == 0)break;	//all done
+		if(k >= err)break;	//can not
+		err = k;
 	}
 }
 

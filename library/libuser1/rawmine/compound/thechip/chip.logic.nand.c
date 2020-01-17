@@ -193,7 +193,15 @@ static void nand_write(struct halfrel* self, struct halfrel* peer, void* arg, in
 	struct entity* ent = self->pchip;
 	say("@nandgate_write:%x\n",buf[0]);
 
-	if('a' == self->flag){
+	if(_src_ == self->flag){
+		tmp = buf[0] - 0x30;
+		if((tmp >= 0)&&(tmp <= 3)){
+			ent->ix0 = (tmp>>0)&1;
+			ent->iy0 = (tmp>>1)&1;
+			ent->iz0 = !(ent->ix0 && ent->iy0);
+		}
+	}
+	else if('a' == self->flag){
 		if('0' == buf[0])ent->ix0 = 0;
 		else if('1' == buf[0])ent->ix0 = 1;
 		else return;
