@@ -155,17 +155,10 @@ void vkbd_draw_tui(struct entity* win, struct style* sty)
 void vkbd_draw_cli(struct entity* win, struct style* sty)
 {
 }
-static void vkbd_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)vkbd_draw_cli(win, sty);
-	else if(fmt == _tui_)vkbd_draw_tui(win, sty);
-	else if(fmt == _html_)vkbd_draw_html(win, sty);
-	else vkbd_draw_pixel(win, sty);
-}
+
+
+
 static int vkbd_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,

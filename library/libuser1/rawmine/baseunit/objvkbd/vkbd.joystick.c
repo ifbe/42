@@ -129,17 +129,10 @@ void vjoy_draw_tui(struct entity* win, struct style* sty)
 void vjoy_draw_cli(struct entity* win, struct style* sty)
 {
 }
-void vjoy_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)vjoy_draw_cli(win, sty);
-	else if(fmt == _tui_)vjoy_draw_tui(win, sty);
-	else if(fmt == _html_)vjoy_draw_html(win, sty);
-	else vjoy_draw_pixel(win, sty);
-}
+
+
+
 int vjoy_event(struct entity* act, int x, int y, int z)
 {
 	int val;

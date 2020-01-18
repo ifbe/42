@@ -180,22 +180,9 @@ static void browser_data(
 
 static void browser_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//browser_draw(act, pin, win, sty);
 }
 static void browser_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//if(len)browser_data(act, pin, buf, len);
-	//else browser_event(act, pin, win, sty, ev);
 }
 static void browser_discon(struct halfrel* self, struct halfrel* peer)
 {

@@ -76,21 +76,9 @@ static void rawdump_draw_cli(
 
 static void rawdump_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//rawdump_draw(act, pin, win, sty);
 }
 static void rawdump_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//if(len)queuepacket(act->buf, act->idx, buf, len);
 }
 static void rawdump_discon(struct halfrel* self, struct halfrel* peer)
 {

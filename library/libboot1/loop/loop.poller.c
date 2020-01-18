@@ -83,10 +83,10 @@ int supplyread_all(void* poller)
 			self.pchip = win;
 			supplyread(&self, &peer, 0, 0, 0, 0);
 		}
-		if(_spk_ == win->type){
+/*		if(_spk_ == win->type){
 			self.pchip = win;
 			supplyread(&self, &peer, 0, 0, 0, 0);
-		}
+		}*/
 	}
 	return 0;
 }

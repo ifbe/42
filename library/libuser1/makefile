@@ -200,6 +200,7 @@ rawmine/compound/theitem/item.mobius.c \
 rawmine/compound/theitem/item.motor.c \
 rawmine/compound/theitem/item.piano.c \
 rawmine/compound/theitem/item.planet.c \
+rawmine/compound/theitem/item.satellite.c \
 rawmine/compound/theitem/item.stair.c \
 rawmine/compound/theitem/item.tardis.c \
 rawmine/compound/theitem/item.tree.c \

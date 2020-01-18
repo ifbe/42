@@ -124,7 +124,6 @@ static void mobius_read(struct halfrel* self, struct halfrel* peer, struct halfr
 		act = self->pchip;slot = self->pfoot;
 		if('v' == len)mobius_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
-	//mobius_draw(act, pin, win, sty);
 }
 static void mobius_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {

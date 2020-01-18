@@ -55,17 +55,6 @@ static void mux_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void mux_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)mux_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)mux_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)mux_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)mux_draw_json(act, pin, win, sty);
-	else mux_draw_pixel(act, pin, win, sty);
-}
 
 
 

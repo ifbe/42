@@ -114,24 +114,9 @@ static void calib3d_data(
 
 static void calib3d_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//calib3d_draw(act, pin, win, sty);
 }
 static void calib3d_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-/*
-	switch(self->flag){
-		case _data_:calib3d_data(act, pin, win, sty, buf, len);break;
-	}
-*/
 }
 static void calib3d_discon(struct halfrel* self, struct halfrel* peer)
 {

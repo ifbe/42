@@ -237,30 +237,21 @@ static int camman_event(
 
 
 
-static void camman_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static int camman_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//camman_draw(act, pin, win, sty);
+	return 0;
 }
 static int camman_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	return 0;//camman_event(act, pin, win, sty, ev, 0);
+	return 0;
 }
-static void camman_discon(struct halfrel* self, struct halfrel* peer)
+static int camman_discon(struct halfrel* self, struct halfrel* peer)
 {
+	return 0;
 }
-static void camman_linkup(struct halfrel* self, struct halfrel* peer)
+static int camman_linkup(struct halfrel* self, struct halfrel* peer)
 {
+	return 0;
 }
 
 

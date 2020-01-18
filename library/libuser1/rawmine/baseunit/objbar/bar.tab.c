@@ -346,30 +346,21 @@ static int tabbar_event(
 
 
 
-static void tabbar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static int tabbar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//tabbar_draw(act, pin, win, sty);
+    return 0;
 }
 static int tabbar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	return 0;//tabbar_event(act, pin, win, sty, ev, 0);
+    return 0;
 }
-static void tabbar_discon(struct halfrel* self, struct halfrel* peer)
+static int tabbar_discon(struct halfrel* self, struct halfrel* peer)
 {
+    return 0;
 }
-static void tabbar_linkup(struct halfrel* self, struct halfrel* peer)
+static int tabbar_linkup(struct halfrel* self, struct halfrel* peer)
 {
+    return 0;
 }
 
 

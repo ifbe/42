@@ -278,17 +278,10 @@ static void codeimg_draw_cli(
 {
 	say("codeimg(%x,%x,%x)\n",win,act,sty);
 }
-static void codeimg_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)codeimg_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)codeimg_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)codeimg_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)codeimg_draw_json(act, pin, win, sty);
-	else codeimg_draw_pixel(act, pin, win, sty);
-}
+
+
+
+
 static void codeimg_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,

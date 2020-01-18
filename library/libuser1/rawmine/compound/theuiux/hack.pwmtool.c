@@ -105,12 +105,6 @@ static void pwmtool_draw_cli(
 
 static void pwmtool_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//pwmtool_draw(act, pin, win, sty);
 }
 static void pwmtool_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

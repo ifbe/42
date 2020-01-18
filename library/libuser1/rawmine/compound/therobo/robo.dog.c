@@ -154,17 +154,6 @@ static void robodog_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void robodog_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)robodog_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)robodog_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)robodog_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)robodog_draw_json(act, pin, win, sty);
-	else robodog_draw_pixel(act, pin, win, sty);
-}
 
 
 

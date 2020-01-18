@@ -54,12 +54,6 @@ static void editor_draw_cli(
 
 static void editor_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//editor_draw(act, pin, win, sty);
 }
 static void editor_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

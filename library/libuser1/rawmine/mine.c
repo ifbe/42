@@ -134,6 +134,7 @@ void mario_register(void*);
 void mobius_register(void*);
 void motor_register(void*);
 void piano_register(void*);
+void satellite_register(void*);
 void stair_register(void*);
 void tardis_register(void*);
 void tree_register(void*);
@@ -500,6 +501,9 @@ void content_create(void* addr)
 	tmp -= sizeof(struct entity);
 
 	piano_register(tmp);
+	tmp -= sizeof(struct entity);
+
+	satellite_register(tmp);
 	tmp -= sizeof(struct entity);
 
 	stair_register(tmp);

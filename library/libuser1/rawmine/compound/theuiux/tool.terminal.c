@@ -155,17 +155,10 @@ static void terminal_draw_cli(
 	int enq, deq;
 	//say("terminal(%x,%x,%x)\n",win,act,sty);
 }
-static void terminal_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)terminal_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)terminal_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)terminal_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)terminal_draw_json(act, pin, win, sty);
-	else terminal_draw_pixel(act, pin, win, sty);
-}
+
+
+
+
 static void terminal_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,

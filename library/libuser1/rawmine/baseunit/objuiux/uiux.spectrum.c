@@ -87,19 +87,6 @@ static void spectrum_draw_cli(
 {
 	say("spectrum(%x,%x,%x)\n",win,act,sty);
 }
-static void spectrum_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(0 == act->buf)return;
-
-	if(fmt == _cli_)spectrum_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)spectrum_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)spectrum_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)spectrum_draw_json(act, pin, win, sty);
-	else spectrum_draw_pixel(act, pin, win, sty);
-}
 
 
 

@@ -213,14 +213,13 @@ static void picture_read(struct halfrel* self, struct halfrel* peer, struct half
 	struct entity* scn;struct style* geom;
 	struct entity* act;struct style* slot;
 
-	if(stack){
+	if(stack&&('v' == len)){
 		act = self->pchip;slot = self->pfoot;
 		scn = peer->pchip;geom = peer->pfoot;
 		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)picture_draw_gl41(act,slot, scn,geom, wnd,area);
+		picture_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
-	//picture_draw(act, pin, win, sty);
 }
 static void picture_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

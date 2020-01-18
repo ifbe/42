@@ -119,16 +119,6 @@ static void motor_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void motor_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)motor_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)motor_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)motor_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)motor_draw_json(act, pin, win, sty);
-}
 
 
 

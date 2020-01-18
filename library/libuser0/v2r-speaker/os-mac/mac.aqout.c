@@ -1,15 +1,15 @@
 #include "libuser.h"
 #include "AudioToolbox/AudioToolbox.h"
 
-
+/*
 typedef struct {
 	int count;
 }PhaseBlah;
 static PhaseBlah phase = {0};
 static float freq[12] = {440, 466, 494, 523, 554, 587, 622, 659, 698.5, 740, 784, 830.6};
+*/
 
-
-static void speakercallback(void *ptr, AudioQueueRef aq, AudioQueueBufferRef buf_ref)
+static void speakercallback(void* ptr, AudioQueueRef aq, AudioQueueBufferRef buf_ref)
 {
 /*
 	OSStatus status;
@@ -27,7 +27,7 @@ static void speakercallback(void *ptr, AudioQueueRef aq, AudioQueueBufferRef buf
 	status = AudioQueueEnqueueBuffer(aq, buf_ref, 0, NULL);
 	printf ("Enqueue status: %d\n", status);
 */
-	printf("@audioqueue.callback\n");
+	printf("@audioqueue.callback: %llx\n", ptr);
 }
 
 
@@ -59,8 +59,21 @@ int speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	usleep(1000*1000);
 	return 0;
 }
-int speakerwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int speakerwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, short* buf, int len)
 {
+	int j;
+	say("@speakerwrite: len=%x\n", len);
+
+	struct supply* spk = self->pchip;
+	AudioQueueRef aqref = spk->aqref;
+	AudioQueueBuffer** aqctx = spk->aqctx;
+
+	short* dst = aqctx[0]->mAudioData;
+	for(j=0;j<len/2;j++)dst[j] = buf[j];
+	aqctx[0]->mAudioDataByteSize = len;
+
+	j = AudioQueueEnqueueBuffer(aqref, aqctx[0], 0, NULL);
+	//say("j=%d\n", j);
 	return 0;
 }
 int speakerstop()
@@ -99,7 +112,7 @@ int speakercreate(struct supply* win)
 	fmt.mBitsPerChannel = 16;
 
 	AudioQueueRef aq;
-	OSStatus status = AudioQueueNewOutput(&fmt, speakercallback, &phase, 0, 0, 0, &aq);
+	OSStatus status = AudioQueueNewOutput(&fmt, speakercallback, win, 0, 0, 0, &aq);
 	if(status == kAudioFormatUnsupportedDataFormatError){
 		puts("oops!");
 		return 0;
@@ -112,7 +125,7 @@ int speakercreate(struct supply* win)
 
 	int j;
 	AudioQueueBufferRef* buf_ref = win->aqctx = malloc(0x1000);
-	for(j=0;j<1;j++){
+	for(j=0;j<2;j++){
 		status = AudioQueueAllocateBuffer(win->aqref, 2*44100, &buf_ref[j]);
 		printf ("[%d]Allocate status: %d\n", j, status);
 	}

@@ -198,17 +198,10 @@ static void hexedit_draw_cli(
 {
 	say("hex(%x,%x,%x)\n",win,act,sty);
 }
-static void hexedit_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
 
-	if(fmt == _cli_)hexedit_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)hexedit_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)hexedit_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)hexedit_draw_json(act, pin, win, sty);
-}
+
+
+
 static void hexedit_event(
 	struct entity* act, struct style* slot,
 	struct supply* wnd, struct style* area,

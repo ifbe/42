@@ -377,7 +377,6 @@ static void maze_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 		act = self->pchip;part = self->pfoot;
 		if('v' == len)maze_draw_gl41(act,part, win,geom, wnd,area);
 	}
-	//maze_draw(act, pin, win, sty);
 }
 static void maze_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
