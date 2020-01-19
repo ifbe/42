@@ -27,7 +27,8 @@ static void speakercallback(void* ptr, AudioQueueRef aq, AudioQueueBufferRef buf
 	status = AudioQueueEnqueueBuffer(aq, buf_ref, 0, NULL);
 	printf ("Enqueue status: %d\n", status);
 */
-	printf("@audioqueue.callback: %llx\n", ptr);
+	struct supply* sup = ptr;
+	say("@audioqueue.callback: %llx, %d, %d\n", sup, sup->aqenq, sup->aqdeq);
 }
 
 
@@ -62,18 +63,21 @@ int speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 int speakerwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, short* buf, int len)
 {
 	int j;
+	struct supply* spk = self->pchip;
 	say("@speakerwrite: len=%x\n", len);
 
-	struct supply* spk = self->pchip;
 	AudioQueueRef aqref = spk->aqref;
 	AudioQueueBuffer** aqctx = spk->aqctx;
+	int enq = spk->aqenq;
 
-	short* dst = aqctx[0]->mAudioData;
+	short* dst = aqctx[enq]->mAudioData;
 	for(j=0;j<len/2;j++)dst[j] = buf[j];
-	aqctx[0]->mAudioDataByteSize = len;
+	aqctx[enq]->mAudioDataByteSize = len;
 
-	j = AudioQueueEnqueueBuffer(aqref, aqctx[0], 0, NULL);
+	j = AudioQueueEnqueueBuffer(aqref, aqctx[enq], 0, NULL);
 	//say("j=%d\n", j);
+
+	spk->aqenq = (enq+1)%2;
 	return 0;
 }
 int speakerstop()
@@ -111,6 +115,7 @@ int speakercreate(struct supply* win)
 	fmt.mBytesPerPacket = fmt.mBytesPerFrame = 2; // x2 for stereo
 	fmt.mBitsPerChannel = 16;
 
+	//0.aqref
 	AudioQueueRef aq;
 	OSStatus status = AudioQueueNewOutput(&fmt, speakercallback, win, 0, 0, 0, &aq);
 	if(status == kAudioFormatUnsupportedDataFormatError){
@@ -122,7 +127,7 @@ int speakercreate(struct supply* win)
 		win->aqref = aq;
 	}
 
-
+	//1.aqctx
 	int j;
 	AudioQueueBufferRef* buf_ref = win->aqctx = malloc(0x1000);
 	for(j=0;j<2;j++){
@@ -136,7 +141,9 @@ int speakercreate(struct supply* win)
 	status = AudioQueueStart(win->aqref, NULL);
 	printf ("Start status: %d\n", status);
 
-	win->aqctx = buf_ref;
+	//2.aqidx
+	win->aqenq = 0;
+	win->aqdeq = 0;
 	return 0;
 }
 

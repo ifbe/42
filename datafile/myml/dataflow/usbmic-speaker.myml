@@ -1,0 +1,13 @@
+<supply>
+spk{
+fmt:spk
+}
+mic{
+fmt:mic
+}
+</supply>
+
+
+<relation>
+(mic, 0, dst) -> (spk, 0, in)
+</relation>

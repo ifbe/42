@@ -161,6 +161,7 @@ rawmine/compound/thefile/file.biology.dna.c \
 rawmine/compound/thefile/file.biology.fasta.c \
 rawmine/compound/thefile/file.circuit.printboard.c \
 rawmine/compound/thefile/file.circuit.schematic.c \
+rawmine/compound/thefile/file.circuit.analog.c \
 rawmine/compound/thefile/file.factory.gcode.c \
 rawmine/compound/thefile/file.factory.gerber.c \
 rawmine/compound/thefile/file.model.geometry.c \

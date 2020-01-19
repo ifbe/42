@@ -876,33 +876,35 @@ struct supply
 
 	//[40,5f]: fd
 	union{
-		u32 fbo;
 		u64 padd0;
-		u64 xlibfd;	//xlib
-		void* hwnd;	//winapi
-		void* sdlwnd;	//sdl
-		void* glwnd;
-		void* aqref;
+		void*  aqref;	//audio.aq
+		u64   xlibfd;	//2d.xlib
+		void*   hwnd;	//2d.winapi
+		void* sdlwnd;	//2d.sdl
+		void*  glwnd;	//3d.glfw
+		u32      fbo;	//3d.fb
 	};
 	union{
-		u32 rbo;
 		u64 padd1;
-		void* xlibgc;	//xlib
-		void* hdc;	//winapi
-		void* sdlren;	//sdl
-		void* aqctx;
+		void*  aqctx;	//audio.aq
+		void* xlibgc;	//2d.xlib
+		void*    hdc;	//2d.winapi
+		void* sdlren;	//2d.sdl
+		u32      rbo;	//3d.fb
 	};
 	union{
-		u32 tex0;
 		u64 padd2;
+		int    aqenq;	//audio.aq
+		void* ximage;	//2d.xlib
+		void*  binfo;	//2d.winapi
+		void* sdltex;	//2d.sdl
+		u32     tex0;	//3d.fb
 		u64 len;
-		void* ximage;	//xlib
-		void* binfo;	//winapi
-		void* sdltex;	//sdl
 	};
 	union{
-		u32* tex;
 		u64 padd3;
+		int    aqdeq;	//audio.aq
+		u32*     tex;	//3d.fb
 		u64 addr;
 		void* buf;
 	};

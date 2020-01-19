@@ -1,0 +1,142 @@
+<style>
+R0slot{
+}
+R0geom{
+c: 500.0, 500.0, 0.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
+}
+
+R1slot{
+}
+R1geom{
+c: 500.0, 0.0, 0.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
+}
+
+R2slot{
+}
+R2geom{
+c: 500.0, -500.0, 0.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
+}
+
+V0slot{
+}
+V0geom{
+c: -500.0, 0.0, 0.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
+}
+
+schslot{
+}
+schgeom{
+c: 0.0, 0.0, -1.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1.0
+}
+
+camslot{
+}
+camgeom{
+c: 0.0, 0.0, 2000.0
+r: 1.0, 0.0, 0.0
+t: 0.0, 1.0, 0.0
+f: 0.0, 0.0,-1.0
+L: 0.0, 0.0, 0.0,-1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0,-1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 10000000000.0
+}
+
+rect{
+c: 0.0, 0.0
+q: 1.0, 1.0
+}
+</style>
+
+
+<entity>
+R0{
+fmt:resistor
+url:1000
+}
+R1{
+fmt:resistor
+url:2000
+}
+R2{
+fmt:resistor
+url:3000
+}
+V0{
+fmt:vsrc
+url:6
+}
+sch{
+fmt:analog
+url:datafile/wiring/1V3R.wire
+}
+
+cam{
+fmt:freecam
+}
+world{
+fmt:3dworld
+}
+</entity>
+
+
+<supply>
+glwnd{
+fmt:gl41wnd0
+}
+opengl{
+fmt:wnd
+}
+std{
+fmt:std
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<relation>
+(std, 0, dst) -> (not, 0, ev)
+(std, 0, dst) -> (sch, 0, ev)
+
+(sch, 0, a) -> (V0, 0, n)
+(sch, 0, a) -> (R2, 0, a)
+(sch, 0, b) -> (V0, 0, p)
+(sch, 0, b) -> (R0, 0, b)
+(sch, 0, c) -> (R0, 0, a)
+(sch, 0, c) -> (R1, 0, b)
+(sch, 0, d) -> (R1, 0, a)
+(sch, 0, d) -> (R2, 0, b)
+
+(world, R0geom, 0) -> (R0, R0slot, 0)
+(world, R1geom, 0) -> (R1, R1slot, 0)
+(world, R2geom, 0) -> (R2, R2slot, 0)
+(world, V0geom, 0) -> (V0, V0slot, 0)
+(world, schgeom, 0) -> (sch, schslot, 0)
+(world, camgeom, 0) -> (cam, camslot, 0)
+
+(glwnd, rect, 0) -> (cam, 0, 0)
+(opengl, 0, wnd) -> (glwnd, 0, 0)
+</relation>

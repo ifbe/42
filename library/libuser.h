@@ -17,9 +17,10 @@
 #define _clickray_ hex64('c','l','i','c','k','r','a','y')
 #define _event3rd_ hex64('e','v','e','n','t','3','r','d')
 //
-#define _reality_ hex64('r','e','a','l','i','t','y', 0)
 #define _eeworld_ hex64('e','e','w','o','r','l','d', 0)
+#define _analog_ hex64('a','n','a','l','o','g', 0, 0)
 //
+#define _reality_ hex64('r','e','a','l','i','t','y', 0)
 #define _world3d_ hex64('3','d','w','o','r','l','d', 0)
 #define _scene3d_ hex64('3','d','s','c','e','n','e', 0)
 //

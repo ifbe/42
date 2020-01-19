@@ -53,13 +53,13 @@ static int parsewiring(u8* buf, float* dat)
 
 
 
-u32 sch_color(int val)
+static u32 sch_color(int val)
 {
 	if(val < 0)return 0x0000ff;
 	if(val > 0)return 0xff0000;
 	return 0xffffff;
 }
-void broadcast_except(struct halfrel* self, void* except, void* stack, int rsp, u8* buf, int len)
+static void broadcast_except(struct halfrel* self, void* except, void* stack, int rsp, u8* buf, int len)
 {
 	struct entity* ent;
 	struct relation* rel;
@@ -117,10 +117,10 @@ void sch_complex(struct entity* ent, struct wireindex* sts, u8* buf, int len)
 		if(0 == sts[j].cnt)break;
 		sts[j].val = 0;
 	}
-	relationwrite(ent, 'a', 0, 0, &any, 0);
-	relationwrite(ent, 'b', 0, 0, &any, 0);
-	relationwrite(ent, 'c', 0, 0, &any, 0);
-	relationwrite(ent, 'd', 0, 0, &any, 0);
+	for(j=0;j<16;j++){
+		if(0 == sts[j].cnt)break;
+		relationwrite(ent, 'a'+j, 0, 0, &any, 0);
+	}
 
 	//step1: send
 	switch(buf[0]){
