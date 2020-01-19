@@ -1,4 +1,6 @@
 #include "libuser.h"
+#define P_PEERFOOT ixn
+#define N_PEERFOOT iyn
 struct wireindex{
 	int off;
 	int cnt;
@@ -97,6 +99,36 @@ static void vsrc_read_bycam(struct halfrel* self, struct halfrel* peer, struct h
 		vsrc_draw_gl41(act,slot, win,geom, wnd,area);
 	}
 }
+static void vsrc_read_p(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct wireindex* sts, int thisone)
+{
+	struct entity* ent = self->pchip;
+	int theother = ent->N_PEERFOOT - 'a';
+	if(theother < 0)return;
+	if(theother > 8)return;
+
+	float vthat = sts[theother].volt;
+	float vthis = sts[thisone].volt;
+	say("@n: %d,%f, %d,%f\n",thisone,vthis, theother,vthat);
+
+	float delta = vthis/2 - (vthat + ent->fx0)/2;
+	say("vsrc_read_p: %f,%f\n", sts[thisone].grad, delta);
+	sts[thisone].grad += delta;
+}
+static void vsrc_read_n(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct wireindex* sts, int thisone)
+{
+	struct entity* ent = self->pchip;
+	int theother = ent->P_PEERFOOT - 'a';
+	if(theother < 0)return;
+	if(theother > 8)return;
+
+	float vthat = sts[theother].volt;
+	float vthis = sts[thisone].volt;
+	say("@n: %d,%f, %d,%f\n",thisone,vthis, theother,vthat);
+
+	float delta = vthis/2 - (vthat - ent->fx0)/2;
+	say("vsrc_read_n: %f,%f\n", sts[thisone].grad, delta);
+	sts[thisone].grad += delta;
+}
 
 
 
@@ -104,8 +136,8 @@ static void vsrc_read_bycam(struct halfrel* self, struct halfrel* peer, struct h
 static void vsrc_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	switch(self->flag){
-		case 'p':break;
-		case 'n':break;
+		case 'p':vsrc_read_p(self,peer, stack,rsp, buf,len);break;
+		case 'n':vsrc_read_n(self,peer, stack,rsp, buf,len);break;
 		default:vsrc_read_bycam(self, peer, stack,rsp, buf,len);break;
 	}
 }
@@ -124,6 +156,11 @@ static void vsrc_discon(struct halfrel* self, struct halfrel* peer)
 }
 static void vsrc_linkup(struct halfrel* self, struct halfrel* peer)
 {
+	struct entity* ent = self->pchip;
+	switch(self->flag){
+		case 'p':ent->P_PEERFOOT = peer->flag;break;
+		case 'n':ent->N_PEERFOOT = peer->flag;break;
+	}
 }
 
 

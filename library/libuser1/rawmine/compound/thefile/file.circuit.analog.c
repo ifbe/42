@@ -43,7 +43,7 @@ static int parsewiring(u8* buf, float* dat)
 			sts[ioff].off = foff;
 			sts[ioff].volt = 0.0;
 			sts[ioff].grad = 0.0;
-			sts[ioff].sure = 0;
+			sts[ioff].sure = 1;
 			sts[ioff].temp = 0;
 			//say("%d,%d\n", sts[ioff].off, sts[ioff].cnt);
 
