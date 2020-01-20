@@ -138,6 +138,8 @@ void satellite_register(void*);
 void stair_register(void*);
 void tardis_register(void*);
 void tree_register(void*);
+void spring_register(void*);
+void stick_register(void*);
 
 //real
 void theear_register(void*);
@@ -513,6 +515,12 @@ void content_create(void* addr)
 	tmp -= sizeof(struct entity);
 
 	tree_register(tmp);
+	tmp -= sizeof(struct entity);
+
+	spring_register(tmp);
+	tmp -= sizeof(struct entity);
+
+	stick_register(tmp);
 	tmp -= sizeof(struct entity);
 
 

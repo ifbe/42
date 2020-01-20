@@ -53,7 +53,7 @@ static int parsewiring(u8* buf, float* dat)
 
 
 
-static u32 sch_color(int val)
+static u32 digital_color(int val)
 {
 	if(val < 0)return 0x0000ff;
 	if(val > 0)return 0xff0000;
@@ -90,7 +90,7 @@ say("rsp=%d\n",rsp);
 
 
 
-void sch_simple(struct entity* ent, struct wireindex* sts)
+void digital_simple(struct entity* ent, struct wireindex* sts)
 {
 	u8 any = 0;
 	u8 positive = 'p';
@@ -105,7 +105,7 @@ void sch_simple(struct entity* ent, struct wireindex* sts)
 		relationwrite(ent, 'a', 0, 0, &negative, 1);
 	}
 }
-void sch_complex(struct entity* ent, struct wireindex* sts, u8* buf, int len)
+void digital_complex(struct entity* ent, struct wireindex* sts, u8* buf, int len)
 {
 	int j;
 	u8 any = 0;
@@ -189,7 +189,7 @@ void sch_complex(struct entity* ent, struct wireindex* sts, u8* buf, int len)
 
 
 
-static void sch_draw_gl41(
+static void digital_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -213,7 +213,7 @@ static void sch_draw_gl41(
 		if(0 == cnt)break;
 
 		off = sts[k].off;
-		rgb = sch_color(sts[k].val);
+		rgb = digital_color(sts[k].val);
 		for(j=6*off;j<6*(off+cnt);j+=6){
 			//say("j=%d\n",j);
 			ta[0] = vc[0]+dat[j+0];
@@ -226,12 +226,12 @@ static void sch_draw_gl41(
 		}
 	}
 }
-void sch_read_board(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+void digital_read_board(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
 	struct entity* wrd;struct style* camg;
-//world -> sch
+//world -> digital
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* slot;
 
@@ -239,13 +239,13 @@ void sch_read_board(struct halfrel* self, struct halfrel* peer, struct halfrel**
 	win = peer->pchip;geom = peer->pfoot;
 	wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 	wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-	sch_draw_gl41(act,slot, win,geom, wnd,area);
+	digital_draw_gl41(act,slot, win,geom, wnd,area);
 }
-int sch_read_child(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int digital_read_child(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct entity* scene;
 	struct relation* rel;
-	//say("@sch_read\n");
+	//say("@digital_read\n");
 
 	scene = self->pchip;
 	if(0 == scene)return 0;
@@ -259,25 +259,25 @@ int sch_read_child(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 	}
 	return 0;
 }
-int sch_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int digital_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	if(stack && ('v' == len)){
-		sch_read_child(self,peer, stack,rsp, buf,len);
-		sch_read_board(self,peer, stack,rsp, buf,len);
+		digital_read_child(self,peer, stack,rsp, buf,len);
+		digital_read_board(self,peer, stack,rsp, buf,len);
 	}
 	return 0;
 }
-int sch_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+int digital_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
 	struct entity* ent = self->pchip;
 	if(0 == ent)return 0;
 	struct wireindex* sts = ent->buf0;
 	if(0 == sts)return 0;
-say("sch_write: %.4s\n", &self->flag);
+say("digital_write: %.4s\n", &self->flag);
 	switch(self->flag){
 		case _ev_:{
-			if('a' == buf[0])sch_simple(ent, sts);
-			else sch_complex(ent, sts, buf, len);
+			if('a' == buf[0])digital_simple(ent, sts);
+			else digital_complex(ent, sts, buf, len);
 			break;
 		}
 		case 'b':{
@@ -301,35 +301,35 @@ say("sch_write: %.4s\n", &self->flag);
 	}
 	return 0;
 }
-int sch_discon(struct halfrel* self, struct halfrel* peer)
+int digital_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int sch_linkup(struct halfrel* self, struct halfrel* peer)
+int digital_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@sch_linkup: %.4s\n", &self->flag);
+	say("@digital_linkup: %.4s\n", &self->flag);
 	return 0;
 }
 
 
 
 
-int sch_search(struct entity* scene)
+int digital_search(struct entity* scene)
 {
 	return 0;
 }
-int sch_modify(struct entity* scene)
+int digital_modify(struct entity* scene)
 {
 	return 0;
 }
-int sch_delete(struct entity* scene)
+int digital_delete(struct entity* scene)
 {
 	return 0;
 }
-int sch_create(struct entity* scene, void* arg, int argc, u8** argv)
+int digital_create(struct entity* scene, void* arg, int argc, u8** argv)
 {
 	int ret;
-	say("@sch_create\n");
+	say("@digital_create\n");
 	if(0 == arg)return 0;
 
 	scene->buf0 = memorycreate(0x10000, 0);

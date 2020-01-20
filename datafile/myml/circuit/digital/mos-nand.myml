@@ -87,7 +87,7 @@ n1{
 fmt:nmos
 }
 sch{
-fmt:sch
+fmt:digital
 url:datafile/wiring/mos-nand.wire
 }
 

@@ -113,7 +113,7 @@ rp{
 fmt:pmos
 }
 sch{
-fmt:sch
+fmt:digital
 url:datafile/wiring/mos-xor.wire
 }
 

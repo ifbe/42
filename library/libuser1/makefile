@@ -159,9 +159,6 @@ rawmine/compound/thefile/file.common.folder.c \
 rawmine/compound/thefile/file.common.hexedit.c \
 rawmine/compound/thefile/file.biology.dna.c \
 rawmine/compound/thefile/file.biology.fasta.c \
-rawmine/compound/thefile/file.circuit.printboard.c \
-rawmine/compound/thefile/file.circuit.schematic.c \
-rawmine/compound/thefile/file.circuit.analog.c \
 rawmine/compound/thefile/file.factory.gcode.c \
 rawmine/compound/thefile/file.factory.gerber.c \
 rawmine/compound/thefile/file.model.geometry.c \
@@ -202,6 +199,8 @@ rawmine/compound/theitem/item.motor.c \
 rawmine/compound/theitem/item.piano.c \
 rawmine/compound/theitem/item.planet.c \
 rawmine/compound/theitem/item.satellite.c \
+rawmine/compound/theitem/item.spring.c \
+rawmine/compound/theitem/item.stick.c \
 rawmine/compound/theitem/item.stair.c \
 rawmine/compound/theitem/item.tardis.c \
 rawmine/compound/theitem/item.tree.c \
@@ -248,6 +247,10 @@ rawmine/scene/scene.3d.c \
 rawmine/scene/scene.ee.c \
 rawmine/scene/scene.nn.c \
 rawmine/scene/scene.ui.c \
+rawmine/scene/simulate.analog.c \
+rawmine/scene/simulate.digital.c \
+rawmine/scene/simulate.pcb.c \
+rawmine/scene/simulate.force.c \
 rawmine/world/3dworld.c \
 rawmine/world/realworld.c \
 rawmine/world/eeworld.c \

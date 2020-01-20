@@ -65,7 +65,7 @@ pmos{
 fmt:pmos
 }
 sch{
-fmt:sch
+fmt:digital
 url:datafile/wiring/mos-not.wire
 }
 

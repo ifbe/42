@@ -56,7 +56,7 @@ a1{
 fmt:mosfet
 }
 sch{
-fmt:sch
+fmt:digital
 }
 
 cam{

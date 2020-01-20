@@ -1058,24 +1058,32 @@ struct entity
 	//[60,7f]: buf
 	union{
 		u64 data0;
+		float fdata0;
+		double ddata0;
 		void* buf0;
 		void* vbuf;		//vert buf
 		void** gl_camera;
 	};
 	union{
 		u64 data1;
+		float fdata1;
+		double ddata1;
 		void* buf1;
 		void* ibuf;		//indx buf
 		void** gl_light;
 	};
 	union{
 		u64 data2;
+		float fdata2;
+		double ddata2;
 		void* buf2;
 		void* nbuf;		//node list
 		void** gl_solid;
 	};
 	union{
 		u64 data3;
+		float fdata3;
+		double ddata3;
 		void* buf3;
 		void* wbuf;		//wire list
 		void** gl_opaque;
