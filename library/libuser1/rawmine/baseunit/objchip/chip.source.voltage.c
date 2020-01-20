@@ -101,6 +101,8 @@ static void vsrc_read_bycam(struct halfrel* self, struct halfrel* peer, struct h
 }
 static void vsrc_read_p(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct wireindex* sts, int thisone)
 {
+	if(rsp != 'V')return;
+
 	struct entity* ent = self->pchip;
 	int theother = ent->N_PEERFOOT - 'a';
 	if(theother < 0)return;
@@ -116,6 +118,8 @@ static void vsrc_read_p(struct halfrel* self, struct halfrel* peer, struct halfr
 }
 static void vsrc_read_n(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct wireindex* sts, int thisone)
 {
+	if(rsp != 'V')return;
+
 	struct entity* ent = self->pchip;
 	int theother = ent->P_PEERFOOT - 'a';
 	if(theother < 0)return;

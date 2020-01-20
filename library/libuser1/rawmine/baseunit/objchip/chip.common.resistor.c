@@ -83,6 +83,8 @@ static void resistor_read_bycam(struct halfrel* self, struct halfrel* peer, stru
 }
 static void resistor_read_a(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct wireindex* sts, int thisone)
 {
+	if(rsp != 'R')return;
+
 	struct entity* ent = self->pchip;
 	int theother = ent->B_PEERFOOT - 'a';
 	if(theother < 0)return;
@@ -98,6 +100,8 @@ static void resistor_read_a(struct halfrel* self, struct halfrel* peer, struct h
 }
 static void resistor_read_b(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct wireindex* sts, int thisone)
 {
+	if(rsp != 'R')return;
+
 	struct entity* ent = self->pchip;
 	int theother = ent->A_PEERFOOT - 'a';
 	if(theother < 0)return;

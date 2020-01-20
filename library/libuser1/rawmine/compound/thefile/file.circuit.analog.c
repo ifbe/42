@@ -59,6 +59,13 @@ static int parsewiring(u8* buf, float* dat)
 
 
 
+static void analog_voltage(struct wireindex* dst, float* volt)
+{
+	dst->volt = *volt;
+	dst->grad = 0.0;
+
+	dst->sure = 1;
+}
 static void analog_emulate(struct entity* ent, struct wireindex* sts, u8* buf, int len)
 {
 	//clear, ensure
@@ -72,7 +79,7 @@ static void analog_emulate(struct entity* ent, struct wireindex* sts, u8* buf, i
 	sts[0].volt = (float)(buf[0]-0x30);
 	relationwrite(ent, 'a', 0, 0, &sts[0], 0);
 }
-static void analog_decent(struct entity* ent, struct wireindex* sts)
+static void analog_decent_V(struct entity* ent, struct wireindex* sts)
 {
 	int j;
 	for(j=1;j<16;j++){
@@ -80,7 +87,7 @@ static void analog_decent(struct entity* ent, struct wireindex* sts)
 		if(0 != sts[j].sure)continue;
 
 		sts[j].grad = 0.0;
-		relationread(ent, 'a'+j, 0, 0, sts, j);
+		relationread(ent, 'a'+j, 0, 'V', sts, j);
 	}
 	for(j=1;j<16;j++){
 		if(0 == sts[j].cnt)break;
@@ -90,12 +97,23 @@ static void analog_decent(struct entity* ent, struct wireindex* sts)
 		say("%f\n",sts[j].volt);
 	}
 }
-static void analog_voltage(struct wireindex* dst, float* volt)
+static void analog_decent_R(struct entity* ent, struct wireindex* sts)
 {
-	dst->volt = *volt;
-	dst->grad = 0.0;
+	int j;
+	for(j=1;j<16;j++){
+		if(0 == sts[j].cnt)break;
+		if(0 != sts[j].sure)continue;
 
-	dst->sure = 1;
+		sts[j].grad = 0.0;
+		relationread(ent, 'a'+j, 0, 'R', sts, j);
+	}
+	for(j=1;j<16;j++){
+		if(0 == sts[j].cnt)break;
+		if(0 != sts[j].sure)continue;
+
+		sts[j].volt -= sts[j].grad;
+		say("%f\n",sts[j].volt);
+	}
 }
 
 
@@ -116,7 +134,9 @@ static void analog_draw_gl41(
 	if(0 == sts)return;
 	float* dat = act->buf1;
 	if(0 == dat)return;
-	analog_decent(act, sts);
+
+	analog_decent_R(act, sts);
+	analog_decent_V(act, sts);
 
 	int j,k;
 	int off,cnt,rgb;
