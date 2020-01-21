@@ -11,6 +11,7 @@ all:
 	make -s a
 	make -s so
 	make -s program
+	cp a.out ../..
 a:
 	ar crs 42.a \
 	$(library)/libboot0/*.o \
