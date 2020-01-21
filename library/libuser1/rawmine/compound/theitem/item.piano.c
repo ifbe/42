@@ -32,40 +32,42 @@ static void piano_gen(short* pcm, float f)
 		pcm[j] *= 1.0 - j/16384.0;
 	}
 }
+static void piano_char(struct entity* act, u8* ch)
+{
+	float f;
+	switch(ch[0]){
+		case 'c':f = cccc;break;
+		case 'd':f = dddd;break;
+		case 'e':f = eeee;break;
+		case 'f':f = ffff;break;
+		case 'g':f = gggg;break;
+		case 'a':f = aaaa;break;
+		case 'b':f = bbbb;break;
+		case '1':f = cccc;break;
+		case '2':f = c__d;break;
+		case '3':f = dddd;break;
+		case '4':f = d__e;break;
+		case '5':f = eeee;break;
+		case '6':f = ffff;break;
+		case '7':f = f__g;break;
+		case '8':f = gggg;break;
+		case '9':f = g__a;break;
+		case '0':f = aaaa;break;
+		case '-':f = a__b;break;
+		case '=':f = bbbb;break;
+		default:break;
+	}
+
+	piano_gen(act->buf, f);
+	relationwrite(act, _spk_, 0, 0, act->buf, 16384*2);
+}
 static void piano_event(struct entity* act, struct event* ev)
 {
 	int j,k;
 	float f;
 	say("@piano_event\n");
 
-	if(_char_ == ev->what)
-	{
-		switch(ev->why)
-		{
-			case 'c':f = cccc;break;
-			case 'd':f = dddd;break;
-			case 'e':f = eeee;break;
-			case 'f':f = ffff;break;
-			case 'g':f = gggg;break;
-			case 'a':f = aaaa;break;
-			case 'b':f = bbbb;break;
-			case '1':f = cccc;break;
-			case '2':f = c__d;break;
-			case '3':f = dddd;break;
-			case '4':f = d__e;break;
-			case '5':f = eeee;break;
-			case '6':f = ffff;break;
-			case '7':f = f__g;break;
-			case '8':f = gggg;break;
-			case '9':f = g__a;break;
-			case '0':f = aaaa;break;
-			case '-':f = a__b;break;
-			case '=':f = bbbb;break;
-		}
-
-		piano_gen(act->buf, f);
-		relationwrite(act, _spk_, 0, 0, act->buf, 16384*2);
-	}//if(_char_)
+	if(_char_ == ev->what)piano_char(act, (void*)ev);
 /*
 	if(0x2d70 == ev->what){
 		j = (ev->why)&0xffff;
@@ -372,10 +374,14 @@ static void piano_read(struct halfrel* self, struct halfrel* peer, struct halfre
 }
 static void piano_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	struct entity* ent = peer->pchip;
-	switch(ent->fmt){
-		case _gl41wnd0_:piano_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	struct entity* ent = self->pchip;
+	if(_std_ == self->flag){
+		piano_char(ent, buf);
+		return;
 	}
+
+	struct supply* sup = peer->pchip;
+	if(_gl41wnd0_ == sup->fmt)piano_write_bywnd(self, peer, stack, rsp, buf, len);
 }
 static void piano_discon(struct halfrel* self, struct halfrel* peer)
 {

@@ -1,0 +1,21 @@
+<entity>
+piano{
+fmt:piano
+}
+</entity>
+
+
+<supply>
+speaker{
+fmt:spk
+}
+std{
+fmt:std
+}
+</supply>
+
+
+<relation>
+(piano, 0, spk) -> (speaker, 0, in)
+(std, 0, dst) -> (piano, 0, std)
+</relation>
