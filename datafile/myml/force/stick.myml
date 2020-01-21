@@ -1,0 +1,83 @@
+<style>
+scnslot{
+}
+scngeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+camslot{
+}
+camgeom{
+c: 0.0, -2000.0, 500.0
+r: 1.0, 0.0, 0.0
+f: 0.0, 1.0, 0.0
+t: 0.0, 0.0, 1.0
+L: 0.0, 0.0, 0.0,-1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0,-1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 10000000000.0
+}
+
+rect{
+c: 0.0, 0.0
+q: 1.0, 1.0
+}
+</style>
+
+
+<entity>
+s1{
+fmt:stick
+l:1414
+}
+s2{
+fmt:stick
+l:1414
+}
+scn{
+fmt:force
+url:datafile/myml/xyz/stick.xyz
+}
+cam{
+fmt:freecam
+}
+world{
+fmt:3dworld
+}
+</entity>
+
+
+<supply>
+thewnd{
+fmt:gl41wnd0
+}
+opengl{
+fmt:wnd
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<relation>
+(scn, 0, a) -> (s1, 0, a)
+(scn, 0, b) -> (s2, 0, a)
+(scn, 0, c) -> (s1, 0, b)
+(scn, 0, c) -> (s2, 0, b)
+
+(world, scngeom, 0) -> (scn, scnslot, 0)
+(world, camgeom, 0) -> (cam, camslot, 0)
+
+(thewnd, rect, 0) -> (cam, 0, 0)
+(opengl, 0, wnd) -> (thewnd, 0, 0)
+</relation>

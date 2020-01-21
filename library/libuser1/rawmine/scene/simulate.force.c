@@ -38,8 +38,7 @@ static int parsejoint(struct joint* jo, u8* buf)
 	int j,k;
 	int tmp=0,ioff=0;
 	for(j=0;j<0x8000;j++){
-		if(0xa > buf[j])break;
-		if(0xa== buf[j]){
+		if(buf[j] <= 0xa){
 			if(j-k<4)break;
 			k = parsejoint_oneline(buf+tmp, &jo[ioff]);
 			if(k){
@@ -49,6 +48,7 @@ static int parsejoint(struct joint* jo, u8* buf)
 				say("%d: %f,%f,%f\n", ioff, jo[ioff].x, jo[ioff].y, jo[ioff].z);
 				ioff += 1;
 			}
+			if(buf[j] < 0xa)break;
 			tmp = j+1;
 		}
 	}
@@ -101,7 +101,7 @@ static void force_decent_stick(struct entity* ent, struct joint* jo)
 		jo[j].x -= jo[j].gradx;
 		jo[j].y -= jo[j].grady;
 		jo[j].z -= jo[j].gradz;
-		say("%f,%f,%f\n",jo[j].x, jo[j].y, jo[j].z);
+		say("force_decent_stick:%f,%f,%f\n",jo[j].x, jo[j].y, jo[j].z);
 	}
 }
 
@@ -125,7 +125,7 @@ static void force_draw_gl41(
 	if(0 == jo[0].exist)return;
 
 	force_decent_spring(act, jo);
-	//force_decent_stick(act, jo);
+	force_decent_stick(act, jo);
 
 	for(j=0;j<3;j++){tr[j] = tf[j] = tu[j] = 0.0;}
 	tr[0] = tf[1] = tu[2] = 10.0;

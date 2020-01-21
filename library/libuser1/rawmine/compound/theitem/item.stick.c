@@ -1,4 +1,7 @@
 #include "libuser.h"
+#define A_PEERFOOT iw0
+#define B_PEERFOOT iwn
+#define LVAL fdata1
 struct joint{
 	float x;
 	float y;
@@ -75,9 +78,75 @@ static void stick_read_bycam(struct halfrel* self, struct halfrel* peer, struct 
 
 
 
+static void stick_read_a(struct halfrel* self, struct halfrel* peer, void* arg, int idx, struct joint* jo, int thisone)
+{
+	if(idx != 'V')return;
+
+	struct entity* ent = self->pchip;
+	int theother = ent->B_PEERFOOT - 'a';
+	if(theother < 0)return;
+	if(theother > 8)return;
+
+	float myx = jo[thisone].x;
+	float myy = jo[thisone].y;
+	float myz = jo[thisone].z;
+	float urx = jo[theother].x;
+	float ury = jo[theother].y;
+	float urz = jo[theother].z;
+	say("@stick_read_a: %d=%f,%f,%f, %d=%f,%f,%f\n",thisone,myx,myy,myz, theother,urx,ury,urz);
+
+	float dx = myx-urx;
+	float dy = myy-ury;
+	float dz = myz-urz;
+	float lenlen = dx*dx + dy*dy + dz*dz - ent->LVAL*ent->LVAL;
+	dx = 4*lenlen*(myx - urx);
+	dy = 4*lenlen*(myy - ury);
+	dz = 4*lenlen*(myz - urz);
+	say("derivative: %f,%f,%f\n",dx,dy,dz);
+	jo[thisone].gradx += dx/10000000;
+	jo[thisone].grady += dy/10000000;
+	jo[thisone].gradz += dz/10000000;
+}
+static void stick_read_b(struct halfrel* self, struct halfrel* peer, void* arg, int idx, struct joint* jo, int thisone)
+{
+	if(idx != 'V')return;
+
+	struct entity* ent = self->pchip;
+	int theother = ent->A_PEERFOOT - 'a';
+	if(theother < 0)return;
+	if(theother > 8)return;
+
+	float myx = jo[thisone].x;
+	float myy = jo[thisone].y;
+	float myz = jo[thisone].z;
+	float urx = jo[theother].x;
+	float ury = jo[theother].y;
+	float urz = jo[theother].z;
+	say("@stick_read_b: %d=%f,%f,%f, %d=%f,%f,%f\n",thisone,myx,myy,myz, theother,urx,ury,urz);
+
+	float dx = myx-urx;
+	float dy = myy-ury;
+	float dz = myz-urz;
+	float lenlen = dx*dx + dy*dy + dz*dz - ent->LVAL*ent->LVAL;
+	dx = 4*lenlen*(myx - urx);
+	dy = 4*lenlen*(myy - ury);
+	dz = 4*lenlen*(myz - urz);
+	say("derivative: %f,%f,%f\n",dx,dy,dz);
+	jo[thisone].gradx += dx/10000000;
+	jo[thisone].grady += dy/10000000;
+	jo[thisone].gradz += dz/10000000;
+}
+
+
+
+
 static void stick_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	stick_read_bycam(self,peer, arg,idx, buf,len);
+	switch(self->flag){
+	case 'a':stick_read_a(self,peer, arg,idx, buf,len);break;
+	case 'b':stick_read_b(self,peer, arg,idx, buf,len);break;
+	default: stick_read_bycam(self,peer, arg,idx, buf,len);
+	}
 }
 static void stick_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -87,6 +156,11 @@ static void stick_discon(struct halfrel* self, struct halfrel* peer)
 }
 static void stick_linkup(struct halfrel* self, struct halfrel* peer)
 {
+	struct entity* ent = self->pchip;
+	switch(self->flag){
+		case 'a':ent->A_PEERFOOT = peer->flag;break;
+		case 'b':ent->B_PEERFOOT = peer->flag;break;
+	}
 }
 
 
@@ -105,6 +179,13 @@ static void stick_delete(struct entity* ent)
 static void stick_create(struct entity* ent, void* arg, int argc, u8** argv)
 {
 	if(0 == ent)return;
+	int j;
+	float L = 1.0;
+	for(j=1;j<argc;j++){
+		if(0 == ncmp("l:", argv[j], 2))decstr2float(argv[j]+2, &L);
+	}
+	say("l=%f\n", L);
+	ent->LVAL = L;
 }
 
 
@@ -113,7 +194,7 @@ static void stick_create(struct entity* ent, void* arg, int argc, u8** argv)
 void stick_register(struct entity* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s', 'p', 'r', 'i', 'n','g', 0, 0);
+	p->fmt = hex64('s', 't', 'i', 'c','k', 0, 0, 0);
 
 	p->oncreate = (void*)stick_create;
 	p->ondelete = (void*)stick_delete;

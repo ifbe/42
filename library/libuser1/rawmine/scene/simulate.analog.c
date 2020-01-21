@@ -37,8 +37,7 @@ static int parsewiring(u8* buf, float* dat)
 	int ioff=0,foff=0;
 	struct wireindex* sts = (void*)buf;
 	for(j=0;j<0x10000;j++){
-		if(0xa > buf[j])break;
-		if(0xa== buf[j]){
+		if(buf[j] <= 0xa){
 			sts[ioff].cnt = parsewiring_oneline(buf+k, j-k, dat,foff);
 			sts[ioff].off = foff;
 			sts[ioff].volt = 0.0;
@@ -47,6 +46,7 @@ static int parsewiring(u8* buf, float* dat)
 			sts[ioff].temp = 0;
 			//say("%d,%d\n", sts[ioff].off, sts[ioff].cnt);
 
+			if(buf[j] < 0xa)break;
 			foff += sts[ioff].cnt;
 			ioff += 1;
 			k = j+1;

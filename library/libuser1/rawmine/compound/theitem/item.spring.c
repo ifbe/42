@@ -81,6 +81,8 @@ static void spring_read_bycam(struct halfrel* self, struct halfrel* peer, struct
 
 static void spring_read_a(struct halfrel* self, struct halfrel* peer, void* arg, int idx, struct joint* jo, int thisone)
 {
+	if(idx != 'R')return;
+
 	struct entity* ent = self->pchip;
 	int theother = ent->B_PEERFOOT - 'a';
 	if(theother < 0)return;
@@ -92,7 +94,7 @@ static void spring_read_a(struct halfrel* self, struct halfrel* peer, void* arg,
 	float urx = jo[theother].x;
 	float ury = jo[theother].y;
 	float urz = jo[theother].z;
-	say("@a: %d,%f,%f,%f, %d,%f,%f,%f\n",thisone,myx,myy,myz, theother,urx,ury,urz);
+	say("@spring_read_a: %d=%f,%f,%f, %d=%f,%f,%f\n",thisone,myx,myy,myz, theother,urx,ury,urz);
 
 	//(0.5*K*dx^2)' = 0.5*K*(len-L)^2, len=sqrt(Xa*Xa + Xb*Xb + Xc*Xc)
 	//derivative(Xa) = K*(Xa-X?) -2L*(2*Xa-2*X?)/(2len)
@@ -110,6 +112,8 @@ static void spring_read_a(struct halfrel* self, struct halfrel* peer, void* arg,
 }
 static void spring_read_b(struct halfrel* self, struct halfrel* peer, void* arg, int idx, struct joint* jo, int thisone)
 {
+	if(idx != 'R')return;
+
 	struct entity* ent = self->pchip;
 	int theother = ent->A_PEERFOOT - 'a';
 	if(theother < 0)return;
@@ -121,7 +125,7 @@ static void spring_read_b(struct halfrel* self, struct halfrel* peer, void* arg,
 	float urx = jo[theother].x;
 	float ury = jo[theother].y;
 	float urz = jo[theother].z;
-	say("@a: %d=%f,%f,%f, %d=%f,%f,%f\n",thisone,myx,myy,myz, theother,urx,ury,urz);
+	say("@spring_read_b: %d=%f,%f,%f, %d=%f,%f,%f\n",thisone,myx,myy,myz, theother,urx,ury,urz);
 
 	float dx = myx-urx;
 	float dy = myy-ury;
@@ -140,7 +144,7 @@ static void spring_read_b(struct halfrel* self, struct halfrel* peer, void* arg,
 
 
 static void spring_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
-{say("@sprint_read: %.4s\n",&self->flag);
+{
 	switch(self->flag){
 	case 'a':spring_read_a(self,peer, arg,idx, buf,len);break;
 	case 'b':spring_read_b(self,peer, arg,idx, buf,len);break;
