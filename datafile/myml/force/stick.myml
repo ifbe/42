@@ -41,7 +41,7 @@ l:1414
 }
 scn{
 fmt:force
-url:datafile/myml/xyz/stick.xyz
+url:datafile/xyz/stick.xyz
 }
 cam{
 fmt:freecam
