@@ -31,7 +31,7 @@ q:1.0, 1.0
 
 
 <entity>
-canvas{
+oscillo{
 fmt:oscillo
 }
 freecam{
@@ -60,9 +60,7 @@ depth:1024
 <artery>
 recut{
 fmt:recut
-}
-dbghex{
-fmt:dbghex
+url:2048
 }
 </artery>
 
@@ -83,12 +81,12 @@ fmt:poller
 
 
 <relation>
-#canvas depends on usbcam
+#oscillo depends on usbcam
 (server, 0, dst) -> (recut, 0, src)
-(recut, 0, dst) -> (canvas, 0, yuv)
+(recut, 0, dst) -> (oscillo, 0, pcm)
 
 #3dworld depends on inner objects
-(3dworld, skygeom, 0) -> (canvas, skyhaha, 0)
+(3dworld, skygeom, 0) -> (oscillo, skyhaha, 0)
 (3dworld, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on ctx + cam
