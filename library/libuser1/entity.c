@@ -45,12 +45,6 @@ int pcb_linkup(void*, void*);
 int pcb_discon(void*, void*);
 int pcb_write(void*, void*, void*, int, void*, int);
 int pcb_read(void*, void*, void*, int, void*, int);
-int eeworld_create(void*, void*, int, u8**);
-int eeworld_delete(void*, void*);
-int eeworld_linkup(void*, void*);
-int eeworld_discon(void*, void*);
-int eeworld_write(void*, void*, void*, int, void*, int);
-int eeworld_read(void*, void*, void*, int, void*, int);
 
 //
 int force_create(void*, void*, int, u8**);
@@ -233,8 +227,8 @@ int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 
 	case _analog_:return analog_read(self, peer, arg, idx, buf, len);
 	case _digital_:return digital_read(self, peer, arg, idx, buf, len);
+
 	case _pcb_:return pcb_read(self, peer, arg, idx, buf, len);
-	case _eeworld_:return eeworld_read(self, peer, arg, idx, buf, len);
 
 	case _html_:return htmlnode_read(self, peer, arg, idx, buf, len);
 	case _test_:return test_read(self, peer, arg, idx, buf, len);
@@ -265,8 +259,8 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 
 	case _analog_:return analog_write(self, peer, arg, idx, buf, len);
 	case _digital_:return digital_write(self, peer, arg, idx, buf, len);
+
 	case _pcb_:return pcb_write(self, peer, arg, idx, buf, len);
-	case _eeworld_:return eeworld_write(self, peer, arg, idx, buf, len);
 
 	case _html_:return htmlnode_write(self, peer, arg, idx, buf, len);
 	case _test_:return test_write(self, peer, arg, idx, buf, len);
@@ -297,8 +291,8 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 
 	case _analog_:return analog_discon(self, peer);
 	case _digital_:return digital_discon(self, peer);
+
 	case _pcb_:return pcb_discon(self, peer);
-	case _eeworld_:return eeworld_discon(self, peer);
 
 	case _html_:return htmlnode_discon(self, peer);
 	case _test_:return test_discon(self, peer);
@@ -329,8 +323,8 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 
 	case _analog_:return analog_linkup(self, peer);
 	case _digital_:return digital_linkup(self, peer);
+
 	case _pcb_:return pcb_linkup(self, peer);
-	case _eeworld_:return eeworld_linkup(self, peer);
 
 	case _html_:return htmlnode_linkup(self, peer);
 	case _test_:return test_linkup(self, peer);
@@ -415,13 +409,6 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		act = allocentity();
 		act->fmt = act->type = _pcb_;
 		pcb_create(act, buf, argc, argv);
-		return act;
-	}
-	else if(_eeworld_ == type)
-	{
-		act = allocentity();
-		act->fmt = act->type = _eeworld_;
-		eeworld_create(act, buf, argc, argv);
 		return act;
 	}
 
