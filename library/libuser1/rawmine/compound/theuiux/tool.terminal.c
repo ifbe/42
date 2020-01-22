@@ -1,4 +1,6 @@
 #include "libuser.h"
+#define CLIENT data0
+#define SERVER data1
 struct uartterm
 {
 	u8* buf;
@@ -188,11 +190,23 @@ static void terminal_event(
 		terminal_serverinput(act->idx, buf, len);
 	}
 }
+void terminal_write_c(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+{
+	struct entity* ent = self->pchip;
+	if(ent->SERVER)relationwrite(ent, 's', 0, 0, buf,len);
+	else printmemory(buf, 8);
+}
+void terminal_write_s(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+{
+	struct entity* ent = self->pchip;
+	if(ent->CLIENT)relationwrite(ent, 'c', 0, 0, buf,len);
+	else printmemory(buf, 8);
+}
 
 
 
 
-static void terminal_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void terminal_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
@@ -202,29 +216,43 @@ static void terminal_read(struct halfrel* self, struct halfrel* peer, struct hal
 	struct entity* scn;struct style* geom;
 	struct entity* act;struct style* slot;
 
-	if(stack){
+	if(stack && ('v' == len)){
 		act = self->pchip;slot = self->pfoot;
 		scn = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)terminal_draw_gl41(act,slot, scn,geom, wnd,area);
+		terminal_draw_gl41(act,slot, scn,geom, wnd,area);
+	}
+}
+
+
+
+
+static void terminal_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	switch(self->flag){
+	case 'c':break;
+	case 's':break;
+	default: terminal_read_bycam(self,peer, stack,rsp, buf,len);
 	}
 }
 static void terminal_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//terminal_event(act, pin, win, sty, ev, 0);
+	switch(self->flag){
+	case 'c':terminal_write_c(self,peer, buf,len);break;
+	case 's':terminal_write_s(self,peer, buf,len);break;
+	}
 }
 static void terminal_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void terminal_linkup(struct halfrel* self, struct halfrel* peer)
 {
+	struct entity* ent = self->pchip;
+	switch(self->flag){
+	case 'c':ent->CLIENT = 1;break;
+	case 's':ent->SERVER = 1;break;
+	}
 }
 
 
@@ -241,33 +269,32 @@ static void terminal_delete(struct entity* act)
 	if(0 == act)return;
 	if(0 == act->buf)memorydelete(act->buf);
 }
-static void terminal_create(struct entity* act, void* arg)
+static void terminal_create(struct entity* act, void* arg, int argc, u8** argv)
 {
 	struct uartterm* term;
 	if(0 == act)return;
 
+	act->CLIENT = 0;
+	act->SERVER = 0;
 	if(0 == arg)return;
-	else
-	{
-		act->idx = memorycreate(sizeof(struct uartterm), 0);
-		act->buf = memorycreate(0x100000, 0);
 
-		term = act->idx;
-		term->curx = 0;
-		term->cury = 0;
-		term->left = 0;
-		term->right = 0;
-		term->top = 0;
-		term->bottom = 0;
-		term->vimw = 128;
-		term->vimh = 24;
-		term->width = 128;
-		term->height = 24;
-		term->bg = 0;
-		term->fg = 7;
-		term->len = 0x100000;
-		term->buf = act->buf;
-	}
+	act->idx = memorycreate(sizeof(struct uartterm), 0);
+	act->buf = memorycreate(0x100000, 0);
+	term = act->idx;
+	term->curx = 0;
+	term->cury = 0;
+	term->left = 0;
+	term->right = 0;
+	term->top = 0;
+	term->bottom = 0;
+	term->vimw = 128;
+	term->vimh = 24;
+	term->width = 128;
+	term->height = 24;
+	term->bg = 0;
+	term->fg = 7;
+	term->len = 0x100000;
+	term->buf = act->buf;
 }
 
 

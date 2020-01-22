@@ -1,6 +1,8 @@
 #include "libuser.h"
 #define MATBUF buf0
 #define CAMBUF buf1
+#define EVTYPE iw0
+#define EVSEND 666666
 int ortho_mvp(mat4 m, struct fstyle* s);
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
 
@@ -242,16 +244,7 @@ static void orthcam_read_bycam(struct halfrel* self, struct halfrel* peer, struc
 		if('v' == len)orthcam_draw_gl41(act,slot, wrd,geom, wnd,area);
 	}
 }
-static void orthcam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
-{
-	struct entity* ent = peer->pchip;
-
-	switch(ent->fmt){
-		case _gl41wnd0_:orthcam_read_bywnd(self, peer, stack, rsp, buf, len);break;
-		default:        orthcam_read_bycam(self, peer, stack, rsp, buf, len);break;
-	}
-}
-static int orthcam_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static int orthcam_write_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
 	struct entity* wnd;struct style* area;
@@ -275,12 +268,39 @@ static int orthcam_write(struct halfrel* self, struct halfrel* peer, struct half
 	}
 	return 0;
 }
+
+
+
+
+static void orthcam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	struct entity* ent = peer->pchip;
+	switch(ent->fmt){
+		case _gl41wnd0_:orthcam_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		default:        orthcam_read_bycam(self, peer, stack, rsp, buf, len);break;
+	}
+}
+static int orthcam_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	struct entity* ent = self->pchip;
+	if(EVSEND == ent->EVTYPE){
+		relationwrite(ent,_ev_, stack,rsp, buf,len);
+	}
+	else{
+		orthcam_write_bycam(self,peer, stack,rsp, buf,len);
+	}
+	return 1;
+}
 static void orthcam_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void orthcam_linkup(struct halfrel* self, struct halfrel* peer)
 {
     say("@orthcam_linkup\n");
+	if(_ev_ == self->flag){
+		struct entity* cam = self->pchip;
+		cam->EVTYPE = EVSEND;
+	}
 }
 
 
