@@ -72,6 +72,7 @@ static void force_decent_spring(struct entity* ent, struct joint* jo)
 		jo[j].gradz = 0.0;
 		relationread(ent, 'a'+j, 0, 'R', jo, j);
 	}
+
 	for(j=0;j<16;j++){
 		if(0 == jo[j].exist)break;
 		if(0 != jo[j].sure)continue;
@@ -104,6 +105,15 @@ static void force_decent_stick(struct entity* ent, struct joint* jo)
 		say("force_decent_stick:%f,%f,%f\n",jo[j].x, jo[j].y, jo[j].z);
 	}
 }
+static void force_decent(struct entity* ent)
+{
+	if(0 == ent)return;
+	struct joint* jo = ent->buf0;
+	if(0 == jo[0].exist)return;
+
+	force_decent_spring(ent, jo);
+	force_decent_stick(ent, jo);
+}
 
 
 
@@ -121,18 +131,37 @@ static void force_draw_gl41(
 	float* vt = geom->f.vt;
 	gl41line_prism4(wnd, 0x404040, vc, vr, vf, vt);
 
+
 	struct joint* jo = act->buf0;
 	if(0 == jo[0].exist)return;
 
-	force_decent_spring(act, jo);
-	force_decent_stick(act, jo);
-
 	for(j=0;j<3;j++){tr[j] = tf[j] = tu[j] = 0.0;}
 	tr[0] = tf[1] = tu[2] = 10.0;
-
 	for(j=0;j<16;j++){
 		if(0 == jo[j].exist)break;
 		gl41solid_sphere(wnd, 0x808080, &jo[j].x,tr,tf,tu);
+	}
+	tr[0] = tf[1] = tu[2] = 100.0;
+	for(j=0;j<16;j++){
+		if(0 == jo[j].exist)break;
+		carveascii_center(wnd, 0xff0000, &jo[j].x,tr,tu,'a'+j);
+	}
+
+
+	void** tab = act->buf1;
+	if(0 == tab)return;
+
+	struct halfrel self;
+	struct halfrel peer;
+	for(j=0;j<16;j++){
+		if(0 == tab[j])break;
+		say("node: %llx\n", tab[j]);
+
+		self.pchip = tab[j];
+		self.flag = 'f';
+		peer.pchip = wnd;
+		peer.flag = 0;
+		entityread(&self,&peer, 0,0, jo,0);
 	}
 }
 void force_read_board(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
@@ -150,28 +179,10 @@ void force_read_board(struct halfrel* self, struct halfrel* peer, struct halfrel
 	wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 	force_draw_gl41(act,slot, win,geom, wnd,area);
 }
-int force_read_child(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
-{
-	struct entity* scene;
-	struct relation* rel;
-	//say("@force_read\n");
-
-	scene = self->pchip;
-	if(0 == scene)return 0;
-	rel = scene->orel0;
-	if(0 == rel)return 0;
-
-	while(1){
-		if(0 == rel)break;
-		if(rel->srcfoot)entityread((void*)(rel->dst), (void*)(rel->src), stack, rsp, buf, len);
-		rel = samesrcnextdst(rel);
-	}
-	return 0;
-}
 int force_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	if(stack && ('v' == len)){
-		force_read_child(self,peer, stack,rsp, buf,len);
+		force_decent(self->pchip);
 		force_read_board(self,peer, stack,rsp, buf,len);
 	}
 	return 0;
@@ -186,7 +197,24 @@ int force_discon(struct halfrel* self, struct halfrel* peer)
 }
 int force_linkup(struct halfrel* self, struct halfrel* peer)
 {
+	int j;
+	if(0 == self)return 0;
 	say("@force_linkup: %.4s\n", &self->flag);
+
+	j = self->flag;
+	if('a' > j)return 0;
+	if('z' < j)return 0;
+
+	struct entity* ent = self->pchip;
+	if(0 == ent)return 0;
+
+	void** tab = ent->buf1;
+	if(0 == tab)return 0;
+
+	for(j=0;j<16;j++){
+		if(tab[j] == peer->pchip)break;
+		if(0 == tab[j]){tab[j] = peer->pchip;break;}
+	}
 	return 0;
 }
 
@@ -212,7 +240,10 @@ int force_create(struct entity* scene, void* arg, int argc, u8** argv)
 	say("@force_create\n");
 	if(0 == arg)return 0;
 
-	buf = scene->buf0 = memorycreate(0x10000, 0);
+	scene->buf0 = memorycreate(0x10000, 0);
+	scene->buf1 = memorycreate(0x10000, 0);
+
+	buf = scene->buf0;
 	if(0 == buf)return 0;
 
 	ret = openreadclose(arg, 0, buf+0x8000, 0x8000);

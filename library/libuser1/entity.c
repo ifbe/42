@@ -220,7 +220,9 @@ int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 	case _gl41data_:return gl41data_read(self, peer, arg, idx, buf, len);
 	case _gl41coop_:return gl41coop_read(self, peer, arg, idx, buf, len);
 
+	//case _field_:return field_read(self, peer, arg, idx, buf, len);
 	case _force_:return force_read(self, peer, arg, idx, buf, len);
+
 	case _scene3d_:return scene3d_read(self, peer, arg, idx, buf, len);
 	case _world3d_:return world3d_read(self, peer, arg, idx, buf, len);
 	case _reality_:return reality_read(self, peer, arg, idx, buf, len);
@@ -252,7 +254,9 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 	case _gl41data_:return gl41data_write(self, peer, arg, idx, buf, len);
 	case _gl41coop_:return gl41coop_write(self, peer, arg, idx, buf, len);
 
+	//case _field_:return field_write(self, peer, arg, idx, buf, len);
 	case _force_:return force_write(self, peer, arg, idx, buf, len);
+
 	case _scene3d_:return scene3d_write(self, peer, arg, idx, buf, len);
 	case _world3d_:return world3d_write(self, peer, arg, idx, buf, len);
 	case _reality_:return reality_write(self, peer, arg, idx, buf, len);
@@ -285,6 +289,9 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	case _gl41data_:return gl41data_discon(self, peer);
 	case _gl41coop_:return gl41coop_discon(self, peer);
 
+	//case _field_:return field_discon(self, peer);
+	case _force_:return force_discon(self, peer);
+
 	case _scene3d_:return scene3d_discon(self, peer);
 	case _world3d_:return world3d_discon(self, peer);
 	case _reality_:return reality_discon(self, peer);
@@ -316,6 +323,9 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 
 	case _gl41data_:return gl41data_linkup(self, peer);
 	case _gl41coop_:return gl41coop_linkup(self, peer);
+
+	//case _field_:return field_linkup(self, peer);
+	case _force_:return force_linkup(self, peer);
 
 	case _scene3d_:return scene3d_linkup(self, peer);
 	case _world3d_:return world3d_linkup(self, peer);

@@ -75,6 +75,16 @@ static void spring_read_bycam(struct halfrel* self, struct halfrel* peer, struct
 		spring_draw_gl41(ent,slot, scn,geom, wnd,area);
 	}
 }
+void spring_read_force(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct joint* jo, int len)
+{
+	struct entity* ent = self->pchip;
+	struct entity* sup = peer->pchip;
+	int a = ent->A_PEERFOOT - 'a';
+	int b = ent->B_PEERFOOT - 'a';
+	say("@spring_read_force: %d,%d\n",a,b);
+
+	gl41line(sup, 0xffffff, &jo[a].x, &jo[b].x);
+}
 
 
 
@@ -145,9 +155,11 @@ static void spring_read_b(struct halfrel* self, struct halfrel* peer, void* arg,
 
 static void spring_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	//say("@spring_read: %.4s\n", &self->flag);
 	switch(self->flag){
 	case 'a':spring_read_a(self,peer, arg,idx, buf,len);break;
 	case 'b':spring_read_b(self,peer, arg,idx, buf,len);break;
+	case 'f':spring_read_force(self,peer, arg,idx, buf,len);break;
 	default: spring_read_bycam(self,peer, arg,idx, buf,len);
 	}
 }
@@ -159,6 +171,7 @@ static void spring_discon(struct halfrel* self, struct halfrel* peer)
 }
 static void spring_linkup(struct halfrel* self, struct halfrel* peer)
 {
+	//say("@spring_linkup: %.4s,%.4s\n", &self->flag, &peer->flag);
 	struct entity* ent = self->pchip;
 	switch(self->flag){
 		case 'a':ent->A_PEERFOOT = peer->flag;break;

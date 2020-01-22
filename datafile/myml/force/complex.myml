@@ -48,7 +48,7 @@ l:50
 }
 s3{
 fmt:spring
-k:175
+k:25
 l:75
 }
 stick{
@@ -90,11 +90,11 @@ fmt:poller
 (scn, 0, b) -> (s1, 0, a)
 (scn, 0, c) -> (s2, 0, a)
 (scn, 0, d) -> (s3, 0, a)
-(scn, 0, a) -> (s0, 0, b)
-(scn, 0, b) -> (s1, 0, b)
-(scn, 0, c) -> (s2, 0, b)
-(scn, 0, d) -> (s3, 0, b)
+(scn, 0, e) -> (s0, 0, b)
+(scn, 0, e) -> (s1, 0, b)
 (scn, 0, e) -> (stick, 0, a)
+(scn, 0, f) -> (s2, 0, b)
+(scn, 0, f) -> (s3, 0, b)
 (scn, 0, f) -> (stick, 0, b)
 
 (world, scngeom, 0) -> (scn, scnslot, 0)
