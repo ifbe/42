@@ -82,7 +82,35 @@ void stick_read_force(struct halfrel* self, struct halfrel* peer, struct halfrel
 	int b = ent->B_PEERFOOT - 'a';
 	say("@stick_read_force: %d,%d\n",a,b);
 
-	gl41line(sup, 0xffffff, &jo[a].x, &jo[b].x);
+	float* va = &jo[a].x;
+	float* vb = &jo[b].x;
+	gl41line(sup, 0xffffff, va, vb);
+
+	int j;
+	vec3 up = {0.0, 0.0, 1.0};
+	vec3 vc,vt;
+	vec3 vr,vf;
+
+	//vt = normalize(va-vb)
+	for(j=0;j<3;j++){
+		vc[j] = (va[j]+vb[j])/2;
+		vt[j] = va[j]-vb[j];
+	}
+	vec3_setlen(vt, 1.0);
+
+	//vr = normalize(cross(vt*up))
+	vec3_cross(vr, vt, up);
+	vec3_setlen(vr, 1.0);
+
+	//vf = normalize(cross(vt*vr))
+	vec3_cross(vf, vt, vr);
+	vec3_setlen(vf, 1.0);
+
+	//correct length
+	vec3_setlen(vr, 10.0);
+	vec3_setlen(vf, 10.0);
+	vec3_setlen(vt, ent->LVAL/2);
+	gl41solid_cylinder(sup, 0x808080, vc,vr,vf,vt);
 }
 
 

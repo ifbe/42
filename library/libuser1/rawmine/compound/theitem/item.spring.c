@@ -83,7 +83,37 @@ void spring_read_force(struct halfrel* self, struct halfrel* peer, struct halfre
 	int b = ent->B_PEERFOOT - 'a';
 	say("@spring_read_force: %d,%d\n",a,b);
 
-	gl41line(sup, 0xffffff, &jo[a].x, &jo[b].x);
+	int j;
+	vec3 up = {0.0, 0.0, 1.0};
+	vec3 vc,vt;
+	vec3 vr,vf;
+	float* va = &jo[a].x;
+	float* vb = &jo[b].x;
+
+	//vt = normalize(va-vb)
+	for(j=0;j<3;j++){
+		vc[j] = (va[j]+vb[j])/2;
+		vt[j] = va[j]-vb[j];
+	}
+	vec3_setlen(vt, 1.0);
+
+	//vr = normalize(cross(vt*up))
+	vec3_cross(vr, vt, up);
+	vec3_setlen(vr, 1.0);
+
+	//vf = normalize(cross(vt*vr))
+	vec3_cross(vf, vt, vr);
+	vec3_setlen(vf, 1.0);
+
+	//spring length
+	vec3_setlen(vr, 10.0);
+	vec3_setlen(vf, 10.0);
+	for(j=0;j<3;j++)vt[j] = (va[j]-vb[j])/2;
+	gl41line_spring(sup, 0x808080, vc,vr,vf,vt);
+
+	//real length
+	vec3_setlen(vt, ent->LVAL/2);
+	gl41solid_cylinder(sup, 0xffffff, vc, vr, vf, vt);
 }
 
 

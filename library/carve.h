@@ -19,7 +19,7 @@ void gl41line(               struct entity* ctx, u32 rgb, vec3 va, vec3 vb);
 void gl41line_shorter(       struct entity* ctx, u32 rgb, vec3 va, vec3 vb);
 void gl41line_arrow(         struct entity* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vn);
 void gl41line_bezier(        struct entity* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
-void gl41line_special(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vu, float sa, float da);
+void gl41line_spring(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
 void gl41line_yshape(        struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
 void gl41line_triangle(      struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
 void gl41line_rect(          struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);

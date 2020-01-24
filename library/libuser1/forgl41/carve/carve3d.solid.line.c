@@ -244,45 +244,42 @@ void gl41line_bezier(struct entity* win, u32 rgb,
 
 
 
-void carveline_special(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vu,
-	float sa, float da)
+#define SPRACC (acc*32)
+void carveline_spring(float* vbuf, int vlen, u16* ibuf, int ilen,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vt)
 {
-	int j;
-	float s,t;
-	for(j=0;j<=acc;j++)
+	int j,k;
+	float a,c,s;
+	for(k=0;k<=SPRACC;k++)
 	{
-		s = j * da / acc;
-		t = j * vr[0] / acc;
+		a = k * 32*tau / SPRACC;
+		c = cosine(a);
+		s = sine(a);
+		for(j=0;j<3;j++)vbuf[6*k +j] = vc[j] +vr[j]*c +vf[j]*s +vt[j]*(2.0*k/SPRACC-1);
 
-		vbuf[6*j + 0] = t * cosine(sa+s);
-		vbuf[6*j + 1] = t * sine(sa+s);
-		vbuf[6*j + 2] = vu[2] * j / acc;
-
-		if(j >= acc)break;
-		ibuf[2*j + 0] = vlen + j;
-		ibuf[2*j + 1] = vlen + j+1;
+		if(k >= SPRACC)break;
+		ibuf[2*k + 0] = vlen + k;
+		ibuf[2*k + 1] = vlen + k+1;
 	}
 }
-void gl41line_special(struct entity* win, u32 rgb,
-	vec3 vc, vec3 vr, vec3 vu,
-	float sa, float da)
+void gl41line_spring(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vt)
 {
 	float* vbuf;
 	u16* ibuf;
-	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, acc + 1, acc);
+	int vlen = line3d_vars(win, 0, &vbuf, &ibuf, SPRACC + 1, SPRACC);
 	if(vlen < 0)return;
 
 	int j;
 	float bb = (float)(rgb&0xff) / 255.0;
 	float gg = (float)((rgb>>8)&0xff) / 255.0;
 	float rr = (float)((rgb>>16)&0xff) / 255.0;
-	for(j=0;j<6*(acc+1);j+=6){
+	for(j=0;j<6*(SPRACC+1);j+=6){
 		vbuf[j + 3] = rr;
 		vbuf[j + 4] = gg;
 		vbuf[j + 5] = bb;
 	}
-	carveline_special(vbuf,vlen, ibuf,0, vc,vr,vu, sa,da);
+	carveline_spring(vbuf,vlen, ibuf,0, vc,vr,vf,vt);
 }
 
 
