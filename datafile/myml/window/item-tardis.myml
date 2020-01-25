@@ -5,8 +5,8 @@ fmt:tardis
 freecam{
 fmt:freecam
 }
-3dworld{
-fmt:3dworld
+world3d{
+fmt:world3d
 }
 </entity>
 
@@ -64,9 +64,9 @@ q:1.0, 1.0
 
 
 <relation>
-#3dworld depends on inner objects
-(3dworld, geom0, 0) -> (tardis, haha0, 0)
-(3dworld, freegeom, 0) -> (freecam, freemodl, 0)
+#world3d depends on inner objects
+(world3d, geom0, 0) -> (tardis, haha0, 0)
+(world3d, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
 (thewnd, freerect, 0) -> (freecam, 0, 0)

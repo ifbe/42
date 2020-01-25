@@ -40,7 +40,7 @@ fmt:texbox
 url:datafile/jpg/wall.jpg
 }
 world{
-fmt:3dworld
+fmt:world3d
 }
 </entity>
 

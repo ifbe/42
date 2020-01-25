@@ -16,10 +16,10 @@ cam0{
 fmt:freecam
 }
 scene{
-fmt:3dscene
+fmt:scene3d
 }
 world{
-fmt:3dworld
+fmt:world3d
 }
 </entity>
 

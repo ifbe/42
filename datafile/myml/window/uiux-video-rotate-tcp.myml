@@ -37,8 +37,8 @@ fmt:video
 freecam{
 fmt:freecam
 }
-3dworld{
-fmt:3dworld
+world3d{
+fmt:world3d
 }
 </entity>
 
@@ -91,9 +91,9 @@ fmt:poller
 (recut, 0, dst) -> (rotate, 0, src)
 (rotate, 0, dst) -> (canvas, 0, yuv)
 
-#3dworld depends on inner objects
-(3dworld, skygeom, 0) -> (canvas, skyhaha, 0)
-(3dworld, freegeom, 0) -> (freecam, freemodl, 0)
+#world3d depends on inner objects
+(world3d, skygeom, 0) -> (canvas, skyhaha, 0)
+(world3d, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on ctx + cam
 (thewnd, freerect, 0) -> (freecam, 0, 0)

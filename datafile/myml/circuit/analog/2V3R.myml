@@ -105,7 +105,7 @@ cam{
 fmt:freecam
 }
 world{
-fmt:3dworld
+fmt:world3d
 }
 </entity>
 

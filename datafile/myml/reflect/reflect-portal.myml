@@ -26,8 +26,8 @@ fmt:portal
 freecam{
 fmt:freecam
 }
-3dworld{
-fmt:3dworld
+world3d{
+fmt:world3d
 }
 
 thectx{
@@ -124,16 +124,16 @@ q:1.0, 1.0
 
 <relation>
 
-#3dworld depends on inner objects
-(3dworld, skygeom, 0) -> (texball, skyhaha, 0)
-(3dworld, gndgeom, 0) -> (ground, gndhaha, 0)
-(3dworld, treegeom, 0) -> (tree, treehaha, 0)
-(3dworld, aaaageom, 0) -> (portal, aaaahaha, a)
-(3dworld, bbbbgeom, 0) -> (portal, bbbbhaha, b)
-(3dworld, freegeom, 0) -> (freecam, freemodl, 0)
+#world3d depends on inner objects
+(world3d, skygeom, 0) -> (texball, skyhaha, 0)
+(world3d, gndgeom, 0) -> (ground, gndhaha, 0)
+(world3d, treegeom, 0) -> (tree, treehaha, 0)
+(world3d, aaaageom, 0) -> (portal, aaaahaha, a)
+(world3d, bbbbgeom, 0) -> (portal, bbbbhaha, b)
+(world3d, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glctx depends on scene
-(thectx, 0, 0) -> (3dworld, 0, 0)
+(thectx, 0, 0) -> (world3d, 0, 0)
 
 #glfbo depends on ctx + cam
 (thefbo, 0, ctx) -> (thectx, 0, 0)

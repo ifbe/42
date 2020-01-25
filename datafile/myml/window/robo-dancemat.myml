@@ -76,8 +76,8 @@ linecolor:800080
 3rdcam{
 fmt:3rdcam
 }
-3dworld{
-fmt:3dworld
+world3d{
+fmt:world3d
 }
 
 button{
@@ -88,7 +88,7 @@ orthcam{
 fmt:orthcam
 }
 uiworld{
-fmt:3dworld
+fmt:world3d
 }
 </entity>
 
@@ -141,10 +141,10 @@ fmt:poller
 (orthcam, 0, ev) -> (button, 0, 0)
 (button, 0, ev) -> (tcpsrv, 0, src)
 
-#3dworld depends on ...
-(3dworld, skygeom, 0) -> (sky, skypart, 0)
-(3dworld, testgeom, 0) -> (dancemat, testpart, 0)
-(3dworld, aaaageom, 0) -> (3rdcam, aaaapart, 0)
+#world3d depends on ...
+(world3d, skygeom, 0) -> (sky, skypart, 0)
+(world3d, testgeom, 0) -> (dancemat, testpart, 0)
+(world3d, aaaageom, 0) -> (3rdcam, aaaapart, 0)
 
 #uiworld depends on ...
 (uiworld, btngeom, 0) -> (button, btnslot, 0)

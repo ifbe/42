@@ -141,16 +141,16 @@ static void clock_read(struct halfrel* self, struct halfrel* peer, struct halfre
 	struct entity* wnd;struct style* area;
 	struct entity* wrd;struct style* camg;
 
-	//scene -> terminal
+	//scene -> clock
 	struct entity* scn;struct style* geom;
 	struct entity* act;struct style* slot;
 
-	if(stack){
+	if(stack && ('v' == len)){
 		act = self->pchip;slot = self->pfoot;
 		scn = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)clock_draw_gl41(act,slot, scn,geom, wnd,area);
+		clock_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
 }
 static void clock_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

@@ -42,7 +42,7 @@ url:datafile/obj/cube.obj
 #fs:datafile/shader/gbuffer/frag.glsl
 }
 world{
-fmt:3dworld
+fmt:world3d
 }
 </entity>
 

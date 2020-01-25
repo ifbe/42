@@ -83,7 +83,7 @@ g4{
 fmt:spurgear
 }
 scene{
-fmt:3dscene
+fmt:scene3d
 }
 
 event{
@@ -93,7 +93,7 @@ cam{
 fmt:freecam
 }
 world{
-fmt:3dworld
+fmt:world3d
 }
 </entity>
 

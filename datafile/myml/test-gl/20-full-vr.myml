@@ -32,7 +32,7 @@ vrglass{
 fmt:vrglass
 }
 world{
-fmt:3dworld
+fmt:world3d
 }
 
 screen{

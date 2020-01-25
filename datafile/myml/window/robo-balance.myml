@@ -48,8 +48,8 @@ fmt:balance
 freecam{
 fmt:freecam
 }
-3dworld{
-fmt:3dworld
+world3d{
+fmt:world3d
 }
 </entity>
 
@@ -94,10 +94,10 @@ fmt:poller
 
 
 <relation>
-#3dworld depends on inner objects
-(3dworld, gndgeom, 0) -> (ground, gndhaha, 0)
-(3dworld, skygeom, 0) -> (balance, skyhaha, 0)
-(3dworld, freegeom, 0) -> (freecam, freemodl, 0)
+#world3d depends on inner objects
+(world3d, gndgeom, 0) -> (ground, gndhaha, 0)
+(world3d, skygeom, 0) -> (balance, skyhaha, 0)
+(world3d, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
 (thewnd, freerect, mvp) -> (freecam, 0, 0)

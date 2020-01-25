@@ -53,12 +53,22 @@ int force_linkup(void*, void*);
 int force_discon(void*, void*);
 int force_write(void*, void*, void*, int, void*, int);
 int force_read(void*, void*, void*, int, void*, int);
+
+//
+int frame3d_create(void*, void*, int, u8**);
+int frame3d_delete(void*, void*);
+int frame3d_linkup(void*, void*);
+int frame3d_discon(void*, void*);
+int frame3d_write(void*, void*, void*, int, void*, int);
+int frame3d_read(void*, void*, void*, int, void*, int);
 int scene3d_create(void*, void*, int, u8**);
 int scene3d_delete(void*, void*);
 int scene3d_linkup(void*, void*);
 int scene3d_discon(void*, void*);
 int scene3d_write(void*, void*, void*, int, void*, int);
 int scene3d_read(void*, void*, void*, int, void*, int);
+
+//
 int world3d_create(void*, void*, int, u8**);
 int world3d_delete(void*, void*);
 int world3d_linkup(void*, void*);
@@ -221,9 +231,12 @@ int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 	case _gl41coop_:return gl41coop_read(self, peer, arg, idx, buf, len);
 
 	//case _field_:return field_read(self, peer, arg, idx, buf, len);
+	//case _fluid_:return fluid_read(self, peer, arg, idx, buf, len);
 	case _force_:return force_read(self, peer, arg, idx, buf, len);
 
+	case _frame3d_:return frame3d_read(self, peer, arg, idx, buf, len);
 	case _scene3d_:return scene3d_read(self, peer, arg, idx, buf, len);
+
 	case _world3d_:return world3d_read(self, peer, arg, idx, buf, len);
 	case _reality_:return reality_read(self, peer, arg, idx, buf, len);
 
@@ -255,9 +268,12 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 	case _gl41coop_:return gl41coop_write(self, peer, arg, idx, buf, len);
 
 	//case _field_:return field_write(self, peer, arg, idx, buf, len);
+	//case _fluid_:return fluid_write(self, peer, arg, idx, buf, len);
 	case _force_:return force_write(self, peer, arg, idx, buf, len);
 
+	case _frame3d_:return frame3d_write(self, peer, arg, idx, buf, len);
 	case _scene3d_:return scene3d_write(self, peer, arg, idx, buf, len);
+
 	case _world3d_:return world3d_write(self, peer, arg, idx, buf, len);
 	case _reality_:return reality_write(self, peer, arg, idx, buf, len);
 
@@ -290,9 +306,12 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	case _gl41coop_:return gl41coop_discon(self, peer);
 
 	//case _field_:return field_discon(self, peer);
+	//case _fluid_:return fluid_discon(self, peer);
 	case _force_:return force_discon(self, peer);
 
+	case _frame3d_:return frame3d_discon(self, peer);
 	case _scene3d_:return scene3d_discon(self, peer);
+
 	case _world3d_:return world3d_discon(self, peer);
 	case _reality_:return reality_discon(self, peer);
 
@@ -325,9 +344,12 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 	case _gl41coop_:return gl41coop_linkup(self, peer);
 
 	//case _field_:return field_linkup(self, peer);
+	//case _fluid_:return fluid_linkup(self, peer);
 	case _force_:return force_linkup(self, peer);
 
+	case _frame3d_:return frame3d_linkup(self, peer);
 	case _scene3d_:return scene3d_linkup(self, peer);
+
 	case _world3d_:return world3d_linkup(self, peer);
 	case _reality_:return reality_linkup(self, peer);
 
@@ -422,12 +444,21 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		return act;
 	}
 
-	//world
+	//physic
 	else if(_force_ == type)
 	{
 		act = allocentity();
 		act->fmt = act->type = _force_;
 		force_create(act, buf, argc, argv);
+		return act;
+	}
+
+	//3d
+	else if(_frame3d_ == type)
+	{
+		act = allocentity();
+		act->fmt = act->type = _frame3d_;
+		frame3d_create(act, buf, argc, argv);
 		return act;
 	}
 	else if(_scene3d_ == type)
@@ -437,6 +468,8 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		scene3d_create(act, buf, argc, argv);
 		return act;
 	}
+
+	//world
 	else if(_world3d_ == type)
 	{
 		act = allocentity();
@@ -451,7 +484,6 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		reality_create(act, buf, argc, argv);
 		return act;
 	}
-
 
 	//render
 	else if(_gl41data_ == type)

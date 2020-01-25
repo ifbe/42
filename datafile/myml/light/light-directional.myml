@@ -83,8 +83,8 @@ fmt:dirlit
 freecam{
 fmt:freecam
 }
-3dworld{
-fmt:3dworld
+world3d{
+fmt:world3d
 }
 </entity>
 
@@ -117,12 +117,12 @@ fmt:poller
 #light depends on thefbo
 (light, 0, fbo) -> (thefbo, litrect, mvp)
 
-#3dworld depends on inner objects
-(3dworld, grndgeom, 0) -> (ground, grndhaha, 0)
-(3dworld, testgeom, 0) -> (test, testhaha, 0)
-(3dworld, treegeom, 0) -> (tree, treehaha, 0)
-(3dworld, litgeom, 0) -> (light, lithaha, 0)
-(3dworld, freegeom, 0) -> (freecam, freemodl, 0)
+#world3d depends on inner objects
+(world3d, grndgeom, 0) -> (ground, grndhaha, 0)
+(world3d, testgeom, 0) -> (test, testhaha, 0)
+(world3d, treegeom, 0) -> (tree, treehaha, 0)
+(world3d, litgeom, 0) -> (light, lithaha, 0)
+(world3d, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
 (thewnd, freerect, mvp) -> (freecam, 0, 0)

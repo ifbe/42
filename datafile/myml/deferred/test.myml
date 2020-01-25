@@ -63,7 +63,7 @@ vs:datafile/shader/ground/gv.glsl
 fs:datafile/shader/ground/gf.glsl
 }
 world{
-fmt:3dworld
+fmt:world3d
 }
 mixer{
 fmt:gbuffer

@@ -52,7 +52,7 @@ cam{
 fmt:freecam
 }
 pcb{
-fmt:3dworld
+fmt:world3d
 }
 </entity>
 

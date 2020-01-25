@@ -16,8 +16,8 @@ fmt:login
 orthcam{
 fmt:orthcam
 }
-3dworld{
-fmt:3dworld
+world3d{
+fmt:world3d
 }
 
 thectx{
@@ -57,12 +57,12 @@ q:1.0, 1.0
 
 <relation>
 
-#3dworld depends on inner objects
-(3dworld, area, 0) -> (login, 0, 0)
-(3dworld, orthgeom, 0) -> (orthcam, orthmodl, 0)
+#world3d depends on inner objects
+(world3d, area, 0) -> (login, 0, 0)
+(world3d, orthgeom, 0) -> (orthcam, orthmodl, 0)
 
 #glctx depends on scene
-(thectx, 0, 0) -> (3dworld, 0, 0)
+(thectx, 0, 0) -> (world3d, 0, 0)
 
 #glwnd depends on ctx + cam
 (thewnd, 0, 0) -> (thectx, 0, 0)

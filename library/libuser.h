@@ -14,18 +14,23 @@
 	#define GLSL_VERSION "#version 410 core\n"
 #endif
 //
-#define _clickray_ hex64('c','l','i','c','k','r','a','y')
-#define _event3rd_ hex64('e','v','e','n','t','3','r','d')
-//
 #define _analog_ hex64('a','n','a','l','o','g', 0, 0)
 #define _digital_ hex64('d','i','g','i','t','a','l', 0)
 #define _eeworld_ hex64('e','e','w','o','r','l','d', 0)
 //
+#define _field_ hex64('f','i','e','l','d', 0, 0, 0)
+#define _fluid_ hex64('f','l','u','i','d', 0, 0, 0)
 #define _force_ hex64('f','o','r','c','e', 0, 0, 0)
-#define _scene3d_ hex64('3','d','s','c','e','n','e', 0)
-#define _world3d_ hex64('3','d','w','o','r','l','d', 0)
+//
+#define _frame3d_ hex64('f','r','a','m','e','3','d', 0)
+#define _scene3d_ hex64('s','c','e','n','e','3','d', 0)
+//
+#define _world3d_ hex64('w','o','r','l','d','3','d', 0)
 #define _reality_ hex64('r','e','a','l','i','t','y', 0)
-//dxhelp
+//event
+#define _clickray_ hex64('c','l','i','c','k','r','a','y')
+#define _event3rd_ hex64('e','v','e','n','t','3','r','d')
+//dx
 #define _dx11data_ hex64('d','x','1','1','d','a','t','a')
 #define _dx11coop_ hex64('d','x','1','1','c','o','o','p')
 
@@ -33,7 +38,7 @@
 #define _dx11fbod_ hex64('d','x','1','1','f','b','o','d')
 #define _dx11fboc_ hex64('d','x','1','1','f','b','o','c')
 #define _dx11fbog_ hex64('d','x','1','1','f','b','o','g')
-//
+//gl
 #define _gl41data_ hex64('g','l','4','1','d','a','t','a')
 #define _gl41coop_ hex64('g','l','4','1','c','o','o','p')
 

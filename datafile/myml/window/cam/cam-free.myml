@@ -1,5 +1,5 @@
 <supply>
-3dworld{
+world3d{
 fmt:vbo
 type:3d
 }
@@ -95,16 +95,16 @@ p2{}
 
 
 <relation>
-(3dworld, 0, aid) -> (geomhelper, 0, 0)
-(3dworld, 0, aid) -> (fonthelper, 0, 0)
-(3dworld, sky, bg) -> (texball, p0, 0)
-(3dworld, area, bg) -> (particle, p1, 0)
-(3dworld, haha, bg) -> (geometry, p2, 0)
+(world3d, 0, aid) -> (geomhelper, 0, 0)
+(world3d, 0, aid) -> (fonthelper, 0, 0)
+(world3d, sky, bg) -> (texball, p0, 0)
+(world3d, area, bg) -> (particle, p1, 0)
+(world3d, haha, bg) -> (geometry, p2, 0)
 
-(3dworld, rtsproj, cam) -> (rtscam, rtsxxxx, geom)
+(world3d, rtsproj, cam) -> (rtscam, rtsxxxx, geom)
 (window, fullscreen, cam) -> (rtscam, frustum, cam)
 
-(window, 0, vp) -> (3dworld, 0, out)
+(window, 0, vp) -> (world3d, 0, out)
 (player1, 0, con) -> (rtscam, 0, con)
 (ahrs, 0, ahrs) -> (geometry, 0, ahrs)
 </relation>

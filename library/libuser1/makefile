@@ -250,6 +250,7 @@ rawmine/scene/factory/fac.pcb.c \
 rawmine/scene/factory/fac.gcode.c \
 rawmine/scene/factory/fac.gerber.c \
 rawmine/scene/physic/phy.field.c \
+rawmine/scene/physic/phy.fluid.c \
 rawmine/scene/physic/phy.force.c \
 rawmine/scene/neural/nn.c \
 rawmine/scene/neural/nn.cnn.c \
@@ -258,6 +259,7 @@ rawmine/scene/uiux/ui.c \
 rawmine/scene/uiux/ui.html.c \
 rawmine/scene/uiux/ui.xaml.c \
 rawmine/scene/virt/3d.c \
+rawmine/scene/virt/3d.frame.c \
 rawmine/world/real.c \
 rawmine/world/virt.c \
 fordx11/dx11.ctx.c \

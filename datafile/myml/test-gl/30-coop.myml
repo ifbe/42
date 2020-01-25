@@ -1,6 +1,6 @@
 <entity>
 world{
-fmt:3dworld
+fmt:world3d
 }
 gldata{
 fmt:gl41data
