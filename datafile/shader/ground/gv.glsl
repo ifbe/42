@@ -7,15 +7,12 @@ out mediump vec3 normal;
 out mediump vec3 texuvw;
 out mediump vec3 depths;
 uniform mat4 cammvp;
+uniform mat4 viewmat;
 void main(){
-	mediump vec4 tmp = cammvp * vec4(vert, 1.0);
-	mediump float d = tmp.z/tmp.w;
-	mediump float n = 1.0;
-	mediump float f = 10000.0;
-	mediump float c = (2.0 * n) / (f + n - d * (f - n));
-	depths = vec3(c, c, c);
+	vec4 tmp = viewmat * vec4(vert, 1.0);
+	depths.z = -tmp.z/10000.0;
 	texuvw = texc;
 	normal = norm;
 	vertex = vert;
-	gl_Position = tmp;
+	gl_Position = cammvp * vec4(vert, 1.0);
 }

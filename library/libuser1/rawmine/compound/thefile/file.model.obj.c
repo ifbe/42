@@ -283,34 +283,25 @@ static void obj3d_event(
 
 static void obj3d_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam
+	//wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
-
-	//cam -> world
 	struct entity* wrd;struct style* camg;
 
 	//world -> obj3d
 	struct entity* scn;struct style* geom;
 	struct entity* act;struct style* slot;
 
-	if(stack){
+	if(stack && ('v' == len)){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		scn = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len)obj3d_draw_gl41(act,slot, scn,geom, wrd,camg, wnd,area);
+		obj3d_draw_gl41(act,slot, scn,geom, wrd,camg, wnd,area);
 	}
 }
 static void obj3d_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//obj3d_event(act, pin, win, sty, ev, 0);
 }
 static void obj3d_discon(struct halfrel* self, struct halfrel* peer)
 {

@@ -3,7 +3,7 @@
 #define CAMBUF buf1
 #define EVTYPE iw0
 #define EVSEND 666666
-void invmvp(float* v, struct fstyle* sty);
+void fixview_transpose(float* m, struct fstyle* sty);
 void fixmatrix_transpose(float* m, struct fstyle* sty);
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
 int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
@@ -82,7 +82,7 @@ static void freecam_create(struct entity* act, void* arg, int argc, u8** argv)
 	act->fz0 = 0.0;
 
 	//matrix
-	act->MATBUF = memorycreate(64, 0);
+	act->MATBUF = memorycreate(64*2, 0);
 	act->CAMBUF = memorycreate(0x200, 0);
 }
 
@@ -697,9 +697,11 @@ static void freecam_matrix(
 	struct entity* wrd, struct style* geom)
 {
 	struct fstyle* frus = &geom->frus;
-	void* mat = act->MATBUF;
+	void* cammvp = act->MATBUF;
+	void* viewmat = cammvp + 4*4*4;
 
-	fixmatrix_transpose(mat, frus);
+	fixmatrix_transpose(cammvp, frus);
+	fixview_transpose(viewmat, frus);
 	//printmat4(m);
 }
 static void freecam_camera(
@@ -712,9 +714,12 @@ static void freecam_camera(
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";
 	src->arg[0].data = act->MATBUF;
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "camxyz";
-	src->arg[1].data = frus->vc;
+	src->arg[1].fmt = 'm';
+	src->arg[1].name = "viewmat";
+	src->arg[1].data = act->MATBUF + 4*4*4;
+	src->arg[2].fmt = 'v';
+	src->arg[2].name = "camxyz";
+	src->arg[2].data = frus->vc;
 	wnd->gl_camera[0] = act->CAMBUF;
 }
 
