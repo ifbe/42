@@ -82,27 +82,6 @@ static void terminal_draw_pixel(
 		drawtext_reverse(win, 0xffffff, cx-ww, cy-hh, cx+ww-16, cy+hh, obuf, ocur);
 	}
 }
-static void terminal_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
-{
-	int ocur;
-	void* obuf;
-	vec3 tc, tr, tf;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	gl41opaque_rect(ctx, 0x80808080, vc, vr, vf);
-
-	tc[0] = vc[0];
-	tc[1] = vc[1];
-	tc[2] = vc[2]+1;
-	obuf = getstdout();
-	ocur = getcurout();
-	carvetext_reverse(ctx, 0xffffff, tc, vr, vf, obuf, ocur);
-	//carvestring(ctx, 0xffffff, vc, vr, vf, obuf, ocur);
-}
 static void terminal_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -161,40 +140,18 @@ static void terminal_draw_cli(
 
 
 
-static void terminal_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
-	void* buf, int len)
-{
-	int j;
-	struct event* ev;
-	if(0 == act->orel0)
-	{
-		ev = buf;
-		if(_char_ == ev->what)
-		{
-			for(j=0;j<4;j++)
-			{
-				if(*(u8*)(buf+j) < 0x8)break;
-			}
-			input(buf, j);
-		}
-	}
-	else if(0 == win)
-	{
-		terminal_clientinput(act, pin, win, sty, buf);
-	}
-	else
-	{
-		printmemory(buf,len);
-		terminal_serverinput(act->idx, buf, len);
-	}
-}
 void terminal_write_c(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	struct entity* ent = self->pchip;
-	if(ent->SERVER)relationwrite(ent, 's', 0, 0, buf,len);
-	else printmemory(buf, 8);
+	if(ent->SERVER){
+		relationwrite(ent, 's', 0, 0, buf,len);
+		return;
+	}
+
+	struct event* ev = buf;
+	if(_char_ == ev->what){
+		input(buf, 1);
+	}
 }
 void terminal_write_s(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
@@ -206,6 +163,26 @@ void terminal_write_s(struct halfrel* self, struct halfrel* peer, void* buf, int
 
 
 
+static void terminal_draw_gl41(
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
+{
+	int j;
+	vec3 tc;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+
+	for(j=0;j<3;j++)tc[j] = vc[j] - vt[j]/1000;
+	gl41opaque_rect(ctx, 0x80808080, tc, vr, vf);
+
+	void* obuf = getstdout();
+	int ocur = getcurout();
+	carvetext_reverse(ctx, 0xffffff, vc, vr, vf, obuf, ocur);
+	//carvestring(ctx, 0xffffff, vc, vr, vf, obuf, ocur);
+}
 static void terminal_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> cam, cam -> world

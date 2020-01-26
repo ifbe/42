@@ -1,38 +1,31 @@
 <style>
-viewpart{
+itemslot{
 }
-viewgeom{
+itemgeom{
 c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
 }
 
-aaaapart{
+viewslot{
 }
-aaaageom{
-c: 0.0, 0.0, 0.0
-r: 1000.0, 0.0, 0.0
-t: 0.0, 1000.0, 0.0
-n: 0.0, 0.0, 1000.0
-f: 0.0, 0.0, -1000.0
-}
-aaaarect{
-c:0.0, 0.0
-q:1.0, 1.0
+viewgeom{
+c: 0.0, 0.0, 1000.0
+r: 1.0, 0.0, 0.0
+f: 0.0, 0.0,-1.0
+t: 0.0, 1.0, 0.0
+L: 0.0, 0.0, 0.0,-1200.0
+R: 0.0, 0.0, 0.0, 1200.0
+B: 0.0, 0.0, 0.0,-1200.0
+T: 0.0, 0.0, 0.0, 1200.0
+N: 0.0, 0.0, 0.0, 0.0
+F: 0.0, 0.0, 0.0, 2000.0
 }
 
-scrxyz{
-c:0.0, 3.0, 1.0
-r:1920, 0.0, 0.0
-t:0.0, 1080, 0.0
-f:0.0, 0.1, 0.0
-}
-eyexyz{
-c:0.0, 0.0, 1.6
-r:0.1, 0.0, 0.0
-f:0.0, 0.1, 0.0
-t:0.0, 0.0, 0.1
+viewrect{
+c:0.0, 0.0
+q:1.0, 1.0
 }
 </style>
 
@@ -46,16 +39,6 @@ fmt:orthcam
 }
 world{
 fmt:world3d
-}
-
-screen{
-fmt:screen
-}
-theeye{
-fmt:theeye
-}
-reality{
-fmt:reality
 }
 </entity>
 
@@ -83,19 +66,12 @@ fmt:poller
 
 <relation>
 #world depends on qrcode
-(world, aaaageom, 0) -> (cam0, aaaapart, 0)
-(world, viewgeom, 0) -> (qrcode, viewpart, 0)
+(world, itemgeom, 0) -> (qrcode, itemslot, 0)
+(world, viewgeom, 0) -> (cam0, viewslot, 0)
 
 #glwnd depends on gldata
-(glwnd, aaaarect, 0) -> (cam0, 0, a0)
+(glwnd, viewrect, 0) -> (cam0, 0, a0)
 
 #opengl depends on glwnd
 (opengl, 0, wnd) -> (glwnd, 0, togl)
-
-#screen depends on opengl
-(screen, 0, 0) -> (opengl, 0, 0)
-
-#reality depends on screen
-(reality, scrxyz, 0) -> (screen, 0, 0)
-(reality, eyexyz, 0) -> (theeye, 0, 0)
 </relation>

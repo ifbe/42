@@ -1,12 +1,33 @@
-<supply>
-opengl{
-fmt:wnd
-title:"42"
-width:1024
-height:1024
-depth:1024
+<style>
+itemslot{
 }
-</supply>
+itemgeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+orthmodl{
+}
+orthgeom{
+c: 0.0, 0.0, 1000.0
+r: 1.0, 0.0, 0.0
+f: 0.0, 0.0,-1.0
+t: 0.0, 1.0, 0.0
+L: 0.0, 0.0, 0.0,-1200.0
+R: 0.0, 0.0, 0.0, 1200.0
+B: 0.0, 0.0, 0.0,-1200.0
+T: 0.0, 0.0, 0.0, 1200.0
+N: 0.0, 0.0, 0.0, 0.0
+F: 0.0, 0.0, 0.0, 2000.0
+}
+
+orthrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
 
 
 <entity>
@@ -19,57 +40,38 @@ fmt:orthcam
 world3d{
 fmt:world3d
 }
-
-thectx{
-fmt:gl41data
-}
-thewnd{
-fmt:gl41wnd0
-}
 </entity>
 
 
-<style>
-area{
-c: 0.0, 0.0, 0.0
-r: 1000.0, 0.0, 0.0
-f: 0.0, 1000.0, 0.0
-t: 0.0, 0.0, 1000.0
+<supply>
+thewnd{
+fmt:gl41wnd0
 }
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
 
-orthmodl{
+
+<worker>
+poller{
+fmt:poller
 }
-orthgeom{
-c: 0.0, 0.0, 0.0
-r: 1000.0, 0.0, 0.0
-t: 0.0, 1000.0, 0.0
-n: 0.0, 0.0, 1000.0
-f: 0.0, 0.0, -1000.0
-}
-orthfrus{
-}
-orthrect{
-c:0.0, 0.0
-q:1.0, 1.0
-}
-</style>
+</worker>
 
 
 <relation>
-
 #world3d depends on inner objects
-(world3d, area, 0) -> (login, 0, 0)
+(world3d, itemgeom, 0) -> (login, itemslot, 0)
 (world3d, orthgeom, 0) -> (orthcam, orthmodl, 0)
 
-#glctx depends on scene
-(thectx, 0, 0) -> (world3d, 0, 0)
+#glwnd depend on
+(thewnd, orthrect, 0) -> (orthcam, 0, 0)
 
-#glwnd depends on ctx + cam
-(thewnd, 0, 0) -> (thectx, 0, 0)
-(thewnd, orthrect, 0) -> (orthcam, orthfrus, 0)
-
-#opengl depends on ctx + wnd
-(opengl, 0, ctx) -> (thectx, 0, 0)
+#opengl depend on
 (opengl, 0, wnd) -> (thewnd, 0, 0)
-
 </relation>

@@ -5,24 +5,34 @@
 
 static void ortho_v(mat4 m, struct fstyle* s)
 {
+	float x,y,z;
 	float cx = s->vc[0];
 	float cy = s->vc[1];
 	float cz = s->vc[2];
 
-	m[0][0] = s->vr[0];
-	m[0][1] = s->vr[1];
-	m[0][2] = s->vr[2];
-	m[0][3] = -(cx*m[0][0] + cy*m[0][1] + cz*m[0][2]);
+	x = s->vr[0];
+	y = s->vr[1];
+	z = s->vr[2];
+	m[0][0] = x;
+	m[0][1] = y;
+	m[0][2] = z;
+	m[0][3] = - cx*x - cy*y - cz*z;
 
-	m[1][0] = s->vt[0];
-	m[1][1] = s->vt[1];
-	m[1][2] = s->vt[2];
-	m[1][3] = -(cx*m[1][0] + cy*m[1][1] + cz*m[1][2]);
+	x = s->vt[0];
+	y = s->vt[1];
+	z = s->vt[2];
+	m[1][0] = x;
+	m[1][1] = y;
+	m[1][2] = z;
+	m[1][3] = - cx*x - cy*y - cz*z;
 
-	m[2][0] =-s->vf[0];
-	m[2][1] =-s->vf[1];
-	m[2][2] =-s->vf[2];
-	m[2][3] = -(cx*m[2][0] + cy*m[2][1] + cz*m[2][2]);
+	x = -s->vf[0];
+	y = -s->vf[1];
+	z = -s->vf[2];
+	m[2][0] = x;
+	m[2][1] = y;
+	m[2][2] = z;
+	m[2][3] = - cx*x - cy*y - cz*z;
 
 	m[3][0] = 0.0;
 	m[3][1] = 0.0;
@@ -58,10 +68,10 @@ static void ortho_p(mat4 m, struct fstyle* s)
 	m[3][2] = 0.0;
 	m[3][3] = 1.0;
 }
-void ortho_mvp(mat4 m, struct fstyle* s)
+void ortho_mvp(mat4 mat, struct fstyle* sty)
 {
 	mat4 t;
-	ortho_p(m, s);
+	ortho_p(mat, sty);
 
 	//ortho_o(t, s);
 	//mat4_multiply(m, t);
@@ -69,6 +79,11 @@ void ortho_mvp(mat4 m, struct fstyle* s)
 	//ortho_p(t, s);
 	//mat4_multiply(m, t);
 
-	ortho_v(t, s);
-	mat4_multiply(m, t);
+	ortho_v(t, sty);
+	mat4_multiply(mat, t);
+}
+void orthomvp_transpose(mat4 mat, struct fstyle* sty)
+{
+	ortho_mvp(mat, sty);
+	mat4_transpose(mat);
 }

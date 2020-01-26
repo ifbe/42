@@ -22,6 +22,7 @@
 #define _fluid_ hex64('f','l','u','i','d', 0, 0, 0)
 #define _force_ hex64('f','o','r','c','e', 0, 0, 0)
 //
+#define _border2d_ hex64('b','o','r','d','e','r','2','d')
 #define _frame3d_ hex64('f','r','a','m','e','3','d', 0)
 #define _scene3d_ hex64('s','c','e','n','e','3','d', 0)
 //

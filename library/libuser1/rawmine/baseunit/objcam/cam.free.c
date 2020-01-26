@@ -636,13 +636,10 @@ void freecam_ratio(
 	struct entity* wrd, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	float dx,dy;
 	struct fstyle* rect = &area->fshape;
-	struct fstyle* shape = &geom->fshape;
 	struct fstyle* frus = &geom->frus;
-
-	dx = rect->vq[0] * wnd->fbwidth;
-	dy = rect->vq[1] * wnd->fbheight;
+	float dx = rect->vq[0] * wnd->fbwidth;
+	float dy = rect->vq[1] * wnd->fbheight;
 	frus->vb[3] = frus->vl[3] * dy / dx;
 	frus->vt[3] = frus->vr[3] * dy / dx;
 }

@@ -55,6 +55,12 @@ int force_write(void*, void*, void*, int, void*, int);
 int force_read(void*, void*, void*, int, void*, int);
 
 //
+int border2d_create(void*, void*, int, u8**);
+int border2d_delete(void*, void*);
+int border2d_linkup(void*, void*);
+int border2d_discon(void*, void*);
+int border2d_write(void*, void*, void*, int, void*, int);
+int border2d_read(void*, void*, void*, int, void*, int);
 int frame3d_create(void*, void*, int, u8**);
 int frame3d_delete(void*, void*);
 int frame3d_linkup(void*, void*);
@@ -234,6 +240,7 @@ int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 	//case _fluid_:return fluid_read(self, peer, arg, idx, buf, len);
 	case _force_:return force_read(self, peer, arg, idx, buf, len);
 
+	case _border2d_:return border2d_read(self, peer, arg, idx, buf, len);
 	case _frame3d_:return frame3d_read(self, peer, arg, idx, buf, len);
 	case _scene3d_:return scene3d_read(self, peer, arg, idx, buf, len);
 
@@ -271,6 +278,7 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 	//case _fluid_:return fluid_write(self, peer, arg, idx, buf, len);
 	case _force_:return force_write(self, peer, arg, idx, buf, len);
 
+	case _border2d_:return border2d_write(self, peer, arg, idx, buf, len);
 	case _frame3d_:return frame3d_write(self, peer, arg, idx, buf, len);
 	case _scene3d_:return scene3d_write(self, peer, arg, idx, buf, len);
 
@@ -309,6 +317,7 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	//case _fluid_:return fluid_discon(self, peer);
 	case _force_:return force_discon(self, peer);
 
+	case _border2d_:return border2d_discon(self, peer);
 	case _frame3d_:return frame3d_discon(self, peer);
 	case _scene3d_:return scene3d_discon(self, peer);
 
@@ -347,6 +356,7 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 	//case _fluid_:return fluid_linkup(self, peer);
 	case _force_:return force_linkup(self, peer);
 
+	case _border2d_:return border2d_linkup(self, peer);
 	case _frame3d_:return frame3d_linkup(self, peer);
 	case _scene3d_:return scene3d_linkup(self, peer);
 
@@ -453,7 +463,14 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		return act;
 	}
 
-	//3d
+	//virt
+	else if(_border2d_ == type)
+	{
+		act = allocentity();
+		act->fmt = act->type = _border2d_;
+		border2d_create(act, buf, argc, argv);
+		return act;
+	}
 	else if(_frame3d_ == type)
 	{
 		act = allocentity();

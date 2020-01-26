@@ -14,56 +14,43 @@ static void login_draw_gl41(
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
+	int j;
 	vec3 tc,tr,tf;
-//say("@login_draw_gl41:%llx,%llx\n",act,ctx);
-
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vt = geom->f.vt;
 	gl41solid_rect(ctx, 0x808080, vc, vr ,vf);
 
-	tc[0] = vc[0] + vf[0]/2;
-	tc[1] = vc[1] + vf[1]/2;
-	tc[2] = vc[2] + vf[2]/2 + 1.0;
-	tr[0] = vr[0] / 4;
-	tr[1] = vr[1] / 4;
-	tr[2] = vr[2] / 4;
-	tf[0] = vf[0] / 4;
-	tf[1] = vf[1] / 4;
-	tf[2] = vf[2] / 4;
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] +vf[j]/2 +vt[j]/1000;
+		tr[j] = vr[j] / 4;
+		tf[j] = vf[j] / 4;
+	}
 	carvestring_center(ctx, 0xffffff, tc, tr, tf, (void*)"welcome!", 8);
 
-	tc[0] = vc[0] - vf[0]/8;
-	tc[1] = vc[1] - vf[1]/8;
-	tc[2] = vc[2] - vf[2]/8 + 1.0;
-	tr[0] = vr[0] / 4;
-	tr[1] = vr[1] / 4;
-	tr[2] = vr[2] / 4;
-	tf[0] = vf[0] / 16;
-	tf[1] = vf[1] / 16;
-	tf[2] = vf[2] / 16;
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vf[j]/8 +vt[j]/1000;
+		tr[j] = vr[j] / 4;
+		tf[j] = vf[j] / 16;
+	}
 	gl41solid_rect(ctx, 0x202020, tc, tr, tf);
-	tc[2] += 1.0;
-	tr[0] /= 8;
-	tr[1] /= 8;
-	tr[1] /= 8;
+	for(j=0;j<3;j++){
+		tc[j] += vt[j]/1000;
+		tr[j] /= 4;
+	}
 	carvestring_center(ctx, 0xffffff, tc, tr, tf, (void*)"username", 8);
 
-	tc[0] = vc[0] - vf[0]*3/8;
-	tc[1] = vc[1] - vf[1]*3/8;
-	tc[2] = vc[2] - vf[2]*3/8 + 1.0;
-	tr[0] = vr[0] / 4;
-	tr[1] = vr[1] / 4;
-	tr[2] = vr[2] / 4;
-	tf[0] = vf[0] / 16;
-	tf[1] = vf[1] / 16;
-	tf[2] = vf[2] / 16;
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vf[j]*3/8 +vt[j]/1000;
+		tr[j] = vr[j] / 4;
+		tf[j] = vf[j] / 16;
+	}
 	gl41solid_rect(ctx, 0x202020, tc, tr, tf);
-	tc[2] += 1.0;
-	tr[0] /= 8;
-	tr[1] /= 8;
-	tr[1] /= 8;
+	for(j=0;j<3;j++){
+		tc[j] += vt[j]/1000;
+		tr[j] /= 4;
+	}
 	carvestring_center(ctx, 0xffffff, tc, tr, tf, (void*)"password", 8);
 }
 static void login_draw_json(

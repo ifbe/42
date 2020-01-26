@@ -259,6 +259,7 @@ rawmine/scene/uiux/ui.c \
 rawmine/scene/uiux/ui.html.c \
 rawmine/scene/uiux/ui.xaml.c \
 rawmine/scene/virt/3d.c \
+rawmine/scene/virt/3d.border.c \
 rawmine/scene/virt/3d.frame.c \
 rawmine/world/real.c \
 rawmine/world/virt.c \

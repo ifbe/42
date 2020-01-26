@@ -100,6 +100,8 @@ static int orthcam_event(
 		switch(ev->why){
 		case 'a':sty->fs.vc[0] -= 10;break;
 		case 'd':sty->fs.vc[0] += 10;break;
+		case 's':sty->fs.vc[1] -= 10;break;
+		case 'w':sty->fs.vc[1] += 10;break;
 		}
 	}
 	return 0;
@@ -112,18 +114,15 @@ static void orthcam_ratio(
 	struct entity* wrd, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	float dx,dy;
 	struct fstyle* rect = &area->fshape;
 	struct fstyle* frus = &geom->frus;
-
-	dx = rect->vq[0] * wnd->fbwidth;
-	dy = rect->vq[1] * wnd->fbheight;
+	float dx = rect->vq[0] * wnd->fbwidth;
+	float dy = rect->vq[1] * wnd->fbheight;
 	frus->vb[3] = frus->vl[3] * dy / dx;
 	frus->vt[3] = frus->vr[3] * dy / dx;
 }
 void orthocam_shape2frustum(struct fstyle* s, struct fstyle* d)
 {
-	float a,b,c;
 	float x,y,z,n;
 	d->vc[0] = s->vc[0];
 	d->vc[1] = s->vc[1];
@@ -138,11 +137,11 @@ void orthocam_shape2frustum(struct fstyle* s, struct fstyle* d)
 	d->vr[0] = x / n;
 	d->vr[1] = y / n;
 	d->vr[2] = z / n;
-	d->vr[3] = n;
+	//d->vr[3] = n;
 	d->vl[0] = - d->vr[0];
 	d->vl[1] = - d->vr[1];
 	d->vl[2] = - d->vr[2];
-	d->vl[3] = -n;
+	//d->vl[3] = -n;
 
 
 	//bottom, top
@@ -153,28 +152,14 @@ void orthocam_shape2frustum(struct fstyle* s, struct fstyle* d)
 	d->vt[0] = x / n;
 	d->vt[1] = y / n;
 	d->vt[2] = z / n;
-	d->vt[3] = n;
+	//d->vt[3] = n;
 	d->vb[0] = - d->vt[0];
 	d->vb[1] = - d->vt[1];
 	d->vb[2] = - d->vt[2];
-	d->vb[3] = -n;
+	//d->vb[3] = -n;
 
 
 	//near, front
-	a = s->vf[0] - s->vn[0];
-	b = s->vf[1] - s->vn[1];
-	c = s->vf[2] - s->vn[2];
-
-	x = s->vn[0];
-	y = s->vn[1];
-	z = s->vn[2];
-	n = squareroot(x*x + y*y + z*z);
-	d->vn[0] = x / n;
-	d->vn[1] = y / n;
-	d->vn[2] = z / n;
-	if(a*x + b*y + c*z < 0)n = -n;
-	d->vn[3] = n;
-
 	x = s->vf[0];
 	y = s->vf[1];
 	z = s->vf[2];
@@ -182,8 +167,11 @@ void orthocam_shape2frustum(struct fstyle* s, struct fstyle* d)
 	d->vf[0] = x / n;
 	d->vf[1] = y / n;
 	d->vf[2] = z / n;
-	if(a*x + b*y + c*z < 0)n = -n;
-	d->vf[3] = n;
+	//d->vf[3] = n;
+	d->vn[0] = - d->vf[0];
+	d->vn[1] = - d->vf[1];
+	d->vn[2] = - d->vf[2];
+	//d->vn[3] = -n;
 }
 static void orthcam_matrix(
 	struct entity* act, struct style* slot,
@@ -235,13 +223,13 @@ static void orthcam_read_bycam(struct halfrel* self, struct halfrel* peer, struc
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* slot;
 
-	if(stack){
+	if(stack && ('v' == len)){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len)orthcam_draw_gl41(act,slot, wrd,geom, wnd,area);
+		orthcam_draw_gl41(act,slot, wrd,geom, wnd,area);
 	}
 }
 static int orthcam_write_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
