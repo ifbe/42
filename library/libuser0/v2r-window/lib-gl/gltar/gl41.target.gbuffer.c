@@ -77,6 +77,9 @@ int gl41fbog_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 }
 int gl41fbog_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	//say("@gl41fbog_write\n");
+	struct supply* sup = self->pchip;
+	relationwrite(sup,_cam_, arg,idx, buf,len);
 	return 0;
 }
 int gl41fbog_discon(struct halfrel* self, struct halfrel* peer)

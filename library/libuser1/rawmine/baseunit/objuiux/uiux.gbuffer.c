@@ -265,6 +265,11 @@ static int gbuffer_read(struct halfrel* self, struct halfrel* peer, struct halfr
 }
 static void gbuffer_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	if(_wnd_ == self->flag){
+		//say("@gbuffer_write\n");
+		struct entity* ent = self->pchip;
+		relationwrite(ent,_fbog_, arg,idx, buf,len);
+	}
 }
 static void gbuffer_discon(struct halfrel* self, struct halfrel* peer)
 {

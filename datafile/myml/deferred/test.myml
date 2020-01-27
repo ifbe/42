@@ -103,7 +103,7 @@ fmt:poller
 (world, aaaageom, 0) -> (cam0, aaaapart, 0)
 
 #gbuffer depends on cam0
-(gbuffer, gbufrect, 0) -> (cam0, 0, 0)
+(gbuffer, gbufrect, cam) -> (cam0, 0, 0)
 
 #mixer depends on gbuffer
 (mixer, 0, fbog) -> (gbuffer, 0, 0)

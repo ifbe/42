@@ -386,7 +386,8 @@ void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	ogl = self->pchip;
 
 	switch(ogl->fmt){
-		case _gl41wnd0_:gl41wnd0_write(self, peer, arg, idx, buf, len);break;
+		case _gl41fbog_:gl41fbog_write(self,peer, arg,idx, buf,len);break;
+		case _gl41wnd0_:gl41wnd0_write(self,peer, arg,idx, buf,len);break;
 		default:windowdispatch(ogl, buf);
 	}
 }
