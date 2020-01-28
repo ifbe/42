@@ -135,11 +135,16 @@ void mobius_register(void*);
 void motor_register(void*);
 void piano_register(void*);
 void satellite_register(void*);
-void stair_register(void*);
 void tardis_register(void*);
 void tree_register(void*);
 void spring_register(void*);
 void stick_register(void*);
+
+//move
+void elevator_register(void*);
+void ladder_register(void*);
+void stair_register(void*);
+void telpher_register(void*);
 
 //real
 void theear_register(void*);

@@ -1,5 +1,13 @@
 <style>
-itemhaha{
+tempslot{
+}
+tempgeom{
+c:-2000.0, 0000.0, 1000.0
+r:-1000.0, 0.0, 0.0
+f: 0.0,-1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+itemslot{
 }
 itemgeom{
 c: 0.0, 0.0, 0.0
@@ -31,6 +39,9 @@ q:1.0, 1.0
 
 <entity>
 stair{
+fmt:stair
+}
+second{
 fmt:stair
 }
 freecam{
@@ -75,7 +86,8 @@ dt:16ms
 (frame3d, 0, tar) -> (scene3d, 0, 0)
 
 #scene depends on inner objects
-(scene3d, itemgeom, 0) -> (stair, itemhaha, 0)
+(scene3d, itemgeom, 0) -> (stair, itemslot, 0)
+(scene3d, tempgeom, 0) -> (second, tempslot, 0)
 
 #world depends on
 (world3d, 0, 0) -> (scene3d, 0, 0)

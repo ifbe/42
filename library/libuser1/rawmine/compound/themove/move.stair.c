@@ -3,44 +3,6 @@
 
 
 
-static void stair_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
-{
-	int z;
-	vec3 tc, tr, tf, tu;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
-	//gl41line_prism4(wnd, 0xffffff, vc, vr, vf, vu);
-
-	tr[0] = vr[0]/2;
-	tr[1] = vr[1]/2;
-	tr[2] = vr[2]/2;
-	tf[0] = vf[0]/8;
-	tf[1] = vf[1]/8;
-	tf[2] = vf[2]/8;
-	tu[0] = vu[0]/16;
-	tu[1] = vu[1]/16;
-	tu[2] = vu[2]/16;
-
-	for(z=1;z<16;z+=2)
-	{
-		tc[0] = vc[0] + vr[0]/2 + vf[0]*(z-8)/8 + vu[0]*z/16;
-		tc[1] = vc[1] + vr[1]/2 + vf[1]*(z-8)/8 + vu[1]*z/16;
-		tc[2] = vc[2] + vr[2]/2 + vf[2]*(z-8)/8 + vu[2]*z/16;
-		gl41solid_prism4(wnd, 0x808080, tc, tr, tf, tu);
-	}
-	for(z=1;z<16;z+=2)
-	{
-		tc[0] = vc[0] - vr[0]/2 + vf[0]*(z-8)/8 - vu[0]*z/16;
-		tc[1] = vc[1] - vr[1]/2 + vf[1]*(z-8)/8 - vu[1]*z/16;
-		tc[2] = vc[2] - vr[2]/2 + vf[2]*(z-8)/8 - vu[2]*z/16;
-		gl41solid_prism4(wnd, 0x808080, tc, tr, tf, tu);
-	}
-}
 static void stair_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -70,7 +32,46 @@ static void stair_draw_cli(
 
 
 
-static void stair_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void stair_draw_gl41(
+	struct entity* act, struct style* slot,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	int z,j;
+	vec3 tc,tr,tf,tt;
+	vec3 kc,kr,kf,kt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+	//gl41line_prism4(wnd, 0xffffff, vc, vr, vf, vt);
+
+	for(j=0;j<3;j++){
+		tr[j] = vr[j]/8;
+		tf[j] = vf[j]/8;
+		tt[j] = vt[j]/64;
+	}
+	for(z=0;z<8;z++)
+	{
+		for(j=0;j<3;j++)tc[j] = vc[j] + tf[j]*(z*2-7) + vt[j]*(z+1)/9-tt[j];
+		gl41solid_prism4(wnd, 0x808080, tc, vr, tf, tt);
+	}
+
+	for(j=0;j<3;j++){
+		kr[j] = vr[j]/64;
+		kf[j] = vf[j]/64;
+		kt[j] = vt[j]/18;
+	}
+	for(z=0;z<=8;z++)
+	{
+		for(j=0;j<3;j++)kc[j] = vc[j] -vr[j]+kr[j] + tf[j]*(z*2-8) + vt[j]*(z+1)/9-kt[j];
+		gl41solid_cylinder(wnd, 0x800000, kc, kr, kf, kt);
+
+		for(j=0;j<3;j++)kc[j] = vc[j] +vr[j]-kr[j] + tf[j]*(z*2-8) + vt[j]*(z+1)/9-kt[j];
+		gl41solid_cylinder(wnd, 0x800000, kc, kr, kf, kt);
+	}
+}
+static void stair_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
@@ -87,6 +88,14 @@ static void stair_read(struct halfrel* self, struct halfrel* peer, struct halfre
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		stair_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
+}
+
+
+
+
+static void stair_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	stair_read_bycam(self,peer, stack,rsp, buf,len);
 }
 static void stair_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

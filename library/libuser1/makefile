@@ -199,9 +199,12 @@ rawmine/compound/theitem/item.planet.c \
 rawmine/compound/theitem/item.satellite.c \
 rawmine/compound/theitem/item.spring.c \
 rawmine/compound/theitem/item.stick.c \
-rawmine/compound/theitem/item.stair.c \
 rawmine/compound/theitem/item.tardis.c \
 rawmine/compound/theitem/item.tree.c \
+rawmine/compound/themove/move.elevator.c \
+rawmine/compound/themove/move.ladder.c \
+rawmine/compound/themove/move.stair.c \
+rawmine/compound/themove/move.telpher.c \
 rawmine/compound/thereal/real.theear.c \
 rawmine/compound/thereal/real.theeye.c \
 rawmine/compound/thereal/real.screen.c \
