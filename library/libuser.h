@@ -24,8 +24,9 @@
 //
 #define _border2d_ hex64('b','o','r','d','e','r','2','d')
 #define _frame3d_ hex64('f','r','a','m','e','3','d', 0)
-#define _scene3d_ hex64('s','c','e','n','e','3','d', 0)
+#define _guide3d_ hex64('g','u','i','d','e','3','d', 0)
 //
+#define _scene3d_ hex64('s','c','e','n','e','3','d', 0)
 #define _world3d_ hex64('w','o','r','l','d','3','d', 0)
 #define _reality_ hex64('r','e','a','l','i','t','y', 0)
 //event

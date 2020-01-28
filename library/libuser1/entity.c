@@ -67,14 +67,20 @@ int frame3d_linkup(void*, void*);
 int frame3d_discon(void*, void*);
 int frame3d_write(void*, void*, void*, int, void*, int);
 int frame3d_read(void*, void*, void*, int, void*, int);
+int guide3d_create(void*, void*, int, u8**);
+int guide3d_delete(void*, void*);
+int guide3d_linkup(void*, void*);
+int guide3d_discon(void*, void*);
+int guide3d_write(void*, void*, void*, int, void*, int);
+int guide3d_read(void*, void*, void*, int, void*, int);
+
+//
 int scene3d_create(void*, void*, int, u8**);
 int scene3d_delete(void*, void*);
 int scene3d_linkup(void*, void*);
 int scene3d_discon(void*, void*);
 int scene3d_write(void*, void*, void*, int, void*, int);
 int scene3d_read(void*, void*, void*, int, void*, int);
-
-//
 int world3d_create(void*, void*, int, u8**);
 int world3d_delete(void*, void*);
 int world3d_linkup(void*, void*);
@@ -242,17 +248,19 @@ int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 
 	case _border2d_:return border2d_read(self, peer, arg, idx, buf, len);
 	case _frame3d_:return frame3d_read(self, peer, arg, idx, buf, len);
-	case _scene3d_:return scene3d_read(self, peer, arg, idx, buf, len);
-
-	case _world3d_:return world3d_read(self, peer, arg, idx, buf, len);
-	case _reality_:return reality_read(self, peer, arg, idx, buf, len);
+	case _guide3d_:return guide3d_read(self, peer, arg, idx, buf, len);
 
 	case _analog_:return analog_read(self, peer, arg, idx, buf, len);
 	case _digital_:return digital_read(self, peer, arg, idx, buf, len);
-
 	case _pcb_:return pcb_read(self, peer, arg, idx, buf, len);
 
 	case _html_:return htmlnode_read(self, peer, arg, idx, buf, len);
+	//case _xaml_:return xamlnode_read(self, peer, arg, idx, buf, len);
+
+	case _scene3d_:return scene3d_read(self, peer, arg, idx, buf, len);
+	case _world3d_:return world3d_read(self, peer, arg, idx, buf, len);
+	case _reality_:return reality_read(self, peer, arg, idx, buf, len);
+
 	case _test_:return test_read(self, peer, arg, idx, buf, len);
 	case _baby_:return baby_read(self, peer, arg, idx, buf, len);
 	}
@@ -280,17 +288,19 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 
 	case _border2d_:return border2d_write(self, peer, arg, idx, buf, len);
 	case _frame3d_:return frame3d_write(self, peer, arg, idx, buf, len);
-	case _scene3d_:return scene3d_write(self, peer, arg, idx, buf, len);
-
-	case _world3d_:return world3d_write(self, peer, arg, idx, buf, len);
-	case _reality_:return reality_write(self, peer, arg, idx, buf, len);
+	case _guide3d_:return guide3d_write(self, peer, arg, idx, buf, len);
 
 	case _analog_:return analog_write(self, peer, arg, idx, buf, len);
 	case _digital_:return digital_write(self, peer, arg, idx, buf, len);
-
 	case _pcb_:return pcb_write(self, peer, arg, idx, buf, len);
 
 	case _html_:return htmlnode_write(self, peer, arg, idx, buf, len);
+	//case _xaml_:return xamlnode_write(self, peer, arg, idx, buf, len);
+
+	case _scene3d_:return scene3d_write(self, peer, arg, idx, buf, len);
+	case _world3d_:return world3d_write(self, peer, arg, idx, buf, len);
+	case _reality_:return reality_write(self, peer, arg, idx, buf, len);
+
 	case _test_:return test_write(self, peer, arg, idx, buf, len);
 	case _baby_:return baby_write(self, peer, arg, idx, buf, len);
 	}
@@ -319,17 +329,19 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 
 	case _border2d_:return border2d_discon(self, peer);
 	case _frame3d_:return frame3d_discon(self, peer);
-	case _scene3d_:return scene3d_discon(self, peer);
-
-	case _world3d_:return world3d_discon(self, peer);
-	case _reality_:return reality_discon(self, peer);
+	case _guide3d_:return guide3d_discon(self, peer);
 
 	case _analog_:return analog_discon(self, peer);
 	case _digital_:return digital_discon(self, peer);
-
 	case _pcb_:return pcb_discon(self, peer);
 
 	case _html_:return htmlnode_discon(self, peer);
+	//case _xaml_:return xamlnode_discon(self, peer);
+
+	case _scene3d_:return scene3d_discon(self, peer);
+	case _world3d_:return world3d_discon(self, peer);
+	case _reality_:return reality_discon(self, peer);
+
 	case _test_:return test_discon(self, peer);
 	case _baby_:return baby_discon(self, peer);
 	}
@@ -358,17 +370,19 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 
 	case _border2d_:return border2d_linkup(self, peer);
 	case _frame3d_:return frame3d_linkup(self, peer);
-	case _scene3d_:return scene3d_linkup(self, peer);
-
-	case _world3d_:return world3d_linkup(self, peer);
-	case _reality_:return reality_linkup(self, peer);
+	case _guide3d_:return guide3d_linkup(self, peer);
 
 	case _analog_:return analog_linkup(self, peer);
 	case _digital_:return digital_linkup(self, peer);
-
 	case _pcb_:return pcb_linkup(self, peer);
 
 	case _html_:return htmlnode_linkup(self, peer);
+	//case _xaml_:return xamlnode_linkup(self, peer);
+
+	case _scene3d_:return scene3d_linkup(self, peer);
+	case _world3d_:return world3d_linkup(self, peer);
+	case _reality_:return reality_linkup(self, peer);
+
 	case _test_:return test_linkup(self, peer);
 	case _baby_:return baby_linkup(self, peer);
 	}
@@ -397,17 +411,7 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 {
 	struct entity* act;
 	say("%llx,%llx\n", type, buf);
-/*
-	if(0 == type)
-	{
-		act = buf;
-		if(0 == act)return 0;
-		if(_ORIG_ == act->type)return 0;
-		if(_COPY_ == act->type)return 0;
 
-		act->oncreate(act, 0, argc, argv);
-	}
-*/
 	//test
 	if(_baby_ == type)
 	{
@@ -423,6 +427,8 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		test_create(act, buf, argc, argv);
 		return act;
 	}
+
+	//virt
 	else if(_html_ == type)
 	{
 		act = allocentity();
@@ -430,6 +436,13 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		htmlnode_create(act, buf, argc, argv);
 		return act;
 	}
+/*	else if(_xaml_ == type)
+	{
+		act = allocentity();
+		act->fmt = act->type = _xaml_;
+		xamlnode_create(act, buf, argc, argv);
+		return act;
+	}*/
 
 	//circuit
 	else if(_analog_ == type)
@@ -463,7 +476,7 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		return act;
 	}
 
-	//virt
+	//uiux
 	else if(_border2d_ == type)
 	{
 		act = allocentity();
@@ -478,6 +491,15 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		frame3d_create(act, buf, argc, argv);
 		return act;
 	}
+	else if(_guide3d_ == type)
+	{
+		act = allocentity();
+		act->fmt = act->type = _guide3d_;
+		guide3d_create(act, buf, argc, argv);
+		return act;
+	}
+
+	//world
 	else if(_scene3d_ == type)
 	{
 		act = allocentity();
@@ -485,8 +507,6 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		scene3d_create(act, buf, argc, argv);
 		return act;
 	}
-
-	//world
 	else if(_world3d_ == type)
 	{
 		act = allocentity();
