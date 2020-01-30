@@ -69,7 +69,7 @@ void speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 
 	sleep_us(1000*1000);
 }
-void speakerwrite(int dev, int time, u8* buf, int len)
+void speakerwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int j;
 	if(0 == obuf)obuf = malloc(0x100000);

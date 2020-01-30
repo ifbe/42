@@ -24,20 +24,7 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 	{
 		//printf("WIM_DATA:%d\n", icur);
 		relationwrite(working, _dst_, 0, 0, ibuf + (1024*2*icur), 1024*2);
-/*
-		struct relation* orel = (struct relation*)(working->orel0);
-		while(1)
-		{
-			if(0 == orel)break;
-			if(_ent_ == orel->dsttype)
-			{
-				struct halfrel* self = (struct halfrel*)&orel->dstchip;
-				struct halfrel* peer = (struct halfrel*)&orel->srcchip;
-				entitywrite(self, peer, ibuf + (1024*2*icur), 1024*2);
-			}
-			orel = (struct relation*)samesrcnextdst(orel);
-		}
-*/
+
 		waveInAddBuffer(wavein, &headin[icur], sizeof (WAVEHDR));
 		icur = (icur+1)%16;
 	}
@@ -78,14 +65,17 @@ void micphonestart()
 void micphonedelete(struct supply* win)
 {
 }
-void micphonecreate(struct supply* win)
+void micphonecreate(struct supply* win, void* arg, int argc, u8** argv)
 {
-	int j,ret;
+	int j,ret,freq;
 	working = win;
 
+	if(0 == arg)freq = 44100;
+	else decstr2u32(arg, &freq);
+
 	fmt.wFormatTag = WAVE_FORMAT_PCM;
-	fmt.nAvgBytesPerSec = 8000*2;
-	fmt.nSamplesPerSec = 8000;
+	fmt.nAvgBytesPerSec = freq*2;
+	fmt.nSamplesPerSec = freq;
 	fmt.wBitsPerSample = 16;
 	fmt.nChannels = 1;
 	fmt.nBlockAlign = 2;
