@@ -1,0 +1,85 @@
+<entity>
+sky{
+fmt:texball
+url:datafile/jpg/warehouse.jpg
+}
+tree{
+fmt:tree
+}
+vrglass{
+fmt:vrglass
+}
+world{
+fmt:world3d
+}
+</entity>
+
+
+<supply>
+glwnd{
+fmt:gl41wnd0
+}
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+<style>
+skyslot{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 1000000.0, 0.0, 0.0
+f: 0.0, 1000000.0, 0.0
+t: 0.0, 0.0, 1000000.0
+}
+
+itemslot{
+}
+itemgeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+viewslot{
+}
+viewgeom{
+c: 0.0, -1000.0, 1000.0
+q: 500.0, -2000.0, 500.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+viewrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#world depends on
+(world, skygeom, 0) -> (sky, skyslot, 0)
+(world, itemgeom, 0) -> (tree, itemslot, 0)
+(world, viewgeom, 0) -> (vrglass, viewslot, 0)
+
+#glwnd depends on
+(glwnd, viewrect, 0) -> (vrglass, 0, a0)
+
+#opengl depends on
+(opengl, 0, wnd) -> (glwnd, 0, togl)
+</relation>
