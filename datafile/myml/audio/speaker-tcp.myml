@@ -1,0 +1,27 @@
+<supply>
+spk{
+fmt:spk
+}
+</supply>
+
+
+<artery>
+recut{
+fmt:recut
+url:2048
+}
+</artery>
+
+
+<system>
+server{
+fmt:TCP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<relation>
+(server, 0, dst) -> (recut, 0, src)
+(recut, 0, dst) -> (spk, 0, pcm)
+</relation>

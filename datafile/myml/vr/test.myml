@@ -9,8 +9,8 @@ fmt:tree
 vrglass{
 fmt:vrglass
 }
-world{
-fmt:world3d
+scene{
+fmt:scene3d
 }
 </entity>
 
@@ -34,6 +34,7 @@ poller{
 fmt:poller
 }
 </worker>
+
 
 <style>
 skyslot{
@@ -72,10 +73,10 @@ q:1.0, 1.0
 
 
 <relation>
-#world depends on
-(world, skygeom, 0) -> (sky, skyslot, 0)
-(world, itemgeom, 0) -> (tree, itemslot, 0)
-(world, viewgeom, 0) -> (vrglass, viewslot, 0)
+#scene depends on
+(scene, skygeom, 0) -> (sky, skyslot, 0)
+(scene, itemgeom, 0) -> (tree, itemslot, 0)
+(scene, viewgeom, 0) -> (vrglass, viewslot, in)
 
 #glwnd depends on
 (glwnd, viewrect, 0) -> (vrglass, 0, a0)

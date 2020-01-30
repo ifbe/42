@@ -736,13 +736,13 @@ static void freecam_read_bycam(struct halfrel* self, struct halfrel* peer, struc
 	struct entity* act;struct style* slot;
 //say("@freecam_read_byeye:%c\n",len);
 
-	if(stack){
+	if(stack && ('v' == len)){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len)freecam_draw_gl41(act,slot, wrd,geom, wnd,area);
+		freecam_draw_gl41(act,slot, wrd,geom, wnd,area);
 	}
 //say("@freecam_read_byeye.end\n");
 }

@@ -1,4 +1,5 @@
 #include "libuser.h"
+#define _in_ hex32('i','n', 0, 0)
 #define MATBUF buf0
 #define CAMBUF buf1
 void fixmatrix_transpose(float* m, struct fstyle* sty);
@@ -9,22 +10,6 @@ int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 
 static void vrglass_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
-	struct relation* rel;
-	struct entity* world;
-	struct fstyle* obb = 0;
-	//say("vrglass@%llx,%llx,%llx,%d\n",act,pin,buf,len);
-
-	rel = act->irel0;
-	while(1){
-		if(0 == rel)return;
-		world = (void*)(rel->srcchip);
-		if(_world3d_ == world->type){
-			self[0] = (void*)&rel->dstchip;
-			peer[0] = (void*)&rel->srcchip;
-			return;
-		}
-		rel = samedstnextsrc(rel);
-	}
 }
 static void vrglass_modify(struct entity* act)
 {
@@ -183,7 +168,7 @@ static int vrglass_event(struct entity* act, struct fstyle* pin, struct event* e
 	struct halfrel* peer;
 	//say("vrglass_event@%llx:%x,%x\n", act, ev->why, ev->what);
 
-	vrglass_search(act, 0, &self, &peer);
+	relationsearch(act, _in_, &self, &peer);
 	obb = peer->pfoot;
 
 	if(joy_left == (ev->what&joy_mask)){
@@ -330,16 +315,30 @@ static void vrglass_camera(
 
 static void vrglass_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+//world -> texball
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack && ('v' == len)){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;slot = self->pfoot;
+		vrglass_draw_gl41(act,slot, wrd,geom, wnd,area);
+	}
 }
 static void vrglass_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-//say("@vrglass_read_bywnd:%c\n",len);
 //wnd.area -> cam.gl41
 	struct entity* wnd;struct style* area;
 	struct entity* cam;struct style* gl41;
 	wnd = peer->pchip;area = peer->pfoot;
 	cam = self->pchip;gl41 = self->pfoot;
-	vrglass_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
+	relationsearch(cam, _in_, &stack[rsp+0], &stack[rsp+1]);
 
 //cam.slot -> world.geom
 	struct entity* act;struct style* slot;
@@ -358,7 +357,6 @@ static void vrglass_read_bywnd(struct halfrel* self, struct halfrel* peer, struc
 		gl41data_read(self, peer, stack, rsp+2, buf, len);
 		vrglass_camera(act,slot, wrd,geom, wnd,area);
 	}
-//say("@vrglass_read_bywnd.end\n");
 }
 
 
