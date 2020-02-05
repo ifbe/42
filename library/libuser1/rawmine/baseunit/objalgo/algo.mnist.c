@@ -260,7 +260,12 @@ static int mnist_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 {
 	struct entity* ent = peer->pchip;
 	switch(ent->fmt){
-		case _gl41wnd0_:mnist_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != len)break;
+		mnist_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 	return 0;
 }
@@ -268,7 +273,9 @@ static int mnist_write(struct halfrel* self, struct halfrel* peer, struct halfre
 {
 	struct entity* ent = peer->pchip;
 	switch(ent->fmt){
-		case _gl41wnd0_:mnist_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:mnist_write_bywnd(self, peer, stack, rsp, buf, len);break;
 	}
 	return 0;
 }

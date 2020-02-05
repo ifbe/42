@@ -131,12 +131,12 @@ static void not_read(struct halfrel* self, struct halfrel* peer, struct halfrel*
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* slot;
 
-	if(stack){
+	if(stack && ('v' == len)){
 		act = self->pchip;slot = self->pfoot;
 		win = peer->pchip;geom = peer->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)not_draw_gl41(act,slot, win,geom, wnd,area);
+		not_draw_gl41(act,slot, win,geom, wnd,area);
 	}
 }
 static void not_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)

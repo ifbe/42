@@ -1,3 +1,70 @@
+<entity>
+sky{
+fmt:texball
+url:datafile/jpg/warehouse.jpg
+}
+dancemat{
+fmt:dancemat
+ballcolor:008000
+linecolor:800080
+}
+3rdcam{
+fmt:3rdcam
+}
+world3d{
+fmt:world3d
+}
+
+button{
+fmt:picture
+url:datafile/png/portal.png
+}
+orthcam{
+fmt:orthcam
+}
+uiworld{
+fmt:world3d
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<artery>
+reline{
+fmt:reline
+}
+</artery>
+
+
+<system>
+udpsrv{
+fmt:UDP
+url:0.0.0.0:3292
+}
+tcpsrv{
+fmt:TCP
+url:0.0.0.0:3292
+}
+</system>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <style>
 testpart{
 }
@@ -68,76 +135,6 @@ q:0.2, 0.2
 </style>
 
 
-<entity>
-sky{
-fmt:texball
-url:datafile/jpg/warehouse.jpg
-}
-dancemat{
-fmt:dancemat
-ballcolor:008000
-linecolor:800080
-}
-3rdcam{
-fmt:3rdcam
-}
-world3d{
-fmt:world3d
-}
-
-button{
-fmt:picture
-url:datafile/png/portal.png
-}
-orthcam{
-fmt:orthcam
-}
-uiworld{
-fmt:world3d
-}
-</entity>
-
-
-<supply>
-glwnd{
-fmt:gl41wnd0
-}
-opengl{
-fmt:wnd
-title:"42"
-width:1024
-height:1024
-depth:1024
-}
-</supply>
-
-
-<artery>
-reline{
-fmt:reline
-}
-</artery>
-
-
-<system>
-udpsrv{
-fmt:UDP
-url:0.0.0.0:3292
-}
-tcpsrv{
-fmt:TCP
-url:0.0.0.0:3292
-}
-</system>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 #dancemat surround by 3rdcam
 (dancemat, 0, 0) -> (3rdcam, 0, tar)
@@ -156,11 +153,8 @@ fmt:poller
 (uiworld, orthgeom, 0) -> (orthcam, orthslot, 0)
 
 #glwnd depends on cam
-(glwnd, aaaarect, 0) -> (3rdcam, 0, 0)
-(glwnd, bbbbrect, 0) -> (orthcam, 0, 0)
-
-#opengl depends on glwnd
-(opengl, 0, wnd) -> (glwnd, 0, togl)
+(opengl, aaaarect, 0) -> (3rdcam, 0, 0)
+(opengl, bbbbrect, 0) -> (orthcam, 0, 0)
 
 (udpsrv, 0, dst) -> (reline, 0, src)
 (tcpsrv, 0, dst) -> (reline, 0, src)

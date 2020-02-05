@@ -1,3 +1,56 @@
+<entity>
+ln{
+fmt:nmos
+}
+lp{
+fmt:pmos
+}
+tn{
+fmt:nmos
+}
+tp{
+fmt:pmos
+}
+rn{
+fmt:nmos
+}
+rp{
+fmt:pmos
+}
+sch{
+fmt:digital
+url:datafile/wiring/mos-xor.wire
+}
+
+xor{
+fmt:xor
+}
+cam{
+fmt:freecam
+}
+world{
+fmt:world3d
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+}
+std{
+fmt:std
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <style>
 lnslot{
 }
@@ -93,62 +146,6 @@ q: 1.0, 1.0
 </style>
 
 
-<entity>
-ln{
-fmt:nmos
-}
-lp{
-fmt:pmos
-}
-tn{
-fmt:nmos
-}
-tp{
-fmt:pmos
-}
-rn{
-fmt:nmos
-}
-rp{
-fmt:pmos
-}
-sch{
-fmt:digital
-url:datafile/wiring/mos-xor.wire
-}
-
-xor{
-fmt:xor
-}
-cam{
-fmt:freecam
-}
-world{
-fmt:world3d
-}
-</entity>
-
-
-<supply>
-glwnd{
-fmt:gl41wnd0
-}
-opengl{
-fmt:wnd
-}
-std{
-fmt:std
-}
-</supply>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 (std, 0, dst) -> (xor, 0, src)
 (std, 0, dst) -> (sch, 0, ev)
@@ -183,6 +180,5 @@ fmt:poller
 (world, xorgeom, 0) -> (xor, xorslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)
 
-(glwnd, rect, 0) -> (cam, 0, 0)
-(opengl, 0, wnd) -> (glwnd, 0, 0)
+(opengl, rect, 0) -> (cam, 0, 0)
 </relation>

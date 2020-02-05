@@ -187,9 +187,7 @@ next:
 
 
 
-//stack[-6] = ogl, 0
-//stack[-5] = wnd, 0
-//stack[-4] = wnd, area
+//stack[-4] = ogl, area
 //stack[-3] = cam, 0
 //stack[-2] = act, slot
 //stack[-1] = wrd, geom

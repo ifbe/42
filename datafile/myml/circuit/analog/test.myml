@@ -1,3 +1,40 @@
+<entity>
+V0{
+fmt:vsrc
+val:5v
+}
+R0{
+fmt:resistor
+val:500
+}
+
+texball{
+fmt:ground
+url:datafile/jpg/grass.jpg
+}
+cam{
+fmt:freecam
+}
+pcb{
+fmt:world3d
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <style>
 v0slot{
 }
@@ -48,46 +85,6 @@ q: 1.0, 1.0
 </style>
 
 
-<entity>
-V0{
-fmt:vsrc
-val:5v
-}
-R0{
-fmt:resistor
-val:500
-}
-
-texball{
-fmt:ground
-url:datafile/jpg/terrain.jpg
-}
-cam{
-fmt:freecam
-}
-pcb{
-fmt:world3d
-}
-</entity>
-
-
-<supply>
-glwnd{
-fmt:gl41wnd0
-}
-opengl{
-fmt:wnd
-}
-</supply>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 (V0, 0, p) -> (R0, 0, p)
 (V0, 0, n) -> (R0, 0, n)
@@ -97,6 +94,5 @@ fmt:poller
 (pcb, skygeom, 0) -> (texball, skyslot, 0)
 (pcb, camgeom, 0) -> (cam, camslot, 0)
 
-(glwnd, rect, 0) -> (cam, 0, 0)
-(opengl, 0, wnd) -> (glwnd, 0, 0)
+(opengl, rect, 0) -> (cam, 0, 0)
 </relation>

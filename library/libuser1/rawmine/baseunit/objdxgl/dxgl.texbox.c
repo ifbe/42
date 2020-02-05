@@ -1,6 +1,7 @@
 #include "libuser.h"
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
 void carveskybox(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 
@@ -58,6 +59,8 @@ static void texbox_draw_gl41(
 	carveskybox(vbuf, ibuf, vc, vr, vf, vu);
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
+
+	gl41data_insert(ctx, 's', src, 1);
 }
 static void texbox_draw_json(
 	struct entity* act, struct style* pin,
@@ -100,31 +103,31 @@ static void texbox_event(
 
 
 
-//stack:
-//-4: wnd, area
-//-3: ctx
-//-2: cam, part of cam
-//-1: world, geom of cam
-static void texbox_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void texbox_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> ctx
-	struct entity* ctx;
-
-	//cam -> world
-	struct entity* cam;
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
 	struct entity* wrd;struct style* camg;
-
-	//world -> texbox
+//world -> texball
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
-
-	if(stack){
-		ctx = stack[rsp-3]->pchip;
+//say("@texball_read\n");
+	if(stack && ('v' == len)){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		texbox_draw_gl41(act,part, win,geom, wrd,camg, ctx,0);
+		texbox_draw_gl41(act,part, win,geom, wrd,camg, wnd,area);
+	}
+}
+static void texbox_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	struct supply* sup = peer->pchip;
+	switch(sup->fmt){
+	default:{
+		texbox_read_bycam(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 }
 static void texbox_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

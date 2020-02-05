@@ -144,8 +144,15 @@ static void finfet_read(struct halfrel* self, struct halfrel* peer, void* arg, i
 {
 	struct supply* sup = peer->pchip;
 	switch(sup->fmt){
-	case _gl41wnd0_:finfet_read_bywnd(self,peer, arg,idx, buf,len);break;
-	default:        finfet_read_bycam(self,peer, arg,idx, buf,len);break;
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != len)break;
+		finfet_read_bywnd(self,peer, arg,idx, buf,len);break;
+	}
+	default:{
+		finfet_read_bycam(self,peer, arg,idx, buf,len);break;
+	}
 	}
 }
 static void finfet_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)

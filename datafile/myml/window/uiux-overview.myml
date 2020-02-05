@@ -1,3 +1,44 @@
+<entity>
+overview{
+fmt:overview
+}
+cam0{
+fmt:orthcam
+}
+world{
+fmt:world3d
+}
+
+screen{
+fmt:screen
+}
+theeye{
+fmt:theeye
+}
+reality{
+fmt:reality
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <style>
 itemslot{
 }
@@ -43,60 +84,13 @@ t:0.0, 0.0, 0.1
 </style>
 
 
-<entity>
-overview{
-fmt:overview
-}
-cam0{
-fmt:orthcam
-}
-world{
-fmt:world3d
-}
-
-screen{
-fmt:screen
-}
-theeye{
-fmt:theeye
-}
-reality{
-fmt:reality
-}
-</entity>
-
-
-<supply>
-glwnd{
-fmt:gl41wnd0
-}
-opengl{
-fmt:wnd
-title:"42"
-width:1024
-height:1024
-depth:1024
-}
-</supply>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 #world depends on overview
 (world, itemgeom, 0) -> (overview, itemslot, 0)
 (world, viewgeom, 0) -> (cam0, viewslot, 0)
 
 #glwnd depends on gldata
-(glwnd, viewrect, 0) -> (cam0, 0, a0)
-
-#opengl depends on glwnd
-(opengl, 0, wnd) -> (glwnd, 0, togl)
+(opengl, viewrect, 0) -> (cam0, 0, a0)
 
 #screen depends on opengl
 (screen, 0, 0) -> (opengl, 0, 0)

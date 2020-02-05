@@ -30,6 +30,7 @@ int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 	struct relation* rel;
 	//say("@gl41wnd0_read\n");
 	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
+	//say("gl41wnd0_read:%llx,%llx,%llx,%x,%llx,%d\n",self,peer,stack,rsp,buf,len);
 
 	wnd = self->pchip;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -67,18 +68,13 @@ int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 	}
 	return 0;
 }
-int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct event* ev, int len)
 {
 	float x,y,x0,y0,xn,yn;
 	short* v;
 	struct relation* rel;
-	struct event* ev;
-
 	struct supply* wnd;
 	struct fstyle* sty;
-	struct entity* cam;
-
-	ev = buf;
 	//say("@gl41wnd0_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
 
 	wnd = self->pchip;
@@ -103,16 +99,16 @@ int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 		return 0;
 	}
 	else{
-		rel = wnd->buf;
+		rel = wnd->glevto;
 		if(0 == rel)rel = wnd->oreln;
 		if(0 == rel)return 0;
 	}
 
 found:
-	wnd->buf = rel;
+	wnd->glevto = rel;
 	stack[rsp+0] = (void*)(rel->src);	//wnd,area
 	stack[rsp+1] = (void*)(rel->dst);	//cam,gl41
-	entitywrite(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, len);
+	entitywrite(stack[rsp+1], stack[rsp+0], stack, rsp+2, ev, len);
 	return 0;
 }
 int gl41wnd0_discon(struct halfrel* self, struct halfrel* peer)
@@ -120,6 +116,18 @@ int gl41wnd0_discon(struct halfrel* self, struct halfrel* peer)
 	return 0;
 }
 int gl41wnd0_linkup(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+
+
+
+
+int gl41wnd0_search(struct supply* act)
+{
+	return 0;
+}
+int gl41wnd0_modify(struct supply* act)
 {
 	return 0;
 }

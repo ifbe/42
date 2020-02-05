@@ -12,9 +12,6 @@ fmt:world3d
 
 
 <supply>
-thewnd{
-fmt:gl41wnd0
-}
 opengl{
 fmt:wnd
 title:"42"
@@ -69,8 +66,5 @@ q:1.0, 1.0
 (world3d, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
-(thewnd, freerect, mvp) -> (freecam, 0, 0)
-
-#opengl depends on wnd
-(opengl, 0, wnd) -> (thewnd, 0, 0)
+(opengl, freerect, mvp) -> (freecam, 0, 0)
 </relation>

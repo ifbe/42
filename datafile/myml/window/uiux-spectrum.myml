@@ -1,3 +1,44 @@
+<entity>
+spectrum{
+fmt:spectrum
+}
+freecam{
+fmt:freecam
+}
+world3d{
+fmt:world3d
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+usbmic{
+fmt:mic
+}
+</supply>
+
+
+<artery>
+fftpcm{
+fmt:fftpcm
+}
+</artery>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <style>
 skyhaha{
 }
@@ -29,50 +70,6 @@ q:1.0, 1.0
 </style>
 
 
-<entity>
-spectrum{
-fmt:spectrum
-}
-freecam{
-fmt:freecam
-}
-world3d{
-fmt:world3d
-}
-</entity>
-
-
-<supply>
-thewnd{
-fmt:gl41wnd0
-}
-opengl{
-fmt:wnd
-title:"42"
-width:1024
-height:1024
-depth:1024
-}
-usbmic{
-fmt:mic
-}
-</supply>
-
-
-<artery>
-fftpcm{
-fmt:fftpcm
-}
-</artery>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 #spectrum depends on usbcam
 (usbmic, 0, dst) -> (fftpcm, 0, src)
@@ -83,8 +80,5 @@ fmt:poller
 (world3d, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
-(thewnd, freerect, 0) -> (freecam, 0, 0)
-
-#opengl depends on wnd
-(opengl, 0, wnd) -> (thewnd, 0, 0)
+(opengl, freerect, 0) -> (freecam, 0, 0)
 </relation>

@@ -15,9 +15,11 @@
 #else
 	#include <GL/glew.h>
 #endif
-GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c);
-GLuint uploadtexture(void* i, u32 t, void* buf, int fmt, int w, int h);
 GLuint uploadvertex(void* i, void* o);
+GLuint uploadtexture(void* i, u32 t, void* buf, int fmt, int w, int h);
+GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c);
+int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
+int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
 
 
 
@@ -85,7 +87,7 @@ void update_onedraw(struct gldst* dst, struct glsrc* src)
 void fullwindow_upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque)
 {
 	int j;
-	//say("@fullwindow_upload: %llx,%llx,%.8s\n", ogl, ctx, &ctx->type);
+	//say("fullwindow_upload:%llx,%llx,%llx,%llx\n",cam,lit,solid,opaque);
 
 	//camera
 	//update_onedraw(&cam[0].dst, &cam[0].src);
@@ -218,6 +220,7 @@ void render_onedraw(struct gl41data* cam, struct gl41data* lit, struct gl41data*
 }
 void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, struct supply* wnd, struct fstyle* area)
 {
+	//say("fullwindow_render:%llx,%llx,%llx,%llx,%llx,%llx\n",cam,lit,solid,opaque,wnd,area);
 	int j;
 	int x0,y0,ww,hh;
 	x0 = area->vc[0] * wnd->fbwidth;
@@ -263,14 +266,24 @@ void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41
 
 void fullwindow_write(struct supply* ogl, struct event* ev)
 {
+	struct halfrel rel[2];
 	struct halfrel* stack[16];
-	//say("@fullwindow_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
 
-	relationwrite(ogl, _wnd_, stack, 0, ev, 0);
+	rel[0].pchip = ogl;
+	gl41wnd0_write(&rel[0], &rel[1], stack, 0, ev, 0);
+
+	//say("@fullwindow_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
+	//relationwrite(ogl, _wnd_, stack, 0, ev, 0);
 }
 void fullwindow_read(struct supply* ogl)
 {
+	struct halfrel rel[2];
 	struct halfrel* stack[16];
+
+	rel[0].pchip = ogl;
+	gl41wnd0_read(&rel[0], &rel[1], stack, 0, 0, 0);
+
+/*	struct halfrel* stack[16];
 	struct relation* rel;
 	struct supply* wnd;
 	//say("@fullwindow_read\n");
@@ -293,7 +306,7 @@ void fullwindow_read(struct supply* ogl)
 		}
 
 		rel = samesrcnextdst(rel);
-	}
+	}*/
 }
 void fullwindow_delete(struct supply* ogl)
 {
@@ -301,4 +314,9 @@ void fullwindow_delete(struct supply* ogl)
 void fullwindow_create(struct supply* ogl)
 {
 	ogl->fmt = _full_;
+
+	ogl->gl_camera = memorycreate(0x10000, 0);
+	ogl->gl_light  = memorycreate(0x10000, 0);
+	ogl->gl_solid  = memorycreate(0x10000, 0);
+	ogl->gl_opaque = memorycreate(0x10000, 0);
 }

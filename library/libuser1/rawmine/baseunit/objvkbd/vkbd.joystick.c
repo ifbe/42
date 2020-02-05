@@ -237,16 +237,21 @@ static void vjoy_write_bywnd(struct halfrel* self, struct halfrel* peer, struct 
 
 static int vjoy_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
-	struct entity* ent = peer->pchip;
-	switch(ent->fmt){
-		case _gl41wnd0_:vjoy_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	struct entity* sup = peer->pchip;
+	switch(sup->fmt){
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != len)break;
+		vjoy_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 	return 0;
 }
 static int vjoy_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
-	struct entity* ent = peer->pchip;
-	switch(ent->fmt){
+	struct entity* sup = peer->pchip;
+	switch(sup->fmt){
 		case _gl41wnd0_:vjoy_write_bywnd(self, peer, stack, rsp, buf, len);break;
 	}
 	return 0;

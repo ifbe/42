@@ -264,8 +264,10 @@ static void orthcam_read(struct halfrel* self, struct halfrel* peer, struct half
 {
 	struct entity* ent = peer->pchip;
 	switch(ent->fmt){
-		case _gl41wnd0_:orthcam_read_bywnd(self, peer, stack, rsp, buf, len);break;
-		default:        orthcam_read_bycam(self, peer, stack, rsp, buf, len);break;
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:orthcam_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	default:orthcam_read_bycam(self, peer, stack, rsp, buf, len);break;
 	}
 }
 static int orthcam_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)

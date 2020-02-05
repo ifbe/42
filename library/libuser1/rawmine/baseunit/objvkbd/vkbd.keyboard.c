@@ -240,17 +240,26 @@ static void vkbd_write_bywnd(struct halfrel* self, struct halfrel* peer, struct 
 
 static int vkbd_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
-	struct entity* ent = peer->pchip;
-	switch(ent->fmt){
-		case _gl41wnd0_:vkbd_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	struct entity* sup = peer->pchip;
+	switch(sup->fmt){
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != len)break;
+		vkbd_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 	return 0;
 }
 static int vkbd_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
-	struct entity* ent = peer->pchip;
-	switch(ent->fmt){
-		case _gl41wnd0_:vkbd_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	struct entity* sup = peer->pchip;
+	switch(sup->fmt){
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		vkbd_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 	return 0;
 }

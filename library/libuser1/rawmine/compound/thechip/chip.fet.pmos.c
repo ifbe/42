@@ -215,7 +215,7 @@ static void pmos_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 }
 static void pmos_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
-	say("pmos_write: %.4s\n", &self->flag);
+	say("pmos_write: %.4s=%x\n", &self->flag, buf[0]);
 	switch(self->flag){
 		case 'D':pmos_write_D(self,peer, stack,rsp, buf,len);return;
 		case 'S':pmos_write_S(self,peer, stack,rsp, buf,len);return;

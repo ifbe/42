@@ -273,7 +273,7 @@ int digital_write(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 	if(0 == ent)return 0;
 	struct wireindex* sts = ent->buf0;
 	if(0 == sts)return 0;
-say("digital_write: %.4s\n", &self->flag);
+say("digital_write: %.4s=%x\n", &self->flag, buf[0]);
 	switch(self->flag){
 		case _ev_:{
 			if('a' == buf[0])digital_simple(ent, sts);

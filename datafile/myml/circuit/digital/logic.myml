@@ -1,3 +1,53 @@
+<entity>
+not{
+fmt:not
+}
+mem{
+fmt:mem
+}
+dff{
+fmt:dff
+}
+
+nor{
+fmt:nor
+}
+nand{
+fmt:nand
+}
+xor{
+fmt:xor
+}
+xnor{
+fmt:xnor
+}
+
+cam{
+fmt:freecam
+}
+pcb{
+fmt:world3d
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+}
+std{
+fmt:std
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <style>
 notslot{
 }
@@ -84,59 +134,6 @@ q: 1.0, 1.0
 </style>
 
 
-<entity>
-not{
-fmt:not
-}
-mem{
-fmt:mem
-}
-dff{
-fmt:dff
-}
-
-nor{
-fmt:nor
-}
-nand{
-fmt:nand
-}
-xor{
-fmt:xor
-}
-xnor{
-fmt:xnor
-}
-
-cam{
-fmt:freecam
-}
-pcb{
-fmt:world3d
-}
-</entity>
-
-
-<supply>
-glwnd{
-fmt:gl41wnd0
-}
-opengl{
-fmt:wnd
-}
-std{
-fmt:std
-}
-</supply>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 (std, 0, dst) -> (xor, 0, src)
 (std, 0, dst) -> (xnor, 0, src)
@@ -151,6 +148,5 @@ fmt:poller
 (pcb, xnorgeom, 0) -> (xnor, xnorslot, 0)
 
 (pcb, camgeom, 0) -> (cam, camslot, 0)
-(glwnd, rect, 0) -> (cam, 0, 0)
-(opengl, 0, wnd) -> (glwnd, 0, 0)
+(opengl, rect, 0) -> (cam, 0, 0)
 </relation>

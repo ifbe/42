@@ -1,3 +1,45 @@
+<entity>
+texball{
+fmt:texball
+url:datafile/jpg/skysphere.jpg
+}
+tree{
+fmt:stl3d
+url:datafile/stl/spider-lowpoly.stl
+}
+water{
+fmt:water
+}
+freecam{
+fmt:freecam
+}
+world3d{
+fmt:world3d
+}
+</entity>
+
+
+<supply>
+thefbo{
+fmt:gl41fboc
+}
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <style>
 skyhaha{
 }
@@ -11,7 +53,7 @@ t: 0.0, 0.0, 10000000.0
 treehaha{
 }
 treegeom{
-c: 0.0, 0.0, 0.0
+c: 0.0, 0.0, 1000.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
@@ -57,50 +99,6 @@ q:1.0, 1.0
 </style>
 
 
-<entity>
-texball{
-fmt:texball
-url:datafile/jpg/skysphere.jpg
-}
-tree{
-fmt:tree
-}
-water{
-fmt:water
-}
-freecam{
-fmt:freecam
-}
-world3d{
-fmt:world3d
-}
-</entity>
-
-
-<supply>
-thefbo{
-fmt:gl41fboc
-}
-thewnd{
-fmt:gl41wnd0
-}
-opengl{
-fmt:wnd
-title:"42"
-width:1024
-height:1024
-depth:1024
-}
-</supply>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 #water depends on thefbo
 (water, 0, fbo) -> (thefbo, mirrrect, mvp)
@@ -112,8 +110,5 @@ fmt:poller
 (world3d, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
-(thewnd, freerect, 0) -> (freecam, 0, 0)
-
-#opengl depends on wnd
-(opengl, 0, wnd) -> (thewnd, 0, 0)
+(opengl, freerect, 0) -> (freecam, 0, 0)
 </relation>

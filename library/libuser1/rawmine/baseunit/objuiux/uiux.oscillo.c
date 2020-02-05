@@ -261,15 +261,31 @@ static void oscillo_read_bycam(struct halfrel* self, struct halfrel* peer, struc
 		if('v' == len)oscillo_draw_gl41(act,slot, win,geom, wnd,area);
 	}
 }
+static void oscillo_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+}
+
+
+
+
 static void oscillo_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct entity* ent = self->pchip;
 	struct supply* sup = peer->pchip;
 //say("fmt=%.8s\n", &sup->fmt);
 	switch(sup->fmt){
-		case _gl41wnd0_:break;
-		case _pcm_:oscillo_pcm(ent, sup);break;
-		default:oscillo_read_bycam(self, peer, stack, rsp, buf, len);break;
+	case _pcm_:{
+		oscillo_pcm(ent, sup);break;
+	}
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != len)break;
+		oscillo_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
+	default:{
+		oscillo_read_bycam(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 }
 static void oscillo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

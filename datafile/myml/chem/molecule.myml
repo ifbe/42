@@ -1,3 +1,39 @@
+<entity>
+ch4{
+fmt:ch4
+}
+h2o{
+fmt:h2o
+}
+diam{
+fmt:diamond
+}
+grap{
+fmt:graphene
+}
+cam{
+fmt:freecam
+}
+world{
+fmt:world3d
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <style>
 ch4slot{
 }
@@ -57,45 +93,6 @@ q: 1.0, 1.0
 </style>
 
 
-<entity>
-ch4{
-fmt:ch4
-}
-h2o{
-fmt:h2o
-}
-diam{
-fmt:diamond
-}
-grap{
-fmt:graphene
-}
-cam{
-fmt:freecam
-}
-world{
-fmt:world3d
-}
-</entity>
-
-
-<supply>
-glwnd{
-fmt:gl41wnd0
-}
-opengl{
-fmt:wnd
-}
-</supply>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 (world, ch4geom, 0) -> (ch4, ch4slot, 0)
 (world, h2ogeom, 0) -> (h2o, h2oslot, 0)
@@ -103,6 +100,5 @@ fmt:poller
 (world, grapgeom, 0) -> (grap, grapslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)
 
-(glwnd, rect, 0) -> (cam, 0, 0)
-(opengl, 0, wnd) -> (glwnd, 0, 0)
+(opengl, rect, 0) -> (cam, 0, 0)
 </relation>

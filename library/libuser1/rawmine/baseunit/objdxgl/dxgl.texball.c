@@ -199,25 +199,36 @@ static void texball_read_bycam(struct halfrel* self, struct halfrel* peer, struc
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
 //say("@texball_read\n");
-	if(stack){
+	if(stack && ('v' == len)){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		if('v' == len)texball_draw_gl41(act,part, win,geom, wrd,camg, wnd,area);
+		texball_draw_gl41(act,part, win,geom, wrd,camg, wnd,area);
 	}
 }
 static void texball_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 }
+
+
+
+
 static void texball_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct supply* sup = peer->pchip;
 	switch(sup->fmt){
-		case _gl41fbog_:
-		case _gl41wnd0_:texball_read_bywnd(self, peer, stack, rsp, buf, len);break;
-		default:        texball_read_bycam(self, peer, stack, rsp, buf, len);break;
+	case _gl41fbog_:
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != len)break;
+		texball_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
+	default:{
+		texball_read_bycam(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 }
 static void texball_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

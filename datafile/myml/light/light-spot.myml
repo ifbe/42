@@ -1,3 +1,47 @@
+<entity>
+ground{
+fmt:ground
+}
+test{
+fmt:stl3d
+url:datafile/stl/spider-lowpoly.stl
+}
+tree{
+fmt:tree
+}
+light{
+fmt:spotlit
+}
+freecam{
+fmt:freecam
+}
+world3d{
+fmt:world3d
+}
+</entity>
+
+
+<supply>
+thefbo{
+fmt:gl41fbod
+}
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <style>
 grndhaha{
 }
@@ -66,53 +110,6 @@ q:1.0, 1.0
 </style>
 
 
-<entity>
-ground{
-fmt:ground
-}
-test{
-fmt:stl3d
-url:datafile/stl/spider-lowpoly.stl
-}
-tree{
-fmt:tree
-}
-light{
-fmt:spotlit
-}
-freecam{
-fmt:freecam
-}
-world3d{
-fmt:world3d
-}
-</entity>
-
-
-<supply>
-thefbo{
-fmt:gl41fbod
-}
-thewnd{
-fmt:gl41wnd0
-}
-opengl{
-fmt:wnd
-title:"42"
-width:1024
-height:1024
-depth:1024
-}
-</supply>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 #light depends on fbo
 (light, 0, fbo) -> (thefbo, litrect, 0)
@@ -125,8 +122,5 @@ fmt:poller
 (world3d, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
-(thewnd, freerect, mvp) -> (freecam, 0, 0)
-
-#opengl depends on wnd
-(opengl, 0, wnd) -> (thewnd, 0, 0)
+(opengl, freerect, mvp) -> (freecam, 0, 0)
 </relation>

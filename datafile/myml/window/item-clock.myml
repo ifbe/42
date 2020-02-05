@@ -1,3 +1,34 @@
+<entity>
+clock{
+fmt:clock
+}
+cam0{
+fmt:orthcam
+}
+world{
+fmt:world3d
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <style>
 viewpart{
 }
@@ -22,45 +53,12 @@ T: 0.0, 0.0, 0.0, 1200.0
 N: 0.0, 0.0, 0.0, 0.0
 F: 0.0, 0.0, 0.0, 2000.0
 }
+
 aaaarect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
 </style>
-
-
-<entity>
-clock{
-fmt:clock
-}
-cam0{
-fmt:orthcam
-}
-world{
-fmt:world3d
-}
-</entity>
-
-
-<supply>
-glwnd{
-fmt:gl41wnd0
-}
-opengl{
-fmt:wnd
-title:"42"
-width:1024
-height:1024
-depth:1024
-}
-</supply>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>
 
 
 <relation>
@@ -69,8 +67,5 @@ fmt:poller
 (world, viewgeom, 0) -> (clock, viewpart, 0)
 
 #glwnd depends on gldata
-(glwnd, aaaarect, 0) -> (cam0, 0, a0)
-
-#opengl depends on glwnd
-(opengl, 0, wnd) -> (glwnd, 0, togl)
+(opengl, aaaarect, 0) -> (cam0, 0, a0)
 </relation>

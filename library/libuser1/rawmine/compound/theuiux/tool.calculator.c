@@ -282,10 +282,17 @@ static void calculator_read_bywnd(struct halfrel* self, struct halfrel* peer, st
 
 static int calculator_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
-	struct entity* ent = peer->pchip;
-	switch(ent->fmt){
-		case _gl41wnd0_:calculator_read_bywnd(self, peer, stack, rsp, buf, len);break;
-		default:        calculator_read_bycam(self, peer, stack, rsp, buf, len);break;
+	struct entity* sup = peer->pchip;
+	switch(sup->fmt){
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != len)break;
+		calculator_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
+	default:{
+		calculator_read_bycam(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 	return 0;
 }
@@ -293,7 +300,11 @@ static void calculator_write(struct halfrel* self, struct halfrel* peer, struct 
 {
 	struct entity* sup = peer->pchip;
 	switch(sup->fmt){
-		case _gl41wnd0_:calculator_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		calculator_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 }
 static void calculator_discon(struct halfrel* self, struct halfrel* peer)

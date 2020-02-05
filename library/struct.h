@@ -890,6 +890,7 @@ struct supply
 		void* xlibgc;	//2d.xlib
 		void*    hdc;	//2d.winapi
 		void* sdlren;	//2d.sdl
+		u64   gltime;	//3d.glfw
 		u32      rbo;	//3d.fb
 	};
 	union{
@@ -898,6 +899,7 @@ struct supply
 		void* ximage;	//2d.xlib
 		void*  binfo;	//2d.winapi
 		void* sdltex;	//2d.sdl
+		void* glevto;	//3d.glfw
 		u32     tex0;	//3d.fb
 		u64 len;
 	};

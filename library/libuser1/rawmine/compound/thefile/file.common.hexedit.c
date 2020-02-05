@@ -293,12 +293,23 @@ static void hexedit_read_bywnd(struct halfrel* self, struct halfrel* peer, struc
 	gl41data_tmpcam(wnd);
 	gl41data_after(wnd);
 }
+
+
+
+
 static int hexedit_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	struct entity* sup = peer->pchip;
 	switch(sup->fmt){
-		case _gl41wnd0_:hexedit_read_bywnd(self, peer, stack, rsp, buf, len);break;
-		default:        hexedit_read_bycam(self, peer, stack, rsp, buf, len);break;
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != len)break;
+		hexedit_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
+	default:{
+		hexedit_read_bycam(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 	return 0;
 }
@@ -307,7 +318,11 @@ static void hexedit_write(struct halfrel* self, struct halfrel* peer, void* arg,
 	struct entity* ent = self->pchip;
 	struct supply* sup = peer->pchip;
 	switch(sup->fmt){
-		case _gl41wnd0_:hexedit_event(ent, self->pfoot, sup, peer->pfoot, buf);break;
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		hexedit_event(ent, self->pfoot, sup, peer->pfoot, buf);break;
+	}
 	}
 }
 static void hexedit_discon(struct halfrel* self, struct halfrel* peer)

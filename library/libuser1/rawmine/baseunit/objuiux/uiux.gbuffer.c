@@ -254,12 +254,23 @@ static void gbuffer_read_bywnd(struct halfrel* self, struct halfrel* peer, struc
 	gl41data_tmpcam(wnd);
 	gl41data_after(wnd);
 }
+
+
+
+
 static int gbuffer_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
 	struct entity* ent = peer->pchip;
 	switch(ent->fmt){
-		case _gl41wnd0_:gbuffer_read_bywnd(self, peer, stack, rsp, buf, len);break;
-		default:        gbuffer_read_bycam(self, peer, stack, rsp, buf, len);break;
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != len)break;
+		gbuffer_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
+	default:{
+		gbuffer_read_bycam(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 	return 0;
 }

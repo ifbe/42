@@ -1,3 +1,50 @@
+<entity>
+p0{
+fmt:pmos
+}
+p1{
+fmt:pmos
+}
+n0{
+fmt:nmos
+}
+n1{
+fmt:nmos
+}
+sch{
+fmt:digital
+url:datafile/wiring/mos-nand.wire
+}
+
+nand{
+fmt:nand
+}
+cam{
+fmt:freecam
+}
+world{
+fmt:world3d
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+}
+std{
+fmt:std
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <style>
 p0slot{
 }
@@ -73,56 +120,6 @@ q: 1.0, 1.0
 </style>
 
 
-<entity>
-p0{
-fmt:pmos
-}
-p1{
-fmt:pmos
-}
-n0{
-fmt:nmos
-}
-n1{
-fmt:nmos
-}
-sch{
-fmt:digital
-url:datafile/wiring/mos-nand.wire
-}
-
-nand{
-fmt:nand
-}
-cam{
-fmt:freecam
-}
-world{
-fmt:world3d
-}
-</entity>
-
-
-<supply>
-glwnd{
-fmt:gl41wnd0
-}
-opengl{
-fmt:wnd
-}
-std{
-fmt:std
-}
-</supply>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 (std, 0, dst) -> (nand, 0, src)
 (std, 0, dst) -> (sch, 0, ev)
@@ -145,6 +142,5 @@ fmt:poller
 (world, nandgeom, 0) -> (nand, nandslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)
 
-(glwnd, rect, 0) -> (cam, 0, 0)
-(opengl, 0, wnd) -> (glwnd, 0, 0)
+(opengl, rect, 0) -> (cam, 0, 0)
 </relation>

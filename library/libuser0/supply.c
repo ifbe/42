@@ -205,7 +205,7 @@ int supplydelete(struct supply* win)
 	if(win == 0)return 0;
 
 	//1.close
-	windowstop(win);
+	windowdelete(win);
 
 	//2.unlink
 	win->irel0 = 0;

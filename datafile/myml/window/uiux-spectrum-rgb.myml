@@ -1,8 +1,17 @@
-<artery>
-fftrgb{
-fmt:fftrgb
+<entity>
+canvas{
+fmt:video
 }
-</artery>
+spectrum{
+fmt:spectrum
+}
+freecam{
+fmt:freecam
+}
+world3d{
+fmt:world3d
+}
+</entity>
 
 
 <supply>
@@ -19,27 +28,18 @@ fmt:cam
 </supply>
 
 
-<entity>
-canvas{
-fmt:video
+<artery>
+fftrgb{
+fmt:fftrgb
 }
-spectrum{
-fmt:spectrum
-}
-freecam{
-fmt:freecam
-}
-world3d{
-fmt:world3d
-}
+</artery>
 
-thectx{
-fmt:gl41data
+
+<worker>
+poller{
+fmt:poller
 }
-thewnd{
-fmt:gl41wnd0
-}
-</entity>
+</worker>
 
 
 <style>
@@ -68,15 +68,14 @@ c: 0.0, -2000.0, 250.0
 r: 1.0, 0.0, 0.0
 t: 0.0, 0.0, 1.0
 f: 0.0, 1.0, 0.0
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
 }
-freefrus{
-l: 0.0, 0.0, 0.0, -1.0
-r: 0.0, 0.0, 0.0, 1.0
-b: 0.0, 0.0, 0.0, -1.0
-t: 0.0, 0.0, 0.0, 1.0
-n: 0.0, 0.0, 0.0, 1.0
-f: 0.0, 0.0, 0.0, 1000000000.0
-}
+
 freerect{
 c:0.0, 0.0
 q:1.0, 1.0
@@ -96,15 +95,6 @@ q:1.0, 1.0
 (world3d, skygeom, 0) -> (spectrum, skyhaha, 0)
 (world3d, freegeom, 0) -> (freecam, freemodl, 0)
 
-#glctx depends on scene
-(thectx, 0, 0) -> (world3d, 0, 0)
-
 #glwnd depends on ctx + cam
-(thewnd, 0, ctx) -> (thectx, 0, 0)
-(thewnd, freerect, mvp) -> (freecam, freefrus, 0)
-
-#opengl depends on ctx + wnd
-(opengl, 0, ctx) -> (thectx, 0, 0)
-(opengl, 0, wnd) -> (thewnd, 0, 0)
-
+(opengl, freerect, mvp) -> (freecam, 0, 0)
 </relation>

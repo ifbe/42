@@ -1,3 +1,38 @@
+<entity>
+canvas{
+fmt:video
+}
+freecam{
+fmt:freecam
+}
+world3d{
+fmt:world3d
+}
+</entity>
+
+
+<supply>
+usbcam{
+fmt:cam
+url:/dev/video0
+}
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <style>
 skyhaha{
 }
@@ -30,45 +65,6 @@ q:1.0, 1.0
 </style>
 
 
-<entity>
-canvas{
-fmt:video
-}
-freecam{
-fmt:freecam
-}
-world3d{
-fmt:world3d
-}
-</entity>
-
-
-<supply>
-usbcam{
-fmt:cam
-url:/dev/video0
-}
-
-thewnd{
-fmt:gl41wnd0
-}
-opengl{
-fmt:wnd
-title:"42"
-width:1024
-height:1024
-depth:1024
-}
-</supply>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 #canvas depends on usbcam
 (canvas, 0, yuv) -> (usbcam, 0, dst)
@@ -78,8 +74,5 @@ fmt:poller
 (world3d, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
-(thewnd, freerect, 0) -> (freecam, 0, 0)
-
-#opengl depends on wnd
-(opengl, 0, wnd) -> (thewnd, 0, 0)
+(opengl, freerect, 0) -> (freecam, 0, 0)
 </relation>

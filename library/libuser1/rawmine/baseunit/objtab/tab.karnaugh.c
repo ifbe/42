@@ -226,7 +226,12 @@ static int karnaugh_read(struct halfrel* self, struct halfrel* peer, struct half
 {
 	struct entity* ent = peer->pchip;
 	switch(ent->fmt){
-		case _gl41wnd0_:karnaugh_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != len)break;
+		karnaugh_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 	return 0;
 }
@@ -242,7 +247,9 @@ static int karnaugh_write(struct halfrel* self, struct halfrel* peer, struct hal
 
 	sup = peer->pchip;
 	switch(sup->fmt){
-		case _gl41wnd0_:karnaugh_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:karnaugh_write_bywnd(self, peer, stack, rsp, buf, len);break;
 	}
 	return 0;
 }

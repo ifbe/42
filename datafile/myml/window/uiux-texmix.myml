@@ -1,11 +1,3 @@
-<style>
-rect{
-c:0.0, 0.0
-q:1.0, 1.0
-}
-</style>
-
-
 <entity>
 texmix{
 fmt:texmix
@@ -14,9 +6,6 @@ fmt:texmix
 
 
 <supply>
-thewnd{
-fmt:gl41wnd0
-}
 opengl{
 fmt:wnd
 title:"42"
@@ -34,9 +23,14 @@ fmt:poller
 </worker>
 
 
-<relation>
-(thewnd, rect, 0) -> (texmix, 0, 0)
+<style>
+rect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
 
-#opengl depends on ctx + wnd
-(opengl, 0, wnd) -> (thewnd, 0, 0)
+
+<relation>
+(opengl, rect, 0) -> (texmix, 0, 0)
 </relation>

@@ -366,9 +366,11 @@ static void vrglass_read(struct halfrel* self, struct halfrel* peer, struct half
 {
 	struct entity* ent = peer->pchip;
 	switch(ent->fmt){
-		case _gl41fbog_:
-		case _gl41wnd0_:vrglass_read_bywnd(self, peer, stack, rsp, buf, len);break;
-		default:        vrglass_read_bycam(self, peer, stack, rsp, buf, len);break;
+	case _gl41fbog_:
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:vrglass_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	default:vrglass_read_bycam(self, peer, stack, rsp, buf, len);break;
 	}
 }
 static int vrglass_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

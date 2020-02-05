@@ -1,3 +1,35 @@
+<entity>
+gcode{
+fmt:gcode
+url:/Users/ifbe/Desktop/test.gcode
+}
+cam0{
+fmt:freecam
+}
+world{
+fmt:world3d
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <style>
 itemslot{
 }
@@ -29,49 +61,11 @@ q:1.0, 1.0
 </style>
 
 
-<entity>
-gcode{
-fmt:gcode
-url:/Users/ifbe/Desktop/test.gcode
-}
-cam0{
-fmt:freecam
-}
-world{
-fmt:world3d
-}
-</entity>
-
-
-<supply>
-glwnd{
-fmt:gl41wnd0
-}
-opengl{
-fmt:wnd
-title:"42"
-width:1024
-height:1024
-depth:1024
-}
-</supply>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 #world depends on gcode
 (world, itemgeom, 0) -> (gcode, itemslot, 0)
 (world, viewgeom, 0) -> (cam0, viewslot, 0)
 
 #glwnd depends on gldata
-(glwnd, aaaarect, 0) -> (cam0, 0, a0)
-
-#opengl depends on glwnd
-(opengl, 0, wnd) -> (glwnd, 0, togl)
+(opengl, aaaarect, 0) -> (cam0, 0, a0)
 </relation>

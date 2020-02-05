@@ -367,9 +367,14 @@ static void piano_draw_cli(
 
 static void piano_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	struct entity* ent = peer->pchip;
-	switch(ent->fmt){
-		case _gl41wnd0_:piano_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	struct entity* sup = peer->pchip;
+	switch(sup->fmt){
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != len)break;
+		piano_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 }
 static void piano_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
@@ -381,7 +386,11 @@ static void piano_write(struct halfrel* self, struct halfrel* peer, struct halfr
 	}
 
 	struct supply* sup = peer->pchip;
-	if(_gl41wnd0_ == sup->fmt)piano_write_bywnd(self, peer, stack, rsp, buf, len);
+	switch(sup->fmt){
+		case _gl41wnd0_:
+		case _full_:
+		case _wnd_:piano_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
 }
 static void piano_discon(struct halfrel* self, struct halfrel* peer)
 {

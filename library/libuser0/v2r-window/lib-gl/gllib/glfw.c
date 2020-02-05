@@ -330,23 +330,25 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	//say("@windowread\n");
 
 	ogl = self->pchip;
-	if(_gl41fboc_ == ogl->fmt){
+	switch(ogl->fmt){
+	case _gl41fboc_:{
 		gl41fboc_read(self, peer, arg, idx, buf, len);
 		return;
 	}
-	if(_gl41fbod_ == ogl->fmt){
+	case _gl41fbod_:{
 		gl41fbod_read(self, peer, arg, idx, buf, len);
 		return;
 	}
-	if(_gl41fbog_ == ogl->fmt){
+	case _gl41fbog_:{
 		gl41fbog_read(self, peer, arg, idx, buf, len);
 		return;
 	}
-	if(_gl41wnd0_ == ogl->fmt){
+	case _gl41wnd0_:{
 		gl41wnd0_read(self, peer, arg, idx, buf, len);
 		return;
 	}
-t0 = ogl->data3;
+	}//switch
+t0 = ogl->gltime;
 
 	//0: context current
 	fw = ogl->glwnd;
@@ -373,7 +375,7 @@ t3 = timeread();
 		t1-t0, t2-t1, t3-t2, t3-t0
 	);
 	glfwSetWindowTitle(fw, str);
-ogl->data3 = t3;
+ogl->gltime = t3;
 
 	//4: poll event
 	if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
@@ -383,7 +385,9 @@ void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 {
 	struct supply* ogl;
 	if(0 == self)return;
+
 	ogl = self->pchip;
+	if(0 == ogl)return;
 
 	switch(ogl->fmt){
 		case _gl41fbog_:gl41fbog_write(self,peer, arg,idx, buf,len);break;
@@ -391,18 +395,22 @@ void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 		default:windowdispatch(ogl, buf);
 	}
 }
-void windowchange()
+void windowdiscon(struct halfrel* self, struct halfrel* peer)
 {
 }
-void windowlist()
+void windowlinkup(struct halfrel* self, struct halfrel* peer)
+{
+	say("@windowlinkup:%llx\n", self->pchip);
+}
+
+
+
+
+void windowsearch(struct supply* ogl)
 {
 }
-void windowstop(struct supply* ogl)
+void windowmodify(struct supply* ogl)
 {
-}
-void windowstart(struct supply* ogl)
-{
-	say("@windowstart:%llx\n", ogl);
 }
 void windowdelete(struct supply* ogl)
 {

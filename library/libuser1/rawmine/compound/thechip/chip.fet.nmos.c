@@ -216,7 +216,7 @@ static void nmos_read(struct halfrel* self, struct halfrel* peer, struct halfrel
 }
 static void nmos_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
 {
-	say("nmos_write: %.4s\n", &self->flag);
+	say("nmos_write: %.4s=%x\n", &self->flag, buf[0]);
 	switch(self->flag){
 		case 'D':nmos_write_D(self,peer, stack,rsp, buf,len);return;
 		case 'S':nmos_write_S(self,peer, stack,rsp, buf,len);return;

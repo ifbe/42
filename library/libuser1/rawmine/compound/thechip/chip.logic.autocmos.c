@@ -156,8 +156,15 @@ static int autocmos_read(struct halfrel* self, struct halfrel* peer, struct half
 {
 	struct entity* sup = peer->pchip;
 	switch(sup->fmt){
-		case _gl41wnd0_:autocmos_read_bywnd(self, peer, stack, rsp, buf, len);break;
-		default:        autocmos_read_bycam(self, peer, stack, rsp, buf, len);break;
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != len)break;
+		autocmos_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
+	default:{
+		autocmos_read_bycam(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 	return 0;
 }

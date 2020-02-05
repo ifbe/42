@@ -1,3 +1,37 @@
+<entity>
+karnaugh{
+fmt:karnaugh
+}
+truthtable{
+fmt:truth
+}
+autocmos{
+fmt:autocmos
+}
+calculator{
+fmt:calc
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <style>
 rect{
 c:0.0, 0.0
@@ -18,52 +52,12 @@ q:0.5, 0.5
 </style>
 
 
-<entity>
-karnaugh{
-fmt:karnaugh
-}
-truthtable{
-fmt:truth
-}
-autocmos{
-fmt:autocmos
-}
-calculator{
-fmt:calc
-}
-</entity>
-
-
-<supply>
-glwnd{
-fmt:gl41wnd0
-}
-opengl{
-fmt:wnd
-title:"42"
-width:1024
-height:1024
-depth:1024
-}
-</supply>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 (karnaugh, 0, true) -> (truthtable, 0, karn)
 
 #glwnd depends on gldata
-(glwnd, rect, 0) -> (karnaugh, 0, 0)
-(glwnd, area, 0) -> (truthtable, 0, 0)
-(glwnd, lefttop, 0) -> (autocmos, 0, 0)
-(glwnd, rightbot, 0) -> (calculator, 0, 0)
-
-#opengl depends on glwnd
-(opengl, 0, wnd) -> (glwnd, 0, togl)
+(opengl, rect, 0) -> (karnaugh, 0, 0)
+(opengl, area, 0) -> (truthtable, 0, 0)
+(opengl, lefttop, 0) -> (autocmos, 0, 0)
+(opengl, rightbot, 0) -> (calculator, 0, 0)
 </relation>

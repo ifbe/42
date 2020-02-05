@@ -778,6 +778,7 @@ static void freecam_read_bywnd(struct halfrel* self, struct halfrel* peer, struc
 }
 static int freecam_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
+	//say("debug:%x\n",len);
 //wnd.area -> cam.gl41
 	struct entity* wnd;struct style* area;
 	struct entity* cam;struct style* gl41;
@@ -809,12 +810,14 @@ static int freecam_write_bywnd(struct halfrel* self, struct halfrel* peer, struc
 
 static void freecam_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	struct entity* ent = peer->pchip;
+	struct entity* sup = peer->pchip;
 //say("@freecam_read\n");
-	switch(ent->fmt){
-		case _gl41fbog_:
-		case _gl41wnd0_:freecam_read_bywnd(self, peer, stack, rsp, buf, len);break;
-		default:        freecam_read_bycam(self, peer, stack, rsp, buf, len);break;
+	switch(sup->fmt){
+	case _gl41fbog_:
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:freecam_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	default:freecam_read_bycam(self, peer, stack, rsp, buf, len);break;
 	}
 //say("@freecam_read.end\n");
 }
