@@ -6,13 +6,13 @@
 
 void button_draw_pixel(
 	struct entity* act, struct style* part,
-	struct entity* ctx, struct style* area)
+	struct supply* ctx, struct style* area)
 {
 	int x,y;
 	int time;
 	int w = ctx->width;
 	int h = ctx->height;
-	u32* pix = ctx->buf;
+	u32* pix = ctx->rawbuf;
 
 	time = 511*(timeread()%1000000)/1000000;
 	if(time > 255)time = 511-time;
@@ -51,12 +51,12 @@ static void button_read_bycam(struct halfrel* self, struct halfrel* peer, struct
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
 
-	if(stack){
+	if(stack && ('v' == len)){
 		act = self->pchip;part = self->pfoot;
 		win = peer->pchip;geom = peer->pfoot;
 		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)button_draw_gl41(act,part, win,geom, wnd,area);
+		button_draw_gl41(act,part, win,geom, wnd,area);
 	}
 }
 
@@ -66,7 +66,7 @@ static void button_read_bycam(struct halfrel* self, struct halfrel* peer, struct
 static void button_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct entity* ent = self->pchip;
-	struct entity* sup = peer->pchip;
+	struct supply* sup = peer->pchip;
 	if(_rgba_ == sup->fmt)button_draw_pixel(ent, self->pfoot, sup, peer->pfoot);
 	else button_read_bycam(self, peer, arg, idx, buf, len);
 }

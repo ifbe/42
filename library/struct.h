@@ -882,7 +882,7 @@ struct supply
 		void*   hwnd;	//2d.winapi
 		void* sdlwnd;	//2d.sdl
 		void*  glwnd;	//3d.glfw
-		u32      fbo;	//3d.fb
+		u32      fbo;	//3d.fbo
 	};
 	union{
 		u64 padd1;
@@ -891,7 +891,7 @@ struct supply
 		void*    hdc;	//2d.winapi
 		void* sdlren;	//2d.sdl
 		u64   gltime;	//3d.glfw
-		u32      rbo;	//3d.fb
+		u32      rbo;	//3d.fbo
 	};
 	union{
 		u64 padd2;
@@ -900,15 +900,13 @@ struct supply
 		void*  binfo;	//2d.winapi
 		void* sdltex;	//2d.sdl
 		void* glevto;	//3d.glfw
-		u32     tex0;	//3d.fb
-		u64 len;
+		u32     tex0;	//3d.fbo
 	};
 	union{
 		u64 padd3;
 		int    aqdeq;	//audio.aq
-		u32*     tex;	//3d.fb
-		u64 addr;
-		void* buf;
+		void* glwhat;	//3d.glfw
+		u32*     tex;	//3d.fbo
 	};
 
 	//[60,7f]: memory
@@ -935,6 +933,8 @@ struct supply
 		struct pcmdata** pcm_data;
 		struct gl41data* glsolid;
 		struct gl41data** gl_solid;
+		void* rawctx;	//raw
+		int rawlen;
 	};
 	union{
 		u64 data3;
@@ -943,6 +943,7 @@ struct supply
 		struct pcmdata** pcm_what;
 		struct gl41data* glopaque;
 		struct gl41data** gl_opaque;
+		void* rawbuf;	//2d
 	};
 
 	//[80,bf]: func
@@ -1034,7 +1035,6 @@ struct entity
 		u64 fd0;
 		u64 fd;
 		void* win;
-		void* ctx;
 		int vlen;
 	};
 	union{
@@ -1046,14 +1046,10 @@ struct entity
 	};
 	union{
 		u64 fd2;
-		u64 len;
-		void* idx;
 		int nlen;
 	};
 	union{
 		u64 fd3;
-		u64 addr;
-		void* buf;
 		int wlen;
 	};
 
@@ -1081,6 +1077,8 @@ struct entity
 		void* buf2;
 		void* nbuf;		//node list
 		void** gl_solid;
+		void* rawctx;	//raw
+		int rawlen;
 	};
 	union{
 		u64 data3;
@@ -1089,6 +1087,7 @@ struct entity
 		void* buf3;
 		void* wbuf;		//wire list
 		void** gl_opaque;
+		void* rawbuf;	//raw
 	};
 
 	//[80,bf]: func

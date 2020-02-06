@@ -215,6 +215,10 @@ static void vkbd_write_bywnd(struct halfrel* self, struct halfrel* peer, struct 
 	ent = self->pchip;gl41 = self->pfoot;
 
 	struct event* ev = buf;
+	if(_char_ == ev->what){
+		relationwrite(ent, _ev_, 0, 0, buf, 0x20);
+		return;
+	}
 	if('p' == (ev->what&0xff)){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);

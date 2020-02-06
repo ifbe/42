@@ -51,7 +51,7 @@ static void texbox_draw_gl41(
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
 
-	src = act->buf;
+	src = act->buf0;
 	if(0 == src)return;
 
 	vbuf = (void*)(src->vbuf);
@@ -71,16 +71,6 @@ static void texbox_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"texbox\" style=\"width:50%%;height:100px;float:left;background-color:#3368a9;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->len = len;
 }
 static void texbox_draw_tui(
 	struct entity* act, struct style* pin,
@@ -132,13 +122,6 @@ static void texbox_read(struct halfrel* self, struct halfrel* peer, struct halfr
 }
 static void texbox_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//texbox_event(act, pin, win, sty, ev, 0);
 }
 static void texbox_discon(struct halfrel* self, struct halfrel* peer)
 {
@@ -159,9 +142,9 @@ static void texbox_modify(struct entity* act)
 static void texbox_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(0 == act->buf){
-		memorydelete(act->buf);
-		act->buf = 0;
+	if(0 == act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
 	}
 }
 static void texbox_create(struct entity* act, void* str)
@@ -170,7 +153,7 @@ static void texbox_create(struct entity* act, void* str)
 	struct glsrc* src;
 	if(0 == act)return;
 
-	src = act->buf = memorycreate(0x200, 0);
+	src = act->buf0 = memorycreate(0x200, 0);
 	if(0 == src)return;
 
 	//

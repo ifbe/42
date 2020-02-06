@@ -135,13 +135,16 @@ static void klotski_modify(struct entity* act)
 static void klotski_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
+	}
 }
 static void klotski_create(struct entity* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = data;
-	if(_copy_ == act->type)act->buf = memorycreate(20, 0);
+	if(_orig_ == act->type)act->buf0 = data;
+	if(_copy_ == act->type)act->buf0 = memorycreate(20, 0);
 
 	data[0][1] = data[0][2] = data[1][1] = data[1][2] = caocao;
 	data[0][0] = data[1][0] = machao;

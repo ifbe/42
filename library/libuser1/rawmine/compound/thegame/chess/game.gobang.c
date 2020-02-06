@@ -32,13 +32,13 @@ static void gobang_modify(struct entity* act)
 static void gobang_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(_copy_ == act->type)memorydelete(act->buf0);
 }
 static void gobang_create(struct entity* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = buffer;
-	if(_copy_ == act->type)act->buf = memorycreate(16, 0);
+	if(_orig_ == act->type)act->buf0 = buffer;
+	if(_copy_ == act->type)act->buf0 = memorycreate(16, 0);
 }
 
 

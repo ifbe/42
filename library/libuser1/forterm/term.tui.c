@@ -8,7 +8,7 @@ void gentui_rect(struct entity* win, u32 rgb, int x0, int y0, int x1, int y1)
 	int x,y;
 	int stride = win->stride;
 	int height = win->height;
-	u8* buf = (u8*)(win->buf);
+	u8* buf = (u8*)(win->rawbuf);
 
 	for(y=y0;y<=y1;y++)
 	{
@@ -23,7 +23,7 @@ void gentui_utf8(struct entity* win, u32 rgb, int x, int y, u8* utf, int len)
 	int j;
 	int stride = win->stride;
 	int height = win->height;
-	u8* buf = (u8*)(win->buf);
+	u8* buf = (u8*)(win->rawbuf);
 	if(utf == 0)return;
 	if(len == 0)while(utf[len] != 0)len++;
 
@@ -36,7 +36,7 @@ void gentui_str(struct entity* win, u32 rgb, int x, int y, u8* str, int len)
 	int j;
 	int stride = win->stride;
 	int height = win->height;
-	u8* buf = (u8*)(win->buf);
+	u8* buf = (u8*)(win->rawbuf);
 	if(str == 0)return;
 	if(len == 0)while(str[len] != 0)len++;
 	for(j=0;j<len;j++)buf[4*(y*stride+x+j)] = str[j];

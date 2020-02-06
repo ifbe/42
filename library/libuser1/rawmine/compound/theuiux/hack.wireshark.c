@@ -49,8 +49,8 @@ static void rawdump_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int len = win->rawlen;
+	u8* buf = win->rawbuf;
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
@@ -58,7 +58,7 @@ static void rawdump_draw_html(
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
-	win->len = len;
+	win->rawlen = len;
 }
 static void rawdump_draw_tui(
 	struct entity* act, struct style* pin,
@@ -99,14 +99,20 @@ static void rawdump_modify(struct entity* act, u8* buf)
 static void rawdump_delete(struct entity* act, u8* buf)
 {
 	if(0 == act)return;
-	if(0 != act->buf)memorydelete(act->buf);
-	act->buf = 0;
+	if(act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
+	}
+	if(act->buf1){
+		memorydelete(act->buf1);
+		act->buf1 = 0;
+	}
 }
 static void rawdump_create(struct entity* act, u8* buf)
 {
 	if(0 == act)return;
-	act->idx = memorycreate(0x10000, 0);
-	act->buf = memorycreate(0x100000, 0);
+	act->buf1 = memorycreate(0x10000, 0);
+	act->buf0 = memorycreate(0x100000, 0);
 }
 
 

@@ -68,16 +68,6 @@ static void algorithm_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"algo\" style=\"width:50%%;height:100px;float:left;background-color:#123456;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->len = len;
 }
 static void algorithm_draw_tui(
 	struct entity* act, struct style* pin,
@@ -157,14 +147,9 @@ static void algorithm_modify(struct entity* act)
 }
 static void algorithm_delete(struct entity* act)
 {
-	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
 }
 static void algorithm_create(struct entity* act)
 {
-	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = buffer;
-	if(_copy_ == act->type)act->buf = memorycreate(256, 0);
 }
 
 

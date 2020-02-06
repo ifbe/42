@@ -80,7 +80,7 @@ static void rubikscube_draw_pixel(
 	}
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 
-	u8 (*buf)[4][4] = act->buf;
+	u8 (*buf)[4][4] = act->buf0;
 	if(0 == buf)return;
 
 	for(y=0;y<level;y++)
@@ -168,7 +168,7 @@ static void rubikscube_draw_gl41(
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
 
-	u8 (*buf)[4][4] = act->buf;
+	u8 (*buf)[4][4] = act->buf0;
 	if(0 == buf)return;
 
 	for(y=0;y<level;y++)
@@ -294,15 +294,15 @@ static void rubikscube_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int len = win->rawlen;
+	u8* buf = win->rawbuf;
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
 		"<div id=\"rubik\" style=\"width:50%%;height:100px;float:left;background-color:#404040;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-	win->len = len;
+	win->rawlen = len;
 }
 static void rubikscube_draw_tui(
 	struct entity* act, struct style* pin,
@@ -380,10 +380,9 @@ static void rubikscube_modify(struct entity* act)
 static void rubikscube_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(act->buf)
-	{
-		memorydelete(act->buf);
-		act->buf = 0;
+	if(act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
 	}
 }
 static void rubikscube_create(struct entity* act, void* str)
@@ -391,11 +390,10 @@ static void rubikscube_create(struct entity* act, void* str)
 	int ret;
 	void* buf;
 	if(0 == act)return;
-	if(act->buf)return;
 //printmemory(str,4);
 
 	//malloc
-	buf = memorycreate(6 * level * level, 0);
+	buf = act->buf0 = memorycreate(6 * level * level, 0);
 	if(0 == buf)return;
 
 	//read
@@ -405,7 +403,6 @@ static void rubikscube_create(struct entity* act, void* str)
 
 	//
 	for(ret=0;ret<6;ret++)printmemory(buf + level*level*ret, level*level);
-	act->buf = buf;
 }
 
 

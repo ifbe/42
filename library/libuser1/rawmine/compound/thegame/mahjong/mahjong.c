@@ -32,13 +32,16 @@ static void mahjong_modify(struct entity* act)
 static void mahjong_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
+	}
 }
 static void mahjong_create(struct entity* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = data;
-	if(_copy_ == act->type)act->buf = memorycreate(144, 0);
+	if(_orig_ == act->type)act->buf0 = data;
+	if(_copy_ == act->type)act->buf0 = memorycreate(144, 0);
 }
 
 

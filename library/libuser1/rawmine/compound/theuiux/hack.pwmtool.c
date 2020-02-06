@@ -77,8 +77,8 @@ static void pwmtool_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int len = win->rawlen;
+	u8* buf = win->rawbuf;
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
@@ -86,7 +86,7 @@ static void pwmtool_draw_html(
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
-	win->len = len;
+	win->rawlen = len;
 }
 static void pwmtool_draw_tui(
 	struct entity* act, struct style* pin,
@@ -128,10 +128,9 @@ static void pwmtool_modify(struct entity* act)
 static void pwmtool_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(act->buf)
-	{
+	if(act->buf0){
 		//memorydelete(act->buf);
-		act->buf = 0;
+		act->buf0 = 0;
 	}
 }
 static void pwmtool_create(struct entity* act)

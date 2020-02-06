@@ -156,7 +156,7 @@ static void tetris_draw_tui(
 	int x,y;
 	int w = win->stride;
 	int h = win->height;
-	char* p = (char*)(win->buf);
+	char* p = win->rawbuf;
 
 	for(x=0;x<w*h*4;x++)p[x]=0;
 	if(h>=HEIGHT)
@@ -276,15 +276,18 @@ static void tetris_modify(struct entity* act)
 static void tetris_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
+	}
 }
 static void tetris_create(struct entity* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = data;
-	if(_copy_ == act->type)act->buf = memorycreate(WIDTH*HEIGHT, 0);
+	if(_orig_ == act->type)act->buf0 = data;
+	if(_copy_ == act->type)act->buf0 = memorycreate(WIDTH*HEIGHT, 0);
 
-	tetris_generate(data, WIDTH, HEIGHT);
+	tetris_generate(act->buf0, WIDTH, HEIGHT);
 }
 
 

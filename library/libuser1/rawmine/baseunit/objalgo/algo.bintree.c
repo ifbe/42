@@ -130,7 +130,7 @@ static void bintree_draw_pixel(
 	drawstring(win, 0xffffff, cx-ww, cy-hh, buffer, 0);
 	drawstring(win, 0xffffff, cx-ww, cy-hh+16, postfix, 0);
 
-	node = act->buf;
+	node = act->buf0;
 	if(node == 0)return;
 	right = bintree_getright(node, node);
 	if(right == 0)return;
@@ -151,16 +151,6 @@ static void bintree_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"bintree\" style=\"width:50%%;height:100px;float:left;background-color:#457645;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->len = len;
 }
 static void bintree_draw_tui(
 	struct entity* act, struct style* pin,
@@ -246,13 +236,13 @@ static void bintree_modify(struct entity* act)
 static void bintree_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(_copy_ == act->type)memorydelete(act->buf0);
 }
 static void bintree_create(struct entity* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = node;
-	if(_copy_ == act->type)act->buf = memorycreate(256, 0);
+	if(_orig_ == act->type)act->buf0 = node;
+	if(_copy_ == act->type)act->buf0 = memorycreate(256, 0);
 }
 
 

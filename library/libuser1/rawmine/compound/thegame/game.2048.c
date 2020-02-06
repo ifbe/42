@@ -1,4 +1,6 @@
 #include "libuser.h"
+#define DATBUF buf0
+#define DATLEN data1
 void new2048(void*);
 void left2048(void*);
 void right2048(void*);
@@ -39,16 +41,19 @@ static void the2048_modify(struct entity* act, u8* buf)
 static void the2048_delete(struct entity* act, u8* buf)
 {
 	if(0 == act)return;
-	act->buf = 0;
+	if(act->DATBUF){
+		memorydelete(act->DATBUF);
+		act->DATBUF = 0;
+	}
 }
 static void the2048_create(struct entity* act, u8* buf)
 {
 	if(0 == act)return;
 
-	act->buf = memorycreate(0x1000, 0);
-	act->len = 0;
+	act->DATBUF = memorycreate(0x1000, 0);
+	act->DATLEN = 0;
 
-	new2048(act->buf);
+	new2048(act->DATBUF);
 }
 
 
@@ -61,7 +66,7 @@ static void the2048_draw_pixel(
 	u32 color;
 	int x,y,x0,y0,x1,y1;
 	int cx, cy, ww, hh;
-	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
+	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
 
 	if(sty)
 	{
@@ -125,7 +130,7 @@ static void the2048_draw_gl41(
 	float* vu = geom->f.vt;
 	gl41solid_rect(ctx, 0x444444, vc, vr, vf);
 
-	tab = (void*)(act->buf) + (act->len)*16;
+	tab = (void*)(act->DATBUF) + (act->DATLEN)*16;
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
@@ -169,9 +174,9 @@ static void the2048_draw_json(
 	struct entity* win, struct style* sty)
 {
 	int x,y;
-	int len = win->len;
-	u8* buf = win->buf;
-	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
+	int len = win->rawlen;
+	u8* buf = win->rawbuf;
+	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
 
 	len += mysnprintf(buf+len, 0x100000-len, "{\"2048\" : ");
 	for(y=0;y<4;y++)
@@ -183,15 +188,14 @@ static void the2048_draw_json(
 	}//fory
 	len += mysnprintf(buf+len, 0x100000-len, "}\n");
 
-	win->len = len;
+	win->rawlen = len;
 }
 static void the2048_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 	int x,y;
-	u8 (*tab)[4];
-	tab = (void*)(act->buf) + (act->len)*16;
+	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
 
 	//<head>
 	htmlprintf(win, 1,
@@ -218,7 +222,7 @@ static void the2048_draw_tui(
 	struct entity* win, struct style* sty)
 {
 	int x,y;
-	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
+	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
 
 	for(y=0;y<4;y++)
 	{
@@ -233,7 +237,7 @@ static void the2048_draw_cli(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	u8 (*tab)[4] = (void*)(act->buf) + (act->len)*16;
+	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
 
 	say("2048(%x,%x,%x,%x)\n", win, act, sty, pin);
 	say("%d	%d	%d	%d\n",
@@ -271,9 +275,9 @@ static void the2048_move(struct entity* act, int op)
 	u8* p;
 	u8* q;
 
-	p = (void*)(act->buf) + 16*(act->len);
-	(act->len) = ((act->len)+1)%4;
-	q = (void*)(act->buf) + 16*(act->len);
+	p = (void*)(act->DATBUF) + 16*(act->DATLEN);
+	(act->DATLEN) = ((act->DATLEN)+1)%4;
+	q = (void*)(act->DATBUF) + 16*(act->DATLEN);
 	for(j=0;j<16;j++)q[j] = p[j];
 
 	if('f' == op)up2048(q);
@@ -293,7 +297,7 @@ static void the2048_event(struct entity* act, struct event* ev)
 	if(_char_ == ev->what)
 	{
 		switch(ev->why){
-		case 0x8:act->len = ((act->len)+15)%16;break;
+		case 0x8:act->DATLEN = ((act->DATLEN)+15)%16;break;
 		case 'w':the2048_move(act, 'f');break;
 		case 's':the2048_move(act, 'n');break;
 		case 'd':the2048_move(act, 'r');break;
@@ -329,15 +333,13 @@ static void the2048_read(struct halfrel* self, struct halfrel* peer, struct half
 
 	act = self->pchip;slot = self->pfoot;
 	win = peer->pchip;geom = peer->pfoot;
-	if(stack){
+	if(stack && ('v' == len)){
 		//wnd -> cam, cam -> world
 		struct entity* wnd;struct style* area;
 		struct entity* wrd;struct style* camg;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		if('v' == len){
-			the2048_draw_gl41(act,slot, win,geom, wnd,area);
-		}
+		the2048_draw_gl41(act,slot, win,geom, wnd,area);
 	}
 	else{
 		switch(win->fmt){

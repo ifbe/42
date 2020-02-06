@@ -176,16 +176,6 @@ static void hexedit_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"hex\" style=\"width:50%%;height:100px;float:left;background-color:#a8a7d9;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->len = len;
 }
 static void hexedit_draw_tui(
 	struct entity* act, struct style* pin,

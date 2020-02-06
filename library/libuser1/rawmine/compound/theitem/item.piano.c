@@ -58,8 +58,8 @@ static void piano_char(struct entity* act, u8* ch)
 		default:break;
 	}
 
-	piano_gen(act->buf, f);
-	relationwrite(act, _spk_, 0, 0, act->buf, 16384*2);
+	piano_gen(act->buf0, f);
+	relationwrite(act, _spk_, 0, 0, act->buf0, 16384*2);
 }
 static void piano_event(struct entity* act, struct event* ev)
 {
@@ -339,8 +339,8 @@ static void piano_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int len = win->rawlen;
+	u8* buf = win->rawbuf;
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
@@ -348,7 +348,7 @@ static void piano_draw_html(
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
-	win->len = len;
+	win->rawlen = len;
 }
 static void piano_draw_tui(
 	struct entity* act, struct style* pin,
@@ -411,14 +411,17 @@ static void piano_modify(struct entity* act)
 static void piano_delete(struct entity* act)
 {
 	if(0 == act)return;
-	memorydelete(act->buf);
+	if(act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
+	}
 }
 static void piano_create(struct entity* act)
 {
 	if(0 == act)return;
 
-	act->buf = memorycreate(0x100000, 0);
-	if(0 == act->buf)return;
+	act->buf0 = memorycreate(0x100000, 0);
+	if(0 == act->buf0)return;
 }
 
 

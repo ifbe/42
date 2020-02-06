@@ -2,6 +2,10 @@
 #define _mic_ hex32('m','i','c',0)
 #define _pcm_ hex32('p','c','m',0)
 #define SLICE 16
+#define DATBUF buf0
+#define DATLEN data1
+#define TABBUF buf2
+#define TABLEN data3
 //libsoft1
 void fft(float* real, float* imag, int k);
 void ifft(float* real, float* imag, int k);
@@ -34,7 +38,7 @@ static void oscillo_draw_pixel(
 	int x,y;
 	int cx, cy, ww, hh;
 	short* pcm;
-	struct perframe* frame = act->buf;
+	struct perframe* frame = act->buf0;
 	float* real = frame[cur].real;
 	float* imag = frame[cur].imag;
 	float* amp = frame[cur].amp;
@@ -55,7 +59,7 @@ static void oscillo_draw_pixel(
 
 	if(0x30 == haha)
 	{
-		pcm = (act->buf)+0x80000;
+		pcm = (act->buf0)+0x80000;
 		for(x=0;x<0x2000;x++)
 		{
 			drawline(win, 0xffffff,
@@ -109,7 +113,7 @@ static void oscillo_draw_gl41(
 	float* vu = geom->f.vt;
 	gl41line_rect(ctx, 0xffff00, vc, vr, vf);
 
-	tab = act->buf;
+	tab = act->TABBUF;
 	if(0 == tab)return;
 	//printmemory(tab, 8*4);
 
@@ -131,37 +135,6 @@ static void oscillo_draw_gl41(
 			gl41line(ctx, 0xffffff, ta, tb);
 		}
 	}
-
-/*	int x;
-	float a,c,s,t;
-	vec3 tc, tr, tf, tu;
-	struct perframe* frame = act->buf;
-	float* real = frame[cur].real;
-	float* imag = frame[cur].imag;
-	float* amp = frame[cur].amp;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
-
-	for(x=0;x<512;x++)
-	{
-		a = x*tau/512;
-		c = cosine(a);
-		s = sine(a);
-		t = 1.0 - amp[x]*10.0;
-
-		tc[0] = vc[0] + vr[0]*c + vf[0]*s;
-		tc[1] = vc[1] + vr[1]*c + vf[1]*s;
-		tc[2] = vc[2] + vr[2]*c + vf[2]*s;
-		c *= t;
-		s *= t;
-
-		tr[0] = vc[0] + vr[0]*c + vf[0]*s;
-		tr[1] = vc[1] + vr[1]*c + vf[1]*s;
-		tr[2] = vc[2] + vr[2]*c + vf[2]*s;
-		gl41line(win, 0xffffff, tc, tr);
-	}*/
 }
 static void oscillo_draw_json(
 	struct entity* act, struct style* pin,
@@ -172,38 +145,11 @@ static void oscillo_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"oscillo\" style=\"width:50%%;height:100px;float:left;background-color:#7ae129;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->len = len;
 }
 static void oscillo_draw_tui(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int x,y;
-	int w = win->stride;
-	int h = win->height;
-	u8* p = (u8*)(win->buf);
-	struct perframe* frame = act->buf;
-	float* real = frame[cur].real;
-	float* imag = frame[cur].imag;
-	float* amp = frame[cur].amp;
-
-	for(x=0;x<w;x++)
-	{
-		y = h - (int)(real[x] * (float)h / 65536.0);
-		for(;y<h;y++)
-		{
-			p[((y*w + x)<<2) + 3] =  0x2;
-		}
-	}
 }
 static void oscillo_draw_cli(
 	struct entity* act, struct style* pin,
@@ -221,18 +167,18 @@ void oscillo_data(struct entity* act, int type, void* buf, int len)
 	void** tab;
 	say("@oscillo_write.pcm: %d\n", len);
 
-	idx = act->len;
-	tab = act->buf;
+	idx = act->TABLEN;
+	tab = act->TABBUF;
 	tab[idx] = buf;
-	act->len = (idx+1) % SLICE;
+	act->TABLEN = (idx+1) % SLICE;
 }
 void oscillo_pcm(struct entity* ent, struct supply* sup)
 {
 	int j;
 	struct pcmdata* pcm;
-	if(0 == ent->buf0)return;
+	if(0 == ent->DATBUF)return;
 //say("@oscillo_pcm\n");
-	pcm = ent->buf0 + 44 - 0x10;
+	pcm = ent->DATBUF + 44 - 0x10;
 	pcm->fmt = hex32('s','1','6',0);
 	pcm->chan = 1;
 	pcm->rate = 44100;
@@ -331,15 +277,15 @@ static void oscillo_create(struct entity* act, u8* arg)
 	void* buf;
 	void** tab;
 
-	act->len = 0;
-	tab = act->buf = memorycreate(0x1000, 0);
+	act->TABLEN = 0;
+	tab = act->TABBUF = memorycreate(0x1000, 0);
 
 	if(arg){
-		buf = act->buf0 = memorycreate(0x100000, 0);
+		buf = act->DATBUF = memorycreate(0x100000, 0);
 		openreadclose(arg, 0, buf, 0x100000);
 
 		for(j=0;j<SLICE;j++)tab[j] = buf+44 + j*1024;
-		act->len = SLICE;
+		act->TABLEN = SLICE;
 	}
 }
 

@@ -147,7 +147,7 @@ static void weiqi_draw_gl41(
 		gl41line(ctx, 0x222222, tc, tr);
 	}
 
-	u8* data = act->buf;
+	u8* data = act->buf0;
 	k = 0;
 	tr[0] = vr[0]/19;
 	tr[1] = vr[1]/19;
@@ -215,7 +215,7 @@ static void weiqi_draw_tui(
 	int x,y,j,k,ret,color;
 	int width = win->stride;
 	int height = win->height;
-	u8* p = (u8*)(win->buf);
+	u8* p = (u8*)(win->buf0);
 
 	for(y=0;y<19;y++)
 	{
@@ -366,7 +366,7 @@ static void weiqi_modify(struct entity* act)
 static void weiqi_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(_copy_ == act->type)memorydelete(act->buf0);
 }
 static void weiqi_create(struct entity* act, void* str)
 {
@@ -386,7 +386,7 @@ static void weiqi_create(struct entity* act, void* str)
 	for(ret=0;ret<19*19;ret+=19)printmemory(buf+ret, 19);
 
 	//success
-	act->buf = buf;
+	act->buf0 = buf;
 }
 
 

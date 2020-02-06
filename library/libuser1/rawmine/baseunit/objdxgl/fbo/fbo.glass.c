@@ -143,8 +143,14 @@ static void glass_modify(struct entity* act)
 static void glass_delete(struct entity* act)
 {
 	if(0 == act)return;
-	memorydelete(act->buf);
-	act->buf = 0;
+	if(act->CTXBUF){
+		memorydelete(act->CTXBUF);
+		act->CTXBUF = 0;
+	}
+	if(act->CAMBUF){
+		memorydelete(act->CAMBUF);
+		act->CAMBUF = 0;
+	}
 }
 static void glass_create(struct entity* act, void* str)
 {

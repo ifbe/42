@@ -1,11 +1,7 @@
 #include "libuser.h"
+#define DATBUF buf0
+#define DATLEN data1
 int qrcode_generate(void* src, void* dst, int len);
-
-
-
-
-static int slen;
-static u8 databuf[49*49];
 
 
 
@@ -14,8 +10,9 @@ static void qrcode_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
+	u8* sbuf;
 	u32 color;
-	int x,y;
+	int x,y,slen;
 	int x1,y1,x2,y2;
 	int cx, cy, ww, hh;
 	if(sty)
@@ -33,11 +30,13 @@ static void qrcode_draw_pixel(
 		hh = win->height/2;
 	}
 
+	sbuf = act->DATBUF;
+	slen = act->DATLEN;
 	for(y=0;y<slen;y++)
 	{
 		for(x=0;x<slen;x++)
 		{
-			if( databuf[(y*slen)+x] == 0 )color=0;
+			if( sbuf[(y*slen)+x] == 0 )color=0;
 			else color=0xffffffff;
 
 			x1 = cx + (x*ww*2/slen) - ww;
@@ -57,11 +56,7 @@ static void qrcode_draw_gl41(
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
-	u32 rgb;
-	int x,y,w,h;
-	u8 (*tab)[4];
-	vec3 tc, tr, tf, tu, f;
-
+	vec3 tc, tr, tf, tu;
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
@@ -74,11 +69,15 @@ static void qrcode_draw_gl41(
 	tf[0] = vf[0] / 49;
 	tf[1] = vf[1] / 49;
 	tf[2] = vf[2] / 49;
+
+	int x,y,rgb;
+	u8* sbuf = act->DATBUF;
+	int slen = act->DATLEN;
 	for(y=0;y<49;y++)
 	{
 		for(x=0;x<49;x++)
 		{
-			if( databuf[(y*slen)+x] == 0 )rgb = 0;
+			if( sbuf[(y*slen)+x] == 0 )rgb = 0;
 			else rgb = 0xffffffff;
 
 			tc[0] = vc[0] + (x-24)*vr[0]*2/49 + (y-24)*vf[0]*2/49;
@@ -97,16 +96,6 @@ static void qrcode_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"qrcode\" style=\"width:50%%;height:100px;float:left;background-color:#e127a9;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->len = len;
 }
 static void qrcode_draw_tui(
 	struct entity* act, struct style* pin,
@@ -115,8 +104,10 @@ static void qrcode_draw_tui(
 	int x,y;
 	int width = win->stride;
 	int height = win->height;
-	u8* p = (u8*)(win->buf);
+	u8* p = (u8*)(win->rawbuf);
 
+	u8* sbuf = act->DATBUF;
+	int slen = act->DATLEN;
 	for(y=0;y<100;y++)
 	{
 		if(y >= slen)break;
@@ -125,7 +116,7 @@ static void qrcode_draw_tui(
 		{
 			if(x >= slen)break;
 			if(x >= width/2)break;
-			if( databuf[(y*slen)+x] != 0 )continue;
+			if( sbuf[(y*slen)+x] != 0 )continue;
 
 			p[( (y*width+x*2)<<2 ) + 3] = 7;
 			p[( (y*width+x*2)<<2 ) + 7] = 7;
@@ -191,16 +182,14 @@ static void qrcode_modify(struct entity* act)
 static void qrcode_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(_copy_ == act->type)memorydelete(act->buf0);
 }
 static void qrcode_create(struct entity* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = databuf;
-	if(_copy_ == act->type)act->buf = memorycreate(49*49, 0);
-
-	slen=49;
-	qrcode_generate("haha",databuf,slen);
+	act->DATBUF = memorycreate(49*49, 0);
+	act->DATLEN = 49;
+	qrcode_generate("haha", act->DATBUF, act->DATLEN);
 }
 
 

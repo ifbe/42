@@ -161,14 +161,14 @@ static void pegged_modify(struct entity* act)
 static void pegged_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(_copy_ == act->type)memorydelete(act->buf0);
 }
 static void pegged_create(struct entity* act)
 {
 	int x,y;
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = data;
-	if(_copy_ == act->type)act->buf = memorycreate(49, 0);
+	if(_orig_ == act->type)act->buf0 = data;
+	if(_copy_ == act->type)act->buf0 = memorycreate(49, 0);
 
 	for(y=0;y<7;y++)
 	{

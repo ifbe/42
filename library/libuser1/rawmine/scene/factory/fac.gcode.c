@@ -1,6 +1,7 @@
 #include "libuser.h"
 #define GERBUF buf0
 #define DSTBUF buf1
+#define CNTBUF data2
 
 
 
@@ -92,7 +93,7 @@ static void gcode_create(struct entity* act, void* arg)
 		dst = act->DSTBUF = memorycreate(0x100000, 0);
 		cnt = gcode_parse(dst, buf);
 
-		act->len = cnt;
+		act->CNTBUF = cnt;
 		say("len=%x\n", 12*cnt);
 	}
 }
@@ -112,7 +113,7 @@ static void gcode_draw_gl41(
 	gl41line_rect(ctx, 0x404040, vc, vr, vf);
 
 	int j;
-	int cnt = act->len;
+	int cnt = act->CNTBUF;
 	float* buf = act->DSTBUF;
 	for(j=0;j<cnt-1;j++){
 		gl41line(ctx, 0xff00ff, &buf[j*3], &buf[j*3+3]);

@@ -1,5 +1,6 @@
 #include "libuser.h"
 #define CTXBUF buf0
+#define DATBUF buf1
 int copypath(u8* path, u8* data);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 //
@@ -35,7 +36,6 @@ static u8 infix[128];
 static u8 postfix[128];
 static u8 result[128];
 //
-static u8* databuf=0;
 static double centerx = 0.0;
 static double centery = 0.0;
 static double scale = 0.0;
@@ -191,7 +191,6 @@ static void wangge(struct entity* win)
 	}//横线
 
 }
-*/
 static void tuxiang(struct entity* win)
 {
 	int x, y;
@@ -200,7 +199,7 @@ static void tuxiang(struct entity* win)
 
 	int width = win->stride;
 	int height = win->height;
-	u32* buf = (u32*)(win->buf);
+	u32* buf = win->rawbuf;
 
 
 
@@ -252,6 +251,7 @@ static void tuxiang(struct entity* win)
 		}
 	}//result2img
 }
+*/
 static void sketchpad_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -260,7 +260,8 @@ static void sketchpad_draw_pixel(
 	int x,y,w,counter;
 	int cx, cy, ww, hh;
 	int stride = win->stride;
-	u32* buf = (u32*)(win->buf);
+	u32* buf = win->rawbuf;
+	u8* databuf = act->DATBUF;
 
 	if(sty)
 	{
@@ -333,8 +334,8 @@ static void sketchpad_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int len = win->rawlen;
+	u8* buf = win->rawbuf;
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
@@ -342,7 +343,7 @@ static void sketchpad_draw_html(
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
-	win->len = len;
+	win->rawlen = len;
 }
 static void sketchpad_draw_tui(
 	struct entity* act, struct style* pin,
@@ -351,10 +352,11 @@ static void sketchpad_draw_tui(
 	int x, y;
 	int value1, value2, counter;
 	double rx, ry, hello;
+	u8* databuf = act->DATBUF;
 
 	int width = win->stride;
 	int height = win->height;
-	u8* p = (u8*)(win->buf);
+	u8* p = win->rawbuf;
 
 	for(x=0;x<width*height*4;x++)p[x] = 0;
 	for(y=0;y<height;y++)
@@ -587,7 +589,7 @@ static void sketchpad_create(struct entity* act, void* str, int argc, u8** argv)
 	act->CTXBUF = memorycreate(0x200, 0);
 	sketchpad_ctxforwnd(act->CTXBUF, vs, fs);
 
-	act->buf = databuf = memorycreate(0x100000, 0);
+	act->DATBUF = memorycreate(0x100000, 0);
 	centerx = 0.00;
 	centery = 0.00;
 	scale = 1.00;

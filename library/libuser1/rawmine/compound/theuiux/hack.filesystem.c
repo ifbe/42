@@ -59,8 +59,8 @@ static void fs_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int len = win->rawlen;
+	u8* buf = win->rawbuf;
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
@@ -68,7 +68,7 @@ static void fs_draw_html(
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
-	win->len = len;
+	win->rawlen = len;
 }
 static void fs_draw_tui(
 	struct entity* act, struct style* pin,
@@ -136,13 +136,15 @@ static void fs_modify(struct entity* act)
 static void fs_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
+	}
 }
 static void fs_create(struct entity* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = fsbuf;
-	if(_copy_ == act->type)act->buf = memorycreate(0x1000, 0);
+	act->buf0 = memorycreate(0x1000, 0);
 }
 
 

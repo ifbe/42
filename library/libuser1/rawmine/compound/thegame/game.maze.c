@@ -33,7 +33,7 @@ static void maze_draw_pixel(
 		hh = win->height/2;
 	}
 
-	buf = act->buf;
+	buf = act->buf0;
 	for(y=0;y<HEIGHT;y++)
 	{
 		for(x=0;x<WIDTH;x++)
@@ -145,7 +145,7 @@ static void maze_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
-	u8* buf = act->buf;
+	u8* buf = act->buf0;
 
 	gl41solid_rect(ctx, 0, vc, vr, vf);
 	for(y=0;y<HEIGHT;y++)
@@ -292,15 +292,15 @@ static void maze_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int len = win->rawlen;
+	u8* buf = win->rawbuf;
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
 		"<div id=\"maze\" style=\"WIDTH:50%%;HEIGHT:100px;float:left;background-color:#444444;\">"
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-	win->len = len;
+	win->rawlen = len;
 }
 static void maze_draw_tui(
 	struct entity* act, struct style* pin,
@@ -308,8 +308,8 @@ static void maze_draw_tui(
 {
 	int x,y,stride;
 	u8* p;
-	u8* buf = act->buf;
-	u8* out = win->buf;
+	u8* buf = act->buf0;
+	u8* out = win->rawbuf;
 
 	stride = win->stride;
 	for(y=0;y<HEIGHT;y++)
@@ -327,7 +327,7 @@ static void maze_draw_cli(
 	struct entity* win, struct style* sty)
 {
 	int x,y;
-	u8* buf = act->buf;
+	u8* buf = act->buf0;
 	for(y=0;y<HEIGHT;y++)
 	{
 		for(x=0;x<WIDTH;x++)
@@ -407,22 +407,21 @@ static void maze_modify(struct entity* act)
 static void maze_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(act->buf)
-	{
-		memorydelete(act->buf);
-		act->buf = 0;
+	if(act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
 	}
 }
 static void maze_create(struct entity* act)
 {
 	if(0 == act)return;
-	act->buf = memorycreate(WIDTH*HEIGHT, 0);
+	act->buf0 = memorycreate(WIDTH*HEIGHT, 0);
 
 	act->ix0 = 31;
 	act->iy0 = -31;
 
-	maze_generate(act->buf, WIDTH, HEIGHT);
-	maze_solve(act->buf, WIDTH, HEIGHT);
+	maze_generate(act->buf0, WIDTH, HEIGHT);
+	maze_solve(act->buf0, WIDTH, HEIGHT);
 }
 
 

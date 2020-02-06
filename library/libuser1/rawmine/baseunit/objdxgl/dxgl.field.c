@@ -27,7 +27,7 @@ static void field_draw_gl41(
 	float* vt = geom->f.vt;
 	gl41line_prism4(wnd, 0xffffff, vc, vr, vf, vt);
 
-	vec = act->buf;
+	vec = act->buf0;
 	for(z=0;z<20;z++){
 	for(y=0;y<20;y++){
 	for(x=0;x<20;x++){
@@ -129,7 +129,7 @@ static void field_linkup(struct halfrel* self, struct halfrel* peer)
 	float ax,ay,az;
 
 	struct entity* act = (void*)(self->chip);
-	float* vec = act->buf;
+	float* vec = act->buf0;
 
 	struct fstyle* sty = (void*)(peer->foot);
 	float* vc = sty->vc;
@@ -163,10 +163,14 @@ static void field_modify(struct entity* act)
 }
 static void field_delete(struct entity* act)
 {
+	if(act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
+	}
 }
 static void field_create(struct entity* act)
 {
-	float* buf = act->buf = memorycreate(0x100000, 0);
+	float* buf = act->buf0 = memorycreate(0x100000, 0);
 }
 
 

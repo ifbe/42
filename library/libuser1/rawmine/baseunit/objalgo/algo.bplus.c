@@ -119,7 +119,7 @@ static void bplus_draw_pixel(
 	int hh = sty->f.vf[1];
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
-	node = act->buf;
+	node = act->buf0;
 	if(node == 0)return;
 	right = bplus_getparent(node, node);
 	if(right == 0)return;
@@ -141,16 +141,6 @@ static void bplus_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"bplus\" style=\"width:50%%;height:100px;float:left;background-color:#289467;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->len = len;
 }
 static void bplus_draw_tui(
 	struct entity* act, struct style* pin,
@@ -211,13 +201,13 @@ static void bplus_modify(struct entity* act)
 static void bplus_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(_copy_ == act->type)memorydelete(act->buf0);
 }
 static void bplus_create(struct entity* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = node;
-	if(_copy_ == act->type)act->buf = memorycreate(0x80*16, 0);
+	if(_orig_ == act->type)act->buf0 = node;
+	if(_copy_ == act->type)act->buf0 = memorycreate(0x80*16, 0);
 }
 
 

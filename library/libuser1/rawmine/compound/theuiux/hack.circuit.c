@@ -19,7 +19,7 @@ static void circuit_draw_pixel(
 	u32 c,val;
 	int x,y,z;
 	int cx, cy, ww, hh;
-	u8 (*data)[HEIGHT][WIDTH] = act->buf;
+	u8 (*data)[HEIGHT][WIDTH] = act->buf0;
 
 	if(sty)
 	{
@@ -80,7 +80,7 @@ static void circuit_draw_gl41(
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
 	float* vu = sty->f.vt;
-	u8 (*data)[HEIGHT][WIDTH] = act->buf;
+	u8 (*data)[HEIGHT][WIDTH] = act->buf0;
 
 	tu[0] = vu[0]/64;
 	tu[1] = vu[1]/64;
@@ -136,8 +136,8 @@ static void circuit_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int len = win->rawlen;
+	u8* buf = win->rawbuf;
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
@@ -145,7 +145,7 @@ static void circuit_draw_html(
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
-	win->len = len;
+	win->rawlen = len;
 }
 static void circuit_draw_tui(
 	struct entity* act, struct style* pin,
@@ -187,17 +187,18 @@ static void circuit_modify(struct entity* act)
 static void circuit_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(act->buf)memorydelete(act->buf);
+	if(act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
+	}
 }
 static void circuit_create(struct entity* act)
 {
 	int x,y,z,w;
 	u8 (*data)[HEIGHT][WIDTH];
-
 	if(0 == act)return;
-	act->buf = memorycreate(WIDTH*HEIGHT*LAYER, 0);
 
-	data = act->buf;
+	data = act->buf0 = memorycreate(WIDTH*HEIGHT*LAYER, 0);
 	for(z=0;z<LAYER;z++)
 	{
 		for(y=0;y<HEIGHT;y++)

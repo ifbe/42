@@ -4,37 +4,48 @@
 
 
 char* weather_glsl_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"uniform mat4 cammvp;\n"
-	"out mediump vec2 uvw;\n"
-	"void main()\n"
-	"{\n"
-		"uvw = texuvw;\n"
-		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
-	"}\n";
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec2 texuvw;\n"
+"uniform mat4 cammvp;\n"
+"out mediump vec2 uvw;\n"
+"void main(){\n"
+	"uvw = texuvw;\n"
+	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+"}\n";
 char* weather_glsl_f =
-	GLSL_VERSION
-	"uniform sampler2D tex0;\n"
-	"in mediump vec2 uvw;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"mediump float k = uvw.x*uvw.x+uvw.y*uvw.y;\n"
-		"FragColor = vec4(vec3(1.0,1.0,1.0)*k, 1.0);\n"
-		//"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
-		//"FragColor = vec4(uvw, 1.0, 1.0);\n"
-	"}\n";
-
-
-
-
-static void weather_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+GLSL_VERSION
+"uniform sampler2D tex0;\n"
+"in mediump vec2 uvw;\n"
+"out mediump vec4 FragColor;\n"
+"void main(){\n"
+	"mediump float k = uvw.x*uvw.x+uvw.y*uvw.y;\n"
+	"FragColor = vec4(vec3(1.0,1.0,1.0)*k, 1.0);\n"
+	//"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
+	//"FragColor = vec4(uvw, 1.0, 1.0);\n"
+"}\n";
+static void weather_ctxforwnd(struct glsrc* src)
 {
+	src->geometry = 3;
+	src->method = 'v';
+
+	//shader
+	src->vs = weather_glsl_v;
+	src->fs = weather_glsl_f;
+	src->shader_enq = 42;
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+	src->vbuf_enq = 0;
 }
+
+
+
+
 static void weather_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -59,6 +70,11 @@ static void weather_draw_gl41(
 			}
 		}
 	}
+}
+static void weather_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
 }
 static void weather_draw_json(
 	struct entity* act, struct style* pin,
@@ -96,38 +112,6 @@ static void weather_discon(struct halfrel* self, struct halfrel* peer)
 }
 static void weather_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct datapair* pair;
-	struct glsrc* src;
-	struct gldst* dst;
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-/*
-	//alloc
-	pair = alloc_winobj(win, 's');
-	src = &pair->src;
-	dst = &pair->dst;
-	pin->foot[0] = (u64)src;
-	sty->foot[0] = (u64)dst;
-
-	//
-	src->geometry = 3;
-	src->method = 'v';
-
-	//shader
-	src->vs = weather_glsl_v;
-	src->fs = weather_glsl_f;
-	src->shader_enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
-	src->vbuf_enq = 0;
-*/
 }
 
 
@@ -142,12 +126,13 @@ static void weather_modify(struct entity* act)
 static void weather_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(_copy_ == act->type)memorydelete(act->buf0);
 }
 static void weather_create(struct entity* act)
 {
 	if(0 == act)return;
-	act->buf = memorycreate(256, 0);
+	act->buf0 = memorycreate(0x200, 0);
+	weather_ctxforwnd(act->buf0);
 }
 
 

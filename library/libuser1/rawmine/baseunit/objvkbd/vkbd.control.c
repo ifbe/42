@@ -37,7 +37,7 @@ static void control_draw_pixel(
 		hh = win->height/2;
 	}
 
-	p = act->buf;
+	p = act->buf0;
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<8;x++)
@@ -102,7 +102,7 @@ static void control_draw_gl41(
 	tf[1] = vf[1]/8;
 	tf[2] = vf[2]/8;
 
-	p = act->buf;
+	p = act->buf0;
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<8;x++)
@@ -186,7 +186,10 @@ static void control_modify(struct entity* act)
 static void control_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(act->buf)memorydelete(act->buf);
+	if(act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
+	}
 }
 static void control_create(struct entity* act)
 {
@@ -198,7 +201,7 @@ static void control_create(struct entity* act)
 	if(0 == p)return;
 
 	for(j=0;j<32;j++)p[j] = statusbuffer[j];
-	act->buf = p;
+	act->buf0 = p;
 }
 
 

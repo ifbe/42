@@ -7,7 +7,7 @@ u32 getrandom();
 void draw8bit_rect(struct entity* win, u8 rgb, int x0, int y0, int x1, int y1)
 {
 	int x,y;
-	u8* buf = win->buf;
+	u8* buf = win->rawbuf;
 	for(y=y0;y<=y1;y++)
 	{
 		for(x=x0;x<=x1;x++)
@@ -28,7 +28,7 @@ void drawicon_1(struct entity* win, u32 rgb,
 	int width = win->width;
 	int height = win->height;
 	int stride = win->stride;
-	u32* fb = (u32*)(win->buf);
+	u32* fb = (u32*)(win->rawbuf);
 
 	for(y=y0;y<y1;y++)
 	{
@@ -85,7 +85,7 @@ void drawhyaline_rect(struct entity* win, u32 rgb,
 	int width = win->width;
 	int height = win->height;
 	int stride = win->stride;
-	u8* buf = (u8*)(win->buf);
+	u8* buf = (u8*)(win->rawbuf);
 
 	if(x1<=x2){startx=x1;endx=x2;}
 	else{startx=x2;endx=x1;}

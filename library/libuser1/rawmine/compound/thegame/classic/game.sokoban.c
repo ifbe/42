@@ -62,7 +62,10 @@ static void sokoban_modify(struct entity* act)
 static void sokoban_delete(struct entity* act)
 {
 	if(0 == act)return;
-	memorydelete(act->buf);
+	if(act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
+	}
 }
 static void sokoban_create(struct entity* act)
 {

@@ -3,10 +3,6 @@
 
 
 
-static u8 buffer[108];
-
-
-
 static void poker_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -68,15 +64,6 @@ static void poker_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"poker\" style=\"width:50%%;height:100px;float:left;background-color:#202020;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-	win->len = len;
 }
 static void poker_draw_tui(
 	struct entity* act, struct style* pin,
@@ -117,13 +104,15 @@ static void poker_modify(struct entity* act)
 static void poker_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
+	}
 }
 static void poker_create(struct entity* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = buffer;
-	if(_copy_ == act->type)act->buf = memorycreate(108, 0);
+	act->buf0 = memorycreate(108, 0);
 }
 
 

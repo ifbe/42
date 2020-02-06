@@ -124,7 +124,7 @@ static void skillbar_draw_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	if(0 == act->buf)return;
+	if(0 == act->buf0)return;
 
 	xmax = act->width;
 	if(xmax >= ww*2)xmax = ww*2;
@@ -133,8 +133,8 @@ static void skillbar_draw_pixel(
 	stride = win->stride;
 	for(y=0;y<ymax;y++)
 	{
-		dst = (win->buf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
-		src = (act->buf) + 4*y*(act->width);
+		dst = (win->buf0) + (cy-hh+y)*stride*4 + (cx-ww)*4;
+		src = (act->buf0) + 4*y*(act->width);
 		//say("y=%d,%llx,%llx\n",y,dst,src);
 		if('b' == ((win->fmt)&0xff))
 		{
@@ -163,7 +163,7 @@ static void skillbar_draw_gl41(
 	float* vu = geom->f.vt;
 	gl41line_rect(wnd, 0xff00ff, vc, vr, vf);
 
-	struct glsrc* src = act->buf;
+	struct glsrc* src = act->buf0;
 	float (*vbuf)[6] = (void*)(src->vbuf);
 
 	tr[0] = vr[0]/30;
@@ -269,8 +269,8 @@ static void skillbar_modify(struct entity* act)
 static void skillbar_delete(struct entity* act)
 {
 	if(0 == act)return;
-	memorydelete(act->buf);
-	act->buf = 0;
+	memorydelete(act->buf0);
+	act->buf0 = 0;
 }
 static void skillbar_create(struct entity* act, void* str)
 {
@@ -278,7 +278,7 @@ static void skillbar_create(struct entity* act, void* str)
 	struct glsrc* src;
 	if(0 == act)return;
 
-	src = act->buf = memorycreate(0x200, 0);
+	src = act->buf0 = memorycreate(0x200, 0);
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";
 	skillbar_ctxforwnd(src, str);
 }

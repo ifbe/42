@@ -1,4 +1,6 @@
 #include "libuser.h"
+#define STRBUF buf0
+#define DATBUF buf1
 void printhtmlbody(u8* buf, int len);
 
 
@@ -10,8 +12,8 @@ static void browser_draw_pixel(
 {
 	int x0,y0,x1,y1;
 	int cx, cy, ww, hh;
-	struct str* str = act->idx;
-	struct str* dat = act->buf;
+	struct str* str = act->STRBUF;
+	struct str* dat = act->DATBUF;
 	if(sty)
 	{
 		cx = sty->f.vc[0];
@@ -49,8 +51,8 @@ static void browser_draw_gl41(
 	struct entity* win, struct style* sty)
 {
 	vec3 tc,tr,tf,tu;
-	struct str* str = act->idx;
-	struct str* dat = act->buf;
+	struct str* str = act->STRBUF;
+	struct str* dat = act->DATBUF;
 	float* vc = sty->f.vc;
 	float* vr = sty->f.vr;
 	float* vf = sty->f.vf;
@@ -114,7 +116,7 @@ static void browser_event(
 	struct str* dat;
 	if(_char_ != ev->what)return;
 
-	str = act->idx;
+	str = act->STRBUF;
 	len = str->len;
 	buf = str->buf;
 	if(0xd == ev->why)
@@ -165,7 +167,7 @@ static void browser_data(
 	u8* tmp;
 	struct str* dat;
 
-	dat = act->buf;
+	dat = act->buf0;
 	cnt = dat->len;
 	tmp = dat->buf;
 
@@ -203,7 +205,14 @@ static void browser_modify(struct entity* act)
 static void browser_delete(struct entity* act)
 {
 	if(0 == act)return;
-	memorydelete(act->buf);
+	if(act->STRBUF){
+		memorydelete(act->STRBUF);
+		act->STRBUF = 0;
+	}
+	if(act->DATBUF){
+		memorydelete(act->DATBUF);
+		act->DATBUF = 0;
+	}
 }
 static void browser_create(struct entity* act)
 {
@@ -211,13 +220,11 @@ static void browser_create(struct entity* act)
 	u8* buf;
 	if(0 == act)return;
 
-	buf = memorycreate(0x1000, 0);
+	buf = act->STRBUF = memorycreate(0x1000, 0);
 	for(j=0;j<0x1000;j++)buf[j] = 0;
-	act->idx = buf;
 
-	buf = memorycreate(0x100000, 0);
+	buf = act->DATBUF = memorycreate(0x100000, 0);
 	for(j=0;j<0x1000;j++)buf[j] = 0;
-	act->buf = buf;
 }
 
 

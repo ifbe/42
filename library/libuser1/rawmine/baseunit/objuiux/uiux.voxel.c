@@ -2,6 +2,8 @@
 #define _mic_ hex32('m','i','c',0)
 #define _pcm_ hex32('p','c','m',0)
 #define slice 16
+#define TABBUF buf2
+#define TABLEN data3
 
 
 
@@ -29,7 +31,7 @@ static void voxel_draw_gl41(
 	float* vu = geom->f.vt;
 	gl41line_prism4(wnd, 0xffff00, vc, vr, vf, vu);
 
-	tab = act->buf;
+	tab = act->TABBUF;
 	if(0 == tab)return;
 	//printmemory(tab, 8*4);
 
@@ -76,16 +78,6 @@ static void voxel_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"voxel\" style=\"width:50%%;height:100px;float:left;background-color:#7ae129;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->len = len;
 }
 static void voxel_draw_tui(
 	struct entity* act, struct style* pin,
@@ -108,13 +100,13 @@ void voxel_data(struct entity* act, int type, void* buf, int len)
 	void** tab;
 	say("@voxel_write.pcm: %d,%llx\n", len, buf);
 
-	idx = act->len;
-	tab = act->buf;
+	idx = act->TABLEN;
+	tab = act->TABBUF;
 
 	for(j=15;j>0;j--)tab[j] = tab[j-1];
 	tab[0] = buf;
 
-	act->len = (idx+1) % slice;
+	act->TABLEN = (idx+1) % slice;
 }
 
 
@@ -130,12 +122,12 @@ static void voxel_read(struct halfrel* self, struct halfrel* peer, struct halfre
 	struct entity* scn;struct style* geom;
 	struct entity* act;struct style* slot;
 
-	if(stack){
+	if(stack && ('v' == len)){
 		act = self->pchip;slot = self->pfoot;
 		scn = peer->pchip;geom = peer->pfoot;
 		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)voxel_draw_gl41(act,slot, scn,geom, wnd,area);
+		voxel_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
 }
 static void voxel_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
@@ -171,8 +163,8 @@ static void voxel_delete(struct entity* act)
 }
 static void voxel_create(struct entity* act)
 {
-	act->buf = memorycreate(0x1000, 0);
-	act->len = 0;
+	act->TABBUF = memorycreate(0x1000, 0);
+	act->TABLEN = 0;
 }
 
 

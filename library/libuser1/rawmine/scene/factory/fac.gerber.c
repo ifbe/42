@@ -1,6 +1,7 @@
 #include "libuser.h"
 #define GERBUF buf0
 #define DSTBUF buf1
+#define CNTBUF data2
 
 
 
@@ -176,7 +177,7 @@ static void gerber_create(struct entity* act, void* arg)
 		dst = act->DSTBUF = memorycreate(0x100000, 0);
 		cnt = rs274x_parse(dst, buf);
 
-		act->len = cnt;
+		act->CNTBUF = cnt;
 		say("len=%x\n", 4*4*cnt);
 
 		rs274x_edge(dst, cnt);
@@ -199,7 +200,7 @@ static void gerber_draw_gl41(
 	float* vt = geom->f.vt;
 	gl41line_rect(ctx, 0xffffff, vc, vr, vf);
 
-	int cnt = act->len;
+	int cnt = act->CNTBUF;
 	float* buf = act->DSTBUF;
 	for(j=0;j<3;j++){
 		tc[j] = (buf[cnt*stride+j]+buf[(cnt+1)*stride+j])/2 - vt[j]/10000.0;

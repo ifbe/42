@@ -288,23 +288,6 @@ static void xiangqi_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int x,y,c;
-	int len = win->len;
-	u8* buf = win->buf;
-
-	len += mysnprintf(buf+len, 0x100000-len, "{\"xiangqi\" : ");
-	for(y=0;y<10;y++)
-	{
-		for(x=0;x<9;x++)
-		{
-			c = data[y][x];
-			if(0 == c)c = '0';
-			len += mysnprintf(buf+len, 0x100000-len, "\"%c\",", c);
-		}//forx
-	}//fory
-	len += mysnprintf(buf+len, 0x100000-len, "}\n");
-
-	win->len = len;
 }
 static void xiangqi_draw_html(
 	struct entity* act, struct style* pin,
@@ -339,7 +322,7 @@ static void xiangqi_draw_tui(
 	int x,y,color;
 	int width = win->stride;
 	int height = win->height;
-	u8* buf = (u8*)(win->buf);
+	u8* buf = win->rawbuf;
 	u8* q;
 
 	for(y=0;y<10;y++)
@@ -548,11 +531,11 @@ static void xiangqi_modify(struct entity* act, u8* buf)
 static void xiangqi_delete(struct entity* act, u8* buf)
 {
 	if(0 == act)return;
-	if((_COPY_ == act->type)&&(0 != act->buf))
+	if(0 != act->buf0)
 	{
-		memorydelete(act->buf);
+		memorydelete(act->buf0);
+		act->buf0 = 0;
 	}
-	act->buf = 0;
 }
 static void xiangqi_create(struct entity* act, void* str)
 {
@@ -563,6 +546,7 @@ say("@xiangqi_create:%llx\n",str);
 
 	if(_orig_ == act->type)buf = data;
 	else if(_copy_ == act->type)buf = memorycreate(10*9, 0);
+	act->buf0 = buf;
 
 	if(str)ret = xiangqi_import(buf, str);
 	if((0==str)|(ret<=0))xiangqi_generate(buf);
@@ -572,7 +556,6 @@ say("@xiangqi_create:%llx\n",str);
 	act->ix0 = act->iy0 = -1;
 	act->ixn = act->iyn = 0;
 	act->iw0 = 0;
-	act->buf = buf;
 }
 
 

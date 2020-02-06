@@ -138,8 +138,8 @@ static void font_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int len = win->rawlen;
+	u8* buf = win->rawbuf;
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
@@ -147,7 +147,7 @@ static void font_draw_html(
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
-	win->len = len;
+	win->rawlen = len;
 }
 static void font_draw_tui(
 	struct entity* act, struct style* pin,
@@ -243,13 +243,12 @@ static void font_modify(struct entity* act)
 static void font_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
 }
 static void font_create(struct entity* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = buffer;
-	if(_copy_ == act->type)act->buf = memorycreate(16, 0);
+	if(_orig_ == act->type)act->buf0 = buffer;
+	if(_copy_ == act->type)act->buf0 = memorycreate(16, 0);
 }
 
 

@@ -187,7 +187,7 @@ static void codeimg_draw_pixel(
 		hh = win->height/2;
 	}
 	u32* src = (u32*)(act->RGBABUF);
-	u32* dst = (u32*)(win->buf);
+	u32* dst = (u32*)(win->rawbuf);
 
 	scale_image(src, dst,
 		1024, 1024, 0, 0, 1024, 1024,

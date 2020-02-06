@@ -138,8 +138,8 @@ static void calculator_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int len = win->rawlen;
+	u8* buf = win->rawbuf;
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
@@ -147,7 +147,7 @@ static void calculator_draw_html(
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
-	win->len = len;
+	win->rawlen = len;
 }
 static void calculator_draw_tui(
 	struct entity* act, struct style* pin,
@@ -326,13 +326,12 @@ static void calculator_modify(struct entity* act)
 static void calculator_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
 }
 static void calculator_create(struct entity* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = buffer;
-	if(_copy_ == act->type)act->buf = memorycreate(128, 0);
+	if(_orig_ == act->type)act->buf0 = buffer;
+	if(_copy_ == act->type)act->buf0 = memorycreate(128, 0);
 
 	buffer[0] = '1';
 	buffer[1] = '+';

@@ -175,7 +175,7 @@ void drawascii(struct entity* win, u32 rgb, int xx, int yy, u8 ch)
 	int width = win->width;
 	int height = win->height;
 	int stride = win->stride;
-	u32* screen = (u32*)(win->buf);
+	u32* screen = (u32*)(win->rawbuf);
 
 	if((xx<0)|(xx+8>width)|(yy<0)|(yy+16>height))return;
 	if((ch<=0x20)|(ch>=0x80))ch = 0x20;
@@ -358,7 +358,7 @@ void drawascii_fit(struct entity* win, u32 rgb, int x0, int y0, int x1, int y1, 
 	int width = win->width;
 	int height = win->height;
 	int stride = win->stride;
-	u32* screen = (u32*)(win->buf);
+	u32* screen = (u32*)(win->rawbuf);
 
 	if((ch<=0x20)|(ch>=0x80))ch = 0x20;
 	points = asciitable + (ch<<4);

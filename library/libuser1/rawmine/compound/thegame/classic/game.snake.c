@@ -109,7 +109,7 @@ void snake_draw_tui(
 {
 	int j,t;
 	int stride = win->stride;
-	char* p = (char*)(win->buf);
+	char* p = win->rawbuf;
 
 	t = buf[0].x + buf[0].y*stride;
 	p[t<<2] = '@';
@@ -176,13 +176,16 @@ static void snake_modify(struct entity* act)
 static void snake_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
+	}
 }
 static void snake_create(struct entity* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = buf;
-	if(_copy_ == act->type)act->buf = memorycreate(WIDTH*HEIGHT*4, 0);
+	if(_orig_ == act->type)act->buf0 = buf;
+	if(_copy_ == act->type)act->buf0 = memorycreate(WIDTH*HEIGHT*4, 0);
 
 	snake_generate(buf, WIDTH, HEIGHT);
 }

@@ -1,6 +1,12 @@
 #include "libuser.h"
 #define CLIENT data0
 #define SERVER data1
+#define DATBUF buf2
+#define IDXBUF buf3
+
+
+
+
 struct uartterm
 {
 	u8* buf;
@@ -71,7 +77,7 @@ static void terminal_draw_pixel(
 	if(act->orel0)
 	{
 		drawhyaline_rect(win, 0x111111, cx-ww, cy-hh, cx+ww, cy+hh);
-		drawterm(win, act->idx, cx-ww, cy-hh, cx+ww, cy+hh);
+		drawterm(win, act->IDXBUF, cx-ww, cy-hh, cx+ww, cy+hh);
 	}
 	else
 	{
@@ -91,8 +97,8 @@ static void terminal_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int len = win->rawlen;
+	u8* buf = win->rawbuf;
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
@@ -100,7 +106,7 @@ static void terminal_draw_html(
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
-	win->len = len;
+	win->rawlen = len;
 }
 static void terminal_draw_tui(
 	struct entity* act, struct style* pin,
@@ -112,13 +118,13 @@ static void terminal_draw_tui(
 	u8* buf;
 	struct uartterm* term;
 
-	term = act->idx;
+	term = act->IDXBUF;
 	w = win->width;
 	h = win->height;
 	if(w > term->width)w = term->width;
 	if(h > term->height)h = term->height;
 
-	p = (void*)(win->buf);
+	p = (void*)(win->rawbuf);
 	q = (void*)(term->buf);
 	for(y=0;y<h;y++)
 	{
@@ -244,7 +250,6 @@ static void terminal_modify(struct entity* act)
 static void terminal_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(0 == act->buf)memorydelete(act->buf);
 }
 static void terminal_create(struct entity* act, void* arg, int argc, u8** argv)
 {
@@ -255,9 +260,7 @@ static void terminal_create(struct entity* act, void* arg, int argc, u8** argv)
 	act->SERVER = 0;
 	if(0 == arg)return;
 
-	act->idx = memorycreate(sizeof(struct uartterm), 0);
-	act->buf = memorycreate(0x100000, 0);
-	term = act->idx;
+	term = act->IDXBUF = memorycreate(sizeof(struct uartterm), 0);
 	term->curx = 0;
 	term->cury = 0;
 	term->left = 0;
@@ -271,7 +274,7 @@ static void terminal_create(struct entity* act, void* arg, int argc, u8** argv)
 	term->bg = 0;
 	term->fg = 7;
 	term->len = 0x100000;
-	term->buf = act->buf;
+	term->buf = memorycreate(0x100000, 0);
 }
 
 

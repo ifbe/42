@@ -232,7 +232,7 @@ static void rtscam_delete(struct entity* act)
 }
 static void rtscam_create(struct entity* act, void* addr)
 {
-	act->buf = memorycreate(64, 0);
+	act->buf0 = memorycreate(64, 0);
 }
 
 

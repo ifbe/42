@@ -1,5 +1,6 @@
 #include "libuser.h"
 #define CTXBUF buf0
+#define DATBUF buf1
 #define _cam_ hex32('c','a','m',0)
 #define _yuv_ hex32('y','u','v',0)
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
@@ -12,39 +13,30 @@ void yuyv2rgba(
 
 
 char* video_glsl_v =
-	GLSL_VERSION
-	"layout(location = 0)in mediump vec3 vertex;\n"
-	"layout(location = 1)in mediump vec2 texuvw;\n"
-	"uniform mat4 cammvp;\n"
-	"out mediump vec2 uv;\n"
-	"void main()\n"
-	"{\n"
-		"uv = texuvw;\n"
-		"gl_Position = cammvp * vec4(vertex, 1.0);\n"
-	"}\n";
-char* video_glsl_t = 0;
-char* video_glsl_g = 0;
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec2 texuvw;\n"
+"uniform mat4 cammvp;\n"
+"out mediump vec2 uv;\n"
+"void main(){\n"
+	"uv = texuvw;\n"
+	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+"}\n";
 char* video_glsl_f = 
-	GLSL_VERSION
-	"uniform sampler2D tex0;\n"
-	"in mediump vec2 uv;\n"
-	"out mediump vec4 FragColor;\n"
-	"void main()\n"
-	"{\n"
-		"mediump vec3 yuv = texture(tex0, uv).rgb;\n"
-		"mediump float y = yuv.r;\n"
-		"mediump float u = yuv.g - 0.5;\n"
-		"mediump float v = yuv.b - 0.5;\n"
-		"mediump float r = y + 1.402*v;\n"
-		"mediump float g = y - 0.34414*u - 0.71414*v;\n"
-		"mediump float b = y + 1.1772*u;\n"
-		"FragColor = vec4(r, g, b, 1.0);\n"
-	"}\n";
-//directx shader
-char* video_hlsl_v = 0;
-char* video_hlsl_t = 0;
-char* video_hlsl_g = 0;
-char* video_hlsl_f = 0;
+GLSL_VERSION
+"uniform sampler2D tex0;\n"
+"in mediump vec2 uv;\n"
+"out mediump vec4 FragColor;\n"
+"void main(){\n"
+	"mediump vec3 yuv = texture(tex0, uv).rgb;\n"
+	"mediump float y = yuv.r;\n"
+	"mediump float u = yuv.g - 0.5;\n"
+	"mediump float v = yuv.b - 0.5;\n"
+	"mediump float r = y + 1.402*v;\n"
+	"mediump float g = y - 0.34414*u - 0.71414*v;\n"
+	"mediump float b = y + 1.1772*u;\n"
+	"FragColor = vec4(r, g, b, 1.0);\n"
+"}\n";
 static void video_ctxforwnd(struct glsrc* src)
 {
 	src->geometry = 3;
@@ -188,10 +180,10 @@ void video_draw_pixel(
 		hh = win->height/2;
 	}
 
-	src = (u8*)(act->idx);
+	src = (u8*)(act->DATBUF);
 	if(0 == src)return;
 
-	dst = (u8*)(win->buf);
+	dst = (u8*)(win->rawbuf);
 	if(0 == dst)return;
 
 	yuyv2rgba(
@@ -223,8 +215,6 @@ void video_draw_cli(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	u8* src = act->idx;
-	say("src@%llx\n", src);
 }
 void video_event(
 	struct entity* act, struct style* pin,
@@ -246,12 +236,12 @@ static void video_read(struct halfrel* self, struct halfrel* peer, struct halfre
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
 
-	if(stack){
+	if(stack && ('v' == len)){
 		act = self->pchip;part = self->pfoot;
 		win = peer->pchip;geom = peer->pfoot;
 		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)video_draw_gl41(act,part, win,geom, wnd,area);
+		video_draw_gl41(act,part, win,geom, wnd,area);
 	}
 }
 static void video_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)

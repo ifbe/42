@@ -33,7 +33,7 @@ static void palette_draw_pixel(
 		hh = win->height/2;
 	}
 	int w = win->stride;
-	u32* buf = (u32*)(win->buf);
+	u32* buf = (u32*)(win->rawbuf);
 	u32 pal;
 
 	type = (win->fmt)&0xffffff;
@@ -69,8 +69,8 @@ static void palette_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->len;
-	u8* buf = win->buf;
+	int len = win->rawlen;
+	u8* buf = win->rawbuf;
 
 	len += mysnprintf(
 		buf+len, 0x100000-len,
@@ -78,7 +78,7 @@ static void palette_draw_html(
 	);
 	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
 
-	win->len = len;
+	win->rawlen = len;
 }
 static void palette_draw_tui(
 	struct entity* act, struct style* pin,
@@ -181,13 +181,16 @@ static void palette_modify(struct entity* act)
 static void palette_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(act->buf0){
+		memorydelete(act->buf0);
+		act->buf0 = 0;
+	}
 }
 static void palette_create(struct entity* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = buffer;
-	if(_copy_ == act->type)act->buf = memorycreate(16, 0);
+	if(_orig_ == act->type)act->buf0 = buffer;
+	if(_copy_ == act->type)act->buf0 = memorycreate(16, 0);
 }
 
 

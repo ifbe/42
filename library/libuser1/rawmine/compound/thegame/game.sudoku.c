@@ -59,7 +59,7 @@ static void sudoku_draw_pixel(
 		hh = win->height/2;
 	}
 
-	u8* data = act->buf;
+	u8* data = act->buf0;
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
@@ -95,7 +95,7 @@ static void sudoku_draw_gl41(
 	float* vf = geom->f.vf;
 	float* vu = geom->f.vt;
 
-	u8* data = act->buf;
+	u8* data = act->buf0;
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
@@ -150,7 +150,7 @@ static void sudoku_draw_html(
 	struct entity* win, struct style* sty)
 {
 	int x,y;
-	u8* data = act->buf;
+	u8* data = act->buf0;
 
 	//<head>
 	htmlprintf(win, 1,
@@ -178,9 +178,9 @@ static void sudoku_draw_tui(
 {
 	int x,y,j,k,ret,color;
 	int stride = win->stride;
-	char* p = (char*)(win->buf);
+	char* p = win->rawbuf;
 
-	u8* data = act->buf;
+	u8* data = act->buf0;
 	for(y=0;y<9;y++)
 	{
 		for(x=0;x<9;x++)
@@ -208,7 +208,7 @@ static void sudoku_draw_cli(
 	struct entity* win, struct style* sty)
 {
 	int x,y;
-	u8* data = act->buf;
+	u8* data = act->buf0;
 
 	for(y=0;y<9;y++)
 	{
@@ -311,7 +311,6 @@ static void sudoku_modify(struct entity* act, u8* buf)
 static void sudoku_delete(struct entity* act, u8* buf)
 {
 	if(0 == act)return;
-	memorydelete(act->buf);
 }
 static void sudoku_create(struct entity* act, void* str)
 {
@@ -320,7 +319,7 @@ static void sudoku_create(struct entity* act, void* str)
 	if(0 == act)return;
 
 	//malloc
-	buf = memorycreate(81, 0);
+	buf = act->buf0 = memorycreate(81, 0);
 	if(0 == buf)return;
 
 	//read
@@ -332,7 +331,6 @@ static void sudoku_create(struct entity* act, void* str)
 	sudoku_solve(buf);
 	for(ret=0;ret<81;ret+=9)printmemory(buf+ret, 9);
 
-	act->buf = buf;
 	act->ix0 = 0;
 	act->iy0 = 0;
 }

@@ -90,7 +90,7 @@ static void calib3d_data(
 	int j;
 	int t = act->vlen;
 	float* f = act->vbuf;
-	struct mag_minmax* priv = act->buf;
+	struct mag_minmax* priv = act->buf0;
 	//say("@calib3d_data:%d\n", len);
 
 	for(j=0;j<len;j+=3){
@@ -212,7 +212,7 @@ static void calib3d_create(struct entity* act, void* str)
 		uu[j*2 + 1] = j+1;
 	}
 
-	priv = act->buf = memorycreate(sizeof(struct mag_minmax), 0);
+	priv = act->buf0 = memorycreate(sizeof(struct mag_minmax), 0);
 	priv->xmin = 99999.0;
 	priv->xmax = -99999.0;
 	priv->ymin = 99999.0;

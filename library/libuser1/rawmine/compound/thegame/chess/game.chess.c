@@ -192,14 +192,14 @@ static void chess_modify(struct entity* act)
 static void chess_delete(struct entity* act)
 {
 	if(0 == act)return;
-	if(_copy_ == act->type)memorydelete(act->buf);
+	if(_copy_ == act->type)memorydelete(act->buf0);
 }
 static void chess_create(struct entity* act)
 {
 	int j,k;
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf = buffer;
-	if(_copy_ == act->type)act->buf = memorycreate(64, 0);
+	if(_orig_ == act->type)act->buf0 = buffer;
+	if(_copy_ == act->type)act->buf0 = memorycreate(64, 0);
 
 	for(k=0;k<8;k++)
 	{
