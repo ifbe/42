@@ -933,8 +933,10 @@ struct supply
 		struct pcmdata** pcm_data;
 		struct gl41data* glsolid;
 		struct gl41data** gl_solid;
-		void* rawctx;	//raw
-		int rawlen;
+		void* htmlctx;	//html
+		int jsonlen;	//json
+		int rgbalen;	//rgba
+		int textlen;	//text
 	};
 	union{
 		u64 data3;
@@ -943,7 +945,10 @@ struct supply
 		struct pcmdata** pcm_what;
 		struct gl41data* glopaque;
 		struct gl41data** gl_opaque;
-		void* rawbuf;	//2d
+		void* htmlbuf;	//html
+		void* jsonbuf;	//json
+		void* rgbabuf;	//rgba
+		void* textbuf;	//text
 	};
 
 	//[80,bf]: func
@@ -1058,36 +1063,41 @@ struct entity
 		u64 data0;
 		float fdata0;
 		double ddata0;
+
 		void* buf0;
-		void* vbuf;		//vert buf
 		void** gl_camera;
 	};
 	union{
 		u64 data1;
 		float fdata1;
 		double ddata1;
+
 		void* buf1;
-		void* ibuf;		//indx buf
 		void** gl_light;
 	};
 	union{
 		u64 data2;
 		float fdata2;
 		double ddata2;
+
 		void* buf2;
-		void* nbuf;		//node list
 		void** gl_solid;
-		void* rawctx;	//raw
-		int rawlen;
+		void* htmlctx;	//html
+		int jsonlen;	//json
+		int rgbalen;	//rgba
+		int textlen;	//text
 	};
 	union{
 		u64 data3;
 		float fdata3;
 		double ddata3;
+
 		void* buf3;
-		void* wbuf;		//wire list
 		void** gl_opaque;
-		void* rawbuf;	//raw
+		void* htmlbuf;	//html
+		void* jsonbuf;	//json
+		void* rgbabuf;	//rgba
+		void* textbuf;	//text
 	};
 
 	//[80,bf]: func

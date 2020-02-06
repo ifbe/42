@@ -33,7 +33,7 @@ static void palette_draw_pixel(
 		hh = win->height/2;
 	}
 	int w = win->stride;
-	u32* buf = (u32*)(win->rawbuf);
+	u32* buf = (u32*)(win->rgbabuf);
 	u32 pal;
 
 	type = (win->fmt)&0xffffff;
@@ -69,16 +69,6 @@ static void palette_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->rawlen;
-	u8* buf = win->rawbuf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"palette\" style=\"width:50%%;height:100px;float:left;background-color:#f624ab;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->rawlen = len;
 }
 static void palette_draw_tui(
 	struct entity* act, struct style* pin,

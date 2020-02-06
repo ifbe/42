@@ -178,7 +178,7 @@ static void sudoku_draw_tui(
 {
 	int x,y,j,k,ret,color;
 	int stride = win->stride;
-	char* p = win->rawbuf;
+	char* p = win->textbuf;
 
 	u8* data = act->buf0;
 	for(y=0;y<9;y++)

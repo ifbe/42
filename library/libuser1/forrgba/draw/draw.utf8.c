@@ -72,7 +72,7 @@ void drawunicode(struct entity* win, u32 rgb, int xx, int yy, u32 unicode)
 	int width = win->width;
 	int height = win->height;
 	int stride = win->stride;
-	u32* buf = (u32*)(win->rawbuf);
+	u32* buf = (u32*)(win->rgbabuf);
 
 	if(0 == utf8table)
 	{
@@ -105,7 +105,7 @@ void drawunicode_fit(struct entity* win, u32 rgb, int x0, int y0, int x1, int y1
 	int width = win->width;
 	int height = win->height;
 	int stride = win->stride;
-	u32* buf = (u32*)(win->rawbuf);
+	u32* buf = (u32*)(win->rgbabuf);
 
 	if(0 == utf8table)return;
 	points = utf8table + 32*(unicode&0xffff);

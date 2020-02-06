@@ -104,7 +104,7 @@ static void qrcode_draw_tui(
 	int x,y;
 	int width = win->stride;
 	int height = win->height;
-	u8* p = (u8*)(win->rawbuf);
+	u8* p = (u8*)(win->textbuf);
 
 	u8* sbuf = act->DATBUF;
 	int slen = act->DATLEN;

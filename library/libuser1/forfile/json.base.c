@@ -17,7 +17,7 @@ int jsonnode_delete(struct entity* win)
 }
 int jsonnode_create(struct entity* win, void* str)
 {
-	win->rawlen = 0;
-	win->rawbuf = memorycreate(0x100000, 0);
+	win->jsonlen = 0;
+	win->jsonbuf = memorycreate(0x100000, 0);
 	return 0;
 }

@@ -1,4 +1,8 @@
 #include "libuser.h"
+#define nbuf buf0
+#define wbuf buf1
+#define vbuf buf2
+#define ibuf buf3
 #define _data_ hex32('d','a','t','a')
 struct mag_minmax{
 	float xmin;

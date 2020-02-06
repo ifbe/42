@@ -322,7 +322,7 @@ static void xiangqi_draw_tui(
 	int x,y,color;
 	int width = win->stride;
 	int height = win->height;
-	u8* buf = win->rawbuf;
+	u8* buf = win->textbuf;
 	u8* q;
 
 	for(y=0;y<10;y++)

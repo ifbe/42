@@ -12,7 +12,7 @@ void button_draw_pixel(
 	int time;
 	int w = ctx->width;
 	int h = ctx->height;
-	u32* pix = ctx->rawbuf;
+	u32* pix = ctx->rgbabuf;
 
 	time = 511*(timeread()%1000000)/1000000;
 	if(time > 255)time = 511-time;

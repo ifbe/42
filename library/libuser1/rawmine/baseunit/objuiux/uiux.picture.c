@@ -161,7 +161,7 @@ static void picture_draw_pixel(
 	stride = win->stride;
 	for(y=0;y<ymax;y++)
 	{
-		dst = (win->rawbuf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
+		dst = (win->rgbabuf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
 		src = (act->CTXBUF) + 4*y*(act->width);
 		//say("y=%d,%llx,%llx\n",y,dst,src);
 		if('b' == ((win->fmt)&0xff))

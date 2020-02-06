@@ -156,7 +156,7 @@ static void tetris_draw_tui(
 	int x,y;
 	int w = win->stride;
 	int h = win->height;
-	char* p = win->rawbuf;
+	char* p = win->textbuf;
 
 	for(x=0;x<w*h*4;x++)p[x]=0;
 	if(h>=HEIGHT)

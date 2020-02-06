@@ -97,16 +97,6 @@ static void terminal_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->rawlen;
-	u8* buf = win->rawbuf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"term\" style=\"width:50%%;height:100px;float:left;background-color:#f0ac2b;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->rawlen = len;
 }
 static void terminal_draw_tui(
 	struct entity* act, struct style* pin,
@@ -124,7 +114,7 @@ static void terminal_draw_tui(
 	if(w > term->width)w = term->width;
 	if(h > term->height)h = term->height;
 
-	p = (void*)(win->rawbuf);
+	p = (void*)(win->textbuf);
 	q = (void*)(term->buf);
 	for(y=0;y<h;y++)
 	{

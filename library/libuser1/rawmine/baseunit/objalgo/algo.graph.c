@@ -1,5 +1,8 @@
 #include "libuser.h"
-#define PI 3.1415926535897932384626433832795028841971693993151
+#define nbuf buf0
+#define wbuf buf1
+#define vbuf buf2
+#define ibuf buf3
 void forcedirected_2d(void*, int, void*, int, void*, int);
 void forcedirected_3d(void*, int, void*, int, void*, int);
 

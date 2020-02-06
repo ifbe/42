@@ -292,15 +292,6 @@ static void maze_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->rawlen;
-	u8* buf = win->rawbuf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"maze\" style=\"WIDTH:50%%;HEIGHT:100px;float:left;background-color:#444444;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-	win->rawlen = len;
 }
 static void maze_draw_tui(
 	struct entity* act, struct style* pin,
@@ -309,7 +300,7 @@ static void maze_draw_tui(
 	int x,y,stride;
 	u8* p;
 	u8* buf = act->buf0;
-	u8* out = win->rawbuf;
+	u8* out = win->textbuf;
 
 	stride = win->stride;
 	for(y=0;y<HEIGHT;y++)

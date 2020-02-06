@@ -183,7 +183,7 @@ void video_draw_pixel(
 	src = (u8*)(act->DATBUF);
 	if(0 == src)return;
 
-	dst = (u8*)(win->rawbuf);
+	dst = (u8*)(win->rgbabuf);
 	if(0 == dst)return;
 
 	yuyv2rgba(

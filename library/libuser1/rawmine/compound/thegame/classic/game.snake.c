@@ -109,7 +109,7 @@ void snake_draw_tui(
 {
 	int j,t;
 	int stride = win->stride;
-	char* p = win->rawbuf;
+	char* p = win->textbuf;
 
 	t = buf[0].x + buf[0].y*stride;
 	p[t<<2] = '@';

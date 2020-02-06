@@ -174,8 +174,8 @@ static void the2048_draw_json(
 	struct entity* win, struct style* sty)
 {
 	int x,y;
-	int len = win->rawlen;
-	u8* buf = win->rawbuf;
+	int len = win->jsonlen;
+	u8* buf = win->jsonbuf;
 	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
 
 	len += mysnprintf(buf+len, 0x100000-len, "{\"2048\" : ");
@@ -188,7 +188,7 @@ static void the2048_draw_json(
 	}//fory
 	len += mysnprintf(buf+len, 0x100000-len, "}\n");
 
-	win->rawlen = len;
+	win->jsonlen = len;
 }
 static void the2048_draw_html(
 	struct entity* act, struct style* pin,

@@ -5,7 +5,7 @@
 
 void background_html(struct entity* win)
 {
-	struct str** ctx = win->rawctx;
+	struct str** ctx = win->htmlctx;
 
 	ctx[0]->len = mysnprintf(
 		ctx[0]->buf, 0x10000,
@@ -29,7 +29,7 @@ void foreground_html(struct entity* win)
 {
 	int len;
 	u8* buf;
-	struct str** ctx = win->rawctx;
+	struct str** ctx = win->htmlctx;
 
 	len = ctx[1]->len;
 	buf = ctx[1]->buf + len;
@@ -72,7 +72,7 @@ int htmlnode_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 	htmlnode_traverse(win);
 	foreground_html(win);
 
-	ctx = win->rawctx;
+	ctx = win->htmlctx;
 	for(j=0;j<4;j++)buf[j] = ctx[j];
 	return 0;
 }
@@ -108,7 +108,7 @@ int htmlnode_create(struct entity* win, void* str)
 	ctx[2] = buf+0x20000;
 	ctx[3] = buf+0x30000;
 
-	win->rawctx = ctx;
-	win->rawbuf = buf;
+	win->htmlctx = ctx;
+	win->htmlbuf = buf;
 	return 0;
 }

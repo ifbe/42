@@ -77,16 +77,6 @@ static void pwmtool_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->rawlen;
-	u8* buf = win->rawbuf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"pwmtool\" style=\"width:50%%;height:100px;float:left;background-color:#e8194a;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->rawlen = len;
 }
 static void pwmtool_draw_tui(
 	struct entity* act, struct style* pin,

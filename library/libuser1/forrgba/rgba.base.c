@@ -15,7 +15,7 @@ void background_pixel(struct supply* win)
 	int h = win->height;
 	int s = win->stride;
 	int len = s*h;
-	u32* buf = (u32*)(win->rawbuf);
+	u32* buf = (u32*)(win->rgbabuf);
 
 	for(x=0;x<len;x++)buf[x] = 0xff000000;
 }

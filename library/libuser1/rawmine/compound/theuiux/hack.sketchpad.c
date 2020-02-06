@@ -260,7 +260,7 @@ static void sketchpad_draw_pixel(
 	int x,y,w,counter;
 	int cx, cy, ww, hh;
 	int stride = win->stride;
-	u32* buf = win->rawbuf;
+	u32* buf = win->rgbabuf;
 	u8* databuf = act->DATBUF;
 
 	if(sty)
@@ -334,16 +334,6 @@ static void sketchpad_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int len = win->rawlen;
-	u8* buf = win->rawbuf;
-
-	len += mysnprintf(
-		buf+len, 0x100000-len,
-		"<div id=\"sketch\" style=\"width:50%%;height:100px;float:left;background-color:#e712a9;\">"
-	);
-	len += mysnprintf(buf+len, 0x100000-len, "</div>\n");
-
-	win->rawlen = len;
 }
 static void sketchpad_draw_tui(
 	struct entity* act, struct style* pin,
@@ -356,7 +346,7 @@ static void sketchpad_draw_tui(
 
 	int width = win->stride;
 	int height = win->height;
-	u8* p = win->rawbuf;
+	u8* p = win->rgbabuf;
 
 	for(x=0;x<width*height*4;x++)p[x] = 0;
 	for(y=0;y<height;y++)
