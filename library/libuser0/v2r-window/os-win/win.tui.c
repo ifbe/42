@@ -256,7 +256,7 @@ void windowdraw(struct supply* win)
 	int x,y;
 	u8 ch, bg=0, fg=7;
 	u8* p;
-	u8* buf = (u8*)(win->buf);
+	u8* buf = (u8*)(win->textbuf);
 	int width = win->width;
 	int height = win->height;
 	gotoxy(0, 0);
@@ -350,7 +350,7 @@ void windowcreate(struct supply* w)
 	w->width = w->stride = width;
 	w->height = height;
 
-	w->buf = malloc(0x100000);
+	w->textbuf = malloc(0x100000);
 	threadcreate(windowthread, w);
 }
 

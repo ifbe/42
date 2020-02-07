@@ -15,8 +15,6 @@ static int termcount = 0;
 
 void windowread(struct supply* win)
 {
-	//draw frame
-	entityread_all(win);
 }
 void windowwrite(struct supply* win)
 {
@@ -38,9 +36,8 @@ void windowdelete(struct supply* w)
 }
 void windowcreate(struct supply* w)
 {
+	w->type = _wnd_;
 	w->fmt = _cli_;
-	w->buf = 0;
-	w->len = 0;
 
 	w->width = w->stride = 80;
 	w->height = 25;

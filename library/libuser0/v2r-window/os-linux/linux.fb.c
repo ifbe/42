@@ -34,7 +34,7 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	rgbanode_read(win, 0);
 
 	//update screen
-	canvas = (void*)(win->buf);
+	canvas = (void*)(win->rgbabuf);
 	if(16 == bpp)
 	{
 		for(x=0;x<xmax*ymax;x++)
@@ -131,7 +131,7 @@ void windowcreate(struct supply* sup, void* arg)
 	sup->height = ymax;
 	sup->stride = fboneline/4;
 
-	sup->buf = malloc(2048*1024*4);
+	sup->rgbabuf = malloc(2048*1024*4);
 	//for(j=0;j<16;j++)w->input[j].id = 0xffff;
 }
 

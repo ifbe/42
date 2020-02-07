@@ -74,7 +74,7 @@ void windowdraw(struct supply* wnd)
 	u8* buf;
 	printf("\033[H\033[J");
 
-	buf = (u8*)(wnd->buf);
+	buf = (u8*)(wnd->textbuf);
 	for(y=0;y<wnd->height;y++)
 	{
 		for(x=0;x<wnd->width;x++)
@@ -172,13 +172,10 @@ void windowcreate(struct supply* w)
 	w->type = hex32('w','i','n',0);
 	w->fmt = hex32('t','u','i',0);;
 
-	w->len = 0;
-	w->buf = 0;
-
 	w->width = w->stride = 80;
 	w->height = 25;
 
-	w->buf = malloc(0x100000);
+	w->textbuf = malloc(0x100000);
 	threadcreate(uievent, w);
 }
 

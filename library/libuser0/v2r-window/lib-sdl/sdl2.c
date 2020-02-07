@@ -40,7 +40,7 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	rgbanode_read(wnd, 0);
 
 	//update screen
-	SDL_UpdateTexture(wnd->sdltex, NULL, wnd->rawbuf, (wnd->width)*4);
+	SDL_UpdateTexture(wnd->sdltex, NULL, wnd->rgbabuf, (wnd->width)*4);
 	SDL_RenderClear(wnd->sdlren);
 	SDL_RenderCopy(wnd->sdlren, wnd->sdltex, NULL, NULL);
 	SDL_RenderPresent(wnd->sdlren);
@@ -188,7 +188,7 @@ void windowcreate(struct supply* wnd)
 	wnd->fbwidth= wnd->fbstride = 1024;
 	wnd->fbheight = 768;
 
-	wnd->rawbuf = malloc(2048*2048*4);
+	wnd->rgbabuf = malloc(2048*2048*4);
 
 
 

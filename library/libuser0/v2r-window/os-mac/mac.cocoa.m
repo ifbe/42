@@ -25,7 +25,7 @@ void windowwrite()
 {
 	//CGColorSpaceRef colorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
 	//cgcxtref = CGBitmapContextCreate(
-	//	win->buf, 512, 512,
+	//	win->rgbabuf, 512, 512,
 	//	8, 2048,
 	//	colorspace, kCGImageAlphaPremultipliedLast
 	//);
@@ -53,7 +53,7 @@ void windowcreate(struct supply* w)
 	w->width = w->stride = 512;
 	w->height = 512;
 
-	w->buf = malloc(2048*1024*4);
+	w->rgbabuf = malloc(2048*1024*4);
 
 	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 

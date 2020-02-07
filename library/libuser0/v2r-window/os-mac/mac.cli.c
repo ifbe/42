@@ -10,8 +10,6 @@
 
 void windowread(struct supply* win)
 {
-	//draw frame
-	entityread_all(win);
 }
 void windowwrite()
 {
@@ -33,11 +31,8 @@ void windowdelete(struct supply* w)
 }
 void windowcreate(struct supply* w)
 {
-	w->type = _sup_;
+	w->type = _wnd_;
 	w->fmt = _cli_;
-
-	w->len = 0;
-	w->buf = 0;
 
 	w->width = w->stride = 80;
 	w->height = 25;

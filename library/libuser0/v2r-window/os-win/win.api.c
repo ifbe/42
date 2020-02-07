@@ -61,7 +61,7 @@ int windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		win->hdc,
 		0, 0,w, h,		//dst: x,y,w,h
 		0, 0,0, h,		//src: x,y,0,h
-		win->buf, &info, DIB_RGB_COLORS
+		win->rgbabuf, &info, DIB_RGB_COLORS
 	);
 
 	//cleanup events
@@ -138,7 +138,7 @@ int windowcreate(struct supply* win)
 
 	win->hwnd = 0;
 	win->hdc = 0;
-	win->buf = malloc(2048*2048*4);
+	win->rgbabuf = malloc(2048*2048*4);
 
 	//for(j=0;j<16;j++)win->input[j].w0 = 0xffff;
 

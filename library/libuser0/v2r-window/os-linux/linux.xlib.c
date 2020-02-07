@@ -102,7 +102,7 @@ void windowevent(struct supply* win, XEvent xev)
 
 		win->ximage = XCreateImage(
 			dsp, visual, 24, ZPixmap,
-			0, win->buf,
+			0, win->rgbabuf,
 			x, y, 32, 0
 		);
 
@@ -280,10 +280,10 @@ void windowcreate(struct supply* win)
 	win->height = 768;
 
 	//
-	win->buf = malloc(0x1000000);
+	win->rgbabuf = malloc(0x1000000);
 	win->ximage = XCreateImage(
 		dsp, visual, 24, ZPixmap, 0,
-		win->buf, 512, 512,
+		win->rgbabuf, 512, 512,
 		32, 0
 	);
 
