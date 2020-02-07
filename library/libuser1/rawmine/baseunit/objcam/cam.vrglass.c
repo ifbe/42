@@ -46,120 +46,7 @@ static int vrglass_draw_gl41(
 		gl41line_rect(wnd, 0xff0000, tc, vr, vt);
 	}
 	return 0;
-}/*
-static int vrglass_event111(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
-	struct event* ev, int len)
-{
-	int id;
-	int x0,y0,x1,y1;
-	short* t;
-	float* vc = act->camera.vc;
-
-	if(_kbd_ == ev->what)
-	{
-		if(0x4b == ev->why)vc[0] -= 10;
-		else if(0x4d == ev->why)vc[0] += 10;
-		else if(0x50 == ev->why)vc[2] -= 10;
-		else if(0x48 == ev->why)vc[2] += 10;
-	}
-	else if(0x2b70 == ev->what)
-	{
-		id = (ev->why)>>48;
-		if('f' == id)vc[1] += 10;
-		if('b' == id)vc[1] -= 10;
-	}
-	else if(0x4070 == ev->what)
-	{
-		id = (ev->why)>>48;
-		if('l' == id)id = 10;
-		else if('r' == id)id = 11;
-		else if(id > 10)return 0;
-		if(0 == win->input[id].z0)return 0;
-
-		x0 = win->input[id].xn;
-		y0 = win->input[id].yn;
-		x1 = (ev->why)&0xffff;
-		y1 = ((ev->why)>>16)&0xffff;
-
-		vc[0] += x1-x0;
-		vc[2] -= y1-y0;
-	}
-	else if(joy_left == (ev->what & joy_mask))
-	{
-		t = (void*)ev;
-		//printmemory(t, 16);
-		//say("%d,%d\n", t[0], t[1]);
-		if(t[3] & joyl_left)		//x-
-		{
-			vc[0] -= 10;
-		}
-		if(t[3] & joyl_right)		//x+
-		{
-			vc[0] += 10;
-		}
-		if(t[3] & joyl_down)		//y-
-		{
-			vc[2] -= 10;
-		}
-		if(t[3] & joyl_up)			//y+
-		{
-			vc[2] += 10;
-		}
-		if(t[3] & joyl_trigger)		//z-
-		{
-			vc[1] -= 10.0;
-		}
-		if(t[3] & joyl_bumper)		//z+
-		{
-			vc[1] += 10.0;
-		}
-		if(t[3] & joyl_thumb)		//w-
-		{
-			vc[0] = 0.0;
-			vc[1] = -2000.0;
-			vc[2] = 0.0;
-		}
-		if(t[3] & joyl_select)		//w+
-		{
-		}
-
-		x0 = t[0];
-		y0 = t[1];
-		if((x0 < -4096) | (x0 > 4096) | (y0 < -4096) | (y0 > 4096))
-		{
-			vc[0] += x0/1000.0;
-			vc[2] += y0/1000.0;
-		}
-	}
-	//say("%f,%f,%f\n",vc[0], vc[1], vc[2]);
-
-	win->camera.vc[0] = vc[0];
-	win->camera.vc[1] = vc[1];
-	win->camera.vc[2] = vc[2];
-
-	win->camera.vn[0] = 0.0;
-	win->camera.vn[1] = -1000.0 - win->camera.vc[1];
-	win->camera.vn[2] = 0.0;
-
-	win->camera.vl[0] = -win->width/2 - win->camera.vc[0];
-	win->camera.vl[1] = 0.0;
-	win->camera.vl[2] = 0.0;
-
-	win->camera.vr[0] = win->width/2 - win->camera.vc[0];
-	win->camera.vr[1] = 0.0;
-	win->camera.vr[2] = 0.0;
-
-	win->camera.vb[0] = 0.0;
-	win->camera.vb[1] = 0.0;
-	win->camera.vb[2] = -win->height/2 - win->camera.vc[2];
-
-	win->camera.vt[0] = 0.0;
-	win->camera.vt[1] = 0.0;
-	win->camera.vt[2] = win->height/2 - win->camera.vc[2];
-	return 1;
-}*/
+}
 static int vrglass_event(struct entity* act, struct fstyle* pin, struct event* ev, int len)
 {
 	short* t;
@@ -171,6 +58,27 @@ static int vrglass_event(struct entity* act, struct fstyle* pin, struct event* e
 	relationsearch(act, _in_, &self, &peer);
 	obb = peer->pfoot;
 
+	if(0x4070 == ev->what){
+		if(0 == act->fwn)return 0;
+		t = (void*)ev;
+
+		obb->vq[0] += t[0] - act->fxn;
+		obb->vq[2] -= t[1] - act->fyn;
+		act->fxn = t[0];
+		act->fyn = t[1];
+		return 0;
+	}
+	if(0x2b70 == ev->what){
+		t = (void*)ev;
+		act->fxn = t[0];
+		act->fyn = t[1];
+		act->fwn = 1;
+		return 0;
+	}
+	if(0x2d70 == ev->what){
+		act->fwn = 0;
+		return 0;
+	}
 	if(joy_left == (ev->what&joy_mask)){
 		t = (void*)ev;
 		if(t[3] & joyl_left   )obb->vq[0] -= 10.0;
@@ -197,6 +105,21 @@ static int vrglass_event(struct entity* act, struct fstyle* pin, struct event* e
 
 
 
+void vrglass_ratio(
+	struct entity* wrd, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	struct fstyle* rect = &area->fshape;
+	float dx = rect->vq[0] * wnd->fbwidth;
+	float dy = rect->vq[1] * wnd->fbheight;
+
+	struct fstyle* shape = &geom->fshape;
+	float lr = vec3_getlen(shape->vr);
+	float lt = vec3_getlen(shape->vt);
+
+	int j;
+	for(j=0;j<3;j++)shape->vt[j] *= dy*lr/dx/lt;
+}
 void vrglass_frustum(struct fstyle* frus, struct fstyle* plane, vec3 eye)
 {
 	float x,y,z,n;
@@ -347,6 +270,7 @@ static void vrglass_read_bywnd(struct halfrel* self, struct halfrel* peer, struc
 	wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
 
 	if('v' == len){
+		vrglass_ratio(wrd, geom, wnd, area);
 		vrglass_frustum(&geom->frustum, &geom->fshape, geom->fshape.vq);
 		vrglass_matrix(act,slot, wrd,geom);
 
