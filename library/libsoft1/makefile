@@ -196,7 +196,8 @@ libflow/stream/stream.test.dbghex.c \
 libflow/stream/stream.test.goslow.c \
 libflow/stream/stream.test.fftpcm.c \
 libflow/stream/stream.test.fftrgb.c \
-libflow/stream/stream.test.rotate.c \
+libflow/stream/stream.image.rotate.c \
+libflow/stream/stream.image.scale.c \
 libphys/phys.elec.c \
 libphys/phys.mech.c \
 artery.c

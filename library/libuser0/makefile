@@ -81,9 +81,9 @@ efifb:target
 linux:
 	$(compiler) $(cflag) w2w-cmdline/linux/linux.stdio.c
 	$(compiler) $(cflag) w2w-systray/linux/linux.tray.c
-	$(compiler) $(cflag) r2v-micphone/linux/linux.pulsein.c
+	$(compiler) $(cflag) r2v-micphone/os-linux/linux.pulsein.c
 	$(compiler) $(cflag) v2r-speaker/os-linux/linux.pulseout.c
-	$(compiler) $(cflag) r2v-camera/linux/linux.v4l2.c
+	$(compiler) $(cflag) r2v-camera/os-linux/linux.v4l2.c
 
 .PHONY:linuxcli
 linuxcli:target linux
@@ -139,9 +139,9 @@ linuxsdl:target linux
 macos:
 	$(compiler) $(cflag) w2w-cmdline/mac/mac.stdio.c
 	$(compiler) $(cflag) w2w-systray/mac/mac.tray.c
-	$(compiler) $(cflag) r2v-micphone/mac/mac.aqin.c
+	$(compiler) $(cflag) r2v-micphone/os-mac/mac.aqin.c
 	$(compiler) $(cflag) v2r-speaker/os-mac/mac.aqout.c
-	$(compiler) $(cflag) r2v-camera/mac/mac.cam.c
+	$(compiler) $(cflag) r2v-camera/os-mac/mac.cam.c
 
 .PHONY:maccli
 maccli:target macos
@@ -187,9 +187,9 @@ macsdl:target macos
 windows:
 	$(compiler) $(cflag) w2w-cmdline/win/win.stdio.c
 	$(compiler) $(cflag) w2w-systray/win/win.tray.c
-	$(compiler) $(cflag) r2v-micphone/win/win.wavein.c
+	$(compiler) $(cflag) r2v-micphone/os-win/win.wavein.c
 	$(compiler) $(cflag) v2r-speaker/os-win/win.waveout.c
-	g++ $(cflag) -fno-rtti r2v-camera/win/win.dshow.cpp
+	g++ $(cflag) -fno-rtti r2v-camera/os-win/win.dshow.cpp
 
 .PHONY:wincli
 wincli:target windows

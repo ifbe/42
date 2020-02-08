@@ -44,6 +44,20 @@ fmt:poller
 
 
 <style>
+winslot{
+}
+wingeom{
+c: 0.0, 0.0, 1.0
+r: 0.96, 0.0, 0.0
+f: 0.0, 0.54, 0.0
+}
+
+eyeslot{
+}
+eyegeom{
+c: 0.0, -2.0, 1.0
+}
+
 skyslot{
 }
 skygeom{
@@ -80,10 +94,11 @@ q:1.0, 1.0
 
 
 <relation>
-(reality, 0, 0) -> (screen, 0, 0)
-(reality, 0, 0) -> (theeye, 0, 0)
+#reality depends on
+(reality, wingeom, 0) -> (screen, winslot, 0)
+(reality, eyegeom, 0) -> (theeye, eyeslot, 0)
 
-#scene depends on
+#virtual depends on
 (scene, skygeom, 0) -> (sky, skyslot, 0)
 (scene, itemgeom, 0) -> (tree, itemslot, 0)
 (scene, viewgeom, 0) -> (vrglass, viewslot, in)

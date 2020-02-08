@@ -42,3 +42,15 @@ int lowlevel_output(char* buf, int len)
 	}
 	return len;
 }
+
+
+
+
+int deleteserial()
+{
+	return 0;
+}
+int createserial()
+{
+	return 0;
+}

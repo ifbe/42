@@ -123,11 +123,13 @@ void updatearg(u32 shader, struct glsrc* src)
 	int iii;
 	u32 uuu;
 
+#ifndef __ANDROID__
 	if((src->routine_name) && (src->routine_detail)){
 		//iii = glGetSubroutineUniformLocation(shader, GL_FRAGMENT_SHADER, src->routine_name);
 		uuu = glGetSubroutineIndex(shader, GL_FRAGMENT_SHADER, src->routine_detail);
 		if(uuu < 256)glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &uuu);
 	}
+#endif
 
 	for(j=0;j<4;j++){
 		if(0 == src->arg[j].name)break;
@@ -231,13 +233,14 @@ void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41
 	glViewport(x0, y0, ww, hh);
 	glScissor(x0, y0, ww, hh);
 
-	//
-	glEnable(GL_SCISSOR_TEST);
-	glEnable(GL_DEPTH_TEST);
+#ifndef __ANDROID__
 	glPointSize(4.0*wnd->fbwidth/wnd->width);
+#endif
 	glLineWidth(4.0*wnd->fbwidth/wnd->width);
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_SCISSOR_TEST);
+	glEnable(GL_DEPTH_TEST);
 
 	//solid
 	for(j=0;j<64;j++){

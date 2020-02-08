@@ -17,11 +17,10 @@ void initobject(void*);
 void initshader(void*);
 void inittexture(void*);
 void initvertex(void*);
-int fbodelete(struct supply* win);
-int fbocreate(struct supply* win, char* arg);
-void hostctx_create(void*);
-void hostctx_update(void*);
-void hostctx_render(void*);
+void fullwindow_create(void*);
+void fullwindow_delete(void*);
+void fullwindow_read(void*);
+void fullwindow_write(void*, void*);
 void* getapp();
 void* pollenv();
 
@@ -144,10 +143,10 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 
 		windowprepare(thewin);
 
-		hostctx_create(thewin);
-		initshader(thewin);
-		inittexture(thewin);
-		initvertex(thewin);
+		//hostctx_create(thewin);
+		//initshader(thewin);
+		//inittexture(thewin);
+		//initvertex(thewin);
 
 		status = 1;
 	}
@@ -217,7 +216,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 					why[1] = 0x4070;
 					why[2] = (u64)thewin;
-					supplyevent((void*)why);
+					fullwindow_write(thewin, (void*)why);
 				}
 			}
 			else
@@ -231,7 +230,7 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 				why[0] = x+(y<<16)+(why[0]<<48);
 				why[1] = a;
 				why[2] = (u64)thewin;
-				supplyevent((void*)why);
+				fullwindow_write(thewin, (void*)why);
 			}
 		}
 		else if(AINPUT_SOURCE_TRACKBALL == source)
@@ -247,25 +246,11 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 void windowread(struct supply* win)
 {
 	u64 fmt = win->fmt;
-	if(status)
-	{
-		if(_fbo_ == fmt)
-		{
-			//say("@windowread fbo\n");
-			hostctx_render(win);
-		}
-		else
-		{
-			supply_rootread(win, 0, 0, 0, 0, 0);
-
-			hostctx_update(win);
-			hostctx_render(win);
-
-			eglSwapBuffers(display, surface);
-		}
+	if(status){
+		fullwindow_read(win);
+		eglSwapBuffers(display, surface);
 	}
-
-	if(_fbo_ != fmt)pollenv();
+	pollenv();
 }
 void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
 {
@@ -278,38 +263,19 @@ void windowstart()
 }
 void windowdelete(struct supply* win)
 {
-	if(_fbo_ == win->fmt)
-	{
-		fbodelete(win);
-	}
-	else
-	{
-	}
 }
 void windowcreate(struct supply* win)
 {
-	if(_fbo_ == win->fmt)
-	{
-		win->width  = win->fbwidth  = 1024;
-		win->stride = win->fbstride = 1024;
-		win->height = win->fbheight = 1024;
-		win->depth  = win->fbdepth  = 1024;
-		fbocreate(win, 0);
-		win->fmt = _fbo_;
-	}
-	else
-	{
-		thewin = win;
-		win->fmt = _vbo_;
+	thewin = win;
 
-		win->width  = win->fbwidth  = 1024;
-		win->stride = win->fbstride = 1024;
-		win->height = win->fbheight = 1024;
-		win->depth  = win->fbdepth  = 1024;
+	win->width  = win->fbwidth  = 1024;
+	win->stride = win->fbstride = 1024;
+	win->height = win->fbheight = 1024;
+	win->depth  = win->fbdepth  = 1024;
+	say("@windowcreate\n");
 
-		say("@windowcreate\n");
-		while(!status)pollenv();
-	}
+	fullwindow_create(win);
+	while(!status)pollenv();
 }
 
 

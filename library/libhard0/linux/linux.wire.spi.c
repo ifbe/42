@@ -111,7 +111,7 @@ int spi_delete(int fd)
 int spi_create(char* buf, int len, int argc, u8** argv)
 {
 	int j,ret;
-	u8 str[128];
+	char str[128];
 	for(j=0;j<128;j++){
 		if(buf[j] > 0x20)str[j] = buf[j];
 		else{str[j] = 0;break;}

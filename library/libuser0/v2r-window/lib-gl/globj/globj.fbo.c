@@ -34,10 +34,8 @@ int fbocreate_d(struct supply* tar, int arg)
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tar->tex0, 0);
 #else
 	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tar->tex0, 0);
-#endif
-
-	//No color buffer is drawn to
 	glDrawBuffer(GL_NONE);
+#endif
 
 	// Always check that our framebuffer is ok
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fbod!!!\n");
