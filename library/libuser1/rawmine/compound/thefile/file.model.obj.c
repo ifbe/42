@@ -2,6 +2,7 @@
 #define OBJBUF buf0
 #define CTXBUF buf1
 int copypath(u8* path, u8* data);
+void loadtexfromfile(struct glsrc* src, int idx, char* name);
 void parsevertfromobj(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
@@ -133,7 +134,7 @@ static void sty_sty_mat(struct fstyle* src, struct fstyle* dst, mat4 mat)
 
 	mat4_transpose(mat);
 }
-static void obj3d_ctxforwnd(struct glsrc* src, char* vs, char* fs)
+static void obj3d_ctxforwnd(struct glsrc* src, char* tex, char* vs, char* fs)
 {
 	float* tmp;
 	src->geometry = 3;
@@ -145,6 +146,14 @@ static void obj3d_ctxforwnd(struct glsrc* src, char* vs, char* fs)
 	src->fs = memorycreate(0x1000, 0);
 	openreadclose(fs, 0, src->fs, 0x1000);
 	src->shader_enq = 42;
+
+	//texture
+	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].name = "tex0";
+	src->tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(src, 0, tex);
+	src->tex[0].enq = 42;
+	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
 
 	//argument
 	src->arg[0].fmt = 'm';
@@ -344,8 +353,10 @@ static void obj3d_create(struct entity* act, void* arg, int argc, u8** argv)
 	struct str* tmp;
 	u8 vspath[128];
 	u8 fspath[128];
+	u8 texpath[128];
 	char* vs = 0;
 	char* fs = 0;
+	char* tex = 0;
 	if(0 == act)return;
 
 	for(j=0;j<argc;j++){
@@ -357,11 +368,17 @@ static void obj3d_create(struct entity* act, void* arg, int argc, u8** argv)
 			copypath(fspath, argv[j]+3);
 			fs = (void*)fspath;
 		}
+		if(0 == ncmp(argv[j], "tex:", 4)){
+			copypath(texpath, argv[j]+4);
+			tex = (void*)texpath;
+		}
 	}
 	if(0 == vs)vs = "datafile/shader/model/vert.glsl";
 	if(0 == fs)fs = "datafile/shader/model/frag.glsl";
+	if(0 == tex)tex = "datafile/jpg/cartoon.jpg";
+
 	act->CTXBUF = memorycreate(0x200, 0);
-	if(act->CTXBUF)obj3d_ctxforwnd(act->CTXBUF, vs, fs);
+	if(act->CTXBUF)obj3d_ctxforwnd(act->CTXBUF, tex, vs, fs);
 
 	if(0 == arg)arg = "datafile/stl/bunny-lowpoly.stl";
 	tmp = act->OBJBUF = memorycreate(0x10000, 0);

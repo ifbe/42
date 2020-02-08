@@ -7,6 +7,7 @@ tree{
 #url:datafile/stl/bunny-lowpoly.stl
 fmt:obj3d
 url:datafile/obj/cube.obj
+tex:datafile/jpg/earth.jpg
 vs:datafile/shader/model/gv.glsl
 fs:datafile/shader/model/gf.glsl
 }
@@ -51,7 +52,7 @@ fmt:poller
 treepart{
 }
 treegeom{
-c: 0.0, 0.0, 0.0
+c: 0.0, 0.0, 1000.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0

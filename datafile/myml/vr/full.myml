@@ -19,7 +19,10 @@ fmt:tree
 vrglass{
 fmt:vrglass
 }
-scene{
+freecam{
+fmt:freecam
+}
+virtual{
 fmt:scene3d
 }
 </entity>
@@ -86,9 +89,28 @@ f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
 }
 
+freeslot{
+}
+freegeom{
+c: 0.0, 2000.0, 3000.0
+r:-1000.0, 0.0, 0.0
+f: 0.0,-707.0,-707.0
+t: 0.0,-707.0, 707.0
+L: 0.0, 0.0, 0.0,-1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0,-1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 10000000.0
+}
+
 viewrect{
 c:0.0, 0.0
 q:1.0, 1.0
+}
+freerect{
+c:0.0, 0.0
+q:0.333333333, 0.333333333
 }
 </style>
 
@@ -99,10 +121,12 @@ q:1.0, 1.0
 (reality, eyegeom, 0) -> (theeye, eyeslot, 0)
 
 #virtual depends on
-(scene, skygeom, 0) -> (sky, skyslot, 0)
-(scene, itemgeom, 0) -> (tree, itemslot, 0)
-(scene, viewgeom, 0) -> (vrglass, viewslot, in)
+(virtual, skygeom, 0) -> (sky, skyslot, 0)
+(virtual, itemgeom, 0) -> (tree, itemslot, 0)
+(virtual, viewgeom, 0) -> (vrglass, viewslot, in)
+(virtual, freegeom, 0) -> (freecam, freeslot, in)
 
 #glwnd depends on
-(opengl, viewrect, 0) -> (vrglass, 0, a0)
+(opengl, viewrect, 0) -> (vrglass, 0, 0)
+(opengl, freerect, 0) -> (freecam, 0, 0)
 </relation>

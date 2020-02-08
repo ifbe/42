@@ -48,7 +48,7 @@ static void freecam_search(struct entity* act, u32 foot, struct halfrel* self[],
 	while(1){
 		if(0 == rel)return;
 		world = (void*)(rel->srcchip);
-		if(_world3d_ == world->type){
+		if( (_world3d_ == world->type) | (_scene3d_ == world->type) ){
 			self[0] = (void*)&rel->dstchip;
 			peer[0] = (void*)&rel->srcchip;
 			return;
@@ -755,12 +755,14 @@ static void freecam_read_bywnd(struct halfrel* self, struct halfrel* peer, struc
 	wnd = peer->pchip;area = peer->pfoot;
 	cam = self->pchip;gl41 = self->pfoot;
 	freecam_search(cam, 0, &stack[rsp+0], &stack[rsp+1]);
+//say("@freecam_read_bywnd.111\n");
 
 //cam.slot -> world.geom
 	struct entity* act;struct style* slot;
 	struct entity* wrd;struct style* geom;
 	act = stack[rsp+0]->pchip;slot = stack[rsp+0]->pfoot;
 	wrd = stack[rsp+1]->pchip;geom = stack[rsp+1]->pfoot;
+//say("@freecam_read_bywnd.222\n");
 
 	if('v' == len){
 		freecam_ratio(wrd, geom, wnd, area);

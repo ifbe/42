@@ -7,14 +7,15 @@ void parsevec3fromobj(float* dst, int cnt, u8* buf, int len)
 {
 	int j,k = 0;
 	float* v = &dst[cnt*3];
+	say("parsevec3fromobj: %.*s\n",len,buf);
 
 	for(j=0;j<3;j++){
 		if(k >= len)break;
 		k += 1+decstr2float(buf+k, &v[j]);
 	}
-	say("%d: %f,%f,%f\n", j, dst[0], v[1], v[2]);
+	say("%d: %f,%f,%f\n", j, v[0], v[1], v[2]);
 }
-void parsearrayfromobj(float* dst, int cnt, float* vv, int cv, float* vn, int cn, float* vt, int ct, u8* buf, int len)
+void parsefacefromobj(float* dst, int cnt, float* vv, int cv, float* vn, int cn, float* vt, int ct, u8* buf, int len)
 {
 	u16 f[9];
 	int j,k;
@@ -22,6 +23,7 @@ void parsearrayfromobj(float* dst, int cnt, float* vv, int cv, float* vn, int cn
 	float* n;
 	float* t;
 	float* p;
+	say("parsefacefromobj: %.*s\n",len,buf);
 
 	//format>>	1/2/3 4/5/6 7/8/9	<<format//
 	k = 0;
@@ -43,13 +45,13 @@ void parsearrayfromobj(float* dst, int cnt, float* vv, int cv, float* vn, int cn
 		p[1] = v[1];
 		p[2] = v[2];
 
-		k = f[j*3+1];
+		k = f[j*3+2];
 		n = &vn[k*3];
 		p[3] = n[0];
 		p[4] = n[1];
 		p[5] = n[2];
 
-		k = f[j*3+2];
+		k = f[j*3+1];
 		t = &vt[k*3];
 		p[6] = t[0];
 		p[7] = t[1];
@@ -139,7 +141,7 @@ void parsevertfromobj(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len)
 				else say("error@%d\n",j);
 			}
 			if('f' == buf[k]){
-				parsearrayfromobj(dst, cnt, fv, cv, fn, cn, ft, ct, buf+k+2, j-k-2);
+				parsefacefromobj(dst, cnt, fv, cv, fn, cn, ft, ct, buf+k+2, j-k-2);
 				cnt += 1;
 			}
 			k = j+1;

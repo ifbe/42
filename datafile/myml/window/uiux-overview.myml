@@ -8,16 +8,6 @@ fmt:orthcam
 world{
 fmt:world3d
 }
-
-screen{
-fmt:screen
-}
-theeye{
-fmt:theeye
-}
-reality{
-fmt:reality
-}
 </entity>
 
 
@@ -68,19 +58,6 @@ viewrect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
-
-scrxyz{
-c:0.0, 3.0, 1.0
-r:1920, 0.0, 0.0
-t:0.0, 1080, 0.0
-f:0.0, 0.1, 0.0
-}
-eyexyz{
-c:0.0, 0.0, 1.6
-r:0.1, 0.0, 0.0
-f:0.0, 0.1, 0.0
-t:0.0, 0.0, 0.1
-}
 </style>
 
 
@@ -91,11 +68,4 @@ t:0.0, 0.0, 0.1
 
 #glwnd depends on gldata
 (opengl, viewrect, 0) -> (cam0, 0, a0)
-
-#screen depends on opengl
-(screen, 0, 0) -> (opengl, 0, 0)
-
-#reality depends on screen
-(reality, scrxyz, 0) -> (screen, 0, 0)
-(reality, eyexyz, 0) -> (theeye, 0, 0)
 </relation>

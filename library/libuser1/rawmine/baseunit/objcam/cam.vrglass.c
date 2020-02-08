@@ -31,19 +31,27 @@ static int vrglass_draw_gl41(
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	float y;
+	int x,y,j;
 	vec3 tc;
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
 
-	for(y=0.0;y<1.01;y+=0.1)
+	for(y=0;y<10;y++)
 	{
-		tc[0] = vc[0] + vf[0]*y;
-		tc[1] = vc[1] + vf[1]*y;
-		tc[2] = vc[2] + vf[2]*y;
+		for(j=0;j<3;j++)tc[j] = vc[j] + vf[j]*y/10.0;
 		gl41line_rect(wnd, 0xff0000, tc, vr, vt);
+	}
+
+	for(y=-1;y<2;y+=2){
+		for(x=-1;x<2;x+=2){
+			for(j=0;j<3;j++){
+				tc[j] = vc[j] +vr[j]*x +vt[j]*y;
+				tc[j] = tc[j]*10 - geom->f.vq[j]*9;
+			}
+			gl41line(wnd, 0xff0000, geom->f.vq, tc);
+		}
 	}
 	return 0;
 }
