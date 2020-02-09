@@ -57,16 +57,14 @@ int arg2utf8(u8* src, u8* dst)
 }
 int main(int argc, char** argv)
 {
-	void* all;
-	void* thr;
 /*
 	for(j=1;j<argc;j++){
 		k = arg2utf8(argv[j], tmp);
 	}
 	if(argc <= 1)prep();
 */
-	all = pwrclkcreate(_win32_, 0, 0, 0);
-	thr = workercreate(0, 0, argc, (u8**)argv);
+	void* all = pwrclkcreate(_win32_, 0, argc, (u8**)argv);
+	vodi* thr = workercreate(0, 0, 0, 0);
 
 	workerdelete(thr);
 	pwrclkdelete(all);

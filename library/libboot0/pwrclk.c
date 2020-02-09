@@ -11,6 +11,8 @@ void boardcreate();
 //
 void death();
 void birth(void*);
+void args_delete(void*);
+void args_create(int, u8**);
 //
 int openreadclose(void*, int, void*, int);
 int openwriteclose(void*, int, void*, int);
@@ -62,11 +64,14 @@ int pwrclkdelete(void* addr)
 	say("pwrclkdelete:%.8s\n", &tmp->type);
 
 	switch(tmp->type){
-		case _main_:
-		case _win32_:{
-			openwriteclose("universe.bin", 0, pwr, 0x1000000);
-			death();
-		}
+	case _main_:
+	case _win32_:
+	case _ndkmain_:{
+		death();
+
+		openwriteclose("universe.bin", 0, pwr, 0x1000000);
+		memorydelete(pwr);
+	}
 	}
 	return 0;
 }
@@ -75,32 +80,35 @@ void* pwrclkcreate(u64 type, void* name, int argc, u8** argv)
 	int j;
 	struct pwrclk* tmp;
 
+	switch(type){
 	//app
-	if( (_main_ == type)|(_win32_ == type) ){
+	case _main_:
+	case _win32_:
+	case _ndkmain_:{
 		tmp = memorycreate(0x1000000, 0);
+		//openreadclose("universe.bin", 0, pwr, 0x1000000);
 
 		birth(tmp);
+		args_create(argc, argv);
 
 		tmp->type = type;
 		return tmp;
 	}
-
 	//bare
-	if( (_start_ == type)|(_efimain_ == type) ){
+	case _start_:
+	case _efimain_:{
 		tmp = (void*)(0x1000000);
 
-		tmp->type = _start_;
+		tmp->type = type;
 		return tmp;
 	}
-
 	//lib
-	if(_lib42_ == type){
+	case _lib42_:
+	case _kext_:{
+		tmp->type = type;
 		return tmp;
 	}
-	if(_kext_ == type){
-		return tmp;
 	}
-
 	return 0;
 }
 int pwrclkmodify(int argc, u8** argv)

@@ -3,8 +3,6 @@ void freestdev();
 void initstdev(void*);
 void freestdrel();
 void initstdrel(void*);
-int args_delete(void*);
-void args_create(int, u8**);
 //
 void initexiter(void*);
 void exiter_create(struct worker*, u8*, int, u8**);
@@ -77,8 +75,6 @@ void* workercreate(u64 type, void* url, int argc, u8** argv)
 	struct worker* tmp;
 
 	if(0 == type){
-		args_create(argc, argv);
-
 		type = wrk->type;
 		if(0 == type)type = _waiter_;
 
