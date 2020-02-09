@@ -243,16 +243,16 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 
 
-void windowread(struct supply* win)
+void windowread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
 {
-	u64 fmt = win->fmt;
+	struct supply* win = self->pchip;
 	if(status){
 		fullwindow_read(win);
 		eglSwapBuffers(display, surface);
 	}
 	pollenv();
 }
-void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+void windowwrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
 {
 }
 void windowstop()

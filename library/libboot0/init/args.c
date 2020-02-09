@@ -10,8 +10,11 @@ int args_create(int argc, char** argv)
 {
 	int j;
 	if(0 == argv){
-		supplycreate(_wnd_, 0, 0, 0);
-		workercreate(_poller_, 0, 0, 0);
+		//supplycreate(_wnd_, 0, 0, 0);
+		//workercreate(_poller_, 0, 0, 0);
+		//role_fromfile("datafile/myml/vr/test.myml", 0);
+		role_fromfile("datafile/myml/window/item-skygndrab.myml", 0);
+		return 0;
 	}
 
 	if(argc <= 1){
