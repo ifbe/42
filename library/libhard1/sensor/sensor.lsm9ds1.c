@@ -1,10 +1,45 @@
 #include "libhard.h"
 #define PI 3.1415926535897932384626433832795
+void sleep_us(int);
 
 
 
 
-int readlsm9ds1(void* it, float* measure)
+enum lsm9ds1{
+	WHO_AM_I	= 0x0F,
+
+	CTRL_REG1_G     = 0x10, // Angular rate sensor Control Register 1.
+
+	OUT_TEMP_L      = 0x15,
+	OUT_TEMP_H      = 0x16,
+	STATUS_REG_G    = 0x17,
+	OUT_X_L_G       = 0x18,
+	OUT_X_H_G       = 0x19,
+	OUT_Y_L_G       = 0x1A,
+	OUT_Y_H_G       = 0x1B,
+	OUT_Z_L_G       = 0x1C,
+	OUT_Z_H_G       = 0x1D,
+
+	CTRL_REG6_XL    = 0x20, // Linear acceleration sensor Control Register 6.
+
+	CTRL_REG8       = 0x22, // Control register 8.
+	CTRL_REG9       = 0x23, // Control register 9.
+
+	STATUS_REG_A    = 0x27,
+	OUT_X_L_XL      = 0x28,
+	OUT_X_H_XL      = 0x29,
+	OUT_Y_L_XL      = 0x2A,
+	OUT_Y_H_XL      = 0x2B,
+	OUT_Z_L_XL      = 0x2C,
+	OUT_Z_H_XL      = 0x2D,
+	FIFO_CTRL       = 0x2E, // FIFO control register.
+	FIFO_SRC	= 0x2F, // FIFO status control register.
+};
+
+
+
+
+int lsm9ds1_i2cread(void* it, float* measure)
 {
 	short t;
 	u8 reg[32];
@@ -62,6 +97,13 @@ int readlsm9ds1(void* it, float* measure)
 		measure[5], measure[7], measure[8]);
 	return 9;
 }
+int lsm9ds1_i2cinit(void* it)
+{
+/*	u8 tmp[0x20];
+	relationwrite(it,_i2c_, 0, 0x6b, tmp, 1);
+	sleep_us(1000);*/
+	return 0;
+}
 
 
 
@@ -77,7 +119,7 @@ int lsm9ds1_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 	void* it = (void*)(self->chip);
 
 	if(_clk_ == self->flag){
-		ret = readlsm9ds1(it, tmp);
+		ret = lsm9ds1_i2cread(it, tmp);
 		relationwrite(it, _dst_, 0, 0, tmp, ret);
 	}
 	return 0;
@@ -88,7 +130,16 @@ int lsm9ds1_discon(struct halfrel* self, struct halfrel* peer)
 }
 int lsm9ds1_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@lsm9ds1_linkup\n");
+	struct driver* it;
+	say("@lsm9ds1_linkup\n", &self->flag);
+
+	it = (void*)(self->chip);
+	if(0 == it)return 0;
+
+	switch(self->flag){
+		case _i2c_:lsm9ds1_i2cinit(it);break;
+		case _spi_:break;
+	}
 	return 0;
 }
 
