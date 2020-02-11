@@ -35,7 +35,7 @@ int deviceread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	int fd;
 	//say("@devicewrite\n");
 
-	ele = (void*)(self->chip);
+	ele = self->pchip;
 	fd = ele->selffd;
 
 	switch(ele->type){
@@ -48,11 +48,16 @@ int devicewrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 {
 	struct device* ele;
 	int fd;
+	u8 t[2];
 	//say("@devicewrite\n");
 
-	ele = (void*)(self->chip);
+	ele = self->pchip;
 	fd = ele->selffd;
-
+	if(0 == buf){
+		t[0] = len;
+		buf = t;
+		len = 1;
+	}
 	switch(ele->type){
 		case _i2c_:return i2c_write(fd, idx, buf, len);break;
 		case _spi_:return spi_write(fd, idx, buf, len);break;

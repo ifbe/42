@@ -1,5 +1,8 @@
 #include "libhard.h"
 #define PI 3.1415926535897932384626433832795
+#define Gscale 3
+#define Ascale 0
+#define Mscale 0
 void sleep_us(int);
 
 
@@ -20,8 +23,10 @@ enum lsm9ds1{
 	OUT_Z_L_G       = 0x1C,
 	OUT_Z_H_G       = 0x1D,
 
+	CTRL_REG4       = 0x1E,
+	CTRL_REG5_XL    = 0x1F,
 	CTRL_REG6_XL    = 0x20, // Linear acceleration sensor Control Register 6.
-
+	CTRL_REG7_XL    = 0x21,
 	CTRL_REG8       = 0x22, // Control register 8.
 	CTRL_REG9       = 0x23, // Control register 9.
 
@@ -35,6 +40,11 @@ enum lsm9ds1{
 	FIFO_CTRL       = 0x2E, // FIFO control register.
 	FIFO_SRC	= 0x2F, // FIFO status control register.
 };
+#define MAG_CTRL_REG1 0x20
+#define MAG_CTRL_REG2 0x21
+#define MAG_CTRL_REG3 0x22
+#define MAG_CTRL_REG4 0x23
+#define MAG_CTRL_REG5 0x24
 
 
 
@@ -44,11 +54,11 @@ int lsm9ds1_i2cread(void* it, float* measure)
 	short t;
 	u8 reg[32];
 
-	t = relationread(it, _i2c_, 0, 0x6a0018, reg+0, 6);
-	t = relationread(it, _i2c_, 0, 0x6a0019, reg+1, 5);
-	t = relationread(it, _i2c_, 0, 0x6a001a, reg+2, 4);
-	t = relationread(it, _i2c_, 0, 0x6a001b, reg+3, 3);
-	t = relationread(it, _i2c_, 0, 0x6a001c, reg+4, 2);
+	t = relationread(it, _i2c_, 0, 0x6a0018, reg+0, 1);
+	t = relationread(it, _i2c_, 0, 0x6a0019, reg+1, 1);
+	t = relationread(it, _i2c_, 0, 0x6a001a, reg+2, 1);
+	t = relationread(it, _i2c_, 0, 0x6a001b, reg+3, 1);
+	t = relationread(it, _i2c_, 0, 0x6a001c, reg+4, 1);
 	t = relationread(it, _i2c_, 0, 0x6a001d, reg+5, 1);
 	//printf("%02x %02x %02x %02x %02x %02x\n", reg[0],reg[1],reg[2],reg[3],reg[4],reg[5]);
 
@@ -60,11 +70,11 @@ int lsm9ds1_i2cread(void* it, float* measure)
 	measure[2] = t * 500.0/32768 * PI/180.0;
 
 
-	relationread(it, _i2c_, 0, 0x6a0028, reg+0, 6);
-	relationread(it, _i2c_, 0, 0x6a0029, reg+1, 5);
-	relationread(it, _i2c_, 0, 0x6a002a, reg+2, 4);
-	relationread(it, _i2c_, 0, 0x6a002b, reg+3, 3);
-	relationread(it, _i2c_, 0, 0x6a002c, reg+4, 2);
+	relationread(it, _i2c_, 0, 0x6a0028, reg+0, 1);
+	relationread(it, _i2c_, 0, 0x6a0029, reg+1, 1);
+	relationread(it, _i2c_, 0, 0x6a002a, reg+2, 1);
+	relationread(it, _i2c_, 0, 0x6a002b, reg+3, 1);
+	relationread(it, _i2c_, 0, 0x6a002c, reg+4, 1);
 	relationread(it, _i2c_, 0, 0x6a002d, reg+5, 1);
 	//printf("%02x %02x %02x %02x %02x %02x\n", reg[0],reg[1],reg[2],reg[3],reg[4],reg[5]);
 
@@ -76,11 +86,11 @@ int lsm9ds1_i2cread(void* it, float* measure)
 	measure[5] = t * 9.8*8 / 32768.0;
 
 
-	relationread(it, _i2c_, 0, 0x1c0028, reg+0, 6);
-	relationread(it, _i2c_, 0, 0x1c0029, reg+1, 5);
-	relationread(it, _i2c_, 0, 0x1c002a, reg+2, 4);
-	relationread(it, _i2c_, 0, 0x1c002b, reg+3, 3);
-	relationread(it, _i2c_, 0, 0x1c002c, reg+4, 2);
+	relationread(it, _i2c_, 0, 0x1c0028, reg+0, 1);
+	relationread(it, _i2c_, 0, 0x1c0029, reg+1, 1);
+	relationread(it, _i2c_, 0, 0x1c002a, reg+2, 1);
+	relationread(it, _i2c_, 0, 0x1c002b, reg+3, 1);
+	relationread(it, _i2c_, 0, 0x1c002c, reg+4, 1);
 	relationread(it, _i2c_, 0, 0x1c002d, reg+5, 1);
 	//printf("%02x %02x %02x %02x %02x %02x\n", reg[0],reg[1],reg[2],reg[3],reg[4],reg[5]);
 
@@ -99,9 +109,30 @@ int lsm9ds1_i2cread(void* it, float* measure)
 }
 int lsm9ds1_i2cinit(void* it)
 {
-/*	u8 tmp[0x20];
-	relationwrite(it,_i2c_, 0, 0x6b, tmp, 1);
-	sleep_us(1000);*/
+	// enable the 3-axes of the gyroscope
+	relationwrite(it,_i2c_, 0,0x6a0000 | CTRL_REG4, 0,0x38);
+	sleep_us(1000);
+
+	// configure the gyroscope
+	relationwrite(it,_i2c_, 0,0x6a0000 | CTRL_REG1_G, 0,6<< 5 | Gscale << 3 | 3);
+	sleep_us(200);
+
+	// enable the three axes of the accelerometer 
+	relationwrite(it,_i2c_, 0,0x6a0000 | CTRL_REG5_XL, 0,0x38);
+	// configure the accelerometer-specify bandwidth selection with Abw
+	relationwrite(it,_i2c_, 0,0x6a0000 | CTRL_REG6_XL, 0,6 << 5 | Ascale << 3 | 0x04 | 3);
+	sleep_us(200);
+
+	// enable block data update, allow auto-increment during multiple byte read
+	relationwrite(it,_i2c_, 0,0x6a0000 | CTRL_REG8, 0,0x44);
+
+	// configure the magnetometer-enable temperature compensation of mag data
+	relationwrite(it,_i2c_, 0,0x1c0000 | MAG_CTRL_REG1, 0,0x80 | 3 << 5 | 6 << 2); // select x,y-axis mode
+	relationwrite(it,_i2c_, 0,0x1c0000 | MAG_CTRL_REG2, 0,Mscale << 5 ); // select mag full scale
+	relationwrite(it,_i2c_, 0,0x1c0000 | MAG_CTRL_REG3, 0,0x00 ); // continuous conversion mode
+	relationwrite(it,_i2c_, 0,0x1c0000 | MAG_CTRL_REG4, 0,3 << 2 ); // select z-axis mode
+	relationwrite(it,_i2c_, 0,0x1c0000 | MAG_CTRL_REG5, 0,0x40 ); // select block update mode
+	sleep_us(200);
 	return 0;
 }
 
