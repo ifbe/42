@@ -6,11 +6,12 @@ out mediump vec3 normal;
 out mediump vec3 texuvw;
 out mediump vec3 depths;
 uniform mat4 objmat;
-uniform mat4 viewmat;
+uniform mat4 cammv_;
 uniform mat4 cammvp;
+uniform vec3 camxyz;
 void main(){
 	vec4 obj = objmat * vec4(vert, 1.0);
-	vec4 tmp = viewmat * obj;
+	vec4 tmp = cammv_ * obj;
 	depths.z = -tmp.z/10000.0;
 	texuvw = texc;
 	normal = norm;

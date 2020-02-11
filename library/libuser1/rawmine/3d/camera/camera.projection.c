@@ -130,6 +130,21 @@ void fixmatrix_transpose(mat4 mat, struct fstyle* sty)
 
 
 
+void style2matrix2(struct fstyle* frus, mat4 v_, mat4 vp)
+{
+	fixproj(vp, frus);
+	fixview(v_, frus);
+	mat4_multiply(vp, v_);
+}
+void style2matrix2_transpose(struct fstyle* frus, mat4 v_, mat4 vp)
+{
+	style2matrix2(frus, v_, vp);
+	mat4_transpose(v_);
+	mat4_transpose(vp);
+}
+
+
+
 
 void invproj(mat4 proj, struct fstyle* sty)
 {
