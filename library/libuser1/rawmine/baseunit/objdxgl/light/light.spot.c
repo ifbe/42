@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
-void fixmatrix_transpose(void* m, struct fstyle* sty);
+void matproj_transpose(void* m, struct fstyle* sty);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
@@ -354,7 +354,7 @@ static void spotlight_matrix(
 	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
 
-	fixmatrix_transpose(sun->mvp, &geom->frus);
+	matproj_transpose(sun->mvp, &geom->frus);
 }
 
 

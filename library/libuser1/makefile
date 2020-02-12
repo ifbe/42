@@ -18,8 +18,10 @@ rawmine/2d/photo/photo.mosaic.c \
 rawmine/2d/photo/photo.rotate.c \
 rawmine/2d/photo/photo.scale.c \
 rawmine/3d/lib3d.c \
-rawmine/3d/camera/camera.projection.c \
-rawmine/3d/camera/camera.orthogonal.c \
+rawmine/3d/matrix/mat.local2world.c \
+rawmine/3d/matrix/mat.world2camera.c \
+rawmine/3d/matrix/mat.camera2ndc.c \
+rawmine/3d/matrix/mat.aid.c \
 rawmine/3d/intersect/intersect.obb.c \
 rawmine/3d/intersect/intersect.ray.c \
 rawmine/3d/intersect/intersect.rect.c \

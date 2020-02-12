@@ -2,7 +2,7 @@
 #define CTXBUF buf0
 #define MATBUF buf1
 #define _tar_ hex32('t','a','r',0)
-void fixmatrix_transpose(float* m, struct fstyle* sty);
+void matproj_transpose(float* m, struct fstyle* sty);
 void freecam_shape2frustum(struct fstyle* d, struct fstyle* s);
 void freecam_ratio(struct entity* wrd, struct style* geom, struct entity* wnd, struct style* area);
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
@@ -233,7 +233,7 @@ static void thirdperson_read_bywnd(struct halfrel* self, struct halfrel* peer, s
 	if('v' == len){
 		freecam_ratio(wrd, geom, wnd, area);
 		freecam_shape2frustum(&geom->fshape, &geom->frustum);
-		fixmatrix_transpose(act->MATBUF, &geom->frus);
+		matproj_transpose(act->MATBUF, &geom->frus);
 
 		gl41data_read(self, peer, stack, rsp+2, buf, len);
 		thirdperson_draw(act,slot, wrd,geom, wnd,area);
@@ -252,13 +252,13 @@ static void thirdperson_read_bycam(struct halfrel* self, struct halfrel* peer, s
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* slot;
 
-	if(stack){
+	if(stack && ('v' == len)){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len)thirdperson_draw(act,slot, wrd,geom, wnd,area);
+		thirdperson_draw(act,slot, wrd,geom, wnd,area);
 	}
 }
 

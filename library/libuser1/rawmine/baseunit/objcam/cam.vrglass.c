@@ -2,7 +2,7 @@
 #define _in_ hex32('i','n', 0, 0)
 #define MATBUF buf0
 #define CAMBUF buf1
-void fixmatrix_transpose(float* m, struct fstyle* sty);
+void matproj_transpose(float* m, struct fstyle* sty);
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
 
 
@@ -222,7 +222,7 @@ static void vrglass_matrix(
 	struct fstyle* frus = &geom->frus;
 
 	float* mat = act->MATBUF;
-	fixmatrix_transpose((void*)mat, frus);
+	matproj_transpose((void*)mat, frus);
 	//printmat4(mat);
 }
 static void vrglass_camera(

@@ -3,7 +3,7 @@
 #define CAMBUF buf1
 #define EVTYPE iw0
 #define EVSEND 666666
-int ortho_mvp(mat4 m, struct fstyle* s);
+int matorth(mat4 m, struct fstyle* s);
 int gl41data_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
 
 
@@ -180,7 +180,7 @@ static void orthcam_matrix(
 	struct fstyle* frus = &geom->frus;
 	void* mat = act->MATBUF;
 
-	ortho_mvp(mat, frus);
+	matorth(mat, frus);
 	mat4_transpose(mat);
 }
 

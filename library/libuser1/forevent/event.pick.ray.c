@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define _tar_ hex32('t','a','r', 0)
-int invmvp(float* v, struct fstyle* sty);
+int invproj(float* v, struct fstyle* sty);
 int obb_ray(struct fstyle* sty, vec3 ray[], vec3 out[]);
 int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 int relationsearch(void* item, u32 foottype, struct halfrel* self[], struct halfrel* peer[]);
@@ -49,7 +49,7 @@ static int clickray_convert(
 	//say("%f,%f\n", dr[0],dr[1]);
 
 	//ndc to world
-	invmvp(xyz, &geom->frus);
+	invproj(xyz, &geom->frus);
 	cam->fx0 = xyz[0];
 	cam->fy0 = xyz[1];
 	cam->fz0 = xyz[2];

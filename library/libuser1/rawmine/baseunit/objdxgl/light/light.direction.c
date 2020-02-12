@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
-void ortho_mvp(mat4 m, struct fstyle* s);
+void matorth(mat4 m, struct fstyle* s);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
@@ -130,7 +130,7 @@ static void dirlight_draw_gl41(
 	struct glsrc* src;
 	float (*vbuf)[6];
 
-	float x,y;
+	int x,y,j;
 	vec3 ta, tb;
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
@@ -140,18 +140,23 @@ static void dirlight_draw_gl41(
 
 	//light ray (for debug)
 	sun = act->OWNBUF;
-	for(y=-1.0;y<1.01;y+=0.2)
-	{
-		for(x=-1.0;x<1.01;x+=0.2)
-		{
-			ta[0] = vc[0] + x*vr[0] + y*vt[0];
-			ta[1] = vc[1] + x*vr[1] + y*vt[1];
-			ta[2] = vc[2] + x*vr[2] + y*vt[2];
-			tb[0] = ta[0] - vf[0];
-			tb[1] = ta[1] - vf[1];
-			tb[2] = ta[2] - vf[2];
-			gl41line(ctx, sun->u_rgb, ta, tb);
+	for(y=-1;y<2;y+=2){
+	for(x=-10;x<11;x++){
+		for(j=0;j<3;j++){
+			ta[j] = vc[j] + x*vr[j]/10.0 + y*vt[j];
+			tb[j] = ta[j] + vf[j];
 		}
+		gl41line(ctx, sun->u_rgb, ta, tb);
+	}
+	}
+	for(x=-1;x<2;x+=2){
+	for(y=-10;y<11;y++){
+		for(j=0;j<3;j++){
+			ta[j] = vc[j] + x*vr[j] + y*vt[j]/10.0;
+			tb[j] = ta[j] + vf[j];
+		}
+		gl41line(ctx, sun->u_rgb, ta, tb);
+	}
 	}
 
 	//depth fbo (for debug)
@@ -161,44 +166,44 @@ static void dirlight_draw_gl41(
 	vbuf = (void*)(src->vbuf);
 	if(0 == vbuf)return;
 
-	vbuf[0][0] = vc[0] - vr[0] - vt[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vt[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vt[2] - vf[2];
+	vbuf[0][0] = vc[0] - vr[0] - vt[0];
+	vbuf[0][1] = vc[1] - vr[1] - vt[1];
+	vbuf[0][2] = vc[2] - vr[2] - vt[2];
 	vbuf[0][3] = 0.0;
 	vbuf[0][4] = 0.0;
 	vbuf[0][5] = 0.0;
 
-	vbuf[1][0] = vc[0] + vr[0] + vt[0] - vf[0];
-	vbuf[1][1] = vc[1] + vr[1] + vt[1] - vf[1];
-	vbuf[1][2] = vc[2] + vr[2] + vt[2] - vf[2];
+	vbuf[1][0] = vc[0] + vr[0] + vt[0];
+	vbuf[1][1] = vc[1] + vr[1] + vt[1];
+	vbuf[1][2] = vc[2] + vr[2] + vt[2];
 	vbuf[1][3] = 1.0;
 	vbuf[1][4] = 1.0;
 	vbuf[1][5] = 0.0;
 
-	vbuf[2][0] = vc[0] - vr[0] + vt[0] - vf[0];
-	vbuf[2][1] = vc[1] - vr[1] + vt[1] - vf[1];
-	vbuf[2][2] = vc[2] - vr[2] + vt[2] - vf[2];
+	vbuf[2][0] = vc[0] - vr[0] + vt[0];
+	vbuf[2][1] = vc[1] - vr[1] + vt[1];
+	vbuf[2][2] = vc[2] - vr[2] + vt[2];
 	vbuf[2][3] = 0.0;
 	vbuf[2][4] = 1.0;
 	vbuf[2][5] = 0.0;
 
-	vbuf[3][0] = vc[0] + vr[0] + vt[0] - vf[0];
-	vbuf[3][1] = vc[1] + vr[1] + vt[1] - vf[1];
-	vbuf[3][2] = vc[2] + vr[2] + vt[2] - vf[2];
+	vbuf[3][0] = vc[0] + vr[0] + vt[0];
+	vbuf[3][1] = vc[1] + vr[1] + vt[1];
+	vbuf[3][2] = vc[2] + vr[2] + vt[2];
 	vbuf[3][3] = 1.0;
 	vbuf[3][4] = 1.0;
 	vbuf[3][5] = 0.0;
 
-	vbuf[4][0] = vc[0] - vr[0] - vt[0] - vf[0];
-	vbuf[4][1] = vc[1] - vr[1] - vt[1] - vf[1];
-	vbuf[4][2] = vc[2] - vr[2] - vt[2] - vf[2];
+	vbuf[4][0] = vc[0] - vr[0] - vt[0];
+	vbuf[4][1] = vc[1] - vr[1] - vt[1];
+	vbuf[4][2] = vc[2] - vr[2] - vt[2];
 	vbuf[4][3] = 0.0;
 	vbuf[4][4] = 0.0;
 	vbuf[4][5] = 0.0;
 
-	vbuf[5][0] = vc[0] + vr[0] - vt[0] - vf[0];
-	vbuf[5][1] = vc[1] + vr[1] - vt[1] - vf[1];
-	vbuf[5][2] = vc[2] + vr[2] - vt[2] - vf[2];
+	vbuf[5][0] = vc[0] + vr[0] - vt[0];
+	vbuf[5][1] = vc[1] + vr[1] - vt[1];
+	vbuf[5][2] = vc[2] + vr[2] - vt[2];
 	vbuf[5][3] = 1.0;
 	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
@@ -284,17 +289,6 @@ static void dirlight_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void dirlight_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)dirlight_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)dirlight_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)dirlight_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)dirlight_draw_json(act, pin, win, sty);
-	else dirlight_draw_pixel(act, pin, win, sty);
-}
 
 
 
@@ -346,12 +340,12 @@ void dirlight_sty2cam(struct fstyle* d, struct fstyle* s)
 	d->vf[0] = x / n;
 	d->vf[1] = y / n;
 	d->vf[2] = z / n;
-	//d->vf[3] = 2000.0;
+	d->vf[3] = n;
 
 	d->vn[0] = d->vf[0];
 	d->vn[1] = d->vf[1];
 	d->vn[2] = d->vf[2];
-	//d->vn[3] = 1.0;
+	d->vn[3] = 1.0;
 }
 static void dirlight_matrix(
 	struct entity* act, struct style* slot,
@@ -360,7 +354,7 @@ static void dirlight_matrix(
 	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
 
-	ortho_mvp(sun->mvp, &geom->frus);
+	matorth(sun->mvp, &geom->frus);
 	mat4_transpose(sun->mvp);
 }
 

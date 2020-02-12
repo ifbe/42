@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
-void fixmatrix_transpose(void* m, struct fstyle* sty);
+void matproj_transpose(void* m, struct fstyle* sty);
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
@@ -343,7 +343,7 @@ static void water_matrix(
 	//mvp from frus
 	struct waterbuf* water = act->CAMBUF;
 	if(0 == water)return;
-	fixmatrix_transpose(water->mvp, frus);
+	matproj_transpose(water->mvp, frus);
 
 	//give arg(matrix and position) to fbo
 	struct glsrc* src = (void*)(water->data);

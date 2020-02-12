@@ -2,7 +2,7 @@
 #define s30 0.5
 #define s45 0.7071067811865476
 #define s60 0.8660254037844386
-void fixmatrix(mat4 m, struct fstyle* sty);
+void matproj(mat4 m, struct fstyle* sty);
 
 
 
@@ -62,7 +62,7 @@ void test_prepgl(struct glsrc* src)
 	src->fs = fshader;
 	src->shader_enq = 1;
 
-	fixmatrix(cammvp, &sty);
+	matproj(cammvp, &sty);
 	mat4_transpose(cammvp);
 
 	src->arg[0].data = cammvp;
@@ -108,7 +108,7 @@ void test_tickgl(struct entity* ent, struct supply* sup)
 	sty.vb[1] = -sty.vt[1];
 	sty.vb[2] = -sty.vt[2];
 
-	fixmatrix(cammvp, &sty);
+	matproj(cammvp, &sty);
 	mat4_transpose(cammvp);
 
 	sup->glsolid = ent->buf0;

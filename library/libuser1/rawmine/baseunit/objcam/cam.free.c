@@ -700,7 +700,7 @@ static void freecam_matrix(
 	void* v_ = vp + 4*4*4;
 	style2matrix2_transpose(frus, v_, vp);
 
-	//fixmatrix_transpose(cammvp, frus);
+	//matproj_transpose(cammvp, frus);
 	//fixview_transpose(cammv_, frus);
 	//printmat4(m);
 }
