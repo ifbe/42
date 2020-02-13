@@ -461,25 +461,25 @@ int fuckgfwmaster_linkup(struct halfrel* self, struct halfrel* peer);
 int fuckgfwmaster_discon( struct halfrel* self, struct halfrel* peer);
 int fuckgfwmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fuckgfwmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-//tcp.serve
-int serveclient_create(struct artery* ele, void* url, int argc, u8** argv);
-int serveclient_delete(struct artery* ele, void* url);
-int serveclient_linkup(struct halfrel* self, struct halfrel* peer);
-int serveclient_discon( struct halfrel* self, struct halfrel* peer);
-int serveclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int serveclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int serveserver_create(struct artery* ele, void* url, int argc, u8** argv);
-int serveserver_delete(struct artery* ele, void* url);
-int serveserver_linkup(struct halfrel* self, struct halfrel* peer);
-int serveserver_discon( struct halfrel* self, struct halfrel* peer);
-int serveserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int serveserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int servemaster_create(struct artery* ele, void* url, int argc, u8** argv);
-int servemaster_delete(struct artery* ele, void* url);
-int servemaster_linkup(struct halfrel* self, struct halfrel* peer);
-int servemaster_discon( struct halfrel* self, struct halfrel* peer);
-int servemaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int servemaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+//tcp.party
+int partyclient_create(struct artery* ele, void* url, int argc, u8** argv);
+int partyclient_delete(struct artery* ele, void* url);
+int partyclient_linkup(struct halfrel* self, struct halfrel* peer);
+int partyclient_discon( struct halfrel* self, struct halfrel* peer);
+int partyclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int partyclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int partyserver_create(struct artery* ele, void* url, int argc, u8** argv);
+int partyserver_delete(struct artery* ele, void* url);
+int partyserver_linkup(struct halfrel* self, struct halfrel* peer);
+int partyserver_discon( struct halfrel* self, struct halfrel* peer);
+int partyserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int partyserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int partymaster_create(struct artery* ele, void* url, int argc, u8** argv);
+int partymaster_delete(struct artery* ele, void* url);
+int partymaster_linkup(struct halfrel* self, struct halfrel* peer);
+int partymaster_discon( struct halfrel* self, struct halfrel* peer);
+int partymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int partymaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 int parseurl(u8* buf, int len, u8* addr, int* port);
 int ncmp(void*, void*, int);
@@ -1218,33 +1218,33 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 
 	//serve: master,server,client
-	if(_SERVE_ == type)
+	if(_PARTY_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _SERVE_;
-		servemaster_create(e, url, argc, argv);
+		e->type = _PARTY_;
+		partymaster_create(e, url, argc, argv);
 
 		return e;
 	}
-	if(_Serve_ == type)
+	if(_Party_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _Serve_;
-		serveserver_create(e, url, argc, argv);
+		e->type = _Party_;
+		partyserver_create(e, url, argc, argv);
 
 		return e;
 	}
-	if(_serve_ == type)
+	if(_party_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _serve_;
-		serveclient_create(e, url, argc, argv);
+		e->type = _party_;
+		partyclient_create(e, url, argc, argv);
 
 		return e;
 	}

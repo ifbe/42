@@ -1,5 +1,5 @@
 #include "libsoft.h"
-void serve_gettype(u8* src, u8* dst)
+void party_gettype(u8* src, u8* dst)
 {
 	int j;
 	for(j=0;j<8;j++)dst[j] = 0;
@@ -17,7 +17,7 @@ void serve_gettype(u8* src, u8* dst)
 
 
 
-int serveclient_write(
+int partyclient_write(
 	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
@@ -25,15 +25,15 @@ int serveclient_write(
 	printmemory(buf, len);
 	return 0;
 }
-int serveclient_read()
+int partyclient_read()
 {
 	return 0;
 }
-int serveclient_delete(struct artery* ele)
+int partyclient_delete(struct artery* ele)
 {
 	return 0;
 }
-int serveclient_create(struct artery* ele, u8* url)
+int partyclient_create(struct artery* ele, u8* url)
 {
 	int j,k;
 	void* obj;
@@ -65,7 +65,7 @@ int serveclient_create(struct artery* ele, u8* url)
 
 
 
-int serveserver_write(
+int partyserver_write(
 	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
@@ -73,18 +73,18 @@ int serveserver_write(
 	printmemory(buf,len);
 	return 0;
 }
-int serveserver_read(
+int partyserver_read(
 	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
 	return 0;
 }
-int serveserver_delete(struct artery* ele)
+int partyserver_delete(struct artery* ele)
 {
 	return 0;
 }
-int serveserver_create(struct artery* ele, u8* url)
+int partyserver_create(struct artery* ele, u8* url)
 {
 	return 0;
 }
@@ -92,15 +92,15 @@ int serveserver_create(struct artery* ele, u8* url)
 
 
 
-int servemaster_write(
+int partymaster_write(
 	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
 	u8* buf, int len)
 {
-	//0. old && state=serve: search, send, state=serve
+	//0. old && state=party: search, send, state=party
 	//1. new && GET && /: debug
 	//2. new && GET && other: search, send, state=wait
-	//3. new && serve: state=serve
+	//3. new && party: state=party
 	int j, k;
 	u64 type, type1;
 	u8 tmp[16];
@@ -151,7 +151,7 @@ int servemaster_write(
 
 	if(SERVE)
 	{
-		serve_gettype(SERVE, tmp);
+		party_gettype(SERVE, tmp);
 		type = *(u64*)tmp;
 		relationcreate(ele, (void*)type, _art_, 0, obj, 0, _fd_, 0);
 	}
@@ -189,7 +189,7 @@ int servemaster_write(
 		}
 		else
 		{
-			serve_gettype(GET, tmp);
+			party_gettype(GET, tmp);
 			type = *(u64*)tmp;
 
 			irel = ele->irel0;
@@ -212,15 +212,15 @@ int servemaster_write(
 	}*/
 	return 0;
 }
-int servemaster_read()
+int partymaster_read()
 {
 	return 0;
 }
-int servemaster_delete(struct artery* ele)
+int partymaster_delete(struct artery* ele)
 {
 	return 0;
 }
-int servemaster_create(struct artery* ele, u8* url)
+int partymaster_create(struct artery* ele, u8* url)
 {
 	return 0;
 }

@@ -1,3 +1,4 @@
+#include "naming.h"
 #include "struct.h"
 #include "carve.h"
 #include "draw.h"
@@ -14,128 +15,6 @@
 	#define GLSL_VERSION "#version 410 core\n"
 #endif
 //
-#define _analog_ hex64('a','n','a','l','o','g', 0, 0)
-#define _digital_ hex64('d','i','g','i','t','a','l', 0)
-#define _eeworld_ hex64('e','e','w','o','r','l','d', 0)
-//
-#define _field_ hex64('f','i','e','l','d', 0, 0, 0)
-#define _fluid_ hex64('f','l','u','i','d', 0, 0, 0)
-#define _force_ hex64('f','o','r','c','e', 0, 0, 0)
-//
-#define _border2d_ hex64('b','o','r','d','e','r','2','d')
-#define _frame3d_ hex64('f','r','a','m','e','3','d', 0)
-#define _guide3d_ hex64('g','u','i','d','e','3','d', 0)
-//
-#define _scene3d_ hex64('s','c','e','n','e','3','d', 0)
-#define _world3d_ hex64('w','o','r','l','d','3','d', 0)
-#define _reality_ hex64('r','e','a','l','i','t','y', 0)
-//event
-#define _clickray_ hex64('c','l','i','c','k','r','a','y')
-#define _event3rd_ hex64('e','v','e','n','t','3','r','d')
-//dx
-#define _dx11data_ hex64('d','x','1','1','d','a','t','a')
-#define _dx11coop_ hex64('d','x','1','1','c','o','o','p')
-
-#define _dx11wnd0_ hex64('d','x','1','1','w','n','d','0')
-#define _dx11fbod_ hex64('d','x','1','1','f','b','o','d')
-#define _dx11fboc_ hex64('d','x','1','1','f','b','o','c')
-#define _dx11fbog_ hex64('d','x','1','1','f','b','o','g')
-//gl
-#define _gl41data_ hex64('g','l','4','1','d','a','t','a')
-#define _gl41coop_ hex64('g','l','4','1','c','o','o','p')
-
-#define _gl41wnd0_ hex64('g','l','4','1','w','n','d','0')
-#define _gl41fbod_ hex64('g','l','4','1','f','b','o','d')
-#define _gl41fboc_ hex64('g','l','4','1','f','b','o','c')
-#define _gl41fbog_ hex64('g','l','4','1','f','b','o','g')
-//
-#define _src_ hex32('s','r','c',0)
-#define _dst_ hex32('d','s','t',0)
-#define _clk_ hex32('c','l','k',0)
-#define  _ev_ hex32('e','v', 0, 0)
-//tier
-#define _ent_ hex32('e','n','t',0)
-#define _sup_ hex32('s','u','p',0)
-#define _art_ hex32('a','r','t',0)
-#define _sys_ hex32('s','y','s',0)
-#define _dri_ hex32('d','r','i',0)
-#define _dev_ hex32('d','e','v',0)
-#define _wrk_ hex32('w','r','k',0)
-//physic
-#define _phys_ hex32('p','h','y','s')
-#define _gravity_ hex64('g','r','a','v','i','t','y',0)
-#define _collide_ hex64('c','o','l','l','i','d','e',0)
-//sensor
-#define _sensor_ hex64('s','e','n','s','o','r',0,0)
-#define _lidar_ hex64('l','i','d','a','r',0,0,0)
-#define _radar_ hex64('r','a','d','a','r',0,0,0)
-#define _ahrs_ hex32('a','h','r','s')
-#define _slam_ hex32('s','l','a','m')
-//motor
-#define _car_ hex32('c','a','r',0)
-#define _bdc_ hex32('b','d','c',0)
-#define _step_ hex32('s','t','e','p')
-//sound
-#define _mic_ hex32('m','i','c',0)
-#define _spk_ hex32('s','p','k',0)
-//light
-#define _cam_ hex32('c','a','m',0)
-#define _wnd_ hex32('w','n','d',0)
-//
-#define _cap_ hex32('c','a','p',0)
-#define _holo_ hex32('h','o','l','o')
-//
-#define _tray_ hex32('t','r','a','y')	//tray
-#define _std_ hex32('s','t','d', 0)		//cmdline
-//
-#define _w2w_ hex32('w','2','w', 0)
-#define _khala_ hex64('k','h','a','l','a', 0, 0, 0)
-#define _loopback_ hex64('l','o','o','p','b', 'a', 'c', 'k')
-//tier=_sup_, type=_sup_, rfmt:
-#define _none_ hex32('n','o','n','e')
-#define _easy_ hex32('e','a','s','y')
-#define _full_ hex32('f','u','l','l')
-#define _coop_ hex32('c','o','o','p')
-//tier=_sup_, type=_ctx_, rfmt:
-#define _vbo_ hex32('v','b','o',0)
-#define _rgba_ hex32('r','g','b','a')
-#define _cli_ hex32('c','l','i',0)
-#define _tui_ hex32('t','u','i',0)
-#define _func_ hex32('f','u','n','c')
-#define _sch_  hex32('s','c','h',0)
-#define _pcb_  hex32('p','c','b',0)
-#define _html_ hex32('h','t','m','l')
-#define _json_ hex32('j','s','o','n')
-#define _xml_  hex32('x','m','l',0)
-//tier=_ent_, type:
-#define _baby_ hex32('b','a','b','y')
-#define _test_ hex32('t','e','s','t')
-#define _pcm_ hex32('p','c','m',0)
-#define _ctx_ hex32('c','t','x',0)
-//
-#define _orig_ hex32('o','r','i','g')
-#define _ORIG_ hex32('O','R','I','G')
-#define _copy_ hex32('c','o','p','y')
-#define _COPY_ hex32('C','O','P','Y')
-//
-#define _uart_ hex32('u','a','r','t')
-#define _dbg_ hex32('d','b','g',0)
-#define _8bit_ hex32('8','b','i','t')
-//
-#define _bus_  hex32('b','u','s',0)
-#define _pin_  hex32('p','i','n',0)
-//
-#define _TCP_ hex32('T','C','P',0)
-#define _tcp_ hex32('t','c','p',0)
-#define _UDP_ hex32('U','D','P',0)
-#define _udp_ hex32('u','d','p',0)
-#define _WS_ hex32('W','S',0,0)
-#define _ws_ hex32('w','s',0,0)
-//
-#define _drag_ hex32('d','r','a','g')
-#define _char_ hex32('c','h','a','r')
-#define _i2c_ hex32('i','2','c',0)
-//
 #define touch0 0
 #define touch1 1
 #define touch2 2
@@ -147,13 +26,11 @@
 #define gamepad2 14
 #define gamepad3 15
 //
-#define _kbd_ hex32('k','b','d',0)
 #define kbd_up 0x48
 #define kbd_down 0x50
 #define kbd_left 0x4b
 #define kbd_right 0x4d
 //
-#define _joy_ hex32('j','o','y',0)
 #define joy_mask  0xff00ff
 #define joy_left  hex32('j', 0 ,'l', 0 )
 #define joy_right hex32('j', 0 ,'r', 0 )
