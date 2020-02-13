@@ -1,8 +1,6 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC -I.
 SRC = \
-evo-collide/collide.simple.c \
-evo-gravity/gravity.simple.c \
 r2v-sensor/sensor.ahrs.c \
 r2v-sensor/sensor.slam.c \
 r2v-sensor/sensor.lidar.c \
