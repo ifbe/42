@@ -1,6 +1,4 @@
 #include "libhard.h"
-//
-#define PI 3.1415926535897932384626433832795
 //0=250dps, 1=500dps, 2=1000dps, 3=2000dps
 #define gyr_cfg 2
 #define gyr_max 1000

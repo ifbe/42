@@ -1,5 +1,4 @@
 #include "libboot.h"
-#define _wnd_ hex32('w','n','d', 0)
 int role_default();
 int role_fromfile(void*, int);
 

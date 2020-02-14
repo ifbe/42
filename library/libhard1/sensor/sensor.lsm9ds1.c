@@ -1,5 +1,4 @@
 #include "libhard.h"
-#define PI 3.1415926535897932384626433832795
 #define Gscale 3
 #define Ascale 0
 #define Mscale 0

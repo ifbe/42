@@ -4,10 +4,8 @@
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 //
-#define _src_ hex32('s','r','c',0)
-#define _dst_ hex32('d','s','t',0)
-#define _clk_ hex32('c','l','k',0)
-#define  _ev_ hex32('e','v', 0, 0)
+#define PI 3.1415926535897932384626433832795028841971693993151
+#define tau PI*2
 //
 #define _ent_ hex32('e','n','t',0)
 #define _sup_ hex32('s','u','p',0)
@@ -17,17 +15,43 @@
 #define _dev_ hex32('d','e','v',0)
 #define _wrk_ hex32('w','r','k',0)
 #define _pwr_ hex32('p','w','r',0)
-//
-#define _FILE_ hex32('F','I','L','E')
-#define _file_ hex32('f','i','l','e')
-#define _mbr_ hex32('m','b','r',0)
-#define _gpt_ hex32('g','p','t',0)
+//bare metal
+#define _start_ hex64('s','t','a','r','t', 0, 0, 0)
+#define _efimain_ hex64('e','f','i','m','a','i','n', 0)
+//module
+#define _lib42_ hex64('l','i','b','4','2', 0, 0, 0)
+#define _kext_ hex32('k','e','x','t')
+#define _ko_ hex32('k','o', 0, 0)
+//application
+#define _main_ hex32('m','a','i','n')
+#define _ndkmain_ hex64('n','d','k','m','a','i','n', 0)
+#define _win32_ hex64('w','i','n','3','2', 0, 0, 0)
+#define _winmain_ hex64('w','i','n','m','a','i','n', 0)
 //
 #define _dbg_ hex32('d','b','g',0)
 #define _i2c_ hex32('i','2','c',0)
 #define _spi_ hex32('s','p','i',0)
 #define _ptmx_ hex32('p','t','m','x')
 #define _uart_ hex32('u','a','r','t')
+#define _ahci_ hex32('a','h','c','i')
+#define _xhci_ hex32('x','h','c','i')
+#define _usb_ hex32('u','s','b',0)
+//
+#define _exiter_ hex64('e','x','i','t','e','r', 0, 0)
+#define _poller_ hex64('p','o','l','l','e','r', 0, 0)
+#define _pulser_ hex64('p','u','l','s','e','r', 0, 0)
+#define _realer_ hex64('r','e','a','l','e','r', 0, 0)
+#define _waiter_ hex64('w','a','i','t','e','r', 0, 0)
+//
+#define _src_ hex32('s','r','c',0)
+#define _dst_ hex32('d','s','t',0)
+#define _clk_ hex32('c','l','k',0)
+#define  _ev_ hex32('e','v', 0, 0)
+//
+#define _FILE_ hex32('F','I','L','E')
+#define _file_ hex32('f','i','l','e')
+#define _mbr_ hex32('m','b','r',0)
+#define _gpt_ hex32('g','p','t',0)
 //raw family
 #define _RAW_ hex32('R','A','W',0)
 #define _Raw_ hex32('R','a','w',0)
