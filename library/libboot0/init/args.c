@@ -12,7 +12,7 @@ int args_create(int argc, char** argv)
 		//supplycreate(_wnd_, 0, 0, 0);
 		//workercreate(_poller_, 0, 0, 0);
 		//role_fromfile("datafile/myml/vr/test.myml", 0);
-		role_fromfile("datafile/myml/window/item-skygndrab.myml", 0);
+		role_fromfile("datafile/myml/index.myml", 0);
 		return 0;
 	}
 

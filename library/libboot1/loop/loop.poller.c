@@ -1,5 +1,6 @@
 #include "libuser.h"
 int input(void*, int);
+int role_fromfile(void* path, int len);
 
 
 
@@ -27,9 +28,12 @@ int supplyevent(void* poller, struct event* e)
 	if(0 == ev.where)
 	{
 		//from cmd
-		if(_char_ == ev.what)
-		{
+		if(_char_ == ev.what){
 			input(&ev.why, 0);
+			return 0;
+		}
+		if(_myml_ == ev.what){
+			role_fromfile((void*)ev.why, 0);
 			return 0;
 		}
 

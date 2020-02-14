@@ -1303,7 +1303,7 @@ static int overview_event(
 
 
 
-static void overview_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void overview_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	//wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
@@ -1313,14 +1313,19 @@ static void overview_read(struct halfrel* self, struct halfrel* peer, struct hal
 	struct entity* scn;struct style* geom;
 	struct entity* act;struct style* slot;
 
-	if(stack){
+	if(stack && ('v' == len)){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		scn = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;slot = self->pfoot;
-		if('v' == len)overview_draw_gl41(act,slot, scn,geom, wnd,area);
+		overview_draw_gl41(act,slot, scn,geom, wnd,area);
 	}
+}
+static int overview_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+{
+	overview_read_bycam(self,peer, arg,idx, buf,len);
+	return 0;
 }
 static int overview_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {

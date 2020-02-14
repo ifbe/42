@@ -1,157 +1,226 @@
 #include "libuser.h"
-int windowread(int type, void* buf);
-u64 file_check(void*, int);
+#define PATHBUF buf0
+#define LISTBUF buf1
+int copypath(void* path, void* data);
+void readfolder(void* url, int fd, void* arg, int off, void* buf, int len);
+void gl41data_before(struct entity* wnd);
+void gl41data_after(struct entity* wnd);
+void gl41data_xxxcam(struct entity* wnd, struct style* area);
+void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 
 
-static u8 fsbuf[0x1000];
-static u8* buffer;
-void fs_prep(void* name)
+static int fslist_find(u8* name, int id, int* head, int* tail)
 {
-	int ret;
-	u64 type;
-
-	ret = openreadclose(name, 0, fsbuf, 0x1000);
-	if(ret <= 0)return;
-	fsbuf[ret] = 0;
-
-	type = file_check(fsbuf, ret);
-	say("type=%.8s\n", &type);
-}
-
-
-
-
-static void fs_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	int cx, cy, ww, hh;
-	if(sty)
-	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
-	}
-	else
-	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
-	}
-	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
-	drawtext(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh, fsbuf, 0x1000);
-}
-static void fs_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void fs_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void fs_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void fs_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void fs_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-
-
-
-
-static void fs_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
-	struct event* ev, int len)
-{
-	int j,ret;
-	u64 type = ev->what;
-	if(_drag_ == type)
-	{
-		ret = windowread(type, buffer);
-		say("%s", buffer);
-
-		for(j=0;j<ret;j++)
-		{
-			if(buffer[j] < 0x20)
-			{
-				buffer[j] = 0;
-				break;
+	int j,k = 0;
+	for(j=0;j<0x1000;j++){
+		if('\n' == name[j]){
+			if(id <= 0){
+				*head = k;
+				*tail = j;
+				return 1;
 			}
+			k = j+1;
+			id--;
 		}
-		fs_prep(buffer);
+	}
+	return 0;
+}
+static int fslist_copy(u8* path, u8* name)
+{
+	int j,k;
+	for(j=0;j<0x200;j++){
+		if(path[j] < 0x20)goto found;
+	}
+	return 0;
+
+found:
+	k = j;
+	path[j] = '/';
+	j += copypath(path+j+1, name) + 1;
+	path[j] = 0;
+	say("%s\n", path);
+	return k;
+}
+static void fslist_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	struct entity* wnd;struct style* area;
+	struct entity* ent;struct style* gl41;
+	wnd = peer->pchip;area = peer->pfoot;
+	ent = self->pchip;gl41 = self->pfoot;
+
+	struct event* ev = buf;
+	if(0x2b70 == ev->what){
+		vec3 xyz;
+		gl41data_convert(wnd, area, ev, xyz);
+		say("%f,%f\n",xyz[0],xyz[1]);
+
+		float h = area->fs.vq[1] * wnd->fbheight;
+		int id = (1.0-xyz[1])*h/32;
+		say("%d\n",id);
+
+		int head,tail,j,k;
+		u8* path = ent->PATHBUF;
+		u8* name = ent->LISTBUF;
+		fslist_find(name, id, &head, &tail);
+		if(tail-head>6){
+		if(0 == ncmp(name+tail-5, ".myml", 5)){
+			k = fslist_copy(path, name+head);
+			eventwrite((u64)path, _myml_, 0, 0);
+			return;
+		}
+		}
+
+		fslist_copy(path, name+head);
+		for(j=0;j<0x1000;j++)name[j] = 0;
+		readfolder(path,0, 0,0, name,0x10000);
 	}
 }
 
 
 
 
-static void fs_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void fslist_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
-static void fs_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void fslist_draw_json(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
-static void fs_discon(struct halfrel* self, struct halfrel* peer)
+static void fslist_draw_html(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
-static void fs_linkup(struct halfrel* self, struct halfrel* peer)
+static void fslist_draw_tui(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void fslist_draw_cli(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
 {
 }
 
 
 
 
-static void fs_search(struct entity* act)
+static void fslist_draw_gl41(
+	struct entity* act, struct style* part,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
+	int j;
+	vec3 tc;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+	gl41solid_rect(wnd,0x0000ff, vc,vr,vf);
+
+	for(j=0;j<3;j++)tc[j] = vc[j] + vt[j]/100.0;
+	carvetext(wnd, 0xff00ff, tc,vr,vf, act->LISTBUF, 0x10000);
 }
-static void fs_modify(struct entity* act)
+static void fslist_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
+//wnd.area -> cam.gl41, cam.slot -> world.geom
+	struct entity* wnd;struct style* area;
+	struct entity* cam;struct style* gl41;
+	wnd = peer->pchip;area = peer->pfoot;
+	cam = self->pchip;gl41 = self->pfoot;
+
+	int j;
+	struct fstyle fs;
+	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
+	fs.vr[0] = area->fs.vq[0] * wnd->fbwidth / 2.0;
+	fs.vf[1] = area->fs.vq[1] * wnd->fbheight/ 2.0;
+	fs.vt[2] =-1.0;
+
+	gl41data_before(wnd);
+	fslist_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
+	gl41data_xxxcam(wnd, area);
+	gl41data_after(wnd);
 }
-static void fs_delete(struct entity* act)
+
+
+
+
+static void fslist_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	if(0 == act)return;
-	if(act->buf0){
-		memorydelete(act->buf0);
-		act->buf0 = 0;
+	struct entity* sup = peer->pchip;
+	switch(sup->fmt){
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != len)break;
+		fslist_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 }
-static void fs_create(struct entity* act)
+static void fslist_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	if(0 == act)return;
-	act->buf0 = memorycreate(0x1000, 0);
+	struct entity* sup = peer->pchip;
+	switch(sup->fmt){
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:fslist_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
+}
+static void fslist_discon(struct halfrel* self, struct halfrel* peer)
+{
+}
+static void fslist_linkup(struct halfrel* self, struct halfrel* peer)
+{
 }
 
 
 
 
-void fs_register(struct entity* p)
+static void fslist_search(struct entity* act)
 {
-	p->type = _orig_;
-	p->fmt = hex32('f', 's', 0, 0);
+}
+static void fslist_modify(struct entity* act)
+{
+}
+static void fslist_delete(struct entity* act)
+{
+	if(0 == act)return;
+	if(act->LISTBUF){
+		memorydelete(act->LISTBUF);
+		act->LISTBUF = 0;
+	}
+}
+static void fslist_create(struct entity* act, void* arg, int argc, u8** argv)
+{
+	if(0 == act)return;
 
-	p->oncreate = (void*)fs_create;
-	p->ondelete = (void*)fs_delete;
-	p->onsearch = (void*)fs_search;
-	p->onmodify = (void*)fs_modify;
+	act->PATHBUF = memorycreate(0x10000, 0);
+	if(0 == arg)arg = "datafile/myml";
+	copypath(act->PATHBUF, arg);
 
-	p->onlinkup = (void*)fs_linkup;
-	p->ondiscon = (void*)fs_discon;
-	p->onread  = (void*)fs_read;
-	p->onwrite = (void*)fs_write;
+	act->LISTBUF = memorycreate(0x10000, 0);
+	readfolder(act->PATHBUF,0, 0,0, act->LISTBUF,0x10000);
+}
+
+
+
+
+void fslist_register(struct entity* p)
+{
+	p->fmt = hex64('f','s','l','i','s','t', 0, 0);
+
+	p->oncreate = (void*)fslist_create;
+	p->ondelete = (void*)fslist_delete;
+	p->onsearch = (void*)fslist_search;
+	p->onmodify = (void*)fslist_modify;
+
+	p->onlinkup = (void*)fslist_linkup;
+	p->ondiscon = (void*)fslist_discon;
+	p->onread  = (void*)fslist_read;
+	p->onwrite = (void*)fslist_write;
 }

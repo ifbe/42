@@ -542,36 +542,50 @@ void carvedouble(struct entity* win, u32 rgb,
 
 
 
-void carvetext2d(struct entity* win, u32 rgb,
+void carvetext(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf,
 	u8* buf, int len)
 {
+	int j,k,cnt;
+	vec3 tc,tr,tf;
+	if(0 == buf)return;
+	if(0 == len)return;
+
+	for(j=0;j<3;j++){tr[j]=vr[j];tf[j]=vf[j];}
+	vec3_setlen(tr, 32);
+	vec3_setlen(tf, 32);
+	for(j=0;j<3;j++)tc[j] = vc[j] -vr[j] +vf[j]-tf[j];
+
+	k = 0;
+	cnt = 0;
+	for(j=0;j<len;j++){
+		if('\n' > buf[j])break;
+		if('\n' == buf[j]){
+			//say("%.*s\n", j-k, buf+k);
+			carvestring(win, rgb, tc, tr, tf, buf+k, j-k);
+			tc[0] -= tf[0];
+			tc[1] -= tf[1];
+			tc[2] -= tf[2];
+
+			k = j+1;
+			cnt += 1;
+			if(cnt > 64)break;
+		}
+	}
 }
 void carvetext_reverse(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf,
 	u8* buf, int len)
 {
 	int j,k,cnt;
-	float n;
-	vec3 tc;
-	vec3 tr;
-	vec3 tf;
+	vec3 tc,tr,tf;
 	if(0 == buf)return;
 	if(0 == len)return;
 
-	n = 32.0 / vec3_getlen(vr);
-	tr[0] = vr[0] * n;
-	tr[1] = vr[1] * n;
-	tr[2] = vr[2] * n;
-
-	n = 32.0 / vec3_getlen(vf);
-	tf[0] = vf[0] * n;
-	tf[1] = vf[1] * n;
-	tf[2] = vf[2] * n;
-
-	tc[0] = vc[0] - vr[0] - vf[0];
-	tc[1] = vc[1] - vr[1] - vf[1];
-	tc[2] = vc[2] - vr[2] - vf[2];
+	for(j=0;j<3;j++){tr[j]=vr[j];tf[j]=vf[j];}
+	vec3_setlen(tr, 32);
+	vec3_setlen(tf, 32);
+	for(j=0;j<3;j++)tc[j] = vc[j] -vr[j] -vf[j];
 
 	k = len;
 	cnt = 0;

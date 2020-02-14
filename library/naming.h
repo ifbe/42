@@ -271,5 +271,5 @@
 #define _drag_ hex32('d','r','a','g')
 #define _joy_ hex32('j','o','y',0)
 #define _kbd_ hex32('k','b','d',0)
-
+#define _myml_ hex32('m','y','m','l')
 #endif

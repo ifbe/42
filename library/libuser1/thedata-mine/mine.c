@@ -123,7 +123,7 @@ void xiangqi_register(void*);
 //hack
 void browser_register(void*);
 void circuit_register(void*);
-void fs_register(void*);
+void fslist_register(void*);
 void pwmtool_register(void*);
 void rawdump_register(void*);
 
@@ -479,7 +479,7 @@ void content_create(void* addr)
 	circuit_register(tmp);
 	tmp -= sizeof(struct entity);
 
-	fs_register(tmp);
+	fslist_register(tmp);
 	tmp -= sizeof(struct entity);
 
 	pwmtool_register(tmp);

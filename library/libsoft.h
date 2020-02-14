@@ -55,6 +55,9 @@ int stopfile(int);
 int readfile( void*, int, void*, int, void*, int);
 int writefile(void*, int, void*, int, void*, int);
 //
+int readfolder( void*, int, void*, int, void*, int);
+int writefolder(void*, int, void*, int, void*, int);
+//
 int threaddelete(u64);
 u64 threadcreate(void*, void*);
 int memorydelete(void*);
