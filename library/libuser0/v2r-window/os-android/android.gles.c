@@ -31,13 +31,15 @@ void* pollenv();
 static EGLDisplay display = EGL_NO_DISPLAY;
 static EGLContext context = EGL_NO_CONTEXT;
 static EGLSurface surface = EGL_NO_SURFACE;
+static int width = 0;
+static int height = 0;
+//
 static struct android_app* theapp = 0;
 static struct supply* thewin = 0;
-static int status = 0;
 
 
 
-void windowprepare(struct supply* win)
+void openwindow()
 {
 	int x,y,z;
 	display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
@@ -61,13 +63,8 @@ void windowprepare(struct supply* win)
 	EGLint format;
 	eglGetConfigAttrib(display, config, EGL_NATIVE_VISUAL_ID, &format);
 
-	x = ANativeWindow_getWidth(theapp->window);
-	y = ANativeWindow_getHeight(theapp->window);
-	z = (x+y)/2;
-	win->width  = win->fbwidth  = x;
-	win->stride = win->fbstride = x;
-	win->height = win->fbheight = y;
-	win->depth  = win->fbdepth  = z;
+	width = ANativeWindow_getWidth(theapp->window);
+	height = ANativeWindow_getHeight(theapp->window);
 	ANativeWindow_setBuffersGeometry(theapp->window, 0, 0, format);
 
 	surface = eglCreateWindowSurface(display, config, theapp->window, NULL);
@@ -92,7 +89,7 @@ void windowprepare(struct supply* win)
 	LOGI("GL Renderer = %s\n", glGetString(GL_RENDERER));
 	LOGI("GL Extensions = %s\n", glGetString(GL_EXTENSIONS));
 }
-void windowunload()
+void closewindow()
 {
 	if (EGL_NO_DISPLAY != display)
 	{
@@ -139,16 +136,7 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 	else if(APP_CMD_INIT_WINDOW == cmd)
 	{
 		LOGI("APP_CMD_INIT_WINDOW");
-		while(!thewin);
-
-		windowprepare(thewin);
-
-		//hostctx_create(thewin);
-		//initshader(thewin);
-		//inittexture(thewin);
-		//initvertex(thewin);
-
-		status = 1;
+		openwindow();
 	}
 	else if(APP_CMD_WINDOW_RESIZED == cmd)
 	{
@@ -157,9 +145,7 @@ static void handle_cmd(struct android_app* app, int32_t cmd)
 	else if(APP_CMD_TERM_WINDOW == cmd)
 	{
 		LOGI("APP_CMD_TERM_WINDOW");
-		//appState->windowInitialized = false;
-		//termDisplay(appState);
-		windowunload();
+		closewindow();
 	}
 	else if(APP_CMD_SAVE_STATE == cmd)
 	{
@@ -246,10 +232,11 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 void windowread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
 {
 	struct supply* win = self->pchip;
-	if(status){
-		fullwindow_read(win);
-		eglSwapBuffers(display, surface);
-	}
+	if(win != thewin)return;
+
+	fullwindow_read(win);
+	eglSwapBuffers(display, surface);
+
 	pollenv();
 }
 void windowwrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
@@ -266,16 +253,14 @@ void windowdelete(struct supply* win)
 }
 void windowcreate(struct supply* win)
 {
-	thewin = win;
-
-	win->width  = win->fbwidth  = 1024;
-	win->stride = win->fbstride = 1024;
-	win->height = win->fbheight = 1024;
-	win->depth  = win->fbdepth  = 1024;
 	say("@windowcreate\n");
-
+	win->width  = win->fbwidth  = width;
+	win->stride = win->fbstride = width;
+	win->height = win->fbheight = height;
+	win->depth  = win->fbdepth  = 1024;
 	fullwindow_create(win);
-	while(!status)pollenv();
+
+	thewin = win;
 }
 
 
@@ -286,6 +271,8 @@ void initwindow()
 	theapp = getapp();
 	theapp->onAppCmd = handle_cmd;
 	theapp->onInputEvent = handle_input;
+
+	while(0 == height)pollenv();
 }
 void freewindow()
 {
