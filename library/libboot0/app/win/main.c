@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 	if(argc <= 1)prep();
 */
 	void* all = pwrclkcreate(_win32_, 0, argc, (u8**)argv);
-	vodi* thr = workercreate(0, 0, 0, 0);
+	void* thr = workercreate(0, 0, 0, 0);
 
 	workerdelete(thr);
 	pwrclkdelete(all);
