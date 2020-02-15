@@ -121,7 +121,7 @@ static void fslist_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	gl41solid_rect(wnd,0x0000ff, vc,vr,vf);
+	gl41solid_rect(wnd,0x000080, vc,vr,vf);
 
 	for(j=0;j<3;j++)tc[j] = vc[j] + vt[j]/100.0;
 	carvetext(wnd, 0xff00ff, tc,vr,vf, act->LISTBUF, 0x10000);
