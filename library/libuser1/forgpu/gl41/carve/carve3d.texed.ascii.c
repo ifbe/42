@@ -472,20 +472,9 @@ void carvestring_center(struct entity* win, u32 rgb,
 void carvedecimal(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 val)
 {
-	int j,len;
-	u8 str[8];
-
-	for(len=0;len<8;len++)
-	{
-		if(0 == val)break;
-		str[len] = 0x30 + (val%10);
-		val = val/10;
-	}
-	if(len == 0)
-	{
-		len = 1;
-		str[0] = '0';
-	}
+	int len;
+	u8 str[16];
+	len = data2decstr(val, str);
 	carvestring(win, rgb, vc, vr, vf, str, len);
 }
 void carvehexadecimal(struct entity* win, u32 rgb,

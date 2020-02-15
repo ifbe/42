@@ -139,7 +139,7 @@ static void fslist_read_bywnd(struct halfrel* self, struct halfrel* peer, struct
 	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
 	fs.vr[0] = area->fs.vq[0] * wnd->fbwidth / 2.0;
 	fs.vf[1] = area->fs.vq[1] * wnd->fbheight/ 2.0;
-	fs.vt[2] =-1.0;
+	fs.vt[2] = 1.0;
 
 	gl41data_before(wnd);
 	fslist_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);

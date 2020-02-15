@@ -32,7 +32,7 @@ void gl41data_xxxcam(struct entity* wnd, struct fstyle* area)
 	}
 	m[0][0] = 2.0 / (area->vq[0] * wnd->fbwidth);
 	m[1][1] = 2.0 / (area->vq[1] * wnd->fbheight);
-	m[2][2] = 1.0;
+	m[2][2] =-1.0;
 	m[3][3] = 1.0;
 	//say("%f,%f\n", m[0][0], m[1][1]);
 
@@ -52,12 +52,13 @@ void gl41data_tmpcam(struct entity* wnd)
 	float (*m)[4] = trick + 0x800;
 	float* v = trick + 0xc00;
 	for(y=0;y<4;y++){
-		for(x=0;x<4;x++){
-			if(x == y)m[y][x] = 1.0;
-			else m[y][x] = 0.0;
-		}
+		for(x=0;x<4;x++)m[y][x] = 0.0;
 		v[y] = 0.0;
 	}
+	m[0][0] = 1.0;
+	m[1][1] = 1.0;
+	m[2][2] =-1.0;
+	m[3][3] = 1.0;
 
 	data->src.arg[0].fmt = 'm';
 	data->src.arg[0].name = "cammvp";

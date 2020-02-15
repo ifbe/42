@@ -280,7 +280,7 @@ static void piano_read_bywnd(struct halfrel* self, struct halfrel* peer, struct 
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
 	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-1.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
 
 	gl41data_before(wnd);
 	piano_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
