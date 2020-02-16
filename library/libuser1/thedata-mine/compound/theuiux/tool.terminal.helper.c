@@ -506,10 +506,11 @@ void terminal_serverinput(struct uartterm* term, u8* buf, int len)
 	int h = term->height;
 	u8* dst = term->buf;
 	u8* q;
-	//printmemory(buf,len);
+	printmemory(buf,len);
 
 	for(j=0;j<len;j++)
 	{
+		//say("%02x\n",buf[j]);
 		if(buf[j] == 0)continue;
 		if(buf[j] == 0x7)continue;
 
@@ -582,6 +583,7 @@ void terminal_serverinput(struct uartterm* term, u8* buf, int len)
 		else
 		{
 			y = 4*(w*(term->cury) + term->curx);
+			//say("(w=%d)\n",w);
 			dst[y + 3] = term->bg;
 			dst[y + 2] = term->fg;
 			dst[y + 0] = buf[j];
@@ -589,6 +591,7 @@ void terminal_serverinput(struct uartterm* term, u8* buf, int len)
 			term->curx++;
 		}
 	}
+	//printmemory(dst, 16);
 }
 void terminal_clientinput(
 	struct entity* act, struct style* pin,

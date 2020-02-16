@@ -1,0 +1,54 @@
+<entity>
+terminal{
+fmt:term
+}
+keyboard{
+fmt:vkbd
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<system>
+ptmx{
+fmt:ptmx
+url:/dev/ptmx
+}
+</system>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<style>
+termrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+vkbdrect{
+c:0.1, 0.0
+q:0.8, 0.4
+}
+</style>
+
+
+<relation>
+(ptmx, 0, dst) -> (terminal, 0, s)
+(keyboard, 0, ev) -> (terminal, 0, 1)
+(opengl, termrect, 0) -> (terminal, 0, 0)
+(opengl, vkbdrect, 0) -> (keyboard, 0, 0)
+</relation>
