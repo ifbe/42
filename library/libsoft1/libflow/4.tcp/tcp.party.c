@@ -17,16 +17,29 @@ void party_gettype(u8* src, u8* dst)
 
 
 
-int partyclient_write(
-	struct artery* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int partyclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	printmemory(buf, len);
+	struct artery* art = self->pchip;
+	say("@partyclient_write\n");
+
+	relationwrite(art, _src_, 0,0, "partyclient!\n", 0);
 	return 0;
 }
-int partyclient_read()
+int partyclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
+	return 0;
+}
+int partyclient_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int partyclient_linkup(struct halfrel* self, struct halfrel* peer)
+{
+	struct object* obj = peer->pchip;
+	if( (_sys_ == obj->tier) && (_tcp_ == obj->type) ){
+		struct artery* art = self->pchip;
+		relationwrite(art,_src_, 0,0, "I volunteer to join\n",20);
+	}
 	return 0;
 }
 int partyclient_delete(struct artery* ele)
@@ -65,18 +78,15 @@ int partyclient_create(struct artery* ele, u8* url)
 
 
 
-int partyserver_write(
-	struct artery* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int partyserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	printmemory(buf,len);
+	struct artery* art = self->pchip;
+	say("@partyserver_write\n");
+
+	relationwrite(art, _src_, 0,0, "partyserver!\n", 0);
 	return 0;
 }
-int partyserver_read(
-	struct artery* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int partyserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -91,7 +101,7 @@ int partyserver_create(struct artery* ele, u8* url)
 
 
 
-
+/*
 int partymaster_write(
 	struct artery* ele, void* sty,
 	struct object* obj, void* pin,
@@ -108,7 +118,7 @@ int partymaster_write(
 	struct relation* irel;
 	u8* GET = 0;
 	u8* SERVE = 0;
-/*
+
 	//old
 	if(obj->orel0)
 	{
@@ -209,10 +219,32 @@ int partymaster_write(
 				irel = samedstnextsrc(irel);
 			}
 		}
-	}*/
+	}
+	return 0;
+}*/
+int partymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+{
+	struct artery* art = self->pchip;
+	say("@partymaster_write\n");
+
+	struct object* sys = peer->pchip;
+	if(0 == ncmp(buf, "GET ", 4)){
+		u8 tmp[128];
+		int ret = mysnprintf(tmp, 128,
+"HTTP/1.1 200 OK\r\n"
+"\r\n"
+"partymaster!"
+		);
+		relationwrite(art, _src_, 0,0, tmp,ret);
+	if(_sys_ == sys->tier)systemdelete(sys->tempobj);
+	}
+	else{
+		printmemory(buf, len);
+	}
+
 	return 0;
 }
-int partymaster_read()
+int partymaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }

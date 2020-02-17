@@ -1,0 +1,18 @@
+<artery>
+service{
+fmt:PARTY
+}
+</artery>
+
+
+<system>
+socket{
+fmt:TCP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<relation>
+(socket, 0, dst) -> (service, 0, src)
+</relation>

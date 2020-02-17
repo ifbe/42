@@ -1,0 +1,18 @@
+<artery>
+client{
+fmt:party
+}
+</artery>
+
+
+<system>
+socket{
+fmt:tcp
+url:127.0.0.1:9999
+}
+</system>
+
+
+<relation>
+(socket, 0, dst) -> (client, 0, src)
+</relation>
