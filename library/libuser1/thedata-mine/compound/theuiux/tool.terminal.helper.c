@@ -502,8 +502,6 @@ void terminal_serverinput(struct uartterm* term, u8* buf, int len)
 {
 	int j,k;
 	int x,y;
-	int w = term->width;
-	int h = term->height;
 	u8* dst = term->buf;
 	u8* q;
 	printmemory(buf,len);
@@ -539,7 +537,7 @@ void terminal_serverinput(struct uartterm* term, u8* buf, int len)
 			else
 			{
 				term->cury++;
-				if(w*(term->cury) >= 0xf0000)
+				if(term->width*term->cury >= 0xf0000)
 				{
 					term->cury = 0;
 					term->top = 0;
@@ -572,7 +570,7 @@ void terminal_serverinput(struct uartterm* term, u8* buf, int len)
 			else if(buf[j] < 0xfe)k = 6;
 			else k = 1;
 
-			y = 4*(w*(term->cury) + term->curx);
+			y = 4*(term->width*term->cury + term->curx);
 			dst[y + 7] = term->bg;
 			dst[y + 6] = term->fg;
 			for(x=0;x<k;x++)dst[y+x] = buf[j+x];
@@ -582,7 +580,7 @@ void terminal_serverinput(struct uartterm* term, u8* buf, int len)
 		}
 		else
 		{
-			y = 4*(w*(term->cury) + term->curx);
+			y = 4*(term->width*term->cury + term->curx);
 			//say("(w=%d)\n",w);
 			dst[y + 3] = term->bg;
 			dst[y + 2] = term->fg;

@@ -44,9 +44,9 @@ void input(u8* buf, int len);
 
 
 
-
-static u8 charbuf[0x100];
-static int charlen = 0;
+static u32 colortable[8] = {
+	0x101010, 0xff0000, 0x00ff00, 0xffff00,
+	0x0000ff, 0xff00ff, 0x00ffff, 0xffffff};
 
 
 
@@ -164,7 +164,7 @@ void terminal_write_s(struct halfrel* self, struct halfrel* peer, u8* buf, int l
 
 void gl41_vt100(struct entity* wnd, struct uartterm* term, float* vc,float* vr,float* vf)
 {
-	int x,y,j;
+	int x,y,j,rgb;
 	vec3 tc,tr,tf;
 	for(j=0;j<3;j++){tr[j]=vr[j];tf[j]=vf[j];}
 	vec3_setlen(tr, 32);
@@ -173,10 +173,18 @@ void gl41_vt100(struct entity* wnd, struct uartterm* term, float* vc,float* vr,f
 	//printmemory(term->buf, term->width);
 	u8* buf;
 	for(y=0;y<32;y++){
-		buf = &term->buf[term->width*y*4];
+		buf = &term->buf[(term->top+y)*term->width*4];
 		for(x=0;x<80;x++){
 			for(j=0;j<3;j++)tc[j] = vc[j] -vr[j]+tr[j]*x/2 + vf[j]-tf[j]*y;
-			carveascii(wnd, 0xffffff, tc,tr,tf, buf[x*4]);
+			if(buf[x*4]<0x80){
+				rgb = colortable[buf[x*4+2]&0x7];
+				carveascii(wnd, rgb, tc,tr,tf, buf[x*4]);
+			}
+			else{
+				rgb = colortable[buf[x*4+6]&0x7];
+				carveutf8(wnd, rgb, tc,tr,tf, &buf[x*4], 0);
+				x++;
+			}
 		}
 	}
 }
@@ -193,7 +201,7 @@ static void terminal_draw_gl41(
 	float* vt = geom->f.vt;
 
 	for(j=0;j<3;j++)tc[j] = vc[j] - vt[j]/1000;
-	gl41opaque_rect(wnd, 0x80202020, tc, vr, vf);
+	gl41opaque_rect(wnd, 0x80101010, tc, vr, vf);
 
 	if(0 == act->SERVER){
 		void* obuf = getstdout();
