@@ -44,7 +44,7 @@ int queue_1b_color(struct uartterm* term, u8* p)
 	//heavy
 	else if(p[0] == '1')
 	{
-		term->fg = 1;
+		term->fg = 0xf;
 		return 1;
 	}
 

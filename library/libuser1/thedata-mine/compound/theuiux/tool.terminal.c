@@ -44,9 +44,9 @@ void input(u8* buf, int len);
 
 
 
-static u32 colortable[8] = {
-	0x101010, 0xff0000, 0x00ff00, 0xffff00,
-	0x0000ff, 0xff00ff, 0x00ffff, 0xffffff};
+static u32 colortable[16] = {
+	0x101010, 0xe00000, 0x00e000, 0xe0e000, 0x0000e0, 0xe000e0, 0x00e0e0, 0xe0e0e0,
+	0x000000, 0xff0000, 0x00ff00, 0xffff00, 0x0000ff, 0xff00ff, 0x00ffff, 0xffffff};
 
 
 
@@ -133,15 +133,6 @@ static void terminal_draw_cli(
 
 
 
-void terminal_write_c(struct halfrel* self, struct halfrel* peer, void* buf, int len)
-{
-	struct event* ev = buf;
-	if(_char_ != ev->what)return;
-
-	struct entity* ent = self->pchip;
-	if(0 == ent->SERVER)input(buf, 1);
-	else relationwrite(ent, 's', 0, 0, buf,1);
-}
 void terminal_write_s(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
 	struct entity* ent = self->pchip;
@@ -158,6 +149,33 @@ void terminal_write_s(struct halfrel* self, struct halfrel* peer, u8* buf, int l
 		terminal_serverinput(ent->TTTBUF, buf, len);
 	}
 }
+void terminal_write_c(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+{
+	struct entity* ent = self->pchip;
+	if(0 == ent->SERVER)input(buf, len);
+	else relationwrite(ent, 's', 0, 0, buf,len);
+}
+static void terminal_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	u32 tmp;
+	struct event* ev = buf;
+	if(_char_ == ev->what){
+		terminal_write_c(self,peer, buf, 1);
+		return;
+	}
+	if(_kbd_ == ev->what){
+		switch(ev->why){
+		case 0x48:tmp = 0x415b1b;len = 3;break;
+		case 0x50:tmp = 0x425b1b;len = 3;break;
+		case 0x4d:tmp = 0x435b1b;len = 3;break;
+		case 0x4b:tmp = 0x445b1b;len = 3;break;
+		case 0x1b:tmp = 0x1b;len = 1;break;
+		default:return;
+		}
+		terminal_write_c(self,peer, &tmp, len);
+		return;
+	}
+}
 
 
 
@@ -165,7 +183,8 @@ void terminal_write_s(struct halfrel* self, struct halfrel* peer, u8* buf, int l
 void gl41_vt100(struct entity* wnd, struct uartterm* term, float* vc,float* vr,float* vf)
 {
 	int x,y,j,rgb;
-	vec3 tc,tr,tf;
+	vec3 tr,tf;
+	vec3 tc,qc;
 	for(j=0;j<3;j++){tr[j]=vr[j];tf[j]=vf[j];}
 	vec3_setlen(tr, 32);
 	vec3_setlen(tf, 32);
@@ -175,18 +194,23 @@ void gl41_vt100(struct entity* wnd, struct uartterm* term, float* vc,float* vr,f
 	for(y=0;y<32;y++){
 		buf = &term->buf[(term->top+y)*term->width*4];
 		for(x=0;x<80;x++){
-			for(j=0;j<3;j++)tc[j] = vc[j] -vr[j]+tr[j]*x/2 + vf[j]-tf[j]*y;
+			for(j=0;j<3;j++)tc[j] = vc[j] -vr[j]+tr[j]*x/2 +vf[j]-tf[j]*y;
 			if(buf[x*4]<0x80){
-				rgb = colortable[buf[x*4+2]&0x7];
+				rgb = colortable[buf[x*4+2]&0xf];
 				carveascii(wnd, rgb, tc,tr,tf, buf[x*4]);
 			}
 			else{
-				rgb = colortable[buf[x*4+6]&0x7];
+				rgb = colortable[buf[x*4+6]&0xf];
 				carveutf8(wnd, rgb, tc,tr,tf, &buf[x*4], 0);
 				x++;
 			}
 		}
 	}
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] -vr[j]+tr[j]*(term->curx)/2 +vf[j]-tf[j]*(term->cury - term->top);
+		qc[j] = tc[j] +tf[j];
+	}
+	gl41line(wnd, 0xffffff, tc,qc);
 }
 static void terminal_draw_gl41(
 	struct entity* act, struct style* slot,
@@ -280,21 +304,25 @@ static void terminal_read(struct halfrel* self, struct halfrel* peer, struct hal
 static void terminal_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	switch(self->flag){
-	case '1':
 	case 'c':terminal_write_c(self,peer, buf,len);break;
 	case 's':terminal_write_s(self,peer, buf,len);break;
+	case '1':terminal_write_bywnd(self,peer, stack,rsp, buf,len);break;
 	}
 
 	struct entity* sup = peer->pchip;
 	switch(sup->fmt){
 	case _gl41wnd0_:
 	case _full_:
-	case _wnd_:terminal_write_c(self,peer, buf,len);break;
+	case _wnd_:terminal_write_bywnd(self,peer, stack,rsp, buf,len);break;
 	}
 }
 static void terminal_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@terminal_discon:%.4s\n", &self->flag);
+	struct entity* ent = self->pchip;
+	switch(self->flag){
+	case 'c':ent->CLIENT = 0;break;
+	case 's':ent->SERVER = 0;break;
+	}
 }
 static void terminal_linkup(struct halfrel* self, struct halfrel* peer)
 {
