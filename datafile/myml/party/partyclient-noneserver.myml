@@ -1,6 +1,8 @@
 <artery>
 client{
 fmt:party
+to:std
+by:term
 }
 </artery>
 

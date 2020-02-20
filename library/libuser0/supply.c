@@ -16,6 +16,8 @@ void initstd(void*);
 void freestd();
 int stdcreate(void*, void*, int, u8**);
 int stddelete(void*);
+int stdio_read(void*, void*, void*, int, void*, int);
+int stdio_write(void*, void*, void*, int, void*, int);
 //
 void inittray(void*);
 void freetray();
@@ -140,6 +142,7 @@ int supplyread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	struct supply* win = self->pchip;
 
 	switch(win->type){
+		case _std_:stdio_read(self,peer, arg,idx, buf,len);return 0;
 		case _wnd_:windowread(self, peer, arg, idx, buf, len);return 0;
 		case _spk_:speakerread(self, peer, arg, idx, buf, len);return 0;
 	}
@@ -162,6 +165,7 @@ int supplywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	struct supply* win = self->pchip;
 
 	switch(win->type){
+		case _std_:stdio_write(self,peer, arg,idx, buf,len);return 0;
 		case _wnd_:windowwrite(self, peer, arg, idx, buf, len);return 0;
 		case _spk_:speakerwrite(self, peer, arg, idx, buf, len);return 0;
 	}

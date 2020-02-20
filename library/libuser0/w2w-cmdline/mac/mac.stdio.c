@@ -27,6 +27,13 @@ void terminalthread(struct supply* win)
 
 
 
+void stdio_read(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf, int len)
+{
+}
+void stdio_write(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf, int len)
+{
+	say("%.*s", len, buf);
+}
 void stddelete(struct supply* win)
 {
 }

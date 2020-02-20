@@ -1,0 +1,28 @@
+<supply>
+std{
+fmt:std
+}
+</supply>
+
+
+<artery>
+client{
+fmt:party
+to:term
+by:std
+}
+</artery>
+
+
+<system>
+socket{
+fmt:tcp
+url:127.0.0.1:9999
+}
+</system>
+
+
+<relation>
+(socket, 0, dst) -> (client, 0, src)
+(std, 0, dst) -> (client, 0, std)
+</relation>

@@ -1,0 +1,25 @@
+<artery>
+client{
+fmt:party
+to:std
+by:term
+}
+</artery>
+
+
+<system>
+socket{
+fmt:tcp
+url:127.0.0.1:9999
+}
+ptmx{
+fmt:ptmx
+url:/dev/ptmx
+}
+</system>
+
+
+<relation>
+(socket, 0, dst) -> (client, 0, src)
+(ptmx, 0, dst) -> (client, 0, dst)
+</relation>
