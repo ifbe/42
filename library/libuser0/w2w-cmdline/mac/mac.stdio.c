@@ -34,10 +34,10 @@ void stdio_write(struct halfrel* self,struct halfrel* peer, void* arg,int idx, v
 {
 	say("%.*s", len, buf);
 }
-void stddelete(struct supply* win)
+void stdio_delete(struct supply* win)
 {
 }
-void stdcreate(struct supply* win)
+void stdio_create(struct supply* win)
 {
 	termwrite("\n", 1);
 	threadcreate(terminalthread, win);

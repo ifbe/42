@@ -37,7 +37,7 @@ by:wnd
 <system>
 socket{
 fmt:tcp
-url:127.0.0.1:9999
+url:deepstack.tech:9999
 }
 </system>
 

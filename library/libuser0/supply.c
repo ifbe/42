@@ -14,8 +14,8 @@ int joydelete(void*);
 //
 void initstd(void*);
 void freestd();
-int stdcreate(void*, void*, int, u8**);
-int stddelete(void*);
+int stdio_create(void*, void*, int, u8**);
+int stdio_delete(void*);
 int stdio_read(void*, void*, void*, int, void*, int);
 int stdio_write(void*, void*, void*, int, void*, int);
 //
@@ -23,16 +23,6 @@ void inittray(void*);
 void freetray();
 int traycreate(void*, void*, int, u8**);
 int traydelete(void*);
-//
-int gravity_create(void*, void*, int, u8**);
-int gravity_delete(void*);
-int gravity_read(void*, void*, void*, int, void*, int);
-int gravity_write(void*, void*, void*, int, void*, int);
-//
-int collide_create(void*, void*, int, u8**);
-int collide_delete(void*);
-int collide_read(void*, void*, void*, int, void*, int);
-int collide_write(void*, void*, void*, int, void*, int);
 //
 int ahrs_create(void*, void*, int, u8**);
 int ahrs_delete(void*);
@@ -147,8 +137,6 @@ int supplyread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _spk_:speakerread(self, peer, arg, idx, buf, len);return 0;
 	}
 	switch(win->fmt){
-		case _collide_:return collide_read(self, peer, arg, idx, buf, len);
-		case _gravity_:return gravity_read(self, peer, arg, idx, buf, len);
 		case _cam_:return videoread(self, peer, arg, idx, buf, len);
 		case _bdc_:return toycar_read(self, peer, arg, idx, buf, len);
 		case _step_:return stepcar_read(self, peer, arg, idx, buf, len);
@@ -170,8 +158,6 @@ int supplywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _spk_:speakerwrite(self, peer, arg, idx, buf, len);return 0;
 	}
 	switch(win->fmt){
-		case _collide_:return collide_write(self, peer, arg, idx, buf, len);
-		case _gravity_:return gravity_write(self, peer, arg, idx, buf, len);
 		case _ahrs_:return ahrs_write(self, peer, arg, idx, buf, len);
 		case _slam_:return slam_write(self, peer, arg, idx, buf, len);
 		case _bdc_:return toycar_write(self, peer, arg, idx, buf, len);
@@ -253,7 +239,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 
 		win->type = _std_;
 		win->fmt = _std_;
-		stdcreate(win, arg, argc, argv);
+		stdio_create(win, arg, argc, argv);
 		return win;
 	}
 	else if(_tray_ == type)
@@ -264,28 +250,6 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		win->type = _tray_;
 		win->fmt = _tray_;
 		traycreate(win, arg, argc, argv);
-		return win;
-	}
-
-	//phys
-	else if(_gravity_ == type)
-	{
-		win = allocsupply();
-		if(0 == win)return 0;
-
-		win->type = _phys_;
-		win->fmt = _gravity_;
-		gravity_create(win, arg, argc, argv);
-		return win;
-	}
-	else if(_collide_ == type)
-	{
-		win = allocsupply();
-		if(0 == win)return 0;
-
-		win->type = _phys_;
-		win->fmt = _collide_;
-		collide_create(win, arg, argc, argv);
 		return win;
 	}
 
