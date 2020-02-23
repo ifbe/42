@@ -193,6 +193,7 @@
 //event
 #define _clickray_ hex64('c','l','i','c','k','r','a','y')
 #define _event3rd_ hex64('e','v','e','n','t','3','r','d')
+#define _eventrts_ hex64('e','v','e','n','t','r','t','s')
 //dx
 #define _dx11data_ hex64('d','x','1','1','d','a','t','a')
 #define _dx11coop_ hex64('d','x','1','1','c','o','o','p')

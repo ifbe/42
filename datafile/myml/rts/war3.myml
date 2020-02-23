@@ -1,0 +1,114 @@
+<entity>
+ground{
+fmt:ground
+url:datafile/jpg/grass.jpg
+}
+tree{
+fmt:human
+}
+rabbit{
+fmt:stl3d
+url:datafile/stl/bunny-lowpoly.stl
+}
+
+freecam{
+fmt:freecam
+}
+world3d{
+fmt:world3d
+}
+event{
+fmt:eventrts
+}
+vkbd{
+fmt:vkbd
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<style>
+gndslot{
+}
+gndgeom{
+c: 0.0, 0.0, -1.0
+r: 100000.0, 0.0, 0.0
+f: 0.0, 100000.0, 0.0
+t: 0.0, 0.0, 10000.0
+}
+
+treeslot{
+}
+treegeom{
+c: 300.0, 300.0, 500.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
+}
+
+rabslot{
+}
+rabgeom{
+c: 0.0, 0.0, 500.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
+}
+
+freeslot{
+}
+freegeom{
+c: 0.0, 0.0, 2000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+L: 0.0, 0.0, 0.0,-0.7
+R: 0.0, 0.0, 0.0, 0.7
+B: 0.0, 0.0, 0.0,-0.7
+T: 0.0, 0.0, 0.0, 0.7
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+fullrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+helprect{
+c:0.0, 0.0
+q:1.0, 0.4
+}
+</style>
+
+
+<relation>
+(event, 0, tar) -> (rabbit, 0, ev)
+(event, 0, cam) -> (freecam, 0, ev)
+
+#world3d depends on inner objects
+(world3d, gndgeom, 0) -> (ground, gndslot, 0)
+(world3d, treegeom, 0) -> (tree, treeslot, 0)
+(world3d, rabgeom, 0) -> (rabbit, rabslot, 0)
+(world3d, freegeom, 0) -> (freecam, freeslot, 0)
+
+#glwnd depends on cam
+(opengl, fullrect, 0) -> (freecam, 0, 0)
+(opengl, helprect, 0) -> (vkbd, 0, 0)
+</relation>

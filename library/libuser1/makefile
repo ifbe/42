@@ -35,6 +35,7 @@ forcpu/cli/cli.c \
 forspu/al10/al10.c \
 forspu/sl10/sl10.c \
 forspu/spu.pcm.c \
+therule-play/event/event.rts.c \
 therule-play/event/event.rpg.1rd.c \
 therule-play/event/event.rpg.3rd.c \
 therule-play/event/event.pick.ray.c \
