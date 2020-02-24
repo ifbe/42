@@ -339,6 +339,24 @@ void datastr2hexstr(char* dst, char* src, int count)
 	}
 	dst[2*count] = 0;
 }
+
+
+
+
+int hexstr2u32(u8* src, u32* dat)
+{
+	int j;
+	u32 tmp = 0;
+	for(j=0;j<8;j++)
+	{
+		if(src[j] >= '0' && src[j] <= '9')tmp = (tmp<<4) + (src[j]-'0');
+		else if(src[j] >= 'A' && src[j] <= 'F')tmp = (tmp<<4) + (src[j]-'A'+10);
+		else if(src[j] >= 'a' && src[j] <= 'f')tmp = (tmp<<4) + (src[j]-'a'+10);
+		else break;
+	}
+	*dat = tmp;
+	return j;
+}
 int hexstr2data(u8* src,u64* data)
 {
 	int j;

@@ -675,6 +675,7 @@ int arterydiscon(struct halfrel* self, struct halfrel* peer)
 		case _tls_:return tlsclient_discon(self, peer);break;
 
 		case _party_:return partyclient_discon(self, peer);break;
+		case _PARTY_:return partymaster_discon(self, peer);break;
 
 		case _proxy_:return proxyclient_discon(self, peer);break;
 		case _Proxy_:return proxyserver_discon(self, peer);break;
@@ -701,6 +702,7 @@ int arterylinkup(struct halfrel* self, struct halfrel* peer)
 		case _tls_:return tlsclient_linkup(self, peer);break;
 
 		case _party_:return partyclient_linkup(self, peer);break;
+		case _PARTY_:return partymaster_linkup(self, peer);break;
 
 		case _proxy_:return proxyclient_linkup(self, peer);break;
 		case _Proxy_:return proxyserver_linkup(self, peer);break;
