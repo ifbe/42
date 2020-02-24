@@ -11,6 +11,9 @@ fmt:party
 to:wnd
 by:cam
 }
+goslow{
+fmt:goslow
+}
 </artery>
 
 
@@ -24,5 +27,6 @@ url:127.0.0.1:9999
 
 <relation>
 (socket, 0, dst) -> (client, 0, src)
-(camera, 0, dst) -> (client, 0, dst)
+(camera, 0, dst) -> (goslow, 0, src)
+(goslow, 0, dst) -> (client, 0, dst)
 </relation>

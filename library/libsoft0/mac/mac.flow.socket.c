@@ -83,7 +83,7 @@ int waitconnectwithselect(int sock)
 
 int writesocket(int fd, void* tmp, void* buf, int len)
 {
-	int j,ret;
+	int cnt,ret;
 	u64 type;
 	if(fd == 0)return 0;
 	if(buf == 0)return 0;
@@ -113,19 +113,20 @@ int writesocket(int fd, void* tmp, void* buf, int len)
 		return len;
 	}
 
-	ret = len;
+	cnt = 0;
 	while(1){
-		j = write(fd, buf, len);
-		if(j == len)break;
-		if(-1 == j){
-			say("error@writesocket\n");
-			return -1;
+		ret = write(fd, buf+cnt, len-cnt);
+		if(ret < 0){
+			say("@writesocket: ret=%d,errno=%d\n", ret, errno);
+			if(EAGAIN != errno)return -1;
+
+			usleep(1000);
+			continue;
 		}
 
-		say("@write:%x/%x",j, len);
-		buf += j;
-		len -= j;
-		usleep(1000);
+		cnt += ret;
+		if(cnt == len)break;
+		say("@writesocket: %x/%x\n", cnt, len);
 	}
 	return ret;
 }

@@ -120,17 +120,17 @@ int writesocket(int fd, void* tmp, void* buf, int len)
 	cnt = 0;
 	while(1){
 		ret = write(fd, buf+cnt, len-cnt);
-		if(ret <= 0){
-			say("@write:ret=%d,errno=%d\n", ret, errno);
-			if(11 != errno)return -1;
+		if(ret < 0){
+			say("@writesocket: ret=%d,errno=%d\n", ret, errno);
+			if(EAGAIN != errno)return -1;
 
 			usleep(1000);
 			continue;
 		}
-		if(ret == len-cnt)break;
 
 		cnt += ret;
-		say("continue@writesocket: %x/%x\n", cnt, len);
+		if(cnt == len)break;
+		say("@writesocket: %x/%x\n", cnt, len);
 	}
 	return len;
 }
