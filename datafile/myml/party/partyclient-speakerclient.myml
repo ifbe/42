@@ -1,0 +1,41 @@
+<supply>
+speaker{
+fmt:spk
+}
+</supply>
+
+
+<artery>
+recut{
+fmt:recut
+url:16384
+}
+client{
+fmt:party
+to:cam
+by:wnd
+}
+</artery>
+
+
+<system>
+socket{
+fmt:tcp
+url:127.0.0.1:9999
+}
+</system>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<relation>
+#canvas depends on usbcam
+(socket, 0, dst) -> (client, 0, src)
+(client, 0, dst) -> (recut, 0, src)
+(recut, 0, dst) -> (speaker, 0, pcm)
+</relation>
