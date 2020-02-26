@@ -91,7 +91,7 @@ int systemwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 			if(0 == oo)return -1;
 		}
 		default:{
-			return writesocket(oo->selffd, 0, buf, len);
+			return writesocket(oo->selffd, arg, buf, len);
 		}
 	}
 	return 0;

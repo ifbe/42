@@ -11,6 +11,8 @@ int stunclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int i
 int stunclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	struct artery* art = self->pchip;
+	//say("@stunclient_write: %.4s\n", &self->flag);
+
 	if(_std_ == self->flag){
 		int j;
 		u8 tmp[16];
@@ -20,9 +22,14 @@ int stunclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 		tmp[2] = 9999>>8;
 		tmp[3] = 9999&0xff;
 		*(u32*)(tmp+4) = art->data0;
+		relationwrite(art,_src_, tmp,0, tmp, 8);
 	}
 	else{
-		printmemory(buf,len);
+		u8* t;
+		t = arg;
+		say("server: %d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		t = buf;
+		say("myself: %d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 	}
 	return 0;
 }
@@ -32,6 +39,7 @@ int stunclient_discon(struct halfrel* self, struct halfrel* peer)
 }
 int stunclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
+	say("@stunclient_linkup: %.4s\n", &self->flag);
 	return 0;
 }
 int stunclient_delete(struct artery* art)

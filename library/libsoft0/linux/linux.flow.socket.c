@@ -126,7 +126,14 @@ int writesocket(int fd, void* tmp, void* buf, int len)
 	type = obj[fd].type;
 	if(_UDP_ == type)
 	{
+		u8 haha[16];
 		if(0 == tmp)tmp = obj[fd].peer;
+		else{
+			memcpy(haha, tmp, 16);
+			haha[1] = AF_INET;
+			tmp = haha;
+		}
+
 		ret = sendto(
 			fd, buf, len, 0,
 			tmp, sizeof(struct sockaddr_in)
@@ -222,6 +229,7 @@ int startsocket(char* addr, int port, int type)
 	//dns thing
 	for(j=0;j<256;j++)
 	{
+		if(addr[j] <= 0x20)break;
 		if((addr[j]>='a')&&(addr[j]<='z'))
 		{
 			ipv4 = resolvehostname(addr);

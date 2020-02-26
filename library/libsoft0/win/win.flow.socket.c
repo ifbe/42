@@ -122,11 +122,22 @@ int writesocket(int fd, void* tmp, void* buf, int len)
 	ret = obj[fd].type;
 	if(_UDP_ == ret)
 	{
+		u8 haha[16];
+		if(0 == tmp)tmp = obj[fd].peer;
+		else{
+			memcpy(haha, tmp, 16);
+			haha[1] = AF_INET;
+			tmp = haha;
+		}
+
 		wbuf.buf = buf;
 		wbuf.len = len;
-		if(0 == tmp)tmp = obj[fd].peer;
-		ret = WSASendTo(fd*4, &wbuf, 1, &dwret, 0,
-			tmp, sizeof(struct sockaddr_in), 0, 0);
+		ret = WSASendTo(fd*4,
+			&wbuf, 1,
+			&dwret, 0,
+			tmp, sizeof(struct sockaddr_in),
+			0, 0
+		);
 		return len;
 	}
 
@@ -175,6 +186,7 @@ u64 startsocket(char* addr, int port, int type)
 	//dns thing
 	for(j=0;j<256;j++)
 	{
+		if(addr[j] <= 0x20)break;
 		if((addr[j]>='a')&&(addr[j]<='z'))
 		{
 			ipv4 = resolvehostname(addr);
