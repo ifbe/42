@@ -14,11 +14,7 @@ int stunclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 	//say("@stunclient_write: %.4s\n", &self->flag);
 
 	if(_std_ == self->flag){
-		int j;
 		u8 tmp[16];
-		for(j=0;j<16;j++)tmp[j] = 0;
-		tmp[0] = 0x10;
-		tmp[1] = 0x02;
 		tmp[2] = 9999>>8;
 		tmp[3] = 9999&0xff;
 		*(u32*)(tmp+4) = art->data0;
@@ -30,6 +26,10 @@ int stunclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 		say("server: %d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 		t = buf;
 		say("myself: %d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+
+		if(len < 16)return 0;
+		t = buf+8;
+		say("friend: %d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 	}
 	return 0;
 }
@@ -93,15 +93,30 @@ int stunmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 	struct artery* art = self->pchip;
 	struct object* sys = peer->pchip;
 	if( (_UDP_ == sys->type) | (_udp_ == sys->type) ) {
-		if(arg){
-			u8* tmp = arg;
-			say("by %d.%d.%d.%d:%d\n",
-			tmp[4],tmp[5],tmp[6],tmp[7],
-			(tmp[2]<<8)+tmp[3]
-			);
-			relationwrite(art,self->flag, arg,idx, arg,8);
+		if(0 == arg){
+			say("error@stunmaster_write\n");
+			return 0;
 		}
-		printmemory(buf, len);
+
+		u8* t = arg;
+		say("%d.%d.%d.%d:%d: %.*s\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3], len,buf);
+
+		u8 out[64];
+		*(u64*)out = *(u64*)arg;
+
+		int j,k;
+		u64* list = &art->data0;
+		for(k=0;k<4;k++){
+			if(0 == list[k]){
+				list[k] = *(u64*)arg;
+				break;
+			}
+			if(list[k] != *(u64*)t){
+				*(u64*)(out+j) = *(u64*)list[k];
+				j += 8;
+			}
+		}
+		relationwrite(art,self->flag, arg,idx, out,j);
 	}
 	return 0;
 }
@@ -121,5 +136,8 @@ int stunmaster_delete(struct artery* art)
 }
 int stunmaster_create(struct artery* art, u8* url)
 {
+	int j;
+	u64* list = &art->data0;
+	for(j=0;j<4;j++)list[j] = 0;
 	return 0;
 }

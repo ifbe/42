@@ -116,7 +116,7 @@ int waitconnectwithselect(int sock)
 
 
 
-int writesocket(int fd, void* tmp, void* buf, int len)
+int writesocket(int fd, struct sockaddr_in* tmp, void* buf, int len)
 {
 	int ret,cnt;
 	u64 type;
@@ -126,17 +126,19 @@ int writesocket(int fd, void* tmp, void* buf, int len)
 	type = obj[fd].type;
 	if(_UDP_ == type)
 	{
-		u8 haha[16];
-		if(0 == tmp)tmp = obj[fd].peer;
+		struct sockaddr_in out;
+		if(0 == tmp)tmp = (void*)obj[fd].peer;
 		else{
-			memcpy(haha, tmp, 16);
-			haha[1] = AF_INET;
-			tmp = haha;
+			memset(&out, 0, sizeof(struct sockaddr_in));
+			out.sin_family = AF_INET;
+			out.sin_port = tmp->sin_port;
+			out.sin_addr.s_addr = tmp->sin_addr.s_addr;
+			tmp = &out;
 		}
 
 		ret = sendto(
 			fd, buf, len, 0,
-			tmp, sizeof(struct sockaddr_in)
+			(void*)tmp, sizeof(struct sockaddr_in)
 		);
 		return ret;
 	}
