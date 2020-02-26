@@ -47,6 +47,38 @@ void peername(u64 fd, u32* buf)
 	buf[0] = *(u32*)&addr.sin_addr;
 	buf[1] = addr.sin_port;
 }
+u32 resolvehostname(char* addr)
+{
+	struct hostent* host;
+	char** ptr;
+	int j;
+
+	//get
+	host = gethostbyname(addr);
+	if(0 == host){
+		printf("err@gethostbyname: %d\n", errno);
+		return 0;
+	}
+
+	//alias
+	j = 0;
+	ptr = host->h_aliases;
+	while(1){
+		if(0 == ptr[j])break;
+		printf("alias:%s\n", ptr[j]);
+		j++;
+	}
+
+	//address
+	j = 0;
+	ptr = host->h_addr_list;
+	while(1){
+		if(0 == ptr[j])break;
+		printf("ipadd:%s\n", inet_ntoa(*(struct in_addr*)ptr[j]));
+		j++;
+	}
+	return *(u32*)ptr[0];
+}
 
 
 
@@ -137,40 +169,19 @@ int stopsocket(SOCKET fd)
 }
 u64 startsocket(char* addr, int port, int type)
 {
-	int ret;
-	char** ptr;
-	struct hostent* host;
+	int j,ret;
+	u32 ipv4;
 
 	//dns thing
-	for(ret=0;ret<256;ret++)
+	for(j=0;j<256;j++)
 	{
-		if((addr[ret]>='a')&&(addr[ret]<='z'))
+		if((addr[j]>='a')&&(addr[j]<='z'))
 		{
-			//dns
-			host = gethostbyname(addr);
-			if(0 == host){
-				printf("err@gethostbyname: %d\n", errno);
-				return 0;
-			}
+			ipv4 = resolvehostname(addr);
+			say("%x\n",ipv4);
+			if(0 == ipv4)return 0;
 
-			//alias
-			ptr = host->h_aliases;
-			while(1){
-				if(0 == *ptr)break;
-				printf("alias:%s\n", *ptr);
-				ptr++;
-			}
-
-			//address
-			ptr = host->h_addr_list;
-			while(1){
-				if(0 == *ptr)break;
-				printf("ipadd:%s\n", inet_ntoa(*(struct in_addr*)ptr[0]));
-				ptr++;
-			}
-
-			//choose
-			addr = inet_ntoa(*(struct in_addr*)host->h_addr_list[0]);
+			addr = inet_ntoa(*(struct in_addr*)&ipv4);
 			break;
 		}
 	}

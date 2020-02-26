@@ -1,0 +1,27 @@
+<supply>
+stdio{
+fmt:std
+}
+</supply>
+
+
+<artery>
+client{
+fmt:stun
+url:deepstack.tech
+}
+</artery>
+
+
+<system>
+socket{
+fmt:UDP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<relation>
+(socket, 0, dst) -> (client, 0, src)
+(stdio, 0, dst) -> (client, 0, dst)
+</relation>
