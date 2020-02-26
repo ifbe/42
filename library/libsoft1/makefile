@@ -153,7 +153,7 @@ libflow/2.ip/ip46.udp.c \
 libflow/2.ip/ipx.spx.c \
 libflow/3.udp/udp.dns.c \
 libflow/3.udp/udp.hack.c \
-libflow/3.udp/udp.hole.c \
+libflow/3.udp/udp.stun.c \
 libflow/3.udp/udp.quic.c \
 libflow/3.udp/udp.tftp.c \
 libflow/4.tcp/tcp.dl.c \

@@ -101,9 +101,65 @@ static void* epollthread(void* p)
 				case _ptmx_:
 				case _uart_:{
 					cnt = read(fd, buf, BUFFER_SIZE);
+					if(0 == cnt){
+						say("error@%.4s:len=%x\n", &here->type, cnt);
+						systemdelete(here);
+						break;
+					}
 					relationwrite(here, _dst_, 0, 0, buf, cnt);
 					break;
-				}//uart
+				}//easy
+
+				case _udp_:
+				case _UDP_:
+				case _tcp_:{
+					cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
+					if(cnt >= 0)
+					{
+						//printmemory(buf, cnt);
+						//say("@kqueuethread: %.4s\n", &obj[cc].type);
+						relationwrite(here, _dst_, here->peer, 0, buf, cnt);
+					}
+					if(cnt <= 0)
+					{
+						epoll_del(fd);
+						systemdelete(here);
+						//close(fd);
+						//here->type = 0;
+						continue;
+					}
+					break;
+				}//tcp
+
+				case _Tcp_:{
+					cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
+					if(cnt >= 0)
+					{
+						//printmemory(buf, cnt);
+						if( (0 == here->irel0) && (0 == here->orel0) )
+						{
+							//tell parent, its me
+							parent = here->tempobj;
+							parent->tempfd = fd;
+							parent->tempobj = here;
+
+							//parent send
+							here = parent;
+						}
+
+						//say("@kqueuethread: %.4s\n", &obj[cc].type);
+						relationwrite(here, _dst_, 0, 0, buf, cnt);
+					}
+					if(cnt <= 0)
+					{
+						epoll_del(fd);
+						systemdelete(here);
+						//close(fd);
+						//here->type = 0;
+						continue;
+					}
+					break;
+				}//Tcp
 
 				case _TCP_:{
 					while(1)
@@ -140,55 +196,9 @@ static void* epollthread(void* p)
 					break;
 				}//TCP
 
-				case _Tcp_:{
-					cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
-					if(cnt >= 0)
-					{
-						//printmemory(buf, cnt);
-						if( (0 == here->irel0) && (0 == here->orel0) )
-						{
-							//tell parent, its me
-							parent = here->tempobj;
-							parent->tempfd = fd;
-							parent->tempobj = here;
-
-							//parent send
-							here = parent;
-						}
-
-						//say("@kqueuethread: %.4s\n", &obj[cc].type);
-						relationwrite(here, _dst_, 0, 0, buf, cnt);
-					}
-					if(cnt <= 0)
-					{
-						epoll_del(fd);
-						systemdelete(here);
-						//close(fd);
-						//here->type = 0;
-						continue;
-					}
-					break;
-				}//Tcp
-
-				case _tcp_:
 				default:{
-					cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
-					if(cnt >= 0)
-					{
-						//printmemory(buf, cnt);
-						//say("@kqueuethread: %.4s\n", &obj[cc].type);
-						relationwrite(here, _dst_, 0, 0, buf, cnt);
-					}
-					if(cnt <= 0)
-					{
-						epoll_del(fd);
-						systemdelete(here);
-						//close(fd);
-						//here->type = 0;
-						continue;
-					}
 					break;
-				}//default
+				}
 				}//switch
 			}//EPOLLIN
 		}//for

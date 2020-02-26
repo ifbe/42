@@ -1130,6 +1130,14 @@ int tlsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	ele->stage1 += 1;
 	return 0;
 }
+int tlsserver_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int tlsserver_linkup(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
 int tlsserver_delete(struct artery* ele)
 {
 	return 0;
@@ -1171,6 +1179,14 @@ int tlsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	self = (void*)&rel->dstchip;
 	peer = (void*)&rel->srcchip;
 	arterywrite(self, peer, 0, 0, buf, len);
+	return 0;
+}
+int tlsmaster_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int tlsmaster_linkup(struct halfrel* self, struct halfrel* peer)
+{
 	return 0;
 }
 int tlsmaster_delete(struct artery* ele)

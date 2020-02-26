@@ -81,33 +81,37 @@ int kqueuethread(int argc, const char * argv[])
 			//say("here=%llx,fd=%x\n", here, fd);
 
 			switch(here->type){
-			case _TCP_:{
-				struct sockaddr_in addr;
-				socklen_t len = sizeof(struct sockaddr_in);
-
-				int cc = accept(fd, (struct sockaddr *)&addr, &len);
-				if(cc <= 0)break;
-
-				if(cc >= MAXSIZE){
-					printf("fd>MAXSIZE\n");
-					close(cc);
+			case _ptmx_:
+			case _uart_:{
+				cnt = read(fd, buf, BUFFER_SIZE);
+				if(0 == cnt){
+					say("error@%.4s:len=%x\n", &here->type, cnt);
+					systemdelete(here);
 					break;
 				}
-				else{
-					child = &obj[cc];
-					child->type = _Tcp_;
-					child->name = 0;
-					child->selffd = cc;
-					child->selfobj = child;
-					child->tempfd = fd;
-					child->tempobj = here;
+				relationwrite(here, _dst_, 0, 0, buf, cnt);
+				break;
+			}//easy
 
-					memcpy(child->peer, &addr, 8);
-					kqueue_add(cc);
-					//eventwrite('+', _fd_, cc, timeread());
+			case _udp_:
+			case _UDP_:
+			case _tcp_:{
+				cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
+				if(cnt >= 0)
+				{
+					//say("@kqueuethread: %.4s\n", &obj[cc].type);
+					relationwrite(here, _dst_, here->peer, 0, buf, cnt);
+				}
+				if(cnt <= 0)
+				{
+					kqueue_del(fd);
+					systemdelete(here);
+					//close(fd);
+					//here->type = 0;
 				}
 				break;
-			}//TCP
+			}//tcp
+
 			case _Tcp_:{
 				cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
 				if(cnt >= 0)
@@ -136,27 +140,38 @@ int kqueuethread(int argc, const char * argv[])
 				}
 				break;
 			}//Tcp
-			case _uart_:{
-				cnt = read(fd, buf, BUFFER_SIZE);
-				relationwrite(here, _dst_, 0, 0, buf, cnt);
+
+			case _TCP_:{
+				struct sockaddr_in addr;
+				socklen_t len = sizeof(struct sockaddr_in);
+
+				int cc = accept(fd, (struct sockaddr *)&addr, &len);
+				if(cc <= 0)break;
+
+				if(cc >= MAXSIZE){
+					printf("fd>MAXSIZE\n");
+					close(cc);
+					break;
+				}
+				else{
+					child = &obj[cc];
+					child->type = _Tcp_;
+					child->name = 0;
+					child->selffd = cc;
+					child->selfobj = child;
+					child->tempfd = fd;
+					child->tempobj = here;
+
+					memcpy(child->peer, &addr, 8);
+					kqueue_add(cc);
+					//eventwrite('+', _fd_, cc, timeread());
+				}
 				break;
-			}//uart
+			}//TCP
+
 			default:{
-				cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
-				if(cnt >= 0)
-				{
-					//say("@kqueuethread: %.4s\n", &obj[cc].type);
-					relationwrite(here, _dst_, 0, 0, buf, cnt);
-				}
-				if(cnt <= 0)
-				{
-					kqueue_del(fd);
-					systemdelete(here);
-					//close(fd);
-					//here->type = 0;
-				}
 				break;
-			}//default
+			}
 			}//switch
 		}//for
 	}//while1

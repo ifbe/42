@@ -202,25 +202,30 @@ while(1){
 }
 int partyclient_write_bydst(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
-	int ret;
 	u8 tmp[64];
-	struct artery* art = self->pchip;
+	if(len <= 0){
+		say("len=%x\n", len);
+		return 0;
+	}
 
-	ret = mysnprintf(tmp, 64, "to %.4s,by %.4s,cnt %x,sum %x:", &art->TO, &art->BY, len, party_sum(buf,len));
+	struct artery* art = self->pchip;
+	int ret = mysnprintf(tmp, 64, "to %.4s,by %.4s,cnt %x,sum %x:", &art->TO, &art->BY, len, party_sum(buf,len));
 	relationwrite(art, _src_, 0,0, tmp,ret);
 	relationwrite(art, _src_, 0,0, buf,len);
 	return 0;
 }
 int partyclient_write_bystd(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
 {
-	int ret;
 	u8 tmp[64];
-	struct artery* art = self->pchip;
+	if(len <= 0){
+		say("len=%x\n", len);
+		return 0;
+	}
 
-	ret = mysnprintf(tmp, 64, "to %.4s,by %.4s,cnt 1,sum %x:", &art->TO, &art->BY,buf[0]);
+	struct artery* art = self->pchip;
+	int ret = mysnprintf(tmp, 64, "to %.4s,by %.4s,cnt 1,sum %x:", &art->TO, &art->BY,buf[0]);
 	tmp[ret] = buf[0];
 	relationwrite(art, _src_, 0,0, tmp,ret+1);
-
 	return 0;
 }
 
@@ -348,6 +353,12 @@ while(1){
 		u32 sum = 0;
 		int ret = party_parse(buf,len, &to, &by, &cnt, &sum);
 		say("to=%x,by=%x,cnt=%x,sum=%x,ret=%x,len=%x\n", to,by,cnt,sum, ret,len);
+
+		if(ret < 8){
+			relationwrite(art, peer->flag, 0,0, "wrong head\n", 10);
+			systemdelete(peer->pchip);
+			return 0;
+		}
 
 		if(len == ret+cnt){		//complete packet
 say("dbg1\n");

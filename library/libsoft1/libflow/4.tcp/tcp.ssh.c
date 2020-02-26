@@ -817,6 +817,14 @@ int sshserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	ele->stage1 += 1;
 	return 0;
 }
+int sshserver_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int sshserver_linkup(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
 int sshserver_delete(struct artery* ele)
 {
 	return 0;
@@ -875,6 +883,14 @@ int sshmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 
 	ele = arterycreate(_Ssh_, 0, 0, 0);
 	relationcreate(ele, 0, _art_, _src_, obj, 0, _sys_, _dst_);
+	return 0;
+}
+int sshmaster_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int sshmaster_linkup(struct halfrel* self, struct halfrel* peer)
+{
 	return 0;
 }
 int sshmaster_delete(struct artery* ele)

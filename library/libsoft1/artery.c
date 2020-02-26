@@ -328,6 +328,25 @@ int tftpserver_linkup(struct halfrel* self, struct halfrel* peer);
 int tftpserver_discon( struct halfrel* self, struct halfrel* peer);
 int tftpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tftpserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+//udp.stun
+int stunclient_create(struct artery* ele, void* url, int argc, u8** argv);
+int stunclient_delete(struct artery* ele, void* url);
+int stunclient_linkup(struct halfrel* self, struct halfrel* peer);
+int stunclient_discon( struct halfrel* self, struct halfrel* peer);
+int stunclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int stunclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int stunserver_create(struct artery* ele, void* url, int argc, u8** argv);
+int stunserver_delete(struct artery* ele, void* url);
+int stunserver_linkup(struct halfrel* self, struct halfrel* peer);
+int stunserver_discon( struct halfrel* self, struct halfrel* peer);
+int stunserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int stunserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int stunmaster_create(struct artery* ele, void* url, int argc, u8** argv);
+int stunmaster_delete(struct artery* ele, void* url);
+int stunmaster_linkup(struct halfrel* self, struct halfrel* peer);
+int stunmaster_discon( struct halfrel* self, struct halfrel* peer);
+int stunmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int stunmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //udp.quic
 int quicclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int quicclient_delete(struct artery* ele, void* url);
@@ -537,6 +556,7 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _fftpcm_:fftpcm_read(self, peer, arg, idx, buf, len);break;
 		case _fftrgb_:fftrgb_read(self, peer, arg, idx, buf, len);break;
 		case _rotate_:rotate_read(self, peer, arg, idx, buf, len);break;
+		//case _scale_: scale_read(self, peer, arg, idx, buf, len);break;
 
 		case _recut_:recut_read(self, peer, arg, idx, buf, len);break;
 		case _reline_:reline_read(self, peer, arg, idx, buf, len);break;
@@ -556,6 +576,9 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _Mavlink_:mavlinkserver_read(self, peer, arg, idx, buf, len);break;
 		case _nema0183_:nema0183client_read(self, peer, arg, idx, buf, len);break;
 		case _Nema0183_:nema0183server_read(self, peer, arg, idx, buf, len);break;
+
+		case _STUN_:stunmaster_read(self, peer, arg, idx, buf, len);break;
+		case _stun_:stunclient_read(self, peer, arg, idx, buf, len);break;
 
 		case _FUCKGFW_:fuckgfwmaster_read(self, peer, arg, idx, buf, len);break;
 		case _Fuckgfw_:fuckgfwserver_read(self, peer, arg, idx, buf, len);break;
@@ -627,6 +650,9 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _Nema0183_:return nema0183server_write(self, peer, arg, idx, buf, len);break;
 		case _nema0183_:return nema0183client_write(self, peer, arg, idx, buf, len);break;
 
+		case _STUN_:return stunmaster_write(self, peer, arg, idx, buf, len);break;
+		case _stun_:return stunclient_write(self, peer, arg, idx, buf, len);break;
+
 		case _FUCKGFW_:return fuckgfwmaster_write(self, peer, arg, idx, buf, len);break;
 		case _Fuckgfw_:return fuckgfwserver_write(self, peer, arg, idx, buf, len);break;
 		case _fuckgfw_:return fuckgfwclient_write(self, peer, arg, idx, buf, len);break;
@@ -668,19 +694,35 @@ int arterydiscon(struct halfrel* self, struct halfrel* peer)
 	switch(ele->type){
 		case _ann_:return ann_discon(self, peer);break;
 
-		case _http_:return httpclient_discon(self, peer);break;
-		case _ws_:return wsclient_discon(self, peer);break;
-
-		case _ssh_:return sshclient_discon(self, peer);break;
-		case _tls_:return tlsclient_discon(self, peer);break;
-
 		case _party_:return partyclient_discon(self, peer);break;
 		case _PARTY_:return partymaster_discon(self, peer);break;
 
+		case _stun_:return stunclient_discon(self, peer);break;
+		case _STUN_:return stunmaster_discon(self, peer);break;
+
+		case _http_:return httpclient_discon(self, peer);break;
+		case _Http_:return httpserver_discon(self, peer);break;
+		case _HTTP_:return httpmaster_discon(self, peer);break;
+
+		case _ws_:return wsclient_discon(self, peer);break;
+		case _Ws_:return wsserver_discon(self, peer);break;
+		case _WS_:return wsmaster_discon(self, peer);break;
+
+		case _ssh_:return sshclient_discon(self, peer);break;
+		case _Ssh_:return sshserver_discon(self, peer);break;
+		case _SSH_:return sshmaster_discon(self, peer);break;
+
+		case _tls_:return tlsclient_discon(self, peer);break;
+		case _Tls_:return tlsserver_discon(self, peer);break;
+		case _TLS_:return tlsmaster_discon(self, peer);break;
+
 		case _proxy_:return proxyclient_discon(self, peer);break;
 		case _Proxy_:return proxyserver_discon(self, peer);break;
+		case _PROXY_:return proxymaster_discon(self, peer);break;
+
 		case _socks_:return socksclient_discon(self, peer);break;
 		case _Socks_:return socksserver_discon(self, peer);break;
+		case _SOCKS_:return socksmaster_discon(self, peer);break;
 	}
 	return 0;
 }
@@ -695,19 +737,35 @@ int arterylinkup(struct halfrel* self, struct halfrel* peer)
 	switch(ele->type){
 		case _ann_:return ann_linkup(self, peer);break;
 
-		case _http_:return httpclient_linkup(self, peer);break;
-		case _ws_:return wsclient_linkup(self, peer);break;
-
-		case _ssh_:return sshclient_linkup(self, peer);break;
-		case _tls_:return tlsclient_linkup(self, peer);break;
-
 		case _party_:return partyclient_linkup(self, peer);break;
 		case _PARTY_:return partymaster_linkup(self, peer);break;
 
+		case _stun_:return stunclient_linkup(self, peer);break;
+		case _STUN_:return stunmaster_linkup(self, peer);break;
+
+		case _http_:return httpclient_linkup(self, peer);break;
+		case _Http_:return httpserver_linkup(self, peer);break;
+		case _HTTP_:return httpmaster_linkup(self, peer);break;
+
+		case _ws_:return wsclient_linkup(self, peer);break;
+		case _Ws_:return wsserver_linkup(self, peer);break;
+		case _WS_:return wsmaster_linkup(self, peer);break;
+
+		case _ssh_:return sshclient_linkup(self, peer);break;
+		case _Ssh_:return sshserver_linkup(self, peer);break;
+		case _SSH_:return sshmaster_linkup(self, peer);break;
+
+		case _tls_:return tlsclient_linkup(self, peer);break;
+		case _Tls_:return tlsserver_linkup(self, peer);break;
+		case _TLS_:return tlsmaster_linkup(self, peer);break;
+
 		case _proxy_:return proxyclient_linkup(self, peer);break;
 		case _Proxy_:return proxyserver_linkup(self, peer);break;
+		case _PROXY_:return proxymaster_linkup(self, peer);break;
+
 		case _socks_:return socksclient_linkup(self, peer);break;
 		case _Socks_:return socksserver_linkup(self, peer);break;
+		case _SOCKS_:return socksmaster_linkup(self, peer);break;
 	}
 	return 0;
 }
@@ -1169,6 +1227,35 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 
 		e->type = _Tftp_;
 		tftpserver_create(e, url, argc, argv);
+		return e;
+	}
+
+	//stun: master,server,client
+	if(_STUN_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _STUN_;
+		stunmaster_create(e, url, argc, argv);
+		return e;
+	}
+	if(_Stun_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _Stun_;
+		stunserver_create(e, url, argc, argv);
+		return e;
+	}
+	if(_stun_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _stun_;
+		stunclient_create(e, url, argc, argv);
 		return e;
 	}
 

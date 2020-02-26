@@ -342,6 +342,14 @@ int httpmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int i
 {
 	return 0;
 }
+int httpmaster_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int httpmaster_linkup(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
 int httpmaster_delete(struct artery* ele)
 {
 	return 0;
