@@ -4,6 +4,26 @@ u32 resolvehostname(void*);
 
 
 
+int stun_memory(u64* list, u64 self)
+{
+	int j;
+	if(list[0] == self)return 0;
+	if(0 == list[0]){
+		list[0] = self;
+		return 0;
+	}
+
+	for(j=0;j<3;j++){
+		if(list[j] == self)break;
+	}
+	for(;j>0;j--)list[j] = list[j-1];
+	list[0] = self;
+	return 0;
+}
+
+
+
+
 int stunclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
@@ -14,13 +34,23 @@ int stunclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 	//say("@stunclient_write: %.4s\n", &self->flag);
 
 	if(_std_ == self->flag){
-		u8 tmp[16];
-		tmp[2] = 9999>>8;
-		tmp[3] = 9999&0xff;
-		*(u32*)(tmp+4) = art->data0;
-		relationwrite(art,_src_, tmp,0, tmp, 8);
+		if(' ' == buf[0])relationwrite(art,_src_, &art->data0,0, buf, 1);
+		else if(art->data1)relationwrite(art,_src_, &art->data1,0, buf, 1);
+		return 0;
 	}
-	else{
+
+	//p=this, s=server, f=friend
+	u16 p_port = *(u16*)(arg+2);
+	u32 p_addr = *(u32*)(arg+4);
+	void* s = (void*)&art->data0;
+	u16 s_port = *(u16*)(s+2);
+	u32 s_addr = *(u32*)(s+4);
+	void* f = (void*)&art->data1;
+	u16 f_port = *(u16*)(f+2);
+	u32 f_addr = *(u32*)(f+4);
+
+	//from server
+	if( (p_port == s_port) && (p_addr == s_addr) ) {
 		u8* t;
 		t = arg;
 		say("server: %d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
@@ -30,7 +60,22 @@ int stunclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 		if(len < 16)return 0;
 		t = buf+8;
 		say("friend: %d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+
+		art->data1 = *(u64*)(buf+8);
+		return 0;
 	}
+
+	//from friend
+	if( (p_port == f_port) && (p_addr == f_addr) ) {
+		u8* t = arg;
+		say("from %d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		printmemory(buf, len);
+		return 0;
+	}
+
+	//from unknown
+	say("from unknown:\n");
+	printmemory(buf,len);
 	return 0;
 }
 int stunclient_discon(struct halfrel* self, struct halfrel* peer)
@@ -48,8 +93,13 @@ int stunclient_delete(struct artery* art)
 }
 int stunclient_create(struct artery* art, u8* url)
 {
-	art->data0 = resolvehostname(url);
-	say("ip = %x\n", art->data0);
+	u8* tmp = (void*)&art->data0;
+	tmp[2] = 9999>>8;
+	tmp[3] = 9999&0xff;
+	*(u32*)(tmp+4) = resolvehostname(url);
+	printmemory(tmp, 8);
+
+	art->data1 = 0;
 	return 0;
 }
 
@@ -99,24 +149,17 @@ int stunmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 		}
 
 		u8* t = arg;
-		say("%d.%d.%d.%d:%d: %.*s\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3], len,buf);
+		say("from %d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		printmemory(buf, len);
 
-		u8 out[64];
-		*(u64*)out = *(u64*)arg;
-
-		int j,k;
 		u64* list = &art->data0;
-		for(k=0;k<4;k++){
-			if(0 == list[k]){
-				list[k] = *(u64*)arg;
-				break;
-			}
-			if(list[k] != *(u64*)t){
-				*(u64*)(out+j) = *(u64*)list[k];
-				j += 8;
-			}
+		stun_memory(list, *(u64*)arg);
+
+		int j;
+		for(j=0;j<4;j++){
+			if(0 == list[j])break;
 		}
-		relationwrite(art,self->flag, arg,idx, out,j);
+		relationwrite(art,self->flag, arg,idx, list,j*8);
 	}
 	return 0;
 }
