@@ -1,0 +1,18 @@
+<artery>
+server{
+fmt:P2P
+}
+</artery>
+
+
+<system>
+socket{
+fmt:TCP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<relation>
+(socket, 0, dst) -> (server, 0, src)
+</relation>

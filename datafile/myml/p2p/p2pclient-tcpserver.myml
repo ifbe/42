@@ -1,0 +1,19 @@
+<artery>
+server{
+fmt:p2p
+url:s
+}
+</artery>
+
+
+<system>
+socket{
+fmt:tcp
+url:deepstack.tech:9999
+}
+</system>
+
+
+<relation>
+(socket, 0, dst) -> (server, 0, src)
+</relation>
