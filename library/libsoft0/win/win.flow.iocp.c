@@ -132,6 +132,8 @@ DWORD WINAPI iocpthread(LPVOID pM)
 			child->tempfd = fd/4;
 			child->tempobj = parent;
 
+			//todo: getpeername
+
 			iocp_add(cc);
 			iocp_mod(cc);
 		}

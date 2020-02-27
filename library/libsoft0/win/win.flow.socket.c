@@ -28,7 +28,7 @@ static struct object* obj;
 
 
 
-
+/*
 void selfname(u64 fd, u32* buf)
 {
 	struct sockaddr_in addr;
@@ -46,7 +46,7 @@ void peername(u64 fd, u32* buf)
 
 	buf[0] = *(u32*)&addr.sin_addr;
 	buf[1] = addr.sin_port;
-}
+}*/
 u32 resolvehostname(char* addr)
 {
 	struct hostent* host;

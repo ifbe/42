@@ -142,10 +142,8 @@ int kqueuethread(int argc, const char * argv[])
 			}//Tcp
 
 			case _TCP_:{
-				struct sockaddr_in addr;
 				socklen_t len = sizeof(struct sockaddr_in);
-
-				int cc = accept(fd, (struct sockaddr *)&addr, &len);
+				int cc = accept(fd, (struct sockaddr *)(here->peer), &len);
 				if(cc <= 0)break;
 
 				if(cc >= MAXSIZE){
@@ -162,7 +160,7 @@ int kqueuethread(int argc, const char * argv[])
 					child->tempfd = fd;
 					child->tempobj = here;
 
-					memcpy(child->peer, &addr, 8);
+					memcpy(child->peer, here->peer, 32);
 					kqueue_add(cc);
 					//eventwrite('+', _fd_, cc, timeread());
 				}

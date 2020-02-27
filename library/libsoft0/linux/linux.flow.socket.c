@@ -34,7 +34,7 @@ static int udpfd = 0;
 
 
 
-
+/*
 int selfname(u64 fd, u32* buf)
 {
 	struct sockaddr_in addr;
@@ -54,7 +54,7 @@ int peername(u64 fd, u32* buf)
 	buf[0] = *(u32*)&addr.sin_addr;
 	buf[1] = addr.sin_port;
 	return 1;
-}
+}*/
 u32 resolvehostname(char* addr)
 {
 	struct hostent* host;

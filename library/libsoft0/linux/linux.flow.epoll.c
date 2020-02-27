@@ -164,10 +164,8 @@ static void* epollthread(void* p)
 				case _TCP_:{
 					while(1)
 					{
-						struct sockaddr_in haha;
 						socklen_t len = sizeof(struct sockaddr_in);
-
-						cc = accept(fd, (struct sockaddr*)&haha, &len);
+						cc = accept(fd, (struct sockaddr*)(here->peer), &len);
 						printf("cc=%x,errno=%d\n",cc,errno);
 						if(cc <= 0)break;
 
@@ -185,7 +183,7 @@ static void* epollthread(void* p)
 							child->tempobj = here;
 							//printf("fd=%x,cc=%x,here=%llx,child=%llx\n",fd,cc,here,child);
 
-							memcpy(child->peer, &haha, 8);
+							memcpy(child->peer, here->peer, 32);
 							epoll_add(cc);
 						}
 						continue;
