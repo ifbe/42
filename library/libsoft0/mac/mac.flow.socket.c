@@ -15,6 +15,8 @@
 #include <sys/types.h>
 #include "libsoft.h"
 #define MAXSIZE 4096
+#define _connect_ hex32('c','o','n', 0)
+#define _listen_ hex32('l','i','s', 0)
 void kqueue_add(int);
 void kqueue_del(int);
 void kqueue_mod(int);
@@ -202,20 +204,36 @@ int readsocket(int fd, void* tmp, void* buf, int len)
 	}
 	return ret;
 }
-int listsocket()
+
+
+
+
+int searchsocket(int fd)
 {
 	return 0;
 }
-int choosesocket()
+int modifysocket(int fd, int arg, u8* addr, int port)
 {
+	if(_connect_ == arg){
+		u8* p = obj[fd].self;
+		u8* q = addr;
+		say("reuse this for connect: %d.%d.%d.%d:%d -> %d.%d.%d.%d:%d\n",
+			p[4],p[5],p[6],p[7], (p[2]<<8)+p[3],
+			q[0],p[1],q[2],q[3], port
+		);
+	}
+	if(_listen_ == arg){
+		say("reuse this for listen\n");
+	}
 	return 0;
 }
-void stopsocket(int x)
+int deletesocket(int fd)
 {
-	int ret = close(x);
-	printf("---- %d %d, %d\n", x, ret, errno);
+	int ret = close(fd);
+	printf("---- %d %d, %d\n", fd, ret, errno);
+	return ret;
 }
-int startsocket(char* addr, int port, int type)
+int createsocket(char* addr, int port, int type)
 {
 	int j,fd,ret;
 	u32 ipv4;
@@ -457,6 +475,9 @@ int startsocket(char* addr, int port, int type)
 			}
 		}
 
+		//get the random port
+		socklen_t len = sizeof(struct sockaddr_in);
+		getsockname(fd, (void*)obj[fd].self, &len);
 
 		//done
 		kqueue_add(fd);

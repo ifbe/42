@@ -1,4 +1,9 @@
 #include "libsoft.h"
+int modifysocket(int fd, int arg, void* addr, int port);
+//
+#define _connect_ hex32('c','o','n', 0)
+#define _listen_ hex32('l','i','s', 0)
+//
 #define _c_recved_ hex32('c','_','r', 0)
 #define _c_friend_ hex32('c','_','f', 0)
 #define _c_client_ hex32('c','_','c', 0)
@@ -33,7 +38,10 @@ int p2pclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int id
 }
 int p2pclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
+	struct artery* art = self->pchip;
+	struct object* sys = peer->pchip;
 	say("p2pclient_write:%.4s\n", &self->flag);
+
 	if(_dst_ == self->flag){
 		return 0;
 	}
@@ -42,8 +50,16 @@ int p2pclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	}
 	if(_src_ == self->flag){
 		printmemory(buf,len);
-		if(len >= 16){
-		}
+
+		u8* t = buf;
+		say("myself=%d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		if(len < 16)return 0;
+
+		t = buf+8;
+		say("friend=%d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+
+		modifysocket(sys->selffd, _connect_, t+4, (t[2]<<8)+t[3]);
+		art->stage1 = _c_friend_;
 	}
 	return 0;
 }

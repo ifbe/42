@@ -26,8 +26,10 @@ int uart_write(int, int, void*, int);
 //socket
 int initsocket(void*);
 int freesocket();
-int startsocket(void* addr, int port, int type);
-int stopsocket(int);
+int createsocket(void* addr, int port, int type);
+int deletesocket(int);
+int searchsocket(int);
+int modifysocket(int);
 int readsocket( int,void*,void*, int);
 int writesocket(int,void*,void*, int);
 //
@@ -152,7 +154,7 @@ int systemdelete(void* addr)
 		break;
 	}
 	default:{
-		stopsocket(fd);
+		deletesocket(fd);
 	}
 	}
 	oo->type = 0;
@@ -240,7 +242,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 
 	if(_RAW_ == type)		//raw server
 	{
-		fd = startsocket(host, port, _RAW_);
+		fd = createsocket(host, port, _RAW_);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _RAW_;
@@ -249,7 +251,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	else if(_raw_ == type)	//raw client
 	{
-		fd = startsocket(host, port, _raw_);
+		fd = createsocket(host, port, _raw_);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _raw_;
@@ -258,7 +260,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	else if(_UDP_ == type)	//udp master
 	{
-		fd = startsocket(host, port, _UDP_);
+		fd = createsocket(host, port, _UDP_);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _UDP_;
@@ -271,7 +273,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	else if(_udp_ == type)	//udp client
 	{
-		fd = startsocket(host, port, _udp_);
+		fd = createsocket(host, port, _udp_);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _udp_;
@@ -280,7 +282,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	else if(_TCP_ == type)	//tcp master
 	{
-		fd = startsocket(host, port, _TCP_);
+		fd = createsocket(host, port, _TCP_);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _TCP_;
@@ -293,7 +295,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	else if(_tcp_ == type)	//tcp client
 	{
-		fd = startsocket(host, port, _tcp_);
+		fd = createsocket(host, port, _tcp_);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _tcp_;

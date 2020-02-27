@@ -207,23 +207,27 @@ int readsocket(int fd, void* tmp, void* buf, int len)
 	epoll_mod(fd);
 	return ret;
 }
-int listsocket()
-{
-	return 0;
-}
-int choosesocket()
-{
-	return 0;
-}
-void stopsocket(int x)
-{
-	int ret = close(x);
-	printf("---- %d %d, %d\n", x, ret, errno);
 
+
+
+
+int searchsocket(int fd)
+{
+	return 0;
+}
+int modifysocket(int fd)
+{
+	return 0;
+}
+int deletesocket(int fd)
+{
+	int ret = close(fd);
+	printf("---- %d %d, %d\n", fd, ret, errno);
+	return ret;
 	//epoll_del(x);
 	//if(tcpfd>0)epoll_del(tcpfd);
 }
-int startsocket(char* addr, int port, int type)
+int createsocket(char* addr, int port, int type)
 {
 	int j,fd,ret;
 	u32 ipv4;
@@ -487,6 +491,10 @@ int startsocket(char* addr, int port, int type)
 				return 0;
 			}
 		}
+
+		//get the random port
+		socklen_t len = sizeof(struct sockaddr_in);
+		getsockname(fd, (void*)obj[fd].self, &len);
 
 		//done
 		epoll_add(fd);

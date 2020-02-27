@@ -149,13 +149,19 @@ int writesocket(int fd, struct sockaddr_in* tmp, void* buf, int len)
 	//printf("@send:len=%d,ret=%d,err=%d\n",len,ret,GetLastError());
 	return len;
 }
-int listsocket()
+
+
+
+
+int searchsocket(SOCKET fd)
 {
+	return 0;
 }
-int choosesocket()
+int modifysocket(SOCKET fd)
 {
+	return 0;
 }
-int stopsocket(SOCKET fd)
+int deletesocket(SOCKET fd)
 {
 	LPFN_DISCONNECTEX disconnectex = NULL;
 	GUID guiddisconnectex = WSAID_DISCONNECTEX;
@@ -180,7 +186,7 @@ int stopsocket(SOCKET fd)
 	disconnectex(fd*4, 0, TF_REUSE_SOCKET, 0);
 	return 0;
 }
-u64 startsocket(char* addr, int port, int type)
+u64 createsocket(char* addr, int port, int type)
 {
 	int j,ret;
 	u32 ipv4;
@@ -423,12 +429,16 @@ u64 startsocket(char* addr, int port, int type)
 		serAddr.sin_family = AF_INET;
 		serAddr.sin_port = htons(port);
 		serAddr.sin_addr.S_un.S_addr = inet_addr(addr); 
-		if (connect(fd, (void*)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
+		if(connect(fd, (void*)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
 		{
 			printf("error:%d@connect\n",GetLastError());
 			stopsocket(fd/4);
 			return 0;
 		}
+
+		//get the random port
+		socklen_t len = sizeof(struct sockaddr_in);
+		getsockname(fd, (void*)obj[fd].self, &len);
 
 		//
 		iocp_add(fd);
