@@ -8,7 +8,7 @@ url:127.0.0.1:443
 
 <artery>
 tls{
-fmt:tls
+fmt:tls1_3
 }
 </artery>
 

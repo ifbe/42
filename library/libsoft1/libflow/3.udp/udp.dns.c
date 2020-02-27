@@ -75,20 +75,9 @@ int dns_query_fixurl(u8* dst, int max, u8* buf, int len)
 int dns_write_query(u8* buf, int len, u8* domain, int count)
 {
 	int j;
-	int aa,bb;
-	struct dnshead* h;
-
-	//check domain
-	aa = -1;
-	for(j=0;j<100;j++)
-	{
-		if(domain[j] <= 0x20){bb = j;break;}
-		if('/' == domain[j])aa = j+1;
-	}
-	if(aa < 0)return 0;
+	struct dnshead* h = (void*)buf;
 
 	//head
-	h = (void*)buf;
 	h->tran = getrandom()&0xffff;
 	h->flag = 1;
 	h->q = 0x100;
@@ -98,7 +87,7 @@ int dns_write_query(u8* buf, int len, u8* domain, int count)
 
 	//copy
 	j = 12;
-	j += dns_query_fixurl(buf+j, 0, domain+aa, bb-aa);
+	j += dns_query_fixurl(buf+j, 0, domain, count);
 
 	//tail
 	buf[j+0] = 0;
@@ -144,17 +133,11 @@ int dns_write_answer(u8* buf, int len)
 
 
 
-int dnsclient_read(
-	struct artery* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int dnsclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int dnsclient_write(
-	struct artery* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int dnsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	//say("@dnsclient_rootwrite\n");
 	//printmemory(buf, len);
@@ -179,46 +162,53 @@ int dnsclient_write(
 	say("}\n");
 	return 0;
 }
+int dnsclient_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int dnsclient_linkup(struct halfrel* self, struct halfrel* peer)
+{
+	say("dnsclient_linkup:%.4s\n", &self->flag);
+	if(_src_ == self->flag){
+		int ret;
+		u8 tmp[0x100];
+
+		ret = dns_write_query(tmp, 0x100, (void*)"www.baidu.com", 13);
+		if(ret <= 0)return 0;
+
+		printmemory(tmp,ret);
+		relationwrite(self->pchip,self->flag, 0, 0, tmp,ret);
+	}
+	return 0;
+}
 int dnsclient_delete(struct artery* ele)
 {
 	return 0;
 }
 int dnsclient_create(struct artery* ele, u8* url)
 {
-	int ret;
-	void* obj;
-	u8 tmp[0x1000];
-//say("@dnsclient_create\n");
-/*
-	ret = dns_write_query(tmp, 0x1000, url, 0);
-	if(ret <= 0)return 0;
-
-	obj = systemcreate(_udp_, url);
-	if(0 == obj)return 0;
-
-	relationcreate(ele, 0, _art_, 0, obj, 0, _fd_, 0);
-
-	ret = relationwrite((void*)ele, _src_, tmp, ret);*/
 	return 0;
 }
 
 
 
 
-int dnsserver_read(
-	struct artery* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int dnsserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int dnsserver_write(
-	struct artery* ele, void* sty,
-	struct object* obj, void* pin,
-	u8* buf, int len)
+int dnsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	say("@dnsserver_rootwrite\n");
 	printmemory(buf, len);
+	return 0;
+}
+int dnsserver_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int dnsserver_linkup(struct halfrel* self, struct halfrel* peer)
+{
 	return 0;
 }
 int dnsserver_delete(struct artery* ele)
@@ -229,29 +219,3 @@ int dnsserver_create(struct artery* ele, u8* url)
 {
 	return 0;
 }
-
-
-
-
-/*
-#define dns 0x736e64
-#define DNS 0x534e44
-int dns_client(struct object* obj, int fd, u8* buf, int len)
-{
-	return 0;
-}
-int dns_server(struct object* obj, int fd, u8* buf, int len)
-{
-	int ret;
-	u64 type = obj[fd].type;
-	if(type == DNS)
-	{
-		ret = dns_write_answer(buf, len);
-		//writesocket(fd, 0, buf, len+16);
-	}
-	if(type == dns)
-	{
-		dns_read_answer(buf, len);
-	}
-	return 0;
-}*/

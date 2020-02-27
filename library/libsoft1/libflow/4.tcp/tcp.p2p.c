@@ -33,8 +33,18 @@ int p2pclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int id
 }
 int p2pclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	say("p2pclient_write\n");
-	printmemory(buf,len);
+	say("p2pclient_write:%.4s\n", &self->flag);
+	if(_dst_ == self->flag){
+		return 0;
+	}
+	if(_std_ == self->flag){
+		return 0;
+	}
+	if(_src_ == self->flag){
+		printmemory(buf,len);
+		if(len >= 16){
+		}
+	}
 	return 0;
 }
 int p2pclient_discon(struct halfrel* self, struct halfrel* peer)

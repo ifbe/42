@@ -34,7 +34,9 @@ int parsefmt(u8* buf, u8* str)
 		k = str[j];
 		if( ((k >= '0') && (k <= '9')) |
 			((k >= 'A') && (k <= 'Z')) |
-			((k >= 'a') && (k <= 'z')) )
+			((k >= 'a') && (k <= 'z')) |
+			('.' == k) |
+			('_' == k) )
 		{
 			buf[j] = k;
 			continue;

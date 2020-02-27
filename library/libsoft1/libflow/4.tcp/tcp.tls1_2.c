@@ -43,7 +43,7 @@ static u8 dh[] = {
 	0x70,0x61,0x1f,0x49,0xb2,0x8d,0x22,0x8f,
 	0x61
 };
-void tls_prep_cert(u8* dirbuf, int dirlen)
+void tls1v2_prep_cert(u8* dirbuf, int dirlen)
 {
 	int j,fl;
 	u8 buf[0x2000];
@@ -94,7 +94,7 @@ void tls_prep_cert(u8* dirbuf, int dirlen)
 	say("private:\n");
 	printmemory(cert_private, 0x100);
 }
-int tls_parse_cert(u8* buf, int len)
+int tls1v2_parse_cert(u8* buf, int len)
 {
 	printmemory(buf, len);
 	return 0;
@@ -109,7 +109,7 @@ struct tlshead
 	u8 version[2];
 	u8 length[2];
 };
-int tls_read_head(u8* buf, int len)
+int tls1v2_read_head(u8* buf, int len)
 {
 	len = (buf[3]<<8)+buf[4];
 	say("head{ctx=%x,ver=%02x%02x,len=%x}\n",
@@ -129,7 +129,7 @@ struct bothhello
 	u8 len[3];
 	u8 ver[2];
 };
-int tls_read_hello(u8* buf, int len)
+int tls1v2_read_hello(u8* buf, int len)
 {
 	struct bothhello* p = (void*)buf;
 	len = (buf[1]<<16) + (buf[2]<<8) + buf[3];
@@ -140,7 +140,7 @@ int tls_read_hello(u8* buf, int len)
 	);
 	return len;
 }
-int tls_write_server_hello(struct artery* ele, int fd, u8* buf, int len)
+int tls1v2_write_server_hello(struct artery* ele, int fd, u8* buf, int len)
 {
 	int j;
 	u8* p = buf + 9;
@@ -228,7 +228,7 @@ struct servercert
 	u8 len[3];
 	u8 certlen[3];
 };
-int tls_read_cert(u8* buf, int len)
+int tls1v2_read_cert(u8* buf, int len)
 {
 	int certlen;
 	struct servercert* p = (void*)buf;
@@ -242,7 +242,7 @@ int tls_read_cert(u8* buf, int len)
 	);
 	return len;
 }
-int tls_write_server_certificate(struct artery* ele, int foot, u8* buf, int len)
+int tls1v2_write_server_certificate(struct artery* ele, int foot, u8* buf, int len)
 {
 	int j,k;
 	u8* p = buf + 5 + 4 + 3;
@@ -296,7 +296,7 @@ struct serverkeyexch
 	u8 curvetype;
 	u8 namedcurve[2];
 };
-int tls_read_keyex(u8* buf, int len)
+int tls1v2_read_keyex(u8* buf, int len)
 {
 	struct serverkeyexch* p = (void*)buf;
 
@@ -307,14 +307,14 @@ int tls_read_keyex(u8* buf, int len)
 	);
 	return len;
 }
-int tls_read_client_keyexch(u8* buf, int len)
+int tls1v2_read_client_keyexch(u8* buf, int len)
 {
 	int j = (buf[3]<<8) + buf[4];
 	say("clientkeyexch{\n");
 	say("}clientkeyexch\n");
 	return j+5;
 }
-int tls_write_client_keyexch(u8* buf, int len)
+int tls1v2_write_client_keyexch(u8* buf, int len)
 {
 	u8* p = buf + 9;
 
@@ -335,7 +335,7 @@ int tls_write_client_keyexch(u8* buf, int len)
 	buf[8] = (len-9)&0xff;
 	return len;
 }
-int tls_write_server_keyexch(struct artery* ele, int fd, u8* buf, int len)
+int tls1v2_write_server_keyexch(struct artery* ele, int fd, u8* buf, int len)
 {
 	int j;
 	u8* p = buf + 9;
@@ -438,7 +438,7 @@ struct serverdone
 	u8 msg;
 	u8 len[3];
 };
-int tls_read_sdone(u8* buf, int len)
+int tls1v2_read_sdone(u8* buf, int len)
 {
 	struct serverdone* p = (void*)buf;
 
@@ -449,7 +449,7 @@ int tls_read_sdone(u8* buf, int len)
 	);
 	return len;
 }
-int tls_write_server_done(struct artery* ele, int foot, u8* buf, int len)
+int tls1v2_write_server_done(struct artery* ele, int foot, u8* buf, int len)
 {
 	//5+4byte
 	buf[0] = 0x16;
@@ -471,12 +471,12 @@ struct servercipher
 	u8 version[2];
 	u8 length[2];
 };
-int tls_read_client_cipherspec(u8* buf, int len)
+int tls1v2_read_client_cipherspec(u8* buf, int len)
 {
 	say("client cipherspec\n");
 	return 6;
 }
-int tls_write_client_cipherspec(u8* buf, int len)
+int tls1v2_write_client_cipherspec(u8* buf, int len)
 {
 	buf[0] = 0x14;
 	buf[1] = buf[2] = 3;
@@ -485,11 +485,11 @@ int tls_write_client_cipherspec(u8* buf, int len)
 	buf[5] = 1;
 	return 6;
 }
-int tls_read_server_cipherspec(u8* buf, int len)
+int tls1v2_read_server_cipherspec(u8* buf, int len)
 {
 	return 0;
 }
-int tls_write_server_cipherspec(u8* buf, int len)
+int tls1v2_write_server_cipherspec(u8* buf, int len)
 {
 	buf[0] = 0x14;
 	buf[1] = 3;
@@ -509,13 +509,13 @@ struct hellorequest
 	u16 version;
 	u8 length[2];
 };
-int tls_read_client_hellorequest(u8* buf, int len)
+int tls1v2_read_client_hellorequest(u8* buf, int len)
 {
 	int j = (buf[3]<<8) + buf[4];
 	say("client hellorequest\n");
 	return j+5;
 }
-int tls_write_client_hellorequest(u8* buf, int len)
+int tls1v2_write_client_hellorequest(u8* buf, int len)
 {
 	return 0;
 }
@@ -529,7 +529,7 @@ struct newsession
 	u16 version;
 	u8 length[2];
 };
-int tls_write_server_newsession(u8* buf, int len)
+int tls1v2_write_server_newsession(u8* buf, int len)
 {
 	u8* p = buf + 9;
 
@@ -555,7 +555,7 @@ int tls_write_server_newsession(u8* buf, int len)
 	buf[8] = (len-9)&0xff;
 	return len;
 }
-int tls_read_server_newsession(u8* buf, int len)
+int tls1v2_read_server_newsession(u8* buf, int len)
 {
 	return 0;
 }
@@ -569,11 +569,11 @@ struct encrypthandshake
 	u16 version;
 	u8 length[2];
 };
-int tls_read_server_encrypthandshake(u8* buf, int len)
+int tls1v2_read_server_encrypthandshake(u8* buf, int len)
 {
 	return 0;
 }
-int tls_write_server_encrypthandshake(u8* buf, int len)
+int tls1v2_write_server_encrypthandshake(u8* buf, int len)
 {
 	int j;
 	u8* p = buf + 5;
@@ -599,7 +599,7 @@ struct bothdata
 	u16 version;
 	u8 length[2];
 };
-int tls_read_both_data(u8* buf, int len)
+int tls1v2_read_both_data(u8* buf, int len)
 {
 	//head
 	say("type=%02x\n", buf[0]);
@@ -610,7 +610,7 @@ int tls_read_both_data(u8* buf, int len)
 	//data
 	return len;
 }
-int tls_write_both_data(u8* buf, int len)
+int tls1v2_write_both_data(u8* buf, int len)
 {
 	return 0;
 }
@@ -618,14 +618,14 @@ int tls_write_both_data(u8* buf, int len)
 
 
 
-int tls_clientread_serverhello(u8* buf, int len)
+int tls1v2_clientread_serverhello(u8* buf, int len)
 {
 	u8* t;
 	int j,k;
 
 	//hello
 	say("serverhello{\n");
-	len = tls_read_hello(buf, len);
+	len = tls1v2_read_hello(buf, len);
 
 
 	//random
@@ -679,12 +679,12 @@ int tls_clientread_serverhello(u8* buf, int len)
 	say("}serverhello\n\n");
 	return len;
 }
-int tls_clientread_servercertificate(u8* buf, int len)
+int tls1v2_clientread_servercertificate(u8* buf, int len)
 {
 	int j,total;
 	u8* q;
 	say("servercert{\n");
-	len = tls_read_cert(buf, len);
+	len = tls1v2_read_cert(buf, len);
 
 
 
@@ -704,7 +704,7 @@ int tls_clientread_servercertificate(u8* buf, int len)
 		q += 3;
 
 		say("cert(%x):\n", j);
-		tls_parse_cert(q, j);
+		tls1v2_parse_cert(q, j);
 		q += j;
 
 		total -= 3+j;
@@ -715,12 +715,12 @@ int tls_clientread_servercertificate(u8* buf, int len)
 	say("}servercert\n\n");
 	return len;
 }
-int tls_clientread_serverkeyexch(u8* buf, int len)
+int tls1v2_clientread_serverkeyexch(u8* buf, int len)
 {
 	int j;
 	u8* q;
 	say("serverkeyexch{\n");
-	len = tls_read_keyex(buf, len);
+	len = tls1v2_read_keyex(buf, len);
 
 
 	//curve
@@ -758,19 +758,19 @@ int tls_clientread_serverkeyexch(u8* buf, int len)
 	say("}serverkeyexch\n\n");
 	return len;
 }
-int tls_clientread_serverdone(u8* buf, int len)
+int tls1v2_clientread_serverdone(u8* buf, int len)
 {
 	struct serverdone* p = (void*)buf;
 	u8* q;
 
 	say("serverdone{\n");
-	len = tls_read_sdone(buf, len);
+	len = tls1v2_read_sdone(buf, len);
 
 	//
 	say("}serverdone\n\n");
 	return len;
 }
-int tls_clientwrite_clienthello(u8* dst, int cnt)
+int tls1v2_clientwrite_clienthello(u8* dst, int cnt)
 {
 	int len;
 	u16* q;
@@ -935,43 +935,43 @@ int tls_clientwrite_clienthello(u8* dst, int cnt)
 
 
 
-int tlsclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v2client_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tlsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v2client_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
 	struct artery* ele;
-	say("@tlsclient_write\n");
+	say("@tls1v2client_write\n");
 
 	ele = self->pchip;
 	if(0 == ele->stage1)
 	{
 		//second read
-		ret = 5 + tls_read_head(buf, len);
-		tls_clientread_serverhello(buf+5, len-5);
+		ret = 5 + tls1v2_read_head(buf, len);
+		tls1v2_clientread_serverhello(buf+5, len-5);
 		buf += ret;
 		len -= ret;
 
-		ret = 5 + tls_read_head(buf, len);
-		tls_clientread_servercertificate(buf+5, len-5);
+		ret = 5 + tls1v2_read_head(buf, len);
+		tls1v2_clientread_servercertificate(buf+5, len-5);
 		buf += ret;
 		len -= ret;
 
-		ret = 5 + tls_read_head(buf, len);
-		tls_clientread_serverkeyexch(buf+5, len-5);
+		ret = 5 + tls1v2_read_head(buf, len);
+		tls1v2_clientread_serverkeyexch(buf+5, len-5);
 		buf += ret;
 		len -= ret;
 
-		ret = 5 + tls_read_head(buf, len);
-		tls_clientread_serverdone(buf+5, len-5);
+		ret = 5 + tls1v2_read_head(buf, len);
+		tls1v2_clientread_serverdone(buf+5, len-5);
 
 		//second write
-		ret = tls_write_client_keyexch(tmp, len);
-		ret += tls_write_client_cipherspec(tmp+ret, len);
-		ret += tls_write_client_hellorequest(tmp+ret, len);
+		ret = tls1v2_write_client_keyexch(tmp, len);
+		ret += tls1v2_write_client_cipherspec(tmp+ret, len);
+		ret += tls1v2_write_client_hellorequest(tmp+ret, len);
 
 		ret = relationwrite(ele, _src_, 0, 0, tmp, ret);
 	}
@@ -982,24 +982,24 @@ int tlsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	ele->stage1 += 1;
 	return 0;
 }
-int tlsclient_discon(struct halfrel* self, struct halfrel* peer)
+int tls1v2client_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tlsclient_linkup(struct halfrel* self, struct halfrel* peer)
+int tls1v2client_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
 	u8 tmp[0x1000];
 
-	ret = tls_clientwrite_clienthello(tmp, 0);
+	ret = tls1v2_clientwrite_clienthello(tmp, 0);
 	if(ret)relationwrite(self->pchip, _src_, 0, 0, tmp, ret);
 	return 0;
 }
-int tlsclient_delete(struct artery* ele)
+int tls1v2client_delete(struct artery* ele)
 {
 	return 0;
 }
-int tlsclient_create(struct artery* ele, u8* url)
+int tls1v2client_create(struct artery* ele, u8* url)
 {
 	ele->stage1 = 0;
 	return 0;
@@ -1008,7 +1008,7 @@ int tlsclient_create(struct artery* ele, u8* url)
 
 
 
-int tls_serverread_clienthello(struct artery* ele, int foot, u8* buf, int len)
+int tls1v2_serverread_clienthello(struct artery* ele, int foot, u8* buf, int len)
 {
 	int j, k;
 	struct bothhello* p = (void*)buf;
@@ -1016,7 +1016,7 @@ int tls_serverread_clienthello(struct artery* ele, int foot, u8* buf, int len)
 
 	//hello
 	say("clienthello{\n");
-	len = tls_read_hello(buf, len);
+	len = tls1v2_read_hello(buf, len);
 
 
 	//random
@@ -1081,15 +1081,15 @@ int tls_serverread_clienthello(struct artery* ele, int foot, u8* buf, int len)
 
 
 
-int tlsserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v2server_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tlsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v2server_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	struct artery* ele;
-	say("@tlsserver_write\n");
+	say("@tls1v2server_write\n");
 
 	ele = self->pchip;
 	switch(ele->stage1)
@@ -1097,14 +1097,14 @@ int tlsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 		case 0:
 		{
 			//first read: client(hello)
-			tls_read_head(buf,len);
-			tls_serverread_clienthello(ele, 0, buf+5, len-5);
+			tls1v2_read_head(buf,len);
+			tls1v2_serverread_clienthello(ele, 0, buf+5, len-5);
 
 			//first write: server(hello+cert+keyexch+done)
-			ret = tls_write_server_hello(       ele, 0, buf, len);
-			ret += tls_write_server_certificate(ele, 0, buf+ret, len);
-			ret += tls_write_server_keyexch(    ele, 0, buf+ret, len);
-			ret += tls_write_server_done(       ele, 0, buf+ret, len);
+			ret = tls1v2_write_server_hello(       ele, 0, buf, len);
+			ret += tls1v2_write_server_certificate(ele, 0, buf+ret, len);
+			ret += tls1v2_write_server_keyexch(    ele, 0, buf+ret, len);
+			ret += tls1v2_write_server_done(       ele, 0, buf+ret, len);
 			relationwrite(ele, _src_, 0, 0, buf, ret);
 
 			break;
@@ -1112,14 +1112,14 @@ int tlsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 		case 1:
 		{
 			//second read: client(keyexch+cipher+request)
-			ret = tls_read_client_keyexch(buf, len);
-			ret += tls_read_client_cipherspec(buf+ret, len);
-			ret += tls_read_client_hellorequest(buf+ret, len);
+			ret = tls1v2_read_client_keyexch(buf, len);
+			ret += tls1v2_read_client_cipherspec(buf+ret, len);
+			ret += tls1v2_read_client_hellorequest(buf+ret, len);
 
 			//second write: server(newsession+cipher+encrypted)
-			ret = tls_write_server_newsession(buf, len);
-			ret += tls_write_server_cipherspec(buf+ret, len);
-			ret += tls_write_server_encrypthandshake(buf+ret, len);
+			ret = tls1v2_write_server_newsession(buf, len);
+			ret += tls1v2_write_server_cipherspec(buf+ret, len);
+			ret += tls1v2_write_server_encrypthandshake(buf+ret, len);
 			relationwrite(ele, _src_, 0, 0, buf, ret);
 
 			break;
@@ -1130,19 +1130,19 @@ int tlsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	ele->stage1 += 1;
 	return 0;
 }
-int tlsserver_discon(struct halfrel* self, struct halfrel* peer)
+int tls1v2server_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tlsserver_linkup(struct halfrel* self, struct halfrel* peer)
+int tls1v2server_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tlsserver_delete(struct artery* ele)
+int tls1v2server_delete(struct artery* ele)
 {
 	return 0;
 }
-int tlsserver_create(struct artery* ele, u8* url)
+int tls1v2server_create(struct artery* ele, u8* url)
 {
 	ele->stage1 = 0;
 	return 0;
@@ -1151,16 +1151,16 @@ int tlsserver_create(struct artery* ele, u8* url)
 
 
 
-int tlsmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v2master_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tlsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v2master_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	struct object* obj;
 	struct artery* ele;
 	struct relation* rel;
-	say("@tlsmaster_write\n");
+	say("@tls1v2master_write\n");
 
 	ele = self->pchip;
 	if(0x16 != buf[0])
@@ -1173,7 +1173,7 @@ int tlsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	if(0 == obj)return 0;
 
 	obj = obj->tempobj;
-	ele = arterycreate(_Tls_, 0, 0, 0);
+	ele = arterycreate(_Tls1_2_, 0, 0, 0);
 	rel = relationcreate(ele, 0, _art_, _src_, obj, 0, _sys_, _dst_);
 
 	self = (void*)&rel->dstchip;
@@ -1181,19 +1181,19 @@ int tlsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	arterywrite(self, peer, 0, 0, buf, len);
 	return 0;
 }
-int tlsmaster_discon(struct halfrel* self, struct halfrel* peer)
+int tls1v2master_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tlsmaster_linkup(struct halfrel* self, struct halfrel* peer)
+int tls1v2master_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int tlsmaster_delete(struct artery* ele)
+int tls1v2master_delete(struct artery* ele)
 {
 	return 0;
 }
-int tlsmaster_create(struct artery* ele, u8* url)
+int tls1v2master_create(struct artery* ele, u8* url)
 {
 	int j;
 	u8 buf[256];
@@ -1203,94 +1203,6 @@ int tlsmaster_create(struct artery* ele, u8* url)
 	}
 	if(j >= 256)return 0;
 
-	tls_prep_cert(buf, j);
+	tls1v2_prep_cert(buf, j);
 	return 0;
 }
-
-
-
-/*
-int tls_read(struct artery* ele, int fd, u8* buf, int len)
-{
-	int ret=0;
-	int stage;
-
-	if(buf[0] == 0x17)
-	{
-		ret = tls_read_both_data(buf,len);
-		ele[fd].stage1 = 0xff;
-	}
-	else if(buf[0] == 0x16)
-	{
-		if(buf[5] == 1)
-		{
-			//ret = tls_read_client_hello(ele, fd, buf, len);
-			ele[fd].stage1 = 1;
-		}
-		else if(buf[5] == 2)
-		{
-			//ret = tls_read_server_hello(buf, len);
-			//ret += tls_read_server_certificate(buf+ret, len);
-			//ret += tls_read_server_keyexch(buf+ret, len);
-			//ret += tls_read_server_done(buf+ret, len);
-			ele[fd].stage1 = 2;
-		}
-		else if(buf[5] == 16)
-		{
-			ret = tls_read_client_keyexch(buf, len);
-			ret += tls_read_client_cipherspec(buf+ret, len);
-			ret += tls_read_client_hellorequest(buf+ret, len);
-			ele[fd].stage1 = 16;
-		}
-		else if(buf[5] == 4)
-		{
-			ret = tls_read_server_newsession(buf, len);
-			ret += tls_read_server_cipherspec(buf+ret, len);
-			ret += tls_read_server_encrypthandshake(buf+ret, len);
-			ele[fd].stage1 = 4;
-		}
-	}
-	else
-	{
-		printmemory(buf, len);
-		ret = -1;
-	}
-
-	return ret;
-}
-int tls_write(struct artery* ele, int fd, u8* buf, int len)
-{
-	int ret;
-	int stage = ele[fd].stage1;
-
-	if(stage == 0)
-	{
-		//ret = tls_write_client_hello(buf, len);
-	}
-	else if(stage == 1)
-	{
-		ret = tls_write_server_hello(ele, fd, buf, len);
-		ret += tls_write_server_certificate(buf+ret, len);
-		ret += tls_write_server_keyexch(ele, fd, buf+ret, len);
-		ret += tls_write_server_done(buf+ret, len);
-	}
-	else if(stage == 2)
-	{
-		ret = tls_write_client_keyexch(buf, len);
-		ret += tls_write_client_cipherspec(buf+ret, len);
-		ret += tls_write_client_hellorequest(buf+ret, len);
-	}
-	else if(stage == 16)
-	{
-		ret = tls_write_server_newsession(buf, len);
-		ret += tls_write_server_cipherspec(buf+ret, len);
-		ret += tls_write_server_encrypthandshake(buf+ret, len);
-		printmemory(buf,ret);
-	}
-	else if(stage == 0xff)
-	{
-		ret = tls_write_both_data(buf, len);
-	}
-
-	return ret;
-}*/

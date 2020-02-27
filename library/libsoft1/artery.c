@@ -461,25 +461,44 @@ int wsmaster_linkup(struct halfrel* self, struct halfrel* peer);
 int wsmaster_discon( struct halfrel* self, struct halfrel* peer);
 int wsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int wsmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-//tcp.tls
-int tlsclient_create(struct artery* ele, void* url, int argc, u8** argv);
-int tlsclient_delete(struct artery* ele, void* url);
-int tlsclient_linkup(struct halfrel* self, struct halfrel* peer);
-int tlsclient_discon( struct halfrel* self, struct halfrel* peer);
-int tlsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int tlsclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int tlsserver_create(struct artery* ele, void* url, int argc, u8** argv);
-int tlsserver_delete(struct artery* ele, void* url);
-int tlsserver_linkup(struct halfrel* self, struct halfrel* peer);
-int tlsserver_discon( struct halfrel* self, struct halfrel* peer);
-int tlsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int tlsserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int tlsmaster_create(struct artery* ele, void* url, int argc, u8** argv);
-int tlsmaster_delete(struct artery* ele, void* url);
-int tlsmaster_linkup(struct halfrel* self, struct halfrel* peer);
-int tlsmaster_discon( struct halfrel* self, struct halfrel* peer);
-int tlsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int tlsmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+//tcp.tls1.2
+int tls1v2client_create(struct artery* ele, void* url, int argc, u8** argv);
+int tls1v2client_delete(struct artery* ele, void* url);
+int tls1v2client_linkup(struct halfrel* self, struct halfrel* peer);
+int tls1v2client_discon( struct halfrel* self, struct halfrel* peer);
+int tls1v2client_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tls1v2client_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tls1v2server_create(struct artery* ele, void* url, int argc, u8** argv);
+int tls1v2server_delete(struct artery* ele, void* url);
+int tls1v2server_linkup(struct halfrel* self, struct halfrel* peer);
+int tls1v2server_discon( struct halfrel* self, struct halfrel* peer);
+int tls1v2server_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tls1v2server_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tls1v2master_create(struct artery* ele, void* url, int argc, u8** argv);
+int tls1v2master_delete(struct artery* ele, void* url);
+int tls1v2master_linkup(struct halfrel* self, struct halfrel* peer);
+int tls1v2master_discon( struct halfrel* self, struct halfrel* peer);
+int tls1v2master_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tls1v2master_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+//tcp.tls1.3
+int tls1v3client_create(struct artery* ele, void* url, int argc, u8** argv);
+int tls1v3client_delete(struct artery* ele, void* url);
+int tls1v3client_linkup(struct halfrel* self, struct halfrel* peer);
+int tls1v3client_discon( struct halfrel* self, struct halfrel* peer);
+int tls1v3client_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tls1v3client_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tls1v3server_create(struct artery* ele, void* url, int argc, u8** argv);
+int tls1v3server_delete(struct artery* ele, void* url);
+int tls1v3server_linkup(struct halfrel* self, struct halfrel* peer);
+int tls1v3server_discon( struct halfrel* self, struct halfrel* peer);
+int tls1v3server_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tls1v3server_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tls1v3master_create(struct artery* ele, void* url, int argc, u8** argv);
+int tls1v3master_delete(struct artery* ele, void* url);
+int tls1v3master_linkup(struct halfrel* self, struct halfrel* peer);
+int tls1v3master_discon( struct halfrel* self, struct halfrel* peer);
+int tls1v3master_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tls1v3master_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //fuckgfw
 int fuckgfwclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int fuckgfwclient_delete(struct artery* ele, void* url);
@@ -596,6 +615,9 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _nema0183_:nema0183client_read(self, peer, arg, idx, buf, len);break;
 		case _Nema0183_:nema0183server_read(self, peer, arg, idx, buf, len);break;
 
+		case _DNS_:dnsserver_read(self, peer, arg, idx, buf, len);break;
+		case _dns_:dnsclient_read(self, peer, arg, idx, buf, len);break;
+
 		case _STUN_:stunmaster_read(self, peer, arg, idx, buf, len);break;
 		case _stun_:stunclient_read(self, peer, arg, idx, buf, len);break;
 		case _P2P_:p2pmaster_read(self, peer, arg, idx, buf, len);break;
@@ -615,6 +637,10 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _Socks_:socksserver_read(self, peer, arg, idx, buf, len);break;
 		case _socks_:socksclient_read(self, peer, arg, idx, buf, len);break;
 
+		case _SSH_:sshmaster_read(self, peer, arg, idx, buf, len);break;
+		case _Ssh_:sshserver_read(self, peer, arg, idx, buf, len);break;
+		case _ssh_:sshclient_read(self, peer, arg, idx, buf, len);break;
+
 		case _HTTP_:httpmaster_read(self, peer, arg, idx, buf, len);break;
 		case _Http_:httpserver_read(self, peer, arg, idx, buf, len);break;
 		case _http_:httpclient_read(self, peer, arg, idx, buf, len);break;
@@ -622,12 +648,12 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _Ws_:wsserver_read(self, peer, arg, idx, buf, len);break;
 		case _ws_:wsclient_read(self, peer, arg, idx, buf, len);break;
 
-		case _SSH_:sshmaster_read(self, peer, arg, idx, buf, len);break;
-		case _Ssh_:sshserver_read(self, peer, arg, idx, buf, len);break;
-		case _ssh_:sshclient_read(self, peer, arg, idx, buf, len);break;
-		case _TLS_:tlsmaster_read(self, peer, arg, idx, buf, len);break;
-		case _Tls_:tlsserver_read(self, peer, arg, idx, buf, len);break;
-		case _tls_:tlsclient_read(self, peer, arg, idx, buf, len);break;
+		case _TLS1_2_:tls1v2master_read(self, peer, arg, idx, buf, len);break;
+		case _Tls1_2_:tls1v2server_read(self, peer, arg, idx, buf, len);break;
+		case _tls1_2_:tls1v2client_read(self, peer, arg, idx, buf, len);break;
+		case _TLS1_3_:tls1v3master_read(self, peer, arg, idx, buf, len);break;
+		case _Tls1_3_:tls1v3server_read(self, peer, arg, idx, buf, len);break;
+		case _tls1_3_:tls1v3client_read(self, peer, arg, idx, buf, len);break;
 	}
 	return 0;
 }
@@ -671,6 +697,9 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _Nema0183_:return nema0183server_write(self, peer, arg, idx, buf, len);break;
 		case _nema0183_:return nema0183client_write(self, peer, arg, idx, buf, len);break;
 
+		case _DNS_:return dnsserver_write(self, peer, arg, idx, buf, len);break;
+		case _dns_:return dnsclient_write(self, peer, arg, idx, buf, len);break;
+
 		case _STUN_:return stunmaster_write(self, peer, arg, idx, buf, len);break;
 		case _stun_:return stunclient_write(self, peer, arg, idx, buf, len);break;
 		case _P2P_:return p2pmaster_write(self, peer, arg, idx, buf, len);break;
@@ -690,6 +719,10 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _Socks_:return socksserver_write(self, peer, arg, idx, buf, len);break;
 		case _socks_:return socksclient_write(self, peer, arg, idx, buf, len);break;
 
+		case _SSH_:return sshmaster_write(self, peer, arg, idx, buf, len);break;
+		case _Ssh_:return sshserver_write(self, peer, arg, idx, buf, len);break;
+		case _ssh_:return sshclient_write(self, peer, arg, idx, buf, len);break;
+
 		case _HTTP_:return httpmaster_write(self, peer, arg, idx, buf, len);break;
 		case _Http_:return httpserver_write(self, peer, arg, idx, buf, len);break;
 		case _http_:return httpclient_write(self, peer, arg, idx, buf, len);break;
@@ -697,12 +730,12 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _Ws_:return wsserver_write(self, peer, arg, idx, buf, len);break;
 		case _ws_:return wsclient_write(self, peer, arg, idx, buf, len);break;
 
-		case _SSH_:return sshmaster_write(self, peer, arg, idx, buf, len);break;
-		case _Ssh_:return sshserver_write(self, peer, arg, idx, buf, len);break;
-		case _ssh_:return sshclient_write(self, peer, arg, idx, buf, len);break;
-		case _TLS_:return tlsmaster_write(self, peer, arg, idx, buf, len);break;
-		case _Tls_:return tlsserver_write(self, peer, arg, idx, buf, len);break;
-		case _tls_:return tlsclient_write(self, peer, arg, idx, buf, len);break;
+		case _TLS1_2_:return tls1v2master_write(self, peer, arg, idx, buf, len);break;
+		case _Tls1_2_:return tls1v2server_write(self, peer, arg, idx, buf, len);break;
+		case _tls1_2_:return tls1v2client_write(self, peer, arg, idx, buf, len);break;
+		case _TLS1_3_:return tls1v3master_write(self, peer, arg, idx, buf, len);break;
+		case _Tls1_3_:return tls1v3server_write(self, peer, arg, idx, buf, len);break;
+		case _tls1_3_:return tls1v3client_write(self, peer, arg, idx, buf, len);break;
 	}
 	return 0;
 }
@@ -717,6 +750,9 @@ int arterydiscon(struct halfrel* self, struct halfrel* peer)
 	switch(ele->type){
 		case _ann_:return ann_discon(self, peer);break;
 
+		case _dns_:return dnsclient_discon(self, peer);break;
+		case _DNS_:return dnsserver_discon(self, peer);break;
+
 		case _party_:return partyclient_discon(self, peer);break;
 		case _PARTY_:return partymaster_discon(self, peer);break;
 
@@ -725,21 +761,23 @@ int arterydiscon(struct halfrel* self, struct halfrel* peer)
 		case _p2p_:return p2pclient_discon(self, peer);break;
 		case _P2P_:return p2pmaster_discon(self, peer);break;
 
-		case _http_:return httpclient_discon(self, peer);break;
-		case _Http_:return httpserver_discon(self, peer);break;
-		case _HTTP_:return httpmaster_discon(self, peer);break;
-
-		case _ws_:return wsclient_discon(self, peer);break;
-		case _Ws_:return wsserver_discon(self, peer);break;
-		case _WS_:return wsmaster_discon(self, peer);break;
-
 		case _ssh_:return sshclient_discon(self, peer);break;
 		case _Ssh_:return sshserver_discon(self, peer);break;
 		case _SSH_:return sshmaster_discon(self, peer);break;
 
-		case _tls_:return tlsclient_discon(self, peer);break;
-		case _Tls_:return tlsserver_discon(self, peer);break;
-		case _TLS_:return tlsmaster_discon(self, peer);break;
+		case _http_:return httpclient_discon(self, peer);break;
+		case _Http_:return httpserver_discon(self, peer);break;
+		case _HTTP_:return httpmaster_discon(self, peer);break;
+		case _ws_:return wsclient_discon(self, peer);break;
+		case _Ws_:return wsserver_discon(self, peer);break;
+		case _WS_:return wsmaster_discon(self, peer);break;
+
+		case _tls1_2_:return tls1v2client_discon(self, peer);break;
+		case _Tls1_2_:return tls1v2server_discon(self, peer);break;
+		case _TLS1_2_:return tls1v2master_discon(self, peer);break;
+		case _tls1_3_:return tls1v3client_discon(self, peer);break;
+		case _Tls1_3_:return tls1v3server_discon(self, peer);break;
+		case _TLS1_3_:return tls1v3master_discon(self, peer);break;
 
 		case _proxy_:return proxyclient_discon(self, peer);break;
 		case _Proxy_:return proxyserver_discon(self, peer);break;
@@ -762,6 +800,9 @@ int arterylinkup(struct halfrel* self, struct halfrel* peer)
 	switch(ele->type){
 		case _ann_:return ann_linkup(self, peer);break;
 
+		case _dns_:return dnsclient_linkup(self, peer);break;
+		case _DNS_:return dnsserver_linkup(self, peer);break;
+
 		case _party_:return partyclient_linkup(self, peer);break;
 		case _PARTY_:return partymaster_linkup(self, peer);break;
 
@@ -770,21 +811,23 @@ int arterylinkup(struct halfrel* self, struct halfrel* peer)
 		case _p2p_:return p2pclient_linkup(self, peer);break;
 		case _P2P_:return p2pmaster_linkup(self, peer);break;
 
-		case _http_:return httpclient_linkup(self, peer);break;
-		case _Http_:return httpserver_linkup(self, peer);break;
-		case _HTTP_:return httpmaster_linkup(self, peer);break;
-
-		case _ws_:return wsclient_linkup(self, peer);break;
-		case _Ws_:return wsserver_linkup(self, peer);break;
-		case _WS_:return wsmaster_linkup(self, peer);break;
-
 		case _ssh_:return sshclient_linkup(self, peer);break;
 		case _Ssh_:return sshserver_linkup(self, peer);break;
 		case _SSH_:return sshmaster_linkup(self, peer);break;
 
-		case _tls_:return tlsclient_linkup(self, peer);break;
-		case _Tls_:return tlsserver_linkup(self, peer);break;
-		case _TLS_:return tlsmaster_linkup(self, peer);break;
+		case _http_:return httpclient_linkup(self, peer);break;
+		case _Http_:return httpserver_linkup(self, peer);break;
+		case _HTTP_:return httpmaster_linkup(self, peer);break;
+		case _ws_:return wsclient_linkup(self, peer);break;
+		case _Ws_:return wsserver_linkup(self, peer);break;
+		case _WS_:return wsmaster_linkup(self, peer);break;
+
+		case _tls1_2_:return tls1v2client_linkup(self, peer);break;
+		case _Tls1_2_:return tls1v2server_linkup(self, peer);break;
+		case _TLS1_2_:return tls1v2master_linkup(self, peer);break;
+		case _tls1_3_:return tls1v3client_linkup(self, peer);break;
+		case _Tls1_3_:return tls1v3server_linkup(self, peer);break;
+		case _TLS1_3_:return tls1v3master_linkup(self, peer);break;
 
 		case _proxy_:return proxyclient_linkup(self, peer);break;
 		case _Proxy_:return proxyserver_linkup(self, peer);break;
@@ -1218,12 +1261,12 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 
 	//dns
-	if(_Dns_ == type)
+	if(_DNS_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _Dns_;
+		e->type = _DNS_;
 		dnsserver_create(e, url, argc, argv);
 		return e;
 	}
@@ -1535,43 +1578,63 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 
 	//tls: master,server,client
-	if(_TLS_ == type)
+	if(_TLS1_2_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _TLS_;
-		tlsmaster_create(e, url, argc, argv);
+		e->type = _TLS1_2_;
+		tls1v2master_create(e, url, argc, argv);
 
 		return e;
 	}
-	if(_Tls_ == type)
+	if(_Tls1_2_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _Tls_;
-		tlsserver_create(e, url, argc, argv);
+		e->type = _Tls1_2_;
+		tls1v2server_create(e, url, argc, argv);
 
 		return e;
 	}
-	if(_tls_ == type)
+	if(_tls1_2_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _tls_;
-		tlsclient_create(e, url, argc, argv);
+		e->type = _tls1_2_;
+		tls1v2client_create(e, url, argc, argv);
 
 		return e;
 	}
-
-	if(_https_ == type)
+	if(_TLS1_3_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _http_;
+		e->type = _TLS1_3_;
+		tls1v3master_create(e, url, argc, argv);
+
+		return e;
+	}
+	if(_Tls1_3_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _Tls1_3_;
+		tls1v3server_create(e, url, argc, argv);
+
+		return e;
+	}
+	if(_tls1_3_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _tls1_3_;
+		tls1v3client_create(e, url, argc, argv);
 
 		return e;
 	}

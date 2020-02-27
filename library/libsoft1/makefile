@@ -169,7 +169,8 @@ libflow/4.tcp/tcp.sql.c \
 libflow/4.tcp/tcp.socks.c \
 libflow/4.tcp/tcp.ssh.c \
 libflow/4.tcp/tcp.telnet.c \
-libflow/4.tcp/tcp.tls.c \
+libflow/4.tcp/tcp.tls1_2.c \
+libflow/4.tcp/tcp.tls1_3.c \
 libflow/4.tcp/tcp.vnc.c \
 libflow/4.tcp/tcp.ws.c \
 libflow/ahrs/ahrs.only_g.c \

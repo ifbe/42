@@ -1,0 +1,18 @@
+<artery>
+server{
+fmt:DNS
+}
+</artery>
+
+
+<system>
+socket{
+fmt:UDP
+url:0.0.0.0:53
+}
+</system>
+
+
+<relation>
+(socket, 0, dst) -> (server, 0, src)
+</relation>
