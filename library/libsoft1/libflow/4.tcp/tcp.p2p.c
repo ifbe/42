@@ -1,5 +1,6 @@
 #include "libsoft.h"
 int modifysocket(int fd, int arg, void* addr, int port);
+int createsocket_tcpclient(void* myaddr, int myport, void* toaddr, int toport);
 //
 #define _connect_ hex32('c','o','n', 0)
 #define _listen_ hex32('l','i','s', 0)
@@ -67,6 +68,13 @@ int p2pclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 
 		modifysocket(sys->selffd, _connect_, t+4, (t[2]<<8)+t[3]);
 		art->stage1 = _c_friend_;
+/*
+		//debug
+		char* tmp[32];
+		t = sys->self;
+		mysnprintf(tmp, 32, "%d.%d.%d.%d", t[4],t[5],t[6],t[7]);
+		int fd = createsocket_tcpclient(tmp, (t[2]<<8)+t[3], "127.0.0.1", 8888);
+		write(fd, "debug\n", 6);*/
 	}
 	return 0;
 }

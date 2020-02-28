@@ -100,7 +100,8 @@ int kqueuethread(int argc, const char * argv[])
 				if(cnt >= 0)
 				{
 					//say("@kqueuethread: %.4s\n", &obj[cc].type);
-					relationwrite(here, _dst_, here->peer, 0, buf, cnt);
+					if((0==here->irel0)&&(0==here->orel0))printmemory(buf, cnt);
+					else relationwrite(here, _dst_, here->peer, 0, buf, cnt);
 				}
 				if(cnt <= 0)
 				{

@@ -116,9 +116,9 @@ static void* epollthread(void* p)
 					cnt = readsocket(fd, here->peer, buf, BUFFER_SIZE);
 					if(cnt >= 0)
 					{
-						//printmemory(buf, cnt);
-						//say("@kqueuethread: %.4s\n", &obj[cc].type);
-						relationwrite(here, _dst_, here->peer, 0, buf, cnt);
+						//say("@epollthread: %.4s\n", &obj[cc].type);
+						if((0==here->irel0)&&(0==here->orel0))printmemory(buf, cnt);
+						else relationwrite(here, _dst_, here->peer, 0, buf, cnt);
 					}
 					if(cnt <= 0)
 					{

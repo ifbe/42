@@ -212,6 +212,12 @@ if((0 != myaddr) && (0 != myport)){
 		return 0;
 	}
 
+	//get the random port
+	self = (void*)obj[fd].self;
+	socklen_t len = sizeof(struct sockaddr_in);
+	getsockname(fd, (void*)self, &len);
+	printf("myaddr=%s:%d\n", inet_ntoa(self->sin_addr), ntohs(self->sin_port));
+
 	//done
 	kqueue_add(fd);
 	return fd;
@@ -236,9 +242,17 @@ int createsocket_tcpserver(char* addr, int port)
 	ret = 1;
 	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
 	if(ret < 0){
-		printf("errno=%d@setsockopt\n",errno);
+		printf("errno=%d@SO_REUSEADDR\n",errno);
 		return 0;
 	}
+#ifdef SO_REUSEPORT
+	ret = 1;
+	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &ret, 4);
+	if(ret < 0){
+		printf("errno=%d@SO_REUSEPORT\n",errno);
+		return 0;
+	}
+#endif
 
 	//self
 	self = (void*)obj[fd].self;
@@ -279,9 +293,17 @@ int createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
 	ret = 1;
 	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
 	if(ret < 0){
-		printf("errno=%d@setsockopt\n",errno);
+		printf("errno=%d@SO_REUSEADDR\n",errno);
 		return 0;
 	}
+#ifdef SO_REUSEPORT
+	ret = 1;
+	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEPORT, &ret, 4);
+	if(ret < 0){
+		printf("errno=%d@SO_REUSEPORT\n",errno);
+		return 0;
+	}
+#endif
 
 if((0 != myaddr) && (0 != myport)){
 	//self
@@ -324,8 +346,10 @@ if((0 != myaddr) && (0 != myport)){
 	}
 
 	//get the random port
+	self = (void*)obj[fd].self;
 	socklen_t len = sizeof(struct sockaddr_in);
-	getsockname(fd, (void*)obj[fd].self, &len);
+	getsockname(fd, (void*)self, &len);
+	printf("myaddr=%s:%d\n", inet_ntoa(self->sin_addr), ntohs(self->sin_port));
 
 	//done
 	kqueue_add(fd);
