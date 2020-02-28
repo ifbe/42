@@ -127,7 +127,7 @@ int createsocket_raw(char* addr, int port)
 	ret = 1;
 	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
 	if(-1 == ret){
-		perror("errno=%d@setsockopt\n",errno);
+		printf("errno=%d@setsockopt\n",errno);
 		close(fd);
 		return 0;
 	}
@@ -200,7 +200,7 @@ int createsocket_udpserver(char* addr, int port)
 }
 int createsocket_udpclient(char* myaddr, int myport, char* toaddr, int toport)
 {
-	int fd;
+	int fd,ret;
 	struct sockaddr_in* self;
 	struct sockaddr_in* peer;
 
@@ -218,7 +218,7 @@ int createsocket_udpclient(char* myaddr, int myport, char* toaddr, int toport)
 	//reuse
 	ret = 1;
 	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
-	if(ret<0)
+	if(ret < 0)
 	{
 		printf("errno=%d@setsockopt\n",errno);
 		return 0;
@@ -314,7 +314,7 @@ int createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
 	//create socket
 	fd = socket(AF_INET, SOCK_STREAM, 0);
 	if(-1 == fd){
-		printf("errno=%d%d@socket\n",errno);
+		printf("errno=%d@socket\n",errno);
 		return 0;
 	}
 

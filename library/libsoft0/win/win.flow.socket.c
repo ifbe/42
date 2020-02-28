@@ -101,7 +101,10 @@ int createsocket_bt(char* addr, int port)
 }
 int createsocket_raw(char* addr, int port)
 {
-	SOCKET fd = WSASocket(
+	int ret;
+	SOCKET fd;
+
+	fd = WSASocket(
 		PF_INET, SOCK_RAW, IPPROTO_IP,
 		0, 0, WSA_FLAG_OVERLAPPED
 	);
@@ -142,11 +145,10 @@ int createsocket_raw(char* addr, int port)
 int createsocket_udpserver(char* addr, int port)
 {
 	int ret;
-	int addrlen = sizeof(SOCKADDR_IN);
-	SOCKADDR_IN servaddr;
+	SOCKET fd;
 
 	//
-	SOCKET fd = WSASocket(
+	fd = WSASocket(
 		AF_INET, SOCK_DGRAM, 0,
 		0, 0, WSA_FLAG_OVERLAPPED
 	);
@@ -163,6 +165,7 @@ int createsocket_udpserver(char* addr, int port)
 	servaddr.sin_addr.s_addr = INADDR_ANY;
 
 	//bind
+	int addrlen = sizeof(SOCKADDR_IN);
 	ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
 	if(SOCKET_ERROR == ret){
 		printf("errno=%d@bind\n",GetLastError());
@@ -177,8 +180,11 @@ int createsocket_udpserver(char* addr, int port)
 }
 int createsocket_udpclient(char* myaddr, int myport, char* toaddr, int toport)
 {
+	int ret;
+	SOCKET fd;
+
 	//
-	SOCKET fd = WSASocket(
+	fd = WSASocket(
 		AF_INET, SOCK_DGRAM, IPPROTO_UDP,
 		0, 0, WSA_FLAG_OVERLAPPED
 	);
@@ -196,6 +202,7 @@ if((0 != myaddr) && (0 != myport)){
 	servaddr.sin_addr.s_addr = inet_addr(myaddr);
 
 	//bind
+	int addrlen = sizeof(SOCKADDR_IN);
 	ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
 	if(SOCKET_ERROR == ret){
 		printf("errno=%d@bind\n",GetLastError());
@@ -226,11 +233,10 @@ if((0 != myaddr) && (0 != myport)){
 int createsocket_tcpserver(char* addr, int port)
 {
 	int ret;
-	int addrlen = sizeof(SOCKADDR_IN);
-	SOCKADDR_IN servaddr;
+	SOCKET fd;
 
 	//new
-	SOCKET fd = WSASocket(
+	fd = WSASocket(
 		AF_INET, SOCK_STREAM, IPPROTO_TCP,
 		0, 0, WSA_FLAG_OVERLAPPED
 	);
@@ -247,6 +253,7 @@ int createsocket_tcpserver(char* addr, int port)
 	servaddr.sin_addr.s_addr = INADDR_ANY;
 
 	//bind
+	int addrlen = sizeof(SOCKADDR_IN);
 	ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
 	if(SOCKET_ERROR == ret){
 		printf("errno=%d@bind\n",GetLastError());
@@ -315,8 +322,11 @@ int createsocket_tcpserver(char* addr, int port)
 }
 int createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
 {
+	int ret;
+	SOCKET fd;
+
 	//
-	SOCKET fd = WSASocket(
+	fd = WSASocket(
 		AF_INET, SOCK_STREAM, IPPROTO_TCP,
 		0, 0, WSA_FLAG_OVERLAPPED
 	);
@@ -334,6 +344,7 @@ if((0 != myaddr) && (0 != myport)){
 	servaddr.sin_addr.s_addr = inet_addr(myaddr);
 
 	//bind
+	int addrlen = sizeof(SOCKADDR_IN);
 	ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
 	if(SOCKET_ERROR == ret){
 		printf("errno=%d@bind\n",GetLastError());
@@ -352,7 +363,7 @@ if((0 != myaddr) && (0 != myport)){
 	//connect
 	if(SOCKET_ERROR == connect(fd, (void*)&serAddr, sizeof(serAddr))){
 		printf("errno=%d@connect\n",GetLastError());
-		stopsocket(fd/4);
+		//stopsocket(fd/4);
 		return 0;
 	}
 
