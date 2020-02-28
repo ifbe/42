@@ -46,17 +46,24 @@ int p2pclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 		return 0;
 	}
 	if(_std_ == self->flag){
+		printmemory(buf, len);
+		relationwrite(self->pchip, _src_, 0,0, buf, 1);
 		return 0;
 	}
 	if(_src_ == self->flag){
+		u8* t;
 		printmemory(buf,len);
 
-		u8* t = buf;
-		say("myself=%d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		t = sys->self;
+		say("myaddr=%d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		if(len < 16)return 0;
+
+		t = buf+0;
+		say("public=%d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 		if(len < 16)return 0;
 
 		t = buf+8;
-		say("friend=%d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		say("remote=%d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 
 		modifysocket(sys->selffd, _connect_, t+4, (t[2]<<8)+t[3]);
 		art->stage1 = _c_friend_;

@@ -26,11 +26,6 @@ void epoll_mod(int);
 
 
 struct object* obj;
-//
-static int btfd = 0;
-static int rawfd = 0;
-static int tcpfd = 0;
-static int udpfd = 0;
 
 
 
@@ -111,6 +106,273 @@ int waitconnectwithselect(int sock)
 	}
 
 	return 1;
+}
+
+
+
+
+int createsocket_raw(char* addr, int port)
+{
+	int fd,ret,len;
+	struct ifreq ifopts;
+
+	//create
+	fd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
+	if(-1 == fd){
+		printf("errno=%d@socket\n",errno);
+		return 0;
+	}
+
+	//reuse
+	ret = 1;
+	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
+	if(-1 == ret){
+		perror("errno=%d@setsockopt\n",errno);
+		close(fd);
+		return 0;
+	}
+
+	//setup
+	for(ret=0;ret<IFNAMSIZ;ret++)
+	{
+		if(addr[ret] < 0x20){ifopts.ifr_name[ret] = 0;break;}
+		else ifopts.ifr_name[ret] = addr[ret];
+	}
+	ioctl(fd, SIOCGIFFLAGS, &ifopts);
+	ifopts.ifr_flags |= IFF_PROMISC;
+	ioctl(fd, SIOCSIFFLAGS, &ifopts);
+
+	//reuse
+	ret = setsockopt(fd, SOL_SOCKET, SO_BINDTODEVICE, addr, len);
+	if(-1 == ret){
+		printf("errno=%d@SO_BINDTODEVICE\n",errno);
+		close(fd);
+		return 0;
+	}
+
+	//done
+	epoll_add(fd);
+	return fd;
+}
+int createsocket_udpserver(char* addr, int port)
+{
+	int fd,ret;
+	struct sockaddr_in* self;
+
+	//create
+	fd = socket(AF_INET, SOCK_DGRAM, 0);
+	if(-1 == fd){
+		printf("errno=%d@socket\n",errno);
+		return 0;
+	}
+	if(fd > MAXSIZE)
+	{
+		printf("fd>4096\n");
+		return 0;
+	}
+
+	//reuse
+	ret = 1;
+	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
+	if(ret < 0){
+		printf("errno=%d@setsockopt\n",errno);
+		return 0;
+	}
+
+	//self
+	self = (void*)obj[fd].self;
+	memset(self, 0, sizeof(struct sockaddr_in));
+	self->sin_family = AF_INET;
+	self->sin_port = htons(port);
+	self->sin_addr.s_addr = htons(INADDR_ANY);
+
+	//bind
+	ret = bind(fd, (void*)self, sizeof(struct sockaddr_in));
+	if(-1 == ret){
+		printf("errno=%d@bind\n",errno);
+		close(fd);
+		return 0;
+	}
+
+	//done
+	epoll_add(fd);
+	return fd;
+}
+int createsocket_udpclient(char* myaddr, int myport, char* toaddr, int toport)
+{
+	int fd;
+	struct sockaddr_in* self;
+	struct sockaddr_in* peer;
+
+	//create
+	fd = socket(AF_INET, SOCK_DGRAM, 0);
+	if(-1 == fd){
+		printf("errno=%d@socket\n",errno);
+		return 0;
+	}
+	if(fd > MAXSIZE){
+		printf("fd>4096\n");
+		return 0;
+	}
+
+	//reuse
+	ret = 1;
+	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
+	if(ret<0)
+	{
+		printf("errno=%d@setsockopt\n",errno);
+		return 0;
+	}
+
+if((0 != myaddr) && (0 != myport)){
+	//self
+	self = (void*)obj[fd].self;
+	memset(self, 0, sizeof(struct sockaddr_in));
+	self->sin_family = AF_INET;
+	self->sin_port = htons(myport);
+	self->sin_addr.s_addr = inet_addr(myaddr);
+
+	//bind
+	ret = bind(fd, (void*)self, sizeof(struct sockaddr_in));
+	if(-1 == ret){
+		printf("errno=%d@bind\n",errno);
+		close(fd);
+		return 0;
+	}
+}
+
+	//peer
+	peer = (void*)obj[fd].peer;
+	memset(peer, 0, sizeof(struct sockaddr_in));
+	peer->sin_family = AF_INET;
+	peer->sin_port = htons(toport);
+	peer->sin_addr.s_addr = inet_addr(toaddr);
+
+	//connect
+	ret = connect(fd, (void*)peer, sizeof(struct sockaddr_in));
+	if(ret < 0){
+		printf("errno=%d@connect\n",errno);
+		return 0;
+	}
+
+	//done
+	epoll_add(fd);
+	return fd;
+}
+int createsocket_tcpserver(char* addr, int port)
+{
+	int fd,ret;
+	struct sockaddr_in* self;
+
+	//create
+	fd = socket(AF_INET, SOCK_STREAM, 0);
+	if(-1 == fd){
+		printf("errno=%d@socket\n",errno);
+		return 0;
+	}
+	if(fd > MAXSIZE){
+		printf("fd>4096\n");
+		return 0;
+	}
+
+	//reuse
+	ret = 1;
+	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
+	if(ret < 0){
+		printf("errno=%d@setsockopt\n",errno);
+		return 0;
+	}
+
+	//self
+	self = (void*)obj[fd].self;
+	memset(self, 0, sizeof(struct sockaddr_in));
+	self->sin_family = AF_INET;
+	self->sin_port = htons(port);
+	self->sin_addr.s_addr = htons(INADDR_ANY);
+
+	//bind
+	ret = bind(fd, (void*)self, sizeof(struct sockaddr_in));
+	if(-1 == ret){
+		printf("errno=%d@bind\n",errno);
+		close(fd);
+		return 0;
+	}
+
+	//work
+	listen(fd, 5);
+
+	//done
+	epoll_add(fd);
+	return fd;
+}
+int createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
+{
+	int fd,ret;
+	struct sockaddr_in* self;
+	struct sockaddr_in* peer;
+
+	//create socket
+	fd = socket(AF_INET, SOCK_STREAM, 0);
+	if(-1 == fd){
+		printf("errno=%d%d@socket\n",errno);
+		return 0;
+	}
+
+	//reuse
+	ret = 1;
+	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
+	if(ret < 0){
+		printf("errno=%d@setsockopt\n",errno);
+		return 0;
+	}
+
+if((0 != myaddr) && (0 != myport)){
+	//self
+	self = (void*)obj[fd].self;
+	memset(self, 0, sizeof(struct sockaddr_in));
+	self->sin_family = AF_INET;
+	self->sin_port = htons(myport);
+	self->sin_addr.s_addr = inet_addr(myaddr);
+
+	//bind
+	ret = bind(fd, (void*)self, sizeof(struct sockaddr_in));
+	if(-1 == ret){
+		printf("errno=%d@bind\n",errno);
+		close(fd);
+		return 0;
+	}
+}
+
+	//peer
+	peer = (void*)obj[fd].peer;
+	memset(peer, 0, sizeof(struct sockaddr_in));
+	peer->sin_family = AF_INET;
+	peer->sin_port = htons(toport);
+	peer->sin_addr.s_addr = inet_addr(toaddr);
+
+	//connect
+	fcntl(fd, F_SETFL, O_NONBLOCK | fcntl(fd, F_GETFL, 0));
+	printf("@@@@@@@@before connect\n");
+	ret = connect(fd, (void*)peer, sizeof(struct sockaddr_in));
+	printf("@@@@@@@@after connect\n");
+	if(ret < 0){
+		if(EINPROGRESS != errno){
+			printf("errno=%d@connect\n",errno);
+			return 0;
+		}
+		if(waitconnectwithselect(fd) <= 0){
+			close(fd);
+			return 0;
+		}
+	}
+
+	//get the random port
+	socklen_t len = sizeof(struct sockaddr_in);
+	getsockname(fd, (void*)obj[fd].self, &len);
+
+	//done
+	epoll_add(fd);
+	return fd;
 }
 
 
@@ -222,10 +484,10 @@ int modifysocket(int fd)
 int deletesocket(int fd)
 {
 	int ret = close(fd);
-	printf("---- %d %d, %d\n", fd, ret, errno);
+	printf("----fd=%d,ret=%d,errno=%d\n", fd, ret, errno);
 	return ret;
 	//epoll_del(x);
-	//if(tcpfd>0)epoll_del(tcpfd);
+	//if(fd>0)epoll_del(fd);
 }
 int createsocket(char* addr, int port, int type)
 {
@@ -246,262 +508,15 @@ int createsocket(char* addr, int port, int type)
 		}
 	}
 
-	//RAW
-	if(_RAW_ == type)
-	{
-		int ret;
-		int len;
-		struct ifreq ifopts;
-
-		//create
-		rawfd = socket(PF_PACKET, SOCK_RAW, htons(ETH_P_ALL));
-		if(rawfd == -1)
-		{
-			printf("error@socket:%d,%d\n",rawfd,errno);
-			return 0;
-		}
-
-		//reuse
-		ret = 1;
-		ret = setsockopt(rawfd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
-		if(ret == -1)
-		{
-			perror("setsockopt");
-			close(rawfd);
-			return 0;
-		}
-
-		//setup
-		for(ret=0;ret<IFNAMSIZ;ret++)
-		{
-			if(addr[ret] < 0x20){ifopts.ifr_name[ret] = 0;break;}
-			else ifopts.ifr_name[ret] = addr[ret];
-		}
-		ioctl(rawfd, SIOCGIFFLAGS, &ifopts);
-		ifopts.ifr_flags |= IFF_PROMISC;
-		ioctl(rawfd, SIOCSIFFLAGS, &ifopts);
-
-		//bind
-		ret = setsockopt(rawfd, SOL_SOCKET, SO_BINDTODEVICE, addr, len);
-		if(ret == -1)
-		{
-			perror("SO_BINDTODEVICE");
-			close(rawfd);
-			return 0;
-		}
-
-		//done
-		epoll_add(rawfd);
-		return rawfd;
+	//type
+	switch(type){
+	case _RAW_:return createsocket_raw(addr,port);
+	case _UDP_:return createsocket_udpserver(addr,port);
+	case _udp_:return createsocket_udpclient(0, 0, addr,port);
+	case _TCP_:return createsocket_tcpserver(addr,port);
+	case _tcp_:return createsocket_tcpclient(0, 0, addr,port);
+	default:printf("error@type\n");
 	}
-
-	//raw client
-	if(_raw_ == type)
-	{
-		return 0;
-	}
-
-	//udp server
-	if(_UDP_ == type)
-	{
-		int ret;
-		struct sockaddr_in* self;
-
-		//create
-		udpfd = socket(AF_INET, SOCK_DGRAM, 0);
-		if (udpfd == -1)
-		{
-			printf("error@socket\n");
-			return 0;
-		}
-		if(udpfd > MAXSIZE)
-		{
-			printf("udpfd>4096\n");
-			return 0;
-		}
-
-		//reuse
-		ret = 1;
-		ret = setsockopt(udpfd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
-		if(ret<0)
-		{
-			printf("error@setsockopet\n");
-			return 0;
-		}
-
-		//self
-		self = (void*)obj[udpfd].self;
-		memset(self, 0, sizeof(struct sockaddr_in));
-		self->sin_family = AF_INET;
-		self->sin_port = htons(port);
-		self->sin_addr.s_addr = htons(INADDR_ANY);
-		ret = bind(udpfd, (void*)self, sizeof(struct sockaddr_in));
-		if(ret == -1)
-		{
-			printf("error@bind\n");
-			close(udpfd);
-			return 0;
-		}
-
-		//done
-		epoll_add(udpfd);
-		return udpfd;
-	}
-
-	//udp client
-	if(_udp_ == type)
-	{
-		struct sockaddr_in* self;
-		struct sockaddr_in* peer;
-
-		//create
-		fd = socket(AF_INET, SOCK_DGRAM, 0);
-		if(fd == -1)
-		{
-			printf("error%d@socket:%d\n",errno,fd);
-			return 0;
-		}
-		if(fd > MAXSIZE)
-		{
-			printf("fd>4096\n");
-			return 0;
-		}
-
-		//reuse
-		ret = 1;
-		ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
-		if(ret<0)
-		{
-			printf("error@setsockopet\n");
-			return 0;
-		}
-
-		//peer
-		peer = (void*)obj[fd].peer;
-		memset(peer, 0, sizeof(struct sockaddr_in));
-		peer->sin_family = AF_INET;
-		peer->sin_port = htons(port);
-		peer->sin_addr.s_addr = inet_addr(addr);
-
-		//
-		ret = connect(fd, (void*)peer, sizeof(struct sockaddr_in));
-		if(ret < 0)
-		{
-			printf("connect error\n");
-			return 0;
-		}
-
-		//done
-		epoll_add(fd);
-		return fd;
-	}
-
-	//tcp server
-	if(_TCP_ == type)
-	{
-		int ret;
-		struct sockaddr_in* self;
-
-		//create
-		tcpfd = socket(AF_INET, SOCK_STREAM, 0);
-		if (tcpfd == -1)
-		{
-			printf("error@socket\n");
-			return 0;
-		}
-		if(tcpfd > MAXSIZE)
-		{
-			printf("tcpfd>4096\n");
-			return 0;
-		}
-
-		//reuse
-		ret = 1;
-		ret = setsockopt(tcpfd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
-		if(ret<0)
-		{
-			printf("error@setsockopet\n");
-			return 0;
-		}
-
-		//self
-		self = (void*)obj[tcpfd].self;
-		memset(self, 0, sizeof(struct sockaddr_in));
-		self->sin_family = AF_INET;
-		self->sin_port = htons(port);
-		self->sin_addr.s_addr = htons(INADDR_ANY);
-		ret = bind(tcpfd, (void*)self, sizeof(struct sockaddr_in));
-		if(ret == -1)
-		{
-			printf("error@bind\n");
-			close(tcpfd);
-			return 0;
-		}
-
-		//work
-		listen(tcpfd, 5);
-
-		//done
-		epoll_add(tcpfd);
-		return tcpfd;
-	}
-
-	//tcp client
-	if(_tcp_ == type)
-	{
-		int ret;
-		struct sockaddr_in* peer;
-
-		//create socket
-		fd = socket(AF_INET, SOCK_STREAM, 0);
-		if(fd == -1)
-		{
-			printf("error%d@socket:%d\n",errno,fd);
-			return 0;
-		}
-
-		//reuse
-		ret = 1;
-		ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
-		if(ret<0)
-		{
-			printf("error@setsockopet\n");
-			return 0;
-		}
-
-		//peer
-		peer = (void*)obj[fd].peer;
-		memset(peer, 0, sizeof(struct sockaddr_in));
-		peer->sin_family = AF_INET;
-		peer->sin_addr.s_addr = inet_addr(addr);
-		peer->sin_port = htons(port);
-
-		//work
-		fcntl(fd, F_SETFL, O_NONBLOCK | fcntl(fd, F_GETFL, 0));
-		printf("@@@@@@@@before connect\n");
-		ret = connect(fd, (void*)peer, sizeof(struct sockaddr_in));
-		printf("@@@@@@@@after connect\n");
-		if(ret < 0){
-			if(EINPROGRESS != errno){
-				printf("connect error\n");
-				return 0;
-			}
-			if(waitconnectwithselect(fd) <= 0){
-				close(fd);
-				return 0;
-			}
-		}
-
-		//get the random port
-		socklen_t len = sizeof(struct sockaddr_in);
-		getsockname(fd, (void*)obj[fd].self, &len);
-
-		//done
-		epoll_add(fd);
-		return fd;
-	}
-
-	printf("error@type\n");
 	return 0;
 }
 

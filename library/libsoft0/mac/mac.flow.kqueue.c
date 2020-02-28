@@ -119,8 +119,10 @@ int kqueuethread(int argc, const char * argv[])
 					//printmemory(buf, cnt);
 					if( (0 == here->irel0) && (0 == here->orel0) )
 					{
-						//tell parent, its me
 						parent = here->tempobj;
+						memcpy(parent->peer, here->peer, 8);
+
+						//tell parent, its me
 						parent->tempfd = fd;
 						parent->tempobj = here;
 

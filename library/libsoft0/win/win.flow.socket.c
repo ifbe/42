@@ -83,6 +83,292 @@ u32 resolvehostname(char* addr)
 
 
 
+int createsocket_bt(char* addr, int port)
+{
+	SOCKET fd = WSASocket(
+		AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM,
+		0, 0, WSA_FLAG_OVERLAPPED
+	);
+	if(INVALID_SOCKET == fd){
+		printf("errno=%d@socket\n",GetLastError());
+		return 0;
+	}
+
+	//
+	iocp_add(fd);
+	iocp_mod(fd);
+	return fd/4;
+}
+int createsocket_raw(char* addr, int port)
+{
+	SOCKET fd = WSASocket(
+		PF_INET, SOCK_RAW, IPPROTO_IP,
+		0, 0, WSA_FLAG_OVERLAPPED
+	);
+	if(INVALID_SOCKET == fd){
+		printf("errno=%d@socket\n", GetLastError());
+		return 0;
+	}
+
+	//
+	int one = 1;
+	if(SOCKET_ERROR == WSAIoctl(fd, SIO_RCVALL, &one, 4, 0, 0, (LPDWORD)&ret, 0, 0)){
+		printf("errno=%d@WSAIoctl\n", GetLastError());
+		return 0;
+	}
+	if(SOCKET_ERROR == setsockopt(fd, IPPROTO_IP, IP_HDRINCL, (char *)&ret, 4)){
+		printf("errno=%d@setsockopt\n", GetLastError());
+		return 0;
+	}
+
+	//self
+	struct sockaddr_in serAddr;
+	memset(&serAddr, 0, sizeof(serAddr));
+	serAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	serAddr.sin_family = PF_INET;
+	serAddr.sin_port = htons(0);
+
+	//bind
+	if(SOCKET_ERROR == bind(fd, (void*)&serAddr, sizeof(serAddr))){
+		printf("errno=%d@bind\n", GetLastError());
+		return 0;
+	}
+
+	//
+	iocp_add(fd);
+	iocp_mod(fd);
+	return fd/4;
+}
+int createsocket_udpserver(char* addr, int port)
+{
+	int ret;
+	int addrlen = sizeof(SOCKADDR_IN);
+	SOCKADDR_IN servaddr;
+
+	//
+	SOCKET fd = WSASocket(
+		AF_INET, SOCK_DGRAM, 0,
+		0, 0, WSA_FLAG_OVERLAPPED
+	);
+	if(INVALID_SOCKET == fd){
+		printf("errno=%d@socket\n",GetLastError());
+		return 0;
+	}
+
+	//self
+	struct sockaddr_in servaddr;
+	memset(&servaddr, 0, sizeof(servaddr));
+	servaddr.sin_family = AF_INET;
+	servaddr.sin_port = htons(port);
+	servaddr.sin_addr.s_addr = INADDR_ANY;
+
+	//bind
+	ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
+	if(SOCKET_ERROR == ret){
+		printf("errno=%d@bind\n",GetLastError());
+		closesocket(fd);
+		return 0;
+	}
+
+	//
+	iocp_add(fd);
+	iocp_mod(fd);
+	return fd/4;
+}
+int createsocket_udpclient(char* myaddr, int myport, char* toaddr, int toport)
+{
+	//
+	SOCKET fd = WSASocket(
+		AF_INET, SOCK_DGRAM, IPPROTO_UDP,
+		0, 0, WSA_FLAG_OVERLAPPED
+	);
+	if(INVALID_SOCKET == fd){
+		printf("errno=%d@socket\n",GetLastError());
+		return 0;
+	}
+
+if((0 != myaddr) && (0 != myport)){
+	//self
+	struct sockaddr_in servaddr;
+	memset(&servaddr, 0, sizeof(servaddr));
+	servaddr.sin_family = AF_INET;
+	servaddr.sin_port = htons(myport);
+	servaddr.sin_addr.s_addr = inet_addr(myaddr);
+
+	//bind
+	ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
+	if(SOCKET_ERROR == ret){
+		printf("errno=%d@bind\n",GetLastError());
+		closesocket(fd);
+		return 0;
+	}
+}
+
+	//peer
+	struct sockaddr_in server;
+	memset(&server, 0, sizeof(struct sockaddr_in));
+	server.sin_family = AF_INET;
+	server.sin_port = htons(toport);
+	server.sin_addr.s_addr = inet_addr(toaddr);
+
+	//connect
+	ret = connect(fd, (struct sockaddr*)&server, sizeof(server));
+	if(ret < 0){
+		printf("errno=%d@connect\n",GetLastError());
+		return 0;
+	}
+
+	//
+	iocp_add(fd);
+	iocp_mod(fd);
+	return fd/4;
+}
+int createsocket_tcpserver(char* addr, int port)
+{
+	int ret;
+	int addrlen = sizeof(SOCKADDR_IN);
+	SOCKADDR_IN servaddr;
+
+	//new
+	SOCKET fd = WSASocket(
+		AF_INET, SOCK_STREAM, IPPROTO_TCP,
+		0, 0, WSA_FLAG_OVERLAPPED
+	);
+	if(INVALID_SOCKET == fd){
+		printf("errno=%d@WSASocket\n",GetLastError());
+		return 0;
+	}
+
+	//self
+	struct sockaddr_in servaddr;
+	memset(&servaddr, 0, sizeof(struct sockaddr_in));
+	servaddr.sin_family = AF_INET;
+	servaddr.sin_port = htons(port);
+	servaddr.sin_addr.s_addr = INADDR_ANY;
+
+	//bind
+	ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
+	if(SOCKET_ERROR == ret){
+		printf("errno=%d@bind\n",GetLastError());
+		closesocket(fd);
+		return 0;
+	}
+
+	//listen
+	ret = listen(fd, SOMAXCONN);
+	if(-1 == ret){
+		printf("errno=%d@listen\n",GetLastError());
+		closesocket(fd);
+		return 0;
+	}
+
+	//ioctl
+	LPFN_ACCEPTEX acceptex = NULL;
+	GUID guidacceptex = WSAID_ACCEPTEX;
+	DWORD dwret = 0;
+	ret = WSAIoctl(
+		fd,
+		SIO_GET_EXTENSION_FUNCTION_POINTER,
+		&guidacceptex,
+		sizeof(guidacceptex),
+		&acceptex,
+		sizeof(acceptex),
+		&dwret,
+		NULL,
+		NULL
+	);
+	if(ret != 0){
+		printf("errno=%d@WSAIoctl\n",GetLastError());
+		return 0;
+	}
+
+	//acceptex
+	int j;
+	SOCKET t;
+	u32* pfd;
+	struct per_io_data* pio;
+	for(j=0;j<0x400;j++)
+	{
+		t = WSASocket(
+			AF_INET, SOCK_STREAM, IPPROTO_TCP,
+			0, 0, WSA_FLAG_OVERLAPPED
+		);
+		if(t&0x3)printf("%d\n", t);
+
+		pfd = (void*)(obj[t/4].self);
+		*pfd = t;
+
+		pio = (void*)(obj[t/4].data);
+		pio->count = 0;
+		pio->stage = 0;
+		pio->fd = t;
+
+		ret = acceptex(
+			fd, t,
+			(void*)pfd, 0, 0x20, 0x20, 0,
+			(void*)pio
+		);
+	}
+
+	iocp_add(fd);
+	return fd/4;
+}
+int createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
+{
+	//
+	SOCKET fd = WSASocket(
+		AF_INET, SOCK_STREAM, IPPROTO_TCP,
+		0, 0, WSA_FLAG_OVERLAPPED
+	);
+	if(INVALID_SOCKET == fd){
+		printf("errno=@socket\n",GetLastError());
+		return 0;
+	}
+
+if((0 != myaddr) && (0 != myport)){
+	//self
+	struct sockaddr_in servaddr;
+	memset(&servaddr, 0, sizeof(struct sockaddr_in));
+	servaddr.sin_family = AF_INET;
+	servaddr.sin_port = htons(myport);
+	servaddr.sin_addr.s_addr = inet_addr(myaddr);
+
+	//bind
+	ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
+	if(SOCKET_ERROR == ret){
+		printf("errno=%d@bind\n",GetLastError());
+		closesocket(fd);
+		return 0;
+	}
+}
+
+	//peer
+	struct sockaddr_in serAddr;
+	memset(&serAddr, 0, sizeof(struct sockaddr_in));
+	serAddr.sin_family = AF_INET;
+	serAddr.sin_port = htons(toport);
+	serAddr.sin_addr.S_un.S_addr = inet_addr(toaddr);
+
+	//connect
+	if(SOCKET_ERROR == connect(fd, (void*)&serAddr, sizeof(serAddr))){
+		printf("errno=%d@connect\n",GetLastError());
+		stopsocket(fd/4);
+		return 0;
+	}
+
+	//get the random port
+	socklen_t len = sizeof(struct sockaddr_in);
+	getsockname(fd, (void*)obj[fd].self, &len);
+
+	//
+	iocp_add(fd);
+	iocp_mod(fd);
+	return fd/4;
+}
+
+
+
+
 int readsocket(int fd, void* tmp, void* buf, int len)
 {
 	int j,ret;
@@ -206,267 +492,16 @@ u64 createsocket(char* addr, int port, int type)
 		}
 	}
 
-	if(_RAW_ == type)
-	{
-		SOCKET fd = WSASocket(
-			PF_INET, SOCK_RAW, IPPROTO_IP,
-			0, 0, WSA_FLAG_OVERLAPPED
-		);
-		if(fd == SOCKET_ERROR)
-		{
-			printf("error:%d@socket\n", GetLastError());
-			return 0;
-		}
-
-		//
-		struct sockaddr_in serAddr;
-		memset(&serAddr, 0, sizeof(serAddr));
-		serAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-		serAddr.sin_family = PF_INET;
-		serAddr.sin_port = htons(0);
-
-		//
-		if(bind(fd, (void*)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
-		{
-			printf("error:%d@bind\n", GetLastError());
-			return 0;
-		}
-
-		//
-		int one=1;
-		if(WSAIoctl(fd, SIO_RCVALL, &one, 4, 0, 0, (LPDWORD)&ret, 0, 0) == SOCKET_ERROR)
-		{
-			printf("error:%d@WSAIoctl\n", GetLastError());
-			return 0;
-		}
-
-		//
-		if(setsockopt(fd, IPPROTO_IP, IP_HDRINCL, (char *)&ret, 4)==SOCKET_ERROR)
-		{
-			printf("error:%d@setsockopt\n", GetLastError());
-			return 0;
-		}
-
-		//
-		iocp_add(fd);
-		iocp_mod(fd);
-		return fd/4;
+	//type
+	switch(type){
+	case _BT_:return createsocket_bt(addr,port);
+	case _RAW_:return createsocket_raw(addr,port);
+	case _UDP_:return createsocket_udpserver(addr,port);
+	case _udp_:return createsocket_udpclient(0, 0, addr,port);
+	case _TCP_:return createsocket_tcpserver(addr,port);
+	case _tcp_:return createsocket_tcpclient(0, 0, addr,port);
+	default:printf("error@type\n");
 	}
-	else if(_raw_ == type)
-	{
-		return 0;
-	}
-	else if(_UDP_ == type)
-	{
-		int ret;
-		int addrlen = sizeof(SOCKADDR_IN);
-		SOCKADDR_IN servaddr;
-
-		//
-		SOCKET fd = WSASocket(
-			AF_INET, SOCK_DGRAM, 0,
-			0, 0, WSA_FLAG_OVERLAPPED
-		);
-
-		//
-		servaddr.sin_family = AF_INET;
-		servaddr.sin_port = htons(port);
-		servaddr.sin_addr.s_addr = INADDR_ANY;
-
-		//
-		ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
-		if(ret == SOCKET_ERROR)
-		{
-			printf("error@bind\n");
-			closesocket(fd);
-			return 0;
-		}
-
-		//
-		iocp_add(fd);
-		iocp_mod(fd);
-		return fd/4;
-	}
-	else if(_udp_ == type)
-	{
-		//
-		SOCKET fd = WSASocket(
-			AF_INET, SOCK_DGRAM, IPPROTO_UDP,
-			0, 0, WSA_FLAG_OVERLAPPED
-		);
-		if(fd == INVALID_SOCKET)
-		{
-			printf("error@socket\n");
-			return 0;
-		}
-
-		struct sockaddr_in server;
-		memset(&server, 0, sizeof(struct sockaddr_in));
-		server.sin_family = AF_INET;
-		server.sin_port = htons(port);
-		server.sin_addr.s_addr = inet_addr(addr);
-
-		//
-		ret = connect(fd, (struct sockaddr*)&server, sizeof(server));
-		if(ret < 0)
-		{
-			printf("connect error\n");
-			return 0;
-		}
-
-		//
-		iocp_add(fd);
-		iocp_mod(fd);
-		return fd/4;
-	}
-	else if(_TCP_ == type)
-	{
-		int ret;
-		int addrlen = sizeof(SOCKADDR_IN);
-		SOCKADDR_IN servaddr;
-
-		//server.1
-		SOCKET fd = WSASocket(
-			AF_INET, SOCK_STREAM, IPPROTO_TCP,
-			0, 0, WSA_FLAG_OVERLAPPED
-		);
-		if(fd == INVALID_SOCKET)
-		{
-			printf("error@wsasocket\n");
-			return 0;
-		}
-
-		//server.2
-		servaddr.sin_family = AF_INET;
-		servaddr.sin_port = htons(port);
-		servaddr.sin_addr.s_addr = INADDR_ANY;
-
-		//server.3
-		ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
-		if(ret == SOCKET_ERROR)
-		{
-			printf("error@bind\n");
-			closesocket(fd);
-			return 0;
-		}
-
-		//server.4
-		ret = listen(fd, SOMAXCONN);
-		if(ret == -1)
-		{
-			printf("error@listen\n");
-			closesocket(fd);
-			return 0;
-		}
-
-		//client.1
-		LPFN_ACCEPTEX acceptex = NULL;
-		GUID guidacceptex = WSAID_ACCEPTEX;
-		DWORD dwret = 0;
-		ret = WSAIoctl(
-			fd,
-			SIO_GET_EXTENSION_FUNCTION_POINTER,
-			&guidacceptex,
-			sizeof(guidacceptex),
-			&acceptex,
-			sizeof(acceptex),
-			&dwret,
-			NULL,
-			NULL
-		);
-		if(ret != 0)
-		{
-			printf("error@WSAIoctl\n");
-			return 0;
-		}
-
-		//clients.2
-		int j;
-		SOCKET t;
-		u32* pfd;
-		struct per_io_data* pio;
-		for(j=0;j<0x400;j++)
-		{
-			t = WSASocket(
-				AF_INET, SOCK_STREAM, IPPROTO_TCP,
-				0, 0, WSA_FLAG_OVERLAPPED
-			);
-			if(t&0x3)printf("%d\n", t);
-
-			pfd = (void*)(obj[t/4].self);
-			*pfd = t;
-
-			pio = (void*)(obj[t/4].data);
-			pio->count = 0;
-			pio->stage = 0;
-			pio->fd = t;
-
-			ret = acceptex(
-				fd, t,
-				(void*)pfd, 0, 0x20, 0x20, 0,
-				(void*)pio
-			);
-		}
-
-		iocp_add(fd);
-		return fd/4;
-	}
-	else if(_tcp_ == type)
-	{
-		//
-		SOCKET fd = WSASocket(
-			AF_INET, SOCK_STREAM, IPPROTO_TCP,
-			0, 0, WSA_FLAG_OVERLAPPED
-		);
-		if(fd == INVALID_SOCKET)
-		{
-			printf("error@socket\n");
-			return 0;
-		}
-
-		//
-		struct sockaddr_in serAddr;
-		serAddr.sin_family = AF_INET;
-		serAddr.sin_port = htons(port);
-		serAddr.sin_addr.S_un.S_addr = inet_addr(addr); 
-		if(connect(fd, (void*)&serAddr, sizeof(serAddr)) == SOCKET_ERROR)
-		{
-			printf("error:%d@connect\n",GetLastError());
-			stopsocket(fd/4);
-			return 0;
-		}
-
-		//get the random port
-		socklen_t len = sizeof(struct sockaddr_in);
-		getsockname(fd, (void*)obj[fd].self, &len);
-
-		//
-		iocp_add(fd);
-		iocp_mod(fd);
-		return fd/4;
-	}
-	else if(_BT_ == type)
-	{
-		return 0;
-	}
-	else if(_bt_ == type)
-	{
-		SOCKET fd = WSASocket(
-			AF_BTH, SOCK_STREAM, BTHPROTO_RFCOMM,
-			0, 0, WSA_FLAG_OVERLAPPED
-		);
-		if(fd == INVALID_SOCKET)
-		{
-			printf("error@socket\n");
-			return 0;
-		}
-
-		//
-		iocp_add(fd);
-		iocp_mod(fd);
-		return fd/4;
-	}
-	else printf("error@type\n");
 	return 0;
 }
 
