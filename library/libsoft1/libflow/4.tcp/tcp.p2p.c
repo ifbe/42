@@ -51,17 +51,19 @@ int p2pclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	}
 	if(_ccc_ == self->flag){
 		say("@ccc\n");
+		printmemory(buf, len);
 		return 0;
 	}
 	if(_sss_ == self->flag){
 		say("@sss\n");
+		printmemory(buf, len);
 		return 0;
 	}
 	if(_std_ == self->flag){
 		printmemory(buf, len);
 		if(' ' == buf[0])relationwrite(self->pchip, _src_, 0,0, buf, 1);
-		if('1' == buf[1])relationwrite(self->pchip, _ccc_, 0,0, buf, 1);
-		if('2' == buf[1])relationwrite(self->pchip, _sss_, 0,0, buf, 1);
+		if((buf[0]>='0') && (buf[0]<='9'))relationwrite(self->pchip, _sss_, 0,0, buf, 1);
+		if((buf[0]>='a') && (buf[0]<='z'))relationwrite(self->pchip, _ccc_, 0,0, buf, 1);
 		return 0;
 	}
 	if(_src_ == self->flag){
