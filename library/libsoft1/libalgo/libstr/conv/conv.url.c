@@ -31,6 +31,33 @@ int parseurl(u8* buf, int len, u8* addr, int* port)
 	addr[j] = 0;
 	return j;
 }
+int parsemyandto(u8* url,int len, u8* tmp,int max,
+	u8** myaddr, int* myport, u8** toaddr, int* toport)
+{
+	int j;
+
+	//left part
+	*myaddr = tmp+0;
+	j = parseurl(url,len, *myaddr, myport);
+
+	//check have right part?
+	for(;j<len;j++){
+		if(url[j] <= 0x20)break;
+		if(('-' == url[j] && '>' == url[j+1])){
+			j += 2;
+			goto found;
+		}
+	}
+	return 0;
+
+	//right part
+found:
+	*toaddr = tmp+max/2;
+	parseurl(url+j, len-j, *toaddr, toport);
+	return 0;
+}
+
+
 
 
 int parseuart(u8* path, int* baud, u8* url)

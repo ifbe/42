@@ -538,7 +538,6 @@ int partymaster_discon( struct halfrel* self, struct halfrel* peer);
 int partymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int partymaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
-int parseurl(u8* buf, int len, u8* addr, int* port);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
 

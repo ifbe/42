@@ -21,6 +21,7 @@
 void epoll_add(int);
 void epoll_del(int);
 void epoll_mod(int);
+int parsemyandto(void*,int, void*,int, char**,int*, char**,int*);
 
 
 
@@ -82,12 +83,28 @@ u32 resolvehostname(char* addr)
 	}
 	return *(u32*)ptr[0];
 }
+int socket_fixaddr(char* addr)
+{
+	int j;
+	u8 ip[4];
+	for(j=0;j<128;j++){
+		if(addr[j] <= 0x20)return 0;
+		if(addr[j] == '.')continue;
+		if((addr[j] >= '0')&&(addr[j] <= '9'))continue;
+
+		//ifnot 0123456789.
+		break;
+	}
+
+	*(u32*)ip = resolvehostname(addr);
+	return snprintf(addr, 16, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+}
 int waitconnectwithselect(int sock)
 {
 	int ret;
 	fd_set fds;
 	struct timeval time;
-	printf("waiting\n");
+	//printf("waiting\n");
 
 	FD_ZERO(&fds);
 	FD_SET(sock, &fds);
@@ -105,6 +122,15 @@ int waitconnectwithselect(int sock)
 		return 0;
 	}
 
+	socklen_t retlen = sizeof(ret);
+	if(getsockopt(sock, SOL_SOCKET, SO_ERROR, &ret, &retlen) < 0){
+		say("errno=%d@getsockopt\n",errno);
+		return 0;
+	}
+	if(ret != 0){
+		say("errno=%d@waitconnect\n",ret);
+		return 0;
+	}
 	return 1;
 }
 
@@ -374,9 +400,9 @@ if((0 != myaddr) && (0 != myport)){
 
 	//connect
 	fcntl(fd, F_SETFL, O_NONBLOCK | fcntl(fd, F_GETFL, 0));
-	printf("@@@@@@@@before connect\n");
+	//printf("@@@@@@@@before connect\n");
 	ret = connect(fd, (void*)peer, sizeof(struct sockaddr_in));
-	printf("@@@@@@@@after connect\n");
+	//printf("@@@@@@@@after connect\n");
 	if(ret < 0){
 		if(EINPROGRESS != errno){
 			printf("errno=%d@connect\n",errno);
@@ -513,32 +539,48 @@ int deletesocket(int fd)
 	//epoll_del(x);
 	//if(fd>0)epoll_del(fd);
 }
-int createsocket(char* addr, int port, int type)
+int createsocket(int fmt, char* arg)
 {
-	int j,fd,ret;
-	u32 ipv4;
+	int j;
+	char tmp[256];
 
-	//dns thing
-	for(j=0;j<256;j++)
-	{
-		if(addr[j] <= 0x20)break;
-		if((addr[j]>='a')&&(addr[j]<='z'))
-		{
-			ipv4 = resolvehostname(addr);
-			if(0 == ipv4)return 0;
+	int myport = 0;
+	char* myaddr = 0;
+	int toport = 0;
+	char* toaddr = 0;
 
-			addr = inet_ntoa(*(struct in_addr*)&ipv4);
-			break;
-		}
+	//my->to
+	for(j=0;j<256;j++){
+		if(arg[j] <= 0x20)break;
+		parsemyandto(arg, 256, tmp, 256, &myaddr, &myport, &toaddr, &toport);
 	}
+	if(myaddr)socket_fixaddr(myaddr);
+	if(toaddr)socket_fixaddr(toaddr);
+	//printmemory(tmp,256);
 
 	//type
-	switch(type){
-	case _RAW_:return createsocket_raw(addr,port);
-	case _UDP_:return createsocket_udpserver(addr,port);
-	case _udp_:return createsocket_udpclient(0, 0, addr,port);
-	case _TCP_:return createsocket_tcpserver(addr,port);
-	case _tcp_:return createsocket_tcpclient(0, 0, addr,port);
+	switch(fmt){
+	case _RAW_:return createsocket_raw(myaddr, myport);
+	case _UDP_:return createsocket_udpserver(myaddr, myport);
+	case _udp_:{
+		if((0 == toaddr)&&(0 == toport)){
+			toaddr = myaddr;
+			toport = myport;
+			myaddr = 0;
+			myport = 0;
+		}
+		return createsocket_udpclient(myaddr, myport, toaddr, toport);
+	}
+	case _TCP_:return createsocket_tcpserver(myaddr, myport);
+	case _tcp_:{
+		if((0 == toaddr)&&(0 == toport)){
+			toaddr = myaddr;
+			toport = myport;
+			myaddr = 0;
+			myport = 0;
+		}
+		return createsocket_tcpclient(myaddr, myport, toaddr, toport);
+	}
 	default:printf("error@type\n");
 	}
 	return 0;

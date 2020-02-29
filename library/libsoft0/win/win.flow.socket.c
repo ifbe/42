@@ -12,6 +12,7 @@
 void iocp_add(SOCKET);
 void iocp_del(SOCKET);
 void iocp_mod(SOCKET);
+int parsemyandto(void*,int, void*,int, char**,int*, char**,int*);
 
 
 
@@ -78,6 +79,22 @@ u32 resolvehostname(char* addr)
 		j++;
 	}
 	return *(u32*)ptr[0];
+}
+int socket_fixaddr(char* addr)
+{
+	int j;
+	u8 ip[4];
+	for(j=0;j<128;j++){
+		if(addr[j] <= 0x20)return 0;
+		if(addr[j] == '.')continue;
+		if((addr[j] >= '0')&&(addr[j] <= '9'))continue;
+
+		//ifnot 0123456789.
+		break;
+	}
+
+	*(u32*)ip = resolvehostname(addr);
+	return snprintf(addr, 16, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
 }
 
 
@@ -483,34 +500,48 @@ int deletesocket(SOCKET fd)
 	disconnectex(fd*4, 0, TF_REUSE_SOCKET, 0);
 	return 0;
 }
-u64 createsocket(char* addr, int port, int type)
+int createsocket(int fmt, char* arg)
 {
-	int j,ret;
-	u32 ipv4;
+	int j;
+	char tmp[256];
 
-	//dns thing
-	for(j=0;j<256;j++)
-	{
-		if(addr[j] <= 0x20)break;
-		if((addr[j]>='a')&&(addr[j]<='z'))
-		{
-			ipv4 = resolvehostname(addr);
-			say("%x\n",ipv4);
-			if(0 == ipv4)return 0;
+	int myport = 0;
+	char* myaddr = 0;
+	int toport = 0;
+	char* toaddr = 0;
 
-			addr = inet_ntoa(*(struct in_addr*)&ipv4);
-			break;
-		}
+	//my->to
+	for(j=0;j<256;j++){
+		if(arg[j] <= 0x20)break;
+		parsemyandto(arg, 256, tmp, 256, &myaddr, &myport, &toaddr, &toport);
 	}
+	if(myaddr)socket_fixaddr(myaddr);
+	if(toaddr)socket_fixaddr(toaddr);
+	//printmemory(tmp,256);
 
 	//type
-	switch(type){
-	case _BT_:return createsocket_bt(addr,port);
-	case _RAW_:return createsocket_raw(addr,port);
-	case _UDP_:return createsocket_udpserver(addr,port);
-	case _udp_:return createsocket_udpclient(0, 0, addr,port);
-	case _TCP_:return createsocket_tcpserver(addr,port);
-	case _tcp_:return createsocket_tcpclient(0, 0, addr,port);
+	switch(fmt){
+	case _RAW_:return createsocket_raw(myaddr, myport);
+	case _UDP_:return createsocket_udpserver(myaddr, myport);
+	case _udp_:{
+		if((0 == toaddr)&&(0 == toport)){
+			toaddr = myaddr;
+			toport = myport;
+			myaddr = 0;
+			myport = 0;
+		}
+		return createsocket_udpclient(myaddr, myport, toaddr, toport);
+	}
+	case _TCP_:return createsocket_tcpserver(myaddr, myport);
+	case _tcp_:{
+		if((0 == toaddr)&&(0 == toport)){
+			toaddr = myaddr;
+			toport = myport;
+			myaddr = 0;
+			myport = 0;
+		}
+		return createsocket_tcpclient(myaddr, myport, toaddr, toport);
+	}
 	default:printf("error@type\n");
 	}
 	return 0;

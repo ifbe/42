@@ -26,14 +26,13 @@ int uart_write(int, int, void*, int);
 //socket
 int initsocket(void*);
 int freesocket();
-int createsocket(void* addr, int port, int type);
+int createsocket(int fmt, void* url);
 int deletesocket(int);
 int searchsocket(int);
 int modifysocket(int);
 int readsocket( int,void*,void*, int);
 int writesocket(int,void*,void*, int);
 //
-int parseurl(u8* buf, int len, u8* addr, int* port);
 int parseuart(void*, int*, void*);
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
@@ -234,68 +233,63 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 		obj[fd].selffd = fd;
 		return &obj[fd];
 	}
-
-	//decode ipaddr
-	port = 80;
-	if(name)url = name + parseurl(name, 0x100, host, &port);
-	//say("systemcreate: %.8s://%s:%d/%s\n", &type, host, port, url);
-
-	if(_RAW_ == type)		//raw server
+	else if(_RAW_ == type)		//raw server
 	{
-		fd = createsocket(host, port, _RAW_);
+		fd = createsocket(_RAW_, name);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _RAW_;
 		obj[fd].selffd = fd;
 		return &obj[fd];
 	}
-	else if(_raw_ == type)	//raw client
+	else if(_raw_ == type)		//raw client
 	{
-		fd = createsocket(host, port, _raw_);
+		fd = createsocket(_raw_, name);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _raw_;
 		obj[fd].selffd = fd;
 		return &obj[fd];
 	}
-	else if(_UDP_ == type)	//udp master
+	else if(_UDP_ == type)		//udp master
 	{
-		fd = createsocket(host, port, _UDP_);
+		fd = createsocket(_UDP_, name);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _UDP_;
 		obj[fd].selffd = fd;
 		return &obj[fd];
 	}
-	else if(_Udp_ == type)	//udp server
+	else if(_Udp_ == type)		//udp server
 	{
 		obj[fd].type = _Udp_;
+		return 0;
 	}
-	else if(_udp_ == type)	//udp client
+	else if(_udp_ == type)		//udp client
 	{
-		fd = createsocket(host, port, _udp_);
+		fd = createsocket(_udp_, name);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _udp_;
 		obj[fd].selffd = fd;
 		return &obj[fd];
 	}
-	else if(_TCP_ == type)	//tcp master
+	else if(_TCP_ == type)		//tcp master
 	{
-		fd = createsocket(host, port, _TCP_);
+		fd = createsocket(_TCP_, name);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _TCP_;
 		obj[fd].selffd = fd;
 		return &obj[fd];
 	}
-	else if(_Tcp_ == type)	//tcp server
+	else if(_Tcp_ == type)		//tcp server
 	{
 		obj[fd].type = _Tcp_;
 	}
-	else if(_tcp_ == type)	//tcp client
+	else if(_tcp_ == type)		//tcp client
 	{
-		fd = createsocket(host, port, _tcp_);
+		fd = createsocket(_tcp_, name);
 		if(0 >= fd)return 0;
 
 		obj[fd].type = _tcp_;

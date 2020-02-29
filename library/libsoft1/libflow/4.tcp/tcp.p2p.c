@@ -1,7 +1,10 @@
 #include "libsoft.h"
+int sleep_us(int);
 int modifysocket(int fd, int arg, void* addr, int port);
 int createsocket_tcpclient(void* myaddr, int myport, void* toaddr, int toport);
 //
+#define _ccc_ hex32('c','c','c', 0)
+#define _sss_ hex32('s','s','s', 0)
 #define _connect_ hex32('c','o','n', 0)
 #define _listen_ hex32('l','i','s', 0)
 //
@@ -46,27 +49,68 @@ int p2pclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	if(_dst_ == self->flag){
 		return 0;
 	}
+	if(_ccc_ == self->flag){
+		say("@ccc\n");
+		return 0;
+	}
+	if(_sss_ == self->flag){
+		say("@sss\n");
+		return 0;
+	}
 	if(_std_ == self->flag){
 		printmemory(buf, len);
-		relationwrite(self->pchip, _src_, 0,0, buf, 1);
+		if(' ' == buf[0])relationwrite(self->pchip, _src_, 0,0, buf, 1);
+		if('1' == buf[1])relationwrite(self->pchip, _ccc_, 0,0, buf, 1);
+		if('2' == buf[1])relationwrite(self->pchip, _sss_, 0,0, buf, 1);
 		return 0;
 	}
 	if(_src_ == self->flag){
-		u8* t;
 		printmemory(buf,len);
 
-		t = sys->self;
+		u8* t = sys->self;
 		say("myaddr=%d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
 		if(len < 16)return 0;
 
-		t = buf+0;
-		say("public=%d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		u8* p = buf+0;
+		say("public=%d.%d.%d.%d:%d\n", p[4],p[5],p[6],p[7], (p[2]<<8)+p[3]);
+
 		if(len < 16)return 0;
+		if(_c_friend_ == art->stage1)return 0;
 
-		t = buf+8;
-		say("remote=%d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
+		u8* r = buf+8;
+		say("remote=%d.%d.%d.%d:%d\n", r[4],r[5],r[6],r[7], (r[2]<<8)+r[3]);
 
-		modifysocket(sys->selffd, _connect_, t+4, (t[2]<<8)+t[3]);
+		int j;
+		char* tmp[64];
+
+		//connect
+		struct system* ccc;
+		mysnprintf(tmp,64,
+			"%d.%d.%d.%d:%d->%d.%d.%d.%d:%d",
+			t[4],t[5],t[6],t[7], (t[2]<<8)+t[3],
+			r[4],r[5],r[6],r[7], (r[2]<<8)+r[3]
+		);
+		for(j=0;j<10;j++){
+			ccc = systemcreate(_tcp_, tmp, 0, 0);
+			say("ccc=%llx\n",ccc);
+			if(ccc){
+				relationcreate(art, 0, _art_, _ccc_, ccc, 0, _sys_, _dst_);
+				break;
+			}
+			sleep_us(1000*1000);
+		}
+
+		//listen
+		struct system* sss;
+		mysnprintf(tmp,32,
+			"%d.%d.%d.%d:%d",
+			t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]
+		);
+		sss = systemcreate(_TCP_, tmp, 0, 0);
+		if(sss){
+			relationcreate(art, 0, _art_, _sss_, sss, 0, _sys_, _dst_);
+		}
+
 		art->stage1 = _c_friend_;
 /*
 		//debug
