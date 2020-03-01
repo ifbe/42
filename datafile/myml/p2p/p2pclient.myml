@@ -1,7 +1,13 @@
+<supply>
+stdio{
+fmt:std
+}
+</supply>
+
+
 <artery>
 server{
 fmt:p2p
-url:s
 }
 </artery>
 
@@ -15,5 +21,6 @@ url:deepstack.tech:9999
 
 
 <relation>
+(stdio, 0, dst) -> (server, 0, std)
 (socket, 0, dst) -> (server, 0, src)
 </relation>

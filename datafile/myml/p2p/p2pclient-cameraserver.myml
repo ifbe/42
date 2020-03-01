@@ -1,0 +1,34 @@
+<supply>
+camera{
+fmt:cam
+}
+stdio{
+fmt:std
+}
+</supply>
+
+
+<artery>
+client{
+fmt:p2p
+}
+goslow{
+fmt:goslow
+}
+</artery>
+
+
+<system>
+socket{
+fmt:tcp
+url:deepstack.tech:9999
+}
+</system>
+
+
+<relation>
+(camera, 0, dst) -> (goslow, 0, src)
+(goslow, 0, dst) -> (client, 0, dst)
+(socket, 0, dst) -> (client, 0, src)
+(stdio, 0, dst) -> (client, 0, std)
+</relation>

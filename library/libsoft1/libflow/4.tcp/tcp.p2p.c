@@ -10,8 +10,6 @@ int createsocket_tcpclient(void* myaddr, int myport, void* toaddr, int toport);
 //
 #define _c_recved_ hex32('c','_','r', 0)
 #define _c_friend_ hex32('c','_','f', 0)
-#define _c_client_ hex32('c','_','c', 0)
-#define _c_server_ hex32('c','_','s', 0)
 
 
 
@@ -46,28 +44,34 @@ int p2pclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	struct object* sys = peer->pchip;
 	say("p2pclient_write:%.4s\n", &self->flag);
 
-	if(_dst_ == self->flag){
-		return 0;
-	}
-	if(_ccc_ == self->flag){
-		say("@ccc\n");
-		printmemory(buf, len);
-		return 0;
-	}
-	if(_sss_ == self->flag){
-		say("@sss\n");
-		printmemory(buf, len);
-		return 0;
-	}
 	if(_std_ == self->flag){
-		printmemory(buf, len);
+		printmemory(buf, len < 16 ? len : 16);
+
 		if(' ' == buf[0])relationwrite(self->pchip, _src_, 0,0, buf, 1);
 		if((buf[0]>='0') && (buf[0]<='9'))relationwrite(self->pchip, _sss_, 0,0, buf, 1);
 		if((buf[0]>='a') && (buf[0]<='z'))relationwrite(self->pchip, _ccc_, 0,0, buf, 1);
 		return 0;
 	}
+	if(_ccc_ == self->flag){
+		say("@ccc\n");
+		printmemory(buf, len < 16 ? len : 16);
+
+		if(_c_friend_ != art->stage1)return 0;
+		relationwrite(art,_dst_, 0,0, buf,len);
+		return 0;
+	}
+	if(_sss_ == self->flag){
+		say("@sss\n");
+		printmemory(buf, len < 16 ? len : 16);
+		return 0;
+	}
+	if(_dst_ == self->flag){
+		if(_c_friend_ != art->stage1)return 0;
+		relationwrite(art,_ccc_, 0,0, buf,len);
+		return 0;
+	}
 	if(_src_ == self->flag){
-		printmemory(buf,len);
+		printmemory(buf, len < 16 ? len : 16);
 
 		u8* t = sys->self;
 		say("myaddr=%d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
