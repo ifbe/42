@@ -42,7 +42,7 @@ int p2pclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 {
 	struct artery* art = self->pchip;
 	struct object* sys = peer->pchip;
-	say("p2pclient_write:%.4s\n", &self->flag);
+	say("@p2pclient_write:%.4s\n", &self->flag);
 
 	if(_std_ == self->flag){
 		printmemory(buf, len < 16 ? len : 16);
@@ -75,19 +75,21 @@ int p2pclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 
 		u8* t = sys->self;
 		say("myaddr=%d.%d.%d.%d:%d\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
-		if(len < 16)return 0;
 
 		u8* p = buf+0;
 		say("public=%d.%d.%d.%d:%d\n", p[4],p[5],p[6],p[7], (p[2]<<8)+p[3]);
 
-		if(len < 16)return 0;
 		if(_c_friend_ == art->stage1)return 0;
-
-		u8* r = buf+8;
-		say("remote=%d.%d.%d.%d:%d\n", r[4],r[5],r[6],r[7], (r[2]<<8)+r[3]);
+		if(len < 16){
+			sleep_us(1000000);
+			relationwrite(art,_src_, 0,0, "?\n", 2);
+			return 0;
+		}
 
 		int j;
 		char* tmp[64];
+		u8* r = buf+8;
+		say("remote=%d.%d.%d.%d:%d\n", r[4],r[5],r[6],r[7], (r[2]<<8)+r[3]);
 
 		//connect
 		struct system* ccc;
