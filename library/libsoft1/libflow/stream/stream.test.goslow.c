@@ -1,4 +1,7 @@
 #include "libsoft.h"
+int decstr2u32(void* src, void* dst);
+#define CURNUM data0
+#define MAXNUM data1
 
 
 
@@ -17,18 +20,21 @@ int goslow_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 }
 int goslow_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	int j;
+	int cur,max;
 	struct artery* ele = self->pchip;
 	if(0 == ele)return 0;
 
-	j = ele->stage1;
-	say("@goslow_write:%d\n", j);
+	if(_src_ == self->flag){
+		cur = ele->CURNUM;
+		max = ele->MAXNUM;
+		say("@goslow_write:%d/%d\n", cur, max);
 
-	if(0 == j){
-		say("@goslow.sending\n");
-		relationwrite(ele, _dst_, 0, 0, buf, len);
+		if(0 == cur){
+			say("@goslow.sending\n");
+			relationwrite(ele, _dst_, 0, 0, buf, len);
+		}
+		ele->CURNUM = (cur + 1) % max;
 	}
-	ele->stage1 = (j + 1) % 8;
 	return 0;
 }
 int goslow_discon(struct halfrel* self, struct halfrel* peer)
@@ -45,7 +51,10 @@ int goslow_linkup(struct halfrel* self, struct halfrel* peer)
 
 int goslow_create(struct artery* ele, u8* url)
 {
-	say("@goslow_create\n");
-	ele->stage1 = 0;
+	ele->CURNUM = 0;
+	ele->MAXNUM = 8;	//default
+	if(url)decstr2u32(url, &ele->MAXNUM);
+
+	say("@goslow_create:%d\n",ele->MAXNUM);
 	return 1;
 }

@@ -23,6 +23,7 @@
 #define _fftrgb_ hex64('f','f','t','r','g','b',0,0)
 #define _rotate_ hex64('r','o','t','a','t','e',0,0)
 //
+#define _easymux_ hex64('e','a','s','y','m','u','x',0)
 #define _echo_ hex32('e','c','h','o')
 #define _pump_ hex32('p','u','m','p')
 #define _goslow_ hex64('g','o','s','l','o','w',0,0)
@@ -40,501 +41,520 @@
 #define _easyag_  hex64('e','a','s','y','a','g', 0 , 0 )
 #define _mahony_  hex64('m','a','h','o','n','y', 0 , 0 )
 #define _madgwick_ hex64('m','a','d','g','w','i','c','k')
+//
 int ann_create(struct artery* ele, void* url, int argc, u8** argv);
 int ann_delete(struct artery* ele, void* url);
 int ann_linkup(struct halfrel* self, struct halfrel* peer);
-int ann_discon( struct halfrel* self, struct halfrel* peer);
+int ann_discon(struct halfrel* self, struct halfrel* peer);
 int ann_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int ann_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int cnn_create(struct artery* ele, void* url, int argc, u8** argv);
+int cnn_delete(struct artery* ele, void* url);
+int cnn_linkup(struct halfrel* self, struct halfrel* peer);
+int cnn_discon(struct halfrel* self, struct halfrel* peer);
+int cnn_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int cnn_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //file
+int pump_create(struct artery* ele, void* url, int argc, u8** argv);
+int pump_delete(struct artery* ele, void* url);
+int pump_discon(struct halfrel* self, struct halfrel* peer);
+int pump_linkup(struct halfrel* self, struct halfrel* peer);
+int pump_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int pump_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fileclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int fileclient_delete(struct artery* ele, void* url);
 int fileclient_linkup(struct halfrel* self, struct halfrel* peer);
-int fileclient_discon( struct halfrel* self, struct halfrel* peer);
+int fileclient_discon(struct halfrel* self, struct halfrel* peer);
 int fileclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fileclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int mbrclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int mbrclient_delete(struct artery* ele, void* url);
 int mbrclient_linkup(struct halfrel* self, struct halfrel* peer);
-int mbrclient_discon( struct halfrel* self, struct halfrel* peer);
+int mbrclient_discon(struct halfrel* self, struct halfrel* peer);
 int mbrclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int mbrclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int gptclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int gptclient_delete(struct artery* ele, void* url);
 int gptclient_linkup(struct halfrel* self, struct halfrel* peer);
-int gptclient_discon( struct halfrel* self, struct halfrel* peer);
+int gptclient_discon(struct halfrel* self, struct halfrel* peer);
 int gptclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int gptclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 int fatclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int fatclient_delete(struct artery* ele, void* url);
 int fatclient_linkup(struct halfrel* self, struct halfrel* peer);
-int fatclient_discon( struct halfrel* self, struct halfrel* peer);
+int fatclient_discon(struct halfrel* self, struct halfrel* peer);
 int fatclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fatclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int ntfsclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int ntfsclient_delete(struct artery* ele, void* url);
 int ntfsclient_linkup(struct halfrel* self, struct halfrel* peer);
-int ntfsclient_discon( struct halfrel* self, struct halfrel* peer);
+int ntfsclient_discon(struct halfrel* self, struct halfrel* peer);
 int ntfsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int ntfsclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int hfsclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int hfsclient_delete(struct artery* ele, void* url);
 int hfsclient_linkup(struct halfrel* self, struct halfrel* peer);
-int hfsclient_discon( struct halfrel* self, struct halfrel* peer);
+int hfsclient_discon(struct halfrel* self, struct halfrel* peer);
 int hfsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int hfsclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int extclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int extclient_delete(struct artery* ele, void* url);
 int extclient_linkup(struct halfrel* self, struct halfrel* peer);
-int extclient_discon( struct halfrel* self, struct halfrel* peer);
+int extclient_discon(struct halfrel* self, struct halfrel* peer);
 int extclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int extclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 int control_create(struct artery* ele, void* url, int argc, u8** argv);
 int control_delete(struct artery* ele, void* url);
 int control_linkup(struct halfrel* self, struct halfrel* peer);
-int control_discon( struct halfrel* self, struct halfrel* peer);
+int control_discon(struct halfrel* self, struct halfrel* peer);
 int control_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int control_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int search_create(struct artery* ele, void* url, int argc, u8** argv);
 int search_delete(struct artery* ele, void* url);
 int search_linkup(struct halfrel* self, struct halfrel* peer);
-int search_discon( struct halfrel* self, struct halfrel* peer);
+int search_discon(struct halfrel* self, struct halfrel* peer);
 int search_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int search_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int vt100_create(struct artery* ele, void* url, int argc, u8** argv);
 int vt100_delete(struct artery* ele, void* url);
 int vt100_linkup(struct halfrel* self, struct halfrel* peer);
-int vt100_discon( struct halfrel* self, struct halfrel* peer);
+int vt100_discon(struct halfrel* self, struct halfrel* peer);
 int vt100_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int vt100_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
+int easymux_create(struct artery* ele, void* url, int argc, u8** argv);
+int easymux_delete(struct artery* ele, void* url);
+int easymux_linkup(struct halfrel* self, struct halfrel* peer);
+int easymux_discon(struct halfrel* self, struct halfrel* peer);
+int easymux_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int easymux_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int echo_create(struct artery* ele, void* url, int argc, u8** argv);
 int echo_delete(struct artery* ele, void* url);
 int echo_linkup(struct halfrel* self, struct halfrel* peer);
-int echo_discon( struct halfrel* self, struct halfrel* peer);
+int echo_discon(struct halfrel* self, struct halfrel* peer);
 int echo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int echo_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int pump_create(struct artery* ele, void* url, int argc, u8** argv);
-int pump_delete(struct artery* ele, void* url);
-int pump_discon( struct halfrel* self, struct halfrel* peer);
-int pump_linkup(struct halfrel* self, struct halfrel* peer);
-int pump_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int pump_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int goslow_create(struct artery* ele, void* url, int argc, u8** argv);
 int goslow_delete(struct artery* ele, void* url);
 int goslow_linkup(struct halfrel* self, struct halfrel* peer);
-int goslow_discon( struct halfrel* self, struct halfrel* peer);
+int goslow_discon(struct halfrel* self, struct halfrel* peer);
 int goslow_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int goslow_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int dbgf32_create(struct artery* ele, void* url, int argc, u8** argv);
 int dbgf32_delete(struct artery* ele, void* url);
 int dbgf32_linkup(struct halfrel* self, struct halfrel* peer);
-int dbgf32_discon( struct halfrel* self, struct halfrel* peer);
+int dbgf32_discon(struct halfrel* self, struct halfrel* peer);
 int dbgf32_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int dbgf32_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int dbghex_create(struct artery* ele, void* url, int argc, u8** argv);
 int dbghex_delete(struct artery* ele, void* url);
 int dbghex_linkup(struct halfrel* self, struct halfrel* peer);
-int dbghex_discon( struct halfrel* self, struct halfrel* peer);
+int dbghex_discon(struct halfrel* self, struct halfrel* peer);
 int dbghex_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int dbghex_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 int fftpcm_create(struct artery* ele, void* url, int argc, u8** argv);
 int fftpcm_delete(struct artery* ele, void* url);
 int fftpcm_linkup(struct halfrel* self, struct halfrel* peer);
-int fftpcm_discon( struct halfrel* self, struct halfrel* peer);
+int fftpcm_discon(struct halfrel* self, struct halfrel* peer);
 int fftpcm_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fftpcm_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fftrgb_create(struct artery* ele, void* url, int argc, u8** argv);
 int fftrgb_delete(struct artery* ele, void* url);
 int fftrgb_linkup(struct halfrel* self, struct halfrel* peer);
-int fftrgb_discon( struct halfrel* self, struct halfrel* peer);
+int fftrgb_discon(struct halfrel* self, struct halfrel* peer);
 int fftrgb_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fftrgb_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int rotate_create(struct artery* ele, void* url, int argc, u8** argv);
 int rotate_delete(struct artery* ele, void* url);
 int rotate_linkup(struct halfrel* self, struct halfrel* peer);
-int rotate_discon( struct halfrel* self, struct halfrel* peer);
+int rotate_discon(struct halfrel* self, struct halfrel* peer);
 int rotate_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int rotate_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int scale_create(struct artery* ele, void* url, int argc, u8** argv);
+int scale_delete(struct artery* ele, void* url);
+int scale_linkup(struct halfrel* self, struct halfrel* peer);
+int scale_discon(struct halfrel* self, struct halfrel* peer);
+int scale_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int scale_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 int recut_create(struct artery* ele, void* url, int argc, u8** argv);
 int recut_delete(struct artery* ele, void* url);
 int recut_linkup(struct halfrel* self, struct halfrel* peer);
-int recut_discon( struct halfrel* self, struct halfrel* peer);
+int recut_discon(struct halfrel* self, struct halfrel* peer);
 int recut_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int recut_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int reline_create(struct artery* ele, void* url, int argc, u8** argv);
 int reline_delete(struct artery* ele, void* url);
 int reline_linkup(struct halfrel* self, struct halfrel* peer);
-int reline_discon( struct halfrel* self, struct halfrel* peer);
+int reline_discon(struct halfrel* self, struct halfrel* peer);
 int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int reline_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int reorder_create(struct artery* ele, void* url, int argc, u8** argv);
 int reorder_delete(struct artery* ele, void* url);
 int reorder_linkup(struct halfrel* self, struct halfrel* peer);
-int reorder_discon( struct halfrel* self, struct halfrel* peer);
+int reorder_discon(struct halfrel* self, struct halfrel* peer);
 int reorder_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int reorder_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 int qu2eu_create(struct artery* ele, void* url, int argc, u8** argv);
 int qu2eu_delete(struct artery* ele, void* url);
 int qu2eu_linkup(struct halfrel* self, struct halfrel* peer);
-int qu2eu_discon( struct halfrel* self, struct halfrel* peer);
+int qu2eu_discon(struct halfrel* self, struct halfrel* peer);
 int qu2eu_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int qu2eu_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int str2fv_create(struct artery* ele, void* url, int argc, u8** argv);
 int str2fv_delete(struct artery* ele, void* url);
 int str2fv_linkup(struct halfrel* self, struct halfrel* peer);
-int str2fv_discon( struct halfrel* self, struct halfrel* peer);
+int str2fv_discon(struct halfrel* self, struct halfrel* peer);
 int str2fv_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int str2fv_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fv2str_create(struct artery* ele, void* url, int argc, u8** argv);
 int fv2str_delete(struct artery* ele, void* url);
 int fv2str_linkup(struct halfrel* self, struct halfrel* peer);
-int fv2str_discon( struct halfrel* self, struct halfrel* peer);
+int fv2str_discon(struct halfrel* self, struct halfrel* peer);
 int fv2str_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fv2str_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 int easyag_create(struct artery* ele, void* url, int argc, u8** argv);
 int easyag_delete(struct artery* ele, void* url);
 int easyag_linkup(struct halfrel* self, struct halfrel* peer);
-int easyag_discon( struct halfrel* self, struct halfrel* peer);
+int easyag_discon(struct halfrel* self, struct halfrel* peer);
 int easyag_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int easyag_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int mahony_create(struct artery* ele, void* url, int argc, u8** argv);
 int mahony_delete(struct artery* ele, void* url);
 int mahony_linkup(struct halfrel* self, struct halfrel* peer);
-int mahony_discon( struct halfrel* self, struct halfrel* peer);
+int mahony_discon(struct halfrel* self, struct halfrel* peer);
 int mahony_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int mahony_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int madgwick_create(struct artery* ele, void* url, int argc, u8** argv);
 int madgwick_delete(struct artery* ele, void* url);
 int madgwick_linkup(struct halfrel* self, struct halfrel* peer);
-int madgwick_discon( struct halfrel* self, struct halfrel* peer);
+int madgwick_discon(struct halfrel* self, struct halfrel* peer);
 int madgwick_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int madgwick_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //uart.gcode
 int gcodeclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int gcodeclient_delete(struct artery* ele, void* url);
 int gcodeclient_linkup(struct halfrel* self, struct halfrel* peer);
-int gcodeclient_discon( struct halfrel* self, struct halfrel* peer);
+int gcodeclient_discon(struct halfrel* self, struct halfrel* peer);
 int gcodeclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int gcodeclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int gcodeserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int gcodeserver_delete(struct artery* ele, void* url);
 int gcodeserver_linkup(struct halfrel* self, struct halfrel* peer);
-int gcodeserver_discon( struct halfrel* self, struct halfrel* peer);
+int gcodeserver_discon(struct halfrel* self, struct halfrel* peer);
 int gcodeserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int gcodeserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int mavlinkclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int mavlinkclient_delete(struct artery* ele, void* url);
 int mavlinkclient_linkup(struct halfrel* self, struct halfrel* peer);
-int mavlinkclient_discon( struct halfrel* self, struct halfrel* peer);
+int mavlinkclient_discon(struct halfrel* self, struct halfrel* peer);
 int mavlinkclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int mavlinkclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int mavlinkserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int mavlinkserver_delete(struct artery* ele, void* url);
 int mavlinkserver_linkup(struct halfrel* self, struct halfrel* peer);
-int mavlinkserver_discon( struct halfrel* self, struct halfrel* peer);
+int mavlinkserver_discon(struct halfrel* self, struct halfrel* peer);
 int mavlinkserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int mavlinkserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int nema0183client_create(struct artery* ele, void* url, int argc, u8** argv);
 int nema0183client_delete(struct artery* ele, void* url);
 int nema0183client_linkup(struct halfrel* self, struct halfrel* peer);
-int nema0183client_discon( struct halfrel* self, struct halfrel* peer);
+int nema0183client_discon(struct halfrel* self, struct halfrel* peer);
 int nema0183client_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int nema0183client_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int nema0183server_create(struct artery* ele, void* url, int argc, u8** argv);
 int nema0183server_delete(struct artery* ele, void* url);
 int nema0183server_linkup(struct halfrel* self, struct halfrel* peer);
-int nema0183server_discon( struct halfrel* self, struct halfrel* peer);
+int nema0183server_discon(struct halfrel* self, struct halfrel* peer);
 int nema0183server_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int nema0183server_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //socket
 int hackclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int hackclient_delete(struct artery* ele, void* url);
 int hackclient_linkup(struct halfrel* self, struct halfrel* peer);
-int hackclient_discon( struct halfrel* self, struct halfrel* peer);
+int hackclient_discon(struct halfrel* self, struct halfrel* peer);
 int hackclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int hackclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int hackserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int hackserver_delete(struct artery* ele, void* url);
 int hackserver_linkup(struct halfrel* self, struct halfrel* peer);
-int hackserver_discon( struct halfrel* self, struct halfrel* peer);
+int hackserver_discon(struct halfrel* self, struct halfrel* peer);
 int hackserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int hackserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int proxyclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int proxyclient_delete(struct artery* ele, void* url);
 int proxyclient_linkup(struct halfrel* self, struct halfrel* peer);
-int proxyclient_discon( struct halfrel* self, struct halfrel* peer);
+int proxyclient_discon(struct halfrel* self, struct halfrel* peer);
 int proxyclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int proxyclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int proxyserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int proxyserver_delete(struct artery* ele, void* url);
 int proxyserver_linkup(struct halfrel* self, struct halfrel* peer);
-int proxyserver_discon( struct halfrel* self, struct halfrel* peer);
+int proxyserver_discon(struct halfrel* self, struct halfrel* peer);
 int proxyserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int proxyserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int proxymaster_create(struct artery* ele, void* url, int argc, u8** argv);
 int proxymaster_delete(struct artery* ele, void* url);
 int proxymaster_linkup(struct halfrel* self, struct halfrel* peer);
-int proxymaster_discon( struct halfrel* self, struct halfrel* peer);
+int proxymaster_discon(struct halfrel* self, struct halfrel* peer);
 int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int proxymaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int socksclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int socksclient_delete(struct artery* ele, void* url);
 int socksclient_linkup(struct halfrel* self, struct halfrel* peer);
-int socksclient_discon( struct halfrel* self, struct halfrel* peer);
+int socksclient_discon(struct halfrel* self, struct halfrel* peer);
 int socksclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int socksclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int socksserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int socksserver_delete(struct artery* ele, void* url);
 int socksserver_linkup(struct halfrel* self, struct halfrel* peer);
-int socksserver_discon( struct halfrel* self, struct halfrel* peer);
+int socksserver_discon(struct halfrel* self, struct halfrel* peer);
 int socksserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int socksserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int socksmaster_create(struct artery* ele, void* url, int argc, u8** argv);
 int socksmaster_delete(struct artery* ele, void* url);
 int socksmaster_linkup(struct halfrel* self, struct halfrel* peer);
-int socksmaster_discon( struct halfrel* self, struct halfrel* peer);
+int socksmaster_discon(struct halfrel* self, struct halfrel* peer);
 int socksmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int socksmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //udp.dns
 int dnsclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int dnsclient_delete(struct artery* ele, void* url);
 int dnsclient_linkup(struct halfrel* self, struct halfrel* peer);
-int dnsclient_discon( struct halfrel* self, struct halfrel* peer);
+int dnsclient_discon(struct halfrel* self, struct halfrel* peer);
 int dnsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int dnsclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int dnsserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int dnsserver_delete(struct artery* ele, void* url);
 int dnsserver_linkup(struct halfrel* self, struct halfrel* peer);
-int dnsserver_discon( struct halfrel* self, struct halfrel* peer);
+int dnsserver_discon(struct halfrel* self, struct halfrel* peer);
 int dnsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int dnsserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //udp.tftp
 int tftpclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int tftpclient_delete(struct artery* ele, void* url);
 int tftpclient_linkup(struct halfrel* self, struct halfrel* peer);
-int tftpclient_discon( struct halfrel* self, struct halfrel* peer);
+int tftpclient_discon(struct halfrel* self, struct halfrel* peer);
 int tftpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tftpclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tftpserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int tftpserver_delete(struct artery* ele, void* url);
 int tftpserver_linkup(struct halfrel* self, struct halfrel* peer);
-int tftpserver_discon( struct halfrel* self, struct halfrel* peer);
+int tftpserver_discon(struct halfrel* self, struct halfrel* peer);
 int tftpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tftpserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //udp.quic
 int quicclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int quicclient_delete(struct artery* ele, void* url);
 int quicclient_linkup(struct halfrel* self, struct halfrel* peer);
-int quicclient_discon( struct halfrel* self, struct halfrel* peer);
+int quicclient_discon(struct halfrel* self, struct halfrel* peer);
 int quicclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int quicclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int quicserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int quicserver_delete(struct artery* ele, void* url);
 int quicserver_linkup(struct halfrel* self, struct halfrel* peer);
-int quicserver_discon( struct halfrel* self, struct halfrel* peer);
+int quicserver_discon(struct halfrel* self, struct halfrel* peer);
 int quicserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int quicserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int quicmaster_create(struct artery* ele, void* url, int argc, u8** argv);
 int quicmaster_delete(struct artery* ele, void* url);
 int quicmaster_linkup(struct halfrel* self, struct halfrel* peer);
-int quicmaster_discon( struct halfrel* self, struct halfrel* peer);
+int quicmaster_discon(struct halfrel* self, struct halfrel* peer);
 int quicmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int quicmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //udp.stun
 int stunclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int stunclient_delete(struct artery* ele, void* url);
 int stunclient_linkup(struct halfrel* self, struct halfrel* peer);
-int stunclient_discon( struct halfrel* self, struct halfrel* peer);
+int stunclient_discon(struct halfrel* self, struct halfrel* peer);
 int stunclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int stunclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int stunserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int stunserver_delete(struct artery* ele, void* url);
 int stunserver_linkup(struct halfrel* self, struct halfrel* peer);
-int stunserver_discon( struct halfrel* self, struct halfrel* peer);
+int stunserver_discon(struct halfrel* self, struct halfrel* peer);
 int stunserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int stunserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int stunmaster_create(struct artery* ele, void* url, int argc, u8** argv);
 int stunmaster_delete(struct artery* ele, void* url);
 int stunmaster_linkup(struct halfrel* self, struct halfrel* peer);
-int stunmaster_discon( struct halfrel* self, struct halfrel* peer);
+int stunmaster_discon(struct halfrel* self, struct halfrel* peer);
 int stunmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int stunmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.p2p
 int p2pclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int p2pclient_delete(struct artery* ele, void* url);
 int p2pclient_linkup(struct halfrel* self, struct halfrel* peer);
-int p2pclient_discon( struct halfrel* self, struct halfrel* peer);
+int p2pclient_discon(struct halfrel* self, struct halfrel* peer);
 int p2pclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int p2pclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int p2pserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int p2pserver_delete(struct artery* ele, void* url);
 int p2pserver_linkup(struct halfrel* self, struct halfrel* peer);
-int p2pserver_discon( struct halfrel* self, struct halfrel* peer);
+int p2pserver_discon(struct halfrel* self, struct halfrel* peer);
 int p2pserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int p2pserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int p2pmaster_create(struct artery* ele, void* url, int argc, u8** argv);
 int p2pmaster_delete(struct artery* ele, void* url);
 int p2pmaster_linkup(struct halfrel* self, struct halfrel* peer);
-int p2pmaster_discon( struct halfrel* self, struct halfrel* peer);
+int p2pmaster_discon(struct halfrel* self, struct halfrel* peer);
 int p2pmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int p2pmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.ssh
 int sshclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int sshclient_delete(struct artery* ele, void* url);
 int sshclient_linkup(struct halfrel* self, struct halfrel* peer);
-int sshclient_discon( struct halfrel* self, struct halfrel* peer);
+int sshclient_discon(struct halfrel* self, struct halfrel* peer);
 int sshclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int sshclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int sshserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int sshserver_delete(struct artery* ele, void* url);
 int sshserver_linkup(struct halfrel* self, struct halfrel* peer);
-int sshserver_discon( struct halfrel* self, struct halfrel* peer);
+int sshserver_discon(struct halfrel* self, struct halfrel* peer);
 int sshserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int sshserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int sshmaster_create(struct artery* ele, void* url, int argc, u8** argv);
 int sshmaster_delete(struct artery* ele, void* url);
 int sshmaster_linkup(struct halfrel* self, struct halfrel* peer);
-int sshmaster_discon( struct halfrel* self, struct halfrel* peer);
+int sshmaster_discon(struct halfrel* self, struct halfrel* peer);
 int sshmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int sshmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.telnet
 int telnetclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int telnetclient_delete(struct artery* ele, void* url);
 int telnetclient_linkup(struct halfrel* self, struct halfrel* peer);
-int telnetclient_discon( struct halfrel* self, struct halfrel* peer);
+int telnetclient_discon(struct halfrel* self, struct halfrel* peer);
 int telnetclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int telnetclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int telnetserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int telnetserver_delete(struct artery* ele, void* url);
 int telnetserver_linkup(struct halfrel* self, struct halfrel* peer);
-int telnetserver_discon( struct halfrel* self, struct halfrel* peer);
+int telnetserver_discon(struct halfrel* self, struct halfrel* peer);
 int telnetserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int telnetserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int telnetmaster_create(struct artery* ele, void* url, int argc, u8** argv);
 int telnetmaster_delete(struct artery* ele, void* url);
 int telnetmaster_linkup(struct halfrel* self, struct halfrel* peer);
-int telnetmaster_discon( struct halfrel* self, struct halfrel* peer);
+int telnetmaster_discon(struct halfrel* self, struct halfrel* peer);
 int telnetmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int telnetmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.http
 int httpclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int httpclient_delete(struct artery* ele, void* url);
 int httpclient_linkup(struct halfrel* self, struct halfrel* peer);
-int httpclient_discon( struct halfrel* self, struct halfrel* peer);
+int httpclient_discon(struct halfrel* self, struct halfrel* peer);
 int httpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int httpclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int httpserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int httpserver_delete(struct artery* ele, void* url);
 int httpserver_linkup(struct halfrel* self, struct halfrel* peer);
-int httpserver_discon( struct halfrel* self, struct halfrel* peer);
+int httpserver_discon(struct halfrel* self, struct halfrel* peer);
 int httpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int httpserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int httpmaster_create(struct artery* ele, void* url, int argc, u8** argv);
 int httpmaster_delete(struct artery* ele, void* url);
 int httpmaster_linkup(struct halfrel* self, struct halfrel* peer);
-int httpmaster_discon( struct halfrel* self, struct halfrel* peer);
+int httpmaster_discon(struct halfrel* self, struct halfrel* peer);
 int httpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int httpmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.ws
 int wsclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int wsclient_delete(struct artery* ele, void* url);
 int wsclient_linkup(struct halfrel* self, struct halfrel* peer);
-int wsclient_discon( struct halfrel* self, struct halfrel* peer);
+int wsclient_discon(struct halfrel* self, struct halfrel* peer);
 int wsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int wsclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int wsserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int wsserver_delete(struct artery* ele, void* url);
 int wsserver_linkup(struct halfrel* self, struct halfrel* peer);
-int wsserver_discon( struct halfrel* self, struct halfrel* peer);
+int wsserver_discon(struct halfrel* self, struct halfrel* peer);
 int wsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int wsserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int wsmaster_create(struct artery* ele, void* url, int argc, u8** argv);
 int wsmaster_delete(struct artery* ele, void* url);
 int wsmaster_linkup(struct halfrel* self, struct halfrel* peer);
-int wsmaster_discon( struct halfrel* self, struct halfrel* peer);
+int wsmaster_discon(struct halfrel* self, struct halfrel* peer);
 int wsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int wsmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.tls1.2
 int tls1v2client_create(struct artery* ele, void* url, int argc, u8** argv);
 int tls1v2client_delete(struct artery* ele, void* url);
 int tls1v2client_linkup(struct halfrel* self, struct halfrel* peer);
-int tls1v2client_discon( struct halfrel* self, struct halfrel* peer);
+int tls1v2client_discon(struct halfrel* self, struct halfrel* peer);
 int tls1v2client_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tls1v2client_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tls1v2server_create(struct artery* ele, void* url, int argc, u8** argv);
 int tls1v2server_delete(struct artery* ele, void* url);
 int tls1v2server_linkup(struct halfrel* self, struct halfrel* peer);
-int tls1v2server_discon( struct halfrel* self, struct halfrel* peer);
+int tls1v2server_discon(struct halfrel* self, struct halfrel* peer);
 int tls1v2server_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tls1v2server_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tls1v2master_create(struct artery* ele, void* url, int argc, u8** argv);
 int tls1v2master_delete(struct artery* ele, void* url);
 int tls1v2master_linkup(struct halfrel* self, struct halfrel* peer);
-int tls1v2master_discon( struct halfrel* self, struct halfrel* peer);
+int tls1v2master_discon(struct halfrel* self, struct halfrel* peer);
 int tls1v2master_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tls1v2master_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.tls1.3
 int tls1v3client_create(struct artery* ele, void* url, int argc, u8** argv);
 int tls1v3client_delete(struct artery* ele, void* url);
 int tls1v3client_linkup(struct halfrel* self, struct halfrel* peer);
-int tls1v3client_discon( struct halfrel* self, struct halfrel* peer);
+int tls1v3client_discon(struct halfrel* self, struct halfrel* peer);
 int tls1v3client_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tls1v3client_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tls1v3server_create(struct artery* ele, void* url, int argc, u8** argv);
 int tls1v3server_delete(struct artery* ele, void* url);
 int tls1v3server_linkup(struct halfrel* self, struct halfrel* peer);
-int tls1v3server_discon( struct halfrel* self, struct halfrel* peer);
+int tls1v3server_discon(struct halfrel* self, struct halfrel* peer);
 int tls1v3server_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tls1v3server_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tls1v3master_create(struct artery* ele, void* url, int argc, u8** argv);
 int tls1v3master_delete(struct artery* ele, void* url);
 int tls1v3master_linkup(struct halfrel* self, struct halfrel* peer);
-int tls1v3master_discon( struct halfrel* self, struct halfrel* peer);
+int tls1v3master_discon(struct halfrel* self, struct halfrel* peer);
 int tls1v3master_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int tls1v3master_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //fuckgfw
 int fuckgfwclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int fuckgfwclient_delete(struct artery* ele, void* url);
 int fuckgfwclient_linkup(struct halfrel* self, struct halfrel* peer);
-int fuckgfwclient_discon( struct halfrel* self, struct halfrel* peer);
+int fuckgfwclient_discon(struct halfrel* self, struct halfrel* peer);
 int fuckgfwclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fuckgfwclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fuckgfwserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int fuckgfwserver_delete(struct artery* ele, void* url);
 int fuckgfwserver_linkup(struct halfrel* self, struct halfrel* peer);
-int fuckgfwserver_discon( struct halfrel* self, struct halfrel* peer);
+int fuckgfwserver_discon(struct halfrel* self, struct halfrel* peer);
 int fuckgfwserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fuckgfwserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fuckgfwmaster_create(struct artery* ele, void* url, int argc, u8** argv);
 int fuckgfwmaster_delete(struct artery* ele, void* url);
 int fuckgfwmaster_linkup(struct halfrel* self, struct halfrel* peer);
-int fuckgfwmaster_discon( struct halfrel* self, struct halfrel* peer);
+int fuckgfwmaster_discon(struct halfrel* self, struct halfrel* peer);
 int fuckgfwmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fuckgfwmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.party
 int partyclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int partyclient_delete(struct artery* ele, void* url);
 int partyclient_linkup(struct halfrel* self, struct halfrel* peer);
-int partyclient_discon( struct halfrel* self, struct halfrel* peer);
+int partyclient_discon(struct halfrel* self, struct halfrel* peer);
 int partyclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int partyclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int partyserver_create(struct artery* ele, void* url, int argc, u8** argv);
 int partyserver_delete(struct artery* ele, void* url);
 int partyserver_linkup(struct halfrel* self, struct halfrel* peer);
-int partyserver_discon( struct halfrel* self, struct halfrel* peer);
+int partyserver_discon(struct halfrel* self, struct halfrel* peer);
 int partyserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int partyserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int partymaster_create(struct artery* ele, void* url, int argc, u8** argv);
 int partymaster_delete(struct artery* ele, void* url);
 int partymaster_linkup(struct halfrel* self, struct halfrel* peer);
-int partymaster_discon( struct halfrel* self, struct halfrel* peer);
+int partymaster_discon(struct halfrel* self, struct halfrel* peer);
 int partymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int partymaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
@@ -584,8 +604,11 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _search_:search_read(self, peer, arg, idx, buf, len);break;
 		case _vt100_:vt100_read(self, peer, arg, idx, buf, len);break;
 
-		case _echo_:echo_read(self, peer, arg, idx, buf, len);break;
+		//case _file_:file_read(self, peer, arg, idx, buf, len);break;
 		case _pump_:pump_read(self, peer, arg, idx, buf, len);break;
+
+		case _easymux_:easymux_read(self, peer, arg, idx, buf, len);break;
+		case _echo_:echo_read(self, peer, arg, idx, buf, len);break;
 		case _goslow_:goslow_read(self, peer, arg, idx, buf, len);break;
 		case _dbgf32_:dbgf32_read(self, peer, arg, idx, buf, len);break;
 		case _dbghex_:dbghex_read(self, peer, arg, idx, buf, len);break;
@@ -667,8 +690,11 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _search_:return search_write(self, peer, arg, idx, buf, len);break;
 		case _vt100_:return vt100_write(self, peer, arg, idx, buf, len);break;
 
-		case _echo_:return echo_write(self, peer, arg, idx, buf, len);break;
+		//case _file_:return file_write(self, peer, arg, idx, buf, len);break;
 		case _pump_:return pump_write(self, peer, arg, idx, buf, len);break;
+
+		case _easymux_:return easymux_write(self, peer, arg, idx, buf, len);break;
+		case _echo_:return echo_write(self, peer, arg, idx, buf, len);break;
 		case _goslow_:return goslow_write(self, peer, arg, idx, buf, len);break;
 		case _dbgf32_:return dbgf32_write(self, peer, arg, idx, buf, len);break;
 		case _dbghex_:return dbghex_write(self, peer, arg, idx, buf, len);break;
@@ -900,6 +926,15 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 
 	//
+	if(_pump_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _pump_;
+		pump_create(e, url, argc, argv);
+		return e;
+	}
 	if(_file_ == type)
 	{
 		e = allocartery();
@@ -967,6 +1002,15 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 
 	//test
+	if(_easymux_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _easymux_;
+		easymux_create(e, url, argc, argv);
+		return e;
+	}
 	if(_echo_ == type)
 	{
 		e = allocartery();
@@ -974,15 +1018,6 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 
 		e->type = _echo_;
 		echo_create(e, url, argc, argv);
-		return e;
-	}
-	if(_pump_ == type)
-	{
-		e = allocartery();
-		if(0 == e)return 0;
-
-		e->type = _pump_;
-		pump_create(e, url, argc, argv);
 		return e;
 	}
 	if(_dbgf32_ == type)

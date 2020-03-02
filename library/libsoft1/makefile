@@ -179,12 +179,16 @@ libflow/ahrs/ahrs.mahony.c \
 libflow/ahrs/ahrs.madgwick.c \
 libflow/ahrs/ahrs.ekf.c \
 libflow/ahrs/ahrs.ukf.c \
-libflow/stream/stream.help.control.c \
-libflow/stream/stream.help.search.c \
-libflow/stream/stream.help.vt100.c \
 libflow/stream/stream.conv.str2fv.c \
 libflow/stream/stream.conv.fv2str.c \
 libflow/stream/stream.conv.qu2eu.c \
+libflow/stream/stream.help.control.c \
+libflow/stream/stream.help.search.c \
+libflow/stream/stream.help.vt100.c \
+libflow/stream/stream.image.rotate.c \
+libflow/stream/stream.image.scale.c \
+libflow/stream/stream.mux.easy.c \
+libflow/stream/stream.mux.media.c \
 libflow/stream/stream.parse.gcode.c \
 libflow/stream/stream.parse.mavlink.c \
 libflow/stream/stream.parse.nema0183.c \
@@ -198,8 +202,6 @@ libflow/stream/stream.test.dbghex.c \
 libflow/stream/stream.test.goslow.c \
 libflow/stream/stream.test.fftpcm.c \
 libflow/stream/stream.test.fftrgb.c \
-libflow/stream/stream.image.rotate.c \
-libflow/stream/stream.image.scale.c \
 libphys/phys.elec.c \
 libphys/phys.mech.c \
 artery.c

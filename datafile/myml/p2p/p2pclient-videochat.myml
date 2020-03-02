@@ -1,0 +1,114 @@
+<entity>
+canvas{
+fmt:video
+}
+freecam{
+fmt:freecam
+}
+world3d{
+fmt:world3d
+}
+</entity>
+
+
+<supply>
+stdio{
+fmt:std
+}
+camera{
+fmt:cam
+}
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<artery>
+goslow{
+fmt:goslow
+}
+recut{
+fmt:recut
+}
+easymux{
+fmt:easymux
+}
+client{
+fmt:p2p
+}
+</artery>
+
+
+<system>
+socket{
+fmt:tcp
+url:deepstack.tech:9999
+}
+</system>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<style>
+skyhaha{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 640.0, 0.0, 0.0
+f: 0.0, 480.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+freemodl{
+}
+freegeom{
+c: 0.0, 0.0, 640.0
+r: 640.0, 0.0, 0.0
+t: 0.0, 640.0, 0.0
+f: 0.0, 0.0, -640.0
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#by
+(camera, 0, dst) -> (goslow, 0, src)
+(goslow, 0, dst) -> (easymux, 0, by)
+
+#to
+(easymux, 0, to) -> (recut, 0, src)
+(recut, 0, dst) -> (canvas, 0, yuv)
+
+#client
+(stdio, 0, dst) -> (client, 0, std)
+(socket, 0, dst) -> (client, 0, src)
+(easymux, 0, src) -> (client, 0, dst)
+
+#world3d depends on inner objects
+(world3d, skygeom, 0) -> (canvas, skyhaha, 0)
+(world3d, freegeom, 0) -> (freecam, freemodl, 0)
+
+#glwnd depends on ctx + cam
+(opengl, freerect, 0) -> (freecam, 0, 0)
+</relation>
