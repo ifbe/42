@@ -16,169 +16,170 @@ struct per_io_data
 	OVERLAPPED overlap;
 	WSABUF bufing;
 	int count;
-	int stage;
-	SOCKET fd;
+	SOCKET sock;
 };
-static struct object* obj;
 static HANDLE iocpfd;
-
-
-
-
-void iocp_add(SOCKET fd)
+//
+static struct object* obj = 0;
+static struct object* getobjbysock(SOCKET sock)
 {
-	u32* pfd = (void*)(obj[fd/4].self);
-	struct per_io_data* pio = (void*)(obj[fd/4].data);
+	return &obj[sock/4];
+}
+static struct object* getobjbid(int idx)
+{
+	return &obj[idx];
+}
+static int getidbysock(SOCKET sock)
+{
+	return sock/4;
+}
+static SOCKET getsockbyid(int idx)
+{
+	return idx*4;
+}
 
-	*pfd = fd;
+
+
+
+void iocp_add(SOCKET sock, int type)
+{
+	struct object* tmp = getobjbysock(sock);
 	CreateIoCompletionPort(
-		(void*)fd,
+		(void*)sock,
 		iocpfd,
-		(ULONG_PTR)pfd,
+		(ULONG_PTR)tmp,
 		0
 	);
-	if(_TCP_ == obj[fd/4].type)return;
+	if(_TCP_ == type)return;
 
-	pio->stage = 1;
-	pio->bufing.buf = malloc(4096);
-	pio->bufing.len = 4096;
+	struct per_io_data* perio = (void*)(tmp->data);
+	perio->bufing.buf = malloc(4096);
+	perio->bufing.len = 4096;
 }
-void iocp_del(SOCKET fd)
+void iocp_del(SOCKET sock, int type)
 {
-	struct per_io_data* pio = (void*)(obj[fd/4].data);
-	if(pio->bufing.buf)
+	struct object* tmp = getobjbysock(sock);
+	struct per_io_data* perio = (void*)(tmp->data);
+	if(perio->bufing.buf)
 	{
-		free(pio->bufing.buf);
-		pio->bufing.buf = 0;
+		free(perio->bufing.buf);
+		perio->bufing.buf = 0;
 	}
 }
-void iocp_mod(SOCKET fd)
+void iocp_mod(SOCKET sock, int type)
 {
 	int ret;
 	DWORD tran = 0;
 	DWORD flag = 0;
-	struct per_io_data* pio;
-	void* peer;
 
-	ret = obj[fd/4].type;
-	pio = (void*)(obj[fd/4].data);
-	peer = (void*)(obj[fd/4].peer);
+	struct object* perfd = getobjbysock(sock);
+	struct per_io_data* perio = (void*)(perfd->data);
 
-	if((_UDP_ == ret) | (_udp_ == ret))
-	{
+	switch(type){
+	case _UDP_:
+	case _udp_:{
 		ret = sizeof(struct sockaddr_in);
-		ret = WSARecvFrom(fd,
-			&(pio->bufing), 1,
+		ret = WSARecvFrom(sock,
+			&(perio->bufing), 1,
 			&tran, &flag,
-			peer, &ret,
-			(void*)pio, NULL
+			(void*)(perfd->peer), &ret,
+			(void*)perio, NULL
 		);
+		break;
 	}
-	else
-	{
-		ret = WSARecv(fd,
-			&(pio->bufing), 1,
+	default:{
+		ret = WSARecv(sock,
+			&(perio->bufing), 1,
 			&tran, &flag,
-			(void*)pio, NULL
+			(void*)perio, NULL
 		);
+		break;
+	}
 	}
 }
 DWORD WINAPI iocpthread(LPVOID pM)
 {
-	u32* pfd = 0;
-	struct per_io_data* pio = NULL;
-	int tmp, ret;
+	int ret;
+	DWORD tran = 0;
+
 	SOCKET fd;
 	SOCKET cc;
-	DWORD tran = 0;
-	DWORD flag = 0;
-	struct object* here;
 	struct object* parent;
 	struct object* child;
+	struct object* perfd = NULL;
+	struct per_io_data* perio = NULL;
 
-	tmp = GetCurrentThreadId();
+	ret = GetCurrentThreadId();
+	//say("threadid = %x\n", ret);
+
 	while(1)
 	{
 		ret = GetQueuedCompletionStatus(
 			iocpfd,
 			&tran,
-			(void*)&pfd,
-			(void*)&pio,
+			(void*)&perfd,
+			(void*)&perio,
 			INFINITE
 		);
-		if(ret == 0)continue;
+		if(0 == ret)continue;
 
-		fd = *pfd;
-		cc = pio->fd;
-		//printf("tmp=%x,tran=%x,listen=%x,this=%x\n", tmp, tran, fd, cc);
-
-		//accept
-		if(pio->stage == 0)
+		fd = getsockbyid(perfd->selffd);
+		if(_TCP_ == perfd->type)
 		{
-			//ret = cc/4;
-			//printf("[%x,%x]++++\n", tmp, ret);
-			//eventwrite('+', _fd_, ret, 0);
+			cc = perio->sock;
+			child = getobjbysock(cc);
 			printf("parent=%x, child=%x\n", fd, cc);
-
-			parent = &obj[fd/4];
-			child = &obj[cc/4];
 
 			child->type = _Tcp_;
 			child->name = 0;
 			child->irel0 = child->ireln = 0;
 			child->orel0 = child->oreln = 0;
-			child->selffd = cc/4;
+			child->selffd = getidbysock(cc);
 			child->selfobj = child;
-			child->tempfd = fd/4;
-			child->tempobj = parent;
+			child->tempfd = getidbysock(fd);
+			child->tempobj = perfd;
 
-			//todo: getpeername
-
-			iocp_add(cc);
-			iocp_mod(cc);
+			//peername
+			iocp_add(cc, _Tcp_);
+			iocp_mod(cc, _Tcp_);
+			continue;
 		}
-		else if(tran == 0)
+		if(0 == tran)
 		{
-			//ret = fd/4;
-			//printf("[%x]----\n", ret);
-			//eventwrite('-', _fd_, ret, 0);
-
-			here = &obj[fd/4];
-			iocp_del(fd);
-			systemdelete(here);
+			iocp_del(fd, 0);
+			systemdelete(perfd);
+			continue;
 		}
-		else
-		{
-			//pio->count = tran;
-			//ret = fd/4;
-			//printf("[%x]####\n", ret);
-			//eventwrite('@', _fd_, ret, 0);
 
-			here = &obj[fd/4];
-			switch(here->type){
-			case _Tcp_:{
-				if(	(0 == here->irel0) && (0 == here->orel0) ){
-					parent = here->tempobj;
-					memcpy(parent->peer, here->peer, 8);
+		switch(perfd->type){
+		case _Tcp_:{
+			if(	(0 == perfd->irel0) && (0 == perfd->orel0) ){
+				parent = perfd->tempobj;
+				memcpy(parent->peer, perfd->peer, 8);
 
-					//tell parent, its me
-					parent->tempfd = fd;
-					parent->tempobj = here;
+				//tell parent, its me
+				parent->tempfd = perfd->selffd;
+				parent->tempobj = perfd;
 
-					//parent send
-					here = parent;
-				}
+				//parent send
+				perfd = parent;
+			}
 
-				relationwrite(here, _dst_, 0, 0, pio->bufing.buf, tran);
-				iocp_mod(fd);
-				break;
-			}//Tcp
-			default:{
-				relationwrite(here, _dst_, 0, 0, pio->bufing.buf, tran);
-				iocp_mod(fd);
-			}//default
-			}//switch
-		}//else
+			relationwrite(perfd, _dst_, 0, 0, perio->bufing.buf, tran);
+			iocp_mod(fd, perfd->type);
+			break;
+		}//Tcp
+		case _UDP_:{
+			relationwrite(perfd, _dst_, perfd->peer, 0, perio->bufing.buf, tran);
+			iocp_mod(fd, perfd->type);
+			break;
+		}
+		default:{
+			relationwrite(perfd, _dst_, 0, 0, perio->bufing.buf, tran);
+			iocp_mod(fd, perfd->type);
+			break;
+		}//default
+		}//switch
 	}//while
 	return 0;
 }

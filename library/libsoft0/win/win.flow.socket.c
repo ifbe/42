@@ -9,9 +9,9 @@
 #include "libsoft.h"
 #define _BT_ hex16('B','T')
 #define _bt_ hex16('b','t')
-void iocp_add(SOCKET);
-void iocp_del(SOCKET);
-void iocp_mod(SOCKET);
+void iocp_add(SOCKET, int);
+void iocp_del(SOCKET, int);
+void iocp_mod(SOCKET, int);
 int parsemyandto(void*,int, void*,int, char**,int*, char**,int*);
 
 
@@ -22,11 +22,26 @@ struct per_io_data
 	OVERLAPPED overlap;
 	WSABUF bufing;
 	int count;
-	int stage;
-	SOCKET fd;
+	SOCKET sock;
 };
-static struct object* obj;
-
+//
+static struct object* obj = 0;
+static struct object* getobjbysock(SOCKET sock)
+{
+	return &obj[sock/4];
+}
+static struct object* getobjbid(int idx)
+{
+	return &obj[idx];
+}
+static int getidbysock(SOCKET sock)
+{
+	return sock/4;
+}
+static SOCKET getsockbyid(int idx)
+{
+	return idx*4;
+}
 
 
 /*
@@ -112,9 +127,9 @@ int createsocket_bt(char* addr, int port)
 	}
 
 	//
-	iocp_add(fd);
-	iocp_mod(fd);
-	return fd/4;
+	iocp_add(fd, _bt_);
+	iocp_mod(fd, _bt_);
+	return getidbysock(fd);
 }
 int createsocket_raw(char* addr, int port)
 {
@@ -142,22 +157,22 @@ int createsocket_raw(char* addr, int port)
 	}
 
 	//self
-	struct sockaddr_in serAddr;
-	memset(&serAddr, 0, sizeof(serAddr));
-	serAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
-	serAddr.sin_family = PF_INET;
-	serAddr.sin_port = htons(0);
+	struct sockaddr_in* self = (void*)(getobjbysock(fd)->self);
+	memset(self, 0, sizeof(struct sockaddr_in));
+	self->sin_family = PF_INET;
+	self->sin_port = htons(0);
+	self->sin_addr.s_addr = inet_addr("127.0.0.1");
 
 	//bind
-	if(SOCKET_ERROR == bind(fd, (void*)&serAddr, sizeof(serAddr))){
+	if(SOCKET_ERROR == bind(fd, (void*)self, sizeof(struct sockaddr_in))){
 		printf("errno=%d@bind\n", GetLastError());
 		return 0;
 	}
 
 	//
-	iocp_add(fd);
-	iocp_mod(fd);
-	return fd/4;
+	iocp_add(fd, _raw_);
+	iocp_mod(fd, _raw_);
+	return getidbysock(fd);
 }
 int createsocket_udpserver(char* addr, int port)
 {
@@ -175,15 +190,14 @@ int createsocket_udpserver(char* addr, int port)
 	}
 
 	//self
-	struct sockaddr_in servaddr;
-	memset(&servaddr, 0, sizeof(servaddr));
-	servaddr.sin_family = AF_INET;
-	servaddr.sin_port = htons(port);
-	servaddr.sin_addr.s_addr = INADDR_ANY;
+	struct sockaddr_in* self = (void*)(getobjbysock(fd)->self);
+	memset(self, 0, sizeof(struct sockaddr_in));
+	self->sin_family = AF_INET;
+	self->sin_port = htons(port);
+	self->sin_addr.s_addr = INADDR_ANY;
 
 	//bind
-	int addrlen = sizeof(SOCKADDR_IN);
-	ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
+	ret = bind(fd, (SOCKADDR*)self, sizeof(SOCKADDR_IN));
 	if(SOCKET_ERROR == ret){
 		printf("errno=%d@bind\n",GetLastError());
 		closesocket(fd);
@@ -191,9 +205,9 @@ int createsocket_udpserver(char* addr, int port)
 	}
 
 	//
-	iocp_add(fd);
-	iocp_mod(fd);
-	return fd/4;
+	iocp_add(fd, _UDP_);
+	iocp_mod(fd, _UDP_);
+	return getidbysock(fd);
 }
 int createsocket_udpclient(char* myaddr, int myport, char* toaddr, int toport)
 {
@@ -212,15 +226,14 @@ int createsocket_udpclient(char* myaddr, int myport, char* toaddr, int toport)
 
 if((0 != myaddr) && (0 != myport)){
 	//self
-	struct sockaddr_in servaddr;
-	memset(&servaddr, 0, sizeof(servaddr));
-	servaddr.sin_family = AF_INET;
-	servaddr.sin_port = htons(myport);
-	servaddr.sin_addr.s_addr = inet_addr(myaddr);
+	struct sockaddr_in* self = (void*)(getobjbysock(fd)->self);
+	memset(self, 0, sizeof(struct sockaddr_in));
+	self->sin_family = AF_INET;
+	self->sin_port = htons(myport);
+	self->sin_addr.s_addr = inet_addr(myaddr);
 
 	//bind
-	int addrlen = sizeof(SOCKADDR_IN);
-	ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
+	ret = bind(fd, (SOCKADDR*)self, sizeof(SOCKADDR_IN));
 	if(SOCKET_ERROR == ret){
 		printf("errno=%d@bind\n",GetLastError());
 		closesocket(fd);
@@ -229,23 +242,23 @@ if((0 != myaddr) && (0 != myport)){
 }
 
 	//peer
-	struct sockaddr_in server;
-	memset(&server, 0, sizeof(struct sockaddr_in));
-	server.sin_family = AF_INET;
-	server.sin_port = htons(toport);
-	server.sin_addr.s_addr = inet_addr(toaddr);
+	struct sockaddr_in* peer = (void*)(getobjbysock(fd)->peer);
+	memset(peer, 0, sizeof(struct sockaddr_in));
+	peer->sin_family = AF_INET;
+	peer->sin_port = htons(toport);
+	peer->sin_addr.s_addr = inet_addr(toaddr);
 
 	//connect
-	ret = connect(fd, (struct sockaddr*)&server, sizeof(server));
+	ret = connect(fd, (struct sockaddr*)peer, sizeof(struct sockaddr_in));
 	if(ret < 0){
 		printf("errno=%d@connect\n",GetLastError());
 		return 0;
 	}
 
 	//
-	iocp_add(fd);
-	iocp_mod(fd);
-	return fd/4;
+	iocp_add(fd, _udp_);
+	iocp_mod(fd, _udp_);
+	return getidbysock(fd);
 }
 int createsocket_tcpserver(char* addr, int port)
 {
@@ -263,15 +276,14 @@ int createsocket_tcpserver(char* addr, int port)
 	}
 
 	//self
-	struct sockaddr_in servaddr;
-	memset(&servaddr, 0, sizeof(struct sockaddr_in));
-	servaddr.sin_family = AF_INET;
-	servaddr.sin_port = htons(port);
-	servaddr.sin_addr.s_addr = INADDR_ANY;
+	struct sockaddr_in* self = (void*)(getobjbysock(fd)->self);
+	memset(self, 0, sizeof(struct sockaddr_in));
+	self->sin_family = AF_INET;
+	self->sin_port = htons(port);
+	self->sin_addr.s_addr = INADDR_ANY;
 
 	//bind
-	int addrlen = sizeof(SOCKADDR_IN);
-	ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
+	ret = bind(fd, (SOCKADDR*)self, sizeof(SOCKADDR_IN));
 	if(SOCKET_ERROR == ret){
 		printf("errno=%d@bind\n",GetLastError());
 		closesocket(fd);
@@ -309,33 +321,31 @@ int createsocket_tcpserver(char* addr, int port)
 	//acceptex
 	int j;
 	SOCKET t;
-	u32* pfd;
-	struct per_io_data* pio;
-	for(j=0;j<0x400;j++)
+	struct object* tmp;
+	struct per_io_data* perio;
+	for(j=0;j<0x100;j++)
 	{
 		t = WSASocket(
 			AF_INET, SOCK_STREAM, IPPROTO_TCP,
 			0, 0, WSA_FLAG_OVERLAPPED
 		);
-		if(t&0x3)printf("%d\n", t);
+		printf("%x\n", t);
 
-		pfd = (void*)(obj[t/4].self);
-		*pfd = t;
-
-		pio = (void*)(obj[t/4].data);
-		pio->count = 0;
-		pio->stage = 0;
-		pio->fd = t;
+		tmp = getobjbysock(t);
+		perio = (void*)(tmp->data);
+		perio->count = 0;
+		perio->sock = t;
 
 		ret = acceptex(
 			fd, t,
-			(void*)pfd, 0, 0x20, 0x20, 0,
-			(void*)pio
+			(void*)(tmp->self), 0,
+			0x20, 0x20,
+			0, (void*)perio
 		);
 	}
 
-	iocp_add(fd);
-	return fd/4;
+	iocp_add(fd, _TCP_);
+	return getidbysock(fd);
 }
 int createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
 {
@@ -354,15 +364,14 @@ int createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
 
 if((0 != myaddr) && (0 != myport)){
 	//self
-	struct sockaddr_in servaddr;
-	memset(&servaddr, 0, sizeof(struct sockaddr_in));
-	servaddr.sin_family = AF_INET;
-	servaddr.sin_port = htons(myport);
-	servaddr.sin_addr.s_addr = inet_addr(myaddr);
+	struct sockaddr_in* self = (void*)(getobjbysock(fd)->self);
+	memset(self, 0, sizeof(struct sockaddr_in));
+	self->sin_family = AF_INET;
+	self->sin_port = htons(myport);
+	self->sin_addr.s_addr = inet_addr(myaddr);
 
 	//bind
-	int addrlen = sizeof(SOCKADDR_IN);
-	ret = bind(fd, (SOCKADDR*)&servaddr, addrlen);
+	ret = bind(fd, (SOCKADDR*)self, sizeof(SOCKADDR_IN));
 	if(SOCKET_ERROR == ret){
 		printf("errno=%d@bind\n",GetLastError());
 		closesocket(fd);
@@ -371,14 +380,14 @@ if((0 != myaddr) && (0 != myport)){
 }
 
 	//peer
-	struct sockaddr_in serAddr;
-	memset(&serAddr, 0, sizeof(struct sockaddr_in));
-	serAddr.sin_family = AF_INET;
-	serAddr.sin_port = htons(toport);
-	serAddr.sin_addr.S_un.S_addr = inet_addr(toaddr);
+	struct sockaddr_in* peer = (void*)(getobjbysock(fd)->peer);
+	memset(peer, 0, sizeof(struct sockaddr_in));
+	peer->sin_family = AF_INET;
+	peer->sin_port = htons(toport);
+	peer->sin_addr.s_addr = inet_addr(toaddr);
 
 	//connect
-	if(SOCKET_ERROR == connect(fd, (void*)&serAddr, sizeof(serAddr))){
+	if(SOCKET_ERROR == connect(fd, (void*)peer, sizeof(SOCKADDR_IN))){
 		printf("errno=%d@connect\n",GetLastError());
 		//stopsocket(fd/4);
 		return 0;
@@ -386,58 +395,61 @@ if((0 != myaddr) && (0 != myport)){
 
 	//get the random port
 	socklen_t len = sizeof(struct sockaddr_in);
-	getsockname(fd, (void*)obj[fd].self, &len);
+	getsockname(fd, (void*)(getobjbysock(fd)->self), &len);
 
 	//
-	iocp_add(fd);
-	iocp_mod(fd);
-	return fd/4;
+	iocp_add(fd, _tcp_);
+	iocp_mod(fd, _tcp_);
+	return getidbysock(fd);
 }
 
 
 
 
-int readsocket(int fd, void* tmp, void* buf, int len)
+int readsocket(int idx, void* tmp, void* buf, int len)
 {
 	int j,ret;
 	char* src;
 	char* dst;
-	struct per_io_data* pio;
 
-	//pio
-	pio = (void*)(obj[fd].data);
-	ret = pio->count;
+	SOCKET sock = getsockbyid(idx);
+	struct object* perfd = &obj[idx];
+	struct per_io_data* perio = (void*)(perfd->data);
+
+	//perio
+	ret = perio->count;
 	if(0 == ret)return 0;	//disconnect
 
 	//data
-	src = pio->bufing.buf;
+	src = perio->bufing.buf;
 	dst = buf;
 	for(j=0;j<ret;j++)dst[j] = src[j];
 
 	//peer
-	j = obj[fd].type;
-	if(_UDP_ == j)
+	if(_UDP_ == perfd->type)
 	{
 		dst = tmp;
-		src = obj[fd].peer;
+		src = perfd->peer;
 		for(j=0;j<8;j++)dst[j] = src[j];
 	}
 
-	pio->count = 0;
-	iocp_mod(fd*4);
+	perio->count = 0;
+	iocp_mod(sock, perfd->type);
 	return ret;
 }
-int writesocket(int fd, struct sockaddr_in* tmp, void* buf, int len)
+int writesocket(int idx, struct sockaddr_in* tmp, void* buf, int len)
 {
 	int ret;
 	DWORD dwret;
 	WSABUF wbuf;
 
-	ret = obj[fd].type;
-	if(_UDP_ == ret)
+	SOCKET sock = getsockbyid(idx);
+	struct object* perfd = &obj[idx];
+
+	if(_UDP_ == perfd->type)
 	{
 		struct sockaddr_in out;
-		if(0 == tmp)tmp = (void*)obj[fd].peer;
+		if(0 == tmp)tmp = (void*)(perfd->peer);
 		else{
 			memset(&out, 0, sizeof(struct sockaddr_in));
 			out.sin_family = AF_INET;
@@ -448,7 +460,7 @@ int writesocket(int fd, struct sockaddr_in* tmp, void* buf, int len)
 
 		wbuf.buf = buf;
 		wbuf.len = len;
-		ret = WSASendTo(fd*4,
+		ret = WSASendTo(sock,
 			&wbuf, 1,
 			&dwret, 0,
 			(void*)tmp, sizeof(struct sockaddr_in),
@@ -459,7 +471,7 @@ int writesocket(int fd, struct sockaddr_in* tmp, void* buf, int len)
 
 	wbuf.buf = buf;
 	wbuf.len = len;
-	ret = WSASend(fd*4, &wbuf, 1, &dwret, 0, 0, 0);
+	ret = WSASend(sock, &wbuf, 1, &dwret, 0, 0, 0);
 	//printf("@send:len=%d,ret=%d,err=%d\n",len,ret,GetLastError());
 	return len;
 }
@@ -467,21 +479,24 @@ int writesocket(int fd, struct sockaddr_in* tmp, void* buf, int len)
 
 
 
-int searchsocket(SOCKET fd)
+int searchsocket(int id)
 {
+	SOCKET sock = getsockbyid(id);
 	return 0;
 }
-int modifysocket(SOCKET fd)
+int modifysocket(int id)
 {
+	SOCKET sock = getsockbyid(id);
 	return 0;
 }
-int deletesocket(SOCKET fd)
+int deletesocket(int id)
 {
+	SOCKET sock = getsockbyid(id);
 	LPFN_DISCONNECTEX disconnectex = NULL;
 	GUID guiddisconnectex = WSAID_DISCONNECTEX;
 	DWORD dwret = 0;
 	int ret = WSAIoctl(
-		fd*4,
+		sock,
 		SIO_GET_EXTENSION_FUNCTION_POINTER,
 		&guiddisconnectex,
 		sizeof(guiddisconnectex),
@@ -497,7 +512,7 @@ int deletesocket(SOCKET fd)
 		return 0;
 	}
 
-	disconnectex(fd*4, 0, TF_REUSE_SOCKET, 0);
+	disconnectex(sock, 0, TF_REUSE_SOCKET, 0);
 	return 0;
 }
 int createsocket(int fmt, char* arg)
