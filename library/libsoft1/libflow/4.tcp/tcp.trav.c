@@ -14,7 +14,7 @@ int createsocket_tcpclient(void* myaddr, int myport, void* toaddr, int toport);
 
 
 
-int p2p_memory(u64* list, u64 self)
+int tcptrav_memory(u64* list, u64 self)
 {
 	int j;
 	if(list[0] == self)return 0;
@@ -34,15 +34,15 @@ int p2p_memory(u64* list, u64 self)
 
 
 
-int p2pclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tcptravclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int p2pclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tcptravclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	struct artery* art = self->pchip;
 	struct object* sys = peer->pchip;
-	say("@p2pclient_write:%.4s\n", &self->flag);
+	say("@tcptravclient_write:%.4s\n", &self->flag);
 
 	if(_std_ == self->flag){
 		printmemory(buf, len < 16 ? len : 16);
@@ -130,23 +130,23 @@ int p2pclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	}
 	return 0;
 }
-int p2pclient_discon(struct halfrel* self, struct halfrel* peer)
+int tcptravclient_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int p2pclient_linkup(struct halfrel* self, struct halfrel* peer)
+int tcptravclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@p2pclient_linkup: %.4s\n", &self->flag);
+	say("@tcptravclient_linkup: %.4s\n", &self->flag);
 	if(_src_ == self->flag){
 		relationwrite(self->pchip, self->flag, 0,0, "?\n", 2);
 	}
 	return 0;
 }
-int p2pclient_delete(struct artery* art)
+int tcptravclient_delete(struct artery* art)
 {
 	return 0;
 }
-int p2pclient_create(struct artery* art, u8* url)
+int tcptravclient_create(struct artery* art, u8* url)
 {
 	art->data0 = 0;
 	art->data1 = 0;
@@ -158,27 +158,27 @@ int p2pclient_create(struct artery* art, u8* url)
 
 
 
-int p2pserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tcptravserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int p2pserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tcptravserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int p2pserver_discon(struct halfrel* self, struct halfrel* peer)
+int tcptravserver_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int p2pserver_linkup(struct halfrel* self, struct halfrel* peer)
+int tcptravserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int p2pserver_delete(struct artery* art)
+int tcptravserver_delete(struct artery* art)
 {
 	return 0;
 }
-int p2pserver_create(struct artery* art, u8* url)
+int tcptravserver_create(struct artery* art, u8* url)
 {
 	return 0;
 }
@@ -186,11 +186,11 @@ int p2pserver_create(struct artery* art, u8* url)
 
 
 
-int p2pmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tcptravmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int p2pmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tcptravmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	struct artery* art = self->pchip;
 	struct object* sys = peer->pchip;
@@ -200,7 +200,7 @@ int p2pmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 		printmemory(buf, len);
 
 		u64* list = &art->data0;
-		p2p_memory(list, *(u64*)t);
+		tcptrav_memory(list, *(u64*)t);
 
 		int j;
 		for(j=0;j<4;j++){
@@ -210,21 +210,21 @@ int p2pmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 	}
 	return 0;
 }
-int p2pmaster_linkup(struct halfrel* self, struct halfrel* peer)
+int tcptravmaster_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@p2pmaster_linkup: %.4s\n", &self->flag);
+	say("@tcptravmaster_linkup: %.4s\n", &self->flag);
 	return 0;
 }
-int p2pmaster_discon(struct halfrel* self, struct halfrel* peer)
+int tcptravmaster_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@p2pmaster_discon: %.4s\n", &self->flag);
+	say("@tcptravmaster_discon: %.4s\n", &self->flag);
 	return 0;
 }
-int p2pmaster_delete(struct artery* art)
+int tcptravmaster_delete(struct artery* art)
 {
 	return 0;
 }
-int p2pmaster_create(struct artery* art, u8* url)
+int tcptravmaster_create(struct artery* art, u8* url)
 {
 	int j;
 	u64* list = &art->data0;

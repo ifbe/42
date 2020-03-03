@@ -1,26 +1,18 @@
-<supply>
-stdio{
-fmt:std
-}
-</supply>
-
-
 <artery>
 server{
-fmt:p2p
+fmt:TCPTRAV
 }
 </artery>
 
 
 <system>
 socket{
-fmt:tcp
-url:deepstack.tech:9999
+fmt:TCP
+url:0.0.0.0:9999
 }
 </system>
 
 
 <relation>
-(stdio, 0, dst) -> (server, 0, std)
 (socket, 0, dst) -> (server, 0, src)
 </relation>

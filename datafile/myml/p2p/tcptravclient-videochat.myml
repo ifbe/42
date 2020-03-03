@@ -39,7 +39,7 @@ easymux{
 fmt:easymux
 }
 client{
-fmt:p2p
+fmt:tcptrav
 }
 </artery>
 

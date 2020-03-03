@@ -4,7 +4,7 @@ u32 resolvehostname(void*);
 
 
 
-int stun_memory(u64* list, u64 self)
+int udptrav_memory(u64* list, u64 self)
 {
 	int j;
 	if(list[0] == self)return 0;
@@ -24,14 +24,14 @@ int stun_memory(u64* list, u64 self)
 
 
 
-int stunclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int udptravclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int stunclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int udptravclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	struct artery* art = self->pchip;
-	//say("@stunclient_write: %.4s\n", &self->flag);
+	//say("@udptravclient_write: %.4s\n", &self->flag);
 
 	if(_std_ == self->flag){
 		if(' ' == buf[0])relationwrite(art,_src_, &art->data0,0, buf, 1);
@@ -78,20 +78,20 @@ int stunclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 	printmemory(buf,len);
 	return 0;
 }
-int stunclient_discon(struct halfrel* self, struct halfrel* peer)
+int udptravclient_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int stunclient_linkup(struct halfrel* self, struct halfrel* peer)
+int udptravclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@stunclient_linkup: %.4s\n", &self->flag);
+	say("@udptravclient_linkup: %.4s\n", &self->flag);
 	return 0;
 }
-int stunclient_delete(struct artery* art)
+int udptravclient_delete(struct artery* art)
 {
 	return 0;
 }
-int stunclient_create(struct artery* art, u8* url)
+int udptravclient_create(struct artery* art, u8* url)
 {
 	u8* tmp = (void*)&art->data0;
 	tmp[2] = 9999>>8;
@@ -106,27 +106,27 @@ int stunclient_create(struct artery* art, u8* url)
 
 
 
-int stunserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int udptravserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int stunserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int udptravserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int stunserver_discon(struct halfrel* self, struct halfrel* peer)
+int udptravserver_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int stunserver_linkup(struct halfrel* self, struct halfrel* peer)
+int udptravserver_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int stunserver_delete(struct artery* art)
+int udptravserver_delete(struct artery* art)
 {
 	return 0;
 }
-int stunserver_create(struct artery* art, u8* url)
+int udptravserver_create(struct artery* art, u8* url)
 {
 	return 0;
 }
@@ -134,17 +134,17 @@ int stunserver_create(struct artery* art, u8* url)
 
 
 
-int stunmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int udptravmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int stunmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int udptravmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	struct artery* art = self->pchip;
 	struct object* sys = peer->pchip;
 	if( (_UDP_ == sys->type) | (_udp_ == sys->type) ) {
 		if(0 == arg){
-			say("error@stunmaster_write\n");
+			say("error@udptravmaster_write\n");
 			return 0;
 		}
 
@@ -153,7 +153,7 @@ int stunmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 		printmemory(buf, len);
 
 		u64* list = &art->data0;
-		stun_memory(list, *(u64*)arg);
+		udptrav_memory(list, *(u64*)arg);
 
 		int j;
 		for(j=0;j<4;j++){
@@ -163,21 +163,21 @@ int stunmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 	}
 	return 0;
 }
-int stunmaster_linkup(struct halfrel* self, struct halfrel* peer)
+int udptravmaster_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@stunmaster_linkup: %.4s\n", &self->flag);
+	say("@udptravmaster_linkup: %.4s\n", &self->flag);
 	return 0;
 }
-int stunmaster_discon(struct halfrel* self, struct halfrel* peer)
+int udptravmaster_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@stunmaster_discon: %.4s\n", &self->flag);
+	say("@udptravmaster_discon: %.4s\n", &self->flag);
 	return 0;
 }
-int stunmaster_delete(struct artery* art)
+int udptravmaster_delete(struct artery* art)
 {
 	return 0;
 }
-int stunmaster_create(struct artery* art, u8* url)
+int udptravmaster_create(struct artery* art, u8* url)
 {
 	int j;
 	u64* list = &art->data0;

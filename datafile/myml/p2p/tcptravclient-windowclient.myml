@@ -30,7 +30,7 @@ recut{
 fmt:recut
 }
 client{
-fmt:p2p
+fmt:tcptrav
 }
 </artery>
 

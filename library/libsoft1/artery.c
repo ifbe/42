@@ -367,44 +367,43 @@ int quicmaster_linkup(struct halfrel* self, struct halfrel* peer);
 int quicmaster_discon(struct halfrel* self, struct halfrel* peer);
 int quicmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int quicmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-//udp.stun
-int stunclient_create(struct artery* ele, void* url, int argc, u8** argv);
-int stunclient_delete(struct artery* ele, void* url);
-int stunclient_linkup(struct halfrel* self, struct halfrel* peer);
-int stunclient_discon(struct halfrel* self, struct halfrel* peer);
-int stunclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int stunclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int stunserver_create(struct artery* ele, void* url, int argc, u8** argv);
-int stunserver_delete(struct artery* ele, void* url);
-int stunserver_linkup(struct halfrel* self, struct halfrel* peer);
-int stunserver_discon(struct halfrel* self, struct halfrel* peer);
-int stunserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int stunserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int stunmaster_create(struct artery* ele, void* url, int argc, u8** argv);
-int stunmaster_delete(struct artery* ele, void* url);
-int stunmaster_linkup(struct halfrel* self, struct halfrel* peer);
-int stunmaster_discon(struct halfrel* self, struct halfrel* peer);
-int stunmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int stunmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-//tcp.p2p
-int p2pclient_create(struct artery* ele, void* url, int argc, u8** argv);
-int p2pclient_delete(struct artery* ele, void* url);
-int p2pclient_linkup(struct halfrel* self, struct halfrel* peer);
-int p2pclient_discon(struct halfrel* self, struct halfrel* peer);
-int p2pclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int p2pclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int p2pserver_create(struct artery* ele, void* url, int argc, u8** argv);
-int p2pserver_delete(struct artery* ele, void* url);
-int p2pserver_linkup(struct halfrel* self, struct halfrel* peer);
-int p2pserver_discon(struct halfrel* self, struct halfrel* peer);
-int p2pserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int p2pserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int p2pmaster_create(struct artery* ele, void* url, int argc, u8** argv);
-int p2pmaster_delete(struct artery* ele, void* url);
-int p2pmaster_linkup(struct halfrel* self, struct halfrel* peer);
-int p2pmaster_discon(struct halfrel* self, struct halfrel* peer);
-int p2pmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int p2pmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+//trav
+int udptravclient_create(struct artery* ele, void* url, int argc, u8** argv);
+int udptravclient_delete(struct artery* ele, void* url);
+int udptravclient_linkup(struct halfrel* self, struct halfrel* peer);
+int udptravclient_discon(struct halfrel* self, struct halfrel* peer);
+int udptravclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int udptravclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int udptravserver_create(struct artery* ele, void* url, int argc, u8** argv);
+int udptravserver_delete(struct artery* ele, void* url);
+int udptravserver_linkup(struct halfrel* self, struct halfrel* peer);
+int udptravserver_discon(struct halfrel* self, struct halfrel* peer);
+int udptravserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int udptravserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int udptravmaster_create(struct artery* ele, void* url, int argc, u8** argv);
+int udptravmaster_delete(struct artery* ele, void* url);
+int udptravmaster_linkup(struct halfrel* self, struct halfrel* peer);
+int udptravmaster_discon(struct halfrel* self, struct halfrel* peer);
+int udptravmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int udptravmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tcptravclient_create(struct artery* ele, void* url, int argc, u8** argv);
+int tcptravclient_delete(struct artery* ele, void* url);
+int tcptravclient_linkup(struct halfrel* self, struct halfrel* peer);
+int tcptravclient_discon(struct halfrel* self, struct halfrel* peer);
+int tcptravclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tcptravclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tcptravserver_create(struct artery* ele, void* url, int argc, u8** argv);
+int tcptravserver_delete(struct artery* ele, void* url);
+int tcptravserver_linkup(struct halfrel* self, struct halfrel* peer);
+int tcptravserver_discon(struct halfrel* self, struct halfrel* peer);
+int tcptravserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tcptravserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tcptravmaster_create(struct artery* ele, void* url, int argc, u8** argv);
+int tcptravmaster_delete(struct artery* ele, void* url);
+int tcptravmaster_linkup(struct halfrel* self, struct halfrel* peer);
+int tcptravmaster_discon(struct halfrel* self, struct halfrel* peer);
+int tcptravmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int tcptravmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.ssh
 int sshclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int sshclient_delete(struct artery* ele, void* url);
@@ -640,10 +639,10 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _DNS_:dnsserver_read(self, peer, arg, idx, buf, len);break;
 		case _dns_:dnsclient_read(self, peer, arg, idx, buf, len);break;
 
-		case _STUN_:stunmaster_read(self, peer, arg, idx, buf, len);break;
-		case _stun_:stunclient_read(self, peer, arg, idx, buf, len);break;
-		case _P2P_:p2pmaster_read(self, peer, arg, idx, buf, len);break;
-		case _p2p_:p2pclient_read(self, peer, arg, idx, buf, len);break;
+		case _UDPTRAV_:udptravmaster_read(self, peer, arg, idx, buf, len);break;
+		case _udptrav_:udptravclient_read(self, peer, arg, idx, buf, len);break;
+		case _TCPTRAV_:tcptravmaster_read(self, peer, arg, idx, buf, len);break;
+		case _tcptrav_:tcptravclient_read(self, peer, arg, idx, buf, len);break;
 
 		case _FUCKGFW_:fuckgfwmaster_read(self, peer, arg, idx, buf, len);break;
 		case _Fuckgfw_:fuckgfwserver_read(self, peer, arg, idx, buf, len);break;
@@ -725,10 +724,10 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _DNS_:return dnsserver_write(self, peer, arg, idx, buf, len);break;
 		case _dns_:return dnsclient_write(self, peer, arg, idx, buf, len);break;
 
-		case _STUN_:return stunmaster_write(self, peer, arg, idx, buf, len);break;
-		case _stun_:return stunclient_write(self, peer, arg, idx, buf, len);break;
-		case _P2P_:return p2pmaster_write(self, peer, arg, idx, buf, len);break;
-		case _p2p_:return p2pclient_write(self, peer, arg, idx, buf, len);break;
+		case _UDPTRAV_:return udptravmaster_write(self, peer, arg, idx, buf, len);break;
+		case _udptrav_:return udptravclient_write(self, peer, arg, idx, buf, len);break;
+		case _TCPTRAV_:return tcptravmaster_write(self, peer, arg, idx, buf, len);break;
+		case _tcptrav_:return tcptravclient_write(self, peer, arg, idx, buf, len);break;
 
 		case _FUCKGFW_:return fuckgfwmaster_write(self, peer, arg, idx, buf, len);break;
 		case _Fuckgfw_:return fuckgfwserver_write(self, peer, arg, idx, buf, len);break;
@@ -781,10 +780,10 @@ int arterydiscon(struct halfrel* self, struct halfrel* peer)
 		case _party_:return partyclient_discon(self, peer);break;
 		case _PARTY_:return partymaster_discon(self, peer);break;
 
-		case _stun_:return stunclient_discon(self, peer);break;
-		case _STUN_:return stunmaster_discon(self, peer);break;
-		case _p2p_:return p2pclient_discon(self, peer);break;
-		case _P2P_:return p2pmaster_discon(self, peer);break;
+		case _udptrav_:return udptravclient_discon(self, peer);break;
+		case _UDPTRAV_:return udptravmaster_discon(self, peer);break;
+		case _tcptrav_:return tcptravclient_discon(self, peer);break;
+		case _TCPTRAV_:return tcptravmaster_discon(self, peer);break;
 
 		case _ssh_:return sshclient_discon(self, peer);break;
 		case _Ssh_:return sshserver_discon(self, peer);break;
@@ -831,10 +830,10 @@ int arterylinkup(struct halfrel* self, struct halfrel* peer)
 		case _party_:return partyclient_linkup(self, peer);break;
 		case _PARTY_:return partymaster_linkup(self, peer);break;
 
-		case _stun_:return stunclient_linkup(self, peer);break;
-		case _STUN_:return stunmaster_linkup(self, peer);break;
-		case _p2p_:return p2pclient_linkup(self, peer);break;
-		case _P2P_:return p2pmaster_linkup(self, peer);break;
+		case _udptrav_:return udptravclient_linkup(self, peer);break;
+		case _UDPTRAV_:return udptravmaster_linkup(self, peer);break;
+		case _tcptrav_:return tcptravclient_linkup(self, peer);break;
+		case _TCPTRAV_:return tcptravmaster_linkup(self, peer);break;
 
 		case _ssh_:return sshclient_linkup(self, peer);break;
 		case _Ssh_:return sshserver_linkup(self, peer);break;
@@ -1363,61 +1362,61 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		return e;
 	}
 
-	//stun: master,server,client
-	if(_STUN_ == type)
+	//udptrav: master,server,client
+	if(_UDPTRAV_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _STUN_;
-		stunmaster_create(e, url, argc, argv);
+		e->type = _UDPTRAV_;
+		udptravmaster_create(e, url, argc, argv);
 		return e;
 	}
-	if(_Stun_ == type)
+	if(_Udptrav_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _Stun_;
-		stunserver_create(e, url, argc, argv);
+		e->type = _Udptrav_;
+		udptravserver_create(e, url, argc, argv);
 		return e;
 	}
-	if(_stun_ == type)
+	if(_udptrav_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _stun_;
-		stunclient_create(e, url, argc, argv);
+		e->type = _udptrav_;
+		udptravclient_create(e, url, argc, argv);
 		return e;
 	}
 
-	//p2p: master,server,client
-	if(_P2P_ == type)
+	//tcptrav: master,server,client
+	if(_TCPTRAV_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _P2P_;
-		p2pmaster_create(e, url, argc, argv);
+		e->type = _TCPTRAV_;
+		tcptravmaster_create(e, url, argc, argv);
 		return e;
 	}
-	if(_P2p_ == type)
+	if(_Tcptrav_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _P2p_;
-		p2pserver_create(e, url, argc, argv);
+		e->type = _Tcptrav_;
+		tcptravserver_create(e, url, argc, argv);
 		return e;
 	}
-	if(_p2p_ == type)
+	if(_tcptrav_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _p2p_;
-		p2pclient_create(e, url, argc, argv);
+		e->type = _tcptrav_;
+		tcptravclient_create(e, url, argc, argv);
 		return e;
 	}
 

@@ -1,6 +1,6 @@
 <artery>
 server{
-fmt:STUN
+fmt:UDPTRAV
 }
 </artery>
 

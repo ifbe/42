@@ -1,7 +1,4 @@
 <supply>
-camera{
-fmt:cam
-}
 stdio{
 fmt:std
 }
@@ -10,10 +7,7 @@ fmt:std
 
 <artery>
 client{
-fmt:p2p
-}
-goslow{
-fmt:goslow
+fmt:tcptrav
 }
 </artery>
 
@@ -27,8 +21,6 @@ url:deepstack.tech:9999
 
 
 <relation>
-(camera, 0, dst) -> (goslow, 0, src)
-(goslow, 0, dst) -> (client, 0, dst)
-(socket, 0, dst) -> (client, 0, src)
 (stdio, 0, dst) -> (client, 0, std)
+(socket, 0, dst) -> (client, 0, src)
 </relation>

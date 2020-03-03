@@ -7,7 +7,7 @@ fmt:std
 
 <artery>
 client{
-fmt:stun
+fmt:udptrav
 url:deepstack.tech
 }
 </artery>

@@ -126,13 +126,13 @@
 #define _FUCKGFW_ hex64('F','U','C','K','G','F','W', 0)
 #define _Fuckgfw_ hex64('F','u','c','k','g','f','w', 0)
 #define _fuckgfw_ hex64('f','u','c','k','g','f','w', 0)
-//hole
-#define _STUN_ hex32('S','T','U','N')
-#define _Stun_ hex32('S','t','u','n')
-#define _stun_ hex32('s','t','u','n')
-#define _P2P_ hex32('P','2','P', 0)
-#define _P2p_ hex32('P','2','p', 0)
-#define _p2p_ hex32('p','2','p', 0)
+//trav
+#define _UDPTRAV_ hex64('U','D','P','T','R','A','V', 0)
+#define _Udptrav_ hex64('U','d','p','t','r','a','v', 0)
+#define _udptrav_ hex64('u','d','p','t','r','a','v', 0)
+#define _TCPTRAV_ hex64('T','C','P','T','R','A','V', 0)
+#define _Tcptrav_ hex64('T','c','p','t','r','a','v', 0)
+#define _tcptrav_ hex64('t','c','p','t','r','a','v', 0)
 //http family
 #define _HTTPS_ hex64('H','T','T','P','S', 0, 0, 0)
 #define _Https_ hex64('H','t','t','p','s', 0, 0, 0)

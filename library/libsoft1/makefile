@@ -153,14 +153,13 @@ libflow/2.ip/ip46.udp.c \
 libflow/2.ip/ipx.spx.c \
 libflow/3.udp/udp.dns.c \
 libflow/3.udp/udp.hack.c \
-libflow/3.udp/udp.stun.c \
 libflow/3.udp/udp.quic.c \
 libflow/3.udp/udp.tftp.c \
+libflow/3.udp/udp.trav.c \
 libflow/4.tcp/tcp.dl.c \
 libflow/4.tcp/tcp.ftp.c \
 libflow/4.tcp/tcp.fuckgfw.c \
 libflow/4.tcp/tcp.http.c \
-libflow/4.tcp/tcp.p2p.c \
 libflow/4.tcp/tcp.party.c \
 libflow/4.tcp/tcp.proxy.c \
 libflow/4.tcp/tcp.rdp.c \
@@ -171,6 +170,7 @@ libflow/4.tcp/tcp.ssh.c \
 libflow/4.tcp/tcp.telnet.c \
 libflow/4.tcp/tcp.tls1_2.c \
 libflow/4.tcp/tcp.tls1_3.c \
+libflow/4.tcp/tcp.trav.c \
 libflow/4.tcp/tcp.vnc.c \
 libflow/4.tcp/tcp.ws.c \
 libflow/ahrs/ahrs.only_g.c \
