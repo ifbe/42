@@ -362,6 +362,13 @@ int createsocket_tcpclient(char* myaddr, int myport, char* toaddr, int toport)
 		return 0;
 	}
 
+	ret = 1;
+	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (void*)&ret, 4);
+	if(ret < 0){
+		printf("errno=%d@SO_REUSEADDR\n",GetLastError());
+		return 0;
+	}
+
 if((0 != myaddr) && (0 != myport)){
 	//self
 	struct sockaddr_in* self = (void*)(getobjbysock(fd)->self);

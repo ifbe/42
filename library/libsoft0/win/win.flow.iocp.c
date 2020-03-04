@@ -53,8 +53,8 @@ void iocp_add(SOCKET sock, int type)
 	if(_TCP_ == type)return;
 
 	struct per_io_data* perio = (void*)(tmp->data);
-	perio->bufing.buf = malloc(4096);
-	perio->bufing.len = 4096;
+	perio->bufing.buf = malloc(0x100000);
+	perio->bufing.len = 0x100000;
 }
 void iocp_del(SOCKET sock, int type)
 {
