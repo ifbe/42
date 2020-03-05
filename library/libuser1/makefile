@@ -44,10 +44,12 @@ therule/chaos/event/event.cam.free.c \
 therule/chaos/event/event.cam.frus.c \
 therule/order/collide/collide.simple.c \
 therule/order/gravity/gravity.simple.c \
-themind/chip/pilot/pilot.car.c \
-themind/chip/pilot/pilot.drone.c \
-themind/chip/solve/solve.maze.c \
-themind/chip/solve/solve.rubik.c \
+themind/elec/bldc/control.bldc.c \
+themind/elec/bulk/control.bulk.c \
+themind/pilot/drone/pilot.drone.c \
+themind/pilot/vehicle/pilot.vehicle.c \
+themind/place/maze/solve.maze.c \
+themind/place/rubik/solve.rubik.c \
 themind/user/baby/baby.c \
 themind/user/gary/gary.c \
 themind/user/john/john.c \
