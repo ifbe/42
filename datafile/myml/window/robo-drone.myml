@@ -37,8 +37,8 @@ depth:1024
 reline{
 fmt:reline
 }
-str2fv{
-fmt:str2fv
+conv{
+fmt:str2vec
 }
 </artery>
 
@@ -119,6 +119,6 @@ q:1.0, 1.0
 (opengl, freerect, mvp) -> (freecam, 0, 0)
 
 (udphost, 0, dst) -> (reline, 0, src)
-(reline, 0, dst) -> (str2fv, 0, src)
-(str2fv, 0, dst) -> (drone, 0, 0)
+(reline, 0, dst) -> (conv, 0, str)
+(conv, 0, vec) -> (drone, 0, 0)
 </relation>

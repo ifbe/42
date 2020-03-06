@@ -29,8 +29,8 @@ depth:1024
 reline{
 fmt:reline
 }
-str2fv{
-fmt:str2fv
+conv{
+fmt:str2vec
 }
 </artery>
 

@@ -10,8 +10,8 @@ url:0.0.0.0:9999
 reline{
 fmt:reline
 }
-str2fv{
-fmt:str2fv
+conv{
+fmt:str2vec
 }
 mahony{
 fmt:mahony
@@ -28,7 +28,7 @@ fmt:ahrs
 
 <relation>
 (udphost, 0, 0) -> (reline, 0, src)
-(reline, 0, dst) -> (str2fv, 0, src)
-(str2fv, 0, dst) -> (mahony, 0, src)
+(reline, 0, dst) -> (conv, 0, str)
+(conv, 0, vec) -> (mahony, 0, src)
 (mahony, 0, dst) -> (ahrs, 0, src)
 </relation>

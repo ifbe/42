@@ -10,8 +10,8 @@ url:/dev/ttyUSB0
 reline{
 fmt:reline
 }
-str2fv{
-fmt:str2fv
+conv{
+fmt:str2vec
 }
 madgwick{
 fmt:madgwick
@@ -28,7 +28,7 @@ fmt:ahrs
 
 <relation>
 (uart, 0, dst) -> (reline, 0, src)
-(reline, 0, dst) -> (str2fv, 0, src)
-(str2fv, 0, dst) -> (madgwick, 0, src)
+(reline, 0, dst) -> (conv, 0, str)
+(conv, 0, vec) -> (madgwick, 0, src)
 (madgwick, 0, dst) -> (ahrs, 0, src)
 </relation>

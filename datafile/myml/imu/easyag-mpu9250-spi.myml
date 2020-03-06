@@ -32,8 +32,8 @@ fmt:easyag
 qu2eu{
 fmt:qu2eu
 }
-fv2str{
-fmt:fv2str
+conv{
+fmt:str2vec
 }
 dbgf32{
 fmt:dbgf32
@@ -46,8 +46,8 @@ fmt:dbgf32
 (mpu9250, 0, dst) -> (easyag, 0, src)
 (easyag, 0, dst) -> (qu2eu, 0, src)
 #(qu2eu, 0, dst) -> (dbgf32, 0, src)
-(qu2eu, 0, dst) -> (fv2str, 0, src)
-(fv2str, 0, dst) -> (target, 0, src)
+(qu2eu, 0, dst) -> (conv, 0, vec)
+(conv, 0, str) -> (target, 0, src)
 
 (clock, 0, dst) -> (mpu9250, 0, clk)
 </relation>

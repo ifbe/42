@@ -151,8 +151,10 @@ libflow/2.ip/ip46.icmp.c \
 libflow/2.ip/ip46.tcp.c \
 libflow/2.ip/ip46.udp.c \
 libflow/2.ip/ipx.spx.c \
+libflow/3.udp/udp.bootp.c \
 libflow/3.udp/udp.dns.c \
 libflow/3.udp/udp.hack.c \
+libflow/3.udp/udp.ntp.c \
 libflow/3.udp/udp.quic.c \
 libflow/3.udp/udp.tftp.c \
 libflow/3.udp/udp.trav.c \
@@ -179,9 +181,8 @@ libflow/ahrs/ahrs.mahony.c \
 libflow/ahrs/ahrs.madgwick.c \
 libflow/ahrs/ahrs.ekf.c \
 libflow/ahrs/ahrs.ukf.c \
-libflow/stream/stream.conv.str2fv.c \
-libflow/stream/stream.conv.fv2str.c \
 libflow/stream/stream.conv.qu2eu.c \
+libflow/stream/stream.conv.str2vec.c \
 libflow/stream/stream.help.control.c \
 libflow/stream/stream.help.search.c \
 libflow/stream/stream.help.vt100.c \

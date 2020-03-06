@@ -11,6 +11,14 @@ int tftpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 {
 	return 0;
 }
+int tftpclient_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int tftpclient_linkup(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
 int tftpclient_delete(struct artery* ele)
 {
 	return 0;
@@ -56,6 +64,14 @@ int tftpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 		relationwrite(ele, _src_, 0, 0, str,ret+2);
 	}
 	relationwrite(ele, _src_, 0, 0, buf,len);
+	return 0;
+}
+int tftpserver_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int tftpserver_linkup(struct halfrel* self, struct halfrel* peer)
+{
 	return 0;
 }
 int tftpserver_delete(struct artery* ele)

@@ -34,9 +34,8 @@
 #define _reline_ hex64('r','e','l','i','n','e', 0, 0)
 #define _reorder_ hex64('r','e','o','r','d','e','r', 0)
 //
-#define _str2fv_ hex64('s','t','r','2','f','v',0,0)
-#define _fv2str_ hex64('f','v','2','s','t','r',0,0)
 #define _qu2eu_ hex64('q','u','2','e','u',0,0,0)
+#define _str2vec_ hex64('s','t','r','2','v','e','c',0)
 //
 #define _easyag_  hex64('e','a','s','y','a','g', 0 , 0 )
 #define _mahony_  hex64('m','a','h','o','n','y', 0 , 0 )
@@ -205,18 +204,12 @@ int qu2eu_linkup(struct halfrel* self, struct halfrel* peer);
 int qu2eu_discon(struct halfrel* self, struct halfrel* peer);
 int qu2eu_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int qu2eu_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int str2fv_create(struct artery* ele, void* url, int argc, u8** argv);
-int str2fv_delete(struct artery* ele, void* url);
-int str2fv_linkup(struct halfrel* self, struct halfrel* peer);
-int str2fv_discon(struct halfrel* self, struct halfrel* peer);
-int str2fv_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int str2fv_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int fv2str_create(struct artery* ele, void* url, int argc, u8** argv);
-int fv2str_delete(struct artery* ele, void* url);
-int fv2str_linkup(struct halfrel* self, struct halfrel* peer);
-int fv2str_discon(struct halfrel* self, struct halfrel* peer);
-int fv2str_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int fv2str_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int str2vec_create(struct artery* ele, void* url, int argc, u8** argv);
+int str2vec_delete(struct artery* ele, void* url);
+int str2vec_linkup(struct halfrel* self, struct halfrel* peer);
+int str2vec_discon(struct halfrel* self, struct halfrel* peer);
+int str2vec_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int str2vec_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //
 int easyag_create(struct artery* ele, void* url, int argc, u8** argv);
 int easyag_delete(struct artery* ele, void* url);
@@ -335,6 +328,32 @@ int dnsserver_linkup(struct halfrel* self, struct halfrel* peer);
 int dnsserver_discon(struct halfrel* self, struct halfrel* peer);
 int dnsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int dnsserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+//udp.ntp
+int ntpclient_create(struct artery* ele, void* url, int argc, u8** argv);
+int ntpclient_delete(struct artery* ele, void* url);
+int ntpclient_linkup(struct halfrel* self, struct halfrel* peer);
+int ntpclient_discon(struct halfrel* self, struct halfrel* peer);
+int ntpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int ntpclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int ntpserver_create(struct artery* ele, void* url, int argc, u8** argv);
+int ntpserver_delete(struct artery* ele, void* url);
+int ntpserver_linkup(struct halfrel* self, struct halfrel* peer);
+int ntpserver_discon(struct halfrel* self, struct halfrel* peer);
+int ntpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int ntpserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+//udp.bootp
+int bootpclient_create(struct artery* ele, void* url, int argc, u8** argv);
+int bootpclient_delete(struct artery* ele, void* url);
+int bootpclient_linkup(struct halfrel* self, struct halfrel* peer);
+int bootpclient_discon(struct halfrel* self, struct halfrel* peer);
+int bootpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int bootpclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int bootpserver_create(struct artery* ele, void* url, int argc, u8** argv);
+int bootpserver_delete(struct artery* ele, void* url);
+int bootpserver_linkup(struct halfrel* self, struct halfrel* peer);
+int bootpserver_discon(struct halfrel* self, struct halfrel* peer);
+int bootpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int bootpserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //udp.tftp
 int tftpclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int tftpclient_delete(struct artery* ele, void* url);
@@ -636,6 +655,7 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	struct artery* ele = (void*)(self->chip);
 	switch(ele->type){
 		case _ann_:ann_read(self, peer, arg, idx, buf, len);break;
+		//case _cnn_:cnn_read(self, peer, arg, idx, buf, len);break;
 
 		case _control_:control_read(self, peer, arg, idx, buf, len);break;
 		case _search_:search_read(self, peer, arg, idx, buf, len);break;
@@ -660,8 +680,7 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _reorder_:reorder_read(self, peer, arg, idx, buf, len);break;
 
 		case _qu2eu_:qu2eu_read(self, peer, arg, idx, buf, len);break;
-		case _str2fv_:str2fv_read(self, peer, arg, idx, buf, len);break;
-		case _fv2str_:fv2str_read(self, peer, arg, idx, buf, len);break;
+		case _str2vec_:str2vec_read(self, peer, arg, idx, buf, len);break;
 
 		case _easyag_:easyag_read(self, peer, arg, idx, buf, len);break;
 		case _mahony_:mahony_read(self, peer, arg, idx, buf, len);break;
@@ -676,6 +695,13 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 
 		case _DNS_:dnsserver_read(self, peer, arg, idx, buf, len);break;
 		case _dns_:dnsclient_read(self, peer, arg, idx, buf, len);break;
+		case _NTP_:ntpserver_read(self, peer, arg, idx, buf, len);break;
+		case _ntp_:ntpclient_read(self, peer, arg, idx, buf, len);break;
+
+		case _BOOTP_:bootpserver_read(self, peer, arg, idx, buf, len);break;
+		case _bootp_:bootpclient_read(self, peer, arg, idx, buf, len);break;
+		case _TFTP_:tftpserver_read(self, peer, arg, idx, buf, len);break;
+		case _tftp_:tftpclient_read(self, peer, arg, idx, buf, len);break;
 
 		case _UDPTRAV_:udptravmaster_read(self, peer, arg, idx, buf, len);break;
 		case _udptrav_:udptravclient_read(self, peer, arg, idx, buf, len);break;
@@ -732,6 +758,7 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	//say("@arterywrite: %.8s\n", &ele->type);
 	switch(ele->type){
 		case _ann_:return ann_write(self, peer, arg, idx, buf, len);break;
+		//case _cnn_:return cnn_write(self, peer, arg, idx, buf, len);break;
 
 		case _control_:return control_write(self, peer, arg, idx, buf, len);break;
 		case _search_:return search_write(self, peer, arg, idx, buf, len);break;
@@ -755,8 +782,7 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _reorder_:return reorder_write(self, peer, arg, idx, buf, len);break;
 
 		case _qu2eu_:return qu2eu_write(self, peer, arg, idx, buf, len);break;
-		case _str2fv_:return str2fv_write(self, peer, arg, idx, buf, len);break;
-		case _fv2str_:return fv2str_write(self, peer, arg, idx, buf, len);break;
+		case _str2vec_:return str2vec_write(self, peer, arg, idx, buf, len);break;
 
 		case _easyag_:return easyag_write(self, peer, arg, idx, buf, len);break;
 		case _mahony_:return mahony_write(self, peer, arg, idx, buf, len);break;
@@ -771,6 +797,13 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 
 		case _DNS_:return dnsserver_write(self, peer, arg, idx, buf, len);break;
 		case _dns_:return dnsclient_write(self, peer, arg, idx, buf, len);break;
+		case _NTP_:return ntpserver_write(self, peer, arg, idx, buf, len);break;
+		case _ntp_:return ntpclient_write(self, peer, arg, idx, buf, len);break;
+
+		case _BOOTP_:return bootpserver_write(self, peer, arg, idx, buf, len);break;
+		case _bootp_:return bootpclient_write(self, peer, arg, idx, buf, len);break;
+		case _TFTP_:return tftpserver_write(self, peer, arg, idx, buf, len);break;
+		case _tftp_:return tftpclient_write(self, peer, arg, idx, buf, len);break;
 
 		case _UDPTRAV_:return udptravmaster_write(self, peer, arg, idx, buf, len);break;
 		case _udptrav_:return udptravclient_write(self, peer, arg, idx, buf, len);break;
@@ -831,12 +864,17 @@ int arterydiscon(struct halfrel* self, struct halfrel* peer)
 
 	switch(ele->type){
 		case _ann_:return ann_discon(self, peer);break;
+		//case _cnn_:return cnn_discon(self, peer);break;
 
 		case _dns_:return dnsclient_discon(self, peer);break;
 		case _DNS_:return dnsserver_discon(self, peer);break;
+		case _ntp_:return ntpclient_discon(self, peer);break;
+		case _NTP_:return ntpserver_discon(self, peer);break;
 
-		case _party_:return partyclient_discon(self, peer);break;
-		case _PARTY_:return partymaster_discon(self, peer);break;
+		case _bootp_:return bootpclient_discon(self, peer);break;
+		case _BOOTP_:return bootpserver_discon(self, peer);break;
+		case _tftp_:return tftpclient_discon(self, peer);break;
+		case _TFTP_:return tftpserver_discon(self, peer);break;
 
 		case _udptrav_:return udptravclient_discon(self, peer);break;
 		case _UDPTRAV_:return udptravmaster_discon(self, peer);break;
@@ -874,10 +912,12 @@ int arterydiscon(struct halfrel* self, struct halfrel* peer)
 		case _proxy_:return proxyclient_discon(self, peer);break;
 		case _Proxy_:return proxyserver_discon(self, peer);break;
 		case _PROXY_:return proxymaster_discon(self, peer);break;
-
 		case _socks_:return socksclient_discon(self, peer);break;
 		case _Socks_:return socksserver_discon(self, peer);break;
 		case _SOCKS_:return socksmaster_discon(self, peer);break;
+
+		case _party_:return partyclient_discon(self, peer);break;
+		case _PARTY_:return partymaster_discon(self, peer);break;
 	}
 	return 0;
 }
@@ -891,12 +931,17 @@ int arterylinkup(struct halfrel* self, struct halfrel* peer)
 
 	switch(ele->type){
 		case _ann_:return ann_linkup(self, peer);break;
+		//case _cnn_:return cnn_linkup(self, peer);break;
 
 		case _dns_:return dnsclient_linkup(self, peer);break;
 		case _DNS_:return dnsserver_linkup(self, peer);break;
+		case _ntp_:return ntpclient_linkup(self, peer);break;
+		case _NTP_:return ntpserver_linkup(self, peer);break;
 
-		case _party_:return partyclient_linkup(self, peer);break;
-		case _PARTY_:return partymaster_linkup(self, peer);break;
+		case _bootp_:return bootpclient_linkup(self, peer);break;
+		case _BOOTP_:return bootpserver_linkup(self, peer);break;
+		case _tftp_:return tftpclient_linkup(self, peer);break;
+		case _TFTP_:return tftpserver_linkup(self, peer);break;
 
 		case _udptrav_:return udptravclient_linkup(self, peer);break;
 		case _UDPTRAV_:return udptravmaster_linkup(self, peer);break;
@@ -934,10 +979,12 @@ int arterylinkup(struct halfrel* self, struct halfrel* peer)
 		case _proxy_:return proxyclient_linkup(self, peer);break;
 		case _Proxy_:return proxyserver_linkup(self, peer);break;
 		case _PROXY_:return proxymaster_linkup(self, peer);break;
-
 		case _socks_:return socksclient_linkup(self, peer);break;
 		case _Socks_:return socksserver_linkup(self, peer);break;
 		case _SOCKS_:return socksmaster_linkup(self, peer);break;
+
+		case _party_:return partyclient_linkup(self, peer);break;
+		case _PARTY_:return partymaster_linkup(self, peer);break;
 	}
 	return 0;
 }
@@ -1193,22 +1240,13 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		qu2eu_create(e, url, argc, argv);
 		return e;
 	}
-	if(_str2fv_ == type)
+	if(_str2vec_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _str2fv_;
-		str2fv_create(e, url, argc, argv);
-		return e;
-	}
-	if(_fv2str_ == type)
-	{
-		e = allocartery();
-		if(0 == e)return 0;
-
-		e->type = _fv2str_;
-		fv2str_create(e, url, argc, argv);
+		e->type = _str2vec_;
+		str2vec_create(e, url, argc, argv);
 		return e;
 	}
 
