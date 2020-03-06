@@ -267,18 +267,6 @@ int nema0183server_discon(struct halfrel* self, struct halfrel* peer);
 int nema0183server_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int nema0183server_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //socket
-int hackclient_create(struct artery* ele, void* url, int argc, u8** argv);
-int hackclient_delete(struct artery* ele, void* url);
-int hackclient_linkup(struct halfrel* self, struct halfrel* peer);
-int hackclient_discon(struct halfrel* self, struct halfrel* peer);
-int hackclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int hackclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int hackserver_create(struct artery* ele, void* url, int argc, u8** argv);
-int hackserver_delete(struct artery* ele, void* url);
-int hackserver_linkup(struct halfrel* self, struct halfrel* peer);
-int hackserver_discon(struct halfrel* self, struct halfrel* peer);
-int hackserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
-int hackserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int proxyclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int proxyclient_delete(struct artery* ele, void* url);
 int proxyclient_linkup(struct halfrel* self, struct halfrel* peer);
@@ -354,6 +342,19 @@ int bootpserver_linkup(struct halfrel* self, struct halfrel* peer);
 int bootpserver_discon(struct halfrel* self, struct halfrel* peer);
 int bootpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int bootpserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+//udp.dhcp
+int dhcpclient_create(struct artery* ele, void* url, int argc, u8** argv);
+int dhcpclient_delete(struct artery* ele, void* url);
+int dhcpclient_linkup(struct halfrel* self, struct halfrel* peer);
+int dhcpclient_discon(struct halfrel* self, struct halfrel* peer);
+int dhcpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int dhcpclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int dhcpserver_create(struct artery* ele, void* url, int argc, u8** argv);
+int dhcpserver_delete(struct artery* ele, void* url);
+int dhcpserver_linkup(struct halfrel* self, struct halfrel* peer);
+int dhcpserver_discon(struct halfrel* self, struct halfrel* peer);
+int dhcpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int dhcpserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //udp.tftp
 int tftpclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int tftpclient_delete(struct artery* ele, void* url);
@@ -700,6 +701,8 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 
 		case _BOOTP_:bootpserver_read(self, peer, arg, idx, buf, len);break;
 		case _bootp_:bootpclient_read(self, peer, arg, idx, buf, len);break;
+		case _DHCP_:dhcpserver_read(self, peer, arg, idx, buf, len);break;
+		case _dhcp_:dhcpclient_read(self, peer, arg, idx, buf, len);break;
 		case _TFTP_:tftpserver_read(self, peer, arg, idx, buf, len);break;
 		case _tftp_:tftpclient_read(self, peer, arg, idx, buf, len);break;
 
@@ -802,6 +805,8 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 
 		case _BOOTP_:return bootpserver_write(self, peer, arg, idx, buf, len);break;
 		case _bootp_:return bootpclient_write(self, peer, arg, idx, buf, len);break;
+		case _DHCP_:return dhcpserver_write(self, peer, arg, idx, buf, len);break;
+		case _dhcp_:return dhcpclient_write(self, peer, arg, idx, buf, len);break;
 		case _TFTP_:return tftpserver_write(self, peer, arg, idx, buf, len);break;
 		case _tftp_:return tftpclient_write(self, peer, arg, idx, buf, len);break;
 
@@ -873,6 +878,8 @@ int arterydiscon(struct halfrel* self, struct halfrel* peer)
 
 		case _bootp_:return bootpclient_discon(self, peer);break;
 		case _BOOTP_:return bootpserver_discon(self, peer);break;
+		case _dhcp_:return dhcpclient_discon(self, peer);break;
+		case _DHCP_:return dhcpserver_discon(self, peer);break;
 		case _tftp_:return tftpclient_discon(self, peer);break;
 		case _TFTP_:return tftpserver_discon(self, peer);break;
 
@@ -940,6 +947,8 @@ int arterylinkup(struct halfrel* self, struct halfrel* peer)
 
 		case _bootp_:return bootpclient_linkup(self, peer);break;
 		case _BOOTP_:return bootpserver_linkup(self, peer);break;
+		case _dhcp_:return dhcpclient_linkup(self, peer);break;
+		case _DHCP_:return dhcpserver_linkup(self, peer);break;
 		case _tftp_:return tftpclient_linkup(self, peer);break;
 		case _TFTP_:return tftpserver_linkup(self, peer);break;
 
@@ -1335,77 +1344,43 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		return e;
 	}
 
-	//simple control over message
-	if(_HACK_ == type)
+	//boop
+	if(_BOOTP_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _HACK_;
-		hackserver_create(e, url, argc, argv);
+		e->type = _BOOTP_;
+		bootpserver_create(e, url, argc, argv);
 		return e;
 	}
-	if(_hack_ == type)
+	if(_bootp_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _hack_;
-		hackclient_create(e, url, argc, argv);
+		e->type = _bootp_;
+		bootpclient_create(e, url, argc, argv);
 		return e;
 	}
-	if(_PROXY_ == type)
+
+	//dhcp
+	if(_DHCP_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _PROXY_;
-		proxymaster_create(e, url, argc, argv);
+		e->type = _DHCP_;
+		dhcpserver_create(e, url, argc, argv);
 		return e;
 	}
-	if(_Proxy_ == type)
+	if(_dhcp_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _Proxy_;
-		proxyserver_create(e, url, argc, argv);
-		return e;
-	}
-	if(_proxy_ == type)
-	{
-		e = allocartery();
-		if(0 == e)return 0;
-
-		e->type = _proxy_;
-		proxyclient_create(e, url, argc, argv);
-		return e;
-	}
-	if(_SOCKS_ == type)
-	{
-		e = allocartery();
-		if(0 == e)return 0;
-
-		e->type = _SOCKS_;
-		socksmaster_create(e, url, argc, argv);
-		return e;
-	}
-	if(_Socks_ == type)
-	{
-		e = allocartery();
-		if(0 == e)return 0;
-
-		e->type = _Socks_;
-		socksserver_create(e, url, argc, argv);
-		return e;
-	}
-	if(_socks_ == type)
-	{
-		e = allocartery();
-		if(0 == e)return 0;
-
-		e->type = _socks_;
-		socksclient_create(e, url, argc, argv);
+		e->type = _dhcp_;
+		dhcpclient_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -1426,6 +1401,26 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 
 		e->type = _dns_;
 		dnsclient_create(e, url, argc, argv);
+		return e;
+	}
+
+	//ntp
+	if(_NTP_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _NTP_;
+		ntpserver_create(e, url, argc, argv);
+		return e;
+	}
+	if(_ntp_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _ntp_;
+		ntpclient_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -1536,67 +1531,59 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		return e;
 	}
 
-	//fuckgfw: master,server,client
-	if(_FUCKGFW_ == type)
+	//
+	if(_PROXY_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _FUCKGFW_;
-		fuckgfwmaster_create(e, url, argc, argv);
-
+		e->type = _PROXY_;
+		proxymaster_create(e, url, argc, argv);
 		return e;
 	}
-	if(_Fuckgfw_ == type)
+	if(_Proxy_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _Fuckgfw_;
-		fuckgfwserver_create(e, url, argc, argv);
-
+		e->type = _Proxy_;
+		proxyserver_create(e, url, argc, argv);
 		return e;
 	}
-	if(_fuckgfw_ == type)
+	if(_proxy_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _fuckgfw_;
-		fuckgfwclient_create(e, url, argc, argv);
-
+		e->type = _proxy_;
+		proxyclient_create(e, url, argc, argv);
 		return e;
 	}
-
-	//serve: master,server,client
-	if(_PARTY_ == type)
+	if(_SOCKS_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _PARTY_;
-		partymaster_create(e, url, argc, argv);
-
+		e->type = _SOCKS_;
+		socksmaster_create(e, url, argc, argv);
 		return e;
 	}
-	if(_Party_ == type)
+	if(_Socks_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _Party_;
-		partyserver_create(e, url, argc, argv);
-
+		e->type = _Socks_;
+		socksserver_create(e, url, argc, argv);
 		return e;
 	}
-	if(_party_ == type)
+	if(_socks_ == type)
 	{
 		e = allocartery();
 		if(0 == e)return 0;
 
-		e->type = _party_;
-		partyclient_create(e, url, argc, argv);
-
+		e->type = _socks_;
+		socksclient_create(e, url, argc, argv);
 		return e;
 	}
 
@@ -1851,6 +1838,71 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 
 		return e;
 	}
+
+	//fuckgfw: master,server,client
+	if(_FUCKGFW_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _FUCKGFW_;
+		fuckgfwmaster_create(e, url, argc, argv);
+
+		return e;
+	}
+	if(_Fuckgfw_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _Fuckgfw_;
+		fuckgfwserver_create(e, url, argc, argv);
+
+		return e;
+	}
+	if(_fuckgfw_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _fuckgfw_;
+		fuckgfwclient_create(e, url, argc, argv);
+
+		return e;
+	}
+
+	//serve: master,server,client
+	if(_PARTY_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _PARTY_;
+		partymaster_create(e, url, argc, argv);
+
+		return e;
+	}
+	if(_Party_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _Party_;
+		partyserver_create(e, url, argc, argv);
+
+		return e;
+	}
+	if(_party_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _party_;
+		partyclient_create(e, url, argc, argv);
+
+		return e;
+	}
+
 	return 0;
 }
 void* arterymodify(int argc, u8** argv)

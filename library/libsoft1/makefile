@@ -152,8 +152,8 @@ libflow/2.ip/ip46.tcp.c \
 libflow/2.ip/ip46.udp.c \
 libflow/2.ip/ipx.spx.c \
 libflow/3.udp/udp.bootp.c \
+libflow/3.udp/udp.dhcp.c \
 libflow/3.udp/udp.dns.c \
-libflow/3.udp/udp.hack.c \
 libflow/3.udp/udp.ntp.c \
 libflow/3.udp/udp.quic.c \
 libflow/3.udp/udp.tftp.c \
