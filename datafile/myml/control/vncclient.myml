@@ -1,0 +1,19 @@
+<system>
+tcp{
+fmt:tcp
+url:192.168.0.22:5901
+#url:127.0.0.1:5900
+}
+</system>
+
+
+<artery>
+vnc{
+fmt:vnc
+}
+</artery>
+
+
+<relation>
+(tcp, 0, dst) -> (vnc, 0, src)
+</relation>

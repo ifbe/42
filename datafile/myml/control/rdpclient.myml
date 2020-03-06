@@ -1,18 +1,18 @@
 <system>
-tcphost{
+tcp{
 fmt:tcp
-url:127.0.0.1:22
+url:127.0.0.1:3389
 }
 </system>
 
 
 <artery>
-ssh{
-fmt:ssh
+rdp{
+fmt:rdp
 }
 </artery>
 
 
 <relation>
-(tcphost, 0, dst) -> (ssh, 0, src)
+(tcp, 0, dst) -> (rdp, 0, src)
 </relation>

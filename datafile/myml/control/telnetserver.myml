@@ -1,5 +1,5 @@
 <system>
-tcphost{
+tcp{
 fmt:TCP
 url:0.0.0.0:2222
 }
@@ -7,12 +7,12 @@ url:0.0.0.0:2222
 
 
 <artery>
-sshd{
-fmt:SSH
+telnet{
+fmt:TELNET
 }
 </artery>
 
 
 <relation>
-(tcphost, 0, dst) -> (sshd, 0, src)
+(tcp, 0, dst) -> (telnet, 0, src)
 </relation>

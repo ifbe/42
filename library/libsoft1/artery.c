@@ -442,6 +442,44 @@ int telnetmaster_linkup(struct halfrel* self, struct halfrel* peer);
 int telnetmaster_discon(struct halfrel* self, struct halfrel* peer);
 int telnetmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int telnetmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+//tcp.rdp
+int rdpclient_create(struct artery* ele, void* url, int argc, u8** argv);
+int rdpclient_delete(struct artery* ele, void* url);
+int rdpclient_linkup(struct halfrel* self, struct halfrel* peer);
+int rdpclient_discon(struct halfrel* self, struct halfrel* peer);
+int rdpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int rdpclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int rdpserver_create(struct artery* ele, void* url, int argc, u8** argv);
+int rdpserver_delete(struct artery* ele, void* url);
+int rdpserver_linkup(struct halfrel* self, struct halfrel* peer);
+int rdpserver_discon(struct halfrel* self, struct halfrel* peer);
+int rdpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int rdpserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int rdpmaster_create(struct artery* ele, void* url, int argc, u8** argv);
+int rdpmaster_delete(struct artery* ele, void* url);
+int rdpmaster_linkup(struct halfrel* self, struct halfrel* peer);
+int rdpmaster_discon(struct halfrel* self, struct halfrel* peer);
+int rdpmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int rdpmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+//tcp.vnc
+int vncclient_create(struct artery* ele, void* url, int argc, u8** argv);
+int vncclient_delete(struct artery* ele, void* url);
+int vncclient_linkup(struct halfrel* self, struct halfrel* peer);
+int vncclient_discon(struct halfrel* self, struct halfrel* peer);
+int vncclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int vncclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int vncserver_create(struct artery* ele, void* url, int argc, u8** argv);
+int vncserver_delete(struct artery* ele, void* url);
+int vncserver_linkup(struct halfrel* self, struct halfrel* peer);
+int vncserver_discon(struct halfrel* self, struct halfrel* peer);
+int vncserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int vncserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int vncmaster_create(struct artery* ele, void* url, int argc, u8** argv);
+int vncmaster_delete(struct artery* ele, void* url);
+int vncmaster_linkup(struct halfrel* self, struct halfrel* peer);
+int vncmaster_discon(struct halfrel* self, struct halfrel* peer);
+int vncmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int vncmaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 //tcp.http
 int httpclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int httpclient_delete(struct artery* ele, void* url);
@@ -661,6 +699,16 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _SSH_:sshmaster_read(self, peer, arg, idx, buf, len);break;
 		case _Ssh_:sshserver_read(self, peer, arg, idx, buf, len);break;
 		case _ssh_:sshclient_read(self, peer, arg, idx, buf, len);break;
+		case _TELNET_:telnetmaster_read(self, peer, arg, idx, buf, len);break;
+		case _Telnet_:telnetserver_read(self, peer, arg, idx, buf, len);break;
+		case _telnet_:telnetclient_read(self, peer, arg, idx, buf, len);break;
+
+		case _RDP_:sshmaster_read(self, peer, arg, idx, buf, len);break;
+		case _Rdp_:sshserver_read(self, peer, arg, idx, buf, len);break;
+		case _rdp_:sshclient_read(self, peer, arg, idx, buf, len);break;
+		case _VNC_:vncmaster_read(self, peer, arg, idx, buf, len);break;
+		case _Vnc_:vncserver_read(self, peer, arg, idx, buf, len);break;
+		case _vnc_:vncclient_read(self, peer, arg, idx, buf, len);break;
 
 		case _HTTP_:httpmaster_read(self, peer, arg, idx, buf, len);break;
 		case _Http_:httpserver_read(self, peer, arg, idx, buf, len);break;
@@ -746,6 +794,16 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _SSH_:return sshmaster_write(self, peer, arg, idx, buf, len);break;
 		case _Ssh_:return sshserver_write(self, peer, arg, idx, buf, len);break;
 		case _ssh_:return sshclient_write(self, peer, arg, idx, buf, len);break;
+		case _TELNET_:return telnetmaster_write(self, peer, arg, idx, buf, len);break;
+		case _Telnet_:return telnetserver_write(self, peer, arg, idx, buf, len);break;
+		case _telnet_:return telnetclient_write(self, peer, arg, idx, buf, len);break;
+
+		case _RDP_:return rdpmaster_write(self, peer, arg, idx, buf, len);break;
+		case _Rdp_:return rdpserver_write(self, peer, arg, idx, buf, len);break;
+		case _rdp_:return rdpclient_write(self, peer, arg, idx, buf, len);break;
+		case _VNC_:return vncmaster_write(self, peer, arg, idx, buf, len);break;
+		case _Vnc_:return vncserver_write(self, peer, arg, idx, buf, len);break;
+		case _vnc_:return vncclient_write(self, peer, arg, idx, buf, len);break;
 
 		case _HTTP_:return httpmaster_write(self, peer, arg, idx, buf, len);break;
 		case _Http_:return httpserver_write(self, peer, arg, idx, buf, len);break;
@@ -788,6 +846,16 @@ int arterydiscon(struct halfrel* self, struct halfrel* peer)
 		case _ssh_:return sshclient_discon(self, peer);break;
 		case _Ssh_:return sshserver_discon(self, peer);break;
 		case _SSH_:return sshmaster_discon(self, peer);break;
+		case _telnet_:return telnetclient_discon(self, peer);break;
+		case _Telnet_:return telnetserver_discon(self, peer);break;
+		case _TELNET_:return telnetmaster_discon(self, peer);break;
+
+		case _rdp_:return rdpclient_discon(self, peer);break;
+		case _Rdp_:return rdpserver_discon(self, peer);break;
+		case _RDP_:return rdpmaster_discon(self, peer);break;
+		case _vnc_:return vncclient_discon(self, peer);break;
+		case _Vnc_:return vncserver_discon(self, peer);break;
+		case _VNC_:return vncmaster_discon(self, peer);break;
 
 		case _http_:return httpclient_discon(self, peer);break;
 		case _Http_:return httpserver_discon(self, peer);break;
@@ -838,6 +906,16 @@ int arterylinkup(struct halfrel* self, struct halfrel* peer)
 		case _ssh_:return sshclient_linkup(self, peer);break;
 		case _Ssh_:return sshserver_linkup(self, peer);break;
 		case _SSH_:return sshmaster_linkup(self, peer);break;
+		case _telnet_:return telnetclient_linkup(self, peer);break;
+		case _Telnet_:return telnetserver_linkup(self, peer);break;
+		case _TELNET_:return telnetmaster_linkup(self, peer);break;
+
+		case _rdp_:return rdpclient_linkup(self, peer);break;
+		case _Rdp_:return rdpserver_linkup(self, peer);break;
+		case _RDP_:return rdpmaster_linkup(self, peer);break;
+		case _vnc_:return vncclient_linkup(self, peer);break;
+		case _Vnc_:return vncserver_linkup(self, peer);break;
+		case _VNC_:return vncmaster_linkup(self, peer);break;
 
 		case _http_:return httpclient_linkup(self, peer);break;
 		case _Http_:return httpserver_linkup(self, peer);break;
@@ -1544,6 +1622,70 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 
 		e->type = _telnet_;
 		telnetclient_create(e, url, argc, argv);
+
+		return e;
+	}
+
+	//rdp: master,server,client
+	if(_RDP_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _RDP_;
+		rdpmaster_create(e, url, argc, argv);
+
+		return e;
+	}
+	if(_Rdp_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _Rdp_;
+		rdpserver_create(e, url, argc, argv);
+
+		return e;
+	}
+	if(_rdp_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _rdp_;
+		rdpclient_create(e, url, argc, argv);
+
+		return e;
+	}
+
+	//vnc: master,server,client
+	if(_VNC_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _VNC_;
+		vncmaster_create(e, url, argc, argv);
+
+		return e;
+	}
+	if(_Vnc_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _Vnc_;
+		vncserver_create(e, url, argc, argv);
+
+		return e;
+	}
+	if(_vnc_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _vnc_;
+		vncclient_create(e, url, argc, argv);
 
 		return e;
 	}

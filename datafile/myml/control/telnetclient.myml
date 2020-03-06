@@ -1,0 +1,18 @@
+<system>
+tcp{
+fmt:tcp
+url:127.0.0.1:23
+}
+</system>
+
+
+<artery>
+telnet{
+fmt:telnet
+}
+</artery>
+
+
+<relation>
+(tcp, 0, dst) -> (telnet, 0, src)
+</relation>

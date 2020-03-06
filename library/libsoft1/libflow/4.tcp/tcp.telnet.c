@@ -132,6 +132,14 @@ int telnetserver_write(struct halfrel* self, struct halfrel* peer, void* arg, in
 	ele->stage1 += 1;
 	return 0;
 }
+int telnetserver_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int telnetserver_linkup(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
 int telnetserver_delete(struct artery* ele)
 {
 	return 0;
@@ -162,6 +170,14 @@ int telnetmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, in
 	self = (void*)&rel->dstchip;
 	peer = (void*)&rel->srcchip;
 	arterywrite(self, peer, arg, idx, buf, len);
+	return 0;
+}
+int telnetmaster_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int telnetmaster_linkup(struct halfrel* self, struct halfrel* peer)
+{
 	return 0;
 }
 int telnetmaster_delete(struct artery* ele)

@@ -1,0 +1,18 @@
+<system>
+tcp{
+fmt:TCP
+url:0.0.0.0:2222
+}
+</system>
+
+
+<artery>
+sshd{
+fmt:SSH
+}
+</artery>
+
+
+<relation>
+(tcp, 0, dst) -> (sshd, 0, src)
+</relation>

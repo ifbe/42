@@ -1,0 +1,18 @@
+<system>
+tcp{
+fmt:TCP
+url:0.0.0.0:2222
+}
+</system>
+
+
+<artery>
+rdp{
+fmt:RDP
+}
+</artery>
+
+
+<relation>
+(tcp, 0, dst) -> (rdp, 0, src)
+</relation>
