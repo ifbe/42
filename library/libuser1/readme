@@ -1,22 +1,17 @@
-rawbaby:
-	just to confirm that function call be called
-rawtest:
-	basic context for testing different supply
-rawkirk:
-	he knows how to pilot
-rawlara:
-	she knows how to explore
-rawmine:
-	baseunit: simple units
-	compound: complex units, or container of baseunit
-	scene: complete something, or container of baseunit/compound
-	world: concept of the whole, or container of baseunit/compound/scene
+thedata:
+	scenes, worlds
+theitem:
+	flower/grass, drone/vehicle, dog/cat, ...
+themind:
+	code for esc/bms/inverter/generator, idea of human
+therule:
+	course of nature, law of human
 
-fordx11:
-	dx11 carvexxx helper function
-forgl41:
-	gl41 carvexxx helper function
-forrgba:
-	raw w*h*4 bitmap draw helperfunction
-forhtml:
-	html helper function
+forcpu:
+	yuv, pcm, ...
+forfile:
+	html, json, ...
+forgpu:
+	dx, gl, vk, ...
+forspu:
+	al, sl, ...
