@@ -139,6 +139,10 @@ int waitconnectwithselect(int sock)
 
 int createsocket_raw(char* addr, int port)
 {
+	return 0;
+}
+int createsocket_raw(char* addr, int port)
+{
 	int fd,ret,len;
 	struct ifreq ifopts;
 
@@ -548,6 +552,7 @@ int createsocket(int fmt, char* arg)
 	char* myaddr = 0;
 	int toport = 0;
 	char* toaddr = 0;
+	if(0 == arg)goto skip;
 
 	//my->to
 	for(j=0;j<256;j++){
@@ -558,6 +563,7 @@ int createsocket(int fmt, char* arg)
 	if(toaddr)socket_fixaddr(toaddr);
 	//printmemory(tmp,256);
 
+skip:
 	//type
 	switch(fmt){
 	case _RAW_:return createsocket_raw(myaddr, myport);

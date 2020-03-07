@@ -1,3 +1,0 @@
-void ecdhe_read()
-{
-}

@@ -116,23 +116,19 @@ int waitconnectwithselect(int sock)
 
 
 
+int createsocket_bt(char* addr, int port)
+{
+	return 0;
+}
 int createsocket_raw(char* addr, int port)
 {
 	int fd,ret;
+	say("macos doesnot support rawsocket!\n");
 
 	//create
 	fd = socket(AF_INET, SOCK_RAW, 0);
 	if(-1 == fd){
 		printf("errno=%d@socket\n", errno);
-		return 0;
-	}
-
-	//reuse
-	ret = 1;
-	ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &ret, 4);
-	if(-1 == ret){
-		printf("errno=%d@setsockopt\n", errno);
-		close(fd);
 		return 0;
 	}
 
@@ -512,6 +508,7 @@ int createsocket(int fmt, char* arg)
 	char* myaddr = 0;
 	int toport = 0;
 	char* toaddr = 0;
+	if(0 == arg)goto skip;
 
 	//my->to
 	for(j=0;j<256;j++){
@@ -522,6 +519,7 @@ int createsocket(int fmt, char* arg)
 	if(toaddr)socket_fixaddr(toaddr);
 	//printmemory(tmp,256);
 
+skip:
 	//type
 	switch(fmt){
 	case _RAW_:return createsocket_raw(myaddr, myport);

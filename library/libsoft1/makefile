@@ -36,7 +36,7 @@ libalgo/hash/hash.sha256.c \
 libalgo/hash/hash.sha512.c \
 libalgo/hash/hash.string.c \
 libalgo/keyexch/keyexch.dh.c \
-libalgo/keyexch/keyexch.ecdhe.c \
+libalgo/keyexch/keyexch.x25519.c \
 libalgo/linear/linear.disjoint.c \
 libalgo/linear/linear.memory.c \
 libalgo/linear/linear.queue.c \

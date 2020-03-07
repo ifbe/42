@@ -1,0 +1,17 @@
+<artery>
+dbg{
+fmt:dbghex
+}
+</artery>
+
+
+<system>
+raw{
+fmt:RAW
+}
+</system>
+
+
+<relation>
+(raw, 0, dst) -> (dbg, 0, src)
+</relation>

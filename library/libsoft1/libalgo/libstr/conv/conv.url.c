@@ -35,6 +35,7 @@ int parsemyandto(u8* url,int len, u8* tmp,int max,
 	u8** myaddr, int* myport, u8** toaddr, int* toport)
 {
 	int j;
+	if(0 == url)return 0;
 
 	//left part
 	*myaddr = tmp+0;
