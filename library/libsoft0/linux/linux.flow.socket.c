@@ -137,7 +137,7 @@ int waitconnectwithselect(int sock)
 
 
 
-int createsocket_raw(char* addr, int port)
+int createsocket_bt(char* addr, int port)
 {
 	return 0;
 }
