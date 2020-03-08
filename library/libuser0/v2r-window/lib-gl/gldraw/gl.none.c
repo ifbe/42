@@ -24,8 +24,8 @@ void nonewindow_write(struct supply* win, struct event* ev)
 	short* t;
 	if(0x2b70 == ev->what){
 		t = (void*)ev;
-		win->x0 = t[0];
-		win->y0 = t[1];
+		win->ix0 = t[0];
+		win->iy0 = t[1];
 		//say("%d,%d\n",t[0],t[1]);
 	}
 }
@@ -36,8 +36,8 @@ void nonewindow_read(struct supply* win)
 	float fbw = win->fbwidth;
 	float fbh = win->fbheight;
 
-	float x = win->x0;
-	float y = h-1 - win->y0;
+	float x = win->ix0;
+	float y = h-1 - win->iy0;
 	float r = x / w;
 	float g = y / h;
 	float b = 0.0;
@@ -64,6 +64,6 @@ void nonewindow_delete(struct supply* win)
 void nonewindow_create(struct supply* win)
 {
 	win->fmt = _none_;
-	win->x0 = win->width / 2;
-	win->y0 = win->height / 2;
+	win->ix0 = win->width / 2;
+	win->iy0 = win->height / 2;
 }

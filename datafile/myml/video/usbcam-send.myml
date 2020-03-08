@@ -19,6 +19,7 @@ fmt:dbghex
 <supply>
 usbcam{
 fmt:cam
+#format:mjpeg
 }
 </supply>
 

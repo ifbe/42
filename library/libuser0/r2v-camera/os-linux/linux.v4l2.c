@@ -9,6 +9,9 @@
 #include <sys/mman.h>
 #include <linux/videodev2.h>
 #include "libuser.h"
+#define STRIDE ix0
+#define HEIGHT iy0
+#define FORMAT iw0
 
 
 
@@ -20,8 +23,6 @@ struct buffer{
 		void* buf;
 	};
 	u64 len;
-	u64 width;
-	u64 height;
 };
 static struct buffer info[24];
 static int cur = 0;
@@ -43,7 +44,7 @@ void* visionlistener(struct supply* win)
 
 	//v4l2_capability
 	struct v4l2_capability cap;
-	if(-1==ioctl(fd,VIDIOC_QUERYCAP,&cap))
+	if(-1 == ioctl(fd,VIDIOC_QUERYCAP,&cap))
 	{
 		printf("VIDIOC_QUERYCAP error\n");
 		return 0;
@@ -60,7 +61,7 @@ void* visionlistener(struct supply* win)
 	desc.type=V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	desc.index=0;
 	printf("v4l2_fmtdesc:\n");
-	while(ioctl(fd, VIDIOC_ENUM_FMT, &desc) != -1)
+	while(-1 != ioctl(fd, VIDIOC_ENUM_FMT, &desc))
 	{
 		printf("	%s\n", desc.description);
 		desc.index++;
@@ -74,20 +75,10 @@ void* visionlistener(struct supply* win)
 	struct v4l2_format fmt;
 	fmt.type		= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	fmt.fmt.pix.field       = V4L2_FIELD_INTERLACED;
-	fmt.fmt.pix.width       = 640;
-	fmt.fmt.pix.height      = 480;
-	fmt.fmt.pix.pixelformat =
-		V4L2_PIX_FMT_YUYV;
-		//V4L2_PIX_FMT_MJPEG;
-		//V4L2_PIX_FMT_SBGGR8;
-		//V4L2_PIX_FMT_SN9C10X;
-		//V4L2_PIX_FMT_MJPEG;
-		//V4L2_PIX_FMT_JPEG;
-		//V4L2_PIX_FMT_RGB24;
-		//V4L2_PIX_FMT_UYVY;
-		//V4L2_PIX_FMT_YUV422P;
-		//V4L2_PIX_FMT_YUV420;
-	if(ioctl(fd,VIDIOC_S_FMT,&fmt) == -1)
+	fmt.fmt.pix.width       = win->STRIDE;
+	fmt.fmt.pix.height      = win->HEIGHT;
+	fmt.fmt.pix.pixelformat = win->FORMAT;
+	if(-1 == ioctl(fd,VIDIOC_S_FMT,&fmt))
 	{
 		printf("VIDIOC_S_FMT error\n");
 		return 0;
@@ -98,7 +89,7 @@ void* visionlistener(struct supply* win)
 	req.count       = 24;
 	req.type	= V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	req.memory      = V4L2_MEMORY_MMAP;     //V4L2_MEMORY_USERPTR;
-	if(ioctl(fd,VIDIOC_REQBUFS,&req) == -1)
+	if(-1 == ioctl(fd,VIDIOC_REQBUFS,&req))
 	{
 		printf("VIDIOC_REQBUFS error\n");
 		return 0;
@@ -111,14 +102,12 @@ void* visionlistener(struct supply* win)
 		buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		buf.memory = V4L2_MEMORY_MMAP;
 		buf.index = j;
-		if(ioctl(fd,VIDIOC_QUERYBUF,&buf) == -1)
+		if(-1 == ioctl(fd,VIDIOC_QUERYBUF,&buf))
 		{
 			printf("VIDIOC_QUERYBUF\n");
 			return 0;
 		}
 
-		info[j].width = 640;
-		info[j].height = 480;
 		info[j].len = buf.length;
 		info[j].buf = mmap(
 			NULL,
@@ -129,12 +118,12 @@ void* visionlistener(struct supply* win)
 			buf.m.offset
 		);
 
-		if(info[j].buf == MAP_FAILED)
+		if(MAP_FAILED == info[j].buf)
 		{
 			printf("fail@mmap\n");
 			return 0;
 		}
-		if(ioctl(fd,VIDIOC_QBUF,&buf) == -1)
+		if(-1 == ioctl(fd,VIDIOC_QBUF,&buf))
 		{
 			printf("VIDEOC_QBUF\n");
 			return 0;
@@ -143,7 +132,7 @@ void* visionlistener(struct supply* win)
 
 	//start
 	j = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	if(ioctl(fd, VIDIOC_STREAMON, &j) == -1)
+	if(-1 == ioctl(fd, VIDIOC_STREAMON, &j))
 	{
 		printf("error@ON\n");
 		return 0;
@@ -170,34 +159,23 @@ void* visionlistener(struct supply* win)
 		//deq
 		buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		buf.memory = V4L2_MEMORY_MMAP;
-		ioctl(fd, VIDIOC_DQBUF, &buf);
+		if(-1 == ioctl(fd, VIDIOC_DQBUF, &buf)){
+			say("error@DQBUF\n");
+		}
 
 		//send
-		relationwrite(win, _dst_, 0, 0, info[cur].buf, info[cur].len);
-/*
-		say("cur=%d\n",cur);
-		//printmemory(info[cur].buf+0xfff, 16);
-		struct relation* orel = win->orel0;
-		while(1)
-		{
-			if(0 == orel)break;
-			if(_ent_ == orel->dsttype)
-			{
-				struct halfrel* self = (void*)&orel->dstchip;
-				struct halfrel* peer = (void*)&orel->srcchip;
-				entitywrite(self, peer, info[cur].buf, 640*480*3/2);
-			}
-			orel = (struct relation*)samesrcnextdst(orel);
-		}
-*/
-		//enq
-		ioctl(fd, VIDIOC_QBUF, &buf);
+		relationwrite(win, _dst_, 0, 0, info[cur].buf, buf.bytesused);//info[cur].len);
 		cur = (cur+1)%24;
+
+		//enq
+		if(-1 == ioctl(fd, VIDIOC_QBUF, &buf)){
+			say("error@DQBUF\n");
+		}
 	}
 
 	//stop
 	j = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	if(ioctl(fd, VIDIOC_STREAMOFF, &j) == -1)
+	if(-1 == ioctl(fd, VIDIOC_STREAMOFF, &j))
 	{
 		printf("error@OFF\n");
 	}
@@ -239,11 +217,32 @@ int videodelete(struct supply* win)
 	alive = 0;
 	return 0;
 }
-int videocreate(struct supply* win)
+int videocreate(struct supply* win, void* arg, int argc, u8** argv)
 {
 	int j;
-	for(j=0;j<24;j++){
-		info[j].addr = 0;
+	for(j=0;j<24;j++)info[j].addr = 0;
+
+	win->STRIDE = 640;
+	win->HEIGHT = 480;
+	win->FORMAT = 
+	//	V4L2_PIX_FMT_JPEG;
+	//	V4L2_PIX_FMT_MJPEG;
+	//	V4L2_PIX_FMT_RGB24;
+	//	V4L2_PIX_FMT_SBGGR8;
+	//	V4L2_PIX_FMT_SN9C10X;
+	//	V4L2_PIX_FMT_UYVY;
+	//	V4L2_PIX_FMT_YUV422P;
+	//	V4L2_PIX_FMT_YUV420;
+		V4L2_PIX_FMT_YUYV;
+
+	for(j=1;j<argc;j++){
+		arg = argv[j];
+		//say("%d->%.16s\n",j,arg;
+		if(0 == ncmp(arg, "format:", 7)){
+			arg = argv[j]+7;
+			//say("format=%.5s\n",arg);
+			if(0 == ncmp(arg, "mjpeg", 5))win->FORMAT = V4L2_PIX_FMT_MJPEG;
+		}
 	}
 
 	alive = 1;
