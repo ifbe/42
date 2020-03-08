@@ -26,6 +26,7 @@
 #define _easymux_ hex64('e','a','s','y','m','u','x',0)
 #define _echo_ hex32('e','c','h','o')
 #define _pump_ hex32('p','u','m','p')
+#define _stor_ hex32('s','t','o','r')
 #define _goslow_ hex64('g','o','s','l','o','w',0,0)
 #define _dbgf32_ hex64('d','b','g','f','3','2',0,0)
 #define _dbghex_ hex64('d','b','g','h','e','x',0,0)
@@ -60,6 +61,12 @@ int pump_discon(struct halfrel* self, struct halfrel* peer);
 int pump_linkup(struct halfrel* self, struct halfrel* peer);
 int pump_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int pump_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int stor_create(struct artery* ele, void* url, int argc, u8** argv);
+int stor_delete(struct artery* ele, void* url);
+int stor_discon(struct halfrel* self, struct halfrel* peer);
+int stor_linkup(struct halfrel* self, struct halfrel* peer);
+int stor_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
+int stor_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len);
 int fileclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int fileclient_delete(struct artery* ele, void* url);
 int fileclient_linkup(struct halfrel* self, struct halfrel* peer);
@@ -664,6 +671,7 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 
 		//case _file_:file_read(self, peer, arg, idx, buf, len);break;
 		case _pump_:pump_read(self, peer, arg, idx, buf, len);break;
+		case _stor_:stor_read(self, peer, arg, idx, buf, len);break;
 
 		case _easymux_:easymux_read(self, peer, arg, idx, buf, len);break;
 		case _echo_:echo_read(self, peer, arg, idx, buf, len);break;
@@ -769,6 +777,7 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 
 		//case _file_:return file_write(self, peer, arg, idx, buf, len);break;
 		case _pump_:return pump_write(self, peer, arg, idx, buf, len);break;
+		case _stor_:return stor_write(self, peer, arg, idx, buf, len);break;
 
 		case _easymux_:return easymux_write(self, peer, arg, idx, buf, len);break;
 		case _echo_:return echo_write(self, peer, arg, idx, buf, len);break;
@@ -1066,6 +1075,15 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 
 		e->type = _pump_;
 		pump_create(e, url, argc, argv);
+		return e;
+	}
+	if(_stor_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _stor_;
+		stor_create(e, url, argc, argv);
 		return e;
 	}
 	if(_file_ == type)
