@@ -283,17 +283,6 @@ static void spotlight_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void spotlight_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)spotlight_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)spotlight_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)spotlight_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)spotlight_draw_json(act, pin, win, sty);
-	else spotlight_draw_pixel(act, pin, win, sty);
-}
 
 
 

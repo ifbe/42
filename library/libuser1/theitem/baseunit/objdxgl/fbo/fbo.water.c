@@ -213,17 +213,6 @@ static void water_draw_cli(
 	struct entity* win, struct style* sty)
 {
 }
-static void water_draw(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	u64 fmt = win->fmt;
-	if(fmt == _cli_)water_draw_cli(act, pin, win, sty);
-	else if(fmt == _tui_)water_draw_tui(act, pin, win, sty);
-	else if(fmt == _html_)water_draw_html(act, pin, win, sty);
-	else if(fmt == _json_)water_draw_json(act, pin, win, sty);
-	else water_draw_pixel(act, pin, win, sty);
-}
 
 
 

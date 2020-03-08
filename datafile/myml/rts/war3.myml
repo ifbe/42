@@ -10,18 +10,22 @@ rabbit{
 fmt:stl3d
 url:datafile/stl/bunny-lowpoly.stl
 }
-
 freecam{
 fmt:freecam
 }
 world3d{
 fmt:world3d
 }
+
+minimap{
+fmt:minimap
+}
+uiuxroot{
+fmt:uiuxroot
+}
+
 event{
 fmt:eventrts
-}
-vkbd{
-fmt:vkbd
 }
 </entity>
 
@@ -93,22 +97,26 @@ q:1.0, 1.0
 }
 helprect{
 c:0.0, 0.0
-q:1.0, 0.4
+q:1.0, 1.0
 }
 </style>
 
 
 <relation>
-(event, 0, tar) -> (rabbit, 0, ev)
-(event, 0, cam) -> (freecam, 0, ev)
-
-#world3d depends on inner objects
+#world3d depends on
 (world3d, gndgeom, 0) -> (ground, gndslot, 0)
 (world3d, treegeom, 0) -> (tree, treeslot, 0)
 (world3d, rabgeom, 0) -> (rabbit, rabslot, 0)
-(world3d, freegeom, 0) -> (freecam, freeslot, 0)
+(world3d, freegeom, 0) -> (freecam, freeslot, in)
 
-#glwnd depends on cam
+#uiuxroot depends on
+(uiuxroot, 0, 0) -> (minimap, 0, 0)
+
+#glwnd depends on
 (opengl, fullrect, 0) -> (freecam, 0, 0)
-(opengl, helprect, 0) -> (vkbd, 0, 0)
+(opengl, helprect, 0) -> (uiuxroot, 0, 0)
+
+#event
+(event, 0, evto) -> (freecam, 0, evby)
+(event, 0, evby) -> (uiuxroot, 0, evto)
 </relation>

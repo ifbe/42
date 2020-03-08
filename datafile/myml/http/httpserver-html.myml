@@ -3,7 +3,7 @@
 fmt:2048
 }
 htmlroot{
-fmt:html
+fmt:htmlroot
 }
 </entity>
 

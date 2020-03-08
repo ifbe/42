@@ -19,12 +19,6 @@ int test_linkup(void*, void*);
 int test_discon(void*, void*);
 int test_read(void*, void*, void*, int, void*, int);
 int test_write(void*, void*, void*, int, void*, int);
-int htmlnode_create(void*, void*, int, u8**);
-int htmlnode_delete(void*);
-int htmlnode_linkup(void*, void*);
-int htmlnode_discon(void*, void*);
-int htmlnode_write(void*, void*, void*, int, void*, int);
-int htmlnode_read( void*, void*, void*, int, void*, int);
 
 //
 int analog_create(void*, void*, int, u8**);
@@ -54,7 +48,7 @@ int force_discon(void*, void*);
 int force_write(void*, void*, void*, int, void*, int);
 int force_read(void*, void*, void*, int, void*, int);
 
-//
+//scene
 int border2d_create(void*, void*, int, u8**);
 int border2d_delete(void*, void*);
 int border2d_linkup(void*, void*);
@@ -73,26 +67,38 @@ int guide3d_linkup(void*, void*);
 int guide3d_discon(void*, void*);
 int guide3d_write(void*, void*, void*, int, void*, int);
 int guide3d_read(void*, void*, void*, int, void*, int);
-
-//
 int scene3d_create(void*, void*, int, u8**);
 int scene3d_delete(void*, void*);
 int scene3d_linkup(void*, void*);
 int scene3d_discon(void*, void*);
 int scene3d_write(void*, void*, void*, int, void*, int);
 int scene3d_read(void*, void*, void*, int, void*, int);
-int world3d_create(void*, void*, int, u8**);
-int world3d_delete(void*, void*);
-int world3d_linkup(void*, void*);
-int world3d_discon(void*, void*);
-int world3d_write(void*, void*, void*, int, void*, int);
-int world3d_read(void*, void*, void*, int, void*, int);
+
+//
 int reality_create(void*, void*, int, u8**);
 int reality_delete(void*);
 int reality_linkup(void*, void*);
 int reality_discon(void*, void*);
 int reality_write(void*, void*, void*, int, void*, int);
 int reality_read( void*, void*, void*, int, void*, int);
+int world3d_create(void*, void*, int, u8**);
+int world3d_delete(void*, void*);
+int world3d_linkup(void*, void*);
+int world3d_discon(void*, void*);
+int world3d_write(void*, void*, void*, int, void*, int);
+int world3d_read(void*, void*, void*, int, void*, int);
+int htmlroot_create(void*, void*, int, u8**);
+int htmlroot_delete(void*);
+int htmlroot_linkup(void*, void*);
+int htmlroot_discon(void*, void*);
+int htmlroot_write(void*, void*, void*, int, void*, int);
+int htmlroot_read( void*, void*, void*, int, void*, int);
+int uiuxroot_create(void*, void*, int, u8**);
+int uiuxroot_delete(void*, void*);
+int uiuxroot_linkup(void*, void*);
+int uiuxroot_discon(void*, void*);
+int uiuxroot_write(void*, void*, void*, int, void*, int);
+int uiuxroot_read(void*, void*, void*, int, void*, int);
 
 //gl41 helper
 int gl41data_create(void*, void*, int, u8**);
@@ -257,17 +263,16 @@ int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 	case _digital_:return digital_read(self, peer, arg, idx, buf, len);
 	case _pcb_:return pcb_read(self, peer, arg, idx, buf, len);
 
-	case _html_:return htmlnode_read(self, peer, arg, idx, buf, len);
-	//case _xaml_:return xamlnode_read(self, peer, arg, idx, buf, len);
-
 	case _border2d_:return border2d_read(self, peer, arg, idx, buf, len);
 	case _frame3d_:return frame3d_read(self, peer, arg, idx, buf, len);
 	case _guide3d_:return guide3d_read(self, peer, arg, idx, buf, len);
-
 	case _scene3d_:return scene3d_read(self, peer, arg, idx, buf, len);
-	case _reality_:return reality_read(self, peer, arg, idx, buf, len);
 
+	case _reality_:return reality_read(self, peer, arg, idx, buf, len);
 	case _world3d_:return world3d_read(self, peer, arg, idx, buf, len);
+	case _htmlroot_:return htmlroot_read(self, peer, arg, idx, buf, len);
+	//case _xamlroot_:return xamlroot_read(self, peer, arg, idx, buf, len);
+	case _uiuxroot_:return uiuxroot_read(self, peer, arg, idx, buf, len);
 
 	case _test_:return test_read(self, peer, arg, idx, buf, len);
 	case _baby_:return baby_read(self, peer, arg, idx, buf, len);
@@ -299,17 +304,16 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 	case _digital_:return digital_write(self, peer, arg, idx, buf, len);
 	case _pcb_:return pcb_write(self, peer, arg, idx, buf, len);
 
-	case _html_:return htmlnode_write(self, peer, arg, idx, buf, len);
-	//case _xaml_:return xamlnode_write(self, peer, arg, idx, buf, len);
-
 	case _border2d_:return border2d_write(self, peer, arg, idx, buf, len);
 	case _frame3d_:return frame3d_write(self, peer, arg, idx, buf, len);
 	case _guide3d_:return guide3d_write(self, peer, arg, idx, buf, len);
-
 	case _scene3d_:return scene3d_write(self, peer, arg, idx, buf, len);
-	case _reality_:return reality_write(self, peer, arg, idx, buf, len);
 
+	case _reality_:return reality_write(self, peer, arg, idx, buf, len);
 	case _world3d_:return world3d_write(self, peer, arg, idx, buf, len);
+	case _htmlroot_:return htmlroot_write(self, peer, arg, idx, buf, len);
+	//case _xamlroot_:return xamlroot_write(self, peer, arg, idx, buf, len);
+	case _uiuxroot_:return uiuxroot_write(self, peer, arg, idx, buf, len);
 
 	case _test_:return test_write(self, peer, arg, idx, buf, len);
 	case _baby_:return baby_write(self, peer, arg, idx, buf, len);
@@ -342,17 +346,16 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	case _digital_:return digital_discon(self, peer);
 	case _pcb_:return pcb_discon(self, peer);
 
-	case _html_:return htmlnode_discon(self, peer);
-	//case _xaml_:return xamlnode_discon(self, peer);
-
 	case _border2d_:return border2d_discon(self, peer);
 	case _frame3d_:return frame3d_discon(self, peer);
 	case _guide3d_:return guide3d_discon(self, peer);
-
 	case _scene3d_:return scene3d_discon(self, peer);
-	case _reality_:return reality_discon(self, peer);
 
+	case _reality_:return reality_discon(self, peer);
 	case _world3d_:return world3d_discon(self, peer);
+	case _htmlroot_:return htmlroot_discon(self, peer);
+	//case _xamlroot_:return xamlroot_discon(self, peer);
+	case _uiuxroot_:return uiuxroot_discon(self, peer);
 
 	case _test_:return test_discon(self, peer);
 	case _baby_:return baby_discon(self, peer);
@@ -385,17 +388,16 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 	case _digital_:return digital_linkup(self, peer);
 	case _pcb_:return pcb_linkup(self, peer);
 
-	case _html_:return htmlnode_linkup(self, peer);
-	//case _xaml_:return xamlnode_linkup(self, peer);
-
 	case _border2d_:return border2d_linkup(self, peer);
 	case _frame3d_:return frame3d_linkup(self, peer);
 	case _guide3d_:return guide3d_linkup(self, peer);
-
 	case _scene3d_:return scene3d_linkup(self, peer);
-	case _reality_:return reality_linkup(self, peer);
 
+	case _reality_:return reality_linkup(self, peer);
 	case _world3d_:return world3d_linkup(self, peer);
+	case _htmlroot_:return htmlroot_linkup(self, peer);
+	//case _xamlroot_:return xamlroot_linkup(self, peer);
+	case _uiuxroot_:return uiuxroot_linkup(self, peer);
 
 	case _test_:return test_linkup(self, peer);
 	case _baby_:return baby_linkup(self, peer);
@@ -482,6 +484,13 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	}
 
 	//world
+	else if(_reality_ == type)
+	{
+		act = allocentity();
+		act->fmt = act->type = _reality_;
+		reality_create(act, buf, argc, argv);
+		return act;
+	}
 	else if(_world3d_ == type)
 	{
 		act = allocentity();
@@ -489,20 +498,25 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		world3d_create(act, buf, argc, argv);
 		return act;
 	}
-
-	//scene.virt
-	else if(_html_ == type)
+	else if(_uiuxroot_ == type)
 	{
 		act = allocentity();
-		act->fmt = act->type = _html_;
-		htmlnode_create(act, buf, argc, argv);
+		act->fmt = act->type = _uiuxroot_;
+		uiuxroot_create(act, buf, argc, argv);
 		return act;
 	}
-/*	else if(_xaml_ == type)
+	else if(_htmlroot_ == type)
 	{
 		act = allocentity();
-		act->fmt = act->type = _xaml_;
-		xamlnode_create(act, buf, argc, argv);
+		act->fmt = act->type = _htmlroot_;
+		htmlroot_create(act, buf, argc, argv);
+		return act;
+	}
+/*	else if(_xamlroot_ == type)
+	{
+		act = allocentity();
+		act->fmt = act->type = _xamlroot_;
+		xamlroot_create(act, buf, argc, argv);
 		return act;
 	}*/
 
@@ -560,20 +574,11 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		guide3d_create(act, buf, argc, argv);
 		return act;
 	}
-
-	//scene.?
 	else if(_scene3d_ == type)
 	{
 		act = allocentity();
 		act->fmt = act->type = _scene3d_;
 		scene3d_create(act, buf, argc, argv);
-		return act;
-	}
-	else if(_reality_ == type)
-	{
-		act = allocentity();
-		act->fmt = act->type = _reality_;
-		reality_create(act, buf, argc, argv);
 		return act;
 	}
 

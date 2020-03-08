@@ -46,7 +46,10 @@
 #define _src_ hex32('s','r','c',0)
 #define _dst_ hex32('d','s','t',0)
 #define _clk_ hex32('c','l','k',0)
+//
 #define  _ev_ hex32('e','v', 0, 0)
+#define _evby_ hex32('e','v','b','y')
+#define _evto_ hex32('e','v','t','o')
 //
 #define _FILE_ hex32('F','I','L','E')
 #define _file_ hex32('f','i','l','e')
@@ -245,7 +248,7 @@
 //
 #define _w2w_ hex32('w','2','w', 0)
 #define _khala_ hex64('k','h','a','l','a', 0, 0, 0)
-#define _loopback_ hex64('l','o','o','p','b', 'a', 'c', 'k')
+#define _loopback_ hex64('l','o','o','p','b','a','c','k')
 //tier=_sup_, type=_sup_, rfmt:
 #define _none_ hex32('n','o','n','e')
 #define _easy_ hex32('e','a','s','y')
@@ -259,9 +262,12 @@
 #define _func_ hex32('f','u','n','c')
 #define _sch_  hex32('s','c','h',0)
 #define _pcb_  hex32('p','c','b',0)
-#define _html_ hex32('h','t','m','l')
-#define _json_ hex32('j','s','o','n')
 #define _xml_  hex32('x','m','l',0)
+//
+#define _htmlroot_ hex64('h','t','m','l','r','o','o','t')
+#define _jsonroot_ hex64('j','s','o','n','r','o','o','t')
+#define _xamlroot_ hex64('x','a','m','l','r','o','o','t')
+#define _uiuxroot_ hex64('u','i','u','x','r','o','o','t')
 //tier=_ent_, type:
 #define _baby_ hex32('b','a','b','y')
 #define _test_ hex32('t','e','s','t')

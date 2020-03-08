@@ -1,7 +1,6 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC -I.
 SRC = \
-forfile/html/html.data.c \
 forfile/html/html.help.c \
 forfile/json/json.c \
 forfile/xml/xml.c \
@@ -111,6 +110,8 @@ thedata/scene/virt/virt.xaml.c \
 thedata/scene/scene.c \
 thedata/world/real.c \
 thedata/world/virt.c \
+thedata/world/html.c \
+thedata/world/uiux.c \
 thedata/test/test.c \
 thedata/mine.c \
 theitem/baseunit/objalgo/algo.algo.c \

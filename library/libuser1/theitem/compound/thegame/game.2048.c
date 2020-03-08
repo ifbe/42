@@ -344,8 +344,8 @@ static void the2048_read(struct halfrel* self, struct halfrel* peer, struct half
 	else{
 		switch(win->fmt){
 		case _tui_:the2048_draw_tui(act,slot, win,geom);break;
-		case _html_:the2048_draw_html(act,slot, win,geom);break;
 		case _rgba_:the2048_draw_pixel(act,slot, win,geom);break;
+		case _htmlroot_:the2048_draw_html(act,slot, win,geom);break;
 		}
 	}
 }

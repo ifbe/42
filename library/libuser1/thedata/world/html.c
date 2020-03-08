@@ -44,7 +44,7 @@ void foreground_html(struct entity* win)
 		"</html>"
 	);
 }
-int htmlnode_traverse(struct entity* ent)
+int htmlroot_traverse(struct entity* ent)
 {
 	struct relation* rel = ent->orel0;
 	while(1){
@@ -60,33 +60,33 @@ int htmlnode_traverse(struct entity* ent)
 
 
 
-int htmlnode_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void** buf, int len)
+int htmlroot_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void** buf, int len)
 {
 	int j;
 	struct entity* win;
 	struct str** ctx;
-	say("@htmlnode_read\n");
+	say("@htmlroot_read\n");
 
 	win = self->pchip;
 	background_html(win);
-	htmlnode_traverse(win);
+	htmlroot_traverse(win);
 	foreground_html(win);
 
 	ctx = win->htmlctx;
 	for(j=0;j<4;j++)buf[j] = ctx[j];
 	return 0;
 }
-int htmlnode_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int htmlroot_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	say("@htmlnode_write\n");
-	relationwrite(self->pchip, _src_, "text/html", 0, "htmlnode_read\n", 14);
+	say("@htmlroot_write\n");
+	relationwrite(self->pchip, _src_, "text/html", 0, "htmlroot_read\n", 14);
 	return 0;
 }
-int htmlnode_discon(struct halfrel* self, struct halfrel* peer)
+int htmlroot_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int htmlnode_linkup(struct halfrel* self, struct halfrel* peer)
+int htmlroot_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
@@ -94,11 +94,11 @@ int htmlnode_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int htmlnode_delete(struct entity* win)
+int htmlroot_delete(struct entity* win)
 {
 	return 0;
 }
-int htmlnode_create(struct entity* win, void* str)
+int htmlroot_create(struct entity* win, void* str)
 {
 	void** ctx = memorycreate(0x1000, 0);
 	void*  buf = memorycreate(0x100000, 0);
