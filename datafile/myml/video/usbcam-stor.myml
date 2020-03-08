@@ -9,8 +9,8 @@ fmt:stor
 usbcam{
 fmt:cam
 format:mjpeg
-width:640
-height:480
+width:1920
+height:1080
 speed:60
 }
 </supply>

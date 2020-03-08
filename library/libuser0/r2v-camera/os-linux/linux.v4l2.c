@@ -243,6 +243,14 @@ int videocreate(struct supply* win, void* arg, int argc, u8** argv)
 			//say("format=%.5s\n",arg);
 			if(0 == ncmp(arg, "mjpeg", 5))win->FORMAT = V4L2_PIX_FMT_MJPEG;
 		}
+		if(0 == ncmp(arg, "width:", 6)){
+			arg = argv[j]+6;
+			decstr2u32(arg, &win->STRIDE);
+		}
+		if(0 == ncmp(arg, "height:", 7)){
+			arg = argv[j]+7;
+			decstr2u32(arg, &win->HEIGHT);
+		}
 	}
 
 	alive = 1;
