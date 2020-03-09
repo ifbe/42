@@ -91,6 +91,9 @@
 
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 //----------------------------------1d------------------------------------
 void gentui_rect(  struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1);
 void gentui_utf8(  struct entity* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
@@ -194,9 +197,6 @@ u64 timeread();
 
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif
 int entityread(  struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
 int entitywrite( struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
 int entitydiscon(struct halfrel* self, struct halfrel* peer);

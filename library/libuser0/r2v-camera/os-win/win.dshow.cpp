@@ -3,7 +3,11 @@
 #include <rpc.h>
 #include <rpcndr.h>
 #include "libuser.h"
-#define _cam_ hex32('c','a','m',0)
+#define _yuyv_ hex32('y','u','y','v')
+#define _mjpg_ hex32('m','j','p','g')
+#define STRIDE ix0
+#define HEIGHT iy0
+#define FORMAT iw0
 
 #pragma comment(lib, "ole32")
 #pragma comment(lib, "strmiids")
@@ -46,10 +50,9 @@ struct pictureobject
 		BYTE* buf;
 	};
 	u64 len;
-	u64 width;
-	u64 height;
 };
 static struct pictureobject obj[60];
+//
 static struct supply* working;
 static int enq = 0;
 
@@ -80,7 +83,9 @@ public:
 	STDMETHODIMP_(ULONG) Release(){return S_OK;}
 
 	//ISampleGrabberCB
-	STDMETHODIMP BufferCB(double SampleTime, BYTE *pBuffer, long BufferLen){return S_OK;}
+	STDMETHODIMP BufferCB(double SampleTime, BYTE *pBuffer, long BufferLen){
+		return S_OK;
+	}
 	STDMETHODIMP SampleCB(double SampleTime, IMediaSample *pSample)
 	{
 		BYTE** buf = &(obj[enq].buf);
@@ -88,28 +93,13 @@ public:
 		pSample->GetPointer(buf);
 		pSample->Release();
 		relationwrite(working, _dst_, 0, 0, obj[enq].buf, obj[enq].len);
-/*
-		//printf("%llx,%x\n", obj[0].buf, obj[0].len);
-		working->width = working->stride = 640;
-		working->height = 480;
-		struct relation* orel = (struct relation*)(working->orel0);
-		while(1)
-		{
-			if(0 == orel)break;
-			if(_ent_ == orel->dsttype)
-			{
-				struct halfrel* self = (struct halfrel*)&orel->dstchip;
-				struct halfrel* peer = (struct halfrel*)&orel->srcchip;
-				entitywrite(self, peer, obj[enq].buf, 640*480*3/2);
-			}
-			orel = (struct relation*)samesrcnextdst(orel);
-		}
-*/
+
 		enq = (enq+1)%60;
 		return S_OK;
 	}
 };
 static CallbackObject cb;
+//
 static IMediaControl* g_pMC = NULL;
 static IMediaEventEx* g_pME = NULL;
 static IVideoWindow*  g_pVW = NULL;
@@ -227,63 +217,16 @@ HRESULT enumpin(IBaseFilter * pFilter, PIN_DIRECTION dirrequired, int iNum, IPin
     } 
 
     return hr;
-}/*
-HRESULT enumfmt(IPin* pin)
-{
-	HRESULT hr;
-	IEnumMediaTypes *mtEnum=NULL;  
-    AM_MEDIA_TYPE   *mt=NULL;  
-    if( FAILED( pin->EnumMediaTypes( &mtEnum )) )return -1;
-    mtEnum->Reset();
-
-	VIDEOINFOHEADER* head;
-	BITMAPINFOHEADER* bmp;
-    ULONG mtFetched = 0;
-    while (SUCCEEDED(mtEnum->Next(1, &mt, &mtFetched)) && mtFetched)
-	{
-		if(mt->majortype == MEDIATYPE_Video)
-		{
-			printf("video,");
-			if(mt->subtype == MEDIASUBTYPE_YUY2)
-			{
-				printf("yuyv,");
-				if(mt->formattype == FORMAT_VideoInfo)
-				{
-					head = (VIDEOINFOHEADER*)(mt->pbFormat);
-					bmp = &(head->bmiHeader);
-					printf("%dx%d~%d", bmp->biWidth, bmp->biHeight, 10*1000*1000/head->AvgTimePerFrame);
-
-					if( (bmp->biWidth == 640) && (bmp->biHeight == 480) )
-					{
-						printf("	***found***");
-					}
-				}
-				else printf("???");
-			}
-			else printf("???");
-		}
-		else printf("???");
-
-		printf("\n");
-	}
-
-	printf("\n");
-	return 1;
-}*/
+}
 
 
 
 
-HRESULT configgraph(IAMStreamConfig* devcfg)
+HRESULT configgraph(struct supply* win, IAMStreamConfig* devcfg)
 {
 	int iCount = 0;
 	int iSize = 0;
 	HRESULT hr;
-
-	VIDEO_STREAM_CONFIG_CAPS scc;
-	AM_MEDIA_TYPE *pmtConfig;
-	VIDEOINFOHEADER* head;
-	BITMAPINFOHEADER* bmp;
 
 	hr = devcfg->GetNumberOfCapabilities(&iCount, &iSize);
 	if(FAILED(hr)){
@@ -296,49 +239,42 @@ HRESULT configgraph(IAMStreamConfig* devcfg)
 	}
 
 	// Use the video capabilities structure.
+	VIDEO_STREAM_CONFIG_CAPS scc;
+	AM_MEDIA_TYPE *pmtConfig;
 	for (int iFormat = 0; iFormat < iCount; iFormat++)
 	{
 		hr = devcfg->GetStreamCaps(iFormat, &pmtConfig, (BYTE*)&scc);
 		if (FAILED(hr))continue;
 
-		if(pmtConfig->majortype == MEDIATYPE_Video)
-		{
-			printf("video,");
-			if(pmtConfig->subtype == MEDIASUBTYPE_YUY2)
+		u32 tmpfmt = 0;
+		if(MEDIASUBTYPE_YUY2 == pmtConfig->subtype)tmpfmt = _yuyv_;
+		if(MEDIASUBTYPE_MJPG == pmtConfig->subtype)tmpfmt = _mjpg_;
+		printf("%03d: %.4s\n",iFormat, &tmpfmt);
+
+		if(MEDIATYPE_Video != pmtConfig->majortype)continue;
+		if(FORMAT_VideoInfo == pmtConfig->formattype){
+			VIDEOINFOHEADER* head = (VIDEOINFOHEADER*)(pmtConfig->pbFormat);
+			BITMAPINFOHEADER* bmp = &head->bmiHeader;
+			printf("FORMAT_VideoInfo1: %dx%d@%d\n",bmp->biWidth, bmp->biHeight, 10*1000*1000/head->AvgTimePerFrame);
+
+			if(	(win->STRIDE == bmp->biWidth) &&
+				(win->HEIGHT == bmp->biHeight) &&
+				(win->FORMAT == tmpfmt) )
 			{
-				printf("yuyv,");
-				if(pmtConfig->formattype == FORMAT_VideoInfo)
-				{
-					head = (VIDEOINFOHEADER*)(pmtConfig->pbFormat);
-					bmp = &head->bmiHeader;
-					printf("%dx%d~%d", bmp->biWidth, bmp->biHeight, 10*1000*1000/head->AvgTimePerFrame);
-
-					if( (bmp->biWidth == 640) && (bmp->biHeight == 480) )
-					{
-						hr = devcfg->SetFormat(pmtConfig);
-						if(SUCCEEDED(hr))
-						{
-							printf("	***selected***");
-						}
-						else
-						{
-							printf("	***%x***", hr);
-						}
-					}
-				}
-				else printf("???");
+				hr = devcfg->SetFormat(pmtConfig);
+				if(SUCCEEDED(hr))printf("success@SetFormat\n");
+				else printf("errno=%d@SetFormat\n", hr);
 			}
-			else printf("???");
 		}
-		else printf("???");
-
-		printf("\n");
-	}
+		if(FORMAT_VideoInfo2 == pmtConfig->formattype){
+			printf("FORMAT_VideoInfo2\n");
+		}
+	}//for
 
 	printf("\n");
 	return S_OK;
 }
-void shutupdie()
+void shutupdie(struct supply* win)
 {
 	if(g_pMC != 0)
 	{
@@ -347,7 +283,7 @@ void shutupdie()
 	}
 	CoUninitialize();
 }
-void letsgo()
+void letsgo(struct supply* win)
 {
 	//builder
 	HRESULT hr;
@@ -459,7 +395,7 @@ void letsgo()
 	);
 	if(FAILED(hr)){printf("%x@findinterface\n",hr);goto fail;}
 
-	hr = configgraph(devcfg);
+	hr = configgraph(win, devcfg);
 /*
 	hr = pGrabber->GetConnectedMediaType(&mt);
 	if(FAILED(hr)){printf("error %x@media type\n",hr);goto fail;}
@@ -498,26 +434,45 @@ int videowrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 {
 	return 0;
 }
-void videolist()
+int videodiscon(struct halfrel* self, struct halfrel* peer)
 {
+	return 0;
 }
-void videochoose()
+int videolinkup(struct halfrel* self, struct halfrel* peer)
 {
-}
-void videostop()
-{
-}
-void videostart()
-{
+	return 0;
 }
 void videodelete(struct supply* win)
 {
-	//shutupdie();
+	//shutupdie(win);
 }
-void videocreate(struct supply* win)
+void videocreate(struct supply* win, void* arg, int argc, u8** argv)
 {
+	int j;
+	win->STRIDE = 640;
+	win->HEIGHT = 480;
+	win->FORMAT = _yuyv_;
+
+	for(j=1;j<argc;j++){
+		arg = argv[j];
+		//say("%d->%.16s\n",j,arg;
+		if(0 == ncmp(arg, (void*)"format:", 7)){
+			arg = argv[j]+7;
+			//say("format=%.5s\n",arg);
+			if(0 == ncmp(arg, (void*)"mjpeg", 5))win->FORMAT = _mjpg_;
+		}
+		if(0 == ncmp(arg, (void*)"width:", 6)){
+			arg = argv[j]+6;
+			decstr2u32(arg, (u32*)&win->STRIDE);
+		}
+		if(0 == ncmp(arg, (void*)"height:", 7)){
+			arg = argv[j]+7;
+			decstr2u32(arg, (u32*)&win->HEIGHT);
+		}
+	}
+
 	working = win;
-	letsgo();
+	letsgo(win);
 	//Sleep(5000);
 }
 
