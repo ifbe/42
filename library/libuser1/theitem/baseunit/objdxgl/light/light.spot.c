@@ -4,7 +4,7 @@ void matproj_transpose(void* m, struct fstyle* sty);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
-#define CAMBUF buf0
+#define FBOBUF buf0
 #define LITBUF buf1
 #define CTXBUF buf2
 #define OWNBUF buf3
@@ -44,16 +44,15 @@ GLSL_VERSION
 "}\n";
 
 
-static void spotlight_camforfbo(struct glsrc* src)
-{
-}
-static void spotlight_camera(
+
+
+static void spotlight_forfbo_update(
 	struct entity* act, struct style* part,
 	struct entity* wrd, struct style* geom,
 	struct supply* fbo, struct style* area)
 {
 	struct sunbuf* sun = act->OWNBUF;
-	struct glsrc* src = act->CAMBUF;
+	struct glsrc* src = act->FBOBUF;
 
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";
@@ -63,26 +62,76 @@ static void spotlight_camera(
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = &geom->frus.vc;
 
-	fbo->gl_camera[0] = act->CAMBUF;
+	fbo->gl_camera[0] = act->FBOBUF;
 }
-
-
-static void spotlight_litforwnd(struct glsrc* src)
+static void dirlight_forfbo_prepare(struct glsrc* src)
 {
-	src->routine_name = "passtype";
-	src->routine_detail = "spotlight";
 }
-static void spotlight_light(
+
+
+
+
+static void spotlight_frustum(struct fstyle* d, struct fstyle* s)
+{
+	float x,y,z,n;
+	d->vc[0] = s->vc[0];
+	d->vc[1] = s->vc[1];
+	d->vc[2] = s->vc[2];
+
+
+	x = s->vr[0];
+	y = s->vr[1];
+	z = s->vr[2];
+	n = squareroot(x*x + y*y + z*z);
+	d->vr[0] = x / n;
+	d->vr[1] = y / n;
+	d->vr[2] = z / n;
+	//d->vr[3] = 1.0;
+	d->vl[0] = -x / n;
+	d->vl[1] = -y / n;
+	d->vl[2] = -z / n;
+	//d->vl[3] = -1.0;
+
+
+	x = s->vt[0];
+	y = s->vt[1];
+	z = s->vt[2];
+	n = squareroot(x*x + y*y + z*z);
+	d->vt[0] = x / n;
+	d->vt[1] = y / n;
+	d->vt[2] = z / n;
+	//d->vt[3] = 1.0;
+	d->vb[0] = -x / n;
+	d->vb[1] = -y / n;
+	d->vb[2] = -z / n;
+	//d->vb[3] = -1.0;
+
+
+	x = s->vf[0];
+	y = s->vf[1];
+	z = s->vf[2];
+	n = squareroot(x*x + y*y + z*z);
+	d->vn[0] = x / n;
+	d->vn[1] = y / n;
+	d->vn[2] = z / n;
+	//d->vn[3] = 1.0;
+	d->vf[0] = x / n;
+	d->vf[1] = y / n;
+	d->vf[2] = z / n;
+	//d->vf[3] = 1e20;
+}
+static void spotlight_forwnd_light_update(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
-	struct sunbuf* sun;
-	struct glsrc* src;
-
-	sun = act->OWNBUF;
+	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
-	src = act->LITBUF;
+
+	spotlight_frustum(&geom->frus, &geom->fs);
+	matproj_transpose(sun->mvp, &geom->frus);
+
+	struct glsrc* src = act->LITBUF;
 	if(0 == src)return;
 
 	src->arg[0].fmt = 'm';
@@ -108,25 +157,15 @@ static void spotlight_light(
 
 	ctx->gl_light[0] = act->LITBUF;
 }
-
-
-static void spotlight_ctxforwnd(struct glsrc* src)
+static void dirlight_forwnd_light_prepare(struct glsrc* src)
 {
-	src->geometry = 3;
-	src->method = 'v';
-
-	//
-	src->vs = spotlit_glsl_v;
-	src->fs = spotlit_glsl_f;
-	src->shader_enq = 42;
-
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	src->routine_name = "passtype";
+	src->routine_detail = "spotlight";
 }
+
+
+
+
 static void spotlight_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -203,6 +242,109 @@ static void spotlight_draw_gl41(
 	src->vbuf_enq += 1;
 	gl41data_insert(ctx, 's', act->CTXBUF, 1);
 }
+static void spotlight_forwnd_vertex_update(struct entity* act, struct style* slot, struct supply* fbo, struct style* area)
+{
+	struct sunbuf* sun = act->OWNBUF;
+	if(0 == sun)return;
+
+	sun->glfd = fbo->tex0;
+}
+static void dirlight_forwnd_vertex_prepare(struct glsrc* src)
+{
+	src->geometry = 3;
+	src->method = 'v';
+
+	//
+	src->vs = spotlit_glsl_v;
+	src->fs = spotlit_glsl_f;
+	src->shader_enq = 42;
+
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 6*4;
+	src->vbuf_h = 6;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+}
+
+
+
+
+static void spotlight_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+//world -> spotlight
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* slot;
+
+	if(stack){
+		act = self->pchip;slot = self->pfoot;
+		win = peer->pchip;geom = peer->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		if('v' == len){
+			spotlight_forwnd_light_update(act,slot, win,geom, wnd,area);
+			spotlight_draw_gl41(act,slot, win,geom, wnd,area);
+		}
+		if('?' == len){
+			int ret;
+			struct halfrel* rel[2];
+			ret = relationsearch(act, _fbo_, &rel[0], &rel[1]);
+			if(ret <= 0)return;
+
+			struct supply* fbo = rel[1]->pchip;
+			struct style* rect = rel[1]->pfoot;
+			spotlight_forfbo_update(act,slot, win,geom, fbo,rect);
+			relationwrite(act,_fbo_, stack,rsp, buf,len);
+
+			spotlight_forwnd_vertex_update(act,slot, fbo,rect);
+		}
+	}
+}
+static void spotlight_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void spotlight_draw_json(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void spotlight_draw_html(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void spotlight_draw_tui(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void spotlight_draw_cli(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+
+
+
+
+static void spotlight_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	spotlight_read_bycam(self,peer, stack,rsp, buf,len);
+}
+static void spotlight_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+{
+}
+static void spotlight_discon(struct halfrel* self, struct halfrel* peer)
+{
+}
+static void spotlight_linkup(struct halfrel* self, struct halfrel* peer)
+{
+}
 
 
 
@@ -245,172 +387,14 @@ static void spotlight_create(struct entity* act, void* str)
 	sun->rgb[2] = ((sun->u_rgb >> 0) & 0xff) / 255.0;
 
 	//
-	act->CAMBUF = memorycreate(0x400, 0);
-	spotlight_camforfbo(act->CAMBUF);
+	act->FBOBUF = memorycreate(0x400, 0);
+	dirlight_forfbo_prepare(act->FBOBUF);
 
 	act->LITBUF = memorycreate(0x400, 0);
-	spotlight_litforwnd(act->LITBUF);
+	dirlight_forwnd_light_prepare(act->LITBUF);
 
 	act->CTXBUF = memorycreate(0x400, 0);
-	spotlight_ctxforwnd(act->CTXBUF);
-}
-
-
-
-
-static void spotlight_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void spotlight_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void spotlight_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void spotlight_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void spotlight_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-
-
-
-
-void spotlight_frustum(struct fstyle* d, struct fstyle* s)
-{
-	float x,y,z,n;
-	d->vc[0] = s->vc[0];
-	d->vc[1] = s->vc[1];
-	d->vc[2] = s->vc[2];
-
-
-	x = s->vr[0];
-	y = s->vr[1];
-	z = s->vr[2];
-	n = squareroot(x*x + y*y + z*z);
-	d->vr[0] = x / n;
-	d->vr[1] = y / n;
-	d->vr[2] = z / n;
-	//d->vr[3] = 1.0;
-	d->vl[0] = -x / n;
-	d->vl[1] = -y / n;
-	d->vl[2] = -z / n;
-	//d->vl[3] = -1.0;
-
-
-	x = s->vt[0];
-	y = s->vt[1];
-	z = s->vt[2];
-	n = squareroot(x*x + y*y + z*z);
-	d->vt[0] = x / n;
-	d->vt[1] = y / n;
-	d->vt[2] = z / n;
-	//d->vt[3] = 1.0;
-	d->vb[0] = -x / n;
-	d->vb[1] = -y / n;
-	d->vb[2] = -z / n;
-	//d->vb[3] = -1.0;
-
-
-	x = s->vf[0];
-	y = s->vf[1];
-	z = s->vf[2];
-	n = squareroot(x*x + y*y + z*z);
-	d->vn[0] = x / n;
-	d->vn[1] = y / n;
-	d->vn[2] = z / n;
-	//d->vn[3] = 1.0;
-	d->vf[0] = x / n;
-	d->vf[1] = y / n;
-	d->vf[2] = z / n;
-	//d->vf[3] = 1e20;
-}
-static void spotlight_matrix(
-	struct entity* act, struct style* part,
-	struct entity* wrd, struct style* geom)
-{
-	struct sunbuf* sun = act->OWNBUF;
-	if(0 == sun)return;
-
-	matproj_transpose(sun->mvp, &geom->frus);
-}
-
-
-
-
-void spotlight_findfbo(struct entity* act, struct style* slot, struct supply** fbo, struct style** rect)
-{
-	struct relation* rel = act->orel0;
-	if(0 == rel)return;
-
-	*fbo = rel->pdstchip;
-	*rect = rel->pdstfoot;
-}
-void spotlight_update(struct entity* act, struct style* slot, struct supply* fbo, struct style* area)
-{
-	struct sunbuf* sun = act->OWNBUF;
-	if(0 == sun)return;
-
-	sun->glfd = fbo->tex0;
-}
-
-
-
-
-static void spotlight_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
-{
-//wnd -> cam, cam -> world
-	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-//world -> spotlight
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-//fbo,rect
-	struct supply* fbo;struct style* rect;
-
-	if(stack){
-		act = self->pchip;slot = self->pfoot;
-		win = peer->pchip;geom = peer->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len){
-			spotlight_frustum(&geom->frus, &geom->fs);
-			spotlight_matrix(act,slot, win,geom);
-
-			spotlight_light(act,slot, win,geom, wnd,area);
-			spotlight_draw_gl41(act,slot, win,geom, wnd,area);
-		}
-		if('?' == len){
-			fbo = 0;rect = 0;
-			spotlight_findfbo(act,slot, &fbo,&rect);
-			if((0 == fbo)|(0 == rect))return;
-
-			spotlight_camera(act,slot, win,geom, fbo,rect);
-			relationread(act,_fbo_, stack,rsp, buf,len);
-
-			spotlight_update(act,slot, fbo,rect);
-		}
-	}
-}
-static void spotlight_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
-{
-}
-static void spotlight_discon(struct halfrel* self, struct halfrel* peer)
-{
-}
-static void spotlight_linkup(struct halfrel* self, struct halfrel* peer)
-{
+	dirlight_forwnd_vertex_prepare(act->CTXBUF);
 }
 
 

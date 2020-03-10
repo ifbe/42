@@ -16,76 +16,6 @@ struct sunbuf{
 
 
 
-static void pointlight_search(struct entity* act)
-{
-}
-static void pointlight_modify(struct entity* act)
-{
-}
-static void pointlight_delete(struct entity* act)
-{
-}
-static void pointlight_create(struct entity* act, void* str)
-{
-	struct sunbuf* sun;
-	if(0 == act)return;
-
-	sun = act->OWNBUF = memorycreate(0x400, 0);
-	sun->u_rgb = 0x0000ff;
-	sun->rgb[0] = ((sun->u_rgb >>16) & 0xff) / 255.0;
-	sun->rgb[1] = ((sun->u_rgb >> 8) & 0xff) / 255.0;
-	sun->rgb[2] = ((sun->u_rgb >> 0) & 0xff) / 255.0;
-
-	act->LITBUF = memorycreate(0x400, 0);
-
-	act->ONOFF = 1;
-}
-
-
-
-
-static void pointlight_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void pointlight_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
-{
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
-	struct sunbuf* sun = act->OWNBUF;
-	if(0 == sun)return;
-	gl41opaque_sphere(ctx, 0x80000000|sun->u_rgb, vc, vr, vf, vt);
-}
-static void pointlight_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void pointlight_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void pointlight_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void pointlight_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-
-
-
-
 static void pointlight_light(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
@@ -112,11 +42,24 @@ static void pointlight_light(
 
 	wnd->gl_light[0] = act->LITBUF;
 }
+static void pointlight_draw_gl41(
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
+{
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
+	struct sunbuf* sun = act->OWNBUF;
+	if(0 == sun)return;
+	gl41opaque_sphere(ctx, 0x80000000|sun->u_rgb, vc, vr, vf, vt);
+}
 
 
 
 
-static void pointlight_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void pointlight_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 //wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
@@ -138,6 +81,39 @@ static void pointlight_read(struct halfrel* self, struct halfrel* peer, struct h
 		}
 	}
 }
+static void pointlight_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void pointlight_draw_json(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void pointlight_draw_html(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void pointlight_draw_tui(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void pointlight_draw_cli(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+
+
+
+
+static void pointlight_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+	pointlight_read_bycam(self,peer, stack,rsp, buf,len);
+}
 static void pointlight_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	struct entity* ent = self->pchip;
@@ -152,6 +128,34 @@ static void pointlight_discon(struct halfrel* self, struct halfrel* peer)
 }
 static void pointlight_linkup(struct halfrel* self, struct halfrel* peer)
 {
+}
+
+
+
+
+static void pointlight_search(struct entity* act)
+{
+}
+static void pointlight_modify(struct entity* act)
+{
+}
+static void pointlight_delete(struct entity* act)
+{
+}
+static void pointlight_create(struct entity* act, void* str)
+{
+	struct sunbuf* sun;
+	if(0 == act)return;
+
+	sun = act->OWNBUF = memorycreate(0x400, 0);
+	sun->u_rgb = 0x0000ff;
+	sun->rgb[0] = ((sun->u_rgb >>16) & 0xff) / 255.0;
+	sun->rgb[1] = ((sun->u_rgb >> 8) & 0xff) / 255.0;
+	sun->rgb[2] = ((sun->u_rgb >> 0) & 0xff) / 255.0;
+
+	act->LITBUF = memorycreate(0x400, 0);
+
+	act->ONOFF = 1;
 }
 
 

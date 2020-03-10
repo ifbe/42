@@ -124,10 +124,6 @@ q:1.0, 1.0
 
 
 <relation>
-#mirror depends on glfbo
-(mirror, 0, fbo) -> (1stfbo, mirrrect, mvp)
-(mirr22, 0, fbo) -> (2ndfbo, mi22rect, mvp)
-
 #world3d depends on inner objects
 (world3d, skygeom, 0) -> (texball, skyhaha, 0)
 (world3d, treegeom, 0) -> (tree, treehaha, 0)
@@ -135,6 +131,10 @@ q:1.0, 1.0
 (world3d, mi22geom, 0) -> (mirr22, mi22haha, 0)
 (world3d, freegeom, 0) -> (freecam, freemodl, 0)
 
+#mirror depends on glfbo
+(1stfbo, mirrrect, 0) -> (mirror, 0, fbo)
+(2ndfbo, mi22rect, 0) -> (mirr22, 0, fbo)
+
 #glwnd depends on cam
-(opengl, freerect, mvp) -> (freecam, 0, 0)
+(opengl, freerect, 0) -> (freecam, 0, 0)
 </relation>

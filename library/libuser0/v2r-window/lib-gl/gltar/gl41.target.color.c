@@ -23,10 +23,25 @@ int fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41d
 
 int gl41fboc_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
+	struct supply* fbo;
+	struct fstyle* sty;
+	//say("@gl41fboc_read: %llx\n", self->pchip);
+
+	fbo = self->pchip;
+	sty = self->pfoot;
+	if(0 == fbo->fbo){
+		fbo->width = fbo->fbwidth = 1024;
+		fbo->height = fbo->fbheight = 1024;
+		fbocreate(fbo, 'c');
+	}
+	return 0;
+}
+int gl41fboc_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
 	struct supply* wnd;
 	struct supply* fbo;
 	struct fstyle* sty;
-	//say("@gl41fboc: %llx\n", self->pchip);
+	//say("@gl41fboc_write: %llx\n", self->pchip);
 
 	fbo = self->pchip;
 	sty = self->pfoot;
@@ -39,10 +54,6 @@ int gl41fboc_read(struct halfrel* self, struct halfrel* peer, struct halfrel** s
 	wnd = stack[rsp-4]->pchip;
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo->fbo);
 	fullwindow_render(fbo->gl_camera, fbo->gl_light, wnd->gl_solid, wnd->gl_opaque, fbo, sty);
-	return 0;
-}
-int gl41fboc_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
-{
 	return 0;
 }
 int gl41fboc_discon(struct halfrel* self, struct halfrel* peer)

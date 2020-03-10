@@ -322,7 +322,7 @@ void windowopen_coop(struct supply* w, struct supply* r)
 
 
 
-void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	u64 t0,t1,t2,t3;
 	struct supply* ogl;
@@ -331,22 +331,10 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 
 	ogl = self->pchip;
 	switch(ogl->fmt){
-	case _gl41fboc_:{
-		gl41fboc_read(self, peer, arg, idx, buf, len);
-		return;
-	}
-	case _gl41fbod_:{
-		gl41fbod_read(self, peer, arg, idx, buf, len);
-		return;
-	}
-	case _gl41fbog_:{
-		gl41fbog_read(self, peer, arg, idx, buf, len);
-		return;
-	}
-	case _gl41wnd0_:{
-		gl41wnd0_read(self, peer, arg, idx, buf, len);
-		return;
-	}
+	case _gl41fboc_:return gl41fboc_read(self, peer, arg, idx, buf, len);
+	case _gl41fbod_:return gl41fbod_read(self, peer, arg, idx, buf, len);
+	case _gl41fbog_:return gl41fbog_read(self, peer, arg, idx, buf, len);
+	case _gl41wnd0_:return gl41wnd0_read(self, peer, arg, idx, buf, len);
 	}//switch
 t0 = ogl->gltime;
 
@@ -378,8 +366,10 @@ t3 = timeread();
 ogl->gltime = t3;
 
 	//4: poll event
-	if(glfwWindowShouldClose(fw)){eventwrite(0,0,0,0);return;}
+	if(glfwWindowShouldClose(fw)){eventwrite(0,0,(u64)ogl,(u64)ogl->gltime);return 0;}
 	glfwPollEvents();
+
+	return 0;
 }
 void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
@@ -390,6 +380,8 @@ void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	if(0 == ogl)return;
 
 	switch(ogl->fmt){
+		case _gl41fboc_:gl41fboc_write(self,peer, arg,idx, buf,len);break;
+		case _gl41fbod_:gl41fbod_write(self,peer, arg,idx, buf,len);break;
 		case _gl41fbog_:gl41fbog_write(self,peer, arg,idx, buf,len);break;
 		case _gl41wnd0_:gl41wnd0_write(self,peer, arg,idx, buf,len);break;
 		default:windowdispatch(ogl, buf);
