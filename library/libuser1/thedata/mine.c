@@ -176,17 +176,19 @@ void tabbar_register(void*);
 
 //uiux
 void gbuffer_register(void*);
+void minimap_register(void*);
 void oscillo_register(void*);
 void picture_register(void*);
 void qrcode_register(void*);
 void spectrum_register(void*);
+void skill_register(void*);
+void status_register(void*);
 void texmix_register(void*);
 void video_register(void*);
 void voxel_register(void*);
 
 //vkbd
 void button_register(void*);
-void control_register(void*);
 void slider_register(void*);
 void vjoy_register(void*);
 void vkbd_register(void*);
@@ -651,6 +653,9 @@ void content_create(void* addr)
 	gbuffer_register(tmp);
 	tmp -= sizeof(struct entity);
 
+	minimap_register(tmp);
+	tmp -= sizeof(struct entity);
+
 	oscillo_register(tmp);
 	tmp -= sizeof(struct entity);
 
@@ -661,6 +666,12 @@ void content_create(void* addr)
 	tmp -= sizeof(struct entity);
 
 	spectrum_register(tmp);
+	tmp -= sizeof(struct entity);
+
+	skill_register(tmp);
+	tmp -= sizeof(struct entity);
+
+	status_register(tmp);
 	tmp -= sizeof(struct entity);
 
 	texmix_register(tmp);
@@ -687,9 +698,6 @@ void content_create(void* addr)
 
 //-------------------vkbd------------------
 	button_register(tmp);
-	tmp -= sizeof(struct entity);
-
-	control_register(tmp);
 	tmp -= sizeof(struct entity);
 
 	slider_register(tmp);

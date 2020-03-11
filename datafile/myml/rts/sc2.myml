@@ -20,6 +20,12 @@ fmt:world3d
 minimap{
 fmt:minimap
 }
+status{
+fmt:status
+}
+skill{
+fmt:skill
+}
 uiuxroot{
 fmt:uiuxroot
 }
@@ -95,9 +101,21 @@ fullrect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
-helprect{
+uiuxrect{
 c:0.0, 0.0
 q:1.0, 1.0
+}
+minirect{
+c:0.0, 0.0
+q:0.3, 0.3
+}
+statrect{
+c:0.3, 0.0
+q:0.4, 0.25
+}
+userrect{
+c:0.7, 0.0
+q:0.3, 0.3
 }
 </style>
 
@@ -110,11 +128,13 @@ q:1.0, 1.0
 (world3d, freegeom, 0) -> (freecam, freeslot, in)
 
 #uiuxroot depends on
-(uiuxroot, 0, 0) -> (minimap, 0, 0)
+(uiuxroot, minirect, 0) -> (minimap, 0, 0)
+(uiuxroot, statrect, 0) -> (status, 0, 0)
+(uiuxroot, userrect, 0) -> (skill, 0, 0)
 
 #glwnd depends on
 (opengl, fullrect, 0) -> (freecam, 0, 0)
-(opengl, helprect, 0) -> (uiuxroot, 0, 0)
+(opengl, uiuxrect, 0) -> (uiuxroot, 0, 0)
 
 #event
 (event, 0, evto) -> (freecam, 0, evby)
