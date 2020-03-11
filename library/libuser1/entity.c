@@ -47,6 +47,12 @@ int force_linkup(void*, void*);
 int force_discon(void*, void*);
 int force_write(void*, void*, void*, int, void*, int);
 int force_read(void*, void*, void*, int, void*, int);
+int gravity_create(void*, void*, int, u8**);
+int gravity_delete(void*, void*);
+int gravity_linkup(void*, void*);
+int gravity_discon(void*, void*);
+int gravity_write(void*, void*, void*, int, void*, int);
+int gravity_read(void*, void*, void*, int, void*, int);
 
 //scene
 int border2d_create(void*, void*, int, u8**);
@@ -258,6 +264,7 @@ int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 	//case _field_:return field_read(self, peer, arg, idx, buf, len);
 	//case _fluid_:return fluid_read(self, peer, arg, idx, buf, len);
 	case _force_:return force_read(self, peer, arg, idx, buf, len);
+	case _gravity_:return gravity_read(self, peer, arg, idx, buf, len);
 
 	case _analog_:return analog_read(self, peer, arg, idx, buf, len);
 	case _digital_:return digital_read(self, peer, arg, idx, buf, len);
@@ -299,6 +306,7 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 	//case _field_:return field_write(self, peer, arg, idx, buf, len);
 	//case _fluid_:return fluid_write(self, peer, arg, idx, buf, len);
 	case _force_:return force_write(self, peer, arg, idx, buf, len);
+	case _gravity_:return gravity_write(self, peer, arg, idx, buf, len);
 
 	case _analog_:return analog_write(self, peer, arg, idx, buf, len);
 	case _digital_:return digital_write(self, peer, arg, idx, buf, len);
@@ -341,6 +349,7 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	//case _field_:return field_discon(self, peer);
 	//case _fluid_:return fluid_discon(self, peer);
 	case _force_:return force_discon(self, peer);
+	case _gravity_:return gravity_discon(self, peer);
 
 	case _analog_:return analog_discon(self, peer);
 	case _digital_:return digital_discon(self, peer);
@@ -383,6 +392,7 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 	//case _field_:return field_linkup(self, peer);
 	//case _fluid_:return fluid_linkup(self, peer);
 	case _force_:return force_linkup(self, peer);
+	case _gravity_:return gravity_linkup(self, peer);
 
 	case _analog_:return analog_linkup(self, peer);
 	case _digital_:return digital_linkup(self, peer);
@@ -549,6 +559,13 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		act = allocentity();
 		act->fmt = act->type = _force_;
 		force_create(act, buf, argc, argv);
+		return act;
+	}
+	else if(_gravity_ == type)
+	{
+		act = allocentity();
+		act->fmt = act->type = _gravity_;
+		gravity_create(act, buf, argc, argv);
 		return act;
 	}
 
