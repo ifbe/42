@@ -20,12 +20,12 @@ struct per_io_data
 };
 static HANDLE iocpfd;
 //
-static struct object* obj = 0;
-static struct object* getobjbysock(SOCKET sock)
+static struct sysobj* obj = 0;
+static struct sysobj* getobjbysock(SOCKET sock)
 {
 	return &obj[sock/4];
 }
-static struct object* getobjbid(int idx)
+static struct sysobj* getobjbid(int idx)
 {
 	return &obj[idx];
 }
@@ -43,7 +43,7 @@ static SOCKET getsockbyid(int idx)
 
 void iocp_add(SOCKET sock, int type)
 {
-	struct object* tmp = getobjbysock(sock);
+	struct sysobj* tmp = getobjbysock(sock);
 	CreateIoCompletionPort(
 		(void*)sock,
 		iocpfd,
@@ -58,7 +58,7 @@ void iocp_add(SOCKET sock, int type)
 }
 void iocp_del(SOCKET sock, int type)
 {
-	struct object* tmp = getobjbysock(sock);
+	struct sysobj* tmp = getobjbysock(sock);
 	struct per_io_data* perio = (void*)(tmp->data);
 	if(perio->bufing.buf)
 	{
@@ -72,7 +72,7 @@ void iocp_mod(SOCKET sock, int type)
 	DWORD tran = 0;
 	DWORD flag = 0;
 
-	struct object* perfd = getobjbysock(sock);
+	struct sysobj* perfd = getobjbysock(sock);
 	struct per_io_data* perio = (void*)(perfd->data);
 
 	switch(type){
@@ -104,9 +104,9 @@ DWORD WINAPI iocpthread(LPVOID pM)
 
 	SOCKET fd;
 	SOCKET cc;
-	struct object* parent;
-	struct object* child;
-	struct object* perfd = NULL;
+	struct sysobj* parent;
+	struct sysobj* child;
+	struct sysobj* perfd = NULL;
 	struct per_io_data* perio = NULL;
 
 	ret = GetCurrentThreadId();

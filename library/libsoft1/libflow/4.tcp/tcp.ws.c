@@ -441,14 +441,14 @@ int wsmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 }
 int wsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct object* obj;		//parent
-	struct object* Tcp;		//child
+	struct sysobj* obj;		//parent
+	struct sysobj* Tcp;		//child
 
 	struct artery* ele;	//master
 	struct artery* Ws;		//server
 
 	struct relation* rel;
-	struct object* ptmx;
+	struct sysobj* ptmx;
 	struct artery* echo;
 	say("@wsserver_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
     printmemory(buf, len<16?len:16);

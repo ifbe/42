@@ -116,9 +116,9 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 	u8* ptr;
 	struct relation* rel;
 
-	struct object* obj;			//parent
-	struct object* Tcp;			//child
-	struct object* client;		//client
+	struct sysobj* obj;			//parent
+	struct sysobj* Tcp;			//child
+	struct sysobj* client;		//client
 
 	struct artery* ele;		//master
 	struct artery* Proxy;		//server

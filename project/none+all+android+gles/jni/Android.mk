@@ -132,7 +132,7 @@ library/libsoft1/libalgo/hash/hash.sha256.c \
 library/libsoft1/libalgo/hash/hash.sha512.c \
 library/libsoft1/libalgo/hash/hash.string.c \
 library/libsoft1/libalgo/keyexch/keyexch.dh.c \
-library/libsoft1/libalgo/keyexch/keyexch.ecdhe.c \
+library/libsoft1/libalgo/keyexch/keyexch.x25519.c \
 library/libsoft1/libalgo/linear/linear.disjoint.c \
 library/libsoft1/libalgo/linear/linear.memory.c \
 library/libsoft1/libalgo/linear/linear.queue.c \
@@ -247,22 +247,24 @@ library/libsoft1/libflow/2.ip/ip46.icmp.c \
 library/libsoft1/libflow/2.ip/ip46.tcp.c \
 library/libsoft1/libflow/2.ip/ip46.udp.c \
 library/libsoft1/libflow/2.ip/ipx.spx.c \
+library/libsoft1/libflow/3.udp/udp.bootp.c \
+library/libsoft1/libflow/3.udp/udp.dhcp.c \
 library/libsoft1/libflow/3.udp/udp.dns.c \
-library/libsoft1/libflow/3.udp/udp.hack.c \
+library/libsoft1/libflow/3.udp/udp.ntp.c \
+library/libsoft1/libflow/3.udp/udp.trav.c \
 library/libsoft1/libflow/3.udp/udp.quic.c \
-library/libsoft1/libflow/3.udp/udp.stun.c \
 library/libsoft1/libflow/3.udp/udp.tftp.c \
 library/libsoft1/libflow/4.tcp/tcp.dl.c \
 library/libsoft1/libflow/4.tcp/tcp.ftp.c \
 library/libsoft1/libflow/4.tcp/tcp.fuckgfw.c \
 library/libsoft1/libflow/4.tcp/tcp.http.c \
-library/libsoft1/libflow/4.tcp/tcp.p2p.c \
 library/libsoft1/libflow/4.tcp/tcp.party.c \
 library/libsoft1/libflow/4.tcp/tcp.proxy.c \
 library/libsoft1/libflow/4.tcp/tcp.rdp.c \
 library/libsoft1/libflow/4.tcp/tcp.rtmp.c \
 library/libsoft1/libflow/4.tcp/tcp.sql.c \
 library/libsoft1/libflow/4.tcp/tcp.socks.c \
+library/libsoft1/libflow/4.tcp/tcp.trav.c \
 library/libsoft1/libflow/4.tcp/tcp.vnc.c \
 library/libsoft1/libflow/4.tcp/tcp.ssh.c \
 library/libsoft1/libflow/4.tcp/tcp.telnet.c \
@@ -278,9 +280,12 @@ library/libsoft1/libflow/ahrs/ahrs.ukf.c \
 library/libsoft1/libflow/stream/stream.help.control.c \
 library/libsoft1/libflow/stream/stream.help.search.c \
 library/libsoft1/libflow/stream/stream.help.vt100.c \
-library/libsoft1/libflow/stream/stream.conv.str2fv.c \
-library/libsoft1/libflow/stream/stream.conv.fv2str.c \
 library/libsoft1/libflow/stream/stream.conv.qu2eu.c \
+library/libsoft1/libflow/stream/stream.conv.str2vec.c \
+library/libsoft1/libflow/stream/stream.image.rotate.c \
+library/libsoft1/libflow/stream/stream.image.scale.c \
+library/libsoft1/libflow/stream/stream.mux.easy.c \
+library/libsoft1/libflow/stream/stream.mux.media.c \
 library/libsoft1/libflow/stream/stream.parse.gcode.c \
 library/libsoft1/libflow/stream/stream.parse.mavlink.c \
 library/libsoft1/libflow/stream/stream.parse.nema0183.c \
@@ -288,14 +293,13 @@ library/libsoft1/libflow/stream/stream.revise.recut.c \
 library/libsoft1/libflow/stream/stream.revise.reline.c \
 library/libsoft1/libflow/stream/stream.revise.reorder.c \
 library/libsoft1/libflow/stream/stream.test.echo.c \
+library/libsoft1/libflow/stream/stream.test.goslow.c \
 library/libsoft1/libflow/stream/stream.test.pump.c \
+library/libsoft1/libflow/stream/stream.test.stor.c \
 library/libsoft1/libflow/stream/stream.test.dbgf32.c \
 library/libsoft1/libflow/stream/stream.test.dbghex.c \
-library/libsoft1/libflow/stream/stream.test.goslow.c \
 library/libsoft1/libflow/stream/stream.test.fftpcm.c \
 library/libsoft1/libflow/stream/stream.test.fftrgb.c \
-library/libsoft1/libflow/stream/stream.image.rotate.c \
-library/libsoft1/libflow/stream/stream.image.scale.c \
 library/libsoft1/artery.c
 
 #libuser0
@@ -342,7 +346,6 @@ library/libuser0/supply.c
 
 #libuser1
 LOCAL_SRC_FILES += \
-library/libuser1/forfile/html/html.data.c \
 library/libuser1/forfile/html/html.help.c \
 library/libuser1/forfile/json/json.c \
 library/libuser1/forfile/xml/xml.c \
@@ -376,8 +379,6 @@ library/libuser1/forcpu/cli/cli.c \
 library/libuser1/forspu/al10/al10.c \
 library/libuser1/forspu/sl10/sl10.c \
 library/libuser1/forspu/spu.pcm.c \
-library/libuser1/therule/order/collide/collide.simple.c \
-library/libuser1/therule/order/gravity/gravity.simple.c \
 library/libuser1/therule/chaos/event/event.rts.c \
 library/libuser1/therule/chaos/event/event.rpg.1rd.c \
 library/libuser1/therule/chaos/event/event.rpg.3rd.c \
@@ -385,10 +386,14 @@ library/libuser1/therule/chaos/event/event.pick.ray.c \
 library/libuser1/therule/chaos/event/event.pick.area.c \
 library/libuser1/therule/chaos/event/event.cam.free.c \
 library/libuser1/therule/chaos/event/event.cam.frus.c \
-library/libuser1/themind/chip/pilot/pilot.car.c \
-library/libuser1/themind/chip/pilot/pilot.drone.c \
-library/libuser1/themind/chip/solve/solve.maze.c \
-library/libuser1/themind/chip/solve/solve.rubik.c \
+library/libuser1/therule/order/collide/collide.simple.c \
+library/libuser1/therule/order/gravity/gravity.simple.c \
+library/libuser1/themind/elec/bldc/control.bldc.c \
+library/libuser1/themind/elec/bulk/control.bulk.c \
+library/libuser1/themind/pilot/drone/pilot.drone.c \
+library/libuser1/themind/pilot/vehicle/pilot.vehicle.c \
+library/libuser1/themind/place/maze/solve.maze.c \
+library/libuser1/themind/place/rubik/solve.rubik.c \
 library/libuser1/themind/user/baby/baby.c \
 library/libuser1/themind/user/gary/gary.c \
 library/libuser1/themind/user/john/john.c \
@@ -450,6 +455,8 @@ library/libuser1/thedata/scene/virt/virt.xaml.c \
 library/libuser1/thedata/scene/scene.c \
 library/libuser1/thedata/world/real.c \
 library/libuser1/thedata/world/virt.c \
+library/libuser1/thedata/world/html.c \
+library/libuser1/thedata/world/uiux.c \
 library/libuser1/thedata/test/test.c \
 library/libuser1/thedata/mine.c \
 library/libuser1/theitem/baseunit/objalgo/algo.algo.c \
@@ -538,15 +545,17 @@ library/libuser1/theitem/baseunit/objpack/pack.tcp.c \
 library/libuser1/theitem/baseunit/objtab/tab.karnaugh.c \
 library/libuser1/theitem/baseunit/objtab/tab.truth.c \
 library/libuser1/theitem/baseunit/objuiux/uiux.gbuffer.c \
+library/libuser1/theitem/baseunit/objuiux/uiux.minimap.c \
 library/libuser1/theitem/baseunit/objuiux/uiux.oscillo.c \
 library/libuser1/theitem/baseunit/objuiux/uiux.picture.c \
 library/libuser1/theitem/baseunit/objuiux/uiux.qrcode.c \
+library/libuser1/theitem/baseunit/objuiux/uiux.skill.c \
+library/libuser1/theitem/baseunit/objuiux/uiux.status.c \
 library/libuser1/theitem/baseunit/objuiux/uiux.spectrum.c \
 library/libuser1/theitem/baseunit/objuiux/uiux.texmix.c \
 library/libuser1/theitem/baseunit/objuiux/uiux.video.c \
 library/libuser1/theitem/baseunit/objuiux/uiux.voxel.c \
 library/libuser1/theitem/baseunit/objvkbd/vkbd.button.c \
-library/libuser1/theitem/baseunit/objvkbd/vkbd.control.c \
 library/libuser1/theitem/baseunit/objvkbd/vkbd.joystick.c \
 library/libuser1/theitem/baseunit/objvkbd/vkbd.keyboard.c \
 library/libuser1/theitem/baseunit/objvkbd/vkbd.slider.c \

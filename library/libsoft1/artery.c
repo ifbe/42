@@ -628,7 +628,7 @@ int cmp(void*, void*);
 
 
 #define datahome qqq
-static struct object* obj = 0;
+static struct sysobj* obj = 0;
 static void* ppp = 0;
 static struct artery* ele = 0;
 static void* qqq = 0;
@@ -701,6 +701,9 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _Mavlink_:mavlinkserver_read(self, peer, arg, idx, buf, len);break;
 		case _nema0183_:nema0183client_read(self, peer, arg, idx, buf, len);break;
 		case _Nema0183_:nema0183server_read(self, peer, arg, idx, buf, len);break;
+
+		case _gpt_:gptclient_read(self, peer, arg, idx, buf, len);break;
+		case _mbr_:mbrclient_read(self, peer, arg, idx, buf, len);break;
 
 		case _DNS_:dnsserver_read(self, peer, arg, idx, buf, len);break;
 		case _dns_:dnsclient_read(self, peer, arg, idx, buf, len);break;
@@ -807,6 +810,9 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _Nema0183_:return nema0183server_write(self, peer, arg, idx, buf, len);break;
 		case _nema0183_:return nema0183client_write(self, peer, arg, idx, buf, len);break;
 
+		case _gpt_:return gptclient_write(self, peer, arg, idx, buf, len);break;
+		case _mbr_:return mbrclient_write(self, peer, arg, idx, buf, len);break;
+
 		case _DNS_:return dnsserver_write(self, peer, arg, idx, buf, len);break;
 		case _dns_:return dnsclient_write(self, peer, arg, idx, buf, len);break;
 		case _NTP_:return ntpserver_write(self, peer, arg, idx, buf, len);break;
@@ -880,6 +886,9 @@ int arterydiscon(struct halfrel* self, struct halfrel* peer)
 		case _ann_:return ann_discon(self, peer);break;
 		//case _cnn_:return cnn_discon(self, peer);break;
 
+		case _gpt_:return gptclient_discon(self, peer);break;
+		case _mbr_:return mbrclient_discon(self, peer);break;
+
 		case _dns_:return dnsclient_discon(self, peer);break;
 		case _DNS_:return dnsserver_discon(self, peer);break;
 		case _ntp_:return ntpclient_discon(self, peer);break;
@@ -948,6 +957,9 @@ int arterylinkup(struct halfrel* self, struct halfrel* peer)
 	switch(ele->type){
 		case _ann_:return ann_linkup(self, peer);break;
 		//case _cnn_:return cnn_linkup(self, peer);break;
+
+		case _gpt_:return gptclient_linkup(self, peer);break;
+		case _mbr_:return mbrclient_linkup(self, peer);break;
 
 		case _dns_:return dnsclient_linkup(self, peer);break;
 		case _DNS_:return dnsserver_linkup(self, peer);break;

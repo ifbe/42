@@ -111,7 +111,7 @@ int socksclient_discon(struct halfrel* self, struct halfrel* peer)
 int socksclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
     struct artery* ele;
-    struct object* obj;
+    struct sysobj* obj;
 	say("@socksclient_linkup: %.4s\n", &self->flag);
 
     if(_src_ == self->flag){
@@ -237,7 +237,7 @@ int socksmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
     if(3 != req->atyp)return 0;
 say("1\n");
     //side a
-	struct object* obj;
+	struct sysobj* obj;
 	obj = (void*)(peer->chip);
 	if(0 == obj)return 0;
 	obj = obj->tempobj;

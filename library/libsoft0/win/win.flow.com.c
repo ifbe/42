@@ -9,7 +9,7 @@ void sleep_us(int);
 
 
 //
-static struct object* obj = 0;
+static struct sysobj* obj = 0;
 static HANDLE hcom = 0;
 //
 static int curid = 0;
@@ -18,7 +18,7 @@ static int alive = 0;
 
 
 
-DWORD WINAPI uart_thread(struct object* oo)
+DWORD WINAPI uart_thread(struct sysobj* oo)
 {
 	int ret;
 	int enq;

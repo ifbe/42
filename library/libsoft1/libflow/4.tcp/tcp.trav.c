@@ -41,7 +41,7 @@ int tcptravclient_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 int tcptravclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	struct artery* art = self->pchip;
-	struct object* sys = peer->pchip;
+	struct sysobj* sys = peer->pchip;
 	say("@tcptravclient_write:%.4s\n", &self->flag);
 
 	if(_std_ == self->flag){
@@ -193,7 +193,7 @@ int tcptravmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 int tcptravmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	struct artery* art = self->pchip;
-	struct object* sys = peer->pchip;
+	struct sysobj* sys = peer->pchip;
 	if(_TCP_ == sys->type){
 		u8* t = sys->peer;
 		say("from %d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);

@@ -1,0 +1,18 @@
+<artery>
+mbr{
+fmt:mbr
+}
+</artery>
+
+
+<system>
+file{
+fmt:file
+url:/dev/disk0
+}
+</system>
+
+
+<relation>
+(file, 0, dst) -> (mbr, 0, src)
+</relation>

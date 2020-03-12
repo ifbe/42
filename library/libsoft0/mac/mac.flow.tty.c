@@ -11,7 +11,7 @@ int kqueue_add(int);
 
 
 
-static struct object* obj;
+static struct sysobj* obj;
 
 
 

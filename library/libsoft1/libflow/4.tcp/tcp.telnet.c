@@ -159,7 +159,7 @@ int telnetmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int
 int telnetmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	struct artery* ele;
-	struct object* obj;
+	struct sysobj* obj;
 	struct relation* rel;
 
 	obj = peer->pchip;

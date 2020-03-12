@@ -174,7 +174,7 @@ int relationread(void* chip, int foot, void* arg, int idx, void* buf, int len)
 		if(foot == rel->dstflag){
 			self = (void*)&rel->srcchip;
 			peer = (void*)&rel->dstchip;
-			relation_r(self, peer, arg, idx, buf, len);
+			return relation_r(self, peer, arg, idx, buf, len);
 		}
 		rel = samedstnextsrc(rel);
 	}
@@ -185,7 +185,7 @@ int relationread(void* chip, int foot, void* arg, int idx, void* buf, int len)
 		if(foot == rel->srcflag){
 			self = (void*)&rel->dstchip;
 			peer = (void*)&rel->srcchip;
-			relation_r(self, peer, arg, idx, buf, len);
+			return relation_r(self, peer, arg, idx, buf, len);
 		}
 		rel = samesrcnextdst(rel);
 	}

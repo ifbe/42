@@ -322,7 +322,7 @@ int fileclient_linkup(struct halfrel* self, struct halfrel* peer)
 	int ret;
 	u64 type;
 	struct artery* ele = self->pchip;
-	struct object* obj = peer->pchip;
+	struct sysobj* obj = peer->pchip;
 	void* buf = memorycreate(0x1000, 0);
 
 	ret = readfile(obj, obj->selffd, "", 0, buf, 0x1000);

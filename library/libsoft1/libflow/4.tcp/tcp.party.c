@@ -267,7 +267,7 @@ int partyclient_discon(struct halfrel* self, struct halfrel* peer)
 int partyclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct artery* art = self->pchip;
-	struct object* obj = peer->pchip;
+	struct sysobj* obj = peer->pchip;
 	if( (_sys_ == obj->tier) && (_tcp_ == obj->type) ){
 		int ret;
 		u8 tmp[64];
@@ -450,7 +450,7 @@ int partymaster_write_first(struct halfrel* self, struct halfrel* peer, u8* buf,
 	u64 name;
 	u8 tmp[256];
 	struct artery* art = self->pchip;
-	struct object* sys = peer->pchip;
+	struct sysobj* sys = peer->pchip;
 
 	struct peruser* per = art->PERBUF;
 	if(0 == per)return 0;
@@ -515,7 +515,7 @@ int partymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 {
 	//say("@partymaster_write\n");
 	struct artery* art = self->pchip;
-	struct object* sys = peer->pchip;
+	struct sysobj* sys = peer->pchip;
 	//printmemory(buf, len);
 	//say("valid message:%.*s", len, buf);
 

@@ -123,7 +123,7 @@ int httpclient_discon(struct halfrel* self, struct halfrel* peer, void* arg, int
 int httpclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct artery* ele;
-	struct object* obj;
+	struct sysobj* obj;
 	say("@httpclient_linkup: %.4s\n", &self->flag);
 
 	ele = self->pchip;
@@ -266,9 +266,9 @@ int httpmaster_write_bysrc(struct halfrel* self, struct halfrel* peer, void* arg
 	//websocket
 	if((0 != p.Connection)&&(0 != p.Upgrade))
 	{
-		struct object* TCP = peer->pchip;
+		struct sysobj* TCP = peer->pchip;
 		if(0 == TCP)return 0;
-		struct object* Tcp = TCP->tempobj;
+		struct sysobj* Tcp = TCP->tempobj;
 		if(0 == Tcp)return 0;
 		struct artery* Ws = arterycreate(_Ws_, 0, 0, 0);
 		if(0 == Ws)return 0;

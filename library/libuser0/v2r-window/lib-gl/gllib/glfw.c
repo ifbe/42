@@ -20,6 +20,10 @@ void fullwindow_delete(void*);
 void fullwindow_read(void*);
 void fullwindow_write(void*, void*);
 //
+int gl41fbo6_create(void*, void*);
+int gl41fbo6_delete(void*, void*);
+int gl41fbo6_read( void*, void*, void*, int, void*, int);
+int gl41fbo6_write(void*, void*, void*, int, void*, int);
 int gl41fboc_create(void*, void*);
 int gl41fboc_delete(void*, void*);
 int gl41fboc_read( void*, void*, void*, int, void*, int);
@@ -407,6 +411,7 @@ void windowmodify(struct supply* ogl)
 void windowdelete(struct supply* ogl)
 {
 	switch(ogl->fmt){
+		case _gl41fbo6_:gl41fbo6_delete(ogl, 0);break;
 		case _gl41fboc_:gl41fboc_delete(ogl, 0);break;
 		case _gl41fbod_:gl41fbod_delete(ogl, 0);break;
 		case _gl41fbog_:gl41fbog_delete(ogl, 0);break;
@@ -422,6 +427,10 @@ void windowcreate(struct supply* ogl, void* arg)
 	struct supply* share = 0;
 
 	switch(ogl->fmt){
+	case _gl41fbo6_:{
+		gl41fbo6_create(ogl, arg);
+		break;
+	}
 	case _gl41fboc_:{
 		gl41fboc_create(ogl, arg);
 		break;

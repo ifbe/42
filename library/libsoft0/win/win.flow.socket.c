@@ -25,12 +25,12 @@ struct per_io_data
 	SOCKET sock;
 };
 //
-static struct object* obj = 0;
-static struct object* getobjbysock(SOCKET sock)
+static struct sysobj* obj = 0;
+static struct sysobj* getobjbysock(SOCKET sock)
 {
 	return &obj[sock/4];
 }
-static struct object* getobjbid(int idx)
+static struct sysobj* getobjbid(int idx)
 {
 	return &obj[idx];
 }
@@ -321,7 +321,7 @@ int createsocket_tcpserver(char* addr, int port)
 	//acceptex
 	int j;
 	SOCKET t;
-	struct object* tmp;
+	struct sysobj* tmp;
 	struct per_io_data* perio;
 	for(j=0;j<0x100;j++)
 	{
@@ -420,7 +420,7 @@ int readsocket(int idx, void* tmp, void* buf, int len)
 	char* dst;
 
 	SOCKET sock = getsockbyid(idx);
-	struct object* perfd = &obj[idx];
+	struct sysobj* perfd = &obj[idx];
 	struct per_io_data* perio = (void*)(perfd->data);
 
 	//perio
@@ -451,7 +451,7 @@ int writesocket(int idx, struct sockaddr_in* tmp, void* buf, int len)
 	WSABUF wbuf;
 
 	SOCKET sock = getsockbyid(idx);
-	struct object* perfd = &obj[idx];
+	struct sysobj* perfd = &obj[idx];
 
 	if(_UDP_ == perfd->type)
 	{

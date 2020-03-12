@@ -1,0 +1,18 @@
+<artery>
+gpt{
+fmt:gpt
+}
+</artery>
+
+
+<system>
+file{
+fmt:file
+url:/dev/disk2
+}
+</system>
+
+
+<relation>
+(file, 0, dst) -> (gpt, 0, src)
+</relation>

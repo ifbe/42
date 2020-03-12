@@ -215,10 +215,11 @@
 #define _gl41data_ hex64('g','l','4','1','d','a','t','a')
 #define _gl41coop_ hex64('g','l','4','1','c','o','o','p')
 
-#define _gl41wnd0_ hex64('g','l','4','1','w','n','d','0')
-#define _gl41fbod_ hex64('g','l','4','1','f','b','o','d')
+#define _gl41fbo6_ hex64('g','l','4','1','f','b','o','6')
 #define _gl41fboc_ hex64('g','l','4','1','f','b','o','c')
+#define _gl41fbod_ hex64('g','l','4','1','f','b','o','d')
 #define _gl41fbog_ hex64('g','l','4','1','f','b','o','g')
+#define _gl41wnd0_ hex64('g','l','4','1','w','n','d','0')
 //physic
 #define _phys_ hex32('p','h','y','s')
 #define _gravity_ hex64('g','r','a','v','i','t','y',0)

@@ -24,7 +24,7 @@ int readsocket(int, void*, void*, int);
 
 
 
-struct object* obj;
+struct sysobj* obj;
 static void* buf;
 static int alive = 0;
 static int epollfd = 0;
@@ -70,9 +70,9 @@ static void* epollthread(void* p)
 	int j;
 	int fd, cc;
 	int ret, cnt;
-	struct object* here;
-	struct object* child;
-	struct object* parent;
+	struct sysobj* here;
+	struct sysobj* child;
+	struct sysobj* parent;
 	struct epoll_event ev[16];
 
 	while(alive)

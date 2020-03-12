@@ -27,12 +27,39 @@ struct str
 	int len;
 	u8 buf[0];
 };
+typedef struct str verylong;
 struct event
 {
 	u64 why;
 	u64 what;
 	u64 where;
 	u64 when;
+};
+typedef struct event event;
+
+
+
+
+struct xyzw
+{
+	u16 x;
+	u16 y;
+	u16 z;
+	u16 id;
+};
+struct xyzwpair
+{
+	//touchdown, pointdown, gamepadleft
+	u16 x0;
+	u16 y0;
+	u16 z0;
+	u16 w0;
+
+	//touchmove, pointmove, gamepadright
+	u16 xn;
+	u16 yn;
+	u16 zn;
+	u16 wn;
 };
 
 
@@ -82,31 +109,6 @@ struct relation
 	u32 srcflag;
 	u32 samesrcprevdst;
 	u32 samesrcnextdst;
-};
-
-
-
-
-struct xyzw
-{
-	u16 x;
-	u16 y;
-	u16 z;
-	u16 id;
-};
-struct xyzwpair
-{
-	//touchdown, pointdown, gamepadleft
-	u16 x0;
-	u16 y0;
-	u16 z0;
-	u16 w0;
-
-	//touchmove, pointmove, gamepadright
-	u16 xn;
-	u16 yn;
-	u16 zn;
-	u16 wn;
 };
 
 
@@ -705,7 +707,7 @@ struct driver
 
 
 
-struct object
+struct sysobj
 {
 	//[00,1f]: wire
 	union{

@@ -32,6 +32,7 @@ opengl:
 	$(compiler) $(cflag) v2r-window/lib-gl/gldraw/gl.easy.c
 	$(compiler) $(cflag) v2r-window/lib-gl/gldraw/gl.full.c
 	$(compiler) $(cflag) v2r-window/lib-gl/gltar/gl41.target.color.c
+	$(compiler) $(cflag) v2r-window/lib-gl/gltar/gl41.target.cube.c
 	$(compiler) $(cflag) v2r-window/lib-gl/gltar/gl41.target.depth.c
 	$(compiler) $(cflag) v2r-window/lib-gl/gltar/gl41.target.gbuffer.c
 	$(compiler) $(cflag) v2r-window/lib-gl/gltar/gl41.target.window.c

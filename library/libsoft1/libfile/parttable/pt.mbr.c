@@ -1,9 +1,4 @@
 #include "libsoft.h"
-#define _mbr_ hex32('m','b','r',0)
-#define _ext_ hex32('e','x','t',0)
-#define _fat_ hex32('f','a','t',0)
-#define _hfs_ hex32('h','f','s',0)
-#define _ntfs_ hex32('n','t','f','s')
 
 
 
@@ -22,125 +17,91 @@ int check_mbr(u8* addr)
 
 
 
-//
-static int mbrrecord(u8* from, u8* dst)
-{
-	u8 H,L;
-	u32 flag;		//(mbr+0x1be)+0
-	u32 type;		//(mbr+0x1be)+4
-	u32 start;		//(mbr+0x1be)+8
-	u32 size;		//(mbr+0x1be)+c
-	u64* dstqword;
-
-	//
-	type = *(u8*)(from+4);
-	if(type == 0)return 0;
-
-	start = *(u32*)(from+8);
-	size = *(u32*)(from+0xc);
-
-	//类型，子类型，开始，结束
-	dstqword = (u64*)dst;
-	dstqword[0] = start;		//start
-	dstqword[1] = start + size - 1;	//end
-
-	//拓展分区要递归
-	if( (type == 0x5) | (type == 0xf) )
-	{
-		say("extend@start\n");
-		dstqword[1] = '~';
-		return 0;
-	}
-
-	//其他普通分区
-	if(	(0x4 == type) |
-		(0x6 == type) |
-		(0xb == type) )
-	{
-		//say("fat\n");
-		dstqword[2] = _fat_;
-	}
-	else if(0x7 == type)
-	{
-		//say("ntfs\n");
-		dstqword[2] = _ntfs_;
-	}
-	else if(0x83 == type)
-	{
-		//say("ext\n");
-		dstqword[2] = _ext_;
-	}
-	else
-	{
-		//say("unknown:%x\n",type);
-		H = ( (type>>4)&0xf ) + 0x30;
-		if(H>0x39)H += 7;
-		L = (type&0xf) + 0x30;
-		if(L>0x39)L += 7;
-
-		dstqword[2] = H + (L<<8);
-	}
-
-	say("[%012x,%012x]:	%8.8s\n",
-		dstqword[0], dstqword[1],
-		&dstqword[2]
-	);
-	return 0x10;	//这次翻译了多少
-}
-
-
-
-
 //[+0x1be,+0x1fd],每个0x10,总共4个
-//[+0]:活动标记
-//[+0x1,+0x3]:开始磁头柱面扇区
-//[+0x4]:分区类型
-//[+0x5,+0x7]:结束磁头柱面扇区
-//[+0x8,+0xb]:起始lba
-//[+0xc,+0xf]:大小
-void parse_mbr(u8* src, u8* dst)
+struct mbrpart{
+	u8 bootflag;		//[+0]:活动标记
+	u8 chs_start[3];	//[+0x1,+0x3]:开始磁头柱面扇区
+	u8 parttype;		//[+0x4]:分区类型
+	u8 chs_end[3];		//[+0x5,+0x7]:结束磁头柱面扇区
+	u32 lba_start;		//[+0x8,+0xb]:起始lba
+	u32 lba_count;		//[+0xc,+0xf]:大小
+};
+void parse_mbr_one(struct mbrpart* part)
 {
-	int j,ret;
-	for(j=0;j<0x10000;j++)dst[j] = 0;
+	u32 start = part->lba_start;
+	u32 count = part->lba_count;
+	say("[%08x,%08x]:\n", start, start + count - 1);
 
-	//主分区
-	ret = mbrrecord(src+0x1be, dst);
-	if(ret > 0)dst += 0x80;
-
-	ret = mbrrecord(src+0x1ce, dst);
-	if(ret > 0)dst += 0x80;
-
-	ret = mbrrecord(src+0x1de, dst);
-	if(ret > 0)dst += 0x80;
-
-	ret = mbrrecord(src+0x1ee, dst);
-	if(ret > 0)dst += 0x80;
+	switch(part->parttype){
+	case 0x5:
+	case 0xf:
+	{
+		say("extend\n");
+		break;
+	}
+	case 0x4:
+	case 0x6:
+	case 0xb:
+	{
+		say("fat\n");
+		break;
+	}
+	case 0x7:
+	{
+		say("ntfs\n");
+		break;
+	}
+	case 0x83:
+	{
+		say("ext\n");
+		break;
+	}
+	default:{
+		say("type=%02x\n",part->parttype);
+	}
+	}//switch
+}
+void parse_mbr(u8* src)
+{
+	int j;
+	src += 0x1be;
+	for(j=0;j<0x40;j+=0x10)parse_mbr_one((void*)(src+j));
 }
 
 
 
 
-int mbrclient_linkup(struct halfrel* self, struct halfrel* peer)
+int mbrclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	int ret;
-	u8 src[0x200];
-	u8 dst[0x200];
-	struct object* obj;
-	struct artery* ele;
-
-	obj = peer->pchip;
-	ele = self->pchip;
-
-	ret = readfile(obj, obj->selffd, "", 0, src, 0x4800);
-
-	parse_mbr(src, dst);
 	return 0;
 }
-
-
-
-
-int mbrclient_create()
+int mbrclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
+	return 0;
+}
+int mbrclient_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int mbrclient_linkup(struct halfrel* self, struct halfrel* peer)
+{
+	struct artery* ele = self->pchip;
+	int ret = relationread(ele,_src_, "",0, ele->buf0, 0x1000);
+	if(ret != 0x1000)return 0;
+
+	parse_mbr(ele->buf0);
+	return 0;
+}
+int mbrclient_delete(struct artery* art)
+{
+	if(art->buf0){
+		memorydelete(art->buf0);
+		art->buf0 = 0;
+	}
+	return 0;
+}
+int mbrclient_create(struct artery* art)
+{
+	art->buf0 = memorycreate(0x1000, 0);
 	return 0;
 }

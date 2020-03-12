@@ -12,7 +12,7 @@ static struct pwrclk* pwr = 0;
 static struct worker* wrk = 0;
 static struct device* dev = 0;
 static struct driver* dri = 0;
-static struct object* obj = 0;
+static struct sysobj* obj = 0;
 static struct artery* ele = 0;
 static struct supply* supply = 0;
 static struct entity* entity = 0;
@@ -239,7 +239,7 @@ void overview_draw_pixel(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct object);
+				k = k / sizeof(struct sysobj);
 				k %= 128;
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+17)*hh/32,
@@ -289,7 +289,7 @@ void overview_draw_pixel(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct object);
+				k = k / sizeof(struct sysobj);
 				k %= 128;
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+17)*hh/32,
@@ -340,7 +340,7 @@ void overview_draw_pixel(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct object);
+				k = k / sizeof(struct sysobj);
 				k %= 128;
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+17)*hh/32,
@@ -390,7 +390,7 @@ void overview_draw_pixel(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct object);
+				k = k / sizeof(struct sysobj);
 				k %= 128;
 				drawline_arrow(win, 0xc0ffc0,
 					cx+(4*(k%16)-29)*ww/32, cy+(2*(k/16)+17)*hh/32,
@@ -649,7 +649,7 @@ void overview_draw_gl41(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct object);
+				k = k / sizeof(struct sysobj);
 				k %= 128;
 
 				r = ((k%16)*4-30)/32.0;
@@ -735,7 +735,7 @@ void overview_draw_gl41(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct object);
+				k = k / sizeof(struct sysobj);
 				k %= 128;
 
 				r = ((k%16)*4-30)/32.0;
@@ -822,7 +822,7 @@ void overview_draw_gl41(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct object);
+				k = k / sizeof(struct sysobj);
 				k %= 128;
 
 				r = ((k%16)*4-30)/32.0;
@@ -909,7 +909,7 @@ void overview_draw_gl41(
 			if(_sys_ == rel->srctype)
 			{
 				k = (void*)(rel->srcchip) - (void*)obj;
-				k = k / sizeof(struct object);
+				k = k / sizeof(struct sysobj);
 				k %= 128;
 
 				r = ((k%16)*4-30)/32.0;
@@ -1049,8 +1049,8 @@ void overview_draw_cli(
 void overview_drag(struct entity* win, int x0, int y0, int x1, int y1)
 {
 	int j;
-	struct object* obj_s;
-	struct object* obj_d;
+	struct sysobj* obj_s;
+	struct sysobj* obj_d;
 	struct artery* ele_s;
 	struct artery* ele_d;
 	struct supply* win_s;

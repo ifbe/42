@@ -41,7 +41,7 @@ int cmp(void*, void*);
 
 
 //
-static struct object* obj = 0;
+static struct sysobj* obj = 0;
 static int objlen = 0;
 static void* ppp = 0;
 static int ppplen = 0;
@@ -51,7 +51,7 @@ static int ppplen = 0;
 
 int systemread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	struct object* oo;
+	struct sysobj* oo;
 	int fd;
 	if(0 == self)return 0;
 	//say("@systemread:%llx\n", self);
@@ -68,7 +68,7 @@ int systemread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 int systemwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
 	int fd;
-	struct object* oo;
+	struct sysobj* oo;
 	//say("@systemwrite:%llx\n", self);
 
 	oo = self->pchip;
@@ -114,7 +114,7 @@ int systemlinkup(struct halfrel* self, struct halfrel* peer)
 int systemdelete(void* addr)
 {
 	int fd;
-	struct object* oo;
+	struct sysobj* oo;
 	struct relation* rel;
 	if(0 == addr)return 0;
 
@@ -191,7 +191,8 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 	if(0 == type)return 0;
 
 	//file family
-	if(_FILE_ == type)
+	switch(type){
+	case _FILE_:
 	{
 		fd = startfile(name, 'w');
 		if(fd <= 0)return 0;
@@ -200,7 +201,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 		obj[fd].selffd = fd;
 		return &obj[fd];
 	}
-	if(_file_ == type)
+	case _file_:
 	{
 		fd = startfile(name, 'r');
 		if(fd <= 0)return 0;
@@ -209,7 +210,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 		obj[fd].selffd = fd;
 		return &obj[fd];
 	}
-	else if(_ptmx_ == type)
+	case _ptmx_:
 	{
 		parseuart(host, &port, name);
 		say("parse: %s, %d\n", host, port);
@@ -221,7 +222,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 		obj[fd].selffd = fd;
 		return &obj[fd];
 	}
-	else if(_uart_ == type)
+	case _uart_:
 	{
 		parseuart(host, &port, name);
 		say("parse: %s, %d\n", host, port);
@@ -233,7 +234,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 		obj[fd].selffd = fd;
 		return &obj[fd];
 	}
-	else if(_RAW_ == type)		//raw server
+	case _RAW_:		//raw server
 	{
 		fd = createsocket(_RAW_, name);
 		if(0 >= fd)return 0;
@@ -242,7 +243,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 		obj[fd].selffd = fd;
 		return &obj[fd];
 	}
-	else if(_raw_ == type)		//raw client
+	case _raw_:		//raw client
 	{
 		fd = createsocket(_raw_, name);
 		if(0 >= fd)return 0;
@@ -251,7 +252,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 		obj[fd].selffd = fd;
 		return &obj[fd];
 	}
-	else if(_UDP_ == type)		//udp master
+	case _UDP_:		//udp master
 	{
 		fd = createsocket(_UDP_, name);
 		if(0 >= fd)return 0;
@@ -260,12 +261,12 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 		obj[fd].selffd = fd;
 		return &obj[fd];
 	}
-	else if(_Udp_ == type)		//udp server
+	case _Udp_:		//udp server
 	{
 		obj[fd].type = _Udp_;
 		return 0;
 	}
-	else if(_udp_ == type)		//udp client
+	case _udp_:		//udp client
 	{
 		fd = createsocket(_udp_, name);
 		if(0 >= fd)return 0;
@@ -274,7 +275,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 		obj[fd].selffd = fd;
 		return &obj[fd];
 	}
-	else if(_TCP_ == type)		//tcp master
+	case _TCP_:		//tcp master
 	{
 		fd = createsocket(_TCP_, name);
 		if(0 >= fd)return 0;
@@ -283,11 +284,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 		obj[fd].selffd = fd;
 		return &obj[fd];
 	}
-	else if(_Tcp_ == type)		//tcp server
-	{
-		obj[fd].type = _Tcp_;
-	}
-	else if(_tcp_ == type)		//tcp client
+	case _tcp_:		//tcp client
 	{
 		fd = createsocket(_tcp_, name);
 		if(0 >= fd)return 0;
@@ -295,6 +292,7 @@ void* systemcreate(u64 type, void* argstr, int argc, u8** argv)
 		obj[fd].type = _tcp_;
 		obj[fd].selffd = fd;
 		return &obj[fd];
+	}
 	}
 
 	return 0;
@@ -321,7 +319,7 @@ void* systemmodify(int argc, u8** argv)
 void* systemsearch(u8* buf, int len)
 {
 	int j,k=0;
-	struct object* tmp;
+	struct sysobj* tmp;
 	for(j=0;j<0x1000;j++)
 	{
 		tmp = &obj[j];
@@ -356,7 +354,7 @@ void initsystem(u8* addr)
 	obj = (void*)(addr+0x000000);
 	ppp = (void*)(addr+0x100000);
 
-#define max (0x100000/sizeof(struct object))
+#define max (0x100000/sizeof(struct sysobj))
 	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)obj[j].tier = _sys_;
 

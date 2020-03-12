@@ -665,7 +665,7 @@ void hfs_delete()
 
 int hfsclient_write(
 	struct artery* ele, void* sty,
-	struct object* obj, void* pin,
+	struct sysobj* obj, void* pin,
 	u8* buf, int len)
 {
 	return 0;

@@ -141,7 +141,7 @@ int udptravmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 int udptravmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	struct artery* art = self->pchip;
-	struct object* sys = peer->pchip;
+	struct sysobj* sys = peer->pchip;
 	if( (_UDP_ == sys->type) | (_udp_ == sys->type) ) {
 		if(0 == arg){
 			say("error@udptravmaster_write\n");

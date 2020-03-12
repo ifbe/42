@@ -16,7 +16,7 @@ int readsocket(int, void*, void*, int);
 
 
 
-static struct object* obj;
+static struct sysobj* obj;
 static void* buf;
 static int kqfd = 0;
 static int alive = 0;
@@ -47,9 +47,9 @@ int kqueuethread(int argc, const char * argv[])
 {
 	int fd,cc;
 	int ret,cnt;
-	struct object* here;
-	struct object* child;
-	struct object* parent;
+	struct sysobj* here;
+	struct sysobj* child;
+	struct sysobj* parent;
 	struct kevent events[10];
 	struct timespec timeout = {10,0};
 

@@ -16,7 +16,6 @@ void* arterymodify(int argc, void* argv);
 void* supplymodify(int argc, void* argv);
 void* entitymodify(int argc, void* argv);
 //
-int event(void*, int);
 int node(void*, int);
 int relation(void*, int);
 int role(void*, int);

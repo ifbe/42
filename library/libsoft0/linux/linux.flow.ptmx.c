@@ -16,7 +16,7 @@ int epoll_add(int);
 
 
 
-static struct object* obj;
+static struct sysobj* obj;
 void systemshell_child(char* p)
 {
 	int ret;

@@ -95,8 +95,8 @@ int fuckgfwmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, in
 }
 int fuckgfwmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	struct object* TCP;		//parent
-	struct object* Tcp;		//child
+	struct sysobj* TCP;		//parent
+	struct sysobj* Tcp;		//child
 
 	struct artery* FUCKGFW;	//master
 	struct artery* Fuckgfw;	//server

@@ -74,6 +74,40 @@ int fbocreate_c(struct supply* tar, int arg)
 	return 0;
 }//c
 
+int fbocreate_6(struct supply* tar, int arg)
+{
+	int j;
+
+	//render buffer: without this, depth wrong
+	glGenRenderbuffers(1, &tar->rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, tar->rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, tar->rbo);
+
+	//color buffer
+	glGenTextures(1, &tar->tex0);
+	glBindTexture(GL_TEXTURE_2D, tar->tex0);
+	for(j=0;j<6;j++){
+		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + j, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	}
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+#ifdef __ANDROID__
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_CUBE_MAP, tar->tex0, 0);
+#else
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tar->tex0, 0);
+	glDrawBuffer(GL_NONE);
+#endif
+
+	//check
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fbo6!!!\n");
+	return 0;
+}//c
+
 int fbocreate_g(struct supply* tar, int arg)
 {
 	int j;
@@ -117,6 +151,7 @@ int fbocreate(struct supply* tar, int arg)
 	glBindFramebuffer(GL_FRAMEBUFFER, tar->fbo);
 
 	switch(arg){
+	case '6':fbocreate_6(tar, arg);break;
 	case 'c':fbocreate_c(tar, arg);break;
 	case 'd':fbocreate_d(tar, arg);break;
 	case 'g':fbocreate_g(tar, arg);break;

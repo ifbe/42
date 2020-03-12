@@ -1157,7 +1157,7 @@ int tls1v2master_read(struct halfrel* self, struct halfrel* peer, void* arg, int
 }
 int tls1v2master_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	struct object* obj;
+	struct sysobj* obj;
 	struct artery* ele;
 	struct relation* rel;
 	say("@tls1v2master_write\n");

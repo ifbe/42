@@ -858,7 +858,7 @@ int sshmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 {
 	int ret;
 	u8 tmp[0x100];
-	struct object* obj;
+	struct sysobj* obj;
 	struct artery* ele;
 	say("@sshmaster_write\n");
 	printmemory(buf, len);
