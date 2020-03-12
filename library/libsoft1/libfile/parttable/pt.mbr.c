@@ -28,25 +28,51 @@ struct mbrpart{
 };
 void parse_mbr_one(struct mbrpart* part)
 {
-	u32 start = part->lba_start;
-	u32 count = part->lba_count;
-	say("[%08x,%08x]:\n", start, start + count - 1);
+	u32 start,count;
+	if(0 == part->parttype)return;
+
+	//count-1 = bus error, gcc bug ?
+	start = part->lba_start;
+	count = part->lba_count;
+	say("[%08x,%08x]:\n", start, start+count);
 
 	switch(part->parttype){
-	case 0x5:
-	case 0xf:
+	case 0x05:
+	case 0x15:
 	{
-		say("extend\n");
+		say("extend-chs\n");
 		break;
 	}
-	case 0x4:
-	case 0x6:
-	case 0xb:
+	case 0x0f:
+	case 0x1f:
 	{
-		say("fat\n");
+		say("extend-lba\n");
 		break;
 	}
-	case 0x7:
+	case 0x04:
+	case 0x06:
+	case 0x0e:
+	case 0x14:
+	case 0x16:
+	case 0x1e:
+	{
+		say("fat16\n");
+		break;
+	}
+	case 0x0b:
+	case 0x1b:
+	{
+		say("fat32-chs\n");
+		break;
+	}
+	case 0x0c:
+	case 0x1c:
+	{
+		say("fat32-lba\n");
+		break;
+	}
+	case 0x07:
+	case 0x17:
 	{
 		say("ntfs\n");
 		break;
@@ -85,11 +111,13 @@ int mbrclient_discon(struct halfrel* self, struct halfrel* peer)
 }
 int mbrclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct artery* ele = self->pchip;
-	int ret = relationread(ele,_src_, "",0, ele->buf0, 0x1000);
-	if(ret != 0x1000)return 0;
+	if(_src_ == self->flag){
+		struct artery* ele = self->pchip;
+		int ret = relationread(ele,_src_, "",0, ele->buf0, 0x1000);
+		if(ret != 0x1000)return 0;
 
-	parse_mbr(ele->buf0);
+		parse_mbr(ele->buf0);
+	}
 	return 0;
 }
 int mbrclient_delete(struct artery* art)

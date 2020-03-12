@@ -101,11 +101,13 @@ int gptclient_discon(struct halfrel* self, struct halfrel* peer)
 }
 int gptclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct artery* ele = self->pchip;
-	int ret = relationread(ele,_src_, "",0, ele->buf0, 0x4800);
-	if(ret != 0x4800)return 0;
+	if(_src_ == self->flag){
+		struct artery* ele = self->pchip;
+		int ret = relationread(ele,_src_, "",0, ele->buf0, 0x4800);
+		if(ret != 0x4800)return 0;
 
-	parse_gpt(ele->buf0);
+		parse_gpt(ele->buf0);
+	}
 	return 0;
 }
 int gptclient_delete(struct artery* ele)
