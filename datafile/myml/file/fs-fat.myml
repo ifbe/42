@@ -1,0 +1,25 @@
+<supply>
+std{
+fmt:std
+}
+</supply>
+
+
+<artery>
+fat{
+fmt:fat
+}
+</artery>
+
+
+<system>
+file{
+fmt:file
+url:/dev/disk0s1
+}
+</system>
+
+
+<relation>
+(file, 0, dst) -> (fat, 0, src)
+</relation>

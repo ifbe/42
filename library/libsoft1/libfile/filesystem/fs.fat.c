@@ -5,40 +5,85 @@
 
 //memory
 static u8* fshome;		//fat表
-	static u8* pbr;
+	static u8* pbrbuffer;
 	static u8* fatbuffer;
-static u8* dirhome;		//目录专用
-static u8* datahome;		//一般使用
+static u8* dirhome;
 
 //disk
 static int version;
-static u64 firstincache;
+static int byte_per_sec;
+static int sec_per_fat;
+static int sec_per_clus;
+static int sec_of_fat0;
+static int sec_of_clus2;		//2号簇所在扇区
 //
-static u64 firstsector;
-static u64 fat0;		//fat表所在扇区
-static u64 fatsize;		//fat表总共的扇区数量
-static u64 cluster2;		//2号簇所在扇区
-static u64 clustersize;	//每个簇的扇区数量
+static u64 cache_first;
+static int cache_count;
 
 
 
 
-//[0,0xf]:name
-//[0x10,0x1f]:time?
-//[0x20,0x2f]:firstcluster
-//[0x30,0x3f]:size
-static void explaindirectory()
+struct folder{
+	u8 name_this[8];	//0x00-0x07：文件名，不足8个字节0x20补全(短文件名8.3命名规则)
+	u8 name_ext[3];		//0x08-0x0A：扩展名
+	u8 attr;			//0x0B：文件属性
+//0x00=读写
+//0x01=只读
+//0x02=隐藏
+//0x04=系统
+//0x08=卷标
+//0x10=目录
+//0x20=归档
+	u8 unused;			//0x0C:
+	u8 create_time_ms;	//0x0D：创建时间的10毫秒位
+	u16 create_time_s;	//0x0E-0x0F：文件创建时间
+	u16 create_date;	//0x10-0x11：文件创建日期
+	u16 access_date;	//0x12-0x13：文件最后访问日期
+	u16 clus_hi16;		//0x14-0x15：文件起始簇号的高16位 0x0000
+	u16 modify_time;	//0x16-0x17：文件最近修改时间
+	u16 modify_date;	//0x18-0x19：文件最近修改日期
+	u16 clus_lo16;		//0x1A-0x1B：文件起始簇号的地16位 0x0003
+	u32 filesize;		//0x1C-0x1F：文件的长度，0x2206=8710bytes=8.5K
+};
+void fatdate2mydate(int val0, int val1, u8* date)
 {
-	int i,j;
-	u8* rsi;
-	u8* rdi;
+	int tmp;
+	date[0] = (val1<< 1)&0x3f;
+	date[1] = (val1>> 5)&0x3f;
+	date[2] = (val1>>11)&0x1f;
+	date[3] = val0 & 0x1f;
+	date[4] = (val0>> 5)&0x0f;
 
-	//before
-	rsi=(u8*)(datahome-0x20);
-	rdi=(u8*)(dirhome);
+	tmp = 1980 + ((val0>>9)&0x7f);
+	date[5] = tmp % 100;
+	date[6] = tmp / 100;
+}
+static void parsefolder(struct artery* art, u8* rsi)
+{
+	int j;
+	struct folder* dir;
+
+	for(j=0;j<0x4000;j+=0x20){
+		dir = (void*)(rsi+j);
+		if(0x0f == rsi[j+0xb])continue;	//longname
+		if(0xe5 == rsi[j+0x0])continue;	//deleted
+		if(0x00 == rsi[j+0x0])continue;	//have name
+
+		printmemory(rsi+j,0x20);
+		say("size=%x\n",dir->filesize);
+
+		int clus = (dir->clus_hi16<<16) + dir->clus_lo16;
+		say("clus=%x\n", clus);
+
+		u8 date[8];
+		fatdate2mydate(dir->create_date, dir->create_time_s, date);
+		say("createtime: %02d%02d, %d:%d, %d:%d:%d\n",
+			date[6],date[5], date[4],date[3], date[2],date[1],date[0]
+		);
+	}
+
+/*
 	for(i=0;i<0x4000;i++) rdi[i]=0;
-
-	//start
 	while(1)
 	{
 		//datahome-0x20+0x20=datahome
@@ -46,9 +91,9 @@ static void explaindirectory()
 		if(rsi >= (u8*)(datahome+0x4000) )break;
 
 		//check
-		if( rsi[0xb] ==0xf )continue;	//fat ignore
-		if( rsi[0] ==0xe5 )continue;	//not deleted
-		if( *(u64*)rsi ==0 )continue;	//have name
+		if( rsi[0xb] ==0xf )continue;	//ignore
+		if( rsi[0] ==0xe5 )continue;	//deleted
+		if( *(u64*)rsi ==0 )continue;	//named
 
 		//[0x10,0x17]:type
 		u64 temp=rsi[0xb];
@@ -96,368 +141,362 @@ static void explaindirectory()
 		}
 		//
 		rdi+=0x40;
+	}*/
+}
+
+
+
+
+static u16 fat16_nextclus(struct artery* art, u16 clus)
+{
+	u16* cache = (void*)fatbuffer;
+	return cache[clus];
+}
+static int fat16_read(struct artery* art, int ign, u32 clus,int offs, u8* buf,int len)
+{
+	u32 tmp;
+	int ret, cnt = 0;
+	int byteperclus = byte_per_sec * sec_per_clus;
+
+	while(1){
+		if(cnt + byteperclus > len)break;
+
+		//read this cluster
+		tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
+		ret = relationread(art,_src_, "",tmp, buf+cnt,byteperclus);
+		if(ret < byteperclus)goto retcnt;
+		cnt += byteperclus;
+
+		//next clus
+		clus = fat16_nextclus(art, clus);
+		if(clus < 2)break;
+		if(clus >= 0xfff8)break;
+		if(clus == 0xfff7){say("bad clus:%x\n",clus);break;}
 	}
+
+	tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
+	ret = relationread(art,_src_, "",ret, buf+cnt,len-cnt);
+	if(ret < len-cnt)goto retcnt;
+	cnt += ret;
+
+retcnt:
+	return cnt;
 }
 
 
 
 
-
-
-
-//从收到的簇号开始一直读最多1MB，接收参数为目的内存地址，第一个簇号
-static int fat16_data(u8* dest,u64 cluster)
+static u32 fat32_nextclus(struct artery* art, u32 clus)
 {
-	say("cluster:%x\n",cluster);
+	u64 byte;
+	u32* cache = (void*)fatbuffer;
+	u32 remain = clus % cache_count;
 
-	u8* rdi=dest;
-	while(rdi<dest+0x80000)		//大于1M的不管
-	{
-		//判断退出
-		say("->%x\n",cluster);
-		if(cluster<2)break;
-		if(cluster==0xfff7){say("bad cluster:%x\n",cluster);break;}
-		if(cluster>=0xfff8)break;
+	if(cache_first != clus-remain){
+		cache_first = clus-remain;
 
-		//读一个簇
-		readfile(0, 0,
-			"", (cluster2+clustersize*(cluster-2))*0x200,
-			rdi, clustersize*0x200
-		);
-
-		//准备下一个地址，找下一个簇，全部fat表在内存里不用担心
-		rdi+=clustersize*0x200;
-		cluster=(u64)(*(u16*)(fatbuffer+2*cluster));
+		byte = byte_per_sec*sec_of_fat0 + 4*cache_first;
+		relationread(art,_src_, "",byte, cache,4*cache_count);
 	}
 
-	say("count:%x\n",rdi-dest);
-	return rdi-dest;
+	return cache[remain];
 }
-static void fat16_root()
+//clus=first clus of file, offs=offset byte of file
+static int fat32_read(struct artery* art, int ign, u64 clus,int offs, u8* buf,int len)
 {
-	//清理内存
-	int i;
-	for(i=0;i<0x40000;i++) datahome[i]=0;
+	u64 tmp;
+	int ret, cnt = 0;
+	int byteperclus = byte_per_sec * sec_per_clus;
 
-	//fat16的fat区最多0xffff个簇记录*每个记录2个字节<=0x20000=0x100个扇区
-	//data区最大0xffff个簇*每簇0x8000字节(?)<=0x80000000=2G=0x400000个扇区
-	say("reading whole fat table\n");
-	readfile(0, 0, "", fat0*0x200, fatbuffer, 0x20000);
-	//printmemory(fatbuffer,0x1000);
+	while(1){
+		if(0 == offs)break;
+		else if(offs >= byteperclus)offs -= byteperclus;
+		else if(offs < byteperclus){
+			tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
+			ret = relationread(art,_src_, "",tmp+offs, buf,byteperclus-offs);
+			if(ret < byteperclus-offs)goto retcnt;
+			cnt += byteperclus-offs;
 
-	//fat16根目录最多512个记录=0x20*0x200=0x4000字节=32个扇区
-	say("cd %x\n",fat0+fatsize*2);
-	readfile(0, 0, "", (fat0+fatsize*2)*0x200, datahome, 0x4000);
-	explaindirectory();
+			offs = 0;
+		}
 
-	say("\n");
-}
-void explainfat16head()
-{
-	//准备本程序需要的变量
-	//u64 firstsector=(u64)( *(u32*)(pbr+0x1c) );
-	say("fat16\n");
-
-	fat0=(u64)( *(u16*)(pbr+0xe) );
-	fat0=firstsector + fat0;
-	say("fat0@%x\n",fat0);
-
-	fatsize=(u64)( *(u16*)(pbr+0x16) );
-	say("fatsize:%x\n",fatsize);
-
-	cluster2=fat0+fatsize*2+32;
-	say("cluster2@%x\n",cluster2);
-
-	clustersize=(u64)( *(u8*)(pbr+0xd) );
-	say("clustersize:%x\n",clustersize);
-}
-
-
-
-
-
-
-
-
-
-//fat32的fat表很大，不能像fat16那样直接全部存进一块32K的内存里
-//所以每次查表的时候，要把，被查的表项目，所在的64K块，搬进内存
-//0x40000=0x200个扇区=0x10000个簇记录
-//所以要读的扇区为：[whatwewant,whatwewant+0x1ff](whatwewant=fat0扇区+(cluster/0x10000)*0x200)
-//举例子：
-//请求cluster=   0x777，如果内存里就是这第   0大块就返回，否则要把       0号到  0xffff号扔进内存然后记下当前clustercurrent=0
-//请求cluster= 0x13578，如果内存里就是这第   1大块就返回，否则要把 0x10000号到 0x1ffff号扔进内存然后记下当前clustercurrent=0x10000
-//请求cluster= 0x20000，如果内存里就是这第   2大块就返回，否则要把 0x20000号到 0x2ffff号扔进内存然后记下当前clustercurrent=0x20000
-//请求cluster=0x613153，如果内存里就是这第0x61大块就返回，否则要把0x610000号到0x61ffff号扔进内存然后记下当前clustercurrent=0x610000
-static void checkcacheforcluster(u64 cluster)
-{
-	//现在的就是我们要的，就直接返回
-	u64 whatwewant=cluster&0xffffffffffff0000;
-	if(firstincache == whatwewant) return;
-
-	//否则，从这个开始，读0xffff个，再记下目前cache里面第一个
-	//每扇区有0x200/4=0x80个，需要fat表所在位置往后
-	readfile(0, 0,
-		"", (fat0+(whatwewant/0x80))*0x200,
-		fatbuffer, 0x40000
-	);
-
-	//say("whatwewant:%x\n",whatwewant);
-	firstincache=whatwewant;
-}
-//从收到的簇号开始一直读最多1MB，接收参数为目的内存地址，第一个簇号
-//destination,clusternum,startoffset,maxbytes
-static void fat32_data(u8* dest,u64 cluster,u64 start,u64 count)
-{
-	say("cluster:%x\n",cluster);
-
-	u8* rdi=dest;
-	while(rdi<dest+count)
-	{
-		readfile(0, 0,
-			"", (cluster2+clustersize*(cluster-2))*0x200,
-			rdi, clustersize*0x200
-		);
-		rdi+=clustersize*0x200;
-
-		//检查缓冲，从检查完的缓冲区里面读一个cluster号
-		checkcacheforcluster(cluster);
-		cluster=(u64)(*(u32*)(fatbuffer+4*(cluster%0x10000)));
-
-		//if(cluster<2){say("impossible cluster:%x\n",cluster);return;}
-		if(cluster<2)break;
-		if(cluster>=0x0ffffff8)break;
-		if(cluster==0x0ffffff7){say("bad cluster:%x\n",cluster);break;}
+		clus = fat32_nextclus(art, clus);
+		if(clus <2)goto retcnt;
+		if(clus >= 0x0ffffff8)goto retcnt;
+		if(clus == 0x0ffffff7){say("bad clus:%x\n",clus);goto retcnt;}
 	}
-	say("count:%x\n",rdi-dest);
-}
-static void fat32_root()
-{
-	int i;
-	for(i=0;i<0x40000;i++) datahome[i]=0;
 
-	//fat32的fat可有0xffffffff个*每簇4字节<=0x400000000=16G=0x2000000个扇区
-	//数据区总共0xffffffff个簇*每簇512k<=0x20000000000=2T=0x100000000个扇区
-	firstincache=0xffffffff;		//保证读第一块
-	checkcacheforcluster(0);
+	while(1){
+		if(cnt + byteperclus > len)break;
 
-	//
-	say("cd root:%x\n",cluster2);
-	fat32_data( datahome , 2 , 0 , 0x4000 );
-	explaindirectory();
-}
-void explainfat32head()
-{
-	//准备本程序需要的变量
-	//u64 firstsector=(u64)( *(u32*)(pbr+0x1c) );
-	say("fat32\n");
+		//read this cluster
+		tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
+		ret = relationread(art,_src_, "",tmp, buf+cnt,byteperclus);
+		if(ret < byteperclus)goto retcnt;
+		cnt += byteperclus;
 
-	fat0=(u64)( *(u16*)(pbr+0xe) );
-	fat0=firstsector + fat0;
-	say("fat0@%x\n",fat0);
+		//next clus
+		clus = fat32_nextclus(art, clus);
+		if(clus <2)goto retcnt;
+		if(clus >= 0x0ffffff8)goto retcnt;
+		if(clus == 0x0ffffff7){say("bad clus:%x\n",clus);goto retcnt;}
+	}
 
-	fatsize=(u64)( *(u32*)(pbr+0x24) );
-	say("fatsize:%x\n",fatsize);
+	tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
+	ret = relationread(art,_src_, "",ret, buf+cnt,len-cnt);
+	if(ret < len-cnt)goto retcnt;
+	cnt += ret;
 
-	cluster2=fat0+fatsize*2;
-	say("cluster2@%x\n",cluster2);
-
-	clustersize=(u64)( *(u8*)(pbr+0xd) );
-	say("clustersize:%x\n",clustersize);
+retcnt:
+	return cnt;
 }
 
 
 
 
-int check_fat(u8* addr)
+int fat_buildcache(struct artery* art)
 {
-	int version=24;
-	u64 temp;
+	cache_first = 0;
+	cache_count = 0x10000;
+	return relationread(art,_src_, "",sec_of_fat0*byte_per_sec, fatbuffer,0x40000);
+}
+int fat_checkname(char* name, u8* fatname)
+{
+	int j;
+	u8 a,b;
+	for(j=0;j<8;j++){
+		if(0 == name[j])break;
+
+		a = name[j];
+		if(a >= 'a')a -= 0x20;
+
+		b = fatname[j];
+		if(b >= 'a')b -= 0x20;
+
+		if(a != b)return j+1;
+	}
+	return 0;
+}
+u32 fat_ls(struct artery* art, char* name)
+{
+	int j;
+	struct folder* dir;
+	if(0 == name)return 2;
+
+	if(32 == version){
+		for(j=0;j<0x1000;j+=0x20){
+			dir = (void*)(dirhome+j);
+			//printmemory(dir, 0x20);
+
+			if(0x0f == dir->attr)continue;	//longname
+			if(0xe5 == dir->name_this[0])continue;	//deleted
+			if(0x00 == dir->name_this[0])continue;	//have name
+			if(0 == (dir->attr&0x10))continue;
+
+			if(0 == fat_checkname(name, dir->name_this))
+			return (dir->clus_hi16<<16) + dir->clus_lo16;
+		}
+	}
+	return 0;
+}
+int fat_cd(struct artery* art, char* name)
+{
+	int ret;
+	u32 clus;
+	if(16 == version){
+		if(0 == name){
+			ret = fat16_read(art,0, 2,0, dirhome, 0x4000);
+			parsefolder(art, dirhome);
+		}
+		else{
+			clus = fat_ls(art, name);
+			if(0 == clus)return 0;
+
+			ret = fat16_read(art,0, clus,0, dirhome+0x10000, 0x10000);
+			if(ret <= 0)return 0;
+
+			//printmemory(dirhome+0x10000, 0x200);
+			parsefolder(art, dirhome+0x10000);
+		}
+	}
+	if(32 == version){
+		if(0 == name){
+			ret = fat32_read(art,0, 2,0, dirhome, 0x4000);
+			parsefolder(art, dirhome);
+		}
+		else{
+			clus = fat_ls(art, name);
+			if(0 == clus)return 0;
+
+			ret = fat32_read(art,0, clus,0, dirhome+0x10000, 0x10000);
+			if(ret <= 0)return 0;
+
+			//printmemory(dirhome+0x10000, 0x200);
+			parsefolder(art, dirhome+0x10000);
+		}
+	}
+
+	return 0;
+}
+
+
+
+
+struct BPB_FAT{
+	u8     BS_jmpBoot[3];	//00: 跳转指令
+	u8     BS_OEMName[8];	//03: 原始制造商
+	u8   byte_per_sec[2];	//0b: 每扇区字节数
+	u8      sec_per_clus; 	//0d: 每簇扇区数
+	u8    sec_of_fat0[2];	//0e: 保留扇区数目
+	u8       BPB_NumFATs; 	//10: 此卷中FAT表数
+	u8 BPB_RootEntCnt[2];	//11: FAT32为0
+	u8   BPB_TotSec16[2]; 	//13: FAT32为0
+	u8         BPB_Media;	//15: 存储介质
+	u8    sec_per_fat[2];	//16: FAT32为0
+	u8  BPB_SecPerTrk[2];	//18: 磁道扇区数
+	u8   BPB_NumHeads[2];	//1a: 磁头数
+	u8    BPB_HiddSec[4]; 	//1c: FAT区前隐扇区数
+	u8   BPB_TotSec32[4];	//20: 该卷总扇区数
+};
+struct BPB_FAT16{
+	struct BPB_FAT common;
+	u8 BS_drvNum;
+	u8 BS_Reserved1;
+	u8 BS_BootSig;
+	u16 BS_VolID[2];
+	u8 BS_VolLab[11];
+	u8 BS_FileSysType[8];
+};
+struct BPB_FAT32{
+	struct BPB_FAT common;
+	u32      sec_per_fat; 	//24: 一个FAT表扇区数
+	u16     BPB_ExtFlags;	//28: FAT32特有
+	u16        BPB_FSVer;	//2a: FAT32特有
+	u32     BPB_RootClus;	//2c: 根目录簇号
+	u16           FSInfo;	//30: 保留扇区FSINFO扇区数
+	u16    BPB_BkBootSec;	//32: 通常为6
+	u8  BPB_Reserved[12];	//34: 扩展用
+	u8         BS_DrvNum;	//40: BIOS驱动器号
+	u8      BS_Reserved1;	//41: 未使用
+	u8        BS_BootSig;	//42: 扩展引导标记
+	u8       BS_VolID[4];	//43: 卷序列号
+	u8 BS_FilSysType[11];	//47: offset:71
+	u8 BS_FilSysType1[8];	//52: "FAT32   "
+};
+int fat_check(u8* addr)
+{
+	int tmp;
 	//printmemory(addr,0x200);
 
 	//0x55,0xaa
-	temp=*(u16*)(addr+0x1fe);
-	if( temp != 0xaa55 ) return 0;
-
-	//512 bytes per sector
-	temp=*(u16*)(addr+0xb);
-	if( temp !=0x200 )
-	{
-		//say("not 512B per sector,bye!\n");
-		return 0;
-	}
+	tmp = *(u16*)(addr+0x1fe);
+	if(tmp != 0xaa55)return 0;
 
 	//totally 2 fat tables
-	temp=*(u8*)(addr+0x10);
-	if( temp != 2 )
+	tmp = addr[0x10];
+	if(tmp != 2)return 0;
+
+	//byte per sector
+	tmp = *(u16*)(addr+0xb);
+	if(tmp < 0x200)return 0;
+	if(tmp & 0x1ff)return 0;
+
+	if(0 != *(u16*)(addr+0x11))return 16;
+	if(0 != *(u16*)(addr+0x16))return 16;
+
+	return 32;
+}
+int fat_parse(struct artery* art, u8* addr, int ver)
+{
+	struct BPB_FAT* fat = (void*)addr;
+
+	byte_per_sec = *(u16*)(fat->byte_per_sec);
+	say("byte_per_sec=%x\n", byte_per_sec);
+
+	sec_per_clus = fat->sec_per_clus;
+	say("sec_per_clus=%x\n", sec_per_clus);
+
+	sec_of_fat0 = *(u16*)(fat->sec_of_fat0);
+	say("sec_of_fat0=%x\n", sec_of_fat0);
+
+	if(16 == ver)		//这是fat16
 	{
-		//say("not 2 fat,bye!\n");
-		return 0;
+		version = 16;
+
+		sec_per_fat = *(u16*)(fat->sec_per_fat);
+		say("sec_per_fat:%x\n", sec_per_fat);
+
+		sec_of_clus2 = sec_of_fat0 + sec_per_fat*2 + 32;
+		say("sec_of_clus2@%x\n", sec_of_clus2);
 	}
+	if(32 == ver)		//这是fat32
+	{
+		struct BPB_FAT32* fat32 = (void*)addr;
+		version = 32;
 
-	//fat32 or fat16
-	if( *(u16*)(addr+0x11) == 0) version+=4;	 //fat32为0
-	else version-=4;
-	if( *(u16*)(addr+0x16) ==0) version+=4;	 //fat32为0
-	else version-=4;
+		sec_per_fat = fat32->sec_per_fat;
+		say("sec_per_fat:%x\n", sec_per_fat);
 
-	//version
-	if(version==32)return 32;
-	else if(version==16)return 16;
-	else return 0;
+		sec_of_clus2 = sec_of_fat0 + sec_per_fat*2;
+		say("sec_of_clus2@%x\n", sec_of_clus2);
+	}
+	return 0;
 }
 
 
 
 
-static int fat_list(u8* to)
+int fatclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-static int fat_choose(u64 id)
+int fatclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
-	//清理
-	int i;
-	for(i=0;i<0x40000;i++) datahome[i]=0;
-
-	if(version == 16)
-	{
-		//读取,转换
-		if(id<2)id=2;
-		fat16_data(datahome,id);
-		explaindirectory();
-	}
-	else
-	{
-		//读取，转换
-		if(id<2)
-		{
-			fat32_root();
-			return 1;
-		}
-
-		fat32_data(datahome,id,0,0x8000);
-		explaindirectory();
-	}
-	return 1;
+	return 0;
 }
-static int fat_read(u64 id,u64 offset)
+int fatclient_discon(struct halfrel* self, struct halfrel* peer)
 {
-	if(version == 16)
-	{
-		//从首簇开始，沿着fat的链表，慢慢挪直到对应簇号
-		u64 cluster=id;
-		u64 temp=0;
-		while(1)
-		{
-			//就是这里，就从这个簇开始
-			if(temp==offset)break;
-		
-			//准备下一个地址，找下一个簇，全部fat表在内存里不用担心
-			temp+=clustersize*0x200;
-			cluster=(u64)(*(u16*)(fatbuffer+2*cluster));
-		}
-
-		//然后读
-		fat16_data(datahome,cluster);
-		return 1;
-	}
-
-	else
-	{
-		if(offset>0x100000)offset=0x100000;
-		fat32_data(datahome,id,offset,0x100000);
-		return 1;
-	}
+	return 0;
 }
-static int fat_write()
-{
-	return 1;
-}
-
-
-
-int fat_start(u64 sector)
+int fatclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	int ret;
-	firstsector=sector;
+	struct artery* art;
+	if(_src_ != self->flag)return 0;
 
-	//读取pbr，检查种类和版本
-	ret = readfile(0, 0, "", firstsector*0x200, pbr, 0x200);
-	ret = check_fat(pbr);
-	if(ret==16)		//这是fat16
-	{
-		//上报3个函数的地址
-		explainfat16head();
+	art = self->pchip;
+	if(0 == art)return 0;
 
-		//change directory /
-		fat16_root();
-
-		version = 16;
+	ret = relationread(art, _src_, "", 0, pbrbuffer, 0x200);
+	if(ret < 0x200){
 		return 0;
 	}
-	else if(ret==32)		//这是fat32
-	{
-		//上报3个函数的地址
-		explainfat32head();
 
-		//change directory /
-		fat32_root();
-
-		version = 32;
-		return 0;
-	}
-	else
-	{
+	ret = fat_check(pbrbuffer);
+	if(ret < 12){
 		say("wrong fat\n");
 		return -1;
 	}
+
+	ret = fat_parse(art, pbrbuffer, ret);
+	//if(ret < 0)
+
+	ret = fat_buildcache(art);
+	//if(ret < 0)
+
+	fat_cd(art, 0);
+	fat_cd(art, "efi");
+	return 0;
 }
-void fat_stop()
-{
-}
-
-
-
-
-void fat_create(void* base, u64* this)
-{
-	//
-	fshome = base+0x100000;
-		pbr = fshome+0x10000;
-		fatbuffer = fshome+0x20000;
-	dirhome = base+0x200000;
-		//rootdir
-		//dirdepth1
-		//dirdepth2
-		//dirdepth3
-		//dirdepth4
-		//......
-	datahome = base+0x300000;
-
-	//
-	this[2] = (u64)fat_start;
-	this[3] = (u64)fat_stop;
-	this[4] = (u64)fat_list;
-	this[5] = (u64)fat_choose;
-	this[6] = (u64)fat_read;
-	this[7] = (u64)fat_write;
-}
-void fat_delete()
-{
-}
-
-
-
-
-int fatclient_write(
-	struct artery* ele, void* sty,
-	struct sysobj* obj, void* pin,
-	u8* buf, int len)
+int fatclient_delete(struct artery* art)
 {
 	return 0;
 }
-int fatclient_create(struct artery* ele, u8* url)
+int fatclient_create(struct artery* art)
 {
+	fshome = memorycreate(0x100000, 0);
+		pbrbuffer = fshome+0x10000;
+		fatbuffer = fshome+0x20000;
+	dirhome = memorycreate(0x100000, 0);
 	return 0;
 }

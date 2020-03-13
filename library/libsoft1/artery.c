@@ -705,6 +705,9 @@ int arteryread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 		case _gpt_:gptclient_read(self, peer, arg, idx, buf, len);break;
 		case _mbr_:mbrclient_read(self, peer, arg, idx, buf, len);break;
 
+		case _fat_:fatclient_read(self, peer, arg, idx, buf, len);break;
+		case _hfs_:hfsclient_read(self, peer, arg, idx, buf, len);break;
+
 		case _DNS_:dnsserver_read(self, peer, arg, idx, buf, len);break;
 		case _dns_:dnsclient_read(self, peer, arg, idx, buf, len);break;
 		case _NTP_:ntpserver_read(self, peer, arg, idx, buf, len);break;
@@ -813,6 +816,9 @@ int arterywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		case _gpt_:return gptclient_write(self, peer, arg, idx, buf, len);break;
 		case _mbr_:return mbrclient_write(self, peer, arg, idx, buf, len);break;
 
+		case _fat_:return fatclient_write(self, peer, arg, idx, buf, len);break;
+		case _hfs_:return hfsclient_write(self, peer, arg, idx, buf, len);break;
+
 		case _DNS_:return dnsserver_write(self, peer, arg, idx, buf, len);break;
 		case _dns_:return dnsclient_write(self, peer, arg, idx, buf, len);break;
 		case _NTP_:return ntpserver_write(self, peer, arg, idx, buf, len);break;
@@ -889,6 +895,9 @@ int arterydiscon(struct halfrel* self, struct halfrel* peer)
 		case _gpt_:return gptclient_discon(self, peer);break;
 		case _mbr_:return mbrclient_discon(self, peer);break;
 
+		case _fat_:return fatclient_discon(self, peer);break;
+		case _hfs_:return hfsclient_discon(self, peer);break;
+
 		case _dns_:return dnsclient_discon(self, peer);break;
 		case _DNS_:return dnsserver_discon(self, peer);break;
 		case _ntp_:return ntpclient_discon(self, peer);break;
@@ -960,6 +969,9 @@ int arterylinkup(struct halfrel* self, struct halfrel* peer)
 
 		case _gpt_:return gptclient_linkup(self, peer);break;
 		case _mbr_:return mbrclient_linkup(self, peer);break;
+
+		case _fat_:return fatclient_linkup(self, peer);break;
+		case _hfs_:return hfsclient_linkup(self, peer);break;
 
 		case _dns_:return dnsclient_linkup(self, peer);break;
 		case _DNS_:return dnsserver_linkup(self, peer);break;

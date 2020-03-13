@@ -618,59 +618,52 @@ int check_hfs(u8* addr)
 	}
 	else return 0;
 }
-int hfs_start(u64 sector)
-{
-	int ret;
-	block0=sector;
-
-	//检查
-	ret = readfile(0, 0, "", block0*0x200, pbr, 0x1000);
-	ret = check_hfs(pbr);
-	if(ret==0)return -1;
-
-	//很多东西
-	ret=explainhfshead();
-	if(ret<0)return ret;
-
-	//进入根目录
-	hfs_choose(2);
-	return 1;
-}
-void hfs_stop()
-{
-}
-void hfs_create(void* base, u64* this)
-{
-	//
-	fshome = base+0x100000;
-		pbr = fshome+0x10000;
-		catabuf = fshome+0x20000;
-	dirhome = base+0x200000;
-	datahome = base+0x300000;
-
-	//
-	this[2] = (u64)hfs_start;
-	this[3] = (u64)hfs_stop;
-	this[4] = (u64)hfs_list;
-	this[5] = (u64)hfs_choose;
-	this[6] = (u64)hfs_read;
-	this[7] = (u64)hfs_write;
-}
-void hfs_delete()
-{
-}
 
 
 
 
-int hfsclient_write(
-	struct artery* ele, void* sty,
-	struct sysobj* obj, void* pin,
-	u8* buf, int len)
+int hfsclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int hfsclient_create(struct artery* ele, u8* url)
+int hfsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
 {
+	return 0;
+}
+int hfsclient_discon(struct halfrel* self, struct halfrel* peer)
+{
+	return 0;
+}
+int hfsclient_linkup(struct halfrel* self, struct halfrel* peer)
+{
+	if(_src_ != self->flag)return 0;
+
+	struct artery* art = self->pchip;
+
+	int ret = readfile(art, _src_, "", 0, pbr, 0x1000);
+	if(ret < 0x1000)return -1;
+
+	ret = check_hfs(pbr);
+	if(ret==0)return -2;
+
+	//很多东西
+	ret = explainhfshead();
+	if(ret < 0)return ret;
+
+	//进入根目录
+	hfs_choose(2);
+	return 0;
+}
+int hfsclient_delete(struct artery* art)
+{
+	return 0;
+}
+int hfsclient_create(struct artery* art)
+{
+	fshome = memorycreate(0x100000, 0);
+		pbr = fshome+0x10000;
+		catabuf = fshome+0x20000;
+	dirhome = memorycreate(0x100000, 0);
+	datahome = memorycreate(0x100000, 0);
 	return 0;
 }

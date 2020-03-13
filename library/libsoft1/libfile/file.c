@@ -50,8 +50,8 @@ int parse_pe(void*);
 int check_ext(void*);
 int parse_ext(void*, void*);
 #define _fat_ hex32('f','a','t',0)
-int check_fat(void*);
-int parse_fat(void*, void*);
+int fat_check(void*);
+int fat_parse(void*, void*);
 #define _hfs_ hex32('h','f','s',0)
 int check_hfs(void*);
 int parse_hfs(void*, void*);
@@ -277,7 +277,7 @@ int file_check(u8* buf, int len)
 		type = _ext_;
 		say("ext\n");
 	}
-	else if(check_fat(buf) != 0){
+	else if(fat_check(buf) != 0){
 		type = _fat_;
 		say("fat\n");
 	}
