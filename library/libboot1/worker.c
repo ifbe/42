@@ -173,7 +173,7 @@ int workersearch(u8* buf, int len)
 
 void freeworker()
 {
-	//say("[2,4):freeing worker\n");
+	say("[2,4):freeing worker\n");
 
 	freestdev();
 	freestdrel();
@@ -193,5 +193,5 @@ void initworker(u8* addr)
 	initpoller(addr - 0x200000);
 	initrealer(addr - 0x200000);
 
-	//say("[2,4):inited worker\n");
+	say("[2,4):inited worker\n");
 }

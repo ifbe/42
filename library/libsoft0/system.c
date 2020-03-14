@@ -339,7 +339,7 @@ void* systemsearch(u8* buf, int len)
 
 void freesystem()
 {
-	//say("[8,9):freeing system\n");
+	say("[8,9):freeing system\n");
 
 	freesocket();
 	freeuart();
@@ -365,5 +365,5 @@ void initsystem(u8* addr)
 	inituart(addr);
 	initsocket(addr);
 
-	//say("[8,a):inited system\n");
+	say("[8,a):inited system\n");
 }

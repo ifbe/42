@@ -4,8 +4,13 @@
 #define u8 unsigned char
 void printmemory(char*,int);
 void say(char*,...);
-void peername(u64 fd, u32* buf)
+
+
+
+
+u32 resolvehostname(char* addr)
 {
+	return 0;
 }
 
 
@@ -15,12 +20,6 @@ void writesocket(int fd, void* tmp, void* buf, int len)
 {
 }
 void readsocket(int fd, void* tmp, void* buf, int len)
-{
-}
-void listsocket()
-{
-}
-void choosesocket()
 {
 }
 void stopsocket()
@@ -33,5 +32,15 @@ void deletesocket(int fd)
 {
 }
 void createsocket()
+{
+}
+
+
+
+
+void freesocket()
+{
+}
+void initsocket()
 {
 }

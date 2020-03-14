@@ -145,7 +145,7 @@ int devicesearch(u8* buf, int len)
 
 void freedevice()
 {
-	//say("[4,6):freeing device\n");
+	say("[4,6):freeing device\n");
 }
 void initdevice(u8* addr)
 {
@@ -159,5 +159,5 @@ void initdevice(u8* addr)
 
 	//devicecreate(_ahci_, 0);
 	//devicecreate(_xhci_, 0);
-	//say("[4,6):inited device\n");
+	say("[4,6):inited device\n");
 }

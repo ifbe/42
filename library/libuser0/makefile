@@ -46,17 +46,25 @@ opengl:
 
 
 ############################bare#########################
+.PHYOY:bare
+bare:
+	$(compiler) $(cflag) w2w-cmdline/bare/bare.stdio.c
+	$(compiler) $(cflag) w2w-gamepad/bare/bare.joy.c
+	$(compiler) $(cflag) w2w-systray/bare/bare.tray.c
+	$(compiler) $(cflag) r2v-camera/os-bare/bare.cam.c
+	$(compiler) $(cflag) r2v-micphone/os-bare/bare.mic.c
+	$(compiler) $(cflag) v2r-speaker/os-bare/bare.spk.c
 .PHONY:barecli
-barecli:target
+barecli:target bare
 	$(compiler) $(cflag) v2r-window/os-bare/bare.cli.c
 .PHONY:baretui
-baretui:target
+baretui:target bare
 	$(compiler) $(cflag) v2r-window/os-bare/bare.tui.c
 .PHONY:bare8bit
-bare8bit:target
+bare8bit:target bare
 	$(compiler) $(cflag) v2r-window/os-bare/bare.8bit.c
 .PHONY:barefb
-barefb:target
+barefb:target bare
 	$(compiler) $(cflag) v2r-window/os-bare/bare.fb.c
 ##########################################################
 
@@ -65,10 +73,10 @@ barefb:target
 
 ############################efi#########################
 .PHONY:eficli
-eficli:target
+eficli:target bare
 	$(compiler) $(cflag) v2r-window/os-efi/efi.cli.c
 .PHONY:efifb
-efifb:target
+efifb:target bare
 	$(compiler) $(cflag) v2r-window/os-efi/efi.fb.c
 #########################################################
 

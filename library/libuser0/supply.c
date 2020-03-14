@@ -489,7 +489,7 @@ void* supplysearch(u8* buf, int len)
 
 void freesupply()
 {
-	//say("[c,e):freeing supply\n");
+	say("[c,e):freeing supply\n");
 
 	freewindow();
 	freetray();
@@ -511,5 +511,5 @@ void initsupply(u8* addr)
 	inittray(supply);
 	initjoy(supply);
 
-	//say("[c,e):inited supply\n");
+	say("[c,e):inited supply\n");
 }

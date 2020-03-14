@@ -22,3 +22,9 @@ void deleteshell()
 void createshell()
 {
 }
+void freeshell()
+{
+}
+void initshell()
+{
+}

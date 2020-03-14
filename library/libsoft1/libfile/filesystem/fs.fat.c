@@ -8,7 +8,9 @@ static u8* fshome;		//fat表
 	static u8* pbrbuffer;
 	static u8* fatbuffer;
 static u8* dirhome;
-
+//
+static u64 cache_first;
+static int cache_count;
 //disk
 static int version;
 static int byte_per_sec;
@@ -16,9 +18,6 @@ static int sec_per_fat;
 static int sec_per_clus;
 static int sec_of_fat0;
 static int sec_of_clus2;		//2号簇所在扇区
-//
-static u64 cache_first;
-static int cache_count;
 
 
 
@@ -406,7 +405,7 @@ int fat_check(u8* addr)
 
 	return 32;
 }
-int fat_parse(struct artery* art, u8* addr, int ver)
+int fat_parse(struct artery* art, u8* addr)
 {
 	struct BPB_FAT* fat = (void*)addr;
 
@@ -418,6 +417,10 @@ int fat_parse(struct artery* art, u8* addr, int ver)
 
 	sec_of_fat0 = *(u16*)(fat->sec_of_fat0);
 	say("sec_of_fat0=%x\n", sec_of_fat0);
+
+	int ver = 32;
+	if(0 != *(u16*)(addr+0x11))ver = 16;
+	if(0 != *(u16*)(addr+0x16))ver = 16;
 
 	if(16 == ver)		//这是fat16
 	{
@@ -478,7 +481,7 @@ int fatclient_linkup(struct halfrel* self, struct halfrel* peer)
 		return -1;
 	}
 
-	ret = fat_parse(art, pbrbuffer, ret);
+	ret = fat_parse(art, pbrbuffer);
 	//if(ret < 0)
 
 	ret = fat_buildcache(art);

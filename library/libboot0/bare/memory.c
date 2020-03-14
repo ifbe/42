@@ -22,6 +22,7 @@ int memory_ensure(int j, int cnt)
 	for(k=0;k<cnt;k++){
 		bitmap[j+k] = cnt-j;
 	}
+	return 1;
 }
 
 
@@ -29,7 +30,7 @@ int memory_ensure(int j, int cnt)
 
 void* memorycreate(int size, int cmd)
 {
-	int j,k;
+	u64 j,k;
 	u8* buf;
 
 	k = (size+0xfffff)/0x100000;
@@ -53,4 +54,16 @@ int memorydelete(void* addr)
 
 	for(k=j;k<j+bitmap[j];k++)bitmap[k] = 0;
 	return 0;
+}
+void* memorysetup(u8* addr, int ch, int len)
+{
+	int j;
+	for(j=0;j<len;j++)addr[j] = ch;
+	return addr;
+}
+void* memorycopy(u8* addr, u8* buf, int len)
+{
+	int j;
+	for(j=0;j<len;j++)addr[j] = buf[j];
+	return addr;
 }

@@ -660,7 +660,7 @@ void* entitysearch(u8* buf, int len)
 
 void freeentity()
 {
-	//say("[e,f):deleteing entity\n");
+	say("[e,f):freeing entity\n");
 	mine_free();
 	test_free();
 	baby_free();
@@ -681,5 +681,5 @@ void initentity(u8* addr)
 	baby_init(addr);
 	test_init(addr);
 	mine_init(addr);
-	//say("[e,f):createed entity\n");
+	say("[e,f):inited entity\n");
 }

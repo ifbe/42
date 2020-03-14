@@ -19,7 +19,7 @@ int read8250_one(u8* buf)
 	}
 	return j;
 }
-int lowlevel_input(char* buf, int len)
+int lowlevel_input(u8* buf, int len)
 {
 	int j,ret;
 	for(j=0;j<len;j++)
@@ -66,5 +66,6 @@ void createserial()
 	out8(PORT + 3, 0x03);//8 bits, no parity, one stop bit
 	out8(PORT + 2, 0xC7);//Enable FIFO, clear them, with 14-byte threshold
 	out8(PORT + 4, 0x0B);//IRQs enabled, RTS/DSR set
+
 	lowlevel_output("42!\n", 4);
 }

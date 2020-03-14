@@ -10,3 +10,13 @@ void deletewatcher()
 void createwatcher()
 {
 }
+
+
+
+
+void freewatcher()
+{
+}
+void initwatcher()
+{
+}

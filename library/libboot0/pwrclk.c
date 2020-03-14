@@ -30,7 +30,7 @@ void* allocpwrclk()
 }
 void freepwrclk()
 {
-	//say("[0,2):freeing pwrclk\n");
+	say("[0,2):freeing pwrclk\n");
 	freestdout();
 	freestdin();
 }
@@ -49,7 +49,7 @@ void initpwrclk(u8* addr)
 	initstdin( addr+0x100000);
 	initstdout(addr+0x180000);
 
-	//say("[0,2):inited pwrclk\n");
+	say("[0,2):inited pwrclk\n");
 }
 
 
@@ -64,6 +64,11 @@ int pwrclkdelete(void* addr)
 	say("pwrclkdelete:%.8s\n", &tmp->type);
 
 	switch(tmp->type){
+	case _start_:
+	case _efimain_:{
+		death();
+		break;
+	}
 	case _main_:
 	case _win32_:
 	case _ndkmain_:{
@@ -98,6 +103,9 @@ void* pwrclkcreate(u64 type, void* name, int argc, u8** argv)
 	case _start_:
 	case _efimain_:{
 		tmp = (void*)(0x1000000);
+
+		birth(tmp);
+		supplycreate(_std_, 0, 0, 0);
 
 		tmp->type = type;
 		return tmp;

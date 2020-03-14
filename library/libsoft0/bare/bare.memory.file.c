@@ -7,28 +7,27 @@ void say(char* fmt,...);
 
 
 
-//file名字，mem地址，文件内偏移，总字节数
 int readfile(void* obj, int fd, void* arg, int off, u8* buf, int len)
 {
+	return 0;
 }
 int writefile(void* obj, int fd, void* arg, int off, u8* buf, int len)
 {
-}
-void listfile(char* dest)
-{
-}
-void choosefile()
-{
+	return 0;
 }
 int stopfile()
 {
+	return 0;
 }
 int startfile(char* path)
 {
+	return 0;
 }
-void deletefile()
+int deletefile()
 {
+	return 0;
 }
-void createfile()
+int createfile()
 {
+	return 0;
 }

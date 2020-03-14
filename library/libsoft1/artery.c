@@ -1989,7 +1989,7 @@ void* arterysearch(u8* buf, int len)
 
 void freeartery()
 {
-	//say("[a,c):freeing artery\n");
+	say("[a,c):freeing artery\n");
 
 	qqq = 0;
 	ele = 0;
@@ -2008,5 +2008,5 @@ void initartery(u8* addr)
 	//arterycreate(0, (u8*)"QUIC://0.0.0.0:4444");
 	//arterycreate(0,  (u8*)"SSH://0.0.0.0:2222");
 	//arterycreate(0, (u8*)"HTTP://0.0.0.0:4444");
-	//say("[a,c):inited artery\n");
+	say("[a,c):inited artery\n");
 }

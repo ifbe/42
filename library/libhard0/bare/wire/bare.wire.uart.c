@@ -7,19 +7,19 @@ void say(char*,...);
 
 
 
-int uartread(int fd, char* buf, int off, int len)
+int uart_read(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
-int uartwrite(int fd, char* buf, int off, int len)
+int uart_write(int fd, char* buf, int off, int len)
 {
 	return 0;
 }
-int stopuart()
+int uart_delete()
 {
 	return 0;
 }
-int startuart(char* p)
+int uart_create(char* p)
 {
 	return 0;
 }

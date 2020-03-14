@@ -19,16 +19,6 @@ int usb_write()
 
 
 
-int usb_list(char* towhere)
-{
-}
-int usb_choose()
-{
-}
-
-
-
-
 void usb_linkup(char* p)
 {
 }

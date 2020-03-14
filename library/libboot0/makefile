@@ -5,9 +5,11 @@ cflag ?= -c -O2 -fPIC
 bare:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
+	$(compiler) $(cflag) init/init.c
+	$(compiler) $(cflag) init/args.c
 	$(compiler) $(cflag) bare/memory.c
 	$(compiler) $(cflag) bare/board.c
-	$(compiler) $(cflag) bare/barex64/start.c
+	$(compiler) $(cflag) bare/barex64/baremain.c
 	$(compiler) $(cflag) bare/barex64/serial.c
 	$(compiler) $(cflag) bare/barex64/thread.c
 
@@ -15,6 +17,8 @@ bare:
 efi:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
+	$(compiler) $(cflag) init/init.c
+	$(compiler) $(cflag) init/args.c
 	$(compiler) $(cflag) bare/memory.c
 	$(compiler) $(cflag) bare/board.c
 	$(compiler) $(cflag) bare/efi/efimain.c
