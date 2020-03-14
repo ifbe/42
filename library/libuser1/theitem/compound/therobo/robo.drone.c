@@ -172,7 +172,7 @@ void drone_write_quaternion(struct entity* act, float* f)
 	while(1){
 		if(0 == rel)break;
 		world = (void*)(rel->srcchip);
-		if(_world3d_ == world->type){
+		if(_virtual_ == world->type){
 			sty = (void*)(rel->srcfoot);
 		}
 		rel = samedstnextsrc(rel);

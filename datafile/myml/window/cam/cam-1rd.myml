@@ -1,5 +1,5 @@
 <supply>
-world3d{
+virtual{
 fmt:vbo
 type:3d
 }
@@ -104,16 +104,16 @@ p3{}
 
 
 <relation>
-(world3d, 0, aid) -> (geomhelper, 0, 0)
-(world3d, 0, aid) -> (fonthelper, 0, 0)
-(world3d, sky, bg) -> (texball, p1, 0)
-(world3d, gnd, bg) -> (terrain, p2, 0)
-(world3d, haha, bg) -> (particle, p0, 0)
+(virtual, 0, aid) -> (geomhelper, 0, 0)
+(virtual, 0, aid) -> (fonthelper, 0, 0)
+(virtual, sky, bg) -> (texball, p1, 0)
+(virtual, gnd, bg) -> (terrain, p2, 0)
+(virtual, haha, bg) -> (particle, p0, 0)
 
-(world3d, rabb, bg) -> (rabbit, robb, 0)
+(virtual, rabb, bg) -> (rabbit, robb, 0)
 (rabbit, 1rdgeom, view) -> (1rdcam, 1rdmodl, geom)
 (window, 1rdrect, cam) -> (1rdcam, 1rdfrus, cam)
 
-(window, 0, vp) -> (world3d, 0, out)
+(window, 0, vp) -> (virtual, 0, out)
 (player1, 0, con) -> (rtscam, 0, con)
 </relation>

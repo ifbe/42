@@ -21,8 +21,8 @@ fmt:pointlit
 freecam{
 fmt:freecam
 }
-world3d{
-fmt:world3d
+virtual{
+fmt:virtual
 }
 event{
 fmt:event3rd
@@ -111,12 +111,12 @@ q:1.0, 1.0
 (event, 0, tar) -> (rabbit, 0, ev)
 (event, 0, cam) -> (freecam, 0, ev)
 
-#world3d depends on inner objects
-(world3d, skygeom, 0) -> (texball, skyhaha, 0)
-(world3d, gndgeom, 0) -> (terrain, gndhaha, 0)
-(world3d, litgeom, 0) -> (light, lithaha, 0)
-(world3d, rabgeom, 0) -> (rabbit, rabhaha, geom)
-(world3d, freegeom, 0) -> (freecam, freemodl, geom)
+#virtual depends on inner objects
+(virtual, skygeom, 0) -> (texball, skyhaha, 0)
+(virtual, gndgeom, 0) -> (terrain, gndhaha, 0)
+(virtual, litgeom, 0) -> (light, lithaha, 0)
+(virtual, rabgeom, 0) -> (rabbit, rabhaha, geom)
+(virtual, freegeom, 0) -> (freecam, freemodl, geom)
 
 #glwnd depends on cam
 (opengl, freerect, 0) -> (freecam, 0, a)

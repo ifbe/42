@@ -6,8 +6,8 @@ url:datafile/jpg/cartoon.jpg
 freecam{
 fmt:freecam
 }
-world3d{
-fmt:world3d
+virtual{
+fmt:virtual
 }
 </entity>
 
@@ -62,9 +62,9 @@ q:1.0, 1.0
 
 
 <relation>
-#world3d depends on inner objects
-(world3d, skygeom, 0) -> (mario, skyhaha, 0)
-(world3d, freegeom, 0) -> (freecam, freemodl, 0)
+#virtual depends on inner objects
+(virtual, skygeom, 0) -> (mario, skyhaha, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on ctx + cam
 (opengl, freerect, 0) -> (freecam, 0, 0)

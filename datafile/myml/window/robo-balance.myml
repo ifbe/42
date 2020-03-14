@@ -8,8 +8,8 @@ fmt:balance
 freecam{
 fmt:freecam
 }
-world3d{
-fmt:world3d
+virtual{
+fmt:virtual
 }
 </entity>
 
@@ -94,10 +94,10 @@ q:1.0, 1.0
 
 
 <relation>
-#world3d depends on inner objects
-(world3d, gndgeom, 0) -> (ground, gndhaha, 0)
-(world3d, skygeom, 0) -> (balance, skyhaha, 0)
-(world3d, freegeom, 0) -> (freecam, freemodl, 0)
+#virtual depends on inner objects
+(virtual, gndgeom, 0) -> (ground, gndhaha, 0)
+(virtual, skygeom, 0) -> (balance, skyhaha, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
 (opengl, freerect, mvp) -> (freecam, 0, 0)

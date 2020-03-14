@@ -12,7 +12,7 @@ border{
 fmt:border2d
 }
 world{
-fmt:world3d
+fmt:virtual
 }
 </entity>
 

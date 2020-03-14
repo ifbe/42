@@ -12,8 +12,8 @@ fmt:glass
 freecam{
 fmt:freecam
 }
-world3d{
-fmt:world3d
+virtual{
+fmt:virtual
 }
 </entity>
 
@@ -102,11 +102,11 @@ q:1.0, 1.0
 #glass depends on thefbo
 (glass, 0, fbo) -> (thefbo, mirrrect, mvp)
 
-#world3d depends on inner objects
-(world3d, skygeom, 0) -> (texball, skyhaha, 0)
-(world3d, treegeom, 0) -> (tree, treehaha, 0)
-(world3d, mirrgeom, 0) -> (glass, mirrhaha, 0)
-(world3d, freegeom, 0) -> (freecam, freemodl, 0)
+#virtual depends on inner objects
+(virtual, skygeom, 0) -> (texball, skyhaha, 0)
+(virtual, treegeom, 0) -> (tree, treehaha, 0)
+(virtual, mirrgeom, 0) -> (glass, mirrhaha, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
 (opengl, freerect, 0) -> (freecam, 0, 0)

@@ -15,8 +15,8 @@ fmt:mirror
 freecam{
 fmt:freecam
 }
-world3d{
-fmt:world3d
+virtual{
+fmt:virtual
 }
 </entity>
 
@@ -124,12 +124,12 @@ q:1.0, 1.0
 
 
 <relation>
-#world3d depends on inner objects
-(world3d, skygeom, 0) -> (texball, skyhaha, 0)
-(world3d, treegeom, 0) -> (tree, treehaha, 0)
-(world3d, mirrgeom, 0) -> (mirror, mirrhaha, 0)
-(world3d, mi22geom, 0) -> (mirr22, mi22haha, 0)
-(world3d, freegeom, 0) -> (freecam, freemodl, 0)
+#virtual depends on inner objects
+(virtual, skygeom, 0) -> (texball, skyhaha, 0)
+(virtual, treegeom, 0) -> (tree, treehaha, 0)
+(virtual, mirrgeom, 0) -> (mirror, mirrhaha, 0)
+(virtual, mi22geom, 0) -> (mirr22, mi22haha, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #mirror depends on glfbo
 (1stfbo, mirrrect, 0) -> (mirror, 0, fbo)

@@ -67,8 +67,8 @@ fmt:robodog
 freecam{
 fmt:3rdcam
 }
-world3d{
-fmt:world3d
+virtual{
+fmt:virtual
 }
 slider{
 fmt:slider
@@ -116,11 +116,11 @@ fmt:poller
 (dog, 0, int) -> (slider, 0, ev)
 (dog, 0, 0) -> (freecam, 0, tar)
 
-#world3d depends on inner objects
-(world3d, skygeom, 0) -> (sky, skyhaha, 0)
-(world3d, gndgeom, 0) -> (gnd, gndhaha, 0)
-(world3d, doggeom, 0) -> (dog, doghaha, 0)
-(world3d, freegeom, 0) -> (freecam, freemodl, 0)
+#virtual depends on inner objects
+(virtual, skygeom, 0) -> (sky, skyhaha, 0)
+(virtual, gndgeom, 0) -> (gnd, gndhaha, 0)
+(virtual, doggeom, 0) -> (dog, doghaha, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
 (opengl, freerect, 0) -> (freecam, 0, 0)

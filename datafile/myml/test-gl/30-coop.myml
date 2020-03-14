@@ -1,6 +1,6 @@
 <entity>
 world{
-fmt:world3d
+fmt:virtual
 }
 </entity>
 

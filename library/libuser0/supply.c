@@ -214,47 +214,9 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 	struct supply* win;
 	struct supply* sub;
 
-	//default
-	if(0 == type)
-	{
-		if(supply[0].type)return 0;
-		type = _sup_;
-	}
-
-	//0: system object
-	if(_joy_ == type)
-	{
-		win = allocsupply();
-		if(0 == win)return 0;
-
-		win->type = _joy_;
-		win->fmt = _joy_;
-		joycreate(win, arg, argc, argv);
-		return win;
-	}
-	else if(_std_ == type)
-	{
-		win = allocsupply();
-		if(0 == win)return 0;
-
-		win->type = _std_;
-		win->fmt = _std_;
-		stdio_create(win, arg, argc, argv);
-		return win;
-	}
-	else if(_tray_ == type)
-	{
-		win = allocsupply();
-		if(0 == win)return 0;
-
-		win->type = _tray_;
-		win->fmt = _tray_;
-		traycreate(win, arg, argc, argv);
-		return win;
-	}
-
-	//sensor
-	else if(_ahrs_ == type)
+	switch(type){
+//-------------------tobe delete--------------
+	case _ahrs_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -264,7 +226,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		ahrs_create(win, arg, argc, argv);
 		return win;
 	}
-	else if(_slam_ == type)
+	case _slam_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -274,9 +236,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		slam_create(win, arg, argc, argv);
 		return win;
 	}
-
-	//motor
-	else if(_bdc_ == type)
+	case _bdc_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -286,7 +246,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		toycar_create(win, arg, argc, argv);
 		return win;
 	}
-	else if(_step_ == type)
+	case _step_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -297,8 +257,40 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		return win;
 	}
 
-	//micphone
-	else if(_mic_ == type)
+//---------------------gadget-----------------
+	case _joy_:
+	{
+		win = allocsupply();
+		if(0 == win)return 0;
+
+		win->type = _joy_;
+		win->fmt = _joy_;
+		joycreate(win, arg, argc, argv);
+		return win;
+	}
+	case _std_:
+	{
+		win = allocsupply();
+		if(0 == win)return 0;
+
+		win->type = _std_;
+		win->fmt = _std_;
+		stdio_create(win, arg, argc, argv);
+		return win;
+	}
+	case _tray_:
+	{
+		win = allocsupply();
+		if(0 == win)return 0;
+
+		win->type = _tray_;
+		win->fmt = _tray_;
+		traycreate(win, arg, argc, argv);
+		return win;
+	}
+
+//--------------------micphone------------------
+	case _mic_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -309,8 +301,8 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		return win;
 	}
 
-	//speaker
-	else if(_spk_ == type)
+//--------------------speaker--------------------
+	case _spk_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -321,8 +313,8 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		return win;
 	}
 
-	//video
-	else if(_cam_ == type)
+//---------------------video-------------------
+	case _cam_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -332,7 +324,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		videocreate(win, arg, argc, argv);
 		return win;
 	}
-	else if(_cap_ == type)
+	case _cap_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -343,8 +335,8 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		return win;
 	}
 
-	//window
-	else if(_none_ == type)
+//---------------------window----------------
+	case _none_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -354,7 +346,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
-	else if(_easy_ == type)
+	case _easy_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -364,7 +356,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
-	else if(_wnd_ == type)
+	case _wnd_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -373,7 +365,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
-	else if(_coop_ == type)
+	case _coop_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -383,7 +375,16 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
-	else if(_gl41fboc_ == type)
+	case _gl41fbo6_:
+	{
+		win = allocsupply();
+		if(0 == win)return 0;
+
+		win->fmt = win->type = _gl41fbo6_;
+		windowcreate(win, arg, argc, argv);
+		return win;
+	}
+	case _gl41fboc_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -392,7 +393,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
-	else if(_gl41fbod_ == type)
+	case _gl41fbod_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -401,7 +402,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
-	else if(_gl41fbog_ == type)
+	case _gl41fbog_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -410,7 +411,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
-	else if(_gl41wnd0_ == type)
+	case _gl41wnd0_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
@@ -419,7 +420,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
-
+	}//switch
 	return 0;
 }
 void* supplymodify(int argc, u8** argv)

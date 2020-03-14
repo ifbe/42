@@ -16,7 +16,7 @@ fmt:texball
 url:datafile/jpg/skysphere.jpg
 }
 world{
-fmt:world3d
+fmt:virtual
 }
 </entity>
 

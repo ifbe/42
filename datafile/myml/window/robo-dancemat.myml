@@ -11,8 +11,8 @@ linecolor:800080
 3rdcam{
 fmt:3rdcam
 }
-world3d{
-fmt:world3d
+virtual{
+fmt:virtual
 }
 
 button{
@@ -23,7 +23,7 @@ orthcam{
 fmt:orthcam
 }
 uiworld{
-fmt:world3d
+fmt:virtual
 }
 </entity>
 
@@ -143,10 +143,10 @@ q:0.2, 0.2
 (orthcam, 0, ev) -> (button, 0, 0)
 (button, 0, ev) -> (tcpsrv, 0, src)
 
-#world3d depends on ...
-(world3d, skygeom, 0) -> (sky, skypart, 0)
-(world3d, testgeom, 0) -> (dancemat, testpart, 0)
-(world3d, aaaageom, 0) -> (3rdcam, aaaapart, 0)
+#virtual depends on ...
+(virtual, skygeom, 0) -> (sky, skypart, 0)
+(virtual, testgeom, 0) -> (dancemat, testpart, 0)
+(virtual, aaaageom, 0) -> (3rdcam, aaaapart, 0)
 
 #uiworld depends on ...
 (uiworld, btngeom, 0) -> (button, btnslot, 0)

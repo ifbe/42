@@ -18,8 +18,8 @@ fmt:prjtor
 freecam{
 fmt:freecam
 }
-world3d{
-fmt:world3d
+virtual{
+fmt:virtual
 }
 </entity>
 
@@ -126,13 +126,13 @@ q:1.0, 1.0
 #light depends on glfbo
 (light, 0, fbo) -> (thefbo, litrect, mvp)
 
-#world3d depends on inner objects
-(world3d, grndgeom, 0) -> (ground, grndhaha, 0)
-(world3d, testgeom, 0) -> (test, testhaha, 0)
-(world3d, cur1geom, 0) -> (cur1, cur1haha, 0)
-(world3d, cur2geom, 0) -> (cur2, cur2haha, 0)
-(world3d, litgeom, 0) -> (light, lithaha, 0)
-(world3d, freegeom, 0) -> (freecam, freemodl, 0)
+#virtual depends on inner objects
+(virtual, grndgeom, 0) -> (ground, grndhaha, 0)
+(virtual, testgeom, 0) -> (test, testhaha, 0)
+(virtual, cur1geom, 0) -> (cur1, cur1haha, 0)
+(virtual, cur2geom, 0) -> (cur2, cur2haha, 0)
+(virtual, litgeom, 0) -> (light, lithaha, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
 (opengl, freerect, mvp) -> (freecam, 0, 0)

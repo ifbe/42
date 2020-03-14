@@ -20,8 +20,8 @@ fmt:tree
 vrglass{
 fmt:vrglass
 }
-world3d{
-fmt:world3d
+virtual{
+fmt:virtual
 }
 
 thectx{
@@ -72,12 +72,12 @@ q:1.0, 1.0
 
 <relation>
 
-(world3d, skygeom, 0) -> (texball, skypart, 0)
-(world3d, treegeom, 0) -> (tree, treepart, 0)
-(world3d, vrgeom, 0) -> (vrglass, vrpart, 0)
+(virtual, skygeom, 0) -> (texball, skypart, 0)
+(virtual, treegeom, 0) -> (tree, treepart, 0)
+(virtual, vrgeom, 0) -> (vrglass, vrpart, 0)
 
 #glctx depends on scene
-(thectx, 0, 0) -> (world3d, 0, 0)
+(thectx, 0, 0) -> (virtual, 0, 0)
 
 #glwnd depends on ctx + cam
 (thewnd, 0, ctx) -> (thectx, 0, 0)

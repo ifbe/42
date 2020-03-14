@@ -8,8 +8,8 @@ fmt:voxel
 freecam{
 fmt:freecam
 }
-world3d{
-fmt:world3d
+virtual{
+fmt:virtual
 }
 </entity>
 
@@ -89,10 +89,10 @@ q:1.0, 1.0
 (usbcam, 0, dst) -> (fftrgb, 0, src)
 (fftrgb, 0, dst) -> (voxel, 0, pcm)
 
-#world3d depends on inner objects
-(world3d, vidgeom, 0) -> (canvas, vidhaha, 0)
-(world3d, skygeom, 0) -> (voxel, skyhaha, 0)
-(world3d, freegeom, 0) -> (freecam, freemodl, 0)
+#virtual depends on inner objects
+(virtual, vidgeom, 0) -> (canvas, vidhaha, 0)
+(virtual, skygeom, 0) -> (voxel, skyhaha, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
 (opengl, freerect, mvp) -> (freecam, 0, 0)

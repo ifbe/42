@@ -36,7 +36,7 @@ int gravity_working(struct entity* ent)
 	if(0 == rel)return 0;
 
 	world = rel->pdstchip;
-	if((_world3d_ != world->fmt)&&(_scene3d_ != world->fmt))return 0;
+	if((_virtual_ != world->fmt)&&(_scene3d_ != world->fmt))return 0;
 
 	now = timeread();
 	say("%llx\n", now);

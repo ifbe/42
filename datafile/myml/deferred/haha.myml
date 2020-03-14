@@ -17,7 +17,7 @@ vs:datafile/shader/ground/gv.glsl
 fs:datafile/shader/ground/gf.glsl
 }
 world{
-fmt:world3d
+fmt:virtual
 }
 mixer{
 fmt:gbuffer

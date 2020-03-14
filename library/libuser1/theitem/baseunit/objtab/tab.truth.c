@@ -17,7 +17,7 @@ static int truth_search(struct entity* act, u32 foot, struct halfrel* self[], st
 	while(1){
 		if(0 == rel)break;
 		world = (void*)(rel->srcchip);
-		if(_world3d_ == world->type){
+		if(_virtual_ == world->type){
 			self[0] = (void*)&rel->dstchip;
 			peer[0] = (void*)&rel->srcchip;
 			return 1;

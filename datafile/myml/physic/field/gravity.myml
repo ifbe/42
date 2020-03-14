@@ -24,7 +24,7 @@ cam0{
 fmt:freecam
 }
 world{
-fmt:world3d
+fmt:virtual
 }
 </entity>
 

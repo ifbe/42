@@ -195,10 +195,15 @@
 #define _border2d_ hex64('b','o','r','d','e','r','2','d')
 #define _frame3d_ hex64('f','r','a','m','e','3','d', 0)
 #define _guide3d_ hex64('g','u','i','d','e','3','d', 0)
-//
 #define _scene3d_ hex64('s','c','e','n','e','3','d', 0)
-#define _world3d_ hex64('w','o','r','l','d','3','d', 0)
+//
 #define _reality_ hex64('r','e','a','l','i','t','y', 0)
+#define _virtual_ hex64('v','i','r','t','u','a','l', 0)
+//
+#define _htmlroot_ hex64('h','t','m','l','r','o','o','t')
+#define _jsonroot_ hex64('j','s','o','n','r','o','o','t')
+#define _xamlroot_ hex64('x','a','m','l','r','o','o','t')
+#define _uiuxroot_ hex64('u','i','u','x','r','o','o','t')
 //event
 #define _clickray_ hex64('c','l','i','c','k','r','a','y')
 #define _event3rd_ hex64('e','v','e','n','t','3','r','d')
@@ -264,11 +269,6 @@
 #define _sch_  hex32('s','c','h',0)
 #define _pcb_  hex32('p','c','b',0)
 #define _xml_  hex32('x','m','l',0)
-//
-#define _htmlroot_ hex64('h','t','m','l','r','o','o','t')
-#define _jsonroot_ hex64('j','s','o','n','r','o','o','t')
-#define _xamlroot_ hex64('x','a','m','l','r','o','o','t')
-#define _uiuxroot_ hex64('u','i','u','x','r','o','o','t')
 //tier=_ent_, type:
 #define _baby_ hex32('b','a','b','y')
 #define _test_ hex32('t','e','s','t')

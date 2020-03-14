@@ -16,7 +16,7 @@ cam{
 fmt:freecam
 }
 pcb{
-fmt:world3d
+fmt:virtual
 }
 </entity>
 

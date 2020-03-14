@@ -5,8 +5,8 @@ fmt:login
 orthcam{
 fmt:orthcam
 }
-world3d{
-fmt:world3d
+virtual{
+fmt:virtual
 }
 </entity>
 
@@ -62,9 +62,9 @@ q:1.0, 1.0
 
 
 <relation>
-#world3d depends on inner objects
-(world3d, itemgeom, 0) -> (login, itemslot, 0)
-(world3d, orthgeom, 0) -> (orthcam, orthmodl, 0)
+#virtual depends on inner objects
+(virtual, itemgeom, 0) -> (login, itemslot, 0)
+(virtual, orthgeom, 0) -> (orthcam, orthmodl, 0)
 
 #glwnd depend on
 (opengl, orthrect, 0) -> (orthcam, 0, 0)

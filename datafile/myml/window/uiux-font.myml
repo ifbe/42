@@ -10,8 +10,8 @@ fmt:font
 freecam{
 fmt:freecam
 }
-world3d{
-fmt:world3d
+virtual{
+fmt:virtual
 }
 </entity>
 
@@ -77,9 +77,9 @@ q:1.0, 1.0
 
 <relation>
 #world depends on inner objects
-(world3d, skygeom, 0) -> (texball, skyhaha, 0)
-(world3d, termgeom, 0) -> (font, termhaha, 0)
-(world3d, freegeom, 0) -> (freecam, freemodl, 0)
+(virtual, skygeom, 0) -> (texball, skyhaha, 0)
+(virtual, termgeom, 0) -> (font, termhaha, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on ctx + cam
 (opengl, freerect, 0) -> (freecam, 0, 0)

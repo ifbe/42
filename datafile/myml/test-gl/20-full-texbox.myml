@@ -7,7 +7,7 @@ fmt:texbox
 url:datafile/jpg/wall.jpg
 }
 world{
-fmt:world3d
+fmt:virtual
 }
 </entity>
 

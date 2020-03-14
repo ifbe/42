@@ -58,7 +58,7 @@ static void thirdperson_search(struct entity* act, u32 foot, struct halfrel* sel
 	while(1){
 		if(0 == rel)return;
 		world = (void*)(rel->srcchip);
-		if(_world3d_ == world->type){
+		if(_virtual_ == world->type){
 			self[0] = (void*)&rel->dstchip;
 			peer[0] = (void*)&rel->srcchip;
 			return;

@@ -19,7 +19,7 @@ scene{
 fmt:scene3d
 }
 world{
-fmt:world3d
+fmt:virtual
 }
 </entity>
 

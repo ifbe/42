@@ -6,17 +6,17 @@
 //stack:
 //-2: glwnd, area
 //-1: glctx, frus
-int world3d_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int virtual_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	say("@world3d_read\n");
+	say("@virtual_read\n");
 	return 0;
 }
-int world3d_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int virtual_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
 	return 0;
 /*	struct entity* world;
 	struct relation* rel;
-	say("@world3d_write\n");
+	say("@virtual_write\n");
 
 	world = self->pchip;
 	if(0 == world)return 0;
@@ -64,36 +64,36 @@ next:
 	return ret;
 */
 }
-int world3d_discon(struct halfrel* self, struct halfrel* peer)
+int virtual_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int world3d_linkup(struct halfrel* self, struct halfrel* peer)
+int virtual_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@world3d_linkup\n");
+	say("@virtual_linkup\n");
 	return 0;
 }
 
 
 
 
-int world3d_search(struct entity* world)
+int virtual_search(struct entity* world)
 {
 	return 0;
 }
-int world3d_modify(struct entity* world)
+int virtual_modify(struct entity* world)
 {
 	return 0;
 }
-int world3d_delete(struct entity* world)
+int virtual_delete(struct entity* world)
 {
 	return 0;
 }
-int world3d_create(struct entity* world, void* str)
+int virtual_create(struct entity* world, void* str)
 {
 	int j;
 	u8* buf;
-	say("@world3d_create\n");
+	say("@virtual_create\n");
 /*
 	buf = world->buf = memorycreate(0x10000, 0);
 	for(j=0;j<0x10000;j++)buf[j] = 0;*/

@@ -94,7 +94,6 @@ thedata/scene/biology/bio.plague.c \
 thedata/scene/chemic/chem.corrode.c \
 thedata/scene/electric/ee.analog.c \
 thedata/scene/electric/ee.digital.c \
-thedata/scene/factory/fac.pcb.c \
 thedata/scene/factory/fac.gcode.c \
 thedata/scene/factory/fac.gerber.c \
 thedata/scene/physic/phy.field.c \
@@ -112,7 +111,7 @@ thedata/world/real.c \
 thedata/world/virt.c \
 thedata/world/html.c \
 thedata/world/uiux.c \
-thedata/test/test.c \
+thedata/world/test.c \
 thedata/mine.c \
 theitem/baseunit/objalgo/algo.algo.c \
 theitem/baseunit/objalgo/algo.bintree.c \

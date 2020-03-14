@@ -5,8 +5,8 @@ fmt:video
 freecam{
 fmt:freecam
 }
-world3d{
-fmt:world3d
+virtual{
+fmt:virtual
 }
 </entity>
 
@@ -69,9 +69,9 @@ q:1.0, 1.0
 #canvas depends on usbcam
 (canvas, 0, yuv) -> (usbcam, 0, dst)
 
-#world3d depends on inner objects
-(world3d, skygeom, 0) -> (canvas, skyhaha, 0)
-(world3d, freegeom, 0) -> (freecam, freemodl, 0)
+#virtual depends on inner objects
+(virtual, skygeom, 0) -> (canvas, skyhaha, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
 (opengl, freerect, 0) -> (freecam, 0, 0)
