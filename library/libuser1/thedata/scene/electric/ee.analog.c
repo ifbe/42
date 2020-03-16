@@ -1,5 +1,7 @@
 #include "libuser.h"
 int parsefv(float* vec, int flen, u8* str, int slen);
+int relation_readall( void* item, int foot, void* arg, int idx, void* buf, int len);
+int relation_writeall( void* item, int foot, void* arg, int idx, void* buf, int len);
 
 
 
@@ -77,7 +79,7 @@ static void analog_emulate(struct entity* ent, struct wireindex* sts, u8* buf, i
 	}
 	sts[0].sure = 1;
 	sts[0].volt = (float)(buf[0]-0x30);
-	relationwrite(ent, 'a', 0, 0, &sts[0], 0);
+	relation_writeall(ent, 'a', 0, 0, &sts[0], 0);
 }
 static void analog_decent_V(struct entity* ent, struct wireindex* sts)
 {
@@ -87,7 +89,7 @@ static void analog_decent_V(struct entity* ent, struct wireindex* sts)
 		if(0 != sts[j].sure)continue;
 
 		sts[j].grad = 0.0;
-		relationread(ent, 'a'+j, 0, 'V', sts, j);
+		relation_readall(ent, 'a'+j, 0, 'V', sts, j);
 	}
 	for(j=1;j<16;j++){
 		if(0 == sts[j].cnt)break;
@@ -105,7 +107,7 @@ static void analog_decent_R(struct entity* ent, struct wireindex* sts)
 		if(0 != sts[j].sure)continue;
 
 		sts[j].grad = 0.0;
-		relationread(ent, 'a'+j, 0, 'R', sts, j);
+		relation_readall(ent, 'a'+j, 0, 'R', sts, j);
 	}
 	for(j=1;j<16;j++){
 		if(0 == sts[j].cnt)break;

@@ -192,6 +192,38 @@ int relationread(void* chip, int foot, void* arg, int idx, void* buf, int len)
 
 	return 0;
 }
+int relation_readall(void* chip, int foot, void* arg, int idx, void* buf, int len)
+{
+	struct item* item;
+	struct relation* rel;
+	struct halfrel* self;
+	struct halfrel* peer;
+
+	item = chip;
+	rel = item->irel0;
+	while(1){
+		if(0 == rel)break;
+		if(foot == rel->dstflag){
+			self = (void*)&rel->srcchip;
+			peer = (void*)&rel->dstchip;
+			relation_r(self, peer, arg, idx, buf, len);
+		}
+		rel = samedstnextsrc(rel);
+	}
+
+	rel = item->orel0;
+	while(1){
+		if(0 == rel)break;
+		if(foot == rel->srcflag){
+			self = (void*)&rel->dstchip;
+			peer = (void*)&rel->srcchip;
+			relation_r(self, peer, arg, idx, buf, len);
+		}
+		rel = samesrcnextdst(rel);
+	}
+
+	return 0;
+}
 
 
 
@@ -211,6 +243,40 @@ int relation_w(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	return 0;
 }
 int relationwrite(void* chip, int foot, void* arg, int idx, void* buf, int len)
+{
+	struct item* item;
+	struct relation* rel;
+	struct halfrel* self;
+	struct halfrel* peer;
+
+	item = chip;
+	rel = item->irel0;
+	while(1){
+		if(0 == rel)break;
+		//say("irel:%.8s\n",&rel->dstflag);
+		if(foot == rel->dstflag){
+			self = (void*)&rel->srcchip;
+			peer = (void*)&rel->dstchip;
+			relation_w(self, peer, arg, idx, buf, len);
+		}
+		rel = samedstnextsrc(rel);
+	}
+
+	rel = item->orel0;
+	while(1){
+		if(0 == rel)break;
+		//say("orel:%.8s\n",&rel->srcflag);
+		if(foot == rel->srcflag){
+			self = (void*)&rel->dstchip;
+			peer = (void*)&rel->srcchip;
+			relation_w(self, peer, arg, idx, buf, len);
+		}
+		rel = samesrcnextdst(rel);
+	}
+
+	return 0;
+}
+int relation_writeall(void* chip, int foot, void* arg, int idx, void* buf, int len)
 {
 	struct item* item;
 	struct relation* rel;

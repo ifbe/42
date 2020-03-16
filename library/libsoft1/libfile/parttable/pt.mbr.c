@@ -5,12 +5,8 @@
 
 int check_mbr(u8* addr)
 {
-	//第一个扇区末尾必须有0x55，0xaa这个标志
-	u64 temp=*(u16*)(addr+0x1fe);
-	if(temp != 0xaa55 ) return 0;
-
-	//但是mbr没有特别的标志，只能勉强用55aa确定
-	//所以只能放在check type的最后
+	if(0x55 != addr[0x1fe])return 0;
+	if(0xaa != addr[0x1ff])return 0;
 	return _mbr_;
 }
 
@@ -19,22 +15,26 @@ int check_mbr(u8* addr)
 
 //[+0x1be,+0x1fd],每个0x10,总共4个
 struct mbrpart{
-	u8 bootflag;		//[+0]:活动标记
+	u8     bootflag;	//[+0]:活动标记
 	u8 chs_start[3];	//[+0x1,+0x3]:开始磁头柱面扇区
-	u8 parttype;		//[+0x4]:分区类型
-	u8 chs_end[3];		//[+0x5,+0x7]:结束磁头柱面扇区
-	u32 lba_start;		//[+0x8,+0xb]:起始lba
-	u32 lba_count;		//[+0xc,+0xf]:大小
+	u8     parttype;	//[+0x4]:分区类型
+	u8   chs_end[3];	//[+0x5,+0x7]:结束磁头柱面扇区
+	u8 lba_start[4];	//[+0x8,+0xb]:起始lba
+	u8 lba_count[4];	//[+0xc,+0xf]:大小
 };
+u32 hackforarmalign4(u8* p)
+{
+	return p[0] + (p[1]<<8) + (p[2]<<16) + (p[3]<<24);
+}
 void parse_mbr_one(struct mbrpart* part)
 {
 	u32 start,count;
 	if(0 == part->parttype)return;
 
 	//count-1 = bus error, gcc bug ?
-	start = part->lba_start;
-	count = part->lba_count;
-	say("[%08x,%08x]:\n", start, start+count);
+	start = hackforarmalign4(part->lba_start);
+	count = hackforarmalign4(part->lba_count);
+	say("[%08x,%08x]:\n", start, start+count-1);
 
 	switch(part->parttype){
 	case 0x05:

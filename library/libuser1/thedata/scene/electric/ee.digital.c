@@ -1,5 +1,7 @@
 #include "libuser.h"
 int parsefv(float* vec, int flen, u8* str, int slen);
+int relation_readall( void* item, int foot, void* arg, int idx, void* buf, int len);
+int relation_writeall( void* item, int foot, void* arg, int idx, void* buf, int len);
 
 
 
@@ -98,11 +100,11 @@ void digital_simple(struct entity* ent, struct wireindex* sts)
 
 	if(sts[0].val <= 0){
 		sts[0].val = 1;
-		relationwrite(ent, 'a', 0, 0, &positive, 1);
+		relation_writeall(ent, 'a', 0, 0, &positive, 1);
 	}
 	else{
 		sts[0].val = -1;
-		relationwrite(ent, 'a', 0, 0, &negative, 1);
+		relation_writeall(ent, 'a', 0, 0, &negative, 1);
 	}
 }
 void digital_complex(struct entity* ent, struct wireindex* sts, u8* buf, int len)
@@ -119,37 +121,37 @@ void digital_complex(struct entity* ent, struct wireindex* sts, u8* buf, int len
 	}
 	for(j=0;j<16;j++){
 		if(0 == sts[j].cnt)break;
-		relationwrite(ent, 'a'+j, 0, 0, &any, 0);
+		relation_writeall(ent, 'a'+j, 0, 0, &any, 0);
 	}
 
 	//step1: send
 	switch(buf[0]){
 	case '0':{
 		sts[0].val = -1;
-		relationwrite(ent, 'a', 0, 0, &negative, 0);
+		relation_writeall(ent, 'a', 0, 0, &negative, 0);
 		sts[1].val = -1;
-		relationwrite(ent, 'b', 0, 0, &negative, 0);
+		relation_writeall(ent, 'b', 0, 0, &negative, 0);
 		break;
 	}
 	case '1':{
 		sts[0].val = 1;
-		relationwrite(ent, 'a', 0, 0, &positive, 0);
+		relation_writeall(ent, 'a', 0, 0, &positive, 0);
 		sts[1].val = -1;
-		relationwrite(ent, 'b', 0, 0, &negative, 0);
+		relation_writeall(ent, 'b', 0, 0, &negative, 0);
 		break;
 	}
 	case '2':{
 		sts[0].val = -1;
-		relationwrite(ent, 'a', 0, 0, &negative, 0);
+		relation_writeall(ent, 'a', 0, 0, &negative, 0);
 		sts[1].val = 1;
-		relationwrite(ent, 'b', 0, 0, &positive, 0);
+		relation_writeall(ent, 'b', 0, 0, &positive, 0);
 		break;
 	}
 	case '3':{
 		sts[0].val = 1;
-		relationwrite(ent, 'a', 0, 0, &positive, 0);
+		relation_writeall(ent, 'a', 0, 0, &positive, 0);
 		sts[1].val = 1;
-		relationwrite(ent, 'b', 0, 0, &positive, 0);
+		relation_writeall(ent, 'b', 0, 0, &positive, 0);
 		break;
 	}
 	}
@@ -168,15 +170,15 @@ void digital_complex(struct entity* ent, struct wireindex* sts, u8* buf, int len
 			if(0 != sts[j].val)continue;
 
 			val = 0;
-			relationread(ent, 'a'+j, 0, 0, &val, 1);
+			relation_readall(ent, 'a'+j, 0, 0, &val, 1);
 			if(0 == val)k += 1;
 			else if('p' == val){
 				sts[j].val = 1;
-				relationwrite(ent, 'a'+j, 0, 0, &positive, 1);
+				relation_writeall(ent, 'a'+j, 0, 0, &positive, 1);
 			}
 			else if('n' == val){
 				sts[j].val =-1;
-				relationwrite(ent, 'a'+j, 0, 0, &negative, 1);
+				relation_writeall(ent, 'a'+j, 0, 0, &negative, 1);
 			}
 		}
 		say("k=%d,err=%d\n", k,err);

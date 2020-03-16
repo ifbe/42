@@ -7,13 +7,12 @@ u32 crc32(u32 crc, u8* buf, u32 len);
 
 int check_gpt(u8* addr)
 {
-	//[1fe, 1ff] = (0xaa，0x55)
-	u64 temp = *(u16*)(addr+0x1fe);
-	if(temp != 0xaa55)return 0;
+	//[1fe, 1ff] = (0x55，0xaa)
+	if(0x55 != addr[0x1fe])return 0;
+	if(0xaa != addr[0x1ff])return 0;
 
 	//[200, 207] = "EFI PART"
-	temp = *(u64*)(addr+0x200);
-	if(temp != _EFI_PART_)return 0;
+	if(*(u64*)(addr+0x200) != _EFI_PART_)return 0;
 
 	//检查crc32校验正确还是错误
 	//
