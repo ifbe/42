@@ -11,6 +11,7 @@ libalgo/libstr/conv/conv.ascii.c \
 libalgo/libstr/conv/conv.bigint.c \
 libalgo/libstr/conv/conv.file.c \
 libalgo/libstr/conv/conv.num.c \
+libalgo/libstr/conv/conv.print.c \
 libalgo/libstr/conv/conv.url.c \
 libalgo/libstr/conv/conv.utf8.c \
 libalgo/libstr/count/count.item.c \

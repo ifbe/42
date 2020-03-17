@@ -242,7 +242,7 @@ static int fat32_read(struct artery* art, int ign, u64 clus,int offs, u8* buf,in
 	}
 
 	tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
-	ret = relationread(art,_src_, "",ret, buf+cnt,len-cnt);
+	ret = relationread(art,_src_, "",tmp, buf+cnt,len-cnt);
 	if(ret < len-cnt)goto retcnt;
 	cnt += ret;
 
