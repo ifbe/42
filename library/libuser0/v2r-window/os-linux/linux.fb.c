@@ -129,7 +129,9 @@ void windowcreate(struct supply* sup, void* arg)
 
 	sup->width  = xmax;
 	sup->height = ymax;
-	sup->stride = fboneline/4;
+
+	sup->fbwidth = fboneline;
+	//sup->fbheight = 0;
 
 	sup->rgbabuf = malloc(2048*1024*4);
 	//for(j=0;j<16;j++)w->input[j].id = 0xffff;

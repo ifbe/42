@@ -343,8 +343,12 @@ void windowcreate(struct supply* w)
 	w->fmt = _rgba_;
 	w->vfmt = hex64('b','g','r','a','8','8','8','8');
 
-	w->width = w->stride = 512;
-	w->height = 512;
+	w->width = 1024;
+	w->height = 768;
+
+	w->fbwidth = 1024*4;
+	//w->fbheight =
+
 	w->thread = startthread(uievent, w);
 }
 

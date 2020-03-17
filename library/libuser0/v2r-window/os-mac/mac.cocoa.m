@@ -48,10 +48,14 @@ void windowdelete(struct supply* w)
 }
 void windowcreate(struct supply* w)
 {
-	w->fmt = hex64('b','g','r','a','8','8','8','8');
+	w->fmt = _rgba_;
+	w->vfmt = hex64('b','g','r','a','8','8','8','8');
 
-	w->width = w->stride = 512;
-	w->height = 512;
+	w->width = 1024;
+	w->height = 768;
+
+	w->fbwidth = 1024*4;
+	//w->fbheight = 0;
 
 	w->rgbabuf = malloc(2048*1024*4);
 

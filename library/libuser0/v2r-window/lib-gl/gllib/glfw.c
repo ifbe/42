@@ -222,11 +222,11 @@ static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 static void callback_reshape(GLFWwindow* fw, int w, int h)
 {
 	struct supply* ogl = glfwGetWindowUserPointer(fw);
-	ogl->fbwidth = ogl->fbstride = w;
+	ogl->fbwidth = w;
 	ogl->fbheight = h;
 
 	glfwGetWindowSize(fw, &w, &h);
-	ogl->width = ogl->stride = w;
+	ogl->width = w;
 	ogl->height = h;
 }
 
@@ -252,7 +252,7 @@ void windowopen_root(struct supply* w, struct supply* r)
 	w->glwnd = fw;
 
 	glfwGetFramebufferSize(fw, &x, &y);
-	w->fbwidth = w->fbstride = x;
+	w->fbwidth = x;
 	w->fbheight = y;
 
 	//3.callback
@@ -299,7 +299,7 @@ void windowopen_coop(struct supply* w, struct supply* r)
 	w->glwnd = fw;
 
 	glfwGetFramebufferSize(fw, &x, &y);
-	w->fbwidth = w->fbstride = x;
+	w->fbwidth = x;
 	w->fbheight = y;
 
 	//3.callback
@@ -454,7 +454,6 @@ void windowcreate(struct supply* ogl, void* arg)
 		ogl->width = 1024;
 		ogl->height = 768;
 		ogl->depth = 1024;
-		ogl->stride = 1024;
 
 		windowopen_coop(ogl, share);
 		break;
@@ -463,7 +462,6 @@ void windowcreate(struct supply* ogl, void* arg)
 		ogl->width = 1024;
 		ogl->height = 768;
 		ogl->depth = 1024;
-		ogl->stride = 1024;
 
 		windowopen_root(ogl, 0);
 		nonewindow_create(ogl);
@@ -473,7 +471,6 @@ void windowcreate(struct supply* ogl, void* arg)
 		ogl->width = 1024;
 		ogl->height = 768;
 		ogl->depth = 1024;
-		ogl->stride = 1024;
 
 		windowopen_root(ogl, 0);
 		easywindow_create(ogl);
@@ -483,7 +480,6 @@ void windowcreate(struct supply* ogl, void* arg)
 		ogl->width = 1024;
 		ogl->height = 768;
 		ogl->depth = 1024;
-		ogl->stride = 1024;
 
 		windowopen_root(ogl, 0);
 		fullwindow_create(ogl);

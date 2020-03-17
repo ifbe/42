@@ -83,7 +83,9 @@ JNIEXPORT void JNICALL Java_com_example_finalanswer_FinalAnswerView_Read(JNIEnv*
 		//LOGI("width=%d,stride=%d\n", buffer.width, buffer.stride);
 		supply[0].buf = buffer.bits;
 		supply[0].width = buffer.width;
-		supply[0].stride = buffer.stride;
+
+		supply[0].fbwidth = buffer.stride;
+		//supply[0].fbwidth = 0;
 		entityread(&supply[0],0,0,0);
 
 		//

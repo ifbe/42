@@ -79,7 +79,7 @@ void windowdraw(struct supply* wnd)
 	{
 		for(x=0;x<wnd->width;x++)
 		{
-			p = buf + ((wnd->stride*y + x)<<2);
+			p = buf + ((wnd->fbwidth*y + x)<<2);
 			if(p[0] > 0x80)
 			{
 				//先颜色
@@ -169,11 +169,14 @@ void windowdelete(struct supply* w)
 }
 void windowcreate(struct supply* w)
 {
-	w->type = hex32('w','i','n',0);
-	w->fmt = hex32('t','u','i',0);;
+	w->fmt = _tui_;;
+	w->vfmt = 0;
 
-	w->width = w->stride = 80;
+	w->width = 80;
 	w->height = 25;
+
+	w->fbwidth = 80;
+	//w->fbheight = 0;
 
 	w->textbuf = malloc(0x100000);
 	threadcreate(uievent, w);

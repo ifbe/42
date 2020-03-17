@@ -14,9 +14,10 @@ void drawsolid_triangle_crop(struct entity* win, u32 rgb,
 	u32* tmp;
 	if(y1 != y2)return;
 	if(y0 == y1)return;
+
 	width = win->width;
 	height = win->height;
-	stride = win->stride;
+	stride = win->fbwidth>>2;
 	buf = (u32*)(win->rgbabuf);
 
 	if(y0 < y1){j = y0;k = y1;}
@@ -77,7 +78,7 @@ void drawsolid_rect(struct entity* win, u32 rgb,
 	int startx,endx,starty,endy;
 	int width = win->width;
 	int height = win->height;
-	int stride = win->stride;
+	int stride = win->fbwidth>>2;
 	u32* buf = (u32*)(win->rgbabuf);
 
 	if(x1<=x2){startx=x1;endx=x2;}
@@ -106,7 +107,7 @@ void drawsolid_circle(struct entity* win, u32 rgb,
 	int x1, y1, x2, y2;
 	int width = win->width;
 	int height = win->height;
-	int stride = win->stride;
+	int stride = win->fbwidth>>2;
 	u32* buf = (u32*)(win->rgbabuf);
 
 	y1=cy-radius;

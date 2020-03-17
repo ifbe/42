@@ -182,8 +182,10 @@ DWORD WINAPI windowthread(struct supply* win)
 				GetConsoleScreenBufferInfo(hStdout, &bInfo);
 				x = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
 				y = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
-				win->width = win->stride = x;
+				win->width = x;
 				win->height = y;
+
+				win->fbwidth = x*4;
 				//eventwrite(x+(y<<16), _size_, 0, 0);
 			}
 			else if(MENU_EVENT == ret)
@@ -344,11 +346,14 @@ void windowcreate(struct supply* w)
 	width = bInfo.srWindow.Right - bInfo.srWindow.Left + 1;
 	height = bInfo.srWindow.Bottom - bInfo.srWindow.Top + 1;
 
-	w->type = hex32('w','i','n',0);
-	w->fmt = hex32('t','u','i',0);
+	w->fmt = _tui_;
+	w->vfmt = 0;
 
-	w->width = w->stride = width;
+	w->width = width;
 	w->height = height;
+
+	w->fbwidth = width*4;
+	//w->fbheight = 0;
 
 	w->textbuf = malloc(0x100000);
 	threadcreate(windowthread, w);

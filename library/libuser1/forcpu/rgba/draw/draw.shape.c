@@ -27,7 +27,7 @@ void drawicon_1(struct entity* win, u32 rgb,
 	int x,y,m,n;
 	int width = win->width;
 	int height = win->height;
-	int stride = win->stride;
+	int stride = win->fbwidth>>2;
 	u32* fb = (u32*)(win->rgbabuf);
 
 	for(y=y0;y<y1;y++)
@@ -84,7 +84,7 @@ void drawhyaline_rect(struct entity* win, u32 rgb,
 	int startx,endx,starty,endy;
 	int width = win->width;
 	int height = win->height;
-	int stride = win->stride;
+	int stride = win->fbwidth>>2;
 	u8* buf = (u8*)(win->rgbabuf);
 
 	if(x1<=x2){startx=x1;endx=x2;}

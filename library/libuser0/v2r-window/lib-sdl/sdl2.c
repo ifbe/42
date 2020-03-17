@@ -62,8 +62,11 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 			if(SDL_WINDOWEVENT_RESIZED == ev.window.event)
 			{
 				//say("%d,%d\n", ev.window.data1, ev.window.data2);
-				wnd->width = wnd->stride = ev.window.data1;
+				wnd->width = ev.window.data1;
 				wnd->height = ev.window.data2;
+
+				wnd->fbwidth = wnd->width*4;
+				//wnd->fbheight = 0;
 
 				SDL_DestroyTexture(wnd->sdltex);
 				wnd->sdltex = SDL_CreateTexture(
@@ -182,11 +185,11 @@ void windowcreate(struct supply* wnd)
 	wnd->fmt = _rgba_;
 	wnd->vfmt = hex64('r','g','b','a','8','8','8','8');
 
-	wnd->width= wnd->stride = 1024;
+	wnd->width= 1024;
 	wnd->height = 768;
 
-	wnd->fbwidth= wnd->fbstride = 1024;
-	wnd->fbheight = 768;
+	wnd->fbwidth = 1024*4;
+	//wnd->fbheight = 768;
 
 	wnd->rgbabuf = malloc(2048*2048*4);
 

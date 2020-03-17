@@ -153,10 +153,14 @@ void windowdelete(struct supply* w)
 }
 void windowcreate(struct supply* w)
 {
-	w->fmt = hex32('t','u','i',0);
+	w->fmt = _tui_;
+	w->vfmt = 0;
 
-	w->width = w->stride = width;
+	w->width = width;
 	w->height = height;
+
+	w->fbwidth = width*4;
+	//w->fbheight = 0;
 
 	w->textbuf = malloc(0x100000);
 	threadcreate(textuithread, w);

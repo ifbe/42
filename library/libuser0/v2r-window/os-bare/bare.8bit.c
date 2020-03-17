@@ -30,11 +30,14 @@ void windowdelete(struct supply* win)
 }
 void windowcreate(struct supply* win)
 {
-	win->type = hex32('w','i','n',0);
 	win->fmt = hex32('8','b','i','t');
+	win->vfmt = 0;
 
-	win->width = win->stride = 320;
+	win->width = 320;
 	win->height = 200;
+
+	win->fbwidth = 320;
+	//win->fbheight = ;
 
 	win->len = 320*200;
 	win->buf = (void*)(u64)0x2000000;

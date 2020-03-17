@@ -172,7 +172,9 @@ void windowread(struct supply* win)
 		thewin->buf = buffer.bits;
 		thewin->width = buffer.width;
 		thewin->height = buffer.height;
-		thewin->stride = buffer.stride;
+
+		thewin->fbwidth = buffer.stride;
+		//thewin->fbheight = 0;
 
 		//read data
 		supply_rootread(thewin, 0, 0, 0, 0, 0);

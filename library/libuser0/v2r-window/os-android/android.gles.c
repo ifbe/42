@@ -254,10 +254,11 @@ void windowdelete(struct supply* win)
 void windowcreate(struct supply* win)
 {
 	say("@windowcreate\n");
-	win->width  = win->fbwidth  = width;
-	win->stride = win->fbstride = width;
-	win->height = win->fbheight = height;
-	win->depth  = win->fbdepth  = 1024;
+	win->width  = width;
+	win->height = height;
+	win->depth  = 1024;
+
+	win->fbwidth = width;
 	fullwindow_create(win);
 
 	thewin = win;

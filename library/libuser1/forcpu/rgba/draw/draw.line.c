@@ -10,7 +10,7 @@ void drawline(struct entity* win, u32 rgb,
 	int dx,dy,sx,sy,e1,e2;
 	int width = win->width;
 	int height = win->height;
-	int stride = win->stride;
+	int stride = win->fbwidth>>2;
 	u32* buf = (u32*)(win->rgbabuf);
 
 	if(x0 < x1){dx = x1-x0;sx = 1;}
@@ -61,7 +61,7 @@ void drawbezier(struct entity* win, u32 rgb,
 	int x,y,t;
 	int width = win->width;
 	int height = win->height;
-	int stride = win->stride;
+	int stride = win->fbwidth>>2;
 	u32* buf = (u32*)(win->rgbabuf);
 
 	for(t=0;t<1000;t++)
@@ -95,7 +95,7 @@ void drawline_rect(struct entity* win, u32 rgb,
 	int startx,endx,starty,endy;
 	int width = win->width;
 	int height = win->height;
-	int stride = win->stride;
+	int stride = win->fbwidth>>2;
 	u32* buf = (u32*)(win->rgbabuf);
 
 	if(x1<x2){startx=x1;endx=x2;}
@@ -152,7 +152,7 @@ void drawline_circle(struct entity* win, u32 rgb,
 	int x1, y1, x2, y2;
 	int width = win->width;
 	int height = win->height;
-	int stride = win->stride;
+	int stride = win->fbwidth>>2;
 	u32* buf = (u32*)(win->rgbabuf);
 
 	y1=cy-radius;

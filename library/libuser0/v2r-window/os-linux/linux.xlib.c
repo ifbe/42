@@ -97,8 +97,11 @@ void windowevent(struct supply* win, XEvent xev)
 		//printf("%d,%d\n",x,y);
 
 		if((x==win->width)&&(y==win->height))return;
-		win->width = win->stride = x;
+		win->width = x;
 		win->height = y;
+
+		win->fbwidth = x*4;
+		//win->fbheight = 0;
 
 		win->ximage = XCreateImage(
 			dsp, visual, 24, ZPixmap,
@@ -276,8 +279,11 @@ void windowcreate(struct supply* win)
 	win->fmt = _rgba_;
 	win->vfmt = hex64('b','g','r','a','8','8','8','8');
 
-	win->width = win->stride = 1024;
+	win->width = 1024;
 	win->height = 768;
+
+	win->fbwidth = 1024*4;
+	//win->fbheight = 0;
 
 	//
 	win->rgbabuf = malloc(0x1000000);

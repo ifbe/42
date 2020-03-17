@@ -110,11 +110,14 @@ void windowcreate(struct supply* w)
 		if(pix->ReservedMask == 0)fmt = __bgra8880__;
 		else fmt = __bgra8888__;
 
-		w->type = _sup_;
 		w->fmt = fmt;
+		w->vfmt = 0;
 
-		w->width = w->stride = 1024;
+		w->width = 1024;
 		w->height = 768;
+
+		w->fbwidthe = 1024*4;
+		//w->fbheight = 0;
 
 		w->buf = (void*)0x2000000;
 		w->len = gop->Mode->FrameBufferSize;

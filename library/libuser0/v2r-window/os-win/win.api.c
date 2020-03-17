@@ -133,8 +133,11 @@ int windowcreate(struct supply* win)
 	win->fmt = _rgba_;
 	win->vfmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
 
-	win->width = win->stride = 1024;
+	win->width = 1024;
 	win->height = 768;
+
+	win->fbwidth = 1024*4;
+	//win->fbheight = 0;
 
 	win->hwnd = 0;
 	win->hdc = 0;
@@ -542,8 +545,10 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 			if(win != 0)
 			{
-				win->width = win->stride = w;
+				win->width = w;
 				win->height = h;
+
+				win->fbwidth = w*4;
 			}
 
 			//eventwrite(0x657a6973, 0x4077, addr, 0);

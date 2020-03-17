@@ -991,13 +991,13 @@ struct supply
 	int width;
 	int height;
 	int depth;
-	int stride;
+	int fourth;
 
 	//[d0,df]
-	int fbwidth;
+	int fbwidth;	//=stride=pitch=byte_per_line
 	int fbheight;
 	int fbdepth;
-	int fbstride;
+	int fbfourth;
 
 	//[e0,ef]
 	union{

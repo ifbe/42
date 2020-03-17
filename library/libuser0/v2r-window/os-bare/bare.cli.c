@@ -26,10 +26,14 @@ void windowdelete(struct supply* w)
 }
 void windowcreate(struct supply* w)
 {
-	w->fmt = hex32('c','l','i',0);
+	w->fmt = _cli_;
+	w->vfmt = 0;
 
-	w->width = w->stride = 80;
+	w->width = 80;
 	w->height = 25;
+
+	w->fbwidth = 80;
+	//w->fbheight = 0;
 }
 
 
