@@ -3,6 +3,9 @@ cflag ?= -c -O2 -fPIC
 
 target:
 	$(compiler) $(cflag) worker.c
+	$(compiler) $(cflag) init/init.c
+	$(compiler) $(cflag) init/args.myml.c
+	$(compiler) $(cflag) init/args.mython.c
 	$(compiler) $(cflag) prep/prep.term.c
 	$(compiler) $(cflag) prep/prep.default.c
 	$(compiler) $(cflag) prep/prep.myml.c

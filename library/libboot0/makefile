@@ -5,8 +5,6 @@ cflag ?= -c -O2 -fPIC
 bare:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
-	$(compiler) $(cflag) init/init.c
-	$(compiler) $(cflag) init/args.c
 	$(compiler) $(cflag) bare/memory.c
 	$(compiler) $(cflag) bare/board.c
 	$(compiler) $(cflag) bare/barex64/baremain.c
@@ -17,8 +15,6 @@ bare:
 efi:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
-	$(compiler) $(cflag) init/init.c
-	$(compiler) $(cflag) init/args.c
 	$(compiler) $(cflag) bare/memory.c
 	$(compiler) $(cflag) bare/board.c
 	$(compiler) $(cflag) bare/efi/efimain.c
@@ -29,8 +25,6 @@ efi:
 none:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
-	$(compiler) $(cflag) init/init.c
-	$(compiler) $(cflag) init/args.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/board.c
 	$(compiler) $(cflag) app/none/main.c
@@ -42,8 +36,6 @@ none:
 rpi:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
-	$(compiler) $(cflag) init/init.c
-	$(compiler) $(cflag) init/args.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/rpi/wiringpi.c
 	$(compiler) $(cflag) app/none/main.c
@@ -55,8 +47,6 @@ rpi:
 wincmd:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
-	$(compiler) $(cflag) init/init.c
-	$(compiler) $(cflag) init/args.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/board.c
 	$(compiler) $(cflag) app/win/main.c
