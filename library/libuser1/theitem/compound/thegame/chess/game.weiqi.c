@@ -1,4 +1,5 @@
 #include "libuser.h"
+int ray_plane(vec3 ray[], vec3 rect[], vec3 out);
 
 
 
@@ -113,58 +114,59 @@ static void weiqi_draw_gl41(
 {
 	int x,y;
 	int j,k,rgb;
-	vec3 tc, tr, tf, tu, f;
+	vec3 tc, tr, tf, tu;
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
-	gl41solid_rect(ctx, 0xf9d65b, vc, vr, vf);
+	float* vt = geom->f.vt;
+	for(j=0;j<3;j++){
+		tu[j] = vt[j]/16;
+		tc[j] = vc[j] - tu[j];
+		gl41solid_prism4(ctx, 0xf9d65b, tc, vr, vf, tu);
+	}
 
 	for(y=-9;y<10;y++)
 	{
-		f[0] = 18.0/19;
-		f[1] = y*2.0/19;
-		f[2] = 1.0/19/4;
-		tc[0] = vc[0] - f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
-		tc[1] = vc[1] - f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
-		tc[2] = vc[2] - f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
-		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
-		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
-		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		for(j=0;j<3;j++){
+			tc[j] = vc[j] - vr[j]*(18.0/19.0) + vf[j]*(y*2.0/19.0) + vt[j]/100.0;
+			tr[j] = tc[j] + vr[j]*36.0/19.0;
+		}
 		gl41line(ctx, 0x222222, tc, tr);
 	}
 	for(x=-9;x<10;x++)
 	{
-		f[0] = x*2.0/19;
-		f[1] = 18.0/19;
-		f[2] = 1.0/19/4;
-		tc[0] = vc[0] + f[0]*vr[0] - f[1]*vf[0] + f[2]*vu[0];
-		tc[1] = vc[1] + f[0]*vr[1] - f[1]*vf[1] + f[2]*vu[1];
-		tc[2] = vc[2] + f[0]*vr[2] - f[1]*vf[2] + f[2]*vu[2];
-		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
-		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
-		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		for(j=0;j<3;j++){
+			tc[j] = vc[j] + vr[j]*(x*2.0/19.0) - vf[j]*(18.0/19.0) + vt[j]/100.0;
+			tr[j] = tc[j] + vf[j]*36.0/19.0;
+		}
 		gl41line(ctx, 0x222222, tc, tr);
+	}
+
+	for(j=0;j<3;j++){
+		tr[j] = vr[j]/100.0;
+		tf[j] = vf[j]/100.0;
+	}
+	for(y=-6;y<=6;y+=6){
+		for(x=-6;x<=6;x+=6){
+			for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*x*2/19 + vf[j]*y*2/19+vt[j]/100.0;
+			gl41solid_circle(ctx,0, tc,tr,tf);
+		}
 	}
 
 	u8* data = act->buf0;
 	k = 0;
-	tr[0] = vr[0]/19;
-	tr[1] = vr[1]/19;
-	tr[2] = vr[2]/19;
-	tf[0] = vf[0]/19;
-	tf[1] = vf[1]/19;
-	tf[2] = vf[2]/19;
-	tu[0] = vu[0]/19/2;
-	tu[1] = vu[1]/19/2;
-	tu[2] = vu[2]/19/2;
+	for(j=0;j<3;j++){
+		tr[j] = vr[j]/19;
+		tf[j] = vf[j]/19;
+		tu[j] = vt[j]/19/2;
+	}
 	for(y=-9;y<10;y++)
 	{
 		for(x=-9;x<10;x++)
 		{
 			j = data[19*(y+9) + x+9];
-			if('w' == j)rgb = 0xc0c0c0;
-			else if('b' == j)rgb = 0x404040;
+			if('w' == j)rgb = 0xe0e0e0;
+			else if('b' == j)rgb = 0x202020;
 			else continue;
 
 			tc[0] = vc[0] + tr[0]*x*2 - tf[0]*y*2 + tu[0];
@@ -247,68 +249,100 @@ static void weiqi_draw_cli(
 
 
 
-
-static void weiqi_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
-	struct event* ev, int len)
+/*
+int weiqi_haveqi(int x,int y, u8 c)
 {
-	char val;
-	int x,y;
-	u64 what = ev->what;
-	u64 key = ev->why;
+	if(x <0)return 0;
+	if(x>18)return 0;
+	if(y <0)return 0;
+	if(y>18)return 0;
+	if(0 == data[y][x])return 1;
+	if(c == data[y][x])return 1;
+	return 0;
+}
+void weiqi_check(int x,int y)
+{
+	if(x<0)return;
+	if(x>18)return;
+	if(y<0)return;
+	if(y>18)return;
 
-	if(what == _kbd_)
-	{
-		if(key == 0x48)   //up
-		{
-			if(py<1)return;
-			py--;
+	u8 c = data[y][x];
+	if(0 == c)return;
+	if(weiqi_haveqi(x-1,y,c))return;
+	if(weiqi_haveqi(x+1,y,c))return;
+	if(weiqi_haveqi(x,y-1,c))return;
+	if(weiqi_haveqi(x,y+1,c))return;
+	data[y][x] = 0;
+}*/
+int weiqi_forbid(int x, int y, u8 c)
+{
+/*
+	foreach k in 上下左右{
+		if(是边)continue;
+
+		k = 这个;
+		if(0 == k)return 0;
+		if(c == k){
+			if(这个能供气)return 0;
 		}
-		else if(key == 0x4b)	//left
-		{
-			if(px<1)return;
-			px--;
-		}
-		else if(key == 0x4d)   //right
-		{
-			if(px>=18)return;
-			px++;
-		}
-		else if(key == 0x50)   //down
-		{
-			if(py>=18)return;
-			py++;
+		if(c != k){
+			if(这个能吃掉)return 0;
 		}
 	}
-	else if(what == _char_)
-	{
-		if(key == 0x20)
-		{
-			if((turn&1)==0)data[py][px] = 'b';
-			else data[py][px] = 'w';
-			turn++;
-		}
-	}
-	else if(what == 0x2d70)
-	{
-		x=key & 0xffff;
-		y=(key >> 16) & 0xffff;
-		//say("%d,%d\n",x,y);
+	return 1;
+*/
+	return 0;
+}
+void weiqi_putone(vec3 v)
+{
+	int x = 19*v[0];
+	int y = 19*(1.0-v[1]);
+	say("%d,%d\n",x,y);
 
-		x = (x*19)>>16;
-		y = (y*19)>>16;
-		//say("%d,%d\n",x,y);
+	if(x<0)return;
+	if(x>18)return;
+	if(y<0)return;
+	if(y>18)return;
 
-		if(x<0)return;
-		if(x>18)return;
-		if(y<0)return;
-		if(y>18)return;
-
-		if((turn&0x1) == 0)data[y][x] = 'b';
-		else data[y][x] = 'w';
+	if(0 != data[y][x])return;
+	if(turn&1){
+		if(weiqi_forbid(x,y,'w'))return;
+		data[y][x] = 'w';
 		turn++;
 	}
+	else{
+		if(weiqi_forbid(x,y,'b'))return;
+		data[y][x] = 'b';
+		turn++;
+	}
+}
+void weiqi_intersect(float* out, vec3 ray[], struct fstyle* sty)
+{
+	vec3 plane[2]={
+		{sty->vc[0],sty->vc[1],sty->vc[2]},
+		{sty->vt[0],sty->vt[1],sty->vt[2]}
+	};
+
+	vec3 tmp;
+	int ret = ray_plane(ray, plane, tmp);
+	if(ret <= 0)return;
+
+	//vec_vc_to_p
+	tmp[0] -= sty->vc[0];
+	tmp[1] -= sty->vc[1];
+	tmp[2] -= sty->vc[2];
+
+	//[-1,1]
+	float lx = vec3_getlen(sty->vr);
+	float ly = vec3_getlen(sty->vf);
+	out[0] = vec3_dot(sty->vr, tmp) / lx / lx;
+	out[1] = vec3_dot(sty->vf, tmp) / ly / ly;
+
+	//[0,1]
+	out[0] = (out[0]+1.0)/2;
+	out[1] = (out[1]+1.0)/2;
+	say("%f,%f\n", out[0],out[1]);
 }
 
 
@@ -316,34 +350,43 @@ static void weiqi_event(
 
 static void weiqi_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam
+	//wnd -> cam, cam -> world
 	struct entity* wnd;struct style* area;
-
-	//cam -> world
 	struct entity* wrd;struct style* camg;
 
 	//world -> this
 	struct entity* win;struct style* geom;
 	struct entity* act;struct style* part;
 
-	if(stack){
+	if(stack&&(('v' == len))){
 		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
 		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
 
 		win = peer->pchip;geom = peer->pfoot;
 		act = self->pchip;part = self->pfoot;
-		if('v' == len)weiqi_draw_gl41(act,part, win,geom, wnd,area);
+		weiqi_draw_gl41(act,part, win,geom, wnd,area);
 	}
 }
 static void weiqi_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//weiqi_event(act, pin, win, sty, ev, 0);
+	struct entity* ent = peer->pchip;
+	switch(ent->type){
+	case _scene3d_:
+	case _reality_:{
+		vec3* ray = buf;
+/*		say("%f,%f,%f->%f,%f,%f\n",
+			ray[0][0],ray[0][1],ray[0][2],
+			ray[1][0],ray[1][1],ray[1][2]);
+*/
+		struct fstyle* sty = peer->pfoot;
+		if(0 == sty)return;
+
+		float out[3];
+		weiqi_intersect(out, ray, sty);
+		weiqi_putone(out);
+		break;
+	}
+	}
 }
 static void weiqi_discon(struct halfrel* self, struct halfrel* peer)
 {

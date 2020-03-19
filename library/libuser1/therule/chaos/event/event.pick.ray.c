@@ -16,6 +16,7 @@ static int clickray_send(struct entity* handler, vec3 ray[])
 	ret = relationsearch(handler, _tar_, self, peer);
 //say("clickray_send:%d\n", ret);
 	if(ret <= 0)return 0;
+//say("%f,%f,%f->%f,%f,%f\n", ray[0][0],ray[0][1],ray[0][2], ray[1][0],ray[1][1],ray[1][2]);
 
 	vec3 out[2];
 	struct style* sty;
@@ -41,19 +42,20 @@ static int clickray_convert(
 	struct entity* wnd, struct style* area,
 	struct event* ev, float* xyz)
 {
-	//screen to ndc
-	gl41data_convert(wnd, area, ev, xyz);
+	//[0,1] to [-1,1]
 	xyz[0] = 2*xyz[0] - 1.0;
 	xyz[1] = 2*xyz[1] - 1.0;
-	xyz[2] = 0.999999;
-	//say("%f,%f\n", dr[0],dr[1]);
+	xyz[2] = 0.5;
+	//say("%f,%f\n",xyz[0],xyz[1]);
 
 	//ndc to world
 	invproj(xyz, &geom->frus);
+	//say("%f,%f,%f\n", xyz[0],xyz[1],xyz[2]);
+
+	//put it into cam.rayslot
 	cam->fx0 = xyz[0];
 	cam->fy0 = xyz[1];
 	cam->fz0 = xyz[2];
-	//say("%f,%f,%f\n", xyz[0],xyz[1],xyz[2]);
 	return 1;
 }
 
@@ -104,6 +106,7 @@ int clickray_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 		if(0 == ent->iw0)return 0;
 
 		int ret;
+		vec3 tmp;
 		vec3 ray[2];
 		struct entity* wrd = stack[rsp-1]->pchip;
 		struct style* geom = stack[rsp-1]->pfoot;
@@ -113,12 +116,21 @@ int clickray_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 		//struct style* gl41 = stack[rsp-3]->pfoot;
 		struct entity* wnd = stack[rsp-4]->pchip;
 		struct style* area = stack[rsp-4]->pfoot;
-		ret = clickray_convert(act,slot, wrd,geom, wnd,area, ev,ray[1]);
+//say("%.8s,%.8s,%.8s\n",&wnd->type, &act->type, &wrd->type);
+
+		//screen to ndc
+		ret = gl41data_convert(wnd, area, ev, tmp);
+		//say("%f,%f\n",xyz[0],xyz[1]);
+
+		ret = clickray_convert(act,slot, wrd,geom, wnd,area, ev,tmp);
 		if(ret <= 0)return 0;
 
 		ray[0][0] = geom->fs.vc[0];
 		ray[0][1] = geom->fs.vc[1];
 		ray[0][2] = geom->fs.vc[2];
+		ray[1][0] = tmp[0] - ray[0][0];
+		ray[1][1] = tmp[1] - ray[0][1];
+		ray[1][2] = tmp[2] - ray[0][2];
 		clickray_send(self->pchip, ray);
 	}
 	return 0;

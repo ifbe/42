@@ -44,11 +44,11 @@ void matproj(mat4 mat, struct fstyle* sty)
 }
 void invproj(vec3 v, struct fstyle* sty)
 {
-	mat4 p;
-	ndc2camera_proj(p, sty);
-
 	mat4 q;
-	camera2world(q, sty);
+	ndc2camera_proj(q, sty);
+
+	mat4 p;
+	camera2world(p, sty);
 
 	mat4_multiply(p, q);
 
