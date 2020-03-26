@@ -203,6 +203,11 @@ void login_register(void*);
 void overview_register(void*);
 void detail_register(void*);
 
+//vmhw
+void arm64_register(void*);
+void x8664_register(void*);
+void vmddr_register(void*);
+
 
 
 //
@@ -727,5 +732,17 @@ void item_init(void* addr)
 	tmp -= sizeof(struct entity);
 
 	detail_register(tmp);
+	tmp -= sizeof(struct entity);
+
+
+
+//----------------vmhw-------------------
+	arm64_register(tmp);
+	tmp -= sizeof(struct entity);
+
+	x8664_register(tmp);
+	tmp -= sizeof(struct entity);
+
+	vmddr_register(tmp);
 	tmp -= sizeof(struct entity);
 }

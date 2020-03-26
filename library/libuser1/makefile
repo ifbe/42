@@ -343,7 +343,8 @@ theitem/imag/tool/menu.overview.c \
 theitem/imag/tool/tool.wireshark.c \
 theitem/imag/tool/uiux.oscillo.c \
 theitem/imag/tool/tool.font.c \
-theitem/vmhw/vmhw.ddr.c \
+theitem/vmhw/ram/vmhw.sram.c \
+theitem/vmhw/ram/vmhw.dram.c \
 theitem/vmhw/cpu/vmhw.cpu.x8664.c \
 theitem/vmhw/cpu/vmhw.cpu.arm64.c \
 theitem/vmhw/rpi/vmhw.rpi.uart.c \

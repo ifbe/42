@@ -106,7 +106,7 @@ static void minimap_read(struct halfrel* self, struct halfrel* peer, struct half
 		minimap_read_bywnd(self, peer, stack, rsp, buf, len);
 		break;
 	}
-	case _uiuxroot_:{
+	case _virtual_:{
 		minimap_read_byuiux(self, peer, stack, rsp, buf, len);
 		break;
 	}

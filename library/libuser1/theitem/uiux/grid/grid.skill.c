@@ -106,7 +106,7 @@ static void skill_read(struct halfrel* self, struct halfrel* peer, struct halfre
 		skill_read_bywnd(self, peer, stack, rsp, buf, len);
 		break;
 	}
-	case _uiuxroot_:{
+	case _virtual_:{
 		skill_read_byuiux(self, peer, stack, rsp, buf, len);
 		break;
 	}

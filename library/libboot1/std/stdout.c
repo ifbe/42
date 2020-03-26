@@ -97,7 +97,7 @@ void printmemory(u8* buf, int len)
 			tmp[(3*j) + 15] = c;
 
 			c = buf[j];
-			if((c<0x20)|(c>=0x7f))c = 0x20;
+			if((c<0x20)|(c>=0x7f))c = '.';
 			tmp[14+48+j] = c;
 		}
 		say((void*)"%.*s\n", 14+48+16, tmp);

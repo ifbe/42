@@ -1,12 +1,13 @@
 #include "libuser.h"
+#define _ram_ hex32('r','a','m', 0)
 
 
 
 
 int mmiospace_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	say("@mmiospace_read\n");
-	return 0;
+	struct entity* ent = self->pchip;
+	return relationread(ent,_ram_, stack,rsp, buf,len);
 }
 int mmiospace_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {

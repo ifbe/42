@@ -2,12 +2,12 @@
 cpu{
 fmt:arm64
 }
+mmio{
+fmt:mmio
+}
 ddr{
 fmt:ddr
 0x80000:../live/kernel/kernel8.img
-}
-bus{
-fmt:bus
 }
 </entity>
 
@@ -19,7 +19,19 @@ fmt:std
 </supply>
 
 
+<worker>
+poller{
+fmt:poller
+}
+pulser{
+fmt:pulser
+}
+</worker>
+
+
 <relation>
-(bus, 0, ram) -> (ddr, 0, bus)
-(bus, 0, cpu) -> (cpu, 0, bus)
+(mmio, 0, ram) -> (ddr, 0, mmio)
+(mmio, 0, cpu) -> (cpu, 0, mmio)
+
+(pulser, 0, clk) -> (cpu, 0, clk)
 </relation>

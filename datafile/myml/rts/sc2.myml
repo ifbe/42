@@ -27,7 +27,7 @@ skill{
 fmt:skill
 }
 uiuxroot{
-fmt:uiuxroot
+fmt:virtual
 }
 
 event{

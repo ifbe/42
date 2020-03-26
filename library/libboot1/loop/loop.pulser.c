@@ -2,6 +2,7 @@
 #define _clk_ hex32('c','l','k',0)
 u64 timeread();
 void sleep_us();
+void relation_writeall(void*,int, void*,int, void*,int);
 
 
 
@@ -13,8 +14,8 @@ void pulser(struct worker* tmp)
 	while(1){
 		t0 = timeread();
 
-		say("@pulser: %llx\n", t0);
-		relationwrite(tmp, _clk_, 0, 0, &t0, 8);
+		//say("@pulser: %llx\n", t0);
+		relation_writeall(tmp, _clk_, 0, 0, &t0, 8);
 
 		dt = timeread() - t0;
 		if(dt < 16000)sleep_us(16000-dt);

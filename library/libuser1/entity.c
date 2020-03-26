@@ -101,6 +101,18 @@ int xamlroot_linkup(void*, void*);
 int xamlroot_discon(void*, void*);
 int xamlroot_write(void*, void*, void*, int, void*, int);
 int xamlroot_read(void*, void*, void*, int, void*, int);
+int mmiospace_create(void*, void*, int, u8**);
+int mmiospace_delete(void*);
+int mmiospace_linkup(void*, void*);
+int mmiospace_discon(void*, void*);
+int mmiospace_write(void*, void*, void*, int, void*, int);
+int mmiospace_read( void*, void*, void*, int, void*, int);
+int portspace_create(void*, void*, int, u8**);
+int portspace_delete(void*, void*);
+int portspace_linkup(void*, void*);
+int portspace_discon(void*, void*);
+int portspace_write(void*, void*, void*, int, void*, int);
+int portspace_read(void*, void*, void*, int, void*, int);
 
 //gl41 helper
 int gl41data_create(void*, void*, int, u8**);
@@ -274,6 +286,8 @@ int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 	case _virtual_:return virtual_read(self, peer, arg, idx, buf, len);
 	case _htmlroot_:return htmlroot_read(self, peer, arg, idx, buf, len);
 	case _xamlroot_:return xamlroot_read(self, peer, arg, idx, buf, len);
+	case _mmio_:return mmiospace_read(self, peer, arg, idx, buf, len);
+	case _port_:return portspace_read(self, peer, arg, idx, buf, len);
 
 	case _test_:return test_read(self, peer, arg, idx, buf, len);
 	case _baby_:return baby_read(self, peer, arg, idx, buf, len);
@@ -314,6 +328,8 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 	case _virtual_:return virtual_write(self, peer, arg, idx, buf, len);
 	case _htmlroot_:return htmlroot_write(self, peer, arg, idx, buf, len);
 	case _xamlroot_:return xamlroot_write(self, peer, arg, idx, buf, len);
+	case _mmio_:return mmiospace_write(self, peer, arg, idx, buf, len);
+	case _port_:return portspace_write(self, peer, arg, idx, buf, len);
 
 	case _test_:return test_write(self, peer, arg, idx, buf, len);
 	case _baby_:return baby_write(self, peer, arg, idx, buf, len);
@@ -355,6 +371,8 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	case _virtual_:return virtual_discon(self, peer);
 	case _htmlroot_:return htmlroot_discon(self, peer);
 	case _xamlroot_:return xamlroot_discon(self, peer);
+	case _mmio_:return mmiospace_discon(self, peer);
+	case _port_:return portspace_discon(self, peer);
 
 	case _test_:return test_discon(self, peer);
 	case _baby_:return baby_discon(self, peer);
@@ -396,6 +414,8 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 	case _virtual_:return virtual_linkup(self, peer);
 	case _htmlroot_:return htmlroot_linkup(self, peer);
 	case _xamlroot_:return xamlroot_linkup(self, peer);
+	case _mmio_:return mmiospace_linkup(self, peer);
+	case _port_:return portspace_linkup(self, peer);
 
 	case _test_:return test_linkup(self, peer);
 	case _baby_:return baby_linkup(self, peer);
@@ -442,6 +462,13 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		virtual_create(act, buf, argc, argv);
 		return act;
 	}
+	case _htmlroot_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _htmlroot_;
+		htmlroot_create(act, buf, argc, argv);
+		return act;
+	}
 	case _xamlroot_:
 	{
 		act = allocentity();
@@ -449,11 +476,18 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		xamlroot_create(act, buf, argc, argv);
 		return act;
 	}
-	case _htmlroot_:
+	case _mmio_:
 	{
 		act = allocentity();
-		act->fmt = act->type = _htmlroot_;
-		htmlroot_create(act, buf, argc, argv);
+		act->fmt = act->type = _mmio_;
+		mmiospace_create(act, buf, argc, argv);
+		return act;
+	}
+	case _port_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _port_;
+		portspace_create(act, buf, argc, argv);
 		return act;
 	}
 

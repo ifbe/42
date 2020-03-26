@@ -199,6 +199,8 @@
 //
 #define _reality_ hex64('r','e','a','l','i','t','y', 0)
 #define _virtual_ hex64('v','i','r','t','u','a','l', 0)
+#define _mmio_ hex32('m','m','i','o')
+#define _port_ hex32('p','p','r','t')
 //
 #define _htmlroot_ hex64('h','t','m','l','r','o','o','t')
 #define _jsonroot_ hex64('j','s','o','n','r','o','o','t')
