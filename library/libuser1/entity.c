@@ -1,10 +1,12 @@
 #include "libuser.h"
-void baby_free();
-void baby_init(void*);
-void test_free();
-void test_init(void*);
-void mine_free();
-void mine_init(void*);
+void item_free();
+void item_init(void*);
+void data_free();
+void data_init(void*);
+void mind_free();
+void mind_init(void*);
+void rule_free();
+void rule_init(void*);
 
 //
 int baby_create(void*, void*, int, u8**);
@@ -93,12 +95,12 @@ int htmlroot_linkup(void*, void*);
 int htmlroot_discon(void*, void*);
 int htmlroot_write(void*, void*, void*, int, void*, int);
 int htmlroot_read( void*, void*, void*, int, void*, int);
-int uiuxroot_create(void*, void*, int, u8**);
-int uiuxroot_delete(void*, void*);
-int uiuxroot_linkup(void*, void*);
-int uiuxroot_discon(void*, void*);
-int uiuxroot_write(void*, void*, void*, int, void*, int);
-int uiuxroot_read(void*, void*, void*, int, void*, int);
+int xamlroot_create(void*, void*, int, u8**);
+int xamlroot_delete(void*, void*);
+int xamlroot_linkup(void*, void*);
+int xamlroot_discon(void*, void*);
+int xamlroot_write(void*, void*, void*, int, void*, int);
+int xamlroot_read(void*, void*, void*, int, void*, int);
 
 //gl41 helper
 int gl41data_create(void*, void*, int, u8**);
@@ -271,8 +273,7 @@ int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, voi
 	case _reality_:return reality_read(self, peer, arg, idx, buf, len);
 	case _virtual_:return virtual_read(self, peer, arg, idx, buf, len);
 	case _htmlroot_:return htmlroot_read(self, peer, arg, idx, buf, len);
-	//case _xamlroot_:return xamlroot_read(self, peer, arg, idx, buf, len);
-	case _uiuxroot_:return uiuxroot_read(self, peer, arg, idx, buf, len);
+	case _xamlroot_:return xamlroot_read(self, peer, arg, idx, buf, len);
 
 	case _test_:return test_read(self, peer, arg, idx, buf, len);
 	case _baby_:return baby_read(self, peer, arg, idx, buf, len);
@@ -312,8 +313,7 @@ int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, vo
 	case _reality_:return reality_write(self, peer, arg, idx, buf, len);
 	case _virtual_:return virtual_write(self, peer, arg, idx, buf, len);
 	case _htmlroot_:return htmlroot_write(self, peer, arg, idx, buf, len);
-	//case _xamlroot_:return xamlroot_write(self, peer, arg, idx, buf, len);
-	case _uiuxroot_:return uiuxroot_write(self, peer, arg, idx, buf, len);
+	case _xamlroot_:return xamlroot_write(self, peer, arg, idx, buf, len);
 
 	case _test_:return test_write(self, peer, arg, idx, buf, len);
 	case _baby_:return baby_write(self, peer, arg, idx, buf, len);
@@ -354,8 +354,7 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	case _reality_:return reality_discon(self, peer);
 	case _virtual_:return virtual_discon(self, peer);
 	case _htmlroot_:return htmlroot_discon(self, peer);
-	//case _xamlroot_:return xamlroot_discon(self, peer);
-	case _uiuxroot_:return uiuxroot_discon(self, peer);
+	case _xamlroot_:return xamlroot_discon(self, peer);
 
 	case _test_:return test_discon(self, peer);
 	case _baby_:return baby_discon(self, peer);
@@ -396,8 +395,7 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 	case _reality_:return reality_linkup(self, peer);
 	case _virtual_:return virtual_linkup(self, peer);
 	case _htmlroot_:return htmlroot_linkup(self, peer);
-	//case _xamlroot_:return xamlroot_linkup(self, peer);
-	case _uiuxroot_:return uiuxroot_linkup(self, peer);
+	case _xamlroot_:return xamlroot_linkup(self, peer);
 
 	case _test_:return test_linkup(self, peer);
 	case _baby_:return baby_linkup(self, peer);
@@ -444,11 +442,11 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		virtual_create(act, buf, argc, argv);
 		return act;
 	}
-	case _uiuxroot_:
+	case _xamlroot_:
 	{
 		act = allocentity();
-		act->fmt = act->type = _uiuxroot_;
-		uiuxroot_create(act, buf, argc, argv);
+		act->fmt = act->type = _xamlroot_;
+		xamlroot_create(act, buf, argc, argv);
 		return act;
 	}
 	case _htmlroot_:
@@ -458,13 +456,6 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		htmlroot_create(act, buf, argc, argv);
 		return act;
 	}
-/*	case _xamlroot_:
-	{
-		act = allocentity();
-		act->fmt = act->type = _xamlroot_;
-		xamlroot_create(act, buf, argc, argv);
-		return act;
-	}*/
 
 	case _border2d_:
 	{
@@ -646,9 +637,10 @@ void* entitysearch(u8* buf, int len)
 void freeentity()
 {
 	say("[e,f):freeing entity\n");
-	mine_free();
-	test_free();
-	baby_free();
+	item_free();
+	data_free();
+	mind_free();
+	rule_free();
 
 	style = 0;
 	entity = 0;
@@ -663,8 +655,9 @@ void initentity(u8* addr)
 	for(j=0;j<0x200000;j++)addr[j] = 0;
 	for(j=0;j<max;j++)entity[j].tier = _ent_;
 
-	baby_init(addr);
-	test_init(addr);
-	mine_init(addr);
+	rule_init(addr);
+	mind_init(addr);
+	data_init(addr);
+	item_init(addr);
 	say("[e,f):inited entity\n");
 }

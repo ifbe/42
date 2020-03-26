@@ -1,0 +1,25 @@
+<entity>
+cpu{
+fmt:arm64
+}
+ddr{
+fmt:ddr
+0x80000:../live/kernel/kernel8.img
+}
+bus{
+fmt:bus
+}
+</entity>
+
+
+<supply>
+stdio{
+fmt:std
+}
+</supply>
+
+
+<relation>
+(bus, 0, ram) -> (ddr, 0, bus)
+(bus, 0, cpu) -> (cpu, 0, bus)
+</relation>

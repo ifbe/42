@@ -70,7 +70,7 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 				SDL_DestroyTexture(wnd->sdltex);
 				wnd->sdltex = SDL_CreateTexture(
 					wnd->sdlren,
-					SDL_PIXELFORMAT_ARGB8888,
+					SDL_PIXELFORMAT_ABGR8888,
 					SDL_TEXTUREACCESS_STREAMING,
 					wnd->width, wnd->height
 				);
