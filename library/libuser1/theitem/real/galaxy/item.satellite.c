@@ -1,69 +1,122 @@
 #include "libuser.h"
-#define PI 3.1415926535897932384626433832795028841971693993151
+#define longitude fx0
+#define latitude fy0
+#define altitude fz0
+#define CTXBUF buf0
+void loadtexfromfile(struct glsrc* src, int idx, char* name);
+void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 
 
-static void satellite_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* area)
+char* satellite_glsl_v =
+GLSL_VERSION
+"layout(location = 0)in mediump vec3 vertex;\n"
+"layout(location = 1)in mediump vec2 texuvw;\n"
+"uniform mat4 cammvp;\n"
+"out mediump vec2 uvw;\n"
+"void main(){\n"
+	"uvw = texuvw;\n"
+	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
+"}\n";
+char* satellite_glsl_f =
+GLSL_VERSION
+"in mediump vec2 uvw;\n"
+"out mediump vec4 FragColor;\n"
+"uniform sampler2D tex0;\n"
+"void main(){\n"
+	"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
+	//"FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
+"}\n";
+
+
+
+
+void satellite_ctxforwnd(struct glsrc* src, char* str)
 {
-	u8 j;
-	float a,c,s;
-	vec3 tc, tr, tf, tu;
+	//
+	src->geometry = 3;
+	src->method = 'i';
+
+	//shader
+	src->vs = satellite_glsl_v;
+	src->fs = satellite_glsl_f;
+	src->shader_enq = 42;
+
+	//texture
+	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].name = "tex0";
+	src->tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(src, 0, str);
+	src->tex[0].enq = 42;
+	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
+
+#define accx 64
+#define accy 63
+	//vertex
+	src->vbuf_fmt = vbuffmt_33;
+	src->vbuf_w = 4*6;
+	src->vbuf_h = accx*accy+(accx-1)*2;
+	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
+	src->vbuf = memorycreate(src->vbuf_len, 0);
+	src->vbuf_enq = 0;
+
+	src->ibuf_fmt = 0x222;
+	src->ibuf_w = 2*3;
+	src->ibuf_h = accy*(accx-1)*2;
+	src->ibuf_len = (src->ibuf_w) * (src->ibuf_h);
+	src->ibuf = memorycreate(src->ibuf_len, 0);
+	src->ibuf_enq = 0;
+}
+static void satellite_draw_gl41(
+	struct entity* act, struct style* part,		//self
+	struct entity* win, struct style* geom,		//world,mygeom
+	struct entity* wrd, struct style* camg,		//world,camgeom
+	struct entity* ctx, struct style* none)		//gldata
+{
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
-	gl41solid_circle(ctx, 0x404040, vc, vr, vf);
+	float* vt = geom->f.vt;
 
-	u64 date = dateread();
-	u8* p = (u8*)&date;
-	p[2] += 8;
-	if(p[2] >= 24)p[2] = 0;p[3] += 1;
-
-	a = PI/2 - (p[0]*PI*2.0/60.0);
-	c = cosine(a);
-	s = sine(a);
-	tr[0] = vc[0]+(vr[0]*c+vf[0]*s);
-	tr[1] = vc[1]+(vr[1]*c+vf[1]*s);
-	tr[2] = vc[2]+(vr[2]*c+vf[2]*s);
-	gl41line(ctx, 0xff0000, vc, tr);
-
-	a = PI/2 - (p[1]*PI*2.0/60.0);
-	c = cosine(a);
-	s = sine(a);
-	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*3/4;
-	tr[1] = vc[1]+(vr[1]*c+vf[1]*s)*3/4;
-	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*3/4;
-	gl41line(ctx, 0x00ff00, vc, tr);
-
-	a = PI/2 - (p[2]*PI*2.0/12.0);
-	c = cosine(a);
-	s = sine(a);
-	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*2/4;
-	tr[1] = vc[1]+(vr[1]*c+vf[1]*s)*2/4;
-	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*2/4;
-	gl41line(ctx, 0x0000ff, vc, tr);
-
-	tr[0] = vr[0]/8;
-	tr[1] = vr[1]/8;
-	tr[2] = vr[2]/8;
-	tf[0] = vf[0]/8;
-	tf[1] = vf[1]/8;
-	tf[2] = vf[2]/8;
-	for(j=0;j<12;j++)
-	{
-		a = PI/2 - j*PI/6;
-		c = cosine(a);
-		s = sine(a);
-		tc[0] = vc[0] + c*vr[0]*7/8 + s*vf[0]*7/8;
-		tc[1] = vc[1] + c*vr[1]*7/8 + s*vf[1]*7/8;
-		tc[2] = vc[2] + c*vr[2]*7/8 + s*vf[2]*7/8 + 1;
-		carveascii_center(ctx, 0xffffff, tc, tr, tf, j<10 ? j+0x30 : j+0x37);
+	vec3 tc,tt,tr,tf;
+	int j;
+	float a0,c0,s0;
+	float az,cz,sz;
+	a0 = (act->longitude+180) * PI / 180;
+	c0 = cosine(a0);
+	s0 = sine(a0);
+	az = act->latitude * PI / 180;
+	cz = cosine(az);
+	sz = sine(az);
+	for(j=0;j<3;j++){
+		tt[j] = (vr[j]*c0 + vf[j]*s0)*cz*2 + vt[j]*sz*2;
+		tc[j] = vc[j] + tt[j];
+		tr[j] = -vr[j]*s0 + vf[j]*c0;
 	}
+	vec3_cross(tf, tt, tr);
+	vec3_setlen(tr, 32);
+	vec3_setlen(tf, 32);
+	gl41line(ctx, 0xff00ff, vc, tc);
+	gl41solid_rect(ctx, 0xffff00, tc, tr, tf);
+
+
+	struct glsrc* src = act->CTXBUF;
+	if(0 == src)return;
+
+	void* vbuf = (void*)(src->vbuf);
+	void* ibuf = (void*)(src->ibuf);
+	carveplanet(vbuf, ibuf, vc, vr, vf, vt);
+	src->vbuf_enq += 1;
+	src->ibuf_enq += 1;
+
+	gl41data_insert(ctx, 's', src, 1);
 }
+
+
+
+
 static void satellite_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -88,6 +141,42 @@ static void satellite_draw_cli(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
+	say("satellite(%x,%x,%x)\n",win,act,sty);
+}
+static void satellite_event(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
+	struct event* ev, int len)
+{
+}
+
+
+
+
+//-4: wnd, area
+//-3: cam, 0
+//-2: cam, part of cam
+//-1: world, geom of cam
+static void satellite_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
+//wnd -> cam, cam -> world
+	struct entity* wnd;struct style* area;
+	struct entity* wrd;struct style* camg;
+//world -> satellite
+	struct entity* win;struct style* geom;
+	struct entity* act;struct style* part;
+//say("@satellite_read\n");
+	if(stack && ('v' == len)){
+		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
+		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
+
+		win = peer->pchip;geom = peer->pfoot;
+		act = self->pchip;part = self->pfoot;
+		satellite_draw_gl41(act,part, win,geom, wrd,camg, wnd,area);
+	}
+}
+static void satellite_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+{
 }
 
 
@@ -95,30 +184,36 @@ static void satellite_draw_cli(
 
 static void satellite_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
 {
-	//wnd -> cam, cam -> world
-	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-
-	//scene -> myself
-	struct entity* scn;struct style* geom;
-	struct entity* act;struct style* slot;
-
-	if(stack&&('v' == len)){
-		act = self->pchip;slot = self->pfoot;
-		scn = peer->pchip;geom = peer->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		satellite_draw_gl41(act,slot, scn,geom, wnd,area);
+	struct supply* sup = peer->pchip;
+	switch(sup->fmt){
+	case _gl41fbog_:
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != len)break;
+		satellite_read_bywnd(self, peer, stack, rsp, buf, len);break;
+	}
+	default:{
+		satellite_read_bycam(self, peer, stack, rsp, buf, len);break;
+	}
 	}
 }
 static void satellite_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
 {
+	float* f = buf;
+	say("@satellite_write: %f,%f,%f,%f\n", f[0],f[1],f[2],f[3]);
+
+	struct entity* ent = self->pchip;
+	ent->longitude= f[0];
+	ent->latitude = f[1];
+	ent->altitude = f[2];
 }
 static void satellite_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void satellite_linkup(struct halfrel* self, struct halfrel* peer)
 {
+	say("@satellite_linkup\n");
 }
 
 
@@ -134,9 +229,19 @@ static void satellite_delete(struct entity* act)
 {
 	if(0 == act)return;
 }
-static void satellite_create(struct entity* act)
+static void satellite_create(struct entity* act, void* str)
 {
 	if(0 == act)return;
+
+	act->longitude = 0.0;
+	act->latitude = 0.0;
+	act->altitude = 0.0;
+
+	void* ctx = act->CTXBUF = memorycreate(0x200, 0);
+	if(ctx){
+		if(0 == str)str = "datafile/jpg/earth.jpg";
+		satellite_ctxforwnd(ctx, str);
+	}
 }
 
 

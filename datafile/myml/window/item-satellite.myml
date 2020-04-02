@@ -1,0 +1,97 @@
+<entity>
+satellite{
+fmt:satelli
+}
+freecam{
+fmt:freecam
+}
+virtual{
+fmt:virtual
+}
+event{
+fmt:event3rd
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<artery>
+str2vec{
+fmt:str2vec
+}
+</artery>
+
+
+<system>
+listen{
+fmt:UDP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<style>
+rabhaha{
+}
+rabgeom{
+c: 0.0, 0.0, 0.0
+r: 500.0, 0.0, 0.0
+f: 0.0, 500.0, 0.0
+t: 0.0, 0.0, 500.0
+}
+
+freemodl{
+}
+freegeom{
+c: 0.0, -2000.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#ev
+(event, 0, tar) -> (satellite, 0, ev)
+(event, 0, cam) -> (freecam, 0, ev)
+
+#input
+(listen, 0, dst) -> (str2vec, 0, str)
+(str2vec, 0, vec) -> (satellite, 0, evin)
+
+#virtual depends on inner objects
+(virtual, rabgeom, 0) -> (satellite, rabhaha, geom)
+(virtual, freegeom, 0) -> (freecam, freemodl, geom)
+
+#glwnd depends on cam
+(opengl, freerect, 0) -> (freecam, 0, a)
+</relation>
