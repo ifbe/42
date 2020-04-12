@@ -1,7 +1,9 @@
 #include "libuser.h"
+#define PERPIN buf0
+#define VERTEX buf1
+#define STAMP data3
 int parsefv(float* vec, int flen, u8* str, int slen);
-int relation_readall( void* item, int foot, void* arg, int idx, void* buf, int len);
-int relation_writeall( void* item, int foot, void* arg, int idx, void* buf, int len);
+int relation_readall(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -54,65 +56,72 @@ static int parsewiring(u8* buf, float* dat)
 
 
 
-
-static u32 digital_color(int val)
+static int digital_recur(_syn* stack,int sp, struct entity* ent)
 {
-	if(val < 0)return 0x0000ff;
-	if(val > 0)return 0xff0000;
-	return 0xffffff;
-}
-static void broadcast_except(struct halfrel* self, void* except, void* stack, int rsp, u8* buf, int len)
-{
-	struct entity* ent;
-	struct relation* rel;
-	if(rsp>3)return;
-
-	ent = self->pchip;
-say("rsp=%d\n",rsp);
-
-	rel = ent->orel0;
-	while(1){
-		if(0 == rel)break;
-		if((rel->srcflag == self->flag) && (rel->dst != except)){
-			entitywrite((void*)(rel->dst), (void*)(rel->src), stack, rsp, buf, len);
-		}
-		rel = samesrcnextdst(rel);
+	int j;
+	for(j=0;j<sp;j++){
+		if(ent == stack[j].pchip)return 1;
 	}
+	return 0;
+}
+static void digital_broadcast(struct entity* ent, int pin, _syn* stack,int sp, u8* buf, int len)
+{
+	struct relation* rel;
+	struct entity* chip;
+	int foot;
 
 	rel = ent->irel0;
 	while(1){
 		if(0 == rel)break;
-		if((rel->dstflag == self->flag)&&(rel->src != except)){
-			entitywrite((void*)(rel->src), (void*)(rel->dst), stack, rsp, buf, len);
-		}
+		if(pin != rel->dstflag)goto next1;
+
+		chip = rel->psrcchip;
+		if(digital_recur(stack,sp, chip))goto next1;
+
+		stack[sp+0].pchip = ent;
+		stack[sp+1].pchip = chip;
+
+		foot = rel->srcflag;
+		entitywrite(chip,foot, stack,sp+2, 0,ent->STAMP, buf,len);
+next1:
 		rel = samedstnextsrc(rel);
 	}
-}
 
+	rel = ent->orel0;
+	while(1){
+		if(0 == rel)break;
+		if(pin != rel->srcflag)goto next2;
 
+		chip = rel->pdstchip;
+		if(digital_recur(stack,sp, chip))goto next2;
 
+		stack[sp+0].pchip = ent;
+		stack[sp+1].pchip = chip;
 
-void digital_simple(struct entity* ent, struct wireindex* sts)
-{
-	u8 any = 0;
-	u8 positive = 'p';
-	u8 negative = 'n';
-
-	if(sts[0].val <= 0){
-		sts[0].val = 1;
-		relation_writeall(ent, 'a', 0, 0, &positive, 1);
-	}
-	else{
-		sts[0].val = -1;
-		relation_writeall(ent, 'a', 0, 0, &negative, 1);
+		foot = rel->dstflag;
+		entitywrite(chip,foot, stack,sp+2, 0,ent->STAMP, buf,len);
+next2:
+		rel = samesrcnextdst(rel);
 	}
 }
-void digital_complex(struct entity* ent, struct wireindex* sts, u8* buf, int len)
+void digital_complex(struct entity* ent,struct wireindex* sts, _syn* stack,int sp, u8* buf,int len)
 {
 	int j;
 	u8 any = 0;
 	u8 positive = 'p';
 	u8 negative = 'n';
+
+	if(' ' == buf[0]){
+		if(sts[0].val <= 0){
+			sts[0].val = 1;
+			digital_broadcast(ent,'a', stack,sp, &positive,1);
+		}
+		else{
+			sts[0].val = -1;
+			digital_broadcast(ent,'a', stack,sp, &negative,1);
+		}
+		return;
+	}
 
 	//step0: clear
 	for(j=0;j<16;j++){
@@ -121,42 +130,42 @@ void digital_complex(struct entity* ent, struct wireindex* sts, u8* buf, int len
 	}
 	for(j=0;j<16;j++){
 		if(0 == sts[j].cnt)break;
-		relation_writeall(ent, 'a'+j, 0, 0, &any, 0);
+		digital_broadcast(ent,'a'+j, stack,sp, &any,0);
 	}
 
 	//step1: send
 	switch(buf[0]){
 	case '0':{
 		sts[0].val = -1;
-		relation_writeall(ent, 'a', 0, 0, &negative, 0);
+		digital_broadcast(ent,'a', stack,sp, &negative,0);
 		sts[1].val = -1;
-		relation_writeall(ent, 'b', 0, 0, &negative, 0);
+		digital_broadcast(ent,'b', stack,sp, &negative,0);
 		break;
 	}
 	case '1':{
 		sts[0].val = 1;
-		relation_writeall(ent, 'a', 0, 0, &positive, 0);
+		digital_broadcast(ent,'a', stack,sp, &positive,0);
 		sts[1].val = -1;
-		relation_writeall(ent, 'b', 0, 0, &negative, 0);
+		digital_broadcast(ent,'b', stack,sp, &negative,0);
 		break;
 	}
 	case '2':{
 		sts[0].val = -1;
-		relation_writeall(ent, 'a', 0, 0, &negative, 0);
+		digital_broadcast(ent,'a', stack,sp, &negative,0);
 		sts[1].val = 1;
-		relation_writeall(ent, 'b', 0, 0, &positive, 0);
+		digital_broadcast(ent,'b', stack,sp, &positive,0);
 		break;
 	}
 	case '3':{
 		sts[0].val = 1;
-		relation_writeall(ent, 'a', 0, 0, &positive, 0);
+		digital_broadcast(ent,'a', stack,sp, &positive,0);
 		sts[1].val = 1;
-		relation_writeall(ent, 'b', 0, 0, &positive, 0);
+		digital_broadcast(ent,'b', stack,sp, &positive,0);
 		break;
 	}
 	}
 
-	//step2: read
+	//step2: chain write won't update all pin, so read 
 	u8 val;
 	int k,err=0;
 	for(j=0;j<16;j++){
@@ -170,15 +179,15 @@ void digital_complex(struct entity* ent, struct wireindex* sts, u8* buf, int len
 			if(0 != sts[j].val)continue;
 
 			val = 0;
-			relation_readall(ent, 'a'+j, 0, 0, &val, 1);
+			relation_readall(ent,'a'+j, stack,sp, 0,0, &val,1);
 			if(0 == val)k += 1;
 			else if('p' == val){
 				sts[j].val = 1;
-				relation_writeall(ent, 'a'+j, 0, 0, &positive, 1);
+				digital_broadcast(ent,'a'+j, stack,sp, &positive,1);
 			}
 			else if('n' == val){
 				sts[j].val =-1;
-				relation_writeall(ent, 'a'+j, 0, 0, &negative, 1);
+				digital_broadcast(ent,'a'+j, stack,sp, &negative,1);
 			}
 		}
 		say("k=%d,err=%d\n", k,err);
@@ -191,6 +200,12 @@ void digital_complex(struct entity* ent, struct wireindex* sts, u8* buf, int len
 
 
 
+static u32 digital_color(int val)
+{
+	if(val < 0)return 0x0000ff;
+	if(val > 0)return 0xff0000;
+	return 0xffffff;
+}
 static void digital_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* scn, struct style* geom,
@@ -202,9 +217,9 @@ static void digital_draw_gl41(
 	float* vt = geom->f.vt;
 	gl41solid_rect(wnd, 0x404040, vc, vr, vf);
 
-	struct wireindex* sts = act->buf0;
+	struct wireindex* sts = act->PERPIN;
 	if(0 == sts)return;
-	float* dat = act->buf1;
+	float* dat = act->VERTEX;
 	if(0 == dat)return;
 
 	int j,k;
@@ -228,76 +243,58 @@ static void digital_draw_gl41(
 		}
 	}
 }
-void digital_read_board(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+void digital_read_board(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
-//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-//world -> digital
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-
-	act = self->pchip;slot = self->pfoot;
-	win = peer->pchip;geom = peer->pfoot;
-	wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-	wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-	digital_draw_gl41(act,slot, win,geom, wnd,area);
-}
-int digital_read_child(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
-{
-	struct entity* scene;
-	struct relation* rel;
-	//say("@digital_read\n");
-
-	scene = self->pchip;
-	if(0 == scene)return 0;
-	rel = scene->orel0;
-	if(0 == rel)return 0;
-
-	while(1){
-		if(0 == rel)break;
-		if(rel->srcfoot)entityread((void*)(rel->dst), (void*)(rel->src), stack, rsp, buf, len);
-		rel = samesrcnextdst(rel);
+	if(stack && ('v'==key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		digital_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
+}
+
+
+
+
+int digital_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	digital_read_board(ent,foot, stack,sp, arg,key);
 	return 0;
 }
-int digital_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int digital_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
-	if(stack && ('v' == len)){
-		digital_read_child(self,peer, stack,rsp, buf,len);
-		digital_read_board(self,peer, stack,rsp, buf,len);
-	}
-	return 0;
-}
-int digital_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
-{
-	struct entity* ent = self->pchip;
-	if(0 == ent)return 0;
-	struct wireindex* sts = ent->buf0;
+	struct wireindex* sts = ent->PERPIN;
 	if(0 == sts)return 0;
-say("digital_write: %.4s=%x\n", &self->flag, buf[0]);
-	switch(self->flag){
-		case _ev_:{
-			if('a' == buf[0])digital_simple(ent, sts);
-			else digital_complex(ent, sts, buf, len);
+
+	switch(foot){
+		case _evby_:
+		{
+			struct event* ev = (void*)buf;
+			if(_char_ != ev->what)return 0;
+			if(ev->why < '0')return 0;
+			if(ev->why > '3')return 0;
+			//not break
+		}
+		case _ioby_:
+		{
+			say("digital_event: %.4s=%x\n", &foot, buf[0]);
+			ent->STAMP += 1;
+			digital_complex(ent,sts, stack,sp, buf,len);
 			break;
 		}
-		case 'b':{
-			if('p' == buf[0])sts[1].val = 1;
-			if('n' == buf[0])sts[1].val =-1;
-			broadcast_except(self, peer, stack, rsp+1, buf, 1);
-			break;
-		}
-		case 'c':{
-			if('p' == buf[0])sts[2].val = 1;
-			if('n' == buf[0])sts[2].val =-1;
-			broadcast_except(self, peer, stack, rsp+1, buf, 1);
-			break;
-		}
-		case 'd':{
-			if('p' == buf[0])sts[3].val = 1;
-			if('n' == buf[0])sts[3].val =-1;
-			broadcast_except(self, peer, stack, rsp+1, buf, 1);
+		case 'a':
+		case 'b':
+		case 'c':
+		case 'd':
+		{
+			say("digital_write: %.4s=%x\n", &foot, buf[0]);
+			int id = foot - 'a';
+			if('p' == buf[0])sts[id].val = 1;
+			if('n' == buf[0])sts[id].val =-1;
+			digital_broadcast(ent,foot, stack,sp, buf,len);
 			break;
 		}
 	}
@@ -334,11 +331,13 @@ int digital_create(struct entity* scene, void* arg, int argc, u8** argv)
 	say("@digital_create\n");
 	if(0 == arg)return 0;
 
-	scene->buf0 = memorycreate(0x10000, 0);
-	ret = openreadclose(arg, 0, scene->buf0, 0x10000);
+	//borrow this as filebuf
+	scene->PERPIN = memorycreate(0x10000, 0);
+	ret = openreadclose(arg, 0, scene->PERPIN, 0x10000);
 	if(ret <= 0)return 0;
 
-	scene->buf1 = memorycreate(0x10000, 0);
-	parsewiring(scene->buf0, scene->buf1);
+	//parse xyz
+	scene->VERTEX = memorycreate(0x10000, 0);
+	parsewiring(scene->PERPIN, scene->VERTEX);
 	return 0;
 }

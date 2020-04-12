@@ -146,35 +146,44 @@ void* samesrcnextdst(struct relation* rel)
 
 
 
-int relation_r(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void relcopy(struct halfrel* dst, struct halfrel* src)
 {
-	switch(self->type){
-		case _pwr_:return pwrclkread(self, peer, arg, idx, buf, len);
-		case _wrk_:return workerread(self, peer, arg, idx, buf, len);
-		case _dev_:return deviceread(self, peer, arg, idx, buf, len);
-		case _dri_:return driverread(self, peer, arg, idx, buf, len);
-		case _sys_:return systemread(self, peer, arg, idx, buf, len);
-		case _art_:return arteryread(self, peer, arg, idx, buf, len);
-		case _sup_:return supplyread(self, peer, arg, idx, buf, len);
-		case _ent_:return entityread(self, peer, arg, idx, buf, len);
+	dst->chip = src->chip;
+	dst->foot = src->foot;
+	dst->type = src->type;
+	dst->flag = src->flag;
+}
+int relation_r(struct item* item,int foot, struct halfrel* stack,int sp, void* arg, int idx, void* buf, int len)
+{
+	switch(item->tier){
+		case _pwr_:return pwrclkread((void*)item,foot, stack,sp, arg, idx, buf, len);
+		case _wrk_:return workerread((void*)item,foot, stack,sp, arg, idx, buf, len);
+		case _dev_:return deviceread((void*)item,foot, stack,sp, arg, idx, buf, len);
+		case _dri_:return driverread((void*)item,foot, stack,sp, arg, idx, buf, len);
+		case _sys_:return systemread((void*)item,foot, stack,sp, arg, idx, buf, len);
+		case _art_:return arteryread((void*)item,foot, stack,sp, arg, idx, buf, len);
+		case _sup_:return supplyread((void*)item,foot, stack,sp, arg, idx, buf, len);
+		case _ent_:return entityread((void*)item,foot, stack,sp, arg, idx, buf, len);
 	}
 	return 0;
 }
-int relationread(void* chip, int foot, void* arg, int idx, void* buf, int len)
+int relationread(void* chip,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct item* item;
 	struct relation* rel;
-	struct halfrel* self;
-	struct halfrel* peer;
 
+	if(0 == chip)return 0;
 	item = chip;
+
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
 		if(foot == rel->dstflag){
-			self = (void*)&rel->srcchip;
-			peer = (void*)&rel->dstchip;
-			return relation_r(self, peer, arg, idx, buf, len);
+			if(stack){
+				relcopy(&stack[sp+0], (void*)rel->dst);
+				relcopy(&stack[sp+1], (void*)rel->src);
+			}
+			return relation_r(rel->psrcchip, rel->srcflag, stack,sp+2, arg,idx, buf,len);
 		}
 		rel = samedstnextsrc(rel);
 	}
@@ -183,30 +192,34 @@ int relationread(void* chip, int foot, void* arg, int idx, void* buf, int len)
 	while(1){
 		if(0 == rel)break;
 		if(foot == rel->srcflag){
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			return relation_r(self, peer, arg, idx, buf, len);
+			if(stack){
+				relcopy(&stack[sp+0], (void*)rel->src);
+				relcopy(&stack[sp+1], (void*)rel->dst);
+			}
+			return relation_r(rel->pdstchip, rel->dstflag, stack,sp+2, arg,idx, buf,len);
 		}
 		rel = samesrcnextdst(rel);
 	}
 
 	return 0;
 }
-int relation_readall(void* chip, int foot, void* arg, int idx, void* buf, int len)
+int relation_readall(void* chip,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct item* item;
 	struct relation* rel;
-	struct halfrel* self;
-	struct halfrel* peer;
 
+	if(0 == chip)return 0;
 	item = chip;
+
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
 		if(foot == rel->dstflag){
-			self = (void*)&rel->srcchip;
-			peer = (void*)&rel->dstchip;
-			relation_r(self, peer, arg, idx, buf, len);
+			if(stack){
+				relcopy(&stack[sp+0], (void*)rel->dst);
+				relcopy(&stack[sp+1], (void*)rel->src);
+			}
+			relation_r(rel->psrcchip, rel->srcflag, stack,sp+2, arg,idx, buf,len);
 		}
 		rel = samedstnextsrc(rel);
 	}
@@ -215,9 +228,11 @@ int relation_readall(void* chip, int foot, void* arg, int idx, void* buf, int le
 	while(1){
 		if(0 == rel)break;
 		if(foot == rel->srcflag){
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			relation_r(self, peer, arg, idx, buf, len);
+			if(stack){
+				relcopy(&stack[sp+0], (void*)rel->src);
+				relcopy(&stack[sp+1], (void*)rel->dst);
+			}
+			relation_r(rel->pdstchip, rel->dstflag, stack,sp+2, arg,idx, buf,len);
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -228,36 +243,38 @@ int relation_readall(void* chip, int foot, void* arg, int idx, void* buf, int le
 
 
 
-int relation_w(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int relation_w(struct item* item,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	switch(self->type){
-		case _pwr_:return pwrclkwrite(self, peer, arg, idx, buf, len);
-		case _wrk_:return workerwrite(self, peer, arg, idx, buf, len);
-		case _dev_:return devicewrite(self, peer, arg, idx, buf, len);
-		case _dri_:return driverwrite(self, peer, arg, idx, buf, len);
-		case _sys_:return systemwrite(self, peer, arg, idx, buf, len);
-		case _art_:return arterywrite(self, peer, arg, idx, buf, len);
-		case _sup_:return supplywrite(self, peer, arg, idx, buf, len);
-		case _ent_:return entitywrite(self, peer, arg, idx, buf, len);
+	switch(item->tier){
+		case _pwr_:return pwrclkwrite((void*)item,foot, stack,sp, arg,idx, buf,len);
+		case _wrk_:return workerwrite((void*)item,foot, stack,sp, arg,idx, buf,len);
+		case _dev_:return devicewrite((void*)item,foot, stack,sp, arg,idx, buf,len);
+		case _dri_:return driverwrite((void*)item,foot, stack,sp, arg,idx, buf,len);
+		case _sys_:return systemwrite((void*)item,foot, stack,sp, arg,idx, buf,len);
+		case _art_:return arterywrite((void*)item,foot, stack,sp, arg,idx, buf,len);
+		case _sup_:return supplywrite((void*)item,foot, stack,sp, arg,idx, buf,len);
+		case _ent_:return entitywrite((void*)item,foot, stack,sp, arg,idx, buf,len);
 	}
 	return 0;
 }
-int relationwrite(void* chip, int foot, void* arg, int idx, void* buf, int len)
+int relationwrite(void* chip,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct item* item;
 	struct relation* rel;
-	struct halfrel* self;
-	struct halfrel* peer;
 
+	if(0 == chip)return 0;
 	item = chip;
+
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
 		//say("irel:%.8s\n",&rel->dstflag);
 		if(foot == rel->dstflag){
-			self = (void*)&rel->srcchip;
-			peer = (void*)&rel->dstchip;
-			relation_w(self, peer, arg, idx, buf, len);
+			if(stack){
+				relcopy(&stack[sp+0], (void*)rel->dst);
+				relcopy(&stack[sp+1], (void*)rel->src);
+			}
+			relation_w(rel->psrcchip, rel->srcflag, stack,sp+2, arg,idx, buf,len);
 		}
 		rel = samedstnextsrc(rel);
 	}
@@ -267,31 +284,35 @@ int relationwrite(void* chip, int foot, void* arg, int idx, void* buf, int len)
 		if(0 == rel)break;
 		//say("orel:%.8s\n",&rel->srcflag);
 		if(foot == rel->srcflag){
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			relation_w(self, peer, arg, idx, buf, len);
+			if(stack){
+				relcopy(&stack[sp+0], (void*)rel->src);
+				relcopy(&stack[sp+1], (void*)rel->dst);
+			}
+			relation_w(rel->pdstchip, rel->dstflag, stack,sp+2, arg,idx, buf,len);
 		}
 		rel = samesrcnextdst(rel);
 	}
 
 	return 0;
 }
-int relation_writeall(void* chip, int foot, void* arg, int idx, void* buf, int len)
+int relation_writeall(void* chip,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct item* item;
 	struct relation* rel;
-	struct halfrel* self;
-	struct halfrel* peer;
 
+	if(0 == chip)return 0;
 	item = chip;
+
 	rel = item->irel0;
 	while(1){
 		if(0 == rel)break;
 		//say("irel:%.8s\n",&rel->dstflag);
 		if(foot == rel->dstflag){
-			self = (void*)&rel->srcchip;
-			peer = (void*)&rel->dstchip;
-			relation_w(self, peer, arg, idx, buf, len);
+			if(stack){
+				relcopy(&stack[sp+0], (void*)rel->dst);
+				relcopy(&stack[sp+1], (void*)rel->src);
+			}
+			relation_w(rel->psrcchip, rel->srcflag, stack,sp+2, arg,idx, buf,len);
 		}
 		rel = samedstnextsrc(rel);
 	}
@@ -301,9 +322,11 @@ int relation_writeall(void* chip, int foot, void* arg, int idx, void* buf, int l
 		if(0 == rel)break;
 		//say("orel:%.8s\n",&rel->srcflag);
 		if(foot == rel->srcflag){
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			relation_w(self, peer, arg, idx, buf, len);
+			if(stack){
+				relcopy(&stack[sp+0], (void*)rel->src);
+				relcopy(&stack[sp+1], (void*)rel->dst);
+			}
+			relation_w(rel->pdstchip, rel->dstflag, stack,sp+2, arg,idx, buf,len);
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -495,8 +518,9 @@ void relationchoose(struct item* item, struct relation* rel)
 		return;
 	}
 }
-int relationsearch(struct item* item, u32 foottype, struct halfrel* self[], struct halfrel* peer[])
+int relationsearch(void* this, u32 foottype, struct halfrel* self[], struct halfrel* peer[])
 {
+	struct item* item = this;
 	struct relation* rel;
 
 	rel = item->orel0;

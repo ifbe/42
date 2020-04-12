@@ -8,11 +8,14 @@ fmt:dancemat
 ballcolor:008000
 linecolor:800080
 }
-3rdcam{
-fmt:3rdcam
+freecam{
+fmt:freecam
 }
-virtual{
+3dworld{
 fmt:virtual
+}
+event{
+fmt:event3rd
 }
 
 button{
@@ -136,26 +139,28 @@ q:0.2, 0.2
 
 
 <relation>
-#dancemat surround by 3rdcam
-(dancemat, 0, 0) -> (3rdcam, 0, tar)
-
-#when orthcam event, send to button
-(orthcam, 0, ev) -> (button, 0, 0)
-(button, 0, ev) -> (tcpsrv, 0, src)
-
-#virtual depends on ...
-(virtual, skygeom, 0) -> (sky, skypart, 0)
-(virtual, testgeom, 0) -> (dancemat, testpart, 0)
-(virtual, aaaageom, 0) -> (3rdcam, aaaapart, 0)
+#3dworld depends on ...
+(3dworld, skygeom, 0) -> (sky, skypart, 0)
+(3dworld, testgeom, 0) -> (dancemat, testpart, 0)
+(3dworld, aaaageom, 0) -> (freecam, aaaapart, 0)
 
 #uiworld depends on ...
 (uiworld, btngeom, 0) -> (button, btnslot, 0)
 (uiworld, orthgeom, 0) -> (orthcam, orthslot, 0)
 
 #glwnd depends on cam
-(opengl, aaaarect, 0) -> (3rdcam, 0, 0)
+(opengl, aaaarect, 0) -> (freecam, 0, 0)
 (opengl, bbbbrect, 0) -> (orthcam, 0, 0)
 
+#thirdperson controller
+(event, 0, tar) -> (dancemat, 0, evby)
+(event, 0, cam) -> (freecam, 0, evto)
+
+#button to socket
+(orthcam, 0, evto) -> (button, 0, evby)
+(button, 0, evto) -> (tcpsrv, 0, src)
+
+#socket to dancemat
 (udpsrv, 0, dst) -> (reline, 0, src)
 (tcpsrv, 0, dst) -> (reline, 0, src)
 (reline, 0, dst) -> (dancemat, 0, 0)

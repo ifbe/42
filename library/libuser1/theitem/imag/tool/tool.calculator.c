@@ -196,21 +196,8 @@ void calculator_char(struct entity* ent, struct style* slot, int key)
 		}
 	}
 }
-static void calculator_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
-	struct event* ev, int len)
+static void calculator_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area, struct event* ev)
 {
-	if(_char_ == ev->what)calculator_char(act,pin, ev->why);
-}
-static void calculator_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
-{
-	struct entity* wnd;struct style* area;
-	struct entity* ent;struct style* gl41;
-	wnd = peer->pchip;area = peer->pfoot;
-	ent = self->pchip;gl41 = self->pfoot;
-
-	struct event* ev = buf;
 	if('p' == (ev->what&0xff)){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);
@@ -221,7 +208,7 @@ static void calculator_write_bywnd(struct halfrel* self, struct halfrel* peer, s
 			int y = (int)(xyz[1]*8);
 			y = 3-y;
 			//say("%d,%d\n",x,y);
-			if((y>=0)&&(y<=3))calculator_char(ent,gl41, table[y][x]);
+			if((y>=0)&&(y<=3))calculator_char(ent,slot, table[y][x]);
 		}
 	}
 }
@@ -229,39 +216,27 @@ static void calculator_write_bywnd(struct halfrel* self, struct halfrel* peer, s
 
 
 
-static void calculator_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void calculator_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
-	//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-
-	//scene -> calc
-	struct entity* scn;struct style* geom;
-	struct entity* act;struct style* slot;
-
-	if(stack){
-		act = self->pchip;slot = self->pfoot;
-		scn = peer->pchip;geom = peer->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)calculator_draw_gl41(act,slot, scn,geom, wnd,area);
+	if(stack && ('v'==key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		calculator_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void calculator_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void calculator_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
-//wnd.area -> cam.gl41, cam.slot -> world.geom
-	struct entity* wnd;struct style* area;
-	struct entity* cam;struct style* gl41;
-	wnd = peer->pchip;area = peer->pfoot;
-	cam = self->pchip;gl41 = self->pfoot;
-
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
 	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
 	gl41data_before(wnd);
-	calculator_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
+	calculator_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_after(wnd);
 
 	gl41data_tmpcam(wnd);
@@ -270,30 +245,38 @@ static void calculator_read_bywnd(struct halfrel* self, struct halfrel* peer, st
 
 
 
-static int calculator_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static int calculator_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* sup = peer->pchip;
-	switch(sup->fmt){
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(wnd->fmt){
 	case _gl41wnd0_:
 	case _full_:
 	case _wnd_:{
-		if('v' != len)break;
-		calculator_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		if('v' != key)break;
+		calculator_read_bywnd(ent,slot, wnd,area);break;
 	}
 	default:{
-		calculator_read_bycam(self, peer, stack, rsp, buf, len);break;
+		calculator_read_bycam(ent,foot, stack,sp, arg,key);break;
 	}
 	}
 	return 0;
 }
-static void calculator_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void calculator_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* sup = peer->pchip;
-	switch(sup->fmt){
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(wnd->fmt){
 	case _gl41wnd0_:
 	case _full_:
 	case _wnd_:{
-		calculator_write_bywnd(self, peer, stack, rsp, buf, len);break;
+		calculator_write_bywnd(ent,slot, wnd,area, buf);break;
 	}
 	}
 }

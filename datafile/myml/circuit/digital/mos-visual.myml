@@ -91,6 +91,5 @@ q: 1.0, 1.0
 
 (world, schgeom, 0) -> (sch, schslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)
-
 (opengl, rect, 0) -> (cam, 0, 0)
 </relation>

@@ -41,40 +41,38 @@ void button_draw_gl41(
 	gl41opaque_rect(ctx, 0x40ffd010, tc, vr, vf);
 	carvestring_center(ctx, 0xff0000, vc, vr ,vf, act->STRBUF, 0);
 }
-static void button_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void button_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
-//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wor;struct style* camg;
-
-//world -> button
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* part;
-
-	if(stack && ('v' == len)){
-		act = self->pchip;part = self->pfoot;
-		win = peer->pchip;geom = peer->pfoot;
-		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		button_draw_gl41(act,part, win,geom, wnd,area);
+	if(stack && ('v'==key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		button_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
 
 
 
 
-static void button_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void button_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* ent = self->pchip;
-	struct supply* sup = peer->pchip;
-	if(_rgba_ == sup->fmt)button_draw_pixel(ent, self->pfoot, sup, peer->pfoot);
-	else button_read_bycam(self, peer, arg, idx, buf, len);
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct supply* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(wnd->fmt){
+	case _rgba_:button_draw_pixel(ent, slot, wnd, area);break;
+	default:button_read_bycam(ent,foot, stack,sp, arg,key);
+	}
 }
-static void button_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void button_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* ent = self->pchip;
 	say("@button_write\n");
-	relationwrite(ent,_ev_, 0, 0, "calibrate\n", 10);
+	relationwrite(ent,_evto_, stack,sp, 0,0, "calibrate\n",10);
 }
 static void button_discon(struct halfrel* self, struct halfrel* peer)
 {

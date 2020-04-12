@@ -64,26 +64,25 @@ static u8 spacket5[] = {
 
 
 
-int telnetclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int telnetclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int telnetclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int telnetclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	struct artery* ele = self->pchip;
-	switch(ele->stage1)
+	switch(art->stage1)
 	{
-		case 1:relationwrite(ele, _src_, 0, 0, cpacket1, sizeof(cpacket1));break;
-		case 2:relationwrite(ele, _src_, 0, 0, cpacket2, sizeof(cpacket2));break;
-		case 3:relationwrite(ele, _src_, 0, 0, cpacket3, sizeof(cpacket3));break;
-		case 4:relationwrite(ele, _src_, 0, 0, cpacket4, sizeof(cpacket4));break;
-		case 5:relationwrite(ele, _src_, 0, 0, cpacket5, sizeof(cpacket5));break;
+		case 1:relationwrite(art,_src_, stack,sp, 0,0, cpacket1,sizeof(cpacket1));break;
+		case 2:relationwrite(art,_src_, stack,sp, 0,0, cpacket2,sizeof(cpacket2));break;
+		case 3:relationwrite(art,_src_, stack,sp, 0,0, cpacket3,sizeof(cpacket3));break;
+		case 4:relationwrite(art,_src_, stack,sp, 0,0, cpacket4,sizeof(cpacket4));break;
+		case 5:relationwrite(art,_src_, stack,sp, 0,0, cpacket5,sizeof(cpacket5));break;
 		default:{
 			say("%.*s", len, buf);
 			return 0;
 		}
 	}
-	ele->stage1 += 1;
+	art->stage1 += 1;
 	return 0;
 }
 int telnetclient_discon(struct halfrel* self, struct halfrel* peer)
@@ -93,7 +92,7 @@ int telnetclient_discon(struct halfrel* self, struct halfrel* peer)
 int telnetclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct artery* ele = self->pchip;
-	relationwrite(ele, _src_, 0, 0, cpacket0, sizeof(cpacket0));
+	relationwrite(ele,_src_, 0,0, 0,0, cpacket0,sizeof(cpacket0));
 
 	ele->stage1 = 1;
 	return 0;
@@ -111,25 +110,24 @@ int telnetclient_create(struct artery* ele, u8* url)
 
 
 
-int telnetserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int telnetserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int telnetserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int telnetserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	struct artery* ele = self->pchip;
 	printmemory(buf, len);
 
-	switch(ele->stage1)
+	switch(art->stage1)
 	{
-		case 0:relationwrite(ele, _src_, 0, 0, spacket0, sizeof(spacket0));break;
-		case 1:relationwrite(ele, _src_, 0, 0, spacket1, sizeof(spacket1));break;
-		case 2:relationwrite(ele, _src_, 0, 0, spacket2, sizeof(spacket2));break;
-		case 3:relationwrite(ele, _src_, 0, 0, spacket3, sizeof(spacket3));break;
-		case 4:relationwrite(ele, _src_, 0, 0, spacket4, sizeof(spacket4));break;
-		case 5:relationwrite(ele, _src_, 0, 0, spacket5, sizeof(spacket5));break;
+		case 0:relationwrite(art,_src_, stack,sp, 0,0, spacket0,sizeof(spacket0));break;
+		case 1:relationwrite(art,_src_, stack,sp, 0,0, spacket1,sizeof(spacket1));break;
+		case 2:relationwrite(art,_src_, stack,sp, 0,0, spacket2,sizeof(spacket2));break;
+		case 3:relationwrite(art,_src_, stack,sp, 0,0, spacket3,sizeof(spacket3));break;
+		case 4:relationwrite(art,_src_, stack,sp, 0,0, spacket4,sizeof(spacket4));break;
+		case 5:relationwrite(art,_src_, stack,sp, 0,0, spacket5,sizeof(spacket5));break;
 	}
-	ele->stage1 += 1;
+	art->stage1 += 1;
 	return 0;
 }
 int telnetserver_discon(struct halfrel* self, struct halfrel* peer)
@@ -152,24 +150,24 @@ int telnetserver_create(struct artery* ele, u8* url)
 
 
 
-int telnetmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int telnetmaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int telnetmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int telnetmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	struct artery* ele;
-	struct sysobj* obj;
-	struct relation* rel;
-
-	obj = peer->pchip;
+	struct sysobj* obj = stack[sp-2].pchip;
+	if(0 == obj)return 0;
 	obj = obj->tempobj;
-	ele = arterycreate(_Telnet_, 0, 0, 0);
+	if(0 == obj)return 0;
 
-	rel = relationcreate(ele, 0, _art_, 0, obj, 0, _sys_, 0);
-	self = (void*)&rel->dstchip;
-	peer = (void*)&rel->srcchip;
-	arterywrite(self, peer, arg, idx, buf, len);
+	struct artery* tel = arterycreate(_Telnet_, 0, 0, 0);
+	if(0 == tel)return 0;
+
+	relationcreate(tel, 0, _art_, _src_, obj, 0, _sys_, _dst_);
+	stack[sp-2].pchip = obj;
+	stack[sp-1].pchip = tel;
+	telnetserver_write(tel,_src_, stack,sp, arg,idx, buf,len);
 	return 0;
 }
 int telnetmaster_discon(struct halfrel* self, struct halfrel* peer)

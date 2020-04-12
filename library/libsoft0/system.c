@@ -49,50 +49,35 @@ static int ppplen = 0;
 
 
 
-int systemread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int systemread(_sys* sys,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	struct sysobj* oo;
-	int fd;
-	if(0 == self)return 0;
-	//say("@systemread:%llx\n", self);
-
-	oo = self->pchip;
-	if(0 == oo)return 0;
-
-	switch(oo->type){
+	switch(sys->type){
 		case _FILE_:
-		case _file_:return readfile(oo, oo->selffd, arg, idx, buf, len);
+		case _file_:return readfile(sys, sys->selffd, arg, idx, buf, len);
 	}
 	return 0;
 }
-int systemwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int systemwrite(_sys* sys,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	int fd;
-	struct sysobj* oo;
-	//say("@systemwrite:%llx\n", self);
-
-	oo = self->pchip;
-	if(0 == oo)return 0;
-
-	switch(oo->type){
+	switch(sys->type){
 		case _FILE_:
 		case _file_:{
-			return writefile(oo, oo->selffd, arg, idx, buf, len);
+			return writefile(sys, sys->selffd, arg, idx, buf, len);
 		}
 		case _ptmx_:{
-			return writeshell(oo->selffd, idx, buf, len);
+			return writeshell(sys->selffd, idx, buf, len);
 			break;
 		}
 		case _uart_:{
-			return uart_write(oo->selffd, idx, buf, len);
+			return uart_write(sys->selffd, idx, buf, len);
 			break;
 		}
 		case _TCP_:{
-			oo = oo->tempobj;
-			if(0 == oo)return -1;
+			sys = sys->tempobj;
+			if(0 == sys)return -1;
 		}
 		default:{
-			return writesocket(oo->selffd, arg, buf, len);
+			return writesocket(sys->selffd, arg, buf, len);
 		}
 	}
 	return 0;

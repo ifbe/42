@@ -3,23 +3,20 @@
 
 
 
-int pump_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int pump_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int pump_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int pump_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
 
-	struct artery* ele = (void*)(self->chip);
-	if(0 == ele)return 0;
-
-	say("@pump.%4s\n", &self->flag);
-	if(_clk_ == self->flag){
+	say("@pump.%4s\n", &foot);
+	if(_clk_ == foot){
 		//whenever clock
-		ret = relationread(ele, _src_, 0, 0, tmp, 0x1000);
-		ret = relationwrite(ele, _dst_, 0, 0, tmp, ret);
+		ret = relationread(art,_src_, stack,sp, 0,0, tmp,0x1000);
+		ret = relationwrite(art,_dst_, stack,sp, 0,0, tmp,ret);
 	}
 	return 0;
 }

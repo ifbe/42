@@ -64,10 +64,10 @@ static void rawdump_draw_cli(
 
 
 
-static void rawdump_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void rawdump_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void rawdump_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void rawdump_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void rawdump_discon(struct halfrel* self, struct halfrel* peer)

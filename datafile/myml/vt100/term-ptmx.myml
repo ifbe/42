@@ -48,7 +48,7 @@ q:0.8, 0.4
 
 <relation>
 (ptmx, 0, dst) -> (terminal, 0, s)
-(keyboard, 0, ev) -> (terminal, 0, 1)
+(keyboard, 0, evto) -> (terminal, 0, evby)
 (opengl, termrect, 0) -> (terminal, 0, 0)
 (opengl, vkbdrect, 0) -> (keyboard, 0, 0)
 </relation>

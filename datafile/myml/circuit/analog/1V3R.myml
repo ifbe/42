@@ -95,10 +95,10 @@ t: 0.0, 0.0, 1.0
 camslot{
 }
 camgeom{
-c: 0.0, 0.0, 2000.0
+c: 0.0, -1000.0, 1732.0
 r: 1.0, 0.0, 0.0
-t: 0.0, 1.0, 0.0
-f: 0.0, 0.0,-1.0
+t: 0.0, 0.866, 0.5
+f: 0.0, 0.5,-0.866
 L: 0.0, 0.0, 0.0,-1.0
 R: 0.0, 0.0, 0.0, 1.0
 B: 0.0, 0.0, 0.0,-1.0
@@ -115,9 +115,6 @@ q: 1.0, 1.0
 
 
 <relation>
-(std, 0, dst) -> (not, 0, ev)
-(std, 0, dst) -> (sch, 0, ev)
-
 (sch, 0, a) -> (V0, 0, n)
 (sch, 0, a) -> (R2, 0, a)
 (sch, 0, b) -> (V0, 0, p)
@@ -133,6 +130,8 @@ q: 1.0, 1.0
 (world, V0geom, 0) -> (V0, V0slot, 0)
 (world, schgeom, 0) -> (sch, schslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)
-
 (opengl, rect, 0) -> (cam, 0, 0)
+
+(std, 0, dst) -> (sch, 0, ioby)
+(cam, 0, evto) -> (sch, 0, evby)
 </relation>

@@ -3,7 +3,7 @@
 fmt:2048
 }
 freecam{
-fmt:3rdcam
+fmt:freecam
 }
 virtual{
 fmt:virtual
@@ -69,8 +69,8 @@ q:0.8, 0.4
 
 
 <relation>
-(2048, 0, ch) -> (vkbd, 0, ev)
-(2048, 0, 0) -> (freecam, 0, tar)
+(2048, 0, evby) -> (vkbd, 0, evto)
+(2048, 0, evby) -> (freecam, 0, evto)
 
 #virtual depends on inner objects
 (virtual, skygeom, 0) -> (2048, skyhaha, 0)

@@ -136,10 +136,10 @@ static void pegged_draw_cli(
 
 
 
-static void pegged_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void pegged_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void pegged_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void pegged_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void pegged_discon(struct halfrel* self, struct halfrel* peer)

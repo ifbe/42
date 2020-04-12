@@ -81,26 +81,12 @@ void slider_draw_gl41(
 		carveascii_center(wnd, 0xffffff, tc,tr,tf, 0x30 + list[y]/10);
 	}
 }
-void slider_event(struct entity* act, int x, int y)
+
+
+
+
+static void slider_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
-	int* list = act->LISTBUF;
-	say("%d,%d\n", x, y);
-
-	list[y] = x;
-	relationwrite(act, _ev_, 0, 0, list, 12);
-}
-
-
-
-
-static void slider_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
-{
-//wnd.area -> cam.gl41, cam.slot -> world.geom
-	struct entity* wnd;struct style* area;
-	struct entity* cam;struct style* gl41;
-	wnd = peer->pchip;area = peer->pfoot;
-	cam = self->pchip;gl41 = self->pfoot;
-
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
 	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
@@ -108,18 +94,15 @@ static void slider_read_bywnd(struct halfrel* self, struct halfrel* peer, struct
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
 
 	gl41data_before(wnd);
-	slider_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
+	slider_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_tmpcam(wnd);
 	gl41data_after(wnd);
 }
-static void slider_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void slider_write_bywnd(_ent* ent,int foot, _syn* stack,int sp, struct event* ev,int len)
 {
 	struct entity* wnd;struct style* area;
-	struct entity* ent;struct style* gl41;
-	wnd = peer->pchip;area = peer->pfoot;
-	ent = self->pchip;gl41 = self->pfoot;
+	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	struct event* ev = buf;
 	if('p' == (ev->what&0xff)){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);
@@ -127,38 +110,48 @@ static void slider_write_bywnd(struct halfrel* self, struct halfrel* peer, struc
 		int y = 12*(1.0-xyz[1]);
 		if(0x2b70 == ev->what)ent->iw0 = y;
 		if(0x2d70 == ev->what)ent->iw0 = -1;
+		if(ent->iw0 < 0)return;
 
 		int x = 120*xyz[0]-10;
 		if(x < 0)x = 0;
 		if(x > 100)x = 100;
-		slider_event(ent, x, ent->iw0);
+
+		int* list = ent->LISTBUF;
+		say("%d,%d\n", x, y);
+
+		list[y] = x;
+		relationwrite(ent, _evto_, stack,sp, 0,0, list,12);
 	}
 }
 
 
 
 
-static int slider_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static int slider_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* sup = peer->pchip;
-	switch(sup->fmt){
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(wnd->fmt){
 	case _gl41wnd0_:
 	case _full_:
 	case _wnd_:{
-		if('v' != len)break;
-		slider_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		if('v' != key)break;
+		slider_read_bywnd(ent,slot, wnd,area);break;
 	}
 	}
 	return 0;
 }
-static int slider_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static int slider_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* sup = peer->pchip;
-	switch(sup->fmt){
+	struct supply* wnd = stack[sp-2].pchip;
+	switch(wnd->fmt){
 	case _gl41wnd0_:
 	case _full_:
 	case _wnd_:{
-		slider_write_bywnd(self, peer, stack, rsp, buf, len);break;
+		slider_write_bywnd(ent,foot, stack,sp, buf,len);break;
 	}
 	}
 	return 0;

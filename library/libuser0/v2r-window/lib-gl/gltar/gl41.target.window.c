@@ -23,63 +23,64 @@ int fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41d
 
 //stack[rsp-2] = ogl, 0
 //stack[rsp-1] = wnd, 0
-int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int gl41wnd0_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	struct supply* wnd;
-	struct fstyle* sty;
-	struct relation* rel;
 	//say("@gl41wnd0_read\n");
 	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
 	//say("gl41wnd0_read:%llx,%llx,%llx,%x,%llx,%d\n",self,peer,stack,rsp,buf,len);
 
-	wnd = self->pchip;
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, wnd->fbwidth, wnd->fbheight);
 	glScissor(0, 0, wnd->fbwidth, wnd->fbheight);
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	//foreach camera: 
-	rel = wnd->orel0;
+	//foreach camera
+	int ret;
+	struct relation* rel = wnd->orel0;
 	while(1){
 		if(0 == rel)break;
 
 		//wnd = rel->psrcchip;		//double check
-		sty = rel->psrcfoot;
-		if(sty){
-			stack[rsp+0] = (void*)(rel->src);
-			stack[rsp+1] = (void*)(rel->dst);
-//say("@read v\n");
+		struct fstyle* area = rel->psrcfoot;
+		if(area){
+			stack[sp+0].pchip = rel->psrcchip;
+			stack[sp+0].pfoot = rel->psrcfoot;
+			//stack[sp+0].type = rel->srctype;
+			stack[sp+0].flag = rel->srcflag;
+
+			stack[sp+1].pchip = rel->pdstchip;
+			stack[sp+1].pfoot = rel->pdstfoot;
+			//stack[sp+1].type = rel->dsttype;
+			stack[sp+1].flag = rel->dstflag;
+
 			//get vertex
-			entityread(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, 'v');
-//say("@upload\n");
+			ret = entityread(rel->pdstchip, rel->dstflag, stack,sp+2, 0,'v', 0, 0);
+
 			//upload
 			fullwindow_upload(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque);
-//say("@read ?\n");
+
 			//get fbo tex, get cam mvp
-			entityread(stack[rsp+1], stack[rsp+0], stack, rsp+2, buf, '?');
-//say("@render\n");
+			entityread(rel->pdstchip, rel->dstflag, stack,sp+2, 0,'?', 0, 0);
+
 			//render
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			fullwindow_render(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque, wnd, sty);
+			fullwindow_render(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque, wnd, area);
 		}
 
 		rel = samesrcnextdst(rel);
 	}
 	return 0;
 }
-int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct event* ev, int len)
+int gl41wnd0_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	float x,y,x0,y0,xn,yn;
 	short* v;
 	struct relation* rel;
-	struct supply* wnd;
 	struct fstyle* sty;
 	//say("@gl41wnd0_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
 
-	wnd = self->pchip;
-	if(0 == wnd)return 0;
-
+	struct event* ev = buf;
 	if(0x4070 == ev->what){
 		rel = wnd->oreln;
 		while(1){
@@ -106,9 +107,14 @@ int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 
 found:
 	wnd->glevto = rel;
-	stack[rsp+0] = (void*)(rel->src);	//wnd,area
-	stack[rsp+1] = (void*)(rel->dst);	//cam,gl41
-	entitywrite(stack[rsp+1], stack[rsp+0], stack, rsp+2, ev, len);
+	stack[sp+0].pchip = rel->psrcchip;
+	stack[sp+0].pfoot = rel->psrcfoot;
+	stack[sp+0].flag = rel->srcflag;
+
+	stack[sp+1].pchip = rel->pdstchip;
+	stack[sp+1].pfoot = rel->pdstfoot;
+	stack[sp+1].flag = rel->dstflag;
+	entitywrite(rel->pdstchip, rel->dstflag, stack,sp+2, 0,0, ev,0);
 	return 0;
 }
 int gl41wnd0_discon(struct halfrel* self, struct halfrel* peer)

@@ -222,35 +222,26 @@ void mahonyupdate9(
 
 
 
-int mahony_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int mahony_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	float f[10];
-	struct artery* ele;
 	say("@mahony_read\n");
 
-	ele = (void*)(self->chip);
-	if(0 == ele)return 0;
-
-	relationread(ele, _src_, 0, 0, f, 10);
+	float f[10];
+	relationread(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
-int mahony_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int mahony_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	float* f;
-	struct artery* ele;
 	say("@mahony_write\n");
 
-	ele = (void*)(self->chip);
-	if(0 == ele)return 0;
-
-	f = (void*)buf;
+	float* f = (void*)buf;
 	switch(len){
 		case 9:mahonyupdate9(f[0],f[1],f[2], f[3],f[4],f[5], f[6],f[7],f[8]);break;
 		case 6:mahonyupdate6(f[0],f[1],f[2], f[3],f[4],f[5]);break;
 		default:say("err@mahony_write:len=%d\n", len);return 0;
 	}
 
-	relationwrite(ele, _dst_, 0, 0, q, 4);
+	relationwrite(art,_dst_, stack,sp, 0,0, q,4);
 	return 0;
 }
 int mahony_discon(struct halfrel* self, struct halfrel* peer)

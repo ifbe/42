@@ -21,39 +21,31 @@ int fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41d
 
 
 
-int gl41fbo6_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int gl41fbo6_read(_sup* this,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	struct supply* fbo;
-	struct fstyle* sty;
 	//say("@gl41fbo6_read: %llx\n", self->pchip);
 
-	fbo = self->pchip;
-	sty = self->pfoot;
-	if(0 == fbo->fbo){
-		fbo->width = fbo->fbwidth = 1024;
-		fbo->height = fbo->fbheight = 1024;
-		fbocreate(fbo, '6');
+	if(0 == this->fbo){
+		this->width = this->fbwidth = 1024;
+		this->height = this->fbheight = 1024;
+		fbocreate(this, '6');
 	}
 	return 0;
 }
-int gl41fbo6_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int gl41fbo6_write(_sup* this,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	struct supply* wnd;
-	struct supply* fbo;
-	struct fstyle* sty;
 	//say("@gl41fbo6_write: %llx\n", self->pchip);
 
-	fbo = self->pchip;
-	sty = self->pfoot;
-	if(0 == fbo->fbo){
-		fbo->width = fbo->fbwidth = 1024;
-		fbo->height = fbo->fbheight = 1024;
-		fbocreate(fbo, '6');
+	if(0 == this->fbo){
+		this->width = this->fbwidth = 1024;
+		this->height = this->fbheight = 1024;
+		fbocreate(this, '6');
 	}
+	glBindFramebuffer(GL_FRAMEBUFFER, this->fbo);
 
-	wnd = stack[rsp-4]->pchip;
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo->fbo);
-	fullwindow_render(fbo->gl_camera, fbo->gl_light, wnd->gl_solid, wnd->gl_opaque, fbo, sty);
+	struct supply* wnd = stack[sp-8].pchip;
+	struct fstyle* area = stack[sp-1].pfoot;
+	fullwindow_render(this->gl_camera, this->gl_light, wnd->gl_solid, wnd->gl_opaque, this, area);
 	return 0;
 }
 int gl41fbo6_discon(struct halfrel* self, struct halfrel* peer)

@@ -97,11 +97,11 @@ void parse_mbr(u8* src)
 
 
 
-int mbrclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int mbrclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int mbrclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int mbrclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -113,7 +113,7 @@ int mbrclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	if(_src_ == self->flag){
 		struct artery* ele = self->pchip;
-		int ret = relationread(ele,_src_, "",0, ele->buf0, 0x1000);
+		int ret = relationread(ele,_src_, 0,0, "",0, ele->buf0,0x1000);
 		if(ret != 0x1000)return 0;
 
 		parse_mbr(ele->buf0);

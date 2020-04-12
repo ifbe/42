@@ -7,10 +7,10 @@ static u8 buffer[16];
 
 
 
-static void puzzle_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void puzzle_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void puzzle_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void puzzle_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void puzzle_discon(struct halfrel* self, struct halfrel* peer)

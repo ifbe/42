@@ -53,7 +53,7 @@ static GLuint vao = 0;
 
 
 
-void easywindow_renderself()
+void easywindow_example()
 {
 	//shader
 	if(0 == shader)shader = shaderprogram(vs, fs, 0, 0, 0, 0);
@@ -77,10 +77,8 @@ void easywindow_renderself()
 	//draw
 	glDrawArrays(GL_TRIANGLES, 0, 3);
 }
-void easywindow_renderpeer(struct supply* win)
+void easywindow_drawthis(struct gl41data* pair)
 {
-	struct gl41data* pair = win->glsolid;
-	if(0 == pair)return;
 	struct glsrc* src = &pair->src;
 	struct gldst* dst = &pair->dst;
 	//say("src=%llx,dst=%llx\n", src, dst);
@@ -134,11 +132,11 @@ void easywindow_renderpeer(struct supply* win)
 
 
 
-void easywindow_write(struct supply* win, struct event* ev)
+void easywindow_write(_sup* win,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	say("@easywindow_event\n");
 }
-void easywindow_read(struct supply* win)
+void easywindow_read(_sup* win,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	float w = win->fbwidth;
 	float h = win->fbheight;
@@ -151,9 +149,9 @@ void easywindow_read(struct supply* win)
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	if(win->orel0)relationread(win, _ctx_, 0, 0, 0, 0);
-	if(win->glsolid)easywindow_renderpeer(win);
-	else easywindow_renderself();
+	if(win->orel0)relationread(win,_ctx_, stack,sp, 0,0, 0,0);
+	if(win->glsolid)easywindow_drawthis(win->glsolid);
+	else easywindow_example();
 }
 void easywindow_delete(struct supply* win)
 {

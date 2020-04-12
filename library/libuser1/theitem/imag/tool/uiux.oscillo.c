@@ -189,67 +189,54 @@ void oscillo_pcm(struct entity* ent, struct supply* sup)
 
 
 
-static void oscillo_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void oscillo_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
-//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wor;struct style* camg;
-
-	//world -> oscillo
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-
-	if(stack){
-		act = self->pchip;slot = self->pfoot;
-		win = peer->pchip;geom = peer->pfoot;
-		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)oscillo_draw_gl41(act,slot, win,geom, wnd,area);
+	if(stack && ('v'==key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		oscillo_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void oscillo_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void oscillo_read_bywnd(_ent* ent,struct style* slot, _sup* wnd,struct style* area)
 {
 }
 
 
 
 
-static void oscillo_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void oscillo_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* ent = self->pchip;
-	struct supply* sup = peer->pchip;
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct supply* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
 //say("fmt=%.8s\n", &sup->fmt);
-	switch(sup->fmt){
+
+	switch(wnd->fmt){
 	case _pcm_:{
-		oscillo_pcm(ent, sup);break;
+		oscillo_pcm(ent, wnd);break;
 	}
 	case _gl41wnd0_:
 	case _full_:
 	case _wnd_:{
-		if('v' != len)break;
-		oscillo_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		if('v' != key)break;
+		oscillo_read_bywnd(ent,slot, wnd,area);break;
 	}
 	default:{
-		oscillo_read_bycam(self, peer, stack, rsp, buf, len);break;
+		oscillo_read_bycam(ent,foot, stack,sp, arg,key);break;
 	}
 	}
 }
-static void oscillo_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void oscillo_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	//struct entity* win = (void*)(peer->chip);
-	//struct style* sty = (void*)(peer->foot);
-	if(_pcm_ == self->flag){
-		oscillo_data(act, 0, buf, len);
+	if(_pcm_ == foot){
+		oscillo_data(ent, 0, buf, len);
+		return;
 	}
-/*
-	switch(self->flag){
-		case _pcm_:oscillo_update(act, pin, win, sty, buf, len);break;
-		default:   oscillo_event( act, pin, win, sty, buf);break;
-	}
-*/
 }
 static void oscillo_discon(struct halfrel* self, struct halfrel* peer)
 {

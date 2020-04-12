@@ -19,11 +19,12 @@ static int icur = 0;
 
 static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1, DWORD dw2)
 {
+	struct halfrel stack[0x80];
 	//printf("@icb\n");
 	if(WIM_DATA == uMsg)
 	{
 		//printf("WIM_DATA:%d\n", icur);
-		relationwrite(working, _dst_, 0, 0, ibuf + (1024*2*icur), 1024*2);
+		relationwrite(working,_dst_, stack,0, 0,0, ibuf+(1024*2*icur),1024*2);
 
 		waveInAddBuffer(wavein, &headin[icur], sizeof (WAVEHDR));
 		icur = (icur+1)%16;
@@ -41,18 +42,10 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 
 
 
-void micphonelist()
+void micphoneread(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 }
-void micphonechoose()
-{
-}
-void micphoneread(
-	struct supply* win, struct style* sty,
-	struct entity* act, struct style* pin)
-{
-}
-void micphonewrite(int dev, int time, u8* buf, int len)
+void micphonewrite(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 }
 void micphonestop()

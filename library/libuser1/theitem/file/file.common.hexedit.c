@@ -246,40 +246,30 @@ static void hexedit_event(
 
 
 
-static void hexedit_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void hexedit_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-//world -> texball
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-//say("@freecam_read_byeye:%c\n",len);
 
-	if(stack){
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-
-		win = peer->pchip;geom = peer->pfoot;
-		act = self->pchip;slot = self->pfoot;
-		if('v' == len)hexedit_draw_gl41(act,slot, wrd,geom, wnd,area);
+	if(stack&&('v'==key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		hexedit_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
-//say("@freecam_read_byeye.end\n");
 }
-static void hexedit_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void hexedit_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-//wnd.area -> cam.gl41, cam.slot -> world.geom
 	struct entity* wnd;struct style* area;
-	struct entity* cam;struct style* gl41;
-	wnd = peer->pchip;area = peer->pfoot;
-	cam = self->pchip;gl41 = self->pfoot;
+	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
 	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	gl41data_before(wnd);
-	hexedit_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
+	hexedit_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_tmpcam(wnd);
 	gl41data_after(wnd);
 }
@@ -287,33 +277,38 @@ static void hexedit_read_bywnd(struct halfrel* self, struct halfrel* peer, struc
 
 
 
-static int hexedit_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static int hexedit_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* sup = peer->pchip;
+	if(sp < 2)return 0;
+	struct entity* sup = stack[sp-2].pchip;
+
 	switch(sup->fmt){
 	case _gl41wnd0_:
 	case _full_:
 	case _wnd_:{
-		if('v' != len)break;
-		hexedit_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		if('v' != key)break;
+		hexedit_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 	default:{
-		hexedit_read_bycam(self, peer, stack, rsp, buf, len);break;
+		hexedit_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 	}
 	return 0;
 }
-static void hexedit_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static int hexedit_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* ent = self->pchip;
-	struct supply* sup = peer->pchip;
-	switch(sup->fmt){
+	if(sp < 2)return 0;
+	struct supply* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(wnd->fmt){
 	case _gl41wnd0_:
 	case _full_:
 	case _wnd_:{
-		hexedit_event(ent, self->pfoot, sup, peer->pfoot, buf);break;
+		hexedit_event(ent,0, wnd,area, buf);break;
 	}
 	}
+	return 0;
 }
 static void hexedit_discon(struct halfrel* self, struct halfrel* peer)
 {

@@ -225,25 +225,20 @@ static void gerber_draw_gl41(
 
 
 
-static void gerber_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void gerber_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//wnd -> cam, cam -> world
-	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-
-	//scene -> terminal
+	struct style* slot;
 	struct entity* scn;struct style* geom;
-	struct entity* act;struct style* slot;
+	struct entity* wnd;struct style* area;
 
-	if(stack){
-		act = self->pchip;slot = self->pfoot;
-		scn = peer->pchip;geom = peer->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)gerber_draw_gl41(act,slot, scn,geom, wnd,area);
+	if(stack&&('v'==key)){
+		slot = stack[sp-1].pfoot;
+		scn = stack[sp-2].pchip;geom = stack[sp-2].pfoot;;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		gerber_draw_gl41(ent,slot, scn,geom, wnd,area);
 	}
 }
-static void gerber_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void gerber_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void gerber_discon(struct halfrel* self, struct halfrel* peer)

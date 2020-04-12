@@ -133,19 +133,11 @@ void vjoy_draw_cli(struct entity* win, struct style* sty)
 
 
 
-int vjoy_event(struct entity* act, int x, int y, int z)
+int vjoy_event(struct event* ev, int x, int y, int z)
 {
-	int val;
-	short* tmp;
-	struct event ev;
 	//say("%d,%d, z\n", x, y, z);
-
-	ev.when = 0;
-	ev.where = 0;
-	ev.what = joy_left;
-	ev.why = 0;
-	tmp = (void*)&ev;
-	val = x + y*4;
+	short* tmp = (void*)&ev;
+	int val = x + y*4;
 	if('l' == z){
 		switch(val){
 		case  1:tmp[3] = joyl_down;break;
@@ -158,7 +150,7 @@ int vjoy_event(struct entity* act, int x, int y, int z)
 		case 14:tmp[3] = joyl_bumper;break;
 		default:return 0;
 		}
-		relationwrite(act, _ev_, 0, 0, &ev, 0x20);
+		ev->what = joy_left;
 	}
 	if('r' == z){
 		switch(val){
@@ -172,22 +164,20 @@ int vjoy_event(struct entity* act, int x, int y, int z)
 		case 15:tmp[3] = joyr_bumper;break;
 		default:return 0;
 		}
-		relationwrite(act, _ev_, 0, 0, &ev, 0x20);
+		ev->what = joy_right;
 	}
-	return 0;
+
+	ev->when = 0;
+	ev->where = 0;
+	ev->why = 0;
+	return 1;
 }
 
 
 
 
-static void vjoy_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static void vjoy_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
-//wnd.area -> cam.gl41, cam.slot -> world.geom
-	struct entity* wnd;struct style* area;
-	struct entity* cam;struct style* gl41;
-	wnd = peer->pchip;area = peer->pfoot;
-	cam = self->pchip;gl41 = self->pfoot;
-
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
 	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
@@ -195,25 +185,22 @@ static void vjoy_read_bywnd(struct halfrel* self, struct halfrel* peer, struct h
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
 
 	gl41data_before(wnd);
-	vjoy_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
+	vjoy_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_tmpcam(wnd);
 	gl41data_after(wnd);
 }
-static void vjoy_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void vjoy_write_bywnd(_ent* ent,int foot, _syn* stack,int sp, struct event* ev,int len)
 {
 	struct entity* wnd;struct style* area;
-	struct entity* cam;struct style* gl41;
-	wnd = peer->pchip;area = peer->pfoot;
-	cam = self->pchip;gl41 = self->pfoot;
+	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	struct event* ev = buf;
 	if('p' == (ev->what&0xff)){
 		int ww,hh,x0,y0,dx,dy;
 		ww = wnd->width;hh = wnd->height;
 		x0 = ww * area->fs.vc[0];y0 = hh * area->fs.vc[1];
 		dx = ww * area->fs.vq[0];dy = hh * area->fs.vq[1];
 
-		short* aa = buf;
+		short* aa = (void*)ev;
 		int x = aa[0] - x0;
 		int y = (hh-1-aa[1]) - y0;
 		int z = -1;
@@ -221,13 +208,19 @@ static void vjoy_write_bywnd(struct halfrel* self, struct halfrel* peer, struct 
 			x = x*4/dy;
 			y = y*4/dy;
 			z = 'l';
-			vjoy_event(cam, x, y, z);
+
+			struct event e;
+			int ret = vjoy_event(&e, x, y, z);
+			if(ret)relationwrite(ent,_evto_, stack,sp, 0,0, &e,0x20);
 		}
 		if(x > dx-dy){
 			x = (x-dx+dy)*4/dy;
 			y = y*4/dy;
 			z = 'r';
-			vjoy_event(cam, x, y, z);
+
+			struct event e;
+			int ret = vjoy_event(&e, x, y, z);
+			if(ret)relationwrite(ent,_evto_, stack,sp, 0,0, &e,0x20);
 		}
 	}
 }
@@ -235,24 +228,32 @@ static void vjoy_write_bywnd(struct halfrel* self, struct halfrel* peer, struct 
 
 
 
-static int vjoy_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static int vjoy_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* sup = peer->pchip;
-	switch(sup->fmt){
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(wnd->fmt){
 	case _gl41wnd0_:
 	case _full_:
 	case _wnd_:{
-		if('v' != len)break;
-		vjoy_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		if('v' != key)break;
+		vjoy_read_bywnd(ent,slot, wnd,area);break;
 	}
 	}
 	return 0;
 }
-static int vjoy_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static int vjoy_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* sup = peer->pchip;
-	switch(sup->fmt){
-		case _gl41wnd0_:vjoy_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	struct supply* wnd = stack[sp-2].pchip;
+	switch(wnd->fmt){
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		vjoy_write_bywnd(ent,foot, stack,sp, buf,len);break;
+	}
 	}
 	return 0;
 }

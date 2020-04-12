@@ -34,10 +34,9 @@ static void speakercallback(void* ptr, AudioQueueRef aq, AudioQueueBufferRef buf
 
 
 
-int speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int speakerread(_sup* spk,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	struct supply* spk = self->pchip;
-	if(spk->orel0)relationread(spk, _ctx_, 0, 0, 0, 0);
+	if(spk->orel0)relationread(spk,_ctx_, stack,sp, 0,0, 0,0);
 
 	struct pcmdata* pcm = spk->pcmdata;
 	if(0 == pcm)return 0;
@@ -60,10 +59,9 @@ int speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	usleep(1000*1000);
 	return 0;
 }
-int speakerwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, short* buf, int len)
+int speakerwrite(_sup* spk,int foot, _syn* stack,int sp, void* arg, int idx, short* buf, int len)
 {
 	int j;
-	struct supply* spk = self->pchip;
 	say("@speakerwrite: len=%x\n", len);
 
 	AudioQueueRef aqref = spk->aqref;

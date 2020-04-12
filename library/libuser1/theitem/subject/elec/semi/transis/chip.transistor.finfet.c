@@ -89,22 +89,19 @@ static void finfet_draw_gl41(
 		gl41opaque_prism4(wnd, 0x80ff0000, tc, tr, tf, tu);
 	}
 }
-static void finfet_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void finfet_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-	win = peer->pchip;geom = peer->pfoot;
-	act = self->pchip;slot = self->pfoot;
-	if(stack && ('v' == len)){
-		struct entity* wnd;struct style* area;
-		struct entity* wrd;struct style* camg;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-
-		finfet_draw_gl41(act,slot, wrd,geom, wnd,area);
+	struct style* slot;
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	if(stack&&('v' == key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		finfet_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void finfet_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void finfet_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 
@@ -140,22 +137,22 @@ static void finfet_draw_cli(
 
 
 
-static void finfet_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void finfet_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct supply* sup = peer->pchip;
+	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
 	case _gl41wnd0_:
 	case _full_:
 	case _wnd_:{
-		if('v' != len)break;
-		finfet_read_bywnd(self,peer, arg,idx, buf,len);break;
+		if('v' != key)break;
+		finfet_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 	default:{
-		finfet_read_bycam(self,peer, arg,idx, buf,len);break;
+		finfet_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 	}
 }
-static void finfet_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void finfet_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void finfet_discon(struct halfrel* self, struct halfrel* peer)

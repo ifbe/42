@@ -1,7 +1,7 @@
 #include "libuser.h"
 int parsefv(float* vec, int flen, u8* str, int slen);
-int relation_readall( void* item, int foot, void* arg, int idx, void* buf, int len);
-int relation_writeall( void* item, int foot, void* arg, int idx, void* buf, int len);
+int relation_readall( void*,int, void*,int, void*,int, void*,int);
+int relation_writeall(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -79,7 +79,7 @@ static void analog_emulate(struct entity* ent, struct wireindex* sts, u8* buf, i
 	}
 	sts[0].sure = 1;
 	sts[0].volt = (float)(buf[0]-0x30);
-	relation_writeall(ent, 'a', 0, 0, &sts[0], 0);
+	relation_writeall(ent,'a', 0,0, 0,0, &sts[0],0);
 }
 static void analog_decent_V(struct entity* ent, struct wireindex* sts)
 {
@@ -89,7 +89,7 @@ static void analog_decent_V(struct entity* ent, struct wireindex* sts)
 		if(0 != sts[j].sure)continue;
 
 		sts[j].grad = 0.0;
-		relation_readall(ent, 'a'+j, 0, 'V', sts, j);
+		relation_readall(ent,'a'+j, 0,0, 0,'V', sts,j);
 	}
 	for(j=1;j<16;j++){
 		if(0 == sts[j].cnt)break;
@@ -107,7 +107,7 @@ static void analog_decent_R(struct entity* ent, struct wireindex* sts)
 		if(0 != sts[j].sure)continue;
 
 		sts[j].grad = 0.0;
-		relation_readall(ent, 'a'+j, 0, 'R', sts, j);
+		relation_readall(ent,'a'+j, 0,0, 0,'R', sts,j);
 	}
 	for(j=1;j<16;j++){
 		if(0 == sts[j].cnt)break;
@@ -168,59 +168,72 @@ static void analog_draw_gl41(
 		carvefloat(wnd, rgb, tc,tr,tf, sts[k].volt);
 	}
 }
-void analog_read_board(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+void analog_read_board(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-//world -> analog
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-
-	act = self->pchip;slot = self->pfoot;
-	win = peer->pchip;geom = peer->pfoot;
-	wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-	wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-	analog_draw_gl41(act,slot, win,geom, wnd,area);
+	if(stack && ('v'==key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		analog_draw_gl41(ent,slot, wor,geom, wnd,area);
+	}
 }
-int analog_read_child(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int analog_read_child(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* scene;
-	struct relation* rel;
-	//say("@analog_read\n");
-
-	scene = self->pchip;
-	if(0 == scene)return 0;
-	rel = scene->orel0;
-	if(0 == rel)return 0;
-
+	struct relation* rel = ent->orel0;
 	while(1){
 		if(0 == rel)break;
-		if(rel->srcfoot)entityread((void*)(rel->dst), (void*)(rel->src), stack, rsp, buf, len);
+		if(rel->srcfoot){
+			stack[sp+0].pchip = rel->psrcchip;
+			stack[sp+0].pfoot = rel->psrcfoot;
+			stack[sp+0].flag = rel->srcflag;
+			stack[sp+1].pchip = rel->pdstchip;
+			stack[sp+1].pfoot = rel->pdstfoot;
+			stack[sp+1].flag = rel->dstflag;
+			entityread(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, arg,key, buf,len);
+		}
 		rel = samesrcnextdst(rel);
 	}
 	return 0;
 }
-int analog_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int analog_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(stack && ('v' == len)){
-		analog_read_child(self,peer, stack,rsp, buf,len);
-		analog_read_board(self,peer, stack,rsp, buf,len);
+	if(stack && ('v' == key)){
+		analog_read_child(ent,foot, stack,sp, arg,key, buf,len);
+		analog_read_board(ent,foot, stack,sp, arg,key, buf,len);
 	}
 	return 0;
 }
-int analog_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int analog_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* ent = self->pchip;
-	if(0 == ent)return 0;
 	struct wireindex* sts = ent->buf0;
 	if(0 == sts)return 0;
-say("analog_write: %.4s\n", &self->flag);
-	switch(self->flag){
-		case _ev_:analog_emulate(ent,sts, buf,len);break;
-		case 'b': analog_voltage(&sts[1], buf);break;
-		case 'c': analog_voltage(&sts[2], buf);break;
-		case 'd': analog_voltage(&sts[3], buf);break;
+
+say("analog_write: %.4s\n", &foot);
+	switch(foot){
+		case _evby_:
+		{
+			struct event* ev = buf;
+			if(_char_ != ev->what)return 0;
+			if(ev->why < '0')return 0;
+			if(ev->why > '9')return 0;
+			//not break
+		}
+		case _ioby_:{
+			analog_emulate(ent,sts, buf,len);
+			break;
+		}
+		case 'a':
+		case 'b':
+		case 'c':
+		case 'd':
+		{
+			int id = foot - 'a';
+			analog_voltage(&sts[id], buf);
+			break;
+		}
 	}
 	return 0;
 }

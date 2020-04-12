@@ -47,9 +47,10 @@
 #define _dst_ hex32('d','s','t',0)
 #define _clk_ hex32('c','l','k',0)
 //
-#define  _ev_ hex32('e','v', 0, 0)
 #define _evby_ hex32('e','v','b','y')
 #define _evto_ hex32('e','v','t','o')
+#define _ioby_ hex32('i','o','b','y')
+#define _ioto_ hex32('i','o','t','o')
 //
 #define _FILE_ hex32('F','I','L','E')
 #define _file_ hex32('f','i','l','e')

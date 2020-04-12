@@ -4,31 +4,26 @@ int openreadclose(void*, int, void*, int);
 
 
 
-int control_read(struct halfrel* self, struct halfrel* peer, u8* arg, int idx, void** buf, int len)
+int control_read(_art* art,int foot, _syn* stack,int sp, u8* arg, int idx, void** buf, int len)
 {
-	struct artery* art;
-	struct str* str;
-	say("@control\n");
+	say("@control_read\n");
 
-	art = self->pchip;
-	str = (void*)art->data;
+	struct str* str = (void*)art->data;
 	str->len = 1;
 	str->buf[0] = '!';
 
 	buf[0] = str;
 	return 0;
 }
-int control_write(struct halfrel* self, struct halfrel* peer, u8* arg, int idx, void* buf, int len)
+int control_write(_art* art,int foot, _syn* stack,int sp, u8* arg, int idx, void* buf, int len)
 {
 	int j;
-	struct artery* ele;
 	say("@control_write\n");
 
 	for(j=0;j<256;j++){if(arg[j] <= 0x20)break;}
 	say("%.*s\n", j, arg);
 
-	ele = self->pchip;
-	relationwrite(self->pchip, _src_, "text/html", 0, ele->buf0, ele->len);
+	relationwrite(art,_src_, stack,sp, "text/html",0, art->buf0,art->len);
 	return 0;
 }
 int control_discon(struct halfrel* self, struct halfrel* peer)

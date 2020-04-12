@@ -3,20 +3,20 @@
 
 
 
-int gcodeclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int gcodeclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int gcodeclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int gcodeclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	switch(self->flag){
+	switch(foot){
 		case _src_:{
 			say("%.*s", len, buf);
 			break;
 		}
 		case _clk_:{
 			//say("@gcodeclient_write.clk\n");
-			relationwrite(self->pchip, _src_, 0, 0, "M105\n", 5);
+			relationwrite(art,_src_, stack,sp, 0,0, "M105\n",5);
 			break;
 		}
 	}

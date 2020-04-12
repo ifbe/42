@@ -14,13 +14,13 @@ static u8 proxy_server0[] =
 
 
 
-int proxyclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int proxyclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int proxyclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int proxyclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@proxyclient_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
+	say("@proxyclient_write: %llx, %.4s, %d\n", art, &foot, len);
 	printmemory(buf, len<16?len:16);
 
 	return 0;
@@ -35,49 +35,47 @@ int proxyclient_linkup(struct halfrel* self, struct halfrel* peer)
 	say("@proxyclient_linkup: %.4s\n", &self->flag);
 	return 0;
 }
-int proxyclient_delete(struct artery* ele)
+int proxyclient_delete(struct artery* art)
 {
 	return 0;
 }
-int proxyclient_create(struct artery* ele, u8* url)
+int proxyclient_create(struct artery* art, u8* url)
 {
 	say("@proxyclient_create\n");
-	ele->stage1 = 0;
+	art->stage1 = 0;
 	return 0;
 }
 
 
 
 
-int proxyserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int proxyserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int proxyserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int proxyserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	struct artery* ele;
-	say("@proxyserver_write: chip=%llx, foot=%.4s, len=%d\n", self->chip, &self->flag, len);
+	say("@proxyserver_write: chip=%llx, foot=%.4s, len=%d\n", art, &foot, len);
 printmemory(buf, len<16?len:16);
 
-	ele = self->pchip;
-	if('c' == self->flag){		//client
-		relationwrite(ele, 's', 0, 0, buf, len);
+	if('c' == foot){	//client
+		relationwrite(art,'s', stack,sp, 0,0, buf,len);
 	}
-	if('s' == self->flag){		//server
+	if('s' == foot){	//server
 		if(0 == len){			//server ready
-			if(ele->buf0){
+			if(art->buf0){
 				//this is http proxy: send cached request directly
-				relationwrite(ele, 's', 0, 0, ele->buf0, ele->len);
-				memorydelete(ele->buf0);
-				ele->buf0 = 0;
+				relationwrite(art,'s', stack,sp, 0,0, art->buf0, art->len);
+				memorydelete(art->buf0);
+				art->buf0 = 0;
 			}
 			else{
 				//this is https proxy: tell client ready to send request
-				relationwrite(ele, 'c', 0, 0, proxy_server0, sizeof(proxy_server0)-1);
+				relationwrite(art,'c', stack,sp, 0,0, proxy_server0,sizeof(proxy_server0)-1);
 			}
 		}
 		else{
-			relationwrite(ele, 'c', 0, 0, buf, len);
+			relationwrite(art,'c', stack,sp, 0,0, buf,len);
 		}
 	}
 	return 0;
@@ -92,39 +90,38 @@ int proxyserver_linkup(struct halfrel* self, struct halfrel* peer)
 	say("@proxyserver_linkup: %.4s\n", &self->flag);
 	return 0;
 }
-int proxyserver_delete(struct artery* ele)
+int proxyserver_delete(struct artery* art)
 {
 	return 0;
 }
-int proxyserver_create(struct artery* ele, u8* url)
+int proxyserver_create(struct artery* art, u8* url)
 {
 	say("@proxyserver_create\n");
-	ele->stage1 = 0;
+	art->stage1 = 0;
 	return 0;
 }
 
 
 
 
-int proxymaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int proxymaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int proxymaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int j;
 	u8* ptr;
 	struct relation* rel;
 
-	struct sysobj* obj;			//parent
-	struct sysobj* Tcp;			//child
+	struct sysobj* obj;		//parent
+	struct sysobj* Tcp;		//child
 	struct sysobj* client;		//client
 
-	struct artery* ele;		//master
 	struct artery* Proxy;		//server
 	struct artery* socks;
 
-	say("@proxymaster_write: chip=%llx, foot=%.4s, len=%d\n", self->chip, &self->flag, len);
+	say("@proxymaster_write: chip=%llx, foot=%.4s, len=%d\n", art, &foot, len);
 	printmemory(buf, len<16?len:16);
 
 
@@ -149,14 +146,12 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 
 //1: create servant
 	//parent, child
-	obj = (void*)(peer->chip);
+	obj = stack[sp-2].pchip;
 	if(0 == obj)return 0;
 	Tcp = obj->tempobj;
 	if(0 == Tcp)return 0;
 
 	//master, servant
-	ele = self->pchip;
-	if(0 == ele)return 0;
 	Proxy = arterycreate(_Proxy_, 0, 0, 0);
 	if(0 == Proxy)return 0;
 
@@ -183,7 +178,7 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 
 //3: server prepare
 	say("target=%s\n", Proxy->data);
-	switch(ele->name){
+	switch(art->name){
 		case _socks_:{
 			//socksclient -> proxyserver
 			socks = arterycreate(_socks_, Proxy->data, 0, 0);
@@ -191,14 +186,12 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 			relationcreate(Proxy, 0, _art_, 's', socks, 0, _art_, _dst_);
 
 			//tcpclient -> socksclient
-			client = systemcreate(_tcp_, ele->data, 0, 0);
+			client = systemcreate(_tcp_, art->data, 0, 0);
 			if(0 == client)break;
 			rel = relationcreate(socks, 0, _art_, _src_, client, 0, _sys_, _dst_);
 
 			//fake ready from tcpclient to socksclient
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			relationlinkup(self, peer);
+			relationlinkup((void*)rel->dst, (void*)rel->src);
 			break;
 		}//socks
 		default:{
@@ -208,9 +201,9 @@ int proxymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 			rel = relationcreate(Proxy, 0, _art_, 's', client, 0, _sys_, _dst_);
 
 			//fake ready from tcpclient to proxyserver
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			proxyserver_write(self, peer, 0, _ok_, 0, 0);
+			stack[sp-2].pchip = client;
+			stack[sp-1].pchip = Proxy;
+			proxyserver_write(Proxy,'s', stack,sp, 0,_ok_, 0,0);
 			break;
 		}//default
 	}
@@ -226,11 +219,11 @@ int proxymaster_linkup(struct halfrel* self, struct halfrel* peer)
 	say("@proxymaster_linkup\n");
 	return 0;
 }
-int proxymaster_delete(struct artery* ele)
+int proxymaster_delete(struct artery* art)
 {
 	return 0;
 }
-int proxymaster_create(struct artery* ele, u8* url)
+int proxymaster_create(struct artery* art, u8* url)
 {
 	int j,k;
 	say("@proxymaster.create\n");
@@ -239,28 +232,28 @@ int proxymaster_create(struct artery* ele, u8* url)
 	if(0 == ncmp(url, "socks", 5)){
 		for(j=5;j<0x80;j++){
 			if(url[j] <= 0x20){
-				mysnprintf(ele->data, 0x80, "127.0.0.1:8888");
+				mysnprintf(art->data, 0x80, "127.0.0.1:8888");
 				break;
 			}
 			if(0 == ncmp(url+j, "://", 3)){
 				url += j+3;
 				for(k=0;k<64;k++){
 					if(url[k] <= 0x20){
-						ele->data[k] = 0;
+						art->data[k] = 0;
 						break;
 					}
-					ele->data[k] = url[k];
+					art->data[k] = url[k];
 				}
 				break;
 			}
 		}
 
-		ele->name = _socks_;
+		art->name = _socks_;
 		return 0;
 	}
 
 none:
-	ele->name = 0;
+	art->name = 0;
 	say("@proxymaster.ending\n");
 	return 0;
 }

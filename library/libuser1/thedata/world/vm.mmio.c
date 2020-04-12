@@ -4,12 +4,11 @@
 
 
 
-int mmiospace_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int mmiospace_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
 {
-	struct entity* ent = self->pchip;
-	return relationread(ent,_ram_, stack,rsp, buf,len);
+	return relationread(ent,_ram_, stack,sp, arg,key, buf,len);
 }
-int mmiospace_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int mmiospace_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
 {
 	return 0;
 }

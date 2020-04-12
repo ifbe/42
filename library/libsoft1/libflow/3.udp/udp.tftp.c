@@ -3,11 +3,11 @@
 
 
 
-int tftpclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tftpclient_read(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tftpclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tftpclient_write(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
@@ -31,16 +31,15 @@ int tftpclient_create(struct artery* ele, u8* url)
 
 
 
-int tftpserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tftpserver_read(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tftpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tftpserver_write(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	int ret;
 	u8* tmp;
 	u8 str[30];
-	struct artery* ele = self->pchip;
 
 	//who
 	tmp = arg;
@@ -61,9 +60,9 @@ int tftpserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 	{
 		str[ret] = ':';
 		str[ret+1] = ' ';
-		relationwrite(ele, _src_, 0, 0, str,ret+2);
+		relationwrite(art,_src_, stack,sp, 0,0, str,ret+2);
 	}
-	relationwrite(ele, _src_, 0, 0, buf,len);
+	relationwrite(art,_src_, stack,sp, 0,0, buf,len);
 	return 0;
 }
 int tftpserver_discon(struct halfrel* self, struct halfrel* peer)

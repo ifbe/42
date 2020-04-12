@@ -406,11 +406,11 @@ int tls1v3_clienthello(u8* dst, int len)
 
 
 
-int tls1v3client_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v3client_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tls1v3client_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v3client_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int j;
 	say("@tls1v3client_write:len=%x\n",len);
@@ -458,7 +458,7 @@ int tls1v3client_linkup(struct halfrel* self, struct halfrel* peer)
 		struct artery* art = self->pchip;
 		u8* buf = art->buf0;
 		int ret = tls1v3_clienthello(buf, 0x10000);
-		relationwrite(art,_src_, 0,0, buf,ret);
+		relationwrite(art,_src_, 0,0, 0,0, buf,ret);
 	}
 	return 0;
 }
@@ -476,11 +476,11 @@ int tls1v3client_create(struct artery* art, u8* url)
 
 
 
-int tls1v3server_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v3server_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tls1v3server_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v3server_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	say("@tls1v3server_write\n");
 	return 0;
@@ -505,11 +505,11 @@ int tls1v3server_create(struct artery* art, u8* url)
 
 
 
-int tls1v3master_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v3master_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tls1v3master_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v3master_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	say("@tls1v3master_write\n");
 	printmemory(buf,len);

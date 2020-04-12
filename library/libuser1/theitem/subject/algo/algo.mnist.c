@@ -182,8 +182,8 @@ void mnist_draw_gl41(
 	float* result = act->buf3;
 	if(0 == weight)return;
 	if(0 == result)return;
-	if(act->iw0)relationwrite(act, _ann_, 0, 0, &image[16+id*28*28], label[8+id]);
-	else relationread(act, _ann_, 0, 0, &image[16+id*28*28], label[8+id]);
+	if(act->iw0)relationwrite(act,_ann_, 0,0, 0,0, &image[16+id*28*28], label[8+id]);
+	else relationread(act,_ann_, 0,0, 0,0, &image[16+id*28*28], label[8+id]);
 	mnist_draw_gl41_rt(wnd, weight, vc,vr,vf,vt);
 	mnist_draw_gl41_rb(wnd, result, vc,vr,vf,vt);
 
@@ -204,24 +204,15 @@ void mnist_draw_tui(struct entity* win, struct style* sty)
 void mnist_draw_cli(struct entity* win, struct style* sty)
 {
 }
-static int mnist_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
-	struct event* ev, int len)
-{
-	return 1;
-}
 
 
 
 
-static void mnist_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void mnist_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
 	struct entity* wnd;struct style* area;
-	struct entity* cam;struct style* gl41;
-	wnd = peer->pchip;area = peer->pfoot;
-	cam = self->pchip;gl41 = self->pfoot;
+	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
@@ -229,19 +220,12 @@ static void mnist_read_bywnd(struct halfrel* self, struct halfrel* peer, struct 
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
 	gl41data_before(wnd);
-	mnist_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
+	mnist_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_tmpcam(wnd);
 	gl41data_after(wnd);
 }
-static void mnist_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void mnist_write_bywnd(struct entity* ent, struct event* ev)
 {
-	struct entity* wnd;struct style* area;
-	struct entity* ent;struct style* gl41;
-	wnd = peer->pchip;area = peer->pfoot;
-	ent = self->pchip;gl41 = self->pfoot;
-	//say("@mnist_write_bywnd\n");
-
-	struct event* ev = buf;
 //say("%x,%x\n",ev->what,ev->why);
 	if(_kbd_ == ev->what){
 		if(kbd_left == ev->why)ent->iz0 -= 1;
@@ -256,26 +240,26 @@ say("%d\n", ent->iz0);
 
 
 
-static int mnist_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static int mnist_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* ent = peer->pchip;
-	switch(ent->fmt){
+	struct entity* xxx = stack[sp-2].pchip;
+	switch(xxx->fmt){
 	case _gl41wnd0_:
 	case _full_:
 	case _wnd_:{
-		if('v' != len)break;
-		mnist_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		if('v' != key)break;
+		mnist_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 	}
 	return 0;
 }
-static int mnist_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static int mnist_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* ent = peer->pchip;
-	switch(ent->fmt){
+	struct entity* xxx = stack[sp-2].pchip;
+	switch(xxx->fmt){
 	case _gl41wnd0_:
 	case _full_:
-	case _wnd_:mnist_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	case _wnd_:mnist_write_bywnd(ent,buf);break;
 	}
 	return 0;
 }

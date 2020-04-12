@@ -93,10 +93,10 @@ static void pwmtool_draw_cli(
 
 
 
-static void pwmtool_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void pwmtool_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void pwmtool_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void pwmtool_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void pwmtool_discon(struct halfrel* self, struct halfrel* peer)

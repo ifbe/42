@@ -1,4 +1,4 @@
-#include "libuser.h"
+#include "libboot.h"
 int input(void*, int);
 int role_fromfile(void* path, int len);
 
@@ -12,11 +12,9 @@ static struct entity* entity = 0;
 
 
 
-int supplyevent(void* poller, struct event* e)
+int supplyevent(struct halfrel* stack, struct event* e)
 {
 	int j;
-	struct halfrel self;
-	struct halfrel peer;
 	struct event ev;
 	struct supply* win;
 
@@ -59,33 +57,29 @@ int supplyevent(void* poller, struct event* e)
 		case _full_:
 		case _coop_:
 		default:{
-			self.pchip = win;
-			peer.pchip = poller;
-			supplywrite(&self, &peer, 0, 0, &ev, 0);break;
+			stack[1].pchip = win;
+			supplywrite(win,0, stack,2, 0,0, &ev,0);break;
 		}
 	}
 	return 0;
 }
-int supplyread_all(void* poller)
+int supplyread_all(struct halfrel* stack)
 {
 	int j;
 	struct supply* win;
-	struct halfrel self;
-	struct halfrel peer;
 
-	peer.pchip = poller;
 	for(j=31;j>=0;j--)
 	{
 		win = &supply[j];
 		if(0 == win->type)continue;
 
 		if(_wnd_ == win->type){
-			self.pchip = win;
-			supplyread(&self, &peer, 0, 0, 0, 0);
+			stack[1].pchip = win;
+			supplyread(win,0, stack,2, 0,0, 0,0);
 		}
 /*		if(_spk_ == win->type){
-			self.pchip = win;
-			supplyread(&self, &peer, 0, 0, 0, 0);
+			stack[1].pchip = win;
+			supplyread(win,0, stack,2, 0,0, 0,0);
 		}*/
 	}
 	return 0;
@@ -96,6 +90,8 @@ void poller(void* poller)
 	u64 t0;
 	u64 dt;
 	struct event* ev;
+	struct halfrel stack[0x80];
+	stack[0].pchip = poller;
 
 	//forever
 	while(alive)
@@ -104,7 +100,7 @@ void poller(void* poller)
 		t0 = timeread();
 
 		//draw frame
-		supplyread_all(poller);
+		supplyread_all(stack);
 
 		//cleanup events
 		while(1)
@@ -113,7 +109,7 @@ void poller(void* poller)
 			if(0 == ev)break;
 			if(0 == ev->what)return;
 
-			supplyevent(poller, ev);
+			supplyevent(stack, ev);
 		}
 
 		//max fps

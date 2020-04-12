@@ -12,7 +12,7 @@ static void* matchtable[10];
 
 
 
-static void joystick_sendevent(struct xyzwpair* pair, int j)
+static void joystick_sendevent(struct halfrel* stack,int sp, struct xyzwpair* pair, int j)
 {
 	u8 buf[4];
 	struct event ev;
@@ -41,11 +41,11 @@ static void joystick_sendevent(struct xyzwpair* pair, int j)
 
 	ev.why = *(u64*)(&pair->x0);
 	ev.what = joy_left;
-	relationwrite(joy, _dst_, 0, 0, &ev, 32);
+	relationwrite(joy,_dst_, stack,sp, 0,0, &ev,32);
 
 	ev.why = *(u64*)(&pair->xn);
 	ev.what = joy_right;
-	relationwrite(joy, _dst_, 0, 0, &ev, 32);
+	relationwrite(joy,_dst_, stack,sp, 0,0, &ev,32);
 /*
 	while(1){
 		if(0 == rel)break;
@@ -230,6 +230,7 @@ static void thread_joystick(struct supply* joy)
 	const u8* u;
 	const float* f;
 	struct xyzwpair pair;
+	struct halfrel stack[0x80];
 
 	while(1)
 	{
@@ -240,7 +241,7 @@ static void thread_joystick(struct supply* joy)
 			if(glfwJoystickIsGamepad(GLFW_JOYSTICK_1 + j))
 			{
 				joystick_gamepad(&pair, j);
-				joystick_sendevent(&pair, j);
+				joystick_sendevent(stack,0, &pair, j);
 				continue;
 			}
 
@@ -256,17 +257,17 @@ static void thread_joystick(struct supply* joy)
 
 			if(0){
 				joystick_8bitdo(&pair, f, u);
-				joystick_sendevent(&pair, j);
+				joystick_sendevent(stack,0, &pair, j);
 			}//windows, 8bitdo
 
 			if(0){
 				joystick_xbox(&pair, f, u);
-				joystick_sendevent(&pair, j);
+				joystick_sendevent(stack,0, &pair, j);
 			}//xbox
 
 			if(1){
 				joystick_ds4(&pair, f, u);
-				joystick_sendevent(&pair, j);
+				joystick_sendevent(stack,0, &pair, j);
 			}//ds4
 		}
 		sleep_us(10000);

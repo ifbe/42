@@ -525,55 +525,54 @@ int secureshell_clientwrite_encryptdata(u8* buf, int len, u8* dst, int cnt)
 
 
 
-int sshclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int sshclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int sshclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int sshclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
-	struct artery* ele;
+
 	say("@sshclient_write\n");
 	printmemory(buf, len);
 
-	ele = self->pchip;
-	if(0 == ele->stage1)
+	if(0 == art->stage1)
 	{
 		secureshell_clientread_handshake(buf, len, tmp, 0x1000);
 
 		ret = secureshell_clientwrite_handshake0x14(buf, len, tmp, 0x1000);
-		if(ret)relationwrite(ele, _src_, 0, 0, tmp, ret);
+		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
-	else if(1 == ele->stage1)
+	else if(1 == art->stage1)
 	{
 		ret = secureshell_clientread_handshake0x14(buf, len, tmp, 0x1000);
 
 		ret = secureshell_clientwrite_handshake0x22(buf, len, tmp, 0x1000);
-		if(ret)relationwrite(ele, _src_, 0, 0, tmp, ret);
+		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
-	else if(2 == ele->stage1)
+	else if(2 == art->stage1)
 	{
 		ret = secureshell_clientread_handshake0x1f(buf, len, tmp, 0x1000);
 
 		ret = secureshell_clientwrite_handshake0x20(buf, len, tmp, 0x1000);
-		if(ret)relationwrite(ele, _src_, 0, 0, tmp, ret);
+		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
-	else if(3 == ele->stage1)
+	else if(3 == art->stage1)
 	{
 		ret = secureshell_clientread_handshake0x21(buf, len, tmp, 0x1000);
 
 		//new keys
 		ret = secureshell_clientwrite_handshake0x15(buf, len, tmp, 0x1000);
-		if(ret)relationwrite(ele, _src_, 0, 0, tmp, ret);
+		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
 
 		//encrypted data
 		ret = secureshell_clientwrite_encryptdata(buf, len, tmp, 0x1000);
-		if(ret)relationwrite(ele, _src_, 0, 0, tmp, ret);
+		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
 	else printmemory(buf, len);
 
-	ele->stage1 += 1;
+	art->stage1 += 1;
 	return 0;
 }
 int sshclient_discon(struct halfrel* self, struct halfrel* peer)
@@ -587,7 +586,7 @@ int sshclient_linkup(struct halfrel* self, struct halfrel* peer)
 	say("@sshclient_linkup\n");
 
 	ret = secureshell_clientwrite_handshake(buf, 0x100);
-	ret = relationwrite(self->pchip, _src_, 0, 0, buf, ret);
+	ret = relationwrite(self->pchip,_src_, 0,0, 0,0, buf,ret);
 	return 0;
 }
 int sshclient_delete(struct artery* ele)
@@ -773,36 +772,35 @@ int secureshell_serverwrite_encryptpacket(u8* buf, int len, u8* dst, int cnt)
 
 
 
-int sshserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int sshserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int sshserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int sshserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
-	struct artery* ele;
+
 	say("@sshserver_write\n");
 	printmemory(buf, len);
 
-	ele = self->pchip;
-	if(0 == ele->stage1)
+	if(0 == art->stage1)
 	{
 		ret = secureshell_serverread_handshake0x14(buf, len, tmp, 0x100);
 
 		//key exchange init
 		ret = secureshell_serverwrite_handshake0x14(buf, len, tmp, 0x1000);
-		if(ret)relationwrite(ele, _src_, 0, 0, tmp, ret);
+		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
-	else if(1 == ele->stage1)
+	else if(1 == art->stage1)
 	{
 		ret = secureshell_serverread_handshake0x22(buf, len, tmp, 0x100);
 
 		//group exchange group
 		ret = secureshell_serverwrite_handshake0x1f(buf, len, tmp, 0x1000);
-		if(ret)relationwrite(ele, _src_, 0, 0, tmp, ret);
+		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
-	else if(2 == ele->stage1)
+	else if(2 == art->stage1)
 	{
 		ret = secureshell_serverread_handshake0x20(buf, len, tmp, 0x100);
 
@@ -810,11 +808,11 @@ int sshserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int i
 		ret = secureshell_serverwrite_handshake0x21(buf, len, tmp, 0x1000);
 		ret += secureshell_serverwrite_handshake0x15(buf, len, tmp+ret, 0x1000-ret);
 		//ret += secureshell_serverwrite_encryptpacket(buf, len, tmp+ret, 0x1000-ret);
-		if(ret)relationwrite(ele, _src_, 0, 0, tmp, ret);
+		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
 	else printmemory(buf, len);
 
-	ele->stage1 += 1;
+	art->stage1 += 1;
 	return 0;
 }
 int sshserver_discon(struct halfrel* self, struct halfrel* peer)
@@ -850,39 +848,37 @@ int secureshell_serverwrite_handshake(u8* buf, int len, u8* dst, int cnt)
 {
 	return 0;
 }
-int sshmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int sshmaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int sshmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int sshmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[0x100];
-	struct sysobj* obj;
-	struct artery* ele;
+
 	say("@sshmaster_write\n");
 	printmemory(buf, len);
 
 	//check if it's ssh
 	ret = secureshell_serverread_handshake(buf, len, tmp, 0x100);
 	if(0 == ret){
-		//relationwrite(ele, _src_, 0, 0, "only ssh!\n", 9);
+		//relationwrite(art, _src_, 0, 0, "only ssh!\n", 9);
 		//close(obj->tempobj);
 		return 0;
 	}
 
 	//send back
-	ele = self->pchip;
-	relationwrite(ele, _src_, 0, 0, tmp, ret);
+	relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
 
 	//link temp to Ssh
-	obj = (void*)(peer->chip);
+	struct sysobj* obj = stack[sp-2].pchip;
 	if(0 == obj)return 0;
 	obj = obj->tempobj;
 	if(0 == obj)return 0;
 
-	ele = arterycreate(_Ssh_, 0, 0, 0);
-	relationcreate(ele, 0, _art_, _src_, obj, 0, _sys_, _dst_);
+	art = arterycreate(_Ssh_, 0, 0, 0);
+	relationcreate(art, 0, _art_, _src_, obj, 0, _sys_, _dst_);
 	return 0;
 }
 int sshmaster_discon(struct halfrel* self, struct halfrel* peer)

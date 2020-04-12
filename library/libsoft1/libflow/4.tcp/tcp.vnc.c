@@ -3,13 +3,13 @@
 
 
 
-int vncclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int vncclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int vncclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int vncclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@vncclient_write:%.4s\n",&self->flag);
+	say("@vncclient_write: %llx,%.4s\n", art, &foot);
 	printmemory(buf, len);
 	return 0;
 }
@@ -23,7 +23,7 @@ int vncclient_linkup(struct halfrel* self, struct halfrel* peer)
 	u8* buf[32];
 	if(_src_ == self->flag){
 		len = mysnprintf(buf,32, "RFB 003.008\n");
-		relationwrite(self->pchip,_src_, 0,0, buf,len);
+		relationwrite(self->pchip,_src_, 0,0, 0,0, buf,len);
 	}
 	return 0;
 }
@@ -39,11 +39,11 @@ int vncclient_create(struct artery* art, void* arg)
 
 
 
-int vncserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int vncserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int vncserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int vncserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -67,11 +67,11 @@ int vncserver_create(struct artery* art, void* arg)
 
 
 
-int vncmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int vncmaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int vncmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int vncmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

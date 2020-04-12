@@ -56,22 +56,16 @@ static void tardis_draw_gl41(
 	if(time>255)time = 511-time;
 	gl41opaque_prism4(wnd, 0x0000ff|(time<<24), tc, tr, tf, tt);
 }
-static void tardis_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void tardis_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
-//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wor;struct style* camg;
-
-	//world -> tardis
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-
-	if(stack){
-		act = self->pchip;slot = self->pfoot;
-		win = peer->pchip;geom = peer->pfoot;
-		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)tardis_draw_gl41(act,slot, win,geom, wnd,area);
+	if(stack && ('v'==key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		tardis_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
 
@@ -95,17 +89,17 @@ void tardis_pcm(struct entity* ent, struct supply* sup)
 
 
 
-static void tardis_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void tardis_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* ent = self->pchip;
-	struct supply* sup = peer->pchip;
+	struct supply* wnd = stack[sp-2].pchip;
 //say("fmt=%.8s\n", &sup->fmt);
-	switch(sup->fmt){
-		case _pcm_:tardis_pcm(ent, sup);break;
-		default:tardis_read_bycam(self, peer, stack, rsp, buf, len);break;
+
+	switch(wnd->fmt){
+		case _pcm_:tardis_pcm(ent, wnd);break;
+		default:tardis_read_bycam(ent,foot, stack,sp, arg,key);
 	}
 }
-static void tardis_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void tardis_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void tardis_discon(struct halfrel* self, struct halfrel* peer)

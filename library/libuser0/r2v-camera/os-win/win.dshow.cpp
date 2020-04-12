@@ -92,7 +92,9 @@ public:
 		obj[enq].len = pSample->GetActualDataLength();
 		pSample->GetPointer(buf);
 		pSample->Release();
-		relationwrite(working, _dst_, 0, 0, obj[enq].buf, obj[enq].len);
+
+		struct halfrel stack[0x80];
+		relationwrite(working,_dst_, stack,0, 0,0, obj[enq].buf,obj[enq].len);
 
 		enq = (enq+1)%60;
 		return S_OK;
@@ -422,7 +424,7 @@ fail:
 extern "C" {
 
 
-int videoread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int videoread(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	u64 addr = obj[(enq+59)%60].addr;
 	printf("addr=%llx\n",addr);
@@ -430,7 +432,7 @@ int videoread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 	*(u64*)buf = addr;
 	return 0;
 }
-int videowrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int videowrite(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }

@@ -6,7 +6,7 @@ car{
 fmt:otto
 }
 freecam{
-fmt:3rdcam
+fmt:freecam
 }
 virtual{
 fmt:virtual

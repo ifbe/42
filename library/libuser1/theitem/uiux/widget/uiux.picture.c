@@ -203,29 +203,22 @@ static void picture_draw_cli(
 
 
 
-static void picture_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void picture_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wor;struct style* camg;
-
-	//world -> video
-	struct entity* scn;struct style* geom;
-	struct entity* act;struct style* slot;
-
-	if(stack&&('v' == len)){
-		act = self->pchip;slot = self->pfoot;
-		scn = peer->pchip;geom = peer->pfoot;
-		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		picture_draw_gl41(act,slot, scn,geom, wnd,area);
+	if(stack && ('v'==key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		picture_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void picture_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void picture_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* ent = self->pchip;
 	say("@picture_write\n");
-	relationwrite(ent,_ev_, 0, 0, "calibrate\n", 10);
+	relationwrite(ent,_evto_, stack,sp, 0,0, "calibrate\n", 10);
 }
 static void picture_discon(struct halfrel* self, struct halfrel* peer)
 {

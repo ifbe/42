@@ -24,7 +24,6 @@ int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max);
 //
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
-void eventwrite(u64,u64,u64,u64);
 
 
 

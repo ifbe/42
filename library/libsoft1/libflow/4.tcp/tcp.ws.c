@@ -87,29 +87,27 @@ int websocket_clientwrite(u8* buf, int len, u8* dst, int max)
 
 
 
-int wsclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int wsclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int wsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int wsclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
-	struct relation* orel;
-	struct artery* ele = self->pchip;
-	say("@wsclient_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
+	say("@wsclient_write: %llx, %.4s, %d\n", art, &foot, len);
     printmemory(buf, len<16?len:16);
 
-	switch(self->flag){
+	switch(foot){
 		case _dst_:{
 			ret = websocket_clientwrite(buf, len, tmp, 0x1000);
 			//printmemory(buf, len);
 			//printmemory(tmp, ret);
-			relationwrite(ele, _src_, 0, 0, tmp, ret);
+			relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
 			break;
 		}
 		case _src_:{
-			if(0 == ele->stage1)
+			if(0 == art->stage1)
 			{
 			/*	say("ws.serverhello={\n"
 					"%.*s"
@@ -119,14 +117,14 @@ int wsclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 				//parse serverhello
 				//websocket_clientread_handshake();
 
-				ele->stage1 = 1;
+				art->stage1 = 1;
 			}
 			else{
 				ret = websocket_clientread(buf, len, 0, 0);
 				buf += ret;
 				len -= ret;
 
-				relationwrite(ele, _dst_, 0, 0, buf, len);
+				relationwrite(art,_dst_, stack,sp, 0,0, buf,len);
 			}
 			break;
 		}
@@ -144,7 +142,7 @@ int wsclient_linkup(struct halfrel* self, struct halfrel* peer)
 
 	if(_src_ == self->flag){
 		ret = websocket_clientwrite_handshake(0, 0, tmp, 0);
-		relationwrite(self->pchip, _src_, 0, 0, tmp, ret);
+		relationwrite(self->pchip,_src_, 0,0, 0,0, tmp,ret);
 	}
 	return 0;
 }
@@ -365,30 +363,29 @@ int websocket_serverwrite_head(u8* buf, int len, u8* dst, int max)
 
 
 
-int wsserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int wsserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int wsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int wsserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
-	struct artery* ele = self->pchip;
-	say("@wsserver_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
+	say("@wsserver_write: %llx, %.4s, %d\n", art, &foot, len);
     printmemory(buf, len<16?len:16);
 
-	switch(self->flag){
+	switch(foot){
 		case _dst_:{
 			ret = websocket_serverwrite_head(buf, len, tmp, 0x100);
 			//printmemory(tmp, ret);
 			//printmemory(buf, len);
-			relationwrite(ele, _src_, 0, 0, tmp, ret);
-			relationwrite(ele, _src_, 0, 0, buf, len);
+			relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
+			relationwrite(art,_src_, stack,sp, 0,0, buf,len);
 			break;
 		}
 		case _src_:{
-			if(0 == ele->stage1){
-				ele->stage1 = 1;
+			if(0 == art->stage1){
+				art->stage1 = 1;
 			/*	say("ws.clienthello={\n"
 					"%.*s"
 					"}=ws.clienthello\n",
@@ -396,18 +393,18 @@ int wsserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int id
 
 				//parse clienthello
 				ret = websocket_serverread_handshake(buf, len, tmp, 256);
-				ret = relationwrite(ele, _src_, 0, 0, tmp, ret);
+				ret = relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
 
 				//on clienthello do something
 				//blen = mysnprintf(tmp, 0x1000, "Who dare summon me ?!");
 
-				ele->stage1 = 1;
+				art->stage1 = 1;
 			}
 			else{
 				ret = websocket_serverread_head(buf, len, tmp, 0x1000);
 				say("sending:\n");
 				printmemory(tmp, ret<16?ret:16);
-				relationwrite(ele, _dst_, 0, 0, tmp, ret);
+				relationwrite(art,_dst_, stack,sp, 0,0, tmp,ret);
 			}
 			break;
 		}
@@ -435,54 +432,42 @@ int wsserver_create(struct artery* ele, u8* url)
 
 
 
-int wsmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int wsmaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int wsmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int wsmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	struct sysobj* obj;		//parent
-	struct sysobj* Tcp;		//child
-
-	struct artery* ele;	//master
-	struct artery* Ws;		//server
-
-	struct relation* rel;
-	struct sysobj* ptmx;
-	struct artery* echo;
-	say("@wsserver_write: %llx, %.4s, %d\n", self->pchip, &self->flag, len);
+	say("@wsserver_write: %llx, %.4s, %d\n", art, &foot, len);
     printmemory(buf, len<16?len:16);
 
-	//parent, child
-	obj = peer->pchip;
+	//socket: parent,child
+	struct sysobj* obj = stack[sp-2].pchip;
 	if(0 == obj)return 0;
-	Tcp = obj->tempobj;
+	struct sysobj* Tcp = obj->tempobj;
 	if(0 == Tcp)return 0;
 
-	//master, server
-	ele = self->pchip;
-	if(0 == ele)return 0;
-	Ws = arterycreate(_Ws_, 0, 0, 0);
+	//server
+	struct artery* Ws = arterycreate(_Ws_, 0, 0, 0);
 	if(0 == Ws)return 0;
 
-	//child -> server
-	rel = relationcreate(Ws, 0, _art_, _src_, Tcp, 0, _sys_, _dst_);
-	//relationstart(&rel->srcchip, &rel->dstchip);
-	self = (void*)&rel->dstchip;
-	peer = (void*)&rel->srcchip;
-	arterywrite(self, peer, 0, 0, buf, len);
+	//socket -> server
+	relationcreate(Ws, 0, _art_, _src_, Tcp, 0, _sys_, _dst_);
+	stack[sp-2].pchip = Tcp;
+	stack[sp-1].pchip = Ws;
+	wsserver_write(Ws,_src_, stack,sp, 0,0, buf,len);
 
 	//server -> ???
-	switch(ele->name){
+	switch(art->name){
 	case _echo_:{
-		echo = arterycreate(_echo_, 0, 0, 0);
+		struct artery* echo = arterycreate(_echo_, 0, 0, 0);
 		if(0 == echo)break;
 		relationcreate(Ws, 0, _art_, _dst_, echo, 0, _art_, _src_);
 		//relationstart(&rel->srcchip, &rel->dstchip);
 		break;
 	}//echo
 	case _ptmx_:{
-		ptmx = systemcreate(_ptmx_, "/dev/ptmx", 0, 0);
+		struct sysobj* ptmx = systemcreate(_ptmx_, "/dev/ptmx", 0, 0);
 		if(0 == ptmx)break;
 		relationcreate(Ws, 0, _art_, _dst_, ptmx, 0, _sys_, _dst_);
 		//relationstart(&rel->srcchip, &rel->dstchip);

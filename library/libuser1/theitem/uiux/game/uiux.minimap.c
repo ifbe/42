@@ -43,32 +43,26 @@ static void minimap_draw_cli(
 
 
 
-static void minimap_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void minimap_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
-//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wor;struct style* camg;
-
-	//world -> minimap
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-
-	if(stack&&('v'==len)){
-		act = self->pchip;slot = self->pfoot;
-		win = peer->pchip;geom = peer->pfoot;
-		wor = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		minimap_draw_gl41(act,slot, win,geom, wnd,area);
+	if(stack && ('v'==key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		minimap_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void minimap_read_byuiux(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void minimap_read_byuiux(_ent* ent,int foot, _syn* stack,int sp)
 {
-	struct entity* wnd;struct style* rect;
+	struct style* slot;
 	struct entity* uuu;struct style* area;
-	struct entity* map;struct style* gl41;
-	wnd = stack[rsp-4]->pchip;rect = stack[rsp-4]->pfoot;
-	uuu = stack[rsp-2]->pchip;area = stack[rsp-2]->pfoot;
-	map = self->pchip;gl41 = self->pfoot;
+	struct entity* wnd;struct style* rect;
+	slot = stack[sp-1].pfoot;
+	uuu = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+	wnd = stack[sp-4].pchip;rect = stack[sp-4].pfoot;
 
 	//0,1 -> -1,1
 	float x0,y0,dx,dy;
@@ -84,39 +78,42 @@ static void minimap_read_byuiux(struct halfrel* self, struct halfrel* peer, stru
 	fs.vf[0] = 0.0;fs.vf[1] = dy;fs.vf[2] = 0.0;
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
 
-	minimap_draw_gl41(map, 0, 0,(void*)&fs, wnd,rect);
+	minimap_draw_gl41(ent,slot, 0,(void*)&fs, wnd,rect);
 }
-static void minimap_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void minimap_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
 }
 
 
 
 
-static void minimap_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void minimap_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* ent = self->pchip;
-	struct supply* sup = peer->pchip;
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
 //say("fmt=%.8s\n", &sup->fmt);
-	switch(sup->fmt){
+
+	switch(wnd->fmt){
 	case _gl41wnd0_:
 	case _full_:
 	case _wnd_:{
-		if('v' != len)break;
-		minimap_read_bywnd(self, peer, stack, rsp, buf, len);
+		if('v' != key)break;
+		minimap_read_bywnd(ent,slot, wnd,area);
 		break;
 	}
 	case _virtual_:{
-		minimap_read_byuiux(self, peer, stack, rsp, buf, len);
+		minimap_read_byuiux(ent,foot, stack,sp);
 		break;
 	}
 	default:{
-		minimap_read_bycam(self, peer, stack, rsp, buf, len);
+		minimap_read_bycam(ent,foot, stack,sp, arg,key);
 		break;
 	}
 	}
 }
-static void minimap_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void minimap_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void minimap_discon(struct halfrel* self, struct halfrel* peer)

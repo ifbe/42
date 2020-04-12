@@ -3,10 +3,9 @@
 
 
 
-int speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int speakerread(_sup* spk,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	struct supply* spk = self->pchip;
-	if(spk->orel0)relationread(spk, _ctx_, 0, 0, 0, 0);
+	if(spk->orel0)relationread(spk,_ctx_, stack,sp, 0,0, 0,0);
 
 	struct pcmdata* pcm = spk->pcmdata;
 	if(0 == pcm)return 0;
@@ -14,7 +13,7 @@ int speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 	say("fmt=%x,chan=%d,rate=%d,count=%d,buf=%llx\n", pcm->fmt, pcm->chan, pcm->rate, pcm->count, pcm->buf);
 	return 0;
 }
-int speakerwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int speakerwrite(_sup* spk,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

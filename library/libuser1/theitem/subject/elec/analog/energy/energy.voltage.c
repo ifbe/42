@@ -18,6 +18,30 @@ static void vsrc_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
+static void vsrc_draw_json(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void vsrc_draw_html(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void vsrc_draw_tui(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void vsrc_draw_cli(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+
+
+
+
 static void vsrc_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* scn, struct style* geom,
@@ -58,52 +82,26 @@ static void vsrc_draw_gl41(
 	}
 	carvefloat(wnd, 0xffffff, tc,tr,tf, act->fx0);
 }
-static void vsrc_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+static void vsrc_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-}
-static void vsrc_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void vsrc_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void vsrc_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-
-
-
-
-static void vsrc_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
-{
-//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-//world -> vsrc
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-
-	if(stack && ('v' == len)){
-		act = self->pchip;slot = self->pfoot;
-		win = peer->pchip;geom = peer->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		vsrc_draw_gl41(act,slot, win,geom, wnd,area);
+	if(stack&&('v' == key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		vsrc_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void vsrc_read_p(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct wireindex* sts, int thisone)
-{
-	if(rsp != 'V')return;
 
-	struct entity* ent = self->pchip;
+
+
+
+static void vsrc_read_p(struct entity* ent, int key, struct wireindex* sts, int thisone)
+{
+	if('V' != key)return;
+
 	int theother = ent->N_PEERFOOT - 'a';
 	if(theother < 0)return;
 	if(theother > 8)return;
@@ -116,11 +114,10 @@ static void vsrc_read_p(struct halfrel* self, struct halfrel* peer, struct halfr
 	say("vsrc_read_p: %f,%f\n", sts[thisone].grad, delta);
 	sts[thisone].grad += delta;
 }
-static void vsrc_read_n(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct wireindex* sts, int thisone)
+static void vsrc_read_n(struct entity* ent, int key, struct wireindex* sts, int thisone)
 {
-	if(rsp != 'V')return;
+	if('V' != key)return;
 
-	struct entity* ent = self->pchip;
 	int theother = ent->P_PEERFOOT - 'a';
 	if(theother < 0)return;
 	if(theother > 8)return;
@@ -137,22 +134,21 @@ static void vsrc_read_n(struct halfrel* self, struct halfrel* peer, struct halfr
 
 
 
-static void vsrc_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void vsrc_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	switch(self->flag){
-		case 'p':vsrc_read_p(self,peer, stack,rsp, buf,len);break;
-		case 'n':vsrc_read_n(self,peer, stack,rsp, buf,len);break;
-		default:vsrc_read_bycam(self, peer, stack,rsp, buf,len);break;
+	switch(foot){
+		case 'p':vsrc_read_p(ent,key, buf,len);break;
+		case 'n':vsrc_read_n(ent,key, buf,len);break;
+		default:vsrc_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 }
-static void vsrc_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void vsrc_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@vsrc_write: %.4s\n", &self->flag);
-	if('n' == self->flag){
-		struct entity* ent = self->pchip;
+	say("@vsrc_write: %.4s\n", &foot);
+	if('n' == foot){
 		struct wireindex* sts = buf;
 		float volt = sts->volt + ent->fx0;
-		relationwrite(ent, 'p', 0, 0, &volt, 0);
+		relationwrite(ent,'p', stack,sp, 0,0, &volt,0);
 	}
 }
 static void vsrc_discon(struct halfrel* self, struct halfrel* peer)

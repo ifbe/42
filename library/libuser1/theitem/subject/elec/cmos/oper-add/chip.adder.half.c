@@ -51,27 +51,21 @@ static void halfadd_draw_cli(
 
 
 
-static void halfadd_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static void halfadd_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-//world -> halfadd
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-
-	if(stack){
-		act = self->pchip;slot = self->pfoot;
-		win = peer->pchip;geom = peer->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)halfadd_draw_gl41(act,slot, win,geom, wnd,area);
+	if(stack&&('v' == key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		halfadd_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void halfadd_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void halfadd_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	u8 tmp;
-	struct entity* ent = self->pchip;
 	say("@halfaddgate_write:%x\n",buf[0]);
 
 	if('0' == buf[0])ent->ix0 = 0;
@@ -80,7 +74,7 @@ static void halfadd_write(struct halfrel* self, struct halfrel* peer, void* arg,
 
 	ent->iy0 = !ent->ix0;
 	tmp = ent->iy0 + 0x30;
-	relationwrite(ent, 'o', 0, 0, &tmp, 1);
+	relationwrite(ent,'o', stack,sp, 0,0, &tmp,1);
 }
 static void halfadd_discon(struct halfrel* self, struct halfrel* peer)
 {

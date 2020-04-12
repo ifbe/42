@@ -3,45 +3,29 @@
 int invproj(float* v, struct fstyle* sty);
 int obb_ray(struct fstyle* sty, vec3 ray[], vec3 out[]);
 int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
-int relationsearch(void* item, u32 foottype, struct halfrel* self[], struct halfrel* peer[]);
 
 
 
 
-static int clickray_send(struct entity* handler, vec3 ray[])
+static int clickray_convert(struct entity* cam, struct style* xxx, float* xyz, vec3 ray[])
 {
-	int ret;
-	struct halfrel* self[2];
-	struct halfrel* peer[2];
-	ret = relationsearch(handler, _tar_, self, peer);
-//say("clickray_send:%d\n", ret);
-	if(ret <= 0)return 0;
-//say("%f,%f,%f->%f,%f,%f\n", ray[0][0],ray[0][1],ray[0][2], ray[1][0],ray[1][1],ray[1][2]);
+	struct relation* rel;
+	struct entity* world;
+	struct style* geom;
 
-	vec3 out[2];
-	struct style* sty;
-	struct entity* scene = peer[0]->pchip;
-	struct relation* rel = scene->orel0;
+	rel = cam->irel0;
 	while(1){
-		if(0 == rel)break;
-		sty = rel->psrcfoot;
-		ret = obb_ray(&sty->fs, ray, out);
-		if(ret){
-			entitywrite((void*)(rel->dst), (void*)(rel->src), sty, 0, ray, 0);
-			return 1;
+		if(0 == rel)return 0;
+		world = rel->psrcchip;
+		if( (_virtual_ == world->type) | (_scene3d_ == world->type) ){
+			geom = rel->psrcfoot;
+			goto found;
 		}
-		rel = samesrcnextdst(rel);
+		rel = samedstnextsrc(rel);
 	}
-
-	say("clickray_send: miss\n");
 	return 0;
-}
-static int clickray_convert(
-	struct entity* cam, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* wnd, struct style* area,
-	struct event* ev, float* xyz)
-{
+
+found:
 	//[0,1] to [-1,1]
 	xyz[0] = 2*xyz[0] - 1.0;
 	xyz[1] = 2*xyz[1] - 1.0;
@@ -56,7 +40,47 @@ static int clickray_convert(
 	cam->fx0 = xyz[0];
 	cam->fy0 = xyz[1];
 	cam->fz0 = xyz[2];
+
+xyz2ray:
+	ray[0][0] = geom->fs.vc[0];
+	ray[0][1] = geom->fs.vc[1];
+	ray[0][2] = geom->fs.vc[2];
+	ray[1][0] = xyz[0] - ray[0][0];
+	ray[1][1] = xyz[1] - ray[0][1];
+	ray[1][2] = xyz[2] - ray[0][2];
 	return 1;
+}
+static int clickray_intersect(struct entity* handler,int foot,
+	struct halfrel* stack,int sp, vec3 ray[], vec3 out[])
+{
+	int ret;
+	struct halfrel* junk[2];
+	ret = relationsearch(handler, _tar_, &junk[0], &junk[1]);
+	if(ret <= 0)return 0;
+//say("%f,%f,%f->%f,%f,%f\n", ray[0][0],ray[0][1],ray[0][2], ray[1][0],ray[1][1],ray[1][2]);
+
+	struct entity* scene = junk[1]->pchip;
+	if(0 == scene)return 0;
+
+	struct relation* rel = scene->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		ret = obb_ray(rel->psrcfoot, ray, out);
+		if(ret){
+			stack[sp+0].pchip = rel->psrcchip;
+			stack[sp+0].pfoot = rel->psrcfoot;
+			stack[sp+0].flag = rel->srcflag;
+			stack[sp+1].pchip = rel->pdstchip;
+			stack[sp+1].pfoot = rel->pdstfoot;
+			stack[sp+1].flag = rel->dstflag;
+			return 1;
+		}
+		rel = samesrcnextdst(rel);
+	}
+
+	say("clickray_send: miss\n");
+	return 0;
 }
 
 
@@ -86,15 +110,13 @@ int clickray_create(struct entity* act, void* flag)
 
 
 
-int clickray_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int clickray_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int clickray_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct event* ev, int len)
+int clickray_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	struct entity* ent = self->pchip;
-	if(0 == ent)return 0;
-
+	struct event* ev = buf;
 	if(0x2d70 == ev->what){		//mouse up
 		ent->iw0 = 0;
 		return 0;
@@ -105,33 +127,32 @@ int clickray_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 	if('p' == (ev->what&0xff)){
 		if(0 == ent->iw0)return 0;
 
+//[-4,-3]: wnd,area -> cam,togl
+//[-2,-1]: cam,evto -> this,bycam
 		int ret;
-		vec3 tmp;
+		vec3 xyz;
 		vec3 ray[2];
-		struct entity* wrd = stack[rsp-1]->pchip;
-		struct style* geom = stack[rsp-1]->pfoot;
-		struct entity* act = stack[rsp-2]->pchip;
-		struct style* slot = stack[rsp-2]->pfoot;
-		//struct entity* cam = stack[rsp-3]->pchip;
-		//struct style* gl41 = stack[rsp-3]->pfoot;
-		struct entity* wnd = stack[rsp-4]->pchip;
-		struct style* area = stack[rsp-4]->pfoot;
+		vec3 out[2];
+		struct entity* cam = stack[sp-2].pchip;
+		struct style* xxxx = stack[sp-2].pfoot;
+		struct entity* wnd = stack[sp-4].pchip;
+		struct style* area = stack[sp-4].pfoot;
 //say("%.8s,%.8s,%.8s\n",&wnd->type, &act->type, &wrd->type);
 
 		//screen to ndc
-		ret = gl41data_convert(wnd, area, ev, tmp);
+		ret = gl41data_convert(wnd, area, ev, xyz);
 		//say("%f,%f\n",xyz[0],xyz[1]);
 
-		ret = clickray_convert(act,slot, wrd,geom, wnd,area, ev,tmp);
+		//ndc to ray
+		ret = clickray_convert(cam, xxxx, xyz, ray);
 		if(ret <= 0)return 0;
 
-		ray[0][0] = geom->fs.vc[0];
-		ray[0][1] = geom->fs.vc[1];
-		ray[0][2] = geom->fs.vc[2];
-		ray[1][0] = tmp[0] - ray[0][0];
-		ray[1][1] = tmp[1] - ray[0][1];
-		ray[1][2] = tmp[2] - ray[0][2];
-		clickray_send(self->pchip, ray);
+		//intersect test
+		ret = clickray_intersect(ent,foot, stack,sp, ray,out);
+		if(ret <= 0)return 0;
+
+		//send
+		entitywrite(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, stack[sp].pfoot, 0, ray, 0);
 	}
 	return 0;
 }

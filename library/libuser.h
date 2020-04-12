@@ -1,7 +1,13 @@
 #include "naming.h"
 #include "struct.h"
+#include "operate.h"
+
 #include "carve.h"
 #include "draw.h"
+
+
+
+
 //
 #ifdef __ANDROID__
 	#define GLSL_VERSION "#version 320 es\n"
@@ -188,81 +194,30 @@ double log2(double);
 double squareroot(double);
 double power(double, double);
 
-//
-u32 getrandom();
-int sleep_us(int);
-u64 dateread();
-u64 timeread();
 
 
 
-
-int entityread(  struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
-int entitywrite( struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
-int entitydiscon(struct halfrel* self, struct halfrel* peer);
-int entitylinkup(struct halfrel* self, struct halfrel* peer);
-int entitydelete(struct entity*);
-void* entitycreate(u64 type, void* addr, int argc, u8** argv);
-//
-int supplyread(  struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
-int supplywrite( struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len);
-int supplydiscon(struct halfrel* self, struct halfrel* peer);
-int supplylinkup(struct halfrel* self, struct halfrel* peer);
-int supplydelete(struct supply*);
-void* supplycreate(u64 type, void* addr, int argc, u8** argv);
-//
-int arteryread( struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
-int arterywrite(struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
-int arterydiscon(struct halfrel* self, struct halfrel* peer);
-int arterylinkup(struct halfrel* self, struct halfrel* peer);
-int arterydelete(void*);
-void* arterycreate(u64 type, void* addr, int argc, u8** argv);
-//
-int systemread( struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
-int systemwrite(struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
-int systemdiscon(struct halfrel* self, struct halfrel* peer);
-int systemlinkup(struct halfrel* self, struct halfrel* peer);
-int systemdelete(void*);
-void* systemcreate(u64 type, void* addr, int argc, u8** argv);
-//
-int driverread( struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
-int driverwrite(struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
-int driverdiscon(struct halfrel* self, struct halfrel* peer);
-int driverlinkup(struct halfrel* self, struct halfrel* peer);
-int driverdelete(void*);
-void* drivercreate(u64 type, void* addr, int argc, u8** argv);
-//
-int deviceread( struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
-int devicewrite(struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
-int devicediscon(struct halfrel* self, struct halfrel* peer);
-int devicelinkup(struct halfrel* self, struct halfrel* peer);
-int devicedelete(void*);
-void* devicecreate(u64 type, void* addr, int argc, u8** argv);
-//
-int workerread( struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
-int workerwrite(struct halfrel* self, struct halfrel* peer,void* arg, int idx, void* buf,int len);
-int workerdiscon(struct halfrel* self, struct halfrel* peer);
-int workerlinkup(struct halfrel* self, struct halfrel* peer);
-int workerdelete(void*);
-void* workercreate(u64 type, void* addr, int argc, u8** argv);
-//
-int relationread( void* item, int foot, void* arg, int idx, void* buf, int len);
-int relationwrite(void* item, int foot, void* arg, int idx, void* buf, int len);
-int relationdiscon(struct halfrel* self, struct halfrel* peer);
-int relationlinkup(struct halfrel* self, struct halfrel* peer);
-int relationsearch(void*, u32 foot, struct halfrel** self, struct halfrel** peer);
-int relationmodify(void*, u32 foot);
-int relationdelete(void*);
-void* relationcreate(void*,void*,int,int,void*,void*,int,int);
 void* samesrcprevdst(void*);
 void* samesrcnextdst(void*);
 void* samedstprevsrc(void*);
 void* samedstnextsrc(void*);
+
+//
+u32 getrandom();
+//
+int sleep_ms(int);
+int sleep_us(int);
+int sleep_ns(int);
+//
+u64 dateread();
+u64 timeread();
 //
 int threaddelete(u64);
 u64 threadcreate(void*, void*);
+//
 int memorydelete(void*);
 void* memorycreate(int, int);
+//
 void* eventread();
 void* eventwrite(u64,u64,u64,u64);
 //

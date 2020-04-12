@@ -18,28 +18,6 @@ static void resistor_draw_pixel(
 	struct entity* win, struct style* sty)
 {
 }
-static void resistor_draw_gl41(
-	struct entity* act, struct style* slot,
-	struct entity* scn, struct style* geom,
-	struct entity* wnd, struct style* area)
-{
-	int j;
-	vec3 tc,tr,tf,tt;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
-
-	for(j=0;j<3;j++)tc[j] = vc[j];
-	gl41solid_prism4(wnd, 0x808080, vc, vr, vf, vt);
-
-	for(j=0;j<3;j++){
-		tc[j] = vc[j]+vt[j]*1.1;
-		tr[j] = vr[j]/2;
-		tf[j] = vf[j]/2;
-	}
-	carvefloat(wnd, 0xffffff, tc,tr,tf, act->fx0);
-}
 static void resistor_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -64,28 +42,48 @@ static void resistor_draw_cli(
 
 
 
-static void resistor_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void resistor_draw_gl41(
+	struct entity* act, struct style* slot,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
-//wnd -> cam, cam -> world
-	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-//world -> resistor
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
+	int j;
+	vec3 tc,tr,tf,tt;
+	float* vc = geom->f.vc;
+	float* vr = geom->f.vr;
+	float* vf = geom->f.vf;
+	float* vt = geom->f.vt;
 
-	if(stack && ('v' == len)){
-		act = self->pchip;slot = self->pfoot;
-		win = peer->pchip;geom = peer->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		resistor_draw_gl41(act,slot, win,geom, wnd,area);
+	for(j=0;j<3;j++)tc[j] = vc[j];
+	gl41solid_prism4(wnd, 0x808080, vc, vr, vf, vt);
+
+	for(j=0;j<3;j++){
+		tc[j] = vc[j]+vt[j]*1.1;
+		tr[j] = vr[j]/2;
+		tf[j] = vf[j]/2;
+	}
+	carvefloat(wnd, 0xffffff, tc,tr,tf, act->fx0);
+}
+static void resistor_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	struct style* slot;
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	if(stack&&('v' == key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		resistor_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void resistor_read_a(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct wireindex* sts, int thisone)
-{
-	if(rsp != 'R')return;
 
-	struct entity* ent = self->pchip;
+
+
+
+static void resistor_read_a(struct entity* ent, int key, struct wireindex* sts, int thisone)
+{
+	if('R' != key)return;
+
 	int theother = ent->B_PEERFOOT - 'a';
 	if(theother < 0)return;
 	if(theother > 8)return;
@@ -98,11 +96,10 @@ static void resistor_read_a(struct halfrel* self, struct halfrel* peer, struct h
 	say("resistor_read_a: %f,%f\n", sts[thisone].grad, delta);
 	sts[thisone].grad += delta;
 }
-static void resistor_read_b(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct wireindex* sts, int thisone)
+static void resistor_read_b(struct entity* ent, int key, struct wireindex* sts, int thisone)
 {
-	if(rsp != 'R')return;
+	if('R' != key)return;
 
-	struct entity* ent = self->pchip;
 	int theother = ent->A_PEERFOOT - 'a';
 	if(theother < 0)return;
 	if(theother > 8)return;
@@ -119,18 +116,18 @@ static void resistor_read_b(struct halfrel* self, struct halfrel* peer, struct h
 
 
 
-static void resistor_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void resistor_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	switch(self->flag){
-		case 'a':resistor_read_a(self,peer, stack,rsp, buf,len);break;
-		case 'b':resistor_read_b(self,peer, stack,rsp, buf,len);break;
-		default:resistor_read_bycam(self, peer, stack,rsp, buf,len);break;
+	switch(foot){
+		case 'a':resistor_read_a(ent, key, buf,len);break;
+		case 'b':resistor_read_b(ent, key, buf,len);break;
+		default:resistor_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 }
-static void resistor_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void resistor_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct wireindex* sts = buf;
-	say("@resistor_write: %.4s\n", &self->flag);
+	say("@resistor_write: %.4s\n", &foot);
 	say("%d, %f\n", sts->sure, sts->volt);
 }
 static void resistor_discon(struct halfrel* self, struct halfrel* peer)

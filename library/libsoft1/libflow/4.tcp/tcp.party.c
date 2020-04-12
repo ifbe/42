@@ -106,7 +106,7 @@ static int party_parse(u8* buf, int len, u64* to, u64* by, u32* cnt, u32* sum)
 
 
 
-int partyclient_write_sent(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int partyclient_write_sent(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf, int len)
 {
 	struct artery* art = self->pchip;
 	art->stage1 = _done_;
@@ -120,7 +120,7 @@ int partyclient_write_sent(struct halfrel* self, struct halfrel* peer, u8* buf, 
 	}
 	return 0;
 }
-int partyclient_write_done(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int partyclient_write_done(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,int len)
 {
 	//printmemory(buf, len);
 	struct artery* art = self->pchip;
@@ -138,20 +138,20 @@ while(1){
 		//say("to=%x,by=%x,cnt=%x,ret=%x,len=%x\n",to,by,cnt,ret,len);
 
 		if(len == ret+cnt){		//complete packet
-			relationwrite(art,_dst_, 0,0, buf+ret,cnt);
-			relationwrite(art,_std_, 0,0, buf+ret,cnt);
+			relationwrite(art,_dst_, stack,sp, 0,0, buf+ret,cnt);
+			relationwrite(art,_std_, stack,sp, 0,0, buf+ret,cnt);
 			return 0;
 		}
 		if(len > ret+cnt){		//complete packet + next packet
-			relationwrite(art,_dst_, 0,0, buf+ret,cnt);
-			relationwrite(art,_std_, 0,0, buf+ret,cnt);
+			relationwrite(art,_dst_, stack,sp, 0,0, buf+ret,cnt);
+			relationwrite(art,_std_, stack,sp, 0,0, buf+ret,cnt);
 			buf += ret+cnt;
 			len -= ret+cnt;
 			continue;
 		}
 		if(len < ret+cnt){		//head ok, body not
-			relationwrite(art,_dst_, 0,0, buf+ret,len-ret);
-			relationwrite(art,_std_, 0,0, buf+ret,len-ret);
+			relationwrite(art,_dst_, stack,sp, 0,0, buf+ret,len-ret);
+			relationwrite(art,_std_, stack,sp, 0,0, buf+ret,len-ret);
 			per->dst_name = to;
 			per->sts = _data_;
 			per->len = cnt-(len-ret);
@@ -162,20 +162,20 @@ while(1){
 	//}
 	else if(_data_ == per->sts){		//data still not complete
 		if(len == per->len){
-			relationwrite(art,_dst_, 0,0, buf,len);
-			relationwrite(art,_std_, 0,0, buf,len);
+			relationwrite(art,_dst_, stack,sp, 0,0, buf,len);
+			relationwrite(art,_std_, stack,sp, 0,0, buf,len);
 			per->sts = 0;
 			return 0;
 		}
 		if(len < per->len){
-			relationwrite(art,_dst_, 0,0, buf,len);
-			relationwrite(art,_std_, 0,0, buf,len);
+			relationwrite(art,_dst_, stack,sp, 0,0, buf,len);
+			relationwrite(art,_std_, stack,sp, 0,0, buf,len);
 			per->len -= len;
 			return 0;
 		}
 		if(len > per->len){
-			relationwrite(art,_dst_, 0,0, buf,per->len);
-			relationwrite(art,_std_, 0,0, buf,per->len);
+			relationwrite(art,_dst_, stack,sp, 0,0, buf,per->len);
+			relationwrite(art,_std_, stack,sp, 0,0, buf,per->len);
 			per->sts = 0;
 			buf += per->len;
 			len -= per->len;
@@ -200,7 +200,7 @@ while(1){
 	relationwrite(art,_dst_, 0,0, buf+ret,len-ret);
 	return 0;*/
 }
-int partyclient_write_bydst(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int partyclient_write_bydst(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,int len)
 {
 	u8 tmp[64];
 	if(len <= 0){
@@ -210,11 +210,11 @@ int partyclient_write_bydst(struct halfrel* self, struct halfrel* peer, u8* buf,
 
 	struct artery* art = self->pchip;
 	int ret = mysnprintf(tmp, 64, "to %.4s,by %.4s,cnt %x,sum %x:", &art->TO, &art->BY, len, party_sum(buf,len));
-	relationwrite(art, _src_, 0,0, tmp,ret);
-	relationwrite(art, _src_, 0,0, buf,len);
+	relationwrite(art, _src_, stack,sp, 0,0, tmp,ret);
+	relationwrite(art, _src_, stack,sp, 0,0, buf,len);
 	return 0;
 }
-int partyclient_write_bystd(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int partyclient_write_bystd(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,int len)
 {
 	u8 tmp[64];
 	if(len <= 0){
@@ -225,29 +225,32 @@ int partyclient_write_bystd(struct halfrel* self, struct halfrel* peer, u8* buf,
 	struct artery* art = self->pchip;
 	int ret = mysnprintf(tmp, 64, "to %.4s,by %.4s,cnt 1,sum %x:", &art->TO, &art->BY,buf[0]);
 	tmp[ret] = buf[0];
-	relationwrite(art, _src_, 0,0, tmp,ret+1);
+	relationwrite(art, _src_, stack,sp, 0,0, tmp,ret+1);
 	return 0;
 }
 
 
 
 
-int partyclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int partyclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	//say("@partyclient_write: %.4s\n", &self->flag);
 	//printmemory(buf,len);
 
-	struct artery* art = self->pchip;
+	if(0==stack|sp<2)return 0;
+	struct halfrel* self = &stack[sp-1];
+	struct halfrel* peer = &stack[sp-2];
+
 	switch(self->flag){
-	case _std_:partyclient_write_bystd(self,peer, buf,len);break;
-	case _dst_:partyclient_write_bydst(self,peer, buf,len);break;
+	case _std_:partyclient_write_bystd(self,peer, stack,sp, buf,len);break;
+	case _dst_:partyclient_write_bydst(self,peer, stack,sp, buf,len);break;
 	case _src_:{
 		if(_done_ == art->stage1){
-			partyclient_write_done(self,peer, buf,len);
+			partyclient_write_done(self,peer, stack,sp, buf,len);
 			break;
 		}
 		if(_sent_ == art->stage1){
-			partyclient_write_sent(self,peer, buf,len);
+			partyclient_write_sent(self,peer, stack,sp, buf,len);
 			break;
 		}
 		say("error@partyclient_write\n");
@@ -256,7 +259,7 @@ int partyclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int
 	}
 	return 0;
 }
-int partyclient_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int partyclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -279,7 +282,7 @@ int partyclient_linkup(struct halfrel* self, struct halfrel* peer)
 &art->BY,
 &art->TO
 		);
-		relationwrite(art,_src_, 0,0, tmp, ret);
+		relationwrite(art,_src_, 0,0, 0,0, tmp,ret);
 		art->stage1 = _sent_;
 	}
 	return 0;
@@ -310,12 +313,12 @@ int partyclient_create(struct artery* ele, void* arg, int argc, u8** argv)
 
 
 
-int partyserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int partyserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	say("@partyserver_write\n");
 	return 0;
 }
-int partyserver_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int partyserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -331,7 +334,7 @@ int partyserver_create(struct artery* ele, u8* url)
 
 
 
-int partymaster_write_other(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int partymaster_write_other(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf, int len)
 {
 	say("@partymaster_write_other: foot=%.4s,len=%x\n", &self->flag, len);
 	printmemory(buf, 0x20);
@@ -355,26 +358,26 @@ while(1){
 		say("to=%x,by=%x,cnt=%x,sum=%x,ret=%x,len=%x\n", to,by,cnt,sum, ret,len);
 
 		if(ret < 8){
-			relationwrite(art, peer->flag, 0,0, "wrong head\n", 10);
+			relationwrite(art,peer->flag, stack,sp, 0,0, "wrong head\n", 10);
 			systemdelete(peer->pchip);
 			return 0;
 		}
 
 		if(len == ret+cnt){		//complete packet
 say("dbg1\n");
-			relationwrite(art,to, 0,0, buf,len);
+			relationwrite(art,to, stack,sp, 0,0, buf,len);
 			return 0;
 		}
 		if(len > ret+cnt){		//complete packet + next packet
 say("dbg2\n");
-			relationwrite(art,to, 0,0, buf,ret+cnt);
+			relationwrite(art,to, stack,sp, 0,0, buf,ret+cnt);
 			buf += ret+cnt;
 			len -= ret+cnt;
 			continue;
 		}
 		if(len < ret+cnt){		//head ok, body not
 say("dbg3\n");
-			relationwrite(art,to, 0,0, buf,len);
+			relationwrite(art,to, stack,sp, 0,0, buf,len);
 			//per->sta_name = by;
 			//per->sta_user = 0;
 			per->dst_name = to;
@@ -391,7 +394,7 @@ say("dbg3\n");
 	else if(_data_ == per->sts){		//data still not complete
 		if(len == per->len){
 say("dbg4\n");
-			relationwrite(art,per->dst_name, 0,0, buf,len);
+			relationwrite(art,per->dst_name, stack,sp, 0,0, buf,len);
 			per->hash_cur += party_sum(buf, len);
 			if(per->hash_all != per->hash_cur){
 				say("%x nequal %x\n", per->hash_all, per->hash_cur);
@@ -403,7 +406,7 @@ say("dbg4\n");
 		}
 		if(len > per->len){
 say("dbg5\n");
-			relationwrite(art,per->dst_name, 0,0, buf,per->len);
+			relationwrite(art,per->dst_name, stack,sp, 0,0, buf,per->len);
 			per->hash_cur += party_sum(buf, per->len);
 			if(per->hash_all != per->hash_cur){
 				say("%x nequal %x\n", per->hash_all, per->hash_cur);
@@ -417,7 +420,7 @@ say("dbg5\n");
 		}
 		if(len < per->len){
 say("dbg6\n");
-			relationwrite(art,per->dst_name, 0,0, buf,len);
+			relationwrite(art,per->dst_name, stack,sp, 0,0, buf,len);
 			per->hash_cur += party_sum(buf, len);
 
 			per->len -= len;
@@ -444,7 +447,7 @@ say("dbg6\n");
 */
 	return 0;
 }
-int partymaster_write_first(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+int partymaster_write_first(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf, int len)
 {
 	int j,k,ret;
 	u64 name;
@@ -488,7 +491,7 @@ found:
 "login success!\n",
 &name
 	);
-	relationwrite(art, name, 0,0, tmp, ret);
+	relationwrite(art,name, stack,sp, 0,0, tmp,ret);
 	return 0;
 
 fail:
@@ -503,7 +506,7 @@ fail:
 			"%d: %.4s\n", j, &per[j].sta_name
 		);
 	}
-	relationwrite(art, self->flag, 0,0, tmp,ret);
+	relationwrite(art,self->flag, stack,sp, 0,0, tmp,ret);
 	systemdelete(sys->tempobj);
 	return 0;
 }
@@ -511,24 +514,28 @@ fail:
 
 
 
-int partymaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int partymaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	//say("@partymaster_write\n");
-	struct artery* art = self->pchip;
+	if(0==stack|sp<2)return 0;
+	struct halfrel* self = &stack[sp-1];
+	struct halfrel* peer = &stack[sp-2];
 	struct sysobj* sys = peer->pchip;
+
 	//printmemory(buf, len);
 	//say("valid message:%.*s", len, buf);
 
 	//only handle socket
-	if(_sys_ == sys->tier){
-		switch(sys->type){
-		case _TCP_:return partymaster_write_first(self,peer, buf,len);
-		case _Tcp_:return partymaster_write_other(self,peer, buf,len);
-		}
+	if(_sys_ != sys->tier)return 0;
+
+	//new or old
+	switch(sys->type){
+	case _TCP_:return partymaster_write_first(self,peer, stack,sp, buf,len);
+	case _Tcp_:return partymaster_write_other(self,peer, stack,sp, buf,len);
 	}
 	return 0;
 }
-int partymaster_read( struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int partymaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }

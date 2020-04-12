@@ -45,13 +45,15 @@ int kqueue_mod(int fd)
 }
 int kqueuethread(int argc, const char * argv[])
 {
-	int fd,cc;
 	int ret,cnt;
+	struct halfrel stack[0x80];
+	struct kevent events[10];
+	struct timespec timeout = {10,0};
+
+	int fd,cc;
 	struct sysobj* here;
 	struct sysobj* child;
 	struct sysobj* parent;
-	struct kevent events[10];
-	struct timespec timeout = {10,0};
 
 	kqfd = kqueue();
 	if(kqfd <= 0)
@@ -89,7 +91,7 @@ int kqueuethread(int argc, const char * argv[])
 					systemdelete(here);
 					break;
 				}
-				relationwrite(here, _dst_, 0, 0, buf, cnt);
+				relationwrite(here,_dst_, stack,0, 0,0, buf,cnt);
 				break;
 			}//easy
 
@@ -101,7 +103,7 @@ int kqueuethread(int argc, const char * argv[])
 				{
 					//say("@kqueuethread: %.4s\n", &obj[cc].type);
 					if((0==here->irel0)&&(0==here->orel0))printmemory(buf, cnt);
-					else relationwrite(here, _dst_, here->peer, 0, buf, cnt);
+					else relationwrite(here,_dst_, stack,0, here->peer,0, buf,cnt);
 				}
 				if(cnt <= 0)
 				{
@@ -132,7 +134,7 @@ int kqueuethread(int argc, const char * argv[])
 					}
 
 					//say("@kqueuethread: %.4s\n", &here->type);
-					relationwrite(here, _dst_, 0, 0, buf, cnt);
+					relationwrite(here,_dst_, stack,0, 0,0, buf,cnt);
 				}
 				if(cnt <= 0)
 				{

@@ -194,40 +194,27 @@ static void texmix_draw_cli(
 
 
 
-static void texmix_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void texmix_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
-//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-//world -> texball
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-//say("@freecam_read_byeye:%c\n",len);
-
-	if(stack){
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-
-		win = peer->pchip;geom = peer->pfoot;
-		act = self->pchip;slot = self->pfoot;
-		if('v' == len)texmix_draw_gl41(act,slot, wrd,geom, wnd,area);
+	if(stack && ('v'==key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		texmix_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 //say("@freecam_read_byeye.end\n");
 }
-static void texmix_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void texmix_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
-//wnd.area -> cam.gl41, cam.slot -> world.geom
-	struct entity* wnd;struct style* area;
-	struct entity* cam;struct style* gl41;
-	wnd = peer->pchip;area = peer->pfoot;
-	cam = self->pchip;gl41 = self->pfoot;
-
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
 	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	gl41data_before(wnd);
-	texmix_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
+	texmix_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_tmpcam(wnd);
 	gl41data_after(wnd);
 }
@@ -235,23 +222,26 @@ static void texmix_read_bywnd(struct halfrel* self, struct halfrel* peer, struct
 
 
 
-static int texmix_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static int texmix_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* ent = peer->pchip;
-	switch(ent->fmt){
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+	switch(wnd->fmt){
 	case _gl41wnd0_:
 	case _full_:
 	case _wnd_:{
-		if('v' != len)break;
-		texmix_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		if('v' != key)break;
+		texmix_read_bywnd(ent,slot, wnd,area);break;
 	}
 	default:{
-		texmix_read_bycam(self, peer, stack, rsp, buf, len);break;
+		texmix_read_bycam(ent,foot, stack,sp, arg,key);break;
 	}
 	}
 	return 0;
 }
-static void texmix_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void texmix_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void texmix_discon(struct halfrel* self, struct halfrel* peer)

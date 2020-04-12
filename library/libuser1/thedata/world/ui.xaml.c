@@ -7,46 +7,12 @@ void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, 
 
 
 
-int xamlroot_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+int xamlroot_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
 {
-	struct entity* wnd = peer->pchip;
-	gl41data_before(wnd);
-	gl41data_tmpcam(wnd);
-
-	struct entity* ent = self->pchip;
-	struct relation* rel = ent->orel0;
-	while(1){
-		if(0 == rel)break;
-		stack[rsp+0] = (void*)(rel->src);
-		stack[rsp+1] = (void*)(rel->dst);
-		entityread(stack[rsp+1],stack[rsp+0],stack,rsp+2,buf,len);
-		rel = samesrcnextdst(rel);
-	}
-
-	gl41data_after(wnd);
 	return 0;
 }
-
-
-
-
-int xamlroot_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+int xamlroot_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
 {
-	//say("@xamlroot_read\n");
-	struct entity* sup = peer->pchip;
-	switch(sup->fmt){
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:{
-		xamlroot_read_bywnd(self, peer, stack, rsp, buf, len);break;
-	}
-	}
-	return 0;
-}
-int xamlroot_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
-{
-	//say("@xamlroot_write\n");
-	relationwrite(self->pchip, _evto_, stack,rsp, buf,len);
 	return 0;
 }
 int xamlroot_discon(struct halfrel* self, struct halfrel* peer)

@@ -75,8 +75,12 @@ struct halfrel
 		u64 foot;
 		void* pfoot;
 	};
+
 	u32 type;
 	u32 flag;
+
+	u32 prev;
+	u32 next;
 };
 struct relation
 {
@@ -907,7 +911,7 @@ struct supply
 	union{
 		u64 padd3;
 		int    aqdeq;	//audio.aq
-		void* glwhat;	//3d.glfw
+		void* glsave;	//3d.glfw
 		u32*     tex;	//3d.fbo
 	};
 
@@ -963,27 +967,27 @@ struct supply
 		char padding1[8];
 	};
 	union{
-		int (*onlinkup)(void* self, void* peer);
+		int (*onsearch)(void* entity, int flag, struct halfrel** self, struct halfrel** peer);
 		char padding2[8];
 	};
 	union{
-		int (*ondiscon)(void* self, void* peer);
+		int (*onmodify)(void* entity, void* buf);
 		char padding3[8];
 	};
 	union{
-		int (*oncread)(void* self, void* peer, void* buf, int len);
+		int (*onlinkup)(void* self, void* peer);
 		char padding4[8];
 	};
 	union{
-		int (*oncwrite)(void* self, void* peer, void* buf, int len);
+		int (*ondiscon)(void* self, void* peer);
 		char padding5[8];
 	};
 	union{
-		int (*onsread)(void* self, void* peer, void* buf, int len);
+		int (*onread)(struct supply* sup,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding6[8];
 	};
 	union{
-		int (*onswrite)(void* self, void* peer, void* buf, int len);
+		int (*onwrite)(struct supply* sup,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding7[8];
 	};
 
@@ -1152,11 +1156,11 @@ struct entity
 		char padding5[8];
 	};
 	union{
-		int (*onread)(void* self, void* peer, void* arg, int idx, void* buf, int len);
+		int (*onread)(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding6[8];
 	};
 	union{
-		int (*onwrite)(void* self, void* peer, void* arg, int idx, void* buf, int len);
+		int (*onwrite)(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding7[8];
 	};
 

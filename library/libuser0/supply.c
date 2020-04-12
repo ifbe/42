@@ -1,11 +1,4 @@
 #include "libuser.h"
-
-
-
-
-//
-int cmp(void*, void*);
-int ncmp(void*, void*, int);
 //
 void initjoy(void*);
 void freejoy();
@@ -16,8 +9,8 @@ void initstd(void*);
 void freestd();
 int stdio_create(void*, void*, int, u8**);
 int stdio_delete(void*);
-int stdio_read(void*, void*, void*, int, void*, int);
-int stdio_write(void*, void*, void*, int, void*, int);
+int stdio_read(void*,int, void*,int, void*,int, void*,int);
+int stdio_write(void*,int, void*,int, void*,int, void*,int);
 //
 void inittray(void*);
 void freetray();
@@ -26,23 +19,23 @@ int traydelete(void*);
 //
 int ahrs_create(void*, void*, int, u8**);
 int ahrs_delete(void*);
-int ahrs_read(void*, void*, void*, int, void*, int);
-int ahrs_write(void*, void*, void*, int, void*, int);
+int ahrs_read(void*,int, void*,int, void*,int, void*,int);
+int ahrs_write(void*,int, void*,int, void*,int, void*,int);
 //
 int slam_create(void*, void*, int, u8**);
 int slam_delete(void*);
-int slam_read(void*, void*, void*, int, void*, int);
-int slam_write(void*, void*, void*, int, void*, int);
+int slam_read(void*,int, void*,int, void*,int, void*,int);
+int slam_write(void*,int, void*,int, void*,int, void*,int);
 //
 int toycar_create(void*, void*, int, u8**);
 int toycar_delete(void*);
-int toycar_read(void*, void*, void*, int, void*, int);
-int toycar_write(void*, void*, void*, int, void*, int);
+int toycar_read(void*,int, void*,int, void*,int, void*,int);
+int toycar_write(void*,int, void*,int, void*,int, void*,int);
 //
 int stepcar_create(void*, void*, int, u8**);
 int stepcar_delete(void*, void*);
-int stepcar_read(void*, void*, void*, int, void*, int);
-int stepcar_write(void*, void*, void*, int, void*, int);
+int stepcar_read(void*,int, void*,int, void*,int, void*,int);
+int stepcar_write(void*,int, void*,int, void*,int, void*,int);
 //sound.usbmic
 void initmicphone(void*);
 void freemicphone();
@@ -50,8 +43,8 @@ int micphonecreate(void*, void*, int, u8**);
 int micphonedelete(void*);
 int micphonestart(void*);
 int micphonestop(void*);
-int micphoneread(void*, void*, void*, int, void*, int);
-int micphonewrite(void*, void*, void*, int, void*, int);
+int micphoneread(void*,int, void*,int, void*,int, void*,int);
+int micphonewrite(void*,int, void*,int, void*,int, void*,int);
 int micphonelist();
 int micphonechoose();
 //sound.speaker
@@ -61,8 +54,8 @@ int speakercreate(void*, void*, int, u8**);
 int speakerdelete(void*);
 int speakerstart(void*);
 int speakerstop(void*);
-int speakerread(void*, void*, void*, int, void*, int);
-int speakerwrite(void*, void*, void*, int, void*, int);
+int speakerread(void*,int, void*,int, void*,int, void*,int);
+int speakerwrite(void*,int, void*,int, void*,int, void*,int);
 int speakerlist();
 int speakerchoose();
 //light.usbcam
@@ -72,8 +65,8 @@ int videocreate(void*, void*, int, u8**);
 int videodelete(void*);
 int videostart(void*);
 int videostop(void*);
-int videoread(void*, void*, void*, int, void*, int);
-int videowrite(void*, void*, void*, int, void*, int);
+int videoread(void*,int, void*,int, void*,int, void*,int);
+int videowrite(void*,int, void*,int, void*,int, void*,int);
 int videolist();
 int videochoose();
 //light.window
@@ -83,8 +76,8 @@ int windowcreate(void*, void*, int, u8**);
 int windowdelete(void*);
 int windowstart(void*);
 int windowstop(void*);
-int windowread(void*, void*, void*, int, void*, int);
-int windowwrite(void*, void*, void*, int, void*, int);
+int windowread(void*,int, void*,int, void*,int, void*,int);
+int windowwrite(void*,int, void*,int, void*,int, void*,int);
 int windowlist();
 int windowchoose();
 
@@ -127,45 +120,41 @@ void* allocpinid()
 
 
 
-int supplyread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int supplyread(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	struct supply* win = self->pchip;
-
-	switch(win->type){
-		case _std_:stdio_read(self,peer, arg,idx, buf,len);return 0;
-		case _wnd_:windowread(self, peer, arg, idx, buf, len);return 0;
-		case _spk_:speakerread(self, peer, arg, idx, buf, len);return 0;
+	switch(sup->type){
+		case _std_:return stdio_read(sup,foot, stack,sp, arg,idx, buf,len);
+		case _wnd_:return windowread(sup,foot, stack,sp, arg, idx, buf, len);
+		case _spk_:return speakerread(sup,foot, stack,sp, arg, idx, buf, len);
 	}
-	switch(win->fmt){
-		case _cam_:return videoread(self, peer, arg, idx, buf, len);
-		case _bdc_:return toycar_read(self, peer, arg, idx, buf, len);
-		case _step_:return stepcar_read(self, peer, arg, idx, buf, len);
+	switch(sup->fmt){
+		case _cam_:return videoread(sup,foot, stack,sp, arg, idx, buf, len);
+		case _bdc_:return toycar_read(sup,foot, stack,sp, arg, idx, buf, len);
+		case _step_:return stepcar_read(sup,foot, stack,sp, arg, idx, buf, len);
 		case _gl41fboc_:
 		case _gl41fbod_:
 		case _gl41fbog_:
-		case _gl41wnd0_:return windowread(self,peer,arg,idx,buf,len);
+		case _gl41wnd0_:return windowread(sup,foot, stack,sp, arg,idx,buf,len);
 	}
 
 	return 0;
 }
-int supplywrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int supplywrite(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	struct supply* win = self->pchip;
-
-	switch(win->type){
-		case _std_:stdio_write(self,peer, arg,idx, buf,len);return 0;
-		case _wnd_:windowwrite(self, peer, arg, idx, buf, len);return 0;
-		case _spk_:speakerwrite(self, peer, arg, idx, buf, len);return 0;
+	switch(sup->type){
+		case _std_:return stdio_write(sup,foot, stack,sp, arg,idx, buf,len);
+		case _wnd_:return windowwrite(sup,foot, stack,sp, arg, idx, buf, len);
+		case _spk_:return speakerwrite(sup,foot, stack,sp, arg, idx, buf, len);
 	}
-	switch(win->fmt){
-		case _ahrs_:return ahrs_write(self, peer, arg, idx, buf, len);
-		case _slam_:return slam_write(self, peer, arg, idx, buf, len);
-		case _bdc_:return toycar_write(self, peer, arg, idx, buf, len);
-		case _step_:return stepcar_write(self, peer, arg, idx, buf, len);
+	switch(sup->fmt){
+		case _ahrs_:return ahrs_write(sup,foot, stack,sp, arg, idx, buf, len);
+		case _slam_:return slam_write(sup,foot, stack,sp, arg, idx, buf, len);
+		case _bdc_:return toycar_write(sup,foot, stack,sp, arg, idx, buf, len);
+		case _step_:return stepcar_write(sup,foot, stack,sp, arg, idx, buf, len);
 		case _gl41fboc_:
 		case _gl41fbod_:
 		case _gl41fbog_:
-		case _gl41wnd0_:return windowwrite(self,peer,arg,idx,buf,len);
+		case _gl41wnd0_:return windowwrite(sup,foot, stack,sp, arg,idx,buf,len);
 	}
 
 	return 0;
@@ -192,7 +181,7 @@ int supplylinkup(struct halfrel* self, struct halfrel* peer)
 
 int supplydelete(struct supply* win)
 {
-	if(win == 0)return 0;
+	if(0 == win)return 0;
 
 	//1.close
 	windowdelete(win);

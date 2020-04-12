@@ -61,15 +61,15 @@ int gravity_working(struct entity* ent)
 
 
 
-int gravity_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int gravity_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@gravity_read:%.4s\n",&self->flag);
+	say("@gravity_read:%.4s\n",&foot);
 	return 0;
 }
-int gravity_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int gravity_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@gravity_write:%.4s\n",&self->flag);
-	if(_clk_ == self->flag)gravity_working(self->pchip);
+	say("@gravity_write:%.4s\n",&foot);
+	if(_clk_ == foot)gravity_working(ent);
 	return 0;
 }
 int gravity_discon(struct halfrel* self, struct halfrel* peer)

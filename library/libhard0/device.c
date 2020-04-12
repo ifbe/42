@@ -29,36 +29,26 @@ void* allocdevice()
 
 
 
-int deviceread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int deviceread(_dev* dev,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	struct device* ele;
-	int fd;
-	//say("@devicewrite\n");
-
-	ele = self->pchip;
-	fd = ele->selffd;
-
-	switch(ele->type){
+	int fd = dev->selffd;
+	switch(dev->type){
 		case _i2c_:return i2c_read(fd, idx, buf, len);break;
 		case _spi_:return spi_read(fd, idx, buf, len);break;
 	}
 	return 0;
 }
-int devicewrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int devicewrite(_dev* dev,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	struct device* ele;
-	int fd;
 	u8 t[2];
-	//say("@devicewrite\n");
-
-	ele = self->pchip;
-	fd = ele->selffd;
 	if(0 == buf){
 		t[0] = len;
 		buf = t;
 		len = 1;
 	}
-	switch(ele->type){
+
+	int fd = dev->selffd;
+	switch(dev->type){
 		case _i2c_:return i2c_write(fd, idx, buf, len);break;
 		case _spi_:return spi_write(fd, idx, buf, len);break;
 	}
@@ -68,7 +58,7 @@ int devicediscon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int devicelinkup(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int devicelinkup(struct halfrel* self, struct halfrel* peer)
 {
 	say("@devicelinkup\n");
 	return 0;

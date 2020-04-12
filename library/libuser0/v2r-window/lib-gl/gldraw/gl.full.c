@@ -18,8 +18,8 @@
 GLuint uploadvertex(void* i, void* o);
 GLuint uploadtexture(void* i, u32 t, void* buf, int fmt, int w, int h);
 GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c);
-int gl41wnd0_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
-int gl41wnd0_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len);
+int gl41wnd0_read( void*,int, void*,int, void*,int, void*,int);
+int gl41wnd0_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -267,49 +267,13 @@ void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41
 
 
 
-void fullwindow_write(struct supply* ogl, struct event* ev)
+void fullwindow_write(_sup* ogl,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	struct halfrel rel[2];
-	struct halfrel* stack[16];
-
-	rel[0].pchip = ogl;
-	gl41wnd0_write(&rel[0], &rel[1], stack, 0, ev, 0);
-
-	//say("@fullwindow_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
-	//relationwrite(ogl, _wnd_, stack, 0, ev, 0);
+	gl41wnd0_write(ogl,foot, stack,sp, arg,idx, buf,len);
 }
-void fullwindow_read(struct supply* ogl)
+void fullwindow_read(_sup* ogl,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	struct halfrel rel[2];
-	struct halfrel* stack[16];
-
-	rel[0].pchip = ogl;
-	gl41wnd0_read(&rel[0], &rel[1], stack, 0, 0, 0);
-
-/*	struct halfrel* stack[16];
-	struct relation* rel;
-	struct supply* wnd;
-	//say("@fullwindow_read\n");
-
-	rel = ogl->orel0;
-	while(1){
-		if(0 == rel)break;
-
-		wnd = rel->pdstchip;
-		//say("%.8s\n", &wnd->type);
-		switch(wnd->type){
-			case _gl41wnd0_:
-				wnd->width = ogl->width;
-				wnd->height = ogl->height;
-				wnd->fbwidth = ogl->fbwidth;
-				wnd->fbheight = ogl->fbheight;
-				stack[0+0] = (void*)(rel->src);
-				stack[0+1] = (void*)(rel->dst);
-				supplyread(stack[1], stack[0], stack, 0+2, 0, 0);
-		}
-
-		rel = samesrcnextdst(rel);
-	}*/
+	gl41wnd0_read(ogl,foot, stack,sp, arg,idx, buf,len);
 }
 void fullwindow_delete(struct supply* ogl)
 {

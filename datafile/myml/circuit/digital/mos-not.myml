@@ -99,9 +99,6 @@ q: 1.0, 1.0
 
 
 <relation>
-(std, 0, dst) -> (not, 0, ev)
-(std, 0, dst) -> (sch, 0, ev)
-
 (sch, 0, a) -> (pmos, 0, G)
 (sch, 0, a) -> (nmos, 0, G)
 (sch, 0, b) -> (pmos, 0, D)
@@ -111,7 +108,9 @@ q: 1.0, 1.0
 (world, n0geom, 0) -> (nmos, n0slot, 0)
 (world, schgeom, 0) -> (sch, schslot, 0)
 (world, notgeom, 0) -> (not, notslot, 0)
-
 (world, camgeom, 0) -> (cam, camslot, 0)
 (opengl, rect, 0) -> (cam, 0, 0)
+
+(std, 0, dst) -> (not, 0, evby)
+(std, 0, dst) -> (sch, 0, evby)
 </relation>

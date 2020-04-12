@@ -46,11 +46,8 @@ void monomic_register(void*);
 void stereo_register(void*);
 
 //cam
-void orthcam_register(void*);
-void firstperson_register(void*);
-void thirdperson_register(void*);
-void rtscam_register(void*);
 void freecam_register(void*);
+void orthcam_register(void*);
 void vrglass_register(void*);
 
 //dxgl
@@ -330,19 +327,10 @@ void item_init(void* addr)
 
 
 //----------------------cam------------------------
-	orthcam_register(tmp);
-	tmp -= sizeof(struct entity);
-
-	firstperson_register(tmp);
-	tmp -= sizeof(struct entity);
-
-	thirdperson_register(tmp);
-	tmp -= sizeof(struct entity);
-
-	rtscam_register(tmp);
-	tmp -= sizeof(struct entity);
-
 	freecam_register(tmp);
+	tmp -= sizeof(struct entity);
+
+	orthcam_register(tmp);
 	tmp -= sizeof(struct entity);
 
 	vrglass_register(tmp);

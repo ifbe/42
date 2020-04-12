@@ -171,18 +171,11 @@ say("%d,%d\n",x,y);
 
 
 
-static void ooxx_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void ooxx_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void ooxx_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void ooxx_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//ooxx_event(act, pin, win, sty, ev, 0);
 }
 static void ooxx_discon(struct halfrel* self, struct halfrel* peer)
 {

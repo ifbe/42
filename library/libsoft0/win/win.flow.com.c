@@ -24,6 +24,7 @@ DWORD WINAPI uart_thread(struct sysobj* oo)
 	int enq;
 	int cnt=0;
 	u8 buf[0x10000];
+	struct halfrel stack[0x80];
 	if(0 == oo)return 0;
 
 	while(alive == 1)
@@ -34,7 +35,7 @@ DWORD WINAPI uart_thread(struct sysobj* oo)
 		ret = ReadFile(hcom, buf+enq, ret, (void*)&cnt, 0);
 		if( (ret > 0) && (cnt > 0) )
 		{
-			relationwrite(oo, _dst_, 0, 0, buf+enq, cnt);
+			relationwrite(oo,_dst_, stack,0, 0,0, buf+enq,cnt);
 
 			enq = (enq + cnt)%0x10000;
 

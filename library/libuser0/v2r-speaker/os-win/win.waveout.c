@@ -44,15 +44,11 @@ void speakerlist()
 void speakerchoose()
 {
 }
-void speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void speakerread(_sup* spk,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	struct supply* spk;
 	struct pcmdata* pcm;
+	if(spk->orel0)relationread(spk,_ctx_, stack,sp, 0,0, 0,0);
 
-	spk = (void*)(self->chip);
-	if(0 == spk)return;
-
-	if(spk->orel0)relationread(spk, _ctx_, 0, 0, 0, 0);
 	pcm = spk->pcmdata;
 	if(0 == pcm)return;
 
@@ -69,7 +65,7 @@ void speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 
 	sleep_us(1000*1000);
 }
-void speakerwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+void speakerwrite(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	int j;
 	if(0 == obuf)obuf = malloc(0x100000);

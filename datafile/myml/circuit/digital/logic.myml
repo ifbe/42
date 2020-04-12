@@ -25,7 +25,7 @@ fmt:xnor
 cam{
 fmt:freecam
 }
-pcb{
+world{
 fmt:virtual
 }
 </entity>
@@ -135,18 +135,16 @@ q: 1.0, 1.0
 
 
 <relation>
+(world, notgeom, 0) -> (not, notslot, 0)
+(world, memgeom, 0) -> (mem, memslot, 0)
+(world, dffgeom, 0) -> (dff, dffslot, 0)
+(world, norgeom, 0) -> (nor, norslot, 0)
+(world, nandgeom, 0) -> (nand, nandslot, 0)
+(world, xorgeom, 0) -> (xor, xorslot, 0)
+(world, xnorgeom, 0) -> (xnor, xnorslot, 0)
+(world, camgeom, 0) -> (cam, camslot, 0)
+(opengl, rect, 0) -> (cam, 0, 0)
+
 (std, 0, dst) -> (xor, 0, src)
 (std, 0, dst) -> (xnor, 0, src)
-
-(pcb, notgeom, 0) -> (not, notslot, 0)
-(pcb, memgeom, 0) -> (mem, memslot, 0)
-(pcb, dffgeom, 0) -> (dff, dffslot, 0)
-
-(pcb, norgeom, 0) -> (nor, norslot, 0)
-(pcb, nandgeom, 0) -> (nand, nandslot, 0)
-(pcb, xorgeom, 0) -> (xor, xorslot, 0)
-(pcb, xnorgeom, 0) -> (xnor, xnorslot, 0)
-
-(pcb, camgeom, 0) -> (cam, camslot, 0)
-(opengl, rect, 0) -> (cam, 0, 0)
 </relation>

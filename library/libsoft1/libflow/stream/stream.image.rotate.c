@@ -3,16 +3,15 @@
 
 
 
-int rotate_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int rotate_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int rotate_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int rotate_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int x,y;
 	u8 yy,uu,vv;
-	struct artery* ele = self->pchip;
-	u8* dst = ele->buf0;
+	u8* dst = art->buf0;
 	u8* src = buf;
 	u8* d8;
 	u8* s8;
@@ -27,7 +26,7 @@ int rotate_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 			d8[3] = s8[3];
 		}
 	}
-	relationwrite(ele, _dst_, 0, 0, dst, 640*480*2);
+	relationwrite(art,_dst_, stack,sp, 0,0, dst,640*480*2);
 	return 0;
 }
 int rotate_discon(struct halfrel* self, struct halfrel* peer)

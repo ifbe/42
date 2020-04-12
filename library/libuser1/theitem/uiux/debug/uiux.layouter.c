@@ -670,24 +670,12 @@ found:
 
 
 
-static void picker_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void picker_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//if 'draw' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//picker_draw(act, pin, win, sty);
 }
-static int picker_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static int picker_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	return 0;//picker_event(act, pin, win, sty, ev, 0);
+	return 0;
 }
 static void picker_discon(struct halfrel* self, struct halfrel* peer)
 {

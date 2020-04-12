@@ -77,26 +77,19 @@ static void login_draw_cli(
 
 
 
-static void login_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void login_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-
-	//world -> login
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-
-	if(stack){
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-
-		win = peer->pchip;geom = peer->pfoot;
-		act = self->pchip;slot = self->pfoot;
-		if('v' == len)login_draw_gl41(act,slot, win,geom, wnd,area);
+	if(stack && ('v'==key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		login_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void login_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void login_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void login_discon(struct halfrel* self, struct halfrel* peer)

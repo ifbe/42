@@ -1,3 +1,67 @@
+<entity>
+sky{
+fmt:texball
+url:datafile/jpg/skysphere.jpg
+}
+gnd{
+fmt:ground
+url:datafile/jpg/grass.jpg
+}
+dog{
+fmt:robodog
+}
+freecam{
+fmt:freecam
+}
+virtual{
+fmt:virtual
+}
+slider{
+fmt:slider
+}
+
+event{
+fmt:event3rd
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<artery>
+reline{
+fmt:reline
+}
+conv{
+fmt:str2vec
+}
+</artery>
+
+
+<system>
+udphost{
+fmt:UDP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
 <style>
 skyhaha{
 }
@@ -52,70 +116,7 @@ q:0.3, 0.4
 </style>
 
 
-<entity>
-sky{
-fmt:texball
-url:datafile/jpg/skysphere.jpg
-}
-gnd{
-fmt:ground
-url:datafile/jpg/grass.jpg
-}
-dog{
-fmt:robodog
-}
-freecam{
-fmt:3rdcam
-}
-virtual{
-fmt:virtual
-}
-slider{
-fmt:slider
-}
-</entity>
-
-
-<supply>
-opengl{
-fmt:wnd
-title:"42"
-width:1024
-height:1024
-depth:1024
-}
-</supply>
-
-
-<artery>
-reline{
-fmt:reline
-}
-conv{
-fmt:str2vec
-}
-</artery>
-
-
-<system>
-udphost{
-fmt:UDP
-url:0.0.0.0:9999
-}
-</system>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
-(dog, 0, int) -> (slider, 0, ev)
-(dog, 0, 0) -> (freecam, 0, tar)
-
 #virtual depends on inner objects
 (virtual, skygeom, 0) -> (sky, skyhaha, 0)
 (virtual, gndgeom, 0) -> (gnd, gndhaha, 0)
@@ -126,6 +127,12 @@ fmt:poller
 (opengl, freerect, 0) -> (freecam, 0, 0)
 (opengl, thatrect, 0) -> (slider, 0, 0)
 
+#
+(event, 0, tar) -> (dog, 0, evby)
+(event, 0, cam) -> (freecam, 0, evto)
+
+#
+(slider, 0, evto) -> (dog, 0, int)
 (conv, 0, vec) -> (dog, 0, 0)
 (udphost, 0, dst) -> (conv, 0, str)
 </relation>

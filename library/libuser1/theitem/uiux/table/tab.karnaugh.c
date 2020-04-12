@@ -153,32 +153,21 @@ void karnaugh_draw_cli(struct entity* win, struct style* sty)
 
 
 
-static void karnaugh_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void karnaugh_read_bywnd(_ent* ent,struct style* slot, _ent* wnd, struct style* area)
 {
-//wnd.area -> cam.gl41, cam.slot -> world.geom
-	struct entity* wnd;struct style* area;
-	struct entity* cam;struct style* gl41;
-	wnd = peer->pchip;area = peer->pfoot;
-	cam = self->pchip;gl41 = self->pfoot;
-
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
 	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
 	gl41data_before(wnd);
-	karnaugh_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
+	karnaugh_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_tmpcam(wnd);
 	gl41data_after(wnd);
 }
-static void karnaugh_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void karnaugh_write_bywnd(_ent* ent,struct style* slot, _ent* wnd, struct style* area,
+	_syn* stack,int sp, struct event* ev,int len)
 {
-	struct entity* wnd;struct style* area;
-	struct entity* ent;struct style* gl41;
-	wnd = peer->pchip;area = peer->pfoot;
-	ent = self->pchip;gl41 = self->pfoot;
-
-	struct event* ev = buf;
 	if('p' == (ev->what&0xff)){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);
@@ -190,7 +179,7 @@ static void karnaugh_write_bywnd(struct halfrel* self, struct halfrel* peer, str
 			int x = ent->ix0;
 			int y = ent->iy0;
 			if((x >= 0)&&(x <= 3)&&(y >= 0)&&(y <= 3))out[y*4+x] ^= 1;
-			relationwrite(ent, _truthtable_, 0, 0, out, 16);
+			relationwrite(ent, _truthtable_, stack,sp, 0,0, out,16);
 		}
 	}
 }
@@ -222,34 +211,36 @@ static int karnaugh_write_bytruthtable(struct entity* ent, u8* i)
 
 
 
-static int karnaugh_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static int karnaugh_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* ent = peer->pchip;
-	switch(ent->fmt){
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+	switch(wnd->fmt){
 	case _gl41wnd0_:
 	case _full_:
 	case _wnd_:{
-		if('v' != len)break;
-		karnaugh_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		if('v' != key)break;
+		karnaugh_read_bywnd(ent,slot, wnd,area);break;
 	}
 	}
 	return 0;
 }
-static int karnaugh_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static int karnaugh_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* ent;
-	struct entity* sup;
-
-	ent = self->pchip;
-	if(_truthtable_ == self->flag){
+	if(_truthtable_ == foot){
 		return karnaugh_write_bytruthtable(ent, buf);
 	}
 
-	sup = peer->pchip;
-	switch(sup->fmt){
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+	switch(wnd->fmt){
 	case _gl41wnd0_:
 	case _full_:
-	case _wnd_:karnaugh_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	case _wnd_:karnaugh_write_bywnd(ent,slot, wnd,area, stack,sp, buf,len);break;
 	}
 	return 0;
 }

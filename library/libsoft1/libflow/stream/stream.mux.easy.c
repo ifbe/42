@@ -5,16 +5,15 @@
 
 
 
-int easymux_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int easymux_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int easymux_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int easymux_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	struct artery* art = self->pchip;
-	switch(self->flag){
+	switch(foot){
 	case _by_:{
-		relationwrite(art,_src_, 0,0, buf,len);
+		relationwrite(art,_src_, stack,sp, 0,0, buf,len);
 		break;
 	}
 	case _to_:{
@@ -22,7 +21,7 @@ int easymux_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 		break;
 	}
 	case _src_:{
-		relationwrite(art,_to_, 0,0, buf,len);
+		relationwrite(art,_to_, stack,sp, 0,0, buf,len);
 		break;
 	}
 	default:break;

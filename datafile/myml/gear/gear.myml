@@ -2,16 +2,19 @@
 g0{
 fmt:spurgear
 }
-g1{
+gl{
 fmt:spurgear
 }
-g2{
+gr{
 fmt:spurgear
 }
-g3{
+gb{
 fmt:spurgear
 }
-g4{
+gt{
+fmt:spurgear
+}
+gg{
 fmt:spurgear
 }
 scene{
@@ -54,37 +57,46 @@ f: 0.0, 500.0, 0.0
 t: 0.0, 0.0, 500.0
 }
 
-g1slot{
+glslot{
 }
-g1geom{
+glgeom{
 c:-950.0, 0.0, 0.0
 r: 500.0, 0.0, 0.0
 f: 0.0, 500.0, 0.0
 t: 0.0, 0.0, 500.0
 }
 
-g2slot{
+grslot{
 }
-g2geom{
+grgeom{
 c: 950.0, 0.0, 0.0
 r: 500.0, 0.0, 0.0
 f: 0.0, 500.0, 0.0
 t: 0.0, 0.0, 500.0
 }
 
-g3slot{
+gbslot{
 }
-g3geom{
+gbgeom{
 c: 0.0,-950.0, 0.0
 r: 500.0, 0.0, 0.0
 f: 0.0, 500.0, 0.0
 t: 0.0, 0.0, 500.0
 }
 
-g4slot{
+gtslot{
 }
-g4geom{
+gtgeom{
 c: 0.0, 950.0, 0.0
+r: 500.0, 0.0, 0.0
+f: 0.0, 500.0, 0.0
+t: 0.0, 0.0, 500.0
+}
+
+ggslot{
+}
+gggeom{
+c: 1900.0, 0.0, 0.0
 r: 500.0, 0.0, 0.0
 f: 0.0, 500.0, 0.0
 t: 0.0, 0.0, 500.0
@@ -113,19 +125,21 @@ q: 1.0, 1.0
 
 
 <relation>
-(event, 0, cam) -> (cam, 0, ev)
+(event, 0, cam) -> (cam, 0, evto)
 (event, 0, tar) -> (scene, 0, ray)
 
-(g0, 0, gear) -> (g1, 0, gear)
-(g0, 0, gear) -> (g2, 0, gear)
-(g0, 0, gear) -> (g3, 0, gear)
-(g0, 0, gear) -> (g4, 0, gear)
+(g0, 0, gear) -> (gl, 0, gear)
+(g0, 0, gear) -> (gr, 0, gear)
+(g0, 0, gear) -> (gb, 0, gear)
+(g0, 0, gear) -> (gt, 0, gear)
+(gr, 0, gear) -> (gg, 0, gear)
 
 (scene, g0geom, 0) -> (g0, g0slot, 0)
-(scene, g1geom, 0) -> (g1, g1slot, 0)
-(scene, g2geom, 0) -> (g2, g2slot, 0)
-(scene, g3geom, 0) -> (g3, g3slot, 0)
-(scene, g4geom, 0) -> (g4, g4slot, 0)
+(scene, glgeom, 0) -> (gl, glslot, 0)
+(scene, grgeom, 0) -> (gr, grslot, 0)
+(scene, gbgeom, 0) -> (gb, gbslot, 0)
+(scene, gtgeom, 0) -> (gt, gtslot, 0)
+(scene, gggeom, 0) -> (gg, ggslot, 0)
 
 (world, 0, 0) -> (scene, 0, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)

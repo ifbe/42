@@ -3,29 +3,27 @@
 
 
 
-//-4: wnd, area
-//-3: cam, 0
-//-2: cam, 0
-//-1: world, geom of cam
-int scene3d_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+//[-6,-5]: wnd,area -> cam,togl
+//[-4,-3]: cam, xxxx -> world,camgeom
+//[-2,-1]: world,0 -> scene,0
+int scene3d_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* scene;
-	struct relation* rel;
-	//say("@scene3d_read\n");
-
-	scene = self->pchip;
-	if(0 == scene)return 0;
-	rel = scene->orel0;
-	if(0 == rel)return 0;
-
+	struct relation* rel = ent->orel0;
 	while(1){
 		if(0 == rel)break;
-		entityread((void*)(rel->dst), (void*)(rel->src), stack, rsp, buf, len);
+		if(_ent_ == rel->dsttype){
+			stack[sp-2].pfoot = rel->psrcfoot;
+
+			stack[sp-1].pchip = rel->pdstchip;
+			stack[sp-1].pfoot = rel->pdstfoot;
+			stack[sp-1].flag = rel->dstflag;
+			entityread(stack[sp-1].pchip,stack[sp-1].flag, stack,sp, arg,key, buf, len);
+		}
 		rel = samesrcnextdst(rel);
 	}
 	return 0;
 }
-int scene3d_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int scene3d_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

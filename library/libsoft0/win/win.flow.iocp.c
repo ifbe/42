@@ -100,20 +100,22 @@ void iocp_mod(SOCKET sock, int type)
 DWORD WINAPI iocpthread(LPVOID pM)
 {
 	int ret;
-	DWORD tran = 0;
+	DWORD tran;
+	struct halfrel stack[0x80];
+	struct sysobj* perfd = NULL;
+	struct per_io_data* perio = NULL;
 
 	SOCKET fd;
 	SOCKET cc;
 	struct sysobj* parent;
 	struct sysobj* child;
-	struct sysobj* perfd = NULL;
-	struct per_io_data* perio = NULL;
 
 	ret = GetCurrentThreadId();
 	//say("threadid = %x\n", ret);
 
 	while(1)
 	{
+		tran = 0;
 		ret = GetQueuedCompletionStatus(
 			iocpfd,
 			&tran,
@@ -165,17 +167,17 @@ DWORD WINAPI iocpthread(LPVOID pM)
 				perfd = parent;
 			}
 
-			relationwrite(perfd, _dst_, 0, 0, perio->bufing.buf, tran);
+			relationwrite(perfd,_dst_, stack,0, 0,0, perio->bufing.buf,tran);
 			iocp_mod(fd, perfd->type);
 			break;
 		}//Tcp
 		case _UDP_:{
-			relationwrite(perfd, _dst_, perfd->peer, 0, perio->bufing.buf, tran);
+			relationwrite(perfd,_dst_, stack,0, perfd->peer,0, perio->bufing.buf,tran);
 			iocp_mod(fd, perfd->type);
 			break;
 		}
 		default:{
-			relationwrite(perfd, _dst_, 0, 0, perio->bufing.buf, tran);
+			relationwrite(perfd,_dst_, stack,0, 0,0, perio->bufing.buf,tran);
 			iocp_mod(fd, perfd->type);
 			break;
 		}//default

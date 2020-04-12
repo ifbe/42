@@ -591,30 +591,3 @@ void terminal_serverinput(struct uartterm* term, u8* buf, int len)
 	}
 	//printmemory(dst, 16);
 }
-void terminal_clientinput(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
-	struct event* ev)
-{
-	int j;
-	u64 why;
-	void* dc;
-	void* df;
-	struct relation* irel;
-
-	why = ev->why;
-	if(ev->what == _kbd_)
-	{
-		j = 3;
-		if(why == 0x1b)j = 1;
-		else if(why == 0x25)why = 0x445b1b;
-		else if(why == 0x26)why = 0x415b1b;
-		else if(why == 0x27)why = 0x435b1b;
-		else if(why == 0x28)why = 0x425b1b;
-		else return;
-	}
-	else if(ev->what == _char_)j = 1;
-	else return;
-
-	relationwrite(act, _src_, 0, 0, &why, j);
-}

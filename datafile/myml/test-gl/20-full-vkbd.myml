@@ -39,7 +39,7 @@ q:1.0, 0.333333333
 
 
 <relation>
-(vkbd, 0, ev) -> (dbg, 0, 0)
+(vkbd, 0, evto) -> (dbg, 0, 0)
 
 #glwnd depends on gldata
 (opengl, rect, 0) -> (vkbd, 0, 0)

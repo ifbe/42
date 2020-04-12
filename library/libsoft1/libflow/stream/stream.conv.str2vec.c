@@ -6,25 +6,24 @@ int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
 
 
 
-int str2vec_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int str2vec_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int str2vec_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int str2vec_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	struct artery* art = self->pchip;
 	if(0 == art)return 0;
+	say("@str2vec_write:%llx.%.4s\n", art, &foot);
 
-	say("@str2vec_write:%llx.%.4s\n", art, &self->flag);
-	if(_str_ == self->flag){
+	if(_str_ == foot){
 		int cnt;
 		float tmp[9];
 		//printmemory(buf, len);
 
 		cnt = parsefv(tmp, 9, buf, len);
-		return relationwrite(art, _vec_, 0, 0, tmp, cnt);
+		return relationwrite(art,_vec_, stack,sp, 0,0, tmp,cnt);
 	}
-	if(_vec_ == self->flag){
+	if(_vec_ == foot){
 		int j,cnt;
 		float* f;
 		u8 tmp[256];
@@ -35,7 +34,7 @@ int str2vec_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx
 			if(j == len-1)cnt += mysnprintf(tmp+cnt, 256-cnt, "%f\n", f[j]);
 			else cnt += mysnprintf(tmp+cnt, 256-cnt, "%f, ", f[j]);
 		}
-		return relationwrite(art, _str_, 0, 0, tmp, cnt);
+		return relationwrite(art,_str_, stack,sp, 0,0, tmp,cnt);
 	}
 	return 0;
 }

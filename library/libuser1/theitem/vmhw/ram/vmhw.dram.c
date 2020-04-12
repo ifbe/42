@@ -47,20 +47,19 @@ static void vmddr_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 
-static int vmddr_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static int vmddr_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
-	struct entity* ent = self->pchip;
-	if(_mmio_ == self->flag){
+	if(_mmio_ == foot){
 		u8* ram = ent->buf0;
 		if(0 == ram)return 0;
 
 		int j;
-		for(j=0;j<len;j++)buf[j] = ram[j+rsp];
+		for(j=0;j<len;j++)buf[j] = ram[j+key];
 		return len;
 	}
 	return 0;
 }
-static int vmddr_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static int vmddr_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

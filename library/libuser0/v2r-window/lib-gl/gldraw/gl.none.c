@@ -19,17 +19,17 @@
 
 
 
-void nonewindow_write(struct supply* win, struct event* ev)
+void nonewindow_write(_sup* win,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	short* t;
+	struct event* ev = buf;
 	if(0x2b70 == ev->what){
-		t = (void*)ev;
+		short* t = (void*)ev;
 		win->ix0 = t[0];
 		win->iy0 = t[1];
 		//say("%d,%d\n",t[0],t[1]);
 	}
 }
-void nonewindow_read(struct supply* win)
+void nonewindow_read(_sup* win,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	float w = win->width;
 	float h = win->height;

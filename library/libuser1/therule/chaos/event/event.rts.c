@@ -42,18 +42,16 @@ static void eventrts_fixgeom(struct fstyle* geom)
 
 
 
-int eventrts_read(struct halfrel* self, struct halfrel* peer, void* arg, int rsp, void* buf, int len)
+int eventrts_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int eventrts_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, struct event* ev, int len)
+int eventrts_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	struct entity* ent = self->pchip;
-	if(0 == ent)return 0;
-
 	struct fstyle* geom = eventrts_find(ent);
 	if(0 == geom)return 0;
 
+	struct event* ev = buf;
 	if(_char_ == ev->what){
 		switch(ev->why){
 			case 'a':geom->vc[0] -= 100;break;
@@ -69,7 +67,7 @@ int eventrts_write(struct halfrel* self, struct halfrel* peer, struct halfrel** 
 		//say("%d,%d\n", t[0],t[1]);
 
 		vec3 v;
-		gl41data_convert(stack[rsp-2]->pchip, stack[rsp-2]->pfoot, ev, v);
+		gl41data_convert(stack[sp-2].pchip, stack[sp-2].pfoot, ev, v);
 		say("%f,%f\n", v[0],v[1]);
 
 		if(v[0] < 0.01)geom->vc[0] -= 10.0;

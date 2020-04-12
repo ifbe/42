@@ -9,25 +9,19 @@
 
 
 
-int qu2eu_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int qu2eu_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int qu2eu_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int qu2eu_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	vec4 e;
-	float* q;
-	struct artery* ele;
-
-	ele = (void*)(self->chip);
-	if(0 == ele)return 0;
-
-	q = buf;
+	float* q = buf;
 	e[0] = arctan2(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
 	e[1] = arcsin(2*qw*qy - 2*qx*qz)*180/3.141592653;
 	e[2] = arctan2(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
 
-	return relationwrite(ele, _dst_, 0, 0, e, 3);
+	return relationwrite(art,_dst_, stack,sp, 0,0, e,3);
 }
 int qu2eu_discon(struct halfrel* self, struct halfrel* peer)
 {

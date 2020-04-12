@@ -6,28 +6,24 @@ void ifft(float* real, float* imag, int k);
 
 
 
-int fftpcm_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int fftpcm_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int fftpcm_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int fftpcm_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int j;
 	float tmp,max;
-	struct artery* ele;
 	short* pcm;
 	float* real;
 	float* imag;
 	say("@fftpcm_write\n");
 	if(len < 2048)return 0;
 
-	ele = (void*)(self->chip);
-	if(0 == ele)return 0;
-
 	//1. pcm->complex
 	pcm = buf;
-	real = ele->buf0;
-	imag = ele->buf0 + 0x80000;
+	real = art->buf0;
+	imag = art->buf0 + 0x80000;
 	for(j=0;j<1024;j++){
 		real[j] = pcm[j] / 32768.0;
 		imag[j] = 0.0;
@@ -35,8 +31,8 @@ int fftpcm_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	fft(real, imag, 10);
 
 	//2.complex->pcm
-	pcm = ele->buf1 + ele->len;
-	ele->len = (ele->len+2048) % 0x100000;
+	pcm = art->buf1 + art->len;
+	art->len = (art->len+2048) % 0x100000;
 
 	max = 0.0;
 	for(j=0;j<1024;j++){
@@ -50,7 +46,7 @@ int fftpcm_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	max = max * 44100 / 1024;
 	say("freq = %f\n", max);
 
-	relationwrite(ele, _dst_, 0, 0, pcm, 1024*2);
+	relationwrite(art,_dst_, stack,sp, 0,0, pcm,1024*2);
 	return 0;
 }
 int fftpcm_discon(struct halfrel* self, struct halfrel* peer)

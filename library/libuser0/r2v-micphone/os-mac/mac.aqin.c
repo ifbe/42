@@ -9,10 +9,11 @@ static void micphonecallback(void* ptr, AudioQueueRef inaq, AudioQueueBufferRef 
 	say("@micphonecallback: ptr=%llx, aqref=%llx, aqctx=%llx, time=%llx, num=%x, desc=%llx\n",
 	ptr, inaq, inctx, inStartTime, inNumberPacketDescriptions, inPacketDescs);
 
+	struct halfrel stack[0x80];
 	void* buf = inctx->mAudioData;
 	int len = inctx->mAudioDataByteSize;
 	say("%llx,%x,%x\n", buf, len, inNumberPacketDescriptions);
-	relationwrite(ptr, _dst_, 0, 0, buf, len);
+	relationwrite(ptr,_dst_, stack,0, 0,0, buf,len);
 
 	AudioQueueEnqueueBuffer(inaq, inctx, 0, NULL);
 }
@@ -20,19 +21,11 @@ static void micphonecallback(void* ptr, AudioQueueRef inaq, AudioQueueBufferRef 
 
 
 
-int micphonelist()
+int micphoneread(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int micphonechoose()
-{
-	return 0;
-}
-void* micphoneread(char* buf, int frame)
-{
-	return 0;
-}
-int micphonewrite(char* buf, int frame)
+int micphonewrite(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	return 0;
 }

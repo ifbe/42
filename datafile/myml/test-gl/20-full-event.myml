@@ -94,7 +94,7 @@ q:1.0, 1.0
 
 
 <relation>
-(event, 0, cam) -> (cam0, 0, ev)
+(event, 0, cam) -> (cam0, 0, evto)
 (event, 0, tar) -> (scene, 0, ray)
 
 #scene depends on item

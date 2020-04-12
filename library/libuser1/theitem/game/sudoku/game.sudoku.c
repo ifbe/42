@@ -261,36 +261,20 @@ static void sudoku_event(
 
 
 
-static void sudoku_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void sudoku_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//wnd -> cam
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-
-	//cam -> world
-	struct entity* wrd;struct style* camg;
-
-	//world -> this
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* part;
-
-	if(stack){
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-
-		win = peer->pchip;geom = peer->pfoot;
-		act = self->pchip;part = self->pfoot;
-		if('v' == len)sudoku_draw_gl41(act,part, win,geom, wnd,area);
+	if(stack && ('v'==key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		sudoku_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void sudoku_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void sudoku_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//if 'ev i' == self.foot
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	struct event* ev = (void*)buf;
-	//sudoku_event(act, pin, win, sty, ev, 0);
 }
 static void sudoku_discon(struct halfrel* self, struct halfrel* peer)
 {

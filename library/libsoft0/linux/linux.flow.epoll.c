@@ -68,12 +68,14 @@ void epoll_mod(u64 fd)
 static void* epollthread(void* p)
 {
 	int j;
-	int fd, cc;
 	int ret, cnt;
+	struct epoll_event ev[16];
+	struct halfrel stack[0x80];
+
+	int fd, cc;
 	struct sysobj* here;
 	struct sysobj* child;
 	struct sysobj* parent;
-	struct epoll_event ev[16];
 
 	while(alive)
 	{
@@ -106,7 +108,7 @@ static void* epollthread(void* p)
 						systemdelete(here);
 						break;
 					}
-					relationwrite(here, _dst_, 0, 0, buf, cnt);
+					relationwrite(here,_dst_, stack,0, 0,0, buf,cnt);
 					break;
 				}//easy
 
@@ -118,7 +120,7 @@ static void* epollthread(void* p)
 					{
 						//say("@epollthread: %.4s\n", &obj[cc].type);
 						if((0==here->irel0)&&(0==here->orel0))printmemory(buf, cnt);
-						else relationwrite(here, _dst_, here->peer, 0, buf, cnt);
+						else relationwrite(here,_dst_, stack,0, here->peer,0, buf,cnt);
 					}
 					if(cnt <= 0)
 					{
@@ -150,7 +152,7 @@ static void* epollthread(void* p)
 						}
 
 						//say("@kqueuethread: %.4s\n", &obj[cc].type);
-						relationwrite(here, _dst_, 0, 0, buf, cnt);
+						relationwrite(here,_dst_, stack,0, 0,0, buf,cnt);
 					}
 					if(cnt <= 0)
 					{

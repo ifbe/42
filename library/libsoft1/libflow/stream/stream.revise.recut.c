@@ -9,41 +9,19 @@ int decstr2u64(u8* src, u64* dst);
 
 
 
-int recut_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int recut_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int recut_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int recut_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	struct artery* ele = self->pchip;
-	if(0 == ele)return 0;
-/*
-	u8* mem = ele->buf0;
-	int ret = ele->len;
-	int max = ele->data1;
-	say("@recut_write: %x+%x / %x\n", ret, len, max);
+	if(0 == art)return 0;
 
-	int j = 0;
-	while(1){
-		if(ret == max){
-			say("sending\n");
-			relationwrite(ele, _dst_, 0, 0, mem, max);
-			ret = 0;
-			continue;
-		}
-		if(j >= len)break;
-
-		mem[ret] = buf[j];
-		ret++;
-		j++;
-	}
-	ele->len = ret;
-*/
 	int j,k;
-	int deq = ele->DEQ;
-	int enq = ele->ENQ;
-	int max = ele->MAX;
-	u8* cache = ele->buf0;
+	int deq = art->DEQ;
+	int enq = art->ENQ;
+	int max = art->MAX;
+	u8* cache = art->buf0;
 
 	while(1){
 		if(len <= 0)break;
@@ -57,7 +35,7 @@ int recut_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 
 		say("@recut_write!: %x+%x / %x\n", enq, k, max);
 		for(j=0;j<k;j++)cache[enq+j] = buf[j];
-		relationwrite(ele, _dst_, 0, 0, cache+deq, max);
+		relationwrite(art,_dst_, stack,sp, 0,0, cache+deq,max);
 
 		buf += k;
 		len -= k;
@@ -67,9 +45,9 @@ int recut_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		enq = deq;
 	}
 
-	ele->MAX = max;
-	ele->ENQ = enq;
-	ele->DEQ = deq;
+	art->MAX = max;
+	art->ENQ = enq;
+	art->DEQ = deq;
 	return 0;
 }
 int recut_discon(struct halfrel* self, struct halfrel* peer)

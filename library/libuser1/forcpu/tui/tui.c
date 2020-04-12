@@ -75,23 +75,28 @@ void gentui_decstr(struct entity* win, u32 rgb, int x, int y, int data)
 
 
 
-int tuinode_read(struct entity* win, struct event* ev)
+int tuinode_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct relation* rel;
-	//gentui_rect(win, 4, 0, 0, 80, 25);
-	//gentui_str(win, 1, 0, 0, (void*)"fuck", 4);
+	//gentui_rect(wnd, 4, 0, 0, 80, 25);
+	//gentui_str(wnd, 1, 0, 0, (void*)"fuck", 4);
 
-	rel = win->orel0;
+	struct relation* rel = wnd->orel0;
 	while(1){
 		if(0 == rel)break;
 		if(_ent_ == rel->dsttype){
-			entityread((void*)rel->dst, (void*)rel->src, 0, 0, 0, 0);
+			stack[sp+0].pchip = rel->psrcchip;
+			stack[sp+0].pfoot = rel->psrcfoot;
+			stack[sp+0].flag = rel->srcflag;
+			stack[sp+1].pchip = rel->pdstchip;
+			stack[sp+1].pfoot = rel->pdstfoot;
+			stack[sp+1].flag = rel->dstflag;
+			entityread(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, arg,key, buf,len);
 		}
 		rel = samesrcnextdst(rel);
 	}
 	return 0;
 }
-int tuinode_write(struct entity* win, struct event* ev)
+int tuinode_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

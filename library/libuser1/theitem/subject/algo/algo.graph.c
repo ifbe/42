@@ -304,10 +304,10 @@ say("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
 
 
 
-static void graph_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void graph_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void graph_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void graph_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void graph_discon(struct halfrel* self, struct halfrel* peer)

@@ -43,14 +43,8 @@ found:
 	say("%s\n", path);
 	return k;
 }
-static void fslist_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void fslist_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area, struct event* ev)
 {
-	struct entity* wnd;struct style* area;
-	struct entity* ent;struct style* gl41;
-	wnd = peer->pchip;area = peer->pfoot;
-	ent = self->pchip;gl41 = self->pfoot;
-
-	struct event* ev = buf;
 	if(0x2b70 == ev->what){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);
@@ -126,14 +120,8 @@ static void fslist_draw_gl41(
 	for(j=0;j<3;j++)tc[j] = vc[j] + vt[j]/100.0;
 	carvetext(wnd, 0xff00ff, tc,vr,vf, act->LISTBUF, 0x10000);
 }
-static void fslist_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void fslist_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
-//wnd.area -> cam.gl41, cam.slot -> world.geom
-	struct entity* wnd;struct style* area;
-	struct entity* cam;struct style* gl41;
-	wnd = peer->pchip;area = peer->pfoot;
-	cam = self->pchip;gl41 = self->pfoot;
-
 	int j;
 	struct fstyle fs;
 	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
@@ -142,7 +130,7 @@ static void fslist_read_bywnd(struct halfrel* self, struct halfrel* peer, struct
 	fs.vt[2] = 1.0;
 
 	gl41data_before(wnd);
-	fslist_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
+	fslist_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_xxxcam(wnd, area);
 	gl41data_after(wnd);
 }
@@ -150,25 +138,33 @@ static void fslist_read_bywnd(struct halfrel* self, struct halfrel* peer, struct
 
 
 
-static void fslist_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void fslist_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* sup = peer->pchip;
-	switch(sup->fmt){
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(wnd->fmt){
 	case _gl41wnd0_:
 	case _full_:
 	case _wnd_:{
-		if('v' != len)break;
-		fslist_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		if('v' != key)break;
+		fslist_read_bywnd(ent,slot, wnd,area);break;
 	}
 	}
 }
-static void fslist_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void fslist_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* sup = peer->pchip;
-	switch(sup->fmt){
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(wnd->fmt){
 	case _gl41wnd0_:
 	case _full_:
-	case _wnd_:fslist_write_bywnd(self, peer, stack, rsp, buf, len);break;
+	case _wnd_:fslist_write_bywnd(ent,slot, wnd,area, buf);break;
 	}
 }
 static void fslist_discon(struct halfrel* self, struct halfrel* peer)

@@ -108,8 +108,8 @@ q:1.0, 1.0
 
 
 <relation>
-(event, 0, tar) -> (rabbit, 0, ev)
-(event, 0, cam) -> (freecam, 0, ev)
+(event, 0, tar) -> (rabbit, 0, evby)
+(event, 0, cam) -> (freecam, 0, evto)
 
 #virtual depends on inner objects
 (virtual, skygeom, 0) -> (texball, skyhaha, 0)

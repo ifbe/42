@@ -12,6 +12,8 @@ static int icur = 0;
 void* visionlistener(struct supply* win)
 {
 	int x,y;
+	struct halfrel stack[0x80];
+
 	while(1){
 		for(y=0;y<480;y++){
 			for(x=0;x<640;x++){
@@ -31,7 +33,7 @@ void* visionlistener(struct supply* win)
 				}
 			}
 		}
-		relationwrite(win, _dst_, 0, 0, ibuf, 640*480*2);
+		relationwrite(win,_dst_, stack,0, 0,0, ibuf,640*480*2);
 		sleep_us(16*1000);
 	}
 	return 0;
@@ -48,11 +50,11 @@ int videochoose()
 {
 	return 0;
 }
-void* videoread(char* buf, int frame)
+int videoread(_sup* sup,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int videowrite(char* buf, int frame)
+int videowrite(_sup* sup,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }

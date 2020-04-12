@@ -5,26 +5,17 @@
 
 
 
-int reorder_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int reorder_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	float f[10];
-	struct artery* ele;
 	say("@reorder_read\n");
 
-	ele = (void*)(self->chip);
-	if(0 == ele)return 0;
-
-	relationread(ele, _src_, 0, 0, f, 10);
+	float f[10];
+	relationread(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
-int reorder_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int reorder_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	struct artery* ele;
 	say("@reorder_write:%d\n", len);
-
-	ele = (void*)(self->chip);
-	if(0 == ele)return 0;
-
 	return 0;
 }
 int reorder_discon(struct halfrel* self, struct halfrel* peer)

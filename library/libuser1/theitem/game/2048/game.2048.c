@@ -325,37 +325,36 @@ static void the2048_event(struct entity* act, struct event* ev)
 
 
 
-static void the2048_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void the2048_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-	//say("@the2048_read\n");
-
-	act = self->pchip;slot = self->pfoot;
-	win = peer->pchip;geom = peer->pfoot;
-	if(stack && ('v' == len)){
-		//wnd -> cam, cam -> world
-		struct entity* wnd;struct style* area;
-		struct entity* wrd;struct style* camg;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		the2048_draw_gl41(act,slot, win,geom, wnd,area);
-	}
-	else{
-		switch(win->fmt){
-		case _tui_:the2048_draw_tui(act,slot, win,geom);break;
-		case _rgba_:the2048_draw_pixel(act,slot, win,geom);break;
-		case _htmlroot_:the2048_draw_html(act,slot, win,geom);break;
-		}
+	struct style* slot;
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	if(stack && ('v'==key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		the2048_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void the2048_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void the2048_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* act;
-	say("@the2048_write\n");
+	//say("@the2048_read\n");
+	struct style* slot = stack[sp-1].pfoot;
+	struct entity* wnd;struct style* area;
+	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	act = self->pchip;
-	the2048_event(act, buf);
+	switch(wnd->fmt){
+	case _tui_:the2048_draw_tui(ent,slot, wnd,area);break;
+	case _rgba_:the2048_draw_pixel(ent,slot, wnd,area);break;
+	case _htmlroot_:the2048_draw_html(ent,slot, wnd,area);break;
+	default:the2048_read_bycam(ent,foot, stack,sp, arg,key);break;
+	}
+}
+static void the2048_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	say("@the2048_write\n");
+	the2048_event(ent, buf);
 }
 static void the2048_discon(struct halfrel* self, struct halfrel* peer)
 {

@@ -84,23 +84,19 @@ static void h2o_draw_cli(
 
 
 
-static void h2o_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void h2o_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//world -> 2048
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-	act = self->pchip;slot = self->pfoot;
-	win = peer->pchip;geom = peer->pfoot;
-	if(stack){
-	//wnd -> cam, cam -> world
-		struct entity* wnd;struct style* area;
-		struct entity* wrd;struct style* camg;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		if('v' == len)h2o_draw_gl41(act,slot, win,geom, wnd,area);
+	struct style* slot;
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	if(stack&&('v' == key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		h2o_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void h2o_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void h2o_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void h2o_discon(struct halfrel* self, struct halfrel* peer)

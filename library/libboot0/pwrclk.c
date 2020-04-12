@@ -155,11 +155,11 @@ int pwrclksearch(u8* buf, int len)
 
 
 
-int pwrclkread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int pwrclkread(_pwr* pwr,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int pwrclkwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int pwrclkwrite(_pwr* pwr,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

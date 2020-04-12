@@ -24,18 +24,17 @@ int udptrav_memory(u64* list, u64 self)
 
 
 
-int udptravclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int udptravclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int udptravclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int udptravclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	struct artery* art = self->pchip;
-	//say("@udptravclient_write: %.4s\n", &self->flag);
+	//say("@udptravclient_write: %.4s\n", &foot);
 
-	if(_std_ == self->flag){
-		if(' ' == buf[0])relationwrite(art,_src_, &art->data0,0, buf, 1);
-		else if(art->data1)relationwrite(art,_src_, &art->data1,0, buf, 1);
+	if(_std_ == foot){
+		if(' ' == buf[0])relationwrite(art,_src_, stack,sp, &art->data0,0, buf, 1);
+		else if(art->data1)relationwrite(art,_src_, stack,sp, &art->data1,0, buf, 1);
 		return 0;
 	}
 
@@ -106,11 +105,11 @@ int udptravclient_create(struct artery* art, u8* url)
 
 
 
-int udptravserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int udptravserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int udptravserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int udptravserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -134,14 +133,15 @@ int udptravserver_create(struct artery* art, u8* url)
 
 
 
-int udptravmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int udptravmaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int udptravmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int udptravmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	struct artery* art = self->pchip;
-	struct sysobj* sys = peer->pchip;
+	if(0==stack|sp<2)return 0;
+	struct sysobj* sys = stack[sp-2].pchip;
+
 	if( (_UDP_ == sys->type) | (_udp_ == sys->type) ) {
 		if(0 == arg){
 			say("error@udptravmaster_write\n");
@@ -159,7 +159,7 @@ int udptravmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 		for(j=0;j<4;j++){
 			if(0 == list[j])break;
 		}
-		relationwrite(art,self->flag, arg,idx, list,j*8);
+		relationwrite(art,foot, stack,sp, arg,idx, list,j*8);
 	}
 	return 0;
 }

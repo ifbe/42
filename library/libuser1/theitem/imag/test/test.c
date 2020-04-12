@@ -138,18 +138,16 @@ void test_tickpcm(struct entity* ent, struct supply* sup)
 
 
 
-int test_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int test_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* ent = self->pchip;
-	struct supply* sup = peer->pchip;
-
-	switch(sup->fmt){
-	case _easy_:test_tickgl(ent,sup);break;
-	case _pcm_:test_tickpcm(ent,sup);break;
+	struct supply* wnd = stack[sp-2].pchip;
+	switch(wnd->fmt){
+	case _easy_:test_tickgl(ent,wnd);break;
+	case _pcm_:test_tickpcm(ent,wnd);break;
 	}
 	return 0;
 }
-int test_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int test_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

@@ -121,9 +121,6 @@ q: 1.0, 1.0
 
 
 <relation>
-(std, 0, dst) -> (nand, 0, src)
-(std, 0, dst) -> (sch, 0, ev)
-
 (sch, 0, a) -> (p0, 0, G)
 (sch, 0, a) -> (n1, 0, G)
 (sch, 0, b) -> (p1, 0, G)
@@ -141,6 +138,9 @@ q: 1.0, 1.0
 (world, schgeom, 0) -> (sch, schslot, 0)
 (world, nandgeom, 0) -> (nand, nandslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)
-
 (opengl, rect, 0) -> (cam, 0, 0)
+
+(cam, 0, evto) -> (sch, 0, evby)
+(std, 0, dst) -> (sch, 0, ioby)
+(std, 0, dst) -> (nand, 0, src)
 </relation>

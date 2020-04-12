@@ -1,7 +1,7 @@
 #include "libuser.h"
 int parsefv(float* vec, int flen, u8* str, int slen);
-int relation_readall( void* item, int foot, void* arg, int idx, void* buf, int len);
-int relation_writeall( void* item, int foot, void* arg, int idx, void* buf, int len);
+int relation_readall( void* item,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
+int relation_writeall(void* item,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
 
 
 
@@ -62,7 +62,7 @@ static int parsejoint(struct joint* jo, u8* buf)
 
 
 
-static void force_decent_spring(struct entity* ent, struct joint* jo)
+static void force_decent_spring(struct entity* ent, struct joint* jo, _syn* stack,int sp)
 {
 	int j;
 	for(j=0;j<16;j++){
@@ -72,7 +72,7 @@ static void force_decent_spring(struct entity* ent, struct joint* jo)
 		jo[j].gradx = 0.0;
 		jo[j].grady = 0.0;
 		jo[j].gradz = 0.0;
-		relation_readall(ent, 'a'+j, 0, 'R', jo, j);
+		relation_readall(ent,'a'+j, stack,sp, 0,'R', jo,j);
 	}
 
 	for(j=0;j<16;j++){
@@ -85,7 +85,7 @@ static void force_decent_spring(struct entity* ent, struct joint* jo)
 		say("@force_decent_spring: %f,%f,%f\n",jo[j].x, jo[j].y, jo[j].z);
 	}
 }
-static void force_decent_stick(struct entity* ent, struct joint* jo)
+static void force_decent_stick(struct entity* ent, struct joint* jo, _syn* stack,int sp)
 {
 	int j;
 	for(j=1;j<16;j++){
@@ -95,7 +95,7 @@ static void force_decent_stick(struct entity* ent, struct joint* jo)
 		jo[j].gradx = 0.0;
 		jo[j].grady = 0.0;
 		jo[j].gradz = 0.0;
-		relation_readall(ent, 'a'+j, 0, 'V', jo, j);
+		relation_readall(ent,'a'+j, stack,sp, 0,'V', jo,j);
 	}
 	for(j=1;j<16;j++){
 		if(0 == jo[j].exist)break;
@@ -106,15 +106,6 @@ static void force_decent_stick(struct entity* ent, struct joint* jo)
 		jo[j].z -= jo[j].gradz;
 		say("force_decent_stick:%f,%f,%f\n",jo[j].x, jo[j].y, jo[j].z);
 	}
-}
-static void force_decent(struct entity* ent)
-{
-	if(0 == ent)return;
-	struct joint* jo = ent->buf0;
-	if(0 == jo[0].exist)return;
-
-	force_decent_spring(ent, jo);
-	force_decent_stick(ent, jo);
 }
 
 
@@ -148,48 +139,56 @@ static void force_draw_gl41(
 		if(0 == jo[j].exist)break;
 		carveascii_center(wnd, 0xff0000, &jo[j].x,tr,tu,'a'+j);
 	}
+}
+void force_read_board(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+{
+	struct style* slot;
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	if(0 == stack)return;
+	if('v' != key)return;
 
+	//joint
+	slot = stack[sp-1].pfoot;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	force_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+void force_read_inner(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+{
+	//spring, stick
+	struct joint* jo = ent->buf0;
+	if(0 == jo[0].exist)return;
 
-	void** tab = act->buf1;
+	void** tab = ent->buf1;
 	if(0 == tab)return;
 
-	struct halfrel self;
-	struct halfrel peer;
+	int j;
 	for(j=0;j<16;j++){
 		if(0 == tab[j])break;
 		say("node: %llx\n", tab[j]);
 
-		self.pchip = tab[j];
-		self.flag = 'f';
-		peer.pchip = wnd;
-		peer.flag = 0;
-		entityread(&self,&peer, 0,0, jo,0);
+		stack[sp+0].pchip = ent;
+		stack[sp+0].flag = 0;
+		stack[sp+1].pchip = tab[j];
+		stack[sp+1].flag = 'f';
+		entityread(tab[j],'f', stack,sp+2, 0,0, jo,0);
 	}
 }
-void force_read_board(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int force_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-//wnd -> cam, cam -> world
-	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-//world -> force
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-
-	act = self->pchip;slot = self->pfoot;
-	win = peer->pchip;geom = peer->pfoot;
-	wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-	wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-	force_draw_gl41(act,slot, win,geom, wnd,area);
-}
-int force_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
-{
-	if(stack && ('v' == len)){
-		force_decent(self->pchip);
-		force_read_board(self,peer, stack,rsp, buf,len);
+	if(stack && ('v' == key)){
+		struct joint* jo = ent->buf0;
+		if(jo[0].exist){
+			force_decent_spring(ent,jo, stack,sp);
+			force_decent_stick(ent,jo, stack,sp);
+		}
+		force_read_board(ent,foot, stack,sp, arg,key);
+		force_read_inner(ent,foot, stack,sp, arg,key);
 	}
 	return 0;
 }
-int force_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int force_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }

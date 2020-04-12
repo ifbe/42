@@ -3,27 +3,23 @@
 
 
 
-int fftrgb_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int fftrgb_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int fftrgb_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int fftrgb_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int x,y;
 	int yy,uu,vv;
 	int rr,gg,bb;
 	u8* yuv;
-	struct artery* ele;
 
 	int* tmp;	//buf0
 	short* pcm;	//buf3
 	say("@fftrgb_write\n");
 
-	ele = (void*)(self->chip);
-	if(0 == ele)return 0;
-
 	//0. clean
-	tmp = ele->buf0;
+	tmp = art->buf0;
 	for(x=0;x<1024;x++)tmp[x] = 0;
 //say("alive1\n");
 	//1. yuv->rgb->tmp
@@ -50,15 +46,15 @@ int fftrgb_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 //say("alive2\n");
 
 	//2. tmp->pcm, send
-	pcm = ele->buf1 + ele->len;
-	ele->len = (ele->len + 1024*2) % 0x100000;
+	pcm = art->buf1 + art->len;
+	art->len = (art->len + 1024*2) % 0x100000;
 //say("alive3\n");
 	for(x=0;x<1024;x++){
 		pcm[x] = tmp[x]/10;
 		//if(pcm[x] > 16)say("%d:%d\n", x, pcm[x]);
 	}
 //say("alive4\n");
-	relationwrite(ele, _dst_, 0, 0, pcm, 1024*2);
+	relationwrite(art,_dst_, stack,sp, 0,0, pcm,1024*2);
 	return 0;
 }
 int fftrgb_discon(struct halfrel* self, struct halfrel* peer)

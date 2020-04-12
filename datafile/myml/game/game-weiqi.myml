@@ -81,6 +81,6 @@ q:1.0, 1.0
 (opengl, freerect, mvp) -> (freecam, 0, 0)
 
 #click
-(event, 0, cam) -> (freecam, 0, ev)
+(event, 0, cam) -> (freecam, 0, evto)
 (event, 0, tar) -> (scene, 0, ray)
 </relation>

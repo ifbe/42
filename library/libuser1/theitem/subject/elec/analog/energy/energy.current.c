@@ -37,10 +37,10 @@ static void isrc_draw_cli(
 
 
 
-static void isrc_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void isrc_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void isrc_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void isrc_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void isrc_discon(struct halfrel* self, struct halfrel* peer)

@@ -1,10 +1,15 @@
 #include "libuser.h"
+#define BLAST vfmt
+#define DSTAMP data0
 #define Dcount ix0
 #define Dvalue ixn
+#define SSTAMP data1
 #define Scount iy0
 #define Svalue iyn
+#define BSTAMP data2
 #define Bcount iz0
 #define Bvalue izn
+#define GSTAMP data3
 #define Gcount iw0
 #define Gvalue iwn
 void gl41line_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
@@ -42,8 +47,9 @@ static void pmos_draw_cli(
 
 
 
-static u32 nmos_color(int val)
+static u32 nmos_color(int val, int blast)
 {
+	if(blast)return 0xffff00;
 	if(val < 0)return 0x0000ff;
 	if(val > 0)return 0xff0000;
 	return 0xffffff;
@@ -59,12 +65,11 @@ static void pmos_draw_gl41(
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	//gl41line_rect(wnd, 0xffffff, vc, vr, vf);
 
-	u32 dcolor = nmos_color(ent->Dvalue);
-	u32 scolor = nmos_color(ent->Svalue);
-	u32 bcolor = nmos_color(ent->Bvalue);
-	u32 gcolor = nmos_color(ent->Gvalue);
+	u32 dcolor = nmos_color(ent->Dvalue, ent->BLAST);
+	u32 scolor = nmos_color(ent->Svalue, ent->BLAST);
+	u32 bcolor = nmos_color(ent->Bvalue, ent->BLAST);
+	u32 gcolor = nmos_color(ent->Gvalue, ent->BLAST);
 
 	//source
 	for(j=0;j<3;j++){
@@ -123,28 +128,24 @@ static void pmos_draw_gl41(
 	}
 	gl41line(wnd, gcolor, tc, tr);
 }
-static void pmos_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static void pmos_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
-	struct entity* ent;struct style* slot;
-	struct entity* scn;struct style* geom;
-	struct entity* wrd;struct style* camg;
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(0 == stack)return;
-	if('v' != len)return;
-
-	ent = self->pchip;slot = self->pfoot;
-	scn = peer->pchip;geom = peer->pfoot;
-	wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-	wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-	pmos_draw_gl41(ent,slot, scn,geom, wnd,area);
+	if(stack&&('v' == key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		pmos_draw_gl41(ent,slot, wor,geom, wnd,area);
+	}
 }
 
 
 
 
-static void pmos_read_D(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static void pmos_read_D(struct entity* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
 {
-	struct entity* mos = self->pchip;
 	if(mos->Gvalue >= 0)return;
 
 	if(0 == mos->Scount){
@@ -157,45 +158,85 @@ static void pmos_read_D(struct halfrel* self, struct halfrel* peer, struct halfr
 		if(mos->Dvalue < 0)buf[0] = 'n';
 	}
 }
-static void pmos_write_D(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static void pmos_write_D(struct entity* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
 {
-	struct entity* mos = self->pchip;
-	switch(buf[0]){
-		case 'p':mos->Dvalue = 1;break;
-		case 'n':mos->Dvalue =-1;break;
-		default:mos->Dvalue = 0;
-	}
-}
-static void pmos_read_S(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
-{
-}
-static void pmos_write_S(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
-{
-	struct entity* mos = self->pchip;
-	switch(buf[0]){
-		case 'p':mos->Svalue = 1;break;
-		case 'n':mos->Svalue =-1;break;
-		default:mos->Svalue = 0;
-	}
-}
-static void pmos_read_G(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
-{
-}
-static void pmos_write_G(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
-{
-	struct entity* mos = self->pchip;
-	switch(buf[0]){
-		case 'p':mos->Gvalue = 1;break;
-		case 'n':mos->Gvalue =-1;break;
-		default:mos->Gvalue = 0;
+	//clear status
+	if(('p' != buf[0])&&('n' != buf[0])){
+		mos->Dvalue = 0;
+		mos->BLAST = 0;
+		return;
 	}
 
+	//check
+	int D;
+	if('p' == buf[0])D = 1;
+	if('n' == buf[0])D = -1;
+	if(key == mos->DSTAMP){
+		if(D != mos->Dvalue)mos->BLAST = 1;
+		return;
+	}
+
+	//set
+	mos->DSTAMP = key;
+	mos->Dvalue = D;
+}
+static void pmos_read_S(struct entity* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
+{
+}
+static void pmos_write_S(struct entity* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
+{
+	//clear status
+	if(('p' != buf[0])&&('n' != buf[0])){
+		mos->Svalue = 0;
+		mos->BLAST = 0;
+		return;
+	}
+
+	//check
+	int S;
+	if('p' == buf[0])S = 1;
+	if('n' == buf[0])S = -1;
+	if(key == mos->SSTAMP){
+		if(S != mos->Svalue)mos->BLAST = 1;
+		return;
+	}
+
+	//set
+	mos->SSTAMP = key;
+	mos->Svalue = S;
+}
+static void pmos_read_G(struct entity* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
+{
+}
+static void pmos_write_G(struct entity* mos,int key, struct halfrel* stack,int sp, u8* buf,int len)
+{
+	//clear status
+	if(('p' != buf[0])&&('n' != buf[0])){
+		mos->Gvalue = 0;
+		mos->BLAST = 0;
+		return;
+	}
+
+	//check
+	int G;
+	if('p' == buf[0])G = 1;
+	if('n' == buf[0])G = -1;
+	if(key == mos->GSTAMP){
+		if(G != mos->Gvalue)mos->BLAST = 1;
+		return;
+	}
+
+	//set
+	mos->GSTAMP = key;
+	mos->Gvalue = G;
+
+	//chain
 	if(0 == mos->Scount){
 		if(mos->Gvalue < 0){
 			mos->Dvalue = 1;
 
 			u8 tmp = 'p';
-			relationwrite(mos, 'D', stack, rsp, &tmp, 1);
+			relationwrite(mos,'D', stack,sp, 0,key, &tmp,1);
 		}
 	}
 }
@@ -203,24 +244,24 @@ static void pmos_write_G(struct halfrel* self, struct halfrel* peer, struct half
 
 
 
-static void pmos_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static void pmos_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
-	switch(self->flag){
-		case 'D':pmos_read_D(self,peer, stack,rsp, buf,len);return;
-		case 'S':pmos_read_S(self,peer, stack,rsp, buf,len);return;
-		//case 'B':pmos_read_B(self,peer, stack,rsp, buf,len);return;
-		case 'G':pmos_read_G(self,peer, stack,rsp, buf,len);return;
-		default: pmos_read_bycam(self,peer, stack,rsp, buf,len);
+	switch(foot){
+		case 'D':pmos_read_D(ent,key, stack,sp, buf,len);return;
+		case 'S':pmos_read_S(ent,key, stack,sp, buf,len);return;
+		//case 'B':pmos_read_B(ent,key, stack,sp, buf,len);return;
+		case 'G':pmos_read_G(ent,key, stack,sp, buf,len);return;
+		default: pmos_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 	}
 }
-static void pmos_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static void pmos_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
-	say("pmos_write: %.4s=%x\n", &self->flag, buf[0]);
-	switch(self->flag){
-		case 'D':pmos_write_D(self,peer, stack,rsp, buf,len);return;
-		case 'S':pmos_write_S(self,peer, stack,rsp, buf,len);return;
-		//case 'B':pmos_write_B(self,peer, stack,rsp, buf,len);return;
-		case 'G':pmos_write_G(self,peer, stack,rsp, buf,len);return;
+	say("pmos_write: %llx, %.4s=%x\n", ent, &foot, buf[0]);
+	switch(foot){
+		case 'D':pmos_write_D(ent,key, stack,sp, buf,len);return;
+		case 'S':pmos_write_S(ent,key, stack,sp, buf,len);return;
+		//case 'B':pmos_write_B(ent,key, stack,sp, buf,len);return;
+		case 'G':pmos_write_G(ent,key, stack,sp, buf,len);return;
 	}
 }
 static void pmos_discon(struct halfrel* self, struct halfrel* peer)

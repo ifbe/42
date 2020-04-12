@@ -161,32 +161,21 @@ static void geometry_event(
 
 
 
-static void geometry_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void geometry_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//wnd -> cam, cam -> world
-	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-
-	//scene -> terminal
+	struct style* slot;
 	struct entity* scn;struct style* geom;
-	struct entity* act;struct style* slot;
+	struct entity* wnd;struct style* area;
 
-	if(stack){
-		act = self->pchip;slot = self->pfoot;
-		scn = peer->pchip;geom = peer->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)geometry_draw_gl41(act,slot, scn,geom, wnd,area);
+	if(stack&&('v'==key)){
+		slot = stack[sp-1].pfoot;
+		scn = stack[sp-1].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-4].pchip;area = stack[sp-4].pfoot;
+		geometry_draw_gl41(ent,slot, scn,geom, wnd,area);
 	}
 }
-static void geometry_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void geometry_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* act = (void*)(self->chip);
-	struct style* pin = (void*)(self->foot);
-	struct entity* win = (void*)(peer->chip);
-	struct style* sty = (void*)(peer->foot);
-	//geometry_event(act, pin, win, sty, ev, 0);
-	struct event* ev = (void*)buf;
 }
 static void geometry_discon(struct halfrel* self, struct halfrel* peer)
 {

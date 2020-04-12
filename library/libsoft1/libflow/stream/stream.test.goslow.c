@@ -6,34 +6,29 @@ int decstr2u32(void* src, void* dst);
 
 
 
-int goslow_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int goslow_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	float f[10];
-	struct artery* ele;
 	say("@goslow_read\n");
 
-	ele = self->pchip;
-	if(0 == ele)return 0;
-
-	relationread(ele, _src_, 0, 0, f, 10);
+	float f[10];
+	relationread(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
-int goslow_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int goslow_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int cur,max;
-	struct artery* ele = self->pchip;
-	if(0 == ele)return 0;
+	if(0 == art)return 0;
 
-	if(_src_ == self->flag){
-		cur = ele->CURNUM;
-		max = ele->MAXNUM;
+	if(_src_ == foot){
+		cur = art->CURNUM;
+		max = art->MAXNUM;
 		say("@goslow_write:%d/%d\n", cur, max);
 
 		if(0 == cur){
 			say("@goslow.sending\n");
-			relationwrite(ele, _dst_, 0, 0, buf, len);
+			relationwrite(art,_dst_, stack,sp, 0,0, buf,len);
 		}
-		ele->CURNUM = (cur + 1) % max;
+		art->CURNUM = (cur + 1) % max;
 	}
 	return 0;
 }

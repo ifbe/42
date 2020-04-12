@@ -59,24 +59,19 @@ static void dram_draw_cli(
 
 
 
-static void dram_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+static void dram_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-//world -> dram
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* slot;
-
-	if(stack){
-		act = self->pchip;slot = self->pfoot;
-		win = peer->pchip;geom = peer->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		if('v' == len)dram_draw_gl41(act,slot, win,geom, wnd,area);
+	if(stack&&('v' == key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		dram_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void dram_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+static void dram_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void dram_discon(struct halfrel* self, struct halfrel* peer)

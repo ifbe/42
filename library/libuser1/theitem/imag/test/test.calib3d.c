@@ -116,10 +116,10 @@ static void calib3d_data(
 
 
 
-static void calib3d_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void calib3d_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void calib3d_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void calib3d_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void calib3d_discon(struct halfrel* self, struct halfrel* peer)

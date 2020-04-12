@@ -34,43 +34,43 @@ int tcptrav_memory(u64* list, u64 self)
 
 
 
-int tcptravclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tcptravclient_read(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tcptravclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tcptravclient_write(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
-	struct artery* art = self->pchip;
-	struct sysobj* sys = peer->pchip;
-	say("@tcptravclient_write:%.4s\n", &self->flag);
+	if(0==stack|sp < 2)return 0;
+	struct sysobj* sys = stack[sp-2].pchip;
+	say("@tcptravclient_write:%.4s\n", &foot);
 
-	if(_std_ == self->flag){
+	if(_std_ == foot){
 		printmemory(buf, len < 16 ? len : 16);
 
-		if(' ' == buf[0])relationwrite(self->pchip, _src_, 0,0, buf, 1);
-		if((buf[0]>='0') && (buf[0]<='9'))relationwrite(self->pchip, _sss_, 0,0, buf, 1);
-		if((buf[0]>='a') && (buf[0]<='z'))relationwrite(self->pchip, _ccc_, 0,0, buf, 1);
+		if(' ' == buf[0])relationwrite(art,_src_, stack,sp, 0,0, buf,1);
+		if((buf[0]>='0') && (buf[0]<='9'))relationwrite(art,_sss_, stack,sp, 0,0, buf,1);
+		if((buf[0]>='a') && (buf[0]<='z'))relationwrite(art,_ccc_, stack,sp, 0,0, buf,1);
 		return 0;
 	}
-	if(_ccc_ == self->flag){
+	if(_ccc_ == foot){
 		say("@ccc\n");
 		printmemory(buf, len < 16 ? len : 16);
 
 		if(_c_friend_ != art->stage1)return 0;
-		relationwrite(art,_dst_, 0,0, buf,len);
+		relationwrite(art,_dst_, stack,sp, 0,0, buf,len);
 		return 0;
 	}
-	if(_sss_ == self->flag){
+	if(_sss_ == foot){
 		say("@sss\n");
 		printmemory(buf, len < 16 ? len : 16);
 		return 0;
 	}
-	if(_dst_ == self->flag){
+	if(_dst_ == foot){
 		if(_c_friend_ != art->stage1)return 0;
-		relationwrite(art,_ccc_, 0,0, buf,len);
+		relationwrite(art,_ccc_, stack,sp, 0,0, buf,len);
 		return 0;
 	}
-	if(_src_ == self->flag){
+	if(_src_ == foot){
 		printmemory(buf, len < 16 ? len : 16);
 
 		u8* t = sys->self;
@@ -82,7 +82,7 @@ int tcptravclient_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 		if(_c_friend_ == art->stage1)return 0;
 		if(len < 16){
 			sleep_us(1000000);
-			relationwrite(art,_src_, 0,0, "?\n", 2);
+			relationwrite(art,_src_, stack,sp, 0,0, "?\n", 2);
 			return 0;
 		}
 
@@ -138,7 +138,7 @@ int tcptravclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	say("@tcptravclient_linkup: %.4s\n", &self->flag);
 	if(_src_ == self->flag){
-		relationwrite(self->pchip, self->flag, 0,0, "?\n", 2);
+		relationwrite(self->pchip, self->flag, 0,0, 0,0, "?\n", 2);
 	}
 	return 0;
 }
@@ -158,11 +158,11 @@ int tcptravclient_create(struct artery* art, u8* url)
 
 
 
-int tcptravserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tcptravserver_read(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tcptravserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tcptravserver_write(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
@@ -186,14 +186,15 @@ int tcptravserver_create(struct artery* art, u8* url)
 
 
 
-int tcptravmaster_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tcptravmaster_read(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tcptravmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tcptravmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
-	struct artery* art = self->pchip;
-	struct sysobj* sys = peer->pchip;
+	if(0==stack|sp < 2)return 0;
+	struct sysobj* sys = stack[sp-2].pchip;
+
 	if(_TCP_ == sys->type){
 		u8* t = sys->peer;
 		say("from %d.%d.%d.%d:%d->\n", t[4],t[5],t[6],t[7], (t[2]<<8)+t[3]);
@@ -206,7 +207,7 @@ int tcptravmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 		for(j=0;j<4;j++){
 			if(0 == list[j])break;
 		}
-		relationwrite(art,self->flag, arg,idx, list,j*8);
+		relationwrite(art,foot, stack,sp, arg,idx, list,j*8);
 	}
 	return 0;
 }

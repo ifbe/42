@@ -8,6 +8,7 @@ int termwrite(void* buf, int len);
 void terminalthread(struct supply* win)
 {
 	int ret;
+	struct halfrel stack[0x80];
 	while(1)
 	{
 		ret = lowlevel_input();
@@ -16,7 +17,7 @@ void terminalthread(struct supply* win)
 		}
 		else {
 			//say("%x\n", ret);
-			relationwrite(win, _dst_, 0, 0, &ret, 1);
+			relationwrite(win,_dst_, stack,0, 0,0, &ret,1);
 		}
 	}
 }
@@ -24,10 +25,10 @@ void terminalthread(struct supply* win)
 
 
 
-void stdio_read(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf, int len)
+void stdio_read(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 }
-void stdio_write(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf, int len)
+void stdio_write(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	say("%.*s", len, buf);
 }

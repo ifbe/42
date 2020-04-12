@@ -1,0 +1,32 @@
+<entity>
+r0{
+fmt:resistor
+}
+
+sch{
+fmt:sch
+}
+pcb{
+fmt:pcb
+}
+v3d{
+fmt:virtual
+}
+</entity>
+
+
+<style>
+sch_r0{	//sch space: r0 location,symbol
+}
+pcb_r0{	//pcb space: r0 location,footprint
+}
+v3d_r0{	//v3d space: r0 location,model3d
+}
+</style>
+
+
+<relation>
+(sch, sch_r0, 0) -> (r0, 0, sch)
+(pcb, pcb_r0, 0) -> (r0, 0, pcb)
+(v3d, v3d_r0, 0) -> (r0, 0, v3d)
+</relation>

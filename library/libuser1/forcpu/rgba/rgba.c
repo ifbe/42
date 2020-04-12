@@ -31,59 +31,58 @@ void foreground_pixel(struct supply* win)
 
 
 
-int rgbanode_read(struct supply* win, struct event* ev)
+int rgbanode_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct style* sty;
-	struct relation* rel;
-	struct halfrel* self;
-	struct halfrel* peer;
+	background_pixel(wnd);
 
-	background_pixel(win);
-
-	rel = win->orel0;
+	struct relation* rel = wnd->orel0;
 	while(1)
 	{
 		if(0 == rel)break;
 
 		if(_ent_ == rel->dsttype)
 		{
-			sty = (void*)(rel->srcfoot);
+			struct style* sty = (void*)(rel->srcfoot);
 			if(sty){if('#' == sty->i.uc[3])goto next;}
 
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			entityread(self, peer, 0, 0, 0, 0);
+			stack[sp+0].pchip = rel->psrcchip;
+			stack[sp+0].pfoot = rel->psrcfoot;
+			stack[sp+0].flag = rel->srcflag;
+			stack[sp+1].pchip = rel->pdstchip;
+			stack[sp+1].pfoot = rel->pdstfoot;
+			stack[sp+1].flag = rel->dstflag;
+			entityread(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, arg,key, buf,len);
 		}
 next:
 		rel = samesrcnextdst(rel);
 	}
 
-	foreground_pixel(win);
+	foreground_pixel(wnd);
 	return 0;
 }
-int rgbanode_write(struct supply* win, struct event* ev)
+int rgbanode_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	int ret;
-	struct style* sty;
-	struct halfrel* self;
-	struct halfrel* peer;
-	struct relation* rel;
-	say("@rgbanode_write:%.8s,%llx\n", &ev->what, ev->why);
+	//struct event* ev = buf;
+	//say("@rgbanode_write:%.8s,%llx\n", &ev->what, ev->why);
 
-	ret = 0;
-	rel = win->oreln;
+	int ret = 0;
+	struct relation* rel = wnd->oreln;
 	while(1)
 	{
 		if(0 == rel)break;
 
 		if(_ent_ == rel->dsttype)
 		{
-			sty = (void*)(rel->srcfoot);
+			struct style* sty = (void*)(rel->srcfoot);
 			if(sty){if('#' == sty->i.uc[3])goto next;}
 
-			self = (void*)&rel->dstchip;
-			peer = (void*)&rel->srcchip;
-			ret = entitywrite(self, peer, 0, 0, ev, 0);
+			stack[sp+0].pchip = rel->psrcchip;
+			stack[sp+0].pfoot = rel->psrcfoot;
+			stack[sp+0].flag = rel->srcflag;
+			stack[sp+1].pchip = rel->pdstchip;
+			stack[sp+1].pfoot = rel->pdstfoot;
+			stack[sp+1].flag = rel->dstflag;
+			ret = entitywrite(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, arg,key, buf,len);
 			if(ret)break;
 		}
 next:

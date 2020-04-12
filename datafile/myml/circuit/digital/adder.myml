@@ -99,8 +99,6 @@ q: 1.0, 1.0
 
 
 <relation>
-(std, 0, dst) -> (a0, 0, src)
-
 (sch, a0geom, 0) -> (a0, 0, 0)
 (sch, a1geom, 0) -> (a1, 0, 0)
 (sch, a2geom, 0) -> (a2, 0, 0)
@@ -108,6 +106,7 @@ q: 1.0, 1.0
 
 (world, schgeom, 0) -> (sch, schslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)
-
 (opengl, rect, 0) -> (cam, 0, 0)
+
+(std, 0, dst) -> (a0, 0, src)
 </relation>

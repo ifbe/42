@@ -147,9 +147,6 @@ q: 1.0, 1.0
 
 
 <relation>
-(std, 0, dst) -> (xor, 0, src)
-(std, 0, dst) -> (sch, 0, ev)
-
 (sch, 0, a) -> (lp, 0, G)
 (sch, 0, a) -> (ln, 0, G)
 (sch, 0, a) -> (tp, 0, G)
@@ -179,6 +176,9 @@ q: 1.0, 1.0
 (world, schgeom, 0) -> (sch, schslot, 0)
 (world, xorgeom, 0) -> (xor, xorslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)
-
 (opengl, rect, 0) -> (cam, 0, 0)
+
+(std, 0, dst) -> (xor, 0, src)
+(std, 0, dst) -> (sch, 0, ioby)
+(cam, 0, evto) -> (sch, 0, evby)
 </relation>

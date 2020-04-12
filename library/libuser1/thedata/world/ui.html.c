@@ -44,42 +44,40 @@ void foreground_html(struct entity* win)
 		"</html>"
 	);
 }
-int htmlroot_traverse(struct entity* ent)
+
+
+
+
+int htmlroot_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
 {
+	say("@htmlroot_read\n");
+
+	background_html(ent);
 	struct relation* rel = ent->orel0;
 	while(1){
 		if(0 == rel)break;
 		if(_ent_ == rel->dsttype){
-			entityread((void*)(rel->dst), (void*)(rel->src), 0, 0, 0, 0);
+			stack[sp+0].pchip = rel->psrcchip;
+			stack[sp+0].pfoot = rel->psrcfoot;
+			stack[sp+0].flag = rel->srcflag;
+			stack[sp+1].pchip = rel->pdstchip;
+			stack[sp+1].pfoot = rel->pdstfoot;
+			stack[sp+1].flag = rel->dstflag;
+			entityread(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, 0,0, 0,0);
 		}
 		rel = samesrcnextdst(rel);
 	}
-	return 0;
-}
+	foreground_html(ent);
 
-
-
-
-int htmlroot_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void** buf, int len)
-{
 	int j;
-	struct entity* win;
-	struct str** ctx;
-	say("@htmlroot_read\n");
-
-	win = self->pchip;
-	background_html(win);
-	htmlroot_traverse(win);
-	foreground_html(win);
-
-	ctx = win->htmlctx;
+	struct str** ctx = ent->htmlctx;
 	for(j=0;j<4;j++)buf[j] = ctx[j];
 	return 0;
 }
-int htmlroot_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int htmlroot_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@htmlroot_write\n");
-	relationwrite(self->pchip, _src_, "text/html", 0, "htmlroot_read\n", 14);
+	relationwrite(ent,_src_, stack,sp, "text/html",0, "htmlroot_read\n",14);
 	return 0;
 }
 int htmlroot_discon(struct halfrel* self, struct halfrel* peer)

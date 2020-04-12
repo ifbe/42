@@ -34,7 +34,6 @@ struct uartterm
 //
 void drawterm(struct entity* win, void* term, int x0, int y0, int x1, int y1);
 void terminal_serverinput(struct uartterm* term, u8* buf, int len);
-void terminal_clientinput(struct entity* act, struct style* pin, struct entity* win, struct style* sty, struct event* ev);
 //
 void* getstdin();
 int getcurin();
@@ -133,13 +132,12 @@ static void terminal_draw_cli(
 
 
 
-void terminal_write_s(struct halfrel* self, struct halfrel* peer, u8* buf, int len)
+void terminal_write_s(_ent* ent,struct style* slot, _syn* stack,int sp, u8* buf, int len)
 {
-	struct entity* ent = self->pchip;
 	//printmemory(buf, 8);
 
 	if(ent->CLIENT){
-		relationwrite(ent, 'c', 0, 0, buf,len);
+		relationwrite(ent,'c', stack,sp, 0,0, buf,len);
 	}
 	else{
 /*		int j;
@@ -149,18 +147,16 @@ void terminal_write_s(struct halfrel* self, struct halfrel* peer, u8* buf, int l
 		terminal_serverinput(ent->TTTBUF, buf, len);
 	}
 }
-void terminal_write_c(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+void terminal_write_c(_ent* ent,struct style* slot, _syn* stack,int sp, void* buf, int len)
 {
-	struct entity* ent = self->pchip;
 	if(0 == ent->SERVER)input(buf, len);
-	else relationwrite(ent, 's', 0, 0, buf,len);
+	else relationwrite(ent,'s', stack,sp, 0,0, buf,len);
 }
-static void terminal_write_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void terminal_write_bywnd(_ent* ent,struct style* slot, _syn* stack,int sp, struct event* ev,int len)
 {
 	u32 tmp;
-	struct event* ev = buf;
 	if(_char_ == ev->what){
-		terminal_write_c(self,peer, buf, 1);
+		terminal_write_c(ent,slot, stack,sp, ev, 1);
 		return;
 	}
 	if(_kbd_ == ev->what){
@@ -172,7 +168,7 @@ static void terminal_write_bywnd(struct halfrel* self, struct halfrel* peer, str
 		case 0x1b:tmp = 0x1b;len = 1;break;
 		default:return;
 		}
-		terminal_write_c(self,peer, &tmp, len);
+		terminal_write_c(ent,slot, stack,sp, &tmp, len);
 		return;
 	}
 }
@@ -241,32 +237,20 @@ static void terminal_draw_gl41(
 		gl41_vt100(wnd,term,vc,vr,vf);
 	}
 }
-static void terminal_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void terminal_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
-	//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-
-	//scene -> terminal
-	struct entity* scn;struct style* geom;
-	struct entity* act;struct style* slot;
-
-	if(stack && ('v' == len)){
-		act = self->pchip;slot = self->pfoot;
-		scn = peer->pchip;geom = peer->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		terminal_draw_gl41(act,slot, scn,geom, wnd,area);
+	if(stack && ('v'==key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		terminal_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void terminal_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void terminal_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
-//wnd.area -> cam.gl41, cam.slot -> world.geom
-	struct entity* wnd;struct style* area;
-	struct entity* cam;struct style* gl41;
-	wnd = peer->pchip;area = peer->pfoot;
-	cam = self->pchip;gl41 = self->pfoot;
-
 	int j;
 	struct fstyle fs;
 	for(j=0;j<3;j++)fs.vc[j] = fs.vr[j] = fs.vf[j] = fs.vt[j] = 0.0;
@@ -275,7 +259,7 @@ static void terminal_read_bywnd(struct halfrel* self, struct halfrel* peer, stru
 	fs.vt[2] = 1.0;
 
 	gl41data_before(wnd);
-	terminal_draw_gl41(cam, 0, 0,(void*)&fs, wnd,area);
+	terminal_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_xxxcam(wnd, area);
 	gl41data_after(wnd);
 }
@@ -283,37 +267,40 @@ static void terminal_read_bywnd(struct halfrel* self, struct halfrel* peer, stru
 
 
 
-static void terminal_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void terminal_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	switch(self->flag){
+	switch(foot){
 	case 'c':break;
 	case 's':break;
 	}
 
-	struct entity* sup = peer->pchip;
-	switch(sup->fmt){
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+	switch(wnd->fmt){
 	case _gl41wnd0_:
 	case _full_:
-	case _wnd_:{
-		if('v' != len)break;
-		terminal_read_bywnd(self, peer, stack, rsp, buf, len);break;
-	}
-	default:terminal_read_bycam(self,peer, stack,rsp, buf,len);
+	case _wnd_:terminal_read_bywnd(ent,slot, wnd,area);break;
+	default:terminal_read_bycam(ent,foot, stack,sp, arg,key);
 	}
 }
-static void terminal_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void terminal_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	switch(self->flag){
-	case 'c':terminal_write_c(self,peer, buf,len);break;
-	case 's':terminal_write_s(self,peer, buf,len);break;
-	case '1':terminal_write_bywnd(self,peer, stack,rsp, buf,len);break;
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+	switch(foot){
+	case 'c':terminal_write_c(ent,slot, stack,sp, buf,len);return;
+	case 's':terminal_write_s(ent,slot, stack,sp, buf,len);return;
+	case _evby_:terminal_write_bywnd(ent,slot, stack,sp, buf,len);return;
 	}
 
-	struct entity* sup = peer->pchip;
-	switch(sup->fmt){
+	switch(wnd->fmt){
 	case _gl41wnd0_:
 	case _full_:
-	case _wnd_:terminal_write_bywnd(self,peer, stack,rsp, buf,len);break;
+	case _wnd_:terminal_write_bywnd(ent,slot, stack,sp, buf,len);return;
 	}
 }
 static void terminal_discon(struct halfrel* self, struct halfrel* peer)

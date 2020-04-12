@@ -5,37 +5,29 @@
 
 
 
-int reline_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int reline_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	float f[10];
-	struct artery* ele;
 	say("@reline_read\n");
 
-	ele = (void*)(self->chip);
-	if(0 == ele)return 0;
-
-	relationread(ele, _src_, 0, 0, f, 10);
+	float f[10];
+	relationread(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
-int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int reline_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int j,k,cur;
 	u8* tmp;
-	struct artery* ele;
 	//say("@reline_write:%.4s\n", &self->flag);
 
-	ele = (void*)(self->chip);
-	if(0 == ele)return 0;
-
-	switch(self->flag){
+	switch(foot){
 		case _dst_:{
 			printmemory(buf, len);
 			break;
 		}
 		case _src_:{
 			//remain part
-			cur = ele->len;
-			tmp = ele->buf0;
+			cur = art->len;
+			tmp = art->buf0;
 			if(cur){
 				for(j=0;j<len;j++){
 					tmp[cur] = buf[j];
@@ -43,14 +35,14 @@ int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 
 					if('\n' == buf[j]){
 						//say("@reline_write:%.*s", cur, tmp);
-						relationwrite(ele, _dst_, 0, 0, tmp, cur-1);
+						relationwrite(art,_dst_, stack,sp, 0,0, tmp,cur-1);
 						cur = 0;
 
 						j++;
 						break;
 					}
 				}
-				ele->len = cur;
+				art->len = cur;
 
 				buf += j;
 				len -= j;
@@ -62,7 +54,7 @@ int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 			for(j=0;j<len;j++){
 				if('\n' == buf[j]){
 					//say("@reline_write:%.*s", j-k+1, buf+k);
-					relationwrite(ele, _dst_, 0, 0, buf+k, j-k+1);
+					relationwrite(art,_dst_, stack,sp, 0,0, buf+k,j-k+1);
 					k = j+1;
 				}
 			}
@@ -70,7 +62,7 @@ int reline_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 
 			//
 			for(j=0;j<len-k;j++)tmp[j] = buf[k+j];
-			ele->len = j;
+			art->len = j;
 
 			break;
 		}

@@ -13,140 +13,140 @@ int baby_create(void*, void*, int, u8**);
 int baby_delete(void*, void*);
 int baby_linkup(void*, void*);
 int baby_discon(void*, void*);
-int baby_read(void*, void*, void*, int, void*, int);
-int baby_write(void*, void*, void*, int, void*, int);
+int baby_read( void*,int, void*,int, void*,int, void*,int);
+int baby_write(void*,int, void*,int, void*,int, void*,int);
 int test_create(void*, void*, int, u8**);
 int test_delete(void*, void*);
 int test_linkup(void*, void*);
 int test_discon(void*, void*);
-int test_read(void*, void*, void*, int, void*, int);
-int test_write(void*, void*, void*, int, void*, int);
+int test_read( void*,int, void*,int, void*,int, void*,int);
+int test_write(void*,int, void*,int, void*,int, void*,int);
 
 //
 int analog_create(void*, void*, int, u8**);
 int analog_delete(void*, void*);
 int analog_linkup(void*, void*);
 int analog_discon(void*, void*);
-int analog_write(void*, void*, void*, int, void*, int);
-int analog_read(void*, void*, void*, int, void*, int);
+int analog_write(void*,int, void*,int, void*,int, void*,int);
+int analog_read( void*,int, void*,int, void*,int, void*,int);
 int digital_create(void*, void*, int, u8**);
 int digital_delete(void*, void*);
 int digital_linkup(void*, void*);
 int digital_discon(void*, void*);
-int digital_write(void*, void*, void*, int, void*, int);
-int digital_read(void*, void*, void*, int, void*, int);
+int digital_write(void*,int, void*,int, void*,int, void*,int);
+int digital_read( void*,int, void*,int, void*,int, void*,int);
 
 //
 int force_create(void*, void*, int, u8**);
 int force_delete(void*, void*);
 int force_linkup(void*, void*);
 int force_discon(void*, void*);
-int force_write(void*, void*, void*, int, void*, int);
-int force_read(void*, void*, void*, int, void*, int);
+int force_write(void*,int, void*,int, void*,int, void*,int);
+int force_read( void*,int, void*,int, void*,int, void*,int);
 int gravity_create(void*, void*, int, u8**);
 int gravity_delete(void*, void*);
 int gravity_linkup(void*, void*);
 int gravity_discon(void*, void*);
-int gravity_write(void*, void*, void*, int, void*, int);
-int gravity_read(void*, void*, void*, int, void*, int);
+int gravity_write(void*,int, void*,int, void*,int, void*,int);
+int gravity_read( void*,int, void*,int, void*,int, void*,int);
 
 //scene
 int border2d_create(void*, void*, int, u8**);
 int border2d_delete(void*, void*);
 int border2d_linkup(void*, void*);
 int border2d_discon(void*, void*);
-int border2d_write(void*, void*, void*, int, void*, int);
-int border2d_read(void*, void*, void*, int, void*, int);
+int border2d_write(void*,int, void*,int, void*,int, void*,int);
+int border2d_read( void*,int, void*,int, void*,int, void*,int);
 int frame3d_create(void*, void*, int, u8**);
 int frame3d_delete(void*, void*);
 int frame3d_linkup(void*, void*);
 int frame3d_discon(void*, void*);
-int frame3d_write(void*, void*, void*, int, void*, int);
-int frame3d_read(void*, void*, void*, int, void*, int);
+int frame3d_write(void*,int, void*,int, void*,int, void*,int);
+int frame3d_read( void*,int, void*,int, void*,int, void*,int);
 int guide3d_create(void*, void*, int, u8**);
 int guide3d_delete(void*, void*);
 int guide3d_linkup(void*, void*);
 int guide3d_discon(void*, void*);
-int guide3d_write(void*, void*, void*, int, void*, int);
-int guide3d_read(void*, void*, void*, int, void*, int);
+int guide3d_write(void*,int, void*,int, void*,int, void*,int);
+int guide3d_read( void*,int, void*,int, void*,int, void*,int);
 int scene3d_create(void*, void*, int, u8**);
 int scene3d_delete(void*, void*);
 int scene3d_linkup(void*, void*);
 int scene3d_discon(void*, void*);
-int scene3d_write(void*, void*, void*, int, void*, int);
-int scene3d_read(void*, void*, void*, int, void*, int);
+int scene3d_write(void*,int, void*,int, void*,int, void*,int);
+int scene3d_read( void*,int, void*,int, void*,int, void*,int);
 
 //
 int reality_create(void*, void*, int, u8**);
 int reality_delete(void*);
 int reality_linkup(void*, void*);
 int reality_discon(void*, void*);
-int reality_write(void*, void*, void*, int, void*, int);
-int reality_read( void*, void*, void*, int, void*, int);
+int reality_write(void*,int, void*,int, void*,int, void*,int);
+int reality_read( void*,int, void*,int, void*,int, void*,int);
 int virtual_create(void*, void*, int, u8**);
 int virtual_delete(void*, void*);
 int virtual_linkup(void*, void*);
 int virtual_discon(void*, void*);
-int virtual_write(void*, void*, void*, int, void*, int);
-int virtual_read(void*, void*, void*, int, void*, int);
+int virtual_write(void*,int, void*,int, void*,int, void*,int);
+int virtual_read( void*,int, void*,int, void*,int, void*,int);
 int htmlroot_create(void*, void*, int, u8**);
 int htmlroot_delete(void*);
 int htmlroot_linkup(void*, void*);
 int htmlroot_discon(void*, void*);
-int htmlroot_write(void*, void*, void*, int, void*, int);
-int htmlroot_read( void*, void*, void*, int, void*, int);
+int htmlroot_write(void*,int, void*,int, void*,int, void*,int);
+int htmlroot_read( void*,int, void*,int, void*,int, void*,int);
 int xamlroot_create(void*, void*, int, u8**);
 int xamlroot_delete(void*, void*);
 int xamlroot_linkup(void*, void*);
 int xamlroot_discon(void*, void*);
-int xamlroot_write(void*, void*, void*, int, void*, int);
-int xamlroot_read(void*, void*, void*, int, void*, int);
+int xamlroot_write(void*,int, void*,int, void*,int, void*,int);
+int xamlroot_read( void*,int, void*,int, void*,int, void*,int);
 int mmiospace_create(void*, void*, int, u8**);
 int mmiospace_delete(void*);
 int mmiospace_linkup(void*, void*);
 int mmiospace_discon(void*, void*);
-int mmiospace_write(void*, void*, void*, int, void*, int);
-int mmiospace_read( void*, void*, void*, int, void*, int);
+int mmiospace_write(void*,int, void*,int, void*,int, void*,int);
+int mmiospace_read( void*,int, void*,int, void*,int, void*,int);
 int portspace_create(void*, void*, int, u8**);
 int portspace_delete(void*, void*);
 int portspace_linkup(void*, void*);
 int portspace_discon(void*, void*);
-int portspace_write(void*, void*, void*, int, void*, int);
-int portspace_read(void*, void*, void*, int, void*, int);
+int portspace_write(void*,int, void*,int, void*,int, void*,int);
+int portspace_read( void*,int, void*,int, void*,int, void*,int);
 
 //gl41 helper
 int gl41data_create(void*, void*, int, u8**);
 int gl41data_delete(void*);
 int gl41data_linkup(void*, void*);
 int gl41data_discon(void*, void*);
-int gl41data_read( void*, void*, void*, int, void*, int);
-int gl41data_write(void*, void*, void*, int, void*, int);
+int gl41data_read( void*,int, void*,int, void*,int, void*,int);
+int gl41data_write(void*,int, void*,int, void*,int, void*,int);
 int gl41coop_create(void*, void*, int, u8**);
 int gl41coop_delete(void*);
 int gl41coop_linkup(void*, void*);
 int gl41coop_discon(void*, void*);
-int gl41coop_read( void*, void*, void*, int, void*, int);
-int gl41coop_write(void*, void*, void*, int, void*, int);
+int gl41coop_read( void*,int, void*,int, void*,int, void*,int);
+int gl41coop_write(void*,int, void*,int, void*,int, void*,int);
 
 //event
 int event3rd_create(void*, void*, int, u8**);
 int event3rd_delete(void*);
 int event3rd_linkup(void*, void*);
 int event3rd_discon(void*, void*);
-int event3rd_read( void*, void*, void*, int, void*, int);
-int event3rd_write(void*, void*, void*, int, void*, int);
+int event3rd_read( void*,int, void*,int, void*,int, void*,int);
+int event3rd_write(void*,int, void*,int, void*,int, void*,int);
 int eventrts_create(void*, void*, int, u8**);
 int eventrts_delete(void*);
 int eventrts_linkup(void*, void*);
 int eventrts_discon(void*, void*);
-int eventrts_read( void*, void*, void*, int, void*, int);
-int eventrts_write(void*, void*, void*, int, void*, int);
+int eventrts_read( void*,int, void*,int, void*,int, void*,int);
+int eventrts_write(void*,int, void*,int, void*,int, void*,int);
 int clickray_create(void*, void*, int, u8**);
 int clickray_delete(void*);
 int clickray_linkup(void*, void*);
 int clickray_discon(void*, void*);
-int clickray_read( void*, void*, void*, int, void*, int);
-int clickray_write(void*, void*, void*, int, void*, int);
+int clickray_read( void*,int, void*,int, void*,int, void*,int);
+int clickray_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -254,89 +254,79 @@ void entityinput_touch(struct supply* win, struct event* ev)
 
 
 
-int entityread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
+int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* act;
-	if(0 == self)return 0;
-	act = self->pchip;
-	if(0 == act)return 0;
-
 	switch(act->type){
-	case _clickray_:return clickray_read(self, peer, arg, idx, buf, len);
-	case _event3rd_:return event3rd_read(self, peer, arg, idx, buf, len);
-	case _eventrts_:return eventrts_read(self, peer, arg, idx, buf, len);
+	case _clickray_:return clickray_read(act,foot, stack,sp, arg,key, buf,len);
+	case _event3rd_:return event3rd_read(act,foot, stack,sp, arg,key, buf,len);
+	case _eventrts_:return eventrts_read(act,foot, stack,sp, arg,key, buf,len);
 
-	case _gl41data_:return gl41data_read(self, peer, arg, idx, buf, len);
-	case _gl41coop_:return gl41coop_read(self, peer, arg, idx, buf, len);
+	case _gl41data_:return gl41data_read(act,foot, stack,sp, arg,key, buf,len);
+	case _gl41coop_:return gl41coop_read(act,foot, stack,sp, arg,key, buf,len);
 
-	//case _field_:return field_read(self, peer, arg, idx, buf, len);
-	//case _fluid_:return fluid_read(self, peer, arg, idx, buf, len);
-	case _force_:return force_read(self, peer, arg, idx, buf, len);
-	case _gravity_:return gravity_read(self, peer, arg, idx, buf, len);
+	//case _field_:return field_read(act,foot, stack,sp, arg,key, buf,len);
+	//case _fluid_:return fluid_read(act,foot, stack,sp, arg,key, buf,len);
+	case _force_:return force_read(act,foot, stack,sp, arg,key, buf,len);
+	case _gravity_:return gravity_read(act,foot, stack,sp, arg,key, buf,len);
 
-	case _analog_:return analog_read(self, peer, arg, idx, buf, len);
-	case _digital_:return digital_read(self, peer, arg, idx, buf, len);
+	case _analog_:return analog_read(act,foot, stack,sp, arg,key, buf,len);
+	case _digital_:return digital_read(act,foot, stack,sp, arg,key, buf,len);
 
-	case _border2d_:return border2d_read(self, peer, arg, idx, buf, len);
-	case _frame3d_:return frame3d_read(self, peer, arg, idx, buf, len);
-	case _guide3d_:return guide3d_read(self, peer, arg, idx, buf, len);
-	case _scene3d_:return scene3d_read(self, peer, arg, idx, buf, len);
+	case _border2d_:return border2d_read(act,foot, stack,sp, arg,key, buf,len);
+	case _frame3d_:return frame3d_read(act,foot, stack,sp, arg,key, buf,len);
+	case _guide3d_:return guide3d_read(act,foot, stack,sp, arg,key, buf,len);
+	case _scene3d_:return scene3d_read(act,foot, stack,sp, arg,key, buf,len);
 
-	case _reality_:return reality_read(self, peer, arg, idx, buf, len);
-	case _virtual_:return virtual_read(self, peer, arg, idx, buf, len);
-	case _htmlroot_:return htmlroot_read(self, peer, arg, idx, buf, len);
-	case _xamlroot_:return xamlroot_read(self, peer, arg, idx, buf, len);
-	case _mmio_:return mmiospace_read(self, peer, arg, idx, buf, len);
-	case _port_:return portspace_read(self, peer, arg, idx, buf, len);
+	case _reality_:return reality_read(act,foot, stack,sp, arg,key, buf,len);
+	case _virtual_:return virtual_read(act,foot, stack,sp, arg,key, buf,len);
+	case _htmlroot_:return htmlroot_read(act,foot, stack,sp, arg,key, buf,len);
+	case _xamlroot_:return xamlroot_read(act,foot, stack,sp, arg,key, buf,len);
+	case _mmio_:return mmiospace_read(act,foot, stack,sp, arg,key, buf,len);
+	case _port_:return portspace_read(act,foot, stack,sp, arg,key, buf,len);
 
-	case _test_:return test_read(self, peer, arg, idx, buf, len);
-	case _baby_:return baby_read(self, peer, arg, idx, buf, len);
+	case _test_:return test_read(act,foot, stack,sp, arg,key, buf,len);
+	case _baby_:return baby_read(act,foot, stack,sp, arg,key, buf,len);
 	}
 
 	if(0 == act->onread)return 0;
-	return act->onread(self, peer, arg, idx, buf, len);
+	return act->onread(act,foot, stack,sp, arg,key, buf,len);
 }
-int entitywrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
+int entitywrite(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* act;
-	if(0 == self)return 0;
-	act = self->pchip;
-	if(0 == act)return 0;
-
 	switch(act->type){
-	case _clickray_:return clickray_write(self, peer, arg, idx, buf, len);
-	case _event3rd_:return event3rd_write(self, peer, arg, idx, buf, len);
-	case _eventrts_:return eventrts_write(self, peer, arg, idx, buf, len);
+	case _clickray_:return clickray_write(act,foot, stack,sp, arg,key, buf,len);
+	case _event3rd_:return event3rd_write(act,foot, stack,sp, arg,key, buf,len);
+	case _eventrts_:return eventrts_write(act,foot, stack,sp, arg,key, buf,len);
 
-	case _gl41data_:return gl41data_write(self, peer, arg, idx, buf, len);
-	case _gl41coop_:return gl41coop_write(self, peer, arg, idx, buf, len);
+	case _gl41data_:return gl41data_write(act,foot, stack,sp, arg,key, buf,len);
+	case _gl41coop_:return gl41coop_write(act,foot, stack,sp, arg,key, buf,len);
 
-	//case _field_:return field_write(self, peer, arg, idx, buf, len);
-	//case _fluid_:return fluid_write(self, peer, arg, idx, buf, len);
-	case _force_:return force_write(self, peer, arg, idx, buf, len);
-	case _gravity_:return gravity_write(self, peer, arg, idx, buf, len);
+	//case _field_:return field_write(act,foot, stack,sp, arg,key, buf,len);
+	//case _fluid_:return fluid_write(act,foot, stack,sp, arg,key, buf,len);
+	case _force_:return force_write(act,foot, stack,sp, arg,key, buf,len);
+	case _gravity_:return gravity_write(act,foot, stack,sp, arg,key, buf,len);
 
-	case _analog_:return analog_write(self, peer, arg, idx, buf, len);
-	case _digital_:return digital_write(self, peer, arg, idx, buf, len);
+	case _analog_:return analog_write(act,foot, stack,sp, arg,key, buf,len);
+	case _digital_:return digital_write(act,foot, stack,sp, arg,key, buf,len);
 
-	case _border2d_:return border2d_write(self, peer, arg, idx, buf, len);
-	case _frame3d_:return frame3d_write(self, peer, arg, idx, buf, len);
-	case _guide3d_:return guide3d_write(self, peer, arg, idx, buf, len);
-	case _scene3d_:return scene3d_write(self, peer, arg, idx, buf, len);
+	case _border2d_:return border2d_write(act,foot, stack,sp, arg,key, buf,len);
+	case _frame3d_:return frame3d_write(act,foot, stack,sp, arg,key, buf,len);
+	case _guide3d_:return guide3d_write(act,foot, stack,sp, arg,key, buf,len);
+	case _scene3d_:return scene3d_write(act,foot, stack,sp, arg,key, buf,len);
 
-	case _reality_:return reality_write(self, peer, arg, idx, buf, len);
-	case _virtual_:return virtual_write(self, peer, arg, idx, buf, len);
-	case _htmlroot_:return htmlroot_write(self, peer, arg, idx, buf, len);
-	case _xamlroot_:return xamlroot_write(self, peer, arg, idx, buf, len);
-	case _mmio_:return mmiospace_write(self, peer, arg, idx, buf, len);
-	case _port_:return portspace_write(self, peer, arg, idx, buf, len);
+	case _reality_:return reality_write(act,foot, stack,sp, arg,key, buf,len);
+	case _virtual_:return virtual_write(act,foot, stack,sp, arg,key, buf,len);
+	case _htmlroot_:return htmlroot_write(act,foot, stack,sp, arg,key, buf,len);
+	case _xamlroot_:return xamlroot_write(act,foot, stack,sp, arg,key, buf,len);
+	case _mmio_:return mmiospace_write(act,foot, stack,sp, arg,key, buf,len);
+	case _port_:return portspace_write(act,foot, stack,sp, arg,key, buf,len);
 
-	case _test_:return test_write(self, peer, arg, idx, buf, len);
-	case _baby_:return baby_write(self, peer, arg, idx, buf, len);
+	case _test_:return test_write(act,foot, stack,sp, arg,key, buf,len);
+	case _baby_:return baby_write(act,foot, stack,sp, arg,key, buf,len);
 	}
 
 	if(0 == act->onwrite)return 0;
-	return act->onwrite(self, peer, arg, idx, buf, len);
+	return act->onwrite(act,foot, stack,sp, arg,key, buf,len);
 }
 int entitydiscon(struct halfrel* self, struct halfrel* peer)
 {
@@ -428,9 +418,11 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int entitydelete(struct entity* act)
+int entitydelete(void* p)
 {
-	if(0 == act)return 0;
+	if(0 == p)return 0;
+	struct entity* act = p;
+
 	switch(act->type){
 		case _orig_:return 0;
 		case _copy_:return 0;

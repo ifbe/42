@@ -39,11 +39,11 @@ void* allocworker()
 
 
 
-int workerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int workerread(_wrk* wrk,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int workerwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int workerwrite(_wrk* wrk,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

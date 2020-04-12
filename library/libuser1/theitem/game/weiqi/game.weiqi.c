@@ -348,29 +348,24 @@ void weiqi_intersect(float* out, vec3 ray[], struct fstyle* sty)
 
 
 
-static void weiqi_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void weiqi_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//wnd -> cam, cam -> world
+	struct style* slot;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	struct entity* wrd;struct style* camg;
-
-	//world -> this
-	struct entity* win;struct style* geom;
-	struct entity* act;struct style* part;
-
-	if(stack&&(('v' == len))){
-		wnd = stack[rsp-4]->pchip;area = stack[rsp-4]->pfoot;
-		wrd = stack[rsp-1]->pchip;camg = stack[rsp-1]->pfoot;
-
-		win = peer->pchip;geom = peer->pfoot;
-		act = self->pchip;part = self->pfoot;
-		weiqi_draw_gl41(act,part, win,geom, wnd,area);
+	if(stack && ('v'==key)){
+		slot = stack[sp-1].pfoot;
+		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+		weiqi_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void weiqi_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void weiqi_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* ent = peer->pchip;
-	switch(ent->type){
+	struct entity* wor;struct style* geom;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+
+	switch(wor->type){
 	case _scene3d_:
 	case _reality_:{
 		vec3* ray = buf;
@@ -378,11 +373,8 @@ static void weiqi_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 			ray[0][0],ray[0][1],ray[0][2],
 			ray[1][0],ray[1][1],ray[1][2]);
 */
-		struct fstyle* sty = peer->pfoot;
-		if(0 == sty)return;
-
 		float out[3];
-		weiqi_intersect(out, ray, sty);
+		weiqi_intersect(out, ray, &geom->fs);
 		weiqi_putone(out);
 		break;
 	}

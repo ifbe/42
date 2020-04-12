@@ -33,6 +33,8 @@ static int alive = 1;
 
 void* visionlistener(struct supply* win)
 {
+	struct halfrel stack[0x80];
+
 	//v4l2_open
 	int j;
 	int fd = open("/dev/video0",O_RDWR);    //|O_NONBLOCK);
@@ -164,7 +166,7 @@ void* visionlistener(struct supply* win)
 		}
 
 		//send
-		relationwrite(win, _dst_, 0, 0, info[cur].buf, buf.bytesused);//info[cur].len);
+		relationwrite(win,_dst_, stack,0, 0,0, info[cur].buf,buf.bytesused);//info[cur].len);
 		cur = (cur+1)%24;
 
 		//enq
@@ -192,7 +194,7 @@ void* visionlistener(struct supply* win)
 
 
 
-int videoread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int videoread(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	u64 addr = info[(cur+23)%24].addr;
 	say("addr=%llx\n",addr);
@@ -200,7 +202,7 @@ int videoread(struct halfrel* self, struct halfrel* peer, void* buf, int len)
 	*(u64*)buf = addr;
 	return 0;
 }
-int videowrite(struct halfrel* self, struct halfrel* peer, void* buf, int len)
+int videowrite(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }

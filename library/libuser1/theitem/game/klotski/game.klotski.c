@@ -110,10 +110,10 @@ static void klotski_draw_cli(
 
 
 
-static void klotski_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void klotski_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void klotski_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void klotski_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void klotski_discon(struct halfrel* self, struct halfrel* peer)

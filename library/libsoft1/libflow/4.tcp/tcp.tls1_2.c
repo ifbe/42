@@ -935,19 +935,17 @@ int tls1v2_clientwrite_clienthello(u8* dst, int cnt)
 
 
 
-int tls1v2client_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v2client_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tls1v2client_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v2client_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
-	struct artery* ele;
 	say("@tls1v2client_write\n");
 
-	ele = self->pchip;
-	if(0 == ele->stage1)
+	if(0 == art->stage1)
 	{
 		//second read
 		ret = 5 + tls1v2_read_head(buf, len);
@@ -973,13 +971,13 @@ int tls1v2client_write(struct halfrel* self, struct halfrel* peer, void* arg, in
 		ret += tls1v2_write_client_cipherspec(tmp+ret, len);
 		ret += tls1v2_write_client_hellorequest(tmp+ret, len);
 
-		ret = relationwrite(ele, _src_, 0, 0, tmp, ret);
+		ret = relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
 	else{
 		printmemory(buf,len);
 	}
 
-	ele->stage1 += 1;
+	art->stage1 += 1;
 	return 0;
 }
 int tls1v2client_discon(struct halfrel* self, struct halfrel* peer)
@@ -992,7 +990,7 @@ int tls1v2client_linkup(struct halfrel* self, struct halfrel* peer)
 	u8 tmp[0x1000];
 
 	ret = tls1v2_clientwrite_clienthello(tmp, 0);
-	if(ret)relationwrite(self->pchip, _src_, 0, 0, tmp, ret);
+	if(ret)relationwrite(self->pchip,_src_, 0,0, 0,0, tmp,ret);
 	return 0;
 }
 int tls1v2client_delete(struct artery* ele)
@@ -1081,31 +1079,29 @@ int tls1v2_serverread_clienthello(struct artery* ele, int foot, u8* buf, int len
 
 
 
-int tls1v2server_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v2server_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tls1v2server_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v2server_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
-	struct artery* ele;
 	say("@tls1v2server_write\n");
 
-	ele = self->pchip;
-	switch(ele->stage1)
+	switch(art->stage1)
 	{
 		case 0:
 		{
 			//first read: client(hello)
 			tls1v2_read_head(buf,len);
-			tls1v2_serverread_clienthello(ele, 0, buf+5, len-5);
+			tls1v2_serverread_clienthello(art, 0, buf+5, len-5);
 
 			//first write: server(hello+cert+keyexch+done)
-			ret = tls1v2_write_server_hello(       ele, 0, buf, len);
-			ret += tls1v2_write_server_certificate(ele, 0, buf+ret, len);
-			ret += tls1v2_write_server_keyexch(    ele, 0, buf+ret, len);
-			ret += tls1v2_write_server_done(       ele, 0, buf+ret, len);
-			relationwrite(ele, _src_, 0, 0, buf, ret);
+			ret = tls1v2_write_server_hello(       art, 0, buf, len);
+			ret += tls1v2_write_server_certificate(art, 0, buf+ret, len);
+			ret += tls1v2_write_server_keyexch(    art, 0, buf+ret, len);
+			ret += tls1v2_write_server_done(       art, 0, buf+ret, len);
+			relationwrite(art,_src_, stack,sp, 0,0, buf,ret);
 
 			break;
 		}
@@ -1120,14 +1116,14 @@ int tls1v2server_write(struct halfrel* self, struct halfrel* peer, void* arg, in
 			ret = tls1v2_write_server_newsession(buf, len);
 			ret += tls1v2_write_server_cipherspec(buf+ret, len);
 			ret += tls1v2_write_server_encrypthandshake(buf+ret, len);
-			relationwrite(ele, _src_, 0, 0, buf, ret);
+			relationwrite(art,_src_, stack,sp, 0,0, buf,ret);
 
 			break;
 		}
 		default:printmemory(buf,len);
 	}
 
-	ele->stage1 += 1;
+	art->stage1 += 1;
 	return 0;
 }
 int tls1v2server_discon(struct halfrel* self, struct halfrel* peer)
@@ -1151,34 +1147,32 @@ int tls1v2server_create(struct artery* ele, u8* url)
 
 
 
-int tls1v2master_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v2master_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tls1v2master_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int tls1v2master_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	struct sysobj* obj;
-	struct artery* ele;
-	struct relation* rel;
 	say("@tls1v2master_write\n");
 
-	ele = self->pchip;
 	if(0x16 != buf[0])
 	{
-		relationwrite(ele, _src_, 0, 0, response, sizeof(response));
+		relationwrite(art,_src_, stack,sp, 0,0, response,sizeof(response));
 		return 0;
 	}
 
-	obj = (void*)(peer->chip);
+	struct sysobj* obj = stack[sp-2].pchip;
+	if(0 == obj)return 0;
+	obj = obj->tempobj;
 	if(0 == obj)return 0;
 
-	obj = obj->tempobj;
-	ele = arterycreate(_Tls1_2_, 0, 0, 0);
-	rel = relationcreate(ele, 0, _art_, _src_, obj, 0, _sys_, _dst_);
+	struct artery* ele = arterycreate(_Tls1_2_, 0, 0, 0);
+	if(0 == ele)return 0;
 
-	self = (void*)&rel->dstchip;
-	peer = (void*)&rel->srcchip;
-	arterywrite(self, peer, 0, 0, buf, len);
+	relationcreate(ele, 0, _art_, _src_, obj, 0, _sys_, _dst_);
+	stack[sp-2].pchip = obj;
+	stack[sp-1].pchip = ele;
+	tls1v2server_write(ele,_src_, stack,sp, 0,0, buf,len);
 	return 0;
 }
 int tls1v2master_discon(struct halfrel* self, struct halfrel* peer)

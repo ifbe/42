@@ -3,11 +3,11 @@
 
 
 
-int quicclient_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int quicclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int quicclient_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int quicclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -23,11 +23,11 @@ int quicclient_create(struct artery* ele, u8* url)
 
 
 
-int quicserver_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int quicserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int quicserver_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int quicserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -43,12 +43,11 @@ int quicserver_create(struct artery* ele, u8* url)
 
 
 
-int quicmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int quicmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8* tmp;
 	u8 str[30];
-	struct artery* ele = self->pchip;
 
 	//who
 	tmp = arg;
@@ -69,12 +68,12 @@ int quicmaster_write(struct halfrel* self, struct halfrel* peer, void* arg, int 
 	{
 		str[ret] = ':';
 		str[ret+1] = ' ';
-		relationwrite(ele, _src_, 0, 0, str, ret+2);
+		relationwrite(art,_src_, stack,sp, 0,0, str,ret+2);
 	}
-	relationwrite(ele, _src_, 0, 0, buf, len);
+	relationwrite(art,_src_, stack,sp, 0,0, buf,len);
 	return 0;
 }
-int quicmaster_read()
+int quicmaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }

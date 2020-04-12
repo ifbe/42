@@ -57,22 +57,19 @@ static void arm64_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 
-static void arm64_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+static void arm64_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void arm64_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+static void arm64_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_clk_ == self->flag){
-		struct entity* ent = self->pchip;
-		if(0 == ent)return;
-
+	if(_clk_ == foot){
 		struct cpu* cpu = ent->buf0;
 		if(0 == cpu)return;
 
 		u64 where = cpu->pc & 0xfffffffffffff000;
 		if(cpu->cache != where){
 			say("cache miss, reading memory: [%llx,%llx]\n", where, where+0xfff);
-			int ret = relationread(ent,_mmio_, 0, where, cpu->code, 0x1000);
+			int ret = relationread(ent,_mmio_, stack,sp, 0,where, cpu->code,0x1000);
 			if(ret <= 0)return;
 		}
 		cpu->cache = where;
