@@ -1,14 +1,21 @@
 #include "libuser.h"
+#define _fboa_ hex32('f','b','o','a')
+#define _fbob_ hex32('f','b','o','b')
+#define Aside buf0
+#define Bside buf1
 void matproj_transpose(void* m, struct fstyle* sty);
-void loadtexfromfile(struct glsrc* src, int idx, char* name);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 struct portalbuf{
 	mat4 mvp;
 	vec4 vc;
-	vec4 vq;
-	u8 data[0];
+	struct entity* world;
+	struct style* geom;
+	struct supply* fbo;
+	struct style* rect;
+	struct gl41data forwnd;
+	struct gl41data forfbo;
 };
 void portal_forwnd(struct glsrc* src)
 {
@@ -28,6 +35,16 @@ void portal_forwnd(struct glsrc* src)
 	src->vbuf_h = 6;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf = memorycreate(src->vbuf_len, 0);
+}
+void portal_forwnd_update(struct entity* act, struct portalbuf* p, struct supply* fbo, struct style* area)
+{
+	struct glsrc* own = &p->forwnd.src;
+	if(0 == own)return;
+
+	own->tex[0].glfd = fbo->tex0;
+	own->tex[0].name = "tex0";
+	own->tex[0].fmt = '!';
+	own->tex[0].enq += 1;
 }
 
 
@@ -56,14 +73,19 @@ static void portal_delete(struct entity* act)
 }
 static void portal_create(struct entity* act, void* str)
 {
-	struct portalbuf* portal;
-	struct glsrc* src;
+	struct portalbuf* aa;
+	struct portalbuf* bb;
 	if(0 == act)return;
 
-	portal = act->buf0 = memorycreate(0x1000, 0);
-	if(0 == portal)return;
-	src = (void*)(portal->data);
-	portal_forwnd(src);
+	//aside
+	aa = act->Aside = memorycreate(0x1000, 0);
+	if(0 == aa)return;
+	portal_forwnd(&aa->forwnd.src);
+
+	//bside
+	bb = act->Bside = memorycreate(0x1000, 0);
+	if(0 == bb)return;
+	portal_forwnd(&bb->forwnd.src);
 }
 
 
@@ -73,84 +95,36 @@ static void portal_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int cx, cy, ww, hh;
-	if(sty)
-	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
-	}
-	else
-	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
-	}
-}
-static void portal_draw_gl41_b(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	struct portalbuf* portal;
-	vec3 tc,tt;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vt = sty->f.vt;
-
-	gl41line_rect(win, 0xffffff, vc, vr, vt);
-	tc[0] = vc[0] - vt[0];
-	tc[1] = vc[1] - vt[1];
-	tc[2] = vc[2] - vt[2];
-	gl41solid_rect(win, 0x3f0000, tc, vr, vf);
-	tc[0] = vc[0] - vt[0] - vf[0];
-	tc[1] = vc[1] - vt[1] - vf[1];
-	tc[2] = vc[2] - vt[2] - vf[2];
-	tt[0] = vc[0] - vt[0] + vf[0];
-	tt[1] = vc[1] - vt[1] + vf[1];
-	tt[2] = vc[2] - vt[2] + vf[2];
-	gl41line_arrow(win, 0xffffff, tc, tt, vt);
-
-	gl41opaque_circle(win, 0x80ffffff, vc, vr, vt);
-	portal = act->buf0;
-	if(0 == portal)return;
-	gl41line_arrow(win, 0xff0000, portal->vc, portal->vq, vt);
 }
 static void portal_draw_gl41(
-	struct entity* act, struct style* slot,
+	struct entity* act, struct portalbuf* portal,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
-	struct portalbuf* portal;
-	struct glsrc* src;
-	float (*vbuf)[6];
-
 	vec3 tc,tt;
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
 
-	gl41line_rect(win, 0xffffff, vc, vr, vt);
+	gl41line_rect(ctx, 0xffffff, vc, vr, vt);
 	tc[0] = vc[0] - vt[0];
 	tc[1] = vc[1] - vt[1];
 	tc[2] = vc[2] - vt[2];
-	gl41solid_rect(win, 0x00003f, tc, vr, vf);
+	gl41solid_rect(ctx, 0x00003f, tc, vr, vf);
 	tc[0] = vc[0] - vt[0] - vf[0];
 	tc[1] = vc[1] - vt[1] - vf[1];
 	tc[2] = vc[2] - vt[2] - vf[2];
 	tt[0] = vc[0] - vt[0] + vf[0];
 	tt[1] = vc[1] - vt[1] + vf[1];
 	tt[2] = vc[2] - vt[2] + vf[2];
-	gl41line_arrow(win, 0xffffff, tc, tt, vt);
+	gl41line_arrow(ctx, 0xffffff, tc, tt, vt);
 
-	portal = act->buf0;
+
 	if(0 == portal)return;
-	src = (void*)(portal->data);
+	struct glsrc* src = &portal->forwnd.src;
 	if(0 == src)return;
-	vbuf = (void*)(src->vbuf);
+	float (*vbuf)[6] = (void*)(src->vbuf);
 	if(0 == vbuf)return;
 
 	vbuf[0][0] = vc[0] - vr[0] - vt[0];
@@ -222,7 +196,7 @@ static void portal_draw_cli(
 
 
 
-void portal_frustum(struct fstyle* frus, struct fstyle* por, struct fstyle* tar, vec3 cam)
+void portal_frustum(struct fstyle* por, struct fstyle* tar, struct fstyle* frus, vec3 cam)
 {
 	float x0,y0,z0,t0;
 	float delta;
@@ -399,65 +373,26 @@ void portal_frustum(struct fstyle* frus, struct fstyle* por, struct fstyle* tar,
 		frus->vn[3], frus->vf[3], frus->vl[3], frus->vr[3], frus->vb[3], frus->vt[3]);*/
 }
 static void portal_matrix(
-	struct entity* act, struct fstyle* part,
-	struct entity* wrd, struct fstyle* geom,
-	struct entity* ctx, struct fstyle* frus,
-	struct supply* fbo, struct fstyle* area,
-	struct entity* dat, struct fstyle* camf)
-{/*
-	struct halfrel* self[1];
-	struct halfrel* peer[1];
-	struct fstyle* obba;
-	struct fstyle* obbb;
+	struct entity* act, float* eye,
+	struct portalbuf* this, struct portalbuf* that)
+{
+	struct fstyle* peershap = &that->geom->fshape;
 
-	struct portalbuf* portal;
-	struct glsrc* own;
-	struct glsrc* src;
-
-	//
-	portal = act->buf0;
-	if(0 == portal)return;
-	own = (void*)(portal->data);
-	if(0 == own)return;
-
-	own->tex[0].glfd = fbo->tex0;
-	own->tex[0].name = "tex0";
-	own->tex[0].fmt = '!';
-	own->tex[0].enq += 1;
+	struct fstyle* selfshap = &this->geom->fshape;
+	struct fstyle* frus = &this->geom->frustum;
+	portal_frustum(selfshap, peershap, frus, eye);
+	matproj_transpose(this->mvp, frus);
 
 
-	//
-	src = fbo->gl_camera;
-	if(0 == src)return;
-
-	self[0] = peer[0] = 0;
-	portal_search(act, 'a', self, peer);
-	if(0 == peer[0])return;
-	obba = peer[0]->pfoot;
-
-	self[0] = peer[0] = 0;
-	portal_search(act, 'b', self, peer);
-	if(0 == peer[0])return;
-	obbb = peer[0]->pfoot;
-
-	vec3 cam = {-1000.0, -2500.0, 1000.0};
-	portal_frustum(frus, obba, obbb, cam);
-	portal->vc[0] = frus->vc[0];
-	portal->vc[1] = frus->vc[1];
-	portal->vc[2] = frus->vc[2];
-	portal->vq[0] = frus->vc[0] + frus->vn[0]*frus->vn[3];
-	portal->vq[1] = frus->vc[1] + frus->vn[1]*frus->vn[3];
-	portal->vq[2] = frus->vc[2] + frus->vn[2]*frus->vn[3];
-
-	matproj_transpose(portal->mvp, frus);
-
+	struct glsrc* src = &this->forfbo.src;
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";
-	src->arg[0].data = portal->mvp;
-
+	src->arg[0].data = this->mvp;
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
-	src->arg[1].data = obba->vc;*/
+	src->arg[1].data = frus->vc;
+
+	this->fbo->gl_camera[0] = &this->forfbo;
 }
 
 
@@ -465,6 +400,48 @@ static void portal_matrix(
 
 static void portal_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(0 == stack)return;
+	say("@portal_read:%.4s,%llx\n", &foot, stack[sp-2].pfoot);
+
+	struct entity* wor;struct style* geom;
+	struct entity* dup;struct style* camg;
+	struct entity* wnd;struct style* area;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	if('v' == key){
+		if('a' == foot){
+			portal_draw_gl41(ent,ent->Aside, wor,geom, wnd,area);
+		}
+		if('b' == foot){
+			portal_draw_gl41(ent,ent->Bside, wor,geom, wnd,area);
+		}
+	}
+	if('?' == key){
+		if('a' == foot){
+			struct portalbuf* p = ent->Aside;
+			portal_matrix(ent, camg->frus.vc, ent->Aside, ent->Bside);
+			relationwrite(ent,_fboa_, stack,sp, 0,0, 0,0);
+			portal_forwnd_update(ent, p, p->fbo, p->rect);
+		}
+		if('b' == foot){
+			struct portalbuf* p = ent->Bside;
+			portal_matrix(ent, camg->frus.vc, ent->Bside, ent->Aside);
+			relationwrite(ent,_fbob_, stack,sp, 0,0, 0,0);
+			portal_forwnd_update(ent, p, p->fbo, p->rect);
+		}
+/*
+		//update matrix for fbo
+		struct supply* fbo = rel[1]->pchip;
+		struct style* rect = rel[1]->pfoot;
+		water_forfbo_update(ent,slot, wor,geom, dup,camg, fbo,rect);
+
+		//wnd.data -> fbo.texture
+		relationwrite(ent,_fbo_, stack,sp, 0,0, 0,0);
+
+		//fbo.texture -> my.data -> wnd.data
+		water_forwnd_update(ent,slot, fbo,rect);*/
+	}
 }
 static void portal_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
@@ -474,6 +451,38 @@ static void portal_discon(struct halfrel* self, struct halfrel* peer)
 }
 static void portal_linkup(struct halfrel* self, struct halfrel* peer)
 {
+	struct entity* ent;
+	struct portalbuf* p;
+
+	ent = self->pchip;
+	if(0==ent)return;
+
+	switch(self->flag){
+	case 'a':{
+		p = ent->Aside;
+		p->world = peer->pchip;
+		p->geom = peer->pfoot;
+		break;
+	}
+	case 'b':{
+		p = ent->Bside;
+		p->world = peer->pchip;
+		p->geom = peer->pfoot;
+		break;
+	}
+	case _fboa_:{
+		p = ent->Aside;
+		p->fbo = peer->pchip;
+		p->rect = peer->pfoot;
+		break;
+	}
+	case _fbob_:{
+		p = ent->Bside;
+		p->fbo = peer->pchip;
+		p->rect = peer->pfoot;
+		break;
+	}
+	}//switch
 }
 
 

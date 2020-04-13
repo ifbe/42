@@ -9,6 +9,9 @@ fmt:ground
 tree{
 fmt:tree
 }
+maze{
+fmt:maze
+}
 portal{
 fmt:portal
 }
@@ -22,7 +25,10 @@ fmt:virtual
 
 
 <supply>
-thefbo{
+fboa{
+fmt:gl41fboc
+}
+fbob{
 fmt:gl41fboc
 }
 opengl{
@@ -55,7 +61,7 @@ t: 0.0, 0.0, 10000000.0
 gndhaha{
 }
 gndgeom{
-c: 0.0, 0.0, 0.0
+c: 0.0, 0.0, -1.0
 r: 10000000.0, 0.0, 0.0
 f: 0.0, 10000000.0, 0.0
 t: 0.0, 0.0, 10000000.0
@@ -64,33 +70,42 @@ t: 0.0, 0.0, 10000000.0
 treehaha{
 }
 treegeom{
-c: -1000.0, 1000.0, 0.0
+c:-1000.0, 1000.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
 }
 
-aaaahaha{
+mazehaha{
 }
-aaaageom{
-c: -1000.0, -1000.0, 1000.0
+mazegeom{
+c: 1000.0, 1000.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
 }
 
-bbbbhaha{
+ahaha{
 }
-bbbbgeom{
-c: 1000.0, 1000.0, 1000.0
-f:-1000.0, 0.0, 0.0
-r: 0.0, 1000.0, 0.0
+ageom{
+c: -1000.0, 0.0, 1000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+bhaha{
+}
+bgeom{
+c: 1000.0, 0.0, 1000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
 }
 
 freeslot{
 }
-freefrus{
+freegeom{
 r: 1.0, 0.0, 0.0
 f: 0.0, 1.0, 0.0
 t: 0.0, 0.0, 1.0
@@ -103,7 +118,11 @@ N: 0.0, 0.0, 0.0, 1.0
 F: 0.0, 0.0, 0.0, 1000000000000.0
 }
 
-mirrrect{
+arect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+brect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
@@ -116,16 +135,18 @@ q:1.0, 1.0
 
 <relation>
 #portal depends on
-(portal, 0, fbo) -> (thefbo, mirrrect, mvp)
+(portal, 0, fboa) -> (fboa, arect, by)
+(portal, 0, fbob) -> (fbob, brect, by)
 
 #virtual depends on inner objects
 (virtual, skygeom, 0) -> (texball, skyhaha, 0)
 (virtual, gndgeom, 0) -> (ground, gndhaha, 0)
 (virtual, treegeom, 0) -> (tree, treehaha, 0)
-(virtual, aaaageom, 0) -> (portal, aaaahaha, a)
-(virtual, bbbbgeom, 0) -> (portal, bbbbhaha, b)
-(virtual, freegeom, 0) -> (freecam, freemodl, 0)
+(virtual, mazegeom, 0) -> (maze, mazehaha, 0)
+(virtual, ageom, 0) -> (portal, 0, a)
+(virtual, bgeom, 0) -> (portal, 0, b)
+(virtual, freegeom, 0) -> (freecam, freeslot, 0)
 
-#glwnd depends on ctx + cam
-(opengl, freerect, mvp) -> (freecam, 0, 0)
+#glwnd depends on
+(opengl, freerect, 0) -> (freecam, 0, 0)
 </relation>
