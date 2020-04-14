@@ -10,8 +10,8 @@
 #include <commctrl.h>
 #include "libuser.h"
 int arg2utf8(void*, void*);
-int rgbanode_read(void*, void*);
-int rgbanode_write(void*, void*);
+int rgbanode_read(void*,int, void*,int, void*,int, void*,int);
+int rgbanode_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -30,18 +30,17 @@ static RECT rt, re;
 
 
 
-int windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	MSG msg;
 	BITMAPINFO info;
-	struct supply* win = self->pchip;
 
 	//read context
-	rgbanode_read(win, 0);
+	rgbanode_read(wnd,foot, stack,sp, arg,key, buf,len);
 
 	//update screen
-	int w = win->width;
-	int h = win->height;
+	int w = wnd->width;
+	int h = wnd->height;
 	info.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
 	info.bmiHeader.biPlanes = 1;
 	info.bmiHeader.biBitCount = 32;
@@ -58,21 +57,28 @@ int windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, v
 	info.bmiHeader.biHeight = -h;
 	info.bmiHeader.biSizeImage = w*h*4;
 	SetDIBitsToDevice(
-		win->hdc,
+		wnd->hdc,
 		0, 0,w, h,		//dst: x,y,w,h
 		0, 0,0, h,		//src: x,y,0,h
-		win->rgbabuf, &info, DIB_RGB_COLORS
+		wnd->rgbabuf, &info, DIB_RGB_COLORS
 	);
 
 	//cleanup events
+	u64 save[2];
+	save[0] = (u64)stack;
+	save[1] = sp;
+	wnd->spsave = save;
+
 	while(PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
 	{
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+
+	wnd->spsave = 0;
 	return 0;
 }
-int windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -199,10 +205,23 @@ int windowcreate(struct supply* win)
 
 
 
+static void restorestackdeliverevent(struct supply* wnd, struct event* ev)
+{
+	u64* save = wnd->spsave;
+	if(0 == save){
+		eventwrite(ev->why, ev->what, ev->where, 0);
+		return;
+	}
+
+	struct halfrel* stack = (void*)save[0];
+	int depth = save[1];
+	rgbanode_write(wnd,0, stack,depth, 0,0, ev,0);
+}
 LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
 	u64 addr = GetWindowLongPtr(wnd, GWLP_USERDATA);
 	struct supply* win = (void*)addr;
+
 	struct event ev;
 	switch (msg)
 	{
@@ -235,7 +254,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = val;
 			ev.what = 0x64626b;
 			ev.where = addr;
-			rgbanode_write(win, &ev);
+			restorestackdeliverevent(win, &ev);
 			return 0;
 		}
 
@@ -248,7 +267,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				ev.why = 0x1b;
 				ev.what = 0x64626b;
 				ev.where = addr;
-				rgbanode_write(win, &ev);
+				restorestackdeliverevent(win, &ev);
 			}
 			else
 			{
@@ -256,7 +275,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 				ev.why = wparam;
 				ev.what = 0x72616863;
 				ev.where = addr;
-				rgbanode_write(win, &ev);
+				restorestackdeliverevent(win, &ev);
 			}
 			return 0;
 		}
@@ -324,7 +343,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2b70;
 			ev.where = addr;
-			rgbanode_write(win, &ev);
+			restorestackdeliverevent(win, &ev);
 			return 0;
 		}
 		case WM_POINTERUP:
@@ -351,7 +370,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2d70;
 			ev.where = addr;
-			rgbanode_write(win, &ev);
+			restorestackdeliverevent(win, &ev);
 			return 0;
 		}
 		case WM_POINTERUPDATE:
@@ -374,7 +393,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x4070;
 			ev.where = addr;
-			rgbanode_write(win, &ev);
+			restorestackdeliverevent(win, &ev);
 			return 0;
 		}
 */
@@ -394,7 +413,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2b70;
 			ev.where = addr;
-			rgbanode_write(win, &ev);
+			restorestackdeliverevent(win, &ev);
 			return 0;
 		}
 
@@ -422,7 +441,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x4070;
 			ev.where = addr;
-			rgbanode_write(win, &ev);
+			restorestackdeliverevent(win, &ev);
 			return 0;
 		}
 
@@ -439,7 +458,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2d70;
 			ev.where = addr;
-			rgbanode_write(win, &ev);
+			restorestackdeliverevent(win, &ev);
 			return 0;
 		}
 
@@ -456,7 +475,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2d70;
 			ev.where = addr;
-			rgbanode_write(win, &ev);
+			restorestackdeliverevent(win, &ev);
 			return 0;
 		}
 
@@ -481,7 +500,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2b70;
 			ev.where = addr;
-			rgbanode_write(win, &ev);
+			restorestackdeliverevent(win, &ev);
 			return 0;
 		}
 
@@ -506,7 +525,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = x + (y<<16) + (k<<48);
 			ev.what = 0x2b70;
 			ev.where = addr;
-			rgbanode_write(win, &ev);
+			restorestackdeliverevent(win, &ev);
 			return 0;
 		}
 
@@ -533,7 +552,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			ev.why = (u64)buf;
 			ev.what = _drag_;
 			ev.where = addr;
-			rgbanode_write(win, &ev);
+			restorestackdeliverevent(win, &ev);
 			return 0;
 		}
 

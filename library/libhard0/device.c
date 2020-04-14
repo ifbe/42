@@ -67,7 +67,7 @@ int devicelinkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int devicedelete()
+int devicedelete(void* this)
 {
 	return 0;
 }

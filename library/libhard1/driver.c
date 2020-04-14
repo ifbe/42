@@ -74,7 +74,7 @@ int driverlinkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int driverdelete()
+int driverdelete(void* this)
 {
 	return 0;
 }

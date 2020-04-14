@@ -911,6 +911,7 @@ struct supply
 	union{
 		u64 padd3;
 		int    aqdeq;	//audio.aq
+		void* spsave;	//2d.*
 		void* glsave;	//3d.glfw
 		u32*     tex;	//3d.fbo
 	};
