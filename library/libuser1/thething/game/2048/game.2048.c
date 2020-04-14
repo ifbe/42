@@ -339,7 +339,7 @@ static void the2048_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 }
 static void the2048_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@the2048_read\n");
+	//say("@the2048_read\n");
 	struct style* slot = stack[sp-1].pfoot;
 	struct entity* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
@@ -353,7 +353,7 @@ static void the2048_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 }
 static void the2048_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@the2048_write\n");
+	//say("@the2048_write\n");
 	the2048_event(ent, buf);
 }
 static void the2048_discon(struct halfrel* self, struct halfrel* peer)

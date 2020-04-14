@@ -34,9 +34,9 @@ dt:16ms
 
 
 <style>
-skyhaha{
+itemhaha{
 }
-skygeom{
+itemgeom{
 c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
@@ -46,7 +46,7 @@ t: 0.0, 0.0, 1000.0
 freemodl{
 }
 freegeom{
-c: 0.0, -100.0, 1200.0
+c: 0.0, -200.0, 2000.0
 r: 1000.0, 0.0, 0.0
 t: 0.0, 1000.0, 0.0
 f: 0.0, 0.0, -1000.0
@@ -73,7 +73,7 @@ q:0.8, 0.4
 (2048, 0, evby) -> (freecam, 0, evto)
 
 #virtual depends on inner objects
-(virtual, skygeom, 0) -> (2048, skyhaha, 0)
+(virtual, itemgeom, 0) -> (2048, itemhaha, 0)
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam

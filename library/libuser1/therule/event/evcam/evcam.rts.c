@@ -67,7 +67,7 @@ int eventrts_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, vo
 		//say("%d,%d\n", t[0],t[1]);
 
 		vec3 v;
-		gl41data_convert(stack[sp-2].pchip, stack[sp-2].pfoot, ev, v);
+		gl41data_convert(stack[sp-4].pchip, stack[sp-4].pfoot, ev, v);
 		say("%f,%f\n", v[0],v[1]);
 
 		if(v[0] < 0.01)geom->vc[0] -= 10.0;

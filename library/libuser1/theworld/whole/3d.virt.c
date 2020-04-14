@@ -6,26 +6,31 @@ void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, 
 
 
 
-/*
-int virtual_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, u8* buf, int len)
+
+int virtual_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
-	struct entity* wnd = peer->pchip;
+	struct entity* wnd = stack[sp-2].pchip;
+	if(0 == wnd)return 0;
+
 	gl41data_before(wnd);
 	gl41data_tmpcam(wnd);
 
-	struct entity* ent = self->pchip;
 	struct relation* rel = ent->orel0;
 	while(1){
 		if(0 == rel)break;
-		stack[rsp+0] = (void*)(rel->src);
-		stack[rsp+1] = (void*)(rel->dst);
-		entityread(stack[rsp+1],stack[rsp+0],stack,rsp+2,buf,len);
+		if(_ent_ == rel->dsttype){
+			stack[sp+0].pchip = rel->psrcchip;
+			stack[sp+0].pfoot = rel->psrcfoot;
+			stack[sp+1].pchip = rel->pdstchip;
+			stack[sp+1].pfoot = rel->pdstfoot;
+			entityread(rel->pdstchip,0, stack,sp+2, arg,key, 0,0);
+		}
 		rel = samesrcnextdst(rel);
 	}
 
 	gl41data_after(wnd);
 	return 0;
-}*/
+}
 
 
 
@@ -33,11 +38,15 @@ int virtual_read_bywnd(struct halfrel* self, struct halfrel* peer, struct halfre
 int virtual_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@virtual_read\n");
-	switch(ent->fmt){
+	struct supply* wnd = stack[sp-2].pchip;
+	if(0 == wnd)return 0;
+
+	switch(wnd->fmt){
 	case _gl41wnd0_:
 	case _full_:
 	case _wnd_:{
-		//virtual_read_bywnd(self, peer, stack, rsp, buf, len);break;
+		if('v' != key)break;
+		virtual_read_bywnd(ent,foot, stack,sp, arg,key);break;
 	}
 	}
 	return 0;

@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define MATBUF buf0
 #define CAMBUF buf1
-#define EVTYPE iw0
+#define EVTYPE vfmt
 #define EVSEND 666666
 void style2matrix2_transpose(struct fstyle* frus, mat4 v_, mat4 vp);
 //
@@ -120,13 +120,32 @@ static int freecam_event_obb(
 	struct event* ev, int len)
 {
 	short* t;
-	struct fstyle* obb;
 	float nx,ny,nz;
 	//say("freecam_event@%llx:%x,%x\n", act, ev->why, ev->what);
 
-	obb = &geom->fshape;
+	struct fstyle* obb = &geom->fshape;
 	if('p' == (ev->what&0xff))
 	{
+		if(0x2d70 == ev->what){
+			act->iw0 = 0;
+			return 0;
+		}
+
+		t = (void*)ev;
+		if(0x2b70 == ev->what){
+			act->ix0 = act->ixn = t[0];
+			act->iy0 = act->iyn = t[1];
+			act->iw0 = 1;
+			return 0;
+		}
+		if(0x4070 == ev->what){
+			if(0 == act->iw0)return 0;
+			freecam_rotate(obb->vr, obb->vf, obb->vt, (t[0] - act->ixn)/100.0);
+			freecam_rotate(obb->vf, obb->vt, obb->vr, (t[1] - act->iyn)/100.0);
+			act->ixn = t[0];
+			act->iyn = t[1];
+		}
+		return 0;
 	}
 	else if('j' == (ev->what&0xff))
 	{

@@ -4,8 +4,8 @@
 #include<SDL2/SDL_video.h>
 #include"libuser.h"
 #undef main
-int rgbanode_read(void*, void*);
-int rgbanode_write(void*, void*);
+int rgbanode_read(void*,int, void*,int, void*,int, void*,int);
+int rgbanode_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -28,15 +28,14 @@ static u8 uppercase[] = {
 
 
 
-void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	SDL_Event ev;
-	SDL_Keysym key;
+	SDL_Keysym sym;
 	struct event msg;
-	struct supply* wnd = self->pchip;
 
 	//read context
-	rgbanode_read(wnd, 0);
+	rgbanode_read(wnd,0, stack,sp, 0,0, 0,0);
 
 	//update screen
 	SDL_UpdateTexture(wnd->sdltex, NULL, wnd->rgbabuf, (wnd->width)*4);
@@ -78,8 +77,8 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		}
 		else if (SDL_KEYDOWN == ev.type)
 		{
-			key = ev.key.keysym;
-			msg.why = key.sym;
+			sym = ev.key.keysym;
+			msg.why = sym.sym;
 			//say("%llx\n",msg.why);
 
 			if(msg.why >= 0xff)
@@ -93,19 +92,19 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 				else continue;
 
 				msg.what = _kbd_;
-				rgbanode_write(wnd, &msg);
+				rgbanode_write(wnd,0, stack,sp, 0,0, &msg,0);
 			}
 			else
 			{
 				if((msg.why >= 0x20)&&(msg.why <= 0x7f))
 				{
-					if((key.mod & KMOD_LSHIFT) | (key.mod & KMOD_CAPS))
+					if((sym.mod & KMOD_LSHIFT) | (sym.mod & KMOD_CAPS))
 					{
 						msg.why = uppercase[msg.why-0x20];
 					}
 				}
 				msg.what = _char_;
-				rgbanode_write(wnd, &msg);
+				rgbanode_write(wnd,0, stack,sp, 0,0, &msg,0);
 			}
 		}
 		else if(SDL_MOUSEWHEEL == ev.type)
@@ -122,7 +121,7 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 			int y = ev.button.y;
 			msg.why = x+(y<<16)+(msg.why<<48);
 			msg.what = 0x2b70;
-			rgbanode_write(wnd, &msg);
+			rgbanode_write(wnd,0, stack,sp, 0,0, &msg,0);
 		}
 		else if(SDL_MOUSEBUTTONDOWN == ev.type)
 		{
@@ -133,7 +132,7 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 				int y = ev.button.y;
 				msg.why = x+(y<<16)+((u64)'l'<<48);
 				msg.what = 0x2b70;
-				rgbanode_write(wnd, &msg);
+				rgbanode_write(wnd,0, stack,sp, 0,0, &msg,0);
 			}
 		}
 		else if(SDL_MOUSEBUTTONUP == ev.type)
@@ -145,7 +144,7 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 				int y = ev.button.y;
 				msg.why = x+(y<<16)+((u64)'l'<<48);
 				msg.what = 0x2d70;
-				rgbanode_write(wnd, &msg);
+				rgbanode_write(wnd,0, stack,sp, 0,0, &msg,0);
 			}
 		}
 		else if(SDL_MOUSEMOTION == ev.type)
@@ -155,7 +154,7 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 			int y = ev.button.y;
 			msg.why = x+(y<<16)+((u64)'l'<<48);
 			msg.what = 0x4070;
-			rgbanode_write(wnd, &msg);
+			rgbanode_write(wnd,0, stack,sp, 0,0, &msg,0);
 		}
 	}
 }

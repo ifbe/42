@@ -3,7 +3,7 @@
 
 
 
-static void status_draw_gl41(
+static void skill_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -12,29 +12,29 @@ static void status_draw_gl41(
 	float* vr = geom->fshape.vr;
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
-	gl41solid_rect(ctx,0xff00ff, vc,vr,vf);
+	gl41solid_rect(ctx,0x00ffff, vc,vr,vf);
 }
-static void status_draw_pixel(
+static void skill_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 }
-static void status_draw_json(
+static void skill_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 }
-static void status_draw_html(
+static void skill_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 }
-static void status_draw_tui(
+static void skill_draw_tui(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 }
-static void status_draw_cli(
+static void skill_draw_cli(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
@@ -43,7 +43,7 @@ static void status_draw_cli(
 
 
 
-static void status_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void skill_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -52,10 +52,10 @@ static void status_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		slot = stack[sp-1].pfoot;
 		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		status_draw_gl41(ent,slot, wor,geom, wnd,area);
+		skill_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void status_read_byuiux(_ent* ent,int foot, _syn* stack,int sp)
+static void skill_read_byuiux(_ent* ent,int foot, _syn* stack,int sp)
 {
 	struct style* slot;
 	struct entity* uuu;struct style* area;
@@ -78,16 +78,16 @@ static void status_read_byuiux(_ent* ent,int foot, _syn* stack,int sp)
 	fs.vf[0] = 0.0;fs.vf[1] = dy;fs.vf[2] = 0.0;
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
 
-	status_draw_gl41(ent,slot, 0,(void*)&fs, wnd,rect);
+	skill_draw_gl41(ent, 0, 0,(void*)&fs, wnd,rect);
 }
-static void status_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void skill_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
 }
 
 
 
 
-static void status_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skill_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -100,60 +100,60 @@ static void status_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	case _full_:
 	case _wnd_:{
 		if('v' != key)break;
-		status_read_bywnd(ent,slot, wnd,area);
+		skill_read_bywnd(ent,slot, wnd,area);
 		break;
 	}
 	case _virtual_:{
-		status_read_byuiux(ent,foot, stack,sp);
+		skill_read_byuiux(ent,foot, stack,sp);
 		break;
 	}
 	default:{
-		status_read_bycam(ent,foot, stack,sp, arg,key);
+		skill_read_bycam(ent,foot, stack,sp, arg,key);
 		break;
 	}
 	}
 }
-static void status_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skill_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void status_discon(struct halfrel* self, struct halfrel* peer)
+static void skill_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void status_linkup(struct halfrel* self, struct halfrel* peer)
-{
-}
-
-
-
-
-static void status_search(struct entity* act)
-{
-}
-static void status_modify(struct entity* act)
-{
-}
-static void status_delete(struct entity* act)
-{
-}
-static void status_create(struct entity* act, u8* arg)
+static void skill_linkup(struct halfrel* self, struct halfrel* peer)
 {
 }
 
 
 
 
-void status_register(struct entity* p)
+static void skill_search(struct entity* act)
+{
+}
+static void skill_modify(struct entity* act)
+{
+}
+static void skill_delete(struct entity* act)
+{
+}
+static void skill_create(struct entity* act, u8* arg)
+{
+}
+
+
+
+
+void skill_register(struct entity* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('s','t','a','t','u','s', 0, 0);
+	p->fmt = hex64('s', 'k', 'i', 'l', 'l', 0, 0, 0);
 
-	p->oncreate = (void*)status_create;
-	p->ondelete = (void*)status_delete;
-	p->onsearch = (void*)status_search;
-	p->onmodify = (void*)status_modify;
+	p->oncreate = (void*)skill_create;
+	p->ondelete = (void*)skill_delete;
+	p->onsearch = (void*)skill_search;
+	p->onmodify = (void*)skill_modify;
 
-	p->onlinkup = (void*)status_linkup;
-	p->ondiscon = (void*)status_discon;
-	p->onread  = (void*)status_read;
-	p->onwrite = (void*)status_write;
+	p->onlinkup = (void*)skill_linkup;
+	p->ondiscon = (void*)skill_discon;
+	p->onread  = (void*)skill_read;
+	p->onwrite = (void*)skill_write;
 }

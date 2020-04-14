@@ -111,7 +111,6 @@ void xiangqi_register(void*);
 
 //hack
 void browser_register(void*);
-void circuit_register(void*);
 void fslist_register(void*);
 void pwmtool_register(void*);
 void rawdump_register(void*);
@@ -125,9 +124,12 @@ void motor_register(void*);
 void piano_register(void*);
 void satellite_register(void*);
 void tardis_register(void*);
-void tree_register(void*);
 void spring_register(void*);
 void stick_register(void*);
+
+//platn
+void grass_register(void*);
+void tree_register(void*);
 
 //move
 void elevator_register(void*);
@@ -463,9 +465,6 @@ void item_init(void* addr)
 	browser_register(tmp);
 	tmp -= sizeof(struct entity);
 
-	circuit_register(tmp);
-	tmp -= sizeof(struct entity);
-
 	fslist_register(tmp);
 	tmp -= sizeof(struct entity);
 
@@ -506,13 +505,20 @@ void item_init(void* addr)
 	tardis_register(tmp);
 	tmp -= sizeof(struct entity);
 
-	tree_register(tmp);
-	tmp -= sizeof(struct entity);
-
 	spring_register(tmp);
 	tmp -= sizeof(struct entity);
 
 	stick_register(tmp);
+	tmp -= sizeof(struct entity);
+
+
+
+
+//----------------------file----------------------
+	grass_register(tmp);
+	tmp -= sizeof(struct entity);
+
+	tree_register(tmp);
 	tmp -= sizeof(struct entity);
 
 

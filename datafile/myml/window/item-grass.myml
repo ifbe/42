@@ -1,0 +1,85 @@
+<entity>
+ground{
+fmt:ground
+url:datafile/jpg/grass.jpg
+}
+grass{
+fmt:grass
+}
+freecam{
+fmt:freecam
+}
+virtual{
+fmt:virtual
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<style>
+gndhaha{
+}
+gndgeom{
+c: 0.0, 0.0, -1.0
+r: 10000000.0, 0.0, 0.0
+f: 0.0, 10000000.0, 0.0
+t: 0.0, 0.0, 10000000.0
+}
+
+treehaha{
+}
+treegeom{
+c: 0.0, 0.0, 0.0
+r: 5000.0, 0.0, 0.0
+f: 0.0, 5000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+freeslot{
+}
+freegeom{
+r: 1.0, 0.0, 0.0
+f: 0.0, 1.0, 0.0
+t: 0.0, 0.0, 1.0
+c: 0.0,-1000.0, 1000.0
+L: 0.0, 0.0, 0.0,-1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0,-1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000000.0
+}
+
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#virtual depends on inner objects
+(virtual, gndgeom, 0) -> (ground, gndhaha, 0)
+(virtual, treegeom, 0) -> (grass, treehaha, 0)
+(virtual, freegeom, 0) -> (freecam, freeslot, 0)
+
+#glwnd depends on
+(opengl, freerect, 0) -> (freecam, 0, 0)
+</relation>
