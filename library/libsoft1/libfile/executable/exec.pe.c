@@ -5,6 +5,10 @@
 //
 void printmemory(char* addr,u64 size);
 void say(char* fmt,...);
+
+
+
+
 struct mz
 {
 	u16 magic;		//'M','Z'
@@ -35,7 +39,7 @@ struct pe
 	u32 timedate;
 	u32 symtab;
 	u32 symnum;
-	u16 opthdr;
+	u16 szopthdr;
 	u16 character;
 };
 struct opthdr
@@ -51,7 +55,15 @@ struct opthdr
 };
 struct opt32
 {
-	u32 database;
+	u16 magic;
+	u8 majorlinker;
+	u8 minorlinker;
+	u32 codesize;
+	u32 datasize;
+	u32 bsssize;
+	u32 entry;
+	u32 codebase;
+	u32 database;	//only in 32
 	u32 imagebase;
 	u32 sectionalign;
 	u32 filealign;
@@ -76,6 +88,14 @@ struct opt32
 };
 struct opt64
 {
+	u16 magic;
+	u8 majorlinker;
+	u8 minorlinker;
+	u32 codesize;
+	u32 datasize;
+	u32 bsssize;
+	u32 entry;
+	u32 codebase;
 	u64 imagebase;
 	u32 sectionalign;
 	u32 filealign;
@@ -98,7 +118,7 @@ struct opt64
 	u32 loaderflag;
 	u32 numrvasize;
 };
-struct dir
+struct dirtab
 {
 	u32 exportaddr;
 	u32 exportsize;
@@ -131,6 +151,187 @@ struct dir
 	u64 clrruntime;
 	u64 mustzero;
 };
+struct sectab{
+	char Name[8];
+	u32 VirtualSize;
+	u32 VirtualAddress;
+	u32 SizeOfRawData;
+	u32 PointerToRawData;
+	u32 PointerToRelocations;
+	u32 PointerToLinenumbers;
+	u16 NumberOfRelocations;
+	u16 NumberOfLinenumbers;
+	u32 Characteristics;
+};
+
+
+
+
+u64 disasm_pe64_nt(struct pe* pe,int len)
+{
+	u64 imagebase;
+	struct opthdr* opt;
+	struct opt32* opt32;
+	struct opt64* opt64;
+	struct dirtab* dir;
+
+	//------------pe.part0-----------
+	say(
+"machine=%x\n"
+"symtab=%x\n"
+"symnum=%x\n"
+"numsec=%x\n"
+"szopthdr=%x\n"
+"\n",
+pe->machine,
+pe->symtab,
+pe->symnum,
+pe->numsec,
+pe->szopthdr
+	);
+
+	//------------pe.part1-----------
+	opt = (void*)pe+24;
+	say(
+"codesize=%x\n"
+"datasize=%x\n"
+"bsssize=%x\n"
+"entry=%x\n"
+"codebase=%x\n"
+"\n",
+opt->codesize,
+opt->datasize,
+opt->bsssize,
+opt->entry,
+opt->codebase
+	);
+
+	//32 or 64
+	if(opt->magic == 0x10b)
+	{
+		opt32 = (void*)opt;
+		dir = (void*)opt + 96;
+
+		imagebase = opt32->imagebase;
+		say(
+"database=%x\n"
+"imagebase=%x\n"
+"imagesize=%x\n"
+"headersize=%x\n"
+"stackreserve=%x\n"
+"stackcommit=%x\n"
+"reserve=%x\n"
+"heapcommit=%x\n"
+"\n",
+opt32->database,
+opt32->imagebase,
+opt32->imagesize,
+opt32->headersize,
+opt32->stackreserve,
+opt32->stackcommit,
+opt32->heapreserve,
+opt32->heapcommit
+		);
+	}
+	else if(opt->magic == 0x20b)
+	{
+		opt64 = (void*)opt;
+		dir = (void*)opt + 108;
+
+		imagebase = opt64->imagebase;
+		say(
+"imagebase=%llx\n"
+"imagesize=%x\n"
+"headersize=%x\n"
+"stackreserve=%llx\n"
+"stackcommit=%llx\n"
+"heapreserve=%llx\n"
+"heapcommit=%llx\n"
+"\n",
+opt64->imagebase,
+opt64->imagesize,
+opt64->headersize,
+opt64->stackreserve,
+opt64->stackcommit,
+opt64->heapreserve,
+opt64->heapcommit
+		);
+	}
+
+	//---------------pe.part2-------------
+	say(
+"export@%x$%x\n"
+"import@%x$%x\n"
+"resource@%x$%x\n"
+"exception@%x$%x\n"
+"certificate@%x$%x\n"
+"relocation@%x$%x\n"
+"debug@%x$%x\n"
+"architecture@%x$%x\n"
+"globalptr@%x$%x\n"
+"tlstable@%x$%x\n"
+"loadconfig@%x$%x\n"
+"boundimport@%x$%x\n"
+"iat@%x$%x\n"
+"delayimport@%x$%x\n"
+"\n",
+dir->exportaddr, dir->exportsize,
+dir->importaddr, dir->importsize,
+dir->resourceaddr, dir->resourcesize,
+dir->exceptionaddr, dir->exceptionsize,
+dir->certificateaddr, dir->certificatesize,
+dir->relocationaddr, dir->relocationsize,
+dir->debugaddr, dir->debugsize,
+dir->architectureaddr, dir->architecturesize,
+dir->globalptraddr, dir->globalptrsize,
+dir->tlstableaddr, dir->tlstablesize,
+dir->loadconfigaddr, dir->loadconfigsize,
+dir->boundimportaddr, dir->boundimportsize,
+dir->iataddr, dir->iatsize,
+dir->delayimportaddr, dir->delayimportsize
+	);
+
+	return imagebase;
+}
+int parse_pe(void* pe, int len)
+{
+	u64 base;
+	int j,num;
+	int mzsz,ntsz;
+	struct mz* mz;
+	struct pe* nt;
+	struct sectab* sec;
+
+//------------mz head-------------
+	mz = pe;
+	mzsz = mz->addr;
+	say("mz@[0,%x)\n", mzsz);
+
+
+//------------pe head-------------
+	nt = (void*)(pe+mzsz);
+	ntsz = 24 + nt->szopthdr;
+	say("nt@[%x,%x)\n", mzsz, mzsz+ntsz);
+
+	base = disasm_pe64_nt(nt, ntsz);
+
+
+//-----------section table--------
+	sec = (void*)nt + ntsz;
+	num = nt->numsec;
+	say("section@[%x,%x)\n", mzsz+ntsz, mzsz+ntsz + num*0x28);
+
+	for(j=0;j<num;j++){
+		say("%8x,%8x,%8x,%8x:	%.8s\n",
+        		sec[j].PointerToRawData,
+        		sec[j].SizeOfRawData,
+			sec[j].VirtualAddress,
+			sec[j].VirtualSize,
+			sec[j].Name
+		);
+	}
+	return 0;
+}
 
 
 
@@ -151,130 +352,4 @@ int check_pe(u8* addr)
 	if(temp!=0x4550)return 0;
 
 	return 64;
-}
-int parse_pe(u8* addr)
-{
-	int j,k;
-	struct mz* mz;
-	struct pe* pe;
-	struct opthdr* opthdr;
-	struct opt32* opt32;
-	struct opt64* opt64;
-	struct dir* dir;
-	say("pe\n");
-
-	//mz head
-	mz = (void*)addr;
-	j = mz->addr;
-	say("[0,%x]\n", j-1);
-
-	//pe head
-	pe = (void*)(addr+j);
-	say(
-		"machine=%x\n"
-		"symtab=%x\n"
-		"symnum=%x\n"
-		"\n",
-		pe->machine,
-		pe->symtab,
-		pe->symnum
-	);
-
-	//opt head
-	opthdr = (void*)(addr+j+24);
-	say(
-		"codesize=%x\n"
-		"datasize=%x\n"
-		"bsssize=%x\n"
-		"entry=%x\n"
-		"codebase=%x\n"
-		"\n",
-		opthdr->codesize,
-		opthdr->datasize,
-		opthdr->bsssize,
-		opthdr->entry,
-		opthdr->codebase
-	);
-
-	//opt body
-	if(opthdr->magic == 0x10b)
-	{
-		opt32 = (void*)(addr + j + 24 + 24);
-		say(
-			"imagebase=%x\n"
-			"imagesize=%x\n"
-			"headersize=%x\n"
-			"stackreserve=%x\n"
-			"stackcommit=%x\n"
-			"stackreserve=%x\n"
-			"stackcommit=%x\n"
-			"\n",
-			opt32->imagebase,
-			opt32->imagesize,
-			opt32->headersize,
-			opt64->stackreserve,
-			opt64->stackcommit,
-			opt64->heapreserve,
-			opt64->heapcommit
-		);
-
-		dir = (void*)(addr + j + 0x78);
-	}
-	else if(opthdr->magic == 0x20b)
-	{
-		opt64 = (void*)(addr + j + 24 + 24);
-		say(
-			"imagebase=%llx\n"
-			"imagesize=%llx\n"
-			"headersize=%llx\n"
-			"stackreserve=%llx\n"
-			"stackcommit=%llx\n"
-			"stackreserve=%llx\n"
-			"stackcommit=%llx\n"
-			"\n",
-			opt64->imagebase,
-			opt64->imagesize,
-			opt64->headersize,
-			opt64->stackreserve,
-			opt64->stackcommit,
-			opt64->heapreserve,
-			opt64->heapcommit
-		);
-
-		dir = (void*)(addr + j + 0x88);
-	}
-
-	say(
-		"export@%llx$%llx\n"
-		"import@%llx$%llx\n"
-		"resource@%llx$%llx\n"
-		"exception@%llx$%llx\n"
-		"certificate@%llx$%llx\n"
-		"relocation@%llx$%llx\n"
-		"debug@%llx$%llx\n"
-		"architecture@%llx$%llx\n"
-		"globalptr@%llx$%llx\n"
-		"tlstable@%llx$%llx\n"
-		"loadconfig@%llx$%llx\n"
-		"boundimport@%llx$%llx\n"
-		"iat@%llx$%llx\n"
-		"delayimport@%llx$%llx\n"
-		"\n",
-		dir->exportaddr, dir->exportsize,
-		dir->importaddr, dir->importsize,
-		dir->resourceaddr, dir->resourcesize,
-		dir->exceptionaddr, dir->exceptionsize,
-		dir->certificateaddr, dir->certificatesize,
-		dir->relocationaddr, dir->relocationsize,
-		dir->debugaddr, dir->debugsize,
-		dir->architectureaddr, dir->architecturesize,
-		dir->globalptraddr, dir->globalptrsize,
-		dir->tlstableaddr, dir->tlstablesize,
-		dir->loadconfigaddr, dir->loadconfigsize,
-		dir->boundimportaddr, dir->boundimportsize,
-		dir->iataddr, dir->iatsize,
-		dir->delayimportaddr, dir->delayimportsize
-	);
-
-	return 0;
 }
