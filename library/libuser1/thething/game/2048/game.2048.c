@@ -280,10 +280,12 @@ static void the2048_move(struct entity* act, int op)
 	q = (void*)(act->DATBUF) + 16*(act->DATLEN);
 	for(j=0;j<16;j++)q[j] = p[j];
 
-	if('f' == op)up2048(q);
-	else if('l' == op)left2048(q);
-	else if('r' == op)right2048(q);
-	else if('n' == op)down2048(q);
+	switch(op){
+	case 'a':left2048(q);break;
+	case 'd':right2048(q);break;
+	case 's':down2048(q);break;
+	case 'w':up2048(q);break;
+	}
 
 	new2048(q);
 }
@@ -298,27 +300,28 @@ static void the2048_event(struct entity* act, struct event* ev)
 	{
 		switch(ev->why){
 		case 0x8:act->DATLEN = ((act->DATLEN)+15)%16;break;
-		case 'w':the2048_move(act, 'f');break;
-		case 's':the2048_move(act, 'n');break;
-		case 'd':the2048_move(act, 'r');break;
-		case 'a':the2048_move(act, 'l');break;
+		case 'a':
+		case 'd':
+		case 's':
+		case 'w':the2048_move(act, ev->why);break;
 		}
 	}
 	else if(_kbd_ == ev->what)
 	{
-		k = (ev->why)&0xff;
-		if(0x48 == k)the2048_move(act, 'f');
-		else if(0x4b == k)the2048_move(act, 'l');
-		else if(0x4d == k)the2048_move(act, 'r');
-		else if(0x50 == k)the2048_move(act, 'n');
+		switch(ev->why){
+		case 0x4b:the2048_move(act, 'a');break;
+		case 0x4d:the2048_move(act, 'd');break;
+		case 0x50:the2048_move(act, 's');break;
+		case 0x48:the2048_move(act, 'w');break;
+		}
 	}
 	else if(joy_left == (ev->what & joy_mask))
 	{
 		s = (void*)ev;
-		if(s[3] & joyl_left) the2048_move(act, 'l');
-		if(s[3] & joyl_right)the2048_move(act, 'r');
-		if(s[3] & joyl_down) the2048_move(act, 'n');
-		if(s[3] & joyl_up)   the2048_move(act, 'f');
+		if(s[3] & joyl_left) the2048_move(act, 'a');
+		if(s[3] & joyl_right)the2048_move(act, 'd');
+		if(s[3] & joyl_down) the2048_move(act, 's');
+		if(s[3] & joyl_up)   the2048_move(act, 'w');
 	}
 }
 
@@ -354,7 +357,8 @@ static void the2048_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 static void the2048_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@the2048_write\n");
-	the2048_event(ent, buf);
+	if(_ioby_ == foot)the2048_move(ent, *(u8*)buf);
+	else the2048_event(ent, buf);
 }
 static void the2048_discon(struct halfrel* self, struct halfrel* peer)
 {

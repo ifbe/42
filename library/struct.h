@@ -941,6 +941,7 @@ struct supply
 		struct gl41data* glsolid;
 		struct gl41data** gl_solid;
 		void* htmlctx;	//html
+		void* rgbaalloc;
 		int jsonlen;	//json
 		int rgbalen;	//rgba
 		int textlen;	//text

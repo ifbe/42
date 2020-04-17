@@ -1,12 +1,3 @@
-<style>
-where{
-c:256,256,0
-r:256,0,0
-f:0,256,0
-}
-</style>
-
-
 <entity>
 2048{
 fmt:2048
@@ -18,6 +9,9 @@ fmt:2048
 wnd{
 fmt:wnd
 }
+std{
+fmt:std
+|}
 </supply>
 
 
@@ -28,6 +22,16 @@ fmt:poller
 </worker>
 
 
+<style>
+where{
+c:256,256,0
+r:256,0,0
+f:0,256,0
+}
+</style>
+
+
 <relation>
 (wnd, where, 0) -> (2048, 0, 0)
+(std, 0, dst) -> (2048, 0, ioby)
 </relation>

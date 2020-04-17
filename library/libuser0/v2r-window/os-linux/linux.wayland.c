@@ -235,7 +235,7 @@ void* uievent(struct supply* p)
 	display = wl_display_connect(NULL);
 	if (display == NULL)
 	{
-		fprintf(stderr, "Can't connect to display\n");
+		fprintf(stderr, "errno=%d@wl_display_connect\n",errno);
 		exit(-1);
 	}
 	printf("connected to display\n");
@@ -284,10 +284,10 @@ void* uievent(struct supply* p)
 	}
 
 	//
-	shm_data = mmap(p->buf, 2048*1024*4,
+	shm_data = mmap(p->rgbabuf, 2048*1024*4,
 		PROT_READ | PROT_WRITE, MAP_FIXED|MAP_SHARED, fd, 0);
 	if (shm_data == MAP_FAILED) {
-		fprintf(stderr, "mmap failed: %m\n");
+		fprintf(stderr, "errno=%d@mmap: %m\n",errno);
 		close(fd);
 		exit(1);
 	}
@@ -337,8 +337,11 @@ void windowdelete(struct supply* w)
 }
 void windowcreate(struct supply* w)
 {
-	u64 m = (u64)malloc(2048*1024*4 + 0x100000);
-	w->buf = m - (m&0xfffff) + 0x100000;
+	u64 align;
+	w->rgbaalloc = malloc(2048*1024*4 + 0x100000);
+	align = (u64)(w->rgbaalloc);
+	align = (align+0xfffff)&0xfffffffffff00000;
+	w->rgbabuf = (void*)align;
 
 	w->fmt = _rgba_;
 	w->vfmt = hex64('b','g','r','a','8','8','8','8');
@@ -349,7 +352,7 @@ void windowcreate(struct supply* w)
 	w->fbwidth = 1024*4;
 	//w->fbheight =
 
-	w->thread = startthread(uievent, w);
+	threadcreate(uievent, w);
 }
 
 
