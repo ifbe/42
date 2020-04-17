@@ -23,6 +23,9 @@ width:1024
 height:1024
 depth:1024
 }
+joy{
+fmt:joy
+}
 </supply>
 
 
@@ -82,4 +85,7 @@ q:1.0, 1.0
 
 #glwnd depends on
 (opengl, freerect, 0) -> (freecam, 0, 0)
+
+#joystick event
+(joy, 0, dst) -> (freecam, 0, evby)
 </relation>

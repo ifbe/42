@@ -38,6 +38,9 @@ width:1024
 height:1024
 depth:1024
 }
+joy{
+fmt:joy
+}
 </supply>
 
 
@@ -108,9 +111,6 @@ q:1.0, 1.0
 
 
 <relation>
-(event, 0, tar) -> (rabbit, 0, evby)
-(event, 0, cam) -> (freecam, 0, evto)
-
 #virtual depends on inner objects
 (virtual, skygeom, 0) -> (texball, skyhaha, 0)
 (virtual, gndgeom, 0) -> (terrain, gndhaha, 0)
@@ -120,4 +120,12 @@ q:1.0, 1.0
 
 #glwnd depends on cam
 (opengl, freerect, 0) -> (freecam, 0, a)
+
+#joy stick
+(joy, 0, dst) -> (freecam, 0, evby)
+
+#3rd controller
+(event, 0, tar) -> (rabbit, 0, evby)
+(event, 0, cam) -> (freecam, 0, evto)
+
 </relation>

@@ -151,6 +151,36 @@ int event3rd_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, st
 		event3rd_movetar(camgeom, targeom, dx, dy, dz);
 		return 0;
 	}
+	else if('j' == (ev->what&0xff))
+	{
+		if(0 == ent->THECAM)return 0;
+		struct fstyle* camgeom = event3rd_findgeom(ent->THECAM);
+		if(0 == camgeom)return 0;
+
+		if(0 == ent->THETAR)return 0;
+		struct fstyle* targeom = event3rd_findgeom(ent->THETAR);
+		if(0 == targeom)return 0;
+
+		short* t = (void*)ev;
+		if(joy_left == (ev->what & joy_mask))
+		{
+			int dx=0;
+			int dy=0;
+			if((t[0]<-4096)|(t[0]>4096))dx = t[0]/256;
+			if((t[1]<-4096)|(t[1]>4096))dy = t[1]/256;
+			event3rd_movetar(camgeom, targeom, dx, dy, 0);
+			return 0;
+		}
+		else if(joy_right == (ev->what & joy_mask))
+		{
+			int dx=0;
+			int dy=0;
+			if((t[0]<-4096)|(t[0]>4096))dx = t[0]/4096;
+			if((t[1]<-4096)|(t[1]>4096))dy =-t[1]/4096;
+			event3rd_movecam(camgeom, targeom, dx, dy);
+			return 0;
+		}
+	}
 	return 0;
 }
 int event3rd_discon(struct halfrel* self, struct halfrel* peer)

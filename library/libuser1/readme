@@ -1,11 +1,11 @@
-thedata:
-	world(root), scene(fork)
-theitem:
-	flower/grass, drone/vehicle, dog/cat, ...
 themind:
-	code for esc/bms/inverter/generator, idea of human
+	soul of thing: code for esc/bms/inverter/generator, idea of human
 therule:
-	course of nature, law of human
+	soul of world: course of nature, law of human
+thething:
+	body of thing: flower/grass, drone/vehicle, dog/cat, ...
+theworld:
+	body of world: whole(root), scene(fork)
 
 forcpu:
 	yuv, pcm, ...

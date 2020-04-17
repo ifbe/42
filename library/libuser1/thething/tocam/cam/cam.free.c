@@ -152,6 +152,12 @@ static int freecam_event_obb(
 		t = (void*)ev;
 		if(joy_left == (ev->what & joy_mask))
 		{
+			if((t[0]<-4096)|(t[0]>4096)){
+				obb->vc[0] += t[0]/256;
+			}
+			if((t[1]<-4096)|(t[1]>4096)){
+				obb->vc[1] += t[1]/256;
+			}
 			if(t[3] & joyl_left)		//x-
 			{
 				obb->vc[0] -= 10;
@@ -179,6 +185,12 @@ static int freecam_event_obb(
 		}
 		else if(joy_right == (ev->what & joy_mask))
 		{
+			if((t[0]<-4096)|(t[0]>4096)){
+				freecam_rotate(obb->vr, obb->vf, obb->vt,-t[0]/1048576.0);
+			}
+			if((t[1]<-4096)|(t[1]>4096)){
+				freecam_rotate(obb->vf, obb->vt, obb->vr, t[1]/1048576.0);
+			}
 			if(t[3] & joyr_left)		//x-
 			{
 				freecam_rotate(obb->vr, obb->vf, obb->vt, 0.05);

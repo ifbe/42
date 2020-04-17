@@ -42,7 +42,7 @@ dylib:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lm -lc
+	-lm -lc -framework AudioToolbox
 program:
 	clang \
 	$(library)/libboot0/*.o \
@@ -53,7 +53,7 @@ program:
 	$(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o \
 	$(library)/libuser1/*.o \
-	-lm
+	-lm -framework AudioToolbox
 clean:
 	make -C $(library) clean
 	rm -f *.o *.a *.dylib

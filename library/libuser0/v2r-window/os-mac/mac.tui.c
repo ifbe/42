@@ -4,8 +4,8 @@
 #include <unistd.h>
 #include <termios.h>
 #include "libuser.h"
-void tuinode_read(void*, void*);
-void tuinode_write(void*, void*);
+int tuinode_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
+int tuinode_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
 
 
 
@@ -117,17 +117,15 @@ void windowdraw(struct supply* wnd)
 
 
 
-void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct supply* win = self->pchip;
-
 	//read context
-	tuinode_read(win, 0);
+	tuinode_read(wnd,0, stack,sp, arg,key, buf,len);
 
 	//update screen
-	windowdraw(win);
+	windowdraw(wnd);
 }
-void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 void windowstop()
