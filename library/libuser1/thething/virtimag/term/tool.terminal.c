@@ -116,7 +116,7 @@ static void terminal_draw_tui(
 	{
 		for(x=0;x<w;x++)
 		{
-			p[(win->stride)*y + x] = q[(term->width)*(term->top+y) + x];
+			p[(win->width)*y + x] = q[(term->width)*(term->top+y) + x];
 		}
 	}
 }

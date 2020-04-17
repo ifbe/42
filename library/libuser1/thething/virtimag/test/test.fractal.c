@@ -103,7 +103,7 @@ static void fractal_draw_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	int w = win->stride;
+
 	u32* buf = win->rgbabuf;
 	drawline_rect(win, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
 /*

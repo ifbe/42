@@ -6,8 +6,8 @@
 #include <sys/ioctl.h>		//ioctl
 #include <linux/fb.h>		//framebuffer
 #include "libuser.h"
-int rgbanode_read(void*, void*);
-int rgbanode_write(void*, void*);
+int rgbanode_read( void*,int, void*,int, void*,int, void*,int);
+int rgbanode_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -24,17 +24,16 @@ static int bpp = 0;
 
 
 
-void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	int x,y,ret;
 	u8* canvas;
-	struct supply* win = self->pchip;
 
 	//read context
-	rgbanode_read(win, 0);
+	rgbanode_read(wnd,0, stack,sp, arg,key, buf,len);
 
 	//update screen
-	canvas = (void*)(win->rgbabuf);
+	canvas = (void*)(wnd->rgbabuf);
 	if(16 == bpp)
 	{
 		for(x=0;x<xmax*ymax;x++)
@@ -63,7 +62,7 @@ void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, 
 		write(fbfd, canvas, fbtotalbyte);
 	}
 }
-void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 }
 void windowlist()

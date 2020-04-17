@@ -215,7 +215,7 @@ static void weiqi_draw_tui(
 	struct entity* win, struct style* sty)
 {
 	int x,y,j,k,ret,color;
-	int width = win->stride;
+	int width = win->width;
 	int height = win->height;
 	u8* p = (u8*)(win->buf0);
 

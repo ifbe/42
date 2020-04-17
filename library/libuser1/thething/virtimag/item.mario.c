@@ -58,7 +58,7 @@ static void mario_draw_pixel(
 	if(xmax >= ww*2)xmax = ww*2;
 	ymax = act->height;
 	if(ymax >= hh*2)ymax = hh*2;
-	stride = win->stride;
+	stride = win->fbwidth;
 	for(y=0;y<ymax;y++)
 	{
 		dst = (win->rgbabuf) + (cy-hh+y)*stride*4 + (cx-ww)*4;

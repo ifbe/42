@@ -102,7 +102,7 @@ static void qrcode_draw_tui(
 	struct entity* win, struct style* sty)
 {
 	int x,y;
-	int width = win->stride;
+	int width = win->width;
 	int height = win->height;
 	u8* p = (u8*)(win->textbuf);
 

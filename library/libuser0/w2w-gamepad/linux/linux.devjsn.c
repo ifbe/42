@@ -11,6 +11,7 @@
 void joystick_event(struct supply* win, void* p)
 {
 	struct event ev;
+	struct halfrel stack[0x80];
 //printf("orel=%llx\n",win->orel0);
 	if(0 == win->orel0)
 	{
@@ -23,11 +24,11 @@ void joystick_event(struct supply* win, void* p)
 
 		ev.why = *(u64*)(p+0);
 		ev.what = joy_left;
-		relationwrite(win, _dst_, 0, 0, &ev, 0);
+		relationwrite(win,_dst_, stack,0, 0,0, &ev,0);
 
 		ev.why = *(u64*)(p+8);
 		ev.what = joy_right;
-		relationwrite(win, _dst_, 0, 0, &ev, 0);
+		relationwrite(win,_dst_, stack,0, 0,0, &ev,0);
 	}
 }
 void joystickthread(struct supply* win)

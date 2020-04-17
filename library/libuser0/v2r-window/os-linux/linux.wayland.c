@@ -310,14 +310,14 @@ void* uievent(struct supply* p)
 
 	wl_display_disconnect(display);
 }
-void windowread()
+void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-void windowwrite(struct supply* p)
+void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	wl_display_dispatch(display);
-	wl_surface_damage(surface, 0, 0, p->width, p->height);
-	wl_surface_attach(surface, p->buf, 0, 0);
+	wl_surface_damage(surface, 0, 0, wnd->width, wnd->height);
+	wl_surface_attach(surface, wnd->rgbabuf, 0, 0);
 	wl_surface_commit(surface);
 }
 void windowlist()

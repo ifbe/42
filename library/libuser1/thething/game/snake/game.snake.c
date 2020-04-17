@@ -108,10 +108,10 @@ void snake_draw_tui(
 	struct entity* win, struct style* sty)
 {
 	int j,t;
-	int stride = win->stride;
+	int width = win->width;
 	char* p = win->textbuf;
 
-	t = buf[0].x + buf[0].y*stride;
+	t = buf[0].x + buf[0].y*width;
 	p[t<<2] = '@';
 }
 void snake_draw_cli(

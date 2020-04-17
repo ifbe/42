@@ -154,7 +154,7 @@ static void tetris_draw_tui(
 	struct entity* win, struct style* sty)
 {
 	int x,y;
-	int w = win->stride;
+	int w = win->width;
 	int h = win->height;
 	char* p = win->textbuf;
 

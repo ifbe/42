@@ -2,10 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <errno.h>
 #include <X11/Xlib.h>
 #include "libuser.h"
-int rgbanode_read(void*, void*);
-int rgbanode_write(void*, void*);
+int rgbanode_read( void*,int, void*,int, void*,int, void*,int);
+int rgbanode_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -77,6 +78,19 @@ static int fuckyou = 0;
 
 
 
+
+static void restorestackdeliverevent(struct supply* wnd, struct event* ev)
+{
+	u64* save = wnd->spsave;
+	if(0 == save){
+		eventwrite(ev->why, ev->what, ev->where, 0);
+		return;
+	}
+
+	struct halfrel* stack = (void*)save[0];
+	int depth = save[1];
+	rgbanode_write(wnd,0, stack,depth, 0,0, ev,0);
+}
 void windowevent(struct supply* win, XEvent xev)
 {
 	u64 x,y,k;
@@ -141,7 +155,7 @@ void windowevent(struct supply* win, XEvent xev)
 		myev.why = x + (y<<16) + (k<<48);
 		myev.what = hex32('p', '+', 0, 0);
 		myev.where = (u64)win;
-		rgbanode_write(win, &myev);
+		restorestackdeliverevent(win, &myev);
 		//eventwrite(why, what, where, 0);
 	}//ButtonPress
 	else if(ButtonRelease == xev.type)
@@ -158,7 +172,7 @@ void windowevent(struct supply* win, XEvent xev)
 		myev.why = x + (y<<16) + (k<<48);
 		myev.what = hex32('p', '-', 0, 0);
 		myev.where = (u64)win;
-		rgbanode_write(win, &myev);
+		restorestackdeliverevent(win, &myev);
 		//eventwrite(why, what, where, 0);
 	}//ButtonRelease
 	else if(MotionNotify == xev.type)
@@ -170,7 +184,7 @@ void windowevent(struct supply* win, XEvent xev)
 		myev.why = x + (y<<16) + (k<<48);
 		myev.what = hex32('p', '@', 0, 0);
 		myev.where = (u64)win;
-		rgbanode_write(win, &myev);
+		restorestackdeliverevent(win, &myev);
 		//eventwrite(why, what, where, 0);
 	}//MotionNotify
 	else if(KeyPress == xev.type)
@@ -188,7 +202,7 @@ void windowevent(struct supply* win, XEvent xev)
 			{
 				//eventwrite(why, what, where, 0);
 				myev.where = (u64)win;
-				rgbanode_write(win, &myev);
+				restorestackdeliverevent(win, &myev);
 				return;
 			}
 		}
@@ -199,7 +213,7 @@ void windowevent(struct supply* win, XEvent xev)
 			{
 				//eventwrite(why, what, where, 0);
 				myev.where = (u64)win;
-				rgbanode_write(win, &myev);
+				restorestackdeliverevent(win, &myev);
 				return;
 			}
 		}
@@ -208,7 +222,7 @@ void windowevent(struct supply* win, XEvent xev)
 		myev.why = xlib2kbd[xev.xkey.keycode];
 		myev.what = hex32('k','b','d',0);
 		myev.where = (u64)win;
-		rgbanode_write(win, &myev);
+		restorestackdeliverevent(win, &myev);
 		//eventwrite(why, what, where, 0);
 	}//KeyPress
 }
@@ -216,29 +230,34 @@ void windowevent(struct supply* win, XEvent xev)
 
 
 
-void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	XEvent xev;
-	struct supply* win = self->pchip;
-
-	//read context
-	rgbanode_read(win, 0);
-
 	//update screen
+	rgbanode_read(wnd,0, stack,sp, arg,key, buf,len);
 	XPutImage(
-		dsp, win->xlibfd, win->xlibgc, win->ximage,
+		dsp, wnd->xlibfd, wnd->xlibgc, wnd->ximage,
 		0, 0, 0, 0,
-		win->width, win->height
+		wnd->width, wnd->height
 	); 
 
-	//peak event
+	//save stack to temp
+	u64 save[2];
+	save[0] = (u64)stack;
+	save[1] = sp;
+	wnd->spsave = save;
+
+	//handle event
+	XEvent xev;
 	while(XPending(dsp))
 	{
 		XNextEvent(dsp, &xev);
-		windowevent(win, xev);
+		windowevent(wnd, xev);
 	}//while
+
+	//clear temp
+	wnd->spsave = 0;
 }
-void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 /*
 	XEvent xev;
@@ -330,7 +349,16 @@ void initwindow()
 
 	//display
 	dsp = XOpenDisplay(NULL);
+	if(0 == dsp){
+		printf("errno=%d@XOpenDisplay\n",errno);
+		return;
+	}
+
 	root = DefaultRootWindow(dsp);
+	if(0 == root){
+		printf("errno=%d@DefaultRootWindow\n",errno);
+		return;
+	}
 	//int screen = DefaultScreen(dsp);
 
 	//visual

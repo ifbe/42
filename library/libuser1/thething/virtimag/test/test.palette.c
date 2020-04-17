@@ -32,7 +32,6 @@ static void palette_draw_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	int w = win->stride;
 	u32* buf = (u32*)(win->rgbabuf);
 	u32 pal;
 
@@ -49,7 +48,9 @@ static void palette_draw_pixel(
 			g = 128+(y*128/hh);
 			if(type == 1)pal = red + (b<<16);
 			else if(type == 2)pal = b + (red<<16);
-			buf[w*(cy+y) + cx+x] = pal | (g<<8) | 0xff000000;
+
+			buf = win->rgbabuf + 4*win->fbwidth*(cy+y);
+			buf[cx+x] = pal | (g<<8) | 0xff000000;
 		}
 	}
 	pal = (red<<16)+(green<<8)+blue;

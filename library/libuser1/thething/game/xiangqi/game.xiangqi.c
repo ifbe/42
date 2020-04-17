@@ -320,7 +320,7 @@ static void xiangqi_draw_tui(
 	struct entity* win, struct style* sty)
 {
 	int x,y,color;
-	int width = win->stride;
+	int width = win->width;
 	int height = win->height;
 	u8* buf = win->textbuf;
 	u8* q;

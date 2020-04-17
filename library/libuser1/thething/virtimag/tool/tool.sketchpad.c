@@ -259,7 +259,7 @@ static void sketchpad_draw_pixel(
 	double rx,ry,rw;
 	int x,y,w,counter;
 	int cx, cy, ww, hh;
-	int stride = win->stride;
+	int stride = win->fbwidth;
 	u32* buf = win->rgbabuf;
 	u8* databuf = act->DATBUF;
 
@@ -344,7 +344,7 @@ static void sketchpad_draw_tui(
 	double rx, ry, hello;
 	u8* databuf = act->DATBUF;
 
-	int width = win->stride;
+	int width = win->width;
 	int height = win->height;
 	u8* p = win->rgbabuf;
 

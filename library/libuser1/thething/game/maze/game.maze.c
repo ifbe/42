@@ -297,17 +297,17 @@ static void maze_draw_tui(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int x,y,stride;
+	int x,y,width;
 	u8* p;
 	u8* buf = act->buf0;
 	u8* out = win->textbuf;
 
-	stride = win->stride;
+	width = win->width;
 	for(y=0;y<HEIGHT;y++)
 	{
 		for(x=0;x<WIDTH;x++)
 		{
-			p = out + (y*stride*4) + (x*8);
+			p = out + (y*width*4) + (x*8);
 			if(buf[WIDTH*y+x] != 0)mysnprintf(p, 4, "⬛");
 			else mysnprintf(p, 4, "  ");
 		}

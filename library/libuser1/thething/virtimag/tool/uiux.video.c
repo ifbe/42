@@ -163,7 +163,7 @@ void video_draw_pixel(
 	u8* src;
 	u8* dst;
 	int cx, cy, ww, hh, j;
-	int w = win->stride;
+	int w = win->fbwidth;
 	int h = win->height;
 	if(sty)
 	{

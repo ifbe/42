@@ -15,7 +15,7 @@ fmt:fat
 <system>
 file{
 fmt:file
-url:/dev/disk0s1
+url:/dev/mmcblk0p1
 }
 </system>
 

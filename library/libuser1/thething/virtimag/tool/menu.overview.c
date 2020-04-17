@@ -1015,7 +1015,7 @@ void overview_draw_tui(
 	struct entity* win, struct style* sty)
 {
 	int j,k,x,y;
-	int ww = ((win->stride)/2)&0xfffc;
+	int ww = ((win->width)/2)&0xfffc;
 	int hh = (win->height)/2;
 
 	gentui_rect(win, 4, ww/2, hh/2, ww*3/2, hh*3/2);

@@ -6,8 +6,8 @@
 #define MOUSE_HWHEELED 0x0008
 #endif
 int lowlevel_input();
-void tuinode_read(void*, void*);
-void tuinode_write(void*, void*);
+void tuinode_read( void*,int, void*,int, void*,int, void*,int);
+void tuinode_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -306,17 +306,15 @@ void windowdraw(struct supply* win)
 
 
 
-void windowread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct supply* win = self->pchip;
-
 	//read context
-	tuinode_read(win, 0);
+	tuinode_read(wnd,0, stack,sp, arg,key, buf,len);
 
 	//update screen
-	windowdraw(win);
+	windowdraw(wnd);
 }
-void windowwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 void windowstop()

@@ -177,7 +177,7 @@ static void sudoku_draw_tui(
 	struct entity* win, struct style* sty)
 {
 	int x,y,j,k,ret,color;
-	int stride = win->stride;
+	int width = win->width;
 	char* p = win->textbuf;
 
 	u8* data = act->buf0;
@@ -188,7 +188,7 @@ static void sudoku_draw_tui(
 			if(data[y*9+x] == 0)continue;
 
 			//position
-			ret = (3*y+1)*stride + 6*x + 2;
+			ret = (3*y+1)*width + 6*x + 2;
 			ret <<= 2;
 
 			//color

@@ -169,8 +169,8 @@ static void codeimg_draw_pixel(
 {
 	int x,y;
 	int width = win->width;
-	int stride = win->stride;
 	int height = win->height;
+	int stride = win->fbwidth;
 	int cx, cy, ww, hh;
 	if(sty)
 	{

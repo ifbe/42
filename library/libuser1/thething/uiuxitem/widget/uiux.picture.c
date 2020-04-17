@@ -133,50 +133,6 @@ static void picture_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	u32 tmp;
-	u32* dst;
-	u32* src;
-	int x,y,xmax,ymax,stride;
-	int cx, cy, ww, hh;
-	if(sty)
-	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
-	}
-	else
-	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
-	}
-	if(0 == act->CTXBUF)return;
-
-	xmax = act->width;
-	if(xmax >= ww*2)xmax = ww*2;
-	ymax = act->height;
-	if(ymax >= hh*2)ymax = hh*2;
-	stride = win->stride;
-	for(y=0;y<ymax;y++)
-	{
-		dst = (win->rgbabuf) + (cy-hh+y)*stride*4 + (cx-ww)*4;
-		src = (act->CTXBUF) + 4*y*(act->width);
-		//say("y=%d,%llx,%llx\n",y,dst,src);
-		if('b' == ((win->fmt)&0xff))
-		{
-			for(x=0;x<xmax;x++)dst[x] = src[x];
-		}
-		else
-		{
-			for(x=0;x<xmax;x++)
-			{
-				tmp = src[x];
-				dst[x] = 0xff000000 | (tmp&0xff00) | ((tmp>>16)&0xff) | ((tmp&0xff)<<16);
-			}
-		}
-	}
 }
 static void picture_draw_json(
 	struct entity* act, struct style* pin,
