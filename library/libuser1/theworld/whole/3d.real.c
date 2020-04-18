@@ -3,12 +3,12 @@
 
 
 
-int reality_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int reality_read(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@reality_read\n");
 	return 0;
 }
-int reality_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int reality_write(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

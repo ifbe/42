@@ -23,12 +23,9 @@ void guide3d_draw_gl41(struct entity* scene, struct entity* wnd)
 		rel = samesrcnextdst(rel);
 	}
 }
-int guide3d_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int guide3d_read_bycam(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg, int key)
 {
-	if(stack && ('v' == len)){
-		struct entity* ent = self->pchip;
-		if(0 == ent)return 0;
-
+	if(stack && ('v' == key)){
 		struct halfrel* aa[2];
 		int ret = relationsearch(ent, _tar_, &aa[0], &aa[1]);
 		if(ret <= 0)return 0;
@@ -36,7 +33,7 @@ int guide3d_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfre
 		struct entity* tar = aa[1]->pchip;
 		if(0 == tar)return 0;
 
-		struct entity* wnd = stack[rsp-4]->pchip;
+		struct entity* wnd = stack[sp-4].pchip;
 		if(0 == wnd)return 0;
 
 		guide3d_draw_gl41(tar, wnd);
@@ -47,11 +44,11 @@ int guide3d_read_bycam(struct halfrel* self, struct halfrel* peer, struct halfre
 
 
 
-int guide3d_read(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int guide3d_read(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	return guide3d_read_bycam(self,peer, stack,rsp, buf,len);
+	return guide3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
-int guide3d_write(struct halfrel* self, struct halfrel* peer, struct halfrel** stack, int rsp, void* buf, int len)
+int guide3d_write(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

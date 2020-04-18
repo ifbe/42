@@ -3,15 +3,13 @@
 
 
 
-int ann_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* image, int label)
+int ann_read(struct artery* art,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
 {
 	int x,y;
-	struct artery* art;
 	float* weight;
 	float* result;
 	//say("@ann_read\n");
 
-	art = self->pchip;
 	weight = art->buf0;
 	result = art->buf1;
 
@@ -26,16 +24,14 @@ int ann_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8*
 
 	return 0;
 }
-int ann_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* image, int label)
+int ann_write(struct artery* art,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
 {
 	int x,y;
-	struct artery* art;
 	float* weight;
 	float* result;
 	float delta[10];
 	//say("@ann_read\n");
 
-	art = self->pchip;
 	weight = art->buf0;
 	result = art->buf1;
 
