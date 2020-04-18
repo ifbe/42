@@ -30,16 +30,20 @@ void bigint_print(struct str* src)
 
 
 //copy src into dst
-int bigdup(struct str* src, struct str* dst)
+int bigdup(verylong* src, verylong* dst)
 {
-	int j,len = src->len;
+	int j,len;
+	len = src->len;
+	dst->len = len;
+
 	u8* srcbuf = src->buf;
 	u8* dstbuf = dst->buf;
-
 	for(j=0;j<len;j++)dstbuf[j] = srcbuf[j];
-	dst->len = len;
 	return len;
 }
+
+
+//verylong* a, verylong* b
 int bigcmp(			//(a-b)
 	u8* abuf, int alen,
 	u8* bbuf, int blen)
@@ -75,6 +79,7 @@ int bigcmp(			//(a-b)
 
 
 
+//verylong* data, int sh
 int bigshl(u8* buf, int len, int sh)
 {
 	int j;
@@ -93,6 +98,7 @@ int bigshl(u8* buf, int len, int sh)
 	}
 	return len;
 }
+//verylong* data, int sh
 int bigshr(u8* buf, int len, int sh)
 {
 	int j;

@@ -14,23 +14,22 @@
 #else
 	#define GLSL_VERSION "#version 410 core\n"
 #endif
-//
-#define touch0 0
-#define touch1 1
-#define touch2 2
-#define touch3 3
-#define mousel 10
-#define mouser 11
-#define gamepad0 12
-#define gamepad1 13
-#define gamepad2 14
-#define gamepad3 15
-//
+//mouse
+#define point_onto hex16('p','+')
+#define point_away hex16('p','-')
+#define point_move hex16('p','@')
+#define point_shut hex16('p','?')
+//touch
+#define touch_onto hex16('t','+')
+#define touch_away hex16('t','-')
+#define touch_move hex16('t','@')
+#define touch_shut hex16('t','?')
+//keyboard
 #define kbd_up 0x48
 #define kbd_down 0x50
 #define kbd_left 0x4b
 #define kbd_right 0x4d
-//
+//gamepad
 #define joy_mask  0xff00ff
 #define joy_left  hex32('j', 0 ,'l', 0 )
 #define joy_right hex32('j', 0 ,'r', 0 )

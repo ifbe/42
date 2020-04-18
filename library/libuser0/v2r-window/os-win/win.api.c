@@ -131,9 +131,6 @@ int windowdelete(struct supply* win)
 }
 int windowcreate(struct supply* win)
 {
-	HWND wnd;
-	HDC dc;
-	int j;
 	if(0 == win)return 0;
 
 	win->fmt = _rgba_;
@@ -147,22 +144,28 @@ int windowcreate(struct supply* win)
 
 	win->hwnd = 0;
 	win->hdc = 0;
-	win->rgbabuf = malloc(2048*2048*4);
 
-	//for(j=0;j<16;j++)win->input[j].w0 = 0xffff;
+	//per window data
+	int j;
+	int* finger = win->perwnd = malloc(0x1000);
+	for(j=0;j<10;j++)finger[j] = -1;
+
+	//rgba buffer
+	win->rgbabuf = malloc(2048*2048*4);
 
 
 
 
 	//创建窗口
-	wnd = CreateWindow(
+	HWND wnd = CreateWindow(
 		AppTitle, AppTitle, WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX=无边框
 		100, 100, (win->width)+16, (win->height)+39,
 		NULL, NULL, 0, NULL);
 	if(!wnd)return 0;
 
 	//dc
-	dc = GetDC(wnd);
+	HDC dc = GetDC(wnd);
+	if(!dc)return 0;
 
 	//透明
 	LONG t = GetWindowLong(wnd, GWL_EXSTYLE);
@@ -205,6 +208,20 @@ int windowcreate(struct supply* win)
 
 
 
+static int whichfinger(struct supply* wnd, int old, int new)
+{
+	int k;
+	int* tab = wnd->perwnd;
+	for(k=0;k<10;k++)
+	{
+		if(old == tab[k])goto found;
+	}
+	return 99;
+
+found:
+	if(old != new)tab[k] = new;
+	return k;
+}
 static void restorestackdeliverevent(struct supply* wnd, struct event* ev)
 {
 	u64* save = wnd->spsave;
@@ -280,6 +297,7 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 /*
+		//obsolete
 		case WM_TOUCH:
 		{
 			int i=0;
@@ -313,51 +331,33 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			return 0;
 		}
 */
-/*
 		case WM_POINTERDOWN:
 		{
 			u64 x,y,k;
-			for(k=0;k<10;k++)
-			{
-				if((u16)wparam == win->input[k].w0)
-				{
-					//find self
-					break;
-				}
-				if(0xffff == win->input[k].w0)
-				{
-					//find empty
-					win->input[k].w0 = (u16)wparam;
-					break;
-				}
-			}
+			k = whichfinger(win, -1, (u16)wparam);
+			//say("k=%d\n",k);
+			if(k >= 10)return 0;
 
 			pt.y = GET_Y_LPARAM(lparam);
 			pt.x = GET_X_LPARAM(lparam);
 			ScreenToClient(wnd, &pt);
-
 			y = pt.y;
 			x = pt.x;
 			//eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
 
 			ev.why = x + (y<<16) + (k<<48);
-			ev.what = 0x2b70;
+			ev.what = touch_onto;
 			ev.where = addr;
+			//printmemory(&ev,16);
 			restorestackdeliverevent(win, &ev);
 			return 0;
 		}
 		case WM_POINTERUP:
 		{
 			u64 x,y,k;
-			for(k=0;k<10;k++)
-			{
-				if((u16)wparam == win->input[k].w0)
-				{
-					//find self
-					win->input[k].w0 = 0xffff;
-					break;
-				}
-			}
+			k = whichfinger(win, (u16)wparam, -1);
+			//say("k=%d\n",k);
+			if(k >= 10)return 0;
 
 			pt.y = GET_Y_LPARAM(lparam);
 			pt.x = GET_X_LPARAM(lparam);
@@ -368,18 +368,17 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			//eventwrite(x + (y<<16) + (k<<48), 0x2d70, addr, 0);
 
 			ev.why = x + (y<<16) + (k<<48);
-			ev.what = 0x2d70;
+			ev.what = touch_away;
 			ev.where = addr;
+			//printmemory(&ev,16);
 			restorestackdeliverevent(win, &ev);
 			return 0;
 		}
 		case WM_POINTERUPDATE:
 		{
 			u64 x,y,k;
-			for(k=0;k<10;k++)
-			{
-				if((u16)wparam == win->input[k].w0)break;
-			}
+			k = whichfinger(win, (u16)wparam, (u16)wparam);
+			//say("k=%d\n",k);
 			if(k >= 10)return 0;
 
 			pt.y = GET_Y_LPARAM(lparam);
@@ -391,12 +390,13 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			//eventwrite(x + (y<<16) + (k<<48), 0x4070, addr, 0);
 
 			ev.why = x + (y<<16) + (k<<48);
-			ev.what = 0x4070;
+			ev.what = touch_move;
 			ev.where = addr;
+			//printmemory(&ev,16);
 			restorestackdeliverevent(win, &ev);
 			return 0;
 		}
-*/
+
 		case WM_MOUSEWHEEL:
 		{
 			u64 x,y,k;

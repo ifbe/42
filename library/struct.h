@@ -920,6 +920,7 @@ struct supply
 	union{
 		u64 data0;
 		void* buf0;
+		void* perwnd;
 		struct pcmdata* pcmmic;
 		struct pcmdata** pcm_mic;
 		struct gl41data* glcam;

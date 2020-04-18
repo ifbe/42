@@ -294,7 +294,7 @@ static void the2048_event(struct entity* act, struct event* ev)
 	int k;
 	short* s;
 	//say("%llx,%llx,%llx\n", act, pin, ev);
-	say("%x,%x,%x\n",ev->why, ev->what, ev->where);
+	say("%16llx,%16llx,%16llx,%16llx\n",ev->when, ev->where, ev->what, ev->why);
 
 	if(_char_ == ev->what)
 	{
