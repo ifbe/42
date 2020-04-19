@@ -1,8 +1,4 @@
 #include "libuser.h"
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_tmpcam(struct entity* wnd);
-void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 

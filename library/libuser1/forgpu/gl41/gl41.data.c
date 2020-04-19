@@ -19,7 +19,7 @@ void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, 
 
 
 
-void gl41data_xxxcam(struct entity* wnd, struct fstyle* area)
+void gl41data_whcam(struct entity* wnd, struct fstyle* area)
 {
 	int x,y;
 	void* trick = wnd->gl_camera;
@@ -44,7 +44,7 @@ void gl41data_xxxcam(struct entity* wnd, struct fstyle* area)
 	data->src.arg[1].data = v;
 	wnd->gl_camera[0] = data;
 }
-void gl41data_tmpcam(struct entity* wnd)
+void gl41data_01cam(struct entity* wnd)
 {
 	int x,y;
 	void* trick = wnd->gl_camera;
@@ -68,7 +68,11 @@ void gl41data_tmpcam(struct entity* wnd)
 	data->src.arg[1].data = v;
 	wnd->gl_camera[0] = data;
 }
-void gl41data_tmplit(struct entity* wnd)
+
+
+
+
+void gl41data_nolit(struct entity* wnd)
 {
 	int x,y;
 	void* trick = wnd->gl_light;
@@ -76,6 +80,13 @@ void gl41data_tmplit(struct entity* wnd)
 	float (*m)[4] = trick + 0x800;
 	float* v = trick + 0xc00;
 }
+void gl41data_mylit(struct entity* wnd)
+{
+}
+
+
+
+
 void gl41data_before(struct entity* ctx)
 {
 	int j;

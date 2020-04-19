@@ -6,7 +6,7 @@
 int copypath(u8* path, u8* data);
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
-void gl41data_tmpcam(struct entity* wnd);
+void gl41data_01cam(struct entity* wnd);
 
 
 
@@ -221,7 +221,7 @@ static void mnist_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
 	gl41data_before(wnd);
 	mnist_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_tmpcam(wnd);
+	gl41data_01cam(wnd);
 	gl41data_after(wnd);
 }
 static void mnist_write_bywnd(struct entity* ent, struct event* ev)

@@ -5,7 +5,7 @@ int copypath(void* path, void* data);
 void readfolder(void* url, int fd, void* arg, int off, void* buf, int len);
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
-void gl41data_xxxcam(struct entity* wnd, struct style* area);
+void gl41data_whcam(struct entity* wnd, struct style* area);
 void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 
 
@@ -131,7 +131,7 @@ static void fslist_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 
 	gl41data_before(wnd);
 	fslist_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_xxxcam(wnd, area);
+	gl41data_whcam(wnd, area);
 	gl41data_after(wnd);
 }
 

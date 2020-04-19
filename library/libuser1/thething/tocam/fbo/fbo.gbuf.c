@@ -3,7 +3,7 @@
 #define CTXBUF buf0
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
-void gl41data_tmpcam(struct entity* wnd);
+void gl41data_01cam(struct entity* wnd);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 //
 int copypath(u8* path, u8* data);
@@ -81,46 +81,63 @@ static void gbuffer_draw_gl41(
 
 	gbuffer_readfrom_gbuffer(act, src);
 
+	float x,y;
+	float x0,y0,xn,yn;
+	x = ctx->width * (area->fs.vq[0] - area->fs.vc[0]);
+	y = ctx->height* (area->fs.vq[1] - area->fs.vc[1]);
+	if(x > y){
+		x0 = 0.0;
+		xn = 1.0;
+		y0 = 0.5 - y/x/2;
+		yn = 0.5 + y/x/2;
+	}
+	else{
+		x0 = 0.5 - x/y/2;
+		xn = 0.5 + x/y/2;
+		y0 = 0.0;
+		yn = 1.0;
+	}
+
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
 	vbuf[0][2] = vc[2] - vr[2] - vf[2];
-	vbuf[0][3] = 0.0;
-	vbuf[0][4] = 0.0;
+	vbuf[0][3] = x0;
+	vbuf[0][4] = y0;
 	vbuf[0][5] = 0.0;
 
 	vbuf[1][0] = vc[0] + vr[0] + vf[0];
 	vbuf[1][1] = vc[1] + vr[1] + vf[1];
 	vbuf[1][2] = vc[2] + vr[2] + vf[2];
-	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 1.0;
+	vbuf[1][3] = xn;
+	vbuf[1][4] = yn;
 	vbuf[1][5] = 0.0;
 
 	vbuf[2][0] = vc[0] - vr[0] + vf[0];
 	vbuf[2][1] = vc[1] - vr[1] + vf[1];
 	vbuf[2][2] = vc[2] - vr[2] + vf[2];
-	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 1.0;
+	vbuf[2][3] = x0;
+	vbuf[2][4] = yn;
 	vbuf[2][5] = 0.0;
 
 	vbuf[3][0] = vc[0] + vr[0] + vf[0];
 	vbuf[3][1] = vc[1] + vr[1] + vf[1];
 	vbuf[3][2] = vc[2] + vr[2] + vf[2];
-	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 1.0;
+	vbuf[3][3] = xn;
+	vbuf[3][4] = yn;
 	vbuf[3][5] = 0.0;
 
 	vbuf[4][0] = vc[0] - vr[0] - vf[0];
 	vbuf[4][1] = vc[1] - vr[1] - vf[1];
 	vbuf[4][2] = vc[2] - vr[2] - vf[2];
-	vbuf[4][3] = 0.0;
-	vbuf[4][4] = 0.0;
+	vbuf[4][3] = x0;
+	vbuf[4][4] = y0;
 	vbuf[4][5] = 0.0;
 
 	vbuf[5][0] = vc[0] + vr[0] - vf[0];
 	vbuf[5][1] = vc[1] + vr[1] - vf[1];
 	vbuf[5][2] = vc[2] + vr[2] - vf[2];
-	vbuf[5][3] = 1.0;
-	vbuf[5][4] = 0.0;
+	vbuf[5][3] = xn;
+	vbuf[5][4] = y0;
 	vbuf[5][5] = 0.0;
 
 	src->vbuf_enq += 1;
@@ -243,7 +260,7 @@ static void gbuffer_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg
 	gl41data_before(wnd);
 	relationread(ent,_fbog_, stack,sp, 0,0, 0,0);
 	gbuffer_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_tmpcam(wnd);
+	gl41data_01cam(wnd);
 	gl41data_after(wnd);
 }
 

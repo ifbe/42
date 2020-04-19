@@ -1,7 +1,7 @@
 #include "libuser.h"
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
-void gl41data_tmpcam(struct entity* wnd);
+void gl41data_01cam(struct entity* wnd);
 void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 void gl41line_pmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
 void gl41line_nmos(struct entity* wnd, u32 irgb, u32 orgb, vec3 vc, vec3 vr, vec3 vf, vec3 vt);
@@ -125,7 +125,7 @@ static void autocmos_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* ar
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
 	gl41data_before(wnd);
 	autocmos_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_tmpcam(wnd);
+	gl41data_01cam(wnd);
 	gl41data_after(wnd);
 }
 static void autocmos_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

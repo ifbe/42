@@ -33,6 +33,7 @@ int gl41fbog_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int idx, voi
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, wnd->fbo);
 	glViewport(0, 0, wnd->fbwidth, wnd->fbheight);
+	glScissor(0, 0, wnd->fbwidth, wnd->fbheight);
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

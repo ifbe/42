@@ -3,7 +3,7 @@
 void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
-void gl41data_tmpcam(struct entity* wnd);
+void gl41data_01cam(struct entity* wnd);
 
 
 
@@ -162,7 +162,7 @@ static void karnaugh_read_bywnd(_ent* ent,struct style* slot, _ent* wnd, struct 
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
 	gl41data_before(wnd);
 	karnaugh_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_tmpcam(wnd);
+	gl41data_01cam(wnd);
 	gl41data_after(wnd);
 }
 static void karnaugh_write_bywnd(_ent* ent,struct style* slot, _ent* wnd, struct style* area,

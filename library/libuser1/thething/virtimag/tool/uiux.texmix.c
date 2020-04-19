@@ -2,7 +2,7 @@
 #define CTXBUF buf0
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
-void gl41data_tmpcam(struct entity* wnd);
+void gl41data_01cam(struct entity* wnd);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 void loadtexfromfile(struct glsrc* src, int idx, char* name);
 
@@ -215,7 +215,7 @@ static void texmix_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	gl41data_before(wnd);
 	texmix_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_tmpcam(wnd);
+	gl41data_01cam(wnd);
 	gl41data_after(wnd);
 }
 

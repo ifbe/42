@@ -1,7 +1,7 @@
 #include "libuser.h"
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
-void gl41data_tmpcam(struct entity* wnd);
+void gl41data_01cam(struct entity* wnd);
 void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 
 
@@ -13,7 +13,7 @@ int virtual_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 	if(0 == wnd)return 0;
 
 	gl41data_before(wnd);
-	gl41data_tmpcam(wnd);
+	gl41data_01cam(wnd);
 
 	struct relation* rel = ent->orel0;
 	while(1){

@@ -1,7 +1,7 @@
 #include "libuser.h"
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
-void gl41data_tmpcam(struct entity* wnd);
+void gl41data_01cam(struct entity* wnd);
 void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 //
 void postfix2binarytree(void* postfix, void* out);
@@ -239,7 +239,7 @@ static void calculator_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct
 	calculator_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_after(wnd);
 
-	gl41data_tmpcam(wnd);
+	gl41data_01cam(wnd);
 }
 
 
