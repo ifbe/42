@@ -466,6 +466,7 @@ static int freecam_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	if(0 == sup)return 0;
 
 	switch(sup->fmt){
+	case _gl41fboc_:
 	case _gl41fbog_:
 	case _gl41wnd0_:
 	case _full_:

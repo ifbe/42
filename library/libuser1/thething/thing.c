@@ -165,8 +165,10 @@ void planet_register(void*);
 void skillbar_register(void*);
 void tabbar_register(void*);
 
-//uiux
+void cbuffer_register(void*);
 void gbuffer_register(void*);
+
+//uiux
 void minimap_register(void*);
 void oscillo_register(void*);
 void picture_register(void*);
@@ -640,10 +642,17 @@ void item_init(void* addr)
 
 
 
-//-------------------uiux------------------
+//-------------postprocess-----------------
+	cbuffer_register(tmp);
+	tmp -= sizeof(struct entity);
+
 	gbuffer_register(tmp);
 	tmp -= sizeof(struct entity);
 
+
+
+
+//-------------------uiux------------------
 	minimap_register(tmp);
 	tmp -= sizeof(struct entity);
 

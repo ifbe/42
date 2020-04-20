@@ -281,11 +281,12 @@ thething/tocam/dxgl/dxgl.particle.c \
 thething/tocam/cam/cam.free.c \
 thething/tocam/cam/cam.ortho.c \
 thething/tocam/cam/cam.vrglass.c \
-thething/tocam/fbo/fbo.mirror.c \
-thething/tocam/fbo/fbo.portal.c \
-thething/tocam/fbo/fbo.gbuf.c \
-thething/tocam/fbo/fbo.water.c \
-thething/tocam/fbo/fbo.glass.c \
+thething/tocam/pull/fbo.cbuf.c \
+thething/tocam/pull/fbo.gbuf.c \
+thething/tocam/push/fbo.mirror.c \
+thething/tocam/push/fbo.portal.c \
+thething/tocam/push/fbo.water.c \
+thething/tocam/push/fbo.glass.c \
 thething/tocam/light/light.point.c \
 thething/tocam/light/light.projector.c \
 thething/tocam/light/light.spot.c \

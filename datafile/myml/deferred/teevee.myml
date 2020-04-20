@@ -1,0 +1,103 @@
+<entity>
+cam0{
+fmt:freecam
+}
+tree{
+fmt:stl3d
+url:datafile/stl/bunny-lowpoly.stl
+}
+grnd{
+fmt:ground
+url:datafile/jpg/wall.jpg
+}
+world{
+fmt:virtual
+}
+mixer{
+fmt:cbuffer
+}
+</entity>
+
+
+<supply>
+fbotex{
+fmt:gl41fboc
+}
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<style>
+treepart{
+}
+treegeom{
+c: 0.0, 0.0, 1000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+grndpart{
+}
+grndgeom{
+c: 0.0, 0.0, 0.0
+r: 10000.0, 0.0, 0.0
+f: 0.0, 10000.0, 0.0
+t: 0.0, 0.0, 10000.0
+}
+
+aaaapart{
+}
+aaaageom{
+c: 0.0, -4000.0, 5000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 707.0,-707.0
+t: 0.0, 707.0, 707.0
+
+L: 0.0, 0.0, 0.0,-1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0,-1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+gbufrect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+aaaarect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#world depends on tree
+(world, grndgeom, 0) -> (grnd, grndpart, 0)
+(world, treegeom, 0) -> (tree, treepart, 0)
+(world, aaaageom, 0) -> (cam0, aaaapart, 0)
+
+#gbuffer depends on cam0
+(fbotex, gbufrect, cam) -> (cam0, 0, 0)
+
+#mixer depends on gbuffer
+(mixer, 0, fbo) -> (fbotex, 0, 0)
+
+#glwnd depends on mixer
+(opengl, aaaarect, 0) -> (mixer, 0, wnd)
+</relation>
