@@ -147,6 +147,12 @@ int clickray_linkup(void*, void*);
 int clickray_discon(void*, void*);
 int clickray_read( void*,int, void*,int, void*,int, void*,int);
 int clickray_write(void*,int, void*,int, void*,int, void*,int);
+int touchobj_create(void*, void*, int, u8**);
+int touchobj_delete(void*);
+int touchobj_linkup(void*, void*);
+int touchobj_discon(void*, void*);
+int touchobj_read( void*,int, void*,int, void*,int, void*,int);
+int touchobj_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -257,6 +263,7 @@ void entityinput_touch(struct supply* win, struct event* ev)
 int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(act->type){
+	case _touchobj_:return touchobj_read(act,foot, stack,sp, arg,key, buf,len);
 	case _clickray_:return clickray_read(act,foot, stack,sp, arg,key, buf,len);
 	case _event3rd_:return event3rd_read(act,foot, stack,sp, arg,key, buf,len);
 	case _eventrts_:return eventrts_read(act,foot, stack,sp, arg,key, buf,len);
@@ -294,6 +301,7 @@ int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* 
 int entitywrite(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(act->type){
+	case _touchobj_:return touchobj_write(act,foot, stack,sp, arg,key, buf,len);
 	case _clickray_:return clickray_write(act,foot, stack,sp, arg,key, buf,len);
 	case _event3rd_:return event3rd_write(act,foot, stack,sp, arg,key, buf,len);
 	case _eventrts_:return eventrts_write(act,foot, stack,sp, arg,key, buf,len);
@@ -337,6 +345,7 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 
 	//say("@entity_discon\n");
 	switch(act->type){
+	case _touchobj_:return touchobj_discon(self, peer);
 	case _clickray_:return clickray_discon(self, peer);
 	case _event3rd_:return event3rd_discon(self, peer);
 	case _eventrts_:return eventrts_discon(self, peer);
@@ -380,6 +389,7 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 
 	//say("@entity_linkup\n");
 	switch(act->type){
+	case _touchobj_:return touchobj_linkup(self, peer);
 	case _clickray_:return clickray_linkup(self, peer);
 	case _event3rd_:return event3rd_linkup(self, peer);
 	case _eventrts_:return eventrts_linkup(self, peer);
@@ -529,6 +539,13 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	}
 
 	//event
+	case _touchobj_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _touchobj_;
+		touchobj_create(act, buf, argc, argv);
+		return act;
+	}
 	case _clickray_:
 	{
 		act = allocentity();

@@ -70,6 +70,8 @@ therule/event/evcam/evcam.frus.c \
 therule/event/evcam/evcam.rts.c \
 therule/event/evpick/evpick.area.c \
 therule/event/evpick/evpick.ray.c \
+therule/event/evtouch/evtouch.movecam.c \
+therule/event/evtouch/evtouch.moveobj.c \
 therule/gameplay/interact/play.interact.c \
 therule/gameplay/mission/play.mission.c \
 therule/nature/collide/collide.simple.c \
