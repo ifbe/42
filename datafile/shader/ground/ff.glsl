@@ -1,6 +1,5 @@
 #version 410 core
 in mediump vec3 objxyz;
-in mediump vec3 normal;
 out mediump vec4 FragColor;
 subroutine vec3 passtype(mediump vec3 albedo);
 subroutine uniform passtype routine;
@@ -32,7 +31,7 @@ subroutine (passtype) vec3 rawcolor(mediump vec3 albedo){
 	mediump float rough = mtrfao.y;
 	mediump float amocc = mtrfao.z;
 
-	mediump vec3 N = normalize(normal);
+	mediump vec3 N = normalize(albedo);
 	mediump vec3 E = normalize(camxyz - objxyz);
 	mediump vec3 F0 = mix(vec3(0.04), albedo, metal);
 

@@ -170,7 +170,7 @@ static void geometry_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	if(stack&&('v'==key)){
 		slot = stack[sp-1].pfoot;
 		scn = stack[sp-1].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-4].pchip;area = stack[sp-4].pfoot;
+		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 		geometry_draw_gl41(ent,slot, scn,geom, wnd,area);
 	}
 }

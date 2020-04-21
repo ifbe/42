@@ -13,17 +13,23 @@ void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 char* terrain_glsl_v =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
-"layout(location = 1)in mediump vec3 t;\n"
-"out mediump vec3 uvw;\n"
-"out mediump vec3 xyz;\n"
+"layout(location = 1)in mediump vec3 n;\n"
+"layout(location = 2)in mediump vec3 t;\n"
+"out mediump vec3 objxyz;\n"
+"out mediump vec3 normal;\n"
+"out mediump vec3 texuvw;\n"
+//"out mediump vec3 uvw;\n"
+//"out mediump vec3 xyz;\n"
 "uniform mat4 objmat;\n"
 "uniform mat4 cammvp;\n"
 "void main(){\n"
-	"uvw = t;\n"
-	"xyz = vec3(objmat * vec4(v, 1.0));\n"
-	"gl_Position = cammvp * objmat * vec4(v, 1.0);\n"
+	"mediump vec4 xyzw = objmat * vec4(v, 1.0);\n"
+	"objxyz = vec3(xyzw);\n"
+	"normal = n;\n"
+	"texuvw = t;\n"
+	"gl_Position = cammvp * xyzw;\n"
 "}\n";
-
+/*
 char* terrain_glsl_g =
 GLSL_VERSION
 "layout(triangles) in;\n"
@@ -55,18 +61,19 @@ GLSL_VERSION
 	"EmitVertex();\n"
 	"EndPrimitive();\n"
 "}\n";
-
+*/
 char* terrain_glsl_f =
 GLSL_VERSION
 "in mediump vec3 objxyz;\n"
 "in mediump vec3 normal;\n"
 "in mediump vec3 texuvw;\n"
 "out mediump vec4 FragColor;\n"
-"uniform mediump vec3 camxyz;\n"
 "uniform sampler2D rgbtex;\n"
+"uniform mediump vec3 camxyz;\n"
+
 "mediump vec3 litdir = vec3(1.0, 1.0, 1.0);\n"
 "mediump vec3 litrgb = vec3(1.0, 1.0, 1.0);\n"
-"mediump vec3 mtrfao = vec3(0.1, 1.0, 1.0);\n"
+"mediump vec3 mtrfao = vec3(0.2, 0.8, 1.0);\n"
 "mediump float metal = mtrfao.x;\n"
 "mediump float rough = mtrfao.y;\n"
 "mediump float amocc = mtrfao.z;\n"
@@ -132,7 +139,7 @@ void copyname(u8* dst, u8* src)
 
 
 
-void terrain_generate(float (*vbuf)[6], u16* ibuf, struct entity* act, struct glsrc* src)
+void terrain_generate(float (*vbuf)[9], u16* ibuf, struct entity* act, struct glsrc* src)
 {
 	int x,y,j;
 	int cx,cy,px,py;
@@ -157,52 +164,20 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct entity* act, struct gl
 			vbuf[y*256+x][2] = rgba[(w*py+px)*4]/255.0;
 
 			//uv[0,1]
-			vbuf[y*256+x][3] = (float)px/w;
-			vbuf[y*256+x][4] = (float)py/h;
-			vbuf[y*256+x][5] = 0.0;
-
+			vbuf[y*256+x][6] = (float)px/w;
+			vbuf[y*256+x][7] = (float)py/h;
+			vbuf[y*256+x][8] = 0.0;
 		}
 	}
-/*
-	float cx = (w-1) / 2.0;
-	float cy = (h-1) / 2.0;
-	for(y=0;y<256;y++)
-	{
-		for(x=0;x<256;x++)
-		{
-			x0 = x + act->fx0;
-			y0 = y + act->fy0;
 
-			//pixel ->  local xyz (->     world xyz)
-			//    0 ->       -1.0 (-> -127.5*1000.0)
-			//  127 -> -0.5/127.5 (->   -0.5*1000.0)
-			//  128 ->  0.5/127.5 (->    0.5*1000.0)
-			//  255 ->        1.0 (->  127.5*1000.0)
-			vbuf[y*256+x][0] = x/127.5 - 1.0;
-			vbuf[y*256+x][1] = y/127.5 - 1.0;
-
-			//local ->        image ->               uv
-			//    0 ->   0-127.5+cx -> (cx-127.5)/(w-1)
-			//  127 -> 127-127.5+cx -> (cx  -0.5)/(w-1)
-			//  128 -> 128-127.5+cx -> (cx  +0.5)/(w-1)
-			//  255 -> 255-127.5+cx -> (cx+127.5)/(w-1)
-			x1 = x0 - 128 + w/2;
-			y1 = y0 - 128 + h/2;
-			y1 = h-1 - y1;
-			if((x1 < 0) | (x1 >= w) | (y1 < 0) | (y1 >= h))f = 0.0;
-			else f = rgba[(w*y1 + x1) * 4] / 255.0;
-			vbuf[y*256+x][2] = f;
-
-			//local ->        image ->               uv
-			//    0 ->   0-127.5+cx -> (cx-127.5)/(w-1)
-			//  127 -> 127-127.5+cx -> (cx  -0.5)/(w-1)
-			//  128 -> 128-127.5+cx -> (cx  +0.5)/(w-1)
-			//  255 -> 255-127.5+cx -> (cx+127.5)/(w-1)
-			vbuf[y*256+x][3] =       (x0-127.5+cx) / (w-1);
-			vbuf[y*256+x][4] = 1.0 - (y0-127.5+cy) / (h-1);
-			vbuf[y*256+x][5] = 0.0;
+	for(y=1;y<254;y++){
+		for(x=1;x<254;x++){
+			//normal
+			vbuf[y*256+x][3] = vbuf[(y+0)*256+x+1][2] - vbuf[(y+0)*256+x-1][2];
+			vbuf[y*256+x][4] = vbuf[(y+1)*256+x+0][2] - vbuf[(y-1)*256+x+0][2];
+			vbuf[y*256+x][5] = 2.0;
 		}
-	}*/
+	}
 
 	j = 0;
 	for(y=0;y<254;y++)
@@ -213,9 +188,9 @@ void terrain_generate(float (*vbuf)[6], u16* ibuf, struct entity* act, struct gl
 			ibuf[j+1] = y*256+x+1;
 			ibuf[j+2] = y*256+x+256;
 
-			ibuf[j+3] = y*256+x+1;
-			ibuf[j+4] = y*256+x+257;
-			ibuf[j+5] = y*256+x+256;
+			ibuf[j+3] = y*256+x+256;
+			ibuf[j+4] = y*256+x+1;
+			ibuf[j+5] = y*256+x+257;
 
 			j += 6;
 		}
@@ -317,7 +292,7 @@ void terrain_ctxforwnd(struct glsrc* src, u8* rgbfile, u8* depfile)
 
 	//shader
 	src->vs = terrain_glsl_v;
-	src->gs = terrain_glsl_g;
+	//src->gs = terrain_glsl_g;
 	src->fs = terrain_glsl_f;
 	src->shader_enq = 42;
 
@@ -337,8 +312,8 @@ void terrain_ctxforwnd(struct glsrc* src, u8* rgbfile, u8* depfile)
 	loadtexfromfile(src, DEPTEX, depfile);
 
 	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*6;
+	src->vbuf_fmt = vbuffmt_333;
+	src->vbuf_w = 4*9;
 	src->vbuf_h = 256*255;
 	src->vbuf_len = (src->vbuf_w) * 256*256;
 	src->vbuf = memorycreate(src->vbuf_len, 0);
