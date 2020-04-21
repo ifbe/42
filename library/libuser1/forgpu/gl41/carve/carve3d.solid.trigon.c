@@ -9,26 +9,81 @@ GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
 "layout(location = 1)in mediump vec3 n;\n"
 "layout(location = 2)in mediump vec3 c;\n"
+"out mediump vec3 objxyz;\n"
 "out mediump vec3 normal;\n"
-"out mediump vec3 vertex;\n"
-"out mediump vec3 colour;\n"
+"out mediump vec3 albedo;\n"
 "uniform mat4 cammvp;\n"
 "void main(){\n"
-	"vertex = v;\n"
+	"objxyz = v;\n"
 	"normal = n;\n"
-	"colour = c;\n"
-	"gl_Position = cammvp * vec4(vertex,1.0);\n"
+	"albedo = c;\n"
+	"gl_Position = cammvp * vec4(objxyz,1.0);\n"
 "}\n";
 
 static char solidtrigon_frag[] =
 GLSL_VERSION
-"in mediump vec3 vertex;\n"
+"in mediump vec3 objxyz;\n"
 "in mediump vec3 normal;\n"
-"in mediump vec3 colour;\n"
+"in mediump vec3 albedo;\n"
+//"in mediump vec3 mtrfao;\n"
 "out mediump vec4 FragColor;\n"
+"uniform mediump vec3 camxyz;\n"
+"mediump vec3 litdir = vec3(1.0, 1.0, 1.0);\n"
+"mediump vec3 litrgb = vec3(1.0, 1.0, 1.0);\n"
+"mediump vec3 mtrfao = vec3(0.5, 0.5, 1.0);\n"
+"mediump float metal = mtrfao.x;\n"
+"mediump float rough = mtrfao.y;\n"
+"mediump float amocc = mtrfao.z;\n"
+"mediump float PI = 3.1415926535897932384626433832795028841971693993151;\n"
+"mediump float getD(mediump float v, mediump float r){\n"
+    "float a2 = r*r*r*r;\n"
+    "float de = (v*v * (a2 - 1.0) + 1.0);\n"
+    "return a2 / (PI * de * de);\n"
+"}\n"
+"mediump float getG(mediump float v, mediump float r){\n"
+    "float k = (r+1.0) * (r+1.0) / 8.0;\n"
+    "return v / (v * (1.0 - k) + k);\n"
+"}\n"
+"void main(){\n"
+	"mediump vec3 N = normalize(normal);\n"
+	"mediump vec3 E = normalize(camxyz - objxyz);\n"
+	"mediump vec3 F0 = mix(vec3(0.04), albedo, metal);\n"
+
+	"mediump vec3 ocolor = vec3(0.0);\n"
+	//"for(){\n"
+		"mediump vec3 L = litdir;\n"
+		//"mediump float distance = length(L);\n"
+		//"mediump float attenuation = 1.0 / (distance * distance);\n"
+		//"mediump vec3 radiance = litrgb * attenuation;\n"
+		"mediump vec3 radiance = litrgb;\n"
+
+		"L = normalize(L);\n"
+		"mediump vec3 H = normalize(E + L);\n"
+		"mediump float NdotL = max(dot(N, L), 0.0);\n"
+		"mediump float NdotE = max(dot(N, E), 0.0);\n"
+		"mediump float NdotH = max(dot(N, H), 0.0);\n"
+		"mediump float HdotE = max(dot(H, E), 0.0);\n"
+
+		"mediump float G = getG(NdotL, rough)*getG(NdotE, rough);\n"
+		"mediump float D = getD(NdotH, rough);\n"
+		"mediump vec3 F = F0 + (1.0 - F0) * pow(1.0 - HdotE, 5.0);\n"
+
+		"mediump vec3 kS = F;\n"
+		"mediump vec3 kD = (vec3(1.0) - kS) * (1.0 - metal);\n"
+		"mediump vec3 specular = (D * G * F) / max(4.0 * NdotE * NdotL, 0.001);\n"
+		"ocolor += (kD * albedo / PI + specular) * radiance * NdotL;\n"
+	//"}\n"
+
+	"ocolor += vec3(0.03) * albedo * amocc;\n"
+	"ocolor = ocolor / (ocolor + vec3(1.0));\n"
+	"ocolor = pow(ocolor, vec3(1.0/2.2));\n"
+	"FragColor = vec4(ocolor, 1.0);\n"
+"}\n";
+
+
+/*
 //"layout(location = 0)out mediump vec4 outxyz\n;"
 //"layout(location = 1)out mediump vec4 outuvw\n;"
-"uniform mediump vec3 camxyz;\n"
 
 "mediump vec3 dirsun0 = vec3(1.0, 1.0, 1.0);\n"
 "mediump vec3 dirsun1 = vec3(-1.0, 0.0, 0.0);\n"
@@ -78,7 +133,7 @@ GLSL_VERSION
 	"FragColor = vec4(c, 1.0);\n"
 	//"outxyz = vec4(vertex, 1.0);\n"
 	//"outuvw = vec4(normal, 1.0);\n"
-"}\n";
+"}\n";*/
 
 
 
