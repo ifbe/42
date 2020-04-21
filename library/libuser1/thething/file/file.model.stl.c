@@ -17,10 +17,10 @@ static void stl3d_ctxforwnd(struct glsrc* src, char* str, char* vs, char* fs)
 	src->method = 'v';
 
 	//shader
-	src->vs = memorycreate(0x1000, 0);
-	openreadclose(vs, 0, src->vs, 0x1000);
-	src->fs = memorycreate(0x1000, 0);
-	openreadclose(fs, 0, src->fs, 0x1000);
+	src->vs = memorycreate(0x10000, 0);
+	openreadclose(vs, 0, src->vs, 0x10000);
+	src->fs = memorycreate(0x10000, 0);
+	openreadclose(fs, 0, src->fs, 0x10000);
 	src->shader_enq = 42;
 
 	//argument
@@ -248,8 +248,8 @@ static void stl3d_create(struct entity* act, void* str, int argc, u8** argv)
 			fs = (void*)fspath;
 		}
 	}
-	if(0 == vs)vs = "datafile/shader/model/vert.glsl";
-	if(0 == fs)fs = "datafile/shader/model/frag.glsl";
+	if(0 == vs)vs = "datafile/shader/model/fv.glsl";
+	if(0 == fs)fs = "datafile/shader/model/ff.glsl";
 	if(0 == str)str = "datafile/stl/bunny-lowpoly.stl";
 
 	act->CTXBUF = memorycreate(0x200, 0);

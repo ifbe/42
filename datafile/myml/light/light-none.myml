@@ -2,6 +2,9 @@
 ground{
 fmt:ground
 }
+tree{
+fmt:tree
+}
 test{
 fmt:stl3d
 url:datafile/stl/spider-lowpoly.stl
@@ -43,10 +46,19 @@ f: 0.0, 10000.0, 0.0
 t: 0.0, 0.0, 10000.0
 }
 
+treehaha{
+}
+treegeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
 testhaha{
 }
 testgeom{
-c: 0.0, 0.0, 1000.0
+c: 0.0, -1000.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
@@ -76,6 +88,7 @@ q:1.0, 1.0
 <relation>
 #virtual depends on inner objects
 (virtual, grndgeom, 0) -> (ground, grndhaha, 0)
+(virtual, treegeom, 0) -> (tree, treehaha, 0)
 (virtual, testgeom, 0) -> (test, testhaha, 0)
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
 

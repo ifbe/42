@@ -217,8 +217,8 @@ static void ground_create(struct entity* act, void* str, int argc, u8** argv)
 			fs = (void*)fspath;
 		}
 	}
-	if(0 == vs)vs = "datafile/shader/ground/vert.glsl";
-	if(0 == fs)fs = "datafile/shader/ground/frag.glsl";
+	if(0 == vs)vs = "datafile/shader/ground/fv.glsl";
+	if(0 == fs)fs = "datafile/shader/ground/ff.glsl";
 	if(0 == str)str = "datafile/jpg/wall.jpg";
 
 	act->OWNBUF = memorycreate(0x200, 0);

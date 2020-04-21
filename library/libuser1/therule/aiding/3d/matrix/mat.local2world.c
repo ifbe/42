@@ -119,7 +119,7 @@ void local2world(struct fstyle* src, struct fstyle* dst, mat4 mat)
 	tmp[2][0] = 0.0;
 	tmp[2][1] = 0.0;
 	tmp[2][2] = 1.0;
-	tmp[2][3] = - src->vc[2];
+	tmp[2][3] = - src->vb[2];
 	tmp[3][0] = 0.0;
 	tmp[3][1] = 0.0;
 	tmp[3][2] = 0.0;

@@ -245,8 +245,8 @@ static void obj3d_create(struct entity* act, void* arg, int argc, u8** argv)
 			tex = (void*)texpath;
 		}
 	}
-	if(0 == vs)vs = "datafile/shader/model/vert.glsl";
-	if(0 == fs)fs = "datafile/shader/model/frag.glsl";
+	if(0 == vs)vs = "datafile/shader/model/fv.glsl";
+	if(0 == fs)fs = "datafile/shader/model/ff.glsl";
 	if(0 == tex)tex = "datafile/jpg/cartoon.jpg";
 
 	act->CTXBUF = memorycreate(0x200, 0);
