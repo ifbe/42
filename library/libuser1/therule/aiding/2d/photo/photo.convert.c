@@ -35,8 +35,7 @@ void yuyv2rgba(
 			U = src[2*(y*w0) + 4*(x>>1) + 1];
 			V = src[2*(y*w0) + 4*(x>>1) + 3];
 
-			z = (y+y2)*w1 + x+x2;
-			z = z*4;
+			z = (y+y2)*w1 + (x+x2)*4;
 
 			temp = Y + (U-128) + ( (104*(U-128) )>>8);
 			if(temp > 255)temp = 255;

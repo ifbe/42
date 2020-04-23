@@ -1,0 +1,45 @@
+<entity>
+video{
+fmt:video
+}
+</entity>
+
+
+<supply>
+usbcam{
+fmt:cam
+url:/dev/video0
+}
+window{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<style>
+rect{
+c:320, 240, 0
+r:320, 0, 0
+f:0, 240, 0
+}
+</style>
+
+
+<relation>
+#canvas depends on usbcam
+(usbcam, 0, dst) -> (video, 0, yuv)
+
+#glwnd depends on cam
+(window, rect, 0) -> (video, 0, 0)
+</relation>

@@ -1,6 +1,5 @@
 #include "libuser.h"
-#define CTXBUF buf0
-#define DATBUF buf1
+#define OWNBUF buf0
 #define _cam_ hex32('c','a','m',0)
 #define _yuv_ hex32('y','u','v',0)
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
@@ -10,6 +9,16 @@ void yuyv2rgba(
 );
 
 
+struct own{
+	union{
+		u64 must8;
+		void* yuyv;
+	};
+	int width;
+	int height;
+
+	struct gl41data gl41;
+};
 
 
 char* video_glsl_v =
@@ -69,8 +78,12 @@ void video_draw_gl41(
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
 
-	struct glsrc* data = act->CTXBUF;
+	struct own* own = act->OWNBUF;
+	if(0 == own)return;
+	struct glsrc* data = &own->gl41.src;
+	if(0 == data)return;
 	float (*vbuf)[6] = data->vbuf;
+	if(0 == vbuf)return;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -120,7 +133,7 @@ void video_draw_gl41(
 	data->tex[0].enq += 1;
 
 	data->vbuf_enq += 1;
-	gl41data_insert(ctx, 's', act->CTXBUF, 1);
+	gl41data_insert(ctx, 's', data, 1);
 }
 
 
@@ -160,7 +173,7 @@ void video_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	u8* src;
+	struct own* own;
 	u8* dst;
 	int cx, cy, ww, hh, j;
 	int w = win->fbwidth;
@@ -180,14 +193,14 @@ void video_draw_pixel(
 		hh = win->height/2;
 	}
 
-	src = (u8*)(act->DATBUF);
-	if(0 == src)return;
+	own = act->OWNBUF;
+	if(0 == own)return;
 
 	dst = (u8*)(win->rgbabuf);
 	if(0 == dst)return;
 
 	yuyv2rgba(
-		  src, 0, 640, 480,     0,     0,     0,     0,
+		  own->yuyv, 0, 640, 480,     0,     0,     0,     0,
 		  dst, 0,   w,   h, cx-ww, cy-hh, cx+ww, cy+hh
 	);
 }
@@ -226,7 +239,7 @@ void video_event(
 
 
 
-static void video_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void video_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -238,17 +251,28 @@ static void video_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 		video_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
+static void video_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* sty = stack[sp-2].pfoot;
+	if(_rgba_ == wnd->fmt){
+		video_draw_pixel(ent,0, wnd, sty);
+	}
+	else{
+		video_read_bycam(ent,foot, stack,sp, arg,key);
+	}
+}
 static void video_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct glsrc* data;
+	struct own* own = ent->OWNBUF;
+	if(0 == own)return;
+
 	if(_yuv_ == foot){
 		say("@video_write.yuv: %llx,%x,%llx,%x\n", arg, key, buf, len);
+		own->yuyv = buf;
 
-		data = ent->CTXBUF;
-		if(0 == data)return;
-		if(0 == data->tex[0].data)return;
-
-		video_update(data->tex[0].data, 1024*1024*4, buf, 640*480*2);
+		if(0 == own->gl41.src.tex[0].data)return;
+		video_update(own->gl41.src.tex[0].data, 1024*1024*4, buf, 640*480*2);
 	}
 }
 static void video_discon(struct halfrel* self, struct halfrel* peer)
@@ -273,14 +297,12 @@ static void video_delete(struct entity* act)
 }
 static void video_create(struct entity* act)
 {
-	int j;
-	struct glsrc* src;
 	if(0 == act)return;
 
-	src = act->CTXBUF = memorycreate(0x200, 0);
-	if(0 == src)return;
+	struct own* own = act->OWNBUF = memorycreate(0x1000, 0);
+	if(0 == own)return;
 
-	video_ctxforwnd(act->CTXBUF);
+	video_ctxforwnd(&own->gl41.src);
 }
 
 
