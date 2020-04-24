@@ -128,6 +128,7 @@ void spring_register(void*);
 void stick_register(void*);
 
 //platn
+void flower_register(void*);
 void grass_register(void*);
 void tree_register(void*);
 
@@ -517,6 +518,9 @@ void item_init(void* addr)
 
 
 //----------------------file----------------------
+	flower_register(tmp);
+	tmp -= sizeof(struct entity);
+
 	grass_register(tmp);
 	tmp -= sizeof(struct entity);
 

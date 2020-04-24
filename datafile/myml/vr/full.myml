@@ -11,7 +11,7 @@ fmt:reality
 
 sky{
 fmt:texball
-url:datafile/jpg/warehouse.jpg
+url:datafile/jpg/texball-warehouse.jpg
 }
 tree{
 fmt:tree

@@ -1,7 +1,7 @@
 <entity>
 texball{
 fmt:texball
-url:datafile/jpg/skysphere.jpg
+url:datafile/jpg/texball-skysphere.jpg
 }
 tree{
 fmt:stl3d
@@ -53,7 +53,7 @@ t: 0.0, 0.0, 10000000.0
 treehaha{
 }
 treegeom{
-c: 0.0, 0.0, 1000.0
+c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0

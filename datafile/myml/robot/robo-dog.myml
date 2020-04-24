@@ -1,14 +1,15 @@
 <entity>
 sky{
 fmt:texball
-url:datafile/jpg/skysphere.jpg
+url:datafile/jpg/texball-skysphere.jpg
 }
-ground{
+gnd{
 fmt:ground
-url:datafile/jpg/grass.jpg
+albedo:datafile/jpg/wall.jpg
+normal:datafile/jpg/wallnormal.jpg
 }
-drone{
-fmt:drone
+dog{
+fmt:robodog
 }
 freecam{
 fmt:freecam
@@ -16,13 +17,17 @@ fmt:freecam
 virtual{
 fmt:virtual
 }
+slider{
+fmt:slider
+}
+
+event{
+fmt:event3rd
+}
 </entity>
 
 
 <supply>
-thewnd{
-fmt:gl41wnd0
-}
 opengl{
 fmt:wnd
 title:"42"
@@ -77,10 +82,10 @@ f: 0.0, 10000.0, 0.0
 t: 0.0, 0.0, 1000.0
 }
 
-itemhaha{
+doghaha{
 }
-itemgeom{
-c: 0.0, 0.0, 1000.0
+doggeom{
+c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0, 1000
 f: 0.0, 1000.0, 0.0, 1000
 t: 0.0, 0.0, 1000.0, 1000
@@ -105,20 +110,30 @@ freerect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
+thatrect{
+c:0.0, 0.3
+q:0.3, 0.4
+}
 </style>
 
 
 <relation>
 #virtual depends on inner objects
 (virtual, skygeom, 0) -> (sky, skyhaha, 0)
-(virtual, gndgeom, 0) -> (ground, gndhaha, 0)
-(virtual, itemgeom, 0) -> (drone, itemhaha, 0)
+(virtual, gndgeom, 0) -> (gnd, gndhaha, 0)
+(virtual, doggeom, 0) -> (dog, doghaha, 0)
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
-(opengl, freerect, mvp) -> (freecam, 0, 0)
+(opengl, freerect, 0) -> (freecam, 0, 0)
+(opengl, thatrect, 0) -> (slider, 0, 0)
 
-(udphost, 0, dst) -> (reline, 0, src)
-(reline, 0, dst) -> (conv, 0, str)
-(conv, 0, vec) -> (drone, 0, 0)
+#
+(event, 0, tar) -> (dog, 0, evby)
+(event, 0, cam) -> (freecam, 0, evto)
+
+#
+(slider, 0, evto) -> (dog, 0, int)
+(conv, 0, vec) -> (dog, 0, 0)
+(udphost, 0, dst) -> (conv, 0, str)
 </relation>

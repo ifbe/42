@@ -1,0 +1,44 @@
+<entity>
+oscillo{
+fmt:oscillo
+}
+</entity>
+
+
+<supply>
+usbmic{
+fmt:mic
+}
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<style>
+rect{
+c:512, 384, 0
+r:512, 0, 0
+f:0, 384, 0
+}
+</style>
+
+
+<relation>
+#oscillo depends on usbcam
+(usbmic, 0, dst) -> (oscillo, 0, pcm)
+
+#glwnd depends on cam
+(opengl, rect, mvp) -> (oscillo, 0, 0)
+</relation>

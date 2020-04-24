@@ -180,7 +180,7 @@ static void human_draw_gl41(
 		t1[1] = vc[1] + vr[1]*x + vf[1]*y + vu[1]*z;
 		t1[2] = vc[2] + vr[2]*x + vf[2]*y + vu[2]*z;
 
-		gl41solid_bodypart(ctx, 0x008080, t0, t1);
+		gl41line(ctx, 0x008080, t0, t1);
 	}
 }
 static void human_draw_json(

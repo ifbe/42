@@ -10,7 +10,7 @@ fmt:rubik
 }
 sky{
 fmt:texball
-url:datafile/jpg/skysphere.jpg
+url:datafile/jpg/texball-skysphere.jpg
 }
 cam0{
 fmt:freecam

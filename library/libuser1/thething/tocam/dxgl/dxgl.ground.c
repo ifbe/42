@@ -5,27 +5,45 @@ void loadtexfromfile(struct glsrc* src, int idx, char* name);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
+struct privdata{
+	u8 vs[128];
+	u8 fs[128];
+	u8 albedo[128];
+	u8 normal[128];
+
+	struct gl41data gl41;
+};
 
 
-static void ground_ctxforwnd(struct glsrc* src, char* str, char* vs, char* fs)
+static void ground_ctxfordx11(struct glsrc* src, char* tex0, char* tex1, char* vs, char* fs)
+{
+}
+static void ground_ctxforgl41(struct glsrc* src, char* tex0, char* tex1, char* vs, char* fs)
 {
 	//
 	src->geometry = 3;
 	src->method = 'v';
-//say("%s\n%s\n%s\n",str,vs,fs);
+say("%s\n%s\n%s\n%s\n",tex0,tex1,vs,fs);
 	//
-	src->vs = memorycreate(0x1000, 0);
-	openreadclose(vs, 0, src->vs, 0x1000);
-	src->fs = memorycreate(0x1000, 0);
-	openreadclose(fs, 0, src->fs, 0x1000);
+	src->vs = memorycreate(0x10000, 0);
+	openreadclose(vs, 0, src->vs, 0x10000);
+	src->fs = memorycreate(0x10000, 0);
+	openreadclose(fs, 0, src->fs, 0x10000);
 	src->shader_enq = 42;
 
 	//texture
 	src->tex[0].name = "tex0";
 	src->tex[0].fmt = hex32('r','g','b','a');
 	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(src, 0, str);
+	loadtexfromfile(src, 0, tex0);
 	src->tex[0].enq = 42;
+
+	//texture
+	src->tex[1].name = "tex1";
+	src->tex[1].fmt = hex32('r','g','b','a');
+	src->tex[1].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(src, 1, tex1);
+	src->tex[1].enq = 42;
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_333;
@@ -39,6 +57,7 @@ static void ground_draw_gl41(
 	struct entity* win, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
+	struct privdata* own;
 	struct glsrc* src;
 	float (*vbuf)[9];
 	float* vc = geom->f.vc;
@@ -47,7 +66,9 @@ static void ground_draw_gl41(
 	float* vt = geom->f.vt;
 	//gl41solid_rect(ctx, 0xffffff, vc, vr, vf);
 
-	src = act->OWNBUF;
+	own = act->OWNBUF;
+	if(0 == own)return;
+	src = &own->gl41.src;
 	if(0 == src)return;
 	vbuf = (void*)(src->vbuf);
 	if(0 == vbuf)return;
@@ -113,7 +134,7 @@ static void ground_draw_gl41(
 	vbuf[5][8] = 0.0;
 
 	src->vbuf_enq += 1;
-	gl41data_insert(wnd, 's', act->OWNBUF, 1);
+	gl41data_insert(wnd, 's', src, 1);
 }
 
 
@@ -200,29 +221,45 @@ static void ground_delete(struct entity* act)
 static void ground_create(struct entity* act, void* str, int argc, u8** argv)
 {
 	int j;
-	u8 vspath[128];
-	u8 fspath[128];
-	char* vs = 0;
-	char* fs = 0;
 	if(0 == act)return;
 
+	struct privdata* own = act->OWNBUF = memorycreate(0x1000, 0);
+	if(0 == own)return;
+
+	//char* dxvs = 0;
+	//char* dxfs = 0;
+	char* glvs = 0;
+	char* glfs = 0;
+	char* albedo = 0;
+	char* normal = 0;
 	for(j=0;j<argc;j++){
 		//say("%d:%.8s\n", j, argv[j]);
-		if(0 == ncmp(argv[j], "vs:", 3)){
-			copypath(vspath, argv[j]+3);
-			vs = (void*)vspath;
+		if(0 == ncmp(argv[j], "glvs:", 5)){
+			copypath(own->vs, argv[j]+5);
+			glvs = (void*)own->vs;
 		}
-		if(0 == ncmp(argv[j], "fs:", 3)){
-			copypath(fspath, argv[j]+3);
-			fs = (void*)fspath;
+		if(0 == ncmp(argv[j], "glfs:", 5)){
+			copypath(own->fs, argv[j]+5);
+			glfs = (void*)own->fs;
+		}
+		if(0 == ncmp(argv[j], "albedo:", 7)){
+			copypath(own->albedo, argv[j]+7);
+			albedo = (void*)own->albedo;
+		}
+		if(0 == ncmp(argv[j], "normal:", 7)){
+			copypath(own->normal, argv[j]+7);
+			normal = (void*)own->normal;
 		}
 	}
-	if(0 == vs)vs = "datafile/shader/ground/fv.glsl";
-	if(0 == fs)fs = "datafile/shader/ground/ff.glsl";
-	if(0 == str)str = "datafile/jpg/wall.jpg";
+	//if(0 == dxvs)dxvs = "datafile/shader/ground/fv.glsl";
+	//if(0 == dxfs)dxfs = "datafile/shader/ground/ff.glsl";
+	if(0 == glvs)glvs = "datafile/shader/ground/fv.glsl";
+	if(0 == glfs)glfs = "datafile/shader/ground/ff.glsl";
+	if(0 == albedo)albedo = "datafile/jpg/wall.jpg";
+	if(0 == normal)normal = "datafile/jpg/wallnormal.jpg";
 
-	act->OWNBUF = memorycreate(0x200, 0);
-	if(act->OWNBUF)ground_ctxforwnd(act->OWNBUF, str, vs, fs);
+	//ground_ctxforgl41(&own->gl41.src, albedo, normal, dxvs, dxfs);
+	ground_ctxforgl41(&own->gl41.src, albedo, normal, glvs, glfs);
 }
 
 

@@ -1,10 +1,12 @@
 <entity>
 ground{
 fmt:ground
-url:datafile/jpg/grass.jpg
 }
 grass{
 fmt:grass
+}
+flower{
+fmt:flower
 }
 freecam{
 fmt:freecam
@@ -46,13 +48,22 @@ f: 0.0, 10000000.0, 0.0
 t: 0.0, 0.0, 10000000.0
 }
 
-treehaha{
+grasslot{
 }
-treegeom{
+grasgeom{
 c: 0.0, 0.0, 0.0
 r: 5000.0, 0.0, 0.0
 f: 0.0, 5000.0, 0.0
 t: 0.0, 0.0, 1000.0
+}
+
+flowslot{
+}
+flowgeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 2000.0
 }
 
 freeslot{
@@ -80,7 +91,8 @@ q:1.0, 1.0
 <relation>
 #virtual depends on inner objects
 (virtual, gndgeom, 0) -> (ground, gndhaha, 0)
-(virtual, treegeom, 0) -> (grass, treehaha, 0)
+(virtual, grasgeom, 0) -> (grass, grasslot, 0)
+(virtual, flowgeom, 0) -> (flower, flowslot, 0)
 (virtual, freegeom, 0) -> (freecam, freeslot, 0)
 
 #glwnd depends on

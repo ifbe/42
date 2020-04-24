@@ -1,7 +1,7 @@
 <entity>
 texball{
 fmt:texball
-url:datafile/jpg/skysphere.jpg
+url:datafile/jpg/texball-atlantic.jpg
 }
 freecam{
 fmt:freecam

@@ -14,11 +14,10 @@ fmt:gravity
 
 sky{
 fmt:texball
-url:datafile/jpg/skysphere.jpg
+url:datafile/jpg/texball-skysphere.jpg
 }
 gnd{
 fmt:ground
-url:datafile/jpg/wall.jpg
 }
 cam0{
 fmt:freecam

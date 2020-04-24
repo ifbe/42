@@ -15,7 +15,7 @@ int soundwrite(int dev, int time, void* buf, int len);
 
 
 
-
+/*
 struct perframe
 {
 	float real[1024];
@@ -26,14 +26,10 @@ struct perframe
 static int cur = 0;
 static int haha;
 static int that;
-
-
-
-
 static void oscillo_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
-{/*
+{
 	float t,cc,ss;
 	int x,y;
 	int cx, cy, ww, hh;
@@ -95,7 +91,35 @@ static void oscillo_draw_pixel(
 		}
 	}
 	drawdecimal(win, 0xffffff, cx, cy, that);
+}
 */
+static void oscillo_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct supply* wnd, struct style* sty)
+{
+	int cx,cy,ww,hh;
+	int x,t,m;
+	void** tab;
+	short* buf;
+	if(0 == sty)return;
+
+	cx = sty->f.vc[0];
+	cy = sty->f.vc[1];
+	ww = sty->f.vr[0];
+	hh = sty->f.vf[1];
+
+	tab = act->TABBUF;
+	if(0 == tab)return;
+
+	for(t=0;t<SLICE;t++){
+		buf = tab[t];
+		if(0 == buf)break;
+
+		for(x=0;x<1024;x++){
+			m = cx-ww + (t*1024+x)*(2*ww)/(SLICE*1024);
+			drawline((void*)wnd, 0xffffff, m, cy, m, cy + buf[x]*hh/32768);
+		}
+	}
 }
 static void oscillo_draw_gl41(
 	struct entity* act, struct style* slot,
@@ -167,14 +191,14 @@ void oscillo_data(struct entity* act, int type, void* buf, int len)
 	void** tab;
 	say("@oscillo_write.pcm: %d\n", len);
 
-	idx = act->TABLEN;
+	idx = (act->TABLEN+1) % SLICE;
+	act->TABLEN = idx;
+
 	tab = act->TABBUF;
 	tab[idx] = buf;
-	act->TABLEN = (idx+1) % SLICE;
 }
 void oscillo_pcm(struct entity* ent, struct supply* sup)
 {
-	int j;
 	struct pcmdata* pcm;
 	if(0 == ent->DATBUF)return;
 //say("@oscillo_pcm\n");
@@ -183,6 +207,7 @@ void oscillo_pcm(struct entity* ent, struct supply* sup)
 	pcm->chan = 1;
 	pcm->rate = 44100;
 	pcm->count = 65536;
+
 	sup->pcmdata = pcm;
 }
 
@@ -219,6 +244,9 @@ static void oscillo_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 	switch(wnd->fmt){
 	case _pcm_:{
 		oscillo_pcm(ent, wnd);break;
+	}
+	case _rgba_:{
+		oscillo_draw_pixel(ent,slot, wnd,area);break;
 	}
 	case _gl41wnd0_:
 	case _full_:

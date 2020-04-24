@@ -8,9 +8,8 @@ fmt:resistor
 val:500
 }
 
-texball{
+ground{
 fmt:ground
-url:datafile/jpg/grass.jpg
 }
 cam{
 fmt:freecam
@@ -91,7 +90,7 @@ q: 1.0, 1.0
 
 (pcb, v0geom, 0) -> (V0, v0slot, 0)
 (pcb, r0geom, 0) -> (R0, r0slot, 0)
-(pcb, skygeom, 0) -> (texball, skyslot, 0)
+(pcb, skygeom, 0) -> (ground, skyslot, 0)
 (pcb, camgeom, 0) -> (cam, camslot, 0)
 
 (opengl, rect, 0) -> (cam, 0, 0)

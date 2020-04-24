@@ -1,10 +1,11 @@
 #version 410 core
 in mediump vec3 objxyz;
 out mediump vec4 FragColor;
-subroutine vec3 passtype(mediump vec3 albedo);
+subroutine vec3 passtype();
 subroutine uniform passtype routine;
 
 uniform sampler2D tex0;
+uniform sampler2D tex1;
 uniform sampler2D suntex;
 uniform sampler2D sunimg;
 uniform mediump vec3 sunrgb;
@@ -23,15 +24,20 @@ mediump float getG(mediump float v, mediump float r){
     float k = (r+1.0) * (r+1.0) / 8.0;
     return v / (v * (1.0 - k) + k);
 }
-subroutine (passtype) vec3 rawcolor(mediump vec3 albedo){
+subroutine (passtype) vec3 rawcolor(){
+	mediump float x = mod(objxyz.x, 1000.0) / 1000.0;
+	mediump float y = mod(-objxyz.y, 1000.0) / 1000.0;
+	mediump vec3 albedo = texture(tex0, vec2(x,y)).bgr;
+	mediump vec3 normal = texture(tex1, vec2(x,y)).bgr;
+
 	mediump vec3 litdir = vec3(1.0, 1.0, 1.0);
 	mediump vec3 litrgb = vec3(1.0, 1.0, 1.0);
-	mediump vec3 mtrfao = vec3(0.5, 0.5, 1.0);
+	mediump vec3 mtrfao = vec3(0.2, 0.5, 1.0);
 	mediump float metal = mtrfao.x;
 	mediump float rough = mtrfao.y;
 	mediump float amocc = mtrfao.z;
 
-	mediump vec3 N = normalize(albedo);
+	mediump vec3 N = normalize(normal);
 	mediump vec3 E = normalize(camxyz - objxyz);
 	mediump vec3 F0 = mix(vec3(0.04), albedo, metal);
 
@@ -64,7 +70,11 @@ subroutine (passtype) vec3 rawcolor(mediump vec3 albedo){
 	ocolor = ocolor / (ocolor + vec3(1.0));
 	return pow(ocolor, vec3(1.0/2.2));
 }
-subroutine (passtype) vec3 dirlight(mediump vec3 albedo){
+subroutine (passtype) vec3 dirlight(){
+	mediump float x = mod(objxyz.x, 1000.0) / 1000.0;
+	mediump float y = mod(-objxyz.y, 1000.0) / 1000.0;
+	mediump vec3 albedo = texture(tex0, vec2(x,y)).bgr;
+
 	mediump vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp /= tmp.w;
 	tmp = (tmp+1.0)*0.5;
@@ -73,7 +83,11 @@ subroutine (passtype) vec3 dirlight(mediump vec3 albedo){
 		(tmp.z - texture(suntex, tmp.xy).r > 0.0001) )return albedo*vec3(0.5);
 	return albedo;
 }
-subroutine (passtype) vec3 spotlight(mediump vec3 albedo){
+subroutine (passtype) vec3 spotlight(){
+	mediump float x = mod(objxyz.x, 1000.0) / 1000.0;
+	mediump float y = mod(-objxyz.y, 1000.0) / 1000.0;
+	mediump vec3 albedo = texture(tex0, vec2(x,y)).bgr;
+
 	mediump vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp /= tmp.w;
 	mediump float val = tmp.x*tmp.x + tmp.y*tmp.y;
@@ -83,7 +97,11 @@ subroutine (passtype) vec3 spotlight(mediump vec3 albedo){
 	if(tmp.z - texture(suntex, tmp.xy).r > 0.0001)return albedo*vec3(0.2);
 	return albedo*mix(sunrgb, vec3(0.2), val);
 }
-subroutine (passtype) vec3 projector(mediump vec3 albedo){
+subroutine (passtype) vec3 projector(){
+	mediump float x = mod(objxyz.x, 1000.0) / 1000.0;
+	mediump float y = mod(-objxyz.y, 1000.0) / 1000.0;
+	mediump vec3 albedo = texture(tex0, vec2(x,y)).bgr;
+
 	mediump vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp /= tmp.w;
 	tmp = (tmp+1.0)*0.5;
@@ -92,7 +110,11 @@ subroutine (passtype) vec3 projector(mediump vec3 albedo){
 		(tmp.z - texture(suntex, tmp.xy).r > 0.0001) )return albedo*vec3(0.5);
 	return albedo*texture(sunimg, tmp.xy).bgr;
 }
-subroutine (passtype) vec3 pointlight(mediump vec3 albedo){
+subroutine (passtype) vec3 pointlight(){
+	mediump float x = mod(objxyz.x, 1000.0) / 1000.0;
+	mediump float y = mod(-objxyz.y, 1000.0) / 1000.0;
+	mediump vec3 albedo = texture(tex0, vec2(x,y)).bgr;
+
 	mediump float dx = (sunxyz-objxyz).x;
 	mediump float dy = (sunxyz-objxyz).y;
 	mediump float dz = (sunxyz-objxyz).z;
@@ -101,8 +123,5 @@ subroutine (passtype) vec3 pointlight(mediump vec3 albedo){
 	return albedo*sunrgb * sq/100000000.0;
 }
 void main(){
-	mediump float x = mod(objxyz.x, 1000.0) / 1000.0;
-	mediump float y = mod(-objxyz.y, 1000.0) / 1000.0;
-	vec3 albedo = texture(tex0, vec2(x,y)).bgr;
-	FragColor = vec4(routine(albedo), 1.0);
+	FragColor = vec4(routine(), 1.0);
 }
