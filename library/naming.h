@@ -208,6 +208,8 @@
 #define _xamlroot_ hex64('x','a','m','l','r','o','o','t')
 #define _uiuxroot_ hex64('u','i','u','x','r','o','o','t')
 //event
+#define _follow_ hex64('f','o','l','l','o','w', 0, 0)
+#define _lookat_ hex64('l','o','o','k','a','t', 0, 0)
 #define _clickray_ hex64('c','l','i','c','k','r','a','y')
 #define _event3rd_ hex64('e','v','e','n','t','3','r','d')
 #define _eventrts_ hex64('e','v','e','n','t','r','t','s')

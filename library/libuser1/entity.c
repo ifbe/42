@@ -1,8 +1,8 @@
 #include "libuser.h"
-void item_free();
-void item_init(void*);
-void data_free();
-void data_init(void*);
+void thing_free();
+void thing_init(void*);
+void world_free();
+void world_init(void*);
 void mind_free();
 void mind_init(void*);
 void rule_free();
@@ -153,6 +153,18 @@ int touchobj_linkup(void*, void*);
 int touchobj_discon(void*, void*);
 int touchobj_read( void*,int, void*,int, void*,int, void*,int);
 int touchobj_write(void*,int, void*,int, void*,int, void*,int);
+int follow_create(void*, void*, int, u8**);
+int follow_delete(void*);
+int follow_linkup(void*, void*);
+int follow_discon(void*, void*);
+int follow_read( void*,int, void*,int, void*,int, void*,int);
+int follow_write(void*,int, void*,int, void*,int, void*,int);
+int lookat_create(void*, void*, int, u8**);
+int lookat_delete(void*);
+int lookat_linkup(void*, void*);
+int lookat_discon(void*, void*);
+int lookat_read( void*,int, void*,int, void*,int, void*,int);
+int lookat_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -263,6 +275,8 @@ void entityinput_touch(struct supply* win, struct event* ev)
 int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(act->type){
+	case _follow_:return follow_read(act,foot, stack,sp, arg,key, buf,len);
+	case _lookat_:return lookat_read(act,foot, stack,sp, arg,key, buf,len);
 	case _touchobj_:return touchobj_read(act,foot, stack,sp, arg,key, buf,len);
 	case _clickray_:return clickray_read(act,foot, stack,sp, arg,key, buf,len);
 	case _event3rd_:return event3rd_read(act,foot, stack,sp, arg,key, buf,len);
@@ -301,6 +315,8 @@ int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* 
 int entitywrite(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(act->type){
+	case _follow_:return follow_write(act,foot, stack,sp, arg,key, buf,len);
+	case _lookat_:return lookat_write(act,foot, stack,sp, arg,key, buf,len);
 	case _touchobj_:return touchobj_write(act,foot, stack,sp, arg,key, buf,len);
 	case _clickray_:return clickray_write(act,foot, stack,sp, arg,key, buf,len);
 	case _event3rd_:return event3rd_write(act,foot, stack,sp, arg,key, buf,len);
@@ -345,6 +361,8 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 
 	//say("@entity_discon\n");
 	switch(act->type){
+	case _follow_:return follow_discon(self, peer);
+	case _lookat_:return lookat_discon(self, peer);
 	case _touchobj_:return touchobj_discon(self, peer);
 	case _clickray_:return clickray_discon(self, peer);
 	case _event3rd_:return event3rd_discon(self, peer);
@@ -389,6 +407,8 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 
 	//say("@entity_linkup\n");
 	switch(act->type){
+	case _follow_:return follow_linkup(self, peer);
+	case _lookat_:return lookat_linkup(self, peer);
 	case _touchobj_:return touchobj_linkup(self, peer);
 	case _clickray_:return clickray_linkup(self, peer);
 	case _event3rd_:return event3rd_linkup(self, peer);
@@ -539,6 +559,20 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	}
 
 	//event
+	case _follow_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _follow_;
+		follow_create(act, buf, argc, argv);
+		return act;
+	}
+	case _lookat_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _lookat_;
+		lookat_create(act, buf, argc, argv);
+		return act;
+	}
 	case _touchobj_:
 	{
 		act = allocentity();
@@ -680,10 +714,10 @@ void* entitysearch(u8* buf, int len)
 void freeentity()
 {
 	say("[e,f):freeing entity\n");
-	item_free();
-	data_free();
 	mind_free();
 	rule_free();
+	thing_free();
+	world_free();
 
 	style = 0;
 	entity = 0;
@@ -698,9 +732,9 @@ void initentity(u8* addr)
 	for(j=0;j<0x200000;j++)addr[j] = 0;
 	for(j=0;j<max;j++)entity[j].tier = _ent_;
 
+	world_init(addr);
+	thing_init(addr);
 	rule_init(addr);
 	mind_init(addr);
-	data_init(addr);
-	item_init(addr);
 	say("[e,f):inited entity\n");
 }

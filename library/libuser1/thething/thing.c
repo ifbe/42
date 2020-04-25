@@ -213,10 +213,10 @@ void vmddr_register(void*);
 
 
 //
-void item_free()
+void thing_free()
 {
 }
-void item_init(void* addr)
+void thing_init(void* addr)
 {
 	void* tmp = addr +0x100000 -sizeof(struct entity);
 

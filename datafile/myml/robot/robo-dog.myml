@@ -11,6 +11,9 @@ normal:datafile/jpg/wallnormal.jpg
 dog{
 fmt:robodog
 }
+car{
+fmt:rccar
+}
 freecam{
 fmt:freecam
 }
@@ -23,6 +26,9 @@ fmt:slider
 
 event{
 fmt:event3rd
+}
+follow{
+fmt:follow
 }
 </entity>
 
@@ -60,6 +66,9 @@ url:0.0.0.0:9999
 poller{
 fmt:poller
 }
+pulser{
+fmt:pulser
+}
 </worker>
 
 
@@ -85,6 +94,15 @@ t: 0.0, 0.0, 1000.0
 doghaha{
 }
 doggeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0, 1000
+f: 0.0, 1000.0, 0.0, 1000
+t: 0.0, 0.0, 1000.0, 1000
+}
+
+carhaha{
+}
+cargeom{
 c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0, 1000
 f: 0.0, 1000.0, 0.0, 1000
@@ -122,18 +140,24 @@ q:0.3, 0.4
 (virtual, skygeom, 0) -> (sky, skyhaha, 0)
 (virtual, gndgeom, 0) -> (gnd, gndhaha, 0)
 (virtual, doggeom, 0) -> (dog, doghaha, 0)
+(virtual, cargeom, 0) -> (car, carhaha, 0)
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
 (opengl, freerect, 0) -> (freecam, 0, 0)
 (opengl, thatrect, 0) -> (slider, 0, 0)
 
-#
+#thirdperson controller
 (event, 0, tar) -> (dog, 0, evby)
 (event, 0, cam) -> (freecam, 0, evto)
 
-#
+#dog pose
 (slider, 0, evto) -> (dog, 0, int)
 (conv, 0, vec) -> (dog, 0, 0)
 (udphost, 0, dst) -> (conv, 0, str)
+
+#car follow dog
+(follow, 0, self) -> (car, 0, 0)
+(follow, 0, that) -> (dog, 0, 0)
+(pulser, 0, clk) -> (follow, 0, clk)
 </relation>
