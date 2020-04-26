@@ -3,7 +3,6 @@
 #define CTXBUF buf1
 int copypath(u8* path, u8* data);
 void local2world(struct fstyle* src, struct fstyle* dst, mat4 mat);
-void loadtexfromfile(struct glsrc* src, int idx, char* name);
 void parsevertfromobj(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
@@ -27,7 +26,7 @@ static void obj3d_ctxforwnd(struct glsrc* src, char* tex, char* vs, char* fs)
 	src->tex[0].fmt = hex32('r','g','b','a');
 	src->tex[0].name = "tex0";
 	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(src, 0, tex);
+	loadtexfromfile(&src->tex[0], tex);
 	src->tex[0].enq = 42;
 	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
 

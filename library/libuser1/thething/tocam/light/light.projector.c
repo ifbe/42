@@ -1,7 +1,6 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
 void matproj_transpose(void* m, struct fstyle* sty);
-void loadtexfromfile(struct glsrc* src, int idx, char* name);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
@@ -167,7 +166,7 @@ static void projector_forwnd_light_prepare(struct glsrc* src)
 	src->tex[1].name = "sunimg";
 	src->tex[1].fmt = hex32('r','g','b','a');
 	src->tex[1].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(src, 1, "datafile/jpg/cartoon.jpg");
+	loadtexfromfile(&src->tex[1], "datafile/jpg/cartoon.jpg");
 	src->tex[1].enq = 42;
 }
 

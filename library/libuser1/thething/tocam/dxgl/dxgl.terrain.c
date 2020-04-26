@@ -4,7 +4,6 @@
 #define CTXBUF buf2
 #define RGBTEX 0
 #define DEPTEX 1
-void loadtexfromfile(struct glsrc* src, int idx, u8* name);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
@@ -73,7 +72,7 @@ GLSL_VERSION
 
 "mediump vec3 litdir = vec3(1.0, 1.0, 1.0);\n"
 "mediump vec3 litrgb = vec3(1.0, 1.0, 1.0);\n"
-"mediump vec3 mtrfao = vec3(0.2, 0.8, 1.0);\n"
+"mediump vec3 mtrfao = vec3(0.0, 0.8, 1.0);\n"
 "mediump float metal = mtrfao.x;\n"
 "mediump float rough = mtrfao.y;\n"
 "mediump float amocc = mtrfao.z;\n"
@@ -88,7 +87,7 @@ GLSL_VERSION
     "return v / (v * (1.0 - k) + k);\n"
 "}\n"
 "void main(){\n"
-	"mediump vec3 albedo = texture(rgbtex, texuvw.xy).bgr;\n"
+	"mediump vec3 albedo = pow(texture(rgbtex, texuvw.xy).bgr, vec3(2.2));\n"
 
 	"mediump vec3 N = normalize(normal);\n"
 	"mediump vec3 E = normalize(camxyz - objxyz);\n"
@@ -285,7 +284,7 @@ static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int
 
 
 
-void terrain_ctxforwnd(struct glsrc* src, u8* rgbfile, u8* depfile)
+void terrain_ctxforwnd(struct glsrc* src, char* rgbfile, char* depfile)
 {
 	src->method = 'i';
 	src->geometry = 3;
@@ -305,11 +304,11 @@ void terrain_ctxforwnd(struct glsrc* src, u8* rgbfile, u8* depfile)
 	src->tex[RGBTEX].fmt = hex32('r','g','b','a');
 	src->tex[RGBTEX].name = "rgbtex";
 	src->tex[RGBTEX].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(src, RGBTEX, rgbfile);
+	loadtexfromfile(&src->tex[RGBTEX], rgbfile);
 	src->tex[RGBTEX].enq = 42;
 
 	src->tex[DEPTEX].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(src, DEPTEX, depfile);
+	loadtexfromfile(&src->tex[DEPTEX], depfile);
 
 	//vertex
 	src->vbuf_fmt = vbuffmt_333;
@@ -493,7 +492,7 @@ static void terrain_create(struct entity* act, void* arg, int argc, u8** argv)
 
 	src = act->CTXBUF = memorycreate(0x200, 0);
 	if(0 == src)return;
-	terrain_ctxforwnd(src, rgbpath, deppath);
+	terrain_ctxforwnd(src, (void*)rgbpath, (void*)deppath);
 
 
 	int x,y;

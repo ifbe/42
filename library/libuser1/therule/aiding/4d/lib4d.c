@@ -63,24 +63,26 @@ void asset_delete()
 
 
 
-void loadtexfromfile(struct glsrc* src, int idx, char* name)
+void savefilefromtex(char* name, struct texture* tex)
+{
+}
+void loadtexfromfile(struct texture* tex, char* name)
 {
 	int w,h,d,s;
 	int len;
 	u8* buf;
 	u8* tmp;
-	if(0 == src)return;
+	if(0 == tex)return;
 	if(0 == name)return;
 
-	buf = src->tex[idx].data;
+	buf = tex->data;
 	if(0 == buf)return;
 
 	tmp = getsuffix(name);
 	if(0 == tmp)return;
 
 	len = openreadclose(name, 0, buf, 0x1000000);
-	if(len <= 0)
-	{
+	if(len <= 0){
 		say("len=%d, %s\n", len, name);
 		return;
 	}
@@ -89,8 +91,8 @@ void loadtexfromfile(struct glsrc* src, int idx, char* name)
 	else if(0 == ncmp(tmp, "jpg", 3))loadimgfromjpg(buf, len, &w, &h, &d, &s);
 	else if(0 == ncmp(tmp, "png", 3))loadimgfrompng(buf, len, &w, &h, &d, &s);
 
-	src->tex[idx].w = w;
-	src->tex[idx].h = h;
+	tex->w = w;
+	tex->h = h;
 }
 
 

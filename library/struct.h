@@ -126,6 +126,21 @@ struct pcmdata
 	int count;
 	short buf[0];
 };
+
+
+
+
+struct texture{
+	char* name;
+	union{
+		void* data;
+		u32 glfd;
+	};
+	u32 w;
+	u32 h;
+	u32 fmt;
+	u8 enq;
+};
 struct glsrc
 {
 	//[00,24)shader
@@ -148,17 +163,7 @@ struct glsrc
 	}arg[7];
 
 	//[88,fc)texture
-	struct tex{
-		char* name;
-		union{
-			void* data;
-			u32 glfd;
-		};
-		u32 w;
-		u32 h;
-		u32 fmt;
-		u8 enq;
-	}tex[4];
+	struct texture tex[4];
 
 	//[c0,e7]vertex
 	void* vbuf;

@@ -1,5 +1,4 @@
 #include "libuser.h"
-void loadtexfromfile(struct glsrc* src, int idx, u8* name);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
@@ -71,7 +70,7 @@ static void vertex_gen(float (*vbuf)[6], float x, float y, vec3 vc, vec3 vr, vec
 	vbuf[t+5][4] = (y+1)/16.0;
 	vbuf[t+5][5] = 0.0;
 }
-void skillbar_ctxforwnd(struct glsrc* src, u8* str)
+void skillbar_ctxforwnd(struct glsrc* src, char* str)
 {
 	//property
 	src->geometry = 3;
@@ -86,7 +85,7 @@ void skillbar_ctxforwnd(struct glsrc* src, u8* str)
 	src->tex[0].fmt = hex32('r','g','b','a');
 	src->tex[0].name = "tex0";
 	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(src, 0, str);
+	loadtexfromfile(&src->tex[0], str);
 	src->tex[0].enq = 42;
 
 	//vertex

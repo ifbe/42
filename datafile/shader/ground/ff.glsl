@@ -6,6 +6,7 @@ subroutine uniform passtype routine;
 
 uniform sampler2D tex0;
 uniform sampler2D tex1;
+uniform sampler2D tex2;
 uniform sampler2D suntex;
 uniform sampler2D sunimg;
 uniform mediump vec3 sunrgb;
@@ -27,23 +28,28 @@ mediump float getG(mediump float v, mediump float r){
 subroutine (passtype) vec3 rawcolor(){
 	mediump float x = mod(objxyz.x, 1000.0) / 1000.0;
 	mediump float y = mod(-objxyz.y, 1000.0) / 1000.0;
-	mediump vec3 albedo = texture(tex0, vec2(x,y)).bgr;
+	mediump vec3 albedo = pow(texture(tex0, vec2(x,y)).bgr, vec3(2.2));
 	mediump vec3 normal = texture(tex1, vec2(x,y)).bgr;
+	mediump vec3 matter = texture(tex2, vec2(x,y)).bgr;
 
-	mediump vec3 litdir = vec3(1.0, 1.0, 1.0);
-	mediump vec3 litrgb = vec3(1.0, 1.0, 1.0);
-	mediump vec3 mtrfao = vec3(0.2, 0.5, 1.0);
-	mediump float metal = mtrfao.x;
-	mediump float rough = mtrfao.y;
-	mediump float amocc = mtrfao.z;
+	mediump float metal = matter.x;
+	mediump float rough = matter.y;
+	mediump float amocc = matter.z;
 
 	mediump vec3 N = normalize(normal);
 	mediump vec3 E = normalize(camxyz - objxyz);
 	mediump vec3 F0 = mix(vec3(0.04), albedo, metal);
 
+	mediump vec3 litrgb = vec3(1.0, 1.0, 1.0);
+	mediump vec3 litdir[4];
+	litdir[0] = vec3(-1.0, 0.0, 1.0);
+	litdir[1] = vec3( 1.0, 0.0, 1.0);
+	litdir[2] = vec3( 0.0,-1.0, 1.0);
+	litdir[3] = vec3( 0.0, 1.0, 1.0);
+
 	mediump vec3 ocolor = vec3(0.0);
-	//for(){
-		mediump vec3 L = litdir;
+	for(int j=0;j<4;j++){
+		mediump vec3 L = litdir[j];
 		//mediump float distance = length(L);
 		//mediump float attenuation = 1.0 / (distance * distance);
 		//mediump vec3 radiance = litrgb * attenuation;
@@ -64,7 +70,7 @@ subroutine (passtype) vec3 rawcolor(){
 		mediump vec3 kD = (vec3(1.0) - kS) * (1.0 - metal);
 		mediump vec3 specular = (D * G * F) / max(4.0 * NdotE * NdotL, 0.001);
 		ocolor += (kD * albedo / PI + specular) * radiance * NdotL;
-	//}
+	}
 
 	ocolor += vec3(0.03) * albedo * amocc;
 	ocolor = ocolor / (ocolor + vec3(1.0));

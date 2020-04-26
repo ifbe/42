@@ -135,13 +135,15 @@ int datastr2decstr(void* dst, void* src, int len);
 int decstr2datastr(void* dst, void* src, int len);
 int hexstr2datastr(void* dst, void* src, int len);
 int datastr2hexstr(void* dst, void* src, int len);
+//
+int cmp(void*,void*);
+int ncmp(void*,void*,int);
 
 //
 int openreadclose(void*, int, void*, int);
 int openwriteclose(void*, int, void*, int);
-//
-int cmp(void*,void*);
-int ncmp(void*,void*,int);
+void savefilefromtex(char* name, struct texture* tex);
+void loadtexfromfile(struct texture* tex, char* name);
 //
 int md5sum(void*, void*, int);
 int sha1sum(void*, void*, int);

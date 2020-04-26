@@ -1,5 +1,4 @@
 #include "libuser.h"
-void loadtexfromfile(struct glsrc* src, int idx, char* name);
 
 
 
@@ -401,7 +400,7 @@ static void mario_create(struct entity* act, void* str)
 	src->tex[0].name = "tex0";
 	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";
-	loadtexfromfile(src, 0, str);
+	loadtexfromfile(&src->tex[0], str);
 	src->tex[0].enq = 42;
 
 	//vertex

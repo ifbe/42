@@ -16,7 +16,7 @@ GLSL_VERSION
 "void main(){\n"
 	"objxyz = v;\n"
 	"normal = n;\n"
-	"albedo = c;\n"
+	"albedo = pow(c, vec3(2.2));\n"
 	"gl_Position = cammvp * vec4(objxyz,1.0);\n"
 "}\n";
 
@@ -30,7 +30,7 @@ GLSL_VERSION
 "uniform mediump vec3 camxyz;\n"
 "mediump vec3 litdir = vec3(1.0, 1.0, 1.0);\n"
 "mediump vec3 litrgb = vec3(1.0, 1.0, 1.0);\n"
-"mediump vec3 mtrfao = vec3(0.5, 0.5, 1.0);\n"
+"mediump vec3 mtrfao = vec3(0.0, 0.8, 1.0);\n"
 "mediump float metal = mtrfao.x;\n"
 "mediump float rough = mtrfao.y;\n"
 "mediump float amocc = mtrfao.z;\n"

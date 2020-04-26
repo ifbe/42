@@ -7,7 +7,6 @@ void gl41data_01cam(struct entity* wnd);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 //
 int copypath(u8* path, u8* data);
-int loadtexfromfile(struct glsrc* src, int idx, char* name);
 
 
 

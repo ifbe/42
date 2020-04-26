@@ -1,5 +1,4 @@
 #include "libuser.h"
-void loadtexfromfile(struct glsrc* src, int idx, char* name);
 void carveskybox(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
@@ -163,7 +162,7 @@ static void texbox_create(struct entity* act, void* str)
 	src->tex[0].name = "tex0";
 	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/earth.jpg";
-	loadtexfromfile(src, 0, str);
+	loadtexfromfile(&src->tex[0], str);
 	src->tex[0].enq = 42;
 	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
 

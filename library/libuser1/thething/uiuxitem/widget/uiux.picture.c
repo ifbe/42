@@ -1,6 +1,5 @@
 #include "libuser.h"
 #define CTXBUF buf0
-void loadtexfromfile(struct glsrc* src, int idx, char* name);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
@@ -50,7 +49,7 @@ static void picture_ctxforwnd(struct glsrc* src, char* str, float* angle)
 	src->tex[0].fmt = hex32('r','g','b','a');
 	src->tex[0].name = "tex0";
 	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(src, 0, str);
+	loadtexfromfile(&src->tex[0], str);
 	src->tex[0].enq = 42;
 
 	//vertex

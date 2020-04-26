@@ -4,7 +4,6 @@ void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
 void gl41data_01cam(struct entity* wnd);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
-void loadtexfromfile(struct glsrc* src, int idx, char* name);
 
 
 
@@ -46,14 +45,14 @@ void texmix_ctxforwnd(struct glsrc* src)
 	src->tex[0].fmt = hex32('r','g','b','a');
 	src->tex[0].name = "tex0";
 	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(src, 0, "datafile/jpg/wall.jpg");
+	loadtexfromfile(&src->tex[0], "datafile/jpg/wall.jpg");
 	src->tex[0].enq = 42;
 
 	//texture1
 	src->tex[1].fmt = hex32('r','g','b','a');
 	src->tex[1].name = "tex1";
 	src->tex[1].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(src, 1, "datafile/jpg/cartoon.jpg");
+	loadtexfromfile(&src->tex[1], "datafile/jpg/cartoon.jpg");
 	src->tex[1].enq = 42;
 
 	//vertex
