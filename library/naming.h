@@ -210,6 +210,7 @@
 //event
 #define _follow_ hex64('f','o','l','l','o','w', 0, 0)
 #define _lookat_ hex64('l','o','o','k','a','t', 0, 0)
+#define _wander_ hex64('w','a','n','d','e','r', 0, 0)
 #define _clickray_ hex64('c','l','i','c','k','r','a','y')
 #define _event3rd_ hex64('e','v','e','n','t','3','r','d')
 #define _eventrts_ hex64('e','v','e','n','t','r','t','s')

@@ -165,6 +165,12 @@ int lookat_linkup(void*, void*);
 int lookat_discon(void*, void*);
 int lookat_read( void*,int, void*,int, void*,int, void*,int);
 int lookat_write(void*,int, void*,int, void*,int, void*,int);
+int wander_create(void*, void*, int, u8**);
+int wander_delete(void*);
+int wander_linkup(void*, void*);
+int wander_discon(void*, void*);
+int wander_read( void*,int, void*,int, void*,int, void*,int);
+int wander_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -277,6 +283,7 @@ int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* 
 	switch(act->type){
 	case _follow_:return follow_read(act,foot, stack,sp, arg,key, buf,len);
 	case _lookat_:return lookat_read(act,foot, stack,sp, arg,key, buf,len);
+	case _wander_:return wander_read(act,foot, stack,sp, arg,key, buf,len);
 	case _touchobj_:return touchobj_read(act,foot, stack,sp, arg,key, buf,len);
 	case _clickray_:return clickray_read(act,foot, stack,sp, arg,key, buf,len);
 	case _event3rd_:return event3rd_read(act,foot, stack,sp, arg,key, buf,len);
@@ -317,6 +324,7 @@ int entitywrite(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void*
 	switch(act->type){
 	case _follow_:return follow_write(act,foot, stack,sp, arg,key, buf,len);
 	case _lookat_:return lookat_write(act,foot, stack,sp, arg,key, buf,len);
+	case _wander_:return wander_write(act,foot, stack,sp, arg,key, buf,len);
 	case _touchobj_:return touchobj_write(act,foot, stack,sp, arg,key, buf,len);
 	case _clickray_:return clickray_write(act,foot, stack,sp, arg,key, buf,len);
 	case _event3rd_:return event3rd_write(act,foot, stack,sp, arg,key, buf,len);
@@ -363,6 +371,7 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	switch(act->type){
 	case _follow_:return follow_discon(self, peer);
 	case _lookat_:return lookat_discon(self, peer);
+	case _wander_:return wander_discon(self, peer);
 	case _touchobj_:return touchobj_discon(self, peer);
 	case _clickray_:return clickray_discon(self, peer);
 	case _event3rd_:return event3rd_discon(self, peer);
@@ -409,6 +418,7 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 	switch(act->type){
 	case _follow_:return follow_linkup(self, peer);
 	case _lookat_:return lookat_linkup(self, peer);
+	case _wander_:return wander_linkup(self, peer);
 	case _touchobj_:return touchobj_linkup(self, peer);
 	case _clickray_:return clickray_linkup(self, peer);
 	case _event3rd_:return event3rd_linkup(self, peer);
@@ -571,6 +581,13 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		act = allocentity();
 		act->fmt = act->type = _lookat_;
 		lookat_create(act, buf, argc, argv);
+		return act;
+	}
+	case _wander_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _wander_;
+		wander_create(act, buf, argc, argv);
 		return act;
 	}
 	case _touchobj_:

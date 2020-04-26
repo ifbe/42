@@ -14,6 +14,9 @@ fmt:robodog
 car{
 fmt:rccar
 }
+test{
+fmt:rccar
+}
 freecam{
 fmt:freecam
 }
@@ -29,6 +32,9 @@ fmt:event3rd
 }
 follow{
 fmt:follow
+}
+wander{
+fmt:wander
 }
 </entity>
 
@@ -109,6 +115,15 @@ f: 0.0, 1000.0, 0.0, 1000
 t: 0.0, 0.0, 1000.0, 1000
 }
 
+testhaha{
+}
+testgeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0, 1000
+f: 0.0, 1000.0, 0.0, 1000
+t: 0.0, 0.0, 1000.0, 1000
+}
+
 freemodl{
 }
 freegeom{
@@ -141,6 +156,7 @@ q:0.3, 0.4
 (virtual, gndgeom, 0) -> (gnd, gndhaha, 0)
 (virtual, doggeom, 0) -> (dog, doghaha, 0)
 (virtual, cargeom, 0) -> (car, carhaha, 0)
+(virtual, testgeom, 0) -> (test, testhaha, 0)
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
@@ -159,5 +175,11 @@ q:0.3, 0.4
 #car follow dog
 (follow, 0, self) -> (car, 0, 0)
 (follow, 0, that) -> (dog, 0, 0)
+
+#test wander
+(wander, 0, self) -> (test, 0, 0)
+
+#clock
 (pulser, 0, clk) -> (follow, 0, clk)
+(pulser, 0, clk) -> (wander, 0, clk)
 </relation>

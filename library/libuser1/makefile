@@ -80,9 +80,10 @@ therule/rule.c \
 themind/elec/bldc/control.bldc.c \
 themind/elec/bulk/control.bulk.c \
 themind/pilot/drone/pilot.drone.c \
+themind/pilot/vehicle/pilot.vehicle.c \
 themind/pilot/follow/pilot.follow.c \
 themind/pilot/lookat/pilot.lookat.c \
-themind/pilot/vehicle/pilot.vehicle.c \
+themind/pilot/wander/pilot.wander.c \
 themind/place/maze/solve.maze.c \
 themind/place/rubik/solve.rubik.c \
 themind/user/baby/baby.c \
