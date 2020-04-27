@@ -12,7 +12,7 @@ void main(){
 		FragColor = vec4(tmp, 1.0);
 	}
 	if((uvw.x > 0.5)&&(uvw.y < 0.5)){
-		tmp = texture(tex1, uvw).rgb;
+		tmp = texture(tex1, uvw).rgb*2.0-1.0;
 		FragColor = vec4(tmp, 1.0);
 	}
 	if((uvw.x < 0.5)&&(uvw.y > 0.5)){

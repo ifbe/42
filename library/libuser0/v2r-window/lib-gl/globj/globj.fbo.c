@@ -114,12 +114,27 @@ int fbocreate_g(struct supply* tar, int arg)
 	GLenum gbuffer[4];
 	tar->tex = memorycreate(0x100, 0);
 
+	//depth buffer
+	glGenTextures(1, &tar->dep);
+	glBindTexture(GL_TEXTURE_2D, tar->dep);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, 1024, 1024, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+#ifdef __ANDROID__
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tar->dep, 0);
+#else
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tar->dep, 0);
+#endif
+/*
 	//render buffer: without this, depth wrong
 	glGenRenderbuffers(1, &tar->rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, tar->rbo);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 1024);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, tar->rbo);
-
+*/
 	for(j=0;j<4;j++){
 		//geometry buffer
 		glGenTextures(1, &tar->tex[j]);

@@ -902,7 +902,6 @@ struct supply
 		void*    hdc;	//2d.winapi
 		void* sdlren;	//2d.sdl
 		u64   gltime;	//3d.glfw
-		u32      rbo;	//3d.fbo
 	};
 	union{
 		u64 padd2;
@@ -911,14 +910,16 @@ struct supply
 		void*  binfo;	//2d.winapi
 		void* sdltex;	//2d.sdl
 		void* glevto;	//3d.glfw
-		u32     tex0;	//3d.fbo
+		u32      rbo;	//3d.depth/stencil
+		u32      dep;	//3d.depth/stencil
 	};
 	union{
 		u64 padd3;
 		int    aqdeq;	//audio.aq
 		void* spsave;	//2d.*
 		void* glsave;	//3d.glfw
-		u32*     tex;	//3d.fbo
+		u32     tex0;	//3d.color
+		u32*     tex;	//3d.gbuffer
 	};
 
 	//[60,7f]: memory
