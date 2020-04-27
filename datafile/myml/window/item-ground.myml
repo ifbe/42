@@ -5,6 +5,16 @@ albedo:/Users/ifbe/Downloads/floor/albedo.png
 normal:/Users/ifbe/Downloads/floor/normal.png
 matter:/Users/ifbe/Downloads/floor/matter.png
 }
+thebox{
+fmt:obj3d
+url:datafile/obj/cube.obj
+albedo:/Users/ifbe/Downloads/floor/albedo.png
+matter:/Users/ifbe/Downloads/floor/matter.png
+}
+rabbit{
+fmt:stl3d
+url:datafile/stl/bunny-lowpoly.stl
+}
 freecam{
 fmt:freecam
 }
@@ -45,6 +55,24 @@ f: 0.0, 10000000.0, 0.0
 t: 0.0, 0.0, 10000000.0
 }
 
+rabslot{
+}
+rabgeom{
+c:-1000.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+boxslot{
+}
+boxgeom{
+c: 1000.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
 freeslot{
 }
 freegeom{
@@ -70,6 +98,8 @@ q:1.0, 1.0
 <relation>
 #virtual depends on inner objects
 (virtual, gndgeom, 0) -> (ground, gndhaha, 0)
+(virtual, boxgeom, 0) -> (thebox, boxslot, 0)
+(virtual, rabgeom, 0) -> (rabbit, rabslot, 0)
 (virtual, freegeom, 0) -> (freecam, freeslot, 0)
 
 #glwnd depends on

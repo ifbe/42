@@ -31,9 +31,7 @@ mediump float getG(mediump float v, mediump float r){
     return v / (v * (1.0 - k) + k);
 }
 subroutine (passtype) vec3 rawcolor(){
-	mediump vec3 litdir = vec3(1.0, 1.0, 1.0);
-	mediump vec3 litrgb = vec3(1.0, 1.0, 1.0);
-	mediump vec3 mtrfao = vec3(0.5, 0.5, 1.0);
+	mediump vec3 mtrfao = vec3(0.0, 0.5, 1.0);
 	mediump float metal = mtrfao.x;
 	mediump float rough = mtrfao.y;
 	mediump float amocc = mtrfao.z;
@@ -42,9 +40,16 @@ subroutine (passtype) vec3 rawcolor(){
 	mediump vec3 E = normalize(camxyz - objxyz);
 	mediump vec3 F0 = mix(vec3(0.04), albedo, metal);
 
+	mediump vec3 litrgb = vec3(1.0, 1.0, 1.0);
+	mediump vec3 litdir[4];
+	litdir[0] = vec3(-1.0, 0.0, 1.0);
+	litdir[1] = vec3( 1.0, 0.0, 1.0);
+	litdir[2] = vec3( 0.0,-1.0, 1.0);
+	litdir[3] = vec3( 0.0, 1.0, 1.0);
+
 	mediump vec3 ocolor = vec3(0.0);
-	//for(){
-		mediump vec3 L = litdir;
+	for(int j=0;j<4;j++){
+		mediump vec3 L = litdir[j];
 		//mediump float distance = length(L);
 		//mediump float attenuation = 1.0 / (distance * distance);
 		//mediump vec3 radiance = litrgb * attenuation;
@@ -65,7 +70,7 @@ subroutine (passtype) vec3 rawcolor(){
 		mediump vec3 kD = (vec3(1.0) - kS) * (1.0 - metal);
 		mediump vec3 specular = (D * G * F) / max(4.0 * NdotE * NdotL, 0.001);
 		ocolor += (kD * albedo / PI + specular) * radiance * NdotL;
-	//}
+	}
 
 	ocolor += vec3(0.03) * albedo * amocc;
 	ocolor = ocolor / (ocolor + vec3(1.0));

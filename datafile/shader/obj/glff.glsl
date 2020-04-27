@@ -1,12 +1,13 @@
 #version 410 core
 in mediump vec3 objxyz;
+in mediump vec3 normal;
+in mediump vec2 texcoo;
 out mediump vec4 FragColor;
 subroutine vec3 passtype();
 subroutine uniform passtype routine;
 
-uniform sampler2D tex0;
-uniform sampler2D tex1;
-uniform sampler2D tex2;
+uniform sampler2D albedomap;
+uniform sampler2D mattermap;
 uniform sampler2D suntex;
 uniform sampler2D sunimg;
 uniform mediump vec3 sunrgb;
@@ -26,11 +27,8 @@ mediump float getG(mediump float v, mediump float r){
     return v / (v * (1.0 - k) + k);
 }
 subroutine (passtype) vec3 rawcolor(){
-	mediump float x = mod(objxyz.x, 1000.0) / 1000.0;
-	mediump float y = mod(-objxyz.y, 1000.0) / 1000.0;
-	mediump vec3 albedo = pow(texture(tex0, vec2(x,y)).bgr, vec3(2.2));
-	mediump vec3 normal = texture(tex1, vec2(x,y)).bgr * 2.0 - vec3(1.0);
-	mediump vec3 matter = texture(tex2, vec2(x,y)).bgr;
+	mediump vec3 albedo = pow(texture(albedomap, texcoo).bgr, vec3(2.2));
+	mediump vec3 matter = texture(mattermap, texcoo).bgr;
 
 	mediump float metal = matter.x;
 	mediump float rough = matter.y;
@@ -79,7 +77,7 @@ subroutine (passtype) vec3 rawcolor(){
 subroutine (passtype) vec3 dirlight(){
 	mediump float x = mod(objxyz.x, 1000.0) / 1000.0;
 	mediump float y = mod(-objxyz.y, 1000.0) / 1000.0;
-	mediump vec3 albedo = texture(tex0, vec2(x,y)).bgr;
+	mediump vec3 albedo = texture(albedomap, vec2(x,y)).bgr;
 
 	mediump vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp /= tmp.w;
@@ -92,7 +90,7 @@ subroutine (passtype) vec3 dirlight(){
 subroutine (passtype) vec3 spotlight(){
 	mediump float x = mod(objxyz.x, 1000.0) / 1000.0;
 	mediump float y = mod(-objxyz.y, 1000.0) / 1000.0;
-	mediump vec3 albedo = texture(tex0, vec2(x,y)).bgr;
+	mediump vec3 albedo = texture(albedomap, vec2(x,y)).bgr;
 
 	mediump vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp /= tmp.w;
@@ -106,7 +104,7 @@ subroutine (passtype) vec3 spotlight(){
 subroutine (passtype) vec3 projector(){
 	mediump float x = mod(objxyz.x, 1000.0) / 1000.0;
 	mediump float y = mod(-objxyz.y, 1000.0) / 1000.0;
-	mediump vec3 albedo = texture(tex0, vec2(x,y)).bgr;
+	mediump vec3 albedo = texture(albedomap, vec2(x,y)).bgr;
 
 	mediump vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp /= tmp.w;
@@ -119,7 +117,7 @@ subroutine (passtype) vec3 projector(){
 subroutine (passtype) vec3 pointlight(){
 	mediump float x = mod(objxyz.x, 1000.0) / 1000.0;
 	mediump float y = mod(-objxyz.y, 1000.0) / 1000.0;
-	mediump vec3 albedo = texture(tex0, vec2(x,y)).bgr;
+	mediump vec3 albedo = texture(albedomap, vec2(x,y)).bgr;
 
 	mediump float dx = (sunxyz-objxyz).x;
 	mediump float dy = (sunxyz-objxyz).y;

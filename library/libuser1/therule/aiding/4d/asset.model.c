@@ -65,15 +65,6 @@ void parsefacefromobj(float* dst, int cnt, float* vv, int cv, float* vn, int cn,
 }
 void parsevertfromobj(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len)
 {
-	int j,k;
-	int cv;
-	int cn;
-	int ct;
-	int cnt;
-	float* fv;
-	float* fn;
-	float* ft;
-	float* dst;
 	float* vl = sty->vl;	//left
 	float* vr = sty->vr;	//right
 	float* vn = sty->vn;	//near
@@ -105,14 +96,16 @@ void parsevertfromobj(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len)
 	vu[1] = 0.0;
 	vu[2] = -100000.0;
 
-	cv = 0;
-	cn = 0;
-	ct = 0;
-	cnt = 0;
-	fv = ctx->vbuf+0x80000;
-	fn = ctx->vbuf+0xa0000;
-	ft = ctx->vbuf+0xc0000;
-	dst = ctx->vbuf;
+
+	int j,k;
+	int cv = 0;
+	int cn = 0;
+	int ct = 0;
+	int cnt = 0;
+	float* fv = ctx->vbuf+0x80000;
+	float* fn = ctx->vbuf+0xa0000;
+	float* ft = ctx->vbuf+0xc0000;
+	float* dst = ctx->vbuf;
 
 	k = 0;
 	for(j=0;j<len;j++){

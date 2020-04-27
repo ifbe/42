@@ -2,20 +2,21 @@
 cam0{
 fmt:freecam
 }
-tree{
-#fmt:stl3d
-#url:datafile/stl/bunny-lowpoly.stl
+item{
 fmt:obj3d
 url:datafile/obj/cube.obj
-tex:datafile/jpg/earth.jpg
-vs:datafile/shader/model/gv.glsl
-fs:datafile/shader/model/gf.glsl
+glvs:datafile/shader/obj/glgv.glsl
+glfs:datafile/shader/obj/glgf.glsl
+albedo:/Users/ifbe/Downloads/floor/albedo.png
+matter:/Users/ifbe/Downloads/floor/matter.png
 }
 grnd{
 fmt:ground
-url:datafile/jpg/wall.jpg
-vs:datafile/shader/ground/gv.glsl
-fs:datafile/shader/ground/gf.glsl
+glvs:datafile/shader/ground/gv.glsl
+glfs:datafile/shader/ground/gf.glsl
+albedo:/Users/ifbe/Downloads/floor/albedo.png
+normal:/Users/ifbe/Downloads/floor/normal.png
+matter:/Users/ifbe/Downloads/floor/matter.png
 }
 world{
 fmt:virtual
@@ -49,9 +50,9 @@ fmt:poller
 
 
 <style>
-treepart{
+itempart{
 }
-treegeom{
+itemgeom{
 c: 0.0, 0.0, 1000.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
@@ -95,9 +96,9 @@ q:1.0, 1.0
 
 
 <relation>
-#world depends on tree
+#world depends on
 (world, grndgeom, 0) -> (grnd, grndpart, 0)
-(world, treegeom, 0) -> (tree, treepart, 0)
+(world, itemgeom, 0) -> (item, itempart, 0)
 (world, aaaageom, 0) -> (cam0, aaaapart, 0)
 
 #gbuffer depends on cam0

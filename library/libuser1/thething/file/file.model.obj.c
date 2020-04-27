@@ -1,40 +1,43 @@
 #include "libuser.h"
-#define OBJBUF buf0
-#define CTXBUF buf1
+#define OWNBUF buf0
 int copypath(u8* path, u8* data);
 void local2world(struct fstyle* src, struct fstyle* dst, mat4 mat);
 void parsevertfromobj(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
+struct privdata{
+	u8 vs[128];
+	u8 fs[128];
+
+	u8 albedo[128];
+	u8 matter[128];
+
+	int objlen;
+	u8* objbuf;
+
+	mat4 objmat;
+	struct gl41data gl41;
+};
 
 
-static void obj3d_ctxforwnd(struct glsrc* src, char* tex, char* vs, char* fs)
+static void obj3d_ctxforgl41(struct glsrc* src, char* albedo, char* matter, char* vs, char* fs)
 {
-	float* tmp;
 	src->geometry = 3;
 	src->method = 'v';
+say("%s\n%s\n%s\n%s\n",albedo,matter,vs,fs);
 
 	//shader
-	src->vs = memorycreate(0x1000, 0);
-	openreadclose(vs, 0, src->vs, 0x1000);
-	src->fs = memorycreate(0x1000, 0);
-	openreadclose(fs, 0, src->fs, 0x1000);
+	src->vs = memorycreate(0x10000, 0);
+	openreadclose(vs, 0, src->vs, 0x10000);
+	src->fs = memorycreate(0x10000, 0);
+	openreadclose(fs, 0, src->fs, 0x10000);
 	src->shader_enq = 42;
-
-	//texture
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "tex0";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&src->tex[0], tex);
-	src->tex[0].enq = 42;
-	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
 
 	//argument
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "objmat";
-	src->arg[0].data = memorycreate(4*4*4, 0);
-
+/*
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "KA";
 	tmp = src->arg[1].data = memorycreate(4*4, 0);
@@ -49,10 +52,20 @@ static void obj3d_ctxforwnd(struct glsrc* src, char* tex, char* vs, char* fs)
 	src->arg[3].name = "KS";
 	tmp = src->arg[3].data = memorycreate(4*4, 0);
 	tmp[0] = tmp[1] = tmp[2] = 0.773911;
+*/
+	//albedo
+	src->tex[0].name = "albedomap";
+	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(&src->tex[0], albedo);
+	src->tex[0].enq = 42;
 
-	//vertex
-	src->vbuf_len = 0x1000000;
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	//matter
+	src->tex[1].name = "mattermap";
+	src->tex[1].fmt = hex32('r','g','b','a');
+	src->tex[1].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(&src->tex[1], matter);
+	src->tex[1].enq = 42;
 }
 static void obj3d_draw_gl41(
 	struct entity* act, struct style* part,
@@ -60,12 +73,12 @@ static void obj3d_draw_gl41(
 	struct entity* wrd, struct style* camg,
 	struct entity* ctx, struct style* none)
 {
-	if(0 == act)return;
-	if(act->CTXBUF == 0)return;
+	struct privdata* own = act->OWNBUF;
+	if(0 == own)return;
 
-	struct glsrc* src = act->CTXBUF;
-	local2world(&part->fs, &geom->fs, (void*)src->arg[0].data);
+	local2world(&part->fs, &geom->fs, own->objmat);
 
+	struct glsrc* src = &own->gl41.src;
 	gl41data_insert(ctx, 's', src, 1);
 }
 
@@ -188,20 +201,23 @@ static void obj3d_discon(struct halfrel* self, struct halfrel* peer)
 }
 static void obj3d_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct str* tmp;
-	struct glsrc* src;
-	struct style* pin = (void*)(self->foot);
-	struct entity* act = (void*)(self->chip);
+	struct entity* act = self->pchip;
 	if(0 == act)return;
-	if(0 == pin)return;
+	struct privdata* own = act->buf0;
+	if(0 == own)return;
 
-	tmp = act->OBJBUF;
+	struct style* pin = self->pfoot;
+	if(0 == pin)return;
+	//struct style* sty = peer->pfoot;
+	//if(0 == sty)return;
 
 	//vertex
-	src = act->CTXBUF;
-	parsevertfromobj(src, &pin->fs, tmp->buf, tmp->len);
+	struct glsrc* src = &own->gl41.src;
+	src->vbuf_len = 0x100000;
+	src->vbuf = memorycreate(src->vbuf_len, 0);
 	src->vbuf_fmt = vbuffmt_333;
 	src->vbuf_w = 4*9;
+	parsevertfromobj(src, &pin->fs, own->objbuf, own->objlen);
 	src->vbuf_enq = 42;
 }
 
@@ -219,7 +235,7 @@ static void obj3d_delete(struct entity* act)
 	if(0 == act)return;
 }
 static void obj3d_create(struct entity* act, void* arg, int argc, u8** argv)
-{
+{/*
 	int j;
 	struct str* tmp;
 	u8 vspath[128];
@@ -251,10 +267,56 @@ static void obj3d_create(struct entity* act, void* arg, int argc, u8** argv)
 	act->CTXBUF = memorycreate(0x200, 0);
 	if(act->CTXBUF)obj3d_ctxforwnd(act->CTXBUF, tex, vs, fs);
 
-	if(0 == arg)arg = "datafile/stl/bunny-lowpoly.stl";
+	if(0 == arg)arg = "datafile/obj/cube.obj";
 	tmp = act->OBJBUF = memorycreate(0x10000, 0);
 	tmp->len = 0x1000;
-	openreadclose(arg, 0, tmp->buf, tmp->len);
+	openreadclose(arg, 0, tmp->buf, tmp->len);*/
+
+	int j;
+	if(0 == act)return;
+
+	struct privdata* own = act->OWNBUF = memorycreate(0x1000, 0);
+	if(0 == own)return;
+
+	//char* dxvs = 0;
+	//char* dxfs = 0;
+	char* glvs = 0;
+	char* glfs = 0;
+	char* albedo = 0;
+	char* matter = 0;
+	for(j=0;j<argc;j++){
+		//say("%d:%.8s\n", j, argv[j]);
+		if(0 == ncmp(argv[j], "glvs:", 5)){
+			copypath(own->vs, argv[j]+5);
+			glvs = (void*)own->vs;
+		}
+		if(0 == ncmp(argv[j], "glfs:", 5)){
+			copypath(own->fs, argv[j]+5);
+			glfs = (void*)own->fs;
+		}
+		if(0 == ncmp(argv[j], "albedo:", 7)){
+			copypath(own->albedo, argv[j]+7);
+			albedo = (void*)own->albedo;
+		}
+		if(0 == ncmp(argv[j], "matter:", 7)){
+			copypath(own->matter, argv[j]+7);
+			matter = (void*)own->matter;
+		}
+	}
+	//if(0 == dxvs)dxvs = "datafile/shader/obj/dxfv.glsl";
+	//if(0 == dxfs)dxfs = "datafile/shader/obj/dxff.glsl";
+	if(0 == glvs)glvs = "datafile/shader/obj/glfv.glsl";
+	if(0 == glfs)glfs = "datafile/shader/obj/glff.glsl";
+	if(0 == albedo)albedo = "datafile/jpg/wall.jpg";
+	if(0 == matter)matter = "datafile/jpg/wallnormal.jpg";
+
+	//obj3d_ctxforgl41(&own->gl41.src, albedo, normal, dxvs, dxfs);
+	obj3d_ctxforgl41(&own->gl41.src, albedo, matter, glvs, glfs);
+	own->gl41.src.arg[0].data = own->objmat;
+
+	if(0 == arg)arg = "datafile/obj/cube.obj";
+	own->objbuf = memorycreate(0x10000, 0);
+	own->objlen = openreadclose(arg, 0, own->objbuf, 0x10000);
 }
 
 
