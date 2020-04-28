@@ -8,8 +8,8 @@ matter:/Users/ifbe/Downloads/floor/matter.png
 thebox{
 fmt:obj3d
 url:datafile/obj/cube.obj
-albedo:/Users/ifbe/Downloads/floor/albedo.png
-matter:/Users/ifbe/Downloads/floor/matter.png
+albedo:/Users/ifbe/Downloads/rustiron/albedo.png
+matter:/Users/ifbe/Downloads/rustiron/matter.png
 }
 rabbit{
 fmt:stl3d

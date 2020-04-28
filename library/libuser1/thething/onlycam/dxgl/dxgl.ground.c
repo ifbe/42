@@ -260,24 +260,30 @@ static void ground_create(struct entity* act, void* str, int argc, u8** argv)
 /*
 	//testing: merge albedo,normal,amocc into ppm
 	int x,y;
-	struct texture tex[2];
+	struct texture tex[3];
 	u8* to = memorycreate(2048*2048*4, 0);
 	u8* tt = memorycreate(2048*2048*4, 0);
 
-	int fd = open("/Users/ifbe/Downloads/floor/matter.ppm", O_RDWR|O_CREAT, 0777);
+	int fd = open("/Users/ifbe/Downloads/rustiron/matter.ppm", O_RDWR|O_CREAT, 0664);
 	j = mysnprintf(to, 64, "P6\n%d %d\n%d\n", 2048, 2048, 255);
 	write(fd, to, j);
 
 	tex[0].data = tt;
-	loadtexfromfile(&tex[0], "/Users/ifbe/Downloads/floor/_ao.png");
+	loadtexfromfile(&tex[0], "/Users/ifbe/Downloads/rustiron/_metal.png");
 	for(j=0;j<2048*2048*4;j+=4){
-		to[j+2] = tt[j+2];
+		to[j+0] = tt[j+0];
 	}
 
 	tex[1].data = tt;
-	loadtexfromfile(&tex[1], "/Users/ifbe/Downloads/floor/_rough.png");
+	loadtexfromfile(&tex[1], "/Users/ifbe/Downloads/rustiron/_rough.png");
 	for(j=0;j<2048*2048*4;j+=4){
 		to[j+1] = tt[j+1];
+	}
+
+	tex[2].data = tt;
+	loadtexfromfile(&tex[2], "/Users/ifbe/Downloads/rustiron/_ao.png");
+	for(j=0;j<2048*2048*4;j+=4){
+		to[j+2] = tt[j+2];
 	}
 
 	for(j=0;j<2048*2048*4;j+=4)write(fd, to+j, 3);

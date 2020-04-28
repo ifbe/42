@@ -7,7 +7,7 @@ bare:
 	$(compiler) $(cflag) pwrclk.c
 	$(compiler) $(cflag) bare/memory.c
 	$(compiler) $(cflag) bare/board.c
-	$(compiler) $(cflag) bare/barex64/baremain.c
+	$(compiler) $(cflag) bare/barex64/entry.c
 	$(compiler) $(cflag) bare/barex64/serial.c
 	$(compiler) $(cflag) bare/barex64/thread.c
 
@@ -17,7 +17,7 @@ efi:
 	$(compiler) $(cflag) pwrclk.c
 	$(compiler) $(cflag) bare/memory.c
 	$(compiler) $(cflag) bare/board.c
-	$(compiler) $(cflag) bare/efi/efimain.c
+	$(compiler) $(cflag) bare/efi/entry.c
 	$(compiler) $(cflag) bare/efi/serial.c
 	$(compiler) $(cflag) bare/efi/thread.c
 
@@ -27,7 +27,7 @@ none:
 	$(compiler) $(cflag) pwrclk.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/board.c
-	$(compiler) $(cflag) app/none/main.c
+	$(compiler) $(cflag) app/none/entry.c
 	$(compiler) $(cflag) app/none/envev.c
 	$(compiler) $(cflag) app/none/serial.c
 	$(compiler) $(cflag) app/none/thread.c
@@ -38,7 +38,7 @@ rpi:
 	$(compiler) $(cflag) pwrclk.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/rpi/wiringpi.c
-	$(compiler) $(cflag) app/none/main.c
+	$(compiler) $(cflag) app/none/entry.c
 	$(compiler) $(cflag) app/none/envev.c
 	$(compiler) $(cflag) app/none/serial.c
 	$(compiler) $(cflag) app/none/thread.c
@@ -49,7 +49,7 @@ wincmd:
 	$(compiler) $(cflag) pwrclk.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/board.c
-	$(compiler) $(cflag) app/win/main.c
+	$(compiler) $(cflag) app/win/entry.c
 	$(compiler) $(cflag) app/win/envev.c
 	$(compiler) $(cflag) app/win/serial.c
 	$(compiler) $(cflag) app/win/thread.c
