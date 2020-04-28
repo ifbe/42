@@ -1,12 +1,20 @@
 [bits 64]
-extern birth
-extern death
+extern pwrclkcreate
 extern say
 
 section .text
 global main
 main:
-	call birth
+	push rbp
+	mov rbp,rsp
+	sub rsp,0x20
+
+	xor rax,rax
+	mov rdi,'main'
+	mov rsi,0
+	mov rdx,0
+	mov rcx,0
+	call pwrclkcreate
 
 	mov rdi, fmt
 	mov rsi, arg1
@@ -16,7 +24,7 @@ main:
 	mov r9, arg5
 	call say
 
-	call death
+	leave
 	ret
 
 section .data

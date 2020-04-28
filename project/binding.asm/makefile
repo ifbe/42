@@ -8,4 +8,4 @@ windows:
 	nasm cd89.s -f win64 -o cd89.o
 	gcc cd89.o 42.a -lwinmm -lws2_32
 clean:
-	rm -f *.o *.a *.exe
+	rm -f *.o *.out *.exe
