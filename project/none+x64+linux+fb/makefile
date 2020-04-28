@@ -35,7 +35,7 @@ exe:
 	$(library)/libuser0/*.o $(library)/libuser1/*.o \
 	-lpulse -lpulse-simple -lpthread -lm
 lib:
-	rm -f $(library)/libboot0/entry.s
+	rm -f $(library)/libboot0/entry.o
 	ar crs 42.a \
 	$(library)/libboot0/*.o $(library)/libboot1/*.o \
 	$(library)/libhard0/*.o $(library)/libhard1/*.o \

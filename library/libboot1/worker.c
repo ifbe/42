@@ -76,7 +76,7 @@ void* workercreate(u64 type, void* url, int argc, u8** argv)
 
 	if(0 == type){
 		type = wrk->type;
-		if(0 == type)type = _waiter_;
+		if(0 == type)type = _poller_;
 
 		switch(type){
 			case _exiter_:exiter(wrk);break;

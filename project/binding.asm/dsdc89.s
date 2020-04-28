@@ -1,5 +1,7 @@
 [bits 64]
 extern pwrclkcreate
+extern workercreate
+extern supplycreate
 extern say
 
 section .text
@@ -9,7 +11,6 @@ main:
 	mov rbp,rsp
 	sub rsp,0x20
 
-	xor rax,rax
 	mov rdi,'main'
 	mov rsi,0
 	mov rdx,0
@@ -23,6 +24,18 @@ main:
 	mov r8, arg4
 	mov r9, arg5
 	call say
+
+	mov rdi,'wnd'
+	mov rsi,0
+	mov rdx,0
+	mov rcx,0
+	call supplycreate
+
+	mov rdi,0
+	mov rsi,0
+	mov rdx,0
+	mov rcx,0
+	call workercreate
 
 	leave
 	ret
