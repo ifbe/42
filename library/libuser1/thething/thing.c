@@ -58,6 +58,7 @@ void portal_register(void*);
 void water_register(void*);
 //.light
 void dirlight_register(void*);
+void imagelight_register(void*);
 void pointlight_register(void*);
 void projector_register(void*);
 void spotlight_register(void*);
@@ -362,13 +363,16 @@ void thing_init(void* addr)
 	dirlight_register(tmp);
 	tmp -= sizeof(struct entity);
 
-	spotlight_register(tmp);
+	imagelight_register(tmp);
 	tmp -= sizeof(struct entity);
 
 	projector_register(tmp);
 	tmp -= sizeof(struct entity);
 
 	pointlight_register(tmp);
+	tmp -= sizeof(struct entity);
+
+	spotlight_register(tmp);
 	tmp -= sizeof(struct entity);
 
 //.else

@@ -1,13 +1,11 @@
 <entity>
-ground{
-fmt:ground
-}
-tree{
-fmt:tree
-}
 test{
 fmt:stl3d
 url:datafile/stl/spider-lowpoly.stl
+}
+light{
+fmt:imagelit
+url:datafile/jpg/texball-grassland.jpg
 }
 freecam{
 fmt:freecam
@@ -22,12 +20,18 @@ fmt:slider
 
 
 <supply>
+thefbo{
+fmt:gl41fbod
+}
 opengl{
 fmt:wnd
 title:"42"
 width:1024
 height:1024
 depth:1024
+}
+std{
+fmt:std
 }
 </supply>
 
@@ -40,31 +44,26 @@ fmt:poller
 
 
 <style>
-grndhaha{
-}
-grndgeom{
-c: 0.0, 0.0, 0.0
-r: 10000.0, 0.0, 0.0
-f: 0.0, 10000.0, 0.0
-t: 0.0, 0.0, 10000.0
-}
-
-treehaha{
-}
-treegeom{
-c: 0.0, 0.0, 0.0
-r: 1000.0, 0.0, 0.0
-f: 0.0, 1000.0, 0.0
-t: 0.0, 0.0, 1000.0
-}
-
 testhaha{
 }
 testgeom{
-c: 0.0, -1000.0, 0.0
+c: 0.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
+}
+
+lithaha{
+}
+litgeom{
+c: 0.0, 0.0, 0.0
+r: 10000000.0, 0.0, 0.0
+f: 0.0, 10000000.0, 0.0
+t: 0.0, 0.0, 10000000.0
+}
+litrect{
+c:0.0, 0.0
+q:1.0, 1.0
 }
 
 freemodl{
@@ -94,9 +93,8 @@ q:0.3, 0.4
 
 <relation>
 #virtual depends on inner objects
-(virtual, grndgeom, 0) -> (ground, grndhaha, 0)
-(virtual, treegeom, 0) -> (tree, treehaha, 0)
 (virtual, testgeom, 0) -> (test, testhaha, 0)
+(virtual, litgeom, 0) -> (light, lithaha, 0)
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam

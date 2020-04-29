@@ -1,4 +1,5 @@
 #include "libuser.h"
+#define _int_ hex32('i','n','t', 0)
 #define CTXBUF buf0
 int copypath(u8* path, u8* data);
 int windowread(int type, void* buf);
@@ -8,11 +9,19 @@ void parsevertfromstl(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
+struct privdata{
+	u8 vs[128];
+	u8 fs[128];
+	vec4 matter;
+	mat4 objmat;
+	struct gl41data gl41;
+};
 
 
-static void stl3d_ctxforwnd(struct glsrc* src, char* str, char* vs, char* fs)
+static void stl3d_ctxforwnd(struct privdata* own, char* str, char* vs, char* fs)
 {
 	float* tmp;
+	struct glsrc* src = &own->gl41.src;
 	src->geometry = 3;
 	src->method = 'v';
 
@@ -26,22 +35,14 @@ static void stl3d_ctxforwnd(struct glsrc* src, char* str, char* vs, char* fs)
 	//argument
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "objmat";
-	src->arg[0].data = memorycreate(4*4*4, 0);
+	src->arg[0].data = own->objmat;
 
 	src->arg[1].fmt = 'v';
-	src->arg[1].name = "KA";
-	tmp = src->arg[1].data = memorycreate(4*4, 0);
-	tmp[0] = tmp[1] = tmp[2] = 0.231250;
-
-	src->arg[2].fmt = 'v';
-	src->arg[2].name = "KD";
-	tmp = src->arg[2].data = memorycreate(4*4, 0);
-	tmp[0] = tmp[1] = tmp[2] = 0.277500;
-
-	src->arg[3].fmt = 'v';
-	src->arg[3].name = "KS";
-	tmp = src->arg[3].data = memorycreate(4*4, 0);
-	tmp[0] = tmp[1] = tmp[2] = 0.773911;
+	src->arg[1].name = "matter";
+	tmp = src->arg[1].data = own->matter;
+	tmp[0] = 0.1;
+	tmp[1] = 1.0;
+	tmp[2] = 1.0;
 
 	//vertex
 	src->vbuf_len = 0x1000000;
@@ -54,10 +55,10 @@ static void stl3d_draw_gl41(
 	struct entity* wrd, struct style* camg,
 	struct entity* ctx, struct style* none)
 {
-	if(0 == act)return;
-	if(act->CTXBUF == 0)return;
+	struct privdata* own = act->CTXBUF;
+	if(0 == own)return;
+	struct glsrc* src = &own->gl41.src;
 
-	struct glsrc* src = act->CTXBUF;
 	local2world(&part->fs, &geom->fs, (void*)src->arg[0].data);
 
 	gl41data_insert(ctx, 's', src, 1);
@@ -171,6 +172,16 @@ static void stl3d_event(
 		//entitycreatefromfile(act, buffer);
 	}
 }
+void stl3d_modify_matter(struct entity* act, int* src, int len)
+{
+	int j;
+	struct privdata* own = act->CTXBUF;
+	float* f = own->matter;
+	f[0] = src[0]*0.01;
+	f[1] = src[1]*0.01;
+	f[2] = src[2]*0.01;
+	say("%f,%f,%f\n",f[0],f[1],f[2]);
+}
 
 
 
@@ -195,20 +206,21 @@ static void stl3d_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 }
 static void stl3d_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(_int_ == foot)stl3d_modify_matter(ent, buf,len);
 }
 static void stl3d_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
 static void stl3d_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct glsrc* src;
-	struct style* pin = (void*)(self->foot);
-	struct entity* act = (void*)(self->chip);
+	struct entity* act = self->pchip;
 	if(0 == act)return;
+	struct style* pin = self->pfoot;
 	if(0 == pin)return;
+	struct privdata* own = act->CTXBUF;
+	if(0 == own)return;
 
-	//vertex
-	src = act->CTXBUF;
+	struct glsrc* src = &own->gl41.src;
 	parsevertfromstl(src, &pin->fs, src->vbuf, src->vbuf_len);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 4*6;
@@ -252,8 +264,10 @@ static void stl3d_create(struct entity* act, void* str, int argc, u8** argv)
 	if(0 == fs)fs = "datafile/shader/model/ff.glsl";
 	if(0 == str)str = "datafile/stl/bunny-lowpoly.stl";
 
-	act->CTXBUF = memorycreate(0x200, 0);
-	if(act->CTXBUF)stl3d_ctxforwnd(act->CTXBUF, str, vs, fs);
+	act->CTXBUF = memorycreate(0x1000, 0);
+	if(0 == act->CTXBUF)return;
+
+	stl3d_ctxforwnd(act->CTXBUF, str, vs, fs);
 }
 
 

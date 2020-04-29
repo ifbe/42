@@ -172,10 +172,11 @@ thething/onlycam/push/fbo.mirror.c \
 thething/onlycam/push/fbo.portal.c \
 thething/onlycam/push/fbo.water.c \
 thething/onlycam/push/fbo.glass.c \
+thething/onlycam/light/light.direction.c \
+thething/onlycam/light/light.imagebased.c \
 thething/onlycam/light/light.point.c \
 thething/onlycam/light/light.projector.c \
 thething/onlycam/light/light.spot.c \
-thething/onlycam/light/light.direction.c \
 thething/onlymic/mic/mic.mono.c \
 thething/onlymic/mic/mic.stereo.c \
 thething/reallife/animal/animal.dog.c \

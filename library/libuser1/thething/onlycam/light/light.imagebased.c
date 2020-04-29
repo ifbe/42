@@ -1,12 +1,13 @@
 #include "libuser.h"
 #define CTXBUF buf0
+#define LITBUF buf1
 void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 
 
-char* texball_glsl_v =
+char* imagelight_glsl_v =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 vertex;\n"
 "layout(location = 1)in mediump vec2 texuvw;\n"
@@ -16,39 +17,53 @@ GLSL_VERSION
 	"uvw = texuvw;\n"
 	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
 "}\n";
-char* texball_glsl_t = 0;
-char* texball_glsl_g = 0;
-char* texball_glsl_f = 
+char* imagelight_glsl_t = 0;
+char* imagelight_glsl_g = 0;
+char* imagelight_glsl_f = 
 GLSL_VERSION
 "in mediump vec2 uvw;\n"
 "out mediump vec4 FragColor;\n"
-"uniform sampler2D tex0;\n"
+"uniform sampler2D skyenvmap;\n"
 "void main(){\n"
-	"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
+	"FragColor = vec4(texture(skyenvmap, uvw).bgr, 1.0);\n"
 	//"FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
 "}\n";
 
 
 
 
-void texball_ctxforwnd(struct glsrc* src, char* str)
+void imagelight_litforwnd(struct glsrc* src, char* str)
+{
+	src->routine_name = "passtype";
+	src->routine_detail = "imagelight";
+
+	//texture
+	src->tex[0].fmt = hex32('r','g','b','a');
+	src->tex[0].name = "skyenvmap";
+	src->tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(&src->tex[0], str);
+	src->tex[0].enq = 42;
+	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
+}
+static void imagelight_lightupdate(
+	struct entity* act, struct style* slot,
+	struct entity* wnd, struct style* area)
+{
+	wnd->gl_light[0] = act->LITBUF;
+}
+
+
+
+void imagelight_ctxforwnd(struct glsrc* src, char* str)
 {
 	//
 	src->geometry = 3;
 	src->method = 'i';
 
 	//shader
-	src->vs = texball_glsl_v;
-	src->fs = texball_glsl_f;
+	src->vs = imagelight_glsl_v;
+	src->fs = imagelight_glsl_f;
 	src->shader_enq = 42;
-
-	//texture
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "tex0";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&src->tex[0], str);
-	src->tex[0].enq = 42;
-	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
 
 #define accx 64
 #define accy 63
@@ -67,7 +82,7 @@ void texball_ctxforwnd(struct glsrc* src, char* str)
 	src->ibuf = memorycreate(src->ibuf_len, 0);
 	src->ibuf_enq = 0;
 }
-static void texball_draw_gl41(
+static void imagelight_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* none)
@@ -95,7 +110,7 @@ static void texball_draw_gl41(
 
 
 
-static void texball_draw_pixel(
+static void imagelight_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {/*
@@ -143,28 +158,28 @@ static void texball_draw_pixel(
 		}
 	}*/
 }
-static void texball_draw_json(
+static void imagelight_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 }
-static void texball_draw_html(
+static void imagelight_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 }
-static void texball_draw_tui(
+static void imagelight_draw_tui(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 }
-static void texball_draw_cli(
+static void imagelight_draw_cli(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	say("texball(%x,%x,%x)\n",win,act,sty);
+	say("imagelight(%x,%x,%x)\n",win,act,sty);
 }
-static void texball_event(
+static void imagelight_event(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty,
 	struct event* ev, int len)
@@ -174,7 +189,7 @@ static void texball_event(
 
 
 
-static void texball_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void imagelight_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -183,17 +198,18 @@ static void texball_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 		slot = stack[sp-1].pfoot;
 		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		texball_draw_gl41(ent,slot, wor,geom, wnd,area);
+		imagelight_draw_gl41(ent,slot, wor,geom, wnd,area);
+		imagelight_lightupdate(ent,slot, wnd,area);
 	}
 }
-static void texball_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void imagelight_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 
 
 
 
-static void texball_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void imagelight_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
@@ -202,64 +218,68 @@ static void texball_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 	case _full_:
 	case _wnd_:{
 		if('v' != key)break;
-		texball_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
+		imagelight_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 	default:{
-		texball_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
+		imagelight_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 	}
 }
-static void texball_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void imagelight_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void texball_discon(struct halfrel* self, struct halfrel* peer)
+static void imagelight_discon(struct halfrel* self, struct halfrel* peer)
 {
 }
-static void texball_linkup(struct halfrel* self, struct halfrel* peer)
+static void imagelight_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@texball_linkup\n");
+	say("@imagelight_linkup\n");
 }
 
 
 
 
-static void texball_search(struct entity* act)
+static void imagelight_search(struct entity* act)
 {
 }
-static void texball_modify(struct entity* act)
+static void imagelight_modify(struct entity* act)
 {
 }
-static void texball_delete(struct entity* act)
+static void imagelight_delete(struct entity* act)
 {
 	if(0 == act)return;
 }
-static void texball_create(struct entity* act, void* str)
+static void imagelight_create(struct entity* act, void* str)
 {
-	void* ctx;
+	void* buf;
 	if(0 == act)return;
 
-	ctx = act->CTXBUF = memorycreate(0x200, 0);
-	if(0 == ctx)return;
+	buf = memorycreate(0x1000, 0);
+	if(0 == buf)return;
+
+	act->CTXBUF = buf;
+	act->LITBUF = buf+0x400;
 
 	if(0 == str)str = "datafile/jpg/texball-earth.jpg";
-	texball_ctxforwnd(ctx, str);
+	imagelight_ctxforwnd(act->CTXBUF, str);
+	imagelight_litforwnd(act->LITBUF, str);
 }
 
 
 
 
-void texball_register(struct entity* p)
+void imagelight_register(struct entity* p)
 {
 	p->type = _orig_;
-	p->fmt = hex64('t', 'e', 'x', 'b', 'a', 'l', 'l', 0);
+	p->fmt = hex64('i','m','a','g','e','l','i','t');
 
-	p->oncreate = (void*)texball_create;
-	p->ondelete = (void*)texball_delete;
-	p->onsearch = (void*)texball_search;
-	p->onmodify = (void*)texball_modify;
+	p->oncreate = (void*)imagelight_create;
+	p->ondelete = (void*)imagelight_delete;
+	p->onsearch = (void*)imagelight_search;
+	p->onmodify = (void*)imagelight_modify;
 
-	p->onlinkup = (void*)texball_linkup;
-	p->ondiscon = (void*)texball_discon;
-	p->onread  = (void*)texball_read;
-	p->onwrite = (void*)texball_write;
+	p->onlinkup = (void*)imagelight_linkup;
+	p->ondiscon = (void*)imagelight_discon;
+	p->onread  = (void*)imagelight_read;
+	p->onwrite = (void*)imagelight_write;
 }
