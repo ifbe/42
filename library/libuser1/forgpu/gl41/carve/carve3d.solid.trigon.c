@@ -54,7 +54,7 @@ GLSL_VERSION
 	"litdir[2] = vec3( 0.0,-1.0, 1.0);\n"
 	"litdir[3] = vec3( 0.0, 1.0, 1.0);\n"
 
-	"mediump vec3 ocolor = vec3(0.0);\n"
+	"mediump vec3 ocolor = vec3(0.03) * albedo * amocc;\n"
 	"for(int j=0;j<4;j++){\n"
 		"mediump vec3 L = litdir[j];\n"
 		//"mediump float distance = length(L);\n"
@@ -79,7 +79,6 @@ GLSL_VERSION
 		"ocolor += (kD * albedo / PI + specular) * radiance * NdotL;\n"
 	"}\n"
 
-	"ocolor += vec3(0.03) * albedo * amocc;\n"
 	"ocolor = ocolor / (ocolor + vec3(1.0));\n"
 	"ocolor = pow(ocolor, vec3(1.0/2.2));\n"
 	"FragColor = vec4(ocolor, 1.0);\n"

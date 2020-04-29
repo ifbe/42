@@ -34,7 +34,7 @@ subroutine (passtype) vec3 rawcolor(){
 
 	mediump float metal = matter.x;
 	mediump float rough = matter.y;
-	mediump float amocc = matter.z;
+	mediump float amocc = pow(matter.z, 2.2);
 
 	mediump vec3 N = normalize(normal);
 	mediump vec3 E = normalize(camxyz - objxyz);
@@ -47,7 +47,7 @@ subroutine (passtype) vec3 rawcolor(){
 	litdir[2] = vec3( 0.0,-1.0, 1.0);
 	litdir[3] = vec3( 0.0, 1.0, 1.0);
 
-	mediump vec3 ocolor = vec3(0.0);
+	mediump vec3 ocolor = vec3(0.03) * albedo * amocc;
 	for(int j=0;j<4;j++){
 		mediump vec3 L = litdir[j];
 		//mediump float distance = length(L);
@@ -72,7 +72,6 @@ subroutine (passtype) vec3 rawcolor(){
 		ocolor += (kD * albedo / PI + specular) * radiance * NdotL;
 	}
 
-	ocolor += vec3(0.03) * albedo * amocc;
 	ocolor = ocolor / (ocolor + vec3(1.0));
 	return pow(ocolor, vec3(1.0/2.2));
 }

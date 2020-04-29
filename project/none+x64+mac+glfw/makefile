@@ -20,13 +20,6 @@ libuser0:
 	make -s -C $(library)/libuser0 compiler="clang" cflag=$(flag) macglfw
 libuser1:
 	make -s -C $(library)/libuser1 compiler="clang" cflag=$(flag)
-exe:
-	clang \
-	$(library)/libboot0/*.o $(library)/libboot1/*.o \
-	$(library)/libhard0/*.o $(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o $(library)/libuser1/*.o \
-	-lGLEW -lglfw -lm -framework OpenGL -framework AudioToolbox
 lib:
 	rm -f $(library)/libboot0/entry.o
 	libtool -static -o 42.a \
@@ -40,6 +33,13 @@ lib:
 	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o $(library)/libuser1/*.o \
 	-lGLEW -lglfw -lc -lm -framework OpenGL -framework AudioToolbox
+exe:
+	clang \
+	$(library)/libboot0/*.o $(library)/libboot1/*.o \
+	$(library)/libhard0/*.o $(library)/libhard1/*.o \
+	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
+	$(library)/libuser0/*.o $(library)/libuser1/*.o \
+	-lGLEW -lglfw -lm -framework OpenGL -framework AudioToolbox
 clean:
 	rm -f *.o *.a *.dylib
 	make -C $(library) clean
