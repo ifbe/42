@@ -1,6 +1,6 @@
 #include "libuser.h"
-#include "unistd.h"
-#include "fcntl.h"
+//#include "unistd.h"
+//#include "fcntl.h"
 #define OWNBUF buf0
 int copypath(u8* path, u8* data);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);

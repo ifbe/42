@@ -1,144 +1,21 @@
 #include "libuser.h"
-#define DEPBUF buf0
-#define RGBBUF buf1
-#define CTXBUF buf2
+#define _int_ hex32('i','n','t', 0)
 #define RGBTEX 0
 #define DEPTEX 1
+#define OWNBUF buf0
+int copypath(u8* path, u8* data);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
-
-
-char* terrain_glsl_v =
-GLSL_VERSION
-"layout(location = 0)in mediump vec3 v;\n"
-"layout(location = 1)in mediump vec3 n;\n"
-"layout(location = 2)in mediump vec3 t;\n"
-"out mediump vec3 objxyz;\n"
-"out mediump vec3 normal;\n"
-"out mediump vec3 texuvw;\n"
-//"out mediump vec3 uvw;\n"
-//"out mediump vec3 xyz;\n"
-"uniform mat4 objmat;\n"
-"uniform mat4 cammvp;\n"
-"void main(){\n"
-	"mediump vec4 xyzw = objmat * vec4(v, 1.0);\n"
-	"objxyz = vec3(xyzw);\n"
-	"normal = n;\n"
-	"texuvw = t;\n"
-	"gl_Position = cammvp * xyzw;\n"
-"}\n";
-/*
-char* terrain_glsl_g =
-GLSL_VERSION
-"layout(triangles) in;\n"
-//"layout(line_strip, max_vertices = 6) out;\n"
-"layout(triangle_strip, max_vertices = 6) out;\n"
-"in mediump vec3 uvw[];\n"
-"in mediump vec3 xyz[];\n"
-"out mediump vec3 objxyz;\n"
-"out mediump vec3 normal;\n"
-"out mediump vec3 texuvw;\n"
-"void main(){\n"
-	"vec3 a = vec3(gl_in[1].gl_Position) - vec3(gl_in[0].gl_Position);\n"
-	"vec3 b = vec3(gl_in[2].gl_Position) - vec3(gl_in[0].gl_Position);\n"
-	"vec3 n = normalize(cross(a, b));\n"
-	"gl_Position = gl_in[0].gl_Position;\n"
-	"objxyz = xyz[0];\n"
-	"texuvw = uvw[0];\n"
-	"normal = n;\n"
-	"EmitVertex();\n"
-	"gl_Position = gl_in[1].gl_Position;\n"
-	"objxyz = xyz[1];\n"
-	"texuvw = uvw[1];\n"
-	"normal = n;\n"
-	"EmitVertex();\n"
-	"gl_Position = gl_in[2].gl_Position;\n"
-	"objxyz = xyz[2];\n"
-	"texuvw = uvw[2];\n"
-	"normal = n;\n"
-	"EmitVertex();\n"
-	"EndPrimitive();\n"
-"}\n";
-*/
-char* terrain_glsl_f =
-GLSL_VERSION
-"in mediump vec3 objxyz;\n"
-"in mediump vec3 normal;\n"
-"in mediump vec3 texuvw;\n"
-"out mediump vec4 FragColor;\n"
-"uniform sampler2D rgbtex;\n"
-"uniform mediump vec3 camxyz;\n"
-
-"mediump vec3 mtrfao = vec3(0.0, 0.8, 1.0);\n"
-"mediump float metal = mtrfao.x;\n"
-"mediump float rough = mtrfao.y;\n"
-"mediump float amocc = mtrfao.z;\n"
-
-"mediump float PI = 3.1415926535897932384626433832795028841971693993151;\n"
-"mediump float getD(mediump float v, mediump float r){\n"
-    "float a2 = r*r*r*r;\n"
-    "float de = (v*v * (a2 - 1.0) + 1.0);\n"
-    "return a2 / (PI * de * de);\n"
-"}\n"
-"mediump float getG(mediump float v, mediump float r){\n"
-    "float k = (r+1.0) * (r+1.0) / 8.0;\n"
-    "return v / (v * (1.0 - k) + k);\n"
-"}\n"
-"void main(){\n"
-	"mediump vec3 albedo = pow(texture(rgbtex, texuvw.xy).bgr, vec3(2.2));\n"
-
-	"mediump vec3 N = normalize(normal);\n"
-	"mediump vec3 E = normalize(camxyz - objxyz);\n"
-	"mediump vec3 F0 = mix(vec3(0.04), albedo, metal);\n"
-
-	"mediump vec3 litrgb = vec3(1.0, 1.0, 1.0);\n"
-	"mediump vec3 litdir[4];\n"
-	"litdir[0] = vec3(-1.0, 0.0, 1.0);\n"
-	"litdir[1] = vec3( 1.0, 0.0, 1.0);\n"
-	"litdir[2] = vec3( 0.0,-1.0, 1.0);\n"
-	"litdir[3] = vec3( 0.0, 1.0, 1.0);\n"
-
-	"mediump vec3 ocolor = vec3(0.03) * albedo * amocc;\n"
-	"for(int j=0;j<4;j++){\n"
-		"mediump vec3 L = litdir[j];\n"
-		//"mediump float distance = length(L);\n"
-		//"mediump float attenuation = 1.0 / (distance * distance);\n"
-		//"mediump vec3 radiance = litrgb * attenuation;\n"
-		"mediump vec3 radiance = litrgb;\n"
-
-		"L = normalize(L);\n"
-		"mediump vec3 H = normalize(E + L);\n"
-		"mediump float NdotL = max(dot(N, L), 0.0);\n"
-		"mediump float NdotE = max(dot(N, E), 0.0);\n"
-		"mediump float NdotH = max(dot(N, H), 0.0);\n"
-		"mediump float HdotE = max(dot(H, E), 0.0);\n"
-
-		"mediump float G = getG(NdotL, rough)*getG(NdotE, rough);\n"
-		"mediump float D = getD(NdotH, rough);\n"
-		"mediump vec3 F = F0 + (1.0 - F0) * pow(1.0 - HdotE, 5.0);\n"
-
-		"mediump vec3 kS = F;\n"
-		"mediump vec3 kD = (vec3(1.0) - kS) * (1.0 - metal);\n"
-		"mediump vec3 specular = (D * G * F) / max(4.0 * NdotE * NdotL, 0.001);\n"
-		"ocolor += (kD * albedo / PI + specular) * radiance * NdotL;\n"
-	"}\n"
-
-	"ocolor = ocolor / (ocolor + vec3(1.0));\n"
-	"ocolor = pow(ocolor, vec3(1.0/2.2));\n"
-	"FragColor = vec4(ocolor, 1.0);\n"
-"}\n";
-
-void copyname(u8* dst, u8* src)
-{
-	int j;
-	while(0x20 == *src)src++;
-	for(j=0;j<256;j++){
-		if(src[j] < 0x20)break;
-		dst[j] = src[j];
-	}
-	dst[j] = 0;
-}
+struct privdata{
+	u8 vs[128];
+	u8 fs[128];
+	u8 rgb[128];
+	u8 dep[128];
+	mat4 mato2w;
+	vec4 matter;
+	struct gl41data gl41;
+};
 
 
 
@@ -174,11 +51,15 @@ void terrain_generate(float (*vbuf)[9], u16* ibuf, struct entity* act, struct gl
 		}
 	}
 
+	float hl,hr,hn,hf;
 	for(y=1;y<254;y++){
 		for(x=1;x<254;x++){
-			//normal
-			vbuf[y*256+x][3] = vbuf[(y+0)*256+x+1][2] - vbuf[(y+0)*256+x-1][2];
-			vbuf[y*256+x][4] = vbuf[(y+1)*256+x+0][2] - vbuf[(y-1)*256+x+0][2];
+			hl = vbuf[(y+0)*256+x-1][2];
+			hr = vbuf[(y+0)*256+x+1][2];
+			hn = vbuf[(y-1)*256+x+0][2];
+			hf = vbuf[(y+1)*256+x+0][2];
+			vbuf[y*256+x][3] = hl - hr;
+			vbuf[y*256+x][4] = hn - hf;
 			vbuf[y*256+x][5] = 2.0;
 		}
 	}
@@ -289,21 +170,31 @@ static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int
 
 
 
-void terrain_ctxforwnd(struct glsrc* src, char* rgbfile, char* depfile)
+void terrain_ctxforwnd(struct privdata* own, char* rgbfile, char* depfile, char* vs, char* fs)
 {
+	float* tmp;
+	struct glsrc* src = &own->gl41.src;
 	src->method = 'i';
 	src->geometry = 3;
 
 	//shader
-	src->vs = terrain_glsl_v;
-	//src->gs = terrain_glsl_g;
-	src->fs = terrain_glsl_f;
+	src->vs = memorycreate(0x10000, 0);
+	openreadclose(vs, 0, src->vs, 0x10000);
+	src->fs = memorycreate(0x10000, 0);
+	openreadclose(fs, 0, src->fs, 0x10000);
 	src->shader_enq = 42;
 
 	//argument
 	src->arg[0].name = "objmat";
-	src->arg[0].data = memorycreate(4*4*4, 0);
+	src->arg[0].data = own->mato2w;
 	src->arg[0].fmt = 'm';
+
+	src->arg[1].fmt = 'v';
+	src->arg[1].name = "matter";
+	tmp = src->arg[1].data = own->matter;
+	tmp[0] = 0.1;
+	tmp[1] = 0.8;
+	tmp[2] = 1.0;
 
 	//texture
 	src->tex[RGBTEX].fmt = hex32('r','g','b','a');
@@ -337,11 +228,6 @@ static void terrain_draw_gl41(
 	struct entity* wrd, struct style* camg,
 	struct entity* ctx, struct style* area)
 {
-	struct glsrc* src;
-	float* mat;
-	void* vbuf;
-	void* ibuf;
-
 	float w = vec3_getlen(geom->fs.vr);
 	float h = vec3_getlen(geom->fs.vf);
 	float x = camg->frus.vc[0]/w/2 + 0.5;
@@ -352,12 +238,14 @@ static void terrain_draw_gl41(
 	if(dy<0)dy = -dy;
 	//say("x=%f,y=%f,dx=%f,dy=%f\n",x,y,dx,dy);
 
+	struct privdata* own = act->OWNBUF;
+	struct glsrc* src = &own->gl41.src;
+	float* mat;
+	void* vbuf;
+	void* ibuf;
 	if((dx > 1.0/16)|(dy > 1.0/16)){
 		act->fx0 = x;
 		act->fy0 = y;
-
-		src = act->CTXBUF;
-		if(0 == src)return;
 
 		//x0,y0,z0,dx,dy,dz -> ndc
 		vbuf = src->vbuf;
@@ -387,7 +275,7 @@ static void terrain_draw_gl41(
 		mat[14] = geom->fs.vc[2];
 		mat[15] = 1.0;
 	}
-	gl41data_insert(ctx, 's', act->CTXBUF, 1);
+	gl41data_insert(ctx, 's', src, 1);
 }
 
 
@@ -397,21 +285,6 @@ static void terrain_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int cx, cy, ww, hh;
-	if(sty)
-	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
-	}
-	else
-	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
-	}
 }
 static void terrain_draw_json(
 	struct entity* act, struct style* pin,
@@ -435,6 +308,16 @@ static void terrain_draw_cli(
 }
 
 
+void terrain_modify_matter(struct entity* act, int* src, int len)
+{
+	int j;
+	struct privdata* own = act->OWNBUF;
+	float* f = own->matter;
+	f[0] = src[0]*0.01;
+	f[1] = src[1]*0.01;
+	f[2] = src[2]*0.01;
+	say("%f,%f,%f\n",f[0],f[1],f[2]);
+}
 
 
 static void terrain_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
@@ -453,6 +336,7 @@ static void terrain_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 }
 static void terrain_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(_int_ == foot)terrain_modify_matter(ent, buf,len);
 }
 static void terrain_discon(struct halfrel* self, struct halfrel* peer)
 {
@@ -477,46 +361,64 @@ static void terrain_delete(struct entity* act)
 static void terrain_create(struct entity* act, void* arg, int argc, u8** argv)
 {
 	int j,k;
-	struct glsrc* src;
-	u8 rgbpath[256] = {0};
-	u8 deppath[256] = {0};
 	if(0 == act)return;
 
 	act->fx0 = -2.0;
 	act->fy0 = -2.0;
 	act->fz0 = -2.0;
-	for(j=1;j<argc;j++){
-		//say("%.6s\n",argv[j]);
-		if(0 == ncmp(argv[j], "rgb:", 4)){copyname(rgbpath, argv[j]+4);continue;}
-		if(0 == ncmp(argv[j], "dep:", 4)){copyname(deppath, argv[j]+4);continue;}
+
+	struct privdata* own = act->OWNBUF = memorycreate(0x1000, 0);
+	if(0 == own)return;
+
+	//char* dxvs = 0;
+	//char* dxfs = 0;
+	char* glvs = 0;
+	char* glfs = 0;
+	char* rgb = 0;
+	char* dep = 0;
+	for(j=0;j<argc;j++){
+		//say("%d:%.8s\n", j, argv[j]);
+		if(0 == ncmp(argv[j], "glvs:", 5)){
+			copypath(own->vs, argv[j]+5);
+			glvs = (void*)own->vs;
+		}
+		if(0 == ncmp(argv[j], "glfs:", 5)){
+			copypath(own->fs, argv[j]+5);
+			glfs = (void*)own->fs;
+		}
+		if(0 == ncmp(argv[j], "rgb:", 4)){
+			copypath(own->rgb, argv[j]+4);
+			rgb = (void*)own->rgb;
+		}
+		if(0 == ncmp(argv[j], "dep:", 4)){
+			copypath(own->dep, argv[j]+4);
+			dep = (void*)own->dep;
+		}
 	}
+	//if(0 == dxvs)dxvs = "datafile/shader/terrain/dxvs.glsl";
+	//if(0 == dxfs)dxfs = "datafile/shader/terrain/dxfs.glsl";
+	if(0 == glvs)glvs = "datafile/shader/terrain/glvs.glsl";
+	if(0 == glfs)glfs = "datafile/shader/terrain/glfs.glsl";
+	if(0 == rgb)rgb = "datafile/jpg/cartoon.jpg";
+	if(0 == dep)dep = "datafile/jpg/cartoon.jpg";
+	terrain_ctxforwnd(own, rgb, dep, glvs, glfs);
 
-	if(0 == arg)arg = "datafile/jpg/cartoon.jpg";
-	if(0 == rgbpath[0])copyname(rgbpath, arg);
-	if(0 == deppath[0])copyname(deppath, arg);
 
-	src = act->CTXBUF = memorycreate(0x200, 0);
-	if(0 == src)return;
-	terrain_ctxforwnd(src, (void*)rgbpath, (void*)deppath);
+	struct glsrc* src = &own->gl41.src;
+	if(src->tex[DEPTEX].w)return;
+	if(src->tex[DEPTEX].h)return;
 
+	src->tex[DEPTEX].w = 2048;
+	src->tex[DEPTEX].h = 2048;
+	if(0 == src->tex[DEPTEX].data)src->tex[DEPTEX].data = memorycreate(2048*2048*4, 0);
 
 	int x,y;
-	u8* rgba;
-	if((0 == src->tex[DEPTEX].w) | (0 == src->tex[DEPTEX].h))
-	{
-		src->tex[DEPTEX].w = 2048;
-		src->tex[DEPTEX].h = 2048;
-		if(0 == src->tex[DEPTEX].data)src->tex[DEPTEX].data = memorycreate(2048*2048*4, 0);
-
-		rgba = src->tex[DEPTEX].data;
-		for(y=0;y<2048;y++)
-		{
-			for(x=0;x<2048;x++)
-			{
-				rgba[4*(y*2048 + x)+0] = getrandom()%256;
-				rgba[4*(y*2048 + x)+1] = getrandom()%256;
-				rgba[4*(y*2048 + x)+2] = getrandom()%256;
-			}
+	u8* rgba = src->tex[DEPTEX].data;
+	for(y=0;y<2048;y++){
+		for(x=0;x<2048;x++){
+			rgba[4*(y*2048 + x)+0] = getrandom()%256;
+			rgba[4*(y*2048 + x)+1] = getrandom()%256;
+			rgba[4*(y*2048 + x)+2] = getrandom()%256;
 		}
 	}
 }

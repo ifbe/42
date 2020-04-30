@@ -14,6 +14,9 @@ fmt:freecam
 virtual{
 fmt:virtual
 }
+slider{
+fmt:slider
+}
 </entity>
 
 
@@ -73,6 +76,10 @@ freerect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
+thatrect{
+c:0.0, 0.3
+q:0.3, 0.4
+}
 </style>
 
 
@@ -84,4 +91,8 @@ q:1.0, 1.0
 
 #glwnd depends on ctx + cam
 (opengl, freerect, 0) -> (freecam, 0, 0)
+(opengl, thatrect, 0) -> (slider, 0, 0)
+
+#slider
+(slider, 0, evto) -> (terrain, 0, int)
 </relation>
