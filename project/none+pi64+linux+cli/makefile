@@ -5,21 +5,21 @@ all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	+make -s lib
 	cp a.out ../..
 libboot0:
-	+make -s -C $(library)/libboot0 cflag=$(flag) none
+	+make -s -C $(library)/libboot0 compiler="aarch64-linux-gnu-gcc" cflag=$(flag) none
 libboot1:
-	+make -s -C $(library)/libboot1 cflag=$(flag)
+	+make -s -C $(library)/libboot1 compiler="aarch64-linux-gnu-gcc" cflag=$(flag)
 libhard0:
-	+make -s -C $(library)/libhard0 cflag=$(flag) linuxpi64
+	+make -s -C $(library)/libhard0 compiler="aarch64-linux-gnu-gcc" cflag=$(flag) linuxpi64
 libhard1:
-	+make -s -C $(library)/libhard1 cflag=$(flag)
+	+make -s -C $(library)/libhard1 compiler="aarch64-linux-gnu-gcc" cflag=$(flag)
 libsoft0:
-	+make -s -C $(library)/libsoft0 cflag=$(flag) linux
+	+make -s -C $(library)/libsoft0 compiler="aarch64-linux-gnu-gcc" cflag=$(flag) linux
 libsoft1:
-	+make -s -C $(library)/libsoft1 cflag=$(flag)
+	+make -s -C $(library)/libsoft1 compiler="aarch64-linux-gnu-gcc" cflag=$(flag)
 libuser0:
-	+make -s -C $(library)/libuser0 cflag=$(flag) linuxcli
+	+make -s -C $(library)/libuser0 compiler="aarch64-linux-gnu-gcc" cflag=$(flag) linuxcli
 libuser1:
-	+make -s -C $(library)/libuser1 cflag=$(flag)
+	+make -s -C $(library)/libuser1 compiler="aarch64-linux-gnu-gcc" cflag=$(flag)
 lib:
 	rm -f $(library)/libboot0/entry.o
 	ar crs 42.a \

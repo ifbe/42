@@ -2,7 +2,7 @@
 	the answer to life,the universe and everything~
 
 howto:
-	make -C project/none+x64+linux+glfw
+	make -C project/none+x64+linux+glfw  #origin+arch+system+uiux
 	./a.out datafile/myml/window/item-skygndrab.myml
 
 explain:
