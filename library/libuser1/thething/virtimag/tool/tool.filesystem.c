@@ -2,7 +2,7 @@
 #define PATHBUF buf0
 #define LISTBUF buf1
 int copypath(void* path, void* data);
-void readfolder(void* url, int fd, void* arg, int off, void* buf, int len);
+int readfolder(void* url, int fd, void* arg, int off, void* buf, int len);
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
 void gl41data_whcam(struct entity* wnd, struct style* area);
@@ -11,14 +11,14 @@ void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, 
 
 
 
-static int fslist_find(u8* name, int id, int* head, int* tail)
+static int fslist_find(struct str* list, int id, u8** head, u8** tail)
 {
 	int j,k = 0;
 	for(j=0;j<0x1000;j++){
-		if('\n' == name[j]){
+		if('\n' == list->buf[j]){
 			if(id <= 0){
-				*head = k;
-				*tail = j;
+				*head = list->buf+k;
+				*tail = list->buf+j;
 				return 1;
 			}
 			k = j+1;
@@ -27,48 +27,69 @@ static int fslist_find(u8* name, int id, int* head, int* tail)
 	}
 	return 0;
 }
-static int fslist_copy(u8* path, u8* name)
+static int fslist_copy(struct str* path, u8* name)
 {
-	int j,k;
-	for(j=0;j<0x200;j++){
-		if(path[j] < 0x20)goto found;
+	int j;
+	if('.' == name[0]){
+		if(0x20 > name[1])return 0;
+		if('.' == name[1]){
+			for(j=path->len-1;j>0;j--){
+				if('/' == path->buf[j]){
+					if(j == path->len-1)continue;
+					path->buf[j+1] = 0;
+					path->len = j+1;
+					break;
+				}
+			}
+			say("%s\n", path->buf);
+			return 0;
+		}
 	}
-	return 0;
 
-found:
-	k = j;
-	path[j] = '/';
-	j += copypath(path+j+1, name) + 1;
-	path[j] = 0;
-	say("%s\n", path);
-	return k;
+	path->len += copypath(path->buf+path->len, name);
+	path->buf[path->len] = 0;
+	say("%s\n", path->buf);
+	return 0;
 }
 static void fslist_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area, struct event* ev)
 {
-	if(0x2b70 == ev->what){
+	if('p' == (ev->what&0xff)){
 		vec3 xyz;
 		gl41data_convert(wnd, area, ev, xyz);
 		say("%f,%f\n",xyz[0],xyz[1]);
 
-		float h = area->fs.vq[1] * wnd->fbheight;
-		int id = (1.0-xyz[1])*h/32;
-		say("%d\n",id);
+		float dx = area->fs.vq[0] * wnd->width;
+		float dy = area->fs.vq[1] * wnd->height;
+		ent->ix0 = (int)(8*xyz[0]);
+		ent->iy0 = (int)(8*(1.0-xyz[1])*dy/dx);
+		say("%d,%d\n",ent->ix0,ent->iy0);
 
-		int head,tail,j,k;
-		u8* path = ent->PATHBUF;
-		u8* name = ent->LISTBUF;
-		fslist_find(name, id, &head, &tail);
-		if(tail-head>6){
-		if(0 == ncmp(name+tail-5, ".myml", 5)){
-			k = fslist_copy(path, name+head);
-			eventwrite((u64)path, _myml_, 0, 0);
-			return;
-		}
-		}
+		if(0x2b70 == ev->what){
+			int id = ent->ix0 + (ent->iy0*8);
+			say("%d\n",id);
 
-		fslist_copy(path, name+head);
-		for(j=0;j<0x1000;j++)name[j] = 0;
-		readfolder(path,0, 0,0, name,0x10000);
+			int j,k;
+			struct str* path = ent->PATHBUF;
+			struct str* list = ent->LISTBUF;
+
+			u8* head = 0;
+			u8* tail = 0;
+			fslist_find(list, id, &head, &tail);
+			if(0 == head)return;	//notfound
+
+			fslist_copy(path, head);
+			if(tail-head > 6){
+				if(0 == ncmp(tail-5, ".myml", 5)){
+					eventwrite((u64)path->buf, _myml_, 0, 0);
+					return;
+				}
+				//if(0 == ncmp(list+tail-5, ".mython", 7)){
+				//}
+			}
+
+			for(j=0;j<0x1000;j++)list->buf[j] = 0;
+			readfolder(path->buf,0, 0,0, list->buf,0x10000);
+		}
 	}
 }
 
@@ -109,16 +130,50 @@ static void fslist_draw_gl41(
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	int j;
-	vec3 tc;
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	gl41solid_rect(wnd,0x000080, vc,vr,vf);
+	gl41line_rect(wnd,0x000080, vc,vr,vf);
 
-	for(j=0;j<3;j++)tc[j] = vc[j] + vt[j]/100.0;
-	carvetext(wnd, 0xff00ff, tc,vr,vf, act->LISTBUF, 0x10000);
+	struct str* path = act->PATHBUF;
+	if(0 == path)return;
+	struct str* list = act->LISTBUF;
+	if(0 == list)return;
+
+	int x,y,j;
+	int rgb,cnt,head,tail;
+	vec3 tc,tr,tf;
+	for(j=0;j<3;j++){tr[j] = vr[j]/8;tf[j] = vf[j];}
+	vec3_setlen(tf, vec3_getlen(tr));
+
+	cnt = 0;
+	head = 0;
+	for(tail=0;tail<list->len;tail++){
+		if('\n' > list->buf[tail])break;
+		if('\n'== list->buf[tail]){
+			y = cnt/8;
+			x = cnt%8;
+			for(j=0;j<3;j++){
+				tc[j] = vc[j] -vr[j] +vf[j] +vt[j]/100.0;
+				tc[j]+= tr[j]*(2*x+1) -tf[j]*(2*y+1);
+			}
+
+			if((x==act->ix0)&&(y==act->iy0))rgb = 0xff0000;
+			else rgb = 0xffffff;
+			gl41line_rect(wnd, 0xff0000, tc,tr,tf);
+			carvestring_center(wnd,rgb, tc,tr,tf, list->buf+head,tail-head);
+
+			cnt += 1;
+			head = tail+1;
+		}
+	}
+
+	for(j=0;j<3;j++){tr[j] = vr[j];tf[j] = vf[j];}
+	vec3_setlen(tr, 32);
+	vec3_setlen(tf, 32);
+	for(j=0;j<3;j++){tc[j] = vc[j] -vr[j] -vf[j];}
+	carvestring(wnd,0xffffff, tc,tr,tf, path->buf,path->len);
 }
 static void fslist_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
@@ -186,6 +241,10 @@ static void fslist_modify(struct entity* act)
 static void fslist_delete(struct entity* act)
 {
 	if(0 == act)return;
+	if(act->PATHBUF){
+		memorydelete(act->PATHBUF);
+		act->PATHBUF = 0;
+	}
 	if(act->LISTBUF){
 		memorydelete(act->LISTBUF);
 		act->LISTBUF = 0;
@@ -193,14 +252,14 @@ static void fslist_delete(struct entity* act)
 }
 static void fslist_create(struct entity* act, void* arg, int argc, u8** argv)
 {
-	if(0 == act)return;
+	if(0 == arg)arg = "datafile/myml/";
 
-	act->PATHBUF = memorycreate(0x10000, 0);
-	if(0 == arg)arg = "datafile/myml";
-	copypath(act->PATHBUF, arg);
+	struct str* path = act->PATHBUF = memorycreate(0x10000, 0);
+	path->len = copypath(path->buf, arg);
 
-	act->LISTBUF = memorycreate(0x10000, 0);
-	readfolder(act->PATHBUF,0, 0,0, act->LISTBUF,0x10000);
+	struct str* list = act->LISTBUF = memorycreate(0x10000, 0);
+	list->len = readfolder(path->buf,0, 0,0, list->buf,0x10000);
+//say("%d,%s\n", list->len, list->buf);
 }
 
 

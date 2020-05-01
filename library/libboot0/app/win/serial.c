@@ -20,6 +20,53 @@ static HANDLE hStdout;
 //
 static u8 last[16] = {0};
 static int pos = 0;
+int arg2utf8(u8* src, u8* dst)
+{
+	int j,k;
+	u32 ret,tmp;
+
+	j = k = 0;
+	while(1)
+	{
+		if(src[j] < 0xa)break;
+		if(src[j] < 0x80)
+		{
+			dst[k] = src[j];
+			k++;
+			j++;
+			continue;
+		}
+
+		ret = *(u16*)(src+j);
+		j += 2;
+
+		tmp = 0;
+		MultiByteToWideChar(
+			CP_ACP, 0,
+			(void*)&ret, -1,
+			(void*)&tmp, 2
+		);
+		//printf("%x\n", tmp);
+
+		ret = 0;
+		WideCharToMultiByte(
+			CP_UTF8, 0,
+			(void*)&tmp, -1,
+			(void*)&ret, 4,
+			NULL, NULL
+		);
+		//printf("%x\n", ret);
+
+		*(u32*)(dst+k) = ret;
+		for(ret=0;ret<4;ret++)
+		{
+			if(dst[k] >= 0xa)k++;
+		}
+	}
+
+	dst[k] = 0;
+	return k;
+}
 
 
 
@@ -311,6 +358,10 @@ static int escapesequence(u8* p)
 
 	return 0;
 }
+
+
+
+
 void lowlevel_output(u8* buf, int len)
 {
 	int i,j,k=0;
@@ -407,10 +458,6 @@ void lowlevel_output(u8* buf, int len)
 	}
 	if(j>k)printf("%.*s", j-k, buf+k);
 }
-
-
-
-
 int lowlevel_input()
 {
 	DWORD num;

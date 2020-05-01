@@ -32,12 +32,19 @@ int readfolder(char* url, int fd, void* arg, int off, char* buf, int len)
 
 	j = 0;
 	while(1){
-		j += snprintf(buf+j, len-j, "%s\n", dat.cFileName);
+		ret = ('.'==dat.cFileName[0]) && (('.'==dat.cFileName[1]) | (0==dat.cFileName[1]));
+		if((!ret) && (dat.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)){
+			j += snprintf(buf+j, len-j, "%s/\n", dat.cFileName);
+		}
+		else{
+			j += snprintf(buf+j, len-j, "%s\n", dat.cFileName);
+		}
 		ret = FindNextFile(dir, &dat);
 		if(0 == ret)break;
 	}
 
 	FindClose(dir);
+	return j;
 }
 int writefolder(void* url, int fd, void* arg, int off, char* buf, int len)
 {

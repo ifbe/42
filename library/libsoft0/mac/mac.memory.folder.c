@@ -11,9 +11,9 @@
 
 
 
-void readfolder(void* url, int fd, void* arg, int off, char* buf, int len)
+int readfolder(void* url, int fd, void* arg, int off, char* buf, int len)
 {
-	int j;
+	int j,k;
 	DIR* dir;
 	struct dirent* ent;
 
@@ -26,14 +26,23 @@ void readfolder(void* url, int fd, void* arg, int off, char* buf, int len)
 		if(0 == ent)break;
 
 		if(ent->d_type == DT_LNK)break;
-		j += snprintf(buf+j, len-j, "%s\n", ent->d_name);
+
+		k = ('.'==ent->d_name[0]) && (('.'==ent->d_name[1]) | (0==ent->d_name[1]));
+		if((!k) && (DT_DIR == ent->d_type)){
+			j += snprintf(buf+j, len-j, "%s/\n", ent->d_name);
+		}
+		else{
+			j += snprintf(buf+j, len-j, "%s\n", ent->d_name);
+		}
 		//printf("%s\n", ent->d_name);
 	}
 
 	closedir(dir);
+	return j;
 }
-void writefolder(void* url, int fd, void* arg, int off, char* buf, int len)
+int writefolder(void* url, int fd, void* arg, int off, char* buf, int len)
 {
+	return 0;
 }
 void listfolder()
 {

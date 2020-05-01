@@ -2,9 +2,8 @@ library?=../../library
 datafile?=../../datafile
 flag="-c -O2 -I.."
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
-	make -s a
-	make -s dll
-	make -s program
+	make -s exe
+	make -s lib
 	cp a.exe ../..
 libboot0:
 	make -s -C $(library)/libboot0 wincmd \
@@ -30,39 +29,26 @@ libuser0:
 libuser1:
 	make -s -C $(library)/libuser1 \
 	cflag=$(flag)
-a:
+lib:
+	rm -f $(library)/libboot0/entry.o
 	ar crs 42.a \
-	$(library)/libboot0/*.o \
-	$(library)/libboot1/*.o \
-	$(library)/libhard0/*.o \
-	$(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o \
-	$(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o \
-	$(library)/libuser1/*.o
-dll:
+	$(library)/libboot0/*.o $(library)/libboot1/*.o \
+	$(library)/libhard0/*.o $(library)/libhard1/*.o \
+	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
+	$(library)/libuser0/*.o $(library)/libuser1/*.o
 	g++ -shared -o 42.dll \
-	$(library)/libboot0/*.o \
-	$(library)/libboot1/*.o \
-	$(library)/libhard0/*.o \
-	$(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o \
-	$(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o \
-	$(library)/libuser1/*.o \
+	$(library)/libboot0/*.o $(library)/libboot1/*.o \
+	$(library)/libhard0/*.o $(library)/libhard1/*.o \
+	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
+	$(library)/libuser0/*.o $(library)/libuser1/*.o \
 	-lglew32 -lfreeglut -lglu32 -lole32 -lopengl32 -lstrmiids -lwinmm -lws2_32
-program:
+exe:
 	windres --input-format=rc -O coff -i $(datafile)/42.rc -o $(datafile)/42.res
-	g++ -mwindows \
-	$(datafile)/42.res \
-	$(library)/libboot0/*.o \
-	$(library)/libboot1/*.o \
-	$(library)/libhard0/*.o \
-	$(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o \
-	$(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o \
-	$(library)/libuser1/*.o \
+	g++ -mwindows $(datafile)/winres/42.res \
+	$(library)/libboot0/*.o $(library)/libboot1/*.o \
+	$(library)/libhard0/*.o $(library)/libhard1/*.o \
+	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
+	$(library)/libuser0/*.o $(library)/libuser1/*.o \
 	-lglew32 -lfreeglut -lglu32 -lole32 -lopengl32 -lstrmiids -lwinmm -lws2_32
 clean:
 	rm -f *.o *.a *.dll
