@@ -128,9 +128,9 @@ void* pollenv()
 
 int main()
 {
-	void* all = pwrclkcreate(_start_, 0, 0, 0);
+	void* all = origincreate(_start_, 0, 0, 0);
 	void* wrk = workercreate(0, 0, 0, 0);
 	workerdelete(wrk);
-	pwrclkdelete(all);
+	origindelete(all);
 	return 0;
 }

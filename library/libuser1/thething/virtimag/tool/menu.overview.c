@@ -8,7 +8,7 @@ void draw8bit_rect(
 
 
 
-static struct pwrclk* pwr = 0;
+static struct origin* ori = 0;
 static struct worker* wrk = 0;
 static struct device* dev = 0;
 static struct driver* dri = 0;
@@ -1371,7 +1371,7 @@ void overview_init(void* addr)
 {
 	addr -= 0xe00000;
 
-	pwr = addr + 0x000000;
+	ori = addr + 0x000000;
 	wrk = addr + 0x200000;
 
 	dev = addr + 0x400000;

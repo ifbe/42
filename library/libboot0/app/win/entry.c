@@ -16,11 +16,11 @@ int main(int argc, char** argv)
 	}
 	if(argc <= 1)prep();
 */
-	void* all = pwrclkcreate(_win32_, 0, argc, (u8**)argv);
+	void* all = origincreate(_win32_, 0, argc, (u8**)argv);
 	void* thr = workercreate(0, 0, 0, 0);
 
 	workerdelete(thr);
-	pwrclkdelete(all);
+	origindelete(all);
 
 	return 0;
 }

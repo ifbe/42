@@ -156,7 +156,7 @@ void relcopy(struct halfrel* dst, struct halfrel* src)
 int relation_r(struct item* item,int foot, struct halfrel* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	switch(item->tier){
-		case _pwr_:return pwrclkread((void*)item,foot, stack,sp, arg, idx, buf, len);
+		case _ori_:return originread((void*)item,foot, stack,sp, arg, idx, buf, len);
 		case _wrk_:return workerread((void*)item,foot, stack,sp, arg, idx, buf, len);
 		case _dev_:return deviceread((void*)item,foot, stack,sp, arg, idx, buf, len);
 		case _dri_:return driverread((void*)item,foot, stack,sp, arg, idx, buf, len);
@@ -246,7 +246,7 @@ int relation_readall(void* chip,int foot, struct halfrel* stack,int sp, void* ar
 int relation_w(struct item* item,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	switch(item->tier){
-		case _pwr_:return pwrclkwrite((void*)item,foot, stack,sp, arg,idx, buf,len);
+		case _ori_:return originwrite((void*)item,foot, stack,sp, arg,idx, buf,len);
 		case _wrk_:return workerwrite((void*)item,foot, stack,sp, arg,idx, buf,len);
 		case _dev_:return devicewrite((void*)item,foot, stack,sp, arg,idx, buf,len);
 		case _dri_:return driverwrite((void*)item,foot, stack,sp, arg,idx, buf,len);
@@ -340,7 +340,7 @@ int relation_writeall(void* chip,int foot, struct halfrel* stack,int sp, void* a
 int relation_d(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->type){
-		case _pwr_:return pwrclkdiscon(self, peer);
+		case _ori_:return origindiscon(self, peer);
 		case _wrk_:return workerdiscon(self, peer);
 		case _dev_:return devicediscon(self, peer);
 		case _dri_:return driverdiscon(self, peer);
@@ -364,7 +364,7 @@ int relationdiscon(struct halfrel* self, struct halfrel* peer)
 int relation_a(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->type){
-		case _pwr_:return pwrclklinkup(self, peer);
+		case _ori_:return originlinkup(self, peer);
 		case _wrk_:return workerlinkup(self, peer);
 		case _dev_:return devicelinkup(self, peer);
 		case _dri_:return driverlinkup(self, peer);

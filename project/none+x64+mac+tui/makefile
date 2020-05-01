@@ -41,5 +41,5 @@ exe:
 	$(library)/libuser0/*.o $(library)/libuser1/*.o \
 	-lm -framework AudioToolbox
 clean:
+	rm -f *.exe *.out *.o *.a *.dylib
 	make -C $(library) clean
-	rm -f *.o *.a *.dylib

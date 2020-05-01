@@ -21,7 +21,7 @@ typedef struct sysobj _sys;
 typedef struct driver _dri;
 typedef struct device _dev;
 typedef struct worker _wrk;
-typedef struct pwrclk _pwr;
+typedef struct origin _ori;
 
 int entityread( _ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int entitywrite(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
@@ -72,12 +72,12 @@ int workerlinkup(struct halfrel* self, struct halfrel* peer);
 int workerdelete(void*);
 void* workercreate(u64 type, void* addr, int argc, u8** argv);
 //
-int pwrclkread( _pwr* pwr,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int pwrclkwrite(_pwr* pwr,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int pwrclkdiscon(struct halfrel* self, struct halfrel* peer);
-int pwrclklinkup(struct halfrel* self, struct halfrel* peer);
-int pwrclkdelete(void*);
-void* pwrclkcreate(u64 type, void* addr, int argc, u8** argv);
+int originread( _ori* ori,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int originwrite(_ori* ori,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int origindiscon(struct halfrel* self, struct halfrel* peer);
+int originlinkup(struct halfrel* self, struct halfrel* peer);
+int origindelete(void*);
+void* origincreate(u64 type, void* addr, int argc, u8** argv);
 //
 int relationread( void* item,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int relationwrite(void* item,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);

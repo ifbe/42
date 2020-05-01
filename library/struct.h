@@ -449,7 +449,7 @@ struct item
 
 
 
-struct pwrclk
+struct origin
 {
 	union{
 		void* irel0;

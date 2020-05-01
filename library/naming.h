@@ -14,7 +14,7 @@
 #define _dri_ hex32('d','r','i',0)
 #define _dev_ hex32('d','e','v',0)
 #define _wrk_ hex32('w','r','k',0)
-#define _pwr_ hex32('p','w','r',0)
+#define _ori_ hex32('o','r','i',0)
 //bare metal
 #define _start_ hex64('s','t','a','r','t', 0, 0, 0)
 #define _efimain_ hex64('e','f','i','m','a','i','n', 0)

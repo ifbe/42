@@ -23,11 +23,11 @@ void android_main(struct android_app* app)
 	APP = app;
 	chdir("/sdcard/42/");
 
-	void* all = pwrclkcreate(_ndkmain_, 0, 0, 0);
+	void* all = origincreate(_ndkmain_, 0, 0, 0);
 	void* thr = workercreate(0, 0, 0, 0);
 
 	workerdelete(thr);
-	pwrclkdelete(all);
+	origindelete(all);
 
 	exit(0);
 }

@@ -41,5 +41,5 @@ exe:
 	$(library)/libuser0/*.o $(library)/libuser1/*.o \
 	-lGLEW -lglfw -lm -framework OpenGL -framework AudioToolbox
 clean:
-	rm -f *.o *.a *.dylib
+	rm -f *.exe *.out *.o *.a *.dylib
 	make -C $(library) clean

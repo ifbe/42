@@ -1,5 +1,5 @@
 [bits 64]
-extern pwrclkcreate
+extern origincreate
 extern workercreate
 extern supplycreate
 extern say
@@ -11,7 +11,7 @@ main:
 	mov r9,0
 	mov r10,0
 	mov r11,0
-	call pwrclkcreate
+	call origincreate
 
 	mov r8, fmt
 	mov r9, arg1

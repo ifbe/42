@@ -25,8 +25,8 @@ void initdevice(void*);
 void freeworker();
 void initworker(void*);
 //libboot0
-void freepwrclk();
-void initpwrclk(void*);
+void freeorigin();
+void initorigin(void*);
 void death()
 {
 	//libuser
@@ -43,12 +43,12 @@ void death()
 
 	//libboot
 	freeworker();
-	freepwrclk();
+	freeorigin();
 }
 void birth(void* addr)
 {
 	//libboot
-	initpwrclk(addr+0x000000);
+	initorigin(addr+0x000000);
 	initworker(addr+0x200000);
 
 	//libsoft

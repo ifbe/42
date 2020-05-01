@@ -4,7 +4,7 @@ cflag ?= -c -O2 -fPIC
 .PHONY:bare
 bare:
 	rm -f *.o
-	$(compiler) $(cflag) pwrclk.c
+	$(compiler) $(cflag) origin.c
 	$(compiler) $(cflag) bare/memory.c
 	$(compiler) $(cflag) bare/barex64/entry.c
 	$(compiler) $(cflag) bare/barex64/serial.c
@@ -13,7 +13,7 @@ bare:
 .PHONY:efi
 efi:
 	rm -f *.o
-	$(compiler) $(cflag) pwrclk.c
+	$(compiler) $(cflag) origin.c
 	$(compiler) $(cflag) bare/memory.c
 	$(compiler) $(cflag) bare/efi/entry.c
 	$(compiler) $(cflag) bare/efi/serial.c
@@ -22,7 +22,7 @@ efi:
 .PHONY:none
 none:
 	rm -f *.o
-	$(compiler) $(cflag) pwrclk.c
+	$(compiler) $(cflag) origin.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/none/entry.c
 	$(compiler) $(cflag) app/none/envev.c
@@ -32,7 +32,7 @@ none:
 .PHONY:wincmd
 wincmd:
 	rm -f *.o
-	$(compiler) $(cflag) pwrclk.c
+	$(compiler) $(cflag) origin.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/win/entry.c
 	$(compiler) $(cflag) app/win/envev.c

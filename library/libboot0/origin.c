@@ -20,28 +20,28 @@ int openwriteclose(void*, int, void*, int);
 
 
 
-static struct pwrclk* pwr;
-static int pwrlen = 0;
-void* allocpwrclk()
+static struct origin* ori;
+static int orilen = 0;
+void* allocorigin()
 {
-	void* addr = &pwr[pwrlen];
-	pwrlen += 1;
+	void* addr = &ori[orilen];
+	orilen += 1;
 	return addr;
 }
-void freepwrclk()
+void freeorigin()
 {
-	say("[0,2):freeing pwrclk\n");
+	say("[0,2):freeing origin\n");
 	freestdout();
 	freestdin();
 }
-void initpwrclk(u8* addr)
+void initorigin(u8* addr)
 {
 	int j;
-	pwr = (void*)(addr+0x000000);
+	ori = (void*)(addr+0x000000);
 
-#define max (0x100000/sizeof(struct pwrclk))
+#define max (0x100000/sizeof(struct origin))
 	for(j=0;j<0x200000;j++)addr[j]=0;
-	for(j=0;j<max;j++)pwr[j].tier = _pwr_;
+	for(j=0;j<max;j++)ori[j].tier = _ori_;
 
 	createserial();
 	boardcreate();
@@ -49,19 +49,19 @@ void initpwrclk(u8* addr)
 	initstdin( addr+0x100000);
 	initstdout(addr+0x180000);
 
-	say("[0,2):inited pwrclk\n");
+	say("[0,2):inited origin\n");
 }
 
 
 
 
-int pwrclkdelete(void* addr)
+int origindelete(void* addr)
 {
-	struct pwrclk* tmp;
+	struct origin* tmp;
 	if(0 == addr)return 0;
 
 	tmp = addr;
-	say("pwrclkdelete:%.8s\n", &tmp->type);
+	say("origindelete:%.8s\n", &tmp->type);
 
 	switch(tmp->type){
 	case _start_:
@@ -74,16 +74,16 @@ int pwrclkdelete(void* addr)
 	case _ndkmain_:{
 		death();
 
-		openwriteclose("universe.bin", 0, pwr, 0x1000000);
-		memorydelete(pwr);
+		openwriteclose("universe.bin", 0, ori, 0x1000000);
+		memorydelete(ori);
 	}
 	}
 	return 0;
 }
-void* pwrclkcreate(u64 type, void* name, int argc, u8** argv)
+void* origincreate(u64 type, void* name, int argc, u8** argv)
 {
 	int j;
-	struct pwrclk* tmp;
+	struct origin* tmp;
 
 	switch(type){
 	//app
@@ -91,7 +91,7 @@ void* pwrclkcreate(u64 type, void* name, int argc, u8** argv)
 	case _win32_:
 	case _ndkmain_:{
 		tmp = memorycreate(0x1000000, 0);
-		//openreadclose("universe.bin", 0, pwr, 0x1000000);
+		//openreadclose("universe.bin", 0, ori, 0x1000000);
 
 		birth(tmp);
 		args_create(argc, argv);
@@ -119,7 +119,7 @@ void* pwrclkcreate(u64 type, void* name, int argc, u8** argv)
 	}
 	return 0;
 }
-int pwrclkmodify(int argc, u8** argv)
+int originmodify(int argc, u8** argv)
 {
 	int j;
 	u64 name = 0;
@@ -134,41 +134,41 @@ int pwrclkmodify(int argc, u8** argv)
 			tmp[j] = argv[2][j];
 		}
 		say("%llx,%llx\n",name, argv[3]);
-		pwrclkcreate(name, argv[3], argc-3, &argv[3]);
+		origincreate(name, argv[3], argc-3, &argv[3]);
 	}
 	return 0;
 }
-int pwrclksearch(u8* buf, int len)
+int originsearch(u8* buf, int len)
 {
 	int j,k=0;
 	for(j=0;j<64;j++)
 	{
-		if(0 == pwr[j].type)continue;
-		say("[%04x]: %.8s\n", j, &pwr[j].type);
+		if(0 == ori[j].type)continue;
+		say("[%04x]: %.8s\n", j, &ori[j].type);
 		k++;
 	}
 
-	if(0 == k)say("empth pwrclk\n");
+	if(0 == k)say("empth origin\n");
 	return 0;
 }
 
 
 
 
-int pwrclkread(_pwr* pwr,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int originread(_ori* ori,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int pwrclkwrite(_pwr* pwr,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int originwrite(_ori* ori,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int pwrclkdiscon(struct halfrel* self, struct halfrel* peer)
+int origindiscon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int pwrclklinkup(struct halfrel* self, struct halfrel* peer)
+int originlinkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@pwrclklinkup\n");
+	say("@originlinkup\n");
 	return 0;
 }

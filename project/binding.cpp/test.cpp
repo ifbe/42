@@ -4,15 +4,15 @@
 #define _main_ hex32('m','a','i','n')
 
 extern "C" {
-	void* pwrclkcreate(u64 type, void* name, int argc, char** argv);
-	void pwrclkdelete(void*);
+	void* origincreate(u64 type, void* name, int argc, char** argv);
+	void origindelete(void*);
 	void say(const void*, ...);
 }
 
 int main(int argc, char** argv)
 {
-	void* all = pwrclkcreate(_main_, 0, argc, argv);
+	void* all = origincreate(_main_, 0, argc, argv);
 	say("here\n");
-	pwrclkdelete(all);
+	origindelete(all);
 	return 0;
 }
