@@ -1,25 +1,31 @@
-int gpio_list()
-{
-}
-int gpio_choose()
-{
-}
-int gpio_read()
-{
-}
-int gpio_write()
-{
-}
-int gpio_linkup()
-{
-}
-int gpio_discon()
-{
-}
-int gpio_create()
-{
-}
-int gpio_delete()
-{
-}
+#include "libhard.h"
 
+
+int boardread(int type, int addr, u8* buf, int len)
+{
+	say("@boardread:%x,%x\n", type, addr);
+	return 0;
+}
+int boardwrite(int type, int addr, u8* buf, int len)
+{
+	say("@boardwrite:%x,%x,%x,%x\n", type, addr, buf, len);
+	return 0;
+}
+int boardstart(int name, int mode)
+{
+	say("@boardstart:%x,%x\n", name, mode);
+	return 0;
+}
+int boardstop(int pin)
+{
+	say("@boardstop:%x\n", pin);
+	return 0;
+}
+int boarddelete()
+{
+	return 0;
+}
+int boardcreate()
+{
+	return 0;
+}

@@ -33,6 +33,15 @@ arm64:
 	$(compiler) $(cflag) bare/cpu/arm64/arm64.fp.c
 	$(compiler) $(cflag) device.c
 
+linuxpi32:arm
+	$(compiler) $(cflag) rpi/rpi.wiringpi.c
+	$(compiler) $(cflag) linux/linux.wire.bt.c
+	$(compiler) $(cflag) linux/linux.wire.i2c.c
+	$(compiler) $(cflag) linux/linux.wire.pci.c
+	$(compiler) $(cflag) linux/linux.wire.spi.c
+	$(compiler) $(cflag) linux/linux.wire.usb.c
+	$(compiler) $(cflag) linux/linux.wire.wifi.c
+
 linuxarm:arm
 	$(compiler) $(cflag) linux/linux.wire.bt.c
 	$(compiler) $(cflag) linux/linux.wire.i2c.c

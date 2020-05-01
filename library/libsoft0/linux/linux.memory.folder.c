@@ -18,7 +18,7 @@ int readfolder(void* url, int fd, void* arg, int off, char* buf, int len)
 	struct dirent* ent;
 
 	dir = opendir(url);
-	if(0 == dir)return;
+	if(0 == dir)return 0;
 
 	j = 0;
 	while(1){

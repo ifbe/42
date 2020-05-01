@@ -5,11 +5,11 @@ all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	+make -s lib
 	cp a.out ../..
 libboot0:
-	+make -s -C $(library)/libboot0 cflag=$(flag) rpi
+	+make -s -C $(library)/libboot0 cflag=$(flag) none
 libboot1:
 	+make -s -C $(library)/libboot1 cflag=$(flag)
 libhard0:
-	+make -s -C $(library)/libhard0 cflag=$(flag) linuxarm
+	+make -s -C $(library)/libhard0 cflag=$(flag) linuxpi32
 libhard1:
 	+make -s -C $(library)/libhard1 cflag=$(flag)
 libsoft0:
@@ -17,7 +17,7 @@ libsoft0:
 libsoft1:
 	+make -s -C $(library)/libsoft1 cflag=$(flag)
 libuser0:
-	+make -s -C $(library)/libuser0 cflag=$(flag) linuxcli
+	+make -s -C $(library)/libuser0 cflag=$(flag) linuxxlib
 libuser1:
 	+make -s -C $(library)/libuser1 cflag=$(flag)
 lib:
@@ -38,8 +38,8 @@ exe:
 	$(library)/libhard0/*.o $(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o $(library)/libuser1/*.o \
-	-lwiringPi -lpulse -lpulse-simple -lpthread -lm
-	#-lasound -lpthread -lm
+	-lwiringPi -lpulse -lpulse-simple -lpthread -lX11 -lm
+	#-lasound -lpthread -lX11
 clean:
-	make -C $(library) clean
 	rm -f *.o *.a *.so
+	make -C $(library) clean

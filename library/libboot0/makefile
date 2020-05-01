@@ -6,7 +6,6 @@ bare:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
 	$(compiler) $(cflag) bare/memory.c
-	$(compiler) $(cflag) bare/board.c
 	$(compiler) $(cflag) bare/barex64/entry.c
 	$(compiler) $(cflag) bare/barex64/serial.c
 	$(compiler) $(cflag) bare/barex64/thread.c
@@ -16,7 +15,6 @@ efi:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
 	$(compiler) $(cflag) bare/memory.c
-	$(compiler) $(cflag) bare/board.c
 	$(compiler) $(cflag) bare/efi/entry.c
 	$(compiler) $(cflag) bare/efi/serial.c
 	$(compiler) $(cflag) bare/efi/thread.c
@@ -26,18 +24,6 @@ none:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
 	$(compiler) $(cflag) app/memory.c
-	$(compiler) $(cflag) app/board.c
-	$(compiler) $(cflag) app/none/entry.c
-	$(compiler) $(cflag) app/none/envev.c
-	$(compiler) $(cflag) app/none/serial.c
-	$(compiler) $(cflag) app/none/thread.c
-
-.PHONY:rpi
-rpi:
-	rm -f *.o
-	$(compiler) $(cflag) pwrclk.c
-	$(compiler) $(cflag) app/memory.c
-	$(compiler) $(cflag) app/rpi/wiringpi.c
 	$(compiler) $(cflag) app/none/entry.c
 	$(compiler) $(cflag) app/none/envev.c
 	$(compiler) $(cflag) app/none/serial.c
@@ -48,7 +34,6 @@ wincmd:
 	rm -f *.o
 	$(compiler) $(cflag) pwrclk.c
 	$(compiler) $(cflag) app/memory.c
-	$(compiler) $(cflag) app/board.c
 	$(compiler) $(cflag) app/win/entry.c
 	$(compiler) $(cflag) app/win/envev.c
 	$(compiler) $(cflag) app/win/serial.c
