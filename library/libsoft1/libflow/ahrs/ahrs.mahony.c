@@ -14,7 +14,7 @@ static float q[4];
 #define qz q[2]
 #define qw q[3]
 //
-float integralx, integraly, integralz;
+static float integralx, integraly, integralz;
 
 
 

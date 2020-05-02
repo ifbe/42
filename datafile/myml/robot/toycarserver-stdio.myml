@@ -1,9 +1,13 @@
+<entity>
+car{
+fmt:bdc
+}
+</entity>
+
+
 <supply>
 std{
 fmt:std
-}
-car{
-fmt:bdc
 }
 </supply>
 

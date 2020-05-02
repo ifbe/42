@@ -7,18 +7,6 @@ r2v-sensor/sensor.lidar.c \
 r2v-sensor/sensor.radar.c \
 v2r-gadget/1602/gadget.1602.c \
 v2r-gadget/12864/gadget.12864.c \
-v2r-robot/bionic/robot-arm.c \
-v2r-robot/bionic/robot-dog.c \
-v2r-robot/bionic/robot-man.c \
-v2r-robot/bionic/robot-snake.c \
-v2r-robot/copter/copter-hexa.c \
-v2r-robot/copter/copter-octo.c \
-v2r-robot/copter/copter-quad.c \
-v2r-robot/factory/3d-printer.c \
-v2r-robot/factory/3d-router.c \
-v2r-robot/vehicle/car-bldc.c \
-v2r-robot/vehicle/car-step.c \
-v2r-robot/vehicle/car-toy.c \
 supply.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 

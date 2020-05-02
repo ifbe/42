@@ -19,8 +19,8 @@ void inittexture(void*);
 void initvertex(void*);
 void fullwindow_create(void*);
 void fullwindow_delete(void*);
-void fullwindow_read(void*);
-void fullwindow_write(void*, void*);
+void fullwindow_read( void*,int, void*,int, void*,int, void*,int);
+void fullwindow_write(void*,int, void*,int, void*,int, void*,int);
 void* getapp();
 void* pollenv();
 
@@ -35,7 +35,7 @@ static int width = 0;
 static int height = 0;
 //
 static struct android_app* theapp = 0;
-static struct supply* thewin = 0;
+static struct supply* thewnd = 0;
 
 
 
@@ -198,11 +198,12 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 					y = AMotionEvent_getY(ev, j);
 					why[0] = j;
 					why[0] = x+(y<<16)+(why[0]<<48);
-					//eventwrite(why, 0x4070, (u64)thewin, 0);
+					//eventwrite(why, 0x4070, (u64)thewnd, 0);
 
 					why[1] = 0x4070;
-					why[2] = (u64)thewin;
-					fullwindow_write(thewin, (void*)why);
+					why[2] = (u64)thewnd;
+					//fullwindow_write(thewnd, (void*)why);
+					eventwrite(why[0], why[1], why[2], why[3]);
 				}
 			}
 			else
@@ -215,8 +216,9 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 				why[0] = AMotionEvent_getPointerId(ev, j);
 				why[0] = x+(y<<16)+(why[0]<<48);
 				why[1] = a;
-				why[2] = (u64)thewin;
-				fullwindow_write(thewin, (void*)why);
+				why[2] = (u64)thewnd;
+				//fullwindow_write(thewnd, (void*)why);
+				eventwrite(why[0], why[1], why[2], why[3]);
 			}
 		}
 		else if(AINPUT_SOURCE_TRACKBALL == source)
@@ -229,18 +231,18 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 
 
 
-void windowread(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
+void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct supply* win = self->pchip;
-	if(win != thewin)return;
+	if(wnd != thewnd)return;
 
-	fullwindow_read(win);
+	fullwindow_read(wnd,foot, stack,sp, arg,key, buf,len);
 	eglSwapBuffers(display, surface);
 
 	pollenv();
 }
-void windowwrite(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf,int len)
+void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	fullwindow_write(wnd,foot, stack,sp, arg,key, buf,len);
 }
 void windowstop()
 {
@@ -248,20 +250,17 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct supply* win)
+void windowdelete(struct supply* wnd)
 {
 }
-void windowcreate(struct supply* win)
+void windowcreate(struct supply* wnd)
 {
 	say("@windowcreate\n");
-	win->width  = width;
-	win->height = height;
-	win->depth  = 1024;
+	wnd->fbwidth = wnd->width = width;
+	wnd->fbheight= wnd->height= height;
 
-	win->fbwidth = width;
-	fullwindow_create(win);
-
-	thewin = win;
+	fullwindow_create(wnd);
+	thewnd = wnd;
 }
 
 

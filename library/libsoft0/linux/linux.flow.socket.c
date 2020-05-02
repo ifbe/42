@@ -26,7 +26,7 @@ int parsemyandto(void*,int, void*,int, char**,int*, char**,int*);
 
 
 
-struct sysobj* obj;
+static struct sysobj* obj;
 
 
 

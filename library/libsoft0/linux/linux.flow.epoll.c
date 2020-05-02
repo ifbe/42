@@ -24,7 +24,7 @@ int readsocket(int, void*, void*, int);
 
 
 
-struct sysobj* obj;
+static struct sysobj* obj;
 static void* buf;
 static int alive = 0;
 static int epollfd = 0;
