@@ -227,6 +227,19 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 	}
 	return 0;
 }
+int checkevent()
+{
+	int ident;
+	int events;
+	struct android_poll_source* source;
+
+	while((ident=ALooper_pollAll(0, NULL, &events, (void**)&source)) >= 0)
+	{
+		if(source)source->process(theapp, source);
+		if(theapp->destroyRequested)return 0;
+	}
+	return 0;
+}
 
 
 
@@ -238,7 +251,7 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 	fullwindow_read(wnd,foot, stack,sp, arg,key, buf,len);
 	eglSwapBuffers(display, surface);
 
-	pollenv();
+	checkevent();
 }
 void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
@@ -272,7 +285,7 @@ void initwindow()
 	theapp->onAppCmd = handle_cmd;
 	theapp->onInputEvent = handle_input;
 
-	while(0 == height)pollenv();
+	while(0==height)checkevent();
 }
 void freewindow()
 {

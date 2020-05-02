@@ -41,15 +41,6 @@ void* getapp()
 
 void* pollenv()
 {
-	int ident;
-	int events;
-	struct android_poll_source* source;
-
-	while((ident=ALooper_pollAll(0, NULL, &events, (void**)&source)) >= 0)
-	{
-		if(source)source->process(APP, source);
-		if(APP->destroyRequested)return 0;
-	}
 	return 0;
 }
 void* waitenv()
