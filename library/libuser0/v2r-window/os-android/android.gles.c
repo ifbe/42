@@ -13,6 +13,8 @@
 #include "libuser.h"
 #define LOG_TAG "finalanswer"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
+void* getapp();
+void* pollenv();
 void initobject(void*);
 void initshader(void*);
 void inittexture(void*);
@@ -21,8 +23,22 @@ void fullwindow_create(void*);
 void fullwindow_delete(void*);
 void fullwindow_read( void*,int, void*,int, void*,int, void*,int);
 void fullwindow_write(void*,int, void*,int, void*,int, void*,int);
-void* getapp();
-void* pollenv();
+int gl41fboc_create(void*, void*);
+int gl41fboc_delete(void*, void*);
+int gl41fboc_read( void*,int, void*,int, void*,int, void*,int);
+int gl41fboc_write(void*,int, void*,int, void*,int, void*,int);
+int gl41fbod_create(void*, void*);
+int gl41fbod_delete(void*, void*);
+int gl41fbod_read( void*,int, void*,int, void*,int, void*,int);
+int gl41fbod_write(void*,int, void*,int, void*,int, void*,int);
+int gl41fbog_create(void*, void*);
+int gl41fbog_delete(void*, void*);
+int gl41fbog_read( void*,int, void*,int, void*,int, void*,int);
+int gl41fbog_write(void*,int, void*,int, void*,int, void*,int);
+int gl41wnd0_create(void*, void*);
+int gl41wnd0_delete(void*, void*);
+int gl41wnd0_read( void*,int, void*,int, void*,int, void*,int);
+int gl41wnd0_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -35,7 +51,6 @@ static int width = 0;
 static int height = 0;
 //
 static struct android_app* theapp = 0;
-static struct supply* thewnd = 0;
 
 
 
@@ -198,11 +213,9 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 					y = AMotionEvent_getY(ev, j);
 					why[0] = j;
 					why[0] = x+(y<<16)+(why[0]<<48);
-					//eventwrite(why, 0x4070, (u64)thewnd, 0);
-
 					why[1] = 0x4070;
-					why[2] = (u64)thewnd;
-					//fullwindow_write(thewnd, (void*)why);
+					why[2] = (u64)(theapp->userData);
+					//fullwindow_write(theapp->userData, (void*)why);
 					eventwrite(why[0], why[1], why[2], why[3]);
 				}
 			}
@@ -216,8 +229,8 @@ static int32_t handle_input(struct android_app* app, AInputEvent* ev)
 				why[0] = AMotionEvent_getPointerId(ev, j);
 				why[0] = x+(y<<16)+(why[0]<<48);
 				why[1] = a;
-				why[2] = (u64)thewnd;
-				//fullwindow_write(thewnd, (void*)why);
+				why[2] = (u64)(theapp->userData);
+				//fullwindow_write(theapp->userData, (void*)why);
 				eventwrite(why[0], why[1], why[2], why[3]);
 			}
 		}
@@ -246,7 +259,7 @@ int checkevent()
 
 void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(wnd != thewnd)return;
+	if(wnd != theapp->userData)return;
 
 	fullwindow_read(wnd,foot, stack,sp, arg,key, buf,len);
 	eglSwapBuffers(display, surface);
@@ -266,14 +279,34 @@ void windowstart()
 void windowdelete(struct supply* wnd)
 {
 }
-void windowcreate(struct supply* wnd)
+void windowcreate(struct supply* wnd, void* arg)
 {
 	say("@windowcreate\n");
-	wnd->fbwidth = wnd->width = width;
-	wnd->fbheight= wnd->height= height;
-
-	fullwindow_create(wnd);
-	thewnd = wnd;
+	switch(wnd->fmt){
+	case _gl41fboc_:{
+		gl41fboc_create(wnd, arg);
+		break;
+	}
+	case _gl41fbod_:{
+		gl41fbod_create(wnd, arg);
+		break;
+	}
+	case _gl41fbog_:{
+		gl41fbog_create(wnd, arg);
+		break;
+	}
+	case _gl41wnd0_:{
+		gl41wnd0_create(wnd, arg);
+		break;
+	}
+	default:{
+		theapp->userData = wnd;
+		wnd->fbwidth = wnd->width = width;
+		wnd->fbheight= wnd->height= height;
+		fullwindow_create(wnd);
+		break;
+	}//default
+	}//switch
 }
 
 
@@ -284,7 +317,6 @@ void initwindow()
 	theapp = getapp();
 	theapp->onAppCmd = handle_cmd;
 	theapp->onInputEvent = handle_input;
-
 	while(0==height)checkevent();
 }
 void freewindow()
