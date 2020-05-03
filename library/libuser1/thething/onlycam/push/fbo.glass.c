@@ -256,25 +256,24 @@ void glass_forwnd_update(struct entity* act, struct style* slot, struct supply* 
 }
 void glass_forwnd_prepare(struct glsrc* src)
 {
-	src->geometry = 3;
-	src->method = 'v';
-	src->opaque = 1;
-
 	//
 	src->vs = glass_glsl_v;
 	src->fs = glass_glsl_f;
 	src->shader_enq = 42;
 
+	//texture
+	src->tex[0].name = "tex0";
+
 	//vertex
+	src->geometry = 3;
+	src->opaque = 1;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 	src->vbuf_enq = 0;
-
-	//texture
-	src->tex[0].name = "tex0";
 }
 
 

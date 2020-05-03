@@ -34,10 +34,6 @@ GLSL_VERSION
 
 void satellite_ctxforwnd(struct glsrc* src, char* str)
 {
-	//
-	src->geometry = 3;
-	src->method = 'i';
-
 	//shader
 	src->vs = satellite_glsl_v;
 	src->fs = satellite_glsl_f;
@@ -54,6 +50,9 @@ void satellite_ctxforwnd(struct glsrc* src, char* str)
 #define accx 64
 #define accy 63
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 4*6;
 	src->vbuf_h = accx*accy+(accx-1)*2;

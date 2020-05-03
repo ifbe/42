@@ -19,9 +19,6 @@ struct portalbuf{
 };
 void portal_forwnd(struct glsrc* src)
 {
-	src->geometry = 3;
-	src->method = 'v';
-
 	//
 	src->vs = memorycreate(0x1000, 0);
 	openreadclose("datafile/shader/portal/vert.glsl", 0, src->vs, 0x1000);
@@ -30,6 +27,9 @@ void portal_forwnd(struct glsrc* src)
 	src->shader_enq = 42;
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;

@@ -144,16 +144,23 @@ static void skydome_linkup(struct halfrel* self, struct halfrel* peer)
 	pin->foot[0] = (u64)src;
 	sty->foot[0] = (u64)dst;
 
-	//
-	src->geometry = 3;
-	src->method = 'i';
-
 	//shader
 	src->vs = skydome_glsl_v;
 	src->fs = skydome_glsl_f;
 	src->shader_enq = 42;
 
+	//texture
+	src->tex_name[0] = "tex0";
+	src->tex_fmt[0] = hex32('r','g','b','a');
+	src->tex_data[0] = act->buf;
+	src->tex_w[0] = act->width;
+	src->tex_h[0] = act->height;
+	src->tex_enq[0] = 42;
+
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 4*6;
 	src->vbuf_h = 128+1;
@@ -165,14 +172,6 @@ static void skydome_linkup(struct halfrel* self, struct halfrel* peer)
 	src->ibuf_h = 256;
 	src->ibuf_len = (src->ibuf_w) * (src->ibuf_h);
 	src->ibuf = memorycreate(src->ibuf_len, 0);
-
-	//texture
-	src->tex_name[0] = "tex0";
-	src->tex_fmt[0] = hex32('r','g','b','a');
-	src->tex_data[0] = act->buf;
-	src->tex_w[0] = act->width;
-	src->tex_h[0] = act->height;
-	src->tex_enq[0] = 42;
 */
 }
 

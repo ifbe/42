@@ -174,8 +174,6 @@ void terrain_ctxforwnd(struct privdata* own, char* rgbfile, char* depfile, char*
 {
 	float* tmp;
 	struct glsrc* src = &own->gl41.src;
-	src->method = 'i';
-	src->geometry = 3;
 
 	//shader
 	src->vs = memorycreate(0x10000, 0);
@@ -207,6 +205,9 @@ void terrain_ctxforwnd(struct privdata* own, char* rgbfile, char* depfile, char*
 	loadtexfromfile(&src->tex[DEPTEX], depfile);
 
 	//vertex
+	src->opaque = 0;
+	src->geometry = 3;
+
 	src->vbuf_fmt = vbuffmt_333;
 	src->vbuf_w = 4*9;
 	src->vbuf_h = 256*255;

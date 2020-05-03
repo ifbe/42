@@ -386,10 +386,6 @@ static void mario_create(struct entity* act, void* str)
 	src = act->buf0 = memorycreate(0x200, 0);
 	if(0 == src)return;
 
-	//property
-	src->geometry = 3;
-	src->method = 'v';
-
 	//shader
 	src->vs = mario_glsl_v;
 	src->fs = mario_glsl_f;
@@ -404,6 +400,9 @@ static void mario_create(struct entity* act, void* str)
 	src->tex[0].enq = 42;
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 0;

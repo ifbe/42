@@ -93,7 +93,7 @@ static int aidfont_load()
 }
 static int aidfont_fill(struct glsrc* src, int id)
 {
-	src->method = 'i';
+	src->opaque = 1;
 	src->geometry = 3;
 
 	if(0 == src->vs){

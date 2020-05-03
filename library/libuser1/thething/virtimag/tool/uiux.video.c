@@ -48,9 +48,6 @@ GLSL_VERSION
 "}\n";
 static void video_ctxforwnd(struct glsrc* src)
 {
-	src->geometry = 3;
-	src->method = 'v';
-
 	//shader
 	src->vs = video_glsl_v;
 	src->fs = video_glsl_f;
@@ -62,6 +59,9 @@ static void video_ctxforwnd(struct glsrc* src)
 	src->tex[0].fmt = hex32('r','g','b','a');
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;

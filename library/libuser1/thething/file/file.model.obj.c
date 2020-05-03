@@ -23,8 +23,6 @@ struct privdata{
 
 static void obj3d_ctxforgl41(struct glsrc* src, char* albedo, char* matter, char* vs, char* fs)
 {
-	src->geometry = 3;
-	src->method = 'v';
 say("%s\n%s\n%s\n%s\n",albedo,matter,vs,fs);
 
 	//shader
@@ -66,6 +64,10 @@ say("%s\n%s\n%s\n%s\n",albedo,matter,vs,fs);
 	src->tex[1].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[1], matter);
 	src->tex[1].enq = 42;
+
+	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
 }
 static void obj3d_draw_gl41(
 	struct entity* act, struct style* part,

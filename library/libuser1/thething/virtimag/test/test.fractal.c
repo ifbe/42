@@ -284,16 +284,15 @@ static void fractal_create(struct entity* act)
 	src = act->GL41BUF = memorycreate(0x200, 0);
 	if(0 == src)return;
 
-	//
-	src->geometry = 3;
-	src->method = 'v';
-
 	//shader
 	src->vs = fractal_glsl_v;
 	src->fs = glsl_julia;
 	src->shader_enq = 42;
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;

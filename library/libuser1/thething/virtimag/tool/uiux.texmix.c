@@ -32,10 +32,6 @@ GLSL_VERSION
 "}\n";
 void texmix_ctxforwnd(struct glsrc* src)
 {
-	//property
-	src->geometry = 3;
-	src->method = 'v';
-
 	//shader
 	src->vs = texmix_glsl_v;
 	src->fs = texmix_glsl_f;
@@ -56,6 +52,9 @@ void texmix_ctxforwnd(struct glsrc* src)
 	src->tex[1].enq = 42;
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;

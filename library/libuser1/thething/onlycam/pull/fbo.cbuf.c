@@ -38,16 +38,15 @@ GLSL_VERSION
 
 void cbuffer_ctxforwnd(struct glsrc* src)
 {
-	//property
-	src->geometry = 3;
-	src->method = 'v';
-
 	//shader
 	src->vs = teevee_glsl_v;
 	src->fs = teevee_glsl_f;
 	src->shader_enq = 42;
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;

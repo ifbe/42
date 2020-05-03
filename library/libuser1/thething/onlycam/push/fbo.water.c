@@ -232,10 +232,6 @@ void water_forwnd_update(struct entity* act, struct style* slot, struct supply* 
 }
 void water_forwnd_prepare(struct glsrc* src, struct waterbuf* water, char* str)
 {
-	src->geometry = 3;
-	src->method = 'v';
-	src->opaque = 1;
-
 	//
 	src->vs = memorycreate(0x1000, 0);
 	openreadclose("datafile/shader/water/vert.glsl", 0, src->vs, 0x1000);
@@ -256,6 +252,9 @@ void water_forwnd_prepare(struct glsrc* src, struct waterbuf* water, char* str)
 	src->tex[0].enq = 42;
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 1;
+
 	src->vbuf = memorycreate(4*6*6, 0);
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;

@@ -23,8 +23,6 @@ static void ground_ctxfordx11(struct glsrc* src, char* tex0, char* tex1, char* v
 static void ground_ctxforgl41(struct glsrc* src, char* tex0, char* tex1, char* tex2, char* vs, char* fs)
 {
 	//
-	src->geometry = 3;
-	src->method = 'v';
 say("%s\n%s\n%s\n%s\n%s\n",tex0,tex1,tex2,vs,fs);
 	//
 	src->vs = memorycreate(0x10000, 0);
@@ -55,6 +53,9 @@ say("%s\n%s\n%s\n%s\n%s\n",tex0,tex1,tex2,vs,fs);
 	src->tex[2].enq = 42;
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 4*3*2;
 	src->vbuf_h = 6;

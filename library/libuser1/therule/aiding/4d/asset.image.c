@@ -1,4 +1,5 @@
 #include "libuser.h"
+void* getsuffix(void* p);
 //upng
 void* upng_new_from_bytes(void* buf, int len);
 void* upng_get_buffer(void* upng);
@@ -21,6 +22,9 @@ unsigned char* njGetImage(void);
 
 
 
+void savejpgfromimg(char* name, int offs, u8* buf, int len, int width, int height)
+{
+}
 void loadimgfromjpg(u8* buf, int len, int* width, int* height, int* depth, int* stride)
 {
 	int ret;
@@ -53,6 +57,9 @@ void loadimgfromjpg(u8* buf, int len, int* width, int* height, int* depth, int* 
 
 
 
+void savepngfromimg(char* name, int offs, u8* buf, int len, int width, int height)
+{
+}
 void loadimgfrompng(u8* buf, int len, int* width, int* height, int* depth, int* stride)
 {
 	int w,h,d;
@@ -107,4 +114,61 @@ void loadimgfrompng(u8* buf, int len, int* width, int* height, int* depth, int* 
 	}
 
 	upng_free(upng);
+}
+
+
+
+
+void saveppmfromimg(char* name, int offs, u8* buf, int len, int width, int height)
+{
+}
+void loadimgfromppm(u8* buf, int len, int* width, int* height, int* depth, int* stride)
+{
+}
+
+
+
+
+void savetgafromimg(char* name, int offs, u8* buf, int len, int width, int height)
+{
+}
+void loadimgfromtga(u8* buf, int len, int* width, int* height, int* depth, int* stride)
+{
+}
+
+
+
+
+void savefilefromtex(char* name, struct texture* tex)
+{
+}
+void loadtexfromfile(struct texture* tex, char* name)
+{
+	int w,h,d,s;
+	int len;
+	u8* buf;
+	u8* tmp;
+	if(0 == tex)return;
+	if(0 == name)return;
+
+	buf = tex->data;
+	if(0 == buf)return;
+
+	tmp = getsuffix(name);
+	if(0 == tmp)return;
+
+	len = openreadclose(name, 0, buf, 0x1000000);
+	if(len <= 0){
+		say("len=%d, %s\n", len, name);
+		return;
+	}
+
+	if(0 == tmp[0])return;
+	else if(0 == ncmp(tmp, "jpg", 3))loadimgfromjpg(buf, len, &w, &h, &d, &s);
+	else if(0 == ncmp(tmp, "png", 3))loadimgfrompng(buf, len, &w, &h, &d, &s);
+	else if(0 == ncmp(tmp, "ppm", 3))loadimgfromppm(buf, len, &w, &h, &d, &s);
+	else if(0 == ncmp(tmp, "tga", 3))loadimgfromtga(buf, len, &w, &h, &d, &s);
+
+	tex->w = w;
+	tex->h = h;
 }

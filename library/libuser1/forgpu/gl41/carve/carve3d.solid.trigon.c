@@ -6,6 +6,7 @@
 
 static char solidtrigon_vert[] =
 GLSL_VERSION
+GLSL_PRECISION
 "layout(location = 0)in mediump vec3 v;\n"
 "layout(location = 1)in mediump vec3 n;\n"
 "layout(location = 2)in mediump vec3 c;\n"
@@ -22,6 +23,7 @@ GLSL_VERSION
 
 static char solidtrigon_frag[] =
 GLSL_VERSION
+GLSL_PRECISION
 "in mediump vec3 objxyz;\n"
 "in mediump vec3 normal;\n"
 "in mediump vec3 albedo;\n"
@@ -145,14 +147,14 @@ GLSL_VERSION
 
 static int trigon3d_fill(struct glsrc* src)
 {
-	src->method = 'i';
-	src->geometry = 3;
-
 	if(0 == src->vs){
 		src->vs = solidtrigon_vert;
 		src->fs = solidtrigon_frag;
 		src->shader_enq = 1;
 	}
+
+	src->opaque = 0;
+	src->geometry = 3;
 
 	if(0 == src->ibuf){
 		src->ibuf_len = 0x100000;

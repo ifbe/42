@@ -56,10 +56,6 @@ static void imagelight_lightupdate(
 
 void imagelight_ctxforwnd(struct glsrc* src, char* str)
 {
-	//
-	src->geometry = 3;
-	src->method = 'i';
-
 	//shader
 	src->vs = imagelight_glsl_v;
 	src->fs = imagelight_glsl_f;
@@ -68,6 +64,9 @@ void imagelight_ctxforwnd(struct glsrc* src, char* str)
 #define accx 64
 #define accy 63
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 4*6;
 	src->vbuf_h = accx*accy+(accx-1)*2;

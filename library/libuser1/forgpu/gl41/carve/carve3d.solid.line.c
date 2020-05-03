@@ -29,14 +29,14 @@ GLSL_VERSION
 
 static int line3d_fill(struct glsrc* src)
 {
-	src->method = 'i';
-	src->geometry = 2;
-
 	if(0 == src->vs){
 		src->vs = solidline_vert;
 		src->fs = solidline_frag;
 		src->shader_enq = 1;
 	}
+
+	src->opaque = 0;
+	src->geometry = 2;
 
 	if(0 == src->ibuf){
 		src->ibuf_len = 0x100000;

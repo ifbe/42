@@ -253,15 +253,15 @@ void mirror_forwnd_update(struct entity* act, struct style* slot, struct supply*
 }
 void mirror_forwnd_prepare(struct glsrc* src)
 {
-	src->geometry = 3;
-	src->method = 'v';
-
 	//shader
 	src->vs = mirror_glsl_v;
 	src->fs = mirror_glsl_f;
 	src->shader_enq = 42;
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;

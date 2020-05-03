@@ -30,11 +30,6 @@ GLSL_VERSION
 
 static void picture_ctxforwnd(struct glsrc* src, char* str, float* angle)
 {
-	//property
-	src->geometry = 3;
-	src->method = 'v';
-	src->opaque = 1;
-
 	//shader
 	src->vs = picture_glsl_v;
 	src->fs = picture_glsl_f;
@@ -53,6 +48,9 @@ static void picture_ctxforwnd(struct glsrc* src, char* str, float* angle)
 	src->tex[0].enq = 42;
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 1;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;

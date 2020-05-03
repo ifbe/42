@@ -205,8 +205,8 @@ void render_onedraw(struct gl41data* cam, struct gl41data* lit, struct gl41data*
 	glBindVertexArray(vao);
 //say("%d,%d,%d,%d,%d,%d\n", dst->shader, dst->tex[0], vao, vbo, src->ibuf_h, src->vbuf_h);
 
-//say("8888@method=%x, geom=%x, vbuf_h=%x, ibuf_h=%x\n", src->method, src->geometry, src->vbuf_h, src->ibuf_h);
-	if('i' == src->method)
+//say("8888@opaque=%x, geom=%x, vbuf_h=%x, ibuf_h=%x\n", src->opaque, src->geometry, src->vbuf_h, src->ibuf_h);
+	if(src->ibuf)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dst->ibo);
 		if(1 == src->geometry)glDrawElements(GL_POINTS, src->ibuf_h, GL_UNSIGNED_SHORT, 0);

@@ -28,14 +28,14 @@ GLSL_VERSION
 
 static int point3d_fill(struct glsrc* src)
 {
-	src->method = 'v';
-	src->geometry = 1;
-
 	if(0 == src->vs){
 		src->vs = solidpoint_vert;
 		src->fs = solidpoint_frag;
 		src->shader_enq = 1;
 	}
+
+	src->opaque = 0;
+	src->geometry = 1;
 
 	if(0 == src->vbuf){
 		src->vbuf_len = 0x100000;

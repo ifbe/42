@@ -148,10 +148,6 @@ static void texbox_create(struct entity* act, void* str)
 	src = act->buf0 = memorycreate(0x200, 0);
 	if(0 == src)return;
 
-	//
-	src->geometry = 3;
-	src->method = 'i';
-
 	//shader
 	src->vs = texbox_glsl_v;
 	src->fs = texbox_glsl_f;
@@ -167,6 +163,9 @@ static void texbox_create(struct entity* act, void* str)
 	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 4*6;
 	src->vbuf_h = 24;

@@ -56,9 +56,6 @@ GLSL_VERSION
 
 void particle_ctxforwnd(struct glsrc* src, float* vbuf)
 {
-	src->geometry = 1;
-	src->method = 'v';
-
 	//shader
 	src->vs = particle_glsl_v;
 	src->gs = particle_glsl_g;
@@ -71,6 +68,9 @@ void particle_ctxforwnd(struct glsrc* src, float* vbuf)
 	src->arg[0].fmt = 'm';
 
 	//vertex
+	src->geometry = 1;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_333;
 	src->vbuf_w = 4*9;
 	src->vbuf_h = COUNT;

@@ -251,15 +251,15 @@ static void spotlight_forwnd_vertex_update(struct entity* act, struct style* slo
 }
 static void dirlight_forwnd_vertex_prepare(struct glsrc* src)
 {
-	src->geometry = 3;
-	src->method = 'v';
-
 	//
 	src->vs = spotlit_glsl_v;
 	src->fs = spotlit_glsl_f;
 	src->shader_enq = 42;
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;

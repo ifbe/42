@@ -72,10 +72,6 @@ static void vertex_gen(float (*vbuf)[6], float x, float y, vec3 vc, vec3 vr, vec
 }
 void skillbar_ctxforwnd(struct glsrc* src, char* str)
 {
-	//property
-	src->geometry = 3;
-	src->method = 'v';
-
 	//shader
 	src->vs = skillbar_glsl_v;
 	src->fs = skillbar_glsl_f;
@@ -89,6 +85,9 @@ void skillbar_ctxforwnd(struct glsrc* src, char* str)
 	src->tex[0].enq = 42;
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 0;

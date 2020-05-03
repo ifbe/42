@@ -33,10 +33,6 @@ GLSL_VERSION
 
 void texball_ctxforwnd(struct glsrc* src, char* str)
 {
-	//
-	src->geometry = 3;
-	src->method = 'i';
-
 	//shader
 	src->vs = texball_glsl_v;
 	src->fs = texball_glsl_f;
@@ -53,6 +49,9 @@ void texball_ctxforwnd(struct glsrc* src, char* str)
 #define accx 64
 #define accy 63
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 4*6;
 	src->vbuf_h = accx*accy+(accx-1)*2;

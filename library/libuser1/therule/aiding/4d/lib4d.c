@@ -2,19 +2,9 @@
 void hexedit_init(void*);
 void overview_init(void*);
 //
-void* getsuffix(void* p);
 void initutf8(void*);
 int openreadclose(void* name, int off, void* buf, int len);
 int openwriteclose(void* name, int off, void* buf, int len);
-//
-void loadimgfromjpg(u8* buf, int len, int* width, int* height, int* depth, int* stride);
-void loadimgfrompng(u8* buf, int len, int* width, int* height, int* depth, int* stride);
-//
-void entitycreatefromobj(struct entity* act, u8* buf, int len);
-void entitycreatefromstl(struct entity* act, u8* buf, int len);
-void entitycreatefrommp3(struct entity* act, u8* buf, int len);
-void entitycreatefromogg(struct entity* act, u8* buf, int len);
-void entitycreatefromwav(struct entity* act, u8* buf, int len);
 
 
 
@@ -58,41 +48,6 @@ void asset_create()
 }
 void asset_delete()
 {
-}
-
-
-
-
-void savefilefromtex(char* name, struct texture* tex)
-{
-}
-void loadtexfromfile(struct texture* tex, char* name)
-{
-	int w,h,d,s;
-	int len;
-	u8* buf;
-	u8* tmp;
-	if(0 == tex)return;
-	if(0 == name)return;
-
-	buf = tex->data;
-	if(0 == buf)return;
-
-	tmp = getsuffix(name);
-	if(0 == tmp)return;
-
-	len = openreadclose(name, 0, buf, 0x1000000);
-	if(len <= 0){
-		say("len=%d, %s\n", len, name);
-		return;
-	}
-
-	if(0 == tmp[0])return;
-	else if(0 == ncmp(tmp, "jpg", 3))loadimgfromjpg(buf, len, &w, &h, &d, &s);
-	else if(0 == ncmp(tmp, "png", 3))loadimgfrompng(buf, len, &w, &h, &d, &s);
-
-	tex->w = w;
-	tex->h = h;
 }
 
 

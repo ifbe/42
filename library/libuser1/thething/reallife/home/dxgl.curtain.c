@@ -48,15 +48,15 @@ static void curtain_create(struct entity* act, void* str)
 	struct glsrc* src = act->buf0 = memorycreate(0x1000, 0);
 	if(0 == src)return;
 
-	src->geometry = 3;
-	src->method = 'v';
-
 	//
 	src->vs = curtain_glsl_v;
 	src->fs = curtain_glsl_f;
 	src->shader_enq = 42;
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;

@@ -45,9 +45,6 @@ static double scale = 0.0;
 
 static void sketchpad_ctxforwnd(struct glsrc* src, char* vs, char* fs)
 {
-	src->geometry = 3;
-	src->method = 'v';
-
 	//shader
 	src->vs = memorycreate(0x1000, 0);
 	openreadclose(vs, 0, src->vs, 0x1000);
@@ -56,6 +53,9 @@ static void sketchpad_ctxforwnd(struct glsrc* src, char* vs, char* fs)
 	src->shader_enq = 42;
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_fmt = vbuffmt_33;
 	src->vbuf_w = 6*4;
 	src->vbuf_h = 6;

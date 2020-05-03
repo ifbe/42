@@ -11,8 +11,10 @@
 //
 #ifdef __ANDROID__
 	#define GLSL_VERSION "#version 320 es\n"
+	#define GLSL_PRECISION "precision highp float;\n"
 #else
 	#define GLSL_VERSION "#version 410 core\n"
+	#define GLSL_PRECISION "precision mediump float;\n"
 #endif
 //mouse
 #define point_onto hex16('p','+')

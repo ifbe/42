@@ -22,8 +22,6 @@ static void stl3d_ctxforwnd(struct privdata* own, char* str, char* vs, char* fs)
 {
 	float* tmp;
 	struct glsrc* src = &own->gl41.src;
-	src->geometry = 3;
-	src->method = 'v';
 
 	//shader
 	src->vs = memorycreate(0x10000, 0);
@@ -45,6 +43,9 @@ static void stl3d_ctxforwnd(struct privdata* own, char* str, char* vs, char* fs)
 	tmp[2] = 1.0;
 
 	//vertex
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->vbuf_len = 0x1000000;
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 	openreadclose(str, 0, src->vbuf, src->vbuf_len);

@@ -139,7 +139,26 @@ struct texture{
 	u32 w;
 	u32 h;
 	u32 fmt;
-	u8 enq;
+	int enq;
+};
+struct vertex{
+	void* vbuf;
+	u32 vbuf_fmt;
+	u32 vbuf_w;
+	u32 vbuf_h;
+	u32 vbuf_len;
+
+	void* ibuf;
+	u32 ibuf_fmt;
+	u32 ibuf_w;
+	u32 ibuf_h;
+	u32 ibuf_len;
+
+	//[e8,eb]
+	u8 geometry;	//1=point, 2=line, *=trigon
+	u8 opaque;		//0=solid, n=opaque
+	u8 vbuf_enq;
+	u8 ibuf_enq;
 };
 struct glsrc
 {
@@ -149,11 +168,9 @@ struct glsrc
 	void* te;
 	void* gs;
 	void* fs;
-	u8 shader_enq;
-
-	//
 	char* routine_name;
 	char* routine_detail;
+	int shader_enq;
 
 	//[24,88)argument
 	struct arg{
@@ -166,28 +183,24 @@ struct glsrc
 	struct texture tex[4];
 
 	//[c0,e7]vertex
+	//struct vertex vtx[1];
 	void* vbuf;
 	u32 vbuf_fmt;
 	u32 vbuf_w;
 	u32 vbuf_h;
 	u32 vbuf_len;
-	u8 vbuf_enq;
 
 	void* ibuf;
 	u32 ibuf_fmt;
 	u32 ibuf_w;
 	u32 ibuf_h;
 	u32 ibuf_len;
-	u8 ibuf_enq;
-
-	//
-	int ifirst;
-	int icount;
 
 	//[e8,eb]
-	u8 method;		//'v'=glDrawArrays, 'i'=glDrawElements
 	u8 geometry;	//1=point, 2=line, *=trigon
 	u8 opaque;		//0=solid, n=opaque
+	u8 vbuf_enq;
+	u8 ibuf_enq;
 };
 struct gldst
 {
@@ -217,51 +230,7 @@ struct gl41data
 	//[1c0,1ff]
 	struct gldst dst;
 	u8 opadd[0x40 - sizeof(struct gldst)];
-};/*
-struct glctx
-{
-	//[00,24)shader
-	u32 shader;
-	u8 shader_enq;
-
-	//[88,fc)texture
-	char* tex_name[4];
-	u32 tex[4];
-	u32 tex_w[4];
-	u32 tex_h[4];
-	u32 tex_fmt[4];
-	u8 tex_deq[4];
-
-	//[24,88)argument
-	char* arg_name[8];
-	void* arg_data[8];
-	u32 arg_fmt[8];
-
-	//[c0,e7]vertex
-	u32 vbo;
-	u32 vbuf_fmt;
-	u32 vbuf_w;
-	u32 vbuf_h;
-	u32 vbuf_len;
-	u8 vbuf_enq;
-
-	u32 ibo;
-	u32 ibuf_fmt;
-	u32 ibuf_w;
-	u32 ibuf_h;
-	u32 ibuf_len;
-	u8 ibuf_enq;
-
-	//
-	u32 vao;
-	int ifirst;
-	int icount;
-
-	//[e8,eb]
-	u8 method;		//'v'=glDrawArrays, 'i'=glDrawElements
-	u8 geometry;	//1=point, 2=line, *=trigon
-	u8 target;		//0=rtt, 1=background, 2=geometry, 3=alphatest, 4=transparent, 5=overlay
-};*/
+};
 
 
 

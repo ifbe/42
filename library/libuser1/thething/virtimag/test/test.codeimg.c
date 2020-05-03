@@ -352,9 +352,6 @@ static void codeimg_create(struct entity* act)
 	src = act->GL41BUF = memorycreate(0x200, 0);
 	if(0 == src)return;
 
-	src->geometry = 3;
-	src->method = 'v';
-
 	//shader
 	src->vs = codeimg_glsl_v;
 	src->fs = codeimg_glsl_f;
@@ -368,6 +365,9 @@ static void codeimg_create(struct entity* act)
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 
 	//texture
+	src->geometry = 3;
+	src->opaque = 0;
+
 	src->tex[0].name = "tex0";
 	src->tex[0].fmt = hex32('r','g','b','a');
 	src->tex[0].data = act->RGBABUF;

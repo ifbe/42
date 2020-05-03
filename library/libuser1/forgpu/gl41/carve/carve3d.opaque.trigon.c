@@ -29,14 +29,14 @@ GLSL_VERSION
 
 static int opaque3d_fill(struct glsrc* src)
 {
-	src->method = 'i';
-	src->geometry = 3;
-
 	if(0 == src->vs){
 		src->vs = opaquetrigon_vert;
 		src->fs = opaquetrigon_frag;
 		src->shader_enq = 1;
 	}
+
+	src->opaque = 1;
+	src->geometry = 3;
 
 	if(0 == src->ibuf){
 		src->ibuf_len = 0x100000;
