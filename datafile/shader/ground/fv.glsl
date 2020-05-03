@@ -1,7 +1,6 @@
-#version 410 core
-layout(location = 0)in mediump vec3 v;
-layout(location = 1)in mediump vec2 t;
-out mediump vec3 objxyz;
+layout(location = 0)in vec3 v;
+layout(location = 1)in vec2 t;
+out vec3 objxyz;
 uniform mat4 cammvp;
 void main(){
 	objxyz = v;

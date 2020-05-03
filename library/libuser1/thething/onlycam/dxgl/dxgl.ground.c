@@ -15,6 +15,11 @@ struct privdata{
 
 	struct gl41data gl41;
 };
+static int loadshaderfromfile(char* buf, char* url)
+{
+	int ret = mysnprintf(buf, 99, "%s%s", GLSL_VERSION, GLSL_PRECISION);
+	return openreadclose(url, 0, buf+ret, 0x10000-ret);
+}
 
 
 static void ground_ctxfordx11(struct glsrc* src, char* tex0, char* tex1, char* vs, char* fs)
@@ -26,9 +31,9 @@ static void ground_ctxforgl41(struct glsrc* src, char* tex0, char* tex1, char* t
 say("%s\n%s\n%s\n%s\n%s\n",tex0,tex1,tex2,vs,fs);
 	//
 	src->vs = memorycreate(0x10000, 0);
-	openreadclose(vs, 0, src->vs, 0x10000);
+	loadshaderfromfile(src->vs, vs);
 	src->fs = memorycreate(0x10000, 0);
-	openreadclose(fs, 0, src->fs, 0x10000);
+	loadshaderfromfile(src->fs, fs);
 	src->shader_enq = 42;
 
 	//albedo

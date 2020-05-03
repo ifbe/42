@@ -16,8 +16,11 @@ struct privdata{
 	vec4 matter;
 	struct gl41data gl41;
 };
-
-
+static int loadshaderfromfile(char* buf, char* url)
+{
+	int ret = mysnprintf(buf, 99, "%s%s", GLSL_VERSION, GLSL_PRECISION);
+	return openreadclose(url, 0, buf+ret, 0x10000-ret);
+}
 
 
 void terrain_generate(float (*vbuf)[9], u16* ibuf, struct entity* act, struct glsrc* src)
@@ -177,9 +180,9 @@ void terrain_ctxforwnd(struct privdata* own, char* rgbfile, char* depfile, char*
 
 	//shader
 	src->vs = memorycreate(0x10000, 0);
-	openreadclose(vs, 0, src->vs, 0x10000);
+	loadshaderfromfile(src->vs, vs);
 	src->fs = memorycreate(0x10000, 0);
-	openreadclose(fs, 0, src->fs, 0x10000);
+	loadshaderfromfile(src->fs, fs);
 	src->shader_enq = 42;
 
 	//argument

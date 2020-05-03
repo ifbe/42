@@ -1,4 +1,3 @@
-#version 410 core
 in mediump vec2 texuvw;
 in mediump vec3 depths;
 layout(location = 0)out mediump vec4 o0;
