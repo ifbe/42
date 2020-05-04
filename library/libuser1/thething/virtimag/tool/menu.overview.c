@@ -494,7 +494,7 @@ void overview_draw_gl41(
 	//entity
 	for(j=0;j<128;j++)
 	{
-		k = entity[j].type & 0xff;
+		k = entity[j].fmt;
 		if(0 == k)break;
 
 		if(j == cursor)
@@ -505,8 +505,7 @@ void overview_draw_gl41(
 		else
 		{
 			bg = 0x404040;
-			if((k >= 'a')&&(k <= 'z'))fg = 0xc0c0c0;
-			else fg = 0x00ffff;
+			fg = 0x80ffffff;
 		}
 
 		x = j % 16;
@@ -542,8 +541,6 @@ void overview_draw_gl41(
 		else
 		{
 			bg = 0x404040;
-			//if(ctx == &supply[j])fg = 0xffff00ff;
-			//else fg = 0x80ffffff;
 			fg = 0x80ffffff;
 		}
 
@@ -1303,7 +1300,7 @@ static int overview_event(
 
 
 
-static void overview_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void overview_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -1315,9 +1312,41 @@ static void overview_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* ar
 		overview_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
+static void overview_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+{
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
+	gl41data_before(wnd);
+	overview_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+	gl41data_after(wnd);
+
+	gl41data_01cam(wnd);
+}
+
+
+
+
 static int overview_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	overview_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(wnd->fmt){
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != key)break;
+		overview_read_bywnd(ent,slot, wnd,area);break;
+	}
+	default:{
+		overview_read_bycam(ent,foot, stack,sp, arg,key);break;
+	}
+	}
 	return 0;
 }
 static int overview_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
