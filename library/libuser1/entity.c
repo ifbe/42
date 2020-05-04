@@ -185,10 +185,9 @@ void* allocentity()
 	struct entity* act;
 
 	max = 0x100000 / sizeof(struct entity);
-	for(j=0;j<max;j++)
-	{
+	for(j=0;j<max;j++){
 		act = &entity[j];
-		if(0 == act->type)return act;
+		if(0 == act->fmt)return act;
 	}
 	return 0;
 }

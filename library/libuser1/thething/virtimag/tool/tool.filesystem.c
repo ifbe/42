@@ -9,6 +9,9 @@ void gl41data_whcam(struct entity* wnd, struct style* area);
 void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 
 
+static u32 rainbow[8] = {
+0xff0000, 0xff8000, 0xffff00, 0x00ff00,
+0x00ffff, 0x0000ff, 0x8000ff, 0x404040};
 
 
 static int fslist_find(struct str* list, int id, u8** head, u8** tail)
@@ -64,7 +67,7 @@ static void fslist_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct st
 		ent->iy0 = (int)(8*(1.0-xyz[1])*dy/dx);
 		say("%d,%d\n",ent->ix0,ent->iy0);
 
-		if(0x2b70 == ev->what){
+		if(0x2d70 == ev->what){
 			int id = ent->ix0 + (ent->iy0*8);
 			say("%d\n",id);
 
@@ -87,8 +90,9 @@ static void fslist_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct st
 				//}
 			}
 
-			for(j=0;j<0x1000;j++)list->buf[j] = 0;
-			readfolder(path->buf,0, 0,0, list->buf,0x10000);
+			for(j=0;j<0x10000;j++)list->buf[j] = 0;
+			list->len = readfolder(path->buf,0, 0,0, list->buf,0x10000);
+			//say("%s\n",list->buf);
 		}
 	}
 }
@@ -142,11 +146,13 @@ static void fslist_draw_gl41(
 	if(0 == list)return;
 
 	int x,y,j;
-	int rgb,cnt,head,tail;
-	vec3 tc,tr,tf;
-	for(j=0;j<3;j++){tr[j] = vr[j]/8;tf[j] = vf[j];}
-	vec3_setlen(tf, vec3_getlen(tr));
+	vec3 kr,kf;
+	for(j=0;j<3;j++){kr[j] = vr[j]/8;kf[j] = vf[j];}
+	vec3_setlen(kf, vec3_getlen(kr));
 
+	int bg,fg;
+	int cnt,head,tail;
+	vec3 tc,tr,tf;
 	cnt = 0;
 	head = 0;
 	for(tail=0;tail<list->len;tail++){
@@ -154,15 +160,29 @@ static void fslist_draw_gl41(
 		if('\n'== list->buf[tail]){
 			y = cnt/8;
 			x = cnt%8;
-			for(j=0;j<3;j++){
-				tc[j] = vc[j] -vr[j] +vf[j] +vt[j]/100.0;
-				tc[j]+= tr[j]*(2*x+1) -tf[j]*(2*y+1);
+			if((x==act->ix0)&&(y==act->iy0)){
+				bg = 0xffffff;
+				fg = 0xff0000;
+			}
+			else{
+				bg = rainbow[x];
+				fg = 0xffffff;
 			}
 
-			if((x==act->ix0)&&(y==act->iy0))rgb = 0xff0000;
-			else rgb = 0xffffff;
-			gl41line_rect(wnd, 0xff0000, tc,tr,tf);
-			carvestring_center(wnd,rgb, tc,tr,tf, list->buf+head,tail-head);
+			for(j=0;j<3;j++){
+				tc[j] = vc[j] -vr[j] +vf[j];
+				tc[j]+= kr[j]*(2*x+1) -kf[j]*(2*y+1);
+				tr[j] = kr[j]*0.9;
+				tf[j] = kf[j]*0.9;
+			}
+			gl41solid_rect(wnd, bg, tc,tr,tf);
+
+			for(j=0;j<3;j++){
+				tc[j] += vt[j]/100.0;
+				tr[j] = kr[j];
+				tf[j] = kf[j]/4.0;
+			}
+			carvestring_center(wnd,fg, tc,tr,tf, list->buf+head,tail-head);
 
 			cnt += 1;
 			head = tail+1;
