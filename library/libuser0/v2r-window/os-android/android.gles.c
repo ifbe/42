@@ -257,7 +257,7 @@ int checkevent()
 
 
 
-void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(wnd->fmt){
 	case _gl41fboc_:return gl41fboc_read(wnd,foot, stack,sp, arg,key, buf,len);
@@ -266,20 +266,22 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 	case _gl41wnd0_:return gl41wnd0_read(wnd,foot, stack,sp, arg,key, buf,len);
 	}//switch
 
-	if(wnd != theapp->userData)return;
+	if(wnd != theapp->userData)return 0;
 	fullwindow_read(wnd,foot, stack,sp, arg,key, buf,len);
 	eglSwapBuffers(display, surface);
 	checkevent();
+	return 0;
 }
-void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(wnd->fmt){
-		case _gl41fboc_:gl41fboc_write(wnd,foot, stack,sp, arg,key, buf,len);break;
-		case _gl41fbod_:gl41fbod_write(wnd,foot, stack,sp, arg,key, buf,len);break;
-		case _gl41fbog_:gl41fbog_write(wnd,foot, stack,sp, arg,key, buf,len);break;
-		case _gl41wnd0_:gl41wnd0_write(wnd,foot, stack,sp, arg,key, buf,len);break;
-		default:fullwindow_write(wnd,foot, stack,sp, arg,key, buf,len);break;
+	case _gl41fboc_:return gl41fboc_write(wnd,foot, stack,sp, arg,key, buf,len);
+	case _gl41fbod_:return gl41fbod_write(wnd,foot, stack,sp, arg,key, buf,len);
+	case _gl41fbog_:return gl41fbog_write(wnd,foot, stack,sp, arg,key, buf,len);
+	case _gl41wnd0_:return gl41wnd0_write(wnd,foot, stack,sp, arg,key, buf,len);
+	default:fullwindow_write(wnd,foot, stack,sp, arg,key, buf,len);
 	}
+	return 0;
 }
 void windowstop()
 {
