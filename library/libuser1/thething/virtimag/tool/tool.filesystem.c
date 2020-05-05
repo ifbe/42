@@ -150,8 +150,8 @@ static void fslist_draw_gl41(
 	for(j=0;j<3;j++){kr[j] = vr[j]/8;kf[j] = vf[j];}
 	vec3_setlen(kf, vec3_getlen(kr));
 
-	int bg,fg;
-	int cnt,head,tail;
+	float scale;
+	int bg,fg,head,tail,cnt;
 	vec3 tc,tr,tf;
 	cnt = 0;
 	head = 0;
@@ -163,24 +163,26 @@ static void fslist_draw_gl41(
 			if((x==act->ix0)&&(y==act->iy0)){
 				bg = 0xffffff;
 				fg = 0xff0000;
+				scale = 1.1;
 			}
 			else{
 				bg = rainbow[x];
 				fg = 0xffffff;
+				scale = 0.9;
 			}
 
 			for(j=0;j<3;j++){
 				tc[j] = vc[j] -vr[j] +vf[j];
 				tc[j]+= kr[j]*(2*x+1) -kf[j]*(2*y+1);
-				tr[j] = kr[j]*0.9;
-				tf[j] = kf[j]*0.9;
+				tr[j] = kr[j]*scale;
+				tf[j] = kf[j]*scale;
 			}
 			gl41solid_rect(wnd, bg, tc,tr,tf);
 
 			for(j=0;j<3;j++){
 				tc[j] += vt[j]/100.0;
-				tr[j] = kr[j];
-				tf[j] = kf[j]/4.0;
+				tr[j] = tr[j];
+				tf[j] = tf[j]/4.0;
 			}
 			carvestring_center(wnd,fg, tc,tr,tf, list->buf+head,tail-head);
 
@@ -192,7 +194,7 @@ static void fslist_draw_gl41(
 	for(j=0;j<3;j++){tr[j] = vr[j];tf[j] = vf[j];}
 	vec3_setlen(tr, 32);
 	vec3_setlen(tf, 32);
-	for(j=0;j<3;j++){tc[j] = vc[j] -vr[j] -vf[j];}
+	for(j=0;j<3;j++){tc[j] = vc[j] -vr[j] -vf[j] +vt[j]/100.0;}
 	carvestring(wnd,0xffffff, tc,tr,tf, path->buf,path->len);
 }
 static void fslist_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)

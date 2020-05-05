@@ -1,6 +1,8 @@
 #include "libuser.h"
-void* allocstyle();
-void* allocstyle();
+void gl41data_before(struct entity* wnd);
+void gl41data_after(struct entity* wnd);
+void gl41data_01cam(struct entity* wnd);
+void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 void draw8bit_rect(
 	struct entity* win, u32 rgb,
 	int x0, int y0, int x1, int y1);
@@ -16,109 +18,6 @@ static struct sysobj* obj = 0;
 static struct artery* ele = 0;
 static struct supply* supply = 0;
 static struct entity* entity = 0;
-
-
-
-/*
-void defaultstyle_2d(struct fstyle* sty, int w, int h, int d)
-{
-	sty->vc[0] = w/2;
-	sty->vc[1] = h/2;
-	sty->vc[2] = 0.0;
-
-	sty->vr[0] = w/2;
-	sty->vr[1] = 0;
-	sty->vr[2] = 0;
-
-	sty->vf[0] = 0;
-	sty->vf[1] = h/2;
-	sty->vf[2] = 0;
-
-	sty->vt[0] = 0;
-	sty->vt[1] = 0;
-	sty->vt[2] = (w+h)/4;
-}
-void defaultstyle_2in3(struct fstyle* sty)
-{
-	sty->vc[0] = 0.0;
-	sty->vc[1] = 0.0;
-	sty->vc[2] = 0.0;
-
-	sty->vr[0] = 1.0;
-	sty->vr[1] = 0.0;
-	sty->vr[2] = 0.0;
-
-	sty->vf[0] = 0.0;
-	sty->vf[1] = 1.0;
-	sty->vf[2] = 0.0;
-
-	sty->vt[0] = 0.0;
-	sty->vt[1] = 0.0;
-	sty->vt[2] = 1.0;
-}
-void defaultstyle_3d(struct fstyle* sty, int w, int h, int d)
-{
-	sty->vr[0] = w;
-	sty->vr[1] = 0.0;
-	sty->vr[2] = 0.0;
-
-	sty->vf[0] = 0.0;
-	sty->vf[1] = h;
-	sty->vf[2] = 0.0;
-
-	sty->vt[0] = 0.0;
-	sty->vt[1] = 0.0;
-	sty->vt[2] = d;
-
-	sty->vc[0] = 0.0;
-	sty->vc[1] = 0.0;
-	sty->vc[2] = 0.0;
-}
-int supplyentity(struct entity* win, struct entity* ccc, struct entity* act, struct entity* tmp)
-{
-	int w,h;
-	struct style* sty;
-	struct style* pin;
-	if(0 == win)return 0;
-
-	sty = allocstyle();
-	if(0 == sty)return 0;
-
-	pin = allocstyle();
-	if(0 == pin)return 0;
-
-	switch(ccc->fmt)
-	{
-		case _bg3d_:
-		case _fg3d_:
-		case _ui3d_:
-		{
-			if(_vbo_ == win->fmt)defaultstyle_3d(&sty->f, w, h, (w+h)/2);
-			else{
-				w = win->width;
-				h = win->height;
-				defaultstyle_2d(&sty->f, w, h, (w+h)/2);
-			}
-			break;
-		}
-		case _bg2d_:
-		case _fg2d_:
-		case _ui2d_:
-		{
-			if(_vbo_ == win->fmt)defaultstyle_2in3(&sty->f);
-			else{
-				w = win->width;
-				h = win->height;
-				defaultstyle_2d(&sty->f, w, h, (w+h)/2);
-			}
-			break;
-		}
-	}
-
-	entitycreate(0, act, 0, 0);
-	relationcreate(act, pin, _ent_, 0, ccc, sty, _sup_, 0);
-	return 0;
-}*/
 
 
 
@@ -159,8 +58,7 @@ void overview_draw_pixel(
 		if(0 == c)break;
 
 		if(j == cursor)c = 0xffff00ff;
-		else if((c >= 'a')&&(c <= 'z'))c = 0xc0808080;
-		else c = 0xc0ffffff;
+		else c = 0x80ffffff;
 
 		x = j%16;
 		y = j/16;
@@ -1325,6 +1223,21 @@ static void overview_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct s
 
 	gl41data_01cam(wnd);
 }
+static void overview_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area, struct event* ev)
+{
+	if('p' == (ev->what&0xff)){
+		vec3 xyz;
+		gl41data_convert(wnd, area, ev, xyz);
+		//say("%f,%f\n",xyz[0],xyz[1]);
+
+		ent->ix0 = (int)(16*xyz[0]);
+		ent->iy0 = (int)(32*(1.0-xyz[1]));
+		say("%d,%d\n",ent->ix0,ent->iy0);
+
+		if(0x2d70 == ev->what){
+		}
+	}
+}
 
 
 
@@ -1343,14 +1256,22 @@ static int overview_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		if('v' != key)break;
 		overview_read_bywnd(ent,slot, wnd,area);break;
 	}
-	default:{
-		overview_read_bycam(ent,foot, stack,sp, arg,key);break;
-	}
+	default:overview_read_bycam(ent,foot, stack,sp, arg,key);break;
 	}
 	return 0;
 }
 static int overview_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	//struct entity* ent = stack[sp-1].pchip;
+	struct style* slot = stack[sp-1].pfoot;
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(wnd->fmt){
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:overview_write_bywnd(ent,slot, wnd,area, buf);break;
+	}
 	return 0;
 }
 static void overview_discon(struct halfrel* self, struct halfrel* peer)
