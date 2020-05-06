@@ -4,14 +4,23 @@
 int copypath(u8* path, u8* data);
 int windowread(int type, void* buf);
 int windowwrite(int type, void* buf);
-void local2world(struct fstyle* src, struct fstyle* dst, mat4 mat);
 void parsevertfromstl(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41solid_spheretest(struct entity* win, u32 rgb, vec3 vc);
+//
+void world2local(mat4 mat, struct fstyle* src, struct fstyle* dst);
+void local2world(mat4 mat, struct fstyle* src, struct fstyle* dst);
+void mat4_transposefrom(mat4, mat4);
+void vec3_mat4vec3(vec3 o, mat4 m, vec3 v);
+//
+int ray_trigon(vec3 out, vec3 ro, vec3 rd, vec3 t0, vec3 t1, vec3 t2);
 
 
 struct privdata{
 	u8 vs[128];
 	u8 fs[128];
+	struct fstyle* localgeom;
+	struct fstyle* worldgeom;
 	vec4 matter;
 	mat4 objmat;
 	struct gl41data gl41;
@@ -54,16 +63,32 @@ static void stl3d_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
-	struct entity* ctx, struct style* none)
+	struct entity* wnd, struct style* none)
 {
+	gl41line_prism4(wnd, 0xff00ff, geom->fs.vc, geom->fs.vr, geom->fs.vf, geom->fs.vt);
+	gl41line_rect(wnd, 0xff00ff, geom->fs.vc, geom->fs.vr, geom->fs.vf);
+
 	struct privdata* own = act->CTXBUF;
 	if(0 == own)return;
+
+	mat4 mat;
+	local2world(mat, &part->fs, &geom->fs);
+	mat4_transposefrom(own->objmat, mat);
+
 	struct glsrc* src = &own->gl41.src;
+	gl41data_insert(wnd, 's', src, 1);
 
-	local2world(&part->fs, &geom->fs, (void*)src->arg[0].data);
+	vec3 tc;
+	vec3_mat4vec3(tc, mat, &act->fx0);
+	gl41solid_spheretest(wnd, 0xff00ff, tc);
 
-	gl41data_insert(ctx, 's', src, 1);
+	vec3 t0,t1,t2;
+	vec3_mat4vec3(t0, mat, src->vbuf + act->data3);
+	vec3_mat4vec3(t1, mat, src->vbuf + act->data3 + 24);
+	vec3_mat4vec3(t2, mat, src->vbuf + act->data3 + 48);
+	gl41solid_triangle(wnd, 0xffff00, t0,t1,t2);
 }
+
 
 
 
@@ -183,6 +208,58 @@ void stl3d_modify_matter(struct entity* act, int* src, int len)
 	f[2] = src[2]*0.01;
 	say("%f,%f,%f\n",f[0],f[1],f[2]);
 }
+void stl3d_modify_ray(struct entity* act, vec3 ray[])
+{
+	float* ro = ray[0];
+	float* rd = ray[1];
+	say("world ray: %f,%f,%f -> %f,%f,%f\n",ro[0],ro[1],ro[2], rd[0],rd[1],rd[2]);
+
+	struct privdata* own = act->CTXBUF;
+	if(0 == own)return;
+
+	int j;
+	mat4 mat;
+	vec3 r[2];
+	world2local(mat, own->worldgeom, own->localgeom);
+	for(j=0;j<3;j++)r[0][j] = ro[j]+rd[j];
+	vec3_mat4vec3(r[1], mat, r[0]);
+	vec3_mat4vec3(r[0], mat, ro);
+	for(j=0;j<3;j++)r[1][j]-= r[0][j];
+	say("local ray: %f,%f,%f -> %f,%f,%f\n",r[0][0],r[0][1],r[0][2], r[1][0],r[1][1],r[1][2]);
+/*
+mat4_transpose(mat);
+mat4_multiply(mat,own->objmat);
+printmat4(own->objmat);
+printmat4(mat);
+*/
+	struct glsrc* src = &own->gl41.src;
+	if(0 == src->vbuf_h)return;
+
+	int ret;
+	float* f;
+	float* out = &act->fx0;
+	float* tmp = &act->fxn;
+	out[3] = 1000000000.0;
+	for(j=0;j<src->vbuf_h/3;j++){
+		f = src->vbuf + 4*6*3*j;
+		ret = ray_trigon(tmp, r[0],r[1], f, &f[6], &f[12]);
+		if(ret <= 0)continue;
+
+		tmp[3] = 
+			(tmp[0]-r[0][0])*(tmp[0]-r[0][0])+
+			(tmp[1]-r[0][1])*(tmp[1]-r[0][1])+
+			(tmp[2]-r[0][2])*(tmp[2]-r[0][2]);
+		say("%d:@%f,%f,%f,%f(%f,%f,%f)(%f,%f,%f)(%f,%f,%f)\n", j,tmp[0],tmp[1],tmp[2],tmp[3],
+		f[0],f[1],f[2], f[6],f[7],f[8], f[12],f[13],f[14]);
+		if(out[3] > tmp[3]){
+			out[0] = tmp[0];
+			out[1] = tmp[1];
+			out[2] = tmp[2];
+			out[3] = tmp[3];
+			act->data3 = 4*6*3*j;
+		}
+	}
+}
 
 
 
@@ -208,6 +285,7 @@ static void stl3d_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 static void stl3d_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_int_ == foot)stl3d_modify_matter(ent, buf,len);
+	else stl3d_modify_ray(ent, buf);
 }
 static void stl3d_discon(struct halfrel* self, struct halfrel* peer)
 {
@@ -220,6 +298,9 @@ static void stl3d_linkup(struct halfrel* self, struct halfrel* peer)
 	if(0 == pin)return;
 	struct privdata* own = act->CTXBUF;
 	if(0 == own)return;
+
+	own->localgeom = self->pfoot;
+	own->worldgeom = peer->pfoot;
 
 	struct glsrc* src = &own->gl41.src;
 	parsevertfromstl(src, &pin->fs, src->vbuf, src->vbuf_len);

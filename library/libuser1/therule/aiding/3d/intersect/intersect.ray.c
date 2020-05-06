@@ -83,14 +83,47 @@ int ray_sphere(vec3 ray[], vec3 sphere[], vec3 out[])
 //0: 0 intersection
 //1: 1 intersection
 //-1: infinite intersections
-int ray_trigon(vec3 ray[], vec3 trigon[], vec3 out[])
+int ray_trigon(vec3 out, vec3 ro, vec3 rd, vec3 t0, vec3 t1, vec3 t2)
 {
-	float* o = ray[0];
-	float* d = ray[1];
-	float* ta = trigon[0];
-	float* tb = trigon[1];
-	float* tc = trigon[2];
-	return 0;
+	vec3 e1 = {t1[0]-t0[0],t1[1]-t0[1],t1[2]-t0[2]};
+	vec3 e2 = {t2[0]-t0[0],t2[1]-t0[1],t2[2]-t0[2]};
+	vec3 P;
+	vec3_cross(P, rd, e2);
+
+	vec3 oo;
+	float det = e1[0]*P[0] + e1[1]*P[1] + e1[2]*P[2];
+	if(det > 0.0){
+		oo[0]=ro[0]-t0[0];oo[1]=ro[1]-t0[1];oo[2]=ro[2]-t0[2];
+	}
+	else{
+		det = -det;
+		oo[0]=t0[0]-ro[0];oo[1]=t0[1]-ro[1];oo[2]=t0[2]-ro[2];
+	}
+
+	//same plane
+	if(det < 0.000001)return -1;
+
+	//x
+	float u = oo[0]*P[0] + oo[1]*P[1] + oo[2]*P[2];
+	if(u < 0.0)return 0;
+	if(u > det)return 0;
+
+	//help
+	vec3 Q;
+	vec3_cross(Q, oo, e1);
+
+	//y
+	float v = rd[0]*Q[0] + rd[1]*Q[1] + rd[2]*Q[2];
+	if(v < 0.0)return 0;
+	if(u+v > det)return 0;
+
+	//t
+	float t = e2[0]*Q[0] + e2[1]*Q[1] + e2[2]*Q[2];
+	t /= det;
+	out[0] = ro[0] + rd[0]*t;
+	out[1] = ro[1] + rd[1]*t;
+	out[2] = ro[2] + rd[2]*t;
+	return 1;
 }
 
 

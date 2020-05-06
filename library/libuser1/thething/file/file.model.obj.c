@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define OWNBUF buf0
 int copypath(u8* path, u8* data);
-void local2world(struct fstyle* src, struct fstyle* dst, mat4 mat);
+void local2world_transpose(mat4 mat, struct fstyle* src, struct fstyle* dst);
 void parsevertfromobj(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
@@ -78,7 +78,7 @@ static void obj3d_draw_gl41(
 	struct privdata* own = act->OWNBUF;
 	if(0 == own)return;
 
-	local2world(&part->fs, &geom->fs, own->objmat);
+	local2world_transpose(own->objmat, &part->fs, &geom->fs);
 
 	struct glsrc* src = &own->gl41.src;
 	gl41data_insert(ctx, 's', src, 1);
