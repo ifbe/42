@@ -1378,9 +1378,9 @@ void gl41solid_sphere(struct entity* win, u32 rgb,
 }
 void gl41solid_spheretest(struct entity* win, u32 rgb, vec3 vc)
 {
-	vec3 vr = {80.0, 0.0, 0.0};
-	vec3 vf = {0.0, 80.0, 0.0};
-	vec3 vt = {0.0, 0.0, 80.0};
+	vec3 vr = {16.0, 0.0, 0.0};
+	vec3 vf = {0.0, 16.0, 0.0};
+	vec3 vt = {0.0, 0.0, 16.0};
 	gl41solid_sphere(win,rgb, vc, vr, vf, vt);
 }
 

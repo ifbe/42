@@ -64,10 +64,10 @@ static void stl3d_draw_gl41(
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
 	struct entity* wnd, struct style* none)
-{
+{/*
 	gl41line_prism4(wnd, 0xff00ff, geom->fs.vc, geom->fs.vr, geom->fs.vf, geom->fs.vt);
 	gl41line_rect(wnd, 0xff00ff, geom->fs.vc, geom->fs.vr, geom->fs.vf);
-
+*/
 	struct privdata* own = act->CTXBUF;
 	if(0 == own)return;
 
@@ -78,14 +78,20 @@ static void stl3d_draw_gl41(
 	struct glsrc* src = &own->gl41.src;
 	gl41data_insert(wnd, 's', src, 1);
 
-	vec3 tc;
+	vec3 tc,td;
+	float* f = src->vbuf + act->data3;
+	tc[0] = act->fx0 + f[3]*100.0;
+	tc[1] = act->fy0 + f[4]*100.0;
+	tc[2] = act->fz0 + f[5]*100.0;
+	vec3_mat4vec3(td, mat, tc);
 	vec3_mat4vec3(tc, mat, &act->fx0);
 	gl41solid_spheretest(wnd, 0xff00ff, tc);
+	gl41line(wnd, 0xffffff, tc, td);
 
 	vec3 t0,t1,t2;
-	vec3_mat4vec3(t0, mat, src->vbuf + act->data3);
-	vec3_mat4vec3(t1, mat, src->vbuf + act->data3 + 24);
-	vec3_mat4vec3(t2, mat, src->vbuf + act->data3 + 48);
+	vec3_mat4vec3(t0, mat, f);
+	vec3_mat4vec3(t1, mat, &f[6]);
+	vec3_mat4vec3(t2, mat, &f[12]);
 	gl41solid_triangle(wnd, 0xffff00, t0,t1,t2);
 }
 
@@ -245,12 +251,9 @@ printmat4(mat);
 		ret = ray_trigon(tmp, r[0],r[1], f, &f[6], &f[12]);
 		if(ret <= 0)continue;
 
-		tmp[3] = 
-			(tmp[0]-r[0][0])*(tmp[0]-r[0][0])+
-			(tmp[1]-r[0][1])*(tmp[1]-r[0][1])+
-			(tmp[2]-r[0][2])*(tmp[2]-r[0][2]);
-		say("%d:@%f,%f,%f,%f(%f,%f,%f)(%f,%f,%f)(%f,%f,%f)\n", j,tmp[0],tmp[1],tmp[2],tmp[3],
-		f[0],f[1],f[2], f[6],f[7],f[8], f[12],f[13],f[14]);
+		tmp[3] = (tmp[0]-r[0][0])*(tmp[0]-r[0][0]) + (tmp[1]-r[0][1])*(tmp[1]-r[0][1]) + (tmp[2]-r[0][2])*(tmp[2]-r[0][2]);
+		//say("%d=(%f,%f,%f),(%f,%f,%f),(%f,%f,%f)\n", j,f[0],f[1],f[2], f[6],f[7],f[8], f[12],f[13],f[14]);
+		say("%d@(%f,%f,%f),%f\n", j,tmp[0],tmp[1],tmp[2],tmp[3]);
 		if(out[3] > tmp[3]){
 			out[0] = tmp[0];
 			out[1] = tmp[1];
