@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define _tar_ hex32('t','a','r', 0)
-int invproj(float* v, struct fstyle* sty);
+int worldxyzfromareauv(float* v, struct fstyle* sty);
 int obb_ray(struct fstyle* sty, vec3 ray[], vec3 out[]);
 int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 
@@ -26,14 +26,8 @@ static int clickray_convert(struct entity* cam, struct style* xxx, float* xyz, v
 	return 0;
 
 found:
-	//[0,1] to [-1,1]
-	xyz[0] = 2*xyz[0] - 1.0;
-	xyz[1] = 2*xyz[1] - 1.0;
-	xyz[2] = 0.5;
-	//say("%f,%f\n",xyz[0],xyz[1]);
-
-	//ndc to world
-	invproj(xyz, &geom->frus);
+	//xyz(world) from xy(screen) and frustum
+	worldxyzfromareauv(xyz, &geom->frus);
 	//say("%f,%f,%f\n", xyz[0],xyz[1],xyz[2]);
 
 	//put it into cam.rayslot

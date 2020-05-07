@@ -3,7 +3,7 @@
 
 
 
-void camera2ndc_orth(mat4 m, struct fstyle* s)
+void view2clip_orth(mat4 m, struct fstyle* s)
 {
 	float l = s->vl[3];
 	float r = s->vr[3];
@@ -32,14 +32,14 @@ void camera2ndc_orth(mat4 m, struct fstyle* s)
 	m[3][2] = 0.0;
 	m[3][3] = 1.0;
 }
-void ndc2camera_orth(mat4 m, struct fstyle* s)
+void clip2view_orth(mat4 m, struct fstyle* s)
 {
 }
 
 
 
 
-void camera2ndc_proj(mat4 proj, struct fstyle* sty)
+void view2clip_proj(mat4 proj, struct fstyle* sty)
 {
 	float l = sty->vl[3];
 	float r = sty->vr[3];
@@ -69,7 +69,7 @@ void camera2ndc_proj(mat4 proj, struct fstyle* sty)
 	proj[3][2] = -1.0;
 	proj[3][3] = 0.0;
 }
-void ndc2camera_proj(mat4 mat, struct fstyle* sty)
+void clip2view_proj(mat4 mat, struct fstyle* sty)
 {
 	float l = sty->vl[3];
 	float r = sty->vr[3];

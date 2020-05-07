@@ -3,7 +3,7 @@
 
 
 
-void world2camera(mat4 m, struct fstyle* s)
+void world2view(mat4 m, struct fstyle* s)
 {
 	float x,y,z;
 	float cx = s->vc[0];
@@ -39,7 +39,16 @@ void world2camera(mat4 m, struct fstyle* s)
 	m[3][2] = 0.0;
 	m[3][3] = 1.0;
 }
-void camera2world(mat4 m, struct fstyle* s)
+void world2view_transpose(mat4 m, struct fstyle* s)
+{
+	world2view(m, s);
+	mat4_transpose(m);
+}
+
+
+
+
+void view2world(mat4 m, struct fstyle* s)
 {
 	m[0][0] = s->vr[0];
 	m[0][1] = s->vt[0];
@@ -61,17 +70,8 @@ void camera2world(mat4 m, struct fstyle* s)
 	m[3][2] = 0.0f;
 	m[3][3] = 1.0f;
 }
-
-
-
-
-void world2camera_transpose(mat4 m, struct fstyle* s)
+void view2world_transpose(mat4 m, struct fstyle* s)
 {
-	world2camera(m, s);
-	mat4_transpose(m);
-}
-void camera2world_transpose(mat4 m, struct fstyle* s)
-{
-	camera2world(m, s);
+	view2world(m, s);
 	mat4_transpose(m);
 }

@@ -1,14 +1,22 @@
 #include "libuser.h"
-#define MATBUF buf0
-#define CAMBUF buf1
+#define OWNBUF buf0
 #define EVTYPE vfmt
 #define EVSEND 666666
-void style2matrix2_transpose(struct fstyle* frus, mat4 v_, mat4 vp);
+void style2viewandclip_transpose(struct fstyle* frus, mat4 v_, mat4 vp);
 //
 void gl41data_before(void*);
 void gl41data_after(void*);
 int gl41data_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+
+
+
+
+struct privdata{
+	mat4 w2v;	//world to view
+	mat4 w2c;	//world to view to clip
+	struct gl41data gl41;
+};
 
 
 
@@ -84,8 +92,7 @@ static void freecam_create(struct entity* act, void* arg, int argc, u8** argv)
 	act->fz0 = 0.0;
 
 	//matrix
-	act->MATBUF = memorycreate(64*2, 0);
-	act->CAMBUF = memorycreate(0x200, 0);
+	act->OWNBUF = memorycreate(0x1000, 0);
 }
 
 
@@ -355,9 +362,8 @@ static void freecam_matrix(
 	struct entity* wrd, struct style* geom)
 {
 	struct fstyle* frus = &geom->frus;
-	void* vp = act->MATBUF;
-	void* v_ = vp + 4*4*4;
-	style2matrix2_transpose(frus, v_, vp);
+	struct privdata* own = act->OWNBUF;
+	style2viewandclip_transpose(frus, own->w2v, own->w2c);
 
 	//matproj_transpose(cammvp, frus);
 	//fixview_transpose(cammv_, frus);
@@ -369,17 +375,19 @@ static void freecam_camera(
 	struct entity* wnd, struct style* area)
 {
 	struct fstyle* frus = &geom->frus;
-	struct glsrc* src = act->CAMBUF;
+	struct privdata* own = act->OWNBUF;
+
+	struct glsrc* src = &own->gl41.src;
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";
-	src->arg[0].data = act->MATBUF;
+	src->arg[0].data = own->w2c;
 	src->arg[1].fmt = 'm';
 	src->arg[1].name = "cammv_";
-	src->arg[1].data = act->MATBUF + 4*4*4;
+	src->arg[1].data = own->w2v;
 	src->arg[2].fmt = 'v';
 	src->arg[2].name = "camxyz";
 	src->arg[2].data = frus->vc;
-	wnd->gl_camera[0] = act->CAMBUF;
+	wnd->gl_camera[0] = src;
 }
 
 

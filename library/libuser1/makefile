@@ -61,9 +61,12 @@ therule/aiding/2d/photo/photo.rotate.c \
 therule/aiding/2d/photo/photo.scale.c \
 therule/aiding/3d/lib3d.c \
 therule/aiding/3d/matrix/mat.local2world.c \
-therule/aiding/3d/matrix/mat.world2camera.c \
-therule/aiding/3d/matrix/mat.camera2ndc.c \
-therule/aiding/3d/matrix/mat.aid.c \
+therule/aiding/3d/matrix/mat.world2view.c \
+therule/aiding/3d/matrix/mat.view2clip.c \
+therule/aiding/3d/matrix/mat.clip2ndc.c \
+therule/aiding/3d/matrix/mat.ndc2uv.c \
+therule/aiding/3d/matrix/mat.uv2xy.c \
+therule/aiding/3d/matrix/mat.3d.c \
 therule/aiding/3d/intersect/intersect.obb.c \
 therule/aiding/3d/intersect/intersect.ray.c \
 therule/aiding/3d/intersect/intersect.rect.c \

@@ -92,6 +92,7 @@ static void stl3d_draw_gl41(
 	vec3_mat4vec3(t0, mat, f);
 	vec3_mat4vec3(t1, mat, &f[6]);
 	vec3_mat4vec3(t2, mat, &f[12]);
+	gl41line_triangle(wnd, 0x00ffff, t0,t1,t2);
 	gl41solid_triangle(wnd, 0xffff00, t0,t1,t2);
 }
 
