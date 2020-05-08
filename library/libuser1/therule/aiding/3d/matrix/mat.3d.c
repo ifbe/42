@@ -85,15 +85,15 @@ void worldxyzfromareauv(vec3 vec, struct fstyle* frus)
 
 
 
-void style2viewandclip(struct fstyle* frus, mat4 w2v, mat4 w2c)
+void frustum2viewandclip(struct fstyle* frus, mat4 w2v, mat4 w2c)
 {
 	view2clip_proj(w2c, frus);
 	world2view(w2v, frus);
 	mat4_multiply(w2c, w2v);
 }
-void style2viewandclip_transpose(struct fstyle* frus, mat4 w2v, mat4 w2c)
+void frustum2viewandclip_transpose(struct fstyle* frus, mat4 w2v, mat4 w2c)
 {
-	style2viewandclip(frus, w2v, w2c);
+	frustum2viewandclip(frus, w2v, w2c);
 	mat4_transpose(w2v);
 	mat4_transpose(w2c);
 }

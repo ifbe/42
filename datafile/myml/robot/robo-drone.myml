@@ -19,9 +19,6 @@ fmt:virtual
 
 
 <supply>
-thewnd{
-fmt:gl41wnd0
-}
 opengl{
 fmt:wnd
 title:"42"

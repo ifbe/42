@@ -252,6 +252,7 @@
 #define _spk_ hex32('s','p','k',0)
 //light
 #define _cam_ hex32('c','a','m',0)
+#define _fbo_ hex32('f','b','o',0)
 #define _wnd_ hex32('w','n','d',0)
 //
 #define _cap_ hex32('c','a','p',0)

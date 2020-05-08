@@ -1,5 +1,4 @@
 #include "libuser.h"
-#define _fbo_ hex32('f','b','o', 0)
 #define CTXBUF buf0
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);

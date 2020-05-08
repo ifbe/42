@@ -97,7 +97,7 @@ q:0.33, 0.33
 (virtual, freegeom, 0) -> (freecam, freemodl, geom)
 (virtual, dbggeom, 0) -> (dbgcam, dbgmodl, geom)
 (opengl, freerect, 0) -> (freecam, 0, a)
-(opengl, dbgrect, 0) -> (dbgcam, 0, a)
+#(opengl, dbgrect, 0) -> (dbgcam, 0, a)
 
 #click
 (event, 0, cam) -> (freecam, 0, evto)

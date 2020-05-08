@@ -160,6 +160,10 @@ struct vertex{
 	u8 vbuf_enq;
 	u8 ibuf_enq;
 };
+
+
+
+
 struct glsrc
 {
 	//[00,24)shader
@@ -230,6 +234,9 @@ struct gl41data
 	//[1c0,1ff]
 	struct gldst dst;
 	u8 opadd[0x40 - sizeof(struct gldst)];
+};
+struct dx11data
+{
 };
 
 

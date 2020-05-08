@@ -170,7 +170,7 @@ say("j=%d,len=%d,cnt=%d\n",j,len,cnt);
 
 
 
-void parsevertfromstl(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len)
+void parsevertfromstl(struct fstyle* sty, int* vbuf_h, u8* buf, int len)
 {
 	u8 tmp[0x100];
 	int j,ret;
@@ -254,6 +254,6 @@ void parsevertfromstl(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len)
 		vq[0], vq[1], vq[2], vc[0], vc[1], vc[2]
 	);
 
-	//ctx->vbuf_w = 4*6;	//vx,vy,vz,nx,ny,nz
-	ctx->vbuf_h = ret*3;	//3point = 1triangle
+	//*vbuf_w = 4*6;	//vx,vy,vz,nx,ny,nz
+	*vbuf_h = ret*3;	//3point = 1triangle
 }

@@ -2,7 +2,8 @@
 #define OWNBUF buf0
 #define EVTYPE vfmt
 #define EVSEND 666666
-void style2viewandclip_transpose(struct fstyle* frus, mat4 v_, mat4 vp);
+void matproj(mat4 mat, struct fstyle* sty);
+void frustum2viewandclip_transpose(struct fstyle* frus, mat4 v_, mat4 vp);
 //
 void gl41data_before(void*);
 void gl41data_after(void*);
@@ -13,6 +14,8 @@ int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, v
 
 
 struct privdata{
+	struct halfrel* self;
+	struct halfrel* peer;
 	mat4 w2v;	//world to view
 	mat4 w2c;	//world to view to clip
 	struct gl41data gl41;
@@ -49,22 +52,6 @@ void printmat4(float* f)
 
 static void freecam_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
-	struct relation* rel;
-	struct entity* world;
-	struct fstyle* obb = 0;
-	//say("freecam@%llx,%llx,%llx,%d\n",act,pin,buf,len);
-
-	rel = act->irel0;
-	while(1){
-		if(0 == rel)return;
-		world = (void*)(rel->srcchip);
-		if( (_virtual_ == world->type) | (_scene3d_ == world->type) ){
-			self[0] = (void*)&rel->dstchip;
-			peer[0] = (void*)&rel->srcchip;
-			return;
-		}
-		rel = samedstnextsrc(rel);
-	}
 }
 static void freecam_modify(struct entity* act)
 {
@@ -303,8 +290,8 @@ void freecam_ratio(
 {
 	struct fstyle* rect = &area->fshape;
 	struct fstyle* frus = &geom->frus;
-	float dx = rect->vq[0] * wnd->fbwidth;
-	float dy = rect->vq[1] * wnd->fbheight;
+	float dx = rect->vq[0] * wnd->width;
+	float dy = rect->vq[1] * wnd->height;
 	frus->vb[3] = frus->vl[3] * dy / dx;
 	frus->vt[3] = frus->vr[3] * dy / dx;
 }
@@ -363,11 +350,8 @@ static void freecam_matrix(
 {
 	struct fstyle* frus = &geom->frus;
 	struct privdata* own = act->OWNBUF;
-	style2viewandclip_transpose(frus, own->w2v, own->w2c);
-
-	//matproj_transpose(cammvp, frus);
-	//fixview_transpose(cammv_, frus);
-	//printmat4(m);
+	frustum2viewandclip_transpose(frus, own->w2v, own->w2c);
+	//printmat4(own->w2c);
 }
 static void freecam_camera(
 	struct entity* act, struct style* part,
@@ -401,6 +385,7 @@ static int freecam_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
+	if(_rgba_ == wnd->fmt)return 0;
 	if(stack&&('v' == key)){
 		slot = stack[sp-1].pfoot;
 		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
@@ -411,24 +396,38 @@ static int freecam_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 }
 static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-//find world from camera
-	struct halfrel* tmp[2];
-	freecam_search(ent, 0, &tmp[0], &tmp[1]);
-	stack[sp+0].pchip = tmp[0]->pchip;
-	stack[sp+0].pfoot = tmp[0]->pfoot;
-	stack[sp+0].flag = tmp[0]->flag;
-	stack[sp+1].pchip = tmp[1]->pchip;
-	stack[sp+1].pfoot = tmp[1]->pfoot;
-	stack[sp+1].flag = tmp[1]->flag;
+	struct privdata* own = ent->OWNBUF;
+	struct halfrel* self = own->self;
+	struct halfrel* peer = own->peer;
+	stack[sp+0].pchip = self->pchip;
+	stack[sp+0].pfoot = self->pfoot;
+	stack[sp+0].flag = self->flag;
+	stack[sp+1].pchip = peer->pchip;
+	stack[sp+1].pfoot = peer->pfoot;
+	stack[sp+1].flag = peer->flag;
 
-//[-2,-1]: wnd,area -> cam,togl
 //[+0,+1]: cam,towr -> wor,geom
+//[-2,-1]: wnd,area -> cam,togl
+	struct entity* wor;struct style* geom;
 	struct style* slot;
 	struct entity* wnd;struct style* area;
-	struct entity* wor;struct style* geom;
+	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
 	slot = stack[sp-1].pfoot;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
+	if(_rgba_ == wnd->fmt){
+		//say("@freecam: raster\n");
+		freecam_ratio(wor, geom, wnd, area);
+		freecam_shape2frustum(&geom->fshape, &geom->frustum);
+		//printstyle(&geom->frus);
+
+		mat4 m;
+		matproj(m, &geom->frus);
+		//printmat4(m);
+
+		entityread(stack[sp+1].pchip, 0, stack, sp+2, m, 0, 0, 0);
+		return 0;
+	}
+
 	if('v' == key){
 		gl41data_before(wnd);
 
@@ -452,11 +451,11 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 static int freecam_write_bywnd(_ent* ent,struct event* ev)
 {
 //find world from camera
-	struct halfrel* tmp[2];
-	freecam_search(ent, 0, &tmp[0], &tmp[1]);
+	struct privdata* own = ent->OWNBUF;
+	struct halfrel* rel = own->peer;
 
-	struct entity* wor = tmp[1]->pchip;
-	struct style* geom = tmp[1]->pfoot;
+	struct entity* wor = rel->pchip;
+	struct style* geom = rel->pfoot;
 	switch(ent->EVTYPE){
 	case 'f':return freecam_event_frus(ent,0, wor,geom, ev,0);break;
 	case 0:return freecam_event_obb(ent,0, wor,geom, ev,0);break;
@@ -469,16 +468,14 @@ static int freecam_write_bywnd(_ent* ent,struct event* ev)
 
 static int freecam_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	//say("@freecam_read\n");
 	if(sp < 2)return 0;
 	struct entity* sup = stack[sp-2].pchip;
 	if(0 == sup)return 0;
 
-	switch(sup->fmt){
-	case _gl41fboc_:
-	case _gl41fbog_:
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:return freecam_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
+	switch(sup->type){
+	case _wnd_:
+	case _fbo_:return freecam_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
 	default:return freecam_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 	}
 	return 0;
@@ -495,9 +492,19 @@ static void freecam_discon(struct halfrel* self, struct halfrel* peer)
 static void freecam_linkup(struct halfrel* self, struct halfrel* peer)
 {
     say("@freecam_linkup\n");
+
+	struct entity* this = self->pchip;
 	if(_evto_ == self->flag){
-		struct entity* cam = self->pchip;
-		cam->EVTYPE = EVSEND;
+		this->EVTYPE = EVSEND;
+		return;
+	}
+
+	struct entity* that = peer->pchip;
+	if( (_virtual_ == that->type) | (_scene3d_ == that->type) ){
+		struct privdata* own = this->OWNBUF;
+		own->self = self;
+		own->peer = peer;
+		return;
 	}
 }
 

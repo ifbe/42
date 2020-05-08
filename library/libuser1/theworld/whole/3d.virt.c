@@ -7,14 +7,8 @@ void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, 
 
 
 
-int virtual_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+int virtual_traverse(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
-	struct entity* wnd = stack[sp-2].pchip;
-	if(0 == wnd)return 0;
-
-	gl41data_before(wnd);
-	gl41data_01cam(wnd);
-
 	struct relation* rel = ent->orel0;
 	while(1){
 		if(0 == rel)break;
@@ -28,7 +22,6 @@ int virtual_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 		rel = samesrcnextdst(rel);
 	}
 
-	gl41data_after(wnd);
 	return 0;
 }
 
@@ -38,17 +31,22 @@ int virtual_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 int virtual_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@virtual_read\n");
-	struct supply* wnd = stack[sp-2].pchip;
+	struct entity* wnd = stack[sp-2].pchip;
 	if(0 == wnd)return 0;
 
-	switch(wnd->fmt){
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:{
+	switch(wnd->type){
+	case _wnd_:
+	case _fbo_:{
 		if('v' != key)break;
-		virtual_read_bywnd(ent,foot, stack,sp, arg,key);break;
+		gl41data_before(wnd);
+		gl41data_01cam(wnd);
+		virtual_traverse(ent,foot, stack,sp, arg,key);break;
+		gl41data_after(wnd);
 	}
+	default:{
+		virtual_traverse(ent,foot, stack,sp, arg,key);break;
 	}
+	}//switch
 	return 0;
 }
 int virtual_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

@@ -22,9 +22,6 @@ fmt:reality
 
 
 <supply>
-glwnd{
-fmt:gl41wnd0
-}
 opengl{
 fmt:wnd
 title:"42"

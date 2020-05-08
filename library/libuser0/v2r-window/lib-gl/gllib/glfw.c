@@ -36,10 +36,6 @@ int gl41fbog_create(void*, void*);
 int gl41fbog_delete(void*, void*);
 int gl41fbog_read( void*,int, void*,int, void*,int, void*,int);
 int gl41fbog_write(void*,int, void*,int, void*,int, void*,int);
-int gl41wnd0_create(void*, void*);
-int gl41wnd0_delete(void*, void*);
-int gl41wnd0_read( void*,int, void*,int, void*,int, void*,int);
-int gl41wnd0_write(void*,int, void*,int, void*,int, void*,int);
 //
 static u8 uppercase[] = {
 	' ', '!','\"', '#', '$', '%', '&','\"',		//20,27
@@ -69,7 +65,6 @@ int windowread(_sup* ogl,int foot, _syn* stack,int sp, void* arg,int idx, void* 
 	case _gl41fboc_:return gl41fboc_read(ogl,foot, stack,sp, arg,idx, buf,len);
 	case _gl41fbod_:return gl41fbod_read(ogl,foot, stack,sp, arg,idx, buf,len);
 	case _gl41fbog_:return gl41fbog_read(ogl,foot, stack,sp, arg,idx, buf,len);
-	case _gl41wnd0_:return gl41wnd0_read(ogl,foot, stack,sp, arg,idx, buf,len);
 	}//switch
 t0 = ogl->gltime;
 
@@ -118,7 +113,6 @@ void windowwrite(_sup* ogl,int foot, _syn* stack,int sp, void* arg,int idx, void
 		case _gl41fboc_:gl41fboc_write(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41fbod_:gl41fbod_write(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41fbog_:gl41fbog_write(ogl,foot, stack,sp, arg,idx, buf,len);break;
-		case _gl41wnd0_:gl41wnd0_write(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _none_:nonewindow_write(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _easy_:easywindow_write(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _full_:
@@ -396,7 +390,6 @@ void windowdelete(struct supply* ogl)
 		case _gl41fboc_:gl41fboc_delete(ogl, 0);break;
 		case _gl41fbod_:gl41fbod_delete(ogl, 0);break;
 		case _gl41fbog_:gl41fbog_delete(ogl, 0);break;
-		case _gl41wnd0_:gl41wnd0_delete(ogl, 0);break;
 		case _none_:nonewindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
 		case _easy_:easywindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
 		default:    fullwindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
@@ -422,10 +415,6 @@ void windowcreate(struct supply* ogl, void* arg)
 	}
 	case _gl41fbog_:{
 		gl41fbog_create(ogl, arg);
-		break;
-	}
-	case _gl41wnd0_:{
-		gl41wnd0_create(ogl, arg);
 		break;
 	}
 	case _coop_:{
