@@ -8,6 +8,7 @@ void parsevertfromstl(struct fstyle* sty, int* vbuf_h, u8* buf, int len);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 void gl41solid_spheretest(struct entity* win, u32 rgb, vec3 vc);
 //
+void invproj(mat4 mat, struct fstyle* frus);
 void world2local(mat4 mat, struct fstyle* src, struct fstyle* dst);
 void local2world(mat4 mat, struct fstyle* src, struct fstyle* dst);
 void mat4_transposefrom(mat4, mat4);
@@ -36,7 +37,16 @@ struct privdata{
 	struct gl41data gl41;
 	struct dx11data dx11;
 };
-void std3d_position(vec3 o, mat4 m, vec3 v)
+static u32 stl3d_normal2rgb(vec3 n)
+{
+	u32 r,g,b;
+	float w = 0.5 / vec3_getlen(n);
+	b = (u32)(256*(n[0]*w+0.5));
+	g = (u32)(256*(n[1]*w+0.5));
+	r = (u32)(256*(n[2]*w+0.5));
+	return (r<<16) + (g<<8) + (b);
+}
+static void std3d_position(vec3 o, mat4 m, vec3 v)
 {
 	float f;
 	f = 1.00 / (m[3][0]*v[0] + m[3][1]*v[1] + m[3][2]*v[2] + m[3][3]);
@@ -44,20 +54,89 @@ void std3d_position(vec3 o, mat4 m, vec3 v)
 	o[1] = f * (m[1][0]*v[0] + m[1][1]*v[1] + m[1][2]*v[2] + m[1][3]);
 	o[2] = f * (m[2][0]*v[0] + m[2][1]*v[1] + m[2][2]*v[2] + m[2][3]);
 }
-void stl3d_fragment(vec3 c, vec3 v, vec3 n, vec3 l)
+static void stl3d_fragment(vec3 c, vec3 v, vec3 n, vec3 l)
 {
 }
-
-
-
-
 static void stl3d_readdata(struct privdata* own, char* str)
 {
 	own->vbuf_len = 0x1000000;
 	own->vbuf = memorycreate(own->vbuf_len, 0);
 	openreadclose(str, 0, own->vbuf, own->vbuf_len);
 }
-static void stl3d_ctxforwnd(struct privdata* own, char* vs, char* fs)
+static void stl3d_modify_matter(struct entity* act, int* src, int len)
+{
+	int j;
+	struct privdata* own = act->CTXBUF;
+	float* f = own->matter;
+	f[0] = src[0]*0.01;
+	f[1] = src[1]*0.01;
+	f[2] = src[2]*0.01;
+	say("%f,%f,%f\n",f[0],f[1],f[2]);
+}
+
+
+
+
+static int stl3d_intersect_local(float* out, float* vbuf, int cnt, vec3 ro, vec3 rd)
+{
+	int j,k,ret;
+	float* f;
+	vec4 tmp;
+
+	k = -1;
+	out[3] = 1000000000.0;
+	for(j=0;j<cnt;j++){
+		f = &vbuf[6*3*j];
+		ret = ray_trigon(tmp, ro,rd, f, &f[6], &f[12]);
+		if(ret <= 0)continue;
+
+		tmp[3] = (tmp[0]-ro[0])*(tmp[0]-ro[0]) + (tmp[1]-ro[1])*(tmp[1]-ro[1]) + (tmp[2]-ro[2])*(tmp[2]-ro[2]);
+		//say("%d=(%f,%f,%f),(%f,%f,%f),(%f,%f,%f)\n", j,f[0],f[1],f[2], f[6],f[7],f[8], f[12],f[13],f[14]);
+		//say("%d@(%f,%f,%f),%f\n", j,tmp[0],tmp[1],tmp[2],tmp[3]);
+		if(out[3] > tmp[3]){
+			out[0] = tmp[0];
+			out[1] = tmp[1];
+			out[2] = tmp[2];
+			out[3] = tmp[3];
+			k = j;
+		}
+	}
+	return k;
+}
+static int stl3d_intersect_world(float* out, float* vbuf, int cnt, vec3 w_ro, vec3 w_rd, mat4 mat)
+{
+	//say("world ray: %f,%f,%f -> %f,%f,%f\n",w_ro[0],w_ro[1],w_ro[2], w_rd[0],w_rd[1],w_rd[2]);
+
+	int j;
+	vec3 l_ro,l_rd;
+	for(j=0;j<3;j++)l_ro[j] = w_ro[j]+w_rd[j];
+	std3d_position(l_rd, mat, l_ro);
+	std3d_position(l_ro, mat, w_ro);
+	for(j=0;j<3;j++)l_rd[j]-= l_ro[j];
+	//say("local ray: %f,%f,%f -> %f,%f,%f\n",l_ro[0],l_ro[1],l_ro[2], l_rd[0],l_rd[1],l_rd[2]);
+
+	//todo: return worldxyz, not localxyz
+	return stl3d_intersect_local(out, vbuf, cnt, l_ro,l_rd);
+}
+static void stl3d_modify_ray(struct entity* act, vec3 ray[])
+{
+	struct privdata* own = act->CTXBUF;
+	if(0 == own)return;
+
+	mat4 mat;
+	world2local(mat, own->worldgeom, own->localgeom);
+
+	int ret = stl3d_intersect_world(&act->fx0, own->vbuf, own->vbuf_h/3, ray[0],ray[1], mat);
+	if(ret >= 0){
+		say("hit:%d\n",ret);
+		act->data3 = 4*6*3*ret;
+	}
+}
+
+
+
+
+static void stl3d_ctxforgl41(struct privdata* own, char* vs, char* fs)
 {
 	float* tmp;
 	struct glsrc* src = &own->gl41.src;
@@ -178,6 +257,34 @@ static void stl3d_draw_pixel(
 	}
 */
 }
+void stl3d_draw_theone(struct entity* wnd, struct entity* act, float* v, mat4 mat, int cx, int cy, int dx, int dy)
+{
+	int x0,y0, x1,y1, x2,y2;
+	vec3 t0,t1,t2;
+	t0[0] = act->fx0 + v[3]*100.0;
+	t0[1] = act->fy0 + v[4]*100.0;
+	t0[2] = act->fz0 + v[5]*100.0;
+	std3d_position(t1, mat, t0);
+	x1 = cx + dx*t1[0];
+	y1 = cy - dy*t1[1];
+	std3d_position(t0, mat, &act->fx0);
+	x0 = cx + dx*t0[0];
+	y0 = cy - dy*t0[1];
+	drawline(wnd, 0xffffff, x0,y0, x1,y1);
+
+
+	std3d_position(t0, mat, v);
+	x0 = cx + dx*t0[0];
+	y0 = cy - dy*t0[1];
+	std3d_position(t1, mat, &v[6]);
+	x1 = cx + dx*t1[0];
+	y1 = cy - dy*t1[1];
+	std3d_position(t2, mat, &v[12]);
+	x2 = cx + dx*t2[0];
+	y2 = cy - dy*t2[1];
+	drawline_triangle(wnd, 0x00ffff, x0,y0, x1,y1, x2,y2);
+	drawsolid_triangle(wnd, 0xffff00, x0,y0, x1,y1, x2,y2);
+}
 static void stl3d_draw_raster(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -195,19 +302,15 @@ static void stl3d_draw_raster(
 //printmat4(world_from_local);
 //printmat4(clip_from_world);
 //printmat4(m);
-	int cx = wnd->width * area->fs.vc[0];
-	int cy = wnd->height* area->fs.vc[1];
-	int dx = wnd->width * area->fs.vq[0];
-	int dy = wnd->height* area->fs.vq[1];
-	cx = (cx+dx)/2;
-	cy = (cy+dy)/2;
-	dx = dx/2;
-	dy = dy/2;
+	int dx = wnd->width * area->fs.vq[0] / 2;
+	int dy = wnd->height* area->fs.vq[1] / 2;
+	int cx = wnd->width * area->fs.vc[0] + dx;
+	int cy = wnd->height* area->fs.vc[1] + dy;
 	//say("%d,%d,%d,%d\n", cx,cy, dx,dy);
 
 	float* v;
 	vec4 t0,t1,t2;
-	int x0,y0, x1,y1, x2,y2, j;
+	int x0,y0, x1,y1, x2,y2, j,rgb;
 	for(j=0;j<own->vbuf_h/3;j++){
 		v = own->vbuf + 4*6*3*j;
 		std3d_position(t0, m, v);
@@ -225,34 +328,63 @@ static void stl3d_draw_raster(
 		y2 = cy - dy*t2[1];
 
 		//say("%d,%d, %d,%d, %d,%d\n", x0,y0, x1,y1, x2,y2);
-		drawline_triangle(wnd, 0xffffff, x0,y0, x1,y1, x2,y2);
+		rgb = stl3d_normal2rgb(&v[3]);
+		drawsolid_triangle(wnd, rgb, x0,y0, x1,y1, x2,y2);
 	}
 
+	stl3d_draw_theone(wnd,act, own->vbuf + act->data3,m, cx,cy, dx,dy);
+}
+static void stl3d_draw_raytrace(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* wnd, struct style* area,
+	mat4 clip_from_world)
+{
+	int w = wnd->width;
+	int h = wnd->height;
+	int dx = w * area->fs.vq[0];
+	int dy = h * area->fs.vq[1];
+	int x0 = w * area->fs.vc[0];
+	int y0 = h * area->fs.vc[1];
+	int xn = x0+dx;
+	int yn = y0+dy;
+	//say("%d,%d,%d,%d\n", x0,y0, xn,yn);
 
-	v = own->vbuf + act->data3;
-	t0[0] = act->fx0 + v[3]*100.0;
-	t0[1] = act->fy0 + v[4]*100.0;
-	t0[2] = act->fz0 + v[5]*100.0;
-	std3d_position(t1, m, t0);
-	x1 = cx + dx*t1[0];
-	y1 = cy - dy*t1[1];
-	std3d_position(t0, m, &act->fx0);
-	x0 = cx + dx*t0[0];
-	y0 = cy - dy*t0[1];
-	drawline(wnd, 0xffffff, x0,y0, x1,y1);
+	struct privdata* own = act->CTXBUF;
+	if(0 == own)return;
 
+	mat4 mat,inv;
+	world2local(mat, own->worldgeom, own->localgeom);
+	invproj(inv, &camg->frus);
 
-	std3d_position(t0, m, v);
-	x0 = cx + dx*t0[0];
-	y0 = cy - dy*t0[1];
-	std3d_position(t1, m, &v[6]);
-	x1 = cx + dx*t1[0];
-	y1 = cy - dy*t1[1];
-	std3d_position(t2, m, &v[12]);
-	x2 = cx + dx*t2[0];
-	y2 = cy - dy*t2[1];
-	drawline_triangle(wnd, 0x00ffff, x0,y0, x1,y1, x2,y2);
-	drawsolid_triangle(wnd, 0xffff00, x0,y0, x1,y1, x2,y2);
+	void* rgba = wnd->rgbabuf;
+	int stride = wnd->fbwidth;
+
+	int x,y,j,ret;
+	vec4 ro,rd, vv,oo;
+	for(j=0;j<3;j++)ro[j] = camg->frus.vc[j];
+	for(y=y0;y<yn;y++){
+		for(x=y0;x<xn;x++){
+			vv[0] = 2.0*(x     - x0) / dx - 1.0;
+			vv[1] = 2.0*(h-1-y - y0) / dy - 1.0;
+			vv[2] = 0.5;
+			//say("%f,%f,%f\n",v[0],v[1],v[2]);
+
+			std3d_position(rd, inv, vv);
+			for(j=0;j<3;j++)rd[j] -= ro[j];
+
+			ret = stl3d_intersect_world(oo, own->vbuf, own->vbuf_h/3, ro,rd, mat);
+			if(ret <= 0)continue;
+
+			*(u32*)(rgba + y*stride + x*4) = stl3d_normal2rgb(own->vbuf + 4*(18*ret+3));
+		}
+	}
+
+	mat4 m,world_from_local;
+	local2world(world_from_local, &part->fs, &geom->fs);
+	mat4_multiplyfrom(m, clip_from_world, world_from_local);
+	stl3d_draw_theone(wnd, act, own->vbuf + act->data3, m, (x0+xn)/2, (y0+yn)/2, dx/2, dy/2);
 }
 
 
@@ -283,96 +415,6 @@ static void stl3d_draw_cli(
 
 
 
-static void stl3d_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
-	struct event* ev, int len)
-{
-	int j,ret;
-	u64 type = ev->what;
-	u64 key = ev->why;
-
-	if(0x2d70 == type)
-	{
-		int x = key&0xffff;
-		int y = (key>>16)&0xffff;
-	}
-	else if(_drag_ == type)
-	{
-/*		char buffer[0x1000];
-		ret = windowread(type, buffer);
-		say("%s", buffer);
-
-		for(j=0;j<ret;j++)
-		{
-			if(buffer[j] < 0x20)
-			{
-				buffer[j] = 0;
-				break;
-			}
-		}*/
-	}
-}
-void stl3d_modify_matter(struct entity* act, int* src, int len)
-{
-	int j;
-	struct privdata* own = act->CTXBUF;
-	float* f = own->matter;
-	f[0] = src[0]*0.01;
-	f[1] = src[1]*0.01;
-	f[2] = src[2]*0.01;
-	say("%f,%f,%f\n",f[0],f[1],f[2]);
-}
-void stl3d_modify_ray(struct entity* act, vec3 ray[])
-{
-	float* ro = ray[0];
-	float* rd = ray[1];
-	say("world ray: %f,%f,%f -> %f,%f,%f\n",ro[0],ro[1],ro[2], rd[0],rd[1],rd[2]);
-
-	struct privdata* own = act->CTXBUF;
-	if(0 == own)return;
-
-	int j;
-	mat4 mat;
-	vec3 r[2];
-	world2local(mat, own->worldgeom, own->localgeom);
-	for(j=0;j<3;j++)r[0][j] = ro[j]+rd[j];
-	std3d_position(r[1], mat, r[0]);
-	std3d_position(r[0], mat, ro);
-	for(j=0;j<3;j++)r[1][j]-= r[0][j];
-	say("local ray: %f,%f,%f -> %f,%f,%f\n",r[0][0],r[0][1],r[0][2], r[1][0],r[1][1],r[1][2]);
-/*
-mat4_transpose(mat);
-mat4_multiply(mat,own->objmat);
-printmat4(own->objmat);
-printmat4(mat);
-*/
-	int ret;
-	float* f;
-	float* out = &act->fx0;
-	float* tmp = &act->fxn;
-	out[3] = 1000000000.0;
-	for(j=0;j<own->vbuf_h/3;j++){
-		f = own->vbuf + 4*6*3*j;
-		ret = ray_trigon(tmp, r[0],r[1], f, &f[6], &f[12]);
-		if(ret <= 0)continue;
-
-		tmp[3] = (tmp[0]-r[0][0])*(tmp[0]-r[0][0]) + (tmp[1]-r[0][1])*(tmp[1]-r[0][1]) + (tmp[2]-r[0][2])*(tmp[2]-r[0][2]);
-		//say("%d=(%f,%f,%f),(%f,%f,%f),(%f,%f,%f)\n", j,f[0],f[1],f[2], f[6],f[7],f[8], f[12],f[13],f[14]);
-		say("%d@(%f,%f,%f),%f\n", j,tmp[0],tmp[1],tmp[2],tmp[3]);
-		if(out[3] > tmp[3]){
-			out[0] = tmp[0];
-			out[1] = tmp[1];
-			out[2] = tmp[2];
-			out[3] = tmp[3];
-			act->data3 = 4*6*3*j;
-		}
-	}
-}
-
-
-
-
 //[-6,-5]: wnd -> cam
 //[-4,-3]: cam -> world
 //[-2,-1]: world -> stl3d
@@ -389,7 +431,8 @@ static void stl3d_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
 	if(_rgba_ == wnd->fmt){
-		stl3d_draw_raster(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
+		//stl3d_draw_raster(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
+		stl3d_draw_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
 		return;
 	}
 
@@ -473,8 +516,10 @@ static void stl3d_create(struct entity* act, void* str, int argc, u8** argv)
 
 	struct privdata* own = act->CTXBUF = memorycreate(0x1000, 0);
 	if(0 == own)return;
+
 	stl3d_readdata(own, str);
-	stl3d_ctxforwnd(own, vs, fs);
+	stl3d_ctxforgl41(own, vs, fs);
+	//stl3d_ctxfordx11(own, vs, fs);
 }
 
 
