@@ -5,6 +5,7 @@ url:datafile/stl/bunny-lowpoly.stl
 }
 freecam{
 fmt:freecam
+render:0
 }
 dbgcam{
 fmt:freecam

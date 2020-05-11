@@ -15,6 +15,7 @@ void mat4_transposefrom(mat4, mat4);
 void mat4_multiplyfrom(mat4, mat4, mat4);
 //
 int ray_trigon(vec3 out, vec3 ro, vec3 rd, vec3 t0, vec3 t1, vec3 t2);
+int rastersolid_triangle(void*,void*, void*,void*, float*,int, mat4);
 
 
 
@@ -257,29 +258,35 @@ static void stl3d_draw_pixel(
 	}
 */
 }
-void stl3d_draw_theone(struct entity* wnd, struct entity* act, float* v, mat4 mat, int cx, int cy, int dx, int dy)
+void stl3d_draw_theone(struct entity* wnd, struct style* area, float* point, float* primi, mat4 mat)
 {
+	int dx = wnd->width * area->fs.vq[0] / 2;
+	int dy = wnd->height* area->fs.vq[1] / 2;
+	int cx = wnd->width * area->fs.vc[0] + dx;
+	int cy = wnd->height* area->fs.vc[1] + dy;
+	//say("%d,%d,%d,%d\n", cx,cy, dx,dy);
+
 	int x0,y0, x1,y1, x2,y2;
 	vec3 t0,t1,t2;
-	t0[0] = act->fx0 + v[3]*100.0;
-	t0[1] = act->fy0 + v[4]*100.0;
-	t0[2] = act->fz0 + v[5]*100.0;
+	t0[0] = point[0] + primi[3]*100.0;
+	t0[1] = point[1] + primi[4]*100.0;
+	t0[2] = point[2] + primi[5]*100.0;
 	std3d_position(t1, mat, t0);
 	x1 = cx + dx*t1[0];
 	y1 = cy - dy*t1[1];
-	std3d_position(t0, mat, &act->fx0);
+	std3d_position(t0, mat, point);
 	x0 = cx + dx*t0[0];
 	y0 = cy - dy*t0[1];
 	drawline(wnd, 0xffffff, x0,y0, x1,y1);
 
 
-	std3d_position(t0, mat, v);
+	std3d_position(t0, mat, primi);
 	x0 = cx + dx*t0[0];
 	y0 = cy - dy*t0[1];
-	std3d_position(t1, mat, &v[6]);
+	std3d_position(t1, mat, &primi[6]);
 	x1 = cx + dx*t1[0];
 	y1 = cy - dy*t1[1];
-	std3d_position(t2, mat, &v[12]);
+	std3d_position(t2, mat, &primi[12]);
 	x2 = cx + dx*t2[0];
 	y2 = cy - dy*t2[1];
 	drawline_triangle(wnd, 0x00ffff, x0,y0, x1,y1, x2,y2);
@@ -299,40 +306,9 @@ static void stl3d_draw_raster(
 	mat4 m,world_from_local;
 	local2world(world_from_local, &part->fs, &geom->fs);
 	mat4_multiplyfrom(m, clip_from_world, world_from_local);
-//printmat4(world_from_local);
-//printmat4(clip_from_world);
-//printmat4(m);
-	int dx = wnd->width * area->fs.vq[0] / 2;
-	int dy = wnd->height* area->fs.vq[1] / 2;
-	int cx = wnd->width * area->fs.vc[0] + dx;
-	int cy = wnd->height* area->fs.vc[1] + dy;
-	//say("%d,%d,%d,%d\n", cx,cy, dx,dy);
 
-	float* v;
-	vec4 t0,t1,t2;
-	int x0,y0, x1,y1, x2,y2, j,rgb;
-	for(j=0;j<own->vbuf_h/3;j++){
-		v = own->vbuf + 4*6*3*j;
-		std3d_position(t0, m, v);
-		x0 = cx + dx*t0[0];
-		y0 = cy - dy*t0[1];
-
-		v = &v[6];
-		std3d_position(t1, m, v);
-		x1 = cx + dx*t1[0];
-		y1 = cy - dy*t1[1];
-
-		v = &v[6];
-		std3d_position(t2, m, v);
-		x2 = cx + dx*t2[0];
-		y2 = cy - dy*t2[1];
-
-		//say("%d,%d, %d,%d, %d,%d\n", x0,y0, x1,y1, x2,y2);
-		rgb = stl3d_normal2rgb(&v[3]);
-		drawsolid_triangle(wnd, rgb, x0,y0, x1,y1, x2,y2);
-	}
-
-	stl3d_draw_theone(wnd,act, own->vbuf + act->data3,m, cx,cy, dx,dy);
+	rastersolid_triangle(wnd, area, std3d_position, stl3d_fragment, own->vbuf, own->vbuf_h/3, m);
+	stl3d_draw_theone(wnd,area, &act->fx0,own->vbuf + act->data3, m);
 }
 static void stl3d_draw_raytrace(
 	struct entity* act, struct style* part,
@@ -384,7 +360,8 @@ static void stl3d_draw_raytrace(
 	mat4 m,world_from_local;
 	local2world(world_from_local, &part->fs, &geom->fs);
 	mat4_multiplyfrom(m, clip_from_world, world_from_local);
-	stl3d_draw_theone(wnd, act, own->vbuf + act->data3, m, (x0+xn)/2, (y0+yn)/2, dx/2, dy/2);
+
+	stl3d_draw_theone(wnd,area, &act->fx0,own->vbuf + act->data3, m);
 }
 
 
@@ -431,8 +408,8 @@ static void stl3d_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
 	if(_rgba_ == wnd->fmt){
-		//stl3d_draw_raster(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
-		stl3d_draw_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
+		if(0==key)stl3d_draw_raster(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
+		else stl3d_draw_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
 		return;
 	}
 

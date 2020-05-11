@@ -27,6 +27,7 @@ forcpu/rgba/draw/draw.shape.c \
 forcpu/rgba/draw/draw.ascii.c \
 forcpu/rgba/draw/draw.utf8.c \
 forcpu/rgba/draw/draw.vt100.c \
+forcpu/rgba/raster/raster.c \
 forcpu/rgba/rgba.c \
 forcpu/yuv/yuv.c \
 forcpu/tui/tui.c \

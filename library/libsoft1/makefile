@@ -138,6 +138,7 @@ libmath/libmath.notation.c \
 libmath/libmath.prime.c \
 libmath/libmath.quaternion.c \
 libmath/libmath.vector.c \
+libmath/libmath.triangle.c \
 libflow/0.phy/phy.bt.c \
 libflow/0.phy/phy.eth.c \
 libflow/0.phy/phy.raw.c \

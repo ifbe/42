@@ -1,7 +1,14 @@
 #include "libuser.h"
 #define OWNBUF buf0
-#define EVTYPE vfmt
-#define EVSEND 666666
+//
+#define EVTOTYPE data2
+#define MOVE 0
+#define FRUS 1
+#define DELIVER 666666
+//
+#define DRAWTYPE data3
+#define RASTER 0
+#define RAYTRACE 1
 void matproj(mat4 mat, struct fstyle* sty);
 void frustum2viewandclip_transpose(struct fstyle* frus, mat4 v_, mat4 vp);
 //
@@ -65,12 +72,15 @@ static void freecam_create(struct entity* act, void* arg, int argc, u8** argv)
     say("@freecam_create\n");
 
 	//script
-	act->EVTYPE = 0;
+	act->EVTOTYPE = 0;
+	act->DRAWTYPE = getrandom()&1;
 	for(j=0;j<argc;j++){
+		if(0 == ncmp(argv[j], "render:", 7)){
+			if('0' == argv[j][7])act->DRAWTYPE = 0;
+			if('1' == argv[j][7])act->DRAWTYPE = 1;
+		}
 		if(0 == ncmp(argv[j], "script:", 7)){
-			if('f' == argv[j][7]){
-				act->EVTYPE = 'f';	//frus
-			}
+			if('f' == argv[j][7])act->EVTOTYPE = 'f';
 		}
 	}
 
@@ -425,7 +435,7 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		matproj(m, &geom->frus);
 		//printmat4(m);
 
-		entityread(stack[sp+1].pchip, 0, stack, sp+2, m, 0, 0, 0);
+		entityread(stack[sp+1].pchip, 0, stack, sp+2, m, ent->DRAWTYPE, 0, 0);
 		return 0;
 	}
 
@@ -457,9 +467,9 @@ static int freecam_write_bywnd(_ent* ent,struct event* ev)
 
 	struct entity* wor = rel->pchip;
 	struct style* geom = rel->pfoot;
-	switch(ent->EVTYPE){
+	switch(ent->EVTOTYPE){
 	case 'f':return freecam_event_frus(ent,0, wor,geom, ev,0);break;
-	case 0:return freecam_event_obb(ent,0, wor,geom, ev,0);break;
+	default:return freecam_event_obb(ent,0, wor,geom, ev,0);break;
 	}
 	return 0;
 }
@@ -483,8 +493,15 @@ static int freecam_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 }
 static int freecam_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(EVSEND != ent->EVTYPE)freecam_write_bywnd(ent, buf);
-	else relationwrite(ent,_evto_, stack,sp, arg,key, buf,len);
+	struct event* ev = buf;
+	if(DELIVER == ent->EVTOTYPE){
+		//say("%.8s\n",&ev->what);
+		if(_char_ != ev->what){
+			relationwrite(ent,_evto_, stack,sp, arg,key, buf,len);
+			return 0;
+		}
+	}
+	freecam_write_bywnd(ent, buf);
 	return 0;
 }
 static void freecam_discon(struct halfrel* self, struct halfrel* peer)
@@ -496,7 +513,7 @@ static void freecam_linkup(struct halfrel* self, struct halfrel* peer)
 
 	struct entity* this = self->pchip;
 	if(_evto_ == self->flag){
-		this->EVTYPE = EVSEND;
+		this->EVTOTYPE = DELIVER;
 		return;
 	}
 

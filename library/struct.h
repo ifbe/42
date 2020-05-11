@@ -924,10 +924,11 @@ struct supply
 		struct gl41data* glsolid;
 		struct gl41data** gl_solid;
 		void* htmlctx;	//html
-		void* rgbaalloc;
 		int jsonlen;	//json
-		int rgbalen;	//rgba
 		int textlen;	//text
+		int rgbalen;	//rgba
+		void* rgbaalloc;
+		void* depthbuf;
 	};
 	union{
 		u64 data3;
@@ -938,8 +939,9 @@ struct supply
 		struct gl41data** gl_opaque;
 		void* htmlbuf;	//html
 		void* jsonbuf;	//json
-		void* rgbabuf;	//rgba
 		void* textbuf;	//text
+		void* rgbabuf;	//rgba
+		void* colorbuf;
 	};
 
 	//[80,bf]: func
@@ -1099,8 +1101,9 @@ struct entity
 		void** gl_solid;
 		void* htmlctx;	//html
 		int jsonlen;	//json
-		int rgbalen;	//rgba
 		int textlen;	//text
+		int rgbalen;	//rgba
+		void* depthbuf;
 	};
 	union{
 		u64 data3;
@@ -1111,8 +1114,9 @@ struct entity
 		void** gl_opaque;
 		void* htmlbuf;	//html
 		void* jsonbuf;	//json
-		void* rgbabuf;	//rgba
 		void* textbuf;	//text
+		void* rgbabuf;	//rgba
+		void* colorbuf;
 	};
 
 	//[80,bf]: func

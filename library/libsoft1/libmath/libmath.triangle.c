@@ -123,3 +123,17 @@ void triangle_circumcircle(		//外接圆
 	*y = (t3*x2 + t2*x1 + t1*x3 - t1*x2 - t2*x3 - t3*x1)/temp/2;
 	*r = squareroot( (x[0]-x1)*(x[0]-x1) + (y[0]-y1)*(y[0]-y1) );
 }
+
+
+
+
+void barycentric(float* o, float* p, float* a, float* b, float* c)
+{
+	o[0] = (b[1]-c[1])*p[0] + (c[0]-b[0])*p[1] + (b[0]*c[1] - c[0]*b[1]);
+	o[0]/= (b[1]-c[1])*a[0] + (c[0]-b[0])*a[1] + (b[0]*c[1] - c[0]*b[1]);
+
+	o[1] = (a[1]-c[1])*p[0] + (c[0]-a[0])*p[1] + (a[0]*c[1] - c[0]*a[1]);
+	o[1]/= (a[1]-c[1])*b[0] + (c[0]-a[0])*b[1] + (a[0]*c[1] - c[0]*a[1]);
+
+	o[2] = 1.0 - o[0] - o[1];
+}
