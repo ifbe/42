@@ -22,6 +22,21 @@ int test_discon(void*, void*);
 int test_read( void*,int, void*,int, void*,int, void*,int);
 int test_write(void*,int, void*,int, void*,int, void*,int);
 
+
+int toycar_create(void*, void*, int, u8**);
+int toycar_delete(void*, void*);
+int toycar_linkup(void*, void*);
+int toycar_discon(void*, void*);
+int toycar_read( void*,int, void*,int, void*,int, void*,int);
+int toycar_write(void*,int, void*,int, void*,int, void*,int);
+int stepcar_create(void*, void*, int, u8**);
+int stepcar_delete(void*, void*);
+int stepcar_linkup(void*, void*);
+int stepcar_discon(void*, void*);
+int stepcar_read( void*,int, void*,int, void*,int, void*,int);
+int stepcar_write(void*,int, void*,int, void*,int, void*,int);
+
+
 //
 int analog_create(void*, void*, int, u8**);
 int analog_delete(void*, void*);
@@ -311,6 +326,9 @@ int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* 
 	case _mmio_:return mmiospace_read(act,foot, stack,sp, arg,key, buf,len);
 	case _port_:return portspace_read(act,foot, stack,sp, arg,key, buf,len);
 
+	case _step_:return stepcar_read(act,foot, stack,sp, arg,key, buf,len);
+	case _bdc_:return toycar_read(act,foot, stack,sp, arg,key, buf,len);
+
 	case _test_:return test_read(act,foot, stack,sp, arg,key, buf,len);
 	case _baby_:return baby_read(act,foot, stack,sp, arg,key, buf,len);
 	}
@@ -351,6 +369,9 @@ int entitywrite(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void*
 	case _xamlroot_:return xamlroot_write(act,foot, stack,sp, arg,key, buf,len);
 	case _mmio_:return mmiospace_write(act,foot, stack,sp, arg,key, buf,len);
 	case _port_:return portspace_write(act,foot, stack,sp, arg,key, buf,len);
+
+	case _step_:return stepcar_write(act,foot, stack,sp, arg,key, buf,len);
+	case _bdc_:return toycar_write(act,foot, stack,sp, arg,key, buf,len);
 
 	case _test_:return test_write(act,foot, stack,sp, arg,key, buf,len);
 	case _baby_:return baby_write(act,foot, stack,sp, arg,key, buf,len);
@@ -399,6 +420,9 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	case _mmio_:return mmiospace_discon(self, peer);
 	case _port_:return portspace_discon(self, peer);
 
+	case _step_:return stepcar_discon(self, peer);
+	case _bdc_:return toycar_discon(self, peer);
+
 	case _test_:return test_discon(self, peer);
 	case _baby_:return baby_discon(self, peer);
 	}
@@ -445,6 +469,9 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 	case _xamlroot_:return xamlroot_linkup(self, peer);
 	case _mmio_:return mmiospace_linkup(self, peer);
 	case _port_:return portspace_linkup(self, peer);
+
+	case _step_:return stepcar_linkup(self, peer);
+	case _bdc_:return toycar_linkup(self, peer);
 
 	case _test_:return test_linkup(self, peer);
 	case _baby_:return baby_linkup(self, peer);
@@ -652,6 +679,21 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	}
 
 //----------------other----------------
+	case _bdc_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _bdc_;
+		toycar_create(act, buf, argc, argv);
+		return act;
+	}
+	case _step_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _step_;
+		stepcar_create(act, buf, argc, argv);
+		return act;
+	}
+
 	case _gl41data_:
 	{
 		act = allocentity();

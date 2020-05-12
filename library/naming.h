@@ -244,7 +244,6 @@
 #define _ahrs_ hex32('a','h','r','s')
 #define _slam_ hex32('s','l','a','m')
 //motor
-#define _car_ hex32('c','a','r',0)
 #define _bdc_ hex32('b','d','c',0)
 #define _step_ hex32('s','t','e','p')
 //sound

@@ -71,23 +71,23 @@ static void stepcar_status(int EN)
 
 
 
-int stepcar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int stepcar_read(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {
-    int j;
-    int ret = 0;
+	int j;
+	int ret = 0;
 
-    for(j=0;j<9;j++){
-        ret += mysnprintf(buf+ret, 256,
-            "%.4s: pin=%d, val=%d<br>\n",
-            &name[j], table[j], expect[j]
-        );
-    }
-    return ret;
+	for(j=0;j<9;j++){
+		ret += mysnprintf(buf+ret, 256,
+		"%.4s: pin=%d, val=%d<br>\n",
+		&name[j], table[j], expect[j]
+		);
+	}
+	return ret;
 }
-int stepcar_write(struct supply* win, struct style* sty, void* sc, void* sf, u8* buf, int len)
+int stepcar_write(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	say("@stepcar_write\n");
-    printmemory(buf, len);
+	printmemory(buf, len);
 
 	switch(buf[0])
 	{
@@ -106,6 +106,12 @@ int stepcar_write(struct supply* win, struct style* sty, void* sc, void* sf, u8*
 	}
 
 	return 0;
+}
+void stepcar_discon(struct halfrel* self, struct halfrel* peer)
+{
+}
+void stepcar_linkup(struct halfrel* self, struct halfrel* peer)
+{
 }
 int stepcar_delete(struct supply* win)
 {

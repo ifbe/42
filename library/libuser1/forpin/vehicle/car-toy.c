@@ -45,27 +45,27 @@ static void toycar_update(int L, int R, int el, int er)
 
 
 
-int toycar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int toycar_read(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {
     int j;
     int ret = mysnprintf(buf, 256,
-        "<html><body>"
-        "<form method=\"post\">"
-        "<input type=\"text\" name=\"fuck\">"
-        "</form>"
+	"<html><body>"
+	"<form method=\"post\">"
+	"<input type=\"text\" name=\"fuck\">"
+	"</form>"
     );
 
     for(j=0;j<12;j++){
-        ret += mysnprintf(buf+ret, 256,
-            "%.4s: pin=%d, val=%d<br>\n",
-            &name[j], table[j], value[j]
-        );
+	ret += mysnprintf(buf+ret, 256,
+	    "%.4s: pin=%d, val=%d<br>\n",
+	    &name[j], table[j], value[j]
+	);
     }
 
     ret += mysnprintf(buf+ret, 256, "</body></html>");
     return ret;
 }
-int toycar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int toycar_write(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {
     say("@toycar_write\n");
     //printmemory(buf, len);
@@ -77,19 +77,25 @@ int toycar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx,
 	case '3':boardwrite(_gpio_, table[10], 0, 1);break;
 	case '4':boardwrite(_gpio_, table[11], 0, 1);break;
 
-        case 'a':toycar_update(1, 0, 1, 1);break;
-        case 'd':toycar_update(0, 1, 1, 1);break;
-        case 'w':toycar_update(1, 1, 1, 1);break;
-        case 's':toycar_update(0, 0, 1, 1);break;
+	case 'a':toycar_update(1, 0, 1, 1);break;
+	case 'd':toycar_update(0, 1, 1, 1);break;
+	case 'w':toycar_update(1, 1, 1, 1);break;
+	case 's':toycar_update(0, 0, 1, 1);break;
 
-        case 'q':toycar_update(1, 1, 0, 1);break;
-        case 'e':toycar_update(1, 1, 1, 0);break;
-        case 'z':toycar_update(0, 0, 0, 1);break;
-        case 'c':toycar_update(0, 0, 1, 0);break;
+	case 'q':toycar_update(1, 1, 0, 1);break;
+	case 'e':toycar_update(1, 1, 1, 0);break;
+	case 'z':toycar_update(0, 0, 0, 1);break;
+	case 'c':toycar_update(0, 0, 1, 0);break;
 
-        default: toycar_update(0, 0, 0, 0);break;
+	default: toycar_update(0, 0, 0, 0);break;
     }
     return 0;
+}
+void toycar_discon(struct halfrel* self, struct halfrel* peer)
+{
+}
+void toycar_linkup(struct halfrel* self, struct halfrel* peer)
+{
 }
 void toycar_delete(struct supply* win)
 {
