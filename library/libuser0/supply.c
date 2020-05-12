@@ -26,16 +26,6 @@ int slam_create(void*, void*, int, u8**);
 int slam_delete(void*);
 int slam_read(void*,int, void*,int, void*,int, void*,int);
 int slam_write(void*,int, void*,int, void*,int, void*,int);
-//
-int toycar_create(void*, void*, int, u8**);
-int toycar_delete(void*);
-int toycar_read(void*,int, void*,int, void*,int, void*,int);
-int toycar_write(void*,int, void*,int, void*,int, void*,int);
-//
-int stepcar_create(void*, void*, int, u8**);
-int stepcar_delete(void*, void*);
-int stepcar_read(void*,int, void*,int, void*,int, void*,int);
-int stepcar_write(void*,int, void*,int, void*,int, void*,int);
 //sound.usbmic
 void initmicphone(void*);
 void freemicphone();
@@ -129,8 +119,6 @@ int supplyread(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* 
 	}
 	switch(sup->fmt){
 		case _cam_:return videoread(sup,foot, stack,sp, arg, idx, buf, len);
-		case _bdc_:return toycar_read(sup,foot, stack,sp, arg, idx, buf, len);
-		case _step_:return stepcar_read(sup,foot, stack,sp, arg, idx, buf, len);
 		case _gl41fboc_:
 		case _gl41fbod_:
 		case _gl41fbog_:
@@ -149,8 +137,6 @@ int supplywrite(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void*
 	switch(sup->fmt){
 		case _ahrs_:return ahrs_write(sup,foot, stack,sp, arg, idx, buf, len);
 		case _slam_:return slam_write(sup,foot, stack,sp, arg, idx, buf, len);
-		case _bdc_:return toycar_write(sup,foot, stack,sp, arg, idx, buf, len);
-		case _step_:return stepcar_write(sup,foot, stack,sp, arg, idx, buf, len);
 		case _gl41fboc_:
 		case _gl41fbod_:
 		case _gl41fbog_:
@@ -223,26 +209,6 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		win->type = _sensor_;
 		win->fmt = _slam_;
 		slam_create(win, arg, argc, argv);
-		return win;
-	}
-	case _bdc_:
-	{
-		win = allocsupply();
-		if(0 == win)return 0;
-
-		win->type = _car_;
-		win->fmt = _bdc_;
-		toycar_create(win, arg, argc, argv);
-		return win;
-	}
-	case _step_:
-	{
-		win = allocsupply();
-		if(0 == win)return 0;
-
-		win->type = _car_;
-		win->fmt = _step_;
-		stepcar_create(win, arg, argc, argv);
 		return win;
 	}
 
