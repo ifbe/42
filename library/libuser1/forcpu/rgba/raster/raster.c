@@ -63,7 +63,7 @@ void raster_trigon(struct supply* wnd, mat4 mat, float* t0, float* t1, float* t2
 //vertshader, fragshader
 //a(xyz),n(xyz), b(xyz),n(xyz), c(xyz),n(xyz)
 //matrix_clip_from_local
-void raster_getndc(vec4 o, vec4 v, mat4 m)
+void raster_vert(vec4 o, vec4 v, mat4 m)
 {
 	float inv;
 	o[3] = (m[3][0]*v[0] + m[3][1]*v[1] + m[3][2]*v[2] + m[3][3]);
@@ -73,20 +73,20 @@ void raster_getndc(vec4 o, vec4 v, mat4 m)
 	o[1] = (m[1][0]*v[0] + m[1][1]*v[1] + m[1][2]*v[2] + m[1][3]) * inv;
 	o[2] = (m[2][0]*v[0] + m[2][1]*v[1] + m[2][2]*v[2] + m[2][3]) * inv;
 }
-static u32 raster_getrgb(vec3 n)
+static u32 raster_frag(vec4 out[], vec4 in[], vec4 uni[])
 {
-	u32 r,g,b;
+	float* n = in[1];
 	float w = 0.5 / vec3_getlen(n);
-	b = (u32)(256*(n[0]*w+0.5));
-	g = (u32)(256*(n[1]*w+0.5));
-	r = (u32)(256*(n[2]*w+0.5));
+	u32 b = (u32)(256*(n[0]*w+0.5));
+	u32 g = (u32)(256*(n[1]*w+0.5));
+	u32 r = (u32)(256*(n[2]*w+0.5));
 	return (r<<16) + (g<<8) + (b);
 }
 void rastersolid_triangle(
 	struct entity* wnd, struct fstyle* rect,
 	void* vs, void* fs,
-	float* vbuf, int tcnt,
-	mat4 mat)
+	float* vbuf, int vfmt, int vw, int vh,
+	mat4 mat, mat4 world_from_local)
 {
 	int stride = wnd->fbwidth>>2;
 	u32* color = wnd->colorbuf;
@@ -106,19 +106,22 @@ void rastersolid_triangle(
 	float* f;
 	float dep;
 	int j, rgb,tmp;
+	//int (*vert)(float*,float*,float*) = vs;
+	u32 (*frag)(vec4 out[], vec4 in[], vec4 uni[]) = fs;
+	if(0==frag)frag = raster_frag;
 
-	vec4 vec[3];
+	vec4 vec[3],out[4],in[4];
 	vec3 uvw,xy,tb,tm,tt;
 	int x,y, lx,rx, left,right;
 	int b,m,t, botx,boty, midx,midy, topx,topy;
 	for(y=0;y<wnd->height;y++){
 		for(x=0;x<wnd->width;x++)depth[y*stride+x] = 1000.0;
 	}
-	for(j=0;j<tcnt;j++){
-		f = &vbuf[6*3*j];
-		raster_getndc(vec[0],      f, mat);
-		raster_getndc(vec[1], &f[ 6], mat);
-		raster_getndc(vec[2], &f[12], mat);
+	for(j=0;j<vh;j++){
+		f = &vbuf[vw*j];
+		raster_vert(vec[0],          f, mat);
+		raster_vert(vec[1], &f[vfmt  ], mat);
+		raster_vert(vec[2], &f[vfmt*2], mat);
 
 		if(vec[0][1] < vec[1][1]){
 			if(vec[1][1] < vec[2][1]){b = 0;m = 1;t = 2;}
@@ -157,7 +160,7 @@ void rastersolid_triangle(
 		//drawline(wnd,rgb, topx,topy, botx,boty);
 		//drawline(wnd,rgb, midx,midy, valx,midy);
 
-		rgb = raster_getrgb(&f[3]);
+		//rgb = raster_frag(&f[3]);
 		//drawsolid_triangle(wnd, rgb, topx,topy, midx,midy, botx,boty);
 
 		//bot half scan line
@@ -171,12 +174,23 @@ void rastersolid_triangle(
 				xy[0] = x;xy[1] = y;
 				barycentric(uvw, xy, tb,tm,tt);
 
-				//1/z = u/bot.z + v/mid.z + w/top.z
+				//depth: 1/z = u/bot.z + v/mid.z + w/top.z
 				dep = 1.0/(uvw[0]/vec[b][2] + uvw[1]/vec[m][2] + uvw[2]/vec[t][2]);
 				if(dep > depth[y*stride+x])continue;
-
 				depth[y*stride+x] = dep;
-				color[y*stride+x] = rgb;
+
+				//color: attr = a0*u/W + a1*v/W + a2*w/W;
+				if(vfmt>3){
+				in[1][0] = f[3]*uvw[0]/vec[b][3] + f[3+vfmt]*uvw[1]/vec[m][3] + f[3+vfmt*2]*uvw[2]/vec[t][3];
+				in[1][1] = f[4]*uvw[0]/vec[b][3] + f[4+vfmt]*uvw[1]/vec[m][3] + f[4+vfmt*2]*uvw[2]/vec[t][3];
+				in[1][2] = f[5]*uvw[0]/vec[b][3] + f[5+vfmt]*uvw[1]/vec[m][3] + f[5+vfmt*2]*uvw[2]/vec[t][3];
+				}
+				if(vfmt>6){
+				in[2][0] = f[6]*uvw[0]/vec[b][3] + f[6+vfmt]*uvw[1]/vec[m][3] + f[6+vfmt*2]*uvw[2]/vec[t][3];
+				in[2][1] = f[7]*uvw[0]/vec[b][3] + f[7+vfmt]*uvw[1]/vec[m][3] + f[7+vfmt*2]*uvw[2]/vec[t][3];
+				in[2][2] = f[8]*uvw[0]/vec[b][3] + f[8+vfmt]*uvw[1]/vec[m][3] + f[8+vfmt*2]*uvw[2]/vec[t][3];
+				}
+				color[y*stride+x] = frag(out, in, 0);
 			}
 		}//for
 		}//if
@@ -192,12 +206,23 @@ void rastersolid_triangle(
 				xy[0] = x;xy[1] = y;
 				barycentric(uvw, xy, tb,tm,tt);
 
-				//1/z = u/bot.z + v/mid.z + w/top.z
+				//depth: 1/z = u/bot.z + v/mid.z + w/top.z
 				dep = 1.0/(uvw[0]/vec[b][2] + uvw[1]/vec[m][2] + uvw[2]/vec[t][2]);
 				if(dep > depth[y*stride+x])continue;
-
 				depth[y*stride+x] = dep;
-				color[y*stride+x] = rgb;
+
+				//color:
+				if(vfmt>3){
+				in[1][0] = f[3]*uvw[0]/vec[b][3] + f[3+vfmt]*uvw[1]/vec[m][3] + f[3+vfmt*2]*uvw[2]/vec[t][3];
+				in[1][1] = f[4]*uvw[0]/vec[b][3] + f[4+vfmt]*uvw[1]/vec[m][3] + f[4+vfmt*2]*uvw[2]/vec[t][3];
+				in[1][2] = f[5]*uvw[0]/vec[b][3] + f[5+vfmt]*uvw[1]/vec[m][3] + f[5+vfmt*2]*uvw[2]/vec[t][3];
+				}
+				if(vfmt>6){
+				in[2][0] = f[6]*uvw[0]/vec[b][3] + f[6+vfmt]*uvw[1]/vec[m][3] + f[6+vfmt*2]*uvw[2]/vec[t][3];
+				in[2][1] = f[7]*uvw[0]/vec[b][3] + f[7+vfmt]*uvw[1]/vec[m][3] + f[7+vfmt*2]*uvw[2]/vec[t][3];
+				in[2][2] = f[8]*uvw[0]/vec[b][3] + f[8+vfmt]*uvw[1]/vec[m][3] + f[8+vfmt*2]*uvw[2]/vec[t][3];
+				}
+				color[y*stride+x] = frag(out, in, 0);
 			}
 		}//for
 		}//if

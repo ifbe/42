@@ -15,7 +15,7 @@ void mat4_transposefrom(mat4, mat4);
 void mat4_multiplyfrom(mat4, mat4, mat4);
 //
 int ray_trigon(vec3 out, vec3 ro, vec3 rd, vec3 t0, vec3 t1, vec3 t2);
-int rastersolid_triangle(void*,void*, void*,void*, float*,int, mat4);
+int rastersolid_triangle(void*,void*, void*,void*, float*,int,int,int, mat4,mat4);
 
 
 
@@ -55,8 +55,14 @@ static void std3d_position(vec3 o, mat4 m, vec3 v)
 	o[1] = f * (m[1][0]*v[0] + m[1][1]*v[1] + m[1][2]*v[2] + m[1][3]);
 	o[2] = f * (m[2][0]*v[0] + m[2][1]*v[1] + m[2][2]*v[2] + m[2][3]);
 }
-static void stl3d_fragment(vec3 c, vec3 v, vec3 n, vec3 l)
+static u32 stl3d_fragment(vec4 out[], vec4 in[], vec4 uni[])
 {
+	float* n = in[1];
+	float w = 0.5 / vec3_getlen(n);
+	u32 b = (u32)(256*(n[0]*w+0.5));
+	u32 g = (u32)(256*(n[1]*w+0.5));
+	u32 r = (u32)(256*(n[2]*w+0.5));
+	return (r<<16) + (g<<8) + (b);
 }
 static void stl3d_readdata(struct privdata* own, char* str)
 {
@@ -307,7 +313,10 @@ static void stl3d_draw_raster(
 	local2world(world_from_local, &part->fs, &geom->fs);
 	mat4_multiplyfrom(m, clip_from_world, world_from_local);
 
-	rastersolid_triangle(wnd, area, std3d_position, stl3d_fragment, own->vbuf, own->vbuf_h/3, m);
+	rastersolid_triangle(
+		wnd, area, std3d_position, stl3d_fragment,
+		own->vbuf, 6, 6*3, own->vbuf_h/3,
+		m, world_from_local);
 	stl3d_draw_theone(wnd,area, &act->fx0,own->vbuf + act->data3, m);
 }
 static void stl3d_draw_raytrace(

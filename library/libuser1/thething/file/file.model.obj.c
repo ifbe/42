@@ -1,9 +1,16 @@
 #include "libuser.h"
 #define OWNBUF buf0
 int copypath(u8* path, u8* data);
-void local2world_transpose(mat4 mat, struct fstyle* src, struct fstyle* dst);
 void parsevertfromobj(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+//
+void world2local(mat4 mat, struct fstyle* src, struct fstyle* dst);
+void local2world(mat4 mat, struct fstyle* src, struct fstyle* dst);
+void local2world_transpose(mat4 mat, struct fstyle* src, struct fstyle* dst);
+void mat4_transposefrom(mat4, mat4);
+void mat4_multiplyfrom(mat4, mat4, mat4);
+//
+int rastersolid_triangle(void*,void*, void*,void*, float*,int,int,int, mat4,mat4);
 
 
 struct privdata{
@@ -19,6 +26,21 @@ struct privdata{
 	mat4 objmat;
 	struct gl41data gl41;
 };
+static void obj3d_position(vec3 o, mat4 m, vec3 v)
+{
+}
+static u32 obj3d_fragment(vec4 out[], vec4 in[], vec4 uni[])
+{
+	//float* v = in[0];		//in vec3 v
+	//float* n = in[1];		//in vec3 n
+	float* t = in[2];		//in vec3 t
+
+	float w = 1.0 / vec3_getlen(t);
+	u32 b = (u32)(256*(t[0]*w));
+	u32 g = (u32)(256*(t[1]*w));
+	u32 r = (u32)(256*(t[2]*w));
+	return (r<<16) + (g<<8) + (b);
+}
 
 
 static void obj3d_ctxforgl41(struct glsrc* src, char* albedo, char* matter, char* vs, char* fs)
@@ -136,6 +158,37 @@ static void obj3d_draw_pixel(
 	}
 */
 }
+static void obj3d_draw_raster(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* wnd, struct style* area,
+	mat4 clip_from_world)
+{
+	struct privdata* own = act->OWNBUF;
+	if(0 == own)return;
+
+	mat4 m,world_from_local;
+	local2world(world_from_local, &part->fs, &geom->fs);
+	mat4_multiplyfrom(m, clip_from_world, world_from_local);
+
+	rastersolid_triangle(
+		wnd, area, obj3d_position, obj3d_fragment,
+		own->gl41.src.vbuf, 9, 9*3, own->gl41.src.vbuf_h/3,
+		m,world_from_local);
+}
+static void obj3d_draw_raytrace(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* wnd, struct style* area,
+	mat4 clip_from_world)
+{
+}
+
+
+
+
 static void obj3d_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -180,20 +233,31 @@ static void obj3d_event(
 
 
 
-static void obj3d_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void obj3d_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
 	struct entity* wrd;struct style* camg;
 	struct entity* wnd;struct style* area;
 
+	slot = stack[sp-1].pfoot;
+	scn = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wrd = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+
+	if(_rgba_ == wnd->fmt){
+		if(0==key)obj3d_draw_raster(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
+		else obj3d_draw_raytrace(ent,slot, scn,geom, wrd,camg, wnd,area, arg);
+		return;
+	}
+
 	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		scn = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wrd = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 		obj3d_draw_gl41(ent,slot, scn,geom, wrd,camg, wnd,area);
 	}
+}
+static void obj3d_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	obj3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
 static void obj3d_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
@@ -237,43 +301,7 @@ static void obj3d_delete(struct entity* act)
 	if(0 == act)return;
 }
 static void obj3d_create(struct entity* act, void* arg, int argc, u8** argv)
-{/*
-	int j;
-	struct str* tmp;
-	u8 vspath[128];
-	u8 fspath[128];
-	u8 texpath[128];
-	char* vs = 0;
-	char* fs = 0;
-	char* tex = 0;
-	if(0 == act)return;
-
-	for(j=0;j<argc;j++){
-		if(0 == ncmp(argv[j], "vs:", 3)){
-			copypath(vspath, argv[j]+3);
-			vs = (void*)vspath;
-		}
-		if(0 == ncmp(argv[j], "fs:", 3)){
-			copypath(fspath, argv[j]+3);
-			fs = (void*)fspath;
-		}
-		if(0 == ncmp(argv[j], "tex:", 4)){
-			copypath(texpath, argv[j]+4);
-			tex = (void*)texpath;
-		}
-	}
-	if(0 == vs)vs = "datafile/shader/model/fv.glsl";
-	if(0 == fs)fs = "datafile/shader/model/ff.glsl";
-	if(0 == tex)tex = "datafile/jpg/cartoon.jpg";
-
-	act->CTXBUF = memorycreate(0x200, 0);
-	if(act->CTXBUF)obj3d_ctxforwnd(act->CTXBUF, tex, vs, fs);
-
-	if(0 == arg)arg = "datafile/obj/cube.obj";
-	tmp = act->OBJBUF = memorycreate(0x10000, 0);
-	tmp->len = 0x1000;
-	openreadclose(arg, 0, tmp->buf, tmp->len);*/
-
+{
 	int j;
 	if(0 == act)return;
 

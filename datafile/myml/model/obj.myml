@@ -1,0 +1,105 @@
+<entity>
+rabbit{
+fmt:obj3d
+}
+freecam{
+fmt:freecam
+render:0
+}
+dbgcam{
+fmt:freecam
+}
+virtual{
+fmt:virtual
+}
+
+event{
+fmt:clickray
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+joy{
+fmt:joy
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<style>
+rabhaha{
+}
+rabgeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+freemodl{
+}
+freegeom{
+c: 0.0, -2000.0, 2000.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 707.0,-707.0
+t: 0.0, 707.0, 707.0
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+dbgmodl{
+}
+dbggeom{
+c: 0.0, 0.0, 2000.0
+r: 1000.0, 0.0, 0.0
+t: 0.0, 1000.0, 0.0
+f: 0.0, 0.0,-1000.0
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+dbgrect{
+c:0.0, 0.0
+q:0.33, 0.33
+}
+</style>
+
+
+<relation>
+#virtual
+(virtual, rabgeom, 0) -> (rabbit, rabhaha, geom)
+(virtual, freegeom, 0) -> (freecam, freemodl, geom)
+(virtual, dbggeom, 0) -> (dbgcam, dbgmodl, geom)
+(opengl, freerect, 0) -> (freecam, 0, a)
+#(opengl, dbgrect, 0) -> (dbgcam, 0, a)
+
+#click
+(event, 0, cam) -> (freecam, 0, evto)
+(event, 0, tar) -> (virtual, 0, ray)
+</relation>
