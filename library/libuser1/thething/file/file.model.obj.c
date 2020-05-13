@@ -10,7 +10,7 @@ void local2world_transpose(mat4 mat, struct fstyle* src, struct fstyle* dst);
 void mat4_transposefrom(mat4, mat4);
 void mat4_multiplyfrom(mat4, mat4, mat4);
 //
-int rastersolid_triangle(void*,void*, void*,void*, float*,int,int,int, mat4,mat4);
+int rastersolid_triangle(void*,void*, void*,void*, float*,int,int,int, mat4,void*);
 
 
 struct privdata{
@@ -26,20 +26,54 @@ struct privdata{
 	mat4 objmat;
 	struct gl41data gl41;
 };
-static void obj3d_position(vec3 o, mat4 m, vec3 v)
+static void obj3d_position(vec4 olist[], vec3 ilist[], mat4 m)
 {
+	float* oo = olist[0];
+	float* ov = olist[1];
+	float* on = olist[2];
+	float* ot = olist[3];
+	float* iv = ilist[0];
+	float* in = ilist[1];
+	float* it = ilist[2];
+
+	ov[0] = iv[0];ov[1] = iv[1];ov[2] = iv[2];
+	on[0] = in[0];on[1] = in[1];on[2] = in[2];
+	ot[0] = it[0];ot[1] = it[1];ot[2] = it[2];
+
+	//gl_Position = m*v
+	oo[0] = m[0][0]*iv[0] + m[0][1]*iv[1] + m[0][2]*iv[2] + m[0][3];
+	oo[1] = m[1][0]*iv[0] + m[1][1]*iv[1] + m[1][2]*iv[2] + m[1][3];
+	oo[2] = m[2][0]*iv[0] + m[2][1]*iv[1] + m[2][2]*iv[2] + m[2][3];
+	oo[3] = m[3][0]*iv[0] + m[3][1]*iv[1] + m[3][2]*iv[2] + m[3][3];
 }
-static u32 obj3d_fragment(vec4 out[], vec4 in[], vec4 uni[])
+static u32 obj3d_fragment(vec4 out[], vec4 in[], struct privdata* own)
 {
 	//float* v = in[0];		//in vec3 v
 	//float* n = in[1];		//in vec3 n
 	float* t = in[2];		//in vec3 t
-
-	float w = 1.0 / vec3_getlen(t);
+	//say("%f,%f,%f\n",t[0],t[1],t[2]);
+/*
+	float w = 1.0;
 	u32 b = (u32)(256*(t[0]*w));
 	u32 g = (u32)(256*(t[1]*w));
 	u32 r = (u32)(256*(t[2]*w));
-	return (r<<16) + (g<<8) + (b);
+	return (r<<16) + (g<<8) + (b);*/
+	struct glsrc* src = &own->gl41.src;
+	u32* tex = src->tex[0].data;
+	int w = src->tex[0].w;
+	int h = src->tex[0].h;
+	int x = w*t[0];
+	int y = h*t[1];
+	if(x < 0)x = 0;
+	if(x > w-1)x = w-1;
+	if(y < 0)y = 0;
+	if(y > h-1)y = h-1;
+
+	u32 rgba = tex[y*w+x];
+	u32 r = rgba&0xff;
+	u32 b = (rgba>>16)&0xff;
+	rgba &= 0xff00ff00;
+	return rgba|(r<<16)|b;
 }
 
 
@@ -175,7 +209,7 @@ static void obj3d_draw_raster(
 	rastersolid_triangle(
 		wnd, area, obj3d_position, obj3d_fragment,
 		own->gl41.src.vbuf, 9, 9*3, own->gl41.src.vbuf_h/3,
-		m,world_from_local);
+		m, own);
 }
 static void obj3d_draw_raytrace(
 	struct entity* act, struct style* part,

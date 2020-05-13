@@ -15,7 +15,7 @@ void mat4_transposefrom(mat4, mat4);
 void mat4_multiplyfrom(mat4, mat4, mat4);
 //
 int ray_trigon(vec3 out, vec3 ro, vec3 rd, vec3 t0, vec3 t1, vec3 t2);
-int rastersolid_triangle(void*,void*, void*,void*, float*,int,int,int, mat4,mat4);
+int rastersolid_triangle(void*,void*, void*,void*, float*,int,int,int, mat4,void*);
 
 
 
@@ -47,13 +47,31 @@ static u32 stl3d_normal2rgb(vec3 n)
 	r = (u32)(256*(n[2]*w+0.5));
 	return (r<<16) + (g<<8) + (b);
 }
-static void std3d_position(vec3 o, mat4 m, vec3 v)
+static void stl3d_mat4vec3(vec3 o, mat4 m, vec3 v)
 {
 	float f;
 	f = 1.00 / (m[3][0]*v[0] + m[3][1]*v[1] + m[3][2]*v[2] + m[3][3]);
 	o[0] = f * (m[0][0]*v[0] + m[0][1]*v[1] + m[0][2]*v[2] + m[0][3]);
 	o[1] = f * (m[1][0]*v[0] + m[1][1]*v[1] + m[1][2]*v[2] + m[1][3]);
 	o[2] = f * (m[2][0]*v[0] + m[2][1]*v[1] + m[2][2]*v[2] + m[2][3]);
+}
+static int stl3d_position(vec4 olist[], vec3 ilist[], mat4 m)
+{
+	float* oo = olist[0];
+	float* ov = olist[1];
+	float* on = olist[2];
+	float* iv = ilist[0];
+	float* in = ilist[1];
+
+	ov[0] = iv[0];ov[1] = iv[1];ov[2] = iv[2];
+	on[0] = in[0];on[1] = in[1];on[2] = in[2];
+
+	//gl_Position = m*v
+	oo[0] = m[0][0]*iv[0] + m[0][1]*iv[1] + m[0][2]*iv[2] + m[0][3];
+	oo[1] = m[1][0]*iv[0] + m[1][1]*iv[1] + m[1][2]*iv[2] + m[1][3];
+	oo[2] = m[2][0]*iv[0] + m[2][1]*iv[1] + m[2][2]*iv[2] + m[2][3];
+	oo[3] = m[3][0]*iv[0] + m[3][1]*iv[1] + m[3][2]*iv[2] + m[3][3];
+	return 0;
 }
 static u32 stl3d_fragment(vec4 out[], vec4 in[], vec4 uni[])
 {
@@ -117,8 +135,8 @@ static int stl3d_intersect_world(float* out, float* vbuf, int cnt, vec3 w_ro, ve
 	int j;
 	vec3 l_ro,l_rd;
 	for(j=0;j<3;j++)l_ro[j] = w_ro[j]+w_rd[j];
-	std3d_position(l_rd, mat, l_ro);
-	std3d_position(l_ro, mat, w_ro);
+	stl3d_mat4vec3(l_rd, mat, l_ro);
+	stl3d_mat4vec3(l_ro, mat, w_ro);
 	for(j=0;j<3;j++)l_rd[j]-= l_ro[j];
 	//say("local ray: %f,%f,%f -> %f,%f,%f\n",l_ro[0],l_ro[1],l_ro[2], l_rd[0],l_rd[1],l_rd[2]);
 
@@ -195,15 +213,15 @@ static void stl3d_draw_gl41(
 	tc[0] = act->fx0 + f[3]*100.0;
 	tc[1] = act->fy0 + f[4]*100.0;
 	tc[2] = act->fz0 + f[5]*100.0;
-	std3d_position(td, mat, tc);
-	std3d_position(tc, mat, &act->fx0);
+	stl3d_mat4vec3(td, mat, tc);
+	stl3d_mat4vec3(tc, mat, &act->fx0);
 	gl41solid_spheretest(wnd, 0xff00ff, tc);
 	gl41line(wnd, 0xffffff, tc, td);
 
 	vec3 t0,t1,t2;
-	std3d_position(t0, mat, f);
-	std3d_position(t1, mat, &f[6]);
-	std3d_position(t2, mat, &f[12]);
+	stl3d_mat4vec3(t0, mat, f);
+	stl3d_mat4vec3(t1, mat, &f[6]);
+	stl3d_mat4vec3(t2, mat, &f[12]);
 	gl41line_triangle(wnd, 0x00ffff, t0,t1,t2);
 	gl41solid_triangle(wnd, 0xffff00, t0,t1,t2);
 
@@ -277,22 +295,22 @@ void stl3d_draw_theone(struct entity* wnd, struct style* area, float* point, flo
 	t0[0] = point[0] + primi[3]*100.0;
 	t0[1] = point[1] + primi[4]*100.0;
 	t0[2] = point[2] + primi[5]*100.0;
-	std3d_position(t1, mat, t0);
+	stl3d_mat4vec3(t1, mat, t0);
 	x1 = cx + dx*t1[0];
 	y1 = cy - dy*t1[1];
-	std3d_position(t0, mat, point);
+	stl3d_mat4vec3(t0, mat, point);
 	x0 = cx + dx*t0[0];
 	y0 = cy - dy*t0[1];
 	drawline(wnd, 0xffffff, x0,y0, x1,y1);
 
 
-	std3d_position(t0, mat, primi);
+	stl3d_mat4vec3(t0, mat, primi);
 	x0 = cx + dx*t0[0];
 	y0 = cy - dy*t0[1];
-	std3d_position(t1, mat, &primi[6]);
+	stl3d_mat4vec3(t1, mat, &primi[6]);
 	x1 = cx + dx*t1[0];
 	y1 = cy - dy*t1[1];
-	std3d_position(t2, mat, &primi[12]);
+	stl3d_mat4vec3(t2, mat, &primi[12]);
 	x2 = cx + dx*t2[0];
 	y2 = cy - dy*t2[1];
 	drawline_triangle(wnd, 0x00ffff, x0,y0, x1,y1, x2,y2);
@@ -314,9 +332,9 @@ static void stl3d_draw_raster(
 	mat4_multiplyfrom(m, clip_from_world, world_from_local);
 
 	rastersolid_triangle(
-		wnd, area, std3d_position, stl3d_fragment,
+		wnd, area, stl3d_position, stl3d_fragment,
 		own->vbuf, 6, 6*3, own->vbuf_h/3,
-		m, world_from_local);
+		m, own);
 	stl3d_draw_theone(wnd,area, &act->fx0,own->vbuf + act->data3, m);
 }
 static void stl3d_draw_raytrace(
@@ -356,7 +374,7 @@ static void stl3d_draw_raytrace(
 			vv[2] = 0.5;
 			//say("%f,%f,%f\n",v[0],v[1],v[2]);
 
-			std3d_position(rd, inv, vv);
+			stl3d_mat4vec3(rd, inv, vv);
 			for(j=0;j<3;j++)rd[j] -= ro[j];
 
 			ret = stl3d_intersect_world(oo, own->vbuf, own->vbuf_h/3, ro,rd, mat);
