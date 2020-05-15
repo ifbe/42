@@ -88,7 +88,6 @@ void rastersolid_triangle(
 	int stride = wnd->fbwidth>>2;
 	u32* color = wnd->colorbuf;
 	float* depth = wnd->depthbuf;
-	if(0 == depth){depth = wnd->depthbuf = memorycreate(2048*2048*4, 0);}
 
 	int px = wnd->width * rect->vc[0];
 	int py = wnd->height* rect->vc[1];
@@ -120,9 +119,6 @@ void rastersolid_triangle(
 	vec3 uvw,fix,xy,tb,tm,tt;
 	//
 	int x,y, lx,rx, left,right;
-	for(y=0;y<wnd->height;y++){
-		for(x=0;x<wnd->width;x++)depth[y*stride+x] = 1000.0;
-	}
 	for(j=0;j<vh;j++){
 		vs_in = &vbuf[vw*j];
 		vert(vs_out[0],          vs_in, mat);

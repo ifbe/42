@@ -51,10 +51,10 @@ void vec3_normalize(vec3 v)
 }
 void vec3_normalizeto(vec3 v, vec3 to)
 {
-	float norm = squareroot(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
-	to[0] = v[0] / norm;
-	to[1] = v[1] / norm;
-	to[2] = v[2] / norm;
+	float norm = 1.0 / squareroot(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+	to[0] = v[0] * norm;
+	to[1] = v[1] * norm;
+	to[2] = v[2] * norm;
 }
 float vec3_dot(vec3 v, vec3 x)
 {

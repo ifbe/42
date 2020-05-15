@@ -1,13 +1,14 @@
 <entity>
-rabbit{
+stl3d{
+fmt:stl3d
+url:datafile/stl/bunny-lowpoly.stl
+}
+obj3d{
 fmt:obj3d
 }
 freecam{
 fmt:freecam
 render:0
-}
-dbgcam{
-fmt:freecam
 }
 virtual{
 fmt:virtual
@@ -41,10 +42,18 @@ fmt:poller
 
 
 <style>
-rabhaha{
+stlhaha{
 }
-rabgeom{
-c: 0.0, 0.0, 0.0
+stlgeom{
+c:-300.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+objhaha{
+}
+objgeom{
+c: 300.0, 0.0, 0.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
@@ -53,10 +62,10 @@ t: 0.0, 0.0, 1000.0
 freemodl{
 }
 freegeom{
-c: 0.0, -2000.0, 2000.0
+c: 0.0, -2000.0, 600.0
 r: 1000.0, 0.0, 0.0
-f: 0.0, 707.0,-707.0
-t: 0.0, 707.0, 707.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
 L: 0.0, 0.0, 0.0, -1.0
 R: 0.0, 0.0, 0.0, 1.0
 B: 0.0, 0.0, 0.0, -1.0
@@ -93,7 +102,8 @@ q:0.33, 0.33
 
 <relation>
 #virtual
-(virtual, rabgeom, 0) -> (rabbit, rabhaha, geom)
+(virtual, stlgeom, 0) -> (stl3d, stlhaha, geom)
+(virtual, objgeom, 0) -> (obj3d, objhaha, geom)
 (virtual, freegeom, 0) -> (freecam, freemodl, geom)
 #(virtual, dbggeom, 0) -> (dbgcam, dbgmodl, geom)
 (opengl, freerect, 0) -> (freecam, 0, a)

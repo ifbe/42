@@ -13,6 +13,7 @@ void world2local(mat4 mat, struct fstyle* src, struct fstyle* dst);
 void local2world(mat4 mat, struct fstyle* src, struct fstyle* dst);
 void mat4_transposefrom(mat4, mat4);
 void mat4_multiplyfrom(mat4, mat4, mat4);
+void vec3_normalizeto(vec3 v, vec3 to);
 //
 int ray_trigon(vec3 out, vec3 ro, vec3 rd, vec3 t0, vec3 t1, vec3 t2);
 int rastersolid_triangle(void*,void*, void*,void*, float*,int,int,int, mat4,void*);
@@ -152,10 +153,20 @@ static void stl3d_modify_ray(struct entity* act, vec3 ray[])
 	world2local(mat, own->worldgeom, own->localgeom);
 
 	int ret = stl3d_intersect_world(&act->fx0, own->vbuf, own->vbuf_h/3, ray[0],ray[1], mat);
-	if(ret >= 0){
-		say("hit:%d\n",ret);
-		act->data3 = 4*6*3*ret;
-	}
+	if(ret < 0)return;
+
+	//save id
+	say("hit:%d\n",ret);
+	act->data3 = 4*6*3*ret;
+
+	//on hit
+	vec3 to;
+	float* at = own->vbuf + 4*6*3*ret;
+	vec3_normalizeto(&at[3], to);
+	say("%f,%f,%f\n",to[0],to[1],to[2]);
+	at[ 0] += to[0];at[ 1] += to[1];at[ 2] += to[2];
+	at[ 6] += to[0];at[ 7] += to[1];at[ 8] += to[2];
+	at[12] += to[0];at[13] += to[1];at[14] += to[2];
 }
 
 

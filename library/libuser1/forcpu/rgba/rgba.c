@@ -8,7 +8,7 @@ int entityinput_touch(struct supply* win, struct event* ev);
 
 
 
-void background_pixel(struct supply* win)
+void pixel_clearcolor(struct supply* win)
 {
 	int x;
 	int w = win->width;
@@ -19,13 +19,16 @@ void background_pixel(struct supply* win)
 
 	for(x=0;x<len;x++)buf[x] = 0xff000000;
 }
-void foreground_pixel(struct supply* win)
+void pixel_cleardepth(struct supply* wnd)
 {
-/*	if((win->theone) | (win->edit) | (0 == win->irel))
-	{
-		drawline(win, 0xffffff, 0, h/2, w, h/2);
-		drawline(win, 0xffffff, w/2, 0, w/2, h);
-	}*/
+	int x,y,w,h,stride;
+	float* depth = wnd->depthbuf;
+	if(0 == depth){depth = wnd->depthbuf = memorycreate(2048*2048*4, 0);}
+
+	stride = wnd->fbwidth>>2;
+	for(y=0;y<wnd->height;y++){
+		for(x=0;x<wnd->width;x++)depth[y*stride+x] = 1000.0;
+	}
 }
 
 
@@ -33,7 +36,7 @@ void foreground_pixel(struct supply* win)
 
 int rgbanode_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	background_pixel(wnd);
+	pixel_clearcolor(wnd);
 
 	struct relation* rel = wnd->orel0;
 	while(1)
@@ -57,7 +60,6 @@ next:
 		rel = samesrcnextdst(rel);
 	}
 
-	foreground_pixel(wnd);
 	return 0;
 }
 int rgbanode_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

@@ -12,6 +12,9 @@
 void matproj(mat4 mat, struct fstyle* sty);
 void frustum2viewandclip_transpose(struct fstyle* frus, mat4 v_, mat4 vp);
 //
+void pixel_clearcolor(void*);
+void pixel_cleardepth(void*);
+//
 void gl41data_before(void*);
 void gl41data_after(void*);
 int gl41data_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
@@ -435,6 +438,7 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		matproj(m, &geom->frus);
 		//printmat4(m);
 
+		pixel_cleardepth(wnd);
 		entityread(stack[sp+1].pchip, 0, stack, sp+2, m, ent->DRAWTYPE, 0, 0);
 		return 0;
 	}
