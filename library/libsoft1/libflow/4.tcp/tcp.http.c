@@ -279,6 +279,8 @@ int httpmaster_write_bysrc(_art* art,int foot, _syn* stack,int sp, void* arg, in
 		for(j=0;j<4;j++){
 			if(s[j])len += s[j]->len;
 		}
+		if(0 == len)return 0;
+
 		ret = mysnprintf(tmp, 0x1000,
 			"HTTP/1.1 200 OK\r\n"
 			"Content-type: %s\r\n"
@@ -320,7 +322,7 @@ int httpmaster_write_bysrc(_art* art,int foot, _syn* stack,int sp, void* arg, in
 }
 int httpmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	say("foot=%.4s\n", &foot);
+	say("@httpmaster_write:sp=%d,foot=%.4s\n", sp, &foot);
 	if(_dst_ == foot)return httpmaster_write_bydst(art,foot, stack,sp, arg,idx, buf,len);
 	else return httpmaster_write_bysrc(art,foot, stack,sp, arg,idx, buf,len);
 	return 0;

@@ -1,4 +1,5 @@
 #include "libuser.h"
+#define _sync_ hex32('s','y','n','c')
 void xiangqi_generate(char (*data)[9]);
 void xiangqi_move(char (*data)[9], int* turn, int px, int py, int x, int y);
 
@@ -497,6 +498,9 @@ static void xiangqi_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 }
 static void xiangqi_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(_sync_ == foot){
+		printmemory(buf,len);
+	}
 }
 static void xiangqi_discon(struct halfrel* self, struct halfrel* peer)
 {

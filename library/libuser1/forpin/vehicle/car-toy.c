@@ -45,10 +45,11 @@ static void toycar_update(int L, int R, int el, int er)
 
 
 
-int toycar_read(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int toycar_read_byhttp(struct entity* ent,int foot, struct halfrel* stack,int sp)
 {
+    u8 buf[1024];
     int j;
-    int ret = mysnprintf(buf, 256,
+    int ret = mysnprintf(buf, 999,
 	"<html><body>"
 	"<form method=\"post\">"
 	"<input type=\"text\" name=\"fuck\">"
@@ -56,20 +57,27 @@ int toycar_read(struct entity* ent,int foot, struct halfrel* stack,int sp, void*
     );
 
     for(j=0;j<12;j++){
-	ret += mysnprintf(buf+ret, 256,
+	ret += mysnprintf(buf+ret, 999-ret,
 	    "%.4s: pin=%d, val=%d<br>\n",
 	    &name[j], table[j], value[j]
 	);
     }
 
-    ret += mysnprintf(buf+ret, 256, "</body></html>");
+    ret += mysnprintf(buf+ret, 999-ret, "</body></html>");
+    relationwrite(ent,foot, stack,sp, "text/html",0, buf,ret);
     return ret;
+}
+int toycar_read(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+{
+    say("@toycar_read:sp=%d,%.4s\n", sp, &foot);
+    return toycar_read_byhttp(ent,foot, stack,sp);
 }
 int toycar_write(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {
     say("@toycar_write\n");
     //printmemory(buf, len);
 
+    //do work
     switch(buf[0])
     {
 	case '1':boardwrite(_gpio_, table[ 8], 0, 1);break;
@@ -89,6 +97,16 @@ int toycar_write(struct entity* ent,int foot, struct halfrel* stack,int sp, void
 
 	default: toycar_update(0, 0, 0, 0);break;
     }
+
+    //send back: my state
+    int j,ret=0;
+    u8 tmp[256];
+
+    for(j=0;j<12;j++)ret += mysnprintf(tmp+ret, 256-ret,"%.4s=%d,",&name[j], value[j]);
+    tmp[ret] = '\n';
+    ret++;
+
+    relationwrite(ent,foot, stack,sp, 0,0, tmp,ret);
     return 0;
 }
 void toycar_discon(struct halfrel* self, struct halfrel* peer)

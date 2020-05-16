@@ -1,0 +1,34 @@
+<entity>
+car{
+fmt:bdc
+}
+</entity>
+
+
+<supply>
+std{
+fmt:std
+}
+</supply>
+
+
+<artery>
+http{
+fmt:HTTP
+}
+</artery>
+
+
+<system>
+tcp{
+fmt:TCP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<relation>
+(tcp, 0, dst) -> (http, 0, src)
+(http, 0, dst) -> (car, 0, http)
+(std, 0, dst) -> (car, 0, src)
+</relation>

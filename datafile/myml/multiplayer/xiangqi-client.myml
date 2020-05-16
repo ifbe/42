@@ -1,0 +1,77 @@
+<entity>
+xiangqi{
+fmt:xiangqi
+}
+freecam{
+fmt:freecam
+}
+virtual{
+fmt:virtual
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<system>
+udp{
+fmt:UDP
+url:0.0.0.0:9999
+}
+</system>
+
+
+<worker>
+poller{
+fmt:poller
+dt:16ms
+}
+</worker>
+
+
+<style>
+skyhaha{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+freemodl{
+}
+freegeom{
+c: 0.0, 0.0, 1200.0
+r: 1000.0, 0.0, 0.0
+t: 0.0, 1000.0, 0.0
+f: 0.0, 0.0, -1000.0
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+(udp, 0, dst) -> (xiangqi, 0, sync)
+(virtual, skygeom, 0) -> (xiangqi, skyhaha, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
+(opengl, freerect, mvp) -> (freecam, 0, 0)
+</relation>
