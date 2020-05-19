@@ -7,21 +7,21 @@
 
 int gravity_effect(struct style* geom, float dt)
 {
-	struct fmotion delta;
-	struct fmotion* added = &geom->fm;
+	struct fmotion* final = &geom->fm;
 
-	//delta.j_displace[2] = 0;
-	//delta.a_displace[2] = 0;
-	delta.v_displace[2] = -9.8 * dt;
-	delta.x_displace[2] = added->v_displace[2] * dt;
+	//a = -9.8, v -= 9.8*dt, x += v*dt
+	final->a_displace[2] = -9.8;
+	final->v_displace[2] -= 9.8 * dt;
+	final->x_displace[2] = geom->fs.vc[2] + final->v_displace[2] * dt;
 
-	//added->j_displace[2] += delta.j_displace[2];
-	//added->a_displace[2] += delta.a_displace[2];
-	added->v_displace[2] += delta.v_displace[2];
-	added->x_displace[2] += delta.x_displace[2];
+	//if collide
+	if(final->x_displace[2] < 0.0){
+		final->x_displace[2] = 0.00001;
+		final->v_displace[2] = -0.5 * final->v_displace[2];
+	}
+	say("%f,%f\n", final->v_displace[2], final->x_displace[2]);
 
-	if(geom->fs.vc[2] + delta.x_displace[2] > 0.0)geom->fs.vc[2] += delta.x_displace[2];
-	say("%f,%f,%f,%f\n", added->v_displace[2], added->x_displace[2], delta.x_displace[2], geom->fs.vc[2]);
+	geom->fs.vc[2] = final->x_displace[2];
 	return 0;
 }
 int gravity_working(struct entity* ent)

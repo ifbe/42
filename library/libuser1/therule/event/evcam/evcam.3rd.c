@@ -76,6 +76,7 @@ void* event3rd_findgeom(struct entity* ent)
 		if(0 == rel)break;
 		world = rel->psrcchip;
 		if(_virtual_ == world->type)return rel->psrcfoot;
+		if(_scene3d_ == world->type)return rel->psrcfoot;
 		rel = samedstnextsrc(rel);
 	}
 
@@ -84,6 +85,7 @@ void* event3rd_findgeom(struct entity* ent)
 		if(0 == rel)break;
 		world = rel->pdstchip;
 		if(_virtual_ == world->type)return rel->pdstfoot;
+		if(_scene3d_ == world->type)return rel->pdstfoot;
 		rel = samesrcnextdst(rel);
 	}
 

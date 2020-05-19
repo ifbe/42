@@ -357,7 +357,7 @@ void freecam_shape2frustum(struct fstyle* s, struct fstyle* d)
 	d->vf[2] = z / n;
 	//d->vf[3] = 1e20;
 }
-static void freecam_matrix(
+static void freecam_frustum2matrix(
 	struct entity* act, struct style* part,
 	struct entity* wrd, struct style* geom)
 {
@@ -446,9 +446,10 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	if('v' == key){
 		gl41data_before(wnd);
 
+		//relationread(ent,_evto_, stack,sp, arg,key, buf,len);
 		freecam_ratio(wor, geom, wnd, area);
 		freecam_shape2frustum(&geom->fshape, &geom->frustum);
-		freecam_matrix(ent,slot, wor,geom);
+		freecam_frustum2matrix(ent,slot, wor,geom);
 		freecam_camera(ent,slot, wor,geom, wnd,area);
 
 		gl41data_read(wor,0, stack,sp+2, 0,'v', buf,len);

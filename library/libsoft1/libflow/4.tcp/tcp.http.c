@@ -271,7 +271,7 @@ int httpmaster_write_bysrc(_art* art,int foot, _syn* stack,int sp, void* arg, in
 	int j,ret;
 	u8 tmp[0x400];
 	if(art->orel0){
-		struct str* s[16];
+/*		struct str* s[16];
 		for(j=0;j<4;j++)s[j] = 0;
 		relationread(art,_dst_, stack,sp, p.GET,0, s,4);
 
@@ -293,6 +293,8 @@ int httpmaster_write_bysrc(_art* art,int foot, _syn* stack,int sp, void* arg, in
 		for(j=0;j<4;j++){
 			if(s[j])relationwrite(art,_src_, stack,sp, 0,0, s[j]->buf,s[j]->len);
 		}
+*/
+		relationwrite(art,_dst_, stack,sp, &p,0, p.Content,p.End-p.Content);
 		return 0;
 	}
 	else{

@@ -324,10 +324,8 @@ struct imotion{
 };
 struct style
 {
-	//[00, 7f]: actual, css shape
+	//[00, 7f]: geometry
 	union{
-		//struct fstyle actualshape;
-		//struct fmotion actualmotion;
 		struct fstyle f;
 		struct fstyle fs;
 		struct fstyle fshape;
@@ -336,23 +334,22 @@ struct style
 		struct istyle ishape;
 	};
 
-	//[80, ff]: actual, css shape
+	//[80, ff]: frustum
 	union{
-		//struct fstyle actualshape;
-		//struct fmotion actualmotion;
 		struct fstyle frus;
 		struct fstyle frustum;
 	};
 
-	//[100, 17f]
+	//[100, 17f]: correct motion (everything fine!)
 	union{
+		struct fmotion actual;
 		struct fmotion fm;
 		struct fmotion fmotion;
 		struct imotion im;
 		struct imotion imotion;
 	};
 
-	//[180, 1ff]
+	//[180, 1ff]: notsure motion (collision test?)
 	union{
 		struct fmotion expect;
 	};
