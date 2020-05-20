@@ -58,12 +58,18 @@ int force_linkup(void*, void*);
 int force_discon(void*, void*);
 int force_write(void*,int, void*,int, void*,int, void*,int);
 int force_read( void*,int, void*,int, void*,int, void*,int);
-int gravity_create(void*, void*, int, u8**);
-int gravity_delete(void*, void*);
-int gravity_linkup(void*, void*);
-int gravity_discon(void*, void*);
-int gravity_write(void*,int, void*,int, void*,int, void*,int);
-int gravity_read( void*,int, void*,int, void*,int, void*,int);
+int graveasy_create(void*, void*, int, u8**);
+int graveasy_delete(void*, void*);
+int graveasy_linkup(void*, void*);
+int graveasy_discon(void*, void*);
+int graveasy_write(void*,int, void*,int, void*,int, void*,int);
+int graveasy_read( void*,int, void*,int, void*,int, void*,int);
+int gravtest_create(void*, void*, int, u8**);
+int gravtest_delete(void*, void*);
+int gravtest_linkup(void*, void*);
+int gravtest_discon(void*, void*);
+int gravtest_write(void*,int, void*,int, void*,int, void*,int);
+int gravtest_read( void*,int, void*,int, void*,int, void*,int);
 
 //scene
 int border2d_create(void*, void*, int, u8**);
@@ -309,7 +315,8 @@ int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* 
 	//case _field_:return field_read(act,foot, stack,sp, arg,key, buf,len);
 	//case _fluid_:return fluid_read(act,foot, stack,sp, arg,key, buf,len);
 	case _force_:return force_read(act,foot, stack,sp, arg,key, buf,len);
-	case _gravity_:return gravity_read(act,foot, stack,sp, arg,key, buf,len);
+	case _graveasy_:return graveasy_read(act,foot, stack,sp, arg,key, buf,len);
+	case _gravtest_:return gravtest_read(act,foot, stack,sp, arg,key, buf,len);
 
 	case _analog_:return analog_read(act,foot, stack,sp, arg,key, buf,len);
 	case _digital_:return digital_read(act,foot, stack,sp, arg,key, buf,len);
@@ -353,7 +360,8 @@ int entitywrite(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void*
 	//case _field_:return field_write(act,foot, stack,sp, arg,key, buf,len);
 	//case _fluid_:return fluid_write(act,foot, stack,sp, arg,key, buf,len);
 	case _force_:return force_write(act,foot, stack,sp, arg,key, buf,len);
-	case _gravity_:return gravity_write(act,foot, stack,sp, arg,key, buf,len);
+	case _graveasy_:return graveasy_write(act,foot, stack,sp, arg,key, buf,len);
+	case _gravtest_:return gravtest_write(act,foot, stack,sp, arg,key, buf,len);
 
 	case _analog_:return analog_write(act,foot, stack,sp, arg,key, buf,len);
 	case _digital_:return digital_write(act,foot, stack,sp, arg,key, buf,len);
@@ -403,7 +411,8 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	//case _field_:return field_discon(self, peer);
 	//case _fluid_:return fluid_discon(self, peer);
 	case _force_:return force_discon(self, peer);
-	case _gravity_:return gravity_discon(self, peer);
+	case _graveasy_:return graveasy_discon(self, peer);
+	case _gravtest_:return gravtest_discon(self, peer);
 
 	case _analog_:return analog_discon(self, peer);
 	case _digital_:return digital_discon(self, peer);
@@ -453,7 +462,8 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 	//case _field_:return field_linkup(self, peer);
 	//case _fluid_:return fluid_linkup(self, peer);
 	case _force_:return force_linkup(self, peer);
-	case _gravity_:return gravity_linkup(self, peer);
+	case _graveasy_:return graveasy_linkup(self, peer);
+	case _gravtest_:return gravtest_linkup(self, peer);
 
 	case _analog_:return analog_linkup(self, peer);
 	case _digital_:return digital_linkup(self, peer);
@@ -670,11 +680,18 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		force_create(act, buf, argc, argv);
 		return act;
 	}
-	case _gravity_:
+	case _graveasy_:
 	{
 		act = allocentity();
-		act->fmt = act->type = _gravity_;
-		gravity_create(act, buf, argc, argv);
+		act->fmt = act->type = _graveasy_;
+		graveasy_create(act, buf, argc, argv);
+		return act;
+	}
+	case _gravtest_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _gravtest_;
+		gravtest_create(act, buf, argc, argv);
 		return act;
 	}
 

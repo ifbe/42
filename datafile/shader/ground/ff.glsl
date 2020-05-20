@@ -1,4 +1,5 @@
 in vec3 objxyz;
+in vec2 objuvw;
 out vec4 FragColor;
 subroutine vec3 passtype();
 subroutine uniform passtype routine;
@@ -25,11 +26,9 @@ float getG(float v, float r){
     return v / (v * (1.0 - k) + k);
 }
 subroutine (passtype) vec3 rawcolor(){
-	float x = mod(objxyz.x, 1000.0) / 1000.0;
-	float y = mod(-objxyz.y, 1000.0) / 1000.0;
-	vec3 albedo = pow(texture(tex0, vec2(x,y)).bgr, vec3(2.2));
-	vec3 normal = texture(tex1, vec2(x,y)).bgr * 2.0 - vec3(1.0);
-	vec3 matter = texture(tex2, vec2(x,y)).bgr;
+	vec3 albedo = pow(texture(tex0, objuvw).bgr, vec3(2.2));
+	vec3 normal = texture(tex1, objuvw).bgr * 2.0 - vec3(1.0);
+	vec3 matter = texture(tex2, objuvw).bgr;
 
 	float metal = matter.x;
 	float rough = matter.y;
@@ -75,9 +74,7 @@ subroutine (passtype) vec3 rawcolor(){
 	return pow(ocolor, vec3(1.0/2.2));
 }
 subroutine (passtype) vec3 dirlight(){
-	float x = mod(objxyz.x, 1000.0) / 1000.0;
-	float y = mod(-objxyz.y, 1000.0) / 1000.0;
-	vec3 albedo = texture(tex0, vec2(x,y)).bgr;
+	vec3 albedo = texture(tex0, objuvw).bgr;
 
 	vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp /= tmp.w;
@@ -88,9 +85,7 @@ subroutine (passtype) vec3 dirlight(){
 	return albedo;
 }
 subroutine (passtype) vec3 spotlight(){
-	float x = mod(objxyz.x, 1000.0) / 1000.0;
-	float y = mod(-objxyz.y, 1000.0) / 1000.0;
-	vec3 albedo = texture(tex0, vec2(x,y)).bgr;
+	vec3 albedo = texture(tex0, objuvw).bgr;
 
 	vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp /= tmp.w;
@@ -102,9 +97,7 @@ subroutine (passtype) vec3 spotlight(){
 	return albedo*mix(sunrgb, vec3(0.2), val);
 }
 subroutine (passtype) vec3 projector(){
-	float x = mod(objxyz.x, 1000.0) / 1000.0;
-	float y = mod(-objxyz.y, 1000.0) / 1000.0;
-	vec3 albedo = texture(tex0, vec2(x,y)).bgr;
+	vec3 albedo = texture(tex0, objuvw).bgr;
 
 	vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp /= tmp.w;
@@ -115,9 +108,7 @@ subroutine (passtype) vec3 projector(){
 	return albedo*texture(sunimg, tmp.xy).bgr;
 }
 subroutine (passtype) vec3 pointlight(){
-	float x = mod(objxyz.x, 1000.0) / 1000.0;
-	float y = mod(-objxyz.y, 1000.0) / 1000.0;
-	vec3 albedo = texture(tex0, vec2(x,y)).bgr;
+	vec3 albedo = texture(tex0, objuvw).bgr;
 
 	float dx = (sunxyz-objxyz).x;
 	float dy = (sunxyz-objxyz).y;

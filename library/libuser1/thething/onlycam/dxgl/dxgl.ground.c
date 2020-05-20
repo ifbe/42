@@ -1,6 +1,7 @@
 #include "libuser.h"
 //#include "unistd.h"
 //#include "fcntl.h"
+#define PIECE 16
 #define OWNBUF buf0
 int copypath(u8* path, u8* data);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
@@ -19,6 +20,50 @@ static int loadshaderfromfile(char* buf, char* url)
 {
 	int ret = mysnprintf(buf, 99, "%s%s", GLSL_VERSION, GLSL_PRECISION);
 	return openreadclose(url, 0, buf+ret, 0x10000-ret);
+}
+void ground_singlepiece(float (*vbuf)[6], float* vc,float* vr,float* vf)
+{
+	vbuf[0][0] = vc[0] - vr[0] - vf[0];
+	vbuf[0][1] = vc[1] - vr[1] - vf[1];
+	vbuf[0][2] = vc[2] - vr[2] - vf[2];
+	vbuf[0][3] = 0.0;
+	vbuf[0][4] = 0.0;
+	vbuf[0][5] = 0.0;
+
+	vbuf[1][0] = vc[0] + vr[0] + vf[0];
+	vbuf[1][1] = vc[1] + vr[1] + vf[1];
+	vbuf[1][2] = vc[2] + vr[2] + vf[2];
+	vbuf[1][3] = 1.0;
+	vbuf[1][4] = 1.0;
+	vbuf[1][5] = 0.0;
+
+	vbuf[2][0] = vc[0] - vr[0] + vf[0];
+	vbuf[2][1] = vc[1] - vr[1] + vf[1];
+	vbuf[2][2] = vc[2] - vr[2] + vf[2];
+	vbuf[2][3] = 0.0;
+	vbuf[2][4] = 1.0;
+	vbuf[2][5] = 0.0;
+
+	vbuf[3][0] = vc[0] + vr[0] + vf[0];
+	vbuf[3][1] = vc[1] + vr[1] + vf[1];
+	vbuf[3][2] = vc[2] + vr[2] + vf[2];
+	vbuf[3][3] = 1.0;
+	vbuf[3][4] = 1.0;
+	vbuf[3][5] = 0.0;
+
+	vbuf[4][0] = vc[0] - vr[0] - vf[0];
+	vbuf[4][1] = vc[1] - vr[1] - vf[1];
+	vbuf[4][2] = vc[2] - vr[2] - vf[2];
+	vbuf[4][3] = 0.0;
+	vbuf[4][4] = 0.0;
+	vbuf[4][5] = 0.0;
+
+	vbuf[5][0] = vc[0] + vr[0] - vf[0];
+	vbuf[5][1] = vc[1] + vr[1] - vf[1];
+	vbuf[5][2] = vc[2] + vr[2] - vf[2];
+	vbuf[5][3] = 1.0;
+	vbuf[5][4] = 0.0;
+	vbuf[5][5] = 0.0;
 }
 
 
@@ -62,8 +107,8 @@ say("%s\n%s\n%s\n%s\n%s\n",tex0,tex1,tex2,vs,fs);
 	src->opaque = 0;
 
 	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*3*2;
-	src->vbuf_h = 6;
+	src->vbuf_w = 4*3*2;	//sizeof(float) * float_per_attr * attr_per_trigon
+	src->vbuf_h = 6*PIECE*PIECE;	//6point_per_block * blockx * blocky
 	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
 	src->vbuf = memorycreate(src->vbuf_len, 0);
 }
@@ -72,63 +117,28 @@ static void ground_draw_gl41(
 	struct entity* win, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	struct privdata* own;
-	struct glsrc* src;
-	float (*vbuf)[6];
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
 	float* vf = geom->f.vf;
 	float* vt = geom->f.vt;
-	//gl41solid_rect(ctx, 0xffffff, vc, vr, vf);
+	//gl41line_rect(wnd, 0xffffff, vc, vr, vf);
 
-	own = act->OWNBUF;
+	struct privdata* own = act->OWNBUF;
 	if(0 == own)return;
-	src = &own->gl41.src;
+	struct glsrc* src = &own->gl41.src;
 	if(0 == src)return;
-	vbuf = (void*)(src->vbuf);
+	float (*vbuf)[6] = (void*)(src->vbuf);
 	if(0 == vbuf)return;
 
-	vbuf[0][0] = vc[0] - vr[0] - vf[0];
-	vbuf[0][1] = vc[1] - vr[1] - vf[1];
-	vbuf[0][2] = vc[2] - vr[2] - vf[2];
-	vbuf[0][3] = 0.0;
-	vbuf[0][4] = 0.0;
-	vbuf[0][5] = 0.0;
-
-	vbuf[1][0] = vc[0] + vr[0] + vf[0];
-	vbuf[1][1] = vc[1] + vr[1] + vf[1];
-	vbuf[1][2] = vc[2] + vr[2] + vf[2];
-	vbuf[1][3] = 1.0;
-	vbuf[1][4] = 1.0;
-	vbuf[1][5] = 0.0;
-
-	vbuf[2][0] = vc[0] - vr[0] + vf[0];
-	vbuf[2][1] = vc[1] - vr[1] + vf[1];
-	vbuf[2][2] = vc[2] - vr[2] + vf[2];
-	vbuf[2][3] = 0.0;
-	vbuf[2][4] = 1.0;
-	vbuf[2][5] = 0.0;
-
-	vbuf[3][0] = vc[0] + vr[0] + vf[0];
-	vbuf[3][1] = vc[1] + vr[1] + vf[1];
-	vbuf[3][2] = vc[2] + vr[2] + vf[2];
-	vbuf[3][3] = 1.0;
-	vbuf[3][4] = 1.0;
-	vbuf[3][5] = 0.0;
-
-	vbuf[4][0] = vc[0] - vr[0] - vf[0];
-	vbuf[4][1] = vc[1] - vr[1] - vf[1];
-	vbuf[4][2] = vc[2] - vr[2] - vf[2];
-	vbuf[4][3] = 0.0;
-	vbuf[4][4] = 0.0;
-	vbuf[4][5] = 0.0;
-
-	vbuf[5][0] = vc[0] + vr[0] - vf[0];
-	vbuf[5][1] = vc[1] + vr[1] - vf[1];
-	vbuf[5][2] = vc[2] + vr[2] - vf[2];
-	vbuf[5][3] = 1.0;
-	vbuf[5][4] = 0.0;
-	vbuf[5][5] = 0.0;
+	int x,y,j;
+	vec3 tc,tr,tf;
+	for(j=0;j<3;j++){tr[j] = vr[j]/PIECE;tf[j] = vf[j]/PIECE;}
+	for(y=0;y<PIECE;y++){
+		for(x=0;x<PIECE;x++){
+			for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(x+x-PIECE+1.0)/PIECE +vf[j]*(y+y-PIECE+1.0)/PIECE;
+			ground_singlepiece(&vbuf[(y*PIECE+x)*6],tc,tr,tf);
+		}
+	}
 
 	src->vbuf_enq += 1;
 	gl41data_insert(wnd, 's', src, 1);
@@ -259,7 +269,7 @@ static void ground_create(struct entity* act, void* str, int argc, u8** argv)
 	if(0 == glfs)glfs = "datafile/shader/ground/ff.glsl";
 	if(0 == albedo)albedo = "datafile/jpg/wall.jpg";
 	if(0 == normal)normal = "datafile/jpg/wallnormal.jpg";
-	if(0 == matter)matter = "datafile/jpg/wallnormal.jpg";
+	if(0 == matter)matter = "datafile/jpg/wallmatter.jpg";
 
 	//ground_ctxforgl41(&own->gl41.src, albedo, normal, dxvs, dxfs);
 	ground_ctxforgl41(&own->gl41.src, albedo, normal, matter, glvs, glfs);

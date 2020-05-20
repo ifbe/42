@@ -91,7 +91,8 @@ therule/event/evtouch/evtouch.moveobj.c \
 therule/gameplay/interact/play.interact.c \
 therule/gameplay/mission/play.mission.c \
 therule/nature/collide/collide.simple.c \
-therule/nature/gravity/gravity.simple.c \
+therule/nature/gravity/gravity.easy.c \
+therule/nature/gravity/gravity.test.c \
 therule/rule.c \
 themind/elec/bldc/control.bldc.c \
 themind/elec/bulk/control.bulk.c \

@@ -1,0 +1,141 @@
+<entity>
+drone{
+fmt:drone
+}
+rccar{
+fmt:rccar
+}
+scene{
+fmt:scene3d
+}
+sky{
+fmt:texball
+url:datafile/jpg/texball-skysphere.jpg
+}
+gnd{
+fmt:ground
+}
+cam0{
+fmt:freecam
+}
+world{
+fmt:virtual
+}
+
+gravity{
+fmt:graveasy
+}
+event{
+fmt:event3rd
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+}
+pulser{
+fmt:pulser
+}
+</worker>
+
+
+<style>
+carslot{
+}
+cargeom{
+c: 2.0, 0.0, 1.0
+r: 1.0, 0.0, 0.0
+f: 0.0, 1.0, 0.0
+t: 0.0, 0.0, 1.0
+}
+
+dronslot{
+}
+drongeom{
+c:-2.0, 0.0, 0.0
+r: 0.25, 0.0, 0.0
+f: 0.0, 0.25, 0.0
+t: 0.0, 0.0, 0.25
+
+j: 0.0, 0.0, 0.0
+a: 0.0, 0.0, 0.0
+v: 0.0, 0.0, 20.0
+x: 0.0, 0.0, 0.0
+}
+
+skypart{
+}
+skygeom{
+c: 0.0, 0.0, 0.0
+r: 10000.0, 0.0, 0.0
+f: 0.0, 10000.0, 0.0
+t: 0.0, 0.0, 10000.0
+}
+
+gndpart{
+}
+gndgeom{
+c: 0.0, 0.0, 0.0
+r: 5.0, 0.0, 0.0
+f: 0.0, 5.0, 0.0
+t: 0.0, 0.0, 1.0
+}
+
+aaaapart{
+}
+aaaageom{
+c: 0.0, -2.0, 1.0
+r: 1.0, 0.0, 0.0
+f: 0.0, 1.0, 0.0
+t: 0.0, 0.0, 1.0
+
+L: 0.0, 0.0, 0.0,-0.01
+R: 0.0, 0.0, 0.0, 0.01
+B: 0.0, 0.0, 0.0,-0.01
+T: 0.0, 0.0, 0.0, 0.01
+N: 0.0, 0.0, 0.0, 0.01
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+
+aaaarect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#scene depends on ???
+(scene, cargeom, 0) -> (rccar, carslot, 0)
+(scene, drongeom, 0) -> (drone, dronslot, 0)
+
+#world depends on ???
+(world, 0, 0) -> (scene, 0, 0)
+(world, skygeom, 0) -> (sky, skypart, 0)
+(world, gndgeom, 0) -> (gnd, gndpart, 0)
+(world, aaaageom, 0) -> (cam0, aaaapart, 0)
+
+#glwnd depends on gldata
+(opengl, aaaarect, 0) -> (cam0, 0, a0)
+
+#3rd controller
+(event, 0, tar) -> (drone, 0, evby)
+(event, 0, cam) -> (cam0, 0, evto)
+
+#
+(gravity, 0, 0) -> (scene, 0, 0)
+(pulser, 0, clk) -> (gravity, 0, clk)
+</relation>

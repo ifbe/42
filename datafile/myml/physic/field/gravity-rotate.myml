@@ -8,9 +8,6 @@ fmt:rccar
 scene{
 fmt:scene3d
 }
-gravity{
-fmt:gravity
-}
 
 sky{
 fmt:texball
@@ -24,6 +21,10 @@ fmt:freecam
 }
 world{
 fmt:virtual
+}
+
+gravity{
+fmt:gravtest
 }
 event{
 fmt:event3rd
@@ -60,6 +61,9 @@ c: 2.0, 0.0, 1.0
 r: 1.0, 0.0, 0.0
 f: 0.0, 1.0, 0.0
 t: 0.0, 0.0, 1.0
+
+0: 0.0, 0.0, 1.0, 0.5
+1: 0.0, 0.0, 0.01745240643728, 0.99984769515639
 }
 
 dronslot{
@@ -89,15 +93,15 @@ gndpart{
 }
 gndgeom{
 c: 0.0, 0.0, 0.0
-r: 1000.0, 0.0, 0.0
-f: 0.0, 1000.0, 0.0
+r: 5.0, 0.0, 0.0
+f: 0.0, 5.0, 0.0
 t: 0.0, 0.0, 1.0
 }
 
 aaaapart{
 }
 aaaageom{
-c: 0.0, -8.0, 4.0
+c: 0.0, -2.0, 1.0
 r: 1.0, 0.0, 0.0
 f: 0.0, 1.0, 0.0
 t: 0.0, 0.0, 1.0

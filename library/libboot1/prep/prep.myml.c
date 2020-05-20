@@ -363,10 +363,14 @@ int role_test_style(struct footlist foot[], int flen, u8* buf, int len)
 					case 'Q':parsefv(sty->frustum.vq, 4, buf+propdata, 99);break;
 					case 'C':parsefv(sty->frustum.vc, 4, buf+propdata, 99);break;
 
-					case 'j':parsefv(sty->fmotion.j_displace, 4, buf+propdata, 99);break;
-					case 'a':parsefv(sty->fmotion.a_displace, 4, buf+propdata, 99);break;
-					case 'v':parsefv(sty->fmotion.v_displace, 4, buf+propdata, 99);break;
-					case 'x':parsefv(sty->fmotion.x_displace, 4, buf+propdata, 99);break;
+					case 'x':parsefv(sty->fmotion.displace_x, 4, buf+propdata, 99);break;
+					case 'v':parsefv(sty->fmotion.displace_v, 4, buf+propdata, 99);break;
+					case 'a':parsefv(sty->fmotion.displace_a, 4, buf+propdata, 99);break;
+					case 'j':parsefv(sty->fmotion.displace_j, 4, buf+propdata, 99);break;
+					case '0':parsefv(sty->fmotion.angular_x, 4, buf+propdata, 99);break;
+					case '1':parsefv(sty->fmotion.angular_v, 4, buf+propdata, 99);break;
+					case '2':parsefv(sty->fmotion.angular_a, 4, buf+propdata, 99);break;
+					case '3':parsefv(sty->fmotion.angular_j, 4, buf+propdata, 99);break;
 				}
 			}
 			continue;

@@ -303,14 +303,14 @@ struct istyle{
 	int uc[4];
 };
 struct fmotion{
-	vec4 j_angular;		//q
-	vec4 j_displace;	//v		jerk
-	vec4 a_angular;		//q
-	vec4 a_displace;	//v		accel
-	vec4 v_angular;		//q
-	vec4 v_displace;	//v		velocity
-	vec4 x_angular;		//q
-	vec4 x_displace;	//v		displace
+	vec4 displace_j;	//jerk
+	vec4 displace_a;	//accel
+	vec4 displace_v;	//velocity
+	vec4 displace_x;	//displace
+	vec4 angular_j;
+	vec4 angular_a;
+	vec4 angular_v;
+	vec4 angular_x;
 };
 struct imotion{
 	int ja[4];

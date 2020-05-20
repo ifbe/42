@@ -235,8 +235,9 @@
 #define _gl41wnd0_ hex64('g','l','4','1','w','n','d','0')
 //physic
 #define _phys_ hex32('p','h','y','s')
-#define _gravity_ hex64('g','r','a','v','i','t','y',0)
 #define _collide_ hex64('c','o','l','l','i','d','e',0)
+#define _graveasy_ hex64('g','r','a','v','e','a','s','y')
+#define _gravtest_ hex64('g','r','a','v','t','e','s','t')
 //sensor
 #define _sensor_ hex64('s','e','n','s','o','r',0,0)
 #define _lidar_ hex64('l','i','d','a','r',0,0,0)
