@@ -63,7 +63,7 @@ void update_onedraw(struct gldst* dst, struct glsrc* src)
 
 //say("@update texture\n");
 	//3: texture
-	for(j=0;j<4;j++){
+	for(j=0;j<5;j++){
 		if(dst->tex_deq[j] == src->tex[j].enq)continue;
 
 		fmt = src->tex[j].fmt;
@@ -177,7 +177,7 @@ void render_onedraw(struct gl41data* cam, struct gl41data* lit, struct gl41data*
 	//2.texture
 	k = 0;
 	if(lit){
-		for(j=0;j<4;j++){
+		for(j=0;j<5;j++){
 			if(0 == lit->src.tex[j].name)continue;
 			if(0 == lit->src.tex[j].data)continue;
 
@@ -187,7 +187,7 @@ void render_onedraw(struct gl41data* cam, struct gl41data* lit, struct gl41data*
 			k++;
 		}
 	}
-	for(j=0;j<4;j++)
+	for(j=0;j<5;j++)
 	{
 		if(0 == dst->tex[j])continue;
 		if(0 == src->tex[j].name)continue;

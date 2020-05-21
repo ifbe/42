@@ -61,6 +61,11 @@ static void gbuffer_readfrom_gbuffer(struct entity* ent, struct glsrc* src)
 	src->tex[3].name = "tex3";
 	src->tex[3].fmt = '!';
 	src->tex[3].enq += 1;
+
+	src->tex[4].glfd = fbo->dep;
+	src->tex[4].name = "tex4";
+	src->tex[4].fmt = '!';
+	src->tex[4].enq += 1;
 	//say("%d,%d,%d,%d\n", src->tex[0].glfd, src->tex[1].glfd, src->tex[2].glfd, src->tex[3].glfd);
 }
 static void gbuffer_draw_gl41(

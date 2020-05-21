@@ -184,7 +184,7 @@ struct glsrc
 	}arg[7];
 
 	//[88,fc)texture
-	struct texture tex[4];
+	struct texture tex[5];
 
 	//[c0,e7]vertex
 	//struct vertex vtx[1];

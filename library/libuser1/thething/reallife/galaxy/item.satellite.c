@@ -226,10 +226,10 @@ static void satellite_create(struct entity* act, void* str)
 	act->altitude = 0.0;
 
 	void* ctx = act->CTXBUF = memorycreate(0x200, 0);
-	if(ctx){
-		if(0 == str)str = "datafile/jpg/earth.jpg";
-		satellite_ctxforwnd(ctx, str);
-	}
+	if(0 == ctx)return;
+
+	if(0 == str)str = "datafile/jpg/earth.jpg";
+	satellite_ctxforwnd(ctx, str);
 }
 
 

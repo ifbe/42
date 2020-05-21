@@ -1,6 +1,7 @@
 <entity>
 satellite{
 fmt:satelli
+url:datafile/jpg/texball-earth.jpg
 }
 freecam{
 fmt:freecam
