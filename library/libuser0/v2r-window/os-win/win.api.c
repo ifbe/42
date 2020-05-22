@@ -403,15 +403,13 @@ LRESULT CALLBACK WindowProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			GetCursorPos(&pt);
 			ScreenToClient(wnd, &pt);
 
-			if( ((wparam>>16) & 0xffff ) < 0xf000 )k = 'f';
-			else k = 'b';
+			short* t = (void*)&ev.why;
+			t[0] = pt.x;
+			t[1] = pt.y;
+			t[2] = (wparam>16)&0xffff;
+			t[3] = (t[2]>0) ? 'f' : 'b';
 
-			y = pt.y;
-			x = pt.x;
-			//eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
-
-			ev.why = x + (y<<16) + (k<<48);
-			ev.what = 0x2b70;
+			ev.what = 0x4070;
 			ev.where = addr;
 			restorestackdeliverevent(win, &ev);
 			return 0;

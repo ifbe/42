@@ -21,6 +21,22 @@ int event3rd_movetar(struct fstyle* camgeom, struct fstyle* targeom, int dx, int
 	cam[2] += dz;
 	return 0;
 }
+int event3rd_nearfar(struct fstyle* cam, struct fstyle* tar, int key, int val)
+{
+	float k = 1.0;
+	if('b' == key)k = 1.01 - val*0.01;
+	if('f' == key)k = 0.99 - val*0.01;
+	//say("%x,%x\n",key,val);
+
+	vec3 v;
+	v[0] = cam->vc[0] - tar->vc[0];
+	v[1] = cam->vc[1] - tar->vc[1];
+	v[2] = cam->vc[2] - tar->vc[2];
+	cam->vc[0] = tar->vc[0] + v[0]*k;
+	cam->vc[1] = tar->vc[1] + v[1]*k;
+	cam->vc[2] = tar->vc[2] + v[2]*k;
+	return 0;
+}
 int event3rd_movecam(struct fstyle* cam, struct fstyle* tar, int dx, int dy)
 {
 	float a,c,s;
@@ -70,6 +86,7 @@ void* event3rd_findgeom(struct entity* ent)
 {
 	struct relation* rel;
 	struct entity* world;
+	if(0 == ent)return 0;
 
 	rel = ent->irel0;
 	while(1){
@@ -101,6 +118,7 @@ int event3rd_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, voi
 }
 int event3rd_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, struct event* ev, int len)
 {
+	//printmemory(ev,16);
 	if(0x2d70 == ev->what){
 		ent->MOUSEDOWN = 0;
 		return 0;
@@ -113,30 +131,34 @@ int event3rd_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, st
 		return 0;
 	}
 	if(0x4070 == ev->what){
-		if(0 == ent->MOUSEDOWN)return 0;
-
-		if(0 == ent->THECAM)return 0;
 		struct fstyle* camgeom = event3rd_findgeom(ent->THECAM);
 		if(0 == camgeom)return 0;
 
-		if(0 == ent->THETAR)return 0;
 		struct fstyle* targeom = event3rd_findgeom(ent->THETAR);
 		if(0 == targeom)return 0;
 
 		short* ch = (void*)ev;
-		int dx = ch[0] - ent->ixn;
-		int dy = ch[1] - ent->iyn;
-		event3rd_movecam(camgeom, targeom, dx, dy);
-		ent->ixn = ch[0];
-		ent->iyn = ch[1];
+		switch(ch[3]){
+		case 'f':
+		case 'b':{
+			event3rd_nearfar(camgeom, targeom, ch[3], ch[2]);
+			break;
+		}//mouse scroll
+		case 'l':
+		case 'r':{
+			if(0 == ent->MOUSEDOWN)return 0;
+			event3rd_movecam(camgeom, targeom, ch[0] - ent->ixn, ch[1] - ent->iyn);
+			ent->ixn = ch[0];
+			ent->iyn = ch[1];
+			break;
+		}//mouse move
+		}//switch
 		return 0;
 	}
 	if(_char_ == ev->what){
-		if(0 == ent->THECAM)return 0;
 		struct fstyle* camgeom = event3rd_findgeom(ent->THECAM);
 		if(0 == camgeom)return 0;
 
-		if(0 == ent->THETAR)return 0;
 		struct fstyle* targeom = event3rd_findgeom(ent->THETAR);
 		if(0 == targeom)return 0;
 
@@ -155,11 +177,9 @@ int event3rd_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, st
 	}
 	else if('j' == (ev->what&0xff))
 	{
-		if(0 == ent->THECAM)return 0;
 		struct fstyle* camgeom = event3rd_findgeom(ent->THECAM);
 		if(0 == camgeom)return 0;
 
-		if(0 == ent->THETAR)return 0;
 		struct fstyle* targeom = event3rd_findgeom(ent->THETAR);
 		if(0 == targeom)return 0;
 

@@ -202,55 +202,59 @@ static void callback_keyboard(GLFWwindow* fw, int key, int scan, int action, int
 	restorestackdeliverevent(ogl, &e);
 	//eventwrite(why, what, where, 0);
 }
-static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
-{
-	u64 x,y,temp;
-	struct event e;
-	double xpos, ypos;
-	struct supply* ogl = glfwGetWindowUserPointer(fw);
-
-	glfwGetCursorPos(fw, &xpos, &ypos);
-	x = ((int)xpos)&0xffff;
-	y = ((int)ypos)&0xffff;
-
-	if(0 == button)temp = 'l';
-	else temp = 'r';
-	e.why = x + (y<<16) + (temp<<48);
-
-	if(1 == action)e.what = 0x2b70;
-	else e.what = 0x2d70;
-
-	e.where = (u64)ogl;
-	restorestackdeliverevent(ogl, &e);
-}
-static void callback_move(GLFWwindow* fw, double xpos, double ypos)
-{
-	u64 x,y,temp;
-	struct event e;
-	struct supply* ogl = glfwGetWindowUserPointer(fw);
-
-	if(GLFW_PRESS == glfwGetMouseButton(fw, GLFW_MOUSE_BUTTON_LEFT))temp = 'l';
-	else temp = 'l';
-
-	x = ((int)xpos)&0xffff;
-	y = ((int)ypos)&0xffff;
-
-	e.why = x + (y<<16) + (temp<<48);
-	e.what = 0x4070;
-	e.where = (u64)ogl;
-	restorestackdeliverevent(ogl, &e);
-}
 static void callback_scroll(GLFWwindow* fw, double x, double y)
 {
-	struct event e;
 	struct supply* ogl = glfwGetWindowUserPointer(fw);
 	//printf("%llx: %f,%f\n", (u64)ogl, x, y);
 
-	e.where = (u64)ogl;
-	e.what = 0x2b70;
-	if(y > 0.0)e.why = ((u64)'f')<<48;	//wheel_up
-	else e.why = ((u64)'b')<<48;	//wheel_down
-	restorestackdeliverevent(ogl, &e);
+	double xpos, ypos;
+	glfwGetCursorPos(fw, &xpos, &ypos);
+
+	struct event ev;
+	ev.where = (u64)ogl;
+	ev.what = 0x4070;
+
+	short* t = (void*)&ev.why;
+	t[0] = (short)xpos;
+	t[1] = (short)ypos;
+	t[2] = (short)y;
+	t[3] = (y>0.0) ? 'f' : 'b';
+	restorestackdeliverevent(ogl, &ev);
+}
+static void callback_mouse(GLFWwindow* fw, int button, int action, int mods)
+{
+	struct supply* ogl = glfwGetWindowUserPointer(fw);
+
+	double xpos, ypos;
+	glfwGetCursorPos(fw, &xpos, &ypos);
+
+	struct event ev;
+	ev.where = (u64)ogl;
+	ev.what = (1 == action) ? 0x2b70 : 0x2d70;
+
+	short* t = (void*)&ev.why;
+	t[0] = (short)xpos;
+	t[1] = (short)ypos;
+	t[3] = (0 == button) ? 'l' : 'r';
+
+	restorestackdeliverevent(ogl, &ev);
+}
+static void callback_move(GLFWwindow* fw, double xpos, double ypos)
+{
+	struct supply* ogl = glfwGetWindowUserPointer(fw);
+
+	struct event ev;
+	ev.where = (u64)ogl;
+	ev.what = 0x4070;
+
+	short* t = (void*)&ev.why;
+	t[0] = (short)xpos;
+	t[1] = (short)ypos;
+
+	if(GLFW_PRESS == glfwGetMouseButton(fw, GLFW_MOUSE_BUTTON_LEFT))t[3] = 'l';
+	else t[3] = 'l';
+
+	restorestackdeliverevent(ogl, &ev);
 }
 static void callback_drop(GLFWwindow* fw, int count, const char** paths)
 {
@@ -284,7 +288,7 @@ static void callback_reshape(GLFWwindow* fw, int w, int h)
 
 
 
-void windowopen_root(struct supply* w, struct supply* r)
+void windowopen_root(struct supply* w)
 {
 	int x,y,j;
 
@@ -433,7 +437,7 @@ void windowcreate(struct supply* ogl, void* arg)
 		ogl->height = 768;
 		ogl->depth = 1024;
 
-		windowopen_root(ogl, 0);
+		windowopen_root(ogl);
 		nonewindow_create(ogl);
 		break;
 	}
@@ -442,7 +446,7 @@ void windowcreate(struct supply* ogl, void* arg)
 		ogl->height = 768;
 		ogl->depth = 1024;
 
-		windowopen_root(ogl, 0);
+		windowopen_root(ogl);
 		easywindow_create(ogl);
 		break;
 	}
@@ -451,7 +455,7 @@ void windowcreate(struct supply* ogl, void* arg)
 		ogl->height = 768;
 		ogl->depth = 1024;
 
-		windowopen_root(ogl, 0);
+		windowopen_root(ogl);
 		fullwindow_create(ogl);
 		break;
 	}

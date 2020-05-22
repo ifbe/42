@@ -109,18 +109,13 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 		}
 		else if(SDL_MOUSEWHEEL == ev.type)
 		{
-			if(ev.wheel.y > 0) // scroll up
-			{
-				msg.why = 'f';
-			}
-			else if(ev.wheel.y < 0) // scroll down
-			{
-				msg.why = 'b';
-			}
-			int x = ev.button.x;
-			int y = ev.button.y;
-			msg.why = x+(y<<16)+(msg.why<<48);
-			msg.what = 0x2b70;
+			short* t = (void*)&msg.why;
+			t[0] = ev.button.x;
+			t[1] = ev.button.y;
+			t[2] = ev.wheel.y;
+			t[3] = (ev.wheel.y > 0) ? 'f' : 'b';
+
+			msg.what = 0x4070;
 			rgbanode_write(wnd,0, stack,sp, 0,0, &msg,0);
 		}
 		else if(SDL_MOUSEBUTTONDOWN == ev.type)
