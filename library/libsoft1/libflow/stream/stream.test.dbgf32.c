@@ -3,11 +3,11 @@
 
 
 
-int dbgf32_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int dbgf32_read(struct artery* art,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
-int dbgf32_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int dbgf32_write(struct artery* art,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	int j;
 	float* f;

@@ -100,10 +100,6 @@ int lsm9ds1_i2cread(void* it, float* measure)
 	t = *(short*)(reg+4);
 	measure[8] = t * 400.0 / 32768.0;
 
-	say("%f,%f,%f, %f,%f,%f, %f,%f,%f\n",
-		measure[0], measure[1], measure[2],
-		measure[3], measure[4], measure[5],
-		measure[5], measure[7], measure[8]);
 	return 9;
 }
 int lsm9ds1_i2cinit(void* it)
@@ -138,19 +134,18 @@ int lsm9ds1_i2cinit(void* it)
 
 
 
-int lsm9ds1_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int lsm9ds1_read(struct driver* dri,int foot, struct halfrel* stack,int sp, struct halfrel* peer, void* arg,int key, u8* buf,int len)
 {
 	return 0;
 }
-int lsm9ds1_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, u8* buf, int len)
+int lsm9ds1_write(struct driver* dri,int foot, struct halfrel* stack,int sp, struct halfrel* peer, void* arg,int key, u8* buf,int len)
 {
 	int ret;
 	float tmp[10];
-	void* it = (void*)(self->chip);
-
-	if(_clk_ == self->flag){
-		ret = lsm9ds1_i2cread(it, tmp);
-		relationwrite(it,_dst_, 0,0, 0,0, tmp,ret);
+	if(_clk_ == foot){
+		ret = lsm9ds1_i2cread(dri, tmp);
+		say("@lsm9ds1_write_clk: %f,%f,%f, %f,%f,%f, %f,%f,%f\n", tmp[0],tmp[1],tmp[2], tmp[3],tmp[4],tmp[5], tmp[6],tmp[7],tmp[8]);
+		relationwrite(dri,_dst_, stack,sp, 0,0, tmp,ret);
 	}
 	return 0;
 }

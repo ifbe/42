@@ -12,9 +12,7 @@ int str2vec_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, voi
 }
 int str2vec_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	if(0 == art)return 0;
-	say("@str2vec_write:%llx.%.4s\n", art, &foot);
-
+	say("@str2vec_write: %.4s\n", &foot);
 	if(_str_ == foot){
 		int cnt;
 		float tmp[9];

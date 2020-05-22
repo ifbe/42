@@ -213,8 +213,8 @@ struct gldst
 	u8 shader_deq;
 
 	//texture
-	u32 tex[4];
-	u8 tex_deq[4];
+	u32 tex[5];
+	u8 tex_deq[5];
 
 	//vertex
 	u32 vbo;

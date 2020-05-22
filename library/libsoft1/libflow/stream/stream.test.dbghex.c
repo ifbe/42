@@ -3,11 +3,11 @@
 
 
 
-int dbghex_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int dbghex_read(struct artery* art,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
-int dbghex_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int dbghex_write(struct artery* art,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@dbghex_write: 0x%x\n", len);
 	printmemory(buf, len<16 ? len : 16);

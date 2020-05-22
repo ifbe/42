@@ -12,7 +12,7 @@ fmt:easyag
 qu2eu{
 fmt:qu2eu
 }
-conv{
+str2vec{
 fmt:str2vec
 }
 dbgf32{
@@ -44,13 +44,19 @@ url:/dev/i2c-1
 </device>
 
 
+<worker>
+pulser{
+fmt:pulser
+}
+</worker>
+
+
 <relation>
 (i2chost, 0, 0) -> (lsm9ds1, 0, i2c)
 (lsm9ds1, 0, dst) -> (easyag, 0, src)
 (easyag, 0, dst) -> (qu2eu, 0, src)
-(qu2eu, 0, dst) -> (dbgf32, 0, src)
-#(qu2eu, 0, dst) -> (conv, 0, vec)
-#(conv, 0, str) -> (target, 0, src)
+(qu2eu, 0, dst) -> (str2vec, 0, vec)
+(str2vec, 0, str) -> (target, 0, src)
 
-(std, 0, dst) -> (lsm9ds1, 0, clk)
+(pulser, 0, clk) -> (lsm9ds1, 0, clk)
 </relation>
