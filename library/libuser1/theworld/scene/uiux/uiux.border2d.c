@@ -11,7 +11,7 @@ void border2d_draw_gl41(struct entity* scene, struct entity* wnd)
 	struct fstyle* sty;
 	vec3 tc,tr,tf;
 	int j;
-	//say("@border2d_read: %.8s\n", &scene->fmt);
+	//say("@border2d_read: %.8s.%.8s\n", &wnd->fmt, &scene->fmt);
 
 	rel = scene->orel0;
 	while(1){
@@ -50,7 +50,7 @@ int border2d_read_bycam(struct entity* ent,int foot, struct halfrel* stack,int s
 		struct entity* tar = aa[1]->pchip;
 		if(0 == tar)return 0;
 
-		struct entity* wnd = stack[sp-4].pchip;
+		struct entity* wnd = stack[sp-6].pchip;
 		if(0 == wnd)return 0;
 
 		border2d_draw_gl41(tar, wnd);

@@ -1,0 +1,96 @@
+<entity>
+stair{
+fmt:geom
+}
+second{
+fmt:tree
+}
+freecam{
+fmt:freecam
+}
+scene3d{
+fmt:scene3d
+}
+axis3d{
+fmt:axis3d
+}
+virtual{
+fmt:virtual
+}
+</entity>
+
+
+<supply>
+opengl{
+fmt:wnd
+title:"42"
+width:1024
+height:1024
+depth:1024
+}
+</supply>
+
+
+<worker>
+poller{
+fmt:poller
+dt:16ms
+}
+</worker>
+
+
+<style>
+tempslot{
+}
+tempgeom{
+c:-2000.0,-1000.0, 1000.0
+r:-1000.0, 0.0, 0.0
+f: 0.0,-1000.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+itemslot{
+}
+itemgeom{
+c: 1000.0, 1000.0, 2000.0
+r: 707.0, 707.0, 0.0
+f:-707.0, 707.0, 0.0
+t: 0.0, 0.0, 1000.0
+}
+
+freemodl{
+}
+freegeom{
+c: 0.0,-2000.0, 2000.0
+r: 1.0, 0.0, 0.0
+f: 0.0, 0.707,-0.707
+t: 0.0, 0.707, 0.707
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000000000.0
+}
+freerect{
+c:0.0, 0.0
+q:1.0, 1.0
+}
+</style>
+
+
+<relation>
+#axis3d controld scene3d
+(axis3d, 0, tar) -> (scene3d, 0, 0)
+
+#scene depends on inner objects
+(scene3d, itemgeom, 0) -> (stair, itemslot, 0)
+(scene3d, tempgeom, 0) -> (second, tempslot, 0)
+
+#world depends on
+(virtual, 0, 0) -> (scene3d, 0, 0)
+(virtual, 0, 0) -> (axis3d, 0, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
+
+#glwnd depends on cam
+(opengl, freerect, mvp) -> (freecam, 0, 0)
+</relation>

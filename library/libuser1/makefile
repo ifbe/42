@@ -127,9 +127,10 @@ theworld/scene/physic/phy.fluid.c \
 theworld/scene/physic/phy.force.c \
 theworld/scene/neural/nn.cnn.c \
 theworld/scene/neural/nn.rnn.c \
-theworld/scene/uiux/uiux.border.c \
-theworld/scene/uiux/uiux.frame.c \
+theworld/scene/uiux/uiux.axis.c \
 theworld/scene/uiux/uiux.guide.c \
+theworld/scene/uiux/uiux.border2d.c \
+theworld/scene/uiux/uiux.border3d.c \
 theworld/scene/scene.c \
 theworld/whole/3d.real.c \
 theworld/whole/3d.virt.c \

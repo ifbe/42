@@ -128,7 +128,7 @@ void tardis_register(void*);
 void spring_register(void*);
 void stick_register(void*);
 
-//platn
+//plant
 void flower_register(void*);
 void grass_register(void*);
 void tree_register(void*);

@@ -1,9 +1,9 @@
 <entity>
 stair{
-fmt:stair
+fmt:geom
 }
 second{
-fmt:stair
+fmt:tree
 }
 freecam{
 fmt:freecam
@@ -11,8 +11,8 @@ fmt:freecam
 scene3d{
 fmt:scene3d
 }
-frame3d{
-fmt:frame3d
+guide3d{
+fmt:guide3d
 }
 virtual{
 fmt:virtual
@@ -43,7 +43,7 @@ dt:16ms
 tempslot{
 }
 tempgeom{
-c:-2000.0, 0000.0, 1000.0
+c:-2000.0,-1000.0, 1000.0
 r:-1000.0, 0.0, 0.0
 f: 0.0,-1000.0, 0.0
 t: 0.0, 0.0, 1000.0
@@ -51,7 +51,7 @@ t: 0.0, 0.0, 1000.0
 itemslot{
 }
 itemgeom{
-c: 0.0, 0.0, 0.0
+c: 1000.0, 1000.0, 2000.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
@@ -79,8 +79,8 @@ q:1.0, 1.0
 
 
 <relation>
-#frame3d controld scene3d
-(frame3d, 0, tar) -> (scene3d, 0, 0)
+#guide3d controld scene3d
+(guide3d, 0, tar) -> (scene3d, 0, 0)
 
 #scene depends on inner objects
 (scene3d, itemgeom, 0) -> (stair, itemslot, 0)
@@ -88,7 +88,7 @@ q:1.0, 1.0
 
 #world depends on
 (virtual, 0, 0) -> (scene3d, 0, 0)
-(virtual, 0, 0) -> (frame3d, 0, 0)
+(virtual, 0, 0) -> (guide3d, 0, 0)
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam

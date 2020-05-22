@@ -4,14 +4,14 @@
 
 
 
-void frame3d_draw_gl41(struct entity* scene, struct entity* wnd)
+void border3d_draw_gl41(struct entity* scene, struct entity* wnd)
 {
 	struct relation* rel;
 	struct entity* ent;
 	struct fstyle* sty;
 	vec3 tc,tr,tf,tt;
 	int j;
-	//say("@frame3d_read: %.8s\n", &scene->fmt);
+	//say("@border3d_read: %.8s\n", &scene->fmt);
 
 	rel = scene->orel0;
 	while(1){
@@ -36,7 +36,7 @@ void frame3d_draw_gl41(struct entity* scene, struct entity* wnd)
 		rel = samesrcnextdst(rel);
 	}
 }
-int frame3d_read_bycam(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key)
+int border3d_read_bycam(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key)
 {
 	if(stack && ('v' == key)){
 		struct halfrel* aa[2];
@@ -46,10 +46,10 @@ int frame3d_read_bycam(struct entity* ent,int foot, struct halfrel* stack,int sp
 		struct entity* tar = aa[1]->pchip;
 		if(0 == tar)return 0;
 
-		struct entity* wnd = stack[sp-4].pchip;
+		struct entity* wnd = stack[sp-6].pchip;
 		if(0 == wnd)return 0;
 
-		frame3d_draw_gl41(tar, wnd);
+		border3d_draw_gl41(tar, wnd);
 	}
 	return 0;
 }
@@ -57,41 +57,41 @@ int frame3d_read_bycam(struct entity* ent,int foot, struct halfrel* stack,int sp
 
 
 
-int frame3d_read(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int border3d_read(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	return frame3d_read_bycam(ent,foot, stack,sp, arg,key);
+	return border3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
-int frame3d_write(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int border3d_write(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
-int frame3d_discon(struct halfrel* self, struct halfrel* peer)
+int border3d_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int frame3d_linkup(struct halfrel* self, struct halfrel* peer)
+int border3d_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@frame3d_linkup\n");
+	say("@border3d_linkup\n");
 	return 0;
 }
 
 
 
 
-int frame3d_search(struct entity* scene)
+int border3d_search(struct entity* scene)
 {
 	return 0;
 }
-int frame3d_modify(struct entity* scene)
+int border3d_modify(struct entity* scene)
 {
 	return 0;
 }
-int frame3d_delete(struct entity* scene)
+int border3d_delete(struct entity* scene)
 {
 	return 0;
 }
-int frame3d_create(struct entity* scene, void* str)
+int border3d_create(struct entity* scene, void* str)
 {
-	say("@frame3d_create\n");
+	say("@border3d_create\n");
 	return 0;
 }

@@ -72,24 +72,30 @@ int gravtest_write(void*,int, void*,int, void*,int, void*,int);
 int gravtest_read( void*,int, void*,int, void*,int, void*,int);
 
 //scene
-int border2d_create(void*, void*, int, u8**);
-int border2d_delete(void*, void*);
-int border2d_linkup(void*, void*);
-int border2d_discon(void*, void*);
-int border2d_write(void*,int, void*,int, void*,int, void*,int);
-int border2d_read( void*,int, void*,int, void*,int, void*,int);
-int frame3d_create(void*, void*, int, u8**);
-int frame3d_delete(void*, void*);
-int frame3d_linkup(void*, void*);
-int frame3d_discon(void*, void*);
-int frame3d_write(void*,int, void*,int, void*,int, void*,int);
-int frame3d_read( void*,int, void*,int, void*,int, void*,int);
+int axis3d_create(void*, void*, int, u8**);
+int axis3d_delete(void*, void*);
+int axis3d_linkup(void*, void*);
+int axis3d_discon(void*, void*);
+int axis3d_write(void*,int, void*,int, void*,int, void*,int);
+int axis3d_read( void*,int, void*,int, void*,int, void*,int);
 int guide3d_create(void*, void*, int, u8**);
 int guide3d_delete(void*, void*);
 int guide3d_linkup(void*, void*);
 int guide3d_discon(void*, void*);
 int guide3d_write(void*,int, void*,int, void*,int, void*,int);
 int guide3d_read( void*,int, void*,int, void*,int, void*,int);
+int border2d_create(void*, void*, int, u8**);
+int border2d_delete(void*, void*);
+int border2d_linkup(void*, void*);
+int border2d_discon(void*, void*);
+int border2d_write(void*,int, void*,int, void*,int, void*,int);
+int border2d_read( void*,int, void*,int, void*,int, void*,int);
+int border3d_create(void*, void*, int, u8**);
+int border3d_delete(void*, void*);
+int border3d_linkup(void*, void*);
+int border3d_discon(void*, void*);
+int border3d_write(void*,int, void*,int, void*,int, void*,int);
+int border3d_read( void*,int, void*,int, void*,int, void*,int);
 int scene3d_create(void*, void*, int, u8**);
 int scene3d_delete(void*, void*);
 int scene3d_linkup(void*, void*);
@@ -321,9 +327,10 @@ int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* 
 	case _analog_:return analog_read(act,foot, stack,sp, arg,key, buf,len);
 	case _digital_:return digital_read(act,foot, stack,sp, arg,key, buf,len);
 
-	case _border2d_:return border2d_read(act,foot, stack,sp, arg,key, buf,len);
-	case _frame3d_:return frame3d_read(act,foot, stack,sp, arg,key, buf,len);
+	case _axis3d_:return axis3d_read(act,foot, stack,sp, arg,key, buf,len);
 	case _guide3d_:return guide3d_read(act,foot, stack,sp, arg,key, buf,len);
+	case _border2d_:return border2d_read(act,foot, stack,sp, arg,key, buf,len);
+	case _border3d_:return border3d_read(act,foot, stack,sp, arg,key, buf,len);
 	case _scene3d_:return scene3d_read(act,foot, stack,sp, arg,key, buf,len);
 
 	case _reality_:return reality_read(act,foot, stack,sp, arg,key, buf,len);
@@ -366,9 +373,10 @@ int entitywrite(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void*
 	case _analog_:return analog_write(act,foot, stack,sp, arg,key, buf,len);
 	case _digital_:return digital_write(act,foot, stack,sp, arg,key, buf,len);
 
-	case _border2d_:return border2d_write(act,foot, stack,sp, arg,key, buf,len);
-	case _frame3d_:return frame3d_write(act,foot, stack,sp, arg,key, buf,len);
+	case _axis3d_:return axis3d_write(act,foot, stack,sp, arg,key, buf,len);
 	case _guide3d_:return guide3d_write(act,foot, stack,sp, arg,key, buf,len);
+	case _border2d_:return border2d_write(act,foot, stack,sp, arg,key, buf,len);
+	case _border3d_:return border3d_write(act,foot, stack,sp, arg,key, buf,len);
 	case _scene3d_:return scene3d_write(act,foot, stack,sp, arg,key, buf,len);
 
 	case _reality_:return reality_write(act,foot, stack,sp, arg,key, buf,len);
@@ -417,9 +425,10 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	case _analog_:return analog_discon(self, peer);
 	case _digital_:return digital_discon(self, peer);
 
-	case _border2d_:return border2d_discon(self, peer);
-	case _frame3d_:return frame3d_discon(self, peer);
+	case _axis3d_:return axis3d_discon(self, peer);
 	case _guide3d_:return guide3d_discon(self, peer);
+	case _border2d_:return border2d_discon(self, peer);
+	case _border3d_:return border3d_discon(self, peer);
 	case _scene3d_:return scene3d_discon(self, peer);
 
 	case _reality_:return reality_discon(self, peer);
@@ -468,9 +477,10 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 	case _analog_:return analog_linkup(self, peer);
 	case _digital_:return digital_linkup(self, peer);
 
-	case _border2d_:return border2d_linkup(self, peer);
-	case _frame3d_:return frame3d_linkup(self, peer);
+	case _axis3d_:return axis3d_linkup(self, peer);
 	case _guide3d_:return guide3d_linkup(self, peer);
+	case _border2d_:return border2d_linkup(self, peer);
+	case _border3d_:return border3d_linkup(self, peer);
 	case _scene3d_:return scene3d_linkup(self, peer);
 
 	case _reality_:return reality_linkup(self, peer);
@@ -559,18 +569,11 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		return act;
 	}
 
-	case _border2d_:
+	case _axis3d_:
 	{
 		act = allocentity();
-		act->fmt = act->type = _border2d_;
-		border2d_create(act, buf, argc, argv);
-		return act;
-	}
-	case _frame3d_:
-	{
-		act = allocentity();
-		act->fmt = act->type = _frame3d_;
-		frame3d_create(act, buf, argc, argv);
+		act->fmt = act->type = _axis3d_;
+		axis3d_create(act, buf, argc, argv);
 		return act;
 	}
 	case _guide3d_:
@@ -578,6 +581,20 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		act = allocentity();
 		act->fmt = act->type = _guide3d_;
 		guide3d_create(act, buf, argc, argv);
+		return act;
+	}
+	case _border2d_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _border2d_;
+		border2d_create(act, buf, argc, argv);
+		return act;
+	}
+	case _border3d_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _border3d_;
+		border3d_create(act, buf, argc, argv);
 		return act;
 	}
 	case _scene3d_:

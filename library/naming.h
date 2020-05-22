@@ -193,10 +193,11 @@
 #define _fluid_ hex64('f','l','u','i','d', 0, 0, 0)
 #define _force_ hex64('f','o','r','c','e', 0, 0, 0)
 //
+#define _axis3d_   hex64('a','x','i','s','3','d', 0, 0)
+#define _guide3d_  hex64('g','u','i','d','e','3','d', 0)
 #define _border2d_ hex64('b','o','r','d','e','r','2','d')
-#define _frame3d_ hex64('f','r','a','m','e','3','d', 0)
-#define _guide3d_ hex64('g','u','i','d','e','3','d', 0)
-#define _scene3d_ hex64('s','c','e','n','e','3','d', 0)
+#define _border3d_ hex64('b','o','r','d','e','r','3','d')
+#define _scene3d_  hex64('s','c','e','n','e','3','d', 0)
 //
 #define _reality_ hex64('r','e','a','l','i','t','y', 0)
 #define _virtual_ hex64('v','i','r','t','u','a','l', 0)

@@ -9,7 +9,8 @@ void guide3d_draw_gl41(struct entity* scene, struct entity* wnd)
 	struct relation* rel;
 	struct entity* ent;
 	struct fstyle* sty;
-	vec3 tc = {0.0, 0.0, 0.0};
+	vec3 at = {0.0, 0.0, 0.0};
+	vec3 up = {0.0, 0.0, 1.0};
 	//say("@guide3d_read: %.8s\n", &scene->fmt);
 
 	rel = scene->orel0;
@@ -18,7 +19,7 @@ void guide3d_draw_gl41(struct entity* scene, struct entity* wnd)
 		ent = rel->pdstchip;
 		sty = rel->psrcfoot;
 		if(sty){
-			gl41line(wnd, 0xffffff, sty->vc, tc);
+			gl41line_arrow(wnd, 0xffffff, at, sty->vc, up);
 		}
 		rel = samesrcnextdst(rel);
 	}
@@ -33,7 +34,7 @@ int guide3d_read_bycam(struct entity* ent,int foot, struct halfrel* stack,int sp
 		struct entity* tar = aa[1]->pchip;
 		if(0 == tar)return 0;
 
-		struct entity* wnd = stack[sp-4].pchip;
+		struct entity* wnd = stack[sp-6].pchip;
 		if(0 == wnd)return 0;
 
 		guide3d_draw_gl41(tar, wnd);
