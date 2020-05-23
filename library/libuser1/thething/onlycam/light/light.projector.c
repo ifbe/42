@@ -32,15 +32,15 @@ char* projector_glsl_f =
 GLSL_VERSION
 "in mediump vec2 uvw;\n"
 "layout(location = 0)out mediump vec4 FragColor;\n"
-"uniform sampler2D suntex;\n"
-"uniform sampler2D sunimg;\n"
+"uniform sampler2D shadowmap;\n"
+"uniform sampler2D prjtormap;\n"
 "void main(){\n"
 	//"FragColor = vec4(texture(tex0, uvw).rgb, 1.0);\n"
 	"mediump float n = 1.0;"
 	"mediump float f = 10000.0;"
-	"mediump float d = texture(suntex, uvw).r;"
+	"mediump float d = texture(shadowmap, uvw).r;"
 	"mediump float c = (2.0 * n) / (f + n - d * (f - n));"
-	"FragColor = vec4(c*texture(sunimg, uvw).bgr, 1.0);\n"
+	"FragColor = vec4(c*texture(prjtormap, uvw).bgr, 1.0);\n"
 "}\n";
 
 
@@ -152,7 +152,7 @@ static void projector_forwnd_light_update(
 	src->arg[3].data = geom->frus.vf;
 
 	src->tex[0].glfd = sun->glfd;
-	src->tex[0].name = "suntex";
+	src->tex[0].name = "shadowmap";
 	src->tex[0].fmt = '!';
 	src->tex[0].enq += 1;
 
@@ -163,7 +163,7 @@ static void projector_forwnd_light_prepare(struct glsrc* src)
 	src->routine_name = "passtype";
 	src->routine_detail = "projector";
 
-	src->tex[1].name = "sunimg";
+	src->tex[1].name = "prjtormap";
 	src->tex[1].fmt = hex32('r','g','b','a');
 	src->tex[1].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[1], "datafile/jpg/cartoon.jpg");

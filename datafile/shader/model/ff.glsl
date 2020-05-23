@@ -10,9 +10,9 @@ uniform mediump vec3 camxyz;
 uniform mediump vec3 sunxyz;
 uniform mediump vec3 sundir;
 uniform mediump vec3 sunrgb;
-uniform sampler2D suntex;
-uniform sampler2D sunimg;
-uniform sampler2D skyenvmap;
+uniform sampler2D shadowmap;
+uniform sampler2D prjtormap;
+uniform sampler2D iblenvmap;
 uniform mat4 sunmvp;
 mediump vec3 LA = sunrgb;
 mediump vec3 LD = sunrgb;
@@ -94,7 +94,7 @@ subroutine (passtype) vec3 imagelight(){
 
 	mediump float x = atan(R.y, R.x)/PI/2.0 + 0.5;
 	mediump float y = 0.5 + asin(R.z)/PI;
-	mediump vec3 litrgb = texture(skyenvmap, vec2(x,y)).bgr;
+	mediump vec3 litrgb = texture(iblenvmap, vec2(x,y)).bgr;
 	mediump vec3 litdir = -R;
 
 	mediump vec3 ocolor = vec3(0.03) * albedo * amocc;
@@ -135,7 +135,7 @@ subroutine (passtype) vec3 dirlight(){
 	if(tmp.x > 1.0)return vec3(0.0);
 	if(tmp.y < 0.0)return vec3(0.0);
 	if(tmp.y > 1.0)return vec3(0.0);
-	if(tmp.z - texture(suntex, tmp.xy).r > 0.0001)return vec3(0.0);
+	if(tmp.z - texture(shadowmap, tmp.xy).r > 0.0001)return vec3(0.0);
 
 	mediump vec3 N = normalize(normal);
 	mediump vec3 L = normalize(-sundir);
@@ -155,7 +155,7 @@ subroutine (passtype) vec3 spotlight(){
 	tmp /= tmp.w;
 	if(tmp.x*tmp.x + tmp.y*tmp.y > 1.0)return vec3(0.0);
 	tmp = (tmp+1.0)*0.5;
-	if(tmp.z - texture(suntex, tmp.xy).r > 0.0001)return vec3(0.0);
+	if(tmp.z - texture(shadowmap, tmp.xy).r > 0.0001)return vec3(0.0);
 
 	mediump vec3 N = normalize(normal);
 	mediump vec3 L = normalize(sunxyz - objxyz);
@@ -178,8 +178,8 @@ subroutine (passtype) vec3 projector(){
 	if(tmp.x > 1.0)return vec3(0.0);
 	if(tmp.y < 0.0)return vec3(0.0);
 	if(tmp.y > 1.0)return vec3(0.0);
-	if(tmp.z - texture(suntex, tmp.xy).r > 0.0001)return vec3(0.0);
-	return texture(sunimg, tmp.xy).bgr;
+	if(tmp.z - texture(shadowmap, tmp.xy).r > 0.0001)return vec3(0.0);
+	return texture(prjtormap, tmp.xy).bgr;
 }
 
 

@@ -23,9 +23,9 @@ char* imagelight_glsl_f =
 GLSL_VERSION
 "in mediump vec2 uvw;\n"
 "out mediump vec4 FragColor;\n"
-"uniform sampler2D skyenvmap;\n"
+"uniform sampler2D iblenvmap;\n"
 "void main(){\n"
-	"FragColor = vec4(texture(skyenvmap, uvw).bgr, 1.0);\n"
+	"FragColor = vec4(texture(iblenvmap, uvw).bgr, 1.0);\n"
 	//"FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
 "}\n";
 
@@ -39,7 +39,7 @@ void imagelight_litforwnd(struct glsrc* src, char* str)
 
 	//texture
 	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "skyenvmap";
+	src->tex[0].name = "iblenvmap";
 	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[0], str);
 	src->tex[0].enq = 42;

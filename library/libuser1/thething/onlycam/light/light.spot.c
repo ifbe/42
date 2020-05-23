@@ -31,14 +31,14 @@ GLSL_VERSION
 
 char* spotlit_glsl_f =
 GLSL_VERSION
-"uniform sampler2D suntex;\n"
+"uniform sampler2D shadowmap;\n"
 "in mediump vec2 uvw;\n"
 "layout(location = 0)out mediump vec4 FragColor;\n"
 "void main(){\n"
 	//"FragColor = vec4(texture(tex0, uvw).rgb, 1.0);\n"
 	"mediump float n = 1.0;"
 	"mediump float f = 10000.0;"
-	"mediump float d = texture(suntex, uvw).r;"
+	"mediump float d = texture(shadowmap, uvw).r;"
 	"mediump float c = (2.0 * n) / (f + n - d * (f - n));"
 	"FragColor = vec4(c, c, c, 1.0);\n"
 "}\n";
@@ -151,7 +151,7 @@ static void spotlight_forwnd_light_update(
 	src->arg[3].data = geom->frus.vf;
 
 	src->tex[0].glfd = sun->glfd;
-	src->tex[0].name = "suntex";
+	src->tex[0].name = "shadowmap";
 	src->tex[0].fmt = '!';
 	src->tex[0].enq += 1;
 

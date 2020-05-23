@@ -1,0 +1,27 @@
+<entity>
+html{
+fmt:htmlroot
+}
+</entity>
+
+
+<system>
+tcp{
+fmt:tcp
+url:www.baidu.com:80
+}
+</system>
+
+
+<artery>
+http{
+fmt:http
+url:www.baidu.com/
+}
+</artery>
+
+
+<relation>
+(http, 0, dst) -> (html, 0, s)
+(tcp, 0, dst) -> (http, 0, src)
+</relation>

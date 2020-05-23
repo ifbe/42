@@ -3,6 +3,20 @@
 
 
 
+void htmlroot_parse(u8* buf, int len)
+{
+	int j,k=0;
+	for(j=0;j<len;j++){
+		if(0xa == buf[j]){
+			printmemory(buf+k,j-k+1);
+			k = j+1;
+		}
+	}
+}
+
+
+
+
 void background_html(struct entity* win)
 {
 	struct str** ctx = win->htmlctx;
@@ -76,8 +90,13 @@ int htmlroot_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, voi
 }
 int htmlroot_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@htmlroot_write\n");
-	relationwrite(ent,_src_, stack,sp, "text/html",0, "htmlroot_read\n",14);
+	say("@htmlroot_write: %.4s\n", &foot);
+	if('s' == foot){	//from server, change myself
+		htmlroot_parse(buf,len);
+	}
+	if('c' == foot){	//from client, replyto thisguy
+		printmemory(buf,len);
+	}
 	return 0;
 }
 int htmlroot_discon(struct halfrel* self, struct halfrel* peer)

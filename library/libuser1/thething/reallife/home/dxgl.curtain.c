@@ -18,8 +18,8 @@ char* curtain_glsl_f =
 GLSL_VERSION
 "in mediump vec3 vertex;\n"
 "layout(location = 0)out mediump vec4 FragColor;\n"
-"uniform sampler2D suntex;\n"
-"uniform sampler2D sunimg;\n"
+"uniform sampler2D shadowmap;\n"
+"uniform sampler2D prjtormap;\n"
 "uniform mat4 sunmvp;\n"
 "void main(){\n"
 	"mediump vec4 tmp = sunmvp * vec4(vertex, 1.0);\n"
@@ -27,8 +27,8 @@ GLSL_VERSION
 	"tmp = (tmp+1.0)*0.5;\n"
 	//"FragColor = vec4(tmp.x, tmp.y, tmp.z, 1.0);\n"
 	"mediump float visiable = 1.0;\n"
-	"if(tmp.z - texture(suntex, tmp.xy).r > 0.0001)visiable = 0.0;\n"
-	"FragColor = vec4(visiable * texture(sunimg, tmp.xy).bgr, 1.0);\n"
+	"if(tmp.z - texture(shadowmap, tmp.xy).r > 0.0001)visiable = 0.0;\n"
+	"FragColor = vec4(visiable * texture(prjtormap, tmp.xy).bgr, 1.0);\n"
 "}\n";
 
 

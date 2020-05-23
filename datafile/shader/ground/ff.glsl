@@ -7,8 +7,8 @@ subroutine uniform passtype routine;
 uniform sampler2D tex0;
 uniform sampler2D tex1;
 uniform sampler2D tex2;
-uniform sampler2D suntex;
-uniform sampler2D sunimg;
+uniform sampler2D shadowmap;
+uniform sampler2D prjtormap;
 uniform vec3 sunrgb;
 uniform vec3 sunxyz;
 uniform vec3 sundir;
@@ -81,7 +81,7 @@ subroutine (passtype) vec3 dirlight(){
 	tmp = (tmp+1.0)*0.5;
 	if(	(tmp.x < 0.0) || (tmp.x > 1.0) ||
 		(tmp.y < 0.0) || (tmp.y > 1.0) ||
-		(tmp.z - texture(suntex, tmp.xy).r > 0.0001) )return albedo*vec3(0.5);
+		(tmp.z - texture(shadowmap, tmp.xy).r > 0.0001) )return albedo*vec3(0.5);
 	return albedo;
 }
 subroutine (passtype) vec3 spotlight(){
@@ -93,7 +93,7 @@ subroutine (passtype) vec3 spotlight(){
 	if(val > 1.0)return albedo*vec3(0.2);
 
 	tmp = (tmp+1.0)*0.5;
-	if(tmp.z - texture(suntex, tmp.xy).r > 0.0001)return albedo*vec3(0.2);
+	if(tmp.z - texture(shadowmap, tmp.xy).r > 0.0001)return albedo*vec3(0.2);
 	return albedo*mix(sunrgb, vec3(0.2), val);
 }
 subroutine (passtype) vec3 projector(){
@@ -104,8 +104,8 @@ subroutine (passtype) vec3 projector(){
 	tmp = (tmp+1.0)*0.5;
 	if(	(tmp.x < 0.0) || (tmp.x > 1.0) ||
 		(tmp.y < 0.0) || (tmp.y > 1.0) ||
-		(tmp.z - texture(suntex, tmp.xy).r > 0.0001) )return albedo*vec3(0.5);
-	return albedo*texture(sunimg, tmp.xy).bgr;
+		(tmp.z - texture(shadowmap, tmp.xy).r > 0.0001) )return albedo*vec3(0.5);
+	return albedo*texture(prjtormap, tmp.xy).bgr;
 }
 subroutine (passtype) vec3 pointlight(){
 	vec3 albedo = texture(tex0, objuvw).bgr;
