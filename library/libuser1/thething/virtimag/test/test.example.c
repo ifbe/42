@@ -104,10 +104,10 @@ static void example_draw_cli(
 
 
 
-static void example_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void example_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void example_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void example_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void example_discon(struct halfrel* self, struct halfrel* peer)
@@ -150,6 +150,6 @@ void example_register(struct entity* p)
 
 	p->onlinkup = (void*)example_linkup;
 	p->ondiscon = (void*)example_discon;
-	p->onread  = (void*)example_read;
-	p->onwrite = (void*)example_read;
+	p->ontaking = (void*)example_taking;
+	p->ongiving = (void*)example_giving;
 }

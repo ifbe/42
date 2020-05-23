@@ -289,11 +289,11 @@ static void obj3d_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 		obj3d_draw_gl41(ent,slot, scn,geom, wrd,camg, wnd,area);
 	}
 }
-static void obj3d_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void obj3d_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	obj3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
-static void obj3d_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void obj3d_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void obj3d_discon(struct halfrel* self, struct halfrel* peer)
@@ -398,6 +398,6 @@ void obj3d_register(struct entity* p)
 
 	p->onlinkup = (void*)obj3d_linkup;
 	p->ondiscon = (void*)obj3d_discon;
-	p->onread  = (void*)obj3d_read;
-	p->onwrite = (void*)obj3d_write;
+	p->ontaking = (void*)obj3d_taking;
+	p->ongiving = (void*)obj3d_giving;
 }

@@ -42,11 +42,11 @@ static void eventrts_fixgeom(struct fstyle* geom)
 
 
 
-int eventrts_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int eventrts_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int eventrts_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int eventrts_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct fstyle* geom = eventrts_find(ent);
 	if(0 == geom)return 0;

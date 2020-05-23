@@ -99,7 +99,7 @@ static void field_draw_cli(
 
 
 
-static void field_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void field_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -111,7 +111,7 @@ static void field_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 		field_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void field_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void field_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void field_discon(struct halfrel* self, struct halfrel* peer)
@@ -182,6 +182,6 @@ void field_register(struct entity* p)
 
 	p->onlinkup = (void*)field_linkup;
 	p->ondiscon = (void*)field_discon;
-	p->onread  = (void*)field_read;
-	p->onwrite = (void*)field_write;
+	p->ontaking = (void*)field_taking;
+	p->ongiving = (void*)field_giving;
 }

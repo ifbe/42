@@ -259,12 +259,12 @@ void digital_read_board(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 
 
 
-int digital_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int digital_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	digital_read_board(ent,foot, stack,sp, arg,key);
 	return 0;
 }
-int digital_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int digital_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	struct wireindex* sts = ent->PERPIN;
 	if(0 == sts)return 0;

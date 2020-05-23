@@ -87,7 +87,7 @@ static void status_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 
 
 
-static void status_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void status_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -113,7 +113,7 @@ static void status_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	}
 	}
 }
-static void status_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void status_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void status_discon(struct halfrel* self, struct halfrel* peer)
@@ -154,6 +154,6 @@ void status_register(struct entity* p)
 
 	p->onlinkup = (void*)status_linkup;
 	p->ondiscon = (void*)status_discon;
-	p->onread  = (void*)status_read;
-	p->onwrite = (void*)status_write;
+	p->ontaking = (void*)status_taking;
+	p->ongiving = (void*)status_giving;
 }

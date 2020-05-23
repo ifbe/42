@@ -78,11 +78,11 @@ int axis3d_read_bycam(struct entity* ent,int foot, struct halfrel* stack,int sp,
 
 
 
-int axis3d_read(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int axis3d_taking(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return axis3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
-int axis3d_write(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int axis3d_giving(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

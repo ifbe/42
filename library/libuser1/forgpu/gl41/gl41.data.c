@@ -173,7 +173,7 @@ void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt)
 
 //[-4,-3]: ogl,area -> cam,togl
 //[-2,-1]: cam,towr -> wor,geom
-int gl41data_read(_ent* world,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int gl41data_taking(_ent* world,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct relation* rel = world->orel0;
 	while(1){
@@ -193,7 +193,7 @@ int gl41data_read(_ent* world,int foot, _syn* stack,int sp, void* arg,int key, v
 	}
 	return 0;
 }
-int gl41data_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int gl41data_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

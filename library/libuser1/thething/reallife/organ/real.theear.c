@@ -3,11 +3,11 @@
 
 
 
-static void theear_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void theear_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@theear_read\n");
 }
-static void theear_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void theear_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void theear_discon(struct halfrel* self, struct halfrel* peer)
@@ -48,6 +48,6 @@ void theear_register(struct entity* p)
 
 	p->onlinkup = (void*)theear_linkup;
 	p->ondiscon = (void*)theear_discon;
-	p->onread  = (void*)theear_read;
-	p->onwrite = (void*)theear_write;
+	p->ontaking = (void*)theear_taking;
+	p->ongiving = (void*)theear_giving;
 }

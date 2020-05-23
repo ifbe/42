@@ -225,7 +225,7 @@ static void gerber_draw_gl41(
 
 
 
-static void gerber_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gerber_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
@@ -238,7 +238,7 @@ static void gerber_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 		gerber_draw_gl41(ent,slot, scn,geom, wnd,area);
 	}
 }
-static void gerber_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gerber_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void gerber_discon(struct halfrel* self, struct halfrel* peer)
@@ -263,6 +263,6 @@ void gerber_register(struct entity* p)
 
 	p->onlinkup = (void*)gerber_linkup;
 	p->ondiscon = (void*)gerber_discon;
-	p->onread  = (void*)gerber_read;
-	p->onwrite = (void*)gerber_write;
+	p->ontaking = (void*)gerber_taking;
+	p->ongiving = (void*)gerber_giving;
 }

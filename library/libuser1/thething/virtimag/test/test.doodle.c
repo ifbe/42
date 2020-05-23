@@ -159,10 +159,10 @@ static void doodle_event(
 
 
 
-static void doodle_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void doodle_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void doodle_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void doodle_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void doodle_discon(struct halfrel* self, struct halfrel* peer)
@@ -205,6 +205,6 @@ void doodle_register(struct entity* p)
 
 	p->onlinkup = (void*)doodle_linkup;
 	p->ondiscon = (void*)doodle_discon;
-	p->onread  = (void*)doodle_read;
-	p->onwrite = (void*)doodle_write;
+	p->ontaking = (void*)doodle_taking;
+	p->ongiving = (void*)doodle_giving;
 }

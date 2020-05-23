@@ -346,11 +346,11 @@ static void glass_draw_cli(
 
 
 
-static void glass_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void glass_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	glass_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void glass_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void glass_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void glass_discon(struct halfrel* self, struct halfrel* peer)
@@ -413,6 +413,6 @@ void glass_register(struct entity* p)
 
 	p->onlinkup = (void*)glass_linkup;
 	p->ondiscon = (void*)glass_discon;
-	p->onread  = (void*)glass_read;
-	p->onwrite = (void*)glass_write;
+	p->ontaking = (void*)glass_taking;
+	p->ongiving = (void*)glass_giving;
 }

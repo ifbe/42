@@ -270,7 +270,7 @@ static void gbuffer_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg
 
 
 
-static int gbuffer_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int gbuffer_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
@@ -286,7 +286,7 @@ static int gbuffer_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	}
 	return 0;
 }
-static void gbuffer_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gbuffer_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@gbuffer_write\n");
 	if(_wnd_ == foot){
@@ -315,6 +315,6 @@ void gbuffer_register(struct entity* p)
 
 	p->onlinkup = (void*)gbuffer_linkup;
 	p->ondiscon = (void*)gbuffer_discon;
-	p->onread  = (void*)gbuffer_read;
-	p->onwrite = (void*)gbuffer_write;
+	p->ontaking = (void*)gbuffer_taking;
+	p->ongiving = (void*)gbuffer_giving;
 }

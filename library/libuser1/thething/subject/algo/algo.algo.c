@@ -123,10 +123,10 @@ static void algorithm_event(
 
 
 
-static void algorithm_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void algorithm_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void algorithm_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void algorithm_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void algorithm_discon(struct halfrel* self, struct halfrel* peer)
@@ -167,6 +167,6 @@ void algorithm_register(struct entity* p)
 
 	p->onlinkup = (void*)algorithm_linkup;
 	p->ondiscon = (void*)algorithm_discon;
-	p->onread  = (void*)algorithm_read;
-	p->onwrite = (void*)algorithm_write;
+	p->ontaking = (void*)algorithm_taking;
+	p->ongiving = (void*)algorithm_giving;
 }

@@ -39,7 +39,7 @@ static void spider_draw_cli(
 
 
 
-static void spider_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spider_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -51,7 +51,7 @@ static void spider_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 		spider_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void spider_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spider_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void spider_discon(struct halfrel* self, struct halfrel* peer)
@@ -97,6 +97,6 @@ void spider_register(struct entity* p)
 
 	p->onlinkup = (void*)spider_linkup;
 	p->ondiscon = (void*)spider_discon;
-	p->onread  = (void*)spider_read;
-	p->onwrite = (void*)spider_write;
+	p->ontaking = (void*)spider_taking;
+	p->ongiving = (void*)spider_giving;
 }

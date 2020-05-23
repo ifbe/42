@@ -59,7 +59,7 @@ static void tristate_draw_cli(
 
 
 
-static void tristate_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void tristate_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -71,7 +71,7 @@ static void tristate_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 		tristate_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void tristate_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void tristate_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void tristate_discon(struct halfrel* self, struct halfrel* peer)
@@ -112,6 +112,6 @@ void tristate_register(struct entity* p)
 
 	p->onlinkup = (void*)tristate_linkup;
 	p->ondiscon = (void*)tristate_discon;
-	p->onread  = (void*)tristate_read;
-	p->onwrite = (void*)tristate_write;
+	p->ontaking = (void*)tristate_taking;
+	p->ongiving = (void*)tristate_giving;
 }

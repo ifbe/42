@@ -59,7 +59,7 @@ static void dram_draw_cli(
 
 
 
-static void dram_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dram_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -71,7 +71,7 @@ static void dram_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 		dram_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void dram_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dram_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void dram_discon(struct halfrel* self, struct halfrel* peer)
@@ -112,6 +112,6 @@ void dram_register(struct entity* p)
 
 	p->onlinkup = (void*)dram_linkup;
 	p->ondiscon = (void*)dram_discon;
-	p->onread  = (void*)dram_read;
-	p->onwrite = (void*)dram_write;
+	p->ontaking = (void*)dram_taking;
+	p->ongiving = (void*)dram_giving;
 }

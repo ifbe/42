@@ -170,7 +170,7 @@ static void nand_draw_cli(
 
 
 
-static void nand_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void nand_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -182,7 +182,7 @@ static void nand_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 		nand_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void nand_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void nand_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	u8 tmp;
 	say("@nandgate_write:%x\n",buf[0]);
@@ -252,6 +252,6 @@ void nand_register(struct entity* p)
 
 	p->onlinkup = (void*)nand_linkup;
 	p->ondiscon = (void*)nand_discon;
-	p->onread  = (void*)nand_read;
-	p->onwrite = (void*)nand_write;
+	p->ontaking = (void*)nand_taking;
+	p->ongiving = (void*)nand_giving;
 }

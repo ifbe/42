@@ -292,7 +292,7 @@ static void codeimg_event(
 
 
 
-static void codeimg_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void codeimg_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -304,7 +304,7 @@ static void codeimg_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		codeimg_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void codeimg_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void codeimg_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void codeimg_discon(struct halfrel* self, struct halfrel* peer)
@@ -391,6 +391,6 @@ void codeimg_register(struct entity* p)
 
 	p->onlinkup = (void*)codeimg_linkup;
 	p->ondiscon = (void*)codeimg_discon;
-	p->onread  = (void*)codeimg_read;
-	p->onwrite = (void*)codeimg_write;
+	p->ontaking = (void*)codeimg_taking;
+	p->ongiving = (void*)codeimg_giving;
 }

@@ -159,7 +159,7 @@ static void curtain_draw_cli(
 
 
 
-static void curtain_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void curtain_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
@@ -172,7 +172,7 @@ static void curtain_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		curtain_draw_gl41(ent,slot, scn,geom, wnd,area);
 	}
 }
-static void curtain_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void curtain_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void curtain_discon(struct halfrel* self, struct halfrel* peer)
@@ -197,6 +197,6 @@ void curtain_register(struct entity* p)
 
 	p->onlinkup = (void*)curtain_linkup;
 	p->ondiscon = (void*)curtain_discon;
-	p->onread  = (void*)curtain_read;
-	p->onwrite = (void*)curtain_write;
+	p->ontaking = (void*)curtain_taking;
+	p->ongiving = (void*)curtain_giving;
 }

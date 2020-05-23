@@ -1242,7 +1242,7 @@ static void overview_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct 
 
 
 
-static int overview_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int overview_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -1260,7 +1260,7 @@ static int overview_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 	}
 	return 0;
 }
-static int overview_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int overview_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -1314,8 +1314,8 @@ void overview_register(struct entity* p)
 
 	p->onlinkup = (void*)overview_linkup;
 	p->ondiscon = (void*)overview_discon;
-	p->onread  = (void*)overview_read;
-	p->onwrite = (void*)overview_write;
+	p->ontaking = (void*)overview_taking;
+	p->ongiving = (void*)overview_giving;
 }
 void overview_init(void* addr)
 {

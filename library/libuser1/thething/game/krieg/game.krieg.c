@@ -7,10 +7,10 @@ static u8 buffer[16];
 
 
 
-static void kriegspiel_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void kriegspiel_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void kriegspiel_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void kriegspiel_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void kriegspiel_discon(struct halfrel* self, struct halfrel* peer)
@@ -56,6 +56,6 @@ void kriegspiel_register(struct entity* p)
 
 	p->onlinkup = (void*)kriegspiel_linkup;
 	p->ondiscon = (void*)kriegspiel_discon;
-	p->onread  = (void*)kriegspiel_read;
-	p->onwrite = (void*)kriegspiel_write;
+	p->ontaking = (void*)kriegspiel_taking;
+	p->ongiving = (void*)kriegspiel_giving;
 }

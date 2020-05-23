@@ -147,10 +147,10 @@ static void palette_event(
 
 
 
-static void palette_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void palette_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void palette_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void palette_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void palette_discon(struct halfrel* self, struct halfrel* peer)
@@ -199,6 +199,6 @@ void palette_register(struct entity* p)
 
 	p->onlinkup = (void*)palette_linkup;
 	p->ondiscon = (void*)palette_discon;
-	p->onread  = (void*)palette_read;
-	p->onwrite = (void*)palette_write;
+	p->ontaking = (void*)palette_taking;
+	p->ongiving = (void*)palette_giving;
 }

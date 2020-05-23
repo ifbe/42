@@ -7,10 +7,10 @@ static u8 data[144];
 
 
 
-static void mahjong_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mahjong_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void mahjong_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mahjong_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void mahjong_discon(struct halfrel* self, struct halfrel* peer)
@@ -59,6 +59,6 @@ void mahjong_register(struct entity* p)
 
 	p->onlinkup = (void*)mahjong_linkup;
 	p->ondiscon = (void*)mahjong_discon;
-	p->onread  = (void*)mahjong_read;
-	p->onwrite = (void*)mahjong_write;
+	p->ontaking = (void*)mahjong_taking;
+	p->ongiving = (void*)mahjong_giving;
 }

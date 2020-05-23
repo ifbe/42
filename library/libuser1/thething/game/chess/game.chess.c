@@ -150,7 +150,7 @@ static void chess_draw_cli(
 
 
 
-static void chess_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void chess_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -162,7 +162,7 @@ static void chess_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 		chess_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void chess_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void chess_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@chess:%x,%x\n", ev->why, ev->what);
 }
@@ -245,6 +245,6 @@ void chess_register(struct entity* p)
 
 	p->onlinkup = (void*)chess_linkup;
 	p->ondiscon = (void*)chess_discon;
-	p->onread  = (void*)chess_read;
-	p->onwrite = (void*)chess_write;
+	p->ontaking = (void*)chess_taking;
+	p->ongiving = (void*)chess_giving;
 }

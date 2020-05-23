@@ -251,7 +251,7 @@ static void video_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 		video_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void video_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void video_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* sty = stack[sp-2].pfoot;
@@ -262,7 +262,7 @@ static void video_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 		video_read_bycam(ent,foot, stack,sp, arg,key);
 	}
 }
-static void video_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void video_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct own* own = ent->OWNBUF;
 	if(0 == own)return;
@@ -320,6 +320,6 @@ void video_register(struct entity* p)
 
 	p->onlinkup = (void*)video_linkup;
 	p->ondiscon = (void*)video_discon;
-	p->onread  = (void*)video_read;
-	p->onwrite = (void*)video_write;
+	p->ontaking = (void*)video_taking;
+	p->ongiving = (void*)video_giving;
 }

@@ -47,7 +47,7 @@ static void vmddr_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 
-static int vmddr_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static int vmddr_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	if(_mmio_ == foot){
 		u8* ram = ent->buf0;
@@ -59,7 +59,7 @@ static int vmddr_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 	}
 	return 0;
 }
-static int vmddr_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vmddr_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -87,6 +87,6 @@ void vmddr_register(struct entity* p)
 
 	p->onlinkup = (void*)vmddr_linkup;
 	p->ondiscon = (void*)vmddr_discon;
-	p->onread  = (void*)vmddr_read;
-	p->onwrite = (void*)vmddr_write;
+	p->ontaking = (void*)vmddr_taking;
+	p->ongiving = (void*)vmddr_giving;
 }

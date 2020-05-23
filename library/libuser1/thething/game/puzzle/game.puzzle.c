@@ -7,10 +7,10 @@ static u8 buffer[16];
 
 
 
-static void puzzle_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void puzzle_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void puzzle_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void puzzle_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void puzzle_discon(struct halfrel* self, struct halfrel* peer)
@@ -59,6 +59,6 @@ void puzzle_register(struct entity* p)
 
 	p->onlinkup = (void*)puzzle_linkup;
 	p->ondiscon = (void*)puzzle_discon;
-	p->onread  = (void*)puzzle_read;
-	p->onwrite = (void*)puzzle_write;
+	p->ontaking = (void*)puzzle_taking;
+	p->ongiving = (void*)puzzle_giving;
 }

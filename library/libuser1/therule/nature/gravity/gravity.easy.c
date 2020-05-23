@@ -61,12 +61,12 @@ int graveasy_working(struct entity* ent)
 
 
 
-int graveasy_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int graveasy_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@graveasy_read:%.4s\n",&foot);
 	return 0;
 }
-int graveasy_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int graveasy_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@graveasy_write:%.4s\n",&foot);
 	if(_clk_ == foot)graveasy_working(ent);

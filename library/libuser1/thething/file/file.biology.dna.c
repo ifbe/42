@@ -99,10 +99,10 @@ static void dna_draw_cli(
 
 
 
-static void dna_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dna_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void dna_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dna_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void dna_discon(struct halfrel* self, struct halfrel* peer)
@@ -148,6 +148,6 @@ void dna_register(struct entity* p)
 
 	p->onlinkup = (void*)dna_linkup;
 	p->ondiscon = (void*)dna_discon;
-	p->onread  = (void*)dna_read;
-	p->onwrite = (void*)dna_write;
+	p->ontaking = (void*)dna_taking;
+	p->ongiving = (void*)dna_giving;
 }

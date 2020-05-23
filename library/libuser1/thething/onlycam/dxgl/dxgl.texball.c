@@ -192,7 +192,7 @@ static void texball_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg
 
 
 
-static void texball_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texball_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
@@ -208,7 +208,7 @@ static void texball_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 	}
 	}
 }
-static void texball_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texball_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void texball_discon(struct halfrel* self, struct halfrel* peer)
@@ -259,6 +259,6 @@ void texball_register(struct entity* p)
 
 	p->onlinkup = (void*)texball_linkup;
 	p->ondiscon = (void*)texball_discon;
-	p->onread  = (void*)texball_read;
-	p->onwrite = (void*)texball_write;
+	p->ontaking = (void*)texball_taking;
+	p->ongiving = (void*)texball_giving;
 }

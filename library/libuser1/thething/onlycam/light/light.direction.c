@@ -346,11 +346,11 @@ static void dirlight_draw_cli(
 
 
 
-static void dirlight_ontake(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dirlight_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	dirlight_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void dirlight_ongive(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dirlight_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void dirlight_discon(struct halfrel* self, struct halfrel* peer)
@@ -424,6 +424,6 @@ void dirlight_register(struct entity* p)
 
 	p->onlinkup = (void*)dirlight_linkup;
 	p->ondiscon = (void*)dirlight_discon;
-	p->onread   = (void*)dirlight_ontake;
-	p->onwrite  = (void*)dirlight_ongive;
+	p->ontaking = (void*)dirlight_taking;
+	p->ongiving = (void*)dirlight_giving;
 }

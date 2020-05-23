@@ -240,7 +240,7 @@ say("%d\n", ent->iz0);
 
 
 
-static int mnist_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int mnist_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* xxx = stack[sp-2].pchip;
 	switch(xxx->fmt){
@@ -253,7 +253,7 @@ static int mnist_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 	}
 	return 0;
 }
-static int mnist_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int mnist_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* xxx = stack[sp-2].pchip;
 	switch(xxx->fmt){
@@ -295,6 +295,6 @@ void mnist_register(struct entity* p)
 
 	p->onlinkup = (void*)mnist_linkup;
 	p->ondiscon = (void*)mnist_discon;
-	p->onread  = (void*)mnist_read;
-	p->onwrite = (void*)mnist_write;
+	p->ontaking = (void*)mnist_taking;
+	p->ongiving = (void*)mnist_giving;
 }

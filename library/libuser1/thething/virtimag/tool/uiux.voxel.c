@@ -112,7 +112,7 @@ void voxel_data(struct entity* act, int type, void* buf, int len)
 
 
 
-static void voxel_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void voxel_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -124,7 +124,7 @@ static void voxel_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 		voxel_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void voxel_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void voxel_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_pcm_ == foot){
 		voxel_data(ent, 0, buf, len);
@@ -171,6 +171,6 @@ void voxel_register(struct entity* p)
 
 	p->onlinkup = (void*)voxel_linkup;
 	p->ondiscon = (void*)voxel_discon;
-	p->onread  = (void*)voxel_read;
-	p->onwrite = (void*)voxel_write;
+	p->ontaking = (void*)voxel_taking;
+	p->ongiving = (void*)voxel_giving;
 }

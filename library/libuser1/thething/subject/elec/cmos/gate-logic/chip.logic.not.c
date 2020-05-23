@@ -122,7 +122,7 @@ static void not_draw_cli(
 
 
 
-static void not_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void not_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -134,7 +134,7 @@ static void not_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, 
 		not_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void not_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void not_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	u8 tmp;
 	say("@notgate_write:%x\n",buf[0]);
@@ -188,6 +188,6 @@ void not_register(struct entity* p)
 
 	p->onlinkup = (void*)not_linkup;
 	p->ondiscon = (void*)not_discon;
-	p->onread  = (void*)not_read;
-	p->onwrite = (void*)not_write;
+	p->ontaking = (void*)not_taking;
+	p->ongiving = (void*)not_giving;
 }

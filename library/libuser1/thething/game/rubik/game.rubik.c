@@ -326,7 +326,7 @@ static void rubikscube_event(
 
 
 
-static void rubikscube_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rubikscube_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -338,7 +338,7 @@ static void rubikscube_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,in
 		rubikscube_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void rubikscube_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rubikscube_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@rubik_write\n");
 }
@@ -401,6 +401,6 @@ void rubikscube_register(struct entity* p)
 
 	p->onlinkup = (void*)rubikscube_linkup;
 	p->ondiscon = (void*)rubikscube_discon;
-	p->onread  = (void*)rubikscube_read;
-	p->onwrite = (void*)rubikscube_write;
+	p->ontaking = (void*)rubikscube_taking;
+	p->ongiving = (void*)rubikscube_giving;
 }

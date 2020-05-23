@@ -355,7 +355,7 @@ static void xor_draw_cli(
 
 
 
-static void xor_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void xor_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -367,7 +367,7 @@ static void xor_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, 
 		xor_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void xor_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void xor_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	u8 tmp;
 	if(_src_ == foot){
@@ -420,6 +420,6 @@ void xor_register(struct entity* p)
 
 	p->onlinkup = (void*)xor_linkup;
 	p->ondiscon = (void*)xor_discon;
-	p->onread  = (void*)xor_read;
-	p->onwrite = (void*)xor_write;
+	p->ontaking = (void*)xor_taking;
+	p->ongiving = (void*)xor_giving;
 }

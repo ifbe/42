@@ -222,7 +222,7 @@ static void tree_draw_cli(
 
 
 
-static void tree_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void tree_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
@@ -235,7 +235,7 @@ static void tree_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 		tree_draw_gl41(ent,slot, scn,geom, wnd,area);
 	}
 }
-static void tree_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void tree_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void tree_discon(struct halfrel* self, struct halfrel* peer)
@@ -260,6 +260,6 @@ void tree_register(struct entity* p)
 
 	p->onlinkup = (void*)tree_linkup;
 	p->ondiscon = (void*)tree_discon;
-	p->onread  = (void*)tree_read;
-	p->onwrite = (void*)tree_write;
+	p->ontaking = (void*)tree_taking;
+	p->ongiving = (void*)tree_giving;
 }

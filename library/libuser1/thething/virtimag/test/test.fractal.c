@@ -241,7 +241,7 @@ static void fractal_event(
 
 
 
-static void fractal_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void fractal_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -253,7 +253,7 @@ static void fractal_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		fractal_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void fractal_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void fractal_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void fractal_discon(struct halfrel* self, struct halfrel* peer)
@@ -315,6 +315,6 @@ void fractal_register(struct entity* p)
 
 	p->onlinkup = (void*)fractal_linkup;
 	p->ondiscon = (void*)fractal_discon;
-	p->onread  = (void*)fractal_read;
-	p->onwrite = (void*)fractal_write;
+	p->ontaking = (void*)fractal_taking;
+	p->ongiving = (void*)fractal_giving;
 }

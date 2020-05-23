@@ -18,7 +18,7 @@ static void cpure_draw_gl41(
 
 
 
-static void cpure_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void cpure_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
@@ -31,7 +31,7 @@ static void cpure_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 		cpure_draw_gl41(ent,slot, scn,geom, wnd,area);
 	}
 }
-static void cpure_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void cpure_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void cpure_discon(struct halfrel* self, struct halfrel* peer)
@@ -77,6 +77,6 @@ void cpure_register(struct entity* p)
 
 	p->onlinkup = (void*)cpure_linkup;
 	p->ondiscon = (void*)cpure_discon;
-	p->onread  = (void*)cpure_read;
-	p->onwrite = (void*)cpure_write;
+	p->ontaking = (void*)cpure_taking;
+	p->ongiving = (void*)cpure_giving;
 }

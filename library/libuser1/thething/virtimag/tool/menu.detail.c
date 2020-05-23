@@ -187,7 +187,7 @@ int detail_draw_pixel(
 
 
 
-static void detail_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void detail_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -199,7 +199,7 @@ static void detail_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 		detail_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static int detail_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int detail_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 1;
 }
@@ -243,6 +243,6 @@ void detail_register(struct entity* p)
 
 	p->onlinkup = (void*)detail_linkup;
 	p->ondiscon = (void*)detail_discon;
-	p->onread  = (void*)detail_read;
-	p->onwrite = (void*)detail_write;
+	p->ontaking = (void*)detail_taking;
+	p->ongiving = (void*)detail_giving;
 }

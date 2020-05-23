@@ -125,10 +125,10 @@ static void skydome_draw_cli(
 
 
 
-static void skydome_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skydome_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void skydome_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skydome_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void skydome_discon(struct halfrel* self, struct halfrel* peer)
@@ -209,6 +209,6 @@ void skydome_register(struct entity* p)
 
 	p->onlinkup = (void*)skydome_linkup;
 	p->ondiscon = (void*)skydome_discon;
-	p->onread  = (void*)skydome_read;
-	p->onwrite = (void*)skydome_write;
+	p->ontaking = (void*)skydome_taking;
+	p->ongiving = (void*)skydome_giving;
 }

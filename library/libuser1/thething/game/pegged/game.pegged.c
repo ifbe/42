@@ -136,10 +136,10 @@ static void pegged_draw_cli(
 
 
 
-static void pegged_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pegged_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void pegged_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pegged_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void pegged_discon(struct halfrel* self, struct halfrel* peer)
@@ -196,6 +196,6 @@ void pegged_register(struct entity* p)
 
 	p->onlinkup = (void*)pegged_linkup;
 	p->ondiscon = (void*)pegged_discon;
-	p->onread  = (void*)pegged_read;
-	p->onwrite = (void*)pegged_write;
+	p->ontaking = (void*)pegged_taking;
+	p->ongiving = (void*)pegged_giving;
 }

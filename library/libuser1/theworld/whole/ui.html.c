@@ -62,7 +62,7 @@ void foreground_html(struct entity* win)
 
 
 
-int htmlroot_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+int htmlroot_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
 {
 	say("@htmlroot_read\n");
 
@@ -88,7 +88,7 @@ int htmlroot_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, voi
 	for(j=0;j<4;j++)buf[j] = ctx[j];
 	return 0;
 }
-int htmlroot_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int htmlroot_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@htmlroot_write: %.4s\n", &foot);
 	if('s' == foot){	//from server, change myself

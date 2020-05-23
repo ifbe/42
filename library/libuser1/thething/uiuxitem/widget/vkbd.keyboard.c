@@ -233,7 +233,7 @@ static void vkbd_write_bywnd(_ent* ent,int foot, _syn* stack,int sp, struct even
 
 
 
-static int vkbd_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vkbd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -250,7 +250,7 @@ static int vkbd_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, 
 	}
 	return 0;
 }
-static int vkbd_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vkbd_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* wnd = stack[sp-2].pchip;
 	switch(wnd->fmt){
@@ -286,6 +286,6 @@ void vkbd_register(struct entity* p)
 
 	p->onlinkup = (void*)vkbd_linkup;
 	p->ondiscon = (void*)vkbd_discon;
-	p->onread  = (void*)vkbd_read;
-	p->onwrite = (void*)vkbd_write;
+	p->ontaking = (void*)vkbd_taking;
+	p->ongiving = (void*)vkbd_giving;
 }

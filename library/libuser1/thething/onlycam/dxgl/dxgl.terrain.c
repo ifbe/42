@@ -324,7 +324,7 @@ void terrain_modify_matter(struct entity* act, int* src, int len)
 }
 
 
-static void terrain_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void terrain_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -338,7 +338,7 @@ static void terrain_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		terrain_draw_gl41(ent,slot, wor,geom, dup,camg, wnd, area);
 	}
 }
-static void terrain_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void terrain_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_int_ == foot)terrain_modify_matter(ent, buf,len);
 }
@@ -442,6 +442,6 @@ void terrain_register(struct entity* p)
 
 	p->onlinkup = (void*)terrain_linkup;
 	p->ondiscon = (void*)terrain_discon;
-	p->onread  = (void*)terrain_read;
-	p->onwrite = (void*)terrain_write;
+	p->ontaking = (void*)terrain_taking;
+	p->ongiving = (void*)terrain_giving;
 }

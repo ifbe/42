@@ -60,11 +60,11 @@ static void ladder_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 
 
 
-static void ladder_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ladder_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	ladder_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void ladder_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ladder_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void ladder_discon(struct halfrel* self, struct halfrel* peer)
@@ -105,6 +105,6 @@ void ladder_register(struct entity* p)
 
 	p->onlinkup = (void*)ladder_linkup;
 	p->ondiscon = (void*)ladder_discon;
-	p->onread  = (void*)ladder_read;
-	p->onwrite = (void*)ladder_write;
+	p->ontaking = (void*)ladder_taking;
+	p->ongiving = (void*)ladder_giving;
 }

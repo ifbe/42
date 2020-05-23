@@ -64,10 +64,10 @@ static void rawdump_draw_cli(
 
 
 
-static void rawdump_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rawdump_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void rawdump_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rawdump_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void rawdump_discon(struct halfrel* self, struct halfrel* peer)
@@ -120,6 +120,6 @@ void rawdump_register(struct entity* p)
 
 	p->onlinkup = (void*)rawdump_linkup;
 	p->ondiscon = (void*)rawdump_discon;
-	p->onread  = (void*)rawdump_read;
-	p->onwrite = (void*)rawdump_write;
+	p->ontaking = (void*)rawdump_taking;
+	p->ongiving = (void*)rawdump_giving;
 }

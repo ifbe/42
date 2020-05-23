@@ -116,10 +116,10 @@ static void calib3d_data(
 
 
 
-static void calib3d_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void calib3d_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void calib3d_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void calib3d_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void calib3d_discon(struct halfrel* self, struct halfrel* peer)
@@ -240,6 +240,6 @@ void calib3d_register(struct entity* p)
 
 	p->onlinkup = (void*)calib3d_linkup;
 	p->ondiscon = (void*)calib3d_discon;
-	p->onread  = (void*)calib3d_read;
-	p->onwrite = (void*)calib3d_write;
+	p->ontaking = (void*)calib3d_taking;
+	p->ongiving = (void*)calib3d_giving;
 }

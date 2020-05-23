@@ -138,7 +138,7 @@ void test_tickpcm(struct entity* ent, struct supply* sup)
 
 
 
-int test_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int test_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* wnd = stack[sp-2].pchip;
 	switch(wnd->fmt){
@@ -147,7 +147,7 @@ int test_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* b
 	}
 	return 0;
 }
-int test_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int test_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

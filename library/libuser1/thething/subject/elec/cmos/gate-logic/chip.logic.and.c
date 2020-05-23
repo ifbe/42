@@ -59,7 +59,7 @@ static void and_draw_cli(
 
 
 
-static void and_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void and_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -71,7 +71,7 @@ static void and_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, 
 		and_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void and_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void and_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void and_discon(struct halfrel* self, struct halfrel* peer)
@@ -112,6 +112,6 @@ void and_register(struct entity* p)
 
 	p->onlinkup = (void*)and_linkup;
 	p->ondiscon = (void*)and_discon;
-	p->onread  = (void*)and_read;
-	p->onwrite = (void*)and_write;
+	p->ontaking = (void*)and_taking;
+	p->ongiving = (void*)and_giving;
 }

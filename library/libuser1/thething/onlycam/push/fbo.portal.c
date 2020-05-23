@@ -398,7 +398,7 @@ static void portal_matrix(
 
 
 
-static void portal_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void portal_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 	say("@portal_read:%.4s,%llx\n", &foot, stack[sp-2].pfoot);
@@ -443,7 +443,7 @@ static void portal_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 		water_forwnd_update(ent,slot, fbo,rect);*/
 	}
 }
-static void portal_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void portal_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void portal_discon(struct halfrel* self, struct halfrel* peer)
@@ -500,6 +500,6 @@ void portal_register(struct entity* p)
 
 	p->onlinkup = (void*)portal_linkup;
 	p->ondiscon = (void*)portal_discon;
-	p->onread  = (void*)portal_read;
-	p->onwrite = (void*)portal_write;
+	p->ontaking = (void*)portal_taking;
+	p->ongiving = (void*)portal_giving;
 }

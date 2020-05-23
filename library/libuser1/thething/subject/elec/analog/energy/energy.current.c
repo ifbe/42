@@ -37,10 +37,10 @@ static void isrc_draw_cli(
 
 
 
-static void isrc_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void isrc_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void isrc_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void isrc_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void isrc_discon(struct halfrel* self, struct halfrel* peer)
@@ -82,6 +82,6 @@ void isrc_register(struct entity* p)
 
 	p->onlinkup = (void*)isrc_linkup;
 	p->ondiscon = (void*)isrc_discon;
-	p->onread  = (void*)isrc_read;
-	p->onwrite = (void*)isrc_write;
+	p->ontaking = (void*)isrc_taking;
+	p->ongiving = (void*)isrc_giving;
 }

@@ -334,11 +334,11 @@ static void spotlight_draw_cli(
 
 
 
-static void spotlight_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spotlight_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	spotlight_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void spotlight_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spotlight_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void spotlight_discon(struct halfrel* self, struct halfrel* peer)
@@ -414,6 +414,6 @@ void spotlight_register(struct entity* p)
 
 	p->onlinkup = (void*)spotlight_linkup;
 	p->ondiscon = (void*)spotlight_discon;
-	p->onread  = (void*)spotlight_read;
-	p->onwrite = (void*)spotlight_write;
+	p->ontaking = (void*)spotlight_taking;
+	p->ongiving = (void*)spotlight_giving;
 }

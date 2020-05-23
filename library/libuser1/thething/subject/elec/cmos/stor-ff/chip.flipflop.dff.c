@@ -195,7 +195,7 @@ static void dff_draw_cli(
 
 
 
-static void dff_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dff_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -207,7 +207,7 @@ static void dff_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, 
 		dff_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void dff_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dff_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void dff_discon(struct halfrel* self, struct halfrel* peer)
@@ -248,6 +248,6 @@ void dff_register(struct entity* p)
 
 	p->onlinkup = (void*)dff_linkup;
 	p->ondiscon = (void*)dff_discon;
-	p->onread  = (void*)dff_read;
-	p->onwrite = (void*)dff_write;
+	p->ontaking = (void*)dff_taking;
+	p->ongiving = (void*)dff_giving;
 }

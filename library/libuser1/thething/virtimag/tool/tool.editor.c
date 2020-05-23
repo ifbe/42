@@ -38,10 +38,10 @@ static void editor_draw_cli(
 
 
 
-static void editor_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void editor_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void editor_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void editor_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void editor_discon(struct halfrel* self, struct halfrel* peer)
@@ -89,6 +89,6 @@ void editor_register(struct entity* p)
 
 	p->onlinkup = (void*)editor_linkup;
 	p->ondiscon = (void*)editor_discon;
-	p->onread  = (void*)editor_read;
-	p->onwrite = (void*)editor_write;
+	p->ontaking = (void*)editor_taking;
+	p->ongiving = (void*)editor_giving;
 }

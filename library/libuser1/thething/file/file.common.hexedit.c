@@ -277,7 +277,7 @@ static void hexedit_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg
 
 
 
-static int hexedit_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int hexedit_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(sp < 2)return 0;
 	struct entity* sup = stack[sp-2].pchip;
@@ -295,7 +295,7 @@ static int hexedit_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	}
 	return 0;
 }
-static int hexedit_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int hexedit_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(sp < 2)return 0;
 	struct supply* wnd = stack[sp-2].pchip;
@@ -332,8 +332,8 @@ void hexedit_register(struct entity* p)
 
 	p->onlinkup = (void*)hexedit_linkup;
 	p->ondiscon = (void*)hexedit_discon;
-	p->onread  = (void*)hexedit_read;
-	p->onwrite = (void*)hexedit_write;
+	p->ontaking = (void*)hexedit_taking;
+	p->ongiving = (void*)hexedit_giving;
 }
 void hexedit_init(void* addr)
 {

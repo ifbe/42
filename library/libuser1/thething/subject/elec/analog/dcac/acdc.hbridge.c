@@ -121,7 +121,7 @@ static void hbridge_draw_cli(
 
 
 
-static void hbridge_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void hbridge_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -133,7 +133,7 @@ static void hbridge_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		hbridge_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void hbridge_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void hbridge_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void hbridge_discon(struct halfrel* self, struct halfrel* peer)
@@ -174,6 +174,6 @@ void hbridge_register(struct entity* p)
 
 	p->onlinkup = (void*)hbridge_linkup;
 	p->ondiscon = (void*)hbridge_discon;
-	p->onread  = (void*)hbridge_read;
-	p->onwrite = (void*)hbridge_write;
+	p->ontaking = (void*)hbridge_taking;
+	p->ongiving = (void*)hbridge_giving;
 }

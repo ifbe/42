@@ -110,10 +110,10 @@ static void klotski_draw_cli(
 
 
 
-static void klotski_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void klotski_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void klotski_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void klotski_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void klotski_discon(struct halfrel* self, struct halfrel* peer)
@@ -174,6 +174,6 @@ void klotski_register(struct entity* p)
 
 	p->onlinkup = (void*)klotski_linkup;
 	p->ondiscon = (void*)klotski_discon;
-	p->onread  = (void*)klotski_read;
-	p->onwrite = (void*)klotski_write;
+	p->ontaking = (void*)klotski_taking;
+	p->ongiving = (void*)klotski_giving;
 }

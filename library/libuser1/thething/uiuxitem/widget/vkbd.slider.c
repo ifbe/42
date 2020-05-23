@@ -127,7 +127,7 @@ static void slider_write_bywnd(_ent* ent,int foot, _syn* stack,int sp, struct ev
 
 
 
-static int slider_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int slider_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -144,7 +144,7 @@ static int slider_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 	}
 	return 0;
 }
-static int slider_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int slider_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* wnd = stack[sp-2].pchip;
 	switch(wnd->fmt){
@@ -180,6 +180,6 @@ void slider_register(struct entity* p)
 
 	p->onlinkup = (void*)slider_linkup;
 	p->ondiscon = (void*)slider_discon;
-	p->onread  = (void*)slider_read;
-	p->onwrite = (void*)slider_write;
+	p->ontaking = (void*)slider_taking;
+	p->ongiving = (void*)slider_giving;
 }

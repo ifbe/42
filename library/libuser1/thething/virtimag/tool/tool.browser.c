@@ -180,10 +180,10 @@ static void browser_data(
 
 
 
-static void browser_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void browser_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void browser_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void browser_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void browser_discon(struct halfrel* self, struct halfrel* peer)
@@ -242,6 +242,6 @@ void browser_register(struct entity* p)
 
 	p->onlinkup = (void*)browser_linkup;
 	p->ondiscon = (void*)browser_discon;
-	p->onread  = (void*)browser_read;
-	p->onwrite = (void*)browser_write;
+	p->ontaking = (void*)browser_taking;
+	p->ongiving = (void*)browser_giving;
 }

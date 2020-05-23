@@ -64,7 +64,7 @@ static void gaafet_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 
 
 
-static void gaafet_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gaafet_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
@@ -79,7 +79,7 @@ static void gaafet_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	}
 	}
 }
-static void gaafet_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gaafet_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void gaafet_discon(struct halfrel* self, struct halfrel* peer)
@@ -124,6 +124,6 @@ void gaafet_register(struct entity* p)
 
 	p->onlinkup = (void*)gaafet_linkup;
 	p->ondiscon = (void*)gaafet_discon;
-	p->onread  = (void*)gaafet_read;
-	p->onwrite = (void*)gaafet_write;
+	p->ontaking = (void*)gaafet_taking;
+	p->ongiving = (void*)gaafet_giving;
 }

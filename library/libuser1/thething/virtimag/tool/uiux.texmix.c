@@ -220,7 +220,7 @@ static void texmix_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 
 
 
-static int texmix_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int texmix_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -239,7 +239,7 @@ static int texmix_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 	}
 	return 0;
 }
-static void texmix_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texmix_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void texmix_discon(struct halfrel* self, struct halfrel* peer)
@@ -264,6 +264,6 @@ void texmix_register(struct entity* p)
 
 	p->onlinkup = (void*)texmix_linkup;
 	p->ondiscon = (void*)texmix_discon;
-	p->onread  = (void*)texmix_read;
-	p->onwrite = (void*)texmix_write;
+	p->ontaking = (void*)texmix_taking;
+	p->ongiving = (void*)texmix_giving;
 }

@@ -112,11 +112,11 @@ void* event3rd_findgeom(struct entity* ent)
 
 
 
-int event3rd_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int event3rd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
-int event3rd_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, struct event* ev, int len)
+int event3rd_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, struct event* ev, int len)
 {
 	//printmemory(ev,16);
 	if(0x2d70 == ev->what){

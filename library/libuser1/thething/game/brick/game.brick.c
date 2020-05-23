@@ -7,10 +7,10 @@ static u8 buffer[16];
 
 
 
-static void brick_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void brick_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void brick_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void brick_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void brick_discon(struct halfrel* self, struct halfrel* peer)
@@ -59,6 +59,6 @@ void brick_register(struct entity* p)
 
 	p->onlinkup = (void*)brick_linkup;
 	p->ondiscon = (void*)brick_discon;
-	p->onread  = (void*)brick_read;
-	p->onwrite = (void*)brick_write;
+	p->ontaking = (void*)brick_taking;
+	p->ongiving = (void*)brick_giving;
 }

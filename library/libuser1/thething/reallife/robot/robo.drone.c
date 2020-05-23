@@ -228,7 +228,7 @@ void drone_write_euler(struct entity* act, float* f)
 
 
 
-static void drone_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void drone_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -240,7 +240,7 @@ static void drone_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 		drone_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void drone_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void drone_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	drone_write_euler(ent, buf);
 }
@@ -287,6 +287,6 @@ void drone_register(struct entity* p)
 
 	p->onlinkup = (void*)drone_linkup;
 	p->ondiscon = (void*)drone_discon;
-	p->onread  = (void*)drone_read;
-	p->onwrite = (void*)drone_write;
+	p->ontaking = (void*)drone_taking;
+	p->ongiving = (void*)drone_giving;
 }

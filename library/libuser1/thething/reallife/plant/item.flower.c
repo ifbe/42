@@ -74,7 +74,7 @@ static void flower_draw_cli(
 
 
 
-static void flower_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void flower_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
@@ -87,7 +87,7 @@ static void flower_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 		flower_draw_gl41(ent,slot, scn,geom, wnd,area);
 	}
 }
-static void flower_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void flower_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void flower_discon(struct halfrel* self, struct halfrel* peer)
@@ -128,6 +128,6 @@ void flower_register(struct entity* p)
 
 	p->onlinkup = (void*)flower_linkup;
 	p->ondiscon = (void*)flower_discon;
-	p->onread  = (void*)flower_read;
-	p->onwrite = (void*)flower_write;
+	p->ontaking = (void*)flower_taking;
+	p->ongiving = (void*)flower_giving;
 }

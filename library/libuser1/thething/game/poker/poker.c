@@ -79,10 +79,10 @@ static void poker_draw_cli(
 
 
 
-static void poker_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void poker_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void poker_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void poker_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void poker_discon(struct halfrel* self, struct halfrel* peer)
@@ -130,6 +130,6 @@ void poker_register(struct entity* p)
 
 	p->onlinkup = (void*)poker_linkup;
 	p->ondiscon = (void*)poker_discon;
-	p->onread  = (void*)poker_read;
-	p->onwrite = (void*)poker_write;
+	p->ontaking = (void*)poker_taking;
+	p->ongiving = (void*)poker_giving;
 }

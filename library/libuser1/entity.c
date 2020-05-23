@@ -13,28 +13,28 @@ int baby_create(void*, void*, int, u8**);
 int baby_delete(void*, void*);
 int baby_linkup(void*, void*);
 int baby_discon(void*, void*);
-int baby_read( void*,int, void*,int, void*,int, void*,int);
-int baby_write(void*,int, void*,int, void*,int, void*,int);
+int baby_taking(void*,int, void*,int, void*,int, void*,int);
+int baby_giving(void*,int, void*,int, void*,int, void*,int);
 int test_create(void*, void*, int, u8**);
 int test_delete(void*, void*);
 int test_linkup(void*, void*);
 int test_discon(void*, void*);
-int test_read( void*,int, void*,int, void*,int, void*,int);
-int test_write(void*,int, void*,int, void*,int, void*,int);
+int test_taking(void*,int, void*,int, void*,int, void*,int);
+int test_giving(void*,int, void*,int, void*,int, void*,int);
 
 
 int toycar_create(void*, void*, int, u8**);
 int toycar_delete(void*, void*);
 int toycar_linkup(void*, void*);
 int toycar_discon(void*, void*);
-int toycar_read( void*,int, void*,int, void*,int, void*,int);
-int toycar_write(void*,int, void*,int, void*,int, void*,int);
+int toycar_taking(void*,int, void*,int, void*,int, void*,int);
+int toycar_giving(void*,int, void*,int, void*,int, void*,int);
 int stepcar_create(void*, void*, int, u8**);
 int stepcar_delete(void*, void*);
 int stepcar_linkup(void*, void*);
 int stepcar_discon(void*, void*);
-int stepcar_read( void*,int, void*,int, void*,int, void*,int);
-int stepcar_write(void*,int, void*,int, void*,int, void*,int);
+int stepcar_taking(void*,int, void*,int, void*,int, void*,int);
+int stepcar_giving(void*,int, void*,int, void*,int, void*,int);
 
 
 //
@@ -42,162 +42,162 @@ int analog_create(void*, void*, int, u8**);
 int analog_delete(void*, void*);
 int analog_linkup(void*, void*);
 int analog_discon(void*, void*);
-int analog_write(void*,int, void*,int, void*,int, void*,int);
-int analog_read( void*,int, void*,int, void*,int, void*,int);
+int analog_giving(void*,int, void*,int, void*,int, void*,int);
+int analog_taking(void*,int, void*,int, void*,int, void*,int);
 int digital_create(void*, void*, int, u8**);
 int digital_delete(void*, void*);
 int digital_linkup(void*, void*);
 int digital_discon(void*, void*);
-int digital_write(void*,int, void*,int, void*,int, void*,int);
-int digital_read( void*,int, void*,int, void*,int, void*,int);
+int digital_giving(void*,int, void*,int, void*,int, void*,int);
+int digital_taking(void*,int, void*,int, void*,int, void*,int);
 
 //
 int force_create(void*, void*, int, u8**);
 int force_delete(void*, void*);
 int force_linkup(void*, void*);
 int force_discon(void*, void*);
-int force_write(void*,int, void*,int, void*,int, void*,int);
-int force_read( void*,int, void*,int, void*,int, void*,int);
+int force_giving(void*,int, void*,int, void*,int, void*,int);
+int force_taking(void*,int, void*,int, void*,int, void*,int);
 int graveasy_create(void*, void*, int, u8**);
 int graveasy_delete(void*, void*);
 int graveasy_linkup(void*, void*);
 int graveasy_discon(void*, void*);
-int graveasy_write(void*,int, void*,int, void*,int, void*,int);
-int graveasy_read( void*,int, void*,int, void*,int, void*,int);
+int graveasy_giving(void*,int, void*,int, void*,int, void*,int);
+int graveasy_taking(void*,int, void*,int, void*,int, void*,int);
 int gravtest_create(void*, void*, int, u8**);
 int gravtest_delete(void*, void*);
 int gravtest_linkup(void*, void*);
 int gravtest_discon(void*, void*);
-int gravtest_write(void*,int, void*,int, void*,int, void*,int);
-int gravtest_read( void*,int, void*,int, void*,int, void*,int);
+int gravtest_giving(void*,int, void*,int, void*,int, void*,int);
+int gravtest_taking(void*,int, void*,int, void*,int, void*,int);
 
 //scene
 int axis3d_create(void*, void*, int, u8**);
 int axis3d_delete(void*, void*);
 int axis3d_linkup(void*, void*);
 int axis3d_discon(void*, void*);
-int axis3d_write(void*,int, void*,int, void*,int, void*,int);
-int axis3d_read( void*,int, void*,int, void*,int, void*,int);
+int axis3d_giving(void*,int, void*,int, void*,int, void*,int);
+int axis3d_taking(void*,int, void*,int, void*,int, void*,int);
 int guide3d_create(void*, void*, int, u8**);
 int guide3d_delete(void*, void*);
 int guide3d_linkup(void*, void*);
 int guide3d_discon(void*, void*);
-int guide3d_write(void*,int, void*,int, void*,int, void*,int);
-int guide3d_read( void*,int, void*,int, void*,int, void*,int);
+int guide3d_giving(void*,int, void*,int, void*,int, void*,int);
+int guide3d_taking(void*,int, void*,int, void*,int, void*,int);
 int border2d_create(void*, void*, int, u8**);
 int border2d_delete(void*, void*);
 int border2d_linkup(void*, void*);
 int border2d_discon(void*, void*);
-int border2d_write(void*,int, void*,int, void*,int, void*,int);
-int border2d_read( void*,int, void*,int, void*,int, void*,int);
+int border2d_giving(void*,int, void*,int, void*,int, void*,int);
+int border2d_taking(void*,int, void*,int, void*,int, void*,int);
 int border3d_create(void*, void*, int, u8**);
 int border3d_delete(void*, void*);
 int border3d_linkup(void*, void*);
 int border3d_discon(void*, void*);
-int border3d_write(void*,int, void*,int, void*,int, void*,int);
-int border3d_read( void*,int, void*,int, void*,int, void*,int);
+int border3d_giving(void*,int, void*,int, void*,int, void*,int);
+int border3d_taking(void*,int, void*,int, void*,int, void*,int);
 int scene3d_create(void*, void*, int, u8**);
 int scene3d_delete(void*, void*);
 int scene3d_linkup(void*, void*);
 int scene3d_discon(void*, void*);
-int scene3d_write(void*,int, void*,int, void*,int, void*,int);
-int scene3d_read( void*,int, void*,int, void*,int, void*,int);
+int scene3d_giving(void*,int, void*,int, void*,int, void*,int);
+int scene3d_taking(void*,int, void*,int, void*,int, void*,int);
 
 //
 int reality_create(void*, void*, int, u8**);
 int reality_delete(void*);
 int reality_linkup(void*, void*);
 int reality_discon(void*, void*);
-int reality_write(void*,int, void*,int, void*,int, void*,int);
-int reality_read( void*,int, void*,int, void*,int, void*,int);
+int reality_giving(void*,int, void*,int, void*,int, void*,int);
+int reality_taking(void*,int, void*,int, void*,int, void*,int);
 int virtual_create(void*, void*, int, u8**);
 int virtual_delete(void*, void*);
 int virtual_linkup(void*, void*);
 int virtual_discon(void*, void*);
-int virtual_write(void*,int, void*,int, void*,int, void*,int);
-int virtual_read( void*,int, void*,int, void*,int, void*,int);
+int virtual_giving(void*,int, void*,int, void*,int, void*,int);
+int virtual_taking(void*,int, void*,int, void*,int, void*,int);
 int htmlroot_create(void*, void*, int, u8**);
 int htmlroot_delete(void*);
 int htmlroot_linkup(void*, void*);
 int htmlroot_discon(void*, void*);
-int htmlroot_write(void*,int, void*,int, void*,int, void*,int);
-int htmlroot_read( void*,int, void*,int, void*,int, void*,int);
+int htmlroot_giving(void*,int, void*,int, void*,int, void*,int);
+int htmlroot_taking(void*,int, void*,int, void*,int, void*,int);
 int xamlroot_create(void*, void*, int, u8**);
 int xamlroot_delete(void*, void*);
 int xamlroot_linkup(void*, void*);
 int xamlroot_discon(void*, void*);
-int xamlroot_write(void*,int, void*,int, void*,int, void*,int);
-int xamlroot_read( void*,int, void*,int, void*,int, void*,int);
+int xamlroot_giving(void*,int, void*,int, void*,int, void*,int);
+int xamlroot_taking(void*,int, void*,int, void*,int, void*,int);
 int mmiospace_create(void*, void*, int, u8**);
 int mmiospace_delete(void*);
 int mmiospace_linkup(void*, void*);
 int mmiospace_discon(void*, void*);
-int mmiospace_write(void*,int, void*,int, void*,int, void*,int);
-int mmiospace_read( void*,int, void*,int, void*,int, void*,int);
+int mmiospace_giving(void*,int, void*,int, void*,int, void*,int);
+int mmiospace_taking(void*,int, void*,int, void*,int, void*,int);
 int portspace_create(void*, void*, int, u8**);
 int portspace_delete(void*, void*);
 int portspace_linkup(void*, void*);
 int portspace_discon(void*, void*);
-int portspace_write(void*,int, void*,int, void*,int, void*,int);
-int portspace_read( void*,int, void*,int, void*,int, void*,int);
+int portspace_giving(void*,int, void*,int, void*,int, void*,int);
+int portspace_taking(void*,int, void*,int, void*,int, void*,int);
 
 //gl41 helper
 int gl41data_create(void*, void*, int, u8**);
 int gl41data_delete(void*);
 int gl41data_linkup(void*, void*);
 int gl41data_discon(void*, void*);
-int gl41data_read( void*,int, void*,int, void*,int, void*,int);
-int gl41data_write(void*,int, void*,int, void*,int, void*,int);
+int gl41data_taking(void*,int, void*,int, void*,int, void*,int);
+int gl41data_giving(void*,int, void*,int, void*,int, void*,int);
 int gl41coop_create(void*, void*, int, u8**);
 int gl41coop_delete(void*);
 int gl41coop_linkup(void*, void*);
 int gl41coop_discon(void*, void*);
-int gl41coop_read( void*,int, void*,int, void*,int, void*,int);
-int gl41coop_write(void*,int, void*,int, void*,int, void*,int);
+int gl41coop_taking(void*,int, void*,int, void*,int, void*,int);
+int gl41coop_giving(void*,int, void*,int, void*,int, void*,int);
 
 //event
 int event3rd_create(void*, void*, int, u8**);
 int event3rd_delete(void*);
 int event3rd_linkup(void*, void*);
 int event3rd_discon(void*, void*);
-int event3rd_read( void*,int, void*,int, void*,int, void*,int);
-int event3rd_write(void*,int, void*,int, void*,int, void*,int);
+int event3rd_taking(void*,int, void*,int, void*,int, void*,int);
+int event3rd_giving(void*,int, void*,int, void*,int, void*,int);
 int eventrts_create(void*, void*, int, u8**);
 int eventrts_delete(void*);
 int eventrts_linkup(void*, void*);
 int eventrts_discon(void*, void*);
-int eventrts_read( void*,int, void*,int, void*,int, void*,int);
-int eventrts_write(void*,int, void*,int, void*,int, void*,int);
+int eventrts_taking(void*,int, void*,int, void*,int, void*,int);
+int eventrts_giving(void*,int, void*,int, void*,int, void*,int);
 int clickray_create(void*, void*, int, u8**);
 int clickray_delete(void*);
 int clickray_linkup(void*, void*);
 int clickray_discon(void*, void*);
-int clickray_read( void*,int, void*,int, void*,int, void*,int);
-int clickray_write(void*,int, void*,int, void*,int, void*,int);
+int clickray_taking(void*,int, void*,int, void*,int, void*,int);
+int clickray_giving(void*,int, void*,int, void*,int, void*,int);
 int touchobj_create(void*, void*, int, u8**);
 int touchobj_delete(void*);
 int touchobj_linkup(void*, void*);
 int touchobj_discon(void*, void*);
-int touchobj_read( void*,int, void*,int, void*,int, void*,int);
-int touchobj_write(void*,int, void*,int, void*,int, void*,int);
+int touchobj_taking(void*,int, void*,int, void*,int, void*,int);
+int touchobj_giving(void*,int, void*,int, void*,int, void*,int);
 int follow_create(void*, void*, int, u8**);
 int follow_delete(void*);
 int follow_linkup(void*, void*);
 int follow_discon(void*, void*);
-int follow_read( void*,int, void*,int, void*,int, void*,int);
-int follow_write(void*,int, void*,int, void*,int, void*,int);
+int follow_taking(void*,int, void*,int, void*,int, void*,int);
+int follow_giving(void*,int, void*,int, void*,int, void*,int);
 int lookat_create(void*, void*, int, u8**);
 int lookat_delete(void*);
 int lookat_linkup(void*, void*);
 int lookat_discon(void*, void*);
-int lookat_read( void*,int, void*,int, void*,int, void*,int);
-int lookat_write(void*,int, void*,int, void*,int, void*,int);
+int lookat_taking(void*,int, void*,int, void*,int, void*,int);
+int lookat_giving(void*,int, void*,int, void*,int, void*,int);
 int wander_create(void*, void*, int, u8**);
 int wander_delete(void*);
 int wander_linkup(void*, void*);
 int wander_discon(void*, void*);
-int wander_read( void*,int, void*,int, void*,int, void*,int);
-int wander_write(void*,int, void*,int, void*,int, void*,int);
+int wander_taking(void*,int, void*,int, void*,int, void*,int);
+int wander_giving(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -260,8 +260,8 @@ found:
 	ent->onmodify = tmp->onmodify;
 	ent->onlinkup = tmp->onlinkup;
 	ent->ondiscon = tmp->ondiscon;
-	ent->onread   = tmp->onread;
-	ent->onwrite  = tmp->onwrite;
+	ent->ontaking = tmp->ontaking;
+	ent->ongiving = tmp->ongiving;
 
 	ent->oncreate(ent, arg, argc, argv);
 	return ent;
@@ -307,94 +307,94 @@ void entityinput_touch(struct supply* win, struct event* ev)
 int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(act->type){
-	case _follow_:return follow_read(act,foot, stack,sp, arg,key, buf,len);
-	case _lookat_:return lookat_read(act,foot, stack,sp, arg,key, buf,len);
-	case _wander_:return wander_read(act,foot, stack,sp, arg,key, buf,len);
-	case _touchobj_:return touchobj_read(act,foot, stack,sp, arg,key, buf,len);
-	case _clickray_:return clickray_read(act,foot, stack,sp, arg,key, buf,len);
-	case _event3rd_:return event3rd_read(act,foot, stack,sp, arg,key, buf,len);
-	case _eventrts_:return eventrts_read(act,foot, stack,sp, arg,key, buf,len);
+	case _follow_:return follow_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _lookat_:return lookat_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _wander_:return wander_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _touchobj_:return touchobj_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _clickray_:return clickray_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _event3rd_:return event3rd_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _eventrts_:return eventrts_taking(act,foot, stack,sp, arg,key, buf,len);
 
-	case _gl41data_:return gl41data_read(act,foot, stack,sp, arg,key, buf,len);
-	case _gl41coop_:return gl41coop_read(act,foot, stack,sp, arg,key, buf,len);
+	case _gl41data_:return gl41data_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _gl41coop_:return gl41coop_taking(act,foot, stack,sp, arg,key, buf,len);
 
-	//case _field_:return field_read(act,foot, stack,sp, arg,key, buf,len);
-	//case _fluid_:return fluid_read(act,foot, stack,sp, arg,key, buf,len);
-	case _force_:return force_read(act,foot, stack,sp, arg,key, buf,len);
-	case _graveasy_:return graveasy_read(act,foot, stack,sp, arg,key, buf,len);
-	case _gravtest_:return gravtest_read(act,foot, stack,sp, arg,key, buf,len);
+	//case _field_:return field_taking(act,foot, stack,sp, arg,key, buf,len);
+	//case _fluid_:return fluid_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _force_:return force_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _graveasy_:return graveasy_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _gravtest_:return gravtest_taking(act,foot, stack,sp, arg,key, buf,len);
 
-	case _analog_:return analog_read(act,foot, stack,sp, arg,key, buf,len);
-	case _digital_:return digital_read(act,foot, stack,sp, arg,key, buf,len);
+	case _analog_:return analog_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _digital_:return digital_taking(act,foot, stack,sp, arg,key, buf,len);
 
-	case _axis3d_:return axis3d_read(act,foot, stack,sp, arg,key, buf,len);
-	case _guide3d_:return guide3d_read(act,foot, stack,sp, arg,key, buf,len);
-	case _border2d_:return border2d_read(act,foot, stack,sp, arg,key, buf,len);
-	case _border3d_:return border3d_read(act,foot, stack,sp, arg,key, buf,len);
-	case _scene3d_:return scene3d_read(act,foot, stack,sp, arg,key, buf,len);
+	case _axis3d_:return axis3d_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _guide3d_:return guide3d_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _border2d_:return border2d_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _border3d_:return border3d_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _scene3d_:return scene3d_taking(act,foot, stack,sp, arg,key, buf,len);
 
-	case _reality_:return reality_read(act,foot, stack,sp, arg,key, buf,len);
-	case _virtual_:return virtual_read(act,foot, stack,sp, arg,key, buf,len);
-	case _htmlroot_:return htmlroot_read(act,foot, stack,sp, arg,key, buf,len);
-	case _xamlroot_:return xamlroot_read(act,foot, stack,sp, arg,key, buf,len);
-	case _mmio_:return mmiospace_read(act,foot, stack,sp, arg,key, buf,len);
-	case _port_:return portspace_read(act,foot, stack,sp, arg,key, buf,len);
+	case _reality_:return reality_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _virtual_:return virtual_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _htmlroot_:return htmlroot_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _xamlroot_:return xamlroot_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _mmio_:return mmiospace_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _port_:return portspace_taking(act,foot, stack,sp, arg,key, buf,len);
 
-	case _step_:return stepcar_read(act,foot, stack,sp, arg,key, buf,len);
-	case _bdc_:return toycar_read(act,foot, stack,sp, arg,key, buf,len);
+	case _step_:return stepcar_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _bdc_:return toycar_taking(act,foot, stack,sp, arg,key, buf,len);
 
-	case _test_:return test_read(act,foot, stack,sp, arg,key, buf,len);
-	case _baby_:return baby_read(act,foot, stack,sp, arg,key, buf,len);
+	case _test_:return test_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _baby_:return baby_taking(act,foot, stack,sp, arg,key, buf,len);
 	}
 
-	if(0 == act->onread)return 0;
-	return act->onread(act,foot, stack,sp, arg,key, buf,len);
+	if(0 == act->ontaking)return 0;
+	return act->ontaking(act,foot, stack,sp, arg,key, buf,len);
 }
 int entitywrite(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(act->type){
-	case _follow_:return follow_write(act,foot, stack,sp, arg,key, buf,len);
-	case _lookat_:return lookat_write(act,foot, stack,sp, arg,key, buf,len);
-	case _wander_:return wander_write(act,foot, stack,sp, arg,key, buf,len);
-	case _touchobj_:return touchobj_write(act,foot, stack,sp, arg,key, buf,len);
-	case _clickray_:return clickray_write(act,foot, stack,sp, arg,key, buf,len);
-	case _event3rd_:return event3rd_write(act,foot, stack,sp, arg,key, buf,len);
-	case _eventrts_:return eventrts_write(act,foot, stack,sp, arg,key, buf,len);
+	case _follow_:return follow_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _lookat_:return lookat_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _wander_:return wander_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _touchobj_:return touchobj_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _clickray_:return clickray_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _event3rd_:return event3rd_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _eventrts_:return eventrts_giving(act,foot, stack,sp, arg,key, buf,len);
 
-	case _gl41data_:return gl41data_write(act,foot, stack,sp, arg,key, buf,len);
-	case _gl41coop_:return gl41coop_write(act,foot, stack,sp, arg,key, buf,len);
+	case _gl41data_:return gl41data_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _gl41coop_:return gl41coop_giving(act,foot, stack,sp, arg,key, buf,len);
 
-	//case _field_:return field_write(act,foot, stack,sp, arg,key, buf,len);
-	//case _fluid_:return fluid_write(act,foot, stack,sp, arg,key, buf,len);
-	case _force_:return force_write(act,foot, stack,sp, arg,key, buf,len);
-	case _graveasy_:return graveasy_write(act,foot, stack,sp, arg,key, buf,len);
-	case _gravtest_:return gravtest_write(act,foot, stack,sp, arg,key, buf,len);
+	//case _field_:return field_giving(act,foot, stack,sp, arg,key, buf,len);
+	//case _fluid_:return fluid_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _force_:return force_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _graveasy_:return graveasy_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _gravtest_:return gravtest_giving(act,foot, stack,sp, arg,key, buf,len);
 
-	case _analog_:return analog_write(act,foot, stack,sp, arg,key, buf,len);
-	case _digital_:return digital_write(act,foot, stack,sp, arg,key, buf,len);
+	case _analog_:return analog_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _digital_:return digital_giving(act,foot, stack,sp, arg,key, buf,len);
 
-	case _axis3d_:return axis3d_write(act,foot, stack,sp, arg,key, buf,len);
-	case _guide3d_:return guide3d_write(act,foot, stack,sp, arg,key, buf,len);
-	case _border2d_:return border2d_write(act,foot, stack,sp, arg,key, buf,len);
-	case _border3d_:return border3d_write(act,foot, stack,sp, arg,key, buf,len);
-	case _scene3d_:return scene3d_write(act,foot, stack,sp, arg,key, buf,len);
+	case _axis3d_:return axis3d_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _guide3d_:return guide3d_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _border2d_:return border2d_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _border3d_:return border3d_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _scene3d_:return scene3d_giving(act,foot, stack,sp, arg,key, buf,len);
 
-	case _reality_:return reality_write(act,foot, stack,sp, arg,key, buf,len);
-	case _virtual_:return virtual_write(act,foot, stack,sp, arg,key, buf,len);
-	case _htmlroot_:return htmlroot_write(act,foot, stack,sp, arg,key, buf,len);
-	case _xamlroot_:return xamlroot_write(act,foot, stack,sp, arg,key, buf,len);
-	case _mmio_:return mmiospace_write(act,foot, stack,sp, arg,key, buf,len);
-	case _port_:return portspace_write(act,foot, stack,sp, arg,key, buf,len);
+	case _reality_:return reality_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _virtual_:return virtual_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _htmlroot_:return htmlroot_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _xamlroot_:return xamlroot_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _mmio_:return mmiospace_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _port_:return portspace_giving(act,foot, stack,sp, arg,key, buf,len);
 
-	case _step_:return stepcar_write(act,foot, stack,sp, arg,key, buf,len);
-	case _bdc_:return toycar_write(act,foot, stack,sp, arg,key, buf,len);
+	case _step_:return stepcar_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _bdc_:return toycar_giving(act,foot, stack,sp, arg,key, buf,len);
 
-	case _test_:return test_write(act,foot, stack,sp, arg,key, buf,len);
-	case _baby_:return baby_write(act,foot, stack,sp, arg,key, buf,len);
+	case _test_:return test_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _baby_:return baby_giving(act,foot, stack,sp, arg,key, buf,len);
 	}
 
-	if(0 == act->onwrite)return 0;
-	return act->onwrite(act,foot, stack,sp, arg,key, buf,len);
+	if(0 == act->ongiving)return 0;
+	return act->ongiving(act,foot, stack,sp, arg,key, buf,len);
 }
 int entitydiscon(struct halfrel* self, struct halfrel* peer)
 {

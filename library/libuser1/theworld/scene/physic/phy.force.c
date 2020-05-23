@@ -175,7 +175,7 @@ void force_read_inner(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 		entityread(tab[j],'f', stack,sp+2, 0,0, jo,0);
 	}
 }
-int force_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int force_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(stack && ('v' == key)){
 		struct joint* jo = ent->buf0;
@@ -188,7 +188,7 @@ int force_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* 
 	}
 	return 0;
 }
-int force_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int force_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }

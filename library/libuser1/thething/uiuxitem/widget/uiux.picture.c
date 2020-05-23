@@ -156,7 +156,7 @@ static void picture_draw_cli(
 
 
 
-static void picture_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void picture_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -168,7 +168,7 @@ static void picture_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		picture_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void picture_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void picture_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@picture_write\n");
 	relationwrite(ent,_evto_, stack,sp, 0,0, "calibrate\n", 10);
@@ -221,6 +221,6 @@ void picture_register(struct entity* p)
 
 	p->onlinkup = (void*)picture_linkup;
 	p->ondiscon = (void*)picture_discon;
-	p->onread  = (void*)picture_read;
-	p->onwrite = (void*)picture_write;
+	p->ontaking = (void*)picture_taking;
+	p->ongiving = (void*)picture_giving;
 }

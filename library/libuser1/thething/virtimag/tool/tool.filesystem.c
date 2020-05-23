@@ -215,7 +215,7 @@ static void fslist_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 
 
 
-static void fslist_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void fslist_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -231,7 +231,7 @@ static void fslist_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	}
 	}
 }
-static void fslist_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void fslist_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -298,6 +298,6 @@ void fslist_register(struct entity* p)
 
 	p->onlinkup = (void*)fslist_linkup;
 	p->ondiscon = (void*)fslist_discon;
-	p->onread  = (void*)fslist_read;
-	p->onwrite = (void*)fslist_write;
+	p->ontaking = (void*)fslist_taking;
+	p->ongiving = (void*)fslist_giving;
 }

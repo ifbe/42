@@ -77,7 +77,7 @@ static void login_draw_cli(
 
 
 
-static void login_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void login_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -89,7 +89,7 @@ static void login_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 		login_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void login_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void login_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void login_discon(struct halfrel* self, struct halfrel* peer)
@@ -135,6 +135,6 @@ void login_register(struct entity* p)
 
 	p->onlinkup = (void*)login_linkup;
 	p->ondiscon = (void*)login_discon;
-	p->onread  = (void*)login_read;
-	p->onwrite = (void*)login_write;
+	p->ontaking = (void*)login_taking;
+	p->ongiving = (void*)login_giving;
 }

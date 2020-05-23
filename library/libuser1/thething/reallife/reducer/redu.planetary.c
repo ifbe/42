@@ -92,7 +92,7 @@ static void planetary_draw_cli(
 
 
 
-static void planetary_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void planetary_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -104,7 +104,7 @@ static void planetary_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 		planetary_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void planetary_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void planetary_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void planetary_discon(struct halfrel* self, struct halfrel* peer)
@@ -129,6 +129,6 @@ void planetary_register(struct entity* p)
 
 	p->onlinkup = (void*)planetary_linkup;
 	p->ondiscon = (void*)planetary_discon;
-	p->onread  = (void*)planetary_read;
-	p->onwrite = (void*)planetary_write;
+	p->ontaking = (void*)planetary_taking;
+	p->ongiving = (void*)planetary_giving;
 }

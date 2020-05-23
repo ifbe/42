@@ -171,10 +171,10 @@ say("%d,%d\n",x,y);
 
 
 
-static void ooxx_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ooxx_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void ooxx_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ooxx_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void ooxx_discon(struct halfrel* self, struct halfrel* peer)
@@ -230,6 +230,6 @@ void ooxx_register(struct entity* p)
 
 	p->onlinkup = (void*)ooxx_linkup;
 	p->ondiscon = (void*)ooxx_discon;
-	p->onread  = (void*)ooxx_read;
-	p->onwrite = (void*)ooxx_write;
+	p->ontaking = (void*)ooxx_taking;
+	p->ongiving = (void*)ooxx_giving;
 }

@@ -134,7 +134,7 @@ static void vsrc_read_n(struct entity* ent, int key, struct wireindex* sts, int 
 
 
 
-static void vsrc_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void vsrc_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(foot){
 		case 'p':vsrc_read_p(ent,key, buf,len);break;
@@ -142,7 +142,7 @@ static void vsrc_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 		default:vsrc_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 }
-static void vsrc_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void vsrc_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@vsrc_write: %.4s\n", &foot);
 	if('n' == foot){
@@ -197,6 +197,6 @@ void vsrc_register(struct entity* p)
 
 	p->onlinkup = (void*)vsrc_linkup;
 	p->ondiscon = (void*)vsrc_discon;
-	p->onread  = (void*)vsrc_read;
-	p->onwrite = (void*)vsrc_write;
+	p->ontaking = (void*)vsrc_taking;
+	p->ongiving = (void*)vsrc_giving;
 }

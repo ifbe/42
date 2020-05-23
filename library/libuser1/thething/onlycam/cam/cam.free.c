@@ -17,7 +17,7 @@ void pixel_cleardepth(void*);
 //
 void gl41data_before(void*);
 void gl41data_after(void*);
-int gl41data_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int gl41data_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 
 
@@ -452,13 +452,13 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		freecam_frustum2matrix(ent,slot, wor,geom);
 		freecam_camera(ent,slot, wor,geom, wnd,area);
 
-		gl41data_read(wor,0, stack,sp+2, 0,'v', buf,len);
+		gl41data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
 
 		gl41data_after(wnd);
 		return -1;
 	}
 	if('?' == key){
-		gl41data_read(wor,0, stack,sp+2, 0,'?', buf,len);
+		gl41data_taking(wor,0, stack,sp+2, 0,'?', buf,len);
 		return 0;
 	}
 	return 0;
@@ -482,7 +482,7 @@ static int freecam_write_bywnd(_ent* ent,struct event* ev)
 
 
 
-static int freecam_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int freecam_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@freecam_read\n");
 	if(sp < 2)return 0;
@@ -496,7 +496,7 @@ static int freecam_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	}
 	return 0;
 }
-static int freecam_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int freecam_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct event* ev = buf;
 	if(DELIVER == ent->EVTOTYPE){
@@ -546,6 +546,6 @@ void freecam_register(struct entity* p)
 
 	p->onlinkup = (void*)freecam_linkup;
 	p->ondiscon = (void*)freecam_discon;
-	p->onread  = (void*)freecam_read;
-	p->onwrite = (void*)freecam_write;
+	p->ontaking = (void*)freecam_taking;
+	p->ongiving = (void*)freecam_giving;
 }

@@ -238,10 +238,10 @@ static void tetris_event(
 
 
 
-static void tetris_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void tetris_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void tetris_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void tetris_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void tetris_discon(struct halfrel* self, struct halfrel* peer)
@@ -292,6 +292,6 @@ void tetris_register(struct entity* p)
 
 	p->onlinkup = (void*)tetris_linkup;
 	p->ondiscon = (void*)tetris_discon;
-	p->onread  = (void*)tetris_read;
-	p->onwrite = (void*)tetris_write;
+	p->ontaking = (void*)tetris_taking;
+	p->ongiving = (void*)tetris_giving;
 }

@@ -337,11 +337,11 @@ static void projector_draw_cli(
 
 
 
-static void projector_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void projector_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	projector_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void projector_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void projector_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void projector_discon(struct halfrel* self, struct halfrel* peer)
@@ -415,6 +415,6 @@ void projector_register(struct entity* p)
 
 	p->onlinkup = (void*)projector_linkup;
 	p->ondiscon = (void*)projector_discon;
-	p->onread  = (void*)projector_read;
-	p->onwrite = (void*)projector_write;
+	p->ontaking = (void*)projector_taking;
+	p->ongiving = (void*)projector_giving;
 }

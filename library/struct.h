@@ -967,11 +967,11 @@ struct supply
 		char padding5[8];
 	};
 	union{
-		int (*onread)(struct supply* sup,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*ontaking)(struct supply* sup,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding6[8];
 	};
 	union{
-		int (*onwrite)(struct supply* sup,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*ongiving)(struct supply* sup,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding7[8];
 	};
 
@@ -1142,11 +1142,11 @@ struct entity
 		char padding5[8];
 	};
 	union{
-		int (*onread)(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*ontaking)(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding6[8];
 	};
 	union{
-		int (*onwrite)(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*ongiving)(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding7[8];
 	};
 

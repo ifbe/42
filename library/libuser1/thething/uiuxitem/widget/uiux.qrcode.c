@@ -145,7 +145,7 @@ static void qrcode_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		qrcode_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void qrcode_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void qrcode_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -157,7 +157,7 @@ static void qrcode_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 		default:qrcode_read_bycam(ent,foot, stack,sp, arg,key);
 	}
 }
-static void qrcode_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void qrcode_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void qrcode_discon(struct halfrel* self, struct halfrel* peer)
@@ -204,6 +204,6 @@ void qrcode_register(struct entity* p)
 
 	p->onlinkup = (void*)qrcode_linkup;
 	p->ondiscon = (void*)qrcode_discon;
-	p->onread  = (void*)qrcode_read;
-	p->onwrite = (void*)qrcode_write;
+	p->ontaking = (void*)qrcode_taking;
+	p->ongiving = (void*)qrcode_giving;
 }

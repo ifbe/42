@@ -3,12 +3,12 @@
 
 
 
-int baby_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int baby_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@baby_read: crying\n");
 	return 0;
 }
-int baby_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int baby_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@baby_write: crying\n");
 	return 0;

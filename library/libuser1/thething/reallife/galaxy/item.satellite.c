@@ -169,7 +169,7 @@ static void satellite_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* a
 
 
 
-static void satellite_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void satellite_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(sp < 2)return;
 	struct supply* sup = stack[sp-2].pchip;
@@ -187,7 +187,7 @@ static void satellite_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	}
 	}
 }
-static void satellite_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void satellite_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	float* f = buf;
 	say("@satellite_write: %f,%f,%f,%f\n", f[0],f[1],f[2],f[3]);
@@ -247,6 +247,6 @@ void satellite_register(struct entity* p)
 
 	p->onlinkup = (void*)satellite_linkup;
 	p->ondiscon = (void*)satellite_discon;
-	p->onread  = (void*)satellite_read;
-	p->onwrite = (void*)satellite_write;
+	p->ontaking = (void*)satellite_taking;
+	p->ongiving = (void*)satellite_giving;
 }

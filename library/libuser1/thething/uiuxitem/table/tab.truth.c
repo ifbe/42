@@ -166,7 +166,7 @@ static int truth_write_bykarnaugh(struct entity* ent, u8* i)
 
 
 
-static int truth_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int truth_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -182,7 +182,7 @@ static int truth_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 	}
 	return 0;
 }
-static int truth_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int truth_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_karnaugh_ == foot){
 		return truth_write_bykarnaugh(ent, buf);
@@ -223,6 +223,6 @@ void truth_register(struct entity* p)
 
 	p->onlinkup = (void*)truth_linkup;
 	p->ondiscon = (void*)truth_discon;
-	p->onread  = (void*)truth_read;
-	p->onwrite = (void*)truth_write;
+	p->ontaking = (void*)truth_taking;
+	p->ongiving = (void*)truth_giving;
 }

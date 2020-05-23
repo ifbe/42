@@ -28,7 +28,7 @@ int virtual_traverse(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 
 
 
-int virtual_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int virtual_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@virtual_read\n");
 	struct entity* wnd = stack[sp-2].pchip;
@@ -49,7 +49,7 @@ int virtual_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void
 	}//switch
 	return 0;
 }
-int virtual_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int virtual_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@virtual_write\n");
 	relationwrite(ent,_evto_, stack,sp, arg,key, buf,len);

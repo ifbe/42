@@ -6,7 +6,7 @@ void matproj_transpose(float* m, struct fstyle* sty);
 //
 void gl41data_before(void*);
 void gl41data_after(void*);
-int gl41data_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int gl41data_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 
 
 
@@ -289,13 +289,13 @@ static int vrglass_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		vrglass_matrix(ent,slot, wor,geom);
 		vrglass_camera(ent,slot, wor,geom, wnd,area);
 
-		gl41data_read(wor,0, stack,sp+2, 0,'v', buf,len);
+		gl41data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
 
 		gl41data_after(wnd);
 		return -1;
 	}
 	if('?' == key){
-		gl41data_read(wor,0, stack,sp+2, 0,'?', buf,len);
+		gl41data_taking(wor,0, stack,sp+2, 0,'?', buf,len);
 		return 0;
 	}
 	return 0;
@@ -304,7 +304,7 @@ static int vrglass_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 
 
 
-static int vrglass_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrglass_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(sp < 2)return 0;
 	struct entity* sup = stack[sp-2].pchip;
@@ -319,7 +319,7 @@ static int vrglass_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	}
 	return 0;
 }
-static int vrglass_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrglass_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	vrglass_event(ent, 0, buf, 0);
 	return 0;
@@ -346,6 +346,6 @@ void vrglass_register(struct entity* p)
 
 	p->onlinkup = (void*)vrglass_linkup;
 	p->ondiscon = (void*)vrglass_discon;
-	p->onread  = (void*)vrglass_read;
-	p->onwrite = (void*)vrglass_write;
+	p->ontaking = (void*)vrglass_taking;
+	p->ongiving = (void*)vrglass_giving;
 }

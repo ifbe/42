@@ -325,7 +325,7 @@ static void fulladd_draw_cli(
 
 
 
-static void fulladd_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void fulladd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -337,7 +337,7 @@ static void fulladd_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		fulladd_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void fulladd_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void fulladd_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	u8 x,y,z,tmp;
 	//say("@fulladd_write:%x\n",buf[0]);
@@ -398,6 +398,6 @@ void fulladd_register(struct entity* p)
 
 	p->onlinkup = (void*)fulladd_linkup;
 	p->ondiscon = (void*)fulladd_discon;
-	p->onread  = (void*)fulladd_read;
-	p->onwrite = (void*)fulladd_write;
+	p->ontaking = (void*)fulladd_taking;
+	p->ongiving = (void*)fulladd_giving;
 }

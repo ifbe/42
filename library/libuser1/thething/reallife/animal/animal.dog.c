@@ -174,7 +174,7 @@ void robodog_write_int(struct entity* act, int* src, int len)
 
 
 
-static void robodog_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void robodog_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
@@ -186,7 +186,7 @@ static void robodog_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		robodog_draw_gl41(ent,slot, scn,geom, wnd,area);
 	}
 }
-static void robodog_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void robodog_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("robodog_write\n");
 
@@ -249,6 +249,6 @@ void robodog_register(struct entity* p)
 
 	p->onlinkup = (void*)robodog_linkup;
 	p->ondiscon = (void*)robodog_discon;
-	p->onread  = (void*)robodog_read;
-	p->onwrite = (void*)robodog_write;
+	p->ontaking = (void*)robodog_taking;
+	p->ongiving = (void*)robodog_giving;
 }

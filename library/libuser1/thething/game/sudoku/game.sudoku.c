@@ -261,7 +261,7 @@ static void sudoku_event(
 
 
 
-static void sudoku_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void sudoku_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -273,7 +273,7 @@ static void sudoku_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 		sudoku_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void sudoku_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void sudoku_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void sudoku_discon(struct halfrel* self, struct halfrel* peer)
@@ -334,6 +334,6 @@ void sudoku_register(struct entity* p)
 
 	p->onlinkup = (void*)sudoku_linkup;
 	p->ondiscon = (void*)sudoku_discon;
-	p->onread  = (void*)sudoku_read;
-	p->onwrite = (void*)sudoku_write;
+	p->ontaking = (void*)sudoku_taking;
+	p->ongiving = (void*)sudoku_giving;
 }

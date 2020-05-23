@@ -161,7 +161,7 @@ static void geometry_event(
 
 
 
-static void geometry_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void geometry_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
@@ -174,7 +174,7 @@ static void geometry_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 		geometry_draw_gl41(ent,slot, scn,geom, wnd,area);
 	}
 }
-static void geometry_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void geometry_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void geometry_discon(struct halfrel* self, struct halfrel* peer)
@@ -223,6 +223,6 @@ void geometry_register(struct entity* p)
 
 	p->onlinkup = (void*)geometry_linkup;
 	p->ondiscon = (void*)geometry_discon;
-	p->onread  = (void*)geometry_read;
-	p->onwrite = (void*)geometry_write;
+	p->ontaking = (void*)geometry_taking;
+	p->ongiving = (void*)geometry_giving;
 }

@@ -89,7 +89,7 @@ void tardis_pcm(struct entity* ent, struct supply* sup)
 
 
 
-static void tardis_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void tardis_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* wnd = stack[sp-2].pchip;
 //say("fmt=%.8s\n", &sup->fmt);
@@ -99,7 +99,7 @@ static void tardis_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 		default:tardis_read_bycam(ent,foot, stack,sp, arg,key);
 	}
 }
-static void tardis_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void tardis_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void tardis_discon(struct halfrel* self, struct halfrel* peer)
@@ -149,6 +149,6 @@ void tardis_register(struct entity* p)
 
 	p->onlinkup = (void*)tardis_linkup;
 	p->ondiscon = (void*)tardis_discon;
-	p->onread  = (void*)tardis_read;
-	p->onwrite = (void*)tardis_write;
+	p->ontaking = (void*)tardis_taking;
+	p->ongiving = (void*)tardis_giving;
 }

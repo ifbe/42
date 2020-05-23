@@ -64,11 +64,11 @@ void pointer_draw_pixel(struct entity* win, struct style* sty)
 
 
 
-static int pointer_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int pointer_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
-static int pointer_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int pointer_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -116,6 +116,6 @@ void pointer_register(struct entity* p)
 
 	p->onlinkup = (void*)pointer_linkup;
 	p->ondiscon = (void*)pointer_discon;
-	p->onread  = (void*)pointer_read;
-	p->onwrite = (void*)pointer_write;
+	p->ontaking = (void*)pointer_taking;
+	p->ongiving = (void*)pointer_giving;
 }

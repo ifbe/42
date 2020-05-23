@@ -116,7 +116,7 @@ static void resistor_read_b(struct entity* ent, int key, struct wireindex* sts, 
 
 
 
-static void resistor_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void resistor_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(foot){
 		case 'a':resistor_read_a(ent, key, buf,len);break;
@@ -124,7 +124,7 @@ static void resistor_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 		default:resistor_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 }
-static void resistor_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void resistor_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct wireindex* sts = buf;
 	say("@resistor_write: %.4s\n", &foot);
@@ -176,6 +176,6 @@ void resistor_register(struct entity* p)
 
 	p->onlinkup = (void*)resistor_linkup;
 	p->ondiscon = (void*)resistor_discon;
-	p->onread  = (void*)resistor_read;
-	p->onwrite = (void*)resistor_write;
+	p->ontaking = (void*)resistor_taking;
+	p->ongiving = (void*)resistor_giving;
 }

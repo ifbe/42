@@ -60,11 +60,11 @@ static void elevator_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* ar
 
 
 
-static void elevator_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void elevator_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	elevator_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void elevator_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void elevator_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void elevator_discon(struct halfrel* self, struct halfrel* peer)
@@ -105,6 +105,6 @@ void elevator_register(struct entity* p)
 
 	p->onlinkup = (void*)elevator_linkup;
 	p->ondiscon = (void*)elevator_discon;
-	p->onread  = (void*)elevator_read;
-	p->onwrite = (void*)elevator_write;
+	p->ontaking = (void*)elevator_taking;
+	p->ongiving = (void*)elevator_giving;
 }

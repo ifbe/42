@@ -171,7 +171,7 @@ static void spurgear_write_ray(struct entity* gear,int foot, struct fstyle* geom
 
 
 
-static void spurgear_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spurgear_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -183,7 +183,7 @@ static void spurgear_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 		spurgear_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void spurgear_write(_ent* gear,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spurgear_giving(_ent* gear,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 
 	if(_gear_ == foot){
@@ -220,6 +220,6 @@ void spurgear_register(struct entity* p)
 
 	p->onlinkup = (void*)spurgear_linkup;
 	p->ondiscon = (void*)spurgear_discon;
-	p->onread  = (void*)spurgear_read;
-	p->onwrite = (void*)spurgear_write;
+	p->ontaking = (void*)spurgear_taking;
+	p->ongiving = (void*)spurgear_giving;
 }

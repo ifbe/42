@@ -60,11 +60,11 @@ static void telpher_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 
 
 
-static void telpher_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void telpher_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	telpher_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void telpher_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void telpher_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void telpher_discon(struct halfrel* self, struct halfrel* peer)
@@ -105,6 +105,6 @@ void telpher_register(struct entity* p)
 
 	p->onlinkup = (void*)telpher_linkup;
 	p->ondiscon = (void*)telpher_discon;
-	p->onread  = (void*)telpher_read;
-	p->onwrite = (void*)telpher_write;
+	p->ontaking = (void*)telpher_taking;
+	p->ongiving = (void*)telpher_giving;
 }

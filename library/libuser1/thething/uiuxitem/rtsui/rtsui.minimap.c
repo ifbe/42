@@ -87,7 +87,7 @@ static void minimap_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct st
 
 
 
-static void minimap_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void minimap_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -113,7 +113,7 @@ static void minimap_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 	}
 	}
 }
-static void minimap_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void minimap_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void minimap_discon(struct halfrel* self, struct halfrel* peer)
@@ -154,6 +154,6 @@ void minimap_register(struct entity* p)
 
 	p->onlinkup = (void*)minimap_linkup;
 	p->ondiscon = (void*)minimap_discon;
-	p->onread  = (void*)minimap_read;
-	p->onwrite = (void*)minimap_write;
+	p->ontaking = (void*)minimap_taking;
+	p->ongiving = (void*)minimap_giving;
 }

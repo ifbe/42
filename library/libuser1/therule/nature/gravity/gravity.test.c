@@ -66,12 +66,12 @@ int gravtest_working(struct entity* ent)
 
 
 
-int gravtest_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int gravtest_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@gravtest_read:%.4s\n",&foot);
 	return 0;
 }
-int gravtest_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int gravtest_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@gravtest_write:%.4s\n",&foot);
 	if(_clk_ == foot)gravtest_working(ent);

@@ -484,7 +484,7 @@ void xiangqi_event(
 
 
 
-static void xiangqi_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void xiangqi_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -496,7 +496,7 @@ static void xiangqi_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		xiangqi_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void xiangqi_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void xiangqi_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_sync_ == foot){
 		printmemory(buf,len);
@@ -563,6 +563,6 @@ void xiangqi_register(struct entity* p)
 
 	p->onlinkup = (void*)xiangqi_linkup;
 	p->ondiscon = (void*)xiangqi_discon;
-	p->onread  = (void*)xiangqi_read;
-	p->onwrite = (void*)xiangqi_write;
+	p->ontaking = (void*)xiangqi_taking;
+	p->ongiving = (void*)xiangqi_giving;
 }

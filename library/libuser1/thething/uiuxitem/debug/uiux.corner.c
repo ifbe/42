@@ -1,7 +1,6 @@
 #include "libuser.h"
 void* allocentity();
 void* allocstyle();
-int ui2d_cwrite(struct entity* win, struct style* sty, struct entity* sc, struct style* sf, int flag);
 
 
 
@@ -568,11 +567,11 @@ static int corner_event(
 
 
 
-static int corner_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int corner_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
-static int corner_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int corner_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -628,6 +627,6 @@ void corner_register(struct entity* p)
 
 	p->onlinkup = (void*)corner_linkup;
 	p->ondiscon = (void*)corner_discon;
-	p->onread  = (void*)corner_read;
-	p->onwrite = (void*)corner_write;
+	p->ontaking = (void*)corner_taking;
+	p->ongiving = (void*)corner_giving;
 }

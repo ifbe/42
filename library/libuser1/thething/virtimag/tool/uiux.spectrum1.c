@@ -92,10 +92,10 @@ static void spectrum_data(
 
 
 
-static void spectrum_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spectrum_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void spectrum_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spectrum_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void spectrum_discon(struct halfrel* self, struct halfrel* peer)
@@ -210,6 +210,6 @@ void spectrum_register(struct entity* p)
 
 	p->onlinkup = (void*)spectrum_linkup;
 	p->ondiscon = (void*)spectrum_discon;
-	p->onread  = (void*)spectrum_read;
-	p->onwrite = (void*)spectrum_write;
+	p->ontaking = (void*)spectrum_taking;
+	p->ongiving = (void*)spectrum_giving;
 }

@@ -51,7 +51,7 @@ static void halfadd_draw_cli(
 
 
 
-static void halfadd_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void halfadd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -63,7 +63,7 @@ static void halfadd_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		halfadd_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void halfadd_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void halfadd_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	u8 tmp;
 	say("@halfaddgate_write:%x\n",buf[0]);
@@ -116,6 +116,6 @@ void halfadd_register(struct entity* p)
 
 	p->onlinkup = (void*)halfadd_linkup;
 	p->ondiscon = (void*)halfadd_discon;
-	p->onread  = (void*)halfadd_read;
-	p->onwrite = (void*)halfadd_write;
+	p->ontaking = (void*)halfadd_taking;
+	p->ongiving = (void*)halfadd_giving;
 }

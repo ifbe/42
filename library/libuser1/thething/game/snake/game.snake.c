@@ -151,10 +151,10 @@ void snake_event(
 
 
 
-static void snake_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void snake_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void snake_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void snake_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void snake_discon(struct halfrel* self, struct halfrel* peer)
@@ -205,6 +205,6 @@ void snake_register(struct entity* p)
 
 	p->onlinkup = (void*)snake_linkup;
 	p->ondiscon = (void*)snake_discon;
-	p->onread  = (void*)snake_read;
-	p->onwrite = (void*)snake_write;
+	p->ontaking = (void*)snake_taking;
+	p->ongiving = (void*)snake_giving;
 }

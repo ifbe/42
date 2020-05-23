@@ -3,11 +3,11 @@
 
 
 
-static void theeye_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void theeye_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@theeye_read\n");
 }
-static void theeye_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void theeye_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void theeye_discon(struct halfrel* self, struct halfrel* peer)
@@ -48,6 +48,6 @@ void theeye_register(struct entity* p)
 
 	p->onlinkup = (void*)theeye_linkup;
 	p->ondiscon = (void*)theeye_discon;
-	p->onread  = (void*)theeye_read;
-	p->onwrite = (void*)theeye_write;
+	p->ontaking = (void*)theeye_taking;
+	p->ongiving = (void*)theeye_giving;
 }

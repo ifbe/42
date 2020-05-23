@@ -57,10 +57,10 @@ static void arm64_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 
-static void arm64_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void arm64_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void arm64_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void arm64_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_clk_ == foot){
 		struct cpu* cpu = ent->buf0;
@@ -102,6 +102,6 @@ void arm64_register(struct entity* p)
 
 	p->onlinkup = (void*)arm64_linkup;
 	p->ondiscon = (void*)arm64_discon;
-	p->onread  = (void*)arm64_read;
-	p->onwrite = (void*)arm64_write;
+	p->ontaking = (void*)arm64_taking;
+	p->ongiving = (void*)arm64_giving;
 }

@@ -57,7 +57,7 @@ static void button_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 
 
 
-static void button_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void button_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -69,7 +69,7 @@ static void button_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	default:button_read_bycam(ent,foot, stack,sp, arg,key);
 	}
 }
-static void button_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void button_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@button_write\n");
 	relationwrite(ent,_evto_, stack,sp, 0,0, "calibrate\n",10);
@@ -125,6 +125,6 @@ void button_register(struct entity* p)
 
 	p->onlinkup = (void*)button_linkup;
 	p->ondiscon = (void*)button_discon;
-	p->onread  = (void*)button_read;
-	p->onwrite = (void*)button_write;
+	p->ontaking = (void*)button_taking;
+	p->ongiving = (void*)button_giving;
 }

@@ -104,11 +104,11 @@ int clickray_create(struct entity* act, void* flag)
 
 
 
-int clickray_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int clickray_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int clickray_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int clickray_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct event* ev = buf;
 	if(0x2d70 == ev->what){		//mouse up

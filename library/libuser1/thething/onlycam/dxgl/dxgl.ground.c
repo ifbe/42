@@ -191,7 +191,7 @@ static void ground_draw_cli(
 
 
 
-static void ground_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ground_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -203,7 +203,7 @@ static void ground_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 		ground_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void ground_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ground_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void ground_discon(struct halfrel* self, struct halfrel* peer)
@@ -325,6 +325,6 @@ void ground_register(struct entity* p)
 
 	p->onlinkup = (void*)ground_linkup;
 	p->ondiscon = (void*)ground_discon;
-	p->onread  = (void*)ground_read;
-	p->onwrite = (void*)ground_write;
+	p->ontaking = (void*)ground_taking;
+	p->ongiving = (void*)ground_giving;
 }

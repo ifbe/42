@@ -330,7 +330,7 @@ static int human_event(
 
 
 
-static int human_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int human_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -343,7 +343,7 @@ static int human_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 	}
 	return 0;
 }
-static int human_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int human_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -369,6 +369,6 @@ void human_register(struct entity* p)
 
 	p->onlinkup = (void*)human_linkup;
 	p->ondiscon = (void*)human_discon;
-	p->onread  = (void*)human_read;
-	p->onwrite = (void*)human_write;
+	p->ontaking = (void*)human_taking;
+	p->ongiving = (void*)human_giving;
 }

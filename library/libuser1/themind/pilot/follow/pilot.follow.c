@@ -60,11 +60,11 @@ void follow_doit(struct fstyle* this, struct fstyle* that)
 
 
 
-int follow_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int follow_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int follow_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int follow_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	say("@follow_write:%.4s\n",&foot);
 	if(_clk_ == foot){

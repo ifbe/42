@@ -146,7 +146,7 @@ static void stick_read_b(struct entity* ent, int key, struct joint* jo,int thiso
 
 
 
-static void stick_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stick_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(foot){
 	case 'a':stick_read_a(ent,key, buf,len);break;
@@ -154,7 +154,7 @@ static void stick_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 	case 'f':stick_read_force(ent,stack[sp-8].pchip, buf,len);break;
 	}
 }
-static void stick_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stick_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void stick_discon(struct halfrel* self, struct halfrel* peer)
@@ -210,6 +210,6 @@ void stick_register(struct entity* p)
 
 	p->onlinkup = (void*)stick_linkup;
 	p->ondiscon = (void*)stick_discon;
-	p->onread  = (void*)stick_read;
-	p->onwrite = (void*)stick_write;
+	p->ontaking = (void*)stick_taking;
+	p->ongiving = (void*)stick_giving;
 }

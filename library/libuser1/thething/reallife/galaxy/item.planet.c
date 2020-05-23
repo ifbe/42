@@ -133,10 +133,10 @@ static void planet_draw_cli(
 
 
 
-static void planet_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void planet_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void planet_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void planet_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void planet_discon(struct halfrel* self, struct halfrel* peer)
@@ -179,6 +179,6 @@ void planet_register(struct entity* p)
 
 	p->onlinkup = (void*)planet_linkup;
 	p->ondiscon = (void*)planet_discon;
-	p->onread  = (void*)planet_read;
-	p->onwrite = (void*)planet_write;
+	p->ontaking = (void*)planet_taking;
+	p->ongiving = (void*)planet_giving;
 }

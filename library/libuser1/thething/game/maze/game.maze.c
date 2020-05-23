@@ -350,7 +350,7 @@ static void maze_event(
 
 
 
-static void maze_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void maze_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -362,7 +362,7 @@ static void maze_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 		maze_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void maze_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void maze_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void maze_discon(struct halfrel* self, struct halfrel* peer)
@@ -416,6 +416,6 @@ void maze_register(struct entity* p)
 
 	p->onlinkup = (void*)maze_linkup;
 	p->ondiscon = (void*)maze_discon;
-	p->onread  = (void*)maze_read;
-	p->onwrite = (void*)maze_write;
+	p->ontaking = (void*)maze_taking;
+	p->ongiving = (void*)maze_giving;
 }

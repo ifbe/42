@@ -103,7 +103,7 @@ static void texbox_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		texbox_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void texbox_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texbox_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
@@ -112,7 +112,7 @@ static void texbox_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	}
 	}
 }
-static void texbox_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texbox_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void texbox_discon(struct halfrel* self, struct halfrel* peer)
@@ -196,6 +196,6 @@ void texbox_register(struct entity* p)
 
 	p->onlinkup = (void*)texbox_linkup;
 	p->ondiscon = (void*)texbox_discon;
-	p->onread  = (void*)texbox_read;
-	p->onwrite = (void*)texbox_write;
+	p->ontaking = (void*)texbox_taking;
+	p->ongiving = (void*)texbox_giving;
 }

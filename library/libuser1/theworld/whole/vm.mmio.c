@@ -4,11 +4,11 @@
 
 
 
-int mmiospace_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+int mmiospace_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
 {
 	return relationread(ent,_ram_, stack,sp, arg,key, buf,len);
 }
-int mmiospace_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+int mmiospace_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
 {
 	return 0;
 }

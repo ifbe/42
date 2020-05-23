@@ -164,7 +164,7 @@ static void mem_draw_cli(
 
 
 
-static void mem_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mem_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -176,7 +176,7 @@ static void mem_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, 
 		mem_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void mem_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void mem_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	u8 tmp;
 	say("@memgate_write:%x\n",buf[0]);
@@ -227,6 +227,6 @@ void mem_register(struct entity* p)
 
 	p->onlinkup = (void*)mem_linkup;
 	p->ondiscon = (void*)mem_discon;
-	p->onread  = (void*)mem_read;
-	p->onwrite = (void*)mem_write;
+	p->ontaking = (void*)mem_taking;
+	p->ongiving = (void*)mem_giving;
 }

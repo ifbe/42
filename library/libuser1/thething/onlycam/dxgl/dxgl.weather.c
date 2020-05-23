@@ -101,10 +101,10 @@ static void weather_draw_cli(
 
 
 
-static void weather_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void weather_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void weather_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void weather_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void weather_discon(struct halfrel* self, struct halfrel* peer)
@@ -150,6 +150,6 @@ void weather_register(struct entity* p)
 
 	p->onlinkup = (void*)weather_linkup;
 	p->ondiscon = (void*)weather_discon;
-	p->onread  = (void*)weather_read;
-	p->onwrite = (void*)weather_write;
+	p->ontaking = (void*)weather_taking;
+	p->ongiving = (void*)weather_giving;
 }

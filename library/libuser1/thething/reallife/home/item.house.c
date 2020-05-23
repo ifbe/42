@@ -158,10 +158,10 @@ static void house_draw_cli(
 
 
 
-static void house_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void house_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void house_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void house_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void house_discon(struct halfrel* self, struct halfrel* peer)
@@ -207,6 +207,6 @@ void house_register(struct entity* p)
 
 	p->onlinkup = (void*)house_linkup;
 	p->ondiscon = (void*)house_discon;
-	p->onread  = (void*)house_read;
-	p->onwrite = (void*)house_write;
+	p->ontaking = (void*)house_taking;
+	p->ongiving = (void*)house_giving;
 }

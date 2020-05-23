@@ -151,7 +151,7 @@ static void spring_read_b(struct entity* ent, int key, struct joint* jo, int thi
 
 
 
-static void spring_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spring_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@spring_read: %.4s\n", &self->flag);
 	switch(foot){
@@ -160,7 +160,7 @@ static void spring_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	case 'f':spring_read_force(ent,stack[sp-8].pchip, buf,len);break;
 	}
 }
-static void spring_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spring_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void spring_discon(struct halfrel* self, struct halfrel* peer)
@@ -219,6 +219,6 @@ void spring_register(struct entity* p)
 
 	p->onlinkup = (void*)spring_linkup;
 	p->ondiscon = (void*)spring_discon;
-	p->onread  = (void*)spring_read;
-	p->onwrite = (void*)spring_write;
+	p->ontaking = (void*)spring_taking;
+	p->ongiving = (void*)spring_giving;
 }

@@ -267,7 +267,7 @@ static void terminal_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct s
 
 
 
-static void terminal_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void terminal_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(foot){
 	case 'c':break;
@@ -285,7 +285,7 @@ static void terminal_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	default:terminal_read_bycam(ent,foot, stack,sp, arg,key);
 	}
 }
-static void terminal_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void terminal_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -375,6 +375,6 @@ void terminal_register(struct entity* p)
 
 	p->onlinkup = (void*)terminal_linkup;
 	p->ondiscon = (void*)terminal_discon;
-	p->onread  = (void*)terminal_read;
-	p->onwrite = (void*)terminal_write;
+	p->ontaking = (void*)terminal_taking;
+	p->ongiving = (void*)terminal_giving;
 }

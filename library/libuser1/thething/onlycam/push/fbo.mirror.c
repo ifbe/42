@@ -339,11 +339,11 @@ static void mirror_draw_cli(
 
 
 
-static void mirror_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mirror_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	mirror_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void mirror_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mirror_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void mirror_discon(struct halfrel* self, struct halfrel* peer)
@@ -397,6 +397,6 @@ void mirror_register(struct entity* p)
 
 	p->onlinkup = (void*)mirror_linkup;
 	p->ondiscon = (void*)mirror_discon;
-	p->onread  = (void*)mirror_read;
-	p->onwrite = (void*)mirror_write;
+	p->ontaking = (void*)mirror_taking;
+	p->ongiving = (void*)mirror_giving;
 }

@@ -93,10 +93,10 @@ static void pwmtool_draw_cli(
 
 
 
-static void pwmtool_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pwmtool_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void pwmtool_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pwmtool_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void pwmtool_discon(struct halfrel* self, struct halfrel* peer)
@@ -144,6 +144,6 @@ void pwmtool_register(struct entity* p)
 
 	p->onlinkup = (void*)pwmtool_linkup;
 	p->ondiscon = (void*)pwmtool_discon;
-	p->onread  = (void*)pwmtool_read;
-	p->onwrite = (void*)pwmtool_write;
+	p->ontaking = (void*)pwmtool_taking;
+	p->ongiving = (void*)pwmtool_giving;
 }

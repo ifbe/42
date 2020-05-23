@@ -130,7 +130,7 @@ static void otto_draw_cli(
 
 
 
-static void otto_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void otto_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -142,7 +142,7 @@ static void otto_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 		otto_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void otto_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void otto_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void otto_discon(struct halfrel* self, struct halfrel* peer)
@@ -188,6 +188,6 @@ void otto_register(struct entity* p)
 
 	p->onlinkup = (void*)otto_linkup;
 	p->ondiscon = (void*)otto_discon;
-	p->onread  = (void*)otto_read;
-	p->onwrite = (void*)otto_write;
+	p->ontaking = (void*)otto_taking;
+	p->ongiving = (void*)otto_giving;
 }

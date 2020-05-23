@@ -178,7 +178,7 @@ static void particle_draw_cli(
 
 
 
-static void particle_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void particle_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -190,7 +190,7 @@ static void particle_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 		particle_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void particle_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void particle_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void particle_discon(struct halfrel* self, struct halfrel* peer)
@@ -261,6 +261,6 @@ void particle_register(struct entity* p)
 
 	p->onlinkup = (void*)particle_linkup;
 	p->ondiscon = (void*)particle_discon;
-	p->onread  = (void*)particle_read;
-	p->onwrite = (void*)particle_write;
+	p->ontaking = (void*)particle_taking;
+	p->ongiving = (void*)particle_giving;
 }

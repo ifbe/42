@@ -3,10 +3,10 @@
 
 
 
-static void speaker_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void speaker_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void speaker_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void speaker_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void speaker_discon(struct halfrel* self, struct halfrel* peer)
@@ -47,6 +47,6 @@ void speaker_register(struct entity* p)
 
 	p->onlinkup = (void*)speaker_linkup;
 	p->ondiscon = (void*)speaker_discon;
-	p->onread  = (void*)speaker_read;
-	p->onwrite = (void*)speaker_write;
+	p->ontaking = (void*)speaker_taking;
+	p->ongiving = (void*)speaker_giving;
 }

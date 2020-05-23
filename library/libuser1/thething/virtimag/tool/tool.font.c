@@ -208,10 +208,10 @@ static void font_event(
 
 
 
-static void font_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void font_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void font_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void font_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void font_discon(struct halfrel* self, struct halfrel* peer)
@@ -256,6 +256,6 @@ void font_register(struct entity* p)
 
 	p->onlinkup = (void*)font_linkup;
 	p->ondiscon = (void*)font_discon;
-	p->onread  = (void*)font_read;
-	p->onwrite = (void*)font_write;
+	p->ontaking = (void*)font_taking;
+	p->ongiving = (void*)font_giving;
 }

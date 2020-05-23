@@ -245,7 +245,7 @@ static void calculator_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct
 
 
 
-static int calculator_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int calculator_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -265,7 +265,7 @@ static int calculator_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	}
 	return 0;
 }
-static void calculator_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void calculator_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -328,6 +328,6 @@ void calculator_register(struct entity* p)
 
 	p->onlinkup = (void*)calculator_linkup;
 	p->ondiscon = (void*)calculator_discon;
-	p->onread  = (void*)calculator_read;
-	p->onwrite = (void*)calculator_write;
+	p->ontaking = (void*)calculator_taking;
+	p->ongiving = (void*)calculator_giving;
 }

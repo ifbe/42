@@ -329,11 +329,11 @@ static void water_draw_cli(
 
 
 
-static void water_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void water_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	water_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void water_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void water_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void water_discon(struct halfrel* self, struct halfrel* peer)
@@ -404,6 +404,6 @@ void water_register(struct entity* p)
 
 	p->onlinkup = (void*)water_linkup;
 	p->ondiscon = (void*)water_discon;
-	p->onread  = (void*)water_read;
-	p->onwrite = (void*)water_write;
+	p->ontaking = (void*)water_taking;
+	p->ongiving = (void*)water_giving;
 }

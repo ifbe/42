@@ -304,10 +304,10 @@ say("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
 
 
 
-static void graph_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void graph_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void graph_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void graph_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void graph_discon(struct halfrel* self, struct halfrel* peer)
@@ -400,6 +400,6 @@ void graph_register(struct entity* p)
 
 	p->onlinkup = (void*)graph_linkup;
 	p->ondiscon = (void*)graph_discon;
-	p->onread  = (void*)graph_read;
-	p->onwrite = (void*)graph_write;
+	p->ontaking = (void*)graph_taking;
+	p->ongiving = (void*)graph_giving;
 }

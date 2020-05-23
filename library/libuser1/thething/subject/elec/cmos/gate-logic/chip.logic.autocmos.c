@@ -144,7 +144,7 @@ static void autocmos_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* ar
 
 
 
-static int autocmos_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int autocmos_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
@@ -160,7 +160,7 @@ static int autocmos_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 	}
 	return 0;
 }
-static void autocmos_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void autocmos_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@autocmos_write:%x\n",buf[0]);
 }
@@ -206,6 +206,6 @@ void autocmos_register(struct entity* p)
 
 	p->onlinkup = (void*)autocmos_linkup;
 	p->ondiscon = (void*)autocmos_discon;
-	p->onread  = (void*)autocmos_read;
-	p->onwrite = (void*)autocmos_write;
+	p->ontaking = (void*)autocmos_taking;
+	p->ongiving = (void*)autocmos_giving;
 }

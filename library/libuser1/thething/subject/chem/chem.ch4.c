@@ -77,7 +77,7 @@ static void ch4_draw_cli(
 
 
 
-static void ch4_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ch4_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -89,7 +89,7 @@ static void ch4_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, 
 		ch4_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void ch4_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ch4_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void ch4_discon(struct halfrel* self, struct halfrel* peer)
@@ -114,6 +114,6 @@ void ch4_register(struct entity* p)
 
 	p->onlinkup = (void*)ch4_linkup;
 	p->ondiscon = (void*)ch4_discon;
-	p->onread  = (void*)ch4_read;
-	p->onwrite = (void*)ch4_write;
+	p->ontaking = (void*)ch4_taking;
+	p->ongiving = (void*)ch4_giving;
 }

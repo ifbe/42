@@ -455,11 +455,11 @@ static void stl3d_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 		stl3d_draw_gl41(ent,slot, scn,geom, wrd,camg, wnd,area);
 	}
 }
-static void stl3d_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stl3d_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	stl3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
-static void stl3d_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stl3d_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_int_ == foot)stl3d_modify_matter(ent, buf,len);
 	else stl3d_modify_ray(ent, buf);
@@ -552,6 +552,6 @@ void stl3d_register(struct entity* p)
 
 	p->onlinkup = (void*)stl3d_linkup;
 	p->ondiscon = (void*)stl3d_discon;
-	p->onread  = (void*)stl3d_read;
-	p->onwrite = (void*)stl3d_write;
+	p->ontaking = (void*)stl3d_taking;
+	p->ongiving = (void*)stl3d_giving;
 }

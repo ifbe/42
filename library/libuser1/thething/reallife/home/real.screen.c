@@ -3,10 +3,10 @@
 
 
 
-static void screen_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void screen_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void screen_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void screen_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void screen_discon(struct halfrel* self, struct halfrel* peer)
@@ -47,6 +47,6 @@ void screen_register(struct entity* p)
 
 	p->onlinkup = (void*)screen_linkup;
 	p->ondiscon = (void*)screen_discon;
-	p->onread  = (void*)screen_read;
-	p->onwrite = (void*)screen_write;
+	p->ontaking = (void*)screen_taking;
+	p->ongiving = (void*)screen_giving;
 }

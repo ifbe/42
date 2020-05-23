@@ -61,11 +61,11 @@ int border2d_read_bycam(struct entity* ent,int foot, struct halfrel* stack,int s
 
 
 
-int border2d_read(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int border2d_taking(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return border2d_read_bycam(ent,foot, stack,sp, arg,key);
 }
-int border2d_write(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int border2d_giving(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

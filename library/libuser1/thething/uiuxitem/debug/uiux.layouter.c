@@ -670,10 +670,11 @@ found:
 
 
 
-static void picker_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int picker_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	return 0;
 }
-static int picker_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int picker_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -717,6 +718,6 @@ void picker_register(struct entity* p)
 
 	p->onlinkup = (void*)picker_linkup;
 	p->ondiscon = (void*)picker_discon;
-	p->onread  = (void*)picker_read;
-	p->onwrite = (void*)picker_write;
+	p->ontaking = (void*)picker_taking;
+	p->ongiving = (void*)picker_giving;
 }

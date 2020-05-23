@@ -57,11 +57,11 @@ int border3d_read_bycam(struct entity* ent,int foot, struct halfrel* stack,int s
 
 
 
-int border3d_read(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int border3d_taking(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return border3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
-int border3d_write(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int border3d_giving(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

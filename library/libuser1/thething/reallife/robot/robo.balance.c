@@ -100,7 +100,7 @@ void balance_write_euler(struct entity* act, float* f)
 
 
 
-static void balance_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void balance_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -112,7 +112,7 @@ static void balance_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		balance_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void balance_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void balance_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	balance_write_euler(ent, buf);
 }
@@ -158,6 +158,6 @@ void balance_register(struct entity* p)
 
 	p->onlinkup = (void*)balance_linkup;
 	p->ondiscon = (void*)balance_discon;
-	p->onread  = (void*)balance_read;
-	p->onwrite = (void*)balance_write;
+	p->ontaking = (void*)balance_taking;
+	p->ongiving = (void*)balance_giving;
 }

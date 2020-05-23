@@ -88,11 +88,11 @@ static void stair_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 
 
 
-static void stair_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stair_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	stair_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void stair_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stair_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void stair_discon(struct halfrel* self, struct halfrel* peer)
@@ -138,6 +138,6 @@ void stair_register(struct entity* p)
 
 	p->onlinkup = (void*)stair_linkup;
 	p->ondiscon = (void*)stair_discon;
-	p->onread  = (void*)stair_read;
-	p->onwrite = (void*)stair_write;
+	p->ontaking = (void*)stair_taking;
+	p->ongiving = (void*)stair_giving;
 }

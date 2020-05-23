@@ -125,7 +125,7 @@ static void clock_draw_cli(
 
 
 
-static void clock_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void clock_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
@@ -138,7 +138,7 @@ static void clock_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 		clock_draw_gl41(ent,slot, scn,geom, wnd,area);
 	}
 }
-static void clock_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void clock_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void clock_discon(struct halfrel* self, struct halfrel* peer)
@@ -184,6 +184,6 @@ void clock_register(struct entity* p)
 
 	p->onlinkup = (void*)clock_linkup;
 	p->ondiscon = (void*)clock_discon;
-	p->onread  = (void*)clock_read;
-	p->onwrite = (void*)clock_write;
+	p->ontaking = (void*)clock_taking;
+	p->ongiving = (void*)clock_giving;
 }

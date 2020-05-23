@@ -355,7 +355,7 @@ static void xnor_draw_cli(
 
 
 
-static void xnor_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void xnor_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -367,7 +367,7 @@ static void xnor_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 		xnor_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void xnor_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void xnor_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	u8 tmp;
 	//say("@xorgate_write:%x\n",buf[0]);
@@ -421,6 +421,6 @@ void xnor_register(struct entity* p)
 
 	p->onlinkup = (void*)xnor_linkup;
 	p->ondiscon = (void*)xnor_discon;
-	p->onread  = (void*)xnor_read;
-	p->onwrite = (void*)xnor_write;
+	p->ontaking = (void*)xnor_taking;
+	p->ongiving = (void*)xnor_giving;
 }

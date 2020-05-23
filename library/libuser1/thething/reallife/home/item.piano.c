@@ -351,7 +351,7 @@ static void piano_draw_cli(
 
 
 
-static void piano_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void piano_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
@@ -363,7 +363,7 @@ static void piano_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 	}
 	}
 }
-static void piano_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void piano_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_std_ == foot){
 		piano_char(ent, buf);
@@ -424,6 +424,6 @@ void piano_register(struct entity* p)
 
 	p->onlinkup = (void*)piano_linkup;
 	p->ondiscon = (void*)piano_discon;
-	p->onread  = (void*)piano_read;
-	p->onwrite = (void*)piano_write;
+	p->ontaking = (void*)piano_taking;
+	p->ongiving = (void*)piano_giving;
 }

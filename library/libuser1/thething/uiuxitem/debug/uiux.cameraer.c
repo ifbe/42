@@ -237,11 +237,11 @@ static int camman_event(
 
 
 
-static int camman_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int camman_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
-static int camman_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int camman_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -285,6 +285,6 @@ void camman_register(struct entity* p)
 
 	p->onlinkup = (void*)camman_linkup;
 	p->ondiscon = (void*)camman_discon;
-	p->onread  = (void*)camman_read;
-	p->onwrite = (void*)camman_write;
+	p->ontaking = (void*)camman_taking;
+	p->ongiving = (void*)camman_giving;
 }

@@ -176,10 +176,10 @@ static void bplus_event(
 
 
 
-static void bplus_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void bplus_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void bplus_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void bplus_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void bplus_discon(struct halfrel* self, struct halfrel* peer)
@@ -225,6 +225,6 @@ void bplus_register(struct entity* p)
 
 	p->onlinkup = (void*)bplus_linkup;
 	p->ondiscon = (void*)bplus_discon;
-	p->onread  = (void*)bplus_read;
-	p->onwrite = (void*)bplus_write;
+	p->ontaking = (void*)bplus_taking;
+	p->ongiving = (void*)bplus_giving;
 }

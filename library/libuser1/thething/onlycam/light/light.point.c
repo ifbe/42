@@ -112,12 +112,12 @@ static void pointlight_draw_cli(
 
 
 
-static void pointlight_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pointlight_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == ent->ONOFF)return;
 	pointlight_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void pointlight_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pointlight_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	u8* in = buf;
 	say("@pointlight_write:%x\n",in[0]);
@@ -175,6 +175,6 @@ void pointlight_register(struct entity* p)
 
 	p->onlinkup = (void*)pointlight_linkup;
 	p->ondiscon = (void*)pointlight_discon;
-	p->onread  = (void*)pointlight_read;
-	p->onwrite = (void*)pointlight_write;
+	p->ontaking = (void*)pointlight_taking;
+	p->ongiving = (void*)pointlight_giving;
 }

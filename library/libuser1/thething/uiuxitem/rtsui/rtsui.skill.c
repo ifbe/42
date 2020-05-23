@@ -87,7 +87,7 @@ static void skill_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct styl
 
 
 
-static void skill_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skill_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -113,7 +113,7 @@ static void skill_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 	}
 	}
 }
-static void skill_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skill_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void skill_discon(struct halfrel* self, struct halfrel* peer)
@@ -154,6 +154,6 @@ void skill_register(struct entity* p)
 
 	p->onlinkup = (void*)skill_linkup;
 	p->ondiscon = (void*)skill_discon;
-	p->onread  = (void*)skill_read;
-	p->onwrite = (void*)skill_write;
+	p->ontaking = (void*)skill_taking;
+	p->ongiving = (void*)skill_giving;
 }

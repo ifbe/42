@@ -67,12 +67,12 @@ int toycar_read_byhttp(struct entity* ent,int foot, struct halfrel* stack,int sp
     relationwrite(ent,foot, stack,sp, "text/html",0, buf,ret);
     return ret;
 }
-int toycar_read(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int toycar_taking(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {
     say("@toycar_read:sp=%d,%.4s\n", sp, &foot);
     return toycar_read_byhttp(ent,foot, stack,sp);
 }
-int toycar_write(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int toycar_giving(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {
     say("@toycar_write\n");
     //printmemory(buf, len);

@@ -7,10 +7,10 @@ static u8 buffer[16];
 
 
 
-static void gobang_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gobang_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void gobang_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gobang_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void gobang_discon(struct halfrel* self, struct halfrel* peer)
@@ -56,6 +56,6 @@ void gobang_register(struct entity* p)
 
 	p->onlinkup = (void*)gobang_linkup;
 	p->ondiscon = (void*)gobang_discon;
-	p->onread  = (void*)gobang_read;
-	p->onwrite = (void*)gobang_write;
+	p->ontaking = (void*)gobang_taking;
+	p->ongiving = (void*)gobang_giving;
 }

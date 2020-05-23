@@ -233,7 +233,7 @@ static void oscillo_read_bywnd(_ent* ent,struct style* slot, _sup* wnd,struct st
 
 
 
-static void oscillo_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void oscillo_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -259,7 +259,7 @@ static void oscillo_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 	}
 	}
 }
-static void oscillo_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void oscillo_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_pcm_ == foot){
 		oscillo_data(ent, 0, buf, len);
@@ -319,6 +319,6 @@ void oscillo_register(struct entity* p)
 
 	p->onlinkup = (void*)oscillo_linkup;
 	p->ondiscon = (void*)oscillo_discon;
-	p->onread  = (void*)oscillo_read;
-	p->onwrite = (void*)oscillo_write;
+	p->ontaking = (void*)oscillo_taking;
+	p->ongiving = (void*)oscillo_giving;
 }

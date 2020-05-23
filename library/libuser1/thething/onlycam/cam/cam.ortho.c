@@ -7,7 +7,7 @@ int matorth(mat4 m, struct fstyle* s);
 //
 void gl41data_before(void*);
 void gl41data_after(void*);
-int gl41data_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int gl41data_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 
 
 
@@ -234,13 +234,13 @@ static int orthcam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		orthcam_matrix(ent,slot, wor,geom);
 		orthcam_camera(ent,slot, wor,geom, wnd,area);
 
-		gl41data_read(wor,0, stack,sp+2, 0,'v', buf,len);
+		gl41data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
 
 		gl41data_after(wnd);
 		return -1;
 	}
 	if('?' == key){
-		gl41data_read(wor,0, stack,sp+2, 0,'?', buf,len);
+		gl41data_taking(wor,0, stack,sp+2, 0,'?', buf,len);
 		return 0;
 	}
 	return 0;
@@ -253,7 +253,7 @@ static int orthcam_write_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 
 
 
-static int orthcam_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int orthcam_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(sp < 2)return 0;
 	struct entity* sup = stack[sp-2].pchip;
@@ -267,7 +267,7 @@ static int orthcam_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	}
 	return 0;
 }
-static int orthcam_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int orthcam_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(EVSEND == ent->EVTYPE)relationwrite(ent,_evto_, stack,sp, arg,key, buf,len);
 	return 0;
@@ -299,6 +299,6 @@ void orthcam_register(struct entity* p)
 
 	p->onlinkup = (void*)orthcam_linkup;
 	p->ondiscon = (void*)orthcam_discon;
-	p->onread  = (void*)orthcam_read;
-	p->onwrite = (void*)orthcam_write;
+	p->ontaking = (void*)orthcam_taking;
+	p->ongiving = (void*)orthcam_giving;
 }

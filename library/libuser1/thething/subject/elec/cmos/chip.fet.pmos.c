@@ -244,7 +244,7 @@ static void pmos_write_G(struct entity* mos,int key, struct halfrel* stack,int s
 
 
 
-static void pmos_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void pmos_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	switch(foot){
 		case 'D':pmos_read_D(ent,key, stack,sp, buf,len);return;
@@ -254,7 +254,7 @@ static void pmos_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 		default: pmos_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 	}
 }
-static void pmos_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void pmos_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	say("pmos_write: %llx, %.4s=%x\n", ent, &foot, buf[0]);
 	switch(foot){
@@ -322,6 +322,6 @@ void pmos_register(struct entity* p)
 
 	p->onlinkup = (void*)pmos_linkup;
 	p->ondiscon = (void*)pmos_discon;
-	p->onread  = (void*)pmos_read;
-	p->onwrite = (void*)pmos_write;
+	p->ontaking = (void*)pmos_taking;
+	p->ongiving = (void*)pmos_giving;
 }

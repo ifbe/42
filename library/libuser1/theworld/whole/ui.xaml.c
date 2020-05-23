@@ -3,11 +3,11 @@
 
 
 
-int xamlroot_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+int xamlroot_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
 {
 	return 0;
 }
-int xamlroot_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+int xamlroot_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
 {
 	return 0;
 }

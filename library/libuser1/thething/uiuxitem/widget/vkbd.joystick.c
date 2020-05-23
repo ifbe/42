@@ -228,7 +228,7 @@ static void vjoy_write_bywnd(_ent* ent,int foot, _syn* stack,int sp, struct even
 
 
 
-static int vjoy_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vjoy_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -245,7 +245,7 @@ static int vjoy_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, 
 	}
 	return 0;
 }
-static int vjoy_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vjoy_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* wnd = stack[sp-2].pchip;
 	switch(wnd->fmt){
@@ -281,6 +281,6 @@ void vjoy_register(struct entity* p)
 
 	p->onlinkup = (void*)vjoy_linkup;
 	p->ondiscon = (void*)vjoy_discon;
-	p->onread  = (void*)vjoy_read;
-	p->onwrite = (void*)vjoy_write;
+	p->ontaking = (void*)vjoy_taking;
+	p->ongiving = (void*)vjoy_giving;
 }

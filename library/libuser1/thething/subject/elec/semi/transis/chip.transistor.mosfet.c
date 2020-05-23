@@ -64,7 +64,7 @@ static void mosfet_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 
 
 
-static void mosfet_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mosfet_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
@@ -79,7 +79,7 @@ static void mosfet_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	}
 	}
 }
-static void mosfet_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mosfet_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void mosfet_discon(struct halfrel* self, struct halfrel* peer)
@@ -124,6 +124,6 @@ void mosfet_register(struct entity* p)
 
 	p->onlinkup = (void*)mosfet_linkup;
 	p->ondiscon = (void*)mosfet_discon;
-	p->onread  = (void*)mosfet_read;
-	p->onwrite = (void*)mosfet_write;
+	p->ontaking = (void*)mosfet_taking;
+	p->ongiving = (void*)mosfet_giving;
 }

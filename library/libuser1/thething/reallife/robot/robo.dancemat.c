@@ -178,7 +178,7 @@ static void dancemat_write_data(struct entity* ent, struct entity* src, u8* buf,
 
 
 
-static void dancemat_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dancemat_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -190,7 +190,7 @@ static void dancemat_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 		dancemat_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void dancemat_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dancemat_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* src = stack[sp-2].pchip;
 	switch(src->tier){
@@ -325,6 +325,6 @@ void dancemat_register(struct entity* p)
 
 	p->onlinkup = (void*)dancemat_linkup;
 	p->ondiscon = (void*)dancemat_discon;
-	p->onread  = (void*)dancemat_read;
-	p->onwrite = (void*)dancemat_write;
+	p->ontaking = (void*)dancemat_taking;
+	p->ongiving = (void*)dancemat_giving;
 }

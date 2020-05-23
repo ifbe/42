@@ -104,7 +104,7 @@ static void mobius_draw_cli(
 
 
 
-static void mobius_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mobius_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -116,7 +116,7 @@ static void mobius_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 		mobius_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void mobius_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mobius_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void mobius_discon(struct halfrel* self, struct halfrel* peer)
@@ -162,6 +162,6 @@ void mobius_register(struct entity* p)
 
 	p->onlinkup = (void*)mobius_linkup;
 	p->ondiscon = (void*)mobius_discon;
-	p->onread  = (void*)mobius_read;
-	p->onwrite = (void*)mobius_write;
+	p->ontaking = (void*)mobius_taking;
+	p->ongiving = (void*)mobius_giving;
 }

@@ -198,7 +198,7 @@ int analog_read_child(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 	}
 	return 0;
 }
-int analog_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int analog_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(stack && ('v' == key)){
 		analog_read_child(ent,foot, stack,sp, arg,key, buf,len);
@@ -206,7 +206,7 @@ int analog_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void*
 	}
 	return 0;
 }
-int analog_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int analog_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct wireindex* sts = ent->buf0;
 	if(0 == sts)return 0;

@@ -340,7 +340,7 @@ static void the2048_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 		the2048_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void the2048_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void the2048_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@the2048_read\n");
 	struct style* slot = stack[sp-1].pfoot;
@@ -354,7 +354,7 @@ static void the2048_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 	default:the2048_read_bycam(ent,foot, stack,sp, arg,key);break;
 	}
 }
-static void the2048_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void the2048_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@the2048_write\n");
 	if(_ioby_ == foot)the2048_move(ent, *(u8*)buf);
@@ -382,6 +382,6 @@ void the2048_register(struct entity* p)
 
 	p->onlinkup = (void*)the2048_linkup;
 	p->ondiscon = (void*)the2048_discon;
-	p->onread  = (void*)the2048_read;
-	p->onwrite = (void*)the2048_write;
+	p->ontaking = (void*)the2048_taking;
+	p->ongiving = (void*)the2048_giving;
 }

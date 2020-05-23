@@ -3,10 +3,10 @@
 
 
 
-static void monomic_read(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void monomic_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void monomic_write(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void monomic_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void monomic_discon(struct halfrel* self, struct halfrel* peer)
@@ -47,6 +47,6 @@ void monomic_register(struct entity* p)
 
 	p->onlinkup = (void*)monomic_linkup;
 	p->ondiscon = (void*)monomic_discon;
-	p->onread  = (void*)monomic_read;
-	p->onwrite = (void*)monomic_write;
+	p->ontaking = (void*)monomic_taking;
+	p->ongiving = (void*)monomic_giving;
 }
