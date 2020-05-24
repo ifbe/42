@@ -37,6 +37,7 @@
 //
 #define _qu2eu_ hex64('q','u','2','e','u',0,0,0)
 #define _str2vec_ hex64('s','t','r','2','v','e','c',0)
+#define _img2pbr_ hex64('i','m','g','2','p','b','r',0)
 //
 #define _easyag_  hex64('e','a','s','y','a','g', 0 , 0 )
 #define _mahony_  hex64('m','a','h','o','n','y', 0 , 0 )
@@ -217,6 +218,12 @@ int str2vec_linkup(struct halfrel* self, struct halfrel* peer);
 int str2vec_discon(struct halfrel* self, struct halfrel* peer);
 int str2vec_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int str2vec_read( _art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int img2pbr_create(struct artery* ele, void* url, int argc, u8** argv);
+int img2pbr_delete(struct artery* ele, void* url);
+int img2pbr_linkup(struct halfrel* self, struct halfrel* peer);
+int img2pbr_discon(struct halfrel* self, struct halfrel* peer);
+int img2pbr_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int img2pbr_read( _art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 //
 int easyag_create(struct artery* ele, void* url, int argc, u8** argv);
 int easyag_delete(struct artery* ele, void* url);
@@ -689,6 +696,7 @@ int arteryread(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void*
 
 		case _qu2eu_:qu2eu_read(art,foot, stack,sp, arg,idx, buf,len);break;
 		case _str2vec_:str2vec_read(art,foot, stack,sp, arg,idx, buf,len);break;
+		case _img2pbr_:img2pbr_read(art,foot, stack,sp, arg,idx, buf,len);break;
 
 		case _easyag_:easyag_read(art,foot, stack,sp, arg,idx, buf,len);break;
 		case _mahony_:mahony_read(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -799,6 +807,7 @@ int arterywrite(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void
 
 		case _qu2eu_:return qu2eu_write(art,foot, stack,sp, arg,idx, buf,len);break;
 		case _str2vec_:return str2vec_write(art,foot, stack,sp, arg,idx, buf,len);break;
+		case _img2pbr_:return img2pbr_write(art,foot, stack,sp, arg,idx, buf,len);break;
 
 		case _easyag_:return easyag_write(art,foot, stack,sp, arg,idx, buf,len);break;
 		case _mahony_:return mahony_write(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -1296,6 +1305,15 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 
 		e->type = _str2vec_;
 		str2vec_create(e, url, argc, argv);
+		return e;
+	}
+	if(_img2pbr_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _img2pbr_;
+		img2pbr_create(e, url, argc, argv);
 		return e;
 	}
 

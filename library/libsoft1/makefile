@@ -183,6 +183,7 @@ libflow/ahrs/ahrs.mahony.c \
 libflow/ahrs/ahrs.madgwick.c \
 libflow/ahrs/ahrs.ekf.c \
 libflow/ahrs/ahrs.ukf.c \
+libflow/stream/stream.conv.img2pbr.c \
 libflow/stream/stream.conv.qu2eu.c \
 libflow/stream/stream.conv.str2vec.c \
 libflow/stream/stream.help.control.c \

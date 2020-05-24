@@ -1,4 +1,8 @@
 #include "libuser.h"
+int startfile(void*, int);
+int stopfile(int);
+int readfile( void*, int, void*, int, void*, int);
+int writefile(void*, int, void*, int, void*, int);
 void* getsuffix(void* p);
 //upng
 void* upng_new_from_bytes(void* buf, int len);
@@ -119,8 +123,17 @@ void loadimgfrompng(u8* buf, int len, int* width, int* height, int* depth, int* 
 
 
 
-void saveppmfromimg(char* name, int offs, u8* buf, int len, int width, int height)
+void saveppmfromimg(char* name, int offs, u8* buf, int bpp, int width, int height)
 {
+	int j,fd,ret;
+	u8 tmp[64];
+
+	fd = startfile(name, 'w');
+	ret = mysnprintf(tmp, 64, "P6\n%d %d\n%d\n", width, height, 255);
+	writefile(0,fd, 0,0, tmp,ret);
+
+	for(j=0;j<2048*2048*4;j+=4)writefile(0,fd, 0,0, buf+j,3);
+	stopfile(fd);
 }
 void loadimgfromppm(u8* buf, int len, int* width, int* height, int* depth, int* stride)
 {
