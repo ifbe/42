@@ -1,5 +1,7 @@
 #include "libuser.h"
 #define level 4
+#define CODE data2
+#define TIME data3
 void rubikscube_generate(void*, int);
 void rubikscube_solve(void*, int);
 
@@ -13,7 +15,7 @@ u32 rubikcolor[6] = {0x00ff00,0x0000ff,0xff0000,0xfa8010,0xffff00,0xffffff};
 
 
 //left, right, near, far, bottom, upper
-int rubikscube_import(char* file, u8 (*buf)[4][4])
+static int rubikscube_import(char* file, u8 (*buf)[4][4])
 {
 	int x,y;
 	int j,t;
@@ -53,6 +55,141 @@ int rubikscube_import(char* file, u8 (*buf)[4][4])
 
 	//printmemory(buf, 81);
 	return 1;
+}
+static void rubikscube_rotateface(u8* buf)
+{
+	u8 t;
+	int j,v;
+	for(v=0;v<level/2;v++){
+		for(j=0;j<level-v-v-1;j++){
+			t = buf[level*v + v+j];
+			buf[level*v + v+j] = buf[level*(v+j) + level-1-v];
+			buf[level*(v+j) + level-1-v] = buf[level*(level-1-v) + level-1-v-j];
+			buf[level*(level-1-v) + level-1-v-j] = buf[level*(level-1-v-j) + v];
+			buf[level*(level-1-v-j) + v] = t;
+		}
+	}
+}
+static void rubikscube_rotate(u8* buf, int code)
+{
+	int j;
+	u8 k[level];
+	u8* l = &buf[level*level*0];
+	u8* r = &buf[level*level*1];
+	u8* n = &buf[level*level*2];
+	u8* f = &buf[level*level*3];
+	u8* b = &buf[level*level*4];
+	u8* t = &buf[level*level*5];
+	switch(code){
+		case 'b':{
+			rubikscube_rotateface(b);
+			for(j=0;j<level;j++)k[j] = n[j];
+			for(j=0;j<level;j++)n[j] = l[j];
+			for(j=0;j<level;j++)l[j] = f[j];
+			for(j=0;j<level;j++)f[j] = r[j];
+			for(j=0;j<level;j++)r[j] = k[j];
+			return;
+		}
+		case 't':{
+			rubikscube_rotateface(t);
+			for(j=0;j<level;j++)k[j] = n[level*(level-1) + j];
+			for(j=0;j<level;j++)n[level*(level-1) + j] = r[level*(level-1) + j];
+			for(j=0;j<level;j++)r[level*(level-1) + j] = f[level*(level-1) + j];
+			for(j=0;j<level;j++)f[level*(level-1) + j] = l[level*(level-1) + j];
+			for(j=0;j<level;j++)l[level*(level-1) + j] = k[j];
+			return;
+		}
+		case 'l':{
+			rubikscube_rotateface(l);
+			for(j=0;j<level;j++)k[j] = b[j*level];
+			for(j=0;j<level;j++)b[j*level] = n[j*level];
+			for(j=0;j<level;j++)n[j*level] = t[j*level];
+			for(j=0;j<level;j++)t[j*level] = f[(level-1-j)*level + level-1];
+			for(j=0;j<level;j++)f[(level-1-j)*level + level-1] = k[j];
+			return;
+		}
+		case 'r':{
+			rubikscube_rotateface(r);
+			for(j=0;j<level;j++)k[j] = t[level*j + level-1];
+			for(j=0;j<level;j++)t[level*j + level-1] = n[level*j + level-1];
+			for(j=0;j<level;j++)n[level*j + level-1] = b[level*j + level-1];
+			for(j=0;j<level;j++)b[level*j + level-1] = f[level*(level-1-j)];
+			for(j=0;j<level;j++)f[level*(level-1-j)] = k[j];
+			return;
+		}
+		case 'n':{
+			rubikscube_rotateface(n);
+			for(j=0;j<level;j++)k[j] = r[level*j];
+			for(j=0;j<level;j++)r[level*j] = t[level-1-j];
+			for(j=0;j<level;j++)t[level-1-j] = l[level*(level-1-j) + level-1];
+			for(j=0;j<level;j++)l[level*(level-1-j) + level-1] = b[level*(level-1) + j];
+			for(j=0;j<level;j++)b[level*(level-1) + j] = k[j];
+			return;
+		}
+		case 'f':{
+			rubikscube_rotateface(f);
+			for(j=0;j<level;j++)k[j] = l[level*j];
+			for(j=0;j<level;j++)l[level*j] = t[level*(level-1) + j];
+			for(j=0;j<level;j++)t[level*(level-1) + j] = r[level*(level-1-j) + level-1];
+			for(j=0;j<level;j++)r[level*(level-1-j) + level-1] = b[level-1-j];
+			for(j=0;j<level;j++)b[level-1-j] = k[j];
+			return;
+		}
+	}
+}
+static int rubikscube_shouldrotate(int x, int y, int face, int code)
+{
+	switch(code){
+	case 'l':{
+		if('l' == face)return 1;
+		if(('b' == face)&(x < 1))return 1;
+		if(('t' == face)&(x < 1))return 1;
+		if(('n' == face)&(x < 1))return 1;
+		if(('f' == face)&(x > level-2))return 1;
+		return 0;
+	}
+	case 'r':{
+		if('r' == face)return 1;
+		if(('b' == face)&(x > level-2))return 1;
+		if(('t' == face)&(x > level-2))return 1;
+		if(('n' == face)&(x > level-2))return 1;
+		if(('f' == face)&(x < 1))return 1;
+		return 0;
+	}
+	case 'n':{
+		if('n' == face)return 1;
+		if(('b' == face)&(y > level-2))return 1;
+		if(('t' == face)&(y < 1))return 1;
+		if(('l' == face)&(x > level-2))return 1;
+		if(('r' == face)&(x < 1))return 1;
+		return 0;
+	}
+	case 'f':{
+		if('f' == face)return 1;
+		if(('b' == face)&(y < 1))return 1;
+		if(('t' == face)&(y > level-2))return 1;
+		if(('l' == face)&(x < 1))return 1;
+		if(('r' == face)&(x > level-2))return 1;
+		return 0;
+	}
+	case 'b':{
+		if('b' == face)return 1;
+		if(('l' == face)&(y < 1))return 1;
+		if(('r' == face)&(y < 1))return 1;
+		if(('n' == face)&(y < 1))return 1;
+		if(('f' == face)&(y < 1))return 1;
+		return 0;
+	}
+	case 't':{
+		if('t' == face)return 1;
+		if(('l' == face)&(y > level-2))return 1;
+		if(('r' == face)&(y > level-2))return 1;
+		if(('n' == face)&(y > level-2))return 1;
+		if(('f' == face)&(y > level-2))return 1;
+		return 0;
+	}
+	}
+	return 0;
 }
 
 
@@ -161,7 +298,8 @@ static void rubikscube_draw_gl41(
 	struct entity* ctx, struct style* area)
 {
 	int x,y,rgb;
-	vec3 f;
+	float c,s;
+	vec4 f,q;
 	vec3 tc, tr, tf, tu;
 	float* vc = geom->f.vc;
 	float* vr = geom->f.vr;
@@ -171,39 +309,79 @@ static void rubikscube_draw_gl41(
 	u8 (*buf)[4][4] = act->buf0;
 	if(0 == buf)return;
 
+	if(act->CODE){
+		u64 time = timeread();
+		q[3] = (time - act->TIME) / 1000000.0;
+		if((q[3] < 0.0)|(q[3] > 1.0)){
+			rubikscube_rotate((void*)buf, act->CODE);
+			act->CODE = 0;
+		}
+
+		if(act->CODE){
+			q[0] = q[1] = q[2] = 0.0;
+			switch(act->CODE){
+				case 'l':q[0] =-1.0;break;
+				case 'r':q[0] = 1.0;break;
+				case 'n':q[1] =-1.0;break;
+				case 'f':q[1] = 1.0;break;
+				case 'b':q[2] =-1.0;break;
+				case 't':q[2] = 1.0;break;
+			}
+
+			q[3] *= -PI/4;
+			c = cosine(q[3]);
+			s = sine(q[3]);
+
+			q[0] = q[0]*s;
+			q[1] = q[1]*s;
+			q[2] = q[2]*s;
+			q[3] = c;
+		}
+	}
+
 	for(y=0;y<level;y++)
 	{
 		for(x=0;x<level;x++)
 		{
 			//left
-			f[0] = -1.0;
-			f[1] = 1.0 - (2.0*x+1.0)/level;
-			f[2] = (2.0*y+1.0)/level - 1.0;
-			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
-			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
-			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
 			tr[0] = -vf[0] / (level+0.5);
 			tr[1] = -vf[1] / (level+0.5);
 			tr[2] = -vf[2] / (level+0.5);
 			tf[0] = vu[0] / (level+0.5);
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
+			f[0] = -1.0;
+			f[1] = 1.0 - (2.0*x+1.0)/level;
+			f[2] = (2.0*y+1.0)/level - 1.0;
+			if(rubikscube_shouldrotate(x, y, 'l', act->CODE)){
+				quaternion_rotate(f, q);
+				quaternion_rotate(tr,q);
+				quaternion_rotate(tf,q);
+			}
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
 			rgb = rubikcolor[(buf[0][y][x])%6];
 			gl41solid_rect(ctx, rgb, tc, tr, tf);
 
 			//right
-			f[0] = 1.0;
-			f[1] = (2.0*x+1.0)/level - 1.0;
-			f[2] = (2.0*y+1.0)/level - 1.0;
-			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
-			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
-			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
 			tr[0] = vf[0] / (level+0.5);
 			tr[1] = vf[1] / (level+0.5);
 			tr[2] = vf[2] / (level+0.5);
 			tf[0] = vu[0] / (level+0.5);
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
+			f[0] = 1.0;
+			f[1] = (2.0*x+1.0)/level - 1.0;
+			f[2] = (2.0*y+1.0)/level - 1.0;
+			if(rubikscube_shouldrotate(x, y, 'r', act->CODE)){
+				quaternion_rotate(f, q);
+				quaternion_rotate(tr,q);
+				quaternion_rotate(tf,q);
+			}
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
 			rgb = rubikcolor[(buf[1][y][x])%6];
 			gl41solid_rect(ctx, rgb, tc, tr, tf);
 		}
@@ -214,34 +392,44 @@ static void rubikscube_draw_gl41(
 		for(x=0;x<level;x++)
 		{
 			//near
-			f[0] = (2.0*x+1.0)/level - 1.0;
-			f[1] = -1.0;
-			f[2] = (2.0*y+1.0)/level - 1.0;
-			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
-			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
-			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
 			tr[0] = vr[0] / (level+0.5);
 			tr[1] = vr[1] / (level+0.5);
 			tr[2] = vr[2] / (level+0.5);
 			tf[0] = vu[0] / (level+0.5);
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
+			f[0] = (2.0*x+1.0)/level - 1.0;
+			f[1] = -1.0;
+			f[2] = (2.0*y+1.0)/level - 1.0;
+			if(rubikscube_shouldrotate(x, y, 'n', act->CODE)){
+				quaternion_rotate(f, q);
+				quaternion_rotate(tr,q);
+				quaternion_rotate(tf,q);
+			}
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
 			rgb = rubikcolor[(buf[2][y][x])%6];
 			gl41solid_rect(ctx, rgb, tc, tr, tf);
 
 			//far
-			f[0] = 1.0 - (2.0*x+1.0)/level;
-			f[1] = 1.0;
-			f[2] = (2.0*y+1.0)/level - 1.0;
-			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
-			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
-			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
 			tr[0] = -vr[0] / (level+0.5);
 			tr[1] = -vr[1] / (level+0.5);
 			tr[2] = -vr[2] / (level+0.5);
 			tf[0] = vu[0] / (level+0.5);
 			tf[1] = vu[1] / (level+0.5);
 			tf[2] = vu[2] / (level+0.5);
+			f[0] = 1.0 - (2.0*x+1.0)/level;
+			f[1] = 1.0;
+			f[2] = (2.0*y+1.0)/level - 1.0;
+			if(rubikscube_shouldrotate(x, y, 'f', act->CODE)){
+				quaternion_rotate(f, q);
+				quaternion_rotate(tr,q);
+				quaternion_rotate(tf,q);
+			}
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
 			rgb = rubikcolor[(buf[3][y][x])%6];
 			gl41solid_rect(ctx, rgb, tc, tr, tf);
 		}
@@ -252,34 +440,44 @@ static void rubikscube_draw_gl41(
 		for(x=0;x<level;x++)
 		{
 			//bottom
-			f[0] = (2.0*x+1.0)/level - 1.0;
-			f[1] = (2.0*y+1.0)/level - 1.0;
-			f[2] = -1.0;
-			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
-			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
-			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
 			tr[0] = vr[0] / (level+0.5);
 			tr[1] = vr[1] / (level+0.5);
 			tr[2] = vr[2] / (level+0.5);
 			tf[0] = -vf[0] / (level+0.5);
 			tf[1] = -vf[1] / (level+0.5);
 			tf[2] = -vf[2] / (level+0.5);
+			f[0] = (2.0*x+1.0)/level - 1.0;
+			f[1] = 1.0 - (2.0*y+1.0)/level;
+			f[2] = -1.0;
+			if(rubikscube_shouldrotate(x, y, 'b', act->CODE)){
+				quaternion_rotate(f, q);
+				quaternion_rotate(tr,q);
+				quaternion_rotate(tf,q);
+			}
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
 			rgb = rubikcolor[(buf[4][y][x])%6];
 			gl41solid_rect(ctx, rgb, tc, tr, tf);
 
 			//upper
-			f[0] = (2.0*x+1.0)/level - 1.0;
-			f[1] = (2.0*y+1.0)/level - 1.0;
-			f[2] = 1.0;
-			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
-			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
-			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
 			tr[0] = vr[0] / (level+0.5);
 			tr[1] = vr[1] / (level+0.5);
 			tr[2] = vr[2] / (level+0.5);
 			tf[0] = vf[0] / (level+0.5);
 			tf[1] = vf[1] / (level+0.5);
 			tf[2] = vf[2] / (level+0.5);
+			f[0] = (2.0*x+1.0)/level - 1.0;
+			f[1] = (2.0*y+1.0)/level - 1.0;
+			f[2] = 1.0;
+			if(rubikscube_shouldrotate(x, y, 't', act->CODE)){
+				quaternion_rotate(f, q);
+				quaternion_rotate(tr,q);
+				quaternion_rotate(tf,q);
+			}
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
 			rgb = rubikcolor[(buf[5][y][x])%6];
 			gl41solid_rect(ctx, rgb, tc, tr, tf);
 		}
@@ -340,7 +538,9 @@ static void rubikscube_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 }
 static void rubikscube_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@rubik_write\n");
+	u8* p = buf;
+	ent->CODE = p[0];
+	ent->TIME = timeread();
 }
 static void rubikscube_discon(struct halfrel* self, struct halfrel* peer)
 {
@@ -381,8 +581,6 @@ static void rubikscube_create(struct entity* act, void* str)
 	ret = 0;
 	if(str)ret = rubikscube_import(str, buf);
 	if((0==str)|(ret<=0))rubikscube_generate(buf, level);
-
-	//
 	for(ret=0;ret<6;ret++)printmemory(buf + level*level*ret, level*level);
 }
 

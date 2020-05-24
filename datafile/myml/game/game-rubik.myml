@@ -43,7 +43,7 @@ t: 0.0, 0.0, 1000.0
 freemodl{
 }
 freegeom{
-c: 0.0, -2500.0, 0.0
+c: 0.0, -4000.0, 500.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
 t: 0.0, 0.0, 1000.0
@@ -68,4 +68,7 @@ q:1.0, 1.0
 
 #glwnd depends on cam
 (opengl, freerect, mvp) -> (freecam, 0, 0)
+
+#
+(freecam, 0, ioto) -> (rubik, 0, ioby)
 </relation>

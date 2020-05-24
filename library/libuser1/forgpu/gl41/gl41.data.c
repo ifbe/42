@@ -76,9 +76,12 @@ void gl41data_nolit(struct entity* wnd)
 {
 	int x,y;
 	void* trick = wnd->gl_light;
-	struct gl41data* data = trick + 0x400;
-	float (*m)[4] = trick + 0x800;
-	float* v = trick + 0xc00;
+	struct glsrc* src = trick + 0x400;
+
+	src->routine_name = "passtype";
+	src->routine_detail = "rawcolor";
+
+	wnd->gl_light[0] = src;
 }
 void gl41data_mylit(struct entity* wnd)
 {
@@ -92,9 +95,12 @@ void gl41data_before(struct entity* ctx)
 	int j;
 	struct glsrc* src;
 
-	//camera,light: forget all
+	//camera: default
 	ctx->gl_camera[0] = 0;
-	ctx->gl_light[0] = 0;
+
+	//light: default
+	//ctx->gl_light[0] = 0;
+	gl41data_nolit(ctx);
 
 	//solid: clear myown, forget other
 	for(j=0;j<solidaid_max;j++){

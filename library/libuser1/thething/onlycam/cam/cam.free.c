@@ -2,9 +2,8 @@
 #define OWNBUF buf0
 //
 #define EVTOTYPE data2
-#define MOVE 0
-#define FRUS 1
-#define DELIVER 666666
+#define IOTO 1
+#define EVTO 2
 //
 #define DRAWTYPE data3
 #define RASTER 0
@@ -128,6 +127,7 @@ static int freecam_event_obb(
 {
 	short* t;
 	float nx,ny,nz;
+	vec3 up = {0.0, 0.0, 1.0};
 	//say("freecam_event@%llx:%x,%x\n", act, ev->why, ev->what);
 
 	struct fstyle* obb = &geom->fshape;
@@ -147,8 +147,15 @@ static int freecam_event_obb(
 		}
 		if(0x4070 == ev->what){
 			if(0 == act->iw0)return 0;
-			freecam_rotate(obb->vr, obb->vf, obb->vt, (t[0] - act->ixn)/100.0);
-			freecam_rotate(obb->vf, obb->vt, obb->vr, (t[1] - act->iyn)/100.0);
+			quaternion_operation(obb->vf, obb->vr, (t[1] - act->iyn)/100.0);
+			quaternion_operation(obb->vt, obb->vr, (t[1] - act->iyn)/100.0);
+
+			quaternion_operation(obb->vr, up, (t[0] - act->ixn)/100.0);
+			quaternion_operation(obb->vf, up, (t[0] - act->ixn)/100.0);
+			quaternion_operation(obb->vt, up, (t[0] - act->ixn)/100.0);
+
+			//freecam_rotate(obb->vr, obb->vf, up, (t[0] - act->ixn)/100.0);
+			//freecam_rotate(obb->vf, obb->vt, obb->vr, (t[1] - act->iyn)/100.0);
 			act->ixn = t[0];
 			act->iyn = t[1];
 		}
@@ -499,10 +506,15 @@ static int freecam_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 static int freecam_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct event* ev = buf;
-	if(DELIVER == ent->EVTOTYPE){
-		//say("%.8s\n",&ev->what);
+	if(ent->EVTOTYPE & EVTO){
 		if(_char_ != ev->what){
 			relationwrite(ent,_evto_, stack,sp, arg,key, buf,len);
+			return 0;
+		}
+	}
+	if(ent->EVTOTYPE & IOTO){
+		if(_char_ == ev->what){
+			relationwrite(ent,_ioto_, stack,sp, arg,key, buf,len);
 			return 0;
 		}
 	}
@@ -517,8 +529,12 @@ static void freecam_linkup(struct halfrel* self, struct halfrel* peer)
     say("@freecam_linkup\n");
 
 	struct entity* this = self->pchip;
+	if(_ioto_ == self->flag){
+		this->EVTOTYPE |= IOTO;
+		return;
+	}
 	if(_evto_ == self->flag){
-		this->EVTOTYPE = DELIVER;
+		this->EVTOTYPE |= EVTO;
 		return;
 	}
 
