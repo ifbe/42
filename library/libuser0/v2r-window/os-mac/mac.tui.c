@@ -3,14 +3,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <termios.h>
+#include <sys/ioctl.h>
 #include "libuser.h"
 int tuinode_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
 int tuinode_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
-
-
-
-
-static int mode = 0;
 
 
 
@@ -118,6 +114,12 @@ void windowdraw(struct supply* wnd)
 
 void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	struct winsize ws;
+	ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
+	wnd->width = ws.ws_col;
+	wnd->height= ws.ws_row;
+	wnd->fbwidth = ws.ws_col;
+
 	//read context
 	tuinode_read(wnd,0, stack,sp, arg,key, buf,len);
 
@@ -137,26 +139,8 @@ void windowstart()
 
 
 
-void windowchange(int what)
+void windowchange()
 {
-	struct termios t;
-	tcgetattr(STDIN_FILENO, &t);
-	mode = what;
-	
-	if(mode == 0)
-	{
-		fcntl(0, F_SETFL, fcntl(0, F_GETFL) & (~O_NONBLOCK));
-		t.c_lflag |= ICANON|ECHO;
-	}
-	else if(mode == 1)
-	{
-		fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
-		t.c_lflag &= ~(ICANON|ECHO);
-		t.c_cc[VTIME] = 0;
-		t.c_cc[VMIN] = 1;
-	}
-
-	tcsetattr(STDIN_FILENO, TCSANOW, &t);
 }
 void windowlist()
 {
@@ -172,7 +156,7 @@ void windowcreate(struct supply* w)
 	w->width = 80;
 	w->height = 25;
 
-	w->fbwidth = 80;
+	//w->fbwidth = 80;
 	//w->fbheight = 0;
 
 	w->textbuf = malloc(0x100000);
@@ -182,11 +166,25 @@ void windowcreate(struct supply* w)
 
 
 
-void initwindow()
-{
-	windowchange(1);
-}
 void freewindow()
 {
-	windowchange(0);
+	struct termios t;
+	tcgetattr(STDIN_FILENO, &t);
+
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL) & (~O_NONBLOCK));
+	t.c_lflag |= ICANON|ECHO;
+
+	tcsetattr(STDIN_FILENO, TCSANOW, &t);
+}
+void initwindow()
+{
+	struct termios t;
+	tcgetattr(STDIN_FILENO, &t);
+	
+	fcntl(0, F_SETFL, fcntl(0, F_GETFL) | O_NONBLOCK);
+	t.c_lflag &= ~(ICANON|ECHO);
+	t.c_cc[VTIME] = 0;
+	t.c_cc[VMIN] = 1;
+
+	tcsetattr(STDIN_FILENO, TCSANOW, &t);
 }
