@@ -87,7 +87,7 @@ int tuinode_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void
 		for(x=0;x<www;x++){
 			tmp[(www*y + x)*4 + 0] = ' ';
 			tmp[(www*y + x)*4 + 1] = 0;
-			tmp[(www*y + x)*4 + 2] = 0;
+			tmp[(www*y + x)*4 + 2] = 7;
 			tmp[(www*y + x)*4 + 3] = 0;
 		}
 	}

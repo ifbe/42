@@ -48,6 +48,30 @@ static u32 stl3d_normal2rgb(vec3 n)
 	r = (u32)(256*(n[2]*w+0.5));
 	return (r<<16) + (g<<8) + (b);
 }
+static u32 stl3d_mixcolor(u32 x, u32 y)
+{
+	u32 o = 0;
+	u8* p = (void*)&x;
+	u8* q = (void*)&y;
+	int b = (p[0]+q[0])/2;
+	int g = (p[1]+q[1])/2;
+	int r = (p[2]+q[2])/2;
+	return (r<<16) + (g<<8) + (b);
+}
+static u8 stl3d_24to4(u32 c)
+{
+	u8 o = 0;
+	u8* p = (void*)&c;
+	if(p[0] > 0x80)o |= 1;
+	if(p[1] > 0x80)o |= 2;
+	if(p[2] > 0x80)o |= 4;
+	if(28*p[0]+151*p[1]+30*p[2] > 0x5600)o |= 8;
+	return o;
+}
+
+
+
+
 static void stl3d_mat4vec3(vec3 o, mat4 m, vec3 v)
 {
 	float f;
@@ -344,7 +368,7 @@ static void stl3d_rgba_raytrace(
 			for(j=0;j<3;j++)rd[j] -= ro[j];
 
 			ret = stl3d_intersect_world(oo, own->vbuf, own->vbuf_h/3, ro,rd, mat);
-			if(ret <= 0)continue;
+			if(ret < 0)continue;
 
 			*(u32*)(rgba + y*stride + x*4) = stl3d_normal2rgb(own->vbuf + 4*(18*ret+3));
 		}
@@ -383,7 +407,7 @@ static void stl3d_tui_raytrace(
 	mat4 clip_from_world)
 {
 	int x,y,j;
-	int top,bot,val;
+	int top,bot,rgb,val;
 	int www = wnd->width;
 	int hhh = wnd->height;
 	u8* buf = (u8*)(wnd->textbuf);
@@ -416,14 +440,25 @@ static void stl3d_tui_raytrace(
 			for(j=0;j<3;j++)rd[j] -= ro[j];
 			bot = stl3d_intersect_world(oo, own->vbuf, own->vbuf_h/3, ro,rd, mat);
 
-			if((top<=0)&&(bot<=0))continue;
-			else if(top<=0)val = 'b';
-			else if(bot<=0)val = 'p';
-			else val = '8';
+			if((top < 0)&&(bot < 0))continue;
+			else if(top < 0){
+				val = 'b';
+				rgb = stl3d_normal2rgb(own->vbuf + 4*(18*bot+3));
+			}
+			else if(bot < 0){
+				val = 'p';
+				rgb = stl3d_normal2rgb(own->vbuf + 4*(18*top+3));
+			}
+			else{
+				val = '8';
+				rgb = stl3d_mixcolor(
+					stl3d_normal2rgb(own->vbuf + 4*(18*bot+3)),
+					stl3d_normal2rgb(own->vbuf + 4*(18*top+3)));
+			}
 
 			j = (www*y+x)*4;
 			buf[j + 0] = val;
-			buf[j + 2] = 7;
+			buf[j + 2] = stl3d_24to4(rgb);
 		}//forx
 	}//fory
 }

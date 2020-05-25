@@ -57,13 +57,12 @@ void* textuithread(void* win)
 
 static void attr(u8 bg, u8 fg)
 {
-	char str[6] = {0x1b, 0x5b, '4', 0, 'm', 0};
-	if( (bg > 0) && (bg <8) )
-	{
-		str[3] = 0x30 + bg;
-		printf("%s", str);
-	}
-	else printf("\033[0m");
+	//01  23  456  789
+	char str[16] = {0x1b,0x5b,  '0',';',  '4','0',';',  '3','7','m',  0};
+	if(fg >= 8)str[2] = '1';
+	str[5] = '0' + (bg&7);
+	str[8] = '0' + (fg&7);
+	printf("%s",str);
 }
 void windowdraw(struct supply* src)
 {
@@ -113,7 +112,7 @@ void windowdraw(struct supply* src)
 			}
 		}
 	}
-	if(bg != 0)attr(0,0);
+	printf("\033[0m");
 }
 
 
