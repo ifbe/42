@@ -31,6 +31,9 @@ depth:1024
 joy{
 fmt:joy
 }
+std{
+fmt:std
+}
 </supply>
 
 
@@ -103,4 +106,6 @@ q:0.33, 0.33
 #click
 (event, 0, cam) -> (freecam, 0, evto)
 (event, 0, tar) -> (virtual, 0, ray)
+
+(std, 0, dst) -> (freecam, 0, ioby)
 </relation>

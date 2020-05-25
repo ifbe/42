@@ -79,6 +79,18 @@ int tuinode_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void
 {
 	//gentui_rect(wnd, 4, 0, 0, 80, 25);
 	//gentui_str(wnd, 1, 0, 0, (void*)"fuck", 4);
+	int x,y;
+	int www = wnd->width;
+	int hhh = wnd->height;
+	u8* tmp = wnd->textbuf;
+	for(y=0;y<hhh;y++){
+		for(x=0;x<www;x++){
+			tmp[(www*y + x)*4 + 0] = ' ';
+			tmp[(www*y + x)*4 + 1] = 0;
+			tmp[(www*y + x)*4 + 2] = 0;
+			tmp[(www*y + x)*4 + 3] = 0;
+		}
+	}
 
 	struct relation* rel = wnd->orel0;
 	while(1){
