@@ -44,7 +44,8 @@ int lowlevel_input()
 }
 void lowlevel_output(char* buf, int len)
 {
-	printf("%.*s", len, buf);
+	//printf("%.*s", len, buf);
+	write(1, buf, len);
 }
 
 

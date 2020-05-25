@@ -304,6 +304,16 @@ static int freecam_event_frus(
 
 
 
+void freecam_tui_ratio(
+	struct entity* wrd, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	struct fstyle* frus = &geom->frus;
+	float dx = wnd->width;
+	float dy = wnd->height * 2;
+	frus->vb[3] = frus->vl[3] * dy / dx;
+	frus->vt[3] = frus->vr[3] * dy / dx;
+}
 void freecam_ratio(
 	struct entity* wrd, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -373,7 +383,7 @@ static void freecam_frustum2matrix(
 	frustum2viewandclip_transpose(frus, own->w2v, own->w2c);
 	//printmat4(own->w2c);
 }
-static void freecam_camera(
+static void freecam_gl41cam(
 	struct entity* act, struct style* part,
 	struct entity* wrd, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -409,6 +419,7 @@ static int freecam_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
+	if(_tui_ == wnd->fmt)return 0;
 	if(_rgba_ == wnd->fmt)return 0;
 	if(stack&&('v' == key)){
 		freecam_draw_gl41(ent,slot, wor,geom, wnd,area);
@@ -435,9 +446,11 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
 	slot = stack[sp-1].pfoot;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-	if(_rgba_ == wnd->fmt){
+	if((_tui_ == wnd->fmt)|(_rgba_ == wnd->fmt)){
 		//say("@freecam: raster\n");
-		freecam_ratio(wor, geom, wnd, area);
+		if(_tui_ == wnd->fmt)freecam_tui_ratio(wor, geom, wnd, area);
+		else freecam_ratio(wor, geom, wnd, area);
+
 		freecam_shape2frustum(&geom->fshape, &geom->frustum);
 		//printstyle(&geom->frus);
 
@@ -457,7 +470,7 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		freecam_ratio(wor, geom, wnd, area);
 		freecam_shape2frustum(&geom->fshape, &geom->frustum);
 		freecam_frustum2matrix(ent,slot, wor,geom);
-		freecam_camera(ent,slot, wor,geom, wnd,area);
+		freecam_gl41cam(ent,slot, wor,geom, wnd,area);
 
 		gl41data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
 
