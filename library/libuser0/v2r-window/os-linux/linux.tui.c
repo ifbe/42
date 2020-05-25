@@ -14,10 +14,6 @@ void tuinode_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
-//窗口
-static struct winsize w;
-static int width,height;
-static int lastwidth=0,lastheight=0;
 //输入
 static int flag=-1;
 static struct termios old;
@@ -25,13 +21,7 @@ static struct termios new;
 
 
 
-
-static void newsize(int num)
-{
-	ioctl(0, TIOCGWINSZ, &w);
-	width=w.ws_col;
-	height=w.ws_row;
-}
+/*
 void* textuithread(void* win)
 {
 	u64 why, what, where;
@@ -50,7 +40,7 @@ void* textuithread(void* win)
 		eventwrite(why, what, where, 0);
 
 	}//while
-}
+}*/
 
 
 
@@ -64,23 +54,25 @@ static void attr(u8 bg, u8 fg)
 	str[8] = '0' + (fg&7);
 	printf("%s",str);
 }
-void windowdraw(struct supply* src)
+void windowdraw(struct supply* wnd)
 {
-	int x,y;
+	int x,y,w,h;
 	u8 ch,bg=0,fg=0;
 	u8* p;
 	u8* buf;
 	printf("\033[H\033[J");
 /*
-	printf("%s",src->textbuf);
+	printf("%s",wnd->textbuf);
 	fflush(stdout);
 */
-	buf = (u8*)(src->textbuf);
-	for(y=0;y<height;y++)
+	w = wnd->width;
+	h = wnd->height;
+	buf = wnd->textbuf;
+	for(y=0;y<h;y++)
 	{
-		for(x=0;x<width;x++)
+		for(x=0;x<w;x++)
 		{
-			p = buf + ((width*y + x)<<2);
+			p = buf + ((w*y + x)<<2);
 			if(p[0] > 0x80)
 			{
 				//先颜色
@@ -120,6 +112,11 @@ void windowdraw(struct supply* src)
 
 void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	struct winsize ws;
+	ioctl(0, TIOCGWINSZ, &ws);
+	wnd->width = ws.ws_col;
+	wnd->height = ws.ws_row;
+
 	//read context
 	tuinode_read(wnd,0, stack,sp, arg,key, buf,len);
 
@@ -153,25 +150,28 @@ void windowcreate(struct supply* w)
 	w->fmt = _tui_;
 	w->vfmt = 0;
 
-	w->width = width;
-	w->height = height;
+	w->width = 80;
+	w->height= 25;
 
-	w->fbwidth = width*4;
-	//w->fbheight = 0;
+	//w->fbwidth = 80*8;
+	//w->fbheight= 25*16;
 
 	w->textbuf = malloc(0x100000);
-	threadcreate(textuithread, w);
+	//threadcreate(textuithread, w);
 }
 
 
 
-
-void initwindow()
+/*
+static void newsize(int num)
 {
 	ioctl(0, TIOCGWINSZ, &w);
 	width=w.ws_col;
 	height=w.ws_row;
-	signal(SIGWINCH,newsize);
+}*/
+void initwindow()
+{
+	//signal(SIGWINCH,newsize);
 
 	//
 	flag=tcgetattr(STDIN_FILENO,&old);
