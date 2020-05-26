@@ -8,6 +8,7 @@ int termwrite(void* buf, int len);
 void terminalthread(struct supply* win)
 {
 	int ret;
+	struct event ev;
 	struct halfrel stack[0x80];
 	while(1)
 	{
@@ -17,7 +18,9 @@ void terminalthread(struct supply* win)
 		}
 		else {
 			//say("%x\n", ret);
-			relationwrite(win,_dst_, stack,0, 0,0, &ret,1);
+			ev.why = ret;
+			ev.what = _char_;
+			relationwrite(win,_dst_, stack,0, 0,0, &ev,0);
 		}
 	}
 }

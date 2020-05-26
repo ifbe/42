@@ -213,29 +213,32 @@ static void windowsutf8(char* utf8)
 	ret = WideCharToMultiByte(CP_ACP, 0, (void*)unicode, -1, gbk, 4, NULL, NULL);
 	printf("%s",gbk);
 }
-static void attr(u8 bg0, u8 fg0)
+static void attr(u8 bg, u8 fg)
 {
-	int bg1, fg1;
-	if(bg0 == 7)bg1 = BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;
-	else if(bg0 == 6)bg1 = BACKGROUND_BLUE | BACKGROUND_GREEN;
-	else if(bg0 == 5)bg1 = BACKGROUND_BLUE | BACKGROUND_RED;
-	else if(bg0 == 4)bg1 = BACKGROUND_BLUE;
-	else if(bg0 == 3)bg1 = BACKGROUND_GREEN | BACKGROUND_RED;
-	else if(bg0 == 2)bg1 = BACKGROUND_GREEN;
-	else if(bg0 == 1)bg1 = BACKGROUND_RED;
-	else bg1 = 0;
+	int a = 0;
 
-	if(fg0 == 7)fg1 = FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED;
-	else if(fg0 == 6)fg1 = FOREGROUND_BLUE | FOREGROUND_GREEN;
-	else if(fg0 == 5)fg1 = FOREGROUND_BLUE | FOREGROUND_RED;
-	else if(fg0 == 4)fg1 = FOREGROUND_BLUE;
-	else if(fg0 == 3)fg1 = FOREGROUND_GREEN | FOREGROUND_RED;
-	else if(fg0 == 2)fg1 = FOREGROUND_GREEN;
-	else if(fg0 == 1)fg1 = FOREGROUND_RED;
-	else fg1 = 0;
+	switch(bg&7){
+	case 7:a |= BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;break;
+	case 6:a |= BACKGROUND_BLUE | BACKGROUND_GREEN;break;
+	case 5:a |= BACKGROUND_BLUE | BACKGROUND_RED;break;
+	case 4:a |= BACKGROUND_BLUE;break;
+	case 3:a |= BACKGROUND_GREEN | BACKGROUND_RED;break;
+	case 2:a |= BACKGROUND_GREEN;break;
+	case 1:a |= BACKGROUND_RED;break;
+	}//bg
 
-	if(fg1 == 0)fg1 = FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED;
-	SetConsoleTextAttribute(output, bg1 | fg1);
+	switch(fg&7){
+	case 7:a |= FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED;break;
+	case 6:a |= FOREGROUND_BLUE | FOREGROUND_GREEN;break;
+	case 5:a |= FOREGROUND_BLUE | FOREGROUND_RED;break;
+	case 4:a |= FOREGROUND_BLUE;break;
+	case 3:a |= FOREGROUND_GREEN | FOREGROUND_RED;break;
+	case 2:a |= FOREGROUND_GREEN;break;
+	case 1:a |= FOREGROUND_RED;break;
+	}//fg
+
+	if(fg >= 8)a |= FOREGROUND_INTENSITY;
+	SetConsoleTextAttribute(output, a);
 }
 
 
