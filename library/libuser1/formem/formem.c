@@ -1,6 +1,7 @@
 #include "libuser.h"
 void hexedit_init(void*);
 void overview_init(void*);
+void drawvt100_create(void*);
 //
 void initutf8(void*);
 int openreadclose(void* name, int off, void* buf, int len);
@@ -53,14 +54,16 @@ void asset_delete()
 
 
 
-void lib4d_create(void* addr)
+void formem_free()
+{
+}
+void formem_init(void* addr)
 {
 	asset_create();
 
 	hexedit_init(addr);
 
 	overview_init(addr);
-}
-void lib4d_delete()
-{
+
+	drawvt100_create(addr);
 }

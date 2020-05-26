@@ -1,4 +1,11 @@
 #include "libuser.h"
+//
+void forcpu_init();
+void forcpu_free();
+void formem_init();
+void formem_free();
+
+//
 void thing_free();
 void thing_init(void*);
 void world_free();
@@ -811,6 +818,9 @@ void freeentity()
 	thing_free();
 	world_free();
 
+	forcpu_free();
+	formem_free();
+
 	style = 0;
 	entity = 0;
 }
@@ -823,6 +833,9 @@ void initentity(u8* addr)
 #define max (0x100000/sizeof(struct entity))
 	for(j=0;j<0x200000;j++)addr[j] = 0;
 	for(j=0;j<max;j++)entity[j].tier = _ent_;
+
+	formem_init(addr);
+	forcpu_init(addr);
 
 	world_init(addr);
 	thing_init(addr);
