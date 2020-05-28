@@ -19,14 +19,17 @@ width:1024
 height:1024
 depth:1024
 }
-stdio{
-fmt:std
+speaker{
+fmt:spk
 }
 usbcam{
 fmt:cam
 }
 usbmic{
 fmt:mic
+}
+stdio{
+fmt:std
 }
 </supply>
 
@@ -111,7 +114,7 @@ q:1.0, 1.0
 
 #peer audio from mux
 (themux, 0, a0to) -> (arecut, 0, src)
-(arecut, 0, dst) -> (canvas, 0, yuv)
+(arecut, 0, dst) -> (speaker, 0, src)
 
 #peer video from mux
 (themux, 0, v0to) -> (vrecut, 0, src)
