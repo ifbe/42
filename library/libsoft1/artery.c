@@ -24,6 +24,7 @@
 #define _rotate_ hex64('r','o','t','a','t','e',0,0)
 //
 #define _easymux_ hex64('e','a','s','y','m','u','x',0)
+#define _mediamux_ hex64('m','e','d','i','a','m','u','x')
 #define _echo_ hex32('e','c','h','o')
 #define _pump_ hex32('p','u','m','p')
 #define _stor_ hex32('s','t','o','r')
@@ -137,6 +138,13 @@ int easymux_linkup(struct halfrel* self, struct halfrel* peer);
 int easymux_discon(struct halfrel* self, struct halfrel* peer);
 int easymux_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int easymux_read( _art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int mediamux_create(struct artery* ele, void* url, int argc, u8** argv);
+int mediamux_delete(struct artery* ele, void* url);
+int mediamux_linkup(struct halfrel* self, struct halfrel* peer);
+int mediamux_discon(struct halfrel* self, struct halfrel* peer);
+int mediamux_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int mediamux_read( _art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+//
 int echo_create(struct artery* ele, void* url, int argc, u8** argv);
 int echo_delete(struct artery* ele, void* url);
 int echo_linkup(struct halfrel* self, struct halfrel* peer);
@@ -680,6 +688,8 @@ int arteryread(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void*
 		case _stor_:stor_read(art,foot, stack,sp, arg,idx, buf,len);break;
 
 		case _easymux_:easymux_read(art,foot, stack,sp, arg,idx, buf,len);break;
+		case _mediamux_:mediamux_read(art,foot, stack,sp, arg,idx, buf,len);break;
+
 		case _echo_:echo_read(art,foot, stack,sp, arg,idx, buf,len);break;
 		case _goslow_:goslow_read(art,foot, stack,sp, arg,idx, buf,len);break;
 		case _dbgf32_:dbgf32_read(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -792,6 +802,8 @@ int arterywrite(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void
 		case _stor_:return stor_write(art,foot, stack,sp, arg,idx, buf,len);break;
 
 		case _easymux_:return easymux_write(art,foot, stack,sp, arg,idx, buf,len);break;
+		case _mediamux_:return mediamux_write(art,foot, stack,sp, arg,idx, buf,len);break;
+
 		case _echo_:return echo_write(art,foot, stack,sp, arg,idx, buf,len);break;
 		case _goslow_:return goslow_write(art,foot, stack,sp, arg,idx, buf,len);break;
 		case _dbgf32_:return dbgf32_write(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -1183,7 +1195,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		return e;
 	}
 
-	//test
+	//mux
 	if(_easymux_ == type)
 	{
 		e = allocartery();
@@ -1193,6 +1205,17 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		easymux_create(e, url, argc, argv);
 		return e;
 	}
+	if(_mediamux_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _mediamux_;
+		mediamux_create(e, url, argc, argv);
+		return e;
+	}
+
+	//test
 	if(_echo_ == type)
 	{
 		e = allocartery();

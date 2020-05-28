@@ -1,0 +1,51 @@
+<supply>
+usbcam{
+fmt:cam
+}
+stdio{
+fmt:std
+}
+</supply>
+
+
+<artery>
+goslow{
+fmt:goslow
+}
+vrecut{
+fmt:vrecut
+}
+themux{
+fmt:mediamux
+}
+client{
+fmt:tcptrav
+}
+</artery>
+
+
+<system>
+socket{
+fmt:tcp
+url:deepstack.tech:9999
+}
+</system>
+
+
+<worker>
+poller{
+fmt:poller
+}
+</worker>
+
+
+<relation>
+#client
+(stdio, 0, dst) -> (client, 0, std)
+(socket, 0, dst) -> (client, 0, src)
+(themux, 0, src) -> (client, 0, dst)
+
+#self video into mux
+(usbcam, 0, dst) -> (goslow, 0, src)
+(goslow, 0, dst) -> (themux, 0, v0by)
+</relation>
