@@ -446,6 +446,10 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
 	slot = stack[sp-1].pfoot;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+	if(_cli_ == wnd->fmt){
+		say("\r%s/%s/%s:%f,%f,%f", &wnd->fmt, &ent->fmt, &wor->fmt, geom->fs.vc[0], geom->fs.vc[1], geom->fs.vc[2]);
+		return 0;
+	}
 	if((_tui_ == wnd->fmt)|(_rgba_ == wnd->fmt)){
 		//say("@freecam: raster\n");
 		if(_tui_ == wnd->fmt)freecam_tui_ratio(wor, geom, wnd, area);

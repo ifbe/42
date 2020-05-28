@@ -12,18 +12,21 @@ fmt:virtual
 
 
 <supply>
-stdio{
-fmt:std
-}
-camera{
-fmt:cam
-}
 opengl{
 fmt:wnd
 title:"42"
 width:1024
 height:1024
 depth:1024
+}
+stdio{
+fmt:std
+}
+usbcam{
+fmt:cam
+}
+usbmic{
+fmt:mic
 }
 </supply>
 
@@ -32,11 +35,15 @@ depth:1024
 goslow{
 fmt:goslow
 }
-recut{
+arecut{
 fmt:recut
+url:2048
 }
-easymux{
-fmt:easymux
+vrecut{
+fmt:vrecut
+}
+themux{
+fmt:mediamux
 }
 client{
 fmt:tcptrav
@@ -92,23 +99,28 @@ q:1.0, 1.0
 
 
 <relation>
-#by
-(camera, 0, dst) -> (goslow, 0, src)
-(goslow, 0, dst) -> (easymux, 0, by)
-
-#to
-(easymux, 0, to) -> (recut, 0, src)
-(recut, 0, dst) -> (canvas, 0, yuv)
+#show video to window
+(virtual, skygeom, 0) -> (canvas, skyhaha, 0)
+(virtual, freegeom, 0) -> (freecam, freemodl, 0)
+(opengl, freerect, 0) -> (freecam, 0, 0)
 
 #client
 (stdio, 0, dst) -> (client, 0, std)
 (socket, 0, dst) -> (client, 0, src)
-(easymux, 0, src) -> (client, 0, dst)
+(themux, 0, src) -> (client, 0, dst)
 
-#virtual depends on inner objects
-(virtual, skygeom, 0) -> (canvas, skyhaha, 0)
-(virtual, freegeom, 0) -> (freecam, freemodl, 0)
+#peer audio from mux
+(themux, 0, a0to) -> (arecut, 0, src)
+(arecut, 0, dst) -> (canvas, 0, yuv)
 
-#glwnd depends on ctx + cam
-(opengl, freerect, 0) -> (freecam, 0, 0)
+#peer video from mux
+(themux, 0, v0to) -> (vrecut, 0, src)
+(vrecut, 0, dst) -> (canvas, 0, yuv)
+
+#self audio into mux
+(usbmic, 0, dst) -> (themux, 0, a0by)
+
+#self video into mux
+(usbcam, 0, dst) -> (goslow, 0, src)
+(goslow, 0, dst) -> (themux, 0, v0by)
 </relation>
