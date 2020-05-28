@@ -43,7 +43,7 @@ fmt:recut
 url:2048
 }
 vrecut{
-fmt:vrecut
+fmt:recut
 }
 themux{
 fmt:mediamux

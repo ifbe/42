@@ -12,9 +12,6 @@ fmt:std
 goslow{
 fmt:goslow
 }
-vrecut{
-fmt:vrecut
-}
 themux{
 fmt:mediamux
 }

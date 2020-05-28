@@ -53,7 +53,7 @@ int tcptravclient_write(_art* art,int foot, _syn* stack,int sp, void* arg,int id
 		return 0;
 	}
 	if(_ccc_ == foot){
-		say("@ccc\n");
+		///say("@ccc\n");
 		printmemory(buf, len < 16 ? len : 16);
 
 		if(_c_friend_ != art->stage1)return 0;
@@ -61,7 +61,7 @@ int tcptravclient_write(_art* art,int foot, _syn* stack,int sp, void* arg,int id
 		return 0;
 	}
 	if(_sss_ == foot){
-		say("@sss\n");
+		//say("@sss\n");
 		printmemory(buf, len < 16 ? len : 16);
 		return 0;
 	}

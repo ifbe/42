@@ -8,9 +8,6 @@ typedef unsigned long long u64;
 
 
 
-void datewrite(u64 x)
-{
-}
 u64 dateread()
 {
 	u64 temp;
@@ -43,18 +40,37 @@ u64 dateread()
 	//
 	return temp;
 }
-
-
-
-
-void sleep_us(int t)
+void datewrite(u64 x)
 {
-	usleep(t);
+}
+
+
+
+
+u64 timeread()
+{
+	return mach_absolute_time() / 1000;
 }
 void timewrite(u64 x)
 {
 }
-u64 timeread()
+
+
+
+
+void sleep_ns(int t)
 {
-	return mach_absolute_time() / 1000;
+	//todo
+}
+void sleep_us(int t)
+{
+	usleep(t);
+}
+void sleep_ms(int t)
+{
+	usleep(t*1000);
+}
+u64 since1970()
+{
+	return time(0);
 }
