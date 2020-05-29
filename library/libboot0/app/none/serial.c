@@ -2,6 +2,7 @@
 #include<stdlib.h>
 #include<fcntl.h>
 #include<unistd.h>
+#include<errno.h>
 #include<termios.h>
 #include<sys/ioctl.h>
 #include<sys/select.h>
@@ -45,7 +46,22 @@ int lowlevel_input()
 void lowlevel_output(char* buf, int len)
 {
 	//printf("%.*s", len, buf);
-	write(1, buf, len);
+	int ret,retry=0;
+	while(1){
+		ret = write(1, buf, len);
+		if(ret == len)return;
+		if(ret > 0){
+			buf += ret;
+			len -= ret;
+			continue;
+		}
+
+		usleep(1);
+		retry++;
+		if(retry > 9)break;
+	}
+	fprintf(stderr, "errno=%d,ret=%d,len=%d@stdout\n",errno,ret,len);
+	fprintf(stderr, "{[(%.*s)]}\n", len, buf);
 }
 
 

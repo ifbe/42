@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <errno.h>
 #include <termios.h>
 #include "libuser.h"
 int lowlevel_input();
+int lowlevel_output(void*,int);
 int termwrite(void* buf, int len);
 
 
@@ -38,8 +40,7 @@ void stdio_read(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void*
 }
 void stdio_write(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
-	//say("%.*s", len, buf);
-	write(1, buf, len);
+	lowlevel_output(buf, len);
 }
 void stdio_delete(struct supply* win)
 {
