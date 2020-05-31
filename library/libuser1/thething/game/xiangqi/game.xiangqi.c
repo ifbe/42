@@ -1,5 +1,9 @@
 #include "libuser.h"
+#define _soul_ hex32('s','o','u','l')
 #define _sync_ hex32('s','y','n','c')
+#define PICKx ix0
+#define PICKy iy0
+#define TURN iw0
 void xiangqi_generate(char (*data)[9]);
 void xiangqi_move(char (*data)[9], int* turn, int px, int py, int x, int y);
 
@@ -37,6 +41,133 @@ int xiangqi_import(u8* buf, u8* str)
 		}
 	}
 	return 1;
+}
+void xiangqi_copydata(u8* dst, u8* src)
+{
+	int j;
+	for(j=0;j<90;j++)dst[j] = src[j];
+}
+int xiangqi_pickup(int x, int y, int turn)
+{
+	if( (x==px) && (y==py) )
+	{
+		px = py = -1;
+		return 1;
+	}
+
+	//chess choosing
+	if( (px<0) | (py<0) | (data[py][px] == 0) )
+	{
+		if( (data[y][x]>='a') && (data[y][x]<='z') && ((turn&1) == 0) )
+		{
+			px = x;
+			py = y;
+		}
+		if( (data[y][x]>='A') && (data[y][x]<='Z') && ((turn&1) == 1) )
+		{
+			px = x;
+			py = y;
+		}
+		return 2;
+	}
+
+	return 0;
+}
+void xiangqi_event(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty,
+	struct event* ev, int len)
+{
+	int x, y, ret;
+	u64 key = ev->why;
+	u64 what = ev->what;
+
+	if(what == _kbd_)
+	{
+		if(key == 0x48)	//up
+		{
+			if(qy<1)return;
+			qy--;
+		}
+		else if(key == 0x4b)	//left
+		{
+			if(qx<1)return;
+			qx--;
+		}
+		else if(key == 0x4d)	//right
+		{
+			if(qx<0)return;
+			if(qx>=8)return;
+			qx++;
+		}
+		else if(key == 0x50)	//down
+		{
+			if(qy<0)return;
+			if(qy>=9)return;
+			qy++;
+		}
+	}
+
+	else if(what == _char_)
+	{
+		if(key == 0x20)
+		{
+			ret = xiangqi_pickup(qx, qy, act->TURN);
+			if(ret > 0)return;
+
+			//move?
+			xiangqi_move(data, &act->TURN, px, py, qx, qy);
+		}
+		else if(key == 0x415b1b)
+		{
+			if(qy<1)return;	//up
+			qy--;
+		}
+		else if(key == 0x425b1b)	//down
+		{
+			if(qy<0)return;
+			if(qy>=9)return;
+			qy++;
+		}
+		else if(key == 0x435b1b)	//right
+		{
+			if(qx<0)return;
+			if(qx>=8)return;
+			qx++;
+		}
+		else if(key == 0x445b1b)	//left
+		{
+			if(qx<1)return;
+			qx--;
+		}
+	}
+
+	else if(what == 0x2b70)
+	{
+		//x = key & 0xffff;
+		//y = (key >> 16) & 0xffff;
+		//say("%d,%d => ",x,y);
+
+		//x = (x*9)>>16;
+		//y = (y*10)>>16;
+		//say("%d,%d\n",x,y);
+
+		x = (key & 0xffff) / 6;
+		y = ((key >> 16) & 0xffff) / 3;
+
+		if(x < 0)return;
+		if(x > 8)return;
+		if(y < 0)return;
+		if(y > 9)return;
+
+		//pick?
+		ret = xiangqi_pickup(x, y, act->TURN);
+		if(ret > 0)return;
+
+		//move?
+		xiangqi_move(data, &act->TURN, px, py, x, y);
+		px = py = -1;
+	}
 }
 
 
@@ -270,6 +401,7 @@ static void xiangqi_draw_gl41(
 			tu[1] = vu[1] / 20.0;
 			tu[2] = vu[2] / 20.0;
 			gl41solid_cylinder(ctx, 0xf9d65b, tc, tr, tf, tu);
+			if((x==act->PICKx)&&(y==act->PICKy))gl41opaque_prism4(ctx, 0x8000ffff, tc,tr,tf,tu);
 
 			tc[0] += tu[0] + vu[0]*0.01;
 			tc[1] += tu[1] + vu[1]*0.01;
@@ -358,133 +490,7 @@ static void xiangqi_draw_cli(
 
 
 
-int xiangqi_pickup(int x, int y, int turn)
-{
-	if( (x==px) && (y==py) )
-	{
-		px = py = -1;
-		return 1;
-	}
-
-	//chess choosing
-	if( (px<0) | (py<0) | (data[py][px] == 0) )
-	{
-		if( (data[y][x]>='a') && (data[y][x]<='z') && ((turn&1) == 0) )
-		{
-			px = x;
-			py = y;
-		}
-		if( (data[y][x]>='A') && (data[y][x]<='Z') && ((turn&1) == 1) )
-		{
-			px = x;
-			py = y;
-		}
-		return 2;
-	}
-
-	return 0;
-}
-void xiangqi_event(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
-	struct event* ev, int len)
-{
-	int x, y, ret;
-	u64 key = ev->why;
-	u64 what = ev->what;
-
-	if(what == _kbd_)
-	{
-		if(key == 0x48)	//up
-		{
-			if(qy<1)return;
-			qy--;
-		}
-		else if(key == 0x4b)	//left
-		{
-			if(qx<1)return;
-			qx--;
-		}
-		else if(key == 0x4d)	//right
-		{
-			if(qx<0)return;
-			if(qx>=8)return;
-			qx++;
-		}
-		else if(key == 0x50)	//down
-		{
-			if(qy<0)return;
-			if(qy>=9)return;
-			qy++;
-		}
-	}
-
-	else if(what == _char_)
-	{
-		if(key == 0x20)
-		{
-			ret = xiangqi_pickup(qx, qy, act->iw0);
-			if(ret > 0)return;
-
-			//move?
-			xiangqi_move(data, &act->iw0, px, py, qx, qy);
-		}
-		else if(key == 0x415b1b)
-		{
-			if(qy<1)return;	//up
-			qy--;
-		}
-		else if(key == 0x425b1b)	//down
-		{
-			if(qy<0)return;
-			if(qy>=9)return;
-			qy++;
-		}
-		else if(key == 0x435b1b)	//right
-		{
-			if(qx<0)return;
-			if(qx>=8)return;
-			qx++;
-		}
-		else if(key == 0x445b1b)	//left
-		{
-			if(qx<1)return;
-			qx--;
-		}
-	}
-
-	else if(what == 0x2b70)
-	{
-		//x = key & 0xffff;
-		//y = (key >> 16) & 0xffff;
-		//say("%d,%d => ",x,y);
-
-		//x = (x*9)>>16;
-		//y = (y*10)>>16;
-		//say("%d,%d\n",x,y);
-
-		x = (key & 0xffff) / 6;
-		y = ((key >> 16) & 0xffff) / 3;
-
-		if(x < 0)return;
-		if(x > 8)return;
-		if(y < 0)return;
-		if(y > 9)return;
-
-		//pick?
-		ret = xiangqi_pickup(x, y, act->iw0);
-		if(ret > 0)return;
-
-		//move?
-		xiangqi_move(data, &act->iw0, px, py, x, y);
-		px = py = -1;
-	}
-}
-
-
-
-
-static void xiangqi_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void xiangqi_taking_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -496,11 +502,17 @@ static void xiangqi_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 		xiangqi_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
+static void xiangqi_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	xiangqi_taking_bycam(ent,foot, stack,sp, arg,key);
+}
 static void xiangqi_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_sync_ == foot){
-		printmemory(buf,len);
-	}
+	say("@xiangqi_giving: %.4s\n", &foot);
+	if(_soul_ == foot){xiangqi_copydata(ent->buf0, buf);return;}
+
+	relationwrite(ent,_soul_, stack,sp, 0,0, buf, 16);
+	relationwrite(ent,_sync_, stack,sp, 0,0, ent->buf0, 9*10);
 }
 static void xiangqi_discon(struct halfrel* self, struct halfrel* peer)
 {
@@ -543,9 +555,8 @@ say("@xiangqi_create:%llx\n",str);
 
 	for(ret=0;ret<90;ret+=9)printmemory(buf+ret, 9);
 
-	act->ix0 = act->iy0 = -1;
-	act->ixn = act->iyn = 0;
-	act->iw0 = 0;
+	act->PICKx = act->PICKy = 0;
+	act->TURN = 0;
 }
 
 

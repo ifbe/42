@@ -23,9 +23,9 @@ depth:1024
 
 
 <system>
-udp{
-fmt:UDP
-url:0.0.0.0:9999
+socket{
+fmt:udp
+url:127.0.0.1:9999
 }
 </system>
 
@@ -70,8 +70,10 @@ q:1.0, 1.0
 
 
 <relation>
-(udp, 0, dst) -> (xiangqi, 0, sync)
-(virtual, skygeom, 0) -> (xiangqi, skyhaha, 0)
+(socket, 0, dst) -> (xiangqi, 0, soul)
+(freecam, 0, evto) -> (xiangqi, 0, evby)
+
+(virtual, skygeom, 0) -> (xiangqi, skyhaha, here)
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
 (opengl, freerect, mvp) -> (freecam, 0, 0)
 </relation>

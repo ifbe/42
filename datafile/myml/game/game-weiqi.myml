@@ -72,12 +72,8 @@ q:1.0, 1.0
 <relation>
 #scene depends on
 (scene, skygeom, 0) -> (weiqi, skyhaha, 0)
-
-#virtual depends on
 (virtual, 0, 0) -> (scene, 0, 0)
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
-
-#glwnd depends on
 (opengl, freerect, mvp) -> (freecam, 0, 0)
 
 #click
