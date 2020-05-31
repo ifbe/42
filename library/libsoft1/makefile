@@ -132,13 +132,6 @@ libfile/video/video.mkv.c \
 libfile/video/video.mp4.c \
 libfile/video/video.rmvb.c \
 libfile/file.c \
-libmath/libmath.bigint.c \
-libmath/libmath.matrix.c \
-libmath/libmath.notation.c \
-libmath/libmath.prime.c \
-libmath/libmath.quaternion.c \
-libmath/libmath.vector.c \
-libmath/libmath.triangle.c \
 libflow/0.phy/phy.bt.c \
 libflow/0.phy/phy.eth.c \
 libflow/0.phy/phy.raw.c \
@@ -207,8 +200,17 @@ libflow/stream/stream.test.dbgf32.c \
 libflow/stream/stream.test.dbghex.c \
 libflow/stream/stream.test.fftpcm.c \
 libflow/stream/stream.test.fftrgb.c \
+libmath/libmath.bigint.c \
+libmath/libmath.matrix.c \
+libmath/libmath.notation.c \
+libmath/libmath.prime.c \
+libmath/libmath.quaternion.c \
+libmath/libmath.vector.c \
+libmath/libmath.triangle.c \
 libphys/phys.elec.c \
 libphys/phys.mech.c \
+libphys/phys.rigid.c \
+libphys/phys.fluid.c \
 artery.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 

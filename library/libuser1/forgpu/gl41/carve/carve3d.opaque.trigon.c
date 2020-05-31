@@ -1,5 +1,12 @@
 #include "libuser.h"
 #define acc 32
+#define circleacc 32
+#define sphereaccx 16
+#define sphereaccy (sphereaccx|0x1)
+void carvetrigonindex_triangle_v4n4x4(float* vbuf,int vlen, u16* ibuf,int ilen, vec3 v0,vec3 v1,vec3 v2);
+void carvetrigonindex_rect_v4n4x4(    float* vbuf,int vlen, u16* ibuf,int ilen, vec3 vc,vec3 vr,vec3 vf);
+void carvetrigonindex_circle_v4n4x4(  float* vbuf,int vlen, u16* ibuf,int ilen, vec3 vc,vec3 vr,vec3 vf);
+void carvetrigonindex_sphere_v4n4x4(  float* vbuf,int vlen, u16* ibuf,int ilen, vec3 vc,vec3 vr,vec3 vf,vec3 vt);
 
 
 
@@ -92,45 +99,6 @@ int opaque3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int 
 
 
 
-void carveopaque_triangle(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 v0, vec3 v1, vec3 v2)
-{
-	vec3 n;
-	n[0] = (v1[1]-v0[1])*(v2[2]-v0[2]) - (v1[2]-v0[2])*(v2[1]-v0[1]);
-	n[1] = (v1[2]-v0[2])*(v2[0]-v0[0]) - (v1[0]-v0[0])*(v2[2]-v0[2]);
-	n[2] = (v1[0]-v0[0])*(v2[1]-v0[1]) - (v1[1]-v0[1])*(v2[0]-v0[0]);
-
-	vbuf[ 0] = v0[0];
-	vbuf[ 1] = v0[1];
-	vbuf[ 2] = v0[2];
-	vbuf[ 3] = 1.0;
-	vbuf[ 4] = n[0];
-	vbuf[ 5] = n[1];
-	vbuf[ 6] = n[2];
-	vbuf[ 7] = 1.0;
-
-	vbuf[12] = v1[0];
-	vbuf[13] = v1[1];
-	vbuf[14] = v1[2];
-	vbuf[15] = 1.0;
-	vbuf[16] = n[0];
-	vbuf[17] = n[1];
-	vbuf[18] = n[2];
-	vbuf[19] = 1.0;
-
-	vbuf[24] = v2[0];
-	vbuf[25] = v2[1];
-	vbuf[26] = v2[2];
-	vbuf[27] = 1.0;
-	vbuf[28] = n[0];
-	vbuf[29] = n[1];
-	vbuf[30] = n[2];
-	vbuf[31] = 1.0;
-
-	ibuf[0] = vlen + 0;
-	ibuf[1] = vlen + 1;
-	ibuf[2] = vlen + 2;
-}
 void gl41opaque_triangle(struct entity* win, u32 rgba,
 	vec3 v0, vec3 v1, vec3 v2)
 {
@@ -151,65 +119,12 @@ void gl41opaque_triangle(struct entity* win, u32 rgba,
 		vbuf[j +10] = bb;
 		vbuf[j +11] = aa;
 	}
-	carveopaque_triangle(vbuf,vlen, ibuf,0, v0,v1,v2);
+	carvetrigonindex_triangle_v4n4x4(vbuf,vlen, ibuf,0, v0,v1,v2);
 }
 
 
 
 
-void carveopaque_rect(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vf)
-{
-	vec3 n;
-	n[0] = vr[1]*vf[2] - vr[2]*vf[1];
-	n[1] = vr[2]*vf[0] - vr[0]*vf[2];
-	n[2] = vr[0]*vf[1] - vr[1]*vf[0];
-
-	vbuf[ 0] = vc[0] - vr[0] - vf[0];
-	vbuf[ 1] = vc[1] - vr[1] - vf[1];
-	vbuf[ 2] = vc[2] - vr[2] - vf[2];
-	vbuf[ 3] = 1.0;
-	vbuf[ 4] = n[0];
-	vbuf[ 5] = n[1];
-	vbuf[ 6] = n[2];
-	vbuf[ 7] = 1.0;
-
-	vbuf[12] = vc[0] + vr[0] - vf[0];
-	vbuf[13] = vc[1] + vr[1] - vf[1];
-	vbuf[14] = vc[2] + vr[2] - vf[2];
-	vbuf[15] = 1.0;
-	vbuf[16] = n[0];
-	vbuf[17] = n[1];
-	vbuf[18] = n[2];
-	vbuf[19] = 1.0;
-
-	vbuf[24] = vc[0] - vr[0] + vf[0];
-	vbuf[25] = vc[1] - vr[1] + vf[1];
-	vbuf[26] = vc[2] - vr[2] + vf[2];
-	vbuf[27] = 1.0;
-	vbuf[28] = n[0];
-	vbuf[29] = n[1];
-	vbuf[30] = n[2];
-	vbuf[31] = 1.0;
-
-	vbuf[36] = vc[0] + vr[0] + vf[0];
-	vbuf[37] = vc[1] + vr[1] + vf[1];
-	vbuf[38] = vc[2] + vr[2] + vf[2];
-	vbuf[39] = 1.0;
-	vbuf[40] = n[0];
-	vbuf[41] = n[1];
-	vbuf[42] = n[2];
-	vbuf[43] = 1.0;
-
-	//index
-	ibuf[0] = vlen + 0;
-	ibuf[1] = vlen + 1;
-	ibuf[2] = vlen + 2;
-
-	ibuf[3] = vlen + 1;
-	ibuf[4] = vlen + 2;
-	ibuf[5] = vlen + 3;
-}
 void gl41opaque_rect(struct entity* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf)
 {
@@ -230,61 +145,18 @@ void gl41opaque_rect(struct entity* win, u32 rgba,
 		vbuf[j +10] = bb;
 		vbuf[j +11] = aa;
 	}
-	carveopaque_rect(vbuf,vlen, ibuf,0, vc,vr,vf);
+	carvetrigonindex_rect_v4n4x4(vbuf,vlen, ibuf,0, vc,vr,vf);
 }
 
 
 
 
-#define circieacc (acc*2)
-void carveopaque_circle(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vf)
-{
-	int a,b,j;
-	float c,s;
-
-	vec3 n;
-	n[0] = vr[1]*vf[2] - vr[2]*vf[1];
-	n[1] = vr[2]*vf[0] - vr[0]*vf[2];
-	n[2] = vr[0]*vf[1] - vr[1]*vf[0];
-	for(j=0;j<circieacc;j++)
-	{
-		a = j*12;
-		b = j*3;
-
-		c = cosine(j*tau/circieacc);
-		s = sine(j*tau/circieacc);
-		vbuf[a+0] = vc[0] + vr[0]*c + vf[0]*s;
-		vbuf[a+1] = vc[1] + vr[1]*c + vf[1]*s;
-		vbuf[a+2] = vc[2] + vr[2]*c + vf[2]*s;
-		vbuf[a+3] = 1.0;
-
-		vbuf[a+4] = n[0];
-		vbuf[a+5] = n[1];
-		vbuf[a+6] = n[2];
-		vbuf[a+7] = 1.0;
-
-		ibuf[b+0] = vlen + circieacc;
-		ibuf[b+1] = vlen + j;
-		ibuf[b+2] = vlen + (j+1)%circieacc;
-	}
-
-	a = circieacc*12;
-	vbuf[a+ 0] = vc[0];
-	vbuf[a+ 1] = vc[1];
-	vbuf[a+ 2] = vc[2];
-	vbuf[a+ 3] = 1.0;
-	vbuf[a+ 4] = n[0];
-	vbuf[a+ 5] = n[1];
-	vbuf[a+ 6] = n[2];
-	vbuf[a+ 7] = 1.0;
-}
 void gl41opaque_circle(struct entity* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	float* vbuf;
 	u16* ibuf;
-	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, circieacc+1, circieacc);
+	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, circleacc+1, circleacc);
 	if(vlen < 0)return;
 
 	int j;
@@ -293,13 +165,13 @@ void gl41opaque_circle(struct entity* win, u32 rgba,
 	float gg = (float)t[1] / 255.0;
 	float rr = (float)t[2] / 255.0;
 	float aa = (float)t[3] / 255.0;
-	for(j=0;j<12*(circieacc+1);j+=12){
+	for(j=0;j<12*(circleacc+1);j+=12){
 		vbuf[j + 8] = rr;
 		vbuf[j + 9] = gg;
 		vbuf[j +10] = bb;
 		vbuf[j +11] = aa;
 	}
-	carveopaque_circle(vbuf,vlen, ibuf,0, vc,vr,vf);
+	carvetrigonindex_circle_v4n4x4(vbuf,vlen, ibuf,0, vc,vr,vf);
 }
 
 
@@ -1109,93 +981,12 @@ void gl41opaque_icosahedron(struct entity* win, u32 rgba,
 
 
 
-#define accx (acc)
-#define accy (acc|0x1)
-void carveopaque_sphere(float* vbuf, int vlen, u16* ibuf, int ilen,
-	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
-{
-	int a,b,j,k;
-	float c,s;
-	vec3 tc, tr, tf;
-
-	for(k=0;k<accy;k++)
-	{
-		s = (2*k-accy+1)*PI/(2*accy+2);
-		c = cosine(s);
-		s = sine(s);
-
-		tc[0] = vc[0] + vu[0]*s;
-		tc[1] = vc[1] + vu[1]*s;
-		tc[2] = vc[2] + vu[2]*s;
-		tr[0] = vr[0]*c;
-		tr[1] = vr[1]*c;
-		tr[2] = vr[2]*c;
-		tf[0] = vf[0]*c;
-		tf[1] = vf[1]*c;
-		tf[2] = vf[2]*c;
-
-		for(j=0;j<accx;j++)
-		{
-			s = j*tau/accx;
-			c = cosine(s);
-			s = sine(s);
-
-			a = (k*accx + j)*12;
-			vbuf[a+ 0] = tc[0] + tr[0]*c + tf[0]*s;
-			vbuf[a+ 1] = tc[1] + tr[1]*c + tf[1]*s;
-			vbuf[a+ 2] = tc[2] + tr[2]*c + tf[2]*s;
-			vbuf[a+ 4] = vbuf[a+0] - vc[0];
-			vbuf[a+ 5] = vbuf[a+1] - vc[1];
-			vbuf[a+ 6] = vbuf[a+2] - vc[2];
-
-			if(k >= accy-1)continue;
-			b = k*accx*6;
-			ibuf[b + 6*j + 0] = vlen+(k*accx)+j;
-			ibuf[b + 6*j + 1] = vlen+(k*accx)+(j+1)%accx;
-			ibuf[b + 6*j + 2] = vlen+(k*accx)+accx+j;
-			ibuf[b + 6*j + 3] = vlen+(k*accx)+(j+1)%accx;
-			ibuf[b + 6*j + 4] = vlen+(k*accx)+accx+j;
-			ibuf[b + 6*j + 5] = vlen+(k*accx)+accx+(j+1)%accx;
-		}
-	}
-
-	a = accx*accy*12;
-
-	vbuf[a+ 0] = vc[0]-vu[0];
-	vbuf[a+ 1] = vc[1]-vu[1];
-	vbuf[a+ 2] = vc[2]-vu[2];
-	vbuf[a+ 3] = 1.0;
-	vbuf[a+ 4] = -vu[0];
-	vbuf[a+ 5] = -vu[1];
-	vbuf[a+ 6] = -vu[2];
-	vbuf[a+ 7] = 1.0;
-
-	vbuf[a+12] = vc[0]+vu[0];
-	vbuf[a+13] = vc[1]+vu[1];
-	vbuf[a+14] = vc[2]+vu[2];
-	vbuf[a+15] = 1.0;
-	vbuf[a+16] = vu[0];
-	vbuf[a+17] = vu[1];
-	vbuf[a+18] = vu[2];
-	vbuf[a+19] = 1.0;
-
-	b = (accy-1)*accx*6;
-	for(j=0;j<accx;j++)
-	{
-		ibuf[b + (6*j) + 0] = vlen+accx*accy;
-		ibuf[b + (6*j) + 1] = vlen+j;
-		ibuf[b + (6*j) + 2] = vlen+(j+1)%accx;
-		ibuf[b + (6*j) + 3] = vlen+accx*accy+1;
-		ibuf[b + (6*j) + 4] = vlen+accx*(accy-1)+j;
-		ibuf[b + (6*j) + 5] = vlen+accx*(accy-1)+(j+1)%accx;
-	}
-}
 void gl41opaque_sphere(struct entity* win, u32 rgba,
 	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
 {
 	float* vbuf;
 	u16* ibuf;
-	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, accx*accy+2, accx*accy*2);
+	int vlen = opaque3d_vars(win, 0, &vbuf, &ibuf, sphereaccx*sphereaccy+2, sphereaccx*sphereaccy*2);
 	if(vlen < 0)return;
 
 	int j;
@@ -1204,13 +995,13 @@ void gl41opaque_sphere(struct entity* win, u32 rgba,
 	float gg = (float)t[1] / 255.0;
 	float rr = (float)t[2] / 255.0;
 	float aa = (float)t[3] / 255.0;
-	for(j=0;j<12*(accx*accy+2);j+=12){
+	for(j=0;j<12*(sphereaccx*sphereaccy+2);j+=12){
 		vbuf[j+ 8] = rr;
 		vbuf[j+ 9] = gg;
 		vbuf[j+10] = bb;
 		vbuf[j+11] = aa;
 	}
-	carveopaque_sphere(vbuf,vlen, ibuf,0, vc,vr,vf,vu);
+	carvetrigonindex_sphere_v4n4x4(vbuf,vlen, ibuf,0, vc,vr,vf,vu);
 }
 
 
@@ -1234,7 +1025,7 @@ void gl41opaque_tokamak(struct entity* win, u32 rgba,
 	float gg = (float)t[1] / 255.0;
 	float rr = (float)t[2] / 255.0;
 	float aa = (float)t[3] / 255.0;
-	for(j=0;j<12*(accx*accy*2);j+=12){
+	for(j=0;j<12*(sphereaccx*sphereaccy*2);j+=12){
 		vbuf[j+ 8] = rr;
 		vbuf[j+ 9] = gg;
 		vbuf[j+10] = bb;
