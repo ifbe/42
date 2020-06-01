@@ -162,7 +162,7 @@ static int fat16_read(struct artery* art, int ign, u32 clus,int offs, u8* buf,in
 
 		//read this cluster
 		tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
-		ret = relationread(art,_src_, 0,0, "",tmp, buf+cnt,byteperclus);
+		ret = take_data_from_peer(art,_src_, 0,0, "",tmp, buf+cnt,byteperclus);
 		if(ret < byteperclus)goto retcnt;
 		cnt += byteperclus;
 
@@ -174,7 +174,7 @@ static int fat16_read(struct artery* art, int ign, u32 clus,int offs, u8* buf,in
 	}
 
 	tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
-	ret = relationread(art,_src_, 0,0, "",ret, buf+cnt,len-cnt);
+	ret = take_data_from_peer(art,_src_, 0,0, "",ret, buf+cnt,len-cnt);
 	if(ret < len-cnt)goto retcnt;
 	cnt += ret;
 
@@ -195,7 +195,7 @@ static u32 fat32_nextclus(struct artery* art, u32 clus)
 		cache_first = clus-remain;
 
 		byte = byte_per_sec*sec_of_fat0 + 4*cache_first;
-		relationread(art,_src_, 0,0, "",byte, cache,4*cache_count);
+		take_data_from_peer(art,_src_, 0,0, "",byte, cache,4*cache_count);
 	}
 
 	return cache[remain];
@@ -212,7 +212,7 @@ static int fat32_read(struct artery* art, int ign, u64 clus,int offs, u8* buf,in
 		else if(offs >= byteperclus)offs -= byteperclus;
 		else if(offs < byteperclus){
 			tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
-			ret = relationread(art,_src_, 0,0, "",tmp+offs, buf,byteperclus-offs);
+			ret = take_data_from_peer(art,_src_, 0,0, "",tmp+offs, buf,byteperclus-offs);
 			if(ret < byteperclus-offs)goto retcnt;
 			cnt += byteperclus-offs;
 
@@ -230,7 +230,7 @@ static int fat32_read(struct artery* art, int ign, u64 clus,int offs, u8* buf,in
 
 		//read this cluster
 		tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
-		ret = relationread(art,_src_, 0,0, "",tmp, buf+cnt,byteperclus);
+		ret = take_data_from_peer(art,_src_, 0,0, "",tmp, buf+cnt,byteperclus);
 		if(ret < byteperclus)goto retcnt;
 		cnt += byteperclus;
 
@@ -242,7 +242,7 @@ static int fat32_read(struct artery* art, int ign, u64 clus,int offs, u8* buf,in
 	}
 
 	tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
-	ret = relationread(art,_src_, 0,0, "",tmp, buf+cnt,len-cnt);
+	ret = take_data_from_peer(art,_src_, 0,0, "",tmp, buf+cnt,len-cnt);
 	if(ret < len-cnt)goto retcnt;
 	cnt += ret;
 
@@ -257,7 +257,7 @@ int fat_buildcache(struct artery* art)
 {
 	cache_first = 0;
 	cache_count = 0x10000;
-	return relationread(art,_src_, 0,0, "",sec_of_fat0*byte_per_sec, fatbuffer,0x40000);
+	return take_data_from_peer(art,_src_, 0,0, "",sec_of_fat0*byte_per_sec, fatbuffer,0x40000);
 }
 int fat_checkname(char* name, u8* fatname)
 {
@@ -480,7 +480,7 @@ int fatclient_linkup(struct halfrel* self, struct halfrel* peer)
 	art = self->pchip;
 	if(0 == art)return 0;
 
-	ret = relationread(art,_src_, 0,0, "",0, pbrbuffer,0x200);
+	ret = take_data_from_peer(art,_src_, 0,0, "",0, pbrbuffer,0x200);
 	if(ret < 0x200){
 		return 0;
 	}

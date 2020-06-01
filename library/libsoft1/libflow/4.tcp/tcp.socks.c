@@ -49,13 +49,13 @@ int socksclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx
 	switch(foot){
 	case _dst_:{
 		//dst to src
-		relationwrite(art,_src_, stack,sp, 0,0, buf, len);
+		give_data_into_peer(art,_src_, stack,sp, 0,0, buf, len);
 		break;
 	}//dst
 	case _src_:{
 		if(3 == art->stage1){
 			//src to dst
-			relationwrite(art,_dst_, stack,sp, 0,0, buf,len);
+			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
 			return 0;
 		}
 
@@ -69,10 +69,10 @@ int socksclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx
 				j = mysnprintf(tmp, 256, httpreq, j, req->url, port);
 
 				printmemory(tmp, j);
-				relationwrite(art,_src_, stack,sp, 0,0, tmp,j);
+				give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,j);
 			}
 			else{
-				relationwrite(art,_dst_, stack,sp, 0,_ok_, 0,0);
+				give_data_into_peer(art,_dst_, stack,sp, 0,_ok_, 0,0);
 			}
 			art->stage1 = 3;
 			return 0;
@@ -84,7 +84,7 @@ int socksclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx
 			req = (void*)(art->data);
  
 			printmemory(req, 7+req->len);
-			relationwrite(art,_src_, stack,sp, 0,0, req,7+req->len);
+			give_data_into_peer(art,_src_, stack,sp, 0,0, req,7+req->len);
  
 			art->stage1 = 2;
 			return 0;
@@ -105,7 +105,7 @@ int socksclient_linkup(struct halfrel* self, struct halfrel* peer)
 
 	if(_src_ == self->flag){
 		ele = self->pchip;
-		relationwrite(ele, _src_, 0,0, 0,0, socks5_client0,3);
+		give_data_into_peer(ele, _src_, 0,0, 0,0, socks5_client0,3);
 		ele->stage1 = 1;
 	}
 	return 0;
@@ -162,10 +162,10 @@ int socksserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx
 	printmemory(buf, len<16?len:16);
 
 	if('a' == foot){
-		relationwrite(art,'b', stack,sp, 0,0, buf,len);
+		give_data_into_peer(art,'b', stack,sp, 0,0, buf,len);
 	}
 	if('b' == foot){
-		relationwrite(art,'a', stack,sp, 0,0, buf,len);
+		give_data_into_peer(art,'a', stack,sp, 0,0, buf,len);
 	}
 	return 0;
 }
@@ -208,7 +208,7 @@ int socksmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx
 	if(3 == len){
 		ch = buf;
 		if( (5 == ch[0]) && (1 == ch[1]) && (0 == ch[2]) ){
-			relationwrite(art,_src_, stack,sp, arg,idx, socks5_server0,2);
+			give_data_into_peer(art,_src_, stack,sp, arg,idx, socks5_server0,2);
 		}
 		return 0;
 	}
@@ -244,7 +244,7 @@ say("3\n");
 	relationcreate(s5, 0, _art_, 'b', sys, 0, _sys_, _dst_);
 say("4\n");
 	//tell client, ok now
-	relationwrite(art,_src_, stack,sp, arg,idx, socks5_server1,10);
+	give_data_into_peer(art,_src_, stack,sp, arg,idx, socks5_server1,10);
 	return 0;
 }
 int socksmaster_discon(struct halfrel* self, struct halfrel* peer)

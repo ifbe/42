@@ -108,7 +108,7 @@ static void* epollthread(void* p)
 						systemdelete(here);
 						break;
 					}
-					relationwrite(here,_dst_, stack,0, 0,0, buf,cnt);
+					give_data_into_peer(here,_dst_, stack,0, 0,0, buf,cnt);
 					break;
 				}//easy
 
@@ -120,7 +120,7 @@ static void* epollthread(void* p)
 					{
 						//say("@epollthread: %.4s\n", &obj[cc].type);
 						if((0==here->irel0)&&(0==here->orel0))printmemory(buf, cnt);
-						else relationwrite(here,_dst_, stack,0, here->peer,0, buf,cnt);
+						else give_data_into_peer(here,_dst_, stack,0, here->peer,0, buf,cnt);
 					}
 					if(cnt <= 0)
 					{
@@ -152,7 +152,7 @@ static void* epollthread(void* p)
 						}
 
 						//say("@kqueuethread: %.4s\n", &obj[cc].type);
-						relationwrite(here,_dst_, stack,0, 0,0, buf,cnt);
+						give_data_into_peer(here,_dst_, stack,0, 0,0, buf,cnt);
 					}
 					if(cnt <= 0)
 					{

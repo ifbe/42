@@ -27,7 +27,7 @@ int search_write(_art* art,int foot, _syn* stack,int sp, u8* arg, int idx, void*
 	for(j=0;j<256;j++){
 		if(arg[j] <= 0x20)break;
 	}
-	relationwrite(art,_src_, stack,sp, 0,0, arg,j);
+	give_data_into_peer(art,_src_, stack,sp, 0,0, arg,j);
 	return 0;
 }
 int search_discon(struct halfrel* self, struct halfrel* peer)

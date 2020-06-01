@@ -24,7 +24,7 @@ static void CALLBACK icb(HWAVEOUT hWave, UINT uMsg, DWORD dwInstance, DWORD dw1,
 	if(WIM_DATA == uMsg)
 	{
 		//printf("WIM_DATA:%d\n", icur);
-		relationwrite(working,_dst_, stack,0, 0,0, ibuf+(1024*2*icur),1024*2);
+		give_data_into_peer(working,_dst_, stack,0, 0,0, ibuf+(1024*2*icur),1024*2);
 
 		waveInAddBuffer(wavein, &headin[icur], sizeof (WAVEHDR));
 		icur = (icur+1)%16;

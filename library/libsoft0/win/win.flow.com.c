@@ -35,7 +35,7 @@ DWORD WINAPI uart_thread(struct sysobj* oo)
 		ret = ReadFile(hcom, buf+enq, ret, (void*)&cnt, 0);
 		if( (ret > 0) && (cnt > 0) )
 		{
-			relationwrite(oo,_dst_, stack,0, 0,0, buf+enq,cnt);
+			give_data_into_peer(oo,_dst_, stack,0, 0,0, buf+enq,cnt);
 
 			enq = (enq + cnt)%0x10000;
 

@@ -166,7 +166,7 @@ void* visionlistener(struct supply* win)
 		}
 
 		//send
-		relationwrite(win,_dst_, stack,0, 0,0, info[cur].buf,buf.bytesused);//info[cur].len);
+		give_data_into_peer(win,_dst_, stack,0, 0,0, info[cur].buf,buf.bytesused);//info[cur].len);
 		cur = (cur+1)%24;
 
 		//enq

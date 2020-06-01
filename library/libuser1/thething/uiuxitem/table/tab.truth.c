@@ -134,7 +134,7 @@ static void truth_write_bywnd(_ent* ent,struct style* slot, _ent* wnd, struct st
 			int x = ent->ix0;
 			int y = ent->iy0;
 			if((5 == x)&&(y > 0)&&(y <= 16))out[y-1] ^= 1;
-			relationwrite(ent,_karnaugh_, stack,sp, 0,0, out,16);
+			give_data_into_peer(ent,_karnaugh_, stack,sp, 0,0, out,16);
 		}
 	}
 }

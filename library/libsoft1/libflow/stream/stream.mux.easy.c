@@ -13,7 +13,7 @@ int easymux_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, vo
 {
 	switch(foot){
 	case _by_:{
-		relationwrite(art,_src_, stack,sp, 0,0, buf,len);
+		give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 		break;
 	}
 	case _to_:{
@@ -21,7 +21,7 @@ int easymux_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, vo
 		break;
 	}
 	case _src_:{
-		relationwrite(art,_to_, stack,sp, 0,0, buf,len);
+		give_data_into_peer(art,_to_, stack,sp, 0,0, buf,len);
 		break;
 	}
 	default:break;

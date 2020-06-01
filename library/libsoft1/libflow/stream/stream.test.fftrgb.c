@@ -54,7 +54,7 @@ int fftrgb_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, voi
 		//if(pcm[x] > 16)say("%d:%d\n", x, pcm[x]);
 	}
 //say("alive4\n");
-	relationwrite(art,_dst_, stack,sp, 0,0, pcm,1024*2);
+	give_data_into_peer(art,_dst_, stack,sp, 0,0, pcm,1024*2);
 	return 0;
 }
 int fftrgb_discon(struct halfrel* self, struct halfrel* peer)

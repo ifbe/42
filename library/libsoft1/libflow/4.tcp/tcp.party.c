@@ -138,20 +138,20 @@ while(1){
 		//say("to=%x,by=%x,cnt=%x,ret=%x,len=%x\n",to,by,cnt,ret,len);
 
 		if(len == ret+cnt){		//complete packet
-			relationwrite(art,_dst_, stack,sp, 0,0, buf+ret,cnt);
-			relationwrite(art,_std_, stack,sp, 0,0, buf+ret,cnt);
+			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf+ret,cnt);
+			give_data_into_peer(art,_std_, stack,sp, 0,0, buf+ret,cnt);
 			return 0;
 		}
 		if(len > ret+cnt){		//complete packet + next packet
-			relationwrite(art,_dst_, stack,sp, 0,0, buf+ret,cnt);
-			relationwrite(art,_std_, stack,sp, 0,0, buf+ret,cnt);
+			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf+ret,cnt);
+			give_data_into_peer(art,_std_, stack,sp, 0,0, buf+ret,cnt);
 			buf += ret+cnt;
 			len -= ret+cnt;
 			continue;
 		}
 		if(len < ret+cnt){		//head ok, body not
-			relationwrite(art,_dst_, stack,sp, 0,0, buf+ret,len-ret);
-			relationwrite(art,_std_, stack,sp, 0,0, buf+ret,len-ret);
+			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf+ret,len-ret);
+			give_data_into_peer(art,_std_, stack,sp, 0,0, buf+ret,len-ret);
 			per->dst_name = to;
 			per->sts = _data_;
 			per->len = cnt-(len-ret);
@@ -162,20 +162,20 @@ while(1){
 	//}
 	else if(_data_ == per->sts){		//data still not complete
 		if(len == per->len){
-			relationwrite(art,_dst_, stack,sp, 0,0, buf,len);
-			relationwrite(art,_std_, stack,sp, 0,0, buf,len);
+			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
+			give_data_into_peer(art,_std_, stack,sp, 0,0, buf,len);
 			per->sts = 0;
 			return 0;
 		}
 		if(len < per->len){
-			relationwrite(art,_dst_, stack,sp, 0,0, buf,len);
-			relationwrite(art,_std_, stack,sp, 0,0, buf,len);
+			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
+			give_data_into_peer(art,_std_, stack,sp, 0,0, buf,len);
 			per->len -= len;
 			return 0;
 		}
 		if(len > per->len){
-			relationwrite(art,_dst_, stack,sp, 0,0, buf,per->len);
-			relationwrite(art,_std_, stack,sp, 0,0, buf,per->len);
+			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,per->len);
+			give_data_into_peer(art,_std_, stack,sp, 0,0, buf,per->len);
 			per->sts = 0;
 			buf += per->len;
 			len -= per->len;
@@ -196,8 +196,8 @@ while(1){
 	say("to=%x,by=%x,cnt=%x,ret=%x,len=%x\n",to,by,cnt,ret,len);
 	if(to != art->BY)ret = 0;
 
-	relationwrite(art,_std_, 0,0, buf+ret,len-ret);
-	relationwrite(art,_dst_, 0,0, buf+ret,len-ret);
+	give_data_into_peer(art,_std_, 0,0, buf+ret,len-ret);
+	give_data_into_peer(art,_dst_, 0,0, buf+ret,len-ret);
 	return 0;*/
 }
 int partyclient_write_bydst(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,int len)
@@ -210,8 +210,8 @@ int partyclient_write_bydst(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,i
 
 	struct artery* art = self->pchip;
 	int ret = mysnprintf(tmp, 64, "to %.4s,by %.4s,cnt %x,sum %x:", &art->TO, &art->BY, len, party_sum(buf,len));
-	relationwrite(art, _src_, stack,sp, 0,0, tmp,ret);
-	relationwrite(art, _src_, stack,sp, 0,0, buf,len);
+	give_data_into_peer(art, _src_, stack,sp, 0,0, tmp,ret);
+	give_data_into_peer(art, _src_, stack,sp, 0,0, buf,len);
 	return 0;
 }
 int partyclient_write_bystd(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,int len)
@@ -225,7 +225,7 @@ int partyclient_write_bystd(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,i
 	struct artery* art = self->pchip;
 	int ret = mysnprintf(tmp, 64, "to %.4s,by %.4s,cnt 1,sum %x:", &art->TO, &art->BY,buf[0]);
 	tmp[ret] = buf[0];
-	relationwrite(art, _src_, stack,sp, 0,0, tmp,ret+1);
+	give_data_into_peer(art, _src_, stack,sp, 0,0, tmp,ret+1);
 	return 0;
 }
 
@@ -282,7 +282,7 @@ int partyclient_linkup(struct halfrel* self, struct halfrel* peer)
 &art->BY,
 &art->TO
 		);
-		relationwrite(art,_src_, 0,0, 0,0, tmp,ret);
+		give_data_into_peer(art,_src_, 0,0, 0,0, tmp,ret);
 		art->stage1 = _sent_;
 	}
 	return 0;
@@ -358,26 +358,26 @@ while(1){
 		say("to=%x,by=%x,cnt=%x,sum=%x,ret=%x,len=%x\n", to,by,cnt,sum, ret,len);
 
 		if(ret < 8){
-			relationwrite(art,peer->flag, stack,sp, 0,0, "wrong head\n", 10);
+			give_data_into_peer(art,peer->flag, stack,sp, 0,0, "wrong head\n", 10);
 			systemdelete(peer->pchip);
 			return 0;
 		}
 
 		if(len == ret+cnt){		//complete packet
 say("dbg1\n");
-			relationwrite(art,to, stack,sp, 0,0, buf,len);
+			give_data_into_peer(art,to, stack,sp, 0,0, buf,len);
 			return 0;
 		}
 		if(len > ret+cnt){		//complete packet + next packet
 say("dbg2\n");
-			relationwrite(art,to, stack,sp, 0,0, buf,ret+cnt);
+			give_data_into_peer(art,to, stack,sp, 0,0, buf,ret+cnt);
 			buf += ret+cnt;
 			len -= ret+cnt;
 			continue;
 		}
 		if(len < ret+cnt){		//head ok, body not
 say("dbg3\n");
-			relationwrite(art,to, stack,sp, 0,0, buf,len);
+			give_data_into_peer(art,to, stack,sp, 0,0, buf,len);
 			//per->sta_name = by;
 			//per->sta_user = 0;
 			per->dst_name = to;
@@ -394,7 +394,7 @@ say("dbg3\n");
 	else if(_data_ == per->sts){		//data still not complete
 		if(len == per->len){
 say("dbg4\n");
-			relationwrite(art,per->dst_name, stack,sp, 0,0, buf,len);
+			give_data_into_peer(art,per->dst_name, stack,sp, 0,0, buf,len);
 			per->hash_cur += party_sum(buf, len);
 			if(per->hash_all != per->hash_cur){
 				say("%x nequal %x\n", per->hash_all, per->hash_cur);
@@ -406,7 +406,7 @@ say("dbg4\n");
 		}
 		if(len > per->len){
 say("dbg5\n");
-			relationwrite(art,per->dst_name, stack,sp, 0,0, buf,per->len);
+			give_data_into_peer(art,per->dst_name, stack,sp, 0,0, buf,per->len);
 			per->hash_cur += party_sum(buf, per->len);
 			if(per->hash_all != per->hash_cur){
 				say("%x nequal %x\n", per->hash_all, per->hash_cur);
@@ -420,7 +420,7 @@ say("dbg5\n");
 		}
 		if(len < per->len){
 say("dbg6\n");
-			relationwrite(art,per->dst_name, stack,sp, 0,0, buf,len);
+			give_data_into_peer(art,per->dst_name, stack,sp, 0,0, buf,len);
 			per->hash_cur += party_sum(buf, len);
 
 			per->len -= len;
@@ -443,7 +443,7 @@ say("dbg6\n");
 	else self->foot = to;
 	say("to=%llx,by=%llx\n", to, by);
 
-	relationwrite(art,to, 0,0, buf,len);
+	give_data_into_peer(art,to, 0,0, buf,len);
 */
 	return 0;
 }
@@ -491,7 +491,7 @@ found:
 "login success!\n",
 &name
 	);
-	relationwrite(art,name, stack,sp, 0,0, tmp,ret);
+	give_data_into_peer(art,name, stack,sp, 0,0, tmp,ret);
 	return 0;
 
 fail:
@@ -506,7 +506,7 @@ fail:
 			"%d: %.4s\n", j, &per[j].sta_name
 		);
 	}
-	relationwrite(art,self->flag, stack,sp, 0,0, tmp,ret);
+	give_data_into_peer(art,self->flag, stack,sp, 0,0, tmp,ret);
 	systemdelete(sys->tempobj);
 	return 0;
 }

@@ -242,7 +242,7 @@ int madgwick_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, vo
 	say("@madgwick_read\n");
 
 	float f[10];
-	relationread(art,_src_, stack,sp, 0,0, f,10);
+	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
 int madgwick_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
@@ -256,7 +256,7 @@ int madgwick_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, v
 		default:say("err@madgwick_write:len=%d\n", len);return 0;
 	}
 
-	relationwrite(art,_dst_, stack,sp, 0,0, q,4);
+	give_data_into_peer(art,_dst_, stack,sp, 0,0, q,4);
 	return 0;
 }
 int madgwick_discon(struct halfrel* self, struct halfrel* peer)

@@ -52,7 +52,7 @@ int virtual_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, vo
 int virtual_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@virtual_write\n");
-	relationwrite(ent,_evto_, stack,sp, arg,key, buf,len);
+	give_data_into_peer(ent,_evto_, stack,sp, arg,key, buf,len);
 	return 0;
 }
 int virtual_discon(struct halfrel* self, struct halfrel* peer)

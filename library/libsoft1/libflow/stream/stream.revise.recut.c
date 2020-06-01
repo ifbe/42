@@ -35,7 +35,7 @@ int recut_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* 
 
 		say("@recut_write!: %x+%x / %x\n", enq, k, max);
 		for(j=0;j<k;j++)cache[enq+j] = buf[j];
-		relationwrite(art,_dst_, stack,sp, 0,0, cache+deq,max);
+		give_data_into_peer(art,_dst_, stack,sp, 0,0, cache+deq,max);
 
 		buf += k;
 		len -= k;

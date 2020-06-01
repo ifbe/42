@@ -148,7 +148,7 @@ static void vsrc_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	if('n' == foot){
 		struct wireindex* sts = buf;
 		float volt = sts->volt + ent->fx0;
-		relationwrite(ent,'p', stack,sp, 0,0, &volt,0);
+		give_data_into_peer(ent,'p', stack,sp, 0,0, &volt,0);
 	}
 }
 static void vsrc_discon(struct halfrel* self, struct halfrel* peer)

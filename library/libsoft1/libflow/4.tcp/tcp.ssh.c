@@ -542,21 +542,21 @@ int sshclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, 
 		secureshell_clientread_handshake(buf, len, tmp, 0x1000);
 
 		ret = secureshell_clientwrite_handshake0x14(buf, len, tmp, 0x1000);
-		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
+		if(ret)give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
 	else if(1 == art->stage1)
 	{
 		ret = secureshell_clientread_handshake0x14(buf, len, tmp, 0x1000);
 
 		ret = secureshell_clientwrite_handshake0x22(buf, len, tmp, 0x1000);
-		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
+		if(ret)give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
 	else if(2 == art->stage1)
 	{
 		ret = secureshell_clientread_handshake0x1f(buf, len, tmp, 0x1000);
 
 		ret = secureshell_clientwrite_handshake0x20(buf, len, tmp, 0x1000);
-		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
+		if(ret)give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
 	else if(3 == art->stage1)
 	{
@@ -564,11 +564,11 @@ int sshclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, 
 
 		//new keys
 		ret = secureshell_clientwrite_handshake0x15(buf, len, tmp, 0x1000);
-		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
+		if(ret)give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 
 		//encrypted data
 		ret = secureshell_clientwrite_encryptdata(buf, len, tmp, 0x1000);
-		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
+		if(ret)give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
 	else printmemory(buf, len);
 
@@ -586,7 +586,7 @@ int sshclient_linkup(struct halfrel* self, struct halfrel* peer)
 	say("@sshclient_linkup\n");
 
 	ret = secureshell_clientwrite_handshake(buf, 0x100);
-	ret = relationwrite(self->pchip,_src_, 0,0, 0,0, buf,ret);
+	ret = give_data_into_peer(self->pchip,_src_, 0,0, 0,0, buf,ret);
 	return 0;
 }
 int sshclient_delete(struct artery* ele)
@@ -790,7 +790,7 @@ int sshserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, 
 
 		//key exchange init
 		ret = secureshell_serverwrite_handshake0x14(buf, len, tmp, 0x1000);
-		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
+		if(ret)give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
 	else if(1 == art->stage1)
 	{
@@ -798,7 +798,7 @@ int sshserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, 
 
 		//group exchange group
 		ret = secureshell_serverwrite_handshake0x1f(buf, len, tmp, 0x1000);
-		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
+		if(ret)give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
 	else if(2 == art->stage1)
 	{
@@ -808,7 +808,7 @@ int sshserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, 
 		ret = secureshell_serverwrite_handshake0x21(buf, len, tmp, 0x1000);
 		ret += secureshell_serverwrite_handshake0x15(buf, len, tmp+ret, 0x1000-ret);
 		//ret += secureshell_serverwrite_encryptpacket(buf, len, tmp+ret, 0x1000-ret);
-		if(ret)relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
+		if(ret)give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
 	else printmemory(buf, len);
 
@@ -863,13 +863,13 @@ int sshmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, 
 	//check if it's ssh
 	ret = secureshell_serverread_handshake(buf, len, tmp, 0x100);
 	if(0 == ret){
-		//relationwrite(art, _src_, 0, 0, "only ssh!\n", 9);
+		//give_data_into_peer(art, _src_, 0, 0, "only ssh!\n", 9);
 		//close(obj->tempobj);
 		return 0;
 	}
 
 	//send back
-	relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
+	give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 
 	//link temp to Ssh
 	struct sysobj* obj = stack[sp-2].pchip;

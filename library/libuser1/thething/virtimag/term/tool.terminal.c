@@ -137,7 +137,7 @@ void terminal_write_s(_ent* ent,struct style* slot, _syn* stack,int sp, u8* buf,
 	//printmemory(buf, 8);
 
 	if(ent->CLIENT){
-		relationwrite(ent,'c', stack,sp, 0,0, buf,len);
+		give_data_into_peer(ent,'c', stack,sp, 0,0, buf,len);
 	}
 	else{
 /*		int j;
@@ -150,7 +150,7 @@ void terminal_write_s(_ent* ent,struct style* slot, _syn* stack,int sp, u8* buf,
 void terminal_write_c(_ent* ent,struct style* slot, _syn* stack,int sp, void* buf, int len)
 {
 	if(0 == ent->SERVER)input(buf, len);
-	else relationwrite(ent,'s', stack,sp, 0,0, buf,len);
+	else give_data_into_peer(ent,'s', stack,sp, 0,0, buf,len);
 }
 static void terminal_write_bywnd(_ent* ent,struct style* slot, _syn* stack,int sp, struct event* ev,int len)
 {

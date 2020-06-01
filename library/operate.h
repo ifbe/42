@@ -79,11 +79,12 @@ int originlinkup(struct halfrel* self, struct halfrel* peer);
 int origindelete(void*);
 void* origincreate(u64 type, void* addr, int argc, u8** argv);
 //
-int relationread( void* item,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int relationwrite(void* item,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int take_data_from_peer(void* item,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int give_data_into_peer(void* item,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int relationdiscon(struct halfrel* self, struct halfrel* peer);
 int relationlinkup(struct halfrel* self, struct halfrel* peer);
 int relationsearch(void* item,u32 foot, struct halfrel** self,struct halfrel** peer);
+int relationmodify(void* item,u32 foot, struct halfrel** self,struct halfrel** peer);
 int relationdelete(_rel* rel);
 void* relationcreate(void*,void*,u32,u32,void*,void*,u32,u32);
 

@@ -237,7 +237,7 @@ static void nmos_write_G(struct entity* mos,int key, struct halfrel* stack,int s
 			mos->Dvalue = -1;
 
 			u8 tmp = 'n';
-			relationwrite(mos,'D', stack,sp, 0,key, &tmp,1);
+			give_data_into_peer(mos,'D', stack,sp, 0,key, &tmp,1);
 		}
 	}
 }

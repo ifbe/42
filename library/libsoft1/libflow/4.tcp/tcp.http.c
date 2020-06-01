@@ -73,7 +73,7 @@ int httpclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx,
 	case _src_:{
 		if(art->stage1 >= 2){
             //src to dst
-			relationwrite(art,_dst_, stack,sp, 0,0, buf,len);
+			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
 			return 0;
 		}
 
@@ -91,7 +91,7 @@ int httpclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx,
 					else{
 						//say("dbg:%d\n",len-j-2);
 						//printmemory(buf+j+2, len-j-2);
-						relationwrite(art, _dst_, stack,sp, 0,0, buf+j+2,len-j-2);
+						give_data_into_peer(art, _dst_, stack,sp, 0,0, buf+j+2,len-j-2);
 						break;
 					}
 					j++;
@@ -118,7 +118,7 @@ int httpclient_linkup(struct halfrel* self, struct halfrel* peer)
 
 	art = self->pchip;
 	if(_src_ == self->flag){
-		relationwrite(art,_src_, 0,0, 0,0, art->buf0,art->len);
+		give_data_into_peer(art,_src_, 0,0, 0,0, art->buf0,art->len);
 		art->stage1 = 1;
 	}
 	return 0;
@@ -241,8 +241,8 @@ int httpmaster_write_bydst(_art* art,int foot, _syn* stack,int sp, void* arg, in
 		"\r\n",
 		arg, len
 	);
-	relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
-	relationwrite(art,_src_, stack,sp, 0,0, buf,len);
+	give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
+	give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 	return 0;
 }
 int httpmaster_write_bysrc(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
@@ -273,7 +273,7 @@ int httpmaster_write_bysrc(_art* art,int foot, _syn* stack,int sp, void* arg, in
 	if(art->orel0){
 /*		struct str* s[16];
 		for(j=0;j<4;j++)s[j] = 0;
-		relationread(art,_dst_, stack,sp, p.GET,0, s,4);
+		take_data_from_peer(art,_dst_, stack,sp, p.GET,0, s,4);
 
 		len = 0;
 		for(j=0;j<4;j++){
@@ -288,13 +288,13 @@ int httpmaster_write_bysrc(_art* art,int foot, _syn* stack,int sp, void* arg, in
 			"\r\n",
 			"text/html", len
 		);
-		relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
+		give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 
 		for(j=0;j<4;j++){
-			if(s[j])relationwrite(art,_src_, stack,sp, 0,0, s[j]->buf,s[j]->len);
+			if(s[j])give_data_into_peer(art,_src_, stack,sp, 0,0, s[j]->buf,s[j]->len);
 		}
 */
-		relationwrite(art,_dst_, stack,sp, &p,0, p.Content,p.End-p.Content);
+		give_data_into_peer(art,_dst_, stack,sp, &p,0, p.Content,p.End-p.Content);
 		return 0;
 	}
 	else{
@@ -306,8 +306,8 @@ int httpmaster_write_bysrc(_art* art,int foot, _syn* stack,int sp, void* arg, in
 				"\r\n",
 				len
 			);
-			relationwrite(art, _src_, stack,sp, 0,0, tmp,ret);
-			relationwrite(art, _src_, stack,sp, 0,0, buf,len);
+			give_data_into_peer(art, _src_, stack,sp, 0,0, tmp,ret);
+			give_data_into_peer(art, _src_, stack,sp, 0,0, buf,len);
 		}
 		else{
 			say("unknown: POST\n");

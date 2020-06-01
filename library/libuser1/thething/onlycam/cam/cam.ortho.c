@@ -269,7 +269,7 @@ static int orthcam_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 }
 static int orthcam_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(EVSEND == ent->EVTYPE)relationwrite(ent,_evto_, stack,sp, arg,key, buf,len);
+	if(EVSEND == ent->EVTYPE)give_data_into_peer(ent,_evto_, stack,sp, arg,key, buf,len);
 	return 0;
 }
 static void orthcam_discon(struct halfrel* self, struct halfrel* peer)

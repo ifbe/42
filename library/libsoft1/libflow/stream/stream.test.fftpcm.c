@@ -46,7 +46,7 @@ int fftpcm_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, voi
 	max = max * 44100 / 1024;
 	say("freq = %f\n", max);
 
-	relationwrite(art,_dst_, stack,sp, 0,0, pcm,1024*2);
+	give_data_into_peer(art,_dst_, stack,sp, 0,0, pcm,1024*2);
 	return 0;
 }
 int fftpcm_discon(struct halfrel* self, struct halfrel* peer)

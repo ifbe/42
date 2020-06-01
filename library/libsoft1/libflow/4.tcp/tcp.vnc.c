@@ -23,7 +23,7 @@ int vncclient_linkup(struct halfrel* self, struct halfrel* peer)
 	u8* buf[32];
 	if(_src_ == self->flag){
 		len = mysnprintf(buf,32, "RFB 003.008\n");
-		relationwrite(self->pchip,_src_, 0,0, 0,0, buf,len);
+		give_data_into_peer(self->pchip,_src_, 0,0, 0,0, buf,len);
 	}
 	return 0;
 }

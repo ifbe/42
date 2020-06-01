@@ -72,11 +72,11 @@ int telnetclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int id
 {
 	switch(art->stage1)
 	{
-		case 1:relationwrite(art,_src_, stack,sp, 0,0, cpacket1,sizeof(cpacket1));break;
-		case 2:relationwrite(art,_src_, stack,sp, 0,0, cpacket2,sizeof(cpacket2));break;
-		case 3:relationwrite(art,_src_, stack,sp, 0,0, cpacket3,sizeof(cpacket3));break;
-		case 4:relationwrite(art,_src_, stack,sp, 0,0, cpacket4,sizeof(cpacket4));break;
-		case 5:relationwrite(art,_src_, stack,sp, 0,0, cpacket5,sizeof(cpacket5));break;
+		case 1:give_data_into_peer(art,_src_, stack,sp, 0,0, cpacket1,sizeof(cpacket1));break;
+		case 2:give_data_into_peer(art,_src_, stack,sp, 0,0, cpacket2,sizeof(cpacket2));break;
+		case 3:give_data_into_peer(art,_src_, stack,sp, 0,0, cpacket3,sizeof(cpacket3));break;
+		case 4:give_data_into_peer(art,_src_, stack,sp, 0,0, cpacket4,sizeof(cpacket4));break;
+		case 5:give_data_into_peer(art,_src_, stack,sp, 0,0, cpacket5,sizeof(cpacket5));break;
 		default:{
 			say("%.*s", len, buf);
 			return 0;
@@ -92,7 +92,7 @@ int telnetclient_discon(struct halfrel* self, struct halfrel* peer)
 int telnetclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct artery* ele = self->pchip;
-	relationwrite(ele,_src_, 0,0, 0,0, cpacket0,sizeof(cpacket0));
+	give_data_into_peer(ele,_src_, 0,0, 0,0, cpacket0,sizeof(cpacket0));
 
 	ele->stage1 = 1;
 	return 0;
@@ -120,12 +120,12 @@ int telnetserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int id
 
 	switch(art->stage1)
 	{
-		case 0:relationwrite(art,_src_, stack,sp, 0,0, spacket0,sizeof(spacket0));break;
-		case 1:relationwrite(art,_src_, stack,sp, 0,0, spacket1,sizeof(spacket1));break;
-		case 2:relationwrite(art,_src_, stack,sp, 0,0, spacket2,sizeof(spacket2));break;
-		case 3:relationwrite(art,_src_, stack,sp, 0,0, spacket3,sizeof(spacket3));break;
-		case 4:relationwrite(art,_src_, stack,sp, 0,0, spacket4,sizeof(spacket4));break;
-		case 5:relationwrite(art,_src_, stack,sp, 0,0, spacket5,sizeof(spacket5));break;
+		case 0:give_data_into_peer(art,_src_, stack,sp, 0,0, spacket0,sizeof(spacket0));break;
+		case 1:give_data_into_peer(art,_src_, stack,sp, 0,0, spacket1,sizeof(spacket1));break;
+		case 2:give_data_into_peer(art,_src_, stack,sp, 0,0, spacket2,sizeof(spacket2));break;
+		case 3:give_data_into_peer(art,_src_, stack,sp, 0,0, spacket3,sizeof(spacket3));break;
+		case 4:give_data_into_peer(art,_src_, stack,sp, 0,0, spacket4,sizeof(spacket4));break;
+		case 5:give_data_into_peer(art,_src_, stack,sp, 0,0, spacket5,sizeof(spacket5));break;
 	}
 	art->stage1 += 1;
 	return 0;

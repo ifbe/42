@@ -179,7 +179,7 @@ static void karnaugh_write_bywnd(_ent* ent,struct style* slot, _ent* wnd, struct
 			int x = ent->ix0;
 			int y = ent->iy0;
 			if((x >= 0)&&(x <= 3)&&(y >= 0)&&(y <= 3))out[y*4+x] ^= 1;
-			relationwrite(ent, _truthtable_, stack,sp, 0,0, out,16);
+			give_data_into_peer(ent, _truthtable_, stack,sp, 0,0, out,16);
 		}
 	}
 }

@@ -120,7 +120,7 @@ static void slider_write_bywnd(_ent* ent,int foot, _syn* stack,int sp, struct ev
 		say("%d,%d\n", x, y);
 
 		list[y] = x;
-		relationwrite(ent, _evto_, stack,sp, 0,0, list,12);
+		give_data_into_peer(ent, _evto_, stack,sp, 0,0, list,12);
 	}
 }
 

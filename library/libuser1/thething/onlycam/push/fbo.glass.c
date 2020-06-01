@@ -311,7 +311,7 @@ static void glass_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 		glass_forfbo_update(ent,slot, wor,geom, dup,camg, fbo,rect);
 
 		//wnd.data -> fbo.texture
-		relationwrite(ent,_fbo_, stack,sp, 0,0, 0,0);
+		give_data_into_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
 
 		//fbo.texture -> my.data -> wnd.data
 		glass_forwnd_update(ent,slot, fbo,rect);

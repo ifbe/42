@@ -41,11 +41,11 @@ static void joystick_sendevent(struct halfrel* stack,int sp, struct xyzwpair* pa
 
 	ev.why = *(u64*)(&pair->x0);
 	ev.what = joy_left;
-	relationwrite(joy,_dst_, stack,sp, 0,0, &ev,32);
+	give_data_into_peer(joy,_dst_, stack,sp, 0,0, &ev,32);
 
 	ev.why = *(u64*)(&pair->xn);
 	ev.what = joy_right;
-	relationwrite(joy,_dst_, stack,sp, 0,0, &ev,32);
+	give_data_into_peer(joy,_dst_, stack,sp, 0,0, &ev,32);
 /*
 	while(1){
 		if(0 == rel)break;

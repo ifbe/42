@@ -210,7 +210,7 @@ static void cbuffer_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 		slot = stack[sp-1].pfoot;
 		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		relationread(ent,_fbo_, stack,sp, 0,0, 0,0);
+		take_data_from_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
 		cbuffer_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 //say("@freecam_read_byeye.end\n");
@@ -226,7 +226,7 @@ static void cbuffer_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg
 	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	gl41data_before(wnd);
-	relationread(ent,_fbo_, stack,sp, 0,0, 0,0);
+	take_data_from_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
 	cbuffer_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_01cam(wnd);
 	gl41data_after(wnd);
@@ -255,7 +255,7 @@ static void cbuffer_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 {
 	//say("@cbuffer_write\n");
 	if(_wnd_ == foot){
-		//relationwrite(ent,_fbo_, stack,sp, arg,key, buf,len);
+		//give_data_into_peer(ent,_fbo_, stack,sp, arg,key, buf,len);
 	}
 }
 static void cbuffer_discon(struct halfrel* self, struct halfrel* peer)

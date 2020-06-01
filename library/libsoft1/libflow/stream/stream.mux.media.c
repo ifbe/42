@@ -27,8 +27,8 @@ int mediamux_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u
 		while(__sync_lock_test_and_set(&art->SENDLOCK,1))sleep_us(10);
 
 		ret = mysnprintf(tmp,32, "a%x\n",len);
-		relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
-		relationwrite(art,_src_, stack,sp, 0,0, buf,len);
+		give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
+		give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 
 		__sync_lock_release(&art->SENDLOCK);
 		break;
@@ -37,8 +37,8 @@ int mediamux_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u
 		while(__sync_lock_test_and_set(&art->SENDLOCK,1))sleep_us(10);
 
 		ret = mysnprintf(tmp,32, "v%x\n",len);
-		relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
-		relationwrite(art,_src_, stack,sp, 0,0, buf,len);
+		give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
+		give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 
 		__sync_lock_release(&art->SENDLOCK);
 		break;
@@ -67,8 +67,8 @@ int mediamux_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u
 			if(ret > len)ret = len;
 
 			//send it
-			if('a' == art->RECVSTAT)relationwrite(art,_a0to_, stack,sp, 0,0, buf,ret);
-			if('v' == art->RECVSTAT)relationwrite(art,_v0to_, stack,sp, 0,0, buf,ret);
+			if('a' == art->RECVSTAT)give_data_into_peer(art,_a0to_, stack,sp, 0,0, buf,ret);
+			if('v' == art->RECVSTAT)give_data_into_peer(art,_v0to_, stack,sp, 0,0, buf,ret);
 
 			//nomore remain?
 			art->RECVBYTE -= ret;

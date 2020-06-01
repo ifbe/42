@@ -3,7 +3,7 @@
 #define VERTEX buf1
 #define STAMP data3
 int parsefv(float* vec, int flen, u8* str, int slen);
-int relation_readall(void*,int, void*,int, void*,int, void*,int);
+int take_data_from_them(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -179,7 +179,7 @@ void digital_complex(struct entity* ent,struct wireindex* sts, _syn* stack,int s
 			if(0 != sts[j].val)continue;
 
 			val = 0;
-			relation_readall(ent,'a'+j, stack,sp, 0,0, &val,1);
+			take_data_from_them(ent,'a'+j, stack,sp, 0,0, &val,1);
 			if(0 == val)k += 1;
 			else if('p' == val){
 				sts[j].val = 1;

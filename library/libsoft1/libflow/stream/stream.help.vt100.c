@@ -14,7 +14,7 @@ int vt100_write(_art* art,int foot, _syn* stack,int sp, u8* arg, int idx, void* 
 	//ret = write(fd, "unset PROMPT_COMMAND\n", 21);
 	switch(foot){
 		case _src_:say("%.*s", len, buf);break;
-		default:relationwrite(art,_src_, stack,sp, 0,0, buf,len);
+		default:give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 	}
 	return 0;
 }

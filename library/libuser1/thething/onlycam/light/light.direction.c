@@ -311,7 +311,7 @@ static void dirlight_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* ar
 		dirlight_forfbo_cameraupdate(ent,slot, wor,geom, fbo,rect);
 
 		//wnd.data -> fbo.texture
-		relationwrite(ent,_fbo_, stack,sp, 0,0, 0,0);
+		give_data_into_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
 
 		//fbo.texture -> my.data -> wnd.data
 		dirlight_forwnd_textureupdate(ent,slot, fbo,rect);

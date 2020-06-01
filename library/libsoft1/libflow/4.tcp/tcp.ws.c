@@ -103,7 +103,7 @@ int wsclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, v
 			ret = websocket_clientwrite(buf, len, tmp, 0x1000);
 			//printmemory(buf, len);
 			//printmemory(tmp, ret);
-			relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
+			give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 			break;
 		}
 		case _src_:{
@@ -124,7 +124,7 @@ int wsclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, v
 				buf += ret;
 				len -= ret;
 
-				relationwrite(art,_dst_, stack,sp, 0,0, buf,len);
+				give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
 			}
 			break;
 		}
@@ -142,7 +142,7 @@ int wsclient_linkup(struct halfrel* self, struct halfrel* peer)
 
 	if(_src_ == self->flag){
 		ret = websocket_clientwrite_handshake(0, 0, tmp, 0);
-		relationwrite(self->pchip,_src_, 0,0, 0,0, tmp,ret);
+		give_data_into_peer(self->pchip,_src_, 0,0, 0,0, tmp,ret);
 	}
 	return 0;
 }
@@ -379,8 +379,8 @@ int wsserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, v
 			ret = websocket_serverwrite_head(buf, len, tmp, 0x100);
 			//printmemory(tmp, ret);
 			//printmemory(buf, len);
-			relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
-			relationwrite(art,_src_, stack,sp, 0,0, buf,len);
+			give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
+			give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 			break;
 		}
 		case _src_:{
@@ -393,7 +393,7 @@ int wsserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, v
 
 				//parse clienthello
 				ret = websocket_serverread_handshake(buf, len, tmp, 256);
-				ret = relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
+				ret = give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 
 				//on clienthello do something
 				//blen = mysnprintf(tmp, 0x1000, "Who dare summon me ?!");
@@ -404,7 +404,7 @@ int wsserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, v
 				ret = websocket_serverread_head(buf, len, tmp, 0x1000);
 				say("sending:\n");
 				printmemory(tmp, ret<16?ret:16);
-				relationwrite(art,_dst_, stack,sp, 0,0, tmp,ret);
+				give_data_into_peer(art,_dst_, stack,sp, 0,0, tmp,ret);
 			}
 			break;
 		}

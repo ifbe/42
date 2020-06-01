@@ -209,7 +209,7 @@ static void nand_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 
 	ent->iz0 = !(ent->ix0 && ent->iy0);
 	tmp = ent->iz0 + 0x30;
-	relationwrite(ent,'o', stack,sp, 0,0, &tmp,1);
+	give_data_into_peer(ent,'o', stack,sp, 0,0, &tmp,1);
 }
 static void nand_discon(struct halfrel* self, struct halfrel* peer)
 {

@@ -60,9 +60,9 @@ int tftpserver_write(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, 
 	{
 		str[ret] = ':';
 		str[ret+1] = ' ';
-		relationwrite(art,_src_, stack,sp, 0,0, str,ret+2);
+		give_data_into_peer(art,_src_, stack,sp, 0,0, str,ret+2);
 	}
-	relationwrite(art,_src_, stack,sp, 0,0, buf,len);
+	give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 	return 0;
 }
 int tftpserver_discon(struct halfrel* self, struct halfrel* peer)

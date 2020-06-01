@@ -19,7 +19,7 @@ int str2vec_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, vo
 		//printmemory(buf, len);
 
 		cnt = parsefv(tmp, 9, buf, len);
-		return relationwrite(art,_vec_, stack,sp, 0,0, tmp,cnt);
+		return give_data_into_peer(art,_vec_, stack,sp, 0,0, tmp,cnt);
 	}
 	if(_vec_ == foot){
 		int j,cnt;
@@ -32,7 +32,7 @@ int str2vec_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, vo
 			if(j == len-1)cnt += mysnprintf(tmp+cnt, 256-cnt, "%f\n", f[j]);
 			else cnt += mysnprintf(tmp+cnt, 256-cnt, "%f, ", f[j]);
 		}
-		return relationwrite(art,_str_, stack,sp, 0,0, tmp,cnt);
+		return give_data_into_peer(art,_str_, stack,sp, 0,0, tmp,cnt);
 	}
 	return 0;
 }

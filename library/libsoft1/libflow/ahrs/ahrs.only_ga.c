@@ -80,7 +80,7 @@ int easyag_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void
 	float f[10];
 	say("@easyag_read\n");
 
-	relationread(art,_src_, stack,sp, 0,0, f,10);
+	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
 int easyag_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
@@ -95,7 +95,7 @@ int easyag_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, voi
 	say("@easyag_write:%f,%f,%f,%f,%f,%f\n",f[0],f[1],f[2], f[3],f[4],f[5]);
 
 	imuupdate(f[0],f[1],f[2], f[3],f[4],f[5]);
-	relationwrite(art,_dst_, stack,sp, 0,0, q,4);
+	give_data_into_peer(art,_dst_, stack,sp, 0,0, q,4);
 	return 0;
 }
 int easyag_discon(struct halfrel* self, struct halfrel* peer)

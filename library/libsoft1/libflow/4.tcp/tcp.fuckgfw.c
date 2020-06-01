@@ -55,13 +55,13 @@ int fuckgfwserver_write(struct halfrel* self, struct halfrel* peer, void* arg, i
 			relationcreate(ele,id, website, _dst_);
 		}
 		if(message == type){
-			relationwrite(ele,id, arg,idx, buf,len);
+			give_data_into_peer(ele,id, arg,idx, buf,len);
 		}
 */
 	}
 	else{
 		//buf,len = encrypt(id, buf,len)
-		//relationwrite(ele, _src_, arg, idx, buf, len);
+		//give_data_into_peer(ele, _src_, arg, idx, buf, len);
 	}
 	return 0;
 }

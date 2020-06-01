@@ -470,7 +470,7 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	if('v' == key){
 		gl41data_before(wnd);
 
-		//relationread(ent,_evto_, stack,sp, arg,key, buf,len);
+		//take_data_from_peer(ent,_evto_, stack,sp, arg,key, buf,len);
 		freecam_ratio(wor, geom, wnd, area);
 		freecam_shape2frustum(&geom->fshape, &geom->frustum);
 		freecam_frustum2matrix(ent,slot, wor,geom);
@@ -525,13 +525,13 @@ static int freecam_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	struct event* ev = buf;
 	if(ent->EVTOTYPE & EVTO){
 		if(_char_ != ev->what){
-			relationwrite(ent,_evto_, stack,sp, arg,key, buf,len);
+			give_data_into_peer(ent,_evto_, stack,sp, arg,key, buf,len);
 			return 0;
 		}
 	}
 	if(ent->EVTOTYPE & IOTO){
 		if(_char_ == ev->what){
-			relationwrite(ent,_ioto_, stack,sp, arg,key, buf,len);
+			give_data_into_peer(ent,_ioto_, stack,sp, arg,key, buf,len);
 			return 0;
 		}
 	}

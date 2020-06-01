@@ -64,7 +64,7 @@ int toycar_read_byhttp(struct entity* ent,int foot, struct halfrel* stack,int sp
     }
 
     ret += mysnprintf(buf+ret, 999-ret, "</body></html>");
-    relationwrite(ent,foot, stack,sp, "text/html",0, buf,ret);
+    give_data_into_peer(ent,foot, stack,sp, "text/html",0, buf,ret);
     return ret;
 }
 int toycar_taking(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
@@ -106,7 +106,7 @@ int toycar_giving(struct entity* ent,int foot, struct halfrel* stack,int sp, voi
     tmp[ret] = '\n';
     ret++;
 
-    relationwrite(ent,foot, stack,sp, 0,0, tmp,ret);
+    give_data_into_peer(ent,foot, stack,sp, 0,0, tmp,ret);
     return 0;
 }
 void toycar_discon(struct halfrel* self, struct halfrel* peer)

@@ -227,7 +227,7 @@ int mahony_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void
 	say("@mahony_read\n");
 
 	float f[10];
-	relationread(art,_src_, stack,sp, 0,0, f,10);
+	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
 int mahony_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
@@ -241,7 +241,7 @@ int mahony_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, voi
 		default:say("err@mahony_write:len=%d\n", len);return 0;
 	}
 
-	relationwrite(art,_dst_, stack,sp, 0,0, q,4);
+	give_data_into_peer(art,_dst_, stack,sp, 0,0, q,4);
 	return 0;
 }
 int mahony_discon(struct halfrel* self, struct halfrel* peer)

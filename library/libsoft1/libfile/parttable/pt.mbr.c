@@ -113,7 +113,7 @@ int mbrclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	if(_src_ == self->flag){
 		struct artery* ele = self->pchip;
-		int ret = relationread(ele,_src_, 0,0, "",0, ele->buf0,0x1000);
+		int ret = take_data_from_peer(ele,_src_, 0,0, "",0, ele->buf0,0x1000);
 		if(ret != 0x1000)return 0;
 
 		parse_mbr(ele->buf0);

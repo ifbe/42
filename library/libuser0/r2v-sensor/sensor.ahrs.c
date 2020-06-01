@@ -46,7 +46,7 @@ static void* ahrs_thread(struct supply* win)
 	struct halfrel stack[0x80];
 	while(1){
 		say("@ahrs_thread:%llx\n", win);
-		relationread(win,_src_, stack,0, 0,0, tmp,4);
+		take_data_from_peer(win,_src_, stack,0, 0,0, tmp,4);
 		sleep_us(1000000);
 	}
 }

@@ -33,7 +33,7 @@ void* visionlistener(struct supply* win)
 				}
 			}
 		}
-		relationwrite(win,_dst_, stack,0, 0,0, ibuf,640*480*2);
+		give_data_into_peer(win,_dst_, stack,0, 0,0, ibuf,640*480*2);
 		sleep_us(16*1000);
 	}
 	return 0;

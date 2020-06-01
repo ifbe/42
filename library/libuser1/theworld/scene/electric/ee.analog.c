@@ -1,7 +1,7 @@
 #include "libuser.h"
 int parsefv(float* vec, int flen, u8* str, int slen);
-int relation_readall( void*,int, void*,int, void*,int, void*,int);
-int relation_writeall(void*,int, void*,int, void*,int, void*,int);
+int take_data_from_them( void*,int, void*,int, void*,int, void*,int);
+int give_data_into_them(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -79,7 +79,7 @@ static void analog_emulate(struct entity* ent, struct wireindex* sts, u8* buf, i
 	}
 	sts[0].sure = 1;
 	sts[0].volt = (float)(buf[0]-0x30);
-	relation_writeall(ent,'a', 0,0, 0,0, &sts[0],0);
+	give_data_into_them(ent,'a', 0,0, 0,0, &sts[0],0);
 }
 static void analog_decent_V(struct entity* ent, struct wireindex* sts)
 {
@@ -89,7 +89,7 @@ static void analog_decent_V(struct entity* ent, struct wireindex* sts)
 		if(0 != sts[j].sure)continue;
 
 		sts[j].grad = 0.0;
-		relation_readall(ent,'a'+j, 0,0, 0,'V', sts,j);
+		take_data_from_them(ent,'a'+j, 0,0, 0,'V', sts,j);
 	}
 	for(j=1;j<16;j++){
 		if(0 == sts[j].cnt)break;
@@ -107,7 +107,7 @@ static void analog_decent_R(struct entity* ent, struct wireindex* sts)
 		if(0 != sts[j].sure)continue;
 
 		sts[j].grad = 0.0;
-		relation_readall(ent,'a'+j, 0,0, 0,'R', sts,j);
+		take_data_from_them(ent,'a'+j, 0,0, 0,'R', sts,j);
 	}
 	for(j=1;j<16;j++){
 		if(0 == sts[j].cnt)break;

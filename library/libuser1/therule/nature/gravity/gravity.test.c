@@ -116,7 +116,8 @@ int gravtest_working(struct entity* ent)
 }
 int gravtest_addforce(struct entity* ent)
 {
-	say("@gravtest_addforce\n");
+	//say("@gravtest_addforce\n");
+	ent->JUMP += 10;
 	return 0;
 }
 
@@ -130,11 +131,10 @@ int gravtest_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, v
 }
 int gravtest_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@gravtest_write:%.4s\n",&foot);
+	//say("@gravtest_write:%.4s\n",&foot);
 	if(_clk_ == foot)gravtest_working(ent);
 	if(_ioby_ == foot){
 		gravtest_addforce(ent);
-		ent->JUMP += 10;
 	}
 	return 0;
 }

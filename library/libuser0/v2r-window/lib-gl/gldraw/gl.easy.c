@@ -149,7 +149,7 @@ void easywindow_read(_sup* win,int foot, _syn* stack,int sp, void* arg,int idx, 
 	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	if(win->orel0)relationread(win,_ctx_, stack,sp, 0,0, 0,0);
+	if(win->orel0)take_data_from_peer(win,_ctx_, stack,sp, 0,0, 0,0);
 	if(win->glsolid)easywindow_drawthis(win->glsolid);
 	else easywindow_example();
 }

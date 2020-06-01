@@ -23,7 +23,7 @@ int control_write(_art* art,int foot, _syn* stack,int sp, u8* arg, int idx, void
 	for(j=0;j<256;j++){if(arg[j] <= 0x20)break;}
 	say("%.*s\n", j, arg);
 
-	relationwrite(art,_src_, stack,sp, "text/html",0, art->buf0,art->len);
+	give_data_into_peer(art,_src_, stack,sp, "text/html",0, art->buf0,art->len);
 	return 0;
 }
 int control_discon(struct halfrel* self, struct halfrel* peer)

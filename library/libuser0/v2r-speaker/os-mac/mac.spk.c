@@ -5,7 +5,7 @@
 
 int speakerread(_sup* spk,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	if(spk->orel0)relationread(spk,_ctx_, stack,sp, 0,0, 0,0);
+	if(spk->orel0)take_data_from_peer(spk,_ctx_, stack,sp, 0,0, 0,0);
 
 	struct pcmdata* pcm = spk->pcmdata;
 	if(0 == pcm)return 0;

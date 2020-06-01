@@ -171,7 +171,7 @@ static void picture_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 static void picture_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@picture_write\n");
-	relationwrite(ent,_evto_, stack,sp, 0,0, "calibrate\n", 10);
+	give_data_into_peer(ent,_evto_, stack,sp, 0,0, "calibrate\n", 10);
 }
 static void picture_discon(struct halfrel* self, struct halfrel* peer)
 {

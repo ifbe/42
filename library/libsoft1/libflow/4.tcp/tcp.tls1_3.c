@@ -458,7 +458,7 @@ int tls1v3client_linkup(struct halfrel* self, struct halfrel* peer)
 		struct artery* art = self->pchip;
 		u8* buf = art->buf0;
 		int ret = tls1v3_clienthello(buf, 0x10000);
-		relationwrite(art,_src_, 0,0, 0,0, buf,ret);
+		give_data_into_peer(art,_src_, 0,0, 0,0, buf,ret);
 	}
 	return 0;
 }

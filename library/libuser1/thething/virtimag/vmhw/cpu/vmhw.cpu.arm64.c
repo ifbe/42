@@ -69,7 +69,7 @@ static void arm64_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		u64 where = cpu->pc & 0xfffffffffffff000;
 		if(cpu->cache != where){
 			say("cache miss, reading memory: [%llx,%llx]\n", where, where+0xfff);
-			int ret = relationread(ent,_mmio_, stack,sp, 0,where, cpu->code,0x1000);
+			int ret = take_data_from_peer(ent,_mmio_, stack,sp, 0,where, cpu->code,0x1000);
 			if(ret <= 0)return;
 		}
 		cpu->cache = where;

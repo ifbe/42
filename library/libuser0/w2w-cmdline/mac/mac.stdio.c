@@ -27,7 +27,7 @@ void terminalthread(struct supply* win)
 			//say("%x\n", ret);
 			ev.why = ret;
 			ev.what = _char_;
-			relationwrite(win,_dst_, stack,0, 0,0, &ev,0);
+			give_data_into_peer(win,_dst_, stack,0, 0,0, &ev,0);
 		}
 	}
 }

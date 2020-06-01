@@ -76,7 +76,7 @@ int gl41fbog_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int idx, voi
 int gl41fbog_write(_sup* this,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	//say("@gl41fbog_write\n");
-	relationwrite(this,_cam_, stack,sp, arg,idx, buf,len);
+	give_data_into_peer(this,_cam_, stack,sp, arg,idx, buf,len);
 	return 0;
 }
 int gl41fbog_discon(struct halfrel* self, struct halfrel* peer)

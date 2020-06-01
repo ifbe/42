@@ -33,8 +33,8 @@ int udptravclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int i
 	//say("@udptravclient_write: %.4s\n", &foot);
 
 	if(_std_ == foot){
-		if(' ' == buf[0])relationwrite(art,_src_, stack,sp, &art->data0,0, buf, 1);
-		else if(art->data1)relationwrite(art,_src_, stack,sp, &art->data1,0, buf, 1);
+		if(' ' == buf[0])give_data_into_peer(art,_src_, stack,sp, &art->data0,0, buf, 1);
+		else if(art->data1)give_data_into_peer(art,_src_, stack,sp, &art->data1,0, buf, 1);
 		return 0;
 	}
 
@@ -159,7 +159,7 @@ int udptravmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int i
 		for(j=0;j<4;j++){
 			if(0 == list[j])break;
 		}
-		relationwrite(art,foot, stack,sp, arg,idx, list,j*8);
+		give_data_into_peer(art,foot, stack,sp, arg,idx, list,j*8);
 	}
 	return 0;
 }

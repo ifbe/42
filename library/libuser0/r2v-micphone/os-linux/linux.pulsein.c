@@ -51,7 +51,7 @@ void* micphonelistener(struct supply* win)
 		}
 		usleep(1000000*10/441);
 
-		relationwrite(win,_dst_, stack,0, 0,0, ibuf+(1024*2*icur),1024*2);
+		give_data_into_peer(win,_dst_, stack,0, 0,0, ibuf+(1024*2*icur),1024*2);
 		icur = (icur+1)%8;
 		//info.enq = (info.enq + 4096) % 0x100000;
 		//eventwrite((u64)&info, 's', 0, 0);

@@ -26,7 +26,7 @@ int rotate_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, voi
 			d8[3] = s8[3];
 		}
 	}
-	relationwrite(art,_dst_, stack,sp, 0,0, dst,640*480*2);
+	give_data_into_peer(art,_dst_, stack,sp, 0,0, dst,640*480*2);
 	return 0;
 }
 int rotate_discon(struct halfrel* self, struct halfrel* peer)

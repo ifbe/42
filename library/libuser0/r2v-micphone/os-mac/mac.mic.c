@@ -15,7 +15,7 @@ void* micphonelistener(struct supply* win)
 	struct halfrel stack[0x80];
 	while(1){
 		for(j=0;j<1024;j++)ibuf[j] = (getrandom()&0xfff) - 0x800;
-		relationwrite(win,_dst_, stack,0, 0,0, ibuf,1024*2);
+		give_data_into_peer(win,_dst_, stack,0, 0,0, ibuf,1024*2);
 		sleep_us(1000*1000);
 	}
 	return 0;

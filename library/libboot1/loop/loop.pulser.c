@@ -1,5 +1,5 @@
 #include "libboot.h"
-void relation_writeall(void*,int, void*,int, void*,int, void*,int);
+void give_data_into_them(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -14,7 +14,7 @@ void pulser(struct worker* pulser)
 		t0 = timeread();
 
 		//say("@pulser: %llx\n", t0);
-		relation_writeall(pulser, _clk_, stack,0, 0,0, &t0,8);
+		give_data_into_them(pulser, _clk_, stack,0, 0,0, &t0,8);
 
 		dt = timeread() - t0;
 		if(dt < 16000)sleep_us(16000-dt);

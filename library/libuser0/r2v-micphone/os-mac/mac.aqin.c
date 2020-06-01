@@ -13,7 +13,7 @@ static void micphonecallback(void* ptr, AudioQueueRef inaq, AudioQueueBufferRef 
 	void* buf = inctx->mAudioData;
 	int len = inctx->mAudioDataByteSize;
 	say("%llx,%x,%x\n", buf, len, inNumberPacketDescriptions);
-	relationwrite(ptr,_dst_, stack,0, 0,0, buf,len);
+	give_data_into_peer(ptr,_dst_, stack,0, 0,0, buf,len);
 
 	AudioQueueEnqueueBuffer(inaq, inctx, 0, NULL);
 }

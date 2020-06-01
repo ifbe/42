@@ -971,7 +971,7 @@ int tls1v2client_write(_art* art,int foot, _syn* stack,int sp, void* arg, int id
 		ret += tls1v2_write_client_cipherspec(tmp+ret, len);
 		ret += tls1v2_write_client_hellorequest(tmp+ret, len);
 
-		ret = relationwrite(art,_src_, stack,sp, 0,0, tmp,ret);
+		ret = give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
 	}
 	else{
 		printmemory(buf,len);
@@ -990,7 +990,7 @@ int tls1v2client_linkup(struct halfrel* self, struct halfrel* peer)
 	u8 tmp[0x1000];
 
 	ret = tls1v2_clientwrite_clienthello(tmp, 0);
-	if(ret)relationwrite(self->pchip,_src_, 0,0, 0,0, tmp,ret);
+	if(ret)give_data_into_peer(self->pchip,_src_, 0,0, 0,0, tmp,ret);
 	return 0;
 }
 int tls1v2client_delete(struct artery* ele)
@@ -1101,7 +1101,7 @@ int tls1v2server_write(_art* art,int foot, _syn* stack,int sp, void* arg, int id
 			ret += tls1v2_write_server_certificate(art, 0, buf+ret, len);
 			ret += tls1v2_write_server_keyexch(    art, 0, buf+ret, len);
 			ret += tls1v2_write_server_done(       art, 0, buf+ret, len);
-			relationwrite(art,_src_, stack,sp, 0,0, buf,ret);
+			give_data_into_peer(art,_src_, stack,sp, 0,0, buf,ret);
 
 			break;
 		}
@@ -1116,7 +1116,7 @@ int tls1v2server_write(_art* art,int foot, _syn* stack,int sp, void* arg, int id
 			ret = tls1v2_write_server_newsession(buf, len);
 			ret += tls1v2_write_server_cipherspec(buf+ret, len);
 			ret += tls1v2_write_server_encrypthandshake(buf+ret, len);
-			relationwrite(art,_src_, stack,sp, 0,0, buf,ret);
+			give_data_into_peer(art,_src_, stack,sp, 0,0, buf,ret);
 
 			break;
 		}
@@ -1157,7 +1157,7 @@ int tls1v2master_write(_art* art,int foot, _syn* stack,int sp, void* arg, int id
 
 	if(0x16 != buf[0])
 	{
-		relationwrite(art,_src_, stack,sp, 0,0, response,sizeof(response));
+		give_data_into_peer(art,_src_, stack,sp, 0,0, response,sizeof(response));
 		return 0;
 	}
 

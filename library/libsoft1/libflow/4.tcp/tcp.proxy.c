@@ -59,23 +59,23 @@ int proxyserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx
 printmemory(buf, len<16?len:16);
 
 	if('c' == foot){	//client
-		relationwrite(art,'s', stack,sp, 0,0, buf,len);
+		give_data_into_peer(art,'s', stack,sp, 0,0, buf,len);
 	}
 	if('s' == foot){	//server
 		if(0 == len){			//server ready
 			if(art->buf0){
 				//this is http proxy: send cached request directly
-				relationwrite(art,'s', stack,sp, 0,0, art->buf0, art->len);
+				give_data_into_peer(art,'s', stack,sp, 0,0, art->buf0, art->len);
 				memorydelete(art->buf0);
 				art->buf0 = 0;
 			}
 			else{
 				//this is https proxy: tell client ready to send request
-				relationwrite(art,'c', stack,sp, 0,0, proxy_server0,sizeof(proxy_server0)-1);
+				give_data_into_peer(art,'c', stack,sp, 0,0, proxy_server0,sizeof(proxy_server0)-1);
 			}
 		}
 		else{
-			relationwrite(art,'c', stack,sp, 0,0, buf,len);
+			give_data_into_peer(art,'c', stack,sp, 0,0, buf,len);
 		}
 	}
 	return 0;

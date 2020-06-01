@@ -16,7 +16,7 @@ int gcodeclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx
 		}
 		case _clk_:{
 			//say("@gcodeclient_write.clk\n");
-			relationwrite(art,_src_, stack,sp, 0,0, "M105\n",5);
+			give_data_into_peer(art,_src_, stack,sp, 0,0, "M105\n",5);
 			break;
 		}
 	}

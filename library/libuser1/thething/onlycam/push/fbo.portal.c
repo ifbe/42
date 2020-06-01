@@ -421,13 +421,13 @@ static void portal_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 		if('a' == foot){
 			struct portalbuf* p = ent->Aside;
 			portal_matrix(ent, camg->frus.vc, ent->Aside, ent->Bside);
-			relationwrite(ent,_fboa_, stack,sp, 0,0, 0,0);
+			give_data_into_peer(ent,_fboa_, stack,sp, 0,0, 0,0);
 			portal_forwnd_update(ent, p, p->fbo, p->rect);
 		}
 		if('b' == foot){
 			struct portalbuf* p = ent->Bside;
 			portal_matrix(ent, camg->frus.vc, ent->Bside, ent->Aside);
-			relationwrite(ent,_fbob_, stack,sp, 0,0, 0,0);
+			give_data_into_peer(ent,_fbob_, stack,sp, 0,0, 0,0);
 			portal_forwnd_update(ent, p, p->fbo, p->rect);
 		}
 /*
@@ -437,7 +437,7 @@ static void portal_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 		water_forfbo_update(ent,slot, wor,geom, dup,camg, fbo,rect);
 
 		//wnd.data -> fbo.texture
-		relationwrite(ent,_fbo_, stack,sp, 0,0, 0,0);
+		give_data_into_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
 
 		//fbo.texture -> my.data -> wnd.data
 		water_forwnd_update(ent,slot, fbo,rect);*/

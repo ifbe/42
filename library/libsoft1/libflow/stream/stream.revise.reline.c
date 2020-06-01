@@ -10,7 +10,7 @@ int reline_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void
 	say("@reline_read\n");
 
 	float f[10];
-	relationread(art,_src_, stack,sp, 0,0, f,10);
+	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
 int reline_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
@@ -35,7 +35,7 @@ int reline_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8*
 
 					if('\n' == buf[j]){
 						//say("@reline_write:%.*s", cur, tmp);
-						relationwrite(art,_dst_, stack,sp, 0,0, tmp,cur-1);
+						give_data_into_peer(art,_dst_, stack,sp, 0,0, tmp,cur-1);
 						cur = 0;
 
 						j++;
@@ -54,7 +54,7 @@ int reline_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8*
 			for(j=0;j<len;j++){
 				if('\n' == buf[j]){
 					//say("@reline_write:%.*s", j-k+1, buf+k);
-					relationwrite(art,_dst_, stack,sp, 0,0, buf+k,j-k+1);
+					give_data_into_peer(art,_dst_, stack,sp, 0,0, buf+k,j-k+1);
 					k = j+1;
 				}
 			}

@@ -177,7 +177,7 @@ int dnsclient_linkup(struct halfrel* self, struct halfrel* peer)
 		if(ret <= 0)return 0;
 
 		printmemory(tmp,ret);
-		relationwrite(self->pchip,self->flag, 0,0, 0,0, tmp,ret);
+		give_data_into_peer(self->pchip,self->flag, 0,0, 0,0, tmp,ret);
 	}
 	return 0;
 }

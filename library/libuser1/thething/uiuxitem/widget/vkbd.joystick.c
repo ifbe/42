@@ -211,7 +211,7 @@ static void vjoy_write_bywnd(_ent* ent,int foot, _syn* stack,int sp, struct even
 
 			struct event e;
 			int ret = vjoy_event(&e, x, y, z);
-			if(ret)relationwrite(ent,_evto_, stack,sp, 0,0, &e,0x20);
+			if(ret)give_data_into_peer(ent,_evto_, stack,sp, 0,0, &e,0x20);
 		}
 		if(x > dx-dy){
 			x = (x-dx+dy)*4/dy;
@@ -220,7 +220,7 @@ static void vjoy_write_bywnd(_ent* ent,int foot, _syn* stack,int sp, struct even
 
 			struct event e;
 			int ret = vjoy_event(&e, x, y, z);
-			if(ret)relationwrite(ent,_evto_, stack,sp, 0,0, &e,0x20);
+			if(ret)give_data_into_peer(ent,_evto_, stack,sp, 0,0, &e,0x20);
 		}
 	}
 }

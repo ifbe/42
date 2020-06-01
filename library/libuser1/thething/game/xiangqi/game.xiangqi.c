@@ -511,8 +511,8 @@ static void xiangqi_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	say("@xiangqi_giving: %.4s\n", &foot);
 	if(_soul_ == foot){xiangqi_copydata(ent->buf0, buf);return;}
 
-	relationwrite(ent,_soul_, stack,sp, 0,0, buf, 16);
-	relationwrite(ent,_sync_, stack,sp, 0,0, ent->buf0, 9*10);
+	give_data_into_peer(ent,_soul_, stack,sp, 0,0, buf, 16);
+	give_data_into_peer(ent,_sync_, stack,sp, 0,0, ent->buf0, 9*10);
 }
 static void xiangqi_discon(struct halfrel* self, struct halfrel* peer)
 {

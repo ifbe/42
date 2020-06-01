@@ -167,7 +167,7 @@ int relation_r(struct item* item,int foot, struct halfrel* stack,int sp, void* a
 	}
 	return 0;
 }
-int relationread(void* chip,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
+int take_data_from_peer(void* chip,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct item* item;
 	struct relation* rel;
@@ -203,7 +203,7 @@ int relationread(void* chip,int foot, struct halfrel* stack,int sp, void* arg,in
 
 	return 0;
 }
-int relation_readall(void* chip,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
+int take_data_from_them(void* chip,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct item* item;
 	struct relation* rel;
@@ -257,7 +257,7 @@ int relation_w(struct item* item,int foot, struct halfrel* stack,int sp, void* a
 	}
 	return 0;
 }
-int relationwrite(void* chip,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
+int give_data_into_peer(void* chip,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct item* item;
 	struct relation* rel;
@@ -295,7 +295,7 @@ int relationwrite(void* chip,int foot, struct halfrel* stack,int sp, void* arg,i
 
 	return 0;
 }
-int relation_writeall(void* chip,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
+int give_data_into_them(void* chip,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct item* item;
 	struct relation* rel;

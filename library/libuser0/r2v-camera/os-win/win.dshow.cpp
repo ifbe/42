@@ -94,7 +94,7 @@ public:
 		pSample->Release();
 
 		struct halfrel stack[0x80];
-		relationwrite(working,_dst_, stack,0, 0,0, obj[enq].buf,obj[enq].len);
+		give_data_into_peer(working,_dst_, stack,0, 0,0, obj[enq].buf,obj[enq].len);
 
 		enq = (enq+1)%60;
 		return S_OK;

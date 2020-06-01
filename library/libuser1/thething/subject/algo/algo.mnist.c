@@ -182,8 +182,8 @@ void mnist_draw_gl41(
 	float* result = act->buf3;
 	if(0 == weight)return;
 	if(0 == result)return;
-	if(act->iw0)relationwrite(act,_ann_, 0,0, 0,0, &image[16+id*28*28], label[8+id]);
-	else relationread(act,_ann_, 0,0, 0,0, &image[16+id*28*28], label[8+id]);
+	if(act->iw0)give_data_into_peer(act,_ann_, 0,0, 0,0, &image[16+id*28*28], label[8+id]);
+	else take_data_from_peer(act,_ann_, 0,0, 0,0, &image[16+id*28*28], label[8+id]);
 	mnist_draw_gl41_rt(wnd, weight, vc,vr,vf,vt);
 	mnist_draw_gl41_rb(wnd, result, vc,vr,vf,vt);
 

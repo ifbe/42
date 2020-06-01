@@ -11,7 +11,7 @@ int goslow_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void
 	say("@goslow_read\n");
 
 	float f[10];
-	relationread(art,_src_, stack,sp, 0,0, f,10);
+	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
 int goslow_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
@@ -26,7 +26,7 @@ int goslow_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, voi
 
 		if(0 == cur){
 			say("@goslow.sending\n");
-			relationwrite(art,_dst_, stack,sp, 0,0, buf,len);
+			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
 		}
 		art->CURNUM = (cur + 1) % max;
 	}

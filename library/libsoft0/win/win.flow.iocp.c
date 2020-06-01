@@ -167,17 +167,17 @@ DWORD WINAPI iocpthread(LPVOID pM)
 				perfd = parent;
 			}
 
-			relationwrite(perfd,_dst_, stack,0, 0,0, perio->bufing.buf,tran);
+			give_data_into_peer(perfd,_dst_, stack,0, 0,0, perio->bufing.buf,tran);
 			iocp_mod(fd, perfd->type);
 			break;
 		}//Tcp
 		case _UDP_:{
-			relationwrite(perfd,_dst_, stack,0, perfd->peer,0, perio->bufing.buf,tran);
+			give_data_into_peer(perfd,_dst_, stack,0, perfd->peer,0, perio->bufing.buf,tran);
 			iocp_mod(fd, perfd->type);
 			break;
 		}
 		default:{
-			relationwrite(perfd,_dst_, stack,0, 0,0, perio->bufing.buf,tran);
+			give_data_into_peer(perfd,_dst_, stack,0, 0,0, perio->bufing.buf,tran);
 			iocp_mod(fd, perfd->type);
 			break;
 		}//default

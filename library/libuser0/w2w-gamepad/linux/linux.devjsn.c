@@ -24,11 +24,11 @@ void joystick_event(struct supply* win, void* p)
 
 		ev.why = *(u64*)(p+0);
 		ev.what = joy_left;
-		relationwrite(win,_dst_, stack,0, 0,0, &ev,0);
+		give_data_into_peer(win,_dst_, stack,0, 0,0, &ev,0);
 
 		ev.why = *(u64*)(p+8);
 		ev.what = joy_right;
-		relationwrite(win,_dst_, stack,0, 0,0, &ev,0);
+		give_data_into_peer(win,_dst_, stack,0, 0,0, &ev,0);
 	}
 }
 void joystickthread(struct supply* win)

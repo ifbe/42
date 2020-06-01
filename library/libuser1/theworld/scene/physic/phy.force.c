@@ -1,7 +1,7 @@
 #include "libuser.h"
 int parsefv(float* vec, int flen, u8* str, int slen);
-int relation_readall( void* item,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
-int relation_writeall(void* item,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
+int take_data_from_them( void* item,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
+int give_data_into_them(void* item,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
 
 
 
@@ -72,7 +72,7 @@ static void force_decent_spring(struct entity* ent, struct joint* jo, _syn* stac
 		jo[j].gradx = 0.0;
 		jo[j].grady = 0.0;
 		jo[j].gradz = 0.0;
-		relation_readall(ent,'a'+j, stack,sp, 0,'R', jo,j);
+		take_data_from_them(ent,'a'+j, stack,sp, 0,'R', jo,j);
 	}
 
 	for(j=0;j<16;j++){
@@ -95,7 +95,7 @@ static void force_decent_stick(struct entity* ent, struct joint* jo, _syn* stack
 		jo[j].gradx = 0.0;
 		jo[j].grady = 0.0;
 		jo[j].gradz = 0.0;
-		relation_readall(ent,'a'+j, stack,sp, 0,'V', jo,j);
+		take_data_from_them(ent,'a'+j, stack,sp, 0,'V', jo,j);
 	}
 	for(j=1;j<16;j++){
 		if(0 == jo[j].exist)break;

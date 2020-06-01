@@ -72,7 +72,7 @@ static void button_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 static void button_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@button_write\n");
-	relationwrite(ent,_evto_, stack,sp, 0,0, "calibrate\n",10);
+	give_data_into_peer(ent,_evto_, stack,sp, 0,0, "calibrate\n",10);
 }
 static void button_discon(struct halfrel* self, struct halfrel* peer)
 {

@@ -59,7 +59,7 @@ static void piano_char(struct entity* act, u8* ch)
 	}
 
 	piano_gen(act->buf0, f);
-	relationwrite(act,_spk_, 0,0, 0,0, act->buf0,16384*2);
+	give_data_into_peer(act,_spk_, 0,0, 0,0, act->buf0,16384*2);
 }
 static void piano_event(struct entity* act, struct event* ev)
 {

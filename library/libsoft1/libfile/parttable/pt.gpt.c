@@ -102,7 +102,7 @@ int gptclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	if(_src_ == self->flag){
 		struct artery* ele = self->pchip;
-		int ret = relationread(ele,_src_, 0,0, "",0, ele->buf0,0x4800);
+		int ret = take_data_from_peer(ele,_src_, 0,0, "",0, ele->buf0,0x4800);
 		if(ret != 0x4800)return 0;
 
 		parse_gpt(ele->buf0);

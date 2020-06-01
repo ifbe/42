@@ -207,7 +207,7 @@ static void vkbd_write_bywnd(_ent* ent,int foot, _syn* stack,int sp, struct even
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	if(_char_ == ev->what){
-		relationwrite(ent,_evto_, stack,sp, 0,0, ev,0x20);
+		give_data_into_peer(ent,_evto_, stack,sp, 0,0, ev,0x20);
 		return;
 	}
 	if('p' == (ev->what&0xff)){
@@ -225,7 +225,7 @@ static void vkbd_write_bywnd(_ent* ent,int foot, _syn* stack,int sp, struct even
 			int y = ent->iy0;
 			tmp.why = x + y*16;
 			tmp.what = _char_;
-			relationwrite(ent,_evto_, stack,sp, 0,0, &tmp,0x20);
+			give_data_into_peer(ent,_evto_, stack,sp, 0,0, &tmp,0x20);
 		}
 	}
 }

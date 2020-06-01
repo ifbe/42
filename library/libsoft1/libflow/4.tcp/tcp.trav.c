@@ -47,9 +47,9 @@ int tcptravclient_write(_art* art,int foot, _syn* stack,int sp, void* arg,int id
 	if(_std_ == foot){
 		printmemory(buf, len < 16 ? len : 16);
 
-		if(' ' == buf[0])relationwrite(art,_src_, stack,sp, 0,0, buf,1);
-		if((buf[0]>='0') && (buf[0]<='9'))relationwrite(art,_sss_, stack,sp, 0,0, buf,1);
-		if((buf[0]>='a') && (buf[0]<='z'))relationwrite(art,_ccc_, stack,sp, 0,0, buf,1);
+		if(' ' == buf[0])give_data_into_peer(art,_src_, stack,sp, 0,0, buf,1);
+		if((buf[0]>='0') && (buf[0]<='9'))give_data_into_peer(art,_sss_, stack,sp, 0,0, buf,1);
+		if((buf[0]>='a') && (buf[0]<='z'))give_data_into_peer(art,_ccc_, stack,sp, 0,0, buf,1);
 		return 0;
 	}
 	if(_ccc_ == foot){
@@ -57,7 +57,7 @@ int tcptravclient_write(_art* art,int foot, _syn* stack,int sp, void* arg,int id
 		printmemory(buf, len < 16 ? len : 16);
 
 		if(_c_friend_ != art->stage1)return 0;
-		relationwrite(art,_dst_, stack,sp, 0,0, buf,len);
+		give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
 		return 0;
 	}
 	if(_sss_ == foot){
@@ -67,7 +67,7 @@ int tcptravclient_write(_art* art,int foot, _syn* stack,int sp, void* arg,int id
 	}
 	if(_dst_ == foot){
 		if(_c_friend_ != art->stage1)return 0;
-		relationwrite(art,_ccc_, stack,sp, 0,0, buf,len);
+		give_data_into_peer(art,_ccc_, stack,sp, 0,0, buf,len);
 		return 0;
 	}
 	if(_src_ == foot){
@@ -82,7 +82,7 @@ int tcptravclient_write(_art* art,int foot, _syn* stack,int sp, void* arg,int id
 		if(_c_friend_ == art->stage1)return 0;
 		if(len < 16){
 			sleep_us(1000000);
-			relationwrite(art,_src_, stack,sp, 0,0, "?\n", 2);
+			give_data_into_peer(art,_src_, stack,sp, 0,0, "?\n", 2);
 			return 0;
 		}
 
@@ -138,7 +138,7 @@ int tcptravclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	say("@tcptravclient_linkup: %.4s\n", &self->flag);
 	if(_src_ == self->flag){
-		relationwrite(self->pchip, self->flag, 0,0, 0,0, "?\n", 2);
+		give_data_into_peer(self->pchip, self->flag, 0,0, 0,0, "?\n", 2);
 	}
 	return 0;
 }
@@ -207,7 +207,7 @@ int tcptravmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg,int id
 		for(j=0;j<4;j++){
 			if(0 == list[j])break;
 		}
-		relationwrite(art,foot, stack,sp, arg,idx, list,j*8);
+		give_data_into_peer(art,foot, stack,sp, arg,idx, list,j*8);
 	}
 	return 0;
 }
