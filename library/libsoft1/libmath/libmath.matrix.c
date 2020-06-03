@@ -41,6 +41,20 @@ float mat2_det(mat2 m)
 
 
 
+void mat3_transposefrom(float* o, float* i)
+{
+	o[0] = i[ 0];
+	o[1] = i[ 3];
+	o[2] = i[ 6];
+
+	o[3] = i[ 1];
+	o[4] = i[ 4];
+	o[5] = i[ 7];
+
+	o[6] = i[ 2];
+	o[7] = i[ 5];
+	o[8] = i[ 8];
+}
 void mat3_transpose(float* u)
 {
 	float t;
@@ -57,23 +71,26 @@ void mat3_transpose(float* u)
 	u[5] = u[7];
 	u[7] = t;
 }
-void mat3_multiply(float* u, float* v)
+void mat3_multiplyfrom(float* o, float* u, float* v)
+{
+	o[0] = u[0]*v[0] + u[1]*v[3] + u[2]*v[6];
+	o[1] = u[0]*v[1] + u[1]*v[4] + u[2]*v[7];
+	o[2] = u[0]*v[2] + u[1]*v[5] + u[2]*v[8];
+
+	o[3] = u[3]*v[0] + u[4]*v[3] + u[5]*v[6];
+	o[4] = u[3]*v[1] + u[4]*v[4] + u[5]*v[7];
+	o[5] = u[3]*v[2] + u[4]*v[5] + u[5]*v[8];
+
+	o[6] = u[6]*v[0] + u[7]*v[3] + u[8]*v[6];
+	o[7] = u[6]*v[1] + u[7]*v[4] + u[8]*v[7];
+	o[8] = u[6]*v[2] + u[7]*v[5] + u[8]*v[8];
+}
+void mat3_multiply(float* l, float* r)
 {
 	int j;
-	float w[9];
-	for(j=0;j<9;j++)w[j] = u[j];
-
-	u[0] = w[0]*v[0] + w[1]*v[3] + w[2]*v[6];
-	u[1] = w[0]*v[1] + w[1]*v[4] + w[2]*v[7];
-	u[2] = w[0]*v[2] + w[1]*v[5] + w[2]*v[8];
-
-	u[3] = w[3]*v[0] + w[4]*v[3] + w[5]*v[6];
-	u[4] = w[3]*v[1] + w[4]*v[4] + w[5]*v[7];
-	u[5] = w[3]*v[2] + w[4]*v[5] + w[5]*v[8];
-
-	u[6] = w[6]*v[0] + w[7]*v[3] + w[8]*v[6];
-	u[7] = w[6]*v[1] + w[7]*v[4] + w[8]*v[7];
-	u[8] = w[6]*v[2] + w[7]*v[5] + w[8]*v[8];
+	float t[9];
+	for(j=0;j<9;j++)t[j] = l[j];
+	mat3_multiplyfrom(l, t, r);
 }
 int mat3_inverse(float* d, float* s)
 {
@@ -107,34 +124,56 @@ float mat3_det(mat3 m)
 
 
 
-void mat4_multiplyfrom(float* m, float* u, float* v)
+void mat4_multiplyfrom(float* o, float* u, float* v)
 {
-	m[ 0] = u[ 0]*v[ 0] + u[ 1]*v[ 4] + u[ 2]*v[ 8] + u[ 3]*v[12];
-	m[ 1] = u[ 0]*v[ 1] + u[ 1]*v[ 5] + u[ 2]*v[ 9] + u[ 3]*v[13];
-	m[ 2] = u[ 0]*v[ 2] + u[ 1]*v[ 6] + u[ 2]*v[10] + u[ 3]*v[14];
-	m[ 3] = u[ 0]*v[ 3] + u[ 1]*v[ 7] + u[ 2]*v[11] + u[ 3]*v[15];
+	o[ 0] = u[ 0]*v[ 0] + u[ 1]*v[ 4] + u[ 2]*v[ 8] + u[ 3]*v[12];
+	o[ 1] = u[ 0]*v[ 1] + u[ 1]*v[ 5] + u[ 2]*v[ 9] + u[ 3]*v[13];
+	o[ 2] = u[ 0]*v[ 2] + u[ 1]*v[ 6] + u[ 2]*v[10] + u[ 3]*v[14];
+	o[ 3] = u[ 0]*v[ 3] + u[ 1]*v[ 7] + u[ 2]*v[11] + u[ 3]*v[15];
 
-	m[ 4] = u[ 4]*v[ 0] + u[ 5]*v[ 4] + u[ 6]*v[ 8] + u[ 7]*v[12];
-	m[ 5] = u[ 4]*v[ 1] + u[ 5]*v[ 5] + u[ 6]*v[ 9] + u[ 7]*v[13];
-	m[ 6] = u[ 4]*v[ 2] + u[ 5]*v[ 6] + u[ 6]*v[10] + u[ 7]*v[14];
-	m[ 7] = u[ 4]*v[ 3] + u[ 5]*v[ 7] + u[ 6]*v[11] + u[ 7]*v[15];
+	o[ 4] = u[ 4]*v[ 0] + u[ 5]*v[ 4] + u[ 6]*v[ 8] + u[ 7]*v[12];
+	o[ 5] = u[ 4]*v[ 1] + u[ 5]*v[ 5] + u[ 6]*v[ 9] + u[ 7]*v[13];
+	o[ 6] = u[ 4]*v[ 2] + u[ 5]*v[ 6] + u[ 6]*v[10] + u[ 7]*v[14];
+	o[ 7] = u[ 4]*v[ 3] + u[ 5]*v[ 7] + u[ 6]*v[11] + u[ 7]*v[15];
 
-	m[ 8] = u[ 8]*v[ 0] + u[ 9]*v[ 4] + u[10]*v[ 8] + u[11]*v[12];
-	m[ 9] = u[ 8]*v[ 1] + u[ 9]*v[ 5] + u[10]*v[ 9] + u[11]*v[13];
-	m[10] = u[ 8]*v[ 2] + u[ 9]*v[ 6] + u[10]*v[10] + u[11]*v[14];
-	m[11] = u[ 8]*v[ 3] + u[ 9]*v[ 7] + u[10]*v[11] + u[11]*v[15];
+	o[ 8] = u[ 8]*v[ 0] + u[ 9]*v[ 4] + u[10]*v[ 8] + u[11]*v[12];
+	o[ 9] = u[ 8]*v[ 1] + u[ 9]*v[ 5] + u[10]*v[ 9] + u[11]*v[13];
+	o[10] = u[ 8]*v[ 2] + u[ 9]*v[ 6] + u[10]*v[10] + u[11]*v[14];
+	o[11] = u[ 8]*v[ 3] + u[ 9]*v[ 7] + u[10]*v[11] + u[11]*v[15];
 
-	m[12] = u[12]*v[ 0] + u[13]*v[ 4] + u[14]*v[ 8] + u[15]*v[12];
-	m[13] = u[12]*v[ 1] + u[13]*v[ 5] + u[14]*v[ 9] + u[15]*v[13];
-	m[14] = u[12]*v[ 2] + u[13]*v[ 6] + u[14]*v[10] + u[15]*v[14];
-	m[15] = u[12]*v[ 3] + u[13]*v[ 7] + u[14]*v[11] + u[15]*v[15];
+	o[12] = u[12]*v[ 0] + u[13]*v[ 4] + u[14]*v[ 8] + u[15]*v[12];
+	o[13] = u[12]*v[ 1] + u[13]*v[ 5] + u[14]*v[ 9] + u[15]*v[13];
+	o[14] = u[12]*v[ 2] + u[13]*v[ 6] + u[14]*v[10] + u[15]*v[14];
+	o[15] = u[12]*v[ 3] + u[13]*v[ 7] + u[14]*v[11] + u[15]*v[15];
 }
-void mat4_multiply(float* m, float* v)
+void mat4_multiply(float* l, float* r)
 {
 	int j;
-	float u[16];
-	for(j=0;j<16;j++)u[j] = m[j];
-	mat4_multiplyfrom(m, u, v);
+	float t[16];
+	for(j=0;j<16;j++)t[j] = l[j];
+	mat4_multiplyfrom(l, t, r);
+}
+void mat4_transposefrom(float* m, float* u)
+{
+	m[ 0] = u[ 0];
+	m[ 1] = u[ 4];
+	m[ 2] = u[ 8];
+	m[ 3] = u[12];
+
+	m[ 4] = u[ 1];
+	m[ 5] = u[ 5];
+	m[ 6] = u[ 9];
+	m[ 7] = u[13];
+
+	m[ 8] = u[ 2];
+	m[ 9] = u[ 6];
+	m[10] = u[10];
+	m[11] = u[14];
+
+	m[12] = u[ 3];
+	m[13] = u[ 7];
+	m[14] = u[11];
+	m[15] = u[15];
 }
 void mat4_transpose(float* u)
 {
@@ -163,28 +202,6 @@ void mat4_transpose(float* u)
 	t = u[11];
 	u[11] = u[14];
 	u[14] = t;
-}
-void mat4_transposefrom(float* m, float* u)
-{
-	m[ 0] = u[ 0];
-	m[ 1] = u[ 4];
-	m[ 2] = u[ 8];
-	m[ 3] = u[12];
-
-	m[ 4] = u[ 1];
-	m[ 5] = u[ 5];
-	m[ 6] = u[ 9];
-	m[ 7] = u[13];
-
-	m[ 8] = u[ 2];
-	m[ 9] = u[ 6];
-	m[10] = u[10];
-	m[11] = u[14];
-
-	m[12] = u[ 3];
-	m[13] = u[ 7];
-	m[14] = u[11];
-	m[15] = u[15];
 }
 int mat4_inverse(float* d, float* s)
 {

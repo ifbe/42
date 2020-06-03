@@ -1,7 +1,147 @@
 #include "libuser.h"
 #define TIME data0
 #define FLAG data1
-#define JUMP data2
+#define TEST data2
+#define THAT data3
+void  inertia_tensor_of_block(mat3 Ival, mat3 Iinv, float M, float lx, float ly, float lz);
+void mat3_transposefrom(void* o, void* i);
+void mat3_multiplyfrom(void* o, void* l, void* r);
+
+
+
+
+void gravtest_resistance(struct style* geom)
+{
+	float a = -geom->fm.angular_v[3];
+
+	geom->fm.angular_a[0] = geom->fm.angular_v[0] * a;
+	geom->fm.angular_a[1] = geom->fm.angular_v[1] * a;
+	geom->fm.angular_a[2] = geom->fm.angular_v[2] * a;
+
+	geom->fm.displace_a[0] = 0.0;
+	geom->fm.displace_a[1] = 0.0;
+	geom->fm.displace_a[2] =-9.8;
+}
+void gravtest_testforce(struct style* geom)
+{
+	//say("@gravtest_addforce\n");
+	geom->fm.angular_a[0] = 0.0;
+	geom->fm.angular_a[1] = 0.0;
+	geom->fm.angular_a[2] = 1.0;
+
+	geom->fm.displace_a[0] = 0.0;
+	geom->fm.displace_a[1] = 0.0;
+	geom->fm.displace_a[2] = 9.8;
+}
+
+
+
+
+void inertiatensor_local2world(mat3 Iworld, mat3 Ilocal, struct fstyle* sty, float mass)
+{
+	int j;
+	mat3 tmp;
+	mat3 Rmat,Rpos;
+	vec3 vr,vf,vt;
+	float* vc = sty->vc;
+
+	vec3_normalizefrom(vr, sty->vr);
+	vec3_normalizefrom(vf, sty->vf);
+	vec3_normalizefrom(vt, sty->vt);
+	for(j=0;j<3;j++){
+		Rmat[j][0] = Rpos[0][j] = vr[j];
+		Rmat[j][1] = Rpos[1][j] = vf[j];
+		Rmat[j][2] = Rpos[2][j] = vt[j];
+	}
+
+	//Iworld = Rmat * Ilocal * Rpos
+	mat3_multiplyfrom(tmp, Ilocal, Rpos);
+	mat3_multiplyfrom(Iworld, Rmat, tmp);
+
+	//move
+	Iworld[0][0] += mass * (vc[1]*vc[1]+vc[2]*vc[2]);
+	Iworld[1][1] += mass * (vc[0]*vc[0]+vc[2]*vc[2]);
+	Iworld[2][2] += mass * (vc[0]*vc[0]+vc[1]*vc[1]);
+	Iworld[0][1] -= mass * vc[0] * vc[1];
+	Iworld[1][0] -= mass * vc[0] * vc[1];
+	Iworld[0][2] -= mass * vc[0] * vc[2];
+	Iworld[2][0] -= mass * vc[0] * vc[2];
+	Iworld[1][2] -= mass * vc[1] * vc[2];
+	Iworld[2][1] -= mass * vc[1] * vc[2];
+}
+void inertiatensor_angularalpha(vec3 a, vec3 t, mat3 m)
+{
+	a[0] = m[0][0]*t[0] + m[0][1]*t[0] + m[0][2]*t[0];
+	a[1] = m[1][0]*t[1] + m[1][1]*t[1] + m[1][2]*t[1];
+	a[2] = m[2][0]*t[2] + m[2][1]*t[2] + m[2][2]*t[2];
+}
+void gravtest_realforce(struct style* geom, int key)
+{
+	float mass = 1.0;
+	mat3 localinverse;	//inverse inertia
+	inertia_tensor_of_block(0, localinverse, mass,
+		vec3_getlen(geom->fs.vr)*2.0,
+		vec3_getlen(geom->fs.vf)*2.0,
+		vec3_getlen(geom->fs.vt)*2.0);
+
+	mat3 worldinverse;
+	inertiatensor_local2world(worldinverse, localinverse, &geom->fshape, mass);
+
+	vec3 worldvector[4];
+	worldvector[0][0] =-geom->fs.vr[0] -geom->fs.vf[0];
+	worldvector[0][1] =-geom->fs.vr[1] -geom->fs.vf[1];
+	worldvector[0][2] =-geom->fs.vr[2] -geom->fs.vf[2];
+	worldvector[1][0] = geom->fs.vr[0] -geom->fs.vf[0];
+	worldvector[1][1] = geom->fs.vr[1] -geom->fs.vf[1];
+	worldvector[1][2] = geom->fs.vr[2] -geom->fs.vf[2];
+	worldvector[2][0] =-geom->fs.vr[0] +geom->fs.vf[0];
+	worldvector[2][1] =-geom->fs.vr[1] +geom->fs.vf[1];
+	worldvector[2][2] =-geom->fs.vr[2] +geom->fs.vf[2];
+	worldvector[3][0] = geom->fs.vr[0] +geom->fs.vf[0];
+	worldvector[3][1] = geom->fs.vr[1] +geom->fs.vf[1];
+	worldvector[3][2] = geom->fs.vr[2] +geom->fs.vf[2];
+
+	float f;
+	vec3 worldforce[4];
+	f = ('z'==key) ? 1.0002 : 1.0;
+	worldforce[0][0] = geom->fs.vt[0] * f;
+	worldforce[0][1] = geom->fs.vt[1] * f;
+	worldforce[0][2] = geom->fs.vt[2] * f;
+	f = ('c'==key) ? 1.0002 : 1.0;
+	worldforce[1][0] = geom->fs.vt[0] * f;
+	worldforce[1][1] = geom->fs.vt[1] * f;
+	worldforce[1][2] = geom->fs.vt[2] * f;
+	f = ('q'==key) ? 1.0002 : 1.0;
+	worldforce[2][0] = geom->fs.vt[0] * f;
+	worldforce[2][1] = geom->fs.vt[1] * f;
+	worldforce[2][2] = geom->fs.vt[2] * f;
+	f = ('e'==key) ? 1.0002 : 1.0;
+	worldforce[3][0] = geom->fs.vt[0] * f;
+	worldforce[3][1] = geom->fs.vt[1] * f;
+	worldforce[3][2] = geom->fs.vt[2] * f;
+
+	vec3 worldtorque[4];
+	vec3_cross(worldtorque[0], worldvector[0], worldforce[0]);
+	vec3_cross(worldtorque[1], worldvector[1], worldforce[1]);
+	vec3_cross(worldtorque[2], worldvector[2], worldforce[2]);
+	vec3_cross(worldtorque[3], worldvector[3], worldforce[3]);
+
+	vec3 totalforce;
+	totalforce[0] = worldforce[0][0] + worldforce[1][0] + worldforce[2][0] + worldforce[3][0];
+	totalforce[1] = worldforce[0][1] + worldforce[1][1] + worldforce[2][1] + worldforce[3][1];
+	totalforce[2] = worldforce[0][2] + worldforce[1][2] + worldforce[2][2] + worldforce[3][2];
+
+	vec3 totaltorque;
+	totaltorque[0] = worldtorque[0][0] + worldtorque[1][0] + worldtorque[2][0] + worldtorque[3][0];
+	totaltorque[1] = worldtorque[0][1] + worldtorque[1][1] + worldtorque[2][1] + worldtorque[3][1];
+	totaltorque[2] = worldtorque[0][2] + worldtorque[1][2] + worldtorque[2][2] + worldtorque[3][2];
+
+	//
+	geom->fm.displace_a[0] = totalforce[0] / mass;
+	geom->fm.displace_a[1] = totalforce[1] / mass;
+	geom->fm.displace_a[2] = totalforce[2] / mass;
+	inertiatensor_angularalpha(geom->fm.angular_a, totaltorque, worldinverse);
+}
 
 
 
@@ -11,7 +151,6 @@ int gravtest_effect(struct style* geom, float dt)
 	vec4 v,q;
 	float a,i,c,s;
 	struct fmotion* final = &geom->fm;
-say("%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
 
 
 	//angular
@@ -47,7 +186,11 @@ say("%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],
 
 
 	//displacement
+	final->displace_v[0] += final->displace_a[0] * dt;
+	final->displace_v[1] += final->displace_a[1] * dt;
 	final->displace_v[2] += final->displace_a[2] * dt;
+	final->displace_x[0] += final->displace_v[0] * dt;
+	final->displace_x[1] += final->displace_v[1] * dt;
 	final->displace_x[2] += final->displace_v[2] * dt;
 
 
@@ -58,13 +201,15 @@ say("%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],
 	}
 	say("%f,%f\n", final->displace_v[2], final->displace_x[2]);
 
+	geom->fs.vc[0] = final->displace_x[0];
+	geom->fs.vc[1] = final->displace_x[1];
 	geom->fs.vc[2] = final->displace_x[2];
 	return 0;
 }
-int gravtest_working(struct entity* ent)
+int gravtest_foreach(struct entity* ent)
 {
 	u64 now;
-	float a,dt;
+	float dt;
 	struct entity* world;
 	struct relation* rel;
 	struct style* geom;
@@ -86,25 +231,13 @@ int gravtest_working(struct entity* ent)
 		if(0 == rel)break;
 
 		geom = rel->psrcfoot;
-		if(ent->JUMP){
-			geom->fm.angular_a[0] = 0.0;
-			geom->fm.angular_a[1] = 0.0;
-			geom->fm.angular_a[2] = 1.0;
-
-			geom->fm.displace_a[0] = 0.0;
-			geom->fm.displace_a[1] = 0.0;
-			geom->fm.displace_a[2] = 9.8;
-			ent->JUMP--;
+		if(ent->TEST){
+			//gravtest_testforce(geom);
+			gravtest_realforce(geom, ent->THAT);
+			ent->TEST--;
 		}
 		else{
-			a = -geom->fm.angular_v[3];
-			geom->fm.angular_a[0] = geom->fm.angular_v[0] * a;
-			geom->fm.angular_a[1] = geom->fm.angular_v[1] * a;
-			geom->fm.angular_a[2] = geom->fm.angular_v[2] * a;
-
-			geom->fm.displace_a[0] = 0.0;
-			geom->fm.displace_a[1] = 0.0;
-			geom->fm.displace_a[2] =-9.8;
+			gravtest_resistance(geom);
 		}
 		gravtest_effect(geom, dt);
 
@@ -112,12 +245,6 @@ int gravtest_working(struct entity* ent)
 	}
 
 	ent->TIME = now;
-	return 0;
-}
-int gravtest_addforce(struct entity* ent)
-{
-	//say("@gravtest_addforce\n");
-	ent->JUMP += 10;
 	return 0;
 }
 
@@ -129,12 +256,13 @@ int gravtest_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, v
 	say("@gravtest_read:%.4s\n",&foot);
 	return 0;
 }
-int gravtest_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int gravtest_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	//say("@gravtest_write:%.4s\n",&foot);
-	if(_clk_ == foot)gravtest_working(ent);
+	if(_clk_ == foot)gravtest_foreach(ent);
 	if(_ioby_ == foot){
-		gravtest_addforce(ent);
+		ent->TEST += 16;
+		ent->THAT = buf[0];
 	}
 	return 0;
 }
@@ -166,6 +294,6 @@ int gravtest_create(struct entity* ent, void* str)
 {
 	say("@gravtest_create\n");
 	ent->FLAG = 0;
-	ent->JUMP = 0;
+	ent->TEST = 0;
 	return 0;
 }

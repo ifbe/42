@@ -42,19 +42,19 @@ void vec3_setlen(vec3 v, float len)
 	v[1] *= len;
 	v[2] *= len;
 }
+void vec3_normalizefrom(vec3 to, vec3 v)
+{
+	float norm = 1.0 / squareroot(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+	to[0] = v[0] * norm;
+	to[1] = v[1] * norm;
+	to[2] = v[2] * norm;
+}
 void vec3_normalize(vec3 v)
 {
 	float norm = squareroot(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
 	v[0] /= norm;
 	v[1] /= norm;
 	v[2] /= norm;
-}
-void vec3_normalizeto(vec3 v, vec3 to)
-{
-	float norm = 1.0 / squareroot(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
-	to[0] = v[0] * norm;
-	to[1] = v[1] * norm;
-	to[2] = v[2] * norm;
 }
 float vec3_dot(vec3 v, vec3 x)
 {
