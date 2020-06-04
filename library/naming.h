@@ -208,6 +208,9 @@
 #define _jsonroot_ hex64('j','s','o','n','r','o','o','t')
 #define _xamlroot_ hex64('x','a','m','l','r','o','o','t')
 #define _uiuxroot_ hex64('u','i','u','x','r','o','o','t')
+//control
+#define _carcon_ hex64('c','a','r','c','o','n', 0, 0)
+#define _flycon_ hex64('f','l','y','c','o','n', 0, 0)
 //event
 #define _follow_ hex64('f','o','l','l','o','w', 0, 0)
 #define _lookat_ hex64('l','o','o','k','a','t', 0, 0)

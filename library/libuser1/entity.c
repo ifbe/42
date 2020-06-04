@@ -29,7 +29,21 @@ int test_discon(void*, void*);
 int test_taking(void*,int, void*,int, void*,int, void*,int);
 int test_giving(void*,int, void*,int, void*,int, void*,int);
 
+//
+int carcon_create(void*, void*, int, u8**);
+int carcon_delete(void*, void*);
+int carcon_linkup(void*, void*);
+int carcon_discon(void*, void*);
+int carcon_taking(void*,int, void*,int, void*,int, void*,int);
+int carcon_giving(void*,int, void*,int, void*,int, void*,int);
+int flycon_create(void*, void*, int, u8**);
+int flycon_delete(void*, void*);
+int flycon_linkup(void*, void*);
+int flycon_discon(void*, void*);
+int flycon_taking(void*,int, void*,int, void*,int, void*,int);
+int flycon_giving(void*,int, void*,int, void*,int, void*,int);
 
+//
 int toycar_create(void*, void*, int, u8**);
 int toycar_delete(void*, void*);
 int toycar_linkup(void*, void*);
@@ -334,6 +348,9 @@ int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* 
 	case _analog_:return analog_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _digital_:return digital_taking(act,foot, stack,sp, arg,key, buf,len);
 
+	case _carcon_:return carcon_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _flycon_:return flycon_taking(act,foot, stack,sp, arg,key, buf,len);
+
 	case _axis3d_:return axis3d_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _guide3d_:return guide3d_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _border2d_:return border2d_taking(act,foot, stack,sp, arg,key, buf,len);
@@ -379,6 +396,9 @@ int entitywrite(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void*
 
 	case _analog_:return analog_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _digital_:return digital_giving(act,foot, stack,sp, arg,key, buf,len);
+
+	case _carcon_:return carcon_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _flycon_:return flycon_giving(act,foot, stack,sp, arg,key, buf,len);
 
 	case _axis3d_:return axis3d_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _guide3d_:return guide3d_giving(act,foot, stack,sp, arg,key, buf,len);
@@ -432,6 +452,9 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	case _analog_:return analog_discon(self, peer);
 	case _digital_:return digital_discon(self, peer);
 
+	case _carcon_:return carcon_discon(self, peer);
+	case _flycon_:return flycon_discon(self, peer);
+
 	case _axis3d_:return axis3d_discon(self, peer);
 	case _guide3d_:return guide3d_discon(self, peer);
 	case _border2d_:return border2d_discon(self, peer);
@@ -483,6 +506,9 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 
 	case _analog_:return analog_linkup(self, peer);
 	case _digital_:return digital_linkup(self, peer);
+
+	case _carcon_:return carcon_linkup(self, peer);
+	case _flycon_:return flycon_linkup(self, peer);
 
 	case _axis3d_:return axis3d_linkup(self, peer);
 	case _guide3d_:return guide3d_linkup(self, peer);
@@ -676,6 +702,20 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		act = allocentity();
 		act->fmt = act->type = _eventrts_;
 		eventrts_create(act, buf, argc, argv);
+		return act;
+	}
+	case _carcon_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _carcon_;
+		carcon_create(act, buf, argc, argv);
+		return act;
+	}
+	case _flycon_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _flycon_;
+		flycon_create(act, buf, argc, argv);
 		return act;
 	}
 

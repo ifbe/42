@@ -23,6 +23,9 @@ world{
 fmt:virtual
 }
 
+control{
+fmt:flycon
+}
 gravity{
 fmt:gravtest
 }
@@ -125,26 +128,27 @@ q:1.0, 1.0
 
 <relation>
 #scene depends on ???
-(scene, cargeom, 0) -> (rccar, carslot, 0)
 (scene, drongeom, 0) -> (drone, dronslot, 0)
-
-#world depends on ???
 (world, 0, 0) -> (scene, 0, 0)
 (world, skygeom, 0) -> (sky, skypart, 0)
 (world, gndgeom, 0) -> (gnd, gndpart, 0)
 (world, aaaageom, 0) -> (cam0, aaaapart, 0)
-
-#glwnd depends on gldata
 (opengl, aaaarect, 0) -> (cam0, 0, a0)
 
-#3rd controller
+#mouse: 3rd controller
 (event, 0, tar) -> (drone, 0, evby)
 (event, 0, cam) -> (cam0, 0, evto)
 
-#keyboard
+#keyboard: 
 (cam0, 0, ioto) -> (gravity, 0, ioby)
 
-#
+#gravity
 (gravity, 0, 0) -> (scene, 0, 0)
+
+#control
+(control, 0, dst) -> (drone, 0, con)
+
+#
+(pulser, 0, clk) -> (control, 0, clk)
 (pulser, 0, clk) -> (gravity, 0, clk)
 </relation>

@@ -322,6 +322,10 @@ struct imotion{
 	int xa[4];
 	int xd[4];
 };
+struct ftest{
+	vec4 force[4];
+	vec4 where[4];
+};
 struct style
 {
 	//[00, 7f]: geometry
@@ -352,6 +356,7 @@ struct style
 	//[180, 1ff]: notsure motion (collision test?)
 	union{
 		struct fmotion expect;
+		struct ftest ft;
 	};
 };
 

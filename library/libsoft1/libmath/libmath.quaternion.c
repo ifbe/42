@@ -55,7 +55,7 @@ void matrix2quaternion(float* matrix, float* q)
 
 //in:	qx,qy,qz,qw
 //out:	vx,vy,vz,angle
-void quaternion2axis(float* q, float* av)
+void quaternion2axisangle(float* q, float* av)
 {
 	float angle = arccos(q[3]);
 	float scale = squareroot(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
@@ -66,20 +66,20 @@ void quaternion2axis(float* q, float* av)
 	av[3] = angle*360/3.141592653;
 }
 //in:	qx,qy,qz,qw
-//out:	pitch,yaw,roll
+//out:	pitch(x),roll(y),yaw(z)
 void quaternion2eulerian(float* q, float* eulerian)
 {
 	//atan2(2(xw+yz), 1-2(xx+yy))
 	eulerian[0] = arctan2( (q[0]*q[3]+q[1]*q[2])*2 , 1-(q[0]*q[0]+q[1]*q[1])*2 );
 	eulerian[0] *= 180.0/PI;
 
-	//asin(2(yw-xz))
-	eulerian[1] = arcsin(  (q[1]*q[3]-q[0]*q[2])*2 );
-	eulerian[1] *= 180.0/PI;
-
 	//atan2(2(zw+xy), 1-2(yy+zz))
 	eulerian[2] = arctan2( (q[2]*q[3]+q[0]*q[1])*2 , 1-(q[1]*q[1]+q[2]*q[2])*2 );
 	eulerian[2] *= 180.0/PI;
+
+	//asin(2(yw-xz))
+	eulerian[1] = arcsin(  (q[1]*q[3]-q[0]*q[2])*2 );
+	eulerian[1] *= 180.0/PI;
 }
 //in:	qx,qy,qz,qw
 //out:	matrix

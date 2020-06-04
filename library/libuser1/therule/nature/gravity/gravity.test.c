@@ -18,9 +18,9 @@ void gravtest_resistance(struct style* geom)
 	geom->fm.angular_a[1] = geom->fm.angular_v[1] * a;
 	geom->fm.angular_a[2] = geom->fm.angular_v[2] * a;
 
-	geom->fm.displace_a[0] = 0.0;
-	geom->fm.displace_a[1] = 0.0;
-	geom->fm.displace_a[2] =-9.8;
+	geom->fm.displace_a[0] = -geom->fm.displace_v[0] * 0.1;
+	geom->fm.displace_a[1] = -geom->fm.displace_v[1] * 0.1;
+	geom->fm.displace_a[2] = -geom->fm.displace_v[2] * 0.1 - 9.8;
 }
 void gravtest_testforce(struct style* geom)
 {
@@ -86,7 +86,7 @@ void gravtest_realforce(struct style* geom, int key)
 
 	mat3 worldinverse;
 	inertiatensor_local2world(worldinverse, localinverse, &geom->fshape, mass);
-
+/*
 	vec3 worldvector[4];
 	worldvector[0][0] =-geom->fs.vr[0] -geom->fs.vf[0];
 	worldvector[0][1] =-geom->fs.vr[1] -geom->fs.vf[1];
@@ -119,6 +119,9 @@ void gravtest_realforce(struct style* geom, int key)
 	worldforce[3][0] = geom->fs.vt[0] * f;
 	worldforce[3][1] = geom->fs.vt[1] * f;
 	worldforce[3][2] = geom->fs.vt[2] * f;
+*/
+	vec4* worldvector = geom->ft.where;
+	vec4* worldforce = geom->ft.force;
 
 	vec3 worldtorque[4];
 	vec3_cross(worldtorque[0], worldvector[0], worldforce[0]);
@@ -139,7 +142,7 @@ void gravtest_realforce(struct style* geom, int key)
 	//
 	geom->fm.displace_a[0] = totalforce[0] / mass;
 	geom->fm.displace_a[1] = totalforce[1] / mass;
-	geom->fm.displace_a[2] = totalforce[2] / mass;
+	geom->fm.displace_a[2] = totalforce[2] / mass - 9.81;
 	inertiatensor_angularalpha(geom->fm.angular_a, totaltorque, worldinverse);
 }
 
