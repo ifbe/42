@@ -202,7 +202,7 @@ int gravtest_effect(struct style* geom, float dt)
 		final->displace_x[2] = 0.00001;
 		final->displace_v[2] = -0.5 * final->displace_v[2];
 	}
-	say("%f,%f\n", final->displace_v[2], final->displace_x[2]);
+	//say("%f,%f\n", final->displace_v[2], final->displace_x[2]);
 
 	geom->fs.vc[0] = final->displace_x[0];
 	geom->fs.vc[1] = final->displace_x[1];
@@ -224,9 +224,9 @@ int gravtest_foreach(struct entity* ent)
 	if((_virtual_ != world->fmt)&&(_scene3d_ != world->fmt))return 0;
 
 	now = timeread();
-	say("%llx\n", now);
+	//say("%llx\n", now);
 	dt = (float)((now - ent->TIME)%1000000)/1000000.0;
-	say("dt=%f\n",dt);
+	//say("dt=%f\n",dt);
 	if(ent->FLAG < 42)ent->FLAG += 1;
 
 	rel = world->orel0;
@@ -256,7 +256,7 @@ int gravtest_foreach(struct entity* ent)
 
 int gravtest_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@gravtest_read:%.4s\n",&foot);
+	//say("@gravtest_read:%.4s\n",&foot);
 	return 0;
 }
 int gravtest_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)

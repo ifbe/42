@@ -13,7 +13,7 @@ void quaternion2eulerian(float* q, float* eulerian);
 
 
 
-float carcon_ploop(struct entity* ent, vec3 front)
+float carcon_pidloop_angle(struct entity* ent, vec3 front)
 {
 	vec3 vf;
 	vec3_normalizefrom(vf, front);
@@ -43,7 +43,7 @@ void carcon_applyforce(struct entity* ent)
 	struct fstyle* fs = &sty->fs;
 	struct ftest* ft = &sty->ft;
 
-	float a = carcon_ploop(ent, fs->vf);
+	float a = carcon_pidloop_angle(ent, fs->vf);
 	float ln =-a;
 	float rn = a;
 	float lf =-a;
@@ -108,7 +108,7 @@ int carcon_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, voi
 }
 int carcon_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
-	say("@carcon_write:%.4s\n",&foot);
+	//say("@carcon_write:%.4s\n",&foot);
 	if(_clk_ == foot){
 		carcon_checkplace(ent);
 		carcon_applyforce(ent);
@@ -117,6 +117,10 @@ int carcon_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8*
 		float angle;
 		decstr2float(buf, &angle);
 		ent->expect_x = angle*PI/180;
+		say("input:%f\n",ent->expect_x);
+	}
+	if(_evby_ == foot){
+		ent->expect_x = buf[0]*PI/50 - PI;
 		say("input:%f\n",ent->expect_x);
 	}
 	return 0;

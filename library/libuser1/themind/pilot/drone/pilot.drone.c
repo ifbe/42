@@ -6,12 +6,12 @@ void quaternion2eulerian(float* q, float* eulerian);
 
 
 
-void flycon_pid_ploop(float* result, float* expect, struct fstyle* fs)
+void flycon_pidloop_angle(float* result, float* expect, struct fstyle* fs)
 {
 	result[0] = arctan2(fs->vf[2], fs->vt[2]);
 	result[1] =-arctan2(fs->vf[0], fs->vr[0]);
 }
-void flycon_pid_vloop(float* result, float* expect, struct fstyle* fs)
+void flycon_pidloop_speed(float* result, float* expect, struct fstyle* fs)
 {
 }
 void flycon_applyforce(struct entity* ent)
@@ -26,7 +26,7 @@ void flycon_applyforce(struct entity* ent)
 	struct ftest* ft = &sty->ft;
 
 	vec3 eulerian;
-	flycon_pid_ploop(eulerian, 0, fs);
+	flycon_pidloop_angle(eulerian, 0, fs);
 	say("eulerian:%f,%f\n", eulerian[0], eulerian[1]);
 
 	float ln = 1.0;
