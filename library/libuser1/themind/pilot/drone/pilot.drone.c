@@ -6,35 +6,10 @@ void quaternion2eulerian(float* q, float* eulerian);
 
 
 
-void flycon_checkplace(struct entity* ent)
-{
-	struct halfrel* tmp[2];
-	int ret = relationsearch(ent, _dst_, &tmp[0], &tmp[1]);
-	if(ret <= 0)return;
-
-	struct entity* drone = tmp[1]->pchip;
-	if(0 == drone)return;
-
-	struct entity* world;
-	struct relation* rel = drone->irel0;
-	while(1){
-		if(0 == rel)break;
-		world = rel->psrcchip;
-		if(	(_virtual_ != world->fmt) | (_scene3d_ != world->fmt)){
-			ent->REL_WORLD = rel->src;
-			ent->REL_DRONE = rel->dst;
-			return;
-		}
-		rel = samedstnextsrc(rel);
-	}
-}
-void eulerainofgeom(float* e, struct fstyle* fs)
-{
-	e[0] = arctan2(fs->vf[2], fs->vt[2]);
-	e[1] =-arctan2(fs->vf[0], fs->vr[0]);
-}
 void flycon_pid_ploop(float* result, float* expect, struct fstyle* fs)
 {
+	result[0] = arctan2(fs->vf[2], fs->vt[2]);
+	result[1] =-arctan2(fs->vf[0], fs->vr[0]);
 }
 void flycon_pid_vloop(float* result, float* expect, struct fstyle* fs)
 {
@@ -51,7 +26,7 @@ void flycon_applyforce(struct entity* ent)
 	struct ftest* ft = &sty->ft;
 
 	vec3 eulerian;
-	eulerainofgeom(eulerian, fs);
+	flycon_pid_ploop(eulerian, 0, fs);
 	say("eulerian:%f,%f\n", eulerian[0], eulerian[1]);
 
 	float ln = 1.0;
@@ -92,6 +67,28 @@ void flycon_applyforce(struct entity* ent)
 	ft->where[3][0] = fs->vr[0] +fs->vf[0];
 	ft->where[3][1] = fs->vr[1] +fs->vf[1];
 	ft->where[3][2] = fs->vr[2] +fs->vf[2];
+}
+void flycon_checkplace(struct entity* ent)
+{
+	struct halfrel* tmp[2];
+	int ret = relationsearch(ent, _dst_, &tmp[0], &tmp[1]);
+	if(ret <= 0)return;
+
+	struct entity* drone = tmp[1]->pchip;
+	if(0 == drone)return;
+
+	struct entity* world;
+	struct relation* rel = drone->irel0;
+	while(1){
+		if(0 == rel)break;
+		world = rel->psrcchip;
+		if(	(_virtual_ != world->fmt) | (_scene3d_ != world->fmt)){
+			ent->REL_WORLD = rel->src;
+			ent->REL_DRONE = rel->dst;
+			return;
+		}
+		rel = samedstnextsrc(rel);
+	}
 }
 
 
