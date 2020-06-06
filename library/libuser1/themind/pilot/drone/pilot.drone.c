@@ -101,7 +101,7 @@ int flycon_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, voi
 }
 int flycon_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
-	say("@flycon_write:%.4s\n",&foot);
+	//say("@flycon_write:%.4s\n",&foot);
 	if(_clk_ == foot){
 		flycon_checkplace(ent);
 		flycon_applyforce(ent);

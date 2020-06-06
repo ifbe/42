@@ -204,7 +204,7 @@ libmath/libmath.bigint.c \
 libmath/libmath.matrix.c \
 libmath/libmath.notation.c \
 libmath/libmath.prime.c \
-libmath/libmath.quaternion.c \
+libmath/libmath.rotation.c \
 libmath/libmath.vector.c \
 libmath/libmath.triangle.c \
 libphys/phys.elec.c \
