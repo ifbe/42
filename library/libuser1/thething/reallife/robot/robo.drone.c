@@ -1,5 +1,5 @@
 #include "libuser.h"
-#define PI 3.1415926535897932384626433832795028841971693993151
+void quaternion_aa(float*, float*);
 
 
 
@@ -29,6 +29,7 @@ static void drone_draw_gl41(
 	struct entity* scn, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
+	int j;
 	float dt;
 	vec3 tc,tr,tf,tu;
 	vec3 kc,kr,kf,ku;
@@ -37,6 +38,26 @@ static void drone_draw_gl41(
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
 	gl41line_rect(ctx, 0xffffff, vc, vr, vf);
+
+
+
+	//debug
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] + geom->expect.angular_v[j];
+		tr[j] = vr[j];
+		tf[j] = vf[j];
+	}
+	quaternion_aa(tr, geom->expect.angular_v);
+	quaternion_aa(tf, geom->expect.angular_v);
+	gl41line(ctx, 0xff0000, vc, tc);
+	gl41line_rect(ctx, 0xff0000, vc, tr, tf);
+
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] + geom->expect.angular_a[j];
+	}
+	gl41line(ctx, 0x0000ff, vc, tc);
+
+
 
 	tu[0] = vt[0] / 64;
 	tu[1] = vt[1] / 64;

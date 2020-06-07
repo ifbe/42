@@ -13,11 +13,11 @@ double arctan2(double, double);
 //q <- q
 void quaternion_normalize(float* q)
 {
-	float norm = squareroot(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
-	q[0] /= norm;
-	q[1] /= norm;
-	q[2] /= norm;
-	q[3] /= norm;
+	float invsqrt = 1.0 / squareroot(q[0]*q[0] + q[1]*q[1] + q[2]*q[2] + q[3]*q[3]);
+	q[0] *= invsqrt;
+	q[1] *= invsqrt;
+	q[2] *= invsqrt;
+	q[3] *= invsqrt;
 }
 //s -> d
 void quaternion_conjugate(float* s, float* d)
@@ -31,24 +31,23 @@ void quaternion_conjugate(float* s, float* d)
 void quaternion_inverse(float* s, float* d)
 {
 	float n2 = s[0]*s[0] + s[1]*s[1] + s[2]*s[2] + s[3]*s[3];
-	d[0] = -s[0] / n2;
-	d[1] = -s[1] / n2;
-	d[2] = -s[2] / n2;
+	d[0] =-s[0] / n2;
+	d[1] =-s[1] / n2;
+	d[2] =-s[2] / n2;
 	d[3] = s[3] / n2;
 }
 //l <- l, r
+void quaternion_multiplyfrom(float* o, float* l, float* r)
+{
+	o[0] = l[0]*r[3] + l[3]*r[0] + l[1]*r[2] - l[2]*r[1];
+	o[1] = l[1]*r[3] + l[3]*r[1] + l[2]*r[0] - l[0]*r[2];
+	o[2] = l[2]*r[3] + l[3]*r[2] + l[0]*r[1] - l[1]*r[0];
+	o[3] = l[3]*r[3] - l[0]*r[0] - l[1]*r[1] - l[2]*r[2];
+}
 void quaternion_multiply(float* l, float* r)
 {
-	float t[4];
-	t[0] = l[0];
-	t[1] = l[1];
-	t[2] = l[2];
-	t[3] = l[3];
-
-	l[0] = t[3]*r[0] + t[0]*r[3] + t[1]*r[2] - t[2]*r[1];
-	l[1] = t[3]*r[1] - t[0]*r[2] + t[1]*r[3] + t[2]*r[0];
-	l[2] = t[3]*r[2] + t[0]*r[1] - t[1]*r[0] + t[2]*r[3];
-	l[3] = t[3]*r[3] - t[0]*r[0] - t[1]*r[1] - t[2]*r[2];
+	float t[4] = {l[0],l[1],l[2],l[3]};
+	quaternion_multiplyfrom(l, t, r);
 }
 //v <- v, q
 void quaternion_rotate(float* v, float* q)
@@ -64,6 +63,9 @@ void quaternion_rotate(float* v, float* q)
 	v[1] += q[3]*t[1] + q[2]*t[0]-q[0]*t[2];
 	v[2] += q[3]*t[2] + q[0]*t[1]-q[1]*t[0];
 }
+void quaternion_slerp(float* out,float* q0,float* q1,float t)
+{
+}
 
 
 
@@ -72,11 +74,18 @@ void quaternion_rotate(float* v, float* q)
 void quaternion2axisangle(float* q, float* a)
 {
 	float t = arccos(q[3]) * 2.0;
-	t /= squareroot(q[0]*q[0] + q[1]*q[1] + q[2]*q[2]);
-
-	a[0] = q[0] * t;
-	a[1] = q[1] * t;
-	a[2] = q[2] * t;
+	float l = q[0]*q[0] + q[1]*q[1] + q[2]*q[2];
+	if(l < 0.001){
+		a[0] = 0.0;
+		a[1] = 0.0;
+		a[2] = t;
+	}
+	else{
+		t /= squareroot(l);
+		a[0] = q[0] * t;
+		a[1] = q[1] * t;
+		a[2] = q[2] * t;
+	}
 }
 //out(qx,qy,qz,qw) <- in(vx,vy,vz)
 void quaternion4axisangle(float* q, float* a)
@@ -142,7 +151,34 @@ void quaternion4eulerian(float* q, float* e)
 	q[3] = cospitch*cosyaw*cosroll + sinpitch*sinyaw*sinroll;
 }
 //in(qx,qy,qz,qw) -> out(matrix)
-void quaternion2matrix(float* q, float* m)
+void quaternion2matthree(float* q, float* m)
+{
+	m[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
+	m[1] = 2.0 * (q[0]*q[1] + q[2]*q[3]);
+	m[2] = 2.0 * (q[0]*q[2] - q[1]*q[3]);
+
+	m[3] = 2.0 * (q[0]*q[1] - q[2]*q[3]);
+	m[4] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
+	m[5] = 2.0 * (q[1]*q[2] + q[0]*q[3]);
+
+	m[6] = 2.0 * (q[0]*q[2] + q[1]*q[3]);
+	m[7] = 2.0 * (q[1]*q[2] - q[0]*q[3]);
+	m[8] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
+}
+//out(qx,qy,qz,qw) <- in(matrix)
+void quaternion4matthree(float* q, float (*m)[3])
+{
+	float trace = m[0][0] + m[1][1] + m[2][2];
+	q[3] = 0.5*squareroot(trace+1.0);
+	q[3] = (q[3] > 0.0) ? q[3] : -q[3];
+	if(q[3] > 0.000000001){
+		q[0] = m[2][1] - m[1][2];
+		q[1] = m[0][2] - m[2][0];
+		q[2] = m[1][0] - m[0][1];
+	}
+}
+//in(qx,qy,qz,qw) -> out(matrix)
+void quaternion2matfour(float* q, float* m)
 {
 	//1-2*(y*y+z*z), 2*(x*y-z*w), 2*(x*z+y*w)
 	//2*(x*y+z*w), 1-2*(x*x+z*z), 2*(y*z-x*w)
@@ -168,20 +204,28 @@ void quaternion2matrix(float* q, float* m)
 	m[15] = 1.0;
 }
 //out(qx,qy,qz,qw) <- in(matrix)
-void quaternion4matrix(float* q, float* m)
+void quaternion4matfour(float* q, float (*m)[4])
 {
+	float trace = m[0][0] + m[1][1] + m[2][2];
+	q[3] = 0.5*squareroot(trace+1.0);
+	q[3] = (q[3] > 0.0) ? q[3] : -q[3];
+	if(q[3] > 0.000000001){
+		q[0] = m[2][1] - m[1][2];
+		q[1] = m[0][2] - m[2][0];
+		q[2] = m[1][0] - m[0][1];
+	}
 }
 
 
 
 
 //in(vx,vy,vz) -> out(matrix)
-void axisangle2matrix(float* a, float (*m)[3])
+void axisangle2matthree(float* a, float (*m)[3])
 {
 	//Rodrigues
 }
 //out(vx,vy,vz) <- in(matrix)
-void axisangle4matrix(float* a, float (*m)[3])
+void axisangle4matthree(float* a, float (*m)[3])
 {
 	float n;
 	a[0] = m[2][1] - m[1][2];
@@ -223,6 +267,12 @@ void axisangle4axisandangle(float* a, float* axis, float angle)
 	a[1] = axis[1] * tmp;
 	a[2] = axis[2] * tmp;
 }
+void quaternion_aa(float* v, float* aa)
+{
+	float q[4];
+	quaternion4axisangle(q, aa);
+	quaternion_rotate(v, q);
+}
 
 
 
@@ -261,13 +311,85 @@ void eulerian4quaternion(float* e, float* q)
 
 
 
-//in(matrix) -> out(qx,qy,qz,qw)
-void matrix2quaternion(float* m, float* q)
+//in(m3) -> out(vx,vy,vz)
+void matthree2axisangle(float (*m)[3], float* a)
 {
-	quaternion4matrix(q, m);
+	axisangle4matthree(a, m);
 }
-//out(matrix) <- in(qx,qy,qz,qw)
-void matrix4quaternion(float* m, float* q)
+//out(m3) -> in(vx,vy,vz)
+void matthree4axisangle(float (*m)[3], float* a)
 {
-	quaternion2matrix(q, m);
+	axisangle2matthree(a, m);
+}
+//in(m3) -> out(qx,qy,qz,qw)
+void matthree2quaternion(float (*m)[3], float* q)
+{
+	quaternion4matthree(q, m);
+}
+//out(m3) <- in(qx,qy,qz,qw)
+void matthree4quaternion(float* m, float* q)
+{
+	quaternion2matthree(q, m);
+}
+//in(m3) -> out(m4)
+void matthree2matfour(float* m3, float* m4)
+{
+	m4[ 0] = m3[0];
+	m4[ 1] = m3[1];
+	m4[ 2] = m3[2];
+	m4[ 3] = 0.0;
+
+	m4[ 4] = m3[3];
+	m4[ 5] = m3[4];
+	m4[ 6] = m3[5];
+	m4[ 7] = 0.0;
+
+	m4[ 8] = m3[6];
+	m4[ 9] = m3[7];
+	m4[10] = m3[8];
+	m4[11] = 0.0;
+
+	m4[12] = 0.0;
+	m4[13] = 0.0;
+	m4[14] = 0.0;
+	m4[15] = 1.0;
+}
+//out(m3) <- in(m4)
+void matthree4matfour(float* m3, float* m4)
+{
+	m3[0] = m4[0];
+	m3[1] = m4[1];
+	m3[2] = m4[2];
+
+	m3[3] = m4[4];
+	m3[4] = m4[5];
+	m3[5] = m4[6];
+
+	m3[6] = m4[8];
+	m3[7] = m4[9];
+	m3[8] = m4[10];
+}
+
+
+
+
+//in(m4) -> out(qx,qy,qz,qw)
+void matfour2quaternion(float (*m)[4], float* q)
+{
+	quaternion4matfour(q, m);
+}
+//out(m4) <- in(qx,qy,qz,qw)
+void matfour4quaternion(float* m, float* q)
+{
+	quaternion2matfour(q, m);
+}
+//in(m4) -> out(m3)
+void matfour2matthree(float* m4, float* m3)
+{
+	matthree4matfour(m3, m4);
+}
+//out(m4) <- in(m3)
+void matfour4matthree(float* m4, float* m3)
+{
+	matthree2matfour(m3, m4);
 }

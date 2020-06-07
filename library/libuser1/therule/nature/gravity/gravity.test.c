@@ -2,21 +2,20 @@
 #define TIME data0
 #define FLAG data1
 #define TEST data2
-#define THAT data3
-void  inertia_tensor_of_block(mat3 Ival, mat3 Iinv, float M, float lx, float ly, float lz);
+void inertia_tensor_of_block(mat3 Ival, mat3 Iinv, float M, float lx, float ly, float lz);
 void mat3_transposefrom(void* o, void* i);
 void mat3_multiplyfrom(void* o, void* l, void* r);
+void quaternion_multiplyfrom(void* o, void* l, void* r);
 
 
 
 
 void gravtest_resistance(struct style* geom)
 {
-	float a = -geom->fm.angular_v[3];
-
-	geom->fm.angular_a[0] = geom->fm.angular_v[0] * a;
-	geom->fm.angular_a[1] = geom->fm.angular_v[1] * a;
-	geom->fm.angular_a[2] = geom->fm.angular_v[2] * a;
+	float na = -geom->fm.angular_v[3];
+	geom->fm.angular_a[0] = geom->fm.angular_v[0] * na;
+	geom->fm.angular_a[1] = geom->fm.angular_v[1] * na;
+	geom->fm.angular_a[2] = geom->fm.angular_v[2] * na;
 
 	geom->fm.displace_a[0] = -geom->fm.displace_v[0] * 0.1;
 	geom->fm.displace_a[1] = -geom->fm.displace_v[1] * 0.1;
@@ -75,7 +74,7 @@ void inertiatensor_angularalpha(vec3 a, vec3 t, mat3 m)
 	a[1] = m[1][0]*t[1] + m[1][1]*t[1] + m[1][2]*t[1];
 	a[2] = m[2][0]*t[2] + m[2][1]*t[2] + m[2][2]*t[2];
 }
-void gravtest_realforce(struct style* geom, int key)
+void gravtest_realforce(struct style* geom)
 {
 	float mass = 1.0;
 	mat3 localinverse;	//inverse inertia
@@ -120,8 +119,8 @@ void gravtest_realforce(struct style* geom, int key)
 	worldforce[3][1] = geom->fs.vt[1] * f;
 	worldforce[3][2] = geom->fs.vt[2] * f;
 */
-	vec4* worldvector = geom->ft.where;
-	vec4* worldforce = geom->ft.force;
+	vec4* worldvector = geom->where;
+	vec4* worldforce = geom->force;
 
 	vec3 worldtorque[4];
 	vec3_cross(worldtorque[0], worldvector[0], worldforce[0]);
@@ -151,9 +150,10 @@ void gravtest_realforce(struct style* geom, int key)
 
 int gravtest_effect(struct style* geom, float dt)
 {
-	vec4 v,q;
-	float a,i,c,s;
+	vec4 v,ql,qr;
+	float a,invn,sbyn;
 	struct fmotion* final = &geom->fm;
+	float* q = geom->fm.angular_x;
 
 
 	//angular
@@ -168,24 +168,37 @@ int gravtest_effect(struct style* geom, float dt)
 
 	//helper
 	a = vec3_getlen(v);
-	i = 1.0 / a;
-	c = cosine(a);
-	s = sine(a);
+	invn = 1.0 / a;
+	sbyn = sine(a/2) * invn;
+	final->angular_v[0] = v[0] * invn;
+	final->angular_v[1] = v[1] * invn;
+	final->angular_v[2] = v[2] * invn;
+	final->angular_v[3] = a;
 
 	//quaternion
-	q[0] = v[0] * s * i;
-	q[1] = v[1] * s * i;
-	q[2] = v[2] * s * i;
-	q[3] = c;
-	quaternion_rotate(geom->fs.vr, q);
-	quaternion_rotate(geom->fs.vf, q);
-	quaternion_rotate(geom->fs.vt, q);
+	ql[0] = v[0] * sbyn;
+	ql[1] = v[1] * sbyn;
+	ql[2] = v[2] * sbyn;
+	ql[3] = cosine(a/2);
+	qr[0] = geom->fm.angular_x[0];
+	qr[1] = geom->fm.angular_x[1];
+	qr[2] = geom->fm.angular_x[2];
+	qr[3] = geom->fm.angular_x[3];
+	quaternion_multiplyfrom(geom->fm.angular_x, ql, qr);
+	quaternion_normalize(geom->fm.angular_x);
 
-	//write back
-	final->angular_v[0] = v[0] * i;
-	final->angular_v[1] = v[1] * i;
-	final->angular_v[2] = v[2] * i;
-	final->angular_v[3] = a;
+	//writeback attitude
+	geom->fshape.vr[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
+	geom->fshape.vr[1] = 2.0 * (q[0]*q[1] + q[2]*q[3]);
+	geom->fshape.vr[2] = 2.0 * (q[0]*q[2] - q[1]*q[3]);
+
+	geom->fshape.vf[0] = 2.0 * (q[0]*q[1] - q[2]*q[3]);
+	geom->fshape.vf[1] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
+	geom->fshape.vf[2] = 2.0 * (q[1]*q[2] + q[0]*q[3]);
+
+	geom->fshape.vt[0] = 2.0 * (q[0]*q[2] + q[1]*q[3]);
+	geom->fshape.vt[1] = 2.0 * (q[1]*q[2] - q[0]*q[3]);
+	geom->fshape.vt[2] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
 
 
 	//displacement
@@ -204,6 +217,7 @@ int gravtest_effect(struct style* geom, float dt)
 	}
 	//say("%f,%f\n", final->displace_v[2], final->displace_x[2]);
 
+	//writeback position
 	geom->fs.vc[0] = final->displace_x[0];
 	geom->fs.vc[1] = final->displace_x[1];
 	geom->fs.vc[2] = final->displace_x[2];
@@ -236,8 +250,8 @@ int gravtest_foreach(struct entity* ent)
 		geom = rel->psrcfoot;
 		if(ent->TEST){
 			//gravtest_testforce(geom);
-			gravtest_realforce(geom, ent->THAT);
-			ent->TEST--;
+			gravtest_realforce(geom);
+			if(ent->TEST < 0x80000000)ent->TEST--;
 		}
 		else{
 			gravtest_resistance(geom);
@@ -264,8 +278,11 @@ int gravtest_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u
 	//say("@gravtest_write:%.4s\n",&foot);
 	if(_clk_ == foot)gravtest_foreach(ent);
 	if(_ioby_ == foot){
-		ent->TEST += 16;
-		ent->THAT = buf[0];
+		switch(buf[0]){
+			case '1':ent->TEST = 0xffffffff;break;
+			case '0':ent->TEST = 0;break;
+			default:ent->TEST += 16;
+		}
 	}
 	return 0;
 }
