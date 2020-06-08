@@ -13,23 +13,42 @@ void quaternion2eulerian(float* q, float* eulerian);
 
 
 
+#define Ap 10.0
 float carcon_pidloop_angle(struct entity* ent, vec3 front)
 {
 	vec3 vf;
 	vec3_normalizefrom(vf, front);
+	float actual =-arctan2(vf[0], vf[1]);
+	float differ = ent->expect_x - actual;
+	if(differ > PI)differ -= tau;
+	if(differ <-PI)differ += tau;
+say("x_desire = %f\n", ent->expect_x);
+say("x_actual = %f\n", actual);
+say("x_differ = %f\n", differ);
 
-	float a = arctan2(vf[0], vf[1]) - ent->expect_x;
-	if(a > PI)a -= PI*2;
-	else if(a <-PI)a += PI*2;
+	return Ap*differ;
+}
+#define Kp 10.0
+#define Ki 0.1
+#define Kd 0.1
+float carcon_pidloop_speed(struct entity* ent, struct style* sty, float expect)
+{
+	float* v = sty->actual.angular_v;
+	float actual = v[3];
+	if(v[2] < 0.0)actual = -actual;
 
 	ent->e2 = ent->e1;
 	ent->e1 = ent->e0;
-	ent->e0 = a;
-	ent->integral += ent->e0;
+	ent->e0 = expect - actual;
 
-#define Kp 0.1
-#define Ki 0.000002
-#define Kd 2.0
+	ent->integral *= 0.99;
+	ent->integral += ent->e0;
+	if(ent->integral <-Kp*100.0)ent->integral =-Kp*100.0;
+	if(ent->integral > Kp*100.0)ent->integral = Kp*100.0;
+say("v_desire = %f\n", expect);
+say("v_actual = %f\n", actual);
+say("v_differ = %f\n", ent->e0);
+
 	return Kp*ent->e0 + Ki*ent->integral + Kd*(ent->e0 - ent->e1);
 }
 void carcon_applyforce(struct entity* ent)
@@ -40,14 +59,29 @@ void carcon_applyforce(struct entity* ent)
 	struct style* sty = rel->pfoot;
 	if(0 == sty)return;
 
+	float* vc = sty->fs.vc;
 	float* vr = sty->fs.vr;
 	float* vf = sty->fs.vf;
 	float* vt = sty->fs.vt;
-	float a = carcon_pidloop_angle(ent, vf);
-	float ln =-a;
-	float rn = a;
-	float lf =-a;
-	float rf = a;
+	float v = carcon_pidloop_angle(ent, vf);
+	say("x_pidout = %f\n",v);
+	float a = carcon_pidloop_speed(ent, sty, v);
+	say("v_pidout = %f\n",a);
+
+	float ln = 0.1 - a;
+	float rn = 0.1 + a;
+	float lf = 0.0 - a;
+	float rf = 0.0 + a;
+#define MAXVAL 1e+6
+	if(ln > MAXVAL)ln = MAXVAL;
+	if(ln <-MAXVAL)ln =-MAXVAL;
+	if(rn > MAXVAL)rn = MAXVAL;
+	if(rn <-MAXVAL)rn =-MAXVAL;
+	if(lf > MAXVAL)lf = MAXVAL;
+	if(lf <-MAXVAL)lf =-MAXVAL;
+	if(rf > MAXVAL)rf = MAXVAL;
+	if(rf <-MAXVAL)rf =-MAXVAL;
+	say("ln,rn,lf,rf = %f,%f,%f,%f\n",ln,rn,lf,rf);
 
 	sty->force[0][0] = vf[0] * ln;
 	sty->force[0][1] = vf[1] * ln;

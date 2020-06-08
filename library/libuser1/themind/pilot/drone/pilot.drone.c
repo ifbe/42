@@ -18,48 +18,33 @@ void flycon_pidloop_position(struct entity* ent, struct style* sty)
 void flycon_pidloop_velocity(struct entity* ent, struct style* sty)
 {
 }
+#define ATT_p 50.0
 void flycon_pidloop_attitude(struct entity* ent, struct style* sty)
 {
-/*
-	//Mx = M? * M0 -> M? = Mx * M0.transpose
-	float n;
-	mat3 m;
-	struct fstyle* fs = &sty->fshape;
-	n = 1.0 / vec3_getlen(fs->vr);
-	m[0][0] = fs->vr[0] * n;
-	m[1][0] = fs->vr[1] * n;
-	m[2][0] = fs->vr[2] * n;
-	n = 1.0 / vec3_getlen(fs->vf);
-	m[0][1] = fs->vf[0] * n;
-	m[1][1] = fs->vf[1] * n;
-	m[2][1] = fs->vf[2] * n;
-	n = 1.0 / vec3_getlen(fs->vt);
-	m[0][2] = fs->vt[0] * n;
-	m[1][2] = fs->vt[1] * n;
-	m[2][2] = fs->vt[2] * n;
-	mat3_transpose(m);
-	//mat3_multiplyfrom(result, expect, m);
-	matthree2axisangle(m, v);
-*/
 	float* expect = sty->expect.angular_x;
 	float* actual = sty->actual.angular_x;
 	vec4 inverse = {-actual[0],-actual[1],-actual[2],actual[3]};
-	say("new: %f,%f,%f,%f\n", expect[0], expect[1], expect[2], expect[3]);
-	say("now: %f,%f,%f,%f\n", actual[0], actual[1], actual[2], actual[3]);
-	say("inv: %f,%f,%f,%f\n",inverse[0],inverse[1],inverse[2],inverse[3]);
+	say("x_desire: %f,%f,%f,%f\n", expect[0], expect[1], expect[2], expect[3]);
+	say("x_actual: %f,%f,%f,%f\n", actual[0], actual[1], actual[2], actual[3]);
 
 	//expect = Q? * actual -> Q? = expect * actual.inverse
 	vec4 q;
 	quaternion_multiplyfrom(q, expect, inverse);
-	say("q-+: %f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
+	say("x_differ: %f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
 
 	float* v = sty->expect.angular_v;
 	quaternion2axisangle(q, v);
+	v[0] *= ATT_p;
+	v[1] *= ATT_p;
+	v[2] *= ATT_p;
 	say("att: %f,%f,%f\n", v[0],v[1],v[2]);
 }
+#define Kp 100.0
+#define Ki 0.0001
+#define Kd 1.0
 void flycon_pidloop_palstance(struct entity* ent, struct style* sty)
 {
-	vec3 e0;
+	vec4 e0;
 	float* e1 = &ent->fx0;
 	float* e2 = &ent->fxn;
 	float* src = sty->fmotion.angular_v;
@@ -68,11 +53,10 @@ void flycon_pidloop_palstance(struct entity* ent, struct style* sty)
 	e0[0] = dst[0] - src[0];
 	e0[1] = dst[1] - src[1];
 	e0[2] = dst[2] - src[2];
-	say("v-+: %f,%f,%f\n",e0[0],e0[1],e0[2]);
+	say("v_desire: %f,%f,%f,%f\n",dst[0],dst[1],dst[2],dst[3]);
+	say("v_actual: %f,%f,%f,%f\n",src[0],src[1],src[2],src[3]);
+	say("v_differ: %f,%f,%f\n",e0[0],e0[1],e0[2]);
 
-#define Kp 1.0
-#define Ki 0.000002
-#define Kd 0.02
 	dv[0] += Kp*(e0[0]-e1[0]) + Ki*e0[0] + Kd*(e0[0]+e2[0]-e1[0]*2);
 	dv[1] += Kp*(e0[1]-e1[1]) + Ki*e0[1] + Kd*(e0[1]+e2[1]-e1[1]*2);
 	dv[2] += Kp*(e0[2]-e1[2]) + Ki*e0[2] + Kd*(e0[2]+e2[2]-e1[2]*2);
@@ -104,24 +88,8 @@ void flycon_accel2force(float* ln, float* rn, float* lf, float* rf, struct style
 	*ln -= (accel[0]-accel[1]) * 0.001;
 	*rf += (accel[0]-accel[1]) * 0.001;
 }
-void flycon_applyforce(struct entity* ent)
+void flycon_force2motor(float ln, float rn, float lf, float rf, struct style* sty)
 {
-	struct halfrel* rel = ent->REL_WORLD;
-	if(0 == rel)return;
-
-	struct style* sty = rel->pfoot;
-	if(0 == sty)return;
-
-	flycon_pidloop_position(ent, sty);
-	flycon_pidloop_attitude(ent, sty);
-	flycon_pidloop_palstance(ent, sty);
-
-	float ln = 2.5;
-	float rn = 2.5;
-	float lf = 2.5;
-	float rf = 2.5;
-	flycon_accel2force(&ln, &rn, &lf, &rf, sty);
-
 	float* vr = sty->fs.vr;
 	float* vf = sty->fs.vf;
 	float* vt = sty->fs.vt;
@@ -150,6 +118,34 @@ void flycon_applyforce(struct entity* ent)
 	sty->where[3][0] = vr[0] +vf[0];
 	sty->where[3][1] = vr[1] +vf[1];
 	sty->where[3][2] = vr[2] +vf[2];
+}
+void flycon_applyforce(struct entity* ent)
+{
+	struct halfrel* rel = ent->REL_WORLD;
+	if(0 == rel)return;
+
+	struct style* sty = rel->pfoot;
+	if(0 == sty)return;
+
+	flycon_pidloop_position(ent, sty);
+	flycon_pidloop_attitude(ent, sty);
+	flycon_pidloop_palstance(ent, sty);
+
+	float ln = 2.5;
+	float rn = 2.5;
+	float lf = 2.5;
+	float rf = 2.5;
+	flycon_accel2force(&ln,&rn,&lf,&rf, sty);
+	if(ln > 1e+6)ln = 1e+6;
+	if(ln <-1e+6)ln =-1e+6;
+	if(rn > 1e+6)rn = 1e+6;
+	if(rn <-1e+6)rn =-1e+6;
+	if(lf > 1e+6)lf = 1e+6;
+	if(lf <-1e+6)lf =-1e+6;
+	if(rf > 1e+6)rf = 1e+6;
+	if(rf <-1e+6)rf =-1e+6;
+	say("ln,rn,lf,rf = %f,%f,%f,%f\n",ln,rn,lf,rf);
+	flycon_force2motor( ln, rn, lf, rf, sty);
 }
 void flycon_checkplace(struct entity* ent)
 {

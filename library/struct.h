@@ -351,6 +351,7 @@ struct style
 
 	//[180, 1ff]: notsure motion (collision test?)
 	union{
+		struct fmotion desire;
 		struct fmotion expect;
 	};
 
