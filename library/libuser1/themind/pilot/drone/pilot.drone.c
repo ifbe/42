@@ -7,19 +7,19 @@ void quaternion_multiplyfrom(float* o, float* l, float* r);
 
 
 
-void flycon_pidloop_position(struct entity* ent, struct style* sty)
+void flycon_pidloop_position2attitude(struct entity* ent, struct style* sty)
 {
 	float* expect = sty->expect.angular_x;
 	expect[0] = 0.0;
 	expect[1] = 0.0;
-	expect[2] = 0.0;
-	expect[3] = 1.0;
+	expect[2] = 0.5;
+	expect[3] = 0.833;
 }
 void flycon_pidloop_velocity(struct entity* ent, struct style* sty)
 {
 }
-#define ATT_p 50.0
-void flycon_pidloop_attitude(struct entity* ent, struct style* sty)
+#define ATT_p 100.0
+void flycon_pidloop_attitude2palstance(struct entity* ent, struct style* sty)
 {
 	float* expect = sty->expect.angular_x;
 	float* actual = sty->actual.angular_x;
@@ -32,24 +32,40 @@ void flycon_pidloop_attitude(struct entity* ent, struct style* sty)
 	quaternion_multiplyfrom(q, expect, inverse);
 	say("x_differ: %f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
 
+	//only P, no I,D
 	float* v = sty->expect.angular_v;
 	quaternion2axisangle(q, v);
 	v[0] *= ATT_p;
 	v[1] *= ATT_p;
 	v[2] *= ATT_p;
-	say("att: %f,%f,%f\n", v[0],v[1],v[2]);
+	say("x_pidout: %f,%f,%f\n", v[0],v[1],v[2]);
 }
-#define Kp 100.0
+#define Kp 1.0
 #define Ki 0.0001
-#define Kd 1.0
-void flycon_pidloop_palstance(struct entity* ent, struct style* sty)
+#define Kd 0.5
+void flycon_pidloop_palstance2accelerate(struct entity* ent, struct style* sty)
 {
+	float nxn,tmp;
+	vec4 src,dst;
+	float* top = sty->fshape.vt;
+	nxn = 1.0 / (top[0]*top[0] + top[1]*top[1] + top[2]*top[2]);
+
+	//actual: seprate pitch_x,roll_y and yaw_z
+	float* now = sty->actual.angular_v;
+	tmp = 0.9 * (top[0]*now[0] + top[1]*now[1] + top[2]*now[2]) * nxn;
+	src[0] = now[0] - top[0] * tmp;
+	src[1] = now[1] - top[1] * tmp;
+	src[2] = now[2] - top[2] * tmp;
+
+	//desire: seprate pitch_x,roll_y and yaw_z
+	float* new = sty->expect.angular_v;
+	tmp = 0.9 * (top[0]*new[0] + top[1]*new[1] + top[2]*new[2]) * nxn;
+	dst[0] = new[0] - top[0] * tmp;
+	dst[1] = new[1] - top[1] * tmp;
+	dst[2] = new[2] - top[2] * tmp;
+
+	//differ: desire - actual
 	vec4 e0;
-	float* e1 = &ent->fx0;
-	float* e2 = &ent->fxn;
-	float* src = sty->fmotion.angular_v;
-	float* dst = sty->expect.angular_v;
-	float* dv = sty->expect.angular_a;
 	e0[0] = dst[0] - src[0];
 	e0[1] = dst[1] - src[1];
 	e0[2] = dst[2] - src[2];
@@ -57,11 +73,16 @@ void flycon_pidloop_palstance(struct entity* ent, struct style* sty)
 	say("v_actual: %f,%f,%f,%f\n",src[0],src[1],src[2],src[3]);
 	say("v_differ: %f,%f,%f\n",e0[0],e0[1],e0[2]);
 
-	dv[0] += Kp*(e0[0]-e1[0]) + Ki*e0[0] + Kd*(e0[0]+e2[0]-e1[0]*2);
-	dv[1] += Kp*(e0[1]-e1[1]) + Ki*e0[1] + Kd*(e0[1]+e2[1]-e1[1]*2);
-	dv[2] += Kp*(e0[2]-e1[2]) + Ki*e0[2] + Kd*(e0[2]+e2[2]-e1[2]*2);
-	say("wor: %f,%f,%f\n",dv[0],dv[1],dv[2]);
+	//pidout: compute
+	float* e1 = &ent->fx0;
+	float* e2 = &ent->fxn;
+	float* out = sty->expect.angular_a;
+	out[0] += Kp*(e0[0]-e1[0]) + Ki*e0[0] + Kd*(e0[0]+e2[0]-e1[0]*2);
+	out[1] += Kp*(e0[1]-e1[1]) + Ki*e0[1] + Kd*(e0[1]+e2[1]-e1[1]*2);
+	out[2] += Kp*(e0[2]-e1[2]) + Ki*e0[2] + Kd*(e0[2]+e2[2]-e1[2]*2);
+	say("v_pidout: %f,%f,%f\n",out[0],out[1],out[2]);
 
+	//pidval: update
 	e2[0] = e1[0];
 	e2[1] = e1[1];
 	e2[2] = e1[2];
@@ -83,28 +104,41 @@ void flycon_accel2force(float* ln, float* rn, float* lf, float* rf, struct style
 	accel[2] = vt[0]*accel_w[0] + vt[1]*accel_w[1] + vt[2]*accel_w[2];	//ignore yaw_z
 	say("loc: %f,%f,%f\n",accel[0],accel[1],accel[2]);
 
-	*rn -= (accel[0]+accel[1]) * 0.001;
-	*lf += (accel[0]+accel[1]) * 0.001;
-	*ln -= (accel[0]-accel[1]) * 0.001;
-	*rf += (accel[0]-accel[1]) * 0.001;
+	*rn +=-accel[0] - accel[1] + accel[2]*0.1;
+	*lf += accel[0] + accel[1] + accel[2]*0.1;
+	*ln +=-accel[0] + accel[1] - accel[2]*0.1;
+	*rf += accel[0] - accel[1] - accel[2]*0.1;
 }
 void flycon_force2motor(float ln, float rn, float lf, float rf, struct style* sty)
 {
+	vec3 yaw;
 	float* vr = sty->fs.vr;
 	float* vf = sty->fs.vf;
 	float* vt = sty->fs.vt;
-	sty->force[0][0] = vt[0] * ln;
-	sty->force[0][1] = vt[1] * ln;
-	sty->force[0][2] = vt[2] * ln;
-	sty->force[1][0] = vt[0] * rn;
-	sty->force[1][1] = vt[1] * rn;
-	sty->force[1][2] = vt[2] * rn;
-	sty->force[2][0] = vt[0] * lf;
-	sty->force[2][1] = vt[1] * lf;
-	sty->force[2][2] = vt[2] * lf;
-	sty->force[3][0] = vt[0] * rf;
-	sty->force[3][1] = vt[1] * rf;
-	sty->force[3][2] = vt[2] * rf;
+	yaw[0] = (-vr[0]+vf[0])/10.0;
+	yaw[1] = (-vr[1]+vf[1])/10.0;
+	yaw[2] = (-vr[2]+vf[2])/10.0;
+	sty->force[0][0] = (vt[0]+yaw[0]) * ln;
+	sty->force[0][1] = (vt[1]+yaw[1]) * ln;
+	sty->force[0][2] = (vt[2]+yaw[2]) * ln;
+	yaw[0] = (vr[0]+vf[0])/10.0;
+	yaw[1] = (vr[1]+vf[1])/10.0;
+	yaw[2] = (vr[2]+vf[2])/10.0;
+	sty->force[1][0] = (vt[0]+yaw[0]) * rn;
+	sty->force[1][1] = (vt[1]+yaw[1]) * rn;
+	sty->force[1][2] = (vt[2]+yaw[2]) * rn;
+	yaw[0] = (-vr[0]-vf[0])/10.0;
+	yaw[1] = (-vr[1]-vf[1])/10.0;
+	yaw[2] = (-vr[2]-vf[2])/10.0;
+	sty->force[2][0] = (vt[0]+yaw[0]) * lf;
+	sty->force[2][1] = (vt[1]+yaw[1]) * lf;
+	sty->force[2][2] = (vt[2]+yaw[2]) * lf;
+	yaw[0] = (vr[0]-vf[0])/10.0;
+	yaw[1] = (vr[1]-vf[1])/10.0;
+	yaw[2] = (vr[2]-vf[2])/10.0;
+	sty->force[3][0] = (vt[0]+yaw[0]) * rf;
+	sty->force[3][1] = (vt[1]+yaw[1]) * rf;
+	sty->force[3][2] = (vt[2]+yaw[2]) * rf;
 
 	sty->where[0][0] =-vr[0] -vf[0];
 	sty->where[0][1] =-vr[1] -vf[1];
@@ -127,14 +161,14 @@ void flycon_applyforce(struct entity* ent)
 	struct style* sty = rel->pfoot;
 	if(0 == sty)return;
 
-	flycon_pidloop_position(ent, sty);
-	flycon_pidloop_attitude(ent, sty);
-	flycon_pidloop_palstance(ent, sty);
+	flycon_pidloop_position2attitude(ent, sty);
+	flycon_pidloop_attitude2palstance(ent, sty);
+	flycon_pidloop_palstance2accelerate(ent, sty);
 
-	float ln = 2.5;
-	float rn = 2.5;
-	float lf = 2.5;
-	float rf = 2.5;
+	float ln = 2.4;
+	float rn = 2.4;
+	float lf = 2.4;
+	float rf = 2.4;
 	flycon_accel2force(&ln,&rn,&lf,&rf, sty);
 	if(ln > 1e+6)ln = 1e+6;
 	if(ln <-1e+6)ln =-1e+6;
@@ -169,6 +203,20 @@ void flycon_checkplace(struct entity* ent)
 		rel = samedstnextsrc(rel);
 	}
 }
+void flycon_changedesire(struct entity* ent, float angle)
+{
+	struct halfrel* rel = ent->REL_WORLD;
+	if(0 == rel)return;
+
+	struct style* sty = rel->pfoot;
+	if(0 == sty)return;
+
+	float* expect = sty->expect.angular_x;
+	expect[0] = 0.0;
+	expect[1] = 0.0;
+	expect[2] = sine(angle/2);
+	expect[3] = cosine(angle/2);
+}
 
 
 
@@ -184,6 +232,10 @@ int flycon_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8*
 	if(_clk_ == foot){
 		flycon_checkplace(ent);
 		flycon_applyforce(ent);
+	}
+	if(_evby_ == foot){
+		flycon_checkplace(ent);
+		flycon_changedesire(ent, buf[0]*PI/50 - PI);
 	}
 	return 0;
 }

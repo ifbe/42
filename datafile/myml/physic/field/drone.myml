@@ -22,6 +22,9 @@ fmt:freecam
 world{
 fmt:virtual
 }
+slider{
+fmt:slider
+}
 
 control{
 fmt:flycon
@@ -118,6 +121,10 @@ N: 0.0, 0.0, 0.0, 0.01
 F: 0.0, 0.0, 0.0, 1000000000.0
 }
 
+uiuxrect{
+c:0.0, 0.0
+q:0.3, 0.3
+}
 aaaarect{
 c:0.0, 0.0
 q:1.0, 1.0
@@ -133,6 +140,10 @@ q:1.0, 1.0
 (world, gndgeom, 0) -> (gnd, gndpart, 0)
 (world, aaaageom, 0) -> (cam0, aaaapart, 0)
 (opengl, aaaarect, 0) -> (cam0, 0, a0)
+(opengl, uiuxrect, 0) -> (slider, 0, 0)
+
+#
+(slider, 0, evto) -> (control, 0, evby)
 
 #mouse: 3rd controller
 (event, 0, tar) -> (drone, 0, evby)

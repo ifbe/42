@@ -94,27 +94,27 @@ void gravtest_realforce(struct style* geom)
 		vec3_getlen(geom->fs.vr)*2.0,
 		vec3_getlen(geom->fs.vf)*2.0,
 		vec3_getlen(geom->fs.vt)*2.0);
-	say("localinertia:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
+/*	say("localinertia:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
 		localinertia[0][0],localinertia[0][1],localinertia[0][2],
 		localinertia[1][0],localinertia[1][1],localinertia[1][2],
 		localinertia[2][0],localinertia[2][1],localinertia[2][2]
-	);
+	);*/
 
 	mat3 worldinertia;
 	inertiatensor_local2world(worldinertia, localinertia, &geom->fshape, mass);
-	say("worldinertia:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
+/*	say("worldinertia:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
 		worldinertia[0][0],worldinertia[0][1],worldinertia[0][2],
 		worldinertia[1][0],worldinertia[1][1],worldinertia[1][2],
 		worldinertia[2][0],worldinertia[2][1],worldinertia[2][2]
-	);
+	);*/
 
 	mat3 worldinverse;
 	mat3_inverse(worldinverse, worldinertia);
-	say("worldinverse:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
+/*	say("worldinverse:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
 		worldinverse[0][0],worldinverse[0][1],worldinverse[0][2],
 		worldinverse[1][0],worldinverse[1][1],worldinverse[1][2],
 		worldinverse[2][0],worldinverse[2][1],worldinverse[2][2]
-	);
+	);*/
 
 	vec3 worldtorque[4];
 	vec3_cross(worldtorque[0], worldvector[0], worldforce[0]);
@@ -141,7 +141,7 @@ int gravtest_effect(struct style* geom, float dt)
 	float* q = geom->fm.angular_x;
 
 
-say("omega_old=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
+//say("omega_old=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
 	//omega_now
 	v[0] = final->angular_v[0] * final->angular_v[3];
 	v[1] = final->angular_v[1] * final->angular_v[3];
@@ -198,7 +198,7 @@ say("omega_old=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->ang
 		geom->fshape.vt[1] = 2.0 * (q[1]*q[2] - q[0]*q[3]);
 		geom->fshape.vt[2] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
 	}
-say("omega_new=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
+//say("omega_new=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
 
 
 	//displacement

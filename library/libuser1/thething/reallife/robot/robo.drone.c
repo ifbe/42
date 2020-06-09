@@ -42,21 +42,17 @@ static void drone_draw_gl41(
 
 
 	//debug
-	for(j=0;j<3;j++){
-		tc[j] = vc[j] + geom->expect.angular_v[j];
-		tr[j] = vr[j];
-		tf[j] = vf[j];
-	}
-	quaternion_aa(tr, geom->expect.angular_v);
-	quaternion_aa(tf, geom->expect.angular_v);
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->expect.angular_v[j];}
 	gl41line(ctx, 0xff0000, vc, tc);
-	gl41line_rect(ctx, 0xff0000, vc, tr, tf);
 
-	for(j=0;j<3;j++){
-		tc[j] = vc[j] + geom->expect.angular_a[j];
-	}
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->actual.angular_v[j];}
+	gl41line(ctx, 0xffff00, vc, tc);
+
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->expect.angular_a[j];}
 	gl41line(ctx, 0x0000ff, vc, tc);
 
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->actual.angular_a[j];}
+	gl41line(ctx, 0x00ffff, vc, tc);
 
 
 	tu[0] = vt[0] / 64;
