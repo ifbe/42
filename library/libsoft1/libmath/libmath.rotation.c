@@ -73,15 +73,17 @@ void quaternion_slerp(float* out,float* q0,float* q1,float t)
 //in(qx,qy,qz,qw) -> out(vx,vy,vz)
 void quaternion2axisangle(float* q, float* a)
 {
-	float t = arccos(q[3]) * 2.0;
-	float l = q[0]*q[0] + q[1]*q[1] + q[2]*q[2];
-	if(l < 0.001){
+	float l,t;
+
+	l = q[0]*q[0] + q[1]*q[1] + q[2]*q[2];
+	if(l < 1e-12){
 		a[0] = 0.0;
 		a[1] = 0.0;
-		a[2] = t;
+		a[2] = 1.0;
 	}
 	else{
-		t /= squareroot(l);
+		l = squareroot(l);
+		t = 2.0 * arctan2(l, q[3]) / l;
 		a[0] = q[0] * t;
 		a[1] = q[1] * t;
 		a[2] = q[2] * t;
