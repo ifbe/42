@@ -106,9 +106,9 @@ void flycon_pidloop_attitude2palstance(struct entity* ent, struct style* sty)
 	v[2] *= ATT_p;
 	say("x_pidout: %f,%f,%f\n", v[0],v[1],v[2]);
 }
-#define Kp 2.0
+#define Kp 1.0
 #define Ki 0.0001
-#define Kd 1.0
+#define Kd 0.5
 void flycon_pidloop_palstance2accelerate(struct entity* ent, struct style* sty)
 {
 	float nxn,tmp;
@@ -247,7 +247,7 @@ void flycon_applyforce(struct entity* ent)
 	float lf = 0.1;
 	float rf = 0.1;
 	flycon_accel2force(&ln,&rn,&lf,&rf, sty);
-#define MAX 1e+3
+#define MAX 10.0
 #define MIN 0.1
 	if(ln > MAX)ln = MAX;
 	if(ln < MIN)ln = MIN;
