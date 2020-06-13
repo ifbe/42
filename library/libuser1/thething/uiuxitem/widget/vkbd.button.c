@@ -1,5 +1,9 @@
 #include "libuser.h"
 #define STRBUF buf0
+void gl41data_before(struct entity* wnd);
+void gl41data_after(struct entity* wnd);
+void gl41data_01cam(struct entity* wnd);
+void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 
@@ -53,6 +57,19 @@ static void button_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		button_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
+static void button_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+{
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
+
+	gl41data_before(wnd);
+	button_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+	gl41data_01cam(wnd);
+	gl41data_after(wnd);
+}
 
 
 
@@ -65,7 +82,13 @@ static void button_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _rgba_:button_draw_pixel(ent, slot, wnd, area);break;
+	case _gl41wnd0_:
+	case _full_:
+	case _wnd_:{
+		if('v' != key)break;
+		button_read_bywnd(ent,slot, (void*)wnd,area);break;
+	}
+	case _rgba_:button_draw_pixel(ent, slot, (void*)wnd, area);break;
 	default:button_read_bycam(ent,foot, stack,sp, arg,key);
 	}
 }

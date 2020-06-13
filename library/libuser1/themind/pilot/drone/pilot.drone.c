@@ -33,7 +33,7 @@ void flycon_pidloop_position2velocity(struct entity* ent, struct style* sty)
 	say("X_differ: %f,%f,%f\n", differ[0], differ[1], differ[2]);
 	say("X_pidout: %f,%f,%f\n", pidout[0], pidout[1], pidout[2]);
 }
-#define VEL_p 1.0
+#define VEL_p 2.0
 void flycon_pidloop_velocity2attitude(struct entity* ent, struct style* sty)
 {
 	vec4 differ;
@@ -48,43 +48,57 @@ void flycon_pidloop_velocity2attitude(struct entity* ent, struct style* sty)
 	say("V_actual: %f,%f,%f\n", actual[0], actual[1], actual[2]);
 	say("V_differ: %f,%f,%f\n", differ[0], differ[1], differ[2]);
 
-
-	//world2local
-	float* vr = sty->fs.vr;
-	float* vf = sty->fs.vf;
-	float* vt = sty->fs.vt;
-	pidout[0] = vr[0]*differ[0] + vr[1]*differ[1] + vr[2]*differ[2];
-	pidout[1] = vf[0]*differ[0] + vf[1]*differ[1] + vf[2]*differ[2];
-	pidout[2] = vt[0]*differ[0] + vt[1]*differ[1] + vt[2]*differ[2];	//local thrust
-	if(pidout[0] > 100.0)pidout[0] = 100.0;
-	if(pidout[0] <-100.0)pidout[0] =-100.0;
-	if(pidout[1] > 100.0)pidout[1] = 100.0;
-	if(pidout[1] <-100.0)pidout[1] =-100.0;
-
-	float a;
+	//desired axisangle
 	vec4 v;
 	quaternion2axisangle(sty->actual.angular_x, v);
 	v[0] = 0.0;
 	v[1] = 0.0;
-	v[2] = v[2]*0.9 + 0.314*0.1;
-	a = pidout[0]*PI*0.002;	//max angle = 180*100*0.002 = 36 degree
+
+	//desired coordinate
+	vec3 vr,vf,vt;
+	float c = cosine(v[2]);
+	float s = sine(v[2]);
+
+	vr[0] = c;
+	vr[1] = s;
+	vr[2] = 0.0;
+
+	vf[0] = -s;
+	vf[1] = c;
+	vf[2] = 0.0;
+
+	vt[0] = 0.0;
+	vt[1] = 0.0;
+	vt[2] = 1.0;
+
+	//world space accel -> desire space accel
+	pidout[0] = VEL_p*(vr[0]*differ[0] + vr[1]*differ[1] + vr[2]*differ[2]);
+	pidout[1] = VEL_p*(vf[0]*differ[0] + vf[1]*differ[1] + vf[2]*differ[2]);
+	pidout[2] = VEL_p*(vt[0]*differ[0] + vt[1]*differ[1] + vt[2]*differ[2]);	//local thrust
+	if(pidout[0] > 10.0)pidout[0] = 10.0;
+	if(pidout[0] <-10.0)pidout[0] =-10.0;
+	if(pidout[1] > 10.0)pidout[1] = 10.0;
+	if(pidout[1] <-10.0)pidout[1] =-10.0;
+
+	float a;
+	a = pidout[0]*PI*0.02;	//max angle = 180*10*0.02 = 36 degree
 	v[0] += vf[0] * a;
 	v[1] += vf[1] * a;
 	v[2] += vf[2] * a;
-	a =-pidout[1]*PI*0.002;	//max angle = 180*100*0.002 = 36 degree
+	a =-pidout[1]*PI*0.02;	//max angle = 180*10*0.02 = 36 degree
 	v[0] += vr[0] * a;
 	v[1] += vr[1] * a;
 	v[2] += vr[2] * a;
 	axisangle2quaternion(v, sty->desire.angular_x);
 
 	//x,y: attitude
-	//float* expect = sty->expect.angular_x;
-	//expect[0] = 0.0;
-	//expect[1] = 0.0;
-	//expect[2] = 0.5;
-	//expect[3] = 0.833;
+/*	float* expect = sty->expect.angular_x;
+	expect[0] = 0.0;
+	expect[1] = 0.0;
+	expect[2] = 0.5;
+	expect[3] = 0.833;*/
 }
-#define ATT_p 10.0
+#define ATT_p 5.0
 void flycon_pidloop_attitude2palstance(struct entity* ent, struct style* sty)
 {
 	float* expect = sty->expect.angular_x;
@@ -106,7 +120,7 @@ void flycon_pidloop_attitude2palstance(struct entity* ent, struct style* sty)
 	v[2] *= ATT_p;
 	say("x_pidout: %f,%f,%f\n", v[0],v[1],v[2]);
 }
-#define Kp 1.0
+#define Kp 2.0
 #define Ki 0.0001
 #define Kd 0.5
 void flycon_pidloop_palstance2accelerate(struct entity* ent, struct style* sty)
@@ -237,6 +251,10 @@ void flycon_applyforce(struct entity* ent)
 	struct style* sty = rel->pfoot;
 	if(0 == sty)return;
 
+	//sty->expect.angular_x[0] = 0.0;
+	//sty->expect.angular_x[1] = 0.0;
+	//sty->expect.angular_x[2] = 0.0;
+	//sty->expect.angular_x[3] = 1.0;
 	flycon_pidloop_position2velocity(ent, sty);
 	flycon_pidloop_velocity2attitude(ent, sty);
 	flycon_pidloop_attitude2palstance(ent, sty);
@@ -247,7 +265,7 @@ void flycon_applyforce(struct entity* ent)
 	float lf = 0.1;
 	float rf = 0.1;
 	flycon_accel2force(&ln,&rn,&lf,&rf, sty);
-#define MAX 10.0
+#define MAX 5.0
 #define MIN 0.1
 	if(ln > MAX)ln = MAX;
 	if(ln < MIN)ln = MIN;

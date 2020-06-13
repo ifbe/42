@@ -41,7 +41,19 @@ static void drone_draw_gl41(
 
 
 
+
 	//debug
+	float* q = geom->expect.angular_x;
+	tr[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
+	tr[1] = 2.0 * (q[0]*q[1] + q[2]*q[3]);
+	tr[2] = 2.0 * (q[0]*q[2] - q[1]*q[3]);
+	vec3_setlen(tr, 1.0);
+	tf[0] = 2.0 * (q[0]*q[1] - q[2]*q[3]);
+	tf[1] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
+	tf[2] = 2.0 * (q[1]*q[2] + q[0]*q[3]);
+	vec3_setlen(tf, 1.0);
+	gl41line_rect(ctx, 0x00ff00, vc, tr, tf);
+
 	for(j=0;j<3;j++){tc[j] = vc[j] + geom->expect.angular_v[j];}
 	gl41line(ctx, 0xff0000, vc, tc);
 
@@ -53,6 +65,8 @@ static void drone_draw_gl41(
 
 	for(j=0;j<3;j++){tc[j] = vc[j] + geom->actual.angular_a[j];}
 	gl41line(ctx, 0x00ffff, vc, tc);
+
+
 
 
 	tu[0] = vt[0] / 64;
