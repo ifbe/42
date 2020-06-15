@@ -91,9 +91,9 @@ void gravtest_realforce(struct style* geom)
 
 	mat3 localinertia;
 	inertia_tensor_of_block(localinertia, 0, mass,
-		vec3_getlen(geom->fs.vr)*2.0,
-		vec3_getlen(geom->fs.vf)*2.0,
-		vec3_getlen(geom->fs.vt)*2.0);
+		geom->fs.vr[3]*2.0,
+		geom->fs.vf[3]*2.0,
+		geom->fs.vt[3]*2.0);
 /*	say("localinertia:\n%f,%f,%f\n%f,%f,%f\n%f,%f,%f\n",
 		localinertia[0][0],localinertia[0][1],localinertia[0][2],
 		localinertia[1][0],localinertia[1][1],localinertia[1][2],
@@ -186,17 +186,20 @@ int gravtest_effect(struct style* geom, float dt)
 		//say("q!=%f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
 
 		//writeback attitude
-		geom->fshape.vr[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
-		geom->fshape.vr[1] = 2.0 * (q[0]*q[1] + q[2]*q[3]);
-		geom->fshape.vr[2] = 2.0 * (q[0]*q[2] - q[1]*q[3]);
+		a = geom->fshape.vr[3];
+		geom->fshape.vr[0] = a * (1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0);
+		geom->fshape.vr[1] = a * (2.0 * (q[0]*q[1] + q[2]*q[3]));
+		geom->fshape.vr[2] = a * (2.0 * (q[0]*q[2] - q[1]*q[3]));
 
-		geom->fshape.vf[0] = 2.0 * (q[0]*q[1] - q[2]*q[3]);
-		geom->fshape.vf[1] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
-		geom->fshape.vf[2] = 2.0 * (q[1]*q[2] + q[0]*q[3]);
+		a = geom->fshape.vf[3];
+		geom->fshape.vf[0] = a * (2.0 * (q[0]*q[1] - q[2]*q[3]));
+		geom->fshape.vf[1] = a * (1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0);
+		geom->fshape.vf[2] = a * (2.0 * (q[1]*q[2] + q[0]*q[3]));
 
-		geom->fshape.vt[0] = 2.0 * (q[0]*q[2] + q[1]*q[3]);
-		geom->fshape.vt[1] = 2.0 * (q[1]*q[2] - q[0]*q[3]);
-		geom->fshape.vt[2] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
+		a = geom->fshape.vt[3];
+		geom->fshape.vt[0] = a * (2.0 * (q[0]*q[2] + q[1]*q[3]));
+		geom->fshape.vt[1] = a * (2.0 * (q[1]*q[2] - q[0]*q[3]));
+		geom->fshape.vt[2] = a * (1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0);
 	}
 //say("omega_new=%f,%f,%f,%f\n",final->angular_v[0],final->angular_v[1],final->angular_v[2],final->angular_v[3]);
 

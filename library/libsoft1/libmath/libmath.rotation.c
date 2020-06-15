@@ -92,12 +92,21 @@ void quaternion2axisangle(float* q, float* a)
 //out(qx,qy,qz,qw) <- in(vx,vy,vz)
 void quaternion4axisangle(float* q, float* a)
 {
-	float angle = squareroot(a[0]*a[0] + a[1]*a[1] * a[2]*a[2]);
-	float sinbynorm = sine(angle/2) / angle;
-	q[0] = a[0] * sinbynorm;
-	q[1] = a[1] * sinbynorm;
-	q[2] = a[2] * sinbynorm;
-	q[3] = cosine(angle/2);
+	float n2 = a[0]*a[0] + a[1]*a[1] * a[2]*a[2];
+	if(n2 < 1e-18){
+		q[0] = 0.0;
+		q[1] = 0.0;
+		q[2] = 0.0;
+		q[3] = 1.0;
+	}
+	else{
+		float angle = squareroot(n2);
+		float sinbynorm = sine(angle/2) / angle;
+		q[0] = a[0] * sinbynorm;
+		q[1] = a[1] * sinbynorm;
+		q[2] = a[2] * sinbynorm;
+		q[3] = cosine(angle/2);
+	}
 }
 //in(qx,qy,qz,qw) -> out((vx,vy,vz),angle)
 void quaternion2axisandangle(float* q, float* axis, float* angle)

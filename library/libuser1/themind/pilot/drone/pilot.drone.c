@@ -33,14 +33,15 @@ void flycon_pidloop_position2velocity(struct entity* ent, struct style* sty)
 	say("X_differ: %f,%f,%f\n", differ[0], differ[1], differ[2]);
 	say("X_pidout: %f,%f,%f\n", pidout[0], pidout[1], pidout[2]);
 }
-#define VEL_p 2.0
-void flycon_pidloop_velocity2attitude(struct entity* ent, struct style* sty)
+#define VEL_p 1.0
+void flycon_pidloop_velocity2attitude(struct entity* ent, struct style* sty, float* thrust)
 {
 	vec4 differ;
 	float* pidout = sty->desire.displace_a;
 	float* desire = sty->desire.displace_v;
 	float* actual = sty->actual.displace_v;
 
+	//differ = desire - actual
 	differ[0] = desire[0] - actual[0];
 	differ[1] = desire[1] - actual[1];
 	differ[2] = desire[2] - actual[2];
@@ -48,55 +49,52 @@ void flycon_pidloop_velocity2attitude(struct entity* ent, struct style* sty)
 	say("V_actual: %f,%f,%f\n", actual[0], actual[1], actual[2]);
 	say("V_differ: %f,%f,%f\n", differ[0], differ[1], differ[2]);
 
-	//desired axisangle
+	//world space output
+	pidout[0] = VEL_p*differ[0];
+	pidout[1] = VEL_p*differ[1];
+	pidout[2] = VEL_p*differ[2];
+
+	//coordinate basis
+	vec3 vr,vf,vt;
+	float* q = sty->actual.angular_x;
+	vr[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
+	vr[1] = 2.0 * (q[0]*q[1] + q[2]*q[3]);
+	vr[2] = 2.0 * (q[0]*q[2] - q[1]*q[3]);
+
+	vf[0] = 2.0 * (q[0]*q[1] - q[2]*q[3]);
+	vf[1] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
+	vf[2] = 2.0 * (q[1]*q[2] + q[0]*q[3]);
+
+	vt[0] = 2.0 * (q[0]*q[2] + q[1]*q[3]);
+	vt[1] = 2.0 * (q[1]*q[2] - q[0]*q[3]);
+	vt[2] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
+
+	//world space accel -> local space accel
+	vec3 acc;
+	acc[0] = vr[0]*pidout[0] + vr[1]*pidout[1] + vr[2]*pidout[2];
+	acc[1] = vf[0]*pidout[0] + vf[1]*pidout[1] + vf[2]*pidout[2];
+	acc[2] = vt[0]*pidout[0] + vt[1]*pidout[1] + vt[2]*pidout[2];	//local thrust
+	if(acc[0] > 10.0)acc[0] = 10.0;
+	if(acc[0] <-10.0)acc[0] =-10.0;
+	if(acc[1] > 10.0)acc[1] = 10.0;
+	if(acc[1] <-10.0)acc[1] =-10.0;
+	*thrust = 2.45 + acc[2];
+	say("%f,%f,%f\n",acc[0],acc[1],acc[2]);
+
+	float a;
 	vec4 v;
 	quaternion2axisangle(sty->actual.angular_x, v);
 	v[0] = 0.0;
 	v[1] = 0.0;
-
-	//desired coordinate
-	vec3 vr,vf,vt;
-	float c = cosine(v[2]);
-	float s = sine(v[2]);
-
-	vr[0] = c;
-	vr[1] = s;
-	vr[2] = 0.0;
-
-	vf[0] = -s;
-	vf[1] = c;
-	vf[2] = 0.0;
-
-	vt[0] = 0.0;
-	vt[1] = 0.0;
-	vt[2] = 1.0;
-
-	//world space accel -> desire space accel
-	pidout[0] = VEL_p*(vr[0]*differ[0] + vr[1]*differ[1] + vr[2]*differ[2]);
-	pidout[1] = VEL_p*(vf[0]*differ[0] + vf[1]*differ[1] + vf[2]*differ[2]);
-	pidout[2] = VEL_p*(vt[0]*differ[0] + vt[1]*differ[1] + vt[2]*differ[2]);	//local thrust
-	if(pidout[0] > 10.0)pidout[0] = 10.0;
-	if(pidout[0] <-10.0)pidout[0] =-10.0;
-	if(pidout[1] > 10.0)pidout[1] = 10.0;
-	if(pidout[1] <-10.0)pidout[1] =-10.0;
-
-	float a;
-	a = pidout[0]*PI*0.02;	//max angle = 180*10*0.02 = 36 degree
+	a = acc[0]*PI*0.01;	//max angle = 180*10*0.02 = 36 degree
 	v[0] += vf[0] * a;
 	v[1] += vf[1] * a;
 	v[2] += vf[2] * a;
-	a =-pidout[1]*PI*0.02;	//max angle = 180*10*0.02 = 36 degree
+	a =-acc[1]*PI*0.01;	//max angle = 180*10*0.02 = 36 degree
 	v[0] += vr[0] * a;
 	v[1] += vr[1] * a;
 	v[2] += vr[2] * a;
 	axisangle2quaternion(v, sty->desire.angular_x);
-
-	//x,y: attitude
-/*	float* expect = sty->expect.angular_x;
-	expect[0] = 0.0;
-	expect[1] = 0.0;
-	expect[2] = 0.5;
-	expect[3] = 0.833;*/
 }
 #define ATT_p 5.0
 void flycon_pidloop_attitude2palstance(struct entity* ent, struct style* sty)
@@ -120,9 +118,9 @@ void flycon_pidloop_attitude2palstance(struct entity* ent, struct style* sty)
 	v[2] *= ATT_p;
 	say("x_pidout: %f,%f,%f\n", v[0],v[1],v[2]);
 }
-#define Kp 2.0
+#define Kp 0.5
 #define Ki 0.0001
-#define Kd 0.5
+#define Kd 0.1
 void flycon_pidloop_palstance2accelerate(struct entity* ent, struct style* sty)
 {
 	float nxn,tmp;
@@ -170,66 +168,87 @@ void flycon_pidloop_palstance2accelerate(struct entity* ent, struct style* sty)
 	e1[1] = e0[1];
 	e1[2] = e0[2];
 }
-void flycon_accel2force(float* ln, float* rn, float* lf, float* rf, struct style* sty)
+void flycon_accel2force(float* ln, float* rn, float* lf, float* rf, struct style* sty, float thrust)
 {
 //------------thrust---------------
-	float thrust = sty->desire.displace_a[2];
-	*ln += thrust;
-	*rn += thrust;
-	*lf += thrust;
-	*rf += thrust;
+	*ln = thrust;
+	*rn = thrust;
+	*lf = thrust;
+	*rf = thrust;
 
 
 //------------rotate---------------
-	vec3 accel;
-	float* accel_w = sty->expect.angular_a;
-	float* vr = sty->fs.vr;
-	float* vf = sty->fs.vf;
-	float* vt = sty->fs.vt;
+	vec3 vr,vf,vt;
+	float* q = sty->actual.angular_x;
+	vr[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
+	vr[1] = 2.0 * (q[0]*q[1] + q[2]*q[3]);
+	vr[2] = 2.0 * (q[0]*q[2] - q[1]*q[3]);
+
+	vf[0] = 2.0 * (q[0]*q[1] - q[2]*q[3]);
+	vf[1] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
+	vf[2] = 2.0 * (q[1]*q[2] + q[0]*q[3]);
+
+	vt[0] = 2.0 * (q[0]*q[2] + q[1]*q[3]);
+	vt[1] = 2.0 * (q[1]*q[2] - q[0]*q[3]);
+	vt[2] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
 
 	//world2local
-	accel[0] = vr[0]*accel_w[0] + vr[1]*accel_w[1] + vr[2]*accel_w[2];
-	accel[1] = vf[0]*accel_w[0] + vf[1]*accel_w[1] + vf[2]*accel_w[2];
-	accel[2] = vt[0]*accel_w[0] + vt[1]*accel_w[1] + vt[2]*accel_w[2];	//ignore yaw_z
-	say("loc: %f,%f,%f\n",accel[0],accel[1],accel[2]);
+	vec3 l_acc;
+	float* w_acc = sty->expect.angular_a;
+	l_acc[0] = vr[0]*w_acc[0] + vr[1]*w_acc[1] + vr[2]*w_acc[2];
+	l_acc[1] = vf[0]*w_acc[0] + vf[1]*w_acc[1] + vf[2]*w_acc[2];
+	l_acc[2] = vt[0]*w_acc[0] + vt[1]*w_acc[1] + vt[2]*w_acc[2];	//ignore yaw_z
+	say("loc: %f,%f,%f\n",l_acc[0],l_acc[1],l_acc[2]);
 
 	//for rotate
-	*rn +=-accel[0] - accel[1] + accel[2]*0.1;
-	*lf += accel[0] + accel[1] + accel[2]*0.1;
-	*ln +=-accel[0] + accel[1] - accel[2]*0.1;
-	*rf += accel[0] - accel[1] - accel[2]*0.1;
+	*rn +=-l_acc[0] - l_acc[1] + l_acc[2]*0.1;
+	*lf += l_acc[0] + l_acc[1] + l_acc[2]*0.1;
+	*ln +=-l_acc[0] + l_acc[1] - l_acc[2]*0.1;
+	*rf += l_acc[0] - l_acc[1] - l_acc[2]*0.1;
 }
 void flycon_force2motor(float ln, float rn, float lf, float rf, struct style* sty)
 {
+	//basis
+	vec3 vr,vf,vt;
+	float* q = sty->actual.angular_x;
+	vr[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
+	vr[1] = 2.0 * (q[0]*q[1] + q[2]*q[3]);
+	vr[2] = 2.0 * (q[0]*q[2] - q[1]*q[3]);
+	vf[0] = 2.0 * (q[0]*q[1] - q[2]*q[3]);
+	vf[1] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
+	vf[2] = 2.0 * (q[1]*q[2] + q[0]*q[3]);
+	vt[0] = 2.0 * (q[0]*q[2] + q[1]*q[3]);
+	vt[1] = 2.0 * (q[1]*q[2] - q[0]*q[3]);
+	vt[2] = 1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0;
+
+	//force
 	vec3 yaw;
-	float* vr = sty->fs.vr;
-	float* vf = sty->fs.vf;
-	float* vt = sty->fs.vt;
-	yaw[0] = (-vr[0]+vf[0])/10.0;
-	yaw[1] = (-vr[1]+vf[1])/10.0;
-	yaw[2] = (-vr[2]+vf[2])/10.0;
+	yaw[0] = (-vr[0]+vf[0])*0.2;
+	yaw[1] = (-vr[1]+vf[1])*0.2;
+	yaw[2] = (-vr[2]+vf[2])*0.2;
 	sty->force[0][0] = (vt[0]+yaw[0]) * ln;
 	sty->force[0][1] = (vt[1]+yaw[1]) * ln;
 	sty->force[0][2] = (vt[2]+yaw[2]) * ln;
-	yaw[0] = (vr[0]+vf[0])/10.0;
-	yaw[1] = (vr[1]+vf[1])/10.0;
-	yaw[2] = (vr[2]+vf[2])/10.0;
+	yaw[0] = (vr[0]+vf[0])*0.2;
+	yaw[1] = (vr[1]+vf[1])*0.2;
+	yaw[2] = (vr[2]+vf[2])*0.2;
 	sty->force[1][0] = (vt[0]+yaw[0]) * rn;
 	sty->force[1][1] = (vt[1]+yaw[1]) * rn;
 	sty->force[1][2] = (vt[2]+yaw[2]) * rn;
-	yaw[0] = (-vr[0]-vf[0])/10.0;
-	yaw[1] = (-vr[1]-vf[1])/10.0;
-	yaw[2] = (-vr[2]-vf[2])/10.0;
+	yaw[0] = (-vr[0]-vf[0])*0.2;
+	yaw[1] = (-vr[1]-vf[1])*0.2;
+	yaw[2] = (-vr[2]-vf[2])*0.2;
 	sty->force[2][0] = (vt[0]+yaw[0]) * lf;
 	sty->force[2][1] = (vt[1]+yaw[1]) * lf;
 	sty->force[2][2] = (vt[2]+yaw[2]) * lf;
-	yaw[0] = (vr[0]-vf[0])/10.0;
-	yaw[1] = (vr[1]-vf[1])/10.0;
-	yaw[2] = (vr[2]-vf[2])/10.0;
+	yaw[0] = (vr[0]-vf[0])*0.2;
+	yaw[1] = (vr[1]-vf[1])*0.2;
+	yaw[2] = (vr[2]-vf[2])*0.2;
 	sty->force[3][0] = (vt[0]+yaw[0]) * rf;
 	sty->force[3][1] = (vt[1]+yaw[1]) * rf;
 	sty->force[3][2] = (vt[2]+yaw[2]) * rf;
 
+	//dist
 	sty->where[0][0] =-vr[0] -vf[0];
 	sty->where[0][1] =-vr[1] -vf[1];
 	sty->where[0][2] =-vr[2] -vf[2];
@@ -251,12 +270,13 @@ void flycon_applyforce(struct entity* ent)
 	struct style* sty = rel->pfoot;
 	if(0 == sty)return;
 
+	float thrust = 2.4;
 	//sty->expect.angular_x[0] = 0.0;
 	//sty->expect.angular_x[1] = 0.0;
 	//sty->expect.angular_x[2] = 0.0;
 	//sty->expect.angular_x[3] = 1.0;
 	flycon_pidloop_position2velocity(ent, sty);
-	flycon_pidloop_velocity2attitude(ent, sty);
+	flycon_pidloop_velocity2attitude(ent, sty, &thrust);
 	flycon_pidloop_attitude2palstance(ent, sty);
 	flycon_pidloop_palstance2accelerate(ent, sty);
 
@@ -264,7 +284,7 @@ void flycon_applyforce(struct entity* ent)
 	float rn = 0.1;
 	float lf = 0.1;
 	float rf = 0.1;
-	flycon_accel2force(&ln,&rn,&lf,&rf, sty);
+	flycon_accel2force(&ln,&rn,&lf,&rf, sty, thrust);
 #define MAX 5.0
 #define MIN 0.1
 	if(ln > MAX)ln = MAX;

@@ -1,5 +1,4 @@
 #include "libuser.h"
-void quaternion_aa(float*, float*);
 
 
 
@@ -37,41 +36,46 @@ static void drone_draw_gl41(
 	float* vr = geom->fshape.vr;
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
-	gl41line_rect(ctx, 0xffffff, vc, vr, vf);
 
 
 
 
-	//debug
+	//debug position
+	gl41line(ctx, 0x000000, vc, geom->expect.displace_x);
+
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->expect.displace_v[j];}
+	gl41line(ctx, 0x808080, vc, tc);
+
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->expect.displace_a[j];}
+	gl41line(ctx, 0xffffff, vc, tc);
+
+
+
+
+	//debug rotation
 	float* q = geom->expect.angular_x;
 	tr[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
 	tr[1] = 2.0 * (q[0]*q[1] + q[2]*q[3]);
 	tr[2] = 2.0 * (q[0]*q[2] - q[1]*q[3]);
-	vec3_setlen(tr, 1.0);
+	vec3_setlen(tr, vr[3]);
 	tf[0] = 2.0 * (q[0]*q[1] - q[2]*q[3]);
 	tf[1] = 1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0;
 	tf[2] = 2.0 * (q[1]*q[2] + q[0]*q[3]);
-	vec3_setlen(tf, 1.0);
-	gl41line_rect(ctx, 0x00ff00, vc, tr, tf);
+	vec3_setlen(tf, vf[3]);
+	gl41line_rect(ctx, 0x0000ff, vc, tr, tf);
 
 	for(j=0;j<3;j++){tc[j] = vc[j] + geom->expect.angular_v[j];}
-	gl41line(ctx, 0xff0000, vc, tc);
-
-	for(j=0;j<3;j++){tc[j] = vc[j] + geom->actual.angular_v[j];}
-	gl41line(ctx, 0xffff00, vc, tc);
+	gl41line(ctx, 0x00ff00, vc, tc);
 
 	for(j=0;j<3;j++){tc[j] = vc[j] + geom->expect.angular_a[j];}
-	gl41line(ctx, 0x0000ff, vc, tc);
-
-	for(j=0;j<3;j++){tc[j] = vc[j] + geom->actual.angular_a[j];}
-	gl41line(ctx, 0x00ffff, vc, tc);
+	gl41line(ctx, 0xff0000, vc, tc);
 
 
 
 
-	tu[0] = vt[0] / 64;
-	tu[1] = vt[1] / 64;
-	tu[2] = vt[2] / 64;
+	tu[0] = vt[0] / 4;
+	tu[1] = vt[1] / 4;
+	tu[2] = vt[2] / 4;
 
 	//center
 	tr[0] = vr[0] / 4;
@@ -117,53 +121,53 @@ static void drone_draw_gl41(
 	tf[0] = vf[0] / 32;
 	tf[1] = vf[1] / 32;
 	tf[2] = vf[2] / 32;
-	tu[0] = vt[0] / 32;
-	tu[1] = vt[1] / 32;
-	tu[2] = vt[2] / 32;
+	tu[0] = vt[0] / 2;
+	tu[1] = vt[1] / 2;
+	tu[2] = vt[2] / 2;
 
 	dt = timeread() % 1000000;
 
 	//rf, motor1
-	tc[0] = vc[0] + vr[0] + vf[0];
-	tc[1] = vc[1] + vr[1] + vf[1];
-	tc[2] = vc[2] + vr[2] + vf[2];
-	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
 	tc[0] = vc[0] + vr[0] + vf[0] + tu[0];
 	tc[1] = vc[1] + vr[1] + vf[1] + tu[1];
 	tc[2] = vc[2] + vr[2] + vf[2] + tu[2];
+	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
+	tc[0] = vc[0] + vr[0] + vf[0] + vt[0];
+	tc[1] = vc[1] + vr[1] + vf[1] + vt[1];
+	tc[2] = vc[2] + vr[2] + vf[2] + vt[2];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '1');
 	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1, dt);
 
 	//ln, motor2
-	tc[0] = vc[0] - vr[0] - vf[0];
-	tc[1] = vc[1] - vr[1] - vf[1];
-	tc[2] = vc[2] - vr[2] - vf[2];
-	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
 	tc[0] = vc[0] - vr[0] - vf[0] + tu[0];
 	tc[1] = vc[1] - vr[1] - vf[1] + tu[1];
 	tc[2] = vc[2] - vr[2] - vf[2] + tu[2];
+	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
+	tc[0] = vc[0] - vr[0] - vf[0] + vt[0];
+	tc[1] = vc[1] - vr[1] - vf[1] + vt[1];
+	tc[2] = vc[2] - vr[2] - vf[2] + vt[2];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '2');
 	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1, dt);
 
 	//lf, motor3
-	tc[0] = vc[0] - vr[0] + vf[0];
-	tc[1] = vc[1] - vr[1] + vf[1];
-	tc[2] = vc[2] - vr[2] + vf[2];
-	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
 	tc[0] = vc[0] - vr[0] + vf[0] + tu[0];
 	tc[1] = vc[1] - vr[1] + vf[1] + tu[1];
 	tc[2] = vc[2] - vr[2] + vf[2] + tu[2];
+	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
+	tc[0] = vc[0] - vr[0] + vf[0] + vt[0];
+	tc[1] = vc[1] - vr[1] + vf[1] + vt[1];
+	tc[2] = vc[2] - vr[2] + vf[2] + vt[2];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '3');
 	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1, dt);
 
 	//rn, motor4
-	tc[0] = vc[0] + vr[0] - vf[0];
-	tc[1] = vc[1] + vr[1] - vf[1];
-	tc[2] = vc[2] + vr[2] - vf[2];
-	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
 	tc[0] = vc[0] + vr[0] - vf[0] + tu[0];
 	tc[1] = vc[1] + vr[1] - vf[1] + tu[1];
 	tc[2] = vc[2] + vr[2] - vf[2] + tu[2];
+	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
+	tc[0] = vc[0] + vr[0] - vf[0] + vt[0];
+	tc[1] = vc[1] + vr[1] - vf[1] + vt[1];
+	tc[2] = vc[2] + vr[2] - vf[2] + vt[2];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '4');
 	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1, dt);
 }
