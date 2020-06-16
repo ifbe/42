@@ -11,7 +11,7 @@ int dbgf32_write(struct artery* art,int foot, struct halfrel* stack,int sp, void
 {
 	int j;
 	float* f;
-	say("@dbgf32_write: 0x%x\n", len);
+	say("@dbgf32_write: foot=%.4s, len=0x%x\n", &foot, len);
 
 	f = buf;
 	for(j=0;j<len;j++){

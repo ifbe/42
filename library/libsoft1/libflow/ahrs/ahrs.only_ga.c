@@ -33,6 +33,7 @@ void imuupdate(
 
 	//normalize a
 	norm = squareroot(ax*ax+ay*ay+az*az);
+	if(norm < 1e-18)return;
 	ax = ax/norm;
 	ay = ay/norm;
 	az = az/norm;
@@ -85,16 +86,18 @@ int easyag_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void
 }
 int easyag_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	int j;
-	float* f = (void*)buf;
-
+	say("@easyag_write: foot=%.4s, len=0x%x\n", &foot, len);
 	if((6 != len) && (9 != len)){
 		say("err@easyag_write:len=%d\n",len);
 		return 0;
 	}
-	say("@easyag_write:%f,%f,%f,%f,%f,%f\n",f[0],f[1],f[2], f[3],f[4],f[5]);
+
+	float* f = (void*)buf;
+	say("	ii: %f,%f,%f,%f,%f,%f\n",f[0],f[1],f[2], f[3],f[4],f[5]);
 
 	imuupdate(f[0],f[1],f[2], f[3],f[4],f[5]);
+	say("	oo: %f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
+
 	give_data_into_peer(art,_dst_, stack,sp, 0,0, q,4);
 	return 0;
 }

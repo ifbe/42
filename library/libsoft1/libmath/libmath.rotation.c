@@ -49,8 +49,7 @@ void quaternion_multiply(float* l, float* r)
 	float t[4] = {l[0],l[1],l[2],l[3]};
 	quaternion_multiplyfrom(l, t, r);
 }
-//v <- v, q
-void quaternion_rotate(float* v, float* q)
+void quaternion_rotatefrom(float* o, float* v, float* q)
 {
 	//t = 2 * cross(q.xyz, v)
 	//v' = v + q.w * t + cross(q.xyz, t)
@@ -59,9 +58,14 @@ void quaternion_rotate(float* v, float* q)
 	t[1] = (q[2]*v[0]-q[0]*v[2]) * 2;
 	t[2] = (q[0]*v[1]-q[1]*v[0]) * 2;
 
-	v[0] += q[3]*t[0] + q[1]*t[2]-q[2]*t[1];
-	v[1] += q[3]*t[1] + q[2]*t[0]-q[0]*t[2];
-	v[2] += q[3]*t[2] + q[0]*t[1]-q[1]*t[0];
+	o[0] = v[0] + q[3]*t[0] + q[1]*t[2]-q[2]*t[1];
+	o[1] = v[1] + q[3]*t[1] + q[2]*t[0]-q[0]*t[2];
+	o[2] = v[2] + q[3]*t[2] + q[0]*t[1]-q[1]*t[0];
+}
+//v <- v, q
+void quaternion_rotate(float* v, float* q)
+{
+	quaternion_rotatefrom(v, v, q);
 }
 void quaternion_slerp(float* out,float* q0,float* q1,float t)
 {

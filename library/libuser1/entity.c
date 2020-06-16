@@ -30,6 +30,12 @@ int test_taking(void*,int, void*,int, void*,int, void*,int);
 int test_giving(void*,int, void*,int, void*,int, void*,int);
 
 //
+int virtimu_create(void*, void*, int, u8**);
+int virtimu_delete(void*, void*);
+int virtimu_linkup(void*, void*);
+int virtimu_discon(void*, void*);
+int virtimu_taking(void*,int, void*,int, void*,int, void*,int);
+int virtimu_giving(void*,int, void*,int, void*,int, void*,int);
 int carcon_create(void*, void*, int, u8**);
 int carcon_delete(void*, void*);
 int carcon_linkup(void*, void*);
@@ -348,6 +354,7 @@ int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* 
 	case _analog_:return analog_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _digital_:return digital_taking(act,foot, stack,sp, arg,key, buf,len);
 
+	case _virtimu_:return virtimu_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _carcon_:return carcon_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _flycon_:return flycon_taking(act,foot, stack,sp, arg,key, buf,len);
 
@@ -397,6 +404,7 @@ int entitywrite(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void*
 	case _analog_:return analog_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _digital_:return digital_giving(act,foot, stack,sp, arg,key, buf,len);
 
+	case _virtimu_:return virtimu_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _carcon_:return carcon_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _flycon_:return flycon_giving(act,foot, stack,sp, arg,key, buf,len);
 
@@ -452,6 +460,7 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	case _analog_:return analog_discon(self, peer);
 	case _digital_:return digital_discon(self, peer);
 
+	case _virtimu_:return virtimu_discon(self, peer);
 	case _carcon_:return carcon_discon(self, peer);
 	case _flycon_:return flycon_discon(self, peer);
 
@@ -507,6 +516,7 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 	case _analog_:return analog_linkup(self, peer);
 	case _digital_:return digital_linkup(self, peer);
 
+	case _virtimu_:return virtimu_linkup(self, peer);
 	case _carcon_:return carcon_linkup(self, peer);
 	case _flycon_:return flycon_linkup(self, peer);
 
@@ -702,6 +712,15 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		act = allocentity();
 		act->fmt = act->type = _eventrts_;
 		eventrts_create(act, buf, argc, argv);
+		return act;
+	}
+
+//---------------robot----------------
+	case _virtimu_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _virtimu_;
+		virtimu_create(act, buf, argc, argv);
 		return act;
 	}
 	case _carcon_:

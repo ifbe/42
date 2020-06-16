@@ -209,6 +209,7 @@
 #define _xamlroot_ hex64('x','a','m','l','r','o','o','t')
 #define _uiuxroot_ hex64('u','i','u','x','r','o','o','t')
 //control
+#define _virtimu_ hex64('v','i','r','t','i','m','u', 0)
 #define _carcon_ hex64('c','a','r','c','o','n', 0, 0)
 #define _flycon_ hex64('f','l','y','c','o','n', 0, 0)
 //event

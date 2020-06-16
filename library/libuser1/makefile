@@ -97,6 +97,7 @@ therule/nature/gravity/gravity.test.c \
 therule/rule.c \
 themind/elec/bldc/control.bldc.c \
 themind/elec/bulk/control.bulk.c \
+themind/sense/sense.virtimu.c \
 themind/pilot/drone/pilot.drone.c \
 themind/pilot/vehicle/pilot.vehicle.c \
 themind/pilot/follow/pilot.follow.c \
