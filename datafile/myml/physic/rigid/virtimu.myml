@@ -1,11 +1,15 @@
 <entity>
-drone{
+drone1{
 fmt:drone
 }
-rccar{
-fmt:rccar
+scene1{
+fmt:scene3d
 }
-scene{
+
+drone2{
+fmt:drone
+}
+scene2{
 fmt:scene3d
 }
 
@@ -16,11 +20,12 @@ url:datafile/jpg/texball-skysphere.jpg
 gnd{
 fmt:ground
 }
-cam0{
-fmt:freecam
-}
 world{
 fmt:virtual
+}
+
+cam0{
+fmt:freecam
 }
 slider{
 fmt:slider
@@ -76,31 +81,28 @@ fmt:pulser
 
 
 <style>
-carslot{
+s1d1slot{
 }
-cargeom{
-c: 5.0, 0.0, 0.0
-r: 0.25, 0.0, 0.0
-f: 0.0, 0.25, 0.0
-t: 0.0, 0.0, 0.25
-
-0: 0.0, 0.0, 1.0, 0.5
-1: 0.0, 0.0, 1.0, 0.05235987755982988
-}
-
-dronslot{
-}
-drongeom{
+s1d1geom{
 r: 0.25, 0.0, 0.0, 0.25
 f: 0.0, 0.25, 0.0, 0.25
-t: 0.0, 0.0, 0.25, 0.05
+t: 0.0, 0.0, 0.05, 0.05
 
 j: 0.0, 0.0, 0.0
 a: 0.0, 0.0, 0.0
 v: 0.0, 0.0, 20.0
-x:-5.0, 0.0, 0.0
+x:-1.0, 0.0, 0.0
 0: 0.0, 0.0, 0.0, 1.0
 1: 0.0, 0.5, 0.8660254037844387, 2.0
+}
+
+s2d2slot{
+}
+s2d2geom{
+c: 0.0, 0.0, 0.0
+r: 0.25, 0.0, 0.0, 0.25
+f: 0.0, 0.25, 0.0, 0.25
+t: 0.0, 0.0, 0.05, 0.05
 }
 
 skypart{
@@ -141,10 +143,6 @@ aaaarect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
-uiuxrect{
-c:0.0, 0.0
-q:0.3, 0.3
-}
 butnrect{
 c:0.0, 0.3
 q:0.1, 0.1
@@ -154,8 +152,10 @@ q:0.1, 0.1
 
 <relation>
 #scene depends on ???
-(scene, drongeom, 0) -> (drone, dronslot, 0)
-(world, 0, 0) -> (scene, 0, 0)
+(scene1, s1d1geom, 0) -> (drone1, s1d1slot, real)
+(scene2, s2d2geom, 0) -> (drone2, s2d2slot, imag)
+(world, 0, 0) -> (scene1, 0, 0)
+(world, 0, 0) -> (scene2, 0, 0)
 (world, skygeom, 0) -> (sky, skypart, 0)
 (world, gndgeom, 0) -> (gnd, gndpart, 0)
 (world, aaaageom, 0) -> (cam0, aaaapart, 0)
@@ -163,20 +163,17 @@ q:0.1, 0.1
 (opengl, butnrect, 0) -> (button, 0, 0)
 
 #mouse: 3rd controller
-(event, 0, tar) -> (drone, 0, evby)
+(event, 0, tar) -> (drone1, 0, evby)
 (event, 0, cam) -> (cam0, 0, evto)
 
 #keyboard: 
 (cam0, 0, ioto) -> (gravity, 0, ioby)
-
-#gravity
-(gravity, 0, 0) -> (scene, 0, 0)
+(gravity, 0, 0) -> (scene1, 0, 0)
 
 #imu
-(drone, 0, con) -> (virtimu, 0, src)
+(drone1, 0, con) -> (virtimu, 0, src)
 (virtimu, 0, dst) -> (easyag, 0, src)
-(easyag, 0, dst) -> (qu2eu, 0, src)
-(qu2eu, 0, dst) -> (dbgf32, 0, src)
+(easyag, 0, dst) -> (drone2, 0, quat)
 
 #
 (pulser, 0, clk) -> (virtimu, 0, clk)

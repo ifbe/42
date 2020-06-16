@@ -30,7 +30,6 @@ void imuupdate(
 	float vx, vy, vz;
 	float ex, ey, ez;
 
-
 	//normalize a
 	norm = squareroot(ax*ax+ay*ay+az*az);
 	if(norm < 1e-18)return;
@@ -38,15 +37,14 @@ void imuupdate(
 	ay = ay/norm;
 	az = az/norm;
 
-
 	//
 	vx = 2*(qx*qz - qw*qy);
 	vy = 2*(qw*qx + qy*qz);
 	vz = qw*qw - qx*qx - qy*qy + qz*qz;
 
-	ex = (ay*vz - az*vy);
-	ey = (az*vx - ax*vz);
-	ez = (ax*vy - ay*vx);
+	ex = vy*az - vz*ay;
+	ey = vz*ax - vx*az;
+	ez = vx*ay - vy*ax;
 
 	integralx += ex*Ki;
 	integraly += ey*Ki;

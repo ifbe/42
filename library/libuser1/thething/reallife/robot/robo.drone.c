@@ -1,4 +1,5 @@
 #include "libuser.h"
+#define _quat_ hex32('q','u','a','t')
 
 
 
@@ -38,8 +39,6 @@ static void drone_draw_gl41(
 	float* vt = geom->fshape.vt;
 
 
-
-
 	//debug position
 	gl41line(ctx, 0x000000, vc, geom->expect.displace_x);
 
@@ -48,8 +47,6 @@ static void drone_draw_gl41(
 
 	for(j=0;j<3;j++){tc[j] = vc[j] + geom->expect.displace_a[j];}
 	gl41line(ctx, 0xffffff, vc, tc);
-
-
 
 
 	//debug rotation
@@ -71,103 +68,67 @@ static void drone_draw_gl41(
 	gl41line(ctx, 0xff0000, vc, tc);
 
 
-
-
-	tu[0] = vt[0] / 4;
-	tu[1] = vt[1] / 4;
-	tu[2] = vt[2] / 4;
-
-	//center
-	tr[0] = vr[0] / 4;
-	tr[1] = vr[1] / 4;
-	tr[2] = vr[2] / 4;
-	tf[0] = vf[0] / 4;
-	tf[1] = vf[1] / 4;
-	tf[2] = vf[2] / 4;
-	gl41solid_prism4(ctx, 0xffffff, vc, tr, tf, tu);
+	//board
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] + vt[j]/4;
+		tr[j] = vr[j] / 4;
+		tf[j] = vf[j] / 4;
+		tu[j] = vt[j] / 4;
+	}
+	gl41solid_prism4(ctx, 0xffffff, tc, tr, tf, tu);
 
 	//pie
-	tr[0] = vr[0] + vf[0];
-	tr[1] = vr[1] + vf[1];
-	tr[2] = vr[2] + vf[2];
-	tf[0] = (vf[0] - vr[0]) / 16;
-	tf[1] = (vf[1] - vr[1]) / 16;
-	tf[2] = (vf[2] - vr[2]) / 16;
-	gl41solid_prism4(ctx, 0xfedcba, vc, tr, tf, tu);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] + vt[j]/4;
+		tr[j] = vr[j] + vf[j];
+		tf[j] = (vf[j] - vr[j]) / 16;
+	}
+	gl41solid_prism4(ctx, 0xfedcba, tc, tr, tf, tu);
 
 	//na
-	tr[0] = (vr[0] + vf[0]) / 16;
-	tr[1] = (vr[1] + vf[1]) / 16;
-	tr[2] = (vr[2] + vf[2]) / 16;
-	tf[0] = vf[0] - vr[0];
-	tf[1] = vf[1] - vr[1];
-	tf[2] = vf[2] - vr[2];
-	gl41solid_prism4(ctx, 0xfedcba, vc, tr, tf, tu);
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] + vt[j]/4;
+		tr[j] = (vr[j] + vf[j]) / 16;
+		tf[j] = vf[j] - vr[j];
+	}
+	gl41solid_prism4(ctx, 0xfedcba, tc, tr, tf, tu);
 
-
-	kr[0] = vr[0] / 4;
-	kr[1] = vr[1] / 4;
-	kr[2] = vr[2] / 4;
-	kf[0] = vf[0] / 4;
-	kf[1] = vf[1] / 4;
-	kf[2] = vf[2] / 4;
-	ku[0] = vt[0] / 4;
-	ku[1] = vt[1] / 4;
-	ku[2] = vt[2] / 4;
-
-	tr[0] = vr[0] / 32;
-	tr[1] = vr[1] / 32;
-	tr[2] = vr[2] / 32;
-	tf[0] = vf[0] / 32;
-	tf[1] = vf[1] / 32;
-	tf[2] = vf[2] / 32;
-	tu[0] = vt[0] / 2;
-	tu[1] = vt[1] / 2;
-	tu[2] = vt[2] / 2;
-
+	//tmp
 	dt = timeread() % 1000000;
+	for(j=0;j<3;j++){
+		kr[j] = vr[j] / 4;
+		kf[j] = vf[j] / 4;
+		ku[j] = vt[j] / 4;
+		tr[j] = vr[j] / 32;
+		tf[j] = vf[j] / 32;
+		tu[j] = vt[j] / 2;
+	}
 
 	//rf, motor1
-	tc[0] = vc[0] + vr[0] + vf[0] + tu[0];
-	tc[1] = vc[1] + vr[1] + vf[1] + tu[1];
-	tc[2] = vc[2] + vr[2] + vf[2] + tu[2];
+	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] + vf[j] + tu[j];
 	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
-	tc[0] = vc[0] + vr[0] + vf[0] + vt[0];
-	tc[1] = vc[1] + vr[1] + vf[1] + vt[1];
-	tc[2] = vc[2] + vr[2] + vf[2] + vt[2];
+	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] + vf[j] + vt[j];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '1');
 	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1, dt);
 
 	//ln, motor2
-	tc[0] = vc[0] - vr[0] - vf[0] + tu[0];
-	tc[1] = vc[1] - vr[1] - vf[1] + tu[1];
-	tc[2] = vc[2] - vr[2] - vf[2] + tu[2];
+	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] - vf[j] + tu[j];
 	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
-	tc[0] = vc[0] - vr[0] - vf[0] + vt[0];
-	tc[1] = vc[1] - vr[1] - vf[1] + vt[1];
-	tc[2] = vc[2] - vr[2] - vf[2] + vt[2];
+	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] - vf[j] + vt[j];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '2');
 	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1, dt);
 
 	//lf, motor3
-	tc[0] = vc[0] - vr[0] + vf[0] + tu[0];
-	tc[1] = vc[1] - vr[1] + vf[1] + tu[1];
-	tc[2] = vc[2] - vr[2] + vf[2] + tu[2];
+	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] + vf[j] + tu[j];
 	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
-	tc[0] = vc[0] - vr[0] + vf[0] + vt[0];
-	tc[1] = vc[1] - vr[1] + vf[1] + vt[1];
-	tc[2] = vc[2] - vr[2] + vf[2] + vt[2];
+	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] + vf[j] + vt[j];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '3');
 	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1, dt);
 
 	//rn, motor4
-	tc[0] = vc[0] + vr[0] - vf[0] + tu[0];
-	tc[1] = vc[1] + vr[1] - vf[1] + tu[1];
-	tc[2] = vc[2] + vr[2] - vf[2] + tu[2];
+	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] - vf[j] + tu[j];
 	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
-	tc[0] = vc[0] + vr[0] - vf[0] + vt[0];
-	tc[1] = vc[1] + vr[1] - vf[1] + vt[1];
-	tc[2] = vc[2] + vr[2] - vf[2] + vt[2];
+	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] - vf[j] + vt[j];
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '4');
 	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1, dt);
 }
@@ -195,48 +156,38 @@ static void drone_draw_cli(
 
 
 
-void drone_write_quaternion(struct entity* act, float* f)
+void drone_write_quaternion(struct entity* act, float* q)
 {
 	struct relation* rel;
 	struct entity* world;
-	struct fstyle* sty = 0;
-	say("%f,%f,%f,%f\n",f[0],f[1],f[2],f[3]);
+	struct style* sty = 0;
+	say("drone_quat: %f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
 
 	rel = act->irel0;
 	while(1){
 		if(0 == rel)break;
 		world = (void*)(rel->srcchip);
-		if(_virtual_ == world->type){
+		if((_virtual_ == world->type)|(_scene3d_ == world->type)){
 			sty = (void*)(rel->srcfoot);
+			break;
 		}
 		rel = samedstnextsrc(rel);
 	}
 	if(0 == sty)return;
 	//say("%f,%f,%f\n",sty->vr[3], sty->vf[3], sty->vt[3]);
 
-	sty->vr[0] = 1.0;
-	sty->vr[1] = 0.0;
-	sty->vr[2] = 0.0;
-	quaternion_rotate(sty->vr, f);
-	sty->vr[0] *= sty->vr[3];
-	sty->vr[1] *= sty->vr[3];
-	sty->vr[2] *= sty->vr[3];
-
-	sty->vf[0] = 0.0;
-	sty->vf[1] = 1.0;
-	sty->vf[2] = 0.0;
-	quaternion_rotate(sty->vf, f);
-	sty->vf[0] *= sty->vf[3];
-	sty->vf[1] *= sty->vf[3];
-	sty->vf[2] *= sty->vf[3];
-
-	sty->vt[0] = 0.0;
-	sty->vt[1] = 0.0;
-	sty->vt[2] = 1.0;
-	quaternion_rotate(sty->vt, f);
-	sty->vt[0] *= sty->vt[3];
-	sty->vt[1] *= sty->vt[3];
-	sty->vt[2] *= sty->vt[3];
+	float l = sty->fshape.vr[3];
+	sty->fshape.vr[0] = l*(1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0);
+	sty->fshape.vr[1] = l*(2.0 * (q[0]*q[1] + q[2]*q[3]));
+	sty->fshape.vr[2] = l*(2.0 * (q[0]*q[2] - q[1]*q[3]));
+	l = sty->fshape.vf[3];
+	sty->fshape.vf[0] = l*(2.0 * (q[0]*q[1] - q[2]*q[3]));
+	sty->fshape.vf[1] = l*(1.0 - (q[0]*q[0] + q[2]*q[2]) * 2.0);
+	sty->fshape.vf[2] = l*(2.0 * (q[1]*q[2] + q[0]*q[3]));
+	l = sty->fshape.vt[3];
+	sty->fshape.vt[0] = l*(2.0 * (q[0]*q[2] + q[1]*q[3]));
+	sty->fshape.vt[1] = l*(2.0 * (q[1]*q[2] - q[0]*q[3]));
+	sty->fshape.vt[2] = l*(1.0 - (q[0]*q[0] + q[1]*q[1]) * 2.0);
 }
 void drone_write_euler(struct entity* act, float* f)
 {
@@ -277,7 +228,8 @@ static void drone_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 }
 static void drone_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	drone_write_euler(ent, buf);
+	if(_quat_ == foot)drone_write_quaternion(ent, buf);
+	else drone_write_euler(ent, buf);
 }
 static void drone_discon(struct halfrel* self, struct halfrel* peer)
 {

@@ -25,8 +25,8 @@ int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, v
 struct privdata{
 	struct halfrel* self;
 	struct halfrel* peer;
-	mat4 w2v;	//world to view
-	mat4 w2c;	//world to view to clip
+	mat4 world2view;	//world to view
+	mat4 world2clip;	//world to view to clip
 	struct gl41data gl41;
 };
 
@@ -380,8 +380,8 @@ static void freecam_frustum2matrix(
 {
 	struct fstyle* frus = &geom->frus;
 	struct privdata* own = act->OWNBUF;
-	frustum2viewandclip_transpose(frus, own->w2v, own->w2c);
-	//printmat4(own->w2c);
+	frustum2viewandclip_transpose(frus, own->world2view, own->world2clip);
+	//printmat4(own->world2clip);
 }
 static void freecam_gl41cam(
 	struct entity* act, struct style* part,
@@ -394,10 +394,10 @@ static void freecam_gl41cam(
 	struct glsrc* src = &own->gl41.src;
 	src->arg[0].fmt = 'm';
 	src->arg[0].name = "cammvp";
-	src->arg[0].data = own->w2c;
+	src->arg[0].data = own->world2clip;
 	src->arg[1].fmt = 'm';
 	src->arg[1].name = "cammv_";
-	src->arg[1].data = own->w2v;
+	src->arg[1].data = own->world2view;
 	src->arg[2].fmt = 'v';
 	src->arg[2].name = "camxyz";
 	src->arg[2].data = frus->vc;

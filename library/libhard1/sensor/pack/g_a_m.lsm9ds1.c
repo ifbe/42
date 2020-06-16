@@ -78,11 +78,11 @@ int lsm9ds1_i2cread(void* it, float* measure)
 	//printf("%02x %02x %02x %02x %02x %02x\n", reg[0],reg[1],reg[2],reg[3],reg[4],reg[5]);
 
 	t = *(short*)(reg+0);
-	measure[3] = t * 9.8*8 / 32768.0;
+	measure[3] =-t * 9.8*8 / 32768.0;
 	t = *(short*)(reg+2);
-	measure[4] =-t * 9.8*8 / 32768.0;
+	measure[4] = t * 9.8*8 / 32768.0;
 	t = *(short*)(reg+4);
-	measure[5] = t * 9.8*8 / 32768.0;
+	measure[5] =-t * 9.8*8 / 32768.0;
 
 
 	take_data_from_peer(it,_i2c_, 0,0, 0,0x1c0028, reg+0,1);
