@@ -40,8 +40,8 @@ fmt:virtimu
 gravity{
 fmt:gravtest
 }
-event{
-fmt:event3rd
+cam3rd{
+fmt:cam3rd
 }
 </entity>
 
@@ -163,8 +163,8 @@ q:0.1, 0.1
 (opengl, butnrect, 0) -> (button, 0, 0)
 
 #mouse: 3rd controller
-(event, 0, tar) -> (drone1, 0, evby)
-(event, 0, cam) -> (cam0, 0, mind)
+(cam3rd, 0, tar) -> (drone1, 0, evby)
+(cam3rd, 0, cam) -> (cam0, 0, mind)
 
 #keyboard: 
 (cam0, 0, ioto) -> (gravity, 0, ioby)

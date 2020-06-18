@@ -25,8 +25,8 @@ fmt:virtual
 gravity{
 fmt:graveasy
 }
-event{
-fmt:event3rd
+cam3rd{
+fmt:cam3rd
 }
 </entity>
 
@@ -132,8 +132,8 @@ q:1.0, 1.0
 (opengl, aaaarect, 0) -> (cam0, 0, a0)
 
 #3rd controller
-(event, 0, tar) -> (drone, 0, evby)
-(event, 0, cam) -> (cam0, 0, evto)
+(cam3rd, 0, tar) -> (drone, 0, evby)
+(cam3rd, 0, cam) -> (cam0, 0, evto)
 
 #
 (gravity, 0, 0) -> (scene, 0, 0)

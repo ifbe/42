@@ -14,8 +14,8 @@ fmt:freecam
 3dworld{
 fmt:virtual
 }
-event{
-fmt:event3rd
+cam3rd{
+fmt:cam3rd
 }
 
 button{
@@ -153,8 +153,8 @@ q:0.2, 0.2
 (opengl, bbbbrect, 0) -> (orthcam, 0, 0)
 
 #thirdperson controller
-(event, 0, tar) -> (dancemat, 0, evby)
-(event, 0, cam) -> (freecam, 0, evto)
+(cam3rd, 0, tar) -> (dancemat, 0, evby)
+(cam3rd, 0, cam) -> (freecam, 0, evto)
 
 #button to socket
 (orthcam, 0, evto) -> (button, 0, evby)

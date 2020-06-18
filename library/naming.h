@@ -213,12 +213,13 @@
 #define _carcon_ hex64('c','a','r','c','o','n', 0, 0)
 #define _flycon_ hex64('f','l','y','c','o','n', 0, 0)
 //event
+#define _cam1rd_ hex64('c','a','m','1','r','d', 0, 0)
+#define _cam3rd_ hex64('c','a','m','3','r','d', 0, 0)
+#define _camrts_ hex64('c','a','m','r','t','s', 0, 0)
 #define _follow_ hex64('f','o','l','l','o','w', 0, 0)
 #define _lookat_ hex64('l','o','o','k','a','t', 0, 0)
 #define _wander_ hex64('w','a','n','d','e','r', 0, 0)
 #define _clickray_ hex64('c','l','i','c','k','r','a','y')
-#define _event3rd_ hex64('e','v','e','n','t','3','r','d')
-#define _eventrts_ hex64('e','v','e','n','t','r','t','s')
 #define _touchcam_ hex64('t','o','u','c','h','c','a','m')
 #define _touchobj_ hex64('t','o','u','c','h','o','b','j')
 //dx

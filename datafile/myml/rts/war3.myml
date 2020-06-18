@@ -24,8 +24,8 @@ uiuxroot{
 fmt:uiuxroot
 }
 
-event{
-fmt:eventrts
+camrts{
+fmt:camrts
 }
 </entity>
 
@@ -116,7 +116,7 @@ q:1.0, 1.0
 (opengl, fullrect, 0) -> (freecam, 0, 0)
 (opengl, helprect, 0) -> (uiuxroot, 0, 0)
 
-#event
-(event, 0, evto) -> (freecam, 0, evby)
-(event, 0, evby) -> (uiuxroot, 0, evto)
+#camera control
+(camrts, 0, evto) -> (freecam, 0, evby)
+(camrts, 0, evby) -> (uiuxroot, 0, evto)
 </relation>

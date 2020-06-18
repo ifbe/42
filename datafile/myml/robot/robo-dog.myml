@@ -27,8 +27,8 @@ slider{
 fmt:slider
 }
 
-event{
-fmt:event3rd
+cam3rd{
+fmt:cam3rd
 }
 follow{
 fmt:follow
@@ -164,8 +164,8 @@ q:0.3, 0.4
 (opengl, thatrect, 0) -> (slider, 0, 0)
 
 #thirdperson controller
-(event, 0, tar) -> (dog, 0, evby)
-(event, 0, cam) -> (freecam, 0, evto)
+(cam3rd, 0, tar) -> (dog, 0, evby)
+(cam3rd, 0, cam) -> (freecam, 0, evto)
 
 #dog pose
 (slider, 0, evto) -> (dog, 0, int)

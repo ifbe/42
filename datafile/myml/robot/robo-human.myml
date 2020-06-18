@@ -12,8 +12,8 @@ virtual{
 fmt:virtual
 }
 
-event{
-fmt:event3rd
+cam3rd{
+fmt:cam3rd
 }
 </entity>
 
@@ -104,6 +104,6 @@ q:1.0, 1.0
 #glwnd depends on cam
 (opengl, freerect, mvp) -> (freecam, 0, 0)
 
-(event, 0, tar) -> (man, 0, evby)
-(event, 0, cam) -> (freecam, 0, evto)
+(cam3rd, 0, tar) -> (man, 0, evby)
+(cam3rd, 0, cam) -> (freecam, 0, evto)
 </relation>

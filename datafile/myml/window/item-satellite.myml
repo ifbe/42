@@ -9,8 +9,8 @@ fmt:freecam
 virtual{
 fmt:virtual
 }
-event{
-fmt:event3rd
+cam3rd{
+fmt:cam3rd
 }
 </entity>
 
@@ -82,8 +82,8 @@ q:1.0, 1.0
 
 <relation>
 #ev
-(event, 0, tar) -> (satellite, 0, evby)
-(event, 0, cam) -> (freecam, 0, evto)
+(cam3rd, 0, tar) -> (satellite, 0, evby)
+(cam3rd, 0, cam) -> (freecam, 0, evto)
 
 #input
 (listen, 0, dst) -> (str2vec, 0, str)

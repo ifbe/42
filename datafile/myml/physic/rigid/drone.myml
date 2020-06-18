@@ -35,8 +35,8 @@ fmt:flycon
 gravity{
 fmt:gravtest
 }
-event{
-fmt:event3rd
+cam3rd{
+fmt:cam1rd
 }
 </entity>
 
@@ -155,8 +155,8 @@ q:0.1, 0.1
 (button, 0, evto) -> (gravity, 0, ioby)
 
 #mouse: 3rd controller
-(event, 0, tar) -> (drone, 0, evby)
-(event, 0, cam) -> (cam0, 0, mind)
+(cam3rd, 0, tar) -> (drone, 0, evby)
+(cam3rd, 0, cam) -> (cam0, 0, mind)
 
 #gravity
 (gravity, 0, 0) -> (scene, 0, 0)

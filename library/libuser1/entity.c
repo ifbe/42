@@ -183,18 +183,24 @@ int gl41coop_taking(void*,int, void*,int, void*,int, void*,int);
 int gl41coop_giving(void*,int, void*,int, void*,int, void*,int);
 
 //event
-int event3rd_create(void*, void*, int, u8**);
-int event3rd_delete(void*);
-int event3rd_linkup(void*, void*);
-int event3rd_discon(void*, void*);
-int event3rd_taking(void*,int, void*,int, void*,int, void*,int);
-int event3rd_giving(void*,int, void*,int, void*,int, void*,int);
-int eventrts_create(void*, void*, int, u8**);
-int eventrts_delete(void*);
-int eventrts_linkup(void*, void*);
-int eventrts_discon(void*, void*);
-int eventrts_taking(void*,int, void*,int, void*,int, void*,int);
-int eventrts_giving(void*,int, void*,int, void*,int, void*,int);
+int cam1rd_create(void*, void*, int, u8**);
+int cam1rd_delete(void*);
+int cam1rd_linkup(void*, void*);
+int cam1rd_discon(void*, void*);
+int cam1rd_taking(void*,int, void*,int, void*,int, void*,int);
+int cam1rd_giving(void*,int, void*,int, void*,int, void*,int);
+int cam3rd_create(void*, void*, int, u8**);
+int cam3rd_delete(void*);
+int cam3rd_linkup(void*, void*);
+int cam3rd_discon(void*, void*);
+int cam3rd_taking(void*,int, void*,int, void*,int, void*,int);
+int cam3rd_giving(void*,int, void*,int, void*,int, void*,int);
+int camrts_create(void*, void*, int, u8**);
+int camrts_delete(void*);
+int camrts_linkup(void*, void*);
+int camrts_discon(void*, void*);
+int camrts_taking(void*,int, void*,int, void*,int, void*,int);
+int camrts_giving(void*,int, void*,int, void*,int, void*,int);
 int clickray_create(void*, void*, int, u8**);
 int clickray_delete(void*);
 int clickray_linkup(void*, void*);
@@ -334,13 +340,14 @@ void entityinput_touch(struct supply* win, struct event* ev)
 int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(act->type){
+	case _cam1rd_:return cam1rd_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _cam3rd_:return cam3rd_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _camrts_:return camrts_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _follow_:return follow_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _lookat_:return lookat_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _wander_:return wander_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _touchobj_:return touchobj_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _clickray_:return clickray_taking(act,foot, stack,sp, arg,key, buf,len);
-	case _event3rd_:return event3rd_taking(act,foot, stack,sp, arg,key, buf,len);
-	case _eventrts_:return eventrts_taking(act,foot, stack,sp, arg,key, buf,len);
 
 	case _gl41data_:return gl41data_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _gl41coop_:return gl41coop_taking(act,foot, stack,sp, arg,key, buf,len);
@@ -384,13 +391,15 @@ int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* 
 int entitywrite(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(act->type){
+	case _cam1rd_:return cam1rd_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _cam3rd_:return cam3rd_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _camrts_:return camrts_giving(act,foot, stack,sp, arg,key, buf,len);
+
 	case _follow_:return follow_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _lookat_:return lookat_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _wander_:return wander_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _touchobj_:return touchobj_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _clickray_:return clickray_giving(act,foot, stack,sp, arg,key, buf,len);
-	case _event3rd_:return event3rd_giving(act,foot, stack,sp, arg,key, buf,len);
-	case _eventrts_:return eventrts_giving(act,foot, stack,sp, arg,key, buf,len);
 
 	case _gl41data_:return gl41data_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _gl41coop_:return gl41coop_giving(act,foot, stack,sp, arg,key, buf,len);
@@ -440,13 +449,15 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 
 	//say("@entity_discon\n");
 	switch(act->type){
+	case _cam1rd_:return cam1rd_discon(self, peer);
+	case _cam3rd_:return cam3rd_discon(self, peer);
+	case _camrts_:return camrts_discon(self, peer);
+
 	case _follow_:return follow_discon(self, peer);
 	case _lookat_:return lookat_discon(self, peer);
 	case _wander_:return wander_discon(self, peer);
 	case _touchobj_:return touchobj_discon(self, peer);
 	case _clickray_:return clickray_discon(self, peer);
-	case _event3rd_:return event3rd_discon(self, peer);
-	case _eventrts_:return eventrts_discon(self, peer);
 
 	case _gl41data_:return gl41data_discon(self, peer);
 	case _gl41coop_:return gl41coop_discon(self, peer);
@@ -496,13 +507,15 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 
 	//say("@entity_linkup\n");
 	switch(act->type){
+	case _cam1rd_:return cam1rd_linkup(self, peer);
+	case _cam3rd_:return cam3rd_linkup(self, peer);
+	case _camrts_:return camrts_linkup(self, peer);
+
 	case _follow_:return follow_linkup(self, peer);
 	case _lookat_:return lookat_linkup(self, peer);
 	case _wander_:return wander_linkup(self, peer);
 	case _touchobj_:return touchobj_linkup(self, peer);
 	case _clickray_:return clickray_linkup(self, peer);
-	case _event3rd_:return event3rd_linkup(self, peer);
-	case _eventrts_:return eventrts_linkup(self, peer);
 
 	case _gl41data_:return gl41data_linkup(self, peer);
 	case _gl41coop_:return gl41coop_linkup(self, peer);
@@ -665,6 +678,28 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	}
 
 	//event
+	case _cam1rd_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _cam1rd_;
+		cam1rd_create(act, buf, argc, argv);
+		return act;
+	}
+	case _cam3rd_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _cam3rd_;
+		cam3rd_create(act, buf, argc, argv);
+		return act;
+	}
+	case _camrts_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _camrts_;
+		camrts_create(act, buf, argc, argv);
+		return act;
+	}
+
 	case _follow_:
 	{
 		act = allocentity();
@@ -698,20 +733,6 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		act = allocentity();
 		act->fmt = act->type = _clickray_;
 		clickray_create(act, buf, argc, argv);
-		return act;
-	}
-	case _event3rd_:
-	{
-		act = allocentity();
-		act->fmt = act->type = _event3rd_;
-		event3rd_create(act, buf, argc, argv);
-		return act;
-	}
-	case _eventrts_:
-	{
-		act = allocentity();
-		act->fmt = act->type = _eventrts_;
-		eventrts_create(act, buf, argc, argv);
 		return act;
 	}
 

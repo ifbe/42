@@ -7,7 +7,7 @@ void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, 
 
 
 
-static void* eventrts_find(struct entity* ent)
+static void* camrts_find(struct entity* ent)
 {
 	int ret;
 	struct halfrel* out[4];
@@ -24,7 +24,7 @@ static void* eventrts_find(struct entity* ent)
 	struct fstyle* geom = out[1]->pfoot;
 	return geom;
 }
-static void eventrts_fixgeom(struct fstyle* geom)
+static void camrts_fixgeom(struct fstyle* geom)
 {
 	geom->vr[0] = 1.0;
 	geom->vr[1] = 0.0;
@@ -42,13 +42,13 @@ static void eventrts_fixgeom(struct fstyle* geom)
 
 
 
-int eventrts_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int camrts_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int eventrts_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int camrts_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	struct fstyle* geom = eventrts_find(ent);
+	struct fstyle* geom = camrts_find(ent);
 	if(0 == geom)return 0;
 
 	struct event* ev = buf;
@@ -76,36 +76,36 @@ int eventrts_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, v
 		if(v[1] > 0.99)geom->vc[1] += 10.0;
 	}
 
-	eventrts_fixgeom(geom);
+	camrts_fixgeom(geom);
 	return 0;
 }
-int eventrts_discon(struct halfrel* self, struct halfrel* peer)
+int camrts_discon(struct halfrel* self, struct halfrel* peer)
 {
-	say("@eventrts_discon\n");
+	say("@camrts_discon\n");
 	return 0;
 }
-int eventrts_linkup(struct halfrel* self, struct halfrel* peer)
+int camrts_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@eventrts_linkup\n");
+	say("@camrts_linkup\n");
 	return 0;
 }
 
 
 
 
-int eventrts_search(struct entity* win)
+int camrts_search(struct entity* win)
 {
 	return 0;
 }
-int eventrts_modify(struct entity* win)
+int camrts_modify(struct entity* win)
 {
 	return 0;
 }
-int eventrts_delete(struct entity* win)
+int camrts_delete(struct entity* win)
 {
 	return 0;
 }
-int eventrts_create(struct entity* act, void* flag)
+int camrts_create(struct entity* act, void* flag)
 {
 	return 0;
 }

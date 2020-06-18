@@ -29,8 +29,8 @@ uiux{
 fmt:virtual
 }
 
-event{
-fmt:eventrts
+camrts{
+fmt:camrts
 }
 </entity>
 
@@ -136,6 +136,6 @@ q:0.3, 0.3
 (opengl, uiuxrect, 0) -> (uiux, 0, 0)
 
 #event
-(event, 0, evto) -> (freecam, 0, evby)
-(event, 0, evby) -> (uiux, 0, evto)
+(camrts, 0, evto) -> (freecam, 0, evby)
+(camrts, 0, evby) -> (uiux, 0, evto)
 </relation>
