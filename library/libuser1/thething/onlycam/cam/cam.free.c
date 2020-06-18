@@ -1,9 +1,11 @@
 #include "libuser.h"
+#define _mind_ hex32('m','i','n','d')
 #define OWNBUF buf0
 //
 #define EVTOTYPE data2
 #define IOTO 1
 #define EVTO 2
+#define MIND 4
 //
 #define DRAWTYPE data3
 #define RASTER 0
@@ -510,6 +512,8 @@ static int freecam_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 {
 	//say("@freecam_read\n");
 	if(sp < 2)return 0;
+	take_data_from_peer(ent,_mind_, stack,sp, 0,0, 0,0);
+
 	struct entity* sup = stack[sp-2].pchip;
 	if(0 == sup)return 0;
 
@@ -523,6 +527,10 @@ static int freecam_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 static int freecam_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct event* ev = buf;
+	if(ent->EVTOTYPE & MIND){
+		give_data_into_peer(ent,_mind_, stack,sp, arg,key, buf,len);
+		return 0;
+	}
 	if(ent->EVTOTYPE & EVTO){
 		if(_char_ != ev->what){
 			give_data_into_peer(ent,_evto_, stack,sp, arg,key, buf,len);
@@ -546,6 +554,10 @@ static void freecam_linkup(struct halfrel* self, struct halfrel* peer)
     say("@freecam_linkup\n");
 
 	struct entity* this = self->pchip;
+	if(_mind_ == self->flag){
+		this->EVTOTYPE |= MIND;
+		return;
+	}
 	if(_ioto_ == self->flag){
 		this->EVTOTYPE |= IOTO;
 		return;

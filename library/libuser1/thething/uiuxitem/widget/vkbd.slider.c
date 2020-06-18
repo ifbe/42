@@ -10,20 +10,6 @@ void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, 
 
 static int slider_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
-	struct relation* rel;
-	struct entity* world;
-
-	rel = act->irel0;
-	while(1){
-		if(0 == rel)break;
-		world = (void*)(rel->srcchip);
-		if(_virtual_ == world->type){
-			self[0] = (void*)&rel->dstchip;
-			peer[0] = (void*)&rel->srcchip;
-			return 1;
-		}
-		rel = samedstnextsrc(rel);
-	}
 	return 0;
 }
 static int slider_modify(struct entity* act)

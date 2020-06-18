@@ -152,13 +152,11 @@ q:0.1, 0.1
 
 #
 (slider, 0, evto) -> (control, 0, evby)
+(button, 0, evto) -> (gravity, 0, ioby)
 
 #mouse: 3rd controller
 (event, 0, tar) -> (drone, 0, evby)
-(event, 0, cam) -> (cam0, 0, evto)
-
-#keyboard: 
-(cam0, 0, ioto) -> (gravity, 0, ioby)
+(event, 0, cam) -> (cam0, 0, mind)
 
 #gravity
 (gravity, 0, 0) -> (scene, 0, 0)

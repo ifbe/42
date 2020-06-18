@@ -1,30 +1,11 @@
 #include "libuser.h"
 #define _quat_ hex32('q','u','a','t')
+#define _imag_ hex32('i','m','a','g')
 
 
 
 
-static void drone_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	int cx, cy, ww, hh;
-	if(sty)
-	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
-	}
-	else
-	{
-		cx = win->width/2;
-		cy = win->height/2;
-		ww = win->width/2;
-		hh = win->height/2;
-	}
-}
-static void drone_draw_gl41(
+static void drone_forgl41_actual(
 	struct entity* act, struct style* part,
 	struct entity* scn, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -132,6 +113,105 @@ static void drone_draw_gl41(
 	carveascii_center(ctx, 0xffffff, tc, kr, kf, '4');
 	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1, dt);
 }
+static void drone_forgl41_estimate(
+	struct entity* act, struct style* part,
+	struct entity* scn, struct style* geom,
+	struct entity* ctx, struct style* area)
+{
+	int j;
+	float dt;
+	vec3 tc,tr,tf,tu;
+	vec3 kc,kr,kf,ku;
+	float* vc = geom->fshape.vc;
+	float* vr = geom->fshape.vr;
+	float* vf = geom->fshape.vf;
+	float* vt = geom->fshape.vt;
+
+
+	//board
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] + vt[j]/4;
+		tr[j] = vr[j] / 4;
+		tf[j] = vf[j] / 4;
+		tu[j] = vt[j] / 4;
+	}
+	gl41opaque_prism4(ctx, 0x3fffffff, tc, tr, tf, tu);
+
+	//pie
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] + vt[j]/4;
+		tr[j] = vr[j] + vf[j];
+		tf[j] = (vf[j] - vr[j]) / 16;
+	}
+	gl41opaque_prism4(ctx, 0x3ffedcba, tc, tr, tf, tu);
+
+	//na
+	for(j=0;j<3;j++){
+		tc[j] = vc[j] + vt[j]/4;
+		tr[j] = (vr[j] + vf[j]) / 16;
+		tf[j] = vf[j] - vr[j];
+	}
+	gl41opaque_prism4(ctx, 0x3ffedcba, tc, tr, tf, tu);
+
+	//tmp
+	dt = timeread() % 1000000;
+	for(j=0;j<3;j++){
+		kr[j] = vr[j] / 4;
+		kf[j] = vf[j] / 4;
+		ku[j] = vt[j] / 4;
+		tr[j] = vr[j] / 32;
+		tf[j] = vf[j] / 32;
+		tu[j] = vt[j] / 2;
+	}
+
+	//rf, motor1
+	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] + vf[j] + tu[j];
+	gl41opaque_cylinder(ctx, 0x3f765432, tc, tr, tf, tu);
+	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] + vf[j] + vt[j];
+	gl41opaque_propeller(ctx, 0x3fffffff, tc, kr, kf, ku, 1, dt);
+	carveascii_center(ctx, 0xffffff, tc, kr, kf, '1');
+
+	//ln, motor2
+	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] - vf[j] + tu[j];
+	gl41opaque_cylinder(ctx, 0x3f765432, tc, tr, tf, tu);
+	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] - vf[j] + vt[j];
+	gl41opaque_propeller(ctx, 0x3fffffff, tc, kr, kf, ku, 1, dt);
+	carveascii_center(ctx, 0xffffff, tc, kr, kf, '2');
+
+	//lf, motor3
+	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] + vf[j] + tu[j];
+	gl41opaque_cylinder(ctx, 0x3f765432, tc, tr, tf, tu);
+	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] + vf[j] + vt[j];
+	gl41opaque_propeller(ctx, 0x3fffffff, tc, kr, kf, ku, -1, dt);
+	carveascii_center(ctx, 0xffffff, tc, kr, kf, '3');
+
+	//rn, motor4
+	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] - vf[j] + tu[j];
+	gl41opaque_cylinder(ctx, 0x3f765432, tc, tr, tf, tu);
+	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] - vf[j] + vt[j];
+	gl41opaque_propeller(ctx, 0x3fffffff, tc, kr, kf, ku, -1, dt);
+	carveascii_center(ctx, 0xffffff, tc, kr, kf, '4');
+}
+static void drone_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+	int cx, cy, ww, hh;
+	if(sty)
+	{
+		cx = sty->f.vc[0];
+		cy = sty->f.vc[1];
+		ww = sty->f.vr[0];
+		hh = sty->f.vf[1];
+	}
+	else
+	{
+		cx = win->width/2;
+		cy = win->height/2;
+		ww = win->width/2;
+		hh = win->height/2;
+	}
+}
 static void drone_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -223,7 +303,8 @@ static void drone_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		slot = stack[sp-1].pfoot;
 		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		drone_draw_gl41(ent,slot, wor,geom, wnd,area);
+		if(_imag_==foot)drone_forgl41_estimate(ent,slot, wor,geom, wnd,area);
+		else drone_forgl41_actual(ent,slot, wor,geom, wnd,area);
 	}
 }
 static void drone_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

@@ -1,9 +1,33 @@
 #include "libuser.h"
-#define THECAM buf0
-#define THETAR buf1
-#define MOUSEDOWN iw0
 #define _tar_ hex32('t','a','r',0)
 #define _geom_ hex32('g','e','o','m')
+void quaternion_rotatefrom(float* o, float* v, float* q);
+
+
+
+
+struct privdata{
+	struct entity* cam;
+	struct entity* tar;
+
+	struct style* caminworld;
+	struct style* tarinworld;
+
+	vec4 cam2tar;
+	vec4 tar2tmp;	//shoulder surfing
+
+	int mousedown_x;
+	int mousedown_y;
+	int mousedown_z;
+	int mousedown_flag;
+	int mousemove_x;
+	int mousemove_y;
+	int mousemove_z;
+	int mousemove_flag;
+
+	int touchdown[4];
+	int touchmove[4];
+};
 
 
 
@@ -21,50 +45,80 @@ int event3rd_movetar(struct fstyle* camgeom, struct fstyle* targeom, int dx, int
 	cam[2] += dz;
 	return 0;
 }
-int event3rd_nearfar(struct fstyle* cam, struct fstyle* tar, int key, int val)
+int event3rd_nearfar(struct privdata* own, struct fstyle* cam, struct fstyle* tar, int key, int val)
 {
 	float k = 1.0;
 	if('b' == key)k = 1.01 - val*0.01;
 	if('f' == key)k = 0.99 - val*0.01;
 	//say("%x,%x\n",key,val);
 
-	vec3 v;
-	v[0] = cam->vc[0] - tar->vc[0];
-	v[1] = cam->vc[1] - tar->vc[1];
-	v[2] = cam->vc[2] - tar->vc[2];
-	cam->vc[0] = tar->vc[0] + v[0]*k;
-	cam->vc[1] = tar->vc[1] + v[1]*k;
-	cam->vc[2] = tar->vc[2] + v[2]*k;
+	own->cam2tar[3] *= k;
+	vec3_setlen(own->cam2tar, own->cam2tar[3]);
+	cam->vc[0] = tar->vc[0] - own->cam2tar[0];
+	cam->vc[1] = tar->vc[1] - own->cam2tar[1];
+	cam->vc[2] = tar->vc[2] - own->cam2tar[2];
+
+	cam->vf[0] = own->cam2tar[0];
+	cam->vf[1] = own->cam2tar[1];
+	cam->vf[2] = own->cam2tar[2];
+	vec3_normalize(cam->vf);
+
+	//
+	cam->vr[0] = cam->vf[1];
+	cam->vr[1] =-cam->vf[0];
+	cam->vr[2] = 0.0;
+	vec3_normalize(cam->vr);
+
+	//a × b = [aybz-azby, azbx-axbz, axby-aybx]
+	cam->vt[0] = cam->vr[1]*cam->vf[2] - cam->vr[2]*cam->vf[1];
+	cam->vt[1] = cam->vr[2]*cam->vf[0] - cam->vr[0]*cam->vf[2];
+	cam->vt[2] = cam->vr[0]*cam->vf[1] - cam->vr[1]*cam->vf[0];
 	return 0;
 }
-int event3rd_movecam(struct fstyle* cam, struct fstyle* tar, int dx, int dy)
+int event3rd_movecam(struct privdata* own, struct fstyle* cam, struct fstyle* tar, int dx, int dy)
 {
 	float a,c,s;
-	float vec[4];
+	float q[4];
 	float tmp[4];
 
 	if(dy != 0){
-		tmp[0] = vec[0] = cam->vc[0] - tar->vc[0];
-		tmp[1] = vec[1] = cam->vc[1] - tar->vc[1];
-		tmp[2] = vec[2] = cam->vc[2] - tar->vc[2];
-		quaternion_operation(tmp, cam->vr, -dy/100.0);
+		a = -dy * 0.005;
+		s = sine(a);
+		c = cosine(a);
 
-		if(tmp[0]*vec[0] + tmp[1]*vec[1] > 0.0){
-			cam->vc[0] = tar->vc[0]+tmp[0];
-			cam->vc[1] = tar->vc[1]+tmp[1];
-			cam->vc[2] = tar->vc[2]+tmp[2];
+		//r
+		q[0] = own->cam2tar[1];
+		q[1] =-own->cam2tar[0];
+		a = s / squareroot(q[0]*q[0] + q[1]*q[1]);
+
+		//q
+		q[0] *= a;
+		q[1] *= a;
+		q[2] = 0.0;
+		q[3] = c;
+
+		//new
+		quaternion_rotatefrom(tmp, own->cam2tar, q);
+		if(tmp[0]*own->cam2tar[0] + tmp[1]*own->cam2tar[1] > 0.0){
+			own->cam2tar[0] = tmp[0];
+			own->cam2tar[1] = tmp[1];
+			own->cam2tar[2] = tmp[2];
 		}
 	}
 
 	if(dx != 0){
-		vec[0] = cam->vc[0] - tar->vc[0];
-		vec[1] = cam->vc[1] - tar->vc[1];
-		a = -dx/100.0;
+		a = -dx * 0.005;
 		s = sine(a);
 		c = cosine(a);
-		cam->vc[0] = tar->vc[0] + vec[0]*c - vec[1]*s;
-		cam->vc[1] = tar->vc[1] + vec[0]*s + vec[1]*c;
+		tmp[0] = own->cam2tar[0];
+		tmp[1] = own->cam2tar[1];
+		own->cam2tar[0] = tmp[0]*c - tmp[1]*s;
+		own->cam2tar[1] = tmp[0]*s + tmp[1]*c;
 	}
+
+	cam->vc[0] = tar->vc[0] - own->cam2tar[0];
+	cam->vc[1] = tar->vc[1] - own->cam2tar[1];
+	cam->vc[2] = tar->vc[2] - own->cam2tar[2];
 
 	cam->vf[0] = tar->vc[0] - cam->vc[0];
 	cam->vf[1] = tar->vc[1] - cam->vc[1];
@@ -75,6 +129,7 @@ int event3rd_movecam(struct fstyle* cam, struct fstyle* tar, int dx, int dy)
 	cam->vr[0] = cam->vf[1];
 	cam->vr[1] =-cam->vf[0];
 	cam->vr[2] = 0.0;
+	vec3_normalize(cam->vr);
 
 	//
 	cam->vt[0] = cam->vr[1]*cam->vf[2] - cam->vr[2]*cam->vf[1];
@@ -114,54 +169,99 @@ void* event3rd_findgeom(struct entity* ent)
 
 int event3rd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	struct privdata* own = ent->buf0;
+	if(0 == own)return 0;
+
+	struct style* cam = own->caminworld;
+	if(0 == cam){
+		cam = event3rd_findgeom(own->cam);
+		if(0 == cam)return 0;
+
+		own->caminworld = cam;
+	}
+
+	struct style* tar = own->tarinworld;
+	if(0 == tar){
+		tar = event3rd_findgeom(own->tar);
+		if(0 == tar)return 0;
+
+		own->tarinworld = tar;
+	}
+
+	cam->fs.vc[0] = tar->fs.vc[0] - own->cam2tar[0];
+	cam->fs.vc[1] = tar->fs.vc[1] - own->cam2tar[1];
+	cam->fs.vc[2] = tar->fs.vc[2] - own->cam2tar[2];
+
+	cam->fs.vf[0] = own->cam2tar[0];
+	cam->fs.vf[1] = own->cam2tar[1];
+	cam->fs.vf[2] = own->cam2tar[2];
+	vec3_normalize(cam->fs.vf);
+
+	//
+	cam->fs.vr[0] = cam->fs.vf[1];
+	cam->fs.vr[1] =-cam->fs.vf[0];
+	cam->fs.vr[2] = 0.0;
+	vec3_normalize(cam->fs.vr);
+
+	//a × b = [aybz-azby, azbx-axbz, axby-aybx]
+	cam->fs.vt[0] = cam->fs.vr[1]*cam->fs.vf[2] - cam->fs.vr[2]*cam->fs.vf[1];
+	cam->fs.vt[1] = cam->fs.vr[2]*cam->fs.vf[0] - cam->fs.vr[0]*cam->fs.vf[2];
+	cam->fs.vt[2] = cam->fs.vr[0]*cam->fs.vf[1] - cam->fs.vr[1]*cam->fs.vf[0];
 	return 0;
 }
 int event3rd_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, struct event* ev, int len)
 {
 	//printmemory(ev,16);
+	struct privdata* own = ent->buf0;
+	if(0 == own)return 0;
+
+	struct style* camgeom = own->caminworld;
+	if(0 == camgeom){
+		camgeom = event3rd_findgeom(own->cam);
+		if(0 == camgeom)return 0;
+
+		own->caminworld = camgeom;
+	}
+
+	struct style* targeom = own->tarinworld;
+	if(0 == targeom){
+		targeom = event3rd_findgeom(own->tar);
+		if(0 == targeom)return 0;
+
+		own->tarinworld = targeom;
+	}
+
 	if(0x2d70 == ev->what){
-		ent->MOUSEDOWN = 0;
+		own->mousedown_flag = 0;
 		return 0;
 	}
 	if(0x2b70 == ev->what){
 		short* ch = (void*)ev;
-		ent->ix0 = ent->ixn = ch[0];
-		ent->iy0 = ent->iyn = ch[1];
-		ent->MOUSEDOWN = 1;
+		own->mousedown_x = own->mousemove_x = ch[0];
+		own->mousedown_y = own->mousemove_y = ch[1];
+		own->mousedown_flag = 1;
 		return 0;
 	}
 	if(0x4070 == ev->what){
-		struct fstyle* camgeom = event3rd_findgeom(ent->THECAM);
-		if(0 == camgeom)return 0;
-
-		struct fstyle* targeom = event3rd_findgeom(ent->THETAR);
-		if(0 == targeom)return 0;
-
 		short* ch = (void*)ev;
 		switch(ch[3]){
 		case 'f':
 		case 'b':{
-			event3rd_nearfar(camgeom, targeom, ch[3], ch[2]);
+			event3rd_nearfar(own, &camgeom->fshape, &targeom->fshape, ch[3], ch[2]);
 			break;
 		}//mouse scroll
 		case 'l':
 		case 'r':{
-			if(0 == ent->MOUSEDOWN)return 0;
-			event3rd_movecam(camgeom, targeom, ch[0] - ent->ixn, ch[1] - ent->iyn);
-			ent->ixn = ch[0];
-			ent->iyn = ch[1];
+			if(0 == own->mousedown_flag)return 0;
+			event3rd_movecam(own, &camgeom->fshape, &targeom->fshape, ch[0] - own->mousemove_x, ch[1] - own->mousemove_y);
+			own->mousemove_x = ch[0];
+			own->mousemove_y = ch[1];
 			break;
 		}//mouse move
 		}//switch
 		return 0;
 	}
 	if(_char_ == ev->what){
-		struct fstyle* camgeom = event3rd_findgeom(ent->THECAM);
-		if(0 == camgeom)return 0;
-
-		struct fstyle* targeom = event3rd_findgeom(ent->THETAR);
-		if(0 == targeom)return 0;
-
 		int dx=0,dy=0,dz=0;
 		switch(ev->why){
 			case 'a':dx =-100;break;
@@ -172,17 +272,11 @@ int event3rd_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, s
 			case 'e':dz = 100;break;
 			default:return 0;
 		}
-		event3rd_movetar(camgeom, targeom, dx, dy, dz);
+		event3rd_movetar(&camgeom->fshape, &targeom->fshape, dx, dy, dz);
 		return 0;
 	}
 	else if('j' == (ev->what&0xff))
 	{
-		struct fstyle* camgeom = event3rd_findgeom(ent->THECAM);
-		if(0 == camgeom)return 0;
-
-		struct fstyle* targeom = event3rd_findgeom(ent->THETAR);
-		if(0 == targeom)return 0;
-
 		short* t = (void*)ev;
 		if(joy_left == (ev->what & joy_mask))
 		{
@@ -190,7 +284,7 @@ int event3rd_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, s
 			int dy=0;
 			if((t[0]<-4096)|(t[0]>4096))dx = t[0]/256;
 			if((t[1]<-4096)|(t[1]>4096))dy = t[1]/256;
-			event3rd_movetar(camgeom, targeom, dx, dy, 0);
+			event3rd_movetar(&camgeom->fshape, &targeom->fshape, dx, dy, 0);
 			return 0;
 		}
 		else if(joy_right == (ev->what & joy_mask))
@@ -199,7 +293,7 @@ int event3rd_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, s
 			int dy=0;
 			if((t[0]<-4096)|(t[0]>4096))dx = t[0]/4096;
 			if((t[1]<-4096)|(t[1]>4096))dy =-t[1]/4096;
-			event3rd_movecam(camgeom, targeom, dx, dy);
+			event3rd_movecam(own, &camgeom->fshape, &targeom->fshape, dx, dy);
 			return 0;
 		}
 	}
@@ -214,9 +308,10 @@ int event3rd_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	say("@event3rd_linkup\n");
 	struct entity* ent = self->pchip;
+	struct privdata* own = ent->buf0;
 	switch(self->flag){
-	case _cam_:ent->THECAM = peer->pchip;break;
-	case _tar_:ent->THETAR = peer->pchip;break;
+	case _cam_:own->cam = peer->pchip;break;
+	case _tar_:own->tar = peer->pchip;break;
 	}
 	return 0;
 }
@@ -238,5 +333,10 @@ int event3rd_delete(struct entity* win)
 }
 int event3rd_create(struct entity* act, void* flag)
 {
+	struct privdata* own = act->buf0 = memorycreate(0x1000, 0);
+	own->cam2tar[0] = 0.0;
+	own->cam2tar[1] = 7.07;
+	own->cam2tar[2] =-7.07;
+	own->cam2tar[3] = 10.0;
 	return 0;
 }

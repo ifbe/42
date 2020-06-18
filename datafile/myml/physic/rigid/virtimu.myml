@@ -164,7 +164,7 @@ q:0.1, 0.1
 
 #mouse: 3rd controller
 (event, 0, tar) -> (drone1, 0, evby)
-(event, 0, cam) -> (cam0, 0, evto)
+(event, 0, cam) -> (cam0, 0, mind)
 
 #keyboard: 
 (cam0, 0, ioto) -> (gravity, 0, ioby)

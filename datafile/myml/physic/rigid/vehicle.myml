@@ -25,6 +25,9 @@ fmt:virtual
 slider{
 fmt:slider
 }
+button{
+fmt:button
+}
 
 control{
 fmt:carcon
@@ -139,6 +142,10 @@ aaaarect{
 c:0.0, 0.0
 q:1.0, 1.0
 }
+butnrect{
+c:0.0, 0.3
+q:0.1, 0.1
+}
 </style>
 
 
@@ -151,16 +158,15 @@ q:1.0, 1.0
 (world, aaaageom, 0) -> (cam0, aaaapart, 0)
 (opengl, aaaarect, 0) -> (cam0, 0, a0)
 (opengl, helprect, 0) -> (slider, 0, 0)
+(opengl, butnrect, 0) -> (button, 0, 0)
 
 #
 (slider, 0, evto) -> (control, 0, evby)
+(button, 0, evto) -> (gravity, 0, ioby)
 
 #mouse: 3rd controller
 (event, 0, tar) -> (rccar, 0, evby)
-(event, 0, cam) -> (cam0, 0, evto)
-
-#keyboard: 
-(cam0, 0, ioto) -> (gravity, 0, ioby)
+(event, 0, cam) -> (cam0, 0, mind)
 
 #gravity
 (gravity, 0, 0) -> (scene, 0, 0)
