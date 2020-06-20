@@ -36,7 +36,6 @@ int gl41wnd0_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int idx, voi
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//foreach camera
-	int ret;
 	struct relation* rel = wnd->orel0;
 	while(1){
 		if(0 == rel)break;
@@ -44,24 +43,19 @@ int gl41wnd0_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int idx, voi
 		//wnd = rel->psrcchip;		//double check
 		struct fstyle* area = rel->psrcfoot;
 		if(area){
+			//get vertex
 			stack[sp+0].pchip = rel->psrcchip;
 			stack[sp+0].pfoot = rel->psrcfoot;
 			//stack[sp+0].type = rel->srctype;
 			stack[sp+0].flag = rel->srcflag;
-
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
 			//stack[sp+1].type = rel->dsttype;
 			stack[sp+1].flag = rel->dstflag;
-
-			//get vertex
-			ret = entityread(rel->pdstchip, rel->dstflag, stack,sp+2, 0,'v', 0, 0);
+			entityread(rel->pdstchip, rel->dstflag, stack,sp+2, 0,'v', 0, 0);
 
 			//upload
 			fullwindow_upload(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque);
-
-			//get fbo tex, get cam mvp
-			entityread(rel->pdstchip, rel->dstflag, stack,sp+2, 0,'?', 0, 0);
 
 			//render
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);

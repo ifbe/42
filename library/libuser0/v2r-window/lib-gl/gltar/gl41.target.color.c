@@ -49,21 +49,15 @@ int gl41fboc_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int idx, voi
 			stack[sp+0].pfoot = rel->psrcfoot;
 			//stack[sp+0].type = rel->srctype;
 			stack[sp+0].flag = rel->srcflag;
-
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
 			//stack[sp+1].type = rel->dsttype;
 			stack[sp+1].flag = rel->dstflag;
-//say("@read v\n");
-			//get vertex
 			entityread(rel->pdstchip, rel->dstflag, stack,sp+2, 0,'v', 0, 0);
-//say("@upload\n");
+
 			//upload
 			fullwindow_upload(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque);
-//say("@read ?\n");
-			//get fbo tex, get cam mvp
-			entityread(rel->pdstchip, rel->dstflag, stack,sp+2, 0,'?', 0, 0);
-//say("@render\n");
+
 			//render
 			glBindFramebuffer(GL_FRAMEBUFFER, wnd->fbo);
 			fullwindow_render(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque, wnd, area);
@@ -86,6 +80,7 @@ int gl41fboc_write(_sup* this,int foot, _syn* stack,int sp, void* arg,int idx, v
 
 	struct supply* wnd = stack[sp-8].pchip;
 	struct fstyle* area = stack[sp-1].pfoot;
+	fullwindow_upload(this->gl_camera, this->gl_light, wnd->gl_solid, wnd->gl_opaque);
 	fullwindow_render(this->gl_camera, this->gl_light, wnd->gl_solid, wnd->gl_opaque, this, area);
 	return 0;
 }

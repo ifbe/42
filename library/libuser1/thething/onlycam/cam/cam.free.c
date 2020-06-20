@@ -470,20 +470,19 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	}
 
 	if('v' == key){
+		//clear all
 		gl41data_before(wnd);
-
-		//take_data_from_peer(ent,_evto_, stack,sp, arg,key, buf,len);
+		//camera matrix
 		freecam_ratio(wor, geom, wnd, area);
 		freecam_shape2frustum(&geom->fshape, &geom->frustum);
 		freecam_frustum2matrix(ent,slot, wor,geom);
 		freecam_gl41cam(ent,slot, wor,geom, wnd,area);
-
+		//render data
 		gl41data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
-
+		//enq++
 		gl41data_after(wnd);
-		return -1;
-	}
-	if('?' == key){
+
+		//let fbos draw, before window draw
 		gl41data_taking(wor,0, stack,sp+2, 0,'?', buf,len);
 		return 0;
 	}
