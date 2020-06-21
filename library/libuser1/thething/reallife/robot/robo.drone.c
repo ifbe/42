@@ -21,17 +21,17 @@ static void drone_forgl41_actual(
 
 
 	//debug position
-	gl41line(ctx, 0x000000, vc, geom->expect.displace_x);
+	gl41line(ctx, 0x000000, vc, geom->desire.displace_x);
 
-	for(j=0;j<3;j++){tc[j] = vc[j] + geom->expect.displace_v[j];}
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->desire.displace_v[j];}
 	gl41line(ctx, 0x808080, vc, tc);
 
-	for(j=0;j<3;j++){tc[j] = vc[j] + geom->expect.displace_a[j];}
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->desire.displace_a[j];}
 	gl41line(ctx, 0xffffff, vc, tc);
 
 
 	//debug rotation
-	float* q = geom->expect.angular_x;
+	float* q = geom->desire.angular_x;
 	tr[0] = 1.0 - (q[1]*q[1] + q[2]*q[2]) * 2.0;
 	tr[1] = 2.0 * (q[0]*q[1] + q[2]*q[3]);
 	tr[2] = 2.0 * (q[0]*q[2] - q[1]*q[3]);
@@ -42,10 +42,10 @@ static void drone_forgl41_actual(
 	vec3_setlen(tf, vf[3]);
 	gl41line_rect(ctx, 0x0000ff, vc, tr, tf);
 
-	for(j=0;j<3;j++){tc[j] = vc[j] + geom->expect.angular_v[j];}
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->desire.angular_v[j];}
 	gl41line(ctx, 0x00ff00, vc, tc);
 
-	for(j=0;j<3;j++){tc[j] = vc[j] + geom->expect.angular_a[j];}
+	for(j=0;j<3;j++){tc[j] = vc[j] + geom->desire.angular_a[j];}
 	gl41line(ctx, 0xff0000, vc, tc);
 
 

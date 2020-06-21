@@ -324,22 +324,25 @@ struct imotion{
 };
 struct style
 {
-	//[00, 7f]: geometry
+	//[00, 7f]: bounding volume
 	union{
+		//float
 		struct fstyle fs;
 		struct fstyle fshape;
-		struct fstyle fbound;	//bounding volume
+		struct fstyle fbound;
+		//int
 		struct istyle is;
 		struct istyle ishape;
+		struct istyle ibound;
 	};
 
-	//[80, ff]: frustum
+	//[80, ff]: observe frustum
 	union{
 		struct fstyle frus;
 		struct fstyle frustum;
 	};
 
-	//[100, 17f]: correct motion (everything fine!)
+	//[100, 17f]: current motion
 	union{
 		struct fmotion actual;
 		struct fmotion fm;
@@ -348,10 +351,9 @@ struct style
 		struct imotion imotion;
 	};
 
-	//[180, 1ff]: notsure motion (collision test?)
+	//[180, 1ff]: future motion
 	union{
 		struct fmotion desire;
-		struct fmotion expect;
 	};
 
 	//[200, 27f]
