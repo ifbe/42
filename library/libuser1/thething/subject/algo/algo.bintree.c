@@ -121,10 +121,10 @@ static void bintree_draw_pixel(
 {
 	struct bintree* node;
 	struct bintree* right;
-	int cx = sty->f.vc[0];
-	int cy = sty->f.vc[1];
-	int ww = sty->f.vr[0];
-	int hh = sty->f.vf[1];
+	int cx = sty->fs.vc[0];
+	int cy = sty->fs.vc[1];
+	int ww = sty->fs.vr[0];
+	int hh = sty->fs.vf[1];
 
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 	drawstring(win, 0xffffff, cx-ww, cy-hh, buffer, 0);

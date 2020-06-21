@@ -151,10 +151,10 @@ static void dirlight_forwnd_meshupdate(
 
 	int x,y,j;
 	vec3 ta, tb;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 	gl41line_rect(ctx, 0xffffff, vc, vr, vt);
 
 	//light ray (for debug)

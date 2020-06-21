@@ -58,7 +58,7 @@ void tabbar_gl41_listtwig(struct entity* win, struct style* sty, struct entity* 
 
             ac = (void*)(rel->dstchip);
             st = (void*)(rel->srcfoot);
-            if('#' == st->i.uc[3])rgb = 0x404040;
+            if('#' == st->is.uc[3])rgb = 0x404040;
             else rgb = 0xff00ff;
             carvestring_center(win, rgb, tc, rr, tf, (void*)&ac->fmt, 8);
 
@@ -78,10 +78,10 @@ void tabbar_gl41_listroot(
     struct relation* rel;
     struct style* st;
     struct entity* aa;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = sty->fs.vc;
+	float* vr = sty->fs.vr;
+	float* vf = sty->fs.vf;
+	float* vu = sty->fs.vt;
 
     tc[0] = vc[0] - vf[0]*31/32;
     tc[1] = vc[1] - vf[1]*31/32;
@@ -163,7 +163,7 @@ void tabbar_pixel_listtwig(struct entity* win, struct style* sty, struct entity*
 
             ac = (void*)(rel->dstchip);
             st = (void*)(rel->srcfoot);
-            if('#' == st->i.uc[3])rgb = 0x404040;
+            if('#' == st->is.uc[3])rgb = 0x404040;
             else rgb = 0xff00ff;
             drawstring_fit(
                 win, rgb,
@@ -301,8 +301,8 @@ found:
         if(_ent_ == rel->dsttype){
             st = (void*)(rel->srcfoot);
             if(j == k){
-                if('#' == st->i.uc[3])st->i.uc[3] = 0;
-                else st->i.uc[3] = '#';
+                if('#' == st->is.uc[3])st->is.uc[3] = 0;
+                else st->is.uc[3] = '#';
                 return 1;
             }
 

@@ -46,7 +46,7 @@ int rgbanode_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, voi
 		if(_ent_ == rel->dsttype)
 		{
 			struct style* sty = (void*)(rel->srcfoot);
-			if(sty){if('#' == sty->i.uc[3])goto next;}
+			if(sty){if('#' == sty->is.uc[3])goto next;}
 
 			stack[sp+0].pchip = rel->psrcchip;
 			stack[sp+0].pfoot = rel->psrcfoot;
@@ -76,7 +76,7 @@ int rgbanode_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, vo
 		if(_ent_ == rel->dsttype)
 		{
 			struct style* sty = (void*)(rel->srcfoot);
-			if(sty){if('#' == sty->i.uc[3])goto next;}
+			if(sty){if('#' == sty->is.uc[3])goto next;}
 
 			stack[sp+0].pchip = rel->psrcchip;
 			stack[sp+0].pfoot = rel->psrcfoot;

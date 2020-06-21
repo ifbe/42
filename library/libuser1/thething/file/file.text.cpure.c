@@ -8,10 +8,10 @@ static void cpure_draw_gl41(
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 	gl41line_rect(ctx, 0x404040, vc, vr, vf);
 }
 

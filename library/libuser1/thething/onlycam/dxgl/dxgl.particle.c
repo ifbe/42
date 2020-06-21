@@ -96,10 +96,10 @@ static void particle_draw_gl41(
 	float* mat;
 	float* buf;
 
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 	//gl41line_prism4(wnd, 0xffffff, vc, vr, vf, vu);
 
 
@@ -114,21 +114,21 @@ static void particle_draw_gl41(
 
 
 	//update matrix
-	mat[ 0] = geom->f.vr[0];
-	mat[ 1] = geom->f.vr[1];
-	mat[ 2] = geom->f.vr[2];
+	mat[ 0] = geom->fs.vr[0];
+	mat[ 1] = geom->fs.vr[1];
+	mat[ 2] = geom->fs.vr[2];
 	mat[ 3] = 0.0;
-	mat[ 4] = geom->f.vf[0];
-	mat[ 5] = geom->f.vf[1];
-	mat[ 6] = geom->f.vf[2];
+	mat[ 4] = geom->fs.vf[0];
+	mat[ 5] = geom->fs.vf[1];
+	mat[ 6] = geom->fs.vf[2];
 	mat[ 7] = 0.0;
-	mat[ 8] = geom->f.vt[0];
-	mat[ 9] = geom->f.vt[1];
-	mat[10] = geom->f.vt[2];
+	mat[ 8] = geom->fs.vt[0];
+	mat[ 9] = geom->fs.vt[1];
+	mat[10] = geom->fs.vt[2];
 	mat[11] = 0.0;
-	mat[12] = geom->f.vc[0];
-	mat[13] = geom->f.vc[1];
-	mat[14] = geom->f.vc[2];
+	mat[12] = geom->fs.vc[0];
+	mat[13] = geom->fs.vc[1];
+	mat[14] = geom->fs.vc[2];
 	mat[15] = 1.0;
 
 

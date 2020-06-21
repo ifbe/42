@@ -112,10 +112,10 @@ void vkbd_draw_gl41(
 	int x,y,j;
 	int c,rgb;
 	vec3 tc,tr,tf;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 	//gl41opaque_rect(wnd, 0x800000ff, vc, vr, vf);
 
 	for(y=0;y<8;y++)

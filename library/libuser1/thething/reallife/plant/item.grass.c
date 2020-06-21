@@ -16,10 +16,10 @@ static void grass_draw_gl41(
 	int j,k;
 	vec3 v0,v1,v2;
 	float x0,y0,z0,rx,ry,rz,fx,fy,fz;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 
 	float* f = act->buf0;
 	for(k=0;k<8192;k++){

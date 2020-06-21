@@ -17,10 +17,10 @@ static void algorithm_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int cx = sty->f.vc[0];
-	int cy = sty->f.vc[1];
-	int ww = sty->f.vr[0];
-	int hh = sty->f.vf[1];
+	int cx = sty->fs.vc[0];
+	int cy = sty->fs.vc[1];
+	int ww = sty->fs.vr[0];
+	int hh = sty->fs.vf[1];
 
 	//left: origin
 	drawsolid_rect(win, 0x0000ff,

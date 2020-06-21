@@ -39,10 +39,10 @@ static void gaafet_draw_gl41(
 {
 	int j;
 	vec3 tc,tr,tf,tu;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 	gl41line_rect(wnd, 0xffffff, vc,vr,vf);
 }
 static void gaafet_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

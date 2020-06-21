@@ -44,10 +44,10 @@ static void texbox_draw_gl41(
 	void* vbuf;
 	void* ibuf;
 	struct glsrc* src;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 
 	src = act->buf0;
 	if(0 == src)return;

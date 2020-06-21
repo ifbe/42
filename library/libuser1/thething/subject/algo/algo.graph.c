@@ -102,9 +102,9 @@ static void graph_draw_gl41(
 		for(j=0;j<100;j++)
 		{
 			forcedirected_3d(buf, act->vlen, act->vbuf, act->vlen, act->wbuf, act->wlen);
-			vbuf[0] = sty->f.vc[0];
-			vbuf[1] = sty->f.vc[1];
-			vbuf[2] = sty->f.vc[2];
+			vbuf[0] = sty->fs.vc[0];
+			vbuf[1] = sty->fs.vc[1];
+			vbuf[2] = sty->fs.vc[2];
 		}
 /*
 		for(j=0;j<act->vlen;j++)
@@ -121,7 +121,7 @@ static void graph_draw_gl41(
 		j = wire[i].parent;
 		k = wire[i].child;
 
-		gl41line_arrow(win, 0xffffff, &vbuf[j*3], &vbuf[k*3], sty->f.vt);
+		gl41line_arrow(win, 0xffffff, &vbuf[j*3], &vbuf[k*3], sty->fs.vt);
 	}
 
 	//tr[0] = win->camera.vr[0];
@@ -291,9 +291,9 @@ static void graph_event(
 			act->ilen = act->wlen;
 			for(j=0;j<act->vlen;j++)
 			{
-				vbuf[j*3 + 0] = sty->f.vc[0] + (getrandom() & 0xffff) / 16.0;
-				vbuf[j*3 + 1] = sty->f.vc[1] + (getrandom() & 0xffff) / 16.0;
-				vbuf[j*3 + 2] = sty->f.vc[2] + (getrandom() & 0xffff) / 16.0;
+				vbuf[j*3 + 0] = sty->fs.vc[0] + (getrandom() & 0xffff) / 16.0;
+				vbuf[j*3 + 1] = sty->fs.vc[1] + (getrandom() & 0xffff) / 16.0;
+				vbuf[j*3 + 2] = sty->fs.vc[2] + (getrandom() & 0xffff) / 16.0;
 				say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
 			}
 say("%d,%d,%d,%d\n",act->nlen, act->wlen, act->vlen, act->ilen);
@@ -331,9 +331,9 @@ static void graph_linkup(struct halfrel* self, struct halfrel* peer)
 	act->ilen = act->wlen;
 	for(j=0;j<act->vlen;j++)
 	{
-		vbuf[j*3 + 0] = sty->f.vc[0] + (getrandom() & 0xffff) / 16.0;
-		vbuf[j*3 + 1] = sty->f.vc[1] + (getrandom() & 0xffff) / 16.0;
-		vbuf[j*3 + 2] = sty->f.vc[2] + (getrandom() & 0xffff) / 16.0;
+		vbuf[j*3 + 0] = sty->fs.vc[0] + (getrandom() & 0xffff) / 16.0;
+		vbuf[j*3 + 1] = sty->fs.vc[1] + (getrandom() & 0xffff) / 16.0;
+		vbuf[j*3 + 2] = sty->fs.vc[2] + (getrandom() & 0xffff) / 16.0;
 		say("%f,%f,%f\n", vbuf[j*3 + 0], vbuf[j*3 + 1], vbuf[j*3 + 2]);
 	}
 	say("%d,%d,%d,%d\n", act->nlen, act->wlen, act->vlen, act->ilen);

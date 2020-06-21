@@ -131,10 +131,10 @@ static void piano_draw_vbo2d(
 	int x;
 	vec3 tc,tr,tf,tu;
 	if(0 == sty)sty = defaultstyle_vbo2d();
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = sty->fs.vc;
+	float* vr = sty->fs.vr;
+	float* vf = sty->fs.vf;
+	float* vu = sty->fs.vt;
 
 	tr[0] = vr[0] / 7 / 11;
 	tr[1] = vr[1] / 7 / 11;
@@ -227,10 +227,10 @@ static void piano_draw_gl41(
 {
 	int x,j;
 	vec3 tc,tr,tf,tu;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 /*	tc[0] = vc[0] + vf[0]/2 + vu[0]/2;
 	tc[1] = vc[1] + vf[1]/2 + vu[1]/2;
 	tc[2] = vc[2] + vf[2]/2 + vu[2]/2;
@@ -294,10 +294,10 @@ static void piano_draw_pixel(
 	int cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
+		cx = sty->fs.vc[0];
+		cy = sty->fs.vc[1];
+		ww = sty->fs.vr[0];
+		hh = sty->fs.vf[1];
 	}
 	else
 	{

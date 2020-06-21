@@ -36,10 +36,10 @@ static int vrglass_draw_gl41(
 {
 	int x,y,j;
 	vec3 tc;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 
 	for(y=0;y<10;y++)
 	{
@@ -51,9 +51,9 @@ static int vrglass_draw_gl41(
 		for(x=-1;x<2;x+=2){
 			for(j=0;j<3;j++){
 				tc[j] = vc[j] +vr[j]*x +vt[j]*y;
-				tc[j] = tc[j]*10 - geom->f.vq[j]*9;
+				tc[j] = tc[j]*10 - geom->fs.vq[j]*9;
 			}
-			gl41line(wnd, 0xff0000, geom->f.vq, tc);
+			gl41line(wnd, 0xff0000, geom->fs.vq, tc);
 		}
 	}
 	return 0;

@@ -33,10 +33,10 @@ void overview_draw_pixel(
 	int cx,cy,ww,hh;
 	if(sty)
 	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
+		cx = sty->fs.vc[0];
+		cy = sty->fs.vc[1];
+		ww = sty->fs.vr[0];
+		hh = sty->fs.vf[1];
 	}
 	else
 	{
@@ -1110,8 +1110,8 @@ static int overview_event(
 		}
 		else
 		{
-			x = 4 + 4 * (x - (sty->f.vc[0])) / (sty->f.vr[0]);
-			y = 16 + 16 * (y - (sty->f.vc[1])) / (sty->f.vf[1]);
+			x = 4 + 4 * (x - (sty->fs.vc[0])) / (sty->fs.vr[0]);
+			y = 16 + 16 * (y - (sty->fs.vc[1])) / (sty->fs.vf[1]);
 		}
 		act->ix0 = x;
 		act->iy0 = y;
@@ -1128,8 +1128,8 @@ static int overview_event(
 			}
 			else
 			{
-				j = 4 + 4 * (j - (sty->f.vc[0])) / (sty->f.vr[0]);
-				k = 16 + 16 * (k - (sty->f.vc[1])) / (sty->f.vf[1]);
+				j = 4 + 4 * (j - (sty->fs.vc[0])) / (sty->fs.vr[0]);
+				k = 16 + 16 * (k - (sty->fs.vc[1])) / (sty->fs.vf[1]);
 			}
 
 			if((j<0)|(j>=16))return 0;

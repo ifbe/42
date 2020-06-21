@@ -83,10 +83,10 @@ void vjoy_draw_gl41(
 	u8 ch[8];
 	int x,y,j;
 	vec3 tc,tr,tf;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 	int w = wnd->fbwidth * area->fs.vq[0];
 	int h = wnd->fbheight * area->fs.vq[1];
 

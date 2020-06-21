@@ -89,10 +89,10 @@ void karnaugh_draw_gl41(
 	int x,y,j;
 	vec3 tc,tr,tf;
 	char* str[4] = {"00", "01", "11", "10"};
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 	for(j=0;j<3;j++)tc[j] = vc[j] -vt[j]/100.0;
 	gl41opaque_rect(wnd, 0x80000080, tc, vr, vf);
 

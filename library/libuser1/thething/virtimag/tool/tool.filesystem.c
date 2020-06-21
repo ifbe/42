@@ -134,10 +134,10 @@ static void fslist_draw_gl41(
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 	gl41line_rect(wnd,0x000080, vc,vr,vf);
 
 	struct str* path = act->PATHBUF;

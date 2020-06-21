@@ -11,10 +11,10 @@ static void house_draw_pixel(
 	int cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
+		cx = sty->fs.vc[0];
+		cy = sty->fs.vc[1];
+		ww = sty->fs.vr[0];
+		hh = sty->fs.vf[1];
 	}
 	else
 	{
@@ -35,10 +35,10 @@ static void house_draw_gl41(
 	struct entity* win, struct style* sty)
 {
 	vec3 tc, tr, tf, tu;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = sty->fs.vc;
+	float* vr = sty->fs.vr;
+	float* vf = sty->fs.vf;
+	float* vu = sty->fs.vt;
 	gl41solid_rect(win, 0x404040, vc, vr, vf);
 
 	//underground

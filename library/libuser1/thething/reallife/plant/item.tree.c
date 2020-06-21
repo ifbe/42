@@ -31,10 +31,10 @@ static void tree_draw_pixel(
 	int cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
+		cx = sty->fs.vc[0];
+		cy = sty->fs.vc[1];
+		ww = sty->fs.vr[0];
+		hh = sty->fs.vf[1];
 	}
 	else
 	{
@@ -58,10 +58,10 @@ static void tree_draw_d(
 {
 	vec3 tc, tr, tf, tu, f;
 
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = sty->fs.vc;
+	float* vr = sty->fs.vr;
+	float* vf = sty->fs.vf;
+	float* vu = sty->fs.vt;
 	//gl41solid_rect(win, 0x6a4b23, vc, vr, vf);
 
 	tc[0] = vc[0]-vf[0]/2;
@@ -117,10 +117,10 @@ static void tree_draw_gl41(
 	struct entity* ctx, struct style* area)
 {
 	vec3 tc, tr, tf, tu, f;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 	//gl41solid_rect(ctx, 0x6a4b23, vc, vr, vf);
 /*
 	tc[0] = vc[0]-vu[0];

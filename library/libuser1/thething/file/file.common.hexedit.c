@@ -68,10 +68,10 @@ static void hexedit_draw_pixel(
 	int cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
+		cx = sty->fs.vc[0];
+		cy = sty->fs.vc[1];
+		ww = sty->fs.vr[0];
+		hh = sty->fs.vf[1];
 	}
 	else
 	{

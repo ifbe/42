@@ -120,10 +120,10 @@ static void human_draw_pixel(
 	int cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
+		cx = sty->fs.vc[0];
+		cy = sty->fs.vc[1];
+		ww = sty->fs.vr[0];
+		hh = sty->fs.vf[1];
 	}
 	else
 	{
@@ -143,10 +143,10 @@ static void human_draw_gl41(
 	float w,h;
 	float x,y,z,n;
 	vec3* bonevert;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 	gl41line_circle(ctx, 0xff00ff, vc, vr, vf);
 
 	j = (timeread()%1000000);
@@ -241,10 +241,10 @@ static int human_event(
 	{
 		t = (void*)ev;
 		say("@human_swrite:%x\n", t[2]);
-		if(t[3] & joyl_left   )sty->f.vc[0] -= 10;
-		if(t[3] & joyl_right  )sty->f.vc[0] += 10;
-		if(t[3] & joyl_down   )sty->f.vc[1] -= 10;
-		if(t[3] & joyl_up     )sty->f.vc[1] += 10;
+		if(t[3] & joyl_left   )sty->fs.vc[0] -= 10;
+		if(t[3] & joyl_right  )sty->fs.vc[0] += 10;
+		if(t[3] & joyl_down   )sty->fs.vc[1] -= 10;
+		if(t[3] & joyl_up     )sty->fs.vc[1] += 10;
 		if(t[3] & joyl_trigger)act->z0 = 0;
 		if(t[3] & joyl_bumper )act->z0 += 10;
 	}
@@ -257,13 +257,13 @@ static int human_event(
 		if(0 == rel)break;
 		if(_ent_ == rel->srctype)
 		{
-			tmp[0] = sty->f.vc[0];
-			tmp[1] = sty->f.vc[1];
+			tmp[0] = sty->fs.vc[0];
+			tmp[1] = sty->fs.vc[1];
 			tmp[2] = 0.0;
 
 			entityread((void*)&rel->srcchip, (void*)&rel->dstchip, tmp, 0);
 
-			sty->f.vc[2] = tmp[2] + act->z0;
+			sty->fs.vc[2] = tmp[2] + act->z0;
 			break;
 		}
 		rel = samedstnextsrc(rel);

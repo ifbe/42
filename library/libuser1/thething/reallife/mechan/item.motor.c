@@ -17,10 +17,10 @@ static void motor_draw_gl41(
 	float a,c,s;
 	vec3 v1,v2,v3;
 	vec3 tc,tr,tf,tu;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 	gl41line_circle(ctx, 0xffffff, vc, vr, vf);
 
 	tr[0] = vr[0]/2;

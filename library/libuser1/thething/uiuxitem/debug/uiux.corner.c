@@ -291,7 +291,7 @@ void corner_gl41_popup(
 
 	struct style* st = (void*)(rel->srcfoot);
 	if(0 == st)return;
-	if('#' == st->i.uc[3])return;
+	if('#' == st->is.uc[3])return;
 
 	int j,rgb;
 	vec3 tc,tr,tf;
@@ -431,7 +431,7 @@ static int corner_event_twig(
 
 	st = (void*)(rel->srcfoot);
 	if(0 == st)return 0;
-	if('#' == st->i.uc[3])return 0;
+	if('#' == st->is.uc[3])return 0;
 
 	int w = win->width;
 	int h = win->height;
@@ -463,10 +463,10 @@ found:
 			if(x == y){
 				st = (void*)(rel->srcfoot);
 
-				j = st->i.uc[3];
+				j = st->is.uc[3];
 				if('#' == j)j = 0;
 				else j = '#';
-				st->i.uc[3] = j;
+				st->is.uc[3] = j;
 
 				break;
 			}
@@ -497,10 +497,10 @@ static int corner_onoff(
 	st = (void*)(rel->srcfoot);
 	if(0 == st)return 0;
 
-	j = st->i.uc[3];
+	j = st->is.uc[3];
 	if('#' == j)j = 0;
 	else j = '#';
-	st->i.uc[3] = j;
+	st->is.uc[3] = j;
 
 	return 1;
 }
@@ -607,7 +607,7 @@ static int corner_create(struct entity* act, u8* str)
 	ac->type = hex32('?','?','?', 0);
 	ac->fmt = hex32('?','?','?', 0);
 
-	sty->i.uc[3] = 0;
+	sty->is.uc[3] = 0;
 	relationcreate(ac, 0, _ent_, 0, act, sty, _ent_, 0);
 	return 0;
 }

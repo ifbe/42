@@ -10,10 +10,10 @@ static void finfet_draw_gl41(
 {
 	int y,j;
 	vec3 tc,tr,tf,tu;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 
 	//body.base
 	for(j=0;j<3;j++){

@@ -54,10 +54,10 @@ void truth_draw_gl41(
 	u8 ch[8];
 	int x,y,j,rgb;
 	vec3 tc,tr,tf;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 	for(j=0;j<3;j++)tc[j] = vc[j] -vt[j]/100.0;
 	gl41opaque_rect(wnd, 0x80800000, tc, vr, vf);
 

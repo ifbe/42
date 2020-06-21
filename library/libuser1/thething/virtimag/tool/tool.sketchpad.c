@@ -67,15 +67,15 @@ static void sketchpad_draw_gl41(
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 
-	float cx = slot->f.vc[0];
-	float cy = slot->f.vc[1];
-	float dx = slot->f.vr[0];
-	float dy = slot->f.vf[1] = dx * vec3_getlen(vf) / vec3_getlen(vr);
+	float cx = slot->fs.vc[0];
+	float cy = slot->fs.vc[1];
+	float dx = slot->fs.vr[0];
+	float dy = slot->fs.vf[1] = dx * vec3_getlen(vf) / vec3_getlen(vr);
 	float x0 = cx-dx;
 	float y0 = cy-dy;
 	float xn = cx+dx;
@@ -265,10 +265,10 @@ static void sketchpad_draw_pixel(
 
 	if(sty)
 	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
+		cx = sty->fs.vc[0];
+		cy = sty->fs.vc[1];
+		ww = sty->fs.vr[0];
+		hh = sty->fs.vf[1];
 	}
 	else
 	{

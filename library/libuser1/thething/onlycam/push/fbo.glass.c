@@ -184,10 +184,10 @@ static void glass_draw_gl41(
 	struct glassbuf* glass;
 	struct glsrc* src;
 	float (*vbuf)[6];
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 
 	glass = act->CTXBUF;
 	if(0 == glass)return;

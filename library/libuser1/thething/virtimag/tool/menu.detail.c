@@ -133,10 +133,10 @@ int detail_draw_gl41(
 	struct halfrel* peer[8];
 
 	vec3 tc, tr, tf, tt;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 	gl41line_rect(ctx, 0xffffff, vc,vr,vf);
 
 	for(j=0;j<3;j++){

@@ -113,10 +113,10 @@ static void bplus_draw_pixel(
 {
 	struct bplusleaf* node;
 	struct bplushead* right;
-	int cx = sty->f.vc[0];
-	int cy = sty->f.vc[1];
-	int ww = sty->f.vr[0];
-	int hh = sty->f.vf[1];
+	int cx = sty->fs.vc[0];
+	int cy = sty->fs.vc[1];
+	int ww = sty->fs.vr[0];
+	int hh = sty->fs.vf[1];
 	drawsolid_rect(win, 0x222222, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	node = act->buf0;

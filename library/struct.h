@@ -326,10 +326,9 @@ struct style
 {
 	//[00, 7f]: geometry
 	union{
-		struct fstyle f;
 		struct fstyle fs;
 		struct fstyle fshape;
-		struct istyle i;
+		struct fstyle fbound;	//bounding volume
 		struct istyle is;
 		struct istyle ishape;
 	};

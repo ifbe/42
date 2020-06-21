@@ -17,10 +17,10 @@ static void dna_draw_gl41(
 	float a,c,s;
 	float A,C,S;
 	vec3 tc,tr,tf,tu;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = sty->fs.vc;
+	float* vr = sty->fs.vr;
+	float* vf = sty->fs.vf;
+	float* vu = sty->fs.vt;
 	gl41line_prism4(win, 0xffffff, vc, vr ,vf, vu);
 
 	tf[0] = vf[0] / 16;

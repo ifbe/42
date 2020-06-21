@@ -74,10 +74,10 @@ static void cbuffer_draw_gl41(
 	struct entity* scn, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 	if(0 == act->CTXBUF)return;
 
 	struct glsrc* src = act->CTXBUF;

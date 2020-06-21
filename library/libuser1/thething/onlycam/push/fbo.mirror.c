@@ -180,10 +180,10 @@ static void mirror_draw_gl41(
 	struct mirrbuf* mirr;
 	struct glsrc* src;
 	float (*vbuf)[6];
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 	//gl41solid_rect(win, 0x404040, vc, vr, vf);
 
 	mirr = act->CTXBUF;

@@ -12,10 +12,10 @@ static void xnor_draw_gl41_12t(
 {
 	int j;
 	vec3 tc,tr,tf,tt;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 	//gl41line_rect(ctx, 0x404040, vc, vr, vf);
 
 	//vcc
@@ -164,10 +164,10 @@ static void xnor_draw_gl41(
 {
 	int j;
 	vec3 tc,tr,tf,tt;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 	gl41line_rect(ctx, 0x404040, vc, vr, vf);
 
 	u32 acolor = ent->ix0 ? 0xff0000 : 0x0000ff;
@@ -318,10 +318,10 @@ static void xnor_draw_pixel(
 	int cx, cy, ww, hh;
 	if(sty)
 	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
+		cx = sty->fs.vc[0];
+		cy = sty->fs.vc[1];
+		ww = sty->fs.vr[0];
+		hh = sty->fs.vf[1];
 	}
 	else
 	{

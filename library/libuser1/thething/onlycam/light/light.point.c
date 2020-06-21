@@ -47,10 +47,10 @@ static void pointlight_draw_gl41(
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
 	gl41opaque_sphere(ctx, 0x80000000|sun->u_rgb, vc, vr, vf, vt);

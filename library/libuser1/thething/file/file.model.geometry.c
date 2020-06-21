@@ -7,10 +7,10 @@ static void geometry_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	int cx = sty->f.vc[0];
-	int cy = sty->f.vc[1];
-	int ww = sty->f.vr[0];
-	int hh = sty->f.vf[1];
+	int cx = sty->fs.vc[0];
+	int cy = sty->fs.vc[1];
+	int ww = sty->fs.vr[0];
+	int hh = sty->fs.vf[1];
 	if(ww > hh)ww = hh;
 	if(hh > ww)hh = ww;
 	drawsolid_rect(win, 0x808080, cx-ww, cy-hh, cx+ww, cy+hh);
@@ -21,10 +21,10 @@ static void geometry_draw_gl41(
 	struct entity* wnd, struct style* area)
 {
 	vec3 t1,t2;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 	int dimen = act->iw0;
 	int shape = act->iwn;
 	//say("%d,%d\n",dimen,shape);

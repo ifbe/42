@@ -65,10 +65,10 @@ static void picture_draw_gl41(
 {
 	struct glsrc* src;
 	float (*vbuf)[6];
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 	if(0 == act->CTXBUF)return;
 /*
 	act->fx0 = ((timeread()%5000000)/5000000.0)*tau;

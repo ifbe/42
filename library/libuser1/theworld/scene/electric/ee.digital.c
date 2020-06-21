@@ -211,10 +211,10 @@ static void digital_draw_gl41(
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 	gl41solid_rect(wnd, 0x404040, vc, vr, vf);
 
 	struct wireindex* sts = act->PERPIN;

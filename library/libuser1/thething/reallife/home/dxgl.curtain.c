@@ -80,10 +80,10 @@ static void curtain_draw_gl41(
 	struct glsrc* src;
 	float (*vbuf)[6];
 
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 
 	src = act->buf0;
 	if(0 == src)return;

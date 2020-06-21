@@ -18,10 +18,10 @@ static void mobius_draw_gl41(
 	float a,c,s;
 	float x,y,z,n;
 	vec3 tc,tr,tf,tu;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 
 	tc[0] = vc[0] + vu[0];
 	tc[1] = vc[1] + vu[1];

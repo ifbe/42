@@ -40,10 +40,10 @@ static void oscillo_draw_pixel(
 	float* amp = frame[cur].amp;
 	if(sty)
 	{
-		cx = sty->f.vc[0];
-		cy = sty->f.vc[1];
-		ww = sty->f.vr[0];
-		hh = sty->f.vf[1];
+		cx = sty->fs.vc[0];
+		cy = sty->fs.vc[1];
+		ww = sty->fs.vr[0];
+		hh = sty->fs.vf[1];
 	}
 	else
 	{
@@ -103,10 +103,10 @@ static void oscillo_draw_pixel(
 	short* buf;
 	if(0 == sty)return;
 
-	cx = sty->f.vc[0];
-	cy = sty->f.vc[1];
-	ww = sty->f.vr[0];
-	hh = sty->f.vf[1];
+	cx = sty->fs.vc[0];
+	cy = sty->fs.vc[1];
+	ww = sty->fs.vr[0];
+	hh = sty->fs.vf[1];
 
 	tab = act->TABBUF;
 	if(0 == tab)return;
@@ -131,10 +131,10 @@ static void oscillo_draw_gl41(
 	vec3 ta,tb;
 	void** tab;
 	short* buf;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 	gl41line_rect(ctx, 0xffff00, vc, vr, vf);
 
 	tab = act->TABBUF;

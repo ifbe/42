@@ -194,10 +194,10 @@ static void gerber_draw_gl41(
 {
 	int j,rgb;
 	vec3 tc,tr,tf;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vt = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
 	gl41line_rect(ctx, 0xffffff, vc, vr, vf);
 
 	int cnt = act->CNTBUF;

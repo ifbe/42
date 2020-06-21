@@ -52,10 +52,10 @@ static void weather_draw_gl41(
 {
 	int x,y,z;
 	vec3 tc;
-	float* vc = sty->f.vc;
-	float* vr = sty->f.vr;
-	float* vf = sty->f.vf;
-	float* vu = sty->f.vt;
+	float* vc = sty->fs.vc;
+	float* vr = sty->fs.vr;
+	float* vf = sty->fs.vf;
+	float* vu = sty->fs.vt;
 
 	for(z=-16;z<=16;z++)
 	{

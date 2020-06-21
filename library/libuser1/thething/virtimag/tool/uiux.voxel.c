@@ -25,10 +25,10 @@ static void voxel_draw_gl41(
 	short* buf;
 
 	vec3 tc,tr,tf,tu;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 	gl41line_prism4(wnd, 0xffff00, vc, vr, vf, vu);
 
 	tab = act->TABBUF;

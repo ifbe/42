@@ -111,10 +111,10 @@ static void skillbar_draw_gl41(
 {
 	int x,y,k,t;
 	vec3 tc, tr, tf;
-	float* vc = geom->f.vc;
-	float* vr = geom->f.vr;
-	float* vf = geom->f.vf;
-	float* vu = geom->f.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 	gl41line_rect(wnd, 0xff00ff, vc, vr, vf);
 
 	struct glsrc* src = act->buf0;
