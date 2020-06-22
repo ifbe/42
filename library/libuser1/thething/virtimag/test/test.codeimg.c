@@ -199,17 +199,15 @@ static void codeimg_draw_gl41(
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	float (*vbuf)[6];
-	struct glsrc* src;
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
 	if(0 == act->RGBABUF)return;
 
-	src = act->GL41BUF;
+	struct glsrc* src = act->GL41BUF;
 	if(0 == src)return;
-	vbuf = src->vbuf;
+	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
@@ -357,23 +355,26 @@ static void codeimg_create(struct entity* act)
 	src->fs = codeimg_glsl_f;
 	src->shader_enq = 42;
 
-	//vertex
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
-
 	//texture
-	src->geometry = 3;
-	src->opaque = 0;
+	struct texture* tex = &src->tex[0];
+	tex->name = "tex0";
+	tex->fmt = hex32('r','g','b','a');
+	tex->data = act->RGBABUF;
+	tex->w = act->width;
+	tex->h = act->height;
 
-	src->tex[0].name = "tex0";
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].data = act->RGBABUF;
-	src->tex[0].w = act->width;
-	src->tex[0].h = act->height;
-	src->tex[0].enq = 42;
+	src->tex_enq[0] = 42;
+
+	//vertex
+	struct vertex* vtx = &src->vtx[0];
+	vtx->geometry = 3;
+	vtx->opaque = 0;
+
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_w = 6*4;
+	vtx->vbuf_h = 6;
+	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 }
 
 

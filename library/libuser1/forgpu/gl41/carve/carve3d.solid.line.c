@@ -40,28 +40,29 @@ static int line3d_fill(struct glsrc* src)
 		src->shader_enq = 1;
 	}
 
-	src->opaque = 0;
-	src->geometry = 2;
+	struct vertex* vtx = src->vtx;
+	vtx->opaque = 0;
+	vtx->geometry = 2;
 
-	if(0 == src->ibuf){
-		src->ibuf_len = 0x100000;
-		src->ibuf = memorycreate(src->ibuf_len, 0);
-		if(0 == src->ibuf)return -1;
+	if(0 == vtx->ibuf){
+		vtx->ibuf_len = 0x100000;
+		vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
+		if(0 == vtx->ibuf)return -1;
 
-		src->ibuf_w = 2*2;
-		src->ibuf_h = 0;	//(src->ibuf_len) / (src->ibuf_w);
-		src->ibuf_fmt = 0x22;
+		vtx->ibuf_w = 2*2;
+		vtx->ibuf_h = 0;	//(src->ibuf_len) / (src->ibuf_w);
+		vtx->ibuf_fmt = 0x22;
 		src->ibuf_enq = 1;
 	}
 
-	if(0 == src->vbuf){
-		src->vbuf_len = 65536*4*6;
-		src->vbuf = memorycreate(src->vbuf_len, 0);
-		if(0 == src->vbuf)return -2;
+	if(0 == vtx->vbuf){
+		vtx->vbuf_len = 65536*4*6;
+		vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+		if(0 == vtx->vbuf)return -2;
 
-		src->vbuf_w = 4*3*2;
-		src->vbuf_h = 0;	//(src->vbuf_len) / (src->vbuf_w);
-		src->vbuf_fmt = vbuffmt_33;
+		vtx->vbuf_w = 4*3*2;
+		vtx->vbuf_h = 0;	//(src->vbuf_len) / (src->vbuf_w);
+		vtx->vbuf_fmt = vbuffmt_33;
 		src->vbuf_enq = 1;
 	}
 
@@ -69,27 +70,28 @@ static int line3d_fill(struct glsrc* src)
 }
 int line3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
-	struct glsrc* src;
-	int vlen,ilen,ret;
 	if(0 == win)return -1;
 	if(0 == win->gl_solid)return -2;
 
-	src = win->gl_solid[line3d];
+	struct glsrc* src = win->gl_solid[line3d];
 	if(0 == src){
 		src = win->gl_solid[line3d] = memorycreate(0x200, 0);
 		if(0 == src)return -3;
 	}
-	if(0 == src->vbuf){
+
+	int vlen,ilen,ret;
+	struct vertex* vtx = src->vtx;
+	if(0 == vtx->vbuf){
 		ret = line3d_fill(src);
 		if(ret < 0)return -4;
 	}
 
-	vlen = src->vbuf_h;
-	ilen = src->ibuf_h;
-	*vbuf = (src->vbuf) + (24*vlen);
-	*ibuf = (src->ibuf) + (4*ilen);
-	src->vbuf_h += vcnt;
-	src->ibuf_h += icnt;
+	vlen = vtx->vbuf_h;
+	ilen = vtx->ibuf_h;
+	*vbuf = (vtx->vbuf) + (24*vlen);
+	*ibuf = (vtx->ibuf) + (4*ilen);
+	vtx->vbuf_h += vcnt;
+	vtx->ibuf_h += icnt;
 
 	return vlen;
 }

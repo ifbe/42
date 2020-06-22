@@ -21,14 +21,15 @@ void gbuffer_ctxforwnd(struct glsrc* src, char* vs, char* fs)
 	src->shader_enq = 42;
 
 	//vertex
-	src->geometry = 3;
-	src->opaque = 0;
+	struct vertex* vtx = src->vtx;
+	vtx->geometry = 3;
+	vtx->opaque = 0;
 
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_w = 6*4;
+	vtx->vbuf_h = 6;
+	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 	src->vbuf_enq = 42;
 }
 static void gbuffer_readfrom_gbuffer(struct entity* ent, struct glsrc* src)
@@ -45,27 +46,27 @@ static void gbuffer_readfrom_gbuffer(struct entity* ent, struct glsrc* src)
 	src->tex[0].glfd = fbo->tex[0];
 	src->tex[0].name = "tex0";
 	src->tex[0].fmt = '!';
-	src->tex[0].enq += 1;
+	src->tex_enq[0] += 1;
 
 	src->tex[1].glfd = fbo->tex[1];
 	src->tex[1].name = "tex1";
 	src->tex[1].fmt = '!';
-	src->tex[1].enq += 1;
+	src->tex_enq[1] += 1;
 
 	src->tex[2].glfd = fbo->tex[2];
 	src->tex[2].name = "tex2";
 	src->tex[2].fmt = '!';
-	src->tex[2].enq += 1;
+	src->tex_enq[2] += 1;
 
 	src->tex[3].glfd = fbo->tex[3];
 	src->tex[3].name = "tex3";
 	src->tex[3].fmt = '!';
-	src->tex[3].enq += 1;
+	src->tex_enq[3] += 1;
 
 	src->tex[4].glfd = fbo->dep;
 	src->tex[4].name = "tex4";
 	src->tex[4].fmt = '!';
-	src->tex[4].enq += 1;
+	src->tex_enq[4] += 1;
 	//say("%d,%d,%d,%d\n", src->tex[0].glfd, src->tex[1].glfd, src->tex[2].glfd, src->tex[3].glfd);
 }
 static void gbuffer_draw_gl41(
@@ -80,8 +81,9 @@ static void gbuffer_draw_gl41(
 	if(0 == act->CTXBUF)return;
 
 	struct glsrc* src = act->CTXBUF;
-	float (*vbuf)[6] = (void*)(src->vbuf);
-
+	if(0 == src)return;
+	float (*vbuf)[6] = src->vtx[0].vbuf;
+	if(0 == vbuf)return;
 	gbuffer_readfrom_gbuffer(act, src);
 
 	float x,y;

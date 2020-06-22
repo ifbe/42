@@ -77,22 +77,23 @@ void skillbar_ctxforwnd(struct glsrc* src, char* str)
 	src->fs = skillbar_glsl_f;
 	src->shader_enq = 42;
 
-	//texture0
+	//texture
 	src->tex[0].fmt = hex32('r','g','b','a');
 	src->tex[0].name = "tex0";
 	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[0], str);
-	src->tex[0].enq = 42;
+	src->tex_enq[0] = 42;
 
 	//vertex
-	src->geometry = 3;
-	src->opaque = 0;
+	struct vertex* vtx = src->vtx;
+	vtx->geometry = 3;
+	vtx->opaque = 0;
 
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 0;
-	src->vbuf_len = (src->vbuf_w) * 6*16*16;
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_w = 6*4;
+	vtx->vbuf_h = 0;
+	vtx->vbuf_len = (vtx->vbuf_w) * 6*16*16;
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 	src->vbuf_enq = 42;
 }
 
@@ -118,8 +119,9 @@ static void skillbar_draw_gl41(
 	gl41line_rect(wnd, 0xff00ff, vc, vr, vf);
 
 	struct glsrc* src = act->buf0;
-	float (*vbuf)[6] = (void*)(src->vbuf);
-
+	if(0 == src)return;
+	float (*vbuf)[6] = src->vtx[0].vbuf;
+	if(0 == vbuf)return;
 	tr[0] = vr[0]/30;
 	tr[1] = vr[1]/30;
 	tr[2] = vr[2]/30;
@@ -154,7 +156,7 @@ static void skillbar_draw_gl41(
 		}
 	}
 
-	src->vbuf_h = 6*12*6;
+	src->vtx[0].vbuf_h = 6*12*6;
 	src->vbuf_enq += 1;
 	gl41data_insert(wnd, 's', src, 1);
 }

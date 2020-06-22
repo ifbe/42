@@ -37,29 +37,37 @@ void texmix_ctxforwnd(struct glsrc* src)
 	src->fs = texmix_glsl_f;
 	src->shader_enq = 42;
 
-	//texture0
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "tex0";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&src->tex[0], "datafile/jpg/wall.jpg");
-	src->tex[0].enq = 42;
 
-	//texture1
-	src->tex[1].fmt = hex32('r','g','b','a');
-	src->tex[1].name = "tex1";
-	src->tex[1].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&src->tex[1], "datafile/jpg/cartoon.jpg");
-	src->tex[1].enq = 42;
+	//texture
+	struct texture* tex;
+
+	tex = &src->tex[0];
+	tex->fmt = hex32('r','g','b','a');
+	tex->name = "tex0";
+	tex->data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(tex, "datafile/jpg/wall.jpg");
+
+	tex = &src->tex[1];
+	tex->fmt = hex32('r','g','b','a');
+	tex->name = "tex1";
+	tex->data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(tex, "datafile/jpg/cartoon.jpg");
+
+	src->tex_enq[0] = 42;
+	src->tex_enq[1] = 42;
+
 
 	//vertex
-	src->geometry = 3;
-	src->opaque = 0;
+	struct vertex* vtx = &src->vtx[0];
+	vtx->geometry = 3;
+	vtx->opaque = 0;
 
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_w = 6*4;
+	vtx->vbuf_h = 6;
+	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+
 	src->vbuf_enq = 42;
 }
 static void texmix_draw_gl41(
@@ -74,7 +82,9 @@ static void texmix_draw_gl41(
 	if(0 == act->CTXBUF)return;
 
 	struct glsrc* src = act->CTXBUF;
-	float (*vbuf)[6] = (void*)(src->vbuf);
+	if(0 == src)return;
+	float (*vbuf)[6] = src->vtx[0].vbuf;
+	if(0 == vbuf)return;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];

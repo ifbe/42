@@ -59,14 +59,15 @@ static void video_ctxforwnd(struct glsrc* src)
 	src->tex[0].fmt = hex32('r','g','b','a');
 
 	//vertex
-	src->geometry = 3;
-	src->opaque = 0;
+	struct vertex* vtx = &src->vtx[0];
+	vtx->geometry = 3;
+	vtx->opaque = 0;
 
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_w = 6*4;
+	vtx->vbuf_h = 6;
+	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 }
 void video_draw_gl41(
 	struct entity* act, struct style* part,
@@ -82,7 +83,7 @@ void video_draw_gl41(
 	if(0 == own)return;
 	struct glsrc* data = &own->gl41.src;
 	if(0 == data)return;
-	float (*vbuf)[6] = data->vbuf;
+	float (*vbuf)[6] = data->vtx[0].vbuf;
 	if(0 == vbuf)return;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
@@ -130,7 +131,7 @@ void video_draw_gl41(
 	//video_update(data->tex[0].data, 1024*1024*4, srcbuf, 640*480*2);
 	data->tex[0].w = 640;
 	data->tex[0].h = 480;
-	data->tex[0].enq += 1;
+	data->tex_enq[0] += 1;
 
 	data->vbuf_enq += 1;
 	gl41data_insert(ctx, 's', data, 1);

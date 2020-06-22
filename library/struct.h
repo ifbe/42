@@ -139,7 +139,6 @@ struct texture{
 	u32 w;
 	u32 h;
 	u32 fmt;
-	int enq;
 };
 struct vertex{
 	void* vbuf;
@@ -157,8 +156,8 @@ struct vertex{
 	//[e8,eb]
 	u8 geometry;	//1=point, 2=line, *=trigon
 	u8 opaque;		//0=solid, n=opaque
-	u8 vbuf_enq;
-	u8 ibuf_enq;
+	u8 flag0;
+	u8 flag1;		//4b align
 };
 
 
@@ -166,7 +165,7 @@ struct vertex{
 
 struct glsrc
 {
-	//[00,24)shader
+	//shader
 	void* vs;
 	void* tc;
 	void* te;
@@ -174,35 +173,23 @@ struct glsrc
 	void* fs;
 	char* routine_name;
 	char* routine_detail;
-	int shader_enq;
 
-	//[24,88)argument
+	//argument
 	struct arg{
 		char* name;
 		void* data;
 		u32 fmt;
 	}arg[7];
 
-	//[88,fc)texture
+	//texture
 	struct texture tex[5];
 
-	//[c0,e7]vertex
-	//struct vertex vtx[1];
-	void* vbuf;
-	u32 vbuf_fmt;
-	u32 vbuf_w;
-	u32 vbuf_h;
-	u32 vbuf_len;
+	//vertex
+	struct vertex vtx[1];
 
-	void* ibuf;
-	u32 ibuf_fmt;
-	u32 ibuf_w;
-	u32 ibuf_h;
-	u32 ibuf_len;
-
-	//[e8,eb]
-	u8 geometry;	//1=point, 2=line, *=trigon
-	u8 opaque;		//0=solid, n=opaque
+	//enqueue
+	u8 shader_enq;
+	u8 tex_enq[5];
 	u8 vbuf_enq;
 	u8 ibuf_enq;
 };
@@ -210,20 +197,21 @@ struct gldst
 {
 	//shader
 	u32 shader;
-	u8 shader_deq;
 
 	//texture
 	u32 tex[5];
-	u8 tex_deq[5];
 
 	//vertex
 	u32 vbo;
-	u8 vbo_deq;
 	u32 ibo;
-	u8 ibo_deq;
-
-	//
 	u32 vao;
+	void* layout;
+
+	//dequeue
+	u8 shader_deq;
+	u8 tex_deq[5];
+	u8 vbo_deq;
+	u8 ibo_deq;
 };
 struct gl41data
 {

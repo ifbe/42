@@ -21,35 +21,31 @@
 
 void uploadvertex(struct gldst* dst, struct glsrc* src)
 {
-	void* buf;
-	u32 w,h,len;
+	u32 w,h;
+	struct vertex* vtx = src->vtx;
 
 	//vao
 	if(0 == dst->vao)glGenVertexArrays(1, &dst->vao);
 	glBindVertexArray(dst->vao);
 
 	//vbo
-	w = dst->vbo_deq;
-	h = src->vbuf_enq;
-	buf = (void*)(src->vbuf);
-	if((w != h) && (0 != buf))
+	if((dst->vbo_deq != src->vbuf_enq) && (0 != vtx->vbuf))
 	{
 		//say("@2: %d\n", dst->vao);
-		w = src->vbuf_w;
-		h = src->vbuf_h;
+		w = vtx->vbuf_w;
+		h = vtx->vbuf_h;
 		if(dst->vbo)
 		{
 			glBindBuffer(GL_ARRAY_BUFFER, dst->vbo);
-			glBufferSubData(GL_ARRAY_BUFFER, 0, w*h, buf);
+			glBufferSubData(GL_ARRAY_BUFFER, 0, w*h, vtx->vbuf);
 		}
 		else
 		{
-			len = src->vbuf_len;
 			glGenBuffers(1, &dst->vbo);
 			glBindBuffer(GL_ARRAY_BUFFER, dst->vbo);
-			glBufferData(GL_ARRAY_BUFFER, len, buf, GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, vtx->vbuf_len, vtx->vbuf, GL_STATIC_DRAW);
 
-			switch(src->vbuf_fmt)
+			switch(vtx->vbuf_fmt)
 			{
 				case vbuffmt_3:
 				{
@@ -104,25 +100,21 @@ void uploadvertex(struct gldst* dst, struct glsrc* src)
 	}
 
 	//idx
-	w = dst->ibo_deq;
-	h = src->ibuf_enq;
-	buf = (void*)(src->ibuf);
-	if((w != h) && (0 != buf))
+	if((dst->vbo_deq != src->vbuf_enq) && (0 != vtx->ibuf))
 	{
 		//say("@1: %d\n", dst->vao);
-		w = src->ibuf_w;
-		h = src->ibuf_h;
+		w = vtx->ibuf_w;
+		h = vtx->ibuf_h;
 		if(dst->ibo)
 		{
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dst->ibo);
-			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, w*h, buf);
+			glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, w*h, vtx->ibuf);
 		}
 		else
 		{
-			len = src->ibuf_len;
 			glGenBuffers(1, &dst->ibo);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dst->ibo);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, len, buf, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, vtx->ibuf_len, vtx->ibuf, GL_STATIC_DRAW);
 		}
 	}
 

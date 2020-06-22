@@ -93,9 +93,6 @@ static int aidfont_load()
 }
 static int aidfont_fill(struct glsrc* src, int id)
 {
-	src->opaque = 1;
-	src->geometry = 3;
-
 	if(0 == src->vs){
 		src->vs = font3dvert;
 		src->fs = fontfrag;
@@ -111,28 +108,32 @@ static int aidfont_fill(struct glsrc* src, int id)
 		src->tex[0].w = 2048;
 		src->tex[0].h = 2048;
 		src->tex[0].fmt = hex32('o','n','e', 0);
-		src->tex[0].enq = 1;
+		src->tex_enq[0] = 1;
 	}
 
-	if(0 == src->ibuf){
-		src->ibuf_len = 0x100000;
-		src->ibuf = memorycreate(src->ibuf_len, 0);
-		if(0 == src->ibuf)return -2;
+	struct vertex* vtx = src->vtx;
+	vtx->opaque = 1;
+	vtx->geometry = 3;
 
-		src->ibuf_w = 2*3;
-		src->ibuf_h = 0;	//(src->ibuf_len) / (src->ibuf_w);
-		src->ibuf_fmt = 0x222;
+	if(0 == vtx->ibuf){
+		vtx->ibuf_len = 0x100000;
+		vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
+		if(0 == vtx->ibuf)return -2;
+
+		vtx->ibuf_w = 2*3;
+		vtx->ibuf_h = 0;	//(src->ibuf_len) / (src->ibuf_w);
+		vtx->ibuf_fmt = 0x222;
 		src->ibuf_enq = 1;
 	}
 
-	if(0 == src->vbuf){
-		src->vbuf_len = 65536*4*9;
-		src->vbuf = memorycreate(src->vbuf_len, 0);
-		if(0 == src->vbuf)return -1;
+	if(0 == vtx->vbuf){
+		vtx->vbuf_len = 65536*4*9;
+		vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+		if(0 == vtx->vbuf)return -1;
 
-		src->vbuf_w = 4*3*3;
-		src->vbuf_h = 0;	//(src->vbuf_len) / (src->vbuf_w);
-		src->vbuf_fmt = vbuffmt_333;
+		vtx->vbuf_w = 4*3*3;
+		vtx->vbuf_h = 0;	//(src->vbuf_len) / (src->vbuf_w);
+		vtx->vbuf_fmt = vbuffmt_333;
 		src->vbuf_enq = 1;
 	}
 
@@ -140,17 +141,18 @@ static int aidfont_fill(struct glsrc* src, int id)
 }
 int ascii3d_vars(struct entity* win, int id, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
-	struct glsrc* src;
-	int vlen,ilen,ret;
 	if(0 == win)return -1;
 	if(0 == win->gl_opaque)return -2;
 
-	src = win->gl_opaque[font3d0 + id];
+	struct glsrc* src = win->gl_opaque[font3d0 + id];
 	if(0 == src){
 		src = win->gl_opaque[font3d0 + id] = memorycreate(0x200, 0);
 		if(0 == src)return -3;
 	}
-	if(0 == src->vbuf){
+
+	int vlen,ilen,ret;
+	struct vertex* vtx = src->vtx;
+	if(0 == vtx->vbuf){
 		ret = aidfont_load();
 		if(ret < 0)return -4;
 
@@ -158,12 +160,12 @@ int ascii3d_vars(struct entity* win, int id, float** vbuf, u16** ibuf, int vcnt,
 		if(ret < 0)return -5;
 	}
 
-	vlen = src->vbuf_h;
-	ilen = src->ibuf_h;
-	*vbuf = (src->vbuf) + (36*vlen);
-	*ibuf = (src->ibuf) + (6*ilen);
-	src->vbuf_h += vcnt;
-	src->ibuf_h += icnt;
+	vlen = vtx->vbuf_h;
+	ilen = vtx->ibuf_h;
+	*vbuf = (vtx->vbuf) + (36*vlen);
+	*ibuf = (vtx->ibuf) + (6*ilen);
+	vtx->vbuf_h += vcnt;
+	vtx->ibuf_h += icnt;
 
 	return vlen;
 }

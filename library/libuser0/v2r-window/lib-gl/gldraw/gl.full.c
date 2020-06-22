@@ -64,7 +64,7 @@ void update_onedraw(struct gldst* dst, struct glsrc* src)
 //say("@update texture\n");
 	//3: texture
 	for(j=0;j<5;j++){
-		if(dst->tex_deq[j] == src->tex[j].enq)continue;
+		if(dst->tex_deq[j] == src->tex_enq[j])continue;
 
 		fmt = src->tex[j].fmt;
 		if('!' == fmt){
@@ -80,7 +80,7 @@ void update_onedraw(struct gldst* dst, struct glsrc* src)
 			}
 		}
 
-		dst->tex_deq[j] = src->tex[j].enq;
+		dst->tex_deq[j] = src->tex_enq[j];
 	}
 //say("@update done\n");
 }
@@ -99,7 +99,7 @@ void fullwindow_upload(struct gl41data** cam, struct gl41data** lit, struct gl41
 	for(j=0;j<64;j++)
 	{
 		if(0 == solid[j])continue;
-		if(0 == solid[j]->src.vbuf)continue;
+		if(0 == solid[j]->src.vtx[0].vbuf)continue;
 		//say("%d\n",j);
 		update_onedraw(&solid[j]->dst, &solid[j]->src);
 	}
@@ -108,7 +108,7 @@ void fullwindow_upload(struct gl41data** cam, struct gl41data** lit, struct gl41
 	for(j=0;j<64;j++)
 	{
 		if(0 == opaque[j])continue;
-		if(0 == opaque[j]->src.vbuf)continue;
+		if(0 == opaque[j]->src.vtx[0].vbuf)continue;
 		//say("%d\n",j);
 		update_onedraw(&opaque[j]->dst, &opaque[j]->src);
 	}
@@ -199,25 +199,26 @@ void render_onedraw(struct gl41data* cam, struct gl41data* lit, struct gl41data*
 	}
 
 	//3.vertex
-	fmt = src->vbuf_fmt;
+	fmt = src->vtx[0].vbuf_fmt;
 	vbo = dst->vbo;
 	vao = dst->vao;
 	glBindVertexArray(vao);
 //say("%d,%d,%d,%d,%d,%d\n", dst->shader, dst->tex[0], vao, vbo, src->ibuf_h, src->vbuf_h);
 
 //say("8888@opaque=%x, geom=%x, vbuf_h=%x, ibuf_h=%x\n", src->opaque, src->geometry, src->vbuf_h, src->ibuf_h);
-	if(src->ibuf)
+	struct vertex* vtx = src->vtx;
+	if(vtx->ibuf)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dst->ibo);
-		if(1 == src->geometry)glDrawElements(GL_POINTS, src->ibuf_h, GL_UNSIGNED_SHORT, 0);
-		else if(2 == src->geometry)glDrawElements(GL_LINES, 2*src->ibuf_h, GL_UNSIGNED_SHORT, 0);
-		else glDrawElements(GL_TRIANGLES, 3*src->ibuf_h, GL_UNSIGNED_SHORT, 0);
+		if(1 == vtx->geometry)glDrawElements(GL_POINTS, vtx->ibuf_h, GL_UNSIGNED_SHORT, 0);
+		else if(2 == vtx->geometry)glDrawElements(GL_LINES, 2*vtx->ibuf_h, GL_UNSIGNED_SHORT, 0);
+		else glDrawElements(GL_TRIANGLES, 3*vtx->ibuf_h, GL_UNSIGNED_SHORT, 0);
 	}
 	else
 	{
-		if(1 == src->geometry)glDrawArrays(GL_POINTS, 0, src->vbuf_h);
-		else if(2 == src->geometry)glDrawArrays(GL_LINES, 0, src->vbuf_h);
-		else glDrawArrays(GL_TRIANGLES, 0, src->vbuf_h);
+		if(1 == vtx->geometry)glDrawArrays(GL_POINTS, 0, vtx->vbuf_h);
+		else if(2 == vtx->geometry)glDrawArrays(GL_LINES, 0, vtx->vbuf_h);
+		else glDrawArrays(GL_TRIANGLES, 0, vtx->vbuf_h);
 	}
 }
 void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, struct supply* wnd, struct fstyle* area)
@@ -245,7 +246,7 @@ void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41
 	//solid
 	for(j=0;j<64;j++){
 		if(0 == solid[j])continue;
-		if(0 == solid[j]->src.vbuf)continue;
+		if(0 == solid[j]->src.vtx[0].vbuf)continue;
 		render_onedraw(cam[0], lit[0], solid[j]);
 	}
 
@@ -256,7 +257,7 @@ void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41
 
 	for(j=0;j<64;j++){
 		if(0 == opaque[j])continue;
-		if(0 == opaque[j]->src.vbuf)continue;
+		if(0 == opaque[j]->src.vtx[0].vbuf)continue;
 		render_onedraw(cam[0], lit[0], opaque[j]);
 	}
 

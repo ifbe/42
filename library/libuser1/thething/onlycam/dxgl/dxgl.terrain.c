@@ -202,28 +202,27 @@ void terrain_ctxforwnd(struct privdata* own, char* rgbfile, char* depfile, char*
 	src->tex[RGBTEX].name = "rgbtex";
 	src->tex[RGBTEX].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[RGBTEX], rgbfile);
-	src->tex[RGBTEX].enq = 42;
+	src->tex_enq[RGBTEX] = 42;
 
 	src->tex[DEPTEX].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[DEPTEX], depfile);
 
-	//vertex
-	src->opaque = 0;
-	src->geometry = 3;
+	struct vertex* vtx = src->vtx;
+	vtx->opaque = 0;
+	vtx->geometry = 3;
 
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*9;
-	src->vbuf_h = 256*255;
-	src->vbuf_len = (src->vbuf_w) * 256*256;
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	vtx->vbuf_fmt = vbuffmt_333;
+	vtx->vbuf_w = 4*9;
+	vtx->vbuf_h = 256*255;
+	vtx->vbuf_len = (vtx->vbuf_w) * 256*256;
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 	src->vbuf_enq = 42;
 
-	//index
-	src->ibuf_fmt = 0x222;
-	src->ibuf_w = 2*3;
-	src->ibuf_h = 254*254*2;
-	src->ibuf_len = (src->ibuf_w) * 256*256*2;
-	src->ibuf = memorycreate(src->ibuf_len, 0);
+	vtx->ibuf_fmt = 0x222;
+	vtx->ibuf_w = 2*3;
+	vtx->ibuf_h = 254*254*2;
+	vtx->ibuf_len = (vtx->ibuf_w) * 256*256*2;
+	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
 	src->ibuf_enq = 42;
 }
 static void terrain_draw_gl41(
@@ -252,9 +251,9 @@ static void terrain_draw_gl41(
 		act->fy0 = y;
 
 		//x0,y0,z0,dx,dy,dz -> ndc
-		vbuf = src->vbuf;
+		vbuf = src->vtx[0].vbuf;
 		if(0 == vbuf)return;
-		ibuf = src->ibuf;
+		ibuf = src->vtx[0].ibuf;
 		if(0 == ibuf)return;
 		terrain_generate(vbuf, ibuf, act, src);
 		src->vbuf_enq += 1;

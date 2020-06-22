@@ -34,17 +34,18 @@ static int point3d_fill(struct glsrc* src)
 		src->shader_enq = 1;
 	}
 
-	src->opaque = 0;
-	src->geometry = 1;
+	struct vertex* vtx = src->vtx;
+	vtx->opaque = 0;
+	vtx->geometry = 1;
 
-	if(0 == src->vbuf){
-		src->vbuf_len = 0x100000;
-		src->vbuf = memorycreate(src->vbuf_len, 0);
-		if(0 == src->vbuf)return -1;
+	if(0 == vtx->vbuf){
+		vtx->vbuf_len = 0x100000;
+		vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+		if(0 == vtx->vbuf)return -1;
 
-		src->vbuf_w = 4*3*2;
-		src->vbuf_h = 0;	//(src->vbuf_len) / (src->vbuf_w);
-		src->vbuf_fmt = vbuffmt_33;
+		vtx->vbuf_w = 4*3*2;
+		vtx->vbuf_h = 0;	//(src->vbuf_len) / (src->vbuf_w);
+		vtx->vbuf_fmt = vbuffmt_33;
 		src->vbuf_enq = 1;
 	}
 
@@ -52,24 +53,25 @@ static int point3d_fill(struct glsrc* src)
 }
 int point3d_vars(struct entity* win, int unused, float** vbuf, int vcnt)
 {
-	struct glsrc* src;
-	int vlen,ret;
 	if(0 == win)return -1;
 	if(0 == win->gl_solid)return -2;
 
-	src = win->gl_solid[point3d];
+	struct glsrc* src = win->gl_solid[point3d];
 	if(0 == src){
 		src = win->gl_solid[point3d] = memorycreate(0x200, 0);
 		if(0 == src)return -3;
 	}
-	if(0 == src->vbuf){
+
+	int vlen,ret;
+	struct vertex* vtx = src->vtx;
+	if(0 == vtx->vbuf){
 		ret = point3d_fill(src);
 		if(ret < 0)return -4;
 	}
 
-	vlen = src->vbuf_h;
-	*vbuf = (src->vbuf) + (24*vlen);
-	src->vbuf_h += vcnt;
+	vlen = vtx->vbuf_h;
+	*vbuf = (vtx->vbuf) + (24*vlen);
+	vtx->vbuf_h += vcnt;
 
 	return vlen;
 }

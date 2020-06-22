@@ -103,7 +103,7 @@ void easywindow_drawthis(struct gl41data* pair)
 	{
 		glGenBuffers(1, &dst->vbo);
 		glBindBuffer(GL_ARRAY_BUFFER, dst->vbo);
-		glBufferData(GL_ARRAY_BUFFER, src->vbuf_len, src->vbuf, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, src->vtx[0].vbuf_len, src->vtx[0].vbuf, GL_STATIC_DRAW);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 24, (void*)0);
 		glEnableVertexAttribArray(0);
@@ -119,7 +119,7 @@ void easywindow_drawthis(struct gl41data* pair)
 	{
 		glGenBuffers(1, &dst->ibo);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dst->ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, src->ibuf_len, src->ibuf, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, src->vtx[0].ibuf_len, src->vtx[0].ibuf, GL_STATIC_DRAW);
 
 		dst->ibo_deq = src->ibuf_enq;
 	}

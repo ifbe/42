@@ -154,7 +154,7 @@ static void projector_forwnd_light_update(
 	src->tex[0].glfd = sun->glfd;
 	src->tex[0].name = "shadowmap";
 	src->tex[0].fmt = '!';
-	src->tex[0].enq += 1;
+	src->tex_enq[0] += 1;
 
 	wnd->gl_light[0] = act->LITBUF;
 }
@@ -167,7 +167,7 @@ static void projector_forwnd_light_prepare(struct glsrc* src)
 	src->tex[1].fmt = hex32('r','g','b','a');
 	src->tex[1].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[1], "datafile/jpg/cartoon.jpg");
-	src->tex[1].enq = 42;
+	src->tex_enq[1] = 42;
 }
 
 
@@ -178,10 +178,6 @@ static void projector_draw_gl41(
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
-	struct sunbuf* sun;
-	struct glsrc* src;
-	float (*vbuf)[6];
-
 	vec3 tt;
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -194,9 +190,9 @@ static void projector_draw_gl41(
 	tt[2] = - vf[2];
 	gl41solid_cone(ctx, 0xffffff, vc, vr, tt);
 
-	src = act->CTXBUF;
+	struct glsrc* src = act->CTXBUF;
 	if(0 == src)return;
-	vbuf = (void*)(src->vbuf);
+	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;
 
 	//depth fbo (for debug)
@@ -254,20 +250,21 @@ static void projector_forwnd_vertex_update(struct entity* act, struct style* slo
 }
 static void projector_forwnd_vertex_prepare(struct glsrc* src)
 {
-	//
+	//shader
 	src->vs = projector_glsl_v;
 	src->fs = projector_glsl_f;
 	src->shader_enq = 42;
 
 	//vertex
-	src->geometry = 3;
-	src->opaque = 0;
+	struct vertex* vtx = src->vtx;
+	vtx->geometry = 3;
+	vtx->opaque = 0;
 
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_w = 6*4;
+	vtx->vbuf_h = 6;
+	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 }
 
 

@@ -27,14 +27,15 @@ void portal_forwnd(struct glsrc* src)
 	src->shader_enq = 42;
 
 	//vertex
-	src->geometry = 3;
-	src->opaque = 0;
+	struct vertex* vtx = src->vtx;
+	vtx->geometry = 3;
+	vtx->opaque = 0;
 
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_w = 6*4;
+	vtx->vbuf_h = 6;
+	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 }
 void portal_forwnd_update(struct entity* act, struct portalbuf* p, struct supply* fbo, struct style* area)
 {
@@ -44,7 +45,7 @@ void portal_forwnd_update(struct entity* act, struct portalbuf* p, struct supply
 	own->tex[0].glfd = fbo->tex0;
 	own->tex[0].name = "tex0";
 	own->tex[0].fmt = '!';
-	own->tex[0].enq += 1;
+	own->tex_enq[0] += 1;
 }
 
 
@@ -124,7 +125,7 @@ static void portal_draw_gl41(
 	if(0 == portal)return;
 	struct glsrc* src = &portal->forwnd.src;
 	if(0 == src)return;
-	float (*vbuf)[6] = (void*)(src->vbuf);
+	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;
 
 	vbuf[0][0] = vc[0] - vr[0] - vt[0];

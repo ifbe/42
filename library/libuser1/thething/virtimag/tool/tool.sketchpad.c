@@ -53,14 +53,15 @@ static void sketchpad_ctxforwnd(struct glsrc* src, char* vs, char* fs)
 	src->shader_enq = 42;
 
 	//vertex
-	src->geometry = 3;
-	src->opaque = 0;
+	struct vertex* vtx = src->vtx;
+	vtx->geometry = 3;
+	vtx->opaque = 0;
 
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_w = 6*4;
+	vtx->vbuf_h = 6;
+	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 }
 static void sketchpad_draw_gl41(
 	struct entity* act, struct style* slot,
@@ -83,7 +84,7 @@ static void sketchpad_draw_gl41(
 
 	struct glsrc* src = act->CTXBUF;
 	if(0 == src)return;
-	float (*vbuf)[6] = src->vbuf;
+	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];

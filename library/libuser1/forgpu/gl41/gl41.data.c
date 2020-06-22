@@ -107,8 +107,8 @@ void gl41data_before(struct entity* ctx)
 		src = ctx->gl_solid[j];
 		if(0 == src)continue;
 
-		src->vbuf_h = 0;
-		src->ibuf_h = 0;
+		src->vtx[0].vbuf_h = 0;
+		src->vtx[0].ibuf_h = 0;
 	}
 	for(;j<64;j++){
 		ctx->gl_solid[j] = 0;
@@ -119,8 +119,8 @@ void gl41data_before(struct entity* ctx)
 		src = ctx->gl_opaque[j];
 		if(0 == src)continue;
 
-		src->vbuf_h = 0;
-		src->ibuf_h = 0;
+		src->vtx[0].vbuf_h = 0;
+		src->vtx[0].ibuf_h = 0;
 	}
 	for(;j<64;j++){
 		ctx->gl_opaque[j] = 0;

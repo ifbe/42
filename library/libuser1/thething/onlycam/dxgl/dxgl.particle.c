@@ -68,14 +68,15 @@ void particle_ctxforwnd(struct glsrc* src, float* vbuf)
 	src->arg[0].fmt = 'm';
 
 	//vertex
-	src->geometry = 1;
-	src->opaque = 0;
+	struct vertex* vtx = src->vtx;
+	vtx->geometry = 1;
+	vtx->opaque = 0;
 
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*9;
-	src->vbuf_h = COUNT;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = vbuf;
+	vtx->vbuf_fmt = vbuffmt_333;
+	vtx->vbuf_w = 4*9;
+	vtx->vbuf_h = COUNT;
+	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
+	vtx->vbuf = vbuf;
 }
 
 
@@ -109,7 +110,7 @@ static void particle_draw_gl41(
 	mat = (void*)src->arg[0].data;
 	if(0 == mat)return;
 
-	buf = src->vbuf;
+	buf = src->vtx[0].vbuf;
 	if(0 == buf)return;
 
 

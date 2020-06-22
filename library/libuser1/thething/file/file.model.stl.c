@@ -221,11 +221,12 @@ static void stl3d_gl41_initer(struct privdata* own, char* vs, char* fs)
 	tmp[2] = 1.0;
 
 	//vertex
-	src->geometry = 3;
-	src->opaque = 0;
+	struct vertex* vtx = &src->vtx[0];
+	vtx->geometry = 3;
+	vtx->opaque = 0;
 
-	src->vbuf_len = own->vbuf_len;
-	src->vbuf = own->vbuf;
+	vtx->vbuf_len = own->vbuf_len;
+	vtx->vbuf = own->vbuf;
 }
 static void stl3d_gl41_update(
 	struct entity* act, struct style* part,
@@ -545,9 +546,10 @@ static void stl3d_linkup(struct halfrel* self, struct halfrel* peer)
 
 	//for gl41
 	struct glsrc* src = &own->gl41.src;
-	src->vbuf_w = own->vbuf_w;
-	src->vbuf_h = own->vbuf_h;
-	src->vbuf_fmt = vbuffmt_33;
+	struct vertex* vtx = &src->vtx[0];
+	vtx->vbuf_w = own->vbuf_w;
+	vtx->vbuf_h = own->vbuf_h;
+	vtx->vbuf_fmt = vbuffmt_33;
 	src->vbuf_enq = 42;
 
 	//for dx11

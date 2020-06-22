@@ -48,20 +48,21 @@ static void curtain_create(struct entity* act, void* str)
 	struct glsrc* src = act->buf0 = memorycreate(0x1000, 0);
 	if(0 == src)return;
 
-	//
+	//shader
 	src->vs = curtain_glsl_v;
 	src->fs = curtain_glsl_f;
 	src->shader_enq = 42;
 
 	//vertex
-	src->geometry = 3;
-	src->opaque = 0;
+	struct vertex* vtx = src->vtx;
+	vtx->geometry = 3;
+	vtx->opaque = 0;
 
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_w = 6*4;
+	vtx->vbuf_h = 6;
+	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 }
 
 
@@ -77,17 +78,14 @@ static void curtain_draw_gl41(
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
-	struct glsrc* src;
-	float (*vbuf)[6];
-
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
 
-	src = act->buf0;
+	struct glsrc* src = act->buf0;
 	if(0 == src)return;
-	vbuf = (void*)(src->vbuf);
+	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;
 
 	//depth fbo (for debug)

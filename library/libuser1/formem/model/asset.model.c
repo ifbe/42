@@ -102,10 +102,10 @@ void parsevertfromobj(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len)
 	int cn = 0;
 	int ct = 0;
 	int cnt = 0;
-	float* fv = ctx->vbuf+0x80000;
-	float* fn = ctx->vbuf+0xa0000;
-	float* ft = ctx->vbuf+0xc0000;
-	float* dst = ctx->vbuf;
+	float* fv = ctx->vtx[0].vbuf+0x80000;
+	float* fn = ctx->vtx[0].vbuf+0xa0000;
+	float* ft = ctx->vtx[0].vbuf+0xc0000;
+	float* dst = ctx->vtx[0].vbuf;
 
 	k = 0;
 	for(j=0;j<len;j++){
@@ -164,7 +164,7 @@ say("j=%d,len=%d,cnt=%d\n",j,len,cnt);
 	);
 
 	//ctx->vbuf_w = 4*9;	//vx,vy,vz,nx,ny,nz,tx,ty,tz
-	ctx->vbuf_h = cnt*3;	//3point = 1triangle
+	ctx->vtx[0].vbuf_h = cnt*3;	//3point = 1triangle
 }
 
 

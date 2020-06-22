@@ -40,22 +40,25 @@ static void picture_ctxforwnd(struct glsrc* src, char* str, float* angle)
 	src->arg[0].name = "angle";
 	src->arg[0].data = angle;
 */
-	//texture0
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "tex0";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&src->tex[0], str);
-	src->tex[0].enq = 42;
+	//texture
+	struct texture* tex = src->tex;
+	tex->fmt = hex32('r','g','b','a');
+	tex->name = "tex0";
+	tex->data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(tex, str);
+	src->tex_enq[0] = 42;
 
 	//vertex
-	src->geometry = 3;
-	src->opaque = 1;
+	struct vertex* vtx = src->vtx;
+	vtx->geometry = 3;
+	vtx->opaque = 1;
 
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 6*4;
-	src->vbuf_h = 6;
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_w = 6*4;
+	vtx->vbuf_h = 6;
+	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+
 	src->vbuf_enq = 42;
 }
 static void picture_draw_gl41(
@@ -63,8 +66,6 @@ static void picture_draw_gl41(
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
-	struct glsrc* src;
-	float (*vbuf)[6];
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
@@ -74,8 +75,10 @@ static void picture_draw_gl41(
 	act->fx0 = ((timeread()%5000000)/5000000.0)*tau;
 	//say("%f\n",act->fx0);
 */
-	src = act->CTXBUF;
-	vbuf = (void*)(src->vbuf);
+	struct glsrc* src = act->CTXBUF;
+	if(0 == src)return;
+	float (*vbuf)[6] = src->vtx[0].vbuf;
+	if(0 == vbuf)return;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];

@@ -72,9 +72,9 @@ static void ground_ctxfordx11(struct glsrc* src, char* tex0, char* tex1, char* v
 }
 static void ground_ctxforgl41(struct glsrc* src, char* tex0, char* tex1, char* tex2, char* vs, char* fs)
 {
-	//
-say("%s\n%s\n%s\n%s\n%s\n",tex0,tex1,tex2,vs,fs);
-	//
+	say("%s\n%s\n%s\n%s\n%s\n",tex0,tex1,tex2,vs,fs);
+
+	//shader
 	src->vs = memorycreate(0x10000, 0);
 	loadshaderfromfile(src->vs, vs);
 	src->fs = memorycreate(0x10000, 0);
@@ -86,31 +86,32 @@ say("%s\n%s\n%s\n%s\n%s\n",tex0,tex1,tex2,vs,fs);
 	src->tex[0].fmt = hex32('r','g','b','a');
 	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[0], tex0);
-	src->tex[0].enq = 42;
+	src->tex_enq[0] = 42;
 
 	//normal
 	src->tex[1].name = "tex1";
 	src->tex[1].fmt = hex32('r','g','b','a');
 	src->tex[1].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[1], tex1);
-	src->tex[1].enq = 42;
+	src->tex_enq[1] = 42;
 
 	//matter
 	src->tex[2].name = "tex2";
 	src->tex[2].fmt = hex32('r','g','b','a');
 	src->tex[2].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[2], tex2);
-	src->tex[2].enq = 42;
+	src->tex_enq[2] = 42;
 
 	//vertex
-	src->geometry = 3;
-	src->opaque = 0;
+	struct vertex* vtx = src->vtx;
+	vtx->geometry = 3;
+	vtx->opaque = 0;
 
-	src->vbuf_fmt = vbuffmt_33;
-	src->vbuf_w = 4*3*2;	//sizeof(float) * float_per_attr * attr_per_trigon
-	src->vbuf_h = 6*PIECE*PIECE;	//6point_per_block * blockx * blocky
-	src->vbuf_len = (src->vbuf_w) * (src->vbuf_h);
-	src->vbuf = memorycreate(src->vbuf_len, 0);
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_w = 4*3*2;	//sizeof(float) * float_per_attr * attr_per_trigon
+	vtx->vbuf_h = 6*PIECE*PIECE;	//6point_per_block * blockx * blocky
+	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 }
 static void ground_draw_gl41(
 	struct entity* act, struct style* part,
@@ -127,7 +128,7 @@ static void ground_draw_gl41(
 	if(0 == own)return;
 	struct glsrc* src = &own->gl41.src;
 	if(0 == src)return;
-	float (*vbuf)[6] = (void*)(src->vbuf);
+	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;
 
 	int x,y,j;

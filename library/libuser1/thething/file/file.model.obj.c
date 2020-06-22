@@ -112,18 +112,18 @@ say("%s\n%s\n%s\n%s\n",albedo,matter,vs,fs);
 	src->tex[0].fmt = hex32('r','g','b','a');
 	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[0], albedo);
-	src->tex[0].enq = 42;
+	src->tex_enq[0] = 42;
 
 	//matter
 	src->tex[1].name = "mattermap";
 	src->tex[1].fmt = hex32('r','g','b','a');
 	src->tex[1].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[1], matter);
-	src->tex[1].enq = 42;
+	src->tex_enq[1] = 42;
 
 	//vertex
-	src->geometry = 3;
-	src->opaque = 0;
+	src->vtx[0].geometry = 3;
+	src->vtx[0].opaque = 0;
 }
 static void obj3d_draw_gl41(
 	struct entity* act, struct style* part,
@@ -206,9 +206,10 @@ static void obj3d_draw_raster(
 	local2world(world_from_local, &part->fs, &geom->fs);
 	mat4_multiplyfrom(m, clip_from_world, world_from_local);
 
+	struct vertex* vtx = own->gl41.src.vtx;
 	rastersolid_triangle(
 		wnd, area, obj3d_position, obj3d_fragment,
-		own->gl41.src.vbuf, 9, 9*3, own->gl41.src.vbuf_h/3,
+		vtx->vbuf, 9, 9*3, vtx->vbuf_h/3,
 		m, own);
 }
 static void obj3d_draw_raytrace(
@@ -313,10 +314,10 @@ static void obj3d_linkup(struct halfrel* self, struct halfrel* peer)
 
 	//vertex
 	struct glsrc* src = &own->gl41.src;
-	src->vbuf_len = 0x100000;
-	src->vbuf = memorycreate(src->vbuf_len, 0);
-	src->vbuf_fmt = vbuffmt_333;
-	src->vbuf_w = 4*9;
+	src->vtx[0].vbuf_len = 0x100000;
+	src->vtx[0].vbuf = memorycreate(src->vtx[0].vbuf_len, 0);
+	src->vtx[0].vbuf_fmt = vbuffmt_333;
+	src->vtx[0].vbuf_w = 4*9;
 	parsevertfromobj(src, &pin->fs, own->objbuf, own->objlen);
 	src->vbuf_enq = 42;
 }

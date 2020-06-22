@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define CTXBUF buf0
-void entitycreatefromfile(struct entity* act, char* name);
 void carveskydome(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 
@@ -81,24 +81,22 @@ static void skydome_draw_pixel(
 }
 static void skydome_draw_gl41(
 	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* wnd, struct style* sty)
 {
-	void* vbuf;
-	void* ibuf;
-	struct glsrc* src;
+	struct glsrc* src = act->CTXBUF;
+	if(0 == src)return;
+
+	void* vbuf = src->vtx[0].vbuf;
+	void* ibuf = src->vtx[0].ibuf;
 	float* vc = sty->fs.vc;
 	float* vr = sty->fs.vr;
 	float* vf = sty->fs.vf;
 	float* vu = sty->fs.vt;
-
-	src = act->CTXBUF;
-	if(0 == src)return;
-
-	vbuf = (void*)(src->vbuf);
-	ibuf = (void*)(src->ibuf);
 	carveskydome(vbuf, ibuf, vc, vr, vf, vu);
 	src->vbuf_enq += 1;
 	src->ibuf_enq += 1;
+
+	gl41data_insert(wnd, 's', src, 1);
 }
 static void skydome_draw_json(
 	struct entity* act, struct style* pin,
