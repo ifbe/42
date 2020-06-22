@@ -24,7 +24,7 @@ libsoft1:
 	make -s -C $(library)/libsoft1 \
 	cflag=$(flag)
 libuser0:
-	make -s -C $(library)/libuser0 wind3d \
+	make -s -C $(library)/libuser0 windx11 \
 	cflag=$(flag)
 libuser1:
 	make -s -C $(library)/libuser1 \
@@ -41,14 +41,15 @@ lib:
 	$(library)/libhard0/*.o $(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o $(library)/libuser1/*.o \
-	-lole32 -lstrmiids -lxinput -lwinmm -lws2_32
-program:
-	windres --input-format=rc -O coff -i $(datafile)/42.rc -o $(datafile)/42.res
+	-ld3d11 -ld3dcompiler -lgdi32 -lole32 -lstrmiids -lxinput -lwinmm -lws2_32
+exe:
+	windres --input-format=rc -O coff -i $(datafile)/winres/42.rc -o $(datafile)/winres/42.res
 	g++ -mwindows $(datafile)/winres/42.res \
 	$(library)/libboot0/*.o $(library)/libboot1/*.o \
 	$(library)/libhard0/*.o $(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o $(library)/libuser1/*.o \
-	-lole32 -lstrmiids -lxinput -lwinmm -lws2_32
+	-ld3d11 -ld3dcompiler -lgdi32 -lole32 -lstrmiids -lxinput -lwinmm -lws2_32
 clean:
-	rm -f *.o *.a *.dll
+	rm -f *.o *.a *.so
+	make -C $(library) clean

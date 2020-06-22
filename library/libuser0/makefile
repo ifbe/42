@@ -199,9 +199,9 @@ winapi:target windows
 	$(compiler) $(cflag) v2r-window/os-win/win.api.c
 	$(compiler) $(cflag) w2w-gamepad/win/win.xinput.c
 
-.PHONY:wind3d
-wind3d:target windows
-	$(compiler) $(cflag) v2r-window/os-win/win.d3d.c
+.PHONY:windx11
+windx11:target windows
+	g++ $(cflag) v2r-window/lib-dx11/dx11.cpp
 	$(compiler) $(cflag) w2w-gamepad/win/win.xinput.c
 
 .PHONY:winglut
