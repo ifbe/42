@@ -2,6 +2,7 @@
 #include <string>
 #include <D3D11.h>
 #include <d3dcompiler.h>
+#include "libuser.h"
 using namespace std;
 
 //wnd thing
@@ -51,8 +52,49 @@ char pshader[] =
 
 
 
+void Upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque)
+{
+	int j;
+	printf("camera");
+	for(j=0;j<16;j++){
+		if(0 == cam[j])break;
+		printf("	%llx", cam[j]);
+	}
+	printf("\n");
+
+	printf("light");
+	for(j=0;j<16;j++){
+		if(0 == lit[j])break;
+		printf("	%llx", lit[j]);
+	}
+	printf("\n");
+
+	printf("solid");
+	for(j=0;j<64;j++){
+		if(0 == solid[j])continue;
+		printf("	%llx", solid[j]);
+	}
+	printf("\n");
+
+	printf("opaque");
+	for(j=0;j<64;j++){
+		if(0 == opaque[j])continue;
+		printf("	%llx", opaque[j]);
+	}
+	printf("\n");
+}
 void Render()
 {
+	// h.设置视口
+	D3D11_VIEWPORT vp = {0};
+	vp.TopLeftX = 0.f;
+	vp.TopLeftY = 0.f;
+	vp.Width	= static_cast<float>(g_winWidth);
+	vp.Height	= static_cast<float>(g_winHeight);
+	vp.MinDepth = 0.f;
+	vp.MaxDepth = 1.f;
+	g_dx11context->RSSetViewports(1,&vp);
+
 	// 绘制青色背景
 	float color[4] = {0.f, 1.f, 1.f, 1.0f};
 	g_dx11context->ClearRenderTargetView(g_renderTargetView,reinterpret_cast<float*>(&color));
@@ -80,7 +122,7 @@ int Initmyctx()
 	HRESULT hr;
 
 	//1. Compile vshader and pshader
-    ID3DBlob* VSBlob = NULL;
+	ID3DBlob* VSBlob = NULL;
 	ID3DBlob* VSError= NULL;
 	ID3DBlob* PSBlob = NULL;
 	ID3DBlob* PSError= NULL;
@@ -111,9 +153,9 @@ int Initmyctx()
 
 	//2. Create vshader and pshader
 	hr = g_dx11device->CreateVertexShader(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), NULL, &g_pVertexShader );
-	if(FAILED(hr)){	
+	if(FAILED(hr)){
 		VSBlob->Release();
-        return hr;
+		return hr;
 	}
 
 	hr = g_dx11device->CreatePixelShader(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize(), NULL, &g_pPixelShader );
@@ -195,7 +237,7 @@ BOOL InitD3D11()
 	);
 	if(FAILED(hr))
 	{
-		MessageBox(NULL, "Create d3d11 device failed!", "error",MB_OK);
+		MessageBox(NULL, "D3D11CreateDevice", "error",MB_OK);
 		return FALSE;
 	}
 
@@ -235,7 +277,7 @@ BOOL InitD3D11()
 	hr = dxgiFactory->CreateSwapChain(g_dx11device, &sd, &g_dx11swapchain);
 	if(FAILED(hr))
 	{
-		MessageBox(NULL, "Create swap chain failed!", "error",MB_OK);
+		MessageBox(NULL, "CreateSwapChain", "error",MB_OK);
 		return FALSE;
 	}
 	dxgiFactory->Release();
@@ -248,7 +290,7 @@ BOOL InitD3D11()
 	hr = g_dx11device->CreateRenderTargetView(backBuffer,NULL,&g_renderTargetView);
 	if(FAILED(hr))
 	{
-		MessageBox(NULL, "Create render target view failed!", "error",MB_OK);
+		MessageBox(NULL, "CreateRenderTargetView", "error",MB_OK);
 		return FALSE;
 	}
 	backBuffer->Release();
@@ -271,29 +313,19 @@ BOOL InitD3D11()
 	hr = g_dx11device->CreateTexture2D(&depthStencilDesc,NULL,&depthStencilBuffer);
 	if(FAILED(hr))
 	{
-		MessageBox(NULL, "Create depth stencil buffer failed!", "error",MB_OK);
+		MessageBox(NULL, "CreateTexture2D(depthstencil)", "error",MB_OK);
 		return FALSE;
 	}
 	hr = g_dx11device->CreateDepthStencilView(depthStencilBuffer,NULL,&g_depthStencilView);
 	if(FAILED(hr))
 	{
-		MessageBox(NULL, "Create depth stencil view failed!", "error",MB_OK);
+		MessageBox(NULL, "CreateDepthStencilView", "error",MB_OK);
 		return FALSE;
 	}
 
 	// g.将视图绑定到输出合并器阶段
 	g_dx11context->OMSetRenderTargets(1,&g_renderTargetView,g_depthStencilView);
 	depthStencilBuffer->Release();
-
-	// h.设置视口
-	D3D11_VIEWPORT vp = {0};
-	vp.TopLeftX = 0.f;
-	vp.TopLeftY = 0.f;
-	vp.Width	= static_cast<float>(g_winWidth);
-	vp.Height	= static_cast<float>(g_winHeight);
-	vp.MinDepth = 0.f;
-	vp.MaxDepth = 1.f;
-	g_dx11context->RSSetViewports(1,&vp);
 
 	return TRUE;
 }
@@ -329,7 +361,7 @@ BOOL InitWin32()
 		NULL
 	);
 	if(!g_hWnd){
-		MessageBox(NULL, "Create window failed!", "error",MB_OK);
+		MessageBox(NULL, "CreateWindow", "error",MB_OK);
 		return FALSE;
 	}
 
@@ -345,8 +377,35 @@ BOOL InitWin32()
 extern "C" {
 int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	//take
+	struct relation* rel = (struct relation*)wnd->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		struct fstyle* area = (struct fstyle*)rel->psrcfoot;
+		if(area){
+			//get vertex
+			stack[sp+0].pchip = rel->psrcchip;
+			stack[sp+0].pfoot = rel->psrcfoot;
+			//stack[sp+0].type = rel->srctype;
+			stack[sp+0].flag = rel->srcflag;
+			stack[sp+1].pchip = rel->pdstchip;
+			stack[sp+1].pfoot = rel->pdstfoot;
+			//stack[sp+1].type = rel->dsttype;
+			stack[sp+1].flag = rel->dstflag;
+			entityread((struct entity*)rel->pdstchip, rel->dstflag, stack,sp+2, 0,'v', 0, 0);
+		}
+
+		rel = (struct relation*)samesrcnextdst(rel);
+	}
+
+	//give
+	Upload(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque);
+
+	//draw
 	Render();
 
+	//event
 	MSG msg = {0};
 	while(PeekMessage(&msg, 0, 0, 0, PM_REMOVE)){
 		TranslateMessage(&msg);
@@ -388,6 +447,12 @@ int windowdelete(struct supply* wnd)
 }
 int windowcreate(struct supply* wnd)
 {
+	wnd->fmt = _full_;
+	wnd->gl_camera = (struct gl41data**)memorycreate(0x10000, 0);
+	wnd->gl_light  = (struct gl41data**)memorycreate(0x10000, 0);
+	wnd->gl_solid  = (struct gl41data**)memorycreate(0x10000, 0);
+	wnd->gl_opaque = (struct gl41data**)memorycreate(0x10000, 0);
+
 	if(!InitWin32())return -1;
 	if(!InitD3D11())return -1;
 	if(!Initmyctx())return -1;
@@ -414,7 +479,7 @@ void initwindow()
 	wndcls.lpszMenuName = NULL;
 	wndcls.style = CS_HREDRAW | CS_VREDRAW;
 	if(!RegisterClass(&wndcls)){
-		MessageBox(NULL, "Register window failed!", "error",MB_OK);
+		MessageBox(NULL, "RegisterClass", "error",MB_OK);
 	}
 }
 
