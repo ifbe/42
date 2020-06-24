@@ -21,11 +21,15 @@ ID3D11RenderTargetView* g_renderTargetView(NULL);
 //buf thing
 ID3D11VertexShader*     g_pVertexShader = NULL;
 ID3D11PixelShader*      g_pPixelShader = NULL;
+ID3D11Buffer*           g_pConstantBuffer = NULL;
 ID3D11InputLayout*      g_pVertexLayout = NULL;
 ID3D11Buffer*           g_pVertexBuffer = NULL;
 
 //my own
 char vshader[] =
+"cbuffer VSConstantBuffer : register(b0){\n"
+	"matrix matmvp;\n"
+"};\n"
 "struct VSin{\n"
 	"float4 where : POSITION;\n"
 	"float4 color : COLOR;\n"
@@ -36,7 +40,7 @@ char vshader[] =
 "};\n"
 "VSout main(VSin input){\n"
 	"VSout output;\n"
-	"output.where = input.where;\n"
+	"output.where = mul(input.where, matmvp);\n"
 	"output.color = input.color;\n"
 	"return output;\n"
 "}\n";
@@ -85,7 +89,7 @@ void Upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 }
 void Render()
 {
-	// h.设置视口
+	//viewport
 	D3D11_VIEWPORT vp = {0};
 	vp.TopLeftX = 0.f;
 	vp.TopLeftY = 0.f;
@@ -95,19 +99,21 @@ void Render()
 	vp.MaxDepth = 1.f;
 	g_dx11context->RSSetViewports(1,&vp);
 
-	// 绘制青色背景
+	//background
 	float color[4] = {0.f, 1.f, 1.f, 1.0f};
 	g_dx11context->ClearRenderTargetView(g_renderTargetView,reinterpret_cast<float*>(&color));
 	g_dx11context->ClearDepthStencilView(g_depthStencilView,D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL,1.f,0);
 
-	// 正式的场景绘制工作
+	//shader
 	g_dx11context->VSSetShader(g_pVertexShader, nullptr, 0);
 	g_dx11context->PSSetShader(g_pPixelShader, nullptr, 0);
-	g_dx11context->IASetInputLayout(g_pVertexLayout);
+	g_dx11context->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
 
+	//ia = input assembler
 	UINT stride = 32;
 	UINT offset = 0;
 	g_dx11context->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
+	g_dx11context->IASetInputLayout(g_pVertexLayout);
 	g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	g_dx11context->Draw(3, 0);
 
@@ -135,7 +141,7 @@ int Initmyctx()
 		&VSBlob, &VSError
 	);
 	if(FAILED(hr)){
-		MessageBox(NULL, (char*)VSError->GetBufferPointer(), "D3DCompile(vshader)",MB_OK);
+		MessageBox(NULL, (char*)VSError->GetBufferPointer(), "D3DCompile(vshader)", MB_OK);
 		return 0;
 	}
 
@@ -147,7 +153,7 @@ int Initmyctx()
 		&PSBlob, &PSError
 	);
 	if(FAILED(hr)){
-		MessageBox(NULL, (char*)PSError->GetBufferPointer(), "D3DCompile(pshader)",MB_OK);
+		MessageBox(NULL, (char*)PSError->GetBufferPointer(), "D3DCompile(pshader)", MB_OK);
 		return 0;
 	}
 
@@ -164,24 +170,48 @@ int Initmyctx()
 		return hr;
 	}
 
-	//3. input layout
-	D3D11_INPUT_ELEMENT_DESC dies[] = {
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{   "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,16, D3D11_INPUT_PER_VERTEX_DATA, 0}
+
+
+	// Fill in a buffer description.
+	mat4 mat = {
+		2.0, 0.0, 0.0, 0.0,
+		0.0, 2.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0
 	};
-	g_dx11device->CreateInputLayout(dies, 2, VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), &g_pVertexLayout);
+
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = 4*16;
+	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = &mat;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Create the buffer.
+	hr = g_dx11device->CreateBuffer( &cbDesc, &InitData, &g_pConstantBuffer);
+	if(FAILED(hr)){
+		MessageBox(NULL, "CreateBuffer(constant)", "Error", MB_OK);
+		return hr;
+	}
 
 
 
 
-	// 设置三角形顶点
+	//vertex data
 	float vertices[][8] = {
 		{ 0.0f, 0.5f, 0.0f, 1.0,        1.0f, 0.0f, 0.0f, 1.0f},
 		{ 0.5f,-0.5f, 0.0f, 1.0,        0.0f, 1.0f, 0.0f, 1.0f},
 		{-0.5f,-0.5f, 0.0f, 1.0,        0.0f, 0.0f, 1.0f, 1.0f}
 	};
 
-	// 设置顶点缓冲区描述
+	//vertex desc
 	D3D11_BUFFER_DESC vbd;
 	ZeroMemory(&vbd, sizeof(vbd));
 	vbd.Usage = D3D11_USAGE_IMMUTABLE;
@@ -189,15 +219,22 @@ int Initmyctx()
 	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	vbd.CPUAccessFlags = 0;
 
-	// 新建顶点缓冲区
+	//vertex buffer
 	D3D11_SUBRESOURCE_DATA Data;
 	ZeroMemory(&Data, sizeof(Data));
 	Data.pSysMem = vertices;
 	hr = g_dx11device->CreateBuffer(&vbd, &Data, &g_pVertexBuffer);
 	if(FAILED(hr)){
-		MessageBox(NULL, "CreateBuffer", "Error", MB_OK);
+		MessageBox(NULL, "CreateBuffer(vertex)", "Error", MB_OK);
 		return hr;
 	}
+
+	//vertex layout
+	D3D11_INPUT_ELEMENT_DESC dies[] = {
+		{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+		{   "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,16, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	};
+	g_dx11device->CreateInputLayout(dies, 2, VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), &g_pVertexLayout);
 
 	return 1;
 }
@@ -335,11 +372,10 @@ BOOL InitD3D11()
 
 LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	switch(msg)
-	{
+	switch(msg){
 	case WM_CLOSE:
+		eventwrite(0,0,0,0);
 		PostQuitMessage(0);
-		return 0;
 	}
 
 	return DefWindowProc(hwnd,msg,wParam,lParam);

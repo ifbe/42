@@ -131,7 +131,7 @@ static void weather_delete(struct entity* act)
 static void weather_create(struct entity* act)
 {
 	if(0 == act)return;
-	act->buf0 = memorycreate(0x200, 0);
+	act->buf0 = memorycreate(0x1000, 0);
 	weather_ctxforwnd(act->buf0);
 }
 

@@ -23,7 +23,7 @@ static void vrglass_delete(struct entity* act)
 static void vrglass_create(struct entity* act, void* str)
 {
 	act->MATBUF = memorycreate(64*2, 0);
-	act->CAMBUF = memorycreate(0x200, 0);
+	act->CAMBUF = memorycreate(0x1000, 0);
 }
 
 

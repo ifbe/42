@@ -243,7 +243,7 @@ static void particle_create(struct entity* act)
 	}
 
 
-	src = act->CTXBUF = memorycreate(0x200, 0);
+	src = act->CTXBUF = memorycreate(0x1000, 0);
 	particle_ctxforwnd(src, vbuf);
 }
 

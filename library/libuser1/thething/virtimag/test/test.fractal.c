@@ -279,7 +279,7 @@ static void fractal_create(struct entity* act)
 	struct glsrc* src;
 	if(0 == act)return;
 
-	src = act->GL41BUF = memorycreate(0x200, 0);
+	src = act->GL41BUF = memorycreate(0x1000, 0);
 	if(0 == src)return;
 
 	//shader

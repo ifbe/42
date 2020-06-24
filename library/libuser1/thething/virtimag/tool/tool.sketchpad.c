@@ -564,7 +564,7 @@ static void sketchpad_create(struct entity* act, void* str, int argc, u8** argv)
 	if(0 == vs)vs = "datafile/shader/sketchpad/vert.glsl";
 	if(0 == fs)fs = "datafile/shader/sketchpad/frag.glsl";
 
-	act->CTXBUF = memorycreate(0x200, 0);
+	act->CTXBUF = memorycreate(0x1000, 0);
 	sketchpad_ctxforwnd(act->CTXBUF, vs, fs);
 
 	act->DATBUF = memorycreate(0x100000, 0);

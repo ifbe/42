@@ -75,7 +75,7 @@ int line3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int vc
 
 	struct glsrc* src = win->gl_solid[line3d];
 	if(0 == src){
-		src = win->gl_solid[line3d] = memorycreate(0x200, 0);
+		src = win->gl_solid[line3d] = memorycreate(0x1000, 0);
 		if(0 == src)return -3;
 	}
 

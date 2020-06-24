@@ -381,7 +381,7 @@ static void projector_create(struct entity* act, void* str)
 	struct sunbuf* sun;
 	if(0 == act)return;
 
-	sun = act->OWNBUF = memorycreate(0x400, 0);
+	sun = act->OWNBUF = memorycreate(0x1000, 0);
 	sun->rgb[0] = 1.0;
 	sun->rgb[1] = 1.0;
 	sun->rgb[2] = 1.0;

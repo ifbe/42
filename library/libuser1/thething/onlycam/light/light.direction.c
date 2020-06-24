@@ -389,19 +389,19 @@ static void dirlight_create(struct entity* act, void* str)
 	struct sunbuf* sun;
 	if(0 == act)return;
 
-	sun = act->OWNBUF = memorycreate(0x400, 0);
+	sun = act->OWNBUF = memorycreate(0x1000, 0);
 	sun->u_rgb = 0xffff00;
 	sun->rgb[0] = ((sun->u_rgb >>16) & 0xff) / 255.0;
 	sun->rgb[1] = ((sun->u_rgb >> 8) & 0xff) / 255.0;
 	sun->rgb[2] = ((sun->u_rgb >> 0) & 0xff) / 255.0;
 
-	act->FBOBUF = memorycreate(0x400, 0);
+	act->FBOBUF = memorycreate(0x1000, 0);
 	dirlight_forfbo_cameraprep(act->FBOBUF);
 
-	act->LITBUF = memorycreate(0x400, 0);
+	act->LITBUF = memorycreate(0x1000, 0);
 	dirlight_forwnd_lightprep(act->LITBUF);
 
-	act->CTXBUF = memorycreate(0x400, 0);
+	act->CTXBUF = memorycreate(0x1000, 0);
 	dirlight_forwnd_meshprep(act->CTXBUF);
 }
 

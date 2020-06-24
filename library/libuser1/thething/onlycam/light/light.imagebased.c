@@ -254,7 +254,7 @@ static void imagelight_create(struct entity* act, void* str)
 	if(0 == buf)return;
 
 	act->CTXBUF = buf;
-	act->LITBUF = buf+0x400;
+	act->LITBUF = buf+0x800;
 
 	if(0 == str)str = "datafile/jpg/texball-earth.jpg";
 	imagelight_ctxforwnd(act->CTXBUF, str);

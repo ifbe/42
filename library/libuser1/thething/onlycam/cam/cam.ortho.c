@@ -41,7 +41,7 @@ static void orthcam_create(struct entity* act, void* arg)
 {
     say("@orthcam_create\n");
 	act->MATBUF = memorycreate(64, 0);
-	act->CAMBUF = memorycreate(0x200, 0);
+	act->CAMBUF = memorycreate(0x1000, 0);
 }
 
 

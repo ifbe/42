@@ -165,7 +165,7 @@ static void cbuffer_delete(struct entity* act)
 }
 static void cbuffer_create(struct entity* act, void* arg, int argc, u8** argv)
 {
-	act->CTXBUF = memorycreate(0x200, 0);
+	act->CTXBUF = memorycreate(0x1000, 0);
 	cbuffer_ctxforwnd(act->CTXBUF);
 }
 

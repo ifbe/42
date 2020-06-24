@@ -228,7 +228,7 @@ static void skillbar_create(struct entity* act, void* str)
 	struct glsrc* src;
 	if(0 == act)return;
 
-	src = act->buf0 = memorycreate(0x200, 0);
+	src = act->buf0 = memorycreate(0x1000, 0);
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";
 	skillbar_ctxforwnd(src, str);
 }

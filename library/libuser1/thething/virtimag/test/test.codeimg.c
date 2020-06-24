@@ -347,7 +347,7 @@ static void codeimg_create(struct entity* act)
 	}
 
 	//gl
-	src = act->GL41BUF = memorycreate(0x200, 0);
+	src = act->GL41BUF = memorycreate(0x1000, 0);
 	if(0 == src)return;
 
 	//shader

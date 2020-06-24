@@ -58,7 +58,7 @@ int point3d_vars(struct entity* win, int unused, float** vbuf, int vcnt)
 
 	struct glsrc* src = win->gl_solid[point3d];
 	if(0 == src){
-		src = win->gl_solid[point3d] = memorycreate(0x200, 0);
+		src = win->gl_solid[point3d] = memorycreate(0x1000, 0);
 		if(0 == src)return -3;
 	}
 

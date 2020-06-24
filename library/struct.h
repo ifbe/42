@@ -174,42 +174,48 @@ struct glsrc
 	char* routine_name;
 	char* routine_detail;
 
-	//argument
+	//constant
 	struct arg{
 		char* name;
 		void* data;
 		u32 fmt;
-	}arg[7];
+	}arg[8];
 
 	//texture
-	struct texture tex[5];
+	struct texture tex[8];
 
 	//vertex
-	struct vertex vtx[1];
+	struct vertex vtx[2];
 
 	//enqueue
 	u8 shader_enq;
-	u8 tex_enq[5];
+	u8 tex_enq[8];
 	u8 vbuf_enq;
 	u8 ibuf_enq;
 };
 struct gldst
 {
 	//shader
+	u32 vs;
+	u32 fs;
 	u32 shader;
 
+	//constant
+	void* constant[8];
+
 	//texture
-	u32 tex[5];
+	u32 tex[8];
 
 	//vertex
 	u32 vbo;
 	u32 ibo;
 	u32 vao;
-	void* layout;
+	void* vlayout;
+	void* ilayout;
 
 	//dequeue
 	u8 shader_deq;
-	u8 tex_deq[5];
+	u8 tex_deq[8];
 	u8 vbo_deq;
 	u8 ibo_deq;
 };
@@ -217,11 +223,11 @@ struct gl41data
 {
 	//[000,1bf]
 	struct glsrc src;
-	u8 ipadd[0x1c0 - sizeof(struct glsrc)];
+	u8 ipadd[0x300 - sizeof(struct glsrc)];
 
 	//[1c0,1ff]
 	struct gldst dst;
-	u8 opadd[0x40 - sizeof(struct gldst)];
+	u8 opadd[0x100 - sizeof(struct gldst)];
 };
 struct dx11data
 {

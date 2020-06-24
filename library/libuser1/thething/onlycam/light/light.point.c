@@ -149,7 +149,7 @@ static void pointlight_create(struct entity* act, void* str)
 	struct sunbuf* sun;
 	if(0 == act)return;
 
-	sun = act->OWNBUF = memorycreate(0x400, 0);
+	sun = act->OWNBUF = memorycreate(0x1000, 0);
 	sun->u_rgb = 0x0000ff;
 	sun->rgb[0] = ((sun->u_rgb >>16) & 0xff) / 255.0;
 	sun->rgb[1] = ((sun->u_rgb >> 8) & 0xff) / 255.0;

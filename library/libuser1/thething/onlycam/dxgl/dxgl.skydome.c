@@ -189,7 +189,7 @@ static void skydome_delete(struct entity* act)
 static void skydome_create(struct entity* act)
 {
 	if(0 == act)return;
-	act->CTXBUF = memorycreate(0x400, 0);
+	act->CTXBUF = memorycreate(0x1000, 0);
 }
 
 

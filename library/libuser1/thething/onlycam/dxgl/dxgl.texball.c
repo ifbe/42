@@ -233,7 +233,7 @@ static void texball_create(struct entity* act, void* str)
 	void* ctx;
 	if(0 == act)return;
 
-	ctx = act->CTXBUF = memorycreate(0x200, 0);
+	ctx = act->CTXBUF = memorycreate(0x1000, 0);
 	if(0 == ctx)return;
 
 	if(0 == str)str = "datafile/jpg/texball-earth.jpg";

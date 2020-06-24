@@ -378,7 +378,7 @@ static void spotlight_create(struct entity* act, void* str)
 	struct sunbuf* sun;
 	if(0 == act)return;
 
-	sun = act->OWNBUF = memorycreate(0x400, 0);
+	sun = act->OWNBUF = memorycreate(0x1000, 0);
 	if(0 == sun)return;
 	sun->u_rgb = 0xff0000;
 	sun->rgb[0] = ((sun->u_rgb >>16) & 0xff) / 255.0;

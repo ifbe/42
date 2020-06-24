@@ -202,7 +202,7 @@ static void picture_create(struct entity* act, void* str)
 {
 	if(0 == act)return;
 
-	act->CTXBUF = memorycreate(0x200, 0);
+	act->CTXBUF = memorycreate(0x1000, 0);
 	if(0 == act->CTXBUF)return;
 
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";

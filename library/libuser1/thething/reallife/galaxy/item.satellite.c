@@ -226,7 +226,7 @@ static void satellite_create(struct entity* act, void* str)
 	act->latitude = 0.0;
 	act->altitude = 0.0;
 
-	void* ctx = act->CTXBUF = memorycreate(0x200, 0);
+	void* ctx = act->CTXBUF = memorycreate(0x1000, 0);
 	if(0 == ctx)return;
 
 	if(0 == str)str = "datafile/jpg/earth.jpg";
