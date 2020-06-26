@@ -8,8 +8,8 @@ using namespace std;
 //wnd thing
 //HINSTANCE	g_hInstance(NULL);
 HWND		g_hWnd(NULL);
-UINT		g_winWidth(640);
-UINT		g_winHeight(480);
+UINT		g_winWidth(1024);
+UINT		g_winHeight(768);
 
 //d3d thing
 ID3D11Device*           g_dx11device(NULL);
@@ -26,6 +26,12 @@ ID3D11InputLayout*      g_pVertexLayout = NULL;
 ID3D11Buffer*           g_pVertexBuffer = NULL;
 
 //my own
+mat4 g_mat = {
+	1.0, 0.0, 0.0, 0.0,
+	0.0, 1.0, 0.0, 0.0,
+	0.0, 0.0, 1.0, 0.0,
+	0.0, 0.0, 0.0, 1.0
+};
 char vshader[] =
 "cbuffer VSConstantBuffer : register(b0){\n"
 	"matrix matmvp;\n"
@@ -40,7 +46,7 @@ char vshader[] =
 "};\n"
 "VSout main(VSin input){\n"
 	"VSout output;\n"
-	"output.where = mul(input.where, matmvp);\n"
+	"output.where = mul(input.where, transpose(matmvp));\n"
 	"output.color = input.color;\n"
 	"return output;\n"
 "}\n";
@@ -56,6 +62,31 @@ char pshader[] =
 
 
 
+void Upload_constant(void* src, ID3D11Buffer** dst)
+{
+	if(0 != *dst){
+		g_dx11context->UpdateSubresource(*dst, 0, 0, src, 0, 0);
+		return;
+	}
+
+	D3D11_BUFFER_DESC cbDesc;
+	cbDesc.ByteWidth = 4*16;
+	cbDesc.Usage = D3D11_USAGE_DEFAULT;
+	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cbDesc.CPUAccessFlags = 0;
+	cbDesc.MiscFlags = 0;
+	cbDesc.StructureByteStride = 0;
+
+	// Fill in the subresource data.
+	D3D11_SUBRESOURCE_DATA InitData;
+	InitData.pSysMem = src;
+	InitData.SysMemPitch = 0;
+	InitData.SysMemSlicePitch = 0;
+
+	// Create the buffer.
+	HRESULT hr = g_dx11device->CreateBuffer( &cbDesc, &InitData, dst);
+	if(FAILED(hr))MessageBox(NULL, "CreateBuffer(constant)", "Error", MB_OK);
+}
 void Upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque)
 {
 	int j;
@@ -86,8 +117,37 @@ void Upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 		printf("	%llx", opaque[j]);
 	}
 	printf("\n");
+
+	struct gl41data* pair = cam[0];
+	for(j=0;j<4;j++){
+		if(0 == pair->src.arg[j].name)break;
+		if(0 == pair->src.arg[j].data)break;
+
+		switch(pair->src.arg[j].fmt){
+			case 'm':{
+				printf("%d:%s@%llx\n",j, pair->src.arg[j].name, pair->src.arg[j].data);
+				if(0==strncmp(pair->src.arg[j].name, "cammvp", 6)){
+					float (*m)[4] = (float (*)[4])pair->src.arg[j].data;
+					printf("0: %f,%f,%f,%f\n1: %f,%f,%f,%f\n2: %f,%f,%f,%f\n3: %f,%f,%f,%f\n",
+						m[0][0], m[0][1], m[0][2], m[0][3],
+						m[1][0], m[1][1], m[1][2], m[1][3],
+						m[2][0], m[2][1], m[2][2], m[2][3],
+						m[3][0], m[3][1], m[3][2], m[3][3]
+					);
+					Upload_constant(pair->src.arg[j].data, (ID3D11Buffer**)&pair->dst.constant[j]);
+				}
+				break;
+			}//mat4
+			case 'v':{
+				break;
+			}//vertex
+			case 'f':{
+				break;
+			}//float
+		}//switch
+	}//for
 }
-void Render()
+void Render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque)
 {
 	//viewport
 	D3D11_VIEWPORT vp = {0};
@@ -95,8 +155,8 @@ void Render()
 	vp.TopLeftY = 0.f;
 	vp.Width	= static_cast<float>(g_winWidth);
 	vp.Height	= static_cast<float>(g_winHeight);
-	vp.MinDepth = 0.f;
-	vp.MaxDepth = 1.f;
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
 	g_dx11context->RSSetViewports(1,&vp);
 
 	//background
@@ -107,7 +167,32 @@ void Render()
 	//shader
 	g_dx11context->VSSetShader(g_pVertexShader, nullptr, 0);
 	g_dx11context->PSSetShader(g_pPixelShader, nullptr, 0);
-	g_dx11context->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
+
+	//constant
+	float a = PI/(getrandom()%180);
+	float c = cosine(a);
+	float s = sine(a);
+	g_mat[0][0] = c;
+	g_mat[0][1] =-s;
+	g_mat[1][0] = s;
+	g_mat[1][1] = c;
+	//g_dx11context->UpdateSubresource(g_pConstantBuffer, 0, 0, &g_mat, 0, 0);
+	//g_dx11context->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
+	int j;
+	struct gl41data* pair = cam[0];
+	for(j=0;j<4;j++){
+		if(0 == pair->src.arg[j].name)break;
+		if(0 == pair->src.arg[j].data)break;
+
+		switch(pair->src.arg[j].fmt){
+			case 'm':{
+				if(0==strncmp(pair->src.arg[j].name, "cammvp", 6)){
+					g_dx11context->VSSetConstantBuffers(0, 1, (ID3D11Buffer**)&pair->dst.constant[j]);
+				}
+				break;
+			}//mat4
+		}
+	}
 
 	//ia = input assembler
 	UINT stride = 32;
@@ -115,7 +200,7 @@ void Render()
 	g_dx11context->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
 	g_dx11context->IASetInputLayout(g_pVertexLayout);
 	g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	g_dx11context->Draw(3, 0);
+	g_dx11context->Draw(6, 0);
 
 	// 显示
 	g_dx11swapchain->Present(0,0);
@@ -173,24 +258,17 @@ int Initmyctx()
 
 
 	// Fill in a buffer description.
-	mat4 mat = {
-		2.0, 0.0, 0.0, 0.0,
-		0.0, 2.0, 0.0, 0.0,
-		0.0, 0.0, 1.0, 0.0,
-		0.0, 0.0, 0.0, 1.0
-	};
-
 	D3D11_BUFFER_DESC cbDesc;
 	cbDesc.ByteWidth = 4*16;
-	cbDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cbDesc.Usage = D3D11_USAGE_DEFAULT;
 	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cbDesc.CPUAccessFlags = 0;
 	cbDesc.MiscFlags = 0;
 	cbDesc.StructureByteStride = 0;
 
 	// Fill in the subresource data.
 	D3D11_SUBRESOURCE_DATA InitData;
-	InitData.pSysMem = &mat;
+	InitData.pSysMem = &g_mat;
 	InitData.SysMemPitch = 0;
 	InitData.SysMemSlicePitch = 0;
 
@@ -205,10 +283,14 @@ int Initmyctx()
 
 
 	//vertex data
+#define VAL 500.0
 	float vertices[][8] = {
-		{ 0.0f, 0.5f, 0.0f, 1.0,        1.0f, 0.0f, 0.0f, 1.0f},
-		{ 0.5f,-0.5f, 0.0f, 1.0,        0.0f, 1.0f, 0.0f, 1.0f},
-		{-0.5f,-0.5f, 0.0f, 1.0,        0.0f, 0.0f, 1.0f, 1.0f}
+		{-VAL,-VAL, 0.0, 1.0,        1.0f, 0.0f, 0.0f, 1.0f},
+		{ VAL,-VAL, 0.0, 1.0,        0.0f, 1.0f, 0.0f, 1.0f},
+		{-VAL, VAL, 0.0, 1.0,        0.0f, 0.0f, 1.0f, 1.0f},
+		{ VAL,-VAL, 0.0, 1.0,        0.0f, 1.0f, 0.0f, 1.0f},
+		{-VAL, VAL, 0.0, 1.0,        0.0f, 0.0f, 1.0f, 1.0f},
+		{ VAL, VAL, 0.0, 1.0,        1.0f, 0.0f, 0.0f, 1.0f}
 	};
 
 	//vertex desc
@@ -370,15 +452,80 @@ BOOL InitD3D11()
 
 
 
-LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+static void restorestackdeliverevent(struct supply* wnd, struct event* ev)
 {
-	switch(msg){
-	case WM_CLOSE:
-		eventwrite(0,0,0,0);
-		PostQuitMessage(0);
+	u64* save = (u64*)wnd->spsave;
+	if(0 == save){
+		eventwrite(ev->why, ev->what, ev->where, 0);
+		return;
 	}
 
-	return DefWindowProc(hwnd,msg,wParam,lParam);
+	struct halfrel* stack = (struct halfrel*)save[0];
+	int sp = save[1];
+
+	//get vertex
+	struct relation* rel = (struct relation*)wnd->orel0;
+	if(0 == rel)return;
+	stack[sp+0].pchip = rel->psrcchip;
+	stack[sp+0].pfoot = rel->psrcfoot;
+	//stack[sp+0].type = rel->srctype;
+	stack[sp+0].flag = rel->srcflag;
+	stack[sp+1].pchip = rel->pdstchip;
+	stack[sp+1].pfoot = rel->pdstfoot;
+	//stack[sp+1].type = rel->dsttype;
+	stack[sp+1].flag = rel->dstflag;
+	entitywrite((struct entity*)rel->pdstchip, rel->dstflag, stack,sp+2, 0,0, ev, 0);
+}
+LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	struct event ev;
+	u64 addr = GetWindowLongPtr(hwnd, GWLP_USERDATA);
+	struct supply* win = (struct supply*)addr;
+
+	switch(msg){
+		case WM_CHAR:{
+			//printf("%x\n",wparam);
+			if(wparam==0x1b)
+			{
+				//eventwrite(0x1b, 0x64626b, addr, 0);
+				ev.why = 0x1b;
+				ev.what = 0x64626b;
+				ev.where = addr;
+				restorestackdeliverevent(win, &ev);
+			}
+			else
+			{
+				//eventwrite(wparam, 0x72616863, addr, 0);
+				ev.why = wparam;
+				ev.what = 0x72616863;
+				ev.where = addr;
+				restorestackdeliverevent(win, &ev);
+			}
+			return 0;
+		}
+		case WM_SIZE:
+		{
+			int w = lparam&0xffff;
+			int h = (lparam>>16)&0xffff;
+			//printf("wm_size:%d,%d\n", w, h);
+
+			if(win != 0){
+				win->fbwidth = win->width = w;
+				win->fbheight= win->height= h;
+			}
+
+			//eventwrite(0x657a6973, 0x4077, addr, 0);
+			return 0;
+		}
+
+		case WM_CLOSE:{
+			eventwrite(0,0,0,0);
+			PostQuitMessage(0);
+			break;
+		}
+	}
+
+	return DefWindowProc(hwnd,msg,wparam,lparam);
 }
 void FreeWin32()
 {
@@ -439,7 +586,12 @@ int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* 
 	Upload(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque);
 
 	//draw
-	Render();
+	Render(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque);
+
+	u64 save[2];
+	save[0] = (u64)stack;
+	save[1] = sp;
+	wnd->spsave = save;
 
 	//event
 	MSG msg = {0};
@@ -448,6 +600,7 @@ int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* 
 		DispatchMessage(&msg);
 	}
 
+	wnd->spsave = 0;
 	return 0;
 }
 int windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
@@ -484,6 +637,8 @@ int windowdelete(struct supply* wnd)
 int windowcreate(struct supply* wnd)
 {
 	wnd->fmt = _full_;
+	wnd->width = wnd->fbwidth = 1024;
+	wnd->height= wnd->fbheight= 768;
 	wnd->gl_camera = (struct gl41data**)memorycreate(0x10000, 0);
 	wnd->gl_light  = (struct gl41data**)memorycreate(0x10000, 0);
 	wnd->gl_solid  = (struct gl41data**)memorycreate(0x10000, 0);
@@ -492,6 +647,7 @@ int windowcreate(struct supply* wnd)
 	if(!InitWin32())return -1;
 	if(!InitD3D11())return -1;
 	if(!Initmyctx())return -1;
+	SetWindowLongPtr(g_hWnd, GWLP_USERDATA, (u64)wnd);
 	return 0;
 }
 
