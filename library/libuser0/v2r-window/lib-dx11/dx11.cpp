@@ -1,5 +1,6 @@
-#include <Windows.h>
 #include <string>
+#include <Windows.h>
+#include <windowsx.h>
 #include <D3D11.h>
 #include <d3dcompiler.h>
 #include "libuser.h"
@@ -10,6 +11,10 @@ using namespace std;
 HWND		g_hWnd(NULL);
 UINT		g_winWidth(1024);
 UINT		g_winHeight(768);
+static int leftdown=0;
+static int rightdown=0;
+static POINT pt, pe;
+static RECT rt, re;
 
 //d3d thing
 ID3D11Device*           g_dx11device(NULL);
@@ -17,6 +22,7 @@ ID3D11DeviceContext*    g_dx11context(NULL);
 IDXGISwapChain*         g_dx11swapchain(NULL);
 ID3D11DepthStencilView* g_depthStencilView(NULL);
 ID3D11RenderTargetView* g_renderTargetView(NULL);
+ID3D11RasterizerState*  g_rasterstate(NULL);
 
 //buf thing
 ID3D11VertexShader*     g_pVertexShader = NULL;
@@ -25,6 +31,16 @@ ID3D11Buffer*           g_pConstantBuffer = NULL;
 ID3D11InputLayout*      g_pVertexLayout = NULL;
 ID3D11Buffer*           g_pVertexBuffer = NULL;
 
+//input layout
+D3D11_INPUT_ELEMENT_DESC inputlayout_p4c4[] = {
+	{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{   "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,16, D3D11_INPUT_PER_VERTEX_DATA, 0}
+};
+D3D11_INPUT_ELEMENT_DESC inputlayout_p3n3c3[] = {
+	{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{  "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{   "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,24, D3D11_INPUT_PER_VERTEX_DATA, 0}
+};
 //my own
 mat4 g_mat = {
 	1.0, 0.0, 0.0, 0.0,
@@ -90,7 +106,7 @@ void Upload_constant(void* src, ID3D11Buffer** dst)
 void Upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque)
 {
 	int j;
-	printf("camera");
+/*	printf("camera");
 	for(j=0;j<16;j++){
 		if(0 == cam[j])break;
 		printf("	%llx", cam[j]);
@@ -117,7 +133,7 @@ void Upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 		printf("	%llx", opaque[j]);
 	}
 	printf("\n");
-
+*/
 	struct gl41data* pair = cam[0];
 	for(j=0;j<4;j++){
 		if(0 == pair->src.arg[j].name)break;
@@ -125,15 +141,15 @@ void Upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 
 		switch(pair->src.arg[j].fmt){
 			case 'm':{
-				printf("%d:%s@%llx\n",j, pair->src.arg[j].name, pair->src.arg[j].data);
+				//printf("%d:%s@%llx\n",j, pair->src.arg[j].name, pair->src.arg[j].data);
 				if(0==strncmp(pair->src.arg[j].name, "cammvp", 6)){
-					float (*m)[4] = (float (*)[4])pair->src.arg[j].data;
+/*					float (*m)[4] = (float (*)[4])pair->src.arg[j].data;
 					printf("0: %f,%f,%f,%f\n1: %f,%f,%f,%f\n2: %f,%f,%f,%f\n3: %f,%f,%f,%f\n",
 						m[0][0], m[0][1], m[0][2], m[0][3],
 						m[1][0], m[1][1], m[1][2], m[1][3],
 						m[2][0], m[2][1], m[2][2], m[2][3],
 						m[3][0], m[3][1], m[3][2], m[3][3]
-					);
+					);*/
 					Upload_constant(pair->src.arg[j].data, (ID3D11Buffer**)&pair->dst.constant[j]);
 				}
 				break;
@@ -158,6 +174,7 @@ void Render(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	g_dx11context->RSSetViewports(1,&vp);
+	g_dx11context->RSSetState(g_rasterstate);
 
 	//background
 	float color[4] = {0.f, 1.f, 1.f, 1.0f};
@@ -312,12 +329,7 @@ int Initmyctx()
 	}
 
 	//vertex layout
-	D3D11_INPUT_ELEMENT_DESC dies[] = {
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-		{   "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,16, D3D11_INPUT_PER_VERTEX_DATA, 0}
-	};
-	g_dx11device->CreateInputLayout(dies, 2, VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), &g_pVertexLayout);
-
+	g_dx11device->CreateInputLayout(inputlayout_p4c4, 2, VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), &g_pVertexLayout);
 	return 1;
 }
 
@@ -446,6 +458,12 @@ BOOL InitD3D11()
 	g_dx11context->OMSetRenderTargets(1,&g_renderTargetView,g_depthStencilView);
 	depthStencilBuffer->Release();
 
+	//no cull
+	D3D11_RASTERIZER_DESC desc;
+	ZeroMemory(&desc, sizeof(D3D11_RASTERIZER_DESC));
+	desc.FillMode = D3D11_FILL_SOLID;
+	desc.CullMode = D3D11_CULL_NONE;
+	g_dx11device->CreateRasterizerState(&desc, &g_rasterstate);
 	return TRUE;
 }
 
@@ -483,6 +501,137 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	struct supply* win = (struct supply*)addr;
 
 	switch(msg){
+		case WM_MOUSEWHEEL:
+		{
+			u64 x,y,k;
+			GetCursorPos(&pt);
+			ScreenToClient(hwnd, &pt);
+
+			short* t = (short*)&ev.why;
+			t[0] = pt.x;
+			t[1] = pt.y;
+			t[2] = GET_WHEEL_DELTA_WPARAM(wparam)/60;
+			printf("%d\n",t[2]);
+			t[3] = (t[2]>0) ? 'f' : 'b';
+
+			ev.what = 0x4070;
+			ev.where = addr;
+			restorestackdeliverevent(win, &ev);
+			return 0;
+		}
+
+		case WM_MOUSEMOVE:
+		{
+			u64 x,y,k;
+			if((leftdown>0)&&(rightdown>0))
+			{
+				GetCursorPos(&pe);		// 获取光标指针的新位置
+				re.left=rt.left+(pe.x - pt.x);		// 窗口新的水平位置
+				re.top =rt.top+(pe.y - pt.y);		// 窗口新的垂直位置
+				MoveWindow(hwnd, re.left, re.top, re.right, re.bottom, 1);// 移动窗口
+				GetCursorPos(&pt);			// 获取鼠标当前位置
+				GetWindowRect(hwnd, &rt);	// 获取窗口位置与大小
+				return 0;
+			}
+			else if(rightdown>0)k = 'r';
+			else if(leftdown>0)k = 'l';
+			else k = 'l';
+
+			y = GET_Y_LPARAM(lparam);
+			x = GET_X_LPARAM(lparam);
+			//eventwrite(x + (y<<16) + (k<<48), 0x4070, addr, 0);
+
+			ev.why = x + (y<<16) + (k<<48);
+			ev.what = 0x4070;
+			ev.where = addr;
+			restorestackdeliverevent(win, &ev);
+			return 0;
+		}
+
+		case WM_LBUTTONUP:
+		{
+			u64 x,y,k;
+			leftdown=0;
+
+			k = 'l';
+			y = GET_Y_LPARAM(lparam);
+			x = GET_X_LPARAM(lparam);
+			//eventwrite(x + (y<<16) + (k<<48), 0x2d70, addr, 0);
+
+			ev.why = x + (y<<16) + (k<<48);
+			ev.what = 0x2d70;
+			ev.where = addr;
+			restorestackdeliverevent(win, &ev);
+			return 0;
+		}
+
+		case WM_RBUTTONUP:
+		{
+			u64 x,y,k;
+			rightdown=0;
+
+			k = 'r';
+			y = GET_Y_LPARAM(lparam);
+			x = GET_X_LPARAM(lparam);
+			//eventwrite(x + (y<<16) + (k<<48), 0x2d70, addr, 0);
+
+			ev.why = x + (y<<16) + (k<<48);
+			ev.what = 0x2d70;
+			ev.where = addr;
+			restorestackdeliverevent(win, &ev);
+			return 0;
+		}
+
+		case WM_LBUTTONDOWN:
+		{
+			u64 x,y,k;
+			leftdown=1;
+			GetCursorPos(&pt);		// 获取鼠标光标指针当前位置
+
+			if(rightdown>0)
+			{
+				GetWindowRect(hwnd, &rt);	// 获取窗口位置与大小
+				re.right=rt.right-rt.left;	// 保存窗口宽度
+				re.bottom=rt.bottom-rt.top;	// 保存窗口高度
+			}
+			
+			k = 'l';
+			y = GET_Y_LPARAM(lparam);
+			x = GET_X_LPARAM(lparam);
+			//eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
+
+			ev.why = x + (y<<16) + (k<<48);
+			ev.what = 0x2b70;
+			ev.where = addr;
+			restorestackdeliverevent(win, &ev);
+			return 0;
+		}
+
+		case WM_RBUTTONDOWN:
+		{
+			u64 x,y,k;
+			rightdown=1;
+			GetCursorPos(&pt);
+
+			if(leftdown>0)
+			{
+				GetWindowRect(hwnd, &rt);
+				re.right=rt.right-rt.left;
+				re.bottom=rt.bottom-rt.top;
+			}
+
+			k = 'r';
+			y = GET_Y_LPARAM(lparam);
+			x = GET_X_LPARAM(lparam);
+			//eventwrite(x + (y<<16) + (k<<48), 0x2b70, addr, 0);
+
+			ev.why = x + (y<<16) + (k<<48);
+			ev.what = 0x2b70;
+			ev.where = addr;
+			restorestackdeliverevent(win, &ev);
+			return 0;
+		}
+
 		case WM_CHAR:{
 			//printf("%x\n",wparam);
 			if(wparam==0x1b)

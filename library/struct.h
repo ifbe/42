@@ -210,8 +210,7 @@ struct gldst
 	u32 vbo;
 	u32 ibo;
 	u32 vao;
-	void* vlayout;
-	void* ilayout;
+	void* layout;
 
 	//dequeue
 	u8 shader_deq;
