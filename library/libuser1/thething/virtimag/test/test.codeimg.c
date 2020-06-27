@@ -49,15 +49,15 @@ GLSL_VERSION
 
 unsigned char RED1(int i,int j)
 {
-	return (char)(_sq(cosine(arctan2(j-512,i-512)/2))*255);
+	return (char)(_sq(getcos(arctanyx(j-512,i-512)/2))*255);
 }
 unsigned char GREEN1(int i,int j)
 {
-	return (char)(_sq(cosine(arctan2(j-512,i-512)/2-2*arccos(-1)/3))*255);
+	return (char)(_sq(getcos(arctanyx(j-512,i-512)/2-2*arccos(-1)/3))*255);
 }
 unsigned char BLUE1(int i,int j)
 {
-	return (char)(_sq(cosine(arctan2(j-512,i-512)/2+2*arccos(-1)/3))*255);
+	return (char)(_sq(getcos(arctanyx(j-512,i-512)/2+2*arccos(-1)/3))*255);
 }
 unsigned char RED2(int i,int j)
 {
@@ -144,19 +144,19 @@ unsigned char BLUE4(int i,int j)
 unsigned char RED6(int i,int j)
 {
 	float s=3./(j+99);
-	float y=(j+sine((i*i+_sq(j-700)*5)/100./DIM)*35)*s;
+	float y=(j+getsin((i*i+_sq(j-700)*5)/100./DIM)*35)*s;
 	return ((int)((i+DIM)*s+y)%2+(int)((DIM*2-i)*s+y)%2)*127;
 }
 unsigned char GREEN6(int i,int j)
 {
 	float s=3./(j+99);
-	float y=(j+sine((i*i+_sq(j-700)*5)/100./DIM)*35)*s;
+	float y=(j+getsin((i*i+_sq(j-700)*5)/100./DIM)*35)*s;
 	return ((int)(5*((i+DIM)*s+y))%2+(int)(5*((DIM*2-i)*s+y))%2)*127;
 }
 unsigned char BLUE6(int i,int j)
 {
 	float s=3./(j+99);
-	float y=(j+sine((i*i+_sq(j-700)*5)/100./DIM)*35)*s;
+	float y=(j+getsin((i*i+_sq(j-700)*5)/100./DIM)*35)*s;
 	return ((int)(29*((i+DIM)*s+y))%2+(int)(29*((DIM*2-i)*s+y))%2)*127;
 }
 

@@ -329,8 +329,8 @@ static void rubikscube_draw_gl41(
 			}
 
 			q[3] *= -PI/4;
-			c = cosine(q[3]);
-			s = sine(q[3]);
+			c = getcos(q[3]);
+			s = getsin(q[3]);
 
 			q[0] = q[0]*s;
 			q[1] = q[1]*s;

@@ -56,24 +56,24 @@ static void clock_draw_gl41(
 	if(p[2] >= 24)p[2] = 0;p[3] += 1;
 
 	a = PI/2 - (p[0]*PI*2.0/60.0);
-	c = cosine(a);
-	s = sine(a);
+	c = getcos(a);
+	s = getsin(a);
 	tr[0] = vc[0]+(vr[0]*c+vf[0]*s);
 	tr[1] = vc[1]+(vr[1]*c+vf[1]*s);
 	tr[2] = vc[2]+(vr[2]*c+vf[2]*s);
 	gl41line(ctx, 0xff0000, vc, tr);
 
 	a = PI/2 - (p[1]*PI*2.0/60.0);
-	c = cosine(a);
-	s = sine(a);
+	c = getcos(a);
+	s = getsin(a);
 	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*3/4;
 	tr[1] = vc[1]+(vr[1]*c+vf[1]*s)*3/4;
 	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*3/4;
 	gl41line(ctx, 0x00ff00, vc, tr);
 
 	a = PI/2 - (p[2]*PI*2.0/12.0);
-	c = cosine(a);
-	s = sine(a);
+	c = getcos(a);
+	s = getsin(a);
 	tr[0] = vc[0]+(vr[0]*c+vf[0]*s)*2/4;
 	tr[1] = vc[1]+(vr[1]*c+vf[1]*s)*2/4;
 	tr[2] = vc[2]+(vr[2]*c+vf[2]*s)*2/4;
@@ -88,8 +88,8 @@ static void clock_draw_gl41(
 	for(j=0;j<12;j++)
 	{
 		a = PI/2 - j*PI/6;
-		c = cosine(a);
-		s = sine(a);
+		c = getcos(a);
+		s = getsin(a);
 		tc[0] = vc[0] + c*vr[0]*7/8 + s*vf[0]*7/8;
 		tc[1] = vc[1] + c*vr[1]*7/8 + s*vf[1]*7/8;
 		tc[2] = vc[2] + c*vr[2]*7/8 + s*vf[2]*7/8 + 1;

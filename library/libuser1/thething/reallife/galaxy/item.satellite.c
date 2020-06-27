@@ -83,11 +83,11 @@ static void satellite_draw_gl41(
 	float a0,c0,s0;
 	float az,cz,sz;
 	a0 = (act->longitude+180) * PI / 180;
-	c0 = cosine(a0);
-	s0 = sine(a0);
+	c0 = getcos(a0);
+	s0 = getsin(a0);
 	az = act->latitude * PI / 180;
-	cz = cosine(az);
-	sz = sine(az);
+	cz = getcos(az);
+	sz = getsin(az);
 	for(j=0;j<3;j++){
 		tt[j] = (vr[j]*c0 + vf[j]*s0)*cz*2 + vt[j]*sz*2;
 		tc[j] = vc[j] + tt[j];

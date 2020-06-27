@@ -228,8 +228,8 @@ void carveline_spring(float* vbuf, int vlen, u16* ibuf, int ilen,
 	for(k=0;k<=SPRACC;k++)
 	{
 		a = k * 32*tau / SPRACC;
-		c = cosine(a);
-		s = sine(a);
+		c = getcos(a);
+		s = getsin(a);
 		for(j=0;j<3;j++)vbuf[6*k +j] = vc[j] +vr[j]*c +vf[j]*s +vt[j]*(2.0*k/SPRACC-1);
 
 		if(k >= SPRACC)break;
@@ -867,16 +867,16 @@ void carveline_gear(float* vbuf, int vlen, u16* ibuf, int ilen,
 	vec3 tc,tr,tf;
 	for(k=0;k<teethcount;k++){
 		a = (k*4-1)*tau/(teethcount*4);
-		c = cosine(a);
-		s = sine(a);
+		c = getcos(a);
+		s = getsin(a);
 		for(j=0;j<3;j++){
 			vbuf[k*6*4 +0 +j] = vc[j] +vr[j]*c*0.9 + vf[j]*s*0.9;
 			vbuf[k*6*4 +6 +j] = vc[j] +vr[j]*c + vf[j]*s;
 		}
 
 		a = (k*4+1)*tau/(teethcount*4);
-		c = cosine(a);
-		s = sine(a);
+		c = getcos(a);
+		s = getsin(a);
 		for(j=0;j<3;j++){
 			vbuf[k*6*4 +12 +j] = vc[j] +vr[j]*c + vf[j]*s;
 			vbuf[k*6*4 +18 +j] = vc[j] +vr[j]*c*0.9 + vf[j]*s*0.9;
@@ -912,8 +912,8 @@ void gl41line_rotategear(struct entity* win, u32 rgb,
 {
 	int j;
 	vec3 tr,tf;
-	float c = cosine(a);
-	float s = sine(a);
+	float c = getcos(a);
+	float s = getsin(a);
 	for(j=0;j<3;j++){
 		tr[j] = vr[j]*c + vf[j]*s;
 		tf[j] = vf[j]*c - vr[j]*s;
@@ -1278,8 +1278,8 @@ void carveline_sphere(float* vbuf, int vlen, u16* ibuf, int ilen,
 	for(k=0;k<accy;k++)
 	{
 		s = (2*k-accy+1)*PI/(2*accy+2);
-		c = cosine(s);
-		s = sine(s);
+		c = getcos(s);
+		s = getsin(s);
 
 		tc[0] = vc[0] + vu[0]*s;
 		tc[1] = vc[1] + vu[1]*s;
@@ -1294,8 +1294,8 @@ void carveline_sphere(float* vbuf, int vlen, u16* ibuf, int ilen,
 		for(j=0;j<accx;j++)
 		{
 			s = j*tau/accx;
-			c = cosine(s);
-			s = sine(s);
+			c = getcos(s);
+			s = getsin(s);
 
 			a = (k*accx + j)*6;
 			b = (k*accx + j)*2;

@@ -532,8 +532,8 @@ void carvepoint_sphere(float* vbuf, int vlen,
 	for(k=0;k<accy;k++)
 	{
 		s = (2*k-accy+1)*PI/(2*accy+2);
-		c = cosine(s);
-		s = sine(s);
+		c = getcos(s);
+		s = getsin(s);
 
 		tc[0] = vc[0] + vu[0]*s;
 		tc[1] = vc[1] + vu[1]*s;
@@ -548,8 +548,8 @@ void carvepoint_sphere(float* vbuf, int vlen,
 		for(j=0;j<accx;j++)
 		{
 			s = j*tau/accx;
-			c = cosine(s);
-			s = sine(s);
+			c = getcos(s);
+			s = getsin(s);
 
 			a = (k*accx + j)*6;
 			vbuf[a+0] = tc[0] + tr[0]*c + tf[0]*s;

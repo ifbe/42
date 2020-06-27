@@ -168,8 +168,8 @@ int detail_draw_gl41(
 
 	for(k=0;k<cnt;k++){
 		a = 2*PI*k/cnt;
-		c = cosine(a)/2;
-		s = sine(a)/2;
+		c = getcos(a)/2;
+		s = getsin(a)/2;
 		for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*c + vf[j]*s;
 
 		detail_draw_gl41_node(ctx, peer[k]->pchip, tc, tr, tf);

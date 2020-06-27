@@ -276,12 +276,12 @@ void drone_write_euler(struct entity* act, float* f)
 	float ry = f[1]*PI/360;
 	float rz = f[2]*PI/360;
 
-	float sinx = sine(rx);
-	float siny = sine(ry);
-	float sinz = sine(rz);
-	float cosx = cosine(rx);
-	float cosy = cosine(ry);
-	float cosz = cosine(rz);
+	float sinx = getsin(rx);
+	float siny = getsin(ry);
+	float sinz = getsin(rz);
+	float cosx = getcos(rx);
+	float cosy = getcos(ry);
+	float cosz = getcos(rz);
 
 	q[0] = sinx * cosy * cosz - cosx * siny * sinz;
 	q[1] = cosx * siny * cosz + sinx * cosy * sinz;

@@ -64,9 +64,9 @@ static void rectify_draw_gl41(
 
 	time = timeread() / 1000;
 	a = time * PI / 1000;
-	s[0] = sine(a - PI*2.0/3.0);
-	s[1] = sine(a);
-	s[2] = sine(a + PI*2.0/3.0);
+	s[0] = getsin(a - PI*2.0/3.0);
+	s[1] = getsin(a);
+	s[2] = getsin(a + PI*2.0/3.0);
 	rectify_chosen(s, chosen);
 
 	//board

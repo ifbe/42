@@ -18,7 +18,7 @@ float carcon_pidloop_angle(struct entity* ent, vec3 front)
 {
 	vec3 vf;
 	vec3_normalizefrom(vf, front);
-	float actual =-arctan2(vf[0], vf[1]);
+	float actual =-arctanyx(vf[0], vf[1]);
 	float differ = ent->expect_x - actual;
 	if(differ > PI)differ -= tau;
 	if(differ <-PI)differ += tau;

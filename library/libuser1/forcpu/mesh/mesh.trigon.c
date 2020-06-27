@@ -198,8 +198,8 @@ void carvetrigonindex_circle_v3n3x3(float* vbuf, int vlen, u16* ibuf, int ilen,
 		a = j*9;
 		b = j*3;
 
-		c = cosine(j*tau/circleacc);
-		s = sine(j*tau/circleacc);
+		c = getcos(j*tau/circleacc);
+		s = getsin(j*tau/circleacc);
 		vbuf[a+0] = vc[0] + vr[0]*c + vf[0]*s;
 		vbuf[a+1] = vc[1] + vr[1]*c + vf[1]*s;
 		vbuf[a+2] = vc[2] + vr[2]*c + vf[2]*s;
@@ -236,8 +236,8 @@ void carvetrigonindex_circle_v4n4x4(float* vbuf, int vlen, u16* ibuf, int ilen,
 		a = j*12;
 		b = j*3;
 
-		c = cosine(j*tau/circleacc);
-		s = sine(j*tau/circleacc);
+		c = getcos(j*tau/circleacc);
+		s = getsin(j*tau/circleacc);
 		vbuf[a+0] = vc[0] + vr[0]*c + vf[0]*s;
 		vbuf[a+1] = vc[1] + vr[1]*c + vf[1]*s;
 		vbuf[a+2] = vc[2] + vr[2]*c + vf[2]*s;
@@ -277,8 +277,8 @@ void carvetrigonindex_sphere_v3n3x3(float* vbuf, int vlen, u16* ibuf, int ilen,
 	for(k=0;k<sphereaccy;k++)
 	{
 		s = (2*k-sphereaccy+1)*PI/(2*sphereaccy+2);
-		c = cosine(s);
-		s = sine(s);
+		c = getcos(s);
+		s = getsin(s);
 
 		tc[0] = vc[0] + vu[0]*s;
 		tc[1] = vc[1] + vu[1]*s;
@@ -293,8 +293,8 @@ void carvetrigonindex_sphere_v3n3x3(float* vbuf, int vlen, u16* ibuf, int ilen,
 		for(j=0;j<sphereaccx;j++)
 		{
 			s = j*tau/sphereaccx;
-			c = cosine(s);
-			s = sine(s);
+			c = getcos(s);
+			s = getsin(s);
 
 			a = (k*sphereaccx + j)*9;
 			vbuf[a+0] = tc[0] + tr[0]*c + tf[0]*s;
@@ -352,8 +352,8 @@ void carvetrigonindex_sphere_v4n4x4(float* vbuf, int vlen, u16* ibuf, int ilen,
 	for(k=0;k<sphereaccy;k++)
 	{
 		s = (2*k-sphereaccy+1)*PI/(2*sphereaccy+2);
-		c = cosine(s);
-		s = sine(s);
+		c = getcos(s);
+		s = getsin(s);
 
 		tc[0] = vc[0] + vu[0]*s;
 		tc[1] = vc[1] + vu[1]*s;
@@ -368,8 +368,8 @@ void carvetrigonindex_sphere_v4n4x4(float* vbuf, int vlen, u16* ibuf, int ilen,
 		for(j=0;j<sphereaccx;j++)
 		{
 			s = j*tau/sphereaccx;
-			c = cosine(s);
-			s = sine(s);
+			c = getcos(s);
+			s = getsin(s);
 
 			a = (k*sphereaccx + j)*12;
 			vbuf[a+ 0] = tc[0] + tr[0]*c + tf[0]*s;

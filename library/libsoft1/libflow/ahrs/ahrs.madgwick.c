@@ -228,9 +228,9 @@ void madgwickupdate9(
 	qz /= norm;
 
 
-	//gx = arctan2(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
+	//gx = arctanyx(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
 	//gy = arcsin(2*qw*qy - 2*qx*qz)*180/3.141592653;
-	//gz = arctan2(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
+	//gz = arctanyx(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
 	//say("euler:	%f	%f	%f\n", gx, gy, gz);
 }
 

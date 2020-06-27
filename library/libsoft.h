@@ -10,11 +10,11 @@ void* samesrcnextdst(void*);
 void* samedstprevsrc(void*);
 void* samedstnextsrc(void*);
 //
-double sine(double);
-double cosine(double);
+double getsin(double);
+double getcos(double);
 double arcsin(double);
 double arccos(double);
-double arctan2(double, double);
+double arctanyx(double, double);
 //
 int startfile(void*, int);
 int stopfile(int);

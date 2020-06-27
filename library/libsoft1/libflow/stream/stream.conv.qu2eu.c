@@ -21,9 +21,9 @@ int qu2eu_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void
 	say("	ii: %f,%f,%f,%f\n", q[0],q[1],q[2],q[3]);
 
 	vec4 e;
-	e[0] = arctan2(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
+	e[0] = arctanyx(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
 	e[1] = arcsin(2*qw*qy - 2*qx*qz)*180/3.141592653;
-	e[2] = arctan2(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
+	e[2] = arctanyx(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
 	say("	oo: %f,%f,%f\n",e[0],e[1],e[2]);
 
 	return give_data_into_peer(art,_dst_, stack,sp, 0,0, e,3);

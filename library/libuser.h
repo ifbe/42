@@ -184,12 +184,12 @@ void mat4_multiply(mat4 d, mat4 s);
 int mat4_inverse(mat4 d, mat4 s);
 
 //libhard1
-double cosine(double);
-double sine(double);
-double tangent(double);
+double getcos(double);
+double getsin(double);
+double gettan(double);
 double arccos(double);
 double arcsin(double);
-double arctan2(double, double);
+double arctanyx(double, double);
 
 double lg(double);
 double ln(double);

@@ -38,8 +38,8 @@ static void mobius_draw_gl41(
 	for(j=0;j<180;j++)
 	{
 		a = j*PI/90;
-		c = cosine(a);
-		s = sine(a);
+		c = getcos(a);
+		s = getsin(a);
 
 		tr[0] = vr[0]*c + vf[0]*s;
 		tr[1] = vr[1]*c + vf[1]*s;
@@ -59,8 +59,8 @@ static void mobius_draw_gl41(
 		tf[2] = z*n;
 
 		//
-		c = cosine(a/2);
-		s = sine(a/2);
+		c = getcos(a/2);
+		s = getsin(a/2);
 		tr[0] = (tr[0]*c + vu[0]*s)*0.25;
 		tr[1] = (tr[1]*c + vu[1]*s)*0.25;
 		tr[2] = (tr[2]*c + vu[2]*s)*0.25;

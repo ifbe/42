@@ -165,7 +165,7 @@ static void spurgear_write_ray(struct entity* gear,int foot, struct fstyle* geom
 	uv[1] = vec3_dot(tf, geom->vf) / vec3_getlen(tf) / vec3_getlen(geom->vf);
 	say("%f,%f\n", uv[0], uv[1]);
 
-	gear->fz0 = arctan2(uv[1], uv[0]);
+	gear->fz0 = arctanyx(uv[1], uv[0]);
 }
 
 

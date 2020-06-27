@@ -18,8 +18,8 @@ int decstr2double(u8*, double*);
 void* bintree_getleft(void*, void*);
 void* bintree_getright(void*, void*);
 //
-double cosine(double);
-double sine(double);
+double getcos(double);
+double getsin(double);
 double power(double, double);
 //
 void printmemory(void*, int);

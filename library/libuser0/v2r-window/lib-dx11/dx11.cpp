@@ -162,6 +162,14 @@ void Upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 			}//float
 		}//switch
 	}//for
+
+	struct vertex* vtx;
+	for(j=0;j<64;j++){
+		if(0 == solid[j])continue;
+		vtx = &solid[j]->src.vtx[0];
+		if(0 == vtx->vbuf)continue;
+		printf("%d: %llx,%llx,%x,%x\n",j, vtx->vbuf, vtx->ibuf, vtx->geometry, vtx->opaque);
+	}
 }
 void Render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque)
 {
@@ -177,7 +185,7 @@ void Render(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 	g_dx11context->RSSetState(g_rasterstate);
 
 	//background
-	float color[4] = {0.f, 1.f, 1.f, 1.0f};
+	float color[4] = {0.1, 0.1, 0.1, 1.0};
 	g_dx11context->ClearRenderTargetView(g_renderTargetView,reinterpret_cast<float*>(&color));
 	g_dx11context->ClearDepthStencilView(g_depthStencilView,D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL,1.f,0);
 
@@ -187,8 +195,8 @@ void Render(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 
 	//constant
 	float a = PI/(getrandom()%180);
-	float c = cosine(a);
-	float s = sine(a);
+	float c = getcos(a);
+	float s = getsin(a);
 	g_mat[0][0] = c;
 	g_mat[0][1] =-s;
 	g_mat[1][0] = s;

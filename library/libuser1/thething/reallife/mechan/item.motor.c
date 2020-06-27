@@ -75,19 +75,19 @@ static void motor_draw_gl41(
 
 	a = timeread() / 1000000.0;
 
-	s = sine(a);
+	s = getsin(a);
 	v1[0] = vc[0] + (vf[0]/2)*s;
 	v1[1] = vc[1] + (vf[1]/2)*s;
 	v1[2] = vc[2] + (vf[2]/2)*s;
 	gl41line(ctx, 0x0000ff, vc, v1);
 
-	s = sine(a+PI*2/3);
+	s = getsin(a+PI*2/3);
 	v2[0] = vc[0] + (vr[0]*1.732/4 - vf[0]*0.25)*s;
 	v2[1] = vc[1] + (vr[1]*1.732/4 - vf[1]*0.25)*s;
 	v2[2] = vc[2] + (vr[2]*1.732/4 - vf[2]*0.25)*s;
 	gl41line(ctx, 0x00ff00, vc, v2);
 
-	s = sine(a+PI*4/3);
+	s = getsin(a+PI*4/3);
 	v3[0] = vc[0] - (vr[0]*1.732/4 + vf[0]*0.25)*s;
 	v3[1] = vc[1] - (vr[1]*1.732/4 + vf[1]*0.25)*s;
 	v3[2] = vc[2] - (vr[2]*1.732/4 + vf[2]*0.25)*s;

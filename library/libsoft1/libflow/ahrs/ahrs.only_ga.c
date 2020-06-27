@@ -65,9 +65,9 @@ void imuupdate(
 	qy = qy / norm;
 	qz = qz / norm;
 
-	//vx = arctan2(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
+	//vx = arctanyx(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
 	//vy = arcsin(2*qw*qy - 2*qx*qz)*180/3.141592653;
-	//vz = arctan2(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
+	//vz = arctanyx(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
 	//say("euler:	%f	%f	%f\n", vx, vy, vz);
 }
 

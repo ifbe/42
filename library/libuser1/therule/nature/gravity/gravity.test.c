@@ -169,11 +169,11 @@ int gravtest_effect(struct style* geom, float dt)
 		final->angular_v[3] = a;
 
 		//update attitude: ql=change, qr=current
-		sbyn = sine(dt*a/2) * invn;
+		sbyn = getsin(dt*a/2) * invn;
 		ql[0] = v[0] * sbyn;
 		ql[1] = v[1] * sbyn;
 		ql[2] = v[2] * sbyn;
-		ql[3] = cosine(dt*a/2);
+		ql[3] = getcos(dt*a/2);
 		qr[0] = geom->fm.angular_x[0];
 		qr[1] = geom->fm.angular_x[1];
 		qr[2] = geom->fm.angular_x[2];

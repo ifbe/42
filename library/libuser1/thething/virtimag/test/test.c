@@ -84,8 +84,8 @@ void test_prepgl(struct glsrc* src)
 void test_tickgl(struct entity* ent, struct supply* sup)
 {
 	float a = 2*PI*(timeread()%5000000)/5000000.0;
-	float c = cosine(a);
-	float s = sine(a);
+	float c = getcos(a);
+	float s = getsin(a);
 
 	sty.vc[0] = 4*c;
 	sty.vc[1] = 4*s;
@@ -131,7 +131,7 @@ void test_preppcm(struct pcmdata* pcm)
 	pcm->count = 65536;
 
 	buf = pcm->buf;
-	for(j=0;j<44100;j++)buf[j] = (short)(4096.0*sine(j*tau/100));
+	for(j=0;j<44100;j++)buf[j] = (short)(4096.0*getsin(j*tau/100));
 }
 void test_tickpcm(struct entity* ent, struct supply* sup)
 {

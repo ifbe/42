@@ -471,8 +471,8 @@ void carveopaque_cask(float* vbuf, int vlen, u16* ibuf, int ilen,
 	{
 		a = j*12*2;
 		b = j*6;
-		c = cosine(j*tau/acc);
-		s = sine(j*tau/acc);
+		c = getcos(j*tau/acc);
+		s = getsin(j*tau/acc);
 
 		vv[0] = c*vr[0] - s*vf[0];
 		vv[1] = c*vr[1] - s*vf[1];

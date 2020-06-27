@@ -21,8 +21,8 @@ int hexstr2data(u8*, u64*);
 int decstr2data(u8*, u64*);
 int decstr2double(u8*, double*);
 //
-double cosine(double);
-double sine(double);
+double getcos(double);
+double getsin(double);
 double power(double, double);
 //
 void printmemory(void*, int);

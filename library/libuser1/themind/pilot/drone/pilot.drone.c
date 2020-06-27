@@ -331,8 +331,8 @@ void flycon_changedesire(struct entity* ent, float angle)
 	float* expect = sty->desire.angular_x;
 	expect[0] = 0.0;
 	expect[1] = 0.0;
-	expect[2] = sine(angle/2);
-	expect[3] = cosine(angle/2);
+	expect[2] = getsin(angle/2);
+	expect[3] = getcos(angle/2);
 }
 
 

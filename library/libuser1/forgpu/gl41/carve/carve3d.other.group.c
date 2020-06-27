@@ -321,8 +321,8 @@ void carveskydome(float vbuf[][6], u16* ibuf,
 	for(k=0;k<ccc;k++)
 	{
 		a = k*PI/(ccc*2);
-		c = cosine(a);
-		s = sine(a);
+		c = getcos(a);
+		s = getsin(a);
 
 		tc[0] = vc[0] + vu[0]*s;
 		tc[1] = vc[1] + vu[1]*s;
@@ -337,8 +337,8 @@ void carveskydome(float vbuf[][6], u16* ibuf,
 		for(j=0;j<(ccc*2);j++)
 		{
 			a = j*PI/ccc;
-			c = cosine(a);
-			s = sine(a);
+			c = getcos(a);
+			s = getsin(a);
 
 			m = 2*ccc*k + j;
 			vbuf[m][0] = tc[0] + tr[0]*c + tf[0]*s;
@@ -394,8 +394,8 @@ void carveplanet(float vbuf[][6], u16* ibuf,
 	for(k=0;k<accy;k++)
 	{
 		s = (2*k-accy+1)*PI/(2*accy+2);
-		c = cosine(s);
-		s = sine(s);
+		c = getcos(s);
+		s = getsin(s);
 
 		tc[0] = vc[0] + vu[0]*s;
 		tc[1] = vc[1] + vu[1]*s;
@@ -410,8 +410,8 @@ void carveplanet(float vbuf[][6], u16* ibuf,
 		for(j=0;j<accx;j++)
 		{
 			s = j*tau/(accx-1);
-			c = cosine(s);
-			s = sine(s);
+			c = getcos(s);
+			s = getsin(s);
 
 			a = k*accx + j;
 			vbuf[a][0] = tc[0] + tr[0]*c + tf[0]*s;

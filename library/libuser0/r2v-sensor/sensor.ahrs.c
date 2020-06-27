@@ -22,9 +22,9 @@ void ahrs_write(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void*
 	vec4 e;
 	float* q = buf;
 
-	e[0] = arctan2(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
+	e[0] = arctanyx(2*(qw*qx+qy*qz),1-2*(qx*qx+qy*qy))*180/3.141592653;
 	e[1] = arcsin(2*qw*qy - 2*qx*qz)*180/3.141592653;
-	e[2] = arctan2(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
+	e[2] = arctanyx(2*(qw*qz+qx*qy),1-2*(qy*qy+qz*qz))*180/3.141592653;
 	say("@ahrs_write:%f,%f,%f,%f -> %f,%f,%f\n", qx,qy,qz,qw, e[0],e[1],e[2]);
 }
 int ahrs_discon(struct halfrel* self, struct halfrel* peer)

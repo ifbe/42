@@ -19,8 +19,8 @@ void vectornormalize(float*);
 void vectorcross(float*, float*);
 //
 double squareroot(double);
-double cosine(double);
-double sine(double);
+double getcos(double);
+double getsin(double);
 
 
 
@@ -866,15 +866,15 @@ void callback_move(int x,int y)
 	v[3] = 0.0;
 	if(x>last_x)
 	{
-		camera[0] = v[0]*cosine(0.05f) + v[1]*sine(0.05f);
-		camera[1] = -v[0]*sine(0.05f) + v[1]*cosine(0.05f);
+		camera[0] = v[0]*getcos(0.05f) + v[1]*getsin(0.05f);
+		camera[1] = -v[0]*getsin(0.05f) + v[1]*getcos(0.05f);
 
 		//camera_yaw += PI/90;
 	}
 	else if(x<last_x)
 	{
-		camera[0] = v[0]*cosine(0.05f) - v[1]*sine(0.05f);
-		camera[1] = v[0]*sine(0.05f) + v[1]*cosine(0.05f);
+		camera[0] = v[0]*getcos(0.05f) - v[1]*getsin(0.05f);
+		camera[1] = v[0]*getsin(0.05f) + v[1]*getcos(0.05f);
 
 		//camera_yaw -= PI/90;
 	}
@@ -884,10 +884,10 @@ void callback_move(int x,int y)
 		vectorcross(v, t);
 		vectornormalize(v);
 
-		v[0] *= sine(0.02f);
-		v[1] *= sine(0.02f);
-		v[2] *= sine(0.02f);
-		v[3] = cosine(0.02f);
+		v[0] *= getsin(0.02f);
+		v[1] *= getsin(0.02f);
+		v[2] *= getsin(0.02f);
+		v[3] = getcos(0.02f);
 		quaternionrotate(camera, v);
 	}
 	else if(y<last_y)
@@ -895,10 +895,10 @@ void callback_move(int x,int y)
 		vectorcross(v, t);
 		vectornormalize(v);
 
-		v[0] *= sine(-0.02f);
-		v[1] *= sine(-0.02f);
-		v[2] *= sine(-0.02f);
-		v[3] = cosine(-0.02f);
+		v[0] *= getsin(-0.02f);
+		v[1] *= getsin(-0.02f);
+		v[2] *= getsin(-0.02f);
+		v[3] = getcos(-0.02f);
 		quaternionrotate(camera, v);
 	}
 

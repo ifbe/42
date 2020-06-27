@@ -116,8 +116,8 @@ void carvelineindex_circle(float* vbuf, int vlen, u16* ibuf, int ilen, vec3 vc, 
 
 	for(j=0;j<lineacc;j++)
 	{
-		c = cosine(j*tau/lineacc);
-		s = sine(j*tau/lineacc);
+		c = getcos(j*tau/lineacc);
+		s = getsin(j*tau/lineacc);
 		vbuf[6*j+0] = vc[0] + vr[0]*c + vf[0]*s;
 		vbuf[6*j+1] = vc[1] + vr[1]*c + vf[1]*s;
 		vbuf[6*j+2] = vc[2] + vr[2]*c + vf[2]*s;

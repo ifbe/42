@@ -1,7 +1,7 @@
 #include "libuser.h"
-double arctan2(double,double);
-double cosine(double);
-double sine(double);
+double arctanyx(double,double);
+double getcos(double);
+double getsin(double);
 
 
 
@@ -39,15 +39,15 @@ void doodle_draw_pixel(
 	drawsolid_circle(win, 0x404040, cx+ww/2, cy, ww/2);
 	drawsolid_circle(win, 0x404040, cx-ww/2, cy, ww/2);
 
-	f = arctan2(py-cy, px-cx+(ww/2));
-	c = cosine(f);
-	s = sine(f);
+	f = arctanyx(py-cy, px-cx+(ww/2));
+	c = getcos(f);
+	s = getsin(f);
 	x0 = (int)(c*ww/4) + (cx-ww/2);
 	y0 = (int)(s*ww/4) + cy;
 
-	f = arctan2(py-cy, px-cx-(ww/2));
-	c = cosine(f);
-	s = sine(f);
+	f = arctanyx(py-cy, px-cx-(ww/2));
+	c = getcos(f);
+	s = getsin(f);
 	x1 = (int)(c*ww/4) + (cx+ww/2);
 	y1 = (int)(s*ww/4) + cy;
 
@@ -95,9 +95,9 @@ static void doodle_draw_gl41(
 	tf[1] = vf[1]/4;
 	tf[2] = vf[2]/4;
 
-	a = arctan2(py-vc[1]+vr[1], px-vc[0]+vr[0]);
-	c = cosine(a);
-	s = sine(a);
+	a = arctanyx(py-vc[1]+vr[1], px-vc[0]+vr[0]);
+	c = getcos(a);
+	s = getsin(a);
 	tc[0] = vc[0]-vr[0]/2+(vr[0]*c+vf[0]*s)/4+vu[0]/4;
 	tc[1] = vc[1]-vr[1]/2+(vr[1]*c+vf[1]*s)/4+vu[1]/4;
 	tc[2] = vc[2]-vr[2]/2+(vr[2]*c+vf[2]*s)/4+vu[2]/4;
@@ -108,9 +108,9 @@ static void doodle_draw_gl41(
 	tu[2] = 0.0;
 	gl41line(win, 0xffffff, tc, tu);
 
-	a = arctan2(py-vc[1]-vr[0], px-vc[0]-vr[1]);
-	c = cosine(a);
-	s = sine(a);
+	a = arctanyx(py-vc[1]-vr[0], px-vc[0]-vr[1]);
+	c = getcos(a);
+	s = getsin(a);
 	tc[0] = vc[0]+vr[0]/2+(vr[0]*c+vf[0]*s)/4+vu[0]/4;
 	tc[1] = vc[1]+vr[1]/2+(vr[1]*c+vf[1]*s)/4+vu[1]/4;
 	tc[2] = vc[2]+vr[2]/2+(vr[2]*c+vf[2]*s)/4+vu[2]/4;

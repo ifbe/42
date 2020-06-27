@@ -570,8 +570,8 @@ void carvesolid_cask(float* vbuf, int vlen, u16* ibuf, int ilen,
 	{
 		a = j*18;
 		b = j*6;
-		c = cosine(j*tau/acc);
-		s = sine(j*tau/acc);
+		c = getcos(j*tau/acc);
+		s = getsin(j*tau/acc);
 
 		vv[0] = c*vr[0] - s*vf[0];
 		vv[1] = c*vr[1] - s*vf[1];
@@ -657,16 +657,16 @@ void carvesolid_gear(float* vbuf, int vlen, u16* ibuf, int ilen,
 	vec3 tc,tr,tf;
 	for(k=0;k<teethcount;k++){
 		a = (k*4-1)*tau/(teethcount*4);
-		c = cosine(a);
-		s = sine(a);
+		c = getcos(a);
+		s = getsin(a);
 		for(j=0;j<3;j++){
 			vbuf[k*9*4 +0 +j] = vc[j] +vr[j]*c*0.9 + vf[j]*s*0.9;
 			vbuf[k*9*4 +9 +j] = vc[j] +vr[j]*c + vf[j]*s;
 		}
 
 		a = (k*4+1)*tau/(teethcount*4);
-		c = cosine(a);
-		s = sine(a);
+		c = getcos(a);
+		s = getsin(a);
 		for(j=0;j<3;j++){
 			vbuf[k*9*4 +18 +j] = vc[j] +vr[j]*c + vf[j]*s;
 			vbuf[k*9*4 +27 +j] = vc[j] +vr[j]*c*0.9 + vf[j]*s*0.9;
@@ -718,8 +718,8 @@ void gl41solid_rotategear(struct entity* win, u32 rgb,
 {
 	int j;
 	vec3 tr,tf;
-	float c = cosine(a);
-	float s = sine(a);
+	float c = getcos(a);
+	float s = getsin(a);
 	for(j=0;j<3;j++){
 		tr[j] = vr[j]*c + vf[j]*s;
 		tf[j] = vf[j]*c - vr[j]*s;

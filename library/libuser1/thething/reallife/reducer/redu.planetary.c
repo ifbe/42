@@ -51,15 +51,15 @@ static void planetary_draw_gl41(
 
 	//planet 1
 	a = 120*PI/180;
-	c = cosine(a)*0.575;
-	s = sine(a)*0.575;
+	c = getcos(a)*0.575;
+	s = getsin(a)*0.575;
 	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*c + vf[j]*s;
 	gl41solid_rotategear(ctx, 0x808080, tc, tr, tf, vt, 18, r);
 
 	//planet 2
 	a = 240*PI/180;
-	c = cosine(a)*0.575;
-	s = sine(a)*0.575;
+	c = getcos(a)*0.575;
+	s = getsin(a)*0.575;
 	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*c + vf[j]*s;
 	gl41solid_rotategear(ctx, 0x808080, tc, tr, tf, vt, 18, r);
 }

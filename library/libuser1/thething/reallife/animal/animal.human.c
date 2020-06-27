@@ -277,34 +277,34 @@ static int human_event(
 	z = boneverta[0][2] - boneverta[1][2];
 	n = squareroot(x*x + y*y + z*z);
 
-	a = PI/90*sine(2.0*PI*sec);
-	c = cosine(a);
-	s = sine(a);
+	a = PI/90*getsin(2.0*PI*sec);
+	c = getcos(a);
+	s = getsin(a);
 	boneverta[0][0] = boneverta[1][0] + n*s;
 	boneverta[0][1] = 0.0;
 	boneverta[0][2] = boneverta[1][2] + n*c;
 
 	//arm
-	a = PI/3*sine(2.0*PI*sec);
-	c = cosine(a);
-	s = sine(a);
+	a = PI/3*getsin(2.0*PI*sec);
+	c = getcos(a);
+	s = getsin(a);
 	boneverta[5][1] = -s * 0.3;
 	boneverta[5][2] = 0.6 - c * 0.3;
 	boneverta[6][1] = s * 0.3;
 	boneverta[6][2] = 0.6 - c * 0.3;
 
-	a = PI/3*sine(2.0*PI*sec);
-	c = cosine(a);
-	s = sine(a);
+	a = PI/3*getsin(2.0*PI*sec);
+	c = getcos(a);
+	s = getsin(a);
 	boneverta[7][1] = boneverta[5][1] - s * 0.3;
 	boneverta[7][2] = boneverta[5][2] - c * 0.3;
 	boneverta[8][1] = boneverta[6][1] + s * 0.3;
 	boneverta[8][2] = boneverta[6][2] - c * 0.3;
 
 	//leg
-	a = PI/3*sine(2.0*PI*sec);
-	c = cosine(a);
-	s = sine(a);
+	a = PI/3*getsin(2.0*PI*sec);
+	c = getcos(a);
+	s = getsin(a);
 	if(a > 0.0)
 	{
 		boneverta[11][1] =  s * 0.5;

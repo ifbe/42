@@ -1,7 +1,7 @@
 #define PI 3.14159265358979323846264338327950288419716939937510582097494459230
 #define tau PI*2
-double cosine(double);
-double sine(double);
+double getcos(double);
+double getsin(double);
 
 
 
@@ -63,8 +63,8 @@ void fft(float real[], float imag[], int k)
 			}
 
 			//算下一次的（第一次不乘）
-			facr = cosine(2*PI*(j+1)*factor/len);
-			faci = -sine(2*PI*(j+1)*factor/len);
+			facr = getcos(2*PI*(j+1)*factor/len);
+			faci =-getsin(2*PI*(j+1)*factor/len);
 		}
 	}
 

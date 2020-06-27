@@ -64,7 +64,7 @@ double squareroot(double x)
 
 
 
-double tangent(double x)
+double gettan(double x)
 {
 	register double result;
 	register double __value2 __attribute__ ((unused));
@@ -76,7 +76,11 @@ double tangent(double x)
 	);
 	return result;
 }
-double sine(double x)
+double gettanyx(double y, double x)
+{
+	return gettan(y/x);
+}
+double getsin(double x)
 {
 	register double result;
 	__asm __volatile__
@@ -87,7 +91,7 @@ double sine(double x)
 	);
 	return result;
 }
-double cosine(double x)
+double getcos(double x)
 {
 	register double result;
 	__asm __volatile__
@@ -111,7 +115,7 @@ void sincos(double x,double *s,double *c)
 
 
 
-double arctan2(double y, double x)
+double arctanyx(double y, double x)
 {
 	register double result;
 	__asm __volatile__
@@ -123,13 +127,17 @@ double arctan2(double y, double x)
 	);
 	return result;
 }
+double arctan(double a)
+{
+	return arctanyx(a, 1.0);
+}
 double arcsin(double x)
 {
-	return arctan2(x, squareroot(1.0 - x * x));
+	return arctanyx(x, squareroot(1.0 - x * x));
 }
 double arccos(double x)
 {
-	return arctan2(squareroot(1.0 - x * x), x);
+	return arctanyx(squareroot(1.0 - x * x), x);
 }
 
 

@@ -80,8 +80,8 @@ static void oscillo_draw_pixel(
 		for(x=0;x<512;x++)
 		{
 			t = tau / 512 * x;
-			cc = cosine(t) * ww;
-			ss = -sine(t) * hh;
+			cc = getcos(t) * ww;
+			ss = -getsin(t) * hh;
 			drawline(win, 0xffffff,
 				cx + (int)(cc * (1.0 - 16*amp[x])),
 				cy + (int)(ss * (1.0 - 16*amp[x])),

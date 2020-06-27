@@ -32,8 +32,8 @@ static void dna_draw_gl41(
 	for(z=-6;z<=6;z++)
 	{
 		a = 2*PI*z/6;
-		c = cosine(a)/2;
-		s = sine(a)/2;
+		c = getcos(a)/2;
+		s = getsin(a)/2;
 
 		tc[0] = vc[0] + vr[0]*c + vf[0]*s + vu[0]*z/6.0;
 		tc[1] = vc[1] + vr[1]*c + vf[1]*s + vu[1]*z/6.0;
@@ -52,11 +52,11 @@ static void dna_draw_gl41(
 	for(z=-6;z<=5;z++)
 	{
 		a = 2*PI*z/6;
-		c = cosine(a)/2;
-		s = sine(a)/2;
+		c = getcos(a)/2;
+		s = getsin(a)/2;
 		A = 2*PI*(z+1)/6;
-		C = cosine(A)/2;
-		S = sine(A)/2;
+		C = getcos(A)/2;
+		S = getsin(A)/2;
 
 		tc[0] = vc[0] + vr[0]*c + vf[0]*s + vu[0]*z/6.0;
 		tc[1] = vc[1] + vr[1]*c + vf[1]*s + vu[1]*z/6.0;

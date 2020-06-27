@@ -58,8 +58,8 @@ static void planet_draw_pixel(
 		if(j>0)r *= 1024;
 		drawline_circle(win, 0x404040, cx, cy, l);
 
-		x = cx + l*cosine(tau*t/data[j].period);
-		y = cy + l*sine(tau*t/data[j].period);
+		x = cx + l*getcos(tau*t/data[j].period);
+		y = cy + l*getsin(tau*t/data[j].period);
 		drawsolid_circle(win, c, x, y, r);
 	}
 }
@@ -101,8 +101,8 @@ static void planet_draw_gl41(
 		tu[2] = vu[2]*r;
 
 		a = tau*t/data[j].period;
-		c = cosine(a);
-		s = sine(a);
+		c = getcos(a);
+		s = getsin(a);
 		tc[0] = vc[0] + (vr[0]*c + vf[0]*s)*l;
 		tc[1] = vc[1] + (vr[1]*c + vf[1]*s)*l;
 		tc[2] = vc[2] + (vr[2]*c + vf[2]*s)*l;

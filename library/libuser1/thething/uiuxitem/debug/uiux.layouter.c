@@ -225,13 +225,13 @@ int joystick2style(struct entity* win, struct fstyle* sty, int aaa, short* tmp)
 		//other
 		if(x0 < 0)
 		{
-			c = cosine(0.05);
-			s = sine(0.05);
+			c = getcos(0.05);
+			s = getsin(0.05);
 		}
 		else if(x0 > 0)
 		{
-			c = cosine(-0.05);
-			s = sine(-0.05);
+			c = getcos(-0.05);
+			s = getsin(-0.05);
 		}
 		else return 0;
 
@@ -422,13 +422,13 @@ int entityinput_editor_target(struct entity* win, struct event* ev)
 		{
 			if(x > win->input[id].x0)
 			{
-				c = cosine(0.05);
-				s = sine(0.05);
+				c = getcos(0.05);
+				s = getsin(0.05);
 			}
 			else if(x < win->input[id].x0)
 			{
-				c = cosine(-0.05);
-				s = sine(-0.05);
+				c = getcos(-0.05);
+				s = getsin(-0.05);
 			}
 			else return 0;
 

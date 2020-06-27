@@ -1,9 +1,9 @@
 double ln(double);
 double squareroot(double);
 double power(double, double);
-double arctan2(double, double);
-double cosine(double);
-double sine(double);
+double getcos(double);
+double getsin(double);
+double arctanyx(double, double);
 
 
 
@@ -14,15 +14,15 @@ float complex_modulus(float* d)
 }
 float complex_angle(float* d)
 {
-	return arctan2(d[1], d[0]);
+	return arctanyx(d[1], d[0]);
 }
 void complex_power_real(float* d, float e)
 {
 	float mod = complexmodulus(d);
 	float ang = complexangle(d);
 	float ppp = power(mod, e);
-	d[0] = ppp * cosine(ang * e);
-	d[1] = ppp * sine(ang * e);
+	d[0] = ppp * getcos(ang * e);
+	d[1] = ppp * getsin(ang * e);
 }
 void complex_power_complex(float* d, float* s)
 {
@@ -34,11 +34,11 @@ void complex_power_complex(float* d, float* s)
 =exp(alnR-(θ+2kπ)*b)*(cos((θ+2kπ)*a+blnR)+i*sin((θ+2kπ)*a+blnR))
 */
 	float lnr = 0.5 * ln(d[0]*d[0] + d[1]*d[1]);
-	float ang = arctan2(d[1], d[0]);
+	float ang = arctanyx(d[1], d[0]);
 	float j = power(2.71828, s[0]*lnr - s[1]*ang);
 	float k = s[0]*ang + s[1]*lnr;
-	d[0] = j * cosine(k);
-	d[1] = j * sine(k);
+	d[0] = j * getcos(k);
+	d[1] = j * getsin(k);
 }
 
 

@@ -23,11 +23,11 @@ static void piano_gen(short* pcm, float f)
 	int j;
 	for(j=0;j<16384;j++)
 	{
-		pcm[j] = 16384*sine(j*2*PI*f*1/44100)
-				+ 8192*sine(j*2*PI*f*2/44100)
-				+ 1024*sine(j*2*PI*f*3/44100)
-				+ 4096*sine(j*2*PI*f*4/44100)
-				+ 1024*sine(j*2*PI*f*5/44100);
+		pcm[j]  =16384 * getsin(j*2*PI*f*1/44100)
+			+ 8192 * getsin(j*2*PI*f*2/44100)
+			+ 1024 * getsin(j*2*PI*f*3/44100)
+			+ 4096 * getsin(j*2*PI*f*4/44100)
+			+ 1024 * getsin(j*2*PI*f*5/44100);
 
 		pcm[j] *= 1.0 - j/16384.0;
 	}

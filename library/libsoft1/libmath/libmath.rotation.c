@@ -1,11 +1,11 @@
 #define PI 3.14159265358979323846264338327950
 double squareroot(double);
-double sine(double);
+double getsin(double);
 double arcsin(double);
-double cosine(double);
+double getcos(double);
 double arccos(double);
-double tangent(double);
-double arctan2(double, double);
+double gettan(double);
+double arctanyx(double, double);
 
 
 
@@ -87,7 +87,7 @@ void quaternion2axisangle(float* q, float* a)
 	}
 	else{
 		l = squareroot(l);
-		t = 2.0 * arctan2(l, q[3]) / l;
+		t = 2.0 * arctanyx(l, q[3]) / l;
 		a[0] = q[0] * t;
 		a[1] = q[1] * t;
 		a[2] = q[2] * t;
@@ -105,11 +105,11 @@ void quaternion4axisangle(float* q, float* a)
 	}
 	else{
 		float angle = squareroot(n2);
-		float sinbynorm = sine(angle/2) / angle;
+		float sinbynorm = getsin(angle/2) / angle;
 		q[0] = a[0] * sinbynorm;
 		q[1] = a[1] * sinbynorm;
 		q[2] = a[2] * sinbynorm;
-		q[3] = cosine(angle/2);
+		q[3] = getcos(angle/2);
 	}
 }
 //in(qx,qy,qz,qw) -> out((vx,vy,vz),angle)
@@ -125,22 +125,22 @@ void quaternion2axisandangle(float* q, float* axis, float* angle)
 void quaternion4axisandangle(float* q, float* a, float angle)
 {
 	float norm = squareroot(a[0]*a[0] + a[1]*a[1] + a[2]*a[2]);
-	float sinbynorm = sine(angle/2) / norm;
+	float sinbynorm = getsin(angle/2) / norm;
 
 	q[0] = a[0] * sinbynorm;
 	q[1] = a[1] * sinbynorm;
 	q[2] = a[2] * sinbynorm;
-	q[3] = cosine(angle/2);
+	q[3] = getcos(angle/2);
 }
 //in(qx,qy,qz,qw) -> out(pitch_x,roll_y,yaw_z)
 void quaternion2eulerian(float* q, float* e)
 {
 	//atan2(2(xw+yz), 1-2(xx+yy))
-	e[0] = arctan2( (q[0]*q[3]+q[1]*q[2])*2 , 1-(q[0]*q[0]+q[1]*q[1])*2 );
+	e[0] = arctanyx( (q[0]*q[3]+q[1]*q[2])*2 , 1-(q[0]*q[0]+q[1]*q[1])*2 );
 	e[0] *= 180.0/PI;
 
 	//atan2(2(zw+xy), 1-2(yy+zz))
-	e[2] = arctan2( (q[2]*q[3]+q[0]*q[1])*2 , 1-(q[1]*q[1]+q[2]*q[2])*2 );
+	e[2] = arctanyx( (q[2]*q[3]+q[0]*q[1])*2 , 1-(q[1]*q[1]+q[2]*q[2])*2 );
 	e[2] *= 180.0/PI;
 
 	//asin(2(yw-xz))
@@ -153,12 +153,12 @@ void quaternion4eulerian(float* q, float* e)
 	float pitch = e[0]*PI/360.0;
 	float yaw = e[1]*PI/360.0;
 	float roll = e[2]*PI/360.0;
-	float cospitch = cosine(pitch);
-	float sinpitch = sine(pitch);
-	float cosyaw = cosine(yaw);
-	float sinyaw = sine(yaw);
-	float cosroll = cosine(roll);
-	float sinroll = sine(roll);
+	float cospitch = getcos(pitch);
+	float sinpitch = getsin(pitch);
+	float cosyaw = getcos(yaw);
+	float sinyaw = getsin(yaw);
+	float cosroll = getcos(roll);
+	float sinroll = getsin(roll);
 
 	q[0] = sinpitch*cosyaw*cosroll - cospitch*sinyaw*sinroll;
 	q[1] = cospitch*sinyaw*cosroll + sinpitch*cosyaw*sinroll;

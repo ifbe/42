@@ -82,8 +82,8 @@ int cam3rd_movecam(struct privdata* own, struct fstyle* cam, struct fstyle* tar,
 
 	if(dy != 0){
 		a = -dy * 0.005;
-		s = sine(a);
-		c = cosine(a);
+		s = getsin(a);
+		c = getcos(a);
 
 		//r
 		q[0] = own->cam2tar[1];
@@ -107,8 +107,8 @@ int cam3rd_movecam(struct privdata* own, struct fstyle* cam, struct fstyle* tar,
 
 	if(dx != 0){
 		a = -dx * 0.005;
-		s = sine(a);
-		c = cosine(a);
+		s = getsin(a);
+		c = getcos(a);
 		tmp[0] = own->cam2tar[0];
 		tmp[1] = own->cam2tar[1];
 		own->cam2tar[0] = tmp[0]*c - tmp[1]*s;
