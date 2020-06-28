@@ -200,9 +200,6 @@ struct gldst
 	u32 fs;
 	u32 shader;
 
-	//constant
-	void* constant[8];
-
 	//texture
 	u32 tex[8];
 
@@ -210,6 +207,44 @@ struct gldst
 	u32 vbo;
 	u32 ibo;
 	u32 vao;
+
+	//dxtest_shader
+	void* vsblob;
+	void* psblob;
+	void* vsprog;
+	void* psprog;
+	//dxtest_texture
+	void* texture[8];
+	//dxtest_constant
+	void* constant[8];
+	//dxtest_vertex
+	void* vbuf;
+	void* ibuf;
+	void* layout;
+
+	//dequeue
+	u8 shader_deq;
+	u8 tex_deq[8];
+	u8 vbo_deq;
+	u8 ibo_deq;
+};
+struct dxdst
+{
+	//shader
+	void* vsblob;
+	void* psblob;
+	void* vsprog;
+	void* psprog;
+
+	//texture
+	void* texture[8];
+
+	//constant
+	void* constant[8];
+
+	//vertex
+	void* vbuf;
+	void* ibuf;
 	void* layout;
 
 	//dequeue

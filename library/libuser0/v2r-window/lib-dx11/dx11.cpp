@@ -24,17 +24,29 @@ ID3D11DepthStencilView* g_depthStencilView(NULL);
 ID3D11RenderTargetView* g_renderTargetView(NULL);
 ID3D11RasterizerState*  g_rasterstate(NULL);
 
-//buf thing
+//shader thing
 ID3D11VertexShader*     g_pVertexShader = NULL;
 ID3D11PixelShader*      g_pPixelShader = NULL;
-ID3D11Buffer*           g_pConstantBuffer = NULL;
 ID3D11InputLayout*      g_pVertexLayout = NULL;
+
+//buffer thing
+ID3D11Buffer*           g_pConstantBuffer = NULL;
 ID3D11Buffer*           g_pVertexBuffer = NULL;
+ID3D11Buffer*           g_pIndexBuffer = NULL;
 
 //input layout
 D3D11_INPUT_ELEMENT_DESC inputlayout_p4c4[] = {
 	{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	{   "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,16, D3D11_INPUT_PER_VERTEX_DATA, 0}
+};
+D3D11_INPUT_ELEMENT_DESC inputlayout_p4n4c4[] = {
+	{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{  "NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,16, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{   "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,32, D3D11_INPUT_PER_VERTEX_DATA, 0}
+};
+D3D11_INPUT_ELEMENT_DESC inputlayout_p3n3[] = {
+	{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{  "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,12, D3D11_INPUT_PER_VERTEX_DATA, 0}
 };
 D3D11_INPUT_ELEMENT_DESC inputlayout_p3n3c3[] = {
 	{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -42,6 +54,17 @@ D3D11_INPUT_ELEMENT_DESC inputlayout_p3n3c3[] = {
 	{   "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,24, D3D11_INPUT_PER_VERTEX_DATA, 0}
 };
 //my own
+#define VAL 500.0
+float vertices[][9] = {
+	{-VAL,-VAL, 0.0,    0.0, 0.0, 1.0,    1.0, 0.0, 0.0},
+	{ VAL,-VAL, 0.0,    0.0, 0.0, 1.0,    0.0, 1.0, 0.0},
+	{-VAL, VAL, 0.0,    0.0, 0.0, 1.0,    0.0, 0.0, 1.0},
+	{ VAL, VAL, 0.0,    0.0, 0.0, 1.0,    1.0, 0.0, 0.0}
+};
+unsigned short indices[] = {
+	0, 1, 2,
+	1, 2, 3
+};
 mat4 g_mat = {
 	1.0, 0.0, 0.0, 0.0,
 	0.0, 1.0, 0.0, 0.0,
@@ -53,8 +76,9 @@ char vshader[] =
 	"matrix matmvp;\n"
 "};\n"
 "struct VSin{\n"
-	"float4 where : POSITION;\n"
-	"float4 color : COLOR;\n"
+	"float3 where : POSITION;\n"
+	"float3 normal : NORMAL;\n"
+	"float3 color : COLOR;\n"
 "};\n"
 "struct VSout{\n"
 	"float4 where : SV_POSITION;\n"
@@ -62,8 +86,8 @@ char vshader[] =
 "};\n"
 "VSout main(VSin input){\n"
 	"VSout output;\n"
-	"output.where = mul(input.where, transpose(matmvp));\n"
-	"output.color = input.color;\n"
+	"output.where = mul(float4(input.where, 1.0), transpose(matmvp));\n"
+	"output.color = float4(input.color, 1.0);\n"
 	"return output;\n"
 "}\n";
 char pshader[] =
@@ -78,61 +102,172 @@ char pshader[] =
 
 
 
-void Upload_constant(void* src, ID3D11Buffer** dst)
+int Upload_shader(
+	char* vshader, char* pshader, D3D11_INPUT_ELEMENT_DESC* desc, int count,
+	ID3D11VertexShader** vs, ID3D11PixelShader** ps, ID3D11InputLayout** layout)
 {
-	if(0 != *dst){
-		g_dx11context->UpdateSubresource(*dst, 0, 0, src, 0, 0);
-		return;
+	ID3DBlob* VSBlob = NULL;
+	ID3DBlob* VSError= NULL;
+	ID3DBlob* PSBlob = NULL;
+	ID3DBlob* PSError= NULL;
+
+	HRESULT hr = D3DCompile(
+		vshader, strlen(vshader), "vs",
+		0, 0,	//define, include
+		"main", "vs_5_0",	//entry, target
+		0, 0,	//flag1, flag2
+		&VSBlob, &VSError
+	);
+	if(FAILED(hr)){
+		MessageBox(NULL, (char*)VSError->GetBufferPointer(), "D3DCompile(vshader)", MB_OK);
+		return 0;
 	}
 
-	D3D11_BUFFER_DESC cbDesc;
-	cbDesc.ByteWidth = 4*16;
-	cbDesc.Usage = D3D11_USAGE_DEFAULT;
-	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbDesc.CPUAccessFlags = 0;
-	cbDesc.MiscFlags = 0;
-	cbDesc.StructureByteStride = 0;
+	hr = D3DCompile(
+		pshader, strlen(pshader), "ps",
+		0, 0,	//define, include
+		"main", "ps_5_0",	//entry, target
+		0, 0,	//flag1, flag2
+		&PSBlob, &PSError
+	);
+	if(FAILED(hr)){
+		MessageBox(NULL, (char*)PSError->GetBufferPointer(), "D3DCompile(pshader)", MB_OK);
+		return 0;
+	}
+
+	//2. Create vshader and pshader
+	hr = g_dx11device->CreateVertexShader(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), NULL, vs);
+	if(FAILED(hr)){
+		VSBlob->Release();
+		return hr;
+	}
+
+	hr = g_dx11device->CreatePixelShader(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize(), NULL, ps);
+	if(FAILED(hr)){
+		PSBlob->Release();
+		return hr;
+	}
+
+	//vertex layout
+	g_dx11device->CreateInputLayout(desc, count, VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), layout);
+	return 0;
+}
+int Upload_texture(ID3D11Texture2D** dst)
+{
+	D3D11_TEXTURE2D_DESC desc;
+	ZeroMemory(&desc, sizeof(desc));
+
+	D3D11_SUBRESOURCE_DATA data;
+	ZeroMemory(&data, sizeof(data));
+
+	HRESULT hr = g_dx11device->CreateTexture2D(&desc, &data, dst);
+	if(FAILED(hr)){
+		MessageBox(NULL, "CreateTexture2D", "Error", MB_OK);
+		return hr;
+	}
+	return 0;
+}
+int Upload_constant(void* buf, int len, ID3D11Buffer** dst)
+{
+	if(0 != *dst){
+		g_dx11context->UpdateSubresource(*dst, 0, 0, buf, 0, 0);
+		return 0;
+	}
+
+	D3D11_BUFFER_DESC Desc;
+	ZeroMemory(&Desc, sizeof(Desc));
+	Desc.ByteWidth           = len;
+	Desc.Usage               = D3D11_USAGE_DEFAULT;
+	Desc.BindFlags           = D3D11_BIND_CONSTANT_BUFFER;
+	Desc.CPUAccessFlags      = 0;
+	Desc.MiscFlags           = 0;
+	Desc.StructureByteStride = 0;
 
 	// Fill in the subresource data.
-	D3D11_SUBRESOURCE_DATA InitData;
-	InitData.pSysMem = src;
-	InitData.SysMemPitch = 0;
-	InitData.SysMemSlicePitch = 0;
+	D3D11_SUBRESOURCE_DATA Data;
+	ZeroMemory(&Data, sizeof(Data));
+	Data.pSysMem          = buf;
+	Data.SysMemPitch      = 0;
+	Data.SysMemSlicePitch = 0;
 
 	// Create the buffer.
-	HRESULT hr = g_dx11device->CreateBuffer( &cbDesc, &InitData, dst);
-	if(FAILED(hr))MessageBox(NULL, "CreateBuffer(constant)", "Error", MB_OK);
+	HRESULT hr = g_dx11device->CreateBuffer(&Desc, &Data, dst);
+	if(FAILED(hr)){
+		MessageBox(NULL, "CreateBuffer(constant)", "Error", MB_OK);
+		return hr;
+	}
+
+	return 0;
+}
+int Upload_vertex(void* buf, int len, ID3D11Buffer** dst)
+{
+	if(0 != *dst){
+		g_dx11context->UpdateSubresource(*dst, 0, 0, buf, 0, 0);
+		return 0;
+	}
+
+	//vertex desc
+	D3D11_BUFFER_DESC desc;
+	ZeroMemory(&desc, sizeof(desc));
+	desc.ByteWidth      = len;
+	desc.Usage          = D3D11_USAGE_DEFAULT;
+	desc.BindFlags      = D3D11_BIND_VERTEX_BUFFER;
+	desc.CPUAccessFlags = 0;
+
+	//vertex buffer
+	D3D11_SUBRESOURCE_DATA Data;
+	ZeroMemory(&Data, sizeof(Data));
+	Data.pSysMem = buf;
+
+	//vertex fd
+	HRESULT hr = g_dx11device->CreateBuffer(&desc, &Data, dst);
+	if(FAILED(hr)){
+		MessageBox(NULL, "CreateBuffer(vertex)", "Error", MB_OK);
+		return hr;
+	}
+
+	return 0;
+}
+int Upload_index(void* buf, int len, ID3D11Buffer** dst)
+{
+	if(0 != *dst){
+		g_dx11context->UpdateSubresource(*dst, 0, 0, buf, 0, 0);
+		return 0;
+	}
+
+	// Fill in a buffer description.
+	D3D11_BUFFER_DESC Desc;
+	Desc.ByteWidth      = len;
+	Desc.Usage          = D3D11_USAGE_DEFAULT;
+	Desc.BindFlags      = D3D11_BIND_INDEX_BUFFER;
+	Desc.CPUAccessFlags = 0;
+	Desc.MiscFlags      = 0;
+
+	// Define the resource data.
+	D3D11_SUBRESOURCE_DATA Data;
+	Data.pSysMem          = buf;
+	Data.SysMemPitch      = 0;
+	Data.SysMemSlicePitch = 0;
+
+	// Create the buffer with the device.
+	HRESULT hr = g_dx11device->CreateBuffer(&Desc, &Data, dst);
+	if(FAILED(hr)){
+		MessageBox(NULL, "CreateBuffer(index)", "Error", MB_OK);
+		return hr;
+	}
+	return 0;
 }
 void Upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque)
 {
 	int j;
-/*	printf("camera");
-	for(j=0;j<16;j++){
-		if(0 == cam[j])break;
-		printf("	%llx", cam[j]);
-	}
-	printf("\n");
-
-	printf("light");
-	for(j=0;j<16;j++){
-		if(0 == lit[j])break;
-		printf("	%llx", lit[j]);
-	}
-	printf("\n");
-
-	printf("solid");
-	for(j=0;j<64;j++){
-		if(0 == solid[j])continue;
-		printf("	%llx", solid[j]);
-	}
-	printf("\n");
-
-	printf("opaque");
-	for(j=0;j<64;j++){
-		if(0 == opaque[j])continue;
-		printf("	%llx", opaque[j]);
-	}
-	printf("\n");
+/*	float a = PI/(getrandom()%180);
+	float c = getcos(a);
+	float s = getsin(a);
+	g_mat[0][0] = c;
+	g_mat[0][1] =-s;
+	g_mat[1][0] = s;
+	g_mat[1][1] = c;
+	g_dx11context->UpdateSubresource(g_pConstantBuffer, 0, 0, &g_mat, 0, 0);
 */
 	struct gl41data* pair = cam[0];
 	for(j=0;j<4;j++){
@@ -150,7 +285,7 @@ void Upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 						m[2][0], m[2][1], m[2][2], m[2][3],
 						m[3][0], m[3][1], m[3][2], m[3][3]
 					);*/
-					Upload_constant(pair->src.arg[j].data, (ID3D11Buffer**)&pair->dst.constant[j]);
+					Upload_constant(pair->src.arg[j].data, 64, (ID3D11Buffer**)&pair->dst.constant[j]);
 				}
 				break;
 			}//mat4
@@ -168,7 +303,18 @@ void Upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 		if(0 == solid[j])continue;
 		vtx = &solid[j]->src.vtx[0];
 		if(0 == vtx->vbuf)continue;
-		printf("%d: %llx,%llx,%x,%x\n",j, vtx->vbuf, vtx->ibuf, vtx->geometry, vtx->opaque);
+		printf("%d: %x,%x, (%llx,%x,%x,%x), (%llx,%x,%x,%x)\n",
+			j, vtx->geometry, vtx->opaque,
+			vtx->vbuf, vtx->vbuf_w, vtx->vbuf_h, vtx->vbuf_fmt,
+			vtx->ibuf, vtx->ibuf_w, vtx->ibuf_h, vtx->ibuf_fmt);
+
+		if(vtx->vbuf){
+			Upload_vertex(vtx->vbuf, vtx->vbuf_len, (ID3D11Buffer**)&solid[j]->dst.vbuf);
+			//if(vtx->vbuf_fmt == vbuffmt_33)
+		}
+		if(vtx->ibuf){
+			Upload_index(vtx->ibuf, vtx->ibuf_len, (ID3D11Buffer**)&solid[j]->dst.ibuf);
+		}
 	}
 }
 void Render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque)
@@ -184,7 +330,7 @@ void Render(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 	g_dx11context->RSSetViewports(1,&vp);
 	g_dx11context->RSSetState(g_rasterstate);
 
-	//background
+	//clear
 	float color[4] = {0.1, 0.1, 0.1, 1.0};
 	g_dx11context->ClearRenderTargetView(g_renderTargetView,reinterpret_cast<float*>(&color));
 	g_dx11context->ClearDepthStencilView(g_depthStencilView,D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL,1.f,0);
@@ -194,14 +340,6 @@ void Render(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 	g_dx11context->PSSetShader(g_pPixelShader, nullptr, 0);
 
 	//constant
-	float a = PI/(getrandom()%180);
-	float c = getcos(a);
-	float s = getsin(a);
-	g_mat[0][0] = c;
-	g_mat[0][1] =-s;
-	g_mat[1][0] = s;
-	g_mat[1][1] = c;
-	//g_dx11context->UpdateSubresource(g_pConstantBuffer, 0, 0, &g_mat, 0, 0);
 	//g_dx11context->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
 	int j;
 	struct gl41data* pair = cam[0];
@@ -219,13 +357,43 @@ void Render(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 		}
 	}
 
+	struct vertex* vtx;
+	for(j=0;j<64;j++){
+		if(0 == solid[j])continue;
+		vtx = &solid[j]->src.vtx[0];
+		if(0 == vtx->vbuf)continue;
+
+		if( (0 != vtx->vbuf)&&
+			(0 != vtx->ibuf)&&
+			(vbuffmt_333 == vtx->vbuf_fmt))
+		{
+			UINT stride = 4*9;
+			UINT offset = 0;
+			g_dx11context->IASetVertexBuffers(0, 1, (ID3D11Buffer**)&solid[j]->dst.vbuf, &stride, &offset);
+			g_dx11context->IASetInputLayout(g_pVertexLayout);
+
+			g_dx11context->IASetIndexBuffer((ID3D11Buffer*)solid[j]->dst.ibuf, DXGI_FORMAT_R16_UINT, 0 );
+
+			g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			g_dx11context->DrawIndexed(3*vtx->ibuf_h, 0, 0);
+		}
+	}
+
+	//texture
+	//g_dx11context->VSSetSamplers(0, 1, );
+	//g_dx11context->PSSetSamplers(0, 1, );
+
 	//ia = input assembler
-	UINT stride = 32;
+	UINT stride = 4*9;
 	UINT offset = 0;
 	g_dx11context->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
 	g_dx11context->IASetInputLayout(g_pVertexLayout);
+
+	g_dx11context->IASetIndexBuffer(g_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0 );
+
 	g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	g_dx11context->Draw(6, 0);
+	g_dx11context->DrawIndexed(2*3, 0, 0);
+	//g_dx11context->Draw(6, 0);
 
 	// 显示
 	g_dx11swapchain->Present(0,0);
@@ -235,109 +403,14 @@ void Freemyctx()
 }
 int Initmyctx()
 {
-	HRESULT hr;
+	Upload_shader(vshader, pshader, inputlayout_p3n3c3, 3, &g_pVertexShader, &g_pPixelShader, &g_pVertexLayout);
 
-	//1. Compile vshader and pshader
-	ID3DBlob* VSBlob = NULL;
-	ID3DBlob* VSError= NULL;
-	ID3DBlob* PSBlob = NULL;
-	ID3DBlob* PSError= NULL;
+	Upload_constant(g_mat, sizeof(g_mat), &g_pConstantBuffer);
 
-	hr = D3DCompile(
-		vshader, sizeof(vshader), "vs",
-		0, 0,	//define, include
-		"main", "vs_5_0",	//entry, target
-		0, 0,	//flag1, flag2
-		&VSBlob, &VSError
-	);
-	if(FAILED(hr)){
-		MessageBox(NULL, (char*)VSError->GetBufferPointer(), "D3DCompile(vshader)", MB_OK);
-		return 0;
-	}
+	Upload_vertex(vertices, sizeof(vertices), &g_pVertexBuffer);
 
-	hr = D3DCompile(
-		pshader, sizeof(pshader), "ps",
-		0, 0,	//define, include
-		"main", "ps_5_0",	//entry, target
-		0, 0,	//flag1, flag2
-		&PSBlob, &PSError
-	);
-	if(FAILED(hr)){
-		MessageBox(NULL, (char*)PSError->GetBufferPointer(), "D3DCompile(pshader)", MB_OK);
-		return 0;
-	}
+	Upload_index(indices, sizeof(indices), &g_pIndexBuffer);
 
-	//2. Create vshader and pshader
-	hr = g_dx11device->CreateVertexShader(VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), NULL, &g_pVertexShader );
-	if(FAILED(hr)){
-		VSBlob->Release();
-		return hr;
-	}
-
-	hr = g_dx11device->CreatePixelShader(PSBlob->GetBufferPointer(), PSBlob->GetBufferSize(), NULL, &g_pPixelShader );
-	if(FAILED(hr)){
-		PSBlob->Release();
-		return hr;
-	}
-
-
-
-	// Fill in a buffer description.
-	D3D11_BUFFER_DESC cbDesc;
-	cbDesc.ByteWidth = 4*16;
-	cbDesc.Usage = D3D11_USAGE_DEFAULT;
-	cbDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbDesc.CPUAccessFlags = 0;
-	cbDesc.MiscFlags = 0;
-	cbDesc.StructureByteStride = 0;
-
-	// Fill in the subresource data.
-	D3D11_SUBRESOURCE_DATA InitData;
-	InitData.pSysMem = &g_mat;
-	InitData.SysMemPitch = 0;
-	InitData.SysMemSlicePitch = 0;
-
-	// Create the buffer.
-	hr = g_dx11device->CreateBuffer( &cbDesc, &InitData, &g_pConstantBuffer);
-	if(FAILED(hr)){
-		MessageBox(NULL, "CreateBuffer(constant)", "Error", MB_OK);
-		return hr;
-	}
-
-
-
-
-	//vertex data
-#define VAL 500.0
-	float vertices[][8] = {
-		{-VAL,-VAL, 0.0, 1.0,        1.0f, 0.0f, 0.0f, 1.0f},
-		{ VAL,-VAL, 0.0, 1.0,        0.0f, 1.0f, 0.0f, 1.0f},
-		{-VAL, VAL, 0.0, 1.0,        0.0f, 0.0f, 1.0f, 1.0f},
-		{ VAL,-VAL, 0.0, 1.0,        0.0f, 1.0f, 0.0f, 1.0f},
-		{-VAL, VAL, 0.0, 1.0,        0.0f, 0.0f, 1.0f, 1.0f},
-		{ VAL, VAL, 0.0, 1.0,        1.0f, 0.0f, 0.0f, 1.0f}
-	};
-
-	//vertex desc
-	D3D11_BUFFER_DESC vbd;
-	ZeroMemory(&vbd, sizeof(vbd));
-	vbd.Usage = D3D11_USAGE_IMMUTABLE;
-	vbd.ByteWidth = sizeof(vertices);
-	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vbd.CPUAccessFlags = 0;
-
-	//vertex buffer
-	D3D11_SUBRESOURCE_DATA Data;
-	ZeroMemory(&Data, sizeof(Data));
-	Data.pSysMem = vertices;
-	hr = g_dx11device->CreateBuffer(&vbd, &Data, &g_pVertexBuffer);
-	if(FAILED(hr)){
-		MessageBox(NULL, "CreateBuffer(vertex)", "Error", MB_OK);
-		return hr;
-	}
-
-	//vertex layout
-	g_dx11device->CreateInputLayout(inputlayout_p4c4, 2, VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), &g_pVertexLayout);
 	return 1;
 }
 
