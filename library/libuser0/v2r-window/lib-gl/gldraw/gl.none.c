@@ -63,7 +63,7 @@ void nonewindow_delete(struct supply* win)
 }
 void nonewindow_create(struct supply* win)
 {
-	win->fmt = _none_;
+	win->fmt = _gl41none_;
 	win->ix0 = win->width / 2;
 	win->iy0 = win->height / 2;
 }

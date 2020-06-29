@@ -312,9 +312,7 @@ static int vrglass_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 
 	switch(sup->fmt){
 	case _gl41fbog_:
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:return vrglass_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
+	case _gl41full_:return vrglass_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
 	default:return vrglass_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 	}
 	return 0;

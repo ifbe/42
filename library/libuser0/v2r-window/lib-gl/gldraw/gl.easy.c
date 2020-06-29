@@ -158,5 +158,5 @@ void easywindow_delete(struct supply* win)
 }
 void easywindow_create(struct supply* win)
 {
-	win->fmt = _easy_;
+	win->fmt = _gl41easy_;
 }

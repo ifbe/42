@@ -35,10 +35,6 @@ int gl41fbog_create(void*, void*);
 int gl41fbog_delete(void*, void*);
 int gl41fbog_read( void*,int, void*,int, void*,int, void*,int);
 int gl41fbog_write(void*,int, void*,int, void*,int, void*,int);
-int gl41wnd0_create(void*, void*);
-int gl41wnd0_delete(void*, void*);
-int gl41wnd0_read( void*,int, void*,int, void*,int, void*,int);
-int gl41wnd0_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -263,7 +259,6 @@ int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* 
 	case _gl41fboc_:return gl41fboc_read(wnd,foot, stack,sp, arg,key, buf,len);
 	case _gl41fbod_:return gl41fbod_read(wnd,foot, stack,sp, arg,key, buf,len);
 	case _gl41fbog_:return gl41fbog_read(wnd,foot, stack,sp, arg,key, buf,len);
-	case _gl41wnd0_:return gl41wnd0_read(wnd,foot, stack,sp, arg,key, buf,len);
 	}//switch
 
 	if(wnd != theapp->userData)return 0;
@@ -278,7 +273,6 @@ int windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 	case _gl41fboc_:return gl41fboc_write(wnd,foot, stack,sp, arg,key, buf,len);
 	case _gl41fbod_:return gl41fbod_write(wnd,foot, stack,sp, arg,key, buf,len);
 	case _gl41fbog_:return gl41fbog_write(wnd,foot, stack,sp, arg,key, buf,len);
-	case _gl41wnd0_:return gl41wnd0_write(wnd,foot, stack,sp, arg,key, buf,len);
 	default:fullwindow_write(wnd,foot, stack,sp, arg,key, buf,len);
 	}
 	return 0;
@@ -295,7 +289,6 @@ void windowdelete(struct supply* wnd)
 		case _gl41fboc_:gl41fboc_delete(wnd, 0);break;
 		case _gl41fbod_:gl41fbod_delete(wnd, 0);break;
 		case _gl41fbog_:gl41fbog_delete(wnd, 0);break;
-		case _gl41wnd0_:gl41wnd0_delete(wnd, 0);break;
 	}
 }
 void windowcreate(struct supply* wnd, void* arg)
@@ -312,10 +305,6 @@ void windowcreate(struct supply* wnd, void* arg)
 	}
 	case _gl41fbog_:{
 		gl41fbog_create(wnd, arg);
-		break;
-	}
-	case _gl41wnd0_:{
-		gl41wnd0_create(wnd, arg);
 		break;
 	}
 	default:{

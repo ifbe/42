@@ -222,23 +222,6 @@
 #define _clickray_ hex64('c','l','i','c','k','r','a','y')
 #define _touchcam_ hex64('t','o','u','c','h','c','a','m')
 #define _touchobj_ hex64('t','o','u','c','h','o','b','j')
-//dx
-#define _dx11data_ hex64('d','x','1','1','d','a','t','a')
-#define _dx11coop_ hex64('d','x','1','1','c','o','o','p')
-
-#define _dx11wnd0_ hex64('d','x','1','1','w','n','d','0')
-#define _dx11fbod_ hex64('d','x','1','1','f','b','o','d')
-#define _dx11fboc_ hex64('d','x','1','1','f','b','o','c')
-#define _dx11fbog_ hex64('d','x','1','1','f','b','o','g')
-//gl
-#define _gl41data_ hex64('g','l','4','1','d','a','t','a')
-#define _gl41coop_ hex64('g','l','4','1','c','o','o','p')
-
-#define _gl41fbo6_ hex64('g','l','4','1','f','b','o','6')
-#define _gl41fboc_ hex64('g','l','4','1','f','b','o','c')
-#define _gl41fbod_ hex64('g','l','4','1','f','b','o','d')
-#define _gl41fbog_ hex64('g','l','4','1','f','b','o','g')
-#define _gl41wnd0_ hex64('g','l','4','1','w','n','d','0')
 //physic
 #define _phys_ hex32('p','h','y','s')
 #define _collide_ hex64('c','o','l','l','i','d','e',0)
@@ -270,11 +253,28 @@
 #define _w2w_ hex32('w','2','w', 0)
 #define _khala_ hex64('k','h','a','l','a', 0, 0, 0)
 #define _loopback_ hex64('l','o','o','p','b','a','c','k')
-//tier=_sup_, type=_sup_, rfmt:
-#define _none_ hex32('n','o','n','e')
-#define _easy_ hex32('e','a','s','y')
-#define _full_ hex32('f','u','l','l')
-#define _coop_ hex32('c','o','o','p')
+//tier=_sup_, type=_wnd_, rfmt:
+#define _dx11none_ hex64('d','x','1','1','n','o','n','e')
+#define _dx11easy_ hex64('d','x','1','1','e','a','s','y')
+#define _dx11full_ hex64('d','x','1','1','f','u','l','l')
+#define _dx11coop_ hex64('d','x','1','1','c','o','o','p')
+//
+#define _dx11data_ hex64('d','x','1','1','d','a','t','a')
+#define _dx11fbo6_ hex64('d','x','1','1','f','b','o','6')
+#define _dx11fboc_ hex64('d','x','1','1','f','b','o','c')
+#define _dx11fbod_ hex64('d','x','1','1','f','b','o','d')
+#define _dx11fbog_ hex64('d','x','1','1','f','b','o','g')
+//tier=_sup_, type=_wnd_, rfmt:
+#define _gl41none_ hex64('g','l','4','1','n','o','n','e')
+#define _gl41easy_ hex64('g','l','4','1','e','a','s','y')
+#define _gl41full_ hex64('g','l','4','1','f','u','l','l')
+#define _gl41coop_ hex64('g','l','4','1','c','o','o','p')
+//
+#define _gl41data_ hex64('g','l','4','1','d','a','t','a')
+#define _gl41fbo6_ hex64('g','l','4','1','f','b','o','6')
+#define _gl41fboc_ hex64('g','l','4','1','f','b','o','c')
+#define _gl41fbod_ hex64('g','l','4','1','f','b','o','d')
+#define _gl41fbog_ hex64('g','l','4','1','f','b','o','g')
 //tier=_sup_, type=_ctx_, rfmt:
 #define _vbo_ hex32('v','b','o',0)
 #define _rgba_ hex32('r','g','b','a')

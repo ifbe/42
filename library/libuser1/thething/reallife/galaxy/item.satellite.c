@@ -177,9 +177,7 @@ static void satellite_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 
 	switch(sup->fmt){
 	case _gl41fbog_:
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:{
+	case _gl41full_:{
 		if('v' != key)break;
 		satellite_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
 	}

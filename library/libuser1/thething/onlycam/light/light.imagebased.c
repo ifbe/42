@@ -210,9 +210,7 @@ static void imagelight_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
 	case _gl41fbog_:
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:{
+	case _gl41full_:{
 		if('v' != key)break;
 		imagelight_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
 	}

@@ -218,9 +218,7 @@ static int karnaugh_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 	switch(wnd->fmt){
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:{
+	case _gl41full_:{
 		if('v' != key)break;
 		karnaugh_read_bywnd(ent,slot, wnd,area);break;
 	}
@@ -238,9 +236,7 @@ static int karnaugh_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 	switch(wnd->fmt){
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:karnaugh_write_bywnd(ent,slot, wnd,area, stack,sp, buf,len);break;
+	case _gl41full_:karnaugh_write_bywnd(ent,slot, wnd,area, stack,sp, buf,len);break;
 	}
 	return 0;
 }

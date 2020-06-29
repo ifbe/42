@@ -146,7 +146,7 @@ int test_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void*
 {
 	struct supply* wnd = stack[sp-2].pchip;
 	switch(wnd->fmt){
-	case _easy_:test_tickgl(ent,wnd);break;
+	case _gl41easy_:test_tickgl(ent,wnd);break;
 	case _pcm_:test_tickpcm(ent,wnd);break;
 	}
 	return 0;

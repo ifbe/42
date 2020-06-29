@@ -114,33 +114,31 @@ int supplyread(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* 
 {
 	switch(sup->type){
 		case _std_:return stdio_read(sup,foot, stack,sp, arg,idx, buf,len);
-		case _wnd_:return windowread(sup,foot, stack,sp, arg, idx, buf, len);
-		case _spk_:return speakerread(sup,foot, stack,sp, arg, idx, buf, len);
-	}
-	switch(sup->fmt){
-		case _cam_:return videoread(sup,foot, stack,sp, arg, idx, buf, len);
-		case _gl41fboc_:
-		case _gl41fbod_:
-		case _gl41fbog_:
-		case _gl41wnd0_:return windowread(sup,foot, stack,sp, arg,idx,buf,len);
-	}
 
+		case _mic_:break;
+		case _spk_:return speakerread(sup,foot, stack,sp, arg, idx, buf, len);
+
+		case _cam_:return videoread(sup,foot, stack,sp, arg, idx, buf, len);
+		case _fbo_:
+		case _wnd_:return windowread(sup,foot, stack,sp, arg, idx, buf, len);
+	}
 	return 0;
 }
 int supplywrite(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	switch(sup->type){
 		case _std_:return stdio_write(sup,foot, stack,sp, arg,idx, buf,len);
-		case _wnd_:return windowwrite(sup,foot, stack,sp, arg, idx, buf, len);
+
+		case _mic_:break;
 		case _spk_:return speakerwrite(sup,foot, stack,sp, arg, idx, buf, len);
+
+		case _cam_:break;
+		case _fbo_:
+		case _wnd_:return windowwrite(sup,foot, stack,sp, arg, idx, buf, len);
 	}
 	switch(sup->fmt){
 		case _ahrs_:return ahrs_write(sup,foot, stack,sp, arg, idx, buf, len);
 		case _slam_:return slam_write(sup,foot, stack,sp, arg, idx, buf, len);
-		case _gl41fboc_:
-		case _gl41fbod_:
-		case _gl41fbog_:
-		case _gl41wnd0_:return windowwrite(sup,foot, stack,sp, arg,idx,buf,len);
 	}
 
 	return 0;
@@ -291,26 +289,6 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 	}
 
 //---------------------window----------------
-	case _none_:
-	{
-		win = allocsupply();
-		if(0 == win)return 0;
-
-		win->type = _wnd_;
-		win->fmt = _none_;
-		windowcreate(win, arg, argc, argv);
-		return win;
-	}
-	case _easy_:
-	{
-		win = allocsupply();
-		if(0 == win)return 0;
-
-		win->type = _wnd_;
-		win->fmt = _easy_;
-		windowcreate(win, arg, argc, argv);
-		return win;
-	}
 	case _wnd_:
 	{
 		win = allocsupply();
@@ -320,13 +298,43 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
-	case _coop_:
+	case _gl41none_:
 	{
 		win = allocsupply();
 		if(0 == win)return 0;
 
 		win->type = _wnd_;
-		win->fmt = _coop_;
+		win->fmt = _gl41none_;
+		windowcreate(win, arg, argc, argv);
+		return win;
+	}
+	case _gl41easy_:
+	{
+		win = allocsupply();
+		if(0 == win)return 0;
+
+		win->type = _wnd_;
+		win->fmt = _gl41easy_;
+		windowcreate(win, arg, argc, argv);
+		return win;
+	}
+	case _gl41full_:
+	{
+		win = allocsupply();
+		if(0 == win)return 0;
+
+		win->type = _wnd_;
+		win->fmt = _gl41full_;
+		windowcreate(win, arg, argc, argv);
+		return win;
+	}
+	case _gl41coop_:
+	{
+		win = allocsupply();
+		if(0 == win)return 0;
+
+		win->type = _wnd_;
+		win->fmt = _gl41coop_;
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}

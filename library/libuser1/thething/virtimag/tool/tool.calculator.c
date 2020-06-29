@@ -253,9 +253,7 @@ static int calculator_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:{
+	case _gl41full_:{
 		if('v' != key)break;
 		calculator_read_bywnd(ent,slot, wnd,area);break;
 	}
@@ -273,9 +271,7 @@ static void calculator_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:{
+	case _gl41full_:{
 		calculator_write_bywnd(ent,slot, wnd,area, buf);break;
 	}
 	}

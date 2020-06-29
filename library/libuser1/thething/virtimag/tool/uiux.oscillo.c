@@ -248,9 +248,7 @@ static void oscillo_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	case _rgba_:{
 		oscillo_draw_pixel(ent,slot, wnd,area);break;
 	}
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:{
+	case _gl41full_:{
 		if('v' != key)break;
 		oscillo_read_bywnd(ent,slot, wnd,area);break;
 	}

@@ -281,7 +281,8 @@ void fullwindow_delete(struct supply* ogl)
 }
 void fullwindow_create(struct supply* ogl)
 {
-	ogl->fmt = _full_;
+	ogl->fmt = _gl41full_;
+	ogl->vfmt= _gl41full_;
 
 	ogl->gl_camera = memorycreate(0x10000, 0);
 	ogl->gl_light  = memorycreate(0x10000, 0);

@@ -355,9 +355,7 @@ static void piano_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 {
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:{
+	case _gl41full_:{
 		if('v' != key)break;
 		piano_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
@@ -372,9 +370,7 @@ static void piano_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
-		case _gl41wnd0_:
-		case _full_:
-		case _wnd_:piano_write_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
+		case _gl41full_:piano_write_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 }
 static void piano_discon(struct halfrel* self, struct halfrel* peer)

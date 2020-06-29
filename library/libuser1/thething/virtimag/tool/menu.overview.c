@@ -1012,10 +1012,10 @@ void overview_drag(struct entity* win, int x0, int y0, int x1, int y1)
 				);
 			}
 			else if(win_s->type){
-				if(_sup_ == win_s->type)win_d = supplycreate(_coop_, win_s, 0, 0);
+				if(_sup_ == win_s->type)win_d = supplycreate(_gl41coop_, win_s, 0, 0);
 			}
 			else if(win_d->type){
-				if(_sup_ == win_s->type)win_s = supplycreate(_coop_, win_d, 0, 0);
+				if(_sup_ == win_s->type)win_s = supplycreate(_gl41coop_, win_d, 0, 0);
 			}
 		}
 		else if(y1 < 24)
@@ -1250,9 +1250,7 @@ static int overview_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:{
+	case _gl41full_:{
 		if('v' != key)break;
 		overview_read_bywnd(ent,slot, wnd,area);break;
 	}
@@ -1268,9 +1266,7 @@ static int overview_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:overview_write_bywnd(ent,slot, wnd,area, buf);break;
+	case _gl41full_:overview_write_bywnd(ent,slot, wnd,area, buf);break;
 	}
 	return 0;
 }

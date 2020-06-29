@@ -52,10 +52,10 @@ int supplyevent(struct halfrel* stack, struct event* e)
 
 	switch(win->fmt)
 	{
-		case _none_:
-		case _easy_:
-		case _full_:
-		case _coop_:
+		case _gl41none_:
+		case _gl41easy_:
+		case _gl41full_:
+		case _gl41coop_:
 		default:{
 			stack[1].pchip = win;
 			supplywrite(win,0, stack,2, 0,0, &ev,0);break;

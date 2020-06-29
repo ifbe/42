@@ -244,9 +244,7 @@ static int mnist_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 {
 	struct entity* xxx = stack[sp-2].pchip;
 	switch(xxx->fmt){
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:{
+	case _gl41full_:{
 		if('v' != key)break;
 		mnist_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
@@ -257,9 +255,7 @@ static int mnist_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 {
 	struct entity* xxx = stack[sp-2].pchip;
 	switch(xxx->fmt){
-	case _gl41wnd0_:
-	case _full_:
-	case _wnd_:mnist_write_bywnd(ent,buf);break;
+	case _gl41full_:mnist_write_bywnd(ent,buf);break;
 	}
 	return 0;
 }

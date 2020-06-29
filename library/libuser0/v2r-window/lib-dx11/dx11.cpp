@@ -36,22 +36,22 @@ ID3D11Buffer*           g_pIndexBuffer = NULL;
 
 //input layout
 D3D11_INPUT_ELEMENT_DESC inputlayout_p4c4[] = {
-	{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	{   "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,16, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	{"PA", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{"PB", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,16, D3D11_INPUT_PER_VERTEX_DATA, 0}
 };
 D3D11_INPUT_ELEMENT_DESC inputlayout_p4n4c4[] = {
-	{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	{  "NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,16, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	{   "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,32, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	{"PA", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{"PB", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,16, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{"PC", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0,32, D3D11_INPUT_PER_VERTEX_DATA, 0}
 };
 D3D11_INPUT_ELEMENT_DESC inputlayout_p3n3[] = {
-	{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	{  "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,12, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	{"PA", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{"PB", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,12, D3D11_INPUT_PER_VERTEX_DATA, 0}
 };
 D3D11_INPUT_ELEMENT_DESC inputlayout_p3n3c3[] = {
-	{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	{  "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-	{   "COLOR", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,24, D3D11_INPUT_PER_VERTEX_DATA, 0}
+	{"PA", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{"PB", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+	{"PC", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,24, D3D11_INPUT_PER_VERTEX_DATA, 0}
 };
 //my own
 #define VAL 500.0
@@ -76,9 +76,9 @@ char vshader[] =
 	"matrix matmvp;\n"
 "};\n"
 "struct VSin{\n"
-	"float3 where : POSITION;\n"
-	"float3 normal : NORMAL;\n"
-	"float3 color : COLOR;\n"
+	"float3 v : PA;\n"
+	"float3 n : PB;\n"
+	"float3 c : PC;\n"
 "};\n"
 "struct VSout{\n"
 	"float4 where : SV_POSITION;\n"
@@ -86,8 +86,8 @@ char vshader[] =
 "};\n"
 "VSout main(VSin input){\n"
 	"VSout output;\n"
-	"output.where = mul(float4(input.where, 1.0), transpose(matmvp));\n"
-	"output.color = float4(input.color, 1.0);\n"
+	"output.where = mul(float4(input.v, 1.0), transpose(matmvp));\n"
+	"output.color = float4(input.c, 1.0);\n"
 	"return output;\n"
 "}\n";
 char pshader[] =
@@ -866,7 +866,9 @@ int windowdelete(struct supply* wnd)
 }
 int windowcreate(struct supply* wnd)
 {
-	wnd->fmt = _full_;
+	wnd->fmt = _gl41full_;
+	wnd->vfmt= _gl41full_;
+
 	wnd->width = wnd->fbwidth = 1024;
 	wnd->height= wnd->fbheight= 768;
 	wnd->gl_camera = (struct gl41data**)memorycreate(0x10000, 0);
