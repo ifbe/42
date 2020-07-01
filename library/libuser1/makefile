@@ -36,6 +36,8 @@ forcpu/intersect/intersect.ray.c \
 forcpu/intersect/intersect.rect.c \
 forcpu/intersect/intersect.sphere.c \
 forcpu/forcpu.c \
+forgpu/dx11/dx11.ctx.c \
+forgpu/dx11/dx11.point.c \
 forgpu/gl10/gl10.ctx.c \
 forgpu/gl10/gl10.draw.c \
 forgpu/gl10/gl10.fbo.c \

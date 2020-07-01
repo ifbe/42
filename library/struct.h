@@ -228,6 +228,45 @@ struct gldst
 	u8 vbo_deq;
 	u8 ibo_deq;
 };
+struct gl41data
+{
+	//[000,2ff]
+	struct glsrc src;
+	u8 ipadd[0x300 - sizeof(struct glsrc)];
+
+	//[300,3ff]
+	struct gldst dst;
+	u8 opadd[0x100 - sizeof(struct gldst)];
+};
+
+
+
+
+struct dxsrc
+{
+	//shader
+	void* vs;
+	void* ps;
+
+	//constant
+	struct cons{
+		mat4 mat;
+		vec4 vec;
+	}arg;
+
+	//texture
+	struct texture tex[8];
+
+	//vertex
+	struct vertex vtx[2];
+
+	//enqueue
+	u8 shader_enq;
+	u8 tex_enq[8];
+	u8 arg_enq;
+	u8 vbuf_enq;
+	u8 ibuf_enq;
+};
 struct dxdst
 {
 	//shader
@@ -240,7 +279,7 @@ struct dxdst
 	void* texture[8];
 
 	//constant
-	void* constant[8];
+	void* constant;
 
 	//vertex
 	void* vbuf;
@@ -250,21 +289,19 @@ struct dxdst
 	//dequeue
 	u8 shader_deq;
 	u8 tex_deq[8];
+	u8 arg_deq;
 	u8 vbo_deq;
 	u8 ibo_deq;
 };
-struct gl41data
-{
-	//[000,1bf]
-	struct glsrc src;
-	u8 ipadd[0x300 - sizeof(struct glsrc)];
-
-	//[1c0,1ff]
-	struct gldst dst;
-	u8 opadd[0x100 - sizeof(struct gldst)];
-};
 struct dx11data
 {
+	//[000,2ff]
+	struct dxsrc src;
+	u8 ipadd[0x300 - sizeof(struct dxsrc)];
+
+	//[300,3ff]
+	struct dxdst dst;
+	u8 opadd[0x100 - sizeof(struct dxdst)];
 };
 
 
@@ -941,6 +978,8 @@ struct supply
 		void* perwnd;
 		struct pcmdata* pcmmic;
 		struct pcmdata** pcm_mic;
+		struct dx11data* dxcam;
+		struct dx11data** dx_camera;
 		struct gl41data* glcam;
 		struct gl41data** gl_camera;
 	};
@@ -949,6 +988,8 @@ struct supply
 		void* buf1;
 		struct pcmdata* pcmwall;
 		struct pcmdata** pcm_wall;
+		struct dx11data* dxlit;
+		struct dx11data** dx_light;
 		struct gl41data* gllit;
 		struct gl41data** gl_light;
 	};
@@ -957,6 +998,8 @@ struct supply
 		void* buf2;
 		struct pcmdata* pcmdata;
 		struct pcmdata** pcm_data;
+		struct dx11data* dxsolid;
+		struct dx11data** dx_solid;
 		struct gl41data* glsolid;
 		struct gl41data** gl_solid;
 		void* htmlctx;	//html
@@ -971,6 +1014,8 @@ struct supply
 		void* buf3;
 		struct pcmdata* pcmwhat;
 		struct pcmdata** pcm_what;
+		struct dx11data* dxopaque;
+		struct dx11data** dx_opaque;
 		struct gl41data* glopaque;
 		struct gl41data** gl_opaque;
 		void* htmlbuf;	//html
@@ -1118,6 +1163,7 @@ struct entity
 		double ddata0;
 
 		void* buf0;
+		void** dx_camera;
 		void** gl_camera;
 	};
 	union{
@@ -1126,6 +1172,7 @@ struct entity
 		double ddata1;
 
 		void* buf1;
+		void** dx_light;
 		void** gl_light;
 	};
 	union{
@@ -1133,13 +1180,16 @@ struct entity
 		float fdata2;
 		double ddata2;
 
-		void* buf2;
-		void** gl_solid;
-		void* htmlctx;	//html
 		int jsonlen;	//json
 		int textlen;	//text
 		int rgbalen;	//rgba
+
+		void* buf2;
+		void* htmlctx;	//html
 		void* depthbuf;
+
+		void** dx_solid;
+		void** gl_solid;
 	};
 	union{
 		u64 data3;
@@ -1147,12 +1197,14 @@ struct entity
 		double ddata3;
 
 		void* buf3;
-		void** gl_opaque;
 		void* htmlbuf;	//html
 		void* jsonbuf;	//json
 		void* textbuf;	//text
 		void* rgbabuf;	//rgba
 		void* colorbuf;
+
+		void** dx_opaque;
+		void** gl_opaque;
 	};
 
 	//[80,bf]: func

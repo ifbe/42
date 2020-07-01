@@ -11,15 +11,20 @@
 #define RASTER 0
 #define RAYTRACE 1
 void matproj(mat4 mat, struct fstyle* sty);
+void mat4_transposefrom(float* m, float* u);
 void frustum2viewandclip_transpose(struct fstyle* frus, mat4 v_, mat4 vp);
+int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 //
 void pixel_clearcolor(void*);
 void pixel_cleardepth(void*);
 //
+void dx11data_before(void*);
+void dx11data_after(void*);
+int dx11data_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+//
 void gl41data_before(void*);
 void gl41data_after(void*);
 int gl41data_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 
 
 
@@ -29,6 +34,7 @@ struct privdata{
 	struct halfrel* peer;
 	mat4 world2view;	//world to view
 	mat4 world2clip;	//world to view to clip
+	struct dx11data dx11;
 	struct gl41data gl41;
 };
 
@@ -405,6 +411,21 @@ static void freecam_gl41cam(
 	src->arg[2].data = frus->vc;
 	wnd->gl_camera[0] = src;
 }
+static void freecam_dx11cam(
+	struct entity* act, struct style* part,
+	struct entity* wrd, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	int j;
+	struct fstyle* frus = &geom->frus;
+	struct privdata* own = act->OWNBUF;
+	struct dxsrc* src = &own->dx11.src;
+
+	mat4_transposefrom((void*)src->arg.mat, (void*)own->world2clip);
+	for(j=0;j<3;j++)src->arg.vec[j] = frus->vc[j];
+
+	wnd->gl_camera[0] = src;
+}
 
 
 
@@ -423,6 +444,7 @@ static int freecam_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 
 	if(_tui_ == wnd->fmt)return 0;
 	if(_rgba_ == wnd->fmt)return 0;
+	if(_dx11full_ == wnd->fmt)return 0;
 	if(stack&&('v' == key)){
 		freecam_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
@@ -469,7 +491,21 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		return 0;
 	}
 
-	if('v' == key){
+	if(_dx11full_ == wnd->fmt){
+		//clear all
+		gl41data_before(wnd);
+		//camera matrix
+		freecam_ratio(wor, geom, wnd, area);
+		freecam_shape2frustum(&geom->fshape, &geom->frustum);
+		freecam_frustum2matrix(ent,slot, wor,geom);
+		freecam_dx11cam(ent,slot, wor,geom, wnd,area);
+		//render data
+		dx11data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
+		//enq++
+		gl41data_after(wnd);
+		return 0;
+	}
+	if(_gl41full_ == wnd->fmt){
 		//clear all
 		gl41data_before(wnd);
 		//camera matrix

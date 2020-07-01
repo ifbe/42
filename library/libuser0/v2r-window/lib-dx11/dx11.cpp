@@ -24,16 +24,6 @@ ID3D11DepthStencilView* g_depthStencilView(NULL);
 ID3D11RenderTargetView* g_renderTargetView(NULL);
 ID3D11RasterizerState*  g_rasterstate(NULL);
 
-//shader thing
-ID3D11VertexShader*     g_pVertexShader = NULL;
-ID3D11PixelShader*      g_pPixelShader = NULL;
-ID3D11InputLayout*      g_pVertexLayout = NULL;
-
-//buffer thing
-ID3D11Buffer*           g_pConstantBuffer = NULL;
-ID3D11Buffer*           g_pVertexBuffer = NULL;
-ID3D11Buffer*           g_pIndexBuffer = NULL;
-
 //input layout
 D3D11_INPUT_ELEMENT_DESC inputlayout_p4c4[] = {
 	{"PA", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
@@ -53,6 +43,15 @@ D3D11_INPUT_ELEMENT_DESC inputlayout_p3n3c3[] = {
 	{"PB", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,12, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	{"PC", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,24, D3D11_INPUT_PER_VERTEX_DATA, 0}
 };
+
+//shader thing
+ID3D11VertexShader*     g_pVertexShader = NULL;
+ID3D11PixelShader*      g_pPixelShader = NULL;
+ID3D11InputLayout*      g_pVertexLayout = NULL;
+//buffer thing
+ID3D11Buffer*           g_pConstantBuffer = NULL;
+ID3D11Buffer*           g_pVertexBuffer = NULL;
+ID3D11Buffer*           g_pIndexBuffer = NULL;
 //my own
 #define VAL 500.0
 float vertices[][9] = {
@@ -86,7 +85,7 @@ char vshader[] =
 "};\n"
 "VSout main(VSin input){\n"
 	"VSout output;\n"
-	"output.where = mul(float4(input.v, 1.0), transpose(matmvp));\n"
+	"output.where = mul(float4(input.v, 1.0), matmvp);\n"
 	"output.color = float4(input.c, 1.0);\n"
 	"return output;\n"
 "}\n";
@@ -257,7 +256,7 @@ int Upload_index(void* buf, int len, ID3D11Buffer** dst)
 	}
 	return 0;
 }
-void Upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque)
+void Upload(struct dx11data** cam, struct dx11data** lit, struct gl41data** solid, struct gl41data** opaque)
 {
 	int j;
 /*	float a = PI/(getrandom()%180);
@@ -269,34 +268,7 @@ void Upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 	g_mat[1][1] = c;
 	g_dx11context->UpdateSubresource(g_pConstantBuffer, 0, 0, &g_mat, 0, 0);
 */
-	struct gl41data* pair = cam[0];
-	for(j=0;j<4;j++){
-		if(0 == pair->src.arg[j].name)break;
-		if(0 == pair->src.arg[j].data)break;
-
-		switch(pair->src.arg[j].fmt){
-			case 'm':{
-				//printf("%d:%s@%llx\n",j, pair->src.arg[j].name, pair->src.arg[j].data);
-				if(0==strncmp(pair->src.arg[j].name, "cammvp", 6)){
-/*					float (*m)[4] = (float (*)[4])pair->src.arg[j].data;
-					printf("0: %f,%f,%f,%f\n1: %f,%f,%f,%f\n2: %f,%f,%f,%f\n3: %f,%f,%f,%f\n",
-						m[0][0], m[0][1], m[0][2], m[0][3],
-						m[1][0], m[1][1], m[1][2], m[1][3],
-						m[2][0], m[2][1], m[2][2], m[2][3],
-						m[3][0], m[3][1], m[3][2], m[3][3]
-					);*/
-					Upload_constant(pair->src.arg[j].data, 64, (ID3D11Buffer**)&pair->dst.constant[j]);
-				}
-				break;
-			}//mat4
-			case 'v':{
-				break;
-			}//vertex
-			case 'f':{
-				break;
-			}//float
-		}//switch
-	}//for
+	Upload_constant((void*)&cam[0]->src.arg, 64+16, (ID3D11Buffer**)&cam[0]->dst.constant);
 
 	struct vertex* vtx;
 	for(j=0;j<64;j++){
@@ -317,7 +289,7 @@ void Upload(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 		}
 	}
 }
-void Render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque)
+void Render(struct dx11data** cam, struct dx11data** lit, struct gl41data** solid, struct gl41data** opaque)
 {
 	//viewport
 	D3D11_VIEWPORT vp = {0};
@@ -341,22 +313,9 @@ void Render(struct gl41data** cam, struct gl41data** lit, struct gl41data** soli
 
 	//constant
 	//g_dx11context->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
+	g_dx11context->VSSetConstantBuffers(0, 1, (ID3D11Buffer**)&cam[0]->dst.constant);
+
 	int j;
-	struct gl41data* pair = cam[0];
-	for(j=0;j<4;j++){
-		if(0 == pair->src.arg[j].name)break;
-		if(0 == pair->src.arg[j].data)break;
-
-		switch(pair->src.arg[j].fmt){
-			case 'm':{
-				if(0==strncmp(pair->src.arg[j].name, "cammvp", 6)){
-					g_dx11context->VSSetConstantBuffers(0, 1, (ID3D11Buffer**)&pair->dst.constant[j]);
-				}
-				break;
-			}//mat4
-		}
-	}
-
 	struct vertex* vtx;
 	for(j=0;j<64;j++){
 		if(0 == solid[j])continue;
@@ -813,10 +772,10 @@ int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* 
 	}
 
 	//give
-	Upload(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque);
+	Upload(wnd->dx_camera, wnd->dx_light, wnd->gl_solid, wnd->gl_opaque);
 
 	//draw
-	Render(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque);
+	Render(wnd->dx_camera, wnd->dx_light, wnd->gl_solid, wnd->gl_opaque);
 
 	u64 save[2];
 	save[0] = (u64)stack;
@@ -866,13 +825,13 @@ int windowdelete(struct supply* wnd)
 }
 int windowcreate(struct supply* wnd)
 {
-	wnd->fmt = _gl41full_;
-	wnd->vfmt= _gl41full_;
+	wnd->fmt = _dx11full_;
+	wnd->vfmt= _dx11full_;
 
 	wnd->width = wnd->fbwidth = 1024;
 	wnd->height= wnd->fbheight= 768;
-	wnd->gl_camera = (struct gl41data**)memorycreate(0x10000, 0);
-	wnd->gl_light  = (struct gl41data**)memorycreate(0x10000, 0);
+	wnd->dx_camera = (struct dx11data**)memorycreate(0x10000, 0);
+	wnd->dx_light  = (struct dx11data**)memorycreate(0x10000, 0);
 	wnd->gl_solid  = (struct gl41data**)memorycreate(0x10000, 0);
 	wnd->gl_opaque = (struct gl41data**)memorycreate(0x10000, 0);
 
