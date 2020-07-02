@@ -43,7 +43,7 @@ D3D11_INPUT_ELEMENT_DESC inputlayout_p3n3c3[] = {
 	{"PB", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,12, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	{"PC", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,24, D3D11_INPUT_PER_VERTEX_DATA, 0}
 };
-
+/*
 //shader thing
 ID3D11VertexShader*     g_pVertexShader = NULL;
 ID3D11PixelShader*      g_pPixelShader = NULL;
@@ -97,7 +97,7 @@ char pshader[] =
 "float4 main(PSin input) : SV_TARGET{\n"
 "	return input.color;\n"
 "}";
-
+*/
 
 
 
@@ -109,6 +109,9 @@ int Upload_shader(
 	ID3DBlob* VSError= NULL;
 	ID3DBlob* PSBlob = NULL;
 	ID3DBlob* PSError= NULL;
+	if(0 != *vs)return 0;
+	if(0 != *ps)return 0;
+//printf("vs:%s\nps:%s\n",vshader,pshader);
 
 	HRESULT hr = D3DCompile(
 		vshader, strlen(vshader), "vs",
@@ -256,7 +259,7 @@ int Upload_index(void* buf, int len, ID3D11Buffer** dst)
 	}
 	return 0;
 }
-void Upload(struct dx11data** cam, struct dx11data** lit, struct gl41data** solid, struct gl41data** opaque)
+void Upload(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque)
 {
 	int j;
 /*	float a = PI/(getrandom()%180);
@@ -275,11 +278,22 @@ void Upload(struct dx11data** cam, struct dx11data** lit, struct gl41data** soli
 		if(0 == solid[j])continue;
 		vtx = &solid[j]->src.vtx[0];
 		if(0 == vtx->vbuf)continue;
-		printf("%d: %x,%x, (%llx,%x,%x,%x), (%llx,%x,%x,%x)\n",
+/*		printf("%d: %x,%x, (%llx,%x,%x,%x), (%llx,%x,%x,%x)\n",
 			j, vtx->geometry, vtx->opaque,
 			vtx->vbuf, vtx->vbuf_w, vtx->vbuf_h, vtx->vbuf_fmt,
 			vtx->ibuf, vtx->ibuf_w, vtx->ibuf_h, vtx->ibuf_fmt);
-
+*/
+		if(vbuffmt_33 == vtx->vbuf_fmt){
+			Upload_shader(
+				(char*)solid[j]->src.vs,
+				(char*)solid[j]->src.ps,
+				inputlayout_p3n3,
+				2,
+				(ID3D11VertexShader**)&solid[j]->dst.vsprog,
+				(ID3D11PixelShader**)&solid[j]->dst.psprog,
+				(ID3D11InputLayout**)&solid[j]->dst.layout
+			);
+		}
 		if(vtx->vbuf){
 			Upload_vertex(vtx->vbuf, vtx->vbuf_len, (ID3D11Buffer**)&solid[j]->dst.vbuf);
 			//if(vtx->vbuf_fmt == vbuffmt_33)
@@ -289,7 +303,7 @@ void Upload(struct dx11data** cam, struct dx11data** lit, struct gl41data** soli
 		}
 	}
 }
-void Render(struct dx11data** cam, struct dx11data** lit, struct gl41data** solid, struct gl41data** opaque)
+void Render(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque)
 {
 	//viewport
 	D3D11_VIEWPORT vp = {0};
@@ -307,6 +321,7 @@ void Render(struct dx11data** cam, struct dx11data** lit, struct gl41data** soli
 	g_dx11context->ClearRenderTargetView(g_renderTargetView,reinterpret_cast<float*>(&color));
 	g_dx11context->ClearDepthStencilView(g_depthStencilView,D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL,1.f,0);
 
+/*
 	//shader
 	g_dx11context->VSSetShader(g_pVertexShader, nullptr, 0);
 	g_dx11context->PSSetShader(g_pPixelShader, nullptr, 0);
@@ -314,29 +329,6 @@ void Render(struct dx11data** cam, struct dx11data** lit, struct gl41data** soli
 	//constant
 	//g_dx11context->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
 	g_dx11context->VSSetConstantBuffers(0, 1, (ID3D11Buffer**)&cam[0]->dst.constant);
-
-	int j;
-	struct vertex* vtx;
-	for(j=0;j<64;j++){
-		if(0 == solid[j])continue;
-		vtx = &solid[j]->src.vtx[0];
-		if(0 == vtx->vbuf)continue;
-
-		if( (0 != vtx->vbuf)&&
-			(0 != vtx->ibuf)&&
-			(vbuffmt_333 == vtx->vbuf_fmt))
-		{
-			UINT stride = 4*9;
-			UINT offset = 0;
-			g_dx11context->IASetVertexBuffers(0, 1, (ID3D11Buffer**)&solid[j]->dst.vbuf, &stride, &offset);
-			g_dx11context->IASetInputLayout(g_pVertexLayout);
-
-			g_dx11context->IASetIndexBuffer((ID3D11Buffer*)solid[j]->dst.ibuf, DXGI_FORMAT_R16_UINT, 0 );
-
-			g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			g_dx11context->DrawIndexed(3*vtx->ibuf_h, 0, 0);
-		}
-	}
 
 	//texture
 	//g_dx11context->VSSetSamplers(0, 1, );
@@ -353,10 +345,50 @@ void Render(struct dx11data** cam, struct dx11data** lit, struct gl41data** soli
 	g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 	g_dx11context->DrawIndexed(2*3, 0, 0);
 	//g_dx11context->Draw(6, 0);
+*/
+
+	int j;
+	struct vertex* vtx;
+	for(j=0;j<64;j++){
+		if(0 == solid[j])continue;
+		vtx = &solid[j]->src.vtx[0];
+		if(0 == vtx->vbuf)continue;
+
+		if(vbuffmt_33 == vtx->vbuf_fmt){
+			g_dx11context->VSSetShader((ID3D11VertexShader*)solid[j]->dst.vsprog, nullptr, 0);
+			g_dx11context->PSSetShader((ID3D11PixelShader*)solid[j]->dst.psprog, nullptr, 0);
+
+			//constant
+			//g_dx11context->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
+			g_dx11context->VSSetConstantBuffers(0, 1, (ID3D11Buffer**)&cam[0]->dst.constant);
+
+			UINT stride = 4*6;
+			UINT offset = 0;
+			g_dx11context->IASetVertexBuffers(0, 1, (ID3D11Buffer**)&solid[j]->dst.vbuf, &stride, &offset);
+			g_dx11context->IASetInputLayout((ID3D11InputLayout*)solid[j]->dst.layout);
+
+			g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+			g_dx11context->Draw(vtx->vbuf_h, 0);
+		}/*
+		if( (0 != vtx->vbuf)&&
+			(0 != vtx->ibuf)&&
+			(vbuffmt_333 == vtx->vbuf_fmt))
+		{
+			UINT stride = 4*9;
+			UINT offset = 0;
+			g_dx11context->IASetVertexBuffers(0, 1, (ID3D11Buffer**)&solid[j]->dst.vbuf, &stride, &offset);
+			g_dx11context->IASetInputLayout(g_pVertexLayout);
+
+			g_dx11context->IASetIndexBuffer((ID3D11Buffer*)solid[j]->dst.ibuf, DXGI_FORMAT_R16_UINT, 0 );
+
+			g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			g_dx11context->DrawIndexed(3*vtx->ibuf_h, 0, 0);
+		}*/
+	}
 
 	// 显示
 	g_dx11swapchain->Present(0,0);
-}
+}/*
 void Freemyctx()
 {
 }
@@ -371,7 +403,7 @@ int Initmyctx()
 	Upload_index(indices, sizeof(indices), &g_pIndexBuffer);
 
 	return 1;
-}
+}*/
 
 
 
@@ -772,10 +804,10 @@ int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* 
 	}
 
 	//give
-	Upload(wnd->dx_camera, wnd->dx_light, wnd->gl_solid, wnd->gl_opaque);
+	Upload(wnd->dx_camera, wnd->dx_light, wnd->dx_solid, wnd->dx_opaque);
 
 	//draw
-	Render(wnd->dx_camera, wnd->dx_light, wnd->gl_solid, wnd->gl_opaque);
+	Render(wnd->dx_camera, wnd->dx_light, wnd->dx_solid, wnd->dx_opaque);
 
 	u64 save[2];
 	save[0] = (u64)stack;
@@ -818,7 +850,7 @@ int windowmodify(struct supply* wnd)
 }
 int windowdelete(struct supply* wnd)
 {
-	Freemyctx();
+	//Freemyctx();
 	FreeD3D11();
 	FreeWin32();
 	return 0;
@@ -832,12 +864,12 @@ int windowcreate(struct supply* wnd)
 	wnd->height= wnd->fbheight= 768;
 	wnd->dx_camera = (struct dx11data**)memorycreate(0x10000, 0);
 	wnd->dx_light  = (struct dx11data**)memorycreate(0x10000, 0);
-	wnd->gl_solid  = (struct gl41data**)memorycreate(0x10000, 0);
-	wnd->gl_opaque = (struct gl41data**)memorycreate(0x10000, 0);
+	wnd->dx_solid  = (struct dx11data**)memorycreate(0x10000, 0);
+	wnd->dx_opaque = (struct dx11data**)memorycreate(0x10000, 0);
 
 	if(!InitWin32())return -1;
 	if(!InitD3D11())return -1;
-	if(!Initmyctx())return -1;
+	//if(!Initmyctx())return -1;
 	SetWindowLongPtr(g_hWnd, GWLP_USERDATA, (u64)wnd);
 	return 0;
 }

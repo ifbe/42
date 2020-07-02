@@ -493,7 +493,7 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 
 	if(_dx11full_ == wnd->fmt){
 		//clear all
-		gl41data_before(wnd);
+		dx11data_before(wnd);
 		//camera matrix
 		freecam_ratio(wor, geom, wnd, area);
 		freecam_shape2frustum(&geom->fshape, &geom->frustum);
@@ -502,7 +502,7 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		//render data
 		dx11data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
 		//enq++
-		gl41data_after(wnd);
+		dx11data_after(wnd);
 		return 0;
 	}
 	if(_gl41full_ == wnd->fmt){

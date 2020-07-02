@@ -1,13 +1,46 @@
 #include "libuser.h"
 #define COUNT (0x100000/36)
+void dx11point(struct entity* win, u32 rgb, vec3 vc);
 
 
 
 
-static void field_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+static void field_draw_dx11(
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
+	int x,y,z;
+	vec3 ta,tb;
+	float tx,ty,tl;
+	float dx,dy,dz;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
+
+	float* vec = act->buf0;
+	for(z=0;z<20;z++){
+	for(y=0;y<20;y++){
+	for(x=0;x<20;x++){
+		ta[0] = vec[(z*20*20 + y*20 + x)*3 + 0];
+		ta[1] = vec[(z*20*20 + y*20 + x)*3 + 1];
+		ta[2] = vec[(z*20*20 + y*20 + x)*3 + 2];
+
+		tx = ta[0] * (1000.0/squareroot(ta[0]*ta[0]+ta[1]*ta[1]) - 1.0);
+		ty = ta[1] * (1000.0/squareroot(ta[0]*ta[0]+ta[1]*ta[1]) - 1.0);
+		tl = squareroot(ta[2]*ta[2] + tx*tx + ty*ty) / 100000.0;
+		dx = tx * tl;
+		dy = ty * tl;
+		dz =-ta[2] * tl;
+		vec[(z*20*20 + y*20 + x)*3 + 0] += dx - ta[1]/1000;
+		vec[(z*20*20 + y*20 + x)*3 + 1] += dy + ta[0]/1000;
+		vec[(z*20*20 + y*20 + x)*3 + 2] += dz;
+
+		dx11point(wnd, 0xffffff, ta);
+	}
+	}
+	}
 }
 static void field_draw_gl41(
 	struct entity* act, struct style* slot,
@@ -74,6 +107,11 @@ static void field_draw_gl41(
 	}
 	}
 }
+static void field_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
 static void field_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -99,17 +137,25 @@ static void field_draw_cli(
 
 
 
-static void field_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void field_taking_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack&&('v' == key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		field_draw_gl41(ent,slot, wor,geom, wnd,area);
+	if(0 == stack)return;
+	if('v' != key)return;
+
+	slot = stack[sp-1].pfoot;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	switch(wnd->fmt){
+		case _dx11full_:field_draw_dx11(ent,slot, wor,geom, wnd,area);break;
+		case _gl41full_:field_draw_gl41(ent,slot, wor,geom, wnd,area);break;
 	}
+}
+static void field_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	field_taking_bycam(ent,foot, stack,sp, arg,key);
 }
 static void field_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
