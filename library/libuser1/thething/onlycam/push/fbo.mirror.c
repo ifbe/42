@@ -163,7 +163,7 @@ static void mirror_forfbo_update(
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = frus->vc;
-	fbo->gl_camera[0] = (void*)(mirr->data);
+	fbo->glfull_camera[0] = (void*)(mirr->data);
 }
 void mirror_forfbo_prepare(struct glsrc* src)
 {

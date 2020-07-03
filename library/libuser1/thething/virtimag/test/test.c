@@ -115,7 +115,7 @@ void test_tickgl(struct entity* ent, struct supply* sup)
 	matproj(cammvp, &sty);
 	mat4_transpose(cammvp);
 
-	sup->glsolid = ent->buf0;
+	sup->gleasy_solid = ent->buf0;
 }
 
 
@@ -135,7 +135,7 @@ void test_preppcm(struct pcmdata* pcm)
 }
 void test_tickpcm(struct entity* ent, struct supply* sup)
 {
-	sup->pcmdata = ent->buf1;
+	sup->pcmeasy_data = ent->buf1;
 }
 
 

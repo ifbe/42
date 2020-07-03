@@ -40,7 +40,7 @@ static void pointlight_light(
 	src->arg[1].name = "sunrgb";
 	src->arg[1].data = sun->rgb;
 
-	wnd->gl_light[0] = act->LITBUF;
+	wnd->glfull_light[0] = act->LITBUF;
 }
 static void pointlight_draw_gl41(
 	struct entity* act, struct style* slot,

@@ -63,7 +63,7 @@ static void projector_forfbo_update(
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = &geom->frus.vc;
 
-	fbo->gl_camera[0] = act->CAMBUF;
+	fbo->glfull_camera[0] = act->CAMBUF;
 }
 static void projector_forfbo_prepare(struct glsrc* src)
 {
@@ -156,7 +156,7 @@ static void projector_forwnd_light_update(
 	src->tex[0].fmt = '!';
 	src->tex_enq[0] += 1;
 
-	wnd->gl_light[0] = act->LITBUF;
+	wnd->glfull_light[0] = act->LITBUF;
 }
 static void projector_forwnd_light_prepare(struct glsrc* src)
 {

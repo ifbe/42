@@ -140,7 +140,7 @@ static void water_forfbo_update(
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = frus->vc;
-	fbo->gl_camera[0] = (void*)(water->data);
+	fbo->glfull_camera[0] = (void*)(water->data);
 }
 void water_forfbo_prepare(struct glsrc* src)
 {

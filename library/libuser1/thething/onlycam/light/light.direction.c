@@ -128,7 +128,7 @@ static void dirlight_forwnd_lightupdate(
 	src->tex[0].fmt = '!';
 	src->tex_enq[0] += 1;
 
-	wnd->gl_light[0] = act->LITBUF;
+	wnd->glfull_light[0] = act->LITBUF;
 }
 static void dirlight_forwnd_lightprep(struct glsrc* src)
 {
@@ -269,7 +269,7 @@ static void dirlight_forfbo_cameraupdate(
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = &geom->frus.vc;
-	fbo->gl_camera[0] = act->FBOBUF;
+	fbo->glfull_camera[0] = act->FBOBUF;
 }
 static void dirlight_forfbo_cameraprep(struct glsrc* src)
 {

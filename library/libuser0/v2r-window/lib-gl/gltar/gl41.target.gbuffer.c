@@ -56,11 +56,11 @@ int gl41fbog_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int idx, voi
 			entityread(rel->pdstchip, rel->dstflag, stack,sp+2, 0,'v', 0, 0);
 
 			//upload
-			fullwindow_upload(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque);
+			fullwindow_upload(wnd->glfull_camera, wnd->glfull_light, wnd->glfull_solid, wnd->glfull_opaque);
 
 			//render
 			glBindFramebuffer(GL_FRAMEBUFFER, wnd->fbo);
-			fullwindow_render(wnd->gl_camera, wnd->gl_light, wnd->gl_solid, wnd->gl_opaque, wnd, area);
+			fullwindow_render(wnd->glfull_camera, wnd->glfull_light, wnd->glfull_solid, wnd->glfull_opaque, wnd, area);
 		}
 
 		rel = samesrcnextdst(rel);
@@ -87,9 +87,9 @@ int gl41fbog_delete(struct entity* act)
 }
 int gl41fbog_create(struct entity* act, void* addr)
 {
-	act->gl_camera = memorycreate(0x10000, 0);
-	act->gl_light  = memorycreate(0x10000, 0);
-	act->gl_solid  = memorycreate(0x10000, 0);
-	act->gl_opaque = memorycreate(0x10000, 0);
+	act->glfull_camera = memorycreate(0x10000, 0);
+	act->glfull_light  = memorycreate(0x10000, 0);
+	act->glfull_solid  = memorycreate(0x10000, 0);
+	act->glfull_opaque = memorycreate(0x10000, 0);
 	return 0;
 }

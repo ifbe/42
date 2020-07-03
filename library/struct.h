@@ -976,53 +976,53 @@ struct supply
 		u64 data0;
 		void* buf0;
 		void* perwnd;
-		struct pcmdata* pcmmic;
-		struct pcmdata** pcm_mic;
-		struct dx11data* dxcam;
-		struct dx11data** dx_camera;
-		struct gl41data* glcam;
-		struct gl41data** gl_camera;
+		struct pcmdata*  pcmeasy_mic;
+		struct pcmdata** pcmfull_mic;
+		struct dx11data*  dxeasy_camera;
+		struct dx11data** dxfull_camera;
+		struct gl41data*  gleasy_camera;
+		struct gl41data** glfull_camera;
 	};
 	union{
 		u64 data1;
 		void* buf1;
-		struct pcmdata* pcmwall;
-		struct pcmdata** pcm_wall;
-		struct dx11data* dxlit;
-		struct dx11data** dx_light;
-		struct gl41data* gllit;
-		struct gl41data** gl_light;
+		struct pcmdata*  pcmeasy_wall;
+		struct pcmdata** pcmfull_wall;
+		struct dx11data*  dxeasy_light;
+		struct dx11data** dxfull_light;
+		struct gl41data*  gleasy_light;
+		struct gl41data** glfull_light;
 	};
 	union{
 		u64 data2;
 		void* buf2;
-		struct pcmdata* pcmdata;
-		struct pcmdata** pcm_data;
-		struct dx11data* dxsolid;
-		struct dx11data** dx_solid;
-		struct gl41data* glsolid;
-		struct gl41data** gl_solid;
+		void* rgbaalloc;
+		void* depthbuf;
 		void* htmlctx;	//html
 		int jsonlen;	//json
 		int textlen;	//text
 		int rgbalen;	//rgba
-		void* rgbaalloc;
-		void* depthbuf;
+		struct pcmdata*  pcmeasy_data;
+		struct pcmdata** pcmfull_data;
+		struct dx11data*  dxeasy_solid;
+		struct dx11data** dxfull_solid;
+		struct gl41data*  gleasy_solid;
+		struct gl41data** glfull_solid;
 	};
 	union{
 		u64 data3;
 		void* buf3;
-		struct pcmdata* pcmwhat;
-		struct pcmdata** pcm_what;
-		struct dx11data* dxopaque;
-		struct dx11data** dx_opaque;
-		struct gl41data* glopaque;
-		struct gl41data** gl_opaque;
 		void* htmlbuf;	//html
 		void* jsonbuf;	//json
 		void* textbuf;	//text
 		void* rgbabuf;	//rgba
 		void* colorbuf;
+		struct pcmdata*  pcmeasy_what;
+		struct pcmdata** pcmfull_what;
+		struct dx11data*  dxeasy_opaque;
+		struct dx11data** dxfull_opaque;
+		struct gl41data*  gleasy_opaque;
+		struct gl41data** glfull_opaque;
 	};
 
 	//[80,bf]: func
@@ -1163,8 +1163,12 @@ struct entity
 		double ddata0;
 
 		void* buf0;
-		void** dx_camera;
-		void** gl_camera;
+		struct pcmdata*  pcmeasy_mic;
+		struct pcmdata** pcmfull_mic;
+		struct dx11data*  dxeasy_camera;
+		struct dx11data** dxfull_camera;
+		struct gl41data*  gleasy_camera;
+		struct gl41data** glfull_camera;
 	};
 	union{
 		u64 data1;
@@ -1172,8 +1176,12 @@ struct entity
 		double ddata1;
 
 		void* buf1;
-		void** dx_light;
-		void** gl_light;
+		struct pcmdata*  pcmeasy_wall;
+		struct pcmdata** pcmfull_wall;
+		struct dx11data*  dxeasy_light;
+		struct dx11data** dxfull_light;
+		struct gl41data*  gleasy_light;
+		struct gl41data** glfull_light;
 	};
 	union{
 		u64 data2;
@@ -1188,8 +1196,12 @@ struct entity
 		void* htmlctx;	//html
 		void* depthbuf;
 
-		void** dx_solid;
-		void** gl_solid;
+		struct pcmdata*  pcmeasy_data;
+		struct pcmdata** pcmfull_data;
+		struct dx11data*  dxeasy_solid;
+		struct dx11data** dxfull_solid;
+		struct gl41data*  gleasy_solid;
+		struct gl41data** glfull_solid;
 	};
 	union{
 		u64 data3;
@@ -1203,8 +1215,12 @@ struct entity
 		void* rgbabuf;	//rgba
 		void* colorbuf;
 
-		void** dx_opaque;
-		void** gl_opaque;
+		struct pcmdata*  pcmeasy_what;
+		struct pcmdata** pcmfull_what;
+		struct dx11data*  dxeasy_opaque;
+		struct dx11data** dxfull_opaque;
+		struct gl41data*  gleasy_opaque;
+		struct gl41data** glfull_opaque;
 	};
 
 	//[80,bf]: func

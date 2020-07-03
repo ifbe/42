@@ -843,10 +843,10 @@ int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* 
 	}
 
 	//give
-	Upload(wnd->dx_camera, wnd->dx_light, wnd->dx_solid, wnd->dx_opaque);
+	Upload(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque);
 
 	//draw
-	Render(wnd->dx_camera, wnd->dx_light, wnd->dx_solid, wnd->dx_opaque);
+	Render(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque);
 
 	u64 save[2];
 	save[0] = (u64)stack;
@@ -901,10 +901,10 @@ int windowcreate(struct supply* wnd)
 
 	wnd->width = wnd->fbwidth = 1024;
 	wnd->height= wnd->fbheight= 768;
-	wnd->dx_camera = (struct dx11data**)memorycreate(0x10000, 0);
-	wnd->dx_light  = (struct dx11data**)memorycreate(0x10000, 0);
-	wnd->dx_solid  = (struct dx11data**)memorycreate(0x10000, 0);
-	wnd->dx_opaque = (struct dx11data**)memorycreate(0x10000, 0);
+	wnd->dxfull_camera = (struct dx11data**)memorycreate(0x10000, 0);
+	wnd->dxfull_light  = (struct dx11data**)memorycreate(0x10000, 0);
+	wnd->dxfull_solid  = (struct dx11data**)memorycreate(0x10000, 0);
+	wnd->dxfull_opaque = (struct dx11data**)memorycreate(0x10000, 0);
 
 	if(!InitWin32())return -1;
 	if(!InitD3D11())return -1;

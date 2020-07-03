@@ -62,18 +62,18 @@ static int dx11solidpoint_fill(struct dxsrc* src)
 int dx11solidpoint_vars(struct entity* win, int unused, float** vbuf, int vcnt)
 {
 	if(0 == win)return -1;
-	if(0 == win->dx_solid)return -2;
+	if(0 == win->dxfull_solid)return -2;
 
-	struct dxsrc* src = win->dx_solid[point3d];
-	if(0 == src){
-		src = win->dx_solid[point3d] = memorycreate(0x1000, 0);
-		if(0 == src)return -3;
+	struct dx11data* p = win->dxfull_solid[point3d];
+	if(0 == p){
+		p = win->dxfull_solid[point3d] = memorycreate(0x1000, 0);
+		if(0 == p)return -3;
 	}
 
 	int vlen,ret;
-	struct vertex* vtx = src->vtx;
+	struct vertex* vtx = p->src.vtx;
 	if(0 == vtx->vbuf){
-		ret = dx11solidpoint_fill(src);
+		ret = dx11solidpoint_fill(&p->src);
 		if(ret < 0)return -4;
 	}
 

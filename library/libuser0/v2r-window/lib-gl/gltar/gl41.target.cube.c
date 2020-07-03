@@ -46,8 +46,8 @@ int gl41fbo6_write(_sup* this,int foot, _syn* stack,int sp, void* arg,int idx, v
 
 	struct supply* wnd = stack[sp-8].pchip;
 	struct fstyle* area = stack[sp-1].pfoot;
-	fullwindow_upload(this->gl_camera, this->gl_light, wnd->gl_solid, wnd->gl_opaque);
-	fullwindow_render(this->gl_camera, this->gl_light, wnd->gl_solid, wnd->gl_opaque, this, area);
+	fullwindow_upload(this->glfull_camera, this->glfull_light, wnd->glfull_solid, wnd->glfull_opaque);
+	fullwindow_render(this->glfull_camera, this->glfull_light, wnd->glfull_solid, wnd->glfull_opaque, this, area);
 	return 0;
 }
 int gl41fbo6_discon(struct halfrel* self, struct halfrel* peer)
@@ -64,7 +64,7 @@ int gl41fbo6_delete(struct entity* act)
 }
 int gl41fbo6_create(struct entity* act, void* addr)
 {
-	act->gl_camera = memorycreate(0x10000, 0);
-	act->gl_light  = memorycreate(0x10000, 0);
+	act->glfull_camera = memorycreate(0x10000, 0);
+	act->glfull_light  = memorycreate(0x10000, 0);
 	return 0;
 }

@@ -409,7 +409,7 @@ static void freecam_gl41cam(
 	src->arg[2].fmt = 'v';
 	src->arg[2].name = "camxyz";
 	src->arg[2].data = frus->vc;
-	wnd->gl_camera[0] = src;
+	wnd->glfull_camera[0] = (void*)src;
 }
 static void freecam_dx11cam(
 	struct entity* act, struct style* part,
@@ -424,7 +424,7 @@ static void freecam_dx11cam(
 	mat4_transposefrom((void*)src->arg.mat, (void*)own->world2clip);
 	for(j=0;j<3;j++)src->arg.vec[j] = frus->vc[j];
 
-	wnd->gl_camera[0] = src;
+	wnd->glfull_camera[0] = (void*)src;
 }
 
 

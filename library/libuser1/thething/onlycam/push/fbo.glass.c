@@ -166,7 +166,7 @@ static void glass_forfbo_update(
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = frus->vc;
-	fbo->gl_camera[0] = (void*)(glass->data);
+	fbo->glfull_camera[0] = (void*)(glass->data);
 }
 static void glass_forfbo_prepare(struct glsrc* src)
 {

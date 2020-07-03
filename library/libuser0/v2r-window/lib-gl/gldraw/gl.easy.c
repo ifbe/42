@@ -150,7 +150,7 @@ void easywindow_read(_sup* win,int foot, _syn* stack,int sp, void* arg,int idx, 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	if(win->orel0)take_data_from_peer(win,_ctx_, stack,sp, 0,0, 0,0);
-	if(win->glsolid)easywindow_drawthis(win->glsolid);
+	if(win->gleasy_solid)easywindow_drawthis(win->gleasy_solid);
 	else easywindow_example();
 }
 void easywindow_delete(struct supply* win)

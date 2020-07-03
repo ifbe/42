@@ -393,7 +393,7 @@ static void portal_matrix(
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = frus->vc;
 
-	this->fbo->gl_camera[0] = &this->forfbo;
+	this->fbo->glfull_camera[0] = &this->forfbo;
 }
 
 

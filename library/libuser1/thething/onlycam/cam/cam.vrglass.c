@@ -241,7 +241,7 @@ static void vrglass_camera(
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "camxyz";
 	src->arg[1].data = frus->vc;
-	wnd->gl_camera[0] = act->CAMBUF;
+	wnd->glfull_camera[0] = act->CAMBUF;
 }
 
 

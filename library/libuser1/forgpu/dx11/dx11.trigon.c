@@ -81,18 +81,18 @@ static int dx11solidtrigon_fill(struct glsrc* src)
 int dx11solidtrigon_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	if(0 == win)return -1;
-	if(0 == win->gl_solid)return -2;
+	if(0 == win->glfull_solid)return -2;
 
-	struct glsrc* src = win->gl_solid[trigon3d];
-	if(0 == src){
-		src = win->gl_solid[trigon3d] = memorycreate(0x1000, 0);
-		if(0 == src)return -3;
+	struct gl41data* p = win->glfull_solid[trigon3d];
+	if(0 == p){
+		p = win->glfull_solid[trigon3d] = memorycreate(0x1000, 0);
+		if(0 == p)return -3;
 	}
 
 	int vlen,ilen,ret;
-	struct vertex* vtx = src->vtx;
+	struct vertex* vtx = p->src.vtx;
 	if(0 == vtx->vbuf){
-		ret = dx11solidtrigon_fill(src);
+		ret = dx11solidtrigon_fill(&p->src);
 		if(ret < 0)return -4;
 	}
 

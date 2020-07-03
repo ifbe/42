@@ -49,7 +49,7 @@ static void imagelight_lightupdate(
 	struct entity* act, struct style* slot,
 	struct entity* wnd, struct style* area)
 {
-	wnd->gl_light[0] = act->LITBUF;
+	wnd->glfull_light[0] = act->LITBUF;
 }
 
 

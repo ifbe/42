@@ -83,7 +83,7 @@ void tardis_pcm(struct entity* ent, struct supply* sup)
 	pcm->chan = 1;
 	pcm->rate = 44100;
 	pcm->count = 65536;
-	sup->pcmdata = pcm;
+	sup->pcmeasy_data = pcm;
 }
 
 

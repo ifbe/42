@@ -39,7 +39,7 @@ int speakerread(_sup* spk,int foot, _syn* stack,int sp, void* arg, int idx, u8* 
 	struct pcmdata* pcm;
 	if(spk->orel0)take_data_from_peer(spk,_ctx_, stack,sp, 0,0, 0,0);
 
-	pcm = spk->pcmdata;
+	pcm = spk->pcmeasy_data;
 	if(0 == pcm)return 0;
 
 	int ret,err;

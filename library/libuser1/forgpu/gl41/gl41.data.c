@@ -22,7 +22,7 @@ void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, 
 void gl41data_whcam(struct entity* wnd, struct fstyle* area)
 {
 	int x,y;
-	void* trick = wnd->gl_camera;
+	void* trick = wnd->glfull_camera;
 	struct gl41data* data = trick + 0x400;
 	float (*m)[4] = trick + 0x800;
 	float* v = trick + 0xc00;
@@ -42,12 +42,12 @@ void gl41data_whcam(struct entity* wnd, struct fstyle* area)
 	data->src.arg[1].fmt = 'v';
 	data->src.arg[1].name = "camxyz";
 	data->src.arg[1].data = v;
-	wnd->gl_camera[0] = data;
+	wnd->glfull_camera[0] = data;
 }
 void gl41data_01cam(struct entity* wnd)
 {
 	int x,y;
-	void* trick = wnd->gl_camera;
+	void* trick = wnd->glfull_camera;
 	struct gl41data* data = trick + 0x400;
 	float (*m)[4] = trick + 0x800;
 	float* v = trick + 0xc00;
@@ -66,7 +66,7 @@ void gl41data_01cam(struct entity* wnd)
 	data->src.arg[1].fmt = 'v';
 	data->src.arg[1].name = "camxyz";
 	data->src.arg[1].data = v;
-	wnd->gl_camera[0] = data;
+	wnd->glfull_camera[0] = data;
 }
 
 
@@ -75,13 +75,13 @@ void gl41data_01cam(struct entity* wnd)
 void gl41data_nolit(struct entity* wnd)
 {
 	int x,y;
-	void* trick = wnd->gl_light;
+	void* trick = wnd->glfull_light;
 	struct glsrc* src = trick + 0x400;
 
 	src->routine_name = "passtype";
 	src->routine_detail = "rawcolor";
 
-	wnd->gl_light[0] = src;
+	wnd->glfull_light[0] = (void*)src;
 }
 void gl41data_mylit(struct entity* wnd)
 {
@@ -93,81 +93,81 @@ void gl41data_mylit(struct entity* wnd)
 void gl41data_before(struct entity* ctx)
 {
 	int j;
-	struct glsrc* src;
+	struct gl41data* p;
 
 	//camera: default
-	ctx->gl_camera[0] = 0;
+	ctx->glfull_camera[0] = 0;
 
 	//light: default
-	//ctx->gl_light[0] = 0;
+	//ctx->glfull_light[0] = 0;
 	gl41data_nolit(ctx);
 
 	//solid: clear myown, forget other
 	for(j=0;j<solidaid_max;j++){
-		src = ctx->gl_solid[j];
-		if(0 == src)continue;
+		p = ctx->glfull_solid[j];
+		if(0 == p)continue;
 
-		src->vtx[0].vbuf_h = 0;
-		src->vtx[0].ibuf_h = 0;
+		p->src.vtx[0].vbuf_h = 0;
+		p->src.vtx[0].ibuf_h = 0;
 	}
 	for(;j<64;j++){
-		ctx->gl_solid[j] = 0;
+		ctx->glfull_solid[j] = 0;
 	}
 
 	//opaque: clear myown, forget other
 	for(j=0;j<opaqueaid_max;j++){
-		src = ctx->gl_opaque[j];
-		if(0 == src)continue;
+		p = ctx->glfull_opaque[j];
+		if(0 == p)continue;
 
-		src->vtx[0].vbuf_h = 0;
-		src->vtx[0].ibuf_h = 0;
+		p->src.vtx[0].vbuf_h = 0;
+		p->src.vtx[0].ibuf_h = 0;
 	}
 	for(;j<64;j++){
-		ctx->gl_opaque[j] = 0;
+		ctx->glfull_opaque[j] = 0;
 	}
 }
 void gl41data_after(struct entity* ctx)
 {
 	int j;
-	struct glsrc* src;
+	struct gl41data* p;
 
 	//solid: enqueue
 	for(j=0;j<solidaid_max;j++)
 	{
-		src = ctx->gl_solid[j];
-		if(0 == src)continue;
+		p = ctx->glfull_solid[j];
+		if(0 == p)continue;
 
-		src->vbuf_enq += 1;
-		src->ibuf_enq += 1;
+		p->src.vbuf_enq += 1;
+		p->src.ibuf_enq += 1;
 	}
 
 	//opaque: enqueue
 	for(j=0;j<opaqueaid_max;j++)
 	{
-		src = ctx->gl_opaque[j];
-		if(0 == src)continue;
+		p = ctx->glfull_opaque[j];
+		if(0 == p)continue;
 
-		src->vbuf_enq += 1;
-		src->ibuf_enq += 1;
+		p->src.vbuf_enq += 1;
+		p->src.ibuf_enq += 1;
 	}
 }
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt)
+void gl41data_insert(struct entity* ctx, int type, struct gl41data* src, int cnt)
 {
 	int j;
 	//say("@gl41data_insert:%llx,%x,%llx,%x\n", ctx,type,src,cnt);
 
 	if('s' == type){
 		for(j=solidaid_max;j<64;j++){
-			if(0 == ctx->gl_solid[j]){
-				ctx->gl_solid[j] = src;
+			if(0 == ctx->glfull_solid[j]){
+				ctx->glfull_solid[j] = src;
 				break;
 			}
 		}
 	}
 	if('o' == type){
 		for(j=opaqueaid_max;j<64;j++){
-			if(0 == ctx->gl_opaque[j]){
-				ctx->gl_opaque[j] = src;
+			if(0 == ctx->glfull_opaque[j]){
+				ctx->glfull_opaque[j] = src;
 				break;
 			}
 		}
@@ -229,9 +229,9 @@ int gl41data_delete(struct entity* win)
 }
 int gl41data_create(struct entity* act, void* flag)
 {
-	act->gl_camera = memorycreate(0x10000, 0);
-	act->gl_light  = memorycreate(0x10000, 0);
-	act->gl_solid  = memorycreate(0x10000, 0);
-	act->gl_opaque = memorycreate(0x10000, 0);
+	act->glfull_camera = memorycreate(0x10000, 0);
+	act->glfull_light  = memorycreate(0x10000, 0);
+	act->glfull_solid  = memorycreate(0x10000, 0);
+	act->glfull_opaque = memorycreate(0x10000, 0);
 	return 0;
 }
