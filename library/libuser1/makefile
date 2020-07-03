@@ -38,9 +38,8 @@ forcpu/intersect/intersect.sphere.c \
 forcpu/forcpu.c \
 forgpu/dx11/dx11.ctx.c \
 forgpu/dx11/dx11.point.c \
-forgpu/gl10/gl10.ctx.c \
-forgpu/gl10/gl10.draw.c \
-forgpu/gl10/gl10.fbo.c \
+forgpu/dx11/dx11.line.c \
+forgpu/dx11/dx11.trigon.c \
 forgpu/gl41/carve/carve3d.opaque.point.c \
 forgpu/gl41/carve/carve3d.opaque.line.c \
 forgpu/gl41/carve/carve3d.opaque.trigon.c \

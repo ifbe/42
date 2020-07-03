@@ -354,22 +354,61 @@ void Render(struct dx11data** cam, struct dx11data** lit, struct dx11data** soli
 		vtx = &solid[j]->src.vtx[0];
 		if(0 == vtx->vbuf)continue;
 
-		if(vbuffmt_33 == vtx->vbuf_fmt){
-			g_dx11context->VSSetShader((ID3D11VertexShader*)solid[j]->dst.vsprog, nullptr, 0);
-			g_dx11context->PSSetShader((ID3D11PixelShader*)solid[j]->dst.psprog, nullptr, 0);
+		g_dx11context->VSSetShader((ID3D11VertexShader*)solid[j]->dst.vsprog, nullptr, 0);
+		g_dx11context->PSSetShader((ID3D11PixelShader*)solid[j]->dst.psprog, nullptr, 0);
+		g_dx11context->VSSetConstantBuffers(0, 1, (ID3D11Buffer**)&cam[0]->dst.constant);
+		g_dx11context->IASetInputLayout((ID3D11InputLayout*)solid[j]->dst.layout);
 
-			//constant
-			//g_dx11context->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
-			g_dx11context->VSSetConstantBuffers(0, 1, (ID3D11Buffer**)&cam[0]->dst.constant);
-
+		switch(vtx->vbuf_fmt){
+		case vbuffmt_33:{
 			UINT stride = 4*6;
 			UINT offset = 0;
 			g_dx11context->IASetVertexBuffers(0, 1, (ID3D11Buffer**)&solid[j]->dst.vbuf, &stride, &offset);
-			g_dx11context->IASetInputLayout((ID3D11InputLayout*)solid[j]->dst.layout);
+			break;
+		}
+		case vbuffmt_333:{
+			UINT stride = 4*9;
+			UINT offset = 0;
+			g_dx11context->IASetVertexBuffers(0, 1, (ID3D11Buffer**)&solid[j]->dst.vbuf, &stride, &offset);
+			break;
+		}
+		}//switch
 
-			g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-			g_dx11context->Draw(vtx->vbuf_h, 0);
-		}/*
+		if(vtx->ibuf){
+			g_dx11context->IASetIndexBuffer((ID3D11Buffer*)solid[j]->dst.ibuf, DXGI_FORMAT_R16_UINT, 0);
+			switch(vtx->geometry){
+			case 1:
+				g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+				g_dx11context->DrawIndexed(vtx->ibuf_h*1, 0, 0);
+				break;
+			case 2:
+				g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+				g_dx11context->DrawIndexed(vtx->ibuf_h*2, 0, 0);
+				break;
+			case 3:
+				g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				g_dx11context->DrawIndexed(vtx->ibuf_h*3, 0, 0);
+				break;
+			}
+		}//drawindex
+
+		else{
+			switch(vtx->geometry){
+			case 1:
+				g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+				g_dx11context->Draw(vtx->vbuf_h*1, 0);
+				break;
+			case 2:
+				g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+				g_dx11context->Draw(vtx->vbuf_h*2, 0);
+				break;
+			case 3:
+				g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				g_dx11context->Draw(vtx->vbuf_h*3, 0);
+				break;
+			}
+		}//drawarray
+/*
 		if( (0 != vtx->vbuf)&&
 			(0 != vtx->ibuf)&&
 			(vbuffmt_333 == vtx->vbuf_fmt))

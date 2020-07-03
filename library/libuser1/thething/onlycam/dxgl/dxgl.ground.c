@@ -8,12 +8,15 @@ void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 struct privdata{
-	u8 vs[128];
-	u8 fs[128];
+	u8 dxvs[128];
+	u8 dxps[128];
+	u8 glvs[128];
+	u8 glfs[128];
 	u8 albedo[128];
 	u8 normal[128];
 	u8 matter[128];
 
+	struct dx11data dx11;
 	struct gl41data gl41;
 };
 static int loadshaderfromfile(char* buf, char* url)
@@ -244,12 +247,12 @@ static void ground_create(struct entity* act, void* str, int argc, u8** argv)
 	for(j=0;j<argc;j++){
 		//say("%d:%.8s\n", j, argv[j]);
 		if(0 == ncmp(argv[j], "glvs:", 5)){
-			copypath(own->vs, argv[j]+5);
-			glvs = (void*)own->vs;
+			copypath(own->glvs, argv[j]+5);
+			glvs = (void*)own->glvs;
 		}
 		if(0 == ncmp(argv[j], "glfs:", 5)){
-			copypath(own->fs, argv[j]+5);
-			glfs = (void*)own->fs;
+			copypath(own->glfs, argv[j]+5);
+			glfs = (void*)own->glfs;
 		}
 		if(0 == ncmp(argv[j], "albedo:", 7)){
 			copypath(own->albedo, argv[j]+7);
