@@ -1,8 +1,14 @@
 #include "libuser.h"
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
+void dx11solid_rect(struct entity* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
+//
+void dx11data_before(void*);
+void dx11data_after(void*);
+void dx11data_01cam(void*);
+//
+void gl41data_before(void*);
+void gl41data_after(void*);
+void gl41data_01cam(void*);
 
 
 
@@ -104,6 +110,35 @@ void vkbd_draw_pixel(struct entity* win, struct style* sty)
 		}
 	}
 }
+void vkbd_draw_dx11(
+	struct entity* act, struct style* part,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	int x,y,j;
+	int c,rgb;
+	vec3 tc,tr,tf;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
+	//gl41opaque_rect(wnd, 0x800000ff, vc, vr, vf);
+
+	for(y=0;y<8;y++)
+	{
+		for(x=0;x<16;x++)
+		{
+			for(j=0;j<3;j++){
+				tr[j] = vr[j]/17;
+				tf[j] = vf[j]/8.5;
+				tc[j] = vc[j] + vr[j]*(x-7.5)/8.0 + vf[j]*(y-3.5)/4.0;
+			}
+			rgb = 0x80808080;
+			if((act->iw0)&&(x == act->ix0)&&(y == act->iy0))rgb = 0x80ff0000;
+			dx11solid_rect(wnd, rgb, tc, tr, tf);
+		}
+	}
+}
 void vkbd_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* scn, struct style* geom,
@@ -188,7 +223,20 @@ static int vkbd_event(
 
 
 
-static void vkbd_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void vkbd_read_bydx11(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+{
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
+
+	dx11data_before(wnd);
+	vkbd_draw_dx11(ent, 0, 0,(void*)&fs, wnd,area);
+	dx11data_01cam(wnd);
+	dx11data_after(wnd);
+}
+static void vkbd_read_bygl41(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
@@ -241,9 +289,13 @@ static int vkbd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
+	case _dx11full_:{
+		if('v' != key)break;
+		vkbd_read_bydx11(ent,slot, wnd,area);break;
+	}
 	case _gl41full_:{
 		if('v' != key)break;
-		vkbd_read_bywnd(ent,slot, wnd,area);break;
+		vkbd_read_bygl41(ent,slot, wnd,area);break;
 	}
 	}
 	return 0;

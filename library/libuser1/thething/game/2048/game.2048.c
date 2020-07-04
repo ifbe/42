@@ -6,6 +6,7 @@ void left2048(void*);
 void right2048(void*);
 void up2048(void*);
 void down2048(void*);
+void dx11solid_rect(struct entity* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 
 
 
@@ -114,6 +115,17 @@ static void the2048_draw_pixel(
 			);
 		}
 	}
+}
+static void the2048_draw_dx11(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
+{
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
+	dx11solid_rect(ctx, 0x444444, vc, vr, vf);
 }
 static void the2048_draw_gl41(
 	struct entity* act, struct style* part,
@@ -333,11 +345,15 @@ static void the2048_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		the2048_draw_gl41(ent,slot, wor,geom, wnd,area);
+	if(0 == stack)return;
+	if('v' != key)return;
+
+	slot = stack[sp-1].pfoot;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	switch(wnd->fmt){
+	case _dx11full_:the2048_draw_dx11(ent,slot, wor,geom, wnd,area);break;
+	case _gl41full_:the2048_draw_gl41(ent,slot, wor,geom, wnd,area);break;
 	}
 }
 static void the2048_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

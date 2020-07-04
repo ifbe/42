@@ -42,11 +42,11 @@ char dx11solidtrigon_frag[] =
 
 
 
-static int dx11solidtrigon_fill(struct glsrc* src)
+static int dx11solidtrigon_fill(struct dxsrc* src)
 {
 	if(0 == src->vs){
 		src->vs = dx11solidtrigon_vert;
-		src->fs = dx11solidtrigon_frag;
+		src->ps = dx11solidtrigon_frag;
 		src->shader_enq = 1;
 	}
 
@@ -81,11 +81,11 @@ static int dx11solidtrigon_fill(struct glsrc* src)
 int dx11solidtrigon_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int vcnt, int icnt)
 {
 	if(0 == win)return -1;
-	if(0 == win->glfull_solid)return -2;
+	if(0 == win->dxfull_solid)return -2;
 
-	struct gl41data* p = win->glfull_solid[trigon3d];
+	struct dx11data* p = win->dxfull_solid[trigon3d];
 	if(0 == p){
-		p = win->glfull_solid[trigon3d] = memorycreate(0x1000, 0);
+		p = win->dxfull_solid[trigon3d] = memorycreate(0x1000, 0);
 		if(0 == p)return -3;
 	}
 

@@ -222,55 +222,78 @@ void Upload(struct dx11data** cam, struct dx11data** lit, struct dx11data** soli
 	struct vertex* vtx;
 	for(j=0;j<64;j++){
 		if(0 == solid[j])continue;
+
 		vtx = &solid[j]->src.vtx[0];
 		if(0 == vtx->vbuf)continue;
-/*		printf("%d: %x,%x, (%llx,%x,%x,%x), (%llx,%x,%x,%x)\n",
+/*
+		//debug
+		printf("%d: %x,%x, (%llx,%x,%x,%x), (%llx,%x,%x,%x)\n",
 			j, vtx->geometry, vtx->opaque,
 			vtx->vbuf, vtx->vbuf_w, vtx->vbuf_h, vtx->vbuf_fmt,
-			vtx->ibuf, vtx->ibuf_w, vtx->ibuf_h, vtx->ibuf_fmt);
+			vtx->ibuf, vtx->ibuf_w, vtx->ibuf_h, vtx->ibuf_fmt
+		);
 */
-		if(vbuffmt_33 == vtx->vbuf_fmt){
-			Upload_shader(
-				(char*)solid[j]->src.vs,
-				(char*)solid[j]->src.ps,
-				inputlayout_p3n3,
-				2,
-				(ID3D11VertexShader**)&solid[j]->dst.vsprog,
-				(ID3D11PixelShader**)&solid[j]->dst.psprog,
-				(ID3D11InputLayout**)&solid[j]->dst.layout
-			);
+		//shader
+		D3D11_INPUT_ELEMENT_DESC* desc;
+		int size;
+		if(0 == vtx->vbuf_fmt)continue;
+		else if(vbuffmt_33 == vtx->vbuf_fmt){
+			desc = inputlayout_p3n3;
+			size = 2;
 		}
+		else if(vbuffmt_333 == vtx->vbuf_fmt){
+			desc = inputlayout_p3n3c3;
+			size = 3;
+		}
+		else continue;
+
+		Upload_shader(
+			(char*)solid[j]->src.vs,
+			(char*)solid[j]->src.ps,
+			desc,
+			size,
+			(ID3D11VertexShader**)&solid[j]->dst.vsprog,
+			(ID3D11PixelShader**)&solid[j]->dst.psprog,
+			(ID3D11InputLayout**)&solid[j]->dst.layout
+		);
+
+		//vertices
 		if(vtx->vbuf){
 			Upload_vertex(vtx->vbuf, vtx->vbuf_len, (ID3D11Buffer**)&solid[j]->dst.vbuf);
 			//if(vtx->vbuf_fmt == vbuffmt_33)
 		}
+
+		//indices
 		if(vtx->ibuf){
 			Upload_index(vtx->ibuf, vtx->ibuf_len, (ID3D11Buffer**)&solid[j]->dst.ibuf);
 		}
 	}
 }
-void Render(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque)
+void Render(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque, struct supply* wnd, struct fstyle* area)
 {
+	float x0,y0,ww,hh;
+	x0 = area->vc[0] * wnd->fbwidth;
+	y0 = area->vc[1] * wnd->fbheight;
+	ww = area->vq[0] * wnd->fbwidth;
+	hh = area->vq[1] * wnd->fbheight;
+
 	//viewport
 	D3D11_VIEWPORT vp = {0};
-	vp.TopLeftX = 0.f;
-	vp.TopLeftY = 0.f;
-	vp.Width	= static_cast<float>(g_winWidth);
-	vp.Height	= static_cast<float>(g_winHeight);
+	vp.TopLeftX = x0;
+	vp.TopLeftY = wnd->fbheight - (y0+hh);
+	vp.Width	= ww;
+	vp.Height	= hh;
 	vp.MinDepth = 0.0f;
 	vp.MaxDepth = 1.0f;
 	g_dx11context->RSSetViewports(1,&vp);
 	g_dx11context->RSSetState(g_rasterstate);
 
 	//clear
-	float color[4] = {0.1, 0.1, 0.1, 1.0};
-	g_dx11context->ClearRenderTargetView(g_renderTargetView,reinterpret_cast<float*>(&color));
 	g_dx11context->ClearDepthStencilView(g_depthStencilView,D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL,1.f,0);
 /*
 	//debug
 	if(1){
 		dx11easy_render(g_dx11context);
-		g_dx11swapchain->Present(0,0);
 		return;
 	}
 */
@@ -278,6 +301,7 @@ void Render(struct dx11data** cam, struct dx11data** lit, struct dx11data** soli
 	struct vertex* vtx;
 	for(j=0;j<64;j++){
 		if(0 == solid[j])continue;
+
 		vtx = &solid[j]->src.vtx[0];
 		if(0 == vtx->vbuf)continue;
 
@@ -336,9 +360,6 @@ void Render(struct dx11data** cam, struct dx11data** lit, struct dx11data** soli
 			}
 		}//drawarray
 	}//solid
-
-	// 显示
-	g_dx11swapchain->Present(0,0);
 }
 
 
@@ -715,7 +736,7 @@ BOOL InitWin32()
 
 
 extern "C" {
-int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int fullwindow_taking(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//take
 	struct relation* rel = (struct relation*)wnd->orel0;
@@ -736,15 +757,41 @@ int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* 
 			entityread((struct entity*)rel->pdstchip, rel->dstflag, stack,sp+2, 0,'v', 0, 0);
 		}
 
+		//give
+		Upload(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque);
+
+		//draw
+		Render(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque, wnd, area);
+
+		//next
 		rel = (struct relation*)samesrcnextdst(rel);
 	}
+	return 0;
+}
+int fullwindow_giving(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	return 0;
+}
 
-	//give
-	Upload(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque);
 
-	//draw
-	Render(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque);
 
+
+int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	//clear
+	float color[4] = {0.1, 0.1, 0.1, 1.0};
+	g_dx11context->ClearRenderTargetView(g_renderTargetView,reinterpret_cast<float*>(&color));
+
+	//read
+	fullwindow_taking(wnd,foot, stack,sp, arg,key, buf,len);
+
+	//show
+	g_dx11swapchain->Present(0,0);
+
+
+
+
+	//temp
 	u64 save[2];
 	save[0] = (u64)stack;
 	save[1] = sp;
