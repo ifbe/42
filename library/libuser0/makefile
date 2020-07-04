@@ -202,6 +202,7 @@ winapi:target windows
 .PHONY:windx11
 windx11:target windows
 	g++ $(cflag) v2r-window/lib-dx11/dx11.cpp
+	g++ $(cflag) v2r-window/lib-dx11/dx11.easy.cpp
 	$(compiler) $(cflag) w2w-gamepad/win/win.xinput.c
 
 .PHONY:winglut

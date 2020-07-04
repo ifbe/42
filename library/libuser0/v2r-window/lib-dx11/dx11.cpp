@@ -5,6 +5,10 @@
 #include <d3dcompiler.h>
 #include "libuser.h"
 using namespace std;
+int dx11easy_create();
+int dx11easy_delete();
+int dx11easy_upload(ID3D11DeviceContext* devctx);
+int dx11easy_render(ID3D11DeviceContext* devctx);
 
 //wnd thing
 //HINSTANCE	g_hInstance(NULL);
@@ -43,61 +47,7 @@ D3D11_INPUT_ELEMENT_DESC inputlayout_p3n3c3[] = {
 	{"PB", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,12, D3D11_INPUT_PER_VERTEX_DATA, 0},
 	{"PC", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0,24, D3D11_INPUT_PER_VERTEX_DATA, 0}
 };
-/*
-//shader thing
-ID3D11VertexShader*     g_pVertexShader = NULL;
-ID3D11PixelShader*      g_pPixelShader = NULL;
-ID3D11InputLayout*      g_pVertexLayout = NULL;
-//buffer thing
-ID3D11Buffer*           g_pConstantBuffer = NULL;
-ID3D11Buffer*           g_pVertexBuffer = NULL;
-ID3D11Buffer*           g_pIndexBuffer = NULL;
-//my own
-#define VAL 500.0
-float vertices[][9] = {
-	{-VAL,-VAL, 0.0,    0.0, 0.0, 1.0,    1.0, 0.0, 0.0},
-	{ VAL,-VAL, 0.0,    0.0, 0.0, 1.0,    0.0, 1.0, 0.0},
-	{-VAL, VAL, 0.0,    0.0, 0.0, 1.0,    0.0, 0.0, 1.0},
-	{ VAL, VAL, 0.0,    0.0, 0.0, 1.0,    1.0, 0.0, 0.0}
-};
-unsigned short indices[] = {
-	0, 1, 2,
-	1, 2, 3
-};
-mat4 g_mat = {
-	1.0, 0.0, 0.0, 0.0,
-	0.0, 1.0, 0.0, 0.0,
-	0.0, 0.0, 1.0, 0.0,
-	0.0, 0.0, 0.0, 1.0
-};
-char vshader[] =
-"cbuffer VSConstantBuffer : register(b0){\n"
-	"matrix matmvp;\n"
-"};\n"
-"struct VSin{\n"
-	"float3 v : PA;\n"
-	"float3 n : PB;\n"
-	"float3 c : PC;\n"
-"};\n"
-"struct VSout{\n"
-	"float4 where : SV_POSITION;\n"
-	"float4 color : COLOR;\n"
-"};\n"
-"VSout main(VSin input){\n"
-	"VSout output;\n"
-	"output.where = mul(float4(input.v, 1.0), matmvp);\n"
-	"output.color = float4(input.c, 1.0);\n"
-	"return output;\n"
-"}\n";
-char pshader[] =
-"struct PSin{\n"
-"	float4 where : SV_POSITION;\n"
-"	float4 color : COLOR;\n"
-"};\n"
-"float4 main(PSin input) : SV_TARGET{\n"
-"	return input.color;\n"
-"}";
-*/
+
 
 
 
@@ -261,16 +211,12 @@ int Upload_index(void* buf, int len, ID3D11Buffer** dst)
 }
 void Upload(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque)
 {
-	int j;
-/*	float a = PI/(getrandom()%180);
-	float c = getcos(a);
-	float s = getsin(a);
-	g_mat[0][0] = c;
-	g_mat[0][1] =-s;
-	g_mat[1][0] = s;
-	g_mat[1][1] = c;
-	g_dx11context->UpdateSubresource(g_pConstantBuffer, 0, 0, &g_mat, 0, 0);
+/*
+	//debug
+	dx11easy_upload(g_dx11context);
+	return;
 */
+	int j;
 	Upload_constant((void*)&cam[0]->src.arg, 64+16, (ID3D11Buffer**)&cam[0]->dst.constant);
 
 	struct vertex* vtx;
@@ -320,33 +266,14 @@ void Render(struct dx11data** cam, struct dx11data** lit, struct dx11data** soli
 	float color[4] = {0.1, 0.1, 0.1, 1.0};
 	g_dx11context->ClearRenderTargetView(g_renderTargetView,reinterpret_cast<float*>(&color));
 	g_dx11context->ClearDepthStencilView(g_depthStencilView,D3D11_CLEAR_DEPTH|D3D11_CLEAR_STENCIL,1.f,0);
-
 /*
-	//shader
-	g_dx11context->VSSetShader(g_pVertexShader, nullptr, 0);
-	g_dx11context->PSSetShader(g_pPixelShader, nullptr, 0);
-
-	//constant
-	//g_dx11context->VSSetConstantBuffers(0, 1, &g_pConstantBuffer);
-	g_dx11context->VSSetConstantBuffers(0, 1, (ID3D11Buffer**)&cam[0]->dst.constant);
-
-	//texture
-	//g_dx11context->VSSetSamplers(0, 1, );
-	//g_dx11context->PSSetSamplers(0, 1, );
-
-	//ia = input assembler
-	UINT stride = 4*9;
-	UINT offset = 0;
-	g_dx11context->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &stride, &offset);
-	g_dx11context->IASetInputLayout(g_pVertexLayout);
-
-	g_dx11context->IASetIndexBuffer(g_pIndexBuffer, DXGI_FORMAT_R16_UINT, 0 );
-
-	g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	g_dx11context->DrawIndexed(2*3, 0, 0);
-	//g_dx11context->Draw(6, 0);
+	//debug
+	if(1){
+		dx11easy_render(g_dx11context);
+		g_dx11swapchain->Present(0,0);
+		return;
+	}
 */
-
 	int j;
 	struct vertex* vtx;
 	for(j=0;j<64;j++){
@@ -408,41 +335,11 @@ void Render(struct dx11data** cam, struct dx11data** lit, struct dx11data** soli
 				break;
 			}
 		}//drawarray
-/*
-		if( (0 != vtx->vbuf)&&
-			(0 != vtx->ibuf)&&
-			(vbuffmt_333 == vtx->vbuf_fmt))
-		{
-			UINT stride = 4*9;
-			UINT offset = 0;
-			g_dx11context->IASetVertexBuffers(0, 1, (ID3D11Buffer**)&solid[j]->dst.vbuf, &stride, &offset);
-			g_dx11context->IASetInputLayout(g_pVertexLayout);
-
-			g_dx11context->IASetIndexBuffer((ID3D11Buffer*)solid[j]->dst.ibuf, DXGI_FORMAT_R16_UINT, 0 );
-
-			g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			g_dx11context->DrawIndexed(3*vtx->ibuf_h, 0, 0);
-		}*/
-	}
+	}//solid
 
 	// 显示
 	g_dx11swapchain->Present(0,0);
-}/*
-void Freemyctx()
-{
 }
-int Initmyctx()
-{
-	Upload_shader(vshader, pshader, inputlayout_p3n3c3, 3, &g_pVertexShader, &g_pPixelShader, &g_pVertexLayout);
-
-	Upload_constant(g_mat, sizeof(g_mat), &g_pConstantBuffer);
-
-	Upload_vertex(vertices, sizeof(vertices), &g_pVertexBuffer);
-
-	Upload_index(indices, sizeof(indices), &g_pIndexBuffer);
-
-	return 1;
-}*/
 
 
 
@@ -889,7 +786,7 @@ int windowmodify(struct supply* wnd)
 }
 int windowdelete(struct supply* wnd)
 {
-	//Freemyctx();
+	dx11easy_delete();
 	FreeD3D11();
 	FreeWin32();
 	return 0;
@@ -908,7 +805,8 @@ int windowcreate(struct supply* wnd)
 
 	if(!InitWin32())return -1;
 	if(!InitD3D11())return -1;
-	//if(!Initmyctx())return -1;
+	dx11easy_create();
+
 	SetWindowLongPtr(g_hWnd, GWLP_USERDATA, (u64)wnd);
 	return 0;
 }
