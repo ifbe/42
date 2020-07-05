@@ -4,6 +4,7 @@
 #define DEPTEX 1
 #define OWNBUF buf0
 int copypath(u8* path, u8* data);
+void dx11data_insert(struct entity* ctx, int type, struct dxsrc* src, int cnt);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
@@ -12,24 +13,81 @@ struct privdata{
 	u8 fs[128];
 	u8 rgb[128];
 	u8 dep[128];
+
 	mat4 mato2w;
 	vec4 matter;
+
+	struct vertex vtx;
+
+	struct texture color;
+	struct texture depth;
+
+	struct dx11data dx11;
 	struct gl41data gl41;
 };
-static int loadshaderfromfile(char* buf, char* url)
+static int loadhlslfromfile(char* buf, char* url)
+{
+	int ret = openreadclose(url, 0, buf, 0xf000);
+	buf[ret] = 0;
+	return ret+1;
+}
+static int loadglslfromfile(char* buf, char* url)
 {
 	int ret = mysnprintf(buf, 99, "%s%s", GLSL_VERSION, GLSL_PRECISION);
 	return openreadclose(url, 0, buf+ret, 0x10000-ret);
 }
 
 
-void terrain_generate(float (*vbuf)[9], u16* ibuf, struct entity* act, struct glsrc* src)
+
+
+static void terrain_vtxprep(struct privdata* own)
+{
+	struct vertex* vtx = &own->vtx;
+
+	vtx->vbuf_fmt = vbuffmt_333;
+	vtx->vbuf_w = 4*9;
+	vtx->vbuf_h = 256*255;
+	vtx->vbuf_len = (vtx->vbuf_w) * 256*256;
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+
+	vtx->ibuf_fmt = 0x222;
+	vtx->ibuf_w = 2*3;
+	vtx->ibuf_h = 254*254*2;
+	vtx->ibuf_len = (vtx->ibuf_w) * 256*256*2;
+	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
+}
+static void terrain_texprep(struct privdata* own, char* rgb, char* dep)
+{
+	own->color.data = memorycreate(2048*2048*4, 0);
+	if(0 == own->color.data)return;
+	loadtexfromfile(&own->color, rgb);
+
+	own->depth.data = memorycreate(2048*2048*4, 0);
+	if(0 == own->depth.data)return;
+	loadtexfromfile(&own->depth, dep);
+
+	if(own->depth.w)return;
+	if(own->depth.h)return;
+	own->depth.w = 2048;
+	own->depth.h = 2048;
+
+	int x,y;
+	u8* rgba = own->depth.data;
+	for(y=0;y<2048;y++){
+		for(x=0;x<2048;x++){
+			rgba[4*(y*2048 + x)+0] = getrandom()%256;
+			rgba[4*(y*2048 + x)+1] = getrandom()%256;
+			rgba[4*(y*2048 + x)+2] = getrandom()%256;
+		}
+	}
+}
+static void terrain_generate(float (*vbuf)[9], u16* ibuf, struct entity* act, struct privdata* own)
 {
 	int x,y,j;
 	int cx,cy,px,py;
-	int w = src->tex[DEPTEX].w;
-	int h = src->tex[DEPTEX].h;
-	u8* rgba = src->tex[DEPTEX].data;
+	int w = own->depth.w;
+	int h = own->depth.h;
+	u8* rgba = own->depth.data;
 
 	//cx,cy is integer
 	cx = w * act->fx0;
@@ -173,8 +231,37 @@ static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int
 
 
 
-static void terrain_dx11prep(struct privdata* own, char* rgbfile, char* depfile, char* vs, char* fs)
+static void terrain_dx11prep(struct privdata* own, char* vs, char* ps)
 {
+	int ret;
+	struct dxsrc* src = &own->dx11.src;
+
+	//shader
+	src->vs = memorycreate(0x10000, 0);
+	loadhlslfromfile(src->vs, vs);
+	src->ps = memorycreate(0x10000, 0);
+	loadhlslfromfile(src->ps, ps);
+	src->shader_enq = 42;
+
+	//vertex
+	struct vertex* vtx = src->vtx;
+	vtx->opaque = 0;
+	vtx->geometry = 3;
+
+	vtx->vbuf_fmt = own->vtx.vbuf_fmt;
+	vtx->vbuf_w   = own->vtx.vbuf_w;
+	vtx->vbuf_h   = own->vtx.vbuf_h;
+	vtx->vbuf_len = own->vtx.vbuf_len;
+	vtx->vbuf     = own->vtx.vbuf;
+
+	vtx->ibuf_fmt = own->vtx.ibuf_fmt;
+	vtx->ibuf_w   = own->vtx.ibuf_w;
+	vtx->ibuf_h   = own->vtx.ibuf_h;
+	vtx->ibuf_len = own->vtx.ibuf_len;
+	vtx->ibuf     = own->vtx.ibuf;
+
+	src->vbuf_enq = 42;
+	src->ibuf_enq = 42;
 }
 static void terrain_dx11draw(
 	struct entity* act, struct style* part,
@@ -182,21 +269,70 @@ static void terrain_dx11draw(
 	struct entity* wrd, struct style* camg,
 	struct entity* ctx, struct style* area)
 {
+	float w = vec3_getlen(geom->fs.vr);
+	float h = vec3_getlen(geom->fs.vf);
+	float x = camg->frus.vc[0]/w/2 + 0.5;
+	float y = camg->frus.vc[1]/h/2 + 0.5;
+	float dx = x - act->fx0;
+	float dy = y - act->fy0;
+	if(dx<0)dx = -dx;
+	if(dy<0)dy = -dy;
+	//say("x=%f,y=%f,dx=%f,dy=%f\n",x,y,dx,dy);
+
+	struct privdata* own = act->OWNBUF;
+	struct dxsrc* src = &own->dx11.src;
+	float* mat = (void*)src->arg.mat;
+	void* vbuf;
+	void* ibuf;
+	if((dx > 1.0/16)|(dy > 1.0/16)){
+		act->fx0 = x;
+		act->fy0 = y;
+
+		//x0,y0,z0,dx,dy,dz -> ndc
+		vbuf = own->vtx.vbuf;
+		if(0 == vbuf)return;
+		ibuf = own->vtx.ibuf;
+		if(0 == ibuf)return;
+		terrain_generate(vbuf, ibuf, act, own);
+		src->vbuf_enq += 1;
+
+		//ndc -> geom
+		mat[ 0] = geom->fs.vr[0];
+		mat[ 1] = geom->fs.vf[0];
+		mat[ 2] = geom->fs.vt[0];
+		mat[ 3] = geom->fs.vc[0];
+
+		mat[ 4] = geom->fs.vr[1];
+		mat[ 5] = geom->fs.vf[1];
+		mat[ 6] = geom->fs.vt[1];
+		mat[ 7] = geom->fs.vc[1];
+
+		mat[ 8] = geom->fs.vr[2];
+		mat[ 9] = geom->fs.vf[2];
+		mat[10] = geom->fs.vt[2];
+		mat[11] = geom->fs.vc[2];
+
+		mat[12] = 0.0;
+		mat[13] = 0.0;
+		mat[14] = 0.0;
+		mat[15] = 1.0;
+	}
+	dx11data_insert(ctx, 's', src, 1);
 }
 
 
 
 
-static void terrain_gl41prep(struct privdata* own, char* rgbfile, char* depfile, char* vs, char* fs)
+static void terrain_gl41prep(struct privdata* own, char* vs, char* fs)
 {
 	float* tmp;
 	struct glsrc* src = &own->gl41.src;
 
 	//shader
 	src->vs = memorycreate(0x10000, 0);
-	loadshaderfromfile(src->vs, vs);
+	loadglslfromfile(src->vs, vs);
 	src->fs = memorycreate(0x10000, 0);
-	loadshaderfromfile(src->fs, fs);
+	loadglslfromfile(src->fs, fs);
 	src->shader_enq = 42;
 
 	//argument
@@ -212,31 +348,32 @@ static void terrain_gl41prep(struct privdata* own, char* rgbfile, char* depfile,
 	tmp[2] = 1.0;
 
 	//texture
-	src->tex[RGBTEX].fmt = hex32('r','g','b','a');
-	src->tex[RGBTEX].name = "rgbtex";
-	src->tex[RGBTEX].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&src->tex[RGBTEX], rgbfile);
+	struct texture* tex = &src->tex[RGBTEX];
+	tex->name = "rgbtex";
+	tex->data = own->color.data;
+	tex->fmt = hex32('r','g','b','a');
+	tex->w = own->color.w;
+	tex->h = own->color.h;
 	src->tex_enq[RGBTEX] = 42;
 
-	src->tex[DEPTEX].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&src->tex[DEPTEX], depfile);
-
+	//vertex
 	struct vertex* vtx = src->vtx;
 	vtx->opaque = 0;
 	vtx->geometry = 3;
 
-	vtx->vbuf_fmt = vbuffmt_333;
-	vtx->vbuf_w = 4*9;
-	vtx->vbuf_h = 256*255;
-	vtx->vbuf_len = (vtx->vbuf_w) * 256*256;
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
-	src->vbuf_enq = 42;
+	vtx->vbuf_fmt = own->vtx.vbuf_fmt;
+	vtx->vbuf_w   = own->vtx.vbuf_w;
+	vtx->vbuf_h   = own->vtx.vbuf_h;
+	vtx->vbuf_len = own->vtx.vbuf_len;
+	vtx->vbuf     = own->vtx.vbuf;
 
-	vtx->ibuf_fmt = 0x222;
-	vtx->ibuf_w = 2*3;
-	vtx->ibuf_h = 254*254*2;
-	vtx->ibuf_len = (vtx->ibuf_w) * 256*256*2;
-	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
+	vtx->ibuf_fmt = own->vtx.ibuf_fmt;
+	vtx->ibuf_w   = own->vtx.ibuf_w;
+	vtx->ibuf_h   = own->vtx.ibuf_h;
+	vtx->ibuf_len = own->vtx.ibuf_len;
+	vtx->ibuf     = own->vtx.ibuf;
+
+	src->vbuf_enq = 42;
 	src->ibuf_enq = 42;
 }
 static void terrain_gl41draw(
@@ -265,11 +402,11 @@ static void terrain_gl41draw(
 		act->fy0 = y;
 
 		//x0,y0,z0,dx,dy,dz -> ndc
-		vbuf = src->vtx[0].vbuf;
+		vbuf = own->vtx.vbuf;
 		if(0 == vbuf)return;
-		ibuf = src->vtx[0].ibuf;
+		ibuf = own->vtx.ibuf;
 		if(0 == ibuf)return;
-		terrain_generate(vbuf, ibuf, act, src);
+		terrain_generate(vbuf, ibuf, act, own);
 		src->vbuf_enq += 1;
 
 		//ndc -> geom
@@ -419,33 +556,16 @@ static void terrain_create(struct entity* act, void* arg, int argc, u8** argv)
 
 	if(0 == rgb)rgb = "datafile/jpg/cartoon.jpg";
 	if(0 == dep)dep = "datafile/jpg/cartoon.jpg";
+	terrain_texprep(own, rgb, dep);
+	terrain_vtxprep(own);
 
 	if(0 == dxvs)dxvs = "datafile/shader/terrain/dxvs.hlsl";
 	if(0 == dxps)dxps = "datafile/shader/terrain/dxps.hlsl";
-	terrain_dx11prep(own, rgb, dep, dxvs, dxps);
+	terrain_dx11prep(own, dxvs, dxps);
 
 	if(0 == glvs)glvs = "datafile/shader/terrain/glvs.glsl";
 	if(0 == glfs)glfs = "datafile/shader/terrain/glfs.glsl";
-	terrain_gl41prep(own, rgb, dep, glvs, glfs);
-
-
-	struct glsrc* src = &own->gl41.src;
-	if(src->tex[DEPTEX].w)return;
-	if(src->tex[DEPTEX].h)return;
-
-	src->tex[DEPTEX].w = 2048;
-	src->tex[DEPTEX].h = 2048;
-	if(0 == src->tex[DEPTEX].data)src->tex[DEPTEX].data = memorycreate(2048*2048*4, 0);
-
-	int x,y;
-	u8* rgba = src->tex[DEPTEX].data;
-	for(y=0;y<2048;y++){
-		for(x=0;x<2048;x++){
-			rgba[4*(y*2048 + x)+0] = getrandom()%256;
-			rgba[4*(y*2048 + x)+1] = getrandom()%256;
-			rgba[4*(y*2048 + x)+2] = getrandom()%256;
-		}
-	}
+	terrain_gl41prep(own, glvs, glfs);
 }
 
 
