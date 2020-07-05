@@ -61,7 +61,7 @@ int Upload_shader(
 	ID3DBlob* PSError= NULL;
 	if(0 != *vs)return 0;
 	if(0 != *ps)return 0;
-//printf("vs:%s\nps:%s\n",vshader,pshader);
+//printf("vs::\n%s\nps::\n%s\n",vshader,pshader);
 
 	HRESULT hr = D3DCompile(
 		vshader, strlen(vshader), "vs",
@@ -233,7 +233,7 @@ void Upload(struct dx11data** cam, struct dx11data** lit, struct dx11data** soli
 			vtx->ibuf, vtx->ibuf_w, vtx->ibuf_h, vtx->ibuf_fmt
 		);
 */
-		//shader
+		//layout
 		D3D11_INPUT_ELEMENT_DESC* desc;
 		int size;
 		if(0 == vtx->vbuf_fmt)continue;
@@ -247,6 +247,7 @@ void Upload(struct dx11data** cam, struct dx11data** lit, struct dx11data** soli
 		}
 		else continue;
 
+		//shader
 		Upload_shader(
 			(char*)solid[j]->src.vs,
 			(char*)solid[j]->src.ps,
@@ -257,10 +258,12 @@ void Upload(struct dx11data** cam, struct dx11data** lit, struct dx11data** soli
 			(ID3D11InputLayout**)&solid[j]->dst.layout
 		);
 
+		//constant
+		Upload_constant((void*)&solid[j]->src.arg, 64+16, (ID3D11Buffer**)&solid[j]->dst.constant);
+
 		//vertices
 		if(vtx->vbuf){
 			Upload_vertex(vtx->vbuf, vtx->vbuf_len, (ID3D11Buffer**)&solid[j]->dst.vbuf);
-			//if(vtx->vbuf_fmt == vbuffmt_33)
 		}
 
 		//indices
@@ -308,8 +311,9 @@ void Render(struct dx11data** cam, struct dx11data** lit, struct dx11data** soli
 		g_dx11context->VSSetShader((ID3D11VertexShader*)solid[j]->dst.vsprog, nullptr, 0);
 		g_dx11context->PSSetShader((ID3D11PixelShader*)solid[j]->dst.psprog, nullptr, 0);
 		g_dx11context->VSSetConstantBuffers(0, 1, (ID3D11Buffer**)&cam[0]->dst.constant);
-		g_dx11context->IASetInputLayout((ID3D11InputLayout*)solid[j]->dst.layout);
+		g_dx11context->VSSetConstantBuffers(1, 1, (ID3D11Buffer**)&solid[j]->dst.constant);
 
+		g_dx11context->IASetInputLayout((ID3D11InputLayout*)solid[j]->dst.layout);
 		switch(vtx->vbuf_fmt){
 		case vbuffmt_33:{
 			UINT stride = 4*6;

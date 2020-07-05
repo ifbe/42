@@ -5,6 +5,8 @@
 int copypath(u8* path, u8* data);
 void parsevertfromstl(struct fstyle* sty, int* vbuf_h, u8* buf, int len);
 //
+void dx11data_insert(struct entity* ctx, int type, struct dxsrc* src, int cnt);
+//
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 void gl41solid_spheretest(struct entity* win, u32 rgb, vec3 vc);
 //
@@ -22,9 +24,6 @@ int rastersolid_triangle(void*,void*, void*,void*, float*,int,int,int, mat4,void
 
 
 struct privdata{
-	u8 vs[128];
-	u8 fs[128];
-
 	struct fstyle* localgeom;
 	struct fstyle* worldgeom;
 
@@ -196,7 +195,46 @@ static void stl3d_modify_ray(struct entity* act, vec3 ray[])
 
 
 
-static void stl3d_gl41_initer(struct privdata* own, char* vs, char* fs)
+static void stl3d_dx11prep(struct privdata* own, char* vs, char* fs)
+{
+	float* tmp;
+	struct dxsrc* src = &own->dx11.src;
+
+	//shader
+	src->vs = memorycreate(0x10000, 0);
+	openreadclose(vs, 0, src->vs, 0x10000);
+	src->ps = memorycreate(0x10000, 0);
+	openreadclose(fs, 0, src->ps, 0x10000);
+	src->shader_enq = 42;
+
+	//vertex
+	struct vertex* vtx = &src->vtx[0];
+	vtx->geometry = 3;
+	vtx->opaque = 0;
+
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_len = own->vbuf_len;
+	vtx->vbuf = own->vbuf;
+}
+static void stl3d_dx11draw(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* wnd, struct style* area)
+{
+	struct privdata* own = act->CTXBUF;
+	if(0 == own)return;
+
+	float (*mat)[4] = own->dx11.src.arg.mat;
+	local2world(mat, &part->fs, &geom->fs);
+
+	dx11data_insert(wnd, 's', &own->dx11.src, 1);
+}
+
+
+
+
+static void stl3d_gl41prep(struct privdata* own, char* vs, char* fs)
 {
 	float* tmp;
 	struct glsrc* src = &own->gl41.src;
@@ -225,10 +263,11 @@ static void stl3d_gl41_initer(struct privdata* own, char* vs, char* fs)
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
+	vtx->vbuf_fmt = vbuffmt_33;
 	vtx->vbuf_len = own->vbuf_len;
 	vtx->vbuf = own->vbuf;
 }
-static void stl3d_gl41_update(
+static void stl3d_gl41draw(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
@@ -513,8 +552,11 @@ static void stl3d_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 		return;
 	}
 
-	if(stack&&('v'==key)){
-		stl3d_gl41_update(ent,slot, scn,geom, wrd,camg, wnd,area);
+	if( 0 == stack)return;
+	if('v'!= key)return;
+	switch(wnd->fmt){
+	case _dx11full_:stl3d_dx11draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
+	case _gl41full_:stl3d_gl41draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
 	}
 }
 static void stl3d_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
@@ -544,15 +586,19 @@ static void stl3d_linkup(struct halfrel* self, struct halfrel* peer)
 	own->vbuf_w = 4*6;
 	parsevertfromstl(&pin->fs, &own->vbuf_h, own->vbuf, own->vbuf_len);
 
-	//for gl41
-	struct glsrc* src = &own->gl41.src;
-	struct vertex* vtx = &src->vtx[0];
-	vtx->vbuf_w = own->vbuf_w;
-	vtx->vbuf_h = own->vbuf_h;
-	vtx->vbuf_fmt = vbuffmt_33;
-	src->vbuf_enq = 42;
-
 	//for dx11
+	struct dxsrc* dxsrc = &own->dx11.src;
+	struct vertex* dxvtx = &dxsrc->vtx[0];
+	dxvtx->vbuf_w = own->vbuf_w;
+	dxvtx->vbuf_h = own->vbuf_h;
+	dxsrc->vbuf_enq = 42;
+
+	//for gl41
+	struct glsrc* glsrc = &own->gl41.src;
+	struct vertex* glvtx = &glsrc->vtx[0];
+	glvtx->vbuf_w = own->vbuf_w;
+	glvtx->vbuf_h = own->vbuf_h;
+	glsrc->vbuf_enq = 42;
 }
 
 
@@ -571,33 +617,49 @@ static void stl3d_delete(struct entity* act)
 static void stl3d_create(struct entity* act, void* str, int argc, u8** argv)
 {
 	int j;
-	u8 vspath[128];
-	u8 fspath[128];
-	char* vs = 0;
-	char* fs = 0;
 	char* stl = 0;
+	char* glvs = 0;
+	char* glfs = 0;
+	char* dxvs = 0;
+	char* dxps = 0;
+	u8 glvspath[128];
+	u8 glfspath[128];
+	u8 dxvspath[128];
+	u8 dxpspath[128];
 	if(0 == act)return;
-
-	for(j=0;j<argc;j++){
-		if(0 == ncmp(argv[j], "vs:", 3)){
-			copypath(vspath, argv[j]+3);
-			vs = (void*)vspath;
-		}
-		if(0 == ncmp(argv[j], "fs:", 3)){
-			copypath(fspath, argv[j]+3);
-			fs = (void*)fspath;
-		}
-	}
-	if(0 == vs)vs = "datafile/shader/model/fv.glsl";
-	if(0 == fs)fs = "datafile/shader/model/ff.glsl";
-	if(0 == str)str = "datafile/stl/bunny-lowpoly.stl";
 
 	struct privdata* own = act->CTXBUF = memorycreate(0x1000, 0);
 	if(0 == own)return;
 
+	for(j=0;j<argc;j++){
+		if(0 == ncmp(argv[j], "dxvs:", 3)){
+			copypath(dxvspath, argv[j]+5);
+			dxvs = (void*)dxvspath;
+		}
+		if(0 == ncmp(argv[j], "dxps:", 3)){
+			copypath(dxpspath, argv[j]+3);
+			dxps = (void*)dxpspath;
+		}
+		if(0 == ncmp(argv[j], "vs:", 3)){
+			copypath(glvspath, argv[j]+3);
+			glvs = (void*)glvspath;
+		}
+		if(0 == ncmp(argv[j], "fs:", 3)){
+			copypath(glfspath, argv[j]+3);
+			glfs = (void*)glfspath;
+		}
+	}
+
+	if(0 == str)str = "datafile/stl/bunny-lowpoly.stl";
 	stl3d_readdata(own, str);
-	stl3d_gl41_initer(own, vs, fs);
-	//stl3d_ctxfordx11(own, vs, fs);
+
+	if(0 == dxvs)dxvs = "datafile/shader/model/dxvs.hlsl";
+	if(0 == dxps)dxps = "datafile/shader/model/dxps.hlsl";
+	stl3d_dx11prep(own, dxvs, dxps);
+
+	if(0 == glvs)glvs = "datafile/shader/model/fv.glsl";
+	if(0 == glfs)glfs = "datafile/shader/model/ff.glsl";
+	stl3d_gl41prep(own, glvs, glfs);
 }
 
 

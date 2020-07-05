@@ -31,7 +31,20 @@ GLSL_VERSION
 
 
 
-void texball_ctxforwnd(struct glsrc* src, char* str)
+static void texball_dx11prep(struct glsrc* src, char* str)
+{
+}
+static void texball_dx11draw(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* none)
+{
+}
+
+
+
+
+static void texball_gl41prep(struct glsrc* src, char* str)
 {
 	//shader
 	src->vs = texball_glsl_v;
@@ -66,7 +79,7 @@ void texball_ctxforwnd(struct glsrc* src, char* str)
 	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
 	src->ibuf_enq = 0;
 }
-static void texball_draw_gl41(
+static void texball_gl41draw(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* none)
@@ -174,11 +187,15 @@ static void texball_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack&&('v' == key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		texball_draw_gl41(ent,slot, wor,geom, wnd,area);
+	if( 0 == stack)return;
+	if('v'!= key)return;
+
+	slot = stack[sp-1].pfoot;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	switch(wnd->fmt){
+	case _dx11full_:texball_dx11draw(ent,slot, wor,geom, wnd,area);break;
+	case _gl41full_:texball_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
 }
 static void texball_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
@@ -235,7 +252,8 @@ static void texball_create(struct entity* act, void* str)
 	if(0 == ctx)return;
 
 	if(0 == str)str = "datafile/jpg/texball-earth.jpg";
-	texball_ctxforwnd(ctx, str);
+	texball_dx11prep(ctx, str);
+	texball_gl41prep(ctx, str);
 }
 
 

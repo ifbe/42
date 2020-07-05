@@ -245,8 +245,8 @@ struct gl41data
 struct dxsrc
 {
 	//shader
-	void* vs;
-	void* ps;
+	char* vs;
+	char* ps;
 
 	//constant
 	struct cons{

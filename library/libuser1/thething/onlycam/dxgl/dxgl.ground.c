@@ -4,6 +4,7 @@
 #define PIECE 16
 #define OWNBUF buf0
 int copypath(u8* path, u8* data);
+void dx11data_insert(struct entity* ctx, int type, struct dxsrc* src, int cnt);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
@@ -19,10 +20,16 @@ struct privdata{
 	struct dx11data dx11;
 	struct gl41data gl41;
 };
-static int loadshaderfromfile(char* buf, char* url)
+static int loadglslfromfile(char* buf, char* url)
 {
 	int ret = mysnprintf(buf, 99, "%s%s", GLSL_VERSION, GLSL_PRECISION);
 	return openreadclose(url, 0, buf+ret, 0x10000-ret);
+}
+static int loadhlslfromfile(char* buf, char* url)
+{
+	int ret = openreadclose(url, 0, buf, 0xf000);
+	buf[ret] = 0;
+	return ret+1;
 }
 void ground_singlepiece(float (*vbuf)[6], float* vc,float* vr,float* vf)
 {
@@ -70,18 +77,69 @@ void ground_singlepiece(float (*vbuf)[6], float* vc,float* vr,float* vf)
 }
 
 
-static void ground_ctxfordx11(struct glsrc* src, char* tex0, char* tex1, char* vs, char* fs)
+static void ground_dx11prep(struct dxsrc* src, char* tex0, char* tex1, char* tex2, char* vs, char* ps)
 {
+	//shader
+	src->vs = memorycreate(0x10000, 0);
+	loadhlslfromfile(src->vs, vs);
+	src->ps = memorycreate(0x10000, 0);
+	loadhlslfromfile(src->ps, ps);
+	src->shader_enq = 42;
+
+	//vertex
+	struct vertex* vtx = src->vtx;
+	vtx->geometry = 3;
+	vtx->opaque = 0;
+
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_w = 4*3*2;	//sizeof(float) * float_per_attr * attr_per_trigon
+	vtx->vbuf_h = 6*PIECE*PIECE;	//6point_per_block * blockx * blocky
+	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 }
-static void ground_ctxforgl41(struct glsrc* src, char* tex0, char* tex1, char* tex2, char* vs, char* fs)
+static void ground_dx11draw(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vt = geom->fs.vt;
+
+	struct privdata* own = act->OWNBUF;
+	if(0 == own)return;
+	struct dxsrc* src = &own->dx11.src;
+	if(0 == src)return;
+	float (*vbuf)[6] = src->vtx[0].vbuf;
+	if(0 == vbuf)return;
+
+	int x,y,j;
+	vec3 tc,tr,tf;
+	for(j=0;j<3;j++){tr[j] = vr[j]/PIECE;tf[j] = vf[j]/PIECE;}
+	for(y=0;y<PIECE;y++){
+		for(x=0;x<PIECE;x++){
+			for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(x+x-PIECE+1.0)/PIECE +vf[j]*(y+y-PIECE+1.0)/PIECE;
+			ground_singlepiece(&vbuf[(y*PIECE+x)*6],tc,tr,tf);
+		}
+	}
+
+	src->vbuf_enq += 1;
+	dx11data_insert(wnd, 's', src, 1);
+}
+
+
+
+
+static void ground_gl41prep(struct glsrc* src, char* tex0, char* tex1, char* tex2, char* vs, char* fs)
 {
 	say("%s\n%s\n%s\n%s\n%s\n",tex0,tex1,tex2,vs,fs);
 
 	//shader
 	src->vs = memorycreate(0x10000, 0);
-	loadshaderfromfile(src->vs, vs);
+	loadglslfromfile(src->vs, vs);
 	src->fs = memorycreate(0x10000, 0);
-	loadshaderfromfile(src->fs, fs);
+	loadglslfromfile(src->fs, fs);
 	src->shader_enq = 42;
 
 	//albedo
@@ -116,7 +174,7 @@ static void ground_ctxforgl41(struct glsrc* src, char* tex0, char* tex1, char* t
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 }
-static void ground_draw_gl41(
+static void ground_gl41draw(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -200,11 +258,15 @@ static void ground_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack&&('v' == key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		ground_draw_gl41(ent,slot, wor,geom, wnd,area);
+	if(0 == stack)return;
+	if('v' != key)return;
+
+	slot = stack[sp-1].pfoot;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	switch(wnd->fmt){
+	case _dx11full_:ground_dx11draw(ent,slot, wor,geom, wnd,area);break;
+	case _gl41full_:ground_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
 }
 static void ground_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
@@ -237,8 +299,8 @@ static void ground_create(struct entity* act, void* str, int argc, u8** argv)
 	struct privdata* own = act->OWNBUF = memorycreate(0x1000, 0);
 	if(0 == own)return;
 
-	//char* dxvs = 0;
-	//char* dxfs = 0;
+	char* dxvs = 0;
+	char* dxps = 0;
 	char* glvs = 0;
 	char* glfs = 0;
 	char* albedo = 0;
@@ -246,6 +308,14 @@ static void ground_create(struct entity* act, void* str, int argc, u8** argv)
 	char* matter = 0;
 	for(j=0;j<argc;j++){
 		//say("%d:%.8s\n", j, argv[j]);
+		if(0 == ncmp(argv[j], "dxvs:", 5)){
+			copypath(own->dxvs, argv[j]+5);
+			dxvs = (void*)own->dxvs;
+		}
+		if(0 == ncmp(argv[j], "dxps:", 5)){
+			copypath(own->dxps, argv[j]+5);
+			dxps = (void*)own->dxps;
+		}
 		if(0 == ncmp(argv[j], "glvs:", 5)){
 			copypath(own->glvs, argv[j]+5);
 			glvs = (void*)own->glvs;
@@ -267,16 +337,17 @@ static void ground_create(struct entity* act, void* str, int argc, u8** argv)
 			matter = (void*)own->matter;
 		}
 	}
-	//if(0 == dxvs)dxvs = "datafile/shader/ground/fv.glsl";
-	//if(0 == dxfs)dxfs = "datafile/shader/ground/ff.glsl";
-	if(0 == glvs)glvs = "datafile/shader/ground/fv.glsl";
-	if(0 == glfs)glfs = "datafile/shader/ground/ff.glsl";
 	if(0 == albedo)albedo = "datafile/jpg/wall.jpg";
 	if(0 == normal)normal = "datafile/jpg/wallnormal.jpg";
 	if(0 == matter)matter = "datafile/jpg/wallmatter.jpg";
 
-	//ground_ctxforgl41(&own->gl41.src, albedo, normal, dxvs, dxfs);
-	ground_ctxforgl41(&own->gl41.src, albedo, normal, matter, glvs, glfs);
+	if(0 == dxvs)dxvs = "datafile/shader/ground/dxvs.hlsl";
+	if(0 == dxps)dxps = "datafile/shader/ground/dxps.hlsl";
+	ground_dx11prep(&own->dx11.src, albedo, normal, matter, dxvs, dxps);
+
+	if(0 == glvs)glvs = "datafile/shader/ground/fv.glsl";
+	if(0 == glfs)glfs = "datafile/shader/ground/ff.glsl";
+	ground_gl41prep(&own->gl41.src, albedo, normal, matter, glvs, glfs);
 }
 
 

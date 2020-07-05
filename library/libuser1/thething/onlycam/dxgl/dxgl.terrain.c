@@ -173,7 +173,21 @@ static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int
 
 
 
-void terrain_ctxforwnd(struct privdata* own, char* rgbfile, char* depfile, char* vs, char* fs)
+static void terrain_dx11prep(struct privdata* own, char* rgbfile, char* depfile, char* vs, char* fs)
+{
+}
+static void terrain_dx11draw(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* wrd, struct style* camg,
+	struct entity* ctx, struct style* area)
+{
+}
+
+
+
+
+static void terrain_gl41prep(struct privdata* own, char* rgbfile, char* depfile, char* vs, char* fs)
 {
 	float* tmp;
 	struct glsrc* src = &own->gl41.src;
@@ -225,7 +239,7 @@ void terrain_ctxforwnd(struct privdata* own, char* rgbfile, char* depfile, char*
 	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
 	src->ibuf_enq = 42;
 }
-static void terrain_draw_gl41(
+static void terrain_gl41draw(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wrd, struct style* camg,
@@ -329,12 +343,16 @@ static void terrain_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	struct entity* wor;struct style* geom;
 	struct entity* dup;struct style* camg;
 	struct entity* wnd;struct style* area;
-	if(stack&&('v' == key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		terrain_draw_gl41(ent,slot, wor,geom, dup,camg, wnd, area);
+	if( 0 == stack)return;
+	if('v'== key)return;
+
+	slot = stack[sp-1].pfoot;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	switch(wnd->fmt){
+	case _dx11full_:terrain_dx11draw(ent,slot, wor,geom, dup,camg, wnd, area);break;
+	case _gl41full_:terrain_gl41draw(ent,slot, wor,geom, dup,camg, wnd, area);break;
 	}
 }
 static void terrain_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
@@ -373,22 +391,14 @@ static void terrain_create(struct entity* act, void* arg, int argc, u8** argv)
 	struct privdata* own = act->OWNBUF = memorycreate(0x1000, 0);
 	if(0 == own)return;
 
-	//char* dxvs = 0;
-	//char* dxfs = 0;
-	char* glvs = 0;
-	char* glfs = 0;
 	char* rgb = 0;
 	char* dep = 0;
+	char* dxvs = 0;
+	char* dxps = 0;
+	char* glvs = 0;
+	char* glfs = 0;
 	for(j=0;j<argc;j++){
 		//say("%d:%.8s\n", j, argv[j]);
-		if(0 == ncmp(argv[j], "glvs:", 5)){
-			copypath(own->vs, argv[j]+5);
-			glvs = (void*)own->vs;
-		}
-		if(0 == ncmp(argv[j], "glfs:", 5)){
-			copypath(own->fs, argv[j]+5);
-			glfs = (void*)own->fs;
-		}
 		if(0 == ncmp(argv[j], "rgb:", 4)){
 			copypath(own->rgb, argv[j]+4);
 			rgb = (void*)own->rgb;
@@ -397,14 +407,26 @@ static void terrain_create(struct entity* act, void* arg, int argc, u8** argv)
 			copypath(own->dep, argv[j]+4);
 			dep = (void*)own->dep;
 		}
+		if(0 == ncmp(argv[j], "glvs:", 5)){
+			copypath(own->vs, argv[j]+5);
+			glvs = (void*)own->vs;
+		}
+		if(0 == ncmp(argv[j], "glfs:", 5)){
+			copypath(own->fs, argv[j]+5);
+			glfs = (void*)own->fs;
+		}
 	}
-	//if(0 == dxvs)dxvs = "datafile/shader/terrain/dxvs.glsl";
-	//if(0 == dxfs)dxfs = "datafile/shader/terrain/dxfs.glsl";
-	if(0 == glvs)glvs = "datafile/shader/terrain/glvs.glsl";
-	if(0 == glfs)glfs = "datafile/shader/terrain/glfs.glsl";
+
 	if(0 == rgb)rgb = "datafile/jpg/cartoon.jpg";
 	if(0 == dep)dep = "datafile/jpg/cartoon.jpg";
-	terrain_ctxforwnd(own, rgb, dep, glvs, glfs);
+
+	if(0 == dxvs)dxvs = "datafile/shader/terrain/dxvs.hlsl";
+	if(0 == dxps)dxps = "datafile/shader/terrain/dxps.hlsl";
+	terrain_dx11prep(own, rgb, dep, dxvs, dxps);
+
+	if(0 == glvs)glvs = "datafile/shader/terrain/glvs.glsl";
+	if(0 == glfs)glfs = "datafile/shader/terrain/glfs.glsl";
+	terrain_gl41prep(own, rgb, dep, glvs, glfs);
 
 
 	struct glsrc* src = &own->gl41.src;

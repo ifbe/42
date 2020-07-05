@@ -61,26 +61,28 @@ static void pointlight_draw_gl41(
 
 static void pointlight_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(0 == stack)return;
-
 	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
+	if(0 == stack)return;
+
 	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	if('v' == key){
-		pointlight_light(ent,slot, wor,geom, wnd,area);
-		pointlight_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
-	if('?' == key){
-		//search for myown fbo
+	if(_gl41full_ == wnd->fmt){
+		if('v' == key){
+			pointlight_light(ent,slot, wor,geom, wnd,area);
+			pointlight_draw_gl41(ent,slot, wor,geom, wnd,area);
+		}
+		if('?' == key){
+			//search for myown fbo
 
-		//update matrix for fbo
+			//update matrix for fbo
 
-		//wnd.data -> fbo.texture
+			//wnd.data -> fbo.texture
 
-		//fbo.texture -> my.data -> wnd.data
+			//fbo.texture -> my.data -> wnd.data
+		}
 	}
 }
 static void pointlight_draw_pixel(
