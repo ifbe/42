@@ -301,17 +301,14 @@ static void terrain_dx11draw(
 		mat[ 1] = geom->fs.vf[0];
 		mat[ 2] = geom->fs.vt[0];
 		mat[ 3] = geom->fs.vc[0];
-
 		mat[ 4] = geom->fs.vr[1];
 		mat[ 5] = geom->fs.vf[1];
 		mat[ 6] = geom->fs.vt[1];
 		mat[ 7] = geom->fs.vc[1];
-
 		mat[ 8] = geom->fs.vr[2];
 		mat[ 9] = geom->fs.vf[2];
 		mat[10] = geom->fs.vt[2];
 		mat[11] = geom->fs.vc[2];
-
 		mat[12] = 0.0;
 		mat[13] = 0.0;
 		mat[14] = 0.0;
@@ -481,15 +478,15 @@ static void terrain_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	struct entity* dup;struct style* camg;
 	struct entity* wnd;struct style* area;
 	if( 0 == stack)return;
-	if('v'== key)return;
+	if('v'!= key)return;
 
 	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
-	case _dx11full_:terrain_dx11draw(ent,slot, wor,geom, dup,camg, wnd, area);break;
-	case _gl41full_:terrain_gl41draw(ent,slot, wor,geom, dup,camg, wnd, area);break;
+	case _dx11full_:terrain_dx11draw(ent,slot, wor,geom, dup,camg, wnd,area);break;
+	case _gl41full_:terrain_gl41draw(ent,slot, wor,geom, dup,camg, wnd,area);break;
 	}
 }
 static void terrain_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
