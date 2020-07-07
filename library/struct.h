@@ -255,14 +255,14 @@ struct dxsrc
 	}arg;
 
 	//texture
-	struct texture tex[8];
+	struct texture tex[7];
 
 	//vertex
 	struct vertex vtx[2];
 
 	//enqueue
 	u8 shader_enq;
-	u8 tex_enq[8];
+	u8 tex_enq[7];
 	u8 arg_enq;
 	u8 vbuf_enq;
 	u8 ibuf_enq;
@@ -276,7 +276,9 @@ struct dxdst
 	void* psprog;
 
 	//texture
-	void* texture[8];
+	void* texture[7];
+	void* resource[7];
+	void* sampler[7];
 
 	//constant
 	void* constant;
@@ -288,7 +290,7 @@ struct dxdst
 
 	//dequeue
 	u8 shader_deq;
-	u8 tex_deq[8];
+	u8 tex_deq[7];
 	u8 arg_deq;
 	u8 vbo_deq;
 	u8 ibo_deq;

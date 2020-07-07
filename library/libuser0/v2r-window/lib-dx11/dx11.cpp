@@ -104,17 +104,70 @@ int Upload_shader(
 	g_dx11device->CreateInputLayout(desc, count, VSBlob->GetBufferPointer(), VSBlob->GetBufferSize(), layout);
 	return 0;
 }
-int Upload_texture(ID3D11Texture2D** dst)
+int Upload_texture(struct texture* tex, ID3D11Texture2D** texture, ID3D11ShaderResourceView** resource, ID3D11SamplerState** sampler)
 {
+	if(0 == tex->data)return 0;
+	if(0 != *resource){
+		return 0;
+	}
+	//printf("%x,%x,%x\n", tex->w, tex->h, tex->fmt);
+
+	//texture
 	D3D11_TEXTURE2D_DESC desc;
 	ZeroMemory(&desc, sizeof(desc));
+	desc.Width = tex->w;
+	desc.Height= tex->h;
+	desc.MipLevels = 1;
+	desc.ArraySize = 1;
+	desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	desc.SampleDesc.Count = 1;
+	desc.SampleDesc.Quality = 0;
+	desc.Usage = D3D11_USAGE_DEFAULT;
+	desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	desc.CPUAccessFlags = 0;
+	desc.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA data;
 	ZeroMemory(&data, sizeof(data));
+	data.pSysMem = tex->data;
+	data.SysMemPitch = 4 * tex->w;
+	data.SysMemSlicePitch = 4 * tex->w * tex->h;
 
-	HRESULT hr = g_dx11device->CreateTexture2D(&desc, &data, dst);
+	HRESULT hr = g_dx11device->CreateTexture2D(&desc, &data, texture);
 	if(FAILED(hr)){
 		MessageBox(NULL, "CreateTexture2D", "Error", MB_OK);
+		return hr;
+	}
+
+
+	//resource
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	srvDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	srvDesc.Texture2D.MipLevels = 1;
+	srvDesc.Texture2D.MostDetailedMip = 0;
+
+	hr = g_dx11device->CreateShaderResourceView(texture[0], &srvDesc, resource);
+	if(FAILED(hr)){
+		MessageBox(NULL, "CreateShaderResourceView", "Error", MB_OK);
+		return hr;
+	}
+
+
+	//sampler
+	D3D11_SAMPLER_DESC sampDesc;
+	ZeroMemory(&sampDesc, sizeof(sampDesc));
+	sampDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+	sampDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+	sampDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+	sampDesc.MinLOD = 0;
+	sampDesc.MaxLOD = D3D11_FLOAT32_MAX;
+
+	hr = g_dx11device->CreateSamplerState(&sampDesc, sampler);
+	if(FAILED(hr)){
+		MessageBox(NULL, "CreateSamplerState", "Error", MB_OK);
 		return hr;
 	}
 	return 0;
@@ -258,6 +311,14 @@ void Upload(struct dx11data** cam, struct dx11data** lit, struct dx11data** soli
 			(ID3D11InputLayout**)&solid[j]->dst.layout
 		);
 
+		//texture
+		Upload_texture(
+			&solid[j]->src.tex[0],
+			(ID3D11Texture2D**)&solid[j]->dst.texture[0],
+			(ID3D11ShaderResourceView**)&solid[j]->dst.resource[0],
+			(ID3D11SamplerState**)&solid[j]->dst.sampler[0]
+		);
+
 		//constant
 		Upload_constant((void*)&solid[j]->src.arg, 64+16, (ID3D11Buffer**)&solid[j]->dst.constant);
 
@@ -309,9 +370,12 @@ void Render(struct dx11data** cam, struct dx11data** lit, struct dx11data** soli
 		if(0 == vtx->vbuf)continue;
 
 		g_dx11context->VSSetShader((ID3D11VertexShader*)solid[j]->dst.vsprog, nullptr, 0);
-		g_dx11context->PSSetShader((ID3D11PixelShader*)solid[j]->dst.psprog, nullptr, 0);
 		g_dx11context->VSSetConstantBuffers(0, 1, (ID3D11Buffer**)&cam[0]->dst.constant);
 		g_dx11context->VSSetConstantBuffers(1, 1, (ID3D11Buffer**)&solid[j]->dst.constant);
+
+		g_dx11context->PSSetShader((ID3D11PixelShader*)solid[j]->dst.psprog, nullptr, 0);
+		g_dx11context->PSSetShaderResources(0, 1, (ID3D11ShaderResourceView**)&solid[j]->dst.resource);
+		g_dx11context->PSSetSamplers(0, 1, (ID3D11SamplerState**)&solid[j]->dst.sampler);
 
 		g_dx11context->IASetInputLayout((ID3D11InputLayout*)solid[j]->dst.layout);
 		switch(vtx->vbuf_fmt){

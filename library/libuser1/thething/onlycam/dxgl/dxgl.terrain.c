@@ -243,6 +243,14 @@ static void terrain_dx11prep(struct privdata* own, char* vs, char* ps)
 	loadhlslfromfile(src->ps, ps);
 	src->shader_enq = 42;
 
+	//texture
+	struct texture* tex = &src->tex[RGBTEX];
+	tex->data = own->color.data;
+	tex->w    = own->color.w;
+	tex->h    = own->color.h;
+	tex->fmt = hex32('r','g','b','a');
+	src->tex_enq[RGBTEX] = 42;
+
 	//vertex
 	struct vertex* vtx = src->vtx;
 	vtx->opaque = 0;
