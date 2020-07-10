@@ -106,11 +106,21 @@ int Upload_shader(
 }
 int Upload_texture(struct texture* tex, ID3D11Texture2D** texture, ID3D11ShaderResourceView** resource, ID3D11SamplerState** sampler)
 {
+	HRESULT hr;
 	if(0 == tex->data)return 0;
 	if(0 != *resource){
+/*		D3D11_BOX box;
+		box.left = 0;
+		box.right = 1;
+		box.top = 0;
+		box.bottom = 1;
+		box.front = 0;
+		box.back = 1;
+*/
+		g_dx11context->UpdateSubresource(texture[0], 0, 0, tex->data, 4*tex->w, 4*tex->w*tex->h);
 		return 0;
 	}
-	//printf("%x,%x,%x\n", tex->w, tex->h, tex->fmt);
+	printf("%x,%x,%x\n", tex->w, tex->h, tex->fmt);
 
 	//texture
 	D3D11_TEXTURE2D_DESC desc;
@@ -133,7 +143,7 @@ int Upload_texture(struct texture* tex, ID3D11Texture2D** texture, ID3D11ShaderR
 	data.SysMemPitch = 4 * tex->w;
 	data.SysMemSlicePitch = 4 * tex->w * tex->h;
 
-	HRESULT hr = g_dx11device->CreateTexture2D(&desc, &data, texture);
+	hr = g_dx11device->CreateTexture2D(&desc, &data, texture);
 	if(FAILED(hr)){
 		MessageBox(NULL, "CreateTexture2D", "Error", MB_OK);
 		return hr;
@@ -312,12 +322,15 @@ void Upload(struct dx11data** cam, struct dx11data** lit, struct dx11data** soli
 		);
 
 		//texture
-		Upload_texture(
-			&solid[j]->src.tex[0],
-			(ID3D11Texture2D**)&solid[j]->dst.texture[0],
-			(ID3D11ShaderResourceView**)&solid[j]->dst.resource[0],
-			(ID3D11SamplerState**)&solid[j]->dst.sampler[0]
-		);
+		if(solid[j]->dst.tex_deq[0] != solid[j]->src.tex_enq[0]){
+			Upload_texture(
+				&solid[j]->src.tex[0],
+				(ID3D11Texture2D**)&solid[j]->dst.texture[0],
+				(ID3D11ShaderResourceView**)&solid[j]->dst.resource[0],
+				(ID3D11SamplerState**)&solid[j]->dst.sampler[0]
+			);
+			solid[j]->dst.tex_deq[0] = solid[j]->src.tex_enq[0];
+		}
 
 		//constant
 		Upload_constant((void*)&solid[j]->src.arg, 64+16, (ID3D11Buffer**)&solid[j]->dst.constant);
