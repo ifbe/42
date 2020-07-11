@@ -1,12 +1,121 @@
 #include "libuser.h"
-#define CTXBUF buf0
+#define OWNBUF buf0
 void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void dx11data_insert(struct entity* ctx, int type, struct dxsrc* src, int cnt);
 void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
 
 
 
 
-char* texball_glsl_v =
+struct own{
+	struct texture tex;
+	struct dx11data dx11;
+	struct gl41data gl41;
+};
+static void texball_prep(struct own* my, char* str)
+{
+	my->tex.data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(&my->tex, str);
+}
+
+
+
+
+char* texball_hlsl_vs =
+"cbuffer VSConstantBuffer : register(b0){\n"
+	"matrix matmvp;\n"
+"};\n"
+"struct VSin{\n"
+	"float3 v : PA;\n"
+	"float3 t : PB;\n"
+"};\n"
+"struct VSout{\n"
+	"float4 where : SV_POSITION;\n"
+	"float4 color : COLOR;\n"
+"};\n"
+"VSout main(VSin input){\n"
+	"VSout output;\n"
+	"output.where = mul(float4(input.v, 1.0), matmvp);\n"
+	"output.color = float4(input.t, 1.0);\n"
+	"return output;\n"
+"}\n";
+char* texball_hlsl_ps =
+"Texture2D    b8g8r8 : register(t0);\n"
+"SamplerState status : register(s0);\n"
+"struct PSin{\n"
+"	float4 where : SV_POSITION;\n"
+"	float4 color : COLOR;\n"
+"};\n"
+"float4 main(PSin input) : SV_TARGET{\n"
+"	float2 uvw = input.color;\n"
+"	float3 bgr = b8g8r8.Sample(status, uvw);\n"
+"	return float4(bgr, 1.0);\n"
+"}";
+static void texball_dx11prep(struct own* my)
+{
+	struct dxsrc* src = &my->dx11.src;
+
+	//shader
+	src->vs = texball_hlsl_vs;
+	src->ps = texball_hlsl_ps;
+	src->shader_enq = 42;
+
+	//texture
+	struct texture* tex = &src->tex[0];
+	tex->fmt  = hex32('r','g','b','a');
+	tex->data = my->tex.data;
+	tex->w    = my->tex.w;
+	tex->h    = my->tex.h;
+	src->tex_enq[0] = 42;
+
+#define accx 64
+#define accy 63
+	struct vertex* vtx = src->vtx;
+	vtx->geometry = 3;
+	vtx->opaque = 0;
+
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_w = 4*6;
+	vtx->vbuf_h = accx*accy+(accx-1)*2;
+	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	src->vbuf_enq = 0;
+
+	vtx->ibuf_fmt = 0x222;
+	vtx->ibuf_w = 2*3;
+	vtx->ibuf_h = accy*(accx-1)*2;
+	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
+	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
+	src->ibuf_enq = 0;
+}
+static void texball_dx11draw(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* none)
+{
+	struct own* my = act->OWNBUF;
+	if(0 == my)return;
+
+	struct dxsrc* src = &my->dx11.src;
+	if(0 == src)return;
+
+	void* vbuf = src->vtx[0].vbuf;
+	void* ibuf = src->vtx[0].ibuf;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
+	carveplanet(vbuf, ibuf, vc, vr, vf, vu);
+	src->vbuf_enq += 1;
+	src->ibuf_enq += 1;
+
+	dx11data_insert(ctx, 's', src, 1);
+}
+
+
+
+
+char* texball_glsl_vs =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 vertex;\n"
 "layout(location = 1)in mediump vec2 texuvw;\n"
@@ -16,9 +125,7 @@ GLSL_VERSION
 	"uvw = texuvw;\n"
 	"gl_Position = cammvp * vec4(vertex, 1.0);\n"
 "}\n";
-char* texball_glsl_t = 0;
-char* texball_glsl_g = 0;
-char* texball_glsl_f = 
+char* texball_glsl_fs =
 GLSL_VERSION
 "in mediump vec2 uvw;\n"
 "out mediump vec4 FragColor;\n"
@@ -27,35 +134,22 @@ GLSL_VERSION
 	"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
 	//"FragColor = vec4(1.0, 1.0, 1.0, 1.0);\n"
 "}\n";
-
-
-
-
-static void texball_dx11prep(struct glsrc* src, char* str)
+static void texball_gl41prep(struct own* my)
 {
-}
-static void texball_dx11draw(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* none)
-{
-}
+	struct glsrc* src = &my->gl41.src;
 
-
-
-
-static void texball_gl41prep(struct glsrc* src, char* str)
-{
 	//shader
-	src->vs = texball_glsl_v;
-	src->fs = texball_glsl_f;
+	src->vs = texball_glsl_vs;
+	src->fs = texball_glsl_fs;
 	src->shader_enq = 42;
 
 	//texture
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "tex0";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&src->tex[0], str);
+	struct texture* tex = &src->tex[0];
+	tex->fmt  = hex32('r','g','b','a');
+	tex->data = my->tex.data;
+	tex->w    = my->tex.w;
+	tex->h    = my->tex.h;
+	tex->name = "tex0";
 	src->tex_enq[0] = 42;
 	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
 
@@ -84,7 +178,10 @@ static void texball_gl41draw(
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* none)
 {
-	struct glsrc* src = act->CTXBUF;
+	struct own* my = act->OWNBUF;
+	if(0 == my)return;
+
+	struct glsrc* src = &my->gl41.src;
 	if(0 == src)return;
 
 	void* vbuf = src->vtx[0].vbuf;
@@ -245,15 +342,16 @@ static void texball_delete(struct entity* act)
 }
 static void texball_create(struct entity* act, void* str)
 {
-	void* ctx;
 	if(0 == act)return;
 
-	ctx = act->CTXBUF = memorycreate(0x1000, 0);
-	if(0 == ctx)return;
+	struct own* my = act->OWNBUF = memorycreate(0x1000, 0);
+	if(0 == my)return;
 
 	if(0 == str)str = "datafile/jpg/texball-earth.jpg";
-	texball_dx11prep(ctx, str);
-	texball_gl41prep(ctx, str);
+	texball_prep(my, str);
+
+	texball_dx11prep(my);
+	texball_gl41prep(my);
 }
 
 

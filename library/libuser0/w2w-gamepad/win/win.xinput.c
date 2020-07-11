@@ -110,8 +110,59 @@ void* gamepadthread(void* win)
 		sleep_us(10000);
 	}
 }
+static void rawinputlistall()
+{
+	int j, ret, count = 0;
+	RAWINPUTDEVICELIST* ridl;
+
+	ret = GetRawInputDeviceList(NULL, &count, sizeof(RAWINPUTDEVICELIST));
+	if(0 != ret)return;
+
+	ridl = malloc(count * sizeof(RAWINPUTDEVICELIST));
+	if(0 == ridl)return;
+
+	ret = GetRawInputDeviceList(ridl, &count, sizeof(RAWINPUTDEVICELIST));
+	if(-1 == ret)goto byebye;
+
+	for(j=0;j<count;j++)
+	{
+		//type
+		char* type = 0;
+		switch(ridl[j].dwType){
+		case RIM_TYPEKEYBOARD:type = "keyboard";break;
+		case RIM_TYPEMOUSE:   type = "mouse";   break;
+		case RIM_TYPEHID:     type = "hid";     break;
+		default:break;
+		}
+		if(0 == type)continue;
+		say("%d:	%s\n", j, type);
+
+		//info
+		RID_DEVICE_INFO rdi;
+		UINT size;
+		ZeroMemory(&rdi, sizeof(rdi));
+		rdi.cbSize = sizeof(rdi);
+
+		size = sizeof(rdi);
+		ret = GetRawInputDeviceInfoA(ridl[j].hDevice, RIDI_DEVICEINFO, &rdi, &size);
+		if(-1 == ret)continue;
+
+		//name
+		char name[256];
+		memset(name, 0, sizeof(name));
+
+		size = sizeof(name);
+		ret = GetRawInputDeviceInfoA(ridl[j].hDevice, RIDI_DEVICENAME, name, &size);
+		if(-1 == ret)continue;
+		say("%s\n", name);
+	}
+
+byebye:
+	free(ridl);
+}
 void joycreate(struct supply* win)
 {
+	rawinputlistall();
 	threadcreate(gamepadthread, win);
 }
 
