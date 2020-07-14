@@ -9,9 +9,9 @@
 //libsoft1
 void fft(float* real, float* imag, int k);
 void ifft(float* real, float* imag, int k);
-//libsoft0
-int soundread(int dev, int time, void* buf, int len);
-int soundwrite(int dev, int time, void* buf, int len);
+//
+void dx11line(void*, int, void*, void*);
+void dx11line_rect(void*, int, void*, void*, void*);
 
 
 
@@ -121,7 +121,46 @@ static void oscillo_draw_pixel(
 		}
 	}
 }
-static void oscillo_draw_gl41(
+static void oscillo_dx11draw(
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
+{
+	int x,t;
+	float tmp,val;
+	vec3 ta,tb;
+	void** tab;
+	short* buf;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
+	dx11line_rect(ctx, 0xffff00, vc, vr, vf);
+
+	tab = act->TABBUF;
+	if(0 == tab)return;
+	//printmemory(tab, 8*4);
+
+	for(t=0;t<SLICE;t++){
+		buf = tab[t];
+		if(0 == buf)break;
+
+		for(x=0;x<1024;x++){
+			tmp = (t*1024 + x)/(SLICE*512.0) - 1.0;
+			ta[0] = vc[0] + vr[0] * tmp;
+			ta[1] = vc[1] + vr[1] * tmp;
+			ta[2] = vc[2] + vr[2] * tmp;
+
+			val = buf[x] / 32768.0;
+			tb[0] = ta[0] + vf[0] * val;
+			tb[1] = ta[1] + vf[1] * val;
+			tb[2] = ta[2] + vf[2] * val;
+
+			dx11line(ctx, 0xffffff, ta, tb);
+		}
+	}
+}
+static void oscillo_gl41draw(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -219,11 +258,15 @@ static void oscillo_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		oscillo_draw_gl41(ent,slot, wor,geom, wnd,area);
+	if( 0 == stack)return;
+	if('v'!= key)return;
+
+	slot = stack[sp-1].pfoot;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	switch(wnd->fmt){
+	case _dx11full_:oscillo_dx11draw(ent,slot, wor,geom, wnd,area);break;
+	case _gl41full_:oscillo_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
 }
 static void oscillo_read_bywnd(_ent* ent,struct style* slot, _sup* wnd,struct style* area)

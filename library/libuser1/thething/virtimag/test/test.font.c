@@ -13,11 +13,28 @@ void carveascii_test(struct entity* win, u32 rgb,
 
 
 static int chosen = 0x4040;
-static u8 buffer[16];
 
 
 
 
+static void font_dx11draw(
+	struct entity* act, struct style* part,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+}
+static void font_gl41draw(
+	struct entity* act, struct style* part,
+	struct entity* scn, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
+	gl41line_rect(wnd, 0xffffff, vc, vr, vf);
+	carveascii_test(wnd, 0xffffff, vc, vr, vf);
+}
 static void font_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -78,56 +95,6 @@ static void font_draw_pixel(
 
 	drawsolid_rect(win, 0x0000ff, cx-32, cy-16, cx-1, cy-1);
 	drawhexadecimal(win, 0xff0000, cx-32, cy-16, chosen);
-}
-static void font_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-	float* vc = sty->fs.vc;
-	float* vr = sty->fs.vr;
-	float* vf = sty->fs.vf;
-	float* vu = sty->fs.vt;
-	gl41line_rect(win, 0xffffff, vc, vr, vf);
-	carveascii_test(win, 0xffffff, vc, vr, vf);
-/*
-	int x,y,dx,dy;
-	int left,right,near,far;
-	vec3 tc, tr, tf, tu, f;
-	for(y=-32;y<32;y++)
-	{
-		for(x=-32;x<32;x++)
-		{
-			dx = x + (chosen&0xff);
-			dy = y + ((chosen>>8)&0xff);
-			if(dx < 0)continue;
-			if(dy < 0)continue;
-			if(dx > 0xff)continue;
-			if(dy > 0xff)continue;
-
-			f[0] = (2*x+1)/64;
-			f[1] = (2*y+1)/64;
-			f[2] = 0.0;
-			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
-			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
-			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
-			tr[0] = vr[0] / 64;
-			tr[1] = vr[1] / 64;
-			tr[2] = vr[2] / 64;
-			tf[0] = vf[0] / 64;
-			tf[1] = vf[1] / 64;
-			tf[2] = vf[2] / 64;
-			carveunicode(win, 0xffffff, tc, tr, tf, (dy<<8)+dx);
-		}
-	}
-
-	tr[0] = vr[0]/4;
-	tr[1] = vr[1]/4;
-	tr[2] = vr[2]/4;
-	tf[0] = vf[0]/4;
-	tf[1] = vf[1]/4;
-	tf[2] = vf[2]/4;
-	carvehexadecimal(win, 0x0000ff, vc, tr, tf, chosen);
-*/
 }
 static void font_draw_json(
 	struct entity* act, struct style* pin,
@@ -208,8 +175,38 @@ static void font_event(
 
 
 
+static void font_byworld_bycam_bywnd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+{
+	struct style* slot;
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	if( 0 == stack)return;
+	if('v'!= key)return;
+
+	slot = stack[sp-1].pfoot;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	switch(wnd->fmt){
+	case _dx11full_:font_dx11draw(ent,slot, wor,geom, wnd,area);break;
+	case _gl41full_:font_gl41draw(ent,slot, wor,geom, wnd,area);break;
+	}
+}
+static void font_byworld_bywnd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+{
+}
+static void font_bywnd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+{
+}
 static void font_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* sty = stack[sp-2].pfoot;
+	if(_rgba_ == wnd->fmt){
+		font_draw_pixel(ent,0, wnd, sty);
+	}
+	else{
+		font_byworld_bycam_bywnd_taking(ent,foot, stack,sp, arg,key);
+	}
 }
 static void font_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
@@ -237,8 +234,6 @@ static void font_delete(struct entity* act)
 static void font_create(struct entity* act)
 {
 	if(0 == act)return;
-	if(_orig_ == act->type)act->buf0 = buffer;
-	if(_copy_ == act->type)act->buf0 = memorycreate(16, 0);
 }
 
 

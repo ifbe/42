@@ -103,9 +103,39 @@ static void example_draw_cli(
 
 
 
-
+/*
+static void example_world_camera_window_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+{
+	switch(stack[sp-6].type){
+		case _wnd_:draw();return;
+	}
+}
+static void example_world_window_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+{
+	switch(stack[sp-4].type){
+		case _wnd_:draw();return;
+		case _cam_:example_world_camera_window_taking();
+	}
+}
+static void example_window_taking()
+{
+}
+*/
 static void example_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+/*
+	//by unknown
+	if(0 == stack){
+		return;
+	}
+
+	//by window
+	if(sp < 2)return;
+	switch(stack[sp-2].type){
+		case _wnd_:example_window_taking();return;
+		case _world:example_world_window_taking();return;
+	}
+*/
 }
 static void example_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

@@ -347,14 +347,13 @@ thething/virtimag/dxgl/dxgl.particle.c \
 thething/virtimag/test/test.palette.c \
 thething/virtimag/test/test.codeimg.c \
 thething/virtimag/test/test.example.c \
+thething/virtimag/test/test.font.c \
 thething/virtimag/test/test.fractal.c \
 thething/virtimag/test/test.doodle.c \
 thething/virtimag/test/test.c \
 thething/virtimag/test/test.calib3d.c \
 thething/virtimag/term/tool.terminal.c \
 thething/virtimag/term/tool.terminal.helper.c \
-thething/virtimag/item.tardis.c \
-thething/virtimag/item.mario.c \
 thething/virtimag/tool/tool.calculator.c \
 thething/virtimag/tool/tool.browser.c \
 thething/virtimag/tool/menu.detail.c \
@@ -369,7 +368,6 @@ thething/virtimag/tool/uiux.video.c \
 thething/virtimag/tool/menu.overview.c \
 thething/virtimag/tool/tool.wireshark.c \
 thething/virtimag/tool/uiux.oscillo.c \
-thething/virtimag/tool/tool.font.c \
 thething/virtimag/vmhw/ram/vmhw.sram.c \
 thething/virtimag/vmhw/ram/vmhw.dram.c \
 thething/virtimag/vmhw/cpu/vmhw.cpu.x8664.c \
@@ -377,6 +375,8 @@ thething/virtimag/vmhw/cpu/vmhw.cpu.arm64.c \
 thething/virtimag/vmhw/rpi/vmhw.rpi.uart.c \
 thething/virtimag/vmhw/rpi/vmhw.rpi.gpio.c \
 thething/virtimag/vmhw/vmhw.gpu.c \
+thething/virtimag/item.tardis.c \
+thething/virtimag/item.mario.c \
 thething/thing.c \
 entity.c
 OBJ = $(patsubst %.c,%.o,$(SRC))

@@ -101,12 +101,20 @@ void flycon_pidloop_attitude2palstance(struct entity* ent, struct style* sty)
 {
 	float* expect = sty->desire.angular_x;
 	float* actual = sty->actual.angular_x;
-	vec4 inverse = {-actual[0],-actual[1],-actual[2],actual[3]};
 	say("x_desire: %f,%f,%f,%f\n", expect[0], expect[1], expect[2], expect[3]);
 	say("x_actual: %f,%f,%f,%f\n", actual[0], actual[1], actual[2], actual[3]);
 
+	//if ass to sky, keep speed
+	if(actual[0]*actual[0] + actual[1]*actual[1] > 0.5){
+		sty->desire.angular_v[0] = sty->actual.angular_v[0];
+		sty->desire.angular_v[1] = sty->actual.angular_v[1];
+		sty->desire.angular_v[2] = sty->actual.angular_v[2];
+		return;
+	}
+
 	//expect = Q? * actual -> Q? = expect * actual.inverse
 	vec4 q;
+	vec4 inverse = {-actual[0],-actual[1],-actual[2],actual[3]};
 	quaternion_multiplyfrom(q, expect, inverse);
 	say("x_differ: %f,%f,%f,%f\n",q[0],q[1],q[2],q[3]);
 

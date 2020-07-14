@@ -185,27 +185,27 @@ void carveascii_test(struct entity* win, u32 rgb,
 	int vlen = ascii3d_vars(win, 0, &vbuf, &ibuf, 4, 2);
 	if(vlen < 0)return;
 
-	vbuf[ 0] = vc[0];
-	vbuf[ 1] = vc[1];
-	vbuf[ 2] = vc[2];
+	vbuf[ 0] = vc[0]-vr[0]-vf[0];
+	vbuf[ 1] = vc[1]-vr[1]-vf[1];
+	vbuf[ 2] = vc[2]-vr[2]-vf[2];
 	vbuf[ 3] = rr;
 	vbuf[ 4] = gg;
 	vbuf[ 5] = bb;
 	vbuf[ 6] = 0.0;
 	vbuf[ 7] = 1.0;
 
-	vbuf[ 9] = vc[0]+vr[0];
-	vbuf[10] = vc[1]+vr[1];
-	vbuf[11] = vc[2]+vr[2];
+	vbuf[ 9] = vc[0]+vr[0]-vf[0];
+	vbuf[10] = vc[1]+vr[1]-vf[1];
+	vbuf[11] = vc[2]+vr[2]-vf[2];
 	vbuf[12] = rr;
 	vbuf[13] = gg;
 	vbuf[14] = bb;
 	vbuf[15] = 1.0;
 	vbuf[16] = 1.0;
 
-	vbuf[18] = vc[0]+vf[0];
-	vbuf[19] = vc[1]+vf[1];
-	vbuf[20] = vc[2]+vf[2];
+	vbuf[18] = vc[0]-vr[0]+vf[0];
+	vbuf[19] = vc[1]-vr[1]+vf[1];
+	vbuf[20] = vc[2]-vr[2]+vf[2];
 	vbuf[21] = rr;
 	vbuf[22] = gg;
 	vbuf[23] = bb;

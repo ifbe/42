@@ -1,12 +1,7 @@
 <entity>
-texball{
-fmt:texball
-url:datafile/jpg/texball-skysphere.jpg
-}
 font{
 fmt:font
 }
-
 freecam{
 fmt:freecam
 }
@@ -35,31 +30,22 @@ fmt:poller
 
 
 <style>
-skyhaha{
-}
-skygeom{
-c: 0.0, 0.0, 0.0
-r: 10000000.0, 0.0, 0.0
-f: 0.0, 10000000.0, 0.0
-t: 0.0, 0.0, 10000000.0
-}
-
 termhaha{
 }
 termgeom{
-c: -1000.0, 0.0, -1000.0
-r: 2000.0, 0.0, 0.0
-f: 0.0, 0.0, 2000.0
-t: 0.0, -2000.0, 0.0
+c: 0.0, 0.0, 0.0
+r: 1000.0, 0.0, 0.0
+f: 0.0, 1000.0, 0.0
+t: 0.0, 0.0, 1000.0
 }
 
 freemodl{
 }
 freegeom{
-c: 0.0, -1000.0, 0.0
+c: 0.0, -1000.0, 1000.0
 r: 1000.0, 0.0, 0.0
-t: 0.0, 0.0, 1000.0
-f: 0.0, 1000.0, 0.0
+t: 0.0, 707.0, 707.0
+f: 0.0, 707.0,-707.0
 L: 0.0, 0.0, 0.0, -1.0
 R: 0.0, 0.0, 0.0, 1.0
 B: 0.0, 0.0, 0.0, -1.0
@@ -77,7 +63,6 @@ q:1.0, 1.0
 
 <relation>
 #world depends on inner objects
-(virtual, skygeom, 0) -> (texball, skyhaha, 0)
 (virtual, termgeom, 0) -> (font, termhaha, 0)
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
 

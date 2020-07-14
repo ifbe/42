@@ -126,3 +126,26 @@ void dx11line(struct entity* win, u32 rgb,
 	}
 	carvelineindex(vbuf,vlen, ibuf,0, va,vb);
 }
+
+
+
+
+void dx11line_rect(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = dx11solidline_vars(win, 0, &vbuf, &ibuf, 4, 4);
+	if(vlen < 0)return;
+
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<6*4;j+=6){
+		vbuf[j + 3] = rr;
+		vbuf[j + 4] = gg;
+		vbuf[j + 5] = bb;
+	}
+	carvelineindex_rect(vbuf,vlen, ibuf,0, vc,vr,vf);
+}
