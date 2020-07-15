@@ -8,10 +8,14 @@ fmt:font
 <supply>
 opengl{
 fmt:wnd
+url:/dev/fb1
 title:"42"
 width:1024
 height:1024
 depth:1024
+}
+stdio{
+fmt:std
 }
 </supply>
 
@@ -25,4 +29,5 @@ fmt:poller
 
 <relation>
 (opengl, 0, 0) -> (font, 0, 0)
+(stdio, 0, dst) -> (font, 0, 0)
 </relation>

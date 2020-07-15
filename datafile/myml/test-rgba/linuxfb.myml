@@ -19,6 +19,9 @@ wnd{
 fmt:wnd
 url:/dev/fb1
 }
+std{
+fmt:std
+}
 </supply>
 
 
@@ -31,4 +34,5 @@ fmt:poller
 
 <relation>
 (wnd, where, 0) -> (button, 0, 0)
+(std, 0, dst) -> (button, 0, 0)
 </relation>

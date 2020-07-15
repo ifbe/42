@@ -37,6 +37,7 @@ forcpu/intersect/intersect.rect.c \
 forcpu/intersect/intersect.sphere.c \
 forcpu/forcpu.c \
 forgpu/dx11/dx11.ctx.c \
+forgpu/dx11/dx11.ascii.c \
 forgpu/dx11/dx11.point.c \
 forgpu/dx11/dx11.line.c \
 forgpu/dx11/dx11.trigon.c \

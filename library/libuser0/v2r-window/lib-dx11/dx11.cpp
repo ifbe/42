@@ -108,6 +108,19 @@ int Upload_texture(struct texture* tex, ID3D11Texture2D** texture, ID3D11ShaderR
 {
 	HRESULT hr;
 	if(0 == tex->data)return 0;
+
+	//
+	DXGI_FORMAT fmt;
+	int per = 4;
+	if(hex32('o','n','e',0) == tex->fmt){
+		fmt = DXGI_FORMAT_R8_UNORM;
+		per = 1;
+	}
+	else{
+		fmt = DXGI_FORMAT_B8G8R8A8_UNORM;
+		per = 4;
+	}
+
 	if(0 != *resource){
 /*		D3D11_BOX box;
 		box.left = 0;
@@ -117,7 +130,10 @@ int Upload_texture(struct texture* tex, ID3D11Texture2D** texture, ID3D11ShaderR
 		box.front = 0;
 		box.back = 1;
 */
-		g_dx11context->UpdateSubresource(texture[0], 0, 0, tex->data, 4*tex->w, 4*tex->w*tex->h);
+		g_dx11context->UpdateSubresource(
+			texture[0], 0, 0, 
+			tex->data, per*tex->w, per*tex->w*tex->h
+		);
 		return 0;
 	}
 	printf("%x,%x,%x\n", tex->w, tex->h, tex->fmt);
@@ -129,7 +145,7 @@ int Upload_texture(struct texture* tex, ID3D11Texture2D** texture, ID3D11ShaderR
 	desc.Height= tex->h;
 	desc.MipLevels = 1;
 	desc.ArraySize = 1;
-	desc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	desc.Format = fmt;
 	desc.SampleDesc.Count = 1;
 	desc.SampleDesc.Quality = 0;
 	desc.Usage = D3D11_USAGE_DEFAULT;
@@ -140,8 +156,8 @@ int Upload_texture(struct texture* tex, ID3D11Texture2D** texture, ID3D11ShaderR
 	D3D11_SUBRESOURCE_DATA data;
 	ZeroMemory(&data, sizeof(data));
 	data.pSysMem = tex->data;
-	data.SysMemPitch = 4 * tex->w;
-	data.SysMemSlicePitch = 4 * tex->w * tex->h;
+	data.SysMemPitch = per * tex->w;
+	data.SysMemSlicePitch = per * tex->w * tex->h;
 
 	hr = g_dx11device->CreateTexture2D(&desc, &data, texture);
 	if(FAILED(hr)){
@@ -152,7 +168,7 @@ int Upload_texture(struct texture* tex, ID3D11Texture2D** texture, ID3D11ShaderR
 
 	//resource
 	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-	srvDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
+	srvDesc.Format = fmt;
 	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	srvDesc.Texture2D.MipLevels = 1;
 	srvDesc.Texture2D.MostDetailedMip = 0;
@@ -272,7 +288,64 @@ int Upload_index(void* buf, int len, ID3D11Buffer** dst)
 	}
 	return 0;
 }
-void Upload(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque)
+void Upload_one(struct dx11data* one)
+{
+	struct vertex* vtx = &one->src.vtx[0];
+	if(0 == vtx->vbuf)return;
+/*
+	//debug
+	printf("%d: %x,%x, (%llx,%x,%x,%x), (%llx,%x,%x,%x)\n",
+		j, vtx->geometry, vtx->opaque,
+		vtx->vbuf, vtx->vbuf_w, vtx->vbuf_h, vtx->vbuf_fmt,
+		vtx->ibuf, vtx->ibuf_w, vtx->ibuf_h, vtx->ibuf_fmt
+	);
+*/
+	//layout
+	D3D11_INPUT_ELEMENT_DESC* desc;
+	int size;
+	if(0 == vtx->vbuf_fmt)return;
+	else if(vbuffmt_33 == vtx->vbuf_fmt){
+		desc = inputlayout_p3n3;
+		size = 2;
+	}
+	else if(vbuffmt_333 == vtx->vbuf_fmt){
+		desc = inputlayout_p3n3c3;
+		size = 3;
+	}
+	else return;
+
+	//shader
+	Upload_shader(
+		(char*)one->src.vs,
+		(char*)one->src.ps,
+		desc,
+		size,
+		(ID3D11VertexShader**)&one->dst.vsprog,
+		(ID3D11PixelShader**)&one->dst.psprog,
+		(ID3D11InputLayout**)&one->dst.layout
+	);
+
+	//texture
+	if(one->dst.tex_deq[0] != one->src.tex_enq[0]){
+		Upload_texture(
+			&one->src.tex[0],
+			(ID3D11Texture2D**)&one->dst.texture[0],
+			(ID3D11ShaderResourceView**)&one->dst.resource[0],
+			(ID3D11SamplerState**)&one->dst.sampler[0]
+		);
+		one->dst.tex_deq[0] = one->src.tex_enq[0];
+	}
+
+	//constant
+	Upload_constant((void*)&one->src.arg, 64+16, (ID3D11Buffer**)&one->dst.constant);
+
+	//vertices
+	if(vtx->vbuf)Upload_vertex(vtx->vbuf, vtx->vbuf_len, (ID3D11Buffer**)&one->dst.vbuf);
+
+	//indices
+	if(vtx->ibuf)Upload_index(vtx->ibuf, vtx->ibuf_len, (ID3D11Buffer**)&one->dst.ibuf);
+}
+void Upload_all(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque)
 {
 /*
 	//debug
@@ -282,71 +355,85 @@ void Upload(struct dx11data** cam, struct dx11data** lit, struct dx11data** soli
 	int j;
 	Upload_constant((void*)&cam[0]->src.arg, 64+16, (ID3D11Buffer**)&cam[0]->dst.constant);
 
-	struct vertex* vtx;
 	for(j=0;j<64;j++){
 		if(0 == solid[j])continue;
+		Upload_one(solid[j]);
+	}
 
-		vtx = &solid[j]->src.vtx[0];
-		if(0 == vtx->vbuf)continue;
-/*
-		//debug
-		printf("%d: %x,%x, (%llx,%x,%x,%x), (%llx,%x,%x,%x)\n",
-			j, vtx->geometry, vtx->opaque,
-			vtx->vbuf, vtx->vbuf_w, vtx->vbuf_h, vtx->vbuf_fmt,
-			vtx->ibuf, vtx->ibuf_w, vtx->ibuf_h, vtx->ibuf_fmt
-		);
-*/
-		//layout
-		D3D11_INPUT_ELEMENT_DESC* desc;
-		int size;
-		if(0 == vtx->vbuf_fmt)continue;
-		else if(vbuffmt_33 == vtx->vbuf_fmt){
-			desc = inputlayout_p3n3;
-			size = 2;
-		}
-		else if(vbuffmt_333 == vtx->vbuf_fmt){
-			desc = inputlayout_p3n3c3;
-			size = 3;
-		}
-		else continue;
-
-		//shader
-		Upload_shader(
-			(char*)solid[j]->src.vs,
-			(char*)solid[j]->src.ps,
-			desc,
-			size,
-			(ID3D11VertexShader**)&solid[j]->dst.vsprog,
-			(ID3D11PixelShader**)&solid[j]->dst.psprog,
-			(ID3D11InputLayout**)&solid[j]->dst.layout
-		);
-
-		//texture
-		if(solid[j]->dst.tex_deq[0] != solid[j]->src.tex_enq[0]){
-			Upload_texture(
-				&solid[j]->src.tex[0],
-				(ID3D11Texture2D**)&solid[j]->dst.texture[0],
-				(ID3D11ShaderResourceView**)&solid[j]->dst.resource[0],
-				(ID3D11SamplerState**)&solid[j]->dst.sampler[0]
-			);
-			solid[j]->dst.tex_deq[0] = solid[j]->src.tex_enq[0];
-		}
-
-		//constant
-		Upload_constant((void*)&solid[j]->src.arg, 64+16, (ID3D11Buffer**)&solid[j]->dst.constant);
-
-		//vertices
-		if(vtx->vbuf){
-			Upload_vertex(vtx->vbuf, vtx->vbuf_len, (ID3D11Buffer**)&solid[j]->dst.vbuf);
-		}
-
-		//indices
-		if(vtx->ibuf){
-			Upload_index(vtx->ibuf, vtx->ibuf_len, (ID3D11Buffer**)&solid[j]->dst.ibuf);
-		}
+	for(j=0;j<64;j++){
+		if(0 == opaque[j])continue;
+		Upload_one(opaque[j]);
 	}
 }
-void Render(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque, struct supply* wnd, struct fstyle* area)
+
+
+
+
+void Render_one(struct dx11data* cam, struct dx11data* lit, struct dx11data* one)
+{
+	struct vertex* vtx = &one->src.vtx[0];
+	if(0 == vtx->vbuf)return;
+
+	g_dx11context->VSSetShader((ID3D11VertexShader*)one->dst.vsprog, nullptr, 0);
+	g_dx11context->VSSetConstantBuffers(0, 1, (ID3D11Buffer**)&cam->dst.constant);
+	g_dx11context->VSSetConstantBuffers(1, 1, (ID3D11Buffer**)&one->dst.constant);
+
+	g_dx11context->PSSetShader((ID3D11PixelShader*)one->dst.psprog, nullptr, 0);
+	g_dx11context->PSSetShaderResources(0, 1, (ID3D11ShaderResourceView**)&one->dst.resource);
+	g_dx11context->PSSetSamplers(0, 1, (ID3D11SamplerState**)&one->dst.sampler);
+
+	g_dx11context->IASetInputLayout((ID3D11InputLayout*)one->dst.layout);
+	switch(vtx->vbuf_fmt){
+	case vbuffmt_33:{
+		UINT stride = 4*6;
+		UINT offset = 0;
+		g_dx11context->IASetVertexBuffers(0, 1, (ID3D11Buffer**)&one->dst.vbuf, &stride, &offset);
+		break;
+	}
+	case vbuffmt_333:{
+		UINT stride = 4*9;
+		UINT offset = 0;
+		g_dx11context->IASetVertexBuffers(0, 1, (ID3D11Buffer**)&one->dst.vbuf, &stride, &offset);
+		break;
+	}
+	}//switch
+
+	if(vtx->ibuf){
+		g_dx11context->IASetIndexBuffer((ID3D11Buffer*)one->dst.ibuf, DXGI_FORMAT_R16_UINT, 0);
+		switch(vtx->geometry){
+		case 1:
+			g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+			g_dx11context->DrawIndexed(vtx->ibuf_h*1, 0, 0);
+			break;
+		case 2:
+			g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+			g_dx11context->DrawIndexed(vtx->ibuf_h*2, 0, 0);
+			break;
+		case 3:
+			g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			g_dx11context->DrawIndexed(vtx->ibuf_h*3, 0, 0);
+			break;
+		}
+	}//drawindex
+
+	else{
+		switch(vtx->geometry){
+		case 1:
+			g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+			g_dx11context->Draw(vtx->vbuf_h*1, 0);
+			break;
+		case 2:
+			g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+			g_dx11context->Draw(vtx->vbuf_h*2, 0);
+			break;
+		case 3:
+			g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			g_dx11context->Draw(vtx->vbuf_h*3, 0);
+			break;
+		}
+	}//drawarray
+}
+void Render_all(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque, struct supply* wnd, struct fstyle* area)
 {
 	float x0,y0,ww,hh;
 	x0 = area->vc[0] * wnd->fbwidth;
@@ -375,72 +462,15 @@ void Render(struct dx11data** cam, struct dx11data** lit, struct dx11data** soli
 	}
 */
 	int j;
-	struct vertex* vtx;
 	for(j=0;j<64;j++){
 		if(0 == solid[j])continue;
-
-		vtx = &solid[j]->src.vtx[0];
-		if(0 == vtx->vbuf)continue;
-
-		g_dx11context->VSSetShader((ID3D11VertexShader*)solid[j]->dst.vsprog, nullptr, 0);
-		g_dx11context->VSSetConstantBuffers(0, 1, (ID3D11Buffer**)&cam[0]->dst.constant);
-		g_dx11context->VSSetConstantBuffers(1, 1, (ID3D11Buffer**)&solid[j]->dst.constant);
-
-		g_dx11context->PSSetShader((ID3D11PixelShader*)solid[j]->dst.psprog, nullptr, 0);
-		g_dx11context->PSSetShaderResources(0, 1, (ID3D11ShaderResourceView**)&solid[j]->dst.resource);
-		g_dx11context->PSSetSamplers(0, 1, (ID3D11SamplerState**)&solid[j]->dst.sampler);
-
-		g_dx11context->IASetInputLayout((ID3D11InputLayout*)solid[j]->dst.layout);
-		switch(vtx->vbuf_fmt){
-		case vbuffmt_33:{
-			UINT stride = 4*6;
-			UINT offset = 0;
-			g_dx11context->IASetVertexBuffers(0, 1, (ID3D11Buffer**)&solid[j]->dst.vbuf, &stride, &offset);
-			break;
-		}
-		case vbuffmt_333:{
-			UINT stride = 4*9;
-			UINT offset = 0;
-			g_dx11context->IASetVertexBuffers(0, 1, (ID3D11Buffer**)&solid[j]->dst.vbuf, &stride, &offset);
-			break;
-		}
-		}//switch
-
-		if(vtx->ibuf){
-			g_dx11context->IASetIndexBuffer((ID3D11Buffer*)solid[j]->dst.ibuf, DXGI_FORMAT_R16_UINT, 0);
-			switch(vtx->geometry){
-			case 1:
-				g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-				g_dx11context->DrawIndexed(vtx->ibuf_h*1, 0, 0);
-				break;
-			case 2:
-				g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-				g_dx11context->DrawIndexed(vtx->ibuf_h*2, 0, 0);
-				break;
-			case 3:
-				g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				g_dx11context->DrawIndexed(vtx->ibuf_h*3, 0, 0);
-				break;
-			}
-		}//drawindex
-
-		else{
-			switch(vtx->geometry){
-			case 1:
-				g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-				g_dx11context->Draw(vtx->vbuf_h*1, 0);
-				break;
-			case 2:
-				g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-				g_dx11context->Draw(vtx->vbuf_h*2, 0);
-				break;
-			case 3:
-				g_dx11context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				g_dx11context->Draw(vtx->vbuf_h*3, 0);
-				break;
-			}
-		}//drawarray
+		Render_one(cam[0], lit[0], solid[j]);
 	}//solid
+
+	for(j=0;j<64;j++){
+		if(0 == opaque[j])continue;
+		Render_one(cam[0], lit[0], opaque[j]);
+	}//opaque
 }
 
 
@@ -839,10 +869,10 @@ int fullwindow_taking(struct supply* wnd,int foot, struct halfrel* stack,int sp,
 		}
 
 		//give
-		Upload(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque);
+		Upload_all(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque);
 
 		//draw
-		Render(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque, wnd, area);
+		Render_all(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque, wnd, area);
 
 		//next
 		rel = (struct relation*)samesrcnextdst(rel);

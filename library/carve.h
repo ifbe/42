@@ -1,6 +1,13 @@
 #include "struct.h"
 
 
+void dx11point(              struct entity* ctx, u32 rgb, vec3 vc);
+
+void dx11line(               struct entity* ctx, u32 rgb, vec3 va, vec3 vb);
+void dx11line_rect(          struct entity* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+
+void dx11solid_triangle(     struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
+void dx11solid_rect(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 
 
 void gl41point(              struct entity* ctx, u32 rgb, vec3 vc);

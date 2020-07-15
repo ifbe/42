@@ -1,13 +1,7 @@
 #include "libuser.h"
 void drawascii_bitmap(u8* buf, int ch);
-void carveunicode_surround(
-	struct entity*,u32,
-	float,float,float,
-	float,float,float,
-	float,float,float,
-	int, int);
-void carveascii_test(struct entity* win, u32 rgb,
-	vec3 vc, vec3 vr, vec3 vf);
+void dx11ascii_test(struct entity* wnd, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void gl41ascii_test(struct entity* wnd, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 
 
 
@@ -22,6 +16,12 @@ static void font_dx11draw(
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
+	dx11line_rect(wnd, 0xffffff, vc, vr, vf);
+	dx11ascii_test(wnd, 0xffffff, vc, vr, vf);
 }
 static void font_gl41draw(
 	struct entity* act, struct style* part,
@@ -33,7 +33,7 @@ static void font_gl41draw(
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
 	gl41line_rect(wnd, 0xffffff, vc, vr, vf);
-	carveascii_test(wnd, 0xffffff, vc, vr, vf);
+	gl41ascii_test(wnd, 0xffffff, vc, vr, vf);
 }
 static void font_draw_pixel(
 	struct entity* act, struct style* pin,
@@ -55,7 +55,7 @@ static void font_draw_pixel(
 		ww = win->width/2;
 		hh = win->height/2;
 	}
-	drawline_rect(win, 0xff, cx-ww, cy-hh, cx+ww, cy+hh);
+	drawsolid_rect(win, 0x101010, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	ww &= 0xfff0;
 	hh &= 0xfff0;
@@ -146,30 +146,47 @@ static void font_draw_cli(
 
 static void font_event(
 	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty,
 	struct event* ev, int len)
 {
-	int k;
-	if(_kbd_ == ev->what)
-	{
-		k = ev->why;
-		if(k == 0x48)
-		{
-			if(chosen >= 256)chosen -= 256;
-		}
-		else if(k == 0x4b)
-		{
-			if((chosen&0xff) > 0)chosen--;
-		}
-		else if(k == 0x4d)
-		{
-			if((chosen&0xff) < 0xff)chosen++;
-		}
-		else if(k == 0x50)
-		{
-			if(chosen <= 65535-256)chosen += 256;
+	int k = 0;
+	if(_kbd_ == ev->what){
+		switch(ev->why){
+		case 0x48:k = 'u';break;
+		case 0x50:k = 'd';break;
+		case 0x4b:k = 'l';break;
+		case 0x4d:k = 'r';break;
+		default:return;
 		}
 	}
+	else if(_char_ == ev->what){
+		switch(ev->why){
+		case 'w':k = 'u';break;
+		case 's':k = 'd';break;
+		case 'a':k = 'l';break;
+		case 'd':k = 'r';break;
+		default:return;
+		}
+	}
+	else return;
+
+	switch(k){
+	case 'u':{
+		if(chosen >= 256)chosen -= 256;
+		break;
+	}
+	case 'd':{
+		if(chosen <= 65535-256)chosen += 256;
+		break;
+	}
+	case 'l':{
+		if((chosen&0xff) > 0)chosen--;
+		break;
+	}
+	case 'r':{
+		if((chosen&0xff) < 0xff)chosen++;
+		break;
+	}
+	}//switch
 }
 
 
@@ -210,6 +227,8 @@ static void font_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 }
 static void font_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	printmemory(buf,16);
+	font_event(ent, 0, buf, len);
 }
 static void font_discon(struct halfrel* self, struct halfrel* peer)
 {

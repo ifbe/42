@@ -173,7 +173,7 @@ int ascii3d_vars(struct entity* win, int id, float** vbuf, u16** ibuf, int vcnt,
 
 
 
-void carveascii_test(struct entity* win, u32 rgb,
+void gl41ascii_test(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf)
 {
 	float bb = (float)(rgb&0xff) / 256.0;

@@ -9,9 +9,6 @@
 //libsoft1
 void fft(float* real, float* imag, int k);
 void ifft(float* real, float* imag, int k);
-//
-void dx11line(void*, int, void*, void*);
-void dx11line_rect(void*, int, void*, void*, void*);
 
 
 
