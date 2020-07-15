@@ -125,7 +125,7 @@ static void calculator_draw_gl41(
 			for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*(2*x-7)/8 + vf[j]*(-2*y-1)/8 + vt[j]/32;
 			gl41solid_rect(ctx, rgb, tc, tr, tf);
 			for(j=0;j<3;j++)tc[j] += vt[j]/32;
-			carveascii_center(ctx, 0xffffff, tc, tr, tf, table[y][x]);
+			gl41ascii_center(ctx, 0xffffff, tc, tr, tf, table[y][x]);
 		}
 	}
 }

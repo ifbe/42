@@ -412,7 +412,7 @@ static void xiangqi_draw_gl41(
 			tf[0] = vf[0] / 8;
 			tf[1] = vf[1] / 8;
 			tf[2] = vf[2] / 8;
-			carveutf8_center(ctx, fontcolor, tc, tr, tf,
+			gl41utf8_center(ctx, fontcolor, tc, tr, tf,
 				(u8*)char2hanzi(data[y][x]), 0);
 		}
 	}

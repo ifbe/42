@@ -162,7 +162,7 @@ static void hexedit_draw_gl41(
 			ch = buf[act->iz0 + y*32 + x];
 			if((x == act->ixn)&&(y == act->iyn))rgb = 0x00ff00;
 			else rgb = 0xffffff;
-			if(act->iw0)carveascii_center(wnd, rgb, tc,tr,tf,ch);
+			if(act->iw0)gl41ascii_center(wnd, rgb, tc,tr,tf,ch);
 			else carvehex8_center(wnd, rgb, tc,tr,tf,ch);
 		}
 	}

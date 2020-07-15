@@ -66,7 +66,7 @@ void karnaugh_draw_gl41_4x4(struct entity* wnd, struct entity* act, vec3 vc, vec
 			if((x == act->ix0)&&(y == act->iy0))rgb = 0xff00ff;
 			else rgb = 0xffffff;
 			gl41line_rect(wnd, 0xffffff, tc, tr, tf);
-			carveascii_center(wnd, rgb, tc, tr, tf, ch[x]);
+			gl41ascii_center(wnd, rgb, tc, tr, tf, ch[x]);
 		}
 	}
 
@@ -108,13 +108,13 @@ void karnaugh_draw_gl41(
 		tf[j] = vf[j]/5;
 	}
 	for(j=0;j<3;j++)tc[j] = vc[j] -vr[j] +vf[j]*7/10;
-	carveascii(wnd, 0xffffff, tc,tr,tf, 'A');
+	gl41ascii(wnd, 0xffffff, tc,tr,tf, 'A');
 	for(j=0;j<3;j++)tc[j] = vc[j] -vr[j]*7/8 +vf[j]*6/10;
-	carveascii(wnd, 0xffffff, tc,tr,tf, 'B');
+	gl41ascii(wnd, 0xffffff, tc,tr,tf, 'B');
 	for(j=0;j<3;j++)tc[j] = vc[j] -vr[j]*7/8 +vf[j]*8/10;
-	carveascii(wnd, 0xffffff, tc,tr,tf, 'C');
+	gl41ascii(wnd, 0xffffff, tc,tr,tf, 'C');
 	for(j=0;j<3;j++)tc[j] = vc[j] -vr[j]*6/8 +vf[j]*7/10;
-	carveascii(wnd, 0xffffff, tc,tr,tf, 'D');
+	gl41ascii(wnd, 0xffffff, tc,tr,tf, 'D');
 
 	for(j=0;j<3;j++){
 		tr[j] = vr[j]/10;

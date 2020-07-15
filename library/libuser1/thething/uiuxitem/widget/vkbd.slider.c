@@ -64,7 +64,7 @@ void slider_draw_gl41(
 			tf[j] = vf[j]/20;
 		}
 		gl41opaque_rect(wnd, 0x80808080, tc,tr,tf);
-		carveascii_center(wnd, 0xffffff, tc,tr,tf, 0x30 + list[y]/10);
+		gl41ascii_center(wnd, 0xffffff, tc,tr,tf, 0x30 + list[y]/10);
 	}
 }
 

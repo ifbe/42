@@ -732,7 +732,7 @@ void carvearrorkey(struct entity* ctx, u32 rgb,
 	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(t-2)/4 -vf[j]*1/4;
 	gl41opaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += 0.1;
-	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[0]&0x7f);
+	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[0]&0x7f);
 		
 
 	//x+: right
@@ -741,7 +741,7 @@ void carvearrorkey(struct entity* ctx, u32 rgb,
 	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(t+2)/4 -vf[j]*1/4;
 	gl41opaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += 0.1;
-	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[1]&0x7f);
+	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[1]&0x7f);
 
 	//y-: near
 	if(buf[2]&0x80)c = 0x7fff00ff;
@@ -749,7 +749,7 @@ void carvearrorkey(struct entity* ctx, u32 rgb,
 	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*t/4 -vf[j]*3/4;
 	gl41opaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += -0.1;
-	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[2]&0x7f);
+	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[2]&0x7f);
 
 	//y+: far
 	if(buf[3]&0x80)c = 0x7fff00ff;
@@ -757,7 +757,7 @@ void carvearrorkey(struct entity* ctx, u32 rgb,
 	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*t/4 +vf[j]*1/4;
 	gl41opaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += 0.1;
-	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[3]&0x7f);
+	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[3]&0x7f);
 
 	//z-: trigger
 	if(buf[4]&0x80)c = 0x7fff00ff;
@@ -765,7 +765,7 @@ void carvearrorkey(struct entity* ctx, u32 rgb,
 	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(t-2)/4 +vf[j]*3/4;
 	gl41opaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += 0.1;
-	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[4]&0x7f);
+	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[4]&0x7f);
 
 	//z+: bumper
 	if(buf[5]&0x80)c = 0x7fff00ff;
@@ -773,7 +773,7 @@ void carvearrorkey(struct entity* ctx, u32 rgb,
 	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(t+2)/4 +vf[j]*3/4;
 	gl41opaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += 0.1;
-	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[5]&0x7f);
+	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[5]&0x7f);
 
 	//press
 	if(buf[6]&0x80)c = 0x7fff00ff;
@@ -781,7 +781,7 @@ void carvearrorkey(struct entity* ctx, u32 rgb,
 	for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*t/4 -vf[j]*1/4;
 	gl41opaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += 0.1;
-	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[6]&0x7f);
+	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[6]&0x7f);
 
 	//select or start
 	if(buf[7]&0x80)c = 0x7fff00ff;
@@ -789,5 +789,5 @@ void carvearrorkey(struct entity* ctx, u32 rgb,
 	for(j=0;j<3;j++)tc[j] = vc[j] -vr[j]*t*3/4 +vf[j]*1/4;
 	gl41opaque_circle(ctx, c, tc, tr, tf);
 	tc[2] += 0.1;
-	carveascii_center(ctx, 0xffffff, tc, tr, tf, buf[7]&0x7f);
+	gl41ascii_center(ctx, 0xffffff, tc, tr, tf, buf[7]&0x7f);
 }

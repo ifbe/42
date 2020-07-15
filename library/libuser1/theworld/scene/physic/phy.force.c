@@ -137,7 +137,7 @@ static void force_draw_gl41(
 	tr[0] = tf[1] = tu[2] = 100.0;
 	for(j=0;j<16;j++){
 		if(0 == jo[j].exist)break;
-		carveascii_center(wnd, 0xff0000, &jo[j].x,tr,tu,'a'+j);
+		gl41ascii_center(wnd, 0xff0000, &jo[j].x,tr,tu,'a'+j);
 	}
 }
 void force_read_board(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)

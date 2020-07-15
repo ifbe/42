@@ -88,7 +88,7 @@ void truth_draw_gl41(
 			gl41line_rect(wnd, rgb, tc, tr, tf);
 			if(4 == x)continue;
 			if(6 <= x)continue;
-			carveascii_center(wnd, rgb, tc, tr, tf, ch[x]);
+			gl41ascii_center(wnd, rgb, tc, tr, tf, ch[x]);
 		}
 	}
 }

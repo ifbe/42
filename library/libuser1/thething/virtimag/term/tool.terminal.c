@@ -193,11 +193,11 @@ void gl41_vt100(struct entity* wnd, struct uartterm* term, float* vc,float* vr,f
 			for(j=0;j<3;j++)tc[j] = vc[j] -vr[j]+tr[j]*x/2 +vf[j]-tf[j]*y;
 			if(buf[x*4]<0x80){
 				rgb = colortable[buf[x*4+2]&0xf];
-				carveascii(wnd, rgb, tc,tr,tf, buf[x*4]);
+				gl41ascii(wnd, rgb, tc,tr,tf, buf[x*4]);
 			}
 			else{
 				rgb = colortable[buf[x*4+6]&0xf];
-				carveutf8(wnd, rgb, tc,tr,tf, &buf[x*4], 0);
+				gl41utf8(wnd, rgb, tc,tr,tf, &buf[x*4], 0);
 				x++;
 			}
 		}

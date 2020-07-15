@@ -93,7 +93,7 @@ static void clock_draw_gl41(
 		tc[0] = vc[0] + c*vr[0]*7/8 + s*vf[0]*7/8;
 		tc[1] = vc[1] + c*vr[1]*7/8 + s*vf[1]*7/8;
 		tc[2] = vc[2] + c*vr[2]*7/8 + s*vf[2]*7/8 + 1;
-		carveascii_center(ctx, 0xffffff, tc, tr, tf, j<10 ? j+0x30 : j+0x37);
+		gl41ascii_center(ctx, 0xffffff, tc, tr, tf, j<10 ? j+0x30 : j+0x37);
 	}
 }
 static void clock_draw_json(

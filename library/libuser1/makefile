@@ -37,10 +37,11 @@ forcpu/intersect/intersect.rect.c \
 forcpu/intersect/intersect.sphere.c \
 forcpu/forcpu.c \
 forgpu/dx11/dx11.ctx.c \
-forgpu/dx11/dx11.ascii.c \
-forgpu/dx11/dx11.point.c \
-forgpu/dx11/dx11.line.c \
-forgpu/dx11/dx11.trigon.c \
+forgpu/dx11/dx11.mesh.point.c \
+forgpu/dx11/dx11.mesh.line.c \
+forgpu/dx11/dx11.mesh.trigon.c \
+forgpu/dx11/dx11.text.ascii.c \
+forgpu/dx11/dx11.text.unicode.c \
 forgpu/gl41/carve/carve3d.opaque.point.c \
 forgpu/gl41/carve/carve3d.opaque.line.c \
 forgpu/gl41/carve/carve3d.opaque.trigon.c \
@@ -48,7 +49,7 @@ forgpu/gl41/carve/carve3d.solid.point.c \
 forgpu/gl41/carve/carve3d.solid.line.c \
 forgpu/gl41/carve/carve3d.solid.trigon.c \
 forgpu/gl41/carve/carve3d.texed.ascii.c \
-forgpu/gl41/carve/carve3d.texed.craft.c \
+forgpu/gl41/carve/carve3d.texed.unicode.c \
 forgpu/gl41/carve/carve3d.other.circuit.c \
 forgpu/gl41/carve/carve3d.other.group.c \
 forgpu/gl41/carve/carve3d.other.helper.c \

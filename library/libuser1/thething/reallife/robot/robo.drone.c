@@ -89,28 +89,28 @@ static void drone_forgl41_actual(
 	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] + vf[j] + tu[j];
 	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
 	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] + vf[j] + vt[j];
-	carveascii_center(ctx, 0xffffff, tc, kr, kf, '1');
+	gl41ascii_center(ctx, 0xffffff, tc, kr, kf, '1');
 	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1, dt);
 
 	//ln, motor2
 	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] - vf[j] + tu[j];
 	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
 	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] - vf[j] + vt[j];
-	carveascii_center(ctx, 0xffffff, tc, kr, kf, '2');
+	gl41ascii_center(ctx, 0xffffff, tc, kr, kf, '2');
 	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, 1, dt);
 
 	//lf, motor3
 	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] + vf[j] + tu[j];
 	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
 	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] + vf[j] + vt[j];
-	carveascii_center(ctx, 0xffffff, tc, kr, kf, '3');
+	gl41ascii_center(ctx, 0xffffff, tc, kr, kf, '3');
 	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1, dt);
 
 	//rn, motor4
 	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] - vf[j] + tu[j];
 	gl41solid_cylinder(ctx, 0x765432, tc, tr, tf, tu);
 	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] - vf[j] + vt[j];
-	carveascii_center(ctx, 0xffffff, tc, kr, kf, '4');
+	gl41ascii_center(ctx, 0xffffff, tc, kr, kf, '4');
 	gl41solid_propeller(ctx, 0xffffff, tc, kr, kf, ku, -1, dt);
 }
 static void drone_forgl41_estimate(
@@ -169,28 +169,28 @@ static void drone_forgl41_estimate(
 	gl41opaque_cylinder(ctx, 0x3f765432, tc, tr, tf, tu);
 	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] + vf[j] + vt[j];
 	gl41opaque_propeller(ctx, 0x3fffffff, tc, kr, kf, ku, 1, dt);
-	carveascii_center(ctx, 0xffffff, tc, kr, kf, '1');
+	gl41ascii_center(ctx, 0xffffff, tc, kr, kf, '1');
 
 	//ln, motor2
 	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] - vf[j] + tu[j];
 	gl41opaque_cylinder(ctx, 0x3f765432, tc, tr, tf, tu);
 	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] - vf[j] + vt[j];
 	gl41opaque_propeller(ctx, 0x3fffffff, tc, kr, kf, ku, 1, dt);
-	carveascii_center(ctx, 0xffffff, tc, kr, kf, '2');
+	gl41ascii_center(ctx, 0xffffff, tc, kr, kf, '2');
 
 	//lf, motor3
 	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] + vf[j] + tu[j];
 	gl41opaque_cylinder(ctx, 0x3f765432, tc, tr, tf, tu);
 	for(j=0;j<3;j++)tc[j] = vc[j] - vr[j] + vf[j] + vt[j];
 	gl41opaque_propeller(ctx, 0x3fffffff, tc, kr, kf, ku, -1, dt);
-	carveascii_center(ctx, 0xffffff, tc, kr, kf, '3');
+	gl41ascii_center(ctx, 0xffffff, tc, kr, kf, '3');
 
 	//rn, motor4
 	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] - vf[j] + tu[j];
 	gl41opaque_cylinder(ctx, 0x3f765432, tc, tr, tf, tu);
 	for(j=0;j<3;j++)tc[j] = vc[j] + vr[j] - vf[j] + vt[j];
 	gl41opaque_propeller(ctx, 0x3fffffff, tc, kr, kf, ku, -1, dt);
-	carveascii_center(ctx, 0xffffff, tc, kr, kf, '4');
+	gl41ascii_center(ctx, 0xffffff, tc, kr, kf, '4');
 }
 static void drone_draw_pixel(
 	struct entity* act, struct style* pin,

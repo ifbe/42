@@ -228,7 +228,7 @@ void gl41ascii_test(struct entity* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-void carveascii(struct entity* win, u32 rgb,
+void gl41ascii(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8 dat)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -283,7 +283,7 @@ void carveascii(struct entity* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-void carveascii_center(struct entity* win, u32 rgb,
+void gl41ascii_center(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8 dat)
 {
 	int j;
@@ -293,13 +293,13 @@ void carveascii_center(struct entity* win, u32 rgb,
 		tf[j] = vf[j]*2;
 		tc[j] = vc[j] - vr[j]/2 - vf[j];
 	}
-	carveascii(win, rgb, tc, tr, tf, dat);
+	gl41ascii(win, rgb, tc, tr, tf, dat);
 }
 
 
 
 
-void carveunicode(struct entity* win, u32 rgb,
+void gl41unicode(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 unicode)
 {
 	float bb = (float)(rgb&0xff) / 256.0;
@@ -356,34 +356,34 @@ void carveunicode(struct entity* win, u32 rgb,
 	ibuf[4] = vlen+2;
 	ibuf[5] = vlen+3;
 }
-void carveunicode_center(struct entity* win, u32 rgb,
+void gl41unicode_center(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 unicode)
 {
 	vec3 tc;
 	tc[0] = vc[0] - vr[0]/2 - vf[0]/2;
 	tc[1] = vc[1] - vr[1]/2 - vf[1]/2;
 	tc[2] = vc[2] - vr[2]/2 - vf[2]/2;
-	carveunicode(win, rgb, tc, vr, vf, unicode);
+	gl41unicode(win, rgb, tc, vr, vf, unicode);
 }
 
 
 
 
-void carveutf8(struct entity* win, u32 rgb,
+void gl41utf8(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
 	u32 unicode;
 	utf2unicode(buf, &unicode);
-	carveunicode(win, rgb, vc, vr, vf, unicode);
+	gl41unicode(win, rgb, vc, vr, vf, unicode);
 }
-void carveutf8_center(struct entity* win, u32 rgb,
+void gl41utf8_center(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
 	vec3 tc;
 	tc[0] = vc[0] - vr[0]/2 - vf[0]/2;
 	tc[1] = vc[1] - vr[1]/2 - vf[1]/2;
 	tc[2] = vc[2] - vr[2]/2 - vf[2]/2;
-	carveutf8(win, rgb, tc, vr, vf, buf, len);
+	gl41utf8(win, rgb, tc, vr, vf, buf, len);
 }
 
 
@@ -418,14 +418,14 @@ void carvestring(struct entity* win, u32 rgb,
 	{
 		k = utf2unicode(buf+j, &unicode);
 		if(k > 1){
-			carveunicode(win, rgb, tc, vr, vf, unicode);
+			gl41unicode(win, rgb, tc, vr, vf, unicode);
 			tc[0] += vr[0];
 			tc[1] += vr[1];
 			tc[2] += vr[2];
 			j += k;
 		}
 		else{
-			carveascii(win, rgb, tc, vr, vf, buf[j]);
+			gl41ascii(win, rgb, tc, vr, vf, buf[j]);
 			tc[0] += vr[0]/2;
 			tc[1] += vr[1]/2;
 			tc[2] += vr[2]/2;
@@ -464,7 +464,7 @@ void carvestring_center(struct entity* win, u32 rgb,
 	for(j=0;j<len;j++)
 	{
 		for(k=0;k<3;k++)tc[k] = vc[k] -vr[k]+tr[k]*(j+dx)/2 -vf[k];
-		carveascii(win, rgb, tc, tr, tf, buf[j]);
+		gl41ascii(win, rgb, tc, tr, tf, buf[j]);
 	}
 }
 

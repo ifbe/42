@@ -119,7 +119,7 @@ void mnist_draw_gl41_rt(struct entity* wnd, float* weight, float* vc, float* vr,
 		}
 		gl41solid_rect(wnd, 0x101010*(12-y), tc,tr,tf);
 		for(j=0;j<3;j++)tc[j] += vt[j]/1000000.0;
-		carveascii_center(wnd, 0, tc,tr,tf, 0x30+y);
+		gl41ascii_center(wnd, 0, tc,tr,tf, 0x30+y);
 	}
 if(0 == weight)return;
 

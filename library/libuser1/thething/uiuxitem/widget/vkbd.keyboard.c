@@ -177,7 +177,7 @@ void vkbd_draw_gl41(
 				else if(0xd == c)c = 'r';
 			}
 
-			carveascii_center(wnd, 0xffffff, tc, tr, tf, c);
+			gl41ascii_center(wnd, 0xffffff, tc, tr, tf, c);
 		}
 	}
 }

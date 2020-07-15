@@ -135,7 +135,7 @@ static void sudoku_draw_gl41(
 				tf[0] = vf[0] / 9;
 				tf[1] = vf[1] / 9;
 				tf[2] = vf[2] / 9;
-				carveascii_center(ctx, ~rgb, tc, tr, tf, 0x30+data[y*9+x]);
+				gl41ascii_center(ctx, ~rgb, tc, tr, tf, 0x30+data[y*9+x]);
 			}
 		}
 	}
