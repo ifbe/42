@@ -27,7 +27,7 @@ static void login_draw_gl41(
 		tr[j] = vr[j] / 4;
 		tf[j] = vf[j] / 4;
 	}
-	carvestring_center(ctx, 0xffffff, tc, tr, tf, (void*)"welcome!", 8);
+	gl41string_center(ctx, 0xffffff, tc, tr, tf, (void*)"welcome!", 8);
 
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vf[j]/8 +vt[j]/1000;
@@ -39,7 +39,7 @@ static void login_draw_gl41(
 		tc[j] += vt[j]/1000;
 		tr[j] /= 4;
 	}
-	carvestring_center(ctx, 0xffffff, tc, tr, tf, (void*)"username", 8);
+	gl41string_center(ctx, 0xffffff, tc, tr, tf, (void*)"username", 8);
 
 	for(j=0;j<3;j++){
 		tc[j] = vc[j] -vf[j]*3/8 +vt[j]/1000;
@@ -51,7 +51,7 @@ static void login_draw_gl41(
 		tc[j] += vt[j]/1000;
 		tr[j] /= 4;
 	}
-	carvestring_center(ctx, 0xffffff, tc, tr, tf, (void*)"password", 8);
+	gl41string_center(ctx, 0xffffff, tc, tr, tf, (void*)"password", 8);
 }
 static void login_draw_json(
 	struct entity* act, struct style* pin,

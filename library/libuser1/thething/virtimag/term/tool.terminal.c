@@ -226,11 +226,11 @@ static void terminal_draw_gl41(
 	if(0 == act->SERVER){
 		void* obuf = getstdout();
 		int ocur = getcurout();
-		carvetext_reverse(wnd, 0xffffff, vc, vr, vf, obuf, ocur);
+		gl41text_reverse(wnd, 0xffffff, vc, vr, vf, obuf, ocur);
 	}
 	else{
 /*		struct str* dat = act->RAWBUF;
-		carvetext(wnd, 0xffffff, vc,vr,vf, dat->buf, dat->len);*/
+		gl41text(wnd, 0xffffff, vc,vr,vf, dat->buf, dat->len);*/
 
 		struct uartterm* term = act->TTTBUF;
 		if(0 == term)return;

@@ -35,7 +35,7 @@ void border2d_draw_gl41(struct entity* scene, struct entity* wnd)
 			vec3_setlen(tr, 32);
 			vec3_setlen(tf, 32);
 			for(j=0;j<3;j++)tc[j] += sty->vt[j]/1000;
-			carvestring_center(wnd, 0xffffff, tc,tr,tf, (void*)&ent->fmt, 8);
+			gl41string_center(wnd, 0xffffff, tc,tr,tf, (void*)&ent->fmt, 8);
 		}
 		rel = samesrcnextdst(rel);
 	}

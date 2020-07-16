@@ -9,6 +9,17 @@ void dx11line_rect(          struct entity* win, u32 rgb, vec3 vc, vec3 vr, vec3
 void dx11solid_triangle(     struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
 void dx11solid_rect(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 
+void dx11ascii(              struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
+void dx11ascii_center(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
+void dx11unicode(            struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
+void dx11unicode_center(     struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 uni);
+void dx11utf8(               struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
+void dx11utf8_center(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
+
+void dx11decimal(             struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
+
+
+
 
 void gl41point(              struct entity* ctx, u32 rgb, vec3 vc);
 void gl41point_bezier(       struct entity* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);
@@ -76,16 +87,16 @@ void gl41unicode_center(     struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3
 void gl41utf8(               struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
 void gl41utf8_center(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
 
-void carvedecimal(            struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void carvehexadecimal(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void carvehex8_center(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-void carvestring(             struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carvestring_center(      struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carvetext(               struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carvetext_reverse(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
-void carvefloat(              struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, float data);
-void carvedouble(             struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, double data);
+void gl41decimal(             struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
+void gl41hexadecimal(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
+void gl41hex8_center(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
+void gl41string(              struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void gl41string_center(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void gl41text(                struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void gl41text_reverse(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void gl41float(               struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, float data);
+void gl41double(              struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, double data);
 
-void carveaxis(               struct entity* ctx);
-void carvefrustum(            struct entity* ctx, struct fstyle* sty);
-void select_3d(               struct entity* ctx, u32 rgb, struct fstyle* sty, u32 flag);
+void gl41axis(                struct entity* ctx);
+void gl41frustum(             struct entity* ctx, struct fstyle* sty);
+void gl41boundingvolume(      struct entity* ctx, u32 rgb, struct fstyle* sty, u32 flag);

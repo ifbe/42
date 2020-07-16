@@ -184,7 +184,7 @@ static void fslist_draw_gl41(
 				tr[j] = tr[j];
 				tf[j] = tf[j]/4.0;
 			}
-			carvestring_center(wnd,fg, tc,tr,tf, list->buf+head,tail-head);
+			gl41string_center(wnd,fg, tc,tr,tf, list->buf+head,tail-head);
 
 			cnt += 1;
 			head = tail+1;
@@ -195,7 +195,7 @@ static void fslist_draw_gl41(
 	vec3_setlen(tr, 32);
 	vec3_setlen(tf, 32);
 	for(j=0;j<3;j++){tc[j] = vc[j] -vr[j] -vf[j] +vt[j]/100.0;}
-	carvestring(wnd,0xffffff, tc,tr,tf, path->buf,path->len);
+	gl41string(wnd,0xffffff, tc,tr,tf, path->buf,path->len);
 }
 static void fslist_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {

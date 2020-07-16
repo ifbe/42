@@ -60,7 +60,7 @@ void tabbar_gl41_listtwig(struct entity* win, struct style* sty, struct entity* 
             st = (void*)(rel->srcfoot);
             if('#' == st->is.uc[3])rgb = 0x404040;
             else rgb = 0xff00ff;
-            carvestring_center(win, rgb, tc, rr, tf, (void*)&ac->fmt, 8);
+            gl41string_center(win, rgb, tc, rr, tf, (void*)&ac->fmt, 8);
 
             j++;
             if(j >= 64)break;
@@ -115,7 +115,7 @@ void tabbar_gl41_listroot(
             tr[2] = vr[2] / 2 / 16;
 
             aa = (void*)(rel->dstchip);
-            carvestring_center(win, 0xffffff, tc, tr, tf, (void*)(&aa->fmt), 8);
+            gl41string_center(win, 0xffffff, tc, tr, tf, (void*)(&aa->fmt), 8);
 
             if(j == act->ix0)tabbar_gl41_listtwig(win, sty, aa, j);
 

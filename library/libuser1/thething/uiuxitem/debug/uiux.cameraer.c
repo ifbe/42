@@ -107,7 +107,7 @@ found:
 			y += 1;
 
 			leaf = (void*)(rel->dstchip);
-			carvestring(win, rgb, tc, tr, tf, (void*)&leaf->fmt, 8);
+			gl41string(win, rgb, tc, tr, tf, (void*)&leaf->fmt, 8);
 		}
 
 		rel = samesrcnextdst(rel);
@@ -165,7 +165,7 @@ found:
 			y += 1;
 
 			leaf = (void*)(rel->dstchip);
-			carvestring(win, rgb, tc, tr, tf, (void*)&leaf->fmt, 8);
+			gl41string(win, rgb, tc, tr, tf, (void*)&leaf->fmt, 8);
 		}
 
 		rel = samesrcnextdst(rel);

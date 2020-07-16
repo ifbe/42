@@ -25,15 +25,15 @@ static void axis3d_perobj(struct entity* wnd, float* vc, float* vr, float* vf, f
 
 	//right
 	gl41line(wnd, 0xff0000, vc, tr);
-	carvefloat(wnd, 0xff0000, vc, nr, nf, lr);
+	gl41float(wnd, 0xff0000, vc, nr, nf, lr);
 
 	//front
 	gl41line(wnd, 0x00ff00, vc, tf);
-	carvefloat(wnd, 0xff0000, vc, nf, nt, lf);
+	gl41float(wnd, 0xff0000, vc, nf, nt, lf);
 
 	//above
 	gl41line(wnd, 0x0000ff, vc, tt);
-	carvefloat(wnd, 0xff0000, vc, nt, nr, lt);
+	gl41float(wnd, 0xff0000, vc, nt, nr, lt);
 }
 void axis3d_draw_gl41(struct entity* scene, struct entity* wnd)
 {

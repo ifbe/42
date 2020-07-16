@@ -101,13 +101,13 @@ static void calculator_draw_gl41(
 		tf[j] = vf[j] / 8;
 	}
 	for(j=0;j<3;j++)tc[j] = vc[j] + vf[j]*7/8 + vt[j]/64;
-	carvestring_center(ctx, 0xffffff, tc, tr, tf, buffer, 0);
+	gl41string_center(ctx, 0xffffff, tc, tr, tf, buffer, 0);
 	for(j=0;j<3;j++)tc[j] = vc[j] + vf[j]*5/8 + vt[j]/64;
-	carvestring_center(ctx, 0xffffff, tc, tr, tf, infix, 0);
+	gl41string_center(ctx, 0xffffff, tc, tr, tf, infix, 0);
 	for(j=0;j<3;j++)tc[j] = vc[j] + vf[j]*3/8 + vt[j]/64;
-	carvestring_center(ctx, 0xffffff, tc, tr, tf, postfix, 0);
+	gl41string_center(ctx, 0xffffff, tc, tr, tf, postfix, 0);
 	for(j=0;j<3;j++)tc[j] = vc[j] + vf[j]*1/8 + vt[j]/64;
-	carvestring_center(ctx, 0xffffff, tc, tr, tf, result, 0);
+	gl41string_center(ctx, 0xffffff, tc, tr, tf, result, 0);
 
 	//keypad
 	for(j=0;j<3;j++){

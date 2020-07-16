@@ -165,7 +165,7 @@ static void analog_draw_gl41(
 			gl41line(wnd, rgb, ta, tb);
 		}
 		for(j=0;j<3;j++)tc[j] = vc[j]+vt[j]+ (dat[6*off+j]+dat[6*off+j+3])/2;
-		carvefloat(wnd, rgb, tc,tr,tf, sts[k].volt);
+		gl41float(wnd, rgb, tc,tr,tf, sts[k].volt);
 	}
 }
 void analog_read_board(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

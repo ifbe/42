@@ -291,3 +291,97 @@ void dx11ascii_center(struct entity* win, u32 rgb,
 	}
 	dx11ascii(win, rgb, tc, tr, tf, dat);
 }
+
+
+
+
+void dx11string(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
+{
+	int j,k;
+	u32 unicode;
+	vec3 tc;
+
+	if(0 == buf)return;
+	if(0 == len)
+	{
+		while(buf[len] > 0x20)len++;
+	}
+	else
+	{
+		for(j=0;j<len;j++)
+		{
+			if(buf[j] < 0x20){len = j;break;}
+		}
+	}
+	if(len == 0)return;
+
+	j = k = 0;
+	tc[0] = vc[0];
+	tc[1] = vc[1];
+	tc[2] = vc[2];
+	while(j < len)
+	{
+		k = utf2unicode(buf+j, &unicode);
+		if(k > 1){
+			//dx11unicode(win, rgb, tc, vr, vf, unicode);
+			tc[0] += vr[0];
+			tc[1] += vr[1];
+			tc[2] += vr[2];
+			j += k;
+		}
+		else{
+			dx11ascii(win, rgb, tc, vr, vf, buf[j]);
+			tc[0] += vr[0]/2;
+			tc[1] += vr[1]/2;
+			tc[2] += vr[2]/2;
+			j++;
+		}
+	}
+}
+void dx11string_center(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
+{
+	float dx;
+	int j,k,cnt;
+	vec3 tc,tr,tf;
+
+	if(0 == buf)return;
+	if(0 == len){
+		while(buf[len] >= 0x20)len++;
+		if(0 == len)return;
+
+		cnt = len;
+	}
+	else{
+		for(cnt=0;cnt<len;cnt++){
+			if(buf[cnt] <= 0x20)break;
+		}
+	}
+	dx = (len-cnt)/2.0;
+
+	//eachsize = 2*vr/len
+	tr[0] = 4*vr[0]/len;
+	tr[1] = 4*vr[1]/len;
+	tr[2] = 4*vr[2]/len;
+	tf[0] = 2*vf[0];
+	tf[1] = 2*vf[1];
+	tf[2] = 2*vf[2];
+	for(j=0;j<len;j++)
+	{
+		for(k=0;k<3;k++)tc[k] = vc[k] -vr[k]+tr[k]*(j+dx)/2 -vf[k];
+		dx11ascii(win, rgb, tc, tr, tf, buf[j]);
+	}
+}
+
+
+
+
+void dx11decimal(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, u32 val)
+{
+	int len;
+	u8 str[16];
+	len = data2decstr(val, str);
+	dx11string(win, rgb, vc, vr, vf, str, len);
+}

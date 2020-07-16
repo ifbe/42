@@ -4,7 +4,7 @@ void invmvp(vec3 v, struct style* sty);
 
 
 
-void select_3d(struct entity* win, u32 rgb, struct fstyle* sty, u32 flag)
+void gl41boundingvolume(struct entity* win, u32 rgb, struct fstyle* sty, u32 flag)
 {
 	float* vc = sty->vc;
 	float* vr = sty->vr;
@@ -12,7 +12,7 @@ void select_3d(struct entity* win, u32 rgb, struct fstyle* sty, u32 flag)
 	float* vu = sty->vt;
 	gl41line_prism4(win, rgb, vc, vr, vf, vu);
 }
-void carveaxis(struct entity* win)
+void gl41axis(struct entity* win)
 {
 	vec3 va, vb;
 	va[0] = -10000.0;
@@ -37,7 +37,7 @@ void carveaxis(struct entity* win)
 	vb[2] = 10000.0;
 	gl41line(win, 0x0000ff, va, vb);
 }
-void carvefrustum(struct entity* ctx, struct fstyle* frus)
+void gl41frustum(struct entity* ctx, struct fstyle* frus)
 {
 	vec3 lbn,rbn,ltn,rtn;
 	vec3 lbf,rbf,ltf,rtf;
@@ -98,7 +98,7 @@ void carvefrustum(struct entity* ctx, struct fstyle* frus)
 	//say("(%f,%f,%f)->(%f,%f,%f)->(%f,%f,%f)\n",vc[0],vc[1],vc[2],lbn[0],lbn[1],lbn[2],rtn[0],rtn[1],rtn[2]);
 	//say("(%f,%f,%f)->(%f,%f,%f)->(%f,%f,%f)\n",vc[0],vc[1],vc[2],lbf[0],lbf[1],lbf[2],rtf[0],rtf[1],rtf[2]);
 }/*
-void carvefrustum(struct entity* win, struct fstyle* sty)
+void gl41frustum(struct entity* win, struct fstyle* sty)
 {
 	vec3 tc, tr, tf;
 	float* vc = sty->vc;

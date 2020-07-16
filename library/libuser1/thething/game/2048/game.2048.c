@@ -126,23 +126,64 @@ static void the2048_draw_dx11(
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
 	dx11solid_rect(ctx, 0x444444, vc, vr, vf);
+
+	u32 rgb;
+	int x,y;
+	vec3 tc, tr, tf, tu, f;
+	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
+	for(y=0;y<4;y++)
+	{
+		for(x=0;x<4;x++)
+		{
+			rgb = color2048[tab[y][x]];
+			//say("%x\n", rgb);
+
+			f[0] = (x+x-3) / 4.0;
+			f[1] = (3-y-y) / 4.0;
+			f[2] = val2048[tab[y][x]] / 2048.0;
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+
+			tr[0] = vr[0]/5;
+			tr[1] = vr[1]/5;
+			tr[2] = vr[2]/5;
+			tf[0] = vf[0]/5;
+			tf[1] = vf[1]/5;
+			tf[2] = vf[2]/5;
+			tu[0] = vu[0]*f[2];
+			tu[1] = vu[1]*f[2];
+			tu[2] = vu[2]*f[2];
+			//gl41solid_prism4(ctx, rgb, tc, tr, tf, tu);
+
+			tc[0] += tu[0] + vu[0]*0.01;
+			tc[1] += tu[1] + vu[1]*0.01;
+			tc[2] += tu[2] + vu[2]*0.01;
+			tr[0] = vr[0]/16;
+			tr[1] = vr[1]/16;
+			tr[2] = vr[2]/16;
+			tf[0] = vf[0]/16;
+			tf[1] = vf[1]/16;
+			tf[2] = vf[2]/16;
+			dx11decimal(ctx, ~rgb, tc, tr, tf, val2048[tab[y][x]]);
+		}
+	}
 }
 static void the2048_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
-	u32 rgb;
-	int x,y;
-	u8 (*tab)[4];
-	vec3 tc, tr, tf, tu, f;
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
 	gl41solid_rect(ctx, 0x444444, vc, vr, vf);
 
-	tab = (void*)(act->DATBUF) + (act->DATLEN)*16;
+	u32 rgb;
+	int x,y;
+	vec3 tc, tr, tf, tu, f;
+	u8 (*tab)[4] = (void*)(act->DATBUF) + (act->DATLEN)*16;
 	for(y=0;y<4;y++)
 	{
 		for(x=0;x<4;x++)
@@ -177,7 +218,7 @@ static void the2048_draw_gl41(
 			tf[0] = vf[0]/16;
 			tf[1] = vf[1]/16;
 			tf[2] = vf[2]/16;
-			carvedecimal(ctx, ~rgb, tc, tr, tf, val2048[tab[y][x]]);
+			gl41decimal(ctx, ~rgb, tc, tr, tf, val2048[tab[y][x]]);
 		}
 	}
 }

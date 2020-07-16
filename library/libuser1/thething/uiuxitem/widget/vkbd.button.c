@@ -43,7 +43,7 @@ void button_draw_gl41(
 	float* vt = geom->fshape.vt;
 	for(j=0;j<3;j++)tc[j] = vc[j]-vt[j]/64;
 	gl41opaque_rect(ctx, 0x40ffd010, tc, vr, vf);
-	carvestring_center(ctx, 0xff0000, vc, vr ,vf, act->STRBUF, 0);
+	gl41string_center(ctx, 0xff0000, vc, vr ,vf, act->STRBUF, 0);
 }
 static void button_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 {

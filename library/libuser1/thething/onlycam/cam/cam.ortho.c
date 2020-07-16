@@ -89,7 +89,7 @@ static int orthcam_draw_gl41(
 	sty->vb[0] = -sty->vu[0];
 	sty->vb[1] = -sty->vu[1];
 	sty->vb[2] = -sty->vu[2];
-	carvefrustum(ctx, sty);
+	gl41frustum(ctx, sty);
 */
 	return 0;
 }

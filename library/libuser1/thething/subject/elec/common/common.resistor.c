@@ -62,7 +62,7 @@ static void resistor_draw_gl41(
 		tr[j] = vr[j]/2;
 		tf[j] = vf[j]/2;
 	}
-	carvefloat(wnd, 0xffffff, tc,tr,tf, act->fx0);
+	gl41float(wnd, 0xffffff, tc,tr,tf, act->fx0);
 }
 static void resistor_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

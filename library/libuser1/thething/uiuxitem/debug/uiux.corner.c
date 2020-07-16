@@ -314,7 +314,7 @@ void corner_gl41_popup(
 		gl41opaque_rect(win, 0x3f000080, tc, tr, tf);
 
 		tr[0] = 1.0/32;
-		carvestring_center(win, 0xffffff, tc, tr, tf, (void*)"test", 8);
+		gl41string_center(win, 0xffffff, tc, tr, tf, (void*)"test", 8);
 	}
 }
 

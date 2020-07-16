@@ -389,7 +389,7 @@ void gl41utf8_center(struct entity* win, u32 rgb,
 
 
 
-void carvestring(struct entity* win, u32 rgb,
+void gl41string(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
 	int j,k;
@@ -433,7 +433,7 @@ void carvestring(struct entity* win, u32 rgb,
 		}
 	}
 }
-void carvestring_center(struct entity* win, u32 rgb,
+void gl41string_center(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
 {
 	float dx;
@@ -471,15 +471,15 @@ void carvestring_center(struct entity* win, u32 rgb,
 
 
 
-void carvedecimal(struct entity* win, u32 rgb,
+void gl41decimal(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 val)
 {
 	int len;
 	u8 str[16];
 	len = data2decstr(val, str);
-	carvestring(win, rgb, vc, vr, vf, str, len);
+	gl41string(win, rgb, vc, vr, vf, str, len);
 }
-void carvehexadecimal(struct entity* win, u32 rgb,
+void gl41hexadecimal(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 val)
 {
 	int j,len;
@@ -497,9 +497,9 @@ void carvehexadecimal(struct entity* win, u32 rgb,
 		len = 1;
 		str[7] = '0';
 	}
-	carvestring(win, rgb, vc, vr, vf, str+8-len, len);
+	gl41string(win, rgb, vc, vr, vf, str+8-len, len);
 }
-void carvehex8_center(struct entity* win, u32 rgb,
+void gl41hex8_center(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, u32 val)
 {
 	int j;
@@ -509,31 +509,31 @@ void carvehex8_center(struct entity* win, u32 rgb,
 		tr[j] = vr[j]*2;
 		tf[j] = vf[j]*2;
 	}
-	carvehexadecimal(win,rgb,tc,tr,tf,val);
+	gl41hexadecimal(win,rgb,tc,tr,tf,val);
 }
 
 
 
 
-void carvefloat(struct entity* win, u32 rgb,
+void gl41float(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, float data)
 {
 	u8 mystr[100];
 	float2decstr(data, mystr);
-	carvestring(win, rgb, vc, vr, vf, mystr, 0);
+	gl41string(win, rgb, vc, vr, vf, mystr, 0);
 }
-void carvedouble(struct entity* win, u32 rgb,
+void gl41double(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf, double data)
 {
 	u8 mystr[100];
 	double2decstr(data, mystr);
-	carvestring(win, rgb, vc, vr, vf, mystr, 0);
+	gl41string(win, rgb, vc, vr, vf, mystr, 0);
 }
 
 
 
 
-void carvetext(struct entity* win, u32 rgb,
+void gl41text(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf,
 	u8* buf, int len)
 {
@@ -553,7 +553,7 @@ void carvetext(struct entity* win, u32 rgb,
 		if('\n' > buf[j])break;
 		if('\n' == buf[j]){
 			//say("%.*s\n", j-k, buf+k);
-			carvestring(win, rgb, tc, tr, tf, buf+k, j-k);
+			gl41string(win, rgb, tc, tr, tf, buf+k, j-k);
 			tc[0] -= tf[0];
 			tc[1] -= tf[1];
 			tc[2] -= tf[2];
@@ -564,7 +564,7 @@ void carvetext(struct entity* win, u32 rgb,
 		}
 	}
 }
-void carvetext_reverse(struct entity* win, u32 rgb,
+void gl41text_reverse(struct entity* win, u32 rgb,
 	vec3 vc, vec3 vr, vec3 vf,
 	u8* buf, int len)
 {
@@ -584,13 +584,13 @@ void carvetext_reverse(struct entity* win, u32 rgb,
 	{
 		if(0 == j)
 		{
-			carvestring(win, rgb, tc, tr, tf, buf, k);
+			gl41string(win, rgb, tc, tr, tf, buf, k);
 			break;
 		}
 
 		if('\n' == buf[j])
 		{
-			carvestring(win, rgb, tc, tr, tf, buf+j+1, k-j-1);
+			gl41string(win, rgb, tc, tr, tf, buf+j+1, k-j-1);
 			tc[0] += tf[0];
 			tc[1] += tf[1];
 			tc[2] += tf[2];

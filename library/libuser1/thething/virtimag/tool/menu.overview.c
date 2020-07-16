@@ -423,7 +423,7 @@ void overview_draw_gl41(
 		tc[0] += vt[0]*0.01;
 		tc[1] += vt[1]*0.01;
 		tc[2] += vt[2]*0.01;
-		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&entity[j].fmt, 8);
+		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&entity[j].fmt, 8);
 	}
 
 	//supply
@@ -459,7 +459,7 @@ void overview_draw_gl41(
 		tc[0] += vt[0]*0.01;
 		tc[1] += vt[1]*0.01;
 		tc[2] += vt[2]*0.01;
-		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&supply[j].fmt, 8);
+		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&supply[j].fmt, 8);
 	}
 
 	//artery
@@ -494,7 +494,7 @@ void overview_draw_gl41(
 		tc[0] += vt[0]*0.01;
 		tc[1] += vt[1]*0.01;
 		tc[2] += vt[2]*0.01;
-		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&ele[j].type, 8);
+		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&ele[j].type, 8);
 	}
 
 	//system
@@ -529,7 +529,7 @@ void overview_draw_gl41(
 		tc[0] += vt[0]*0.01;
 		tc[1] += vt[1]*0.01;
 		tc[2] += vt[2]*0.01;
-		carvestring_center(ctx, fg, tc, tr, tf, (u8*)&obj[j].type, 8);
+		gl41string_center(ctx, fg, tc, tr, tf, (u8*)&obj[j].type, 8);
 	}
 
 	//entity.irel

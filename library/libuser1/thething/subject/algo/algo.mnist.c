@@ -86,7 +86,7 @@ void mnist_draw_gl41_lt(struct entity* wnd, u8* img, int id, float* vc, float* v
 		tf[j] = vf[j]/16;
 		tc[j] = vc[j] -vr[j] +vf[j]-tf[j]+vt[j]/100.0;
 	}
-	carvehexadecimal(wnd, 0xffffff, tc, tr, tf, id);
+	gl41hexadecimal(wnd, 0xffffff, tc, tr, tf, id);
 }
 void mnist_draw_gl41_lb(struct entity* wnd, int val, float* vc, float* vr, float* vf, float* vt)
 {
@@ -101,8 +101,8 @@ void mnist_draw_gl41_lb(struct entity* wnd, int val, float* vc, float* vr, float
 			tc[j] = vc[j] -vr[j]/2 -tf[j]*(y+1);
 		}
 		//gl41solid_rect(wnd, 0x400000, tc, tr, tf);
-		if(y == val)carvefloat(wnd, 0xff0000, tc, tr, tf, 1.0);
-		else carvefloat(wnd, 0xffffff, tc, tr, tf, 0.0);
+		if(y == val)gl41float(wnd, 0xff0000, tc, tr, tf, 1.0);
+		else gl41float(wnd, 0xffffff, tc, tr, tf, 0.0);
 	}
 }
 void mnist_draw_gl41_rt(struct entity* wnd, float* weight, float* vc, float* vr, float* vf, float* vt)
@@ -152,8 +152,8 @@ void mnist_draw_gl41_rb(struct entity* wnd, float* result, float* vc, float* vr,
 			tc[j] = vc[j] +vr[j]/2 -tf[j]*(y+1);
 		}
 		//gl41solid_rect(wnd, 0x400000, tc, tr, tf);
-		if(y == x)carvefloat(wnd, 0xff0000, tc, tr, tf, result[y]);
-		else carvefloat(wnd, 0xffffff, tc, tr, tf, result[y]);
+		if(y == x)gl41float(wnd, 0xff0000, tc, tr, tf, result[y]);
+		else gl41float(wnd, 0xffffff, tc, tr, tf, result[y]);
 	}
 }
 void mnist_draw_gl41(

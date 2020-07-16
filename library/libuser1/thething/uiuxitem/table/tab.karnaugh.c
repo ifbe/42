@@ -122,11 +122,11 @@ void karnaugh_draw_gl41(
 	}
 	for(x=0;x<4;x++){
 		for(j=0;j<3;j++)tc[j] = vc[j] +vr[j]*(2*x-2)/5 +vf[j]*4/5;
-		carvestring_center(wnd, 0xffffff, tc, tr, tf, (u8*)str[x], 2);
+		gl41string_center(wnd, 0xffffff, tc, tr, tf, (u8*)str[x], 2);
 	}
 	for(y=0;y<4;y++){
 		for(j=0;j<3;j++)tc[j] = vc[j] -vr[j]*4/5 +vf[j]*(2-2*y)/5;
-		carvestring_center(wnd, 0xffffff, tc, tr, tf, (u8*)str[y], 2);
+		gl41string_center(wnd, 0xffffff, tc, tr, tf, (u8*)str[y], 2);
 	}
 
 	//4x4

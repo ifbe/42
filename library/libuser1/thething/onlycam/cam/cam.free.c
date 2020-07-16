@@ -111,7 +111,7 @@ static int freecam_draw_gl41(
 	struct entity* ctx, struct style* none)
 {
 	//frustum
-	carvefrustum(ctx, &geom->frus);
+	gl41frustum(ctx, &geom->frus);
 
 	//ray from eye to far
 	gl41line(ctx, 0, geom->frus.vc, &act->fx0);

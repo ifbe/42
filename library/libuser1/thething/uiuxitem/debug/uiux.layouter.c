@@ -579,7 +579,7 @@ static int picker_draw(
 	struct relation* rel;
 	struct entity* www;
 	struct fstyle* sss;
-	//carvefrustum(win, &win->camera);
+	//gl41frustum(win, &win->camera);
 	//gl41line_prism4(win, 0xff00ff, win->target.vc, win->target.vr, win->target.vf, win->target.vu);
 /*
 	tc[0] = act->target.vc[0];

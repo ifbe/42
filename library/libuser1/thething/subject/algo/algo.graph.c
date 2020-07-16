@@ -158,7 +158,7 @@ static void graph_draw_gl41(
 			case _ent_:rgb = 0x00ffff;str = (void*)&tmp->fmt;break;
 			default:rgb = 0xff00ff;str = (void*)"????????";
 		}
-		carvestring_center(win, rgb, &vbuf[j*3], tr, tf, str, 8);
+		gl41string_center(win, rgb, &vbuf[j*3], tr, tf, str, 8);
 	}
 }
 static void graph_draw_json(

@@ -77,7 +77,7 @@ static void browser_draw_gl41(
 	tf[0] = vf[0]*0.02;
 	tf[1] = vf[1]*0.02;
 	tf[2] = vf[2]*0.02;
-	carvestring(win, 0x000000, tc, tr, tf, str->buf, str->len);
+	gl41string(win, 0x000000, tc, tr, tf, str->buf, str->len);
 }
 static void browser_draw_json(
 	struct entity* act, struct style* pin,

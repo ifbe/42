@@ -136,7 +136,7 @@ void navmenu_draw_gl41(struct entity* win)
 	vf[2] = 0.0;
 	gl41line2d_rect(win, 0xffffff, vc, vr, vf);
 	vr[0] /= 4.0;
-	carvestring2d_center(win, 0xffffff, vc, vr, vf, nametab[tmp], 0);
+	gl41string2d_center(win, 0xffffff, vc, vr, vf, nametab[tmp], 0);
 */
 }
 void navmenu_draw_pixel(struct entity* win)

@@ -70,7 +70,7 @@ void carveentity(struct entity* win, int val, vec3 vc, vec3 vr, vec3 vf)
 			tf[0] = 0.0;
 			tf[1] = vf[1]/4;
 			tf[2] = 0.0;
-			carvestring_center(win, 0x000000, tc, tr, tf, buf, 8);
+			gl41string_center(win, 0x000000, tc, tr, tf, buf, 8);
 		}
 	}
 }
@@ -87,7 +87,7 @@ void detail_draw_gl41_node(struct entity* ctx, struct entity* one, vec3 vc, vec3
 		tf[j] = vf[j]*2;
 	}
 	gl41line_circle(ctx, 0x404040, vc,tr,tf);
-	carvestring_center(ctx, 0xff0000, vc,vr,vf, (void*)&one->fmt, 8);
+	gl41string_center(ctx, 0xff0000, vc,vr,vf, (void*)&one->fmt, 8);
 }
 void detail_draw_gl41_foot(struct entity* ctx, void* aaa, void* bbb, vec3 src, vec3 dst, vec3 vr, vec3 vf, vec3 vt)
 {
@@ -111,7 +111,7 @@ void detail_draw_gl41_foot(struct entity* ctx, void* aaa, void* bbb, vec3 src, v
 	}
 	gl41line_triangle(ctx, 0xff0000, tc, t1, t2);
 	for(j=0;j<3;j++)t0[j] = (src[j]*2 + dst[j]*1)/3;
-	carvestring_center(ctx, 0xff0000, t0, tr, tf, aaa, 4);
+	gl41string_center(ctx, 0xff0000, t0, tr, tf, aaa, 4);
 
 	for(j=0;j<3;j++){
 		t1[j] = tc[j] - d1[j];
@@ -119,7 +119,7 @@ void detail_draw_gl41_foot(struct entity* ctx, void* aaa, void* bbb, vec3 src, v
 	}
 	gl41line_triangle(ctx, 0xff0000, tc, t1, t2);
 	for(j=0;j<3;j++)t0[j] = (src[j]*1 + dst[j]*2)/3;
-	carvestring_center(ctx, 0xff0000, t0, tr, tf, bbb, 4);
+	gl41string_center(ctx, 0xff0000, t0, tr, tf, bbb, 4);
 }
 int detail_draw_gl41(
 	struct entity* act, struct style* slot,
