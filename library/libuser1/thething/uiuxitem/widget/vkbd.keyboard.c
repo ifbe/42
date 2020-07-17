@@ -135,7 +135,21 @@ void vkbd_draw_dx11(
 			}
 			rgb = 0x80808080;
 			if((act->iw0)&&(x == act->ix0)&&(y == act->iy0))rgb = 0x80ff0000;
-			dx11solid_rect(wnd, rgb, tc, tr, tf);
+			dx11line_rect(wnd, rgb, tc, tr, tf);
+
+			c = x+(y<<4);
+			if((0==c)|(7==c)|(8==c)|(9==c)|(0xa==c)|(0xd==c))
+			{
+				if(0x0 == c)c = '0';
+				else if(0x7 == c)c = 'a';
+				else if(0x8 == c)c = 'b';
+				else if(0x9 == c)c = 't';
+				else if(0xa == c)c = 'n';
+				else if(0xd == c)c = 'r';
+			}
+
+			for(j=0;j<3;j++)tc[j] += vt[j]*0.01;
+			dx11ascii_center(wnd, 0xffffff, tc, tr, tf, c);
 		}
 	}
 }
@@ -229,7 +243,7 @@ static void vkbd_read_bydx11(_ent* ent,struct style* slot, _ent* wnd,struct styl
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
 	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
 
 	dx11data_before(wnd);
 	vkbd_draw_dx11(ent, 0, 0,(void*)&fs, wnd,area);

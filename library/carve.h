@@ -8,6 +8,8 @@ void dx11line_rect(          struct entity* win, u32 rgb, vec3 vc, vec3 vr, vec3
 
 void dx11solid_triangle(     struct entity* ctx, u32 rgb, vec3 v0, vec3 v1, vec3 v2);
 void dx11solid_rect(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+void dx11solid_prism4(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
+void dx11solid_cylinder(     struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 
 void dx11ascii(              struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);
 void dx11ascii_center(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8 dat);

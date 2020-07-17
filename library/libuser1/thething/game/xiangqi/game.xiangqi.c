@@ -320,7 +320,103 @@ void xiangqi_draw_pixel(
 		}//forx
 	}//fory
 }
-static void xiangqi_draw_gl41(
+static void xiangqi_dx11draw(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
+{
+	int x,y;
+	u32 chesscolor, fontcolor, temp;
+	vec3 tc, tr, tf, tu, f;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
+	dx11solid_rect(ctx, 0x8d6f25, vc, vr, vf);
+
+	for(y=-5;y<5;y++)
+	{
+		f[0] = 8.0/9;
+		f[1] = (2*y+1)/10.0;
+		f[2] = 0.0;
+		tc[0] = vc[0] - f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+		tc[1] = vc[1] - f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+		tc[2] = vc[2] - f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		dx11line(ctx, 0x222222, tc, tr);
+	}
+	for(x=-4;x<5;x++)
+	{
+		f[0] = x*2/9.0;
+		f[1] = -1.0/10.0;
+		f[2] = 0.0;
+		tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+		tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+		tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		f[1] = -9.0/10.0;
+		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		dx11line(ctx, 0x222222, tc, tr);
+
+		f[1] = 1.0/10.0;
+		tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+		tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+		tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		f[1] = 9.0/10.0;
+		tr[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+		tr[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+		tr[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+		dx11line(ctx, 0x222222, tc, tr);
+	}
+
+	for(y=0;y<10;y++)
+	{
+		for(x=0;x<9;x++)
+		{
+			//empty
+			if(data[y][x] < 'A')continue;
+
+			//>0x41
+			else if(data[y][x] <= 'Z')fontcolor = 0;
+
+			//>0x61
+			else if(data[y][x] <= 'z')fontcolor = 0xff0000;
+
+			f[0] = (x+x-8)/9.0;
+			f[1] = (y+y-9)/10.0;
+			f[2] = 1.0/20;
+			tc[0] = vc[0] + f[0]*vr[0] - f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] - f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] - f[1]*vf[2] + f[2]*vu[2];
+			tr[0] = vr[0] / 9.1;
+			tr[1] = vr[1] / 9.1;
+			tr[2] = vr[2] / 9.1;
+			tf[0] = vf[0] / 9.1;
+			tf[1] = vf[1] / 9.1;
+			tf[2] = vf[2] / 9.1;
+			tu[0] = vu[0] / 20.0;
+			tu[1] = vu[1] / 20.0;
+			tu[2] = vu[2] / 20.0;
+			dx11solid_cylinder(ctx, 0xf9d65b, tc, tr, tf, tu);
+			//if((x==act->PICKx)&&(y==act->PICKy))dx11opaque_prism4(ctx, 0x8000ffff, tc,tr,tf,tu);
+
+			tc[0] += tu[0] + vu[0]*0.01;
+			tc[1] += tu[1] + vu[1]*0.01;
+			tc[2] += tu[2] + vu[2]*0.01;
+			tr[0] = vr[0] / 8;
+			tr[1] = vr[1] / 8;
+			tr[2] = vr[2] / 8;
+			tf[0] = vf[0] / 8;
+			tf[1] = vf[1] / 8;
+			tf[2] = vf[2] / 8;
+			dx11utf8_center(ctx, fontcolor, tc, tr, tf, (u8*)char2hanzi(data[y][x]), 0);
+		}
+	}
+}
+static void xiangqi_gl41draw(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -412,8 +508,7 @@ static void xiangqi_draw_gl41(
 			tf[0] = vf[0] / 8;
 			tf[1] = vf[1] / 8;
 			tf[2] = vf[2] / 8;
-			gl41utf8_center(ctx, fontcolor, tc, tr, tf,
-				(u8*)char2hanzi(data[y][x]), 0);
+			gl41utf8_center(ctx, fontcolor, tc, tr, tf, (u8*)char2hanzi(data[y][x]), 0);
 		}
 	}
 }
@@ -495,11 +590,15 @@ static void xiangqi_taking_bycam(_ent* ent,int foot, _syn* stack,int sp, void* a
 	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		xiangqi_draw_gl41(ent,slot, wor,geom, wnd,area);
+	if( 0 == stack)return;
+	if('v'!= key)return;
+
+	slot = stack[sp-1].pfoot;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	switch(wnd->fmt){
+	case _dx11full_:xiangqi_dx11draw(ent,slot, wor,geom, wnd,area);break;
+	case _gl41full_:xiangqi_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
 }
 static void xiangqi_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

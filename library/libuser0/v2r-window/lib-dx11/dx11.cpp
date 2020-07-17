@@ -435,13 +435,16 @@ void Render_one(struct dx11data* cam, struct dx11data* lit, struct dx11data* one
 }
 void Render_all(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque, struct supply* wnd, struct fstyle* area)
 {
+	//target
+	g_dx11context->OMSetRenderTargets(1, &g_renderTargetView, g_depthStencilView);
+
+	//viewport
 	float x0,y0,ww,hh;
 	x0 = area->vc[0] * wnd->fbwidth;
 	y0 = area->vc[1] * wnd->fbheight;
 	ww = area->vq[0] * wnd->fbwidth;
 	hh = area->vq[1] * wnd->fbheight;
 
-	//viewport
 	D3D11_VIEWPORT vp = {0};
 	vp.TopLeftX = x0;
 	vp.TopLeftY = wnd->fbheight - (y0+hh);
@@ -593,9 +596,6 @@ BOOL InitD3D11()
 		MessageBox(NULL, "CreateDepthStencilView", "error",MB_OK);
 		return FALSE;
 	}
-
-	// g.将视图绑定到输出合并器阶段
-	g_dx11context->OMSetRenderTargets(1,&g_renderTargetView,g_depthStencilView);
 	depthStencilBuffer->Release();
 
 	//no cull

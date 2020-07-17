@@ -385,3 +385,93 @@ void dx11decimal(struct entity* win, u32 rgb,
 	len = data2decstr(val, str);
 	dx11string(win, rgb, vc, vr, vf, str, len);
 }
+
+
+
+
+void dx11unicode(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, u32 unicode)
+{
+	float bb = (float)(rgb&0xff) / 256.0;
+	float gg = (float)((rgb>>8)&0xff) / 256.0;
+	float rr = (float)((rgb>>16)&0xff) / 256.0;
+
+	float* vbuf;
+	u16* ibuf;
+	int vvv = (unicode&0xffff)/0x4000;
+	int vlen = dx11ascii_vars(win, vvv, &vbuf, &ibuf, 4, 2);
+	if(vlen < 0)return;
+
+	unicode = unicode&0x3fff;
+	vbuf[ 0] = vc[0];
+	vbuf[ 1] = vc[1];
+	vbuf[ 2] = vc[2];
+	vbuf[ 3] = rr;
+	vbuf[ 4] = gg;
+	vbuf[ 5] = bb;
+	vbuf[ 6] = (unicode&0x7f)/128.0;
+	vbuf[ 7] = ((unicode>>7)+1)/128.0;
+
+	vbuf[ 9] = vc[0]+vr[0];
+	vbuf[10] = vc[1]+vr[1];
+	vbuf[11] = vc[2]+vr[2];
+	vbuf[12] = rr;
+	vbuf[13] = gg;
+	vbuf[14] = bb;
+	vbuf[15] = ((unicode&0x7f)+1)/128.0;
+	vbuf[16] = ((unicode>>7)+1)/128.0;
+
+	vbuf[18] = vc[0]+vf[0];
+	vbuf[19] = vc[1]+vf[1];
+	vbuf[20] = vc[2]+vf[2];
+	vbuf[21] = rr;
+	vbuf[22] = gg;
+	vbuf[23] = bb;
+	vbuf[24] = (unicode&0x7f)/128.0;
+	vbuf[25] = (unicode>>7)/128.0;
+
+	vbuf[27] = vc[0]+vr[0]+vf[0];
+	vbuf[28] = vc[1]+vr[1]+vf[1];
+	vbuf[29] = vc[2]+vr[2]+vf[2];
+	vbuf[30] = rr;
+	vbuf[31] = gg;
+	vbuf[32] = bb;
+	vbuf[33] = ((unicode&0x7f)+1)/128.0;
+	vbuf[34] = (unicode>>7)/128.0;
+
+	ibuf[0] = vlen+0;
+	ibuf[1] = vlen+1;
+	ibuf[2] = vlen+3;
+	ibuf[3] = vlen+0;
+	ibuf[4] = vlen+2;
+	ibuf[5] = vlen+3;
+}
+void dx11unicode_center(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, u32 unicode)
+{
+	vec3 tc;
+	tc[0] = vc[0] - vr[0]/2 - vf[0]/2;
+	tc[1] = vc[1] - vr[1]/2 - vf[1]/2;
+	tc[2] = vc[2] - vr[2]/2 - vf[2]/2;
+	dx11unicode(win, rgb, tc, vr, vf, unicode);
+}
+
+
+
+
+void dx11utf8(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
+{
+	u32 unicode;
+	utf2unicode(buf, &unicode);
+	dx11unicode(win, rgb, vc, vr, vf, unicode);
+}
+void dx11utf8_center(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, u8* buf, int len)
+{
+	vec3 tc;
+	tc[0] = vc[0] - vr[0]/2 - vf[0]/2;
+	tc[1] = vc[1] - vr[1]/2 - vf[1]/2;
+	tc[2] = vc[2] - vr[2]/2 - vf[2]/2;
+	dx11utf8(win, rgb, tc, vr, vf, buf, len);
+}

@@ -6,6 +6,8 @@
 void carvetrigonindex_triangle_v3n3x3(float* vbuf,int vlen, u16* ibuf,int ilen, vec3 v0,vec3 v1,vec3 v2);
 void carvetrigonindex_rect_v3n3x3(    float* vbuf,int vlen, u16* ibuf,int ilen, vec3 vc,vec3 vr,vec3 vf);
 void carvetrigonindex_circle_v3n3x3(  float* vbuf,int vlen, u16* ibuf,int ilen, vec3 vc,vec3 vr,vec3 vf);
+void carvetrigonindex_cask_v3n3x3(    float* vbuf,int vlen, u16* ibuf,int ilen, vec3 vc,vec3 vr,vec3 vf,vec3 vt);
+void carvetrigonindex_prism4_v3n3x3(  float* vbuf,int vlen, u16* ibuf,int ilen, vec3 vc,vec3 vr,vec3 vf,vec3 vt);
 void carvetrigonindex_sphere_v3n3x3(  float* vbuf,int vlen, u16* ibuf,int ilen, vec3 vc,vec3 vr,vec3 vf,vec3 vt);
 
 
@@ -150,4 +152,92 @@ void dx11solid_rect(struct entity* win, u32 rgb,
 		vbuf[j + 8] = bb;
 	}
 	carvetrigonindex_rect_v3n3x3(vbuf,vlen, ibuf,0, vc,vr,vf);
+}
+
+
+
+
+void dx11solid_circle(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = dx11solidtrigon_vars(win, 0, &vbuf, &ibuf, circleacc+1, circleacc);
+	if(vlen < 0)return;
+
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<9*(circleacc+1);j+=9){
+		vbuf[j + 6] = rr;
+		vbuf[j + 7] = gg;
+		vbuf[j + 8] = bb;
+	}
+	carvetrigonindex_circle_v3n3x3(vbuf,vlen, ibuf,0, vc,vr,vf);
+}
+
+
+
+void dx11solid_cask(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = dx11solidtrigon_vars(win, 0, &vbuf, &ibuf, acc * 2, acc * 2);
+	if(vlen < 0)return;
+
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<9*(acc*2);j+=9){
+		vbuf[j + 6] = rr;
+		vbuf[j + 7] = gg;
+		vbuf[j + 8] = bb;
+	}
+	carvetrigonindex_cask_v3n3x3(vbuf,vlen, ibuf,0, vc,vr,vf,vu);
+}
+void dx11solid_cylinder(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+	vec3 tc;
+	vec3 tf;
+	dx11solid_cask(win, rgb, vc, vr, vf, vu);
+
+	tc[0] = vc[0]+vu[0];
+	tc[1] = vc[1]+vu[1];
+	tc[2] = vc[2]+vu[2];
+	dx11solid_circle(win, rgb, tc, vr, vf);
+
+	tc[0] = vc[0]-vu[0];
+	tc[1] = vc[1]-vu[1];
+	tc[2] = vc[2]-vu[2];
+	tf[0] = -vf[0];
+	tf[1] = -vf[1];
+	tf[2] = -vf[2];
+	dx11solid_circle(win, rgb, tc, vr, tf);
+}
+
+
+
+
+void dx11solid_prism4(struct entity* win, u32 rgb,
+	vec3 vc, vec3 vr, vec3 vf, vec3 vu)
+{
+	float* vbuf;
+	u16* ibuf;
+	int vlen = dx11solidtrigon_vars(win, 0, &vbuf, &ibuf, 24, 12);
+	if(vlen < 0)return;
+
+	int j;
+	float bb = (float)(rgb&0xff) / 255.0;
+	float gg = (float)((rgb>>8)&0xff) / 255.0;
+	float rr = (float)((rgb>>16)&0xff) / 255.0;
+	for(j=0;j<9*24;j+=9){
+		vbuf[j + 6] = rr;
+		vbuf[j + 7] = gg;
+		vbuf[j + 8] = bb;
+	}
+	carvetrigonindex_prism4_v3n3x3(vbuf,vlen, ibuf,0, vc,vr,vf,vu);
 }
