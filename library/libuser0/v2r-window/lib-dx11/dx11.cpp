@@ -11,10 +11,6 @@ int dx11easy_upload(ID3D11DeviceContext* devctx);
 int dx11easy_render(ID3D11DeviceContext* devctx);
 
 //wnd thing
-//HINSTANCE	g_hInstance(NULL);
-HWND		g_hWnd(NULL);
-UINT		g_winWidth(1024);
-UINT		g_winHeight(768);
 static int leftdown=0;
 static int rightdown=0;
 static POINT pt, pe;
@@ -24,9 +20,12 @@ static RECT rt, re;
 ID3D11Device*           g_dx11device(NULL);
 ID3D11DeviceContext*    g_dx11context(NULL);
 IDXGISwapChain*         g_dx11swapchain(NULL);
+
 ID3D11DepthStencilView* g_depthStencilView(NULL);
 ID3D11RenderTargetView* g_renderTargetView(NULL);
+
 ID3D11RasterizerState*  g_rasterstate(NULL);
+ID3D11BlendState*       g_blendstate(NULL);
 
 //input layout
 D3D11_INPUT_ELEMENT_DESC inputlayout_p4c4[] = {
@@ -435,9 +434,6 @@ void Render_one(struct dx11data* cam, struct dx11data* lit, struct dx11data* one
 }
 void Render_all(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque, struct supply* wnd, struct fstyle* area)
 {
-	//target
-	g_dx11context->OMSetRenderTargets(1, &g_renderTargetView, g_depthStencilView);
-
 	//viewport
 	float x0,y0,ww,hh;
 	x0 = area->vc[0] * wnd->fbwidth;
@@ -465,11 +461,15 @@ void Render_all(struct dx11data** cam, struct dx11data** lit, struct dx11data** 
 	}
 */
 	int j;
+	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+	g_dx11context->OMSetBlendState(0, blendFactor, 0xffffffff);
 	for(j=0;j<64;j++){
 		if(0 == solid[j])continue;
 		Render_one(cam[0], lit[0], solid[j]);
 	}//solid
 
+	g_dx11context->OMSetBlendState(g_blendstate, blendFactor, 0xffffffff);
 	for(j=0;j<64;j++){
 		if(0 == opaque[j])continue;
 		Render_one(cam[0], lit[0], opaque[j]);
@@ -479,16 +479,75 @@ void Render_all(struct dx11data** cam, struct dx11data** lit, struct dx11data** 
 
 
 
-void FreeD3D11()
+void FreeTEXcd()
 {
 	g_depthStencilView->Release();
 	g_renderTargetView->Release();
+}
+BOOL InitTEXcd(struct supply* wnd)
+{
+	// e.创建渲染目标视图
+	ID3D11Texture2D *backBuffer(NULL);
+	g_dx11swapchain->GetBuffer(0,__uuidof(ID3D11Texture2D),reinterpret_cast<void**>(&backBuffer));
 
+	HRESULT hr = g_dx11device->CreateRenderTargetView(backBuffer,NULL,&g_renderTargetView);
+	if(FAILED(hr))
+	{
+		MessageBox(NULL, "CreateRenderTargetView", "error",MB_OK);
+		return FALSE;
+	}
+	backBuffer->Release();
+
+	// f.创建深度缓冲区和其视图
+	UINT m4xMsaaQuality(0);
+	g_dx11device->CheckMultisampleQualityLevels(
+		DXGI_FORMAT_R8G8B8A8_UNORM,
+		4,
+		&m4xMsaaQuality
+	);
+
+	D3D11_TEXTURE2D_DESC depthStencilDesc = {0};
+	depthStencilDesc.Width				= wnd->width;
+	depthStencilDesc.Height				= wnd->height;
+	depthStencilDesc.MipLevels			= 1;
+	depthStencilDesc.ArraySize			= 1;
+	depthStencilDesc.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depthStencilDesc.SampleDesc.Count	= 4;
+	depthStencilDesc.SampleDesc.Quality	= m4xMsaaQuality-1;
+	depthStencilDesc.Usage				= D3D11_USAGE_DEFAULT;
+	depthStencilDesc.BindFlags			= D3D11_BIND_DEPTH_STENCIL;
+	depthStencilDesc.CPUAccessFlags		= 0;
+	depthStencilDesc.MiscFlags			= 0;
+
+	ID3D11Texture2D *depthStencilBuffer(NULL);
+	hr = g_dx11device->CreateTexture2D(&depthStencilDesc,NULL,&depthStencilBuffer);
+	if(FAILED(hr))
+	{
+		MessageBox(NULL, "CreateTexture2D(depthstencil)", "error",MB_OK);
+		return FALSE;
+	}
+
+	hr = g_dx11device->CreateDepthStencilView(depthStencilBuffer,NULL,&g_depthStencilView);
+	if(FAILED(hr))
+	{
+		MessageBox(NULL, "CreateDepthStencilView", "error",MB_OK);
+		return FALSE;
+	}
+	depthStencilBuffer->Release();
+
+	return TRUE;
+}
+
+
+
+
+void FreeD3D11()
+{
 	g_dx11swapchain->Release();
 	g_dx11context->Release();
 	g_dx11device->Release();
 }
-BOOL InitD3D11()
+BOOL InitD3D11(struct supply* wnd)
 {
 	// a.创建设备和上下文
 	D3D_FEATURE_LEVEL myFeatureLevel;
@@ -520,12 +579,13 @@ BOOL InitD3D11()
 	g_dx11device->CheckMultisampleQualityLevels(
 		DXGI_FORMAT_R8G8B8A8_UNORM,
 		4,
-		&m4xMsaaQuality);
+		&m4xMsaaQuality
+	);
 
 	// c.准备交换链属性
 	DXGI_SWAP_CHAIN_DESC sd = {0};
-	sd.BufferDesc.Width = g_winWidth;
-	sd.BufferDesc.Height = g_winHeight;
+	sd.BufferDesc.Width = wnd->width;
+	sd.BufferDesc.Height = wnd->height;
 	sd.BufferDesc.RefreshRate.Numerator = 60;
 	sd.BufferDesc.RefreshRate.Denominator = 1;
 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -536,7 +596,7 @@ BOOL InitD3D11()
 	sd.SampleDesc.Quality = m4xMsaaQuality-1;
 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	sd.BufferCount = 1;
-	sd.OutputWindow = g_hWnd;
+	sd.OutputWindow = (HWND)wnd->hwnd;
 	sd.Windowed = true;
 	sd.SwapEffect = DXGI_SWAP_EFFECT_DISCARD;
 	sd.Flags = 0;
@@ -558,52 +618,27 @@ BOOL InitD3D11()
 	dxgiAdapter->Release();
 	dxgiDevice->Release();
 
-	// e.创建渲染目标视图
-	ID3D11Texture2D *backBuffer(NULL);
-	g_dx11swapchain->GetBuffer(0,__uuidof(ID3D11Texture2D),reinterpret_cast<void**>(&backBuffer));
-	hr = g_dx11device->CreateRenderTargetView(backBuffer,NULL,&g_renderTargetView);
-	if(FAILED(hr))
-	{
-		MessageBox(NULL, "CreateRenderTargetView", "error",MB_OK);
-		return FALSE;
-	}
-	backBuffer->Release();
+	//cull
+	D3D11_RASTERIZER_DESC culldesc;
+	ZeroMemory(&culldesc, sizeof(D3D11_RASTERIZER_DESC));
+	culldesc.FillMode = D3D11_FILL_SOLID;
+	culldesc.CullMode = D3D11_CULL_NONE;
+	g_dx11device->CreateRasterizerState(&culldesc, &g_rasterstate);
 
-	// f.创建深度缓冲区和其视图
-	D3D11_TEXTURE2D_DESC depthStencilDesc = {0};
-	depthStencilDesc.Width				= g_winWidth;
-	depthStencilDesc.Height				= g_winHeight;
-	depthStencilDesc.MipLevels			= 1;
-	depthStencilDesc.ArraySize			= 1;
-	depthStencilDesc.Format				= DXGI_FORMAT_D24_UNORM_S8_UINT;
-	depthStencilDesc.SampleDesc.Count	= 4;
-	depthStencilDesc.SampleDesc.Quality	= m4xMsaaQuality-1;
-	depthStencilDesc.Usage				= D3D11_USAGE_DEFAULT;
-	depthStencilDesc.BindFlags			= D3D11_BIND_DEPTH_STENCIL;
-	depthStencilDesc.CPUAccessFlags		= 0;
-	depthStencilDesc.MiscFlags			= 0;
-
-	ID3D11Texture2D *depthStencilBuffer(NULL);
-	hr = g_dx11device->CreateTexture2D(&depthStencilDesc,NULL,&depthStencilBuffer);
-	if(FAILED(hr))
-	{
-		MessageBox(NULL, "CreateTexture2D(depthstencil)", "error",MB_OK);
-		return FALSE;
-	}
-	hr = g_dx11device->CreateDepthStencilView(depthStencilBuffer,NULL,&g_depthStencilView);
-	if(FAILED(hr))
-	{
-		MessageBox(NULL, "CreateDepthStencilView", "error",MB_OK);
-		return FALSE;
-	}
-	depthStencilBuffer->Release();
-
-	//no cull
-	D3D11_RASTERIZER_DESC desc;
-	ZeroMemory(&desc, sizeof(D3D11_RASTERIZER_DESC));
-	desc.FillMode = D3D11_FILL_SOLID;
-	desc.CullMode = D3D11_CULL_NONE;
-	g_dx11device->CreateRasterizerState(&desc, &g_rasterstate);
+	//blend
+	D3D11_BLEND_DESC blenddesc;
+	blenddesc.AlphaToCoverageEnable = false;
+	blenddesc.IndependentBlendEnable = false;
+	blenddesc.RenderTarget[0].BlendEnable = true;
+	blenddesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blenddesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blenddesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blenddesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blenddesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blenddesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blenddesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+	hr = g_dx11device->CreateBlendState(&blenddesc, &g_blendstate);
+ 
 	return TRUE;
 }
 
@@ -798,9 +833,15 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 			int h = (lparam>>16)&0xffff;
 			//printf("wm_size:%d,%d\n", w, h);
 
-			if(win != 0){
+			if(win){
+				//FreeTEXcd();
+
 				win->fbwidth = win->width = w;
 				win->fbheight= win->height= h;
+
+				//g_dx11swapchain->ResizeBuffers();
+
+				//InitTexcd(win);
 			}
 
 			//eventwrite(0x657a6973, 0x4077, addr, 0);
@@ -819,27 +860,31 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 void FreeWin32()
 {
 }
-BOOL InitWin32()
+BOOL InitWin32(struct supply* wnd)
 {
-	g_hWnd = CreateWindow(
+	HWND hwnd = CreateWindow(
 		"d3d11",
 		"d3d11",
 		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT,CW_USEDEFAULT,
-		g_winWidth,g_winHeight,
+		CW_USEDEFAULT,
+		CW_USEDEFAULT,
+		wnd->width,
+		wnd->height,
 		NULL,
 		NULL,
 		0,
 		NULL
 	);
-	if(!g_hWnd){
+	if(!hwnd){
 		MessageBox(NULL, "CreateWindow", "error",MB_OK);
 		return FALSE;
 	}
 
-	ShowWindow(g_hWnd,SW_SHOW);
-	UpdateWindow(g_hWnd);
+	ShowWindow(hwnd,SW_SHOW);
+	UpdateWindow(hwnd);
 
+	SetWindowLongPtr(hwnd, GWLP_USERDATA, (u64)wnd);
+	wnd->hwnd = hwnd;
 	return TRUE;
 }
 
@@ -889,6 +934,9 @@ int fullwindow_giving(struct supply* wnd,int foot, struct halfrel* stack,int sp,
 
 int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	//target
+	g_dx11context->OMSetRenderTargets(1, &g_renderTargetView, g_depthStencilView);
+
 	//clear
 	float color[4] = {0.1, 0.1, 0.1, 1.0};
 	g_dx11context->ClearRenderTargetView(g_renderTargetView,reinterpret_cast<float*>(&color));
@@ -945,6 +993,7 @@ int windowmodify(struct supply* wnd)
 int windowdelete(struct supply* wnd)
 {
 	dx11easy_delete();
+	FreeTEXcd();
 	FreeD3D11();
 	FreeWin32();
 	return 0;
@@ -961,11 +1010,11 @@ int windowcreate(struct supply* wnd)
 	wnd->dxfull_solid  = (struct dx11data**)memorycreate(0x10000, 0);
 	wnd->dxfull_opaque = (struct dx11data**)memorycreate(0x10000, 0);
 
-	if(!InitWin32())return -1;
-	if(!InitD3D11())return -1;
+	if(!InitWin32(wnd))return -1;
+	if(!InitD3D11(wnd))return -1;
+	if(!InitTEXcd(wnd))return -1;
 	dx11easy_create();
 
-	SetWindowLongPtr(g_hWnd, GWLP_USERDATA, (u64)wnd);
 	return 0;
 }
 

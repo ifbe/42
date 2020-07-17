@@ -37,8 +37,7 @@ char dx11ascii_frag[] =
 "};\n"
 "float4 main(PSin input) : SV_TARGET{\n"
 "	float2 uvw = input.coord;\n"
-"	float3 bgr = input.color * b8g8r8.Sample(status, uvw).rrr;\n"
-"	return float4(bgr, 1.0);\n"
+"	return float4(input.color, 1.0) * b8g8r8.Sample(status, uvw).rrrr;\n"
 "}";
 static u8* buf = 0;
 
