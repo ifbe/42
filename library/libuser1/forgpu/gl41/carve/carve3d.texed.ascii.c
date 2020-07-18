@@ -408,7 +408,7 @@ void gl41string(struct entity* win, u32 rgb,
 			if(buf[j] < 0x20){len = j;break;}
 		}
 	}
-	if(len == 0)return;
+	if(0 == len)return;
 
 	j = k = 0;
 	tc[0] = vc[0];

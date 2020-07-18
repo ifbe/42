@@ -17,15 +17,16 @@ static POINT pt, pe;
 static RECT rt, re;
 
 //d3d thing
-ID3D11Device*           g_dx11device(NULL);
-ID3D11DeviceContext*    g_dx11context(NULL);
-IDXGISwapChain*         g_dx11swapchain(NULL);
+ID3D11Device*            g_dx11device(NULL);
+ID3D11DeviceContext*     g_dx11context(NULL);
+IDXGISwapChain*          g_dx11swapchain(NULL);
 
-ID3D11DepthStencilView* g_depthStencilView(NULL);
-ID3D11RenderTargetView* g_renderTargetView(NULL);
+ID3D11DepthStencilView*  g_depthStencilView(NULL);
+ID3D11RenderTargetView*  g_renderTargetView(NULL);
 
-ID3D11RasterizerState*  g_rasterstate(NULL);
-ID3D11BlendState*       g_blendstate(NULL);
+ID3D11RasterizerState*   g_rasterstate(NULL);
+ID3D11BlendState*        g_blendstate(NULL);
+ID3D11DepthStencilState* g_depthstate(NULL);
 
 //input layout
 D3D11_INPUT_ELEMENT_DESC inputlayout_p4c4[] = {
@@ -435,11 +436,10 @@ void Render_one(struct dx11data* cam, struct dx11data* lit, struct dx11data* one
 void Render_all(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque, struct supply* wnd, struct fstyle* area)
 {
 	//viewport
-	float x0,y0,ww,hh;
-	x0 = area->vc[0] * wnd->fbwidth;
-	y0 = area->vc[1] * wnd->fbheight;
-	ww = area->vq[0] * wnd->fbwidth;
-	hh = area->vq[1] * wnd->fbheight;
+	float x0 = area->vc[0] * wnd->fbwidth;
+	float y0 = area->vc[1] * wnd->fbheight;
+	float ww = area->vq[0] * wnd->fbwidth;
+	float hh = area->vq[1] * wnd->fbheight;
 
 	D3D11_VIEWPORT vp = {0};
 	vp.TopLeftX = x0;
@@ -464,12 +464,14 @@ void Render_all(struct dx11data** cam, struct dx11data** lit, struct dx11data** 
 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 	g_dx11context->OMSetBlendState(0, blendFactor, 0xffffffff);
+	g_dx11context->OMSetDepthStencilState(0, 1);
 	for(j=0;j<64;j++){
 		if(0 == solid[j])continue;
 		Render_one(cam[0], lit[0], solid[j]);
 	}//solid
 
 	g_dx11context->OMSetBlendState(g_blendstate, blendFactor, 0xffffffff);
+	g_dx11context->OMSetDepthStencilState(g_depthstate, 1);
 	for(j=0;j<64;j++){
 		if(0 == opaque[j])continue;
 		Render_one(cam[0], lit[0], opaque[j]);
@@ -623,7 +625,10 @@ BOOL InitD3D11(struct supply* wnd)
 	ZeroMemory(&culldesc, sizeof(D3D11_RASTERIZER_DESC));
 	culldesc.FillMode = D3D11_FILL_SOLID;
 	culldesc.CullMode = D3D11_CULL_NONE;
-	g_dx11device->CreateRasterizerState(&culldesc, &g_rasterstate);
+	hr = g_dx11device->CreateRasterizerState(&culldesc, &g_rasterstate);
+	if(FAILED(hr)){
+		MessageBox(NULL, "CreateRasterizerState", "Error", MB_OK);
+	}
 
 	//blend
 	D3D11_BLEND_DESC blenddesc;
@@ -638,7 +643,23 @@ BOOL InitD3D11(struct supply* wnd)
 	blenddesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
 	blenddesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
 	hr = g_dx11device->CreateBlendState(&blenddesc, &g_blendstate);
+	if(FAILED(hr)){
+		MessageBox(NULL, "CreateBlendState", "Error", MB_OK);
+	}
  
+	//depth
+	D3D11_DEPTH_STENCIL_DESC depthdesc;
+	depthdesc.DepthEnable      = true;
+	depthdesc.DepthWriteMask   = D3D11_DEPTH_WRITE_MASK_ZERO;
+	depthdesc.DepthFunc        = D3D11_COMPARISON_LESS;
+	depthdesc.StencilEnable    = false;
+	depthdesc.StencilReadMask  = D3D11_DEFAULT_STENCIL_READ_MASK;
+	depthdesc.StencilWriteMask = D3D11_DEFAULT_STENCIL_WRITE_MASK;
+	hr = g_dx11device->CreateDepthStencilState(&depthdesc, &g_depthstate);
+	if(FAILED(hr)){
+		MessageBox(NULL, "CreateDepthStencilState", "Error", MB_OK);
+	}
+
 	return TRUE;
 }
 
@@ -657,7 +678,7 @@ static void restorestackdeliverevent(struct supply* wnd, struct event* ev)
 	int sp = save[1];
 
 	//get vertex
-	struct relation* rel = (struct relation*)wnd->orel0;
+	struct relation* rel = (struct relation*)wnd->oreln;
 	if(0 == rel)return;
 	stack[sp+0].pchip = rel->psrcchip;
 	stack[sp+0].pfoot = rel->psrcfoot;
@@ -831,7 +852,7 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		{
 			int w = lparam&0xffff;
 			int h = (lparam>>16)&0xffff;
-			//printf("wm_size:%d,%d\n", w, h);
+			printf("wm_size:%d,%d\n", w, h);
 
 			if(win){
 				//FreeTEXcd();
@@ -862,14 +883,21 @@ void FreeWin32()
 }
 BOOL InitWin32(struct supply* wnd)
 {
+	RECT tmp;
+	tmp.left = 0;
+	tmp.right = wnd->width;
+	tmp.top = 0;
+	tmp.bottom = wnd->height;
+	AdjustWindowRect(&tmp, WS_OVERLAPPEDWINDOW, FALSE);
+
 	HWND hwnd = CreateWindow(
 		"d3d11",
 		"d3d11",
 		WS_OVERLAPPEDWINDOW,
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
-		wnd->width,
-		wnd->height,
+		tmp.right-tmp.left,
+		tmp.bottom-tmp.top,
 		NULL,
 		NULL,
 		0,
@@ -1000,6 +1028,8 @@ int windowdelete(struct supply* wnd)
 }
 int windowcreate(struct supply* wnd)
 {
+	//wnd->tier
+	//wnd->type
 	wnd->fmt = _dx11full_;
 	wnd->vfmt= _dx11full_;
 

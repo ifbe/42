@@ -66,7 +66,7 @@ void overview_draw_pixel(
 		y0 = (cy+1)+(y-16)*hh/16;
 		x1 = (cx-1)+(x-7)*ww/8;
 		y1 = (cy-1)+(y-15)*hh/16;
-		drawhyaline_rect(win, c, x0, y0, x1, y1);
+		drawopaque_rect(win, c, x0, y0, x1, y1);
 		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&entity[j].fmt, 8);
 	}
 
@@ -85,7 +85,7 @@ void overview_draw_pixel(
 		y0 = (cy+1)+(y-8)*hh/16;
 		x1 = (cx-1)+(x-7)*ww/8;
 		y1 = (cy-1)+(y-7)*hh/16;
-		drawhyaline_rect(win, c, x0, y0, x1, y1);
+		drawopaque_rect(win, c, x0, y0, x1, y1);
 		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&supply[j].fmt, 8);
 	}
 
@@ -103,7 +103,7 @@ void overview_draw_pixel(
 		y0 = (cy+1)+(y+0)*hh/16;
 		x1 = (cx-1)+(x-7)*ww/8;
 		y1 = (cy-1)+(y+1)*hh/16;
-		drawhyaline_rect(win, c, x0, y0, x1, y1);
+		drawopaque_rect(win, c, x0, y0, x1, y1);
 		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&ele[j].type, 8);
 	}
 
@@ -121,7 +121,7 @@ void overview_draw_pixel(
 		y0 = (cy+1)+(y+8)*hh/16;
 		x1 = (cx-1)+(x-7)*ww/8;
 		y1 = (cy-1)+(y+9)*hh/16;
-		drawhyaline_rect(win, c, x0, y0, x1, y1);
+		drawopaque_rect(win, c, x0, y0, x1, y1);
 		drawstring_fit(win, 0xffffff, x0, y0, x1, y1, (u8*)&obj[j].type, 8);
 	}
 

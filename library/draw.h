@@ -20,8 +20,8 @@ void drawsolid_oval(    struct entity* ctx, u32 rgb, int cx, int cy, int rx, int
 void drawsolid_sector(  struct entity* ctx, u32 rgb, int cx, int cy, int radius, int start, int end);
 
 void drawicon_1(        struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1);
-void drawhyaline_rect(  struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2);
-void drawhyaline_circle(struct entity* ctx, u32 rgb, int cx, int cy, int r);
+void drawopaque_rect(   struct entity* ctx, u32 rgb, int x1, int y1, int x2, int y2);
+void drawopaque_circle( struct entity* ctx, u32 rgb, int cx, int cy, int r);
 
 void drawascii(         struct entity* ctx, u32 rgb, int cx, int cy, u8 data);
 void drawbyte(          struct entity* ctx, u32 rgb, int cx, int cy, u8 data);

@@ -105,7 +105,7 @@ void vkbd_draw_pixel(struct entity* win, struct style* sty)
 			y0 = h+1-((y+1)*h/32)+1;
 			x1 = ((x+1)*w/16)-1;
 			y1 = h-1-(y*h/32);
-			drawhyaline_rect(win, 0x7fffffff, x0, y0, x1, y1);
+			drawopaque_rect(win, 0x7fffffff, x0, y0, x1, y1);
 			drawstring_fit(win, rgb, x0, y0, x1, y1, (u8*)&c, l);
 		}
 	}
@@ -178,7 +178,7 @@ void vkbd_draw_gl41(
 			}
 			rgb = 0x80808080;
 			if((act->iw0)&&(x == act->ix0)&&(y == act->iy0))rgb = 0x80ff0000;
-			gl41opaque_rect(wnd, rgb, tc, tr, tf);
+			gl41line_rect(wnd, rgb, tc, tr, tf);
 
 			c = x+(y<<4);
 			if((0==c)|(7==c)|(8==c)|(9==c)|(0xa==c)|(0xd==c))
@@ -318,6 +318,7 @@ static int vkbd_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 {
 	struct entity* wnd = stack[sp-2].pchip;
 	switch(wnd->fmt){
+	case _dx11full_:
 	case _gl41full_:{
 		vkbd_write_bywnd(ent,foot, stack,sp, buf,len);break;
 	}

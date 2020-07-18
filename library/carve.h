@@ -18,7 +18,10 @@ void dx11unicode_center(     struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3
 void dx11utf8(               struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
 void dx11utf8_center(        struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* buf, int len);
 
+void dx11string(              struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
+void dx11string_center(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 void dx11decimal(             struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
+void dx11hexadecimal(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
 
 
 

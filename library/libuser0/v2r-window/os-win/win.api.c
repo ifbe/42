@@ -157,10 +157,26 @@ int windowcreate(struct supply* win)
 
 
 	//创建窗口
+	RECT tmp;
+	tmp.left = 0;
+	tmp.right = wnd->width;
+	tmp.top = 0;
+	tmp.bottom = wnd->height;
+	AdjustWindowRect(&tmp, WS_OVERLAPPEDWINDOW, FALSE);
+
 	HWND wnd = CreateWindow(
-		AppTitle, AppTitle, WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX=无边框
-		100, 100, (win->width)+16, (win->height)+39,
-		NULL, NULL, 0, NULL);
+		AppTitle,
+		AppTitle,
+		WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX=无边框
+		CW_USEDEFAULT,
+		CW_USEDEFAULT,
+		tmp.right-tmp.left,
+		tmp.bottom-tmp.top,
+		NULL,
+		NULL,
+		0,
+		NULL
+	);
 	if(!wnd)return 0;
 
 	//dc

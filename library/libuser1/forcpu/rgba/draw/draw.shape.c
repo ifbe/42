@@ -76,7 +76,7 @@ void drawicon_disabled(struct entity* win, u32 rgb,
 
 
 
-void drawhyaline_rect(struct entity* win, u32 rgb,
+void drawopaque_rect(struct entity* win, u32 rgb,
 	int x1, int y1, int x2, int y2)
 {
 	u8 r,g,b,a;

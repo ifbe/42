@@ -72,7 +72,7 @@ static void terminal_draw_pixel(
 
 	if(act->orel0)
 	{
-		drawhyaline_rect(win, 0x111111, cx-ww, cy-hh, cx+ww, cy+hh);
+		drawopaque_rect(win, 0x111111, cx-ww, cy-hh, cx+ww, cy+hh);
 		drawterm(win, act->TTTBUF, cx-ww, cy-hh, cx+ww, cy+hh);
 	}
 	else

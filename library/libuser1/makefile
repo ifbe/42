@@ -126,13 +126,11 @@ theworld/scene/3dhelp/uiux.axis.c \
 theworld/scene/3dhelp/uiux.guide.c \
 theworld/scene/3dhelp/uiux.border2d.c \
 theworld/scene/3dhelp/uiux.border3d.c \
-theworld/scene/biology/bio.evolution.c \
-theworld/scene/biology/bio.multiply.c \
-theworld/scene/biology/bio.plague.c \
+theworld/scene/biosimu/bio.evolution.c \
+theworld/scene/biosimu/bio.multiply.c \
+theworld/scene/biosimu/bio.plague.c \
 theworld/scene/chemic/chem.burning.c \
 theworld/scene/chemic/chem.corrode.c \
-theworld/scene/comsimu/vm.mmio.c \
-theworld/scene/comsimu/vm.port.c \
 theworld/scene/electric/ee.schematic.c \
 theworld/scene/electric/ee.printboard.c \
 theworld/scene/elecsimu/ee.analog.c \
@@ -144,6 +142,8 @@ theworld/scene/frontend/ui.xaml.c \
 theworld/scene/physic/phy.field.c \
 theworld/scene/physic/phy.fluid.c \
 theworld/scene/physic/phy.force.c \
+theworld/scene/progsimu/vm.mmio.c \
+theworld/scene/progsimu/vm.port.c \
 theworld/scene/neural/nn.cnn.c \
 theworld/scene/neural/nn.rnn.c \
 theworld/whole/reality.c \

@@ -156,9 +156,9 @@ static void the2048_draw_dx11(
 			tu[2] = vu[2]*f[2];
 			dx11solid_prism4(ctx, rgb, tc, tr, tf, tu);
 
-			tc[0] += tu[0] + vu[0]*0.01;
-			tc[1] += tu[1] + vu[1]*0.01;
-			tc[2] += tu[2] + vu[2]*0.01;
+			tc[0] += vu[0]*0.01;
+			tc[1] += vu[1]*0.01;
+			tc[2] += vu[2]*0.01;
 			tr[0] = vr[0]/16;
 			tr[1] = vr[1]/16;
 			tr[2] = vr[2]/16;
