@@ -10,7 +10,7 @@ val:500
 cam{
 fmt:freecam
 }
-pcb{
+world{
 fmt:virtual
 }
 </entity>
@@ -72,9 +72,9 @@ q: 1.0, 1.0
 
 
 <relation>
-(pcb, v0geom, 0) -> (V0, v0slot, 0)
-(pcb, r0geom, 0) -> (R0, r0slot, 0)
-(pcb, camgeom, 0) -> (cam, camslot, 0)
+(world, v0geom, 0) -> (V0, v0slot, 0)
+(world, r0geom, 0) -> (R0, r0slot, 0)
+(world, camgeom, 0) -> (cam, camslot, 0)
 
 (opengl, rect, 0) -> (cam, 0, 0)
 </relation>

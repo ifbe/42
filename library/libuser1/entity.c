@@ -65,6 +65,18 @@ int stepcar_giving(void*,int, void*,int, void*,int, void*,int);
 
 
 //
+int schematic_create(void*, void*, int, u8**);
+int schematic_delete(void*, void*);
+int schematic_linkup(void*, void*);
+int schematic_discon(void*, void*);
+int schematic_giving(void*,int, void*,int, void*,int, void*,int);
+int schematic_taking(void*,int, void*,int, void*,int, void*,int);
+int printboard_create(void*, void*, int, u8**);
+int printboard_delete(void*, void*);
+int printboard_linkup(void*, void*);
+int printboard_discon(void*, void*);
+int printboard_giving(void*,int, void*,int, void*,int, void*,int);
+int printboard_taking(void*,int, void*,int, void*,int, void*,int);
 int analog_create(void*, void*, int, u8**);
 int analog_delete(void*, void*);
 int analog_linkup(void*, void*);
@@ -358,6 +370,8 @@ int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* 
 	case _graveasy_:return graveasy_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _gravtest_:return gravtest_taking(act,foot, stack,sp, arg,key, buf,len);
 
+	case _sch_:return schematic_taking(act,foot, stack,sp, arg,key, buf,len);
+	case _pcb_:return printboard_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _analog_:return analog_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _digital_:return digital_taking(act,foot, stack,sp, arg,key, buf,len);
 
@@ -373,6 +387,7 @@ int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* 
 
 	case _reality_:return reality_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _virtual_:return virtual_taking(act,foot, stack,sp, arg,key, buf,len);
+
 	case _htmlroot_:return htmlroot_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _xamlroot_:return xamlroot_taking(act,foot, stack,sp, arg,key, buf,len);
 	case _mmio_:return mmiospace_taking(act,foot, stack,sp, arg,key, buf,len);
@@ -410,6 +425,8 @@ int entitywrite(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void*
 	case _graveasy_:return graveasy_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _gravtest_:return gravtest_giving(act,foot, stack,sp, arg,key, buf,len);
 
+	case _sch_:return schematic_giving(act,foot, stack,sp, arg,key, buf,len);
+	case _pcb_:return printboard_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _analog_:return analog_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _digital_:return digital_giving(act,foot, stack,sp, arg,key, buf,len);
 
@@ -425,6 +442,7 @@ int entitywrite(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void*
 
 	case _reality_:return reality_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _virtual_:return virtual_giving(act,foot, stack,sp, arg,key, buf,len);
+
 	case _htmlroot_:return htmlroot_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _xamlroot_:return xamlroot_giving(act,foot, stack,sp, arg,key, buf,len);
 	case _mmio_:return mmiospace_giving(act,foot, stack,sp, arg,key, buf,len);
@@ -468,6 +486,8 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 	case _graveasy_:return graveasy_discon(self, peer);
 	case _gravtest_:return gravtest_discon(self, peer);
 
+	case _sch_:return schematic_discon(self, peer);
+	case _pcb_:return printboard_discon(self, peer);
 	case _analog_:return analog_discon(self, peer);
 	case _digital_:return digital_discon(self, peer);
 
@@ -483,6 +503,7 @@ int entitydiscon(struct halfrel* self, struct halfrel* peer)
 
 	case _reality_:return reality_discon(self, peer);
 	case _virtual_:return virtual_discon(self, peer);
+
 	case _htmlroot_:return htmlroot_discon(self, peer);
 	case _xamlroot_:return xamlroot_discon(self, peer);
 	case _mmio_:return mmiospace_discon(self, peer);
@@ -526,6 +547,8 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 	case _graveasy_:return graveasy_linkup(self, peer);
 	case _gravtest_:return gravtest_linkup(self, peer);
 
+	case _sch_:return schematic_linkup(self, peer);
+	case _pcb_:return printboard_linkup(self, peer);
 	case _analog_:return analog_linkup(self, peer);
 	case _digital_:return digital_linkup(self, peer);
 
@@ -541,6 +564,7 @@ int entitylinkup(struct halfrel* self, struct halfrel* peer)
 
 	case _reality_:return reality_linkup(self, peer);
 	case _virtual_:return virtual_linkup(self, peer);
+
 	case _htmlroot_:return htmlroot_linkup(self, peer);
 	case _xamlroot_:return xamlroot_linkup(self, peer);
 	case _mmio_:return mmiospace_linkup(self, peer);
@@ -622,6 +646,36 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 		act = allocentity();
 		act->fmt = act->type = _port_;
 		portspace_create(act, buf, argc, argv);
+		return act;
+	}
+
+	//circuit
+	case _sch_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _sch_;
+		schematic_create(act, buf, argc, argv);
+		return act;
+	}
+	case _pcb_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _pcb_;
+		printboard_create(act, buf, argc, argv);
+		return act;
+	}
+	case _analog_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _analog_;
+		analog_create(act, buf, argc, argv);
+		return act;
+	}
+	case _digital_:
+	{
+		act = allocentity();
+		act->fmt = act->type = _digital_;
+		digital_create(act, buf, argc, argv);
 		return act;
 	}
 
@@ -760,21 +814,6 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	}
 
 //----------------rule----------------
-	//circuit
-	case _analog_:
-	{
-		act = allocentity();
-		act->fmt = act->type = _analog_;
-		analog_create(act, buf, argc, argv);
-		return act;
-	}
-	case _digital_:
-	{
-		act = allocentity();
-		act->fmt = act->type = _digital_;
-		digital_create(act, buf, argc, argv);
-		return act;
-	}
 
 	//physic
 	case _force_:

@@ -19,7 +19,7 @@ V1{
 fmt:vsrc
 url:9
 }
-sch{
+simu{
 fmt:analog
 url:datafile/wiring/2V3R.wire
 }
@@ -96,9 +96,9 @@ f: 0.0, 100.0, 0.0
 t: 0.0, 0.0, 100.0
 }
 
-schslot{
+simuslot{
 }
-schgeom{
+simugeom{
 c: 0.0, 0.0, -1.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
@@ -128,26 +128,26 @@ q: 1.0, 1.0
 
 
 <relation>
-(sch, 0, a) -> (V0, 0, n)
-(sch, 0, a) -> (R2, 0, a)
-(sch, 0, b) -> (V0, 0, p)
-(sch, 0, b) -> (R0, 0, b)
-(sch, 0, c) -> (R0, 0, a)
-(sch, 0, c) -> (R1, 0, b)
-(sch, 0, c) -> (V1, 0, p)
-(sch, 0, d) -> (R1, 0, a)
-(sch, 0, d) -> (R2, 0, b)
-(sch, 0, d) -> (V1, 0, n)
+(simu, 0, a) -> (V0, 0, n)
+(simu, 0, a) -> (R2, 0, a)
+(simu, 0, b) -> (V0, 0, p)
+(simu, 0, b) -> (R0, 0, b)
+(simu, 0, c) -> (R0, 0, a)
+(simu, 0, c) -> (R1, 0, b)
+(simu, 0, c) -> (V1, 0, p)
+(simu, 0, d) -> (R1, 0, a)
+(simu, 0, d) -> (R2, 0, b)
+(simu, 0, d) -> (V1, 0, n)
 
 (world, R0geom, 0) -> (R0, R0slot, 0)
 (world, R1geom, 0) -> (R1, R1slot, 0)
 (world, R2geom, 0) -> (R2, R2slot, 0)
 (world, V0geom, 0) -> (V0, V0slot, 0)
 (world, V1geom, 0) -> (V1, V1slot, 0)
-(world, schgeom, 0) -> (sch, schslot, 0)
+(world, simugeom, 0) -> (simu, simuslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)
 (opengl, rect, 0) -> (cam, 0, 0)
 
-(std, 0, dst) -> (sch, 0, ioby)
-(cam, 0, ioto) -> (sch, 0, ioby)
+(std, 0, dst) -> (simu, 0, ioby)
+(cam, 0, ioto) -> (simu, 0, ioby)
 </relation>

@@ -17,7 +17,7 @@ fmt:nmos
 rp{
 fmt:pmos
 }
-sch{
+simu{
 fmt:digital
 url:datafile/wiring/mos-xor.wire
 }
@@ -106,9 +106,9 @@ f: 0.0, 250.0, 0.0
 t: 0.0, 0.0, 250.0
 }
 
-schslot{
+simuslot{
 }
-schgeom{
+simugeom{
 c: 1000.0, 0.0, -1.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
@@ -147,25 +147,25 @@ q: 1.0, 1.0
 
 
 <relation>
-(sch, 0, a) -> (lp, 0, G)
-(sch, 0, a) -> (ln, 0, G)
-(sch, 0, a) -> (tp, 0, G)
-(sch, 0, a) -> (rp, 0, S)
+(simu, 0, a) -> (lp, 0, G)
+(simu, 0, a) -> (ln, 0, G)
+(simu, 0, a) -> (tp, 0, G)
+(simu, 0, a) -> (rp, 0, S)
 
-(sch, 0, b) -> (rp, 0, G)
-(sch, 0, b) -> (rn, 0, G)
-(sch, 0, b) -> (tp, 0, S)
-(sch, 0, b) -> (tn, 0, S)
+(simu, 0, b) -> (rp, 0, G)
+(simu, 0, b) -> (rn, 0, G)
+(simu, 0, b) -> (tp, 0, S)
+(simu, 0, b) -> (tn, 0, S)
 
-(sch, 0, c) -> (lp, 0, D)
-(sch, 0, c) -> (ln, 0, D)
-(sch, 0, c) -> (tn, 0, G)
-(sch, 0, c) -> (rn, 0, S)
+(simu, 0, c) -> (lp, 0, D)
+(simu, 0, c) -> (ln, 0, D)
+(simu, 0, c) -> (tn, 0, G)
+(simu, 0, c) -> (rn, 0, S)
 
-(sch, 0, d) -> (rp, 0, D)
-(sch, 0, d) -> (rn, 0, D)
-(sch, 0, d) -> (tp, 0, D)
-(sch, 0, d) -> (tn, 0, D)
+(simu, 0, d) -> (rp, 0, D)
+(simu, 0, d) -> (rn, 0, D)
+(simu, 0, d) -> (tp, 0, D)
+(simu, 0, d) -> (tn, 0, D)
 
 (world, lpgeom, 0) -> (lp, lpslot, 0)
 (world, lngeom, 0) -> (ln, lnslot, 0)
@@ -173,12 +173,12 @@ q: 1.0, 1.0
 (world, tngeom, 0) -> (tn, tnslot, 0)
 (world, rpgeom, 0) -> (rp, rpslot, 0)
 (world, rngeom, 0) -> (rn, rnslot, 0)
-(world, schgeom, 0) -> (sch, schslot, 0)
+(world, simugeom, 0) -> (simu, simuslot, 0)
 (world, xorgeom, 0) -> (xor, xorslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)
 (opengl, rect, 0) -> (cam, 0, 0)
 
 (std, 0, dst) -> (xor, 0, src)
-(std, 0, dst) -> (sch, 0, ioby)
-(cam, 0, evto) -> (sch, 0, evby)
+(std, 0, dst) -> (simu, 0, ioby)
+(cam, 0, evto) -> (simu, 0, evby)
 </relation>

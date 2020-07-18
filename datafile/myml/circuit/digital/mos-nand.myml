@@ -11,7 +11,7 @@ fmt:nmos
 n1{
 fmt:nmos
 }
-sch{
+simu{
 fmt:digital
 url:datafile/wiring/mos-nand.wire
 }
@@ -80,9 +80,9 @@ f: 0.0, 250.0, 0.0
 t: 0.0, 0.0, 250.0
 }
 
-schslot{
+simuslot{
 }
-schgeom{
+simugeom{
 c: 1000.0, 0.0, -1.0
 r: 1000.0, 0.0, 0.0
 f: 0.0, 1000.0, 0.0
@@ -121,26 +121,26 @@ q: 1.0, 1.0
 
 
 <relation>
-(sch, 0, a) -> (p0, 0, G)
-(sch, 0, a) -> (n1, 0, G)
-(sch, 0, b) -> (p1, 0, G)
-(sch, 0, b) -> (n0, 0, G)
-(sch, 0, c) -> (p0, 0, D)
-(sch, 0, c) -> (p1, 0, D)
-(sch, 0, c) -> (n0, 0, D)
-(sch, 0, d) -> (n0, 0, S)
-(sch, 0, d) -> (n1, 0, D)
+(simu, 0, a) -> (p0, 0, G)
+(simu, 0, a) -> (n1, 0, G)
+(simu, 0, b) -> (p1, 0, G)
+(simu, 0, b) -> (n0, 0, G)
+(simu, 0, c) -> (p0, 0, D)
+(simu, 0, c) -> (p1, 0, D)
+(simu, 0, c) -> (n0, 0, D)
+(simu, 0, d) -> (n0, 0, S)
+(simu, 0, d) -> (n1, 0, D)
 
 (world, p0geom, 0) -> (p0, p0slot, 0)
 (world, p1geom, 0) -> (p1, p1slot, 0)
 (world, n0geom, 0) -> (n0, n0slot, 0)
 (world, n1geom, 0) -> (n1, n1slot, 0)
-(world, schgeom, 0) -> (sch, schslot, 0)
+(world, simugeom, 0) -> (simu, simuslot, 0)
 (world, nandgeom, 0) -> (nand, nandslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)
 (opengl, rect, 0) -> (cam, 0, 0)
 
-(cam, 0, evto) -> (sch, 0, evby)
-(std, 0, dst) -> (sch, 0, ioby)
+(cam, 0, evto) -> (simu, 0, evby)
+(std, 0, dst) -> (simu, 0, ioby)
 (std, 0, dst) -> (nand, 0, src)
 </relation>

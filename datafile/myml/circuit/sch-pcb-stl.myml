@@ -1,6 +1,15 @@
 <entity>
+v0{
+fmt:voltage
+symbol:asdf
+footprint:asdf
+3dmodel:asdf
+}
 r0{
 fmt:resistor
+symbol:asdf
+footprint:asdf
+3dmodel:asdf
 }
 
 sch{
@@ -10,23 +19,83 @@ pcb{
 fmt:pcb
 }
 v3d{
+fmt:scene3d
+}
+
+
+cam{
+fmt:freecam
+}
+world{
 fmt:virtual
 }
 </entity>
 
 
+<supply>
+opengl{
+fmt:wnd
+}
+</supply>
+
+
 <style>
-sch_r0{	//sch space: r0 location,symbol
+schslot{
 }
-pcb_r0{	//pcb space: r0 location,footprint
+schgeom{
+c:-1.0, 0.0, 0.0
+r: 0.1, 0.0, 0.0
+t: 0.0, 0.1, 0.0
+f: 0.0, 0.0, 0.0016
 }
-v3d_r0{	//v3d space: r0 location,model3d
+
+pcbslot{
+}
+pcbgeom{
+c: 0.0, 0.0, 0.0
+r: 0.1, 0.0, 0.0
+t: 0.0, 0.1, 0.0
+f: 0.0, 0.0, 0.0016
+}
+
+v3dslot{
+}
+v3dgeom{
+c: 1.0, 0.0, 0.0
+r: 0.1, 0.0, 0.0
+t: 0.0, 0.1, 0.0
+f: 0.0, 0.0, 0.0016
+}
+
+camslot{
+}
+camgeom{
+c: 0.0, 0.0, 2.0
+r: 1.0, 0.0, 0.0
+t: 0.0, 1.0, 0.0
+f: 0.0, 0.0, -1.0
+L: 0.0, 0.0, 0.0, -1.0
+R: 0.0, 0.0, 0.0, 1.0
+B: 0.0, 0.0, 0.0, -1.0
+T: 0.0, 0.0, 0.0, 1.0
+N: 0.0, 0.0, 0.0, 1.0
+F: 0.0, 0.0, 0.0, 1000.0
+}
+
+oglslot{
+}
+oglrect{
+c:0.0, 0.0
+q:1.0, 1.0
 }
 </style>
 
 
 <relation>
-(sch, sch_r0, 0) -> (r0, 0, sch)
-(pcb, pcb_r0, 0) -> (r0, 0, pcb)
-(v3d, v3d_r0, 0) -> (r0, 0, v3d)
+(world, schgeom, 0) -> (sch, schslot, 0)
+(world, pcbgeom, 0) -> (pcb, pcbslot, 0)
+(world, v3dgeom, 0) -> (v3d, v3dslot, 0)
+(world, camgeom, 0) -> (cam, camslot, 0)
+
+(opengl, oglrect, 0) -> (cam, oglslot, 0)
 </relation>

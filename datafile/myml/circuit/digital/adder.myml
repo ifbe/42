@@ -11,7 +11,7 @@ fmt:fulladd
 a3{
 fmt:fulladd
 }
-sch{
+simu{
 fmt:digital
 }
 
@@ -67,9 +67,9 @@ f: 0.0, 400.0, 0.0
 t: 0.0, 0.0, 400.0
 }
 
-schslot{
+simuslot{
 }
-schgeom{
+simugeom{
 c: 0.0, 0.0, -1.0
 r: 2000.0, 0.0, 0.0
 f: 0.0, 2000.0, 0.0
@@ -99,12 +99,12 @@ q: 1.0, 1.0
 
 
 <relation>
-(sch, a0geom, 0) -> (a0, 0, 0)
-(sch, a1geom, 0) -> (a1, 0, 0)
-(sch, a2geom, 0) -> (a2, 0, 0)
-(sch, a3geom, 0) -> (a3, 0, 0)
+(simu, a0geom, 0) -> (a0, 0, 0)
+(simu, a1geom, 0) -> (a1, 0, 0)
+(simu, a2geom, 0) -> (a2, 0, 0)
+(simu, a3geom, 0) -> (a3, 0, 0)
 
-(world, schgeom, 0) -> (sch, schslot, 0)
+(world, simugeom, 0) -> (simu, simuslot, 0)
 (world, camgeom, 0) -> (cam, camslot, 0)
 (opengl, rect, 0) -> (cam, 0, 0)
 
