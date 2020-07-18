@@ -108,50 +108,50 @@ int windowchange()
 	//SetWindowText(win, "hahahaha");
 	return 0;
 }
-int windowdelete(struct supply* win)
+int windowdelete(struct supply* wnd)
 {/*
 	PostThreadMessage(
 		uithread,
 		WM_USER,
 		hex16('w','-'),
-		(LPARAM)win
+		(LPARAM)wnd
 	);*/
-	HWND wnd = win->hwnd;
-	HDC dc = win->hdc;
+	HWND hwnd = wnd->hwnd;
+	HDC dc = wnd->hdc;
 
-	ReleaseDC(wnd, dc);
+	ReleaseDC(hwnd, dc);
 
-	UnregisterTouchWindow(wnd);
+	UnregisterTouchWindow(hwnd);
 
-	DestroyWindow(wnd);
+	DestroyWindow(hwnd);
 
 	alivecount--;
 	if(alivecount == 0)eventwrite(0,0,0,0);
 	return 0;
 }
-int windowcreate(struct supply* win)
+int windowcreate(struct supply* wnd)
 {
-	if(0 == win)return 0;
+	if(0 == wnd)return 0;
 
-	win->fmt = _rgba_;
-	win->vfmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
+	wnd->fmt = _rgba_;
+	wnd->vfmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
 
-	win->width = 1024;
-	win->height = 768;
+	wnd->width = 1024;
+	wnd->height = 768;
 
-	win->fbwidth = 1024*4;
-	//win->fbheight = 0;
+	wnd->fbwidth = 1024*4;
+	//wnd->fbheight = 0;
 
-	win->hwnd = 0;
-	win->hdc = 0;
+	wnd->hwnd = 0;
+	wnd->hdc = 0;
 
 	//per window data
 	int j;
-	int* finger = win->perwnd = malloc(0x1000);
+	int* finger = wnd->perwnd = malloc(0x1000);
 	for(j=0;j<10;j++)finger[j] = -1;
 
 	//rgba buffer
-	win->rgbabuf = malloc(2048*2048*4);
+	wnd->rgbabuf = malloc(2048*2048*4);
 
 
 
@@ -164,7 +164,7 @@ int windowcreate(struct supply* win)
 	tmp.bottom = wnd->height;
 	AdjustWindowRect(&tmp, WS_OVERLAPPEDWINDOW, FALSE);
 
-	HWND wnd = CreateWindow(
+	HWND hwnd = CreateWindow(
 		AppTitle,
 		AppTitle,
 		WS_OVERLAPPEDWINDOW,		//WS_POPUP | WS_MINIMIZEBOX=无边框
@@ -177,27 +177,27 @@ int windowcreate(struct supply* win)
 		0,
 		NULL
 	);
-	if(!wnd)return 0;
+	if(!hwnd)return 0;
 
 	//dc
-	HDC dc = GetDC(wnd);
+	HDC dc = GetDC(hwnd);
 	if(!dc)return 0;
 
 	//透明
-	LONG t = GetWindowLong(wnd, GWL_EXSTYLE);
-	SetWindowLong(wnd, GWL_EXSTYLE, t | WS_EX_LAYERED);
-	SetLayeredWindowAttributes(wnd, 0, 0xf8, LWA_ALPHA);
+	LONG t = GetWindowLong(hwnd, GWL_EXSTYLE);
+	SetWindowLong(hwnd, GWL_EXSTYLE, t | WS_EX_LAYERED);
+	SetLayeredWindowAttributes(hwnd, 0, 0xf8, LWA_ALPHA);
 
 	//显示窗口
-	ShowWindow(wnd, SW_SHOW);
-	UpdateWindow(wnd);
+	ShowWindow(hwnd, SW_SHOW);
+	UpdateWindow(hwnd);
 
 	//打开触摸
-	RegisterTouchWindow(wnd, 0);
+	RegisterTouchWindow(hwnd, 0);
 
 	//打开拖拽
 	typedef BOOL (WINAPI *ChangeWindowMessageFilterProc)(UINT, u32);
-	DragAcceptFiles(wnd, TRUE);
+	DragAcceptFiles(hwnd, TRUE);
 
 	HMODULE hUser = LoadLibraryA("user32.dll");
 	if(!hUser){say("failed to load\n");exit(-1);}
@@ -211,9 +211,9 @@ int windowcreate(struct supply* win)
 	hProc(0x0049, 1);
 
 	//完成
-	win->hwnd = wnd;
-	win->hdc = dc;
-	SetWindowLongPtr(wnd, GWLP_USERDATA, (u64)win);
+	wnd->hwnd = hwnd;
+	wnd->hdc = dc;
+	SetWindowLongPtr(hwnd, GWLP_USERDATA, (u64)wnd);
 	alivecount++;
 
 	MSG msg;
