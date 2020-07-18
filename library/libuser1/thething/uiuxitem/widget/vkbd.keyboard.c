@@ -115,8 +115,7 @@ void vkbd_draw_dx11(
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	int x,y,j;
-	int c,rgb;
+	int x,y,j,dat;
 	vec3 tc,tr,tf;
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -133,23 +132,25 @@ void vkbd_draw_dx11(
 				tf[j] = vf[j]/8.5;
 				tc[j] = vc[j] + vr[j]*(x-7.5)/8.0 + vf[j]*(y-3.5)/4.0;
 			}
-			rgb = 0x80808080;
-			if((act->iw0)&&(x == act->ix0)&&(y == act->iy0))rgb = 0x80ff0000;
-			dx11line_rect(wnd, rgb, tc, tr, tf);
+			if((act->iw0)&&(x == act->ix0)&&(y == act->iy0)){
+				dx11solid_rect(wnd, 0x80ff0000, tc, tr, tf);
+			}
+			else{
+				dx11line_rect(wnd, 0x80808080, tc, tr, tf);
+			}
 
-			c = x+(y<<4);
-			if((0==c)|(7==c)|(8==c)|(9==c)|(0xa==c)|(0xd==c))
-			{
-				if(0x0 == c)c = '0';
-				else if(0x7 == c)c = 'a';
-				else if(0x8 == c)c = 'b';
-				else if(0x9 == c)c = 't';
-				else if(0xa == c)c = 'n';
-				else if(0xd == c)c = 'r';
+			dat = x+(y<<4);
+			switch(dat){
+				case 0x0:dat = '0';break;
+				case 0x7:dat = 'a';break;
+				case 0x8:dat = 'b';break;
+				case 0x9:dat = 't';break;
+				case 0xa:dat = 'n';break;
+				case 0xd:dat = 'r';break;
 			}
 
 			for(j=0;j<3;j++)tc[j] += vt[j]*0.01;
-			dx11ascii_center(wnd, 0xffffff, tc, tr, tf, c);
+			dx11ascii_center(wnd, 0xffffff, tc, tr, tf, dat);
 		}
 	}
 }
@@ -158,8 +159,7 @@ void vkbd_draw_gl41(
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	int x,y,j;
-	int c,rgb;
+	int x,y,j,dat;
 	vec3 tc,tr,tf;
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -176,22 +176,24 @@ void vkbd_draw_gl41(
 				tf[j] = vf[j]/8.5;
 				tc[j] = vc[j] + vr[j]*(x-7.5)/8.0 + vf[j]*(y-3.5)/4.0;
 			}
-			rgb = 0x80808080;
-			if((act->iw0)&&(x == act->ix0)&&(y == act->iy0))rgb = 0x80ff0000;
-			gl41line_rect(wnd, rgb, tc, tr, tf);
-
-			c = x+(y<<4);
-			if((0==c)|(7==c)|(8==c)|(9==c)|(0xa==c)|(0xd==c))
-			{
-				if(0x0 == c)c = '0';
-				else if(0x7 == c)c = 'a';
-				else if(0x8 == c)c = 'b';
-				else if(0x9 == c)c = 't';
-				else if(0xa == c)c = 'n';
-				else if(0xd == c)c = 'r';
+			if((act->iw0)&&(x == act->ix0)&&(y == act->iy0)){
+				gl41opaque_rect(wnd, 0x80ff0000, tc, tr, tf);
+			}
+			else{
+				gl41line_rect(wnd, 0x80808080, tc, tr, tf);
 			}
 
-			gl41ascii_center(wnd, 0xffffff, tc, tr, tf, c);
+			dat = x+(y<<4);
+			switch(dat){
+				case 0x0:dat = '0';break;
+				case 0x7:dat = 'a';break;
+				case 0x8:dat = 'b';break;
+				case 0x9:dat = 't';break;
+				case 0xa:dat = 'n';break;
+				case 0xd:dat = 'r';break;
+			}
+
+			gl41ascii_center(wnd, 0xffffff, tc, tr, tf, dat);
 		}
 	}
 }

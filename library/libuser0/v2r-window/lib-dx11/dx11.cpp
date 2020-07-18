@@ -483,8 +483,10 @@ void Render_all(struct dx11data** cam, struct dx11data** lit, struct dx11data** 
 
 void FreeTEXcd()
 {
+	g_dx11context->OMSetRenderTargets(0, 0, 0);
 	g_depthStencilView->Release();
 	g_renderTargetView->Release();
+	g_dx11context->Flush();
 }
 BOOL InitTEXcd(struct supply* wnd)
 {
@@ -850,19 +852,21 @@ LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		}
 		case WM_SIZE:
 		{
+			if(SIZE_MINIMIZED == wparam)break;
+
 			int w = lparam&0xffff;
 			int h = (lparam>>16)&0xffff;
 			printf("wm_size:%d,%d\n", w, h);
 
 			if(win){
-				//FreeTEXcd();
+				FreeTEXcd();
 
 				win->fbwidth = win->width = w;
 				win->fbheight= win->height= h;
 
-				//g_dx11swapchain->ResizeBuffers();
+				g_dx11swapchain->ResizeBuffers(0,0,0, DXGI_FORMAT_UNKNOWN, 0);
 
-				//InitTexcd(win);
+				InitTEXcd(win);
 			}
 
 			//eventwrite(0x657a6973, 0x4077, addr, 0);
