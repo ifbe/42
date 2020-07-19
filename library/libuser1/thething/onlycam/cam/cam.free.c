@@ -240,16 +240,13 @@ static int freecam_event_obb(
 		}
 	}
 	else if(_char_ == ev->what){
-		nx = 100.0/vec3_getlen(obb->vr);
-		ny = 100.0/vec3_getlen(obb->vf);
-		nz = 100.0/vec3_getlen(obb->vt);
 		switch(ev->why){
-			case 'a':freecam_move(obb->vc, obb->vr,-nx);break;
-			case 'd':freecam_move(obb->vc, obb->vr, nx);break;
-			case 's':freecam_move(obb->vc, obb->vf,-ny);break;
-			case 'w':freecam_move(obb->vc, obb->vf, ny);break;
-			case 'q':freecam_move(obb->vc, obb->vt,-nz);break;
-			case 'e':freecam_move(obb->vc, obb->vt, nz);break;
+			case 'a':freecam_move(obb->vc, obb->vr,-1.0);break;
+			case 'd':freecam_move(obb->vc, obb->vr, 1.0);break;
+			case 's':freecam_move(obb->vc, obb->vf,-1.0);break;
+			case 'w':freecam_move(obb->vc, obb->vf, 1.0);break;
+			case 'q':freecam_move(obb->vc, obb->vt,-1.0);break;
+			case 'e':freecam_move(obb->vc, obb->vt, 1.0);break;
 
 			case 'j':freecam_rotate(obb->vr, obb->vf, obb->vt, 0.05);break;
 			case 'l':freecam_rotate(obb->vr, obb->vf, obb->vt,-0.05);break;

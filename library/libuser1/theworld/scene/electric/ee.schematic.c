@@ -14,7 +14,7 @@ static void schematic_dx11draw(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
-	dx11solid_prism4(ctx, 0xff0000, vc, vr, vf, vt);
+	dx11solid_prism4(ctx, 0x20ffff00, vc, vr, vf, vt);
 }
 static void schematic_gl41draw(
 	struct entity* act, struct style* part,
@@ -25,7 +25,7 @@ static void schematic_gl41draw(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
-	gl41solid_prism4(ctx, 0xff0000, vc, vr, vf, vt);
+	gl41opaque_prism4(ctx, 0x20ffff00, vc, vr, vf, vt);
 }
 
 

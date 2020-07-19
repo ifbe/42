@@ -1,6 +1,18 @@
 #include "libuser.h"
-
-
+#define mil (2.54*0.001*0.01)
+#define oz  (2.54*0.001*0.01*1.35)
+void line2crft(float* v0, float* v1, float* vc, float* vr, float* vf, float* vt)
+{
+	int j;
+	for(j=0;j<3;j++){
+		vc[j] = (v0[j]+v1[j])/2 + vt[j];
+		vr[j] = (v1[j]-v0[j])/2;
+	}
+	vf[0] =-vt[2]*vr[1];	//vt[1]*vr[2] - vt[2]*vr[1];
+	vf[1] = vt[2]*vr[0];	//vt[2]*vr[0] - vt[0]*vr[2];
+	vf[2] = 0.0;	//vt[0]*vr[1] - vt[1]*vr[0];
+	vec3_setlen(vf, mil*50);
+}
 
 
 
@@ -25,7 +37,31 @@ static void printboard_gl41draw(
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
-	gl41solid_prism4(ctx, 0x00ff00, vc, vr, vf, vt);
+	gl41opaque_prism4(ctx, 0x2000ff00, vc, vr, vf, vt);
+
+	int j;
+	vec3 t0,t1;
+	vec3 tc,tr,tf,tt;
+
+	for(j=0;j<3;j++){
+		t0[j] = vc[j] + vt[j];
+		t1[j] = vc[j] + vt[j] + vr[j]/2;
+	}
+	tt[0] = 0.0;
+	tt[1] = 0.0;
+	tt[2] = oz/2;
+	line2crft(t0,t1, tc,tr,tf,tt);
+	gl41solid_prism4(ctx, 0xff0000, tc,tr,tf,tt);
+
+	for(j=0;j<3;j++){
+		t0[j] = vc[j] - vt[j];
+		t1[j] = vc[j] - vt[j] + vr[j]/2;
+	}
+	tt[0] = 0.0;
+	tt[1] = 0.0;
+	tt[2] =-oz/2;
+	line2crft(t0,t1, tc,tr,tf,tt);
+	gl41solid_prism4(ctx, 0x0000ff, tc,tr,tf,tt);
 }
 
 
