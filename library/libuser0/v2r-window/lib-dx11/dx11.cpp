@@ -303,16 +303,24 @@ void Upload_one(struct dx11data* one)
 	//layout
 	D3D11_INPUT_ELEMENT_DESC* desc;
 	int size;
-	if(0 == vtx->vbuf_fmt)return;
-	else if(vbuffmt_33 == vtx->vbuf_fmt){
+	switch(vtx->vbuf_fmt){
+	case vbuffmt_33:{
 		desc = inputlayout_p3n3;
 		size = 2;
+		break;
 	}
-	else if(vbuffmt_333 == vtx->vbuf_fmt){
+	case vbuffmt_333:{
 		desc = inputlayout_p3n3c3;
 		size = 3;
+		break;
 	}
-	else return;
+	case vbuffmt_444:{
+		desc = inputlayout_p4n4c4;
+		size = 3;
+		break;
+	}
+	default:return;
+	}
 
 	//shader
 	Upload_shader(
@@ -385,13 +393,19 @@ void Render_one(struct dx11data* cam, struct dx11data* lit, struct dx11data* one
 	g_dx11context->IASetInputLayout((ID3D11InputLayout*)one->dst.layout);
 	switch(vtx->vbuf_fmt){
 	case vbuffmt_33:{
-		UINT stride = 4*6;
+		UINT stride = 4*3*2;
 		UINT offset = 0;
 		g_dx11context->IASetVertexBuffers(0, 1, (ID3D11Buffer**)&one->dst.vbuf, &stride, &offset);
 		break;
 	}
 	case vbuffmt_333:{
-		UINT stride = 4*9;
+		UINT stride = 4*3*3;
+		UINT offset = 0;
+		g_dx11context->IASetVertexBuffers(0, 1, (ID3D11Buffer**)&one->dst.vbuf, &stride, &offset);
+		break;
+	}
+	case vbuffmt_444:{
+		UINT stride = 4*4*3;
 		UINT offset = 0;
 		g_dx11context->IASetVertexBuffers(0, 1, (ID3D11Buffer**)&one->dst.vbuf, &stride, &offset);
 		break;
