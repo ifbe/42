@@ -76,6 +76,7 @@
 #define point3d  0
 #define line3d   1
 #define trigon3d 2
+#define voxel3d  3
 #define solidaid_max 3
 //opaque
 #define font3d0 0
