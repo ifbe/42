@@ -9,7 +9,7 @@ libboot0:
 libboot1:
 	make -s -C $(library)/libboot1 compiler="clang" cflag=$(flag)
 libhard0:
-	make -s -C $(library)/libhard0 compiler="clang" cflag=$(flag) x64
+	make -s -C $(library)/libhard0 compiler="clang" cflag=$(flag) macx64
 libhard1:
 	make -s -C $(library)/libhard1 compiler="clang" cflag=$(flag)
 libsoft0:
@@ -33,13 +33,13 @@ lib:
 	$(library)/libhard0/*.o $(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o $(library)/libuser1/*.o \
-	-lc -framework Cocoa
-program:
+	-lc -framework Cocoa  -framework AudioToolbox
+exe:
 	clang \
 	$(library)/libboot0/*.o $(library)/libboot1/*.o \
 	$(library)/libhard0/*.o $(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o $(library)/libuser1/*.o \
-	-framework Foundation -framework Cocoa
+	-framework Foundation -framework Cocoa -framework AudioToolbox
 clean:
 	rm -f *.o *.a *.dylib

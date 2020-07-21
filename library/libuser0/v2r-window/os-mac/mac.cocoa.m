@@ -59,51 +59,46 @@ void windowcreate(struct supply* w)
 
 	w->rgbabuf = malloc(2048*1024*4);
 
-	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+	[NSAutoreleasePool new];
+        [NSApplication sharedApplication];
+        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
-	// Create a shared app instance.
-	// This will createialize the global variable
-	// 'NSApp' with the application instance.
-	[NSApplication sharedApplication];
+        id menubar = [[NSMenu new] autorelease];
+        id appMenuItem = [[NSMenuItem new] autorelease];
+        [menubar addItem:appMenuItem];
+        [NSApp setMainMenu:menubar];
 
-	// Style flags:
-	NSUInteger windowStyle = 
-		NSWindowStyleMaskTitled |
-		NSWindowStyleMaskClosable |
-		NSWindowStyleMaskResizable |
-		NSWindowStyleMaskMiniaturizable;
+        id appMenu = [[NSMenu new] autorelease];
+        id appName = [[NSProcessInfo processInfo] processName];
+        id quitTitle = [@"Quit " stringByAppendingString:appName];
+        id quitMenuItem = [[[NSMenuItem alloc] initWithTitle:quitTitle
+                action:@selector(terminate:) keyEquivalent:@"q"] autorelease];
+        [appMenu addItem:quitMenuItem];
+        [appMenuItem setSubmenu:appMenu];
 
-	// Window bounds (x, y, width, height).
-	NSRect windowRect = NSMakeRect(0, 0, 512, 512);
-	NSWindow* window = [
-		[NSWindow alloc] initWithContentRect:windowRect
-		styleMask:windowStyle
-		backing:NSBackingStoreBuffered
-		defer:NO];
-	[window autorelease];
-	[window setTitle:[NSString stringWithUTF8String:"hello world"]];
+	NSUInteger windowStyle =
+                NSWindowStyleMaskTitled |
+                NSWindowStyleMaskClosable |
+                NSWindowStyleMaskResizable |
+                NSWindowStyleMaskMiniaturizable;
+        NSRect windowRect = NSMakeRect(0, 0, 1024, 768);
+        id window = [[[NSWindow alloc]
+                initWithContentRect:windowRect
+                styleMask:windowStyle
+                backing:NSBackingStoreBuffered
+                defer:NO]
+        autorelease];
+        //[window cascadeTopLeftFromPoint:NSMakePoint(20,20)];
+        [window setTitle:appName];
+        [window makeKeyAndOrderFront:nil];
 
-	// Window controller:
-	NSWindowController * windowController = [[NSWindowController alloc] initWithWindow:window];
-	[windowController autorelease];
+        NSTextView* textView = [[NSTextView alloc] initWithFrame:windowRect];
+        [textView autorelease];
+        [window setContentView:textView];
+        [textView insertText:@"Hello OSX/Cocoa world!"];
 
-	// This will add a simple text view to the window,
-	// so we can write a test string on it.
-	NSTextView* textView = [[NSTextView alloc] initWithFrame:windowRect];
-	[textView autorelease];
-
-	[window setContentView:textView];
-	//[textView insertText:@"Hello OSX/Cocoa world!"];
-
-	//TODO: Create app delegate to handle system events.
-	//TODO: Create menus (especially Quit!)
-
-	// Show window and run event loop.
-	[window orderFrontRegardless];
-
-	[NSApp run];
-
-	[pool drain];
+	[NSApp activateIgnoringOtherApps:YES];
+        [NSApp run];
 }
 
 
