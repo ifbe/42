@@ -9,27 +9,189 @@
  */
 #import "Cocoa/Cocoa.h"
 #import "libuser.h"
+int rgbanode_read(void*,int, void*,int, void*,int, void*,int);
 
 
 
 
-CGContextRef  cgcxtref;
+struct supply* thewnd = 0;
 
 
 
 
-void windowread()
-{
+@interface MyApplicationDelegate : NSObject <NSApplicationDelegate> {
 }
-void windowwrite()
+@end
+
+@implementation MyApplicationDelegate : NSObject
+- (id)init{
+NSLog(@"init MyApplicationDelegate");
+	self = [super init];
+	if(nil != self){
+	}
+	return self;
+}
+- (void)windowDidResize:(NSNotification*)noti{
+	NSLog(@"windowDidResize");
+}
+- (void)applicationWillFinishLaunching:(NSNotification*)noti{
+	NSLog(@"applicationWillFinishLaunching");
+}
+- (void)applicationDidFinishLaunching:(NSNotification*)noti{
+	NSLog(@"applicationDidFinishLaunching");
+}
+- (void)applicationShouldTerminate{
+	NSLog(@"applicationShouldTerminate");
+}
+- (void)applicationWillTerminate{
+	NSLog(@"applicationWillTerminate");
+}
+- (void)applicationDidChangeScreenParameters{
+	NSLog(@"applicationDidChangeScreenParameters");
+}
+- (void)dealloc{
+	NSLog(@"free");
+	[super dealloc];
+}
+@end
+
+
+
+
+@interface MyWindowDelegate : NSObject <NSWindowDelegate> {
+}
+@end
+
+@implementation MyWindowDelegate : NSObject
+- (id)init{
+NSLog(@"init MyWindowDelegate");
+	self = [super init];
+	if(nil != self){
+	}
+	return self;
+}
+- (void)windowWillBeginSheet:(NSNotification*)noti{
+	NSLog(@"windowWillBeginSheet");
+}
+- (void)windowDidEndSheet:(NSNotification*)noti{
+	NSLog(@"windowDidEndSheet");
+}
+- (void)windowDidResize:(NSNotification*)noti{
+	NSLog(@"windowDidResize");
+}
+- (void)windowWillMiniaturize:(NSNotification*)noti{
+	NSLog(@"windowWillMiniaturize");
+}
+- (void)windowDidMiniaturize:(NSNotification*)noti{
+	NSLog(@"windowDidMiniaturize");
+}
+- (void)windowDidDeminiaturize:(NSNotification*)noti{
+	NSLog(@"windowDidDeminiaturize");
+}
+- (void)windowWillEnterFullScreen:(NSNotification*)noti{
+	NSLog(@"windowWillEnterFullScreen");
+}
+- (void)windowDidEnterFullScreen:(NSNotification*)noti{
+	NSLog(@"windowDidEnterFullScreen");
+}
+- (void)windowWillExitFullScreen:(NSNotification*)noti{
+	NSLog(@"windowWillExitFullScreen");
+}
+- (void)windowDidExitFullScreen:(NSNotification*)noti{
+	NSLog(@"windowDidExitFullScreen");
+}
+- (void)windowWillClose:(NSNotification*)noti{
+	NSLog(@"windowWillClose");
+	eventwrite(0, 0, 0, 0);
+}
+@end
+
+
+
+
+@interface MyView : NSView {
+}
+@end
+
+@implementation MyView
+- (id)initWithFrame:(NSRect)rect{
+NSLog(@"initWithFrame");
+	self = [super initWithFrame:rect];
+	if(nil != self){
+	}
+	return self;
+}
+- (void)drawRect:(NSRect)rect
 {
-	//CGColorSpaceRef colorspace = CGColorSpaceCreateWithName(kCGColorSpaceGenericRGB);
-	//cgcxtref = CGBitmapContextCreate(
-	//	win->rgbabuf, 512, 512,
-	//	8, 2048,
-	//	colorspace, kCGImageAlphaPremultipliedLast
-	//);
-	//CGColorSpaceRelease(colorspace);
+NSLog(@"drawRect");
+	//[[NSColor redColor] setFill];
+	//NSRectFill(rect);
+	//[super drawRect:rect];
+
+	//Fill pixel buffer with color data
+	int width = thewnd->width;
+	int height= thewnd->height;
+	UInt8* data = thewnd->rgbabuf;
+
+	// Create a CGImage with the pixel data
+	NSInteger dataLength = width * height * 4;
+	CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, data, dataLength, NULL);
+	CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
+	CGImageRef image = CGImageCreate(
+		width, height, 8, 32, width * 4, colorspace,
+		kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast,
+		provider, NULL, true, kCGRenderingIntentDefault
+	);
+
+	//draw
+	CGContextRef ctx = (CGContextRef)[[NSGraphicsContext currentContext] CGContext];
+	CGRect renderRect = CGRectMake(0., 0., 1024, 768);
+	CGContextDrawImage(ctx, renderRect, image);
+
+	//Clean up
+	CGColorSpaceRelease(colorspace);
+	CGDataProviderRelease(provider);
+	CGImageRelease(image);
+}
+-(void)mouseDown:(NSEvent *)event{
+NSLog(@"mouseDown");
+}
+@end
+
+
+
+
+void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	rgbanode_read(wnd,foot, stack,sp, arg,key, buf,len);
+
+	while(1){
+		NSEvent *event = [NSApp nextEventMatchingMask:NSEventMaskAny untilDate:[NSDate distantPast] inMode:NSDefaultRunLoopMode dequeue:YES ];
+		if(nil == event)break;
+
+		switch ([event type]) {
+		case NSEventTypeLeftMouseDown:
+		case NSEventTypeOtherMouseDown:
+		case NSEventTypeRightMouseDown:
+		case NSEventTypeLeftMouseUp:
+		case NSEventTypeOtherMouseUp:
+		case NSEventTypeRightMouseUp:
+		case NSEventTypeLeftMouseDragged:
+		case NSEventTypeRightMouseDragged:
+		case NSEventTypeOtherMouseDragged: /* usually middle mouse dragged */
+		case NSEventTypeMouseMoved:
+		case NSEventTypeScrollWheel:
+		case NSEventTypeKeyDown:
+		case NSEventTypeKeyUp:
+		case NSEventTypeFlagsChanged:
+		default:break;
+		}
+		/* Pass through to NSApp to make sure everything stays in sync */
+		[NSApp sendEvent:event];
+	}
+}
+void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+{
 }
 void windowlist()
 {
@@ -46,59 +208,47 @@ void windowstop()
 void windowdelete(struct supply* w)
 {
 }
-void windowcreate(struct supply* w)
+void windowcreate(struct supply* wnd)
 {
-	w->fmt = _rgba_;
-	w->vfmt = hex64('b','g','r','a','8','8','8','8');
+	//value
+	wnd->fmt = _rgba_;
+	wnd->vfmt = hex64('b','g','r','a','8','8','8','8');
 
-	w->width = 1024;
-	w->height = 768;
+	wnd->width = 1024;
+	wnd->height = 768;
 
-	w->fbwidth = 1024*4;
-	//w->fbheight = 0;
+	wnd->fbwidth = 1024*4;
+	//wnd->fbheight = 0;
 
-	w->rgbabuf = malloc(2048*1024*4);
+	wnd->rgbabuf = malloc(2048*1024*4);
+	thewnd = wnd;
 
-	[NSAutoreleasePool new];
-        [NSApplication sharedApplication];
-        [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
 
-        id menubar = [[NSMenu new] autorelease];
-        id appMenuItem = [[NSMenuItem new] autorelease];
-        [menubar addItem:appMenuItem];
-        [NSApp setMainMenu:menubar];
-
-        id appMenu = [[NSMenu new] autorelease];
-        id appName = [[NSProcessInfo processInfo] processName];
-        id quitTitle = [@"Quit " stringByAppendingString:appName];
-        id quitMenuItem = [[[NSMenuItem alloc] initWithTitle:quitTitle
-                action:@selector(terminate:) keyEquivalent:@"q"] autorelease];
-        [appMenu addItem:quitMenuItem];
-        [appMenuItem setSubmenu:appMenu];
-
+	//window
+	NSRect windowRect = NSMakeRect(0, 0, 1024, 768);
 	NSUInteger windowStyle =
-                NSWindowStyleMaskTitled |
-                NSWindowStyleMaskClosable |
-                NSWindowStyleMaskResizable |
-                NSWindowStyleMaskMiniaturizable;
-        NSRect windowRect = NSMakeRect(0, 0, 1024, 768);
-        id window = [[[NSWindow alloc]
-                initWithContentRect:windowRect
-                styleMask:windowStyle
-                backing:NSBackingStoreBuffered
-                defer:NO]
-        autorelease];
-        //[window cascadeTopLeftFromPoint:NSMakePoint(20,20)];
-        [window setTitle:appName];
-        [window makeKeyAndOrderFront:nil];
+		NSWindowStyleMaskTitled |
+		NSWindowStyleMaskClosable |
+		NSWindowStyleMaskResizable |
+		NSWindowStyleMaskMiniaturizable;
+	id window = [[[NSWindow alloc]
+		initWithContentRect:windowRect
+		styleMask:windowStyle
+		backing:NSBackingStoreBuffered
+		defer:NO]
+	autorelease];
+	[window makeKeyAndOrderFront:nil];
 
-        NSTextView* textView = [[NSTextView alloc] initWithFrame:windowRect];
-        [textView autorelease];
-        [window setContentView:textView];
-        [textView insertText:@"Hello OSX/Cocoa world!"];
+	id appName = [[NSProcessInfo processInfo] processName];
+	[window setTitle:appName];
 
-	[NSApp activateIgnoringOtherApps:YES];
-        [NSApp run];
+	MyWindowDelegate* windowdelegate = [[[MyWindowDelegate alloc] init] autorelease];
+	[window setDelegate:windowdelegate];
+
+
+	//view
+	MyView* myview = [[[MyView alloc] initWithFrame:windowRect] autorelease];
+	[window setContentView:myview];
 }
 
 
@@ -106,6 +256,31 @@ void windowcreate(struct supply* w)
 
 void initwindow()
 {
+	//app
+	[NSApplication sharedApplication];
+	[NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
+
+	MyApplicationDelegate* applicationdelegate = [[[MyApplicationDelegate alloc] init] autorelease];
+	[NSApp setDelegate:applicationdelegate];
+
+
+	//menu
+	id appName = [[NSProcessInfo processInfo] processName];
+	id quitTitle = [@"Quit " stringByAppendingString:appName];
+	id quitMenuItem = [[[NSMenuItem alloc]
+		initWithTitle:quitTitle
+		action:@selector(terminate:)
+		keyEquivalent:@"q"] autorelease];
+
+	id appMenu = [[NSMenu new] autorelease];
+	[appMenu addItem:quitMenuItem];
+
+	id appMenuItem = [[NSMenuItem new] autorelease];
+	[appMenuItem setSubmenu:appMenu];
+
+	id menubar = [[NSMenu new] autorelease];
+	[menubar addItem:appMenuItem];
+	[NSApp setMainMenu:menubar];
 }
 void freewindow()
 {

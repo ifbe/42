@@ -43,3 +43,4 @@ exe:
 	-framework Foundation -framework Cocoa -framework AudioToolbox
 clean:
 	rm -f *.o *.a *.dylib
+	make -C $(library) clean
