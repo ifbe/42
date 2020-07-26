@@ -1,7 +1,8 @@
 #import "Cocoa/Cocoa.h"
+#import <Metal/Metal.h>
+#import <MetalKit/MetalKit.h>
 #import "libuser.h"
-int rgbanode_read (void*,int, void*,int, void*,int, void*,int);
-int rgbanode_write(void*,int, void*,int, void*,int, void*,int);
+const int uniformBufferCount = 3;
 
 
 
@@ -25,17 +26,6 @@ static void CreateApplicationMenus(void)
 	id menubar = [[NSMenu new] autorelease];
 	[menubar addItem:appMenuItem];
 	[NSApp setMainMenu:menubar];
-}
-static void stackevent()
-{
-	struct halfrel stack[16];
-
-	struct event ev;
-	ev.why = 'a';
-	ev.what = _char_;
-	ev.where = (u64)thewnd;
-
-	rgbanode_write(thewnd,0, stack,2, 0,0, &ev,0);
 }
 
 
@@ -146,79 +136,47 @@ NSLog(@"mywindow.keyUp");
 
 
 
-@interface MyView : NSView {
-}
+@interface MyView : MTKView
 @end
 
-@implementation MyView
-- (id)initWithFrame:(NSRect)rect{
-NSLog(@"initWithFrame");
-	self = [super initWithFrame:rect];
-	if(nil != self){
-	}
-	return self;
+@implementation MyView {
+    id <MTLLibrary> _library;
+    id <MTLCommandQueue> _commandQueue;
+    id <MTLRenderPipelineState> _pipelineState;
+    id <MTLDepthStencilState> _depthState;
+    dispatch_semaphore_t _semaphore;
+    id <MTLBuffer> _uniformBuffers[uniformBufferCount];
+    id <MTLBuffer> _vertexBuffer;
+    int uniformBufferIndex;
+    long frame;
 }
-- (void)drawRect:(NSRect)rect
+- (id)initWithFrame:(CGRect)inFrame {
+NSLog(@"initWithFrame");
+    id<MTLDevice> device = MTLCreateSystemDefaultDevice();
+    self = [super initWithFrame:inFrame device:device];
+    if (self) {
+        [self setup];
+    }
+    return self;
+}
+- (void)setup {
+NSLog(@"setup");
+}
+- (void)drawRect:(CGRect)rect
 {
 NSLog(@"drawRect");
-	//[[NSColor redColor] setFill];
-	//NSRectFill(rect);
-	//[super drawRect:rect];
-
-	//Fill pixel buffer with color data
-	int width = thewnd->width;
-	int height= thewnd->height;
-	UInt8* data = thewnd->rgbabuf;
-
-	// Create a CGImage with the pixel data
-	NSInteger dataLength = width * height * 4;
-	CGDataProviderRef provider = CGDataProviderCreateWithData(NULL, data, dataLength, NULL);
-	CGColorSpaceRef colorspace = CGColorSpaceCreateDeviceRGB();
-	CGImageRef image = CGImageCreate(
-		width, height, 8, 32, width * 4, colorspace,
-		kCGBitmapByteOrder32Big | kCGImageAlphaPremultipliedLast,
-		provider, NULL, true, kCGRenderingIntentDefault
-	);
-
-	//draw
-	CGContextRef ctx = (CGContextRef)[[NSGraphicsContext currentContext] CGContext];
-	CGRect renderRect = CGRectMake(0., 0., 1024, 768);
-	CGContextDrawImage(ctx, renderRect, image);
-
-	//Clean up
-	CGColorSpaceRelease(colorspace);
-	CGDataProviderRelease(provider);
-	CGImageRelease(image);
+        [super drawRect:rect];
 }
 -(void)mouseDown:(NSEvent *)event{
-NSLog(@"myview.mouseDown");
-	stackevent();
-}
--(void)mouseUp:(NSEvent *)event{
-NSLog(@"myview.mouseUp");
-}
--(void)keyDown:(NSEvent *)event{
-NSLog(@"myview.keyDown");
-}
--(void)keyUp:(NSEvent *)event{
-NSLog(@"myview.keyUp");
+NSLog(@"mouseDown");
 }
 @end
-
-
-
-
-MyView* myview;
 
 
 
 
 void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	rgbanode_read(wnd,foot, stack,sp, arg,key, buf,len);
-
-	[myview setNeedsDisplay:YES];
-
 	while(1){
 		NSEvent *event = [NSApp
 			nextEventMatchingMask:NSEventMaskAny
@@ -269,17 +227,12 @@ void windowdelete(struct supply* w)
 }
 void windowcreate(struct supply* wnd)
 {
-	//value
-	wnd->fmt = _rgba_;
-	wnd->vfmt = hex64('r','g','b','a','8','8','8','8');
-
 	wnd->width = 1024;
 	wnd->height = 768;
 
-	wnd->fbwidth = 1024*4;
-	//wnd->fbheight = 0;
+	wnd->fbwidth = 1024;
+	wnd->fbheight = 768;
 
-	wnd->rgbabuf = malloc(2048*2048*4);
 	thewnd = wnd;
 
 
@@ -306,7 +259,7 @@ void windowcreate(struct supply* wnd)
 
 
 	//view
-	myview = [[[MyView alloc] initWithFrame:windowRect] autorelease];
+	MyView* myview = [[[MyView alloc] initWithFrame:windowRect] autorelease];
 	[window setContentView:myview];
 }
 

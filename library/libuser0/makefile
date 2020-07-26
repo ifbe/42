@@ -146,15 +146,25 @@ mactui:target macos
 	$(compiler) $(cflag) v2r-window/os-mac/mac.tui.c
 	$(compiler) $(cflag) w2w-gamepad/mac/mac.gamepad.c
 
+.PHONY:macquartz
+macquartz:target macos
+	$(compiler) $(cflag) v2r-window/os-mac/mac.quartz.c
+	$(compiler) $(cflag) w2w-gamepad/mac/mac.gamepad.c
+
 .PHONY:maccocoa
 maccocoa:target macos
 	$(compiler) $(cflag) v2r-window/os-mac/mac.cocoa.m
 	$(compiler) $(cflag) w2w-gamepad/mac/mac.gamepad.c
 
-.PHONY:macquartz
-macquartz:target macos
-	$(compiler) $(cflag) v2r-window/os-mac/mac.quartz.c
+.PHONY:macmetal
+macmetal:target macos
+	$(compiler) $(cflag) v2r-window/lib-metal/metal.m
 	$(compiler) $(cflag) w2w-gamepad/mac/mac.gamepad.c
+
+.PHONY:macsdl
+macsdl:target macos
+	$(compiler) $(cflag) v2r-window/lib-sdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
+	$(compiler) $(cflag) w2w-gamepad/sdl/sdl.gamepad.c
 
 .PHONY:macglut
 macglut:target macos
@@ -165,11 +175,6 @@ macglut:target macos
 macglfw:target macos opengl
 	$(compiler) $(cflag) v2r-window/lib-gl/gllib/glfw.c
 	$(compiler) $(cflag) w2w-gamepad/glfw/glfw.gamepad.c
-
-.PHONY:macsdl
-macsdl:target macos
-	$(compiler) $(cflag) v2r-window/lib-sdl/sdl2.c -I /usr/local/Cellar/sdl2/2.0.3/include
-	$(compiler) $(cflag) w2w-gamepad/sdl/sdl.gamepad.c
 #########################################################
 
 

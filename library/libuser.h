@@ -194,7 +194,7 @@ double arctanyx(double, double);
 
 double lg(double);
 double ln(double);
-double log2(double);
+//double log2(double);
 double squareroot(double);
 double power(double, double);
 
