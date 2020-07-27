@@ -132,10 +132,6 @@ theworld/scene/biosimu/bio.multiply.c \
 theworld/scene/biosimu/bio.plague.c \
 theworld/scene/chemic/chem.burning.c \
 theworld/scene/chemic/chem.corrode.c \
-theworld/scene/electric/ee.schematic.c \
-theworld/scene/electric/ee.printboard.c \
-theworld/scene/elecsimu/ee.analog.c \
-theworld/scene/elecsimu/ee.digital.c \
 theworld/scene/factory/fac.gcode.c \
 theworld/scene/factory/fac.gerber.c \
 theworld/scene/frontend/ui.html.c \
@@ -147,6 +143,11 @@ theworld/scene/progsimu/vm.mmio.c \
 theworld/scene/progsimu/vm.port.c \
 theworld/scene/neural/nn.cnn.c \
 theworld/scene/neural/nn.rnn.c \
+theworld/scene/schematic/sch.electric.c \
+theworld/scene/schesimu/ee.analog.c \
+theworld/scene/schesimu/ee.digital.c \
+theworld/scene/wiring/wiring.circuit.c \
+theworld/scene/wiresimu/wiresimu.c \
 theworld/whole/reality.c \
 theworld/whole/virtual.c \
 theworld/world.c \

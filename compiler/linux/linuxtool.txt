@@ -12,4 +12,4 @@ ubuntu:
 	libx11-dev \
 	freeglut3-dev \
 	libsdl1.2-dev libsdl2-dev \
-	libpulse-dev #libasound2-dev
+	libpulse-dev pulseaudio #libasound2-dev
