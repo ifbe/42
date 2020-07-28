@@ -1,0 +1,30 @@
+#include <metal_matrix>
+using namespace metal;
+
+struct FrameUniforms {
+	metal::float4x4 projectionViewModel;
+};
+
+struct VertexInput {
+	float3 where [[ attribute(0) ]];
+	half4  color [[ attribute(1) ]];
+};
+
+struct ShaderInOut {
+	float4 where [[ position ]];
+	half4  color;
+};
+
+vertex ShaderInOut vert(
+	VertexInput in [[ stage_in ]],
+	constant FrameUniforms& uni [[ buffer(1) ]] )
+{
+	ShaderInOut out;
+	out.where = uni.projectionViewModel * float4(in.where, 1.0);
+	out.color = in.color / 255.0;
+	return out;
+}
+
+fragment half4 frag(ShaderInOut in [[stage_in]]) {
+	return in.color;
+}
