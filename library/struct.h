@@ -154,10 +154,77 @@ struct vertex{
 	u32 ibuf_len;
 
 	//[e8,eb]
-	u8 geometry;	//1=point, 2=line, *=trigon
+	u8 geometry;	//0=default, 1=point, 2=line, 3=trigon, 4=volume
+	u8 fill;		//0=default, 1=point, 2=line, 3=trigon, 4=volume
 	u8 opaque;		//0=solid, n=opaque
-	u8 flag0;
-	u8 flag1;		//4b align
+	u8 flag;		//4b align
+};
+
+
+
+
+struct dxsrc
+{
+	//shader
+	char* vs;
+	char* ps;
+
+	//constant
+	struct constant{
+		mat4 mat;
+		vec4 vec;
+	}arg;
+
+	//texture
+	struct texture tex[7];
+
+	//vertex
+	struct vertex vtx[2];
+
+	//enqueue
+	u8 shader_enq;
+	u8 tex_enq[7];
+	u8 arg_enq;
+	u8 vbuf_enq;
+	u8 ibuf_enq;
+};
+struct dxdst
+{
+	//shader
+	void* vsblob;
+	void* psblob;
+	void* vsprog;
+	void* psprog;
+
+	//texture
+	void* texture[7];
+	void* resource[7];
+	void* sampler[7];
+
+	//constant
+	void* constant;
+
+	//vertex
+	void* vbuf;
+	void* ibuf;
+	void* layout;
+
+	//dequeue
+	u8 shader_deq;
+	u8 tex_deq[7];
+	u8 arg_deq;
+	u8 vbo_deq;
+	u8 ibo_deq;
+};
+struct dx11data
+{
+	//[000,2ff]
+	struct dxsrc src;
+	u8 ipadd[0x300 - sizeof(struct dxsrc)];
+
+	//[300,3ff]
+	struct dxdst dst;
+	u8 opadd[0x100 - sizeof(struct dxdst)];
 };
 
 
@@ -242,14 +309,14 @@ struct gl41data
 
 
 
-struct dxsrc
+struct mtsrc
 {
 	//shader
 	char* vs;
 	char* ps;
 
 	//constant
-	struct cons{
+	struct uniform{
 		mat4 mat;
 		vec4 vec;
 	}arg;
@@ -267,21 +334,19 @@ struct dxsrc
 	u8 vbuf_enq;
 	u8 ibuf_enq;
 };
-struct dxdst
+struct mtdst
 {
+	void* pipeline;
+
 	//shader
-	void* vsblob;
-	void* psblob;
-	void* vsprog;
-	void* psprog;
+	void* shader;
 
 	//texture
 	void* texture[7];
-	void* resource[7];
 	void* sampler[7];
 
 	//constant
-	void* constant;
+	void* uniform;
 
 	//vertex
 	void* vbuf;
@@ -295,15 +360,15 @@ struct dxdst
 	u8 vbo_deq;
 	u8 ibo_deq;
 };
-struct dx11data
+struct mt20data
 {
 	//[000,2ff]
-	struct dxsrc src;
-	u8 ipadd[0x300 - sizeof(struct dxsrc)];
+	struct mtsrc src;
+	u8 ipadd[0x300 - sizeof(struct mtsrc)];
 
 	//[300,3ff]
-	struct dxdst dst;
-	u8 opadd[0x100 - sizeof(struct dxdst)];
+	struct mtdst dst;
+	u8 opadd[0x100 - sizeof(struct mtdst)];
 };
 
 

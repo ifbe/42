@@ -151,13 +151,14 @@ NSLog(@"mywindow.keyUp");
 @end
 
 @implementation MyView {
+	//global
 	id<MTLDevice> device;
 	id<MTLCommandQueue> _commandQueue;
 
-	id<MTLLibrary> _shader;
-	id<MTLRenderPipelineState> _pipelineState;
+	//perdraw
 	id<MTLDepthStencilState> _depthState;
-
+	id<MTLRenderPipelineState> _pipelineState;
+	id<MTLLibrary> _shader;
 	id<MTLBuffer> _vertexBuffer;
 	id<MTLBuffer> _uniformBuffer;
 }
@@ -176,6 +177,12 @@ NSLog(@"setup");
 	self.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
 	self.depthStencilPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
 
+	// Create depth state.
+	MTLDepthStencilDescriptor *depthDesc = [MTLDepthStencilDescriptor new];
+	depthDesc.depthCompareFunction = MTLCompareFunctionLess;
+	depthDesc.depthWriteEnabled = YES;
+	_depthState = [self.device newDepthStencilStateWithDescriptor:depthDesc];
+
 	// Load shaders.
 	NSError* error = nil;
 	_shader = [self.device newLibraryWithFile: @"metal.so" error:&error];
@@ -185,12 +192,6 @@ NSLog(@"setup");
 	}
 	id <MTLFunction> vertFunc = [_shader newFunctionWithName:@"vert"];
 	id <MTLFunction> fragFunc = [_shader newFunctionWithName:@"frag"];
-
-	// Create depth state.
-	MTLDepthStencilDescriptor *depthDesc = [MTLDepthStencilDescriptor new];
-	depthDesc.depthCompareFunction = MTLCompareFunctionLess;
-	depthDesc.depthWriteEnabled = YES;
-	_depthState = [self.device newDepthStencilStateWithDescriptor:depthDesc];
 
 	// Create vertex descriptor.
 	MTLVertexDescriptor *vertDesc = [MTLVertexDescriptor new];
@@ -262,6 +263,7 @@ NSLog(@"drawRect");
 	mat[3][2] = 0.0;
 	mat[3][3] = 1.0;
 
+	//viewport
 	MTLViewport vp = {
 	.originX = 0.0,
 	.originY = 0.0,
@@ -271,15 +273,15 @@ NSLog(@"drawRect");
 	.zfar = 1.0
 	};
 
-	// Create a command buffer.
-	id <MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
-
 	// clear color
 	MTLRenderPassDescriptor* passdesc = self.currentRenderPassDescriptor;
 	passdesc.depthAttachment.loadAction = MTLLoadActionClear;
 	passdesc.depthAttachment.clearDepth = 1.0;
 	passdesc.colorAttachments[0].loadAction = MTLLoadActionClear;
 	passdesc.colorAttachments[0].clearColor = MTLClearColorMake(0.5, 0.5, 0.5, 1.0);
+
+	// Create a command buffer.
+	id <MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
 
 	// Encode render command.
 	id <MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:passdesc];
