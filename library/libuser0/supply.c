@@ -338,6 +338,8 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		windowcreate(win, arg, argc, argv);
 		return win;
 	}
+
+//------------------framebuffer-------------------
 	case _gl41fbo6_:
 	{
 		win = allocsupply();

@@ -77,7 +77,7 @@
 #define line3d   1
 #define trigon3d 2
 #define voxel3d  3
-#define solidaid_max 3
+#define solidaid_max 4
 //opaque
 #define font3d0 0
 #define font3d1 1
@@ -86,15 +86,8 @@
 #define opaquepoint3d  4
 #define opaqueline3d   5
 #define opaquetrigon3d 6
-#define opaqueaid_max 7
-//#define point2d  3
-//#define line2d   4
-//#define trigon2d 5
-//#define font2d0 6
-//#define font2d1 7
-//#define font2d2 8
-//#define font2d3 9
-//#define opaquetrigon2d 1
+#define opaquevoxel3d  7
+#define opaqueaid_max 8
 
 
 
