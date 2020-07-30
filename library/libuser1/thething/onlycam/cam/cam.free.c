@@ -36,6 +36,7 @@ struct privdata{
 	mat4 world2clip;	//world to view to clip
 	struct dx11data dx11;
 	struct gl41data gl41;
+	struct mt20data mt20;
 };
 
 
@@ -423,6 +424,22 @@ static void freecam_dx11cam(
 
 	wnd->glfull_camera[0] = (void*)src;
 }
+static void freecam_mt20cam(
+	struct entity* act, struct style* part,
+	struct entity* wrd, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	int x,y;
+	struct privdata* own = act->OWNBUF;
+	struct mtsrc* src = &own->mt20.src;
+	struct fstyle* frus = &geom->frus;
+	for(x=0;x<3;x++)src->arg.vec[x] = frus->vc[x];
+	for(y=0;y<4;y++){
+		for(x=0;x<4;x++)src->arg.mat[y][x] = own->world2clip[y][x];
+	}
+
+	wnd->mtfull_camera[0] = (void*)src;
+}
 
 
 
@@ -467,11 +484,14 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
 	slot = stack[sp-1].pfoot;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-	if(_cli_ == wnd->fmt){
+	switch(wnd->fmt){
+
+	case _cli_:
 		say("\r%s/%s/%s:%f,%f,%f", &wnd->fmt, &ent->fmt, &wor->fmt, geom->fs.vc[0], geom->fs.vc[1], geom->fs.vc[2]);
-		return 0;
-	}
-	if((_tui_ == wnd->fmt)|(_rgba_ == wnd->fmt)){
+		break;
+
+	case _tui_:
+	case _rgba_:
 		//say("@freecam: raster\n");
 		if(_tui_ == wnd->fmt)freecam_tui_ratio(wor, geom, wnd, area);
 		else freecam_ratio(wor, geom, wnd, area);
@@ -485,10 +505,9 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 
 		pixel_cleardepth(wnd);
 		entityread(stack[sp+1].pchip, 0, stack, sp+2, m, ent->DRAWTYPE, 0, 0);
-		return 0;
-	}
+		break;
 
-	if(_dx11full_ == wnd->fmt){
+	case _dx11full_:
 		//clear all
 		dx11data_before(wnd);
 		//camera matrix
@@ -500,9 +519,9 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		dx11data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
 		//enq++
 		dx11data_after(wnd);
-		return 0;
-	}
-	if(_gl41full_ == wnd->fmt){
+		break;
+
+	case _gl41full_:
 		//clear all
 		gl41data_before(wnd);
 		//camera matrix
@@ -517,7 +536,15 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 
 		//let fbos draw, before window draw
 		gl41data_taking(wor,0, stack,sp+2, 0,'?', buf,len);
-		return 0;
+		break;
+
+	case _mt20full_:
+		say("@freecam_mt20full\n");
+		freecam_ratio(wor, geom, wnd, area);
+		freecam_shape2frustum(&geom->fshape, &geom->frustum);
+		freecam_frustum2matrix(ent,slot, wor,geom);
+		freecam_mt20cam(ent,slot, wor,geom, wnd,area);
+		break;
 	}
 	return 0;
 //say("@freecam_read_bywnd.end\n");

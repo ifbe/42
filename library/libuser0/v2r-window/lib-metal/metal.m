@@ -14,6 +14,38 @@ struct Vertex {
 	float position[3];
 	unsigned char color[4];
 };
+NSString* source =
+@"#include <metal_matrix>\n"
+"using namespace metal;\n"
+
+"struct Uniform {\n"
+"	metal::float4x4 projectionViewModel;\n"
+"};\n"
+"struct VertexInput {\n"
+"	float3 where [[ attribute(0) ]];\n"
+"	float4 color [[ attribute(1) ]];\n"
+"};\n"
+"struct VertOutFragIn {\n"
+"	float4 where [[ position ]];\n"
+"	float4 color;\n"
+"};\n"
+
+"vertex VertOutFragIn vert(\n"
+"	VertexInput in [[ stage_in ]],\n"
+"	constant Uniform& uni [[ buffer(1) ]] )\n"
+"{\n"
+"	VertOutFragIn out;\n"
+"	out.where = uni.projectionViewModel * float4(in.where, 1.0);\n"
+"	out.color = in.color / 255.0;\n"
+"	return out;\n"
+"}\n"
+"fragment half4 frag(\n"
+"	VertOutFragIn in [[stage_in]],\n"
+"	texture2d<half> colorTexture [[ texture(0) ]])\n"
+"{\n"
+"	constexpr sampler sam(mag_filter::linear, min_filter::linear);\n"
+"	return colorTexture.sample(sam, in.color.xy);\n"
+"}\n";
 
 
 
@@ -159,17 +191,23 @@ NSLog(@"mywindow.keyUp");
 	id<MTLDepthStencilState> _depthState;
 	id<MTLRenderPipelineState> _pipelineState;
 	id<MTLLibrary> _shader;
+	id<MTLTexture> _texture;
 	id<MTLBuffer> _vertexBuffer;
 	id<MTLBuffer> _uniformBuffer;
 }
 - (id)initWithFrame:(CGRect)inFrame {
 NSLog(@"initWithFrame");
     device = MTLCreateSystemDefaultDevice();
+
     self = [super initWithFrame:inFrame device:device];
     if (self) {
+		_commandQueue = [self.device newCommandQueue];
         [self setup];
     }
     return self;
+}
+- (void)upload_vertex {
+
 }
 - (void)setup {
 NSLog(@"setup");
@@ -178,14 +216,15 @@ NSLog(@"setup");
 	self.depthStencilPixelFormat = MTLPixelFormatDepth32Float_Stencil8;
 
 	// Create depth state.
-	MTLDepthStencilDescriptor *depthDesc = [MTLDepthStencilDescriptor new];
+	MTLDepthStencilDescriptor* depthDesc = [MTLDepthStencilDescriptor new];
 	depthDesc.depthCompareFunction = MTLCompareFunctionLess;
 	depthDesc.depthWriteEnabled = YES;
 	_depthState = [self.device newDepthStencilStateWithDescriptor:depthDesc];
 
 	// Load shaders.
 	NSError* error = nil;
-	_shader = [self.device newLibraryWithFile: @"metal.so" error:&error];
+	_shader = [self.device newLibraryWithSource:source options:nil error:&error];
+	//_shader = [self.device newLibraryWithFile: @"metal.so" error:&error];
 	if(!_shader) {
 		NSLog(@"Failed to load library. error %@", error);
 		exit(0);
@@ -194,7 +233,7 @@ NSLog(@"setup");
 	id <MTLFunction> fragFunc = [_shader newFunctionWithName:@"frag"];
 
 	// Create vertex descriptor.
-	MTLVertexDescriptor *vertDesc = [MTLVertexDescriptor new];
+	MTLVertexDescriptor* vertDesc = [MTLVertexDescriptor new];
 	vertDesc.attributes[VertexAttributePosition].format = MTLVertexFormatFloat3;
 	vertDesc.attributes[VertexAttributePosition].offset = 0;
 	vertDesc.attributes[VertexAttributePosition].bufferIndex = MeshVertexBuffer;
@@ -206,7 +245,7 @@ NSLog(@"setup");
 	vertDesc.layouts[MeshVertexBuffer].stepFunction = MTLVertexStepFunctionPerVertex;
 
 	// Create pipeline state.
-	MTLRenderPipelineDescriptor *pipelineDesc = [MTLRenderPipelineDescriptor new];
+	MTLRenderPipelineDescriptor* pipelineDesc = [MTLRenderPipelineDescriptor new];
 	pipelineDesc.sampleCount = self.sampleCount;
 	pipelineDesc.vertexFunction = vertFunc;
 	pipelineDesc.fragmentFunction = fragFunc;
@@ -220,30 +259,60 @@ NSLog(@"setup");
 		exit(0);
 	}
 
-	// Create vertices.
+	//texture
+	MTLTextureDescriptor* textureDescriptor = [[MTLTextureDescriptor alloc] init];
+	textureDescriptor.pixelFormat = MTLPixelFormatBGRA8Unorm;
+	textureDescriptor.width = 1024;
+	textureDescriptor.height = 1024;
+	_texture = [self.device newTextureWithDescriptor:textureDescriptor];
+
+	int x,y;
+	unsigned int* image = malloc(4*1024*1024);
+	for(y=0;y<1024;y++){
+		for(x=0;x<1024;x++){
+			if(((x&0xff) > 0x7f) && ((y&0xff) > 0x7f))image[y*1024+x] = 0xffffffff;
+			else image[y*1024+x] = 0xff000000;
+		}
+	}
+
+	MTLRegion region = {
+		{   0,    0, 0},	// MTLOrigin
+		{1024, 1024, 1}		// MTLSize
+	};
+	[_texture replaceRegion:region
+		mipmapLevel:0
+		withBytes:image
+		bytesPerRow:4*1024
+	];
+
+	//vertex
 	struct Vertex verts[] = {
-		{{-0.5,-0.5, 0}, {255, 0, 0, 255}},
-		{{   0, 0.5, 0}, {0, 255, 0, 255}},
-		{{0.5, -0.5, 0}, {0, 0, 255, 255}}
+		{{-2000,-2000, 0}, {255, 0, 0, 255}},
+		{{-2000, 2000, 0}, {0, 255, 0, 255}},
+		{{ 2000,-2000, 0}, {0, 0, 255, 255}}
 	};
 	_vertexBuffer = [self.device
 		newBufferWithBytes:verts
 		length:sizeof(verts)
 		options:MTLResourceStorageModeShared
 	];
+
+	//uniform
 	_uniformBuffer = [self.device
 		newBufferWithLength:sizeof(64)
 		options:MTLResourceCPUCacheModeWriteCombined
 	];
-
-	// Create command queue
-	_commandQueue = [self.device newCommandQueue];
 }
 - (void)drawRect:(CGRect)rect
 {
 NSLog(@"drawRect");
+	int x,y;
 	float (*mat)[4] = (float (*)[4])[_uniformBuffer contents];
-	mat[0][0] = 1.0;
+	float (*cam)[4] = thewnd->mtfull_camera[0]->src.arg.mat;
+	for(y=0;y<4;y++){
+		for(x=0;x<4;x++)mat[y][x] = cam[y][x];
+	}
+/*	mat[0][0] = 1.0;
 	mat[0][1] = 0.0;
 	mat[0][2] = 0.0;
 	mat[0][3] = 0.0;
@@ -261,7 +330,7 @@ NSLog(@"drawRect");
 	mat[3][0] = 0.5;
 	mat[3][1] = 0.5;
 	mat[3][2] = 0.0;
-	mat[3][3] = 1.0;
+	mat[3][3] = 1.0;*/
 
 	//viewport
 	MTLViewport vp = {
@@ -288,6 +357,7 @@ NSLog(@"drawRect");
 	[encoder setViewport:vp];
 	[encoder setDepthStencilState:_depthState];
 	[encoder setRenderPipelineState:_pipelineState];
+	[encoder setFragmentTexture:_texture atIndex:0];
 	[encoder setVertexBuffer:_vertexBuffer offset:0 atIndex:MeshVertexBuffer];
 	[encoder setVertexBuffer:_uniformBuffer offset:0 atIndex:FrameUniformBuffer];
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
@@ -306,8 +376,50 @@ NSLog(@"mouseDown");
 
 
 
+int fullwindow_taking(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	//take
+	struct relation* rel = (struct relation*)wnd->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		struct fstyle* area = (struct fstyle*)rel->psrcfoot;
+		if(area){
+			//get vertex
+			stack[sp+0].pchip = rel->psrcchip;
+			stack[sp+0].pfoot = rel->psrcfoot;
+			//stack[sp+0].type = rel->srctype;
+			stack[sp+0].flag = rel->srcflag;
+			stack[sp+1].pchip = rel->pdstchip;
+			stack[sp+1].pfoot = rel->pdstfoot;
+			//stack[sp+1].type = rel->dsttype;
+			stack[sp+1].flag = rel->dstflag;
+			entityread((struct entity*)rel->pdstchip, rel->dstflag, stack,sp+2, 0,'v', 0, 0);
+		}
+
+		//give
+		//Upload_all(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque);
+
+		//draw
+		//Render_all(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque, wnd, area);
+
+		//next
+		rel = (struct relation*)samesrcnextdst(rel);
+	}
+	return 0;
+}
+int fullwindow_giving(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	return 0;
+}
+
+
+
+
 void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	fullwindow_taking(wnd,foot, stack,sp, arg,key, buf,len);
+
 	while(1){
 		NSEvent *event = [NSApp
 			nextEventMatchingMask:NSEventMaskAny
@@ -358,12 +470,20 @@ void windowdelete(struct supply* w)
 }
 void windowcreate(struct supply* wnd)
 {
+	//wnd->tier
+	//wnd->type
+	wnd->fmt = _mt20full_;
+	wnd->vfmt= _mt20full_;
+
 	wnd->width = 1024;
 	wnd->height = 768;
-
 	wnd->fbwidth = 1024;
 	wnd->fbheight = 768;
 
+	wnd->mtfull_camera = (struct mt20data**)memorycreate(0x10000, 0);
+	//wnd->mtfull_light  = (struct mt20data**)memorycreate(0x10000, 0);
+	//wnd->mtfull_solid  = (struct mt20data**)memorycreate(0x10000, 0);
+	//wnd->mtfull_opaque = (struct mt20data**)memorycreate(0x10000, 0);
 	thewnd = wnd;
 
 

@@ -275,6 +275,17 @@
 #define _gl41fboc_ hex64('g','l','4','1','f','b','o','c')
 #define _gl41fbod_ hex64('g','l','4','1','f','b','o','d')
 #define _gl41fbog_ hex64('g','l','4','1','f','b','o','g')
+//
+#define _mt20none_ hex64('m','t','2','0','n','o','n','e')
+#define _mt20easy_ hex64('m','t','2','0','e','a','s','y')
+#define _mt20full_ hex64('m','t','2','0','f','u','l','l')
+#define _mt20coop_ hex64('m','t','2','0','c','o','o','p')
+//
+#define _mt20data_ hex64('m','t','2','0','d','a','t','a')
+#define _mt20fbo6_ hex64('m','t','2','0','f','b','o','6')
+#define _mt20fboc_ hex64('m','t','2','0','f','b','o','c')
+#define _mt20fbod_ hex64('m','t','2','0','f','b','o','d')
+#define _mt20fbog_ hex64('m','t','2','0','f','b','o','g')
 //tier=_sup_, type=_ctx_, rfmt:
 #define _vbo_ hex32('v','b','o',0)
 #define _rgba_ hex32('r','g','b','a')

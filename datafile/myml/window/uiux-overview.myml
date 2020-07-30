@@ -32,5 +32,5 @@ q:1.0, 1.0
 
 
 <relation>
-(opengl, viewrect, 0) -> (overview, 0, gl)
+(opengl, viewrect, 0) @ (overview, 0, gl)
 </relation>

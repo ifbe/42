@@ -1049,6 +1049,8 @@ struct supply
 		struct dx11data** dxfull_camera;
 		struct gl41data*  gleasy_camera;
 		struct gl41data** glfull_camera;
+		struct mt20data*  mteasy_camera;
+		struct mt20data** mtfull_camera;
 	};
 	union{
 		u64 data1;
@@ -1236,6 +1238,8 @@ struct entity
 		struct dx11data** dxfull_camera;
 		struct gl41data*  gleasy_camera;
 		struct gl41data** glfull_camera;
+		struct mt20data*  mteasy_camera;
+		struct mt20data** mtfull_camera;
 	};
 	union{
 		u64 data1;
