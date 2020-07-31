@@ -194,6 +194,9 @@ NSLog(@"mywindow.keyUp");
 	id<MTLTexture> _texture;
 	id<MTLBuffer> _vertexBuffer;
 	id<MTLBuffer> _uniformBuffer;
+
+	id<MTLBuffer> _vertexBuffer2;
+	id<MTLBuffer> _uniformBuffer2;
 }
 - (id)initWithFrame:(CGRect)inFrame {
 NSLog(@"initWithFrame");
@@ -285,6 +288,22 @@ NSLog(@"setup");
 		bytesPerRow:4*1024
 	];
 
+	//vertex2
+	struct Vertex vert2[] = {
+		{{-0.5,-0.5, 0}, {255, 0, 0, 255}},
+		{{-0.5, 0.5, 0}, {0, 255, 0, 255}},
+		{{ 0.5,-0.5, 0}, {0, 0, 255, 255}}
+	};
+	_vertexBuffer2 = [self.device
+		newBufferWithBytes:vert2
+		length:sizeof(vert2)
+		options:MTLResourceStorageModeShared
+	];
+	_uniformBuffer2 = [self.device
+		newBufferWithLength:sizeof(64)
+		options:MTLResourceCPUCacheModeWriteCombined
+	];
+
 	//vertex
 	struct Vertex verts[] = {
 		{{-2000,-2000, 0}, {255, 0, 0, 255}},
@@ -296,42 +315,13 @@ NSLog(@"setup");
 		length:sizeof(verts)
 		options:MTLResourceStorageModeShared
 	];
-
-	//uniform
 	_uniformBuffer = [self.device
 		newBufferWithLength:sizeof(64)
 		options:MTLResourceCPUCacheModeWriteCombined
 	];
 }
-- (void)drawRect:(CGRect)rect
+- (void)drawone:(id <MTLCommandBuffer>)commandBuffer
 {
-NSLog(@"drawRect");
-	int x,y;
-	float (*mat)[4] = (float (*)[4])[_uniformBuffer contents];
-	float (*cam)[4] = thewnd->mtfull_camera[0]->src.arg.mat;
-	for(y=0;y<4;y++){
-		for(x=0;x<4;x++)mat[y][x] = cam[y][x];
-	}
-/*	mat[0][0] = 1.0;
-	mat[0][1] = 0.0;
-	mat[0][2] = 0.0;
-	mat[0][3] = 0.0;
-
-	mat[1][0] = 0.0;
-	mat[1][1] = 1.0;
-	mat[1][2] = 0.0;
-	mat[1][3] = 0.0;
-
-	mat[2][0] = 0.0;
-	mat[2][1] = 0.0;
-	mat[2][2] = 1.0;
-	mat[2][3] = 0.0;
-
-	mat[3][0] = 0.5;
-	mat[3][1] = 0.5;
-	mat[3][2] = 0.0;
-	mat[3][3] = 1.0;*/
-
 	//viewport
 	MTLViewport vp = {
 	.originX = 0.0,
@@ -342,6 +332,13 @@ NSLog(@"drawRect");
 	.zfar = 1.0
 	};
 
+	//
+	float (*mat)[4] = (float (*)[4])[_uniformBuffer2 contents];
+	mat[0][0] = 1.0;mat[0][1] = 0.0;mat[0][2] = 0.0;mat[0][3] = 0.0;
+	mat[1][0] = 0.0;mat[1][1] = 1.0;mat[1][2] = 0.0;mat[1][3] = 0.0;
+	mat[2][0] = 0.0;mat[2][1] = 0.0;mat[2][2] = 1.0;mat[2][3] = 0.0;
+	mat[3][0] = 0.0;mat[3][1] = 0.0;mat[3][2] = 0.0;mat[3][3] = 1.0;
+
 	// clear color
 	MTLRenderPassDescriptor* passdesc = self.currentRenderPassDescriptor;
 	passdesc.depthAttachment.loadAction = MTLLoadActionClear;
@@ -349,8 +346,42 @@ NSLog(@"drawRect");
 	passdesc.colorAttachments[0].loadAction = MTLLoadActionClear;
 	passdesc.colorAttachments[0].clearColor = MTLClearColorMake(0.5, 0.5, 0.5, 1.0);
 
-	// Create a command buffer.
-	id <MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
+	// Encode render command.
+	id <MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:passdesc];
+	[encoder setViewport:vp];
+	[encoder setDepthStencilState:_depthState];
+	[encoder setRenderPipelineState:_pipelineState];
+	[encoder setFragmentTexture:_texture atIndex:0];
+	[encoder setVertexBuffer:_vertexBuffer2 offset:0 atIndex:MeshVertexBuffer];
+	[encoder setVertexBuffer:_uniformBuffer2 offset:0 atIndex:FrameUniformBuffer];
+	[encoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
+	[encoder endEncoding];
+}
+- (void)drawtwo:(id <MTLCommandBuffer>)commandBuffer
+{
+	//viewport
+	MTLViewport vp = {
+	.originX = 0.0,
+	.originY = 0.0,
+	.width = self.drawableSize.width,
+	.height= self.drawableSize.height,
+	.znear= 0.0,
+	.zfar = 1.0
+	};
+
+	int x,y;
+	float (*tmp)[4] = (float (*)[4])[_uniformBuffer contents];
+	float (*cam)[4] = thewnd->mtfull_camera[0]->src.arg.mat;
+	for(y=0;y<4;y++){
+		for(x=0;x<4;x++)tmp[y][x] = cam[y][x];
+	}
+
+	// clear color
+	MTLRenderPassDescriptor* passdesc = self.currentRenderPassDescriptor;
+	passdesc.depthAttachment.loadAction = MTLLoadActionClear;
+	passdesc.depthAttachment.clearDepth = 1.0;
+	passdesc.colorAttachments[0].loadAction = MTLLoadActionLoad;
+	//passdesc.colorAttachments[0].clearColor = MTLClearColorMake(0.5, 0.5, 0.5, 1.0);
 
 	// Encode render command.
 	id <MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:passdesc];
@@ -362,6 +393,15 @@ NSLog(@"drawRect");
 	[encoder setVertexBuffer:_uniformBuffer offset:0 atIndex:FrameUniformBuffer];
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
 	[encoder endEncoding];
+}
+- (void)drawRect:(CGRect)rect
+{
+NSLog(@"drawRect");
+	// Create a command buffer.
+	id <MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
+
+	[self drawone:commandBuffer];
+	[self drawtwo:commandBuffer];
 
 	[commandBuffer presentDrawable:self.currentDrawable];
 	[commandBuffer commit];
