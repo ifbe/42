@@ -56,6 +56,11 @@ forgpu/gl41/carve/gl41.other.group.c \
 forgpu/gl41/carve/gl41.other.helper.c \
 forgpu/gl41/gl41.coop.c \
 forgpu/gl41/gl41.data.c \
+forgpu/metal/metal.solid.point.c \
+forgpu/metal/metal.solid.line.c \
+forgpu/metal/metal.solid.trigon.c \
+forgpu/metal/metal.solid.voxel.c \
+forgpu/metal/metal.ctx.c \
 fornpu/npu.c \
 forspu/al10/al10.c \
 forspu/sl10/sl10.c \

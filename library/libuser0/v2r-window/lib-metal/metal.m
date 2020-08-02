@@ -187,7 +187,7 @@ NSLog(@"mywindow.keyUp");
 	id<MTLDevice> device;
 	id<MTLCommandQueue> _commandQueue;
 
-	//perdraw
+	//example
 	id<MTLDepthStencilState> _depthState;
 	id<MTLRenderPipelineState> _pipelineState;
 	id<MTLLibrary> _shader;
@@ -288,27 +288,11 @@ NSLog(@"setup");
 		bytesPerRow:4*1024
 	];
 
-	//vertex2
-	struct Vertex vert2[] = {
+	//vertex
+	struct Vertex verts[] = {
 		{{-0.5,-0.5, 0}, {255, 0, 0, 255}},
 		{{-0.5, 0.5, 0}, {0, 255, 0, 255}},
 		{{ 0.5,-0.5, 0}, {0, 0, 255, 255}}
-	};
-	_vertexBuffer2 = [self.device
-		newBufferWithBytes:vert2
-		length:sizeof(vert2)
-		options:MTLResourceStorageModeShared
-	];
-	_uniformBuffer2 = [self.device
-		newBufferWithLength:sizeof(64)
-		options:MTLResourceCPUCacheModeWriteCombined
-	];
-
-	//vertex
-	struct Vertex verts[] = {
-		{{-2000,-2000, 0}, {255, 0, 0, 255}},
-		{{-2000, 2000, 0}, {0, 255, 0, 255}},
-		{{ 2000,-2000, 0}, {0, 0, 255, 255}}
 	};
 	_vertexBuffer = [self.device
 		newBufferWithBytes:verts
@@ -319,8 +303,24 @@ NSLog(@"setup");
 		newBufferWithLength:sizeof(64)
 		options:MTLResourceCPUCacheModeWriteCombined
 	];
+
+	//vertex2
+	struct Vertex vert2[] = {
+		{{-2000,-2000, 0}, {255, 0, 0, 255}},
+		{{-2000, 2000, 0}, {0, 255, 0, 255}},
+		{{ 2000,-2000, 0}, {0, 0, 255, 255}}
+	};
+	_vertexBuffer2 = [self.device
+		newBufferWithBytes:vert2
+		length:sizeof(vert2)
+		options:MTLResourceStorageModeShared
+	];
+	_uniformBuffer2 = [self.device
+		newBufferWithLength:sizeof(64)
+		options:MTLResourceCPUCacheModeWriteCombined
+	];
 }
-- (void)drawone:(id <MTLCommandBuffer>)commandBuffer
+- (void)draw000:(id <MTLCommandBuffer>)commandBuffer
 {
 	//viewport
 	MTLViewport vp = {
@@ -333,11 +333,11 @@ NSLog(@"setup");
 	};
 
 	//
-	float (*mat)[4] = (float (*)[4])[_uniformBuffer2 contents];
+	float (*mat)[4] = (float (*)[4])[_uniformBuffer contents];
 	mat[0][0] = 1.0;mat[0][1] = 0.0;mat[0][2] = 0.0;mat[0][3] = 0.0;
 	mat[1][0] = 0.0;mat[1][1] = 1.0;mat[1][2] = 0.0;mat[1][3] = 0.0;
 	mat[2][0] = 0.0;mat[2][1] = 0.0;mat[2][2] = 1.0;mat[2][3] = 0.0;
-	mat[3][0] = 0.0;mat[3][1] = 0.0;mat[3][2] = 0.0;mat[3][3] = 1.0;
+	mat[3][0] = 0.5;mat[3][1] = 0.0;mat[3][2] = 0.0;mat[3][3] = 1.0;
 
 	// clear color
 	MTLRenderPassDescriptor* passdesc = self.currentRenderPassDescriptor;
@@ -352,13 +352,125 @@ NSLog(@"setup");
 	[encoder setDepthStencilState:_depthState];
 	[encoder setRenderPipelineState:_pipelineState];
 	[encoder setFragmentTexture:_texture atIndex:0];
-	[encoder setVertexBuffer:_vertexBuffer2 offset:0 atIndex:MeshVertexBuffer];
-	[encoder setVertexBuffer:_uniformBuffer2 offset:0 atIndex:FrameUniformBuffer];
+	[encoder setVertexBuffer:_vertexBuffer offset:0 atIndex:MeshVertexBuffer];
+	[encoder setVertexBuffer:_uniformBuffer offset:0 atIndex:FrameUniformBuffer];
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
 	[encoder endEncoding];
 }
-- (void)drawtwo:(id <MTLCommandBuffer>)commandBuffer
+- (void)drawone:(id <MTLCommandBuffer>)commandBuffer data:(struct mt20data*)mt
 {
+	if(mt->dst.shader_deq != mt->src.shader_enq){
+		if(mt->dst.shader){
+			//free shader
+		}
+		if(mt->src.source){
+			NSError* error = nil;
+			NSString* str = [NSString stringWithUTF8String:mt->src.source];
+
+			id<MTLLibrary> mtllib = [self.device newLibraryWithSource:str options:nil error:&error];
+			if(!mtllib) {
+				NSLog(@"Failed to load library. error %@", error);
+				return;
+			}
+			id <MTLFunction> vertFunc = [mtllib newFunctionWithName:@"vert"];
+			id <MTLFunction> fragFunc = [mtllib newFunctionWithName:@"frag"];
+
+			// Create vertex descriptor.
+			MTLVertexDescriptor* vertDesc = [MTLVertexDescriptor new];
+			vertDesc.attributes[0].format = MTLVertexFormatFloat3;
+			vertDesc.attributes[0].offset = 0;
+			vertDesc.attributes[0].bufferIndex = 0;
+			vertDesc.attributes[1].format = MTLVertexFormatFloat3;
+			vertDesc.attributes[1].offset = 4*3;
+			vertDesc.attributes[1].bufferIndex = 0;
+			vertDesc.attributes[2].format = MTLVertexFormatFloat3;
+			vertDesc.attributes[2].offset = 4*6;
+			vertDesc.attributes[2].bufferIndex = 0;
+			vertDesc.layouts[0].stride = 4*9;
+			vertDesc.layouts[0].stepRate = 1;
+			vertDesc.layouts[0].stepFunction = MTLVertexStepFunctionPerVertex;
+
+			// Create pipeline state.
+			MTLRenderPipelineDescriptor* pipelineDesc = [MTLRenderPipelineDescriptor new];
+			pipelineDesc.sampleCount = self.sampleCount;
+			pipelineDesc.vertexFunction = vertFunc;
+			pipelineDesc.fragmentFunction = fragFunc;
+			pipelineDesc.vertexDescriptor = vertDesc;
+			pipelineDesc.colorAttachments[0].pixelFormat = self.colorPixelFormat;
+			pipelineDesc.depthAttachmentPixelFormat = self.depthStencilPixelFormat;
+			pipelineDesc.stencilAttachmentPixelFormat = self.depthStencilPixelFormat;
+
+			id<MTLRenderPipelineState> pipeline = [self.device newRenderPipelineStateWithDescriptor:pipelineDesc error:&error];
+			if (!pipeline) {
+				NSLog(@"Failed to create pipeline state, error %@", error);
+				exit(0);
+			}
+
+			mt->dst.shader = mtllib;
+			mt->dst.vert = vertFunc;
+			mt->dst.frag = fragFunc;
+			mt->dst.pipeline = pipeline;
+			NSLog(@"upload shader");
+		}
+		mt->dst.shader_deq = mt->src.shader_enq;
+	}
+
+	struct vertex* vtx = &mt->src.vtx[0];
+	if(mt->dst.vbo_deq != mt->src.vbuf_enq){
+		if(vtx->vbuf){
+			if(0 == mt->dst.vbuf){
+				mt->dst.vbuf = [self.device
+					newBufferWithBytesNoCopy:vtx->vbuf
+					length:vtx->vbuf_len
+					options:MTLResourceStorageModeShared
+					deallocator:nil
+				];
+				NSLog(@"upload vertex:%x,%x,%x", vtx->vbuf_w, vtx->vbuf_h, vtx->vbuf_len);
+			}
+			else{
+
+			}
+		}
+		mt->dst.vbo_deq = mt->src.vbuf_enq;
+	}
+
+	if(mt->dst.ibo_deq != mt->src.ibuf_enq){
+		if(vtx->ibuf){
+			if(0 == mt->dst.ibuf){
+				mt->dst.ibuf = [self.device
+					newBufferWithBytesNoCopy:vtx->ibuf
+					length:vtx->ibuf_len
+					options:MTLResourceStorageModeShared
+					deallocator:nil
+				];
+				NSLog(@"upload indice:%x,%x,%x", vtx->ibuf_w, vtx->ibuf_h, vtx->ibuf_len);
+			}
+			else{
+
+			}
+		}
+		mt->dst.ibo_deq = mt->src.ibuf_enq;
+	}
+
+	if(0 == mt->dst.uniform){
+		mt->dst.uniform = [self.device
+			newBufferWithLength:sizeof(64)
+			options:MTLResourceCPUCacheModeWriteCombined
+		];
+	}
+	id<MTLBuffer> uniform = mt->dst.uniform;
+
+	float (*tmp)[4] = (float (*)[4])[uniform contents];
+	float (*cam)[4] = thewnd->mtfull_camera[0]->src.arg.mat;
+
+	int x,y;
+	for(y=0;y<4;y++){
+		for(x=0;x<4;x++)tmp[y][x] = cam[y][x];
+	}
+
+
+
+
 	//viewport
 	MTLViewport vp = {
 	.originX = 0.0,
@@ -368,13 +480,6 @@ NSLog(@"setup");
 	.znear= 0.0,
 	.zfar = 1.0
 	};
-
-	int x,y;
-	float (*tmp)[4] = (float (*)[4])[_uniformBuffer contents];
-	float (*cam)[4] = thewnd->mtfull_camera[0]->src.arg.mat;
-	for(y=0;y<4;y++){
-		for(x=0;x<4;x++)tmp[y][x] = cam[y][x];
-	}
 
 	// clear color
 	MTLRenderPassDescriptor* passdesc = self.currentRenderPassDescriptor;
@@ -387,21 +492,40 @@ NSLog(@"setup");
 	id <MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:passdesc];
 	[encoder setViewport:vp];
 	[encoder setDepthStencilState:_depthState];
-	[encoder setRenderPipelineState:_pipelineState];
-	[encoder setFragmentTexture:_texture atIndex:0];
-	[encoder setVertexBuffer:_vertexBuffer offset:0 atIndex:MeshVertexBuffer];
-	[encoder setVertexBuffer:_uniformBuffer offset:0 atIndex:FrameUniformBuffer];
-	[encoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
+	[encoder setRenderPipelineState:mt->dst.pipeline];
+	[encoder setVertexBuffer:mt->dst.vbuf offset:0 atIndex:0];
+	[encoder setVertexBuffer:mt->dst.uniform offset:0 atIndex:1];
+	[encoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle 
+                indexCount:vtx->ibuf_h*3
+                 indexType:MTLIndexTypeUInt16
+               indexBuffer:mt->dst.ibuf
+         indexBufferOffset:0
+	];
+	//[encoder setRenderPipelineState:_pipelineState];
+	//[encoder setFragmentTexture:_texture atIndex:0];
+	//[encoder setVertexBuffer:_vertexBuffer2 offset:0 atIndex:0];
+	//[encoder setVertexBuffer:mt->dst.uniform offset:0 atIndex:1];
+	//[encoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
+
 	[encoder endEncoding];
 }
 - (void)drawRect:(CGRect)rect
 {
-NSLog(@"drawRect");
+//NSLog(@"drawRect");
 	// Create a command buffer.
 	id <MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
 
-	[self drawone:commandBuffer];
-	[self drawtwo:commandBuffer];
+	[self draw000:commandBuffer];
+
+	int j;
+	struct mt20data* mt;
+	for(j=0;j<64;j++){
+		mt = thewnd->mtfull_solid[j];
+		if(0 == mt)continue;
+
+		//NSLog(@"%d, %p", j, mt);
+		[self drawone:commandBuffer data:mt];
+	}
 
 	[commandBuffer presentDrawable:self.currentDrawable];
 	[commandBuffer commit];
@@ -521,9 +645,9 @@ void windowcreate(struct supply* wnd)
 	wnd->fbheight = 768;
 
 	wnd->mtfull_camera = (struct mt20data**)memorycreate(0x10000, 0);
-	//wnd->mtfull_light  = (struct mt20data**)memorycreate(0x10000, 0);
-	//wnd->mtfull_solid  = (struct mt20data**)memorycreate(0x10000, 0);
-	//wnd->mtfull_opaque = (struct mt20data**)memorycreate(0x10000, 0);
+	wnd->mtfull_light  = (struct mt20data**)memorycreate(0x10000, 0);
+	wnd->mtfull_solid  = (struct mt20data**)memorycreate(0x10000, 0);
+	wnd->mtfull_opaque = (struct mt20data**)memorycreate(0x10000, 0);
 	thewnd = wnd;
 
 

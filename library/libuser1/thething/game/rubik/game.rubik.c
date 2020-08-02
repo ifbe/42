@@ -675,6 +675,197 @@ static void rubikscube_draw_gl41(
 		}
 	}
 }
+static void rubikscube_draw_mt20(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
+{
+	int x,y,rgb;
+	float c,s;
+	vec4 f,q;
+	vec3 tc, tr, tf, tu;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
+
+	u8 (*buf)[4][4] = act->buf0;
+	if(0 == buf)return;
+
+	if(act->CODE){
+		u64 time = timeread();
+		q[3] = (time - act->TIME) / 1000000.0;
+		if((q[3] < 0.0)|(q[3] > 1.0)){
+			rubikscube_rotate((void*)buf, act->CODE);
+			act->CODE = 0;
+		}
+
+		if(act->CODE){
+			q[0] = q[1] = q[2] = 0.0;
+			switch(act->CODE){
+				case 'l':q[0] =-1.0;break;
+				case 'r':q[0] = 1.0;break;
+				case 'n':q[1] =-1.0;break;
+				case 'f':q[1] = 1.0;break;
+				case 'b':q[2] =-1.0;break;
+				case 't':q[2] = 1.0;break;
+			}
+
+			q[3] *= -PI/4;
+			c = getcos(q[3]);
+			s = getsin(q[3]);
+
+			q[0] = q[0]*s;
+			q[1] = q[1]*s;
+			q[2] = q[2]*s;
+			q[3] = c;
+		}
+	}
+
+	for(y=0;y<level;y++)
+	{
+		for(x=0;x<level;x++)
+		{
+			//left
+			tr[0] = -vf[0] / (level+0.5);
+			tr[1] = -vf[1] / (level+0.5);
+			tr[2] = -vf[2] / (level+0.5);
+			tf[0] = vu[0] / (level+0.5);
+			tf[1] = vu[1] / (level+0.5);
+			tf[2] = vu[2] / (level+0.5);
+			f[0] = -1.0;
+			f[1] = 1.0 - (2.0*x+1.0)/level;
+			f[2] = (2.0*y+1.0)/level - 1.0;
+			if(rubikscube_shouldrotate(x, y, 'l', act->CODE)){
+				quaternion_rotate(f, q);
+				quaternion_rotate(tr,q);
+				quaternion_rotate(tf,q);
+			}
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			rgb = rubikcolor[(buf[0][y][x])%6];
+			mt20solid_rect(ctx, rgb, tc, tr, tf);
+
+			//right
+			tr[0] = vf[0] / (level+0.5);
+			tr[1] = vf[1] / (level+0.5);
+			tr[2] = vf[2] / (level+0.5);
+			tf[0] = vu[0] / (level+0.5);
+			tf[1] = vu[1] / (level+0.5);
+			tf[2] = vu[2] / (level+0.5);
+			f[0] = 1.0;
+			f[1] = (2.0*x+1.0)/level - 1.0;
+			f[2] = (2.0*y+1.0)/level - 1.0;
+			if(rubikscube_shouldrotate(x, y, 'r', act->CODE)){
+				quaternion_rotate(f, q);
+				quaternion_rotate(tr,q);
+				quaternion_rotate(tf,q);
+			}
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			rgb = rubikcolor[(buf[1][y][x])%6];
+			mt20solid_rect(ctx, rgb, tc, tr, tf);
+		}
+	}
+
+	for(y=0;y<level;y++)
+	{
+		for(x=0;x<level;x++)
+		{
+			//near
+			tr[0] = vr[0] / (level+0.5);
+			tr[1] = vr[1] / (level+0.5);
+			tr[2] = vr[2] / (level+0.5);
+			tf[0] = vu[0] / (level+0.5);
+			tf[1] = vu[1] / (level+0.5);
+			tf[2] = vu[2] / (level+0.5);
+			f[0] = (2.0*x+1.0)/level - 1.0;
+			f[1] = -1.0;
+			f[2] = (2.0*y+1.0)/level - 1.0;
+			if(rubikscube_shouldrotate(x, y, 'n', act->CODE)){
+				quaternion_rotate(f, q);
+				quaternion_rotate(tr,q);
+				quaternion_rotate(tf,q);
+			}
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			rgb = rubikcolor[(buf[2][y][x])%6];
+			mt20solid_rect(ctx, rgb, tc, tr, tf);
+
+			//far
+			tr[0] = -vr[0] / (level+0.5);
+			tr[1] = -vr[1] / (level+0.5);
+			tr[2] = -vr[2] / (level+0.5);
+			tf[0] = vu[0] / (level+0.5);
+			tf[1] = vu[1] / (level+0.5);
+			tf[2] = vu[2] / (level+0.5);
+			f[0] = 1.0 - (2.0*x+1.0)/level;
+			f[1] = 1.0;
+			f[2] = (2.0*y+1.0)/level - 1.0;
+			if(rubikscube_shouldrotate(x, y, 'f', act->CODE)){
+				quaternion_rotate(f, q);
+				quaternion_rotate(tr,q);
+				quaternion_rotate(tf,q);
+			}
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			rgb = rubikcolor[(buf[3][y][x])%6];
+			mt20solid_rect(ctx, rgb, tc, tr, tf);
+		}
+	}
+
+	for(y=0;y<level;y++)
+	{
+		for(x=0;x<level;x++)
+		{
+			//bottom
+			tr[0] = vr[0] / (level+0.5);
+			tr[1] = vr[1] / (level+0.5);
+			tr[2] = vr[2] / (level+0.5);
+			tf[0] = -vf[0] / (level+0.5);
+			tf[1] = -vf[1] / (level+0.5);
+			tf[2] = -vf[2] / (level+0.5);
+			f[0] = (2.0*x+1.0)/level - 1.0;
+			f[1] = 1.0 - (2.0*y+1.0)/level;
+			f[2] = -1.0;
+			if(rubikscube_shouldrotate(x, y, 'b', act->CODE)){
+				quaternion_rotate(f, q);
+				quaternion_rotate(tr,q);
+				quaternion_rotate(tf,q);
+			}
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			rgb = rubikcolor[(buf[4][y][x])%6];
+			mt20solid_rect(ctx, rgb, tc, tr, tf);
+
+			//upper
+			tr[0] = vr[0] / (level+0.5);
+			tr[1] = vr[1] / (level+0.5);
+			tr[2] = vr[2] / (level+0.5);
+			tf[0] = vf[0] / (level+0.5);
+			tf[1] = vf[1] / (level+0.5);
+			tf[2] = vf[2] / (level+0.5);
+			f[0] = (2.0*x+1.0)/level - 1.0;
+			f[1] = (2.0*y+1.0)/level - 1.0;
+			f[2] = 1.0;
+			if(rubikscube_shouldrotate(x, y, 't', act->CODE)){
+				quaternion_rotate(f, q);
+				quaternion_rotate(tr,q);
+				quaternion_rotate(tf,q);
+			}
+			tc[0] = vc[0] + f[0]*vr[0] + f[1]*vf[0] + f[2]*vu[0];
+			tc[1] = vc[1] + f[0]*vr[1] + f[1]*vf[1] + f[2]*vu[1];
+			tc[2] = vc[2] + f[0]*vr[2] + f[1]*vf[2] + f[2]*vu[2];
+			rgb = rubikcolor[(buf[5][y][x])%6];
+			mt20solid_rect(ctx, rgb, tc, tr, tf);
+		}
+	}
+}
 static void rubikscube_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -730,6 +921,7 @@ static void rubikscube_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	switch(wnd->fmt){
 	case _dx11full_:rubikscube_draw_dx11(ent,slot, wor,geom, wnd,area);break;
 	case _gl41full_:rubikscube_draw_gl41(ent,slot, wor,geom, wnd,area);break;
+	case _mt20full_:rubikscube_draw_mt20(ent,slot, wor,geom, wnd,area);break;
 	}
 }
 static void rubikscube_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

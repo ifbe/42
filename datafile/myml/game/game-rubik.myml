@@ -19,6 +19,9 @@ width:1024
 height:1024
 depth:1024
 }
+stdio{
+fmt:std
+}
 </supply>
 
 
@@ -71,4 +74,5 @@ q:1.0, 1.0
 
 #
 (freecam, 0, ioto) -> (rubik, 0, ioby)
+(stdio, 0, dst) -> (rubik, 0, ioby)
 </relation>

@@ -108,3 +108,8 @@ void gl41double(              struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec
 void gl41axis(                struct entity* ctx);
 void gl41frustum(             struct entity* ctx, struct fstyle* sty);
 void gl41boundingvolume(      struct entity* ctx, u32 rgb, struct fstyle* sty, u32 flag);
+
+
+
+
+void mt20solid_rect(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);

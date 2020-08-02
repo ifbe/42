@@ -311,9 +311,11 @@ struct gl41data
 
 struct mtsrc
 {
+	void* pipeline;
+	void* depthstencil;
+
 	//shader
-	char* vs;
-	char* ps;
+	char* source;
 
 	//constant
 	struct uniform{
@@ -337,9 +339,13 @@ struct mtsrc
 struct mtdst
 {
 	void* pipeline;
+	void* depthstencil;
+	void* blend;
 
 	//shader
 	void* shader;
+	void* vert;
+	void* frag;
 
 	//texture
 	void* texture[7];
@@ -351,7 +357,6 @@ struct mtdst
 	//vertex
 	void* vbuf;
 	void* ibuf;
-	void* layout;
 
 	//dequeue
 	u8 shader_deq;
@@ -1061,6 +1066,8 @@ struct supply
 		struct dx11data** dxfull_light;
 		struct gl41data*  gleasy_light;
 		struct gl41data** glfull_light;
+		struct mt20data*  mteasy_light;
+		struct mt20data** mtfull_light;
 	};
 	union{
 		u64 data2;
@@ -1077,6 +1084,8 @@ struct supply
 		struct dx11data** dxfull_solid;
 		struct gl41data*  gleasy_solid;
 		struct gl41data** glfull_solid;
+		struct mt20data*  mteasy_solid;
+		struct mt20data** mtfull_solid;
 	};
 	union{
 		u64 data3;
@@ -1092,6 +1101,8 @@ struct supply
 		struct dx11data** dxfull_opaque;
 		struct gl41data*  gleasy_opaque;
 		struct gl41data** glfull_opaque;
+		struct mt20data*  mteasy_opaque;
+		struct mt20data** mtfull_opaque;
 	};
 
 	//[80,bf]: func
@@ -1253,6 +1264,8 @@ struct entity
 		struct dx11data** dxfull_light;
 		struct gl41data*  gleasy_light;
 		struct gl41data** glfull_light;
+		struct mt20data*  mteasy_light;
+		struct mt20data** mtfull_light;
 	};
 	union{
 		u64 data2;
@@ -1273,6 +1286,8 @@ struct entity
 		struct dx11data** dxfull_solid;
 		struct gl41data*  gleasy_solid;
 		struct gl41data** glfull_solid;
+		struct mt20data*  mteasy_solid;
+		struct mt20data** mtfull_solid;
 	};
 	union{
 		u64 data3;
@@ -1292,6 +1307,8 @@ struct entity
 		struct dx11data** dxfull_opaque;
 		struct gl41data*  gleasy_opaque;
 		struct gl41data** glfull_opaque;
+		struct mt20data*  mteasy_opaque;
+		struct mt20data** mtfull_opaque;
 	};
 
 	//[80,bf]: func

@@ -14,17 +14,21 @@ void matproj(mat4 mat, struct fstyle* sty);
 void mat4_transposefrom(float* m, float* u);
 void frustum2viewandclip_transpose(struct fstyle* frus, mat4 v_, mat4 vp);
 int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
-//
+//cpurender
 void pixel_clearcolor(void*);
 void pixel_cleardepth(void*);
-//
+//directx
 void dx11data_before(void*);
 void dx11data_after(void*);
 int dx11data_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-//
+//opengl
 void gl41data_before(void*);
 void gl41data_after(void*);
 int gl41data_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+//metal
+void mt20data_before(void*);
+void mt20data_after(void*);
+int mt20data_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 
 
 
@@ -106,18 +110,6 @@ static void freecam_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 
-static int freecam_draw_gl41(
-	struct entity* act, struct style* part,
-	struct entity* win, struct style* geom,
-	struct entity* ctx, struct style* none)
-{
-	//frustum
-	gl41frustum(ctx, &geom->frus);
-
-	//ray from eye to far
-	gl41line(ctx, 0, geom->frus.vc, &act->fx0);
-	return 0;
-}
 void freecam_move(vec3 dst, vec3 src, float t)
 {
 	dst[0] += src[0] * t;
@@ -444,6 +436,18 @@ static void freecam_mt20cam(
 
 
 
+static int freecam_draw_gl41(
+	struct entity* act, struct style* part,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* none)
+{
+	//frustum
+	gl41frustum(ctx, &geom->frus);
+
+	//ray from eye to far
+	gl41line(ctx, 0, geom->frus.vc, &act->fx0);
+	return 0;
+}
 static int freecam_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 //[-6,-5]: wnd,area -> cam,togl
@@ -458,9 +462,8 @@ static int freecam_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 
 	if(_tui_ == wnd->fmt)return 0;
 	if(_rgba_ == wnd->fmt)return 0;
-	if(_dx11full_ == wnd->fmt)return 0;
-	if(stack&&('v' == key)){
-		freecam_draw_gl41(ent,slot, wor,geom, wnd,area);
+	if(_gl41full_ == wnd->fmt){
+		if(stack&&('v' == key))freecam_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 	return 0;
 }
@@ -539,11 +542,16 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		break;
 
 	case _mt20full_:
-		say("@freecam_mt20full\n");
+		mt20data_before(wnd);
+		//camera
 		freecam_ratio(wor, geom, wnd, area);
 		freecam_shape2frustum(&geom->fshape, &geom->frustum);
 		freecam_frustum2matrix(ent,slot, wor,geom);
 		freecam_mt20cam(ent,slot, wor,geom, wnd,area);
+		//data
+		mt20data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
+		//enq++
+		mt20data_after(wnd);
 		break;
 	}
 	return 0;
