@@ -165,6 +165,9 @@ struct vertex{
 
 struct dxsrc
 {
+	//renderto
+	void* target;
+
 	//shader
 	char* vs;
 	char* ps;
@@ -190,6 +193,9 @@ struct dxsrc
 };
 struct dxdst
 {
+	//framebuffer
+	void* fbo;
+
 	//shader
 	void* vsblob;
 	void* psblob;
@@ -232,6 +238,9 @@ struct dx11data
 
 struct glsrc
 {
+	//renderto
+	void* target;
+
 	//shader
 	void* vs;
 	void* tc;
@@ -262,6 +271,9 @@ struct glsrc
 };
 struct gldst
 {
+	//framebuffer
+	u32 fbo;
+
 	//shader
 	u32 vs;
 	u32 fs;
@@ -275,19 +287,8 @@ struct gldst
 	u32 ibo;
 	u32 vao;
 
-	//dxtest_shader
-	void* vsblob;
-	void* psblob;
-	void* vsprog;
-	void* psprog;
-	//dxtest_texture
-	void* texture[8];
-	//dxtest_constant
-	void* constant[8];
-	//dxtest_vertex
-	void* vbuf;
-	void* ibuf;
-	void* layout;
+	//uniform
+	u32 ubo;
 
 	//dequeue
 	u8 shader_deq;
@@ -311,8 +312,8 @@ struct gl41data
 
 struct mtsrc
 {
-	void* pipeline;
-	void* depthstencil;
+	//render target
+	void* target;
 
 	//shader
 	char* source;
@@ -338,6 +339,8 @@ struct mtsrc
 };
 struct mtdst
 {
+	//framebuffer
+	void* fbo;
 	void* pipeline;
 	void* depthstencil;
 	void* blend;
