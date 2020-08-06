@@ -207,6 +207,12 @@ void render_onedraw(struct gl41data* cam, struct gl41data* lit, struct gl41data*
 
 //say("8888@opaque=%x, geom=%x, vbuf_h=%x, ibuf_h=%x\n", src->opaque, src->geometry, src->vbuf_h, src->ibuf_h);
 	struct vertex* vtx = src->vtx;
+	if((3==vtx->geometry)&&(2==vtx->fill)){
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+	else{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	}
 	if(vtx->ibuf)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dst->ibo);
