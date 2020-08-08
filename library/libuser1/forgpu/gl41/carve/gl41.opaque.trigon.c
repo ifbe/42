@@ -53,6 +53,7 @@ static int opaque3d_fill(struct glsrc* src)
 	struct vertex* vtx = src->vtx;
 	vtx->opaque = 1;
 	vtx->geometry = 3;
+	//vtx->fill = 2;
 
 	if(0 == vtx->ibuf){
 		vtx->ibuf_len = 0x100000;

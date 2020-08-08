@@ -124,6 +124,7 @@ say("%s\n%s\n%s\n%s\n",albedo,matter,vs,fs);
 	//vertex
 	src->vtx[0].geometry = 3;
 	src->vtx[0].opaque = 0;
+	//src->vtx[0].fill = 2;
 }
 static void obj3d_draw_gl41(
 	struct entity* act, struct style* part,
@@ -380,8 +381,8 @@ static void obj3d_create(struct entity* act, void* arg, int argc, u8** argv)
 	own->gl41.src.arg[0].data = own->objmat;
 
 	if(0 == arg)arg = "datafile/obj/cube.obj";
-	own->objbuf = memorycreate(0x10000, 0);
-	own->objlen = openreadclose(arg, 0, own->objbuf, 0x10000);
+	own->objbuf = memorycreate(0x100000, 0);
+	own->objlen = openreadclose(arg, 0, own->objbuf, 0x100000);
 }
 
 

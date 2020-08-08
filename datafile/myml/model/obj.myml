@@ -1,6 +1,8 @@
 <entity>
 rabbit{
 fmt:obj3d
+url:datafile/obj/viking_room.obj
+albedo:datafile/obj/viking_room.png
 }
 freecam{
 fmt:freecam
