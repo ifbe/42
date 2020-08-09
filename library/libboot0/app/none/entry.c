@@ -7,8 +7,10 @@
 
 int main(int argc, char** argv)
 {
-	void* all = origincreate(_main_, 0, argc, (u8**)argv);
-	void* thr = workercreate(0, 0, 0, 0);
+	//init world, store args
+	void* all = origincreate(_main_, main, argc, (u8**)argv);
+	//call mython, until return
+	void* thr = workercreate(_myml_, 0, argc, (u8**)argv);
 
 	workerdelete(thr);
 	origindelete(all);

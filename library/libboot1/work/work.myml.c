@@ -534,7 +534,7 @@ void role_test1(u8* buf, int len)
 	}
 */
 }
-int role_fromfile(char* str, int len)
+int role_fromfile(u8* str, int len)
 {
 	u8 buf[0x2000];
 
@@ -544,4 +544,40 @@ int role_fromfile(char* str, int len)
 
 	role_test1(buf, len);
 	return 1;
+}
+
+
+
+
+void exiter(void*);
+void pulser(void*);
+void poller(void*);
+void realer(void*);
+void waiter(void*);
+int myml_create(struct worker* wrk, void* url, int argc, u8** argv)
+{
+	int j;
+	if(0 == argv){
+		role_fromfile((u8*)"datafile/myml/index.myml", 0);
+	}
+	else if(argc <= 1){
+		supplycreate(_std_, 0, 0, 0);
+        workercreate(_waiter_, 0, 0, 0);
+	}
+	else{
+		for(j=1;j<argc;j++){
+			say("arg[%d]=%s\n", j, argv[j]);
+			role_fromfile(argv[j], 0);
+		}
+	}
+
+    //loop @ 1
+    switch(wrk[1].type){
+        case _exiter_:exiter(wrk);break;
+        case _pulser_:pulser(wrk);break;
+        case _poller_:poller(wrk);break;
+        case _realer_:realer(wrk);break;
+        case _waiter_:waiter(wrk);break;
+    }
+	return 0;
 }

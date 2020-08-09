@@ -16,8 +16,10 @@ int main(int argc, char** argv)
 	}
 	if(argc <= 1)prep();
 */
-	void* all = origincreate(_win32_, 0, argc, (u8**)argv);
-	void* thr = workercreate(0, 0, 0, 0);
+	//init world, store args
+	void* all = origincreate(_win32_, main, argc, (u8**)argv);
+	//call mython, until return
+	void* thr = workercreate(_myml_, 0, argc, (u8**)argv);
 
 	workerdelete(thr);
 	origindelete(all);

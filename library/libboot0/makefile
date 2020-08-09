@@ -5,6 +5,7 @@ cflag ?= -c -O2 -fPIC
 bare:
 	rm -f *.o
 	$(compiler) $(cflag) origin.c
+	$(compiler) $(cflag) bare/initer.c
 	$(compiler) $(cflag) bare/memory.c
 	$(compiler) $(cflag) bare/barex64/entry.c
 	$(compiler) $(cflag) bare/barex64/serial.c
@@ -14,6 +15,7 @@ bare:
 efi:
 	rm -f *.o
 	$(compiler) $(cflag) origin.c
+	$(compiler) $(cflag) bare/initer.c
 	$(compiler) $(cflag) bare/memory.c
 	$(compiler) $(cflag) bare/efi/entry.c
 	$(compiler) $(cflag) bare/efi/serial.c
@@ -23,6 +25,7 @@ efi:
 none:
 	rm -f *.o
 	$(compiler) $(cflag) origin.c
+	$(compiler) $(cflag) app/initer.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/none/entry.c
 	$(compiler) $(cflag) app/none/envev.c
@@ -33,6 +36,7 @@ none:
 wincmd:
 	rm -f *.o
 	$(compiler) $(cflag) origin.c
+	$(compiler) $(cflag) app/initer.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/win/entry.c
 	$(compiler) $(cflag) app/win/envev.c

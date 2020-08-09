@@ -617,19 +617,19 @@ struct origin
 
 	//[60,7f]: memory
 	union{
-		u64 padd0;
+		u64 data0;
 		void* addr0;
 	};
 	union{
-		u64 padd1;
+		u64 data1;
 		void* addr1;
 	};
 	union{
-		u64 padd2;
+		u64 data2;
 		void* addr2;
 	};
 	union{
-		u64 padd3;
+		u64 data3;
 		void* addr3;
 		void* buf;
 	};

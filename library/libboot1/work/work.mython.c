@@ -1,4 +1,5 @@
 #include "libboot.h"
+//
 void* originsearch(void*, int);
 void* workersearch(void*, int);
 void* devicesearch(void*, int);
@@ -16,10 +17,16 @@ void* arterymodify(int argc, void* argv);
 void* supplymodify(int argc, void* argv);
 void* entitymodify(int argc, void* argv);
 //
-int node(void*, int);
-int relation(void*, int);
-int role(void*, int);
-int scene(void*, int);
+void exiter(void*);
+void pulser(void*);
+void poller(void*);
+void realer(void*);
+void waiter(void*);
+//
+int openreadclose(void*,int,void*,int);
+int openwriteclose(void*,int,void*,int);
+//
+u8* getsuffix(u8* p);
 int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max);
 //
 int ncmp(void*, void*, int);
@@ -81,32 +88,7 @@ int termwrite(u8* buf, int len)
 	if(0 == ncmp(buf, "exit", 4))goto byebye;
 
 	j = str2arg(buf, len, tmp, 0x1000, argv, 8);
-	if(0 == ncmp(buf, "ls", 2))
-	{
-		term_ls(buf, len);
-	}
-	else if(0 == ncmp(buf, "role", 4))
-	{
-		role(buf, len);
-	}
-/*
-	else if(0 == ncmp(buf, "ev", 2))
-	{
-		event(buf, len);
-	}
-	else if(0 == ncmp(buf, "node", 4))
-	{
-		node(buf, len);
-	}
-	else if(0 == ncmp(buf, "rel", 3))
-	{
-		relation(buf, len);
-	}
-	else if(0 == ncmp(buf, "scene", 5))
-	{
-		scene(buf, len);
-	}
-*/
+	if(0 == ncmp(buf, "ls", 2))term_ls(buf, len);
 	else if(0 == ncmp(buf, "origin", 6))originmodify(j, argv);
 	else if(0 == ncmp(buf, "worker", 6))workermodify(j, argv);
 	else if(0 == ncmp(buf, "device", 6))devicemodify(j, argv);
@@ -126,4 +108,44 @@ byebye:
 }
 void termread()
 {
+}
+
+
+
+
+int mython_fromfile(u8* str, int len)
+{
+	u8 buf[0x2000];
+	len = openreadclose(str, 0, buf, 0x2000);
+	if(len <= 0)return 0;
+
+	int j,k = 0;
+	for(j=0;j<=len;j++){
+		if((j==len)|('\n' == buf[j])){
+			say("%.*s\n", j-k, buf);
+			k = j+1;
+		}
+	}
+	return 1;
+}
+int mython_create(struct worker* wrk, void* url, int argc, u8** argv)
+{
+	int j;
+	if(0 == argv)return 0;
+	else if(argc <= 1)return 0;
+
+	for(j=1;j<argc;j++){
+		say("arg[%d]=%s\n", j, argv[j]);
+		mython_fromfile(argv[j], 0);
+	}
+
+    //loop @ 1
+    switch(wrk[1].type){
+        case _exiter_:exiter(wrk);break;
+        case _pulser_:pulser(wrk);break;
+        case _poller_:poller(wrk);break;
+        case _realer_:realer(wrk);break;
+        case _waiter_:waiter(wrk);break;
+    }
+	return 0;
 }

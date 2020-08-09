@@ -11,9 +11,6 @@ void boardcreate();
 //
 void death();
 void birth(void*);
-void args_delete(void*);
-void args_create(int, u8**);
-//
 int openreadclose(void*, int, void*, int);
 int openwriteclose(void*, int, void*, int);
 
@@ -80,7 +77,7 @@ int origindelete(void* addr)
 	}
 	return 0;
 }
-void* origincreate(u64 type, void* name, int argc, u8** argv)
+void* origincreate(u64 type, void* func, int argc, u8** argv)
 {
 	int j;
 	struct origin* tmp;
@@ -92,10 +89,8 @@ void* origincreate(u64 type, void* name, int argc, u8** argv)
 	case _ndkmain_:{
 		tmp = memorycreate(0x1000000, 0);
 		//openreadclose("universe.bin", 0, ori, 0x1000000);
-
 		birth(tmp);
-		args_create(argc, argv);
-
+		say("type=%.8s, func@%p, argc=%d, argv@%p\n", &type, func, argc, argv);
 		tmp->type = type;
 		return tmp;
 	}
@@ -103,8 +98,8 @@ void* origincreate(u64 type, void* name, int argc, u8** argv)
 	case _start_:
 	case _efimain_:{
 		tmp = (void*)(0x1000000);
-
 		birth(tmp);
+
 		supplycreate(_std_, 0, 0, 0);
 
 		tmp->type = type;

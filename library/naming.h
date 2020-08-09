@@ -27,6 +27,15 @@
 #define _ndkmain_ hex64('n','d','k','m','a','i','n', 0)
 #define _win32_ hex64('w','i','n','3','2', 0, 0, 0)
 #define _winmain_ hex64('w','i','n','m','a','i','n', 0)
+//worker
+#define _myml_ hex32('m','y','m','l')
+#define _mython_ hex64('m','y','t','h','o','n', 0, 0)
+#define _compiler_ hex64('c','o','m','p','i','l','e','r')
+#define _exiter_ hex64('e','x','i','t','e','r', 0, 0)
+#define _poller_ hex64('p','o','l','l','e','r', 0, 0)
+#define _pulser_ hex64('p','u','l','s','e','r', 0, 0)
+#define _realer_ hex64('r','e','a','l','e','r', 0, 0)
+#define _waiter_ hex64('w','a','i','t','e','r', 0, 0)
 //
 #define _dbg_ hex32('d','b','g',0)
 #define _i2c_ hex32('i','2','c',0)
@@ -36,12 +45,6 @@
 #define _ahci_ hex32('a','h','c','i')
 #define _xhci_ hex32('x','h','c','i')
 #define _usb_ hex32('u','s','b',0)
-//
-#define _exiter_ hex64('e','x','i','t','e','r', 0, 0)
-#define _poller_ hex64('p','o','l','l','e','r', 0, 0)
-#define _pulser_ hex64('p','u','l','s','e','r', 0, 0)
-#define _realer_ hex64('r','e','a','l','e','r', 0, 0)
-#define _waiter_ hex64('w','a','i','t','e','r', 0, 0)
 //
 #define _src_ hex32('s','r','c',0)
 #define _dst_ hex32('d','s','t',0)
@@ -311,5 +314,4 @@
 #define _drag_ hex32('d','r','a','g')
 #define _joy_ hex32('j','o','y',0)
 #define _kbd_ hex32('k','b','d',0)
-#define _myml_ hex32('m','y','m','l')
 #endif
