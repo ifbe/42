@@ -130,6 +130,10 @@ struct pcmdata
 
 
 
+struct uniform{
+	void* buf;
+	int len;
+};
 struct texture{
 	char* name;
 	union{
@@ -158,6 +162,31 @@ struct vertex{
 	u8 fill;		//0=default, 1=point, 2=line, 3=trigon, 4=volume
 	u8 opaque;		//0=solid, n=opaque
 	u8 flag;		//4b align
+};
+struct mysrc
+{
+	//renderto
+	void* target;
+
+	//shader
+	char* vert;
+	char* frag;
+
+	//uniform
+	struct uniform uni[1];
+
+	//texture
+	struct texture tex[8];
+
+	//vertex
+	struct vertex vtx[2];
+
+	//enqueue
+	u8 shader_enq;
+	u8 tex_enq[8];
+	u8 arg_enq;
+	u8 vbuf_enq;
+	u8 ibuf_enq;
 };
 
 
@@ -319,7 +348,7 @@ struct mtsrc
 	char* source;
 
 	//constant
-	struct uniform{
+	struct metaluniform{
 		mat4 mat;
 		vec4 vec;
 	}arg;
