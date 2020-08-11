@@ -30,35 +30,35 @@ GLSL_VERSION
 	"mediump vec3 c1 = texture(tex1, uvw).bgr;\n"
 	"FragColor = vec4((c0+c1)*0.5, 1.0);\n"
 "}\n";
-void texmix_ctxforwnd(struct glsrc* src)
+void texmix_ctxforwnd(struct gl41data* data)
 {
 	//shader
-	src->vs = texmix_glsl_v;
-	src->fs = texmix_glsl_f;
-	src->shader_enq = 42;
+	data->src.vs = texmix_glsl_v;
+	data->src.fs = texmix_glsl_f;
+	data->src.shader_enq = 42;
 
 
 	//texture
 	struct texture* tex;
+	data->dst.texname[0] = "tex0";
+	data->dst.texname[1] = "tex1";
 
-	tex = &src->tex[0];
+	tex = &data->src.tex[0];
 	tex->fmt = hex32('r','g','b','a');
-	tex->name = "tex0";
 	tex->data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(tex, "datafile/jpg/wall.jpg");
 
-	tex = &src->tex[1];
+	tex = &data->src.tex[1];
 	tex->fmt = hex32('r','g','b','a');
-	tex->name = "tex1";
 	tex->data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(tex, "datafile/jpg/cartoon.jpg");
 
-	src->tex_enq[0] = 42;
-	src->tex_enq[1] = 42;
+	data->src.tex_enq[0] = 42;
+	data->src.tex_enq[1] = 42;
 
 
 	//vertex
-	struct vertex* vtx = &src->vtx[0];
+	struct vertex* vtx = &data->src.vtx[0];
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
@@ -68,7 +68,7 @@ void texmix_ctxforwnd(struct glsrc* src)
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 
-	src->vbuf_enq = 42;
+	data->src.vbuf_enq = 42;
 }
 static void texmix_draw_gl41(
 	struct entity* act, struct style* slot,

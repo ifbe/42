@@ -4,7 +4,7 @@
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
 void gl41data_01cam(struct entity* wnd);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, void* src, int cnt);
 //
 int copypath(u8* path, u8* data);
 
@@ -32,7 +32,7 @@ void gbuffer_ctxforwnd(struct glsrc* src, char* vs, char* fs)
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 	src->vbuf_enq = 42;
 }
-static void gbuffer_readfrom_gbuffer(struct entity* ent, struct glsrc* src)
+static void gbuffer_readfrom_gbuffer(struct entity* ent, struct gl41data* data)
 {
 	struct relation* rel = ent->orel0;
 	while(1){
@@ -43,31 +43,32 @@ static void gbuffer_readfrom_gbuffer(struct entity* ent, struct glsrc* src)
 
 	struct supply* fbo = rel->pdstchip;
 
-	src->tex[0].glfd = fbo->tex[0];
-	src->tex[0].name = "tex0";
-	src->tex[0].fmt = '!';
-	src->tex_enq[0] += 1;
+	data->dst.texname[0] = "tex0";
+	data->dst.texname[1] = "tex1";
+	data->dst.texname[2] = "tex2";
+	data->dst.texname[3] = "tex3";
+	data->dst.texname[4] = "tex4";
 
-	src->tex[1].glfd = fbo->tex[1];
-	src->tex[1].name = "tex1";
-	src->tex[1].fmt = '!';
-	src->tex_enq[1] += 1;
+	data->src.tex[0].glfd = fbo->tex[0];
+	data->src.tex[0].fmt = '!';
+	data->src.tex_enq[0] += 1;
 
-	src->tex[2].glfd = fbo->tex[2];
-	src->tex[2].name = "tex2";
-	src->tex[2].fmt = '!';
-	src->tex_enq[2] += 1;
+	data->src.tex[1].glfd = fbo->tex[1];
+	data->src.tex[1].fmt = '!';
+	data->src.tex_enq[1] += 1;
 
-	src->tex[3].glfd = fbo->tex[3];
-	src->tex[3].name = "tex3";
-	src->tex[3].fmt = '!';
-	src->tex_enq[3] += 1;
+	data->src.tex[2].glfd = fbo->tex[2];
+	data->src.tex[2].fmt = '!';
+	data->src.tex_enq[2] += 1;
 
-	src->tex[4].glfd = fbo->dep;
-	src->tex[4].name = "tex4";
-	src->tex[4].fmt = '!';
-	src->tex_enq[4] += 1;
-	//say("%d,%d,%d,%d\n", src->tex[0].glfd, src->tex[1].glfd, src->tex[2].glfd, src->tex[3].glfd);
+	data->src.tex[3].glfd = fbo->tex[3];
+	data->src.tex[3].fmt = '!';
+	data->src.tex_enq[3] += 1;
+
+	data->src.tex[4].glfd = fbo->dep;
+	data->src.tex[4].fmt = '!';
+	data->src.tex_enq[4] += 1;
+	//say("%d,%d,%d,%d\n", data->src.tex[0].glfd, data->src.tex[1].glfd, data->src.tex[2].glfd, data->src.tex[3].glfd);
 }
 static void gbuffer_draw_gl41(
 	struct entity* act, struct style* slot,
@@ -80,11 +81,11 @@ static void gbuffer_draw_gl41(
 	float* vu = geom->fs.vt;
 	if(0 == act->CTXBUF)return;
 
-	struct glsrc* src = act->CTXBUF;
-	if(0 == src)return;
-	float (*vbuf)[6] = src->vtx[0].vbuf;
+	struct gl41data* data = act->CTXBUF;
+	if(0 == data)return;
+	float (*vbuf)[6] = data->src.vtx[0].vbuf;
 	if(0 == vbuf)return;
-	gbuffer_readfrom_gbuffer(act, src);
+	gbuffer_readfrom_gbuffer(act, data);
 
 	float x,y;
 	float x0,y0,xn,yn;
@@ -145,8 +146,8 @@ static void gbuffer_draw_gl41(
 	vbuf[5][4] = y0;
 	vbuf[5][5] = 0.0;
 
-	src->vbuf_enq += 1;
-	gl41data_insert(ctx, 's', src, 1);
+	data->src.vbuf_enq += 1;
+	gl41data_insert(ctx, 's', data, 1);
 }
 
 

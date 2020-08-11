@@ -54,18 +54,16 @@ GLSL_VERSION
 	"FragColor = vec4(colour, 1.0);\n"
 "}\n";
 
-void particle_ctxforwnd(struct glsrc* src, float* vbuf)
+void particle_ctxforwnd(struct gl41data* data, float* vbuf)
 {
+	struct glsrc* src = &data->src;
+	struct gldst* dst = &data->dst;
+
 	//shader
 	src->vs = particle_glsl_v;
 	src->gs = particle_glsl_g;
 	src->fs = particle_glsl_f;
 	src->shader_enq = 42;
-
-	//argument
-	src->arg[0].name = "objmat";
-	src->arg[0].data = memorycreate(4*4*4, 0);
-	src->arg[0].fmt = 'm';
 
 	//vertex
 	struct vertex* vtx = src->vtx;
@@ -77,6 +75,11 @@ void particle_ctxforwnd(struct glsrc* src, float* vbuf)
 	vtx->vbuf_h = COUNT;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = vbuf;
+
+	//argument
+	dst->arg[0].name = "objmat";
+	dst->arg[0].data = memorycreate(4*4*4, 0);
+	dst->arg[0].fmt = 'm';
 }
 
 
@@ -93,7 +96,6 @@ static void particle_draw_gl41(
 {
 	int j;
 	float x,y,z;
-	struct glsrc* src;
 	float* mat;
 	float* buf;
 
@@ -104,13 +106,13 @@ static void particle_draw_gl41(
 	//gl41line_prism4(wnd, 0xffffff, vc, vr, vf, vu);
 
 
-	src = act->CTXBUF;
-	if(0 == src)return;
+	struct gl41data* data = act->CTXBUF;
+	if(0 == data)return;
 
-	mat = (void*)src->arg[0].data;
+	mat = (void*)data->dst.arg[0].data;
 	if(0 == mat)return;
 
-	buf = src->vtx[0].vbuf;
+	buf = data->src.vtx[0].vbuf;
 	if(0 == buf)return;
 
 
@@ -151,7 +153,7 @@ static void particle_draw_gl41(
 		else if(z > 1.0)z = -1.0;
 		buf[9*j + 2] = z;
 	}
-	src->vbuf_enq += 1;
+	data->src.vbuf_enq += 1;
 	gl41data_insert(wnd, 's', act->CTXBUF, 1);
 }
 static void particle_draw_json(
@@ -216,13 +218,10 @@ static void particle_delete(struct entity* act)
 }
 static void particle_create(struct entity* act)
 {
-	int j;
-	float* vbuf;
-	struct glsrc* src;
 	if(0 == act)return;
 
-
-	vbuf = act->F32BUF = memorycreate(4*9 * COUNT, 0);
+	int j;
+	float* vbuf = act->F32BUF = memorycreate(4*9 * COUNT, 0);
 	if(0 == vbuf)return;
 	for(j=0;j<COUNT;j++)
 	{
@@ -242,9 +241,8 @@ static void particle_create(struct entity* act)
 		vbuf[9*j + 8] = (getrandom()%8192)/8192.0;
 	}
 
-
-	src = act->CTXBUF = memorycreate(0x1000, 0);
-	particle_ctxforwnd(src, vbuf);
+	struct gl41data* data = act->CTXBUF = memorycreate(0x1000, 0);
+	particle_ctxforwnd(data, vbuf);
 }
 
 

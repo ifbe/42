@@ -97,9 +97,7 @@ static int aidfont_fill(struct dxsrc* src, int id)
 	if(0 == src->tex[0].data){
 		if(0 == buf)return -3;
 
-		src->tex[0].name = "tex0";
 		src->tex[0].data = buf + 0x400000*id;
-
 		src->tex[0].w = 2048;
 		src->tex[0].h = 2048;
 		src->tex[0].fmt = hex32('o','n','e', 0);

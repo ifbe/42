@@ -156,14 +156,14 @@ static void mirror_forfbo_update(
 //printstyle(shap);
 //printstyle(frus);
 	//
-	struct glsrc* src = (void*)(mirr->data);
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "cammvp";
-	src->arg[0].data = mirr->mvp;
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "camxyz";
-	src->arg[1].data = frus->vc;
-	fbo->glfull_camera[0] = (void*)(mirr->data);
+	struct gl41data* data = (void*)(mirr->data);
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "cammvp";
+	data->dst.arg[0].data = mirr->mvp;
+	data->dst.arg[1].fmt = 'v';
+	data->dst.arg[1].name = "camxyz";
+	data->dst.arg[1].data = frus->vc;
+	fbo->glfull_camera[0] = data;
 }
 void mirror_forfbo_prepare(struct glsrc* src)
 {
@@ -240,13 +240,13 @@ void mirror_forwnd_update(struct entity* act, struct style* slot, struct supply*
 	struct mirrbuf* mirr = act->CTXBUF;
 	if(0 == mirr)return;
 
-	struct glsrc* own = (void*)(mirr->data);
-	if(0 == own)return;
+	struct gl41data* data = (void*)(mirr->data);
+	if(0 == data)return;
 
-	own->tex[0].glfd = fbo->tex0;
-	own->tex[0].name = "tex0";
-	own->tex[0].fmt = '!';
-	own->tex_enq[0] += 1;
+	data->dst.texname[0] = "tex0";
+	data->src.tex[0].glfd = fbo->tex0;
+	data->src.tex[0].fmt = '!';
+	data->src.tex_enq[0] += 1;
 }
 void mirror_forwnd_prepare(struct glsrc* src)
 {

@@ -212,20 +212,19 @@ GLSL_VERSION
 "}\n";
 static void video_gl41prep(struct own* my)
 {
-	struct glsrc* src = &my->gl41.src;
+	struct gl41data* data = &my->gl41;
 
 	//shader
-	src->vs = video_glsl_vs;
-	src->fs = video_glsl_fs;
-	src->shader_enq = 42;
+	data->src.vs = video_glsl_vs;
+	data->src.fs = video_glsl_fs;
+	data->src.shader_enq = 42;
 
 	//texture
-	src->tex[0].name = "tex0";
-	src->tex[0].data = my->y8u8v8a8;
-	src->tex[0].fmt = hex32('r','g','b','a');
+	data->src.tex[0].data = my->y8u8v8a8;
+	data->src.tex[0].fmt = hex32('r','g','b','a');
 
 	//vertex
-	struct vertex* vtx = &src->vtx[0];
+	struct vertex* vtx = &data->src.vtx[0];
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
@@ -234,6 +233,9 @@ static void video_gl41prep(struct own* my)
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+
+	//
+	data->dst.texname[0] = "tex0";
 }
 void video_gl41draw(
 	struct entity* act, struct style* part,

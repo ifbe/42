@@ -32,18 +32,18 @@ GLSL_VERSION
 
 
 
-void imagelight_litforwnd(struct glsrc* src, char* str)
+void imagelight_litforwnd(struct gl41data* data, char* str)
 {
-	src->routine_name = "passtype";
-	src->routine_detail = "imagelight";
+	data->dst.routine_name = "passtype";
+	data->dst.routine_detail = "imagelight";
 
 	//texture
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "iblenvmap";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&src->tex[0], str);
-	src->tex_enq[0] = 42;
-	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
+	data->dst.texname[0] = "iblenvmap";
+	data->src.tex[0].fmt = hex32('r','g','b','a');
+	data->src.tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(&data->src.tex[0], str);
+	data->src.tex_enq[0] = 42;
+	//say("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
 }
 static void imagelight_lightupdate(
 	struct entity* act, struct style* slot,

@@ -234,13 +234,13 @@ static void vrglass_camera(
 	struct entity* wnd, struct style* area)
 {
 	struct fstyle* frus = &geom->frus;
-	struct glsrc* src = act->CAMBUF;
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "cammvp";
-	src->arg[0].data = act->MATBUF;
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "camxyz";
-	src->arg[1].data = frus->vc;
+	struct gl41data* data = act->CAMBUF;
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "cammvp";
+	data->dst.arg[0].data = act->MATBUF;
+	data->dst.arg[1].fmt = 'v';
+	data->dst.arg[1].name = "camxyz";
+	data->dst.arg[1].data = frus->vc;
 	wnd->glfull_camera[0] = act->CAMBUF;
 }
 

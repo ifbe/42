@@ -137,28 +137,27 @@ static void texbox_delete(struct entity* act)
 }
 static void texbox_create(struct entity* act, void* str)
 {
-	int j;
-	struct glsrc* src;
 	if(0 == act)return;
 
-	src = act->buf0 = memorycreate(0x1000, 0);
-	if(0 == src)return;
+	struct gl41data* data = act->buf0 = memorycreate(0x1000, 0);
+	if(0 == data)return;
 
 	//shader
-	src->vs = texbox_glsl_v;
-	src->fs = texbox_glsl_f;
-	src->shader_enq = 42;
+	data->src.vs = texbox_glsl_v;
+	data->src.fs = texbox_glsl_f;
+	data->src.shader_enq = 42;
 
 	//texture
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "tex0";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
+	data->src.tex[0].fmt = hex32('r','g','b','a');
+	data->src.tex[0].data = memorycreate(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/earth.jpg";
-	loadtexfromfile(&src->tex[0], str);
-	src->tex_enq[0] = 42;
-	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
+	loadtexfromfile(&data->src.tex[0], str);
 
-	struct vertex* vtx = src->vtx;
+	data->dst.texname[0] = "tex0";
+	data->src.tex_enq[0] = 42;
+	//say("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
+
+	struct vertex* vtx = data->src.vtx;
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
@@ -167,14 +166,14 @@ static void texbox_create(struct entity* act, void* str)
 	vtx->vbuf_h = 24;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
-	src->vbuf_enq = 0;
+	data->src.vbuf_enq = 0;
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
 	vtx->ibuf_h = 36;
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
 	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
-	src->ibuf_enq = 0;
+	data->src.ibuf_enq = 0;
 }
 
 

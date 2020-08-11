@@ -70,22 +70,22 @@ static void vertex_gen(float (*vbuf)[6], float x, float y, vec3 vc, vec3 vr, vec
 	vbuf[t+5][4] = (y+1)/16.0;
 	vbuf[t+5][5] = 0.0;
 }
-void skillbar_ctxforwnd(struct glsrc* src, char* str)
+void skillbar_ctxforwnd(struct gl41data* data, char* str)
 {
 	//shader
-	src->vs = skillbar_glsl_v;
-	src->fs = skillbar_glsl_f;
-	src->shader_enq = 42;
+	data->src.vs = skillbar_glsl_v;
+	data->src.fs = skillbar_glsl_f;
+	data->src.shader_enq = 42;
 
 	//texture
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "tex0";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&src->tex[0], str);
-	src->tex_enq[0] = 42;
+	data->dst.texname[0] = "tex0";
+	data->src.tex[0].fmt = hex32('r','g','b','a');
+	data->src.tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(&data->src.tex[0], str);
+	data->src.tex_enq[0] = 42;
 
 	//vertex
-	struct vertex* vtx = src->vtx;
+	struct vertex* vtx = data->src.vtx;
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
@@ -94,7 +94,7 @@ void skillbar_ctxforwnd(struct glsrc* src, char* str)
 	vtx->vbuf_h = 0;
 	vtx->vbuf_len = (vtx->vbuf_w) * 6*16*16;
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
-	src->vbuf_enq = 42;
+	data->src.vbuf_enq = 42;
 }
 
 
@@ -224,13 +224,11 @@ static void skillbar_delete(struct entity* act)
 }
 static void skillbar_create(struct entity* act, void* str)
 {
-	int j;
-	struct glsrc* src;
 	if(0 == act)return;
 
-	src = act->buf0 = memorycreate(0x1000, 0);
+	struct gl41data* data = act->buf0 = memorycreate(0x1000, 0);
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";
-	skillbar_ctxforwnd(src, str);
+	skillbar_ctxforwnd(data, str);
 }
 
 

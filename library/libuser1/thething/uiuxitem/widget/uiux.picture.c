@@ -28,28 +28,29 @@ GLSL_VERSION
 "}\n";
 
 
-static void picture_ctxforwnd(struct glsrc* src, char* str, float* angle)
+static void picture_ctxforwnd(struct gl41data* data, char* str, float* angle)
 {
 	//shader
-	src->vs = picture_glsl_v;
-	src->fs = picture_glsl_f;
-	src->shader_enq = 42;
+	data->src.vs = picture_glsl_v;
+	data->src.fs = picture_glsl_f;
+	data->src.shader_enq = 42;
 /*
 	//arg
-	src->arg[0].fmt = 'f';
-	src->arg[0].name = "angle";
-	src->arg[0].data = angle;
+	data->src.arg[0].fmt = 'f';
+	data->src.arg[0].name = "angle";
+	data->src.arg[0].data = angle;
 */
 	//texture
-	struct texture* tex = src->tex;
+	struct texture* tex = data->src.tex;
 	tex->fmt = hex32('r','g','b','a');
-	tex->name = "tex0";
 	tex->data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(tex, str);
-	src->tex_enq[0] = 42;
+
+	data->dst.texname[0] = "tex0";
+	data->src.tex_enq[0] = 42;
 
 	//vertex
-	struct vertex* vtx = src->vtx;
+	struct vertex* vtx = data->src.vtx;
 	vtx->geometry = 3;
 	vtx->opaque = 1;
 
@@ -59,7 +60,7 @@ static void picture_ctxforwnd(struct glsrc* src, char* str, float* angle)
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 
-	src->vbuf_enq = 42;
+	data->src.vbuf_enq = 42;
 }
 static void picture_draw_gl41(
 	struct entity* act, struct style* slot,

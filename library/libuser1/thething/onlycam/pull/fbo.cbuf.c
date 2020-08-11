@@ -3,7 +3,7 @@
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
 void gl41data_01cam(struct entity* wnd);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, void* data, int cnt);
 
 
 
@@ -54,7 +54,7 @@ void cbuffer_ctxforwnd(struct glsrc* src)
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 	src->vbuf_enq = 42;
 }
-static void cbuffer_readfrom_cbuffer(struct entity* ent, struct glsrc* src)
+static void cbuffer_readfrom_cbuffer(struct entity* ent, struct gl41data* data)
 {
 	struct relation* rel = ent->orel0;
 	while(1){
@@ -64,11 +64,11 @@ static void cbuffer_readfrom_cbuffer(struct entity* ent, struct glsrc* src)
 	}
 
 	struct supply* sup = rel->pdstchip;
+	data->src.tex[0].glfd = sup->tex0;
+	data->src.tex[0].fmt = '!';
 
-	src->tex[0].glfd = sup->tex0;
-	src->tex[0].name = "tex0";
-	src->tex[0].fmt = '!';
-	src->tex_enq[0] += 1;
+	data->dst.texname[0] = "tex0";
+	data->src.tex_enq[0] += 1;
 }
 static void cbuffer_draw_gl41(
 	struct entity* act, struct style* slot,
@@ -81,11 +81,11 @@ static void cbuffer_draw_gl41(
 	float* vu = geom->fs.vt;
 	if(0 == act->CTXBUF)return;
 
-	struct glsrc* src = act->CTXBUF;
-	if(0 == src)return;
-	float (*vbuf)[6] = src->vtx[0].vbuf;
+	struct gl41data* data = act->CTXBUF;
+	if(0 == data)return;
+	float (*vbuf)[6] = data->src.vtx[0].vbuf;
 	if(0 == vbuf)return;
-	cbuffer_readfrom_cbuffer(act, src);
+	cbuffer_readfrom_cbuffer(act, data);
 
 	float x,y;
 	float x0,y0,xn,yn;
@@ -146,8 +146,8 @@ static void cbuffer_draw_gl41(
 	vbuf[5][4] = y0;
 	vbuf[5][5] = 0.0;
 
-	src->vbuf_enq += 1;
-	gl41data_insert(ctx, 's', src, 1);
+	data->src.vbuf_enq += 1;
+	gl41data_insert(ctx, 's', data, 1);
 }
 
 

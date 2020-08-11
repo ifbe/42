@@ -91,8 +91,11 @@ static int aidfont_load()
 	}
 	return 0;
 }
-static int aidfont_fill(struct glsrc* src, int id)
+static int aidfont_fill(struct gl41data* data, int id)
 {
+	struct glsrc* src = &data->src;
+	struct gldst* dst = &data->dst;
+
 	if(0 == src->vs){
 		src->vs = font3dvert;
 		src->fs = fontfrag;
@@ -101,10 +104,9 @@ static int aidfont_fill(struct glsrc* src, int id)
 
 	if(0 == src->tex[0].data){
 		if(0 == buf)return -3;
+		dst->texname[0] = "tex0";
 
-		src->tex[0].name = "tex0";
 		src->tex[0].data = buf + 0x400000*id;
-
 		src->tex[0].w = 2048;
 		src->tex[0].h = 2048;
 		src->tex[0].fmt = hex32('o','n','e', 0);
@@ -156,7 +158,7 @@ int ascii3d_vars(struct entity* win, int id, float** vbuf, u16** ibuf, int vcnt,
 		ret = aidfont_load();
 		if(ret < 0)return -4;
 
-		ret = aidfont_fill(&p->src, id);
+		ret = aidfont_fill(p, id);
 		if(ret < 0)return -5;
 	}
 

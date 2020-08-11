@@ -330,7 +330,6 @@ static void codeimg_create(struct entity* act)
 	int x,y;
 	int rr,gg,bb;
 	u32* rgba;
-	struct glsrc* src;
 	if(0 == act)return;
 
 	//own
@@ -347,26 +346,26 @@ static void codeimg_create(struct entity* act)
 	}
 
 	//gl
-	src = act->GL41BUF = memorycreate(0x1000, 0);
-	if(0 == src)return;
+	struct gl41data* data = act->GL41BUF = memorycreate(0x1000, 0);
+	if(0 == data)return;
 
 	//shader
-	src->vs = codeimg_glsl_v;
-	src->fs = codeimg_glsl_f;
-	src->shader_enq = 42;
+	data->src.vs = codeimg_glsl_v;
+	data->src.fs = codeimg_glsl_f;
+	data->src.shader_enq = 42;
 
 	//texture
-	struct texture* tex = &src->tex[0];
-	tex->name = "tex0";
+	struct texture* tex = &data->src.tex[0];
 	tex->fmt = hex32('r','g','b','a');
 	tex->data = act->RGBABUF;
 	tex->w = act->width;
 	tex->h = act->height;
 
-	src->tex_enq[0] = 42;
+	data->dst.texname[0] = "tex0";
+	data->src.tex_enq[0] = 42;
 
 	//vertex
-	struct vertex* vtx = &src->vtx[0];
+	struct vertex* vtx = &data->src.vtx[0];
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 

@@ -39,13 +39,13 @@ void portal_forwnd(struct glsrc* src)
 }
 void portal_forwnd_update(struct entity* act, struct portalbuf* p, struct supply* fbo, struct style* area)
 {
-	struct glsrc* own = &p->forwnd.src;
-	if(0 == own)return;
+	struct gl41data* data = &p->forwnd;
+	if(0 == data)return;
 
-	own->tex[0].glfd = fbo->tex0;
-	own->tex[0].name = "tex0";
-	own->tex[0].fmt = '!';
-	own->tex_enq[0] += 1;
+	data->dst.texname[0] = "tex0";
+	data->src.tex[0].glfd = fbo->tex0;
+	data->src.tex[0].fmt = '!';
+	data->src.tex_enq[0] += 1;
 }
 
 
@@ -385,14 +385,13 @@ static void portal_matrix(
 	matproj_transpose(this->mvp, frus);
 
 
-	struct glsrc* src = &this->forfbo.src;
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "cammvp";
-	src->arg[0].data = this->mvp;
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "camxyz";
-	src->arg[1].data = frus->vc;
-
+	struct gl41data* data = &this->forfbo;
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "cammvp";
+	data->dst.arg[0].data = this->mvp;
+	data->dst.arg[1].fmt = 'v';
+	data->dst.arg[1].name = "camxyz";
+	data->dst.arg[1].data = frus->vc;
 	this->fbo->glfull_camera[0] = &this->forfbo;
 }
 

@@ -32,24 +32,24 @@ GLSL_VERSION
 
 
 
-void satellite_ctxforwnd(struct glsrc* src, char* str)
+void satellite_ctxforwnd(struct gl41data* data, char* str)
 {
 	//shader
-	src->vs = satellite_glsl_v;
-	src->fs = satellite_glsl_f;
-	src->shader_enq = 42;
+	data->src.vs = satellite_glsl_v;
+	data->src.fs = satellite_glsl_f;
+	data->src.shader_enq = 42;
 
 	//texture
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "tex0";
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&src->tex[0], str);
-	src->tex_enq[0] = 42;
-	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
+	data->dst.texname[0] = "tex0";
+	data->src.tex[0].fmt = hex32('r','g','b','a');
+	data->src.tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(&data->src.tex[0], str);
+	data->src.tex_enq[0] = 42;
+	//say("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
 
 #define accx 64
 #define accy 63
-	struct vertex* vtx = src->vtx;
+	struct vertex* vtx = data->src.vtx;
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
@@ -65,8 +65,8 @@ void satellite_ctxforwnd(struct glsrc* src, char* str)
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
 	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
 
-	src->vbuf_enq = 0;
-	src->ibuf_enq = 0;
+	data->src.vbuf_enq = 0;
+	data->src.ibuf_enq = 0;
 }
 static void satellite_draw_gl41(
 	struct entity* act, struct style* part,		//self

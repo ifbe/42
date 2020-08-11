@@ -117,39 +117,41 @@ void fullwindow_upload(struct gl41data** cam, struct gl41data** lit, struct gl41
 
 
 
-void updatearg(u32 shader, struct glsrc* src)
+void updatearg(u32 shader, struct gl41data* data)
 {
 	int j;
 	int iii;
 	u32 uuu;
+	struct glsrc* src = &data->src;
+	struct gldst* dst = &data->dst;
 
 #ifndef __ANDROID__
-	if((src->routine_name) && (src->routine_detail)){
-		//iii = glGetSubroutineUniformLocation(shader, GL_FRAGMENT_SHADER, src->routine_name);
-		uuu = glGetSubroutineIndex(shader, GL_FRAGMENT_SHADER, src->routine_detail);
+	if((dst->routine_name) && (dst->routine_detail)){
+		//iii = glGetSubroutineUniformLocation(shader, GL_FRAGMENT_SHADER, dst->routine_name);
+		uuu = glGetSubroutineIndex(shader, GL_FRAGMENT_SHADER, dst->routine_detail);
 		if(uuu < 256)glUniformSubroutinesuiv(GL_FRAGMENT_SHADER, 1, &uuu);
 	}
 #endif
 
 	for(j=0;j<4;j++){
-		if(0 == src->arg[j].name)break;
-		if(0 == src->arg[j].data)break;
-//say("%d,%d,%llx,%s\n", j, shader, src, src->arg[j].name);
+		if(0 == dst->arg[j].name)break;
+		if(0 == dst->arg[j].data)break;
+//say("%d,%d,%llx,%s\n", j, shader, src, dst->arg[j].name);
 
-		iii = glGetUniformLocation(shader, src->arg[j].name);
+		iii = glGetUniformLocation(shader, dst->arg[j].name);
 		if(iii < 0)continue;
 
-		switch(src->arg[j].fmt){
+		switch(dst->arg[j].fmt){
 			case 'm':{
-				glUniformMatrix4fv(iii, 1, GL_FALSE, src->arg[j].data);
+				glUniformMatrix4fv(iii, 1, GL_FALSE, dst->arg[j].data);
 				break;
 			}//mat4
 			case 'v':{
-				glUniform3fv(iii, 1, src->arg[j].data);
+				glUniform3fv(iii, 1, dst->arg[j].data);
 				break;
 			}//vertex
 			case 'f':{
-				glUniform1fv(iii, 1, src->arg[j].data);
+				glUniform1fv(iii, 1, dst->arg[j].data);
 				break;
 			}//float
 		}//switch
@@ -170,31 +172,31 @@ void render_onedraw(struct gl41data* cam, struct gl41data* lit, struct gl41data*
 	glUseProgram(dst->shader);
 
 	//1.argument
-	updatearg(dst->shader, src);
-	if(lit)updatearg(dst->shader, &lit->src);
-	if(cam)updatearg(dst->shader, &cam->src);
+	updatearg(dst->shader, data);
+	if(lit)updatearg(dst->shader, lit);
+	if(cam)updatearg(dst->shader, cam);
 
 	//2.texture
 	k = 0;
 	if(lit){
 		for(j=0;j<5;j++){
-			if(0 == lit->src.tex[j].name)continue;
+			if(0 == lit->dst.texname[j])continue;
 			if(0 == lit->src.tex[j].data)continue;
 
 			glActiveTexture(GL_TEXTURE0 + k);
 			glBindTexture(GL_TEXTURE_2D, lit->dst.tex[j]);
-			glUniform1i(glGetUniformLocation(dst->shader, lit->src.tex[j].name), k);
+			glUniform1i(glGetUniformLocation(dst->shader, lit->dst.texname[j]), k);
 			k++;
 		}
 	}
 	for(j=0;j<5;j++)
 	{
 		if(0 == dst->tex[j])continue;
-		if(0 == src->tex[j].name)continue;
+		if(0 == dst->texname[j])continue;
 //say("tex=%x\n", dst->tex[j]);
 		glActiveTexture(GL_TEXTURE0 + k);
 		glBindTexture(GL_TEXTURE_2D, dst->tex[j]);
-		glUniform1i(glGetUniformLocation(dst->shader, src->tex[j].name), k);
+		glUniform1i(glGetUniformLocation(dst->shader, dst->texname[j]), k);
 		k++;
 	}
 

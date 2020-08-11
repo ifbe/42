@@ -36,12 +36,12 @@ void gl41data_whcam(struct entity* wnd, struct fstyle* area)
 	m[3][3] = 1.0;
 	//say("%f,%f\n", m[0][0], m[1][1]);
 
-	data->src.arg[0].fmt = 'm';
-	data->src.arg[0].name = "cammvp";
-	data->src.arg[0].data = m;
-	data->src.arg[1].fmt = 'v';
-	data->src.arg[1].name = "camxyz";
-	data->src.arg[1].data = v;
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "cammvp";
+	data->dst.arg[0].data = m;
+	data->dst.arg[1].fmt = 'v';
+	data->dst.arg[1].name = "camxyz";
+	data->dst.arg[1].data = v;
 	wnd->glfull_camera[0] = data;
 }
 void gl41data_01cam(struct entity* wnd)
@@ -60,12 +60,12 @@ void gl41data_01cam(struct entity* wnd)
 	m[2][2] =-1.0;
 	m[3][3] = 1.0;
 
-	data->src.arg[0].fmt = 'm';
-	data->src.arg[0].name = "cammvp";
-	data->src.arg[0].data = m;
-	data->src.arg[1].fmt = 'v';
-	data->src.arg[1].name = "camxyz";
-	data->src.arg[1].data = v;
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "cammvp";
+	data->dst.arg[0].data = m;
+	data->dst.arg[1].fmt = 'v';
+	data->dst.arg[1].name = "camxyz";
+	data->dst.arg[1].data = v;
 	wnd->glfull_camera[0] = data;
 }
 
@@ -74,14 +74,13 @@ void gl41data_01cam(struct entity* wnd)
 
 void gl41data_nolit(struct entity* wnd)
 {
-	int x,y;
 	void* trick = wnd->glfull_light;
-	struct glsrc* src = trick + 0x400;
+	struct gl41data* data = trick + 0x400;
 
-	src->routine_name = "passtype";
-	src->routine_detail = "rawcolor";
+	data->dst.routine_name = "passtype";
+	data->dst.routine_detail = "rawcolor";
 
-	wnd->glfull_light[0] = (void*)src;
+	wnd->glfull_light[0] = (void*)data;
 }
 void gl41data_mylit(struct entity* wnd)
 {

@@ -56,30 +56,30 @@ static struct fstyle sty = {
 	.vc = { 0.0, -s60*4, s30*4, 0.0},
 };
 static mat4 cammvp;
-void test_prepgl(struct glsrc* src)
+void test_prepgl(struct gl41data* data)
 {
 	//shader
-	src->vs = vshader;
-	src->fs = fshader;
-	src->shader_enq = 1;
-
-	//argument
-	matproj(cammvp, &sty);
-	mat4_transpose(cammvp);
-
-	src->arg[0].data = cammvp;
-	src->arg[0].name = "cammvp";
-	src->arg[0].fmt = 'm';
+	data->src.vs = vshader;
+	data->src.fs = fshader;
 
 	//vertex
-	struct vertex* vtx = &src->vtx[0];
+	struct vertex* vtx = &data->src.vtx[0];
 	vtx->vbuf = vbuf;
 	vtx->vbuf_len = 4*6*8;
 	vtx->ibuf = ibuf;
 	vtx->ibuf_len = 2*3*2*6;
 
-	src->vbuf_enq = 1;
-	src->ibuf_enq = 1;
+	//argument
+	matproj(cammvp, &sty);
+	mat4_transpose(cammvp);
+
+	data->dst.arg[0].data = cammvp;
+	data->dst.arg[0].name = "cammvp";
+	data->dst.arg[0].fmt = 'm';
+
+	data->src.shader_enq = 1;
+	data->src.vbuf_enq = 1;
+	data->src.ibuf_enq = 1;
 }
 void test_tickgl(struct entity* ent, struct supply* sup)
 {

@@ -389,17 +389,17 @@ static void freecam_gl41cam(
 	struct fstyle* frus = &geom->frus;
 	struct privdata* own = act->OWNBUF;
 
-	struct glsrc* src = &own->gl41.src;
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "cammvp";
-	src->arg[0].data = own->world2clip;
-	src->arg[1].fmt = 'm';
-	src->arg[1].name = "cammv_";
-	src->arg[1].data = own->world2view;
-	src->arg[2].fmt = 'v';
-	src->arg[2].name = "camxyz";
-	src->arg[2].data = frus->vc;
-	wnd->glfull_camera[0] = (void*)src;
+	struct gl41data* data = &own->gl41;
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "cammvp";
+	data->dst.arg[0].data = own->world2clip;
+	data->dst.arg[1].fmt = 'm';
+	data->dst.arg[1].name = "cammv_";
+	data->dst.arg[1].data = own->world2view;
+	data->dst.arg[2].fmt = 'v';
+	data->dst.arg[2].name = "camxyz";
+	data->dst.arg[2].data = frus->vc;
+	wnd->glfull_camera[0] = data;
 }
 static void freecam_dx11cam(
 	struct entity* act, struct style* part,

@@ -77,8 +77,10 @@ static u32 obj3d_fragment(vec4 out[], vec4 in[], struct privdata* own)
 }
 
 
-static void obj3d_ctxforgl41(struct glsrc* src, char* albedo, char* matter, char* vs, char* fs)
+static void obj3d_ctxforgl41(struct gl41data* data, char* albedo, char* matter, char* vs, char* fs)
 {
+	struct glsrc* src = &data->src;
+	struct gldst* dst = &data->dst;
 say("%s\n%s\n%s\n%s\n",albedo,matter,vs,fs);
 
 	//shader
@@ -89,8 +91,8 @@ say("%s\n%s\n%s\n%s\n",albedo,matter,vs,fs);
 	src->shader_enq = 42;
 
 	//argument
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "objmat";
+	dst->arg[0].fmt = 'm';
+	dst->arg[0].name = "objmat";
 /*
 	src->arg[1].fmt = 'v';
 	src->arg[1].name = "KA";
@@ -108,14 +110,14 @@ say("%s\n%s\n%s\n%s\n",albedo,matter,vs,fs);
 	tmp[0] = tmp[1] = tmp[2] = 0.773911;
 */
 	//albedo
-	src->tex[0].name = "albedomap";
+	dst->texname[0] = "albedomap";
 	src->tex[0].fmt = hex32('r','g','b','a');
 	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[0], albedo);
 	src->tex_enq[0] = 42;
 
 	//matter
-	src->tex[1].name = "mattermap";
+	dst->texname[1] = "mattermap";
 	src->tex[1].fmt = hex32('r','g','b','a');
 	src->tex[1].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[1], matter);
@@ -377,8 +379,8 @@ static void obj3d_create(struct entity* act, void* arg, int argc, u8** argv)
 	if(0 == matter)matter = "datafile/jpg/wallnormal.jpg";
 
 	//obj3d_ctxforgl41(&own->gl41.src, albedo, normal, dxvs, dxfs);
-	obj3d_ctxforgl41(&own->gl41.src, albedo, matter, glvs, glfs);
-	own->gl41.src.arg[0].data = own->objmat;
+	obj3d_ctxforgl41(&own->gl41, albedo, matter, glvs, glfs);
+	own->gl41.dst.arg[0].data = own->objmat;
 
 	if(0 == arg)arg = "datafile/obj/cube.obj";
 	own->objbuf = memorycreate(0x100000, 0);

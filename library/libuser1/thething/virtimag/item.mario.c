@@ -379,29 +379,25 @@ static void mario_delete(struct entity* act)
 }
 static void mario_create(struct entity* act, void* str)
 {
-	int j;
-	struct glsrc* src;
 	if(0 == act)return;
-
-	src = act->buf0 = memorycreate(0x1000, 0);
-	if(0 == src)return;
+	struct gl41data* data = act->buf0 = memorycreate(0x1000, 0);
+	if(0 == data)return;
 
 	//shader
-	src->vs = mario_glsl_v;
-	src->fs = mario_glsl_f;
-	src->shader_enq = 42;
+	data->src.vs = mario_glsl_v;
+	data->src.fs = mario_glsl_f;
+	data->src.shader_enq = 42;
 
 	//texture
-	struct texture* tex = &src->tex[0];
+	struct texture* tex = &data->src.tex[0];
 	tex->fmt = hex32('r','g','b','a');
-	tex->name = "tex0";
 	tex->data = memorycreate(2048*2048*4, 0);
 	if(0 == str)str = "datafile/jpg/cartoon.jpg";
 	loadtexfromfile(tex, str);
-	src->tex_enq[0] = 42;
+	data->src.tex_enq[0] = 42;
 
 	//vertex
-	struct vertex* vtx = &src->vtx[0];
+	struct vertex* vtx = &data->src.vtx[0];
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
@@ -411,7 +407,9 @@ static void mario_create(struct entity* act, void* str)
 	vtx->vbuf_len = (vtx->vbuf_w) * 6*16*16;
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 
-	src->vbuf_enq = 42;
+	//
+	data->dst.texname[0] = "tex0";
+	data->src.vbuf_enq = 42;
 }
 
 

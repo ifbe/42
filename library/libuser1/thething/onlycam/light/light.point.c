@@ -21,24 +21,21 @@ static void pointlight_light(
 	struct entity* win, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	struct sunbuf* sun;
-	struct glsrc* src;
-
-	sun = act->OWNBUF;
+	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
-	src = act->LITBUF;
-	if(0 == src)return;
+	struct gl41data* data = act->LITBUF;
+	if(0 == data)return;
 
-	src->routine_name = "passtype";
-	src->routine_detail = "pointlight";
+	data->dst.routine_name = "passtype";
+	data->dst.routine_detail = "pointlight";
 
-	src->arg[0].fmt = 'v';
-	src->arg[0].name = "sunxyz";
-	src->arg[0].data = geom->fs.vc;
+	data->dst.arg[0].fmt = 'v';
+	data->dst.arg[0].name = "sunxyz";
+	data->dst.arg[0].data = geom->fs.vc;
 
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "sunrgb";
-	src->arg[1].data = sun->rgb;
+	data->dst.arg[1].fmt = 'v';
+	data->dst.arg[1].name = "sunrgb";
+	data->dst.arg[1].data = sun->rgb;
 
 	wnd->glfull_light[0] = act->LITBUF;
 }

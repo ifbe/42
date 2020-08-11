@@ -237,7 +237,8 @@ static void stl3d_dx11draw(
 static void stl3d_gl41prep(struct privdata* own, char* vs, char* fs)
 {
 	float* tmp;
-	struct glsrc* src = &own->gl41.src;
+	struct gl41data* data = &own->gl41;
+	struct glsrc* src = &data->src;
 
 	//shader
 	src->vs = memorycreate(0x10000, 0);
@@ -247,13 +248,13 @@ static void stl3d_gl41prep(struct privdata* own, char* vs, char* fs)
 	src->shader_enq = 42;
 
 	//argument
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "objmat";
-	src->arg[0].data = own->objmat;
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "objmat";
+	data->dst.arg[0].data = own->objmat;
 
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "matter";
-	tmp = src->arg[1].data = own->matter;
+	data->dst.arg[1].fmt = 'v';
+	data->dst.arg[1].name = "matter";
+	tmp = data->dst.arg[1].data = own->matter;
 	tmp[0] = 0.1;
 	tmp[1] = 1.0;
 	tmp[2] = 1.0;

@@ -131,40 +131,41 @@ static void ground_dx11draw(
 
 
 
-static void ground_gl41prep(struct glsrc* src, char* tex0, char* tex1, char* tex2, char* vs, char* fs)
+static void ground_gl41prep(struct gl41data* data, char* tex0, char* tex1, char* tex2, char* vs, char* fs)
 {
 	say("%s\n%s\n%s\n%s\n%s\n",tex0,tex1,tex2,vs,fs);
 
 	//shader
-	src->vs = memorycreate(0x10000, 0);
-	loadglslfromfile(src->vs, vs);
-	src->fs = memorycreate(0x10000, 0);
-	loadglslfromfile(src->fs, fs);
-	src->shader_enq = 42;
+	data->src.vs = memorycreate(0x10000, 0);
+	loadglslfromfile(data->src.vs, vs);
+	data->src.fs = memorycreate(0x10000, 0);
+	loadglslfromfile(data->src.fs, fs);
+	data->src.shader_enq = 42;
+
+	data->dst.texname[0] = "tex0";
+	data->dst.texname[1] = "tex1";
+	data->dst.texname[2] = "tex2";
 
 	//albedo
-	src->tex[0].name = "tex0";
-	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&src->tex[0], tex0);
-	src->tex_enq[0] = 42;
+	data->src.tex[0].fmt = hex32('r','g','b','a');
+	data->src.tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(&data->src.tex[0], tex0);
+	data->src.tex_enq[0] = 42;
 
 	//normal
-	src->tex[1].name = "tex1";
-	src->tex[1].fmt = hex32('r','g','b','a');
-	src->tex[1].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&src->tex[1], tex1);
-	src->tex_enq[1] = 42;
+	data->src.tex[1].fmt = hex32('r','g','b','a');
+	data->src.tex[1].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(&data->src.tex[1], tex1);
+	data->src.tex_enq[1] = 42;
 
 	//matter
-	src->tex[2].name = "tex2";
-	src->tex[2].fmt = hex32('r','g','b','a');
-	src->tex[2].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&src->tex[2], tex2);
-	src->tex_enq[2] = 42;
+	data->src.tex[2].fmt = hex32('r','g','b','a');
+	data->src.tex[2].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(&data->src.tex[2], tex2);
+	data->src.tex_enq[2] = 42;
 
 	//vertex
-	struct vertex* vtx = src->vtx;
+	struct vertex* vtx = data->src.vtx;
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
@@ -347,7 +348,7 @@ static void ground_create(struct entity* act, void* str, int argc, u8** argv)
 
 	if(0 == glvs)glvs = "datafile/shader/ground/fv.glsl";
 	if(0 == glfs)glfs = "datafile/shader/ground/ff.glsl";
-	ground_gl41prep(&own->gl41.src, albedo, normal, matter, glvs, glfs);
+	ground_gl41prep(&own->gl41, albedo, normal, matter, glvs, glfs);
 }
 
 

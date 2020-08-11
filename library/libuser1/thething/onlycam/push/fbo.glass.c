@@ -159,16 +159,16 @@ static void glass_forfbo_update(
 	matproj_transpose(glass->mvp, frus);
 
 	//give arg(matrix and position) to fbo
-	struct glsrc* src = (void*)(glass->data);
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "cammvp";
-	src->arg[0].data = glass->mvp;
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "camxyz";
-	src->arg[1].data = frus->vc;
-	fbo->glfull_camera[0] = (void*)(glass->data);
+	struct gl41data* data = (void*)(glass->data);
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "cammvp";
+	data->dst.arg[0].data = glass->mvp;
+	data->dst.arg[1].fmt = 'v';
+	data->dst.arg[1].name = "camxyz";
+	data->dst.arg[1].data = frus->vc;
+	fbo->glfull_camera[0] = data;
 }
-static void glass_forfbo_prepare(struct glsrc* src)
+static void glass_forfbo_prepare(struct gl41data* data)
 {
 }
 
@@ -243,26 +243,26 @@ void glass_forwnd_update(struct entity* act, struct style* slot, struct supply* 
 	struct glassbuf* glass = act->CTXBUF;
 	if(0 == glass)return;
 
-	struct glsrc* own = (void*)(glass->data);
-	if(0 == own)return;
+	struct gl41data* data = (void*)(glass->data);
+	if(0 == data)return;
 
-	own->tex[0].glfd = fbo->tex0;
-	own->tex[0].name = "tex0";
-	own->tex[0].fmt = '!';
-	own->tex_enq[0] += 1;
+	data->dst.texname[0] = "tex0";
+	data->src.tex[0].glfd = fbo->tex0;
+	data->src.tex[0].fmt = '!';
+	data->src.tex_enq[0] += 1;
 }
-void glass_forwnd_prepare(struct glsrc* src)
+void glass_forwnd_prepare(struct gl41data* data)
 {
 	//shader
-	src->vs = glass_glsl_v;
-	src->fs = glass_glsl_f;
-	src->shader_enq = 42;
+	data->src.vs = glass_glsl_v;
+	data->src.fs = glass_glsl_f;
+	data->src.shader_enq = 42;
 
 	//texture
-	src->tex[0].name = "tex0";
+	data->dst.texname[0] = "tex0";
 
 	//vertex
-	struct vertex* vtx = src->vtx;
+	struct vertex* vtx = data->src.vtx;
 	vtx->geometry = 3;
 	vtx->opaque = 1;
 
@@ -271,7 +271,8 @@ void glass_forwnd_prepare(struct glsrc* src)
 	vtx->vbuf_h = 6;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
-	src->vbuf_enq = 0;
+
+	data->src.vbuf_enq = 0;
 }
 
 
@@ -382,18 +383,18 @@ static void glass_delete(struct entity* act)
 static void glass_create(struct entity* act, void* str)
 {
 	struct glassbuf* glass;
-	struct glsrc* src;
+	struct gl41data* data;
 	if(0 == act)return;
 
 	glass = act->CTXBUF = memorycreate(0x1000, 0);
 	if(0 == glass)return;
-	src = (void*)(glass->data);
-	glass_forwnd_prepare(src);
+	data = (void*)(glass->data);
+	glass_forwnd_prepare(data);
 
 	glass = act->CAMBUF = memorycreate(0x1000, 0);
 	if(0 == glass)return;
-	src = (void*)(glass->data);
-	glass_forfbo_prepare(src);
+	data = (void*)(glass->data);
+	glass_forfbo_prepare(data);
 }
 
 

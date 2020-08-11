@@ -136,26 +136,26 @@ GLSL_VERSION
 "}\n";
 static void texball_gl41prep(struct own* my)
 {
-	struct glsrc* src = &my->gl41.src;
+	struct gl41data* data = &my->gl41;
 
 	//shader
-	src->vs = texball_glsl_vs;
-	src->fs = texball_glsl_fs;
-	src->shader_enq = 42;
+	data->src.vs = texball_glsl_vs;
+	data->src.fs = texball_glsl_fs;
+	data->src.shader_enq = 42;
 
 	//texture
-	struct texture* tex = &src->tex[0];
+	struct texture* tex = &data->src.tex[0];
 	tex->fmt  = hex32('r','g','b','a');
 	tex->data = my->tex.data;
 	tex->w    = my->tex.w;
 	tex->h    = my->tex.h;
-	tex->name = "tex0";
-	src->tex_enq[0] = 42;
-	//say("w=%d,h=%d\n",src->tex[0].w, src->tex[0].h);
+	data->dst.texname[0] = "tex0";
+	data->src.tex_enq[0] = 42;
+	//say("w=%d,h=%d\n",data->src.tex[0].w, data->src.tex[0].h);
 
 #define accx 64
 #define accy 63
-	struct vertex* vtx = src->vtx;
+	struct vertex* vtx = data->src.vtx;
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
@@ -164,14 +164,14 @@ static void texball_gl41prep(struct own* my)
 	vtx->vbuf_h = accx*accy+(accx-1)*2;
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
-	src->vbuf_enq = 0;
+	data->src.vbuf_enq = 0;
 
 	vtx->ibuf_fmt = 0x222;
 	vtx->ibuf_w = 2*3;
 	vtx->ibuf_h = accy*(accx-1)*2;
 	vtx->ibuf_len = (vtx->ibuf_w) * (vtx->ibuf_h);
 	vtx->ibuf = memorycreate(vtx->ibuf_len, 0);
-	src->ibuf_enq = 0;
+	data->src.ibuf_enq = 0;
 }
 static void texball_gl41draw(
 	struct entity* act, struct style* part,

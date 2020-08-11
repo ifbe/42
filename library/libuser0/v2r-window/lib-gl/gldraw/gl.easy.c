@@ -92,7 +92,7 @@ void easywindow_drawthis(struct gl41data* pair)
 	glUseProgram(dst->shader);
 
 	//arg
-	glUniformMatrix4fv(glGetUniformLocation(dst->shader, src->arg[0].name), 1, GL_FALSE, src->arg[0].data);
+	glUniformMatrix4fv(glGetUniformLocation(dst->shader, dst->arg[0].name), 1, GL_FALSE, dst->arg[0].data);
 
 	//vao
 	if(0 == dst->vao)glGenVertexArrays(1, &dst->vao);

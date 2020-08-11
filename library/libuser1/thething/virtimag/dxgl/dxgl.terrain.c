@@ -331,7 +331,9 @@ static void terrain_dx11draw(
 static void terrain_gl41prep(struct privdata* own, char* vs, char* fs)
 {
 	float* tmp;
-	struct glsrc* src = &own->gl41.src;
+	struct gl41data* data = &own->gl41;
+	struct glsrc* src = &data->src;
+	struct gldst* dst = &data->dst;
 
 	//shader
 	src->vs = memorycreate(0x10000, 0);
@@ -341,24 +343,25 @@ static void terrain_gl41prep(struct privdata* own, char* vs, char* fs)
 	src->shader_enq = 42;
 
 	//argument
-	src->arg[0].name = "objmat";
-	src->arg[0].data = own->mato2w;
-	src->arg[0].fmt = 'm';
+	dst->arg[0].name = "objmat";
+	dst->arg[0].data = own->mato2w;
+	dst->arg[0].fmt = 'm';
 
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "matter";
-	tmp = src->arg[1].data = own->matter;
+	dst->arg[1].fmt = 'v';
+	dst->arg[1].name = "matter";
+	tmp = dst->arg[1].data = own->matter;
 	tmp[0] = 0.1;
 	tmp[1] = 0.8;
 	tmp[2] = 1.0;
 
 	//texture
 	struct texture* tex = &src->tex[RGBTEX];
-	tex->name = "rgbtex";
 	tex->data = own->color.data;
 	tex->fmt = hex32('r','g','b','a');
 	tex->w = own->color.w;
 	tex->h = own->color.h;
+
+	dst->texname[RGBTEX] = "rgbtex";
 	src->tex_enq[RGBTEX] = 42;
 
 	//vertex
@@ -399,6 +402,7 @@ static void terrain_gl41draw(
 
 	struct privdata* own = act->OWNBUF;
 	struct glsrc* src = &own->gl41.src;
+	struct gldst* dst = &own->gl41.dst;
 	float* mat;
 	void* vbuf;
 	void* ibuf;
@@ -415,7 +419,7 @@ static void terrain_gl41draw(
 		src->vbuf_enq += 1;
 
 		//ndc -> geom
-		mat = src->arg[0].data;
+		mat = dst->arg[0].data;
 		if(0 == mat)return;
 		mat[ 0] = geom->fs.vr[0];
 		mat[ 1] = geom->fs.vr[1];

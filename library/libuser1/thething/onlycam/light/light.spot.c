@@ -52,15 +52,15 @@ static void spotlight_forfbo_update(
 	struct supply* fbo, struct style* area)
 {
 	struct sunbuf* sun = act->OWNBUF;
-	struct glsrc* src = act->FBOBUF;
+	struct gl41data* data = act->FBOBUF;
 
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "cammvp";
-	src->arg[0].data = sun->mvp;
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "cammvp";
+	data->dst.arg[0].data = sun->mvp;
 
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "camxyz";
-	src->arg[1].data = &geom->frus.vc;
+	data->dst.arg[1].fmt = 'v';
+	data->dst.arg[1].name = "camxyz";
+	data->dst.arg[1].data = &geom->frus.vc;
 
 	fbo->glfull_camera[0] = act->FBOBUF;
 }
@@ -131,36 +131,39 @@ static void spotlight_forwnd_light_update(
 	spotlight_frustum(&geom->frus, &geom->fs);
 	matproj_transpose(sun->mvp, &geom->frus);
 
-	struct glsrc* src = act->LITBUF;
-	if(0 == src)return;
+	struct gl41data* data = act->LITBUF;
+	if(0 == data)return;
 
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "sunmvp";
-	src->arg[0].data = sun->mvp;
+	data->src.tex[0].glfd = sun->glfd;
+	data->src.tex[0].fmt = '!';
+	data->src.tex_enq[0] += 1;
 
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "sunrgb";
-	src->arg[1].data = sun->rgb;
 
-	src->arg[2].fmt = 'v';
-	src->arg[2].name = "sunxyz";
-	src->arg[2].data = geom->frus.vc;
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "sunmvp";
+	data->dst.arg[0].data = sun->mvp;
 
-	src->arg[3].fmt = 'v';
-	src->arg[3].name = "sundir";
-	src->arg[3].data = geom->frus.vf;
+	data->dst.arg[1].fmt = 'v';
+	data->dst.arg[1].name = "sunrgb";
+	data->dst.arg[1].data = sun->rgb;
 
-	src->tex[0].glfd = sun->glfd;
-	src->tex[0].name = "shadowmap";
-	src->tex[0].fmt = '!';
-	src->tex_enq[0] += 1;
+	data->dst.arg[2].fmt = 'v';
+	data->dst.arg[2].name = "sunxyz";
+	data->dst.arg[2].data = geom->frus.vc;
+
+	data->dst.arg[3].fmt = 'v';
+	data->dst.arg[3].name = "sundir";
+	data->dst.arg[3].data = geom->frus.vf;
+
+	data->dst.texname[0] = "shadowmap";
+
 
 	ctx->glfull_light[0] = act->LITBUF;
 }
-static void dirlight_forwnd_light_prepare(struct glsrc* src)
+static void dirlight_forwnd_light_prepare(struct gl41data* data)
 {
-	src->routine_name = "passtype";
-	src->routine_detail = "spotlight";
+	data->dst.routine_name = "passtype";
+	data->dst.routine_detail = "spotlight";
 }
 
 

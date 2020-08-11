@@ -135,7 +135,6 @@ struct uniform{
 	int len;
 };
 struct texture{
-	char* name;
 	union{
 		void* data;
 		u32 glfd;
@@ -163,20 +162,21 @@ struct vertex{
 	u8 opaque;		//0=solid, n=opaque
 	u8 flag;		//4b align
 };
-struct mysrc
+struct glsrc
 {
-	//renderto
+	//shader
+	void* vs;
+	void* gs;
+	void* fs;
+
+	//texture out
 	void* target;
 
-	//shader
-	char* vert;
-	char* frag;
+	//texture in
+	struct texture tex[8];
 
 	//uniform
-	struct uniform uni[1];
-
-	//texture
-	struct texture tex[8];
+	struct uniform uni[2];
 
 	//vertex
 	struct vertex vtx[2];
@@ -184,7 +184,7 @@ struct mysrc
 	//enqueue
 	u8 shader_enq;
 	u8 tex_enq[8];
-	u8 arg_enq;
+	u8 uni_enq[2];
 	u8 vbuf_enq;
 	u8 ibuf_enq;
 };
@@ -265,59 +265,32 @@ struct dx11data
 
 
 
-struct glsrc
-{
-	//renderto
-	void* target;
-
-	//shader
-	void* vs;
-	void* tc;
-	void* te;
-	void* gs;
-	void* fs;
-	char* routine_name;
-	char* routine_detail;
-
-	//constant
-	struct arg{
-		char* name;
-		void* data;
-		u32 fmt;
-	}arg[8];
-
-	//texture
-	struct texture tex[8];
-
-	//vertex
-	struct vertex vtx[2];
-
-	//enqueue
-	u8 shader_enq;
-	u8 tex_enq[8];
-	u8 vbuf_enq;
-	u8 ibuf_enq;
-};
 struct gldst
 {
 	//framebuffer
 	u32 fbo;
 
 	//shader
-	u32 vs;
-	u32 fs;
 	u32 shader;
+	char* routine_name;
+	char* routine_detail;
 
 	//texture
 	u32 tex[8];
+	char* texname[8];
+
+	//uniform
+	u32 ubo;
+	struct arg{
+		char* name;
+		void* data;
+		u32 fmt;
+	}arg[8];
 
 	//vertex
 	u32 vbo;
 	u32 ibo;
 	u32 vao;
-
-	//uniform
-	u32 ubo;
 
 	//dequeue
 	u8 shader_deq;
@@ -329,11 +302,11 @@ struct gl41data
 {
 	//[000,2ff]
 	struct glsrc src;
-	u8 ipadd[0x300 - sizeof(struct glsrc)];
+	u8 ipadd[0x200 - sizeof(struct glsrc)];
 
 	//[300,3ff]
 	struct gldst dst;
-	u8 opadd[0x100 - sizeof(struct gldst)];
+	u8 opadd[0x200 - sizeof(struct gldst)];
 };
 
 

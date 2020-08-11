@@ -133,16 +133,16 @@ static void water_forfbo_update(
 	matproj_transpose(water->mvp, frus);
 
 	//give arg(matrix and position) to fbo
-	struct glsrc* src = (void*)(water->data);
-	src->arg[0].fmt = 'm';
-	src->arg[0].name = "cammvp";
-	src->arg[0].data = water->mvp;
-	src->arg[1].fmt = 'v';
-	src->arg[1].name = "camxyz";
-	src->arg[1].data = frus->vc;
-	fbo->glfull_camera[0] = (void*)(water->data);
+	struct gl41data* data = (void*)(water->data);
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "cammvp";
+	data->dst.arg[0].data = water->mvp;
+	data->dst.arg[1].fmt = 'v';
+	data->dst.arg[1].name = "camxyz";
+	data->dst.arg[1].data = frus->vc;
+	fbo->glfull_camera[0] = data;
 }
-void water_forfbo_prepare(struct glsrc* src)
+void water_forfbo_prepare(struct gl41data* data)
 {
 }
 
@@ -219,16 +219,19 @@ void water_forwnd_update(struct entity* act, struct style* slot, struct supply* 
 	struct waterbuf* water = act->CTXBUF;
 	if(0 == water)return;
 
-	struct glsrc* own = (void*)(water->data);
-	if(0 == own)return;
+	struct gl41data* data = (void*)(water->data);
+	if(0 == data)return;
 
-	own->tex[0].glfd = fbo->tex0;
-	own->tex[0].name = "tex0";
-	own->tex[0].fmt = '!';
-	own->tex_enq[0] += 1;
+	data->dst.texname[0] = "tex0";
+	data->src.tex[0].glfd = fbo->tex0;
+	data->src.tex[0].fmt = '!';
+	data->src.tex_enq[0] += 1;
 }
-void water_forwnd_prepare(struct glsrc* src, struct waterbuf* water, char* str)
+void water_forwnd_prepare(struct gl41data* data, struct waterbuf* water, char* str)
 {
+	struct glsrc* src = &data->src;
+	struct gldst* dst = &data->dst;
+
 	//
 	src->vs = memorycreate(0x1000, 0);
 	openreadclose("datafile/shader/water/vert.glsl", 0, src->vs, 0x1000);
@@ -237,13 +240,13 @@ void water_forwnd_prepare(struct glsrc* src, struct waterbuf* water, char* str)
 	src->shader_enq = 42;
 
 	//argument
-	src->arg[0].name = "time";
-	src->arg[0].data = &water->time;
-	src->arg[0].fmt = 'f';
+	dst->arg[0].name = "time";
+	dst->arg[0].data = &water->time;
+	dst->arg[0].fmt = 'f';
 
 	//texture0
+	dst->texname[0] = "dudvmap";
 	src->tex[0].fmt = hex32('r','g','b','a');
-	src->tex[0].name = "dudvmap";
 	src->tex[0].data = memorycreate(2048*2048*4, 0);
 	loadtexfromfile(&src->tex[0], str);
 	src->tex_enq[0] = 42;
@@ -372,19 +375,19 @@ static void water_delete(struct entity* act)
 static void water_create(struct entity* act, char* str)
 {
 	struct waterbuf* water;
-	struct glsrc* src;
+	struct gl41data* data;
 	if(0 == act)return;
 
 	water = act->CTXBUF = memorycreate(0x1000, 0);
 	if(0 == water)return;
-	src = (void*)(water->data);
+	data = (void*)(water->data);
 	if(0 == str)str = "datafile/jpg/dudvmap.jpg";
-	water_forwnd_prepare(src, water, str);
+	water_forwnd_prepare(data, water, str);
 
 	water = act->CAMBUF = memorycreate(0x1000, 0);
 	if(0 == water)return;
-	src = (void*)(water->data);
-	water_forfbo_prepare(src);
+	data = (void*)(water->data);
+	water_forfbo_prepare(data);
 }
 
 
