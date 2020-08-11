@@ -19,7 +19,7 @@
 
 
 
-void uploadvertex(struct gldst* dst, struct glsrc* src)
+void uploadvertex(struct gldst* dst, struct mysrc* src)
 {
 	u32 w,h;
 	struct vertex* vtx = src->vtx;

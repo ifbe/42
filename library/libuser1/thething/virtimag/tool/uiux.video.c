@@ -7,7 +7,7 @@ void yuyv2rgba(
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3
 );
 void dx11data_insert(struct entity* ctx, int type, struct dxsrc* src, int cnt);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 struct own{
@@ -249,7 +249,7 @@ void video_gl41draw(
 
 	struct own* own = act->OWNBUF;
 	if(0 == own)return;
-	struct glsrc* data = &own->gl41.src;
+	struct mysrc* data = &own->gl41.src;
 	if(0 == data)return;
 	float (*vbuf)[6] = data->vtx[0].vbuf;
 	if(0 == vbuf)return;

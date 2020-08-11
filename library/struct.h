@@ -162,9 +162,10 @@ struct vertex{
 	u8 opaque;		//0=solid, n=opaque
 	u8 flag;		//4b align
 };
-struct glsrc
+struct mysrc
 {
 	//shader
+	void* source;
 	void* vs;
 	void* gs;
 	void* fs;
@@ -301,8 +302,8 @@ struct gldst
 struct gl41data
 {
 	//[000,2ff]
-	struct glsrc src;
-	u8 ipadd[0x200 - sizeof(struct glsrc)];
+	struct mysrc src;
+	u8 ipadd[0x200 - sizeof(struct mysrc)];
 
 	//[300,3ff]
 	struct gldst dst;
@@ -312,33 +313,6 @@ struct gl41data
 
 
 
-struct mtsrc
-{
-	//render target
-	void* target;
-
-	//shader
-	char* source;
-
-	//constant
-	struct metaluniform{
-		mat4 mat;
-		vec4 vec;
-	}arg;
-
-	//texture
-	struct texture tex[7];
-
-	//vertex
-	struct vertex vtx[2];
-
-	//enqueue
-	u8 shader_enq;
-	u8 tex_enq[7];
-	u8 arg_enq;
-	u8 vbuf_enq;
-	u8 ibuf_enq;
-};
 struct mtdst
 {
 	//framebuffer
@@ -373,12 +347,12 @@ struct mtdst
 struct mt20data
 {
 	//[000,2ff]
-	struct mtsrc src;
-	u8 ipadd[0x300 - sizeof(struct mtsrc)];
+	struct mysrc src;
+	u8 ipadd[0x200 - sizeof(struct mysrc)];
 
 	//[300,3ff]
 	struct mtdst dst;
-	u8 opadd[0x100 - sizeof(struct mtdst)];
+	u8 opadd[0x200 - sizeof(struct mtdst)];
 };
 
 

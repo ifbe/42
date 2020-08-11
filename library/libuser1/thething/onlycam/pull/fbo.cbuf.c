@@ -35,7 +35,7 @@ GLSL_VERSION
 
 
 
-void cbuffer_ctxforwnd(struct glsrc* src)
+void cbuffer_ctxforwnd(struct mysrc* src)
 {
 	//shader
 	src->vs = teevee_glsl_v;

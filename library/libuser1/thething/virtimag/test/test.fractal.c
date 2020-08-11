@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define GL41BUF buf0
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 
@@ -129,7 +129,7 @@ static void fractal_draw_gl41(
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
 
-	struct glsrc* src = act->GL41BUF;
+	struct mysrc* src = act->GL41BUF;
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;
@@ -276,7 +276,7 @@ static void fractal_delete(struct entity* act)
 }
 static void fractal_create(struct entity* act)
 {
-	struct glsrc* src;
+	struct mysrc* src;
 	if(0 == act)return;
 
 	src = act->GL41BUF = memorycreate(0x1000, 0);

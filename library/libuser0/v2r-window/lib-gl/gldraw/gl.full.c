@@ -23,7 +23,7 @@ int gl41wnd0_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
-void update_onedraw(struct gldst* dst, struct glsrc* src)
+void update_onedraw(struct gldst* dst, struct mysrc* src)
 {
 	int j;
 	int w,h,fmt;
@@ -122,7 +122,7 @@ void updatearg(u32 shader, struct gl41data* data)
 	int j;
 	int iii;
 	u32 uuu;
-	struct glsrc* src = &data->src;
+	struct mysrc* src = &data->src;
 	struct gldst* dst = &data->dst;
 
 #ifndef __ANDROID__
@@ -163,8 +163,8 @@ void render_onedraw(struct gl41data* cam, struct gl41data* lit, struct gl41data*
 	u32 fmt;
 	u32 vbo;
 	u32 vao;
+	struct mysrc* src = &data->src;
 	struct gldst* dst = &data->dst;
-	struct glsrc* src = &data->src;
 	if(0 == dst->shader)return;
 	if(0 == dst->vao)return;
 

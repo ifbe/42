@@ -5,7 +5,7 @@
 #define OWNBUF buf0
 int copypath(u8* path, u8* data);
 void dx11data_insert(struct entity* ctx, int type, struct dxsrc* src, int cnt);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 struct privdata{
@@ -332,7 +332,7 @@ static void terrain_gl41prep(struct privdata* own, char* vs, char* fs)
 {
 	float* tmp;
 	struct gl41data* data = &own->gl41;
-	struct glsrc* src = &data->src;
+	struct mysrc* src = &data->src;
 	struct gldst* dst = &data->dst;
 
 	//shader
@@ -401,7 +401,7 @@ static void terrain_gl41draw(
 	//say("x=%f,y=%f,dx=%f,dy=%f\n",x,y,dx,dy);
 
 	struct privdata* own = act->OWNBUF;
-	struct glsrc* src = &own->gl41.src;
+	struct mysrc* src = &own->gl41.src;
 	struct gldst* dst = &own->gl41.dst;
 	float* mat;
 	void* vbuf;

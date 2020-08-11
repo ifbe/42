@@ -3,7 +3,7 @@
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
 void gl41data_01cam(struct entity* wnd);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 
@@ -81,7 +81,7 @@ static void texmix_draw_gl41(
 	float* vu = geom->fs.vt;
 	if(0 == act->CTXBUF)return;
 
-	struct glsrc* src = act->CTXBUF;
+	struct mysrc* src = act->CTXBUF;
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;

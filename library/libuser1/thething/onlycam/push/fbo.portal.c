@@ -4,7 +4,7 @@
 #define Aside buf0
 #define Bside buf1
 void matproj_transpose(void* m, struct fstyle* sty);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 struct portalbuf{
@@ -17,7 +17,7 @@ struct portalbuf{
 	struct gl41data forwnd;
 	struct gl41data forfbo;
 };
-void portal_forwnd(struct glsrc* src)
+void portal_forwnd(struct mysrc* src)
 {
 	//
 	src->vs = memorycreate(0x1000, 0);
@@ -123,7 +123,7 @@ static void portal_draw_gl41(
 
 
 	if(0 == portal)return;
-	struct glsrc* src = &portal->forwnd.src;
+	struct mysrc* src = &portal->forwnd.src;
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;

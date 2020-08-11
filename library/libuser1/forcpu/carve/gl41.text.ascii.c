@@ -93,7 +93,7 @@ static int aidfont_load()
 }
 static int aidfont_fill(struct gl41data* data, int id)
 {
-	struct glsrc* src = &data->src;
+	struct mysrc* src = &data->src;
 	struct gldst* dst = &data->dst;
 
 	if(0 == src->vs){

@@ -154,7 +154,7 @@ GLSL_PRECISION
 
 
 
-static int trigon3d_fill(struct glsrc* src)
+static int trigon3d_fill(struct mysrc* src)
 {
 	if(0 == src->vs){
 		src->vs = solidtrigon_vert;

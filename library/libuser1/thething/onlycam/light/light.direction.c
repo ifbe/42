@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
 void matorth_transpose(mat4 m, struct fstyle* s);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 #define FBOBUF buf0
@@ -180,7 +180,7 @@ static void dirlight_forwnd_meshupdate(
 	}
 
 	//depth fbo (for debug)
-	struct glsrc* src = act->CTXBUF;
+	struct mysrc* src = act->CTXBUF;
 	if(0 == src)return;
 
 	float (*vbuf)[6] = (void*)(src->vtx[0].vbuf);
@@ -231,7 +231,7 @@ static void dirlight_forwnd_meshupdate(
 	src->vbuf_enq += 1;
 	gl41data_insert(ctx, 's', act->CTXBUF, 1);
 }
-static void dirlight_forwnd_meshprep(struct glsrc* src)
+static void dirlight_forwnd_meshprep(struct mysrc* src)
 {
 	//shader
 	src->vs = dirlit_glsl_v;
@@ -277,7 +277,7 @@ static void dirlight_forfbo_cameraupdate(
 	data->dst.arg[1].data = &geom->frus.vc;
 	fbo->glfull_camera[0] = act->FBOBUF;
 }
-static void dirlight_forfbo_cameraprep(struct glsrc* src)
+static void dirlight_forfbo_cameraprep(struct mysrc* src)
 {
 }
 

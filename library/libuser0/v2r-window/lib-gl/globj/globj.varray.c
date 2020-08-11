@@ -26,7 +26,7 @@ void coopctx_copy(struct datapair* d, struct datapair* s)
 	u8* dd = (void*)(&d->src);
 	struct gldst* host = &s->dst;
 	struct gldst* coop = &d->dst;
-	for(j=0;j<sizeof(struct glsrc);j++)dd[j] = ss[j];
+	for(j=0;j<sizeof(struct mysrc);j++)dd[j] = ss[j];
 
 	//shader
 	coop->shader = host->shader;
@@ -42,7 +42,7 @@ void coopctx_copy(struct datapair* d, struct datapair* s)
 }
 void coopctx_update_one(struct datapair* pair)
 {
-	struct glsrc* gs = &pair->src;
+	struct mysrc* gs = &pair->src;
 	struct gldst* gd = &pair->dst;
 
 	//skip

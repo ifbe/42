@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
 void matproj_transpose(void* m, struct fstyle* sty);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 #define CAMBUF buf0
@@ -165,7 +165,7 @@ static void mirror_forfbo_update(
 	data->dst.arg[1].data = frus->vc;
 	fbo->glfull_camera[0] = data;
 }
-void mirror_forfbo_prepare(struct glsrc* src)
+void mirror_forfbo_prepare(struct mysrc* src)
 {
 }
 
@@ -179,7 +179,7 @@ static void mirror_draw_gl41(
 {
 	struct mirrbuf* mirr = act->CTXBUF;
 	if(0 == mirr)return;
-	struct glsrc* src = (void*)(mirr->data);
+	struct mysrc* src = (void*)(mirr->data);
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;
@@ -248,7 +248,7 @@ void mirror_forwnd_update(struct entity* act, struct style* slot, struct supply*
 	data->src.tex[0].fmt = '!';
 	data->src.tex_enq[0] += 1;
 }
-void mirror_forwnd_prepare(struct glsrc* src)
+void mirror_forwnd_prepare(struct mysrc* src)
 {
 	//shader
 	src->vs = mirror_glsl_v;
@@ -366,7 +366,7 @@ static void mirror_delete(struct entity* act)
 static void mirror_create(struct entity* act, void* str)
 {
 	struct mirrbuf* mirr;
-	struct glsrc* src;
+	struct mysrc* src;
 	if(0 == act)return;
 
 	mirr = act->CTXBUF = memorycreate(0x1000, 0);

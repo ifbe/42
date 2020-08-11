@@ -1,5 +1,5 @@
 #include "libuser.h"
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 
@@ -118,7 +118,7 @@ static void skillbar_draw_gl41(
 	float* vu = geom->fs.vt;
 	gl41line_rect(wnd, 0xff00ff, vc, vr, vf);
 
-	struct glsrc* src = act->buf0;
+	struct mysrc* src = act->buf0;
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;

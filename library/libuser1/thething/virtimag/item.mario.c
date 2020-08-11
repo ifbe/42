@@ -88,7 +88,7 @@ static void mario_draw_gl41(
 	float* vu = sty->fs.vt;
 	gl41line_rect(win, 0xffffff, vc, vr, vf);
 
-	struct glsrc* src = act->buf0;
+	struct mysrc* src = act->buf0;
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;

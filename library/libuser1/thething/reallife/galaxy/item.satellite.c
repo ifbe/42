@@ -4,7 +4,7 @@
 #define altitude fz0
 #define CTXBUF buf0
 void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 
@@ -100,7 +100,7 @@ static void satellite_draw_gl41(
 	gl41solid_rect(ctx, 0xffff00, tc, tr, tf);
 
 
-	struct glsrc* src = act->CTXBUF;
+	struct mysrc* src = act->CTXBUF;
 	if(0 == src)return;
 
 	void* vbuf = src->vtx[0].vbuf;

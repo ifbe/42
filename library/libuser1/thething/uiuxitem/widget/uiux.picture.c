@@ -1,6 +1,6 @@
 #include "libuser.h"
 #define CTXBUF buf0
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 
@@ -76,7 +76,7 @@ static void picture_draw_gl41(
 	act->fx0 = ((timeread()%5000000)/5000000.0)*tau;
 	//say("%f\n",act->fx0);
 */
-	struct glsrc* src = act->CTXBUF;
+	struct mysrc* src = act->CTXBUF;
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;

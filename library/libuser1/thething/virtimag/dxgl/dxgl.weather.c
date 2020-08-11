@@ -24,7 +24,7 @@ GLSL_VERSION
 	//"FragColor = vec4(texture(tex0, uvw).bgr, 1.0);\n"
 	//"FragColor = vec4(uvw, 1.0, 1.0);\n"
 "}\n";
-static void weather_ctxforwnd(struct glsrc* src)
+static void weather_ctxforwnd(struct mysrc* src)
 {
 	//shader
 	src->vs = weather_glsl_v;

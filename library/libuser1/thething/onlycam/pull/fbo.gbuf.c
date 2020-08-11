@@ -11,7 +11,7 @@ int copypath(u8* path, u8* data);
 
 
 
-void gbuffer_ctxforwnd(struct glsrc* src, char* vs, char* fs)
+void gbuffer_ctxforwnd(struct mysrc* src, char* vs, char* fs)
 {
 	//shader
 	src->vs = memorycreate(0x1000, 0);

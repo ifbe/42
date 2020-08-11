@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
 void matproj_transpose(void* m, struct fstyle* sty);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 #define CAMBUF buf0
@@ -162,7 +162,7 @@ static void water_draw_gl41(
 
 	struct waterbuf* water = act->CTXBUF;
 	if(0 == water)return;
-	struct glsrc* src = (void*)(water->data);
+	struct mysrc* src = (void*)(water->data);
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;
@@ -229,7 +229,7 @@ void water_forwnd_update(struct entity* act, struct style* slot, struct supply* 
 }
 void water_forwnd_prepare(struct gl41data* data, struct waterbuf* water, char* str)
 {
-	struct glsrc* src = &data->src;
+	struct mysrc* src = &data->src;
 	struct gldst* dst = &data->dst;
 
 	//

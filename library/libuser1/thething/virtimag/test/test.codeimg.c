@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define GL41BUF buf1
 #define RGBABUF buf0
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 void scale_image(void* src, void* dst,
 	int sw, int sh, int sx1, int sy1, int sx2, int sy2,
 	int dw, int dh, int dx1, int dy1, int dx2, int dy2);
@@ -205,7 +205,7 @@ static void codeimg_draw_gl41(
 	float* vu = geom->fs.vt;
 	if(0 == act->RGBABUF)return;
 
-	struct glsrc* src = act->GL41BUF;
+	struct mysrc* src = act->GL41BUF;
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;

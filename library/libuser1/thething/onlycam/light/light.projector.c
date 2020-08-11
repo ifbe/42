@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
 void matproj_transpose(void* m, struct fstyle* sty);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 #define CAMBUF buf0
@@ -65,7 +65,7 @@ static void projector_forfbo_update(
 
 	fbo->glfull_camera[0] = act->CAMBUF;
 }
-static void projector_forfbo_prepare(struct glsrc* src)
+static void projector_forfbo_prepare(struct mysrc* src)
 {
 }
 
@@ -190,7 +190,7 @@ static void projector_draw_gl41(
 	tt[2] = - vf[2];
 	gl41solid_cone(ctx, 0xffffff, vc, vr, tt);
 
-	struct glsrc* src = act->CTXBUF;
+	struct mysrc* src = act->CTXBUF;
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;
@@ -248,7 +248,7 @@ static void projector_forwnd_vertex_update(struct entity* act, struct style* slo
 
 	sun->glfd = fbo->tex0;
 }
-static void projector_forwnd_vertex_prepare(struct glsrc* src)
+static void projector_forwnd_vertex_prepare(struct mysrc* src)
 {
 	//shader
 	src->vs = projector_glsl_v;

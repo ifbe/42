@@ -79,7 +79,7 @@ void easywindow_example()
 }
 void easywindow_drawthis(struct gl41data* pair)
 {
-	struct glsrc* src = &pair->src;
+	struct mysrc* src = &pair->src;
 	struct gldst* dst = &pair->dst;
 	//say("src=%llx,dst=%llx\n", src, dst);
 

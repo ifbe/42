@@ -33,11 +33,16 @@ int mt20data_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, v
 
 
 
+struct unidata{
+	mat4 mat;
+	vec4 vec;
+};
 struct privdata{
 	struct halfrel* self;
 	struct halfrel* peer;
 	mat4 world2view;	//world to view
 	mat4 world2clip;	//world to view to clip
+	struct unidata uni;
 	struct dx11data dx11;
 	struct gl41data gl41;
 	struct mt20data mt20;
@@ -423,14 +428,19 @@ static void freecam_mt20cam(
 {
 	int x,y;
 	struct privdata* own = act->OWNBUF;
-	struct mtsrc* src = &own->mt20.src;
-	struct fstyle* frus = &geom->frus;
-	for(x=0;x<3;x++)src->arg.vec[x] = frus->vc[x];
+	struct mt20data* data = &own->mt20;
+	data->src.uni[0].buf = &own->uni;
+	data->src.uni[0].len = sizeof(struct unidata);
+
+	float* c = geom->frus.vc;
+	float* vec = own->uni.vec;
+	float (*mat)[4] = own->uni.mat;
+	for(x=0;x<3;x++)vec[x] = c[x];
 	for(y=0;y<4;y++){
-		for(x=0;x<4;x++)src->arg.mat[y][x] = own->world2clip[y][x];
+		for(x=0;x<4;x++)mat[y][x] = own->world2clip[y][x];
 	}
 
-	wnd->mtfull_camera[0] = (void*)src;
+	wnd->mtfull_camera[0] = data;
 }
 
 

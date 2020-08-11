@@ -2,7 +2,7 @@
 #define OWNBUF buf0
 void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
 void dx11data_insert(struct entity* ctx, int type, struct dxsrc* src, int cnt);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 
@@ -181,7 +181,7 @@ static void texball_gl41draw(
 	struct own* my = act->OWNBUF;
 	if(0 == my)return;
 
-	struct glsrc* src = &my->gl41.src;
+	struct mysrc* src = &my->gl41.src;
 	if(0 == src)return;
 
 	void* vbuf = src->vtx[0].vbuf;

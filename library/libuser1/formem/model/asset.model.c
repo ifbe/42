@@ -63,7 +63,7 @@ void parsefacefromobj(float* dst, int cnt, float* vv, int cv, float* vn, int cn,
 	//say("@b: %f,%f,%f %f,%f,%f %f,%f,%f\n", j, p[ 9],p[10],p[11], p[12],p[13],p[14], p[15],p[16],p[17]);
 	//say("@c: %f,%f,%f %f,%f,%f %f,%f,%f\n", j, p[18],p[19],p[20], p[21],p[22],p[23], p[24],p[24],p[26]);
 }
-void parsevertfromobj(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len)
+void parsevertfromobj(struct mysrc* ctx, struct fstyle* sty, u8* buf, int len)
 {
 	float* vl = sty->vl;	//left
 	float* vr = sty->vr;	//right

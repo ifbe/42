@@ -46,7 +46,7 @@ static void spectrum_draw_gl41(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	struct glsrc* src = (void*)(pin->data[0]);
+	struct mysrc* src = (void*)(pin->data[0]);
 	src->vbuf_enq += 1;
 	//say("@spectrum_draw_gl41\n");
 }
@@ -104,7 +104,7 @@ static void spectrum_discon(struct halfrel* self, struct halfrel* peer)
 static void spectrum_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	struct datapair* pair;
-	struct glsrc* src;
+	struct mysrc* src;
 	struct gldst* dst;
 	struct entity* act = (void*)(self->chip);
 	struct style* pin = (void*)(self->foot);

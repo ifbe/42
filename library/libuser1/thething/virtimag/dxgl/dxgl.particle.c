@@ -2,7 +2,7 @@
 #define F32BUF buf0
 #define CTXBUF buf1
 #define COUNT (0x100000/36)
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 
@@ -56,7 +56,7 @@ GLSL_VERSION
 
 void particle_ctxforwnd(struct gl41data* data, float* vbuf)
 {
-	struct glsrc* src = &data->src;
+	struct mysrc* src = &data->src;
 	struct gldst* dst = &data->dst;
 
 	//shader

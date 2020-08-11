@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
 void matproj_transpose(void* m, struct fstyle* sty);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 #define CAMBUF buf0
@@ -183,7 +183,7 @@ static void glass_draw_gl41(
 {
 	struct glassbuf* glass = act->CTXBUF;
 	if(0 == glass)return;
-	struct glsrc* src = (void*)(glass->data);
+	struct mysrc* src = (void*)(glass->data);
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;

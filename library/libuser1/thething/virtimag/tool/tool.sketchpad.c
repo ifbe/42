@@ -2,7 +2,7 @@
 #define CTXBUF buf0
 #define DATBUF buf1
 int copypath(u8* path, u8* data);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 //
 double calculator(void* postfix, u64 x, u64 y);
 double sketchpad(void*, double, double);
@@ -43,7 +43,7 @@ static double scale = 0.0;
 
 
 
-static void sketchpad_ctxforwnd(struct glsrc* src, char* vs, char* fs)
+static void sketchpad_ctxforwnd(struct mysrc* src, char* vs, char* fs)
 {
 	//shader
 	src->vs = memorycreate(0x1000, 0);
@@ -82,7 +82,7 @@ static void sketchpad_draw_gl41(
 	float xn = cx+dx;
 	float yn = cy+dy;
 
-	struct glsrc* src = act->CTXBUF;
+	struct mysrc* src = act->CTXBUF;
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;

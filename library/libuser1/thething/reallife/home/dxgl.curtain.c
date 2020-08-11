@@ -45,7 +45,7 @@ static void curtain_delete(struct entity* act)
 }
 static void curtain_create(struct entity* act, void* str)
 {
-	struct glsrc* src = act->buf0 = memorycreate(0x1000, 0);
+	struct mysrc* src = act->buf0 = memorycreate(0x1000, 0);
 	if(0 == src)return;
 
 	//shader
@@ -83,7 +83,7 @@ static void curtain_draw_gl41(
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
 
-	struct glsrc* src = act->buf0;
+	struct mysrc* src = act->buf0;
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;

@@ -7,7 +7,7 @@ void parsevertfromstl(struct fstyle* sty, int* vbuf_h, u8* buf, int len);
 //
 void dx11data_insert(struct entity* ctx, int type, struct dxsrc* src, int cnt);
 //
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 void gl41solid_spheretest(struct entity* win, u32 rgb, vec3 vc);
 //
 void invproj(mat4 mat, struct fstyle* frus);
@@ -238,7 +238,7 @@ static void stl3d_gl41prep(struct privdata* own, char* vs, char* fs)
 {
 	float* tmp;
 	struct gl41data* data = &own->gl41;
-	struct glsrc* src = &data->src;
+	struct mysrc* src = &data->src;
 
 	//shader
 	src->vs = memorycreate(0x10000, 0);
@@ -595,11 +595,11 @@ static void stl3d_linkup(struct halfrel* self, struct halfrel* peer)
 	dxsrc->vbuf_enq = 42;
 
 	//for gl41
-	struct glsrc* glsrc = &own->gl41.src;
-	struct vertex* glvtx = &glsrc->vtx[0];
+	struct mysrc* mysrc = &own->gl41.src;
+	struct vertex* glvtx = &mysrc->vtx[0];
 	glvtx->vbuf_w = own->vbuf_w;
 	glvtx->vbuf_h = own->vbuf_h;
-	glsrc->vbuf_enq = 42;
+	mysrc->vbuf_enq = 42;
 }
 
 

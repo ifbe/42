@@ -48,14 +48,14 @@ static char* shadersource =
 
 
 
-static int mt20solidtrigon_fill(struct mtsrc* src)
+static int mt20solidtrigon_fill(struct mt20data* data)
 {
-	if(0 == src->source){
-		src->source = shadersource;
-		src->shader_enq = 1;
+	if(0 == data->src.source){
+		data->src.source = shadersource;
+		data->src.shader_enq = 1;
 	}
 
-	struct vertex* vtx = src->vtx;
+	struct vertex* vtx = data->src.vtx;
 	vtx->opaque = 0;
 	vtx->geometry = 3;
 
@@ -67,7 +67,7 @@ static int mt20solidtrigon_fill(struct mtsrc* src)
 		vtx->ibuf_w = 2*3;
 		vtx->ibuf_h = 0;	//(src->ibuf_len) / (src->ibuf_w);
 		vtx->ibuf_fmt = 0x222;
-		src->ibuf_enq = 1;
+		data->src.ibuf_enq = 1;
 	}
 
 	if(0 == vtx->vbuf){
@@ -78,7 +78,7 @@ static int mt20solidtrigon_fill(struct mtsrc* src)
 		vtx->vbuf_w = 4*3*3;
 		vtx->vbuf_h = 0;	//(src->vbuf_len) / (src->vbuf_w);
 		vtx->vbuf_fmt = vbuffmt_333;
-		src->vbuf_enq = 1;
+		data->src.vbuf_enq = 1;
 	}
 
 	return 0;
@@ -97,7 +97,7 @@ int mt20solidtrigon_vars(struct entity* win, int unused, float** vbuf, u16** ibu
 	int vlen,ilen,ret;
 	struct vertex* vtx = p->src.vtx;
 	if(0 == vtx->vbuf){
-		ret = mt20solidtrigon_fill(&p->src);
+		ret = mt20solidtrigon_fill(p);
 		if(ret < 0)return -4;
 	}
 

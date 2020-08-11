@@ -42,7 +42,7 @@ GLSL_VERSION
 
 
 
-static int opaque3d_fill(struct glsrc* src)
+static int opaque3d_fill(struct mysrc* src)
 {
 	if(0 == src->vs){
 		src->vs = opaquetrigon_vert;

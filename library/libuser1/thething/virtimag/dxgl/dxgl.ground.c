@@ -5,7 +5,7 @@
 #define OWNBUF buf0
 int copypath(u8* path, u8* data);
 void dx11data_insert(struct entity* ctx, int type, struct dxsrc* src, int cnt);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 struct privdata{
@@ -188,7 +188,7 @@ static void ground_gl41draw(
 
 	struct privdata* own = act->OWNBUF;
 	if(0 == own)return;
-	struct glsrc* src = &own->gl41.src;
+	struct mysrc* src = &own->gl41.src;
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;

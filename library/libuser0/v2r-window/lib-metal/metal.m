@@ -461,7 +461,7 @@ NSLog(@"setup");
 	id<MTLBuffer> uniform = mt->dst.uniform;
 
 	float (*tmp)[4] = (float (*)[4])[uniform contents];
-	float (*cam)[4] = thewnd->mtfull_camera[0]->src.arg.mat;
+	float (*cam)[4] = thewnd->mtfull_camera[0]->src.uni[0].buf;
 
 	int x,y;
 	for(y=0;y<4;y++){

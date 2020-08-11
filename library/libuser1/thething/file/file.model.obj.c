@@ -1,8 +1,8 @@
 #include "libuser.h"
 #define OWNBUF buf0
 int copypath(u8* path, u8* data);
-void parsevertfromobj(struct glsrc* ctx, struct fstyle* sty, u8* buf, int len);
-void gl41data_insert(struct entity* ctx, int type, struct glsrc* src, int cnt);
+void parsevertfromobj(struct mysrc* ctx, struct fstyle* sty, u8* buf, int len);
+void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 //
 void world2local(mat4 mat, struct fstyle* src, struct fstyle* dst);
 void local2world(mat4 mat, struct fstyle* src, struct fstyle* dst);
@@ -58,7 +58,7 @@ static u32 obj3d_fragment(vec4 out[], vec4 in[], struct privdata* own)
 	u32 g = (u32)(256*(t[1]*w));
 	u32 r = (u32)(256*(t[2]*w));
 	return (r<<16) + (g<<8) + (b);*/
-	struct glsrc* src = &own->gl41.src;
+	struct mysrc* src = &own->gl41.src;
 	u32* tex = src->tex[0].data;
 	int w = src->tex[0].w;
 	int h = src->tex[0].h;
@@ -79,7 +79,7 @@ static u32 obj3d_fragment(vec4 out[], vec4 in[], struct privdata* own)
 
 static void obj3d_ctxforgl41(struct gl41data* data, char* albedo, char* matter, char* vs, char* fs)
 {
-	struct glsrc* src = &data->src;
+	struct mysrc* src = &data->src;
 	struct gldst* dst = &data->dst;
 say("%s\n%s\n%s\n%s\n",albedo,matter,vs,fs);
 
@@ -139,7 +139,7 @@ static void obj3d_draw_gl41(
 
 	local2world_transpose(own->objmat, &part->fs, &geom->fs);
 
-	struct glsrc* src = &own->gl41.src;
+	struct mysrc* src = &own->gl41.src;
 	gl41data_insert(ctx, 's', src, 1);
 }
 
@@ -316,7 +316,7 @@ static void obj3d_linkup(struct halfrel* self, struct halfrel* peer)
 	//if(0 == sty)return;
 
 	//vertex
-	struct glsrc* src = &own->gl41.src;
+	struct mysrc* src = &own->gl41.src;
 	src->vtx[0].vbuf_len = 0x100000;
 	src->vtx[0].vbuf = memorycreate(src->vtx[0].vbuf_len, 0);
 	src->vtx[0].vbuf_fmt = vbuffmt_333;
