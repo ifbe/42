@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define OWNBUF buf0
 void carveplanet(void*, void*, vec3 vc, vec3 vr, vec3 vf, vec3 vu);
-void dx11data_insert(struct entity* ctx, int type, struct dxsrc* src, int cnt);
+void dx11data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
@@ -53,11 +53,11 @@ char* texball_hlsl_ps =
 "}";
 static void texball_dx11prep(struct own* my)
 {
-	struct dxsrc* src = &my->dx11.src;
+	struct mysrc* src = &my->dx11.src;
 
 	//shader
 	src->vs = texball_hlsl_vs;
-	src->ps = texball_hlsl_ps;
+	src->fs = texball_hlsl_ps;
 	src->shader_enq = 42;
 
 	//texture
@@ -96,7 +96,7 @@ static void texball_dx11draw(
 	struct own* my = act->OWNBUF;
 	if(0 == my)return;
 
-	struct dxsrc* src = &my->dx11.src;
+	struct mysrc* src = &my->dx11.src;
 	if(0 == src)return;
 
 	void* vbuf = src->vtx[0].vbuf;

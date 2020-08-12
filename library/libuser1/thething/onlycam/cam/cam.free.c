@@ -411,27 +411,33 @@ static void freecam_dx11cam(
 	struct entity* wrd, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	int j;
-	struct fstyle* frus = &geom->frus;
 	struct privdata* own = act->OWNBUF;
-	struct dxsrc* src = &own->dx11.src;
+	struct dx11data* data = &own->dx11;
+	data->src.uni[0].buf = &own->uni;
+	data->src.uni[0].len = sizeof(struct unidata);
 
-	mat4_transposefrom((void*)src->arg.mat, (void*)own->world2clip);
-	for(j=0;j<3;j++)src->arg.vec[j] = frus->vc[j];
+	int x,y;
+	float* c = geom->frus.vc;
+	float* vec = own->uni.vec;
+	float (*mat)[4] = own->uni.mat;
+	for(x=0;x<3;x++)vec[x] = c[x];
+	for(y=0;y<4;y++){
+		for(x=0;x<4;x++)mat[y][x] = own->world2clip[x][y];
+	}
 
-	wnd->glfull_camera[0] = (void*)src;
+	wnd->dxfull_camera[0] = data;
 }
 static void freecam_mt20cam(
 	struct entity* act, struct style* part,
 	struct entity* wrd, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	int x,y;
 	struct privdata* own = act->OWNBUF;
 	struct mt20data* data = &own->mt20;
 	data->src.uni[0].buf = &own->uni;
 	data->src.uni[0].len = sizeof(struct unidata);
 
+	int x,y;
 	float* c = geom->frus.vc;
 	float* vec = own->uni.vec;
 	float (*mat)[4] = own->uni.mat;

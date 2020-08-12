@@ -1,4 +1,8 @@
 #include "libuser.h"
+struct unidata{
+	mat4 mat;
+	vec4 vec;
+};
 
 
 
@@ -21,11 +25,15 @@ void dx11data_convert(struct entity* wnd, struct style* area, struct event* ev, 
 
 void dx11data_whcam(struct entity* wnd, struct fstyle* area)
 {
-	int x,y;
 	void* trick = wnd->dxfull_camera;
 	struct dx11data* data = trick + 0x400;
-	float (*m)[4] = data->src.arg.mat;
-	float* v = data->src.arg.vec;
+	struct unidata* uni = trick + 0x800;
+	data->src.uni[0].buf = uni;
+	data->src.uni[0].len = sizeof(struct unidata);
+
+	int x,y;
+	float (*m)[4] = uni->mat;
+	float* v = uni->vec;
 	for(y=0;y<4;y++){
 		for(x=0;x<4;x++)m[y][x] = 0.0;
 		v[y] = 0.0;
@@ -34,17 +42,20 @@ void dx11data_whcam(struct entity* wnd, struct fstyle* area)
 	m[1][1] = 2.0 / (area->vq[1] * wnd->fbheight);
 	m[2][2] =-1.0;
 	m[3][3] = 1.0;
-	//say("%f,%f\n", m[0][0], m[1][1]);
 
 	wnd->dxfull_camera[0] = data;
 }
 void dx11data_01cam(struct entity* wnd)
 {
-	int x,y;
 	void* trick = wnd->dxfull_camera;
 	struct dx11data* data = trick + 0x400;
-	float (*m)[4] = data->src.arg.mat;
-	float* v = data->src.arg.vec;
+	struct unidata* uni = trick + 0x800;
+	data->src.uni[0].buf = uni;
+	data->src.uni[0].len = sizeof(struct unidata);
+
+	int x,y;
+	float (*m)[4] = uni->mat;
+	float* v = uni->vec;
 	for(y=0;y<4;y++){
 		for(x=0;x<4;x++)m[y][x] = 0.0;
 		v[y] = 0.0;

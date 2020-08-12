@@ -86,11 +86,11 @@ static int aidfont_load()
 	}
 	return 0;
 }
-static int aidfont_fill(struct dxsrc* src, int id)
+static int aidfont_fill(struct mysrc* src, int id)
 {
 	if(0 == src->vs){
 		src->vs = dx11ascii_vert;
-		src->ps = dx11ascii_frag;
+		src->fs = dx11ascii_frag;
 		src->shader_enq = 1;
 	}
 

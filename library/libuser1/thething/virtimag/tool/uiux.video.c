@@ -6,7 +6,7 @@ void yuyv2rgba(
 	u8* src, int s1, int w0, int h0, int x0, int y0, int x1, int y1,
 	u8* dst, int s2, int w1, int h1, int x2, int y2, int x3, int y3
 );
-void dx11data_insert(struct entity* ctx, int type, struct dxsrc* src, int cnt);
+void dx11data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
@@ -91,11 +91,11 @@ char* video_hlsl_ps =
 "}";
 static void video_dx11prep(struct own* my)
 {
-	struct dxsrc* src = &my->dx11.src;
+	struct mysrc* src = &my->dx11.src;
 
 	//shader
 	src->vs = video_hlsl_vs;
-	src->ps = video_hlsl_ps;
+	src->fs = video_hlsl_ps;
 	src->shader_enq = 42;
 
 	//texture
@@ -125,7 +125,7 @@ void video_dx11draw(
 
 	struct own* own = act->OWNBUF;
 	if(0 == own)return;
-	struct dxsrc* data = &own->dx11.src;
+	struct mysrc* data = &own->dx11.src;
 	if(0 == data)return;
 	float (*vbuf)[6] = data->vtx[0].vbuf;
 	if(0 == vbuf)return;

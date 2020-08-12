@@ -189,38 +189,19 @@ struct mysrc
 	u8 vbuf_enq;
 	u8 ibuf_enq;
 };
-
-
-
-
-struct dxsrc
+struct my3ddata
 {
-	//renderto
-	void* target;
+	//[000,1ff]
+	struct mysrc src;
+	u8 ipadd[0x200 - sizeof(struct mysrc)];
 
-	//shader
-	char* vs;
-	char* ps;
-
-	//constant
-	struct constant{
-		mat4 mat;
-		vec4 vec;
-	}arg;
-
-	//texture
-	struct texture tex[7];
-
-	//vertex
-	struct vertex vtx[2];
-
-	//enqueue
-	u8 shader_enq;
-	u8 tex_enq[7];
-	u8 arg_enq;
-	u8 vbuf_enq;
-	u8 ibuf_enq;
+	//[200,3ff]
+	u8 opadd[0x200];
 };
+
+
+
+
 struct dxdst
 {
 	//framebuffer
@@ -254,13 +235,13 @@ struct dxdst
 };
 struct dx11data
 {
-	//[000,2ff]
-	struct dxsrc src;
-	u8 ipadd[0x300 - sizeof(struct dxsrc)];
+	//[000,1ff]
+	struct mysrc src;
+	u8 ipadd[0x200 - sizeof(struct mysrc)];
 
-	//[300,3ff]
+	//[200,3ff]
 	struct dxdst dst;
-	u8 opadd[0x100 - sizeof(struct dxdst)];
+	u8 opadd[0x200 - sizeof(struct dxdst)];
 };
 
 
@@ -301,11 +282,11 @@ struct gldst
 };
 struct gl41data
 {
-	//[000,2ff]
+	//[000,1ff]
 	struct mysrc src;
 	u8 ipadd[0x200 - sizeof(struct mysrc)];
 
-	//[300,3ff]
+	//[200,3ff]
 	struct gldst dst;
 	u8 opadd[0x200 - sizeof(struct gldst)];
 };
@@ -346,11 +327,11 @@ struct mtdst
 };
 struct mt20data
 {
-	//[000,2ff]
+	//[000,1ff]
 	struct mysrc src;
 	u8 ipadd[0x200 - sizeof(struct mysrc)];
 
-	//[300,3ff]
+	//[200,3ff]
 	struct mtdst dst;
 	u8 opadd[0x200 - sizeof(struct mtdst)];
 };

@@ -44,11 +44,11 @@ char dx11solidtrigon_frag[] =
 
 
 
-static int dx11solidtrigon_fill(struct dxsrc* src)
+static int dx11solidtrigon_fill(struct mysrc* src)
 {
 	if(0 == src->vs){
 		src->vs = dx11solidtrigon_vert;
-		src->ps = dx11solidtrigon_frag;
+		src->fs = dx11solidtrigon_frag;
 		src->shader_enq = 1;
 	}
 

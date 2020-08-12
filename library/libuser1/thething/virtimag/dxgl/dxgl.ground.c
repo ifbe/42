@@ -4,7 +4,7 @@
 #define PIECE 16
 #define OWNBUF buf0
 int copypath(u8* path, u8* data);
-void dx11data_insert(struct entity* ctx, int type, struct dxsrc* src, int cnt);
+void dx11data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
@@ -77,13 +77,13 @@ void ground_singlepiece(float (*vbuf)[6], float* vc,float* vr,float* vf)
 }
 
 
-static void ground_dx11prep(struct dxsrc* src, char* tex0, char* tex1, char* tex2, char* vs, char* ps)
+static void ground_dx11prep(struct mysrc* src, char* tex0, char* tex1, char* tex2, char* vs, char* ps)
 {
 	//shader
 	src->vs = memorycreate(0x10000, 0);
 	loadhlslfromfile(src->vs, vs);
-	src->ps = memorycreate(0x10000, 0);
-	loadhlslfromfile(src->ps, ps);
+	src->fs = memorycreate(0x10000, 0);
+	loadhlslfromfile(src->fs, ps);
 	src->shader_enq = 42;
 
 	//vertex
@@ -109,7 +109,7 @@ static void ground_dx11draw(
 
 	struct privdata* own = act->OWNBUF;
 	if(0 == own)return;
-	struct dxsrc* src = &own->dx11.src;
+	struct mysrc* src = &own->dx11.src;
 	if(0 == src)return;
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;

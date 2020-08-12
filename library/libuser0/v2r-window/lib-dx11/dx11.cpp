@@ -325,7 +325,7 @@ void Upload_one(struct dx11data* one)
 	//shader
 	Upload_shader(
 		(char*)one->src.vs,
-		(char*)one->src.ps,
+		(char*)one->src.fs,
 		desc,
 		size,
 		(ID3D11VertexShader**)&one->dst.vsprog,
@@ -345,13 +345,20 @@ void Upload_one(struct dx11data* one)
 	}
 
 	//constant
-	Upload_constant((void*)&one->src.arg, 64+16, (ID3D11Buffer**)&one->dst.constant);
+	struct uniform* uni = &one->src.uni[0];
+	if((uni->buf) && (uni->len)){
+		Upload_constant(uni->buf, uni->len, (ID3D11Buffer**)&one->dst.constant);
+	}
 
 	//vertices
-	if(vtx->vbuf)Upload_vertex(vtx->vbuf, vtx->vbuf_len, (ID3D11Buffer**)&one->dst.vbuf);
+	if((vtx->vbuf) && (vtx->vbuf_len)){
+		Upload_vertex(vtx->vbuf, vtx->vbuf_len, (ID3D11Buffer**)&one->dst.vbuf);
+	}
 
 	//indices
-	if(vtx->ibuf)Upload_index(vtx->ibuf, vtx->ibuf_len, (ID3D11Buffer**)&one->dst.ibuf);
+	if((vtx->ibuf) && (vtx->ibuf_len)){
+		Upload_index(vtx->ibuf, vtx->ibuf_len, (ID3D11Buffer**)&one->dst.ibuf);
+	}
 }
 void Upload_all(struct dx11data** cam, struct dx11data** lit, struct dx11data** solid, struct dx11data** opaque)
 {
@@ -361,7 +368,8 @@ void Upload_all(struct dx11data** cam, struct dx11data** lit, struct dx11data** 
 	return;
 */
 	int j;
-	Upload_constant((void*)&cam[0]->src.arg, 64+16, (ID3D11Buffer**)&cam[0]->dst.constant);
+	struct dx11data* data = cam[0];
+	Upload_constant(data->src.uni[0].buf, data->src.uni[0].len, (ID3D11Buffer**)&data->dst.constant);
 
 	for(j=0;j<64;j++){
 		if(0 == solid[j])continue;

@@ -34,11 +34,11 @@ char dx11solidpoint_frag[] =
 
 
 
-static int dx11solidpoint_fill(struct dxsrc* src)
+static int dx11solidpoint_fill(struct mysrc* src)
 {
 	if(0 == src->vs){
 		src->vs = dx11solidpoint_vert;
-		src->ps = dx11solidpoint_frag;
+		src->fs = dx11solidpoint_frag;
 		src->shader_enq = 1;
 	}
 

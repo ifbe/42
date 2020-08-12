@@ -50,11 +50,11 @@ char dx11opaquetrigon_frag[] =
 
 
 
-static int opaque3d_fill(struct dxsrc* src)
+static int opaque3d_fill(struct mysrc* src)
 {
 	if(0 == src->vs){
 		src->vs = dx11opaquetrigon_vert;
-		src->ps = dx11opaquetrigon_frag;
+		src->fs = dx11opaquetrigon_frag;
 		src->shader_enq = 1;
 	}
 

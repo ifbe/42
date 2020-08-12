@@ -5,7 +5,7 @@
 int copypath(u8* path, u8* data);
 void parsevertfromstl(struct fstyle* sty, int* vbuf_h, u8* buf, int len);
 //
-void dx11data_insert(struct entity* ctx, int type, struct dxsrc* src, int cnt);
+void dx11data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 //
 void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 void gl41solid_spheretest(struct entity* win, u32 rgb, vec3 vc);
@@ -198,13 +198,13 @@ static void stl3d_modify_ray(struct entity* act, vec3 ray[])
 static void stl3d_dx11prep(struct privdata* own, char* vs, char* fs)
 {
 	float* tmp;
-	struct dxsrc* src = &own->dx11.src;
+	struct mysrc* src = &own->dx11.src;
 
 	//shader
 	src->vs = memorycreate(0x10000, 0);
 	openreadclose(vs, 0, src->vs, 0x10000);
-	src->ps = memorycreate(0x10000, 0);
-	openreadclose(fs, 0, src->ps, 0x10000);
+	src->fs = memorycreate(0x10000, 0);
+	openreadclose(fs, 0, src->fs, 0x10000);
 	src->shader_enq = 42;
 
 	//vertex
@@ -225,7 +225,11 @@ static void stl3d_dx11draw(
 	struct privdata* own = act->CTXBUF;
 	if(0 == own)return;
 
-	float (*mat)[4] = own->dx11.src.arg.mat;
+	struct dx11data* data = &own->dx11;
+	data->src.uni[0].buf = own->objmat;
+	data->src.uni[0].len = sizeof(mat4);
+
+	float (*mat)[4] = own->objmat;
 	local2world(mat, &part->fs, &geom->fs);
 
 	dx11data_insert(wnd, 's', &own->dx11.src, 1);
@@ -588,7 +592,7 @@ static void stl3d_linkup(struct halfrel* self, struct halfrel* peer)
 	parsevertfromstl(&pin->fs, &own->vbuf_h, own->vbuf, own->vbuf_len);
 
 	//for dx11
-	struct dxsrc* dxsrc = &own->dx11.src;
+	struct mysrc* dxsrc = &own->dx11.src;
 	struct vertex* dxvtx = &dxsrc->vtx[0];
 	dxvtx->vbuf_w = own->vbuf_w;
 	dxvtx->vbuf_h = own->vbuf_h;

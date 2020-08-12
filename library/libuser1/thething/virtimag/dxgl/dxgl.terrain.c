@@ -4,7 +4,7 @@
 #define DEPTEX 1
 #define OWNBUF buf0
 int copypath(u8* path, u8* data);
-void dx11data_insert(struct entity* ctx, int type, struct dxsrc* src, int cnt);
+void dx11data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
@@ -234,13 +234,13 @@ static void terrain_ask(struct halfrel* self, struct halfrel* peer, u8* buf, int
 static void terrain_dx11prep(struct privdata* own, char* vs, char* ps)
 {
 	int ret;
-	struct dxsrc* src = &own->dx11.src;
+	struct mysrc* src = &own->dx11.src;
 
 	//shader
 	src->vs = memorycreate(0x10000, 0);
 	loadhlslfromfile(src->vs, vs);
-	src->ps = memorycreate(0x10000, 0);
-	loadhlslfromfile(src->ps, ps);
+	src->fs = memorycreate(0x10000, 0);
+	loadhlslfromfile(src->fs, ps);
 	src->shader_enq = 42;
 
 	//texture
@@ -250,6 +250,10 @@ static void terrain_dx11prep(struct privdata* own, char* vs, char* ps)
 	tex->h    = own->color.h;
 	tex->fmt = hex32('r','g','b','a');
 	src->tex_enq[RGBTEX] = 42;
+
+	//uniform
+	src->uni[0].buf = own->mato2w;
+	src->uni[0].len = sizeof(mat4);
 
 	//vertex
 	struct vertex* vtx = src->vtx;
@@ -288,8 +292,8 @@ static void terrain_dx11draw(
 	//say("x=%f,y=%f,dx=%f,dy=%f\n",x,y,dx,dy);
 
 	struct privdata* own = act->OWNBUF;
-	struct dxsrc* src = &own->dx11.src;
-	float* mat = (void*)src->arg.mat;
+	struct mysrc* src = &own->dx11.src;
+	float* mat = (void*)src->uni[0].buf;
 	void* vbuf;
 	void* ibuf;
 	if((dx > 1.0/16)|(dy > 1.0/16)){

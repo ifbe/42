@@ -40,11 +40,11 @@ char dx11solidline_frag[] =
 
 
 
-static int dx11solidline_fill(struct dxsrc* src)
+static int dx11solidline_fill(struct mysrc* src)
 {
 	if(0 == src->vs){
 		src->vs = dx11solidline_vert;
-		src->ps = dx11solidline_frag;
+		src->fs = dx11solidline_frag;
 		src->shader_enq = 1;
 	}
 
