@@ -10,7 +10,7 @@ static int chosen = 0x4040;
 
 
 
-
+/*
 static void font_dx11draw(
 	struct entity* act, struct style* part,
 	struct entity* scn, struct style* geom,
@@ -22,7 +22,7 @@ static void font_dx11draw(
 	float* vu = geom->fs.vt;
 	dx11line_rect(wnd, 0xffffff, vc, vr, vf);
 	dx11ascii_test(wnd, 0xffffff, vc, vr, vf);
-}
+}*/
 static void font_gl41draw(
 	struct entity* act, struct style* part,
 	struct entity* scn, struct style* geom,
@@ -204,8 +204,12 @@ static void font_byworld_bycam_bywnd_taking(_ent* ent,int foot, _syn* stack,int 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
-	case _dx11full_:font_dx11draw(ent,slot, wor,geom, wnd,area);break;
-	case _gl41full_:font_gl41draw(ent,slot, wor,geom, wnd,area);break;
+	case _dx11full_:
+	case _mt20full_:
+	case _gl41full_:
+	case _vk12full_:
+		font_gl41draw(ent,slot, wor,geom, wnd,area);
+		break;
 	}
 }
 static void font_byworld_bywnd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)

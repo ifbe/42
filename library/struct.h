@@ -165,7 +165,6 @@ struct vertex{
 struct mysrc
 {
 	//shader
-	void* source;
 	void* vs;
 	void* gs;
 	void* fs;

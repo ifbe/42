@@ -4,7 +4,6 @@
 #define TIME data3
 void rubikscube_generate(void*, int);
 void rubikscube_solve(void*, int);
-void dx11solid_rect(struct entity* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 
 
 
@@ -292,7 +291,7 @@ static void rubikscube_draw_pixel(
 			);
 		}
 	}
-}
+}/*
 static void rubikscube_draw_dx11(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -483,7 +482,7 @@ static void rubikscube_draw_dx11(
 			dx11solid_rect(ctx, rgb, tc, tr, tf);
 		}
 	}
-}
+}*/
 static void rubikscube_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -674,7 +673,7 @@ static void rubikscube_draw_gl41(
 			gl41solid_rect(ctx, rgb, tc, tr, tf);
 		}
 	}
-}
+}/*
 static void rubikscube_draw_mt20(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -865,7 +864,7 @@ static void rubikscube_draw_mt20(
 			mt20solid_rect(ctx, rgb, tc, tr, tf);
 		}
 	}
-}
+}*/
 static void rubikscube_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -919,9 +918,12 @@ static void rubikscube_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
-	case _dx11full_:rubikscube_draw_dx11(ent,slot, wor,geom, wnd,area);break;
-	case _gl41full_:rubikscube_draw_gl41(ent,slot, wor,geom, wnd,area);break;
-	case _mt20full_:rubikscube_draw_mt20(ent,slot, wor,geom, wnd,area);break;
+	case _dx11full_:
+	case _mt20full_:
+	case _gl41full_:
+	case _vk12full_:
+		rubikscube_draw_gl41(ent,slot, wor,geom, wnd,area);
+		break;
 	}
 }
 static void rubikscube_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

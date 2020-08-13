@@ -13,7 +13,73 @@ void carvetrigonindex_sphere_v3n3x3(  float* vbuf,int vlen, u16* ibuf,int ilen, 
 
 
 
-static char solidtrigon_vert[] =
+static char* shadersource =
+"#include <metal_matrix>\n"
+"using namespace metal;\n"
+
+"struct Uniform {\n"
+"	metal::float4x4 wvp;\n"
+"};\n"
+"struct VertexInput {\n"
+"	float3 v [[ attribute(0) ]];\n"
+"	float3 n [[ attribute(1) ]];\n"
+"	float3 c [[ attribute(2) ]];\n"
+"};\n"
+"struct VertOutFragIn {\n"
+"	float4 v [[ position ]];\n"
+"	float3 n;\n"
+"	float3 c;\n"
+"};\n"
+
+"vertex VertOutFragIn vert(\n"
+"	VertexInput in [[ stage_in ]],\n"
+"	constant Uniform& uni [[ buffer(1) ]] )\n"
+"{\n"
+"	VertOutFragIn out;\n"
+"	out.v = uni.wvp * float4(in.v, 1.0);\n"
+"	out.n = in.n;\n"
+"	out.c = in.c;\n"
+"	return out;\n"
+"}\n"
+"fragment float4 frag(VertOutFragIn in [[stage_in]]){\n"
+"	return float4(in.c, 1.0);\n"
+"}\n";
+
+
+
+
+static char dx11solidtrigon_vert[] =
+"cbuffer VSConstantBuffer : register(b0){\n"
+	"matrix matmvp;\n"
+"};\n"
+"struct VSin{\n"
+	"float3 v : PA;\n"
+	"float3 n : PB;\n"
+	"float3 c : PC;\n"
+"};\n"
+"struct VSout{\n"
+	"float4 where : SV_POSITION;\n"
+	"float4 color : COLOR;\n"
+"};\n"
+"VSout main(VSin input){\n"
+	"VSout output;\n"
+	"output.where = mul(float4(input.v, 1.0), matmvp);\n"
+	"output.color = float4(input.c, 1.0);\n"
+	"return output;\n"
+"}\n";
+static char dx11solidtrigon_frag[] =
+"struct PSin{\n"
+"	float4 where : SV_POSITION;\n"
+"	float4 color : COLOR;\n"
+"};\n"
+"float4 main(PSin input) : SV_TARGET{\n"
+"	return input.color;\n"
+"}";
+
+
+
+
+static char gl41solidtrigon_vert[] =
 GLSL_VERSION
 GLSL_PRECISION
 "layout(location = 0)in vec3 v;\n"
@@ -29,8 +95,7 @@ GLSL_PRECISION
 	"albedo = pow(c, vec3(2.2));\n"
 	"gl_Position = cammvp * vec4(objxyz,1.0);\n"
 "}\n";
-
-static char solidtrigon_frag[] =
+static char gl41solidtrigon_frag[] =
 GLSL_VERSION
 GLSL_PRECISION
 "in vec3 objxyz;\n"
@@ -154,11 +219,23 @@ GLSL_PRECISION
 
 
 
-static int trigon3d_fill(struct mysrc* src)
+static int trigon3d_fill(struct entity* win, struct mysrc* src)
 {
 	if(0 == src->vs){
-		src->vs = solidtrigon_vert;
-		src->fs = solidtrigon_frag;
+		switch(win->fmt){
+		case _gl41full_:
+			src->vs = gl41solidtrigon_vert;
+			src->fs = gl41solidtrigon_frag;
+			break;
+		case _dx11full_:
+			src->vs = dx11solidtrigon_vert;
+			src->fs = dx11solidtrigon_frag;
+			break;
+		case _mt20full_:
+			src->vs = shadersource;
+			break;
+		default:return -3;
+		}
 		src->shader_enq = 1;
 	}
 
@@ -205,7 +282,7 @@ int trigon3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int 
 	int vlen,ilen,ret;
 	struct vertex* vtx = p->src.vtx;
 	if(0 == vtx->vbuf){
-		ret = trigon3d_fill(&p->src);
+		ret = trigon3d_fill(win, &p->src);
 		if(ret < 0)return -4;
 	}
 

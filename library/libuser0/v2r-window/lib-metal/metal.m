@@ -363,9 +363,9 @@ NSLog(@"setup");
 		if(mt->dst.shader){
 			//free shader
 		}
-		if(mt->src.source){
+		if(mt->src.vs){
 			NSError* error = nil;
-			NSString* str = [NSString stringWithUTF8String:mt->src.source];
+			NSString* str = [NSString stringWithUTF8String:mt->src.vs];
 
 			id<MTLLibrary> mtllib = [self.device newLibraryWithSource:str options:nil error:&error];
 			if(!mtllib) {

@@ -267,17 +267,6 @@
 #define _dx11fboc_ hex64('d','x','1','1','f','b','o','c')
 #define _dx11fbod_ hex64('d','x','1','1','f','b','o','d')
 #define _dx11fbog_ hex64('d','x','1','1','f','b','o','g')
-//tier=_sup_, type=_wnd_, rfmt:
-#define _gl41none_ hex64('g','l','4','1','n','o','n','e')
-#define _gl41easy_ hex64('g','l','4','1','e','a','s','y')
-#define _gl41full_ hex64('g','l','4','1','f','u','l','l')
-#define _gl41coop_ hex64('g','l','4','1','c','o','o','p')
-//
-#define _gl41data_ hex64('g','l','4','1','d','a','t','a')
-#define _gl41fbo6_ hex64('g','l','4','1','f','b','o','6')
-#define _gl41fboc_ hex64('g','l','4','1','f','b','o','c')
-#define _gl41fbod_ hex64('g','l','4','1','f','b','o','d')
-#define _gl41fbog_ hex64('g','l','4','1','f','b','o','g')
 //
 #define _mt20none_ hex64('m','t','2','0','n','o','n','e')
 #define _mt20easy_ hex64('m','t','2','0','e','a','s','y')
@@ -289,6 +278,28 @@
 #define _mt20fboc_ hex64('m','t','2','0','f','b','o','c')
 #define _mt20fbod_ hex64('m','t','2','0','f','b','o','d')
 #define _mt20fbog_ hex64('m','t','2','0','f','b','o','g')
+//
+#define _gl41none_ hex64('g','l','4','1','n','o','n','e')
+#define _gl41easy_ hex64('g','l','4','1','e','a','s','y')
+#define _gl41full_ hex64('g','l','4','1','f','u','l','l')
+#define _gl41coop_ hex64('g','l','4','1','c','o','o','p')
+//
+#define _gl41data_ hex64('g','l','4','1','d','a','t','a')
+#define _gl41fbo6_ hex64('g','l','4','1','f','b','o','6')
+#define _gl41fboc_ hex64('g','l','4','1','f','b','o','c')
+#define _gl41fbod_ hex64('g','l','4','1','f','b','o','d')
+#define _gl41fbog_ hex64('g','l','4','1','f','b','o','g')
+//
+#define _vk12none_ hex64('v','k','1','2','n','o','n','e')
+#define _vk12easy_ hex64('v','k','1','2','e','a','s','y')
+#define _vk12full_ hex64('v','k','1','2','f','u','l','l')
+#define _vk12coop_ hex64('v','k','1','2','c','o','o','p')
+//
+#define _vk12data_ hex64('v','k','1','2','d','a','t','a')
+#define _vk12fbo6_ hex64('v','k','1','2','f','b','o','6')
+#define _vk12fboc_ hex64('v','k','1','2','f','b','o','c')
+#define _vk12fbod_ hex64('v','k','1','2','f','b','o','d')
+#define _vk12fbog_ hex64('v','k','1','2','f','b','o','g')
 //tier=_sup_, type=_ctx_, rfmt:
 #define _vbo_ hex32('v','b','o',0)
 #define _rgba_ hex32('r','g','b','a')

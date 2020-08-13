@@ -319,7 +319,7 @@ void xiangqi_draw_pixel(
 			);
 		}//forx
 	}//fory
-}
+}/*
 static void xiangqi_dx11draw(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -415,7 +415,7 @@ static void xiangqi_dx11draw(
 			dx11utf8_center(ctx, fontcolor, tc, tr, tf, (u8*)char2hanzi(data[y][x]), 0);
 		}
 	}
-}
+}*/
 static void xiangqi_gl41draw(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -597,8 +597,12 @@ static void xiangqi_taking_bycam(_ent* ent,int foot, _syn* stack,int sp, void* a
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
-	case _dx11full_:xiangqi_dx11draw(ent,slot, wor,geom, wnd,area);break;
-	case _gl41full_:xiangqi_gl41draw(ent,slot, wor,geom, wnd,area);break;
+	case _dx11full_:
+	case _mt20full_:
+	case _gl41full_:
+	case _vk12full_:
+		xiangqi_gl41draw(ent,slot, wor,geom, wnd,area);
+		break;
 	}
 }
 static void xiangqi_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

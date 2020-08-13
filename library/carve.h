@@ -1,6 +1,6 @@
 #include "struct.h"
 
-
+/*
 void dx11point(              struct entity* ctx, u32 rgb, vec3 vc);
 
 void dx11line(               struct entity* ctx, u32 rgb, vec3 va, vec3 vb);
@@ -25,7 +25,7 @@ void dx11string(              struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec
 void dx11string_center(       struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u8* str, int len);
 void dx11decimal(             struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
 void dx11hexadecimal(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf, u32 dat);
-
+*/
 
 
 
@@ -112,4 +112,4 @@ void gl41boundingvolume(      struct entity* ctx, u32 rgb, struct fstyle* sty, u
 
 
 
-void mt20solid_rect(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
+//void mt20solid_rect(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);

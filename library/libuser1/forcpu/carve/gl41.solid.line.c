@@ -10,7 +10,37 @@ void carvelineindex_circle(  float* vbuf, int vlen, u16* ibuf, int ilen, vec3 vc
 
 
 
-static char solidline_vert[] =
+static char dx11solidline_vert[] =
+"cbuffer VSConstantBuffer : register(b0){\n"
+	"matrix matmvp;\n"
+"};\n"
+"struct VSin{\n"
+	"float3 v : PA;\n"
+	"float3 c : PB;\n"
+"};\n"
+"struct VSout{\n"
+	"float4 where : SV_POSITION;\n"
+	"float4 color : COLOR;\n"
+"};\n"
+"VSout main(VSin input){\n"
+	"VSout output;\n"
+	"output.where = mul(float4(input.v, 1.0), matmvp);\n"
+	"output.color = float4(input.c, 1.0);\n"
+	"return output;\n"
+"}\n";
+static char dx11solidline_frag[] =
+"struct PSin{\n"
+"	float4 where : SV_POSITION;\n"
+"	float4 color : COLOR;\n"
+"};\n"
+"float4 main(PSin input) : SV_TARGET{\n"
+"	return input.color;\n"
+"}";
+
+
+
+
+static char gl41solidline_vert[] =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
 "layout(location = 1)in mediump vec3 c;\n"
@@ -21,7 +51,7 @@ GLSL_VERSION
 	"gl_Position = cammvp * vec4(v, 1.0);\n"
 "}\n";
 
-static char solidline_frag[] =
+static char gl41solidline_frag[] =
 GLSL_VERSION
 "in mediump vec3 colour;\n"
 "out mediump vec4 FragColor;\n"
@@ -32,11 +62,20 @@ GLSL_VERSION
 
 
 
-static int line3d_fill(struct mysrc* src)
+static int line3d_fill(struct entity* win, struct mysrc* src)
 {
 	if(0 == src->vs){
-		src->vs = solidline_vert;
-		src->fs = solidline_frag;
+		switch(win->fmt){
+		case _gl41full_:
+			src->vs = gl41solidline_vert;
+			src->fs = gl41solidline_frag;
+			break;
+		case _dx11full_:
+			src->vs = dx11solidline_vert;
+			src->fs = dx11solidline_frag;
+			break;
+		default:return -3;
+		}
 		src->shader_enq = 1;
 	}
 
@@ -82,7 +121,7 @@ int line3d_vars(struct entity* win, int unused, float** vbuf, u16** ibuf, int vc
 	int vlen,ilen,ret;
 	struct vertex* vtx = p->src.vtx;
 	if(0 == vtx->vbuf){
-		ret = line3d_fill(&p->src);
+		ret = line3d_fill(win, &p->src);
 		if(ret < 0)return -4;
 	}
 

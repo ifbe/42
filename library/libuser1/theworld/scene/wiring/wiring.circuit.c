@@ -18,7 +18,7 @@ void line2crft(
 
 
 
-
+/*
 static void printboard_dx11draw(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -53,7 +53,7 @@ static void printboard_dx11draw(
 	tt[2] =-oz/2;
 	line2crft(t0,t1,tt, tc,tr,tf);
 	dx11solid_prism4(ctx, 0x0000ff, tc,tr,tf,tt);
-}
+}*/
 static void printboard_gl41draw(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -105,8 +105,12 @@ static void printboard_camread(_ent* ent,int foot, _syn* stack,int sp, void* arg
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
-	case _dx11full_:printboard_dx11draw(ent,slot, wor,geom, wnd,area);break;
-	case _gl41full_:printboard_gl41draw(ent,slot, wor,geom, wnd,area);break;
+	case _dx11full_:
+	case _mt20full_:
+	case _gl41full_:
+	case _vk12full_:
+		printboard_gl41draw(ent,slot, wor,geom, wnd,area);
+		break;
 	}
 }
 int printboard_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

@@ -1,11 +1,9 @@
 #include "libuser.h"
 #define COUNT (0x100000/36)
-void dx11point(struct entity* win, u32 rgb, vec3 vc);
-void dx11line(struct entity* win, u32 rgb, vec3 va, vec3 vb);
 
 
 
-
+/*
 static void field_draw_dx11(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
@@ -63,7 +61,7 @@ static void field_draw_dx11(
 	}
 	}
 	}
-}
+}*/
 static void field_draw_gl41(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
@@ -171,8 +169,12 @@ static void field_taking_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
-		case _dx11full_:field_draw_dx11(ent,slot, wor,geom, wnd,area);break;
-		case _gl41full_:field_draw_gl41(ent,slot, wor,geom, wnd,area);break;
+	case _dx11full_:
+	case _mt20full_:
+	case _gl41full_:
+	case _vk12full_:
+		field_draw_gl41(ent,slot, wor,geom, wnd,area);
+		break;
 	}
 }
 static void field_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

@@ -3,8 +3,7 @@
 
 
 
-
-
+/*
 static void schematic_dx11draw(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -15,7 +14,7 @@ static void schematic_dx11draw(
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
 	dx11opaque_rect(ctx, 0x20ffff00, vc, vr, vf);
-}
+}*/
 static void schematic_gl41draw(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -60,8 +59,12 @@ static void schematic_camread(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
-	case _dx11full_:schematic_dx11draw(ent,slot, wor,geom, wnd,area);break;
-	case _gl41full_:schematic_gl41draw(ent,slot, wor,geom, wnd,area);break;
+	case _dx11full_:
+	case _mt20full_:
+	case _gl41full_:
+	case _vk12full_:
+		schematic_gl41draw(ent,slot, wor,geom, wnd,area);
+		break;
 	}
 }
 int schematic_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

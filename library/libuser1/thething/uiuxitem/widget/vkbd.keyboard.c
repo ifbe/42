@@ -109,7 +109,7 @@ void vkbd_draw_pixel(struct entity* win, struct style* sty)
 			drawstring_fit(win, rgb, x0, y0, x1, y1, (u8*)&c, l);
 		}
 	}
-}
+}/*
 void vkbd_draw_dx11(
 	struct entity* act, struct style* part,
 	struct entity* scn, struct style* geom,
@@ -153,7 +153,7 @@ void vkbd_draw_dx11(
 			dx11ascii_center(wnd, 0xffffff, tc, tr, tf, dat);
 		}
 	}
-}
+}*/
 void vkbd_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* scn, struct style* geom,
@@ -238,7 +238,7 @@ static int vkbd_event(
 
 
 
-
+/*
 static void vkbd_read_bydx11(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
 	struct fstyle fs;
@@ -251,7 +251,7 @@ static void vkbd_read_bydx11(_ent* ent,struct style* slot, _ent* wnd,struct styl
 	vkbd_draw_dx11(ent, 0, 0,(void*)&fs, wnd,area);
 	dx11data_01cam(wnd);
 	dx11data_after(wnd);
-}
+}*/
 static void vkbd_read_bygl41(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
 	struct fstyle fs;
@@ -305,10 +305,7 @@ static int vkbd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _dx11full_:{
-		if('v' != key)break;
-		vkbd_read_bydx11(ent,slot, wnd,area);break;
-	}
+	case _dx11full_:
 	case _gl41full_:{
 		if('v' != key)break;
 		vkbd_read_bygl41(ent,slot, wnd,area);break;

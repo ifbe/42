@@ -115,7 +115,7 @@ static void the2048_draw_pixel(
 			);
 		}
 	}
-}
+}/*
 static void the2048_draw_dx11(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -168,7 +168,7 @@ static void the2048_draw_dx11(
 			dx11decimal(ctx, ~rgb, tc, tr, tf, val2048[tab[y][x]]);
 		}
 	}
-}
+}*/
 static void the2048_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -393,8 +393,12 @@ static void the2048_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
-	case _dx11full_:the2048_draw_dx11(ent,slot, wor,geom, wnd,area);break;
-	case _gl41full_:the2048_draw_gl41(ent,slot, wor,geom, wnd,area);break;
+	case _dx11full_:
+	case _mt20full_:
+	case _gl41full_:
+	case _vk12full_:
+		the2048_draw_gl41(ent,slot, wor,geom, wnd,area);
+		break;
 	}
 }
 static void the2048_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

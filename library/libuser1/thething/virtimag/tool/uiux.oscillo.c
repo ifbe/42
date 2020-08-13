@@ -117,7 +117,7 @@ static void oscillo_draw_pixel(
 			drawline((void*)wnd, 0xffffff, m, cy, m, cy + buf[x]*hh/32768);
 		}
 	}
-}
+}/*
 static void oscillo_dx11draw(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
@@ -156,7 +156,7 @@ static void oscillo_dx11draw(
 			dx11line(ctx, 0xffffff, ta, tb);
 		}
 	}
-}
+}*/
 static void oscillo_gl41draw(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
@@ -262,8 +262,12 @@ static void oscillo_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
-	case _dx11full_:oscillo_dx11draw(ent,slot, wor,geom, wnd,area);break;
-	case _gl41full_:oscillo_gl41draw(ent,slot, wor,geom, wnd,area);break;
+	case _dx11full_:
+	case _mt20full_:
+	case _gl41full_:
+	case _vk12full_:
+		oscillo_gl41draw(ent,slot, wor,geom, wnd,area);
+		break;
 	}
 }
 static void oscillo_read_bywnd(_ent* ent,struct style* slot, _sup* wnd,struct style* area)

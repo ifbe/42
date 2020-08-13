@@ -7,7 +7,7 @@ void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
 
 
 #ifdef __ANDROID__
-	static char fontfrag[] = {
+	static char gl41ascii_frag[] = {
 		GLSL_VERSION
 		"in mediump vec3 colour;\n"
 		"in mediump vec2 texuvw;\n"
@@ -18,7 +18,7 @@ void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
 		"}\n"
 	};
 #else
-	static char fontfrag[] = {
+	static char gl41ascii_frag[] = {
 		GLSL_VERSION
 		"in mediump vec3 colour;\n"
 		"in mediump vec2 texuvw;\n"
@@ -30,7 +30,7 @@ void drawunicode_alpha(void* buf, int w, int h, int x, int y, u32 c);
 	};
 #endif
 
-static char font3dvert[] =
+static char gl41ascii_vert[] =
 GLSL_VERSION
 "layout(location = 0)in mediump vec3 v;\n"
 "layout(location = 1)in mediump vec3 c;\n"
@@ -43,6 +43,46 @@ GLSL_VERSION
 	"texuvw = t;\n"
 	"gl_Position = cammvp * vec4(v, 1.0);\n"
 "}\n";
+
+
+
+
+static char dx11ascii_vert[] =
+"cbuffer VSConstantBuffer : register(b0){\n"
+	"matrix matmvp;\n"
+"};\n"
+"struct VSin{\n"
+	"float3 v : PA;\n"
+	"float3 c : PB;\n"
+	"float3 t : PC;\n"
+"};\n"
+"struct VSout{\n"
+	"float4 where : SV_POSITION;\n"
+	"float3 color : COLOR;\n"
+	"float3 coord : COORD;\n"
+"};\n"
+"VSout main(VSin input){\n"
+	"VSout output;\n"
+	"output.where = mul(float4(input.v, 1.0), matmvp);\n"
+	"output.color = input.c;\n"
+	"output.coord = input.t;\n"
+	"return output;\n"
+"}\n";
+static char dx11ascii_frag[] =
+"Texture2D    b8g8r8 : register(t0);\n"
+"SamplerState status : register(s0);\n"
+"struct PSin{\n"
+"	float4 where : SV_POSITION;\n"
+"	float3 color : COLOR;\n"
+"	float3 coord : COORD;\n"
+"};\n"
+"float4 main(PSin input) : SV_TARGET{\n"
+"	float2 uvw = input.coord;\n"
+"	return float4(input.color, 1.0) * b8g8r8.Sample(status, uvw).rrrr;\n"
+"}";
+
+
+
 
 static u8* buf = 0;
 
@@ -91,14 +131,23 @@ static int aidfont_load()
 	}
 	return 0;
 }
-static int aidfont_fill(struct gl41data* data, int id)
+static int aidfont_fill(struct entity* win, struct gl41data* data, int id)
 {
 	struct mysrc* src = &data->src;
 	struct gldst* dst = &data->dst;
 
 	if(0 == src->vs){
-		src->vs = font3dvert;
-		src->fs = fontfrag;
+		switch(win->fmt){
+		case _gl41full_:
+			src->vs = gl41ascii_vert;
+			src->fs = gl41ascii_frag;
+			break;
+		case _dx11full_:
+			src->vs = dx11ascii_vert;
+			src->fs = dx11ascii_frag;
+			break;
+		default:return -3;
+		}
 		src->shader_enq = 1;
 	}
 
@@ -158,7 +207,7 @@ int ascii3d_vars(struct entity* win, int id, float** vbuf, u16** ibuf, int vcnt,
 		ret = aidfont_load();
 		if(ret < 0)return -4;
 
-		ret = aidfont_fill(p, id);
+		ret = aidfont_fill(win, p, id);
 		if(ret < 0)return -5;
 	}
 
