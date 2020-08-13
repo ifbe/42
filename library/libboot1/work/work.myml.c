@@ -572,12 +572,6 @@ int myml_create(struct worker* wrk, void* url, int argc, u8** argv)
 	}
 
     //loop @ 1
-    switch(wrk[1].type){
-        case _exiter_:exiter(wrk);break;
-        case _pulser_:pulser(wrk);break;
-        case _poller_:poller(wrk);break;
-        case _realer_:realer(wrk);break;
-        case _waiter_:waiter(wrk);break;
-    }
+	poller(wrk);
 	return 0;
 }

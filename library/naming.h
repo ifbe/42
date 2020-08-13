@@ -28,9 +28,10 @@
 #define _win32_ hex64('w','i','n','3','2', 0, 0, 0)
 #define _winmain_ hex64('w','i','n','m','a','i','n', 0)
 //worker
+#define _compiler_ hex64('c','o','m','p','i','l','e','r')
+#define _kernel_ hex64('k','e','r','n','e','l', 0, 0)
 #define _myml_ hex32('m','y','m','l')
 #define _mython_ hex64('m','y','t','h','o','n', 0, 0)
-#define _compiler_ hex64('c','o','m','p','i','l','e','r')
 #define _exiter_ hex64('e','x','i','t','e','r', 0, 0)
 #define _poller_ hex64('p','o','l','l','e','r', 0, 0)
 #define _pulser_ hex64('p','u','l','s','e','r', 0, 0)

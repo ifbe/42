@@ -3,9 +3,10 @@ cflag ?= -c -O2 -fPIC
 
 target:
 	$(compiler) $(cflag) worker.c
+	$(compiler) $(cflag) work/work.compile.c
+	$(compiler) $(cflag) work/work.kernel.c
 	$(compiler) $(cflag) work/work.myml.c
 	$(compiler) $(cflag) work/work.mython.c
-	$(compiler) $(cflag) work/work.compile.c
 	$(compiler) $(cflag) loop/loop.exiter.c
 	$(compiler) $(cflag) loop/loop.poller.c
 	$(compiler) $(cflag) loop/loop.pulser.c

@@ -61,9 +61,6 @@ url:0.0.0.0:9999
 
 
 <worker>
-poller{
-fmt:poller
-}
 pulser{
 fmt:pulser
 }
