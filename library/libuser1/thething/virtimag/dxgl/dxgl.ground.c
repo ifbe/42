@@ -77,17 +77,23 @@ void ground_singlepiece(float (*vbuf)[6], float* vc,float* vr,float* vf)
 }
 
 
-static void ground_dx11prep(struct mysrc* src, char* tex0, char* tex1, char* tex2, char* vs, char* ps)
+static void ground_dx11prep(struct dx11data* data, char* tex0, char* tex1, char* tex2, char* vs, char* ps)
 {
 	//shader
-	src->vs = memorycreate(0x10000, 0);
-	loadhlslfromfile(src->vs, vs);
-	src->fs = memorycreate(0x10000, 0);
-	loadhlslfromfile(src->fs, ps);
-	src->shader_enq = 42;
+	data->src.vs = memorycreate(0x10000, 0);
+	loadhlslfromfile(data->src.vs, vs);
+	data->src.fs = memorycreate(0x10000, 0);
+	loadhlslfromfile(data->src.fs, ps);
+	data->src.shader_enq = 42;
+
+	//texture
+	data->src.tex[0].fmt = hex32('r','g','b','a');
+	data->src.tex[0].data = memorycreate(2048*2048*4, 0);
+	loadtexfromfile(&data->src.tex[0], tex0);
+	data->src.tex_enq[0] = 42;
 
 	//vertex
-	struct vertex* vtx = src->vtx;
+	struct vertex* vtx = data->src.vtx;
 	vtx->geometry = 3;
 	vtx->opaque = 0;
 
@@ -344,7 +350,7 @@ static void ground_create(struct entity* act, void* str, int argc, u8** argv)
 
 	if(0 == dxvs)dxvs = "datafile/shader/ground/dxvs.hlsl";
 	if(0 == dxps)dxps = "datafile/shader/ground/dxps.hlsl";
-	ground_dx11prep(&own->dx11.src, albedo, normal, matter, dxvs, dxps);
+	ground_dx11prep(&own->dx11, albedo, normal, matter, dxvs, dxps);
 
 	if(0 == glvs)glvs = "datafile/shader/ground/fv.glsl";
 	if(0 == glfs)glfs = "datafile/shader/ground/ff.glsl";

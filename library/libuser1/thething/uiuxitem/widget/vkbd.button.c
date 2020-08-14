@@ -1,5 +1,7 @@
 #include "libuser.h"
 #define STRBUF buf0
+void dx11data_01cam(struct entity* wnd);
+//
 void gl41data_before(struct entity* wnd);
 void gl41data_after(struct entity* wnd);
 void gl41data_01cam(struct entity* wnd);
@@ -50,12 +52,13 @@ static void button_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		button_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
+	if(0 == stack)return;
+	if('v' != key)return;
+
+	slot = stack[sp-1].pfoot;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	button_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
 static void button_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
@@ -67,8 +70,10 @@ static void button_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 
 	gl41data_before(wnd);
 	button_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_01cam(wnd);
 	gl41data_after(wnd);
+
+	if(_dx11full_ == wnd->fmt)dx11data_01cam(wnd);
+	else gl41data_01cam(wnd);
 }
 
 
@@ -82,14 +87,18 @@ static void button_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41full_:{
+	case _rgba_:
+		button_draw_pixel(ent, slot, (void*)wnd, area);
+		break;
+	case _dx11full_:
+	case _mt20full_:
+	case _gl41full_:
+	case _vk12full_:
 		if('v' != key)break;
-		button_read_bywnd(ent,slot, (void*)wnd,area);break;
-	}
-	case _rgba_:{
-		button_draw_pixel(ent, slot, (void*)wnd, area);break;
-	}
-	default:button_read_bycam(ent,foot, stack,sp, arg,key);
+		button_read_bywnd(ent,slot, (void*)wnd,area);
+		break;
+	default:
+		button_read_bycam(ent,foot, stack,sp, arg,key);
 	}
 }
 static void button_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

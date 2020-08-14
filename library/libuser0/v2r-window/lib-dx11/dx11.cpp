@@ -346,17 +346,17 @@ void Upload_one(struct dx11data* one)
 
 	//constant
 	struct uniform* uni = &one->src.uni[0];
-	if((uni->buf) && (uni->len)){
+	if(uni->buf && uni->len){
 		Upload_constant(uni->buf, uni->len, (ID3D11Buffer**)&one->dst.constant);
 	}
 
 	//vertices
-	if((vtx->vbuf) && (vtx->vbuf_len)){
+	if(vtx->vbuf && vtx->vbuf_len){
 		Upload_vertex(vtx->vbuf, vtx->vbuf_len, (ID3D11Buffer**)&one->dst.vbuf);
 	}
 
 	//indices
-	if((vtx->ibuf) && (vtx->ibuf_len)){
+	if(vtx->ibuf && vtx->ibuf_len){
 		Upload_index(vtx->ibuf, vtx->ibuf_len, (ID3D11Buffer**)&one->dst.ibuf);
 	}
 }
@@ -369,7 +369,10 @@ void Upload_all(struct dx11data** cam, struct dx11data** lit, struct dx11data** 
 */
 	int j;
 	struct dx11data* data = cam[0];
-	Upload_constant(data->src.uni[0].buf, data->src.uni[0].len, (ID3D11Buffer**)&data->dst.constant);
+	struct uniform* uni = &data->src.uni[0];
+	if(uni->buf && uni->len){
+		Upload_constant(data->src.uni[0].buf, data->src.uni[0].len, (ID3D11Buffer**)&data->dst.constant);
+	}
 
 	for(j=0;j<64;j++){
 		if(0 == solid[j])continue;

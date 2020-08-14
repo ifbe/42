@@ -40,7 +40,8 @@ void dx11data_whcam(struct entity* wnd, struct fstyle* area)
 	}
 	m[0][0] = 2.0 / (area->vq[0] * wnd->fbwidth);
 	m[1][1] = 2.0 / (area->vq[1] * wnd->fbheight);
-	m[2][2] =-1.0;
+	m[2][2] =-0.5;
+	m[3][2] = 0.5;
 	m[3][3] = 1.0;
 
 	wnd->dxfull_camera[0] = data;
@@ -62,7 +63,8 @@ void dx11data_01cam(struct entity* wnd)
 	}
 	m[0][0] = 1.0;
 	m[1][1] = 1.0;
-	m[2][2] =-1.0;
+	m[2][2] =-0.5;
+	m[3][2] = 0.5;
 	m[3][3] = 1.0;
 
 	wnd->dxfull_camera[0] = data;
