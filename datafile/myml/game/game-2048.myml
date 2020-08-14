@@ -25,14 +25,6 @@ depth:1024
 </supply>
 
 
-<worker>
-poller{
-fmt:poller
-dt:16ms
-}
-</worker>
-
-
 <style>
 itemhaha{
 }

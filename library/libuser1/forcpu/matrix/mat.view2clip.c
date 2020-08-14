@@ -40,7 +40,7 @@ void clip2view_orth(mat4 m, struct fstyle* s)
 
 
 
-void view2clip_proj(mat4 proj, struct fstyle* sty)
+void view2clip_proj_n1p1(mat4 proj, struct fstyle* sty)
 {
 	float l = sty->vl[3];
 	float r = sty->vr[3];
@@ -49,7 +49,7 @@ void view2clip_proj(mat4 proj, struct fstyle* sty)
 	float n = sty->vn[3];
 	float f = sty->vf[3];
 	//say("%f,%f,%f,%f,%f,%f\n",l,r,b,t,n,f);
-/*
+
 	proj[0][0] = 2 * n / (r-l);
 	proj[0][1] = 0.0;
 	proj[0][2] = (r+l) / (r-l);
@@ -68,7 +68,50 @@ void view2clip_proj(mat4 proj, struct fstyle* sty)
 	proj[3][0] = 0.0;
 	proj[3][1] = 0.0;
 	proj[3][2] = -1.0;
-	proj[3][3] = 0.0;*/
+	proj[3][3] = 0.0;
+}
+void clip2view_proj_n1p1(mat4 mat, struct fstyle* sty)
+{
+	float l = sty->vl[3];
+	float r = sty->vr[3];
+	float b = sty->vb[3];
+	float t = sty->vt[3];
+	float n = sty->vn[3];
+	float f = sty->vf[3];
+
+	mat[0][0] = (r-l) / 2.0 / n;
+	mat[0][1] = 0.0;
+	mat[0][2] = 0.0;
+	mat[0][3] = (r+l) / 2.0 / n;
+
+	mat[1][0] = 0.0;
+	mat[1][1] = (t-b) / 2.0 / n;
+	mat[1][2] = 0.0;
+	mat[1][3] = (t+b) / 2.0 / n;
+
+	mat[2][0] = 0.0;
+	mat[2][1] = 0.0;
+	mat[2][2] = 0.0;
+	mat[2][3] = -1.0;
+
+	mat[3][0] = 0.0;
+	mat[3][1] = 0.0;
+	mat[3][2] = (n-f) / 2.0 / n / f;
+	mat[3][3] = (n+f) / 2.0 / n / f;
+}
+
+
+
+
+void view2clip_proj(mat4 proj, struct fstyle* sty)
+{
+	float l = sty->vl[3];
+	float r = sty->vr[3];
+	float b = sty->vb[3];
+	float t = sty->vt[3];
+	float n = sty->vn[3];
+	float f = sty->vf[3];
+	//say("%f,%f,%f,%f,%f,%f\n",l,r,b,t,n,f);
 
 	proj[0][0] = 2 * n / (r-l);
 	proj[0][1] = 0.0;
@@ -116,6 +159,6 @@ void clip2view_proj(mat4 mat, struct fstyle* sty)
 
 	mat[3][0] = 0.0;
 	mat[3][1] = 0.0;
-	mat[3][2] = (n-f) / 2.0 / n / f;
-	mat[3][3] = (n+f) / 2.0 / n / f;
+	mat[3][2] = (n-f) / n / f;
+	mat[3][3] = 1.0 / n;
 }
