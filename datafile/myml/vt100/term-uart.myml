@@ -27,13 +27,6 @@ url:/dev/tty.usbmodem424242423
 </system>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 termrect{
 c:0.0, 0.0

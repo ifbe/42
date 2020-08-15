@@ -34,13 +34,6 @@ fmt:std
 </supply>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 a0geom{
 c: -1500.0, 0.0, 0.0

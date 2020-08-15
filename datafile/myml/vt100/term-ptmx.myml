@@ -27,13 +27,6 @@ url:/dev/ptmx
 </system>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 termrect{
 c:0.0, 0.0

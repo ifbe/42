@@ -32,13 +32,6 @@ fmt:fftpcm
 </artery>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 skyhaha{
 }

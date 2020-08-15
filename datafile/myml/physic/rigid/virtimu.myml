@@ -71,9 +71,6 @@ fmt:dbgf32
 
 
 <worker>
-poller{
-fmt:poller
-}
 pulser{
 fmt:pulser
 }

@@ -15,13 +15,6 @@ fmt:std
 </supply>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 where{
 c:256,256,0

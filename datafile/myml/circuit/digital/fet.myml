@@ -28,13 +28,6 @@ fmt:std
 </supply>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 a0slot{
 }

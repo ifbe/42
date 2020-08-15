@@ -20,9 +20,6 @@ fmt:std
 
 
 <worker>
-poller{
-fmt:poller
-}
 pulser{
 fmt:pulser
 }

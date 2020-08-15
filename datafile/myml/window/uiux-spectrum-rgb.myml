@@ -35,13 +35,6 @@ fmt:fftrgb
 </artery>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 vidhaha{
 }

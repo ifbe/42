@@ -16,13 +16,6 @@ depth:1024
 </supply>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 viewrect{
 c:0.0, 0.0

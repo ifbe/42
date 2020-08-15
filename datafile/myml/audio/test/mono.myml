@@ -12,13 +12,6 @@ fmt:spk
 </supply>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 (speaker, 0, ctx) -> (monomic, 0, 0)
 </relation>

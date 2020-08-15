@@ -43,13 +43,6 @@ fmt:wnd
 </supply>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 scnslot{
 }

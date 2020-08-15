@@ -40,13 +40,6 @@ fmt:wnd
 </supply>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 g0slot{
 }

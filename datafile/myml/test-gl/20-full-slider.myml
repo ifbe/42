@@ -23,13 +23,6 @@ fmt:dbghex
 </artery>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 rect{
 c:0.0, 0.3

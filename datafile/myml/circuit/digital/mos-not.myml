@@ -32,13 +32,6 @@ fmt:std
 </supply>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 n0slot{
 }

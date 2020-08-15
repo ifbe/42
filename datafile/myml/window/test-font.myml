@@ -20,13 +20,6 @@ fmt:std
 </supply>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 (opengl, 0, 0) -> (font, 0, 0)
 (stdio, 0, dst) -> (font, 0, 0)

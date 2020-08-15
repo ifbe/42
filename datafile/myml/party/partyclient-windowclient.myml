@@ -42,13 +42,6 @@ url:127.0.0.1:9999
 </system>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 skyhaha{
 }

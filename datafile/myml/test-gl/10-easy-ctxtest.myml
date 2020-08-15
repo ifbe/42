@@ -16,13 +16,6 @@ depth:1024
 </supply>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 (opengl, 0, ctx) -> (test, 0, 0)
 </relation>

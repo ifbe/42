@@ -61,13 +61,6 @@ url:0.0.0.0:3292
 </system>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 testpart{
 }

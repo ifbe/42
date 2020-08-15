@@ -62,13 +62,6 @@ url:deepstack.tech:9999
 </system>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 skyhaha{
 }

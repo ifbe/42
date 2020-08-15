@@ -29,13 +29,6 @@ url:deepstack.tech:9999
 </system>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 #client
 (stdio, 0, dst) -> (client, 0, std)

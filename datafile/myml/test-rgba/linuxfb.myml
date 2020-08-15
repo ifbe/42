@@ -25,13 +25,6 @@ fmt:std
 </supply>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <relation>
 (wnd, where, 0) -> (button, 0, 0)
 (std, 0, dst) -> (button, 0, 0)

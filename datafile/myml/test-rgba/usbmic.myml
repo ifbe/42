@@ -19,13 +19,6 @@ depth:1024
 </supply>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 rect{
 c:512, 384, 0

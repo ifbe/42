@@ -25,13 +25,6 @@ fmt:joy
 </supply>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 haha0{
 }

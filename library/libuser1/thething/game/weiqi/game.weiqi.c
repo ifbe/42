@@ -122,8 +122,8 @@ static void weiqi_draw_gl41(
 	for(j=0;j<3;j++){
 		tu[j] = vt[j]/16;
 		tc[j] = vc[j] - tu[j];
-		gl41solid_prism4(ctx, 0xf9d65b, tc, vr, vf, tu);
 	}
+	gl41solid_prism4(ctx, 0xf9d65b, tc, vr, vf, tu);
 
 	for(y=-9;y<10;y++)
 	{

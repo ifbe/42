@@ -3,10 +3,3 @@ window{
 fmt:none
 }
 </supply>
-
-
-<worker>
-poller{
-fmt:poller
-}
-</worker>

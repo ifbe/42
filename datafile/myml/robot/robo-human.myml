@@ -47,13 +47,6 @@ url:0.0.0.0:9999
 </system>
 
 
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <style>
 gndhaha{
 }

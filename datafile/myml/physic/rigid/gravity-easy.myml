@@ -43,9 +43,6 @@ depth:1024
 
 
 <worker>
-poller{
-fmt:poller
-}
 pulser{
 fmt:pulser
 }

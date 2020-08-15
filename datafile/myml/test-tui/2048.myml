@@ -1,10 +1,3 @@
-<worker>
-poller{
-fmt:poller
-}
-</worker>
-
-
 <entity>
 2048{
 fmt:2048
