@@ -562,7 +562,6 @@ int myml_create(struct worker* wrk, void* url, int argc, u8** argv)
 	}
 	else if(argc <= 1){
 		supplycreate(_std_, 0, 0, 0);
-        workercreate(_waiter_, 0, 0, 0);
 	}
 	else{
 		for(j=1;j<argc;j++){

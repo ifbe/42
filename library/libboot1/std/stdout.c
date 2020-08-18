@@ -83,7 +83,7 @@ void printmemory(u8* buf, int len)
 		if(len <= 16)k = len;
 		else k = 16;
 
-		j = mysnprintf(tmp, 80, (void*)"@%-13llx", (u64)buf);
+		j = mysnprintf(tmp, 80, (void*)"@%-12p ", buf);
 		for(;j<80;j++)tmp[j]=0x20;
 
 		for(j=0;j<k;j++)
