@@ -159,7 +159,8 @@ void vkbd_draw_gl41(
 	struct entity* scn, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
-	int x,y,j,dat;
+	int x,y,j;
+	int dat,flag;
 	vec3 tc,tr,tf;
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
@@ -184,18 +185,27 @@ void vkbd_draw_gl41(
 			}
 
 			dat = x+(y<<4);
+			flag = 0;
 			switch(dat){
-				case 0x0:dat = '0';break;
-				case 0x7:dat = 'a';break;
-				case 0x8:dat = 'b';break;
-				case 0x9:dat = 't';break;
-				case 0xa:dat = 'n';break;
-				case 0xd:dat = 'r';break;
-			}
+				case 0x0:dat = '0';flag = 1;break;
+				case 0x7:dat = 'a';flag = 1;break;
+				case 0x8:dat = 'b';flag = 1;break;
+				case 0x9:dat = 't';flag = 1;break;
+				case 0xa:dat = 'n';flag = 1;break;
+				case 0xd:dat = 'r';flag = 1;break;
+			}//switch
 
-			gl41ascii_center(wnd, 0xffffff, tc, tr, tf, dat);
-		}
-	}
+			if(flag){
+				for(j=0;j<3;j++)tc[j] -= vr[j]/32;
+				gl41ascii_center(wnd, 0xffffff, tc, tr, tf, '\\');
+				for(j=0;j<3;j++)tc[j] += vr[j]/16;
+				gl41ascii_center(wnd, 0xffffff, tc, tr, tf, dat);
+			}
+			else{
+				gl41ascii_center(wnd, 0xffffff, tc, tr, tf, dat);
+			}
+		}//forx
+	}//fory
 }
 void vkbd_draw_html(struct entity* win, struct style* sty)
 {

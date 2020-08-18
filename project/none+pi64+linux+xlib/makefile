@@ -38,7 +38,7 @@ exe:
 	$(library)/libhard0/*.o $(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o $(library)/libuser1/*.o \
-	-lwiringPi -lpulse -lpulse-simple -lpthread -lX11 -lm
+	-lpulse -lpulse-simple -lpthread -lX11 -lm
 	#-lasound -lpthread -lX11
 clean:
 	rm -f *.o *.a *.so

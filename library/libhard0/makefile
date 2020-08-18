@@ -57,16 +57,16 @@ arm64:
 
 linuxarm64:arm64
 	$(compiler) $(cflag) linux/linux.wire.bt.c
-	$(compiler) $(cflag) linux/linux.wire.i2c.c
 	$(compiler) $(cflag) linux/linux.wire.gpio.c
+	$(compiler) $(cflag) linux/linux.wire.i2c.c
 	$(compiler) $(cflag) linux/linux.wire.pci.c
 	$(compiler) $(cflag) linux/linux.wire.spi.c
 	$(compiler) $(cflag) linux/linux.wire.usb.c
 	$(compiler) $(cflag) linux/linux.wire.wifi.c
 
 linuxpi64:arm64
-	$(compiler) $(cflag) rpi/rpi.wiringpi.c
 	$(compiler) $(cflag) linux/linux.wire.bt.c
+	$(compiler) $(cflag) linux/linux.wire.gpio.c
 	$(compiler) $(cflag) linux/linux.wire.i2c.c
 	$(compiler) $(cflag) linux/linux.wire.pci.c
 	$(compiler) $(cflag) linux/linux.wire.spi.c

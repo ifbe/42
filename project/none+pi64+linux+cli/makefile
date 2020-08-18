@@ -38,7 +38,7 @@ exe:
 	$(library)/libhard0/*.o $(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o $(library)/libuser1/*.o \
-	-lwiringPi -lpulse -lpulse-simple -lpthread -lm
+	-lpulse -lpulse-simple -lpthread -lm
 clean:
 	make -C $(library) clean
 	rm -f *.o *.a *.so
