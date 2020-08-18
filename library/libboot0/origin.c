@@ -100,8 +100,6 @@ void* origincreate(u64 type, void* func, int argc, u8** argv)
 		tmp = (void*)(0x1000000);
 		birth(tmp);
 
-		supplycreate(_std_, 0, 0, 0);
-
 		tmp->type = type;
 		return tmp;
 	}

@@ -8,8 +8,9 @@ bare:
 	$(compiler) $(cflag) bare/initer.c
 	$(compiler) $(cflag) bare/memory.c
 	$(compiler) $(cflag) bare/barex64/entry.c
-	$(compiler) $(cflag) bare/barex64/serial.c
 	$(compiler) $(cflag) bare/barex64/thread.c
+	$(compiler) $(cflag) bare/barex64/keyboard.c
+	$(compiler) $(cflag) bare/barex64/serial.c
 
 .PHONY:efi
 efi:

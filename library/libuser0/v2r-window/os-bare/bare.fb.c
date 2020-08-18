@@ -4,19 +4,22 @@ static u32* screen = 0;
 
 
 
-void windowread()
+void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-}
-void windowwrite(struct supply* win)
-{
+	//say("wnd=%p,stack=%p\n",wnd,stack);
+	rgbanode_read(wnd,foot, stack,sp, arg,key, buf,len);
+
 	int j;
-	u32* ibuf = win->buf;
+	u32* ibuf = wnd->rgbabuf;
 	u32* obuf = screen;
 	for(j=0;j<1024*768;j++)
 	{
 		obuf = (void*)obuf + 3;
 		*obuf = ibuf[j];
 	}
+}
+void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+{
 }
 void windowlist()
 {
@@ -33,18 +36,18 @@ void windowstart()
 void windowdelete(struct supply* w)
 {
 }
-void windowcreate(struct supply* w)
+void windowcreate(struct supply* wnd)
 {
-	w->fmt = hex64('b','g','r','a','8','8','8','8');
-	w->vfmt = 0;
+	wnd->fmt = _rgba_;
+	wnd->vfmt = hex64('b', 'g', 'r', 'a', '8', '8', '8', '8');
 
-	w->width = 1024;
-	w->height = 768;
+	wnd->width = 1024;
+	wnd->height = 768;
 
-	w->fbwidth = 1024*4;
-	//w->fbheight = 0;
+	wnd->fbwidth = 1024*4;
+	//wnd->fbheight = 0;
 
-	w->buf = (void*)0x2000000;
+	wnd->rgbabuf = (void*)0x2000000;
 }
 
 
@@ -53,7 +56,8 @@ void windowcreate(struct supply* w)
 void initwindow()
 {
 #define screeninfo 0x2000
-	screen = *(u32*)screeninfo;
+	u64 memory = *(u32*)screeninfo;
+	screen = (u32*)memory;
 }
 void freewindow()
 {

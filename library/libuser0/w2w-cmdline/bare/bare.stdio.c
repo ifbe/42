@@ -1,4 +1,5 @@
 #include "libuser.h"
+void termwrite(void*, int);
 
 
 

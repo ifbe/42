@@ -126,6 +126,7 @@ barex64:x64
 	$(compiler) $(cflag) bare/timer/825x.c
 	$(compiler) $(cflag) bare/timer/rtc.c
 	$(compiler) $(cflag) bare/wire/bare.wire.bt.c
+	$(compiler) $(cflag) bare/wire/bare.wire.gpio.c
 	$(compiler) $(cflag) bare/wire/bare.wire.i2c.c
 	$(compiler) $(cflag) bare/wire/bare.wire.spi.c
 	$(compiler) $(cflag) bare/wire/bare.wire.uart.c
