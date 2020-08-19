@@ -27,7 +27,7 @@ int readkbd(u8* buf, int len)
 
 static u8 kbd[9*2] =
 {
-	0x1,0x1b,       //esc
+	0x01,0x1b,       //esc
 	0x47,0x47,      //home
 	0x4f,0x4f,      //end
 	0x49,0x49,      //page up
@@ -91,34 +91,26 @@ void* pollenv()
 	if(buf[0] >= 0x80)return 0;
 
 	//kbd
-	ev->what = 0;
-	ev->why = buf[0];
-	if(ev->what==0)
+	for(j=0;j<9;j++)
 	{
-		for(j=0;j<9;j++)
+		if(buf[0] == kbd[j*2])
 		{
-			if(ev->why == kbd[j*2])
-			{
-				ev->what = 0x64626b;
-				ev->why = kbd[(j*2) + 1];
-				break;
-			}
+			ev->what = _kbd_;
+			ev->why = kbd[(j*2) + 1];
+			return ev;
 		}
 	}
 
 	//char
-	if(ev->what==0)
+	for(j=0;j<41;j++)
 	{
-		for(j=0;j<41;j++)
+		if(buf[0] == ch[j*2])
 		{
-			if(ev->why == ch[j*2])
-			{
-				ev->what = 0x72616863;
-				ev->why = ch[(j*2) + 1];
-				break;
-			}
+			ev->what = _char_;
+			ev->why = ch[(j*2) + 1];
+			return ev;
 		}
 	}
 
-	return ev;
+	return 0;
 }

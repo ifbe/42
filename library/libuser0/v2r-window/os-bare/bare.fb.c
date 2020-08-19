@@ -20,6 +20,8 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 }
 void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	//printmemory(buf, 0x20);
+	rgbanode_write(wnd,0, stack,sp, 0,0, buf,len);
 }
 void windowlist()
 {
