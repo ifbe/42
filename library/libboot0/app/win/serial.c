@@ -534,10 +534,10 @@ int lowlevel_input()
 
 
 
-void deleteserial()
+void freeserial()
 {
 }
-void createserial()
+void initserial()
 {
 	//opened?
 	HWND consolewindow = GetConsoleWindow();

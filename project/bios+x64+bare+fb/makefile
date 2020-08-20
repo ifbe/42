@@ -1,40 +1,25 @@
 library?=../../library
 linker?=ld
+flag="-c -O2 -fPIC -ffreestanding -fno-stack-protector -I.."
 linux:
-	make -s -C $(library)/libboot0 bare \
-	cflag="-c -O2 -fPIC -fno-stack-protector -I.."
-	make -s -C $(library)/libboot1 \
-	cflag="-c -O2 -fPIC -fno-stack-protector -I.."
-	make -s -C $(library)/libhard0 barex64 \
-	cflag="-c -O2 -fPIC -fno-stack-protector -I.."
-	make -s -C $(library)/libhard1 \
-	cflag="-c -O2 -fPIC -fno-stack-protector -I.."
-	make -s -C $(library)/libsoft0 bare \
-	cflag="-c -O2 -fPIC -fno-stack-protector -I.."
-	make -s -C $(library)/libsoft1 \
-	cflag="-c -O2 -fPIC -fno-stack-protector -I.."
-	make -s -C $(library)/libuser0 barefb \
-	cflag="-c -O2 -fPIC -fno-stack-protector -I.."
-	make -s -C $(library)/libuser1 \
-	cflag="-c -O2 -fPIC -fno-stack-protector -I.."
+	make -s -C $(library)/libboot0 cflag=$(flag) bare
+	make -s -C $(library)/libboot1 cflag=$(flag)
+	make -s -C $(library)/libhard0 cflag=$(flag) barex64
+	make -s -C $(library)/libhard1 cflag=$(flag)
+	make -s -C $(library)/libsoft0 cflag=$(flag) bare
+	make -s -C $(library)/libsoft1 cflag=$(flag)
+	make -s -C $(library)/libuser0 cflag=$(flag) barefb
+	make -s -C $(library)/libuser1 cflag=$(flag)
 	make -s link linker=/opt/cross/bin/x86_64-elf-ld
 cross:
-	make -s -C $(library)/libboot0 bare \
-	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I.."
-	make -s -C $(library)/libboot1 \
-	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I.."
-	make -s -C $(library)/libhard0 barex64 \
-	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I.."
-	make -s -C $(library)/libhard1 \
-	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I.."
-	make -s -C $(library)/libsoft0 bare \
-	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I.."
-	make -s -C $(library)/libsoft1 \
-	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I.."
-	make -s -C $(library)/libuser0 barefb \
-	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I.."
-	make -s -C $(library)/libuser1 \
-	compiler="x86_64-elf-gcc" cflag="-c -O2 -fPIC -fno-stack-protector -I.."
+	make -s -C $(library)/libboot0 compiler="x86_64-elf-gcc" cflag=$(flag) bare
+	make -s -C $(library)/libboot1 compiler="x86_64-elf-gcc" cflag=$(flag)
+	make -s -C $(library)/libhard0 compiler="x86_64-elf-gcc" cflag=$(flag) barex64
+	make -s -C $(library)/libhard1 compiler="x86_64-elf-gcc" cflag=$(flag)
+	make -s -C $(library)/libsoft0 compiler="x86_64-elf-gcc" cflag=$(flag) bare
+	make -s -C $(library)/libsoft1 compiler="x86_64-elf-gcc" cflag=$(flag)
+	make -s -C $(library)/libuser0 compiler="x86_64-elf-gcc" cflag=$(flag) barefb
+	make -s -C $(library)/libuser1 compiler="x86_64-elf-gcc" cflag=$(flag)
 	make -s link linker=x86_64-elf-ld
 link:
 	mv $(library)/libboot0/entry.o .

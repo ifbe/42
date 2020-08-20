@@ -4,10 +4,8 @@ void initstdin(void*);
 void freestdout();
 void initstdout(void*);
 //
-void deleteserial();
-void createserial();
-void boarddelete();
-void boardcreate();
+void freeserial();
+void initserial();
 //
 void death();
 void birth(void*);
@@ -28,8 +26,11 @@ void* allocorigin()
 void freeorigin()
 {
 	say("[0,2):freeing origin\n");
+
 	freestdout();
 	freestdin();
+
+	freeserial();
 }
 void initorigin(u8* addr)
 {
@@ -40,8 +41,7 @@ void initorigin(u8* addr)
 	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)ori[j].tier = _ori_;
 
-	createserial();
-	boardcreate();
+	initserial();
 
 	initstdin( addr+0x100000);
 	initstdout(addr+0x180000);

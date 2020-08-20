@@ -1,9 +1,9 @@
 #include "libuser.h"
 #define _gpio_ hex32('g','p','i','o')
-int boardstart(int, int);
-int boardstop(int);
-int boardread(int, int, void*, int);
-int boardwrite(int, int, void*, int);
+int gpiostart(int, int);
+int gpiostop(int);
+int gpioread(int, int, void*, int);
+int gpiowrite(int, int, void*, int);
 
 
 
@@ -39,7 +39,7 @@ static void toycar_update(int L, int R, int el, int er)
     value[ 8] = value[ 9] = el;
     value[10] = value[11] = er;
 
-    for(j=0;j<12;j++)boardwrite(_gpio_, table[j], 0, value[j]);
+    for(j=0;j<12;j++)gpiowrite(_gpio_, table[j], 0, value[j]);
 }
 
 
@@ -80,10 +80,10 @@ int toycar_giving(struct entity* ent,int foot, struct halfrel* stack,int sp, voi
     //do work
     switch(buf[0])
     {
-	case '1':boardwrite(_gpio_, table[ 8], 0, 1);break;
-	case '2':boardwrite(_gpio_, table[ 9], 0, 1);break;
-	case '3':boardwrite(_gpio_, table[10], 0, 1);break;
-	case '4':boardwrite(_gpio_, table[11], 0, 1);break;
+	case '1':gpiowrite(_gpio_, table[ 8], 0, 1);break;
+	case '2':gpiowrite(_gpio_, table[ 9], 0, 1);break;
+	case '3':gpiowrite(_gpio_, table[10], 0, 1);break;
+	case '4':gpiowrite(_gpio_, table[11], 0, 1);break;
 
 	case 'a':toycar_update(1, 0, 1, 1);break;
 	case 'd':toycar_update(0, 1, 1, 1);break;
@@ -118,10 +118,10 @@ void toycar_linkup(struct halfrel* self, struct halfrel* peer)
 void toycar_delete(struct supply* win)
 {
     int j;
-    for(j=0;j<12;j++)boardstop(table[j]);
+    for(j=0;j<12;j++)gpiostop(table[j]);
 }
 void toycar_create(struct supply* win)
 {
     int j;
-    for(j=0;j<12;j++)table[j] = boardstart(name[j], 'o');
+    for(j=0;j<12;j++)table[j] = gpiostart(name[j], 'o');
 }

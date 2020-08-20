@@ -1,4 +1,10 @@
 #include "libuser.h"
+int rgbanode_read(void*,int, void*,int, void*,int, void*,int);
+int rgbanode_write(void*,int, void*,int, void*,int, void*,int);
+
+
+
+
 static u32* screen = 0;
 
 

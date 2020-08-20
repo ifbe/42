@@ -67,9 +67,9 @@ void lowlevel_output(char* buf, int len)
 
 
 
-void deleteserial()
+void freeserial()
 {
 }
-void createserial()
+void initserial()
 {
 }

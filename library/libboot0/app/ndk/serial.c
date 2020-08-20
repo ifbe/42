@@ -46,11 +46,11 @@ int lowlevel_output(char* buf, int len)
 
 
 
-int deleteserial()
+int freeserial()
 {
 	return 0;
 }
-int createserial()
+int initserial()
 {
 	return 0;
 }

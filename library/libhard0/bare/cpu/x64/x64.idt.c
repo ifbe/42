@@ -51,25 +51,25 @@ __attribute__((interrupt)) static void isr_06(void* p)
 __attribute__((interrupt)) static void isr_07(void* p)
 {say("int07!\n");}		//Device Not Available
 __attribute__((interrupt)) static void isr_08(void* p, u64 e)
-{say("int08:%x\n", e);}		//Double Fault
+{say("int08:%llx\n", e);}		//Double Fault
 __attribute__((interrupt)) static void isr_09(void* p)
 {say("int09!\n");}		//Coprocessor Segment Overrun
 __attribute__((interrupt)) static void isr_0a(void* p, u64 e)
-{say("int0a:%x\n", e);}		//Invalid TSS
+{say("int0a:%llx\n", e);}		//Invalid TSS
 __attribute__((interrupt)) static void isr_0b(void* p, u64 e)
-{say("int0b:%x\n", e);}		//Segment Not Present
+{say("int0b:%llx\n", e);}		//Segment Not Present
 __attribute__((interrupt)) static void isr_0c(void* p, u64 e)
-{say("int0c:%x\n", e);}		//Stack-Segment Fault
+{say("int0c:%llx\n", e);}		//Stack-Segment Fault
 __attribute__((interrupt)) static void isr_0d(void* p, u64 e)
-{say("int0d:%x\n", e);}		//General Protection Fault
+{say("int0d:%llx\n", e);}		//General Protection Fault
 __attribute__((interrupt)) static void isr_0e(void* p, u64 e)
-{say("int0e:%x\n", e);}		//Page Fault
+{say("int0e:%llx\n", e);}		//Page Fault
 __attribute__((interrupt)) static void isr_0f(void* p)
 {say("int0f!\n");}		//Reserved
 __attribute__((interrupt)) static void isr_10(void* p)
 {say("int10!\n");}		//x87 Floating-Point Exception
 __attribute__((interrupt)) static void isr_11(void* p, u64 e)
-{say("int11:%x\n", e);}		//Alignment Check
+{say("int11:%llx\n", e);}		//Alignment Check
 __attribute__((interrupt)) static void isr_12(void* p)
 {say("int12!\n");}		//Machine Check
 __attribute__((interrupt)) static void isr_13(void* p)
@@ -95,7 +95,7 @@ __attribute__((interrupt)) static void isr_1c(void* p)
 __attribute__((interrupt)) static void isr_1d(void* p)
 {say("int1d!\n");}		//Reserved
 __attribute__((interrupt)) static void isr_1e(void* p, u64 e)
-{say("int1e:%x\n", e);}		//Security Exception
+{say("int1e:%llx\n", e);}		//Security Exception
 __attribute__((interrupt)) static void isr_1f(void* p)
 {say("int1f!\n");}		//Reserved
 __attribute__((interrupt)) static void isr_20(void* p)

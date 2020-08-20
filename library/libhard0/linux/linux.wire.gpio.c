@@ -1,31 +1,31 @@
 #include "libhard.h"
 
 
-int boardread(int type, int addr, u8* buf, int len)
+int gpioread(int type, int addr, u8* buf, int len)
 {
-	say("@boardread:%x,%x\n", type, addr);
+	say("@gpioread:%x,%x\n", type, addr);
 	return 0;
 }
-int boardwrite(int type, int addr, u8* buf, int len)
+int gpiowrite(int type, int addr, u8* buf, int len)
 {
-	say("@boardwrite:%x,%x,%x,%x\n", type, addr, buf, len);
+	say("@gpiowrite:%x,%x,%x,%x\n", type, addr, buf, len);
 	return 0;
 }
-int boardstart(int name, int mode)
+int gpiostart(int name, int mode)
 {
-	say("@boardstart:%x,%x\n", name, mode);
+	say("@gpiostart:%x,%x\n", name, mode);
 	return 0;
 }
-int boardstop(int pin)
+int gpiostop(int pin)
 {
-	say("@boardstop:%x\n", pin);
+	say("@gpiostop:%x\n", pin);
 	return 0;
 }
-int boarddelete()
+int gpiodelete()
 {
 	return 0;
 }
-int boardcreate()
+int gpiocreate()
 {
 	return 0;
 }

@@ -54,10 +54,10 @@ int lowlevel_output(char* buf, int len)
 
 
 
-void deleteserial()
+void freeserial()
 {
 }
-void createserial()
+void initserial()
 {
 	out8(PORT + 1, 0x00);//Disable all interrupts
 	out8(PORT + 3, 0x80);//Enable DLAB (set baud rate divisor)

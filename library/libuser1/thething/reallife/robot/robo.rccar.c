@@ -1,7 +1,7 @@
 #include "libuser.h"
 #define _car_ hex32('c','a','r',0)
-int boardread(int,int,void*,int);
-int boardwrite(int,int,void*,int);
+int gpioread(int,int,void*,int);
+int gpiowrite(int,int,void*,int);
 
 
 
@@ -134,11 +134,11 @@ static void rccar_event(
 		p = (void*)ev;
 		switch(p[0])
 		{
-			case 'a':boardwrite(_car_, 0, "l", 0);break;
-			case 'd':boardwrite(_car_, 0, "r", 0);break;
-			case 's':boardwrite(_car_, 0, "n", 0);break;
-			case 'w':boardwrite(_car_, 0, "f", 0);break;
-			default:boardwrite(_car_, 0, " ", 0);
+			case 'a':gpiowrite(_car_, 0, "l", 0);break;
+			case 'd':gpiowrite(_car_, 0, "r", 0);break;
+			case 's':gpiowrite(_car_, 0, "n", 0);break;
+			case 'w':gpiowrite(_car_, 0, "f", 0);break;
+			default:gpiowrite(_car_, 0, " ", 0);
 		}
 		return;
 	}
@@ -147,11 +147,11 @@ static void rccar_event(
 	{
 		switch(ev->why)
 		{
-			case 'a':boardwrite(_car_, 0, "l", 0);break;
-			case 'd':boardwrite(_car_, 0, "r", 0);break;
-			case 's':boardwrite(_car_, 0, "n", 0);break;
-			case 'w':boardwrite(_car_, 0, "f", 0);break;
-			default:boardwrite(_car_, 0, " ", 0);
+			case 'a':gpiowrite(_car_, 0, "l", 0);break;
+			case 'd':gpiowrite(_car_, 0, "r", 0);break;
+			case 's':gpiowrite(_car_, 0, "n", 0);break;
+			case 'w':gpiowrite(_car_, 0, "f", 0);break;
+			default:gpiowrite(_car_, 0, " ", 0);
 		}
 		return;
 	}
@@ -163,25 +163,25 @@ static void rccar_event(
 			t = (void*)ev;
 			if(t[3] & joyl_left)		//x-
 			{
-				boardwrite(_car_, 0, "l", 0);
+				gpiowrite(_car_, 0, "l", 0);
 				return;
 			}
 			if(t[3] & joyl_right)		//x+
 			{
-				boardwrite(_car_, 0, "r", 0);
+				gpiowrite(_car_, 0, "r", 0);
 				return;
 			}
 			if(t[3] & joyl_down)		//y-
 			{
-				boardwrite(_car_, 0, "n", 0);
+				gpiowrite(_car_, 0, "n", 0);
 				return;
 			}
 			if(t[3] & joyl_up)			//y+
 			{
-				boardwrite(_car_, 0, "f", 0);
+				gpiowrite(_car_, 0, "f", 0);
 				return;
 			}
-			boardwrite(_car_, 0, " ", 0);
+			gpiowrite(_car_, 0, " ", 0);
 		}
 	}
 }

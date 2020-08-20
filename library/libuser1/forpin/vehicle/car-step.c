@@ -1,9 +1,9 @@
 #include "libuser.h"
 #define _gpio_ hex32('g','p','i','o')
-int boardstart(int, int);
-int boardstop(int);
-int boardread(int, int, void*, int);
-int boardwrite(int, int, void*, int);
+int gpiostart(int, int);
+int gpiostop(int);
+int gpioread(int, int, void*, int);
+int gpiowrite(int, int, void*, int);
 
 
 
@@ -31,14 +31,14 @@ static int expect[9];
 static void stepcar_test(int a)
 {
 	int j;
-	boardwrite(_gpio_, table[a], 0, 0);
+	gpiowrite(_gpio_, table[a], 0, 0);
 
 	for(j=0;j<200*32;j++)
 	{
-		boardwrite(_gpio_, table[a+1], 0, 1);
+		gpiowrite(_gpio_, table[a+1], 0, 1);
 		sleep_us(100);
 
-		boardwrite(_gpio_, table[a+1], 0, 0);
+		gpiowrite(_gpio_, table[a+1], 0, 0);
 		sleep_us(100);
 	}
 }
@@ -51,20 +51,20 @@ static void stepcar_update(int a, int b, int c, int d)
 	actual[4] = c;
 	actual[6] = d;
 
-	for(j=0;j<8;j+=2)boardwrite(_gpio_, table[j], 0, actual[j]);
+	for(j=0;j<8;j+=2)gpiowrite(_gpio_, table[j], 0, actual[j]);
 	for(k=0;k<200*32;k++)
 	{
-		for(j=1;j<8;j+=2)boardwrite(_gpio_, table[j], 0, 1);
+		for(j=1;j<8;j+=2)gpiowrite(_gpio_, table[j], 0, 1);
 		sleep_us(100);
 
-		for(j=1;j<8;j+=2)boardwrite(_gpio_, table[j], 0, 0);
+		for(j=1;j<8;j+=2)gpiowrite(_gpio_, table[j], 0, 0);
 		sleep_us(100);
 	}
 }
 static void stepcar_status(int EN)
 {
 	actual[8] = EN;
-	boardwrite(_gpio_, table[8], 0, EN);
+	gpiowrite(_gpio_, table[8], 0, EN);
 }
 
 
@@ -116,12 +116,12 @@ void stepcar_linkup(struct halfrel* self, struct halfrel* peer)
 int stepcar_delete(struct supply* win)
 {
 	int j;
-	for(j=0;j<9;j++)boardstop(table[j]);
+	for(j=0;j<9;j++)gpiostop(table[j]);
 	return 0;
 }
 int stepcar_create(struct supply* win)
 {
 	int j;
-	for(j=0;j<9;j++)table[j] = boardstart(name[j], 'o');
+	for(j=0;j<9;j++)table[j] = gpiostart(name[j], 'o');
 	return 0;
 }

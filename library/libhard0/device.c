@@ -1,4 +1,7 @@
 #include "libhard.h"
+//gpio
+int gpiodelete();
+int gpiocreate();
 //i2c
 int i2c_create(void*, int, int, u8**);
 int i2c_delete(int);
@@ -136,6 +139,8 @@ int devicesearch(u8* buf, int len)
 void freedevice()
 {
 	say("[4,6):freeing device\n");
+
+	gpiodelete();
 }
 void initdevice(u8* addr)
 {
@@ -147,7 +152,7 @@ void initdevice(u8* addr)
 	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)dev[j].tier = _dev_;
 
-	//devicecreate(_ahci_, 0);
-	//devicecreate(_xhci_, 0);
+	gpiocreate();
+
 	say("[4,6):inited device\n");
 }

@@ -8,7 +8,7 @@
 
 
 
-int boardread(int type, int addr, u8* buf, int len)
+int gpioread(int type, int addr, u8* buf, int len)
 {
 	switch(type){
 	case _gpio_:{
@@ -21,9 +21,9 @@ int boardread(int type, int addr, u8* buf, int len)
 	}//switch
 	return 0;
 }
-int boardwrite(int type, int addr, u8* buf, int len)
+int gpiowrite(int type, int addr, u8* buf, int len)
 {
-	//say("@boardwrite: %.4s, %d, %d\n", &type, addr, len);
+	//say("@gpiowrite: %.4s, %d, %d\n", &type, addr, len);
 	switch(type){
 	case _gpio_:{
 		digitalWrite(addr, len);
@@ -43,12 +43,12 @@ int boardwrite(int type, int addr, u8* buf, int len)
 
 
 
-int boardstop(int pin)
+int gpiostop(int pin)
 {
 	pinMode(pin, INPUT);
 	return 0;
 }
-int boardstart(int name, int mode)
+int gpiostart(int name, int mode)
 {
 	int pin = -1;
 	switch(name)
@@ -77,7 +77,7 @@ int boardstart(int name, int mode)
 		case hex32('w','s', 0, 0):pin = 29;break;
 		default:return -1;
 	}
-	say("@boardstart: name=%x,mode=%x,pin=%d\n", name, mode, pin);
+	say("@gpiostart: name=%x,mode=%x,pin=%d\n", name, mode, pin);
 
 	switch(mode)
 	{
@@ -99,11 +99,11 @@ int boardstart(int name, int mode)
 	}
 	return pin;
 }
-int boarddelete()
+int gpiodelete()
 {
 	return 0;
 }
-int boardcreate()
+int gpiocreate()
 {
 	return wiringPiSetup();
 }
