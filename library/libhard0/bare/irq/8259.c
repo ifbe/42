@@ -45,8 +45,6 @@ void init8259()
 {
 	say("@init8259\n");
 
-	asm("cli");
-
 	//icw1
 	out8(0x20, 0x11);
 	out8(0xa0, 0x11);

@@ -1,9 +1,10 @@
 #include "libboot.h"
 #define _2048_ hex32('2','0','4','8')
 #define _term_ hex32('t','e','r','m')
-void init8259();
-void initrtc();
 void initidt();
+void init8259();	//interrupt controller
+void init825x();	//timer.pit
+void initrtc(); 	//timer.rtc
 void* allocstyle();
 
 
@@ -11,9 +12,15 @@ void* allocstyle();
 
 int kernel_create(struct worker* wrk, void* url, int argc, u8** argv)
 {
-	init8259();
-	initrtc();
+	asm("cli");
 	initidt();
+	init8259();
+	init825x();
+	initrtc();
+	asm("sti");
+
+	asm("int3");
+	asm("int $0x80");
 
 
 	//screen

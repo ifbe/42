@@ -30,6 +30,13 @@ struct idt_entry{
 	u32 byte47;
 	u32 what;
 };
+struct int_frame{
+	u64 ip;
+	u64 cs;
+	u64 flag;
+	u64 sp;
+	u64 ss;
+};
 
 
 
@@ -40,8 +47,10 @@ __attribute__((interrupt)) static void isr_01(void* p)
 {say("int01!\n");}		//Debug
 __attribute__((interrupt)) static void isr_02(void* p)
 {say("int02!\n");}		//Non-maskable Interrupt
-__attribute__((interrupt)) static void isr_03(void* p)
-{say("int03!\n");}		//Breakpoint
+__attribute__((interrupt)) static void isr_03(struct int_frame* p)
+{//Breakpoint
+	say("int03: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
+}
 __attribute__((interrupt)) static void isr_04(void* p)
 {say("int04!\n");}		//Overflow
 __attribute__((interrupt)) static void isr_05(void* p)
@@ -100,7 +109,7 @@ __attribute__((interrupt)) static void isr_1f(void* p)
 {say("int1f!\n");}		//Reserved
 __attribute__((interrupt)) static void isr_20(void* p)
 {
-	say("825x!\n");
+	//say("825x!\n");
 	isr_825x();
 	endofirq(0);
 }
@@ -116,9 +125,9 @@ __attribute__((interrupt)) static void isr_28(void* p)
 	isr_rtc();
 	endofirq(8);
 }
-__attribute__((interrupt)) static void isr_80(void* p)
+__attribute__((interrupt)) static void isr_80(struct int_frame* p)
 {
-	say("int80!\n");
+	say("int80: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 }
 
 
@@ -139,12 +148,11 @@ void interruptinstall(int num, u64 isr)
 }
 void initidt()
 {
+	say("@initidt\n");
+
 	int j;
 	u64 temp = idthome;
 	u8* addr = (void*)temp;
-	say("@initidt\n");
-
-	asm("cli");
 	for(j=0;j<0x1000;j++)addr[j] = 0;
 
 	//exception
@@ -191,6 +199,4 @@ void initidt()
 
 	//
 	lidt(addr, 0xfff);
-	asm("int3");
-	asm("sti");
 }
