@@ -279,10 +279,17 @@ static void terminal_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,in
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 	switch(wnd->fmt){
-	case _gl41full_:{
-		terminal_read_bywnd(ent,slot, wnd,area);break;
-	}
-	default:terminal_read_bycam(ent,foot, stack,sp, arg,key);
+	case _rgba_:
+		terminal_draw_pixel(ent,slot, wnd,area);
+		break;
+	case _dx11full_:
+	case _mt20full_:
+	case _gl41full_:
+	case _vk12full_:
+		terminal_read_bywnd(ent,slot, wnd,area);
+		break;
+	default:
+		terminal_read_bycam(ent,foot, stack,sp, arg,key);
 	}
 }
 static void terminal_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
@@ -298,9 +305,12 @@ static void terminal_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,in
 	}
 
 	switch(wnd->fmt){
-	case _gl41full_:{
-		terminal_write_bywnd(ent,slot, stack,sp, buf,len);return;
-	}
+	case _dx11full_:
+	case _mt20full_:
+	case _gl41full_:
+	case _vk12full_:
+		terminal_write_bywnd(ent,slot, stack,sp, buf,len);
+		return;
 	}
 }
 static void terminal_discon(struct halfrel* self, struct halfrel* peer)

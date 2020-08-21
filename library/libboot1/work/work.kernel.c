@@ -1,5 +1,6 @@
 #include "libboot.h"
-#define _name_ hex32('2','0','4','8')
+#define _2048_ hex32('2','0','4','8')
+#define _term_ hex32('t','e','r','m')
 void init8259();
 void initrtc();
 void initidt();
@@ -14,27 +15,42 @@ int kernel_create(struct worker* wrk, void* url, int argc, u8** argv)
 	initrtc();
 	initidt();
 
+
+	//screen
 	struct supply* wnd = supplycreate(_wnd_, 0, 0, 0);
-	struct entity* ent = entitycreate(_name_,0, 0, 0);
+	struct entity* dbg = entitycreate(_term_,0, 0, 0);
+	struct entity* ent = entitycreate(_2048_,0, 0, 0);
+
 	struct style* aaa = allocstyle();
 	struct style* bbb = allocstyle();
-
-	aaa->fshape.vc[0] = 256;
-	aaa->fshape.vc[1] = 256;
-	aaa->fshape.vr[0] = 256;
+	aaa->fshape.vc[0] = 512;
+	aaa->fshape.vc[1] = 384;
+	aaa->fshape.vr[0] = 512;
 	aaa->fshape.vr[1] = 0;
 	aaa->fshape.vf[0] = 0;
-	aaa->fshape.vf[1] = 256;
+	aaa->fshape.vf[1] = 384;
 
-	struct relation* rel = relationcreate(ent, bbb, _ent_, 0, wnd, aaa, _ent_, 0);
+	struct style* ccc = allocstyle();
+	struct style* ddd = allocstyle();
+	ccc->fshape.vc[0] = 768;
+	ccc->fshape.vc[1] = 256;
+	ccc->fshape.vr[0] = 256;
+	ccc->fshape.vr[1] = 0;
+	ccc->fshape.vf[0] = 0;
+	ccc->fshape.vf[1] = 256;
+
+	struct relation* rel = relationcreate(dbg, bbb, _ent_, 0, wnd, aaa, _ent_, 0);
 	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
 
+	rel = relationcreate(ent, ddd, _ent_, 0, wnd, ccc, _ent_, 0);
+	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
+
+
+	//loop
 	struct event* ev;
 	struct halfrel stack[0x80];
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
-
-	//forever
 	while(1)
 	{
 		//draw frame

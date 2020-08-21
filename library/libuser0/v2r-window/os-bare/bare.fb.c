@@ -5,7 +5,23 @@ int rgbanode_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
+struct fbinfo{
+	u32 buf;
+	u32 pad0;
+
+	u32 fmt;
+	u32 pad1;
+
+	u16 w;
+	u16 zerow;
+	u32 padd2;
+
+	u16 h;
+	u16 zeroh;
+	u32 padd3;
+};
 static u32* screen = 0;
+static u32 format = 4;
 
 
 
@@ -20,7 +36,7 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 	u32* obuf = screen;
 	for(j=0;j<1024*768;j++)
 	{
-		obuf = (void*)obuf + 3;
+		obuf = (void*)obuf + format;
 		*obuf = ibuf[j];
 	}
 }
@@ -64,8 +80,10 @@ void windowcreate(struct supply* wnd)
 void initwindow()
 {
 #define screeninfo 0x2000
-	u64 memory = *(u32*)screeninfo;
-	screen = (u32*)memory;
+	struct fbinfo* fb = (struct fbinfo*)0x2000;
+
+	screen = (u32*)(u64)(fb->buf);
+	format = fb->fmt;
 }
 void freewindow()
 {
