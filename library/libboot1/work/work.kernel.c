@@ -1,10 +1,6 @@
 #include "libboot.h"
 #define _2048_ hex32('2','0','4','8')
 #define _term_ hex32('t','e','r','m')
-void initidt();
-void init8259();	//interrupt controller
-void init825x();	//timer.pit
-void initrtc(); 	//timer.rtc
 void* allocstyle();
 
 

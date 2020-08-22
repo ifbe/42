@@ -2,6 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+void printmemory(void*, int);
+void say(void*, ...);
 
 
 
@@ -15,12 +17,12 @@ static u8 bitmap[1024] = {
 int memory_ensure(int j, int cnt)
 {
 	int k;
-	for(k=j;k<j+cnt;j++){
+	for(k=j;k<j+cnt;k++){
 		if(bitmap[k])return 0;
 	}
 
 	for(k=0;k<cnt;k++){
-		bitmap[j+k] = cnt-j;
+		bitmap[j+k] = j;
 	}
 	return 1;
 }
@@ -52,7 +54,14 @@ int memorydelete(void* addr)
 	j = (u64)addr;
 	j >>= 20;
 
-	for(k=j;k<j+bitmap[j];k++)bitmap[k] = 0;
+	//for(k=j;k<j+bitmap[j];k++)bitmap[k] = 0;
+	k = bitmap[j];
+	if(0 == k)return 0;
+
+	while(bitmap[j] == k){
+		bitmap[j] = 0;
+		j++;
+	}
 	return 0;
 }
 void* memorysetup(u8* addr, int ch, int len)

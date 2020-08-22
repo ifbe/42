@@ -4,6 +4,8 @@ void initstdin(void*);
 void freestdout();
 void initstdout(void*);
 //
+void freerunenv();
+void initrunenv();
 void freeserial();
 void initserial();
 //
@@ -30,6 +32,7 @@ void freeorigin()
 	freestdout();
 	freestdin();
 
+	freerunenv();
 	freeserial();
 }
 void initorigin(u8* addr)
@@ -42,6 +45,7 @@ void initorigin(u8* addr)
 	for(j=0;j<max;j++)ori[j].tier = _ori_;
 
 	initserial();
+	initrunenv();
 
 	initstdin( addr+0x100000);
 	initstdout(addr+0x180000);

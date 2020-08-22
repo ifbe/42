@@ -12,3 +12,13 @@ void* waitenv()
 {
 	return 0;
 }
+
+
+
+
+void freerunenv()
+{
+}
+void initrunenv()
+{
+}

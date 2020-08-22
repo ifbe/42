@@ -10,6 +10,7 @@ bare:
 	$(compiler) $(cflag) bare/barex64/entry.c
 	$(compiler) $(cflag) bare/barex64/thread.c
 	$(compiler) $(cflag) bare/barex64/keyboard.c
+	$(compiler) $(cflag) bare/barex64/runenv.c
 	$(compiler) $(cflag) bare/barex64/serial.c
 
 .PHONY:efi
@@ -19,6 +20,7 @@ efi:
 	$(compiler) $(cflag) bare/initer.c
 	$(compiler) $(cflag) bare/memory.c
 	$(compiler) $(cflag) bare/efi/entry.c
+	$(compiler) $(cflag) bare/efi/runenv.c
 	$(compiler) $(cflag) bare/efi/serial.c
 	$(compiler) $(cflag) bare/efi/thread.c
 
@@ -29,7 +31,7 @@ none:
 	$(compiler) $(cflag) app/initer.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/none/entry.c
-	$(compiler) $(cflag) app/none/envev.c
+	$(compiler) $(cflag) app/none/runenv.c
 	$(compiler) $(cflag) app/none/serial.c
 	$(compiler) $(cflag) app/none/thread.c
 
@@ -40,7 +42,7 @@ wincmd:
 	$(compiler) $(cflag) app/initer.c
 	$(compiler) $(cflag) app/memory.c
 	$(compiler) $(cflag) app/win/entry.c
-	$(compiler) $(cflag) app/win/envev.c
+	$(compiler) $(cflag) app/win/runenv.c
 	$(compiler) $(cflag) app/win/serial.c
 	$(compiler) $(cflag) app/win/thread.c
 
