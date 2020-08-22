@@ -409,10 +409,18 @@ static void the2048_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _tui_:the2048_draw_tui(ent,slot, wnd,area);break;
-	case _rgba_:the2048_draw_pixel(ent,slot, wnd,area);break;
-	case _htmlroot_:the2048_draw_html(ent,slot, wnd,area);break;
-	default:the2048_read_bycam(ent,foot, stack,sp, arg,key);break;
+	case _tui_:
+		the2048_draw_tui(ent,slot, wnd,area);
+		break;
+	case _rgba_:
+		the2048_draw_pixel(ent,slot, wnd,area);
+		break;
+	case _htmlroot_:
+		the2048_draw_html(ent,slot, wnd,area);
+		break;
+	default:
+		the2048_read_bycam(ent,foot, stack,sp, arg,key);
+		break;
 	}
 }
 static void the2048_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

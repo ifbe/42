@@ -1,14 +1,6 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC
 
-.PHONY:efi
-efi:
-	$(compiler) $(cflag) efi/efi.wire.bt.c
-	$(compiler) $(cflag) efi/efi.wire.i2c.c
-	$(compiler) $(cflag) efi/efi.wire.spi.c
-	$(compiler) $(cflag) efi/efi.wire.usb.c
-	$(compiler) $(cflag) efi/efi.wire.wifi.c
-
 .PHONY:mips
 mips:
 	$(compiler) $(cflag) bare/cpu/mips/mips.fp.c
@@ -131,6 +123,26 @@ barex64:x64
 	$(compiler) $(cflag) bare/wire/bare.wire.uart.c
 	$(compiler) $(cflag) bare/wire/bare.wire.usb.c
 	$(compiler) $(cflag) bare/wire/bare.wire.wifi.c
+
+.PHONY:efix64
+efix64:x64
+	$(compiler) $(cflag) bare/cpu/x64/x64.asm.c
+	$(compiler) $(cflag) bare/cpu/x64/x64.page.c
+	$(compiler) $(cflag) bare/cpu/x64/x64.gdt.c
+	$(compiler) $(cflag) -mgeneral-regs-only -mno-red-zone bare/cpu/x64/x64.idt.c
+	$(compiler) $(cflag) bare/irq/8259.c
+	#$(compiler) $(cflag) bare/irq/apic.c
+	$(compiler) $(cflag) bare/bus/input/8042.c
+	$(compiler) $(cflag) bare/bus/pci/pci.c
+	$(compiler) $(cflag) bare/timer/825x.c
+	$(compiler) $(cflag) bare/timer/rtc.c
+	$(compiler) $(cflag) efi/efi.wire.bt.c
+	$(compiler) $(cflag) efi/efi.wire.gpio.c
+	$(compiler) $(cflag) efi/efi.wire.i2c.c
+	$(compiler) $(cflag) efi/efi.wire.spi.c
+	$(compiler) $(cflag) efi/efi.wire.uart.c
+	$(compiler) $(cflag) efi/efi.wire.usb.c
+	$(compiler) $(cflag) efi/efi.wire.wifi.c
 
 .PHONY:linuxx64
 linuxx64:x64

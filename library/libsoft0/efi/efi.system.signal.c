@@ -22,3 +22,11 @@ void createsignal()
 void deletesignal()
 {
 }
+
+
+void freesignal()
+{
+}
+void initsignal()
+{
+}

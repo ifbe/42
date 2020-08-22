@@ -62,4 +62,14 @@ void birth(void* addr)
 	//libuser
 	initsupply(addr+0xc00000);
 	initentity(addr+0xe00000);
+
+	asm("cli");
+	initidt();
+	init8259();
+	init825x();
+	initrtc();
+	asm("sti");
+
+	asm("int3");
+	asm("int $0x80");
 }

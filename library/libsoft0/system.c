@@ -324,7 +324,7 @@ void* systemsearch(u8* buf, int len)
 
 void freesystem()
 {
-	say("[8,9):freeing system\n");
+	say("[8,a):system freeing\n");
 
 	freesocket();
 	freeuart();
@@ -332,9 +332,13 @@ void freesystem()
 	freewatcher();
 	freesignal();
 	freerandom();
+
+	say("[8,a):system freeed\n");
 }
 void initsystem(u8* addr)
 {
+	say("[8,a):system initing\n");
+
 	int j;
 	obj = (void*)(addr+0x000000);
 	ppp = (void*)(addr+0x100000);
@@ -350,5 +354,5 @@ void initsystem(u8* addr)
 	inituart(addr);
 	initsocket(addr);
 
-	say("[8,a):inited system\n");
+	say("[8,a):system inited\n");
 }

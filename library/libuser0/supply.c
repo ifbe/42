@@ -450,15 +450,19 @@ void* supplysearch(u8* buf, int len)
 
 void freesupply()
 {
-	say("[c,e):freeing supply\n");
+	say("[c,e):supply freeing\n");
 
 	freewindow();
 	freetray();
 	freestd();
 	freejoy();
+
+	say("[c,e):supply freeed\n");
 }
 void initsupply(u8* addr)
 {
+	say("[c,e):supply initing\n");
+
 	int j;
 	supply = (void*)(addr+0x000000);
 	pinid = (void*)(addr+0x100000);
@@ -472,5 +476,5 @@ void initsupply(u8* addr)
 	inittray(supply);
 	initjoy(supply);
 
-	say("[c,e):inited supply\n");
+	say("[c,e):supply inited\n");
 }

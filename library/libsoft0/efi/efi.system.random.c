@@ -13,3 +13,11 @@ void createrandom()
 void deleterandom()
 {
 }
+
+
+void freerandom()
+{
+}
+void initrandom()
+{
+}

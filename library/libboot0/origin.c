@@ -25,7 +25,7 @@ void* allocorigin()
 }
 void freeorigin()
 {
-	say("[0,2):freeing origin\n");
+	say("[0,2):origin freeing\n");
 
 	freestdout();
 	freestdin();
@@ -46,7 +46,7 @@ void initorigin(u8* addr)
 	initstdin( addr+0x100000);
 	initstdout(addr+0x180000);
 
-	say("[0,2):inited origin\n");
+	say("[0,2):origin inited\n");
 }
 
 
@@ -99,6 +99,7 @@ void* origincreate(u64 type, void* func, int argc, u8** argv)
 	case _efimain_:{
 		tmp = (void*)(0x1000000);
 		birth(tmp);
+		say("type=%.8s, func@%p, argc=%d, argv@%p\n", &type, func, argc, argv);
 
 		tmp->type = type;
 		return tmp;

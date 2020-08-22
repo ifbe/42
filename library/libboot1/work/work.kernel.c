@@ -12,17 +12,6 @@ void* allocstyle();
 
 int kernel_create(struct worker* wrk, void* url, int argc, u8** argv)
 {
-	asm("cli");
-	initidt();
-	init8259();
-	init825x();
-	initrtc();
-	asm("sti");
-
-	asm("int3");
-	asm("int $0x80");
-
-
 	//screen
 	struct supply* wnd = supplycreate(_wnd_, 0, 0, 0);
 	struct entity* dbg = entitycreate(_term_,0, 0, 0);

@@ -1,0 +1,6 @@
+void freewatcher()
+{
+}
+void initwatcher()
+{
+}

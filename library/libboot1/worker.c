@@ -198,13 +198,17 @@ int workersearch(u8* buf, int len)
 
 void freeworker()
 {
-	say("[2,4):freeing worker\n");
+	say("[2,4):worker freeing\n");
 
 	freestdev();
 	freestdrel();
+
+	say("[2,4):worker freeed\n");
 }
 void initworker(u8* addr)
 {
+	say("[2,4):worker initing\n");
+
 	int j;
 	wrk = (void*)(addr+0x000000);
 
@@ -218,5 +222,5 @@ void initworker(u8* addr)
 	initpoller(addr - 0x200000);
 	initrealer(addr - 0x200000);
 
-	say("[2,4):inited worker\n");
+	say("[2,4):worker inited\n");
 }

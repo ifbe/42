@@ -138,12 +138,16 @@ int devicesearch(u8* buf, int len)
 
 void freedevice()
 {
-	say("[4,6):freeing device\n");
+	say("[4,6):device freeing\n");
 
 	gpiodelete();
+
+	say("[4,6):device freeed\n");
 }
 void initdevice(u8* addr)
 {
+	say("[4,6):device initing\n");
+
 	int j;
 	dev = (void*)(addr+0x000000);
 	aaa = (void*)(addr+0x100000);
@@ -154,5 +158,5 @@ void initdevice(u8* addr)
 
 	gpiocreate();
 
-	say("[4,6):inited device\n");
+	say("[4,6):device inited\n");
 }

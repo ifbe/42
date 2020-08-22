@@ -31,6 +31,14 @@ int uart_linkup(char* p)
 {
 	return 0;
 }
+int uart_delete()
+{
+	return 0;
+}
+int uart_create()
+{
+	return 0;
+}
 
 
 

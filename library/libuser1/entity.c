@@ -931,7 +931,8 @@ void* entitysearch(u8* buf, int len)
 
 void freeentity()
 {
-	say("[e,f):freeing entity\n");
+	say("[e,f):entity freeing\n");
+
 	mind_free();
 	rule_free();
 	thing_free();
@@ -942,9 +943,13 @@ void freeentity()
 
 	style = 0;
 	entity = 0;
+
+	say("[e,f):entity freeed\n");
 }
 void initentity(u8* addr)
 {
+	say("[e,f):entity initing\n");
+
 	int j;
 	entity = (void*)(addr+0x000000);
 	style = (void*)(addr+0x100000);
@@ -960,5 +965,6 @@ void initentity(u8* addr)
 	thing_init(addr);
 	rule_init(addr);
 	mind_init(addr);
-	say("[e,f):inited entity\n");
+
+	say("[e,f):entity inited\n");
 }

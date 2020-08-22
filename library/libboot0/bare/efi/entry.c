@@ -1,12 +1,8 @@
 #include <efi.h>
 #include <efilib.h>
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
-#define hex16(a,b) (a | (b<<8))
-#define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
-void main(int argc, void* argv);
+#include "libboot.h"
+#define MEMMAP_SIZE 1024
+static UINT8 memmap[MEMMAP_SIZE * sizeof(EFI_MEMORY_DESCRIPTOR)];
 
 
 
@@ -19,13 +15,42 @@ EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *table)
 	H = handle;
 	T = table;
 
-	ret = table->ConOut->OutputString(table->ConOut, L"42!!\r\n");
+	int ret = table->ConOut->OutputString(table->ConOut, L"42!!\r\n");
 	if(EFI_ERROR(ret))return ret;
 
 	ret = table->ConIn->Reset(table->ConIn, FALSE);
 	if(EFI_ERROR(ret))return ret;
 
-	main(0, 0);
+
+	void* all = origincreate(_efimain_, efi_main, 0, 0);
+
+    UINTN memmap_size = MEMMAP_SIZE;
+    UINTN map_key;
+	UINTN descriptor_size;
+    UINT32 descriptor_version;
+	ret = T->BootServices->GetMemoryMap(
+		&memmap_size,
+		(EFI_MEMORY_DESCRIPTOR*)memmap,
+		&map_key,
+		&descriptor_size,
+		&descriptor_version
+	);
+    if(EFI_SUCCESS != ret){
+		say("error:%d@GetMemoryMap\n", ret);
+	}
+
+	ret = T->BootServices->ExitBootServices(handle, map_key);
+	if(EFI_SUCCESS != ret){
+		say("error:%d@ExitBootServices\n", ret);
+	}
+	H = 0;
+	T = 0;
+
+
+	void* wrk = workercreate(_kernel_, 0, 0, 0);
+	workerdelete(wrk);
+	origindelete(all);
+
 	return EFI_SUCCESS;
 }
 void gethandleandtable(void** handle, void** table)
@@ -40,6 +65,9 @@ void atexit(){}
 
 int lowlevel_input(void* buf)
 {
+	if(0==H)return 0;
+	if(0==T)return 0;
+
 	int ret;
 	while(1)
 	{
@@ -47,8 +75,11 @@ int lowlevel_input(void* buf)
 		if(ret == EFI_SUCCESS)return 1;
 	}
 }
-void lowlevel_output(char* buf, int len)
+int lowlevel_output(char* buf, int len)
 {
+	if(0==H)return 0;
+	if(0==T)return 0;
+
 	int j;
 	unsigned short temp[2] = {0,0};
 	for(j=0;j<len;j++)
@@ -63,11 +94,12 @@ void lowlevel_output(char* buf, int len)
 			T->ConOut->OutputString(T->ConOut, temp);
 		}
 	}
+	return 0;
 }
 
 
 
-
+/*
 void* birth()
 {
 	int j;
@@ -78,13 +110,16 @@ void* birth()
 }
 void death()
 {
-}
+}*/
 
 
 
 
 void* pollenv()
 {
+	if(0==H)return 0;
+	if(0==T)return 0;
+
 	int ret = T->ConIn->ReadKeyStroke(T->ConIn, (void*)ev);
 	if(ret != EFI_SUCCESS)return 0;
 
@@ -129,7 +164,7 @@ void* waitenv()
 
 
 
-
+/*
 int arg2utf8(u8* src, u8* dst)
 {
 	int j = 0;
@@ -141,4 +176,4 @@ int arg2utf8(u8* src, u8* dst)
 
 	dst[j] = 0;
 	return j;
-}
+}*/
