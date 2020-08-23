@@ -143,11 +143,11 @@ int bootservice_graphic()
 	while(1){
 		ret = gop->QueryMode(gop, num, &size, &info);
 		if(ret != EFI_SUCCESS)break;
-
-		if((1 == info->HorizontalResolution) && (768 == info->VerticalResolution)){
+/*
+		if((1024 == info->HorizontalResolution) && (768 == info->VerticalResolution)){
 			chosen = num;
 		}
-
+*/
 		say("%d: %d,%d,%d,%x\n",
 			num,
 			info->HorizontalResolution,
@@ -176,13 +176,6 @@ int bootservice_graphic()
 	h = info->VerticalResolution;
 	fbw = info->PixelsPerScanLine;
 	//fbh = ?
-	say("cur: buf=%llx,len=%x\n", gop->Mode->FrameBufferBase, gop->Mode->FrameBufferSize);
-	say("cur: fmt=%x,inf=%x, w=%d,h=%d, fbw=%d,fbh=%d\n",
-		gop->Mode->Info->PixelFormat, gop->Mode->Info->PixelInformation,
-		gop->Mode->Info->HorizontalResolution, gop->Mode->Info->VerticalResolution,
-		gop->Mode->Info->PixelsPerScanLine, 0
-		//gop->Mode->Info->Version
-	);
 
 
 	//some uefi are buggy, don't setmode!
@@ -195,17 +188,18 @@ int bootservice_graphic()
 
 	//preserve infomation
 	if(gop->Mode){
-		say("new: buf=%llx,len=%x\n", gop->Mode->FrameBufferBase, gop->Mode->FrameBufferSize);
+		say("buf=%llx,len=%x\n", gop->Mode->FrameBufferBase, gop->Mode->FrameBufferSize);
 		screen = (void*)(gop->Mode->FrameBufferBase);
 
 		if(gop->Mode->Info){
-			say("new: fmt=%x,inf=%x, w=%d,h=%d, fbw=%d,fbh=%d\n",
+			say("fmt=%x,inf=%x, w=%d,h=%d, fbw=%d,fbh=%d\n",
 				gop->Mode->Info->PixelFormat, gop->Mode->Info->PixelInformation,
 				gop->Mode->Info->HorizontalResolution, gop->Mode->Info->VerticalResolution,
 				gop->Mode->Info->PixelsPerScanLine, 0
 				//gop->Mode->Info->Version
 			);
-			pix = &(gop->Mode->Info->PixelInformation);
+
+			pix = &gop->Mode->Info->PixelInformation;
 			if(pix->ReservedMask == 0){
 				vfmt = _bgra8880_;
 				fbw *= 3;
