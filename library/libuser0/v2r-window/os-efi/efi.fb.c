@@ -11,8 +11,8 @@ int rgbanode_write(void*,int, void*,int, void*,int, void*,int);
 
 
 
-static void* screen = 0;
-static u64 vfmt;
+static void* lfb = 0;
+static u64 fmt;
 static int w = 0;
 static int h = 0;
 static int fbw = 0;
@@ -23,7 +23,7 @@ static int fbh = 0;
 
 void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(0 == screen)return;
+	if(0 == lfb)return;
 	rgbanode_read(wnd,foot, stack,sp, arg,key, buf,len);
 
 	int bpp;
@@ -42,7 +42,7 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 
 	int j;
 	u32* ibuf = wnd->rgbabuf;
-	u32* obuf = screen;
+	u32* obuf = lfb;
 	for(j=0;j<w*h-1;j++)
 	{
 		*obuf = ibuf[j];
@@ -71,12 +71,12 @@ void windowdelete(struct supply* wnd)
 }
 void windowcreate(struct supply* wnd)
 {
-	getscreen(&screen, &vfmt, &w, &h, &fbw, &fbh);
-	say("buf=%p,fmt=%llx, w=%d,h=%d, fbw=%d,fbh=%d\n", screen,vfmt, w,h, fbw,fbh);
+	getscreen(&lfb, &fmt, &w, &h, &fbw, &fbh);
+	say("lfb=%p,fmt=%.8s, w=%d,h=%d, fbw=%d,fbh=%d\n", lfb,&fmt, w,h, fbw,fbh);
 
 	//wnd data
 	wnd->fmt = _rgba_;
-	wnd->vfmt = vfmt;
+	wnd->vfmt = fmt;
 
 	wnd->width = w;
 	wnd->height = h;

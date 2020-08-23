@@ -13,8 +13,8 @@
 static EFI_HANDLE H;
 static EFI_SYSTEM_TABLE* T;
 //
-static void* screen = 0;
-static u64 vfmt;
+static void* lfb = 0;
+static u64 fmt;
 static int w = 0;
 static int h = 0;
 static int fbw = 0;
@@ -38,8 +38,8 @@ void sethandleandefitab(void* handle, void* table)
 }
 void getscreen(void** _buf, u64* _fmt, int* _w, int* _h, int* _fbw, int* _fbh)
 {
-	*_buf = screen;
-	*_fmt = vfmt;
+	*_buf = lfb;
+	*_fmt = fmt;
 	*_w = w;
 	*_h = h;
 	*_fbw = fbw;
@@ -66,33 +66,19 @@ void runtimeservice_gettime()
 
 
 
-int bootservice_input(void* buf)
+static u64 parseinfo(EFI_GRAPHICS_PIXEL_FORMAT format, EFI_PIXEL_BITMASK bitmask)
 {
-	if(0 == H)return 0;
-
-	int ret;
-	while(1)
-	{
-		ret = T->ConIn->ReadKeyStroke(T->ConIn, buf);
-		if(ret == EFI_SUCCESS)return 1;
-	}
-}
-int bootservice_output(char* buf, int len)
-{
-	if(0 == H)return 0;
-
-	int j;
-	unsigned short temp[2] = {0,0};
-	for(j=0;j<len;j++)
-	{
-		if(buf[j] == '\n')
-		{
-			T->ConOut->OutputString(T->ConOut, L"\r\n");
+	switch(format){
+	case PixelRedGreenBlueReserved8BitPerColor:
+		return _rgba8888_;
+	case PixelBlueGreenRedReserved8BitPerColor:
+		return _bgra8888_;
+	case PixelBitMask:
+		if(bitmask.ReservedMask){
+			return _rgba8888_;
 		}
-		else
-		{
-			temp[0] = buf[j];
-			T->ConOut->OutputString(T->ConOut, temp);
+		else{
+			return _rgba8880_;
 		}
 	}
 	return 0;
@@ -100,16 +86,15 @@ int bootservice_output(char* buf, int len)
 int bootservice_graphic()
 {
 	int ret, num, chosen;
-	UINTN size = 0;
-	UINTN hlen = 0;
-	EFI_PIXEL_BITMASK* pix;
+	UINTN size = 0, hlen = 0;
 	EFI_GRAPHICS_OUTPUT_MODE_INFORMATION* info;
 
 
 	//locate protocol
-	EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
+	EFI_GRAPHICS_OUTPUT_PROTOCOL* gop = 0;
 	EFI_GUID gopGuid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
 	T->BootServices->LocateProtocol(&gopGuid, NULL, (void**)&gop);
+	if(0 == gop)return 0;
 /*
 	EFI_HANDLE* hbuf;
 
@@ -148,12 +133,12 @@ int bootservice_graphic()
 			chosen = num;
 		}
 */
-		say("%d: %d,%d,%d,%x\n",
+		fmt = parseinfo(info->PixelFormat, info->PixelInformation);
+		say("%d: %d,%d, %d,%d, ver=%d,fmt=%.8s\n",
 			num,
-			info->HorizontalResolution,
-			info->VerticalResolution,
-			info->PixelsPerScanLine,
-			info->PixelFormat
+			info->HorizontalResolution, info->VerticalResolution,
+			info->PixelsPerScanLine, 0,
+			info->Version, &fmt
 		);
 		num++;
 	}
@@ -189,27 +174,29 @@ int bootservice_graphic()
 	//preserve infomation
 	if(gop->Mode){
 		say("buf=%llx,len=%x\n", gop->Mode->FrameBufferBase, gop->Mode->FrameBufferSize);
-		screen = (void*)(gop->Mode->FrameBufferBase);
+		lfb = (void*)(gop->Mode->FrameBufferBase);
+		fbh = gop->Mode->FrameBufferSize;
 
 		if(gop->Mode->Info){
-			say("fmt=%x,inf=%x, w=%d,h=%d, fbw=%d,fbh=%d\n",
-				gop->Mode->Info->PixelFormat, gop->Mode->Info->PixelInformation,
-				gop->Mode->Info->HorizontalResolution, gop->Mode->Info->VerticalResolution,
-				gop->Mode->Info->PixelsPerScanLine, 0
-				//gop->Mode->Info->Version
-			);
+			fmt = parseinfo(gop->Mode->Info->PixelFormat, gop->Mode->Info->PixelInformation);
+			switch(fmt){
+				case _bgra8888_:
+				case _rgba8888_:
+					fbw *= 4;
+					break;
+				case _bgra8880_:
+				case _rgba8880_:
+					fbw *= 3;
+					break;
+				default:
+					lfb = 0;
+			}
 
-			pix = &gop->Mode->Info->PixelInformation;
-			if(pix->ReservedMask == 0){
-				vfmt = _bgra8880_;
-				fbw *= 3;
-				fbh = gop->Mode->FrameBufferSize;
-			}
-			else{
-				vfmt = _bgra8888_;
-				fbw *= 4;
-				fbh = gop->Mode->FrameBufferSize;
-			}
+			say("w=%d,h=%d, fbw=%d,fbh=%d, ver=%d,fmt=%.8s\n",
+				gop->Mode->Info->HorizontalResolution, gop->Mode->Info->VerticalResolution,
+				gop->Mode->Info->PixelsPerScanLine, 0,
+				gop->Mode->Info->Version, &fmt
+			);
 		}
 	}
 
@@ -239,6 +226,37 @@ int bootservice_exit()
 		say("error:%d@ExitBootServices\n", ret);
 	}
 
+	return 0;
+}
+int bootservice_input(void* buf)
+{
+	if(0 == H)return 0;
+
+	int ret;
+	while(1)
+	{
+		ret = T->ConIn->ReadKeyStroke(T->ConIn, buf);
+		if(ret == EFI_SUCCESS)return 1;
+	}
+}
+int bootservice_output(char* buf, int len)
+{
+	if(0 == H)return 0;
+
+	int j;
+	unsigned short temp[2] = {0,0};
+	for(j=0;j<len;j++)
+	{
+		if(buf[j] == '\n')
+		{
+			T->ConOut->OutputString(T->ConOut, L"\r\n");
+		}
+		else
+		{
+			temp[0] = buf[j];
+			T->ConOut->OutputString(T->ConOut, temp);
+		}
+	}
 	return 0;
 }
 
