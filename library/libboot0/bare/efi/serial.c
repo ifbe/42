@@ -5,6 +5,7 @@
 #define PORT 0x3f8
 u8 in8(u32 port);
 void out8(u32 port, u8 data);
+int bootservice_output(char* buf, int len);
 
 
 
@@ -48,6 +49,7 @@ int lowlevel_output(char* buf, int len)
 {
 	int j;
 	for(j=0;j<len;j++)write8250_one(buf[j]);
+	bootservice_output(buf, len);
 	return j;
 }
 

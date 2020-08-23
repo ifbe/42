@@ -147,7 +147,8 @@ int bootservice_graphic()
 			chosen = num;
 		}
 
-		say("%d,%d,%d,%x\n",
+		say("%d: %d,%d,%d,%x\n",
+			num,
 			info->HorizontalResolution,
 			info->VerticalResolution,
 			info->PixelsPerScanLine,
@@ -171,6 +172,7 @@ int bootservice_graphic()
 		//fbh = ?
 		chosen = 0;
 	}
+	say("chosen=%d\n",chosen);
 
 
 	//set mode
@@ -179,26 +181,31 @@ int bootservice_graphic()
 		say("error@SetMode:%d\n", chosen);
 		return 0;
 	};
-	say("buf=%llx,len=%x, fmt=%x,inf=%x, w=%d,h=%d, fbw=%d,fbh=%d\n",
-		gop->Mode->FrameBufferBase, gop->Mode->FrameBufferSize,
-		gop->Mode->Info->PixelFormat, gop->Mode->Info->PixelInformation,
-		gop->Mode->Info->HorizontalResolution, gop->Mode->Info->VerticalResolution,
-		gop->Mode->Info->PixelsPerScanLine, 0
-		//gop->Mode->Info->Version
-	);
+	if(gop->Mode){
+		say("buf=%llx,len=%x\n", gop->Mode->FrameBufferBase, gop->Mode->FrameBufferSize);
+		screen = (void*)(gop->Mode->FrameBufferBase);
 
-	screen = (void*)(gop->Mode->FrameBufferBase);
-	pix = &(gop->Mode->Info->PixelInformation);
-	if(pix->ReservedMask == 0){
-		vfmt = _bgra8880_;
-		fbw *= 3;
-		fbh = gop->Mode->FrameBufferSize;
+		if(gop->Mode->Info){
+			say("fmt=%x,inf=%x, w=%d,h=%d, fbw=%d,fbh=%d\n",
+				gop->Mode->Info->PixelFormat, gop->Mode->Info->PixelInformation,
+				gop->Mode->Info->HorizontalResolution, gop->Mode->Info->VerticalResolution,
+				gop->Mode->Info->PixelsPerScanLine, 0
+				//gop->Mode->Info->Version
+			);
+			pix = &(gop->Mode->Info->PixelInformation);
+			if(pix->ReservedMask == 0){
+				vfmt = _bgra8880_;
+				fbw *= 3;
+				fbh = gop->Mode->FrameBufferSize;
+			}
+			else{
+				vfmt = _bgra8888_;
+				fbw *= 4;
+				fbh = gop->Mode->FrameBufferSize;
+			}
+		}
 	}
-	else{
-		vfmt = _bgra8888_;
-		fbw *= 4;
-		fbh = gop->Mode->FrameBufferSize;
-	}
+
 	return 0;
 }
 int bootservice_exit()
@@ -237,9 +244,11 @@ void freerunenv()
 void initrunenv()
 {
 	//screen 1024x768x32
+	T->ConOut->OutputString(T->ConOut, L"1111\r\n");
 	bootservice_graphic();
  
 	//free bootservice
+	T->ConOut->OutputString(T->ConOut, L"2222\r\n");
 	bootservice_exit();
 
 	//nomore bootservice
