@@ -1,14 +1,13 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
 #include "libuser.h"
+int lowlevel_input();
 
 
 
 
 void windowread()
 {
+	int ret = lowlevel_input();
+	say("ret=%d\n",ret);
 }
 void windowwrite()
 {
@@ -25,22 +24,19 @@ void windowstop()
 void windowstart()
 {
 }
-void windowdelete(struct supply* w)
+void windowdelete(struct supply* wnd)
 {
 }
-void windowcreate(struct supply* w)
+void windowcreate(struct supply* wnd)
 {
-	w->fmt = _cli_;
-	w->vfmt = 0;
+	wnd->fmt = _cli_;
+	wnd->vfmt = 0;
 
-	w->width = 80;
-	w->height = 25;
+	wnd->width = 80;
+	wnd->height = 25;
 
-	w->fbwidth = 80;
-	//w->fbheight = 0;
-
-	w->buf = 0;
-	w->len = 0;
+	wnd->fbwidth = 80;
+	wnd->fbheight = 0;
 }
 
 

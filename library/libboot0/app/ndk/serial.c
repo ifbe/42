@@ -19,9 +19,9 @@ int cur=0;
 
 
 
-int lowlevel_input(char* buf)
+int lowlevel_input()
 {
-	while(1)usleep(1000*1000);
+	usleep(1000);
 	return 0;
 }
 int lowlevel_output(char* buf, int len)

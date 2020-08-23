@@ -18,7 +18,7 @@ bare:
 	$(compiler) $(cflag) system.c
 
 .PHONY:efi
-efi:
+efiapp:
 	rm -f *.o
 	$(compiler) $(cflag) efi/efi.flow.socket.c
 	$(compiler) $(cflag) efi/efi.flow.watcher.c

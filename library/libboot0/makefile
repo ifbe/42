@@ -13,8 +13,8 @@ bare:
 	$(compiler) $(cflag) bare/barex64/runenv.c
 	$(compiler) $(cflag) bare/barex64/serial.c
 
-.PHONY:efi
-efi:
+.PHONY:efios
+efios:
 	rm -f *.o
 	$(compiler) $(cflag) origin.c
 	$(compiler) $(cflag) bare/initer.c
@@ -23,6 +23,16 @@ efi:
 	$(compiler) $(cflag) bare/efi/runenv.c
 	$(compiler) $(cflag) bare/efi/serial.c
 	$(compiler) $(cflag) bare/efi/thread.c
+
+.PHONY:efiapp
+efiapp:
+	rm -f *.o
+	$(compiler) $(cflag) origin.c
+	$(compiler) $(cflag) bare/initer.c
+	$(compiler) $(cflag) bare/memory.c
+	$(compiler) $(cflag) app/efi/entry.c
+	$(compiler) $(cflag) app/efi/runenv.c
+	$(compiler) $(cflag) app/efi/thread.c
 
 .PHONY:none
 none:

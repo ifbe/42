@@ -23,6 +23,7 @@ static int fbh = 0;
 
 void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(0 == screen)return;
 	rgbanode_read(wnd,foot, stack,sp, arg,key, buf,len);
 
 	int bpp;
