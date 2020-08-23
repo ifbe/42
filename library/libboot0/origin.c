@@ -29,11 +29,11 @@ void freeorigin()
 {
 	say("[0,2):origin freeing\n");
 
-	freestdout();
-	freestdin();
-
 	freerunenv();
 	freeserial();
+
+	freestdin();
+	freestdout();
 }
 void initorigin(u8* addr)
 {
@@ -44,11 +44,11 @@ void initorigin(u8* addr)
 	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)ori[j].tier = _ori_;
 
+	initstdout(addr+0x180000);
+	initstdin( addr+0x100000);
+
 	initserial();
 	initrunenv();
-
-	initstdin( addr+0x100000);
-	initstdout(addr+0x180000);
 
 	say("[0,2):origin inited\n");
 }

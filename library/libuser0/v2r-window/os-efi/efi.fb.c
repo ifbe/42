@@ -43,7 +43,7 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 	int j;
 	u32* ibuf = wnd->rgbabuf;
 	u32* obuf = screen;
-	for(j=0;j<1024*768-1;j++)
+	for(j=0;j<w*h-1;j++)
 	{
 		*obuf = ibuf[j];
 		obuf = (void*)obuf + bpp;
@@ -72,6 +72,7 @@ void windowdelete(struct supply* wnd)
 void windowcreate(struct supply* wnd)
 {
 	getscreen(&screen, &vfmt, &w, &h, &fbw, &fbh);
+	say("buf=%p,fmt=%llx, w=%d,h=%d, fbw=%d,fbh=%d\n", screen,vfmt, w,h, fbw,fbh);
 
 	//wnd data
 	wnd->fmt = _rgba_;

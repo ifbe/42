@@ -102,11 +102,16 @@ int bootservice_graphic()
 	int ret, num, chosen;
 	UINTN size = 0;
 	UINTN hlen = 0;
-	EFI_HANDLE* hbuf;
-	EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
-	EFI_GRAPHICS_OUTPUT_MODE_INFORMATION* info;
 	EFI_PIXEL_BITMASK* pix;
+	EFI_GRAPHICS_OUTPUT_MODE_INFORMATION* info;
 
+
+	//locate protocol
+	EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
+	EFI_GUID gopGuid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+	T->BootServices->LocateProtocol(&gopGuid, NULL, (void**)&gop);
+/*
+	EFI_HANDLE* hbuf;
 
 	//where is
 	ret = T->BootServices->LocateHandleBuffer(
@@ -130,7 +135,7 @@ int bootservice_graphic()
 		say("error@HandleProtocol\n");
 		return 0;
 	}
-
+*/
 
 	//prefer 1024x768
 	num = 0;
@@ -139,11 +144,7 @@ int bootservice_graphic()
 		ret = gop->QueryMode(gop, num, &size, &info);
 		if(ret != EFI_SUCCESS)break;
 
-		if((1024 == info->HorizontalResolution) && (768 == info->VerticalResolution)){
-			w = 1024;
-			h = 768;
-			fbw = info->PixelsPerScanLine;
-			//fbh = ?
+		if((1 == info->HorizontalResolution) && (768 == info->VerticalResolution)){
 			chosen = num;
 		}
 
@@ -158,35 +159,47 @@ int bootservice_graphic()
 	}
 
 
-	//fallback index0
+	//fallback current
 	if(chosen < 0){
-		ret = gop->QueryMode(gop, 0, &size, &info);
-		if(ret != EFI_SUCCESS){
-			say("error@QueryMode:0\n");
-			return 0;
-		}
-
-		w = info->HorizontalResolution;
-		h = info->VerticalResolution;
-		fbw = info->PixelsPerScanLine;
-		//fbh = ?
-		chosen = 0;
+		chosen = gop->Mode->Mode;
 	}
 	say("chosen=%d\n",chosen);
 
 
-	//set mode
-	ret = gop->SetMode(gop, chosen);
+	//query mode
+	ret = gop->QueryMode(gop, chosen, &size, &info);
+	if(ret != EFI_SUCCESS){
+		say("error@QueryMode:0\n");
+		return 0;
+	}
+	w = info->HorizontalResolution;
+	h = info->VerticalResolution;
+	fbw = info->PixelsPerScanLine;
+	//fbh = ?
+	say("cur: buf=%llx,len=%x\n", gop->Mode->FrameBufferBase, gop->Mode->FrameBufferSize);
+	say("cur: fmt=%x,inf=%x, w=%d,h=%d, fbw=%d,fbh=%d\n",
+		gop->Mode->Info->PixelFormat, gop->Mode->Info->PixelInformation,
+		gop->Mode->Info->HorizontalResolution, gop->Mode->Info->VerticalResolution,
+		gop->Mode->Info->PixelsPerScanLine, 0
+		//gop->Mode->Info->Version
+	);
+
+
+	//some uefi are buggy, don't setmode!
+/*	ret = gop->SetMode(gop, chosen);
 	if(ret != EFI_SUCCESS){
 		say("error@SetMode:%d\n", chosen);
 		return 0;
-	};
+	}*/
+
+
+	//preserve infomation
 	if(gop->Mode){
-		say("buf=%llx,len=%x\n", gop->Mode->FrameBufferBase, gop->Mode->FrameBufferSize);
+		say("new: buf=%llx,len=%x\n", gop->Mode->FrameBufferBase, gop->Mode->FrameBufferSize);
 		screen = (void*)(gop->Mode->FrameBufferBase);
 
 		if(gop->Mode->Info){
-			say("fmt=%x,inf=%x, w=%d,h=%d, fbw=%d,fbh=%d\n",
+			say("new: fmt=%x,inf=%x, w=%d,h=%d, fbw=%d,fbh=%d\n",
 				gop->Mode->Info->PixelFormat, gop->Mode->Info->PixelInformation,
 				gop->Mode->Info->HorizontalResolution, gop->Mode->Info->VerticalResolution,
 				gop->Mode->Info->PixelsPerScanLine, 0
