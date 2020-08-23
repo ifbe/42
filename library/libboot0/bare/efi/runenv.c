@@ -66,56 +66,6 @@ void runtimeservice_gettime()
 
 
 
-static u64 ev[4];
-void* pollenv()
-{
-	if(0 == H)return 0;
-
-	int ret = T->ConIn->ReadKeyStroke(T->ConIn, (void*)ev);
-	if(ret != EFI_SUCCESS)return 0;
-
-	if(ev[0] <= 0x10000)
-	{
-		if(ev[0] == 0x17)
-		{
-			ev[0] = 0x1b;
-			ev[1] = hex32('c','h','a','r');
-			return ev;
-		}
-		else if((ev[0]>=1)&&(ev[0]<=4))
-		{
-			if(ev[0] == 1)ev[0] = 0x48;
-			else if(ev[0] == 2)ev[0] = 0x50;
-			else if(ev[0] == 3)ev[0] = 0x4d;
-			else if(ev[0] == 4)ev[0] = 0x4b;
-			ev[1] = hex32('k','b','d',0);
-			return ev;
-		}
-		else if((ev[0]>=0xb)&&(ev[0]<=0x16))
-		{
-			ev[0] = ev[0]-0xb+0xf1;
-			ev[1] = hex32('k','b','d',0);
-			return ev;
-		}
-		else
-		{
-			//say("%x\n",ev[0]);
-			return 0;
-		}
-	}
-
-	ev[0] >>= 16;
-	ev[1] = hex32('c','h','a','r');
-	return ev;
-}
-void* waitenv()
-{
-	return 0;
-}
-
-
-
-
 int bootservice_input(void* buf)
 {
 	if(0 == H)return 0;

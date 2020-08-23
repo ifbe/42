@@ -8,10 +8,10 @@ bare:
 	$(compiler) $(cflag) bare/initer.c
 	$(compiler) $(cflag) bare/memory.c
 	$(compiler) $(cflag) bare/barex64/entry.c
-	$(compiler) $(cflag) bare/barex64/thread.c
 	$(compiler) $(cflag) bare/barex64/keyboard.c
 	$(compiler) $(cflag) bare/barex64/runenv.c
 	$(compiler) $(cflag) bare/barex64/serial.c
+	$(compiler) $(cflag) bare/barex64/thread.c
 
 .PHONY:efios
 efios:
@@ -20,6 +20,7 @@ efios:
 	$(compiler) $(cflag) bare/initer.c
 	$(compiler) $(cflag) bare/memory.c
 	$(compiler) $(cflag) bare/efi/entry.c
+	$(compiler) $(cflag) bare/efi/keyboard.c
 	$(compiler) $(cflag) bare/efi/runenv.c
 	$(compiler) $(cflag) bare/efi/serial.c
 	$(compiler) $(cflag) bare/efi/thread.c

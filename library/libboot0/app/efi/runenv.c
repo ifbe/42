@@ -294,4 +294,5 @@ void freerunenv()
 }
 void initrunenv()
 {
+	bootservice_graphic();
 }
