@@ -40,13 +40,17 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 		return;
 	}
 
-	int j;
+	int x,y;
 	u32* ibuf = wnd->rgbabuf;
 	u32* obuf = lfb;
-	for(j=0;j<w*h-1;j++)
-	{
-		*obuf = ibuf[j];
-		obuf = (void*)obuf + bpp;
+	for(y=0;y<h;y++){
+		obuf = lfb + y*fbw;
+		for(x=0;x<w;x++){
+			*obuf = ibuf[y*w + x];
+			obuf = (void*)obuf + bpp;
+
+			if((x == w-1) && (y == h-1))break;
+		}
 	}
 }
 void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
@@ -72,7 +76,7 @@ void windowdelete(struct supply* wnd)
 void windowcreate(struct supply* wnd)
 {
 	getscreen(&lfb, &fmt, &w, &h, &fbw, &fbh);
-	say("lfb=%p,fmt=%.8s, w=%d,h=%d, fbw=%d,fbh=%d\n", lfb,&fmt, w,h, fbw,fbh);
+	say("lfb=%p,fmt=%.8s, w=%d,h=%d, fbw=%x,fbh=%x\n", lfb,&fmt, w,h, fbw,fbh);
 
 	//wnd data
 	wnd->fmt = _rgba_;

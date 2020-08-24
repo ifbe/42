@@ -116,6 +116,53 @@ void* waitenv()
 
 
 
+static u64 parseinfo(EFI_GRAPHICS_PIXEL_FORMAT format, EFI_PIXEL_BITMASK bitmask)
+{
+	switch(format){
+	case PixelRedGreenBlueReserved8BitPerColor:
+		return _rgba8888_;
+	case PixelBlueGreenRedReserved8BitPerColor:
+		return _bgra8888_;
+	case PixelBitMask:
+		if(bitmask.ReservedMask){
+			return _rgba8888_;
+		}
+		else{
+			return _rgba8880_;
+		}
+	}
+	return 0;
+}
+int bootservice_graphic()
+{
+	int ret, num, chosen;
+	UINTN size = 0, hlen = 0;
+	EFI_GRAPHICS_OUTPUT_MODE_INFORMATION* info;
+
+
+	//locate protocol
+	EFI_GRAPHICS_OUTPUT_PROTOCOL* gop = 0;
+	EFI_GUID gopGuid = EFI_GRAPHICS_OUTPUT_PROTOCOL_GUID;
+	T->BootServices->LocateProtocol(&gopGuid, NULL, (void**)&gop);
+	if(0 == gop)return 0;
+
+	//query all
+	num = 0;
+	while(1){
+		ret = gop->QueryMode(gop, num, &size, &info);
+		if(ret != EFI_SUCCESS)break;
+
+		u64 fmt = parseinfo(info->PixelFormat, info->PixelInformation);
+		say("%d: %d,%d, %d,%d, ver=%d,fmt=%.8s\n",
+			num,
+			info->HorizontalResolution, info->VerticalResolution,
+			info->PixelsPerScanLine, 0,
+			info->Version, &fmt
+		);
+		num++;
+	}
+	return 0;
+}
 int lowlevel_input()
 {
 	if(0 == H)return 0;
@@ -146,137 +193,6 @@ int lowlevel_output(char* buf, int len)
 			T->ConOut->OutputString(T->ConOut, temp);
 		}
 	}
-	return 0;
-}
-int bootservice_graphic()
-{
-	int ret, num, chosen;
-	UINTN size = 0;
-	UINTN hlen = 0;
-	EFI_HANDLE* hbuf;
-	EFI_GRAPHICS_OUTPUT_PROTOCOL* gop;
-	EFI_GRAPHICS_OUTPUT_MODE_INFORMATION* info;
-	EFI_PIXEL_BITMASK* pix;
-
-
-	//where is
-	ret = T->BootServices->LocateHandleBuffer(
-		ByProtocol,
-		&gEfiGraphicsOutputProtocolGuid,
-		NULL,
-		&hlen,
-		&hbuf
-	);
-	if(ret != EFI_SUCCESS){
-		say("error@LocateHandleBuffer\n");
-		return 0;
-	}
-
-	ret = T->BootServices->HandleProtocol(
-		hbuf[0],
-		&gEfiGraphicsOutputProtocolGuid,
-		(void**)&gop
-	);
-	if(ret != EFI_SUCCESS){
-		say("error@HandleProtocol\n");
-		return 0;
-	}
-
-
-	//prefer 1024x768
-	num = 0;
-	chosen = -1;
-	while(1){
-		ret = gop->QueryMode(gop, num, &size, &info);
-		if(ret != EFI_SUCCESS)break;
-
-		if((1024 == info->HorizontalResolution) && (768 == info->VerticalResolution)){
-			w = 1024;
-			h = 768;
-			fbw = info->PixelsPerScanLine;
-			//fbh = ?
-			chosen = num;
-		}
-
-		say("%d,%d,%d,%x\n",
-			info->HorizontalResolution,
-			info->VerticalResolution,
-			info->PixelsPerScanLine,
-			info->PixelFormat
-		);
-		num++;
-	}
-
-
-	//fallback index0
-	if(chosen < 0){
-		ret = gop->QueryMode(gop, 0, &size, &info);
-		if(ret != EFI_SUCCESS){
-			say("error@QueryMode:0\n");
-			return 0;
-		}
-
-		w = info->HorizontalResolution;
-		h = info->VerticalResolution;
-		fbw = info->PixelsPerScanLine;
-		//fbh = ?
-		chosen = 0;
-	}
-
-/*
-	//set mode
-	ret = gop->SetMode(gop, chosen);
-	if(ret != EFI_SUCCESS){
-		say("error@SetMode:%d\n", chosen);
-		return 0;
-	};
-	say("buf=%llx,len=%x, fmt=%x,inf=%x, w=%d,h=%d, fbw=%d,fbh=%d\n",
-		gop->Mode->FrameBufferBase, gop->Mode->FrameBufferSize,
-		gop->Mode->Info->PixelFormat, gop->Mode->Info->PixelInformation,
-		gop->Mode->Info->HorizontalResolution, gop->Mode->Info->VerticalResolution,
-		gop->Mode->Info->PixelsPerScanLine, 0
-		//gop->Mode->Info->Version
-	);
-
-	screen = (void*)(gop->Mode->FrameBufferBase);
-	pix = &(gop->Mode->Info->PixelInformation);
-	if(pix->ReservedMask == 0){
-		vfmt = _bgra8880_;
-		fbw *= 3;
-		fbh = gop->Mode->FrameBufferSize;
-	}
-	else{
-		vfmt = _bgra8888_;
-		fbw *= 4;
-		fbh = gop->Mode->FrameBufferSize;
-	}
-*/
-	return 0;
-}
-int bootservice_exit()
-{
-	//GetMemoryMap
-	UINTN memmap_size = MEMMAP_SIZE;
-	UINTN map_key;
-	UINTN descriptor_size;
-	UINT32 descriptor_version;
-	int ret = T->BootServices->GetMemoryMap(
-		&memmap_size,
-		(EFI_MEMORY_DESCRIPTOR*)memmap,
-		&map_key,
-		&descriptor_size,
-		&descriptor_version
-	);
-	if(EFI_SUCCESS != ret){
-		say("error:%d@GetMemoryMap\n", ret);
-	}
-
-	//ExitBootService
-	ret = T->BootServices->ExitBootServices(H, map_key);
-	if(EFI_SUCCESS != ret){
-		say("error:%d@ExitBootServices\n", ret);
-	}
-
 	return 0;
 }
 
