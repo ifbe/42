@@ -1,6 +1,6 @@
 library?=../../library
 linker?=ld
-flag="-c -O2 -fPIC -ffreestanding -fno-stack-protector -I.."
+flag="-c -O2 -I.. -fPIC -ffreestanding -fno-stack-protector -mno-red-zone"
 linux:
 	make -s -C $(library)/libboot0 cflag=$(flag) bare
 	make -s -C $(library)/libboot1 cflag=$(flag)

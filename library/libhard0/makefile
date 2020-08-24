@@ -129,7 +129,7 @@ efix64:x64
 	$(compiler) $(cflag) bare/cpu/x64/x64.asm.c
 	$(compiler) $(cflag) bare/cpu/x64/x64.page.c
 	$(compiler) $(cflag) bare/cpu/x64/x64.gdt.c
-	$(compiler) $(cflag) -mgeneral-regs-only -mno-red-zone bare/cpu/x64/x64.idt.c
+	$(compiler) $(cflag) -mgeneral-regs-only bare/cpu/x64/x64.idt.c
 	$(compiler) $(cflag) bare/irq/8259.c
 	#$(compiler) $(cflag) bare/irq/apic.c
 	$(compiler) $(cflag) bare/bus/input/8042.c

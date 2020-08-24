@@ -17,7 +17,7 @@ void initrunenv()
 	initidt();
 
 	init8259();
-	//init825x();
+	init825x();
 	initrtc();
 	asm("sti");
 
