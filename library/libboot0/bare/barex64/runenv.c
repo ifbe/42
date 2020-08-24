@@ -1,3 +1,4 @@
+void initgdt();
 void initidt();
 void init8259();	//interrupt controller
 void init825x();	//timer.pit
@@ -12,9 +13,11 @@ void freerunenv()
 void initrunenv()
 {
 	asm("cli");
+	initgdt();
 	initidt();
+
 	init8259();
-	init825x();
+	//init825x();
 	initrtc();
 	asm("sti");
 

@@ -55,8 +55,10 @@ __attribute__((interrupt)) static void isr_04(void* p)
 {say("int04!\n");}		//Overflow
 __attribute__((interrupt)) static void isr_05(void* p)
 {say("int05!\n");}		//Bound Range Exceeded
-__attribute__((interrupt)) static void isr_06(void* p)
-{say("int06!\n");}		//Invalid Opcode
+__attribute__((interrupt)) static void isr_06(struct int_frame* p)
+{//Invalid Opcode
+	say("int06: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
+}
 __attribute__((interrupt)) static void isr_07(void* p)
 {say("int07!\n");}		//Device Not Available
 __attribute__((interrupt)) static void isr_08(void* p, u64 e)

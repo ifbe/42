@@ -34,7 +34,7 @@ link:
 	$(library)/libuser1/*.o \
 	-o 42.bin
 copy:
-	cp 42.bin ../../../live/boot/
+	cp 42.bin ../../../live/mount/
 clean:
 	rm -f *.o *.out *.bin *.img
 	make -C $(library) clean

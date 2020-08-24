@@ -76,7 +76,7 @@ void windowdelete(struct supply* wnd)
 void windowcreate(struct supply* wnd)
 {
 	getscreen(&lfb, &fmt, &w, &h, &fbw, &fbh);
-	say("lfb=%p,fmt=%.8s, w=%d,h=%d, fbw=%x,fbh=%x\n", lfb,&fmt, w,h, fbw,fbh);
+	say("lfb=%p,fmt=%.8s, w=%d,h=%d, fbw=0x%x,fbh=0x%x\n", lfb,&fmt, w,h, fbw,fbh);
 
 	//wnd data
 	wnd->fmt = _rgba_;
