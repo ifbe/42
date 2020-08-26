@@ -79,7 +79,7 @@ void* pollenv()
 		if(ev[0] == 0x17)
 		{
 			ev[0] = 0x1b;
-			ev[1] = hex32('c','h','a','r');
+			ev[1] = hex32('k','b','d',0);
 			return ev;
 		}
 		else if((ev[0]>=1)&&(ev[0]<=4))

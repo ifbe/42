@@ -10,7 +10,7 @@ linux:
 	make -s -C $(library)/libsoft1 cflag=$(flag)
 	make -s -C $(library)/libuser0 cflag=$(flag) barefb
 	make -s -C $(library)/libuser1 cflag=$(flag)
-	make -s link linker=/opt/cross/bin/x86_64-elf-ld
+	make -s link
 cross:
 	make -s -C $(library)/libboot0 compiler="x86_64-elf-gcc" cflag=$(flag) bare
 	make -s -C $(library)/libboot1 compiler="x86_64-elf-gcc" cflag=$(flag)

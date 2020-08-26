@@ -1,16 +1,19 @@
 #include "libuser.h"
-int lowlevel_input();
+int input(void* buf, int len);
 
 
 
 
-void windowread()
+void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	int ret = lowlevel_input();
-	say("ret=%d\n",ret);
 }
-void windowwrite()
+void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	struct event* ev = buf;
+	if(_kbd_ == ev->what){
+		if(0x1b == ev->why)eventwrite(0,0,0,0);
+	}
+	if(_char_ == ev->what)input(buf, 1);
 }
 void windowlist()
 {
