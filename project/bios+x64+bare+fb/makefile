@@ -4,7 +4,7 @@ flag="-c -O2 -I.. -fPIC -ffreestanding -fno-stack-protector -mno-red-zone"
 linux:
 	make -s -C $(library)/libboot0 cflag=$(flag) bare
 	make -s -C $(library)/libboot1 cflag=$(flag)
-	make -s -C $(library)/libhard0 cflag=$(flag) barex64
+	make -s -C $(library)/libhard0 cflag=$(flag) oldx64
 	make -s -C $(library)/libhard1 cflag=$(flag)
 	make -s -C $(library)/libsoft0 cflag=$(flag) bare
 	make -s -C $(library)/libsoft1 cflag=$(flag)
@@ -14,7 +14,7 @@ linux:
 cross:
 	make -s -C $(library)/libboot0 compiler="x86_64-elf-gcc" cflag=$(flag) bare
 	make -s -C $(library)/libboot1 compiler="x86_64-elf-gcc" cflag=$(flag)
-	make -s -C $(library)/libhard0 compiler="x86_64-elf-gcc" cflag=$(flag) barex64
+	make -s -C $(library)/libhard0 compiler="x86_64-elf-gcc" cflag=$(flag) oldx64
 	make -s -C $(library)/libhard1 compiler="x86_64-elf-gcc" cflag=$(flag)
 	make -s -C $(library)/libsoft0 compiler="x86_64-elf-gcc" cflag=$(flag) bare
 	make -s -C $(library)/libsoft1 compiler="x86_64-elf-gcc" cflag=$(flag)

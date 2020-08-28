@@ -1,0 +1,6 @@
+void freehardware()
+{
+}
+void inithardware()
+{
+}

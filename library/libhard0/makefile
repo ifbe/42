@@ -1,16 +1,6 @@
 compiler ?= gcc
 cflag ?= -c -O2 -fPIC
 
-.PHONY:mips
-mips:
-	$(compiler) $(cflag) bare/cpu/mips/mips.fp.c
-	$(compiler) $(cflag) device.c
-
-.PHONY:mips64
-mips64:
-	$(compiler) $(cflag) bare/cpu/mips64/mips64.fp.c
-	$(compiler) $(cflag) device.c
-
 
 
 
@@ -21,6 +11,7 @@ arm:
 	$(compiler) $(cflag) device.c
 
 linuxarm:arm
+	$(compiler) $(cflag) linux/hardware.c
 	$(compiler) $(cflag) linux/linux.wire.bt.c
 	$(compiler) $(cflag) linux/linux.wire.i2c.c
 	$(compiler) $(cflag) linux/linux.wire.gpio.c
@@ -30,6 +21,7 @@ linuxarm:arm
 	$(compiler) $(cflag) linux/linux.wire.wifi.c
 
 linuxpi32:arm
+	$(compiler) $(cflag) rpi/hardware.c
 	$(compiler) $(cflag) rpi/rpi.wiringpi.c
 	$(compiler) $(cflag) linux/linux.wire.bt.c
 	$(compiler) $(cflag) linux/linux.wire.i2c.c
@@ -48,6 +40,7 @@ arm64:
 	$(compiler) $(cflag) device.c
 
 linuxarm64:arm64
+	$(compiler) $(cflag) linux/hardware.c
 	$(compiler) $(cflag) linux/linux.wire.bt.c
 	$(compiler) $(cflag) linux/linux.wire.gpio.c
 	$(compiler) $(cflag) linux/linux.wire.i2c.c
@@ -57,6 +50,7 @@ linuxarm64:arm64
 	$(compiler) $(cflag) linux/linux.wire.wifi.c
 
 linuxpi64:arm64
+	$(compiler) $(cflag) linux/hardware.c
 	$(compiler) $(cflag) linux/linux.wire.bt.c
 	$(compiler) $(cflag) linux/linux.wire.gpio.c
 	$(compiler) $(cflag) linux/linux.wire.i2c.c
@@ -64,6 +58,24 @@ linuxpi64:arm64
 	$(compiler) $(cflag) linux/linux.wire.spi.c
 	$(compiler) $(cflag) linux/linux.wire.usb.c
 	$(compiler) $(cflag) linux/linux.wire.wifi.c
+
+
+
+
+#---------------------mips32-------------------------
+.PHONY:mips
+mips:
+	$(compiler) $(cflag) bare/cpu/mips/mips.fp.c
+	$(compiler) $(cflag) device.c
+
+
+
+
+#---------------------mips64-------------------------
+.PHONY:mips64
+mips64:
+	$(compiler) $(cflag) bare/cpu/mips64/mips64.fp.c
+	$(compiler) $(cflag) device.c
 
 
 
@@ -93,6 +105,10 @@ winx86:x86
 	$(compiler) $(cflag) bare/cpu/x86/x86.port.c
 	$(compiler) $(cflag) device.c
 
+
+
+
+#---------------------x64-------------------------
 .PHONY:x64
 x64:
 	$(compiler) $(cflag) bare/cpu/x64/x64.endian.c
@@ -100,12 +116,30 @@ x64:
 	$(compiler) $(cflag) bare/cpu/x64/x64.port.c
 	$(compiler) $(cflag) device.c
 
+.PHONY:oldx64
+oldx64:x64
+	$(compiler) $(cflag) bare/oldhw.c
+	$(compiler) $(cflag) bare/cpu/x64/x64.asm.c
+	$(compiler) $(cflag) bare/cpu/x64/x64.page.c
+	$(compiler) $(cflag) bare/cpu/x64/x64.gdt.c
+	$(compiler) $(cflag) -mgeneral-regs-only -mno-red-zone bare/cpu/x64/x64.idt.c
+	$(compiler) $(cflag) bare/irq/8259.c
+	#$(compiler) $(cflag) bare/irq/apic.c
+	$(compiler) $(cflag) bare/bus/input/8042.c
+	$(compiler) $(cflag) bare/bus/pci/pci.c
+	$(compiler) $(cflag) bare/timer/825x.c
+	$(compiler) $(cflag) bare/timer/rtc.c
+	$(compiler) $(cflag) bare/wire/bare.wire.bt.c
+	$(compiler) $(cflag) bare/wire/bare.wire.gpio.c
+	$(compiler) $(cflag) bare/wire/bare.wire.i2c.c
+	$(compiler) $(cflag) bare/wire/bare.wire.spi.c
+	$(compiler) $(cflag) bare/wire/bare.wire.uart.c
+	$(compiler) $(cflag) bare/wire/bare.wire.usb.c
+	$(compiler) $(cflag) bare/wire/bare.wire.wifi.c
 
-
-
-#---------------------x64-------------------------
-.PHONY:barex64
-barex64:x64
+.PHONY:newx64
+newx64:x64
+	$(compiler) $(cflag) bare/newhw.c
 	$(compiler) $(cflag) bare/cpu/x64/x64.asm.c
 	$(compiler) $(cflag) bare/cpu/x64/x64.page.c
 	$(compiler) $(cflag) bare/cpu/x64/x64.gdt.c
@@ -143,9 +177,11 @@ efix64:x64
 	$(compiler) $(cflag) efi/efi.wire.uart.c
 	$(compiler) $(cflag) efi/efi.wire.usb.c
 	$(compiler) $(cflag) efi/efi.wire.wifi.c
+	$(compiler) $(cflag) efi/hardware.c
 
 .PHONY:linuxx64
 linuxx64:x64
+	$(compiler) $(cflag) linux/hardware.c
 	$(compiler) $(cflag) linux/linux.wire.bt.c
 	$(compiler) $(cflag) linux/linux.wire.i2c.c
 	$(compiler) $(cflag) linux/linux.wire.gpio.c
@@ -156,6 +192,7 @@ linuxx64:x64
 
 .PHONY:macx64
 macx64:x64
+	$(compiler) $(cflag) mac/hardware.c
 	$(compiler) $(cflag) mac/mac.wire.bt.c
 	$(compiler) $(cflag) mac/mac.wire.i2c.c
 	$(compiler) $(cflag) mac/mac.wire.gpio.c
@@ -166,6 +203,7 @@ macx64:x64
 
 .PHONY:winx64
 winx64:x64
+	$(compiler) $(cflag) win/hardware.c
 	$(compiler) $(cflag) win/win.wire.bt.c
 	$(compiler) $(cflag) win/win.wire.i2c.c
 	$(compiler) $(cflag) win/win.wire.gpio.c

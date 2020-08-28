@@ -17,13 +17,14 @@ void say(void*, ...);
 static int dt = 0;
 void isr_825x()
 {
-	if(0==(dt%100))say("dt=%d\n",dt);
+	if(0==(dt%1000))say("dt=%d\n",dt);
 	dt ++;
 }
 void init825x()
 {
-	u16 lo = 11931&0xff;
-	u16 hi = 11931/256;
+	u32 t = 3579545 / 3 / 1000;
+	u16 lo = t & 0xff;
+	u16 hi = t >> 8;
 
 	out8(0x43, 0x34);
 	out8(0x40, lo);

@@ -99,11 +99,15 @@ int gpiostart(int name, int mode)
 	}
 	return pin;
 }
-int gpiodelete()
+
+
+
+
+int initgpio()
 {
 	return 0;
 }
-int gpiocreate()
+int initgpio()
 {
 	return wiringPiSetup();
 }

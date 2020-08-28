@@ -1,7 +1,7 @@
 #include "libhard.h"
-//gpio
-int gpiodelete();
-int gpiocreate();
+//hw
+int inithardware();
+int freehardware();
 //i2c
 int i2c_create(void*, int, int, u8**);
 int i2c_delete(int);
@@ -12,8 +12,6 @@ int spi_create(void*, int, int, u8**);
 int spi_delete(int);
 int spi_read(int fd, int addr, u8* buf, int len);
 int spi_write(int fd, int addr, u8* buf, int len);
-//16550
-//pl011
 
 
 
@@ -140,7 +138,7 @@ void freedevice()
 {
 	say("[4,6):device freeing\n");
 
-	gpiodelete();
+	freehardware();
 
 	say("[4,6):device freeed\n");
 }
@@ -156,7 +154,7 @@ void initdevice(u8* addr)
 	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)dev[j].tier = _dev_;
 
-	gpiocreate();
+	inithardware();
 
 	say("[4,6):device inited\n");
 }

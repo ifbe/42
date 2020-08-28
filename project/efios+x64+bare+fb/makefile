@@ -10,7 +10,7 @@ libboot1:
 	make -s -C $(library)/libboot1 \
 	compiler="x86_64-w64-mingw32-gcc" cflag="$(flag)"
 libhard0:
-	make -s -C $(library)/libhard0 barex64 \
+	make -s -C $(library)/libhard0 newx64 \
 	compiler="x86_64-w64-mingw32-gcc" cflag="$(flag)"
 libhard1:
 	make -s -C $(library)/libhard1 \
