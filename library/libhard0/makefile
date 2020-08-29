@@ -116,33 +116,12 @@ x64:
 	$(compiler) $(cflag) bare/cpu/x64/x64.port.c
 	$(compiler) $(cflag) device.c
 
-.PHONY:oldx64
-oldx64:x64
+.PHONY:barex64
+barex64:x64
 	$(compiler) $(cflag) bare/oldhw.c
 	$(compiler) $(cflag) bare/cpu/x64/x64.asm.c
 	$(compiler) $(cflag) bare/cpu/x64/x64.page.c
-	$(compiler) $(cflag) bare/cpu/x64/x64.gdt.c
-	$(compiler) $(cflag) -mgeneral-regs-only -mno-red-zone bare/cpu/x64/x64.idt.c
-	$(compiler) $(cflag) bare/irq/8259.c
-	#$(compiler) $(cflag) bare/irq/apic.c
-	$(compiler) $(cflag) bare/bus/input/8042.c
-	$(compiler) $(cflag) bare/bus/pci/pci.c
-	$(compiler) $(cflag) bare/timer/825x.c
-	$(compiler) $(cflag) bare/timer/rtc.c
-	$(compiler) $(cflag) bare/wire/bare.wire.bt.c
-	$(compiler) $(cflag) bare/wire/bare.wire.gpio.c
-	$(compiler) $(cflag) bare/wire/bare.wire.i2c.c
-	$(compiler) $(cflag) bare/wire/bare.wire.spi.c
-	$(compiler) $(cflag) bare/wire/bare.wire.uart.c
-	$(compiler) $(cflag) bare/wire/bare.wire.usb.c
-	$(compiler) $(cflag) bare/wire/bare.wire.wifi.c
-
-.PHONY:newx64
-newx64:x64
-	$(compiler) $(cflag) bare/newhw.c
-	$(compiler) $(cflag) bare/cpu/x64/x64.asm.c
-	$(compiler) $(cflag) bare/cpu/x64/x64.page.c
-	$(compiler) $(cflag) bare/cpu/x64/x64.gdt.c
+	yasm -a x86 -m amd64 -f elf64 -o x64.gdt.o bare/cpu/x64/x64.gdt.asm
 	$(compiler) $(cflag) -mgeneral-regs-only -mno-red-zone bare/cpu/x64/x64.idt.c
 	$(compiler) $(cflag) bare/irq/8259.c
 	#$(compiler) $(cflag) bare/irq/apic.c

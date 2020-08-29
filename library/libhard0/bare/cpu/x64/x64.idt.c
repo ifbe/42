@@ -71,8 +71,10 @@ __attribute__((interrupt)) static void isr_0b(void* p, u64 e)
 {say("int0b:%llx\n", e);}		//Segment Not Present
 __attribute__((interrupt)) static void isr_0c(void* p, u64 e)
 {say("int0c:%llx\n", e);}		//Stack-Segment Fault
-__attribute__((interrupt)) static void isr_0d(void* p, u64 e)
-{say("int0d:%llx\n", e);}		//General Protection Fault
+__attribute__((interrupt)) static void isr_0d(struct int_frame* p, u64 e)
+{		//General Protection Fault
+	say("int0d: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
+}
 __attribute__((interrupt)) static void isr_0e(void* p, u64 e)
 {say("int0e:%llx\n", e);}		//Page Fault
 __attribute__((interrupt)) static void isr_0f(void* p)
@@ -150,8 +152,6 @@ void interruptinstall(int num, u64 isr)
 }
 void initidt()
 {
-	say("@initidt\n");
-
 	int j;
 	u64 temp = idthome;
 	u8* addr = (void*)temp;
