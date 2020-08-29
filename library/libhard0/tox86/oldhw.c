@@ -24,8 +24,8 @@ void inithardware()
 	init8259();
 	init825x();
 	initrtc();
-	//asm("sti");
+	asm("sti");
 
-	//asm("int3");
-	//asm("int $0x80");
+	asm("int3");
+	asm("int $0x80");
 }
