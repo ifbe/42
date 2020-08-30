@@ -117,8 +117,10 @@ barex64:x64
 	$(compiler) $(cflag) tox86/oldhw.c
 	$(compiler) $(cflag) tox86/cpu64/x64.asm.c
 	$(compiler) $(cflag) tox86/cpu64/x64.page.c
-	yasm -a x86 -m amd64 -f elf64 -o x64.gdt.o tox86/cpu64/x64.gdt.asm
-	$(compiler) $(cflag) -mgeneral-regs-only -mno-red-zone tox86/cpu64/x64.idt.c
+	$(compiler) $(cflag) tox86/cpu64/x64.gdtmake.c
+	yasm -a x86 -m amd64 -f elf64 -o x64.gdtload.o tox86/cpu64/x64.gdtload.asm
+	$(compiler) $(cflag) -mgeneral-regs-only tox86/cpu64/x64.idt.c
+	yasm -a x86 -m amd64 -f elf64 -o x64.idthelp.o tox86/cpu64/x64.idthelp.asm
 	$(compiler) $(cflag) tox86/irq/8259.c
 	#$(compiler) $(cflag) tox86/irq/apic.c
 	$(compiler) $(cflag) tox86/bus/input/8042.c

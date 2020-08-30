@@ -15,7 +15,7 @@ Abstract:
 Revision History
 
 --*/
-
+#include "stdint.h"
 #include "lib.h"
 
 //

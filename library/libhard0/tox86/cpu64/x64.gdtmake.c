@@ -3,7 +3,12 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 #define GDTBUF 0x10000
-void lgdt(void* buf, int len);
+#define TSSBUF 0x20000
+u16 gettss();
+void sgdt(void*);
+void loadgdtandtss();
+//
+void printmemory(void*, int);
 void say(void*, ...);
 
 
@@ -44,13 +49,33 @@ struct tss{
 //2: 00,00,00,00,00,92,2f,00
 void initgdt()
 {
+	say("@initgdt\n");
+
+	say("tr@%x\n", gettss());
+
+	u8 map[16];
+	sgdt(map);
+	printmemory(map, 16);
+	printmemory(*(u8**)(map+2), *(u16*)map + 1);
+
 	int j;
 	u8* buf = (u8*)GDTBUF;
 	for(j=0;j<0x10000;j++)buf[j] = 0;
 
+	struct tss* tss = (void*)buf + 0x1000;
+	tss->rsp0 = 0x40000;
+
+	struct gdt* gdt = (void*)buf;
 	*(u64*)(buf+0x00) = 0;
 	*(u64*)(buf+0x08) = 0x002f9a0000000000;
 	*(u64*)(buf+0x10) = 0x002f920000000000;
-
-	lgdt(buf, 8*3-1);
+/*	gdt[2].limit01 = 103;
+	gdt[2].base01 = ((u64)tss)&0xffff;
+	gdt[2].base2 = (((u64)tss)>>16)&0xffff;
+	gdt[2].type = 0x89;
+	gdt[2].limit2 = 0;
+	gdt[2].base3 = (((u64)tss)>>24)&0xff;
+	*(u64*)(buf+0x20) = ((u64)tss)>>32;
+*/
+	loadgdtandtss();
 }

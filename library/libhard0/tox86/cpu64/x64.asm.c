@@ -29,6 +29,10 @@ u64 rdtsc()
 	asm volatile("rdtsc" : "=A"(ret) );
 	return ret;
 }
+void gettss()
+{
+	asm volatile("str %ax");
+}
 void lgdt(void* buf, u16 len)
 {
 	struct {
@@ -41,6 +45,13 @@ void lgdt(void* buf, u16 len)
 		: "m"(GDTR)
 	);
 }
+void sgdt(u8* buf)
+{
+	asm("sgdt %0"
+		:
+		: "m"(*buf)
+	);
+}
 void lidt(void* buf, u16 len)
 {
 	struct {
@@ -51,6 +62,13 @@ void lidt(void* buf, u16 len)
 	asm("lidt %0"
 		:
 		: "m"(IDTR)
+	);
+}
+void sidt(u8* buf)
+{
+	asm("sidt %0"
+		:
+		: "m"(*buf)
 	);
 }
 void wrmsr(u32 addr, u64 data)

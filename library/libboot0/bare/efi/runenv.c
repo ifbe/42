@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <efi.h>
 #include <efilib.h>
 #include "libboot.h"
@@ -80,6 +81,7 @@ static u64 parseinfo(EFI_GRAPHICS_PIXEL_FORMAT format, EFI_PIXEL_BITMASK bitmask
 		else{
 			return _rgba8880_;
 		}
+	default:break;
 	}
 	return 0;
 }

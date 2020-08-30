@@ -10,6 +10,9 @@ void isr_825x();
 void isr_8042();
 void isr_rtc();
 //
+u64 getisr03();
+u64 getisr80();
+//
 u8 in8(u16 port);
 void out8(u16 port, u8 data);
 void endofirq(int);
@@ -74,6 +77,9 @@ __attribute__((interrupt)) static void isr_0c(void* p, u64 e)
 __attribute__((interrupt)) static void isr_0d(struct int_frame* p, u64 e)
 {		//General Protection Fault
 	say("int0d: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
+	printmemory(p, 0x80);
+	asm("cli");
+	asm("hlt");
 }
 __attribute__((interrupt)) static void isr_0e(void* p, u64 e)
 {say("int0e:%llx\n", e);}		//Page Fault
@@ -152,16 +158,18 @@ void interruptinstall(int num, u64 isr)
 }
 void initidt()
 {
-	int j;
-	u64 temp = idthome;
-	u8* addr = (void*)temp;
-	for(j=0;j<0x1000;j++)addr[j] = 0;
+	say("@initidt\n");
 
+	int j;
+	u8* buf = (void*)idthome;
+	for(j=0;j<0x1000;j++)buf[j] = 0;
+say("stack@%x\n",&j);
 	//exception
 	interruptinstall(0x00, (u64)isr_00);
 	interruptinstall(0x01, (u64)isr_01);
 	interruptinstall(0x02, (u64)isr_02);
-	interruptinstall(0x03, (u64)isr_03);
+	//interruptinstall(0x03, (u64)isr_03);
+	interruptinstall(0x03, getisr03());
 	interruptinstall(0x04, (u64)isr_04);
 	interruptinstall(0x05, (u64)isr_05);
 	interruptinstall(0x06, (u64)isr_06);
@@ -197,8 +205,9 @@ void initidt()
 	interruptinstall(0x28, (u64)isr_28);
 
 	//systemcall
-	interruptinstall(0x80, (u64)isr_80);
+	//interruptinstall(0x80, (u64)isr_80);
+	interruptinstall(0x80, getisr80());
 
 	//
-	lidt(addr, 0xfff);
+	lidt(buf, 0xfff);
 }
