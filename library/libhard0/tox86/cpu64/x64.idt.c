@@ -168,8 +168,8 @@ say("stack@%x\n",&j);
 	interruptinstall(0x00, (u64)isr_00);
 	interruptinstall(0x01, (u64)isr_01);
 	interruptinstall(0x02, (u64)isr_02);
-	//interruptinstall(0x03, (u64)isr_03);
-	interruptinstall(0x03, getisr03());
+	interruptinstall(0x03, (u64)isr_03);
+	//interruptinstall(0x03, getisr03());
 	interruptinstall(0x04, (u64)isr_04);
 	interruptinstall(0x05, (u64)isr_05);
 	interruptinstall(0x06, (u64)isr_06);
@@ -205,8 +205,8 @@ say("stack@%x\n",&j);
 	interruptinstall(0x28, (u64)isr_28);
 
 	//systemcall
-	//interruptinstall(0x80, (u64)isr_80);
-	interruptinstall(0x80, getisr80());
+	interruptinstall(0x80, (u64)isr_80);
+	//interruptinstall(0x80, getisr80());
 
 	//
 	lidt(buf, 0xfff);
