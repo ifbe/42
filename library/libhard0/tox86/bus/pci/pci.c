@@ -43,29 +43,50 @@ struct pci
 
 void initpci()
 {
-	u32 addr,d1,d2;
-	u32 bus,dev,fun;
+	u32 idid,type;
+	u32 bus,dev,fun,addr;
 	say("@initpci\n");
 
-	for(bus=0;bus<256;bus++)
-	{
-	for(dev=0;dev<32;dev++)
-	{
-	for(fun=0;fun<8;fun++)
-	{
-		addr = (bus<<16) | (dev<<11) | (fun<<8);
-		out32(0xcf8, 0x80000000 | addr);
-		d1 = in32(0xcfc);
-		if(d1 == 0xffffffff)continue;
+	for(bus=0;bus<256;bus++){
+	for(dev=0;dev<32;dev++){
+	for(fun=0;fun<8;fun++){
+		addr = 0x80000000 | (bus<<16) | (dev<<11) | (fun<<8);
+		out32(0xcf8, addr);
+		idid = in32(0xcfc);
+		if(idid == 0xffffffff)continue;
 
-		out32(0xcf8, 0x80000000 | (addr+0x8));
-		d2 = in32(0xcfc);
-		if(d2 == 0xffffffff)continue;
+		out32(0xcf8, addr+8);
+		type = in32(0xcfc);
+		say("@%08x(%d,%d,%d): idid=%08x, type=%08x\n", addr,bus,dev,fun, idid,type);
 
-		say("bus:%d, dev:%d, fun:%d, vendor:%08x, class:%08x\n",
-			bus, dev, fun, d1, d2
-		);
-	}
-	}
-	}
+		switch(type >> 16){
+		case 0x0101:
+			//ide_portinit(addr);
+			break;
+
+		case 0x0106:
+			//if(0x01 == ((type>>8)&0xff))ahci_portinit(addr);
+			break;
+
+		case 0x0108:
+			//if(0x02 == ((type>>8)&0xff))nvme_portinit(addr);
+			break;
+
+		case 0x0200:
+			//if(0x100e8086 == idid)e1000_portinit(addr);
+			break;
+
+/*		case 0x0c03:
+			switch((type>>8)&0xff){
+			case 0x00:uhci_portinit(addr);break;
+			case 0x10:ohci_portinit(addr);break;
+			case 0x20:ehci_portinit(addr);break;
+			case 0x30:xhci_portinit(addr);break;
+			}//usbver
+			break;
+*/
+		}//class,subclass
+	}//fun
+	}//dev
+	}//bus
 }

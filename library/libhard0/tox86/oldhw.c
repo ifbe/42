@@ -1,8 +1,13 @@
 void initgdt();
 void initidt();
+//
+void initpci();
+//
 void init8259();        //interrupt controller
+//
 void init825x();        //timer.pit
 void initrtc();         //timer.rtc
+//
 void say(void*, ...);
 
 
@@ -18,7 +23,10 @@ void inithardware()
 	initgdt();
 	initidt();
 
+	initpci();
+
 	init8259();
+
 	init825x();
 	initrtc();
 
