@@ -1,69 +1,58 @@
-#include<math.h>
+#warning "this havn't been done"
 
 
-double getsin(double in)
+
+
+float getsin(float a)
 {
-	return sin(in);
+	return 0.0;
 }
-double arcsin(double x)
+float getcos(float a)
 {
-	return asin(x);
+	return 0.0;
 }
-
-
-double getcos(double in)
+float arcsin(float a)
 {
-	return cos(in);
+	return 0.0;
 }
-double arccos(double x)
+float arccos(float a)
 {
-	return acos(x);
+	return 0.0;
 }
-
-
-double gettan(double in)
+float arctanyx(float y, float x)
 {
-	return tan(in);
-}
-double arctan(double in)
-{
-	return atan(in);
+	return 0.0;
 }
 
 
-double gettanyx(double y, double x)
+
+
+float squareroot(float x)
 {
-	return tan(y/x);
+	return 0.0;
 }
-double arctanyx(double y, double x)
+float cuberoot(float x)
 {
-	return atan2(y, x);
+	return 0.0;
 }
 
 
-double squareroot(double in)
+
+
+//result=x^y
+float power(float x, float y)
 {
-	return sqrt(in);
+	return 0.0;
 }
-double exponent(double in)
+float exponent(float x)
 {
-	return exp(in);
-}
-double power(double a, double b)
-{
-        return pow(a, b);
+	return 0.0;
 }
 
 
-double lg(double in)
+
+
+float ln(float x)
 {
-	return log10(in);
-}
-double ln(double in)
-{
-	return log(in);
-}
-double log2(double in)
-{
-	return log(in)/log(2);
+	return 0.0;
 }

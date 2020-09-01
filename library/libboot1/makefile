@@ -1,20 +1,20 @@
-compiler ?= gcc
-cflag ?= -c -O2 -fPIC
+CC ?= gcc
+CF ?= -c -O2 -fPIC
 
 target:
-	$(compiler) $(cflag) worker.c
-	$(compiler) $(cflag) work/work.compile.c
-	$(compiler) $(cflag) work/work.kernel.c
-	$(compiler) $(cflag) work/work.myml.c
-	$(compiler) $(cflag) work/work.mython.c
-	$(compiler) $(cflag) loop/loop.exiter.c
-	$(compiler) $(cflag) loop/loop.poller.c
-	$(compiler) $(cflag) loop/loop.pulser.c
-	$(compiler) $(cflag) loop/loop.realer.c
-	$(compiler) $(cflag) loop/loop.waiter.c
-	$(compiler) $(cflag) std/stdev.c
-	$(compiler) $(cflag) std/stdin.c
-	$(compiler) $(cflag) std/stdout.c
-	$(compiler) $(cflag) std/stdrel.c
+	$(CC) $(CF) worker.c
+	$(CC) $(CF) work/work.compile.c
+	$(CC) $(CF) work/work.kernel.c
+	$(CC) $(CF) work/work.myml.c
+	$(CC) $(CF) work/work.mython.c
+	$(CC) $(CF) loop/loop.exiter.c
+	$(CC) $(CF) loop/loop.poller.c
+	$(CC) $(CF) loop/loop.pulser.c
+	$(CC) $(CF) loop/loop.realer.c
+	$(CC) $(CF) loop/loop.waiter.c
+	$(CC) $(CF) std/stdev.c
+	$(CC) $(CF) std/stdin.c
+	$(CC) $(CF) std/stdout.c
+	$(CC) $(CF) std/stdrel.c
 clean:
 	rm -f *.o *.a *.so

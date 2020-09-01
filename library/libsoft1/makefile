@@ -1,5 +1,5 @@
-compiler ?= gcc
-cflag ?= -c -O2 -fPIC -I.
+CC ?= gcc
+CF ?= -c -O2 -fPIC -I.
 SRC = \
 libalgo/liblang/assembly/asm.x64.c \
 libalgo/liblang/assembly/asm.arm.c \
@@ -216,7 +216,7 @@ OBJ = $(patsubst %.c,%.o,$(SRC))
 
 target: $(OBJ)
 %.o: %.c
-	$(compiler) $(cflag) $<
+	$(CC) $(CF) $<
 
 clean:
 	rm -f *.o *.a

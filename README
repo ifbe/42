@@ -2,12 +2,12 @@
 	the answer to life,the universe and everything~
 
 howto:
-	make -C project/none+x64+linux+glfw  #origin+arch+system+uiux
+	make -C project/none+x64+linux+glfw  #origin+board+system+uiux
 	./a.out datafile/myml/window/item-skygndrab.myml
 
 explain:
-	libboot0: pwrclk(power, clock, ...)
-	libboot1: worker(waiter, poller, ...)
+	libboot0: pwrclk(power, clock, debug)
+	libboot1: worker(kernel, drawer, ...)
 	libhard0: device
 	libhard1: driver
 	libsoft0: system

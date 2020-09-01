@@ -1,34 +1,26 @@
 library?=../../library
 datafile?=../../datafile
-flag="-c -O2 -I.."
+CF="-c -O2 -I.."
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s exe
 	make -s lib
 	cp a.exe ../..
 libboot0:
-	make -s -C $(library)/libboot0 wincmd \
-	cflag=$(flag)
+	make -s -C $(library)/libboot0 CF=$(CF) wincmd
 libboot1:
-	make -s -C $(library)/libboot1 \
-	cflag=$(flag)
+	make -s -C $(library)/libboot1 CF=$(CF)
 libhard0:
-	make -s -C $(library)/libhard0 winx64 \
-	cflag=$(flag)
+	make -s -C $(library)/libhard0 CF=$(CF) winx64
 libhard1:
-	make -s -C $(library)/libhard1 \
-	cflag=$(flag)
+	make -s -C $(library)/libhard1 CF=$(CF)
 libsoft0:
-	make -s -C $(library)/libsoft0 win \
-	cflag=$(flag)
+	make -s -C $(library)/libsoft0 CF=$(CF) win
 libsoft1:
-	make -s -C $(library)/libsoft1 \
-	cflag=$(flag)
+	make -s -C $(library)/libsoft1 CF=$(CF)
 libuser0:
-	make -s -C $(library)/libuser0 winsdl \
-	cflag=$(flag)
+	make -s -C $(library)/libuser0 CF=$(CF) winsdl
 libuser1:
-	make -s -C $(library)/libuser1 \
-	cflag=$(flag)
+	make -s -C $(library)/libuser1 CF=$(CF)
 lib:
 	rm -f $(library)/libboot0/entry.o
 	ar crs 42.a \

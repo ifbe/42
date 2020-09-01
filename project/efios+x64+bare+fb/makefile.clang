@@ -6,28 +6,28 @@ all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1 gnue
 	make -f makefile.clang -s link
 libboot0:
 	make -s -C $(library)/libboot0 efios \
-	compiler=$(COMPILER) cflag=$(CFLAG)
+	CC=$(COMPILER) CF=$(CFLAG)
 libboot1:
 	make -s -C $(library)/libboot1 \
-	compiler=$(COMPILER) cflag=$(CFLAG)
+	CC=$(COMPILER) CF=$(CFLAG)
 libhard0:
 	make -s -C $(library)/libhard0 barex64 \
-	compiler=$(COMPILER) cflag=$(CFLAG)
+	CC=$(COMPILER) CF=$(CFLAG)
 libhard1:
 	make -s -C $(library)/libhard1 \
-	compiler=$(COMPILER) cflag=$(CFLAG)
+	CC=$(COMPILER) CF=$(CFLAG)
 libsoft0:
 	make -s -C $(library)/libsoft0 bare \
-	compiler=$(COMPILER) cflag=$(CFLAG)
+	CC=$(COMPILER) CF=$(CFLAG)
 libsoft1:
 	make -s -C $(library)/libsoft1 \
-	compiler=$(COMPILER) cflag=$(CFLAG)
+	CC=$(COMPILER) CF=$(CFLAG)
 libuser0:
 	make -s -C $(library)/libuser0 efifb \
-	compiler=$(COMPILER) cflag=$(CFLAG)
+	CC=$(COMPILER) CF=$(CFLAG)
 libuser1:
 	make -s -C $(library)/libuser1 \
-	compiler=$(COMPILER) cflag=$(CFLAG)
+	CC=$(COMPILER) CF=$(CFLAG)
 gnuefi:
 	$(COMPILER) $(CFLAG) -o data.o \
 	-I$(library)/gnu-efi/inc \

@@ -1,5 +1,5 @@
-compiler ?= gcc
-cflag ?= -c -O2 -fPIC
+CC ?= gcc
+CF ?= -c -O2 -fPIC
 
 
 
@@ -7,28 +7,28 @@ cflag ?= -c -O2 -fPIC
 #---------------------arm32-------------------------
 .PHONY:arm
 arm:
-	$(compiler) $(cflag) toarm/cpu32/arm.fp.c
-	$(compiler) $(cflag) device.c
+	$(CC) $(CF) toarm/cpu32/arm.fp.c
+	$(CC) $(CF) device.c
 
 linuxarm:arm
-	$(compiler) $(cflag) inlinux/hardware.c
-	$(compiler) $(cflag) inlinux/linux.wire.bt.c
-	$(compiler) $(cflag) inlinux/linux.wire.i2c.c
-	$(compiler) $(cflag) inlinux/linux.wire.gpio.c
-	$(compiler) $(cflag) inlinux/linux.wire.pci.c
-	$(compiler) $(cflag) inlinux/linux.wire.spi.c
-	$(compiler) $(cflag) inlinux/linux.wire.usb.c
-	$(compiler) $(cflag) inlinux/linux.wire.wifi.c
+	$(CC) $(CF) inlinux/hardware.c
+	$(CC) $(CF) inlinux/linux.wire.bt.c
+	$(CC) $(CF) inlinux/linux.wire.i2c.c
+	$(CC) $(CF) inlinux/linux.wire.gpio.c
+	$(CC) $(CF) inlinux/linux.wire.pci.c
+	$(CC) $(CF) inlinux/linux.wire.spi.c
+	$(CC) $(CF) inlinux/linux.wire.usb.c
+	$(CC) $(CF) inlinux/linux.wire.wifi.c
 
 linuxpi32:arm
-	$(compiler) $(cflag) torpi/hardware.c
-	$(compiler) $(cflag) torpi/rpi.wiringpi.c
-	$(compiler) $(cflag) inlinux/linux.wire.bt.c
-	$(compiler) $(cflag) inlinux/linux.wire.i2c.c
-	$(compiler) $(cflag) inlinux/linux.wire.pci.c
-	$(compiler) $(cflag) inlinux/linux.wire.spi.c
-	$(compiler) $(cflag) inlinux/linux.wire.usb.c
-	$(compiler) $(cflag) inlinux/linux.wire.wifi.c
+	$(CC) $(CF) torpi/hardware.c
+	$(CC) $(CF) torpi/lib/rpi.wiringpi.c
+	$(CC) $(CF) inlinux/linux.wire.bt.c
+	$(CC) $(CF) inlinux/linux.wire.i2c.c
+	$(CC) $(CF) inlinux/linux.wire.pci.c
+	$(CC) $(CF) inlinux/linux.wire.spi.c
+	$(CC) $(CF) inlinux/linux.wire.usb.c
+	$(CC) $(CF) inlinux/linux.wire.wifi.c
 
 
 
@@ -36,28 +36,35 @@ linuxpi32:arm
 #---------------------arm64-------------------------
 .PHONY:arm64
 arm64:
-	$(compiler) $(cflag) toarm/cpu64/arm64.fp.c
-	$(compiler) $(cflag) device.c
+	$(CC) $(CF) toarm/cpu64/arm64.fp.c
+	$(CC) $(CF) device.c
+
+barepi64:arm64
+	$(CC) $(CF) toarm/pi3.c
+	$(CC) $(CF) toarm/rpi/rpi.gpio.c
+	$(CC) $(CF) toarm/rpi/rpi.uart.c
+	$(CC) $(CF) toarm/rpi/rpi.i2c.c
+	$(CC) $(CF) toarm/rpi/rpi.spi.c
 
 linuxarm64:arm64
-	$(compiler) $(cflag) inlinux/hardware.c
-	$(compiler) $(cflag) inlinux/linux.wire.bt.c
-	$(compiler) $(cflag) inlinux/linux.wire.gpio.c
-	$(compiler) $(cflag) inlinux/linux.wire.i2c.c
-	$(compiler) $(cflag) inlinux/linux.wire.pci.c
-	$(compiler) $(cflag) inlinux/linux.wire.spi.c
-	$(compiler) $(cflag) inlinux/linux.wire.usb.c
-	$(compiler) $(cflag) inlinux/linux.wire.wifi.c
+	$(CC) $(CF) inlinux/hardware.c
+	$(CC) $(CF) inlinux/linux.wire.bt.c
+	$(CC) $(CF) inlinux/linux.wire.gpio.c
+	$(CC) $(CF) inlinux/linux.wire.i2c.c
+	$(CC) $(CF) inlinux/linux.wire.pci.c
+	$(CC) $(CF) inlinux/linux.wire.spi.c
+	$(CC) $(CF) inlinux/linux.wire.usb.c
+	$(CC) $(CF) inlinux/linux.wire.wifi.c
 
 linuxpi64:arm64
-	$(compiler) $(cflag) inlinux/hardware.c
-	$(compiler) $(cflag) inlinux/linux.wire.bt.c
-	$(compiler) $(cflag) inlinux/linux.wire.gpio.c
-	$(compiler) $(cflag) inlinux/linux.wire.i2c.c
-	$(compiler) $(cflag) inlinux/linux.wire.pci.c
-	$(compiler) $(cflag) inlinux/linux.wire.spi.c
-	$(compiler) $(cflag) inlinux/linux.wire.usb.c
-	$(compiler) $(cflag) inlinux/linux.wire.wifi.c
+	$(CC) $(CF) inlinux/hardware.c
+	$(CC) $(CF) inlinux/linux.wire.bt.c
+	$(CC) $(CF) inlinux/linux.wire.gpio.c
+	$(CC) $(CF) inlinux/linux.wire.i2c.c
+	$(CC) $(CF) inlinux/linux.wire.pci.c
+	$(CC) $(CF) inlinux/linux.wire.spi.c
+	$(CC) $(CF) inlinux/linux.wire.usb.c
+	$(CC) $(CF) inlinux/linux.wire.wifi.c
 
 
 
@@ -65,8 +72,8 @@ linuxpi64:arm64
 #---------------------mips32-------------------------
 .PHONY:mips
 mips:
-	$(compiler) $(cflag) tomips/cpu32/mips.fp.c
-	$(compiler) $(cflag) device.c
+	$(CC) $(CF) tomips/cpu32/mips.fp.c
+	$(CC) $(CF) device.c
 
 
 
@@ -74,8 +81,8 @@ mips:
 #---------------------mips64-------------------------
 .PHONY:mips64
 mips64:
-	$(compiler) $(cflag) tomips/cpu64/mips64.fp.c
-	$(compiler) $(cflag) device.c
+	$(CC) $(CF) tomips/cpu64/mips64.fp.c
+	$(CC) $(CF) device.c
 
 
 
@@ -83,10 +90,10 @@ mips64:
 #---------------------x86-------------------------
 .PHONY:x86
 x86:
-	$(compiler) $(cflag) tox86/cpu32/x86.endian.c
-	$(compiler) $(cflag) tox86/cpu32/x86.fp.c
-	$(compiler) $(cflag) tox86/cpu32/x86.port.c
-	$(compiler) $(cflag) device.c
+	$(CC) $(CF) tox86/cpu32/x86.endian.c
+	$(CC) $(CF) tox86/cpu32/x86.fp.c
+	$(CC) $(CF) tox86/cpu32/x86.port.c
+	$(CC) $(CF) device.c
 
 .PHONY:linuxx86
 linuxx86:x86
@@ -96,10 +103,10 @@ macx86:x86
 
 .PHONY:winx86
 winx86:x86
-	$(compiler) $(cflag) tox86/cpu32/x86.endian.c
-	$(compiler) $(cflag) tox86/cpu32/x86.fp.c
-	$(compiler) $(cflag) tox86/cpu32/x86.port.c
-	$(compiler) $(cflag) device.c
+	$(CC) $(CF) tox86/cpu32/x86.endian.c
+	$(CC) $(CF) tox86/cpu32/x86.fp.c
+	$(CC) $(CF) tox86/cpu32/x86.port.c
+	$(CC) $(CF) device.c
 
 
 
@@ -107,87 +114,87 @@ winx86:x86
 #---------------------x64-------------------------
 .PHONY:x64
 x64:
-	$(compiler) $(cflag) tox86/cpu64/x64.endian.c
-	$(compiler) $(cflag) tox86/cpu64/x64.fp.c
-	$(compiler) $(cflag) tox86/cpu64/x64.port.c
-	$(compiler) $(cflag) device.c
+	$(CC) $(CF) tox86/cpu64/x64.endian.c
+	$(CC) $(CF) tox86/cpu64/x64.fp.c
+	$(CC) $(CF) tox86/cpu64/x64.port.c
+	$(CC) $(CF) device.c
 
 .PHONY:barex64
 barex64:x64
-	$(compiler) $(cflag) tox86/oldhw.c
-	$(compiler) $(cflag) tox86/cpu64/x64.asm.c
-	$(compiler) $(cflag) tox86/cpu64/x64.page.c
-	$(compiler) $(cflag) tox86/cpu64/x64.gdtmake.c
+	$(CC) $(CF) tox86/oldhw.c
+	$(CC) $(CF) tox86/cpu64/x64.asm.c
+	$(CC) $(CF) tox86/cpu64/x64.page.c
+	$(CC) $(CF) tox86/cpu64/x64.gdtmake.c
 	yasm -a x86 -m amd64 -f elf64 -o x64.gdtload.o tox86/cpu64/x64.gdtload.asm
-	$(compiler) $(cflag) -mgeneral-regs-only tox86/cpu64/x64.idt.c
+	$(CC) $(CF) -mgeneral-regs-only tox86/cpu64/x64.idt.c
 	yasm -a x86 -m amd64 -f elf64 -o x64.idthelp.o tox86/cpu64/x64.idthelp.asm
-	$(compiler) $(cflag) tox86/irq/8259.c
-	#$(compiler) $(cflag) tox86/irq/apic.c
-	$(compiler) $(cflag) tox86/bus/input/8042.c
-	$(compiler) $(cflag) tox86/bus/pci/pci.c
-	$(compiler) $(cflag) tox86/timer/825x.c
-	$(compiler) $(cflag) tox86/timer/rtc.c
-	$(compiler) $(cflag) tox86/wire/bare.wire.bt.c
-	$(compiler) $(cflag) tox86/wire/bare.wire.gpio.c
-	$(compiler) $(cflag) tox86/wire/bare.wire.i2c.c
-	$(compiler) $(cflag) tox86/wire/bare.wire.spi.c
-	$(compiler) $(cflag) tox86/wire/bare.wire.uart.c
-	$(compiler) $(cflag) tox86/wire/bare.wire.usb.c
-	$(compiler) $(cflag) tox86/wire/bare.wire.wifi.c
+	$(CC) $(CF) tox86/irq/8259.c
+	#$(CC) $(CF) tox86/irq/apic.c
+	$(CC) $(CF) tox86/bus/input/8042.c
+	$(CC) $(CF) tox86/bus/pci/pci.c
+	$(CC) $(CF) tox86/timer/825x.c
+	$(CC) $(CF) tox86/timer/rtc.c
+	$(CC) $(CF) tox86/wire/bare.wire.bt.c
+	$(CC) $(CF) tox86/wire/bare.wire.gpio.c
+	$(CC) $(CF) tox86/wire/bare.wire.i2c.c
+	$(CC) $(CF) tox86/wire/bare.wire.spi.c
+	$(CC) $(CF) tox86/wire/bare.wire.uart.c
+	$(CC) $(CF) tox86/wire/bare.wire.usb.c
+	$(CC) $(CF) tox86/wire/bare.wire.wifi.c
 
 .PHONY:efix64
 efix64:x64
-	$(compiler) $(cflag) tox86/cpu64/x64.asm.c
-	$(compiler) $(cflag) tox86/cpu64/x64.page.c
-	$(compiler) $(cflag) tox86/cpu64/x64.gdt.c
-	$(compiler) $(cflag) -mgeneral-regs-only tox86/cpu64/x64.idt.c
-	$(compiler) $(cflag) tox86/irq/8259.c
-	#$(compiler) $(cflag) tox86/irq/apic.c
-	$(compiler) $(cflag) tox86/bus/input/8042.c
-	$(compiler) $(cflag) tox86/bus/pci/pci.c
-	$(compiler) $(cflag) tox86/timer/825x.c
-	$(compiler) $(cflag) tox86/timer/rtc.c
-	$(compiler) $(cflag) inefi/efi.wire.bt.c
-	$(compiler) $(cflag) inefi/efi.wire.gpio.c
-	$(compiler) $(cflag) inefi/efi.wire.i2c.c
-	$(compiler) $(cflag) inefi/efi.wire.spi.c
-	$(compiler) $(cflag) inefi/efi.wire.uart.c
-	$(compiler) $(cflag) inefi/efi.wire.usb.c
-	$(compiler) $(cflag) inefi/efi.wire.wifi.c
-	$(compiler) $(cflag) inefi/hardware.c
+	$(CC) $(CF) tox86/cpu64/x64.asm.c
+	$(CC) $(CF) tox86/cpu64/x64.page.c
+	$(CC) $(CF) tox86/cpu64/x64.gdt.c
+	$(CC) $(CF) -mgeneral-regs-only tox86/cpu64/x64.idt.c
+	$(CC) $(CF) tox86/irq/8259.c
+	#$(CC) $(CF) tox86/irq/apic.c
+	$(CC) $(CF) tox86/bus/input/8042.c
+	$(CC) $(CF) tox86/bus/pci/pci.c
+	$(CC) $(CF) tox86/timer/825x.c
+	$(CC) $(CF) tox86/timer/rtc.c
+	$(CC) $(CF) inefi/efi.wire.bt.c
+	$(CC) $(CF) inefi/efi.wire.gpio.c
+	$(CC) $(CF) inefi/efi.wire.i2c.c
+	$(CC) $(CF) inefi/efi.wire.spi.c
+	$(CC) $(CF) inefi/efi.wire.uart.c
+	$(CC) $(CF) inefi/efi.wire.usb.c
+	$(CC) $(CF) inefi/efi.wire.wifi.c
+	$(CC) $(CF) inefi/hardware.c
 
 .PHONY:linuxx64
 linuxx64:x64
-	$(compiler) $(cflag) inlinux/hardware.c
-	$(compiler) $(cflag) inlinux/linux.wire.bt.c
-	$(compiler) $(cflag) inlinux/linux.wire.i2c.c
-	$(compiler) $(cflag) inlinux/linux.wire.gpio.c
-	$(compiler) $(cflag) inlinux/linux.wire.pci.c
-	$(compiler) $(cflag) inlinux/linux.wire.spi.c
-	$(compiler) $(cflag) inlinux/linux.wire.usb.c
-	$(compiler) $(cflag) inlinux/linux.wire.wifi.c
+	$(CC) $(CF) inlinux/hardware.c
+	$(CC) $(CF) inlinux/linux.wire.bt.c
+	$(CC) $(CF) inlinux/linux.wire.i2c.c
+	$(CC) $(CF) inlinux/linux.wire.gpio.c
+	$(CC) $(CF) inlinux/linux.wire.pci.c
+	$(CC) $(CF) inlinux/linux.wire.spi.c
+	$(CC) $(CF) inlinux/linux.wire.usb.c
+	$(CC) $(CF) inlinux/linux.wire.wifi.c
 
 .PHONY:macx64
 macx64:x64
-	$(compiler) $(cflag) inmac/hardware.c
-	$(compiler) $(cflag) inmac/mac.wire.bt.c
-	$(compiler) $(cflag) inmac/mac.wire.i2c.c
-	$(compiler) $(cflag) inmac/mac.wire.gpio.c
-	$(compiler) $(cflag) inmac/mac.wire.pci.c
-	$(compiler) $(cflag) inmac/mac.wire.spi.c
-	$(compiler) $(cflag) inmac/mac.wire.usb.c
-	$(compiler) $(cflag) inmac/mac.wire.wifi.c
+	$(CC) $(CF) inmac/hardware.c
+	$(CC) $(CF) inmac/mac.wire.bt.c
+	$(CC) $(CF) inmac/mac.wire.i2c.c
+	$(CC) $(CF) inmac/mac.wire.gpio.c
+	$(CC) $(CF) inmac/mac.wire.pci.c
+	$(CC) $(CF) inmac/mac.wire.spi.c
+	$(CC) $(CF) inmac/mac.wire.usb.c
+	$(CC) $(CF) inmac/mac.wire.wifi.c
 
 .PHONY:winx64
 winx64:x64
-	$(compiler) $(cflag) inwin/hardware.c
-	$(compiler) $(cflag) inwin/win.wire.bt.c
-	$(compiler) $(cflag) inwin/win.wire.i2c.c
-	$(compiler) $(cflag) inwin/win.wire.gpio.c
-	$(compiler) $(cflag) inwin/win.wire.pci.c
-	$(compiler) $(cflag) inwin/win.wire.spi.c
-	$(compiler) $(cflag) inwin/win.wire.usb.c
-	$(compiler) $(cflag) inwin/win.wire.wifi.c
+	$(CC) $(CF) inwin/hardware.c
+	$(CC) $(CF) inwin/win.wire.bt.c
+	$(CC) $(CF) inwin/win.wire.i2c.c
+	$(CC) $(CF) inwin/win.wire.gpio.c
+	$(CC) $(CF) inwin/win.wire.pci.c
+	$(CC) $(CF) inwin/win.wire.spi.c
+	$(CC) $(CF) inwin/win.wire.usb.c
+	$(CC) $(CF) inwin/win.wire.wifi.c
 
 clean:
 	rm -f *.o *.a

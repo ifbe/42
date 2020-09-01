@@ -1,0 +1,10 @@
+
+
+
+
+void freehardware()
+{
+}
+void inithardware()
+{
+}

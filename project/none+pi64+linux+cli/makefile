@@ -1,25 +1,26 @@
 library?=../../library
-flag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -I.."
+CC="aarch64-linux-gnu-gcc"
+CF="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -I.."
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	+make -s exe
 	+make -s lib
 	cp a.out ../..
 libboot0:
-	+make -s -C $(library)/libboot0 compiler="aarch64-linux-gnu-gcc" cflag=$(flag) none
+	+make -s -C $(library)/libboot0 CC=$(CC) CF=$(CF) none
 libboot1:
-	+make -s -C $(library)/libboot1 compiler="aarch64-linux-gnu-gcc" cflag=$(flag)
+	+make -s -C $(library)/libboot1 CC=$(CC) CF=$(CF)
 libhard0:
-	+make -s -C $(library)/libhard0 compiler="aarch64-linux-gnu-gcc" cflag=$(flag) linuxpi64
+	+make -s -C $(library)/libhard0 CC=$(CC) CF=$(CF) linuxpi64
 libhard1:
-	+make -s -C $(library)/libhard1 compiler="aarch64-linux-gnu-gcc" cflag=$(flag)
+	+make -s -C $(library)/libhard1 CC=$(CC) CF=$(CF)
 libsoft0:
-	+make -s -C $(library)/libsoft0 compiler="aarch64-linux-gnu-gcc" cflag=$(flag) linux
+	+make -s -C $(library)/libsoft0 CC=$(CC) CF=$(CF) linux
 libsoft1:
-	+make -s -C $(library)/libsoft1 compiler="aarch64-linux-gnu-gcc" cflag=$(flag)
+	+make -s -C $(library)/libsoft1 CC=$(CC) CF=$(CF)
 libuser0:
-	+make -s -C $(library)/libuser0 compiler="aarch64-linux-gnu-gcc" cflag=$(flag) linuxcli
+	+make -s -C $(library)/libuser0 CC=$(CC) CF=$(CF) linuxcli
 libuser1:
-	+make -s -C $(library)/libuser1 compiler="aarch64-linux-gnu-gcc" cflag=$(flag)
+	+make -s -C $(library)/libuser1 CC=$(CC) CF=$(CF)
 lib:
 	rm -f $(library)/libboot0/entry.o
 	ar crs 42.a \

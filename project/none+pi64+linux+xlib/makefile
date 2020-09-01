@@ -1,25 +1,25 @@
 library?=../../library
-flag="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -I.."
+CF="-c -O2 -fPIC -Wno-pointer-to-int-cast -Wno-int-to-pointer-cast -I.."
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	+make -s exe
 	+make -s lib
 	cp a.out ../..
 libboot0:
-	+make -s -C $(library)/libboot0 cflag=$(flag) none
+	+make -s -C $(library)/libboot0 CF=$(CF) none
 libboot1:
-	+make -s -C $(library)/libboot1 cflag=$(flag)
+	+make -s -C $(library)/libboot1 CF=$(CF)
 libhard0:
-	+make -s -C $(library)/libhard0 cflag=$(flag) linuxpi64
+	+make -s -C $(library)/libhard0 CF=$(CF) linuxpi64
 libhard1:
-	+make -s -C $(library)/libhard1 cflag=$(flag)
+	+make -s -C $(library)/libhard1 CF=$(CF)
 libsoft0:
-	+make -s -C $(library)/libsoft0 cflag=$(flag) linux
+	+make -s -C $(library)/libsoft0 CF=$(CF) linux
 libsoft1:
-	+make -s -C $(library)/libsoft1 cflag=$(flag)
+	+make -s -C $(library)/libsoft1 CF=$(CF)
 libuser0:
-	+make -s -C $(library)/libuser0 cflag=$(flag) linuxxlib
+	+make -s -C $(library)/libuser0 CF=$(CF) linuxxlib
 libuser1:
-	+make -s -C $(library)/libuser1 cflag=$(flag)
+	+make -s -C $(library)/libuser1 CF=$(CF)
 lib:
 	rm -f $(library)/libboot0/entry.o
 	ar crs 42.a \

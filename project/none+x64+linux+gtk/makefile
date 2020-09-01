@@ -5,28 +5,28 @@ all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	cp a.out ../..
 libboot0:
 	+make -s -C $(library)/libboot0 none \
-	cflag="-c -O2 -fPIC -I.."
+	CF="-c -O2 -fPIC -I.."
 libboot1:
 	+make -s -C $(library)/libboot1 \
-	cflag="-c -O2 -fPIC -I.."
+	CF="-c -O2 -fPIC -I.."
 libhard0:
 	+make -s -C $(library)/libhard0 linuxx64 \
-	cflag="-c -O2 -fPIC -I.."
+	CF="-c -O2 -fPIC -I.."
 libhard1:
 	+make -s -C $(library)/libhard1 \
-	cflag="-c -O2 -fPIC -I.."
+	CF="-c -O2 -fPIC -I.."
 libsoft0:
 	+make -s -C $(library)/libsoft0 linux \
-	cflag="-c -O2 -fPIC -I.."
+	CF="-c -O2 -fPIC -I.."
 libsoft1:
 	+make -s -C $(library)/libsoft1 \
-	cflag="-c -O2 -fPIC -I.."
+	CF="-c -O2 -fPIC -I.."
 libuser0:
 	+make -s -C $(library)/libuser0 linuxgtk \
-	cflag="-c -O2 -fPIC -I.."
+	CF="-c -O2 -fPIC -I.."
 libuser1:
 	+make -s -C $(library)/libuser1 \
-	cflag="-c -O2 -fPIC -I.."
+	CF="-c -O2 -fPIC -I.."
 lib:
 	rm -f $(library)/libboot0/entry.o
 	ar crs 42.a \

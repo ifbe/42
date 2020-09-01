@@ -201,7 +201,7 @@ double f2xm1(double x)
 	);
 	return result;
 }
-//*/result=x^y
+//result=x^y
 double power(double x,double y)
 {
 	double result;

@@ -1,25 +1,25 @@
 library?=../../library
-flag="-c -O2 -fno-stack-protector -I.."
+CF="-c -O2 -fno-stack-protector -I.."
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s exe
 	make -s lib
 	cp a.out ../..
 libboot0:
-	make -s -C $(library)/libboot0 compiler="clang" cflag=$(flag) none
+	make -s -C $(library)/libboot0 CC="clang" CF=$(CF) none
 libboot1:
-	make -s -C $(library)/libboot1 compiler="clang" cflag=$(flag)
+	make -s -C $(library)/libboot1 CC="clang" CF=$(CF)
 libhard0:
-	make -s -C $(library)/libhard0 compiler="clang" cflag=$(flag) macx64
+	make -s -C $(library)/libhard0 CC="clang" CF=$(CF) macx64
 libhard1:
-	make -s -C $(library)/libhard1 compiler="clang" cflag=$(flag)
+	make -s -C $(library)/libhard1 CC="clang" CF=$(CF)
 libsoft0:
-	make -s -C $(library)/libsoft0 compiler="clang" cflag=$(flag) mac
+	make -s -C $(library)/libsoft0 CC="clang" CF=$(CF) mac
 libsoft1:
-	make -s -C $(library)/libsoft1 compiler="clang" cflag=$(flag)
+	make -s -C $(library)/libsoft1 CC="clang" CF=$(CF)
 libuser0:
-	make -s -C $(library)/libuser0 compiler="clang" cflag=$(flag) macmetal
+	make -s -C $(library)/libuser0 CC="clang" CF=$(CF) macmetal
 libuser1:
-	make -s -C $(library)/libuser1 compiler="clang" cflag=$(flag)
+	make -s -C $(library)/libuser1 CC="clang" CF=$(CF)
 lib:
 	rm -f $(library)/libboot0/entry.o
 	libtool -static -o 42.a \

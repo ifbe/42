@@ -2,21 +2,21 @@ library?=../../library
 flag?=-c -fPIC -ffreestanding -I.. -I../gnu-efi/inc -I../gnu-efi/inc/x86_64 -I../gnu-efi/inc/protocol
 all:
 	make -s -C $(library)/libboot0 efiapp \
-	compiler="x86_64-w64-mingw32-gcc" cflag="$(flag)"
+	CC="x86_64-w64-mingw32-gcc" CF="$(flag)"
 	make -s -C $(library)/libboot1 \
-	compiler="x86_64-w64-mingw32-gcc" cflag="$(flag)"
+	CC="x86_64-w64-mingw32-gcc" CF="$(flag)"
 	make -s -C $(library)/libhard0 efix64 \
-	compiler="x86_64-w64-mingw32-gcc" cflag="$(flag)"
+	CC="x86_64-w64-mingw32-gcc" CF="$(flag)"
 	make -s -C $(library)/libhard1 \
-	compiler="x86_64-w64-mingw32-gcc" cflag="$(flag)"
+	CC="x86_64-w64-mingw32-gcc" CF="$(flag)"
 	make -s -C $(library)/libsoft0 efiapp \
-	compiler="x86_64-w64-mingw32-gcc" cflag="$(flag)"
+	CC="x86_64-w64-mingw32-gcc" CF="$(flag)"
 	make -s -C $(library)/libsoft1 \
-	compiler="x86_64-w64-mingw32-gcc" cflag="$(flag)"
+	CC="x86_64-w64-mingw32-gcc" CF="$(flag)"
 	make -s -C $(library)/libuser0 efifb \
-	compiler="x86_64-w64-mingw32-gcc" cflag="$(flag)"
+	CC="x86_64-w64-mingw32-gcc" CF="$(flag)"
 	make -s -C $(library)/libuser1 \
-	compiler="x86_64-w64-mingw32-gcc" cflag="$(flag)"
+	CC="x86_64-w64-mingw32-gcc" CF="$(flag)"
 	make -s gnuefi
 	make -s link
 gnuefi:

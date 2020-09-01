@@ -1,21 +1,21 @@
 library?=../../library
 all:
 	make -s -C $(library)/libboot0 none \
-	compiler="emcc"
+	CC="emcc"
 	make -s -C $(library)/libboot1 \
-	compiler="emcc"
+	CC="emcc"
 	make -s -C $(library)/libhard0 all \
-	compiler="emcc"
+	CC="emcc"
 	make -s -C $(library)/libhard1 \
-	compiler="emcc"
+	CC="emcc"
 	make -s -C $(library)/libsoft0 wasm \
-	compiler="emcc"
+	CC="emcc"
 	make -s -C $(library)/libsoft1 \
-	compiler="emcc"
+	CC="emcc"
 	make -s -C $(library)/libuser0 wasmcli \
-	compiler="emcc"
+	CC="emcc"
 	make -s -C $(library)/libuser1 \
-	compiler="emcc"
+	CC="emcc"
 	make -s a
 	make -s so
 	make -s program

@@ -1,14 +1,14 @@
-compiler ?= gcc
-cflag ?= -c -O2 -fPIC
+CC ?= gcc
+CF ?= -c -O2 -fPIC
 
 target:
-	$(compiler) $(cflag) sensor/baro/baro.ms5611.c
-	$(compiler) $(cflag) sensor/gyro/gyro.l3gd20.c
-	$(compiler) $(cflag) sensor/pack/g_a_b.icm20789.c
-	$(compiler) $(cflag) sensor/pack/g_a_m.lsm9ds1.c
-	$(compiler) $(cflag) sensor/pack/g_a_m.mpu9250.c
-	$(compiler) $(cflag) hwinfo/hwinfo.acpi.c
-	$(compiler) $(cflag) hwinfo/hwinfo.dts.c
-	$(compiler) $(cflag) driver.c
+	$(CC) $(CF) sensor/baro/baro.ms5611.c
+	$(CC) $(CF) sensor/gyro/gyro.l3gd20.c
+	$(CC) $(CF) sensor/pack/g_a_b.icm20789.c
+	$(CC) $(CF) sensor/pack/g_a_m.lsm9ds1.c
+	$(CC) $(CF) sensor/pack/g_a_m.mpu9250.c
+	$(CC) $(CF) hwinfo/hwinfo.acpi.c
+	$(CC) $(CF) hwinfo/hwinfo.dts.c
+	$(CC) $(CF) driver.c
 clean:
 	rm -f *.o
