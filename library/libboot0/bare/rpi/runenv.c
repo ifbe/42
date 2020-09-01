@@ -1,11 +1,18 @@
-#warning "this havn't been done"
+#include "libboot.h"
+int miniuart_getc();
 
 
 
 
+static struct event ev[2];
 void* pollenv()
 {
-	return 0;
+	int ret = miniuart_getc();
+	if(ret > 0xff)return 0;
+
+	ev->why = ret;
+	ev->what = _char_;
+	return ev;
 }
 
 

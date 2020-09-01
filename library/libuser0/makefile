@@ -52,6 +52,9 @@ bare8bit:target bare
 .PHONY:barefb
 barefb:target bare
 	$(CC) $(CF) v2r-window/os-bare/bare.fb.c
+.PHONY:rpifb
+rpifb:target bare
+	$(CC) $(CF) v2r-window/os-bare/bare.rpifb.c
 ##########################################################
 
 
