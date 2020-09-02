@@ -34,7 +34,7 @@ libuser0:
 	make -s -C $(library)/libuser0 AS=$(AS) CC=$(CC) CF=$(CF) rpifb
 libuser1:
 	make -s -C $(library)/libuser1 AS=$(AS) CC=$(CC) CF=$(CF)
-qemu:
+rpi3:
 	qemu-system-aarch64 -M raspi3 -serial null -serial stdio -drive file=../../../live/live.img,if=sd,format=raw -kernel kernel8.img
 clean:
 	rm -f *.o *.out *.bin *.img

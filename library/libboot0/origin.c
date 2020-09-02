@@ -106,6 +106,7 @@ void* origincreate(u64 type, void* func, int argc, u8** argv)
 		say("type=%.8s, func@%p, argc=%d, argv@%p\n", &type, func, argc, argv);
 
 		tmp->type = type;
+		tmp->buf = argv;
 		return tmp;
 	}
 	//lib

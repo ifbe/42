@@ -14,4 +14,5 @@ int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
 void printmemory(void*, int);
+void printmmio(void*, int);
 void say(void*, ...);

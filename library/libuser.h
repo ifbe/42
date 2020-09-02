@@ -221,7 +221,9 @@ void* eventwrite(u64,u64,u64,u64);
 int htmlprintf(struct entity*, int, char*, ...);
 int mysnprintf(void*, int, void*, ...);
 int myvsnprintf(void*, int, void*, __builtin_va_list);
+//
 int printmemory(void*, int);
+int printmmio(void*, int);
 int say(void*, ...);
 
 #ifdef __cplusplus

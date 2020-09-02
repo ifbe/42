@@ -28,4 +28,5 @@ int ncmp(void*, void*, int);
 int cmp(void*, void*);
 //
 int printmemory(void*, int);
+int printmmio(void*, int);
 int say(void*, ...);

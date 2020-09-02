@@ -37,7 +37,8 @@ u64 timeread();
 //
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
-//
 int mysnprintf(void*, int, void*, ...);
+//
 int printmemory(void*, int);
+int printmmmio(void*, int);
 int say(void*, ...);

@@ -3,9 +3,9 @@
 
 
 
-int main(u32 r0, u32 r1, u32 r2)
+int main(u32 dtb)
 {
-	void* all = origincreate(_start_, main, 0, 0);
+	void* all = origincreate(_start_, main, 0, (void*)(u64)dtb);
 	void* wrk = workercreate(_kernel_, 0, 0, 0);
 	workerdelete(wrk);
 	origindelete(all);
