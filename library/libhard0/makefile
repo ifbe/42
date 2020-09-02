@@ -41,6 +41,7 @@ arm64:
 
 barepi64:arm64
 	$(CC) $(CF) toarm/pi3.c
+	$(CC) $(CF) toarm/rpi/rpi.sd.c
 	$(CC) $(CF) toarm/rpi/rpi.mbox.c
 	$(CC) $(CF) toarm/rpi/rpi.gpio.c
 	$(CC) $(CF) toarm/rpi/rpi.uart.c
@@ -130,7 +131,7 @@ barex64:x64
 	$(CC) $(CF) -mgeneral-regs-only tox86/cpu64/x64.idt.c
 	yasm -a x86 -m amd64 -f elf64 -o x64.idthelp.o tox86/cpu64/x64.idthelp.asm
 	$(CC) $(CF) tox86/irq/8259.c
-	#$(CC) $(CF) tox86/irq/apic.c
+	$(CC) $(CF) tox86/irq/apic.c
 	$(CC) $(CF) tox86/bus/input/8042.c
 	$(CC) $(CF) tox86/bus/pci/pci.c
 	$(CC) $(CF) tox86/timer/825x.c

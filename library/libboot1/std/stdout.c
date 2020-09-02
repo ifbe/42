@@ -71,6 +71,22 @@ void printbigint(u8* buf, int len)
 	say((void*)"0x");
 	for(j=len-1;j>=0;j--)say((void*)"%02x", buf[j]);
 }
+void printmmio(u8* buf, int len)
+{
+	if((u64)buf & 3)return;
+
+	int j,k;
+	for(j=0;j<len;j+=4){
+		if(0 == (j&0xf))say((u8*)"@%-12p ", buf+j);
+
+		say((u8*)"0x%08x", *(u32*)(buf+j));
+
+		if((j+4)>=len)break;
+
+		say((u8*)"%c", (0xc == (j&0xf)) ? '\n' : ' ');
+	}
+	say((u8*)"\n");
+}
 void printmemory(u8* buf, int len)
 {
 	u8 c;

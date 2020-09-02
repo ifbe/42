@@ -33,22 +33,25 @@
 #define IOAPIC_BASE 0xfec00000
 u8 in8(u16 port);
 void out8(u16 port, u8 data);
+void printmmio(void*, int);
 void printmemory(void*, int);
 void say(void*, ...);
 
 
 
 
-void endofirq(u32 num)
+void apic_endofirq(u32 num)
 {
 	u32* addr = (u32*)(LAPIC_BASE + LAPIC_EOI);
 	*addr = 0;
 }
 void initapic()
 {
-	u32* addr;
 	say("@initapic\n");
 
+	u32* addr = (u32*)(LAPIC_BASE);
+	printmmio(addr, 0x400);
+/*
 	asm("cli");
 
 	//task priority = 0;
@@ -86,15 +89,16 @@ void initapic()
 	//disable superious vector + enable apic
 	addr = (u32*)(LAPIC_BASE + LAPIC_SVR);
 	*addr = 0x1ff;
+*/
 }
 
 
 
 
-void enableirq(u32 irq)
+void ioapic_enableirq(u32 irq)
 {
 }
-void disableirq(u32 irq)
+void ioapic_disableirq(u32 irq)
 {
 }
 void initioapic()

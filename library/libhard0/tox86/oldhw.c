@@ -4,6 +4,7 @@ void initidt();
 void initpci();
 //
 void init8259();        //interrupt controller
+void initapic();
 //
 void init825x();        //timer.pit
 void initrtc();         //timer.rtc
@@ -26,6 +27,7 @@ void inithardware()
 	initpci();
 
 	init8259();
+	initapic();
 
 	init825x();
 	initrtc();
