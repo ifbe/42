@@ -90,10 +90,6 @@ void gerber_register(void*);
 void geometry_register(void*);
 void obj3d_register(void*);
 void stl3d_register(void*);
-//.program
-void cpure_register(void*);
-//.other
-void hexedit_register(void*);
 
 //game
 void the2048_register(void*);
@@ -181,6 +177,12 @@ void status_register(void*);
 void texmix_register(void*);
 void video_register(void*);
 void voxel_register(void*);
+
+//edit
+void hexedit_register(void*);
+void mmioedit_register(void*);
+void textedit_register(void*);
+void codeedit_register(void*);
 
 //vkbd
 void button_register(void*);
@@ -556,14 +558,6 @@ void thing_init(void* addr)
 	stl3d_register(tmp);
 	tmp -= sizeof(struct entity);
 
-//.program
-	cpure_register(tmp);
-	tmp -= sizeof(struct entity);
-
-//.else
-	hexedit_register(tmp);
-	tmp -= sizeof(struct entity);
-
 
 
 
@@ -699,6 +693,13 @@ void thing_init(void* addr)
 	tmp -= sizeof(struct entity);
 
 	tabbar_register(tmp);
+	tmp -= sizeof(struct entity);
+
+
+
+
+//-------------------edit------------------
+	hexedit_register(tmp);
 	tmp -= sizeof(struct entity);
 
 
