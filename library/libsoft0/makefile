@@ -1,5 +1,5 @@
-CC ?= gcc
-CF ?= -c -O2 -fPIC -I.
+CC:=gcc
+CF:=-c -O2 -fPIC -I.
 
 .PHONY:bare
 bare:

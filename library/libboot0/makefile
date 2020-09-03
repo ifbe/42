@@ -1,5 +1,5 @@
-CC ?= gcc
-CF ?= -c -O2 -fPIC
+CC:=gcc
+CF:=-c -O2 -fPIC
 
 .PHONY:rpi
 rpi:

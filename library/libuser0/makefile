@@ -1,6 +1,6 @@
-CC ?= gcc
-CF ?= -c -O2 -fPIC -I.
-SRC = \
+CC:=gcc
+CF:=-c -O2 -fPIC -I.
+SRC= \
 r2v-sensor/sensor.ahrs.c \
 r2v-sensor/sensor.slam.c \
 r2v-sensor/sensor.lidar.c \

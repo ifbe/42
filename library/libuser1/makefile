@@ -1,6 +1,6 @@
-CC ?= gcc
-CF ?= -c -O2 -fPIC -I.
-SRC = \
+CC:=gcc
+CF:=-c -O2 -fPIC -I.
+SRC= \
 forcpu/carve/carve.point.c \
 forcpu/carve/carve.line.c \
 forcpu/carve/carve.trigon.c \

@@ -1,6 +1,6 @@
-CC ?= gcc
-CF ?= -c -O2 -fPIC -I.
-SRC = \
+CC:=gcc
+CF:=-c -O2 -fPIC -I.
+SRC= \
 libalgo/liblang/assembly/asm.x64.c \
 libalgo/liblang/assembly/asm.arm.c \
 libalgo/liblang/program/prog.purec.c \
