@@ -1,0 +1,6 @@
+window:
+	data(w=1024,h=768)
+drawer:
+	data(style=macos)
+render:
+	func(window, drawer)

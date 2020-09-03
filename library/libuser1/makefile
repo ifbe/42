@@ -142,6 +142,11 @@ theworld/scene/neural/nn.cnn.c \
 theworld/scene/neural/nn.rnn.c \
 theworld/scene/schematic/sch.electric.c \
 theworld/scene/wiring/wiring.circuit.c \
+theworld/scene/cam/cam.free.c \
+theworld/scene/cam/cam.ortho.c \
+theworld/scene/cam/cam.vrglass.c \
+theworld/scene/mic/mic.mono.c \
+theworld/scene/mic/mic.stereo.c \
 theworld/whole/reality.c \
 theworld/whole/virtual.c \
 theworld/world.c \
@@ -179,9 +184,6 @@ thething/game/xiangqi/game.xiangqi.c \
 thething/game/snake/game.snake.c \
 thething/game/sokoban/game.sokoban.c \
 thething/game/klotski/game.klotski.c \
-thething/onlycam/cam/cam.free.c \
-thething/onlycam/cam/cam.ortho.c \
-thething/onlycam/cam/cam.vrglass.c \
 thething/onlycam/pull/fbo.cbuf.c \
 thething/onlycam/pull/fbo.gbuf.c \
 thething/onlycam/push/fbo.mirror.c \
@@ -193,8 +195,6 @@ thething/onlycam/light/light.imagebased.c \
 thething/onlycam/light/light.point.c \
 thething/onlycam/light/light.projector.c \
 thething/onlycam/light/light.spot.c \
-thething/onlymic/mic/mic.mono.c \
-thething/onlymic/mic/mic.stereo.c \
 thething/reallife/animal/animal.dog.c \
 thething/reallife/animal/animal.human.c \
 thething/reallife/animal/animal.spider.c \
