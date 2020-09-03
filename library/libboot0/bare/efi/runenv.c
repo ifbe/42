@@ -49,6 +49,10 @@ void getscreen(void** _buf, u64* _fmt, int* _w, int* _h, int* _fbw, int* _fbh)
 void getmemmap()
 {
 }
+void* getacpiaddr()
+{
+    return 0;
+}
 
 
 

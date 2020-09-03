@@ -134,7 +134,8 @@ barex64:x64
 	$(CC) $(CF) tox86/irq/8259.c
 	$(CC) $(CF) tox86/irq/apic.c
 	$(CC) $(CF) tox86/bus/input/8042.c
-	$(CC) $(CF) tox86/bus/pci/pci.c
+	$(CC) $(CF) tox86/bus/pci/pci-port.c
+	$(CC) $(CF) tox86/bus/pci/pci-mmio.c
 	$(CC) $(CF) tox86/timer/825x.c
 	$(CC) $(CF) tox86/timer/rtc.c
 	$(CC) $(CF) tox86/wire/bare.wire.bt.c
@@ -147,16 +148,6 @@ barex64:x64
 
 .PHONY:efix64
 efix64:x64
-	$(CC) $(CF) tox86/cpu64/x64.asm.c
-	$(CC) $(CF) tox86/cpu64/x64.page.c
-	$(CC) $(CF) tox86/cpu64/x64.gdt.c
-	$(CC) $(CF) -mgeneral-regs-only tox86/cpu64/x64.idt.c
-	$(CC) $(CF) tox86/irq/8259.c
-	#$(CC) $(CF) tox86/irq/apic.c
-	$(CC) $(CF) tox86/bus/input/8042.c
-	$(CC) $(CF) tox86/bus/pci/pci.c
-	$(CC) $(CF) tox86/timer/825x.c
-	$(CC) $(CF) tox86/timer/rtc.c
 	$(CC) $(CF) inefi/efi.wire.bt.c
 	$(CC) $(CF) inefi/efi.wire.gpio.c
 	$(CC) $(CF) inefi/efi.wire.i2c.c

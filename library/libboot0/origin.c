@@ -98,6 +98,7 @@ void* origincreate(u64 type, void* func, int argc, u8** argv)
 		tmp->type = type;
 		return tmp;
 	}
+
 	//bare
 	case _start_:
 	case _efimain_:{
@@ -109,9 +110,15 @@ void* origincreate(u64 type, void* func, int argc, u8** argv)
 		tmp->buf = argv;
 		return tmp;
 	}
-	//lib
-	case _lib42_:
+
+	//kmod
 	case _kext_:{
+		tmp->type = type;
+		return tmp;
+	}
+
+	//lib
+	case _lib42_:{
 		tmp->type = type;
 		return tmp;
 	}

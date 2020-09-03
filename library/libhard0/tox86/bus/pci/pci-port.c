@@ -41,11 +41,11 @@ struct pci
 
 
 
-void initpci()
+void initpci_port()
 {
 	u32 idid,type;
 	u32 bus,dev,fun,addr;
-	say("@initpci\n");
+	say("@initpci_port\n");
 
 	for(bus=0;bus<256;bus++){
 	for(dev=0;dev<32;dev++){

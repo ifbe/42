@@ -1,3 +1,7 @@
+void* getacpiaddr()
+{
+    return 0;
+}
 
 
 

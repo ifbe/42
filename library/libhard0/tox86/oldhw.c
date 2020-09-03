@@ -1,7 +1,8 @@
 void initgdt();
 void initidt();
 //
-void initpci();
+void initpci_port();
+void initpci_mmio();
 //
 void init8259();        //interrupt controller
 void initapic();
@@ -24,7 +25,8 @@ void inithardware()
 	initgdt();
 	initidt();
 
-	initpci();
+	initpci_port();
+	initpci_mmio();
 
 	init8259();
 	initapic();
