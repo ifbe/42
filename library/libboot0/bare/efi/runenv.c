@@ -13,16 +13,25 @@
 //
 static EFI_HANDLE H;
 static EFI_SYSTEM_TABLE* T;
-//
+//tables
+static u8 table_mps[]     = {0x2f, 0x2d, 0x9d, 0xeb, 0x88, 0x2d, 0xd3, 0x11, 0x9a, 0x16, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d};
+static u8 table_acpi[]    = {0x30, 0x2d, 0x9d, 0xeb, 0x88, 0x2d, 0xd3, 0x11, 0x9a, 0x16, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d};
+static u8 table_acpi2[]   = {0x71, 0xe8, 0x68, 0x88, 0xf1, 0xe4, 0xd3, 0x11, 0xbc, 0x22, 0x00, 0x80, 0xc7, 0x3c, 0x88, 0x81};
+static u8 table_smbios[]  = {0x31, 0x2d, 0x9d, 0xeb, 0x88, 0x2d, 0xd3, 0x11, 0x9a, 0x16, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d};
+static u8 table_smbios3[] = {0x44, 0x15, 0xfd, 0xf2, 0x94, 0x97, 0x2c, 0x4a, 0x99, 0x2e, 0xe5, 0xbb, 0xcf, 0x20, 0xe3, 0x94};
+static u8 table_sal[]     = {0x32, 0x2d, 0x9d, 0xeb, 0x88, 0x2d, 0xd3, 0x11, 0x9a, 0x16, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d};
+
+//screen
 static void* lfb = 0;
 static u64 fmt;
 static int w = 0;
 static int h = 0;
 static int fbw = 0;
 static int fbh = 0;
-//
-#define MEMMAP_SIZE 1024
-static UINT8 memmap[MEMMAP_SIZE * sizeof(EFI_MEMORY_DESCRIPTOR)];
+//memmap
+#define BYTE_PER_DESC 0x30
+#define DESC_PER_UEFI 4096
+static u8 memmap[BYTE_PER_DESC * DESC_PER_UEFI];
 
 
 
@@ -211,23 +220,45 @@ int bootservice_graphic()
 int bootservice_exit()
 {
 	//GetMemoryMap
-	UINTN memmap_size = MEMMAP_SIZE;
-	UINTN map_key;
-	UINTN descriptor_size;
-	UINT32 descriptor_version;
+	UINT32 ver;
+	UINTN key;
+	UINTN byteperuefi = BYTE_PER_DESC * DESC_PER_UEFI;
+	UINTN byteperdesc;
 	int ret = T->BootServices->GetMemoryMap(
-		&memmap_size,
+		&byteperuefi,
 		(EFI_MEMORY_DESCRIPTOR*)memmap,
-		&map_key,
-		&descriptor_size,
-		&descriptor_version
+		&key,
+		&byteperdesc,
+		&ver
 	);
 	if(EFI_SUCCESS != ret){
 		say("error:%d@GetMemoryMap\n", ret);
 	}
+	else{
+		say("@GetMemoryMap:buf=%p,len=%x,key=%x,sz=%x,ver=%x\n",
+			memmap, byteperuefi,
+			key,
+			byteperdesc,
+			ver
+		);
+
+		int j;
+		EFI_MEMORY_DESCRIPTOR* desc;
+		for(j=0;j<byteperuefi / byteperdesc;j++){
+			desc = (void*)(memmap + byteperdesc*j);
+			say("%04x: type=%x, pbuf=%llx, vbuf=%llx, size=%llx, attr=%llx\n",
+				j,
+				desc->Type,
+				desc->PhysicalStart,
+				desc->VirtualStart,
+				desc->NumberOfPages << 12,
+				desc->Attribute
+			);
+		}
+	}
 
 	//ExitBootService
-	ret = T->BootServices->ExitBootServices(H, map_key);
+	ret = T->BootServices->ExitBootServices(H, key);
 	if(EFI_SUCCESS != ret){
 		say("error:%d@ExitBootServices\n", ret);
 	}
@@ -269,17 +300,69 @@ int bootservice_output(char* buf, int len)
 
 
 
+void uefi_version()
+{
+	say("efiver=%x\n", T->Hdr.Revision);
+}
+void uefi_tables()
+{
+	//uefi version
+	int j;
+	for(j=0;j<T->NumberOfTableEntries;j++){
+		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_mps, 16)){
+			say("@%p: mps\n", T->ConfigurationTable[j].VendorTable);
+			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+			continue;
+		}
+		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_acpi, 16)){
+			say("@%p: acpi\n", T->ConfigurationTable[j].VendorTable);
+			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+			continue;
+		}
+		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_acpi2, 16)){
+			say("@%p: acpi2\n", T->ConfigurationTable[j].VendorTable);
+			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+			continue;
+		}
+		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_smbios, 16)){
+			say("@%p: smbios\n", T->ConfigurationTable[j].VendorTable);
+			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+			continue;
+		}
+		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_smbios3, 16)){
+			say("@%p: smbios3\n", T->ConfigurationTable[j].VendorTable);
+			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+			continue;
+		}
+		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_sal, 16)){
+			say("@%p: sal\n", T->ConfigurationTable[j].VendorTable);
+			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+			continue;
+		}
+		else{
+			u32* p = (u32*)&T->ConfigurationTable[j].VendorGuid;
+			say("@%p: unknown: 0x%x,0x%x,0x%x,0x%x\n", T->ConfigurationTable[j].VendorTable, p[0], p[1], p[2], p[3]);
+			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+		}
+	}
+}
+
+
+
+
 void freerunenv()
 {
 }
 void initrunenv()
 {
+	uefi_version();
+
+	uefi_tables();
+
 	//screen 1024x768x32
-	T->ConOut->OutputString(T->ConOut, L"1111\r\n");
 	bootservice_graphic();
  
 	//free bootservice
-	T->ConOut->OutputString(T->ConOut, L"2222\r\n");
 	bootservice_exit();
 
 	//nomore bootservice

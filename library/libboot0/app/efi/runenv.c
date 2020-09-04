@@ -19,9 +19,6 @@ static int w = 0;
 static int h = 0;
 static int fbw = 0;
 static int fbh = 0;
-//
-#define MEMMAP_SIZE 1024
-static UINT8 memmap[MEMMAP_SIZE * sizeof(EFI_MEMORY_DESCRIPTOR)];
 
 
 

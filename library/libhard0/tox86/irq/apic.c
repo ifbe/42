@@ -50,7 +50,7 @@ void initapic()
 	say("@initapic\n");
 
 	u32* addr = (u32*)(LAPIC_BASE);
-	printmmio(addr, 0x400);
+	//printmmio(addr, 0x400);
 /*
 	asm("cli");
 
