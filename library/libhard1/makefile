@@ -7,8 +7,10 @@ target:
 	$(CC) $(CF) sensor/pack/g_a_b.icm20789.c
 	$(CC) $(CF) sensor/pack/g_a_m.lsm9ds1.c
 	$(CC) $(CF) sensor/pack/g_a_m.mpu9250.c
-	$(CC) $(CF) hwinfo/hwinfo.acpi.c
-	$(CC) $(CF) hwinfo/hwinfo.dts.c
+	$(CC) $(CF) devmap/acpi/devmap.acpi.c
+	$(CC) $(CF) devmap/dts/devmap.dts.c
+	$(CC) $(CF) memmap/memmap.bios.c
+	$(CC) $(CF) memmap/memmap.uefi.c
 	$(CC) $(CF) driver.c
 clean:
 	rm -f *.o

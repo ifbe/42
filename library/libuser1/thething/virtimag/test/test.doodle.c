@@ -57,7 +57,7 @@ void doodle_draw_pixel(
 	drawline(win, 0xffffff, x0, y0, px, py);
 	drawline(win, 0xffffff, x1, y1, px, py);
 
-	drawbezier(win, 0xffffff, x0, y0, x1, y1, px, py);
+	drawline_bezier(win, 0xffffff, x0, y0, x1, y1, px, py);
 }
 static void doodle_draw_gl41(
 	struct entity* act, struct style* pin,

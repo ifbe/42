@@ -55,7 +55,7 @@ void drawline_arrow(struct entity* win, u32 rgb,
 	b = y1 + 0.5*x + halfsqrt3*y;
 	drawline(win, rgb, x1, y1, (int)a, (int)b);
 }
-void drawbezier(struct entity* win, u32 rgb,
+void drawline_bezier(struct entity* win, u32 rgb,
 	int x1, int y1, int x2, int y2, int xc, int yc)
 {
 	int x,y,t;

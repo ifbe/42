@@ -212,6 +212,13 @@ void drawbyte(struct entity* win, u32 rgb, int x, int y, u8 ch)
 	if(ch>0x39)ch+=0x7;
 	drawascii(win, rgb, x+8, y, ch);
 }
+void drawhex32(struct entity* win, u32 rgb, int x, int y, u32 ch)
+{
+	drawbyte(win, rgb, x+ 0, y, (ch>> 0)&0xff);
+	drawbyte(win, rgb, x+16, y, (ch>> 8)&0xff);
+	drawbyte(win, rgb, x+32, y, (ch>>16)&0xff);
+	drawbyte(win, rgb, x+48, y, (ch>>24)&0xff);
+}
 void drawstring(struct entity* win, u32 rgb, int x, int y, u8* buf, int len)
 {
 	int j;

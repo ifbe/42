@@ -1,6 +1,7 @@
 #include "libboot.h"
 #define _2048_ hex32('2','0','4','8')
 #define _term_ hex32('t','e','r','m')
+#define _mmioedit_ hex64('m','m','i','o','e','d','i','t')
 void* allocstyle();
 
 
@@ -10,31 +11,49 @@ int kernel_create(struct worker* wrk, void* url, int argc, u8** argv)
 {
 	//screen
 	struct supply* wnd = supplycreate(_wnd_, 0, 0, 0);
-	struct entity* dbg = entitycreate(_term_,0, 0, 0);
-	struct entity* ent = entitycreate(_2048_,0, 0, 0);
-
+	//wnd-> = ;
+	//wnd-> = ;
 	struct style* aaa = allocstyle();
-	struct style* bbb = allocstyle();
-	aaa->fshape.vc[0] = 512;
-	aaa->fshape.vc[1] = 384;
-	aaa->fshape.vr[0] = 512;
+	aaa->fshape.vc[0] = wnd->width/2;
+	aaa->fshape.vc[1] = wnd->height/2;
+	aaa->fshape.vr[0] = wnd->width/2;
 	aaa->fshape.vr[1] = 0;
 	aaa->fshape.vf[0] = 0;
-	aaa->fshape.vf[1] = 384;
-
+	aaa->fshape.vf[1] = wnd->height/2;
+	struct style* bbb = allocstyle();
+	bbb->fshape.vc[0] = wnd->width*3/4;
+	bbb->fshape.vc[1] = wnd->height/4;
+	bbb->fshape.vr[0] = wnd->width/4;
+	bbb->fshape.vr[1] = 0;
+	bbb->fshape.vf[0] = 0;
+	bbb->fshape.vf[1] = wnd->height/4;
 	struct style* ccc = allocstyle();
-	struct style* ddd = allocstyle();
-	ccc->fshape.vc[0] = 768;
-	ccc->fshape.vc[1] = 256;
-	ccc->fshape.vr[0] = 256;
+	ccc->fshape.vc[0] = wnd->width*3/4;
+	ccc->fshape.vc[1] = wnd->height*3/4;
+	ccc->fshape.vr[0] = wnd->width/4;
 	ccc->fshape.vr[1] = 0;
 	ccc->fshape.vf[0] = 0;
-	ccc->fshape.vf[1] = 256;
+	ccc->fshape.vf[1] = wnd->height/4;
 
-	struct relation* rel = relationcreate(dbg, bbb, _ent_, 0, wnd, aaa, _ent_, 0);
+	//things
+	struct entity* termnode = entitycreate(_term_,0, 0, 0);
+	struct style* termfoot = allocstyle();
+
+	struct entity* gamenode = entitycreate(_2048_,0, 0, 0);
+	struct style* gamefoot = allocstyle();
+
+	struct entity* editnode = entitycreate(_mmioedit_,0, 0, 0);
+	struct style* editfoot = allocstyle();
+
+	//relation
+	struct relation* rel;
+	rel = relationcreate(termnode, termfoot, _ent_, 0, wnd, aaa, _ent_, 0);
 	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
 
-	rel = relationcreate(ent, ddd, _ent_, 0, wnd, ccc, _ent_, 0);
+	rel = relationcreate(gamenode, gamefoot, _ent_, 0, wnd, bbb, _ent_, 0);
+	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
+
+	rel = relationcreate(editnode, editfoot, _ent_, 0, wnd, ccc, _ent_, 0);
 	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
 
 

@@ -17,7 +17,7 @@ void say(void*, ...);
 static int dt = 0;
 void isr_825x()
 {
-	if(0==(dt%1000))say("dt=%d\n",dt);
+	//if(0==(dt%1000))say("dt=%d\n",dt);
 	dt ++;
 }
 void init825x()

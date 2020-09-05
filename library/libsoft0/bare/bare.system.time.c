@@ -22,10 +22,10 @@ void datewrite(u64 x)
 {
 	date = x;
 	//eventwrite(x, __date__, 0, 0);
-	char* p = (void*)&x;
+/*	char* p = (void*)&x;
 	say("%02d:%02d:%02d:%02d:%02d:%02d:%02d:%02d\n",
 		p[7],p[6],p[5],p[4],p[3],p[2],p[1],p[0]
-	);
+	);*/
 }
 u64 dateread()
 {

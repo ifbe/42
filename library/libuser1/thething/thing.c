@@ -702,6 +702,9 @@ void thing_init(void* addr)
 	hexedit_register(tmp);
 	tmp -= sizeof(struct entity);
 
+	mmioedit_register(tmp);
+	tmp -= sizeof(struct entity);
+
 
 
 

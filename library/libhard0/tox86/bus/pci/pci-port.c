@@ -2,11 +2,13 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-u8 in8(u16 port);
-u16 in16(u16 port);
+//
+void xhci_portinit(u32 addr);
+//
+void ide_portinit(u32 addr);
+void ahci_portinit(u32 addr);
+//
 u32 in32(u16 port);
-void out8(u16 port, u8 data);
-void out16(u16 port, u16 data);
 void out32(u16 port, u32 data);
 void say(void*, ...);
 
@@ -61,11 +63,11 @@ void initpci_port()
 
 		switch(type >> 16){
 		case 0x0101:
-			//ide_portinit(addr);
+			ide_portinit(addr);
 			break;
 
 		case 0x0106:
-			//if(0x01 == ((type>>8)&0xff))ahci_portinit(addr);
+			if(0x01 == ((type>>8)&0xff))ahci_portinit(addr);
 			break;
 
 		case 0x0108:
@@ -76,15 +78,15 @@ void initpci_port()
 			//if(0x100e8086 == idid)e1000_portinit(addr);
 			break;
 
-/*		case 0x0c03:
+		case 0x0c03:
 			switch((type>>8)&0xff){
-			case 0x00:uhci_portinit(addr);break;
-			case 0x10:ohci_portinit(addr);break;
-			case 0x20:ehci_portinit(addr);break;
+			//case 0x00:uhci_portinit(addr);break;
+			//case 0x10:ohci_portinit(addr);break;
+			//case 0x20:ehci_portinit(addr);break;
 			case 0x30:xhci_portinit(addr);break;
 			}//usbver
 			break;
-*/
+
 		}//class,subclass
 	}//fun
 	}//dev
