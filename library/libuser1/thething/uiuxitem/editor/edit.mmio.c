@@ -3,6 +3,10 @@
 
 
 
+static u32 colortable[8] = {
+0x000000, 0x0000ff, 0x00ff00, 0x00ffff,
+0xff0000, 0xff00ff, 0xffff00, 0xffffff
+};
 static int mmioedit_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
 {
 	return 0;
@@ -40,7 +44,7 @@ static void mmioedit_draw_pixel(
 		ww = wnd->width/2;
 		hh = wnd->height/2;
 	}
-	drawline_rect(wnd, 0x00ff00, cx-ww, cy-hh, cx+ww, cy+hh);
+	drawsolid_rect(wnd, 0, cx-ww, cy-hh, cx+ww, cy+hh);
 
 	int byteperline;
 	if(ww*2 < 16*4)return;
@@ -64,22 +68,29 @@ static void mmioedit_draw_pixel(
 	lineperrect = (hh*2)/16;
 //say("bpl=%x,lpr=%x\n", byteperline, lineperrect);
 
-	int x,y;
+	int x,y,rgb;
 	u32* addr;
 	for(y=0;y<lineperrect;y++){
-		addr = (u32*)(act->buf0 + y*byteperline*lineperrect);
+		addr = (u32*)(act->buf0 + y*byteperline);
 		for(x=0;x<byteperline;x+=4){
 			//bg
+			rgb = colortable[(x>>2)%8];
+			drawsolid_rect(
+				wnd, ~rgb,
+				cx+((x+0-byteperline/2)<<4), cy+((y+0-lineperrect/2)<<4),
+				cx+((x+4-byteperline/2)<<4), cy+((y+1-lineperrect/2)<<4)
+			);
+			//sel
 			if((4==x)&&(2==y)){
-				drawsolid_rect(
-					wnd, 0xff00ff,
-					cx+((x+0-byteperline/2)<<4), cy+((y+0-lineperrect/2)<<4),
-					cx+((x+4-byteperline/2)<<4), cy+((y+1-lineperrect/2)<<4)
-				);
+			drawline_rect(
+				wnd, rgb,
+				cx+((x+0-byteperline/2)<<4), cy+((y+0-lineperrect/2)<<4),
+				cx+((x+4-byteperline/2)<<4), cy+((y+1-lineperrect/2)<<4)
+			);
 			}
 			//fg
 			drawhex32(
-				wnd, 0xffffff,
+				wnd, rgb,
 				cx+((x-byteperline/2)<<4), cy+((y-lineperrect/2)<<4),
 				addr[x>>2]
 			);

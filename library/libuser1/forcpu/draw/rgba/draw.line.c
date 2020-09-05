@@ -122,7 +122,7 @@ void drawline_rect(struct entity* win, u32 rgb,
 			{
 				if(x > width-1)break;
 				if(x < 0)x=0;
-				buf[((endy-n)*stride) + x] = rgb;
+				buf[((endy-n-1)*stride) + x] = rgb;
 			}
 		}
 		if((startx+n >= 0) && (startx+n < width))
