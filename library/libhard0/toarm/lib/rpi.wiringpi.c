@@ -103,7 +103,7 @@ int gpiostart(int name, int mode)
 
 
 
-int initgpio()
+int freegpio()
 {
 	return 0;
 }

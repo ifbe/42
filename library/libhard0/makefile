@@ -21,8 +21,8 @@ linuxarm:arm
 	$(CC) $(CF) inlinux/linux.wire.wifi.c
 
 linuxpi32:arm
-	$(CC) $(CF) torpi/hardware.c
-	$(CC) $(CF) torpi/lib/rpi.wiringpi.c
+	$(CC) $(CF) inlinux/hardware.c
+	$(CC) $(CF) toarm/lib/rpi.wiringpi.c
 	$(CC) $(CF) inlinux/linux.wire.bt.c
 	$(CC) $(CF) inlinux/linux.wire.i2c.c
 	$(CC) $(CF) inlinux/linux.wire.pci.c
