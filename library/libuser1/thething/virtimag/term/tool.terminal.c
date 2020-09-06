@@ -305,6 +305,9 @@ static void terminal_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,in
 	}
 
 	switch(wnd->fmt){
+	case _rgba_:
+		terminal_write_c(ent,slot, stack,sp, buf,len);
+		return;
 	case _dx11full_:
 	case _mt20full_:
 	case _gl41full_:

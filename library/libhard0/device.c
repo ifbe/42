@@ -74,12 +74,23 @@ int devicedelete(void* this)
 }
 void* devicecreate(u64 type, void* name, int argc, u8** argv)
 {
-	int fd, baud;
-	u8 tmp[256];
-
+	if(0 == type){
+		return allocdevice();
+	}
+	if(_cpu_ == type){
+		struct device* p = allocdevice();
+		p->type = _cpu_;
+		p->hfmt = _cpu_;
+	}
+	if(_pci_ == type){
+		struct device* p = allocdevice();
+		p->type = _bus_;
+		p->hfmt = _pci_;
+		return p;
+	}
 	if(_i2c_ == type)
 	{
-		fd = i2c_create(name, 0, argc, argv);
+		int fd = i2c_create(name, 0, argc, argv);
 		if(fd <= 0)return 0;
 
 		dev[fd].type = _i2c_;
@@ -89,7 +100,7 @@ void* devicecreate(u64 type, void* name, int argc, u8** argv)
 	}
 	if(_spi_ == type)
 	{
-		fd = spi_create(name, 0, argc, argv);
+		int fd = spi_create(name, 0, argc, argv);
 		if(fd <= 0)return 0;
 
 		dev[fd].type = _spi_;
@@ -120,10 +131,12 @@ int devicemodify(int argc, u8** argv)
 int devicesearch(u8* buf, int len)
 {
 	int j,k=0;
+	struct device* p;
 	for(j=0;j<64;j++)
 	{
-		if(0 == dev[j].type)continue;
-		say("[%04x]: %.8s\n", j, &dev[j].type);
+		p = &dev[j];
+		if(0 == p->type)continue;
+		say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &p->tier, &p->type, &p->hfmt, &p->vfmt);
 		k++;
 	}
 
@@ -149,6 +162,8 @@ void initdevice(u8* addr)
 	int j;
 	dev = (void*)(addr+0x000000);
 	aaa = (void*)(addr+0x100000);
+	devlen = 0;
+	aaalen = 0;
 
 #define max (0x100000/sizeof(struct device))
 	for(j=0;j<0x200000;j++)addr[j]=0;

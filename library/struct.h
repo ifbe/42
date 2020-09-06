@@ -684,8 +684,8 @@ struct device
 	//[20,3f]: type
 	u64 tier;
 	u64 type;
-	u64 stage1;
-	u64 name;
+	u64 hfmt;
+	u64 vfmt;
 
 	//[40,5f]: fd/handle
 	union{

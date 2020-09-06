@@ -1,3 +1,4 @@
+#include "libhard.h"
 void initgdt();
 void initidt();
 //
@@ -9,8 +10,21 @@ void initapic();
 //
 void init825x();        //timer.pit
 void initrtc();         //timer.rtc
-//
-void say(void*, ...);
+
+
+
+
+void initcpu0(struct device* p)
+{
+	asm("cli");
+
+	initgdt();
+	initidt();
+
+	asm("sti");
+	asm("int3");
+	asm("int $0x80");
+}
 
 
 
@@ -20,12 +34,13 @@ void freehardware()
 }
 void inithardware()
 {
-	asm("cli");
+	struct device* p;
 
-	initgdt();
-	initidt();
+	p = devicecreate(_cpu_, 0, 0, 0);
+	initcpu0(p);
 
-	initpci_port();
+	p = devicecreate(_pci_, 0, 0, 0);
+	initpci_port(p);
 	initpci_mmio();
 
 	init8259();
@@ -33,8 +48,4 @@ void inithardware()
 
 	init825x();
 	initrtc();
-
-	asm("sti");
-	asm("int3");
-	asm("int $0x80");
 }

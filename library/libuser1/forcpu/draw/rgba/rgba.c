@@ -67,7 +67,6 @@ int rgbanode_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, vo
 	//struct event* ev = buf;
 	//say("@rgbanode_write:%.8s,%llx\n", &ev->what, ev->why);
 
-	int ret = 0;
 	struct relation* rel = wnd->oreln;
 	while(1)
 	{
@@ -84,15 +83,15 @@ int rgbanode_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, vo
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
 			stack[sp+1].flag = rel->dstflag;
-			ret = entitywrite(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, arg,key, buf,len);
-			if(ret)break;
+			entitywrite(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, arg,key, buf,len);
+			break;
 		}
 next:
 		rel = samesrcprevdst(rel);
 	}
 
 	//if('p' == (ev->what&0xff))entityinput_touch(win, ev);
-	return ret;
+	return 0;
 }
 int rgbanode_discon(struct supply* win, struct style* sty)
 {

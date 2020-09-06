@@ -414,8 +414,7 @@ void* supplysearch(u8* buf, int len)
 		{
 			win = &supply[j];
 			if(0 == win->type)break;
-			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j,
-				&win->tier, &win->type, &win->fmt, &win->vfmt);
+			say("[%04x]: %.8s, %.8s, %.8s, %.8s\n", j, &win->tier, &win->type, &win->fmt, &win->vfmt);
 		}
 		if(0 == j)say("empty supply\n");
 	}
