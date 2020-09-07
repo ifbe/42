@@ -88,6 +88,12 @@ void* devicecreate(u64 type, void* name, int argc, u8** argv)
 		p->hfmt = _pci_;
 		return p;
 	}
+	if(_mmc_ == type){
+		struct device* p = allocdevice();
+		p->type = _mmc_;
+		p->hfmt = _mmc_;
+		return p;
+	}
 	if(_i2c_ == type)
 	{
 		int fd = i2c_create(name, 0, argc, argv);

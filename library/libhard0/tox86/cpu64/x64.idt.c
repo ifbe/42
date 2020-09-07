@@ -149,7 +149,7 @@ void interruptinstall(int num, u64 isr)
 	struct idt_entry* addr = (void*)temp;
 
 	addr->byte01 = isr&0xffff;
-	addr->select = 0x8;
+	addr->select = 0x10;		//kernel code @ 10
 	addr->zero = 0x0;
 	addr->attr = 0x8e;
 	addr->byte23 = (isr>>16)&0xffff;

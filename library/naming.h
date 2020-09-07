@@ -41,6 +41,8 @@
 #define _cpu_ hex32('c','p','u',0)
 #define _bus_ hex32('b','u','s',0)
 #define _pci_ hex32('p','c','i',0)
+#define _mmc_ hex32('m','m','c',0)
+//
 #define _dbg_ hex32('d','b','g',0)
 #define _i2c_ hex32('i','2','c',0)
 #define _spi_ hex32('s','p','i',0)

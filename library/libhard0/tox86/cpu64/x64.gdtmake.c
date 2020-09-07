@@ -67,8 +67,11 @@ void initgdt()
 
 	struct gdt* gdt = (void*)buf;
 	*(u64*)(buf+0x00) = 0;
-	*(u64*)(buf+0x08) = 0x002f9a0000000000;
-	*(u64*)(buf+0x10) = 0x002f920000000000;
+	*(u64*)(buf+0x08) = 0;
+	*(u64*)(buf+0x10) = 0x002f9a0000000000;		//kernel code
+	*(u64*)(buf+0x18) = 0x002f920000000000;		//kernel data
+	//*(u64*)(buf+0x20) = 0x002f9a0000000000;		//user code
+	//*(u64*)(buf+0x28) = 0x002f920000000000;		//user data
 /*	gdt[2].limit01 = 103;
 	gdt[2].base01 = ((u64)tss)&0xffff;
 	gdt[2].base2 = (((u64)tss)>>16)&0xffff;
