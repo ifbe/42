@@ -20,7 +20,7 @@ static u8 table_acpi2[]   = {0x71, 0xe8, 0x68, 0x88, 0xf1, 0xe4, 0xd3, 0x11, 0xb
 static u8 table_smbios[]  = {0x31, 0x2d, 0x9d, 0xeb, 0x88, 0x2d, 0xd3, 0x11, 0x9a, 0x16, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d};
 static u8 table_smbios3[] = {0x44, 0x15, 0xfd, 0xf2, 0x94, 0x97, 0x2c, 0x4a, 0x99, 0x2e, 0xe5, 0xbb, 0xcf, 0x20, 0xe3, 0x94};
 static u8 table_sal[]     = {0x32, 0x2d, 0x9d, 0xeb, 0x88, 0x2d, 0xd3, 0x11, 0x9a, 0x16, 0x00, 0x90, 0x27, 0x3f, 0xc1, 0x4d};
-
+static void* rsdptr = 0;
 //screen
 static void* lfb = 0;
 static u64 fmt;
@@ -55,12 +55,13 @@ void getscreen(void** _buf, u64* _fmt, int* _w, int* _h, int* _fbw, int* _fbh)
 	*_fbw = fbw;
 	*_fbh = fbh;
 }
-void getmemmap()
+void* getmemmap()
 {
+	return memmap;
 }
-void* getacpiaddr()
+void* getdevmap()
 {
-    return 0;
+    return rsdptr;
 }
 
 
@@ -317,11 +318,13 @@ void uefi_tables()
 		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_acpi, 16)){
 			say("@%p: acpi\n", T->ConfigurationTable[j].VendorTable);
 			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+			rsdptr = T->ConfigurationTable[j].VendorTable;
 			continue;
 		}
 		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_acpi2, 16)){
 			say("@%p: acpi2\n", T->ConfigurationTable[j].VendorTable);
 			printmemory(T->ConfigurationTable[j].VendorTable, 16);
+			rsdptr = T->ConfigurationTable[j].VendorTable;
 			continue;
 		}
 		if(0 == ncmp(&T->ConfigurationTable[j].VendorGuid, &table_smbios, 16)){
