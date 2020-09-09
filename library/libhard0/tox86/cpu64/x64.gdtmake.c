@@ -3,7 +3,8 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 #define GDTBUF 0x10000
-#define TSSBUF 0x20000
+#define TSSBUF (GDTBUF+0x1000)
+#define STKBUF (GDTBUF+0x10000)
 u16 gettss();
 void sgdt(void*);
 void loadgdtandtss();
@@ -14,13 +15,54 @@ void say(void*, ...);
 
 
 
+/*
+type:
+.bit7 = Present, if(1)valid selectors
+.b6,5 = Privilege, 2 bits. if(0)ring0, if(3)ring3
+.bit4 = Desctype, if(1)code or data, if(0)tss or ldt
+.bit3 = Executable, If(1)code, If(0)data
+.bit2 = Direction/Conforming
+	Direction bit for data selectors: Tells the direction. 0 the segment grows up. 1 the segment grows down, ie. the offset has to be greater than the limit.
+	Conforming bit for code selectors:
+	If 1 code in this segment can be executed from an equal or lower privilege level. For example, code in ring 3 can far-jump to conforming code in a ring 2 segment. The privl-bits represent the highest privilege level that is allowed to execute the segment. For example, code in ring 0 cannot far-jump to a conforming code segment with privl==0x2, while code in ring 2 and 3 can. Note that the privilege level remains the same, ie. a far-jump form ring 3 to a privl==2-segment remains in ring 3 after the jump.
+	If 0 code in this segment can only be executed from the ring set in privl.
+.bit1 = Read/Write
+	Readable bit for code selectors: Whether read access for this segment is allowed. Write access is never allowed for code segments.
+	Writable bit for data selectors: Whether write access for this segment is allowed. Read access is always allowed for data segments.
+.bit0 = Accessed, you set to 0. CPU set to 1 when the segment is accessed.
+flag:
+.bit3 = Gr: If(0)limit is in 1 B blocks, if(1)limit is in 4 KiB blocks
+.bit2 = Sz: Size bit. if(Lbit)has to be 0, elif(0)16 bit protected mode, elif(1)32 bit protected mode
+.bit1 = indicate x86_64 code descriptor. This bit is reserved for data segments
+.bit0 = unused
+*/
 struct gdt{
-	u16 limit01;
-	u16 base01;
-	u8 base2;
-	u8 type;
-	u8 limit2;
-	u8 base3;
+	u16 limit_00_15  ;	//[00,15]
+	u16  base_00_15  ;	//[16,31]
+	u8   base_16_23  ;	//[32,39]
+	u8         type  ;	//[40,47]
+	u8  limit_16_19:4;	//[48,51]
+	u8         flag:4;	//[52,55]
+	u8   base_24_31  ;	//[56,63]
+};
+struct gdt_64bit{
+	u32 zero0  ;	//[00,31]
+	u8  zero1  ;	//[32,39]
+	u8   type  ;	//[40,47]
+	u8  zero2:4;	//[48,51]
+	u8   flag:4;	//[52,55]
+	u8  zero3  ;	//[56,63]
+};
+struct gdt_tss{
+	u16 limit_00_15  ;	//[00,15]	//0x67
+	u16  base_00_15  ;	//[16,31]
+	u8   base_16_23  ;	//[32,39]
+	u8         type  ;	//[40,47]	//0x89
+	u8  limit_16_19:4;	//[48,51]
+	u8         flag:4;	//[52,55]	//0x00
+	u8   base_24_31  ;	//[56,63]
+	u32  base_32_63  ;	//[64,95]
+	u32        zero  ;	//[96,127]
 };
 struct tss{
 	u32 rsvd;	//[ 0, 3]
@@ -44,43 +86,51 @@ struct tss{
 
 
 
-//0: 00,00,00,00,00,00,00,00
-//1: 00,00,00,00,00,9a,2f,00
-//2: 00,00,00,00,00,92,2f,00
+void fillgdt(u8* buf)
+{
+	int j;
+	for(j=0;j<0x10000;j++)buf[j] = 0;
+
+	struct tss* tss = (void*)(TSSBUF);
+	tss->rsp0 = STKBUF;
+
+	struct gdt* gdt = (void*)buf;
+	*(u64*)(buf+0x00) =                  0;		//must null
+	*(u64*)(buf+0x08) =                  0;		//myown unused
+	*(u64*)(buf+0x10) = 0x00209a0000000000;		//kernel code
+	*(u64*)(buf+0x18) = 0x0000920000000000;		//kernel data
+	*(u64*)(buf+0x20) = 0x0020fa0000000000;		//user code
+	*(u64*)(buf+0x28) = 0x0000f20000000000;		//user data
+
+	struct gdt_tss* gt = (void*)(buf+0x30);
+	gt->limit_00_15 = 0x67;		//103;
+	gt->base_00_15  = ((u64)tss)&0xffff;
+	gt->base_16_23  = (((u64)tss)>>16)&0xffff;
+	gt->type        = 0x89;
+	gt->limit_16_19 = 0;
+	gt->base_24_31  = (((u64)tss)>>24)&0xff;
+	gt->base_32_63  = ((u64)tss)>>32;
+}
 void initgdt()
 {
 	say("@initgdt\n");
 
-	say("tr@%x\n", gettss());
-
+	//old
+	//say("oldtr@%x\n", gettss());
+	say("oldgdt:\n");
 	u8 map[16];
 	sgdt(map);
 	printmemory(map, 16);
 	printmemory(*(u8**)(map+2), *(u16*)map + 1);
 
-	int j;
+	//set
 	u8* buf = (u8*)GDTBUF;
-	for(j=0;j<0x10000;j++)buf[j] = 0;
+	fillgdt(buf);
 
-	struct tss* tss = (void*)buf + 0x1000;
-	tss->rsp0 = 0x40000;
+	//new
+	say("newgdt:\n");
+	printmemory(buf, 0x40);
 
-	struct gdt* gdt = (void*)buf;
-	*(u64*)(buf+0x00) =                  0;		//must null
-	*(u64*)(buf+0x08) =                  0;		//myown unused
-	*(u64*)(buf+0x10) = 0x002f9a0000000000;		//kernel code
-	*(u64*)(buf+0x18) = 0x002f920000000000;		//kernel data
-	//*(u64*)(buf+0x20) = 0x002f9a0000000000;		//user code
-	//*(u64*)(buf+0x28) = 0x002f920000000000;		//user data
-	//*(u64*)(buf+0x30) =                   ;		//tss lo
-	//*(u64*)(buf+0x38) =                   ;		//tss hi
-/*	gdt[2].limit01 = 103;
-	gdt[2].base01 = ((u64)tss)&0xffff;
-	gdt[2].base2 = (((u64)tss)>>16)&0xffff;
-	gdt[2].type = 0x89;
-	gdt[2].limit2 = 0;
-	gdt[2].base3 = (((u64)tss)>>24)&0xff;
-	*(u64*)(buf+0x20) = ((u64)tss)>>32;
-*/
+	//run
 	loadgdtandtss();
 }
