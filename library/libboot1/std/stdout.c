@@ -36,6 +36,29 @@ int getcurout()
 
 
 
+void dbg(u8* fmt, ...)
+{
+	int cur,ret;
+	__builtin_va_list arg;
+
+	//read position
+	cur = outcur;
+
+	//
+	__builtin_va_start(arg, fmt);
+
+	//snprintf
+	//ret = diary(outputqueue+cur, 0x1000, fmt, arg, cur%0x80);
+	ret = myvsnprintf(outputqueue+cur, 0x1000, fmt, arg);
+
+	//
+	__builtin_va_end(arg);
+
+	//write position
+	cur = cur+ret;
+	if(cur > 0x3f000)cur = 0;
+	outcur = cur;
+}
 void say(u8* fmt, ...)
 {
 	int cur,ret;

@@ -5,9 +5,11 @@
 #define GDTBUF 0x10000
 #define TSSBUF (GDTBUF+0x1000)
 #define STKBUF (GDTBUF+0x10000)
+void getgdt(void*);
 u16 gettss();
-void sgdt(void*);
-void loadgdtandtss();
+//
+void loadgdt();
+void loadtss();
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -44,7 +46,7 @@ struct gdt{
 	u8  limit_16_19:4;	//[48,51]
 	u8         flag:4;	//[52,55]
 	u8   base_24_31  ;	//[56,63]
-};
+}__attribute__((packed));
 struct gdt_64bit{
 	u32 zero0  ;	//[00,31]
 	u8  zero1  ;	//[32,39]
@@ -52,7 +54,7 @@ struct gdt_64bit{
 	u8  zero2:4;	//[48,51]
 	u8   flag:4;	//[52,55]
 	u8  zero3  ;	//[56,63]
-};
+}__attribute__((packed));
 struct gdt_tss{
 	u16 limit_00_15  ;	//[00,15]	//0x67
 	u16  base_00_15  ;	//[16,31]
@@ -63,13 +65,13 @@ struct gdt_tss{
 	u8   base_24_31  ;	//[56,63]
 	u32  base_32_63  ;	//[64,95]
 	u32        zero  ;	//[96,127]
-};
+}__attribute__((packed));
 struct tss{
 	u32 rsvd;	//[ 0, 3]
 	u64 rsp0;	//[ 4, b]
 	u64 rsp1;	//[0c,13]
 	u64 rsp2;	//[14,1b]
-	u64 rsp3;	//[1c,23]
+	u64 ignd;	//[1c,23]
 	u64 ist1;	//[24,2b]
 	u64 ist2;	//[2c,33]
 	u64 ist3;	//[34,3b]
@@ -81,7 +83,7 @@ struct tss{
 	u32 hehe;	//[60,63]
 	u16 zero;	//[64,65]
 	u16 iopb;	//[66,67]
-};
+}__attribute__((packed));
 
 
 
@@ -93,6 +95,9 @@ void fillgdt(u8* buf)
 
 	struct tss* tss = (void*)(TSSBUF);
 	tss->rsp0 = STKBUF;
+	tss->iopb = 0x68;
+	say("tss:\n");
+	printmemory(tss, 0x68);
 
 	struct gdt* gdt = (void*)buf;
 	*(u64*)(buf+0x00) =                  0;		//must null
@@ -105,9 +110,10 @@ void fillgdt(u8* buf)
 	struct gdt_tss* gt = (void*)(buf+0x30);
 	gt->limit_00_15 = 0x67;		//103;
 	gt->base_00_15  = ((u64)tss)&0xffff;
-	gt->base_16_23  = (((u64)tss)>>16)&0xffff;
+	gt->base_16_23  = (((u64)tss)>>16)&0xff;
 	gt->type        = 0x89;
 	gt->limit_16_19 = 0;
+	gt->flag        = 0;
 	gt->base_24_31  = (((u64)tss)>>24)&0xff;
 	gt->base_32_63  = ((u64)tss)>>32;
 }
@@ -119,7 +125,7 @@ void initgdt()
 	//say("oldtr@%x\n", gettss());
 	say("oldgdt:\n");
 	u8 map[16];
-	sgdt(map);
+	getgdt(map);
 	printmemory(map, 16);
 	printmemory(*(u8**)(map+2), *(u16*)map + 1);
 
@@ -132,5 +138,6 @@ void initgdt()
 	printmemory(buf, 0x40);
 
 	//run
-	loadgdtandtss();
+	loadgdt();
+	loadtss();
 }

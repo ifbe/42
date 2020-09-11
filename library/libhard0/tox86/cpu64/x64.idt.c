@@ -5,7 +5,7 @@
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
-#define idthome 0x5000
+#define idthome (u64)0x5000
 void isr_825x();
 void isr_8042();
 void isr_rtc();
@@ -16,7 +16,7 @@ u64 getisr80();
 u8 in8(u16 port);
 void out8(u16 port, u8 data);
 void endofirq(int);
-void lidt(void* buf, int len);
+void setidt(void* buf, int len);
 //
 void eventwrite(u64,u64,u64,u64);
 void printmemory(void*, int);
@@ -28,115 +28,170 @@ struct idt_entry{
 	u16 byte01;
 	u16 select;
 	u8 zero;
-	u8 attr;
+	u8 type;
 	u16 byte23;
 	u32 byte47;
 	u32 what;
-};
+}__attribute__((packed));
 struct int_frame{
 	u64 ip;
 	u64 cs;
 	u64 flag;
 	u64 sp;
 	u64 ss;
-};
+}__attribute__((packed));
 
 
 
 
-__attribute__((interrupt)) static void isr_00(void* p)
-{say("int00!\n");}		//Divide-by-zero
-__attribute__((interrupt)) static void isr_01(void* p)
-{say("int01!\n");}		//Debug
-__attribute__((interrupt)) static void isr_02(void* p)
-{say("int02!\n");}		//Non-maskable Interrupt
-__attribute__((interrupt)) static void isr_03(struct int_frame* p)
-{//Breakpoint
+__attribute__((interrupt)) static void isr_00(void* p){
+	say("int00!\n");
+	while(1);
+}//Divide-by-zero
+__attribute__((interrupt)) static void isr_01(void* p){
+	say("int01!\n");
+	while(1);
+}//Debug
+__attribute__((interrupt)) static void isr_02(void* p){
+	say("int02!\n");
+	while(1);
+}//Non-maskable Interrupt
+__attribute__((interrupt)) static void isr_03(struct int_frame* p){
 	say("int03: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
-}
-__attribute__((interrupt)) static void isr_04(void* p)
-{say("int04!\n");}		//Overflow
-__attribute__((interrupt)) static void isr_05(void* p)
-{say("int05!\n");}		//Bound Range Exceeded
-__attribute__((interrupt)) static void isr_06(struct int_frame* p)
-{//Invalid Opcode
+}//Breakpoint
+__attribute__((interrupt)) static void isr_04(void* p){
+	say("int04!\n");
+	while(1);
+}//Overflow
+__attribute__((interrupt)) static void isr_05(void* p){
+	say("int05!\n");
+	while(1);
+}//Bound Range Exceeded
+__attribute__((interrupt)) static void isr_06(struct int_frame* p){
 	say("int06: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
-}
-__attribute__((interrupt)) static void isr_07(void* p)
-{say("int07!\n");}		//Device Not Available
-__attribute__((interrupt)) static void isr_08(void* p, u64 e)
-{say("int08:%llx\n", e);}		//Double Fault
-__attribute__((interrupt)) static void isr_09(void* p)
-{say("int09!\n");}		//Coprocessor Segment Overrun
-__attribute__((interrupt)) static void isr_0a(void* p, u64 e)
-{say("int0a:%llx\n", e);}		//Invalid TSS
-__attribute__((interrupt)) static void isr_0b(void* p, u64 e)
-{say("int0b:%llx\n", e);}		//Segment Not Present
-__attribute__((interrupt)) static void isr_0c(void* p, u64 e)
-{say("int0c:%llx\n", e);}		//Stack-Segment Fault
-__attribute__((interrupt)) static void isr_0d(struct int_frame* p, u64 e)
-{		//General Protection Fault
+	while(1);
+}//Invalid Opcode
+__attribute__((interrupt)) static void isr_07(void* p){
+	say("int07!\n");
+	while(1);
+}//Device Not Available
+__attribute__((interrupt)) static void isr_08(void* p, u64 e){
+	say("int08:%llx\n", e);
+	while(1);
+}//Double Fault
+__attribute__((interrupt)) static void isr_09(void* p){
+	say("int09!\n");
+	while(1);
+}//Coprocessor Segment Overrun
+__attribute__((interrupt)) static void isr_0a(void* p, u64 e){
+	say("int0a:%llx\n", e);
+	while(1);
+}//Invalid TSS
+__attribute__((interrupt)) static void isr_0b(void* p, u64 e){
+	say("int0b:%llx\n", e);
+	while(1);
+}//Segment Not Present
+__attribute__((interrupt)) static void isr_0c(void* p, u64 e){
+	say("int0c:%llx\n", e);
+	while(1);
+}//Stack-Segment Fault
+__attribute__((interrupt)) static void isr_0d(struct int_frame* p, u64 e){
 	say("int0d: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
-	printmemory(p, 0x80);
+	printmemory((u8*)p-0x18, 0x80);
 	asm("cli");
 	asm("hlt");
-}
-__attribute__((interrupt)) static void isr_0e(void* p, u64 e)
-{say("int0e:%llx\n", e);}		//Page Fault
-__attribute__((interrupt)) static void isr_0f(void* p)
-{say("int0f!\n");}		//Reserved
-__attribute__((interrupt)) static void isr_10(void* p)
-{say("int10!\n");}		//x87 Floating-Point Exception
-__attribute__((interrupt)) static void isr_11(void* p, u64 e)
-{say("int11:%llx\n", e);}		//Alignment Check
-__attribute__((interrupt)) static void isr_12(void* p)
-{say("int12!\n");}		//Machine Check
-__attribute__((interrupt)) static void isr_13(void* p)
-{say("int13!\n");}		//SIMD Floating-Point Exception
-__attribute__((interrupt)) static void isr_14(void* p)
-{say("int14!\n");}		//Virtualization Exception
-__attribute__((interrupt)) static void isr_15(void* p)
-{say("int15!\n");}		//Reserved
-__attribute__((interrupt)) static void isr_16(void* p)
-{say("int16!\n");}		//Reserved
-__attribute__((interrupt)) static void isr_17(void* p)
-{say("int17!\n");}		//Reserved
-__attribute__((interrupt)) static void isr_18(void* p)
-{say("int18!\n");}		//Reserved
-__attribute__((interrupt)) static void isr_19(void* p)
-{say("int19!\n");}		//Reserved
-__attribute__((interrupt)) static void isr_1a(void* p)
-{say("int1a!\n");}		//Reserved
-__attribute__((interrupt)) static void isr_1b(void* p)
-{say("int1b!\n");}		//Reserved
-__attribute__((interrupt)) static void isr_1c(void* p)
-{say("int1c!\n");}		//Reserved
-__attribute__((interrupt)) static void isr_1d(void* p)
-{say("int1d!\n");}		//Reserved
-__attribute__((interrupt)) static void isr_1e(void* p, u64 e)
-{say("int1e:%llx\n", e);}		//Security Exception
-__attribute__((interrupt)) static void isr_1f(void* p)
-{say("int1f!\n");}		//Reserved
-__attribute__((interrupt)) static void isr_20(void* p)
-{
+}//General Protection Fault
+__attribute__((interrupt)) static void isr_0e(struct int_frame* p, u64 e){
+	say("int0e: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
+	printmemory((u8*)p-0x18, 0x80);
+	asm("cli");
+	asm("hlt");
+}//Page Fault
+__attribute__((interrupt)) static void isr_0f(void* p){
+	say("int0f!\n");
+	while(1);
+}//Reserved
+__attribute__((interrupt)) static void isr_10(void* p){
+	say("int10!\n");
+	while(1);
+}//x87 Floating-Point Exception
+__attribute__((interrupt)) static void isr_11(void* p, u64 e){
+	say("int11:%llx\n", e);
+	while(1);
+}//Alignment Check
+__attribute__((interrupt)) static void isr_12(void* p){
+	say("int12!\n");
+	while(1);
+}//Machine Check
+__attribute__((interrupt)) static void isr_13(void* p){
+	say("int13!\n");
+	while(1);
+}//SIMD Floating-Point Exception
+__attribute__((interrupt)) static void isr_14(void* p){
+	say("int14!\n");
+	while(1);
+}//Virtualization Exception
+__attribute__((interrupt)) static void isr_15(void* p){
+	say("int15!\n");
+	while(1);
+}//Reserved
+__attribute__((interrupt)) static void isr_16(void* p){
+	say("int16!\n");
+	while(1);
+}//Reserved
+__attribute__((interrupt)) static void isr_17(void* p){
+	say("int17!\n");
+	while(1);
+}//Reserved
+__attribute__((interrupt)) static void isr_18(void* p){
+	say("int18!\n");
+	while(1);
+}//Reserved
+__attribute__((interrupt)) static void isr_19(void* p){
+	say("int19!\n");
+	while(1);
+}//Reserved
+__attribute__((interrupt)) static void isr_1a(void* p){
+	say("int1a!\n");
+	while(1);
+}//Reserved
+__attribute__((interrupt)) static void isr_1b(void* p){
+	say("int1b!\n");
+	while(1);
+}//Reserved
+__attribute__((interrupt)) static void isr_1c(void* p){
+	say("int1c!\n");
+	while(1);
+}//Reserved
+__attribute__((interrupt)) static void isr_1d(void* p){
+	say("int1d!\n");
+	while(1);
+}//Reserved
+__attribute__((interrupt)) static void isr_1e(void* p, u64 e){
+	say("int1e:%llx\n", e);
+	while(1);
+}//Security Exception
+__attribute__((interrupt)) static void isr_1f(void* p){
+	say("int1f!\n");
+	while(1);
+}//Reserved
+__attribute__((interrupt)) static void isr_20(void* p){
 	//say("825x!\n");
 	isr_825x();
 	endofirq(0);
 }
-__attribute__((interrupt)) static void isr_21(void* p)
-{
+__attribute__((interrupt)) static void isr_21(void* p){
 	//say("kbd!\n");
 	isr_8042();
 	endofirq(1);
 }
-__attribute__((interrupt)) static void isr_28(void* p)
-{
+__attribute__((interrupt)) static void isr_28(void* p){
 	//say("rtc!\n");
 	isr_rtc();
 	endofirq(8);
 }
-__attribute__((interrupt)) static void isr_80(struct int_frame* p)
-{
+__attribute__((interrupt)) static void isr_80(struct int_frame* p){
+	while(1);
 	say("int80: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 }
 
@@ -145,13 +200,14 @@ __attribute__((interrupt)) static void isr_80(struct int_frame* p)
 
 void interruptinstall(int num, u64 isr)
 {
-	u64 temp = idthome + num*16;
-	struct idt_entry* addr = (void*)temp;
+	//0x80: testing syscall: 
+	u8 type = (num>=0x80) ? 0xee : 0x8e;
+	struct idt_entry* addr = (void*)(idthome + num*16);;
 
 	addr->byte01 = isr&0xffff;
-	addr->select = 0x10;		//kernel code @ 10
+	addr->select = 0x10;		//kernel @ 10
 	addr->zero = 0x0;
-	addr->attr = 0x8e;
+	addr->type = type;
 	addr->byte23 = (isr>>16)&0xffff;
 	addr->byte47 = (isr>>32)&0xffffffff;
 	addr->what = 0;
@@ -163,7 +219,7 @@ void initidt()
 	int j;
 	u8* buf = (void*)idthome;
 	for(j=0;j<0x1000;j++)buf[j] = 0;
-say("stack@%x\n",&j);
+
 	//exception
 	interruptinstall(0x00, (u64)isr_00);
 	interruptinstall(0x01, (u64)isr_01);
@@ -205,9 +261,10 @@ say("stack@%x\n",&j);
 	interruptinstall(0x28, (u64)isr_28);
 
 	//systemcall
-	interruptinstall(0x80, (u64)isr_80);
-	//interruptinstall(0x80, getisr80());
+	//interruptinstall(0x80, (u64)isr_80);
+	interruptinstall(0x80, getisr80());
 
 	//
-	lidt(buf, 0xfff);
+	printmemory(buf, 0x40);
+	setidt(buf, 0xfff);
 }

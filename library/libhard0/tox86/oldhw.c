@@ -1,6 +1,7 @@
 #include "libhard.h"
 void initgdt();
 void initidt();
+void enterring3();
 //
 void* getmemmap();
 void* getdevmap();
@@ -19,14 +20,26 @@ void initrtc();         //timer.rtc
 
 void initcpu0(struct device* p)
 {
+	//
 	asm("cli");
-
 	initgdt();
 	initidt();
 
-	asm("sti");
-	asm("int3");
+/*
+	//--------jump to ring3---------
+	say("ring3 try...\n");
+	enterring3();
+	dbg("ring3 god!!!\n");
+
+
+	//--------back to ring0---------
+	dbg("ring0 try...\n");
 	asm("int $0x80");
+	say("ring0 god!!!\n");
+*/
+
+	//ok
+	asm("sti");
 }
 
 
@@ -101,6 +114,6 @@ void inithardware()
 	init8259();
 	initapic();
 
-	init825x();
 	initrtc();
+	init825x();
 }

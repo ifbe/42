@@ -16,3 +16,4 @@ int cmp(void*, void*);
 void printmemory(void*, int);
 void printmmio(void*, int);
 void say(void*, ...);
+void dbg(void*, ...);

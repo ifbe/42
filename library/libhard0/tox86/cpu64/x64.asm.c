@@ -15,6 +15,12 @@ void cpuid(int code, uint32_t *a, uint32_t *d)
 		:"ecx","ebx");
 }
 */
+void* syscall(u64 iCall, void* arg)		//only work with dsdc89
+{
+    void *retval;
+    asm volatile( "syscall" : "=a"(retval) : "D"(iCall), "S"(arg) : "memory" );
+    return retval;
+}
 int cpuid_string(int code, u32 p[4])
 {
 	asm volatile("cpuid"
@@ -29,11 +35,18 @@ u64 rdtsc()
 	asm volatile("rdtsc" : "=A"(ret) );
 	return ret;
 }
+u64 rdpmc()
+{
+	return 0;
+}
 void gettss()
 {
 	asm volatile("str %ax");
 }
-void lgdt(void* buf, u16 len)
+void settss()
+{
+}
+void setgdt(void* buf, u16 len)
 {
 	struct {
 		u16 len;
@@ -45,14 +58,14 @@ void lgdt(void* buf, u16 len)
 		: "m"(GDTR)
 	);
 }
-void sgdt(u8* buf)
+void getgdt(u8* buf)
 {
 	asm("sgdt %0"
 		:
 		: "m"(*buf)
 	);
 }
-void lidt(void* buf, u16 len)
+void setidt(void* buf, u16 len)
 {
 	struct {
 		u16 len;
@@ -64,7 +77,7 @@ void lidt(void* buf, u16 len)
 		: "m"(IDTR)
 	);
 }
-void sidt(u8* buf)
+void getidt(u8* buf)
 {
 	asm("sidt %0"
 		:
