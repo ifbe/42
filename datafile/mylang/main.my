@@ -1,0 +1,13 @@
+window:data{
+	w:int 1024
+	h:int 768
+}
+drawer:data,type=style{
+	area:fullscreen
+}
+main:func{
+	link(window,drawer)
+	while(1){
+		window.take()
+	}
+}

@@ -1,0 +1,27 @@
+g_data: data, seg=.data{
+	x:int 24
+	y:int 35
+}
+
+add_asm: func, seg=.text, lang=yasm{
+	add rax,rbx
+	ret
+}
+
+add_cxx: func, seg=.text, lang=llvm, in(aaa@rax, bbb@rbx), out(ccc@rax){
+	ccc = aaa+bbb
+}
+
+main: func, seg=.text, lang=cxx, in(argc:int,argv:char**), out(val){
+	if(argc <= 1)return
+
+	xx: u64@stack
+	xx = add_asm(argv[1], argv[2])
+	print(xx)
+
+	yy: u64@stack
+	yy = add_cxx(argv[1], argv[2])
+	print(yy)
+
+	return 0
+}
