@@ -1,7 +1,7 @@
 #include "libhard.h"
+void initpaging();
 void initgdt();
 void initidt();
-void enterring3();
 //
 void* getmemmap();
 void* getdevmap();
@@ -14,6 +14,8 @@ void initapic();
 //
 void init825x();        //timer.pit
 void initrtc();         //timer.rtc
+//for fun
+void enterring3();
 
 
 
@@ -22,10 +24,11 @@ void initcpu0(struct device* p)
 {
 	//
 	asm("cli");
+	initpaging();
 	initgdt();
 	initidt();
 
-/*
+
 	//--------jump to ring3---------
 	say("ring3 try...\n");
 	enterring3();
@@ -36,7 +39,7 @@ void initcpu0(struct device* p)
 	dbg("ring0 try...\n");
 	asm("int $0x80");
 	say("ring0 god!!!\n");
-*/
+
 
 	//ok
 	asm("sti");

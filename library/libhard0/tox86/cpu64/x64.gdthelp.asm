@@ -1,3 +1,4 @@
+%define GDTBUF 0x30000
 [bits 64]
 section .text
 
@@ -6,7 +7,7 @@ global loadgdt
 loadgdt:
 	;gdt
 	mov word [0x800], 8*8-1
-	mov qword [0x802], 0x10000
+	mov qword [0x802], GDTBUF
 	lgdt [0x800]
 
 	;fs,gs

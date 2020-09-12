@@ -2,7 +2,7 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-#define GDTBUF 0x10000
+#define GDTBUF 0x30000
 #define TSSBUF (GDTBUF+0x1000)
 #define STKBUF (GDTBUF+0x10000)
 void getgdt(void*);
