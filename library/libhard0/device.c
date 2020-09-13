@@ -88,6 +88,18 @@ void* devicecreate(u64 type, void* name, int argc, u8** argv)
 		p->hfmt = _pci_;
 		return p;
 	}
+	if(_ahci_ == type){
+		struct device* p = allocdevice();
+		p->type = _ahci_;
+		p->hfmt = _ahci_;
+		return p;
+	}
+	if(_xhci_ == type){
+		struct device* p = allocdevice();
+		p->type = _xhci_;
+		p->hfmt = _xhci_;
+		return p;
+	}
 	if(_mmc_ == type){
 		struct device* p = allocdevice();
 		p->type = _mmc_;

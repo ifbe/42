@@ -1,12 +1,9 @@
-#define u8 unsigned char
-#define u16 unsigned short
-#define u32 unsigned int
-#define u64 unsigned long long
+#include "libhard.h"
 //
-void xhci_portinit(u32 addr);
+void xhci_portinit(struct device* dev, u32 addr);
 //
-void ide_portinit(u32 addr);
-void ahci_portinit(u32 addr);
+void ide_portinit(struct device* dev, u32 addr);
+void ahci_portinit(struct device* dev, u32 addr);
 //
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
@@ -45,6 +42,7 @@ struct pci
 
 void initpci_port()
 {
+	struct device* xx;
 	u32 idid,type;
 	u32 bus,dev,fun,addr;
 	say("@initpci_port\n");
@@ -63,11 +61,15 @@ void initpci_port()
 
 		switch(type >> 16){
 		case 0x0101:
-			ide_portinit(addr);
+			xx = devicecreate(_ide_, 0, 0, 0);
+			ide_portinit(xx, addr);
 			break;
 
 		case 0x0106:
-			if(0x01 == ((type>>8)&0xff))ahci_portinit(addr);
+			if(0x01 == ((type>>8)&0xff)){
+				xx = devicecreate(_ahci_, 0, 0, 0);
+				ahci_portinit(xx, addr);
+			}
 			break;
 
 		case 0x0108:
@@ -83,7 +85,7 @@ void initpci_port()
 			//case 0x00:uhci_portinit(addr);break;
 			//case 0x10:ohci_portinit(addr);break;
 			//case 0x20:ehci_portinit(addr);break;
-			case 0x30:xhci_portinit(addr);break;
+			case 0x30:xx = devicecreate(_xhci_, 0, 0, 0);xhci_portinit(xx, addr);break;
 			}//usbver
 			break;
 

@@ -42,14 +42,15 @@
 #define _bus_ hex32('b','u','s',0)
 #define _pci_ hex32('p','c','i',0)
 #define _mmc_ hex32('m','m','c',0)
+#define _ide_ hex32('i','d','e',0)
+#define _ahci_ hex32('a','h','c','i')
+#define _xhci_ hex32('x','h','c','i')
 //
 #define _dbg_ hex32('d','b','g',0)
 #define _i2c_ hex32('i','2','c',0)
 #define _spi_ hex32('s','p','i',0)
 #define _ptmx_ hex32('p','t','m','x')
 #define _uart_ hex32('u','a','r','t')
-#define _ahci_ hex32('a','h','c','i')
-#define _xhci_ hex32('x','h','c','i')
 #define _usb_ hex32('u','s','b',0)
 //
 #define _src_ hex32('s','r','c',0)

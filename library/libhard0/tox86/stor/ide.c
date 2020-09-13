@@ -5,7 +5,7 @@ void out32(u16 port, u32 data);
 
 
 
-void ide_portinit(u32 addr)
+void ide_portinit(struct device* dev, u32 addr)
 {
 	u32 temp;
 	say("ide@port:%x{\n",addr);

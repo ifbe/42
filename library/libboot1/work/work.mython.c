@@ -28,6 +28,8 @@ int openwriteclose(void*,int,void*,int);
 //
 u8* getsuffix(u8* p);
 int str2arg(u8* buf, int len, u8* tmp, int cnt, u8** argv, int max);
+int hexstr2u32(void*, u32*);
+int hexstr2u64(void*, u64*);
 //
 int ncmp(void*, void*, int);
 int cmp(void*, void*);
@@ -68,6 +70,21 @@ void term_ls(u8* buf, int len)
 	else if(0 == ncmp(buf, "entity", 6))entitysearch(0, 0);
 	else say("ls(%s)\n", buf);
 }
+void term_mmio(int argc, u8** argv)
+{
+	if(argc <= 1)return;
+
+	u64 addr;
+	hexstr2u64(argv[1], &addr);
+	addr &= 0xfffffffffffffffc;
+	if(3 == argc){
+		u32 data;
+		hexstr2u32(argv[2], &data);
+		*(u32*)addr = data;
+		say("writing: [%llx] = %08x\n", addr, data);
+	}
+	say("reading: [%llx] = %08x\n", addr, *(u32*)addr);
+}
 
 
 
@@ -89,6 +106,7 @@ int termwrite(u8* buf, int len)
 
 	j = str2arg(buf, len, tmp, 0x1000, argv, 8);
 	if(0 == ncmp(buf, "ls", 2))term_ls(buf, len);
+	else if(0 == ncmp(buf, "mmio", 4))term_mmio(j, argv);
 	else if(0 == ncmp(buf, "origin", 6))originmodify(j, argv);
 	else if(0 == ncmp(buf, "worker", 6))workermodify(j, argv);
 	else if(0 == ncmp(buf, "device", 6))devicemodify(j, argv);
