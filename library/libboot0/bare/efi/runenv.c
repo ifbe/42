@@ -234,6 +234,7 @@ int bootservice_exit()
 	);
 	if(EFI_SUCCESS != ret){
 		say("error:%d@GetMemoryMap\n", ret);
+		return -1;
 	}
 	else{
 		say("@GetMemoryMap:buf=%p,len=%x,key=%x,sz=%x,ver=%x\n",
@@ -259,9 +260,30 @@ int bootservice_exit()
 	}
 
 	//ExitBootService
-	ret = T->BootServices->ExitBootServices(H, key);
-	if(EFI_SUCCESS != ret){
-		say("error:%d@ExitBootServices\n", ret);
+	int j;
+	for(j=0;j<3;j++){
+		//key may change after each call to exitbootservice
+
+		byteperuefi = BYTE_PER_DESC * DESC_PER_UEFI;
+		ret = T->BootServices->GetMemoryMap(
+			&byteperuefi,
+			(EFI_MEMORY_DESCRIPTOR*)memmap,
+			&key,
+			&byteperdesc,
+			&ver
+		);
+		if(EFI_SUCCESS != ret){
+			say("error:%d,retry:%d@GetMemoryMap\n", ret, j);
+			continue;
+		}
+
+		ret = T->BootServices->ExitBootServices(H, key);
+		if(EFI_SUCCESS != ret){
+			say("error:%d,retry:%d@ExitBootServices\n", ret, j);
+			continue;
+		}
+
+		break;
 	}
 
 	return 0;

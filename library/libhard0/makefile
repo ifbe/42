@@ -138,6 +138,7 @@ barex64:x64
 	$(CC) $(CF) tox86/bus/pci/pci-mmio.c
 	$(CC) $(CF) tox86/bus/usb/ehci.c
 	$(CC) $(CF) tox86/bus/usb/xhci.c
+	$(CC) $(CF) tox86/bus/usb/usb.c
 	$(CC) $(CF) tox86/stor/ide.c
 	$(CC) $(CF) tox86/stor/ahci.c
 	$(CC) $(CF) tox86/stor/nvme.c
@@ -148,7 +149,6 @@ barex64:x64
 	$(CC) $(CF) tox86/wire/bare.wire.i2c.c
 	$(CC) $(CF) tox86/wire/bare.wire.spi.c
 	$(CC) $(CF) tox86/wire/bare.wire.uart.c
-	$(CC) $(CF) tox86/wire/bare.wire.usb.c
 	$(CC) $(CF) tox86/wire/bare.wire.wifi.c
 
 .PHONY:efix64

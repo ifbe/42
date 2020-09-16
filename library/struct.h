@@ -707,21 +707,24 @@ struct device
 
 	//[60,7f]: memory
 	union{
-		u64 padd0;
-		void* addr0;
+		u64 addr0;
+		u64 data0;
+		void* buf0;
 	};
 	union{
-		u64 padd1;
-		void* addr1;
+		u64 addr1;
+		u64 data1;
+		void* buf1;
 	};
 	union{
-		u64 padd2;
-		void* addr2;
+		u64 addr2;
+		u64 data2;
+		void* buf2;
 	};
 	union{
-		u64 padd3;
-		void* addr3;
-		void* buf;
+		u64 addr3;
+		u64 data3;
+		void* buf3;
 	};
 
 	//[80,ff]
