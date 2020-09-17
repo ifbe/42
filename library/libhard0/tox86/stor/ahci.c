@@ -563,12 +563,11 @@ void ahci_portinit(struct device* dev, u32 addr)
 	say("ahci@port:%x{\n",addr);
 
 	out32(0xcf8, addr+0x4);
-	temp = in32(0xcfc) | (1<<10) | (1<<2);		//bus master=1
-	out32(0xcf8, addr+0x4);
-	out32(0xcfc, temp);
+	temp = in32(0xcfc);
+	say("sts,cmd=%x\n", temp);
 
 	out32(0xcf8, addr+0x4);
-	say("sts,cmd=%x\n", in32(0xcfc));
+	out32(0xcfc, temp | (1<<10) | (1<<2));		//bus master=1
 
 	out32(0xcf8, addr+0x10);
 	say("bar0=%x\n", in32(0xcfc));

@@ -50,38 +50,113 @@ static u32 colortable[16] = {
 
 
 
+void terminal_write_s(_ent* ent,struct style* slot, _syn* stack,int sp, u8* buf, int len)
+{
+	//printmemory(buf, 8);
+
+	if(ent->CLIENT){
+		give_data_into_peer(ent,'c', stack,sp, 0,0, buf,len);
+	}
+	else{
+/*		int j;
+		struct str* dat = ent->RAWBUF;
+		for(j=0;j<len;j++)dat->buf[dat->len + j] = buf[j];
+		dat->len += j;*/
+		terminal_serverinput(ent->TTTBUF, buf, len);
+	}
+}
+void terminal_write_c(_ent* ent,struct style* slot, _syn* stack,int sp, void* buf, int len)
+{
+	if(0 == ent->SERVER)input(buf, len);
+	else give_data_into_peer(ent,'s', stack,sp, 0,0, buf,len);
+}
+static void terminal_write_bywnd(_ent* ent,struct style* slot, _syn* stack,int sp, struct event* ev,int len)
+{
+	u32 tmp;
+	if(_char_ == ev->what){
+		terminal_write_c(ent,slot, stack,sp, ev, 1);
+		return;
+	}
+	if(_kbd_ == ev->what){
+		switch(ev->why){
+		case 0x48:
+			if(ent->iy0 > 0)ent->iy0 -= 1;
+			return;
+			//tmp = 0x415b1b;len = 3;
+			//break;
+		case 0x50:
+			ent->iy0 += 1;
+			return;
+			//tmp = 0x425b1b;len = 3;
+			//break;
+		case 0x4d:
+			tmp = 0x435b1b;len = 3;
+			break;
+		case 0x4b:
+			tmp = 0x445b1b;len = 3;
+			break;
+		case 0x1b:
+			tmp = 0x1b;len = 1;
+			break;
+		default:
+			return;
+		}
+		terminal_write_c(ent,slot, stack,sp, &tmp, len);
+		return;
+	}
+}
+
+
+
+
 static void terminal_draw_pixel(
-	struct entity* act, struct style* pin,
+	struct entity* ent, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 	int cx, cy, ww, hh;
-	if(sty)
-	{
+	if(sty){
 		cx = sty->fs.vc[0];
 		cy = sty->fs.vc[1];
 		ww = sty->fs.vr[0];
 		hh = sty->fs.vf[1];
 	}
-	else
-	{
+	else{
 		cx = win->width/2;
 		cy = win->height/2;
 		ww = win->width/2;
 		hh = win->height/2;
 	}
 
-	if(act->orel0)
-	{
+	if(ent->orel0){
 		drawopaque_rect(win, 0x111111, cx-ww, cy-hh, cx+ww, cy+hh);
-		drawterm(win, act->TTTBUF, cx-ww, cy-hh, cx+ww, cy+hh);
+		drawterm(win, ent->TTTBUF, cx-ww, cy-hh, cx+ww, cy+hh);
 	}
-	else
-	{
-		void* obuf = getstdout();
-		int ocur = getcurout();
+	else{
 		drawsolid_rect(win, 0x202020, cx-ww, cy-hh, cx+ww, cy+hh);
-		drawsolid_rect(win, 0xe0e0e0, cx+ww-16, cy-hh, cx+ww, cy+hh);
-		drawtext_reverse(win, 0xffffff, cx-ww, cy-hh, cx+ww-16, cy+hh, obuf, ocur);
+
+		u8* obuf = getstdout();
+		if(0 == obuf)return;
+		int ocur = getcurout();
+		if(ocur <= 0)return;
+
+		int j,k = 0;
+		int here=0;
+		for(j=0;j<ocur;j++){
+			if(obuf[j] < 0x8)break;
+			if('\n' == obuf[j]){
+				k++;
+				if(k == ent->iy0){
+					here = j+1;
+					break;
+				}
+			}
+		}
+
+		int last = here + drawtext(win, 0xffffff, cx-ww, cy-hh, cx+ww, cy+hh, obuf+here, ocur-here);
+	
+		int ytop = cy-hh + (2*hh*here)/ocur;
+		int ybot = cy-hh + (2*hh*last)/ocur;
+		drawopaque_rect(win, 0x80e0e0e0, cx+ww-16, ytop, cx+ww, ybot);
 	}
 }
 static void terminal_draw_json(
@@ -127,50 +202,6 @@ static void terminal_draw_cli(
 	u8* p;
 	int enq, deq;
 	//say("terminal(%x,%x,%x)\n",win,act,sty);
-}
-
-
-
-
-void terminal_write_s(_ent* ent,struct style* slot, _syn* stack,int sp, u8* buf, int len)
-{
-	//printmemory(buf, 8);
-
-	if(ent->CLIENT){
-		give_data_into_peer(ent,'c', stack,sp, 0,0, buf,len);
-	}
-	else{
-/*		int j;
-		struct str* dat = ent->RAWBUF;
-		for(j=0;j<len;j++)dat->buf[dat->len + j] = buf[j];
-		dat->len += j;*/
-		terminal_serverinput(ent->TTTBUF, buf, len);
-	}
-}
-void terminal_write_c(_ent* ent,struct style* slot, _syn* stack,int sp, void* buf, int len)
-{
-	if(0 == ent->SERVER)input(buf, len);
-	else give_data_into_peer(ent,'s', stack,sp, 0,0, buf,len);
-}
-static void terminal_write_bywnd(_ent* ent,struct style* slot, _syn* stack,int sp, struct event* ev,int len)
-{
-	u32 tmp;
-	if(_char_ == ev->what){
-		terminal_write_c(ent,slot, stack,sp, ev, 1);
-		return;
-	}
-	if(_kbd_ == ev->what){
-		switch(ev->why){
-		case 0x48:tmp = 0x415b1b;len = 3;break;
-		case 0x50:tmp = 0x425b1b;len = 3;break;
-		case 0x4d:tmp = 0x435b1b;len = 3;break;
-		case 0x4b:tmp = 0x445b1b;len = 3;break;
-		case 0x1b:tmp = 0x1b;len = 1;break;
-		default:return;
-		}
-		terminal_write_c(ent,slot, stack,sp, &tmp, len);
-		return;
-	}
 }
 
 
@@ -306,8 +337,6 @@ static void terminal_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,in
 
 	switch(wnd->fmt){
 	case _rgba_:
-		terminal_write_c(ent,slot, stack,sp, buf,len);
-		return;
 	case _dx11full_:
 	case _mt20full_:
 	case _gl41full_:

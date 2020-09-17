@@ -238,7 +238,7 @@ static int drawvt100_1b(u8* p, struct txtcfg* cfg)
 
 
 
-void drawvt100(
+int drawvt100(
 	struct entity* win, u32 rgb,
 	int x0, int y0, int x1, int y1,
 	u8* buf, int len)
@@ -326,6 +326,7 @@ void drawvt100(
 			j += z-1;
 		}
 	}
+	return j;
 }
 
 

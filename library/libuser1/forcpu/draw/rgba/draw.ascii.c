@@ -222,14 +222,12 @@ void drawhex32(struct entity* win, u32 rgb, int x, int y, u32 ch)
 void drawstring(struct entity* win, u32 rgb, int x, int y, u8* buf, int len)
 {
 	int j;
-	if(buf == 0)return;
-	if(len == 0)
-	{
+	if(0 == buf)return;
+	if(0 == len){
 		for(;len<256;len++)if(buf[len] == 0)break;
 	}
-	for(j=0;j<len;j++)
-	{
-		if(buf[j] == 0)break;
+	for(j=0;j<len;j++){
+		if(0 == buf[j])break;
 		drawascii(win, rgb, x+j*8, y, buf[j]);
 	}
 }
@@ -293,46 +291,44 @@ void drawhexadecimal(struct entity* win, u32 rgb, int x, int y, u64 hex)
 		hex=hex>>4;
 	}
 }
-void drawtext(
+int drawtext(
 	struct entity* win, u32 rgb,
 	int x0, int y0, int x1, int y1,
 	u8* buf, int len)
 {
 	int j, k;
 	int cc, dy;
-	if(buf == 0)return;
-	if(len == 0)
-	{
+	if(0 == buf)return 0;
+	if(0 == len){
 		while(buf[len] != 0)len++;
 	}
 
 	k = 0;
 	dy = 0;
-	for(j=0;j<=len;j++)
-	{
+	for(j=0;j<=len;j++){
 		if(dy+16 > y1-y0)break;
-		if((j==len)|('\n'==buf[j]))
-		{
+
+		if((j==len)|('\n'==buf[j])){
 			cc = (x1-x0)/8;
 			if(cc > j-k)cc = j-k;
 
-			if(cc > 0)
-			{
+			if(cc > 0){
 				drawstring(win, rgb, x0, y0+dy, buf+k, cc);
 			}
 			k = j+1;
 			dy += 16;
 		}
 	}
-}
-void drawtext_reverse(
+	return j;
+}/*
+int drawtext_reverse(
 	struct entity* win, u32 rgb,
 	int x0, int y0, int x1, int y1,
 	u8* buf, int len)
 {
 	int j,k;
-	if(0 == buf)return;
-	if(0 == len)return;
+	if(0 == buf)return 0;
+	if(0 == len)return 0;
 
 	k = len;
 	for(j=len-1;j>=0;j--)
@@ -352,7 +348,9 @@ void drawtext_reverse(
 			k = j;
 		}
 	}
-}
+
+	return j;
+}*/
 
 
 

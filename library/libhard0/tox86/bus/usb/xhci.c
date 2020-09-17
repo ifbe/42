@@ -45,6 +45,8 @@
 #define TRB_event_MFINDEXWrap        39
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
+void explaindevdesc(void*);
+void explainconfdesc(void*);
 
 
 
@@ -107,6 +109,56 @@ struct CapabilityRegisters{
 	volatile u32 CAPPARAMS2;		//[1c,1f]
 }__attribute__((packed));
 
+//
+struct SlotContext{
+	//[0,3]
+	u32    RouteString:20;	//[ 0,19]
+	u32          Speed: 4;	//[20,23]
+	u32           Rsvd: 1;	//24
+	u32        MultiTT: 1;	//25
+	u32            Hub: 1;	//26
+	u32 ContextEntries: 5;	//[27,31]
+	//[4,7]
+	u16 MaxExitLatency;
+	u8 RootHubPortNumber;
+	u8 NumberofPorts;
+	//[8,b]
+	u8 ParentHubSlotID;
+	u8 ParentPortNumber;
+	u16       TTThinkTime: 2;
+	u16             RsvdZ: 4;
+	u16 InterrupterTarget:10;
+	//[c,f]
+	u32 USBDeviceAddress: 8;
+	u32         Rsvd_c_8:19;
+	u32        SlotState: 5;
+}__attribute__((packed));
+
+struct EndpointContext{
+	//[0,3]
+	u32     EndpointState: 3;	//[0,2]
+	u32          Rsvd_0_3: 5;	//[3,7]
+	u32              Mult: 2;	//[8,9]
+	u32 MaxPrimaryStreams: 5;	//[10,14]
+	u32  LinerStreamArray: 1;	//15
+	u32          Interval: 8;	//[16,23]
+	u32  MaxESITPayloadHi: 8;	//[24,31]
+	//[4,7]
+	u8            Rsvd_4_0: 1;
+	u8          ErrorCount: 2;
+	u8        EndpointType: 3;
+	u8            Rsvd_4_6: 1;
+	u8 HostInitiateDisable: 1;
+	u8 MaxBurstSize;
+	u16 MaxPacketSize;
+	//[8,f]
+	u64 DequeueCycleState: 1;
+	u64              Rsvd: 3;
+	u64  TRDequeuePointer:60;
+	//[10,13]
+	u16 AverageTRBLength;
+	u16 MaxESITPayloadLo;
+}__attribute__((packed));
 //
 struct SetupStage{
 	//[0,3]
@@ -202,7 +254,7 @@ struct mydata{
 
 
 
-int xhci_takeevent(struct device* dev, int xxx, u64 wantslot, u64 wanttype)
+void* xhci_takeevent(struct device* dev)
 {
 	struct mydata* my = (void*)(dev->data);
 	u32* ev = (u32*)(my->event_queue);
@@ -216,7 +268,7 @@ int xhci_takeevent(struct device* dev, int xxx, u64 wantslot, u64 wanttype)
 	}
 	say("	timeout@%p: %08x,%08x,%08x,%08x\n", ev, ev[0], ev[1], ev[2], ev[3]);
 	//printmemory(my->event_cycle, 0x10);
-	return -2;
+	return 0;
 
 found:
 	my->event_queue += 0x10;
@@ -226,27 +278,47 @@ found:
 		my->runreg->ir[0].ERDP_lo = my->event_buf & 0xffffffff;
 		my->runreg->ir[0].ERDP_hi = my->event_buf >> 32;
 	}
+	printmemory(ev, 16);
 
-	say("	event@%p: %08x,%08x,%08x,%08x\n", ev, ev[0], ev[1], ev[2], ev[3]);
-	if(1 != (ev[2] >> 24)){		//success: completecode == 1
-		say("	error=%d\n", ev[2] >> 24);
-		return -3;
-	}
-
-	u32 slot = ev[3]>>24;
 	u32 type = (ev[3]>>10)&0x3f;
-	say("	event:slot=%x,type=%x\n", slot, type);
-	if(0 != wantslot){
-		if(slot == wantslot)return 1;
+	u32 stat = ev[2]>>24;
+	switch(type){
+	case TRB_event_Transfer: 	 			//32
+		say("%d@Transfer: cmd=%p, len=%x, slot=%x, ep=%x\n", stat, *(u8**)ev, ev[2]&0xffffff, ev[3]>>24, (ev[3]>>16)&0x1f);
+		break;
+	case TRB_event_CommandCompletion:		//33
+		say("%d@CommandCompletion: cmd=%p, param=%x, slot=%x\n", stat, *(u8**)ev, ev[2]&0xffffff, ev[3]>>24);
+		break;
+	case TRB_event_PortStatusChange:		//34
+		say("%d@PortStatusChange: port=%x(Count from 1)\n", stat, ev[0]>>24);
+		break;
+	default:
+		say("%d@unknown\n");
 	}
-	else{
-		if(type == wanttype){
-			if(0x21 == type)return ev[3] >> 24;
-			return 1;
-		}
-	}
-	return 1;
+	return ev;
 }
+int xhci_takewanted(struct device* dev, u32 wanttype)
+{
+	u32* ev;
+	while(1){
+		ev = xhci_takeevent(dev);
+		if(0 == ev)break;
+
+		u32 stat = ev[2]>>24;
+		if(1 != stat)continue;
+
+		u32 type = (ev[3]>>10)&0x3f;
+		if(type != wanttype)continue;
+
+		if(0x21 == type)return ev[3] >> 24;
+		return 1;
+	}
+	return -1;
+}
+
+
+
+
 void xhci_giveorder(struct device* dev, int slot)
 {
 /*
@@ -332,9 +404,10 @@ int addressdevice(struct device* xhci, u32 usbspeed, u32 rootport, u32 hubport)
 
 
 //------------------alloc slot from xhci------------------
+	say("	--------------------------------\n");
 	say("	slot:allocating\n");
 	xhci_hostorder(xhci,0, 0,0,0,(TRB_command_EnableSlot<<10));
-	int slot = xhci_takeevent(xhci,0, 0,TRB_event_CommandCompletion);
+	int slot = xhci_takewanted(xhci, TRB_event_CommandCompletion);
 	if(slot <= 0){
 		say("	error=%d\n", slot);
 		return -1;
@@ -343,50 +416,60 @@ int addressdevice(struct device* xhci, u32 usbspeed, u32 rootport, u32 hubport)
 	if(slot >= 16)return -1;
 
 
+//------------------write slot context to dcbaa------------
+	u64* dcbatable = (u64*)(my->dcba);
+	u8* slotcontext = my->slotctx + slot*0x1000;
+	dcbatable[slot] = (u64)slotcontext;
+
+
 //------------------send slot to device-----------------
-	say("	slot:telling device\n");
+	say("	--------------------------------\n");
+	say("	slot:addressing device\n");
 	int j;
 	u8* perusb = my->perusb + slot*0x10000;
 	for(j=0;j<0x10000;j++)perusb[j] = 0;
 
-	u32* incon  = (void*)(perusb + 0);
-	u32* devctx = (void*)(perusb + contextsize);
-	u32* ep0ctx = (void*)(perusb + contextsize*2);
+	//cmdring
+	u8* ep0cmd = perusb;
+	//send buffer
+	u32* incon  = (void*)(perusb + 0x4000);
+	u32* devctx = (void*)(perusb + 0x4000 + contextsize);
+	u32* ep0ctx = (void*)(perusb + 0x4000 + contextsize*2);
+	//recv buffer
+	u8* recvbuf = (void*)(perusb + 0x8000);
 
-	u8* ep0cmd = perusb+0x4000;
-	u32 lo = ((u64)ep0cmd) & 0xffffffff;
-	u32 hi = ((u64)ep0cmd) >> 32;
-
-	u8* freebuf = (void*)(perusb + 0x8000);
-
-	//fill context
+	//fill send buffer
 	incon[0] = 0;
 	incon[1] = 3;
 	for(j=2;j<8;j++)incon[j] = 0;
 
-	devctx[0] = (3<<27) + (usbspeed<<20) + hubport;
+	devctx[0] = (1<<27) + (usbspeed<<20) + hubport;
 	devctx[1] = rootport << 16;
+	devctx[2] = 0;
+	devctx[3] = 0;
 
+	u32 lo = ((u64)ep0cmd) & 0xffffffff;
+	u32 hi = ((u64)ep0cmd) >> 32;
 	ep0ctx[0] = 0;
 	ep0ctx[1] = (packetsize<<16) + (4<<3) + 6;
 	ep0ctx[2] = lo | 1;
 	ep0ctx[3] = hi;
 	ep0ctx[4] = 0x8;
+	//printmemory(devctx, contextsize*2);
 
 	//send command
 	lo = ((u64)incon) & 0xffffffff;
 	hi = ((u64)incon) >> 32;
 	xhci_hostorder(xhci,0, lo,hi,0,(slot<<24)+(TRB_command_AddressDevice<<10) );
-	if(xhci_takeevent(xhci,0, 0,TRB_event_CommandCompletion)<0){
+	if(xhci_takewanted(xhci, TRB_event_CommandCompletion) < 0){
 		say("	error@address device\n");
 		return -1;
 	}
-	say("	slot:packet sent\n");
+	say("	slot:addressed device\n");
 
-	//if2,addressed
-	u8* slotcontext = my->slotctx + slot*0x1000;
-	u32 slotstate=(*(u32*)(slotcontext+0xc))>>27;
-	u32 ep0state=(*(u32*)(slotcontext+contextsize))&0x3;
+	//printmemory(slotcontext, contextsize*2);
+	u32 slotstate = (*(u32*)(slotcontext+0xc))>>27;
+	u32 ep0state = (*(u32*)(slotcontext+contextsize))&0x3;
 	say("	slotstate=%x, ep0state=%x\n", slotstate, ep0state);
 	if(2 != slotstate){
 		say("	slot state:%x\n",slotstate);
@@ -396,14 +479,111 @@ int addressdevice(struct device* xhci, u32 usbspeed, u32 rootport, u32 hubport)
 		say("	ep0 wrong\n");
 		return -2;
 	}
-	say("	slot:device addressed\n");
+
+
+	//FS device only:
+	//1.get first 8b of for packetsize from device descriptor
+	//2.issue EvaluateContextCommand to change endpoint0 context
+	u8* ep0cur = ep0cmd;
+	struct SetupStage* setup;
+	struct DataStage* data;
+	struct StatusStage* status;
+	if(1 == usbspeed){
+		say("	--------------------------------\n");
+		say("	getting device desc (first 8B)\n");
+		setup  = (void*)(ep0cur+0x00);
+		data   = (void*)(ep0cur+0x10);
+		status = (void*)(ep0cur+0x20);
+		ep0cur += 0x30;
+		//
+		setup->TRBType = TRB_common_SetupStage;
+		setup->TransferType = 3;
+		setup->TRBTransferLength = 8;
+		setup->InterruptOnCompletion = 0;
+		setup->ImmediateData = 1;
+		setup->bmRequestType = 0x80;	//Dir = Device-to-Host, Type = Standard, Recipient = Device
+		setup->bRequest = 6;
+		setup->wValue = 0x100;	//lo = Descriptor Index, hi = Descriptor type
+		setup->wIndex = 0;
+		setup->wLength = 8;
+		setup->Cyclebit = 1;
+		//
+		data->TRBType = TRB_common_DataStage;
+		data->Direction = 1;
+		data->TRBTransferLength = 8;
+		data->Chainbit = 0;
+		data->InterruptOnCompletion = 0;
+		data->ImmediateData = 0;
+		data->buffer = (u64)recvbuf;
+		data->Cyclebit = 1;
+		//
+		status->TRBType = TRB_common_StatusStage;	//TRB Type = Status Stage TRB.
+		status->Direction = 0;
+		status->Chainbit = 0;
+		status->InterruptOnCompletion = 1;
+		status->Cyclebit = 1;
+		//
+		xhci_giveorder(xhci, slot);
+		if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -4;
+
+		printmemory(recvbuf, 8);
+		packetsize = recvbuf[7];		//bMaxPacketSize0
+		say("	packetsize=%x now\n", packetsize);
+
+
+		//Evaluate Context Command
+		say("	--------------------------------\n");
+		say("	evaluating");
+		incon[0] = 0;
+		incon[1] = 2;
+		for(j=2;j<8;j++)incon[j] = 0;
+
+		devctx[0] = 0;
+		devctx[1] = 0;
+		devctx[2] = 0;
+		devctx[3] = 0;
+
+		lo = ((u64)ep0cmd) & 0xffffffff;
+		hi = ((u64)ep0cmd) >> 32;
+		ep0ctx[0] = 0;
+		ep0ctx[1] = (packetsize<<16) + (4<<3) + 6;
+		ep0ctx[2] = lo | 1;
+		ep0ctx[3] = hi;
+		ep0ctx[4] = 0x8;
+		//printmemory(devctx, contextsize*2);
+
+		//send command
+		lo = ((u64)incon) & 0xffffffff;
+		hi = ((u64)incon) >> 32;
+		xhci_hostorder(xhci,0, lo,hi,0,(slot<<24)+(TRB_command_EvaluateContext<<10) );
+		if(xhci_takewanted(xhci, TRB_event_CommandCompletion) < 0){
+			say("	error@evaluate context\n");
+			return -1;
+		}
+		say("	evaluated\n");
+
+		//printmemory(slotcontext, contextsize*2);
+		slotstate = (*(u32*)(slotcontext+0xc))>>27;
+		ep0state = (*(u32*)(slotcontext+contextsize))&0x3;
+		say("	slotstate=%x, ep0state=%x\n", slotstate, ep0state);
+		if(2 != slotstate){
+			say("	slot state:%x\n",slotstate);
+			return -3;
+		}
+		if(0 == ep0state){
+			say("	ep0 wrong\n");
+			return -2;
+		}
+	}
 
 
 	//
-	say("	getting device desc...\n");
-	struct SetupStage* setup   = (void*)(ep0cmd+0x00);
-	struct DataStage* data     = (void*)(ep0cmd+0x10);
-	struct StatusStage* status = (void*)(ep0cmd+0x20);
+	say("	--------------------------------\n");
+	say("	getting device desc fully\n");
+	setup  = (void*)(ep0cur+0x00);
+	data   = (void*)(ep0cur+0x10);
+	status = (void*)(ep0cur+0x20);
+	ep0cur += 0x30;
 	//
 	setup->TRBType = TRB_common_SetupStage;
 	setup->TransferType = 3;
@@ -414,16 +594,16 @@ int addressdevice(struct device* xhci, u32 usbspeed, u32 rootport, u32 hubport)
 	setup->bRequest = 6;
 	setup->wValue = 0x100;	//lo = Descriptor Index, hi = Descriptor type
 	setup->wIndex = 0;
-	setup->wLength = 8;
+	setup->wLength = 0x12;
 	setup->Cyclebit = 1;
 	//
 	data->TRBType = TRB_common_DataStage;
 	data->Direction = 1;
-	data->TRBTransferLength = 8;
+	data->TRBTransferLength = 0x12;
 	data->Chainbit = 0;
 	data->InterruptOnCompletion = 0;
 	data->ImmediateData = 0;
-	data->buffer = (u64)freebuf;
+	data->buffer = (u64)recvbuf;
 	data->Cyclebit = 1;
 	//
 	status->TRBType = TRB_common_StatusStage;	//TRB Type = Status Stage TRB.
@@ -433,8 +613,52 @@ int addressdevice(struct device* xhci, u32 usbspeed, u32 rootport, u32 hubport)
 	status->Cyclebit = 1;
 	//
 	xhci_giveorder(xhci, slot);
-	if(xhci_takeevent(xhci, 0, slot,1)<0)return -4;
-	printmemory(freebuf, 0x12);
+	if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -5;
+
+	printmemory(recvbuf, 0x12);
+	explaindevdesc(recvbuf);
+
+
+	//
+	say("	--------------------------------\n");
+	say("	getting conf desc\n");
+	setup  = (void*)(ep0cur+0x00);
+	data   = (void*)(ep0cur+0x10);
+	status = (void*)(ep0cur+0x20);
+	ep0cur += 0x30;
+	//
+	setup->TRBType = TRB_common_SetupStage;
+	setup->TransferType = 3;
+	setup->TRBTransferLength = 8;
+	setup->InterruptOnCompletion = 0;
+	setup->ImmediateData = 1;
+	setup->bmRequestType = 0x80;	//Dir = Device-to-Host, Type = Standard, Recipient = Device
+	setup->bRequest = 6;
+	setup->wValue = 0x200;	//lo = Descriptor Index, hi = Descriptor type
+	setup->wIndex = 0;
+	setup->wLength = 9;
+	setup->Cyclebit = 1;
+	//
+	data->TRBType = TRB_common_DataStage;
+	data->Direction = 1;
+	data->TRBTransferLength = 9;
+	data->Chainbit = 0;
+	data->InterruptOnCompletion = 0;
+	data->ImmediateData = 0;
+	data->buffer = (u64)recvbuf;
+	data->Cyclebit = 1;
+	//
+	status->TRBType = TRB_common_StatusStage;	//TRB Type = Status Stage TRB.
+	status->Direction = 0;
+	status->Chainbit = 0;
+	status->InterruptOnCompletion = 1;
+	status->Cyclebit = 1;
+	//
+	xhci_giveorder(xhci, slot);
+	if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -5;
+
+	printmemory(recvbuf, 9);
+	explainconfdesc(recvbuf);
 	return 0;
 }
 /*
@@ -504,13 +728,13 @@ void devicedescripter(struct device* xhci)
 
 
 
-int resetport(struct device* xhci, int xxx, struct PortRegisters* port)
+int resetport(struct device* xhci, struct PortRegisters* port)
 {
 	//bit4 = PR = reset
 	port->PORTSC |= 0x10;
 
 	//wait for reset done
-	int j = 0xffffffff;
+	int j = 0xfffffff;
 	while(1){
 		if(0 == (port->PORTSC & 0x10))break;
 
@@ -520,7 +744,7 @@ int resetport(struct device* xhci, int xxx, struct PortRegisters* port)
 	say("	port reseted\n");
 
 	//wait for enable=1
-	j = 0xffffff;
+	j = 0xfffffff;
 	while(1){
 		if(2 == (port->PORTSC & 2))break;
 
@@ -530,7 +754,7 @@ int resetport(struct device* xhci, int xxx, struct PortRegisters* port)
 	say("	port enabled\n");
 
 	//wait for portchange event
-	if(xhci_takeevent(xhci, xxx, 0, TRB_event_PortStatusChange) < 0)return -2;
+	if(xhci_takewanted(xhci, TRB_event_PortStatusChange) < 0)return -2;
 	say("	port changed\n");
 
 	return 1;
@@ -544,9 +768,9 @@ void xhci_listall(struct device* xhci, int xxx, struct PortRegisters* port, int 
 		say("%02x:portsc=%x\n", j, tmp);
 		if(0 == (tmp & 0x1))continue;
 
-		//if(0 == PORTSC.bit2)dev ver <= 2.0, have to reset
+		//if(0 == PORTSC.bit1)ver <= 2.0, have to reset
 		if(0 == (tmp & 0x2)){
-			if(resetport(xhci, xxx, &port[j]) <= 0){
+			if(resetport(xhci, &port[j]) <= 0){
 				say("	reset failed: portsc=%x\n", port[j].PORTSC);
 				continue;
 			}
@@ -554,7 +778,8 @@ void xhci_listall(struct device* xhci, int xxx, struct PortRegisters* port, int 
 		//todo:检查错误
 
 		//link state
-		say("	linkstate=%x\n", (port[j].PORTSC >> 5) & 0xf);
+		tmp = port[j].PORTSC;
+		say("	portsc=%08x,linkstate=%x\n", tmp, (tmp >> 5) & 0xf);
 
 		//usb speed
 		speed = (port[j].PORTSC >> 10) & 0xf;
@@ -569,7 +794,7 @@ void xhci_listall(struct device* xhci, int xxx, struct PortRegisters* port, int 
 		default:say("	speed=%x\n", speed);
 		}
 
-		addressdevice(xhci, speed, j, 0);
+		addressdevice(xhci, speed, j+1, 0);
 	}
 }
 
@@ -579,20 +804,20 @@ void xhci_listall(struct device* xhci, int xxx, struct PortRegisters* port, int 
 int ownership(volatile u32* p)
 {
 	//set hc os owned semaphore
-	say("	seting handoff\n");
+	say("	before handoff:%08x,%08x\n", p[0],p[1]);
 	p[0] |= 0x1000000;
 
 	//wait until bit16==0 && bit24==1
 	volatile int timeout = 0xfffffff;
 	while(1){
 		if(0x01000000 == (p[0] & 0x01010000)){
-			say("   bios gone\n");
+			say("	after handoff:%08x,%08x\n", p[0],p[1]);
 			return 1;
 		}
 
 		timeout--;
 		if(0 == timeout){
-			say("   failed to get ownership\n");
+			say("	timeout@handoff\n");
 			return -1;
 		}
 	}
@@ -601,8 +826,8 @@ void supportedprotocol(u32* p)
 {
 	u32 major = p[0] >> 24;
 	u32 minor =(p[0] >> 16) & 0xff;
-	u32 port0 = p[2] & 0xff;
-	u32 portn = (port0-1) + ((p[2] >> 8) & 0xff);
+	u32 port0 =(p[2] & 0xff) - 1;
+	u32 portn =(port0-1) + ((p[2] >> 8) & 0xff);
 	say("	[%x,%x]: usb%x.%x\n", port0, portn, major, minor);
 }
 void explainxecp(u32* at)
@@ -644,15 +869,15 @@ int xhci_mmioinit(struct device* dev, u8* xhciaddr)
 
 //---------------clear home---------------------
 	int j,k;
-	u8* ptr = memorycreate(0x100000, 0);
-	for(j=0;j<0x100000;j++)ptr[j] = 0;
+	u8* ptr = memorycreate(0x200000, 0);
+	for(j=0;j<0x200000;j++)ptr[j] = 0;
 
 	u64 slotctxhome   = (u64)(ptr + slotctxoffs);
 	u64 dcbahome      = (u64)(ptr + dcbaoffs);
 	u64 eventringhome = (u64)(ptr + eventringoffs);
 	u64 ersthome      = (u64)(ptr + erstoffs);
 	u64 cmdringhome   = (u64)(ptr + cmdringoffs);
-	//u64 cmdxxxxhome
+	u64 scratchpad    = (u64)(ptr + 0x100000);
 
 
 //--------------basic infomation--------------------
@@ -664,20 +889,34 @@ int xhci_mmioinit(struct device* dev, u8* xhciaddr)
 	struct RuntimeRegisters*     runreg = (void*)(xhciaddr + capreg->RTSOFF);
 	struct DoorbellRegisters*    dblreg = (void*)(xhciaddr + capreg->DBOFF);
 
-	say("base information:\n");
-	say("	version:%x\n", version);
-	say("	caplength:%x\n", caplen);
+	say("base information:version=%x,caplen=%x\n", version, caplen);
 
-	say("	hcsparams1:%x\n", capreg->HCSPARAMS1);
-	say("	hcsparams2:%x\n", capreg->HCSPARAMS2);
-	say("	hcsparams3:%x\n", capreg->HCSPARAMS3);
-
-	say("	capparams1:%x\n", capreg->CAPPARAMS1);
-	say("	capparams2:%x\n", capreg->CAPPARAMS2);
-
+	say("	capability@%p\n", capreg);
 	say("	operational@%p\n", optreg);
 	say("	runtime@%p\n", runreg);
 	say("	doorbell@%p\n", dblreg);
+
+	u32 tmp = capreg->HCSPARAMS1;
+	say("	hcsparams1:%08x:\n", tmp);
+	say("	.maxslots=%x\n", tmp&0xff);
+	say("	.maxintrs=%x\n", (tmp>>8)&0x7ff);
+	say("	.maxports=%x\n", (tmp>>24)&0xff);
+	tmp = capreg->HCSPARAMS2;
+	say("	hcsparams2:%08x\n", tmp);
+	say("	.Isochronous Scheduling Threshold=%x\n", tmp&0xf);
+	say("	.Event Ring Segment Table Max=2^%x\n", (tmp>>4)&0xf);
+	say("	.Max Scratchpad Buffers=%xpages\n", (((tmp>>21)&0x1f)<<5) | (tmp>>27)&0x1f);
+	tmp = capreg->HCSPARAMS3;
+	say("	hcsparams3:%08x\n", tmp);
+	say("	.U1 Device Exit Latency=%x\n", tmp&0xff);
+	say("	.U2 Device Exit Latency=%x\n", (tmp>>16)&0xffff);
+	tmp = capreg->CAPPARAMS1;
+	say("	capparams1:%08x\n", tmp);
+	say("	.AC64=%x\n", tmp&1);
+	say("	.CSZ=%x\n", (tmp>>2)&1);
+	tmp = capreg->CAPPARAMS2;
+	say("	capparams2:%08x\n", tmp);
+	say("	.VTIO support=%x\n", (tmp>>9)&1);
 
 
 //--------------print operational---------------
@@ -757,10 +996,8 @@ int xhci_mmioinit(struct device* dev, u8* xhciaddr)
 	say("	CONFIG=%x\n", optreg->CONFIG);
 
 	//[dcbahome] = 16 slot contexts
-	say("	dcbaa: slot data@%x\n", slotctxhome);
-	for(j=0;j<16;j++){
-		*(u64*)(dcbahome + j*8) = slotctxhome + j*0x1000;
-	}
+	say("	dcbaa: scratch@%llx\n", scratchpad);
+	*(u64*)(dcbahome + 0) = scratchpad;
 
 	//[dcbaap] = dcbahome
 	say("	dcbaa: data ptrs@%llx\n", dcbahome);
@@ -837,12 +1074,12 @@ int xhci_mmioinit(struct device* dev, u8* xhciaddr)
 	my->runreg = runreg;
 	my->dblreg = dblreg;
 	//memory
-	my->slotctx  = (u8*)slotctxhome;
-	my->dcba = (u8*)dcbahome;
+	my->slotctx   = (u8*)slotctxhome;
+	my->dcba      = (u8*)dcbahome;
 	my->eventring = (u8*)eventringhome;
-	my->erst = (u8*)ersthome;
-	my->cmdring = (u8*)cmdringhome;
-	my->perusb = ptr+0x80000;
+	my->erst      = (u8*)ersthome;
+	my->cmdring   = (u8*)cmdringhome;
+	my->perusb    = ptr+0x80000;
 	//ev
 	my->event_buf = eventringhome;
 	my->event_end = eventringhome + 0x10000;
@@ -862,13 +1099,11 @@ int xhci_portinit(struct device* dev, u32 addr)
 	say("xhci@port:%x{\n", addr);
 
 	out32(0xcf8, addr+0x4);
-	temp=in32(0xcfc) | (1<<10) | (1<<2);	//bus master=1
-	out32(0xcf8, addr+0x4);
-	out32(0xcfc, temp);
-
-	out32(0xcf8, addr+0x4);
 	temp = in32(0xcfc);
 	say("sts,cmd=%x\n", temp);
+
+	out32(0xcf8, addr+0x4);
+	out32(0xcfc, temp | (1<<10) | (1<<2));	//bus master=1
 
 	out32(0xcf8, addr+0x10);
 	temp = in32(0xcfc);

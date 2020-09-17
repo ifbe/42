@@ -56,6 +56,38 @@ struct HIDDescriptor{
 
 
 
+void explaindevdesc(struct DeviceDescriptor* desc)
+{
+	say(".bLength=%x\n",            desc->bLength);
+	say(".bDescriptorType=%x\n",    desc->bDescriptorType);
+	say(".bcdUSB=%x\n",             desc->bcdUSB);
+	say(".bDeviceClass=%x\n",       desc->bDeviceClass);
+	say(".bDeviceSubClass=%x\n",    desc->bDeviceSubClass);
+	say(".bDeviceProtocol=%x\n",    desc->bDeviceProtocol);
+	say(".bMaxPacketSize0=%x\n",    desc->bMaxPacketSize0);
+	say(".idVendor=%04x\n",         desc->idVendor);
+	say(".idProduct=%04x\n",        desc->idProduct);
+	say(".bcdDevice=%x\n",          desc->bcdDevice);
+	say(".iManufacturer=%x\n",      desc->iManufacturer);
+	say(".iProduct=%x\n",           desc->iProduct);
+	say(".iSerialNumber=%x\n",      desc->iSerialNumber);
+	say(".bNumConfigurations=%x\n", desc->bNumConfigurations);
+}
+void explainconfdesc(struct ConfigurationDescriptor* desc)
+{
+	say(".bLength=%x\n",             desc->bLength);
+	say(".bDescriptorType=%x\n",     desc->bDescriptorType);
+	say(".wTotalLength=%x\n",        desc->wTotalLength);
+	say(".bNumInterfaces=%x\n",      desc->bNumInterfaces);
+	say(".bConfigurationValue=%x\n", desc->bConfigurationValue);
+	say(".iConfiguration=%x\n",      desc->iConfiguration);
+	say(".bmAttributes=%x\n",        desc->bmAttributes);
+	say(".bMaxPower=%dmA\n",         desc->bMaxPower*2);
+}
+
+
+
+
 int usb_delete()
 {
 	return 0;

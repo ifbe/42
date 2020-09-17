@@ -40,6 +40,6 @@ void drawstring_fit(    struct entity* ctx, u32 rgb, int x0, int y0, int x1, int
 void drawdec_fit(       struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, int);
 void drawhex_fit(       struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u64);
 
-void drawtext(          struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-void drawtext_reverse(  struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
-void drawvt100(         struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+int drawtext(           struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+int drawtext_reverse(   struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
+int drawvt100(          struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8* buf, int len);
