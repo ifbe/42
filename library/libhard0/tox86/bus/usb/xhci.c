@@ -46,7 +46,7 @@
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
 void explaindevdesc(void*);
-void explainconfdesc(void*);
+void explaineverydesc(void*, int);
 
 
 
@@ -319,6 +319,41 @@ int xhci_takewanted(struct device* dev, u32 wanttype)
 
 
 
+int maketrb_getdesc(u8* trb, int type, u8* buf, int len)
+{
+	struct SetupStage* setup   = (void*)(trb+0x00);
+	struct DataStage* data     = (void*)(trb+0x10);
+	struct StatusStage* status = (void*)(trb+0x20);
+
+	setup->TRBType = TRB_common_SetupStage;
+	setup->TransferType = 3;
+	setup->TRBTransferLength = 8;
+	setup->InterruptOnCompletion = 0;
+	setup->ImmediateData = 1;
+	setup->bmRequestType = 0x80;	//Dir = Device-to-Host, Type = Standard, Recipient = Device
+	setup->bRequest = 6;
+	setup->wValue = type;	//lo = Descriptor Index, hi = Descriptor type
+	setup->wIndex = 0;
+	setup->wLength = len;
+	setup->Cyclebit = 1;
+	//
+	data->TRBType = TRB_common_DataStage;
+	data->Direction = 1;
+	data->TRBTransferLength = len;
+	data->Chainbit = 0;
+	data->InterruptOnCompletion = 0;
+	data->ImmediateData = 0;
+	data->buffer = (u64)buf;
+	data->Cyclebit = 1;
+	//
+	status->TRBType = TRB_common_StatusStage;	//TRB Type = Status Stage TRB.
+	status->Direction = 0;
+	status->Chainbit = 0;
+	status->InterruptOnCompletion = 1;
+	status->Cyclebit = 1;
+
+	return 0x30;
+}
 void xhci_giveorder(struct device* dev, int slot)
 {
 /*
@@ -485,43 +520,12 @@ int addressdevice(struct device* xhci, u32 usbspeed, u32 rootport, u32 hubport)
 	//1.get first 8b of for packetsize from device descriptor
 	//2.issue EvaluateContextCommand to change endpoint0 context
 	u8* ep0cur = ep0cmd;
-	struct SetupStage* setup;
-	struct DataStage* data;
-	struct StatusStage* status;
 	if(1 == usbspeed){
 		say("	--------------------------------\n");
 		say("	getting device desc (first 8B)\n");
-		setup  = (void*)(ep0cur+0x00);
-		data   = (void*)(ep0cur+0x10);
-		status = (void*)(ep0cur+0x20);
+		//
+		maketrb_getdesc(ep0cur, 0x100, recvbuf, 8);
 		ep0cur += 0x30;
-		//
-		setup->TRBType = TRB_common_SetupStage;
-		setup->TransferType = 3;
-		setup->TRBTransferLength = 8;
-		setup->InterruptOnCompletion = 0;
-		setup->ImmediateData = 1;
-		setup->bmRequestType = 0x80;	//Dir = Device-to-Host, Type = Standard, Recipient = Device
-		setup->bRequest = 6;
-		setup->wValue = 0x100;	//lo = Descriptor Index, hi = Descriptor type
-		setup->wIndex = 0;
-		setup->wLength = 8;
-		setup->Cyclebit = 1;
-		//
-		data->TRBType = TRB_common_DataStage;
-		data->Direction = 1;
-		data->TRBTransferLength = 8;
-		data->Chainbit = 0;
-		data->InterruptOnCompletion = 0;
-		data->ImmediateData = 0;
-		data->buffer = (u64)recvbuf;
-		data->Cyclebit = 1;
-		//
-		status->TRBType = TRB_common_StatusStage;	//TRB Type = Status Stage TRB.
-		status->Direction = 0;
-		status->Chainbit = 0;
-		status->InterruptOnCompletion = 1;
-		status->Cyclebit = 1;
 		//
 		xhci_giveorder(xhci, slot);
 		if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -4;
@@ -579,38 +583,10 @@ int addressdevice(struct device* xhci, u32 usbspeed, u32 rootport, u32 hubport)
 
 	//
 	say("	--------------------------------\n");
-	say("	getting device desc fully\n");
-	setup  = (void*)(ep0cur+0x00);
-	data   = (void*)(ep0cur+0x10);
-	status = (void*)(ep0cur+0x20);
+	say("	getting device desc (fully 0x12B)\n");
+	//
+	maketrb_getdesc(ep0cur, 0x100, recvbuf, 0x12);
 	ep0cur += 0x30;
-	//
-	setup->TRBType = TRB_common_SetupStage;
-	setup->TransferType = 3;
-	setup->TRBTransferLength = 8;
-	setup->InterruptOnCompletion = 0;
-	setup->ImmediateData = 1;
-	setup->bmRequestType = 0x80;	//Dir = Device-to-Host, Type = Standard, Recipient = Device
-	setup->bRequest = 6;
-	setup->wValue = 0x100;	//lo = Descriptor Index, hi = Descriptor type
-	setup->wIndex = 0;
-	setup->wLength = 0x12;
-	setup->Cyclebit = 1;
-	//
-	data->TRBType = TRB_common_DataStage;
-	data->Direction = 1;
-	data->TRBTransferLength = 0x12;
-	data->Chainbit = 0;
-	data->InterruptOnCompletion = 0;
-	data->ImmediateData = 0;
-	data->buffer = (u64)recvbuf;
-	data->Cyclebit = 1;
-	//
-	status->TRBType = TRB_common_StatusStage;	//TRB Type = Status Stage TRB.
-	status->Direction = 0;
-	status->Chainbit = 0;
-	status->InterruptOnCompletion = 1;
-	status->Cyclebit = 1;
 	//
 	xhci_giveorder(xhci, slot);
 	if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -5;
@@ -621,44 +597,45 @@ int addressdevice(struct device* xhci, u32 usbspeed, u32 rootport, u32 hubport)
 
 	//
 	say("	--------------------------------\n");
-	say("	getting conf desc\n");
-	setup  = (void*)(ep0cur+0x00);
-	data   = (void*)(ep0cur+0x10);
-	status = (void*)(ep0cur+0x20);
+	say("	getting conf desc (first 8B)\n");
+	//
+	maketrb_getdesc(ep0cur, 0x200, recvbuf, 8);
 	ep0cur += 0x30;
-	//
-	setup->TRBType = TRB_common_SetupStage;
-	setup->TransferType = 3;
-	setup->TRBTransferLength = 8;
-	setup->InterruptOnCompletion = 0;
-	setup->ImmediateData = 1;
-	setup->bmRequestType = 0x80;	//Dir = Device-to-Host, Type = Standard, Recipient = Device
-	setup->bRequest = 6;
-	setup->wValue = 0x200;	//lo = Descriptor Index, hi = Descriptor type
-	setup->wIndex = 0;
-	setup->wLength = 9;
-	setup->Cyclebit = 1;
-	//
-	data->TRBType = TRB_common_DataStage;
-	data->Direction = 1;
-	data->TRBTransferLength = 9;
-	data->Chainbit = 0;
-	data->InterruptOnCompletion = 0;
-	data->ImmediateData = 0;
-	data->buffer = (u64)recvbuf;
-	data->Cyclebit = 1;
-	//
-	status->TRBType = TRB_common_StatusStage;	//TRB Type = Status Stage TRB.
-	status->Direction = 0;
-	status->Chainbit = 0;
-	status->InterruptOnCompletion = 1;
-	status->Cyclebit = 1;
 	//
 	xhci_giveorder(xhci, slot);
 	if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -5;
 
-	printmemory(recvbuf, 9);
-	explainconfdesc(recvbuf);
+	printmemory(recvbuf, 8);
+	j = *(u16*)(recvbuf+2);
+	say("	wTotalLength=%x\n", j);
+
+
+	//
+	say("	--------------------------------\n");
+	say("	getting conf desc (fully 0x%xB)\n", j);
+	//
+	maketrb_getdesc(ep0cur, 0x200, recvbuf, j);
+	ep0cur += 0x30;
+	//
+	xhci_giveorder(xhci, slot);
+	if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -5;
+
+	printmemory(recvbuf, j);
+	explaineverydesc(recvbuf, j);
+
+
+	//
+	say("	--------------------------------\n");
+	say("	getting string desc (index 0)\n");
+	//
+	maketrb_getdesc(ep0cur, 0x300, recvbuf, 4);
+	ep0cur += 0x30;
+	//
+	xhci_giveorder(xhci, slot);
+	if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -5;
+
+	printmemory(recvbuf, 4);
+
 	return 0;
 }
 /*
