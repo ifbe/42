@@ -160,6 +160,32 @@ struct EndpointContext{
 	u16 MaxESITPayloadLo;
 }__attribute__((packed));
 //
+struct UsbRequest{
+	//[0,3]
+	u8 bmRequestType;
+		//bit[0,4]: 0=device, 1=interface, 2=endpoint
+		//bit[5,6]: 0=normal, 1=class, 2=vendor
+		//bit7: 0=host to device, 1=device to host
+	u8 bRequest;
+		//0: GET_STATUS
+		//1: CLEAR_FEATURE
+		//3: SET_FEATURE
+		//5: SET_ADDRESS
+		//6: GET_DESCRIPTOR
+		//7: SET_DESCRIPTOR
+		//8: GET_CONFIGURATION
+		//9: SET_CONFIGURATION
+		//a: GET_INTERFACE
+		//b: SET_INTERFACE
+		//c: SYNCH_FRAME
+	u16 wValue;
+		//if(GET_DESCRIPTOR)hi = type, lo = index
+	//[4,7]
+	u16 wIndex;
+		//if(GET_DESCRIPTOR_string)wIndex = LANGID
+	u16 wLength;
+}__attribute__((packed));
+
 struct SetupStage{
 	//[0,3]
 	u8 bmRequestType;
@@ -254,6 +280,105 @@ struct mydata{
 
 
 
+int maketrb_usbrequest(u8* trb, struct UsbRequest* req, u8* buf, int len)
+{
+	struct SetupStage* setup   = (void*)(trb+0x00);
+	struct DataStage* data     = (void*)(trb+0x10);
+	struct StatusStage* status = (void*)(trb+0x20);
+
+	setup->TRBType = TRB_common_SetupStage;
+	setup->TransferType = 3;
+	setup->TRBTransferLength = 8;
+	setup->InterruptOnCompletion = 0;
+	setup->ImmediateData = 1;
+	setup->bmRequestType = 0x80;	//Dir = Device-to-Host, Type = Standard, Recipient = Device
+	setup->bRequest = 6;
+	setup->wValue = req->wValue;	//lo = Descriptor Index, hi = Descriptor type
+	setup->wIndex = req->wIndex;
+	setup->wLength = len;
+	setup->Cyclebit = 1;
+	//
+	data->TRBType = TRB_common_DataStage;
+	data->Direction = 1;
+	data->TRBTransferLength = len;
+	data->Chainbit = 0;
+	data->InterruptOnCompletion = 0;
+	data->ImmediateData = 0;
+	data->buffer = (u64)buf;
+	data->Cyclebit = 1;
+	//
+	status->TRBType = TRB_common_StatusStage;	//TRB Type = Status Stage TRB.
+	status->Direction = 0;
+	status->Chainbit = 0;
+	status->InterruptOnCompletion = 1;
+	status->Cyclebit = 1;
+
+	return 0x30;
+}
+int maketrb_getdesc(u8* trb, int type, u8* buf, int len)
+{
+	struct SetupStage* setup   = (void*)(trb+0x00);
+	struct DataStage* data     = (void*)(trb+0x10);
+	struct StatusStage* status = (void*)(trb+0x20);
+
+	setup->TRBType = TRB_common_SetupStage;
+	setup->TransferType = 3;
+	setup->TRBTransferLength = 8;
+	setup->InterruptOnCompletion = 0;
+	setup->ImmediateData = 1;
+	setup->bmRequestType = 0x80;	//Dir = Device-to-Host, Type = Standard, Recipient = Device
+	setup->bRequest = 6;
+	setup->wValue = type;	//lo = Descriptor Index, hi = Descriptor type
+	setup->wIndex = 0;
+	setup->wLength = len;
+	setup->Cyclebit = 1;
+	//
+	data->TRBType = TRB_common_DataStage;
+	data->Direction = 1;
+	data->TRBTransferLength = len;
+	data->Chainbit = 0;
+	data->InterruptOnCompletion = 0;
+	data->ImmediateData = 0;
+	data->buffer = (u64)buf;
+	data->Cyclebit = 1;
+	//
+	status->TRBType = TRB_common_StatusStage;	//TRB Type = Status Stage TRB.
+	status->Direction = 0;
+	status->Chainbit = 0;
+	status->InterruptOnCompletion = 1;
+	status->Cyclebit = 1;
+
+	return 0x30;
+}
+int maketrb_setconf(u8* trb, int type, u8* buf, int len)
+{
+	struct SetupStage* setup   = (void*)(trb+0x00);
+	struct StatusStage* status = (void*)(trb+0x10);
+
+	setup->TRBType = TRB_common_SetupStage;
+	setup->TransferType = 3;
+	setup->TRBTransferLength = 8;
+	setup->InterruptOnCompletion = 0;
+	setup->ImmediateData = 1;
+	setup->bmRequestType = 0x80;	//Dir = Device-to-Host, Type = Standard, Recipient = Device
+	setup->bRequest = 6;
+	setup->wValue = type;	//lo = Descriptor Index, hi = Descriptor type
+	setup->wIndex = 0;
+	setup->wLength = 0;
+	setup->Cyclebit = 1;
+
+	status->TRBType = TRB_common_StatusStage;	//TRB Type = Status Stage TRB.
+	status->Direction = 0;
+	status->Chainbit = 0;
+	status->InterruptOnCompletion = 1;
+	status->Cyclebit = 1;
+
+	return 0x20;
+}
+
+
+
+
 void* xhci_takeevent(struct device* dev)
 {
 	struct mydata* my = (void*)(dev->data);
@@ -319,41 +444,6 @@ int xhci_takewanted(struct device* dev, u32 wanttype)
 
 
 
-int maketrb_getdesc(u8* trb, int type, u8* buf, int len)
-{
-	struct SetupStage* setup   = (void*)(trb+0x00);
-	struct DataStage* data     = (void*)(trb+0x10);
-	struct StatusStage* status = (void*)(trb+0x20);
-
-	setup->TRBType = TRB_common_SetupStage;
-	setup->TransferType = 3;
-	setup->TRBTransferLength = 8;
-	setup->InterruptOnCompletion = 0;
-	setup->ImmediateData = 1;
-	setup->bmRequestType = 0x80;	//Dir = Device-to-Host, Type = Standard, Recipient = Device
-	setup->bRequest = 6;
-	setup->wValue = type;	//lo = Descriptor Index, hi = Descriptor type
-	setup->wIndex = 0;
-	setup->wLength = len;
-	setup->Cyclebit = 1;
-	//
-	data->TRBType = TRB_common_DataStage;
-	data->Direction = 1;
-	data->TRBTransferLength = len;
-	data->Chainbit = 0;
-	data->InterruptOnCompletion = 0;
-	data->ImmediateData = 0;
-	data->buffer = (u64)buf;
-	data->Cyclebit = 1;
-	//
-	status->TRBType = TRB_common_StatusStage;	//TRB Type = Status Stage TRB.
-	status->Direction = 0;
-	status->Chainbit = 0;
-	status->InterruptOnCompletion = 1;
-	status->Cyclebit = 1;
-
-	return 0x30;
-}
 void xhci_giveorder(struct device* dev, int slot)
 {
 /*
@@ -419,6 +509,7 @@ void xhci_hostorder(struct device* dev, int slot, u32 d0,u32 d1,u32 d2,u32 d3)
 
 int addressdevice(struct device* xhci, u32 usbspeed, u32 rootport, u32 hubport)
 {
+	int j,k;
 	struct mydata* my = (void*)(xhci->data);
 
 //-------------from xhci known slotctxsz------------
@@ -460,7 +551,6 @@ int addressdevice(struct device* xhci, u32 usbspeed, u32 rootport, u32 hubport)
 //------------------send slot to device-----------------
 	say("	--------------------------------\n");
 	say("	slot:addressing device\n");
-	int j;
 	u8* perusb = my->perusb + slot*0x10000;
 	for(j=0;j<0x10000;j++)perusb[j] = 0;
 
@@ -594,6 +684,10 @@ int addressdevice(struct device* xhci, u32 usbspeed, u32 rootport, u32 hubport)
 	printmemory(recvbuf, 0x12);
 	explaindevdesc(recvbuf);
 
+	u8      iManufacturer = recvbuf[0x0e];
+	u8           iProduct = recvbuf[0x0f];
+	u8      iSerialNumber = recvbuf[0x10];
+
 
 	//
 	say("	--------------------------------\n");
@@ -614,12 +708,18 @@ int addressdevice(struct device* xhci, u32 usbspeed, u32 rootport, u32 hubport)
 	say("	--------------------------------\n");
 	say("	getting conf desc (fully 0x%xB)\n", j);
 	//
-	maketrb_getdesc(ep0cur, 0x200, recvbuf, j);
+	struct UsbRequest req;
+	req.bmRequestType = 0x80;
+	req.bRequest = 6;
+	req.wValue = 0x200;
+	req.wIndex = 0;
+	req.wLength = (j>0xff) ? j : 0xff;
+	maketrb_usbrequest(ep0cur, &req, recvbuf, req.wLength);
 	ep0cur += 0x30;
 	//
 	xhci_giveorder(xhci, slot);
 	if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -5;
-
+	//
 	printmemory(recvbuf, j);
 	explaineverydesc(recvbuf, j);
 
@@ -635,72 +735,128 @@ int addressdevice(struct device* xhci, u32 usbspeed, u32 rootport, u32 hubport)
 	if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -5;
 
 	printmemory(recvbuf, 4);
+	int lang = *(u16*)(recvbuf+2);
+	say("	wLANGID[0]=%04x\n", lang);
 
-	return 0;
+
+if(iManufacturer){
+	say("	--------------------------------\n");
+	say("	getting string desc (iManufacturer %x)\n", iManufacturer);
+	//read length
+	req.bmRequestType = 0x80;
+	req.bRequest = 6;
+	req.wValue = 0x300+iManufacturer;
+	req.wIndex = lang;
+	req.wLength = 4;
+	maketrb_usbrequest(ep0cur, &req, recvbuf, req.wLength);
+	ep0cur += 0x30;
+	//
+	xhci_giveorder(xhci, slot);
+	if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -5;
+
+
+	//read again
+	req.wLength = recvbuf[0];
+	maketrb_usbrequest(ep0cur, &req, recvbuf, req.wLength);
+	ep0cur += 0x30;
+	//
+	xhci_giveorder(xhci, slot);
+	if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -5;
+
+	printmemory(recvbuf, j);
+}
+
+
+if(iProduct){
+	say("	--------------------------------\n");
+	say("	getting string desc (iProduct %x)\n", iProduct);
+	//
+	req.bmRequestType = 0x80;
+	req.bRequest = 6;
+	req.wValue = 0x300+iProduct;
+	req.wIndex = lang;
+	req.wLength = 4;
+	maketrb_usbrequest(ep0cur, &req, recvbuf, req.wLength);
+	ep0cur += 0x30;
+	//
+	xhci_giveorder(xhci, slot);
+	if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -5;
+
+	printmemory(recvbuf, 4);
+
+
+	//
+	req.wLength = recvbuf[0];
+	maketrb_usbrequest(ep0cur, &req, recvbuf, req.wLength);
+	ep0cur += 0x30;
+	//
+	xhci_giveorder(xhci, slot);
+	if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -5;
+
+	printmemory(recvbuf, j);
+}
+
+
+if(iSerialNumber){
+	say("	--------------------------------\n");
+	say("	getting string desc (iSerialNumber %x)\n", iSerialNumber);
+	//
+	req.bmRequestType = 0x80;
+	req.bRequest = 6;
+	req.wValue = 0x300+iSerialNumber;
+	req.wIndex = lang;
+	req.wLength = 4;
+	maketrb_usbrequest(ep0cur, &req, recvbuf, req.wLength);
+	ep0cur += 0x30;
+	//
+	xhci_giveorder(xhci, slot);
+	if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -5;
+
+	printmemory(recvbuf, 4);
+	j = recvbuf[0];
+
+
+	//
+	req.wLength = recvbuf[0];
+	maketrb_usbrequest(ep0cur, &req, recvbuf, req.wLength);
+	ep0cur += 0x30;
+	//
+	xhci_giveorder(xhci, slot);
+	if(xhci_takewanted(xhci, TRB_event_Transfer) < 0)return -5;
+
+	printmemory(recvbuf, j);
 }
 /*
-void devicedescripter(struct device* xhci)
-{
-	struct mydata* my = (void*)(xhci->data);
-	u8* ctxbuf = my->perslotbuf + slot*0x10000;
-	u8* ep0cmd = ctxbuf+0x4000;
-	u8* ep0buf = ctxbuf+0x8000;
+	say("	--------------------------------\n");
+	say("	configuring");
+	incon[0] = 0;
+	incon[1] = 2;
+	for(j=2;j<8;j++)incon[j] = 0;
 
-	//_______________device descriptor__________________
-	//say("getting device desc(0x12 bytes)......\n");
-	packet.bmrequesttype=0x80;
-	packet.brequest=6;
-	packet.wvalue=0x100;
-	packet.windex=0;
-	packet.wlength=0x12;
-	packet.buffer=data0+0x100;
-	xhci_giveorder(ep0ring);
-	ring(slot,1);
-	if(xhci_takeevent(slot,1)<0) goto failed;
-	explaindescriptor(data0+0x100);
-	u64 vendorproduct=*(u32*)(data0+0x108);
-	//___________________________________________________
+	devctx[0] = 0;
+	devctx[1] = 0;
+	devctx[2] = 0;
+	devctx[3] = 0;
 
+	lo = ((u64)ep0cmd) & 0xffffffff;
+	hi = ((u64)ep0cmd) >> 32;
+	ep0ctx[0] = 0;
+	ep0ctx[1] = (packetsize<<16) + (4<<3) + 6;
+	ep0ctx[2] = lo | 1;
+	ep0ctx[3] = hi;
+	ep0ctx[4] = 0x8;
 
-
-
-	//----------------configuration descriptor-----------
-	//say("3.descriptors:",0);
-	//[data0+0x100]:configure descriptor
-	//say("getting conf desc......\n");
-	packet.bmrequesttype=0x80;
-	packet.brequest=6;
-	packet.wvalue=0x200;
-	packet.windex=0;
-	packet.wlength=0x9;
-	packet.buffer=data0+0x200;
-	xhci_giveorder(ep0ring);
-	ring(slot,1);
-	if(xhci_takeevent(slot,1)<0) goto failed;
-
-	packet.wlength=*(u16*)(data0+0x102);
-	xhci_giveorder(ep0ring);
-	ring(slot,1);
-	if(xhci_takeevent(slot,1)<0) goto failed;
-	explaindescriptor(data0+0x200);
-
-
-
-
-	//----------------string descriptors----------------
-	//say("string descriptor...",0);
-	packet.bmrequesttype=0x80;
-	packet.brequest=6;
-	packet.wvalue=0x300;
-	packet.windex=0;				//语言id
-	packet.wlength=4;
-	packet.buffer=data0+0x300;
-	xhci_giveorder(ep0ring);
-	ring(slot,1);
-	if(xhci_takeevent(slot,1)<0) goto failed;
-
+	lo = ((u64)incon) & 0xffffffff;
+	hi = ((u64)incon) >> 32;
+	xhci_hostorder(xhci,0, lo,hi,0,(slot<<24)+(TRB_command_ConfigureEndpoint<<10) );
+	if(xhci_takewanted(xhci, TRB_event_CommandCompletion) < 0){
+		say("	error@configure endpoint\n");
+		return -1;
+	}
+	say("	configured\n");
+*/
 	return 0;
-}*/
+}
 
 
 
@@ -854,6 +1010,7 @@ int xhci_mmioinit(struct device* dev, u8* xhciaddr)
 	u64 eventringhome = (u64)(ptr + eventringoffs);
 	u64 ersthome      = (u64)(ptr + erstoffs);
 	u64 cmdringhome   = (u64)(ptr + cmdringoffs);
+
 	u64 scratchpad    = (u64)(ptr + 0x100000);
 
 
@@ -873,7 +1030,10 @@ int xhci_mmioinit(struct device* dev, u8* xhciaddr)
 	say("	runtime@%p\n", runreg);
 	say("	doorbell@%p\n", dblreg);
 
-	u32 tmp = capreg->HCSPARAMS1;
+	u32 tmp;
+	u32 maxscratch;
+	u32 maxerst;
+	tmp = capreg->HCSPARAMS1;
 	say("	hcsparams1:%08x:\n", tmp);
 	say("	.maxslots=%x\n", tmp&0xff);
 	say("	.maxintrs=%x\n", (tmp>>8)&0x7ff);
@@ -881,8 +1041,10 @@ int xhci_mmioinit(struct device* dev, u8* xhciaddr)
 	tmp = capreg->HCSPARAMS2;
 	say("	hcsparams2:%08x\n", tmp);
 	say("	.Isochronous Scheduling Threshold=%x\n", tmp&0xf);
-	say("	.Event Ring Segment Table Max=2^%x\n", (tmp>>4)&0xf);
-	say("	.Max Scratchpad Buffers=%xpages\n", (((tmp>>21)&0x1f)<<5) | (tmp>>27)&0x1f);
+	maxerst = (tmp>>4)&0xf;
+	say("	.Event Ring Segment Table Max=2^%x\n", maxerst);
+	maxscratch = (((tmp>>21)&0x1f)<<5) | ((tmp>>27)&0x1f);
+	say("	.Max Scratchpad Buffers=%xpages\n", maxscratch);
 	tmp = capreg->HCSPARAMS3;
 	say("	hcsparams3:%08x\n", tmp);
 	say("	.U1 Device Exit Latency=%x\n", tmp&0xff);
@@ -912,7 +1074,7 @@ int xhci_mmioinit(struct device* dev, u8* xhciaddr)
 	say("before anything:\n");
 	say("	usbcommand:%x\n", optreg->USBCMD);
 	say("	usbstatus:%x\n", optreg->USBSTS);
-	say("	pagesize:%x\n", pagesize);
+	say("	psz=%x,pagesize=%x\n", psz, pagesize);
 	say("	crcr:%x\n", ((u64)optreg->CRCR_hi<<32) | optreg->CRCR_lo);
 	say("	dcbaa:%x\n", ((u64)optreg->DCBAAP_hi<<32) | optreg->DCBAAP_lo);
 	say("	config:%x\n", optreg->CONFIG);
@@ -972,20 +1134,26 @@ int xhci_mmioinit(struct device* dev, u8* xhciaddr)
 	optreg->CONFIG = (capreg->HCSPARAMS1) &0xff;
 	say("	CONFIG=%x\n", optreg->CONFIG);
 
-	//[dcbahome] = 16 slot contexts
-	say("	dcbaa: scratch@%llx\n", scratchpad);
+	//scratcharray[0 to max]: each is a page
+	say("	devctx: scratcharray[0-max) = scratchbuffer@%llx\n", scratchpad + pagesize);
+	for(j=0;j<maxscratch;j++){
+		*(u64*)(scratchpad+j*8) = scratchpad + pagesize*(j+1);
+	}
+
+	//[dcbahome] = scratcharray
+	say("	devctx: dcbahome[0] = scratcharray@%llx\n", scratchpad);
 	*(u64*)(dcbahome + 0) = scratchpad;
 
 	//[dcbaap] = dcbahome
-	say("	dcbaa: data ptrs@%llx\n", dcbahome);
+	say("	devctx: dcbaap[0] = dcbahome@%llx\n", dcbahome);
 	optreg->DCBAAP_lo = dcbahome & 0xffffffff;
 	optreg->DCBAAP_hi = dcbahome >> 32;
 
 	//command linktrb:lastone point to firstone
-	say("	crcr: cmdring prep\n");
+	say("	crcr: lasttrb point to firsttrb\n");
 	*(u64*)(cmdringhome + 0xfff*0x10 + 0x0) = cmdringhome;
 	*(u32*)(cmdringhome + 0xfff*0x10 + 0x8) = 0;
-	*(u32*)(cmdringhome + 0xfff*0x10 + 0xc) = (6<<10) + 2;
+	*(u32*)(cmdringhome + 0xfff*0x10 + 0xc) = (TRB_common_Link<<10) + 2;
 
 	//[crcr] = cmdringhome
 	say("	crcr: set cmdring@%llx\n", cmdringhome+1);

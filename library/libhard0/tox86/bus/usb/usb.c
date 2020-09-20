@@ -53,6 +53,12 @@ struct ConfigurationDescriptor{
 	u8           bMaxPower;		//8: 50=100mA, 250=500mA
 }__attribute__((packed));
 
+struct StringDescriptor{
+	u8            bLength;		//0
+	u8    bDescriptorType;		//1: 0x03
+	u16        wLANGID[0];		//[2,3]: at least one, 0409=en-US
+}__attribute__((packed));
+
 struct InterfaceDescriptor{
 	u8            bLength;		//0: 0x09
 	u8    bDescriptorType;		//1: 0x04
@@ -72,6 +78,11 @@ struct EndpointDescriptor{
 	u8     bmAttributes;		//3: endpoint attribute
 	u16  wMaxPacketSize;		//[4,5]
 	u8        bInterval;		//6: interval between two access
+}__attribute__((packed));
+
+struct DeviceQualifier{
+	u8            bLength;		//0
+	u8    bDescriptorType;		//1: 0x03
 }__attribute__((packed));
 
 struct HIDDescriptor{
@@ -139,12 +150,13 @@ void explainintfdesc(struct InterfaceDescriptor* desc)
 }
 void explainendpdesc(struct EndpointDescriptor* desc)
 {
+	int tmp = desc->bEndpointAddress;
 	say(".bLength=%x\n",          desc->bLength);
 	say(".bDescriptorType=EndpointDescriptor\n");
-	say(".bEndpointAddress=%x\n", desc->bEndpointAddress);
+	say(".bEndpointAddress=%x,%s\n", tmp&0x1f, (tmp>=0x80)?"in":"out");
 	say(".bmAttributes=%x\n",     desc->bmAttributes);
 	say(".wMaxPacketSize=%x\n",   desc->wMaxPacketSize);
-	say(".bInterval=%x\n",        desc->bInterval);
+	say(".bInterval=%dms\n",      desc->bInterval);
 }
 void explainHIDdesc(struct HIDDescriptor* desc)
 {

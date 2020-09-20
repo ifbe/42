@@ -80,12 +80,12 @@ static void terminal_write_bywnd(_ent* ent,struct style* slot, _syn* stack,int s
 	if(_kbd_ == ev->what){
 		switch(ev->why){
 		case 0x48:
-			if(ent->iy0 > 0)ent->iy0 -= 1;
+			if(ent->iy0 >= 10)ent->iy0 -= 10;
 			return;
 			//tmp = 0x415b1b;len = 3;
 			//break;
 		case 0x50:
-			ent->iy0 += 1;
+			ent->iy0 += 10;
 			return;
 			//tmp = 0x425b1b;len = 3;
 			//break;
@@ -381,6 +381,9 @@ static void terminal_create(struct entity* act, void* arg, int argc, u8** argv)
 
 	act->CLIENT = 0;
 	act->SERVER = 0;
+
+	act->ix0 = 0;
+	act->iy0 = 0;
 
 	//struct str* dat = act->RAWBUF = memorycreate(0x100000, 0);
 	//dat->len = 0;
