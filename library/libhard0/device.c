@@ -100,6 +100,12 @@ void* devicecreate(u64 type, void* name, int argc, u8** argv)
 		p->hfmt = _xhci_;
 		return p;
 	}
+	if(_usb_ == type){
+		struct device* p = allocdevice();
+		p->type = _usb_;
+		p->hfmt = _usb_;
+		return p;
+	}
 	if(_mmc_ == type){
 		struct device* p = allocdevice();
 		p->type = _mmc_;
