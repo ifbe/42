@@ -35,6 +35,44 @@
 #define TRB_event_HostController     37
 #define TRB_event_DeviceNotification 38
 #define TRB_event_MFINDEXWrap        39
+//completion
+#define TRB_completion_Success                     1
+#define TRB_completion_DataBufferError             2
+#define TRB_completion_BabbleDetectedError         3
+#define TRB_completion_USBTransactionError         4
+#define TRB_completion_TRBError                    5
+#define TRB_completion_StallError                  6
+#define TRB_completion_ResourceError               7
+#define TRB_completion_BandwidthError              8
+#define TRB_completion_NoSlotsAvailableError       9
+#define TRB_completion_InvalidStreamTypeError      10
+#define TRB_completion_SlotNotEnabledError         11
+#define TRB_completion_EndpointNotEnabledError     12
+#define TRB_completion_ShortPacket                 13
+#define TRB_completion_RingUnderrun                14
+#define TRB_completion_RingOverrun                 15
+#define TRB_completion_VFEventRingFullError        16
+#define TRB_completion_ParameterError              17
+#define TRB_completion_BandwidthOverrunError       18
+#define TRB_completion_ContextStateError           19
+#define TRB_completion_NoPingResponseError         20
+#define TRB_completion_EventRingFullError          21
+#define TRB_completion_IncompatibleDeviceError     22
+#define TRB_completion_MissedServiceError          23
+#define TRB_completion_CommandRingStopped          24
+#define TRB_completion_CommandAborted              25
+#define TRB_completion_Stopped                     26
+#define TRB_completion_Stopped_LengthInvalid       27
+#define TRB_completion_Stopped_ShoftPacket         28
+#define TRB_completion_MaxExitLatencyTooLargeError 29
+#define TRB_completion_IsochBufferOverrun          31
+#define TRB_completion_EventLostError              32
+#define TRB_completion_UndefinedError              33
+#define TRB_completion_InvalidStreamIDError        34
+#define TRB_completion_SecondaryBandwidthError     35
+#define TRB_completion_SplitTransationError        36
+//#define TRB_completion_VendorDefinedError 192-223
+//#define TRB_completion_VendorDefinedInfo 224-255
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
 void explaindevdesc(void*);
@@ -60,7 +98,6 @@ struct RuntimeRegisters{
 	u32 rsvd[7];	//[04,1f]
 	struct InterruptRegisters ir[0];	//[20,x]
 }__attribute__((packed));
-
 //operational registers
 struct PortRegisters{
 	volatile u32 PORTSC;
@@ -84,12 +121,9 @@ struct OperationalRegisters{
 	u8 Rsvd[0x400-0x3c];	//[3c,3ff]
 	struct PortRegisters port[0];	//[400,1400]
 }__attribute__((packed));
-
-//doorbell registers
 struct DoorbellRegisters{
 	u32 bell[0];
 }__attribute__((packed));
-
 //first 0x20 byte
 struct CapabilityRegisters{
 	volatile u32  lenandver;		//[0,3]: byte0=len, byte23=ver
@@ -102,57 +136,9 @@ struct CapabilityRegisters{
 	volatile u32 CAPPARAMS2;		//[1c,1f]
 }__attribute__((packed));
 
-//
-struct SlotContext{
-	//[0,3]
-	u32    RouteString:20;	//[ 0,19]
-	u32          Speed: 4;	//[20,23]
-	u32           Rsvd: 1;	//24
-	u32        MultiTT: 1;	//25
-	u32            Hub: 1;	//26
-	u32 ContextEntries: 5;	//[27,31]
-	//[4,7]
-	u16 MaxExitLatency;
-	u8 RootroutestringNumber;
-	u8 NumberofPorts;
-	//[8,b]
-	u8 ParentHubSlotID;
-	u8 ParentPortNumber;
-	u16       TTThinkTime: 2;
-	u16             RsvdZ: 4;
-	u16 InterrupterTarget:10;
-	//[c,f]
-	u32 USBDeviceAddress: 8;
-	u32         Rsvd_c_8:19;
-	u32        SlotState: 5;
-}__attribute__((packed));
 
-struct EndpointContext{
-	//[0,3]
-	u32     EndpointState: 3;	//[0,2]
-	u32          Rsvd_0_3: 5;	//[3,7]
-	u32              Mult: 2;	//[8,9]
-	u32 MaxPrimaryStreams: 5;	//[10,14]
-	u32  LinerStreamArray: 1;	//15
-	u32          Interval: 8;	//[16,23]
-	u32  MaxESITPayloadHi: 8;	//[24,31]
-	//[4,7]
-	u8            Rsvd_4_0: 1;
-	u8          ErrorCount: 2;
-	u8        EndpointType: 3;
-	u8            Rsvd_4_6: 1;
-	u8 HostInitiateDisable: 1;
-	u8 MaxBurstSize;
-	u16 MaxPacketSize;
-	//[8,f]
-	u64 DequeueCycleState: 1;
-	u64              Rsvd: 3;
-	u64  TRDequeuePointer:60;
-	//[10,13]
-	u16 AverageTRBLength;
-	u16 MaxESITPayloadLo;
-}__attribute__((packed));
-//
+
+
 struct UsbRequest{
 	//[0,3]
 	u8 bmRequestType;
@@ -178,6 +164,70 @@ struct UsbRequest{
 		//if(GET_DESCRIPTOR_string)wIndex = LANGID
 	u16 wLength;
 }__attribute__((packed));
+struct EndpointDescriptor{
+	u8          bLength;		//0: 0x09
+	u8  bDescriptorType;		//1: 0x05
+	u8 bEndpointAddress;		//2: endpoint number and direction
+	u8     bmAttributes;		//3: endpoint attribute
+	u16  wMaxPacketSize;		//[4,5]
+	u8        bInterval;		//6: interval between two access
+}__attribute__((packed));
+
+
+
+
+//
+struct SlotContext{
+	//[0,3]
+	u32    RouteString:20;	//[ 0,19]
+	u32          Speed: 4;	//[20,23]
+	u32           Rsvd: 1;	//24
+	u32        MultiTT: 1;	//25
+	u32            Hub: 1;	//26
+	u32 ContextEntries: 5;	//[27,31]
+	//[4,7]
+	u16 MaxExitLatency;
+	u8 RootHubPortNumber;
+	u8 NumberofPorts;
+	//[8,b]
+	u8 ParentHubSlotID;
+	u8 ParentPortNumber;
+	u16       TTThinkTime: 2;
+	u16             RsvdZ: 4;
+	u16 InterrupterTarget:10;
+	//[c,f]
+	u32 USBDeviceAddress: 8;
+	u32         Rsvd_c_8:19;
+	u32        SlotState: 5;
+}__attribute__((packed));
+struct EndpointContext{
+	//[0,3]
+	u32     EndpointState: 3;	//[0,2]
+	u32          Rsvd_0_3: 5;	//[3,7]
+	u32              Mult: 2;	//[8,9]
+	u32 MaxPrimaryStreams: 5;	//[10,14]
+	u32  LinerStreamArray: 1;	//15
+	u32          Interval: 8;	//[16,23]
+	u32  MaxESITPayloadHi: 8;	//[24,31]
+	//[4,7]
+	u8            Rsvd_4_0: 1;
+	u8          ErrorCount: 2;
+	u8        EndpointType: 3;
+	u8            Rsvd_4_6: 1;
+	u8 HostInitiateDisable: 1;
+	u8 MaxBurstSize;
+	u16 MaxPacketSize;
+	//[8,f]
+	u64 DequeueCycleState: 1;
+	u64              Rsvd: 3;
+	u64  TRDequeuePointer:60;
+	//[10,13]
+	u16 AverageTRBLength;
+	u16 MaxESITPayloadLo;
+}__attribute__((packed));
+
+
+
 
 struct SetupStage{
 	//[0,3]
@@ -201,7 +251,6 @@ struct SetupStage{
 	u32          TransferType: 2;	//[16,17]
 	u32             Rsvd_c_18:14;	//[18,31]
 }__attribute__((packed));
-
 struct DataStage{
 	//[0,7]
 	u64 buffer;
@@ -222,7 +271,6 @@ struct DataStage{
 	u32              Direction: 1;	//16
 	u32              Rsvd_c_17:15;	//[17,31]
 }__attribute__((packed));
-
 struct StatusStage{
 	//[0,7]
 	u64 zero;
@@ -241,6 +289,9 @@ struct StatusStage{
 	u32             Rsvd_c_17:15;	//[17,31]
 }__attribute__((packed));
 
+
+
+
 struct perdev{
 	u32 rootport;
 	u32 routestring;
@@ -251,64 +302,39 @@ struct perdev{
 	u32 cc;
 	u32 dd;
 }__attribute__((packed));
-
 struct perendp{
 	u32 queue;
 	u32 cycle;
 	u32 packetsize;
-	u32 errorstatus;
+	u32 eptype;
 	u32 aa;
 	u32 bb;
 	u32 cc;
 	u32 dd;
 }__attribute__((packed));
-
-struct perslot{
+struct myctx{
 	//[000,7ff]: hc can write, me read only
-	u8 slotctx[0x800];
+	u8 unusable[0x800];
 
 	//[800,81f]: device thing, [820,fff]: endpoint thing
-	struct perdev dev;
-	struct perendp ep[31];
-	u8 padding[0x800 - sizeof(struct perdev) - sizeof(struct perendp)];
-
-	//[1000,ffff]: cmdrings
-	u8 ep0cmd[0x1000];	//[1000,1fff]: control endpoint
-	u8 ep1out[0x1000];	//[2000,2fff]
-	u8 ep1in [0x1000];	//[3000,3fff]
-	u8 ep2out[0x1000];	//[4000,4fff]
-	u8 ep2in [0x1000];	//[5000,5fff]
-	u8 ep3out[0x1000];	//[6000,6fff]
-	u8 ep3in [0x1000];	//[7000,7fff]
-	u8 ep4out[0x1000];	//[8000,8fff]
-	u8 ep4in [0x1000];	//[9000,9fff]
-	u8 ep5out[0x1000];	//[a000,afff]
-	u8 ep5in [0x1000];	//[b000,bfff]
-	u8 ep6out[0x1000];	//[c000,cfff]
-	u8 ep6in [0x1000];	//[d000,dfff]
-	u8 ep7out[0x1000];	//[e000,efff]
-	u8 ep7in [0x1000];	//[f000,ffff]
-/*
-	u8 ep8out[0x1000];	//[10000,10fff]
-	u8 ep8in [0x1000];	//[11000,11fff]
-	u8 ep9out[0x1000];	//[12000,12fff]
-	u8 ep9in [0x1000];	//[13000,13fff]
-	u8 ep10out[0x1000];	//[14000,14fff]
-	u8 ep10in [0x1000];	//[15000,15fff]
-	u8 ep11out[0x1000];	//[16000,16fff]
-	u8 ep11in [0x1000];	//[17000,17fff]
-	u8 ep12out[0x1000];	//[18000,18fff]
-	u8 ep12in [0x1000];	//[19000,19fff]
-	u8 ep13out[0x1000];	//[1a000,1afff]
-	u8 ep13in [0x1000];	//[1b000,1bfff]
-	u8 ep14out[0x1000];	//[1c000,1cfff]
-	u8 ep14in [0x1000];	//[1d000,1dfff]
-	u8 ep15out[0x1000];	//[1e000,1efff]
-	u8 ep15in [0x1000];	//[1f000,1ffff]
-*/
+	union{
+		struct perdev devctx;
+		struct perendp epnctx[32];
+		u8 padding[0x800];
+	};
 }__attribute__((packed));
+struct perslot{
+	union{
+		//[0,7ff]: hc can write, me read only
+		u8 hcctx[0x800];
 
-//
+		//[0,fff]: 0x20B per DCI, first 0x800B unused
+		struct myctx myctx;
+
+		//[0,ffff]: 0x1000B per DCI, first 0x1000B reserved
+		u8 cmdring[32][0x1000];
+	};
+}__attribute__((packed));
 struct perxhci{
 	//mmio
 	struct CapabilityRegisters* capreg;
@@ -344,37 +370,51 @@ struct perxhci{
 int maketrb_usbrequest(u8* trb, struct UsbRequest* req, u8* buf, int len)
 {
 	struct SetupStage* setup   = (void*)(trb+0x00);
-	struct DataStage* data     = (void*)(trb+0x10);
-	struct StatusStage* status = (void*)(trb+0x20);
-
 	setup->TRBType = TRB_common_SetupStage;
 	setup->TransferType = 3;
 	setup->TRBTransferLength = 8;
 	setup->InterruptOnCompletion = 0;
 	setup->ImmediateData = 1;
-	setup->bmRequestType = 0x80;	//Dir = Device-to-Host, Type = Standard, Recipient = Device
-	setup->bRequest = 6;
-	setup->wValue = req->wValue;	//lo = Descriptor Index, hi = Descriptor type
+	setup->bmRequestType = req->bmRequestType;
+	setup->bRequest = req->bRequest;
+	setup->wValue = req->wValue;
 	setup->wIndex = req->wIndex;
-	setup->wLength = len;
-	setup->Cyclebit = 1;
-	//
-	data->TRBType = TRB_common_DataStage;
-	data->Direction = 1;
-	data->TRBTransferLength = len;
-	data->Chainbit = 0;
-	data->InterruptOnCompletion = 0;
-	data->ImmediateData = 0;
-	data->buffer = (u64)buf;
-	data->Cyclebit = 1;
-	//
-	status->TRBType = TRB_common_StatusStage;	//TRB Type = Status Stage TRB.
-	status->Direction = 0;
-	status->Chainbit = 0;
-	status->InterruptOnCompletion = 1;
-	status->Cyclebit = 1;
+	setup->wLength = req->wLength;
 
-	return 0x30;
+	if(0 == req->wLength){
+		struct StatusStage* status = (void*)(trb+0x10);
+		status->TRBType = TRB_common_StatusStage;
+		status->Direction = 0;
+		status->Chainbit = 0;
+		status->InterruptOnCompletion = 1;
+
+		setup->Cyclebit = 1;
+		status->Cyclebit = 1;
+		return 0x20;
+	}
+	else{
+		struct DataStage* data     = (void*)(trb+0x10);
+		struct StatusStage* status = (void*)(trb+0x20);
+		//
+		data->TRBType = TRB_common_DataStage;
+		data->Direction = 1;
+		data->TRBTransferLength = len;
+		data->Chainbit = 0;
+		data->InterruptOnCompletion = 0;
+		data->ImmediateData = 0;
+		data->buffer = (u64)buf;
+		//
+		status->TRBType = TRB_common_StatusStage;
+		status->Direction = 0;
+		status->Chainbit = 0;
+		status->InterruptOnCompletion = 1;
+
+		setup->Cyclebit = 1;
+		data->Cyclebit = 1;
+		status->Cyclebit = 1;
+		return 0x30;
+	}
+	return 0;
 }
 int maketrb_getdesc(u8* trb, int type, u8* buf, int len)
 {
@@ -561,7 +601,7 @@ int xhci_EnableSlot(struct device* xhci)
 	struct perxhci* xhcidata = (void*)(xhci->data);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 	u64* dcbatable = (u64*)(xhcidata->dcba);
-	dcbatable[slot] = (u64)(slotdata->slotctx);
+	dcbatable[slot] = (u64)(slotdata->hcctx);
 	return slot;
 }
 int xhci_DisableSlot(struct device* xhci, int slot)
@@ -576,9 +616,9 @@ int xhci_AddressDevice(struct device* xhci, int slot)
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 
 //-------------from myown get something------------
-	u32 usbspeed = slotdata->dev.usbspeed;
-	u32 rootport = slotdata->dev.rootport;
-	u32 routestring = slotdata->dev.routestring;
+	u32 usbspeed = slotdata->myctx.devctx.usbspeed;
+	u32 rootport = slotdata->myctx.devctx.rootport;
+	u32 routestring = slotdata->myctx.devctx.routestring;
 	say("	speed=%x,port=%x,route=%x\n",usbspeed,rootport,routestring);
 
 //-------------from speed know maxpacksz-------------
@@ -606,18 +646,22 @@ int xhci_AddressDevice(struct device* xhci, int slot)
 	u32* devctx = (void*)(buf + contextsize);
 	u32* ep0ctx = (void*)(buf + contextsize*2);
 
+	u32 EP0DCI = 1;		//ep0 bidir
+	u64 EP0CMD = (u64)(slotdata->cmdring[EP0DCI]);
+	u32 lo = EP0CMD & 0xffffffff;
+	u32 hi = EP0CMD >> 32;
+	say("	ep0cmd@%llx\n", EP0CMD);
+
 	//fill buffer
 	incon[0] = 0;
 	incon[1] = 3;
 	for(j=2;j<8;j++)incon[j] = 0;
 
-	devctx[0] = (1<<27) + (usbspeed<<20) + routestring;
+	devctx[0] = (EP0DCI<<27) + (usbspeed<<20) + routestring;
 	devctx[1] = rootport << 16;
 	devctx[2] = 0;
 	devctx[3] = 0;
 
-	u32 lo = ((u64)slotdata->ep0cmd) & 0xffffffff;
-	u32 hi = ((u64)slotdata->ep0cmd) >> 32;
 	ep0ctx[0] = 0;
 	ep0ctx[1] = (packetsize<<16) + (4<<3) + 6;
 	ep0ctx[2] = lo | 1;
@@ -635,8 +679,8 @@ int xhci_AddressDevice(struct device* xhci, int slot)
 	}
 	say("	slot:addressed device\n");
 
-	u32 slotstate = (*(u32*)(slotdata->slotctx+0xc))>>27;
-	u32 ep0state = (*(u32*)(slotdata->slotctx+contextsize))&0x3;
+	u32 slotstate = (*(u32*)(slotdata->hcctx+0xc))>>27;
+	u32 ep0state = (*(u32*)(slotdata->hcctx+contextsize))&0x3;
 	say("	slotstate=%x, ep0state=%x\n", slotstate, ep0state);
 	if(2 != slotstate){
 		say("	slot state:%x\n",slotstate);
@@ -647,10 +691,10 @@ int xhci_AddressDevice(struct device* xhci, int slot)
 		return -3;
 	}
 
-	slotdata->ep[0].queue = 0;
-	slotdata->ep[0].cycle = 1;
-	slotdata->ep[0].packetsize = packetsize;
-	slotdata->ep[0].errorstatus = 0;
+	slotdata->myctx.epnctx[EP0DCI].queue = 0;
+	slotdata->myctx.epnctx[EP0DCI].cycle = 1;
+	slotdata->myctx.epnctx[EP0DCI].packetsize = packetsize;
+	slotdata->myctx.epnctx[EP0DCI].eptype = 7;
 	return 1;
 }
 int xhci_EvaluateContext(struct device* xhci, int slot, u8* devdesc, int len)
@@ -661,12 +705,13 @@ int xhci_EvaluateContext(struct device* xhci, int slot, u8* devdesc, int len)
 
 	struct perxhci* xhcidata = (void*)(xhci->data);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
-	if(1 != slotdata->dev.usbspeed){
+	if(1 != slotdata->myctx.devctx.usbspeed){
 		say("	not fullspeed, dont change\n");
 		return 0;
 	}
 
-	u32 oldsize = slotdata->ep[0].packetsize;
+	u32 EP0DCI = 1;
+	u32 oldsize = slotdata->myctx.epnctx[EP0DCI].packetsize;
 	u32 newsize = devdesc[7];
 	if(newsize == oldsize){
 		say("	same bMaxPacketSize0, nothing change\n");
@@ -674,7 +719,7 @@ int xhci_EvaluateContext(struct device* xhci, int slot, u8* devdesc, int len)
 	}
 
 //-------------from packet known maxpacksz------------
-	slotdata->ep[0].packetsize = newsize;		//bMaxPacketSize0
+	slotdata->myctx.epnctx[EP0DCI].packetsize = newsize;		//bMaxPacketSize0
 	say("	packetsize=%x now\n", newsize);
 
 //-------------from xhci known slotctxsz------------
@@ -692,6 +737,9 @@ int xhci_EvaluateContext(struct device* xhci, int slot, u8* devdesc, int len)
 	u32* devctx = (void*)(buf + contextsize);
 	u32* ep0ctx = (void*)(buf + contextsize*2);
 
+	u32 lo = ((u64)slotdata->cmdring[EP0DCI]) & 0xffffffff;
+	u32 hi = ((u64)slotdata->cmdring[EP0DCI]) >> 32;
+
 	//change bMaxPacketSize0
 	incon[0] = 0;
 	incon[1] = 2;
@@ -702,8 +750,6 @@ int xhci_EvaluateContext(struct device* xhci, int slot, u8* devdesc, int len)
 	devctx[2] = 0;
 	devctx[3] = 0;
 
-	u32 lo = ((u64)slotdata->ep0cmd) & 0xffffffff;
-	u32 hi = ((u64)slotdata->ep0cmd) >> 32;
 	ep0ctx[0] = 0;
 	ep0ctx[1] = (newsize<<16) + (4<<3) + 6;
 	ep0ctx[2] = lo | 1;
@@ -721,8 +767,8 @@ int xhci_EvaluateContext(struct device* xhci, int slot, u8* devdesc, int len)
 	}
 	say("	evaluated\n");
 
-	u32 slotstate = (*(u32*)(slotdata->slotctx + 0xc))>>27;
-	u32 ep0state = (*(u32*)(slotdata->slotctx + contextsize))&0x3;
+	u32 slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
+	u32 ep0state = (*(u32*)(slotdata->hcctx + contextsize))&0x3;
 	say("	slotstate=%x, ep0state=%x\n", slotstate, ep0state);
 	if(2 != slotstate){
 		say("	slot state:%x\n",slotstate);
@@ -734,55 +780,117 @@ int xhci_EvaluateContext(struct device* xhci, int slot, u8* devdesc, int len)
 	}
 	return 0;
 }
-int xhci_ConfigureEndpoint(struct device* xhci, int slot, u8* epdesc, int len)
+int xhci_ConfigureEndpoint(struct device* xhci, int slot, struct EndpointDescriptor* epdesc, int len)
 {
 	say("	--------------------------------\n");
 	say("	ConfigureEndpoint\n");
 
 	struct perxhci* xhcidata = (void*)(xhci->data);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
-/*
-//-------------from packet known maxpacksz------------
-	perslot->epinf[0].packetsize = newsize;		//bMaxPacketSize0
-	say("	packetsize=%x now\n", newsize);
 
-//-------------from xhci known slotctxsz------------
+//----------------from xhci known slotctxsz------------
 	u32 contextsize = 0x20;
-	if(0x4 == (my->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
+	if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
 	say("	contextsize=0x%x\n", contextsize);
 
-//---------------------------------------------------
+//----------------from packet known things------------
+	if(5 != epdesc->bDescriptorType){
+		say("	not epdesc, bye bye\n");
+		return -1;
+	}
+
+	u8 DCI = (epdesc->bEndpointAddress & 0xf) << 1;
+	if(epdesc->bEndpointAddress & 0x80)DCI += 1;
+
+	u32 eptype = epdesc->bmAttributes & 3;
+	if(epdesc->bEndpointAddress & 0x80)eptype |= 4;
+	if(0 == eptype)eptype = 4;		//control out -> control bidir
+
+	u32 packetsize = epdesc->wMaxPacketSize;
+
+	u32 interval = epdesc->bInterval;
+
+	say("	DCI=%x, eptype=%x, packetsize=%x, interval=%x\n", DCI, eptype, packetsize, interval);
+
+//----------------store in my ctx----------------
+	slotdata->myctx.epnctx[DCI].packetsize = packetsize;
+	slotdata->myctx.epnctx[DCI].eptype = packetsize;
+
+	struct SlotContext* hcslotctx = (void*)(slotdata->hcctx);
+	u32 maxdci = hcslotctx->ContextEntries;
+	if(maxdci < DCI)maxdci = DCI;
+	say("	maxdci=%x now\n", maxdci);
+/*
+
 	//some buffer
 	int j;
 	u8* buf = perslot->tmpbuf;
+	for(j=0;j<0x800;j++)buf[j] = 0;
+
 	u32* incon  = (void*)(buf + 0);
-	u32* devctx = (void*)(buf + contextsize);
-	u32* ep0ctx = (void*)(buf + contextsize*2);
 	incon[0] = 0;
-	incon[1] = 2;
+	incon[1] = 1 | (1<<DCI);
 	for(j=2;j<8;j++)incon[j] = 0;
 
-	devctx[0] = 0;
-	devctx[1] = 0;
-	devctx[2] = 0;
-	devctx[3] = 0;
+	struct SlotContext* devctx = (void*)(buf + contextsize);
+	//[0,3]
+	devctx->RouteString = routestring;
+	devctx->Speed = usbspeed;
+	devctx->ContextEntries = maxdci;
+	//[4,7]
+	devctx->MaxExitLatency = 0;
+	devctx->RootHubPortNumber = rootport;
+	devctx->NumberofPorts = 0;
+	//[8,b]
+	devctx->ParentHubSlotID = 0;
+	devctx->ParentPortNumber = 0;
+	devctx->TTThinkTime = 0;
+	devctx->InterrupterTarget = 0;
+	//[c,f]
+	devctx->USBDeviceAddress = 0;
+	devctx->SlotState = 0;
 
-	lo = ((u64)ep0cmd) & 0xffffffff;
-	hi = ((u64)ep0cmd) >> 32;
-	ep0ctx[0] = 0;
-	ep0ctx[1] = (packetsize<<16) + (4<<3) + 6;
-	ep0ctx[2] = lo | 1;
-	ep0ctx[3] = hi;
-	ep0ctx[4] = 0x8;
+	struct EndpointContext* epctx = (void*)(buf + contextsize * (DCI+1));
+	//[0,3]
+	epctx->EndpointState = 0;
+	epctx->Mult = 0;
+	epctx->MaxPrimaryStreams = 0;
+	epctx->LinerStreamArray = 0;
+	epctx->Interval = interval;
+	epctx->MaxESITPayloadHi = (maxesit >> 16) & 0xff;
+	//[4,7]
+	epctx->ErrorCount = 3;
+	epctx->EndpointType = eptype;
+	epctx->HostInitiateDisable = 0;
+	epctx->MaxBurstSize = 0;
+	epctx->MaxPacketSize = packetsize;
+	//[8,b]
+	epctx->DequeueCycleState: 1;
+	epctx->TRDequeuePointer = ((u64)slotdata + 0x1000*DCI) >> 4;
+	//[c,f]
+	epctx->AverageTRBLength = 16;
+	epctx->MaxESITPayloadLo = maxesit & 0xffff;
 
-	lo = ((u64)incon) & 0xffffffff;
-	hi = ((u64)incon) >> 32;
+	u32 lo = ((u64)incon) & 0xffffffff;
+	u32 hi = ((u64)incon) >> 32;
 	xhci_hostorder(xhci,0, lo,hi,0,(slot<<24)+(TRB_command_ConfigureEndpoint<<10) );
 	if(xhci_waitevent(xhci, TRB_event_CommandCompletion) < 0){
 		say("	error@configure endpoint\n");
 		return -1;
 	}
 	say("	configured\n");
+
+	u32 slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
+	u32 epstate = (*(u32*)(slotdata->hcctx + contextsize*DCI))&0x3;
+	say("	slotstate=%x, epstate=%x\n", slotstate, epstate);
+	if(2 != slotstate){
+		say("	slot state:%x\n",slotstate);
+		return -3;
+	}
+	if(0 == epstate){
+		say("	ep wrong\n");
+		return -2;
+	}
 */
 	return 0;
 }
@@ -807,14 +915,20 @@ int xhci_giveorderwaitevent(
 
 	else{	//to device
 		say("	--------------------------------\n");
-		say("	GET_DESCRIPTOR (0x%xB)\n", recvlen);
+		int DCI = 1;
+
+		struct UsbRequest* req = sendbuf;
+		say("	SENDTO DEVICE slot=%x,dci=%x: (bm=%x,br=%x,val=%x,idx=%x,len=%x)\n",
+			slot, DCI,
+			req->bmRequestType,req->bRequest,req->wValue,req->wIndex,req->wLength
+		);
+
 		struct perxhci* xhcidata = (void*)(xhci->data);
 		struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
-
-		maketrb_usbrequest(slotdata->ep0cmd + slotdata->ep[0].queue, sendbuf, recvbuf, recvlen);
-		slotdata->ep[0].queue += 0x30;
+		u8* cmdenq = slotdata->cmdring[DCI] + slotdata->myctx.epnctx[DCI].queue;
+		slotdata->myctx.epnctx[DCI].queue += maketrb_usbrequest(cmdenq, req, recvbuf, recvlen);
 		//
-		xhci_giveorder(xhci, slot | (1<<8));
+		xhci_giveorder(xhci, slot | (DCI<<8));
 		if(xhci_waitevent(xhci, TRB_event_Transfer) < 0)return 0;
 		//
 		printmemory(recvbuf, recvlen);
@@ -901,9 +1015,9 @@ void xhci_listall(struct device* xhci, int xxx, struct PortRegisters* port, int 
 
 		struct perxhci* xhcidata = (void*)(xhci->data);
 		struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
-		slotdata->dev.usbspeed = speed;
-		slotdata->dev.rootport = j+1;
-		slotdata->dev.routestring = 0;
+		slotdata->myctx.devctx.usbspeed = speed;
+		slotdata->myctx.devctx.rootport = j+1;
+		slotdata->myctx.devctx.routestring = 0;
 
 		//let usb do rest
 		struct device* usb = devicecreate(_usb_, 0, 0, 0);
