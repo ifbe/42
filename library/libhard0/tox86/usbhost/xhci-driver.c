@@ -218,9 +218,7 @@ struct EndpointContext{
 	u8 MaxBurstSize;
 	u16 MaxPacketSize;
 	//[8,f]
-	u64 DequeueCycleState: 1;
-	u64              Rsvd: 3;
-	u64  TRDequeuePointer:60;
+	u64 DequeueCycleAndPointer;
 	//[10,13]
 	u16 AverageTRBLength;
 	u16 MaxESITPayloadLo;
@@ -229,6 +227,66 @@ struct EndpointContext{
 
 
 
+struct NoOpTRB{
+	//[0,7]
+	u64 zero;
+	//[8,b]
+	u32          Rsvd_8:22;
+	u32 InterruptTarget:10;
+	//[c,d]
+	u16              Cyclebit:1;	//0
+	u16       EvaluateNextTRB:1;	//1
+	u16              Rsvd_2_3:2;	//[2,3]
+	u16              Chainbit:1;	//4
+	u16 InterruptOnCompletion:1;	//5
+	u16              Rsvd_6_9:4;	//[6,9]
+	u16               TRBType:6;	//[10,15]
+	//[e,f]
+	u16 unused;
+}__attribute__((packed));
+struct NormalTRB{
+	//[0,7]
+	u64 DataBufferPointer;
+	//[8,b]
+	u32 TRBTransferLength:17;
+	u32            TDSize: 5;
+	u32   InterruptTarget:10;
+	//[c,d]
+	u16               Cyclebit:1;	//0
+	u16        EvaluateNextTRB:1;	//1
+	u16 InterruptonShortPacket:1;	//2
+	u16                NoSnoop:1;	//3
+	u16               Chainbit:1;	//4
+	u16  InterruptOnCompletion:1;	//5
+	u16          ImmediateData:1;	//6
+	u16                   Rsvd:2;	//[7,8]
+	u16    BlockEventInterrupt:1;	//9
+	u16                TRBType:6;	//[10,15]
+	//[e,f]
+	u16 unused;
+}__attribute__((packed));
+struct IsochTRB{
+	//[0,7]
+	u64 DataBufferPointer;
+	//[8,b]
+	u32 TRBTransferLength:17;
+	u32            TDSize: 5;
+	u32   InterruptTarget:10;
+	//[c,f]
+	u32                     Cyclebit: 1;	//0
+	u32              EvaluateNextTRB: 1;	//1
+	u32       InterruptonShortPacket: 1;	//2
+	u32                      NoSnoop: 1;	//3
+	u32                     Chainbit: 1;	//4
+	u32        InterruptOnCompletion: 1;	//5
+	u32                ImmediateData: 1;	//6
+	u32           TransferBurstCount: 2;	//[7,8]
+	u32          BlockEventInterrupt: 1;	//9
+	u32                      TRBType: 6;	//[10,15]
+	u32 TransferLastBurstPacketCount: 4;	//[16,19]
+	u32                      FrameID:11;	//[20,30]
+	u32               StartIsochASAP: 1;	//31
+}__attribute__((packed));
 struct SetupStage{
 	//[0,3]
 	u8 bmRequestType;
@@ -416,65 +474,39 @@ int maketrb_usbrequest(u8* trb, struct UsbRequest* req, u8* buf, int len)
 	}
 	return 0;
 }
-int maketrb_getdesc(u8* trb, int type, u8* buf, int len)
+int UsbInterval2XhcInterval(int usbspeed, int eptype, int bInterval)
 {
-	struct SetupStage* setup   = (void*)(trb+0x00);
-	struct DataStage* data     = (void*)(trb+0x10);
-	struct StatusStage* status = (void*)(trb+0x20);
-
-	setup->TRBType = TRB_common_SetupStage;
-	setup->TransferType = 3;
-	setup->TRBTransferLength = 8;
-	setup->InterruptOnCompletion = 0;
-	setup->ImmediateData = 1;
-	setup->bmRequestType = 0x80;	//Dir = Device-to-Host, Type = Standard, Recipient = Device
-	setup->bRequest = 6;
-	setup->wValue = type;	//lo = Descriptor Index, hi = Descriptor type
-	setup->wIndex = 0;
-	setup->wLength = len;
-	setup->Cyclebit = 1;
+	//realtime in us
+	int time;
+	switch(usbspeed){
+	case 2:
+		//2=LS,interrupt: i*1000us
+		time = bInterval*1000;
+		break;
+	case 1:
+		if(3 == eptype){
+			//1=FS,interrupt: i*1000us
+			time = bInterval*1000;
+		}
+		else{
+			//1=FS,isoch: 2^(i-1)*1000us
+			time = (1<<(bInterval-1))*1000;
+		}
+		break;
+	default:
+		//HS,SS,SS+: 2^(i-1)*125us
+		time = (1<<(bInterval-1))*125;
+	}
+//say("usbspeed=%x,eptype=%x,binterval=%x,time=%x\n", usbspeed, eptype, bInterval, time);
 	//
-	data->TRBType = TRB_common_DataStage;
-	data->Direction = 1;
-	data->TRBTransferLength = len;
-	data->Chainbit = 0;
-	data->InterruptOnCompletion = 0;
-	data->ImmediateData = 0;
-	data->buffer = (u64)buf;
-	data->Cyclebit = 1;
-	//
-	status->TRBType = TRB_common_StatusStage;	//TRB Type = Status Stage TRB.
-	status->Direction = 0;
-	status->Chainbit = 0;
-	status->InterruptOnCompletion = 1;
-	status->Cyclebit = 1;
-
-	return 0x30;
-}
-int maketrb_setconf(u8* trb, int type, u8* buf, int len)
-{
-	struct SetupStage* setup   = (void*)(trb+0x00);
-	struct StatusStage* status = (void*)(trb+0x10);
-
-	setup->TRBType = TRB_common_SetupStage;
-	setup->TransferType = 3;
-	setup->TRBTransferLength = 8;
-	setup->InterruptOnCompletion = 0;
-	setup->ImmediateData = 1;
-	setup->bmRequestType = 0x80;	//Dir = Device-to-Host, Type = Standard, Recipient = Device
-	setup->bRequest = 6;
-	setup->wValue = type;	//lo = Descriptor Index, hi = Descriptor type
-	setup->wIndex = 0;
-	setup->wLength = 0;
-	setup->Cyclebit = 1;
-
-	status->TRBType = TRB_common_StatusStage;	//TRB Type = Status Stage TRB.
-	status->Direction = 0;
-	status->Chainbit = 0;
-	status->InterruptOnCompletion = 1;
-	status->Cyclebit = 1;
-
-	return 0x20;
+	time /= 125;
+	bInterval = 0;
+	while(1){
+		if(1 >= time)break;
+		time = time >> 1;
+		bInterval++;
+	}
+	return bInterval;
 }
 
 
@@ -606,6 +638,9 @@ int xhci_EnableSlot(struct device* xhci)
 }
 int xhci_DisableSlot(struct device* xhci, int slot)
 {
+	say("	--------------------------------\n");
+	say("	DisableSlot\n");
+
 	return 0;
 }
 int xhci_AddressDevice(struct device* xhci, int slot)
@@ -697,6 +732,12 @@ int xhci_AddressDevice(struct device* xhci, int slot)
 	slotdata->myctx.epnctx[EP0DCI].eptype = 7;
 	return 1;
 }
+int xhci_ResetDevice(struct device* xhci, int slot)
+{
+	say("	--------------------------------\n");
+	say("	ResetDevice\n");
+	return 0;
+}
 int xhci_EvaluateContext(struct device* xhci, int slot, u8* devdesc, int len)
 {
 	//Evaluate Context Command
@@ -711,8 +752,9 @@ int xhci_EvaluateContext(struct device* xhci, int slot, u8* devdesc, int len)
 	}
 
 	u32 EP0DCI = 1;
+	u32 usbspeed = slotdata->myctx.devctx.usbspeed;
 	u32 oldsize = slotdata->myctx.epnctx[EP0DCI].packetsize;
-	u32 newsize = devdesc[7];
+	u32 newsize = (usbspeed>=4) ? (1<<devdesc[7]) : devdesc[7];
 	if(newsize == oldsize){
 		say("	same bMaxPacketSize0, nothing change\n");
 		return 0;
@@ -806,10 +848,11 @@ int xhci_ConfigureEndpoint(struct device* xhci, int slot, struct EndpointDescrip
 	if(epdesc->bEndpointAddress & 0x80)eptype |= 4;
 	if(0 == eptype)eptype = 4;		//control out -> control bidir
 
-	u32 packetsize = epdesc->wMaxPacketSize;
+	u32 interval = UsbInterval2XhcInterval(slotdata->myctx.devctx.usbspeed, eptype&3, epdesc->bInterval);
 
-	u32 interval = epdesc->bInterval;
-
+	u32 packetsize = epdesc->wMaxPacketSize & 0x7ff;
+	u32 burstsize = (epdesc->wMaxPacketSize & 0x1800) >> 11;
+	u32 esitpayload = packetsize * (burstsize + 1);
 	say("	DCI=%x, eptype=%x, packetsize=%x, interval=%x\n", DCI, eptype, packetsize, interval);
 
 //----------------store in my ctx----------------
@@ -820,11 +863,11 @@ int xhci_ConfigureEndpoint(struct device* xhci, int slot, struct EndpointDescrip
 	u32 maxdci = hcslotctx->ContextEntries;
 	if(maxdci < DCI)maxdci = DCI;
 	say("	maxdci=%x now\n", maxdci);
-/*
+
 
 	//some buffer
 	int j;
-	u8* buf = perslot->tmpbuf;
+	u8* buf = xhcidata->freebuf;
 	for(j=0;j<0x800;j++)buf[j] = 0;
 
 	u32* incon  = (void*)(buf + 0);
@@ -834,12 +877,12 @@ int xhci_ConfigureEndpoint(struct device* xhci, int slot, struct EndpointDescrip
 
 	struct SlotContext* devctx = (void*)(buf + contextsize);
 	//[0,3]
-	devctx->RouteString = routestring;
-	devctx->Speed = usbspeed;
+	devctx->RouteString = slotdata->myctx.devctx.routestring;
+	devctx->Speed = slotdata->myctx.devctx.usbspeed;
 	devctx->ContextEntries = maxdci;
 	//[4,7]
 	devctx->MaxExitLatency = 0;
-	devctx->RootHubPortNumber = rootport;
+	devctx->RootHubPortNumber = slotdata->myctx.devctx.rootport;
 	devctx->NumberofPorts = 0;
 	//[8,b]
 	devctx->ParentHubSlotID = 0;
@@ -857,19 +900,18 @@ int xhci_ConfigureEndpoint(struct device* xhci, int slot, struct EndpointDescrip
 	epctx->MaxPrimaryStreams = 0;
 	epctx->LinerStreamArray = 0;
 	epctx->Interval = interval;
-	epctx->MaxESITPayloadHi = (maxesit >> 16) & 0xff;
+	epctx->MaxESITPayloadHi = (esitpayload >> 16) & 0xff;
 	//[4,7]
 	epctx->ErrorCount = 3;
 	epctx->EndpointType = eptype;
 	epctx->HostInitiateDisable = 0;
-	epctx->MaxBurstSize = 0;
+	epctx->MaxBurstSize = burstsize;
 	epctx->MaxPacketSize = packetsize;
 	//[8,b]
-	epctx->DequeueCycleState: 1;
-	epctx->TRDequeuePointer = ((u64)slotdata + 0x1000*DCI) >> 4;
+	epctx->DequeueCycleAndPointer = ((u64)slotdata + 0x1000*DCI) | 1;
 	//[c,f]
 	epctx->AverageTRBLength = 16;
-	epctx->MaxESITPayloadLo = maxesit & 0xffff;
+	epctx->MaxESITPayloadLo = esitpayload & 0xffff;
 
 	u32 lo = ((u64)incon) & 0xffffffff;
 	u32 hi = ((u64)incon) >> 32;
@@ -883,7 +925,7 @@ int xhci_ConfigureEndpoint(struct device* xhci, int slot, struct EndpointDescrip
 	u32 slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
 	u32 epstate = (*(u32*)(slotdata->hcctx + contextsize*DCI))&0x3;
 	say("	slotstate=%x, epstate=%x\n", slotstate, epstate);
-	if(2 != slotstate){
+/*	if(2 != slotstate){
 		say("	slot state:%x\n",slotstate);
 		return -3;
 	}
@@ -929,7 +971,15 @@ int xhci_giveorderwaitevent(
 		slotdata->myctx.epnctx[DCI].queue += maketrb_usbrequest(cmdenq, req, recvbuf, recvlen);
 		//
 		xhci_giveorder(xhci, slot | (DCI<<8));
-		if(xhci_waitevent(xhci, TRB_event_Transfer) < 0)return 0;
+		if(xhci_waitevent(xhci, TRB_event_Transfer) < 0){
+			u32 contextsize = 0x20;
+			if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
+
+			u32 slotstate = (*(u32*)(slotdata->hcctx+0xc))>>27;
+			u32 ep0state = (*(u32*)(slotdata->hcctx+contextsize))&0x3;
+			say("	slotstate=%x, ep0state=%x\n", slotstate, ep0state);
+			return 0;
+		}
 		//
 		printmemory(recvbuf, recvlen);
 		return recvlen;
@@ -1301,13 +1351,12 @@ int xhci_mmioinit(struct device* dev, u8* xhciaddr)
 //	*(u32*)operational = (*(u32*)operational) | 0xc;      //no interrupt
 
 	optreg->USBCMD = optreg->USBCMD | 0x1;
-	say("	USBCMD=%08x\n", optreg->USBCMD);
+	say("	USBCMD=%08x, USBSTS=%08x\n", optreg->USBCMD, optreg->USBSTS);
 
 	say("}\n");
 
 
 //-------------------list device------------------
-	say("each port:\n");
 	struct perxhci* my = (void*)(dev->data);
 	//mmio
 	my->capreg = capreg;
@@ -1330,6 +1379,19 @@ int xhci_mmioinit(struct device* dev, u8* xhciaddr)
 	my->order_len = 0x10000;
 	my->order_enq = 0;
 	my->order_cycle = 1;
+
+	//wait until device detected
+	wait2 = 0xffffff;
+	while(1){
+		//bit4 = Port Change Detect
+		if(0x10 == (optreg->USBSTS & 0x10))break;
+
+		wait2--;
+		if(0 == wait2){
+			say("xhci: USBCMD=%08x, USBSTS=%08x, no port change detected\n", optreg->USBCMD, optreg->USBSTS);
+			break;
+		}
+	}
 	xhci_listall(dev, 0, optreg->port, capreg->HCSPARAMS1>>24);
 	return 0;
 }

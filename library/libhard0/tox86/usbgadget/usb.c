@@ -372,7 +372,7 @@ void explainendpdesc(struct EndpointDescriptor* desc)
 	say(".bEndpointAddress=%x,%s\n", tmp&0x1f, (tmp>=0x80)?"in":"out");
 	say(".bmAttributes=%x\n",     desc->bmAttributes);
 	say(".wMaxPacketSize=%x\n",   desc->wMaxPacketSize);
-	say(".bInterval=%dms\n",      desc->bInterval);
+	say(".bInterval=%d\n",      desc->bInterval);
 }
 void explainHIDdesc(struct HIDDescriptor* desc)
 {
@@ -686,7 +686,7 @@ int usb_DriverHID(struct device* usb, int xxx, struct device* xhci, int slot)
 	struct descnode* devnode;
 	struct DeviceDescriptor* devdesc;
 	struct descnode* confnode;
-	struct ConfigureDescriptor* confdesc;
+	struct ConfigurationDescriptor* confdesc;
 	struct descnode* intfnode;
 	struct InterfaceDescriptor* intfdesc;
 	struct descnode* endpnode;
@@ -776,12 +776,12 @@ int usb_DriverHID(struct device* usb, int xxx, struct device* xhci, int slot)
 		j = endpnode->rfellow;
 	}
 
-/*
-//------------------------device side------------------------
-	DEVICE_REQUEST_SET_CONFIGURATION(&req, my->conf);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, buf,req.wLength);
-	if(4 != ret)return -10;
 
+//------------------------device side------------------------
+	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
+	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, 0,0);
+	if(4 != ret)return -10;
+/*
 	INTERFACE_REQUEST_SET_INTERFACE(&req, my->intf, 0);
 	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, buf,req.wLength);
 	if(4 != ret)return -11;
@@ -801,7 +801,7 @@ int usb_ChooseFirst(struct device* usb, int xxx, struct device* xhci, int slot)
 	struct descnode* devnode;
 	struct DeviceDescriptor* devdesc;
 	struct descnode* confnode;
-	struct ConfigureDescriptor* confdesc;
+	struct ConfigurationDescriptor* confdesc;
 	struct descnode* intfnode;
 	struct InterfaceDescriptor* intfdesc;
 

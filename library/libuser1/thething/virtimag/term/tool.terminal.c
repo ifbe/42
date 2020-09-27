@@ -383,7 +383,7 @@ static void terminal_create(struct entity* act, void* arg, int argc, u8** argv)
 	act->SERVER = 0;
 
 	act->ix0 = 0;
-	act->iy0 = 0;
+	act->iy0 = 350;
 
 	//struct str* dat = act->RAWBUF = memorycreate(0x100000, 0);
 	//dat->len = 0;

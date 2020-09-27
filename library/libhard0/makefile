@@ -136,9 +136,9 @@ barex64:x64
 	$(CC) $(CF) tox86/bus/input/8042.c
 	$(CC) $(CF) tox86/bus/pci/pci-port.c
 	$(CC) $(CF) tox86/bus/pci/pci-mmio.c
-	$(CC) $(CF) tox86/bus/usb/ehci.c
-	$(CC) $(CF) tox86/bus/usb/xhci.c
-	$(CC) $(CF) tox86/bus/usb/usb.c
+	$(CC) $(CF) tox86/usbhost/ehci-driver.c
+	$(CC) $(CF) tox86/usbhost/xhci-driver.c
+	$(CC) $(CF) tox86/usbgadget/usb.c
 	$(CC) $(CF) tox86/stor/ide.c
 	$(CC) $(CF) tox86/stor/ahci.c
 	$(CC) $(CF) tox86/stor/nvme.c
