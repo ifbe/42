@@ -85,6 +85,18 @@ void term_mmio(int argc, u8** argv)
 	}
 	say("reading: [%llx] = %08x\n", addr, *(u32*)addr);
 }
+void term_memory(int argc, u8** argv)
+{
+	if(argc <= 1)return;
+
+	u64 addr;
+	hexstr2u64(argv[1], &addr);
+
+	int len = 0x100;
+	if(3 == argc)hexstr2u32(argv[2], &len);
+
+	printmemory((void*)addr, len);
+}
 
 
 
@@ -107,6 +119,7 @@ int termwrite(u8* buf, int len)
 	j = str2arg(buf, len, tmp, 0x1000, argv, 8);
 	if(0 == ncmp(buf, "ls", 2))term_ls(buf, len);
 	else if(0 == ncmp(buf, "mmio", 4))term_mmio(j, argv);
+	else if(0 == ncmp(buf, "memory", 5))term_memory(j, argv);
 	else if(0 == ncmp(buf, "origin", 6))originmodify(j, argv);
 	else if(0 == ncmp(buf, "worker", 6))workermodify(j, argv);
 	else if(0 == ncmp(buf, "device", 6))devicemodify(j, argv);

@@ -139,6 +139,8 @@ barex64:x64
 	$(CC) $(CF) tox86/usbhost/ehci-driver.c
 	$(CC) $(CF) tox86/usbhost/xhci-driver.c
 	$(CC) $(CF) tox86/usbgadget/usb.c
+	$(CC) $(CF) tox86/usbgadget/usbhid-driver.c
+	$(CC) $(CF) tox86/usbgadget/usbstor-driver.c
 	$(CC) $(CF) tox86/stor/ide.c
 	$(CC) $(CF) tox86/stor/ahci.c
 	$(CC) $(CF) tox86/stor/nvme.c

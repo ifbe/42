@@ -1,5 +1,7 @@
 #include "libhard.h"
 int xhci_giveorderwaitevent(void* hc,int id, u32,u32, void* sendbuf,int sendlen, void* recvbuf, int recvlen);
+int usbhid_driver(struct device* usb, int xxx, struct device* xhci, int slot);
+int usbstor_driver(struct device* usb, int xxx, struct device* xhci, int slot);
 
 
 
@@ -429,7 +431,7 @@ struct perusb{
 	u32 intfnode;	//chosen node for interface descriptor
 	u32  strnode;	//chosen node for string descriptor(chosen language)
 	u32 nodelen;
-	u32 freelen;
+	u32 desclen;
 
 	u8 iManufac;	//won't change
 	u8 iProduct;	//won't change
@@ -440,14 +442,14 @@ struct perusb{
 
 	//[0x100, 0xfff]
 	struct descnode node[0];	//0xf00/0x20=0x78, basically enough
-	u8 padding1[0x1000];
+	u8 padding1[0xf00];
 
 	//[0x1000, 0xffff]
-	u8 free[0];
-	u8 padding2[0x10000];
+	u8 desc[0];
+	u8 padding2[0xf000];
 
 	//[0x10000, 0xfffff]
-	u8 unused[0];
+	u8 freebuf[0];
 }__attribute__((packed));
 void usb_handledevdesc(struct device* usb, int xxx, struct device* xhci, int slot, struct DeviceDescriptor* desc, int len)
 {
@@ -613,7 +615,7 @@ int usb_ReadAndHandleConfigure(struct device* usb, int xxx, struct device* xhci,
 	int ret;
 	struct UsbRequest req;
 	struct perusb* perusb = usb->buf0;
-	u8* tmp = perusb->free + perusb->freelen;
+	u8* tmp = perusb->desc + perusb->desclen;
 
 	//GET_DESCRIPTOR confdesc 8B
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x200+value, 0, 8);
@@ -628,8 +630,8 @@ int usb_ReadAndHandleConfigure(struct device* usb, int xxx, struct device* xhci,
 	//parse Configure Descriptor
 	usb_handleconfdesc(usb,xxx, xhci,slot, tmp,ret);
 
-	perusb->freelen += req.wLength;
-	tmp = perusb->free + perusb->freelen;
+	perusb->desclen += req.wLength;
+	tmp = perusb->desc + perusb->desclen;
 	return 0;
 }
 
@@ -641,7 +643,7 @@ int usb_ReadAndHandleString(struct device* usb, int xxx, struct device* xhci, in
 	int ret;
 	struct UsbRequest req;
 	struct perusb* perusb = usb->buf0;
-	u8* tmp = perusb->free + perusb->freelen;
+	u8* tmp = perusb->desc + perusb->desclen;
 
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300 + id, lang, 4);
 	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
@@ -654,8 +656,8 @@ int usb_ReadAndHandleString(struct device* usb, int xxx, struct device* xhci, in
 	say("	iManufac:\n");
 	printmemory(tmp, req.wLength);
 
-	perusb->freelen += req.wLength;
-	tmp = perusb->free + perusb->freelen;
+	perusb->desclen += req.wLength;
+	tmp = perusb->desc + perusb->desclen;
 	return 0;
 }
 int usb_ReadAndHandleLang(struct device* usb, int xxx, struct device* xhci, int slot, u16 lang)
@@ -664,7 +666,7 @@ int usb_ReadAndHandleLang(struct device* usb, int xxx, struct device* xhci, int 
 	int ret;
 	struct UsbRequest req;
 	struct perusb* perusb = usb->buf0;
-	u8* tmp = perusb->free + perusb->freelen;
+	u8* tmp = perusb->desc + perusb->desclen;
 
 	//if(my->iManufac)  usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iManufac);
 	//if(my->iProduct)  usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iProduct);
@@ -677,122 +679,6 @@ int usb_ReadAndHandleLang(struct device* usb, int xxx, struct device* xhci, int 
 
 
 
-int usb_DriverHID(struct device* usb, int xxx, struct device* xhci, int slot)
-{
-	int j,ret;
-	struct UsbRequest req;
-	struct perusb* perusb;
-
-	struct descnode* devnode;
-	struct DeviceDescriptor* devdesc;
-	struct descnode* confnode;
-	struct ConfigurationDescriptor* confdesc;
-	struct descnode* intfnode;
-	struct InterfaceDescriptor* intfdesc;
-	struct descnode* endpnode;
-	struct EndpointDescriptor* endpdesc;
-	struct descnode* hidnode;
-	struct HIDDescriptor* hiddesc;
-
-
-//------------------------basic information------------------------
-	perusb = usb->buf0;
-	if(0 == perusb)return 0;
-
-	if(0 == perusb->devnode)return -1;		//no devdesc?
-	devnode = (void*)perusb + perusb->devnode;
-	devdesc = (void*)perusb + devnode->real;
-
-	if(0 == devnode->lchild)return -2;		//no confdesc?
-	confnode = (void*)perusb + perusb->confnode;
-	confdesc = (void*)perusb + confnode->real;
-
-	if(0 == confnode->lchild)return -3;		//no intfdesc?
-	intfnode = (void*)perusb + perusb->intfnode;
-	intfdesc = (void*)perusb + intfnode->real;
-
-
-//------------------------check type------------------------
-	if(3 == intfdesc->bInterfaceClass){
-		say("	this is hid device\n");
-	}
-
-	if(1 == intfdesc->bInterfaceSubClass){
-		say("	bootmode\n");
-	}
-	else{
-		say("	reportmode\n");
-	}
-
-	if(1 == intfdesc->bInterfaceProtocol){		//keyboard
-		say("	keyboard\n");
-	}
-	else if(2 == intfdesc->bInterfaceProtocol){	//mouse
-		say("	mouse\n");
-	}
-	else{
-		say("	proto=%x\n",intfdesc->bInterfaceProtocol);
-	}
-
-
-//------------------------host side + my parse------------------------
-	j = intfnode->lchild;
-	while(1){
-		if(0 == j)break;
-		endpnode = (void*)perusb + j;
-		endpdesc = (void*)perusb + endpnode->real;
-
-		switch(endpdesc->bDescriptorType){
-		case 5:{
-			say("	endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
-				endpdesc->bEndpointAddress, endpdesc->bmAttributes,
-				endpdesc->wMaxPacketSize, endpdesc->bInterval
-			);
-			if(1){
-				//inform the xHC of the value of the Max Exit Latency parameter
-				//ret = xhci_giveorderwaitevent(xhci,slot, 'h',TRB_command_EvaluateContext, buf,8, 0,0);
-				//if(ret < 0)return -9;
-
-				//inform the xHC of the endpoint
-				ret = xhci_giveorderwaitevent(xhci,slot, 'h',TRB_command_ConfigureEndpoint, endpdesc,sizeof(struct EndpointDescriptor), 0,0);
-				if(ret < 0)return -9;
-			}
-			break;
-		}//ep desc
-		case 0x21:{
-			hidnode = (void*)endpnode;
-			hiddesc = (void*)endpdesc;
-			say("	hiddesc: country=%x, numdesc=%x, reporttype=%x, reportlen=%x\n",
-				hiddesc->bCountryCode, hiddesc->bNumDescriptors,
-				hiddesc->bReportDescType, hiddesc->wReportDescLength
-			);
-			break;
-		}//hid desc
-		default:{
-			say("	desctype=%x\n", endpdesc->bDescriptorType);
-		}//report desc?
-		}//switch
-
-		j = endpnode->rfellow;
-	}
-
-
-//------------------------device side------------------------
-	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, 0,0);
-	if(4 != ret)return -10;
-/*
-	INTERFACE_REQUEST_SET_INTERFACE(&req, my->intf, 0);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, buf,req.wLength);
-	if(4 != ret)return -11;
-*/
-	return 0;
-}
-int usb_DriverStorage(struct device* usb, int xxx, struct device* xhci, int slot)
-{
-	say("	usb disk\n");
-	return 0;
-}
 int usb_ChooseFirst(struct device* usb, int xxx, struct device* xhci, int slot)
 {
 	struct perusb* perusb = usb->buf0;
@@ -822,10 +708,10 @@ int usb_ChooseFirst(struct device* usb, int xxx, struct device* xhci, int slot)
 	say("	class=%x,subclass=%x,protocol=%x\n", intfdesc->bInterfaceClass, intfdesc->bInterfaceSubClass, intfdesc->bInterfaceProtocol);
 	switch(intfdesc->bInterfaceClass){
 	case class_hid:
-		usb_DriverHID(usb,xxx, xhci,slot);
+		usbhid_driver(usb,xxx, xhci,slot);
 		break;
 	case class_storage:
-		usb_DriverStorage(usb,xxx, xhci,slot);
+		usbstor_driver(usb,xxx, xhci,slot);
 		break;
 	case class_hub:
 		say("	usb hub\n");
@@ -866,7 +752,7 @@ int usb_linkup(struct device* usb, int xxx, struct device* xhci, int slot)
 
 //-----------------device descroptor------------------
 	//begin reading
-	tmp = perusb->free + perusb->freelen;
+	tmp = perusb->desc + perusb->desclen;
 
 	//GET_DESCRIPTOR devdesc 8B (FS device only)
 	if(1){
@@ -885,7 +771,7 @@ int usb_linkup(struct device* usb, int xxx, struct device* xhci, int slot)
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x100, 0, 0x12);
 	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
 	if(0x12 != ret)return -3;
-	perusb->freelen += 0x12;
+	perusb->desclen += 0x12;
 
 	//parse Device Descriptor
 	usb_handledevdesc(usb,xxx, xhci,slot, (void*)tmp,ret);
@@ -900,7 +786,7 @@ int usb_linkup(struct device* usb, int xxx, struct device* xhci, int slot)
 
 
 //----------------------string descriptor-----------------
-	tmp = perusb->free + perusb->freelen;
+	tmp = perusb->desc + perusb->desclen;
 
 	//GET_DESCRIPTOR stringdesc 4B
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300, 0, 4);
@@ -911,7 +797,7 @@ int usb_linkup(struct device* usb, int xxx, struct device* xhci, int slot)
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300, 0, tmp[0]);
 	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
 	if(req.wLength != ret)return -7;
-	perusb->freelen += req.wLength;
+	perusb->desclen += req.wLength;
 
 	//foreach lang, read string descriptor
 	num = req.wLength;
