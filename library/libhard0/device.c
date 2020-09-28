@@ -32,7 +32,7 @@ void* allocdevice()
 
 int deviceread(_dev* dev,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	int fd = dev->selffd;
+	int fd = dev->priv_fd;
 	switch(dev->type){
 		case _i2c_:return i2c_read(fd, idx, buf, len);break;
 		case _spi_:return spi_read(fd, idx, buf, len);break;
@@ -48,7 +48,7 @@ int devicewrite(_dev* dev,int foot, _syn* stack,int sp, void* arg,int idx, void*
 		len = 1;
 	}
 
-	int fd = dev->selffd;
+	int fd = dev->priv_fd;
 	switch(dev->type){
 		case _i2c_:return i2c_write(fd, idx, buf, len);break;
 		case _spi_:return spi_write(fd, idx, buf, len);break;
@@ -118,7 +118,7 @@ void* devicecreate(u64 type, void* name, int argc, u8** argv)
 		if(fd <= 0)return 0;
 
 		dev[fd].type = _i2c_;
-		dev[fd].selffd = fd;
+		dev[fd].priv_fd = fd;
 
 		return &dev[fd];
 	}
@@ -128,7 +128,7 @@ void* devicecreate(u64 type, void* name, int argc, u8** argv)
 		if(fd <= 0)return 0;
 
 		dev[fd].type = _spi_;
-		dev[fd].selffd = fd;
+		dev[fd].priv_fd = fd;
 		return &dev[fd];
 	}
 	return 0;

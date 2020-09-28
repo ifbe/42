@@ -7,33 +7,58 @@ void* allocstyle();
 
 
 
+static struct origin* origin = 0;
+static struct worker* worker = 0;
+static struct device* device = 0;
+static struct driver* driver = 0;
+
+
+
+
+int kernel_pollall()
+{
+	int j;
+	struct device* dev;
+	for(j=0;j<10;j++){
+		dev = &device[j];
+		if(_xhci_ == dev->type){
+			if(dev->ontaking)dev->ontaking(dev,0, 0,0, 0,0, 0,0);
+		}
+	}
+}
 int kernel_create(struct worker* wrk, void* url, int argc, u8** argv)
 {
 	//screen
 	struct supply* wnd = supplycreate(_wnd_, 0, 0, 0);
 	//wnd-> = ;
 	//wnd-> = ;
-	struct style* aaa = allocstyle();
-	aaa->fshape.vc[0] = wnd->width/2;
-	aaa->fshape.vc[1] = wnd->height/2;
-	aaa->fshape.vr[0] = wnd->width/2;
-	aaa->fshape.vr[1] = 0;
-	aaa->fshape.vf[0] = 0;
-	aaa->fshape.vf[1] = wnd->height/2;
-	struct style* bbb = allocstyle();
-	bbb->fshape.vc[0] = wnd->width*3/4;
-	bbb->fshape.vc[1] = wnd->height/4;
-	bbb->fshape.vr[0] = wnd->width/5;
-	bbb->fshape.vr[1] = 0;
-	bbb->fshape.vf[0] = 0;
-	bbb->fshape.vf[1] = wnd->height/5;
-	struct style* ccc = allocstyle();
-	ccc->fshape.vc[0] = wnd->width*3/4;
-	ccc->fshape.vc[1] = wnd->height*3/4;
-	ccc->fshape.vr[0] = wnd->width/4;
-	ccc->fshape.vr[1] = 0;
-	ccc->fshape.vf[0] = 0;
-	ccc->fshape.vf[1] = wnd->height/4;
+	struct style* toterm = allocstyle();
+	toterm->fshape.vc[0] = wnd->width/2;
+	toterm->fshape.vc[1] = wnd->height/2;
+	toterm->fshape.vc[2] = 0;
+	toterm->fshape.vc[3] = 9999.0;		//event owner
+	toterm->fshape.vr[0] = wnd->width/2;
+	toterm->fshape.vr[1] = 0;
+	toterm->fshape.vf[0] = 0;
+	toterm->fshape.vf[1] = wnd->height/2;
+	struct style* togame = allocstyle();
+	togame->fshape.vc[0] = wnd->width*3/4;
+	togame->fshape.vc[1] = wnd->height/4;
+	togame->fshape.vc[2] = 0;
+	togame->fshape.vc[3] = 0;
+	togame->fshape.vr[0] = wnd->width/5;
+	togame->fshape.vr[1] = 0;
+	togame->fshape.vf[0] = 0;
+	togame->fshape.vf[1] = wnd->height/5;
+	struct style* toedit = allocstyle();
+	toedit->fshape.vc[0] = wnd->width*3/4;
+	toedit->fshape.vc[1] = wnd->height*3/4;
+	toedit->fshape.vc[2] = 0;
+	toedit->fshape.vc[3] = 0;
+	toedit->fshape.vr[0] = wnd->width/4;
+	toedit->fshape.vr[1] = 0;
+	toedit->fshape.vf[0] = 0;
+	toedit->fshape.vf[1] = wnd->height/4;
 
 
 	//things
@@ -49,29 +74,29 @@ int kernel_create(struct worker* wrk, void* url, int argc, u8** argv)
 
 	//relation
 	struct relation* rel;
-	rel = relationcreate(termnode, termfoot, _ent_, 0, wnd, aaa, _ent_, 0);
-	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
-/*
-	rel = relationcreate(gamenode, gamefoot, _ent_, 0, wnd, bbb, _ent_, 0);
+	rel = relationcreate(termnode,termfoot, _ent_,0, wnd,toterm, _ent_,0);
 	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
 
-	rel = relationcreate(editnode, editfoot, _ent_, 0, wnd, ccc, _ent_, 0);
+	rel = relationcreate(gamenode,gamefoot, _ent_,0, wnd,togame, _ent_,0);
 	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
-*/
+
+	rel = relationcreate(editnode,editfoot, _ent_,0, wnd,toedit, _ent_,0);
+	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
+
 
 	//loop
 	struct event* ev;
 	struct halfrel stack[0x80];
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
-	while(1)
-	{
+	while(1){
 		//draw frame
 		supplyread(wnd,0, stack,2, 0,0, 0,0);
 
+		kernel_pollall();
+
 		//cleanup events
-		while(1)
-		{
+		while(1){
 			ev = eventread();
 			if(0 == ev)break;
 			if(0 == ev->what)return 0;
@@ -80,4 +105,18 @@ int kernel_create(struct worker* wrk, void* url, int argc, u8** argv)
 		}
 	}
 	return 0;
+}
+
+
+
+
+void freekernel()
+{
+}
+void initkernel(void* addr)
+{
+	origin = addr + 0x000000;
+	worker = addr + 0x200000;
+	device = addr + 0x400000;
+	driver = addr + 0x600000;
 }

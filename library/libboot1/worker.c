@@ -26,10 +26,12 @@ void waiter(void*);
 //
 void compiler_create(struct worker*, u8*, int, u8**);
 //
+void initkernel(void*);
 void kernel_create(struct worker*, u8*, int, u8**);
 //
 void myml_create(struct worker*, u8*, int, u8**);
 //
+void initmython(void*);
 void mython_create(struct worker*, u8*, int, u8**);
 
 
@@ -218,6 +220,9 @@ void initworker(u8* addr)
 
 	initstdev( addr+0x100000);
 	initstdrel(addr+0x180000);
+
+	initkernel(addr - 0x200000);
+	initmython(addr - 0x200000);
 
 	initpoller(addr - 0x200000);
 	initrealer(addr - 0x200000);

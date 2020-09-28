@@ -36,18 +36,13 @@ void pixel_cleardepth(struct supply* wnd)
 
 int rgbanode_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	pixel_clearcolor(wnd);
+	//pixel_clearcolor(wnd);
 
 	struct relation* rel = wnd->orel0;
-	while(1)
-	{
+	while(1){
 		if(0 == rel)break;
 
-		if(_ent_ == rel->dsttype)
-		{
-			struct style* sty = (void*)(rel->srcfoot);
-			if(sty){if('#' == sty->is.uc[3])goto next;}
-
+		if(_ent_ == rel->dsttype){
 			stack[sp+0].pchip = rel->psrcchip;
 			stack[sp+0].pfoot = rel->psrcfoot;
 			stack[sp+0].flag = rel->srcflag;
@@ -64,33 +59,39 @@ next:
 }
 int rgbanode_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//struct event* ev = buf;
-	//say("@rgbanode_write:%.8s,%llx\n", &ev->what, ev->why);
+	//say("@rgbanode_write:%p,%x\n", wnd,foot);
+	//printmemory(buf,16);
 
+	float max = -1.0;
 	struct relation* rel = wnd->oreln;
-	while(1)
-	{
+	struct relation* the = rel;
+	while(1){
 		if(0 == rel)break;
 
-		if(_ent_ == rel->dsttype)
-		{
+		if(_ent_ == rel->dsttype){
 			struct style* sty = (void*)(rel->srcfoot);
-			if(sty){if('#' == sty->is.uc[3])goto next;}
-
-			stack[sp+0].pchip = rel->psrcchip;
-			stack[sp+0].pfoot = rel->psrcfoot;
-			stack[sp+0].flag = rel->srcflag;
-			stack[sp+1].pchip = rel->pdstchip;
-			stack[sp+1].pfoot = rel->pdstfoot;
-			stack[sp+1].flag = rel->dstflag;
-			entitywrite(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, arg,key, buf,len);
-			break;
+			if(sty){
+				//say("%f\n", sty->fs.vc[3]);
+				if(max < sty->fs.vc[3]){
+					the = rel;
+					max = sty->fs.vc[3];
+				}
+			}
 		}
-next:
+
 		rel = samesrcprevdst(rel);
 	}
 
-	//if('p' == (ev->what&0xff))entityinput_touch(win, ev);
+//say("max=%f,the=%p\n",max,the);
+	if(the){
+		stack[sp+0].pchip = the->psrcchip;
+		stack[sp+0].pfoot = the->psrcfoot;
+		stack[sp+0].flag = the->srcflag;
+		stack[sp+1].pchip = the->pdstchip;
+		stack[sp+1].pfoot = the->pdstfoot;
+		stack[sp+1].flag = the->dstflag;
+		entitywrite(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, arg,key, buf,len);
+	}
 	return 0;
 }
 int rgbanode_discon(struct supply* win, struct style* sty)

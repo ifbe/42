@@ -687,48 +687,46 @@ struct device
 	u64 hfmt;
 	u64 vfmt;
 
-	//[40,5f]: fd/handle
+	//[40,7f]: func
 	union{
-		u64 sz0;
-		u64 selffd;
+		int (*oncreate)(struct device* node, void* url, int argc, u8** argv);
+		char padding0[8];
 	};
 	union{
-		u64 sz1;
-		void* selfobj;
+		int (*ondelete)(struct device* node);
+		char padding1[8];
 	};
 	union{
-		u64 sz2;
-		u64 tempfd;
+		int (*onsearch)(struct device* node, int flag, struct halfrel** self, struct halfrel** peer);
+		char padding2[8];
 	};
 	union{
-		u64 sz3;
-		void* tempobj;
-	};
-
-	//[60,7f]: memory
-	union{
-		u64 addr0;
-		u64 data0;
-		void* buf0;
+		int (*onmodify)(struct device* node, void* buf);
+		char padding3[8];
 	};
 	union{
-		u64 addr1;
-		u64 data1;
-		void* buf1;
+		int (*onlinkup)(struct device* node,int foot, void* self, void* peer);
+		char padding4[8];
 	};
 	union{
-		u64 addr2;
-		u64 data2;
-		void* buf2;
+		int (*ondiscon)(struct device* node,int foot, void* self, void* peer);
+		char padding5[8];
 	};
 	union{
-		u64 addr3;
-		u64 data3;
-		void* buf3;
+		int (*ontaking)(struct device* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding6[8];
+	};
+	union{
+		int (*ongiving)(struct device* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding7[8];
 	};
 
 	//[80,ff]
-	u8 data[0x80];
+	union{
+		int   priv_fd;
+		void* priv_ptr;
+		u8    priv_data[0x80];
+	};
 };
 struct driver
 {

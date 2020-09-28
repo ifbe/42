@@ -321,7 +321,7 @@ int usbhid_driver(struct device* usb, int xxx, struct device* xhci, int slot)
 
 
 //------------------------basic information------------------------
-	perusb = usb->buf0;
+	perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 
 	if(0 == perusb->devnode)return -1;		//no devdesc?
@@ -424,7 +424,7 @@ int usbhid_driver(struct device* usb, int xxx, struct device* xhci, int slot)
 	if(4 != ret)return -11;
 */
 	ret = xhci_giveorderwaitevent(xhci,slot|(epaddr<<8), 'd',0, 0,0, perusb->freebuf,pktlen);
-
+/*
 	//parse keyboard
 	if(1 == intfdesc->bInterfaceProtocol){
 		struct report_keyboard* report = (void*)perusb->freebuf;
@@ -444,6 +444,6 @@ int usbhid_driver(struct device* usb, int xxx, struct device* xhci, int slot)
 
 	ret = 0xffffff;
 	while(ret)ret--;
-	printmemory(perusb->freebuf, 0x80);
+	printmemory(perusb->freebuf, 0x80);*/
 	return 0;
 }

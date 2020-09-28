@@ -458,7 +458,7 @@ void usb_handledevdesc(struct device* usb, int xxx, struct device* xhci, int slo
 		say("	composite device ?!\n");
 	}
 
-	struct perusb* perusb = usb->buf0;
+	struct perusb* perusb = usb->priv_ptr;
 	struct descnode* node = &perusb->node[perusb->nodelen];
 	node->type = 1;
 	node->index = 0;
@@ -491,7 +491,7 @@ void usb_handleconfdesc(struct device* usb, int xxx, struct device* xhci, int sl
 	struct EndpointDescriptor* endp;
 	struct HIDDescriptor* hid;
 
-	perusb = usb->buf0;
+	perusb = usb->priv_ptr;
 	devnode = (void*)perusb + perusb->devnode;
 
 	int j = 0;
@@ -614,7 +614,7 @@ int usb_ReadAndHandleConfigure(struct device* usb, int xxx, struct device* xhci,
 {
 	int ret;
 	struct UsbRequest req;
-	struct perusb* perusb = usb->buf0;
+	struct perusb* perusb = usb->priv_ptr;
 	u8* tmp = perusb->desc + perusb->desclen;
 
 	//GET_DESCRIPTOR confdesc 8B
@@ -642,7 +642,7 @@ int usb_ReadAndHandleString(struct device* usb, int xxx, struct device* xhci, in
 {
 	int ret;
 	struct UsbRequest req;
-	struct perusb* perusb = usb->buf0;
+	struct perusb* perusb = usb->priv_ptr;
 	u8* tmp = perusb->desc + perusb->desclen;
 
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300 + id, lang, 4);
@@ -665,7 +665,7 @@ int usb_ReadAndHandleLang(struct device* usb, int xxx, struct device* xhci, int 
 	say("	wLANGID=%04x\n", lang);
 	int ret;
 	struct UsbRequest req;
-	struct perusb* perusb = usb->buf0;
+	struct perusb* perusb = usb->priv_ptr;
 	u8* tmp = perusb->desc + perusb->desclen;
 
 	//if(my->iManufac)  usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iManufac);
@@ -681,7 +681,7 @@ int usb_ReadAndHandleLang(struct device* usb, int xxx, struct device* xhci, int 
 
 int usb_ChooseFirst(struct device* usb, int xxx, struct device* xhci, int slot)
 {
-	struct perusb* perusb = usb->buf0;
+	struct perusb* perusb = usb->priv_ptr;
 	printmemory(perusb->node, perusb->nodelen*sizeof(struct descnode));
 
 	struct descnode* devnode;
@@ -734,7 +734,7 @@ int usb_linkup(struct device* usb, int xxx, struct device* xhci, int slot)
 
 	int j,num,ret;
 	struct UsbRequest req;
-	struct perusb* perusb = usb->buf0 = memorycreate(0x100000, 0);
+	struct perusb* perusb = usb->priv_ptr = memorycreate(0x100000, 0);
 
 	//clear memory
 	u8* tmp = (void*)perusb;

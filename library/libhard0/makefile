@@ -141,9 +141,9 @@ barex64:x64
 	$(CC) $(CF) tox86/usbgadget/usb.c
 	$(CC) $(CF) tox86/usbgadget/usbhid-driver.c
 	$(CC) $(CF) tox86/usbgadget/usbstor-driver.c
-	$(CC) $(CF) tox86/stor/ide.c
-	$(CC) $(CF) tox86/stor/ahci.c
-	$(CC) $(CF) tox86/stor/nvme.c
+	$(CC) $(CF) tox86/stor/ide-driver.c
+	$(CC) $(CF) tox86/stor/ahci-driver.c
+	$(CC) $(CF) tox86/stor/nvme-driver.c
 	$(CC) $(CF) tox86/timer/825x.c
 	$(CC) $(CF) tox86/timer/rtc.c
 	$(CC) $(CF) tox86/wire/bare.wire.bt.c

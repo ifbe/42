@@ -173,3 +173,13 @@ int mython_create(struct worker* wrk, void* url, int argc, u8** argv)
 	waiter(wrk);
 	return 0;
 }
+
+
+
+
+void freemython()
+{
+}
+void initmython()
+{
+}
