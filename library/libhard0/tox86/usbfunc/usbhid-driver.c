@@ -1,6 +1,25 @@
 #include "libhard.h"
+//xhci command
+#define TRB_command_EnableSlot           9
+#define TRB_command_DisableSlot         10
+#define TRB_command_AddressDevice       11
+#define TRB_command_ConfigureEndpoint   12
+#define TRB_command_EvaluateContext     13
+#define TRB_command_ResetEndpoint       14
+#define TRB_command_StopEndpoint        15
+#define TRB_command_SetTRDequeuePointer 16
+#define TRB_command_ResetDevice         17
+#define TRB_command_ForceEvent          18		//Optional, used with virtualization only
+#define TRB_command_NegotiateBandwidth  19
+#define TRB_command_SetLatencyTolerance 20
+#define TRB_command_GetPortBandwidth    21
+#define TRB_command_ForceHeader         22
+#define TRB_command_NoOp                23
+#define TRB_command_GetExtendedProperty 24
+#define TRB_command_SetExtendedProperty 25
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 int xhci_giveorderwaitevent(void* hc,int id, u32,u32, void* sendbuf,int sendlen, void* recvbuf, int recvlen);
+
 //error
 #define NoKeyPress 0
 #define InvalidScanCode 1
@@ -270,11 +289,11 @@ struct perusb{
 	u8 padding0[0x100 - sizeof(u32)*6 - 5];
 
 	//[0x100, 0xfff]
-	struct descnode node[0];	//0xf00/0x20=0x78, basically enough
+	struct descnode node[0];	//0xf00/0x20=0x78, enough for node
 	u8 padding1[0xf00];
 
 	//[0x1000, 0xffff]
-	u8 desc[0];
+	u8 desc[0];					//0xf000=61440, enough for desc
 	u8 padding2[0xf000];
 
 	//[0x10000, 0xfffff]
@@ -284,36 +303,44 @@ struct perusb{
 
 
 
-//xhci command
-#define TRB_command_EnableSlot           9
-#define TRB_command_DisableSlot         10
-#define TRB_command_AddressDevice       11
-#define TRB_command_ConfigureEndpoint   12
-#define TRB_command_EvaluateContext     13
-#define TRB_command_ResetEndpoint       14
-#define TRB_command_StopEndpoint        15
-#define TRB_command_SetTRDequeuePointer 16
-#define TRB_command_ResetDevice         17
-#define TRB_command_ForceEvent          18		//Optional, used with virtualization only
-#define TRB_command_NegotiateBandwidth  19
-#define TRB_command_SetLatencyTolerance 20
-#define TRB_command_GetPortBandwidth    21
-#define TRB_command_ForceHeader         22
-#define TRB_command_NoOp                23
-#define TRB_command_GetExtendedProperty 24
-#define TRB_command_SetExtendedProperty 25
-int usbhid_driver(struct device* usb, int xxx, struct device* xhci, int slot)
+int parsekeyboard(struct report_keyboard* report)
+{
+	int j;
+	for(j=0;j<6;j++){
+		if(report->keys[j] >= USBKEY_A){
+			if(report->keys[j] <= USBKEY_Z)say("[usbkbd]key_%c\n", report->keys[j]-USBKEY_A+'A');
+			else if(report->keys[j] <= USBKEY_9)say("[usbkbd]key_%c\n", report->keys[j]-USBKEY_0+'0');
+			else say("[usbkbd]key=%x\n", report->keys[j]);
+		}
+	}
+	return 0;
+}
+int parsemouse(struct report_mouse* report)
+{
+	say("[usbmouse]btn=%x,dx=%d,dy=%d\n", report->btn, report->dx, report->dy);
+	return 0;
+}/*
+int parsehid()
+{
+	//parse keyboard
+	if(1 == intfdesc->bInterfaceProtocol){
+	}
+    //parse mouse
+	if(2 == intfdesc->bInterfaceProtocol){
+		 = (void*)perusb->freebuf;
+	}
+}*/
+int usbhid_driver(struct device* usb,int xxx, struct device* xhci,int slot, struct descnode* intfnode, struct InterfaceDescriptor* intfdesc)
 {
 	int j,ret;
 	struct UsbRequest req;
 	struct perusb* perusb;
-
+	//per device
 	struct descnode* devnode;
 	struct DeviceDescriptor* devdesc;
 	struct descnode* confnode;
 	struct ConfigurationDescriptor* confdesc;
-	struct descnode* intfnode;
-	struct InterfaceDescriptor* intfdesc;
+	//per interface
 	struct descnode* endpnode;
 	struct EndpointDescriptor* endpdesc;
 	struct descnode* hidnode;
@@ -332,36 +359,32 @@ int usbhid_driver(struct device* usb, int xxx, struct device* xhci, int slot)
 	confnode = (void*)perusb + perusb->confnode;
 	confdesc = (void*)perusb + confnode->real;
 
-	if(0 == confnode->lchild)return -3;		//no intfdesc?
-	intfnode = (void*)perusb + perusb->intfnode;
-	intfdesc = (void*)perusb + intfnode->real;
-
 
 //------------------------check type------------------------
 	if(3 == intfdesc->bInterfaceClass){
-		say("	this is hid device\n");
+		say("[usbhid]	this is hid device\n");
 	}
 	else{
-		say("	non-hid, byebye\n");
+		say("[usbhid]	non-hid, byebye\n");
 		return -4;
 	}
 
 	if(1 == intfdesc->bInterfaceSubClass){
-		say("	bootmode\n");
+		say("[usbhid]	bootmode\n");
 	}
 	else{
-		say("	reportmode, byebye\n");
+		say("[usbhid]	reportmode, byebye\n");
 		return -5;
 	}
 
 	if(1 == intfdesc->bInterfaceProtocol){		//keyboard
-		say("	keyboard\n");
+		say("[usbhid]	keyboard\n");
 	}
 	else if(2 == intfdesc->bInterfaceProtocol){	//mouse
-		say("	mouse\n");
+		say("[usbhid]	mouse\n");
 	}
 	else{
-		say("	proto=%x, unknown, byebye\n",intfdesc->bInterfaceProtocol);
+		say("[usbhid]	proto=%x, unknown, byebye\n",intfdesc->bInterfaceProtocol);
 		return -6;
 	}
 
@@ -381,7 +404,7 @@ int usbhid_driver(struct device* usb, int xxx, struct device* xhci, int slot)
 			epaddr = (endpdesc->bEndpointAddress & 0xf) << 1;
 			if(endpdesc->bEndpointAddress & 0x80)epaddr += 1;
 			pktlen = endpdesc->wMaxPacketSize;
-			say("	endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
+			say("[usbhid]	endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
 				endpdesc->bEndpointAddress, endpdesc->bmAttributes,
 				endpdesc->wMaxPacketSize, endpdesc->bInterval
 			);
@@ -399,14 +422,14 @@ int usbhid_driver(struct device* usb, int xxx, struct device* xhci, int slot)
 		case 0x21:{
 			hidnode = (void*)endpnode;
 			hiddesc = (void*)endpdesc;
-			say("	hiddesc: country=%x, numdesc=%x, reporttype=%x, reportlen=%x\n",
+			say("[usbhid]	hiddesc: country=%x, numdesc=%x, reporttype=%x, reportlen=%x\n",
 				hiddesc->bCountryCode, hiddesc->bNumDescriptors,
 				hiddesc->bReportDescType, hiddesc->wReportDescLength
 			);
 			break;
 		}//hid desc
 		default:{
-			say("	desctype=%x\n", endpdesc->bDescriptorType);
+			say("[usbhid]	desctype=%x\n", endpdesc->bDescriptorType);
 		}//report desc?
 		}//switch
 
@@ -415,6 +438,7 @@ int usbhid_driver(struct device* usb, int xxx, struct device* xhci, int slot)
 
 
 //------------------------device side------------------------
+	say("[usbhid]set_config\n");
 	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
 	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, 0,0);
 	if(ret < 0)return -10;
@@ -423,27 +447,8 @@ int usbhid_driver(struct device* usb, int xxx, struct device* xhci, int slot)
 	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, buf,req.wLength);
 	if(4 != ret)return -11;
 */
+	say("[usbhid]making trb\n");
 	ret = xhci_giveorderwaitevent(xhci,slot|(epaddr<<8), 'd',0, 0,0, perusb->freebuf,pktlen);
-/*
-	//parse keyboard
-	if(1 == intfdesc->bInterfaceProtocol){
-		struct report_keyboard* report = (void*)perusb->freebuf;
-		for(j=0;j<6;j++){
-			if(report->keys[j] >= USBKEY_A){
-				if(report->keys[j] <= USBKEY_Z)say("	key_%c\n", report->keys[j]-USBKEY_A+'A');
-				else if(report->keys[j] <= USBKEY_9)say("	key_%c\n", report->keys[j]-USBKEY_0+'0');
-				else say("	key:%x\n", report->keys[j]);
-			}
-		}
-	}
-    //parse mouse
-	if(2 == intfdesc->bInterfaceProtocol){
-		struct report_mouse* report = (void*)perusb->freebuf;
-        say("btn=%x,dx=%d,dy=%d\n", report->btn, report->dx, report->dy);
-	}
 
-	ret = 0xffffff;
-	while(ret)ret--;
-	printmemory(perusb->freebuf, 0x80);*/
 	return 0;
 }

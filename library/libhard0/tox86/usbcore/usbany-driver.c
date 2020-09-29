@@ -1,7 +1,7 @@
 #include "libhard.h"
 int xhci_giveorderwaitevent(void* hc,int id, u32,u32, void* sendbuf,int sendlen, void* recvbuf, int recvlen);
-int usbhid_driver(struct device* usb, int xxx, struct device* xhci, int slot);
-int usbstor_driver(struct device* usb, int xxx, struct device* xhci, int slot);
+int usbhid_driver(struct device* usb, int xxx, struct device* xhci, int slot, void*, void*);
+int usbstor_driver(struct device* usb, int xxx, struct device* xhci, int slot, void*, void*);
 
 
 
@@ -441,11 +441,11 @@ struct perusb{
 	u8 padding0[0x100 - sizeof(u32)*6 - 5];
 
 	//[0x100, 0xfff]
-	struct descnode node[0];	//0xf00/0x20=0x78, basically enough
+	struct descnode node[0];	//0xf00/0x20=0x78, enough for node
 	u8 padding1[0xf00];
 
 	//[0x1000, 0xffff]
-	u8 desc[0];
+	u8 desc[0];					//0xf000=61440, enough for desc
 	u8 padding2[0xf000];
 
 	//[0x10000, 0xfffff]
@@ -455,7 +455,7 @@ void usb_handledevdesc(struct device* usb, int xxx, struct device* xhci, int slo
 {
 	explaindevdesc(desc);
 	if( (0xef == desc->bDeviceClass) && (2 == desc->bDeviceSubClass) && (1 == desc->bDeviceProtocol) ){
-		say("	composite device ?!\n");
+		say("[usbcore]	composite device ?!\n");
 	}
 
 	struct perusb* perusb = usb->priv_ptr;
@@ -498,7 +498,7 @@ void usb_handleconfdesc(struct device* usb, int xxx, struct device* xhci, int sl
 	while(1){
 		if(j >= len)break;
 
-		//say("@[%x,%x]:%x\n", j, j+buf[j]-1, buf[j+1]);
+		//say("[usbcore]@[%x,%x]:%x\n", j, j+buf[j]-1, buf[j+1]);
 		switch(buf[j+1]){
 		case 0x02:
 			conf = (void*)(buf+j);
@@ -653,7 +653,7 @@ int usb_ReadAndHandleString(struct device* usb, int xxx, struct device* xhci, in
 	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
 	if(req.wLength != ret)return -8;
 
-	say("	iManufac:\n");
+	say("[usbcore]	iManufac:\n");
 	printmemory(tmp, req.wLength);
 
 	perusb->desclen += req.wLength;
@@ -662,7 +662,7 @@ int usb_ReadAndHandleString(struct device* usb, int xxx, struct device* xhci, in
 }
 int usb_ReadAndHandleLang(struct device* usb, int xxx, struct device* xhci, int slot, u16 lang)
 {
-	say("	wLANGID=%04x\n", lang);
+	say("[usbcore]	wLANGID=%04x\n", lang);
 	int ret;
 	struct UsbRequest req;
 	struct perusb* perusb = usb->priv_ptr;
@@ -679,7 +679,7 @@ int usb_ReadAndHandleLang(struct device* usb, int xxx, struct device* xhci, int 
 
 
 
-int usb_ChooseFirst(struct device* usb, int xxx, struct device* xhci, int slot)
+int usb_FirstConfig(struct device* usb, int xxx, struct device* xhci, int slot)
 {
 	struct perusb* perusb = usb->priv_ptr;
 	printmemory(perusb->node, perusb->nodelen*sizeof(struct descnode));
@@ -703,21 +703,35 @@ int usb_ChooseFirst(struct device* usb, int xxx, struct device* xhci, int slot)
 	if(0 == confnode->lchild)return -3;		//no intfdesc?
 	intfnode = (void*)perusb + confnode->lchild;
 	intfdesc = (void*)perusb + intfnode->real;
-	perusb->intfnode = (u8*)intfnode - (u8*)perusb;
 
-	say("	class=%x,subclass=%x,protocol=%x\n", intfdesc->bInterfaceClass, intfdesc->bInterfaceSubClass, intfdesc->bInterfaceProtocol);
-	switch(intfdesc->bInterfaceClass){
-	case class_hid:
-		usbhid_driver(usb,xxx, xhci,slot);
-		break;
-	case class_storage:
-		usbstor_driver(usb,xxx, xhci,slot);
-		break;
-	case class_hub:
-		say("	usb hub\n");
-		break;
+	//if not composite device
+	if( (0xef != devdesc->bDeviceClass) | (2 != devdesc->bDeviceSubClass) | (1 != devdesc->bDeviceProtocol) ){
+		say("[usbcore]class=%x,subclass=%x,protocol=%x\n", intfdesc->bInterfaceClass, intfdesc->bInterfaceSubClass, intfdesc->bInterfaceProtocol);
+
+		perusb->intfnode = (u8*)intfnode - (u8*)perusb;
+		switch(intfdesc->bInterfaceClass){
+		case class_hid:
+			usbhid_driver(usb,xxx, xhci,slot, intfnode, intfdesc);
+			break;
+		case class_storage:
+			usbstor_driver(usb,xxx, xhci,slot, intfnode, intfdesc);
+			break;
+		case class_hub:
+			say("[usbcore]	usb hub\n");
+			break;
+		}
+		return 0;
 	}
 
+	//composite device, all interface
+	while(1){
+		say("[usbcore]composite interface: node=%p,desc=%p, c=%x,s=%x,p=%x\n",
+			intfnode,intfdesc, intfdesc->bInterfaceClass, intfdesc->bInterfaceSubClass, intfdesc->bInterfaceProtocol);
+
+		if(0 == intfnode->rfellow)break;
+		intfnode = (void*)perusb + intfnode->rfellow;
+		intfdesc = (void*)perusb + intfnode->real;
+	}
 	return 0;
 }
 
@@ -730,7 +744,7 @@ int usb_discon()
 }
 int usb_linkup(struct device* usb, int xxx, struct device* xhci, int slot)
 {
-	//say("@usblinkup: %p,%x,%p,%x\n",usb,xxx,xhci,slot);
+	say("[usbcore]@usblinkup: %p,%x,%p,%x\n",usb,xxx,xhci,slot);
 
 	int j,num,ret;
 	struct UsbRequest req;
@@ -742,6 +756,7 @@ int usb_linkup(struct device* usb, int xxx, struct device* xhci, int slot)
 
 
 //-------------let xhci prepare device-----------------
+	say("[usbcore]set_address\n");
 	if(1){	//if(xhci)
 		//int slot = xhci_giveorderwaitevent(xhci,slot, 'h',TRB_command_EnableSlot, 0,0, 0,0);
 
@@ -751,6 +766,7 @@ int usb_linkup(struct device* usb, int xxx, struct device* xhci, int slot)
 
 
 //-----------------device descroptor------------------
+	say("[usbcore]get_desc: device desc\n");
 	//begin reading
 	tmp = perusb->desc + perusb->desclen;
 
@@ -778,6 +794,7 @@ int usb_linkup(struct device* usb, int xxx, struct device* xhci, int slot)
 
 
 //---------------------configure descriptor--------------------
+	say("[usbcore]get_desc: config desc\n");
 	//foreach value, read configure descriptor
 	num = tmp[0x11];		//bNumConfigurations
 	for(j=0;j<num;j++){
@@ -786,6 +803,7 @@ int usb_linkup(struct device* usb, int xxx, struct device* xhci, int slot)
 
 
 //----------------------string descriptor-----------------
+	say("[usbcore]get_desc: string desc\n");
 	tmp = perusb->desc + perusb->desclen;
 
 	//GET_DESCRIPTOR stringdesc 4B
@@ -807,7 +825,8 @@ int usb_linkup(struct device* usb, int xxx, struct device* xhci, int slot)
 
 
 //-----------now that all read, choose one-------------
-	usb_ChooseFirst(usb,xxx, xhci,slot);
+	say("[usbcore]choose config\n");
+	usb_FirstConfig(usb,xxx, xhci,slot);
 
 	return 0;
 }

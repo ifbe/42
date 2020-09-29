@@ -1,0 +1,4 @@
+this dir = per device driver
+	any = default prober
+	hub = hub devices
+	odd = some strange device have special design
