@@ -362,29 +362,29 @@ int usbhid_driver(struct device* usb,int xxx, struct device* xhci,int slot, stru
 
 //------------------------check type------------------------
 	if(3 == intfdesc->bInterfaceClass){
-		say("[usbhid]	this is hid device\n");
+		say("[usbhid]this is hid device\n");
 	}
 	else{
-		say("[usbhid]	non-hid, byebye\n");
+		say("[usbhid]non-hid, byebye\n");
 		return -4;
 	}
 
 	if(1 == intfdesc->bInterfaceSubClass){
-		say("[usbhid]	bootmode\n");
+		say("[usbhid]bootmode\n");
 	}
 	else{
-		say("[usbhid]	reportmode, byebye\n");
+		say("[usbhid]reportmode, byebye\n");
 		return -5;
 	}
 
 	if(1 == intfdesc->bInterfaceProtocol){		//keyboard
-		say("[usbhid]	keyboard\n");
+		say("[usbhid]keyboard\n");
 	}
 	else if(2 == intfdesc->bInterfaceProtocol){	//mouse
-		say("[usbhid]	mouse\n");
+		say("[usbhid]mouse\n");
 	}
 	else{
-		say("[usbhid]	proto=%x, unknown, byebye\n",intfdesc->bInterfaceProtocol);
+		say("[usbhid]proto=%x, unknown, byebye\n",intfdesc->bInterfaceProtocol);
 		return -6;
 	}
 
@@ -404,7 +404,7 @@ int usbhid_driver(struct device* usb,int xxx, struct device* xhci,int slot, stru
 			epaddr = (endpdesc->bEndpointAddress & 0xf) << 1;
 			if(endpdesc->bEndpointAddress & 0x80)epaddr += 1;
 			pktlen = endpdesc->wMaxPacketSize;
-			say("[usbhid]	endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
+			say("[usbhid]endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
 				endpdesc->bEndpointAddress, endpdesc->bmAttributes,
 				endpdesc->wMaxPacketSize, endpdesc->bInterval
 			);
@@ -422,14 +422,14 @@ int usbhid_driver(struct device* usb,int xxx, struct device* xhci,int slot, stru
 		case 0x21:{
 			hidnode = (void*)endpnode;
 			hiddesc = (void*)endpdesc;
-			say("[usbhid]	hiddesc: country=%x, numdesc=%x, reporttype=%x, reportlen=%x\n",
+			say("[usbhid]hiddesc: country=%x, numdesc=%x, reporttype=%x, reportlen=%x\n",
 				hiddesc->bCountryCode, hiddesc->bNumDescriptors,
 				hiddesc->bReportDescType, hiddesc->wReportDescLength
 			);
 			break;
 		}//hid desc
 		default:{
-			say("[usbhid]	desctype=%x\n", endpdesc->bDescriptorType);
+			say("[usbhid]desctype=%x\n", endpdesc->bDescriptorType);
 		}//report desc?
 		}//switch
 

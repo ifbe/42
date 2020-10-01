@@ -39,7 +39,7 @@ int usbstor_driver(struct device* usb, int xxx, struct device* xhci, int slot, v
 //usb class
 #define class_reserve       0x00	//去看interface descriptor
 #define class_audio         0x01	//音频类
-#define class_cdccom        0x02	//CDC控制类
+#define class_cdccom        0x02	//通讯 + CDC控制类
 #define class_hid           0x03	//人机接口类（HID）
 #define class_physical      0x05	//物理类
 #define class_image         0x06	//图像类
@@ -455,7 +455,7 @@ void usb_handledevdesc(struct device* usb, int xxx, struct device* xhci, int slo
 {
 	explaindevdesc(desc);
 	if( (0xef == desc->bDeviceClass) && (2 == desc->bDeviceSubClass) && (1 == desc->bDeviceProtocol) ){
-		say("[usbcore]	composite device ?!\n");
+		say("[usbcore]composite device ?!\n");
 	}
 
 	struct perusb* perusb = usb->priv_ptr;
@@ -640,10 +640,12 @@ int usb_ReadAndHandleConfigure(struct device* usb, int xxx, struct device* xhci,
 
 int usb_ReadAndHandleString(struct device* usb, int xxx, struct device* xhci, int slot, u16 lang, u16 id)
 {
-	int ret;
+	int j,ret;
 	struct UsbRequest req;
 	struct perusb* perusb = usb->priv_ptr;
 	u8* tmp = perusb->desc + perusb->desclen;
+
+	say("[usbcore]readstr: lang=%x,id=%x\n", lang, id);
 
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300 + id, lang, 4);
 	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
@@ -653,24 +655,28 @@ int usb_ReadAndHandleString(struct device* usb, int xxx, struct device* xhci, in
 	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
 	if(req.wLength != ret)return -8;
 
-	say("[usbcore]	iManufac:\n");
-	printmemory(tmp, req.wLength);
-
 	perusb->desclen += req.wLength;
-	tmp = perusb->desc + perusb->desclen;
+
+	//printmemory(tmp, req.wLength);
+	say("unicode2ascii{");
+	for(j=2;j<req.wLength;j+=2){
+		say("%c",tmp[j]);
+	}
+	say("}\n");
+
 	return 0;
 }
 int usb_ReadAndHandleLang(struct device* usb, int xxx, struct device* xhci, int slot, u16 lang)
 {
-	say("[usbcore]	wLANGID=%04x\n", lang);
+	say("[usbcore]wLANGID=%04x\n", lang);
 	int ret;
 	struct UsbRequest req;
 	struct perusb* perusb = usb->priv_ptr;
 	u8* tmp = perusb->desc + perusb->desclen;
 
-	//if(my->iManufac)  usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iManufac);
-	//if(my->iProduct)  usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iProduct);
-	//if(my->iSerial)   usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iSerial);
+	if(perusb->iManufac)  usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->iManufac);
+	if(perusb->iProduct)  usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->iProduct);
+	if(perusb->iSerial)   usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->iSerial);
 	//if(my->iConfigure)usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iConfigure);
 	//if(my->iInterface)usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iInterface);
 	return 0;
@@ -717,7 +723,7 @@ int usb_FirstConfig(struct device* usb, int xxx, struct device* xhci, int slot)
 			usbstor_driver(usb,xxx, xhci,slot, intfnode, intfdesc);
 			break;
 		case class_hub:
-			say("[usbcore]	usb hub\n");
+			say("[usbcore]usb hub\n");
 			break;
 		}
 		return 0;

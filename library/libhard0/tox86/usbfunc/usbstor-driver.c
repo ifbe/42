@@ -1,4 +1,6 @@
 #include "libhard.h"
+void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
+int xhci_giveorderwaitevent(void* hc,int id, u32,u32, void* sendbuf,int sendlen, void* recvbuf, int recvlen);
 //xhci command
 #define TRB_command_EnableSlot           9
 #define TRB_command_DisableSlot         10
@@ -43,6 +45,129 @@
 #define scsi_Write_10           0x2A
 #define scsi_Verify             0x2F
 #define scsi_ModeSense10        0x5A
+/*
+struct CommandBlock{
+	u8      Operation;	//0
+
+	u8         Rsvd:5;	//1.[0,4]
+	u8 LogicUnitNum:3;	//1.[5,7]
+
+	u32 LBA_MsbNotLsb;	//[2,5]
+	u8        unused6;	//6
+
+	u16 LEN_MsbNotLsb;	//[7,8]
+	u8        unused9;	//9
+	u8        unuseda;	//10
+	u8        unusedb;	//11
+}__attribute__((packed));*/
+struct INQUERY_Command{
+	u8      Operation;	//0: 0x12
+
+	u8         EVPD:1;	//1.0
+	u8         Rsvd:4;	//1.[0,4]
+	u8 LogicUnitNum:3;	//1.[5,7]
+
+	u8       PageCode;	//2
+
+	u8         Rsvd_3;	//3
+
+	u8    AllocLength;	//4
+
+	u8      unused[7];	//[5,11]
+}__attribute__((packed));
+struct INQUERY_Reply{
+	u8 PeripheralDeviceType:5;	//0
+		//00h SBC Direct-access device (e.g., UHD Floppy disk)
+		//05h CD-ROM device
+		//07h Optical memory device (e.g., Non-CD optical disks)
+		//0Eh RBC Direct-access device (e.g., UHD Floppy disk)
+	u8                Rsvd0:3;
+
+	u8                Rsvd1:6;	//1
+	u8                  RMB:2;	//removable=1, notremove=0
+
+	u8          ANSIVersion:3;	//2
+	u8          ECMAVersion:3;
+	u8           ISOVersion:2;
+
+	u8   ResponseDataFormat:4;	//3
+	u8                Rsvd3:4;
+
+	u8       AdditionalLength;	//4
+
+	u8               Rsvd5[3];	//[5,7]
+
+	u8   VendorInformation[8];	//[8,15]
+	u8 ProductInformation[16];	//[16,31]
+	u8     ProductRevision[4];	//[32,35]
+}__attribute__((packed));
+//
+struct TESTUNITREADY{
+	u8      Operation;	//0: 0x0
+	u8        Rsvd1:5;	//1
+	u8 LogicUnitNum:3;
+	u8        Rsvd[4];	//[2,5]
+	u8         PAD[6];	//[6,11]
+}__attribute__((packed));
+//
+struct READ_CAPACITY{
+	u8      Operation;	//0: 0x25
+	u8        Rsvd1:5;	//1
+	u8 LogicUnitNum:3;
+	u8        Rsvd[8];	//[2,9]
+	u16           PAD;	//[10,11]
+}__attribute__((packed));
+struct READ_CAPACITY_Reply{
+	u32 LastLBA_MsbNotLsb;
+	u32 BlockSz_MsbNotLsb;
+}__attribute__((packed));
+//
+struct READ10{
+	u8      Operation;	//0: 0x28
+	u8        Rsvd1:5;	//1
+	u8 LogicUnitNum:3;
+	u32 LBA_MsbNotLsb;	//[2,5]
+	u8        unused6;	//6
+
+	u16 LEN_MsbNotLsb;	//[7,8]
+	u8        unused9;	//9
+	u16           PAD;	//[10,11]
+}__attribute__((packed));
+struct WRITE10{
+	u8      Operation;	//0: 0x2a
+	u8        Rsvd1:5;	//1
+	u8 LogicUnitNum:3;
+	u32 LBA_MsbNotLsb;	//[2,5]
+	u8        unused6;	//6
+
+	u16 LEN_MsbNotLsb;	//[7,8]
+	u8        unused9;	//9
+	u16           PAD;	//[10,11]
+}__attribute__((packed));
+struct FORMATUNIT10{
+	u8            Operation;	//0: 0x4
+	u8   DefectListFormat:3;	//1
+	u8            CmpList:1;
+	u8            FmtData:1;
+	u8       LogicUnitNum:3;
+	u8       VendorSpecific;	//2
+	u8 Interleave_MsbnotLsb;	//[3,4]
+	u8                 Rsvd;	//5
+	u16              PAD[6];	//[6,11]
+}__attribute__((packed));
+struct VERIFY10{
+	u8      Operation;	//0: 0x2f
+	u8      Reserve:1;
+	u8      ByteChk:1;
+	u8        Rsvd1:3;
+	u8 LogicUnitNum:3;
+	u32 LBA_MsbNotLsb;	//[2,5]
+	u8        unused6;	//6
+
+	u16 LEN_MsbNotLsb;	//[7,8]
+	u8        unused9;	//9
+	u16           PAD;	//[10,11]
+}__attribute__((packed));
 //
 struct CommandBlockWrapper{
 	u32   Signature;	//[0,3]: 0x43425355	//'USBC'
@@ -57,7 +182,10 @@ struct CommandStatusWrapper{
 	u32 Signature;	//[0,3]: 0x43425355	//'USBS'
 	u32       Tag;	//[4,7]: Copied From CBW
 	u32   Residue;	//[8,b]: Difference Between CBW Length And Actual Length
-	u8     Status;	//c: 0x80=d2h, 00=h2d
+	u8     Status;	//c
+		//0 Command Passed(good state)
+		//1 Command Failed
+		//2 Phase Error
 }__attribute__((packed));
 
 
@@ -201,20 +329,56 @@ struct perusb{
 
 
 
+u32 usbstor_endian(u32 in)
+{
+	return (in>>24) | ((in>>8)&0xff00) | ((in<<8)&0xff0000) | ((in<<24)&0xff000000);
+}
+int usbstor_ZeroMemory(void* buf, int len)
+{
+	int j;
+	u8* tmp = buf;
+	for(j=0;j<len;j++)tmp[j] = 0;
+	return j;
+}
 int usbstor_driver(struct device* usb,int xxx, struct device* xhci,int slot, struct descnode* intfnode, struct InterfaceDescriptor* intfdesc)
 {
 	say("[usbdisk]begin...\n");
 
+	int j,ret;
+	int inaddr=0,outaddr=0;
+	struct UsbRequest req;
+	struct perusb* perusb;
+	//per device
+	struct descnode* devnode;
+	struct DeviceDescriptor* devdesc;
+	struct descnode* confnode;
+	struct ConfigurationDescriptor* confdesc;
+	//per interface
+	struct descnode* endpnode;
+	struct EndpointDescriptor* endpdesc;
 
-	struct perusb* perusb = usb->priv_ptr;
+
+//------------------------basic information------------------------
+	perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 
+	if(0 == perusb->devnode)return -1;		//no devdesc?
+	devnode = (void*)perusb + perusb->devnode;
+	devdesc = (void*)perusb + devnode->real;
+
+	if(0 == devnode->lchild)return -2;		//no confdesc?
+	confnode = (void*)perusb + perusb->confnode;
+	confdesc = (void*)perusb + confnode->real;
+
+
+//------------------------check type------------------------
 	if(subclass_SCSI != intfdesc->bInterfaceSubClass){
 		say("[usbdisk]not SCSI, bye bye\n");
 		return -1;
 	}
 	if(interface_BBB == intfdesc->bInterfaceProtocol){
 		say("[usbdisk]bulk only\n");
+		//lets go
 	}
 	else if(interface_UAS == intfdesc->bInterfaceProtocol){
 		say("[usbdisk]UASP, bye bye\n");
@@ -222,14 +386,11 @@ int usbstor_driver(struct device* usb,int xxx, struct device* xhci,int slot, str
 	}
 	else{
 		say("[usbdisk]proto=%x, bye bye\n", intfdesc->bInterfaceProtocol);
+		return -2;
 	}
 
 
-	int j,ret;
-	int inaddr=0,outaddr=0;
-	struct descnode* endpnode;
-	struct EndpointDescriptor* endpdesc;
-
+//------------------------host side + my parse------------------------
 	j = intfnode->lchild;
 	while(1){
 		if(0 == j)break;
@@ -254,8 +415,8 @@ int usbstor_driver(struct device* usb,int xxx, struct device* xhci,int slot, str
 				//if(ret < 0)return -9;
 
 				//inform the xHC of the endpoint
-				//ret = xhci_giveorderwaitevent(xhci,slot, 'h',TRB_command_ConfigureEndpoint, endpdesc,sizeof(struct EndpointDescriptor), 0,0);
-				//if(ret < 0)return -9;
+				ret = xhci_giveorderwaitevent(xhci,slot, 'h',TRB_command_ConfigureEndpoint, endpdesc,sizeof(struct EndpointDescriptor), 0,0);
+				if(ret < 0)return -9;
 			}
 			break;
 		}//ep desc
@@ -269,34 +430,95 @@ int usbstor_driver(struct device* usb,int xxx, struct device* xhci,int slot, str
 	say("[usbdisk]in@%x, out@%x\n", inaddr, outaddr);
 
 
-	say("[usbdisk]Inquiry\n");
-	struct CommandBlockWrapper cbw;
-	struct CommandStatusWrapper csw;
-
-	cbw.Signature    = 0x43425355;
-	cbw.Tag          = 0xaabbccdd;
-	cbw.DataLen      = 0x24;
-	cbw.DataDir      = 0x80;
-	cbw.LogicUnitNum = 0;
-	cbw.CmdLen       = 6;
-
-	cbw.CmdData[0] = scsi_Inquiry;	//SCSI operation code
-	cbw.CmdData[1] =    0;	//SCSI reserved
-	cbw.CmdData[2] =    0;	//SCSI page or operation code
-	cbw.CmdData[3] =    0;	//SCSI reserved
-	cbw.CmdData[4] = 0x24;	//SCSI allocation length
-	cbw.CmdData[5] =    0;	//SCSI control
-	for(j=6;j<16;j++)cbw.CmdData[j] = 0;
-
-	//xhci_send(bulkout, &cbw, sizeof(struct CommandBlockWrapper));		//31byte
-	//xhci_send(bulkin, &csw, sizeof(struct CommandStatusWrapper));		//13byte
+//------------------------set configuration------------------------
+	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
+	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, 0,0);
 
 
-	say("[usbdisk]Test Unit Ready\n");
+//------------------------send INQUERY------------------------
+	say("[usbdisk]Inquiry...\n");
+	struct CommandBlockWrapper* inqcbw = (void*)(perusb->freebuf);
+	usbstor_ZeroMemory(inqcbw, 0x1f);
+	inqcbw->Signature    = 0x43425355;
+	inqcbw->Tag          = hex32('i','n','q',0);
+	inqcbw->DataLen      = 0x24;
+	inqcbw->DataDir      = 0x80;
+	inqcbw->LogicUnitNum = 0;
+	inqcbw->CmdLen       = 6;
+	inqcbw->CmdData[0] = scsi_Inquiry;	//SCSI operation code
+	inqcbw->CmdData[1] =    0;	//SCSI reserved
+	inqcbw->CmdData[2] =    0;	//SCSI page or operation code
+	inqcbw->CmdData[3] =    0;	//SCSI reserved
+	inqcbw->CmdData[4] = 0x24;	//SCSI allocation length
+	inqcbw->CmdData[5] =    0;	//SCSI control
+	for(j=6;j<16;j++)inqcbw->CmdData[j] = 0;
+	ret = xhci_giveorderwaitevent(xhci,slot|(outaddr<<8),'d',0, inqcbw, 0x1f, 0,0);
+
+	struct INQUERY_Reply* inqrep = (void*)(perusb->freebuf + 0x100);
+	usbstor_ZeroMemory(inqrep, 0x24);
+	ret = xhci_giveorderwaitevent(xhci,slot|(inaddr<<8), 'd',0, inqrep, 0x24, 0,0);
+	printmemory(inqrep, 0x24);
+
+	struct CommandStatusWrapper* inqcsw = (void*)(perusb->freebuf + 0x200);
+	usbstor_ZeroMemory(inqcsw, 0x0d);
+	ret = xhci_giveorderwaitevent(xhci,slot|(inaddr<<8), 'd',0, inqcsw, 0x0d, 0,0);
+
+	printmemory(inqcsw, 0x0d);
+	if(0 != inqcsw->Status)say("[usbdisk]csw.status=%x\n", inqcsw->Status);
 
 
-	say("[usbdisk]Read Capacity\n");
+//------------------------send TestUnitReady------------------------
+	say("[usbdisk]Test Unit Ready...\n");
+	struct CommandBlockWrapper* turcbw = (void*)(perusb->freebuf+0x300);
+	usbstor_ZeroMemory(turcbw, 0x1f);
+	turcbw->Signature    = 0x43425355;
+	turcbw->Tag          = hex32('t','u','r',0);
+	turcbw->DataLen      = 0;
+	turcbw->DataDir      = 0x80;
+	turcbw->LogicUnitNum = 0;
+	turcbw->CmdLen       = 6;
+	turcbw->CmdData[0] = scsi_TestUnitReady;
+	for(j=1;j<16;j++)turcbw->CmdData[j] = 0;
+	ret = xhci_giveorderwaitevent(xhci,slot|(outaddr<<8),'d',0, turcbw, 0x1f, 0,0);
 
+	struct CommandStatusWrapper* turcsw = (void*)(perusb->freebuf + 0x400);
+	usbstor_ZeroMemory(turcsw, 0x0d);
+	ret = xhci_giveorderwaitevent(xhci,slot|(inaddr<<8), 'd',0, turcsw, 0x0d, 0,0);
+
+	printmemory(turcsw, 0x0d);
+	if(0 != turcsw->Status)say("[usbdisk]csw.status=%x\n", turcsw->Status);
+
+
+//------------------------send ReadCapacity------------------------
+	say("[usbdisk]Read Capacity...\n");
+	struct CommandBlockWrapper* capcbw = (void*)(perusb->freebuf + 0x600);
+	usbstor_ZeroMemory(capcbw, 0x1f);
+	capcbw->Signature    = 0x43425355;
+	capcbw->Tag          = hex32('c','a','p',0);
+	capcbw->DataLen      = 8;
+	capcbw->DataDir      = 0x80;
+	capcbw->LogicUnitNum = 0;
+	capcbw->CmdLen       = 6;
+	capcbw->CmdData[0]   = scsi_ReadCapacity;
+	for(j=1;j<16;j++)capcbw->CmdData[j] = 0;
+	ret = xhci_giveorderwaitevent(xhci,slot|(outaddr<<8),'d',0, capcbw, 0x1f, 0,0);
+
+	struct READ_CAPACITY_Reply* caprep = (void*)(perusb->freebuf + 0x700);
+	usbstor_ZeroMemory(caprep, 8);
+	ret = xhci_giveorderwaitevent(xhci,slot|(inaddr<<8), 'd',0, caprep, 8, 0,0);
+
+	printmemory(caprep, 8);
+	u32 aa = usbstor_endian(caprep->LastLBA_MsbNotLsb) + 1;
+	u32 bb = usbstor_endian(caprep->BlockSz_MsbNotLsb);
+	u64 cc = aa*bb;
+	say("blockcnt=0x%x,blocksize=0x%x,totalsize=0x%llx\n", aa, bb, cc);
+
+	struct CommandStatusWrapper* capcsw = (void*)(perusb->freebuf + 0x800);
+	usbstor_ZeroMemory(capcsw, 0x0d);
+	ret = xhci_giveorderwaitevent(xhci,slot|(inaddr<<8), 'd',0, capcsw, 0x0d, 0,0);
+
+	printmemory(capcsw, 0x0d);
+	if(0 != capcsw->Status)say("[usbdisk]csw.status=%x\n", capcsw->Status);
 
 	return 0;
 }
