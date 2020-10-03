@@ -193,7 +193,5 @@ void initdevice(u8* addr)
 	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)dev[j].tier = _dev_;
 
-	inithardware();
-
 	say("[4,6):device inited\n");
 }

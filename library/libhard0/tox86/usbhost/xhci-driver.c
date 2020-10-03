@@ -426,6 +426,10 @@ struct perslot{
 		u8 cmdring[32][0x1000];
 	};
 }__attribute__((packed));
+struct perport{
+	u32 protocol;	//u2 or u3
+	u32 slot;
+}__attribute__((packed));
 struct perxhci{
 	//mmio
 	struct CapabilityRegisters* capreg;
@@ -440,6 +444,7 @@ struct perxhci{
 	u8* eventring;
 
 	u8* freebuf;
+	struct perport* perport;
 	u8* scratch;
 	struct perslot* perslot;
 
@@ -565,7 +570,7 @@ int maketrb_bulktransfer(u8* ring, int xxx, u8* buf, int len)
 	trb->DataBufferPointer = (u64)(buf);
 
 	trb->TRBTransferLength = len;
-	trb->TDSize = 0x10;
+	trb->TDSize = 0;
 	trb->InterruptTarget = 0;
 
 	trb->EvaluateNextTRB = 0;
@@ -593,7 +598,7 @@ int maketrb_interrupttransfer(u8* ring, int xxx, u8* buf, int len)
 		trb->DataBufferPointer = (u64)(buf + j*8);
 
 		trb->TRBTransferLength = len;
-		trb->TDSize = 0x10;
+		trb->TDSize = 0;
 		trb->InterruptTarget = 0;
 
 		trb->EvaluateNextTRB = 0;
@@ -641,6 +646,11 @@ void* xhci_takeevent(struct device* xhci)
 		my->event_mydeq = 0;
 		my->event_cycle ^= 1;
 	}
+
+	struct RuntimeRegisters* runreg = my->runreg;
+	u64 erdp = ((u64)my->eventring + my->event_mydeq) | 0x8;
+	runreg->ir[0].ERDP_lo = erdp & 0xffffffff;
+	runreg->ir[0].ERDP_hi = erdp >> 32;
 	return ev;
 }
 int xhci_parseevent(struct device* xhci, u32* ev)
@@ -674,15 +684,16 @@ int xhci_parseevent(struct device* xhci, u32* ev)
 	default:
 		say("[xhci]code=%d@evtype=%d\n", stat, type);
 	}
+
 	return 0;
 }
-int xhci_waitevent(struct device* dev, u32 wanttype, u32 arg)
+int xhci_waitevent(struct device* xhci, u32 wanttype, u32 arg)
 {
 	u32* ev;
 	while(1){
 		u32 timeout = 0xfffffff;
 		while(1){
-			ev = xhci_takeevent(dev);
+			ev = xhci_takeevent(xhci);
 			if(0 != ev)break;
 
 			timeout--;
@@ -695,35 +706,37 @@ int xhci_waitevent(struct device* dev, u32 wanttype, u32 arg)
 			//printmemory(my->event_cycle, 0x10);
 		}
 
-		//got event
-		printmemory(ev, 16);
+		//parse
+		xhci_parseevent(xhci, ev);
 
+		//return
 		u32 stat = ev[2]>>24;
-		if(1 != stat)continue;
-
 		u32 slot = ev[3]>>24;
 		u32 type = (ev[3]>>10)&0x3f;
 		switch(type){
 		case TRB_event_Transfer: 	 			//32
 			u32 endp = (ev[3]>>16)&0x1f;
-			say("%d@Transfer: cmd=%p, len=%x, slot=%x, ep=%x\n", stat, *(u8**)ev, ev[2]&0xffffff, slot, endp);
 			//update perslot.epctx.hcdeq
-			if((type == wanttype)&&(arg == (slot | (endp<<8))))return arg;
+			if((type == wanttype)&&(arg == (slot | (endp<<8)))){
+				if(1 == stat)return arg;
+				else return -1;
+			}
 			break;
 
 		case TRB_event_CommandCompletion:		//33
-			say("%d@CommandCompletion: cmd=%p, param=%x, slot=%x\n", stat, *(u8**)ev, ev[2]&0xffffff, slot);
-			if(type == wanttype)return slot;
+			if(type == wanttype){
+				if(1 == stat)return slot;
+				else return -1;
+			}
 			break;
 
 		case TRB_event_PortStatusChange:		//34
 			u32 port = ev[0]>>24;
-			say("%d@PortStatusChange: port=%x(Count from 1)\n", stat, port);
-			if((type == wanttype)&&(arg == port))return port;
+			if((type == wanttype)&&(arg == port)){
+				if(1 == stat)return port;
+				else return -1;
+			}
 			break;
-
-		default:
-			say("code=%d@evtype=%d\n", stat, type);
 		}
 	}
 
@@ -1315,12 +1328,13 @@ void xhci_listall(struct device* xhci, int count)
 	int j;
 	u32 tmp,speed;
 	struct perxhci* my = (void*)(xhci->priv_data);
+	struct perport* pp = my->perport;
 	struct OperationalRegisters* optreg = my->optreg;
 	struct PortRegisters* port = optreg->port;
 	for(j=0;j<count;j++){
 		tmp = port[j].PORTSC;
 		say("[xhci]@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-		say("[xhci]%02x:portsc=%x\n", j, tmp);
+		say("[xhci]%02x:psi=%x,portsc=%x\n", j, pp[j].protocol, tmp);
 		if(0 == (tmp & 0x1))continue;
 
 		//if(0 == PORTSC.bit1)ver <= 2.0, have to reset
@@ -1391,15 +1405,23 @@ int ownership(volatile u32* p)
 		}
 	}
 }
-void supportedprotocol(u32* p)
+void supportedprotocol(struct device* dev, u32* p)
 {
 	u32 major = p[0] >> 24;
 	u32 minor =(p[0] >> 16) & 0xff;
 	u32 port0 =(p[2] & 0xff) - 1;
 	u32 portn =(port0-1) + ((p[2] >> 8) & 0xff);
 	say("[xhci][%x,%x]: usb%x.%x\n", port0, portn, major, minor);
+
+	int j;
+	struct perxhci* my = (void*)(dev->priv_data);
+	struct perport* pp = my->perport;
+	for(j=port0;j<=portn;j++){
+		pp[j].protocol = (major<<8) | minor;
+		pp[j].slot = 0;
+	}
 }
-void explainxecp(u32* at)
+void explainxecp(struct device* dev, u32* at)
 {
 	say("[xhci]xecp parsing\n");
 	while(1){
@@ -1412,7 +1434,7 @@ void explainxecp(u32* at)
 				break;
 			}
 			case 2:{
-				supportedprotocol(at);
+				supportedprotocol(dev, at);
 				break;
 			}
 			defualt:{
@@ -1445,10 +1467,10 @@ int xhci_mmioinit(struct device* dev, u8* xhciaddr)
 	u64 cmdringhome   = (u64)(ptr + 0x010000);	//64k*[ 1, 2)
 	u64 ersthome      = (u64)(ptr + 0x020000);	//64k*[ 2, 3)
 	u64 eventringhome = (u64)(ptr + 0x030000);	//64k*[ 3, 4)
-	u64 freebufhome   = (u64)(ptr + 0x040000);	//64k*[ 4, 8)
+	u64 freebufhome   = (u64)(ptr + 0x040000);	//64k*[ 4, 6)
+	u64 perport       = (u64)(ptr + 0x060000);	//64k*[ 6, 8)
 	u64 scratchpad    = (u64)(ptr + 0x080000);	//64k*[ 8, f)
 	u64 perslot       = (u64)(ptr + 0x100000);	//64k*[16,32)
-
 
 //--------------basic infomation--------------------
 	struct CapabilityRegisters* capreg = (void*)xhciaddr;
@@ -1517,8 +1539,34 @@ int xhci_mmioinit(struct device* dev, u8* xhciaddr)
 
 
 //--------------grab ownership-----------------
+	struct perxhci* my = (void*)(dev->priv_data);
+	//mmio
+	my->capreg = capreg;
+	my->optreg = optreg;
+	my->runreg = runreg;
+	my->dblreg = dblreg;
+	//memory
+	my->dcba      = (void*)dcbahome;
+	my->cmdring   = (void*)cmdringhome;
+	my->erst      = (void*)ersthome;
+	my->eventring = (void*)eventringhome;
+	my->freebuf   = (void*)freebufhome;
+	my->perport   = (void*)perport;
+	my->scratch   = (void*)scratchpad;
+	my->perslot   = (void*)perslot;
+	//cmd
+	my->order_len = 0x10000;
+	my->order_cycle = 1;
+	my->order_myenq = 0;
+	my->order_hcdeq = 0;
+	//ev
+	my->event_len = 0x10000;
+	my->event_cycle = 1;
+	my->event_hcenq = 0;
+	my->event_mydeq = 0;
+
 	u32* xecp = (void*)xhciaddr + ((capreg->CAPPARAMS1 >> 16) << 2);
-	explainxecp(xecp);
+	explainxecp(dev, xecp);
 
 
 //------------operational registers----------------
@@ -1648,32 +1696,6 @@ int xhci_mmioinit(struct device* dev, u8* xhciaddr)
 	say("[xhci]}\n");
 
 
-//-------------------list device------------------
-	struct perxhci* my = (void*)(dev->priv_data);
-	//mmio
-	my->capreg = capreg;
-	my->optreg = optreg;
-	my->runreg = runreg;
-	my->dblreg = dblreg;
-	//memory
-	my->dcba      = (void*)dcbahome;
-	my->cmdring   = (void*)cmdringhome;
-	my->erst      = (void*)ersthome;
-	my->eventring = (void*)eventringhome;
-	my->freebuf   = (void*)freebufhome;
-	my->scratch   = (void*)scratchpad;
-	my->perslot   = (void*)perslot;
-	//cmd
-	my->order_len = 0x10000;
-	my->order_cycle = 1;
-	my->order_myenq = 0;
-	my->order_hcdeq = 0;
-	//ev
-	my->event_len = 0x10000;
-	my->event_cycle = 1;
-	my->event_hcenq = 0;
-	my->event_mydeq = 0;
-
 	//wait until device detected
 	wait2 = 0xffffff;
 	while(1){
@@ -1688,7 +1710,8 @@ int xhci_mmioinit(struct device* dev, u8* xhciaddr)
 	}
 	xhci_listall(dev, capreg->HCSPARAMS1>>24);
 
-	//
+
+	//callback functions
 	dev->ontaking = (void*)xhci_ontake;
 	dev->ongiving = (void*)xhci_ongive;
 	return 0;

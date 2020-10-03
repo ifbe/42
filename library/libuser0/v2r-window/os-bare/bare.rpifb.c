@@ -82,7 +82,7 @@ void windowcreate(struct supply* wnd)
 	wnd->fbwidth = pitch;
 	//wnd->fbheight = 0;
 
-	wnd->rgbabuf = (void*)0x2000000;
+	wnd->rgbabuf = (void*)0x4000000;
 }
 
 

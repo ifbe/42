@@ -55,10 +55,10 @@ int kernel_create(struct worker* wrk, void* url, int argc, u8** argv)
 	toedit->fshape.vc[1] = wnd->height*3/4;
 	toedit->fshape.vc[2] = 0;
 	toedit->fshape.vc[3] = 0;
-	toedit->fshape.vr[0] = wnd->width/4;
+	toedit->fshape.vr[0] = wnd->width/5;
 	toedit->fshape.vr[1] = 0;
 	toedit->fshape.vf[0] = 0;
-	toedit->fshape.vf[1] = wnd->height/4;
+	toedit->fshape.vf[1] = wnd->height/5;
 
 
 	//things
@@ -84,11 +84,15 @@ int kernel_create(struct worker* wrk, void* url, int argc, u8** argv)
 	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
 
 
-	//loop
-	struct event* ev;
 	struct halfrel stack[0x80];
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
+	supplyread(wnd,0, stack,2, 0,0, 0,0);
+	inithardware();
+
+
+	//loop
+	struct event* ev;
 	while(1){
 		//draw frame
 		supplyread(wnd,0, stack,2, 0,0, 0,0);

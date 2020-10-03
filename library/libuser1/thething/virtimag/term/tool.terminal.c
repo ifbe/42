@@ -140,7 +140,7 @@ static void terminal_draw_pixel(
 		if(ocur <= 0)return;
 
 		int j,k = 0;
-		int here=0;
+		int here = 0;
 		for(j=0;j<ocur;j++){
 			if(obuf[j] < 0x8)break;
 			if('\n' == obuf[j]){
@@ -383,7 +383,7 @@ static void terminal_create(struct entity* act, void* arg, int argc, u8** argv)
 	act->SERVER = 0;
 
 	act->ix0 = 0;
-	act->iy0 = 350;
+	act->iy0 = 840;
 
 	//struct str* dat = act->RAWBUF = memorycreate(0x100000, 0);
 	//dat->len = 0;

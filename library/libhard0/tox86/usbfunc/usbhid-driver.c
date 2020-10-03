@@ -17,9 +17,18 @@
 #define TRB_command_NoOp                23
 #define TRB_command_GetExtendedProperty 24
 #define TRB_command_SetExtendedProperty 25
-void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 int xhci_giveorderwaitevent(void* hc,int id, u32,u32, void* sendbuf,int sendlen, void* recvbuf, int recvlen);
-
+//
+#define desctype_HID 0x21
+#define desctype_report 0x22
+#define desctype_descriptor 0x23
+#define bRequest_GET_REPORT 1
+#define bRequest_GET_IDLE 2
+#define bRequest_GET_PROTOCOL 3
+#define bRequest_SET_REPORT 9
+#define bRequest_SET_IDLE 0xa
+#define bRequest_SET_PROTOCOL 0xb
+void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 //error
 #define NoKeyPress 0
 #define InvalidScanCode 1
@@ -258,6 +267,58 @@ struct UsbRequest{
 		//if(GET_DESCRIPTOR_string)wIndex = LANGID
 	u16 wLength;
 }__attribute__((packed));
+
+
+
+
+void INTERFACE_REQUEST_GET_REPORT(struct UsbRequest* req, u16 intf, u16 len)
+{
+	req->bmRequestType = 0xa1;
+	req->bRequest = bRequest_GET_REPORT;
+	req->wValue = 0;	//report type and report id: 1=input, 2=output, 3=feature
+	req->wIndex = intf;
+	req->wLength = len;	//report length
+}
+void INTERFACE_REQUEST_SET_REPORT(struct UsbRequest* req, u16 intf, u16 len)
+{
+	req->bmRequestType = 0x21;
+	req->bRequest = bRequest_SET_REPORT;
+	req->wValue = 0;
+	req->wIndex = intf;
+	req->wLength = len;
+}
+void INTERFACE_REQUEST_GET_IDLE(struct UsbRequest* req, u16 intf)
+{
+	req->bmRequestType = 0xa1;
+	req->bRequest = bRequest_GET_IDLE;
+	req->wValue = 0;	//0 and report id
+	req->wIndex = intf;
+	req->wLength = 1;
+}
+void INTERFACE_REQUEST_SET_IDLE(struct UsbRequest* req, u16 intf, u16 val)
+{
+	req->bmRequestType = 0x21;
+	req->bRequest = bRequest_SET_IDLE;
+	req->wValue = val;	//duration and report id
+	req->wIndex = intf;
+	req->wLength = 0;
+}
+void INTERFACE_REQUEST_GET_PROTOCOL(struct UsbRequest* req, u16 intf)
+{
+	req->bmRequestType = 0xa1;
+	req->bRequest = bRequest_GET_PROTOCOL;
+	req->wValue = 0;	//0 and report id
+	req->wIndex = intf;
+	req->wLength = 1;
+}
+void INTERFACE_REQUEST_SET_PROTOCOL(struct UsbRequest* req, u16 intf, u16 val)
+{
+	req->bmRequestType = 0x21;
+	req->bRequest = bRequest_SET_PROTOCOL;
+	req->wValue = val;	//duration and report id
+	req->wIndex = intf;
+	req->wLength = 0;
+}
 
 
 
