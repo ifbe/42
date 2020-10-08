@@ -78,7 +78,6 @@ void say(u8* fmt, ...)
 	__builtin_va_end(arg);
 
 	//debugport
-	//printout(cur, ret);
 	lowlevel_output(outputqueue+cur, ret);
 
 	//write position

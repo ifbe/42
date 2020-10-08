@@ -1,4 +1,7 @@
 #include "libhard.h"
+void eventwrite(u64,u64,u64,u64);
+void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
+int xhci_giveorderwaitevent(void* hc,int id, u32,u32, void* sendbuf,int sendlen, void* recvbuf, int recvlen);
 //xhci command
 #define TRB_command_EnableSlot           9
 #define TRB_command_DisableSlot         10
@@ -17,7 +20,6 @@
 #define TRB_command_NoOp                23
 #define TRB_command_GetExtendedProperty 24
 #define TRB_command_SetExtendedProperty 25
-int xhci_giveorderwaitevent(void* hc,int id, u32,u32, void* sendbuf,int sendlen, void* recvbuf, int recvlen);
 //
 #define desctype_HID 0x21
 #define desctype_report 0x22
@@ -28,18 +30,37 @@ int xhci_giveorderwaitevent(void* hc,int id, u32,u32, void* sendbuf,int sendlen,
 #define bRequest_SET_REPORT 9
 #define bRequest_SET_IDLE 0xa
 #define bRequest_SET_PROTOCOL 0xb
-void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 //error
 #define NoKeyPress 0
 #define InvalidScanCode 1
 #define SelfTestFail 2
 #define UndefinedError 3
+static u8 usb2kbd[0x100] = {
+   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,0x4d,
+0x4b,0x50,0x48
+};
+static u8 usb2char[0x100] = {
+   0,   0,   0,   0, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',
+ 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2',
+ '3', '4', '5', '6', '7', '8', '9', '0', 0xd,0x1b, 0x8,   0, ' ', '-', '=', '[',
+ ']','\\',   0, ';','\'', '`', ',', '.', '/'
+};
+static u8 usb2shift[0x100] = {
+   0,   0,   0,   0, 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+ 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '!', '@',
+ '#', '$', '%', '^', '&', '*', '(', ')', 0xd,0x1b, 0x8,   0, ' ', '_', '+', '{',
+ '}', '|',   0, ':','\"', '~', '<', '>', '?'
+};
 //[A,B,C...Z]: [4, 29]
 #define USBKEY_A 4
 #define USBKEY_Z 29
 //[1,2,3...0]: [30, 39]
-#define USBKEY_0 30
-#define USBKEY_9 39
+#define USBKEY_1 30
+#define USBKEY_0 39
 //kbd
 #define USBKEY_Enter 40
 #define USBKEY_Esc   41
@@ -364,33 +385,59 @@ struct perusb{
 
 
 
-int parsekeyboard(struct report_keyboard* report)
+static int parsekeyboard(struct report_keyboard* report)
 {
-	int j;
+	int j,k,v;
 	for(j=0;j<6;j++){
-		if(report->keys[j] >= USBKEY_A){
-			if(report->keys[j] <= USBKEY_Z)say("[usbkbd]key_%c\n", report->keys[j]-USBKEY_A+'A');
-			else if(report->keys[j] <= USBKEY_9)say("[usbkbd]key_%c\n", report->keys[j]-USBKEY_0+'0');
-			else say("[usbkbd]key=%x\n", report->keys[j]);
+		k = report->keys[j];
+		if(k < 4)continue;
+
+		v = usb2kbd[k];
+		if(0 != v){
+			say("%x->kbd %x\n", k, v);
+			eventwrite(v, _kbd_, 0, 0);
+			continue;
+		}
+
+		v = usb2char[k];
+		if(0 != v){
+			say("%x->char %x\n", k, v);
+			eventwrite(v, _char_, 0, 0);
+			continue;
 		}
 	}
 	return 0;
 }
-int parsemouse(struct report_mouse* report)
+static int parsemouse(struct report_mouse* report)
 {
 	say("[usbmouse]btn=%x,dx=%d,dy=%d\n", report->btn, report->dx, report->dy);
+
+	short xx[4];
+	xx[0] = report->dx;
+	xx[1] = report->dy;
+	eventwrite(*(u64*)xx, 0x4070, 0, 0);
 	return 0;
-}/*
-int parsehid()
+}
+static int usbhid_ongive(struct device* usb,int xxx, struct device* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
 {
-	//parse keyboard
+	struct perusb* perusb = usb->priv_ptr;
+	if(0 == perusb)return 0;
+
+	struct descnode* intfnode = (void*)perusb + perusb->intfnode;
+	struct InterfaceDescriptor* intfdesc = (void*)perusb + intfnode->real;
+
+	void* data = *(void**)sbuf;
 	if(1 == intfdesc->bInterfaceProtocol){
+		parsekeyboard(data);
 	}
-    //parse mouse
-	if(2 == intfdesc->bInterfaceProtocol){
-		 = (void*)perusb->freebuf;
+	else if(2 == intfdesc->bInterfaceProtocol){
+		parsemouse(data);
 	}
-}*/
+	else{
+		printmemory(data, 8);
+	}
+	return 0;
+}
 int usbhid_driver(struct device* usb,int xxx, struct device* xhci,int slot, struct descnode* intfnode, struct InterfaceDescriptor* intfdesc)
 {
 	int j,ret;
@@ -508,8 +555,12 @@ int usbhid_driver(struct device* usb,int xxx, struct device* xhci,int slot, stru
 	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, buf,req.wLength);
 	if(4 != ret)return -11;
 */
+
+
+//------------------------transfer ring------------------------
 	say("[usbhid]making trb\n");
-	ret = xhci_giveorderwaitevent(xhci,slot|(epaddr<<8), 'd',0, 0,0, perusb->freebuf,pktlen);
+	usb->ongiving = (void*)usbhid_ongive;
+	ret = xhci_giveorderwaitevent(xhci,slot|(epaddr<<8), 'd',0, perusb->freebuf,pktlen, usb,0);
 
 	return 0;
 }

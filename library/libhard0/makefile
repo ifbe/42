@@ -131,11 +131,12 @@ barex64:x64
 	yasm -a x86 -m amd64 -f elf64 -o x64.gdthelp.o tox86/cpu64/x64.gdthelp.asm
 	$(CC) $(CF) -mgeneral-regs-only tox86/cpu64/x64.idt.c
 	yasm -a x86 -m amd64 -f elf64 -o x64.idthelp.o tox86/cpu64/x64.idthelp.asm
-	$(CC) $(CF) tox86/irq/8259.c
-	$(CC) $(CF) tox86/irq/apic.c
 	$(CC) $(CF) tox86/bus/input/8042.c
 	$(CC) $(CF) tox86/bus/pci/pci-port.c
 	$(CC) $(CF) tox86/bus/pci/pci-mmio.c
+	$(CC) $(CF) tox86/irq/8259.c
+	$(CC) $(CF) tox86/irq/apic.c
+	$(CC) $(CF) tox86/pmic/power.c
 	$(CC) $(CF) tox86/usbhost/ehci-driver.c
 	$(CC) $(CF) tox86/usbhost/xhci-driver.c
 	$(CC) $(CF) tox86/usbcore/usbany-driver.c

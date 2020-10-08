@@ -3,6 +3,7 @@
 #define _term_ hex32('t','e','r','m')
 #define _mmioedit_ hex64('m','m','i','o','e','d','i','t')
 void* allocstyle();
+void inithardware();
 
 
 
@@ -25,6 +26,7 @@ int kernel_pollall()
 			if(dev->ontaking)dev->ontaking(dev,0, 0,0, 0,0, 0,0);
 		}
 	}
+	return 0;
 }
 int kernel_create(struct worker* wrk, void* url, int argc, u8** argv)
 {

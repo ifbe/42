@@ -400,8 +400,7 @@ struct perendp{
 	u32 rsvd;
 	u32 myenq;
 	u32 hcdeq;
-	u32 cc;
-	u32 dd;
+	u64 contractor;
 }__attribute__((packed));
 struct myctx{
 	//[000,7ff]: hc can write, me read only
@@ -666,6 +665,15 @@ int xhci_parseevent(struct device* xhci, u32* ev)
 		u32 endp = (ev[3]>>16)&0x1f;
 		say("[xhci]%d@Transfer: cmd=%p, len=%x, slot=%x, ep=%x\n", stat, *(u8**)ev, ev[2]&0xffffff, slot, endp);
 		//update perslot.epctx.hcdeq
+		struct perxhci* xhcidata = (void*)(xhci->priv_data);
+		struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
+		struct perendp* endpdata = &slotdata->myctx.epnctx[endp];
+		struct device* usb = (void*)endpdata->contractor;
+		if(usb){
+			if(usb->ongiving){
+				usb->ongiving(usb,0, xhci,endp, *(u8**)ev,0, 0,0);
+			}
+		}
 		break;
 
 	case TRB_event_CommandCompletion:		//33
@@ -1205,9 +1213,11 @@ int xhci_InterruptTransfer(struct device* xhci, int slotendp, void* sendbuf, int
 
 	struct perxhci* xhcidata = (void*)(xhci->priv_data);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
-	void* cmdenq = slotdata->cmdring[DCI] + slotdata->myctx.epnctx[DCI].myenq;
-	slotdata->myctx.epnctx[DCI].myenq += maketrb_interrupttransfer(cmdenq, 0, recvbuf, recvlen);
-	if(slotdata->myctx.epnctx[DCI].myenq >= 0x1000)slotdata->myctx.epnctx[DCI].myenq = 0;
+	struct perendp* endpdata = &slotdata->myctx.epnctx[DCI];
+	void* cmdenq = slotdata->cmdring[DCI] + endpdata->myenq;
+	endpdata->myenq += maketrb_interrupttransfer(cmdenq, 0, sendbuf, sendlen);
+	if(endpdata->myenq >= 0x1000)endpdata->myenq = 0;
+	endpdata->contractor = (u64)recvbuf;
 
 	//
 	xhci_giveorder(xhci, slot | (DCI<<8));

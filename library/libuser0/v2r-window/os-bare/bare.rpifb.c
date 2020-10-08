@@ -1,6 +1,6 @@
 #include "libuser.h"
-int rgbanode_read(void*,int, void*,int, void*,int, void*,int);
-int rgbanode_write(void*,int, void*,int, void*,int, void*,int);
+int wndmgr_read(void*,int, void*,int, void*,int, void*,int);
+int wndmgr_write(void*,int, void*,int, void*,int, void*,int);
 //
 int mbox_call(unsigned char ch);
 
@@ -40,7 +40,7 @@ static unsigned char *lfb = 0;
 void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("wnd=%p,stack=%p\n",wnd,stack);
-	rgbanode_read(wnd,foot, stack,sp, arg,key, buf,len);
+	wndmgr_read(wnd,foot, stack,sp, arg,key, buf,len);
 
 	int j;
 	u32* ibuf = wnd->rgbabuf;
@@ -54,7 +54,7 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//printmemory(buf, 0x20);
-	rgbanode_write(wnd,0, stack,sp, 0,0, buf,len);
+	wndmgr_write(wnd,0, stack,sp, 0,0, buf,len);
 }
 void windowlist()
 {

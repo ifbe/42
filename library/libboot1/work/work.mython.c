@@ -1,4 +1,5 @@
 #include "libboot.h"
+void poweroff();
 //
 void* originsearch(void*, int);
 void* workersearch(void*, int);
@@ -92,7 +93,7 @@ void term_memory(int argc, u8** argv)
 	u64 addr;
 	hexstr2u64(argv[1], &addr);
 
-	int len = 0x100;
+	u32 len = 0x100;
 	if(3 == argc)hexstr2u32(argv[2], &len);
 
 	printmemory((void*)addr, len);
@@ -118,6 +119,7 @@ int termwrite(u8* buf, int len)
 
 	j = str2arg(buf, len, tmp, 0x1000, argv, 8);
 	if(0 == ncmp(buf, "ls", 2))term_ls(buf, len);
+	else if(0 == ncmp(buf, "poweroff", 8))poweroff();
 	else if(0 == ncmp(buf, "mmio", 4))term_mmio(j, argv);
 	else if(0 == ncmp(buf, "memory", 5))term_memory(j, argv);
 	else if(0 == ncmp(buf, "origin", 6))originmodify(j, argv);

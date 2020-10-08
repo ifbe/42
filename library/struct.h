@@ -488,42 +488,6 @@ struct item
 	u64 type;
 	u64 fmt;
 	u64 name;
-
-	//[40,5f]: fd/handle
-	union{
-		u64 sz0;
-		u64 selffd;
-	};
-	union{
-		u64 sz1;
-		void* selfobj;
-	};
-	union{
-		u64 sz2;
-		u64 tempfd;
-	};
-	union{
-		u64 sz3;
-		void* tempobj;
-	};
-
-	//[60,7f]: memory
-	union{
-		u64 addr0;
-		void* buf0;
-	};
-	union{
-		u64 addr1;
-		void* buf1;
-	};
-	union{
-		u64 addr2;
-		void* buf2;
-	};
-	union{
-		u64 addr3;
-		void* buf3;
-	};
 };
 
 
@@ -553,46 +517,47 @@ struct origin
 	u64 hfmt;
 	u64 vfmt;
 
-	//[40,5f]: fd/handle
+	//[40,7f]: func
 	union{
-		u64 sz0;
-		u64 selffd;
+		int (*oncreate)(struct origin* node, void* url, int argc, u8** argv);
+		char padding0[8];
 	};
 	union{
-		u64 sz1;
-		void* selfobj;
+		int (*ondelete)(struct origin* node);
+		char padding1[8];
 	};
 	union{
-		u64 sz2;
-		u64 tempfd;
+		int (*onsearch)(struct origin* node, int flag, struct halfrel** self, struct halfrel** peer);
+		char padding2[8];
 	};
 	union{
-		u64 sz3;
-		void* tempobj;
-	};
-
-	//[60,7f]: memory
-	union{
-		u64 data0;
-		void* addr0;
+		int (*onmodify)(struct origin* node, void* buf);
+		char padding3[8];
 	};
 	union{
-		u64 data1;
-		void* addr1;
+		int (*onlinkup)(struct origin* node,int foot, void* self, void* peer);
+		char padding4[8];
 	};
 	union{
-		u64 data2;
-		void* addr2;
+		int (*ondiscon)(struct origin* node,int foot, void* self, void* peer);
+		char padding5[8];
 	};
 	union{
-		u64 data3;
-		void* addr3;
-		void* buf;
+		int (*ontaking)(struct origin* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding6[8];
+	};
+	union{
+		int (*ongiving)(struct origin* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding7[8];
 	};
 
-	//[80, ff]
-	u8 tmp[0x80];
-};
+	//[80,ff]
+	union{
+		int   priv_fd;
+		void* priv_ptr;
+		u8    priv_data[0x80];
+	};
+}__attribute__((packed));
 struct worker
 {
 	union{
@@ -617,46 +582,47 @@ struct worker
 	u64 hfmt;
 	u64 vfmt;
 
-	//[40,5f]: fd/handle
+	//[40,7f]: func
 	union{
-		u64 sz0;
-		u64 selffd;
+		int (*oncreate)(struct worker* node, void* url, int argc, u8** argv);
+		char padding0[8];
 	};
 	union{
-		u64 sz1;
-		void* selfobj;
+		int (*ondelete)(struct worker* node);
+		char padding1[8];
 	};
 	union{
-		u64 sz2;
-		u64 tempfd;
+		int (*onsearch)(struct worker* node, int flag, struct halfrel** self, struct halfrel** peer);
+		char padding2[8];
 	};
 	union{
-		u64 sz3;
-		void* tempobj;
-	};
-
-	//[60,7f]: memory
-	union{
-		u64 padd0;
-		void* addr0;
+		int (*onmodify)(struct worker* node, void* buf);
+		char padding3[8];
 	};
 	union{
-		u64 padd1;
-		void* addr1;
+		int (*onlinkup)(struct worker* node,int foot, void* self, void* peer);
+		char padding4[8];
 	};
 	union{
-		u64 padd2;
-		void* addr2;
+		int (*ondiscon)(struct worker* node,int foot, void* self, void* peer);
+		char padding5[8];
 	};
 	union{
-		u64 padd3;
-		void* addr3;
-		void* buf;
+		int (*ontaking)(struct worker* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding6[8];
+	};
+	union{
+		int (*ongiving)(struct worker* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding7[8];
 	};
 
 	//[80,ff]
-	u8 tmp[0x80];
-};
+	union{
+		int   priv_fd;
+		void* priv_ptr;
+		u8    priv_data[0x80];
+	};
+}__attribute__((packed));
 
 
 
@@ -727,7 +693,7 @@ struct device
 		void* priv_ptr;
 		u8    priv_data[0x80];
 	};
-};
+}__attribute__((packed));
 struct driver
 {
 	//[00,1f]: wire
@@ -754,45 +720,47 @@ struct driver
 	u64 stage1;
 	u64 name;
 
-	//[40,5f]: fd/handle
+	//[40,7f]: func
 	union{
-		u64 sz0;
-		u64 selffd;
+		int (*oncreate)(struct driver* node, void* url, int argc, u8** argv);
+		char padding0[8];
 	};
 	union{
-		u64 sz1;
-		void* selfobj;
+		int (*ondelete)(struct driver* node);
+		char padding1[8];
 	};
 	union{
-		u64 sz2;
-		u64 tempfd;
+		int (*onsearch)(struct driver* node, int flag, struct halfrel** self, struct halfrel** peer);
+		char padding2[8];
 	};
 	union{
-		u64 sz3;
-		void* tempobj;
-	};
-
-	//[60,7f]: data
-	union{
-		u64 padd0;
-		void* addr0;
+		int (*onmodify)(struct driver* node, void* buf);
+		char padding3[8];
 	};
 	union{
-		u64 padd1;
-		void* addr1;
+		int (*onlinkup)(struct driver* node,int foot, void* self, void* peer);
+		char padding4[8];
 	};
 	union{
-		u64 padd2;
-		void* addr2;
+		int (*ondiscon)(struct driver* node,int foot, void* self, void* peer);
+		char padding5[8];
 	};
 	union{
-		u64 padd3;
-		void* addr3;
+		int (*ontaking)(struct driver* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding6[8];
+	};
+	union{
+		int (*ongiving)(struct driver* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding7[8];
 	};
 
 	//[80,ff]
-	u8 data[0x80];
-};
+	union{
+		int   priv_fd;
+		void* priv_ptr;
+		u8    priv_data[0x80];
+	};
+}__attribute__((packed));
 
 
 
@@ -865,7 +833,7 @@ struct sysobj
 
 	//[0xc0,0xff]
 	u8 data[0x40];
-};
+}__attribute__((packed));
 struct artery
 {
 	//[00,1f]: wire
@@ -935,7 +903,7 @@ struct artery
 
 	//[80,ff]
 	u8 data[0x80];
-};
+}__attribute__((packed));
 
 
 
@@ -966,7 +934,41 @@ struct supply
 	u64 fmt;
 	u64 vfmt;
 
-	//[40,5f]: fd
+	//[40,7f]: func
+	union{
+		int (*oncreate)(void* entity, void* url, int argc, u8** argv);
+		char padding0[8];
+	};
+	union{
+		int (*ondelete)(void* entity);
+		char padding1[8];
+	};
+	union{
+		int (*onsearch)(void* entity, int flag, struct halfrel** self, struct halfrel** peer);
+		char padding2[8];
+	};
+	union{
+		int (*onmodify)(void* entity, void* buf);
+		char padding3[8];
+	};
+	union{
+		int (*onlinkup)(void* self, void* peer);
+		char padding4[8];
+	};
+	union{
+		int (*ondiscon)(void* self, void* peer);
+		char padding5[8];
+	};
+	union{
+		int (*ontaking)(struct supply* sup,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding6[8];
+	};
+	union{
+		int (*ongiving)(struct supply* sup,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding7[8];
+	};
+
+	//[80,9f]: fd
 	union{
 		u64 padd0;
 		void*  aqref;	//audio.aq
@@ -1003,7 +1005,7 @@ struct supply
 		u32*     tex;	//3d.gbuffer
 	};
 
-	//[60,7f]: memory
+	//[a0,bf]: memory
 	union{
 		u64 data0;
 		void* buf0;
@@ -1065,40 +1067,6 @@ struct supply
 		struct mt20data** mtfull_opaque;
 	};
 
-	//[80,bf]: func
-	union{
-		int (*oncreate)(void* entity, void* url, int argc, u8** argv);
-		char padding0[8];
-	};
-	union{
-		int (*ondelete)(void* entity);
-		char padding1[8];
-	};
-	union{
-		int (*onsearch)(void* entity, int flag, struct halfrel** self, struct halfrel** peer);
-		char padding2[8];
-	};
-	union{
-		int (*onmodify)(void* entity, void* buf);
-		char padding3[8];
-	};
-	union{
-		int (*onlinkup)(void* self, void* peer);
-		char padding4[8];
-	};
-	union{
-		int (*ondiscon)(void* self, void* peer);
-		char padding5[8];
-	};
-	union{
-		int (*ontaking)(struct supply* sup,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
-		char padding6[8];
-	};
-	union{
-		int (*ongiving)(struct supply* sup,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
-		char padding7[8];
-	};
-
 	//[c0,cf]
 	int width;
 	int height;
@@ -1146,7 +1114,7 @@ struct supply
 		int iwn;
 		f32 fwn;
 	};
-};
+}__attribute__((packed));
 struct entity
 {
 	//[00,1f]: wire
@@ -1173,7 +1141,41 @@ struct entity
 	u64 fmt;
 	u64 vfmt;
 
-	//[40,5f]: fd
+	//[40,7f]: func
+	union{
+		int (*oncreate)(void* entity, void* url, int argc, u8** argv);
+		char padding0[8];
+	};
+	union{
+		int (*ondelete)(void* entity);
+		char padding1[8];
+	};
+	union{
+		int (*onsearch)(void* entity, int flag, struct halfrel** self, struct halfrel** peer);
+		char padding2[8];
+	};
+	union{
+		int (*onmodify)(void* entity, void* buf);
+		char padding3[8];
+	};
+	union{
+		int (*onlinkup)(void* self, void* peer);
+		char padding4[8];
+	};
+	union{
+		int (*ondiscon)(void* self, void* peer);
+		char padding5[8];
+	};
+	union{
+		int (*ontaking)(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding6[8];
+	};
+	union{
+		int (*ongiving)(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding7[8];
+	};
+
+	//[80,9f]: fd
 	union{
 		u64 fd0;
 		u64 fd;
@@ -1196,7 +1198,7 @@ struct entity
 		int wlen;
 	};
 
-	//[60,7f]: buf
+	//[a0,bf]: buf
 	union{
 		u64 data0;
 		float fdata0;
@@ -1271,40 +1273,6 @@ struct entity
 		struct mt20data** mtfull_opaque;
 	};
 
-	//[80,bf]: func
-	union{
-		int (*oncreate)(void* entity, void* url, int argc, u8** argv);
-		char padding0[8];
-	};
-	union{
-		int (*ondelete)(void* entity);
-		char padding1[8];
-	};
-	union{
-		int (*onsearch)(void* entity, int flag, struct halfrel** self, struct halfrel** peer);
-		char padding2[8];
-	};
-	union{
-		int (*onmodify)(void* entity, void* buf);
-		char padding3[8];
-	};
-	union{
-		int (*onlinkup)(void* self, void* peer);
-		char padding4[8];
-	};
-	union{
-		int (*ondiscon)(void* self, void* peer);
-		char padding5[8];
-	};
-	union{
-		int (*ontaking)(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
-		char padding6[8];
-	};
-	union{
-		int (*ongiving)(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
-		char padding7[8];
-	};
-
 	//[c0,cf]
 	int width;
 	int height;
@@ -1352,5 +1320,5 @@ struct entity
 		int iwn;
 		f32 fwn;
 	};
-};
+}__attribute__((packed));
 #endif

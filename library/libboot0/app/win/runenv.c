@@ -1,4 +1,13 @@
+#include <stdlib.h>
 #include <windows.h>
+
+
+
+
+void poweroff()
+{
+	exit(-1);
+}
 
 
 

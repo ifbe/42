@@ -59,6 +59,12 @@ int usbstor_driver(struct device* usb, int xxx, struct device* xhci, int slot, v
 #define class_miscellaneous 0xEF	//混杂
 #define class_specific      0xFE	//特定应用类（包括红外的桥接器等）
 #define class_vendor        0xFF	//厂商定义的设备
+//video collection: e,3,0
+//video control: e,1,0
+//video streaming: e,2,0
+//audio collection: 1,2,0
+//audio control: 1,1,0
+//audio streaming: 1,2,0
 
 
 
@@ -673,6 +679,28 @@ int usb_FirstConfig(struct device* usb, int xxx, struct device* xhci, int slot)
 	if(0 == perusb->my.devnode)return -1;		//no devdesc?
 	devnode = (void*)perusb + perusb->my.devnode;
 	devdesc = (void*)perusb + devnode->real;
+
+	if(0x045e == devdesc->idVendor){
+		switch(devdesc->idProduct){
+		case 0x0202:say("xbox\n");break;
+		case 0x0285:
+		case 0x0289:say("xbox-s\n");break;
+		case 0x028e:say("xbox360\n");break;
+		case 0x028f:say("xbox360-wireless\n");break;
+		case 0x02d1:say("xboxone\n");break;
+		case 0x02dd:say("xboxone-2015\n");break;
+		case 0x02e3:say("xboxone-elite\n");break;
+		case 0x02e6:say("xbox-dongle\n");break;
+		case 0x02ea:say("xboxones\n");break;
+		}
+	}
+	if(0x054c == devdesc->idVendor){
+		switch(devdesc->idProduct){
+		case 0x05c4:say("ds4-original\n");break;
+		case 0x09cc:say("ds4-ps4pro\n");break;
+		case 0x0ba0:say("ds4-adapter\n");break;
+		}
+	}
 
 	if(0 == devnode->lchild)return -2;		//no confdesc?
 	confnode = (void*)perusb + devnode->lchild;
