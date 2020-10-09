@@ -1,7 +1,12 @@
 #include "libhard.h"
 int xhci_giveorderwaitevent(void* hc,int id, u32,u32, void* sendbuf,int sendlen, void* recvbuf, int recvlen);
+//device driver
+int usbds4_driver(struct device* usb, int xxx, struct device* xhci, int slot);
+int usbxbox_driver(struct device* usb, int xxx, struct device* xhci, int slot);
+//interface driver
 int usbhid_driver(struct device* usb, int xxx, struct device* xhci, int slot, void*, void*);
 int usbstor_driver(struct device* usb, int xxx, struct device* xhci, int slot, void*, void*);
+int usbuvc_driver(struct device* usb, int xxx, struct device* xhci, int slot, void*, void*);
 
 
 
@@ -680,28 +685,6 @@ int usb_FirstConfig(struct device* usb, int xxx, struct device* xhci, int slot)
 	devnode = (void*)perusb + perusb->my.devnode;
 	devdesc = (void*)perusb + devnode->real;
 
-	if(0x045e == devdesc->idVendor){
-		switch(devdesc->idProduct){
-		case 0x0202:say("xbox\n");break;
-		case 0x0285:
-		case 0x0289:say("xbox-s\n");break;
-		case 0x028e:say("xbox360\n");break;
-		case 0x028f:say("xbox360-wireless\n");break;
-		case 0x02d1:say("xboxone\n");break;
-		case 0x02dd:say("xboxone-2015\n");break;
-		case 0x02e3:say("xboxone-elite\n");break;
-		case 0x02e6:say("xbox-dongle\n");break;
-		case 0x02ea:say("xboxones\n");break;
-		}
-	}
-	if(0x054c == devdesc->idVendor){
-		switch(devdesc->idProduct){
-		case 0x05c4:say("ds4-original\n");break;
-		case 0x09cc:say("ds4-ps4pro\n");break;
-		case 0x0ba0:say("ds4-adapter\n");break;
-		}
-	}
-
 	if(0 == devnode->lchild)return -2;		//no confdesc?
 	confnode = (void*)perusb + devnode->lchild;
 	confdesc = (void*)perusb + confnode->real;
@@ -891,9 +874,32 @@ int usb_linkup(struct device* usb, int xxx, struct device* xhci, int slot)
 
 
 //-----------now that all read, choose one-------------
-	say("[usbcore]choose config\n");
-	usb_FirstConfig(usb,xxx, xhci,slot);
+	struct descnode* devnode = (void*)perusb + perusb->my.devnode;
+	struct DeviceDescriptor* devdesc = (void*)perusb + devnode->real;
 
+	if(0x045e == devdesc->idVendor){
+		switch(devdesc->idProduct){
+		case 0x0202:say("xbox\n");break;
+		case 0x0285:
+		case 0x0289:say("xbox-s\n");break;
+		case 0x028e:say("xbox360\n");break;
+		case 0x028f:say("xbox360-wireless\n");break;
+		case 0x02d1:say("xboxone\n");break;
+		case 0x02dd:say("xboxone-2015\n");break;
+		case 0x02e3:say("xboxone-elite\n");break;
+		case 0x02e6:say("xbox-dongle\n");break;
+		case 0x02ea:say("xboxones\n");break;
+		}
+	}
+	if(0x054c == devdesc->idVendor){
+		switch(devdesc->idProduct){
+		case 0x05c4:
+		case 0x09cc:
+		case 0x0ba0:return usbds4_driver(usb,xxx, xhci,slot);
+		}
+	}
+
+	usb_FirstConfig(usb,xxx, xhci,slot);
 	return 0;
 }
 int usb_delete()

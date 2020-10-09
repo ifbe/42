@@ -292,6 +292,14 @@ struct UsbRequest{
 
 
 
+void INTERFACE_REQUEST_GET_REPORT_DESC(struct UsbRequest* req, u16 intf, u16 typeindex, u16 len)
+{
+	req->bmRequestType = 0x81;
+	req->bRequest = 6;
+	req->wValue = typeindex;
+	req->wIndex = intf;
+	req->wLength = len;
+}
 void INTERFACE_REQUEST_GET_REPORT(struct UsbRequest* req, u16 intf, u16 len)
 {
 	req->bmRequestType = 0xa1;
@@ -498,8 +506,9 @@ int usbhid_driver(struct device* usb,int xxx, struct device* xhci,int slot, stru
 
 
 //------------------------host side + my parse------------------------
-	int epaddr = 3;
-	int pktlen = 0x81;
+	int outaddr = 2;
+	int inaddr = 3;
+	int pktlen = 8;
 
 	j = intfnode->lchild;
 	while(1){
@@ -509,8 +518,14 @@ int usbhid_driver(struct device* usb,int xxx, struct device* xhci,int slot, stru
 
 		switch(endpdesc->bDescriptorType){
 		case 5:{
-			epaddr = (endpdesc->bEndpointAddress & 0xf) << 1;
-			if(endpdesc->bEndpointAddress & 0x80)epaddr += 1;
+			ret = (endpdesc->bEndpointAddress & 0xf) << 1;
+			if(0 == (endpdesc->bEndpointAddress & 0x80)){
+				outaddr = ret;
+			}
+			else{
+				inaddr = ret + 1;
+			}
+
 			pktlen = endpdesc->wMaxPacketSize;
 			say("[usbhid]endpdesc: addr=%x, attr=%x, pktlen=%x, interval=%x\n",
 				endpdesc->bEndpointAddress, endpdesc->bmAttributes,
@@ -560,7 +575,8 @@ int usbhid_driver(struct device* usb,int xxx, struct device* xhci,int slot, stru
 //------------------------transfer ring------------------------
 	say("[usbhid]making trb\n");
 	usb->ongiving = (void*)usbhid_ongive;
-	ret = xhci_giveorderwaitevent(xhci,slot|(epaddr<<8), 'd',0, perusb->freebuf,pktlen, usb,0);
 
+	if(pktlen > 0x40)pktlen = 0x40;
+	ret = xhci_giveorderwaitevent(xhci,slot|(inaddr<<8), 'd',0, perusb->freebuf,pktlen, usb,0);
 	return 0;
 }

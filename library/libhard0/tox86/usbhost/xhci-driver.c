@@ -594,7 +594,7 @@ int maketrb_interrupttransfer(u8* ring, int xxx, u8* buf, int len)
 
 	for(j=0;j<0xff;j++){
 		trb = (void*)(ring + j*0x10);
-		trb->DataBufferPointer = (u64)(buf + j*8);
+		trb->DataBufferPointer = (u64)(buf + j*len);
 
 		trb->TRBTransferLength = len;
 		trb->TDSize = 0;
