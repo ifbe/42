@@ -10,19 +10,6 @@
 extern "C" {
 #endif
 
-typedef struct relation _rel;
-typedef struct halfrel _syn;
-
-typedef struct item _any;
-typedef struct entity _ent;
-typedef struct supply _sup;
-typedef struct artery _art;
-typedef struct sysobj _sys;
-typedef struct driver _dri;
-typedef struct device _dev;
-typedef struct worker _wrk;
-typedef struct origin _ori;
-
 int entityread( _ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int entitywrite(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int entitydiscon(struct halfrel* self, struct halfrel* peer);

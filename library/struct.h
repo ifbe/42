@@ -532,6 +532,9 @@ struct item
 		u8    priv_data[0x80];
 	};
 }__attribute__((packed));
+struct foot{
+	u64 type;
+}__attribute__((packed));
 
 
 
@@ -1092,4 +1095,19 @@ struct entity
 		f32 fwn;
 	};
 }__attribute__((packed));
+
+typedef struct relation _rel;
+typedef struct halfrel _syn;
+typedef struct item _obj;
+typedef struct foot _lnk;
+
+typedef struct entity _ent;
+typedef struct supply _sup;
+typedef struct artery _art;
+typedef struct sysobj _sys;
+typedef struct driver _dri;
+typedef struct device _dev;
+typedef struct worker _wrk;
+typedef struct origin _ori;
+
 #endif

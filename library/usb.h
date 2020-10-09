@@ -187,6 +187,28 @@ struct InterfaceAssociation{
 	u8         iFunction;		//7
 }__attribute__((packed));
 
+struct BOSDescriptor{
+	u8         bLength;		//0: 0x08
+	u8 bDescriptorType;		//1: 0x0f
+	u16   wTotalLength;		//[2,3]
+	u8  bNumDeviceCaps;		//4
+}__attribute__((packed));
+
+struct DeviceCapabilityDescriptor{
+	u8            bLength;		//0: 0x08
+	u8    bDescriptorType;		//1: 0x10
+	u8 bDevCapabilityType;		//2
+	u8             cap[0];		//3
+}__attribute__((packed));
+
+struct EndpointCompanionDescriptor{
+	u8            bLength;		//0: 0x08
+	u8    bDescriptorType;		//1: 0x30
+	u8          bMaxBurst;		//2
+	u8       bmAttributes;		//3
+	u16 wBytesPerInterval;		//[4,5]
+}__attribute__((packed));
+
 struct HIDDescriptor{
 	u8            bLength;		//0: 0x09
 	u8    bDescriptorType;		//1: 0x21
