@@ -8,10 +8,10 @@ void inithardware();
 
 
 
-static struct origin* origin = 0;
-static struct worker* worker = 0;
-static struct device* device = 0;
-static struct driver* driver = 0;
+static struct item* origin = 0;
+static struct item* worker = 0;
+static struct item* device = 0;
+static struct item* driver = 0;
 
 
 
@@ -19,7 +19,7 @@ static struct driver* driver = 0;
 int kernel_pollall()
 {
 	int j;
-	struct device* dev;
+	struct item* dev;
 	for(j=0;j<10;j++){
 		dev = &device[j];
 		if(_xhci_ == dev->type){
@@ -28,7 +28,7 @@ int kernel_pollall()
 	}
 	return 0;
 }
-int kernel_create(struct worker* wrk, void* url, int argc, u8** argv)
+int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 {
 	//screen
 	struct supply* wnd = supplycreate(_wnd_, 0, 0, 0);

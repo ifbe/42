@@ -134,11 +134,11 @@ int lsm9ds1_i2cinit(void* it)
 
 
 
-int lsm9ds1_read(struct driver* dri,int foot, struct halfrel* stack,int sp, struct halfrel* peer, void* arg,int key, u8* buf,int len)
+int lsm9ds1_read(struct item* dri,int foot, struct halfrel* stack,int sp, struct halfrel* peer, void* arg,int key, u8* buf,int len)
 {
 	return 0;
 }
-int lsm9ds1_write(struct driver* dri,int foot, struct halfrel* stack,int sp, struct halfrel* peer, void* arg,int key, u8* buf,int len)
+int lsm9ds1_write(struct item* dri,int foot, struct halfrel* stack,int sp, struct halfrel* peer, void* arg,int key, u8* buf,int len)
 {
 	int ret;
 	float tmp[10];
@@ -155,7 +155,7 @@ int lsm9ds1_discon(struct halfrel* self, struct halfrel* peer)
 }
 int lsm9ds1_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct driver* it;
+	struct item* it;
 	say("@lsm9ds1_linkup\n", &self->flag);
 
 	it = (void*)(self->chip);
@@ -171,12 +171,12 @@ int lsm9ds1_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int lsm9ds1_create(struct driver* ele, u8* url)
+int lsm9ds1_create(struct item* ele, u8* url)
 {
 	say("@lsm9ds1_create\n");
 	return 1;
 }
-int lsm9ds1_delete(struct driver* ele)
+int lsm9ds1_delete(struct item* ele)
 {
 	return 0;
 }

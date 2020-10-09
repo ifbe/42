@@ -17,7 +17,7 @@ int openwriteclose(void*, int, void*, int);
 
 
 
-static struct origin* ori;
+static struct item* ori;
 static int orilen = 0;
 void* allocorigin()
 {
@@ -40,7 +40,7 @@ void initorigin(u8* addr)
 	int j;
 	ori = (void*)(addr+0x000000);
 
-#define max (0x100000/sizeof(struct origin))
+#define max (0x100000/sizeof(struct item))
 	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)ori[j].tier = _ori_;
 
@@ -58,7 +58,7 @@ void initorigin(u8* addr)
 
 int origindelete(void* addr)
 {
-	struct origin* tmp;
+	struct item* tmp;
 	if(0 == addr)return 0;
 
 	tmp = addr;
@@ -84,7 +84,7 @@ int origindelete(void* addr)
 void* origincreate(u64 type, void* func, int argc, u8** argv)
 {
 	int j;
-	struct origin* tmp;
+	struct item* tmp;
 
 	switch(type){
 	//app
@@ -161,11 +161,11 @@ int originsearch(u8* buf, int len)
 
 
 
-int originread(_ori* ori,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int originread(struct item* ori,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int originwrite(_ori* ori,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int originwrite(struct item* ori,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

@@ -16,7 +16,7 @@ int spi_write(int fd, int addr, u8* buf, int len);
 
 
 
-static struct device* dev;
+static struct item* dev;
 static int devlen = 0;
 static void* aaa;
 static int aaalen = 0;
@@ -30,7 +30,7 @@ void* allocdevice()
 
 
 
-int deviceread(_dev* dev,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int deviceread(struct item* dev,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	int fd = dev->priv_fd;
 	switch(dev->type){
@@ -39,7 +39,7 @@ int deviceread(_dev* dev,int foot, _syn* stack,int sp, void* arg,int idx, void* 
 	}
 	return 0;
 }
-int devicewrite(_dev* dev,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int devicewrite(struct item* dev,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	u8 t[2];
 	if(0 == buf){
@@ -78,36 +78,36 @@ void* devicecreate(u64 type, void* name, int argc, u8** argv)
 		return allocdevice();
 	}
 	if(_cpu_ == type){
-		struct device* p = allocdevice();
+		struct item* p = allocdevice();
 		p->type = _cpu_;
 		p->hfmt = _cpu_;
 	}
 	if(_pci_ == type){
-		struct device* p = allocdevice();
+		struct item* p = allocdevice();
 		p->type = _bus_;
 		p->hfmt = _pci_;
 		return p;
 	}
 	if(_ahci_ == type){
-		struct device* p = allocdevice();
+		struct item* p = allocdevice();
 		p->type = _ahci_;
 		p->hfmt = _ahci_;
 		return p;
 	}
 	if(_xhci_ == type){
-		struct device* p = allocdevice();
+		struct item* p = allocdevice();
 		p->type = _xhci_;
 		p->hfmt = _xhci_;
 		return p;
 	}
 	if(_usb_ == type){
-		struct device* p = allocdevice();
+		struct item* p = allocdevice();
 		p->type = _usb_;
 		p->hfmt = _usb_;
 		return p;
 	}
 	if(_mmc_ == type){
-		struct device* p = allocdevice();
+		struct item* p = allocdevice();
 		p->type = _mmc_;
 		p->hfmt = _mmc_;
 		return p;
@@ -155,7 +155,7 @@ int devicemodify(int argc, u8** argv)
 int devicesearch(u8* buf, int len)
 {
 	int j,k=0;
-	struct device* p;
+	struct item* p;
 	for(j=0;j<64;j++)
 	{
 		p = &dev[j];
@@ -189,7 +189,7 @@ void initdevice(u8* addr)
 	devlen = 0;
 	aaalen = 0;
 
-#define max (0x100000/sizeof(struct device))
+#define max (0x100000/sizeof(struct item))
 	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)dev[j].tier = _dev_;
 

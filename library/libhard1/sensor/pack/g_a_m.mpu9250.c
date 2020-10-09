@@ -93,7 +93,7 @@ int mpu9250_parse(u8* buf, float* vec)
 
 
 
-int spi9250_slv8963_read(struct driver* dri, u8 reg, u8* buf, int len)
+int spi9250_slv8963_read(struct item* dri, u8 reg, u8* buf, int len)
 {
 	u8 tmp[16];
 
@@ -116,7 +116,7 @@ int spi9250_slv8963_read(struct driver* dri, u8 reg, u8* buf, int len)
 	take_data_from_peer(dri,_spi_, 0,0, 0,0x49|0x80, buf,len);
 	return 0;
 }
-int spi9250_slv8963_write(struct driver* dri, u8 reg, u8* buf, int len)
+int spi9250_slv8963_write(struct item* dri, u8 reg, u8* buf, int len)
 {
 	u8 tmp[16];
 
@@ -138,11 +138,11 @@ int spi9250_slv8963_write(struct driver* dri, u8 reg, u8* buf, int len)
 
 	return 0;
 }
-int spi9250_slv8963_stop(struct driver* dri)
+int spi9250_slv8963_stop(struct item* dri)
 {
 	return 0;
 }
-int spi9250_slv8963_start(struct driver* dri)
+int spi9250_slv8963_start(struct item* dri)
 {
 	u8 tmp[0x20];
 
@@ -168,7 +168,7 @@ int spi9250_slv8963_start(struct driver* dri)
 
 
 
-int mpu9250_spiread(struct driver* dri, float* vec)
+int mpu9250_spiread(struct item* dri, float* vec)
 {
 	u8 tmp[0x20];
 
@@ -183,7 +183,7 @@ int mpu9250_spiread(struct driver* dri, float* vec)
 	ak8963_parse(tmp+14, &vec[6]);
 	return 9;
 }
-int mpu9250_spiinit(struct driver* dri)
+int mpu9250_spiinit(struct item* dri)
 {
 	u8 tmp[0x80];
 
@@ -264,7 +264,7 @@ int mpu9250_spiinit(struct driver* dri)
 
 
 
-int mpu9250_i2cinit(struct driver* dri)
+int mpu9250_i2cinit(struct item* dri)
 {
 	u8 reg[0x20];
 
@@ -318,7 +318,7 @@ int mpu9250_i2cinit(struct driver* dri)
 	sleep_us(1000);
 	return 0;
 }
-int mpu9250_i2cread(struct driver* dri, float* vec)
+int mpu9250_i2cread(struct item* dri, float* vec)
 {
 	u8 tmp[32];
 
@@ -334,18 +334,18 @@ int mpu9250_i2cread(struct driver* dri, float* vec)
 
 
 
-int mpu9250_read( _dri* dri,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int mpu9250_read( struct item* dri,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int mpu9250_write(_dri* dri,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int mpu9250_write(struct item* dri,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	int ret;
 	float tmp[10];
 	say("@mpu9250_write: %.4s\n", &foot);
 
 	if(_clk_ == foot){
-		switch(dri->stage1){
+		switch(dri->hfmt){
 		case _i2c_:ret = mpu9250_i2cread(dri, tmp);break;
 		case _spi_:ret = mpu9250_spiread(dri, tmp);break;
 		default:return 0;
@@ -361,7 +361,7 @@ int mpu9250_discon(struct halfrel* self, struct halfrel* peer)
 }
 int mpu9250_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct driver* drv;
+	struct item* drv;
 	say("@mpu9250_linkup: %.4s\n", &self->flag);
 
 	drv = self->pchip;
@@ -370,13 +370,13 @@ int mpu9250_linkup(struct halfrel* self, struct halfrel* peer)
 	switch(self->flag){
 	case _i2c_:{
 		mpu9250_i2cinit(drv);
-		drv->stage1 = _i2c_;
+		drv->hfmt = _i2c_;
 		break;
 	}
 	case _spi_:{
 		mpu9250_spiinit(drv);
 		spi9250_slv8963_start(drv);
-		drv->stage1 = _spi_;
+		drv->hfmt = _spi_;
 		break;
 	}
 	}
@@ -386,12 +386,12 @@ int mpu9250_linkup(struct halfrel* self, struct halfrel* peer)
 
 
 
-int mpu9250_create(struct driver* ele, u8* url)
+int mpu9250_create(struct item* ele, u8* url)
 {
 	say("@mpu9250_create\n");
 	return 1;
 }
-int mpu9250_delete(struct driver* ele)
+int mpu9250_delete(struct item* ele)
 {
 	return 0;
 }

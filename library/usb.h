@@ -236,10 +236,10 @@ struct bufhead{
 	u8 iInterface;	//change when new intf
 }__attribute__((packed));
 struct perusb{
-union{
-	struct bufhead my;
-	u8 padding0[0x100];
-};
+	union{
+		struct bufhead my;
+		u8 padding0[0x100];
+	};
 
 	//[0x100, 0xfff]
 	struct descnode node[0];	//0xf00/0x20=0x78, enough for node

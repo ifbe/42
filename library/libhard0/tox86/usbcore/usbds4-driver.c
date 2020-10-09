@@ -60,7 +60,7 @@ static void dpad2lrdu(u8 dpad, u8* p)
 	if((dpad >= 3)&&(dpad <= 5))p[2] = 1;
 	if((0==dpad)|(1==dpad)|(7==dpad))p[3] = 1;
 }
-static int ds4hid_ongive(struct device* usb,int xxx, struct device* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
+static int ds4hid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)
 {
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
@@ -77,7 +77,7 @@ static int ds4hid_ongive(struct device* usb,int xxx, struct device* xhci,int end
 	say("gx=%d,gy=%d,gz=%d, ax=%d,ay=%d,az=%d\n",data->gx,-data->gz,data->gy,  -data->ax,data->az,-data->ay);
 	return 0;
 }
-int ds4hid_driver(struct device* usb,int xxx, struct device* xhci,int slot, struct descnode* intfnode, struct InterfaceDescriptor* intfdesc)
+int ds4hid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct descnode* intfnode, struct InterfaceDescriptor* intfdesc)
 {
 	int j,ret;
 	struct UsbRequest req;
@@ -194,7 +194,7 @@ int ds4hid_driver(struct device* usb,int xxx, struct device* xhci,int slot, stru
 	ret = xhci_giveorderwaitevent(xhci,slot|(inaddr<<8), 'd',0, perusb->freebuf,pktlen, usb,0);
 	return 0;
 }
-int usbds4_driver(struct device* usb, int xxx, struct device* xhci, int slot)
+int usbds4_driver(struct item* usb, int xxx, struct item* xhci, int slot)
 {
 	struct perusb* perusb = usb->priv_ptr;
 

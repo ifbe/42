@@ -489,7 +489,7 @@ static void enableport(volatile struct HBA_PORT* port)
 
 
 
-void ahci_mmioinit(struct device* dev, volatile struct HBA_MEM* abar)
+void ahci_mmioinit(struct item* dev, volatile struct HBA_MEM* abar)
 {
 	say("ahci@mmio:%p{\n", abar);
 	//printmmio(abar, 0x20);
@@ -557,7 +557,7 @@ void ahci_mmioinit(struct device* dev, volatile struct HBA_MEM* abar)
 
     say("}\n");
 }
-void ahci_portinit(struct device* dev, u32 addr)
+void ahci_portinit(struct item* dev, u32 addr)
 {
 	u32 temp;
 	say("ahci@port:%x{\n",addr);

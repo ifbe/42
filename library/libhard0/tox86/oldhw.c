@@ -21,7 +21,7 @@ void enterring3();
 
 
 
-void initcpu0(struct device* p)
+void initcpu0(struct item* p)
 {
 	//
 	asm("cli");
@@ -62,7 +62,7 @@ void freehardware()
 }
 void inithardware()
 {
-	struct device* p;
+	struct item* p;
 
 	p = devicecreate(_cpu_, 0, 0, 0);
 	initcpu0(p);

@@ -1,9 +1,9 @@
 #include "libhard.h"
 //
-void xhci_portinit(struct device* dev, u32 addr);
+void xhci_portinit(struct item* dev, u32 addr);
 //
-void ide_portinit(struct device* dev, u32 addr);
-void ahci_portinit(struct device* dev, u32 addr);
+void ide_portinit(struct item* dev, u32 addr);
+void ahci_portinit(struct item* dev, u32 addr);
 //
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
@@ -42,7 +42,7 @@ struct pci
 
 void initpci_port()
 {
-	struct device* xx;
+	struct item* xx;
 	u32 idid,type;
 	u32 bus,dev,fun,addr;
 	say("@initpci_port\n");

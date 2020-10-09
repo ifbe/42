@@ -51,29 +51,29 @@ int systemlinkup(struct halfrel* self, struct halfrel* peer);
 int systemdelete(void*);
 void* systemcreate(u64 type, void* addr, int argc, u8** argv);
 //
-int driverread( _dri* dri,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int driverwrite(_dri* dri,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int driverread( struct item* dri,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int driverwrite(struct item* dri,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int driverdiscon(struct halfrel* self, struct halfrel* peer);
 int driverlinkup(struct halfrel* self, struct halfrel* peer);
 int driverdelete(void*);
 void* drivercreate(u64 type, void* addr, int argc, u8** argv);
 //
-int deviceread( _dev* dev,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int devicewrite(_dev* dev,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int deviceread( struct item* dev,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int devicewrite(struct item* dev,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int devicediscon(struct halfrel* self, struct halfrel* peer);
 int devicelinkup(struct halfrel* self, struct halfrel* peer);
 int devicedelete(void*);
 void* devicecreate(u64 type, void* addr, int argc, u8** argv);
 //
-int workerread( _wrk* wrk,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int workerwrite(_wrk* wrk,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int workerread( struct item* wrk,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int workerwrite(struct item* wrk,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int workerdiscon(struct halfrel* self, struct halfrel* peer);
 int workerlinkup(struct halfrel* self, struct halfrel* peer);
 int workerdelete(void*);
 void* workercreate(u64 type, void* addr, int argc, u8** argv);
 //
-int originread( _ori* ori,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int originwrite(_ori* ori,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int originread( struct item* ori,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int originwrite(struct item* ori,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int origindiscon(struct halfrel* self, struct halfrel* peer);
 int originlinkup(struct halfrel* self, struct halfrel* peer);
 int origindelete(void*);

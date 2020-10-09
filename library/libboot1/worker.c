@@ -5,39 +5,39 @@ void freestdrel();
 void initstdrel(void*);
 //
 void initexiter(void*);
-void exiter_create(struct worker*, u8*, int, u8**);
+void exiter_create(struct item*, u8*, int, u8**);
 void exiter(void*);
 //
 void initpulser(void*);
-void pulser_create(struct worker*, u8*, int, u8**);
+void pulser_create(struct item*, u8*, int, u8**);
 void pulser(void*);
 //
 void initpoller(void*);
-void poller_create(struct worker*, u8*, int, u8**);
+void poller_create(struct item*, u8*, int, u8**);
 void poller(void*);
 //
 void initrealer(void*);
-void realer_create(struct worker*, u8*, int, u8**);
+void realer_create(struct item*, u8*, int, u8**);
 void realer(void*);
 //
 void initwaiter(void*);
-void waiter_create(struct worker*, u8*, int, u8**);
+void waiter_create(struct item*, u8*, int, u8**);
 void waiter(void*);
 //
-void compiler_create(struct worker*, u8*, int, u8**);
+void compiler_create(struct item*, u8*, int, u8**);
 //
 void initkernel(void*);
-void kernel_create(struct worker*, u8*, int, u8**);
+void kernel_create(struct item*, u8*, int, u8**);
 //
-void myml_create(struct worker*, u8*, int, u8**);
+void myml_create(struct item*, u8*, int, u8**);
 //
 void initmython(void*);
-void mython_create(struct worker*, u8*, int, u8**);
+void mython_create(struct item*, u8*, int, u8**);
 
 
 
 
-static struct worker* wrk;
+static struct item* wrk;
 static int wrklen = 0;
 void* allocworker()
 {
@@ -49,11 +49,11 @@ void* allocworker()
 
 
 
-int workerread(_wrk* wrk,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int workerread(struct item* wrk,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int workerwrite(_wrk* wrk,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int workerwrite(struct item* wrk,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -72,7 +72,7 @@ int workerlinkup(struct halfrel* self, struct halfrel* peer)
 
 int workerdelete(void* addr)
 {
-	struct worker* tmp;
+	struct item* tmp;
 	if(0 == addr)return 0;
 
 	tmp = addr;
@@ -82,7 +82,7 @@ int workerdelete(void* addr)
 }
 void* workercreate(u64 type, void* url, int argc, u8** argv)
 {
-	struct worker* tmp;
+	struct item* tmp;
 
 	//
 	if(_compiler_ == type){
@@ -214,7 +214,7 @@ void initworker(u8* addr)
 	int j;
 	wrk = (void*)(addr+0x000000);
 
-#define max (0x100000/sizeof(struct worker))
+#define max (0x100000/sizeof(struct item))
 	for(j=0;j<0x200000;j++)addr[j]=0;
 	for(j=0;j<max;j++)wrk[j].tier = _wrk_;
 

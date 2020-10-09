@@ -10,7 +10,7 @@ void freehardware()
 }
 void inithardware()
 {
-	struct device* p;
+	struct item* p;
 
 	//cpu
 	p = devicecreate(_cpu_, 0, 0, 0);
