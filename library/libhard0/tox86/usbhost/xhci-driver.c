@@ -586,7 +586,33 @@ int maketrb_bulktransfer(u8* ring, int xxx, u8* buf, int len)
 	trb->Cyclebit = 1;
 	return 0x10;
 }
-int maketrb_interrupttransfer(u8* ring, int xxx, u8* buf, int len)
+int maketrb_interruptout(u8* ring, int xxx, u8* buf, int len)
+{
+	struct NormalTRB* trb;
+	xhci_ZeroMemory(ring, 0x10);
+
+	trb = (void*)ring;
+	trb->DataBufferPointer = (u64)buf;
+
+	trb->TRBTransferLength = len;
+	trb->TDSize = 0;
+	trb->InterruptTarget = 0;
+
+	trb->EvaluateNextTRB = 0;
+	trb->InterruptonShortPacket = 0;
+	trb->NoSnoop = 0;
+	trb->Chainbit = 0;
+	trb->InterruptOnCompletion = 1;
+	trb->ImmediateData = 0;
+	trb->Rsvd = 0;
+	trb->BlockEventInterrupt = 0;
+	trb->TRBType = TRB_common_Normal;
+	trb->unused = 0;
+
+	trb->Cyclebit = 1;
+	return 0x10;
+}
+int maketrb_interruptin(u8* ring, int xxx, u8* buf, int len)
 {
 	int j;
 	struct NormalTRB* trb;
@@ -654,9 +680,6 @@ void* xhci_takeevent(struct item* xhci)
 }
 int xhci_parseevent(struct item* xhci, u32* ev)
 {
-	//got event
-	printmemory(ev, 16);
-
 	u32 stat = ev[2]>>24;
 	u32 slot = ev[3]>>24;
 	u32 type = (ev[3]>>10)&0x3f;
@@ -693,6 +716,7 @@ int xhci_parseevent(struct item* xhci, u32* ev)
 		break;
 
 	default:
+		printmemory(ev, 16);
 		say("[xhci]code=%d@evtype=%d\n", stat, type);
 	}
 
@@ -716,6 +740,9 @@ int xhci_waitevent(struct item* xhci, u32 wanttype, u32 arg)
 			//say("timeout@%p: %08x,%08x,%08x,%08x\n", ev, ev[0], ev[1], ev[2], ev[3]);
 			//printmemory(my->event_cycle, 0x10);
 		}
+
+		//print
+		printmemory(ev, 16);
 
 		//parse
 		xhci_parseevent(xhci, ev);
@@ -1178,8 +1205,7 @@ int xhci_ControlTransfer(struct item* xhci, int slot, struct UsbRequest* req, in
 		say("[xhci]slotstate=%x, ep0state=%x\n", slotstate, ep0state);
 		return 0;
 	}
-	//
-	printmemory(recvbuf, recvlen);
+	//printmemory(recvbuf, recvlen);
 	return recvlen;
 }
 int xhci_BulkTransfer(struct item* xhci, int slotendp, void* sendbuf, int sendlen, void* recvbuf, int recvlen)
@@ -1207,18 +1233,46 @@ int xhci_BulkTransfer(struct item* xhci, int slotendp, void* sendbuf, int sendle
 	}
 	return 0;
 }
-int xhci_InterruptTransfer(struct item* xhci, int slotendp, void* sendbuf, int sendlen, void* recvbuf, int recvlen)
+int xhci_InterruptTransferOut(struct item* xhci, int slotendp, void* sendbuf, int sendlen, void* recvbuf, int recvlen)
 {
 	int slot = slotendp & 0xff;
 	int DCI = (slotendp>>8)&0xff;
 	say("--------------------------------\n");
-	say("[xhci]InterruptTransfer slot=%x,dci=%x\n", slot, DCI);
+	say("[xhci]InterruptTransferOut slot=%x,dci=%x\n", slot, DCI);
 
 	struct perxhci* xhcidata = (void*)(xhci->priv_data);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 	struct perendp* endpdata = &slotdata->myctx.epnctx[DCI];
 	void* cmdenq = slotdata->cmdring[DCI] + endpdata->myenq;
-	endpdata->myenq += maketrb_interrupttransfer(cmdenq, 0, sendbuf, sendlen);
+	endpdata->myenq += maketrb_interruptout(cmdenq, 0, sendbuf, sendlen);
+	if(endpdata->myenq >= 0x1000)endpdata->myenq = 0;
+
+	//
+	xhci_giveorder(xhci, slot | (DCI<<8));
+	if(xhci_waitevent(xhci, TRB_event_Transfer, slotendp) != slotendp){
+		u32 contextsize = 0x20;
+		if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
+
+		u32 slotstate = (*(u32*)(slotdata->hcctx+0xc))>>27;
+		u32 epstate = (*(u32*)(slotdata->hcctx+contextsize*DCI))&0x3;
+		say("[xhci]slotstate=%x, epstate=%x\n", slotstate, epstate);
+		return 0;
+	}
+	//printmemory(recvbuf, recvlen);
+	return recvlen;
+}
+int xhci_InterruptTransferIn(struct item* xhci, int slotendp, void* sendbuf, int sendlen, void* recvbuf, int recvlen)
+{
+	int slot = slotendp & 0xff;
+	int DCI = (slotendp>>8)&0xff;
+	say("--------------------------------\n");
+	say("[xhci]InterruptTransferIn slot=%x,dci=%x\n", slot, DCI);
+
+	struct perxhci* xhcidata = (void*)(xhci->priv_data);
+	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
+	struct perendp* endpdata = &slotdata->myctx.epnctx[DCI];
+	void* cmdenq = slotdata->cmdring[DCI] + endpdata->myenq;
+	endpdata->myenq += maketrb_interruptin(cmdenq, 0, sendbuf, sendlen);
 	if(endpdata->myenq >= 0x1000)endpdata->myenq = 0;
 	endpdata->contractor = (u64)recvbuf;
 
@@ -1266,8 +1320,10 @@ int xhci_giveorderwaitevent(
 		struct perxhci* xhcidata = (void*)(xhci->priv_data);
 		struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 		switch(slotdata->myctx.epnctx[DCI].eptype){
+		case EPType_InterruptOut:
+			return xhci_InterruptTransferOut(xhci, SlotEndp, sendbuf, sendlen, recvbuf, recvlen);
 		case EPType_InterruptIn:
-			return xhci_InterruptTransfer(xhci, SlotEndp, sendbuf, sendlen, recvbuf, recvlen);
+			return xhci_InterruptTransferIn(xhci, SlotEndp, sendbuf, sendlen, recvbuf, recvlen);
 		case EPType_BulkOut:
 		case EPType_BulkIn:
 			return xhci_BulkTransfer(xhci, SlotEndp, sendbuf, sendlen, recvbuf, recvlen);

@@ -55,34 +55,36 @@ struct xbox360command_led{
 
 
 struct xboxonereport{
-	u8 sequence;	//0
+	u8 type;	//0
 	u8 unknown;		//1
 
-	u8   sync:1;	//2
+	u16 id;			//[2,3]
+
+	u8   sync:1;	//4
 	u8   what:1;
-	u8   menu:1;
-	u8  share:1;
+	u8  start:1;
+	u8   back:1;
 	u8 kpad_a:1;
-	u8 kpad_x:1;
 	u8 kpad_b:1;
+	u8 kpad_x:1;
 	u8 kpad_y:1;
 
-	u8 dpad_u:1;	//3
+	u8 dpad_u:1;	//5
 	u8 dpad_d:1;
 	u8 dpad_l:1;
 	u8 dpad_r:1;
-	u8     l2:1;
-	u8     r2:1;
-	u8     l3:1;
-	u8     r3:1;
+	u8     lb:1;
+	u8     rb:1;
+	u8     ls:1;
+	u8     rs:1;
 
-	u16 lt;		//[4,5]
-	u16 rt;		//[6,7]
+	u16 lt;		//[6,7]
+	u16 rt;		//[8,9]
 
-	u16 lx;		//[8.9]
-	u16 ly;		//[a,b]
-	u16 rx;		//[c,d]
-	u16 ry;		//[e,f]
+	u16 lx;		//[a.b]
+	u16 ly;		//[c,d]
+	u16 rx;		//[e,f]
+	u16 ry;		//[10,11]
 }__attribute__((packed));
 struct xboxonecommand{
 	u8 what;
@@ -99,8 +101,24 @@ static int xboxhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, 
 	struct xboxonereport* data = *(void**)sbuf;
 	printmemory(data, 0x40);
 
-	say("l=%x,r=%x,d=%x,u=%x\n",data->dpad_l,data->dpad_r,data->dpad_d,data->dpad_u);
-	say("a=%x,b=%x,x=%x,y=%x\n",data->kpad_a,data->kpad_b,data->kpad_x,data->kpad_y);
+	switch(data->type){
+	case 0x01:	//invalid op data
+	case 0x02:	//waiting for connection
+	case 0x03:	//heart beat
+	case 0x07:	//guide button status
+		break;
+	case 0x20:	//button data
+		say("l=%x,r=%x,d=%x,u=%x,a=%x,b=%x,x=%x,y=%x\n",data->dpad_l,data->dpad_r,data->dpad_d,data->dpad_u,data->kpad_a,data->kpad_b,data->kpad_x,data->kpad_y);
+		say("lb=%d,rb=%d,ls=%d,rs=%d,back=%d,start=%d\n",data->lb,data->rb,data->ls,data->rs,data->back,data->start);
+		say("lx=%d,ly=%d,rx=%d,ry=%d,lt=%d,rt=%d\n",data->lx,data->ly,data->rx,data->ry,data->lt,data->rt);
+
+		if(data->dpad_l)eventwrite(0x4b, _kbd_, 0, 0);
+		if(data->dpad_r)eventwrite(0x4d, _kbd_, 0, 0);
+		if(data->dpad_d)eventwrite(0x50, _kbd_, 0, 0);
+		if(data->dpad_u)eventwrite(0x48, _kbd_, 0, 0);
+		break;
+	}
+
 	return 0;
 }
 int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct descnode* intfnode, struct InterfaceDescriptor* intfdesc)
@@ -194,6 +212,17 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
 	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, 0,0);
 	if(ret < 0)return -10;
+
+
+//------------------------start work------------------------
+	say("[xboxhid]start_work\n");
+	u8 tmp[8];
+	tmp[0] = 0x05;
+	tmp[1] = 0x20;
+	tmp[2] = 0x00;
+	tmp[3] = 0x01;
+	tmp[4] = 0x00;
+	ret = xhci_giveorderwaitevent(xhci,slot|(outaddr<<8), 'd',0, tmp,5, 0,0);
 
 
 //------------------------transfer ring------------------------
