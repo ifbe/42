@@ -631,16 +631,16 @@ int usb_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 
 	if(0x045e == devdesc->idVendor){
 		switch(devdesc->idProduct){
-		case 0x0202:say("xbox\n");break;
+		case 0x0202:
 		case 0x0285:
-		case 0x0289:say("xbox-s\n");break;
-		case 0x028e:say("xbox360\n");break;
-		case 0x028f:say("xbox360-wireless\n");break;
-		case 0x02d1:say("xboxone\n");break;
-		case 0x02dd:say("xboxone-2015\n");break;
-		case 0x02e3:say("xboxone-elite\n");break;
-		case 0x02e6:say("xbox-dongle\n");break;
-		case 0x02ea:say("xboxones\n");break;
+		case 0x0289:
+		case 0x028e:
+		case 0x028f:
+		case 0x02d1:
+		case 0x02dd:
+		case 0x02e3:
+		case 0x02e6:
+		case 0x02ea:return usbxbox_driver(usb,xxx, xhci,slot);
 		}
 	}
 	if(0x054c == devdesc->idVendor){

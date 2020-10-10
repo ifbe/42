@@ -161,7 +161,7 @@ int mython_fromfile(u8* str, int len)
 	}
 	return 1;
 }
-int mython_create(struct worker* wrk, void* url, int argc, u8** argv)
+int mython_create(struct item* wrk, void* url, int argc, u8** argv)
 {
 	int j;
 	if(0 == argv)return 0;

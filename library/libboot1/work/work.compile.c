@@ -20,7 +20,7 @@ int compiler_fromfile(u8* str, int len)
 	}
 	return 1;
 }
-int compiler_create(struct worker* wrk, void* url, int argc, u8** argv)
+int compiler_create(struct item* wrk, void* url, int argc, u8** argv)
 {
 	int j;
 	if(0 == argv)return 0;

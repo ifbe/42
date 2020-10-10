@@ -37,10 +37,10 @@ void realer(void* realer)
 
 
 
-void realer_delete(struct worker* wrk, u8* arg)
+void realer_delete(struct item* wrk, u8* arg)
 {
 }
-void realer_create(struct worker* wrk, u8* arg, int argc, u8** argv)
+void realer_create(struct item* wrk, u8* arg, int argc, u8** argv)
 {
 }
 

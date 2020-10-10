@@ -1,5 +1,6 @@
 #include "libhard.h"
 #include "usb.h"
+void eventwrite(u64,u64,u64,u64);
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 void INTERFACE_REQUEST_GET_REPORT_DESC(void* req, u16 intf, u16 typeindex, u16 len);
 void INTERFACE_REQUEST_SET_IDLE(struct UsbRequest* req, u16 intf, u16 val);
@@ -70,6 +71,10 @@ static int ds4hid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, v
 
 	u8 lrdu[4];
 	dpad2lrdu(data->dpad, lrdu);
+	if(lrdu[0])eventwrite(0x4b, _kbd_, 0, 0);
+	if(lrdu[1])eventwrite(0x4d, _kbd_, 0, 0);
+	if(lrdu[2])eventwrite(0x50, _kbd_, 0, 0);
+	if(lrdu[3])eventwrite(0x48, _kbd_, 0, 0);
 
 	say("l=%d,r=%d,d=%d,u=%d,a=%d,b=%d,x=%d,y=%d\n",lrdu[0],lrdu[1],lrdu[2],lrdu[3],data->a,data->b,data->x,data->y);
 	say("l1=%d,r1=%d,l2=%d,r2=%d,l3=%d,r3=%d, share=%d,opt=%d,ps=%d\n",data->l1,data->r1,data->l2,data->r2,data->l3,data->r3,  data->share,data->opt,data->ps);

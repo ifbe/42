@@ -1105,9 +1105,5 @@ typedef struct entity _ent;
 typedef struct supply _sup;
 typedef struct artery _art;
 typedef struct sysobj _sys;
-typedef struct driver _dri;
-typedef struct device _dev;
-typedef struct worker _wrk;
-typedef struct origin _ori;
 
 #endif

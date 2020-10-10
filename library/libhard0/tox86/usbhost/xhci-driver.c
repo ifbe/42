@@ -663,8 +663,8 @@ int xhci_parseevent(struct item* xhci, u32* ev)
 	switch(type){
 	case TRB_event_Transfer: 	 			//32
 		u32 endp = (ev[3]>>16)&0x1f;
-		say("[xhci]%d@Transfer: cmd=%p, len=%x, slot=%x, ep=%x\n", stat, *(u8**)ev, ev[2]&0xffffff, slot, endp);
 		//update perslot.epctx.hcdeq
+
 		struct perxhci* xhcidata = (void*)(xhci->priv_data);
 		struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 		struct perendp* endpdata = &slotdata->myctx.epnctx[endp];
@@ -672,8 +672,11 @@ int xhci_parseevent(struct item* xhci, u32* ev)
 		if(usb){
 			if(usb->ongiving){
 				usb->ongiving(usb,0, xhci,endp, *(u8**)ev,0, 0,0);
+				break;
 			}
 		}
+
+		say("[xhci]%d@Transfer: cmd=%p, len=%x, slot=%x, ep=%x\n", stat, *(u8**)ev, ev[2]&0xffffff, slot, endp);
 		break;
 
 	case TRB_event_CommandCompletion:		//33

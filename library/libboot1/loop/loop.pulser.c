@@ -4,7 +4,7 @@ void give_data_into_them(void*,int, void*,int, void*,int, void*,int);
 
 
 
-void pulser(struct worker* pulser)
+void pulser(struct item* pulser)
 {
 	u64 t0;
 	u64 dt;
@@ -24,9 +24,9 @@ void pulser(struct worker* pulser)
 
 
 
-void pulser_delete(struct worker* wrk, u8* arg)
+void pulser_delete(struct item* wrk, u8* arg)
 {
 }
-void pulser_create(struct worker* wrk, u8* arg, int argc, u8** argv)
+void pulser_create(struct item* wrk, u8* arg, int argc, u8** argv)
 {
 }

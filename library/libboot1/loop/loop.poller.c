@@ -122,10 +122,10 @@ void poller(void* poller)
 
 
 
-void poller_delete(struct worker* wrk, u8* arg)
+void poller_delete(struct item* wrk, u8* arg)
 {
 }
-void poller_create(struct worker* wrk, u8* arg, int argc, u8** argv)
+void poller_create(struct item* wrk, u8* arg, int argc, u8** argv)
 {
 }
 

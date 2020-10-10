@@ -554,7 +554,7 @@ void pulser(void*);
 void poller(void*);
 void realer(void*);
 void waiter(void*);
-int myml_create(struct worker* wrk, void* url, int argc, u8** argv)
+int myml_create(struct item* wrk, void* url, int argc, u8** argv)
 {
 	int j;
 	if(0 == argv){
