@@ -10,7 +10,6 @@
 #define _DSDT_ hex32('D','S','D','T')
 #define _FACP_ hex32('F','A','C','P')
 #define _HPET_ hex32('H','P','E','T')
-#define _MADT_ hex32('M','A','D','T')
 #define _MCFG_ hex32('M','C','F','G')
 #define RSD_PTR_ hex64('R','S','D',' ','P','T','R',' ')
 void printmemory(void*, int);
@@ -31,19 +30,6 @@ struct ACPIHEAD{
 	u32   creatorrev;	//[20,23]
 }__attribute__((packed));
 
-struct MCFG_CONFSPACE{
-	u64    BaseAddr;	//[0.7]
-	u16    GroupNum;	//[8,9]
-	u8 BusNum_start;	//a
-	u8   BusNum_end;	//b
-	u32        Rsvd;	//[c,f]
-}__attribute__((packed));
-struct MCFG{
-	struct ACPIHEAD          head;	//[00,23]
-	u64                      what;	//[24,2b]
-	struct MCFG_CONFSPACE conf[0];	//[2c,??]
-}__attribute__((packed));
-
 struct HPET_BASEADDR{
 	u8  space;	//0
 	u8  width;	//1
@@ -58,6 +44,64 @@ struct HPET{
 	u8                HPETNumber;	//34
 	u16 MinimumClockPeriodicMode;	//[35,36]
 	u8   PageProtectOEMAttribute;	//37
+}__attribute__((packed));
+
+
+struct MADT_TYPE0{	//local apic
+	u8 type;
+	u8 len;
+	u8 cpuID;
+	u8 apicID;
+	u32 flag;
+}__attribute__((packed));
+struct MADT_TYPE1{	//io apic
+	u8 type;
+	u8 len;
+	u8 ioapicID;
+	u8 rsvd;
+	u32 ioapicaddr;
+	u32 GlobalSystemInterruptBase;
+}__attribute__((packed));
+struct MADT_TYPE2{	//interrupt source override
+	u8 type;
+	u8 len;
+	u8 bus;
+	u8 irq;
+	u32 GlobalSystemInterrupt;
+	u16 flag;
+}__attribute__((packed));
+struct MADT_TYPE4{	//non maskable interrupt
+	u8 type;
+	u8 len;
+	u8 cpuID;
+	u16 flag;
+	u8 LINT;
+}__attribute__((packed));
+struct MADT_TYPE5{	//local apic address override
+	u8 type;
+	u8 len;
+	u16 rsvd;
+	u64 apicaddr;
+}__attribute__((packed));
+struct MADT{
+	struct ACPIHEAD head;	//[00,23]
+	u32    LocalApicAddr;	//[24,27]
+	u32     Dual8259Flag;	//[28,2b]
+	u8          entry[0];	//[2c,??]
+}__attribute__((packed));
+
+
+struct MCFG_CONFSPACE{
+	u64    BaseAddr;	//[0.7]
+	u16    GroupNum;	//[8,9]
+	u8 BusNum_start;	//a
+	u8   BusNum_end;	//b
+	u32        Rsvd;	//[c,f]
+}__attribute__((packed));
+struct MCFG{
+	struct ACPIHEAD          head;	//[00,23]
+	u64                      what;	//[24,2b]
+	struct MCFG_CONFSPACE conf[0];	//[2c,??]
 }__attribute__((packed));
 
 
@@ -117,6 +161,46 @@ void acpi_HPET(void* p)
 }
 void acpi_MADT(void* p)
 {
+	struct MADT* madt = p;
+	say(".localapic=%x, have8259=%d\n", madt->LocalApicAddr, madt->Dual8259Flag);
+
+	int j = 0;
+	int len = madt->head.len - 0x2c;
+	struct MADT_TYPE0* t0;
+	struct MADT_TYPE1* t1;
+	struct MADT_TYPE2* t2;
+	struct MADT_TYPE4* t4;
+	struct MADT_TYPE5* t5;
+	while(1){
+		switch(madt->entry[j]){
+		case 0:
+			t0 = (void*)(madt->entry+j);
+			say("%x: cpu=%x,apic=%x,flag=%x\n", j, t0->cpuID,t0->apicID,t0->flag);
+			break;
+		case 1:
+			t1 = (void*)(madt->entry+j);
+			say("%x: ioapicid=%x,ioapicaddr=%x,gsib=%x\n", j, t1->ioapicID,t1->ioapicaddr,t1->GlobalSystemInterruptBase);
+			break;
+		case 2:
+			t2 = (void*)(madt->entry+j);
+			say("%x: bus=%x,irq=%x,gsi=%x,flag=%x\n", j, t2->bus,t2->irq,t2->GlobalSystemInterrupt,t2->flag);
+			break;
+		case 4:
+			t4 = (void*)(madt->entry+j);
+			say("%x: cpu=%x,flag=%x,LINT=%x\n", j, t4->cpuID,t4->flag,t4->LINT);
+			break;
+		case 5:
+			t5 = (void*)(madt->entry+j);
+			say("%x: localapic=%llx\n", j, t5->apicaddr);
+			break;
+		default:
+			say("%x: type=%x,len=%x\n", j, madt->entry[j], madt->entry[j+1]);
+		}
+		if(0 == madt->entry[j+1])break;
+
+		j += madt->entry[j+1];
+		if(j >= len)break;
+	}
 }
 void acpi_MCFG(void* p)
 {
@@ -127,18 +211,14 @@ void acpi_MCFG(void* p)
 		c[j].BaseAddr, c[j].GroupNum, c[j].BusNum_start, c[j].BusNum_end);
 	}
 }
-void acpi_APIC(void* p)
-{
-}
 void acpitable(void* p)
 {
 	say("%.4s@%p\n", p, p);
 	switch(*(u32*)p){
-	case _APIC_:acpi_APIC(p);break;
+	case _APIC_:acpi_MADT(p);break;
 	case _DSDT_:acpi_DSDT(p);break;
 	case _FACP_:acpi_FACP(p);break;
 	case _HPET_:acpi_HPET(p);break;
-	case _MADT_:acpi_MADT(p);break;
 	case _MCFG_:acpi_MCFG(p);break;
 	}
 }
