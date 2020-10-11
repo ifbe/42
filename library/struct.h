@@ -467,7 +467,13 @@ struct style
 
 struct item
 {
-	//[40,7f]: wire
+	//[00,1f]: type
+	u64 tier;
+	u64 type;
+	u64 hfmt;
+	u64 vfmt;
+
+	//[20,3f]: wire
 	union{
 		void* irel0;
 		u64 ipad0;
@@ -484,12 +490,6 @@ struct item
 		void* oreln;
 		u64 opadn;
 	};
-
-	//[40,7f]: type
-	u64 tier;
-	u64 type;
-	u64 hfmt;
-	u64 vfmt;
 
 	//[40,7f]: func
 	union{
@@ -525,11 +525,15 @@ struct item
 		char padding7[8];
 	};
 
-	//[80,ff]
+
+	//[80,ff]: public
+	u8 public_data[0x80];
+
+	//[100,1ff]: private
 	union{
 		int   priv_fd;
 		void* priv_ptr;
-		u8    priv_data[0x80];
+		u8    priv_data[0x100];
 	};
 }__attribute__((packed));
 struct foot{
@@ -541,7 +545,13 @@ struct foot{
 
 struct sysobj
 {
-	//[00,1f]: wire
+	//[00,1f]: type
+	u64 tier;
+	u64 type;
+	u64 fmt;
+	u64 name;
+
+	//[20,3f]: wire
 	union{
 		void* irel0;
 		u64 ipad0;
@@ -559,13 +569,41 @@ struct sysobj
 		u64 opadn;
 	};
 
-	//[20,3f]: type
-	u64 tier;
-	u64 type;
-	u64 fmt;
-	u64 name;
+	//[40,7f]: func
+	union{
+		int (*oncreate)(struct item* node, void* url, int argc, u8** argv);
+		char padding0[8];
+	};
+	union{
+		int (*ondelete)(struct item* node);
+		char padding1[8];
+	};
+	union{
+		int (*onsearch)(struct item* node, int flag, struct halfrel** self, struct halfrel** peer);
+		char padding2[8];
+	};
+	union{
+		int (*onmodify)(struct item* node, void* buf);
+		char padding3[8];
+	};
+	union{
+		int (*onlinkup)(struct item* node,int foot, void* self, void* peer);
+		char padding4[8];
+	};
+	union{
+		int (*ondiscon)(struct item* node,int foot, void* self, void* peer);
+		char padding5[8];
+	};
+	union{
+		int (*ontaking)(struct item* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding6[8];
+	};
+	union{
+		int (*ongiving)(struct item* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding7[8];
+	};
 
-	//[40,5f]: fd/handle
+	//[80,9f]: fd/handle
 	union{
 		u64 sz0;
 		u64 selffd;
@@ -583,7 +621,7 @@ struct sysobj
 		void* tempobj;
 	};
 
-	//[60,7f]: memory
+	//[a0,bf]: memory
 	union{
 		u64 addr0;
 		void* buf0;
@@ -601,16 +639,22 @@ struct sysobj
 		void* buf3;
 	};
 
-	//[0x80,0xbf]
+	//[0xc0,0xff]
 	u8 self[0x20];
 	u8 peer[0x20];
 
-	//[0xc0,0xff]
-	u8 data[0x40];
+	//[0x100,0x1ff]
+	u8 data[0x100];
 }__attribute__((packed));
 struct artery
 {
-	//[00,1f]: wire
+	//[00,1f]: type
+	u64 tier;
+	u64 type;
+	u64 stage1;
+	u64 name;
+
+	//[20,3f]: wire
 	union{
 		void* irel0;
 		u64 ipad0;
@@ -628,13 +672,41 @@ struct artery
 		u64 opadn;
 	};
 
-	//[20,3f]: type
-	u64 tier;
-	u64 type;
-	u64 stage1;
-	u64 name;
+	//[40,7f]: func
+	union{
+		int (*oncreate)(struct item* node, void* url, int argc, u8** argv);
+		char padding0[8];
+	};
+	union{
+		int (*ondelete)(struct item* node);
+		char padding1[8];
+	};
+	union{
+		int (*onsearch)(struct item* node, int flag, struct halfrel** self, struct halfrel** peer);
+		char padding2[8];
+	};
+	union{
+		int (*onmodify)(struct item* node, void* buf);
+		char padding3[8];
+	};
+	union{
+		int (*onlinkup)(struct item* node,int foot, void* self, void* peer);
+		char padding4[8];
+	};
+	union{
+		int (*ondiscon)(struct item* node,int foot, void* self, void* peer);
+		char padding5[8];
+	};
+	union{
+		int (*ontaking)(struct item* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding6[8];
+	};
+	union{
+		int (*ongiving)(struct item* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		char padding7[8];
+	};
 
-	//[40,5f]: fd/handle
+	//[80,9f]: fd/handle
 	union{
 		u64 sz0;
 		u64 selffd;
@@ -652,7 +724,7 @@ struct artery
 		void* tempobj;
 	};
 
-	//[60,7f]: memory
+	//[a0,bf]: memory
 	union{
 		u64 addr0;
 		u64 data0;
@@ -675,8 +747,12 @@ struct artery
 		void* buf3;
 	};
 
-	//[80,ff]
-	u8 data[0x80];
+	//[0xc0,0xff]
+	u8 self[0x20];
+	u8 peer[0x20];
+
+	//[0x100,0x1ff]
+	u8 data[0x100];
 }__attribute__((packed));
 
 
@@ -684,7 +760,13 @@ struct artery
 
 struct supply
 {
-	//[00,1f]: wire
+	//[00,1f]: type
+	u64 tier;
+	u64 type;
+	u64 fmt;
+	u64 vfmt;
+
+	//[20,3f]: wire
 	union{
 		void* irel0;
 		u64 ipad0;
@@ -701,12 +783,6 @@ struct supply
 		void* oreln;
 		u64 opadn;
 	};
-
-	//[20,3f]: type
-	u64 tier;
-	u64 type;
-	u64 fmt;
-	u64 vfmt;
 
 	//[40,7f]: func
 	union{
@@ -888,10 +964,23 @@ struct supply
 		int iwn;
 		f32 fwn;
 	};
+
+	//[100,1ff]
+	union{
+		int   priv_fd;
+		void* priv_ptr;
+		u8    priv_data[0x100];
+	};
 }__attribute__((packed));
 struct entity
 {
-	//[00,1f]: wire
+	//[00,1f]: type
+	u64 tier;
+	u64 type;
+	u64 fmt;
+	u64 vfmt;
+
+	//[20,3f]: wire
 	union{
 		void* irel0;
 		u64 ipad0;
@@ -908,12 +997,6 @@ struct entity
 		void* oreln;
 		u64 opadn;
 	};
-
-	//[20,3f]: type
-	u64 tier;
-	u64 type;
-	u64 fmt;
-	u64 vfmt;
 
 	//[40,7f]: func
 	union{
@@ -1093,6 +1176,13 @@ struct entity
 	union{
 		int iwn;
 		f32 fwn;
+	};
+
+	//[100,1ff]
+	union{
+		int   priv_fd;
+		void* priv_ptr;
+		u8    priv_data[0x100];
 	};
 }__attribute__((packed));
 
