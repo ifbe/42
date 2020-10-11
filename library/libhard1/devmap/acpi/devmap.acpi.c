@@ -20,22 +20,44 @@ void say(void*, ...);
 
 
 struct ACPIHEAD{
-	u32 signature;	//[0,3]
-	u32 len;		//[4,7]
-	u8 revision;	//8
-	u8 checksum;	//9
-	u8 OEMID[6];	//[a,f]
+	u32    signature;	//[0,3]
+	u32          len;	//[4,7]
+	u8      revision;	//8
+	u8      checksum;	//9
+	u8      OEMID[6];	//[a,f]
 	u8 OEMtableID[8];	//[10,17]
-	u32 OEMrevision;	//[18,1b]
-	u32 creatorID;		//[1c,1f]
-	u32 creatorrev;		//[20,23]
+	u32  OEMrevision;	//[18,1b]
+	u32    creatorID;	//[1c,1f]
+	u32   creatorrev;	//[20,23]
 }__attribute__((packed));
+
 struct MCFG_CONFSPACE{
-	u64 BaseAddr;
-	u16 GroupNum;
-	u8 BusNum_start;
-	u8 BusNum_end;
-	u32 Rsvd;
+	u64    BaseAddr;	//[0.7]
+	u16    GroupNum;	//[8,9]
+	u8 BusNum_start;	//a
+	u8   BusNum_end;	//b
+	u32        Rsvd;	//[c,f]
+}__attribute__((packed));
+struct MCFG{
+	struct ACPIHEAD          head;	//[00,23]
+	u64                      what;	//[24,2b]
+	struct MCFG_CONFSPACE conf[0];	//[2c,??]
+}__attribute__((packed));
+
+struct HPET_BASEADDR{
+	u8  space;	//0
+	u8  width;	//1
+	u8 offset;	//2
+	u8   rsvd;	//3
+	u64  addr;	//[4,b]
+}__attribute__((packed));
+struct HPET{
+	struct ACPIHEAD         head;	//[00,23]
+	u32        EventTimerBlockID;	//[24,27]
+	struct HPET_BASEADDR    base;	//[28,33]
+	u8                HPETNumber;	//34
+	u16 MinimumClockPeriodicMode;	//[35,36]
+	u8   PageProtectOEMAttribute;	//37
 }__attribute__((packed));
 
 
@@ -90,6 +112,8 @@ void acpi_FACP(void* p)
 }
 void acpi_HPET(void* p)
 {
+	struct HPET_BASEADDR* a = p+0x28;
+	say("00: hpet@%llx\n",a->addr);
 }
 void acpi_MADT(void* p)
 {

@@ -67,14 +67,14 @@ void inithardware()
 	p = devicecreate(_cpu_, 0, 0, 0);
 	initcpu0(p);
 
+	initmemmap();
+	initacpi(getdevmap());
+
 	init8259();
 	initapic();
 
 	initrtc();
 	init825x();
-
-	initmemmap();
-	initacpi(getdevmap());
 
 	p = devicecreate(_pci_, 0, 0, 0);
 	initpci_port(p);
