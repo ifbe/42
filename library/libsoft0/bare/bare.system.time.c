@@ -14,6 +14,7 @@ void say(void*, ...);
 
 
 static u64 date = 0;
+static u64 time = 0;
 
 
 
@@ -38,10 +39,14 @@ u64 dateread()
 void sleep_us(int t)
 {
 }
-void timewrite(u64 time)
+void sleep_ms(int t)
 {
+}
+void timewrite(u64 t)
+{
+	time = t;
 }
 u64 timeread()
 {
-	return 0;
+	return time;
 }

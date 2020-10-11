@@ -722,62 +722,66 @@ int xhci_parseevent(struct item* xhci, u32* ev)
 
 	return 0;
 }
-int xhci_waitevent(struct item* xhci, u32 wanttype, u32 arg)
+int xhci_waitevent(struct item* xhci, u32 wanttype, u32 wantarg)
 {
+	u64 time;
+	u64 deadline = timeread() + 0x1000000;
+
 	u32* ev;
+	u32 timeout = 0xfffffff;
 	while(1){
-		u32 timeout = 0xfffffff;
-		while(1){
-			ev = xhci_takeevent(xhci);
-			if(0 != ev)break;
+		ev = xhci_takeevent(xhci);
+		if(ev){
+			//print
+			printmemory(ev, 16);
 
-			timeout--;
-			if(0 == timeout)break;
-		}
-		if(0 == timeout){
-			say("timeout!!!!!!\n");
-			return -1;
-			//say("timeout@%p: %08x,%08x,%08x,%08x\n", ev, ev[0], ev[1], ev[2], ev[3]);
-			//printmemory(my->event_cycle, 0x10);
-		}
+			//parse
+			xhci_parseevent(xhci, ev);
 
-		//print
-		printmemory(ev, 16);
+			//return
+			u32 stat = ev[2]>>24;
+			u32 slot = ev[3]>>24;
+			u32 type = (ev[3]>>10)&0x3f;
+			u32 arg = wantarg;
+			switch(type){
+			case TRB_event_Transfer: 	 			//32
+				u32 endp = (ev[3]>>16)&0x1f;
+				arg = slot | (endp<<8);
+				//update perslot.epctx.hcdeq
+				if((wanttype == type)&&(wantarg == arg)){
+					if(1 == stat)return arg;
+					else return -1;
+				}
+				break;
 
-		//parse
-		xhci_parseevent(xhci, ev);
+			case TRB_event_CommandCompletion:		//33
+				if(wanttype == type){
+					if(1 == stat)return slot;
+					else return -1;
+				}
+				break;
 
-		//return
-		u32 stat = ev[2]>>24;
-		u32 slot = ev[3]>>24;
-		u32 type = (ev[3]>>10)&0x3f;
-		switch(type){
-		case TRB_event_Transfer: 	 			//32
-			u32 endp = (ev[3]>>16)&0x1f;
-			//update perslot.epctx.hcdeq
-			if((type == wanttype)&&(arg == (slot | (endp<<8)))){
-				if(1 == stat)return arg;
-				else return -1;
+			case TRB_event_PortStatusChange:		//34
+				u32 port = ev[0]>>24;
+				arg = port;
+				if((wanttype == type)&&(wantarg == arg)){
+					if(1 == stat)return arg;
+					else return -1;
+				}
+				break;
 			}
-			break;
 
-		case TRB_event_CommandCompletion:		//33
-			if(type == wanttype){
-				if(1 == stat)return slot;
-				else return -1;
-			}
-			break;
+			say("[xhci]event unwanted: wanttype=%x,thistype=%x,wantarg=%x,thisarg=%x\n", wanttype, type, wantarg, arg);
+		}//if(ev)
 
-		case TRB_event_PortStatusChange:		//34
-			u32 port = ev[0]>>24;
-			if((type == wanttype)&&(arg == port)){
-				if(1 == stat)return port;
-				else return -1;
-			}
-			break;
-		}
+		time = timeread();
+		if(time > deadline)break;
+
+		timeout -= 1;
+		if(0 == timeout)break;
 	}
 
+	say("timeout!!!!!!\n");
 	return -1;
 }
 

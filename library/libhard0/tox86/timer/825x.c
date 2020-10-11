@@ -2,6 +2,8 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
+void timewrite(u64);
+//
 u8 in8(u16 port);
 void out8(u16 port, u8 data);
 //
@@ -14,11 +16,12 @@ void say(void*, ...);
 
 
 
-static int dt = 0;
+static u64 dt = 0;
 void isr_825x()
 {
 	//if(0==(dt%1000))say("dt=%d\n",dt);
-	dt ++;
+	dt += 1;
+	timewrite(dt*1000);
 }
 void init825x()
 {
