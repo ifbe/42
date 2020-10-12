@@ -21,13 +21,12 @@ void* syscall(u64 iCall, void* arg)		//only work with dsdc89
     asm volatile( "syscall" : "=a"(retval) : "D"(iCall), "S"(arg) : "memory" );
     return retval;
 }
-int cpuid_string(int code, u32 p[4])
+void cpuid(u32 abcd[4])
 {
 	asm volatile("cpuid"
-		:"=a"(p[0]),"=b"(p[1]),"=c"(p[2]),"=d"(p[3])
-		:"a"(code)
+		:"=a"(abcd[0]),"=b"(abcd[1]),"=c"(abcd[2]),"=d"(abcd[3])
+		:"a"(abcd[0])
 	);
-	return (int)p[0];
 }
 u64 rdtsc()
 {
