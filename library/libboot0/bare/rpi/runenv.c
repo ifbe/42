@@ -14,6 +14,23 @@ void* pollenv()
 	ev->what = _char_;
 	return ev;
 }
+
+
+
+
+static void* dtb = 0;
+void* getdtb()
+{
+	return dtb;
+}
+void setdtb(void* p)
+{
+	dtb = p;
+}
+
+
+
+
 void* mmiobase()
 {
 	u32 reg;

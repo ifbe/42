@@ -39,6 +39,8 @@
 #define _waiter_ hex64('w','a','i','t','e','r', 0, 0)
 //
 #define _cpu_ hex32('c','p','u',0)
+#define _irq_ hex32('i','r','q',0)
+#define _tmr_ hex32('t','m','r',0)
 #define _bus_ hex32('b','u','s',0)
 #define _pci_ hex32('p','c','i',0)
 #define _mmc_ hex32('m','m','c',0)

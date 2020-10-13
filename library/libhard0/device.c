@@ -81,6 +81,19 @@ void* devicecreate(u64 type, void* name, int argc, u8** argv)
 		struct item* p = allocdevice();
 		p->type = _cpu_;
 		p->hfmt = _cpu_;
+		return p;
+	}
+	if(_irq_ == type){
+		struct item* p = allocdevice();
+		p->type = _irq_;
+		p->hfmt = _irq_;
+		return p;
+	}
+	if(_tmr_ == type){
+		struct item* p = allocdevice();
+		p->type = _tmr_;
+		p->hfmt = _tmr_;
+		return p;
 	}
 	if(_pci_ == type){
 		struct item* p = allocdevice();

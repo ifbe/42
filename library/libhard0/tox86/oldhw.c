@@ -78,18 +78,25 @@ void inithardware()
 {
 	struct item* p;
 
-	p = devicecreate(_cpu_, 0, 0, 0);
-	initcpu0(p);
-
+	//map
 	initmemmap();
 	initacpi(getdevmap());
 
+	//cpu
+	p = devicecreate(_cpu_, 0, 0, 0);
+	initcpu0(p);
+
+	//interrupter
+	p = devicecreate(_irq_, 0, 0, 0);
 	init8259();
 	initapic();
 
+	//timer
+	p = devicecreate(_tmr_, 0, 0, 0);
 	initrtc();
 	init825x();
 
+	//pci
 	p = devicecreate(_pci_, 0, 0, 0);
 	initpci_port(p);
 	initpci_mmio();

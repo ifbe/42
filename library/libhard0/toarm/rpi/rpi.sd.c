@@ -211,7 +211,7 @@ int sd_readblock(unsigned int fd, unsigned int lba, unsigned char *buf, int num)
 	int r,c=0,d;
 	if(num<1) num=1;
 
-	say("sd_readblock lba %x,%x\n", lba, num);
+	say("EMMC: sd_readblock lba %x,%x\n", lba, num);
 	if(sd_status(SR_DAT_INHIBIT)) {sd_err=SD_TIMEOUT; return 0;}
 
 	unsigned int* tmp = (unsigned int*)buf;
@@ -233,7 +233,7 @@ int sd_readblock(unsigned int fd, unsigned int lba, unsigned char *buf, int num)
 			if(sd_err) return 0;
 		}
 		if((r=sd_int(INT_READ_RDY))){
-			say("\rERROR: Timeout waiting for ready to read\n");
+			say("ERROR: Timeout waiting for ready to read\n");
 			sd_err = r;
 			return 0;
 		}
@@ -277,7 +277,7 @@ int sd_clk(unsigned int f)
 	else d=(1<<s);
 
 	if(d<=2) {d=2;s=0;}
-	say("sd_clk divisor %x, shift %x\n", d, s);
+	say("EMMC: sd_clk divisor %x, shift %x\n", d, s);
 
 	if(sd_hv>HOST_SPEC_V2) h=(d&0x300)>>2;
 	d=(((d&0x0ff)<<8)|h);
@@ -298,13 +298,13 @@ int sd_clk(unsigned int f)
 
 
 
-int freesd()
+int freesdcard()
 {
 	return 0;
 }
-int initsd()
+int initsdcard()
 {
-	say("@initsd\n");
+	say("@initsdcard\n");
 
 	long r,cnt,ccs=0;
 	mmio = mmiobase();
@@ -384,7 +384,9 @@ int initsd()
 		say("EMMC: CMD_SEND_OP_COND returned ");
 		if(r&ACMD41_CMD_COMPLETE)say("COMPLETE ");
 		if(r&ACMD41_VOLTAGE)say("VOLTAGE ");
-		if(r&ACMD41_CMD_CCS)say("CCS %08x,%08x\n", r>>32, r);
+		if(r&ACMD41_CMD_CCS)say("CCS %08x,%08x", r>>32, r);
+		say("\n");
+
 		if(sd_err!=SD_TIMEOUT && sd_err!=SD_OK ) {
 			say("ERROR: EMMC ACMD41 returned error\n");
 			return sd_err;

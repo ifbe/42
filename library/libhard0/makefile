@@ -41,9 +41,10 @@ arm64:
 
 barepi64:arm64
 	$(CC) $(CF) toarm/pi34.c
-	$(CC) $(CF) toarm/rpi/rpi.sd.c
 	$(CC) $(CF) toarm/rpi/rpi.mbox.c
+	$(CC) $(CF) toarm/rpi/rpi.pmic.c
 	$(CC) $(CF) toarm/rpi/rpi.systmr.c
+	$(CC) $(CF) toarm/rpi/rpi.sd.c
 	$(CC) $(CF) toarm/rpi/rpi.gpio.c
 	$(CC) $(CF) toarm/rpi/rpi.uart.c
 	$(CC) $(CF) toarm/rpi/rpi.i2c.c
