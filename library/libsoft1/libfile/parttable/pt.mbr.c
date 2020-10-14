@@ -111,6 +111,7 @@ int mbrclient_discon(struct halfrel* self, struct halfrel* peer)
 }
 int mbrclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
+	say("@mbrclient_linkup:%x\n",self->flag);
 	if(_src_ == self->flag){
 		struct artery* ele = self->pchip;
 		int ret = take_data_from_peer(ele,_src_, 0,0, "",0, ele->buf0,0x1000);

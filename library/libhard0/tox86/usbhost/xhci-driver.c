@@ -1402,7 +1402,7 @@ int resetport(struct item* xhci, int countfrom0)
 
 	//wait for portchange event
 	if(xhci_waitevent(xhci, TRB_event_PortStatusChange, countfrom0+1) < 0){
-		say("portstatus unchanged: %p, USBSTS=%x\n", &optreg->USBSTS, optreg->USBSTS);
+		say("portstatus unchanged: USBSTS=%x\n", optreg->USBSTS);
 		return -2;
 	}
 	say("[xhci]port changed\n");

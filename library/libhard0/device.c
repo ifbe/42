@@ -32,6 +32,11 @@ void* allocdevice()
 
 int deviceread(struct item* dev,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
+	//say("@deviceread\n");
+	if(dev->ontaking){
+		return dev->ontaking(dev,foot, stack,sp, arg,idx, buf,len);
+	}
+
 	int fd = dev->priv_fd;
 	switch(dev->type){
 		case _i2c_:return i2c_read(fd, idx, buf, len);break;
