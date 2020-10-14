@@ -681,17 +681,23 @@ void* xhci_takeevent(struct item* xhci)
 int xhci_parseevent(struct item* xhci, u32* ev)
 {
 	u32 stat = ev[2]>>24;
-	u32 slot = ev[3]>>24;
 	u32 type = (ev[3]>>10)&0x3f;
+	u32 slot = ev[3]>>24;
+	u32 endp;
+	u32 port;
+	struct perxhci* xhcidata;
+	struct perslot* slotdata;
+	struct perendp* endpdata;
+	struct item* usb;
 	switch(type){
 	case TRB_event_Transfer: 	 			//32
-		u32 endp = (ev[3]>>16)&0x1f;
+		endp = (ev[3]>>16)&0x1f;
 		//update perslot.epctx.hcdeq
 
-		struct perxhci* xhcidata = (void*)(xhci->priv_data);
-		struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
-		struct perendp* endpdata = &slotdata->myctx.epnctx[endp];
-		struct item* usb = (void*)endpdata->contractor;
+		xhcidata = (void*)(xhci->priv_data);
+		slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
+		endpdata = &slotdata->myctx.epnctx[endp];
+		usb = (void*)endpdata->contractor;
 		if(usb){
 			if(usb->ongiving){
 				usb->ongiving(usb,0, xhci,endp, *(u8**)ev,0, 0,0);
@@ -707,7 +713,7 @@ int xhci_parseevent(struct item* xhci, u32* ev)
 		break;
 
 	case TRB_event_PortStatusChange:		//34
-		u32 port = ev[0]>>24;
+		port = ev[0]>>24;
 		say("[xhci]%d@PortStatusChange: port=%x(Count from 1)\n", stat, port);
 		break;
 
@@ -724,6 +730,10 @@ int xhci_parseevent(struct item* xhci, u32* ev)
 }
 int xhci_waitevent(struct item* xhci, u32 wanttype, u32 wantarg)
 {
+	u32 stat,port;
+	u32 slot,endp;
+	u32 type,arg;
+
 	u64 time;
 	u64 deadline = timeread() + 0x1000000;
 
@@ -739,13 +749,13 @@ int xhci_waitevent(struct item* xhci, u32 wanttype, u32 wantarg)
 			xhci_parseevent(xhci, ev);
 
 			//return
-			u32 stat = ev[2]>>24;
-			u32 slot = ev[3]>>24;
-			u32 type = (ev[3]>>10)&0x3f;
-			u32 arg = wantarg;
+			stat = ev[2]>>24;
+			slot = ev[3]>>24;
+			type = (ev[3]>>10)&0x3f;
+			arg = wantarg;
 			switch(type){
 			case TRB_event_Transfer: 	 			//32
-				u32 endp = (ev[3]>>16)&0x1f;
+				endp = (ev[3]>>16)&0x1f;
 				arg = slot | (endp<<8);
 				//update perslot.epctx.hcdeq
 				if((wanttype == type)&&(wantarg == arg)){
@@ -762,7 +772,7 @@ int xhci_waitevent(struct item* xhci, u32 wanttype, u32 wantarg)
 				break;
 
 			case TRB_event_PortStatusChange:		//34
-				u32 port = ev[0]>>24;
+				port = ev[0]>>24;
 				arg = port;
 				if((wanttype == type)&&(wantarg == arg)){
 					if(1 == stat)return arg;
@@ -1391,7 +1401,10 @@ int resetport(struct item* xhci, int countfrom0)
 	say("[xhci]port enabled\n");
 
 	//wait for portchange event
-	if(xhci_waitevent(xhci, TRB_event_PortStatusChange, countfrom0+1) < 0)return -2;
+	if(xhci_waitevent(xhci, TRB_event_PortStatusChange, countfrom0+1) < 0){
+		say("portstatus unchanged: %p, USBSTS=%x\n", &optreg->USBSTS, optreg->USBSTS);
+		return -2;
+	}
 	say("[xhci]port changed\n");
 
 	return 1;
@@ -1407,7 +1420,7 @@ void xhci_listall(struct item* xhci, int count)
 	for(j=0;j<count;j++){
 		tmp = port[j].PORTSC;
 		say("[xhci]@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-		say("[xhci]%02x:psi=%x,portsc=%x\n", j, pp[j].protocol, tmp);
+		say("[xhci]%02x@%p:psi=%x,portsc=%x\n", j, &port[j], pp[j].protocol, tmp);
 		if(0 == (tmp & 0x1))continue;
 
 		//if(0 == PORTSC.bit1)ver <= 2.0, have to reset
@@ -1678,7 +1691,7 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 			return -3;
 		}
 	}
-	say("[xhci]hc reseted\n");
+	say("[xhci]hc reseted,wait=%x\n",wait2);
 
 	//controller not ready=1就是没准备好
 	if(0x800 == (optreg->USBSTS&0x800)){
@@ -1746,10 +1759,10 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 
 	say("[xhci]setting ir[0]\n");
 	runreg->ir[0].ERSTSZ = 1;
-	runreg->ir[0].ERSTBA_lo = ersthome & 0xffffffff;
-	runreg->ir[0].ERSTBA_hi = ersthome >> 32;
 	runreg->ir[0].ERDP_lo = eventringhome & 0xffffffff;
 	runreg->ir[0].ERDP_hi = eventringhome >> 32;
+	runreg->ir[0].ERSTBA_lo = ersthome & 0xffffffff;
+	runreg->ir[0].ERSTBA_hi = ersthome >> 32;
 	runreg->ir[0].IMOD = 4000;
 	runreg->ir[0].IMAN |= 0x2;
 
