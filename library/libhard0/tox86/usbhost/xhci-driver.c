@@ -101,27 +101,27 @@ int usb_linkup(void*,int,void*,int);
 
 //runtime registers
 struct InterruptRegisters{
-	u32      IMAN;	//[00,03]: bit0=pending, bit1=enable
-	u32      IMOD;	//[04,07]: Interrupter Moderation, lo16=Interval, hi16=Counter
-	u32    ERSTSZ;	//[08,0b]: Event Ring Segment Table Size
-	u32     RsvdP;	//[0c,0f]
-	u32 ERSTBA_lo;	//[10,13]: Event Ring Segment Table Base Address
-	u32 ERSTBA_hi;	//[14,17]
-	u32   ERDP_lo;	//[18,1b]: Event Ring Dequeue Pointer
-	u32   ERDP_hi;	//[1c,1f]
-}__attribute__((packed));
+	volatile u32      IMAN;	//[00,03]: bit0=pending, bit1=enable
+	volatile u32      IMOD;	//[04,07]: Interrupter Moderation, lo16=Interval, hi16=Counter
+	volatile u32    ERSTSZ;	//[08,0b]: Event Ring Segment Table Size
+	volatile u32     RsvdP;	//[0c,0f]
+	volatile u32 ERSTBA_lo;	//[10,13]: Event Ring Segment Table Base Address
+	volatile u32 ERSTBA_hi;	//[14,17]
+	volatile u32   ERDP_lo;	//[18,1b]: Event Ring Dequeue Pointer
+	volatile u32   ERDP_hi;	//[1c,1f]
+}__attribute__((packed));	//must volatile, must packed
 struct RuntimeRegisters{
-	u32 MFINDEX;	//[00,03]
-	u32 rsvd[7];	//[04,1f]
+	volatile u32 MFINDEX;	//[00,03]
+	volatile u32 rsvd[7];	//[04,1f]
 	struct InterruptRegisters ir[0];	//[20,x]
-}__attribute__((packed));
+}__attribute__((packed));	//must volatile, must packed
 //operational registers
 struct PortRegisters{
 	volatile u32 PORTSC;
 	volatile u32 PORTPMSC;
 	volatile u32 PORTLI;
 	volatile u32 PORTHLPMC;
-}__attribute__((packed));
+}__attribute__((packed));	//must volatile, must packed
 struct OperationalRegisters{
 	volatile u32     USBCMD;		//[00,03]
 	volatile u32     USBSTS;		//[04,07]
@@ -137,10 +137,10 @@ struct OperationalRegisters{
 	volatile u32     CONFIG;		//[38,3b]
 	u8 Rsvd[0x400-0x3c];	//[3c,3ff]
 	struct PortRegisters port[0];	//[400,1400]
-}__attribute__((packed));
+}__attribute__((packed));	//must volatile, must packed
 struct DoorbellRegisters{
-	u32 bell[0];
-}__attribute__((packed));
+	volatile u32 bell[0];
+}__attribute__((packed));	//must volatile, must packed
 //first 0x20 byte
 struct CapabilityRegisters{
 	volatile u32  lenandver;		//[0,3]: byte0=len, byte23=ver
@@ -151,7 +151,7 @@ struct CapabilityRegisters{
 	volatile u32      DBOFF;		//[14,17]
 	volatile u32     RTSOFF;		//[18,1b]
 	volatile u32 CAPPARAMS2;		//[1c,1f]
-}__attribute__((packed));
+}__attribute__((packed));	//must volatile, must packed
 
 
 
@@ -1541,7 +1541,7 @@ void explainxecp(struct item* dev, u32* at)
 int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 {
 	say("[xhci]xhci@mmio:%p{\n", xhciaddr);
-	//printmmio(addr, 0x20);
+	//printmmio(xhciaddr, 0x1000);
 
 
 //---------------clear home---------------------
@@ -1802,6 +1802,29 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 	dev->ongiving = (void*)xhci_ongive;
 	return 0;
 }
+
+
+
+
+int xhci_portcaps(struct item* dev, u32 addr)
+{
+	u32 temp,next;
+
+	out32(0xcf8, addr+0x34);
+	next = in32(0xcfc)&0xff;
+	say("[xhci]pcicap@%x\n", next);
+
+	while(1){
+		if(next < 0x40)break;
+		if(next > 0xfc)break;
+
+		out32(0xcf8, addr+next);
+		temp = in32(0xcfc);
+		next = (temp>>8)&0xff;
+		say("[xhci]cap:type=%x,next=%x\n", temp&0xff, next);
+	}
+	return 0;
+}
 int xhci_portinit(struct item* dev, u32 addr)
 {
 	u64 temp,high;
@@ -1828,6 +1851,8 @@ int xhci_portinit(struct item* dev, u32 addr)
 	say("[xhci]bar4=%x\n", in32(0xcfc));
 	out32(0xcf8, addr+0x24);
 	say("[xhci]bar5=%x\n", in32(0xcfc));
+
+	xhci_portcaps(dev, addr);
 
 	//if(intel PantherPoint):
 	//Write 0xFFFFFFFF (as a dword) to the PCI Config Registers 0xD8 and 0xD0

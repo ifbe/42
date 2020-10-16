@@ -19,7 +19,7 @@ static int enable = 0;
 int read8250_one(u8* buf)
 {
 	int j = 0;
-	if(UARTPORT != enable)return 0xffff;
+	if(0 == enable)return 0xffff;
 	if((in8(UARTPORT + 5) & 1) != 0)
 	{
 		buf[0] = in8(UARTPORT);
@@ -30,7 +30,7 @@ int read8250_one(u8* buf)
 int lowlevel_input(u8* buf, int len)
 {
 	int j,ret;
-	if(UARTPORT != enable)return 0xffff;
+	if(0 == enable)return 0xffff;
 	for(j=0;j<len;j++)
 	{
 		ret = read8250_one(buf+j);
@@ -45,7 +45,7 @@ int lowlevel_input(u8* buf, int len)
 int write8250_one(u8 data)
 {
 	int j=0;
-	if(UARTPORT != enable)return 0xffff;
+	if(0 == enable)return 0xffff;
 	while((in8(UARTPORT + 5) & 0x20) == 0)
 	{
 		j++;
@@ -58,7 +58,7 @@ int lowlevel_output(char* buf, int len)
 {
 	int j;
 	bootservice_output(buf, len);
-	if(UARTPORT != enable)return 0xffff;
+	if(0 == enable)return 0xffff;
 
 	for(j=0;j<len;j++)write8250_one(buf[j]);
 	return j;
@@ -73,6 +73,8 @@ void freeserial()
 void initserial()
 {
 	if(UARTPORT != *(u16*)(BIOSDATA+0))return;
+	enable = 1;
+
 	out8(UARTPORT + 1, 0x00);//Disable all interrupts
 	out8(UARTPORT + 3, 0x80);//Enable DLAB (set baud rate divisor)
 	out8(UARTPORT + 0, 0x01);//1=115200, 3=38400
