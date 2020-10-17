@@ -63,9 +63,10 @@ void initcpu0(struct item* p)
 
 
 
-void initmemmap()
+void initmemmap(void* p)
 {
-	void* p = getmemmap();
+	if(0 == p)return;
+	printmemory(p, 0x100);
 }
 
 
@@ -79,7 +80,7 @@ void inithardware()
 	struct item* p;
 
 	//map
-	initmemmap();
+	initmemmap(getmemmap());
 	initacpi(getdevmap());
 
 	//cpu

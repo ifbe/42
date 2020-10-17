@@ -1,3 +1,4 @@
+//loader = github.com/ifbe/live
 #include "libboot.h"
 #define RSD_PTR_ hex64('R','S','D',' ','P','T','R',' ')
 
@@ -6,7 +7,11 @@
 
 void* getmemmap()
 {
-	return 0;
+	return (void*)0x1000;
+}
+void* getlfbmap()
+{
+	return (void*)0x2000;
 }
 void* getdevmap()
 {
