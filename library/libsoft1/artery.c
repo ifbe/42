@@ -911,6 +911,8 @@ int arterydiscon(struct halfrel* self, struct halfrel* peer)
 		case _ann_:return ann_discon(self, peer);break;
 		//case _cnn_:return cnn_discon(self, peer);break;
 
+		case _file_:return fileclient_discon(self, peer);break;
+
 		case _gpt_:return gptclient_discon(self, peer);break;
 		case _mbr_:return mbrclient_discon(self, peer);break;
 
@@ -985,6 +987,8 @@ int arterylinkup(struct halfrel* self, struct halfrel* peer)
 	switch(ele->type){
 		case _ann_:return ann_linkup(self, peer);break;
 		//case _cnn_:return cnn_linkup(self, peer);break;
+
+		case _file_:return fileclient_linkup(self, peer);break;
 
 		case _gpt_:return gptclient_linkup(self, peer);break;
 		case _mbr_:return mbrclient_linkup(self, peer);break;

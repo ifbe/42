@@ -71,13 +71,13 @@ int parse_stl(void*);
 //parttable
 #define _applept_ hex32('a','p','t',0)
 int check_applept(void*);
-int parse_applept(void*, void*);
+int parse_applept(void*, int);
 #define _gpt_ hex32('g','p','t',0)
 int check_gpt(void*);
-int parse_gpt(void*, void*);
+int parse_gpt(void*, int);
 #define _mbr_ hex32('m','b','r',0)
 int check_mbr(void*);
-int parse_mbr(void*, void*);
+int parse_mbr(void*, int);
 //picture
 #define _bmp_ hex32('b','m','p',0)
 int check_bmp(void*);
@@ -293,11 +293,11 @@ int file_check(u8* buf, int len)
 	//parttable
 	else if(check_gpt(buf) != 0){
 		type = _gpt_;
-		//parse_gpt(buf);
+		parse_gpt(buf, len);
 	}
 	else if(check_mbr(buf) != 0){
 		type = _mbr_;
-		//parse_mbr(buf, dirhome);
+		parse_mbr(buf, len);
 	}
 
 	//unknown
@@ -319,16 +319,27 @@ int fileclient_discon(struct halfrel* self, struct halfrel* peer)
 }
 int fileclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
+	say("@fileclient_linkup\n");
+	struct artery* ele = self->pchip;
+	if(0 == ele)return 0;
+	void* buf = ele->buf0;
+	if(0 == buf)return 0;
+
 	int ret;
 	u64 type;
-	struct artery* ele = self->pchip;
-	struct sysobj* obj = peer->pchip;
-	void* buf = memorycreate(0x1000, 0);
+	struct item* xxx = peer->pchip;
+	if((_sys_ == xxx->tier)|(_art_ == xxx->tier)){
+		struct sysobj* obj = peer->pchip;
+		ret = readfile(obj, obj->selffd, "", 0, buf, 0x10000);
+		if(0x10000 != ret)return -1;
+	}
+	else{
+		if(0 == xxx->ontaking)return -1;
+		ret = xxx->ontaking(xxx,peer->foot, 0,0, 0,0, buf, 0x10000);
+		if(0x10000 != ret)return -1;
+	}
 
-	ret = readfile(obj, obj->selffd, "", 0, buf, 0x1000);
-	if(ret != 0x1000)return -1;
-
-	type = file_check(buf, 0x1000);
+	type = file_check(buf, 0x10000);
 	if(0 == type)return -2;
 
 	say("filetype = %.8s\n", &type);
@@ -344,6 +355,6 @@ int fileclient_delete(struct artery* ele)
 }
 int fileclient_create(struct artery* ele, u8* url)
 {
-	ele->buf0 = memorycreate(0x1000, 0);
+	ele->buf0 = memorycreate(0x10000, 0);
 	return 0;
 }

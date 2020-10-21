@@ -8,8 +8,8 @@
 #define u64 unsigned long long
 int myvsnprintf(u8* buf, int len, u8* fmt, __builtin_va_list arg);
 int mysnprintf(u8* buf, int len, u8* fmt, ...);
-void lowlevel_input(void*);
 void lowlevel_output(void*, int);
+void danmu_output(void*, int);
 
 
 
@@ -47,8 +47,7 @@ void dbg(u8* fmt, ...)
 	//
 	__builtin_va_start(arg, fmt);
 
-	//snprintf
-	//ret = diary(outputqueue+cur, 0x1000, fmt, arg, cur%0x80);
+	//
 	ret = myvsnprintf(outputqueue+cur, 0x1000, fmt, arg);
 
 	//
@@ -70,8 +69,7 @@ void say(u8* fmt, ...)
 	//
 	__builtin_va_start(arg, fmt);
 
-	//snprintf
-	//ret = diary(outputqueue+cur, 0x1000, fmt, arg, cur%0x80);
+	//
 	ret = myvsnprintf(outputqueue+cur, 0x1000, fmt, arg);
 
 	//
@@ -79,6 +77,9 @@ void say(u8* fmt, ...)
 
 	//debugport
 	lowlevel_output(outputqueue+cur, ret);
+
+	//framebuffer
+	//danmu_output(outputqueue+cur, ret);
 
 	//write position
 	cur = cur+ret;

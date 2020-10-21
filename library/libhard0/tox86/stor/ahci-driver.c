@@ -112,40 +112,40 @@ struct HBA_CMD_HEADER{
 }__attribute__((packed));
 
 struct HBA_PORT{
-	u32       clb;	// 0x00, command list base address, 1K-byte aligned
-	u32      clbu;	// 0x04, command list base address upper 32 bits
-	u32        fb;	// 0x08, FIS base address, 256-byte aligned
-	u32       fbu;	// 0x0C, FIS base address upper 32 bits
-	u32        is;	// 0x10, interrupt status
-	u32        ie;	// 0x14, interrupt enable
-	u32       cmd;	// 0x18, command and status
-	u32      rsv0;	// 0x1C, Reserved
-	u32       tfd;	// 0x20, task file data
-	u32       sig;	// 0x24, signature
-	u32      ssts;	// 0x28, SATA status (SCR0:SStatus)
-	u32      sctl;	// 0x2C, SATA control (SCR2:SControl)
-	u32      serr;	// 0x30, SATA error (SCR1:SError)
-	u32      sact;	// 0x34, SATA active (SCR3:SActive)
-	u32        ci;	// 0x38, command issue
-	u32      sntf;	// 0x3C, SATA notification (SCR4:SNotification)
-	u32       fbs;	// 0x40, FIS-based switch control
-	u32  rsv1[11];	// 0x44 ~ 0x6F, Reserved
-	u32 vendor[4];	// 0x70 ~ 0x7F, vendor specific
+	volatile u32       clb;	// 0x00, command list base address, 1K-byte aligned
+	volatile u32      clbu;	// 0x04, command list base address upper 32 bits
+	volatile u32        fb;	// 0x08, FIS base address, 256-byte aligned
+	volatile u32       fbu;	// 0x0C, FIS base address upper 32 bits
+	volatile u32        is;	// 0x10, interrupt status
+	volatile u32        ie;	// 0x14, interrupt enable
+	volatile u32       cmd;	// 0x18, command and status
+	volatile u32      rsv0;	// 0x1C, Reserved
+	volatile u32       tfd;	// 0x20, task file data
+	volatile u32       sig;	// 0x24, signature
+	volatile u32      ssts;	// 0x28, SATA status (SCR0:SStatus)
+	volatile u32      sctl;	// 0x2C, SATA control (SCR2:SControl)
+	volatile u32      serr;	// 0x30, SATA error (SCR1:SError)
+	volatile u32      sact;	// 0x34, SATA active (SCR3:SActive)
+	volatile u32        ci;	// 0x38, command issue
+	volatile u32      sntf;	// 0x3C, SATA notification (SCR4:SNotification)
+	volatile u32       fbs;	// 0x40, FIS-based switch control
+	volatile u32  rsv1[11];	// 0x44 ~ 0x6F, Reserved
+	volatile u32 vendor[4];	// 0x70 ~ 0x7F, vendor specific
 }__attribute__((packed));
 
 struct HBA_MEM{
 //[0x00, 0x2B]: Generic Host Control
-	u32     cap;	// 0x00, Host capability
-	u32     ghc;	// 0x04, Global host control
-	u32      is;	// 0x08, Interrupt status
-	u32      pi;	// 0x0C, Port implemented
-	u32      vs;	// 0x10, Version
-	u32 ccc_ctl;	// 0x14, Command completion coalescing control
-	u32 ccc_pts;	// 0x18, Command completion coalescing ports
-	u32  em_loc;	// 0x1C, Enclosure management location
-	u32  em_ctl;	// 0x20, Enclosure management control
-	u32    cap2;	// 0x24, Host capabilities extended
-	u32    bohc;	// 0x28, BIOS/OS handoff control and status
+	volatile u32     cap;	// 0x00, Host capability
+	volatile u32     ghc;	// 0x04, Global host control
+	volatile u32      is;	// 0x08, Interrupt status
+	volatile u32      pi;	// 0x0C, Port implemented
+	volatile u32      vs;	// 0x10, Version
+	volatile u32 ccc_ctl;	// 0x14, Command completion coalescing control
+	volatile u32 ccc_pts;	// 0x18, Command completion coalescing ports
+	volatile u32  em_loc;	// 0x1C, Enclosure management location
+	volatile u32  em_ctl;	// 0x20, Enclosure management control
+	volatile u32    cap2;	// 0x24, Host capabilities extended
+	volatile u32    bohc;	// 0x28, BIOS/OS handoff control and status
 
 //[0x2C, 0x9F]: Reserved
 	u8 rsv[0xA0-0x2C];
@@ -264,12 +264,21 @@ struct SATA_ident
 	u16     words236_254[19];	//[fc,fd]Reserved
 	u16            integrity;	//[fe,ff]Cheksum, Signature
 }__attribute__((packed));
+struct perahci{
+	//hc
+	struct HBA_MEM* abar;
+	struct HBA_PORT* port;	//port0
+
+	//my
+	void* cmdlist;
+	void* fisrecv;
+}__attribute__((packed));
 
 
 
 
 
-void swap16(u8* buf, int len)
+static void swap16(u8* buf, int len)
 {
 	u8 t;
 	int j;
@@ -279,7 +288,148 @@ void swap16(u8* buf, int len)
 		buf[j+1] = t;
 	}
 }
-int ahci_identify(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
+static int find_cmdslot(struct HBA_PORT* port)
+{
+	// If not set in SACT and CI, the slot is free
+	int i;
+	u32 cmdslot = (port->sact | port->ci);
+	for (i=0; i<32; i++){    //cmdslots=32
+		if(0 == (cmdslot&1))return i;
+		cmdslot >>= 1;
+	}
+	return -1;
+}
+void maketable(struct HBA_CMD_HEADER* cmdheader, u64 from, u8* buf, u64 count)
+{
+	//Command FIS size
+	cmdheader->cfl=sizeof(struct FIS_REG_H2D)/4;
+
+	// Read from device
+	cmdheader->w = 0;
+
+	//PRDT entries count,example:
+	cmdheader->prdtl = (u16)((count-1)>>7) + 1;
+	//13sectors    >>>>    prdt=1个
+	//0x80sectors    >>>>    prdt=1个
+	//0x93sectors    >>>>    prdt=2个
+	//0x100sectors    >>>>    prdt=2个
+	//0x173sectors    >>>>    prdt=3个
+	//0x181sectors    >>>>    prdt=4个
+	//say("ptdtl",(u64)cmdheader->prdtl);
+
+	struct HBA_CMD_TBL* cmdtable = (struct HBA_CMD_TBL*)(u64)cmdheader->ctba;
+	say("cmdtable=%p\n", cmdtable);
+	char* p=(char*)cmdtable;
+	int i=sizeof(struct HBA_CMD_TBL)+(cmdheader->prdtl-1)*sizeof(struct HBA_PRDT_ENTRY);
+	for(;i>0;i--){p[i]=0;}
+
+	// 8K bytes (16 sectors) per PRDT
+	u64 addr;
+	for (i=0; i<cmdheader->prdtl-1; i++){
+		addr = (u64)buf;
+		cmdtable->prdt_entry[i].dba = addr&0xffffffff;
+		cmdtable->prdt_entry[i].dbau = addr>>32;
+		cmdtable->prdt_entry[i].dbc = 0x80*0x200-1;	//bit0=1, 0x1ffff
+		//cmdtable->prdt_entry[i].i = 1;
+
+		buf += 0x10000;  // 64KB words?
+		count -= 0x80;    // 16 sectors
+	}
+	addr = (u64)buf;
+	cmdtable->prdt_entry[i].dba = addr&0xffffffff;	//Last entry
+	cmdtable->prdt_entry[i].dbau = addr>>32;		//Last entry
+	cmdtable->prdt_entry[i].dbc = count*0x200-1;	// 512 bytes per sector
+	//cmdtable->prdt_entry[i].i = 1;
+
+	// Setup command
+	struct FIS_REG_H2D* fis = (struct FIS_REG_H2D*)(&cmdtable->cfis);
+	fis->fis_type = FIS_TYPE_REG_H2D;       //0
+	fis->c = 1;             //Command       //[1].[0,0]
+	//fis->command = 0x20;
+	//fis->command = ATA_CMD_READ_DMA_EX;
+	fis->command = 0x25;            //2
+
+	fis->lba0 = (u8)from;           //4
+	fis->lba1 = (u8)(from>>8);      //5
+	fis->lba2 = (u8)(from>>16);     //6
+	fis->device = 1<<6;             //7     1<<6=LBA mode
+
+	fis->lba3 = (u8)(from>>24);     //8
+	fis->lba4 = (u8)(from>>32);     //9
+	fis->lba5 = (u8)(from>>40);     //a
+
+	fis->countl = count&0xff;       //c
+	fis->counth = (count>>8)&0xff;  //d
+}
+int ahci_readblock(struct HBA_PORT* port, u64 from, u8* buf, u64 count)
+{
+	struct HBA_CMD_HEADER* cmdheader = (void*)(u64)(port->clb);
+
+	//Clear pending interrupt
+	port->is = 0xffffffff;
+
+	//find cmdslot
+	int cmdslot = find_cmdslot(port);
+	if(-1 == cmdslot){
+		say("err:no cmdslot\n");
+		return -1;
+	}
+
+	say("cmdslot=%x\n", cmdslot);
+	say("cmdheader=%p\n", cmdheader);
+	cmdheader += cmdslot;
+	maketable(cmdheader, from, buf, count);
+
+	//make the table
+	u32 temp=0;
+	volatile int timeout = 0;
+	while(1){
+		timeout++;
+		if(timeout>0xfffff){
+			say("(timeout1)port->tfd:%x\n",(u64)port->tfd);
+			return -11;
+		}
+
+		temp=port->tfd;                  //0x20
+		if(0x80 == (temp&0x80))continue;      //bit7,busy
+		if(0x8 == (temp&0x8))continue;  //bit3,DRQ
+		//0x88=interface busy|data transfer requested
+
+		break;
+	}
+	say("is=%x\n", port->is);
+	//unsigned int* pointer=(unsigned int*)(u64)(port->fb);
+
+	//issue
+	port->ci = 1<<cmdslot;    //Issue command
+	timeout=0;
+	while (1){
+		timeout++;
+		if(timeout>0xffffff){
+			say("(timeout2)port->ci=%x\n",temp);
+			return -22;
+		}
+
+		//
+		temp=port->is;
+		if (temp & 0x40000000){  //Task file error
+			say("port err 1\n",0);
+			return -33;
+		}
+
+		// in the PxIS port field as well (1 << 5)
+		temp=port->ci;
+		if((temp & (1<<cmdslot)) != 0)continue;
+
+		break;
+	}
+	return 0;
+}
+
+
+
+
+static int ahci_identify(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 {
 	volatile struct HBA_CMD_HEADER* cmdheader = (void*)(u64)(port->clb);
 	u32 cmdslot;
@@ -376,12 +526,55 @@ int ahci_identify(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 		"	model=<%.40s>\n", rdi->serial_no, rdi->model);
 	return 1;
 }
-int ahci_list(volatile struct HBA_MEM* abar, int total, u8* buf, int len)
+static int ahci_satacmd(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
+{
+	return 0;
+}
+static int ahci_ontake(struct item* ahci,int xxx,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+{
+	struct perahci* my = (void*)(ahci->priv_data);
+	struct HBA_MEM* abar = my->abar;
+	struct HBA_PORT* port = &abar->ports[xxx];
+	say("@ahci_ontake: node=%p,abar=%p,port=%p, off=%x,len=%x\n", my,abar,port, off,len);
+
+	int ret = ahci_readblock(port, off>>9, buf, len>>9);
+	if(ret < 0)return 0;
+
+	say("ret=%d\n",ret);
+	return len;
+}
+static int ahci_ongive(struct item* ahci,int xxx,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+{
+	say("@ahci_ongive\n");
+	return 0;
+}
+
+
+
+
+int ahci_contractor(struct item* dev, int who, u8* buf, int len)
+{
+	struct perahci* my = (void*)(dev->priv_data);
+	struct HBA_MEM* abar = my->abar;
+	struct HBA_PORT* port = &abar->ports[who];
+	int ret = ahci_identify(port, (void*)buf);
+	if(ret < 0)return -1;
+
+	struct artery* probe = arterycreate(_file_,0,0,0);
+	if(0 == probe)return -2;
+	struct relation* rel = relationcreate(probe,0,_art_,_src_, dev,who,_dev_,0);
+	if(0 == rel)return -3;
+	arterylinkup((void*)&rel->dst, (void*)&rel->src);
+	return 0;
+}
+int ahci_list(struct item* dev, int total, u8* buf, int len)
 {
 	int j,cnt=0;
-	volatile struct HBA_PORT* port;
+	struct perahci* my = (void*)(dev->priv_data);
+	struct HBA_MEM* abar = my->abar;
+	struct HBA_PORT* port;
 	for(j=0;j<total;j++){
-		port = (struct HBA_PORT*)&abar->ports[j];
+		port = &abar->ports[j];
 
 		u32 ssts = port->ssts;		//0x28
 		u8 ipm = (ssts >> 8) & 0x0F;	//0x28.[8,11]
@@ -395,8 +588,8 @@ int ahci_list(volatile struct HBA_MEM* abar, int total, u8* buf, int len)
 			case 0x00000101:	//sata
 			{
 				say("%x:sata\n", j);
-				ahci_identify(port, (void*)buf);
 				cnt += 1;
+				ahci_contractor(dev, j, buf, len);
 				break;
 			}
 			case 0xeb140101:	//atapi
@@ -489,7 +682,7 @@ static void enableport(volatile struct HBA_PORT* port)
 
 
 
-void ahci_mmioinit(struct item* dev, volatile struct HBA_MEM* abar)
+void ahci_mmioinit(struct item* dev, struct HBA_MEM* abar)
 {
 	say("ahci@mmio:%p{\n", abar);
 	//printmmio(abar, 0x20);
@@ -553,7 +746,14 @@ void ahci_mmioinit(struct item* dev, volatile struct HBA_MEM* abar)
 	}
 
 	//list
-	ahci_list(abar, cnt, ptr+receivebuf, 0x10000);
+	struct perahci* my = (void*)(dev->priv_data);
+	my->abar = abar;
+	my->port = &abar->ports[0];
+	my->cmdlist = ptr+commandlist;
+	my->fisrecv = ptr+receivefis;
+	dev->ongiving = ahci_ongive;
+	dev->ontaking = ahci_ontake;
+	ahci_list(dev, cnt, ptr+receivebuf, 0x10000);
 
     say("}\n");
 }

@@ -501,11 +501,10 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 
 //------------------------file prober------------------------
-	struct artery* probe = arterycreate(_mbr_,0,0,0);
+	struct artery* probe = arterycreate(_file_,0,0,0);
 	if(0 == probe)return 0;
 	struct relation* rel = relationcreate(probe,0,_art_,_src_, usb,0,_dev_,0);
 	if(0 == rel)return 0;
-	printmemory(rel,0x40);
 	arterylinkup((void*)&rel->dst, (void*)&rel->src);
 	return 0;
 }

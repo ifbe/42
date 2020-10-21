@@ -1,9 +1,11 @@
 #include "libhard.h"
 //
+void ehci_portinit(struct item* dev, u32 addr);
 void xhci_portinit(struct item* dev, u32 addr);
 //
 void ide_portinit(struct item* dev, u32 addr);
 void ahci_portinit(struct item* dev, u32 addr);
+void nvme_portinit(struct item* dev, u32 addr);
 //
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
@@ -73,7 +75,10 @@ void initpci_port()
 			break;
 
 		case 0x0108:
-			//if(0x02 == ((type>>8)&0xff))nvme_portinit(addr);
+			switch((type>>8)&0xff){
+			case 0x02:
+			case 0x03:xx = devicecreate(0, 0, 0, 0);nvme_portinit(xx, addr);break;
+			}
 			break;
 
 		case 0x0200:
