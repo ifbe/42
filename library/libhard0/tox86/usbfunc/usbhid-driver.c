@@ -242,14 +242,14 @@ static int parsekeyboard(struct report_keyboard* report)
 
 		v = usb2kbd[k];
 		if(0 != v){
-			say("[usbkbd]%x->kbd %x\n", k, v);
+			//say("[usbkbd]%x->kbd %x\n", k, v);
 			eventwrite(v, _kbd_, 0, 0);
 			continue;
 		}
 
 		v = usb2char[k];
 		if(0 != v){
-			say("[usbkbd]%x->char %x\n", k, v);
+			//say("[usbkbd]%x->char %x\n", k, v);
 			eventwrite(v, _char_, 0, 0);
 			continue;
 		}
@@ -258,7 +258,7 @@ static int parsekeyboard(struct report_keyboard* report)
 }
 static int parsemouse(struct report_mouse* report)
 {
-	say("[usbmouse]btn=%x,dx=%d,dy=%d\n", report->btn, report->dx, report->dy);
+	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", report->btn, report->dx, report->dy);
 
 	short xx[4];
 	xx[0] = report->dx;
