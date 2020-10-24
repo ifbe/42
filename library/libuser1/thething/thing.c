@@ -90,6 +90,7 @@ void gerber_register(void*);
 void geometry_register(void*);
 void obj3d_register(void*);
 void stl3d_register(void*);
+void wrl3d_register(void*);
 
 //game
 void the2048_register(void*);
@@ -556,6 +557,9 @@ void thing_init(void* addr)
 	tmp -= sizeof(struct entity);
 
 	stl3d_register(tmp);
+	tmp -= sizeof(struct entity);
+
+	wrl3d_register(tmp);
 	tmp -= sizeof(struct entity);
 
 

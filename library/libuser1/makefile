@@ -157,8 +157,9 @@ thething/file/file.program.arm64.c \
 thething/file/file.program.x86_64.c \
 thething/file/file.biology.fasta.c \
 thething/file/file.biology.dna.c \
-thething/file/file.model.stl.c \
 thething/file/file.model.obj.c \
+thething/file/file.model.stl.c \
+thething/file/file.model.wrl.c \
 thething/game/2048/game.2048.c \
 thething/game/gobang/game.gobang.c \
 thething/game/poker/poker.c \
