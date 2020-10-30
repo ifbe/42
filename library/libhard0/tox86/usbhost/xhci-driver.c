@@ -1,4 +1,5 @@
 #include "libhard.h"
+#define xhci_print(fmt, ...) say("[%08lld,xhci]"fmt, timeread(), ##__VA_ARGS__)
 //speed
 #define SPEED_FS 1
 #define SPEED_LS 2
@@ -486,7 +487,7 @@ int xhci_UsbInterval2XhcInterval(int usbspeed, int eptype, int bInterval)
 		//HS,SS,SS+: 2^(i-1)*125us
 		time = (1<<(bInterval-1))*125;
 	}
-//say("[xhci]usbspeed=%x,eptype=%x,binterval=%x,time=%x\n", usbspeed, eptype, bInterval, time);
+//xhci_print("usbspeed=%x,eptype=%x,binterval=%x,time=%x\n", usbspeed, eptype, bInterval, time);
 	//
 	time /= 125;
 	bInterval = 0;
@@ -705,25 +706,25 @@ int xhci_parseevent(struct item* xhci, u32* ev)
 			}
 		}
 
-		say("[xhci]%d@Transfer: cmd=%p, len=%x, slot=%x, ep=%x\n", stat, *(u8**)ev, ev[2]&0xffffff, slot, endp);
+		xhci_print("%d@Transfer: cmd=%p, len=%x, slot=%x, ep=%x\n", stat, *(u8**)ev, ev[2]&0xffffff, slot, endp);
 		break;
 
 	case TRB_event_CommandCompletion:		//33
-		say("[xhci]%d@CommandCompletion: cmd=%p, param=%x, slot=%x\n", stat, *(u8**)ev, ev[2]&0xffffff, slot);
+		xhci_print("%d@CommandCompletion: cmd=%p, param=%x, slot=%x\n", stat, *(u8**)ev, ev[2]&0xffffff, slot);
 		break;
 
 	case TRB_event_PortStatusChange:		//34
 		port = ev[0]>>24;
-		say("[xhci]%d@PortStatusChange: port=%x(Count from 1)\n", stat, port);
+		xhci_print("%d@PortStatusChange: port=%x(Count from 1)\n", stat, port);
 		break;
 
 	case TRB_event_HostController:		//37
-		say("[xhci]%d@HostController\n", stat);
+		xhci_print("%d@HostController\n", stat);
 		break;
 
 	default:
 		printmemory(ev, 16);
-		say("[xhci]code=%d@evtype=%d\n", stat, type);
+		xhci_print("code=%d@evtype=%d\n", stat, type);
 	}
 
 	return 0;
@@ -781,7 +782,7 @@ int xhci_waitevent(struct item* xhci, u32 wanttype, u32 wantarg)
 				break;
 			}
 
-			say("[xhci]event unwanted: wanttype=%x,thistype=%x,wantarg=%x,thisarg=%x\n", wanttype, type, wantarg, arg);
+			xhci_print("event unwanted: wanttype=%x,thistype=%x,wantarg=%x,thisarg=%x\n", wanttype, type, wantarg, arg);
 		}//if(ev)
 
 		time = timeread();
@@ -791,7 +792,7 @@ int xhci_waitevent(struct item* xhci, u32 wanttype, u32 wantarg)
 		if(0 == timeout)break;
 	}
 
-	say("timeout!!!!!!\n");
+	xhci_print("timeout!!!!!!\n");
 	return -1;
 }
 
@@ -838,16 +839,16 @@ void xhci_hostorder(struct item* xhci, int slot, u32 d0,u32 d1,u32 d2,u32 d3)
 
 int xhci_EnableSlot(struct item* xhci)
 {
-	say("--------------------------------\n");
-	say("[xhci]EnableSlot\n");
+	xhci_print("--------------------------------\n");
+	xhci_print("EnableSlot\n");
 
 	xhci_hostorder(xhci,0, 0,0,0,(TRB_command_EnableSlot<<10));
 	int slot = xhci_waitevent(xhci, TRB_event_CommandCompletion, 0);
 	if(slot <= 0){
-		say("[xhci]error=%d\n", slot);
+		xhci_print("error=%d\n", slot);
 		return -1;
 	}
-	say("[xhci]slot:allocated=%d\n", slot);
+	xhci_print("slot:allocated=%d\n", slot);
 	if(slot >= 16)return -1;
 
 	struct perxhci* xhcidata = (void*)(xhci->priv_data);
@@ -858,15 +859,15 @@ int xhci_EnableSlot(struct item* xhci)
 }
 int xhci_DisableSlot(struct item* xhci, int slot)
 {
-	say("--------------------------------\n");
-	say("[xhci]DisableSlot\n");
+	xhci_print("--------------------------------\n");
+	xhci_print("DisableSlot\n");
 
 	return 0;
 }
 int xhci_AddressDevice(struct item* xhci, int slot)
 {
-	say("--------------------------------\n");
-	say("[xhci]AddressDevice\n");
+	xhci_print("--------------------------------\n");
+	xhci_print("AddressDevice\n");
 	struct perxhci* xhcidata = (void*)(xhci->priv_data);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 
@@ -874,7 +875,7 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 	u32 usbspeed = slotdata->myctx.devctx.usbspeed;
 	u32 rootport = slotdata->myctx.devctx.rootport;
 	u32 routestring = slotdata->myctx.devctx.routestring;
-	say("[xhci]speed=%x,port=%x,route=%x\n",usbspeed,rootport,routestring);
+	xhci_print("speed=%x,port=%x,route=%x\n",usbspeed,rootport,routestring);
 
 //-------------from speed know maxpacksz-------------
 	u32 packetsize;
@@ -884,12 +885,12 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 	case 3:packetsize = 0x40;break;
 	default:packetsize = 0x200;
 	}
-	say("[xhci]packetsize=0x%x\n", packetsize);
+	xhci_print("packetsize=0x%x\n", packetsize);
 
 //-------------from xhci known slotctxsz------------
 	u32 contextsize = 0x20;
 	if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
-	say("[xhci]contextsize=0x%x\n", contextsize);
+	xhci_print("contextsize=0x%x\n", contextsize);
 
 //---------------------------------------------------
 	//some buffer
@@ -905,7 +906,7 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 	u64 EP0CMD = (u64)(slotdata->cmdring[EP0DCI]);
 	u32 lo = EP0CMD & 0xffffffff;
 	u32 hi = EP0CMD >> 32;
-	say("[xhci]ep0cmd@%llx\n", EP0CMD);
+	xhci_print("ep0cmd@%llx\n", EP0CMD);
 
 	//fill buffer
 	incon[0] = 0;
@@ -929,20 +930,20 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 	hi = ((u64)incon) >> 32;
 	xhci_hostorder(xhci,0, lo,hi,0,(slot<<24)+(TRB_command_AddressDevice<<10) );
 	if(xhci_waitevent(xhci, TRB_event_CommandCompletion, 0) != slot){
-		say("[xhci]error@address device\n");
+		xhci_print("error@address device\n");
 		return -1;
 	}
-	say("[xhci]slot:addressed device\n");
+	xhci_print("slot:addressed device\n");
 
 	u32 slotstate = (*(u32*)(slotdata->hcctx+0xc))>>27;
 	u32 ep0state = (*(u32*)(slotdata->hcctx+contextsize))&0x3;
-	say("[xhci]slotstate=%x, ep0state=%x\n", slotstate, ep0state);
+	xhci_print("slotstate=%x, ep0state=%x\n", slotstate, ep0state);
 	if(2 != slotstate){
-		say("[xhci]slot state:%x\n",slotstate);
+		xhci_print("slot state:%x\n",slotstate);
 		return -2;
 	}
 	if(0 == ep0state){
-		say("[xhci]ep0 wrong\n");
+		xhci_print("ep0 wrong\n");
 		return -3;
 	}
 
@@ -955,20 +956,20 @@ int xhci_AddressDevice(struct item* xhci, int slot)
 }
 int xhci_ResetDevice(struct item* xhci, int slot)
 {
-	say("--------------------------------\n");
-	say("[xhci]ResetDevice\n");
+	xhci_print("--------------------------------\n");
+	xhci_print("ResetDevice\n");
 	return 0;
 }
 int xhci_EvaluateContext(struct item* xhci, int slot, u8* devdesc, int len)
 {
 	//Evaluate Context Command
-	say("--------------------------------\n");
-	say("[xhci]EvaluateContext\n");
+	xhci_print("--------------------------------\n");
+	xhci_print("EvaluateContext\n");
 
 	struct perxhci* xhcidata = (void*)(xhci->priv_data);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
 	if(1 != slotdata->myctx.devctx.usbspeed){
-		say("[xhci]not fullspeed, dont change\n");
+		xhci_print("not fullspeed, dont change\n");
 		return 0;
 	}
 
@@ -977,18 +978,18 @@ int xhci_EvaluateContext(struct item* xhci, int slot, u8* devdesc, int len)
 	u32 oldsize = slotdata->myctx.epnctx[EP0DCI].packetsize;
 	u32 newsize = (usbspeed>=4) ? (1<<devdesc[7]) : devdesc[7];
 	if(newsize == oldsize){
-		say("[xhci]same bMaxPacketSize0, nothing change\n");
+		xhci_print("same bMaxPacketSize0, nothing change\n");
 		return 0;
 	}
 
 //-------------from packet known maxpacksz------------
 	slotdata->myctx.epnctx[EP0DCI].packetsize = newsize;		//bMaxPacketSize0
-	say("[xhci]packetsize=%x now\n", newsize);
+	xhci_print("packetsize=%x now\n", newsize);
 
 //-------------from xhci known slotctxsz------------
 	u32 contextsize = 0x20;
 	if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
-	say("[xhci]contextsize=0x%x\n", contextsize);
+	xhci_print("contextsize=0x%x\n", contextsize);
 
 //---------------------------------------------------
 	//some buffer
@@ -1025,28 +1026,28 @@ int xhci_EvaluateContext(struct item* xhci, int slot, u8* devdesc, int len)
 	hi = ((u64)incon) >> 32;
 	xhci_hostorder(xhci,0, lo,hi,0,(slot<<24)+(TRB_command_EvaluateContext<<10) );
 	if(xhci_waitevent(xhci, TRB_event_CommandCompletion, 0) != slot){
-		say("[xhci]error@evaluate context\n");
+		xhci_print("error@evaluate context\n");
 		return -1;
 	}
-	say("[xhci]evaluated\n");
+	xhci_print("evaluated\n");
 
 	u32 slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
 	u32 ep0state = (*(u32*)(slotdata->hcctx + contextsize))&0x3;
-	say("[xhci]slotstate=%x, ep0state=%x\n", slotstate, ep0state);
+	xhci_print("slotstate=%x, ep0state=%x\n", slotstate, ep0state);
 	if(2 != slotstate){
-		say("[xhci]slot state:%x\n",slotstate);
+		xhci_print("slot state:%x\n",slotstate);
 		return -3;
 	}
 	if(0 == ep0state){
-		say("[xhci]ep0 wrong\n");
+		xhci_print("ep0 wrong\n");
 		return -2;
 	}
 	return 0;
 }
 int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescriptor* epdesc, int len)
 {
-	say("--------------------------------\n");
-	say("[xhci]ConfigureEndpoint\n");
+	xhci_print("--------------------------------\n");
+	xhci_print("ConfigureEndpoint\n");
 
 	struct perxhci* xhcidata = (void*)(xhci->priv_data);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
@@ -1054,11 +1055,11 @@ int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescripto
 //----------------from xhci known slotctxsz------------
 	u32 contextsize = 0x20;
 	if(0x4 == (xhcidata->capreg->CAPPARAMS1 & 0x4))contextsize = 0x40;
-	say("[xhci]contextsize=0x%x\n", contextsize);
+	xhci_print("contextsize=0x%x\n", contextsize);
 
 //----------------from packet known things------------
 	if(5 != epdesc->bDescriptorType){
-		say("[xhci]not epdesc, bye bye\n");
+		xhci_print("not epdesc, bye bye\n");
 		return -1;
 	}
 
@@ -1106,13 +1107,13 @@ int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescripto
 		burstsize = (epdesc->wMaxPacketSize & 0x1800) >> 11;
 		esitpayload = packetsize * (burstsize + 1);
 	}
-	say("[xhci]DCI=%x, eptype=%x, packetsize=%x, interval=%x\n", DCI, eptype, packetsize, interval);
+	xhci_print("DCI=%x, eptype=%x, packetsize=%x, interval=%x\n", DCI, eptype, packetsize, interval);
 
 //----------------store in my ctx----------------
 	struct SlotContext* hcslotctx = (void*)(slotdata->hcctx);
 	u32 maxdci = hcslotctx->ContextEntries;
 	if(maxdci < DCI)maxdci = DCI;
-	say("[xhci]maxdci=%x now\n", maxdci);
+	xhci_print("maxdci=%x now\n", maxdci);
 
 
 	//some buffer
@@ -1167,14 +1168,14 @@ int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescripto
 	u32 hi = ((u64)incon) >> 32;
 	xhci_hostorder(xhci,0, lo,hi,0,(slot<<24)+(TRB_command_ConfigureEndpoint<<10) );
 	if(xhci_waitevent(xhci, TRB_event_CommandCompletion, 0) != slot){
-		say("[xhci]error@configure endpoint\n");
+		xhci_print("error@configure endpoint\n");
 		return -1;
 	}
-	say("[xhci]configured\n");
+	xhci_print("configured\n");
 
 	u32 slotstate = (*(u32*)(slotdata->hcctx + 0xc))>>27;
 	u32 epstate = (*(u32*)(slotdata->hcctx + contextsize*DCI))&0x3;
-	say("[xhci]slotstate=%x, epstate=%x\n", slotstate, epstate);
+	xhci_print("slotstate=%x, epstate=%x\n", slotstate, epstate);
 
 	slotdata->myctx.epnctx[DCI].eptype = eptype;
 	slotdata->myctx.epnctx[DCI].packetsize = packetsize;
@@ -1182,11 +1183,11 @@ int xhci_ConfigureEndpoint(struct item* xhci, int slot, struct EndpointDescripto
 	slotdata->myctx.epnctx[DCI].myenq = 0;
 	slotdata->myctx.epnctx[DCI].hcdeq = 0;
 /*	if(2 != slotstate){
-		say("[xhci]slot state:%x\n",slotstate);
+		xhci_print("slot state:%x\n",slotstate);
 		return -3;
 	}
 	if(0 == epstate){
-		say("[xhci]ep wrong\n");
+		xhci_print("ep wrong\n");
 		return -2;
 	}
 */
@@ -1197,8 +1198,8 @@ int xhci_ControlTransfer(struct item* xhci, int slot, struct UsbRequest* req, in
 	int DCI = 1;
 	slot &= 0xff;
 
-	say("--------------------------------\n");
-	say("[xhci]ControlTransfer slot=%x,dci=%x: (bm=%x,br=%x,val=%x,idx=%x,len=%x)\n",
+	xhci_print("--------------------------------\n");
+	xhci_print("ControlTransfer slot=%x,dci=%x: (bm=%x,br=%x,val=%x,idx=%x,len=%x)\n",
 		slot, DCI,
 		req->bmRequestType,req->bRequest,req->wValue,req->wIndex,req->wLength
 	);
@@ -1216,7 +1217,7 @@ int xhci_ControlTransfer(struct item* xhci, int slot, struct UsbRequest* req, in
 
 		u32 slotstate = (*(u32*)(slotdata->hcctx+0xc))>>27;
 		u32 ep0state = (*(u32*)(slotdata->hcctx+contextsize))&0x3;
-		say("[xhci]slotstate=%x, ep0state=%x\n", slotstate, ep0state);
+		xhci_print("slotstate=%x, ep0state=%x\n", slotstate, ep0state);
 		return 0;
 	}
 	//printmemory(recvbuf, recvlen);
@@ -1226,8 +1227,8 @@ int xhci_BulkTransfer(struct item* xhci, int slotendp, void* sendbuf, int sendle
 {
 	int slot = slotendp & 0xff;
 	int DCI = (slotendp>>8)&0xff;
-	say("--------------------------------\n");
-	say("[xhci]BulkTransfer slot=%x,dci=%x\n", slot, DCI);
+	xhci_print("--------------------------------\n");
+	xhci_print("BulkTransfer slot=%x,dci=%x\n", slot, DCI);
 
 	struct perxhci* xhcidata = (void*)(xhci->priv_data);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
@@ -1242,7 +1243,7 @@ int xhci_BulkTransfer(struct item* xhci, int slotendp, void* sendbuf, int sendle
 
 		u32 slotstate = (*(u32*)(slotdata->hcctx+0xc))>>27;
 		u32 epstate = (*(u32*)(slotdata->hcctx+contextsize*DCI))&0x3;
-		say("[xhci]slotstate=%x, epstate=%x\n", slotstate, epstate);
+		xhci_print("slotstate=%x, epstate=%x\n", slotstate, epstate);
 		return 0;
 	}
 	return 0;
@@ -1251,8 +1252,8 @@ int xhci_InterruptTransferOut(struct item* xhci, int slotendp, void* sendbuf, in
 {
 	int slot = slotendp & 0xff;
 	int DCI = (slotendp>>8)&0xff;
-	say("--------------------------------\n");
-	say("[xhci]InterruptTransferOut slot=%x,dci=%x\n", slot, DCI);
+	xhci_print("--------------------------------\n");
+	xhci_print("InterruptTransferOut slot=%x,dci=%x\n", slot, DCI);
 
 	struct perxhci* xhcidata = (void*)(xhci->priv_data);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
@@ -1269,7 +1270,7 @@ int xhci_InterruptTransferOut(struct item* xhci, int slotendp, void* sendbuf, in
 
 		u32 slotstate = (*(u32*)(slotdata->hcctx+0xc))>>27;
 		u32 epstate = (*(u32*)(slotdata->hcctx+contextsize*DCI))&0x3;
-		say("[xhci]slotstate=%x, epstate=%x\n", slotstate, epstate);
+		xhci_print("slotstate=%x, epstate=%x\n", slotstate, epstate);
 		return 0;
 	}
 	//printmemory(recvbuf, recvlen);
@@ -1279,8 +1280,8 @@ int xhci_InterruptTransferIn(struct item* xhci, int slotendp, void* sendbuf, int
 {
 	int slot = slotendp & 0xff;
 	int DCI = (slotendp>>8)&0xff;
-	say("--------------------------------\n");
-	say("[xhci]InterruptTransferIn slot=%x,dci=%x\n", slot, DCI);
+	xhci_print("--------------------------------\n");
+	xhci_print("InterruptTransferIn slot=%x,dci=%x\n", slot, DCI);
 
 	struct perxhci* xhcidata = (void*)(xhci->priv_data);
 	struct perslot* slotdata = (void*)(xhcidata->perslot) + slot*0x10000;
@@ -1298,7 +1299,7 @@ int xhci_InterruptTransferIn(struct item* xhci, int slotendp, void* sendbuf, int
 
 		u32 slotstate = (*(u32*)(slotdata->hcctx+0xc))>>27;
 		u32 epstate = (*(u32*)(slotdata->hcctx+contextsize*DCI))&0x3;
-		say("[xhci]slotstate=%x, epstate=%x\n", slotstate, epstate);
+		xhci_print("slotstate=%x, epstate=%x\n", slotstate, epstate);
 		return 0;
 	}
 	//
@@ -1388,7 +1389,7 @@ int resetport(struct item* xhci, int countfrom0)
 		j--;
 		if(0 == j)return -1;
 	}
-	say("[xhci]port reseted\n");
+	xhci_print("port reseted\n");
 
 	//wait for enable=1
 	j = 0xfffffff;
@@ -1398,14 +1399,14 @@ int resetport(struct item* xhci, int countfrom0)
 		j--;
 		if(0 == j)return -3;
 	}
-	say("[xhci]port enabled\n");
+	xhci_print("port enabled\n");
 
 	//wait for portchange event
 	if(xhci_waitevent(xhci, TRB_event_PortStatusChange, countfrom0+1) < 0){
-		say("portstatus unchanged: USBSTS=%x\n", optreg->USBSTS);
+		xhci_print("portstatus unchanged: USBSTS=%x\n", optreg->USBSTS);
 		return -2;
 	}
-	say("[xhci]port changed\n");
+	xhci_print("port changed\n");
 
 	return 1;
 }
@@ -1419,14 +1420,14 @@ void xhci_listall(struct item* xhci, int count)
 	struct PortRegisters* port = optreg->port;
 	for(j=0;j<count;j++){
 		tmp = port[j].PORTSC;
-		say("[xhci]@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
-		say("[xhci]%02x@%p:psi=%x,portsc=%x\n", j, &port[j], pp[j].protocol, tmp);
+		xhci_print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@\n");
+		xhci_print("%02x@%p:psi=%x,portsc=%x\n", j, &port[j], pp[j].protocol, tmp);
 		if(0 == (tmp & 0x1))continue;
 
 		//if(0 == PORTSC.bit1)ver <= 2.0, have to reset
 		if(0 == (tmp & 0x2)){
 			if(resetport(xhci, j) <= 0){
-				say("[xhci]reset failed: portsc=%x\n", port[j].PORTSC);
+				xhci_print("reset failed: portsc=%x\n", port[j].PORTSC);
 				continue;
 			}
 		}
@@ -1434,19 +1435,19 @@ void xhci_listall(struct item* xhci, int count)
 
 		//link state
 		tmp = port[j].PORTSC;
-		say("[xhci]portsc=%08x,linkstate=%x\n", tmp, (tmp >> 5) & 0xf);
+		xhci_print("portsc=%08x,linkstate=%x\n", tmp, (tmp >> 5) & 0xf);
 
 		//usb speed
 		speed = (port[j].PORTSC >> 10) & 0xf;
 		switch(speed){
-		case 7:say("[xhci]10Gb,x2\n");break;
-		case 6:say("[xhci]5Gb,x2\n");break;
-		case 5:say("[xhci]10Gb,x1\n");break;
-		case 4:say("[xhci]5Gb,x1\n");break;
-		case 3:say("[xhci]480Mb\n");break;
-		case 2:say("[xhci]1.5Mb\n");break;	//yes, 2=low speed
-		case 1:say("[xhci]12Mb\n");break;	//yes, 1=full speed
-		default:say("[xhci]speed=%x\n", speed);
+		case 7:xhci_print("10Gb,x2\n");break;
+		case 6:xhci_print("5Gb,x2\n");break;
+		case 5:xhci_print("10Gb,x1\n");break;
+		case 4:xhci_print("5Gb,x1\n");break;
+		case 3:xhci_print("480Mb\n");break;
+		case 2:xhci_print("1.5Mb\n");break;	//yes, 2=low speed
+		case 1:xhci_print("12Mb\n");break;	//yes, 1=full speed
+		default:xhci_print("speed=%x\n", speed);
 		}
 
 		//probedevice(xhci, speed, j+1, 0);
@@ -1473,20 +1474,20 @@ void xhci_listall(struct item* xhci, int count)
 int ownership(volatile u32* p)
 {
 	//set hc os owned semaphore
-	say("[xhci]before handoff:%08x,%08x\n", p[0],p[1]);
+	xhci_print("before handoff:%08x,%08x\n", p[0],p[1]);
 	p[0] |= 0x1000000;
 
 	//wait until bit16==0 && bit24==1
 	volatile int timeout = 0xfffffff;
 	while(1){
 		if(0x01000000 == (p[0] & 0x01010000)){
-			say("[xhci]after handoff:%08x,%08x\n", p[0],p[1]);
+			xhci_print("after handoff:%08x,%08x\n", p[0],p[1]);
 			return 1;
 		}
 
 		timeout--;
 		if(0 == timeout){
-			say("[xhci]timeout@handoff\n");
+			xhci_print("timeout@handoff\n");
 			return -1;
 		}
 	}
@@ -1497,7 +1498,7 @@ void supportedprotocol(struct item* dev, u32* p)
 	u32 minor =(p[0] >> 16) & 0xff;
 	u32 port0 =(p[2] & 0xff) - 1;
 	u32 portn =(port0-1) + ((p[2] >> 8) & 0xff);
-	say("[xhci][%x,%x]: usb%x.%x\n", port0, portn, major, minor);
+	xhci_print("[%x,%x]: usb%x.%x\n", port0, portn, major, minor);
 
 	int j;
 	struct perxhci* my = (void*)(dev->priv_data);
@@ -1509,9 +1510,9 @@ void supportedprotocol(struct item* dev, u32* p)
 }
 void explainxecp(struct item* dev, u32* at)
 {
-	say("[xhci]xecp parsing\n");
+	xhci_print("xecp parsing\n");
 	while(1){
-		say("[xhci]@%p: %08x,%08x,%08x,%08x\n", at, at[0], at[1], at[2], at[3]);
+		xhci_print("@%p: %08x,%08x,%08x,%08x\n", at, at[0], at[1], at[2], at[3]);
 
 		u32 type = at[0] & 0xff;
 		switch(type){
@@ -1524,7 +1525,7 @@ void explainxecp(struct item* dev, u32* at)
 				break;
 			}
 			defualt:{
-				say("[xhci]???\n");
+				xhci_print("???\n");
 			}
 		}
 
@@ -1540,7 +1541,7 @@ void explainxecp(struct item* dev, u32* at)
 
 int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 {
-	say("[xhci]xhci@mmio:%p{\n", xhciaddr);
+	xhci_print("mmio@%p{\n", xhciaddr);
 	//printmmio(xhciaddr, 0x1000);
 
 
@@ -1567,39 +1568,39 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 	struct RuntimeRegisters*     runreg = (void*)(xhciaddr + capreg->RTSOFF);
 	struct DoorbellRegisters*    dblreg = (void*)(xhciaddr + capreg->DBOFF);
 
-	say("[xhci]base information:version=%x,caplen=%x\n", version, caplen);
+	xhci_print("base information:version=%x,caplen=%x\n", version, caplen);
 
-	say("[xhci]capability@%p\n", capreg);
-	say("[xhci]operational@%p\n", optreg);
-	say("[xhci]runtime@%p\n", runreg);
-	say("[xhci]doorbell@%p\n", dblreg);
+	xhci_print("capability@%p\n", capreg);
+	xhci_print("operational@%p\n", optreg);
+	xhci_print("runtime@%p\n", runreg);
+	xhci_print("doorbell@%p\n", dblreg);
 
 	u32 tmp;
 	u32 maxscratch;
 	u32 maxerst;
 	tmp = capreg->HCSPARAMS1;
-	say("[xhci]hcsparams1=%08x\n", tmp);
-	say("[xhci].maxslots=%x\n", tmp&0xff);
-	say("[xhci].maxintrs=%x\n", (tmp>>8)&0x7ff);
-	say("[xhci].maxports=%x\n", (tmp>>24)&0xff);
+	xhci_print("hcsparams1=%08x\n", tmp);
+	xhci_print(".maxslots=%x\n", tmp&0xff);
+	xhci_print(".maxintrs=%x\n", (tmp>>8)&0x7ff);
+	xhci_print(".maxports=%x\n", (tmp>>24)&0xff);
 	tmp = capreg->HCSPARAMS2;
-	say("[xhci]hcsparams2=%08x\n", tmp);
-	say("[xhci].Isochronous Scheduling Threshold=%x\n", tmp&0xf);
+	xhci_print("hcsparams2=%08x\n", tmp);
+	xhci_print(".Isochronous Scheduling Threshold=%x\n", tmp&0xf);
 	maxerst = (tmp>>4)&0xf;
-	say("[xhci].Event Ring Segment Table Max=2^%x\n", maxerst);
+	xhci_print(".Event Ring Segment Table Max=2^%x\n", maxerst);
 	maxscratch = (((tmp>>21)&0x1f)<<5) | ((tmp>>27)&0x1f);
-	say("[xhci].Max Scratchpad Buffers=%xpages\n", maxscratch);
+	xhci_print(".Max Scratchpad Buffers=%xpages\n", maxscratch);
 	tmp = capreg->HCSPARAMS3;
-	say("[xhci]hcsparams3=%08x\n", tmp);
-	say("[xhci].U1 Device Exit Latency=%x\n", tmp&0xff);
-	say("[xhci].U2 Device Exit Latency=%x\n", (tmp>>16)&0xffff);
+	xhci_print("hcsparams3=%08x\n", tmp);
+	xhci_print(".U1 Device Exit Latency=%x\n", tmp&0xff);
+	xhci_print(".U2 Device Exit Latency=%x\n", (tmp>>16)&0xffff);
 	tmp = capreg->CAPPARAMS1;
-	say("[xhci]capparams1=%08x\n", tmp);
-	say("[xhci].AC64=%x\n", tmp&1);
-	say("[xhci].CSZ=%x\n", (tmp>>2)&1);
+	xhci_print("capparams1=%08x\n", tmp);
+	xhci_print(".AC64=%x\n", tmp&1);
+	xhci_print(".CSZ=%x\n", (tmp>>2)&1);
 	tmp = capreg->CAPPARAMS2;
-	say("[xhci]capparams2=%08x\n", tmp);
-	say("[xhci].VTIO support=%x\n", (tmp>>9)&1);
+	xhci_print("capparams2=%08x\n", tmp);
+	xhci_print(".VTIO support=%x\n", (tmp>>9)&1);
 
 
 //--------------print operational---------------
@@ -1607,7 +1608,7 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 	u32 pagesize = 0x1000;
 	while(1){
 		if(0 == psz){
-			say("[xhci]psz:\n",psz);
+			xhci_print("psz:\n",psz);
 			return -1;
 		}
 		if(1 == psz)break;
@@ -1615,13 +1616,13 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 		psz >>= 1;
 		pagesize <<= 1;
 	}
-	say("[xhci]before anything:\n");
-	say("[xhci]usbcommand:%x\n", optreg->USBCMD);
-	say("[xhci]usbstatus:%x\n", optreg->USBSTS);
-	say("[xhci]psz=%x,pagesize=%x\n", psz, pagesize);
-	say("[xhci]crcr:%x\n", ((u64)optreg->CRCR_hi<<32) | optreg->CRCR_lo);
-	say("[xhci]dcbaa:%x\n", ((u64)optreg->DCBAAP_hi<<32) | optreg->DCBAAP_lo);
-	say("[xhci]config:%x\n", optreg->CONFIG);
+	xhci_print("before anything:\n");
+	xhci_print("usbcommand:%x\n", optreg->USBCMD);
+	xhci_print("usbstatus:%x\n", optreg->USBSTS);
+	xhci_print("psz=%x,pagesize=%x\n", psz, pagesize);
+	xhci_print("crcr:%x\n", ((u64)optreg->CRCR_hi<<32) | optreg->CRCR_lo);
+	xhci_print("dcbaa:%x\n", ((u64)optreg->DCBAAP_hi<<32) | optreg->DCBAAP_lo);
+	xhci_print("config:%x\n", optreg->CONFIG);
 
 
 //--------------grab ownership-----------------
@@ -1656,11 +1657,11 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 
 
 //------------operational registers----------------
-	say("[xhci]setup optreg@%p\n", optreg);
+	xhci_print("setup optreg@%p\n", optreg);
 
 	//xhci正在运行吗
 	if(0 == (optreg->USBSTS&0x1)){		//=0: runing
-		say("[xhci]hc stopping\n");
+		xhci_print("hc stopping\n");
 
 		//按下停止按钮
 		optreg->USBCMD = optreg->USBCMD & 0xfffffffe;
@@ -1671,12 +1672,12 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 			if(1 == (optreg->USBSTS&0x1))break;
 			wait1--;
 			if(0 == wait1){
-				say("[xhci]not stop\n");
+				xhci_print("not stop\n");
 				return -2;
 			}
 		}
 	}
-	say("[xhci]hc stopped\n");
+	xhci_print("hc stopped\n");
 
 	//按下复位按钮
 	optreg->USBCMD = optreg->USBCMD | 2;
@@ -1687,46 +1688,46 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 		if(0 == (optreg->USBCMD&0x2))break;
 		wait2--;
 		if(0 == wait2){
-			say("[xhci]reset failed:%x\n", optreg->USBCMD);
+			xhci_print("reset failed:%x\n", optreg->USBCMD);
 			return -3;
 		}
 	}
-	say("[xhci]hc reseted,wait=%x\n",wait2);
+	xhci_print("hc reseted,wait=%x\n",wait2);
 
 	//controller not ready=1就是没准备好
 	if(0x800 == (optreg->USBSTS&0x800)){
-		say("[xhci]not ready:%x\n", optreg->USBSTS);
+		xhci_print("not ready:%x\n", optreg->USBSTS);
 		return -4;
 	}
-	say("[xhci]hc ready\n");
+	xhci_print("hc ready\n");
 
 	//maxslot=deviceslots
 	optreg->CONFIG = (capreg->HCSPARAMS1) &0xff;
-	say("[xhci]CONFIG=%x\n", optreg->CONFIG);
+	xhci_print("CONFIG=%x\n", optreg->CONFIG);
 
 	//scratcharray[0 to max]: each is a page
-	say("[xhci]devctx: scratcharray[0-max) = scratchbuffer@%llx\n", scratchpad + pagesize);
+	xhci_print("devctx: scratcharray[0-max) = scratchbuffer@%llx\n", scratchpad + pagesize);
 	for(j=0;j<maxscratch;j++){
 		*(u64*)(scratchpad+j*8) = scratchpad + pagesize*(j+1);
 	}
 
 	//[dcbahome] = scratcharray
-	say("[xhci]devctx: dcbahome[0] = scratcharray@%llx\n", scratchpad);
+	xhci_print("devctx: dcbahome[0] = scratcharray@%llx\n", scratchpad);
 	*(u64*)(dcbahome + 0) = scratchpad;
 
 	//[dcbaap] = dcbahome
-	say("[xhci]devctx: dcbaap[0] = dcbahome@%llx\n", dcbahome);
+	xhci_print("devctx: dcbaap[0] = dcbahome@%llx\n", dcbahome);
 	optreg->DCBAAP_lo = dcbahome & 0xffffffff;
 	optreg->DCBAAP_hi = dcbahome >> 32;
 
 	//command linktrb:lastone point to firstone
-	say("[xhci]crcr: lasttrb point to firsttrb\n");
+	xhci_print("crcr: lasttrb point to firsttrb\n");
 	*(u64*)(cmdringhome + 0xfff*0x10 + 0x0) = cmdringhome;
 	*(u32*)(cmdringhome + 0xfff*0x10 + 0x8) = 0;
 	*(u32*)(cmdringhome + 0xfff*0x10 + 0xc) = (TRB_common_Link<<10) + 2;
 
 	//[crcr] = cmdringhome
-	say("[xhci]crcr: set cmdring@%llx\n", cmdringhome+1);
+	xhci_print("crcr: set cmdring@%llx\n", cmdringhome+1);
 	optreg->CRCR_lo = cmdringhome+1;
 	optreg->CRCR_hi = 0;
 
@@ -1737,17 +1738,17 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 //point table&pba offset to message control table and pending bit array
 //init message control register of msix capability structure
 //-------------------------------------------------
-	say("[xhci]setup runreg@%p\n", runreg);
+	xhci_print("setup runreg@%p\n", runreg);
 
 	//setupisr(xhciaddr);
 	//----------------------if(msix)--------------------------
 	//----------------------if(msi)--------------------------
 	//----------------------if(intx)--------------------------
 
-	say("[xhci]building eventring@%llx\n", eventringhome);
+	xhci_print("building eventring@%llx\n", eventringhome);
 
 	//build the "event ring segment table"
-	say("[xhci]building erst@%llx\n", ersthome);
+	xhci_print("building erst@%llx\n", ersthome);
 	*(u64*)(ersthome + 0x0) = eventringhome;
 	*(u64*)(ersthome + 0x8) = 0x1000;            //0x1000*0x10=0x10000
 /*
@@ -1757,7 +1758,7 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 	*(u64*)(ersthome + 0x28) = 0x1000;            //0x1000*0x10=0x10000
 */
 
-	say("[xhci]setting ir[0]\n");
+	xhci_print("setting ir[0]\n");
 	runreg->ir[0].ERSTSZ = 1;
 	runreg->ir[0].ERDP_lo = eventringhome & 0xffffffff;
 	runreg->ir[0].ERDP_hi = eventringhome >> 32;
@@ -1770,16 +1771,16 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 //---------------------xhci启动---------------------
 //write usbcmd,turn host controller on
 //-------------------------------------------------
-	say("[xhci]turnon hc:\n");
+	xhci_print("turnon hc:\n");
 
 	//enable EWE|HSEIE|INTE(0x400|0x8|0x4) in USBCMD
 //	*(u32*)operational |= 0x40c;
 //	*(u32*)operational = (*(u32*)operational) | 0xc;      //no interrupt
 
 	optreg->USBCMD = optreg->USBCMD | 0x1;
-	say("[xhci]USBCMD=%08x, USBSTS=%08x\n", optreg->USBCMD, optreg->USBSTS);
+	xhci_print("USBCMD=%08x, USBSTS=%08x\n", optreg->USBCMD, optreg->USBSTS);
 
-	say("[xhci]}\n");
+	xhci_print("}\n");
 
 
 	//wait until device detected
@@ -1790,7 +1791,7 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 
 		wait2--;
 		if(0 == wait2){
-			say("[xhci]xhci: USBCMD=%08x, USBSTS=%08x, no port change detected\n", optreg->USBCMD, optreg->USBSTS);
+			xhci_print("xhci: USBCMD=%08x, USBSTS=%08x, no port change detected\n", optreg->USBCMD, optreg->USBSTS);
 			break;
 		}
 	}
@@ -1812,7 +1813,7 @@ int xhci_portcaps(struct item* dev, u32 addr)
 
 	out32(0xcf8, addr+0x34);
 	next = in32(0xcfc)&0xff;
-	say("[xhci]pcicap@%x\n", next);
+	xhci_print("pcicap@%x\n", next);
 
 	while(1){
 		if(next < 0x40)break;
@@ -1821,42 +1822,42 @@ int xhci_portcaps(struct item* dev, u32 addr)
 		out32(0xcf8, addr+next);
 		temp = in32(0xcfc);
 		next = (temp>>8)&0xff;
-		say("[xhci]cap:type=%x,next=%x\n", temp&0xff, next);
+		xhci_print("cap:type=%x,next=%x\n", temp&0xff, next);
 	}
 	return 0;
 }
 int xhci_portinit(struct item* dev, u32 addr)
 {
 	u64 temp,high;
-	say("[xhci]xhci@port:%x{\n", addr);
+	xhci_print("xhci@port:%x{\n", addr);
 
 	out32(0xcf8, addr+0x4);
 	temp = in32(0xcfc);
-	say("[xhci]sts,cmd=%x\n", temp);
+	xhci_print("sts,cmd=%x\n", temp);
 
 	out32(0xcf8, addr+0x4);
 	out32(0xcfc, temp | (1<<10) | (1<<2));	//bus master=1
 
 	out32(0xcf8, addr+0x10);
 	temp = in32(0xcfc);
-	say("[xhci]bar0=%x\n", temp);			//lo
+	xhci_print("bar0=%x\n", temp);			//lo
 	out32(0xcf8, addr+0x14);
 	high = in32(0xcfc);
-	say("[xhci]bar1=%x\n", high);			//hi
+	xhci_print("bar1=%x\n", high);			//hi
 	out32(0xcf8, addr+0x18);
-	say("[xhci]bar2=%x\n", in32(0xcfc));
+	xhci_print("bar2=%x\n", in32(0xcfc));
 	out32(0xcf8, addr+0x1c);
-	say("[xhci]bar3=%x\n", in32(0xcfc));
+	xhci_print("bar3=%x\n", in32(0xcfc));
 	out32(0xcf8, addr+0x20);
-	say("[xhci]bar4=%x\n", in32(0xcfc));
+	xhci_print("bar4=%x\n", in32(0xcfc));
 	out32(0xcf8, addr+0x24);
-	say("[xhci]bar5=%x\n", in32(0xcfc));
+	xhci_print("bar5=%x\n", in32(0xcfc));
 
 	xhci_portcaps(dev, addr);
 
 	//if(intel PantherPoint):
 	//Write 0xFFFFFFFF (as a dword) to the PCI Config Registers 0xD8 and 0xD0
-	say("[xhci]}\n");
+	xhci_print("}\n");
 
 
 	//xhci mmio

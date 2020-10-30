@@ -1,4 +1,5 @@
 #include "libhard.h"
+#define nvme_print(fmt, ...) say("[%08lld,nvme]" fmt, timeread(), ##__VA_ARGS__)
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
 
@@ -47,9 +48,9 @@ struct NVME_MMIO{
 
 int nvme_mmioinit(struct item* dev, u8* mmio)
 {
-	say("nvme@mmio:%p{\n", mmio);
+	nvme_print("nvme@mmio:%p{\n", mmio);
 	printmmio(mmio, 32);
-	say("}\n");
+	nvme_print("}\n");
 	return 0;
 }
 
@@ -62,7 +63,7 @@ int nvme_portcaps(struct item* dev, u32 addr)
 
 	out32(0xcf8, addr+0x34);
 	next = in32(0xcfc)&0xff;
-	say("[nvme]pcicap@%x\n", next);
+	nvme_print("pcicap@%x\n", next);
 
 	while(1){
 		if(next < 0x40)break;
@@ -71,7 +72,7 @@ int nvme_portcaps(struct item* dev, u32 addr)
 		out32(0xcf8, addr+next);
 		temp = in32(0xcfc);
 		next = (temp>>8)&0xff;
-		say("[nvme]cap:type=%x,next=%x\n", temp&0xff, next);
+		nvme_print("cap:type=%x,next=%x\n", temp&0xff, next);
 	}
 	return 0;
 }
@@ -79,32 +80,32 @@ int nvme_portinit(struct item* dev, u32 addr)
 {
 	u32 tmp;
 	u64 lo,hi;
-	say("nvme@port:%x{\n",addr);
+	nvme_print("nvme@port:%x{\n",addr);
 
 	out32(0xcf8, addr+8);
 	tmp = in32(0xcfc);
 	switch(tmp>>8){
-	case 0x010802:say("nvme ioctl\n");break;
-	case 0x010803:say("nvme admin\n");break;
+	case 0x010802:nvme_print("nvme ioctl\n");break;
+	case 0x010803:nvme_print("nvme admin\n");break;
 	}
 
 	out32(0xcf8, addr+0x10);
 	lo = in32(0xcfc);
-	say("bar0=%x\n", lo);
+	nvme_print("bar0=%x\n", lo);
 	out32(0xcf8, addr+0x14);
 	hi = in32(0xcfc);
-	say("bar1=%x\n", hi);
+	nvme_print("bar1=%x\n", hi);
 	out32(0xcf8, addr+0x18);
-	say("bar2=%x\n", in32(0xcfc));
+	nvme_print("bar2=%x\n", in32(0xcfc));
 	out32(0xcf8, addr+0x1c);
-	say("bar3=%x\n", in32(0xcfc));
+	nvme_print("bar3=%x\n", in32(0xcfc));
 	out32(0xcf8, addr+0x20);
-	say("bar4=%x\n", in32(0xcfc));
+	nvme_print("bar4=%x\n", in32(0xcfc));
 	out32(0xcf8, addr+0x24);
-	say("bar5=%x\n", in32(0xcfc));
+	nvme_print("bar5=%x\n", in32(0xcfc));
 
 	nvme_portcaps(dev, addr);
-	say("}\n");
+	nvme_print("}\n");
 
 	//nvme mmio
 	u8* mmio = (u8*)((lo&0xffffc000) | (hi<<32));

@@ -1,4 +1,5 @@
 #include "libhard.h"
+#define ahci_print(fmt, ...) say("[%08lld,ahci]" fmt, timeread(), ##__VA_ARGS__)
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
 
@@ -315,10 +316,10 @@ void maketable(struct HBA_CMD_HEADER* cmdheader, u64 from, u8* buf, u64 count)
 	//0x100sectors    >>>>    prdt=2个
 	//0x173sectors    >>>>    prdt=3个
 	//0x181sectors    >>>>    prdt=4个
-	//say("ptdtl",(u64)cmdheader->prdtl);
+	//ahci_print("ptdtl",(u64)cmdheader->prdtl);
 
 	struct HBA_CMD_TBL* cmdtable = (struct HBA_CMD_TBL*)(u64)cmdheader->ctba;
-	say("cmdtable=%p\n", cmdtable);
+	ahci_print("cmdtable=%p\n", cmdtable);
 	char* p=(char*)cmdtable;
 	int i=sizeof(struct HBA_CMD_TBL)+(cmdheader->prdtl-1)*sizeof(struct HBA_PRDT_ENTRY);
 	for(;i>0;i--){p[i]=0;}
@@ -371,12 +372,12 @@ int ahci_readblock(struct HBA_PORT* port, u64 from, u8* buf, u64 count)
 	//find cmdslot
 	int cmdslot = find_cmdslot(port);
 	if(-1 == cmdslot){
-		say("err:no cmdslot\n");
+		ahci_print("err:no cmdslot\n");
 		return -1;
 	}
 
-	say("cmdslot=%x\n", cmdslot);
-	say("cmdheader=%p\n", cmdheader);
+	ahci_print("cmdslot=%x\n", cmdslot);
+	ahci_print("cmdheader=%p\n", cmdheader);
 	cmdheader += cmdslot;
 	maketable(cmdheader, from, buf, count);
 
@@ -386,7 +387,7 @@ int ahci_readblock(struct HBA_PORT* port, u64 from, u8* buf, u64 count)
 	while(1){
 		timeout++;
 		if(timeout>0xfffff){
-			say("(timeout1)port->tfd:%x\n",(u64)port->tfd);
+			ahci_print("(timeout1)port->tfd:%x\n",(u64)port->tfd);
 			return -11;
 		}
 
@@ -397,7 +398,7 @@ int ahci_readblock(struct HBA_PORT* port, u64 from, u8* buf, u64 count)
 
 		break;
 	}
-	say("is=%x\n", port->is);
+	ahci_print("is=%x\n", port->is);
 	//unsigned int* pointer=(unsigned int*)(u64)(port->fb);
 
 	//issue
@@ -406,14 +407,14 @@ int ahci_readblock(struct HBA_PORT* port, u64 from, u8* buf, u64 count)
 	while (1){
 		timeout++;
 		if(timeout>0xffffff){
-			say("(timeout2)port->ci=%x\n",temp);
+			ahci_print("(timeout2)port->ci=%x\n",temp);
 			return -22;
 		}
 
 		//
 		temp=port->is;
 		if (temp & 0x40000000){  //Task file error
-			say("port err 1\n",0);
+			ahci_print("port err 1\n",0);
 			return -33;
 		}
 
@@ -445,12 +446,12 @@ static int ahci_identify(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 	}
 	if(cmdslot == 32)
 	{
-		say("err:no cmdslot\n",0);
+		ahci_print("err:no cmdslot\n",0);
 		return -1;
 	}
 	cmdheader += cmdslot;
-	//say("cmdslot:",(u64)cmdslot);
-	//say("cmdheader:",(u64)cmdheader);
+	//ahci_print("cmdslot:",(u64)cmdslot);
+	//ahci_print("cmdheader:",(u64)cmdheader);
 
 	cmdheader->cfl=sizeof(struct FIS_REG_H2D)/4;	//Command FIS size
 	cmdheader->w = 0;			// Read from device
@@ -459,7 +460,7 @@ static int ahci_identify(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 
 	//make the table
 	struct HBA_CMD_TBL* cmdtable = (struct HBA_CMD_TBL*)(u64)cmdheader->ctba;
-	//say("cmdtable(comheader->ctba):",(u64)cmdtable);
+	//ahci_print("cmdtable(comheader->ctba):",(u64)cmdtable);
 	char* p = (char*)cmdtable;
 	int i = sizeof(struct HBA_CMD_TBL);
 	for(;i>0;i--){p[i]=0;}
@@ -480,7 +481,7 @@ static int ahci_identify(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 	{
 		timeout++;
 		if(timeout>0xfffff){
-			say("(timeout1)port->tfd:%x\n",(u64)port->tfd);
+			ahci_print("(timeout1)port->tfd:%x\n",(u64)port->tfd);
 			return -1;
 		}
 
@@ -491,7 +492,7 @@ static int ahci_identify(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 
 		break;
 	}
-	//say("is:",(u64)port->is);
+	//ahci_print("is:",(u64)port->is);
 	//u32* pointer=(u32*)(u64)(port->fb);
 	//set issue,wait for completion
 	port->ci = 1<<cmdslot;  // Issue command,start reading
@@ -500,14 +501,14 @@ static int ahci_identify(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 	{
 		timeout++;
 		if(timeout>0xfffff){
-			say("(timeout2)ci=%x,prdbc=%x\n",temp,cmdheader->prdbc);
+			ahci_print("(timeout2)ci=%x,prdbc=%x\n",temp,cmdheader->prdbc);
 			return -2;
 		}
 
 		temp=port->is;
 		if (temp & 0x40000000)  // Task file error
 		{
-			say("port error 1\n");
+			ahci_print("port error 1\n");
 			return -9;
 		}
 
@@ -522,7 +523,7 @@ static int ahci_identify(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 	//printmemory(rdi, 0x200);
 	swap16(rdi->serial_no, 20);
 	swap16(rdi->model,     40);
-	say("	serial=<%.20s>\n"
+	ahci_print("	serial=<%.20s>\n"
 		"	model=<%.40s>\n", rdi->serial_no, rdi->model);
 	return 1;
 }
@@ -535,17 +536,17 @@ static int ahci_ontake(struct item* ahci,int xxx,struct halfrel* stack,int sp, v
 	struct perahci* my = (void*)(ahci->priv_data);
 	struct HBA_MEM* abar = my->abar;
 	struct HBA_PORT* port = &abar->ports[xxx];
-	say("@ahci_ontake: node=%p,abar=%p,port=%p, off=%x,len=%x\n", my,abar,port, off,len);
+	ahci_print("@ahci_ontake: node=%p,abar=%p,port=%p, off=%x,len=%x\n", my,abar,port, off,len);
 
 	int ret = ahci_readblock(port, off>>9, buf, len>>9);
 	if(ret < 0)return 0;
 
-	say("ret=%d\n",ret);
+	ahci_print("ret=%d\n",ret);
 	return len;
 }
 static int ahci_ongive(struct item* ahci,int xxx,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
 {
-	say("@ahci_ongive\n");
+	ahci_print("@ahci_ongive\n");
 	return 0;
 }
 
@@ -580,35 +581,35 @@ int ahci_list(struct item* dev, int total, u8* buf, int len)
 		u8 ipm = (ssts >> 8) & 0x0F;	//0x28.[8,11]
 		u8 det = ssts & 0x0F;			//0x28.[0,3]
 		if((0 == ipm) | (0 == det)){
-			say("%x:empty(%x)\n", j, ssts);
+			ahci_print("%x:empty(%x)\n", j, ssts);
 			continue;
 		}
 
 		switch(port->sig){
 			case 0x00000101:	//sata
 			{
-				say("%x:sata\n", j);
+				ahci_print("%x:sata\n", j);
 				cnt += 1;
 				ahci_contractor(dev, j, buf, len);
 				break;
 			}
 			case 0xeb140101:	//atapi
 			{
-				say("%x:atapi\n", j);
+				ahci_print("%x:atapi\n", j);
 				break;
 			}
 			case 0xc33c0101:	//enclosure....
 			{
-				say("%x:enclosure\n", j);
+				ahci_print("%x:enclosure\n", j);
 				break;
 			}
 			case 0x96690101:	//port multiplier
 			{
-				say("%x:multiplier\n", j);
+				ahci_print("%x:multiplier\n", j);
 				break;
 			}
 			default:{
-				say("%x:unknown\n", j);
+				ahci_print("%x:unknown\n", j);
 				break;
 			}
 		}//switch
@@ -626,7 +627,7 @@ static void disableport(volatile struct HBA_PORT* port)
 	port->is = 0xfd8000af;			//0x10
 
 	//put port in idle mode
-	//say("port->cmd before disable:%x",(u64)(port->cmd));
+	//ahci_print("port->cmd before disable:%x",(u64)(port->cmd));
 	port->cmd &= 0xfffffffe;	//0x18,bit0
 	port->cmd &= 0xffffffef;	//0x18,bit4,FRE
  
@@ -634,7 +635,7 @@ static void disableport(volatile struct HBA_PORT* port)
 	while(timeout){
 		timeout--;
 		if(0 == timeout){
-			say("(timeout)still running:%x\n",(u64)(port->cmd));
+			ahci_print("(timeout)still running:%x\n",(u64)(port->cmd));
 			return;
 		}
 
@@ -647,7 +648,7 @@ static void disableport(volatile struct HBA_PORT* port)
 		//
 		break;
 	}
-	//say("port->cmd after disable:%x",(u64)(port->cmd));
+	//ahci_print("port->cmd after disable:%x",(u64)(port->cmd));
 
 	//reset port
 	port->sctl |= 0x2;
@@ -659,7 +660,7 @@ static void disableport(volatile struct HBA_PORT* port)
 	while(timeout){
 		timeout--;
 		if(0 == timeout){
-			//say("no device:%x",11111);
+			//ahci_print("no device:%x",11111);
 			return;
 		}
 
@@ -671,12 +672,12 @@ static void disableport(volatile struct HBA_PORT* port)
 }
 static void enableport(volatile struct HBA_PORT* port)
 {
-	//say("port->cmd before enable:%x",(u64)(port->cmd));
+	//ahci_print("port->cmd before enable:%x",(u64)(port->cmd));
 	while(port->cmd & (1<<15));	//bit15
  
 	port->cmd |= 1<<4;	//bit4,receive enable
 	port->cmd |= 1; 	//bit0,start
-	//say("port->cmd after enable:%x",(u64)(port->cmd));
+	//ahci_print("port->cmd after enable:%x",(u64)(port->cmd));
 }
 
 
@@ -684,7 +685,7 @@ static void enableport(volatile struct HBA_PORT* port)
 
 void ahci_mmioinit(struct item* dev, struct HBA_MEM* abar)
 {
-	say("ahci@mmio:%p{\n", abar);
+	ahci_print("ahci@mmio:%p{\n", abar);
 	//printmmio(abar, 0x20);
 
 
@@ -705,7 +706,7 @@ void ahci_mmioinit(struct item* dev, struct HBA_MEM* abar)
 		tmp >>= 1;
 		cnt++;
 	}
-	say("totalport=%x\n", cnt);
+	ahci_print("totalport=%x\n", cnt);
 
 
 //2: ports settings
@@ -755,35 +756,35 @@ void ahci_mmioinit(struct item* dev, struct HBA_MEM* abar)
 	dev->ontaking = ahci_ontake;
 	ahci_list(dev, cnt, ptr+receivebuf, 0x10000);
 
-    say("}\n");
+    ahci_print("}\n");
 }
 void ahci_portinit(struct item* dev, u32 addr)
 {
 	u32 temp;
-	say("ahci@port:%x{\n",addr);
+	ahci_print("ahci@port:%x{\n",addr);
 
 	out32(0xcf8, addr+0x4);
 	temp = in32(0xcfc);
-	say("sts,cmd=%x\n", temp);
+	ahci_print("sts,cmd=%x\n", temp);
 
 	out32(0xcf8, addr+0x4);
 	out32(0xcfc, temp | (1<<10) | (1<<2));		//bus master=1
 
 	out32(0xcf8, addr+0x10);
-	say("bar0=%x\n", in32(0xcfc));
+	ahci_print("bar0=%x\n", in32(0xcfc));
 	out32(0xcf8, addr+0x14);
-	say("bar1=%x\n", in32(0xcfc));
+	ahci_print("bar1=%x\n", in32(0xcfc));
 	out32(0xcf8, addr+0x18);
-	say("bar2=%x\n", in32(0xcfc));
+	ahci_print("bar2=%x\n", in32(0xcfc));
 	out32(0xcf8, addr+0x1c);
-	say("bar3=%x\n", in32(0xcfc));
+	ahci_print("bar3=%x\n", in32(0xcfc));
 	out32(0xcf8, addr+0x20);
-	say("bar4=%x\n", in32(0xcfc));
+	ahci_print("bar4=%x\n", in32(0xcfc));
 	out32(0xcf8, addr+0x24);
 	temp = in32(0xcfc);
-	say("bar5=%x\n", temp);
+	ahci_print("bar5=%x\n", temp);
 
-	say("}\n");
+	ahci_print("}\n");
 
 
 	//hba addr
