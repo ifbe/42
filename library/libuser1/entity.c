@@ -20,48 +20,48 @@ int baby_create(void*, void*, int, u8**);
 int baby_delete(void*, void*);
 int baby_linkup(void*, void*);
 int baby_discon(void*, void*);
-int baby_taking(void*,int, void*,int, void*,int, void*,int);
-int baby_giving(void*,int, void*,int, void*,int, void*,int);
+int baby_taking(void*,void*, void*,int, void*,int, void*,int);
+int baby_giving(void*,void*, void*,int, void*,int, void*,int);
 int test_create(void*, void*, int, u8**);
 int test_delete(void*, void*);
 int test_linkup(void*, void*);
 int test_discon(void*, void*);
-int test_taking(void*,int, void*,int, void*,int, void*,int);
-int test_giving(void*,int, void*,int, void*,int, void*,int);
+int test_taking(void*,void*, void*,int, void*,int, void*,int);
+int test_giving(void*,void*, void*,int, void*,int, void*,int);
 
 //
 int virtimu_create(void*, void*, int, u8**);
 int virtimu_delete(void*, void*);
 int virtimu_linkup(void*, void*);
 int virtimu_discon(void*, void*);
-int virtimu_taking(void*,int, void*,int, void*,int, void*,int);
-int virtimu_giving(void*,int, void*,int, void*,int, void*,int);
+int virtimu_taking(void*,void*, void*,int, void*,int, void*,int);
+int virtimu_giving(void*,void*, void*,int, void*,int, void*,int);
 int carcon_create(void*, void*, int, u8**);
 int carcon_delete(void*, void*);
 int carcon_linkup(void*, void*);
 int carcon_discon(void*, void*);
-int carcon_taking(void*,int, void*,int, void*,int, void*,int);
-int carcon_giving(void*,int, void*,int, void*,int, void*,int);
+int carcon_taking(void*,void*, void*,int, void*,int, void*,int);
+int carcon_giving(void*,void*, void*,int, void*,int, void*,int);
 int flycon_create(void*, void*, int, u8**);
 int flycon_delete(void*, void*);
 int flycon_linkup(void*, void*);
 int flycon_discon(void*, void*);
-int flycon_taking(void*,int, void*,int, void*,int, void*,int);
-int flycon_giving(void*,int, void*,int, void*,int, void*,int);
+int flycon_taking(void*,void*, void*,int, void*,int, void*,int);
+int flycon_giving(void*,void*, void*,int, void*,int, void*,int);
 
 //
 int toycar_create(void*, void*, int, u8**);
 int toycar_delete(void*, void*);
 int toycar_linkup(void*, void*);
 int toycar_discon(void*, void*);
-int toycar_taking(void*,int, void*,int, void*,int, void*,int);
-int toycar_giving(void*,int, void*,int, void*,int, void*,int);
+int toycar_taking(void*,void*, void*,int, void*,int, void*,int);
+int toycar_giving(void*,void*, void*,int, void*,int, void*,int);
 int stepcar_create(void*, void*, int, u8**);
 int stepcar_delete(void*, void*);
 int stepcar_linkup(void*, void*);
 int stepcar_discon(void*, void*);
-int stepcar_taking(void*,int, void*,int, void*,int, void*,int);
-int stepcar_giving(void*,int, void*,int, void*,int, void*,int);
+int stepcar_taking(void*,void*, void*,int, void*,int, void*,int);
+int stepcar_giving(void*,void*, void*,int, void*,int, void*,int);
 
 
 //
@@ -69,180 +69,180 @@ int schematic_create(void*, void*, int, u8**);
 int schematic_delete(void*, void*);
 int schematic_linkup(void*, void*);
 int schematic_discon(void*, void*);
-int schematic_giving(void*,int, void*,int, void*,int, void*,int);
-int schematic_taking(void*,int, void*,int, void*,int, void*,int);
+int schematic_giving(void*,void*, void*,int, void*,int, void*,int);
+int schematic_taking(void*,void*, void*,int, void*,int, void*,int);
 int printboard_create(void*, void*, int, u8**);
 int printboard_delete(void*, void*);
 int printboard_linkup(void*, void*);
 int printboard_discon(void*, void*);
-int printboard_giving(void*,int, void*,int, void*,int, void*,int);
-int printboard_taking(void*,int, void*,int, void*,int, void*,int);
+int printboard_giving(void*,void*, void*,int, void*,int, void*,int);
+int printboard_taking(void*,void*, void*,int, void*,int, void*,int);
 int analog_create(void*, void*, int, u8**);
 int analog_delete(void*, void*);
 int analog_linkup(void*, void*);
 int analog_discon(void*, void*);
-int analog_giving(void*,int, void*,int, void*,int, void*,int);
-int analog_taking(void*,int, void*,int, void*,int, void*,int);
+int analog_giving(void*,void*, void*,int, void*,int, void*,int);
+int analog_taking(void*,void*, void*,int, void*,int, void*,int);
 int digital_create(void*, void*, int, u8**);
 int digital_delete(void*, void*);
 int digital_linkup(void*, void*);
 int digital_discon(void*, void*);
-int digital_giving(void*,int, void*,int, void*,int, void*,int);
-int digital_taking(void*,int, void*,int, void*,int, void*,int);
+int digital_giving(void*,void*, void*,int, void*,int, void*,int);
+int digital_taking(void*,void*, void*,int, void*,int, void*,int);
 
 //
 int force_create(void*, void*, int, u8**);
 int force_delete(void*, void*);
 int force_linkup(void*, void*);
 int force_discon(void*, void*);
-int force_giving(void*,int, void*,int, void*,int, void*,int);
-int force_taking(void*,int, void*,int, void*,int, void*,int);
+int force_giving(void*,void*, void*,int, void*,int, void*,int);
+int force_taking(void*,void*, void*,int, void*,int, void*,int);
 int graveasy_create(void*, void*, int, u8**);
 int graveasy_delete(void*, void*);
 int graveasy_linkup(void*, void*);
 int graveasy_discon(void*, void*);
-int graveasy_giving(void*,int, void*,int, void*,int, void*,int);
-int graveasy_taking(void*,int, void*,int, void*,int, void*,int);
+int graveasy_giving(void*,void*, void*,int, void*,int, void*,int);
+int graveasy_taking(void*,void*, void*,int, void*,int, void*,int);
 int gravtest_create(void*, void*, int, u8**);
 int gravtest_delete(void*, void*);
 int gravtest_linkup(void*, void*);
 int gravtest_discon(void*, void*);
-int gravtest_giving(void*,int, void*,int, void*,int, void*,int);
-int gravtest_taking(void*,int, void*,int, void*,int, void*,int);
+int gravtest_giving(void*,void*, void*,int, void*,int, void*,int);
+int gravtest_taking(void*,void*, void*,int, void*,int, void*,int);
 
 //scene
 int axis3d_create(void*, void*, int, u8**);
 int axis3d_delete(void*, void*);
 int axis3d_linkup(void*, void*);
 int axis3d_discon(void*, void*);
-int axis3d_giving(void*,int, void*,int, void*,int, void*,int);
-int axis3d_taking(void*,int, void*,int, void*,int, void*,int);
+int axis3d_giving(void*,void*, void*,int, void*,int, void*,int);
+int axis3d_taking(void*,void*, void*,int, void*,int, void*,int);
 int guide3d_create(void*, void*, int, u8**);
 int guide3d_delete(void*, void*);
 int guide3d_linkup(void*, void*);
 int guide3d_discon(void*, void*);
-int guide3d_giving(void*,int, void*,int, void*,int, void*,int);
-int guide3d_taking(void*,int, void*,int, void*,int, void*,int);
+int guide3d_giving(void*,void*, void*,int, void*,int, void*,int);
+int guide3d_taking(void*,void*, void*,int, void*,int, void*,int);
 int border2d_create(void*, void*, int, u8**);
 int border2d_delete(void*, void*);
 int border2d_linkup(void*, void*);
 int border2d_discon(void*, void*);
-int border2d_giving(void*,int, void*,int, void*,int, void*,int);
-int border2d_taking(void*,int, void*,int, void*,int, void*,int);
+int border2d_giving(void*,void*, void*,int, void*,int, void*,int);
+int border2d_taking(void*,void*, void*,int, void*,int, void*,int);
 int border3d_create(void*, void*, int, u8**);
 int border3d_delete(void*, void*);
 int border3d_linkup(void*, void*);
 int border3d_discon(void*, void*);
-int border3d_giving(void*,int, void*,int, void*,int, void*,int);
-int border3d_taking(void*,int, void*,int, void*,int, void*,int);
+int border3d_giving(void*,void*, void*,int, void*,int, void*,int);
+int border3d_taking(void*,void*, void*,int, void*,int, void*,int);
 int scene3d_create(void*, void*, int, u8**);
 int scene3d_delete(void*, void*);
 int scene3d_linkup(void*, void*);
 int scene3d_discon(void*, void*);
-int scene3d_giving(void*,int, void*,int, void*,int, void*,int);
-int scene3d_taking(void*,int, void*,int, void*,int, void*,int);
+int scene3d_giving(void*,void*, void*,int, void*,int, void*,int);
+int scene3d_taking(void*,void*, void*,int, void*,int, void*,int);
 
 //
 int reality_create(void*, void*, int, u8**);
 int reality_delete(void*);
 int reality_linkup(void*, void*);
 int reality_discon(void*, void*);
-int reality_giving(void*,int, void*,int, void*,int, void*,int);
-int reality_taking(void*,int, void*,int, void*,int, void*,int);
+int reality_giving(void*,void*, void*,int, void*,int, void*,int);
+int reality_taking(void*,void*, void*,int, void*,int, void*,int);
 int virtual_create(void*, void*, int, u8**);
 int virtual_delete(void*, void*);
 int virtual_linkup(void*, void*);
 int virtual_discon(void*, void*);
-int virtual_giving(void*,int, void*,int, void*,int, void*,int);
-int virtual_taking(void*,int, void*,int, void*,int, void*,int);
+int virtual_giving(void*,void*, void*,int, void*,int, void*,int);
+int virtual_taking(void*,void*, void*,int, void*,int, void*,int);
 int htmlroot_create(void*, void*, int, u8**);
 int htmlroot_delete(void*);
 int htmlroot_linkup(void*, void*);
 int htmlroot_discon(void*, void*);
-int htmlroot_giving(void*,int, void*,int, void*,int, void*,int);
-int htmlroot_taking(void*,int, void*,int, void*,int, void*,int);
+int htmlroot_giving(void*,void*, void*,int, void*,int, void*,int);
+int htmlroot_taking(void*,void*, void*,int, void*,int, void*,int);
 int xamlroot_create(void*, void*, int, u8**);
 int xamlroot_delete(void*, void*);
 int xamlroot_linkup(void*, void*);
 int xamlroot_discon(void*, void*);
-int xamlroot_giving(void*,int, void*,int, void*,int, void*,int);
-int xamlroot_taking(void*,int, void*,int, void*,int, void*,int);
+int xamlroot_giving(void*,void*, void*,int, void*,int, void*,int);
+int xamlroot_taking(void*,void*, void*,int, void*,int, void*,int);
 int mmiospace_create(void*, void*, int, u8**);
 int mmiospace_delete(void*);
 int mmiospace_linkup(void*, void*);
 int mmiospace_discon(void*, void*);
-int mmiospace_giving(void*,int, void*,int, void*,int, void*,int);
-int mmiospace_taking(void*,int, void*,int, void*,int, void*,int);
+int mmiospace_giving(void*,void*, void*,int, void*,int, void*,int);
+int mmiospace_taking(void*,void*, void*,int, void*,int, void*,int);
 int portspace_create(void*, void*, int, u8**);
 int portspace_delete(void*, void*);
 int portspace_linkup(void*, void*);
 int portspace_discon(void*, void*);
-int portspace_giving(void*,int, void*,int, void*,int, void*,int);
-int portspace_taking(void*,int, void*,int, void*,int, void*,int);
+int portspace_giving(void*,void*, void*,int, void*,int, void*,int);
+int portspace_taking(void*,void*, void*,int, void*,int, void*,int);
 
 //gl41 helper
 int gl41data_create(void*, void*, int, u8**);
 int gl41data_delete(void*);
 int gl41data_linkup(void*, void*);
 int gl41data_discon(void*, void*);
-int gl41data_taking(void*,int, void*,int, void*,int, void*,int);
-int gl41data_giving(void*,int, void*,int, void*,int, void*,int);
+int gl41data_taking(void*,void*, void*,int, void*,int, void*,int);
+int gl41data_giving(void*,void*, void*,int, void*,int, void*,int);
 int gl41coop_create(void*, void*, int, u8**);
 int gl41coop_delete(void*);
 int gl41coop_linkup(void*, void*);
 int gl41coop_discon(void*, void*);
-int gl41coop_taking(void*,int, void*,int, void*,int, void*,int);
-int gl41coop_giving(void*,int, void*,int, void*,int, void*,int);
+int gl41coop_taking(void*,void*, void*,int, void*,int, void*,int);
+int gl41coop_giving(void*,void*, void*,int, void*,int, void*,int);
 
 //event
 int cam1rd_create(void*, void*, int, u8**);
 int cam1rd_delete(void*);
 int cam1rd_linkup(void*, void*);
 int cam1rd_discon(void*, void*);
-int cam1rd_taking(void*,int, void*,int, void*,int, void*,int);
-int cam1rd_giving(void*,int, void*,int, void*,int, void*,int);
+int cam1rd_taking(void*,void*, void*,int, void*,int, void*,int);
+int cam1rd_giving(void*,void*, void*,int, void*,int, void*,int);
 int cam3rd_create(void*, void*, int, u8**);
 int cam3rd_delete(void*);
 int cam3rd_linkup(void*, void*);
 int cam3rd_discon(void*, void*);
-int cam3rd_taking(void*,int, void*,int, void*,int, void*,int);
-int cam3rd_giving(void*,int, void*,int, void*,int, void*,int);
+int cam3rd_taking(void*,void*, void*,int, void*,int, void*,int);
+int cam3rd_giving(void*,void*, void*,int, void*,int, void*,int);
 int camrts_create(void*, void*, int, u8**);
 int camrts_delete(void*);
 int camrts_linkup(void*, void*);
 int camrts_discon(void*, void*);
-int camrts_taking(void*,int, void*,int, void*,int, void*,int);
-int camrts_giving(void*,int, void*,int, void*,int, void*,int);
+int camrts_taking(void*,void*, void*,int, void*,int, void*,int);
+int camrts_giving(void*,void*, void*,int, void*,int, void*,int);
 int clickray_create(void*, void*, int, u8**);
 int clickray_delete(void*);
 int clickray_linkup(void*, void*);
 int clickray_discon(void*, void*);
-int clickray_taking(void*,int, void*,int, void*,int, void*,int);
-int clickray_giving(void*,int, void*,int, void*,int, void*,int);
+int clickray_taking(void*,void*, void*,int, void*,int, void*,int);
+int clickray_giving(void*,void*, void*,int, void*,int, void*,int);
 int touchobj_create(void*, void*, int, u8**);
 int touchobj_delete(void*);
 int touchobj_linkup(void*, void*);
 int touchobj_discon(void*, void*);
-int touchobj_taking(void*,int, void*,int, void*,int, void*,int);
-int touchobj_giving(void*,int, void*,int, void*,int, void*,int);
+int touchobj_taking(void*,void*, void*,int, void*,int, void*,int);
+int touchobj_giving(void*,void*, void*,int, void*,int, void*,int);
 int follow_create(void*, void*, int, u8**);
 int follow_delete(void*);
 int follow_linkup(void*, void*);
 int follow_discon(void*, void*);
-int follow_taking(void*,int, void*,int, void*,int, void*,int);
-int follow_giving(void*,int, void*,int, void*,int, void*,int);
+int follow_taking(void*,void*, void*,int, void*,int, void*,int);
+int follow_giving(void*,void*, void*,int, void*,int, void*,int);
 int lookat_create(void*, void*, int, u8**);
 int lookat_delete(void*);
 int lookat_linkup(void*, void*);
 int lookat_discon(void*, void*);
-int lookat_taking(void*,int, void*,int, void*,int, void*,int);
-int lookat_giving(void*,int, void*,int, void*,int, void*,int);
+int lookat_taking(void*,void*, void*,int, void*,int, void*,int);
+int lookat_giving(void*,void*, void*,int, void*,int, void*,int);
 int wander_create(void*, void*, int, u8**);
 int wander_delete(void*);
 int wander_linkup(void*, void*);
 int wander_discon(void*, void*);
-int wander_taking(void*,int, void*,int, void*,int, void*,int);
-int wander_giving(void*,int, void*,int, void*,int, void*,int);
+int wander_taking(void*,void*, void*,int, void*,int, void*,int);
+int wander_giving(void*,void*, void*,int, void*,int, void*,int);
 
 
 
@@ -349,7 +349,7 @@ void entityinput_touch(struct supply* win, struct event* ev)
 
 
 
-int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int entity_take(_ent* act,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(act->type){
 	case _cam1rd_:return cam1rd_taking(act,foot, stack,sp, arg,key, buf,len);
@@ -403,7 +403,7 @@ int entityread(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* 
 	if(0 == act->ontaking)return 0;
 	return act->ontaking(act,foot, stack,sp, arg,key, buf,len);
 }
-int entitywrite(_ent* act,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int entity_give(_ent* act,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(act->type){
 	case _cam1rd_:return cam1rd_giving(act,foot, stack,sp, arg,key, buf,len);

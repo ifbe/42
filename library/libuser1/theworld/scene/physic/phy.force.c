@@ -172,7 +172,7 @@ void force_read_inner(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 		stack[sp+0].flag = 0;
 		stack[sp+1].pchip = tab[j];
 		stack[sp+1].flag = 'f';
-		entityread(tab[j],'f', stack,sp+2, 0,0, jo,0);
+		entity_take(tab[j],0, stack,sp+2, 0,0, jo,0);
 	}
 }
 int force_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

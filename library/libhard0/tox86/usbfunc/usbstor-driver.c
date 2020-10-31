@@ -227,9 +227,10 @@ struct perstor{
 	u64 blocksize;
 	u64 totalsize;
 };
-static int usbstor_ontake(struct item* usb,int xxx,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+static int usbstor_ontake(struct item* usb,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
 {
 	//arg: 0=readfile, "blocksize", "totalsize", ...
+	say("usbstor_ontake:%p,%x,%p,%x\n",arg,off,buf,len);
 
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
@@ -253,6 +254,7 @@ static int usbstor_ontake(struct item* usb,int xxx,struct halfrel* stack,int sp,
 
 		blocklba = bytecur / (info->blocksize);
 		blockcnt = bytecnt / (info->blocksize);
+		say("lba=%x,cnt=%x\n",blocklba,blockcnt);
 
 		usbstor_ZeroMemory(&cbw, 0x1f);
 		usbstor_ZeroMemory(&rsw, 0x0d);
@@ -279,7 +281,7 @@ static int usbstor_ontake(struct item* usb,int xxx,struct halfrel* stack,int sp,
 			break;
 		}
 
-		ret = xhci_giveorderwaitevent(info->host,info->slot|(info->bulkin<<8), 'd',0, buf+bytecur, bytecnt, 0,0);
+		ret = xhci_giveorderwaitevent(info->host,info->slot|(info->bulkin<<8), 'd',0, buf+bytecur-off, bytecnt, 0,0);
 		if(ret < 0){
 			say("[usbdisk]error@recv dat\n");
 			break;
@@ -299,7 +301,7 @@ static int usbstor_ontake(struct item* usb,int xxx,struct halfrel* stack,int sp,
 	}
 	return bytecur-off;
 }
-static int usbstor_ongive(struct item* usb,int xxx,struct halfrel* stack,int sp, void* sbuf,int slen, void* rbuf,int rlen)
+static int usbstor_ongive(struct item* usb,void* foot,struct halfrel* stack,int sp, void* sbuf,int slen, void* rbuf,int rlen)
 {
 	return 0;
 }
@@ -501,7 +503,7 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 
 //------------------------file prober------------------------
-	struct artery* probe = arterycreate(_file_,0,0,0);
+	struct artery* probe = arterycreate(_fileauto_,0,0,0);
 	if(0 == probe)return 0;
 	struct relation* rel = relationcreate(probe,0,_art_,_src_, usb,0,_dev_,0);
 	if(0 == rel)return 0;

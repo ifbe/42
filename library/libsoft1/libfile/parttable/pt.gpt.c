@@ -92,11 +92,11 @@ void parse_gpt(u8* src)
 
 
 
-int gptclient_read(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int gptclient_take(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int gptclient_write(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int gptclient_give(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
@@ -125,6 +125,7 @@ int gptclient_delete(struct artery* ele)
 }
 int gptclient_create(struct artery* ele, u8* url)
 {
+	say("@gptclient_create\n");
 	ele->buf0 = memorycreate(0x10000, 0);
 	return 0;
 }

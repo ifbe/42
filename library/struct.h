@@ -65,59 +65,6 @@ struct xyzwpair
 
 
 
-struct halfrel
-{
-	union{
-		u64 chip;
-		void* pchip;
-	};
-	union{
-		u64 foot;
-		void* pfoot;
-	};
-
-	u32 type;
-	u32 flag;
-
-	u32 prev;
-	u32 next;
-};
-struct relation
-{
-	//[0x00,0x1f]
-	union{
-		u8 dst[0];
-		u64 dstchip;
-		void* pdstchip;
-	};
-	union{
-		u64 dstfoot;
-		void* pdstfoot;
-	};
-	u32 dsttype;
-	u32 dstflag;
-	u32 samedstprevsrc;
-	u32 samedstnextsrc;
-
-	//0x20,0x3f
-	union{
-		u8 src[0];
-		u64 srcchip;
-		void* psrcchip;
-	};
-	union{
-		u64 srcfoot;
-		void* psrcfoot;
-	};
-	u32 srctype;
-	u32 srcflag;
-	u32 samesrcprevdst;
-	u32 samesrcnextdst;
-};
-
-
-
-
 struct pcmdata
 {
 	int fmt;
@@ -465,6 +412,62 @@ struct style
 
 
 
+struct halfrel
+{
+	union{
+		u64 chip;
+		void* pchip;
+	};
+	union{
+		u64 foot;
+		void* pfoot;
+	};
+
+	u32 type;
+	u32 flag;
+
+	u32 prev;
+	u32 next;
+};
+struct relation
+{
+	//[0x00,0x1f]
+	union{
+		u8 dst[0];
+		u64 dstchip;
+		void* pdstchip;
+	};
+	union{
+		u64 dstfoot;
+		void* pdstfoot;
+	};
+	u32 dsttype;
+	u32 dstflag;
+	u32 samedstprevsrc;
+	u32 samedstnextsrc;
+
+	//0x20,0x3f
+	union{
+		u8 src[0];
+		u64 srcchip;
+		void* psrcchip;
+	};
+	union{
+		u64 srcfoot;
+		void* psrcfoot;
+	};
+	u32 srctype;
+	u32 srcflag;
+	u32 samesrcprevdst;
+	u32 samesrcnextdst;
+};
+struct foot{
+	u64 type;
+}__attribute__((packed));
+
+
+
+
 struct item
 {
 	//[00,1f]: type
@@ -509,19 +512,19 @@ struct item
 		char padding3[8];
 	};
 	union{
-		int (*onlinkup)(struct item* node,int foot, void* self, void* peer);
+		int (*onlinkup)(struct item* node,void* foot, void* self, void* peer);
 		char padding4[8];
 	};
 	union{
-		int (*ondiscon)(struct item* node,int foot, void* self, void* peer);
+		int (*ondiscon)(struct item* node,void* foot, void* self, void* peer);
 		char padding5[8];
 	};
 	union{
-		int (*ontaking)(struct item* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*ontaking)(struct item* node,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding6[8];
 	};
 	union{
-		int (*ongiving)(struct item* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*ongiving)(struct item* node,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding7[8];
 	};
 
@@ -535,9 +538,6 @@ struct item
 		void* priv_ptr;
 		u8    priv_data[0x100];
 	};
-}__attribute__((packed));
-struct foot{
-	u64 type;
 }__attribute__((packed));
 
 
@@ -587,19 +587,19 @@ struct sysobj
 		char padding3[8];
 	};
 	union{
-		int (*onlinkup)(struct item* node,int foot, void* self, void* peer);
+		int (*onlinkup)(struct item* node,void* foot, void* self, void* peer);
 		char padding4[8];
 	};
 	union{
-		int (*ondiscon)(struct item* node,int foot, void* self, void* peer);
+		int (*ondiscon)(struct item* node,void* foot, void* self, void* peer);
 		char padding5[8];
 	};
 	union{
-		int (*ontaking)(struct item* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*ontaking)(struct item* node,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding6[8];
 	};
 	union{
-		int (*ongiving)(struct item* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*ongiving)(struct item* node,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding7[8];
 	};
 
@@ -690,19 +690,19 @@ struct artery
 		char padding3[8];
 	};
 	union{
-		int (*onlinkup)(struct item* node,int foot, void* self, void* peer);
+		int (*onlinkup)(struct item* node,void* foot, void* self, void* peer);
 		char padding4[8];
 	};
 	union{
-		int (*ondiscon)(struct item* node,int foot, void* self, void* peer);
+		int (*ondiscon)(struct item* node,void* foot, void* self, void* peer);
 		char padding5[8];
 	};
 	union{
-		int (*ontaking)(struct item* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*ontaking)(struct item* node,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding6[8];
 	};
 	union{
-		int (*ongiving)(struct item* node,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*ongiving)(struct item* node,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding7[8];
 	};
 
@@ -810,11 +810,11 @@ struct supply
 		char padding5[8];
 	};
 	union{
-		int (*ontaking)(struct supply* sup,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*ontaking)(struct supply* sup,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding6[8];
 	};
 	union{
-		int (*ongiving)(struct supply* sup,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*ongiving)(struct supply* sup,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding7[8];
 	};
 
@@ -1024,11 +1024,11 @@ struct entity
 		char padding5[8];
 	};
 	union{
-		int (*ontaking)(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*ontaking)(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding6[8];
 	};
 	union{
-		int (*ongiving)(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
+		int (*ongiving)(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf,int len);
 		char padding7[8];
 	};
 

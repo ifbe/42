@@ -68,7 +68,6 @@ static void digital_broadcast(struct entity* ent, int pin, _syn* stack,int sp, u
 {
 	struct relation* rel;
 	struct entity* chip;
-	int foot;
 
 	rel = ent->irel0;
 	while(1){
@@ -80,9 +79,8 @@ static void digital_broadcast(struct entity* ent, int pin, _syn* stack,int sp, u
 
 		stack[sp+0].pchip = ent;
 		stack[sp+1].pchip = chip;
-
-		foot = rel->srcflag;
-		entitywrite(chip,foot, stack,sp+2, 0,ent->STAMP, buf,len);
+		stack[sp+1].flag = rel->srcflag;
+		entity_give(chip,0, stack,sp+2, 0,ent->STAMP, buf,len);
 next1:
 		rel = samedstnextsrc(rel);
 	}
@@ -97,9 +95,8 @@ next1:
 
 		stack[sp+0].pchip = ent;
 		stack[sp+1].pchip = chip;
-
-		foot = rel->dstflag;
-		entitywrite(chip,foot, stack,sp+2, 0,ent->STAMP, buf,len);
+		stack[sp+1].flag = rel->dstflag;
+		entity_give(chip,0, stack,sp+2, 0,ent->STAMP, buf,len);
 next2:
 		rel = samesrcnextdst(rel);
 	}

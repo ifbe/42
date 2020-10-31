@@ -264,7 +264,8 @@ int httpmaster_write_bysrc(_art* art,int foot, _syn* stack,int sp, void* arg, in
 		if(0 == rel)return 0;
 		stack[sp-2].pchip = Tcp;
 		stack[sp-1].pchip = Ws;
-		arterywrite(Ws,_src_, stack,sp, 0,0, buf,len);
+		stack[sp-1].flag = _src_;
+		artery_give(Ws,0, stack,sp, 0,0, buf,len);
 		return 0;
 	}
 

@@ -381,15 +381,13 @@ static void the2048_event(struct entity* act, struct event* ev)
 
 
 
-static void the2048_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void the2048_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
 	if(0 == stack)return;
 	if('v' != key)return;
 
-	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
@@ -401,10 +399,9 @@ static void the2048_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 		break;
 	}
 }
-static void the2048_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void the2048_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@the2048_read\n");
-	struct style* slot = stack[sp-1].pfoot;
 	struct entity* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
@@ -419,15 +416,17 @@ static void the2048_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 		the2048_draw_html(ent,slot, wnd,area);
 		break;
 	default:
-		the2048_read_bycam(ent,foot, stack,sp, arg,key);
+		the2048_read_bycam(ent,slot, stack,sp, arg,key);
 		break;
 	}
 }
 static void the2048_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@the2048_write\n");
-	if(_ioby_ == foot)the2048_move(ent, *(u8*)buf);
-	else the2048_event(ent, buf);
+	switch(stack[sp-1].flag){
+	case _ioby_:the2048_move(ent, *(u8*)buf);break;
+	default:the2048_event(ent, buf);
+	}
 }
 static void the2048_discon(struct halfrel* self, struct halfrel* peer)
 {

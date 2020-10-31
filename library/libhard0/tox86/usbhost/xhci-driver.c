@@ -1,5 +1,5 @@
 #include "libhard.h"
-#define xhci_print(fmt, ...) say("[%08lld,xhci]"fmt, timeread(), ##__VA_ARGS__)
+#define xhci_print(fmt, ...) say("<%08lld,xhci>"fmt, timeread(), ##__VA_ARGS__)
 //speed
 #define SPEED_FS 1
 #define SPEED_LS 2
@@ -1829,7 +1829,7 @@ int xhci_portcaps(struct item* dev, u32 addr)
 int xhci_portinit(struct item* dev, u32 addr)
 {
 	u64 temp,high;
-	xhci_print("xhci@port:%x{\n", addr);
+	xhci_print("port@%x{\n", addr);
 
 	out32(0xcf8, addr+0x4);
 	temp = in32(0xcfc);

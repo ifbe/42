@@ -19,17 +19,7 @@
 
 
 
-void nonewindow_write(_sup* win,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
-{
-	struct event* ev = buf;
-	if(0x2b70 == ev->what){
-		short* t = (void*)ev;
-		win->ix0 = t[0];
-		win->iy0 = t[1];
-		//say("%d,%d\n",t[0],t[1]);
-	}
-}
-void nonewindow_read(_sup* win,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void nonewindow_take(_sup* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	float w = win->width;
 	float h = win->height;
@@ -57,6 +47,16 @@ void nonewindow_read(_sup* win,int foot, _syn* stack,int sp, void* arg,int idx, 
 	//clear screen
 	glClearColor(r, g, b, a);
 	glClear(GL_COLOR_BUFFER_BIT);	//GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT
+}
+void nonewindow_give(_sup* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+{
+	struct event* ev = buf;
+	if(0x2b70 == ev->what){
+		short* t = (void*)ev;
+		win->ix0 = t[0];
+		win->iy0 = t[1];
+		//say("%d,%d\n",t[0],t[1]);
+	}
 }
 void nonewindow_delete(struct supply* win)
 {

@@ -13,10 +13,10 @@ static int termcount = 0;
 
 
 
-void windowread(struct supply* win)
+void window_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg, int idx, short* buf, int len)
 {
 }
-void windowwrite(struct supply* win)
+void window_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg, int idx, short* buf, int len)
 {
 }
 void windowlist()

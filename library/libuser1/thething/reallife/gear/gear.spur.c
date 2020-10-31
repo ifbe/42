@@ -108,7 +108,8 @@ say("@12\n");
 say("@14\n");
 		stack[sp+0].pchip = gear;
 		stack[sp+1].pchip = next;
-		entitywrite(next,_gear_, stack,sp+2, 0,0, &gear->fz0,1);
+		stack[sp+1].flag = _gear_;
+		entity_give(next,0, stack,sp+2, 0,0, &gear->fz0,1);
 next1:
 		rel = samedstnextsrc(rel);
 	}
@@ -126,7 +127,8 @@ say("@22\n");
 say("@24\n");
 		stack[sp+0].pchip = gear;
 		stack[sp+1].pchip = next;
-		entitywrite(next,_gear_, stack,sp+2, 0,0, &gear->fz0,1);
+		stack[sp+1].flag = _gear_;
+		entity_give(next,0, stack,sp+2, 0,0, &gear->fz0,1);
 next2:
 		rel = samesrcnextdst(rel);
 	}

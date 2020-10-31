@@ -5,8 +5,8 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 #include "libuser.h"
-int tuinode_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
-int tuinode_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
+int tuinode_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
+int tuinode_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
 
 
 
@@ -112,7 +112,7 @@ void windowdraw(struct supply* wnd)
 
 
 
-void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct winsize ws;
 	ioctl(STDOUT_FILENO, TIOCGWINSZ, &ws);
@@ -121,12 +121,12 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 	wnd->fbwidth = ws.ws_col;
 
 	//read context
-	tuinode_read(wnd,0, stack,sp, arg,key, buf,len);
+	tuinode_take(wnd,0, stack,sp, arg,key, buf,len);
 
 	//update screen
 	windowdraw(wnd);
 }
-void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 void windowstop()

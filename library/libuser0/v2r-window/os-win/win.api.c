@@ -10,8 +10,8 @@
 #include <commctrl.h>
 #include "libuser.h"
 int arg2utf8(void*, void*);
-int rgbanode_read(void*,int, void*,int, void*,int, void*,int);
-int rgbanode_write(void*,int, void*,int, void*,int, void*,int);
+int rgbanode_take(void*,void*, void*,int, void*,int, void*,int);
+int rgbanode_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 
@@ -30,7 +30,7 @@ static RECT rt, re;
 
 
 
-int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	MSG msg;
 	BITMAPINFO info;
@@ -78,7 +78,7 @@ int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* 
 	wnd->spsave = 0;
 	return 0;
 }
-int windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

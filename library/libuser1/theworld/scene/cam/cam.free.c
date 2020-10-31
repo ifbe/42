@@ -523,7 +523,7 @@ static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		//printmat4(m);
 
 		pixel_cleardepth(wnd);
-		entityread(stack[sp+1].pchip, 0, stack, sp+2, m, ent->DRAWTYPE, 0, 0);
+		entity_take(stack[sp+1].pchip, 0, stack, sp+2, m, ent->DRAWTYPE, 0, 0);
 		break;
 
 	case _dx11full_:

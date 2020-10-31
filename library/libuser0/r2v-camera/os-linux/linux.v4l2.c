@@ -194,7 +194,7 @@ void* visionlistener(struct supply* win)
 
 
 
-int videoread(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int video_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	u64 addr = info[(cur+23)%24].addr;
 	say("addr=%llx\n",addr);
@@ -202,7 +202,7 @@ int videoread(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf
 	*(u64*)buf = addr;
 	return 0;
 }
-int videowrite(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int video_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }

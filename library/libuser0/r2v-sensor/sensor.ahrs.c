@@ -8,12 +8,12 @@
 
 
 
-void ahrs_read(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void ahrs_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	//writeback: east north sky?
 	say("@ahrs_read\n");
 }
-void ahrs_write(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void ahrs_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 /*
 	receive gpsdata(already filtered):

@@ -715,7 +715,7 @@ static void restorestackdeliverevent(struct supply* wnd, struct event* ev)
 	stack[sp+1].pfoot = rel->pdstfoot;
 	//stack[sp+1].type = rel->dsttype;
 	stack[sp+1].flag = rel->dstflag;
-	entitywrite((struct entity*)rel->pdstchip, rel->dstflag, stack,sp+2, 0,0, ev, 0);
+	entity_give((struct entity*)rel->pdstchip, rel->dstflag, stack,sp+2, 0,0, ev, 0);
 }
 LRESULT CALLBACK WinProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -949,7 +949,7 @@ BOOL InitWin32(struct supply* wnd)
 
 
 extern "C" {
-int fullwindow_taking(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int fullwindow_taking(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//take
 	struct relation* rel = (struct relation*)wnd->orel0;
@@ -967,7 +967,7 @@ int fullwindow_taking(struct supply* wnd,int foot, struct halfrel* stack,int sp,
 			stack[sp+1].pfoot = rel->pdstfoot;
 			//stack[sp+1].type = rel->dsttype;
 			stack[sp+1].flag = rel->dstflag;
-			entityread((struct entity*)rel->pdstchip, rel->dstflag, stack,sp+2, 0,'v', 0, 0);
+			entity((struct entity*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
 		}
 
 		//give
@@ -981,7 +981,7 @@ int fullwindow_taking(struct supply* wnd,int foot, struct halfrel* stack,int sp,
 	}
 	return 0;
 }
-int fullwindow_giving(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int fullwindow_giving(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -989,7 +989,7 @@ int fullwindow_giving(struct supply* wnd,int foot, struct halfrel* stack,int sp,
 
 
 
-int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//target
 	g_dx11context->OMSetRenderTargets(1, &g_renderTargetView, g_depthStencilView);
@@ -1023,7 +1023,7 @@ int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* 
 	wnd->spsave = 0;
 	return 0;
 }
-int windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

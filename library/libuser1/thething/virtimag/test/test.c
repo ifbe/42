@@ -142,7 +142,7 @@ void test_tickpcm(struct entity* ent, struct supply* sup)
 
 
 
-int test_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int test_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* wnd = stack[sp-2].pchip;
 	switch(wnd->fmt){

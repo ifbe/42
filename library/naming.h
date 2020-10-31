@@ -66,8 +66,17 @@
 //
 #define _FILE_ hex32('F','I','L','E')
 #define _file_ hex32('f','i','l','e')
+#define _filetype_ hex64('f','i','l','e','t','y','p','e')
+#define _fileauto_ hex64('f','i','l','e','a','u','t','o')
+//
 #define _mbr_ hex32('m','b','r',0)
 #define _gpt_ hex32('g','p','t',0)
+#define _fat_ hex32('f','a','t',0)
+#define _ntfs_ hex32('n','t','f','s')
+#define _hfs_ hex32('h','f','s',0)
+#define _apfs_ hex32('a','p','f','s')
+#define _ext_ hex32('e','x','t',0)
+#define _zfs_ hex32('z','f','s',0)
 //raw family
 #define _RAW_ hex32('R','A','W',0)
 #define _Raw_ hex32('R','a','w',0)

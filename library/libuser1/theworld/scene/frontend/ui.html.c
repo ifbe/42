@@ -77,7 +77,7 @@ int htmlroot_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, v
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
 			stack[sp+1].flag = rel->dstflag;
-			entityread(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, 0,0, 0,0);
+			entity_take(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, 0,0, 0,0);
 		}
 		rel = samesrcnextdst(rel);
 	}

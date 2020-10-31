@@ -1,5 +1,5 @@
 #include "libhard.h"
-#define ahci_print(fmt, ...) say("[%08lld,ahci]" fmt, timeread(), ##__VA_ARGS__)
+#define ahci_print(fmt, ...) say("<%08lld,ahci>" fmt, timeread(), ##__VA_ARGS__)
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
 
@@ -531,11 +531,11 @@ static int ahci_satacmd(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 {
 	return 0;
 }
-static int ahci_ontake(struct item* ahci,int xxx,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+static int ahci_ontake(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
 {
 	struct perahci* my = (void*)(ahci->priv_data);
 	struct HBA_MEM* abar = my->abar;
-	struct HBA_PORT* port = &abar->ports[xxx];
+	struct HBA_PORT* port = foot;
 	ahci_print("@ahci_ontake: node=%p,abar=%p,port=%p, off=%x,len=%x\n", my,abar,port, off,len);
 
 	int ret = ahci_readblock(port, off>>9, buf, len>>9);
@@ -544,7 +544,7 @@ static int ahci_ontake(struct item* ahci,int xxx,struct halfrel* stack,int sp, v
 	ahci_print("ret=%d\n",ret);
 	return len;
 }
-static int ahci_ongive(struct item* ahci,int xxx,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+static int ahci_ongive(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
 {
 	ahci_print("@ahci_ongive\n");
 	return 0;
@@ -561,9 +561,9 @@ int ahci_contractor(struct item* dev, int who, u8* buf, int len)
 	int ret = ahci_identify(port, (void*)buf);
 	if(ret < 0)return -1;
 
-	struct artery* probe = arterycreate(_file_,0,0,0);
-	if(0 == probe)return -2;
-	struct relation* rel = relationcreate(probe,0,_art_,_src_, dev,who,_dev_,0);
+	struct artery* tmp = arterycreate(_fileauto_,0,0,0);
+	if(0 == tmp)return -2;
+	struct relation* rel = relationcreate(tmp,0,_art_,_src_, dev,port,_dev_,0);
 	if(0 == rel)return -3;
 	arterylinkup((void*)&rel->dst, (void*)&rel->src);
 	return 0;
@@ -685,7 +685,7 @@ static void enableport(volatile struct HBA_PORT* port)
 
 void ahci_mmioinit(struct item* dev, struct HBA_MEM* abar)
 {
-	ahci_print("ahci@mmio:%p{\n", abar);
+	ahci_print("mmio@%p{\n", abar);
 	//printmmio(abar, 0x20);
 
 
@@ -761,7 +761,7 @@ void ahci_mmioinit(struct item* dev, struct HBA_MEM* abar)
 void ahci_portinit(struct item* dev, u32 addr)
 {
 	u32 temp;
-	ahci_print("ahci@port:%x{\n",addr);
+	ahci_print("port@%x{\n",addr);
 
 	out32(0xcf8, addr+0x4);
 	temp = in32(0xcfc);

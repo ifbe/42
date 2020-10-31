@@ -206,11 +206,11 @@ void windowchange()
 {
 	say("@windowchange\n");
 }
-void windowread(void* dc,void* df,void* sc,void* sf)
+void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@windowread\n");
 }
-void windowwrite(void* dc,void* df,void* sc,void* sf,void* buf,int len)
+void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@windowwrite\n");
 }

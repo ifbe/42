@@ -5,8 +5,8 @@
 #include <errno.h>
 #include <X11/Xlib.h>
 #include "libuser.h"
-int rgbanode_read( void*,int, void*,int, void*,int, void*,int);
-int rgbanode_write(void*,int, void*,int, void*,int, void*,int);
+int rgbanode_take(void*,void*, void*,int, void*,int, void*,int);
+int rgbanode_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 
@@ -230,10 +230,10 @@ void windowevent(struct supply* win, XEvent xev)
 
 
 
-void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//update screen
-	rgbanode_read(wnd,0, stack,sp, arg,key, buf,len);
+	rgbanode_take(wnd,0, stack,sp, arg,key, buf,len);
 	XPutImage(
 		dsp, wnd->xlibfd, wnd->xlibgc, wnd->ximage,
 		0, 0, 0, 0,
@@ -257,7 +257,7 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 	//clear temp
 	wnd->spsave = 0;
 }
-void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 /*
 	XEvent xev;

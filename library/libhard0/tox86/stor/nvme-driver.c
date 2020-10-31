@@ -1,5 +1,5 @@
 #include "libhard.h"
-#define nvme_print(fmt, ...) say("[%08lld,nvme]" fmt, timeread(), ##__VA_ARGS__)
+#define nvme_print(fmt, ...) say("<%08lld,nvme>" fmt, timeread(), ##__VA_ARGS__)
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
 
@@ -48,7 +48,7 @@ struct NVME_MMIO{
 
 int nvme_mmioinit(struct item* dev, u8* mmio)
 {
-	nvme_print("nvme@mmio:%p{\n", mmio);
+	nvme_print("mmio@%p{\n", mmio);
 	printmmio(mmio, 32);
 	nvme_print("}\n");
 	return 0;
@@ -80,7 +80,7 @@ int nvme_portinit(struct item* dev, u32 addr)
 {
 	u32 tmp;
 	u64 lo,hi;
-	nvme_print("nvme@port:%x{\n",addr);
+	nvme_print("port@%x{\n",addr);
 
 	out32(0xcf8, addr+8);
 	tmp = in32(0xcfc);

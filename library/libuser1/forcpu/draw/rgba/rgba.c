@@ -34,7 +34,7 @@ void pixel_cleardepth(struct supply* wnd)
 
 
 
-int wndmgr_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//pixel_clearcolor(wnd);
 
@@ -49,7 +49,7 @@ int wndmgr_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void*
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
 			stack[sp+1].flag = rel->dstflag;
-			entityread(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, arg,key, buf,len);
+			entity_take(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 		}
 next:
 		rel = samesrcnextdst(rel);
@@ -61,7 +61,7 @@ next:
 	drawline((void*)wnd, 0xffff00, x, y-16, x, y+16);
 	return 0;
 }
-int wndmgr_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@rgbanode_write:%p,%x\n", wnd,foot);
 	//printmemory(buf,16);
@@ -106,7 +106,7 @@ int wndmgr_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void
 		stack[sp+1].pchip = the->pdstchip;
 		stack[sp+1].pfoot = the->pdstfoot;
 		stack[sp+1].flag = the->dstflag;
-		entitywrite(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, arg,key, buf,len);
+		entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 	}
 	return 0;
 }
@@ -114,7 +114,7 @@ int wndmgr_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void
 
 
 
-int rgbanode_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int rgbanode_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//pixel_clearcolor(wnd);
 
@@ -129,7 +129,7 @@ int rgbanode_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, voi
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
 			stack[sp+1].flag = rel->dstflag;
-			entityread(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, arg,key, buf,len);
+			entity_take(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 		}
 next:
 		rel = samesrcnextdst(rel);
@@ -137,7 +137,7 @@ next:
 
 	return 0;
 }
-int rgbanode_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int rgbanode_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@rgbanode_write:%p,%x\n", wnd,foot);
 	//printmemory(buf,16);
@@ -170,7 +170,7 @@ int rgbanode_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int key, vo
 		stack[sp+1].pchip = the->pdstchip;
 		stack[sp+1].pfoot = the->pdstfoot;
 		stack[sp+1].flag = the->dstflag;
-		entitywrite(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, arg,key, buf,len);
+		entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 	}
 	return 0;
 }

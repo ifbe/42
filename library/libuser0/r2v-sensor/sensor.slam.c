@@ -23,11 +23,11 @@ int slam_create(struct supply* win, void* str)
 
 
 
-int slam_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int slam_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int slam_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int slam_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	return 0;
 }

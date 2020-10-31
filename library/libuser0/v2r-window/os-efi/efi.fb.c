@@ -5,8 +5,8 @@
 #define _rgba8888_ hex64('r', 'g', 'b', 'a', '8', '8', '8', '8')
 void getscreen(void** _buf, u64* _fmt, int* _w, int* _h, int* _fbw, int* _fbh);
 //
-int wndmgr_read(void*,int, void*,int, void*,int, void*,int);
-int wndmgr_write(void*,int, void*,int, void*,int, void*,int);
+int wndmgr_take(void*,void*, void*,int, void*,int, void*,int);
+int wndmgr_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 
@@ -21,10 +21,10 @@ static int fbh = 0;
 
 
 
-void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == lfb)return;
-	wndmgr_read(wnd,foot, stack,sp, arg,key, buf,len);
+	wndmgr_take(wnd,foot, stack,sp, arg,key, buf,len);
 
 	int bpp;
 	switch(wnd->vfmt){
@@ -53,10 +53,10 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 		}
 	}
 }
-void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//printmemory(buf, 32);
-	wndmgr_write(wnd,0, stack,sp, 0,0, buf,len);
+	wndmgr_give(wnd,0, stack,sp, 0,0, buf,len);
 }
 void windowlist()
 {

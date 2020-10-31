@@ -44,7 +44,7 @@ void speakerlist()
 void speakerchoose()
 {
 }
-void speakerread(_sup* spk,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void speaker_take(_sup* spk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct pcmdata* pcm;
 	if(spk->orel0)take_data_from_peer(spk,_ctx_, stack,sp, 0,0, 0,0);
@@ -65,7 +65,7 @@ void speakerread(_sup* spk,int foot, _syn* stack,int sp, void* arg,int idx, void
 
 	sleep_us(1000*1000);
 }
-void speakerwrite(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+void speaker_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	int j;
 	if(0 == obuf)obuf = malloc(0x100000);

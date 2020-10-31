@@ -1,12 +1,8 @@
 
-void videoread(
-	struct supply* win, struct style* sty,
-	struct entity* act, struct style* pin)
+void video_take(struct supply* win, void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	printf("%llx,%llx,%llx,%llx\n", win, sty, act, pin);
-	if(0 == act)return;
 }
-void videowrite()
+void video_give(struct supply* win, void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 }
 void videolist()

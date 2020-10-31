@@ -1,7 +1,7 @@
 #import "Cocoa/Cocoa.h"
 #import "libuser.h"
-int rgbanode_read (void*,int, void*,int, void*,int, void*,int);
-int rgbanode_write(void*,int, void*,int, void*,int, void*,int);
+int rgbanode_take(void*,void*, void*,int, void*,int, void*,int);
+int rgbanode_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 
@@ -213,9 +213,9 @@ MyView* myview;
 
 
 
-void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	rgbanode_read(wnd,foot, stack,sp, arg,key, buf,len);
+	rgbanode_take(wnd,foot, stack,sp, arg,key, buf,len);
 
 	[myview setNeedsDisplay:YES];
 
@@ -249,7 +249,7 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 		[NSApp sendEvent:event];
 	}
 }
-void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 void windowlist()

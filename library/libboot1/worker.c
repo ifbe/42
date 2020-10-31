@@ -49,11 +49,11 @@ void* allocworker()
 
 
 
-int workerread(struct item* wrk,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int worker_take(struct item* wrk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int workerwrite(struct item* wrk,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int worker_give(struct item* wrk,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

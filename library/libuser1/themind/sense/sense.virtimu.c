@@ -60,15 +60,15 @@ void virtimu_senseforce(struct entity* ent)
 
 
 
-int virtimu_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int virtimu_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@virtimu_read:%.4s\n",&foot);
+	say("@virtimu_read:%p,%p\n", ent, foot);
 	return 0;
 }
-int virtimu_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int virtimu_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	//say("@virtimu_write:%.4s\n",&foot);
-	if(_clk_ == foot){
+	if(_clk_ == stack[sp=1].flag){
 		virtimu_checkplace(ent);
 		virtimu_senseforce(ent);
 	}

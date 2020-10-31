@@ -944,10 +944,10 @@ void* uievent(struct supply* p)
 	glutMotionFunc(callback_move);
 	glutMainLoop();
 }
-void windowread()
+void window_take(struct supply* wnd)
 {
 }
-void windowwrite(struct supply* win)
+void window_give(struct supply* wnd)
 {
 	queuehead++;
 }

@@ -89,7 +89,7 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 	struct halfrel stack[0x80];
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
-	supplyread(wnd,0, stack,2, 0,0, 0,0);
+	supply_take(wnd,0, stack,2, 0,0, 0,0);
 	inithardware();
 
 
@@ -97,7 +97,7 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 	struct event* ev;
 	while(1){
 		//draw frame
-		supplyread(wnd,0, stack,2, 0,0, 0,0);
+		supply_take(wnd,0, stack,2, 0,0, 0,0);
 
 		kernel_pollall();
 
@@ -107,7 +107,7 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 			if(0 == ev)break;
 			if(0 == ev->what)return 0;
 
-			supplywrite(wnd,0, stack,2, 0,0, ev,0);
+			supply_give(wnd,0, stack,2, 0,0, ev,0);
 		}
 	}
 	return 0;

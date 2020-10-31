@@ -132,17 +132,15 @@ static void mmioedit_draw_cli(
 
 
 
-static int mmioedit_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int mmioedit_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(sp < 2)return 0;
 
-	//struct entity* ent = stack[sp-1].pchip;
-	struct style* slot = stack[sp-1].pfoot;
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 	switch(wnd->fmt){
 	case _rgba_:
-		mmioedit_draw_pixel(ent,slot, wnd,area);
+		mmioedit_draw_pixel(ent,foot, wnd,area);
 		break;
 	}
 	return 0;

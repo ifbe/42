@@ -1,6 +1,6 @@
 #include "libuser.h"
-int wndmgr_read(void*,int, void*,int, void*,int, void*,int);
-int wndmgr_write(void*,int, void*,int, void*,int, void*,int);
+int wndmgr_take(void*,void*, void*,int, void*,int, void*,int);
+int wndmgr_give(void*,void*, void*,int, void*,int, void*,int);
 //
 int mbox_call(unsigned char ch);
 
@@ -37,7 +37,7 @@ static unsigned char *lfb = 0;
 
 
 
-void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("wnd=%p,stack=%p\n",wnd,stack);
 	wndmgr_read(wnd,foot, stack,sp, arg,key, buf,len);
@@ -51,7 +51,7 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 		*obuf = ibuf[j];
 	}
 }
-void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//printmemory(buf, 0x20);
 	wndmgr_write(wnd,0, stack,sp, 0,0, buf,len);

@@ -18,8 +18,8 @@
 GLuint uploadvertex(void* i, void* o);
 GLuint uploadtexture(void* i, u32 t, void* buf, int fmt, int w, int h);
 GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c);
-int gl41wnd0_read( void*,int, void*,int, void*,int, void*,int);
-int gl41wnd0_write(void*,int, void*,int, void*,int, void*,int);
+int gl41wnd0_take(void*,void*, void*,int, void*,int, void*,int);
+int gl41wnd0_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 
@@ -276,13 +276,13 @@ void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41
 
 
 
-void fullwindow_write(_sup* ogl,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void fullwindow_take(_sup* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	gl41wnd0_write(ogl,foot, stack,sp, arg,idx, buf,len);
+	gl41wnd0_take(ogl,foot, stack,sp, arg,idx, buf,len);
 }
-void fullwindow_read(_sup* ogl,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void fullwindow_give(_sup* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	gl41wnd0_read(ogl,foot, stack,sp, arg,idx, buf,len);
+	gl41wnd0_give(ogl,foot, stack,sp, arg,idx, buf,len);
 }
 void fullwindow_delete(struct supply* ogl)
 {

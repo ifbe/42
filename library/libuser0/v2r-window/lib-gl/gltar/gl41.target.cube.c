@@ -22,7 +22,7 @@ int fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41d
 
 
 
-int gl41fbo6_read(_sup* this,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int gl41fbo6_take(_sup* this,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	//say("@gl41fbo6_read: %llx\n", self->pchip);
 
@@ -33,7 +33,7 @@ int gl41fbo6_read(_sup* this,int foot, _syn* stack,int sp, void* arg,int idx, vo
 	}
 	return 0;
 }
-int gl41fbo6_write(_sup* this,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int gl41fbo6_give(_sup* this,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	//say("@gl41fbo6_write: %llx\n", self->pchip);
 

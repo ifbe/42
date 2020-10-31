@@ -9,8 +9,8 @@ void initstd(void*);
 void freestd();
 int stdio_create(void*, void*, int, u8**);
 int stdio_delete(void*);
-int stdio_read(void*,int, void*,int, void*,int, void*,int);
-int stdio_write(void*,int, void*,int, void*,int, void*,int);
+int stdio_take(void*,void*, void*,int, void*,int, void*,int);
+int stdio_give(void*,void*, void*,int, void*,int, void*,int);
 //
 void inittray(void*);
 void freetray();
@@ -19,57 +19,41 @@ int traydelete(void*);
 //
 int ahrs_create(void*, void*, int, u8**);
 int ahrs_delete(void*);
-int ahrs_read(void*,int, void*,int, void*,int, void*,int);
-int ahrs_write(void*,int, void*,int, void*,int, void*,int);
+int ahrs_take(void*,void*, void*,int, void*,int, void*,int);
+int ahrs_give(void*,void*, void*,int, void*,int, void*,int);
 //
 int slam_create(void*, void*, int, u8**);
 int slam_delete(void*);
-int slam_read(void*,int, void*,int, void*,int, void*,int);
-int slam_write(void*,int, void*,int, void*,int, void*,int);
+int slam_take(void*,void*, void*,int, void*,int, void*,int);
+int slam_give(void*,void*, void*,int, void*,int, void*,int);
 //sound.usbmic
 void initmicphone(void*);
 void freemicphone();
 int micphonecreate(void*, void*, int, u8**);
 int micphonedelete(void*);
-int micphonestart(void*);
-int micphonestop(void*);
-int micphoneread(void*,int, void*,int, void*,int, void*,int);
-int micphonewrite(void*,int, void*,int, void*,int, void*,int);
-int micphonelist();
-int micphonechoose();
+int micphone_take(void*,void*, void*,int, void*,int, void*,int);
+int micphone_give(void*,void*, void*,int, void*,int, void*,int);
 //sound.speaker
 void initspeaker(void*);
 void freespeaker();
 int speakercreate(void*, void*, int, u8**);
 int speakerdelete(void*);
-int speakerstart(void*);
-int speakerstop(void*);
-int speakerread(void*,int, void*,int, void*,int, void*,int);
-int speakerwrite(void*,int, void*,int, void*,int, void*,int);
-int speakerlist();
-int speakerchoose();
+int speaker_take(void*,void*, void*,int, void*,int, void*,int);
+int speaker_give(void*,void*, void*,int, void*,int, void*,int);
 //light.usbcam
 void initcam(void*);
 void freecam();
 int videocreate(void*, void*, int, u8**);
 int videodelete(void*);
-int videostart(void*);
-int videostop(void*);
-int videoread(void*,int, void*,int, void*,int, void*,int);
-int videowrite(void*,int, void*,int, void*,int, void*,int);
-int videolist();
-int videochoose();
+int video_take(void*,void*, void*,int, void*,int, void*,int);
+int video_give(void*,void*, void*,int, void*,int, void*,int);
 //light.window
 void initwindow(void*);
 void freewindow();
 int windowcreate(void*, void*, int, u8**);
 int windowdelete(void*);
-int windowstart(void*);
-int windowstop(void*);
-int windowread(void*,int, void*,int, void*,int, void*,int);
-int windowwrite(void*,int, void*,int, void*,int, void*,int);
-int windowlist();
-int windowchoose();
+int window_take(void*,void*, void*,int, void*,int, void*,int);
+int window_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 
@@ -110,35 +94,35 @@ void* allocpinid()
 
 
 
-int supplyread(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int supply_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	switch(sup->type){
-		case _std_:return stdio_read(sup,foot, stack,sp, arg,idx, buf,len);
+		case _std_:return stdio_take(sup,foot, stack,sp, arg,idx, buf,len);
 
 		case _mic_:break;
-		case _spk_:return speakerread(sup,foot, stack,sp, arg, idx, buf, len);
+		case _spk_:return speaker_take(sup,foot, stack,sp, arg, idx, buf, len);
 
-		case _cam_:return videoread(sup,foot, stack,sp, arg, idx, buf, len);
+		case _cam_:return video_take(sup,foot, stack,sp, arg, idx, buf, len);
 		case _fbo_:
-		case _wnd_:return windowread(sup,foot, stack,sp, arg, idx, buf, len);
+		case _wnd_:return window_take(sup,foot, stack,sp, arg, idx, buf, len);
 	}
 	return 0;
 }
-int supplywrite(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int supply_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	switch(sup->type){
-		case _std_:return stdio_write(sup,foot, stack,sp, arg,idx, buf,len);
+		case _std_:return stdio_give(sup,foot, stack,sp, arg,idx, buf,len);
 
 		case _mic_:break;
-		case _spk_:return speakerwrite(sup,foot, stack,sp, arg, idx, buf, len);
+		case _spk_:return speaker_give(sup,foot, stack,sp, arg, idx, buf, len);
 
 		case _cam_:break;
 		case _fbo_:
-		case _wnd_:return windowwrite(sup,foot, stack,sp, arg, idx, buf, len);
+		case _wnd_:return window_give(sup,foot, stack,sp, arg, idx, buf, len);
 	}
 	switch(sup->fmt){
-		case _ahrs_:return ahrs_write(sup,foot, stack,sp, arg, idx, buf, len);
-		case _slam_:return slam_write(sup,foot, stack,sp, arg, idx, buf, len);
+		case _ahrs_:return ahrs_give(sup,foot, stack,sp, arg, idx, buf, len);
+		case _slam_:return slam_give(sup,foot, stack,sp, arg, idx, buf, len);
 	}
 
 	return 0;

@@ -30,7 +30,7 @@ void* allocdevice()
 
 
 
-int deviceread(struct item* dev,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int device_take(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	//say("@deviceread\n");
 	if(dev->ontaking){
@@ -44,7 +44,7 @@ int deviceread(struct item* dev,int foot, _syn* stack,int sp, void* arg,int idx,
 	}
 	return 0;
 }
-int devicewrite(struct item* dev,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int device_give(struct item* dev,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	u8 t[2];
 	if(0 == buf){

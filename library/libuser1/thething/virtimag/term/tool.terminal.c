@@ -268,13 +268,11 @@ static void terminal_draw_gl41(
 		gl41_vt100(wnd,term,vc,vr,vf);
 	}
 }
-static void terminal_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void terminal_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
 	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
 		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 		terminal_draw_gl41(ent,slot, wor,geom, wnd,area);
@@ -298,41 +296,37 @@ static void terminal_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct s
 
 
 
-static void terminal_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void terminal_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	switch(foot){
+	switch(stack[sp-1].flag){
 	case 'c':break;
 	case 's':break;
 	}
 
-	//struct entity* ent = stack[sp-1].pchip;
-	struct style* slot = stack[sp-1].pfoot;
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 	switch(wnd->fmt){
 	case _rgba_:
-		terminal_draw_pixel(ent,slot, wnd,area);
+		terminal_draw_pixel(ent,foot, wnd,area);
 		break;
 	case _dx11full_:
 	case _mt20full_:
 	case _gl41full_:
 	case _vk12full_:
-		terminal_read_bywnd(ent,slot, wnd,area);
+		terminal_read_bywnd(ent,foot, wnd,area);
 		break;
 	default:
 		terminal_read_bycam(ent,foot, stack,sp, arg,key);
 	}
 }
-static void terminal_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void terminal_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//struct entity* ent = stack[sp-1].pchip;
-	struct style* slot = stack[sp-1].pfoot;
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
-	switch(foot){
-	case 'c':terminal_write_c(ent,slot, stack,sp, buf,len);return;
-	case 's':terminal_write_s(ent,slot, stack,sp, buf,len);return;
-	case _evby_:terminal_write_bywnd(ent,slot, stack,sp, buf,len);return;
+	switch(stack[sp-1].flag){
+	case 'c':terminal_write_c(ent,foot, stack,sp, buf,len);return;
+	case 's':terminal_write_s(ent,foot, stack,sp, buf,len);return;
+	case _evby_:terminal_write_bywnd(ent,foot, stack,sp, buf,len);return;
 	}
 
 	switch(wnd->fmt){
@@ -341,7 +335,7 @@ static void terminal_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,in
 	case _mt20full_:
 	case _gl41full_:
 	case _vk12full_:
-		terminal_write_bywnd(ent,slot, stack,sp, buf,len);
+		terminal_write_bywnd(ent,foot, stack,sp, buf,len);
 		return;
 	}
 }

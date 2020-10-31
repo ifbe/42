@@ -229,29 +229,33 @@ int startsound_playback(unsigned int frequency, int channels)
 
 
 
-int soundlist()
+int sound_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int soundchoose()
-{
-	return 0;
-}
-int soundread(char* buf, int frame)
-{
-	return 0;
-}
-int soundwrite(char* buf, int frame)
+int sound_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	bufout = buf;
 	count = 0;
 	return 0;
 }
-int soundstop()
+int sound_gone()
 {
 	return 0;
 }
-int soundstart()
+int sound_link()
+{
+	return 0;
+}
+
+
+
+
+int soundlist()
+{
+	return 0;
+}
+int soundchoose()
 {
 	return 0;
 }

@@ -49,7 +49,7 @@ static int ppplen = 0;
 
 
 
-int systemread(_sys* sys,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int system_take(_sys* sys,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	switch(sys->type){
 		case _FILE_:
@@ -57,7 +57,7 @@ int systemread(_sys* sys,int foot, _syn* stack,int sp, void* arg, int idx, void*
 	}
 	return 0;
 }
-int systemwrite(_sys* sys,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int system_give(_sys* sys,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	switch(sys->type){
 		case _FILE_:

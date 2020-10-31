@@ -17,7 +17,7 @@ int virtual_traverse(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 			stack[sp+0].pfoot = rel->psrcfoot;
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
-			entityread(rel->pdstchip,0, stack,sp+2, arg,key, 0,0);
+			entity_take(rel->pdstchip,0, stack,sp+2, arg,key, 0,0);
 		}
 		rel = samesrcnextdst(rel);
 	}

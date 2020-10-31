@@ -4,8 +4,8 @@
 #include<SDL2/SDL_video.h>
 #include"libuser.h"
 #undef main
-int rgbanode_read(void*,int, void*,int, void*,int, void*,int);
-int rgbanode_write(void*,int, void*,int, void*,int, void*,int);
+int rgbanode_take(void*,void*, void*,int, void*,int, void*,int);
+int rgbanode_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 
@@ -28,14 +28,14 @@ static u8 uppercase[] = {
 
 
 
-void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	SDL_Event ev;
 	SDL_Keysym sym;
 	struct event msg;
 
 	//read context
-	rgbanode_read(wnd,0, stack,sp, 0,0, 0,0);
+	rgbanode_take(wnd,0, stack,sp, 0,0, 0,0);
 
 	//update screen
 	SDL_UpdateTexture(wnd->sdltex, NULL, wnd->rgbabuf, (wnd->width)*4);
@@ -153,7 +153,7 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 		}
 	}
 }
-void windowwrite(struct supply* wnd)
+void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//SDL_Event ev;  
 	//ev.type = SDL_USEREVENT;  

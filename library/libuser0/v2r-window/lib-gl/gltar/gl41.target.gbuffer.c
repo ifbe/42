@@ -22,7 +22,7 @@ int fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41d
 
 
 
-int gl41fbog_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int gl41fbog_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 //say("@gl41fbog\n");
 
@@ -53,7 +53,7 @@ int gl41fbog_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int idx, voi
 			stack[sp+1].pfoot = rel->pdstfoot;
 			//stack[sp+1].type = rel->dsttype;
 			stack[sp+1].flag = rel->dstflag;
-			entityread(rel->pdstchip, rel->dstflag, stack,sp+2, 0,'v', 0, 0);
+			entity_take(rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
 
 			//upload
 			fullwindow_upload(wnd->glfull_camera, wnd->glfull_light, wnd->glfull_solid, wnd->glfull_opaque);
@@ -67,7 +67,7 @@ int gl41fbog_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int idx, voi
 	}
 	return 0;
 }
-int gl41fbog_write(_sup* this,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int gl41fbog_give(_sup* this,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	//say("@gl41fbog_write\n");
 	give_data_into_peer(this,_cam_, stack,sp, arg,idx, buf,len);

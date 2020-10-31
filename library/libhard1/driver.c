@@ -5,16 +5,16 @@ int lsm9ds1_create(struct item* ele, void* url, int argc, u8** argv);
 int lsm9ds1_delete(struct item* ele);
 int lsm9ds1_linkup(struct halfrel* self, struct halfrel* peer);
 int lsm9ds1_discon(struct halfrel* self, struct halfrel* peer);
-int lsm9ds1_write( struct item* dri,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
-int lsm9ds1_read(  struct item* dri,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
+int lsm9ds1_write( struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
+int lsm9ds1_read(  struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
 //
 #define _mpu9250_ hex64('m','p','u','9','2','5','0',0)
 int mpu9250_create(struct item* ele, void* url, int argc, u8** argv);
 int mpu9250_delete(struct item* ele);
 int mpu9250_linkup(struct halfrel* self, struct halfrel* peer);
 int mpu9250_discon(struct halfrel* self, struct halfrel* peer);
-int mpu9250_write( struct item* dri,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
-int mpu9250_read(  struct item* dri,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
+int mpu9250_write( struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
+int mpu9250_read(  struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len);
 
 
 
@@ -33,20 +33,20 @@ void* allocdriver()
 
 
 
-int driverwrite(struct item* dri,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int driver_take(struct item* dri,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+{
+	switch(dri->type){
+		case _mpu9250_:mpu9250_read(dri,foot, stack,sp, arg,idx, buf,len);break;
+		case _lsm9ds1_:lsm9ds1_read(dri,foot, stack,sp, arg,idx, buf,len);break;
+	}
+	return 0;
+}
+int driver_give(struct item* dri,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	//say("@driverwrite\n");
 	switch(dri->type){
 		case _mpu9250_:return mpu9250_write(dri,foot, stack,sp, arg,idx, buf,len);break;
 		case _lsm9ds1_:return lsm9ds1_write(dri,foot, stack,sp, arg,idx, buf,len);break;
-	}
-	return 0;
-}
-int driverread(struct item* dri,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
-{
-	switch(dri->type){
-		case _mpu9250_:mpu9250_read(dri,foot, stack,sp, arg,idx, buf,len);break;
-		case _lsm9ds1_:lsm9ds1_read(dri,foot, stack,sp, arg,idx, buf,len);break;
 	}
 	return 0;
 }

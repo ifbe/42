@@ -131,7 +131,8 @@ libfile/video/video.gif.c \
 libfile/video/video.mkv.c \
 libfile/video/video.mp4.c \
 libfile/video/video.rmvb.c \
-libfile/file.c \
+libfile/filetype.c \
+libfile/fileauto.c \
 libflow/0.phy/phy.bt.c \
 libflow/0.phy/phy.eth.c \
 libflow/0.phy/phy.raw.c \

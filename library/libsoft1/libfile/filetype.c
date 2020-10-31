@@ -98,213 +98,101 @@ int parse_webp(void*, int);
 
 
 
-int openreadclose(void* name, int off, void* buf, int len)
-{
-	int ret;
-	int fd = startfile(name, 'r');
-	if(fd <= 0)return fd;
-
-	ret = readfile(0, fd, "", off, buf, len);
-
-	stopfile(fd);
-	return ret;
-}
-int openwriteclose(void* name, int off, void* buf, int len)
-{
-	int ret;
-	int fd = startfile(name, 'w');
-	if(fd <= 0)return fd;
-
-	ret = writefile(0, fd, "", off, buf, len);
-
-	stopfile(fd);
-	return ret;
-}
-
-
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		|[want     ,     want+1m]|
-		|			| [where,]    //不要
- [where, ]      |			|	     //不要
-	    [---|--where,--]	     |	     //要后面
-	    [---|--where,----------------|----]	//要中间
-		|  [where,    ]	  |	     //全要
-		|  [---where,------------|----]	//要前面
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(设备这一小块是逻辑上的哪) -> (内存这一小块想要逻辑上的哪)
-(扇区，数量，是哪) -> (内存，数量，要哪)
-*/
-void cleverread(
-	u64 src, u64 count, u64 where,
-	u8* buf, u64 len, u64 want)
-{
-	u8* rdi = 0;    //内存地址
-	u64 rsi = 0;    //扇区号
-	u64 rcx = 0;    //扇区数量
-
-	//改rdi,rsi,rcx数值
-	if(where<want)	     //3和4
-	{
-		rdi = buf;
-		rsi = src+(want-where);
-		if(where+count <= want+len)
-		{
-			rcx = count-(want-where);
-		}
-		else
-		{
-			rcx = len;
-		}
-	}
-	else
-	{
-		rdi = buf+(where-want);
-		rsi = src;
-		if(where+count <= want+len)
-		{
-			rcx = count;
-		}
-		else
-		{
-			rcx = want+len-where;
-		}
-	}
-
-/*
-	say(
-		"(%llx,%llx,%llx)->(%llx,%llx,%llx)\n",
-		src,count,where,    buf,len,want
-	);
-	say(
-		"rdi=%llx,rsi=%llx,rcx=%llx\n",
-		rdi,rsi,rcx
-	);
-*/
-	readfile(0, 0, "", rsi, rdi, rcx);
-}
-
-
-
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		|[want     ,     want+1m]|
-		|			| [where,]    //不要
- [where, ]      |			|	     //不要
-	    [---|--where,--]	     |	     //要后面
-	    [---|--where,----------------|----]	//要中间
-		|  [where,    ]	  |	     //全要
-		|  [---where,------------|----]	//要前面
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(内存这一小块是逻辑上的哪) -> (设备这一小块想要逻辑上的哪)
-(来源，数量，是哪) -> (目的，数量，要哪)
-*/
-void cleverwrite(
-	u8* buf, u64 len, u64 where,
-	u64 dst, u64 size, u64 want)
-{
-}
-
-
-
-
-int file_check(u8* buf, int len)
+u64 file_check(u8* buf, int len)
 {
 	u64 type;
 
 	//picture
 	if(check_bmp(buf) != 0){
 		type = _bmp_;
-		parse_bmp(buf, len);
+		//parse_bmp(buf, len);
 	}
 	else if(check_flif(buf) != 0){
 		type = _flif_;
-		parse_flif(buf, len);
+		//parse_flif(buf, len);
 	}
 	else if(check_jpg(buf) != 0){
 		type = _jpg_;
-		parse_jpg(buf, len);
+		//parse_jpg(buf, len);
 	}
 	else if(check_png(buf) != 0){
 		type = _png_;
-		parse_png(buf, len);
+		//parse_png(buf, len);
 	}
 	else if(check_webp(buf) != 0){
 		type = _webp_;
-		parse_webp(buf, len);
+		//parse_webp(buf, len);
 	}
 
 	//compress
 	else if(check_7z(buf) != 0){
 		type = _7z_;
-		parse_7z(buf);
+		//parse_7z(buf);
 	}
 	else if(check_cpio(buf) != 0){
 		type = _cpio_;
-		parse_cpio(buf);
+		//parse_cpio(buf);
 	}
 	else if(check_gz(buf) != 0){
 		type = _gz_;
-		parse_gz(buf);
+		//parse_gz(buf);
 	}
 	else if(check_tar(buf) != 0){
 		type = _tar_;
-		parse_tar(buf);
+		//parse_tar(buf);
 	}
 	else if(check_zip(buf) != 0){
 		type = _zip_;
-		parse_zip(buf);
+		//parse_zip(buf);
 	}
 
 	//executable
 	else if(check_elf(buf) != 0){
 		type = _elf_;
-		parse_elf(buf);
+		//parse_elf(buf);
 	}
 	else if(check_macho(buf) != 0){
 		type = _macho_;
-		parse_macho(buf);
+		//parse_macho(buf);
 	}
 	else if(check_pe(buf) != 0){
 		type = _pe_;
-		parse_pe(buf);
+		//parse_pe(buf);
 	}
 
 	//filesystem
 	else if(check_ext(buf) != 0){
 		type = _ext_;
-		say("ext\n");
+		//say("ext\n");
 	}
 	else if(fat_check(buf) != 0){
 		type = _fat_;
-		say("fat\n");
+		//say("fat\n");
 	}
 	else if(check_hfs(buf) != 0){
 		type = _hfs_;
-		say("hfs\n");
+		//say("hfs\n");
 	}
 	else if(check_ntfs(buf) != 0){
 		type = _ntfs_;
-		say("ntfs\n");
+		//say("ntfs\n");
 	}
 
 	//parttable
 	else if(check_gpt(buf) != 0){
 		type = _gpt_;
-		parse_gpt(buf, len);
+		//parse_gpt(buf, len);
 	}
 	else if(check_mbr(buf) != 0){
 		type = _mbr_;
-		parse_mbr(buf, len);
+		//parse_mbr(buf, len);
 	}
 
 	//unknown
 	else
 	{
 		type = 0;
-		printmemory(buf, 0x200);
+		//printmemory(buf, 0x200);
 	}
 
 	return type;
@@ -313,20 +201,19 @@ int file_check(u8* buf, int len)
 
 
 
-int fileclient_discon(struct halfrel* self, struct halfrel* peer)
+int filetype_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
 }
-int fileclient_linkup(struct halfrel* self, struct halfrel* peer)
+int filetype_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	say("@fileclient_linkup\n");
+	say("@filetype_linkup\n");
 	struct artery* ele = self->pchip;
 	if(0 == ele)return 0;
 	void* buf = ele->buf0;
 	if(0 == buf)return 0;
 
 	int ret;
-	u64 type;
 	struct item* xxx = peer->pchip;
 	if((_sys_ == xxx->tier)|(_art_ == xxx->tier)){
 		struct sysobj* obj = peer->pchip;
@@ -335,17 +222,18 @@ int fileclient_linkup(struct halfrel* self, struct halfrel* peer)
 	}
 	else{
 		if(0 == xxx->ontaking)return -1;
-		ret = xxx->ontaking(xxx,peer->foot, 0,0, 0,0, buf, 0x10000);
+		ret = xxx->ontaking(xxx,peer->pfoot, 0,0, 0,0, buf, 0x10000);
 		if(0x10000 != ret)return -1;
 	}
 
-	type = file_check(buf, 0x10000);
+	u64 type = file_check(buf, 0x10000);
 	if(0 == type)return -2;
 
 	say("filetype = %.8s\n", &type);
+
 	return 0;
 }
-int fileclient_delete(struct artery* ele)
+int filetype_delete(struct artery* ele)
 {
 	if(ele->buf0){
 		memorydelete(ele->buf0);
@@ -353,7 +241,7 @@ int fileclient_delete(struct artery* ele)
 	}
 	return 0;
 }
-int fileclient_create(struct artery* ele, u8* url)
+int filetype_create(struct artery* ele, u8* url)
 {
 	ele->buf0 = memorycreate(0x10000, 0);
 	return 0;

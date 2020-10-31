@@ -310,10 +310,10 @@ void* uievent(struct supply* p)
 
 	wl_display_disconnect(display);
 }
-void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	wl_display_dispatch(display);
 	wl_surface_damage(surface, 0, 0, wnd->width, wnd->height);

@@ -4,10 +4,10 @@ void termwrite(void*, int);
 
 
 
-void stdio_read(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf, int len)
+void stdio_take(struct supply* std,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 }
-void stdio_write(struct halfrel* self,struct halfrel* peer, void* arg,int idx, void* buf, int len)
+void stdio_give(struct supply* std,void* foot, struct halfrel* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	say("%.*s", len, buf);
 }

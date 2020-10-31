@@ -23,10 +23,10 @@ int lidar_create(struct supply* win, void* str)
 
 
 
-void lidar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void lidar_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 }
-void lidar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void lidar_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 }
 int lidar_discon(struct halfrel* self, struct halfrel* peer)

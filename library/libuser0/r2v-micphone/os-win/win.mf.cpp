@@ -1,24 +1,24 @@
+#include "libuser.h"
 
-void videoread(
-	struct supply* win, struct style* sty,
-	struct entity* act, struct style* pin)
+
+
+
+void video_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	printf("%llx,%llx,%llx,%llx\n", win, sty, act, pin);
 	if(0 == act)return;
 }
-void videowrite()
+void video_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 }
+
+
+
+
 void videolist()
 {
 }
 void videochoose()
-{
-}
-void videostop()
-{
-}
-void videostart()
 {
 }
 void videodelete(struct supply* win)

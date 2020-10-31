@@ -34,7 +34,7 @@ int speakerchoose()
 {
 	return 0;
 }
-int speakerread(_sup* spk,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int speaker_take(_sup* spk,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	struct pcmdata* pcm;
 	if(spk->orel0)take_data_from_peer(spk,_ctx_, stack,sp, 0,0, 0,0);
@@ -65,7 +65,7 @@ int speakerread(_sup* spk,int foot, _syn* stack,int sp, void* arg, int idx, u8* 
 
 	return 0;
 }
-int speakerwrite(_sup* spk,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int speaker_give(_sup* spk,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int err;
 	pa_usec_t latency;

@@ -3,11 +3,11 @@
 
 
 
-int speakerread(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int speaker_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int speakerwrite(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+int speaker_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }

@@ -23,7 +23,7 @@ int fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41d
 
 //stack[rsp-2] = ogl, 0
 //stack[rsp-1] = wnd, 0
-int gl41wnd0_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int gl41wnd0_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	//say("@gl41wnd0_read\n");
 	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
@@ -52,7 +52,7 @@ int gl41wnd0_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int idx, voi
 			stack[sp+1].pfoot = rel->pdstfoot;
 			//stack[sp+1].type = rel->dsttype;
 			stack[sp+1].flag = rel->dstflag;
-			entityread(rel->pdstchip, rel->dstflag, stack,sp+2, 0,'v', 0, 0);
+			entity_take(rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
 
 			//upload
 			fullwindow_upload(wnd->glfull_camera, wnd->glfull_light, wnd->glfull_solid, wnd->glfull_opaque);
@@ -66,7 +66,7 @@ int gl41wnd0_read(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int idx, voi
 	}
 	return 0;
 }
-int gl41wnd0_write(_sup* wnd,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int gl41wnd0_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	float x,y,x0,y0,xn,yn;
 	short* v;
@@ -108,7 +108,7 @@ found:
 	stack[sp+1].pchip = rel->pdstchip;
 	stack[sp+1].pfoot = rel->pdstfoot;
 	stack[sp+1].flag = rel->dstflag;
-	entitywrite(rel->pdstchip, rel->dstflag, stack,sp+2, 0,0, ev,0);
+	entity_give(rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,0, ev,0);
 	return 0;
 }
 int gl41wnd0_discon(struct halfrel* self, struct halfrel* peer)

@@ -473,6 +473,7 @@ int fatclient_discon(struct halfrel* self, struct halfrel* peer)
 }
 int fatclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
+	say("@fatclient_linkup\n");
 	int ret;
 	struct artery* art;
 	if(_src_ != self->flag)return 0;
@@ -482,12 +483,14 @@ int fatclient_linkup(struct halfrel* self, struct halfrel* peer)
 
 	ret = take_data_from_peer(art,_src_, 0,0, "",0, pbrbuffer,0x200);
 	if(ret < 0x200){
+		say("fail@read:%d\n",ret);
 		return 0;
 	}
 
 	ret = fat_check(pbrbuffer);
 	if(ret < 12){
 		say("wrong fat\n");
+		printmemory(pbrbuffer,0x200);
 		return -1;
 	}
 
@@ -498,7 +501,6 @@ int fatclient_linkup(struct halfrel* self, struct halfrel* peer)
 	//if(ret < 0)
 
 	fat_cd(art, 0);
-	fat_cd(art, "efi");
 	return 0;
 }
 int fatclient_delete(struct artery* art)
@@ -507,9 +509,10 @@ int fatclient_delete(struct artery* art)
 }
 int fatclient_create(struct artery* art)
 {
-	fshome = memorycreate(0x100000, 0);
+	say("@fatclient_create\n");
+	fshome = memorycreate(0x200000, 0);
 		pbrbuffer = fshome+0x10000;
 		fatbuffer = fshome+0x20000;
-	dirhome = memorycreate(0x100000, 0);
+	dirhome = fshome+0x100000;
 	return 0;
 }

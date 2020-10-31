@@ -161,11 +161,11 @@ int originsearch(u8* buf, int len)
 
 
 
-int originread(struct item* ori,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int origin_take(struct item* ori,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int originwrite(struct item* ori,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int origin_give(struct item* ori,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

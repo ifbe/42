@@ -146,7 +146,7 @@ int clickray_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, v
 		if(ret <= 0)return 0;
 
 		//send
-		entitywrite(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, stack[sp].pfoot, 0, ray, 0);
+		entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, stack[sp].pfoot, 0, ray, 0);
 	}
 	return 0;
 }

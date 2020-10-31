@@ -35,10 +35,10 @@ void terminalthread(struct supply* win)
 
 
 
-void stdio_read(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void stdio_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 }
-void stdio_write(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+void stdio_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	lowlevel_output(buf, len);
 }

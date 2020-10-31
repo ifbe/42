@@ -34,7 +34,7 @@ static void speakercallback(void* ptr, AudioQueueRef aq, AudioQueueBufferRef buf
 
 
 
-int speakerread(_sup* spk,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int speaker_take(_sup* spk,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	if(spk->orel0)take_data_from_peer(spk,_ctx_, stack,sp, 0,0, 0,0);
 
@@ -59,7 +59,7 @@ int speakerread(_sup* spk,int foot, _syn* stack,int sp, void* arg, int idx, void
 	usleep(1000*1000);
 	return 0;
 }
-int speakerwrite(_sup* spk,int foot, _syn* stack,int sp, void* arg, int idx, short* buf, int len)
+int speaker_give(_sup* spk,void* foot, _syn* stack,int sp, void* arg, int idx, short* buf, int len)
 {
 	int j;
 	say("@speakerwrite: len=%x\n", len);

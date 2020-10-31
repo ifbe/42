@@ -135,27 +135,29 @@ void carcon_checkplace(struct entity* ent)
 
 
 
-int carcon_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int carcon_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@carcon_read:%.4s\n",&foot);
+	say("@carcon_read:%p,%p\n",ent,foot);
 	return 0;
 }
-int carcon_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int carcon_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	//say("@carcon_write:%.4s\n",&foot);
-	if(_clk_ == foot){
+	float angle;
+	switch(stack[sp=1].flag){
+	case _clk_:
 		carcon_checkplace(ent);
 		carcon_applyforce(ent);
-	}
-	if(_ioby_ == foot){
-		float angle;
+		break;
+	case _ioby_:
 		decstr2float(buf, &angle);
 		ent->expect_x = angle*PI/180;
 		say("input:%f\n",ent->expect_x);
-	}
-	if(_evby_ == foot){
+		break;
+	case _evby_:
 		ent->expect_x = buf[0]*PI/50 - PI;
 		say("input:%f\n",ent->expect_x);
+		break;
 	}
 	return 0;
 }

@@ -21,11 +21,11 @@ static void micphonecallback(void* ptr, AudioQueueRef inaq, AudioQueueBufferRef 
 
 
 
-int micphoneread(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int micphone_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	return 0;
 }
-int micphonewrite(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
+int micphone_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 	return 0;
 }

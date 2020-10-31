@@ -23,10 +23,10 @@ int radar_create(struct supply* win, void* str)
 
 
 
-void radar_read(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void radar_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 }
-void radar_write(struct halfrel* self, struct halfrel* peer, void* arg, int idx, void* buf, int len)
+void radar_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf, int len)
 {
 }
 int radar_discon(struct halfrel* self, struct halfrel* peer)

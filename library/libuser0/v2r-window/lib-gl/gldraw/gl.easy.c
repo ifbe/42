@@ -132,11 +132,7 @@ void easywindow_drawthis(struct gl41data* pair)
 
 
 
-void easywindow_write(_sup* win,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
-{
-	say("@easywindow_event\n");
-}
-void easywindow_read(_sup* win,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void easywindow_take(_sup* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	float w = win->fbwidth;
 	float h = win->fbheight;
@@ -152,6 +148,10 @@ void easywindow_read(_sup* win,int foot, _syn* stack,int sp, void* arg,int idx, 
 	if(win->orel0)take_data_from_peer(win,_ctx_, stack,sp, 0,0, 0,0);
 	if(win->gleasy_solid)easywindow_drawthis(win->gleasy_solid);
 	else easywindow_example();
+}
+void easywindow_give(_sup* win,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+{
+	say("@easywindow_event\n");
 }
 void easywindow_delete(struct supply* win)
 {

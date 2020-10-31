@@ -8,7 +8,7 @@
 
 
 
-void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct relation* rel = wnd->orel0;
 	while(1){
@@ -20,12 +20,12 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 			stack[sp+1].pchip = rel->pdstchip;
 			stack[sp+1].pfoot = rel->pdstfoot;
 			stack[sp+1].flag = rel->dstflag;
-			entityread(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, arg,key, buf,len);
+			entity_take(stack[sp+1].pchip, stack[sp+1].flag, stack,sp+2, arg,key, buf,len);
 		}
 		rel = samesrcnextdst(rel);
 	}
 }
-void windowwrite(struct supply* win,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(struct supply* win,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 void windowlist()

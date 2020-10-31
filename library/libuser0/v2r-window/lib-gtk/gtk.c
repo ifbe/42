@@ -41,22 +41,20 @@ void* uievent(void* p)
 
 
 
+void window_take()
+{
+}
+void window_give()
+{
+}
+
+
+
+
 void windowchange()
 {
 }
 void windowlist()
-{
-}
-void windowread()
-{
-}
-void windowwrite()
-{
-}
-void windowstop()
-{
-}
-void windowstart(char* addr, char* pixfmt, int x, int y)
 {
 }
 void windowcreate(struct supply* w)

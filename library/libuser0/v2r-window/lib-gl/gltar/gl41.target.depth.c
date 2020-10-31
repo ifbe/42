@@ -26,7 +26,7 @@ int fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41d
 //[-6,-5]: camera -> world
 //[-4,-3]: world -> some thing need framebuf
 //[-2,-1]: thing -> myself
-int gl41fbod_read(_sup* this,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int gl41fbod_take(_sup* this,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	//say("@gl41fbod_read: %llx\n", self->pchip);
 
@@ -38,7 +38,7 @@ int gl41fbod_read(_sup* this,int foot, _syn* stack,int sp, void* arg,int idx, vo
 
 	return 0;
 }
-int gl41fbod_write(_sup* this,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int gl41fbod_give(_sup* this,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	//say("@gl41fbod_write: %llx\n", self->pchip);
 

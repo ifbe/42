@@ -21,20 +21,20 @@ void inittexture(void*);
 void initvertex(void*);
 void fullwindow_create(void*);
 void fullwindow_delete(void*);
-void fullwindow_read( void*,int, void*,int, void*,int, void*,int);
-void fullwindow_write(void*,int, void*,int, void*,int, void*,int);
+void fullwindow_take(void*,void*, void*,int, void*,int, void*,int);
+void fullwindow_give(void*,void*, void*,int, void*,int, void*,int);
 int gl41fboc_create(void*, void*);
 int gl41fboc_delete(void*, void*);
-int gl41fboc_read( void*,int, void*,int, void*,int, void*,int);
-int gl41fboc_write(void*,int, void*,int, void*,int, void*,int);
+int gl41fboc_take(void*,void*, void*,int, void*,int, void*,int);
+int gl41fboc_give(void*,void*, void*,int, void*,int, void*,int);
 int gl41fbod_create(void*, void*);
 int gl41fbod_delete(void*, void*);
-int gl41fbod_read( void*,int, void*,int, void*,int, void*,int);
-int gl41fbod_write(void*,int, void*,int, void*,int, void*,int);
+int gl41fbod_take(void*,void*, void*,int, void*,int, void*,int);
+int gl41fbod_give(void*,void*, void*,int, void*,int, void*,int);
 int gl41fbog_create(void*, void*);
 int gl41fbog_delete(void*, void*);
-int gl41fbog_read( void*,int, void*,int, void*,int, void*,int);
-int gl41fbog_write(void*,int, void*,int, void*,int, void*,int);
+int gl41fbog_take(void*,void*, void*,int, void*,int, void*,int);
+int gl41fbog_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 
@@ -253,7 +253,7 @@ int checkevent()
 
 
 
-int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(wnd->fmt){
 	case _gl41fboc_:return gl41fboc_read(wnd,foot, stack,sp, arg,key, buf,len);
@@ -267,7 +267,7 @@ int windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* 
 	checkevent();
 	return 0;
 }
-int windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	switch(wnd->fmt){
 	case _gl41fboc_:return gl41fboc_write(wnd,foot, stack,sp, arg,key, buf,len);

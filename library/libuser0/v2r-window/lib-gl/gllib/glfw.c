@@ -7,35 +7,35 @@
 //
 void nonewindow_create(void*);
 void nonewindow_delete(void*);
-void nonewindow_read( void*,int, void*,int, void*,int, void*,int);
-void nonewindow_write(void*,int, void*,int, void*,int, void*,int);
+void nonewindow_take(void*,void*, void*,int, void*,int, void*,int);
+void nonewindow_give(void*,void*, void*,int, void*,int, void*,int);
 //
 void easywindow_create(void*);
 void easywindow_delete(void*);
-void easywindow_read( void*,int, void*,int, void*,int, void*,int);
-void easywindow_write(void*,int, void*,int, void*,int, void*,int);
+void easywindow_take(void*,void*, void*,int, void*,int, void*,int);
+void easywindow_give(void*,void*, void*,int, void*,int, void*,int);
 //
 void fullwindow_create(void*);
 void fullwindow_delete(void*);
-void fullwindow_read( void*,int, void*,int, void*,int, void*,int);
-void fullwindow_write(void*,int, void*,int, void*,int, void*,int);
+void fullwindow_take(void*,void*, void*,int, void*,int, void*,int);
+void fullwindow_give(void*,void*, void*,int, void*,int, void*,int);
 //
 int gl41fbo6_create(void*, void*);
 int gl41fbo6_delete(void*, void*);
-int gl41fbo6_read( void*,int, void*,int, void*,int, void*,int);
-int gl41fbo6_write(void*,int, void*,int, void*,int, void*,int);
+int gl41fbo6_take(void*,void*, void*,int, void*,int, void*,int);
+int gl41fbo6_give(void*,void*, void*,int, void*,int, void*,int);
 int gl41fboc_create(void*, void*);
 int gl41fboc_delete(void*, void*);
-int gl41fboc_read( void*,int, void*,int, void*,int, void*,int);
-int gl41fboc_write(void*,int, void*,int, void*,int, void*,int);
+int gl41fboc_take(void*,void*, void*,int, void*,int, void*,int);
+int gl41fboc_give(void*,void*, void*,int, void*,int, void*,int);
 int gl41fbod_create(void*, void*);
 int gl41fbod_delete(void*, void*);
-int gl41fbod_read( void*,int, void*,int, void*,int, void*,int);
-int gl41fbod_write(void*,int, void*,int, void*,int, void*,int);
+int gl41fbod_take(void*,void*, void*,int, void*,int, void*,int);
+int gl41fbod_give(void*,void*, void*,int, void*,int, void*,int);
 int gl41fbog_create(void*, void*);
 int gl41fbog_delete(void*, void*);
-int gl41fbog_read( void*,int, void*,int, void*,int, void*,int);
-int gl41fbog_write(void*,int, void*,int, void*,int, void*,int);
+int gl41fbog_take(void*,void*, void*,int, void*,int, void*,int);
+int gl41fbog_give(void*,void*, void*,int, void*,int, void*,int);
 //
 static u8 uppercase[] = {
 	' ', '!','\"', '#', '$', '%', '&','\"',		//20,27
@@ -55,16 +55,16 @@ static u8 uppercase[] = {
 
 
 
-int windowread(_sup* ogl,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int window_take(_sup* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	u64 t0,t1,t2,t3;
 	GLFWwindow* fw;
 	//say("@windowread\n");
 
 	switch(ogl->fmt){
-	case _gl41fboc_:return gl41fboc_read(ogl,foot, stack,sp, arg,idx, buf,len);
-	case _gl41fbod_:return gl41fbod_read(ogl,foot, stack,sp, arg,idx, buf,len);
-	case _gl41fbog_:return gl41fbog_read(ogl,foot, stack,sp, arg,idx, buf,len);
+	case _gl41fboc_:return gl41fboc_take(ogl,foot, stack,sp, arg,idx, buf,len);
+	case _gl41fbod_:return gl41fbod_take(ogl,foot, stack,sp, arg,idx, buf,len);
+	case _gl41fbog_:return gl41fbog_take(ogl,foot, stack,sp, arg,idx, buf,len);
 	}//switch
 t0 = ogl->gltime;
 
@@ -75,10 +75,10 @@ t1 = timeread();
 
 	//1: render everything
 	switch(ogl->fmt){
-		case _gl41none_:nonewindow_read(ogl,foot, stack,sp, arg,idx, buf,len);break;
-		case _gl41easy_:easywindow_read(ogl,foot, stack,sp, arg,idx, buf,len);break;
+		case _gl41none_:nonewindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
+		case _gl41easy_:easywindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41full_:
-		default:fullwindow_read(ogl,foot, stack,sp, arg,idx, buf,len);break;
+		default:fullwindow_take(ogl,foot, stack,sp, arg,idx, buf,len);break;
 	}
 t2 = timeread();
 
@@ -107,16 +107,16 @@ ogl->gltime = t3;
 
 	return 0;
 }
-void windowwrite(_sup* ogl,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void window_give(_sup* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	switch(ogl->fmt){
-		case _gl41fboc_:gl41fboc_write(ogl,foot, stack,sp, arg,idx, buf,len);break;
-		case _gl41fbod_:gl41fbod_write(ogl,foot, stack,sp, arg,idx, buf,len);break;
-		case _gl41fbog_:gl41fbog_write(ogl,foot, stack,sp, arg,idx, buf,len);break;
-		case _gl41none_:nonewindow_write(ogl,foot, stack,sp, arg,idx, buf,len);break;
-		case _gl41easy_:easywindow_write(ogl,foot, stack,sp, arg,idx, buf,len);break;
+		case _gl41fboc_:gl41fboc_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
+		case _gl41fbod_:gl41fbod_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
+		case _gl41fbog_:gl41fbog_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
+		case _gl41none_:nonewindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
+		case _gl41easy_:easywindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41full_:
-		default:fullwindow_write(ogl,foot, stack,sp, arg,idx, buf,len);break;
+		default:fullwindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 	}
 }
 void windowdiscon(struct halfrel* self, struct halfrel* peer)
@@ -140,7 +140,7 @@ static void restorestackdeliverevent(struct supply* ogl, struct event* ev)
 
 	struct halfrel* stack = (void*)save[0];
 	int depth = save[1];
-	windowwrite(ogl,0, stack,depth, 0,0, ev,0);
+	window_give(ogl,0, stack,depth, 0,0, ev,0);
 }
 static void callback_keyboard(GLFWwindow* fw, int key, int scan, int action, int mods)
 {

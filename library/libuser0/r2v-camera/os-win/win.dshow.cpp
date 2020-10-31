@@ -424,7 +424,7 @@ fail:
 extern "C" {
 
 
-int videoread(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int video_take(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	u64 addr = obj[(enq+59)%60].addr;
 	printf("addr=%llx\n",addr);
@@ -432,7 +432,7 @@ int videoread(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* b
 	*(u64*)buf = addr;
 	return 0;
 }
-int videowrite(_sup* sup,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int video_give(_sup* sup,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
