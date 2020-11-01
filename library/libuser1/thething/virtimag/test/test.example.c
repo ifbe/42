@@ -104,13 +104,13 @@ static void example_draw_cli(
 
 
 /*
-static void example_world_camera_window_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void example_world_camera_window_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	switch(stack[sp-6].type){
 		case _wnd_:draw();return;
 	}
 }
-static void example_world_window_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void example_world_window_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	switch(stack[sp-4].type){
 		case _wnd_:draw();return;
@@ -121,7 +121,7 @@ static void example_window_taking()
 {
 }
 */
-static void example_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void example_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 /*
 	//by unknown
@@ -137,7 +137,7 @@ static void example_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	}
 */
 }
-static void example_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void example_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void example_discon(struct halfrel* self, struct halfrel* peer)

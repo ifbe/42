@@ -170,7 +170,7 @@ static void nor_draw_cli(
 
 
 
-static void nor_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void nor_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -182,17 +182,17 @@ static void nor_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 		nor_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void nor_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void nor_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	u8 tmp;
 	say("@norgate_write:%x\n",buf[0]);
 
-	if('a' == foot){
+	if('a' == stack[sp-1].flag){
 		if('0' == buf[0])ent->ix0 = 0;
 		else if('1' == buf[0])ent->ix0 = 1;
 		else return;
 	}
-	else if('b' == foot){
+	else if('b' == stack[sp-1].flag){
 		if('0' == buf[0])ent->iy0 = 0;
 		else if('1' == buf[0])ent->iy0 = 1;
 		else return;

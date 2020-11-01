@@ -3,7 +3,7 @@
 
 
 
-int gl41coop_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int gl41coop_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//0: locate target
 
@@ -15,7 +15,7 @@ int gl41coop_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, v
 
 	return 0;
 }
-int gl41coop_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int gl41coop_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

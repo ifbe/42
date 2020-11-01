@@ -71,7 +71,7 @@ static void stair_draw_gl41(
 		gl41solid_cylinder(wnd, 0x800000, kc, kr, kf, kt);
 	}
 }
-static void stair_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stair_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
@@ -88,11 +88,11 @@ static void stair_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 
 
 
-static void stair_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stair_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	stair_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void stair_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stair_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void stair_discon(struct halfrel* self, struct halfrel* peer)

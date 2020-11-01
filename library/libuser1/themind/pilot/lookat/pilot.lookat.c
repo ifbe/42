@@ -54,14 +54,14 @@ void lookat_doit(struct fstyle* this, struct fstyle* that)
 
 
 
-int lookat_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int lookat_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int lookat_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int lookat_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	say("@lookat_write:%.4s\n",&foot);
-	if(_clk_ == foot){
+	if(_clk_ == stack[sp-1].flag){
 		struct privdata* own = ent->buf0;
 		if(0 == own->that)return 0;
 		if(0 == own->self)return 0;

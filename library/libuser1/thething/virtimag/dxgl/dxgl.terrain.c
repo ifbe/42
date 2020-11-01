@@ -487,7 +487,7 @@ void terrain_modify_matter(struct entity* act, int* src, int len)
 }
 
 
-static void terrain_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void terrain_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -505,9 +505,9 @@ static void terrain_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	case _gl41full_:terrain_gl41draw(ent,slot, wor,geom, dup,camg, wnd,area);break;
 	}
 }
-static void terrain_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void terrain_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_int_ == foot)terrain_modify_matter(ent, buf,len);
+	if(_int_ == stack[sp-1].flag)terrain_modify_matter(ent, buf,len);
 }
 static void terrain_discon(struct halfrel* self, struct halfrel* peer)
 {

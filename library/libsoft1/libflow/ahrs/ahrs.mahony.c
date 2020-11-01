@@ -222,7 +222,7 @@ void mahonyupdate9(
 
 
 
-int mahony_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int mahony_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@mahony_read\n");
 
@@ -230,7 +230,7 @@ int mahony_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void
 	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
-int mahony_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int mahony_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@mahony_write\n");
 

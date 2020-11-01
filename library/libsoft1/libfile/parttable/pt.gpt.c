@@ -92,11 +92,11 @@ void parse_gpt(u8* src)
 
 
 
-int gptclient_take(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int gptclient_take(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int gptclient_give(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int gptclient_give(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }

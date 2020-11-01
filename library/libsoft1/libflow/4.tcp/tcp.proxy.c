@@ -14,11 +14,11 @@ static u8 proxy_server0[] =
 
 
 
-int proxyclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int proxyclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int proxyclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int proxyclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@proxyclient_write: %llx, %.4s, %d\n", art, &foot, len);
 	printmemory(buf, len<16?len:16);
@@ -49,19 +49,20 @@ int proxyclient_create(struct artery* art, u8* url)
 
 
 
-int proxyserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int proxyserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int proxyserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int proxyserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@proxyserver_write: chip=%llx, foot=%.4s, len=%d\n", art, &foot, len);
+	say("@proxyserver_write:%p,%p, len=%d\n", art, foot, len);
 printmemory(buf, len<16?len:16);
 
-	if('c' == foot){	//client
+	switch(stack[sp-1].flag){
+	case 'c':	//client
 		give_data_into_peer(art,'s', stack,sp, 0,0, buf,len);
-	}
-	if('s' == foot){	//server
+		break;
+	case 's':	//server
 		if(0 == len){			//server ready
 			if(art->buf0){
 				//this is http proxy: send cached request directly
@@ -77,6 +78,7 @@ printmemory(buf, len<16?len:16);
 		else{
 			give_data_into_peer(art,'c', stack,sp, 0,0, buf,len);
 		}
+		break;
 	}
 	return 0;
 }
@@ -104,11 +106,11 @@ int proxyserver_create(struct artery* art, u8* url)
 
 
 
-int proxymaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int proxymaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int proxymaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int proxymaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int j;
 	u8* ptr;
@@ -203,7 +205,8 @@ int proxymaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx
 			//fake ready from tcpclient to proxyserver
 			stack[sp-2].pchip = client;
 			stack[sp-1].pchip = Proxy;
-			proxyserver_write(Proxy,'s', stack,sp, 0,_ok_, 0,0);
+			stack[sp-1].flag = 's';
+			proxyserver_write(Proxy,0, stack,sp, 0,_ok_, 0,0);
 			break;
 		}//default
 	}

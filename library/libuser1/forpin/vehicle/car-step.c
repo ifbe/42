@@ -71,7 +71,7 @@ static void stepcar_status(int EN)
 
 
 
-int stepcar_taking(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int stepcar_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	int j;
 	int ret = 0;
@@ -84,7 +84,7 @@ int stepcar_taking(struct entity* ent,int foot, struct halfrel* stack,int sp, vo
 	}
 	return ret;
 }
-int stepcar_giving(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int stepcar_giving(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	say("@stepcar_write\n");
 	printmemory(buf, len);

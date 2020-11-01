@@ -211,10 +211,10 @@ static void bintree_event(
 
 
 
-static void bintree_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void bintree_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void bintree_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void bintree_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void bintree_linkup(struct halfrel* self, struct halfrel* peer)

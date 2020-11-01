@@ -24,15 +24,15 @@ int udptrav_memory(u64* list, u64 self)
 
 
 
-int udptravclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int udptravclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int udptravclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int udptravclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	//say("@udptravclient_write: %.4s\n", &foot);
 
-	if(_std_ == foot){
+	if(_std_ == stack[sp-1].flag){
 		if(' ' == buf[0])give_data_into_peer(art,_src_, stack,sp, &art->data0,0, buf, 1);
 		else if(art->data1)give_data_into_peer(art,_src_, stack,sp, &art->data1,0, buf, 1);
 		return 0;
@@ -105,11 +105,11 @@ int udptravclient_create(struct artery* art, u8* url)
 
 
 
-int udptravserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int udptravserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int udptravserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int udptravserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -133,11 +133,11 @@ int udptravserver_create(struct artery* art, u8* url)
 
 
 
-int udptravmaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int udptravmaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int udptravmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int udptravmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	if(0==stack|sp<2)return 0;
 	struct sysobj* sys = stack[sp-2].pchip;
@@ -159,7 +159,7 @@ int udptravmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int i
 		for(j=0;j<4;j++){
 			if(0 == list[j])break;
 		}
-		give_data_into_peer(art,foot, stack,sp, arg,idx, list,j*8);
+		give_data_into_peer(art,stack[sp-1].flag, stack,sp, arg,idx, list,j*8);
 	}
 	return 0;
 }

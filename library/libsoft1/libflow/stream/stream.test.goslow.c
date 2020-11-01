@@ -6,7 +6,7 @@ int decstr2u32(void* src, void* dst);
 
 
 
-int goslow_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int goslow_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@goslow_read\n");
 
@@ -14,12 +14,12 @@ int goslow_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void
 	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
-int goslow_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int goslow_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int cur,max;
 	if(0 == art)return 0;
 
-	if(_src_ == foot){
+	if(_src_ == stack[sp-1].flag){
 		cur = art->CURNUM;
 		max = art->MAXNUM;
 		say("@goslow_write:%d/%d\n", cur, max);

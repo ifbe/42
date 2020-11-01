@@ -87,47 +87,45 @@ int websocket_clientwrite(u8* buf, int len, u8* dst, int max)
 
 
 
-int wsclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int wsclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int wsclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int wsclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
 	say("@wsclient_write: %llx, %.4s, %d\n", art, &foot, len);
     printmemory(buf, len<16?len:16);
 
-	switch(foot){
-		case _dst_:{
-			ret = websocket_clientwrite(buf, len, tmp, 0x1000);
-			//printmemory(buf, len);
-			//printmemory(tmp, ret);
-			give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
-			break;
+	switch(stack[sp-1].flag){
+	case _dst_:
+		ret = websocket_clientwrite(buf, len, tmp, 0x1000);
+		//printmemory(buf, len);
+		//printmemory(tmp, ret);
+		give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
+		break;
+	case _src_:
+		if(0 == art->stage1)
+		{
+		/*	say("ws.serverhello={\n"
+				"%.*s"
+				"}=ws.serverhello\n",
+				len, buf);*/
+
+			//parse serverhello
+			//websocket_clientread_handshake();
+
+			art->stage1 = 1;
 		}
-		case _src_:{
-			if(0 == art->stage1)
-			{
-			/*	say("ws.serverhello={\n"
-					"%.*s"
-					"}=ws.serverhello\n",
-					len, buf);*/
+		else{
+			ret = websocket_clientread(buf, len, 0, 0);
+			buf += ret;
+			len -= ret;
 
-				//parse serverhello
-				//websocket_clientread_handshake();
-
-				art->stage1 = 1;
-			}
-			else{
-				ret = websocket_clientread(buf, len, 0, 0);
-				buf += ret;
-				len -= ret;
-
-				give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
-			}
-			break;
+			give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
 		}
+		break;
 	}
 	return 0;
 }
@@ -363,51 +361,49 @@ int websocket_serverwrite_head(u8* buf, int len, u8* dst, int max)
 
 
 
-int wsserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int wsserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int wsserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int wsserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
 	say("@wsserver_write: %llx, %.4s, %d\n", art, &foot, len);
     printmemory(buf, len<16?len:16);
 
-	switch(foot){
-		case _dst_:{
-			ret = websocket_serverwrite_head(buf, len, tmp, 0x100);
-			//printmemory(tmp, ret);
-			//printmemory(buf, len);
-			give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
-			give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
-			break;
+	switch(stack[sp-1].flag){
+	case _dst_:
+		ret = websocket_serverwrite_head(buf, len, tmp, 0x100);
+		//printmemory(tmp, ret);
+		//printmemory(buf, len);
+		give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
+		give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
+		break;
+	case _src_:
+		if(0 == art->stage1){
+			art->stage1 = 1;
+		/*	say("ws.clienthello={\n"
+				"%.*s"
+				"}=ws.clienthello\n",
+				len, buf);*/
+
+			//parse clienthello
+			ret = websocket_serverread_handshake(buf, len, tmp, 256);
+			ret = give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
+
+			//on clienthello do something
+			//blen = mysnprintf(tmp, 0x1000, "Who dare summon me ?!");
+
+			art->stage1 = 1;
 		}
-		case _src_:{
-			if(0 == art->stage1){
-				art->stage1 = 1;
-			/*	say("ws.clienthello={\n"
-					"%.*s"
-					"}=ws.clienthello\n",
-					len, buf);*/
-
-				//parse clienthello
-				ret = websocket_serverread_handshake(buf, len, tmp, 256);
-				ret = give_data_into_peer(art,_src_, stack,sp, 0,0, tmp,ret);
-
-				//on clienthello do something
-				//blen = mysnprintf(tmp, 0x1000, "Who dare summon me ?!");
-
-				art->stage1 = 1;
-			}
-			else{
-				ret = websocket_serverread_head(buf, len, tmp, 0x1000);
-				say("sending:\n");
-				printmemory(tmp, ret<16?ret:16);
-				give_data_into_peer(art,_dst_, stack,sp, 0,0, tmp,ret);
-			}
-			break;
+		else{
+			ret = websocket_serverread_head(buf, len, tmp, 0x1000);
+			say("sending:\n");
+			printmemory(tmp, ret<16?ret:16);
+			give_data_into_peer(art,_dst_, stack,sp, 0,0, tmp,ret);
 		}
+		break;
 	}
 	return 0;
 }
@@ -432,11 +428,11 @@ int wsserver_create(struct artery* ele, u8* url)
 
 
 
-int wsmaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int wsmaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int wsmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int wsmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@wsserver_write: %llx, %.4s, %d\n", art, &foot, len);
     printmemory(buf, len<16?len:16);
@@ -455,7 +451,8 @@ int wsmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, v
 	relationcreate(Ws, 0, _art_, _src_, Tcp, 0, _sys_, _dst_);
 	stack[sp-2].pchip = Tcp;
 	stack[sp-1].pchip = Ws;
-	wsserver_write(Ws,_src_, stack,sp, 0,0, buf,len);
+	stack[sp-1].flag = _src_;
+	wsserver_write(Ws,0, stack,sp, 0,0, buf,len);
 
 	//server -> ???
 	switch(art->name){

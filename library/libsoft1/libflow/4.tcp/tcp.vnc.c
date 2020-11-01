@@ -3,11 +3,11 @@
 
 
 
-int vncclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int vncclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int vncclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int vncclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@vncclient_write: %llx,%.4s\n", art, &foot);
 	printmemory(buf, len);
@@ -39,11 +39,11 @@ int vncclient_create(struct artery* art, void* arg)
 
 
 
-int vncserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int vncserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int vncserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int vncserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
@@ -67,11 +67,11 @@ int vncserver_create(struct artery* art, void* arg)
 
 
 
-int vncmaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int vncmaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int vncmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int vncmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

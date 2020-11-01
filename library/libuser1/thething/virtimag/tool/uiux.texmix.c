@@ -202,7 +202,7 @@ static void texmix_draw_cli(
 
 
 
-static void texmix_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void texmix_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -230,7 +230,7 @@ static void texmix_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 
 
 
-static int texmix_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int texmix_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -247,7 +247,7 @@ static int texmix_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 	}
 	return 0;
 }
-static void texmix_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texmix_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void texmix_discon(struct halfrel* self, struct halfrel* peer)

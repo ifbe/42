@@ -282,7 +282,7 @@ void glass_forwnd_prepare(struct gl41data* data)
 
 
 
-static void glass_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void glass_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -345,11 +345,11 @@ static void glass_draw_cli(
 
 
 
-static void glass_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void glass_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	glass_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void glass_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void glass_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void glass_discon(struct halfrel* self, struct halfrel* peer)

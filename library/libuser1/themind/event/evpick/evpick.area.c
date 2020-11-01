@@ -3,11 +3,11 @@
 
 
 
-int areapick_taking(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int areapick_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
-int areapick_giving(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int areapick_giving(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

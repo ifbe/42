@@ -136,15 +136,15 @@ int mount_mbr(_art* art, u8* src)
 
 
 
-int mbrclient_take(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int mbrclient_take(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	say("@mbrclient_take\n");
 	say("foot=%x\n",foot);
-	int ret = take_data_from_peer(art,_src_, 0,0, arg,foot+idx, buf,len);
+	int ret = take_data_from_peer(art,_src_, stack,sp+2, arg,(u64)foot+idx, buf,len);
 	say("mbr.ret=%x\n",ret);
 	return ret;
 }
-int mbrclient_give(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int mbrclient_give(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }

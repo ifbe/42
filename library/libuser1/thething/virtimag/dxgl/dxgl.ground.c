@@ -260,7 +260,7 @@ static void ground_draw_cli(
 
 
 
-static void ground_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ground_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -276,7 +276,7 @@ static void ground_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	case _gl41full_:ground_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
 }
-static void ground_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ground_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void ground_discon(struct halfrel* self, struct halfrel* peer)

@@ -151,16 +151,16 @@ static void spring_read_b(struct entity* ent, int key, struct joint* jo, int thi
 
 
 
-static void spring_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spring_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@spring_read: %.4s\n", &self->flag);
-	switch(foot){
+	switch(stack[sp-1].flag){
 	case 'a':spring_read_a(ent,key, buf,len);break;
 	case 'b':spring_read_b(ent,key, buf,len);break;
 	case 'f':spring_read_force(ent,stack[sp-8].pchip, buf,len);break;
 	}
 }
-static void spring_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spring_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void spring_discon(struct halfrel* self, struct halfrel* peer)

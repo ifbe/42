@@ -93,7 +93,7 @@ static void printboard_gl41draw(
 
 
 
-static void printboard_camread(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void printboard_camread(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -113,7 +113,7 @@ static void printboard_camread(_ent* ent,int foot, _syn* stack,int sp, void* arg
 		break;
 	}
 }
-int printboard_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int printboard_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot = stack[sp-1].pfoot;
 	struct entity* wnd;struct style* area;
@@ -124,7 +124,7 @@ int printboard_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 	}
 	return 0;
 }
-int printboard_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int printboard_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

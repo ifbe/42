@@ -5,11 +5,11 @@ void saveppmfromimg(char* name, int offs, u8* buf, int len, int width, int heigh
 
 
 
-int img2pbr_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int img2pbr_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int img2pbr_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int img2pbr_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
     return 0;
 }

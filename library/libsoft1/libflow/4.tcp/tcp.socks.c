@@ -34,11 +34,11 @@ static u8 httpreq[] =
 
 
 
-int socksclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int socksclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int socksclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int socksclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int j,port;
 	u8 tmp[256];
@@ -46,7 +46,7 @@ int socksclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx
 	say("@socksclient_write: %llx, %.4s, %x\n", art, &foot, len);
 	if(len>0)printmemory(buf, len<16?len:16);
 
-	switch(foot){
+	switch(stack[sp-1].flag){
 	case _dst_:{
 		//dst to src
 		give_data_into_peer(art,_src_, stack,sp, 0,0, buf, len);
@@ -152,20 +152,22 @@ int socksclient_create(struct artery* ele, char* url)
 
 
 
-int socksserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int socksserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int socksserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int socksserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	say("@socksserver_write: chip=%llx, foot=%.4s, len=%d\n", art, &foot, len);
+	say("@socksserver_write:%p,%p, len=%d\n", art, foot, len);
 	printmemory(buf, len<16?len:16);
 
-	if('a' == foot){
+	switch(stack[sp-1].flag){
+	case 'a':
 		give_data_into_peer(art,'b', stack,sp, 0,0, buf,len);
-	}
-	if('b' == foot){
+		break;
+	case 'b':
 		give_data_into_peer(art,'a', stack,sp, 0,0, buf,len);
+		break;
 	}
 	return 0;
 }
@@ -192,11 +194,11 @@ int socksserver_create(struct artery* ele, u8* url)
 
 
 
-int socksmaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int socksmaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int socksmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int socksmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int j;
 	u8* ch;

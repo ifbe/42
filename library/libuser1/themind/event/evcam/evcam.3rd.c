@@ -166,7 +166,7 @@ void* cam3rd_findgeom(struct entity* ent)
 
 
 
-int cam3rd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int cam3rd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct privdata* own = ent->buf0;
 	if(0 == own)return 0;
@@ -208,7 +208,7 @@ int cam3rd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, voi
 	cam->fs.vt[2] = cam->fs.vr[0]*cam->fs.vf[1] - cam->fs.vr[1]*cam->fs.vf[0];
 	return 0;
 }
-int cam3rd_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, struct event* ev, int len)
+int cam3rd_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, struct event* ev, int len)
 {
 	//printmemory(ev,16);
 	struct privdata* own = ent->buf0;

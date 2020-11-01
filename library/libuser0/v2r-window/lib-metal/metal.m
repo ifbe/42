@@ -540,7 +540,7 @@ NSLog(@"mouseDown");
 
 
 
-int fullwindow_taking(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int fullwindow_taking(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//take
 	struct relation* rel = (struct relation*)wnd->orel0;
@@ -572,7 +572,7 @@ int fullwindow_taking(struct supply* wnd,int foot, struct halfrel* stack,int sp,
 	}
 	return 0;
 }
-int fullwindow_giving(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int fullwindow_giving(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }
@@ -580,7 +580,7 @@ int fullwindow_giving(struct supply* wnd,int foot, struct halfrel* stack,int sp,
 
 
 
-void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void windowread(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	fullwindow_taking(wnd,foot, stack,sp, arg,key, buf,len);
 
@@ -614,7 +614,7 @@ void windowread(struct supply* wnd,int foot, struct halfrel* stack,int sp, void*
 		[NSApp sendEvent:event];
 	}
 }
-void windowwrite(struct supply* wnd,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void windowwrite(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 void windowlist()

@@ -3,11 +3,11 @@
 
 
 
-int tftpclient_read(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tftpclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tftpclient_write(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tftpclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
@@ -31,11 +31,11 @@ int tftpclient_create(struct artery* ele, u8* url)
 
 
 
-int tftpserver_read(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tftpserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tftpserver_write(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tftpserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	int ret;
 	u8* tmp;

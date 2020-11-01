@@ -112,7 +112,7 @@ void voxel_data(struct entity* act, int type, void* buf, int len)
 
 
 
-static void voxel_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void voxel_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -124,9 +124,9 @@ static void voxel_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		voxel_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void voxel_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void voxel_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_pcm_ == foot){
+	if(_pcm_ == stack[sp-1].flag){
 		voxel_data(ent, 0, buf, len);
 	}
 }

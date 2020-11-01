@@ -189,7 +189,7 @@ static void vjoy_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style
 	gl41data_01cam(wnd);
 	gl41data_after(wnd);
 }
-static void vjoy_write_bywnd(_ent* ent,int foot, _syn* stack,int sp, struct event* ev,int len)
+static void vjoy_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, struct event* ev,int len)
 {
 	struct entity* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
@@ -228,7 +228,7 @@ static void vjoy_write_bywnd(_ent* ent,int foot, _syn* stack,int sp, struct even
 
 
 
-static int vjoy_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vjoy_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -243,7 +243,7 @@ static int vjoy_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 	}
 	return 0;
 }
-static int vjoy_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vjoy_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* wnd = stack[sp-2].pchip;
 	switch(wnd->fmt){

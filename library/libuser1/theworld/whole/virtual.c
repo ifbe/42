@@ -7,7 +7,7 @@ void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, 
 
 
 
-int virtual_traverse(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+int virtual_traverse(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct relation* rel = ent->orel0;
 	while(1){
@@ -28,7 +28,7 @@ int virtual_traverse(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 
 
 
-int virtual_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int virtual_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@virtual_read\n");
 	struct entity* wnd = stack[sp-2].pchip;
@@ -49,7 +49,7 @@ int virtual_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, vo
 	}//switch
 	return 0;
 }
-int virtual_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int virtual_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@virtual_write\n");
 	give_data_into_peer(ent,_evto_, stack,sp, arg,key, buf,len);

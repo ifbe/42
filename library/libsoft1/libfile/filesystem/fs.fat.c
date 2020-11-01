@@ -459,11 +459,11 @@ int fat_parse(struct artery* art, u8* addr)
 
 
 
-int fatclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int fatclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int fatclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int fatclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }

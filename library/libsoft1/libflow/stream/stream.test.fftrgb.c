@@ -3,11 +3,11 @@
 
 
 
-int fftrgb_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int fftrgb_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int fftrgb_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int fftrgb_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int x,y;
 	int yy,uu,vv;

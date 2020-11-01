@@ -274,7 +274,7 @@ void mirror_forwnd_prepare(struct mysrc* src)
 //[-6,-5]: wnd,area -> cam,togl
 //[-4,-3]: cam,gl41 -> wor,camg		//the camera taking photo
 //[-2,-1]: wor,geom -> ent,gl41		//the entity being taken
-static void mirror_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mirror_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -337,11 +337,11 @@ static void mirror_draw_cli(
 
 
 
-static void mirror_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mirror_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	mirror_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void mirror_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mirror_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void mirror_discon(struct halfrel* self, struct halfrel* peer)

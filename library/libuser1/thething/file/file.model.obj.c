@@ -271,7 +271,7 @@ static void obj3d_event(
 
 
 
-static void obj3d_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void obj3d_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
@@ -293,11 +293,11 @@ static void obj3d_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 		obj3d_draw_gl41(ent,slot, scn,geom, wrd,camg, wnd,area);
 	}
 }
-static void obj3d_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void obj3d_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	obj3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
-static void obj3d_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void obj3d_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void obj3d_discon(struct halfrel* self, struct halfrel* peer)

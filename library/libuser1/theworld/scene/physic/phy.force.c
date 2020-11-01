@@ -1,7 +1,5 @@
 #include "libuser.h"
 int parsefv(float* vec, int flen, u8* str, int slen);
-int take_data_from_them( void* item,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
-int give_data_into_them(void* item,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len);
 
 
 
@@ -140,7 +138,7 @@ static void force_draw_gl41(
 		gl41ascii_center(wnd, 0xff0000, &jo[j].x,tr,tu,'a'+j);
 	}
 }
-void force_read_board(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+void force_read_board(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -154,7 +152,7 @@ void force_read_board(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	force_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-void force_read_inner(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+void force_read_inner(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	//spring, stick
 	struct joint* jo = ent->buf0;
@@ -175,7 +173,7 @@ void force_read_inner(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
 		entity_take(tab[j],0, stack,sp+2, 0,0, jo,0);
 	}
 }
-int force_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int force_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(stack && ('v' == key)){
 		struct joint* jo = ent->buf0;
@@ -188,7 +186,7 @@ int force_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void
 	}
 	return 0;
 }
-int force_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int force_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }

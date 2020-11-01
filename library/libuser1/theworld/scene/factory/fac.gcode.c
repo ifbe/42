@@ -123,7 +123,7 @@ static void gcode_draw_gl41(
 
 
 
-static void gcode_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gcode_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
@@ -136,7 +136,7 @@ static void gcode_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		gcode_draw_gl41(ent,slot, scn,geom, wnd,area);
 	}
 }
-static void gcode_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gcode_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void gcode_discon(struct halfrel* self, struct halfrel* peer)

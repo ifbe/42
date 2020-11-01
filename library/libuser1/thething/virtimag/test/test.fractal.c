@@ -239,7 +239,7 @@ static void fractal_event(
 
 
 
-static void fractal_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void fractal_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -251,7 +251,7 @@ static void fractal_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 		fractal_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void fractal_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void fractal_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void fractal_discon(struct halfrel* self, struct halfrel* peer)

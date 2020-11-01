@@ -84,7 +84,7 @@ static void h2o_draw_cli(
 
 
 
-static void h2o_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void h2o_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -96,7 +96,7 @@ static void h2o_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 		h2o_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void h2o_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void h2o_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void h2o_discon(struct halfrel* self, struct halfrel* peer)

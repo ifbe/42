@@ -348,7 +348,7 @@ void weiqi_intersect(float* out, vec3 ray[], struct fstyle* sty)
 
 
 
-static void weiqi_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void weiqi_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -360,7 +360,7 @@ static void weiqi_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		weiqi_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void weiqi_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void weiqi_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* wor;struct style* geom;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;

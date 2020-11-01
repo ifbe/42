@@ -145,7 +145,7 @@ static int mmioedit_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 	}
 	return 0;
 }
-static int mmioedit_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int mmioedit_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

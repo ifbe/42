@@ -246,7 +246,7 @@ static void hexedit_event(
 
 
 
-static void hexedit_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void hexedit_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -259,7 +259,7 @@ static void hexedit_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 		hexedit_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void hexedit_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void hexedit_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
@@ -277,7 +277,7 @@ static void hexedit_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg
 
 
 
-static int hexedit_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int hexedit_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(sp < 2)return 0;
 	struct entity* sup = stack[sp-2].pchip;
@@ -293,7 +293,7 @@ static int hexedit_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	}
 	return 0;
 }
-static int hexedit_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int hexedit_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(sp < 2)return 0;
 	struct supply* wnd = stack[sp-2].pchip;

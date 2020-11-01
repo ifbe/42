@@ -56,7 +56,7 @@ static void pointlight_draw_gl41(
 
 
 
-static void pointlight_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pointlight_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -111,12 +111,12 @@ static void pointlight_draw_cli(
 
 
 
-static void pointlight_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pointlight_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == ent->ONOFF)return;
 	pointlight_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void pointlight_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pointlight_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	u8* in = buf;
 	say("@pointlight_write:%x\n",in[0]);

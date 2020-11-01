@@ -44,7 +44,7 @@ xyz2ray:
 	ray[1][2] = xyz[2] - ray[0][2];
 	return 1;
 }
-static int clickray_intersect(struct entity* handler,int foot,
+static int clickray_intersect(struct entity* handler,void* foot,
 	struct halfrel* stack,int sp, vec3 ray[], vec3 out[])
 {
 	int ret;
@@ -104,11 +104,11 @@ int clickray_create(struct entity* act, void* flag)
 
 
 
-int clickray_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int clickray_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int clickray_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int clickray_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct event* ev = buf;
 	if(0x2d70 == ev->what){		//mouse up

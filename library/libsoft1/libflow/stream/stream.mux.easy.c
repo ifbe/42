@@ -5,26 +5,22 @@
 
 
 
-int easymux_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int easymux_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int easymux_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int easymux_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	switch(foot){
-	case _by_:{
+	switch(stack[sp-1].flag){
+	case _by_:
 		give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 		break;
-	}
-	case _to_:{
+	case _to_:
 		//this foot cannot write
 		break;
-	}
-	case _src_:{
+	case _src_:
 		give_data_into_peer(art,_to_, stack,sp, 0,0, buf,len);
 		break;
-	}
-	default:break;
 	}
 	return 0;
 }

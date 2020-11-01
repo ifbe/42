@@ -6,7 +6,7 @@ void matproj_transpose(float* m, struct fstyle* sty);
 //
 void gl41data_before(void*);
 void gl41data_after(void*);
-int gl41data_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int gl41data_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 
 
 
@@ -247,7 +247,7 @@ static void vrglass_camera(
 
 
 
-static int vrglass_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrglass_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -260,7 +260,7 @@ static int vrglass_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	}
 	return 0;
 }
-static int vrglass_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrglass_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 //find world from camera
 	struct halfrel* tmp[2];
@@ -304,7 +304,7 @@ static int vrglass_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 
 
 
-static int vrglass_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrglass_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(sp < 2)return 0;
 	struct entity* sup = stack[sp-2].pchip;
@@ -317,7 +317,7 @@ static int vrglass_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	}
 	return 0;
 }
-static int vrglass_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vrglass_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	vrglass_event(ent, 0, buf, 0);
 	return 0;

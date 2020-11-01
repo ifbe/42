@@ -60,14 +60,14 @@ void follow_doit(struct fstyle* this, struct fstyle* that)
 
 
 
-int follow_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int follow_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int follow_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int follow_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	say("@follow_write:%.4s\n",&foot);
-	if(_clk_ == foot){
+	if(_clk_ == stack[sp-1].flag){
 		struct privdata* own = ent->buf0;
 		if(0 == own->that)return 0;
 		if(0 == own->self)return 0;

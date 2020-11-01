@@ -622,11 +622,11 @@ int check_hfs(u8* addr)
 
 
 
-int hfsclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int hfsclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int hfsclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int hfsclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }

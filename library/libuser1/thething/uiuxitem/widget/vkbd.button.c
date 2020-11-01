@@ -47,7 +47,7 @@ void button_draw_gl41(
 	gl41opaque_rect(ctx, 0x40ffd010, tc, vr, vf);
 	gl41string_center(ctx, 0xff0000, vc, vr ,vf, act->STRBUF, 0);
 }
-static void button_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void button_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -79,7 +79,7 @@ static void button_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 
 
 
-static void button_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void button_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -101,7 +101,7 @@ static void button_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 		button_read_bycam(ent,foot, stack,sp, arg,key);
 	}
 }
-static void button_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void button_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct event* ev = buf;
 	if(0x2b70 == ev->what)give_data_into_peer(ent,_evto_, stack,sp, 0,0, "1",1);

@@ -270,7 +270,7 @@ static void projector_forwnd_vertex_prepare(struct mysrc* src)
 
 
 
-static void projector_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void projector_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -334,11 +334,11 @@ static void projector_draw_cli(
 
 
 
-static void projector_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void projector_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	projector_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void projector_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void projector_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void projector_discon(struct halfrel* self, struct halfrel* peer)

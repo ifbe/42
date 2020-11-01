@@ -1,7 +1,5 @@
 #include "libuser.h"
 int parsefv(float* vec, int flen, u8* str, int slen);
-int take_data_from_them( void*,int, void*,int, void*,int, void*,int);
-int give_data_into_them(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -168,7 +166,7 @@ static void analog_draw_gl41(
 		gl41float(wnd, rgb, tc,tr,tf, sts[k].volt);
 	}
 }
-void analog_read_board(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+void analog_read_board(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -180,7 +178,7 @@ void analog_read_board(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 		analog_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-int analog_read_child(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int analog_read_child(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct relation* rel = ent->orel0;
 	while(1){
@@ -198,7 +196,7 @@ int analog_read_child(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 	}
 	return 0;
 }
-int analog_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int analog_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(stack && ('v' == key)){
 		analog_read_child(ent,foot, stack,sp, arg,key, buf,len);
@@ -206,34 +204,31 @@ int analog_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, voi
 	}
 	return 0;
 }
-int analog_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int analog_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct wireindex* sts = ent->buf0;
 	if(0 == sts)return 0;
 
+	struct event* ev;
+	int id;
 say("analog_write: %.4s\n", &foot);
-	switch(foot){
-		case _evby_:
-		{
-			struct event* ev = buf;
-			if(_char_ != ev->what)return 0;
-			if(ev->why < '0')return 0;
-			if(ev->why > '9')return 0;
-			//not break
-		}
-		case _ioby_:{
-			analog_emulate(ent,sts, buf,len);
-			break;
-		}
-		case 'a':
-		case 'b':
-		case 'c':
-		case 'd':
-		{
-			int id = foot - 'a';
-			analog_voltage(&sts[id], buf);
-			break;
-		}
+	switch(stack[sp-1].flag){
+	case _evby_:
+		ev = buf;
+		if(_char_ != ev->what)return 0;
+		if(ev->why < '0')return 0;
+		if(ev->why > '9')return 0;
+		//not break
+	case _ioby_:
+		analog_emulate(ent,sts, buf,len);
+		break;
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+		id = stack[sp-1].flag - 'a';
+		analog_voltage(&sts[id], buf);
+		break;
 	}
 	return 0;
 }

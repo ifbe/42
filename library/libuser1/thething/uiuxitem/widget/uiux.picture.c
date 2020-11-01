@@ -160,7 +160,7 @@ static void picture_draw_cli(
 
 
 
-static void picture_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void picture_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -172,7 +172,7 @@ static void picture_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 		picture_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void picture_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void picture_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@picture_write\n");
 	give_data_into_peer(ent,_evto_, stack,sp, 0,0, "calibrate\n", 10);

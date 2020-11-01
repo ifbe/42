@@ -1,5 +1,4 @@
 #include "libboot.h"
-void give_data_into_them(void*,int, void*,int, void*,int, void*,int);
 
 
 

@@ -208,7 +208,7 @@ void mnist_draw_cli(struct entity* win, struct style* sty)
 
 
 
-static void mnist_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mnist_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
 	struct entity* wnd;struct style* area;
@@ -240,7 +240,7 @@ say("%d\n", ent->iz0);
 
 
 
-static int mnist_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int mnist_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* xxx = stack[sp-2].pchip;
 	switch(xxx->fmt){
@@ -251,7 +251,7 @@ static int mnist_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	}
 	return 0;
 }
-static int mnist_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int mnist_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* xxx = stack[sp-2].pchip;
 	switch(xxx->fmt){

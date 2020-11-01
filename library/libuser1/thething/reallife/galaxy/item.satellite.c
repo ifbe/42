@@ -151,7 +151,7 @@ static void satellite_event(
 
 
 
-static void satellite_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void satellite_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -163,14 +163,14 @@ static void satellite_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* a
 		satellite_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void satellite_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void satellite_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 
 
 
 
-static void satellite_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void satellite_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(sp < 2)return;
 	struct supply* sup = stack[sp-2].pchip;
@@ -186,7 +186,7 @@ static void satellite_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 	}
 	}
 }
-static void satellite_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void satellite_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	float* f = buf;
 	say("@satellite_write: %f,%f,%f,%f\n", f[0],f[1],f[2],f[3]);

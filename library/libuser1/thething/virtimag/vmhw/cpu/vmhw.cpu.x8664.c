@@ -27,10 +27,10 @@ static void x8664_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 
-static void x8664_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void x8664_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void x8664_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void x8664_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void x8664_discon(struct halfrel* self, struct halfrel* peer)

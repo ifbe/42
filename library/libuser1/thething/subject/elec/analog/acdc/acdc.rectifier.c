@@ -188,7 +188,7 @@ static void rectify_draw_cli(
 
 
 
-static void rectify_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rectify_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -200,7 +200,7 @@ static void rectify_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 		rectify_draw_gl41(ent, slot, wor,geom, wnd,area);
 	}
 }
-static void rectify_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rectify_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void rectify_discon(struct halfrel* self, struct halfrel* peer)

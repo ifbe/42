@@ -45,7 +45,7 @@ static void toycar_update(int L, int R, int el, int er)
 
 
 
-int toycar_read_byhttp(struct entity* ent,int foot, struct halfrel* stack,int sp)
+int toycar_read_byhttp(struct entity* ent,void* foot, struct halfrel* stack,int sp)
 {
     u8 buf[1024];
     int j;
@@ -64,15 +64,15 @@ int toycar_read_byhttp(struct entity* ent,int foot, struct halfrel* stack,int sp
     }
 
     ret += mysnprintf(buf+ret, 999-ret, "</body></html>");
-    give_data_into_peer(ent,foot, stack,sp, "text/html",0, buf,ret);
+    give_data_into_peer(ent,stack[sp-1].flag, stack,sp, "text/html",0, buf,ret);
     return ret;
 }
-int toycar_taking(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int toycar_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {
-    say("@toycar_read:sp=%d,%.4s\n", sp, &foot);
+    say("@toycar_read:%p,%p,sp=%x\n", ent,foot, sp);
     return toycar_read_byhttp(ent,foot, stack,sp);
 }
-int toycar_giving(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int toycar_giving(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {
     say("@toycar_write\n");
     //printmemory(buf, len);
@@ -106,7 +106,7 @@ int toycar_giving(struct entity* ent,int foot, struct halfrel* stack,int sp, voi
     tmp[ret] = '\n';
     ret++;
 
-    give_data_into_peer(ent,foot, stack,sp, 0,0, tmp,ret);
+    give_data_into_peer(ent,stack[sp-1].flag, stack,sp, 0,0, tmp,ret);
     return 0;
 }
 void toycar_discon(struct halfrel* self, struct halfrel* peer)

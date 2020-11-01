@@ -232,7 +232,7 @@ int partyclient_write_bystd(_syn* self,_syn* peer, _syn* stack,int sp, u8* buf,i
 
 
 
-int partyclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int partyclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	//say("@partyclient_write: %.4s\n", &self->flag);
 	//printmemory(buf,len);
@@ -259,7 +259,7 @@ int partyclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx
 	}
 	return 0;
 }
-int partyclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int partyclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -313,12 +313,12 @@ int partyclient_create(struct artery* ele, void* arg, int argc, u8** argv)
 
 
 
-int partyserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int partyserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	say("@partyserver_write\n");
 	return 0;
 }
-int partyserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int partyserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -514,7 +514,7 @@ fail:
 
 
 
-int partymaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int partymaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	//say("@partymaster_write\n");
 	if(0==stack|sp<2)return 0;
@@ -535,7 +535,7 @@ int partymaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx
 	}
 	return 0;
 }
-int partymaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int partymaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }

@@ -57,12 +57,12 @@ static void arm64_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 
-static void arm64_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void arm64_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void arm64_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void arm64_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_clk_ == foot){
+	if(_clk_ == stack[sp-1].flag){
 		struct cpu* cpu = ent->buf0;
 		if(0 == cpu)return;
 

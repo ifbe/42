@@ -330,7 +330,7 @@ static int human_event(
 
 
 
-static int human_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int human_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -343,7 +343,7 @@ static int human_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	}
 	return 0;
 }
-static int human_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int human_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

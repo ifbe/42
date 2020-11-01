@@ -34,43 +34,40 @@ int tcptrav_memory(u64* list, u64 self)
 
 
 
-int tcptravclient_read(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tcptravclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tcptravclient_write(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tcptravclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	if(0==stack|sp < 2)return 0;
 	struct sysobj* sys = stack[sp-2].pchip;
 	say("@tcptravclient_write:%.4s\n", &foot);
 
-	if(_std_ == foot){
+	switch(stack[sp-1].flag){
+	case _std_:
 		printmemory(buf, len < 16 ? len : 16);
 
 		if(' ' == buf[0])give_data_into_peer(art,_src_, stack,sp, 0,0, buf,1);
 		if((buf[0]>='0') && (buf[0]<='9'))give_data_into_peer(art,_sss_, stack,sp, 0,0, buf,1);
 		if((buf[0]>='a') && (buf[0]<='z'))give_data_into_peer(art,_ccc_, stack,sp, 0,0, buf,1);
 		return 0;
-	}
-	if(_ccc_ == foot){
+	case _ccc_:
 		///say("@ccc\n");
 		printmemory(buf, len < 16 ? len : 16);
 
 		if(_c_friend_ != art->stage1)return 0;
 		give_data_into_peer(art,_dst_, stack,sp, 0,0, buf,len);
 		return 0;
-	}
-	if(_sss_ == foot){
+	case _sss_:
 		//say("@sss\n");
 		printmemory(buf, len < 16 ? len : 16);
 		return 0;
-	}
-	if(_dst_ == foot){
+	case _dst_:
 		if(_c_friend_ != art->stage1)return 0;
 		give_data_into_peer(art,_ccc_, stack,sp, 0,0, buf,len);
 		return 0;
-	}
-	if(_src_ == foot){
+	case _src_:
 		printmemory(buf, len < 16 ? len : 16);
 
 		u8* t = sys->self;
@@ -127,6 +124,7 @@ int tcptravclient_write(_art* art,int foot, _syn* stack,int sp, void* arg,int id
 		mysnprintf(tmp, 32, "%d.%d.%d.%d", t[4],t[5],t[6],t[7]);
 		int fd = createsocket_tcpclient(tmp, (t[2]<<8)+t[3], "127.0.0.1", 8888);
 		write(fd, "debug\n", 6);*/
+		break;
 	}
 	return 0;
 }
@@ -158,11 +156,11 @@ int tcptravclient_create(struct artery* art, u8* url)
 
 
 
-int tcptravserver_read(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tcptravserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tcptravserver_write(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tcptravserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
@@ -186,11 +184,11 @@ int tcptravserver_create(struct artery* art, u8* url)
 
 
 
-int tcptravmaster_read(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tcptravmaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int tcptravmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int tcptravmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	if(0==stack|sp < 2)return 0;
 	struct sysobj* sys = stack[sp-2].pchip;
@@ -207,7 +205,7 @@ int tcptravmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg,int id
 		for(j=0;j<4;j++){
 			if(0 == list[j])break;
 		}
-		give_data_into_peer(art,foot, stack,sp, arg,idx, list,j*8);
+		give_data_into_peer(art,stack[sp-1].flag, stack,sp, arg,idx, list,j*8);
 	}
 	return 0;
 }

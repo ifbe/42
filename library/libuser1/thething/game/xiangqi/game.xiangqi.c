@@ -585,7 +585,7 @@ static void xiangqi_draw_cli(
 
 
 
-static void xiangqi_taking_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void xiangqi_taking_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -605,14 +605,14 @@ static void xiangqi_taking_bycam(_ent* ent,int foot, _syn* stack,int sp, void* a
 		break;
 	}
 }
-static void xiangqi_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void xiangqi_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	xiangqi_taking_bycam(ent,foot, stack,sp, arg,key);
 }
-static void xiangqi_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void xiangqi_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@xiangqi_giving: %.4s\n", &foot);
-	if(_soul_ == foot){xiangqi_copydata(ent->buf0, buf);return;}
+	if(_soul_ == stack[sp-1].flag){xiangqi_copydata(ent->buf0, buf);return;}
 
 	give_data_into_peer(ent,_soul_, stack,sp, 0,0, buf, 16);
 	give_data_into_peer(ent,_sync_, stack,sp, 0,0, ent->buf0, 9*10);

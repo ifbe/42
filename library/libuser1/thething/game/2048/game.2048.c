@@ -420,7 +420,7 @@ static void the2048_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,i
 		break;
 	}
 }
-static void the2048_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void the2048_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@the2048_write\n");
 	switch(stack[sp-1].flag){

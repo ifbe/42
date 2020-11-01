@@ -334,17 +334,17 @@ int mpu9250_i2cread(struct item* dri, float* vec)
 
 
 
-int mpu9250_read( struct item* dri,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int mpu9250_read( struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
-int mpu9250_write(struct item* dri,int foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int mpu9250_write(struct item* dri,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
 	int ret;
 	float tmp[10];
-	say("@mpu9250_write: %.4s\n", &foot);
+	say("@mpu9250_write:%p,%p\n", dri,foot);
 
-	if(_clk_ == foot){
+	if(_clk_ == stack[sp-1].flag){
 		switch(dri->hfmt){
 		case _i2c_:ret = mpu9250_i2cread(dri, tmp);break;
 		case _spi_:ret = mpu9250_spiread(dri, tmp);break;

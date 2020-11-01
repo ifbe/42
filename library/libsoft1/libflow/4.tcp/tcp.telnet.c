@@ -64,11 +64,11 @@ static u8 spacket5[] = {
 
 
 
-int telnetclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int telnetclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int telnetclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int telnetclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	switch(art->stage1)
 	{
@@ -110,11 +110,11 @@ int telnetclient_create(struct artery* ele, u8* url)
 
 
 
-int telnetserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int telnetserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int telnetserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int telnetserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	printmemory(buf, len);
 
@@ -150,11 +150,11 @@ int telnetserver_create(struct artery* ele, u8* url)
 
 
 
-int telnetmaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int telnetmaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int telnetmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int telnetmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	struct sysobj* obj = stack[sp-2].pchip;
 	if(0 == obj)return 0;
@@ -167,7 +167,8 @@ int telnetmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int id
 	relationcreate(tel, 0, _art_, _src_, obj, 0, _sys_, _dst_);
 	stack[sp-2].pchip = obj;
 	stack[sp-1].pchip = tel;
-	telnetserver_write(tel,_src_, stack,sp, arg,idx, buf,len);
+	stack[sp-1].flag = _src_;
+	telnetserver_write(tel,0, stack,sp, arg,idx, buf,len);
 	return 0;
 }
 int telnetmaster_discon(struct halfrel* self, struct halfrel* peer)

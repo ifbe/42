@@ -3,11 +3,11 @@
 
 
 
-int quicclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int quicclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int quicclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int quicclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -23,11 +23,11 @@ int quicclient_create(struct artery* ele, u8* url)
 
 
 
-int quicserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int quicserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int quicserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int quicserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -43,7 +43,7 @@ int quicserver_create(struct artery* ele, u8* url)
 
 
 
-int quicmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int quicmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8* tmp;
@@ -73,7 +73,7 @@ int quicmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx,
 	give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 	return 0;
 }
-int quicmaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int quicmaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }

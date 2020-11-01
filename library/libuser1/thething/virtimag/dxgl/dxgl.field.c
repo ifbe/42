@@ -157,7 +157,7 @@ static void field_draw_cli(
 
 
 
-static void field_taking_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void field_taking_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -177,11 +177,11 @@ static void field_taking_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 		break;
 	}
 }
-static void field_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void field_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	field_taking_bycam(ent,foot, stack,sp, arg,key);
 }
-static void field_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void field_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void field_discon(struct halfrel* self, struct halfrel* peer)

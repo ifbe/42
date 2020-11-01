@@ -192,7 +192,7 @@ static void font_event(
 
 
 
-static void font_byworld_bycam_bywnd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void font_byworld_bycam_bywnd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -212,13 +212,13 @@ static void font_byworld_bycam_bywnd_taking(_ent* ent,int foot, _syn* stack,int 
 		break;
 	}
 }
-static void font_byworld_bywnd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void font_byworld_bywnd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 }
-static void font_bywnd_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void font_bywnd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 }
-static void font_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void font_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* sty = stack[sp-2].pfoot;
@@ -229,7 +229,7 @@ static void font_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 		font_byworld_bycam_bywnd_taking(ent,foot, stack,sp, arg,key);
 	}
 }
-static void font_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void font_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	printmemory(buf,16);
 	font_event(ent, 0, buf, len);

@@ -74,7 +74,7 @@ void imuupdate(
 
 
 
-int easyag_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int easyag_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	float f[10];
 	say("@easyag_read\n");
@@ -82,7 +82,7 @@ int easyag_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void
 	take_data_from_peer(art,_src_, stack,sp, 0,0, f,10);
 	return 0;
 }
-int easyag_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int easyag_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@easyag_write: foot=%.4s, len=0x%x\n", &foot, len);
 	if((6 != len) && (9 != len)){

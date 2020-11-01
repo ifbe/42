@@ -346,19 +346,19 @@ void flycon_changedesire(struct entity* ent, float angle)
 
 
 
-int flycon_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int flycon_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@flycon_read:%.4s\n",&foot);
 	return 0;
 }
-int flycon_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int flycon_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	//say("@flycon_write:%.4s\n",&foot);
-	if(_clk_ == foot){
+	if(_clk_ == stack[sp-1].flag){
 		flycon_checkplace(ent);
 		flycon_applyforce(ent);
 	}
-	if(_evby_ == foot){
+	if(_evby_ == stack[sp-1].flag){
 		flycon_checkplace(ent);
 		flycon_changedesire(ent, buf[0]*PI/50 - PI);
 	}

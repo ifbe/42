@@ -3,7 +3,7 @@
 
 
 
-int search_read(_art* art,int foot, _syn* stack,int sp, u8* arg, int idx, void** buf, int len)
+int search_read(_art* art,void* foot, _syn* stack,int sp, u8* arg, int idx, void** buf, int len)
 {
 	say("@search_read\n");
 
@@ -18,7 +18,7 @@ int search_read(_art* art,int foot, _syn* stack,int sp, u8* arg, int idx, void**
 	buf[0] = str;
 	return 0;
 }
-int search_write(_art* art,int foot, _syn* stack,int sp, u8* arg, int idx, void* buf, int len)
+int search_write(_art* art,void* foot, _syn* stack,int sp, u8* arg, int idx, void* buf, int len)
 {
 	say("@search_write\n");
 	if(0 == arg)return 0;

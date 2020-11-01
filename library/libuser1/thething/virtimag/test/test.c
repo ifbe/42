@@ -151,7 +151,7 @@ int test_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, voi
 	}
 	return 0;
 }
-int test_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int test_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

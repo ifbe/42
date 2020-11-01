@@ -239,7 +239,7 @@ static void gbuffer_draw_cli(
 
 
 
-static void gbuffer_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gbuffer_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -253,7 +253,7 @@ static void gbuffer_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 	}
 //say("@freecam_read_byeye.end\n");
 }
-static void gbuffer_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gbuffer_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
 	struct entity* wnd;struct style* area;
@@ -273,7 +273,7 @@ static void gbuffer_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg
 
 
 
-static int gbuffer_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int gbuffer_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
@@ -287,10 +287,10 @@ static int gbuffer_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	}
 	return 0;
 }
-static void gbuffer_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gbuffer_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@gbuffer_write\n");
-	if(_wnd_ == foot){
+	if(_wnd_ == stack[sp-1].flag){
 		give_data_into_peer(ent,_fbog_, stack,sp, arg,key, buf,len);
 	}
 }

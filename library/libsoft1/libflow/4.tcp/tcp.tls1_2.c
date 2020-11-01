@@ -242,7 +242,7 @@ int tls1v2_read_cert(u8* buf, int len)
 	);
 	return len;
 }
-int tls1v2_write_server_certificate(struct artery* ele, int foot, u8* buf, int len)
+int tls1v2_write_server_certificate(struct artery* ele, void* foot, u8* buf, int len)
 {
 	int j,k;
 	u8* p = buf + 5 + 4 + 3;
@@ -449,7 +449,7 @@ int tls1v2_read_sdone(u8* buf, int len)
 	);
 	return len;
 }
-int tls1v2_write_server_done(struct artery* ele, int foot, u8* buf, int len)
+int tls1v2_write_server_done(struct artery* ele, void* foot, u8* buf, int len)
 {
 	//5+4byte
 	buf[0] = 0x16;
@@ -935,11 +935,11 @@ int tls1v2_clientwrite_clienthello(u8* dst, int cnt)
 
 
 
-int tls1v2client_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int tls1v2client_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tls1v2client_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int tls1v2client_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
@@ -1006,7 +1006,7 @@ int tls1v2client_create(struct artery* ele, u8* url)
 
 
 
-int tls1v2_serverread_clienthello(struct artery* ele, int foot, u8* buf, int len)
+int tls1v2_serverread_clienthello(struct artery* ele, void* foot, u8* buf, int len)
 {
 	int j, k;
 	struct bothhello* p = (void*)buf;
@@ -1079,11 +1079,11 @@ int tls1v2_serverread_clienthello(struct artery* ele, int foot, u8* buf, int len
 
 
 
-int tls1v2server_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int tls1v2server_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tls1v2server_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int tls1v2server_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	say("@tls1v2server_write\n");
@@ -1147,16 +1147,15 @@ int tls1v2server_create(struct artery* ele, u8* url)
 
 
 
-int tls1v2master_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int tls1v2master_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int tls1v2master_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int tls1v2master_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	say("@tls1v2master_write\n");
 
-	if(0x16 != buf[0])
-	{
+	if(0x16 != buf[0]){
 		give_data_into_peer(art,_src_, stack,sp, 0,0, response,sizeof(response));
 		return 0;
 	}
@@ -1172,7 +1171,8 @@ int tls1v2master_write(_art* art,int foot, _syn* stack,int sp, void* arg, int id
 	relationcreate(ele, 0, _art_, _src_, obj, 0, _sys_, _dst_);
 	stack[sp-2].pchip = obj;
 	stack[sp-1].pchip = ele;
-	tls1v2server_write(ele,_src_, stack,sp, 0,0, buf,len);
+	stack[sp-1].flag = _src_;
+	tls1v2server_write(ele,0, stack,sp, 0,0, buf,len);
 	return 0;
 }
 int tls1v2master_discon(struct halfrel* self, struct halfrel* peer)

@@ -9,11 +9,11 @@ int decstr2u64(u8* src, u64* dst);
 
 
 
-int recut_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int recut_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int recut_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int recut_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	if(0 == art)return 0;
 

@@ -284,7 +284,7 @@ static void dirlight_forfbo_cameraprep(struct mysrc* src)
 
 
 
-static void dirlight_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dirlight_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -348,11 +348,11 @@ static void dirlight_draw_cli(
 
 
 
-static void dirlight_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dirlight_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	dirlight_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void dirlight_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dirlight_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void dirlight_discon(struct halfrel* self, struct halfrel* peer)

@@ -3,17 +3,17 @@
 
 
 
-int pump_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int pump_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int pump_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int pump_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int ret;
 	u8 tmp[0x1000];
 
 	say("@pump.%4s\n", &foot);
-	if(_clk_ == foot){
+	if(_clk_ == stack[sp-1].flag){
 		//whenever clock
 		ret = take_data_from_peer(art,_src_, stack,sp, 0,0, tmp,0x1000);
 		ret = give_data_into_peer(art,_dst_, stack,sp, 0,0, tmp,ret);

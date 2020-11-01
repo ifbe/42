@@ -56,17 +56,17 @@ void httpparser(u8* buf, int len, struct httpparsed* p)
 
 
 
-int httpclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int httpclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int httpclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int httpclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int j,k;
-	say("@httpclient_write: %llx, %.4s, %x\n", art, &foot, len);
+	say("@httpclient_write:%p,%p\n", art, foot);
 	if(len>0)printmemory(buf, len<16?len:16);
 
-	switch(foot){
+	switch(stack[sp-1].flag){
 	case _dst_:{
 		break;
 	}
@@ -181,11 +181,11 @@ int httpclient_create(struct artery* ele, u8* url)
 
 
 
-int httpserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int httpserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int httpserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int httpserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {/*
 	u8 tmp[0x1000];
 	if(0 == buf)
@@ -225,7 +225,7 @@ int httpserver_create(struct artery* ele, u8* url)
 
 
 
-int httpmaster_write_bydst(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int httpmaster_write_bydst(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[0x400];
@@ -245,7 +245,7 @@ int httpmaster_write_bydst(_art* art,int foot, _syn* stack,int sp, void* arg, in
 	give_data_into_peer(art,_src_, stack,sp, 0,0, buf,len);
 	return 0;
 }
-int httpmaster_write_bysrc(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int httpmaster_write_bysrc(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	struct httpparsed p;
 	httpparser(buf, len, &p);
@@ -323,14 +323,16 @@ int httpmaster_write_bysrc(_art* art,int foot, _syn* stack,int sp, void* arg, in
 	//systemdelete(obj);
 	return 0;
 }
-int httpmaster_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int httpmaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	say("@httpmaster_write:sp=%d,foot=%.4s\n", sp, &foot);
-	if(_dst_ == foot)return httpmaster_write_bydst(art,foot, stack,sp, arg,idx, buf,len);
-	else return httpmaster_write_bysrc(art,foot, stack,sp, arg,idx, buf,len);
+	say("@httpmaster_write:%p,%p\n", art, foot);
+	switch(stack[sp-1].flag){
+	case _dst_:return httpmaster_write_bydst(art,foot, stack,sp, arg,idx, buf,len);
+	default:return httpmaster_write_bysrc(art,foot, stack,sp, arg,idx, buf,len);
+	}
 	return 0;
 }
-int httpmaster_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int httpmaster_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }

@@ -3,7 +3,7 @@
 
 
 
-int ann_read(struct artery* art,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
+int ann_read(struct artery* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
 {
 	int x,y;
 	float* weight;
@@ -24,7 +24,7 @@ int ann_read(struct artery* art,int foot, struct halfrel* stack,int sp, void* ar
 
 	return 0;
 }
-int ann_write(struct artery* art,int foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
+int ann_write(struct artery* art,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* image, int label)
 {
 	int x,y;
 	float* weight;

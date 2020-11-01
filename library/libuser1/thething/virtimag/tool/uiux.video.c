@@ -378,7 +378,7 @@ void video_event(
 
 
 
-static void video_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void video_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -394,7 +394,7 @@ static void video_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 	case _gl41full_:video_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
 }
-static void video_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void video_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* sty = stack[sp-2].pfoot;
@@ -405,12 +405,12 @@ static void video_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		video_read_bycam(ent,foot, stack,sp, arg,key);
 	}
 }
-static void video_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void video_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct own* own = ent->OWNBUF;
 	if(0 == own)return;
 
-	if(_yuv_ == foot){
+	if(_yuv_ == stack[sp-1].flag){
 		//say("@video_write.yuv: %llx,%x,%llx,%x\n", arg, key, buf, len);
 		own->yuyv = buf;
 		if(own->y8u8v8a8)video_update(own->y8u8v8a8, 1024*1024*4, buf, 640*480*2);

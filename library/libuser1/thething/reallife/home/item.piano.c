@@ -106,7 +106,7 @@ static void piano_event(struct entity* act, struct event* ev)
 	}//if(mouseup)
 */
 }
-static void piano_write_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void piano_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
@@ -266,7 +266,7 @@ static void piano_draw_gl41(
 		gl41solid_rect(wnd, 0x202020, tc, tr, tf);
 	}
 }
-static void piano_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void piano_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 //wnd.area -> cam.gl41, cam.slot -> world.geom
 	struct entity* wnd;struct style* area;
@@ -351,7 +351,7 @@ static void piano_draw_cli(
 
 
 
-static void piano_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void piano_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
@@ -361,9 +361,9 @@ static void piano_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 	}
 	}
 }
-static void piano_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void piano_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_std_ == foot){
+	if(_std_ == stack[sp-1].flag){
 		piano_char(ent, buf);
 		return;
 	}

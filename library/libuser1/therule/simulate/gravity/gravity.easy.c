@@ -61,15 +61,15 @@ int graveasy_working(struct entity* ent)
 
 
 
-int graveasy_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int graveasy_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@graveasy_read:%.4s\n",&foot);
+	say("@graveasy_read:%p,%p\n",ent,foot);
 	return 0;
 }
-int graveasy_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int graveasy_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@graveasy_write:%.4s\n",&foot);
-	if(_clk_ == foot)graveasy_working(ent);
+	say("@graveasy_give:%p,%p\n",ent,foot);
+	if(_clk_ == stack[sp-1].flag)graveasy_working(ent);
 	return 0;
 }
 int graveasy_discon(struct halfrel* self, struct halfrel* peer)

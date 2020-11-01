@@ -906,7 +906,7 @@ static void rubikscube_event(
 
 
 
-static void rubikscube_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rubikscube_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -926,7 +926,7 @@ static void rubikscube_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		break;
 	}
 }
-static void rubikscube_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rubikscube_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	u8* p = buf;
 	ent->CODE = p[0];

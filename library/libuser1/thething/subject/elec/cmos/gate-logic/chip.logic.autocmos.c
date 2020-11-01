@@ -113,7 +113,7 @@ static void autocmos_draw_gl41(
 		}
 	}
 }
-static void autocmos_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void autocmos_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
@@ -128,7 +128,7 @@ static void autocmos_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* ar
 	gl41data_01cam(wnd);
 	gl41data_after(wnd);
 }
-static void autocmos_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void autocmos_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -144,7 +144,7 @@ static void autocmos_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* ar
 
 
 
-static int autocmos_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int autocmos_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
@@ -158,7 +158,7 @@ static int autocmos_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	}
 	return 0;
 }
-static void autocmos_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void autocmos_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@autocmos_write:%x\n",buf[0]);
 }

@@ -12,17 +12,17 @@ int hexstr2data(void*,void*);
 
 
 
-int mediamux_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int mediamux_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int mediamux_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int mediamux_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	int ret;
 	u8 tmp[32];
 	say("@mediamux:%.4s\n", &foot);
 
-	switch(foot){
+	switch(stack[sp-1].flag){
 	case _a0by_:{
 		while(__sync_lock_test_and_set(&art->SENDLOCK,1))sleep_us(10);
 

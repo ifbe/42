@@ -133,11 +133,11 @@ int dns_write_answer(u8* buf, int len)
 
 
 
-int dnsclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int dnsclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int dnsclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int dnsclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	//say("@dnsclient_rootwrite\n");
 	//printmemory(buf, len);
@@ -193,11 +193,11 @@ int dnsclient_create(struct artery* ele, u8* url)
 
 
 
-int dnsserver_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int dnsserver_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
-int dnsserver_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int dnsserver_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	say("@dnsserver_rootwrite\n");
 	printmemory(buf, len);

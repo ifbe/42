@@ -174,7 +174,7 @@ void robodog_write_int(struct entity* act, int* src, int len)
 
 
 
-static void robodog_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void robodog_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
@@ -186,11 +186,11 @@ static void robodog_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 		robodog_draw_gl41(ent,slot, scn,geom, wnd,area);
 	}
 }
-static void robodog_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void robodog_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("robodog_write\n");
 
-	if(_int_ == foot)robodog_write_int(ent,buf,len);
+	if(_int_ == stack[sp-1].flag)robodog_write_int(ent,buf,len);
 	else robodog_write_float(ent,buf,len);
 }
 static void robodog_discon(struct halfrel* self, struct halfrel* peer)

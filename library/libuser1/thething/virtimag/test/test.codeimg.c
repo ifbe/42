@@ -290,7 +290,7 @@ static void codeimg_event(
 
 
 
-static void codeimg_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void codeimg_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -302,7 +302,7 @@ static void codeimg_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 		codeimg_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void codeimg_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void codeimg_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void codeimg_discon(struct halfrel* self, struct halfrel* peer)

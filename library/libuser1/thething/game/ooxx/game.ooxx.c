@@ -171,10 +171,10 @@ say("%d,%d\n",x,y);
 
 
 
-static void ooxx_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ooxx_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
-static void ooxx_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void ooxx_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void ooxx_discon(struct halfrel* self, struct halfrel* peer)

@@ -128,7 +128,7 @@ static void pmos_draw_gl41(
 	}
 	gl41line(wnd, gcolor, tc, tr);
 }
-static void pmos_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void pmos_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -244,9 +244,9 @@ static void pmos_write_G(struct entity* mos,int key, struct halfrel* stack,int s
 
 
 
-static void pmos_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void pmos_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
-	switch(foot){
+	switch(stack[sp-1].flag){
 		case 'D':pmos_read_D(ent,key, stack,sp, buf,len);return;
 		case 'S':pmos_read_S(ent,key, stack,sp, buf,len);return;
 		//case 'B':pmos_read_B(ent,key, stack,sp, buf,len);return;
@@ -254,10 +254,10 @@ static void pmos_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 		default: pmos_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 	}
 }
-static void pmos_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void pmos_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	say("pmos_write: %llx, %.4s=%x\n", ent, &foot, buf[0]);
-	switch(foot){
+	switch(stack[sp-1].flag){
 		case 'D':pmos_write_D(ent,key, stack,sp, buf,len);return;
 		case 'S':pmos_write_S(ent,key, stack,sp, buf,len);return;
 		//case 'B':pmos_write_B(ent,key, stack,sp, buf,len);return;

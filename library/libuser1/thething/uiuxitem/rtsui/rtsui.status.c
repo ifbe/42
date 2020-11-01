@@ -43,7 +43,7 @@ static void status_draw_cli(
 
 
 
-static void status_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void status_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -55,7 +55,7 @@ static void status_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		status_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void status_read_byuiux(_ent* ent,int foot, _syn* stack,int sp)
+static void status_read_byuiux(_ent* ent,void* foot, _syn* stack,int sp)
 {
 	struct style* slot;
 	struct entity* uuu;struct style* area;
@@ -87,7 +87,7 @@ static void status_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 
 
 
-static void status_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void status_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -111,7 +111,7 @@ static void status_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	}
 	}
 }
-static void status_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void status_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void status_discon(struct halfrel* self, struct halfrel* peer)

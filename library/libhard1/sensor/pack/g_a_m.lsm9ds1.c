@@ -134,15 +134,15 @@ int lsm9ds1_i2cinit(void* it)
 
 
 
-int lsm9ds1_read(struct item* dri,int foot, struct halfrel* stack,int sp, struct halfrel* peer, void* arg,int key, u8* buf,int len)
+int lsm9ds1_read(struct item* dri,void* foot, struct halfrel* stack,int sp, struct halfrel* peer, void* arg,int key, u8* buf,int len)
 {
 	return 0;
 }
-int lsm9ds1_write(struct item* dri,int foot, struct halfrel* stack,int sp, struct halfrel* peer, void* arg,int key, u8* buf,int len)
+int lsm9ds1_write(struct item* dri,void* foot, struct halfrel* stack,int sp, struct halfrel* peer, void* arg,int key, u8* buf,int len)
 {
 	int ret;
 	float tmp[10];
-	if(_clk_ == foot){
+	if(_clk_ == stack[sp-1].flag){
 		ret = lsm9ds1_i2cread(dri, tmp);
 		say("@lsm9ds1_write_clk: %f,%f,%f, %f,%f,%f, %f,%f,%f\n", tmp[0],tmp[1],tmp[2], tmp[3],tmp[4],tmp[5], tmp[6],tmp[7],tmp[8]);
 		give_data_into_peer(dri,_dst_, stack,sp, 0,0, tmp,ret);

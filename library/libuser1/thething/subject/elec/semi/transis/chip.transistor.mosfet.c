@@ -45,7 +45,7 @@ static void mosfet_draw_gl41(
 	float* vt = geom->fs.vt;
 	gl41line_rect(wnd, 0xffffff, vc,vr,vf);
 }
-static void mosfet_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mosfet_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -57,14 +57,14 @@ static void mosfet_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		mosfet_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void mosfet_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mosfet_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 
 
 
 
-static void mosfet_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mosfet_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
@@ -77,7 +77,7 @@ static void mosfet_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	}
 	}
 }
-static void mosfet_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mosfet_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void mosfet_discon(struct halfrel* self, struct halfrel* peer)

@@ -279,7 +279,7 @@ static void texball_event(
 
 
 
-static void texball_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texball_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -295,14 +295,14 @@ static void texball_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 	case _gl41full_:texball_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
 }
-static void texball_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texball_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 
 
 
 
-static void texball_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texball_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
@@ -316,7 +316,7 @@ static void texball_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	}
 	}
 }
-static void texball_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texball_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void texball_discon(struct halfrel* self, struct halfrel* peer)

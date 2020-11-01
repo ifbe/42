@@ -6,33 +6,32 @@ int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
 
 
 
-int str2vec_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int str2vec_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int str2vec_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int str2vec_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
+	int j,cnt;
+	float* f;
+	float tmp_f[9];
+	u8 tmp_u8[256];
 	say("@str2vec_write: %.4s\n", &foot);
-	if(_str_ == foot){
-		int cnt;
-		float tmp[9];
+
+	switch(stack[sp-1].flag){
+	case _str_:
 		//printmemory(buf, len);
 
-		cnt = parsefv(tmp, 9, buf, len);
-		return give_data_into_peer(art,_vec_, stack,sp, 0,0, tmp,cnt);
-	}
-	if(_vec_ == foot){
-		int j,cnt;
-		float* f;
-		u8 tmp[256];
-
+		cnt = parsefv(tmp_f, 9, buf, len);
+		return give_data_into_peer(art,_vec_, stack,sp, 0,0, tmp_f,cnt);
+	case _vec_:
 		cnt = 0;
 		f = buf;
 		for(j=0;j<len;j++){
-			if(j == len-1)cnt += mysnprintf(tmp+cnt, 256-cnt, "%f\n", f[j]);
-			else cnt += mysnprintf(tmp+cnt, 256-cnt, "%f, ", f[j]);
+			if(j == len-1)cnt += mysnprintf(tmp_u8+cnt, 256-cnt, "%f\n", f[j]);
+			else cnt += mysnprintf(tmp_u8+cnt, 256-cnt, "%f, ", f[j]);
 		}
-		return give_data_into_peer(art,_str_, stack,sp, 0,0, tmp,cnt);
+		return give_data_into_peer(art,_str_, stack,sp, 0,0, tmp_u8,cnt);
 	}
 	return 0;
 }

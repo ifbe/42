@@ -47,7 +47,7 @@ static void wrl3d_draw_cli(
 //[-6,-5]: wnd -> cam
 //[-4,-3]: cam -> world
 //[-2,-1]: world -> wrl3d
-static void wrl3d_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void wrl3d_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
@@ -65,11 +65,11 @@ static void wrl3d_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 	case _gl41full_:wrl3d_gl41draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
 	}
 }
-static void wrl3d_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void wrl3d_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	wrl3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
-static void wrl3d_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void wrl3d_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void wrl3d_discon(struct halfrel* self, struct halfrel* peer)

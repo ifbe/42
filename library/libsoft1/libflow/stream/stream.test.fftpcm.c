@@ -6,11 +6,11 @@ void ifft(float* real, float* imag, int k);
 
 
 
-int fftpcm_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int fftpcm_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int fftpcm_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int fftpcm_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	int j;
 	float tmp,max;

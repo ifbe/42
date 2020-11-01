@@ -42,11 +42,11 @@ static void camrts_fixgeom(struct fstyle* geom)
 
 
 
-int camrts_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int camrts_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	return 0;
 }
-int camrts_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+int camrts_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	struct fstyle* geom = camrts_find(ent);
 	if(0 == geom)return 0;

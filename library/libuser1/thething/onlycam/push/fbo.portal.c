@@ -398,7 +398,7 @@ static void portal_matrix(
 
 
 
-static void portal_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void portal_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 	say("@portal_read:%.4s,%llx\n", &foot, stack[sp-2].pfoot);
@@ -410,21 +410,21 @@ static void portal_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	if('v' == key){
-		if('a' == foot){
+		if('a' == stack[sp-1].flag){
 			portal_draw_gl41(ent,ent->Aside, wor,geom, wnd,area);
 		}
-		if('b' == foot){
+		if('b' == stack[sp-1].flag){
 			portal_draw_gl41(ent,ent->Bside, wor,geom, wnd,area);
 		}
 	}
 	if('?' == key){
-		if('a' == foot){
+		if('a' == stack[sp-1].flag){
 			struct portalbuf* p = ent->Aside;
 			portal_matrix(ent, camg->frus.vc, ent->Aside, ent->Bside);
 			give_data_into_peer(ent,_fboa_, stack,sp, 0,0, 0,0);
 			portal_forwnd_update(ent, p, p->fbo, p->rect);
 		}
-		if('b' == foot){
+		if('b' == stack[sp-1].flag){
 			struct portalbuf* p = ent->Bside;
 			portal_matrix(ent, camg->frus.vc, ent->Bside, ent->Aside);
 			give_data_into_peer(ent,_fbob_, stack,sp, 0,0, 0,0);
@@ -443,7 +443,7 @@ static void portal_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 		water_forwnd_update(ent,slot, fbo,rect);*/
 	}
 }
-static void portal_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void portal_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void portal_discon(struct halfrel* self, struct halfrel* peer)

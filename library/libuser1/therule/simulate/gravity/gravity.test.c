@@ -271,16 +271,16 @@ int gravtest_foreach(struct entity* ent)
 
 
 
-int gravtest_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int gravtest_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@gravtest_read:%.4s\n",&foot);
 	return 0;
 }
-int gravtest_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int gravtest_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	//say("@gravtest_write:%.4s\n",&foot);
-	if(_clk_ == foot)gravtest_foreach(ent);
-	if(_ioby_ == foot){
+	if(_clk_ == stack[sp-1].flag)gravtest_foreach(ent);
+	if(_ioby_ == stack[sp-1].flag){
 		switch(buf[0]){
 			case '1':ent->TEST = 0xffffffff;break;
 			case '0':ent->TEST = 0;break;

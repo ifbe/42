@@ -56,7 +56,7 @@ static void tardis_draw_gl41(
 	if(time>255)time = 511-time;
 	gl41opaque_prism4(wnd, 0x0000ff|(time<<24), tc, tr, tf, tt);
 }
-static void tardis_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void tardis_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -89,7 +89,7 @@ void tardis_pcm(struct entity* ent, struct supply* sup)
 
 
 
-static void tardis_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void tardis_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* wnd = stack[sp-2].pchip;
 //say("fmt=%.8s\n", &sup->fmt);
@@ -99,7 +99,7 @@ static void tardis_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 		default:tardis_read_bycam(ent,foot, stack,sp, arg,key);
 	}
 }
-static void tardis_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void tardis_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void tardis_discon(struct halfrel* self, struct halfrel* peer)

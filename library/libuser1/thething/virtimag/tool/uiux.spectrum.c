@@ -101,7 +101,7 @@ void spectrum_data(struct entity* act, int type, void* buf, int len)
 
 
 
-static void spectrum_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void spectrum_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -113,9 +113,9 @@ static void spectrum_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,in
 		spectrum_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void spectrum_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spectrum_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_pcm_ == foot){
+	if(_pcm_ == stack[sp-1].flag){
 		spectrum_data(ent, 0, buf, len);
 	}
 }

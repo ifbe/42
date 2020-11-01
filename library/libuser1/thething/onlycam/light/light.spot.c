@@ -270,7 +270,7 @@ static void dirlight_forwnd_vertex_prepare(struct mysrc* src)
 
 
 
-static void spotlight_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spotlight_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -334,11 +334,11 @@ static void spotlight_draw_cli(
 
 
 
-static void spotlight_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spotlight_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	spotlight_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void spotlight_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spotlight_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void spotlight_discon(struct halfrel* self, struct halfrel* peer)

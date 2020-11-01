@@ -170,7 +170,7 @@ static void nand_draw_cli(
 
 
 
-static void nand_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void nand_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -182,12 +182,12 @@ static void nand_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 		nand_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void nand_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void nand_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	u8 tmp;
 	say("@nandgate_write:%x\n",buf[0]);
 
-	if(_src_ == foot){
+	if(_src_ == stack[sp-1].flag){
 		tmp = buf[0] - 0x30;
 		if((tmp >= 0)&&(tmp <= 3)){
 			ent->ix0 = (tmp>>0)&1;
@@ -195,12 +195,12 @@ static void nand_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 			ent->iz0 = !(ent->ix0 && ent->iy0);
 		}
 	}
-	else if('a' == foot){
+	else if('a' == stack[sp-1].flag){
 		if('0' == buf[0])ent->ix0 = 0;
 		else if('1' == buf[0])ent->ix0 = 1;
 		else return;
 	}
-	else if('b' == foot){
+	else if('b' == stack[sp-1].flag){
 		if('0' == buf[0])ent->iy0 = 0;
 		else if('1' == buf[0])ent->iy0 = 1;
 		else return;

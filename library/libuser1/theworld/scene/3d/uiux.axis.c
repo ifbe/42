@@ -57,7 +57,7 @@ void axis3d_draw_gl41(struct entity* scene, struct entity* wnd)
 		rel = samesrcnextdst(rel);
 	}
 }
-int axis3d_read_bycam(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key)
+int axis3d_read_bycam(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key)
 {
 	if(stack && ('v' == key)){
 		struct halfrel* aa[2];
@@ -78,11 +78,11 @@ int axis3d_read_bycam(struct entity* ent,int foot, struct halfrel* stack,int sp,
 
 
 
-int axis3d_taking(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int axis3d_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return axis3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
-int axis3d_giving(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int axis3d_giving(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

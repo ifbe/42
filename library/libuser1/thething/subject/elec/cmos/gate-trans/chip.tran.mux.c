@@ -59,7 +59,7 @@ static void mux_draw_cli(
 
 
 
-static void mux_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mux_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -71,7 +71,7 @@ static void mux_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 		mux_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void mux_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mux_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void mux_discon(struct halfrel* self, struct halfrel* peer)

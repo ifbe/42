@@ -294,23 +294,25 @@ void drone_write_euler(struct entity* act, float* f)
 
 
 
-static void drone_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void drone_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
 	if(0 == stack)return;
 	if('v' != key)return;
 
-	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	if(_imag_==foot)drone_forgl41_estimate(ent,slot, wor,geom, wnd,area);
-	else drone_forgl41_actual(ent,slot, wor,geom, wnd,area);
+	if(_imag_ == stack[sp-1].flag){
+		drone_forgl41_estimate(ent,foot, wor,geom, wnd,area);
+	}
+	else{
+		drone_forgl41_actual(ent,foot, wor,geom, wnd,area);
+	}
 }
-static void drone_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void drone_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_quat_ == foot)drone_write_quaternion(ent, buf);
+	if(_quat_ == stack[sp-1].flag)drone_write_quaternion(ent, buf);
 	else drone_write_euler(ent, buf);
 }
 static void drone_discon(struct halfrel* self, struct halfrel* peer)

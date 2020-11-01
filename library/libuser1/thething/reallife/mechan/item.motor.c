@@ -123,7 +123,7 @@ static void motor_draw_cli(
 
 
 
-static void motor_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void motor_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -135,7 +135,7 @@ static void motor_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		motor_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void motor_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void motor_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void motor_discon(struct halfrel* self, struct halfrel* peer)

@@ -142,7 +142,7 @@ static void spurgear_write_val(struct entity* gear, float* val)
 	//wrong
 	gear->fz0 = PI/32 - val[0];
 }
-static void spurgear_write_ray(struct entity* gear,int foot, struct fstyle* geom, float* ray)
+static void spurgear_write_ray(struct entity* gear,void* foot, struct fstyle* geom, float* ray)
 {
 	say("%f,%f,%f -> %f,%f,%f\n",ray[0],ray[1],ray[2], ray[3],ray[4],ray[5]);
 
@@ -173,7 +173,7 @@ static void spurgear_write_ray(struct entity* gear,int foot, struct fstyle* geom
 
 
 
-static void spurgear_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spurgear_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -185,10 +185,10 @@ static void spurgear_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,in
 		spurgear_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void spurgear_giving(_ent* gear,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spurgear_giving(_ent* gear,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 
-	if(_gear_ == foot){
+	if(_gear_ == stack[sp-1].flag){
 		say("@spurgear_gear:%llx\n", gear);
 		spurgear_write_val(gear, buf);
 		spurgear_spread(stack, sp, gear);

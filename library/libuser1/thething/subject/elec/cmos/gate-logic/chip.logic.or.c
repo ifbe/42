@@ -59,7 +59,7 @@ static void or_draw_cli(
 
 
 
-static void or_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void or_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -71,7 +71,7 @@ static void or_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key,
 		or_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void or_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void or_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void or_discon(struct halfrel* self, struct halfrel* peer)

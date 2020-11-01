@@ -20,15 +20,15 @@ void pixel_cleardepth(void*);
 //directx
 void dx11data_before(void*);
 void dx11data_after(void*);
-int dx11data_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int dx11data_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 //opengl
 void gl41data_before(void*);
 void gl41data_after(void*);
-int gl41data_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int gl41data_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 //metal
 void mt20data_before(void*);
 void mt20data_after(void*);
-int mt20data_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int mt20data_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 
 
 
@@ -464,7 +464,7 @@ static int freecam_draw_gl41(
 	gl41line(ctx, 0, geom->frus.vc, &act->fx0);
 	return 0;
 }
-static int freecam_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int freecam_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 //[-6,-5]: wnd,area -> cam,togl
 //[-4,-3]: cam,gl41 -> wor,geom		//the camera taking photo
@@ -483,7 +483,7 @@ static int freecam_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 	}
 	return 0;
 }
-static int freecam_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int freecam_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct privdata* own = ent->OWNBUF;
 	struct halfrel* self = own->self;
@@ -591,7 +591,7 @@ static int freecam_write_bywnd(_ent* ent,struct event* ev)
 
 
 
-static int freecam_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int freecam_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@freecam_read\n");
 	if(sp < 2)return 0;
@@ -607,7 +607,7 @@ static int freecam_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	}
 	return 0;
 }
-static int freecam_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int freecam_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct event* ev = buf;
 	if(ent->EVTOTYPE & MIND){

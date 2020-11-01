@@ -166,7 +166,7 @@ static int truth_write_bykarnaugh(struct entity* ent, u8* i)
 
 
 
-static int truth_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int truth_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -180,9 +180,9 @@ static int truth_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	}
 	return 0;
 }
-static int truth_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int truth_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_karnaugh_ == foot){
+	if(_karnaugh_ == stack[sp-1].flag){
 		return truth_write_bykarnaugh(ent, buf);
 	}
 

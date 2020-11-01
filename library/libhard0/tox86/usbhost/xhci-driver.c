@@ -1351,7 +1351,7 @@ int xhci_giveorderwaitevent(
 
 
 
-static int xhci_ontake(struct item* xhci, int foot, void* stack, int sp, void* sbuf, int slen, void* rbuf, void* rlen)
+static int xhci_ontake(struct item* xhci, void* foot, void* stack, int sp, void* sbuf, int slen, void* rbuf, void* rlen)
 {
 	if(0 == xhci)return 0;
 
@@ -1364,7 +1364,7 @@ static int xhci_ontake(struct item* xhci, int foot, void* stack, int sp, void* s
 	}
 	return 0;
 }
-static int xhci_ongive(struct item* xhci, int foot, void* stack, int sp, void* sbuf, int slen, void* rbuf, void* rlen)
+static int xhci_ongive(struct item* xhci, void* foot, void* stack, int sp, void* sbuf, int slen, void* rbuf, void* rlen)
 {
 	return 0;
 }

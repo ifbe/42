@@ -45,7 +45,7 @@ static void gaafet_draw_gl41(
 	float* vt = geom->fs.vt;
 	gl41line_rect(wnd, 0xffffff, vc,vr,vf);
 }
-static void gaafet_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gaafet_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -57,14 +57,14 @@ static void gaafet_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		gaafet_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void gaafet_read_bywnd(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gaafet_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 
 
 
 
-static void gaafet_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gaafet_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
@@ -77,7 +77,7 @@ static void gaafet_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	}
 	}
 }
-static void gaafet_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gaafet_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void gaafet_discon(struct halfrel* self, struct halfrel* peer)

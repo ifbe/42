@@ -267,7 +267,7 @@ void water_forwnd_prepare(struct gl41data* data, struct waterbuf* water, char* s
 
 
 
-static void water_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void water_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
 
@@ -330,11 +330,11 @@ static void water_draw_cli(
 
 
 
-static void water_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void water_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	water_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void water_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void water_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void water_discon(struct halfrel* self, struct halfrel* peer)

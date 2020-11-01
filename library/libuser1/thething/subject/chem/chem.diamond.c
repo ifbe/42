@@ -68,7 +68,7 @@ static void diamond_draw_cli(
 
 
 
-static void diamond_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void diamond_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -80,7 +80,7 @@ static void diamond_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 		diamond_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void diamond_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void diamond_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void diamond_discon(struct halfrel* self, struct halfrel* peer)

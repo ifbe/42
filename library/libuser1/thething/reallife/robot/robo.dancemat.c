@@ -178,7 +178,7 @@ static void dancemat_write_data(struct entity* ent, struct entity* src, u8* buf,
 
 
 
-static void dancemat_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dancemat_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -190,7 +190,7 @@ static void dancemat_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,in
 		dancemat_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void dancemat_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dancemat_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* src = stack[sp-2].pchip;
 	switch(src->tier){

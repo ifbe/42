@@ -534,7 +534,7 @@ static void stl3d_draw_cli(
 //[-6,-5]: wnd -> cam
 //[-4,-3]: cam -> world
 //[-2,-1]: world -> stl3d
-static void stl3d_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+static void stl3d_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
@@ -564,13 +564,13 @@ static void stl3d_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,i
 	case _gl41full_:stl3d_gl41draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
 	}
 }
-static void stl3d_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stl3d_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	stl3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
-static void stl3d_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stl3d_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_int_ == foot)stl3d_modify_matter(ent, buf,len);
+	if(_int_ == stack[sp-1].flag)stl3d_modify_matter(ent, buf,len);
 	else stl3d_modify_ray(ent, buf);
 }
 static void stl3d_discon(struct halfrel* self, struct halfrel* peer)

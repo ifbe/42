@@ -3,7 +3,6 @@
 #define VERTEX buf1
 #define STAMP data3
 int parsefv(float* vec, int flen, u8* str, int slen);
-int take_data_from_them(void*,int, void*,int, void*,int, void*,int);
 
 
 
@@ -240,7 +239,7 @@ static void digital_draw_gl41(
 		}
 	}
 }
-void digital_read_board(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key)
+void digital_read_board(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -256,44 +255,41 @@ void digital_read_board(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 
 
 
-int digital_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int digital_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	digital_read_board(ent,foot, stack,sp, arg,key);
 	return 0;
 }
-int digital_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+int digital_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
 	struct wireindex* sts = ent->PERPIN;
 	if(0 == sts)return 0;
 
-	switch(foot){
-		case _evby_:
-		{
-			struct event* ev = (void*)buf;
-			if(_char_ != ev->what)return 0;
-			if(ev->why < '0')return 0;
-			if(ev->why > '3')return 0;
-			//not break
-		}
-		case _ioby_:
-		{
-			say("digital_event: %.4s=%x\n", &foot, buf[0]);
-			ent->STAMP += 1;
-			digital_complex(ent,sts, stack,sp, buf,len);
-			break;
-		}
-		case 'a':
-		case 'b':
-		case 'c':
-		case 'd':
-		{
-			say("digital_write: %.4s=%x\n", &foot, buf[0]);
-			int id = foot - 'a';
-			if('p' == buf[0])sts[id].val = 1;
-			if('n' == buf[0])sts[id].val =-1;
-			digital_broadcast(ent,foot, stack,sp, buf,len);
-			break;
-		}
+	struct event* ev;
+	int id;
+	int foottype = stack[sp-1].flag;
+	switch(foottype){
+	case _evby_:
+		ev = (void*)buf;
+		if(_char_ != ev->what)return 0;
+		if(ev->why < '0')return 0;
+		if(ev->why > '3')return 0;
+		//not break
+	case _ioby_:
+		say("digital_event: %.4s=%x\n", &foot, buf[0]);
+		ent->STAMP += 1;
+		digital_complex(ent,sts, stack,sp, buf,len);
+		break;
+	case 'a':
+	case 'b':
+	case 'c':
+	case 'd':
+		say("digital_write: %.4s=%x\n", &foot, buf[0]);
+		id = foottype - 'a';
+		if('p' == buf[0])sts[id].val = 1;
+		if('n' == buf[0])sts[id].val =-1;
+		digital_broadcast(ent,foottype, stack,sp, buf,len);
+		break;
 	}
 	return 0;
 }

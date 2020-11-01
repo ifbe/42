@@ -87,7 +87,7 @@ static void texbox_event(
 
 
 
-static void texbox_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texbox_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -99,7 +99,7 @@ static void texbox_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,
 		texbox_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void texbox_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texbox_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct supply* sup = stack[sp-2].pchip;
 	switch(sup->fmt){
@@ -108,7 +108,7 @@ static void texbox_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int 
 	}
 	}
 }
-static void texbox_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texbox_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void texbox_discon(struct halfrel* self, struct halfrel* peer)

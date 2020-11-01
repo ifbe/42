@@ -47,9 +47,9 @@ static void vmddr_create(struct entity* act, void* arg, int argc, u8** argv)
 
 
 
-static int vmddr_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static int vmddr_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
-	if(_mmio_ == foot){
+	if(_mmio_ == stack[sp-1].flag){
 		u8* ram = ent->buf0;
 		if(0 == ram)return 0;
 
@@ -59,7 +59,7 @@ static int vmddr_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int ke
 	}
 	return 0;
 }
-static int vmddr_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int vmddr_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

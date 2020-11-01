@@ -82,7 +82,7 @@ static void vsrc_draw_gl41(
 	}
 	gl41float(wnd, 0xffffff, tc,tr,tf, act->fx0);
 }
-static void vsrc_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void vsrc_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -134,18 +134,18 @@ static void vsrc_read_n(struct entity* ent, int key, struct wireindex* sts, int 
 
 
 
-static void vsrc_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void vsrc_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	switch(foot){
+	switch(stack[sp-1].flag){
 		case 'p':vsrc_read_p(ent,key, buf,len);break;
 		case 'n':vsrc_read_n(ent,key, buf,len);break;
 		default:vsrc_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 }
-static void vsrc_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void vsrc_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@vsrc_write: %.4s\n", &foot);
-	if('n' == foot){
+	if('n' == stack[sp-1].flag){
 		struct wireindex* sts = buf;
 		float volt = sts->volt + ent->fx0;
 		give_data_into_peer(ent,'p', stack,sp, 0,0, &volt,0);

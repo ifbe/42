@@ -24,7 +24,7 @@ void guide3d_draw_gl41(struct entity* scene, struct entity* wnd)
 		rel = samesrcnextdst(rel);
 	}
 }
-int guide3d_read_bycam(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg, int key)
+int guide3d_read_bycam(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg, int key)
 {
 	if(stack && ('v' == key)){
 		struct halfrel* aa[2];
@@ -45,11 +45,11 @@ int guide3d_read_bycam(struct entity* ent,int foot, struct halfrel* stack,int sp
 
 
 
-int guide3d_taking(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int guide3d_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return guide3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
-int guide3d_giving(struct entity* ent,int foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+int guide3d_giving(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

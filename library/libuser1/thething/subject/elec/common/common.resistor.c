@@ -64,7 +64,7 @@ static void resistor_draw_gl41(
 	}
 	gl41float(wnd, 0xffffff, tc,tr,tf, act->fx0);
 }
-static void resistor_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void resistor_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -116,15 +116,15 @@ static void resistor_read_b(struct entity* ent, int key, struct wireindex* sts, 
 
 
 
-static void resistor_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void resistor_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	switch(foot){
+	switch(stack[sp-1].flag){
 		case 'a':resistor_read_a(ent, key, buf,len);break;
 		case 'b':resistor_read_b(ent, key, buf,len);break;
 		default:resistor_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
 	}
 }
-static void resistor_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void resistor_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct wireindex* sts = buf;
 	say("@resistor_write: %.4s\n", &foot);

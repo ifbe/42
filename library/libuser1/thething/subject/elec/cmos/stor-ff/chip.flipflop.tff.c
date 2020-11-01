@@ -59,7 +59,7 @@ static void tff_draw_cli(
 
 
 
-static void tff_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void tff_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -71,7 +71,7 @@ static void tff_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key
 		tff_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void tff_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void tff_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void tff_discon(struct halfrel* self, struct halfrel* peer)

@@ -3,13 +3,13 @@
 
 
 
-int gcodeclient_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int gcodeclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int gcodeclient_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int gcodeclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
-	switch(foot){
+	switch(stack[sp-1].flag){
 		case _src_:{
 			say("%.*s", len, buf);
 			break;

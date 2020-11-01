@@ -9,11 +9,11 @@
 
 
 
-int qu2eu_read(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int qu2eu_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	return 0;
 }
-int qu2eu_write(_art* art,int foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
+int qu2eu_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, void* buf, int len)
 {
 	say("@qu2eu_write: foot=%.4s, len=0x%x\n", &foot, len);
 

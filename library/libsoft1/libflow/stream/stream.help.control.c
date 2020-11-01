@@ -4,7 +4,7 @@ int openreadclose(void*, int, void*, int);
 
 
 
-int control_read(_art* art,int foot, _syn* stack,int sp, u8* arg, int idx, void** buf, int len)
+int control_read(_art* art,void* foot, _syn* stack,int sp, u8* arg, int idx, void** buf, int len)
 {
 	say("@control_read\n");
 
@@ -15,7 +15,7 @@ int control_read(_art* art,int foot, _syn* stack,int sp, u8* arg, int idx, void*
 	buf[0] = str;
 	return 0;
 }
-int control_write(_art* art,int foot, _syn* stack,int sp, u8* arg, int idx, void* buf, int len)
+int control_write(_art* art,void* foot, _syn* stack,int sp, u8* arg, int idx, void* buf, int len)
 {
 	int j;
 	say("@control_write\n");

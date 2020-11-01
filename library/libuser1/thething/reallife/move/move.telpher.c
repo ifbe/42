@@ -43,7 +43,7 @@ static void telpher_draw_gl41(
 	float* vt = geom->fs.vt;
 	gl41line_prism4(wnd, 0xffffff, vc, vr, vf, vt);
 }
-static void telpher_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void telpher_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* scn;struct style* geom;
@@ -60,11 +60,11 @@ static void telpher_read_bycam(_ent* ent,int foot, _syn* stack,int sp, void* arg
 
 
 
-static void telpher_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void telpher_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	telpher_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
-static void telpher_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void telpher_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void telpher_discon(struct halfrel* self, struct halfrel* peer)

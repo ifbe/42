@@ -189,7 +189,7 @@ static void rccar_event(
 
 
 
-static void rccar_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rccar_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct style* slot;
 	struct entity* wor;struct style* geom;
@@ -201,7 +201,7 @@ static void rccar_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int k
 		rccar_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void rccar_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void rccar_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void rccar_discon(struct halfrel* self, struct halfrel* peer)

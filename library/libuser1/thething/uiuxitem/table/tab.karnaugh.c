@@ -211,7 +211,7 @@ static int karnaugh_write_bytruthtable(struct entity* ent, u8* i)
 
 
 
-static int karnaugh_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int karnaugh_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//struct entity* ent = stack[sp-1].pchip;
 	struct style* slot = stack[sp-1].pfoot;
@@ -225,9 +225,9 @@ static int karnaugh_taking(_ent* ent,int foot, _syn* stack,int sp, void* arg,int
 	}
 	return 0;
 }
-static int karnaugh_giving(_ent* ent,int foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int karnaugh_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_truthtable_ == foot){
+	if(_truthtable_ == stack[sp-1].flag){
 		return karnaugh_write_bytruthtable(ent, buf);
 	}
 
