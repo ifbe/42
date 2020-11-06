@@ -3,25 +3,6 @@
 
 
 
-//memory
-static u8* fshome;		//fat表
-	static u8* pbrbuffer;
-	static u8* fatbuffer;
-static u8* dirhome;
-//
-static u64 cache_first;
-static int cache_count;
-//disk
-static int version;
-static int byte_per_sec;
-static int sec_per_fat;
-static int sec_per_clus;
-static int sec_of_fat0;
-static int sec_of_clus2;		//2号簇所在扇区
-
-
-
-
 struct folder{
 	u8 name_this[8];	//0x00-0x07：文件名，不足8个字节0x20补全(短文件名8.3命名规则)
 	u8 name_ext[3];		//0x08-0x0A：扩展名
@@ -43,7 +24,30 @@ struct folder{
 	u16 modify_date;	//0x18-0x19：文件最近修改日期
 	u16 clus_lo16;		//0x1A-0x1B：文件起始簇号的地16位 0x0003
 	u32 filesize;		//0x1C-0x1F：文件的长度，0x2206=8710bytes=8.5K
-};
+}__attribute__((packed));
+
+
+
+
+//memory
+static u8* fshome;		//fat表
+	static u8* pbrbuffer;
+	static u8* fatbuffer;
+static u8* dirhome;
+//
+static u64 cache_first;
+static int cache_count;
+//disk
+static int version;
+static int byte_per_sec;
+static int sec_per_fat;
+static int sec_per_clus;
+static int sec_of_fat0;
+static int sec_of_clus2;		//2号簇所在扇区
+
+
+
+
 void fatdate2mydate(int val0, int val1, u8* date)
 {
 	int tmp;
@@ -68,16 +72,17 @@ static void parsefolder(struct artery* art, u8* rsi)
 		if(0xe5 == rsi[j+0x0])continue;	//deleted
 		if(0x00 == rsi[j+0x0])continue;	//have name
 
-		printmemory(rsi+j,0x20);
-		say("size=%x\n",dir->filesize);
-
 		int clus = (dir->clus_hi16<<16) + dir->clus_lo16;
-		say("clus=%x\n", clus);
 
 		u8 date[8];
 		fatdate2mydate(dir->create_date, dir->create_time_s, date);
-		say("createtime: %02d%02d, %d:%d, %d:%d:%d\n",
-			date[6],date[5], date[4],date[3], date[2],date[1],date[0]
+
+		printmemory(rsi+j,0x20);
+		say("clus=%x, size=%x, type=%x, name=%.8s%.3s\n",
+			clus,
+			dir->filesize,
+			dir->attr,
+			dir->name_this, dir->name_ext
 		);
 	}
 

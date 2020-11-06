@@ -3,16 +3,6 @@
 
 
 
-int check_mbr(u8* addr)
-{
-	if(0x55 != addr[0x1fe])return 0;
-	if(0xaa != addr[0x1ff])return 0;
-	return _mbr_;
-}
-
-
-
-
 //[+0x1be,+0x1fd],每个0x10,总共4个
 struct mbrpart{
 	u8     bootflag;	//[+0]:活动标记
@@ -21,11 +11,25 @@ struct mbrpart{
 	u8   chs_end[3];	//[+0x5,+0x7]:结束磁头柱面扇区
 	u8 lba_start[4];	//[+0x8,+0xb]:起始lba
 	u8 lba_count[4];	//[+0xc,+0xf]:大小
-};
+}__attribute__((packed));
+
+
+
+
+int check_mbr(u8* addr)
+{
+	if(0x55 != addr[0x1fe])return 0;
+	if(0xaa != addr[0x1ff])return 0;
+	return _mbr_;
+}
 u32 hackforarmalign4(u8* p)
 {
 	return p[0] + (p[1]<<8) + (p[2]<<16) + (p[3]<<24);
 }
+
+
+
+
 void parse_mbr_one(struct mbrpart* part)
 {
 	u32 start,count;
