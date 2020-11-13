@@ -528,7 +528,6 @@ struct item
 		char padding7[8];
 	};
 
-
 	//[80,ff]: public
 	u8 public_data[0x80];
 

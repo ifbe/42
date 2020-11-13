@@ -30,6 +30,59 @@ void pixel_cleardepth(struct supply* wnd)
 		for(x=0;x<wnd->width;x++)depth[y*stride+x] = 1000.0;
 	}
 }
+void* wndmgr_find_maxw(struct supply* wnd)
+{
+	float max = -1.0;
+	struct style* sty = 0;
+	struct relation* rel = wnd->oreln;
+	struct relation* the = rel;
+
+	//find max_w
+	while(1){
+		if(0 == rel)break;
+
+		if(_ent_ == rel->dsttype){
+			sty = (void*)(rel->srcfoot);
+			if(sty){
+				//say("%f\n", sty->fs.vc[3]);
+				if(max < sty->fs.vc[3]){
+					the = rel;
+					max = sty->fs.vc[3];
+				}
+			}
+		}
+
+		rel = samesrcprevdst(rel);
+	}
+	return the;
+}
+void* wndmgr_find_hit(struct supply* wnd, int x, int y)
+{
+	struct style* sty = 0;
+	struct relation* rel = wnd->oreln;
+
+	//find max_w
+	while(1){
+		if(0 == rel)break;
+
+		if(_ent_ == rel->dsttype){
+			sty = (void*)(rel->srcfoot);
+			if(sty){
+				//say("%d,%d, %f,%f,%f,%f\n",x,y,sty->fs.vc[0],sty->fs.vc[1],sty->fs.vr[0],sty->fs.vf[1]);
+				if(	(x > sty->fs.vc[0] - sty->fs.vr[0]) &&
+					(x < sty->fs.vc[0] + sty->fs.vr[0]) &&
+					(y > sty->fs.vc[1] - sty->fs.vf[1]) &&
+					(y < sty->fs.vc[1] + sty->fs.vf[1]) )
+				{
+					return rel;
+				}
+			}
+		}
+
+		rel = samesrcprevdst(rel);
+	}
+	return rel;
+}
 
 
 
@@ -65,6 +118,10 @@ int wndmgr_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, voi
 {
 	//say("@rgbanode_write:%p,%x\n", wnd,foot);
 	//printmemory(buf,16);
+
+	struct relation* hit = 0;
+	struct relation* the = wndmgr_find_maxw(wnd);
+
 	struct event* ev = buf;
 	if(0x4070 == ev->what){
 		short* pp = (short*)ev;
@@ -75,27 +132,15 @@ int wndmgr_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, voi
 		wnd->iy0 += pp[1];
 		if(wnd->iy0 < 0)wnd->iy0 = 0;
 		if(wnd->iy0 >= wnd->height)wnd->iy0 = wnd->height-1;
-		return 0;
-	}
 
-	float max = -1.0;
-	struct relation* rel = wnd->oreln;
-	struct relation* the = rel;
-	while(1){
-		if(0 == rel)break;
-
-		if(_ent_ == rel->dsttype){
-			struct style* sty = (void*)(rel->srcfoot);
-			if(sty){
-				//say("%f\n", sty->fs.vc[3]);
-				if(max < sty->fs.vc[3]){
-					the = rel;
-					max = sty->fs.vc[3];
-				}
-			}
+		hit = wndmgr_find_hit(wnd, wnd->ix0, wnd->iy0);
+		//say("the=%p,hit=%p\n",the,hit);
+		if(hit && the && (hit != the)){
+			struct style* hitsty = (void*)(hit->srcfoot);
+			struct style* thesty = (void*)(the->srcfoot);
+			hitsty->fs.vc[3] = thesty->fs.vc[3]+1.0;
+			the = hit;
 		}
-
-		rel = samesrcprevdst(rel);
 	}
 
 //say("max=%f,the=%p\n",max,the);

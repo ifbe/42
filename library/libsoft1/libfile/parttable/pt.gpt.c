@@ -12,7 +12,7 @@ struct gptpart{
 	u64 lba_start;		//[+0x20,+0x27]:起始lba
 	u64 lba_end;		//[+0x28,+0x2f]:末尾lba
 	u64 flag;			//[+0x30,+0x37]:属性标签
-	u8 name[0x48];		//[+0x38,+0x7f]:名字
+	char name[0x48];		//[+0x38,+0x7f]:名字
 }__attribute__((packed));
 static u8 guid_bbp[16] = {0x48,0x61,0x68,0x21,0x49,0x64,0x6F,0x6E,0x74,0x4E,0x65,0x65,0x64,0x45,0x46,0x49};
 static u8 guid_efi[16] = {0x45,0x46,0x49,0x20,0x50,0x41,0x52,0x54,0x00,0x00,0x01,0x00,0x5C,0x00,0x00,0x00};
@@ -48,6 +48,27 @@ int check_gpt(u8* addr)
 
 
 
+void parse_gpt_one(struct gptpart* part)
+{
+	if(0 == part->lba_start)return;
+	printmemory(part, 0x80);
+
+	u64 type;
+	if(0 == ncmp(part->guid_type, guid_bbp, 16))type = _bbp_;
+	else if(0 == ncmp(part->guid_type, guid_efi, 16))type = _efi_;
+	else if(0 == ncmp(part->guid_type, guid_fat, 16))type = _fat_;
+	else if(0 == ncmp(part->guid_type, guid_ntfs,16))type = _ntfs_;
+	else if(0 == ncmp(part->guid_type, guid_hfs, 16))type = _hfs_;
+	else if(0 == ncmp(part->guid_type, guid_apfs,16))type = _apfs_;
+	else if(0 == ncmp(part->guid_type, guid_ext4,16))type = _ext_;
+	else type = hex32('?','?','?','?');
+
+	int j;
+	char* name = part->name;
+	for(j=0;j<0x40;j++)name[j] = part->name[j*2];
+
+	say("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type, name);
+}
 void parse_gpt(u8* src)
 {
 	int j,k;
@@ -61,28 +82,58 @@ void parse_gpt(u8* src)
 	say("head crc:	%x, %x\n", *(u32*)(src+0x210), crc);
 	say("body crc:	%x, %x\n", *(u32*)(src+0x258), crc32(0, src+0x400, 0x4000));
 
-	char* type;
-	char* name;
-	struct gptpart* part = (void*)(src+0x400);
-	for(j=0;j<0x80;j++)
-	{
-		if(0 == part[j].lba_start)continue;
+	for(j=0;j<0x80;j++){
+		parse_gpt_one((void*)(src + 0x400 + 0x80*j));
+	}
+}
 
-		printmemory(part[j].guid_part, 0x80);
 
-		if(0 == ncmp(part[j].guid_type, guid_bbp, 16))type = "bbp";
-		else if(0 == ncmp(part[j].guid_type, guid_efi, 16))type = "efi";
-		else if(0 == ncmp(part[j].guid_type, guid_fat, 16))type = "fat";
-		else if(0 == ncmp(part[j].guid_type, guid_ntfs,16))type = "ntfs";
-		else if(0 == ncmp(part[j].guid_type, guid_hfs, 16))type = "hfs";
-		else if(0 == ncmp(part[j].guid_type, guid_apfs,16))type = "apfs";
-		else if(0 == ncmp(part[j].guid_type, guid_ext4,16))type = "ext4";
-		else type = "???";
 
-		name = part[j].name;
-		for(k=0;k<0x40;k++)name[k] = part[j].name[k*2];
 
-		say("[%016llx,%016llx]:	type=%s, name=%s\n", part[j].lba_start, part[j].lba_end, type, name);
+void mount_gpt_one(_art* art, struct gptpart* part)
+{
+	if(0 == part->lba_start)return;
+	printmemory(part, 0x80);
+
+	u64 type;
+	if(0 == ncmp(part->guid_type, guid_bbp, 16))type = _bbp_;
+	else if(0 == ncmp(part->guid_type, guid_efi, 16))type = _efi_;
+	else if(0 == ncmp(part->guid_type, guid_fat, 16))type = _fat_;
+	else if(0 == ncmp(part->guid_type, guid_ntfs,16))type = _ntfs_;
+	else if(0 == ncmp(part->guid_type, guid_hfs, 16))type = _hfs_;
+	else if(0 == ncmp(part->guid_type, guid_apfs,16))type = _apfs_;
+	else if(0 == ncmp(part->guid_type, guid_ext4,16))type = _ext_;
+	else type = hex32('?','?','?','?');
+
+	int j;
+	char* name = part->name;
+	for(j=0;j<0x40;j++)name[j] = part->name[j*2];
+
+	say("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type, name);
+
+	if((_efi_ == type)|(_fat_ == type)){
+		struct artery* tmp = arterycreate(_fat_,0,0,0);
+		if(0 == tmp)return;
+		struct relation* rel = relationcreate(tmp,0,_art_,_src_, art,(void*)(part->lba_start<<9),_art_,_dst_);
+		if(0 == rel)return;
+		arterylinkup((void*)&rel->dst, (void*)&rel->src);
+	}
+}
+void mount_gpt(_art* art, u8* src)
+{
+	int j,k;
+	u32 crc;
+
+	j = src[0x20c];
+	if(j >= 0x14)j -= 0x14;
+	crc = crc32(0, src + 0x200, 0x10);
+	crc = crc32(crc, src + 0x214, 4);
+	crc = crc32(crc, src + 0x214, j);
+	say("head crc:	%x, %x\n", *(u32*)(src+0x210), crc);
+	say("body crc:	%x, %x\n", *(u32*)(src+0x258), crc32(0, src+0x400, 0x4000));
+
+	for(j=0;j<0x80;j++){
+		mount_gpt_one(art, (void*)(src + 0x400 + 0x80*j));
 	}
 }
 
@@ -91,7 +142,11 @@ void parse_gpt(u8* src)
 
 int gptclient_take(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
-	return 0;
+	say("@gptclient_take\n");
+	say("foot=%x\n",foot);
+	int ret = take_data_from_peer(art,_src_, stack,sp+2, arg,(u64)foot+idx, buf,len);
+	say("gpt.ret=%x\n",ret);
+	return ret;
 }
 int gptclient_give(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
 {
@@ -103,13 +158,19 @@ int gptclient_discon(struct halfrel* self, struct halfrel* peer)
 }
 int gptclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	if(_src_ == self->flag){
-		struct artery* ele = self->pchip;
-		int ret = take_data_from_peer(ele,_src_, 0,0, "",0, ele->buf0,0x4800);
-		if(ret != 0x4800)return 0;
+	struct artery* ele = self->pchip;
+	if(0 == ele)return 0;
+	void* buf = ele->buf0;
+	if(0 == buf)return 0;
 
-		parse_gpt(ele->buf0);
+	//read
+	if(_src_ == self->flag){
+		int ret = take_data_from_peer(ele,_src_, 0,0, "",0, buf,0x4800);
+		if(ret != 0x4800)return 0;
 	}
+
+	//check self type, parse or mount
+	mount_gpt(ele, buf);
 	return 0;
 }
 int gptclient_delete(struct artery* ele)

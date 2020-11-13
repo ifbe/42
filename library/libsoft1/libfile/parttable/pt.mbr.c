@@ -38,7 +38,7 @@ void parse_mbr_one(struct mbrpart* part)
 	//count-1 = bus error, gcc bug ?
 	start = hackforarmalign4(part->lba_start);
 	count = hackforarmalign4(part->lba_count);
-	say("[%08x,%08x]:\n", start, start+count-1);
+	say("[%08x,%08x]:type=%x\n", start, start+count-1, part->parttype);
 
 	switch(part->parttype){
 	case 0x05:
@@ -86,16 +86,15 @@ void parse_mbr_one(struct mbrpart* part)
 		say("ext\n");
 		break;
 	}
-	default:{
-		say("type=%02x\n",part->parttype);
-	}
 	}//switch
 }
 void parse_mbr(u8* src)
 {
 	int j;
 	src += 0x1be;
-	for(j=0;j<0x40;j+=0x10)parse_mbr_one((void*)(src+j));
+	for(j=0;j<0x40;j+=0x10){
+		parse_mbr_one((void*)(src+j));
+	}
 }
 
 
@@ -109,7 +108,7 @@ int mount_mbr_one(_art* art, struct mbrpart* part)
 	//count-1 = bus error, gcc bug ?
 	start = hackforarmalign4(part->lba_start);
 	count = hackforarmalign4(part->lba_count);
-	say("[%08x,%08x]:%x\n", start, start+count-1, part->parttype);
+	say("[%08x,%08x]:type=%x\n", start, start+count-1, part->parttype);
 
 	switch(part->parttype){
 	case 0x0b:
@@ -130,10 +129,11 @@ int mount_mbr_one(_art* art, struct mbrpart* part)
 }
 int mount_mbr(_art* art, u8* src)
 {
-	say("@mount_mbr\n");
 	int j;
 	src += 0x1be;
-	for(j=0;j<0x40;j+=0x10)mount_mbr_one(art, (void*)(src+j));
+	for(j=0;j<0x40;j+=0x10){
+		mount_mbr_one(art, (void*)(src+j));
+	}
 	return 0;
 }
 
@@ -142,10 +142,7 @@ int mount_mbr(_art* art, u8* src)
 
 int mbrclient_take(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
-	say("@mbrclient_take\n");
-	say("foot=%x\n",foot);
 	int ret = take_data_from_peer(art,_src_, stack,sp+2, arg,(u64)foot+idx, buf,len);
-	say("mbr.ret=%x\n",ret);
 	return ret;
 }
 int mbrclient_give(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
@@ -164,6 +161,7 @@ int mbrclient_linkup(struct halfrel* self, struct halfrel* peer)
 	void* buf = ele->buf0;
 	if(0 == buf)return 0;
 
+	//read
 	int ret;
 	struct item* xxx = peer->pchip;
 	if((_sys_ == xxx->tier)|(_art_ == xxx->tier)){
@@ -181,6 +179,7 @@ int mbrclient_linkup(struct halfrel* self, struct halfrel* peer)
 		if(0x10000 != ret)return -1;
 	}
 
+	//check self type, parse or mount
 	mount_mbr(ele, buf);
 	return 0;
 }

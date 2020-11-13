@@ -71,6 +71,9 @@
 //
 #define _mbr_ hex32('m','b','r',0)
 #define _gpt_ hex32('g','p','t',0)
+//
+#define _bbp_ hex32('b','b','p',0)
+#define _efi_ hex32('e','f','i',0)
 #define _fat_ hex32('f','a','t',0)
 #define _ntfs_ hex32('n','t','f','s')
 #define _hfs_ hex32('h','f','s',0)
