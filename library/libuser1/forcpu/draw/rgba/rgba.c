@@ -103,11 +103,22 @@ int wndmgr_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, voi
 			stack[sp+1].pfoot = rel->pdstfoot;
 			stack[sp+1].flag = rel->dstflag;
 			entity_take(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
+
+			struct style* sty = rel->psrcfoot;
+			int x0 = sty->fs.vc[0] - sty->fs.vr[0];
+			int y0 = sty->fs.vc[1] - sty->fs.vf[1];
+			int xn = sty->fs.vc[0];
+			int yn = y0-16;
+			drawopaque_rect((void*)wnd, 0x80ff00ff, x0,y0, xn,yn);
+
+			struct entity* ent = rel->pdstchip;
+			drawstring((void*)wnd, 0xffffff, x0,yn, (void*)&ent->fmt, 8);
 		}
 next:
 		rel = samesrcnextdst(rel);
 	}
 
+	//mouse
 	int x = wnd->ix0;
 	int y = wnd->iy0;
 	drawline((void*)wnd, 0xffff00, x-16, y, x+16, y);
