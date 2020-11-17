@@ -65,7 +65,8 @@ static void mmioedit_draw_pixel(
 	}
 
 	int lineperrect;
-	lineperrect = (hh*2)/16;
+	lineperrect = (hh*2-1)/16;
+	//say("hh=%x,lpr=%x\n",hh,lineperrect);
 //say("bpl=%x,lpr=%x\n", byteperline, lineperrect);
 
 	int x,y,rgb;

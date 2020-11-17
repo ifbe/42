@@ -30,6 +30,32 @@ void pixel_cleardepth(struct supply* wnd)
 		for(x=0;x<wnd->width;x++)depth[y*stride+x] = 1000.0;
 	}
 }
+
+
+
+
+int wndmgr_mouseat_title(int x,int y, int x0,int y0, int xn,int yn)
+{
+	if(x < x0)return 0;
+	if(x > xn)return 0;
+	if(y > y0)return 0;
+	if(y < yn)return 0;
+	return 1;
+}
+int wndmgr_mouseat_border(int x,int y, int x0,int y0, int xn,int yn)
+{
+	if(x < x0-2)return 0;
+	if(x > xn+2)return 0;
+	if(y < y0-2)return 0;
+	if(y > yn+2)return 0;
+
+	if(x <= x0+2)return 1;
+	if(x >= xn-2)return 1;
+	if(y <= y0+2)return 1;
+	if(y >= yn-2)return 1;
+
+	return 0;
+}
 void* wndmgr_find_maxw(struct supply* wnd)
 {
 	float max = -1.0;
@@ -90,7 +116,10 @@ void* wndmgr_find_hit(struct supply* wnd, int x, int y)
 int wndmgr_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//pixel_clearcolor(wnd);
+	int x = wnd->ix0;
+	int y = wnd->iy0;
 
+	struct relation* the = wndmgr_find_maxw(wnd);
 	struct relation* rel = wnd->orel0;
 	while(1){
 		if(0 == rel)break;
@@ -107,20 +136,36 @@ int wndmgr_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, voi
 			struct style* sty = rel->psrcfoot;
 			int x0 = sty->fs.vc[0] - sty->fs.vr[0];
 			int y0 = sty->fs.vc[1] - sty->fs.vf[1];
-			int xn = sty->fs.vc[0];
-			int yn = y0-16;
-			drawopaque_rect((void*)wnd, 0x80ff00ff, x0,y0, xn,yn);
+			int xn = sty->fs.vc[0] + sty->fs.vr[0];
+			int yn = sty->fs.vc[1] + sty->fs.vf[1];
+			int xq = sty->fs.vc[0];
+			int yq = y0-16;
 
+			//border
+			if(
+				wndmgr_mouseat_border(x,y, x0,y0, xn,yn) |
+				wndmgr_mouseat_title(x,y, x0,y0, xq,yq)
+			){
+				drawline_rect((void*)wnd,0xffff00, x0,y0,xn,yn);
+			}
+
+			//title.rect
+			if(the == rel){
+				drawopaque_rect((void*)wnd, 0xc0ff0000, x0,y0, xq,yq);
+			}
+			else{
+				drawopaque_rect((void*)wnd, 0xc07f007f, x0,y0, xq,yq);
+			}
+
+			//title.name
 			struct entity* ent = rel->pdstchip;
-			drawstring((void*)wnd, 0xffffff, x0,yn, (void*)&ent->fmt, 8);
+			drawstring((void*)wnd, 0xffffff, x0,yq, (void*)&ent->fmt, 8);
 		}
 next:
 		rel = samesrcnextdst(rel);
 	}
 
 	//mouse
-	int x = wnd->ix0;
-	int y = wnd->iy0;
 	drawline((void*)wnd, 0xffff00, x-16, y, x+16, y);
 	drawline((void*)wnd, 0xffff00, x, y-16, x, y+16);
 	return 0;
