@@ -27,7 +27,7 @@ lib:
 	$(library)/libhard0/*.o $(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o $(library)/libuser1/*.o 2>/dev/null
-	libtool -dynamic -macosx_version_min 10.15 -o 42.dylib \
+	#libtool -dynamic -macosx_version_min 11.0 -o 42.dylib \
 	$(library)/libboot0/*.o $(library)/libboot1/*.o \
 	$(library)/libhard0/*.o $(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \

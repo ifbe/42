@@ -124,6 +124,8 @@ themind/user/musk/musk.c \
 themind/user/rose/rose.c \
 themind/user/yoda/yoda.c \
 themind/mind.c \
+theworld/scene/2d/wndtest.naked.c \
+theworld/scene/2d/wndtest.titled.c \
 theworld/scene/3d/scene.c \
 theworld/scene/3d/uiux.axis.c \
 theworld/scene/3d/uiux.guide.c \
