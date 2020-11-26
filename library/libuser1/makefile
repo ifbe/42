@@ -145,11 +145,11 @@ theworld/physic/phy.fluid.c \
 theworld/physic/phy.force.c \
 theworld/neural/nn.cnn.c \
 theworld/neural/nn.rnn.c \
-theworld/cam/cam.free.c \
-theworld/cam/cam.ortho.c \
-theworld/cam/cam.vrglass.c \
-theworld/mic/mic.mono.c \
-theworld/mic/mic.stereo.c \
+theworld/capture/cam/cam.free.c \
+theworld/capture/cam/cam.ortho.c \
+theworld/capture/cam/cam.vrglass.c \
+theworld/capture/mic/mic.mono.c \
+theworld/capture/mic/mic.stereo.c \
 theworld/whole/reality.c \
 theworld/whole/virtual.c \
 theworld/world.c \
