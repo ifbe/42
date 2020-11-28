@@ -552,9 +552,6 @@ static int freecam_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 		gl41data_taking(wor,0, stack,sp+2, 0,'v', buf,len);
 		//enq++
 		gl41data_after(wnd);
-
-		//let fbos draw, before window draw
-		gl41data_taking(wor,0, stack,sp+2, 0,'?', buf,len);
 		break;
 
 	case _mt20full_:

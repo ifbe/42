@@ -138,8 +138,6 @@ theworld/circuit/circ.sch.c \
 theworld/circuit/circ.pcb.c \
 theworld/factory/fac.gcode.c \
 theworld/factory/fac.gerber.c \
-theworld/frontend/ui.html.c \
-theworld/frontend/ui.xaml.c \
 theworld/physic/phy.field.c \
 theworld/physic/phy.fluid.c \
 theworld/physic/phy.force.c \
@@ -150,6 +148,8 @@ theworld/capture/cam/cam.ortho.c \
 theworld/capture/cam/cam.vrglass.c \
 theworld/capture/mic/mic.mono.c \
 theworld/capture/mic/mic.stereo.c \
+theworld/uispace/ui.html.c \
+theworld/uispace/ui.xaml.c \
 theworld/whole/reality.c \
 theworld/whole/virtual.c \
 theworld/world.c \

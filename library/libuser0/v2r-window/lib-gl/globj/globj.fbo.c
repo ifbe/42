@@ -19,6 +19,49 @@
 
 
 
+int gl41_createfbo(struct gl41data* tar)
+{
+	int w = tar->src.tex[0].w;
+	int h = tar->src.tex[0].h;
+	int fmt = tar->src.tex[0].fmt;
+
+	//fbo
+	glGenFramebuffers(1, &tar->dst.fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, tar->dst.fbo);
+
+	//render buffer: without this, depth wrong
+	glGenRenderbuffers(1, &tar->dst.rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, tar->dst.rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, w, h);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, tar->dst.rbo);
+
+	//color buffer
+	glGenTextures(1, &tar->dst.tex[0]);
+	glBindTexture(GL_TEXTURE_2D, tar->dst.tex[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	//glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+#ifdef __ANDROID__
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tar->dst.tex[0], 0);
+#else
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, tar->dst.tex[0], 0);
+#endif
+
+	//1 drawbuffer
+	GLenum DrawBuffers[1] = {GL_COLOR_ATTACHMENT0};
+	glDrawBuffers(1, DrawBuffers);
+
+	//check
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fboc!!!\n");
+	return 0;
+}//c
+
+
+
+
 int fbocreate_d(struct supply* tar, int arg)
 {
 	//depth buffer

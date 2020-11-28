@@ -116,10 +116,7 @@ struct mysrc
 	void* gs;
 	void* fs;
 
-	//texture out
-	void* target;
-
-	//texture in
+	//texture in/out
 	struct texture tex[8];
 
 	//uniform
@@ -129,6 +126,7 @@ struct mysrc
 	struct vertex vtx[2];
 
 	//enqueue
+	u8 target_enq;
 	u8 shader_enq;
 	u8 tex_enq[8];
 	u8 uni_enq[2];
@@ -173,6 +171,7 @@ struct dxdst
 	void* layout;
 
 	//dequeue
+	u8 target_deq;
 	u8 shader_deq;
 	u8 tex_deq[7];
 	u8 arg_deq;
@@ -197,6 +196,7 @@ struct gldst
 {
 	//framebuffer
 	u32 fbo;
+	u32 rbo;
 
 	//shader
 	u32 shader;
@@ -221,6 +221,7 @@ struct gldst
 	u32 vao;
 
 	//dequeue
+	u8 target_deq;
 	u8 shader_deq;
 	u8 tex_deq[8];
 	u8 vbo_deq;
@@ -234,6 +235,23 @@ struct gl41data
 
 	//[200,3ff]
 	struct gldst dst;
+	u8 opadd[0x200 - sizeof(struct gldst)];
+};
+
+
+
+
+struct vk12dst
+{
+};
+struct vk12data
+{
+	//[000,1ff]
+	struct mysrc src;
+	u8 ipadd[0x200 - sizeof(struct mysrc)];
+
+	//[200,3ff]
+	struct vk12dst dst;
 	u8 opadd[0x200 - sizeof(struct gldst)];
 };
 
@@ -265,6 +283,7 @@ struct mtdst
 	void* ibuf;
 
 	//dequeue
+	u8 target_deq;
 	u8 shader_deq;
 	u8 tex_deq[7];
 	u8 arg_deq;

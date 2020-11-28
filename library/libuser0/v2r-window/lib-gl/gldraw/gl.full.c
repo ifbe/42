@@ -18,8 +18,7 @@
 GLuint uploadvertex(void* i, void* o);
 GLuint uploadtexture(void* i, u32 t, void* buf, int fmt, int w, int h);
 GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c);
-int gl41wnd0_take(void*,void*, void*,int, void*,int, void*,int);
-int gl41wnd0_give(void*,void*, void*,int, void*,int, void*,int);
+int gl41_createfbo(struct gl41data* tar);
 
 
 
@@ -31,6 +30,7 @@ void update_onedraw(struct gldst* dst, struct mysrc* src)
 	void* buf1;
 	void* buf2;
 	//say("%llx,%llx\n", dst, src);
+
 //say("@update shader\n");
 	//0: shader
 	if(dst->shader_deq != src->shader_enq)
@@ -90,10 +90,18 @@ void fullwindow_upload(struct gl41data** cam, struct gl41data** lit, struct gl41
 	//say("fullwindow_upload:%llx,%llx,%llx,%llx\n",cam,lit,solid,opaque);
 
 	//camera
-	//update_onedraw(&cam[0].dst, &cam[0].src);
+	for(j=1;j<16;j++){
+		if(0 == cam[j])break;
+		if(cam[j]->dst.target_deq != cam[j]->src.target_enq){
+			gl41_createfbo(cam[j]);
+			cam[j]->dst.target_deq = cam[j]->src.target_enq;
+		}
+	}
 
 	//light
-	if(lit[0])update_onedraw(&lit[0]->dst, &lit[0]->src);
+	for(j=0;j<1;j++){
+		update_onedraw(&lit[j]->dst, &lit[j]->src);
+	}
 
 	//solid
 	for(j=0;j<64;j++)
@@ -157,7 +165,7 @@ void updatearg(u32 shader, struct gl41data* data)
 		}//switch
 	}//for
 }
-void render_onedraw(struct gl41data* cam, struct gl41data* lit, struct gl41data* data)
+void render_material(struct gl41data* cam, struct gl41data* lit, struct gl41data* data)
 {
 	int j,k;
 	u32 fmt;
@@ -229,18 +237,23 @@ void render_onedraw(struct gl41data* cam, struct gl41data* lit, struct gl41data*
 		else glDrawArrays(GL_TRIANGLES, 0, vtx->vbuf_h);
 	}
 }
-void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, struct supply* wnd, struct fstyle* area)
+void render_target(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, struct supply* wnd, struct fstyle* area)
 {
 	//say("fullwindow_render:%llx,%llx,%llx,%llx,%llx,%llx\n",cam,lit,solid,opaque,wnd,area);
 	int j;
 	int x0,y0,ww,hh;
-	x0 = area->vc[0] * wnd->fbwidth;
-	y0 = area->vc[1] * wnd->fbheight;
-	ww = area->vq[0] * wnd->fbwidth;
-	hh = area->vq[1] * wnd->fbheight;
-	//say("%d,%d,%d,%d\n", x0, y0, ww, hh);
-	glViewport(x0, y0, ww, hh);
-	glScissor(x0, y0, ww, hh);
+	if(0 == area){
+		glViewport(0, 0, 1024, 1024);
+		glScissor(0, 0, 1024, 1024);
+	}
+	else{
+		x0 = area->vc[0] * wnd->fbwidth;
+		y0 = area->vc[1] * wnd->fbheight;
+		ww = area->vq[0] * wnd->fbwidth;
+		hh = area->vq[1] * wnd->fbheight;
+		glViewport(x0, y0, ww, hh);
+		glScissor(x0, y0, ww, hh);
+	}
 
 #ifndef __ANDROID__
 	glPointSize(4.0*wnd->fbwidth/wnd->width);
@@ -255,7 +268,7 @@ void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41
 	for(j=0;j<64;j++){
 		if(0 == solid[j])continue;
 		if(0 == solid[j]->src.vtx[0].vbuf)continue;
-		render_onedraw(cam[0], lit[0], solid[j]);
+		render_material(cam[0], lit[0], solid[j]);
 	}
 
 	//opaque
@@ -266,23 +279,114 @@ void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41
 	for(j=0;j<64;j++){
 		if(0 == opaque[j])continue;
 		if(0 == opaque[j]->src.vtx[0].vbuf)continue;
-		render_onedraw(cam[0], lit[0], opaque[j]);
+		render_material(cam[0], lit[0], opaque[j]);
 	}
 
 	glDisable(GL_BLEND);
 	glDepthMask(GL_TRUE);
 }
-
-
-
-
-void fullwindow_take(_sup* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41data** solid, struct gl41data** opaque, struct supply* wnd, struct fstyle* area)
 {
-	gl41wnd0_take(ogl,foot, stack,sp, arg,idx, buf,len);
+	int j;
+	for(j=8;j>0;j--){
+		if(0 == cam[j])continue;
+		glBindFramebuffer(GL_FRAMEBUFFER, cam[j]->dst.fbo);
+		render_target(&cam[j],lit, solid,opaque, wnd,0);
+	}
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	render_target(cam,lit, solid,opaque, wnd,area);
 }
-void fullwindow_give(_sup* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+
+
+
+
+int fullwindow_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
-	gl41wnd0_give(ogl,foot, stack,sp, arg,idx, buf,len);
+	//say("@gl41wnd0_read\n");
+	//say("%d,%llx@fullwindow_renderwnd\n", rsp, stack);
+	//say("gl41wnd0_read:%llx,%llx,%llx,%x,%llx,%d\n",self,peer,stack,rsp,buf,len);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, wnd->fbwidth, wnd->fbheight);
+	glScissor(0, 0, wnd->fbwidth, wnd->fbheight);
+	glClearColor(0.1, 0.1, 0.1, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//foreach camera
+	struct relation* rel = wnd->orel0;
+	while(1){
+		if(0 == rel)break;
+
+		//wnd = rel->psrcchip;		//double check
+		struct fstyle* area = rel->psrcfoot;
+		if(area){
+			//get vertex
+			stack[sp+0].pchip = rel->psrcchip;
+			stack[sp+0].pfoot = rel->psrcfoot;
+			//stack[sp+0].type = rel->srctype;
+			stack[sp+0].flag = rel->srcflag;
+			stack[sp+1].pchip = rel->pdstchip;
+			stack[sp+1].pfoot = rel->pdstfoot;
+			//stack[sp+1].type = rel->dsttype;
+			stack[sp+1].flag = rel->dstflag;
+			entity_take(rel->pdstchip,rel->pdstfoot, stack,sp+2, 0,0, 0,0);
+
+			//upload
+			fullwindow_upload(wnd->glfull_camera, wnd->glfull_light, wnd->glfull_solid, wnd->glfull_opaque);
+
+			//render
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			fullwindow_render(wnd->glfull_camera, wnd->glfull_light, wnd->glfull_solid, wnd->glfull_opaque, wnd, area);
+		}
+
+		rel = samesrcnextdst(rel);
+	}
+	return 0;
+}
+int fullwindow_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
+{
+	float x,y,x0,y0,xn,yn;
+	short* v;
+	struct relation* rel;
+	struct fstyle* sty;
+	//say("@gl41wnd0_write:%llx,%llx,%llx,%llx\n", ev->why, ev->what, ev->where, ev->when);
+
+	struct event* ev = buf;
+	if(0x4070 == ev->what){
+		rel = wnd->oreln;
+		while(1){
+			if(0 == rel)return 0;
+			sty = rel->psrcfoot;
+			x0 = sty->vc[0] * wnd->width;
+			y0 = sty->vc[1] * wnd->height;
+			xn = sty->vq[0] * wnd->width + x0;
+			yn = sty->vq[1] * wnd->height + y0;
+
+			v = (short*)ev;
+			x = v[0];
+			y = (wnd->height-1) - v[1];
+			if( (x>x0) && (x<xn) && (y>y0) && (y<yn) )goto found;
+			rel = samesrcprevdst(rel);
+		}
+		return 0;
+	}
+	else{
+		rel = wnd->glevto;
+		if(0 == rel)rel = wnd->oreln;
+		if(0 == rel)return 0;
+	}
+
+found:
+	wnd->glevto = rel;
+	stack[sp+0].pchip = rel->psrcchip;
+	stack[sp+0].pfoot = rel->psrcfoot;
+	stack[sp+0].flag = rel->srcflag;
+
+	stack[sp+1].pchip = rel->pdstchip;
+	stack[sp+1].pfoot = rel->pdstfoot;
+	stack[sp+1].flag = rel->dstflag;
+	entity_give(rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,0, ev,0);
+	return 0;
 }
 void fullwindow_delete(struct supply* ogl)
 {

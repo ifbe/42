@@ -1,14 +1,14 @@
 #include "libuser.h"
-#define _fbo_ hex32('f','b','o',0)
 void matproj_transpose(void* m, struct fstyle* sty);
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct gl41data* data, int cnt);
+void gl41data_addcam(struct entity* wnd, struct gl41data* data);
 
 
-#define CAMBUF buf0
-#define CTXBUF buf1
+#define CTXBUF buf0
 struct mirrbuf{
 	mat4 mvp;
-	u8 data[0];
+	struct gl41data geom;
+	struct gl41data dest;
 };
 
 
@@ -138,11 +138,11 @@ static void mirror_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 	frus->vt[2] = z;
 	frus->vt[3] = t;
 }
-static void mirror_forfbo_update(
+static void mirror_gl41fbo_update(
 	struct entity* act, struct style* part,
 	struct entity* wrd, struct style* geom,
 	struct entity* wrl, struct style* camg,
-	struct supply* fbo, struct style* area)
+	struct supply* wnd, struct style* area)
 {
 	//frus from shape and eye
 	struct fstyle* shap = &geom->fshape;
@@ -150,40 +150,54 @@ static void mirror_forfbo_update(
 	mirror_frustum(frus, shap, camg->frus.vc);
 
 	//mvp from frus
-	struct mirrbuf* mirr = act->CAMBUF;
+	struct mirrbuf* mirr = act->CTXBUF;
 	if(0 == mirr)return;
 	matproj_transpose(mirr->mvp, frus);
 //printstyle(shap);
 //printstyle(frus);
 	//
-	struct gl41data* data = (void*)(mirr->data);
+	struct gl41data* data = &mirr->dest;
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "cammvp";
 	data->dst.arg[0].data = mirr->mvp;
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
 	data->dst.arg[1].data = frus->vc;
-	fbo->glfull_camera[0] = data;
+	gl41data_addcam((void*)wnd, data);
 }
-void mirror_forfbo_prepare(struct mysrc* src)
+void mirror_gl41fbo_prepare(struct mysrc* src)
 {
+	src->tex[0].w = 1024;
+	src->tex[0].h = 1024;
+	src->tex[0].fmt = 0;
+	src->tex[0].glfd = 0;
+	src->target_enq = 42;
 }
 
 
 
 
-static void mirror_draw_gl41(
+static void mirror_gl41geom_update(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
 	struct mirrbuf* mirr = act->CTXBUF;
 	if(0 == mirr)return;
-	struct mysrc* src = (void*)(mirr->data);
-	if(0 == src)return;
-	float (*vbuf)[6] = src->vtx[0].vbuf;
-	if(0 == vbuf)return;
+	struct gl41data* dest = &mirr->dest;
+	if(0 == dest)return;
+	struct gl41data* body = &mirr->geom;
+	if(0 == body)return;
 
+//texture
+	body->dst.texname[0] = "tex0";
+	body->src.tex[0].glfd = dest->dst.tex[0];
+	body->src.tex[0].fmt = '!';
+	body->src.tex_enq[0] += 1;
+
+//vertex
+	float (*vbuf)[6] = body->src.vtx[0].vbuf;
+	if(0 == vbuf)return;
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
@@ -232,23 +246,10 @@ static void mirror_draw_gl41(
 	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
 
-	src->vbuf_enq += 1;
-	gl41data_insert(wnd, 's', src, 1);
+	body->src.vbuf_enq += 1;
+	gl41data_insert(wnd, 's', body, 1);
 }
-void mirror_forwnd_update(struct entity* act, struct style* slot, struct supply* fbo, struct style* area)
-{
-	struct mirrbuf* mirr = act->CTXBUF;
-	if(0 == mirr)return;
-
-	struct gl41data* data = (void*)(mirr->data);
-	if(0 == data)return;
-
-	data->dst.texname[0] = "tex0";
-	data->src.tex[0].glfd = fbo->tex0;
-	data->src.tex[0].fmt = '!';
-	data->src.tex_enq[0] += 1;
-}
-void mirror_forwnd_prepare(struct mysrc* src)
+void mirror_gl41geom_prepare(struct mysrc* src)
 {
 	//shader
 	src->vs = mirror_glsl_v;
@@ -277,19 +278,19 @@ void mirror_forwnd_prepare(struct mysrc* src)
 static void mirror_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
-
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* dup;struct style* camg;
 	struct entity* wnd;struct style* area;
-	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	if('v' == key){
-		mirror_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
-	if('?' == key){
+
+	//create or update fbo
+	mirror_gl41fbo_update(ent,foot, wor,geom, dup,camg, (void*)wnd,area);
+
+	//geom
+	mirror_gl41geom_update(ent,foot, wor,geom, wnd,area);
+/*	if('?' == key){
 		//search for myown fbo
 		int ret;
 		struct halfrel* rel[2];
@@ -306,7 +307,7 @@ static void mirror_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 
 		//fbo.texture -> my.data -> wnd.data
 		mirror_forwnd_update(ent,slot, fbo,rect);
-	}
+	}*/
 }
 static void mirror_draw_pixel(
 	struct entity* act, struct style* pin,
@@ -365,19 +366,13 @@ static void mirror_delete(struct entity* act)
 }
 static void mirror_create(struct entity* act, void* str)
 {
-	struct mirrbuf* mirr;
-	struct mysrc* src;
 	if(0 == act)return;
 
-	mirr = act->CTXBUF = memorycreate(0x1000, 0);
+	struct mirrbuf* mirr = act->CTXBUF = memorycreate(0x10000, 0);
 	if(0 == mirr)return;
-	src = (void*)(mirr->data);
-	mirror_forwnd_prepare(src);
 
-	mirr = act->CAMBUF = memorycreate(0x1000, 0);
-	if(0 == mirr)return;
-	src = (void*)(mirr->data);
-	mirror_forfbo_prepare(src);
+	mirror_gl41fbo_prepare(&mirr->dest.src);
+	mirror_gl41geom_prepare(&mirr->geom.src);
 }
 
 

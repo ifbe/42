@@ -323,47 +323,6 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 		return win;
 	}
 
-//------------------framebuffer-------------------
-	case _gl41fbo6_:
-	{
-		win = allocsupply();
-		if(0 == win)return 0;
-
-		win->type = _fbo_;
-		win->fmt = _gl41fbo6_;
-		windowcreate(win, arg, argc, argv);
-		return win;
-	}
-	case _gl41fboc_:
-	{
-		win = allocsupply();
-		if(0 == win)return 0;
-
-		win->type = _fbo_;
-		win->fmt = _gl41fboc_;
-		windowcreate(win, arg, argc, argv);
-		return win;
-	}
-	case _gl41fbod_:
-	{
-		win = allocsupply();
-		if(0 == win)return 0;
-
-		win->type = _fbo_;
-		win->fmt = _gl41fbod_;
-		windowcreate(win, arg, argc, argv);
-		return win;
-	}
-	case _gl41fbog_:
-	{
-		win = allocsupply();
-		if(0 == win)return 0;
-
-		win->type = _fbo_;
-		win->fmt = _gl41fbog_;
-		windowcreate(win, arg, argc, argv);
-		return win;
-	}
 	}//switch
 	return 0;
 }

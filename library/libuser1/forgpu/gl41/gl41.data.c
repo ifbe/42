@@ -19,6 +19,31 @@ void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, 
 
 
 
+void gl41data_01cam(struct entity* wnd)
+{
+	int x,y;
+	void* trick = wnd->glfull_camera;
+	struct gl41data* data = trick + 0x400;
+	float (*m)[4] = trick + 0x800;
+	float* v = trick + 0xc00;
+	for(y=0;y<4;y++){
+		for(x=0;x<4;x++)m[y][x] = 0.0;
+		v[y] = 0.0;
+	}
+	m[0][0] = 1.0;
+	m[1][1] = 1.0;
+	m[2][2] =-0.5;
+	m[2][3] = 0.5;
+	m[3][3] = 1.0;
+
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "cammvp";
+	data->dst.arg[0].data = m;
+	data->dst.arg[1].fmt = 'v';
+	data->dst.arg[1].name = "camxyz";
+	data->dst.arg[1].data = v;
+	wnd->glfull_camera[0] = data;
+}
 void gl41data_whcam(struct entity* wnd, struct fstyle* area)
 {
 	int x,y;
@@ -45,30 +70,15 @@ void gl41data_whcam(struct entity* wnd, struct fstyle* area)
 	data->dst.arg[1].data = v;
 	wnd->glfull_camera[0] = data;
 }
-void gl41data_01cam(struct entity* wnd)
+void gl41data_addcam(struct entity* wnd, struct gl41data* data)
 {
-	int x,y;
-	void* trick = wnd->glfull_camera;
-	struct gl41data* data = trick + 0x400;
-	float (*m)[4] = trick + 0x800;
-	float* v = trick + 0xc00;
-	for(y=0;y<4;y++){
-		for(x=0;x<4;x++)m[y][x] = 0.0;
-		v[y] = 0.0;
+	int j;
+	for(j=1;j<8;j++){
+		if(0 == wnd->glfull_camera[j]){
+			wnd->glfull_camera[j] = data;
+			break;
+		}
 	}
-	m[0][0] = 1.0;
-	m[1][1] = 1.0;
-	m[2][2] =-0.5;
-	m[2][3] = 0.5;
-	m[3][3] = 1.0;
-
-	data->dst.arg[0].fmt = 'm';
-	data->dst.arg[0].name = "cammvp";
-	data->dst.arg[0].data = m;
-	data->dst.arg[1].fmt = 'v';
-	data->dst.arg[1].name = "camxyz";
-	data->dst.arg[1].data = v;
-	wnd->glfull_camera[0] = data;
 }
 
 

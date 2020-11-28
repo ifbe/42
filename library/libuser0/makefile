@@ -21,7 +21,6 @@ opengl:
 	$(CC) $(CF) v2r-window/lib-gl/gltar/gl41.target.cube.c
 	$(CC) $(CF) v2r-window/lib-gl/gltar/gl41.target.depth.c
 	$(CC) $(CF) v2r-window/lib-gl/gltar/gl41.target.gbuffer.c
-	$(CC) $(CF) v2r-window/lib-gl/gltar/gl41.target.window.c
 	$(CC) $(CF) v2r-window/lib-gl/globj/globj.fbo.c
 	$(CC) $(CF) v2r-window/lib-gl/globj/globj.shader.c
 	$(CC) $(CF) v2r-window/lib-gl/globj/globj.texture.c
