@@ -19,7 +19,37 @@
 
 
 
-int gl41_createfbo(struct gl41data* tar)
+int gl41fbod_create(struct gl41data* tar)
+{
+	int w = tar->src.tex[0].w;
+	int h = tar->src.tex[0].h;
+	int fmt = tar->src.tex[0].fmt;
+
+	//fbo
+	glGenFramebuffers(1, &tar->dst.fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, tar->dst.fbo);
+
+	//depth buffer
+	glGenTextures(1, &tar->dst.tex[0]);
+	glBindTexture(GL_TEXTURE_2D, tar->dst.tex[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, w, h, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+#ifdef __ANDROID__
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tar->dst.tex[0], 0);
+#else
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, tar->dst.tex[0], 0);
+	glDrawBuffer(GL_NONE);
+#endif
+
+	// Always check that our framebuffer is ok
+	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fbod!!!\n");
+	return 0;
+}//d
+int gl41fboc_create(struct gl41data* tar)
 {
 	int w = tar->src.tex[0].w;
 	int h = tar->src.tex[0].h;
@@ -58,6 +88,13 @@ int gl41_createfbo(struct gl41data* tar)
 	if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)say("err@fboc!!!\n");
 	return 0;
 }//c
+int gl41fbo_create(struct gl41data* tar)
+{
+	switch(tar->src.type){
+	case 'c':gl41fboc_create(tar);break;
+	case 'd':gl41fbod_create(tar);break;
+	}
+}
 
 
 

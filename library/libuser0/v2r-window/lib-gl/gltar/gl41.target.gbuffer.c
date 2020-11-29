@@ -73,23 +73,3 @@ int gl41fbog_give(_sup* this,void* foot, _syn* stack,int sp, void* arg,int idx, 
 	give_data_into_peer(this,_cam_, stack,sp, arg,idx, buf,len);
 	return 0;
 }
-int gl41fbog_discon(struct halfrel* self, struct halfrel* peer)
-{
-	return 0;
-}
-int gl41fbog_linkup(struct halfrel* self, struct halfrel* peer)
-{
-	return 0;
-}
-int gl41fbog_delete(struct entity* act)
-{
-	return 0;
-}
-int gl41fbog_create(struct entity* act, void* addr)
-{
-	act->glfull_camera = memorycreate(0x10000, 0);
-	act->glfull_light  = memorycreate(0x10000, 0);
-	act->glfull_solid  = memorycreate(0x10000, 0);
-	act->glfull_opaque = memorycreate(0x10000, 0);
-	return 0;
-}

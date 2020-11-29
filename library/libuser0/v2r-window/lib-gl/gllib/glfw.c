@@ -20,23 +20,6 @@ void fullwindow_delete(void*);
 void fullwindow_take(void*,void*, void*,int, void*,int, void*,int);
 void fullwindow_give(void*,void*, void*,int, void*,int, void*,int);
 //
-int gl41fbo6_create(void*, void*);
-int gl41fbo6_delete(void*, void*);
-int gl41fbo6_take(void*,void*, void*,int, void*,int, void*,int);
-int gl41fbo6_give(void*,void*, void*,int, void*,int, void*,int);
-int gl41fboc_create(void*, void*);
-int gl41fboc_delete(void*, void*);
-int gl41fboc_take(void*,void*, void*,int, void*,int, void*,int);
-int gl41fboc_give(void*,void*, void*,int, void*,int, void*,int);
-int gl41fbod_create(void*, void*);
-int gl41fbod_delete(void*, void*);
-int gl41fbod_take(void*,void*, void*,int, void*,int, void*,int);
-int gl41fbod_give(void*,void*, void*,int, void*,int, void*,int);
-int gl41fbog_create(void*, void*);
-int gl41fbog_delete(void*, void*);
-int gl41fbog_take(void*,void*, void*,int, void*,int, void*,int);
-int gl41fbog_give(void*,void*, void*,int, void*,int, void*,int);
-//
 static u8 uppercase[] = {
 	' ', '!','\"', '#', '$', '%', '&','\"',		//20,27
 	'(', ')', '*', '+', '<', '_', '>', '?',		//28,2f
@@ -60,12 +43,6 @@ int window_take(_sup* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, voi
 	u64 t0,t1,t2,t3;
 	GLFWwindow* fw;
 	//say("@windowread\n");
-
-	switch(ogl->fmt){
-	case _gl41fboc_:return gl41fboc_take(ogl,foot, stack,sp, arg,idx, buf,len);
-	case _gl41fbod_:return gl41fbod_take(ogl,foot, stack,sp, arg,idx, buf,len);
-	case _gl41fbog_:return gl41fbog_take(ogl,foot, stack,sp, arg,idx, buf,len);
-	}//switch
 t0 = ogl->gltime;
 
 	//0: context current
@@ -110,9 +87,6 @@ ogl->gltime = t3;
 void window_give(_sup* ogl,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
 	switch(ogl->fmt){
-		case _gl41fboc_:gl41fboc_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
-		case _gl41fbod_:gl41fbod_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
-		case _gl41fbog_:gl41fbog_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41none_:nonewindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41easy_:easywindow_give(ogl,foot, stack,sp, arg,idx, buf,len);break;
 		case _gl41full_:
@@ -390,10 +364,6 @@ void windowmodify(struct supply* ogl)
 void windowdelete(struct supply* ogl)
 {
 	switch(ogl->fmt){
-		case _gl41fbo6_:gl41fbo6_delete(ogl, 0);break;
-		case _gl41fboc_:gl41fboc_delete(ogl, 0);break;
-		case _gl41fbod_:gl41fbod_delete(ogl, 0);break;
-		case _gl41fbog_:gl41fbog_delete(ogl, 0);break;
 		case _gl41none_:nonewindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
 		case _gl41easy_:easywindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
 		default:        fullwindow_delete(ogl);glfwDestroyWindow(ogl->glwnd);break;
@@ -405,22 +375,6 @@ void windowcreate(struct supply* ogl, void* arg)
 	struct supply* share = 0;
 
 	switch(ogl->fmt){
-	case _gl41fbo6_:{
-		gl41fbo6_create(ogl, arg);
-		break;
-	}
-	case _gl41fboc_:{
-		gl41fboc_create(ogl, arg);
-		break;
-	}
-	case _gl41fbod_:{
-		gl41fbod_create(ogl, arg);
-		break;
-	}
-	case _gl41fbog_:{
-		gl41fbog_create(ogl, arg);
-		break;
-	}
 	case _gl41coop_:{
 		rel = ogl->orel0;
 		if(rel)share = (void*)(rel->dstchip);

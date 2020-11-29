@@ -1,18 +1,18 @@
 #include "libuser.h"
-#define _fbo_ hex32('f','b','o',0)
 void matorth_transpose(mat4 m, struct fstyle* s);
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+void gl41data_addcam(struct entity* wnd, struct gl41data* data);
+void gl41data_insert(struct entity* ctx, int type, struct gl41data* src, int cnt);
 
 
-#define FBOBUF buf0
-#define LITBUF buf1
-#define CTXBUF buf2
-#define OWNBUF buf3
+#define OWNBUF buf0
 struct sunbuf{
 	mat4 mvp;
 	vec4 rgb;
 	u32 u_rgb;
 	u32 glfd;
+	struct gl41data cam;
+	struct gl41data lit;
+	struct gl41data ctx;
 };
 
 
@@ -97,7 +97,7 @@ static void dirlight_frustum(struct fstyle* d, struct fstyle* s)
 	d->vn[2] = d->vf[2];
 	d->vn[3] = 1.0;
 }
-static void dirlight_forwnd_lightupdate(
+static void dirlight_lit_update(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -108,12 +108,11 @@ static void dirlight_forwnd_lightupdate(
 	dirlight_frustum(&geom->frus, &geom->fs);
 	matorth_transpose(sun->mvp, &geom->frus);
 
-	struct gl41data* data = act->LITBUF;
+	struct gl41data* data = &sun->lit;
 	if(0 == data)return;
 
-
 	//common
-	data->src.tex[0].glfd = sun->glfd;
+	data->src.tex[0].glfd = sun->cam.dst.tex[0];
 	data->src.tex[0].fmt = '!';
 	data->src.tex_enq[0] += 1;
 
@@ -133,10 +132,9 @@ static void dirlight_forwnd_lightupdate(
 
 	data->dst.texname[0] = "shadowmap";
 
-
-	wnd->glfull_light[0] = act->LITBUF;
+	wnd->glfull_light[0] = data;
 }
-static void dirlight_forwnd_lightprep(struct gl41data* data)
+static void dirlight_lit_prep(struct gl41data* data)
 {
 	data->dst.routine_name = "passtype";
 	data->dst.routine_detail = "dirlight";
@@ -145,7 +143,7 @@ static void dirlight_forwnd_lightprep(struct gl41data* data)
 
 
 
-static void dirlight_forwnd_meshupdate(
+static void dirlight_mesh_update(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -180,10 +178,11 @@ static void dirlight_forwnd_meshupdate(
 	}
 
 	//depth fbo (for debug)
-	struct mysrc* src = act->CTXBUF;
-	if(0 == src)return;
-
-	float (*vbuf)[6] = (void*)(src->vtx[0].vbuf);
+	struct gl41data* dest = &sun->cam;
+	if(0 == dest)return;
+	struct gl41data* body = &sun->ctx;
+	if(0 == body)return;
+	float (*vbuf)[6] = (void*)(body->src.vtx[0].vbuf);
 	if(0 == vbuf)return;
 
 	vbuf[0][0] = vc[0] - vr[0] - vt[0];
@@ -228,10 +227,16 @@ static void dirlight_forwnd_meshupdate(
 	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
 
-	src->vbuf_enq += 1;
-	gl41data_insert(ctx, 's', act->CTXBUF, 1);
+//texture
+	body->dst.texname[0] = "tex0";
+	body->src.tex[0].glfd = dest->dst.tex[0];
+	body->src.tex[0].fmt = '!';
+	body->src.tex_enq[0] += 1;
+
+	body->src.vbuf_enq += 1;
+	gl41data_insert(ctx, 's', body, 1);
 }
-static void dirlight_forwnd_meshprep(struct mysrc* src)
+static void dirlight_mesh_prep(struct mysrc* src)
 {
 	//shader
 	src->vs = dirlit_glsl_v;
@@ -249,24 +254,18 @@ static void dirlight_forwnd_meshprep(struct mysrc* src)
 	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
 	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
 }
-static void dirlight_forwnd_textureupdate(struct entity* act, struct style* slot, struct supply* fbo, struct style* area)
+
+
+
+
+static void dirlight_cam_update(
+	struct entity* act, struct style* slot,
+	struct entity* wrd, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
-
-	sun->glfd = fbo->tex0;
-}
-
-
-
-
-static void dirlight_forfbo_cameraupdate(
-	struct entity* act, struct style* slot,
-	struct entity* wrd, struct style* geom,
-	struct supply* fbo, struct style* area)
-{
-	struct sunbuf* sun = act->OWNBUF;
-	struct gl41data* data = act->FBOBUF;
+	struct gl41data* data = &sun->cam;
 	if(0 == data)return;
 
 	data->dst.arg[0].fmt = 'm';
@@ -275,10 +274,17 @@ static void dirlight_forfbo_cameraupdate(
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
 	data->dst.arg[1].data = &geom->frus.vc;
-	fbo->glfull_camera[0] = act->FBOBUF;
+	gl41data_addcam(wnd, data);
 }
-static void dirlight_forfbo_cameraprep(struct mysrc* src)
+static void dirlight_cam_prep(struct mysrc* src)
 {
+	src->tex[0].w = 1024;
+	src->tex[0].h = 1024;
+	src->tex[0].fmt = 0;
+	src->tex[0].glfd = 0;
+
+	src->type = 'd';
+	src->target_enq = 42;
 }
 
 
@@ -288,36 +294,16 @@ static void dirlight_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* 
 {
 	if(0 == stack)return;
 
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* dup;struct style* camg;
 	struct entity* wnd;struct style* area;
-	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	if('v' == key){
-		dirlight_forwnd_lightupdate(ent,slot, wor,geom, wnd,area);
-		dirlight_forwnd_meshupdate(ent,slot, wor,geom, wnd,area);
-	}
-	if('?' == key){
-		//search for myown fbo
-		int ret;
-		struct halfrel* rel[2];
-		ret = relationsearch(ent, _fbo_, &rel[0], &rel[1]);
-		if(ret <= 0)return;
 
-		//update matrix for fbo
-		struct supply* fbo = rel[1]->pchip;
-		struct style* rect = rel[1]->pfoot;
-		dirlight_forfbo_cameraupdate(ent,slot, wor,geom, fbo,rect);
-
-		//wnd.data -> fbo.texture
-		give_data_into_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
-
-		//fbo.texture -> my.data -> wnd.data
-		dirlight_forwnd_textureupdate(ent,slot, fbo,rect);
-	}
+	dirlight_cam_update(ent,foot, wor,geom, wnd,area);
+	dirlight_lit_update(ent,foot, wor,geom, wnd,area);
+	dirlight_mesh_update(ent,foot, wor,geom, wnd,area);
 }
 static void dirlight_draw_pixel(
 	struct entity* act, struct style* pin,
@@ -395,20 +381,17 @@ static void dirlight_create(struct entity* act, void* str)
 	struct sunbuf* sun;
 	if(0 == act)return;
 
-	sun = act->OWNBUF = memorycreate(0x1000, 0);
+	sun = act->OWNBUF = memorycreate(0x10000, 0);
 	sun->u_rgb = 0xffff00;
 	sun->rgb[0] = ((sun->u_rgb >>16) & 0xff) / 255.0;
 	sun->rgb[1] = ((sun->u_rgb >> 8) & 0xff) / 255.0;
 	sun->rgb[2] = ((sun->u_rgb >> 0) & 0xff) / 255.0;
 
-	act->FBOBUF = memorycreate(0x1000, 0);
-	dirlight_forfbo_cameraprep(act->FBOBUF);
+	dirlight_cam_prep(&sun->cam.src);
 
-	act->LITBUF = memorycreate(0x1000, 0);
-	dirlight_forwnd_lightprep(act->LITBUF);
+	dirlight_lit_prep(&sun->lit);
 
-	act->CTXBUF = memorycreate(0x1000, 0);
-	dirlight_forwnd_meshprep(act->CTXBUF);
+	dirlight_mesh_prep(&sun->ctx.src);
 }
 
 

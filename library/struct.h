@@ -111,6 +111,8 @@ struct vertex{
 };
 struct mysrc
 {
+	u32 type;
+
 	//shader
 	void* vs;
 	void* gs;

@@ -55,21 +55,3 @@ int gl41fbod_give(_sup* this,void* foot, _syn* stack,int sp, void* arg,int idx, 
 	fullwindow_render(this->glfull_camera, this->glfull_light, wnd->glfull_solid, wnd->glfull_opaque, this, area);
 	return 0;
 }
-int gl41fbod_discon(struct halfrel* self, struct halfrel* peer)
-{
-	return 0;
-}
-int gl41fbod_linkup(struct halfrel* self, struct halfrel* peer)
-{
-	return 0;
-}
-int gl41fbod_delete(struct entity* act)
-{
-	return 0;
-}
-int gl41fbod_create(struct entity* act, void* addr)
-{
-	act->glfull_camera = memorycreate(0x10000, 0);
-	act->glfull_light  = memorycreate(0x10000, 0);
-	return 0;
-}

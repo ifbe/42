@@ -18,7 +18,7 @@
 GLuint uploadvertex(void* i, void* o);
 GLuint uploadtexture(void* i, u32 t, void* buf, int fmt, int w, int h);
 GLuint shaderprogram(void* v, void* f, void* g, void* tc, void* te, void* c);
-int gl41_createfbo(struct gl41data* tar);
+int gl41fbo_create(struct gl41data* tar);
 
 
 
@@ -93,7 +93,7 @@ void fullwindow_upload(struct gl41data** cam, struct gl41data** lit, struct gl41
 	for(j=1;j<16;j++){
 		if(0 == cam[j])break;
 		if(cam[j]->dst.target_deq != cam[j]->src.target_enq){
-			gl41_createfbo(cam[j]);
+			gl41fbo_create(cam[j]);
 			cam[j]->dst.target_deq = cam[j]->src.target_enq;
 		}
 	}

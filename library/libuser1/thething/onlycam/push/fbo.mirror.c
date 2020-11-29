@@ -31,7 +31,7 @@ GLSL_VERSION
 "in mediump vec2 uvw;\n"
 "out mediump vec4 FragColor;\n"
 "void main(){\n"
-	"mediump vec3 c = 0.8*texture(tex0, uvw).rgb + vec3(0.2, 0.2, 0.2);\n"
+	"mediump vec3 c = 0.9*texture(tex0, uvw).rgb + vec3(0.1);\n"
 	"FragColor = vec4(c, 1.0);\n"
 "}\n";
 
@@ -171,6 +171,8 @@ void mirror_gl41fbo_prepare(struct mysrc* src)
 	src->tex[0].h = 1024;
 	src->tex[0].fmt = 0;
 	src->tex[0].glfd = 0;
+
+	src->type = 'c';
 	src->target_enq = 42;
 }
 
