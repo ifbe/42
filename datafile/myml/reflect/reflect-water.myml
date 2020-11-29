@@ -20,9 +20,6 @@ fmt:virtual
 
 
 <supply>
-thefbo{
-fmt:gl41fboc
-}
 opengl{
 fmt:wnd
 title:"42"
@@ -66,10 +63,6 @@ T: 0.0, 0.0, 0.0, 1.0
 N: 0.0, 0.0, 0.0, 1.0
 F: 0.0, 0.0, 0.0, 1000000000000.0
 }
-mirrrect{
-c:0.0, 0.0
-q:1.0, 1.0
-}
 
 freemodl{
 }
@@ -93,9 +86,6 @@ q:1.0, 1.0
 
 
 <relation>
-#water depends on thefbo
-(water, 0, fbo) -> (thefbo, mirrrect, mvp)
-
 #virtual depends on inner objects
 (virtual, skygeom, 0) -> (texball, skyhaha, 0)
 (virtual, treegeom, 0) -> (tree, treehaha, 0)

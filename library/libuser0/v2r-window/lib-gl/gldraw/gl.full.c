@@ -255,14 +255,15 @@ void render_target(struct gl41data** cam, struct gl41data** lit, struct gl41data
 		glScissor(x0, y0, ww, hh);
 	}
 
-#ifndef __ANDROID__
-	glPointSize(4.0*wnd->fbwidth/wnd->width);
-#endif
-	glLineWidth(4.0*wnd->fbwidth/wnd->width);
 	glClearColor(0.1, 0.1, 0.1, 1.0);
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_DEPTH_TEST);
+
+#ifndef __ANDROID__
+	glPointSize(4.0*wnd->fbwidth/wnd->width);
+#endif
+	glLineWidth(4.0*wnd->fbwidth/wnd->width);
 
 	//solid
 	for(j=0;j<64;j++){

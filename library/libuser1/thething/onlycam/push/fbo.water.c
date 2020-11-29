@@ -1,15 +1,16 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
 void matproj_transpose(void* m, struct fstyle* sty);
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+void gl41data_insert(struct entity* ctx, int type, struct gl41data* src, int cnt);
+void gl41data_addcam(struct entity* wnd, struct gl41data* data);
 
 
-#define CAMBUF buf0
-#define CTXBUF buf1
+#define CTXBUF buf0
 struct waterbuf{
 	mat4 mvp;
 	float time;
-	u8 data[0];
+	struct gl41data geom;
+	struct gl41data dest;
 };
 
 
@@ -116,11 +117,11 @@ void water_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 	frus->vt[2] = z;
 	frus->vt[3] = t;
 }
-static void water_forfbo_update(
+static void water_gl41fbo_update(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* wrl, struct style* camg,
-	struct supply* fbo, struct style* area)
+	struct supply* wnd, struct style* area)
 {
 	//frus from shape and eye
 	struct fstyle* shap = &geom->fshape;
@@ -128,46 +129,60 @@ static void water_forfbo_update(
 	water_frustum(frus, shap, camg->frus.vc);
 
 	//mvp from frus
-	struct waterbuf* water = act->CAMBUF;
+	struct waterbuf* water = act->CTXBUF;
 	if(0 == water)return;
 	matproj_transpose(water->mvp, frus);
 
 	//give arg(matrix and position) to fbo
-	struct gl41data* data = (void*)(water->data);
+	struct gl41data* data = &water->dest;
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "cammvp";
 	data->dst.arg[0].data = water->mvp;
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
 	data->dst.arg[1].data = frus->vc;
-	fbo->glfull_camera[0] = data;
+	gl41data_addcam((void*)wnd, data);
 }
-void water_forfbo_prepare(struct gl41data* data)
+void water_gl41fbo_prepare(struct mysrc* src)
 {
+	src->tex[0].w = 1024;
+	src->tex[0].h = 1024;
+	src->tex[0].fmt = 0;
+	src->tex[0].glfd = 0;
+	src->target_enq = 42;
 }
 
 
 
 
-static void water_draw_gl41(
+static void water_gl41geom_update(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
+	struct waterbuf* water = act->CTXBUF;
+	if(0 == water)return;
+
+	water->time = (timeread()%10000000)/10000000.0;
+
+	struct gl41data* dest = &water->dest;
+	if(0 == dest)return;
+	struct gl41data* body = &water->geom;
+	if(0 == body)return;
+
+//texture
+	body->dst.texname[0] = "tex0";
+	body->src.tex[0].glfd = dest->dst.tex[0];
+	body->src.tex[0].fmt = '!';
+	body->src.tex_enq[0] += 1;
+
+	float (*vbuf)[6] = body->src.vtx[0].vbuf;
+	if(0 == vbuf)return;
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
 	gl41line_rect(ctx, 0xffffff, vc, vr, vf);
-
-	struct waterbuf* water = act->CTXBUF;
-	if(0 == water)return;
-	struct mysrc* src = (void*)(water->data);
-	if(0 == src)return;
-	float (*vbuf)[6] = src->vtx[0].vbuf;
-	if(0 == vbuf)return;
-
-	water->time = (timeread()%10000000)/10000000.0;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -211,9 +226,9 @@ static void water_draw_gl41(
 	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
 
-	src->vbuf_enq += 1;
-	gl41data_insert(ctx, 'o', src, 1);
-}
+	body->src.vbuf_enq += 1;
+	gl41data_insert(ctx, 'o', body, 1);
+}/*
 void water_forwnd_update(struct entity* act, struct style* slot, struct supply* fbo, struct style* area)
 {
 	struct waterbuf* water = act->CTXBUF;
@@ -226,8 +241,8 @@ void water_forwnd_update(struct entity* act, struct style* slot, struct supply* 
 	data->src.tex[0].glfd = fbo->tex0;
 	data->src.tex[0].fmt = '!';
 	data->src.tex_enq[0] += 1;
-}
-void water_forwnd_prepare(struct gl41data* data, struct waterbuf* water, char* str)
+}*/
+void water_gl41geom_prepare(struct gl41data* data, struct waterbuf* water, char* str)
 {
 	struct mysrc* src = &data->src;
 	struct gldst* dst = &data->dst;
@@ -271,18 +286,20 @@ static void water_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg
 {
 	if(0 == stack)return;
 
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* dup;struct style* camg;
 	struct entity* wnd;struct style* area;
-	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	if('v' == key){
-		water_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
-	if('?' == key){
+
+	//create or update fbo
+	water_gl41fbo_update(ent,foot, wor,geom, dup,camg, (void*)wnd,area);
+
+	//geom
+	water_gl41geom_update(ent,foot, wor,geom, wnd,area);
+
+/*	if('?' == key){
 		//search for myown fbo
 		int ret;
 		struct halfrel* rel[2];
@@ -299,7 +316,7 @@ static void water_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg
 
 		//fbo.texture -> my.data -> wnd.data
 		water_forwnd_update(ent,slot, fbo,rect);
-	}
+	}*/
 }
 static void water_draw_pixel(
 	struct entity* act, struct style* pin,
@@ -374,20 +391,15 @@ static void water_delete(struct entity* act)
 }
 static void water_create(struct entity* act, char* str)
 {
-	struct waterbuf* water;
-	struct gl41data* data;
 	if(0 == act)return;
 
-	water = act->CTXBUF = memorycreate(0x1000, 0);
+	struct waterbuf* water = act->CTXBUF = memorycreate(0x10000, 0);
 	if(0 == water)return;
-	data = (void*)(water->data);
-	if(0 == str)str = "datafile/jpg/dudvmap.jpg";
-	water_forwnd_prepare(data, water, str);
 
-	water = act->CAMBUF = memorycreate(0x1000, 0);
-	if(0 == water)return;
-	data = (void*)(water->data);
-	water_forfbo_prepare(data);
+	if(0 == str)str = "datafile/jpg/dudvmap.jpg";
+	water_gl41geom_prepare(&water->geom, water, str);
+
+	water_gl41fbo_prepare(&water->dest.src);
 }
 
 

@@ -182,6 +182,13 @@ static void mirror_gl41geom_update(
 	struct entity* win, struct style* geom,
 	struct entity* wnd, struct style* area)
 {
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
+	//say("%f,%f,%f	%f,%f,%f\n",vc[0],vc[1],vc[2],vr[0],vf[1],vu[2]);
+	gl41line_rect(wnd, 0x404040, vc, vr, vf);
+
 	struct mirrbuf* mirr = act->CTXBUF;
 	if(0 == mirr)return;
 	struct gl41data* dest = &mirr->dest;
@@ -189,20 +196,9 @@ static void mirror_gl41geom_update(
 	struct gl41data* body = &mirr->geom;
 	if(0 == body)return;
 
-//texture
-	body->dst.texname[0] = "tex0";
-	body->src.tex[0].glfd = dest->dst.tex[0];
-	body->src.tex[0].fmt = '!';
-	body->src.tex_enq[0] += 1;
-
 //vertex
 	float (*vbuf)[6] = body->src.vtx[0].vbuf;
 	if(0 == vbuf)return;
-	float* vc = geom->fs.vc;
-	float* vr = geom->fs.vr;
-	float* vf = geom->fs.vf;
-	float* vu = geom->fs.vt;
-	//gl41solid_rect(win, 0x404040, vc, vr, vf);
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -245,6 +241,12 @@ static void mirror_gl41geom_update(
 	vbuf[5][3] = 0.0;
 	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
+
+//texture
+	body->dst.texname[0] = "tex0";
+	body->src.tex[0].glfd = dest->dst.tex[0];
+	body->src.tex[0].fmt = '!';
+	body->src.tex_enq[0] += 1;
 
 	body->src.vbuf_enq += 1;
 	gl41data_insert(wnd, 's', body, 1);
