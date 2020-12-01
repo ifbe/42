@@ -97,6 +97,36 @@ void gl41data_nolit(struct entity* wnd)
 void gl41data_mylit(struct entity* wnd)
 {
 }
+void gl41data_addlit(struct entity* wnd, struct gl41data* data)
+{
+	wnd->glfull_light[0] = data;
+}
+
+
+
+
+void gl41data_insert(struct entity* ctx, int type, struct gl41data* src, int cnt)
+{
+	int j;
+	//say("@gl41data_insert:%llx,%x,%llx,%x\n", ctx,type,src,cnt);
+
+	if('s' == type){
+		for(j=solidaid_max;j<64;j++){
+			if(0 == ctx->glfull_solid[j]){
+				ctx->glfull_solid[j] = src;
+				break;
+			}
+		}
+	}
+	if('o' == type){
+		for(j=opaqueaid_max;j<64;j++){
+			if(0 == ctx->glfull_opaque[j]){
+				ctx->glfull_opaque[j] = src;
+				break;
+			}
+		}
+	}
+}
 
 
 
@@ -160,28 +190,6 @@ void gl41data_after(struct entity* ctx)
 
 		p->src.vbuf_enq += 1;
 		p->src.ibuf_enq += 1;
-	}
-}
-void gl41data_insert(struct entity* ctx, int type, struct gl41data* src, int cnt)
-{
-	int j;
-	//say("@gl41data_insert:%llx,%x,%llx,%x\n", ctx,type,src,cnt);
-
-	if('s' == type){
-		for(j=solidaid_max;j<64;j++){
-			if(0 == ctx->glfull_solid[j]){
-				ctx->glfull_solid[j] = src;
-				break;
-			}
-		}
-	}
-	if('o' == type){
-		for(j=opaqueaid_max;j<64;j++){
-			if(0 == ctx->glfull_opaque[j]){
-				ctx->glfull_opaque[j] = src;
-				break;
-			}
-		}
 	}
 }
 

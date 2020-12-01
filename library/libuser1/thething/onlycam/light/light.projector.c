@@ -1,17 +1,18 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
 void matproj_transpose(void* m, struct fstyle* sty);
-void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
+void gl41data_addcam(struct entity* wnd, struct gl41data* data);
+void gl41data_addlit(struct entity* wnd, struct gl41data* data);
+void gl41data_insert(struct entity* ctx, int type, struct gl41data* src, int cnt);
 
 
-#define CAMBUF buf0
-#define LITBUF buf1
-#define CTXBUF buf2
-#define OWNBUF buf3
+#define OWNBUF buf0
 struct sunbuf{
 	mat4 mvp;
 	vec4 rgb;
-	u32 glfd;
+	struct gl41data cam;
+	struct gl41data lit;
+	struct gl41data ctx;
 };
 
 
@@ -42,32 +43,6 @@ GLSL_VERSION
 	"mediump float c = (2.0 * n) / (f + n - d * (f - n));"
 	"FragColor = vec4(c*texture(prjtormap, uvw).bgr, 1.0);\n"
 "}\n";
-
-
-
-
-static void projector_forfbo_update(
-	struct entity* act, struct style* part,
-	struct entity* wrd, struct style* geom,
-	struct supply* fbo, struct style* area)
-{
-	struct sunbuf* sun = act->OWNBUF;
-	struct gl41data* data = act->CAMBUF;
-	if(0 == data)return;
-
-	data->dst.arg[0].fmt = 'm';
-	data->dst.arg[0].name = "cammvp";
-	data->dst.arg[0].data = sun->mvp;
-
-	data->dst.arg[1].fmt = 'v';
-	data->dst.arg[1].name = "camxyz";
-	data->dst.arg[1].data = &geom->frus.vc;
-
-	fbo->glfull_camera[0] = act->CAMBUF;
-}
-static void projector_forfbo_prepare(struct mysrc* src)
-{
-}
 
 
 
@@ -121,7 +96,7 @@ static void projector_frustum(struct fstyle* d, struct fstyle* s)
 	d->vf[2] = z / n;
 	//d->vf[3] = 1e20;
 }
-static void projector_forwnd_light_update(
+static void projector_lit_update(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* wnd, struct style* area)
@@ -129,12 +104,15 @@ static void projector_forwnd_light_update(
 	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
 
-	projector_frustum(&geom->frus, &geom->fs);
-	matproj_transpose(sun->mvp, &geom->frus);
-
-	struct gl41data* data = act->LITBUF;
+	struct gl41data* data = &sun->lit;
 	if(0 == data)return;
 
+	//common
+	data->src.tex[0].glfd = sun->cam.dst.tex[0];
+	data->src.tex[0].fmt = '!';
+	data->src.tex_enq[0] += 1;
+
+	//gl41
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "sunmvp";
 	data->dst.arg[0].data = sun->mvp;
@@ -152,13 +130,9 @@ static void projector_forwnd_light_update(
 	data->dst.arg[3].data = geom->frus.vf;
 
 	data->dst.texname[0] = "shadowmap";
-	data->src.tex[0].glfd = sun->glfd;
-	data->src.tex[0].fmt = '!';
-	data->src.tex_enq[0] += 1;
-
-	wnd->glfull_light[0] = act->LITBUF;
+	gl41data_addlit(wnd, data);
 }
-static void projector_forwnd_light_prepare(struct gl41data* data)
+static void projector_lit_prepare(struct gl41data* data)
 {
 	data->dst.routine_name = "passtype";
 	data->dst.routine_detail = "projector";
@@ -173,7 +147,41 @@ static void projector_forwnd_light_prepare(struct gl41data* data)
 
 
 
-static void projector_draw_gl41(
+static void projector_cam_update(
+	struct entity* act, struct style* part,
+	struct entity* wrd, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	struct sunbuf* sun = act->OWNBUF;
+	if(0 == sun)return;
+	struct gl41data* data = &sun->cam;
+	if(0 == data)return;
+
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "cammvp";
+	data->dst.arg[0].data = sun->mvp;
+
+	data->dst.arg[1].fmt = 'v';
+	data->dst.arg[1].name = "camxyz";
+	data->dst.arg[1].data = &geom->frus.vc;
+
+	gl41data_addcam(wnd, data);
+}
+static void projector_cam_prepare(struct mysrc* src)
+{
+	src->tex[0].w = 1024;
+	src->tex[0].h = 1024;
+	src->tex[0].fmt = 0;
+	src->tex[0].glfd = 0;
+
+	src->type = 'd';
+	src->target_enq = 42;
+}
+
+
+
+
+static void projector_mesh_update(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -190,12 +198,17 @@ static void projector_draw_gl41(
 	tt[2] = - vf[2];
 	gl41solid_cone(ctx, 0xffffff, vc, vr, tt);
 
-	struct mysrc* src = act->CTXBUF;
-	if(0 == src)return;
-	float (*vbuf)[6] = src->vtx[0].vbuf;
+	//depth fbo (for debug)
+	struct sunbuf* sun = act->OWNBUF;
+	if(0 == sun)return;
+	struct gl41data* dest = &sun->cam;
+	if(0 == dest)return;
+	struct gl41data* mesh = &sun->ctx;
+	if(0 == mesh)return;
+	float (*vbuf)[6] = (void*)(mesh->src.vtx[0].vbuf);
 	if(0 == vbuf)return;
 
-	//depth fbo (for debug)
+//.vertex
 	vbuf[0][0] = vc[0] - vr[0] - vt[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vt[1] - vf[1];
 	vbuf[0][2] = vc[2] - vr[2] - vt[2] - vf[2];
@@ -238,17 +251,10 @@ static void projector_draw_gl41(
 	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
 
-	src->vbuf_enq += 1;
-	gl41data_insert(ctx, 's', act->CTXBUF, 1);
+	mesh->src.vbuf_enq += 1;
+	gl41data_insert(ctx, 's', mesh, 1);
 }
-static void projector_forwnd_vertex_update(struct entity* act, struct style* slot, struct supply* fbo, struct style* area)
-{
-	struct sunbuf* sun = act->OWNBUF;
-	if(0 == sun)return;
-
-	sun->glfd = fbo->tex0;
-}
-static void projector_forwnd_vertex_prepare(struct mysrc* src)
+static void projector_mesh_prepare(struct mysrc* src)
 {
 	//shader
 	src->vs = projector_glsl_v;
@@ -274,36 +280,20 @@ static void projector_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void*
 {
 	if(0 == stack)return;
 
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* dup;struct style* camg;
 	struct entity* wnd;struct style* area;
-	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	if('v' == key){
-		projector_forwnd_light_update(ent,slot, wor,geom, wnd,area);
-		projector_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
-	if('?' == key){
-		//search for myown fbo
-		int ret;
-		struct halfrel* rel[2];
-		ret = relationsearch(ent, _fbo_, &rel[0], &rel[1]);
-		if(ret <= 0)return;
 
-		//update matrix for fbo
-		struct supply* fbo = rel[1]->pchip;
-		struct style* rect = rel[1]->pfoot;
-		projector_forfbo_update(ent,slot, wor,geom, fbo,rect);
+	struct sunbuf* sun = ent->OWNBUF;
+	projector_frustum(&geom->frus, &geom->fs);
+	matproj_transpose(sun->mvp, &geom->frus);
 
-		//wnd.data -> fbo.texture
-		give_data_into_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
-
-		//fbo.texture -> my.data -> wnd.data
-		projector_forwnd_vertex_update(ent,slot, fbo,rect);
-	}
+	projector_cam_update(ent,foot, wor,geom, wnd,area);
+	projector_lit_update(ent,foot, wor,geom, wnd,area);
+	projector_mesh_update(ent,foot, wor,geom, wnd,area);
 }
 static void projector_draw_pixel(
 	struct entity* act, struct style* pin,
@@ -381,20 +371,16 @@ static void projector_create(struct entity* act, void* str)
 	struct sunbuf* sun;
 	if(0 == act)return;
 
-	sun = act->OWNBUF = memorycreate(0x1000, 0);
+	sun = act->OWNBUF = memorycreate(0x10000, 0);
 	sun->rgb[0] = 1.0;
 	sun->rgb[1] = 1.0;
 	sun->rgb[2] = 1.0;
 
-	//
-	act->CAMBUF = memorycreate(0x400, 0);
-	projector_forfbo_prepare(act->CAMBUF);
+	projector_cam_prepare(&sun->cam.src);
 
-	act->LITBUF = memorycreate(0x400, 0);
-	projector_forwnd_light_prepare(act->LITBUF);
+	projector_lit_prepare(&sun->lit);
 
-	act->CTXBUF = memorycreate(0x400, 0);
-	projector_forwnd_vertex_prepare(act->CTXBUF);
+	projector_mesh_prepare(&sun->ctx.src);
 }
 
 

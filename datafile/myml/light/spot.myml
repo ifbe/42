@@ -22,9 +22,6 @@ fmt:virtual
 
 
 <supply>
-thefbo{
-fmt:gl41fbod
-}
 opengl{
 fmt:wnd
 title:"42"
@@ -77,10 +74,6 @@ T: 0.0, 0.0, 0.0, 0.7
 N: 0.0, 0.0, 0.0, 1.0
 F: 0.0, 0.0, 0.0, 100000.0
 }
-litrect{
-c:0.0, 0.0
-q:1.0, 1.0
-}
 
 freemodl{
 }
@@ -104,9 +97,6 @@ q:1.0, 1.0
 
 
 <relation>
-#light depends on fbo
-(light, 0, fbo) -> (thefbo, litrect, 0)
-
 #virtual depends on inner objects
 (virtual, grndgeom, 0) -> (ground, grndhaha, 0)
 (virtual, testgeom, 0) -> (test, testhaha, 0)

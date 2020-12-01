@@ -1,6 +1,7 @@
 #include "libuser.h"
 void matorth_transpose(mat4 m, struct fstyle* s);
 void gl41data_addcam(struct entity* wnd, struct gl41data* data);
+void gl41data_addlit(struct entity* wnd, struct gl41data* data);
 void gl41data_insert(struct entity* ctx, int type, struct gl41data* src, int cnt);
 
 
@@ -9,7 +10,6 @@ struct sunbuf{
 	mat4 mvp;
 	vec4 rgb;
 	u32 u_rgb;
-	u32 glfd;
 	struct gl41data cam;
 	struct gl41data lit;
 	struct gl41data ctx;
@@ -105,9 +105,6 @@ static void dirlight_lit_update(
 	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
 
-	dirlight_frustum(&geom->frus, &geom->fs);
-	matorth_transpose(sun->mvp, &geom->frus);
-
 	struct gl41data* data = &sun->lit;
 	if(0 == data)return;
 
@@ -116,8 +113,7 @@ static void dirlight_lit_update(
 	data->src.tex[0].fmt = '!';
 	data->src.tex_enq[0] += 1;
 
-
-	//dst
+	//gl41
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "sunmvp";
 	data->dst.arg[0].data = sun->mvp;
@@ -131,13 +127,44 @@ static void dirlight_lit_update(
 	data->dst.arg[2].data = &geom->frus.vf;
 
 	data->dst.texname[0] = "shadowmap";
-
-	wnd->glfull_light[0] = data;
+	gl41data_addlit(wnd, data);
 }
 static void dirlight_lit_prep(struct gl41data* data)
 {
 	data->dst.routine_name = "passtype";
 	data->dst.routine_detail = "dirlight";
+}
+
+
+
+
+static void dirlight_cam_update(
+	struct entity* act, struct style* slot,
+	struct entity* wrd, struct style* geom,
+	struct entity* wnd, struct style* area)
+{
+	struct sunbuf* sun = act->OWNBUF;
+	if(0 == sun)return;
+	struct gl41data* data = &sun->cam;
+	if(0 == data)return;
+
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "cammvp";
+	data->dst.arg[0].data = sun->mvp;
+	data->dst.arg[1].fmt = 'v';
+	data->dst.arg[1].name = "camxyz";
+	data->dst.arg[1].data = &geom->frus.vc;
+	gl41data_addcam(wnd, data);
+}
+static void dirlight_cam_prep(struct mysrc* src)
+{
+	src->tex[0].w = 1024;
+	src->tex[0].h = 1024;
+	src->tex[0].fmt = 0;
+	src->tex[0].glfd = 0;
+
+	src->type = 'd';
+	src->target_enq = 42;
 }
 
 
@@ -180,11 +207,12 @@ static void dirlight_mesh_update(
 	//depth fbo (for debug)
 	struct gl41data* dest = &sun->cam;
 	if(0 == dest)return;
-	struct gl41data* body = &sun->ctx;
-	if(0 == body)return;
-	float (*vbuf)[6] = (void*)(body->src.vtx[0].vbuf);
+	struct gl41data* mesh = &sun->ctx;
+	if(0 == mesh)return;
+	float (*vbuf)[6] = (void*)(mesh->src.vtx[0].vbuf);
 	if(0 == vbuf)return;
 
+//.vertex
 	vbuf[0][0] = vc[0] - vr[0] - vt[0];
 	vbuf[0][1] = vc[1] - vr[1] - vt[1];
 	vbuf[0][2] = vc[2] - vr[2] - vt[2];
@@ -227,14 +255,14 @@ static void dirlight_mesh_update(
 	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
 
-//texture
-	body->dst.texname[0] = "tex0";
-	body->src.tex[0].glfd = dest->dst.tex[0];
-	body->src.tex[0].fmt = '!';
-	body->src.tex_enq[0] += 1;
+//.texture
+	mesh->dst.texname[0] = "tex0";
+	mesh->src.tex[0].glfd = dest->dst.tex[0];
+	mesh->src.tex[0].fmt = '!';
+	mesh->src.tex_enq[0] += 1;
 
-	body->src.vbuf_enq += 1;
-	gl41data_insert(ctx, 's', body, 1);
+	mesh->src.vbuf_enq += 1;
+	gl41data_insert(ctx, 's', mesh, 1);
 }
 static void dirlight_mesh_prep(struct mysrc* src)
 {
@@ -258,38 +286,6 @@ static void dirlight_mesh_prep(struct mysrc* src)
 
 
 
-static void dirlight_cam_update(
-	struct entity* act, struct style* slot,
-	struct entity* wrd, struct style* geom,
-	struct entity* wnd, struct style* area)
-{
-	struct sunbuf* sun = act->OWNBUF;
-	if(0 == sun)return;
-	struct gl41data* data = &sun->cam;
-	if(0 == data)return;
-
-	data->dst.arg[0].fmt = 'm';
-	data->dst.arg[0].name = "cammvp";
-	data->dst.arg[0].data = sun->mvp;
-	data->dst.arg[1].fmt = 'v';
-	data->dst.arg[1].name = "camxyz";
-	data->dst.arg[1].data = &geom->frus.vc;
-	gl41data_addcam(wnd, data);
-}
-static void dirlight_cam_prep(struct mysrc* src)
-{
-	src->tex[0].w = 1024;
-	src->tex[0].h = 1024;
-	src->tex[0].fmt = 0;
-	src->tex[0].glfd = 0;
-
-	src->type = 'd';
-	src->target_enq = 42;
-}
-
-
-
-
 static void dirlight_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(0 == stack)return;
@@ -300,6 +296,10 @@ static void dirlight_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+
+	struct sunbuf* sun = ent->OWNBUF;
+	dirlight_frustum(&geom->frus, &geom->fs);
+	matorth_transpose(sun->mvp, &geom->frus);
 
 	dirlight_cam_update(ent,foot, wor,geom, wnd,area);
 	dirlight_lit_update(ent,foot, wor,geom, wnd,area);
@@ -378,10 +378,9 @@ static void dirlight_delete(struct entity* act)
 }
 static void dirlight_create(struct entity* act, void* str)
 {
-	struct sunbuf* sun;
 	if(0 == act)return;
 
-	sun = act->OWNBUF = memorycreate(0x10000, 0);
+	struct sunbuf* sun = act->OWNBUF = memorycreate(0x10000, 0);
 	sun->u_rgb = 0xffff00;
 	sun->rgb[0] = ((sun->u_rgb >>16) & 0xff) / 255.0;
 	sun->rgb[1] = ((sun->u_rgb >> 8) & 0xff) / 255.0;

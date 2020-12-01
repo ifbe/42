@@ -293,6 +293,7 @@ void fullwindow_render(struct gl41data** cam, struct gl41data** lit, struct gl41
 		if(0 == cam[j])continue;
 		glBindFramebuffer(GL_FRAMEBUFFER, cam[j]->dst.fbo);
 		render_target(&cam[j],lit, solid,opaque, wnd,0);
+		//glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	render_target(cam,lit, solid,opaque, wnd,area);
