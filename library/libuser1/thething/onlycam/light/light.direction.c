@@ -31,7 +31,6 @@ GLSL_VERSION
 
 char* dirlit_glsl_f =
 GLSL_VERSION
-"uniform sampler2D tex0;\n"
 "uniform sampler2D shadowmap;\n"
 "in mediump vec2 uvw;\n"
 "layout(location = 0)out mediump vec4 FragColor;\n"
@@ -45,7 +44,6 @@ GLSL_VERSION
 
 static void dirlight_frustum(struct fstyle* d, struct fstyle* s)
 {
-	float a,b,c;
 	float x,y,z,n;
 	d->vc[0] = s->vc[0];
 	d->vc[1] = s->vc[1];
@@ -205,14 +203,11 @@ static void dirlight_mesh_update(
 	}
 
 	//depth fbo (for debug)
-	struct gl41data* dest = &sun->cam;
-	if(0 == dest)return;
 	struct gl41data* mesh = &sun->ctx;
 	if(0 == mesh)return;
 	float (*vbuf)[6] = (void*)(mesh->src.vtx[0].vbuf);
 	if(0 == vbuf)return;
 
-//.vertex
 	vbuf[0][0] = vc[0] - vr[0] - vt[0];
 	vbuf[0][1] = vc[1] - vr[1] - vt[1];
 	vbuf[0][2] = vc[2] - vr[2] - vt[2];
@@ -254,12 +249,6 @@ static void dirlight_mesh_update(
 	vbuf[5][3] = 1.0;
 	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
-
-//.texture
-	mesh->dst.texname[0] = "tex0";
-	mesh->src.tex[0].glfd = dest->dst.tex[0];
-	mesh->src.tex[0].fmt = '!';
-	mesh->src.tex_enq[0] += 1;
 
 	mesh->src.vbuf_enq += 1;
 	gl41data_insert(ctx, 's', mesh, 1);

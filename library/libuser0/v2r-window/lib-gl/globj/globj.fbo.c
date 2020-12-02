@@ -91,9 +91,10 @@ int gl41fboc_create(struct gl41data* tar)
 int gl41fbo_create(struct gl41data* tar)
 {
 	switch(tar->src.type){
-	case 'c':gl41fboc_create(tar);break;
-	case 'd':gl41fbod_create(tar);break;
+	case 'c':return gl41fboc_create(tar);
+	case 'd':return gl41fbod_create(tar);
 	}
+	return 0;
 }
 
 

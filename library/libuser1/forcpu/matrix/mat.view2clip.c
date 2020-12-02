@@ -11,7 +11,7 @@ void view2clip_orth(mat4 m, struct fstyle* s)
 	float t = s->vt[3];
 	float n = s->vn[3];
 	float f = s->vf[3];
-	say("%f,%f,%f,%f,%f,%f\n",l,r,b,t,n,f);
+	//say("%f,%f,%f,%f,%f,%f\n",l,r,b,t,n,f);
 
 	m[0][0] = 2.0 / (r-l);
 	m[0][1] = 0.0;
@@ -63,7 +63,7 @@ void view2clip_proj_n1p1(mat4 proj, struct fstyle* sty)
 	proj[2][0] = 0.0;
 	proj[2][1] = 0.0;
 	proj[2][2] = (n+f) / (n-f);
-	proj[2][3] = 2 * f * n / (n-f);
+	proj[2][3] = 2*f*n / (n-f);
 
 	proj[3][0] = 0.0;
 	proj[3][1] = 0.0;

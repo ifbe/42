@@ -191,14 +191,21 @@ static void mirror_gl41geom_update(
 	//say("%f,%f,%f	%f,%f,%f\n",vc[0],vc[1],vc[2],vr[0],vf[1],vu[2]);
 	gl41line_rect(wnd, 0x404040, vc, vr, vf);
 
+
 	struct mirrbuf* mirr = act->CTXBUF;
 	if(0 == mirr)return;
-	struct gl41data* dest = &mirr->dest;
-	if(0 == dest)return;
 	struct gl41data* body = &mirr->geom;
 	if(0 == body)return;
+	struct gl41data* dest = &mirr->dest;
+	if(0 == dest)return;
 
-//vertex
+//.texture
+	body->dst.texname[0] = "tex0";
+	body->src.tex[0].glfd = dest->dst.tex[0];
+	body->src.tex[0].fmt = '!';
+	body->src.tex_enq[0] += 1;
+
+//.vertex
 	float (*vbuf)[6] = body->src.vtx[0].vbuf;
 	if(0 == vbuf)return;
 
@@ -244,12 +251,6 @@ static void mirror_gl41geom_update(
 	vbuf[5][4] = 0.0;
 	vbuf[5][5] = 0.0;
 
-//texture
-	body->dst.texname[0] = "tex0";
-	body->src.tex[0].glfd = dest->dst.tex[0];
-	body->src.tex[0].fmt = '!';
-	body->src.tex_enq[0] += 1;
-
 	body->src.vbuf_enq += 1;
 	gl41data_insert(wnd, 's', body, 1);
 }
@@ -294,24 +295,6 @@ static void mirror_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 
 	//geom
 	mirror_gl41geom_update(ent,foot, wor,geom, wnd,area);
-/*	if('?' == key){
-		//search for myown fbo
-		int ret;
-		struct halfrel* rel[2];
-		ret = relationsearch(ent, _fbo_, &rel[0], &rel[1]);
-		if(ret <= 0)return;
-
-		//update matrix for fbo
-		struct supply* fbo = rel[1]->pchip;
-		struct style* rect = rel[1]->pfoot;
-		mirror_forfbo_update(ent,slot, wor,geom, dup,camg, fbo,rect);
-
-		//wnd.data -> fbo.texture
-		give_data_into_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
-
-		//fbo.texture -> my.data -> wnd.data
-		mirror_forwnd_update(ent,slot, fbo,rect);
-	}*/
 }
 static void mirror_draw_pixel(
 	struct entity* act, struct style* pin,

@@ -149,6 +149,8 @@ void water_gl41fbo_prepare(struct mysrc* src)
 	src->tex[0].h = 1024;
 	src->tex[0].fmt = 0;
 	src->tex[0].glfd = 0;
+
+	src->type = 'c';
 	src->target_enq = 42;
 }
 
@@ -160,29 +162,33 @@ static void water_gl41geom_update(
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
-	struct waterbuf* water = act->CTXBUF;
-	if(0 == water)return;
-
-	water->time = (timeread()%10000000)/10000000.0;
-
-	struct gl41data* dest = &water->dest;
-	if(0 == dest)return;
-	struct gl41data* body = &water->geom;
-	if(0 == body)return;
-
-//texture
-	body->dst.texname[0] = "tex0";
-	body->src.tex[0].glfd = dest->dst.tex[0];
-	body->src.tex[0].fmt = '!';
-	body->src.tex_enq[0] += 1;
-
-	float (*vbuf)[6] = body->src.vtx[0].vbuf;
-	if(0 == vbuf)return;
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vu = geom->fs.vt;
 	gl41line_rect(ctx, 0xffffff, vc, vr, vf);
+
+
+	struct waterbuf* water = act->CTXBUF;
+	if(0 == water)return;
+
+	water->time = (timeread()%10000000)/10000000.0;
+
+
+	struct gl41data* body = &water->geom;
+	if(0 == body)return;
+	struct gl41data* dest = &water->dest;
+	if(0 == dest)return;
+
+//.texture
+	body->dst.texname[0] = "tex0";
+	body->src.tex[0].glfd = dest->dst.tex[0];
+	body->src.tex[0].fmt = '!';
+	body->src.tex_enq[0] += 1;
+
+//.vertex
+	float (*vbuf)[6] = body->src.vtx[0].vbuf;
+	if(0 == vbuf)return;
 
 	vbuf[0][0] = vc[0] - vr[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vf[1];
@@ -228,20 +234,7 @@ static void water_gl41geom_update(
 
 	body->src.vbuf_enq += 1;
 	gl41data_insert(ctx, 'o', body, 1);
-}/*
-void water_forwnd_update(struct entity* act, struct style* slot, struct supply* fbo, struct style* area)
-{
-	struct waterbuf* water = act->CTXBUF;
-	if(0 == water)return;
-
-	struct gl41data* data = (void*)(water->data);
-	if(0 == data)return;
-
-	data->dst.texname[0] = "tex0";
-	data->src.tex[0].glfd = fbo->tex0;
-	data->src.tex[0].fmt = '!';
-	data->src.tex_enq[0] += 1;
-}*/
+}
 void water_gl41geom_prepare(struct gl41data* data, struct waterbuf* water, char* str)
 {
 	struct mysrc* src = &data->src;
@@ -298,25 +291,6 @@ static void water_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg
 
 	//geom
 	water_gl41geom_update(ent,foot, wor,geom, wnd,area);
-
-/*	if('?' == key){
-		//search for myown fbo
-		int ret;
-		struct halfrel* rel[2];
-		ret = relationsearch(ent,_fbo_, &rel[0], &rel[1]);
-		if(ret <= 0)return;
-
-		//update matrix for fbo
-		struct supply* fbo = rel[1]->pchip;
-		struct style* rect = rel[1]->pfoot;
-		water_forfbo_update(ent,slot, wor,geom, dup,camg, fbo,rect);
-
-		//wnd.data -> fbo.texture
-		give_data_into_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
-
-		//fbo.texture -> my.data -> wnd.data
-		water_forwnd_update(ent,slot, fbo,rect);
-	}*/
 }
 static void water_draw_pixel(
 	struct entity* act, struct style* pin,

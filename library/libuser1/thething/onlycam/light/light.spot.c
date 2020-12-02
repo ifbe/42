@@ -1,5 +1,4 @@
 #include "libuser.h"
-#define _fbo_ hex32('f','b','o',0)
 void matproj_transpose(void* m, struct fstyle* sty);
 void gl41data_addcam(struct entity* wnd, struct gl41data* data);
 void gl41data_addlit(struct entity* wnd, struct gl41data* data);
@@ -199,14 +198,11 @@ static void spotlight_mesh_update(
 
 
 	//depth fbo (for debug)
-	struct gl41data* dest = &sun->cam;
-	if(0 == dest)return;
 	struct gl41data* mesh = &sun->ctx;
 	if(0 == mesh)return;
 	float (*vbuf)[6] = (void*)(mesh->src.vtx[0].vbuf);
 	if(0 == vbuf)return;
 
-//.vertex
 	vbuf[0][0] = vc[0] - vr[0] - vt[0] - vf[0];
 	vbuf[0][1] = vc[1] - vr[1] - vt[1] - vf[1];
 	vbuf[0][2] = vc[2] - vr[2] - vt[2] - vf[2];

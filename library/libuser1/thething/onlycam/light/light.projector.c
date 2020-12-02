@@ -1,5 +1,4 @@
 #include "libuser.h"
-#define _fbo_ hex32('f','b','o',0)
 void matproj_transpose(void* m, struct fstyle* sty);
 void gl41data_addcam(struct entity* wnd, struct gl41data* data);
 void gl41data_addlit(struct entity* wnd, struct gl41data* data);
@@ -36,12 +35,12 @@ GLSL_VERSION
 "uniform sampler2D shadowmap;\n"
 "uniform sampler2D prjtormap;\n"
 "void main(){\n"
-	//"FragColor = vec4(texture(tex0, uvw).rgb, 1.0);\n"
-	"mediump float n = 1.0;"
-	"mediump float f = 10000.0;"
-	"mediump float d = texture(shadowmap, uvw).r;"
-	"mediump float c = (2.0 * n) / (f + n - d * (f - n));"
-	"FragColor = vec4(c*texture(prjtormap, uvw).bgr, 1.0);\n"
+	"mediump float n = 1.0;\n"
+	"mediump float f = 10000.0;\n"
+	"mediump float d = texture(shadowmap, uvw).r;\n"
+	"mediump float c = (2.0 * n) / (f + n - d * (f - n));\n"
+	"mediump vec3 tmp = 0.9*vec3(c) + 0.1*texture(prjtormap, uvw).bgr;\n"
+	"FragColor = vec4(tmp, 1.0);\n"
 "}\n";
 
 
@@ -201,8 +200,6 @@ static void projector_mesh_update(
 	//depth fbo (for debug)
 	struct sunbuf* sun = act->OWNBUF;
 	if(0 == sun)return;
-	struct gl41data* dest = &sun->cam;
-	if(0 == dest)return;
 	struct gl41data* mesh = &sun->ctx;
 	if(0 == mesh)return;
 	float (*vbuf)[6] = (void*)(mesh->src.vtx[0].vbuf);

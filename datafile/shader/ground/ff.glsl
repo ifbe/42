@@ -79,32 +79,46 @@ subroutine (passtype) vec3 dirlight(){
 	vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp /= tmp.w;
 	tmp = (tmp+1.0)*0.5;
+	//out of light
 	if(	(tmp.x < 0.0) || (tmp.x > 1.0) ||
-		(tmp.y < 0.0) || (tmp.y > 1.0) ||
-		(tmp.z - texture(shadowmap, tmp.xy).r > 0.0001) )return albedo*vec3(0.5);
+		(tmp.y < 0.0) || (tmp.y > 1.0) )return albedo*0.1;
+	//in the shadow
+	if(tmp.z > texture(shadowmap, tmp.xy).r+0.0001)return albedo*0.2;
+	//regular light
 	return albedo;
 }
 subroutine (passtype) vec3 spotlight(){
 	vec3 albedo = texture(tex0, objuvw).bgr;
 
 	vec4 tmp = sunmvp * vec4(objxyz, 1.0);
-	tmp /= tmp.w;
+	tmp.x /= tmp.w;
+	tmp.y /= tmp.w;
+	//out of light
 	float val = tmp.x*tmp.x + tmp.y*tmp.y;
-	if(val > 1.0)return albedo*vec3(0.2);
-
-	tmp = (tmp+1.0)*0.5;
-	if(tmp.z - texture(shadowmap, tmp.xy).r > 0.0001)return albedo*vec3(0.2);
-	return albedo*mix(sunrgb, vec3(0.2), val);
+	if(val > 1.0)return albedo*0.1;
+	//compute color
+	vec3 colour = albedo*mix(sunrgb, vec3(0.1), val);
+	tmp.x = (tmp.x+1.0)*0.5;
+	tmp.y = (tmp.y+1.0)*0.5;		//z already in [0,1]
+	//in the shadow
+	if((tmp.z+0.45)/tmp.w > texture(shadowmap, tmp.xy).r)return colour*0.2;
+	//regular light
+	return colour;
 }
 subroutine (passtype) vec3 projector(){
 	vec3 albedo = texture(tex0, objuvw).bgr;
 
 	vec4 tmp = sunmvp * vec4(objxyz, 1.0);
-	tmp /= tmp.w;
-	tmp = (tmp+1.0)*0.5;
+	tmp.x /= tmp.w;
+	tmp.y /= tmp.w;
+	tmp.x = (tmp.x+1.0)*0.5;
+	tmp.y = (tmp.y+1.0)*0.5;
+	//out of light
 	if(	(tmp.x < 0.0) || (tmp.x > 1.0) ||
-		(tmp.y < 0.0) || (tmp.y > 1.0) ||
-		(tmp.z - texture(shadowmap, tmp.xy).r > 0.0001) )return albedo*vec3(0.5);
+		(tmp.y < 0.0) || (tmp.y > 1.0) )return albedo*0.1;
+	//in the shadow
+	if((tmp.z+0.45)/tmp.w > texture(shadowmap, tmp.xy).r)return albedo*0.2;
+	//regular light
 	return albedo*texture(prjtormap, tmp.xy).bgr;
 }
 subroutine (passtype) vec3 pointlight(){
