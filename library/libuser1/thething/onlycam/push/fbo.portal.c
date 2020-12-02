@@ -1,103 +1,242 @@
 #include "libuser.h"
-#define _fboa_ hex32('f','b','o','a')
-#define _fbob_ hex32('f','b','o','b')
-#define Aside buf0
-#define Bside buf1
+#define mybuf buf0
 void matproj_transpose(void* m, struct fstyle* sty);
+void gl41data_addcam(struct entity* wnd, struct gl41data* data);
 void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 struct portalbuf{
 	mat4 mvp;
 	vec4 vc;
-	struct entity* world;
-	struct style* geom;
-	struct supply* fbo;
-	struct style* rect;
-	struct gl41data forwnd;
-	struct gl41data forfbo;
+	struct entity* peer_portal;
+	struct portalbuf* peer_buf;
+
+	struct entity* selfworld_body;
+	struct style* selfworld_geom;
+	struct entity* peerworld_body;
+	struct style* peerworld_geom;
+
+	struct gl41data fbo;
+	struct gl41data mesh;
 };
-void portal_forwnd(struct mysrc* src)
+
+
+
+
+//want(frus) know(cam, selfgeom,peergeom)
+void portal_frustum(struct fstyle* frus, float* cam, struct fstyle* selfgeom, struct fstyle* peergeom)
 {
-	//
-	src->vs = memorycreate(0x1000, 0);
-	openreadclose("datafile/shader/portal/vert.glsl", 0, src->vs, 0x1000);
-	src->fs = memorycreate(0x1000, 0);
-	openreadclose("datafile/shader/portal/frag.glsl", 0, src->fs, 0x1000);
-	src->shader_enq = 42;
+	float x0,y0,z0,t0;
+	float delta;
+	//say("self@(%f,%f,%f), peer@(%f,%f,%f)\n",selfgeom->vc[0],selfgeom->vc[1],selfgeom->vc[2],peergeom->vc[0],peergeom->vc[1],peergeom->vc[2]);
 
-	//vertex
-	struct vertex* vtx = src->vtx;
-	vtx->geometry = 3;
-	vtx->opaque = 0;
+//-------------q---------------
+	//portal.n
+	x0 = peergeom->vf[0];
+	y0 = peergeom->vf[1];
+	z0 = peergeom->vf[2];
+	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
+	x0 /= t0;
+	y0 /= t0;
+	z0 /= t0;
 
-	vtx->vbuf_fmt = vbuffmt_33;
-	vtx->vbuf_w = 6*4;
-	vtx->vbuf_h = 6;
-	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
-	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+	//len(eye to q) = vec(eye to center) * portal.n
+	t0= (peergeom->vc[0] - cam[0])*x0
+	  + (peergeom->vc[1] - cam[1])*y0
+	  + (peergeom->vc[2] - cam[2])*z0;
+
+	//foot of a perpendicular: q = eye + len(eye to q)*portal.n
+	frus->vq[0] = cam[0] + t0*x0;
+	frus->vq[1] = cam[1] + t0*y0;
+	frus->vq[2] = cam[2] + t0*z0;
+
+	frus->vc[0] = selfgeom->vc[0];
+	frus->vc[1] = selfgeom->vc[1];
+	frus->vc[2] = selfgeom->vc[2];
+
+	//say("q,c = (%f,%f,%f), (%f,%f,%f)\n", frus->vq[0], frus->vq[1], frus->vq[2], frus->vc[0], frus->vc[1], frus->vc[2]);
+
+
+//----------------n,f----------------
+	frus->vn[3] = t0;
+	frus->vf[3] = 1000000000.0;
+
+	//normalize(self.vf) = t*portal.n + offset
+	x0 = selfgeom->vf[0];
+	y0 = selfgeom->vf[1];
+	z0 = selfgeom->vf[2];
+	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
+	x0 /= t0;
+	y0 /= t0;
+	z0 /= t0;
+
+	frus->vn[0] = x0;
+	frus->vn[1] = y0;
+	frus->vn[2] = z0;
+
+	frus->vf[0] = x0;
+	frus->vf[1] = y0;
+	frus->vf[2] = z0;
+
+	frus->vc[0] -= x0 * (frus->vn[3]);
+	frus->vc[1] -= y0 * (frus->vn[3]);
+	frus->vc[2] -= z0 * (frus->vn[3]);
+
+	frus->vn[3] *= 2;
+
+/*	say("n,f,c = (%f,%f,%f,%f), (%f,%f,%f,%f), (%f,%f,%f)\n",
+		frus->vn[0], frus->vn[1], frus->vn[2], frus->vn[3],
+		frus->vf[0], frus->vf[1], frus->vf[2], frus->vf[3],
+		frus->vc[0], frus->vc[1], frus->vc[2]);*/
+
+
+//--------------l,r--------------------
+	//nr(portal) = norm(portal.r)
+	x0 = peergeom->vr[0];
+	y0 = peergeom->vr[1];
+	z0 = peergeom->vr[2];
+	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
+	x0 /= t0;
+	y0 /= t0;
+	z0 /= t0;
+
+	//l.len = (l-q) * nr
+	t0= (peergeom->vc[0] - peergeom->vr[0] - frus->vq[0]) * x0
+	  + (peergeom->vc[1] - peergeom->vr[1] - frus->vq[1]) * y0
+	  + (peergeom->vc[2] - peergeom->vr[2] - frus->vq[2]) * z0;
+	frus->vl[3] = t0;
+
+	//r.len = (r-q) * nr
+	t0= (peergeom->vc[0] + peergeom->vr[0] - frus->vq[0]) * x0
+	  + (peergeom->vc[1] + peergeom->vr[1] - frus->vq[1]) * y0
+	  + (peergeom->vc[2] + peergeom->vr[2] - frus->vq[2]) * z0;
+	frus->vr[3] = t0;
+
+	//delta in right direction
+	delta = (frus->vq[0] - peergeom->vc[0]) * x0
+	      + (frus->vq[1] - peergeom->vc[1]) * y0
+		  + (frus->vq[2] - peergeom->vc[2]) * z0;
+
+	//nr(target) = norm(target.r)
+	x0 = selfgeom->vr[0];
+	y0 = selfgeom->vr[1];
+	z0 = selfgeom->vr[2];
+	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
+	x0 /= t0;
+	y0 /= t0;
+	z0 /= t0;
+
+	frus->vl[0] = x0;
+	frus->vl[1] = y0;
+	frus->vl[2] = z0;
+
+	frus->vr[0] = x0;
+	frus->vr[1] = y0;
+	frus->vr[2] = z0;
+
+	frus->vc[0] += x0 * delta;
+	frus->vc[1] += y0 * delta;
+	frus->vc[2] += z0 * delta;
+
+/*	say("l,r,c = (%f,%f,%f,%f), (%f,%f,%f,%f), (%f,%f,%f)\n",
+		frus->vl[0], frus->vl[1], frus->vl[2], frus->vl[3],
+		frus->vr[0], frus->vr[1], frus->vr[2], frus->vr[3],
+		frus->vc[0], frus->vc[1], frus->vc[2]);*/
+
+
+//----------------b,t-----------------
+	//nt(portal) = norm(portal.t)
+	x0 = peergeom->vt[0];
+	y0 = peergeom->vt[1];
+	z0 = peergeom->vt[2];
+	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
+	x0 /= t0;
+	y0 /= t0;
+	z0 /= t0;
+
+	//b.len =  = (b-q) * nt
+	t0= (peergeom->vc[0] - peergeom->vt[0] - frus->vq[0]) * x0
+	  + (peergeom->vc[1] - peergeom->vt[1] - frus->vq[1]) * y0
+	  + (peergeom->vc[2] - peergeom->vt[2] - frus->vq[2]) * z0;
+	frus->vb[3] = t0;
+
+	//t.len = (u-q) * nt
+	t0= (peergeom->vc[0] + peergeom->vt[0] - frus->vq[0]) * x0
+	  + (peergeom->vc[1] + peergeom->vt[1] - frus->vq[1]) * y0
+	  + (peergeom->vc[2] + peergeom->vt[2] - frus->vq[2]) * z0;
+	frus->vt[3] = t0;
+
+	//delta in front direction
+	delta = (frus->vq[0] - peergeom->vc[0]) * x0
+	      + (frus->vq[1] - peergeom->vc[1]) * y0
+		  + (frus->vq[2] - peergeom->vc[2]) * z0;
+
+	//nt(target) = norm(target.t)
+	x0 = selfgeom->vt[0];
+	y0 = selfgeom->vt[1];
+	z0 = selfgeom->vt[2];
+	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
+	x0 /= t0;
+	y0 /= t0;
+	z0 /= t0;
+
+	frus->vb[0] = x0;
+	frus->vb[1] = y0;
+	frus->vb[2] = z0;
+
+	frus->vt[0] = x0;
+	frus->vt[1] = y0;
+	frus->vt[2] = z0;
+
+	frus->vc[0] += x0 * delta;
+	frus->vc[1] += y0 * delta;
+	frus->vc[2] += z0 * delta;
+
+/*	say("b,t,c = (%f,%f,%f,%f), (%f,%f,%f,%f), (%f,%f,%f)\n",
+		frus->vb[0], frus->vb[1], frus->vb[2], frus->vb[3],
+		frus->vt[0], frus->vt[1], frus->vt[2], frus->vt[3],
+		frus->vc[0], frus->vc[1], frus->vc[2]);*/
 }
-void portal_forwnd_update(struct entity* act, struct portalbuf* p, struct supply* fbo, struct style* area)
+
+
+
+
+void portal_fbo_update(
+	struct entity* act, struct style* part,
+	struct entity* wrd, struct style* geom,
+	struct entity* wrl, struct style* camg,
+	struct supply* wnd, struct style* area)
 {
-	struct gl41data* data = &p->forwnd;
+	struct portalbuf* ptr = act->mybuf;
+	if(0 == ptr)return;
+	struct gl41data* data = &ptr->fbo;
 	if(0 == data)return;
 
-	data->dst.texname[0] = "tex0";
-	data->src.tex[0].glfd = fbo->tex0;
-	data->src.tex[0].fmt = '!';
-	data->src.tex_enq[0] += 1;
+	data->dst.arg[0].fmt = 'm';
+	data->dst.arg[0].name = "cammvp";
+	data->dst.arg[0].data = ptr->mvp;
+	data->dst.arg[1].fmt = 'v';
+	data->dst.arg[1].name = "camxyz";
+	data->dst.arg[1].data = geom->frus.vc;
+	gl41data_addcam((void*)wnd, data);
 }
-
-
-
-
-static void portal_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+void portal_fbo_prepare(struct gl41data* data)
 {
-	struct relation* rel;
+	struct mysrc* src = &data->src;
 
-	rel = act->irel0;
-	while(1){
-		if(0 == rel)return;
-		if(foot == rel->dstflag){
-			self[0] = (void*)&rel->dstchip;
-			peer[0] = (void*)&rel->srcchip;
-			return;
-		}
-		rel = samedstnextsrc(rel);
-	}
-}
-static void portal_modify(struct entity* act)
-{
-}
-static void portal_delete(struct entity* act)
-{
-}
-static void portal_create(struct entity* act, void* str)
-{
-	struct portalbuf* aa;
-	struct portalbuf* bb;
-	if(0 == act)return;
+	src->tex[0].w = 1024;
+	src->tex[0].h = 1024;
+	src->tex[0].fmt = 0;
+	src->tex[0].glfd = 0;
 
-	//aside
-	aa = act->Aside = memorycreate(0x1000, 0);
-	if(0 == aa)return;
-	portal_forwnd(&aa->forwnd.src);
-
-	//bside
-	bb = act->Bside = memorycreate(0x1000, 0);
-	if(0 == bb)return;
-	portal_forwnd(&bb->forwnd.src);
+	src->type = 'c';
+	src->target_enq = 42;
 }
 
 
 
 
-static void portal_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void portal_draw_gl41(
+static void portal_mesh_update(
 	struct entity* act, struct portalbuf* portal,
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
@@ -122,9 +261,19 @@ static void portal_draw_gl41(
 	gl41line_arrow(ctx, 0xffffff, tc, tt, vt);
 
 
-	if(0 == portal)return;
-	struct mysrc* src = &portal->forwnd.src;
+	struct portalbuf* selfptr = act->mybuf;
+	if(0 == selfptr)return;
+	struct portalbuf* peerptr = selfptr->peer_buf;
+	if(0 == peerptr)return;
+//.texture
+	struct mysrc* src = &selfptr->mesh.src;
 	if(0 == src)return;
+	src->tex[0].glfd = peerptr->fbo.dst.tex[0];
+	src->tex[0].fmt = '!';
+	src->tex_enq[0] += 1;
+	peerptr->mesh.dst.texname[0] = "tex0";
+
+//.vertex
 	float (*vbuf)[6] = src->vtx[0].vbuf;
 	if(0 == vbuf)return;
 
@@ -173,6 +322,73 @@ static void portal_draw_gl41(
 	src->vbuf_enq += 1;
 	gl41data_insert(ctx, 's', src, 1);
 }
+static void portal_mesh_prepare(struct gl41data* data)
+{
+	struct mysrc* src = &data->src;
+
+	//
+	src->vs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/portal/vert.glsl", 0, src->vs, 0x1000);
+	src->fs = memorycreate(0x1000, 0);
+	openreadclose("datafile/shader/portal/frag.glsl", 0, src->fs, 0x1000);
+	src->shader_enq = 42;
+
+	//vertex
+	struct vertex* vtx = src->vtx;
+	vtx->geometry = 3;
+	vtx->opaque = 0;
+
+	vtx->vbuf_fmt = vbuffmt_33;
+	vtx->vbuf_w = 6*4;
+	vtx->vbuf_h = 6;
+	vtx->vbuf_len = (vtx->vbuf_w) * (vtx->vbuf_h);
+	vtx->vbuf = memorycreate(vtx->vbuf_len, 0);
+}
+
+
+
+
+static void portal_taking_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == stack)return;
+	//say("@portal_read:%p,%p\n", ent,foot);
+
+	struct entity* wor;struct style* geom;
+	struct entity* dup;struct style* camg;
+	struct entity* wnd;struct style* area;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+
+	struct portalbuf* selfptr = ent->mybuf;
+	struct portalbuf* peerptr = selfptr->peer_buf;
+	selfptr->peerworld_body = peerptr->selfworld_body;
+	selfptr->peerworld_geom = peerptr->selfworld_geom;
+	//say("selfptr=%p,peerptr=%p\n",selfptr,peerptr);
+
+	struct fstyle* selfshap = &geom->fs;
+	struct fstyle* peershap = &peerptr->selfworld_geom->fshape;
+	//say("selfgeom=%p,peergeom=%p\n",selfshap,peershap);
+
+	//
+	portal_frustum(&geom->frus, camg->frus.vc, selfshap, peershap);
+	matproj_transpose(selfptr->mvp, &geom->frus);
+
+	//create or update fbo
+	portal_fbo_update(ent,foot, wor,geom, dup,camg, (void*)wnd,area);
+
+	//geom
+	portal_mesh_update(ent,foot, wor,geom, wnd,area);
+}
+
+
+
+
+static void portal_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
 static void portal_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -197,251 +413,9 @@ static void portal_draw_cli(
 
 
 
-void portal_frustum(struct fstyle* por, struct fstyle* tar, struct fstyle* frus, vec3 cam)
-{
-	float x0,y0,z0,t0;
-	float delta;
-
-//-------------q---------------
-	//portal.n
-	x0 = por->vf[0];
-	y0 = por->vf[1];
-	z0 = por->vf[2];
-	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
-	x0 /= t0;
-	y0 /= t0;
-	z0 /= t0;
-
-	//op*cos(on,op): t = op * portal.n
-	t0= (por->vc[0] - cam[0])*x0
-	  + (por->vc[1] - cam[1])*y0
-	  + (por->vc[2] - cam[2])*z0;
-
-	//foot of a perpendicular: q = p - t*portal.n
-	frus->vq[0] = cam[0] + t0*x0;
-	frus->vq[1] = cam[1] + t0*y0;
-	frus->vq[2] = cam[2] + t0*z0;
-
-	frus->vc[0] = tar->vc[0];
-	frus->vc[1] = tar->vc[1];
-	frus->vc[2] = tar->vc[2];
-
-	//length(frus.n) > length(camera to portal)
-	frus->vn[3] = t0;
-	frus->vf[3] = 1e20;
-	//say("q,c = (%f,%f,%f), (%f,%f,%f)\n", frus->vq[0], frus->vq[1], frus->vq[2], frus->vc[0], frus->vc[1], frus->vc[2]);
-
-
-//----------------n,f----------------
-	//dir*len: fbo.n = t*portal.n + offset
-	x0 = tar->vf[0];
-	y0 = tar->vf[1];
-	z0 = tar->vf[2];
-	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
-	x0 /= t0;
-	y0 /= t0;
-	z0 /= t0;
-
-	frus->vn[0] = x0;
-	frus->vn[1] = y0;
-	frus->vn[2] = z0;
-
-	frus->vf[0] = x0;
-	frus->vf[1] = y0;
-	frus->vf[2] = z0;
-
-	frus->vc[0] -= x0 * (frus->vn[3]);
-	frus->vc[1] -= y0 * (frus->vn[3]);
-	frus->vc[2] -= z0 * (frus->vn[3]);
-
-/*	say("n,f,c = (%f,%f,%f), (%f,%f,%f), (%f,%f,%f)\n",
-		frus->vn[0], frus->vn[1], frus->vn[2],
-		frus->vf[0], frus->vf[1], frus->vf[2],
-		frus->vc[0], frus->vc[1], frus->vc[2]);*/
-
-
-//--------------l,r--------------------
-	//nr(portal) = norm(portal.r)
-	x0 = por->vr[0];
-	y0 = por->vr[1];
-	z0 = por->vr[2];
-	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
-	x0 /= t0;
-	y0 /= t0;
-	z0 /= t0;
-
-	//l.len = (l-q) * nr
-	t0= (por->vc[0] - por->vr[0] - frus->vq[0]) * x0
-	  + (por->vc[1] - por->vr[1] - frus->vq[1]) * y0
-	  + (por->vc[2] - por->vr[2] - frus->vq[2]) * z0;
-	frus->vl[3] = t0;
-
-	//r.len = (r-q) * nr
-	t0= (por->vc[0] + por->vr[0] - frus->vq[0]) * x0
-	  + (por->vc[1] + por->vr[1] - frus->vq[1]) * y0
-	  + (por->vc[2] + por->vr[2] - frus->vq[2]) * z0;
-	frus->vr[3] = t0;
-
-	//delta z
-	delta = (frus->vq[0] - por->vc[0]) * x0
-	      + (frus->vq[1] - por->vc[1]) * y0
-		  + (frus->vq[2] - por->vc[2]) * z0;
-
-	//nr(target) = norm(target.r)
-	x0 = tar->vr[0];
-	y0 = tar->vr[1];
-	z0 = tar->vr[2];
-	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
-	x0 /= t0;
-	y0 /= t0;
-	z0 /= t0;
-
-	frus->vl[0] = -x0;
-	frus->vl[1] = -y0;
-	frus->vl[2] = -z0;
-
-	frus->vr[0] = x0;
-	frus->vr[1] = y0;
-	frus->vr[2] = z0;
-
-	frus->vc[0] += x0 * delta;
-	frus->vc[1] += y0 * delta;
-	frus->vc[2] += z0 * delta;
-
-/*	say("l,r,c = (%f,%f,%f), (%f,%f,%f), (%f,%f,%f)\n",
-		frus->vl[0], frus->vl[1], frus->vl[2],
-		frus->vr[0], frus->vr[1], frus->vr[2],
-		frus->vc[0], frus->vc[1], frus->vc[2]);*/
-
-
-//----------------b,t-----------------
-	//nt(portal) = norm(portal.t)
-	x0 = por->vt[0];
-	y0 = por->vt[1];
-	z0 = por->vt[2];
-	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
-	x0 /= t0;
-	y0 /= t0;
-	z0 /= t0;
-
-	//b.len =  = (b-q) * nt
-	t0= (por->vc[0] - por->vt[0] - frus->vq[0]) * x0
-	  + (por->vc[1] - por->vt[1] - frus->vq[1]) * y0
-	  + (por->vc[2] - por->vt[2] - frus->vq[2]) * z0;
-	frus->vb[3] = t0;
-
-	//t.len = (u-q) * nt
-	t0= (por->vc[0] + por->vt[0] - frus->vq[0]) * x0
-	  + (por->vc[1] + por->vt[1] - frus->vq[1]) * y0
-	  + (por->vc[2] + por->vt[2] - frus->vq[2]) * z0;
-	frus->vt[3] = t0;
-
-	//delta z
-	delta = (frus->vq[0] - por->vc[0]) * x0
-	      + (frus->vq[1] - por->vc[1]) * y0
-		  + (frus->vq[2] - por->vc[2]) * z0;
-
-	//nt(target) = norm(target.r)
-	x0 = tar->vt[0];
-	y0 = tar->vt[1];
-	z0 = tar->vt[2];
-	t0 = squareroot(x0*x0 + y0*y0 + z0*z0);
-	x0 /= t0;
-	y0 /= t0;
-	z0 /= t0;
-
-	frus->vb[0] = -x0;
-	frus->vb[1] = -y0;
-	frus->vb[2] = -z0;
-
-	frus->vt[0] = x0;
-	frus->vt[1] = y0;
-	frus->vt[2] = z0;
-
-	frus->vc[0] += x0 * delta;
-	frus->vc[1] += y0 * delta;
-	frus->vc[2] += z0 * delta;
-
-/*	say("b,t,c = (%f,%f,%f), (%f,%f,%f), (%f,%f,%f)\n",
-		frus->vb[0], frus->vb[1], frus->vb[2],
-		frus->vt[0], frus->vt[1], frus->vt[2],
-		frus->vc[0], frus->vc[1], frus->vc[2]);*/
-
-
-//--------------larger vn--------------
-	frus->vn[3] *= 1.001;
-/*	say("portal_frustum: (%f,%f), (%f,%f), (%f,%f)\n",
-		frus->vn[3], frus->vf[3], frus->vl[3], frus->vr[3], frus->vb[3], frus->vt[3]);*/
-}
-static void portal_matrix(
-	struct entity* act, float* eye,
-	struct portalbuf* this, struct portalbuf* that)
-{
-	struct fstyle* peershap = &that->geom->fshape;
-
-	struct fstyle* selfshap = &this->geom->fshape;
-	struct fstyle* frus = &this->geom->frustum;
-	portal_frustum(selfshap, peershap, frus, eye);
-	matproj_transpose(this->mvp, frus);
-
-
-	struct gl41data* data = &this->forfbo;
-	data->dst.arg[0].fmt = 'm';
-	data->dst.arg[0].name = "cammvp";
-	data->dst.arg[0].data = this->mvp;
-	data->dst.arg[1].fmt = 'v';
-	data->dst.arg[1].name = "camxyz";
-	data->dst.arg[1].data = frus->vc;
-	this->fbo->glfull_camera[0] = &this->forfbo;
-}
-
-
-
-
 static void portal_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(0 == stack)return;
-	say("@portal_read:%.4s,%llx\n", &foot, stack[sp-2].pfoot);
-
-	struct entity* wor;struct style* geom;
-	struct entity* dup;struct style* camg;
-	struct entity* wnd;struct style* area;
-	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
-	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	if('v' == key){
-		if('a' == stack[sp-1].flag){
-			portal_draw_gl41(ent,ent->Aside, wor,geom, wnd,area);
-		}
-		if('b' == stack[sp-1].flag){
-			portal_draw_gl41(ent,ent->Bside, wor,geom, wnd,area);
-		}
-	}
-	if('?' == key){
-		if('a' == stack[sp-1].flag){
-			struct portalbuf* p = ent->Aside;
-			portal_matrix(ent, camg->frus.vc, ent->Aside, ent->Bside);
-			give_data_into_peer(ent,_fboa_, stack,sp, 0,0, 0,0);
-			portal_forwnd_update(ent, p, p->fbo, p->rect);
-		}
-		if('b' == stack[sp-1].flag){
-			struct portalbuf* p = ent->Bside;
-			portal_matrix(ent, camg->frus.vc, ent->Bside, ent->Aside);
-			give_data_into_peer(ent,_fbob_, stack,sp, 0,0, 0,0);
-			portal_forwnd_update(ent, p, p->fbo, p->rect);
-		}
-/*
-		//update matrix for fbo
-		struct supply* fbo = rel[1]->pchip;
-		struct style* rect = rel[1]->pfoot;
-		water_forfbo_update(ent,slot, wor,geom, dup,camg, fbo,rect);
-
-		//wnd.data -> fbo.texture
-		give_data_into_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
-
-		//fbo.texture -> my.data -> wnd.data
-		water_forwnd_update(ent,slot, fbo,rect);*/
-	}
+	portal_taking_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
 static void portal_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
@@ -451,38 +425,60 @@ static void portal_discon(struct halfrel* self, struct halfrel* peer)
 }
 static void portal_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	struct entity* ent;
-	struct portalbuf* p;
+	struct entity* ent = self->pchip;
+	if(0 == ent)return;
 
-	ent = self->pchip;
-	if(0==ent)return;
+	struct portalbuf* ptr = ent->mybuf;
+	if(0 == ptr)return;
 
+	struct entity* peer_portal;
 	switch(self->flag){
-	case 'a':{
-		p = ent->Aside;
-		p->world = peer->pchip;
-		p->geom = peer->pfoot;
+	case hex32('p','e','e','r'):
+		peer_portal = peer->pchip;
+		if(0 == peer_portal)break;
+
+		ptr->peer_portal = peer_portal;
+		ptr->peer_buf = peer_portal->mybuf;
 		break;
-	}
-	case 'b':{
-		p = ent->Bside;
-		p->world = peer->pchip;
-		p->geom = peer->pfoot;
+	case hex32('s','k','i','n'):
+		ptr->selfworld_body = peer->pchip;
+		ptr->selfworld_geom = peer->pfoot;
 		break;
-	}
-	case _fboa_:{
-		p = ent->Aside;
-		p->fbo = peer->pchip;
-		p->rect = peer->pfoot;
-		break;
-	}
-	case _fbob_:{
-		p = ent->Bside;
-		p->fbo = peer->pchip;
-		p->rect = peer->pfoot;
-		break;
-	}
 	}//switch
+}
+
+
+
+
+static void portal_search(struct entity* act, u32 foot, struct halfrel* self[], struct halfrel* peer[])
+{
+	struct relation* rel;
+
+	rel = act->irel0;
+	while(1){
+		if(0 == rel)return;
+		if(foot == rel->dstflag){
+			self[0] = (void*)&rel->dstchip;
+			peer[0] = (void*)&rel->srcchip;
+			return;
+		}
+		rel = samedstnextsrc(rel);
+	}
+}
+static void portal_modify(struct entity* act)
+{
+}
+static void portal_delete(struct entity* act)
+{
+}
+static void portal_create(struct entity* act, void* str)
+{
+	struct portalbuf* aa = act->mybuf = memorycreate(0x10000, 0);
+	if(0 == aa)return;
+
+	portal_fbo_prepare(&aa->fbo);
+
+	portal_mesh_prepare(&aa->mesh);
 }
 
 

@@ -120,7 +120,7 @@ static void mirror_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 	y /= t;
 	z /= t;
 
-	//b.len =  = (b-q) * nt
+	//b.len = (b-q) * nt
 	t = (obb->vc[0] - obb->vf[0] - frus->vq[0]) * x
 	  + (obb->vc[1] - obb->vf[1] - frus->vq[1]) * y
 	  + (obb->vc[2] - obb->vf[2] - frus->vq[2]) * z;

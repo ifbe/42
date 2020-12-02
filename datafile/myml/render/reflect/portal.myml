@@ -12,7 +12,10 @@ fmt:tree
 maze{
 fmt:maze
 }
-portal{
+portala{
+fmt:portal
+}
+portalb{
 fmt:portal
 }
 freecam{
@@ -46,9 +49,9 @@ skyhaha{
 }
 skygeom{
 c: 0.0, 0.0, 0.0
-r: 10000000.0, 0.0, 0.0
-f: 0.0, 10000000.0, 0.0
-t: 0.0, 0.0, 10000000.0
+r: 1000000.0, 0.0, 0.0
+f: 0.0, 1000000.0, 0.0
+t: 0.0, 0.0, 1000000.0
 }
 
 gndhaha{
@@ -99,9 +102,9 @@ t: 0.0, 0.0, 1000.0
 freeslot{
 }
 freegeom{
-r: 1.0, 0.0, 0.0
-f: 0.0, 1.0, 0.0
-t: 0.0, 0.0, 1.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
 c: -1000.0,-2500.0, 1000.0
 L: 0.0, 0.0, 0.0,-1.0
 R: 0.0, 0.0, 0.0, 1.0
@@ -110,14 +113,14 @@ T: 0.0, 0.0, 0.0, 1.0
 N: 0.0, 0.0, 0.0, 1.0
 F: 0.0, 0.0, 0.0, 1000000000000.0
 }
-
-arect{
-c:0.0, 0.0
-q:1.0, 1.0
-}
-brect{
-c:0.0, 0.0
-q:1.0, 1.0
+freendc{
+c: 0.0, 0.0, 0.0
+n: 0.0, 0.0, 0.0
+f: 0.0, 1.0, 0.0
+l:-1.0, 0.0, 0.0
+r: 1.0, 0.0, 0.0
+b: 0.0, 0.0,-1.0
+t: 0.0, 0.0, 1.0
 }
 freerect{
 c:0.0, 0.0
@@ -127,19 +130,17 @@ q:1.0, 1.0
 
 
 <relation>
-#portal depends on
-(portal, 0, fboa) -> (fboa, arect, by)
-(portal, 0, fbob) -> (fbob, brect, by)
+(portala, 0, peer) -> (portalb, 0, peer)
 
 #virtual depends on inner objects
 (virtual, skygeom, 0) -> (texball, skyhaha, 0)
 (virtual, gndgeom, 0) -> (ground, gndhaha, 0)
 (virtual, treegeom, 0) -> (tree, treehaha, 0)
 (virtual, mazegeom, 0) -> (maze, mazehaha, 0)
-(virtual, ageom, 0) -> (portal, 0, a)
-(virtual, bgeom, 0) -> (portal, 0, b)
+(virtual, ageom, 0) -> (portala, 0, skin)
+(virtual, bgeom, 0) -> (portalb, 0, skin)
 (virtual, freegeom, 0) -> (freecam, freeslot, 0)
 
 #glwnd depends on
-(opengl, freerect, 0) -> (freecam, 0, 0)
+(opengl, freerect, 0) -> (freecam, freendc, 0)
 </relation>

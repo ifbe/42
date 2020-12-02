@@ -245,6 +245,8 @@ void render_target(struct gl41data** cam, struct gl41data** lit, struct gl41data
 	if(0 == area){
 		glViewport(0, 0, 1024, 1024);
 		glScissor(0, 0, 1024, 1024);
+		glClearColor(0.1, 0.1, 0.1, 1.0);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 	else{
 		x0 = area->vc[0] * wnd->fbwidth;
@@ -253,10 +255,10 @@ void render_target(struct gl41data** cam, struct gl41data** lit, struct gl41data
 		hh = area->vq[1] * wnd->fbheight;
 		glViewport(x0, y0, ww, hh);
 		glScissor(x0, y0, ww, hh);
+		glClearColor(0.1, 0.1, 0.1, 1.0);
+		glClear(GL_DEPTH_BUFFER_BIT);
 	}
 
-	glClearColor(0.1, 0.1, 0.1, 1.0);
-	glClear(GL_DEPTH_BUFFER_BIT);
 	glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_DEPTH_TEST);
 

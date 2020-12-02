@@ -89,6 +89,15 @@ T: 0.0, 0.0, 0.0, 0.7
 N: 0.0, 0.0, 0.0, 1.0
 F: 0.0, 0.0, 0.0, 100000.0
 }
+freendc{
+c: 0.0, 0.0, 0.0
+n: 0.0, 0.0, 0.0
+f: 0.0, 1.0, 0.0
+l:-1.0, 0.0, 0.0
+r: 1.0, 0.0, 0.0
+b: 0.0, 0.0,-1.0
+t: 0.0, 0.0, 1.0
+}
 freerect{
 c:0.0, 0.0
 q:1.0, 1.0
@@ -105,5 +114,5 @@ q:1.0, 1.0
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
 
 #glwnd depends on cam
-(opengl, freerect, mvp) -> (freecam, 0, 0)
+(opengl, freerect, mvp) -> (freecam, freendc, 0)
 </relation>
