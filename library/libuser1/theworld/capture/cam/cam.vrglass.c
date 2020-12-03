@@ -2,7 +2,8 @@
 #define _in_ hex32('i','n', 0, 0)
 #define MATBUF buf0
 #define CAMBUF buf1
-void matproj_transpose(float* m, struct fstyle* sty);
+void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
+void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus);
 //
 void gl41data_before(void*);
 void gl41data_after(void*);
@@ -225,7 +226,7 @@ static void vrglass_matrix(
 	struct fstyle* frus = &geom->frus;
 
 	float* mat = act->MATBUF;
-	matproj_transpose((void*)mat, frus);
+	world2clip_projznzp_transpose((void*)mat, frus);
 	//printmat4(mat);
 }
 static void vrglass_camera(

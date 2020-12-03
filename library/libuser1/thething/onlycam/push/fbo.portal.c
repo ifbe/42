@@ -1,12 +1,13 @@
 #include "libuser.h"
 #define mybuf buf0
-void matproj_transpose(void* m, struct fstyle* sty);
+void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
+void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus);
 void gl41data_addcam(struct entity* wnd, struct gl41data* data);
 void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
 struct portalbuf{
-	mat4 mvp;
+	mat4 wvp;
 	vec4 vc;
 	struct entity* peer_portal;
 	struct portalbuf* peer_buf;
@@ -82,7 +83,7 @@ void portal_frustum(struct fstyle* frus, float* cam, struct fstyle* selfgeom, st
 	frus->vc[1] -= y0 * (frus->vn[3]);
 	frus->vc[2] -= z0 * (frus->vn[3]);
 
-	frus->vn[3] *= 2;
+	frus->vn[3] *= 1.001;
 
 /*	say("n,f,c = (%f,%f,%f,%f), (%f,%f,%f,%f), (%f,%f,%f)\n",
 		frus->vn[0], frus->vn[1], frus->vn[2], frus->vn[3],
@@ -214,7 +215,7 @@ void portal_fbo_update(
 
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "cammvp";
-	data->dst.arg[0].data = ptr->mvp;
+	data->dst.arg[0].data = ptr->wvp;
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
 	data->dst.arg[1].data = geom->frus.vc;
@@ -241,23 +242,26 @@ static void portal_mesh_update(
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
-	vec3 tc,tt;
+	vec3 tc,tr,tf,tt;
 	float* vc = geom->fs.vc;
 	float* vr = geom->fs.vr;
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
 
 	gl41line_rect(ctx, 0xffffff, vc, vr, vt);
-	tc[0] = vc[0] - vt[0];
-	tc[1] = vc[1] - vt[1];
-	tc[2] = vc[2] - vt[2];
-	gl41solid_rect(ctx, 0x00003f, tc, vr, vf);
+	tc[0] = vc[0] - vf[0]/2 - vt[0];
+	tc[1] = vc[1] - vf[1]/2 - vt[1];
+	tc[2] = vc[2] - vf[2]/2 - vt[2];
+	tf[0] = vf[0] / 2;
+	tf[1] = vf[1] / 2;
+	tf[2] = vf[2] / 2;
+	gl41line_rect(ctx, 0xffffff, tc, vr, tf);
 	tc[0] = vc[0] - vt[0] - vf[0];
 	tc[1] = vc[1] - vt[1] - vf[1];
 	tc[2] = vc[2] - vt[2] - vf[2];
-	tt[0] = vc[0] - vt[0] + vf[0];
-	tt[1] = vc[1] - vt[1] + vf[1];
-	tt[2] = vc[2] - vt[2] + vf[2];
+	tt[0] = vc[0] - vt[0];
+	tt[1] = vc[1] - vt[1];
+	tt[2] = vc[2] - vt[2];
 	gl41line_arrow(ctx, 0xffffff, tc, tt, vt);
 
 
@@ -372,7 +376,8 @@ static void portal_taking_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* 
 
 	//
 	portal_frustum(&geom->frus, camg->frus.vc, selfshap, peershap);
-	matproj_transpose(selfptr->mvp, &geom->frus);
+	if(_gl41full_ == wnd->fmt)world2clip_projznzp_transpose(selfptr->wvp, &geom->frus);
+	else world2clip_projz0z1_transpose(selfptr->wvp, &geom->frus);
 
 	//create or update fbo
 	portal_fbo_update(ent,foot, wor,geom, dup,camg, (void*)wnd,area);

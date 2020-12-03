@@ -131,11 +131,11 @@ subroutine (passtype) vec3 dirlight(){
 	mediump vec4 tmp = sunmvp * vec4(objxyz, 1.0);
 	tmp /= tmp.w;
 	tmp = (tmp+1.0)*0.5;
-	if(tmp.x < 0.0)return vec3(0.0);
-	if(tmp.x > 1.0)return vec3(0.0);
-	if(tmp.y < 0.0)return vec3(0.0);
-	if(tmp.y > 1.0)return vec3(0.0);
-	if(tmp.z - texture(shadowmap, tmp.xy).r > 0.0001)return vec3(0.0);
+
+	if( (tmp.x < 0.0) || (tmp.x > 1.0) ||
+		(tmp.y < 0.0) || (tmp.y > 1.0) )return vec3(0.1);
+
+	if(tmp.z - texture(shadowmap, tmp.xy).r > 0.0001)return vec3(0.2);
 
 	mediump vec3 N = normalize(normal);
 	mediump vec3 L = normalize(-sundir);
@@ -151,35 +151,59 @@ subroutine (passtype) vec3 dirlight(){
 
 
 subroutine (passtype) vec3 spotlight(){
-	mediump vec4 tmp = sunmvp * vec4(objxyz, 1.0);
-	tmp /= tmp.w;
-	if(tmp.x*tmp.x + tmp.y*tmp.y > 1.0)return vec3(0.0);
-	tmp = (tmp+1.0)*0.5;
-	if(tmp.z - texture(shadowmap, tmp.xy).r > 0.0001)return vec3(0.0);
-
 	mediump vec3 N = normalize(normal);
 	mediump vec3 L = normalize(sunxyz - objxyz);
-	mediump float SN = dot(N, L);
-	mediump vec3 ret = LA*KA + LD*KD*max(SN, 0.0);
-	if(SN < 0.0)return ret;
+	mediump float dotNL = dot(N, L);
+	mediump vec3 colour = LA*KA + LD*KD*max(dotNL, 0.0);
 
+	//out of light
+	mediump vec4 tmp = sunmvp * vec4(objxyz, 1.0);
+	tmp.x /= tmp.w;
+	tmp.y /= tmp.w;
+	float val = tmp.x*tmp.x + tmp.y*tmp.y;
+	if(val > 1.0)return 0.1*colour;
+
+	//in the shadow
+	tmp = (tmp+1.0)*0.5;
+	if(tmp.z+0.45 > tmp.w*texture(shadowmap, tmp.xy).r)return 0.2*colour;
+
+	//greater than 90 degree
+	if(dotNL < 0.0)return colour;
+
+	//have specular
 	mediump vec3 E = normalize(camxyz - objxyz);
 	mediump vec3 H = normalize(E + L);
 	mediump float NH = max(dot(N, H), 0.0);
-	return ret + LS*KS*pow(NH, 25.0);
+	return colour + LS*KS*pow(NH, 25.0);
 }
 
 
 subroutine (passtype) vec3 projector(){
+	mediump vec3 N = normalize(normal);
+	mediump vec3 L = normalize(sunxyz - objxyz);
+	mediump float dotNL = dot(N, L);
+	mediump vec3 colour = LA*KA + LD*KD*max(dotNL, 0.0);
+
+	//out of light
 	mediump vec4 tmp = sunmvp * vec4(objxyz, 1.0);
-	tmp /= tmp.w;
+	tmp.x /= tmp.w;
+	tmp.y /= tmp.w;
+	float val = tmp.x*tmp.x + tmp.y*tmp.y;
+	if(val > 1.0)return 0.1*colour;
+
+	//in the shadow
 	tmp = (tmp+1.0)*0.5;
-	if(tmp.x < 0.0)return vec3(0.0);
-	if(tmp.x > 1.0)return vec3(0.0);
-	if(tmp.y < 0.0)return vec3(0.0);
-	if(tmp.y > 1.0)return vec3(0.0);
-	if(tmp.z - texture(shadowmap, tmp.xy).r > 0.0001)return vec3(0.0);
-	return texture(prjtormap, tmp.xy).bgr;
+	if(tmp.z+0.45 > tmp.w*texture(shadowmap, tmp.xy).r)return 0.2*colour;
+
+	//greater than 90 degree
+	colour *= texture(prjtormap, tmp.xy).bgr;
+	if(dotNL < 0.0)return colour;
+
+	//have specular
+	mediump vec3 E = normalize(camxyz - objxyz);
+	mediump vec3 H = normalize(E + L);
+	mediump float NH = max(dot(N, H), 0.0);
+	return colour + LS*KS*pow(NH, 25.0);
 }
 
 

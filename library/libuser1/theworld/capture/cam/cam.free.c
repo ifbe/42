@@ -10,8 +10,8 @@
 #define DRAWTYPE data3
 #define RASTER 0
 #define RAYTRACE 1
-void matproj(mat4 mat, struct fstyle* sty);
-void mat4_transposefrom(float* m, float* u);
+void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
+void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus);
 void frustum2viewandclip_transpose(struct fstyle* frus, mat4 v_, mat4 vp);
 int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
 //cpurender
@@ -519,7 +519,7 @@ static int freecam_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 		//printstyle(&geom->frus);
 
 		mat4 m;
-		matproj(m, &geom->frus);
+		world2clip_projz0z1_transpose(m, &geom->frus);
 		//printmat4(m);
 
 		pixel_cleardepth(wnd);

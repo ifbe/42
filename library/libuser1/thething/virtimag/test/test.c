@@ -2,7 +2,8 @@
 #define s30 0.5
 #define s45 0.7071067811865476
 #define s60 0.8660254037844386
-void matproj(mat4 m, struct fstyle* sty);
+void world2clip_projznzp(mat4 mat, struct fstyle* frus);
+void clip2world_projznzp(mat4 mat, struct fstyle* frus);
 
 
 
@@ -70,7 +71,7 @@ void test_prepgl(struct gl41data* data)
 	vtx->ibuf_len = 2*3*2*6;
 
 	//argument
-	matproj(cammvp, &sty);
+	world2clip_projznzp(cammvp, &sty);
 	mat4_transpose(cammvp);
 
 	data->dst.arg[0].data = cammvp;
@@ -112,7 +113,7 @@ void test_tickgl(struct entity* ent, struct supply* sup)
 	sty.vb[1] = -sty.vt[1];
 	sty.vb[2] = -sty.vt[2];
 
-	matproj(cammvp, &sty);
+	world2clip_projznzp(cammvp, &sty);
 	mat4_transpose(cammvp);
 
 	sup->gleasy_solid = ent->buf0;

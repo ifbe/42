@@ -1,12 +1,13 @@
 #include "libuser.h"
-void matproj_transpose(void* m, struct fstyle* sty);
+void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
+void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus);
 void gl41data_insert(struct entity* ctx, int type, struct gl41data* data, int cnt);
 void gl41data_addcam(struct entity* wnd, struct gl41data* data);
 
 
 #define CTXBUF buf0
 struct mirrbuf{
-	mat4 mvp;
+	mat4 wvp;
 	struct gl41data geom;
 	struct gl41data dest;
 };
@@ -144,25 +145,14 @@ static void mirror_gl41fbo_update(
 	struct entity* wrl, struct style* camg,
 	struct supply* wnd, struct style* area)
 {
-	//frus from shape and eye
-	struct fstyle* shap = &geom->fshape;
-	struct fstyle* frus = &geom->frustum;
-	mirror_frustum(frus, shap, camg->frus.vc);
-
-	//mvp from frus
 	struct mirrbuf* mirr = act->CTXBUF;
-	if(0 == mirr)return;
-	matproj_transpose(mirr->mvp, frus);
-//printstyle(shap);
-//printstyle(frus);
-	//
 	struct gl41data* data = &mirr->dest;
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "cammvp";
-	data->dst.arg[0].data = mirr->mvp;
+	data->dst.arg[0].data = mirr->wvp;
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
-	data->dst.arg[1].data = frus->vc;
+	data->dst.arg[1].data = geom->frus.vc;
 	gl41data_addcam((void*)wnd, data);
 }
 void mirror_gl41fbo_prepare(struct mysrc* src)
@@ -289,6 +279,14 @@ static void mirror_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+
+	//frus from shape and eye
+	struct mirrbuf* mirr = ent->CTXBUF;
+	mirror_frustum(&geom->frus, &geom->fshape, camg->frus.vc);
+
+	//wvp from frus
+	if(_gl41full_ == wnd->fmt)world2clip_projznzp_transpose(mirr->wvp, &geom->frus);
+	else world2clip_projz0z1_transpose(mirr->wvp, &geom->frus);
 
 	//create or update fbo
 	mirror_gl41fbo_update(ent,foot, wor,geom, dup,camg, (void*)wnd,area);

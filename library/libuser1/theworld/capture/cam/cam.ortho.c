@@ -3,7 +3,8 @@
 #define CAMBUF buf1
 #define EVTYPE iw0
 #define EVSEND 666666
-int matorth(mat4 m, struct fstyle* s);
+void world2clip_orthz0z1_transpose(mat4 mat, struct fstyle* frus);
+void world2clip_orthznzp_transpose(mat4 mat, struct fstyle* frus);
 //
 void gl41data_before(void*);
 void gl41data_after(void*);
@@ -183,8 +184,7 @@ static void orthcam_matrix(
 	struct fstyle* frus = &geom->frus;
 	void* mat = act->MATBUF;
 
-	matorth(mat, frus);
-	mat4_transpose(mat);
+	world2clip_orthznzp_transpose(mat, frus);
 }
 
 

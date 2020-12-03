@@ -17,14 +17,13 @@ static int w = 0;
 static int h = 0;
 static int fbw = 0;
 static int fbh = 0;
-
-
-
-
-void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_update(struct supply* wnd,void* test, int x0,int y0, int xn,int yn)
 {
 	if(0 == lfb)return;
-	wndmgr_take(wnd,foot, stack,sp, arg,key, buf,len);
+	if(x0 < 0)x0 = 0;
+	if(y0 < 0)y0 = 0;
+	if(xn > w)xn = w;
+	if(yn > h)yn = h;
 
 	int bpp;
 	switch(wnd->vfmt){
@@ -43,9 +42,9 @@ void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 	int x,y;
 	u32* ibuf = wnd->rgbabuf;
 	u32* obuf = lfb;
-	for(y=0;y<h;y++){
+	for(y=y0;y<yn;y++){
 		obuf = lfb + y*fbw;
-		for(x=0;x<w;x++){
+		for(x=x0;x<xn;x++){
 			*obuf = ibuf[y*w + x];
 			obuf = (void*)obuf + bpp;
 
@@ -53,10 +52,27 @@ void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 		}
 	}
 }
+
+
+
+
+void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == lfb)return;
+	wndmgr_take(wnd,foot, stack,sp, arg,key, buf,len);
+
+	//10fps? update whole window
+	window_update(wnd,0, 0,0, w,h);
+}
 void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//printmemory(buf, 32);
 	wndmgr_give(wnd,0, stack,sp, 0,0, buf,len);
+
+	//only update mouse area
+	int x = wnd->ix0;
+	int y = wnd->iy0;
+	window_update(wnd,0, x-16,y-16, x+16,y+16);
 }
 void windowlist()
 {

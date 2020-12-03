@@ -1,5 +1,6 @@
 #include "libuser.h"
-void matproj_transpose(void* m, struct fstyle* sty);
+void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
+void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus);
 void gl41data_addcam(struct entity* wnd, struct gl41data* data);
 void gl41data_addlit(struct entity* wnd, struct gl41data* data);
 void gl41data_insert(struct entity* ctx, int type, struct gl41data* src, int cnt);
@@ -7,7 +8,7 @@ void gl41data_insert(struct entity* ctx, int type, struct gl41data* src, int cnt
 
 #define OWNBUF buf0
 struct sunbuf{
-	mat4 mvp;
+	mat4 wvp;
 	vec4 rgb;
 	struct gl41data cam;
 	struct gl41data lit;
@@ -114,7 +115,7 @@ static void projector_lit_update(
 	//gl41
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "sunmvp";
-	data->dst.arg[0].data = sun->mvp;
+	data->dst.arg[0].data = sun->wvp;
 
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "sunrgb";
@@ -158,7 +159,7 @@ static void projector_cam_update(
 
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "cammvp";
-	data->dst.arg[0].data = sun->mvp;
+	data->dst.arg[0].data = sun->wvp;
 
 	data->dst.arg[1].fmt = 'v';
 	data->dst.arg[1].name = "camxyz";
@@ -286,7 +287,8 @@ static void projector_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void*
 
 	struct sunbuf* sun = ent->OWNBUF;
 	projector_frustum(&geom->frus, &geom->fs);
-	matproj_transpose(sun->mvp, &geom->frus);
+	if(_gl41full_ == wnd->fmt)world2clip_projznzp_transpose(sun->wvp, &geom->frus);
+	else world2clip_projz0z1_transpose(sun->wvp, &geom->frus);
 
 	projector_cam_update(ent,foot, wor,geom, wnd,area);
 	projector_lit_update(ent,foot, wor,geom, wnd,area);

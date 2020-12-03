@@ -1,6 +1,7 @@
 #include "libuser.h"
 #define _fbo_ hex32('f','b','o',0)
-void matproj_transpose(void* m, struct fstyle* sty);
+void world2clip_projz0z1_transpose(mat4 mat, struct fstyle* frus);
+void world2clip_projznzp_transpose(mat4 mat, struct fstyle* frus);
 void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 
 
@@ -156,7 +157,7 @@ static void glass_forfbo_update(
 	//mvp from frus
 	struct glassbuf* glass = act->CAMBUF;
 	if(0 == glass)return;
-	matproj_transpose(glass->mvp, frus);
+	world2clip_projznzp_transpose(glass->mvp, frus);
 
 	//give arg(matrix and position) to fbo
 	struct gl41data* data = (void*)(glass->data);

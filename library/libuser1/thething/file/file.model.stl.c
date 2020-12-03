@@ -10,9 +10,11 @@ void dx11data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 void gl41data_insert(struct entity* ctx, int type, struct mysrc* src, int cnt);
 void gl41solid_spheretest(struct entity* win, u32 rgb, vec3 vc);
 //
-void invproj(mat4 mat, struct fstyle* frus);
 void world2local(mat4 mat, struct fstyle* src, struct fstyle* dst);
 void local2world(mat4 mat, struct fstyle* src, struct fstyle* dst);
+void world2clip_projznzp(mat4 mat, struct fstyle* frus);
+void clip2world_projznzp(mat4 mat, struct fstyle* frus);
+//
 void mat4_transposefrom(mat4, mat4);
 void mat4_multiplyfrom(mat4, mat4, mat4);
 void vec3_normalizefrom(vec3 to, vec3 v);
@@ -394,7 +396,7 @@ static void stl3d_rgba_raytrace(
 
 	mat4 mat,inv;
 	world2local(mat, own->worldgeom, own->localgeom);
-	invproj(inv, &camg->frus);
+	clip2world_projznzp(inv, &camg->frus);
 
 	void* rgba = wnd->rgbabuf;
 	int stride = wnd->fbwidth;
@@ -463,7 +465,7 @@ static void stl3d_tui_raytrace(
 
 	mat4 mat,inv;
 	world2local(mat, own->worldgeom, own->localgeom);
-	invproj(inv, &camg->frus);
+	clip2world_projznzp(inv, &camg->frus);
 
 	vec4 ro,rd, vv,oo;
 	for(j=0;j<3;j++)ro[j] = camg->frus.vc[j];

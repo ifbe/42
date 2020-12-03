@@ -178,5 +178,10 @@ int wndmgr_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, voi
 		stack[sp+1].flag = the->dstflag;
 		entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 	}
+
+	int x = wnd->ix0;
+	int y = wnd->iy0;
+	drawline((void*)wnd, 0xffff00, x-16, y, x+16, y);
+	drawline((void*)wnd, 0xffff00, x, y-16, x, y+16);
 	return 0;
 }
