@@ -52,12 +52,12 @@ int devicelinkup(struct halfrel* self, struct halfrel* peer);
 int devicedelete(void*);
 void* devicecreate(u64 type, void* addr, int argc, u8** argv);
 //
-int worker_take(struct item* wrk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int worker_give(struct item* wrk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-int workerdiscon(struct halfrel* self, struct halfrel* peer);
-int workerlinkup(struct halfrel* self, struct halfrel* peer);
-int workerdelete(void*);
-void* workercreate(u64 type, void* addr, int argc, u8** argv);
+int bootup_take(struct item* wrk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int bootup_give(struct item* wrk,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+int bootupdiscon(struct halfrel* self, struct halfrel* peer);
+int bootuplinkup(struct halfrel* self, struct halfrel* peer);
+int bootupdelete(void*);
+void* bootupcreate(u64 type, void* addr, int argc, u8** argv);
 //
 int origin_take(struct item* ori,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 int origin_give(struct item* ori,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);

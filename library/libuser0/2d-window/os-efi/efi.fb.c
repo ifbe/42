@@ -24,7 +24,7 @@ void window_update(struct supply* wnd,void* test, int x0,int y0, int xn,int yn)
 	if(y0 < 0)y0 = 0;
 	if(xn > w)xn = w;
 	if(yn > h)yn = h;
-
+//say("%d,%d,%d,%d\n",x0,y0,xn,yn);
 	int bpp;
 	switch(wnd->vfmt){
 	case _bgra8888_:
@@ -43,7 +43,7 @@ void window_update(struct supply* wnd,void* test, int x0,int y0, int xn,int yn)
 	u32* ibuf = wnd->rgbabuf;
 	u32* obuf = lfb;
 	for(y=y0;y<yn;y++){
-		obuf = lfb + y*fbw;
+		obuf = lfb + y*fbw + x0*bpp;
 		for(x=x0;x<xn;x++){
 			*obuf = ibuf[y*w + x];
 			obuf = (void*)obuf + bpp;
@@ -72,6 +72,7 @@ void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 	//only update mouse area
 	int x = wnd->ix0;
 	int y = wnd->iy0;
+	//say("x=%d,y=%d\n",x,y);
 	window_update(wnd,0, x-16,y-16, x+16,y+16);
 }
 void windowlist()

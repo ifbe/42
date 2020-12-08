@@ -160,7 +160,7 @@ int relation_take(struct item* item,void* foot, struct halfrel* stack,int sp, vo
 	}
 	switch(item->tier){
 		case _ori_:return origin_take(item,foot, stack,sp, arg, idx, buf, len);
-		case _wrk_:return worker_take(item,foot, stack,sp, arg, idx, buf, len);
+		case _wrk_:return bootup_take(item,foot, stack,sp, arg, idx, buf, len);
 		case _dev_:return device_take(item,foot, stack,sp, arg, idx, buf, len);
 		case _dri_:return driver_take(item,foot, stack,sp, arg, idx, buf, len);
 		case _sys_:return system_take((void*)item,foot, stack,sp, arg, idx, buf, len);
@@ -253,7 +253,7 @@ int relation_w(struct item* item,void* foot, struct halfrel* stack,int sp, void*
 	}
 	switch(item->tier){
 		case _ori_:return origin_give(item,foot, stack,sp, arg,idx, buf,len);
-		case _wrk_:return worker_give(item,foot, stack,sp, arg,idx, buf,len);
+		case _wrk_:return bootup_give(item,foot, stack,sp, arg,idx, buf,len);
 		case _dev_:return device_give(item,foot, stack,sp, arg,idx, buf,len);
 		case _dri_:return driver_give(item,foot, stack,sp, arg,idx, buf,len);
 		case _sys_:return system_give((void*)item,foot, stack,sp, arg,idx, buf,len);
@@ -347,7 +347,7 @@ int relation_d(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->type){
 		case _ori_:return origindiscon(self, peer);
-		case _wrk_:return workerdiscon(self, peer);
+		case _wrk_:return bootupdiscon(self, peer);
 		case _dev_:return devicediscon(self, peer);
 		case _dri_:return driverdiscon(self, peer);
 		case _sys_:return systemdiscon(self, peer);
@@ -371,7 +371,7 @@ int relation_a(struct halfrel* self, struct halfrel* peer)
 {
 	switch(self->type){
 		case _ori_:return originlinkup(self, peer);
-		case _wrk_:return workerlinkup(self, peer);
+		case _wrk_:return bootuplinkup(self, peer);
 		case _dev_:return devicelinkup(self, peer);
 		case _dri_:return driverlinkup(self, peer);
 		case _sys_:return systemlinkup(self, peer);

@@ -272,7 +272,7 @@ int role_test_node(u64 tier, int aaa, struct chiplist chip[], int clen, u8* buf,
 					case _sys_:chip[clen].addr = systemcreate(fmt, url, argc, argv);break;
 					case _dri_:chip[clen].addr = drivercreate(fmt, url, argc, argv);break;
 					case _dev_:chip[clen].addr = devicecreate(fmt, url, argc, argv);break;
-					case _wrk_:chip[clen].addr = workercreate(fmt, url, argc, argv);break;
+					case _wrk_:chip[clen].addr = bootupcreate(fmt, url, argc, argv);break;
 				}
 
 				nodename = -1;
@@ -456,7 +456,7 @@ void role_test1(u8* buf, int len)
 				typename = j+1;
 			}
 			else {
-				if(0 == ncmp(buf+typename, "worker", 6)) {
+				if(0 == ncmp(buf+typename, "bootup", 6)) {
 					clen = role_test_node(
 						_wrk_, 0, cbuf, clen,
 						buf + typedata, j-typedata

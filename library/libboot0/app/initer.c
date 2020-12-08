@@ -22,8 +22,8 @@ void initdriver(void*);
 void freedevice();
 void initdevice(void*);
 //libboot1
-void freeworker();
-void initworker(void*);
+void freebootup();
+void initbootup(void*);
 //libboot0
 void freeorigin();
 void initorigin(void*);
@@ -42,14 +42,14 @@ void death()
 	freedevice();
 
 	//libboot
-	freeworker();
+	freebootup();
 	freeorigin();
 }
 void birth(void* addr)
 {
 	//libboot
 	initorigin(addr+0x000000);
-	initworker(addr+0x200000);
+	initbootup(addr+0x200000);
 
 	//libsoft
 	initdevice(addr+0x400000);

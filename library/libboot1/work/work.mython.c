@@ -2,7 +2,7 @@
 void poweroff();
 //
 void* originsearch(void*, int);
-void* workersearch(void*, int);
+void* bootupsearch(void*, int);
 void* devicesearch(void*, int);
 void* driversearch(void*, int);
 void* systemsearch(void*, int);
@@ -10,7 +10,7 @@ void* arterysearch(void*, int);
 void* supplysearch(void*, int);
 void* entitysearch(void*, int);
 void* originmodify(int argc, void* argv);
-void* workermodify(int argc, void* argv);
+void* bootupmodify(int argc, void* argv);
 void* devicemodify(int argc, void* argv);
 void* drivermodify(int argc, void* argv);
 void* systemmodify(int argc, void* argv);
@@ -44,7 +44,7 @@ void term_ls(u8* buf, int len)
 	{
 		originsearch(0, 0);
 		say("----------------\n");
-		workersearch(0, 0);
+		bootupsearch(0, 0);
 		say("----------------\n");
 		devicesearch(0, 0);
 		say("----------------\n");
@@ -62,7 +62,7 @@ void term_ls(u8* buf, int len)
 
 	buf += 3;
 	if(0 == ncmp(buf, "origin", 6))originsearch(0, 0);
-	else if(0 == ncmp(buf, "worker", 6))workersearch(0, 0);
+	else if(0 == ncmp(buf, "bootup", 6))bootupsearch(0, 0);
 	else if(0 == ncmp(buf, "device", 6))devicesearch(0, 0);
 	else if(0 == ncmp(buf, "driver", 6))driversearch(0, 0);
 	else if(0 == ncmp(buf, "system", 6))systemsearch(0, 0);
@@ -123,7 +123,7 @@ int termwrite(u8* buf, int len)
 	else if(0 == ncmp(buf, "mmio", 4))term_mmio(j, argv);
 	else if(0 == ncmp(buf, "memory", 5))term_memory(j, argv);
 	else if(0 == ncmp(buf, "origin", 6))originmodify(j, argv);
-	else if(0 == ncmp(buf, "worker", 6))workermodify(j, argv);
+	else if(0 == ncmp(buf, "bootup", 6))bootupmodify(j, argv);
 	else if(0 == ncmp(buf, "device", 6))devicemodify(j, argv);
 	else if(0 == ncmp(buf, "driver", 6))drivermodify(j, argv);
 	else if(0 == ncmp(buf, "system", 6))systemmodify(j, argv);

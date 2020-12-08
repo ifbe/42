@@ -24,9 +24,9 @@ void android_main(struct android_app* app)
 	chdir("/sdcard/42/");
 
 	void* all = origincreate(_ndkmain_, 0, 0, 0);
-	void* thr = workercreate(0, 0, 0, 0);
+	void* thr = bootupcreate(0, 0, 0, 0);
 
-	workerdelete(thr);
+	bootupdelete(thr);
 	origindelete(all);
 
 	exit(0);
