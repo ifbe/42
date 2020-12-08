@@ -401,15 +401,14 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 
 
 //------------------------device side------------------------
+	INTERFACE_REQUEST_SET_PROTOCOL(&req, 0, 0);
+	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, 0,0);
+	if(ret < 0)return -11;
+
 	say("[usbhid]set_config\n");
 	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
 	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, 0,0);
 	if(ret < 0)return -10;
-/*
-	INTERFACE_REQUEST_SET_INTERFACE(&req, my->intf, 0);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, buf,req.wLength);
-	if(4 != ret)return -11;
-*/
 
 
 //------------------------transfer ring------------------------
