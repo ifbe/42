@@ -60,31 +60,35 @@ void dbg(u8* fmt, ...)
 }
 void say(u8* fmt, ...)
 {
-	int cur,ret;
+	int cur,len;
+	u8* ptr;
 	__builtin_va_list arg;
 
 	//read position
 	cur = outcur;
 
-	//
+	//va start
 	__builtin_va_start(arg, fmt);
 
-	//
-	ret = myvsnprintf(outputqueue+cur, 0x1000, fmt, arg);
+	//convert
+	len = myvsnprintf(outputqueue+cur, 0x1000, fmt, arg);
 
-	//
+	//va end
 	__builtin_va_end(arg);
 
-	//debugport
-	lowlevel_output(outputqueue+cur, ret);
+	//tmp
+	ptr = outputqueue+cur;
 
-	//framebuffer
-	//danmu_output(outputqueue+cur, ret);
-
-	//write position
-	cur = cur+ret;
+	//position
+	cur = cur+len;
 	if(cur > 0x3f000)cur = 0;
 	outcur = cur;
+
+	//debugport
+	lowlevel_output(ptr, len);
+
+	//framebuffer
+	//danmu_output(ptr, len);
 }
 void printbigint(u8* buf, int len)
 {

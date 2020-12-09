@@ -2,14 +2,15 @@
 ground{
 fmt:ground
 albedo:/Users/ifbe/Downloads/floor/albedo.png
-normal:/Users/ifbe/Downloads/floor/normal.png
 matter:/Users/ifbe/Downloads/floor/matter.png
+normal:/Users/ifbe/Downloads/floor/normal.png
 }
 thebox{
 fmt:obj3d
 url:datafile/obj/cube.obj
 albedo:/Users/ifbe/Downloads/rustiron/albedo.png
 matter:/Users/ifbe/Downloads/rustiron/matter.png
+normal:/Users/ifbe/Downloads/rustiron/normal.png
 }
 rabbit{
 fmt:stl3d
@@ -69,9 +70,9 @@ t: 0.0, 0.0, 1000.0
 freeslot{
 }
 freegeom{
-r: 1.0, 0.0, 0.0
-f: 0.0, 1.0, 0.0
-t: 0.0, 0.0, 1.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 100.0, 0.0
+t: 0.0, 0.0, 100.0
 c: 0.0,-4000.0, 3000.0
 L: 0.0, 0.0, 0.0,-1.0
 R: 0.0, 0.0, 0.0, 1.0

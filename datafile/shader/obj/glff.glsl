@@ -1,7 +1,8 @@
 #version 410 core
 in mediump vec3 objxyz;
-in mediump vec3 normal;
 in mediump vec2 texcoo;
+in mediump vec3 normal;
+in mediump vec3 tangen;
 out mediump vec4 FragColor;
 subroutine vec3 passtype();
 subroutine uniform passtype routine;
@@ -27,7 +28,16 @@ mediump float getG(mediump float v, mediump float r){
     float k = (r+1.0) * (r+1.0) / 8.0;
     return v / (v * (1.0 - k) + k);
 }
-subroutine (passtype) vec3 rawcolor(){
+mediump vec3 getnormal(){
+	vec3 N = normalize(normal);
+	vec3 T = normalize(tangen);
+	T = normalize(T - N * dot(T, N));
+	vec3 B = cross(N, T);
+	vec3 XYZ = texture(normalmap, texcoo).bgr * 2.0 - vec3(1.0);
+	mat3 TBN = mat3(T, B, N);
+	return TBN * XYZ;
+}
+subroutine (passtype) vec3 pbrcolor(){
 	mediump vec3 albedo = pow(texture(albedomap, texcoo).bgr, vec3(2.2));
 	mediump vec3 matter = texture(mattermap, texcoo).bgr;
 
@@ -35,7 +45,7 @@ subroutine (passtype) vec3 rawcolor(){
 	mediump float rough = matter.y;
 	mediump float amocc = matter.z;
 
-	mediump vec3 N = normalize(normal);
+	mediump vec3 N = getnormal();
 	mediump vec3 E = normalize(camxyz - objxyz);
 	mediump vec3 F0 = mix(vec3(0.04), albedo, metal);
 

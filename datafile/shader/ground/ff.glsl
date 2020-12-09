@@ -25,7 +25,7 @@ float getG(float v, float r){
     float k = (r+1.0) * (r+1.0) / 8.0;
     return v / (v * (1.0 - k) + k);
 }
-subroutine (passtype) vec3 rawcolor(){
+subroutine (passtype) vec3 pbrcolor(){
 	vec3 albedo = pow(texture(tex0, objuvw).bgr, vec3(2.2));
 	vec3 normal = texture(tex1, objuvw).bgr * 2.0 - vec3(1.0);
 	vec3 matter = texture(tex2, objuvw).bgr;

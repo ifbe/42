@@ -32,7 +32,7 @@ mediump float getG(mediump float v, mediump float r){
     float k = (r+1.0) * (r+1.0) / 8.0;
     return v / (v * (1.0 - k) + k);
 }
-subroutine (passtype) vec3 rawcolor(){
+subroutine (passtype) vec3 pbrcolor(){
 	mediump float metal = matter.x;
 	mediump float rough = matter.y;
 	mediump float amocc = matter.z;

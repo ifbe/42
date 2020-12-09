@@ -90,7 +90,7 @@ void gl41data_nolit(struct entity* wnd)
 	struct gl41data* data = trick + 0x400;
 
 	data->dst.routine_name = "passtype";
-	data->dst.routine_detail = "rawcolor";
+	data->dst.routine_detail = "pbrcolor";
 
 	wnd->glfull_light[0] = (void*)data;
 }

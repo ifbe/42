@@ -185,3 +185,23 @@ void loadtexfromfile(struct texture* tex, char* name)
 	tex->w = w;
 	tex->h = h;
 }
+
+
+
+
+void loadtexfromcolor(struct texture* tex, u32 rgb, int w, int h)
+{
+	if(0 == tex)return;
+
+	u32* buf = tex->data;
+	if(0 == buf)return;
+
+	int x,y;
+	for(y=0;y<h;y++){
+		for(x=0;x<w;x++){
+			buf[y*w + x] = rgb | 0xff000000;
+		}
+	}
+	tex->w = w;
+	tex->h = h;
+}
