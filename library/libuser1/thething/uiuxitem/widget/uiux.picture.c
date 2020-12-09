@@ -162,15 +162,13 @@ static void picture_draw_cli(
 
 static void picture_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		picture_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
+	if(0 == stack)return;
+
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	picture_draw_gl41(ent,foot, wor,geom, wnd,area);
 }
 static void picture_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

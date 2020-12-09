@@ -199,7 +199,7 @@ void loadtexfromcolor(struct texture* tex, u32 rgb, int w, int h)
 	int x,y;
 	for(y=0;y<h;y++){
 		for(x=0;x<w;x++){
-			buf[y*w + x] = rgb | 0xff000000;
+			buf[y*w + x] = rgb;
 		}
 	}
 	tex->w = w;

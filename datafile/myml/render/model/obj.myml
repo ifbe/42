@@ -2,7 +2,9 @@
 rabbit{
 fmt:obj3d
 url:datafile/obj/viking_room.obj
-albedo:datafile/obj/viking_room.png
+#albedo:datafile/obj/viking_room.png
+albedo:datafile/jpg/brickwall.jpg
+normal:datafile/jpg/brickwall_normal.jpg
 }
 freecam{
 fmt:freecam

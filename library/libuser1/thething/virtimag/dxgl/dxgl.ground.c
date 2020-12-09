@@ -266,7 +266,6 @@ static void ground_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
 	if(0 == stack)return;
-	if('v' != key)return;
 
 	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
@@ -303,7 +302,7 @@ static void ground_create(struct entity* act, void* str, int argc, u8** argv)
 	int j;
 	if(0 == act)return;
 
-	struct privdata* own = act->OWNBUF = memorycreate(0x1000, 0);
+	struct privdata* own = act->OWNBUF = memorycreate(0x10000, 0);
 	if(0 == own)return;
 
 	char* dxvs = 0;

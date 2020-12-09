@@ -538,7 +538,7 @@ static void terrain_create(struct entity* act, void* arg, int argc, u8** argv)
 	act->fy0 = -2.0;
 	act->fz0 = -2.0;
 
-	struct privdata* own = act->OWNBUF = memorycreate(0x1000, 0);
+	struct privdata* own = act->OWNBUF = memorycreate(0x10000, 0);
 	if(0 == own)return;
 
 	char* rgb = 0;

@@ -230,15 +230,12 @@ static void vjoy_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, struct ev
 
 static int vjoy_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//struct entity* ent = stack[sp-1].pchip;
-	struct style* slot = stack[sp-1].pfoot;
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
 	case _gl41full_:{
-		if('v' != key)break;
-		vjoy_read_bywnd(ent,slot, wnd,area);break;
+		vjoy_read_bywnd(ent,foot, wnd,area);break;
 	}
 	}
 	return 0;

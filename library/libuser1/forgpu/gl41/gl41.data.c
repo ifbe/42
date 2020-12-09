@@ -137,10 +137,14 @@ void gl41data_before(struct entity* ctx)
 	struct gl41data* p;
 
 	//camera: default
-	ctx->glfull_camera[0] = 0;
+	for(j=0;j<16;j++){
+		ctx->glfull_camera[j] = 0;
+	}
 
 	//light: default
-	//ctx->glfull_light[0] = 0;
+	for(j=0;j<16;j++){
+		ctx->glfull_light[j] = 0;
+	}
 	gl41data_nolit(ctx);
 
 	//solid: clear myown, forget other

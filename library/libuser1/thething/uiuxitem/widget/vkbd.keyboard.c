@@ -309,16 +309,13 @@ static void vkbd_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, struct ev
 
 static int vkbd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//struct entity* ent = stack[sp-1].pchip;
-	struct style* slot = stack[sp-1].pfoot;
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
 	case _dx11full_:
 	case _gl41full_:{
-		if('v' != key)break;
-		vkbd_read_bygl41(ent,slot, wnd,area);break;
+		vkbd_read_bygl41(ent,foot, wnd,area);break;
 	}
 	}
 	return 0;

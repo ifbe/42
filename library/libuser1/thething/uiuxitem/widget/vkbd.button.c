@@ -53,7 +53,6 @@ static void button_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
 	if(0 == stack)return;
-	if('v' != key)return;
 
 	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
@@ -81,21 +80,18 @@ static void button_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 
 static void button_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//struct entity* ent = stack[sp-1].pchip;
-	struct style* slot = stack[sp-1].pfoot;
 	struct supply* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
 	case _rgba_:
-		button_draw_pixel(ent, slot, (void*)wnd, area);
+		button_draw_pixel(ent,foot, (void*)wnd,area);
 		break;
 	case _dx11full_:
 	case _mt20full_:
 	case _gl41full_:
 	case _vk12full_:
-		if('v' != key)break;
-		button_read_bywnd(ent,slot, (void*)wnd,area);
+		button_read_bywnd(ent,foot, (void*)wnd,area);
 		break;
 	default:
 		button_read_bycam(ent,foot, stack,sp, arg,key);

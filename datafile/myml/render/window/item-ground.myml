@@ -8,9 +8,11 @@ normal:/Users/ifbe/Downloads/floor/normal.png
 thebox{
 fmt:obj3d
 url:datafile/obj/cube.obj
-albedo:/Users/ifbe/Downloads/rustiron/albedo.png
-matter:/Users/ifbe/Downloads/rustiron/matter.png
-normal:/Users/ifbe/Downloads/rustiron/normal.png
+#albedo:/Users/ifbe/Downloads/rustiron/albedo.png
+#matter:/Users/ifbe/Downloads/rustiron/matter.png
+#normal:/Users/ifbe/Downloads/rustiron/normal.png
+albedo:datafile/jpg/brickwall.jpg
+normal:datafile/jpg/brickwall_normal.jpg
 }
 rabbit{
 fmt:stl3d

@@ -119,8 +119,6 @@ static void slider_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, struct 
 
 static int slider_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//struct entity* ent = stack[sp-1].pchip;
-	struct style* slot = stack[sp-1].pfoot;
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
@@ -131,8 +129,7 @@ static int slider_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 	case _mt20full_:
 	case _gl41full_:
 	case _vk12full_:
-		if('v' != key)break;
-		slider_read_bywnd(ent,slot, wnd,area);
+		slider_read_bywnd(ent,foot, wnd,area);
 		break;
 	}
 	return 0;

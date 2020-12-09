@@ -111,7 +111,8 @@ static void obj3d_ctxforgl41(struct gl41data* data, char* albedo, char* matter, 
 	dst->texname[1] = "mattermap";
 	src->tex[1].fmt = hex32('r','g','b','a');
 	src->tex[1].data = memorycreate(2048*2048*4, 0);
-	loadtexfromfile(&src->tex[1], matter);
+	if(matter)loadtexfromfile(&src->tex[1], matter);
+	else loadtexfromcolor(&src->tex[1], 0xff8001, 2048, 2048);
 	src->tex_enq[1] = 42;
 
 	//normal
@@ -380,7 +381,7 @@ static void obj3d_create(struct entity* act, void* arg, int argc, u8** argv)
 	if(0 == glvs)glvs = "datafile/shader/obj/glfv.glsl";
 	if(0 == glfs)glfs = "datafile/shader/obj/glff.glsl";
 	if(0 == albedo)albedo = "datafile/jpg/wall.jpg";
-	if(0 == matter)matter = "datafile/jpg/wallnormal.jpg";
+	//if(0 == matter)matter = "datafile/jpg/wallnormal.jpg";
 	//if(0 == normal)normal = "datafile/jpg/wallnormal.jpg";
 
 	//obj3d_ctxforgl41(&own->gl41.src, albedo, normal, dxvs, dxfs);
