@@ -3,6 +3,7 @@
 #define _rgba8880_ hex64('r', 'g', 'b', 'a', '8', '8', '8', '0')
 #define _bgra8888_ hex64('b', 'g', 'r', 'a', '8', '8', '8', '8')
 #define _rgba8888_ hex64('r', 'g', 'b', 'a', '8', '8', '8', '8')
+void stdout_setwindow(void* node);
 void getscreen(void** _buf, u64* _fmt, int* _w, int* _h, int* _fbw, int* _fbh);
 //
 int wndmgr_take(void*,void*, void*,int, void*,int, void*,int);
@@ -66,25 +67,35 @@ void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 }
 void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//printmemory(buf, 32);
-	wndmgr_give(wnd,0, stack,sp, 0,0, buf,len);
+	if(foot){
+		drawstring((void*)wnd,0xff00ff, 0,wnd->height-16, buf,len);
+		window_update(wnd,0, 0,wnd->height-16, wnd->width,wnd->height);
+	}
+	else{
+		//printmemory(buf, 32);
+		wndmgr_give(wnd,0, stack,sp, 0,0, buf,len);
 
-	//only update mouse area
-	int x = wnd->ix0;
-	int y = wnd->iy0;
-	//say("x=%d,y=%d\n",x,y);
-	window_update(wnd,0, x-16,y-16, x+16,y+16);
+		//only update mouse area
+		int x = wnd->ix0;
+		int y = wnd->iy0;
+		//say("x=%d,y=%d\n",x,y);
+		window_update(wnd,0, x-16,y-16, x+16,y+16);
+	}
 }
-void windowlist()
+void windowdiscon()
 {
 }
-void windowchoose()
+void windowlinkup()
 {
 }
-void windowstart()
+
+
+
+
+void windowsearch()
 {
 }
-void windowstop()
+void windowmodify()
 {
 }
 void windowdelete(struct supply* wnd)
@@ -106,6 +117,7 @@ void windowcreate(struct supply* wnd)
 	//wnd->fbheight = 0;
 
 	wnd->rgbabuf = (void*)0x4000000;
+	stdout_setwindow(wnd);
 }
 
 

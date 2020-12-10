@@ -70,10 +70,11 @@ void parsevec3fromobj(float* dst, int cnt, u8* buf, int len)
 {
 	int j,k = 0;
 	float* v = &dst[cnt*3];
-	say("parsevec3fromobj: %.*s\n",len,buf);
+	say("parsevec3fromobj: %p,%d, %.*s\n", dst,cnt, len,buf);
 
 	for(j=0;j<3;j++){
 		if(k >= len)break;
+		if(0xa >= buf[k])break;
 		k += 1+decstr2float(buf+k, &v[j]);
 	}
 	say("%d: %f,%f,%f\n", j, v[0], v[1], v[2]);
@@ -167,10 +168,10 @@ void parsevertfromobj(struct mysrc* ctx, struct fstyle* sty, u8* buf, int len)
 	int ct = 0;
 	int cn = 0;
 	int cp = 0;
-	float* fv = ctx->vtx[0].vbuf+0x100000;
-	float* ft = ctx->vtx[0].vbuf+0x140000;
-	float* fn = ctx->vtx[0].vbuf+0x180000;
-	float* fp = ctx->vtx[0].vbuf+0x1c0000;
+	float* fv = (void*)(buf+0x100000);
+	float* ft = (void*)(buf+0x140000);
+	float* fn = (void*)(buf+0x180000);
+	float* fp = (void*)(buf+0x1c0000);
 	float* dst = ctx->vtx[0].vbuf;
 
 	k = 0;

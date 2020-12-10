@@ -9,7 +9,7 @@
 int myvsnprintf(u8* buf, int len, u8* fmt, __builtin_va_list arg);
 int mysnprintf(u8* buf, int len, u8* fmt, ...);
 void lowlevel_output(void*, int);
-void danmu_output(void*, int);
+void window_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 
@@ -31,6 +31,20 @@ void* getstdout()
 int getcurout()
 {
 	return outcur;
+}
+
+
+
+
+static void* serialnode = 1;
+static void* windownode = 0;
+void stdout_setseiral(void* node)
+{
+	serialnode = node;
+}
+void stdout_setwindow(void* node)
+{
+	windownode = node;
 }
 
 
@@ -85,11 +99,15 @@ void say(u8* fmt, ...)
 	outcur = cur;
 
 	//debugport
-	lowlevel_output(ptr, len);
+	if(serialnode)lowlevel_output(ptr, len);
 
 	//framebuffer
-	//danmu_output(ptr, len);
+	if(windownode)window_give(windownode,windownode, 0,0, 0,0, ptr, len);
 }
+
+
+
+
 void printbigint(u8* buf, int len)
 {
 	int j;
