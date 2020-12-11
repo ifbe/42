@@ -68,8 +68,11 @@ void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(foot){
-		drawstring((void*)wnd,0xff00ff, 0,wnd->height-16, buf,len);
-		window_update(wnd,0, 0,wnd->height-16, wnd->width,wnd->height);
+		int w = wnd->width;
+		int h = wnd->height + (key<<4);
+		drawsolid_rect((void*)wnd,0, 0,h, w,h+16);
+		drawstring((void*)wnd,0xff00ff, 0,h, buf,len);
+		window_update(wnd,0, 0,h, w,h+16);
 	}
 	else{
 		//printmemory(buf, 32);

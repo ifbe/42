@@ -14,12 +14,20 @@ void window_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 
-static void* outputqueue;
-static int outcur;
+static u8* outputqueue;
+static int enq = 0;
+static int lastline_3 = 0;
+static int lastline_2 = 0;
+static int lastline_1 = 0;	//lastline_head
+static int lastline_0 = 0;	//lastline_tail
 void initstdout(void* addr)
 {
 	outputqueue = addr;
-	outcur = 0;
+	enq = 0;
+	lastline_3 = 0;
+	lastline_2 = 0;
+	lastline_1 = 0;
+	lastline_0 = 0;
 }
 void freestdout()
 {
@@ -30,13 +38,13 @@ void* getstdout()
 }
 int getcurout()
 {
-	return outcur;
+	return lastline_0;
 }
 
 
 
 
-static void* serialnode = 1;
+static void* serialnode = (void*)1;
 static void* windownode = 0;
 void stdout_setseiral(void* node)
 {
@@ -52,57 +60,84 @@ void stdout_setwindow(void* node)
 
 void dbg(u8* fmt, ...)
 {
-	int cur,ret;
+	int j,len;
 	__builtin_va_list arg;
-
-	//read position
-	cur = outcur;
-
-	//
-	__builtin_va_start(arg, fmt);
-
-	//
-	ret = myvsnprintf(outputqueue+cur, 0x1000, fmt, arg);
-
-	//
-	__builtin_va_end(arg);
-
-	//write position
-	cur = cur+ret;
-	if(cur > 0x3f000)cur = 0;
-	outcur = cur;
-}
-void say(u8* fmt, ...)
-{
-	int cur,len;
-	u8* ptr;
-	__builtin_va_list arg;
-
-	//read position
-	cur = outcur;
 
 	//va start
 	__builtin_va_start(arg, fmt);
 
 	//convert
-	len = myvsnprintf(outputqueue+cur, 0x1000, fmt, arg);
+	len = myvsnprintf(outputqueue+enq, 0x1000, fmt, arg);
 
 	//va end
 	__builtin_va_end(arg);
 
-	//tmp
-	ptr = outputqueue+cur;
+	//update enq, update head and tail
+	if(enq < lastline_1){
+		lastline_1 = 0;
+		lastline_0 = enq;
+	}
 
-	//position
-	cur = cur+len;
-	if(cur > 0x3f000)cur = 0;
-	outcur = cur;
+	enq += len;
+	if(enq > 0x3f000)enq = 0;
 
-	//debugport
-	if(serialnode)lowlevel_output(ptr, len);
+	lastline_0 += len;
+	for(j=lastline_1;j<lastline_0-1;j++){
+		if('\n' == outputqueue[j]){
+			lastline_3 = lastline_2;
+			lastline_2 = lastline_1;
+			lastline_1 = j+1;
+		}
+	}
 
-	//framebuffer
-	if(windownode)window_give(windownode,windownode, 0,0, 0,0, ptr, len);
+}
+void say(u8* fmt, ...)
+{
+	int j,len;
+	__builtin_va_list arg;
+
+	//temp position
+	u8* ptr;
+	ptr = outputqueue+enq;
+
+	//va start
+	__builtin_va_start(arg, fmt);
+
+	//convert
+	len = myvsnprintf(outputqueue+enq, 0x1000, fmt, arg);
+
+	//va end
+	__builtin_va_end(arg);
+
+	//update enq, update head and tail
+	if(enq < lastline_1){
+		lastline_1 = 0;
+		lastline_0 = enq;
+	}
+
+	enq += len;
+	if(enq > 0x3f000)enq = 0;
+
+	lastline_0 += len;
+	for(j=lastline_1;j<lastline_0-1;j++){
+		if('\n' == outputqueue[j]){
+			lastline_3 = lastline_2;
+			lastline_2 = lastline_1;
+			lastline_1 = j+1;
+		}
+	}
+
+	//write debugport
+	if(serialnode){
+		lowlevel_output(ptr, len);
+	}
+
+	//write screen
+	if(windownode){
+		window_give(windownode,windownode, 0,0, 0,-3, outputqueue+lastline_3, lastline_2-lastline_3);
+		window_give(windownode,windownode, 0,0, 0,-2, outputqueue+lastline_2, lastline_1-lastline_2);
+		window_give(windownode,windownode, 0,0, 0,-1, outputqueue+lastline_1, lastline_0-lastline_1);
+	}
 }
 
 
