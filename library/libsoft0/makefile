@@ -10,7 +10,10 @@ bare:
 	$(CC) $(CF) bare/bare.memory.folder.c
 	$(CC) $(CF) bare/bare.memory.portio.c
 	$(CC) $(CF) bare/bare.system.power.c
-	$(CC) $(CF) bare/bare.system.process.c
+	$(CC) $(CF) bare/bare.multitask.coroutine.c
+	$(CC) $(CF) bare/bare.multitask.thread.c
+	$(CC) $(CF) bare/bare.multitask.process.c
+	$(CC) $(CF) bare/bare.multitask.virtualize.c
 	$(CC) $(CF) bare/bare.system.random.c
 	$(CC) $(CF) bare/bare.system.signal.c
 	$(CC) $(CF) bare/bare.system.shell.c
@@ -26,7 +29,10 @@ efiapp:
 	$(CC) $(CF) efi/efi.memory.folder.c
 	$(CC) $(CF) efi/efi.memory.portio.c
 	$(CC) $(CF) efi/efi.system.power.c
-	$(CC) $(CF) efi/efi.system.process.c
+	$(CC) $(CF) efi/efi.multitask.coroutine.c
+	$(CC) $(CF) efi/efi.multitask.thread.c
+	$(CC) $(CF) efi/efi.multitask.process.c
+	$(CC) $(CF) efi/efi.multitask.virtualize.c
 	$(CC) $(CF) efi/efi.system.random.c
 	$(CC) $(CF) efi/efi.system.signal.c
 	$(CC) $(CF) efi/efi.system.shell.c
@@ -40,7 +46,10 @@ bsd:
 	$(CC) $(CF) bsd/bsd.memory.folder.c
 	$(CC) $(CF) bsd/bsd.memory.mmio.c
 	$(CC) $(CF) bsd/bsd.system.power.c
-	$(CC) $(CF) bsd/bsd.system.process.c
+	$(CC) $(CF) bsd/bsd.multitask.coroutine.c
+	$(CC) $(CF) bsd/bsd.multitask.thread.c
+	$(CC) $(CF) bsd/bsd.multitask.process.c
+	$(CC) $(CF) bsd/bsd.multitask.virtualize.c
 	$(CC) $(CF) bsd/bsd.system.random.c
 	$(CC) $(CF) bsd/bsd.system.signal.c
 	$(CC) $(CF) bsd/bsd.system.time.c
@@ -57,7 +66,10 @@ linux:
 	$(CC) $(CF) linux/linux.memory.folder.c
 	$(CC) $(CF) linux/linux.memory.mmio.c
 	$(CC) $(CF) linux/linux.system.power.c
-	$(CC) $(CF) linux/linux.system.process.c
+	$(CC) $(CF) linux/linux.multitask.coroutine.c
+	$(CC) $(CF) linux/linux.multitask.thread.c
+	$(CC) $(CF) linux/linux.multitask.process.c
+	$(CC) $(CF) linux/linux.multitask.virtualize.c
 	$(CC) $(CF) linux/linux.system.random.c
 	$(CC) $(CF) linux/linux.system.signal.c
 	$(CC) $(CF) linux/linux.system.time.c
@@ -74,7 +86,10 @@ mac:
 	$(CC) $(CF) mac/mac.memory.folder.c
 	$(CC) $(CF) mac/mac.memory.mmio.c
 	$(CC) $(CF) mac/mac.system.power.c
-	$(CC) $(CF) mac/mac.system.process.c
+	$(CC) $(CF) mac/mac.multitask.coroutine.c
+	$(CC) $(CF) mac/mac.multitask.thread.c
+	$(CC) $(CF) mac/mac.multitask.process.c
+	$(CC) $(CF) mac/mac.multitask.virtualize.c
 	$(CC) $(CF) mac/mac.system.random.c
 	$(CC) $(CF) mac/mac.system.signal.c
 	$(CC) $(CF) mac/mac.system.time.c
@@ -90,7 +105,10 @@ win:
 	$(CC) $(CF) win/win.memory.file.c
 	$(CC) $(CF) win/win.memory.folder.c
 	$(CC) $(CF) win/win.system.power.c
-	$(CC) $(CF) win/win.system.process.c
+	$(CC) $(CF) win/win.multitask.coroutine.c
+	$(CC) $(CF) win/win.multitask.thread.c
+	$(CC) $(CF) win/win.multitask.process.c
+	$(CC) $(CF) win/win.multitask.virtualize.c
 	$(CC) $(CF) win/win.system.random.c
 	$(CC) $(CF) win/win.system.signal.c
 	$(CC) $(CF) win/win.system.time.c

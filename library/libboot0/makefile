@@ -11,7 +11,6 @@ rpi:
 	$(CC) $(CF) bare/rpi/main.c
 	$(CC) $(CF) bare/rpi/runenv.c
 	$(CC) $(CF) bare/rpi/serial.c
-	$(CC) $(CF) bare/rpi/thread.c
 
 .PHONY:bare
 bare:
@@ -23,7 +22,6 @@ bare:
 	$(CC) $(CF) bare/barex64/keyboard.c
 	$(CC) $(CF) bare/barex64/runenv.c
 	$(CC) $(CF) bare/barex64/serial.c
-	$(CC) $(CF) bare/barex64/thread.c
 
 .PHONY:efios
 efios:
@@ -35,7 +33,6 @@ efios:
 	$(CC) $(CF) bare/efi/keyboard.c
 	$(CC) $(CF) bare/efi/runenv.c
 	$(CC) $(CF) bare/efi/serial.c
-	$(CC) $(CF) bare/efi/thread.c
 
 .PHONY:efiapp
 efiapp:
@@ -45,7 +42,6 @@ efiapp:
 	$(CC) $(CF) bare/memory.c
 	$(CC) $(CF) app/efi/entry.c
 	$(CC) $(CF) app/efi/runenv.c
-	$(CC) $(CF) app/efi/thread.c
 
 .PHONY:none
 none:
@@ -56,7 +52,6 @@ none:
 	$(CC) $(CF) app/none/entry.c
 	$(CC) $(CF) app/none/runenv.c
 	$(CC) $(CF) app/none/serial.c
-	$(CC) $(CF) app/none/thread.c
 
 .PHONY:wincmd
 wincmd:
@@ -67,7 +62,6 @@ wincmd:
 	$(CC) $(CF) app/win/entry.c
 	$(CC) $(CF) app/win/runenv.c
 	$(CC) $(CF) app/win/serial.c
-	$(CC) $(CF) app/win/thread.c
 
 clean:
 	rm -f *.o
