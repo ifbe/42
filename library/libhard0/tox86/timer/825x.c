@@ -16,12 +16,34 @@ void say(void*, ...);
 
 
 
+struct stackframe{
+	u64 rax;
+	u64 rbx;
+	u64 rcx;
+	u64 rdx;
+	u64 rsi;
+	u64 rdi;
+
+	u64 ip;
+	u64 cs;
+	u64 flag;
+	u64 sp;
+	u64 ss;
+}__attribute__((packed));
+
+
+
+
 static u64 dt = 0;
-void isr_825x()
+void isr_825x(struct stackframe* p)
 {
 	//if(0==(dt%1000))say("dt=%d\n",dt);
 	dt += 1;
 	timewrite(dt*1000);
+
+	if(0x1f == (dt&0x3f)){		//freq=1000/64
+		say("%p: ip=%llx,cs=%llx,rf=%llx,sp=%llx,ss=%llx\n",p, p->ip, p->cs, p->flag, p->sp, p->ss);
+	}
 }
 void init825x()
 {

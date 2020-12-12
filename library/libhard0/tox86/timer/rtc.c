@@ -55,7 +55,7 @@ void isr_rtc()
 	p[0] = in8(0x71);
 
 	for(j=0;j<7;j++)p[j] = (p[j]&0xf) + (p[j]>>4)*10;
-	//say("%d,%d,%d,%d,%d,%d,%d,%d\n",p[7],p[6],p[5],p[4],p[3],p[2],p[1],p[0]);
+	//say("date: %d,%d,%d,%d,%d,%d,%d,%d\n",p[7],p[6],p[5],p[4],p[3],p[2],p[1],p[0]);
 	datewrite(date);
 }
 void initrtc()

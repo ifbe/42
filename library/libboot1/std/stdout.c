@@ -45,6 +45,7 @@ int getcurout()
 
 
 static void* serialnode = (void*)1;
+static void* dbglognode = 0;
 static void* windownode = 0;
 void stdout_setseiral(void* node)
 {
@@ -131,6 +132,10 @@ void say(u8* fmt, ...)
 	if(serialnode){
 		lowlevel_output(ptr, len);
 	}
+
+	//write logfile
+/*	if(dbglognode){
+	}*/
 
 	//write screen
 	if(windownode){

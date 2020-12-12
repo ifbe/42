@@ -11,6 +11,8 @@ void isr_8042();
 void isr_rtc();
 //
 u64 getisr03();
+u64 getisr20();
+u64 getisr28();
 u64 getisr80();
 //
 u8 in8(u16 port);
@@ -96,14 +98,14 @@ __attribute__((interrupt)) static void isr_0c(void* p, u64 e){
 	while(1);
 }//Stack-Segment Fault
 __attribute__((interrupt)) static void isr_0d(struct int_frame* p, u64 e){
-	say("int0d: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
 	printmemory((u8*)p-0x18, 0x80);
+	say("int0d: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
 	asm("cli");
 	asm("hlt");
 }//General Protection Fault
 __attribute__((interrupt)) static void isr_0e(struct int_frame* p, u64 e){
-	say("int0e: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
 	printmemory((u8*)p-0x18, 0x80);
+	say("int0e: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
 	asm("cli");
 	asm("hlt");
 }//Page Fault
@@ -191,7 +193,6 @@ __attribute__((interrupt)) static void isr_28(void* p){
 	endofirq(8);
 }
 __attribute__((interrupt)) static void isr_80(struct int_frame* p){
-	while(1);
 	say("int80: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 }
 
@@ -256,13 +257,12 @@ void initidt()
 	interruptinstall(0x1f, (u64)isr_1f);
 
 	//interrupt
-	interruptinstall(0x20, (u64)isr_20);
+	interruptinstall(0x20, getisr20());		//(u64)isr_20
 	interruptinstall(0x21, (u64)isr_21);
 	interruptinstall(0x28, (u64)isr_28);
 
 	//systemcall
-	//interruptinstall(0x80, (u64)isr_80);
-	interruptinstall(0x80, getisr80());
+	interruptinstall(0x80, getisr80());		//(u64)isr_80
 
 	//
 	printmemory(buf, 0x40);
