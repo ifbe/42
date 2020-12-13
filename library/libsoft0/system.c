@@ -1,5 +1,8 @@
 #include "libsoft.h"
 #define _ptmx_ hex32('p','t','m','x')
+//
+int initprocess();
+int freeprocess();
 //random
 int initrandom(void*);
 int freerandom();
@@ -353,6 +356,7 @@ void initsystem(u8* addr)
 	initshell(addr);
 	inituart(addr);
 	initsocket(addr);
+	initprocess();
 
 	say("[8,a):system inited\n");
 }

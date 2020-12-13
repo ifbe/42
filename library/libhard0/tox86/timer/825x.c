@@ -3,6 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 void timewrite(u64);
+void scheduleprocess(void*,int,int);
 //
 u8 in8(u16 port);
 void out8(u16 port, u8 data);
@@ -17,12 +18,22 @@ void say(void*, ...);
 
 
 struct stackframe{
+	u64 r8;
+	u64 r9;
+	u64 r10;
+	u64 r11;
+	u64 r12;
+	u64 r13;
+	u64 r14;
+	u64 r15;
+
 	u64 rax;
 	u64 rbx;
 	u64 rcx;
 	u64 rdx;
 	u64 rsi;
 	u64 rdi;
+	u64 rbp;
 
 	u64 ip;
 	u64 cs;
@@ -41,9 +52,7 @@ void isr_825x(struct stackframe* p)
 	dt += 1;
 	timewrite(dt*1000);
 
-	if(0x1f == (dt&0x3f)){		//freq=1000/64
-		say("%p: ip=%llx,cs=%llx,rf=%llx,sp=%llx,ss=%llx\n",p, p->ip, p->cs, p->flag, p->sp, p->ss);
-	}
+	scheduleprocess(p, 0, dt&0xfffffff);
 }
 void init825x()
 {
