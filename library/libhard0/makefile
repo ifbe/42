@@ -126,6 +126,7 @@ x64:
 .PHONY:barex64
 barex64:x64
 	$(CC) $(CF) tox86/oldhw.c
+	$(CC) $(CF) tox86/cpu64/x64.c
 	$(CC) $(CF) tox86/cpu64/x64.paging.c
 	$(CC) $(CF) tox86/cpu64/x64.gdtmake.c
 	yasm -a x86 -m amd64 -f elf64 -o x64.gdthelp.o tox86/cpu64/x64.gdthelp.asm

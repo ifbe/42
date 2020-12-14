@@ -50,8 +50,9 @@ static int taskcount = 0;
 
 
 
-void scheduleprocess(struct saved_register* p, int coreid, int time)
+void scheduleprocess(struct saved_register* p, int coreid)
 {
+	u64 time = timeread() >> 10;
 	coreid = 0;
 
 	//1.find curr: CoreRunThisTask == coreid
@@ -100,7 +101,7 @@ static void test1()
 	u64 time;
 	while(1){
 		time = timeread();
-		say("pid=1: time=%llx\n",time);
+		say("core=%d,task=%d: time=%llx\n", 0,1, time);
 		asm("hlt");
 	}
 }
@@ -109,7 +110,7 @@ static void test2()
 	u64 time;
 	while(1){
 		time = timeread();
-		say("pid=2: time=%llx\n",time);
+		say("core=%d,task=%d: time=%llx\n", 0,2, time);
 		asm("hlt");
 	}
 }

@@ -1,0 +1,6 @@
+void initprocess()
+{
+}
+void freeprocess()
+{
+}

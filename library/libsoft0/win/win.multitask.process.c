@@ -17,6 +17,16 @@ char* memoryinfo;
 
 
 
+void initprocess()
+{
+}
+void freeprocess()
+{
+}
+
+
+
+
 void listprocess()
 {
 	//只需列出进程名字和编号

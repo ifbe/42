@@ -1,3 +1,13 @@
+void initprocess()
+{
+}
+void freeprocess()
+{
+}
+
+
+
+
 int readprocess()
 {
 }
