@@ -6,7 +6,7 @@ void initmemmap(void*);
 void* getdevmap();
 void initacpi(void*);
 //
-void initcpu0(struct item* p);
+void initcpu(struct item* p);
 //
 void initpci_port();
 void initpci_mmio();
@@ -35,7 +35,7 @@ void inithardware()
 
 	//cpu
 	p = devicecreate(_cpu_, 0, 0, 0);
-	initcpu0(p);
+	initcpu(p);
 
 	//interrupter
 	p = devicecreate(_irq_, 0, 0, 0);
