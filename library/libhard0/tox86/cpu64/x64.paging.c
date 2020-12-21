@@ -8,11 +8,8 @@
 
 
 
-void initpaging()
+void pagetable_make()
 {
-	say("@initpaging\n");
-
-
 	//clear memory
 	u64 j;
 	u8* buf = (u8*)PAGEHOME;
@@ -38,11 +35,20 @@ void initpaging()
 	//pdptaddr8B_per_item, 512item_per_table, 1table_cant_less
 	u64* pml4 = (u64*)PML4ADDR;
 	pml4[0] = (u64)pdpt | 7;
-
-
+}
+void pagetable_use()
+{
 	//write cr3
 	asm __volatile__(
 		"mov $0x7f000, %rax\n"
 		"mov %rax, %cr3\n"
 	);
+}
+void initpaging()
+{
+	say("@initpaging\n");
+
+	pagetable_make();
+
+	pagetable_use();
 }

@@ -195,6 +195,9 @@ __attribute__((interrupt)) static void isr_28(void* p){
 __attribute__((interrupt)) static void isr_80(struct int_frame* p){
 	say("int80: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 }
+__attribute__((interrupt)) static void isr_ff(struct int_frame* p){
+	say("intff: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
+}
 
 
 
@@ -263,6 +266,9 @@ void initidt()
 
 	//systemcall
 	interruptinstall(0x80, getisr80());		//(u64)isr_80
+
+	//apic spurious
+	interruptinstall(0xff, (u64)isr_ff);
 
 	//
 	printmemory(buf, 0x40);

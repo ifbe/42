@@ -103,12 +103,14 @@ int wndmgr_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, voi
 			entity_take(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, arg,key, buf,len);
 
 			struct style* sty = rel->psrcfoot;
-			int x0 = sty->fs.vc[0] - sty->fs.vr[0];
+			int x0 = sty->fs.vc[0] - sty->fs.vr[0];	//(left, top)
 			int y0 = sty->fs.vc[1] - sty->fs.vf[1];
-			int xn = sty->fs.vc[0] + sty->fs.vr[0];
+			int xn = sty->fs.vc[0] + sty->fs.vr[0];	//(right, bot)
 			int yn = sty->fs.vc[1] + sty->fs.vf[1];
-			int xq = sty->fs.vc[0];
+			int xq = sty->fs.vc[0];		//(mid, above top 16 pixel)
 			int yq = y0-16;
+			int xt = x0+16;				//(left+16, top-16)
+			int yt = y0-16;
 
 			//border
 			if(
@@ -121,14 +123,20 @@ int wndmgr_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, voi
 			//title.rect
 			if(the == rel){
 				drawopaque_rect((void*)wnd, 0xc0ff0000, x0,y0, xq,yq);
+
+				drawsolid_rect((void*)wnd, 0xffff00, x0,y0, xt,yt);
+				drawsolid_rect((void*)wnd, 0x00ffff, x0+4,y0-4, xt-4,yt+4);
 			}
 			else{
 				drawopaque_rect((void*)wnd, 0xc07f007f, x0,y0, xq,yq);
+
+				drawsolid_rect((void*)wnd, 0x7f7f00, x0,y0, xt,yt);
+				drawsolid_rect((void*)wnd, 0x007f7f, x0+4,y0-4, xt-4,yt+4);
 			}
 
 			//title.name
 			struct entity* ent = rel->pdstchip;
-			drawstring((void*)wnd, 0xffffff, x0,yq, (void*)&ent->fmt, 8);
+			drawstring_fit((void*)wnd, 0xffffff, x0,y0, xq,yq, (void*)&ent->fmt, 8);
 		}
 next:
 		rel = samesrcnextdst(rel);

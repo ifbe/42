@@ -107,12 +107,26 @@ struct MCFG{
 
 
 
-static u16 g_port;
-static u16 g_data;
+static u16 power_port;
+static u16 power_data;
 void getportanddata(u16* p, u16* d)
 {
-	*p = g_port;
-	*d = g_data;
+	*p = power_port;
+	*d = power_data;
+}
+
+
+
+
+static void* addr_localapic = 0;
+static void* addr_theioaddr = 0;
+void* getlocalapic()
+{
+	return addr_localapic;
+}
+void* gettheioapic()
+{
+	return addr_theioaddr;
 }
 
 
@@ -126,7 +140,7 @@ void parse_S5_(void* p)
 	data = (*(u8*)(p+8))<<10;
 	say("data=%p\n", data);
 
-	g_data = data;
+	power_data = data;
 }
 void acpi_DSDT(void* p)
 {
@@ -152,7 +166,7 @@ void acpi_FACP(void* p)
 	addr = *(u32*)(p+0x28);
 	acpi_DSDT((void*)addr);
 
-	g_port = port;
+	power_port = port;
 }
 void acpi_HPET(void* p)
 {
@@ -163,6 +177,7 @@ void acpi_MADT(void* p)
 {
 	struct MADT* madt = p;
 	say(".localapic=%x, have8259=%d\n", madt->LocalApicAddr, madt->Dual8259Flag);
+	addr_localapic = (void*)(u64)(madt->LocalApicAddr);
 
 	int j = 0;
 	int len = madt->head.len - 0x2c;
@@ -180,6 +195,7 @@ void acpi_MADT(void* p)
 		case 1:
 			t1 = (void*)(madt->entry+j);
 			say("%x: ioapicid=%x,ioapicaddr=%x,gsib=%x\n", j, t1->ioapicID,t1->ioapicaddr,t1->GlobalSystemInterruptBase);
+			addr_theioaddr = (void*)(u64)(t1->ioapicaddr);
 			break;
 		case 2:
 			t2 = (void*)(madt->entry+j);
@@ -261,4 +277,6 @@ void initacpi(void* buf)
 		void* xsdt = (void*)(u64)(*(u32*)(buf+0x18));
 		acpixsdt(xsdt);
 	}
+
+	say("\n\n");
 }

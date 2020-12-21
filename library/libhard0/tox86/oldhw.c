@@ -6,7 +6,8 @@ void initmemmap(void*);
 void* getdevmap();
 void initacpi(void*);
 //
-void initcpu(struct item* p);
+void initcpu_bsp(struct item* p);
+void initcpu_ap(int coreid);
 //
 void initpci_port();
 void initpci_mmio();
@@ -33,9 +34,9 @@ void inithardware()
 	//acpi
 	initacpi(getdevmap());
 
-	//cpu
+	//cpu0: gdt,idt,paging...
 	p = devicecreate(_cpu_, 0, 0, 0);
-	initcpu(p);
+	initcpu_bsp(p);
 
 	//interrupter
 	p = devicecreate(_irq_, 0, 0, 0);
@@ -46,6 +47,9 @@ void inithardware()
 	p = devicecreate(_tmr_, 0, 0, 0);
 	initrtc();
 	init825x();
+
+	//cpu ap: after bsp and apic and timer
+	initcpu_ap(2);
 
 	//pci
 	p = devicecreate(_pci_, 0, 0, 0);

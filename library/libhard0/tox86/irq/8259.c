@@ -64,4 +64,6 @@ void init8259()
 	//
 	out8(0x21, 0xff);
 	out8(0xa1, 0xff);
+
+	say("\n\n");
 }
