@@ -118,6 +118,15 @@ void getportanddata(u16* p, u16* d)
 
 
 
+static u64 knowncores = 0;
+u64 getknowncores()
+{
+	return knowncores;
+}
+
+
+
+
 static void* addr_localapic = 0;
 static void* addr_theioaddr = 0;
 void* getlocalapic()
@@ -191,6 +200,7 @@ void acpi_MADT(void* p)
 		case 0:
 			t0 = (void*)(madt->entry+j);
 			say("%x: cpu=%x,apic=%x,flag=%x\n", j, t0->cpuID,t0->apicID,t0->flag);
+			if(0 != (t0->flag&3))knowncores |= 1<<(t0->apicID);
 			break;
 		case 1:
 			t1 = (void*)(madt->entry+j);

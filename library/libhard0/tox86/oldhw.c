@@ -7,7 +7,7 @@ void* getdevmap();
 void initacpi(void*);
 //
 void initcpu_bsp(struct item* p);
-void initcpu_ap(int coreid);
+void initcpu_ap();
 //
 void initpci_port();
 void initpci_mmio();
@@ -49,7 +49,7 @@ void inithardware()
 	init825x();
 
 	//cpu ap: after bsp and apic and timer
-	initcpu_ap(2);
+	initcpu_ap();
 
 	//pci
 	p = devicecreate(_pci_, 0, 0, 0);

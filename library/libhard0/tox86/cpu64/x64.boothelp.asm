@@ -1,6 +1,7 @@
 %define TRAMPOLINE16 0x8000
-%define FromBsp_rip 0xffe0
-%define FromBsp_rsp 0xffe8
+%define TRAMPOLINE64 0x9000
+%define FromBsp_rsp 0xffe0
+%define FromBsp_rip 0xffe8
 %define ApToBsp_message 0xfff0
 %define BspToAp_command 0xfff8
 
@@ -18,7 +19,7 @@ section .text
 
 
 [bits 16]
-entry_ap_start:
+trampoline16_start:
 	;0.tell bsp, ap started in 16bit
 	mov ax, 0
 	mov ds, ax
@@ -71,20 +72,25 @@ setflag64:
 	mov [es:di], al
 
 lastjump:
-	mov eax, [FromBsp_rsp]
-	mov esp, eax
-
-	mov eax, [FromBsp_rip]
+	mov eax, TRAMPOLINE64
 	jmp dword KERNCODE:TEMPJUMP
 
 failloop:
 	cli
 	hlt
 	jmp failloop
-entry_ap_end:
+trampoline16_end:
 
 
 [bits 64]
+trampoline64_start:
+	mov rax, [FromBsp_rsp]
+	mov rsp, rax
+
+	mov rax, [FromBsp_rip]
+	jmp rax
+trampoline64_end:
+
 global enterring3
 enterring3:
 	pop             rax		;user ip
@@ -101,12 +107,22 @@ enterring3:
 	sub rsp, 0x28
 	iretq
 
-global get_entry_ap_start
-get_entry_ap_start:
-	lea rax,[rel entry_ap_start]
+global get_trampoline16_start
+get_trampoline16_start:
+	lea rax,[rel trampoline16_start]
 	ret
 
-global get_entry_ap_end
-get_entry_ap_end:
-	lea rax,[rel entry_ap_end]
+global get_trampoline16_end
+get_trampoline16_end:
+	lea rax,[rel trampoline16_end]
+	ret
+
+global get_trampoline64_start
+get_trampoline64_start:
+	lea rax,[rel trampoline64_start]
+	ret
+
+global get_trampoline64_end
+get_trampoline64_end:
+	lea rax,[rel trampoline64_end]
 	ret
