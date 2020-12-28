@@ -5,6 +5,8 @@
 #define FromBsp_rip 0xffe8
 #define ApToBsp_message 0xfff0
 #define BspToAp_command 0xfff8
+void incomingprocess(int);
+//
 void cpuid(u32*);
 void initpaging();
 void initgdt();
@@ -29,15 +31,73 @@ void* get_trampoline64_end();
 
 
 
+void initcpu_bsp(struct item* p)
+{
+	//
+	asm("cli");
+	say("initing cpu@0\n");
+
+
+//----------------check cpuid----------------
+	u32 abcd[4];
+	abcd[0] = 0;
+	cpuid(abcd);
+	say("cpuid.0: eax=%08x,str=%.4s%.4s%.4s\n",abcd[0], &abcd[1],&abcd[3],&abcd[2]);
+	abcd[0] = 1;
+	cpuid(abcd);
+	say("cpuid.1: eax=%08x,ebx=%08x,ecx=%08x,edx=%08x\n",abcd[0],abcd[1],abcd[2],abcd[3]);
+
+
+//----------------prep descs----------------
+	initpaging();
+	initgdt();
+	initidt();
+
+
+//----------------jump to ring3----------------
+	say("ring3 try...\n");
+	enterring3();
+	dbg("ring3 god!!!\n");
+
+
+//----------------back to ring0----------------
+	dbg("ring0 try...\n");
+	asm("int $0x80");
+	say("ring0 god!!!\n");
+
+
+	//ok
+	asm("sti");
+	say("\n\n");
+}
+
+
+
+
 static u32 shit = 0;
 static void initcpu_other()
 {
 	shit = hex32('f','u','c','k');
-	say("<<<from coreid=%x>>>i'm here!\n", localapic_coreid());
+	asm("cli");
 
-	while(1){
-		asm("hlt");
-	}
+
+//----------------check coreid----------------
+	int coreid = localapic_coreid();
+	say("initing cpu@%d\n", coreid);
+
+
+//----------------check cpuid----------------
+	u32 abcd[4];
+	abcd[0] = 0;
+	cpuid(abcd);
+	say("cpuid.0: eax=%08x,str=%.4s%.4s%.4s\n",abcd[0], &abcd[1],&abcd[3],&abcd[2]);
+	abcd[0] = 1;
+	cpuid(abcd);
+	say("cpuid.1: eax=%08x,ebx=%08x,ecx=%08x,edx=%08x\n",abcd[0],abcd[1],abcd[2],abcd[3]);
+
+//----------------goto sleep----------------
+	incomingprocess(coreid);
+	while(1)asm("hlt");
 }
 
 
@@ -56,7 +116,7 @@ static void initcpu_other()
 //		else thiscore fail
 void initcpu_onecore(int coreid)
 {
-	say("initing cpu@%d...\n", coreid);
+	say("wakeup cpu@%d...\n", coreid);
 	if(0 == localapic_isenabled()){
 		say("fail@no apic\n");
 		return;
@@ -146,47 +206,4 @@ void initcpu_ap()
 		initcpu_onecore(j);
 		break;
 	}
-}
-
-
-
-
-void initcpu_bsp(struct item* p)
-{
-	//
-	asm("cli");
-	say("initing cpu0...\n");
-
-
-//----------------check cpuid----------------
-	u32 abcd[4];
-	abcd[0] = 0;
-	cpuid(abcd);
-	say("cpuid.0: eax=%08x,str=%.4s%.4s%.4s\n",abcd[0], &abcd[1],&abcd[3],&abcd[2]);
-	abcd[0] = 1;
-	cpuid(abcd);
-	say("cpuid.1: eax=%08x,ebx=%08x,ecx=%08x,edx=%08x\n",abcd[0],abcd[1],abcd[2],abcd[3]);
-
-
-//----------------prep descs----------------
-	initpaging();
-	initgdt();
-	initidt();
-
-
-//----------------jump to ring3----------------
-	say("ring3 try...\n");
-	enterring3();
-	dbg("ring3 god!!!\n");
-
-
-//----------------back to ring0----------------
-	dbg("ring0 try...\n");
-	asm("int $0x80");
-	say("ring0 god!!!\n");
-
-
-	//ok
-	asm("sti");
-	say("\n\n");
 }

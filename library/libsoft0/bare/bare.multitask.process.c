@@ -1,9 +1,11 @@
 #include "libsoft.h"
+void haltwaitforint();
 
 
 
 
 struct saved_register{
+	//[0,3f]
 	u64 r8;
 	u64 r9;
 	u64 r10;
@@ -12,7 +14,7 @@ struct saved_register{
 	u64 r13;
 	u64 r14;
 	u64 r15;
-
+	//[40,77]
 	u64 rax;
 	u64 rbx;
 	u64 rcx;
@@ -20,12 +22,13 @@ struct saved_register{
 	u64 rsi;
 	u64 rdi;
 	u64 rbp;
-
+	//[78,9f]
 	u64 ip;
 	u64 cs;
 	u64 flag;
 	u64 sp;
 	u64 ss;
+	//[a0,??]
 }__attribute__((packed));
 
 struct saved_pagetable{
@@ -36,6 +39,7 @@ struct saved_vmcb{
 
 struct taskstate{
 	int CoreRunThisTask;	//-1 = none, 0 to n = processor id
+	int  CoreIdThisWant;	//-1 = any, 0 to n = processor id
 	struct saved_register reg;
 	struct saved_pagetable* pt;
 	struct saved_vmcb* vmcb;
@@ -50,6 +54,10 @@ static int taskcount = 0;
 
 
 
+void incomingprocess(int coreid)
+{
+	say("incoming process: from coreid=%d\n", coreid);
+}
 void scheduleprocess(struct saved_register* p, int coreid)
 {
 	u64 time = timeread() >> 10;
@@ -102,7 +110,7 @@ static void test1()
 	while(1){
 		time = timeread();
 		say("core=%d,task=%d: time=%llx\n", 0,1, time);
-		asm("hlt");
+		haltwaitforint();
 	}
 }
 static void test2()
@@ -111,7 +119,7 @@ static void test2()
 	while(1){
 		time = timeread();
 		say("core=%d,task=%d: time=%llx\n", 0,2, time);
-		asm("hlt");
+		haltwaitforint();
 	}
 }
 
@@ -125,8 +133,10 @@ void initprocess()
 	for(j=0;j<8*sizeof(struct taskstate);j++)tmp[j] = 0;
 
 	tasktable[0].CoreRunThisTask = 0;
+	tasktable[0].CoreIdThisWant = 0;
 
 	tasktable[1].CoreRunThisTask = -1;
+	tasktable[1].CoreIdThisWant = -1;
 	tasktable[1].reg.ip = (u64)test1;
 	tasktable[1].reg.cs = 0x10;
 	tasktable[1].reg.flag = 0x202;
@@ -134,6 +144,7 @@ void initprocess()
 	tasktable[1].reg.ss = 0x18;
 
 	tasktable[2].CoreRunThisTask = -1;
+	tasktable[2].CoreIdThisWant = -1;
 	tasktable[2].reg.ip = (u64)test2;
 	tasktable[2].reg.cs = 0x10;
 	tasktable[2].reg.flag = 0x202;

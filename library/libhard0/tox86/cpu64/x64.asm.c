@@ -6,15 +6,10 @@
 
 
 
-/*
-void cpuid(int code, uint32_t *a, uint32_t *d)
+void haltwaitforint()
 {
-	asm volatile("cpuid"
-		:"=a"(*a),"=d"(*d)
-		:"a"(code)
-		:"ecx","ebx");
+	asm("hlt");
 }
-*/
 void* syscall(u64 iCall, void* arg)		//only work with dsdc89
 {
     void *retval;
