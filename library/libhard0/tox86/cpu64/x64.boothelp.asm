@@ -5,9 +5,12 @@
 %define ApToBsp_message 0xfff0
 %define BspToAp_command 0xfff8
 
+%define PERCPU 0x30000
 %define GDTBUF 0x30000
 	%define KERNCODE 0x10
 	%define KERNDATA 0x18
+%define TSSBUF 0x31000
+%define IDTBUF 0x32000
 %define PML4ADDR 0x7f000
 
 %define TEMPGDTR 0x800

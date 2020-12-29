@@ -5,7 +5,11 @@
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
-#define idthome (u64)0x5000
+#define PERCPU 0x30000
+#define GDTBUF (PERCPU+0x000)
+#define TSSBUF (PERCPU+0x1000)
+#define IDTBUF (PERCPU+0x2000)
+#define STKBUF (PERCPU+0x10000)
 void isr_825x();
 void isr_8042();
 void isr_rtc();
@@ -206,7 +210,7 @@ void interruptinstall(int num, u64 isr)
 {
 	//0x80: testing syscall: 
 	u8 type = (num>=0x80) ? 0xee : 0x8e;
-	struct idt_entry* addr = (void*)(idthome + num*16);;
+	struct idt_entry* addr = (void*)(u64)(IDTBUF + num*16);;
 
 	addr->byte01 = isr&0xffff;
 	addr->select = 0x10;		//kernel @ 10
@@ -216,12 +220,12 @@ void interruptinstall(int num, u64 isr)
 	addr->byte47 = (isr>>32)&0xffffffff;
 	addr->what = 0;
 }
-void initidt()
+void initidt_bsp()
 {
-	say("@initidt\n");
+	say("@initidt_bsp\n");
 
 	int j;
-	u8* buf = (void*)idthome;
+	u8* buf = (void*)IDTBUF;
 	for(j=0;j<0x1000;j++)buf[j] = 0;
 
 	//exception
@@ -273,4 +277,8 @@ void initidt()
 	//
 	printmemory(buf, 0x40);
 	setidt(buf, 0xfff);
+}
+void initidt_ap(int coreid)
+{
+	say("@initidt_ap: %d\n", coreid);
 }

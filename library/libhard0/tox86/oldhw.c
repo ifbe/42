@@ -13,7 +13,7 @@ void initpci_port();
 void initpci_mmio();
 //
 void init8259();        //interrupt controller
-void initapic();
+void initioapic();
 //
 void init825x();        //timer.pit
 void initrtc();         //timer.rtc
@@ -34,21 +34,21 @@ void inithardware()
 	//acpi
 	initacpi(getdevmap());
 
-	//cpu0: gdt,idt,paging...
+	//cpu_bsp: gdt,paging,idt,apic...
 	p = devicecreate(_cpu_, 0, 0, 0);
 	initcpu_bsp(p);
 
 	//interrupter
 	p = devicecreate(_irq_, 0, 0, 0);
 	init8259();
-	initapic();
+	//initioapic();
 
 	//timer
 	p = devicecreate(_tmr_, 0, 0, 0);
 	initrtc();
 	init825x();
 
-	//cpu ap: after bsp and apic and timer
+	//cpu_app: after cpu_bsp and pic and timer
 	initcpu_ap();
 
 	//pci

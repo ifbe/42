@@ -1,4 +1,8 @@
-%define GDTBUF 0x30000
+%define PERCPU 0x30000
+%define GDTBUF (PERCPU+0x000)
+%define TSSBUF (PERCPU+0x1000)
+%define IDTBUF (PERCPU+0x2000)
+%define STKBUF (PERCPU+0x10000)
 [bits 64]
 section .text
 

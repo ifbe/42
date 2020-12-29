@@ -2,9 +2,11 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-#define GDTBUF 0x30000
-#define TSSBUF (GDTBUF+0x1000)
-#define STKBUF (GDTBUF+0x10000)
+#define PERCPU 0x30000
+#define GDTBUF (PERCPU+0x000)
+#define TSSBUF (PERCPU+0x1000)
+#define IDTBUF (PERCPU+0x2000)
+#define STKBUF (PERCPU+0x10000)
 void getgdt(void*);
 u16 gettss();
 //

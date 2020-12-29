@@ -5,12 +5,17 @@
 #define FromBsp_rip 0xffe8
 #define ApToBsp_message 0xfff0
 #define BspToAp_command 0xfff8
-void incomingprocess(int);
 //
 void cpuid(u32*);
 void initpaging();
 void initgdt();
-void initidt();
+//
+void initidt_bsp();
+void initidt_ap();
+void initapic();
+void initapic_timer();
+//
+void incomingprocess(int);
 //acpi
 u64 getknowncores();
 //
@@ -35,7 +40,12 @@ void initcpu_bsp(struct item* p)
 {
 	//
 	asm("cli");
-	say("initing cpu@0\n");
+	say("@initcpu_bsp\n");
+
+
+//----------------prep descs----------------
+	initpaging();
+	initgdt();
 
 
 //----------------check cpuid----------------
@@ -48,12 +58,18 @@ void initcpu_bsp(struct item* p)
 	say("cpuid.1: eax=%08x,ebx=%08x,ecx=%08x,edx=%08x\n",abcd[0],abcd[1],abcd[2],abcd[3]);
 
 
-//----------------prep descs----------------
-	initpaging();
-	initgdt();
-	initidt();
+//----------------check coreid----------------
+	int coreid = localapic_coreid();
+	say("coreid = %d\n", coreid);
+
+	incomingprocess(coreid);
+
+	initidt_bsp();
+	initapic();
+	//initapic_timer();
 
 
+/*
 //----------------jump to ring3----------------
 	say("ring3 try...\n");
 	enterring3();
@@ -64,7 +80,7 @@ void initcpu_bsp(struct item* p)
 	dbg("ring0 try...\n");
 	asm("int $0x80");
 	say("ring0 god!!!\n");
-
+*/
 
 	//ok
 	asm("sti");
@@ -79,11 +95,12 @@ static void initcpu_other()
 {
 	shit = hex32('f','u','c','k');
 	asm("cli");
+	say("@initcpu_other\n");
 
 
-//----------------check coreid----------------
-	int coreid = localapic_coreid();
-	say("initing cpu@%d\n", coreid);
+//----------------prep descs----------------
+	//initpaging();		//currently same as bsp
+	//initgdt();
 
 
 //----------------check cpuid----------------
@@ -95,8 +112,20 @@ static void initcpu_other()
 	cpuid(abcd);
 	say("cpuid.1: eax=%08x,ebx=%08x,ecx=%08x,edx=%08x\n",abcd[0],abcd[1],abcd[2],abcd[3]);
 
-//----------------goto sleep----------------
+
+//----------------check coreid----------------
+	int coreid = localapic_coreid();
+	say("coreid=%d\n", coreid);
+
 	incomingprocess(coreid);
+
+	initidt_ap();
+	initapic();
+	//initapic_timer();
+
+
+//----------------goto sleep----------------
+	say("coreid=%d sleeping\n", coreid);
 	while(1)asm("hlt");
 }
 
@@ -173,8 +202,8 @@ givecmdtoap:
 	*(volatile u64*)FromBsp_rsp = (u64)memorycreate(0x100000, 0) + 0x100000 - 0x100;
 	*(volatile u64*)BspToAp_command = hex32('g','o','g','o');		//must after rip & rsp
 
-	//wait 200us, check flag
-	sleep_us(1000*100);
+	//bsp wait 2s, until ap done, then check flag
+	sleep_us(1000*2000);
 	say("flag=%x\n", *flag);
 	if(64 == *flag){
 		say("ap in 64bit mode\n");
