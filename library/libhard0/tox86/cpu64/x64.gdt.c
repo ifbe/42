@@ -2,15 +2,26 @@
 #define u16 unsigned short
 #define u32 unsigned int
 #define u64 unsigned long long
-#define PERCPU 0x30000
-#define GDTBUF (PERCPU+0x000)
-#define TSSBUF (PERCPU+0x1000)
-#define IDTBUF (PERCPU+0x2000)
-#define STKBUF (PERCPU+0x10000)
-void getgdt(void*);
-u16 gettss();
+#define KERNCODE 0x10
+#define KERNDATA 0x18
+#define USERCODE 0x20
+#define USERDATA 0x28
 //
+#define APPCPU 0x20000		//[20000,2ffff]
+#define APPCPU_GDT (APPCPU+0x000)
+#define APPCPU_TSS (APPCPU+0x1000)
+#define APPCPU_IDT (APPCPU+0x2000)
+#define APPCPU_RSP (APPCPU+0x10000)
+//
+#define BSPCPU 0x30000		//[30000,3ffff]
+#define GDTBUF (BSPCPU+0x000)
+#define TSSBUF (BSPCPU+0x1000)
+#define IDTBUF (BSPCPU+0x2000)
+#define STKBUF (BSPCPU+0x10000)
+void getgdt(void*);
 void loadgdt();
+//
+u16 gettss();
 void loadtss();
 //
 void printmemory(void*, int);
@@ -104,10 +115,10 @@ void fillgdt(u8* buf)
 	struct gdt* gdt = (void*)buf;
 	*(u64*)(buf+0x00) =                  0;		//must null
 	*(u64*)(buf+0x08) =                  0;		//myown unused
-	*(u64*)(buf+0x10) = 0x00209a0000000000;		//kernel code
-	*(u64*)(buf+0x18) = 0x0000920000000000;		//kernel data
-	*(u64*)(buf+0x20) = 0x0020fa0000000000;		//user code
-	*(u64*)(buf+0x28) = 0x0000f20000000000;		//user data
+	*(u64*)(buf+KERNCODE) = 0x00209a0000000000;		//kernel code
+	*(u64*)(buf+KERNDATA) = 0x0000920000000000;		//kernel data
+	*(u64*)(buf+USERCODE) = 0x0020fa0000000000;		//user code
+	*(u64*)(buf+USERDATA) = 0x0000f20000000000;		//user data
 
 	struct gdt_tss* gt = (void*)(buf+0x30);
 	gt->limit_00_15 = 0x67;		//103;

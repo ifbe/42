@@ -5,11 +5,22 @@
 #define hex16(a,b) (a | (b<<8))
 #define hex32(a,b,c,d) (a | (b<<8) | (c<<16) | (d<<24))
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
-#define PERCPU 0x30000
-#define GDTBUF (PERCPU+0x000)
-#define TSSBUF (PERCPU+0x1000)
-#define IDTBUF (PERCPU+0x2000)
-#define STKBUF (PERCPU+0x10000)
+#define KERNCODE 0x10
+#define KERNDATA 0x18
+#define USERCODE 0x20
+#define USERDATA 0x28
+//
+#define APPCPU 0x20000		//[20000,2ffff]
+#define APPCPU_GDT (APPCPU+0x000)
+#define APPCPU_TSS (APPCPU+0x1000)
+#define APPCPU_IDT (APPCPU+0x2000)
+#define APPCPU_RSP (APPCPU+0x10000)
+//
+#define BSPCPU 0x30000		//[30000,3ffff]
+#define BSPCPU_GDT (BSPCPU+0x000)
+#define BSPCPU_TSS (BSPCPU+0x1000)
+#define BSPCPU_IDT (BSPCPU+0x2000)
+#define BSPCPU_RSP (BSPCPU+0x10000)
 void isr_825x();
 void isr_8042();
 void isr_rtc();
@@ -17,11 +28,11 @@ void isr_rtc();
 u64 getisr03();
 u64 getisr20();
 u64 getisr28();
+u64 getisr40();
 u64 getisr80();
 //
-u8 in8(u16 port);
-void out8(u16 port, u8 data);
-void endofirq(int);
+void dual8259_endofirq(int);
+void localapic_endofirq(u32 num);
 void setidt(void* buf, int len);
 //
 void eventwrite(u64,u64,u64,u64);
@@ -50,170 +61,222 @@ struct int_frame{
 
 
 
-__attribute__((interrupt)) static void isr_00(void* p){
+__attribute__((interrupt)) static void allcpu_isr00(void* p){
 	say("int00!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Divide-by-zero
-__attribute__((interrupt)) static void isr_01(void* p){
+__attribute__((interrupt)) static void allcpu_isr01(void* p){
 	say("int01!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Debug
-__attribute__((interrupt)) static void isr_02(void* p){
+__attribute__((interrupt)) static void allcpu_isr02(void* p){
 	say("int02!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Non-maskable Interrupt
-__attribute__((interrupt)) static void isr_03(struct int_frame* p){
+__attribute__((interrupt)) static void allcpu_isr03(struct int_frame* p){
 	say("int03: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 }//Breakpoint
-__attribute__((interrupt)) static void isr_04(void* p){
+__attribute__((interrupt)) static void allcpu_isr04(void* p){
 	say("int04!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Overflow
-__attribute__((interrupt)) static void isr_05(void* p){
+__attribute__((interrupt)) static void allcpu_isr05(void* p){
 	say("int05!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Bound Range Exceeded
-__attribute__((interrupt)) static void isr_06(struct int_frame* p){
+__attribute__((interrupt)) static void allcpu_isr06(struct int_frame* p){
 	say("int06: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Invalid Opcode
-__attribute__((interrupt)) static void isr_07(void* p){
+__attribute__((interrupt)) static void allcpu_isr07(void* p){
 	say("int07!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Device Not Available
-__attribute__((interrupt)) static void isr_08(void* p, u64 e){
+__attribute__((interrupt)) static void allcpu_isr08(void* p, u64 e){
 	say("int08:%llx\n", e);
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Double Fault
-__attribute__((interrupt)) static void isr_09(void* p){
+__attribute__((interrupt)) static void allcpu_isr09(void* p){
 	say("int09!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Coprocessor Segment Overrun
-__attribute__((interrupt)) static void isr_0a(void* p, u64 e){
+__attribute__((interrupt)) static void allcpu_isr0a(void* p, u64 e){
 	say("int0a:%llx\n", e);
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Invalid TSS
-__attribute__((interrupt)) static void isr_0b(void* p, u64 e){
+__attribute__((interrupt)) static void allcpu_isr0b(void* p, u64 e){
 	say("int0b:%llx\n", e);
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Segment Not Present
-__attribute__((interrupt)) static void isr_0c(void* p, u64 e){
+__attribute__((interrupt)) static void allcpu_isr0c(void* p, u64 e){
 	say("int0c:%llx\n", e);
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Stack-Segment Fault
-__attribute__((interrupt)) static void isr_0d(struct int_frame* p, u64 e){
+__attribute__((interrupt)) static void allcpu_isr0d(struct int_frame* p, u64 e){
 	printmemory((u8*)p-0x18, 0x80);
 	say("int0d: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
 	asm("cli");
 	asm("hlt");
 }//General Protection Fault
-__attribute__((interrupt)) static void isr_0e(struct int_frame* p, u64 e){
+__attribute__((interrupt)) static void allcpu_isr0e(struct int_frame* p, u64 e){
 	printmemory((u8*)p-0x18, 0x80);
 	say("int0e: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
 	asm("cli");
 	asm("hlt");
 }//Page Fault
-__attribute__((interrupt)) static void isr_0f(void* p){
+__attribute__((interrupt)) static void allcpu_isr0f(void* p){
 	say("int0f!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Reserved
-__attribute__((interrupt)) static void isr_10(void* p){
+__attribute__((interrupt)) static void allcpu_isr10(void* p){
 	say("int10!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//x87 Floating-Point Exception
-__attribute__((interrupt)) static void isr_11(void* p, u64 e){
+__attribute__((interrupt)) static void allcpu_isr11(void* p, u64 e){
 	say("int11:%llx\n", e);
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Alignment Check
-__attribute__((interrupt)) static void isr_12(void* p){
+__attribute__((interrupt)) static void allcpu_isr12(void* p){
 	say("int12!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Machine Check
-__attribute__((interrupt)) static void isr_13(void* p){
+__attribute__((interrupt)) static void allcpu_isr13(void* p){
 	say("int13!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//SIMD Floating-Point Exception
-__attribute__((interrupt)) static void isr_14(void* p){
+__attribute__((interrupt)) static void allcpu_isr14(void* p){
 	say("int14!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Virtualization Exception
-__attribute__((interrupt)) static void isr_15(void* p){
+__attribute__((interrupt)) static void allcpu_isr15(void* p){
 	say("int15!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Reserved
-__attribute__((interrupt)) static void isr_16(void* p){
+__attribute__((interrupt)) static void allcpu_isr16(void* p){
 	say("int16!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Reserved
-__attribute__((interrupt)) static void isr_17(void* p){
+__attribute__((interrupt)) static void allcpu_isr17(void* p){
 	say("int17!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Reserved
-__attribute__((interrupt)) static void isr_18(void* p){
+__attribute__((interrupt)) static void allcpu_isr18(void* p){
 	say("int18!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Reserved
-__attribute__((interrupt)) static void isr_19(void* p){
+__attribute__((interrupt)) static void allcpu_isr19(void* p){
 	say("int19!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Reserved
-__attribute__((interrupt)) static void isr_1a(void* p){
+__attribute__((interrupt)) static void allcpu_isr1a(void* p){
 	say("int1a!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Reserved
-__attribute__((interrupt)) static void isr_1b(void* p){
+__attribute__((interrupt)) static void allcpu_isr1b(void* p){
 	say("int1b!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Reserved
-__attribute__((interrupt)) static void isr_1c(void* p){
+__attribute__((interrupt)) static void allcpu_isr1c(void* p){
 	say("int1c!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Reserved
-__attribute__((interrupt)) static void isr_1d(void* p){
+__attribute__((interrupt)) static void allcpu_isr1d(void* p){
 	say("int1d!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Reserved
-__attribute__((interrupt)) static void isr_1e(void* p, u64 e){
+__attribute__((interrupt)) static void allcpu_isr1e(void* p, u64 e){
 	say("int1e:%llx\n", e);
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Security Exception
-__attribute__((interrupt)) static void isr_1f(void* p){
+__attribute__((interrupt)) static void allcpu_isr1f(void* p){
 	say("int1f!\n");
-	while(1);
+	asm("cli");
+	asm("hlt");
 }//Reserved
-__attribute__((interrupt)) static void isr_20(void* p){
+
+
+
+
+__attribute__((interrupt)) static void bspcpu_isr20(void* p){
 	//say("825x!\n");
 	isr_825x();
-	endofirq(0);
+	dual8259_endofirq(0);
 }
-__attribute__((interrupt)) static void isr_21(void* p){
+__attribute__((interrupt)) static void bspcpu_isr21(void* p){
 	//say("kbd!\n");
 	isr_8042();
-	endofirq(1);
+	dual8259_endofirq(1);
 }
-__attribute__((interrupt)) static void isr_28(void* p){
+__attribute__((interrupt)) static void bspcpu_isr28(void* p){
 	//say("rtc!\n");
 	isr_rtc();
-	endofirq(8);
+	dual8259_endofirq(8);
 }
-__attribute__((interrupt)) static void isr_80(struct int_frame* p){
+__attribute__((interrupt)) static void bspcpu_isr80(struct int_frame* p){
 	say("int80: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 }
-__attribute__((interrupt)) static void isr_ff(struct int_frame* p){
+__attribute__((interrupt)) static void bspcpu_isrff(struct int_frame* p){
 	say("intff: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 }
 
 
 
+void testtest()
+{
+	*(volatile u32*)0xfee000b0 = 0;
+}
+__attribute__((interrupt)) static void appcpu_isr40(struct int_frame* p){
+	*(u64*)8 += 1;
+	testtest();
+	//localapic_endofirq(0x40);
+/*	asm(
+		".intel_syntax\n"
+		"mov [0],rsp\n"
+	);*/
+}
+__attribute__((interrupt)) static void appcpu_isrff(struct int_frame* p){
+	say("appcpu_isrff: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
+}
 
-void interruptinstall(int num, u64 isr)
+
+
+
+void interruptinstall(void* idt, int num, u64 isr, int flag)
 {
 	//0x80: testing syscall: 
 	u8 type = (num>=0x80) ? 0xee : 0x8e;
-	struct idt_entry* addr = (void*)(u64)(IDTBUF + num*16);;
+	struct idt_entry* addr = (void*)(idt + num*16);
 
 	addr->byte01 = isr&0xffff;
-	addr->select = 0x10;		//kernel @ 10
+	addr->select = KERNCODE;		//kernel @ 10
 	addr->zero = 0x0;
 	addr->type = type;
 	addr->byte23 = (isr>>16)&0xffff;
@@ -225,60 +288,107 @@ void initidt_bsp()
 	say("@initidt_bsp\n");
 
 	int j;
-	u8* buf = (void*)IDTBUF;
-	for(j=0;j<0x1000;j++)buf[j] = 0;
+	u8* idt = (void*)BSPCPU_IDT;
+	for(j=0;j<0x1000;j++)idt[j] = 0;
 
 	//exception
-	interruptinstall(0x00, (u64)isr_00);
-	interruptinstall(0x01, (u64)isr_01);
-	interruptinstall(0x02, (u64)isr_02);
-	interruptinstall(0x03, (u64)isr_03);
-	//interruptinstall(0x03, getisr03());
-	interruptinstall(0x04, (u64)isr_04);
-	interruptinstall(0x05, (u64)isr_05);
-	interruptinstall(0x06, (u64)isr_06);
-	interruptinstall(0x07, (u64)isr_07);
-	interruptinstall(0x08, (u64)isr_08);
-	interruptinstall(0x09, (u64)isr_09);
-	interruptinstall(0x0a, (u64)isr_0a);
-	interruptinstall(0x0b, (u64)isr_0b);
-	interruptinstall(0x0c, (u64)isr_0c);
-	interruptinstall(0x0d, (u64)isr_0d);
-	interruptinstall(0x0e, (u64)isr_0e);
-	interruptinstall(0x0f, (u64)isr_0f);
-	interruptinstall(0x10, (u64)isr_10);
-	interruptinstall(0x11, (u64)isr_11);
-	interruptinstall(0x12, (u64)isr_12);
-	interruptinstall(0x13, (u64)isr_13);
-	interruptinstall(0x14, (u64)isr_14);
-	interruptinstall(0x15, (u64)isr_15);
-	interruptinstall(0x16, (u64)isr_16);
-	interruptinstall(0x17, (u64)isr_17);
-	interruptinstall(0x18, (u64)isr_18);
-	interruptinstall(0x19, (u64)isr_19);
-	interruptinstall(0x1a, (u64)isr_1a);
-	interruptinstall(0x1b, (u64)isr_1b);
-	interruptinstall(0x1c, (u64)isr_1c);
-	interruptinstall(0x1d, (u64)isr_1d);
-	interruptinstall(0x1e, (u64)isr_1e);
-	interruptinstall(0x1f, (u64)isr_1f);
+	interruptinstall(idt, 0x00, (u64)allcpu_isr00, 0);
+	interruptinstall(idt, 0x01, (u64)allcpu_isr01, 0);
+	interruptinstall(idt, 0x02, (u64)allcpu_isr02, 0);
+	interruptinstall(idt, 0x03, (u64)allcpu_isr03, 0);
+	//interruptinstall(idt, 0x03, getisr03(), 0);
+	interruptinstall(idt, 0x04, (u64)allcpu_isr04, 0);
+	interruptinstall(idt, 0x05, (u64)allcpu_isr05, 0);
+	interruptinstall(idt, 0x06, (u64)allcpu_isr06, 0);
+	interruptinstall(idt, 0x07, (u64)allcpu_isr07, 0);
+	interruptinstall(idt, 0x08, (u64)allcpu_isr08, 0);
+	interruptinstall(idt, 0x09, (u64)allcpu_isr09, 0);
+	interruptinstall(idt, 0x0a, (u64)allcpu_isr0a, 0);
+	interruptinstall(idt, 0x0b, (u64)allcpu_isr0b, 0);
+	interruptinstall(idt, 0x0c, (u64)allcpu_isr0c, 0);
+	interruptinstall(idt, 0x0d, (u64)allcpu_isr0d, 0);
+	interruptinstall(idt, 0x0e, (u64)allcpu_isr0e, 0);
+	interruptinstall(idt, 0x0f, (u64)allcpu_isr0f, 0);
+	interruptinstall(idt, 0x10, (u64)allcpu_isr10, 0);
+	interruptinstall(idt, 0x11, (u64)allcpu_isr11, 0);
+	interruptinstall(idt, 0x12, (u64)allcpu_isr12, 0);
+	interruptinstall(idt, 0x13, (u64)allcpu_isr13, 0);
+	interruptinstall(idt, 0x14, (u64)allcpu_isr14, 0);
+	interruptinstall(idt, 0x15, (u64)allcpu_isr15, 0);
+	interruptinstall(idt, 0x16, (u64)allcpu_isr16, 0);
+	interruptinstall(idt, 0x17, (u64)allcpu_isr17, 0);
+	interruptinstall(idt, 0x18, (u64)allcpu_isr18, 0);
+	interruptinstall(idt, 0x19, (u64)allcpu_isr19, 0);
+	interruptinstall(idt, 0x1a, (u64)allcpu_isr1a, 0);
+	interruptinstall(idt, 0x1b, (u64)allcpu_isr1b, 0);
+	interruptinstall(idt, 0x1c, (u64)allcpu_isr1c, 0);
+	interruptinstall(idt, 0x1d, (u64)allcpu_isr1d, 0);
+	interruptinstall(idt, 0x1e, (u64)allcpu_isr1e, 0);
+	interruptinstall(idt, 0x1f, (u64)allcpu_isr1f, 0);
 
 	//interrupt
-	interruptinstall(0x20, getisr20());		//(u64)isr_20
-	interruptinstall(0x21, (u64)isr_21);
-	interruptinstall(0x28, (u64)isr_28);
+	interruptinstall(idt, 0x20, getisr20(), 0);		//(u64)bspcpu_isr20
+	interruptinstall(idt, 0x21, (u64)bspcpu_isr21, 0);
+	interruptinstall(idt, 0x28, (u64)bspcpu_isr28, 0);
 
 	//systemcall
-	interruptinstall(0x80, getisr80());		//(u64)isr_80
+	interruptinstall(idt, 0x80, getisr80(), 0);		//(u64)bspcpu_isr80
 
 	//apic spurious
-	interruptinstall(0xff, (u64)isr_ff);
+	interruptinstall(idt, 0xff, (u64)bspcpu_isrff, 0);
 
 	//
-	printmemory(buf, 0x40);
-	setidt(buf, 0xfff);
+	printmemory(idt, 0x40);
+	setidt(idt, 0xfff);
 }
 void initidt_ap(int coreid)
 {
 	say("@initidt_ap: %d\n", coreid);
+
+	int j;
+	u8* idt = (void*)APPCPU_IDT;
+	for(j=0;j<0x1000;j++)idt[j] = 0;
+
+	interruptinstall(idt, 0x00, (u64)allcpu_isr00, 0);
+	interruptinstall(idt, 0x01, (u64)allcpu_isr01, 0);
+	interruptinstall(idt, 0x02, (u64)allcpu_isr02, 0);
+	interruptinstall(idt, 0x03, (u64)allcpu_isr03, 0);
+	//interruptinstall(idt, 0x03, getisr03(), 0);
+	interruptinstall(idt, 0x04, (u64)allcpu_isr04, 0);
+	interruptinstall(idt, 0x05, (u64)allcpu_isr05, 0);
+	interruptinstall(idt, 0x06, (u64)allcpu_isr06, 0);
+	interruptinstall(idt, 0x07, (u64)allcpu_isr07, 0);
+	interruptinstall(idt, 0x08, (u64)allcpu_isr08, 0);
+	interruptinstall(idt, 0x09, (u64)allcpu_isr09, 0);
+	interruptinstall(idt, 0x0a, (u64)allcpu_isr0a, 0);
+	interruptinstall(idt, 0x0b, (u64)allcpu_isr0b, 0);
+	interruptinstall(idt, 0x0c, (u64)allcpu_isr0c, 0);
+	interruptinstall(idt, 0x0d, (u64)allcpu_isr0d, 0);
+	interruptinstall(idt, 0x0e, (u64)allcpu_isr0e, 0);
+	interruptinstall(idt, 0x0f, (u64)allcpu_isr0f, 0);
+	interruptinstall(idt, 0x10, (u64)allcpu_isr10, 0);
+	interruptinstall(idt, 0x11, (u64)allcpu_isr11, 0);
+	interruptinstall(idt, 0x12, (u64)allcpu_isr12, 0);
+	interruptinstall(idt, 0x13, (u64)allcpu_isr13, 0);
+	interruptinstall(idt, 0x14, (u64)allcpu_isr14, 0);
+	interruptinstall(idt, 0x15, (u64)allcpu_isr15, 0);
+	interruptinstall(idt, 0x16, (u64)allcpu_isr16, 0);
+	interruptinstall(idt, 0x17, (u64)allcpu_isr17, 0);
+	interruptinstall(idt, 0x18, (u64)allcpu_isr18, 0);
+	interruptinstall(idt, 0x19, (u64)allcpu_isr19, 0);
+	interruptinstall(idt, 0x1a, (u64)allcpu_isr1a, 0);
+	interruptinstall(idt, 0x1b, (u64)allcpu_isr1b, 0);
+	interruptinstall(idt, 0x1c, (u64)allcpu_isr1c, 0);
+	interruptinstall(idt, 0x1d, (u64)allcpu_isr1d, 0);
+	interruptinstall(idt, 0x1e, (u64)allcpu_isr1e, 0);
+	interruptinstall(idt, 0x1f, (u64)allcpu_isr1f, 0);
+
+	//apic timer
+	interruptinstall(idt, 0x40, getisr40(), 0);
+
+	//apic spurious
+	interruptinstall(idt, 0xff, (u64)appcpu_isrff, 0);
+
+	printmemory(idt, 0x40);
+	setidt(idt, 0xfff);
 }

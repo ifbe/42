@@ -11,9 +11,10 @@ void initpaging();
 void initgdt();
 //
 void initidt_bsp();
-void initidt_ap();
-void initapic();
-void initapic_timer();
+void initidt_ap(int coreid);
+//
+void localapic_init();
+void apictimer_init();
 //
 void incomingprocess(int);
 //acpi
@@ -65,8 +66,8 @@ void initcpu_bsp(struct item* p)
 	incomingprocess(coreid);
 
 	initidt_bsp();
-	initapic();
-	//initapic_timer();
+	localapic_init();
+	//apictimer_init();
 
 
 /*
@@ -119,13 +120,14 @@ static void initcpu_other()
 
 	incomingprocess(coreid);
 
-	initidt_ap();
-	initapic();
-	//initapic_timer();
+	initidt_ap(coreid);
+	localapic_init();
+	apictimer_init();
 
 
 //----------------goto sleep----------------
-	say("coreid=%d sleeping\n", coreid);
+	say("coreid=%d sleepwaitforint\n", coreid);
+	asm("sti");
 	while(1)asm("hlt");
 }
 
@@ -200,6 +202,7 @@ void initcpu_onecore(int coreid)
 givecmdtoap:
 	*(volatile u64*)FromBsp_rip = (u64)initcpu_other;
 	*(volatile u64*)FromBsp_rsp = (u64)memorycreate(0x100000, 0) + 0x100000 - 0x100;
+	say("rip=%llx,rsp=%llx\n", *(volatile u64*)FromBsp_rip, *(volatile u64*)FromBsp_rsp);
 	*(volatile u64*)BspToAp_command = hex32('g','o','g','o');		//must after rip & rsp
 
 	//bsp wait 2s, until ap done, then check flag

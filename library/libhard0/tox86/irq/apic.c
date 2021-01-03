@@ -20,15 +20,15 @@
 #define LAPIC_ESR     0x0280	//Error Status
 #define LAPIC_ICRLO   0x0300	//Interrupt Command
 #define LAPIC_ICRHI   0x0310	//Interrupt Command [63:32]
-#define LAPIC_TIMER   0x0320	//LVT Timer
-#define LAPIC_THERMAL 0x0330	//LVT Thermal Sensor
-#define LAPIC_PERF    0x0340	//LVT Performance Counter
-#define LAPIC_LINT0   0x0350	//LVT LINT0
-#define LAPIC_LINT1   0x0360	//LVT LINT1
-#define LAPIC_ERROR   0x0370	//LVT Error
-#define LAPIC_TICR    0x0380	//Initial Count (for Timer)
-#define LAPIC_TCCR    0x0390	//Current Count (for Timer)
-#define LAPIC_TDCR    0x03e0	//Divide Configuration (for Timer)
+#define LAPIC_LVT_TIMER   0x0320	//LVT Timer
+#define LAPIC_LVT_THERMAL 0x0330	//LVT Thermal Sensor
+#define LAPIC_LVT_PERF    0x0340	//LVT Performance Counter
+#define LAPIC_LVT_LINT0   0x0350	//LVT LINT0
+#define LAPIC_LVT_LINT1   0x0360	//LVT LINT1
+#define LAPIC_LVT_ERROR   0x0370	//LVT Error
+#define LAPIC_TMR_INITCOUNT    0x0380	//Initial Count (for Timer)
+#define LAPIC_TMR_CURRCOUNT    0x0390	//Current Count (for Timer)
+#define LAPIC_TMR_DIVCONFIG    0x03e0	//Divide Configuration (for Timer)
 // Delivery Mode
 #define ICR_FIXED                       0x00000000
 #define ICR_LOWEST                      0x00000100
@@ -55,6 +55,9 @@
 #define ICR_ALL_EXCLUDING_SELF          0x000c0000
 // Destination Field
 #define ICR_DESTINATION_SHIFT           24
+// Timer
+#define TMR_PERIODIC 0x20000
+#define TMR_BASEDIV	(1<<20)
 //
 #define IOAPIC_BASE 0xfec00000
 #define IOAPIC_ADDR 0
@@ -82,18 +85,32 @@ int localapic_isenabled()
 }
 int localapic_coreid()
 {
-	u32* apicid = (u32*)(addr_localapic + LAPIC_ID);
+	volatile u32* apicid = (volatile u32*)(addr_localapic + LAPIC_ID);
 	return (*apicid)>>24;
 }
 int localapic_version()
 {
-	u32* apicid = (u32*)(addr_localapic + LAPIC_VER);
+	volatile u32* apicid = (volatile u32*)(addr_localapic + LAPIC_VER);
 	return *apicid;
 }
 void localapic_endofirq(u32 num)
 {
-	u32* addr = (u32*)(addr_localapic + LAPIC_EOI);
+	volatile u32* addr = (volatile u32*)(addr_localapic + LAPIC_EOI);
 	*addr = 0;
+}
+
+
+
+
+void apictimer_init()
+{
+	volatile u32* LVT = (volatile u32*)(addr_localapic + LAPIC_LVT_TIMER);
+	volatile u32* DIV = (volatile u32*)(addr_localapic + LAPIC_TMR_DIVCONFIG);
+	volatile u32* CNT = (volatile u32*)(addr_localapic + LAPIC_TMR_INITCOUNT);
+
+	*LVT = 0x40 | TMR_PERIODIC;
+	*DIV = 0x3;
+	*CNT = 0x1000000;
 }
 
 
@@ -123,7 +140,7 @@ void localapic_sendstart(u32 apic_id, u32 vector)
     localapic_write(LAPIC_ICRLO, vector | ICR_STARTUP | ICR_PHYSICAL | ICR_ASSERT | ICR_EDGE | ICR_NO_SHORTHAND);
     while(localapic_read(LAPIC_ICRLO) & ICR_SEND_PENDING);
 }
-void initapic()
+void localapic_init()
 {
 	say("@initapic\n");
 
@@ -156,23 +173,23 @@ void initapic()
 }
 /*
 	//timer interrupt = disable
-	addr = (u32*)(LAPIC_BASE + LAPIC_TIMER);
+	addr = (u32*)(LAPIC_BASE + LAPIC_LVT_TIMER);
 	*addr = 0x10000;
 
 	//performance counter interrupt = disable
-	addr = (u32*)(LAPIC_BASE + LAPIC_PERF);
+	addr = (u32*)(LAPIC_BASE + LAPIC_LVT_PERF);
 	*addr = 0x10000;
 
 	//local interrupt0(normal external interrupt) = disable
-	addr = (u32*)(LAPIC_BASE + LAPIC_LINT0);
+	addr = (u32*)(LAPIC_BASE + LAPIC_LVT_LINT0);
 	*addr = 0x8700;
 
 	//local interrupt1(normal nmi processing) = disable
-	addr = (u32*)(LAPIC_BASE + LAPIC_LINT1);
+	addr = (u32*)(LAPIC_BASE + LAPIC_LVT_LINT1);
 	*addr = 0x400;
 
 	//error interrupt = disable
-	addr = (u32*)(LAPIC_BASE + LAPIC_ERROR);
+	addr = (u32*)(LAPIC_BASE + LAPIC_LVT_ERROR);
 	*addr = 0x10000;
 */
 
@@ -199,7 +216,7 @@ void ioapic_enableirq(u32 irq)
 void ioapic_disableirq(u32 irq)
 {
 }
-void initioapic()
+void ioapic_init()
 {
 	int j;
 	u32* addr;

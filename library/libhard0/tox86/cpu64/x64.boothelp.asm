@@ -5,13 +5,18 @@
 %define ApToBsp_message 0xfff0
 %define BspToAp_command 0xfff8
 
-%define PERCPU 0x30000
-%define GDTBUF 0x30000
-	%define KERNCODE 0x10
-	%define KERNDATA 0x18
-%define TSSBUF 0x31000
-%define IDTBUF 0x32000
-%define PML4ADDR 0x7f000
+%define KERNCODE 0x10
+%define KERNDATA 0x18
+
+%define BSPCPU 0x30000
+%define BSPCPU_GDT (BSPCPU+0x0000)
+%define BSPCPU_TSS (BSPCPU+0x1000)
+%define BSPCPU_IDT (BSPCPU+0x2000)
+
+;%define PML1ADDR unused	;pt
+%define PML2ADDR 0x40000	;pd
+%define PML3ADDR 0x7e000	;pdp
+%define PML4ADDR 0x7f000	;pml4
 
 %define TEMPGDTR 0x800
 %define TEMPIDTR 0x900
@@ -47,8 +52,8 @@ at16to64:
 	mov word [TEMPIDTR + 4], 0
 
 	mov word [TEMPGDTR + 0], 0x30-1
-	mov word [TEMPGDTR + 2], GDTBUF & 0xffff
-	mov word [TEMPGDTR + 4], GDTBUF >> 16
+	mov word [TEMPGDTR + 2], BSPCPU_GDT & 0xffff
+	mov word [TEMPGDTR + 4], BSPCPU_GDT >> 16
 
 	lidt [TEMPIDTR]
 

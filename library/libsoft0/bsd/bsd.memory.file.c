@@ -1,0 +1,11 @@
+
+
+
+
+
+void initfilemgr()
+{
+}
+void freefilemgr()
+{
+}

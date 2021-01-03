@@ -7,6 +7,14 @@ void say(char* fmt,...);
 
 
 
+void incomingfileowner(void* obj)
+{
+	say("incoming fileowner: %p\n", obj);
+}
+
+
+
+
 int readfile(void* obj, int fd, void* arg, int off, u8* buf, int len)
 {
 	return 0;
@@ -30,4 +38,15 @@ int deletefile()
 int createfile()
 {
 	return 0;
+}
+
+
+
+
+void initfilemgr()
+{
+	say("@initfilemgr\n");
+}
+void freefilemgr()
+{
 }

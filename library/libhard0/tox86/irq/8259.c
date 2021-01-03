@@ -36,7 +36,7 @@ void enableirq(u32 num)
 
 
 
-void endofirq(int num)
+void dual8259_endofirq(int num)
 {
 	if(num >= 8)out8(0xa0, 0x20);
 	out8(0x20, 0x20);

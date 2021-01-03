@@ -31,3 +31,13 @@ void createfile()
 void deletefile()
 {
 }
+
+
+
+
+void initfilemgr()
+{
+}
+void freefilemgr()
+{
+}

@@ -128,6 +128,8 @@ static void test2()
 
 void initprocess()
 {
+	say("@initprocess\n");
+
 	int j;
 	u8* tmp = (void*)tasktable;
 	for(j=0;j<8*sizeof(struct taskstate);j++)tmp[j] = 0;

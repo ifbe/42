@@ -177,3 +177,13 @@ void deletefile()
 void createfile()
 {
 }
+
+
+
+
+void initfilemgr()
+{
+}
+void freefilemgr()
+{
+}

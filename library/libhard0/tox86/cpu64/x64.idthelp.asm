@@ -1,7 +1,8 @@
 [bits 64]
 extern isr_rtc
 extern isr_825x
-extern endofirq
+extern dual8259_endofirq
+extern localapic_endofirq
 section .text
 
 
@@ -13,6 +14,11 @@ getisr03:
 global getisr20
 getisr20:
 	lea rax,[rel isr20_825x]
+	ret
+
+global getisr40
+getisr40:
+	lea rax,[rel isr40_apictimer]
 	ret
 
 global getisr80
@@ -49,7 +55,7 @@ isr20_825x:
 
 	mov rdi, 0x20	;for abi: di,si,dx,cx,r8,r9
 	mov rcx, rdi	;for abi: cx,dx,r8,r9
-	call endofirq
+	call dual8259_endofirq
 
 	pop r8
 	pop r9
@@ -66,7 +72,29 @@ isr20_825x:
 	pop rsi
 	pop rdi
 	pop rbp
-	iretq 
+	iretq
+
+
+isr40_apictimer:
+	push rbp
+	push rdi
+	push rsi
+	push rdx
+	push rcx
+	push rbx
+	push rax
+
+	inc qword [0]
+	call localapic_endofirq
+
+	pop rax
+	pop rbx
+	pop rcx
+	pop rdx
+	pop rsi
+	pop rdi
+	pop rbp
+	iretq
 
 
 isr80_ring3to0:
