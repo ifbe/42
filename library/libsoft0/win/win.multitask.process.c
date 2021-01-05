@@ -27,7 +27,7 @@ void freeprocess()
 
 
 
-void listprocess()
+void processsearch()
 {
 	//只需列出进程名字和编号
 	HANDLE temp;
@@ -65,14 +65,14 @@ void listprocess()
 
 
 
-void chooseprocess(u64 pid)
+void processmodify(u64 pid)
 {
 }
 
 
 
 
-u64 readprocess(u64 buf,u64 startaddr,u64 disk,u32 count)
+u64 processread(u64 buf,u64 startaddr,u64 disk,u32 count)
 {
 	u64 bytesread = 0;
 	ReadProcessMemory(hDev,(char*)(startaddr*512),(char*)buf,count*0x200,&bytesread);
@@ -82,7 +82,7 @@ u64 readprocess(u64 buf,u64 startaddr,u64 disk,u32 count)
 
 
 
-void writeprocess()
+void processwrite()
 {
 }
 
@@ -93,10 +93,9 @@ void writeprocess()
 
 
 
-void createprocess(char* addr)
+void processcreate()
 {
-	memoryinfo=addr;
 }
-void deleteprocess()
+void processdelete()
 {
 }

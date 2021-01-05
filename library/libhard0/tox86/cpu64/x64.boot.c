@@ -7,6 +7,8 @@
 #define BspToAp_command 0xfff8
 //
 void cpuid(u32*);
+void enable_sse();
+//
 void initpaging();
 void initgdt();
 //
@@ -47,6 +49,7 @@ void initcpu_bsp(struct item* p)
 //----------------prep descs----------------
 	initpaging();
 	initgdt();
+	enable_sse();
 
 
 //----------------check cpuid----------------
@@ -102,6 +105,7 @@ static void initcpu_other()
 //----------------prep descs----------------
 	//initpaging();		//currently same as bsp
 	//initgdt();
+	enable_sse();
 
 
 //----------------check cpuid----------------

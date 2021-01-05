@@ -4,6 +4,8 @@
 #define _mmioedit_ hex64('m','m','i','o','e','d','i','t')
 void* allocstyle();
 void inithardware();
+void haltwaitforint();
+int processcreate(void* code, void* arg);
 
 
 
@@ -16,7 +18,7 @@ static struct item* driver = 0;
 
 
 
-int kernel_pollall()
+static int kernel_pollall()
 {
 	int j;
 	struct item* dev;
@@ -28,7 +30,7 @@ int kernel_pollall()
 	}
 	return 0;
 }
-int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
+static int kernel_display(struct item* wrk, void* url, int argc, u8** argv)
 {
 	//screen
 	struct supply* wnd = supplycreate(_wnd_, 0, 0, 0);
@@ -90,7 +92,6 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
 	supply_take(wnd,0, stack,2, 0,0, 0,0);
-	inithardware();
 
 
 	//loop
@@ -111,6 +112,29 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 		}
 	}
 	return 0;
+}
+static int kernel_input()
+{
+	return 0;
+}
+
+
+
+
+int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
+{
+	//kernel_display(wrk, url, argc, argv);
+	processcreate(kernel_display, wrk);
+
+	inithardware();
+
+	asm("sti");
+	while(1)haltwaitforint();
+/*
+	createprocess(kernel_display);	//window system
+	createprocess(kernel_input);	//input system
+
+*/
 }
 
 

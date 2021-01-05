@@ -8,15 +8,11 @@ void freeprocess()
 
 
 
-void readprocess()
+int processcreate()
 {
+	return 0;
 }
-void writeprocess()
+int processdelete()
 {
-}
-void listprocess()
-{
-}
-void chooseprocess()
-{
+	return 0;
 }

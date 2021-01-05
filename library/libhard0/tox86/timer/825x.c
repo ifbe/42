@@ -3,7 +3,7 @@
 #define u32 unsigned int
 #define u64 unsigned long long
 void timewrite(u64);
-void scheduleprocess(void*,int);
+void scheduleprocess(void*);
 //
 u8 in8(u16 port);
 void out8(u16 port, u8 data);
@@ -24,7 +24,7 @@ void isr_825x(void* p)
 	dt += 1;
 	timewrite(dt*1000);
 
-	scheduleprocess(p, 0);
+	scheduleprocess(p);
 }
 void init825x()
 {
