@@ -18,7 +18,7 @@ void initidt_ap(int coreid);
 void localapic_init();
 void apictimer_init();
 //
-void incomingprocess(int);
+void incomingthread(int);
 //acpi
 u64 getknowncores();
 //
@@ -66,7 +66,7 @@ void initcpu_bsp(struct item* p)
 	int coreid = localapic_coreid();
 	say("coreid = %d\n", coreid);
 
-	incomingprocess(coreid);
+	incomingthread(coreid);
 
 	initidt_bsp();
 	localapic_init();
@@ -94,10 +94,8 @@ void initcpu_bsp(struct item* p)
 
 
 
-static u32 shit = 0;
-static void initcpu_other()
+void initcpu_other()
 {
-	shit = hex32('f','u','c','k');
 	asm("cli");
 	say("@initcpu_other\n");
 
@@ -122,15 +120,26 @@ static void initcpu_other()
 	int coreid = localapic_coreid();
 	say("coreid=%d\n", coreid);
 
-	incomingprocess(coreid);
+	incomingthread(coreid);
 
 	initidt_ap(coreid);
 	localapic_init();
 	apictimer_init();
+}
 
+
+
+
+static u32 shit = 0;
+static void trampoline_appcpu()
+{
+//----------------set flag--------------
+	shit = hex32('f','u','c','k');
+
+//----------------init cpu---------------
+	initcpu_other();
 
 //----------------goto sleep----------------
-	say("coreid=%d sleepwaitforint\n", coreid);
 	asm("sti");
 	while(1)asm("hlt");
 }
@@ -204,7 +213,7 @@ void initcpu_onecore(int coreid)
 	return;
 
 givecmdtoap:
-	*(volatile u64*)FromBsp_rip = (u64)initcpu_other;
+	*(volatile u64*)FromBsp_rip = (u64)trampoline_appcpu;
 	*(volatile u64*)FromBsp_rsp = (u64)memorycreate(0x100000, 0) + 0x100000 - 0x100;
 	say("rip=%llx,rsp=%llx\n", *(volatile u64*)FromBsp_rip, *(volatile u64*)FromBsp_rsp);
 	*(volatile u64*)BspToAp_command = hex32('g','o','g','o');		//must after rip & rsp

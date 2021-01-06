@@ -5,7 +5,6 @@
 void* allocstyle();
 void inithardware();
 void haltwaitforint();
-int processcreate(void* code, void* arg);
 
 
 
@@ -124,7 +123,7 @@ static int kernel_input()
 int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 {
 	//kernel_display(wrk, url, argc, argv);
-	processcreate(kernel_display, wrk);
+	threadcreate(kernel_display, wrk);
 
 	inithardware();
 

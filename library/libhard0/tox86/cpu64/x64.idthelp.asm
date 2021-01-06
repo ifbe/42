@@ -3,7 +3,7 @@ extern isr_rtc
 extern isr_825x
 extern dual8259_endofirq
 extern localapic_endofirq
-extern scheduleprocess
+extern schedulethread
 section .text
 
 
@@ -124,7 +124,7 @@ isr40_apictimer:
 
 	mov rdi, rsp	;for abi: di,si,dx,cx,r8,r9
 	mov rcx, rdi	;for abi: cx,dx,r8,r9
-	call scheduleprocess
+	call schedulethread
 
 	call localapic_endofirq
 

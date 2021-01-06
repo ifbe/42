@@ -4,6 +4,9 @@
 int initprocess();
 int freeprocess();
 //
+int initthread();
+int freethread();
+//
 int initfilemgr();
 int freefilemgr();
 //random
@@ -359,8 +362,10 @@ void initsystem(u8* addr)
 	initshell(addr);
 	inituart(addr);
 	initsocket(addr);
-	initprocess();
 	initfilemgr();
+
+	initprocess();
+	initthread();
 
 	say("[8,a):system inited\n");
 }

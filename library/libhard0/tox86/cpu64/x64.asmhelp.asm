@@ -35,3 +35,15 @@ enable_avx:
 	pop rcx
 	pop rax
 	ret
+
+
+global enable_fpu
+enable_fpu:
+	push rax
+	mov rax, cr0
+	and rax, 0xfffffffffffffffb
+	or rax, 0x22
+	mov cr0, rax
+	clts
+	pop rax
+	ret
