@@ -171,6 +171,19 @@ fail:
 	say("%d,%d@open:%s\n", ret, errno, path);
 	return ret;
 }
+
+
+
+
+int filesearch(void* buf, int len)
+{
+	say("@filesearch\n");
+	return 0;
+}
+int filemodify(void* buf, int len)
+{
+	return 0;
+}
 void deletefile()
 {
 }

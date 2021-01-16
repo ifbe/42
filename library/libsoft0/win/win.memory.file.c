@@ -219,6 +219,19 @@ HANDLE startfile(u8* path, int flag)
 	}
 	return fd;
 }
+
+
+
+
+int filesearch(void* buf, int len)
+{
+	say("@filesearch\n");
+	return 0;
+}
+int filemodify(void* buf, int len)
+{
+	return 0;
+}
 void deletefile()
 {
 }

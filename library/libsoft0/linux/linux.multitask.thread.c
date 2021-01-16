@@ -13,3 +13,13 @@ u64 threadcreate(void* func, void* args)
 void threaddelete(u64 h)
 {
 }
+
+
+
+
+void initthread()
+{
+}
+void freethread()
+{
+}
