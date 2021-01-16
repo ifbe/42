@@ -31,6 +31,19 @@ int startfile(char* path)
 {
 	return 0;
 }
+
+
+
+
+int filesearch(void* buf, int len)
+{
+	say("@filesearch\n");
+	return 0;
+}
+int filemodify(void* buf, int len)
+{
+	return 0;
+}
 int deletefile()
 {
 	return 0;

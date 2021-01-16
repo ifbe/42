@@ -6,6 +6,8 @@ void initmemmap(void*);
 void* getdevmap();
 void initacpi(void*);
 //
+void apicwhere();
+//
 void initcpu_bsp(struct item* p);
 void initcpu_ap();
 //
@@ -33,6 +35,9 @@ void inithardware()
 
 	//acpi
 	initacpi(getdevmap());
+
+	//where
+	apicwhere();
 
 	//cpu_bsp: gdt,paging,idt,apic...
 	p = devicecreate(_cpu_, 0, 0, 0);

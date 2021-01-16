@@ -1,10 +1,13 @@
-[bits 64]
+%define XSAVESIZE 1024
 extern isr_rtc
 extern isr_825x
 extern dual8259_endofirq
 extern localapic_endofirq
 extern schedulethread
+
+
 section .text
+[bits 64]
 
 
 global getisr03
@@ -49,15 +52,6 @@ isr20_825x:
 	push r10
 	push r9
 	push r8
-	sub rsp, 0x80
-	movaps [rsp+0x00], xmm0
-	movaps [rsp+0x10], xmm1
-	movaps [rsp+0x20], xmm2
-	movaps [rsp+0x30], xmm3
-	movaps [rsp+0x40], xmm4
-	movaps [rsp+0x50], xmm5
-	movaps [rsp+0x60], xmm6
-	movaps [rsp+0x70], xmm7
 
 	mov rdi, rsp	;for abi: di,si,dx,cx,r8,r9
 	mov rcx, rdi	;for abi: cx,dx,r8,r9
@@ -67,15 +61,6 @@ isr20_825x:
 	mov rcx, rdi	;for abi: cx,dx,r8,r9
 	call dual8259_endofirq
 
-	movaps xmm0, [rsp+0x00]
-	movaps xmm1, [rsp+0x10]
-	movaps xmm2, [rsp+0x20]
-	movaps xmm3, [rsp+0x30]
-	movaps xmm4, [rsp+0x40]
-	movaps xmm5, [rsp+0x50]
-	movaps xmm6, [rsp+0x60]
-	movaps xmm7, [rsp+0x70]
-	add rsp, 0x80
 	pop r8
 	pop r9
 	pop r10
@@ -110,17 +95,6 @@ isr40_apictimer:
 	push r10
 	push r9
 	push r8
-	sub rsp, 0x80
-	movaps [rsp+0x00], xmm0
-	movaps [rsp+0x10], xmm1
-	movaps [rsp+0x20], xmm2
-	movaps [rsp+0x30], xmm3
-	movaps [rsp+0x40], xmm4
-	movaps [rsp+0x50], xmm5
-	movaps [rsp+0x60], xmm6
-	movaps [rsp+0x70], xmm7
-
-	;inc qword [0]	;debug
 
 	mov rdi, rsp	;for abi: di,si,dx,cx,r8,r9
 	mov rcx, rdi	;for abi: cx,dx,r8,r9
@@ -128,15 +102,6 @@ isr40_apictimer:
 
 	call localapic_endofirq
 
-	movaps xmm0, [rsp+0x00]
-	movaps xmm1, [rsp+0x10]
-	movaps xmm2, [rsp+0x20]
-	movaps xmm3, [rsp+0x30]
-	movaps xmm4, [rsp+0x40]
-	movaps xmm5, [rsp+0x50]
-	movaps xmm6, [rsp+0x60]
-	movaps xmm7, [rsp+0x70]
-	add rsp, 0x80
 	pop r8
 	pop r9
 	pop r10

@@ -62,12 +62,12 @@ struct int_frame{
 
 
 __attribute__((interrupt)) static void allcpu_isr00(void* p){
-	say("int00!\n");
+	say("int00#DE\n");
 	asm("cli");
 	asm("hlt");
 }//Divide-by-zero
 __attribute__((interrupt)) static void allcpu_isr01(void* p){
-	say("int01!\n");
+	say("int01#DB\n");
 	asm("cli");
 	asm("hlt");
 }//Debug
@@ -77,30 +77,31 @@ __attribute__((interrupt)) static void allcpu_isr02(void* p){
 	asm("hlt");
 }//Non-maskable Interrupt
 __attribute__((interrupt)) static void allcpu_isr03(struct int_frame* p){
-	say("int03: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
+	say("int03#BP: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 }//Breakpoint
 __attribute__((interrupt)) static void allcpu_isr04(void* p){
-	say("int04!\n");
+	say("int04#OF\n");
 	asm("cli");
 	asm("hlt");
 }//Overflow
 __attribute__((interrupt)) static void allcpu_isr05(void* p){
-	say("int05!\n");
+	say("int05#BR\n");
 	asm("cli");
 	asm("hlt");
 }//Bound Range Exceeded
 __attribute__((interrupt)) static void allcpu_isr06(struct int_frame* p){
-	say("int06: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
+	say("int06#UD: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
+	printmemory((void*)(p->ip), 0x10);
 	asm("cli");
 	asm("hlt");
 }//Invalid Opcode
 __attribute__((interrupt)) static void allcpu_isr07(void* p){
-	say("int07!\n");
+	say("int07#NM\n");
 	asm("cli");
 	asm("hlt");
 }//Device Not Available
 __attribute__((interrupt)) static void allcpu_isr08(void* p, u64 e){
-	say("int08:%llx\n", e);
+	say("int08#DF:%llx\n", e);
 	asm("cli");
 	asm("hlt");
 }//Double Fault
@@ -110,29 +111,30 @@ __attribute__((interrupt)) static void allcpu_isr09(void* p){
 	asm("hlt");
 }//Coprocessor Segment Overrun
 __attribute__((interrupt)) static void allcpu_isr0a(void* p, u64 e){
-	say("int0a:%llx\n", e);
+	say("int0a#TS:%llx\n", e);
 	asm("cli");
 	asm("hlt");
 }//Invalid TSS
 __attribute__((interrupt)) static void allcpu_isr0b(void* p, u64 e){
-	say("int0b:%llx\n", e);
+	say("int0b#NP:%llx\n", e);
 	asm("cli");
 	asm("hlt");
 }//Segment Not Present
 __attribute__((interrupt)) static void allcpu_isr0c(void* p, u64 e){
-	say("int0c:%llx\n", e);
+	say("int0c#SS:%llx\n", e);
 	asm("cli");
 	asm("hlt");
 }//Stack-Segment Fault
 __attribute__((interrupt)) static void allcpu_isr0d(struct int_frame* p, u64 e){
 	printmemory((u8*)p-0x18, 0x80);
-	say("int0d: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
+	say("int0d#GP: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
+	printmemory((void*)(p->ip), 0x10);
 	asm("cli");
 	asm("hlt");
 }//General Protection Fault
 __attribute__((interrupt)) static void allcpu_isr0e(struct int_frame* p, u64 e){
 	printmemory((u8*)p-0x18, 0x80);
-	say("int0e: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
+	say("int0e#PF: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
 	asm("cli");
 	asm("hlt");
 }//Page Fault
@@ -142,27 +144,27 @@ __attribute__((interrupt)) static void allcpu_isr0f(void* p){
 	asm("hlt");
 }//Reserved
 __attribute__((interrupt)) static void allcpu_isr10(void* p){
-	say("int10!\n");
+	say("int10#MF\n");
 	asm("cli");
 	asm("hlt");
 }//x87 Floating-Point Exception
 __attribute__((interrupt)) static void allcpu_isr11(void* p, u64 e){
-	say("int11:%llx\n", e);
+	say("int11#AC:%llx\n", e);
 	asm("cli");
 	asm("hlt");
 }//Alignment Check
 __attribute__((interrupt)) static void allcpu_isr12(void* p){
-	say("int12!\n");
+	say("int12#MC\n");
 	asm("cli");
 	asm("hlt");
 }//Machine Check
 __attribute__((interrupt)) static void allcpu_isr13(void* p){
-	say("int13!\n");
+	say("int13#XF\n");
 	asm("cli");
 	asm("hlt");
 }//SIMD Floating-Point Exception
 __attribute__((interrupt)) static void allcpu_isr14(void* p){
-	say("int14!\n");
+	say("int14#VE\n");
 	asm("cli");
 	asm("hlt");
 }//Virtualization Exception
@@ -212,7 +214,7 @@ __attribute__((interrupt)) static void allcpu_isr1d(void* p){
 	asm("hlt");
 }//Reserved
 __attribute__((interrupt)) static void allcpu_isr1e(void* p, u64 e){
-	say("int1e:%llx\n", e);
+	say("int1e#SX:%llx\n", e);
 	asm("cli");
 	asm("hlt");
 }//Security Exception

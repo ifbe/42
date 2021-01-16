@@ -31,9 +31,8 @@ static int kernel_pollall()
 }
 static int kernel_display(struct item* wrk, void* url, int argc, u8** argv)
 {
-	//screen
-	struct supply* wnd = supplycreate(_wnd_, 0, 0, 0);
-	//wnd-> = ;
+	struct supply* wnd = wrk->priv_ptr;
+
 	//wnd-> = ;
 	struct style* toterm = allocstyle();
 	toterm->fshape.vc[0] = wnd->width/2;
@@ -90,7 +89,6 @@ static int kernel_display(struct item* wrk, void* url, int argc, u8** argv)
 	struct halfrel stack[0x80];
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
-	supply_take(wnd,0, stack,2, 0,0, 0,0);
 
 
 	//loop
@@ -98,8 +96,6 @@ static int kernel_display(struct item* wrk, void* url, int argc, u8** argv)
 	while(1){
 		//draw frame
 		supply_take(wnd,0, stack,2, 0,0, 0,0);
-
-		kernel_pollall();
 
 		//cleanup events
 		while(1){
@@ -114,6 +110,7 @@ static int kernel_display(struct item* wrk, void* url, int argc, u8** argv)
 }
 static int kernel_input()
 {
+	while(1)kernel_pollall();
 	return 0;
 }
 
@@ -122,18 +119,21 @@ static int kernel_input()
 
 int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 {
-	//kernel_display(wrk, url, argc, argv);
-	threadcreate(kernel_display, wrk);
+	//debug device
+	//struct supply* tty = supplycreate(_tty_, 0, 0, 0);
+	struct supply* wnd = supplycreate(_wnd_, 0, 0, 0);
+	wrk->priv_ptr = wnd;
 
+	//every thing
 	inithardware();
 
+	//kernel thread
+	threadcreate(kernel_display, wrk);
+	threadcreate(kernel_input, wrk);
+
+	//sleep
 	asm("sti");
 	while(1)haltwaitforint();
-/*
-	createprocess(kernel_display);	//window system
-	createprocess(kernel_input);	//input system
-
-*/
 }
 
 

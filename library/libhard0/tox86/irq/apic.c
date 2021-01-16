@@ -78,6 +78,20 @@ void say(void*, ...);
 
 static volatile u8* addr_localapic = 0;
 static volatile u8* addr_theioapic = 0;
+void apicwhere()
+{
+	say("@apicwhere\n");
+
+	u8* addr = getlocalapic();
+	if(LAPIC_BASE != (u64)addr)return;
+
+	addr_localapic = (void*)addr;
+	say("apic@%p\n", addr_localapic);
+}
+
+
+
+
 int localapic_isenabled()
 {
 	if(0 == addr_localapic)return 0;
@@ -110,7 +124,7 @@ void apictimer_init()
 
 	*LVT = 0x40 | TMR_PERIODIC;
 	*DIV = 0x3;
-	*CNT = 0x1000000;
+	*CNT = 0x100000;
 }
 
 
@@ -144,31 +158,27 @@ void localapic_init()
 {
 	say("@initapic\n");
 
-	u8* addr = getlocalapic();
-	if(LAPIC_BASE != (u64)addr)return;
-
-	printmmio(addr, 0x400);
-	say("lapic: id=%x,ver=%x\n", localapic_coreid(), localapic_version());
+	printmmio((void*)addr_localapic, 0x400);
+	say("lapic: id=%x,ver=%x\n", localapic_coreid(), localapic_version());		//wrong
 
 	//Clear task priority to enable all interrupts
 	volatile u32* tmp;
-	tmp = (volatile u32*)(addr + LAPIC_TPR);
+	tmp = (volatile u32*)(addr_localapic + LAPIC_TPR);
 	*tmp = 0;
 
 	//flat mode
-	tmp = (volatile u32*)(addr + LAPIC_DFR);
+	tmp = (volatile u32*)(addr_localapic + LAPIC_DFR);
 	*tmp = 0xffffffff;
 
 	//all cpu use logical id 1
-	tmp = (volatile u32*)(addr + LAPIC_LDR);
+	tmp = (volatile u32*)(addr_localapic + LAPIC_LDR);
 	*tmp = 0x01000000;
 
 	//setup spurious vector + enable apic
-	tmp = (volatile u32*)(addr + LAPIC_SVR);
+	tmp = (volatile u32*)(addr_localapic + LAPIC_SVR);
 	*tmp = 0x100 | 0xff;
 
 	//done
-	addr_localapic = (void*)addr;
 	say("\n\n");
 }
 /*

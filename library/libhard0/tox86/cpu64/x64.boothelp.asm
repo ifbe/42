@@ -51,7 +51,7 @@ at16to64:
 	mov word [TEMPIDTR + 2], 0
 	mov word [TEMPIDTR + 4], 0
 
-	mov word [TEMPGDTR + 0], 0x30-1
+	mov word [TEMPGDTR + 0], 0x40-1
 	mov word [TEMPGDTR + 2], BSPCPU_GDT & 0xffff
 	mov word [TEMPGDTR + 4], BSPCPU_GDT >> 16
 

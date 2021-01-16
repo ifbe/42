@@ -7,7 +7,9 @@
 #define BspToAp_command 0xfff8
 //
 void cpuid(u32*);
-void enable_sse();
+int enable_fpu();
+int enable_sse();
+int enable_xsave();
 //
 void initpaging();
 void initgdt();
@@ -42,14 +44,18 @@ void* get_trampoline64_end();
 void initcpu_bsp(struct item* p)
 {
 	//
-	asm("cli");
+	say("cli");
 	say("@initcpu_bsp\n");
 
 
 //----------------prep descs----------------
 	initpaging();
 	initgdt();
-	enable_sse();
+
+
+	if(!enable_fpu())say("fail@enable_fpu\n");
+	if(!enable_sse())say("fail@enable_sse\n");
+	if(!enable_xsave())say("fail@enable_xsave\n");
 
 
 //----------------check cpuid----------------
@@ -63,28 +69,16 @@ void initcpu_bsp(struct item* p)
 
 
 //----------------check coreid----------------
+	localapic_init();
+
 	int coreid = localapic_coreid();
 	say("coreid = %d\n", coreid);
 
 	incomingthread(coreid);
 
 	initidt_bsp();
-	localapic_init();
 	//apictimer_init();
 
-
-/*
-//----------------jump to ring3----------------
-	say("ring3 try...\n");
-	enterring3();
-	dbg("ring3 god!!!\n");
-
-
-//----------------back to ring0----------------
-	dbg("ring0 try...\n");
-	asm("int $0x80");
-	say("ring0 god!!!\n");
-*/
 
 	//ok
 	asm("sti");
@@ -96,14 +90,18 @@ void initcpu_bsp(struct item* p)
 
 void initcpu_other()
 {
-	asm("cli");
+	say("cli");
 	say("@initcpu_other\n");
 
 
 //----------------prep descs----------------
 	//initpaging();		//currently same as bsp
 	//initgdt();
-	enable_sse();
+
+
+	if(!enable_fpu())say("fail@enable_fpu\n");
+	if(!enable_sse())say("fail@enable_sse\n");
+	if(!enable_xsave())say("fail@enable_xsave\n");
 
 
 //----------------check cpuid----------------
@@ -117,14 +115,20 @@ void initcpu_other()
 
 
 //----------------check coreid----------------
+	localapic_init();
+
 	int coreid = localapic_coreid();
 	say("coreid=%d\n", coreid);
 
 	incomingthread(coreid);
 
 	initidt_ap(coreid);
-	localapic_init();
 	apictimer_init();
+
+
+	//ok
+	asm("sti");
+	say("\n\n");
 }
 
 
@@ -134,6 +138,7 @@ static u32 shit = 0;
 static void trampoline_appcpu()
 {
 //----------------set flag--------------
+	asm("cli");
 	shit = hex32('f','u','c','k');
 
 //----------------init cpu---------------

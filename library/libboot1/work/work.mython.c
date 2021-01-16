@@ -1,5 +1,6 @@
 #include "libboot.h"
 void poweroff();
+void* filesearch(void*, int);
 //
 void* originsearch(void*, int);
 void* bootupsearch(void*, int);
@@ -69,6 +70,7 @@ void term_ls(u8* buf, int len)
 	else if(0 == ncmp(buf, "artery", 6))arterysearch(0, 0);
 	else if(0 == ncmp(buf, "supply", 6))supplysearch(0, 0);
 	else if(0 == ncmp(buf, "entity", 6))entitysearch(0, 0);
+	else if(0 == ncmp(buf, "file", 4))filesearch(0, 0);
 	else say("ls(%s)\n", buf);
 }
 void term_mmio(int argc, u8** argv)
