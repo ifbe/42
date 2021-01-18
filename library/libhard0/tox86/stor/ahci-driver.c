@@ -2,6 +2,7 @@
 #define ahci_print(fmt, ...) say("<%08lld,ahci>" fmt, timeread(), ##__VA_ARGS__)
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
+void filemanager_registersupplier(void*);
 
 
 
@@ -560,12 +561,14 @@ int ahci_contractor(struct item* dev, int who, u8* buf, int len)
 	struct HBA_PORT* port = &abar->ports[who];
 	int ret = ahci_identify(port, (void*)buf);
 	if(ret < 0)return -1;
-
+/*
 	struct artery* tmp = arterycreate(_fileauto_,0,0,0);
 	if(0 == tmp)return -2;
 	struct relation* rel = relationcreate(tmp,0,_art_,_src_, dev,port,_dev_,0);
 	if(0 == rel)return -3;
 	arterylinkup((void*)&rel->dst, (void*)&rel->src);
+*/
+	filemanager_registersupplier(dev);
 	return 0;
 }
 int ahci_list(struct item* dev, int total, u8* buf, int len)

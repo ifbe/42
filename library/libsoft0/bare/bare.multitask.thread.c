@@ -256,7 +256,7 @@ void schedulethread(struct saved_cpureg* cpureg)
 fuckshit:
 	return;
 }
-void incomingthread(int coreid)
+void threadmanager_registersupplier(int coreid)
 {
 	say("incoming thread: from coreid=%d\n", coreid);
 

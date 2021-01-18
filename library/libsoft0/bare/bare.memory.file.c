@@ -7,9 +7,13 @@ void say(char* fmt,...);
 
 
 
-void incomingfileowner(void* obj)
+static void* filetable[16];
+static int filecount = 0;
+void filemanager_registersupplier(void* obj)
 {
-	say("incoming fileowner: %p\n", obj);
+	say("@filemanager_registersupplier: [%d]=%p\n", filecount, obj);
+	filetable[filecount] = obj;
+	filecount += 1;
 }
 
 
@@ -37,7 +41,11 @@ int startfile(char* path)
 
 int filesearch(void* buf, int len)
 {
+	int j;
 	say("@filesearch\n");
+	for(j=0;j<filecount;j++){
+		say("[%d]=%p\n", j, filetable[j]);
+	}
 	return 0;
 }
 int filemodify(void* buf, int len)

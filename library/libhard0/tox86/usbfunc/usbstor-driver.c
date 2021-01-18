@@ -2,6 +2,7 @@
 #include "usb.h"
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 int xhci_giveorderwaitevent(void* hc,int id, u32,u32, void* sendbuf,int sendlen, void* recvbuf, int recvlen);
+void filemanager_registersupplier(void*);
 
 //subclass
 #define subclass_RBC        1
@@ -503,10 +504,11 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 
 //------------------------file prober------------------------
-	struct artery* probe = arterycreate(_fileauto_,0,0,0);
+	filemanager_registersupplier(usb);
+/*	struct artery* probe = arterycreate(_fileauto_,0,0,0);
 	if(0 == probe)return 0;
 	struct relation* rel = relationcreate(probe,0,_art_,_src_, usb,0,_dev_,0);
 	if(0 == rel)return 0;
-	arterylinkup((void*)&rel->dst, (void*)&rel->src);
+	arterylinkup((void*)&rel->dst, (void*)&rel->src);*/
 	return 0;
 }
