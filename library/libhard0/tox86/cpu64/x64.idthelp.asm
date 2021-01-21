@@ -25,11 +25,6 @@ getisr40:
 	lea rax,[rel isr40_apictimer]
 	ret
 
-global getisr80
-getisr80:
-	lea rax,[rel isr80_ring3to0]
-	ret
-
 
 isr03_debug:
 	iretq
@@ -117,16 +112,4 @@ isr40_apictimer:
 	pop rsi
 	pop rdi
 	pop rbp
-	iretq
-
-
-isr80_ring3to0:
-	push rax
-
-	mov       rax, 0x10		;kernel cs @ 10
-	mov [rsp+0x10], rax
-	mov       rax, 0x18		;kernel ss @ 18
-	mov [rsp+0x28], rax
-
-	pop rax
 	iretq

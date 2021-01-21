@@ -126,14 +126,16 @@ x64:
 .PHONY:barex64
 barex64:x64
 	$(CC) $(CF) tox86/oldhw.c
+	$(CC) $(CF) tox86/cpu64/x64.asm.c
+	yasm -a x86 -m amd64 -f elf64 -o x64.asmhelp.o tox86/cpu64/x64.asmhelp.asm
 	$(CC) $(CF) tox86/cpu64/x64.boot.c
 	yasm -a x86 -m amd64 -f elf64 -o x64.boothelp.o tox86/cpu64/x64.boothelp.asm
 	$(CC) $(CF) tox86/cpu64/x64.gdt.c
 	yasm -a x86 -m amd64 -f elf64 -o x64.gdthelp.o tox86/cpu64/x64.gdthelp.asm
 	$(CC) $(CF) -mgeneral-regs-only tox86/cpu64/x64.idt.c
 	yasm -a x86 -m amd64 -f elf64 -o x64.idthelp.o tox86/cpu64/x64.idthelp.asm
-	$(CC) $(CF) tox86/cpu64/x64.asm.c
-	yasm -a x86 -m amd64 -f elf64 -o x64.asmhelp.o tox86/cpu64/x64.asmhelp.asm
+	$(CC) $(CF) -mgeneral-regs-only tox86/cpu64/x64.syscall.c
+	yasm -a x86 -m amd64 -f elf64 -o x64.syscallhelp.o tox86/cpu64/x64.syscallhelp.asm
 	$(CC) $(CF) tox86/cpu64/x64.paging.c
 	$(CC) $(CF) tox86/cpu64/x64.vt.amd.c
 	$(CC) $(CF) tox86/cpu64/x64.vt.intel.c

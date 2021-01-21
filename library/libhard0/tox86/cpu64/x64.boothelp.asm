@@ -99,22 +99,6 @@ trampoline64_start:
 	jmp rax
 trampoline64_end:
 
-global enterring3
-enterring3:
-	pop             rax		;user ip
-	mov [rsp-0x28], rax
-	mov       rax, 0x23		;user cs
-	mov [rsp-0x20], rax
-	mov      rax, 0x202		;rflag
-	mov [rsp-0x18], rax
-	mov        rax, rsp		;user sp
-	mov [rsp-0x10], rax
-	mov       rax, 0x2b		;user ss
-	mov [rsp-0x08], rax
-
-	sub rsp, 0x28
-	iretq
-
 global get_trampoline16_start
 get_trampoline16_start:
 	lea rax,[rel trampoline16_start]
