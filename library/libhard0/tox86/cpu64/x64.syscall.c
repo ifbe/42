@@ -1,4 +1,8 @@
 #include "libhard.h"
+#define _ver_ hex32('v','e','r',0)
+#define _exit_ hex32('e','x','i','t')
+#define _take_ hex32('t','a','k','e')
+#define _give_ hex32('g','i','v','e')
 
 
 struct saved_cpureg{
@@ -29,9 +33,44 @@ struct saved_cpureg{
 }__attribute__((packed));
 
 
+void syscall_ver()
+{
+	say("ver: date=%s,time=%s\n", __DATE__, __TIME__);
+}
+void syscall_exit()
+{
+	//thread or process: want exit
+}
+void syscall_read()
+{
+}
+void syscall_write()
+{
+}
+
+
+
+
 void syscall_handler(struct saved_cpureg* cpureg)
 {
     say("@syscall: rax=%llx,rbx=%llx,rcx=%llx,rdx=%llx\n", cpureg->rax, cpureg->rbx, cpureg->rcx, cpureg->rdx);
+	switch(cpureg->rax){
+	case _ver_:syscall_ver();break;
+	case _exit_:syscall_exit();break;
+	case _take_:syscall_read();break;
+	case _give_:syscall_write();break;
+	}
+}
+void syscall_caller(u64 a, u64 b, u64 c, u64 d)
+{
+	asm("movq %0, %%rax\n"
+		"movq %1, %%rbx\n"
+		"movq %2, %%rcx\n"
+		"movq %3, %%rdx\n"
+		"int $0x80\n"
+		:
+		:"r"(a),"r"(b),"r"(c),"r"(d)
+	);
 }
 
 

@@ -2,7 +2,7 @@
 #define ahci_print(fmt, ...) say("<%08lld,ahci>" fmt, timeread(), ##__VA_ARGS__)
 u32 in32(u16 port);
 void out32(u16 port, u32 data);
-void filemanager_registersupplier(void*);
+void filemanager_registersupplier(void*,void*);
 
 
 
@@ -524,15 +524,16 @@ static int ahci_identify(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 	//printmemory(rdi, 0x200);
 	swap16(rdi->serial_no, 20);
 	swap16(rdi->model,     40);
-	ahci_print("	serial=<%.20s>\n"
-		"	model=<%.40s>\n", rdi->serial_no, rdi->model);
+	say("type=sata\n"
+		"serial=<%.20s>\n"
+		"model=<%.40s>\n", rdi->serial_no, rdi->model);
 	return 1;
 }
 static int ahci_satacmd(volatile struct HBA_PORT* port, struct SATA_ident* rdi)
 {
 	return 0;
 }
-static int ahci_ontake(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+static int ahci_readdata(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
 {
 	struct perahci* my = (void*)(ahci->priv_data);
 	struct HBA_MEM* abar = my->abar;
@@ -545,9 +546,27 @@ static int ahci_ontake(struct item* ahci,void* foot,struct halfrel* stack,int sp
 	ahci_print("ret=%d\n",ret);
 	return len;
 }
+static int ahci_readinfo(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+{
+	//say("@ahci_readinfo: %p,%p\n",ahci,foot);
+	int ret = ahci_identify(foot, (void*)buf);
+	return 0;
+}
+
+
+
+
+static int ahci_ontake(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+{
+	//say("ahci_ontake:%p,%x,%p,%x\n",arg,off,buf,len);
+
+	//filedata, diskinfo, SMART, ...
+	if(0 == arg)return ahci_readdata(ahci,foot, stack,sp, arg,off, buf,len);
+	return ahci_readinfo(ahci,foot, stack,sp, arg,off, buf,len);
+}
 static int ahci_ongive(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
 {
-	ahci_print("@ahci_ongive\n");
+	ahci_print("@ahci_ongive: %p,%p\n",ahci,foot);
 	return 0;
 }
 
@@ -568,7 +587,7 @@ int ahci_contractor(struct item* dev, int who, u8* buf, int len)
 	if(0 == rel)return -3;
 	arterylinkup((void*)&rel->dst, (void*)&rel->src);
 */
-	filemanager_registersupplier(dev);
+	filemanager_registersupplier(dev,port);
 	return 0;
 }
 int ahci_list(struct item* dev, int total, u8* buf, int len)

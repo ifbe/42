@@ -2,7 +2,7 @@
 #include "usb.h"
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 int xhci_giveorderwaitevent(void* hc,int id, u32,u32, void* sendbuf,int sendlen, void* recvbuf, int recvlen);
-void filemanager_registersupplier(void*);
+void filemanager_registersupplier(void*, void*);
 
 //subclass
 #define subclass_RBC        1
@@ -228,11 +228,8 @@ struct perstor{
 	u64 blocksize;
 	u64 totalsize;
 };
-static int usbstor_ontake(struct item* usb,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
 {
-	//arg: 0=readfile, "blocksize", "totalsize", ...
-	say("usbstor_ontake:%p,%x,%p,%x\n",arg,off,buf,len);
-
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 
@@ -302,10 +299,46 @@ static int usbstor_ontake(struct item* usb,void* foot,struct halfrel* stack,int 
 	}
 	return bytecur-off;
 }
-static int usbstor_ongive(struct item* usb,void* foot,struct halfrel* stack,int sp, void* sbuf,int slen, void* rbuf,int rlen)
+static int usbstor_readinfo(struct item* usb,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
 {
+	//say("@usbstor_readinfo: %p,%p\n",usb,foot);
+
+	struct perusb* perusb = usb->priv_ptr;
+	if(0 == perusb)return 0;
+
+	struct perstor* info = (void*)(perusb->freebuf);
+	if(0 == info->host)return 0;
+	if(0 == info->blocksize)return 0;
+
+	u32 blocksize = info->blocksize;
+	u64 totalsize = info->totalsize;
+	int sh = usbstor_shift(totalsize);
+	say("type=usbdisk\n"
+		"blocksize=0x%x\n"
+		"totalsize=0x%llx(%d%cB)\n", blocksize, totalsize, totalsize>>sh, KMGTPE[sh/10]);
 	return 0;
 }
+
+
+
+
+static int usbstor_ontake(struct item* usb,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+{
+	//say("usbstor_readfile:%p,%x,%p,%x\n",arg,off,buf,len);
+
+	//filedata, diskinfo, SMART, ...
+	if(0 == arg)return usbstor_readdata(usb,foot, stack,sp, arg,off, buf,len);
+	return usbstor_readinfo(usb,foot, stack,sp, arg,off, buf,len);
+}
+static int usbstor_ongive(struct item* usb,void* foot,struct halfrel* stack,int sp, void* sbuf,int slen, void* rbuf,int rlen)
+{
+	say("@ahci_ongive: %p,%p\n", usb,foot);
+	return 0;
+}
+
+
+
+
 int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct descnode* intfnode, struct InterfaceDescriptor* intfdesc)
 {
 	say("[usbdisk]begin...\n");
@@ -504,7 +537,7 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 
 
 //------------------------file prober------------------------
-	filemanager_registersupplier(usb);
+	filemanager_registersupplier(usb, 0);
 /*	struct artery* probe = arterycreate(_fileauto_,0,0,0);
 	if(0 == probe)return 0;
 	struct relation* rel = relationcreate(probe,0,_art_,_src_, usb,0,_dev_,0);

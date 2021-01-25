@@ -1,18 +1,16 @@
-#define u64 unsigned long long
-#define u32 unsigned int
-#define u16 unsigned short
-#define u8 unsigned char
-void say(char* fmt,...);
+#include "libhard.h"
 
 
 
 
-static void* filetable[16];
+static void* nodetable[16];
+static void* foottable[16];
 static int filecount = 0;
-void filemanager_registersupplier(void* obj)
+void filemanager_registersupplier(void* node, void* foot)
 {
-	say("@filemanager_registersupplier: [%d]=%p\n", filecount, obj);
-	filetable[filecount] = obj;
+	say("@filemanager_registersupplier: [%d]=%p\n", filecount, node);
+	nodetable[filecount] = node;
+	foottable[filecount] = foot;
 	filecount += 1;
 }
 
@@ -41,10 +39,21 @@ int startfile(char* path)
 
 int filesearch(void* buf, int len)
 {
-	int j;
+	int j,ret;
+	u8 tmp[512];
+	struct item* p;
+	void* q;
 	say("@filesearch\n");
+
 	for(j=0;j<filecount;j++){
-		say("[%d]=%p\n", j, filetable[j]);
+		say("[%d]=%p\n", j, nodetable[j]);
+
+		p = nodetable[j];
+		if(p->ontaking){
+			q = foottable[j];
+			ret = p->ontaking(p,q, 0,0, "info",0, tmp,512);
+			//say("ret=%d\n",ret);
+		}
 	}
 	return 0;
 }
