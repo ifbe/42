@@ -10,8 +10,9 @@ u64 threadcreate(void* func, void* args)
 	pthread_create((void*)&id, NULL, func, args);
 	return id;
 }
-void threaddelete(u64 h)
+int threaddelete(u64 h)
 {
+	return 0;
 }
 int tasksearch(void* buf, int len)
 {

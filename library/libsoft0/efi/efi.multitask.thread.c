@@ -7,8 +7,9 @@ u64 threadcreate(void* func, void* args)
 {
 	return 0;
 }
-void threaddelete(u64 h)
+int threaddelete(u64 h)
 {
+	return 0;
 }
 int tasksearch(void* buf, int len)
 {
