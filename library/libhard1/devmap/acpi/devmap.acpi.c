@@ -272,7 +272,7 @@ void acpixsdt(void* buf)
 		acpitable((void*)addr);
 	}
 }
-void initacpi(void* buf)
+void parsedevmap_acpi(void* buf)
 {
 	if(0 == buf)return;
 

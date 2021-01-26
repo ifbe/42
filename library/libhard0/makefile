@@ -37,6 +37,8 @@ linuxpi32:arm
 .PHONY:arm64
 arm64:
 	$(CC) $(CF) toarm/cpu64/arm64.fp.c
+	$(CC) $(CF) toarm/cpu64/arm64.asm.c
+	$(CC) $(CF) toarm/cpu64/arm64.boot.c
 	$(CC) $(CF) device.c
 
 barepi64:arm64

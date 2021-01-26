@@ -1,6 +1,11 @@
 #include "libsoft.h"
+int percpucoreid();
 void haltwaitforint();
-int localapic_coreid();
+//
+void fpu_fxsave(u64 addr);
+void fpu_fxrstor(u64 addr);
+void fpu_xsave(u64 addr);
+void fpu_rstor(u64 addr);
 
 
 
@@ -64,53 +69,13 @@ static volatile int percputaskcount[8];
 
 
 
-
-void fpu_fxsave(u64 addr)
-{
-	asm("movq %0, %%rax\n"
-		"fxsave (%%rax)\n"
-		:
-		:"m"(addr)
-	);
-}
-void fpu_fxrstor(u64 addr)
-{
-	asm("movq %0, %%rax\n"
-		"fxrstor (%%rax)\n"
-		:
-		:"m"(addr)
-	);
-}
-void fpu_xsave(u64 addr)
-{
-	asm("movq %0, %%rcx;\n"
-		"movl $0xffffffff, %%edx;\n"
-		"movl $0xffffffff, %%eax;\n"
-		"xsaveopt (%%rcx);\n"
-		:
-		:"m"(addr)
-	);
-}
-void fpu_rstor(u64 addr)
-{
-	asm("movq %0, %%rcx;\n"
-		"movl $0xffffffff, %%edx;\n"
-		"movl $0xffffffff, %%eax;\n"
-		"xrstor (%%rcx);\n"
-		:
-		:"m"(addr)
-	);
-}
-
-
-
 /*
 static void test1()
 {
 	u64 time;
 	while(1){
 		time = timeread();
-		say("core=%d, task=%d, time=%llx\n", localapic_coreid(), 1, time);
+		say("core=%d, task=%d, time=%llx\n", percpucoreid(), 1, time);
 		haltwaitforint();
 	}
 }
@@ -119,7 +84,7 @@ static void test2()
 	u64 time;
 	while(1){
 		time = timeread();
-		say("core=%d, task=%d, time=%llx\n", localapic_coreid(), 2, time);
+		say("core=%d, task=%d, time=%llx\n", percpucoreid(), 2, time);
 		haltwaitforint();
 	}
 }*/
@@ -155,7 +120,7 @@ u64 threadcreate(void* code, void* arg)
 
 	task->lock = 0;
 	task->state = 1;
-	task->BindToCoreId = -1;	//localapic_coreid();
+	task->BindToCoreId = -1;	//percpucoreid();
 	task->CoreRunThisTask = -1;
 
 	percputaskcount[that] += 1;		//must after all above
@@ -167,8 +132,17 @@ int threaddelete(u64 id)
 }
 int tasksearch(void* buf, int len)
 {
+	int j,k;
+	volatile struct taskstate* tasktable;
 	say("@tasksearch\n");
 
+	for(j=0;j<cpucount;j++){
+		say("cpu[%d]:\n", j);
+		tasktable = percputasktable[j];
+		for(k=0;k<percputaskcount[j];k++){
+			say("%d: ip=%llx,sp=%llx\n", k, tasktable[k].cpureg.ip, tasktable[k].cpureg.sp);
+		}
+	}
 	return 0;
 }
 int taskmodify(void* buf, int len)
@@ -213,7 +187,7 @@ void schedulethread(struct saved_cpureg* cpureg)
 	//if((time&0x3ff) < 0x3f0)return;
 
 	//0.which core want change, and his own table
-	int coreid = localapic_coreid();
+	int coreid = percpucoreid();
 	int itable = schedulethread_findtable(coreid);
 	if(itable < 0)return;
 

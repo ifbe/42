@@ -282,3 +282,43 @@ double exponent(double x)
 	);
 	return(result);
 }
+
+
+
+
+void fpu_fxsave(u64 addr)
+{
+	asm("movq %0, %%rax\n"
+		"fxsave (%%rax)\n"
+		:
+		:"m"(addr)
+	);
+}
+void fpu_fxrstor(u64 addr)
+{
+	asm("movq %0, %%rax\n"
+		"fxrstor (%%rax)\n"
+		:
+		:"m"(addr)
+	);
+}
+void fpu_xsave(u64 addr)
+{
+	asm("movq %0, %%rcx;\n"
+		"movl $0xffffffff, %%edx;\n"
+		"movl $0xffffffff, %%eax;\n"
+		"xsaveopt (%%rcx);\n"
+		:
+		:"m"(addr)
+	);
+}
+void fpu_rstor(u64 addr)
+{
+	asm("movq %0, %%rcx;\n"
+		"movl $0xffffffff, %%edx;\n"
+		"movl $0xffffffff, %%eax;\n"
+		"xrstor (%%rcx);\n"
+		:
+		:"m"(addr)
+	);
+}

@@ -36,7 +36,7 @@ static u32 be2le(u32 x)
 	u32 _31_24 = (x<<24)&0xff000000;
 	return _31_24 | _23_16 | _15_08 | _07_00;
 }
-void parsedtb(struct fdt_header* h)
+void parsedevmap_dtb(struct fdt_header* h)
 {
 	if(0 == h){
 		say("[dt]wrong addr\n");

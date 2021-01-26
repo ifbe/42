@@ -128,12 +128,14 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 	inithardware();
 
 	//kernel thread
-	threadcreate(kernel_display, wrk);
-	threadcreate(kernel_input, wrk);
-
-	//sleep
-	asm("sti");
-	while(1)haltwaitforint();
+	if(0){
+		kernel_display(wrk, 0, 0, 0);
+	}
+	else{
+		threadcreate(kernel_display, wrk);
+		threadcreate(kernel_input, wrk);
+		while(1)haltwaitforint();
+	}
 }
 
 

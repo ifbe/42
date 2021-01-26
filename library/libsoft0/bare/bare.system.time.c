@@ -42,7 +42,7 @@ void sleep_ns(int t)
 void sleep_us(int t)
 {
 	u64 that = time + t;
-	while(time < that)asm("hlt");
+	while(time < that);
 }
 void sleep_ms(int t)
 {

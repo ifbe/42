@@ -1,3 +1,4 @@
+#include "libhard.h"
 #warning "this havn't been done"
 
 
@@ -55,4 +56,20 @@ float exponent(float x)
 float ln(float x)
 {
 	return 0.0;
+}
+
+
+
+
+void fpu_fxsave(u64 addr)
+{
+}
+void fpu_fxrstor(u64 addr)
+{
+}
+void fpu_xsave(u64 addr)
+{
+}
+void fpu_rstor(u64 addr)
+{
 }

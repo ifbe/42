@@ -1,6 +1,6 @@
 #include "libhard.h"
 void* getdtb();
-void parsedtb();
+void parsedevmap_dtb();
 //
 void initsystmr();
 void initsdcard();
@@ -16,7 +16,7 @@ void initdevmap()
 	void* dtb = getdtb();
 	if(0 == dtb)return;
 
-	parsedtb(dtb);
+	parsedevmap_dtb(dtb);
 }
 
 

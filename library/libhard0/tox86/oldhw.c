@@ -1,10 +1,12 @@
 #include "libhard.h"
 //
 void* getmemmap();
-void initmemmap(void*);
+void parsememmap_bios(void*);
+void parsememmap_uefi(void*);
 //
 void* getdevmap();
-void initacpi(void*);
+void parsedevmap_acpi(void*);
+void parsedevmap_dts(void*);
 //
 void apicwhere();
 //
@@ -31,10 +33,10 @@ void inithardware()
 	struct item* p;
 
 	//mem
-	initmemmap(getmemmap());
+	parsememmap_uefi(getmemmap());
 
 	//acpi
-	initacpi(getdevmap());
+	parsedevmap_acpi(getdevmap());
 
 	//where
 	apicwhere();

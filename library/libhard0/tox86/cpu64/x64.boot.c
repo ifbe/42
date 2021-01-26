@@ -257,3 +257,11 @@ void initcpu_ap()
 		break;
 	}
 }
+
+
+
+
+int percpucoreid()
+{
+	return localapic_coreid();
+}
