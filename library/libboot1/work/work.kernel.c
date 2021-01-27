@@ -134,6 +134,8 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 	else{
 		threadcreate(kernel_display, wrk);
 		threadcreate(kernel_input, wrk);
+
+		say("bspcpu: sleep wait for int\n");
 		while(1)haltwaitforint();
 	}
 }

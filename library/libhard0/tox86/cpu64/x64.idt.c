@@ -128,6 +128,7 @@ __attribute__((interrupt)) static void allcpu_isr0c(void* p, u64 e){
 __attribute__((interrupt)) static void allcpu_isr0d(struct int_frame* p, u64 e){
 	printmemory((u8*)p-0x18, 0x80);
 	say("int0d#GP: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
+	say("index=%x,type=%x,internal=%x\n", e>>3, (e>>1)&3, e&1);
 	printmemory((void*)(p->ip), 0x10);
 	asm("cli");
 	asm("hlt");
@@ -227,21 +228,35 @@ __attribute__((interrupt)) static void allcpu_isr1f(void* p){
 
 
 
-__attribute__((interrupt)) static void bspcpu_isr20(void* p){
+__attribute__((interrupt)) static void allcpu_isr20(void* p){
 	//say("825x!\n");
 	isr_825x();
 	dual8259_endofirq(0);
 }
-__attribute__((interrupt)) static void bspcpu_isr21(void* p){
+__attribute__((interrupt)) static void allcpu_isr21(void* p){
 	//say("kbd!\n");
 	isr_8042();
 	dual8259_endofirq(1);
 }
-__attribute__((interrupt)) static void bspcpu_isr28(void* p){
+__attribute__((interrupt)) static void allcpu_isr27(struct int_frame* p){
+	//say("int27: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
+/*
+	out8(0x20, 0x0b);
+	u8 irr = in8(0x20);
+	if(irr&0x80){		//only when this set, real irq
+		//isr_parallel();
+		dual8259_endofirq(7);
+	}*/
+}
+__attribute__((interrupt)) static void allcpu_isr28(void* p){
 	//say("rtc!\n");
 	isr_rtc();
 	dual8259_endofirq(8);
 }
+
+
+
+
 __attribute__((interrupt)) static void bspcpu_isr80(struct int_frame* p){
 	say("int80: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 }
@@ -251,19 +266,7 @@ __attribute__((interrupt)) static void bspcpu_isrff(struct int_frame* p){
 
 
 
-void testtest()
-{
-	*(volatile u32*)0xfee000b0 = 0;
-}
-__attribute__((interrupt)) static void appcpu_isr40(struct int_frame* p){
-	*(u64*)8 += 1;
-	testtest();
-	//localapic_endofirq(0x40);
-/*	asm(
-		".intel_syntax\n"
-		"mov [0],rsp\n"
-	);*/
-}
+
 __attribute__((interrupt)) static void appcpu_isrff(struct int_frame* p){
 	say("appcpu_isrff: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
 }
@@ -330,8 +333,12 @@ void initidt_bsp()
 
 	//interrupt
 	interruptinstall(idt, 0x20, getisr20(), 0);		//(u64)bspcpu_isr20
-	interruptinstall(idt, 0x21, (u64)bspcpu_isr21, 0);
-	interruptinstall(idt, 0x28, (u64)bspcpu_isr28, 0);
+	interruptinstall(idt, 0x21, (u64)allcpu_isr21, 0);
+	interruptinstall(idt, 0x27, (u64)allcpu_isr27, 0);
+	interruptinstall(idt, 0x28, (u64)allcpu_isr28, 0);
+
+	//apic timer
+	interruptinstall(idt, 0x40, getisr40(), 0);
 
 	//systemcall
 	interruptinstall(idt, 0x80, getisr80(), 0);		//(u64)bspcpu_isr80
@@ -385,8 +392,17 @@ void initidt_ap(int coreid)
 	interruptinstall(idt, 0x1e, (u64)allcpu_isr1e, 0);
 	interruptinstall(idt, 0x1f, (u64)allcpu_isr1f, 0);
 
+	//what?
+	interruptinstall(idt, 0x20, getisr20(), 0);
+	interruptinstall(idt, 0x21, (u64)allcpu_isr21, 0);
+	interruptinstall(idt, 0x27, (u64)allcpu_isr27, 0);
+	interruptinstall(idt, 0x28, (u64)allcpu_isr28, 0);
+
 	//apic timer
 	interruptinstall(idt, 0x40, getisr40(), 0);
+
+	//systemcall
+	interruptinstall(idt, 0x80, getisr80(), 0);		//(u64)bspcpu_isr80
 
 	//apic spurious
 	interruptinstall(idt, 0xff, (u64)appcpu_isrff, 0);

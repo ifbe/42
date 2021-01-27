@@ -92,6 +92,13 @@ trampoline16_end:
 
 [bits 64]
 trampoline64_start:
+	mov rax, KERNDATA	;kernel data @ 18
+	mov ss, ax		;must must for retf
+	mov ds, ax		;no harm
+	mov es, ax		;no harm
+	mov fs, ax
+	mov gs, ax
+
 	mov rax, [FromBsp_rsp]
 	mov rsp, rax
 

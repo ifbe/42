@@ -44,8 +44,8 @@ void* get_trampoline64_end();
 void initcpu_bsp(struct item* p)
 {
 	//
-	say("cli");
-	say("@initcpu_bsp\n");
+	asm("cli");
+	say("@initcpu_bsp.in\n");
 
 
 //----------------prep descs----------------
@@ -77,12 +77,12 @@ void initcpu_bsp(struct item* p)
 	threadmanager_registersupplier(coreid);
 
 	initidt_bsp();
-	//apictimer_init();
+	apictimer_init();
 
 
 	//ok
+	say("@initcpu_bsp.end\n\n");
 	asm("sti");
-	say("\n\n");
 }
 
 
@@ -90,8 +90,8 @@ void initcpu_bsp(struct item* p)
 
 void initcpu_other()
 {
-	say("cli");
-	say("@initcpu_other\n");
+	asm("cli");
+	say("@initcpu_other.in\n");
 
 
 //----------------prep descs----------------
@@ -127,8 +127,8 @@ void initcpu_other()
 
 
 	//ok
+	say("@initcpu_other.end\n\n", coreid);
 	asm("sti");
-	say("\n\n");
 }
 
 
@@ -145,7 +145,7 @@ static void trampoline_appcpu()
 	initcpu_other();
 
 //----------------goto sleep----------------
-	asm("sti");
+	say("appcpu: sleep wait for int\n");
 	while(1)asm("hlt");
 }
 

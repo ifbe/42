@@ -23,8 +23,6 @@ void isr_825x(void* p)
 	//if(0==(dt%1000))say("dt=%d\n",dt);
 	dt += 1;
 	timewrite(dt*1000);
-
-	schedulethread(p);
 }
 void init825x()
 {
