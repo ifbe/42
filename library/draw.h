@@ -24,14 +24,16 @@ void drawopaque_rect(   struct entity* ctx, u32 rgb, int x1, int y1, int x2, int
 void drawopaque_circle( struct entity* ctx, u32 rgb, int cx, int cy, int r);
 
 void drawascii(         struct entity* ctx, u32 rgb, int cx, int cy, u8 data);
-void drawbyte(          struct entity* ctx, u32 rgb, int cx, int cy, u8 data);
+void drawstring(        struct entity* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
+void drawfloat(         struct entity* ctx, u32 rgb, int cx, int cy, float z);
+void drawdouble(        struct entity* ctx, u32 rgb, int cx, int cy, double z);
+void drawhex8(          struct entity* ctx, u32 rgb, int cx, int cy, u8 data);
 void drawhex32(         struct entity* ctx, u32 rgb, int cx, int cy, u32 data);
+void drawhexadecimal(   struct entity* ctx, u32 rgb, int cx, int cy, u64 data);
+void drawdec8(          struct entity* ctx, u32 rgb, int cx, int cy, u8 data);
+void drawdecimal(       struct entity* ctx, u32 rgb, int cx, int cy, int data);
 void drawunicode(       struct entity* ctx, u32 rgb, int cx, int cy, u32 unicode);
 void drawutf8(          struct entity* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
-void drawstring(        struct entity* ctx, u32 rgb, int cx, int cy, u8* buf, int len);
-void drawdecimal(       struct entity* ctx, u32 rgb, int cx, int cy, int data);
-void drawhexadecimal(   struct entity* ctx, u32 rgb, int cx, int cy, u64 data);
-void drawdouble(        struct entity* ctx, u32 rgb, int cx, int cy, double z);
 
 void drawascii_fit(     struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u8 data);
 void drawunicode_fit(   struct entity* ctx, u32 rgb, int x0, int y0, int x1, int y1, u32 unicode);

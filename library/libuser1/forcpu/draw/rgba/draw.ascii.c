@@ -197,7 +197,39 @@ void drawascii(struct entity* win, u32 rgb, int xx, int yy, u8 ch)
 		}//x
 	}//y
 }
-void drawbyte(struct entity* win, u32 rgb, int x, int y, u8 ch)
+void drawstring(struct entity* win, u32 rgb, int x, int y, u8* buf, int len)
+{
+	int j;
+	if(0 == buf)return;
+	if(0 == len){
+		for(;len<256;len++)if(buf[len] == 0)break;
+	}
+	for(j=0;j<len;j++){
+		if(0 == buf[j])break;
+		drawascii(win, rgb, x+j*8, y, buf[j]);
+	}
+}
+
+
+
+
+void drawfloat(struct entity* win, u32 rgb, int x, int y, float data)
+{
+	u8 mystr[100];
+	float2decstr(data, mystr);
+	drawstring(win, rgb, x, y, mystr, 0);
+}
+void drawdouble(struct entity* win, u32 rgb, int x, int y, double data)
+{
+	u8 mystr[100];
+	double2decstr(data, mystr);
+	drawstring(win, rgb, x, y, mystr, 0);
+}
+
+
+
+
+void drawhex8(struct entity* win, u32 rgb, int x, int y, u8 ch)
 {
 	int i;
 	u8 temp = ch;
@@ -214,28 +246,43 @@ void drawbyte(struct entity* win, u32 rgb, int x, int y, u8 ch)
 }
 void drawhex32(struct entity* win, u32 rgb, int x, int y, u32 ch)
 {
-	drawbyte(win, rgb, x+ 0, y, (ch>> 0)&0xff);
-	drawbyte(win, rgb, x+16, y, (ch>> 8)&0xff);
-	drawbyte(win, rgb, x+32, y, (ch>>16)&0xff);
-	drawbyte(win, rgb, x+48, y, (ch>>24)&0xff);
+	drawhex8(win, rgb, x+ 0, y, (ch>> 0)&0xff);
+	drawhex8(win, rgb, x+16, y, (ch>> 8)&0xff);
+	drawhex8(win, rgb, x+32, y, (ch>>16)&0xff);
+	drawhex8(win, rgb, x+48, y, (ch>>24)&0xff);
 }
-void drawstring(struct entity* win, u32 rgb, int x, int y, u8* buf, int len)
+void drawhexadecimal(struct entity* win, u32 rgb, int x, int y, u64 hex)
 {
-	int j;
-	if(0 == buf)return;
-	if(0 == len){
-		for(;len<256;len++)if(buf[len] == 0)break;
+	char ch;
+	int i = 0;
+	u64 temp = hex;
+
+	while(1)
+	{
+		if(temp<0x10)break;
+		temp=temp>>4;
+		i++;
 	}
-	for(j=0;j<len;j++){
-		if(0 == buf[j])break;
-		drawascii(win, rgb, x+j*8, y, buf[j]);
+	for(;i>=0;i--)
+	{
+		ch=(char)(hex&0x0000000f);
+		if(ch<=9)ch+=0x30;
+		else if(ch<=0xf)ch+=0x37;
+		drawascii(win, rgb, x+i*8, y, ch);
+
+		hex=hex>>4;
 	}
 }
-void drawdouble(struct entity* win, u32 rgb, int x, int y, double data)
+
+
+
+
+void drawdec8(struct entity* win, u32 rgb, int x, int y, u8 ch)
 {
-	u8 mystr[100];
-	double2decstr(data, mystr);
-	drawstring(win, rgb, x, y, mystr, 0);
+	u8 hi = (ch/10)%10;
+	u8 lo = ch%10;
+	drawascii(win, rgb, x+0, y, 0x30+hi);
+	drawascii(win, rgb, x+8, y, 0x30+lo);
 }
 void drawdecimal(struct entity* win, u32 rgb, int x, int y, int dec)
 {
@@ -269,28 +316,10 @@ void drawdecimal(struct entity* win, u32 rgb, int x, int y, int dec)
 		dec=dec/10;
 	}
 }
-void drawhexadecimal(struct entity* win, u32 rgb, int x, int y, u64 hex)
-{
-	char ch;
-	int i = 0;
-	u64 temp = hex;
 
-	while(1)
-	{
-		if(temp<0x10)break;
-		temp=temp>>4;
-		i++;
-	}
-	for(;i>=0;i--)
-	{
-		ch=(char)(hex&0x0000000f);
-		if(ch<=9)ch+=0x30;
-		else if(ch<=0xf)ch+=0x37;
-		drawascii(win, rgb, x+i*8, y, ch);
 
-		hex=hex>>4;
-	}
-}
+
+
 int drawtext(
 	struct entity* win, u32 rgb,
 	int x0, int y0, int x1, int y1,

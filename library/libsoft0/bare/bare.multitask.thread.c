@@ -64,7 +64,7 @@ struct taskstate{
 static volatile void* cpubuffer = 0;
 static volatile int cpucount = 0;
 //
-static volatile struct taskstate** percputasktable = 0;
+static volatile struct taskstate* percputasktable[8];
 static volatile int percputaskcount[8];
 
 
@@ -135,6 +135,7 @@ int tasksearch(void* buf, int len)
 	int j,k;
 	volatile struct taskstate* tasktable;
 	say("@tasksearch\n");
+	say("%p,%p,%d\n", percputasktable, percputaskcount,cpucount);
 
 	for(j=0;j<cpucount;j++){
 		say("cpu[%d]:\n", j);
@@ -188,6 +189,7 @@ void schedulethread(struct saved_cpureg* cpureg)
 
 	//0.which core want change, and his own table
 	int coreid = percpucoreid();
+
 	int itable = schedulethread_findtable(coreid);
 	if(itable < 0)return;
 

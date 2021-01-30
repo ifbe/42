@@ -386,7 +386,6 @@ static void the2048_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* a
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
 	if(0 == stack)return;
-	if('v' != key)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;

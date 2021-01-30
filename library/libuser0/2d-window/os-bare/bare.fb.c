@@ -29,7 +29,7 @@ static u32 format = 4;
 void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("wnd=%p,stack=%p\n",wnd,stack);
-	wndmgr_read(wnd,foot, stack,sp, arg,key, buf,len);
+	wndmgr_take(wnd,foot, stack,sp, arg,key, buf,len);
 
 	int j;
 	u32* ibuf = wnd->rgbabuf;
@@ -43,7 +43,7 @@ void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, vo
 void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//printmemory(buf, 0x20);
-	wndmgr_write(wnd,0, stack,sp, 0,0, buf,len);
+	wndmgr_give(wnd,0, stack,sp, 0,0, buf,len);
 }
 void windowlist()
 {

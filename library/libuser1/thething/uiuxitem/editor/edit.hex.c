@@ -97,7 +97,7 @@ static void hexedit_draw_pixel(
 					cx+x, cy+y, cx+x+15, cy+y+15);
 
 				j = ((y+hh)<<1) + ((x+256)>>4);
-				drawbyte(win, 0xffffff, cx+x, cy+y, universe[j]);
+				drawdec8(win, 0xffffff, cx+x, cy+y, universe[j]);
 			}
 		}
 	}

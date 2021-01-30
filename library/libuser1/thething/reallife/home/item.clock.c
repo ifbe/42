@@ -8,8 +8,7 @@ static void clock_draw_pixel(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
-	u32 c[7]={0xff,0xff00,0xffff,0xff0000,0xff00ff,0xffff00,0xffffff};
-	int j,k;
+	int j,rad;
 	int cx, cy, ww, hh;
 	if(sty)
 	{
@@ -28,13 +27,25 @@ static void clock_draw_pixel(
 	u64 date = dateread();
 	u8* p = (u8*)&date;
 
-	if(ww < hh)j = ww;
-	else j = hh;
-	drawsolid_circle(win, 0x222222, cx, cy, j);
-	for(j=6;j>=0;j--)
-	{
-		drawdecimal(win, c[j], cx+64-(j*24), cy-8, p[j]);
-	}
+	if(ww < hh)rad = ww;
+	else rad = hh;
+	drawline_rect(win, 0xffffff, cx-ww,cy-hh, cx+ww,cy+hh);
+	drawsolid_circle(win, 0x101010, cx, cy, rad);
+	drawline_circle(win, 0xffffff, cx, cy, rad);
+
+	//year
+	drawdec8(win, 0xffffff, cx-8-48, cy-16, p[6]);
+	drawdec8(win, 0xffffff, cx-8-32, cy-16, p[5]);
+	//month
+	drawdec8(win, 0xffffff, cx-8   , cy-16, p[4]);
+	//day
+	drawdec8(win, 0xffffff, cx-8+32, cy-16, p[3]);
+	//hour
+	drawdec8(win, 0xffffff, cx-8-32, cy, p[2]);
+	//minute
+	drawdec8(win, 0xffffff, cx-8   , cy, p[1]);
+	//second
+	drawdec8(win, 0xffffff, cx-8+32, cy, p[0]);
 }
 static void clock_draw_gl41(
 	struct entity* act, struct style* slot,
@@ -125,17 +136,35 @@ static void clock_draw_cli(
 
 
 
+static void clock_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+{
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	if(0 == stack)return;
+
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	switch(wnd->fmt){
+	case _dx11full_:
+	case _mt20full_:
+	case _gl41full_:
+	case _vk12full_:
+		clock_draw_gl41(ent,slot, wor,geom, wnd,area);
+		break;
+	}
+}
 static void clock_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct style* slot;
-	struct entity* scn;struct style* geom;
 	struct entity* wnd;struct style* area;
+	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		scn = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		clock_draw_gl41(ent,slot, scn,geom, wnd,area);
+	switch(wnd->fmt){
+	case _rgba_:
+		clock_draw_pixel(ent,foot, wnd,area);
+		break;
+	default:
+		clock_read_bycam(ent,foot, stack,sp, arg,key);
+		break;
 	}
 }
 static void clock_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

@@ -124,7 +124,7 @@ void apictimer_init()
 
 	*LVT = 0x40 | TMR_PERIODIC;
 	*DIV = 0x3;
-	*CNT = 0x100000;
+	*CNT = 1000*100;
 }
 
 
