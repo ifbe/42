@@ -48,8 +48,8 @@ struct saved_vmcb{
 }__attribute__((packed));
 
 struct taskstate{
-	volatile int            lock;	//0 = free, n = locked
-	volatile int           state;	//0 = disable, n = normal
+	volatile u32           count;
+	volatile u32           state;	//0 = disable, n = normal
 	volatile int    BindToCoreId;	//-1 = any, 0 to n = processor id
 	volatile int CoreRunThisTask;	//-1 = none, 0 to n = processor id
 	volatile struct saved_cpureg cpureg;
@@ -118,7 +118,10 @@ u64 threadcreate(void* code, void* arg)
 	task->cpureg.rdi = (u64)arg;	//di,si,dx,cx,r8,r9
 	task->cpureg.rcx = (u64)arg;	//cx,dx,r8,r9
 
-	task->lock = 0;
+	u64 fpubuf = (u64)&task->fpureg;
+	fpu_fxsave((fpubuf+0x40) - (fpubuf&0x3f));
+
+	task->count = 0;
 	task->state = 1;
 	task->BindToCoreId = -1;	//percpucoreid();
 	task->CoreRunThisTask = -1;
@@ -162,6 +165,39 @@ int schedulethread_findtable(int coreid)
 	}
 	return -1;
 }
+int schedulethread_findcurr(volatile struct taskstate* tasktable, int taskcount, int coreid)
+{
+	int j=0;
+	for(j=0;j<taskcount;j++){
+		if(coreid == tasktable[j].CoreRunThisTask){
+			return j;
+		}
+	}
+	return -1;
+}
+int schedulethread_findnext(volatile struct taskstate* tasktable, int taskcount, int icurr)
+{
+	//0: next = 0
+	if(0 == (tasktable[0].count&0xff))return 0;
+
+	//[1,255]: next = all except the 0
+	int j,inext=0;
+	for(j=icurr+1;j<taskcount;j++){
+		if(-1 == tasktable[j].CoreRunThisTask){
+		if(1 == tasktable[j].state){
+			return j;
+		}	//this task is alive
+		}	//no one running this
+	}
+	for(j=1;j<icurr;j++){
+		if(-1 == tasktable[j].CoreRunThisTask){
+		if(1 == tasktable[j].state){
+			return j;
+		}	//this task is alive
+		}	//no one running this
+	}
+	return -1;
+}
 void schedulethread_savecurr(volatile struct taskstate* pcurr, u8* cputmp, int coreid)
 {
 	int j;
@@ -196,48 +232,22 @@ void schedulethread(struct saved_cpureg* cpureg)
 	volatile struct taskstate* tasktable = percputasktable[itable];
 	int taskcount = percputaskcount[itable];
 
-	//1.find curr: CoreRunThisTask == coreid
-	int j,icurr=0;
-	volatile struct taskstate* pcurr = 0;
-	for(j=0;j<taskcount;j++){
-		if(coreid == tasktable[j].CoreRunThisTask){
-			icurr = j;
-			pcurr = &tasktable[j];
-			break;
-		}
-	}
-	if(0 == pcurr)goto fuckshit;	//change nothing
+	tasktable[0].count += 1;
 
-	//2.find next: 
-	int k,inext=0;
-	volatile struct taskstate* pnext = 0;
-	for(j=icurr+1;j<icurr+taskcount;j++){
-		k = j % taskcount;
-		if(k != icurr){
-		if(-1 == tasktable[k].CoreRunThisTask){
-		if(1 == tasktable[k].state){
-//		if((-1 == tasktable[k].BindToCoreId) | (coreid == tasktable[k].BindToCoreId)){
-//		if(0 == __sync_lock_test_and_set(&tasktable[k].lock,1)){
-			inext = k;
-			pnext = &tasktable[k];
-			break;
-//		}	//try to own lock
-//		}	//bindto noone | bindto myself
-		}	//this task is alive
-		}	//no one running this
-		}	//not same as curr
-	}
-	if(0 == pnext)goto fuckshit;
-//say("core=%d,curr=%d,next=%d\n",coreid, icurr,inext);
+	int icurr = schedulethread_findcurr(tasktable, taskcount, coreid);
+	if(icurr < 0)goto fuckshit;
 
-	schedulethread_savecurr(pcurr, (u8*)cpureg, coreid);
+	int inext = schedulethread_findnext(tasktable, taskcount, icurr);
+	if(inext < 0)goto fuckshit;
 
-	schedulethread_loadnext(pnext, (u8*)cpureg, coreid);
+	if(icurr == inext)goto fuckshit;
 
-	pcurr->CoreRunThisTask = -1;			//no cpu @ this task
-	pnext->CoreRunThisTask = coreid;		//this cpu @ this task
+	schedulethread_savecurr(&tasktable[icurr], (u8*)cpureg, coreid);
 
-	//__sync_lock_release(&pnext->lock);
+	schedulethread_loadnext(&tasktable[inext], (u8*)cpureg, coreid);
+
+	tasktable[icurr].CoreRunThisTask = -1;			//no cpu @ this task
+	tasktable[inext].CoreRunThisTask = coreid;		//this cpu @ this task
 
 fuckshit:
 	return;
@@ -256,7 +266,7 @@ void threadmanager_registersupplier(int coreid)
 	task->cpureg.sp = 0xfedcba98;
 	task->cpureg.ss = 0x18;
 
-	task->lock = 0;
+	task->count = 0;
 	task->state = 1;
 	task->BindToCoreId = coreid;
 	task->CoreRunThisTask = coreid;

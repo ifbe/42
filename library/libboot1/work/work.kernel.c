@@ -54,10 +54,10 @@ static int kernel_wndctx(struct supply* wnd)
 	//things
 	struct entity* termnode = entitycreate(_term_,0, 0, 0);
 	struct style* termfoot = allocstyle();
-/*
+
 	struct entity* gamenode = entitycreate(_clock_,0, 0, 0);
 	struct style* gamefoot = allocstyle();
-*/
+
 	struct entity* editnode = entitycreate(_mmioedit_,0, 0, 0);
 	struct style* editfoot = allocstyle();
 
@@ -66,10 +66,10 @@ static int kernel_wndctx(struct supply* wnd)
 	struct relation* rel;
 	rel = relationcreate(termnode,termfoot, _ent_,0, wnd,toterm, _ent_,0);
 	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
-/*
+
 	rel = relationcreate(gamenode,gamefoot, _ent_,0, wnd,togame, _ent_,0);
 	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
-*/
+
 	rel = relationcreate(editnode,editfoot, _ent_,0, wnd,toedit, _ent_,0);
 	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
 }

@@ -145,9 +145,9 @@ __attribute__((interrupt)) static void allcpu_isr0f(void* p){
 	asm("hlt");
 }//Reserved
 __attribute__((interrupt)) static void allcpu_isr10(void* p){
-	//say("int10#MF\n");
-	//asm("cli");
-	//asm("hlt");
+	say("int10#MF\n");
+	asm("cli");
+	asm("hlt");
 }//x87 Floating-Point Exception
 __attribute__((interrupt)) static void allcpu_isr11(void* p, u64 e){
 	say("int11#AC:%llx\n", e);

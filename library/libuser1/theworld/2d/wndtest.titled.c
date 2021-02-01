@@ -147,7 +147,7 @@ next:
 	int qy = wnd->height-64;
 	u32 c = timeread();
 	drawsolid_rect((void*)wnd, c, qx-32, qy-32, qx+32, qy+32);
-	//drawsolid_circle((void*)wnd, ~c, qx, qy, 32);
+	drawsolid_circle((void*)wnd, ~c, qx, qy, 32);
 
 	//mouse
 	drawline((void*)wnd, 0xffff00, x-16, y, x+16, y);
