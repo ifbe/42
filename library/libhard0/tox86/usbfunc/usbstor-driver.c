@@ -322,15 +322,17 @@ static int usbstor_readinfo(struct item* usb,void* foot,struct halfrel* stack,in
 
 
 
-static int usbstor_ontake(struct item* usb,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+static int usbstor_ontake(struct item* usb,void* foot,struct halfrel* stack,int sp, u8* arg,int off, void* buf,int len)
 {
 	//say("usbstor_readfile:%p,%x,%p,%x\n",arg,off,buf,len);
+	if(arg){
+		if('i' == arg[0])return usbstor_readinfo(usb,foot, stack,sp, arg,off, buf,len);
+	}
 
-	//filedata, diskinfo, SMART, ...
-	if(0 == arg)return usbstor_readdata(usb,foot, stack,sp, arg,off, buf,len);
-	return usbstor_readinfo(usb,foot, stack,sp, arg,off, buf,len);
+takedata:
+	return usbstor_readdata(usb,foot, stack,sp, arg,off, buf,len);
 }
-static int usbstor_ongive(struct item* usb,void* foot,struct halfrel* stack,int sp, void* sbuf,int slen, void* rbuf,int rlen)
+static int usbstor_ongive(struct item* usb,void* foot,struct halfrel* stack,int sp, u8* arg,int off, void* buf,int len)
 {
 	say("@ahci_ongive: %p,%p\n", usb,foot);
 	return 0;
@@ -532,8 +534,8 @@ int usbstor_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	info->bulkout = outaddr;
 	info->blocksize = blocksize;
 	info->totalsize = totalsize;
-	usb->ongiving = usbstor_ongive;
-	usb->ontaking = usbstor_ontake;
+	usb->ongiving = (void*)usbstor_ongive;
+	usb->ontaking = (void*)usbstor_ontake;
 
 
 //------------------------file prober------------------------

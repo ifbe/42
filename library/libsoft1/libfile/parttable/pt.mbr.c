@@ -33,24 +33,25 @@ u32 hackforarmalign4(u8* p)
 void parse_mbr_one(struct mbrpart* part)
 {
 	u32 start,count;
+	u8* type;
 	if(0 == part->parttype)return;
 
 	//count-1 = bus error, gcc bug ?
 	start = hackforarmalign4(part->lba_start);
 	count = hackforarmalign4(part->lba_count);
-	say("[%08x,%08x]:type=%x\n", start, start+count-1, part->parttype);
 
+	type = "?";
 	switch(part->parttype){
 	case 0x05:
 	case 0x15:
 	{
-		say("extend-chs\n");
+		type = "extend-chs";
 		break;
 	}
 	case 0x0f:
 	case 0x1f:
 	{
-		say("extend-lba\n");
+		type = "extend-lba";
 		break;
 	}
 	case 0x04:
@@ -60,33 +61,35 @@ void parse_mbr_one(struct mbrpart* part)
 	case 0x16:
 	case 0x1e:
 	{
-		say("fat16\n");
+		type = "fat16";
 		break;
 	}
 	case 0x0b:
 	case 0x1b:
 	{
-		say("fat32-chs\n");
+		type = "fat32-chs";
 		break;
 	}
 	case 0x0c:
 	case 0x1c:
 	{
-		say("fat32-lba\n");
+		type = "fat32-lba";
 		break;
 	}
 	case 0x07:
 	case 0x17:
 	{
-		say("ntfs\n");
+		type = "ntfs";
 		break;
 	}
 	case 0x83:
 	{
-		say("ext\n");
+		type = "ext";
 		break;
 	}
 	}//switch
+
+	say("[%08x,%08x]:type=%02x(%s)\n", start, start+count-1, part->parttype, type);
 }
 void parse_mbr(u8* src)
 {
@@ -140,15 +143,47 @@ int mount_mbr(_art* art, u8* src)
 
 
 
-int mbrclient_take(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int mbrclient_showmount(_art* art)
 {
-	int ret = take_data_from_peer(art,_src_, stack,sp+2, arg,(u64)foot+idx, buf,len);
-	return ret;
+	struct relation* rel = art->orel0;
+	while(1){
+		if(0 == rel)break;
+		say("%llx,%llx -> %llx,%llx\n",rel->srcchip,rel->srcfoot,rel->dstchip,rel->dstfoot);
+		rel = samesrcnextdst(rel);
+	}
+	return 0;
 }
-int mbrclient_give(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int mbrclient_showinfo(_art* art)
+{
+	u8* mbr = art->buf0;
+	parse_mbr(mbr);
+	return 0;
+}
+
+
+
+
+static int mbrclient_ontake(_art* art,void* foot, _syn* stack,int sp, u8* arg, int off, u8* buf, int len)
+{
+	//say("@mbrclient_ontake\n");
+	if(arg){
+		//info
+		if('i' == arg[0])return mbrclient_showinfo(art);
+		//rel
+		if('r' == arg[0])return mbrclient_showmount(art);
+	}
+
+takedata:
+	return take_data_from_peer(art,_src_, stack,sp+2, arg,(u64)foot+off, buf,len);
+}
+static int mbrclient_ongive(_art* art,void* foot, _syn* stack,int sp, u8* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
+
+
+
+
 int mbrclient_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
@@ -194,6 +229,9 @@ int mbrclient_delete(struct artery* art)
 int mbrclient_create(struct artery* art)
 {
 	say("@mbrclient_create\n");
-	art->buf0 = memorycreate(0x1000, 0);
+	art->buf0 = memorycreate(0x100000, 0);
+
+	art->ongiving = (void*)mbrclient_ongive;
+	art->ontaking = (void*)mbrclient_ontake;
 	return 0;
 }

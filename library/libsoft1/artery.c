@@ -684,7 +684,7 @@ int artery_take(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 {
 	switch(art->type){
 	case _gpt_:return gptclient_take(art,foot, stack,sp, arg,idx, buf,len);break;
-	case _mbr_:return mbrclient_take(art,foot, stack,sp, arg,idx, buf,len);break;
+	//case _mbr_:return mbrclient_take(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _fat_:return fatclient_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _hfs_:return hfsclient_read(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -798,7 +798,7 @@ int artery_give(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 	//say("@arterywrite: %.8s\n", &ele->type);
 	switch(art->type){
 	case _gpt_:return gptclient_give(art,foot, stack,sp, arg,idx, buf,len);break;
-	case _mbr_:return mbrclient_give(art,foot, stack,sp, arg,idx, buf,len);break;
+	//case _mbr_:return mbrclient_give(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _fat_:return fatclient_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _hfs_:return hfsclient_write(art,foot, stack,sp, arg,idx, buf,len);break;

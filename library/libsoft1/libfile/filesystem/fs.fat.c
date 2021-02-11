@@ -28,22 +28,31 @@ struct folder{
 
 
 
+struct perfs{
+	//@[1m,2m)
+	u8 dirhome[0x100000];
 
-//memory
-static u8* fshome;		//fat表
-	static u8* pbrbuffer;
-	static u8* fatbuffer;
-static u8* dirhome;
-//
-static u64 cache_first;
-static int cache_count;
-//disk
-static int version;
-static int byte_per_sec;
-static int sec_per_fat;
-static int sec_per_clus;
-static int sec_of_fat0;
-static int sec_of_clus2;		//2号簇所在扇区
+	//@[512k,1m)
+	u8 xxxhome[0x80000];
+
+	//@[256k,512k)
+	u8 fatbuffer[0x40000];
+
+	//@[128k,256k)
+	u8 pbrbuffer[0x20000];
+
+	//basic info
+	int version;
+	int byte_per_sec;
+	int sec_per_fat;
+	int sec_per_clus;
+	int sec_of_fat0;
+	int sec_of_clus2;		//2号簇所在扇区
+
+	//fat cache
+	u64 cache_first;
+	int cache_count;
+};
 
 
 
@@ -153,20 +162,24 @@ static void parsefolder(struct artery* art, u8* rsi)
 
 static u16 fat16_nextclus(struct artery* art, u16 clus)
 {
-	u16* cache = (void*)fatbuffer;
+	struct perfs* per = art->buf0;
+	u16* cache = (void*)per->fatbuffer;
 	return cache[clus];
 }
 static int fat16_read(struct artery* art, int ign, u32 clus,int offs, u8* buf,int len)
 {
 	u32 tmp;
-	int ret, cnt = 0;
-	int byteperclus = byte_per_sec * sec_per_clus;
+	int ret, cnt;
+	int byteperclus;
+	struct perfs* per = art->buf0;
 
+	cnt = 0;
+	byteperclus = per->byte_per_sec * per->sec_per_clus;
 	while(1){
 		if(cnt + byteperclus > len)break;
 
 		//read this cluster
-		tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
+		tmp = per->byte_per_sec * (per->sec_of_clus2 + per->sec_per_clus * (clus-2));
 		ret = take_data_from_peer(art,_src_, 0,0, "",tmp, buf+cnt,byteperclus);
 		if(ret < byteperclus)goto retcnt;
 		cnt += byteperclus;
@@ -178,7 +191,7 @@ static int fat16_read(struct artery* art, int ign, u32 clus,int offs, u8* buf,in
 		if(clus == 0xfff7){say("bad clus:%x\n",clus);break;}
 	}
 
-	tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
+	tmp = per->byte_per_sec * (per->sec_of_clus2 + per->sec_per_clus * (clus-2));
 	ret = take_data_from_peer(art,_src_, 0,0, "",ret, buf+cnt,len-cnt);
 	if(ret < len-cnt)goto retcnt;
 	cnt += ret;
@@ -193,14 +206,15 @@ retcnt:
 static u32 fat32_nextclus(struct artery* art, u32 clus)
 {
 	u64 byte;
-	u32* cache = (void*)fatbuffer;
-	u32 remain = clus % cache_count;
+	struct perfs* per = art->buf0;
+	u32* cache = (void*)per->fatbuffer;
+	u32 remain = clus % per->cache_count;
 
-	if(cache_first != clus-remain){
-		cache_first = clus-remain;
+	if(per->cache_first != clus-remain){
+		per->cache_first = clus-remain;
 
-		byte = byte_per_sec*sec_of_fat0 + 4*cache_first;
-		take_data_from_peer(art,_src_, 0,0, "",byte, cache,4*cache_count);
+		byte = per->byte_per_sec * per->sec_of_fat0 + 4*per->cache_first;
+		take_data_from_peer(art,_src_, 0,0, "",byte, cache,4*per->cache_count);
 	}
 
 	return cache[remain];
@@ -210,13 +224,14 @@ static int fat32_read(struct artery* art, int ign, u64 clus,int offs, u8* buf,in
 {
 	u64 tmp;
 	int ret, cnt = 0;
-	int byteperclus = byte_per_sec * sec_per_clus;
+	struct perfs* per = art->buf0;
+	int byteperclus = per->byte_per_sec * per->sec_per_clus;
 
 	while(1){
 		if(0 == offs)break;
 		else if(offs >= byteperclus)offs -= byteperclus;
 		else if(offs < byteperclus){
-			tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
+			tmp = per->byte_per_sec * (per->sec_of_clus2 + per->sec_per_clus * (clus-2));
 			ret = take_data_from_peer(art,_src_, 0,0, "",tmp+offs, buf,byteperclus-offs);
 			if(ret < byteperclus-offs)goto retcnt;
 			cnt += byteperclus-offs;
@@ -234,7 +249,7 @@ static int fat32_read(struct artery* art, int ign, u64 clus,int offs, u8* buf,in
 		if(cnt + byteperclus > len)break;
 
 		//read this cluster
-		tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
+		tmp = per->byte_per_sec * (per->sec_of_clus2 + per->sec_per_clus * (clus-2));
 		ret = take_data_from_peer(art,_src_, 0,0, "",tmp, buf+cnt,byteperclus);
 		if(ret < byteperclus)goto retcnt;
 		cnt += byteperclus;
@@ -246,7 +261,7 @@ static int fat32_read(struct artery* art, int ign, u64 clus,int offs, u8* buf,in
 		if(clus == 0x0ffffff7){say("bad clus:%x\n",clus);goto retcnt;}
 	}
 
-	tmp = byte_per_sec * (sec_of_clus2+sec_per_clus*(clus-2));
+	tmp = per->byte_per_sec * (per->sec_of_clus2 + per->sec_per_clus * (clus-2));
 	ret = take_data_from_peer(art,_src_, 0,0, "",tmp, buf+cnt,len-cnt);
 	if(ret < len-cnt)goto retcnt;
 	cnt += ret;
@@ -260,9 +275,10 @@ retcnt:
 
 int fat_buildcache(struct artery* art)
 {
-	cache_first = 0;
-	cache_count = 0x10000;
-	return take_data_from_peer(art,_src_, 0,0, "",sec_of_fat0*byte_per_sec, fatbuffer,0x40000);
+	struct perfs* per = art->buf0;
+	per->cache_first = 0;
+	per->cache_count = 0x10000;
+	return take_data_from_peer(art,_src_, 0,0, "",per->sec_of_fat0 * per->byte_per_sec, per->fatbuffer,0x40000);
 }
 int fat_checkname(char* name, u8* fatname)
 {
@@ -287,9 +303,10 @@ u32 fat_ls(struct artery* art, char* name)
 	struct folder* dir;
 	if(0 == name)return 2;
 
-	if(32 == version){
+	struct perfs* per = art->buf0;
+	if(32 == per->version){
 		for(j=0;j<0x1000;j+=0x20){
-			dir = (void*)(dirhome+j);
+			dir = (void*)(per->dirhome+j);
 			//printmemory(dir, 0x20);
 
 			if(0x0f == dir->attr)continue;	//longname
@@ -307,7 +324,9 @@ int fat_cd(struct artery* art, char* name)
 {
 	int ret;
 	u32 clus;
-	if(16 == version){
+	struct perfs* per = art->buf0;
+	u8* dirhome = per->dirhome;
+	if(16 == per->version){
 		if(0 == name){
 			ret = fat16_read(art,0, 2,0, dirhome, 0x4000);
 			parsefolder(art, dirhome);
@@ -323,7 +342,7 @@ int fat_cd(struct artery* art, char* name)
 			parsefolder(art, dirhome+0x10000);
 		}
 	}
-	if(32 == version){
+	if(32 == per->version){
 		if(0 == name){
 			ret = fat32_read(art,0, 2,0, dirhome, 0x4000);
 			parsefolder(art, dirhome);
@@ -416,17 +435,18 @@ int fat_parse(struct artery* art, u8* addr)
 {
 	u8* p;
 	struct BPB_FAT* fat = (void*)addr;
+	struct perfs* per = art->buf0;
 
 	p = fat->byte_per_sec;
-	byte_per_sec = p[0] + (p[1]<<8);
-	say("byte_per_sec=%x\n", byte_per_sec);
+	per->byte_per_sec = p[0] + (p[1]<<8);
+	say("byte_per_sec=%x\n", per->byte_per_sec);
 
-	sec_per_clus = fat->sec_per_clus;
-	say("sec_per_clus=%x\n", sec_per_clus);
+	per->sec_per_clus = fat->sec_per_clus;
+	say("sec_per_clus=%x\n", per->sec_per_clus);
 
 	p = fat->sec_of_fat0;
-	sec_of_fat0 = p[0] + (p[1]<<8);
-	say("sec_of_fat0=%x\n", sec_of_fat0);
+	per->sec_of_fat0 = p[0] + (p[1]<<8);
+	say("sec_of_fat0=%x\n", per->sec_of_fat0);
 
 	int ver = 32;
 	if(addr[0x11])ver = 16;
@@ -437,26 +457,26 @@ int fat_parse(struct artery* art, u8* addr)
 	if(16 == ver)		//这是fat16
 	{
 		p = fat->sec_per_fat;
-		sec_per_fat = *(u16*)(fat->sec_per_fat);
-		say("sec_per_fat:%x\n", sec_per_fat);
+		per->sec_per_fat = *(u16*)(fat->sec_per_fat);
+		say("sec_per_fat:%x\n", per->sec_per_fat);
 
-		sec_of_clus2 = sec_of_fat0 + sec_per_fat*2 + 32;
-		say("sec_of_clus2@%x\n", sec_of_clus2);
+		per->sec_of_clus2 = per->sec_of_fat0 + per->sec_per_fat*2 + 32;
+		say("sec_of_clus2@%x\n", per->sec_of_clus2);
 
-		version = 16;
+		per->version = 16;
 	}
 	if(32 == ver)		//这是fat32
 	{
 		struct BPB_FAT32* fat32 = (void*)addr;
 
 		p = fat32->sec_per_fat;
-		sec_per_fat = p[0] + (p[1]<<8) + (p[2]<<16) + (p[3]<<24);;
-		say("sec_per_fat:%x\n", sec_per_fat);
+		per->sec_per_fat = p[0] + (p[1]<<8) + (p[2]<<16) + (p[3]<<24);;
+		say("sec_per_fat:%x\n", per->sec_per_fat);
 
-		sec_of_clus2 = sec_of_fat0 + sec_per_fat*2;
-		say("sec_of_clus2@%x\n", sec_of_clus2);
+		per->sec_of_clus2 = per->sec_of_fat0 + per->sec_per_fat*2;
+		say("sec_of_clus2@%x\n", per->sec_of_clus2);
 
-		version = 32;
+		per->version = 32;
 	}
 	return 0;
 }
@@ -480,26 +500,28 @@ int fatclient_linkup(struct halfrel* self, struct halfrel* peer)
 {
 	say("@fatclient_linkup\n");
 	int ret;
-	struct artery* art;
 	if(_src_ != self->flag)return 0;
 
-	art = self->pchip;
+	struct artery* art = self->pchip;
 	if(0 == art)return 0;
 
-	ret = take_data_from_peer(art,_src_, 0,0, "",0, pbrbuffer,0x200);
+	struct perfs* per = art->buf0;
+	if(0 == per)return 0;
+
+	ret = take_data_from_peer(art,_src_, 0,0, "",0, per->pbrbuffer,0x200);
 	if(ret < 0x200){
 		say("fail@read:%d\n",ret);
 		return 0;
 	}
 
-	ret = fat_check(pbrbuffer);
+	ret = fat_check(per->pbrbuffer);
 	if(ret < 12){
 		say("wrong fat\n");
-		printmemory(pbrbuffer,0x200);
+		printmemory(per->pbrbuffer,0x200);
 		return -1;
 	}
 
-	ret = fat_parse(art, pbrbuffer);
+	ret = fat_parse(art, per->pbrbuffer);
 	//if(ret < 0)
 
 	ret = fat_buildcache(art);
@@ -515,9 +537,9 @@ int fatclient_delete(struct artery* art)
 int fatclient_create(struct artery* art)
 {
 	say("@fatclient_create\n");
-	fshome = memorycreate(0x200000, 0);
-		pbrbuffer = fshome+0x10000;
-		fatbuffer = fshome+0x20000;
-	dirhome = fshome+0x100000;
+
+	struct perfs* per = memorycreate(0x200000, 0);
+
+	art->buf0 = per;
 	return 0;
 }

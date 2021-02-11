@@ -39,6 +39,11 @@ void* memorycreate(int size, int cmd)
 	u64 j,k;
 	u8* buf;
 
+	if(size&0xfffff){
+		size = size&0xfffffffffff00000;
+		size += 0x100000;
+	}
+
 	k = (size+0xfffff)/0x100000;
 	for(j=64;j<1024;j++)
 	{

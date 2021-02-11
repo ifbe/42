@@ -556,15 +556,17 @@ static int ahci_readinfo(struct item* ahci,void* foot,struct halfrel* stack,int 
 
 
 
-static int ahci_ontake(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+static int ahci_ontake(struct item* ahci,void* foot,struct halfrel* stack,int sp, u8* arg,int off, void* buf,int len)
 {
 	//say("ahci_ontake:%p,%x,%p,%x\n",arg,off,buf,len);
+	if(arg){
+		if('i' == arg[0])return ahci_readinfo(ahci,foot, stack,sp, arg,off, buf,len);
+	}
 
-	//filedata, diskinfo, SMART, ...
-	if(0 == arg)return ahci_readdata(ahci,foot, stack,sp, arg,off, buf,len);
-	return ahci_readinfo(ahci,foot, stack,sp, arg,off, buf,len);
+takedata:
+	return ahci_readdata(ahci,foot, stack,sp, arg,off, buf,len);
 }
-static int ahci_ongive(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
+static int ahci_ongive(struct item* ahci,void* foot,struct halfrel* stack,int sp, u8* arg,int off, void* buf,int len)
 {
 	ahci_print("@ahci_ongive: %p,%p\n",ahci,foot);
 	return 0;
@@ -774,8 +776,8 @@ void ahci_mmioinit(struct item* dev, struct HBA_MEM* abar)
 	my->port = &abar->ports[0];
 	my->cmdlist = ptr+commandlist;
 	my->fisrecv = ptr+receivefis;
-	dev->ongiving = ahci_ongive;
-	dev->ontaking = ahci_ontake;
+	dev->ongiving = (void*)ahci_ongive;
+	dev->ontaking = (void*)ahci_ontake;
 	ahci_list(dev, cnt, ptr+receivebuf, 0x10000);
 
     ahci_print("}\n");

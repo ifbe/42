@@ -133,6 +133,7 @@ libfile/video/video.mp4.c \
 libfile/video/video.rmvb.c \
 libfile/filetype.c \
 libfile/fileauto.c \
+libfile/filemgr.c \
 libflow/0.phy/phy.bt.c \
 libflow/0.phy/phy.eth.c \
 libflow/0.phy/phy.raw.c \
