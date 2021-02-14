@@ -119,9 +119,14 @@ void getportanddata(u16* p, u16* d)
 
 
 static u64 knowncores = 0;
+static int have8259 = 0;
 u64 getknowncores()
 {
 	return knowncores;
+}
+int doihave8259()
+{
+	return have8259;
 }
 
 
@@ -187,6 +192,7 @@ void acpi_MADT(void* p)
 	struct MADT* madt = p;
 	say(".localapic=%x, have8259=%d\n", madt->LocalApicAddr, madt->Dual8259Flag);
 	addr_localapic = (void*)(u64)(madt->LocalApicAddr);
+	have8259 = madt->Dual8259Flag;
 
 	int j = 0;
 	int len = madt->head.len - 0x2c;

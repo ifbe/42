@@ -9,15 +9,13 @@ void parsedevmap_acpi(void*);
 void parsedevmap_dts(void*);
 //
 void apicwhere();
+void initirq();
 //
 void initcpu_bsp(struct item* p);
 void initcpu_ap();
 //
 void initpci_port();
 void initpci_mmio();
-//
-void init8259();        //interrupt controller
-void initioapic();
 //
 void init825x();        //timer.pit
 void initrtc();         //timer.rtc
@@ -47,8 +45,7 @@ void inithardware()
 
 	//interrupter
 	p = devicecreate(_irq_, 0, 0, 0);
-	init8259();
-	//initioapic();
+	initirq(p);
 
 	//timer
 	p = devicecreate(_tmr_, 0, 0, 0);

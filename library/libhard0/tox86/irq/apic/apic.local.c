@@ -4,6 +4,7 @@
 #define u64 unsigned long long
 //
 #define LAPIC_BASE 0xfee00000
+//
 #define LAPIC_ID      0x0020	//Local APIC ID
 #define LAPIC_VER     0x0030	//Local APIC Version
 #define LAPIC_TPR     0x0080	//Task Priority
@@ -55,19 +56,9 @@
 #define ICR_ALL_EXCLUDING_SELF          0x000c0000
 // Destination Field
 #define ICR_DESTINATION_SHIFT           24
-// Timer
-#define TMR_PERIODIC 0x20000
-#define TMR_BASEDIV	(1<<20)
-//
-#define IOAPIC_BASE 0xfec00000
-#define IOAPIC_ADDR 0
-#define IOAPIC_DATA 0x10
 //
 void* getlocalapic();
 void* gettheioapic();
-//
-u8 in8(u16 port);
-void out8(u16 port, u8 data);
 //
 void printmmio(void*, int);
 void printmemory(void*, int);
@@ -111,20 +102,6 @@ void localapic_endofirq(u32 num)
 {
 	volatile u32* addr = (volatile u32*)(addr_localapic + LAPIC_EOI);
 	*addr = 0;
-}
-
-
-
-
-void apictimer_init()
-{
-	volatile u32* LVT = (volatile u32*)(addr_localapic + LAPIC_LVT_TIMER);
-	volatile u32* DIV = (volatile u32*)(addr_localapic + LAPIC_TMR_DIVCONFIG);
-	volatile u32* CNT = (volatile u32*)(addr_localapic + LAPIC_TMR_INITCOUNT);
-
-	*LVT = 0x40 | TMR_PERIODIC;
-	*DIV = 0x3;
-	*CNT = 1000*100;
 }
 
 
@@ -206,6 +183,52 @@ void localapic_init()
 
 
 
+#define TMR_PERIODIC 0x20000
+#define TMR_BASEDIV	(1<<20)
+void apictimer_init()
+{
+	volatile u32* LVT = (volatile u32*)(addr_localapic + LAPIC_LVT_TIMER);
+	volatile u32* DIV = (volatile u32*)(addr_localapic + LAPIC_TMR_DIVCONFIG);
+	volatile u32* CNT = (volatile u32*)(addr_localapic + LAPIC_TMR_INITCOUNT);
+
+	*LVT = 0x40 | TMR_PERIODIC;
+	*DIV = 0x3;
+	*CNT = 1000*100;
+}
+
+
+
+
+//
+#define IOAPIC_BASE 0xfec00000
+#define IOAPIC_ADDR 0
+#define IOAPIC_DATA 0x10
+//[0,7]: vector
+//[8,10]: delivery mode
+#define REDTBL_DELIVER_FIXED  (0<<8)
+#define REDTBL_DELIVER_LOWPRI (1<<8)
+#define REDTBL_DELIVER_SMI    (2<<8)
+#define REDTBL_DELIVER_NMI    (4<<8)
+#define REDTBL_DELIVER_INIT   (5<<8)
+#define REDTBL_DELIVER_EXTINT (7<<8)
+//bit11
+#define REDTBL_DEST_PHYSICAL (0<<11)
+#define REDTBL_DEST_LOGICAL  (1<<11)
+//bit12: 0=done, 1=still waiting
+#define REDTBL_STATUS_DONE      (0<<12)
+#define REDTBL_STATUS_STILLWAIT (1<<12)
+//bit13
+#define REDTBL_POLARITY_ACTIVEHIGH (0<<13)
+#define REDTBL_POLARITY_ACTIVELOW  (1<<13)
+//bit15
+#define REDTBL_TRIGGER_EDGE  (0<<15)
+#define REDTBL_TRIGGER_LEVEL (1<<15)
+//bit16
+#define REDTBL_DISABLE (1<<16)
+
+
+
+
 u32 ioapic_read(u8 reg)
 {
 	volatile u32* addr = (volatile u32*)(IOAPIC_BASE + IOAPIC_ADDR);
@@ -222,26 +245,39 @@ void ioapic_write(u8 reg, u32 val)
 }
 void ioapic_enableirq(u32 irq)
 {
+	int off = 0x10 + irq*2;
+	u32 lo32 = ioapic_read(off);
+	ioapic_write(off, lo32 & (~REDTBL_DISABLE));
 }
 void ioapic_disableirq(u32 irq)
 {
+	int off = 0x10 + irq*2;
+	u32 lo32 = ioapic_read(off);
+	ioapic_write(off, lo32 | REDTBL_DISABLE);
 }
 void ioapic_init()
 {
-	int j;
+	int j,off,lo32,hi32;
 	u32* addr;
 	say("@initioapic\n");
 
-	asm("cli");
-	out8(0x21, 0xfd);
-	out8(0xa1, 0xff);
+	for(j=0;j<0x10+24*2;j++){
+		say(" %08x", ioapic_read(j));
+		if(7 == (j%8))say("\n");
+	}
 
 	addr = (u32*)IOAPIC_BASE;
 	for(j=0;j<24;j++)
 	{
-		addr[0] = 0x10 + (j*2);
-		addr[4] = 0x20 + j;
-		addr[0] = 0x11 + (j*2);
-		addr[4] = 0x10000;
+		off = 0x10 + j*2;
+		lo32= (0x20+j)
+			+ REDTBL_DELIVER_FIXED
+			+ REDTBL_DEST_PHYSICAL
+			+ REDTBL_POLARITY_ACTIVEHIGH
+			+ REDTBL_TRIGGER_EDGE
+			+ REDTBL_DISABLE;
+		hi32 = (0<<24);
+		ioapic_write(off+0, lo32);
+		ioapic_write(off+1, hi32);
 	}
 }

@@ -10,10 +10,10 @@ void say(void*, ...);
 
 
 
-void disableirq(u32 num)
+void dual8259_disableirq(u32 num)
 {
 }
-void enableirq(u32 num)
+void dual8259_enableirq(u32 num)
 {
 	u8 tmp;
 	if((num>=0)&&(num<=7))
@@ -41,7 +41,7 @@ void dual8259_endofirq(int num)
 	if(num >= 8)out8(0xa0, 0x20);
 	out8(0x20, 0x20);
 }
-void init8259()
+void dual8259_init()
 {
 	say("@init8259\n");
 

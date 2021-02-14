@@ -31,8 +31,8 @@ u64 getisr28();
 u64 getisr40();
 u64 getisr80();
 //
-void dual8259_endofirq(int);
-void localapic_endofirq(u32 num);
+void endofextirq(int);
+//
 void setidt(void* buf, int len);
 //
 void eventwrite(u64,u64,u64,u64);
@@ -95,8 +95,9 @@ __attribute__((interrupt)) static void allcpu_isr06(struct int_frame* p){
 	asm("cli");
 	asm("hlt");
 }//Invalid Opcode
-__attribute__((interrupt)) static void allcpu_isr07(void* p){
+__attribute__((interrupt)) static void allcpu_isr07(struct int_frame* p){
 	say("int07#NM\n");
+	printmemory((void*)(p->ip), 0x10);
 	asm("cli");
 	asm("hlt");
 }//Device Not Available
@@ -231,12 +232,12 @@ __attribute__((interrupt)) static void allcpu_isr1f(void* p){
 __attribute__((interrupt)) static void allcpu_isr20(void* p){
 	//say("825x!\n");
 	isr_825x();
-	dual8259_endofirq(0);
+	endofextirq(0);
 }
 __attribute__((interrupt)) static void allcpu_isr21(void* p){
 	//say("kbd!\n");
 	isr_8042();
-	dual8259_endofirq(1);
+	endofextirq(1);
 }
 __attribute__((interrupt)) static void allcpu_isr27(struct int_frame* p){
 	//say("int27: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp);
@@ -245,13 +246,13 @@ __attribute__((interrupt)) static void allcpu_isr27(struct int_frame* p){
 	u8 irr = in8(0x20);
 	if(irr&0x80){		//only when this set, real irq
 		//isr_parallel();
-		dual8259_endofirq(7);
+		endofextirq(7);
 	}*/
 }
 __attribute__((interrupt)) static void allcpu_isr28(void* p){
 	//say("rtc!\n");
 	isr_rtc();
-	dual8259_endofirq(8);
+	endofextirq(8);
 }
 
 

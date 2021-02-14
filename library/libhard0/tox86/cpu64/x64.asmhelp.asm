@@ -6,7 +6,7 @@ global enable_fpu
 enable_fpu:
 .okFPU:
 	mov rax, cr0
-	and al, 0xfb
+	and al, 0xf3
 	or rax, 0x22
 	mov cr0, rax
 	clts
@@ -25,7 +25,7 @@ enable_sse:
 	jz .noSSE
 .okSSE:
 	mov rax, cr0
-	and ax, 0xFFFB		;clear coprocessor emulation CR0.EM
+	and al, 0xf3		;clear coprocessor emulation CR0.EM, CR0.TS
 	or ax, 0x2			;set coprocessor monitoring  CR0.MP
 	mov cr0, rax
 

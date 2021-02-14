@@ -144,8 +144,11 @@ barex64:x64
 	$(CC) $(CF) tox86/bus/input/8042.c
 	$(CC) $(CF) tox86/bus/pci/pci-port.c
 	$(CC) $(CF) tox86/bus/pci/pci-mmio.c
-	$(CC) $(CF) tox86/irq/8259.c
-	$(CC) $(CF) tox86/irq/apic.c
+	$(CC) $(CF) tox86/irq/irq.c
+	$(CC) $(CF) tox86/irq/8259/8259.c
+	$(CC) $(CF) tox86/irq/apic/apic.io.c
+	$(CC) $(CF) tox86/irq/apic/apic.local.c
+	$(CC) $(CF) tox86/irq/apic/apic.timer.c
 	$(CC) $(CF) tox86/pmic/power.c
 	$(CC) $(CF) tox86/usbhost/ehci-driver.c
 	$(CC) $(CF) tox86/usbhost/xhci-driver.c
