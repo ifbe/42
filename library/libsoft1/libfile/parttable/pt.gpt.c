@@ -140,18 +140,50 @@ void mount_gpt(_art* art, u8* src)
 
 
 
-int gptclient_take(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int gptclient_showmount(_art* art)
+{
+	struct relation* rel = art->orel0;
+	while(1){
+		if(0 == rel)break;
+		say("%llx,%llx -> %llx,%llx\n",rel->srcchip,rel->srcfoot,rel->dstchip,rel->dstfoot);
+		rel = samesrcnextdst(rel);
+	}
+	return 0;
+}
+int gptclient_showinfo(_art* art)
+{
+	u8* gpt = art->buf0;
+	parse_gpt(gpt);
+	return 0;
+}
+
+
+
+
+int gptclient_ontake(_art* art,void* foot, _syn* stack,int sp, u8* arg,int idx, u8* buf,int len)
 {
 	say("@gptclient_take\n");
+	if(arg){
+		//info
+		if('i' == arg[0])return gptclient_showinfo(art);
+		//rel
+		if('r' == arg[0])return gptclient_showmount(art);
+	}
+
+takedata:
 	say("foot=%x\n",foot);
 	int ret = take_data_from_peer(art,_src_, stack,sp+2, arg,(u64)foot+idx, buf,len);
 	say("gpt.ret=%x\n",ret);
 	return ret;
 }
-int gptclient_give(_art* art,void* foot, _syn* stack,int sp, void* arg,int idx, u8* buf,int len)
+int gptclient_ongive(_art* art,void* foot, _syn* stack,int sp, u8* arg,int idx, u8* buf,int len)
 {
 	return 0;
 }
+
+
+
+
 int gptclient_discon(struct halfrel* self, struct halfrel* peer)
 {
 	return 0;
@@ -181,9 +213,12 @@ int gptclient_delete(struct artery* ele)
 	}
 	return 0;
 }
-int gptclient_create(struct artery* ele, u8* url)
+int gptclient_create(struct artery* art, u8* url)
 {
 	say("@gptclient_create\n");
-	ele->buf0 = memorycreate(0x10000, 0);
+	art->buf0 = memorycreate(0x10000, 0);
+
+	art->ongiving = (void*)gptclient_ongive;
+	art->ontaking = (void*)gptclient_ontake;
 	return 0;
 }

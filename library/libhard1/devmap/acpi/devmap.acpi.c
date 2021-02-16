@@ -116,31 +116,40 @@ void getportanddata(u16* p, u16* d)
 }
 
 
-
-
 static u64 knowncores = 0;
-static int have8259 = 0;
 u64 getknowncores()
 {
 	return knowncores;
 }
-int doihave8259()
-{
-	return have8259;
-}
-
-
 
 
 static void* addr_localapic = 0;
-static void* addr_theioaddr = 0;
 void* getlocalapic()
 {
 	return addr_localapic;
 }
-void* gettheioapic()
+
+
+static void* addr_extioaddr = 0;
+static u8 isa2gsi[32] = {
+	0x0,0x1,0x2,0x3, 0x4,0x5,0x6,0x7,
+	0x8,0x9,0xa,0xb, 0xc,0xd,0xe,0xf
+};
+void* getextioapic()
 {
-	return addr_theioaddr;
+	return addr_extioaddr;
+}
+void* getredirtbl()
+{
+	return isa2gsi;
+}
+
+
+
+static int have8259 = 0;
+int getdual8259()
+{
+	return have8259;
 }
 
 
@@ -211,11 +220,12 @@ void acpi_MADT(void* p)
 		case 1:
 			t1 = (void*)(madt->entry+j);
 			say("%x: ioapicid=%x,ioapicaddr=%x,gsib=%x\n", j, t1->ioapicID,t1->ioapicaddr,t1->GlobalSystemInterruptBase);
-			addr_theioaddr = (void*)(u64)(t1->ioapicaddr);
+			if(0 == t1->GlobalSystemInterruptBase)addr_extioaddr = (void*)(u64)(t1->ioapicaddr);
 			break;
 		case 2:
 			t2 = (void*)(madt->entry+j);
 			say("%x: bus=%x,irq=%x,gsi=%x,flag=%x\n", j, t2->bus,t2->irq,t2->GlobalSystemInterrupt,t2->flag);
+			if(t2->irq < 16)isa2gsi[t2->irq] = t2->GlobalSystemInterrupt;
 			break;
 		case 4:
 			t4 = (void*)(madt->entry+j);

@@ -1,6 +1,8 @@
 #include "libhard.h"
 //
-int doihave8259();
+int getdual8259();
+void* getextioapic();
+//
 void dual8259_init();
 void dual8259_endofirq(int);
 void dual8259_enableirq(int);
@@ -14,42 +16,48 @@ void ioapic_disableirq(int num);
 
 
 
-static int chosen = 8259;
+static int chosen = 0;
 void enableirq(int irq)
 {
-    if(8259 == chosen){
-        dual8259_enableirq(irq);
-    }
-    else{
-       ioapic_enableirq(irq);
-    }
+	if(8259 == chosen){
+		dual8259_enableirq(irq);
+	}
+	else{
+	   ioapic_enableirq(irq);
+	}
 }
 void disableirq(int irq)
 {
-    if(8259 == chosen){
-        dual8259_disableirq(irq);
-    }
-    else{
-        ioapic_disableirq(irq);
-    }
+	if(8259 == chosen){
+		dual8259_disableirq(irq);
+	}
+	else{
+		ioapic_disableirq(irq);
+	}
 }
 void endofextirq(int irq)
 {
-    if(8259 == chosen){
-        dual8259_endofirq(irq);
-    }
-    else{
-        localapic_endofirq(irq);
-    }
+	if(8259 == chosen){
+		dual8259_endofirq(irq);
+	}
+	else{
+		localapic_endofirq(irq);
+	}
 }
 void initirq(struct item* dev)
 {
-	if(1 == doihave8259()){
+	if(0 != getextioapic()){
+		ioapic_init();
+		chosen = 0;
+		say("irqchip=apic\n");
+	}
+	else if(1 == getdual8259()){
 		dual8259_init();
-        chosen = 8259;
+		chosen = 8259;
+		say("irqchip=8259\n");
 	}
 	else{
-		ioapic_init();
-        chosen = 0;
+		say("error: no irq chip found\n");
+		while(1)asm("hlt");
 	}
 }

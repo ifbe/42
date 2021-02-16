@@ -32,6 +32,7 @@ u64 getisr40();
 u64 getisr80();
 //
 void endofextirq(int);
+int localapic_coreid();
 //
 void setidt(void* buf, int len);
 //
@@ -96,10 +97,10 @@ __attribute__((interrupt)) static void allcpu_isr06(struct int_frame* p){
 	asm("hlt");
 }//Invalid Opcode
 __attribute__((interrupt)) static void allcpu_isr07(struct int_frame* p){
-	say("int07#NM\n");
-	printmemory((void*)(p->ip), 0x10);
-	asm("cli");
-	asm("hlt");
+	say("int07#NM: core=%x\n", localapic_coreid());
+	printmemory((void*)(p->ip-0x10), 0x20);
+	//asm("cli");
+	//asm("hlt");
 }//Device Not Available
 __attribute__((interrupt)) static void allcpu_isr08(void* p, u64 e){
 	say("int08#DF:%llx\n", e);

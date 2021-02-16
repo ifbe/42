@@ -58,7 +58,8 @@
 #define ICR_DESTINATION_SHIFT           24
 //
 void* getlocalapic();
-void* gettheioapic();
+void* getextioapic();
+void* getredirtbl();
 //
 void printmmio(void*, int);
 void printmemory(void*, int);
@@ -68,7 +69,7 @@ void say(void*, ...);
 
 
 static volatile u8* addr_localapic = 0;
-static volatile u8* addr_theioapic = 0;
+static volatile u8* addr_extioapic = 0;
 void apicwhere()
 {
 	say("@apicwhere\n");
@@ -135,7 +136,7 @@ void localapic_init()
 {
 	say("@initapic\n");
 
-	printmmio((void*)addr_localapic, 0x400);
+	//printmmio((void*)addr_localapic, 0x400);
 	say("lapic: id=%x,ver=%x\n", localapic_coreid(), localapic_version());		//wrong
 
 	//Clear task priority to enable all interrupts
@@ -205,26 +206,26 @@ void apictimer_init()
 #define IOAPIC_DATA 0x10
 //[0,7]: vector
 //[8,10]: delivery mode
-#define REDTBL_DELIVER_FIXED  (0<<8)
-#define REDTBL_DELIVER_LOWPRI (1<<8)
-#define REDTBL_DELIVER_SMI    (2<<8)
-#define REDTBL_DELIVER_NMI    (4<<8)
-#define REDTBL_DELIVER_INIT   (5<<8)
-#define REDTBL_DELIVER_EXTINT (7<<8)
+#define REDIRTBL_DELIVER_FIXED  (0<<8)
+#define REDIRTBL_DELIVER_LOWPRI (1<<8)
+#define REDIRTBL_DELIVER_SMI    (2<<8)
+#define REDIRTBL_DELIVER_NMI    (4<<8)
+#define REDIRTBL_DELIVER_INIT   (5<<8)
+#define REDIRTBL_DELIVER_EXTINT (7<<8)
 //bit11
-#define REDTBL_DEST_PHYSICAL (0<<11)
-#define REDTBL_DEST_LOGICAL  (1<<11)
+#define REDIRTBL_DEST_PHYSICAL (0<<11)
+#define REDIRTBL_DEST_LOGICAL  (1<<11)
 //bit12: 0=done, 1=still waiting
-#define REDTBL_STATUS_DONE      (0<<12)
-#define REDTBL_STATUS_STILLWAIT (1<<12)
+#define REDIRTBL_STATUS_DONE      (0<<12)
+#define REDIRTBL_STATUS_STILLWAIT (1<<12)
 //bit13
-#define REDTBL_POLARITY_ACTIVEHIGH (0<<13)
-#define REDTBL_POLARITY_ACTIVELOW  (1<<13)
+#define REDIRTBL_POLARITY_ACTIVEHIGH (0<<13)
+#define REDIRTBL_POLARITY_ACTIVELOW  (1<<13)
 //bit15
-#define REDTBL_TRIGGER_EDGE  (0<<15)
-#define REDTBL_TRIGGER_LEVEL (1<<15)
+#define REDIRTBL_TRIGGER_EDGE  (0<<15)
+#define REDIRTBL_TRIGGER_LEVEL (1<<15)
 //bit16
-#define REDTBL_DISABLE (1<<16)
+#define REDIRTBL_DISABLE (1<<16)
 
 
 
@@ -245,15 +246,26 @@ void ioapic_write(u8 reg, u32 val)
 }
 void ioapic_enableirq(u32 irq)
 {
-	int off = 0x10 + irq*2;
+	//redirect table
+	u8* redirtbl = getredirtbl();
+	u8 gsi = redirtbl[irq];
+	say("redirtbl: isa %d -> gsi %d\n", irq, gsi);
+
+	int off = 0x10 + gsi*2;
 	u32 lo32 = ioapic_read(off);
-	ioapic_write(off, lo32 & (~REDTBL_DISABLE));
+	u32 hi32 = (0<<24);
+	lo32 &= ~REDIRTBL_DISABLE;
+	lo32 &= 0xffffff00;
+	lo32 |= 0x20 + irq;
+	ioapic_write(off+0, lo32);
+	ioapic_write(off+1, hi32);
 }
 void ioapic_disableirq(u32 irq)
 {
 	int off = 0x10 + irq*2;
 	u32 lo32 = ioapic_read(off);
-	ioapic_write(off, lo32 | REDTBL_DISABLE);
+	lo32 |= REDIRTBL_DISABLE;
+	ioapic_write(off, lo32);
 }
 void ioapic_init()
 {
@@ -261,21 +273,29 @@ void ioapic_init()
 	u32* addr;
 	say("@initioapic\n");
 
+	//register dump
 	for(j=0;j<0x10+24*2;j++){
 		say(" %08x", ioapic_read(j));
 		if(7 == (j%8))say("\n");
 	}
+	j = ioapic_read(0);
+	say("id=%x\n", (j>>24)&0xf);
+	j = ioapic_read(1);
+	say("ver=%x,cnt=%x\n", j&0xff, (j>>16)&0xff);
+	j = ioapic_read(2);
+	say("priority=%x\n", (j>>24)&0xf);
 
+	//configure perirq
 	addr = (u32*)IOAPIC_BASE;
 	for(j=0;j<24;j++)
 	{
 		off = 0x10 + j*2;
-		lo32= (0x20+j)
-			+ REDTBL_DELIVER_FIXED
-			+ REDTBL_DEST_PHYSICAL
-			+ REDTBL_POLARITY_ACTIVEHIGH
-			+ REDTBL_TRIGGER_EDGE
-			+ REDTBL_DISABLE;
+		lo32= (0x20 + j)
+			+ REDIRTBL_DELIVER_FIXED
+			+ REDIRTBL_DEST_PHYSICAL
+			+ REDIRTBL_POLARITY_ACTIVEHIGH
+			+ REDIRTBL_TRIGGER_EDGE
+			+ REDIRTBL_DISABLE;
 		hi32 = (0<<24);
 		ioapic_write(off+0, lo32);
 		ioapic_write(off+1, hi32);

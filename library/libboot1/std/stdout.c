@@ -14,20 +14,17 @@ void window_give(void*,void*, void*,int, void*,int, void*,int);
 
 
 
+#define MAXLINE 16
+static int lastline[MAXLINE];
 static u8* outputqueue;
 static int enq = 0;
-static int lastline_3 = 0;
-static int lastline_2 = 0;
-static int lastline_1 = 0;	//lastline_head
-static int lastline_0 = 0;	//lastline_tail
 void initstdout(void* addr)
 {
+	int j;
+	for(j=0;j<32;j++)lastline[j] = 0;
+
 	outputqueue = addr;
 	enq = 0;
-	lastline_3 = 0;
-	lastline_2 = 0;
-	lastline_1 = 0;
-	lastline_0 = 0;
 }
 void freestdout()
 {
@@ -38,7 +35,7 @@ void* getstdout()
 }
 int getcurout()
 {
-	return lastline_0;
+	return lastline[0];
 }
 
 
@@ -61,7 +58,7 @@ void stdout_setwindow(void* node)
 
 void dbg(u8* fmt, ...)
 {
-	int j,len;
+	int j,k,len;
 	__builtin_va_list arg;
 
 	//va start
@@ -74,27 +71,26 @@ void dbg(u8* fmt, ...)
 	__builtin_va_end(arg);
 
 	//update enq, update head and tail
-	if(enq < lastline_1){
-		lastline_1 = 0;
-		lastline_0 = enq;
+	if(enq < lastline[1]){
+		lastline[1] = 0;
+		lastline[0] = enq;
 	}
 
 	enq += len;
 	if(enq > 0x3f000)enq = 0;
 
-	lastline_0 += len;
-	for(j=lastline_1;j<lastline_0-1;j++){
+	lastline[0] += len;
+	for(j=lastline[1];j<lastline[0]-1;j++){
 		if('\n' == outputqueue[j]){
-			lastline_3 = lastline_2;
-			lastline_2 = lastline_1;
-			lastline_1 = j+1;
+			for(k=MAXLINE-1;k>0;k--)lastline[k] = lastline[k-1];
+			lastline[1] = j+1;
 		}
 	}
 
 }
 void say(u8* fmt, ...)
 {
-	int j,len;
+	int j,k,len;
 	__builtin_va_list arg;
 
 	//temp position
@@ -111,20 +107,19 @@ void say(u8* fmt, ...)
 	__builtin_va_end(arg);
 
 	//update enq, update head and tail
-	if(enq < lastline_1){
-		lastline_1 = 0;
-		lastline_0 = enq;
+	if(enq < lastline[1]){
+		lastline[1] = 0;
+		lastline[0] = enq;
 	}
 
 	enq += len;
 	if(enq > 0x3f000)enq = 0;
 
-	lastline_0 += len;
-	for(j=lastline_1;j<lastline_0-1;j++){
+	lastline[0] += len;
+	for(j=lastline[1];j<lastline[0]-1;j++){
 		if('\n' == outputqueue[j]){
-			lastline_3 = lastline_2;
-			lastline_2 = lastline_1;
-			lastline_1 = j+1;
+			for(k=MAXLINE-1;k>0;k--)lastline[k] = lastline[k-1];
+			lastline[1] = j+1;
 		}
 	}
 
@@ -139,9 +134,14 @@ void say(u8* fmt, ...)
 
 	//write screen
 	if(windownode){
-		window_give(windownode,windownode, 0,0, 0,-3, outputqueue+lastline_3, lastline_2-lastline_3);
-		window_give(windownode,windownode, 0,0, 0,-2, outputqueue+lastline_2, lastline_1-lastline_2);
-		window_give(windownode,windownode, 0,0, 0,-1, outputqueue+lastline_1, lastline_0-lastline_1);
+		for(j=1;j<MAXLINE;j++){
+			window_give(
+				windownode,windownode,
+				0,0,
+				0,-j,
+				outputqueue+lastline[j], lastline[j-1]-lastline[j]
+			);
+		}
 	}
 }
 
