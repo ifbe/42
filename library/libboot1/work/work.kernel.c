@@ -14,12 +14,13 @@ static struct item* origin = 0;
 static struct item* worker = 0;
 static struct item* device = 0;
 static struct item* driver = 0;
-volatile static int allok = 0;
+volatile static u64 heartbeat_draw = 0;
+volatile static u64 heartbeat_poll = 0;
 
 
 
 
-static int kernel_wndctx(struct supply* wnd)
+static void kernel_wndctx(struct supply* wnd)
 {
 	//wnd-> = ;
 	struct style* toterm = allocstyle();
@@ -77,10 +78,19 @@ static int kernel_wndctx(struct supply* wnd)
 
 
 
-static int kernel_pollloop()
+static int kernel_pollloop(struct item* wrk)
 {
 	int j;
+	struct event* ev;
 	struct item* dev;
+	struct supply* wnd;
+	struct halfrel stack[0x80];
+
+	wnd = wrk->priv_ptr;
+	stack[0].pchip = wrk;
+	stack[1].pchip = wnd;
+	say("pollloop: stack@%p,window@%p\n", stack, wnd);
+
 	while(1){
 		for(j=0;j<10;j++){
 			dev = &device[j];
@@ -88,25 +98,6 @@ static int kernel_pollloop()
 				if(dev->ontaking)dev->ontaking(dev,0, 0,0, 0,0, 0,0);
 			}
 		}
-	}
-	return 0;
-}
-static int kernel_drawloop(struct item* wrk)
-{
-	struct supply* wnd = wrk->priv_ptr;
-
-	struct halfrel stack[0x80];
-	stack[0].pchip = wrk;
-	stack[1].pchip = wnd;
-
-	//loop
-	struct event* ev;
-	while(1){
-		//draw frame
-		supply_take(wnd,0, stack,2, 0,0, 0,0);
-
-		allok = 1;
-
 		//cleanup events
 		while(1){
 			ev = eventread();
@@ -115,6 +106,38 @@ static int kernel_drawloop(struct item* wrk)
 
 			supply_give(wnd,0, stack,2, 0,0, ev,0);
 		}
+
+		heartbeat_poll = timeread();
+	}
+	return 0;
+}
+static int kernel_drawloop(struct item* wrk)
+{
+	int j;
+	u64 t0,t1;
+	struct supply* wnd;
+	struct halfrel stack[0x80];
+
+	wnd = wrk->priv_ptr;
+	stack[0].pchip = wrk;
+	stack[1].pchip = wnd;
+	say("drawloop: stack@%p,window@%p\n", stack, wnd);
+
+	//loop
+	t0 = timeread();
+	while(1){
+		if(stack[0].pchip != wrk){
+			say("what fuck???\n\n\n");
+			for(j=0;j<4;j++)say("%d: %p,%p,%x,%x\n", j, stack[j].pchip, stack[j].pfoot, stack[j].type, stack[j].flag);
+		}
+		//draw frame
+		supply_take(wnd,0, stack,2, 0,0, 0,0);
+
+		t1 = timeread();
+		//say("dt=%d\n",t1-t0);
+		t0 = t1;
+
+		heartbeat_draw = t0;
 	}
 	return 0;
 }
@@ -178,22 +201,36 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 	//fall back
 	u64 haha = 1;
 	u64 time = timeread();
-	while(0 == allok){		//wait at most 10s
+	while(1){		//wait at most 10s
+		if((0 != heartbeat_draw)&&(0 != heartbeat_poll))break;
 		if(timeread() > time + haha*1000*1000){
-			say("bspcpu: thread fail(%ds/10s)\n", haha);
+			if(0 == heartbeat_draw){
+				say("drawloop: thread fail(%ds/10s)\n", haha);
+			}
+			if(0 == heartbeat_poll){
+				say("pollloop: thread fail(%ds/10s)\n", haha);
+			}
 
 			haha += 1;
-			if(haha > 10)break;
+			if(haha > 10){		//still fail after 10s
+				say("bspcpu: run into stupid mode\n");
+				kernel_failloop(wrk);
+			}
 		}
-	}
-	if(0 == allok){		//still fail after 10s
-		say("bspcpu: run into stupid mode\n");
-		kernel_failloop(wrk);
 	}
 
 	//everything ok
-	say("bspcpu: all fine, sleep wait for int\n");
-	while(1)haltwaitforint();
+	say("haltloop(core=0), sleep wait for int\n");
+	while(1){
+		time = timeread();
+		if(time > heartbeat_draw + 1000*1000*10){
+			say("drawloop: stall >10s\n");
+		}
+		if(time > heartbeat_poll + 1000*1000*10){
+			say("pollloop: stall >10s\n");
+		}
+		haltwaitforint();
+	}
 }
 
 

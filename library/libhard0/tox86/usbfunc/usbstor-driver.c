@@ -230,6 +230,7 @@ struct perstor{
 };
 static int usbstor_readdata(struct item* usb,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
 {
+	say("@usbstor_readdata: %p,%p,%p,%x,%p,%x,%p,%x\n",usb,foot,stack,sp,arg,off,buf,len);
 	struct perusb* perusb = usb->priv_ptr;
 	if(0 == perusb)return 0;
 

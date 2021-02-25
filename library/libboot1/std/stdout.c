@@ -21,7 +21,7 @@ static int enq = 0;
 void initstdout(void* addr)
 {
 	int j;
-	for(j=0;j<32;j++)lastline[j] = 0;
+	for(j=0;j<MAXLINE;j++)lastline[j] = 0;
 
 	outputqueue = addr;
 	enq = 0;

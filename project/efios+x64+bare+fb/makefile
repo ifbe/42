@@ -1,5 +1,5 @@
 library?=../../library
-flag?=-c -fPIC -ffreestanding -Wno-address-of-packed-member -I.. -I../gnu-efi/inc -I../gnu-efi/inc/x86_64 -I../gnu-efi/inc/protocol
+flag?=-c -fPIC -ffreestanding -mno-red-zone -Wno-address-of-packed-member -I.. -I../gnu-efi/inc -I../gnu-efi/inc/x86_64 -I../gnu-efi/inc/protocol
 all:libboot0 libboot1 libhard1 libsoft0 libsoft1 libuser0 libuser1 gnuefi
 	make -f makefile.clang -s libhard0	#mingw64 bug: attribute interrupt
 	make -s link

@@ -94,10 +94,9 @@ u64 rdmsr(u32 addr)
 	);
 	return data;
 }
-/*
-u32 readcr(int id)
+u64 readcr(int id)
 {
-	u32 val;
+	u64 val;
 	if(id == 0)asm volatile("mov %%cr0, %0" : "=r"(val) );
 	//else if(id == 1)asm volatile("movl %%cr1, %0" : "=r"(val) );
 	else if(id == 2)asm volatile("mov %%cr2, %0" : "=r"(val) );
@@ -109,6 +108,7 @@ u32 readcr(int id)
 	else if(id == 8)asm volatile("mov %%cr8, %0" : "=r"(val) );
 	return val;
 }
+/*
 void writecr(int id, u32 val)
 {
 	if(id == 0)asm volatile("mov %0, %%cr0" : "=r"(val) );

@@ -12,6 +12,12 @@ struct mbrpart{
 	u8 lba_start[4];	//[+0x8,+0xb]:起始lba
 	u8 lba_count[4];	//[+0xc,+0xf]:大小
 }__attribute__((packed));
+struct parsed{
+	u64 type;
+	u64 name;
+	u64 start;
+	u64 count;
+}__attribute__((packed));
 
 
 
@@ -30,28 +36,30 @@ u32 hackforarmalign4(u8* p)
 
 
 
-void parse_mbr_one(struct mbrpart* part)
+int parse_mbr_one(struct mbrpart* part, struct parsed* out)
 {
 	u32 start,count;
-	u8* type;
-	if(0 == part->parttype)return;
+	u64 type;
+	char* str;
+	if(0 == part->parttype)return 0;
 
 	//count-1 = bus error, gcc bug ?
 	start = hackforarmalign4(part->lba_start);
 	count = hackforarmalign4(part->lba_count);
 
-	type = "?";
+	type = 0;
+	str = "?";
 	switch(part->parttype){
 	case 0x05:
 	case 0x15:
 	{
-		type = "extend-chs";
+		str = "extend-chs";
 		break;
 	}
 	case 0x0f:
 	case 0x1f:
 	{
-		type = "extend-lba";
+		str = "extend-lba";
 		break;
 	}
 	case 0x04:
@@ -61,43 +69,61 @@ void parse_mbr_one(struct mbrpart* part)
 	case 0x16:
 	case 0x1e:
 	{
-		type = "fat16";
+		str = "fat16";
+		type = _fat_;
 		break;
 	}
 	case 0x0b:
 	case 0x1b:
 	{
-		type = "fat32-chs";
+		str = "fat32-chs";
+		type = _fat_;
 		break;
 	}
 	case 0x0c:
 	case 0x1c:
 	{
-		type = "fat32-lba";
+		str = "fat32-lba";
+		type = _fat_;
 		break;
 	}
 	case 0x07:
 	case 0x17:
 	{
-		type = "ntfs";
+		str = "ntfs";
+		type = _ntfs_;
 		break;
 	}
 	case 0x83:
 	{
-		type = "ext";
+		str = "ext";
+		type = _ext_;
 		break;
 	}
 	}//switch
 
-	say("[%08x,%08x]:type=%02x(%s)\n", start, start+count-1, part->parttype, type);
+	say("[%08x,%08x]:type=%02x(%s)\n", start, start+count-1, part->parttype, str);
+	if(out){
+		out->type = type;
+		out->name = 0;
+		out->start = start;
+		out->count = count;
+	}
+	return 1;
 }
-void parse_mbr(u8* src)
+int parse_mbr(u8* src, struct parsed* out)
 {
 	int j;
-	src += 0x1be;
-	for(j=0;j<0x40;j+=0x10){
-		parse_mbr_one((void*)(src+j));
+	int ret,cnt;
+	u8* tmp;
+
+	cnt = 0;
+	for(j=0;j<4;j++){
+		tmp = src + 0x1be + 0x10*j;
+		ret = parse_mbr_one((void*)tmp, &out[cnt]);
+		if(ret)cnt += 1;
 	}
+	return cnt;
 }
 
 
@@ -143,21 +169,15 @@ int mount_mbr(_art* art, u8* src)
 
 
 
-int mbrclient_showmount(_art* art)
-{
-	struct relation* rel = art->orel0;
-	while(1){
-		if(0 == rel)break;
-		say("%llx,%llx -> %llx,%llx\n",rel->srcchip,rel->srcfoot,rel->dstchip,rel->dstfoot);
-		rel = samesrcnextdst(rel);
-	}
-	return 0;
-}
-int mbrclient_showinfo(_art* art)
+static int mbrclient_showinfo(_art* art)
 {
 	u8* mbr = art->buf0;
-	parse_mbr(mbr);
-	return 0;
+	return parse_mbr(mbr, 0);
+}
+static int mbrclient_showpart(_art* art,void* foot, void* buf,int len)
+{
+	u8* mbr = art->buf0;
+	return parse_mbr(mbr, buf);
 }
 
 
@@ -165,16 +185,19 @@ int mbrclient_showinfo(_art* art)
 
 static int mbrclient_ontake(_art* art,void* foot, _syn* stack,int sp, u8* arg, int off, u8* buf, int len)
 {
-	//say("@mbrclient_ontake\n");
+	u64 offs;
+	say("@mbrclient_ontake\n");
+
 	if(arg){
 		//info
 		if('i' == arg[0])return mbrclient_showinfo(art);
-		//rel
-		if('r' == arg[0])return mbrclient_showmount(art);
+		//part
+		if('p' == arg[0])return mbrclient_showpart(art,foot, buf,len);
 	}
 
 takedata:
-	return take_data_from_peer(art,_src_, stack,sp+2, arg,(u64)foot+off, buf,len);
+	offs = (u64)foot + off;		//foot->offs + idx		//partoffs + dataoffs
+	return take_data_from_peer(art,_src_, stack,sp+2, arg,offs, buf,len);
 }
 static int mbrclient_ongive(_art* art,void* foot, _syn* stack,int sp, u8* arg, int idx, u8* buf, int len)
 {
@@ -215,7 +238,7 @@ int mbrclient_linkup(struct halfrel* self, struct halfrel* peer)
 	}
 
 	//check self type, parse or mount
-	mount_mbr(ele, buf);
+	parse_mbr(buf, 0);
 	return 0;
 }
 int mbrclient_delete(struct artery* art)

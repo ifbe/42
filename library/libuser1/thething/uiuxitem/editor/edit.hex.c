@@ -246,18 +246,15 @@ static void hexedit_event(
 
 
 
-static void hexedit_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void hexedit_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
+	if(0 == stack)return;
 
-	if(stack&&('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		hexedit_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	hexedit_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
 static void hexedit_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
@@ -283,13 +280,10 @@ static int hexedit_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	struct entity* sup = stack[sp-2].pchip;
 
 	switch(sup->fmt){
-	case _gl41full_:{
-		if('v' != key)break;
+	case _gl41full_:
 		hexedit_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
-	}
-	default:{
+	default:
 		hexedit_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
-	}
 	}
 	return 0;
 }

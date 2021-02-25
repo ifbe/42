@@ -49,12 +49,14 @@ isr20_825x:
 
 	mov rdi, rsp	;for abi: di,si,dx,cx,r8,r9
 	mov rcx, rdi	;for abi: cx,dx,r8,r9
+	sub rsp, 0x100	;mingw bug!!!: it breaks stack [rsp,rsp+?]
 	call isr_825x
 
 	mov rdi, 0x20	;for abi: di,si,dx,cx,r8,r9
 	mov rcx, rdi	;for abi: cx,dx,r8,r9
 	call endofextirq
 
+	add rsp, 0x100
 	pop r8
 	pop r9
 	pop r10
@@ -92,10 +94,12 @@ isr40_apictimer:
 
 	mov rdi, rsp	;for abi: di,si,dx,cx,r8,r9
 	mov rcx, rdi	;for abi: cx,dx,r8,r9
+	sub rsp, 0x100	;mingw bug!!!: it breaks stack [rsp,rsp+?]
 	call schedulethread
 
 	call endofextirq
 
+	add rsp, 0x100
 	pop r8
 	pop r9
 	pop r10

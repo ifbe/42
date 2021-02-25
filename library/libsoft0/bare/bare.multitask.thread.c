@@ -198,21 +198,21 @@ int schedulethread_findnext(volatile struct taskstate* tasktable, int taskcount,
 	}
 	return -1;
 }
-void schedulethread_savecurr(volatile struct taskstate* pcurr, u8* cputmp, int coreid)
+void schedulethread_savecurr(volatile struct taskstate* pcurr, u64* cputmp, int coreid)
 {
 	int j;
-	u8* cpubuf = (void*)&pcurr->cpureg;
-	for(j=0;j<sizeof(struct saved_cpureg);j++)cpubuf[j] = cputmp[j];
+	u64* cpubuf = (void*)&pcurr->cpureg;
+	for(j=0;j<sizeof(struct saved_cpureg)/8;j++)cpubuf[j] = cputmp[j];
 
 	u64 fpubuf = (u64)&pcurr->fpureg;
 	fpu_fxsave((fpubuf+0x40) - (fpubuf&0x3f));
 }
-void schedulethread_loadnext(volatile struct taskstate* pnext, u8* cputmp, int coreid)
+void schedulethread_loadnext(volatile struct taskstate* pnext, u64* cputmp, int coreid)
 {
 	int j;
 
-	u8* cpubuf = (void*)&pnext->cpureg;
-	for(j=0;j<sizeof(struct saved_cpureg);j++)cputmp[j] = cpubuf[j];
+	u64* cpubuf = (void*)&pnext->cpureg;
+	for(j=0;j<sizeof(struct saved_cpureg)/8;j++)cputmp[j] = cpubuf[j];
 
 	u64 fpubuf = (u64)&pnext->fpureg;
 	fpu_fxrstor((fpubuf+0x40) - (fpubuf&0x3f));
@@ -242,9 +242,9 @@ void schedulethread(struct saved_cpureg* cpureg)
 
 	if(icurr == inext)goto fuckshit;
 
-	schedulethread_savecurr(&tasktable[icurr], (u8*)cpureg, coreid);
+	schedulethread_savecurr(&tasktable[icurr], (u64*)cpureg, coreid);
 
-	schedulethread_loadnext(&tasktable[inext], (u8*)cpureg, coreid);
+	schedulethread_loadnext(&tasktable[inext], (u64*)cpureg, coreid);
 
 	tasktable[icurr].CoreRunThisTask = -1;			//no cpu @ this task
 	tasktable[inext].CoreRunThisTask = coreid;		//this cpu @ this task

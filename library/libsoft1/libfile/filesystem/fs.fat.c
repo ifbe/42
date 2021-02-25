@@ -484,11 +484,14 @@ int fat_parse(struct artery* art, u8* addr)
 
 
 
-int fatclient_read(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int fatclient_ontake(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
+	say("@fatclient_ontake\n");
+
+	fat_cd(art, 0);
 	return 0;
 }
-int fatclient_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
+int fatclient_ongive(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	return 0;
 }
@@ -527,7 +530,6 @@ int fatclient_linkup(struct halfrel* self, struct halfrel* peer)
 	ret = fat_buildcache(art);
 	//if(ret < 0)
 
-	fat_cd(art, 0);
 	return 0;
 }
 int fatclient_delete(struct artery* art)
@@ -539,7 +541,9 @@ int fatclient_create(struct artery* art)
 	say("@fatclient_create\n");
 
 	struct perfs* per = memorycreate(0x200000, 0);
-
 	art->buf0 = per;
+
+	art->ongiving = (void*)fatclient_ongive;
+	art->ontaking = (void*)fatclient_ontake;
 	return 0;
 }

@@ -58,6 +58,9 @@ struct int_frame{
 	u64 sp;
 	u64 ss;
 }__attribute__((packed));
+static void anchorpoint()
+{
+}
 
 
 
@@ -97,7 +100,7 @@ __attribute__((interrupt)) static void allcpu_isr06(struct int_frame* p){
 	asm("hlt");
 }//Invalid Opcode
 __attribute__((interrupt)) static void allcpu_isr07(struct int_frame* p){
-	say("int07#NM: core=%x\n", localapic_coreid());
+	say("int07#NM@%x\n", localapic_coreid());
 	printmemory((void*)(p->ip-0x10), 0x20);
 	//asm("cli");
 	//asm("hlt");
@@ -129,15 +132,20 @@ __attribute__((interrupt)) static void allcpu_isr0c(void* p, u64 e){
 }//Stack-Segment Fault
 __attribute__((interrupt)) static void allcpu_isr0d(struct int_frame* p, u64 e){
 	printmemory((u8*)p-0x18, 0x80);
-	say("int0d#GP: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
+	say("int0d#GP@core%x: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", localapic_coreid(), p->flag, p->cs, p->ip, p->ss, p->sp, e);
 	say("index=%x,type=%x,internal=%x\n", e>>3, (e>>1)&3, e&1);
 	printmemory((void*)(p->ip), 0x10);
 	asm("cli");
 	asm("hlt");
 }//General Protection Fault
 __attribute__((interrupt)) static void allcpu_isr0e(struct int_frame* p, u64 e){
-	printmemory((u8*)p-0x18, 0x80);
-	say("int0e#PF: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx\n", p->flag, p->cs, p->ip, p->ss, p->sp, e);
+	u64 cr2;
+	asm volatile("mov %%cr2, %0" : "=r"(cr2) );
+
+	printmemory(p, 0x60);
+	say("int0e#PF@core%x: flag=%llx, cs=%llx,ip=%llx, ss=%llx,sp=%llx, err=%llx, cr2=%llx\n", localapic_coreid(), p->flag, p->cs, p->ip, p->ss, p->sp, e, cr2);
+	say("anchor@%p,offset=%llx\n", anchorpoint, p->ip - (u64)anchorpoint);
+	printmemory((void*)(p->ip), 0x10);
 	asm("cli");
 	asm("hlt");
 }//Page Fault
