@@ -7,8 +7,8 @@ int wndmgr_mouseat_title(int x,int y, int x0,int y0, int xn,int yn)
 {
 	if(x < x0)return 0;
 	if(x > xn)return 0;
-	if(y > y0)return 0;
-	if(y < yn)return 0;
+	if(y < y0)return 0;
+	if(y > yn)return 0;
 	return 1;
 }
 int wndmgr_mouseat_border(int x,int y, int x0,int y0, int xn,int yn)
@@ -105,38 +105,38 @@ int wndmgr_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, voi
 			struct style* sty = rel->psrcfoot;
 			int x0 = sty->fs.vc[0] - sty->fs.vr[0];	//(left, top)
 			int y0 = sty->fs.vc[1] - sty->fs.vf[1];
-			int xn = sty->fs.vc[0] + sty->fs.vr[0];	//(right, bot)
-			int yn = sty->fs.vc[1] + sty->fs.vf[1];
-			int xq = sty->fs.vc[0];		//(mid, above top 16 pixel)
-			int yq = y0-16;
-			int xt = x0+16;				//(left+16, top-16)
-			int yt = y0-16;
+			int xn = sty->fs.vc[0] + sty->fs.vr[0]-1;	//(right, bot)
+			int yn = sty->fs.vc[1] + sty->fs.vf[1]-1;
+			int tx0 =        x0;	//title.(left, top)
+			int ty0 =     y0-16;
+			int txn = (x0+xn)/2;	//(right, bot)
+			int tyn =      y0-1;
 
 			//border
 			if(
 				wndmgr_mouseat_border(x,y, x0,y0, xn,yn) |
-				wndmgr_mouseat_title(x,y, x0,y0, xq,yq)
+				wndmgr_mouseat_title(x,y, tx0,ty0, txn,tyn)
 			){
-				drawline_rect((void*)wnd,0xffff00, x0,y0,xn,yn);
+				drawline_choose((void*)wnd,0xffff00, x0,y0,xn,yn);
 			}
 
 			//title.rect
 			if(the == rel){
-				drawopaque_rect((void*)wnd, 0xc0ff0000, x0,y0, xq,yq);
+				drawopaque_rect((void*)wnd, 0xc0ff0000, tx0,ty0, txn,tyn);
 
-				drawsolid_rect((void*)wnd, 0xffff00, x0,y0, xt,yt);
-				drawsolid_rect((void*)wnd, 0x00ffff, x0+4,y0-4, xt-4,yt+4);
+				drawsolid_rect((void*)wnd, 0xffff00, tx0+0,ty0+0, tx0+15+0,tyn+0);
+				drawsolid_rect((void*)wnd, 0x00ffff, tx0+4,ty0+4, tx0+15-4,tyn-4);
 			}
 			else{
-				drawopaque_rect((void*)wnd, 0xc07f007f, x0,y0, xq,yq);
+				drawopaque_rect((void*)wnd, 0xc07f007f, tx0,ty0, txn,tyn);
 
-				drawsolid_rect((void*)wnd, 0x7f7f00, x0,y0, xt,yt);
-				drawsolid_rect((void*)wnd, 0x007f7f, x0+4,y0-4, xt-4,yt+4);
+				drawsolid_rect((void*)wnd, 0x7f7f00, tx0+0,ty0+0, tx0+15+0,tyn+0);
+				drawsolid_rect((void*)wnd, 0x007f7f, tx0+4,ty0+4, tx0+15-4,tyn-4);
 			}
 
 			//title.name
 			struct entity* ent = rel->pdstchip;
-			drawstring_fit((void*)wnd, 0xffffff, x0,y0, xq,yq, (void*)&ent->fmt, 8);
+			drawstring_fit((void*)wnd, 0xffffff, tx0,ty0, txn,tyn, (void*)&ent->fmt, 8);
 		}
 next:
 		rel = samesrcnextdst(rel);

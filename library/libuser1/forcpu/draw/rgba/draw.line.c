@@ -88,6 +88,40 @@ void drawline_triangle(struct entity* win, u32 rgb,
 	drawline(win, rgb, x1, y1, x3, y3);
 	drawline(win, rgb, x2, y2, x3, y3);
 }
+void drawline_choose(struct entity* win, u32 rgb,
+	int x1, int y1, int x2, int y2)
+{
+	int t;
+	if(x1 > x2){
+		t = x1;
+		x1 = x2;
+		x2 = t;
+	}
+	if(y1 > y2){
+		t = y1;
+		y1 = y2;
+		y2 = t;
+	}
+
+	int dx = (x2-x1)/4;
+	int dy = (y2-y1)/4;
+
+	//left,top
+	drawline(win,rgb, x1,y1, x1   ,y1+dy);
+	drawline(win,rgb, x1,y1, x1+dx,y1   );
+
+	//right,top
+	drawline(win,rgb, x2,y1, x2   ,y1+dy);
+	drawline(win,rgb, x2,y1, x2-dx,y1   );
+
+	//left,bot
+	drawline(win,rgb, x1,y2, x1   ,y2-dy);
+	drawline(win,rgb, x1,y2, x1+dx,y2   );
+
+	//right,bot
+	drawline(win,rgb, x2,y2, x2   ,y2-dy);
+	drawline(win,rgb, x2,y2, x2-dx,y2   );
+}
 void drawline_rect(struct entity* win, u32 rgb,
 	int x1, int y1, int x2, int y2)
 {
