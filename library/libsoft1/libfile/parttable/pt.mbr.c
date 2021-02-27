@@ -120,7 +120,7 @@ int parse_mbr(u8* src, struct parsed* out)
 	cnt = 0;
 	for(j=0;j<4;j++){
 		tmp = src + 0x1be + 0x10*j;
-		ret = parse_mbr_one((void*)tmp, &out[cnt]);
+		ret = parse_mbr_one((void*)tmp, out ? &out[cnt] : 0);
 		if(ret)cnt += 1;
 	}
 	return cnt;

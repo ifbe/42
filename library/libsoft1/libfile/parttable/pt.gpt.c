@@ -69,11 +69,7 @@ int parse_gpt_one(struct gptpart* part, struct parsed* out)
 	else if(0 == ncmp(part->guid_type, guid_ext4,16))type = _ext_;
 	else type = hex32('?','?','?','?');
 
-	int j;
-	char* name = part->name;
-	for(j=0;j<0x40;j++)name[j] = part->name[j*2];
-
-	say("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type, name);
+	say("[%016llx,%016llx]:	type=%.8s, name=%s\n", part->lba_start, part->lba_end, &type, part->name);
 	if(out){
 		out->type = type;
 		out->name = 0;
@@ -100,7 +96,7 @@ int parse_gpt(u8* src, struct parsed* out)
 	cnt = 0;
 	for(j=0;j<0x80;j++){
 		tmp = src + 0x400 + 0x80*j;
-		ret = parse_gpt_one((void*)tmp, &out[cnt]);
+		ret = parse_gpt_one((void*)tmp, out ? &out[cnt] : 0);
 		if(ret)cnt += 1;
 	}
 	return cnt;
