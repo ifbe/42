@@ -2,6 +2,7 @@
 void poweroff();
 void* filesearch(void*, int);
 void* tasksearch(void*, int);
+int processcreate(void* file, void* args);
 //
 void* originsearch(void*, int);
 void* bootupsearch(void*, int);
@@ -102,6 +103,14 @@ void term_memory(int argc, u8** argv)
 
 	printmemory((void*)addr, len);
 }
+void term_file(int argc, u8** argv)
+{
+	filesearch(0, 0);
+}
+void term_proc(int argc, u8** argv)
+{
+	processcreate(argv[1], 0);
+}
 
 
 
@@ -126,6 +135,8 @@ int termwrite(u8* buf, int len)
 	else if(0 == ncmp(buf, "poweroff", 8))poweroff();
 	else if(0 == ncmp(buf, "mmio", 4))term_mmio(j, argv);
 	else if(0 == ncmp(buf, "memory", 5))term_memory(j, argv);
+	else if(0 == ncmp(buf, "file", 4))term_file(j, argv);
+	else if(0 == ncmp(buf, "proc", 4))term_proc(j, argv);
 	else if(0 == ncmp(buf, "origin", 6))originmodify(j, argv);
 	else if(0 == ncmp(buf, "bootup", 6))bootupmodify(j, argv);
 	else if(0 == ncmp(buf, "device", 6))devicemodify(j, argv);

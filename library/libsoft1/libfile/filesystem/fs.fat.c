@@ -3,6 +3,47 @@
 
 
 
+struct BPB_FAT{
+	u8     BS_jmpBoot[3];	//00: 跳转指令
+	u8     BS_OEMName[8];	//03: 原始制造商
+	u8   byte_per_sec[2];	//0b: 每扇区字节数
+	u8      sec_per_clus; 	//0d: 每簇扇区数
+	u8    sec_of_fat0[2];	//0e: 保留扇区数目
+	u8       BPB_NumFATs; 	//10: 此卷中FAT表数
+	u8 BPB_RootEntCnt[2];	//11: FAT32为0
+	u8   BPB_TotSec16[2]; 	//13: FAT32为0
+	u8         BPB_Media;	//15: 存储介质
+	u8    sec_per_fat[2];	//16: FAT32为0
+	u8  BPB_SecPerTrk[2];	//18: 磁道扇区数
+	u8   BPB_NumHeads[2];	//1a: 磁头数
+	u8    BPB_HiddSec[4]; 	//1c: FAT区前隐扇区数
+	u8   BPB_TotSec32[4];	//20: 该卷总扇区数
+};
+struct BPB_FAT16{
+	struct BPB_FAT common;
+	u8 BS_drvNum;
+	u8 BS_Reserved1;
+	u8 BS_BootSig;
+	u8 BS_VolID[4];
+	u8 BS_VolLab[11];
+	u8 BS_FileSysType[8];
+};
+struct BPB_FAT32{
+	struct BPB_FAT common;
+	u8    sec_per_fat[4]; 	//24: 一个FAT表扇区数
+	u8   BPB_ExtFlags[2];	//28: FAT32特有
+	u8      BPB_FSVer[2];	//2a: FAT32特有
+	u8   BPB_RootClus[4];	//2c: 根目录簇号
+	u8         FSInfo[2];	//30: 保留扇区FSINFO扇区数
+	u8  BPB_BkBootSec[2];	//32: 通常为6
+	u8  BPB_Reserved[12];	//34: 扩展用
+	u8         BS_DrvNum;	//40: BIOS驱动器号
+	u8      BS_Reserved1;	//41: 未使用
+	u8        BS_BootSig;	//42: 扩展引导标记
+	u8       BS_VolID[4];	//43: 卷序列号
+	u8 BS_FilSysType[11];	//47: offset:71
+	u8 BS_FilSysType1[8];	//52: "FAT32   "
+};
 struct folder{
 	u8 name_this[8];	//0x00-0x07：文件名，不足8个字节0x20补全(短文件名8.3命名规则)
 	u8 name_ext[3];		//0x08-0x0A：扩展名
@@ -28,18 +69,38 @@ struct folder{
 
 
 
-struct perfs{
-	//@[1m,2m)
-	u8 dirhome[0x100000];
 
-	//@[512k,1m)
-	u8 xxxhome[0x80000];
+struct dirnode{
+	char* name;		//dir path
+	char* data;		//folder content
+};
+struct filenode{
+	char* name;		//file path
+	int curroffs;	//current position
+};
+struct perfs{
+	//@[1m,2m): todo: filenodes
+	u8 datahome[0x100000];
+
+	//@[512k,1m): todo: dirtree
+	u8 dirhome[0x80000];
 
 	//@[256k,512k)
 	u8 fatbuffer[0x40000];
 
 	//@[128k,256k)
 	u8 pbrbuffer[0x20000];
+
+	//file index
+	int fd_cnt;
+
+	//dir index
+	void* dir_root;
+	int dir_cnt;
+
+	//fat cache
+	u64 cache_first;
+	int cache_count;
 
 	//basic info
 	int version;
@@ -48,11 +109,7 @@ struct perfs{
 	int sec_per_clus;
 	int sec_of_fat0;
 	int sec_of_clus2;		//2号簇所在扇区
-
-	//fat cache
-	u64 cache_first;
-	int cache_count;
-};
+}__attribute__((packed));
 
 
 
@@ -246,6 +303,7 @@ static int fat32_read(struct artery* art, int ign, u64 clus,int offs, u8* buf,in
 	}
 
 	while(1){
+		if(cnt == len)goto retcnt;
 		if(cnt + byteperclus > len)break;
 
 		//read this cluster
@@ -285,7 +343,8 @@ int fat_checkname(char* name, u8* fatname)
 	int j;
 	u8 a,b;
 	for(j=0;j<8;j++){
-		if(0 == name[j])break;
+		if(0xd >= name[j])break;
+		if('/' == name[j])break;
 
 		a = name[j];
 		if(a >= 'a')a -= 0x20;
@@ -297,26 +356,26 @@ int fat_checkname(char* name, u8* fatname)
 	}
 	return 0;
 }
-u32 fat_ls(struct artery* art, char* name)
+u32 fat_searchfolder(u8* ptr, char* name)
 {
-	int j;
+	int j,k;
 	struct folder* dir;
 	if(0 == name)return 2;
 
-	struct perfs* per = art->buf0;
-	if(32 == per->version){
-		for(j=0;j<0x1000;j+=0x20){
-			dir = (void*)(per->dirhome+j);
-			//printmemory(dir, 0x20);
+	for(j=0;j<0x1000;j+=0x20){
+		dir = (void*)(ptr+j);
+		//printmemory(dir, 0x20);
 
-			if(0x0f == dir->attr)continue;	//longname
-			if(0xe5 == dir->name_this[0])continue;	//deleted
-			if(0x00 == dir->name_this[0])continue;	//have name
-			if(0 == (dir->attr&0x10))continue;
+		if(0x0f == dir->attr)continue;	//longname
+		if(0xe5 == dir->name_this[0])continue;	//deleted
+		if(0x00 == dir->name_this[0])continue;	//have name
+		//if(0 == (dir->attr&0x10))continue;
 
-			if(0 == fat_checkname(name, dir->name_this))
-			return (dir->clus_hi16<<16) + dir->clus_lo16;
-		}
+		k = fat_checkname(name, dir->name_this);
+		//say("@@@@@@k=%d\n",k);
+		if(0 != k)continue;
+
+		return (dir->clus_hi16<<16) + dir->clus_lo16;
 	}
 	return 0;
 }
@@ -324,88 +383,64 @@ int fat_cd(struct artery* art, char* name)
 {
 	int ret;
 	u32 clus;
-	struct perfs* per = art->buf0;
-	u8* dirhome = per->dirhome;
+	struct perfs* per;
+	u8* dirhome;
+
+	per = art->buf0;
+	if(0 == per)return 0;
+
+	dirhome = per->dirhome;
+
 	if(16 == per->version){
-		if(0 == name){
-			ret = fat16_read(art,0, 2,0, dirhome, 0x4000);
-			parsefolder(art, dirhome);
-		}
-		else{
-			clus = fat_ls(art, name);
-			if(0 == clus)return 0;
+		clus = fat_searchfolder(dirhome, name);
+		if(0 == clus)return 0;
 
-			ret = fat16_read(art,0, clus,0, dirhome+0x10000, 0x10000);
-			if(ret <= 0)return 0;
+		ret = fat16_read(art,0, clus,0, dirhome, 0x10000);
+		if(ret <= 0)return 0;
 
-			//printmemory(dirhome+0x10000, 0x200);
-			parsefolder(art, dirhome+0x10000);
-		}
+		//printmemory(dirhome, 0x200);
+		parsefolder(art, dirhome);
 	}
 	if(32 == per->version){
-		if(0 == name){
-			ret = fat32_read(art,0, 2,0, dirhome, 0x4000);
-			parsefolder(art, dirhome);
-		}
-		else{
-			clus = fat_ls(art, name);
-			if(0 == clus)return 0;
+		clus = fat_searchfolder(dirhome, name);
+		if(0 == clus)return 0;
 
-			ret = fat32_read(art,0, clus,0, dirhome+0x10000, 0x10000);
-			if(ret <= 0)return 0;
+		ret = fat32_read(art,0, clus,0, dirhome, 0x10000);
+		if(ret <= 0)return 0;
 
-			//printmemory(dirhome+0x10000, 0x200);
-			parsefolder(art, dirhome+0x10000);
-		}
+		//printmemory(dirhome, 0x200);
+		parsefolder(art, dirhome);
 	}
 
 	return 0;
+}
+u32 fat_name2clus(struct artery* art, char* name)
+{
+	u32 ret = 0;
+	int j,k=0,depth=0;
+
+	struct perfs* per = art->buf0;
+	if(0 == per)return 0;
+
+	for(j=0;j<256;j++){
+		if(0xd >= name[j]){
+			ret = fat_searchfolder(per->dirhome, name+k);
+			break;
+		}
+		if('/' == name[j]){
+			if(j==k)fat_cd(art, 0);
+			else fat_cd(art, name+k);
+			k = j+1;
+			depth++;
+		}
+	}
+	say("depth=%d\n",depth);
+	return ret;
 }
 
 
 
 
-struct BPB_FAT{
-	u8     BS_jmpBoot[3];	//00: 跳转指令
-	u8     BS_OEMName[8];	//03: 原始制造商
-	u8   byte_per_sec[2];	//0b: 每扇区字节数
-	u8      sec_per_clus; 	//0d: 每簇扇区数
-	u8    sec_of_fat0[2];	//0e: 保留扇区数目
-	u8       BPB_NumFATs; 	//10: 此卷中FAT表数
-	u8 BPB_RootEntCnt[2];	//11: FAT32为0
-	u8   BPB_TotSec16[2]; 	//13: FAT32为0
-	u8         BPB_Media;	//15: 存储介质
-	u8    sec_per_fat[2];	//16: FAT32为0
-	u8  BPB_SecPerTrk[2];	//18: 磁道扇区数
-	u8   BPB_NumHeads[2];	//1a: 磁头数
-	u8    BPB_HiddSec[4]; 	//1c: FAT区前隐扇区数
-	u8   BPB_TotSec32[4];	//20: 该卷总扇区数
-};
-struct BPB_FAT16{
-	struct BPB_FAT common;
-	u8 BS_drvNum;
-	u8 BS_Reserved1;
-	u8 BS_BootSig;
-	u8 BS_VolID[4];
-	u8 BS_VolLab[11];
-	u8 BS_FileSysType[8];
-};
-struct BPB_FAT32{
-	struct BPB_FAT common;
-	u8    sec_per_fat[4]; 	//24: 一个FAT表扇区数
-	u8   BPB_ExtFlags[2];	//28: FAT32特有
-	u8      BPB_FSVer[2];	//2a: FAT32特有
-	u8   BPB_RootClus[4];	//2c: 根目录簇号
-	u8         FSInfo[2];	//30: 保留扇区FSINFO扇区数
-	u8  BPB_BkBootSec[2];	//32: 通常为6
-	u8  BPB_Reserved[12];	//34: 扩展用
-	u8         BS_DrvNum;	//40: BIOS驱动器号
-	u8      BS_Reserved1;	//41: 未使用
-	u8        BS_BootSig;	//42: 扩展引导标记
-	u8       BS_VolID[4];	//43: 卷序列号
-	u8 BS_FilSysType[11];	//47: offset:71
-	u8 BS_FilSysType1[8];	//52: "FAT32   "
-};
 int fat_check(u8* addr)
 {
 	int tmp;
@@ -487,8 +522,19 @@ int fat_parse(struct artery* art, u8* addr)
 int fatclient_ontake(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {
 	say("@fatclient_ontake\n");
+	if(0 == foot){
+		fat_cd(art, 0);
+		return 0;
+	}
 
-	fat_cd(art, 0);
+	u32 clus = fat_name2clus(art,foot);
+	say("name=%s,fat=%x\n",foot, clus);
+	if(0 == clus){
+		say("wrong file\n");
+		return 0;
+	}
+
+	fat32_read(art,0, clus,0, buf,len);
 	return 0;
 }
 int fatclient_ongive(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)

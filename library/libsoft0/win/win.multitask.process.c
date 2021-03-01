@@ -93,8 +93,22 @@ void processwrite()
 
 
 
-void processcreate()
+void processcreate(void* file, void* args)
 {
+/*
+BOOL CreateProcess(
+LPCTSTR lpApplicationName,
+LPTSTR lpCommandLine,
+LPSECURITY_ATTRIBUTES lpProcessAttributes,
+LPSECURITY_ATTRIBUTES lpThreadAttributes,
+BOOL bInheritHandles,
+DWORD dwCreationFlags,
+LPVOID lpEnvironment,
+LPCTSTR lpCurrentDirectory,
+LPSTARTUPINFO lpStartupInfo,
+LPPROCESS_INFORMATIONlpProcessInformation
+);
+*/
 }
 void processdelete()
 {

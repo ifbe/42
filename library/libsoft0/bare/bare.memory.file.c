@@ -101,6 +101,15 @@ int filemanager_registersupplier(void* node, void* foot)
 
 int readfile(void* obj, int fd, void* arg, int off, u8* buf, int len)
 {
+	struct artery* p;
+	//void* q;
+
+	p = fsysnode[0];
+	if(0 == p)return 0;
+	if(0 == p->ontaking)return 0;
+
+	//q = fsysfoot[0];
+	p->ontaking((void*)p,obj, 0,0, 0,0, buf,len);
 	return 0;
 }
 int writefile(void* obj, int fd, void* arg, int off, u8* buf, int len)

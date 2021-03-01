@@ -8,7 +8,7 @@ void freeprocess()
 
 
 
-int processcreate()
+int processcreate(void* file, void* args)
 {
 	return 0;
 }

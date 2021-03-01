@@ -47,7 +47,7 @@ struct saved_pagetable{
 struct saved_vmcb{
 }__attribute__((packed));
 
-struct taskstate{
+struct threadstate{
 	volatile u32           count;
 	volatile u32           state;	//0 = disable, n = normal
 	volatile int    BindToCoreId;	//-1 = any, 0 to n = processor id
@@ -64,7 +64,7 @@ struct taskstate{
 static volatile void* cpubuffer = 0;
 static volatile int cpucount = 0;
 //
-static volatile struct taskstate* percputasktable[8];
+static volatile struct threadstate* percputasktable[8];
 static volatile int percputaskcount[8];
 
 
@@ -106,8 +106,8 @@ u64 threadcreate(void* code, void* arg)
 	if(that < 0)return 0;
 
 	int taskcount = percputaskcount[that];
-	volatile struct taskstate* tasktable = percputasktable[that];
-	volatile struct taskstate* task = &tasktable[taskcount];
+	volatile struct threadstate* tasktable = percputasktable[that];
+	volatile struct threadstate* task = &tasktable[taskcount];
 
 	task->cpureg.ip = (u64)code;
 	task->cpureg.cs = 0x10;
@@ -136,7 +136,7 @@ int threaddelete(u64 id)
 int tasksearch(void* buf, int len)
 {
 	int j,k;
-	volatile struct taskstate* tasktable;
+	volatile struct threadstate* tasktable;
 	say("@tasksearch\n");
 	say("%p,%p,%d\n", percputasktable, percputaskcount,cpucount);
 
@@ -165,7 +165,7 @@ int schedulethread_findtable(int coreid)
 	}
 	return -1;
 }
-int schedulethread_findcurr(volatile struct taskstate* tasktable, int taskcount, int coreid)
+int schedulethread_findcurr(volatile struct threadstate* tasktable, int taskcount, int coreid)
 {
 	int j=0;
 	for(j=0;j<taskcount;j++){
@@ -175,7 +175,7 @@ int schedulethread_findcurr(volatile struct taskstate* tasktable, int taskcount,
 	}
 	return -1;
 }
-int schedulethread_findnext(volatile struct taskstate* tasktable, int taskcount, int icurr)
+int schedulethread_findnext(volatile struct threadstate* tasktable, int taskcount, int icurr)
 {
 	//0: next = 0
 	if(0 == (tasktable[0].count&0xff))return 0;
@@ -198,7 +198,7 @@ int schedulethread_findnext(volatile struct taskstate* tasktable, int taskcount,
 	}
 	return -1;
 }
-void schedulethread_savecurr(volatile struct taskstate* pcurr, u64* cputmp, int coreid)
+void schedulethread_savecurr(volatile struct threadstate* pcurr, u64* cputmp, int coreid)
 {
 	int j;
 	u64* cpubuf = (void*)&pcurr->cpureg;
@@ -207,7 +207,7 @@ void schedulethread_savecurr(volatile struct taskstate* pcurr, u64* cputmp, int 
 	u64 fpubuf = (u64)&pcurr->fpureg;
 	fpu_fxsave((fpubuf+0x40) - (fpubuf&0x3f));
 }
-void schedulethread_loadnext(volatile struct taskstate* pnext, u64* cputmp, int coreid)
+void schedulethread_loadnext(volatile struct threadstate* pnext, u64* cputmp, int coreid)
 {
 	int j;
 
@@ -229,7 +229,7 @@ void schedulethread(struct saved_cpureg* cpureg)
 	int itable = schedulethread_findtable(coreid);
 	if(itable < 0)return;
 
-	volatile struct taskstate* tasktable = percputasktable[itable];
+	volatile struct threadstate* tasktable = percputasktable[itable];
 	int taskcount = percputaskcount[itable];
 
 	tasktable[0].count += 1;
@@ -256,9 +256,9 @@ void threadmanager_registersupplier(int coreid)
 {
 	say("incoming thread: from coreid=%d\n", coreid);
 
-	volatile struct taskstate* tasktable = cpubuffer + 0x10000*cpucount;
+	volatile struct threadstate* tasktable = cpubuffer + 0x10000*cpucount;
 
-	volatile struct taskstate* task = &tasktable[0];
+	volatile struct threadstate* task = &tasktable[0];
 
 	task->cpureg.ip = 0x5a5a5a5a;
 	task->cpureg.cs = 0x10;
