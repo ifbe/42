@@ -27,39 +27,35 @@ void freeprocess()
 
 
 
-void processsearch()
+int processsearch()
 {
-	//只需列出进程名字和编号
-	HANDLE temp;
-	temp = CreateToolhelp32Snapshot(0x2,0x0);
-	if(temp==INVALID_HANDLE_VALUE){
-		return;
+	HANDLE snap;
+	snap = CreateToolhelp32Snapshot(0x2,0x0);
+	if(INVALID_HANDLE_VALUE == snap){
+		return 1;
 	}
 
 	//
 	PROCESSENTRY32 proc;
 	proc.dwSize = sizeof(PROCESSENTRY32);
-
-	//找位置，跟在后面
-	char* p=(char*)memoryinfo;
-	int i=0;
-	while(1)
-	{
-		if( p[i] == 0 )break;
-		else i+=0x100;
+	if (!Process32First(snap, &proc)){
+		CloseHandle(snap);
+		return 1;
 	}
 
 	//写内容
-	printf("%-40s%-20s\n","proc.szExeFile","proc.th32ProcessID");
-	while( Process32Next(temp,&proc) )
-	{
-		printf("%-40s%d\n",proc.szExeFile,proc.th32ProcessID);
-		sprintf((char*)memoryinfo+i,"%-40s%d\n",proc.szExeFile,proc.th32ProcessID);
-		i+=0x100;
-		if(i>0x100*100)break;
-	}
-	CloseHandle(temp);
-	return;
+	printf("procid  parent  cntthr  name\n");
+	do{
+		printf("%-8d%-8d%-8d%-40s\n",
+			proc.th32ProcessID,
+			proc.th32ParentProcessID,
+			proc.cntThreads,
+			proc.szExeFile
+		);
+	}while( Process32Next(snap, &proc) );
+
+	CloseHandle(snap);
+	return 0;
 }
 
 
