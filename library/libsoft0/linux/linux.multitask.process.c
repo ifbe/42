@@ -37,3 +37,12 @@ int processdelete()
 {
 	return 0;
 }
+
+
+
+
+int processsearch(void* buf, int len)
+{
+	printf("@procsearch\n");
+	return 0;
+}

@@ -1,7 +1,11 @@
 #include "libboot.h"
 void poweroff();
+//
 void* filesearch(void*, int);
+//
 void* tasksearch(void*, int);
+//
+int processsearch(void* buf, int len);
 int processcreate(void* file, void* args);
 //
 void* originsearch(void*, int);
@@ -72,8 +76,6 @@ void term_ls(u8* buf, int len)
 	else if(0 == ncmp(buf, "artery", 6))arterysearch(0, 0);
 	else if(0 == ncmp(buf, "supply", 6))supplysearch(0, 0);
 	else if(0 == ncmp(buf, "entity", 6))entitysearch(0, 0);
-	else if(0 == ncmp(buf, "file", 4))filesearch(0, 0);
-	else if(0 == ncmp(buf, "task", 4))tasksearch(0, 0);
 	else say("ls(%s)\n", buf);
 }
 void term_mmio(int argc, u8** argv)
@@ -105,11 +107,16 @@ void term_memory(int argc, u8** argv)
 }
 void term_file(int argc, u8** argv)
 {
-	filesearch(0, 0);
+	if(argc <= 1)filesearch(0, 0);
+}
+void term_task(int argc, u8** argv)
+{
+	if(argc <= 1)tasksearch(0, 0);
 }
 void term_proc(int argc, u8** argv)
 {
-	processcreate(argv[1], 0);
+	if(argc <= 1)processsearch(0, 0);
+	else processcreate(argv[1], 0);
 }
 
 
@@ -136,6 +143,7 @@ int termwrite(u8* buf, int len)
 	else if(0 == ncmp(buf, "mmio", 4))term_mmio(j, argv);
 	else if(0 == ncmp(buf, "memory", 5))term_memory(j, argv);
 	else if(0 == ncmp(buf, "file", 4))term_file(j, argv);
+	else if(0 == ncmp(buf, "task", 4))term_task(j, argv);
 	else if(0 == ncmp(buf, "proc", 4))term_proc(j, argv);
 	else if(0 == ncmp(buf, "origin", 6))originmodify(j, argv);
 	else if(0 == ncmp(buf, "bootup", 6))bootupmodify(j, argv);
