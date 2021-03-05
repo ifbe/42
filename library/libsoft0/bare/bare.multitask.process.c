@@ -1,4 +1,5 @@
 #include "libsoft.h"
+int parse_pe(void* pe, int len);
 
 
 
@@ -17,7 +18,7 @@ int processsearch(void* buf, int len)
 {
 	int j;
 	for(j=0;j<8;j++){
-		say("%d:cr3=%p,code=%p,path=%p\n", table[j].cr3, table[j].code, table[j].path);
+		say("%d:cr3=%p,code=%p,path=%p\n", j, table[j].cr3, table[j].code, table[j].path);
 	}
 	return 0;
 }
@@ -28,7 +29,12 @@ u64 processcreate(void* file, void* args)
 
 	void* p = (void*)table[0].code;
 	int ret = readfile(file,0, 0,0, p,0x10000);
+
 	printmemory(p, 0x100);
+	parse_pe(p, 0x10000);
+
+	//pagetable_makeuser(cr3, 0x100000, 0xffffffff00000000, len, p, len);
+
 	return 0;
 }
 void processdelete(u64 h)

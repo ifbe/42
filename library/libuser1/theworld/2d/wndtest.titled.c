@@ -78,6 +78,33 @@ void* wndmgr_find_hit(struct supply* wnd, int x, int y)
 	}
 	return rel;
 }
+void* wndmgr_find_close(struct supply* wnd, int x, int y)
+{
+	struct style* sty = 0;
+	struct relation* rel = wnd->oreln;
+
+	//find max_w
+	while(1){
+		if(0 == rel)break;
+
+		if(_ent_ == rel->dsttype){
+			sty = (void*)(rel->srcfoot);
+			if(sty){
+				//say("%d,%d, %f,%f,%f,%f\n",x,y,sty->fs.vc[0],sty->fs.vc[1],sty->fs.vr[0],sty->fs.vf[1]);
+				if(	(x > sty->fs.vc[0] - sty->fs.vr[0]) &&
+					(x < sty->fs.vc[0] - sty->fs.vr[0] + 16) &&
+					(y > sty->fs.vc[1] - sty->fs.vf[1] - 16) &&
+					(y < sty->fs.vc[1] - sty->fs.vf[1]) )
+				{
+					return rel;
+				}
+			}
+		}
+
+		rel = samesrcprevdst(rel);
+	}
+	return rel;
+}
 
 
 
@@ -163,7 +190,7 @@ int wndmgr_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, voi
 	struct relation* the = wndmgr_find_maxw(wnd);
 
 	struct event* ev = buf;
-	if(0x4070 == ev->what){
+	if('p' == (ev->what&0xff)){
 		short* pp = (short*)ev;
 		wnd->ix0 += pp[0];
 		if(wnd->ix0 < 0)wnd->ix0 = 0;
@@ -172,7 +199,24 @@ int wndmgr_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, voi
 		wnd->iy0 += pp[1];
 		if(wnd->iy0 < 0)wnd->iy0 = 0;
 		if(wnd->iy0 >= wnd->height)wnd->iy0 = wnd->height-1;
-
+	}
+	if(0x2b70 == ev->what){
+		hit = wndmgr_find_close(wnd, wnd->ix0, wnd->iy0);
+		//say("the=%p,hit=%p\n",the,hit);
+		if(hit){
+			struct style* tmp = (void*)(hit->srcfoot);
+			tmp->fs.vr[0] /= 2;
+			tmp->fs.vr[1] /= 2;
+			tmp->fs.vf[0] /= 2;
+			tmp->fs.vf[1] /= 2;
+		}
+		return 0;
+	}
+	if(0x2d70 == ev->what){
+		say("mouse up\n");
+		return 0;
+	}
+	if(0x4070 == ev->what){
 		hit = wndmgr_find_hit(wnd, wnd->ix0, wnd->iy0);
 		//say("the=%p,hit=%p\n",the,hit);
 		if(hit && the && (hit != the)){

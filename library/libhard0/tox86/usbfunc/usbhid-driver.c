@@ -161,9 +161,9 @@ struct report_keyboard{
 	u8 keys[6];
 }__attribute__((packed));
 //
-#define MOUSE_LEFTBUTTON
-#define MOUSE_RIGHTBUTTON
-#define MOUSE_MIDDLEBUTTON
+//#define MOUSE_LEFTBUTTON
+//#define MOUSE_RIGHTBUTTON
+//#define MOUSE_MIDDLEBUTTON
 struct report_mouse{
 	u8 btn;
 	char dx;
@@ -258,12 +258,18 @@ static int parsekeyboard(struct report_keyboard* report)
 }
 static int parsemouse(struct report_mouse* report)
 {
+	u64 type;
+	short xx[4];
 	//say("[usbmouse]btn=%x,dx=%d,dy=%d\n", report->btn, report->dx, report->dy);
 
-	short xx[4];
+	type = 0x4070;
+	if(report->btn){
+		type = 0x2b70;
+	}
+
 	xx[0] = report->dx;
 	xx[1] = report->dy;
-	eventwrite(*(u64*)xx, 0x4070, 0, 0);
+	eventwrite(*(u64*)xx, type, 0, 0);
 	return 0;
 }
 static int usbhid_ongive(struct item* usb,int xxx, struct item* xhci,int endp, void* sbuf,int slen, void* rbuf,int rlen)

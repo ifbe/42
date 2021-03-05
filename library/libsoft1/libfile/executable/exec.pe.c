@@ -293,6 +293,27 @@ dir->delayimportaddr, dir->delayimportsize
 
 	return imagebase;
 }
+
+
+
+
+int check_pe(u8* addr)
+{
+	u32 temp;
+
+	//[0,1]:'M','Z'
+	temp=*(u16*)addr;
+	if(temp!=0x5a4d)return 0;
+
+	//[0x3c,0x3f]:	=0x40,=0xf0,=0x?
+	temp=*(u32*)(addr+0x3c);
+	if(temp>=0xffc)return 0;
+
+	temp=*(u32*)(addr+temp);
+	if(temp!=0x4550)return 0;
+
+	return 64;
+}
 int parse_pe(void* pe, int len)
 {
 	u64 base;
@@ -301,6 +322,7 @@ int parse_pe(void* pe, int len)
 	struct mz* mz;
 	struct pe* nt;
 	struct sectab* sec;
+	if(0 == check_pe(pe))return 0;
 
 //------------mz head-------------
 	mz = pe;
@@ -331,25 +353,4 @@ int parse_pe(void* pe, int len)
 		);
 	}
 	return 0;
-}
-
-
-
-
-int check_pe(u8* addr)
-{
-	u32 temp;
-
-	//[0,1]:'M','Z'
-	temp=*(u16*)addr;
-	if(temp!=0x5a4d)return 0;
-
-	//[0x3c,0x3f]:	=0x40,=0xf0,=0x?
-	temp=*(u32*)(addr+0x3c);
-	if(temp>=0xffc)return 0;
-
-	temp=*(u32*)(addr+temp);
-	if(temp!=0x4550)return 0;
-
-	return 64;
 }
