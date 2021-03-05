@@ -198,12 +198,20 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 	threadcreate(kernel_drawloop, wrk);
 	threadcreate(kernel_pollloop, wrk);
 
-	//fall back
+	//check if thread ok, wait at most 10s
 	u64 haha = 1;
+	u64 curr;
 	u64 time = timeread();
-	while(1){		//wait at most 10s
+	while(1){
 		if((0 != heartbeat_draw)&&(0 != heartbeat_poll))break;
-		if(timeread() > time + haha*1000*1000){
+
+		curr = timeread();
+		if(0 == curr){
+			haha = 100;
+			break;
+		}
+
+		if(curr > time + haha*1000*1000){
 			if(0 == heartbeat_draw){
 				say("drawloop: thread fail(%ds/10s)\n", haha);
 			}
@@ -212,11 +220,13 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 			}
 
 			haha += 1;
-			if(haha > 10){		//still fail after 10s
-				say("bspcpu: run into stupid mode\n");
-				kernel_failloop(wrk);
-			}
 		}
+	}
+
+	//still fail after 10s
+	if(haha > 10){
+		say("bspcpu: run into stupid mode\n");
+		kernel_failloop(wrk);
 	}
 
 	//everything ok

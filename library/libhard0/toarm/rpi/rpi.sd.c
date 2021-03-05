@@ -2,6 +2,7 @@
 void* mmiobase();
 void wait_msec(int);
 void wait_cycles(int);
+void filemanager_registersupplier(void*,void*);
 
 
 
@@ -298,11 +299,23 @@ int sd_clk(unsigned int f)
 
 
 
+static int sdcard_ontake(struct item* xhci, void* foot, void* stack, int sp, void* arg, int idx, void* buf, int len)
+{
+	return sd_readblock(0, idx>>9, buf, len>>9);
+}
+static int sdcard_ongive(struct item* xhci, void* foot, void* stack, int sp, void* arg, int idx, void* buf, int len)
+{
+	return 0;
+}
+
+
+
+
 int freesdcard()
 {
 	return 0;
 }
-int initsdcard()
+int initsdcard(struct item* dev)
 {
 	say("@initsdcard\n");
 
@@ -434,8 +447,8 @@ int initsdcard()
 	sd_scr[0] &= ~SCR_SUPP_CCS;
 	sd_scr[0] |= ccs;
 
-	u8 test[512];
-	sd_readblock(0, 0, test, 1);
-	printmemory(test, 512);
+	dev->ontaking = (void*)sdcard_ontake;
+	dev->ongiving = (void*)sdcard_ongive;
+	filemanager_registersupplier(dev, 0);
 	return SD_OK;
 }

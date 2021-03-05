@@ -2,8 +2,8 @@
 void* getdtb();
 void parsedevmap_dtb();
 //
-void initsystmr();
-void initsdcard();
+void initsystmr(void*);
+void initsdcard(void*);
 
 
 
@@ -38,9 +38,9 @@ void inithardware()
 
 	//timer
 	p = devicecreate(_tmr_, 0, 0, 0);
-	initsystmr();
+	initsystmr(p);
 
 	//sdcard
 	p = devicecreate(_mmc_, 0, 0, 0);
-	initsdcard();
+	initsdcard(p);
 }
