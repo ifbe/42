@@ -14,9 +14,9 @@
 %define BSPCPU_IDT (BSPCPU+0x2000)
 
 ;%define PML1ADDR unused	;pt
-%define PML2ADDR 0x40000	;pd
-%define PML3ADDR 0x7e000	;pdp
-%define PML4ADDR 0x7f000	;pml4
+%define PML2ADDR 0x42000	;pd
+%define PML3ADDR 0x41000	;pdp
+%define PML4ADDR 0x40000	;pml4
 
 %define TEMPGDTR 0x800
 %define TEMPIDTR 0x900

@@ -11,14 +11,17 @@
 #define Noexecute (1<<63)
 //[0x40000, 0x80000)
 #define PAGEHOME 0x40000
-#define PDIRADDR PAGEHOME
-#define PDPTADDR (PAGEHOME+0x3e000)
-#define PML4ADDR (PAGEHOME+0x3f000)
-#define COUNT (64-2)
+#define GIGACOUNT (64-2)
+//
+#define PML4OFFS 0x00000
+#define PDPTOFFS 0x01000
+#define PDIROFFS 0x02000
+#define PDPTUSER 0x40000
+#define PDIRUSER 0x41000
 
 
 
-u64 pagetable_virt2phys(u64 va)
+u64 pagetable_virt2phys(u64 cr3, u64 va)
 {
 	//bit48to63 must be signed extension of bit47
 	u64 bit47_63 = (va>>47)&0x1ffff;
@@ -27,7 +30,7 @@ u64 pagetable_virt2phys(u64 va)
 	}
 
 	//search pml4
-	u64* pml4 = (u64*)PML4ADDR;
+	u64* pml4 = (u64*)cr3;
 	u64 bit39_47 = (va>>39)&0x1ff;
 	u64 val4 = pml4[bit39_47];
 	if(0 == (val4 & 1)){
@@ -66,17 +69,11 @@ u64 pagetable_virt2phys(u64 va)
 
 
 
-void pagetable_makeuser(u64* buf, int len, u64 va, int vlen, u64 pa, int plen)
-{
-	//copy kern
-	//whereis va, *where = pa | Allowuser | Writable | Present;
-}
-void pagetable_makekern()
+void pagetable_makekern(u8* buf, int len)
 {
 	//clear memory
 	u64 j;
-	u8* buf = (u8*)PAGEHOME;
-	for(j=0;j<0x40000;j++)buf[j] = 0;
+	for(j=0;j<len;j++)buf[j] = 0;
 
 
 	//page table: unused
@@ -84,38 +81,63 @@ void pagetable_makekern()
 
 	//page directory: waste 0x1000*62 B, means 62 GB
 	//realaddr8B_per_item, 512item_per_table, 62table_we_used
-	u64* pdir = (u64*)PDIRADDR;
-	for(j=0;j<512*COUNT;j++)pdir[j] = ((j<<21) + 0) | Isleaf | Writable | Present;
+	u64* pdir = (u64*)(buf+PDIROFFS);
+	for(j=0;j<512*GIGACOUNT;j++)pdir[j] = ((j<<21) + 0) | Isleaf | Writable | Present;
 
 
 	//page directory pointer: waste 0x1000 B, actually 62*8 B
 	//pdiraddr8B_per_item, 512item_per_table, 1table_cant_less
-	u64* pdpt = (u64*)PDPTADDR;
-	for(j=0;j<COUNT;j++)pdpt[j] = ((j<<12) + (u64)pdir) | Writable | Present;
+	u64* pdpt = (u64*)(buf+PDPTOFFS);
+	for(j=0;j<GIGACOUNT;j++)pdpt[j] = ((j<<12) + (u64)pdir) | Writable | Present;
 
 
 	//page map level 4: waste 0x1000 B, actually 8B
 	//pdptaddr8B_per_item, 512item_per_table, 1table_cant_less
-	u64* pml4 = (u64*)PML4ADDR;
+	u64* pml4 = (u64*)(buf+PML4OFFS);
 	pml4[0] = (u64)pdpt | Writable | Present;
+}
+void pagetable_makeuser(u8* buf, int len, u64 va, int vlen, u64 pa, int plen)
+{
+	pagetable_makekern(buf, 0x40000);
+
+	//copy kern
+	//whereis va, *where = pa | Allowuser | Writable | Present;
+
+	u64* pdir = (u64*)(buf+PDIRUSER);
+	pdir[511] = 0 | Isleaf | Allowuser | Writable | Present;
+
+	//page directory pointer: waste 0x1000 B, actually 62*8 B
+	//pdiraddr8B_per_item, 512item_per_table, 1table_cant_less
+	u64* pdpt = (u64*)(buf+PDPTUSER);
+	pdpt[511] = (u64)pdir | Allowuser | Writable | Present;
+
+	//page map level 4: waste 0x1000 B, actually 8B
+	//pdptaddr8B_per_item, 512item_per_table, 1table_cant_less
+	u64* pml4 = (u64*)(buf+PML4OFFS);
+	pml4[511] = (u64)pdpt | Writable | Present;
 }
 
 
 
 
-void pagetable_use()
+void pagetable_use(u8* cr3)
 {
 	//write cr3
 	asm __volatile__(
-		"mov $0x7f000, %rax\n"
-		"mov %rax, %cr3\n"
+		"mov %0, %%rax\n"
+		"mov %%rax, %%cr3\n"
+		:
+		:"m"(cr3)
 	);
 }
 void initpaging()
 {
 	say("@initpaging\n");
 
-	pagetable_makekern();
+	pagetable_makekern((u8*)PAGEHOME, 0x40000);
+	//pagetable_makeuser((u8*)PAGEHOME, 0x42000, 0,0, 0,0);
 
-	pagetable_use();
+	pagetable_use((u8*)PAGEHOME);
+
+	//printmemory((u8*)0xffffffffffe00000, 0x100);
 }
