@@ -345,7 +345,7 @@ NSLog(@"setup");
 	passdesc.depthAttachment.clearDepth = 1.0;
 	passdesc.colorAttachments[0].loadAction = MTLLoadActionClear;
 	passdesc.colorAttachments[0].clearColor = MTLClearColorMake(0.5, 0.5, 0.5, 1.0);
-
+/*
 	// Encode render command.
 	id <MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:passdesc];
 	[encoder setViewport:vp];
@@ -355,6 +355,10 @@ NSLog(@"setup");
 	[encoder setVertexBuffer:_vertexBuffer offset:0 atIndex:MeshVertexBuffer];
 	[encoder setVertexBuffer:_uniformBuffer offset:0 atIndex:FrameUniformBuffer];
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
+	[encoder endEncoding];
+*/
+	//clear color
+	id <MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:passdesc];
 	[encoder endEncoding];
 }
 - (void)drawone:(id <MTLCommandBuffer>)commandBuffer data:(struct mt20data*)mt
@@ -558,7 +562,7 @@ int fullwindow_taking(struct supply* wnd,void* foot, struct halfrel* stack,int s
 			stack[sp+1].pfoot = rel->pdstfoot;
 			//stack[sp+1].type = rel->dsttype;
 			stack[sp+1].flag = rel->dstflag;
-			entity_take((struct entity*)rel->pdstchip, rel->dstflag, stack,sp+2, 0,'v', 0, 0);
+			entity_take((struct entity*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
 		}
 
 		//give
@@ -580,7 +584,7 @@ int fullwindow_giving(struct supply* wnd,void* foot, struct halfrel* stack,int s
 
 
 
-void windowread(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_take(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	fullwindow_taking(wnd,foot, stack,sp, arg,key, buf,len);
 
@@ -614,7 +618,7 @@ void windowread(struct supply* wnd,void* foot, struct halfrel* stack,int sp, voi
 		[NSApp sendEvent:event];
 	}
 }
-void windowwrite(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
+void window_give(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 void windowlist()

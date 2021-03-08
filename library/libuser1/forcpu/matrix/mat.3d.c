@@ -1,4 +1,5 @@
 #include "libuser.h"
+void printmat4(void*);
 void world2view_rh2lh(mat4 m, struct fstyle* s);
 void view2world_lh2rh(mat4 m, struct fstyle* s);
 //
@@ -138,13 +139,28 @@ void frustum2viewandclip_transpose(struct fstyle* frus, mat4 w2v, mat4 w2c)
 
 
 
+/*
+void testmats(struct fstyle* frus)
+{
+	mat4 m;
+	mat4 n;
 
+	view2world_lh2rh(m, frus);
+	world2view_rh2lh(n, frus);
+	mat4_multiply(n,m);
+	printmat4(n);
+
+	clip2view_projz0z1(m, frus);
+	view2clip_projz0z1(n, frus);
+	mat4_multiply(n,m);
+	printmat4(n);
+}*/
 void worldxyzfromareauv(vec3 vec, struct fstyle* frus)
 {
 	vec4 t;
 	t[0] = vec[0]*2.0 - 1.0;
 	t[1] = vec[1]*2.0 - 1.0;
-	t[2] = 0.5;
+	t[2] = 0.9;
 	//say("%f,%f\n",xyz[0],xyz[1]);
 
 	mat4 m;

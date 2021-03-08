@@ -51,7 +51,7 @@ static int clickray_intersect(struct entity* handler,void* foot,
 	struct halfrel* junk[2];
 	ret = relationsearch(handler, _tar_, &junk[0], &junk[1]);
 	if(ret <= 0)return 0;
-//say("%f,%f,%f->%f,%f,%f\n", ray[0][0],ray[0][1],ray[0][2], ray[1][0],ray[1][1],ray[1][2]);
+//say("(%f,%f,%f)->(%f,%f,%f)\n", ray[0][0],ray[0][1],ray[0][2], ray[1][0],ray[1][1],ray[1][2]);
 
 	struct entity* scene = junk[1]->pchip;
 	if(0 == scene)return 0;
@@ -110,6 +110,19 @@ int clickray_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx,
 }
 int clickray_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len)
 {
+//[-4,-3]: wnd,area -> cam,togl
+//[-2,-1]: cam,evto -> this,bycam
+	struct entity* cam = stack[sp-2].pchip;
+	struct style* xxxx = stack[sp-2].pfoot;
+	struct entity* wnd = stack[sp-4].pchip;
+	struct style* area = stack[sp-4].pfoot;
+say("%.8s->%.8s->%.8s\n",&wnd->fmt, &cam->fmt, &ent->fmt);
+/*	switch(wnd->fmt){
+	case _gl41full_:
+	case _dx11full_:
+	case _mt20full_:
+	}
+*/
 	struct event* ev = buf;
 	if(0x2d70 == ev->what){		//mouse up
 		ent->iw0 = 0;
@@ -121,17 +134,10 @@ int clickray_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx,
 	if('p' == (ev->what&0xff)){
 		if(0 == ent->iw0)return 0;
 
-//[-4,-3]: wnd,area -> cam,togl
-//[-2,-1]: cam,evto -> this,bycam
 		int ret;
 		vec3 xyz;
 		vec3 ray[2];
 		vec3 out[2];
-		struct entity* cam = stack[sp-2].pchip;
-		struct style* xxxx = stack[sp-2].pfoot;
-		struct entity* wnd = stack[sp-4].pchip;
-		struct style* area = stack[sp-4].pfoot;
-//say("%.8s,%.8s,%.8s\n",&wnd->type, &act->type, &wrd->type);
 
 		//screen to ndc
 		ret = gl41data_convert(wnd, area, ev, xyz);

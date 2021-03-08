@@ -135,7 +135,7 @@ void clip2view_projznzp(mat4 mat, struct fstyle* sty)
 	mat[2][0] = 0.0;
 	mat[2][1] = 0.0;
 	mat[2][2] = 0.0;
-	mat[2][3] = -1.0;
+	mat[2][3] = 1.0;
 
 	mat[3][0] = 0.0;
 	mat[3][1] = 0.0;
@@ -200,7 +200,7 @@ void clip2view_projz0z1(mat4 mat, struct fstyle* sty)
 	mat[2][0] = 0.0;
 	mat[2][1] = 0.0;
 	mat[2][2] = 0.0;
-	mat[2][3] = -1.0;
+	mat[2][3] = 1.0;
 
 	mat[3][0] = 0.0;
 	mat[3][1] = 0.0;

@@ -1,3 +1,8 @@
+#include "libsoft.h"
+
+
+
+
 void initprocess()
 {
 }
@@ -22,6 +27,6 @@ int processdelete()
 
 int processsearch(void* buf, int len)
 {
-	printf("@procsearch\n");
+	say("@procsearch\n");
 	return 0;
 }
