@@ -6,6 +6,10 @@ void left2048(void*);
 void right2048(void*);
 void up2048(void*);
 void down2048(void*);
+void gl41data_before(struct entity* wnd);
+void gl41data_after(struct entity* wnd);
+void gl41data_nocam(struct entity* wnd);
+void gl41data_01cam(struct entity* wnd);
 void dx11solid_rect(struct entity* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 
 
@@ -169,6 +173,21 @@ static void the2048_draw_dx11(
 		}
 	}
 }*/
+static void the2048_draw_gl41_nocam(
+	struct entity* act, struct style* part,
+	struct entity* wnd, struct style* area)
+{
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
+
+	gl41data_before(wnd);
+	gl41data_01cam(wnd);
+	gl41solid_rect(wnd, 0x00ff00, fs.vc, fs.vr, fs.vf);
+	gl41data_after(wnd);
+}
 static void the2048_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -401,18 +420,26 @@ static void the2048_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* a
 static void the2048_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@the2048_read\n");
-	struct entity* wnd;struct style* area;
-	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
+	switch(caller->fmt){
 	case _tui_:
-		the2048_draw_tui(ent,slot, wnd,area);
+		the2048_draw_tui(ent,slot, caller,area);
 		break;
 	case _rgba_:
-		the2048_draw_pixel(ent,slot, wnd,area);
+		the2048_draw_pixel(ent,slot, caller,area);
 		break;
 	case _htmlroot_:
-		the2048_draw_html(ent,slot, wnd,area);
+		the2048_draw_html(ent,slot, caller,area);
+		break;
+	case _gl41full_:
+		the2048_draw_gl41_nocam(ent,slot, caller,area);
+		break;
+	case _dx11full_:
+	case _mt20full_:
+	case _vk12full_:
+		say("caller@%p\n", caller);
 		break;
 	default:
 		the2048_read_bycam(ent,slot, stack,sp, arg,key);

@@ -45,6 +45,56 @@ int cmp(void*, void*);
 
 
 
+#define _2048_ hex32('2','0','4','8')
+#define _vkbd_ hex32('v','k','b','d')
+void* allocstyle();
+u64 u64fromstr(char* buf)
+{
+	int j;
+	u8 tmp[8] = {0};
+
+	for(j=0;j<8;j++){
+		if(buf[j] <= 0x20)break;
+		tmp[j] = buf[j];
+	}
+	return *(u64*)tmp;
+}
+void term_show(int argc, u8** argv)
+{
+	u64 type = _2048_;
+	if(argc > 1)type = u64fromstr(argv[1]);
+
+	struct supply* wnd = supplycreate(_wnd_, 0, 0, 0);
+	if(0 == wnd)return;
+
+	struct entity* ent = entitycreate(type, 0, 0, 0);
+	if(0 == ent)return;
+
+	struct style* toterm = allocstyle();
+	if(_gl41full_ == wnd->fmt){
+		toterm->fshape.vc[0] = 0.0;
+		toterm->fshape.vc[1] = 0.0;
+		toterm->fshape.vq[0] = 1.0;
+		toterm->fshape.vq[1] = 1.0;
+	}
+	else{
+		toterm->fshape.vc[0] = wnd->width/2;
+		toterm->fshape.vc[1] = wnd->height/2;
+		toterm->fshape.vc[2] = 0;
+		toterm->fshape.vc[3] = 9999.0;
+		toterm->fshape.vr[0] = wnd->width/2;
+		toterm->fshape.vr[1] = 0;
+		toterm->fshape.vr[2] = 0.0;
+		toterm->fshape.vf[0] = 0;
+		toterm->fshape.vf[1] = wnd->height/2;
+		toterm->fshape.vf[2] = 0.0;
+	}
+
+	struct style* termfoot = allocstyle();
+
+	struct relation* rel = relationcreate(ent,termfoot, _ent_,0, wnd,toterm, _sup_,0);
+	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);
+}
 void term_ls(u8* buf, int len)
 {
 	if(buf[3] <= 0x20)
@@ -145,6 +195,7 @@ int termwrite(u8* buf, int len)
 	else if(0 == ncmp(buf, "file", 4))term_file(j, argv);
 	else if(0 == ncmp(buf, "task", 4))term_task(j, argv);
 	else if(0 == ncmp(buf, "proc", 4))term_proc(j, argv);
+	else if(0 == ncmp(buf, "show", 4))term_show(j, argv);
 	else if(0 == ncmp(buf, "origin", 6))originmodify(j, argv);
 	else if(0 == ncmp(buf, "bootup", 6))bootupmodify(j, argv);
 	else if(0 == ncmp(buf, "device", 6))devicemodify(j, argv);

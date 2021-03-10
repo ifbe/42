@@ -100,6 +100,7 @@ void fullwindow_upload(struct gl41data** cam, struct gl41data** lit, struct gl41
 
 	//light
 	for(j=0;j<1;j++){
+		if(0 == lit[j])break;
 		update_onedraw(&lit[j]->dst, &lit[j]->src);
 	}
 
