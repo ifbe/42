@@ -1,5 +1,8 @@
 <entity>
-weiqi{
+weiqi1{
+fmt:weiqi
+}
+weiqi2{
 fmt:weiqi
 }
 scene{
@@ -31,13 +34,22 @@ depth:1024
 
 
 <style>
-skyhaha{
+haha1{
 }
-skygeom{
-c: 0.0, 0.0, 0.0
-r: 1000.0, 0.0, 0.0
-f: 0.0, 1000.0, 0.0
-t: 0.0, 0.0, 1000.0
+geom1{
+c:-500.0, 0.0, 0.0
+r: 500.0, 0.0, 0.0
+f: 0.0, 500.0, 0.0
+t: 0.0, 0.0, 20.0
+}
+
+haha2{
+}
+geom2{
+c: 500.0, 0.0, 0.0
+r: 500.0, 0.0, 0.0
+f: 0.0, 500.0, 0.0
+t: 0.0, 0.0, 20.0
 }
 
 freemodl{
@@ -62,12 +74,14 @@ q:1.0, 1.0
 
 
 <relation>
-#scene depends on
-(scene, skygeom, 0) -> (weiqi, skyhaha, 0)
+#scene space
+(scene, geom1, 0) -> (weiqi1, haha1, 0)
+(scene, geom2, 0) -> (weiqi2, haha2, 0)
+#world space
 (virtual, 0, 0) -> (scene, 0, 0)
 (virtual, freegeom, 0) -> (freecam, freemodl, 0)
+#window
 (opengl, freerect, mvp) -> (freecam, 0, 0)
-
 #click
 (event, 0, cam) -> (freecam, 0, evto)
 (event, 0, tar) -> (scene, 0, ray)

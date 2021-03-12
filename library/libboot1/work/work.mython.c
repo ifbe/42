@@ -48,7 +48,7 @@ int cmp(void*, void*);
 #define _2048_ hex32('2','0','4','8')
 #define _vkbd_ hex32('v','k','b','d')
 void* allocstyle();
-u64 u64fromstr(char* buf)
+u64 u64fromstr(u8* buf)
 {
 	int j;
 	u8 tmp[8] = {0};
@@ -59,13 +59,13 @@ u64 u64fromstr(char* buf)
 	}
 	return *(u64*)tmp;
 }
-void term_show(int argc, u8** argv)
+void term_window(int argc, u8** argv)
 {
-	u64 type = _2048_;
-	if(argc > 1)type = u64fromstr(argv[1]);
-
 	struct supply* wnd = supplycreate(_wnd_, 0, 0, 0);
 	if(0 == wnd)return;
+	if(argc <=1)return;
+
+	u64 type = u64fromstr(argv[1]);
 
 	struct entity* ent = entitycreate(type, 0, 0, 0);
 	if(0 == ent)return;
@@ -195,7 +195,7 @@ int termwrite(u8* buf, int len)
 	else if(0 == ncmp(buf, "file", 4))term_file(j, argv);
 	else if(0 == ncmp(buf, "task", 4))term_task(j, argv);
 	else if(0 == ncmp(buf, "proc", 4))term_proc(j, argv);
-	else if(0 == ncmp(buf, "show", 4))term_show(j, argv);
+	else if(0 == ncmp(buf, "window", 6))term_window(j, argv);
 	else if(0 == ncmp(buf, "origin", 6))originmodify(j, argv);
 	else if(0 == ncmp(buf, "bootup", 6))bootupmodify(j, argv);
 	else if(0 == ncmp(buf, "device", 6))devicemodify(j, argv);

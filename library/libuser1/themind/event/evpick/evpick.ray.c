@@ -48,12 +48,12 @@ static int clickray_intersect(struct entity* handler,void* foot,
 	struct halfrel* stack,int sp, vec3 ray[], vec3 out[])
 {
 	int ret;
-	struct halfrel* junk[2];
-	ret = relationsearch(handler, _tar_, &junk[0], &junk[1]);
+	struct halfrel* totar[2];
+	ret = relationsearch(handler, _tar_, &totar[0], &totar[1]);
 	if(ret <= 0)return 0;
 //say("(%f,%f,%f)->(%f,%f,%f)\n", ray[0][0],ray[0][1],ray[0][2], ray[1][0],ray[1][1],ray[1][2]);
 
-	struct entity* scene = junk[1]->pchip;
+	struct entity* scene = totar[1]->pchip;
 	if(0 == scene)return 0;
 
 	struct relation* rel = scene->orel0;
@@ -62,18 +62,19 @@ static int clickray_intersect(struct entity* handler,void* foot,
 
 		ret = obb_ray(rel->psrcfoot, ray, out);
 		if(ret){
-			stack[sp+0].pchip = rel->psrcchip;
-			stack[sp+0].pfoot = rel->psrcfoot;
-			stack[sp+0].flag = rel->srcflag;
-			stack[sp+1].pchip = rel->pdstchip;
-			stack[sp+1].pfoot = rel->pdstfoot;
-			stack[sp+1].flag = rel->dstflag;
+			//tell that world
+			stack[sp+0].pchip = totar[0]->pchip;
+			stack[sp+0].pfoot = totar[0]->pfoot;stack[sp+0].flag = totar[0]->flag;
+			stack[sp+1].pchip = totar[1]->pchip;
+			stack[sp+1].pfoot = totar[1]->pfoot;stack[sp+1].flag = totar[1]->flag;
+			entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, rel, 0, ray, 0);
 			return 1;
 		}
 		rel = samesrcnextdst(rel);
 	}
 
 	say("clickray_send: miss\n");
+	entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, 0, 0, ray, 0);
 	return 0;
 }
 
@@ -150,9 +151,6 @@ say("%.8s->%.8s->%.8s\n",&wnd->fmt, &cam->fmt, &ent->fmt);
 		//intersect test
 		ret = clickray_intersect(ent,foot, stack,sp, ray,out);
 		if(ret <= 0)return 0;
-
-		//send
-		entity_give(stack[sp+1].pchip, stack[sp+1].pfoot, stack,sp+2, stack[sp].pfoot, 0, ray, 0);
 	}
 	return 0;
 }

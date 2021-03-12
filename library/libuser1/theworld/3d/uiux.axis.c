@@ -59,19 +59,19 @@ void axis3d_draw_gl41(struct entity* scene, struct entity* wnd)
 }
 int axis3d_read_bycam(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key)
 {
-	if(stack && ('v' == key)){
-		struct halfrel* aa[2];
-		int ret = relationsearch(ent, _tar_, &aa[0], &aa[1]);
-		if(ret <= 0)return 0;
+	if(0 == stack)return 0;
 
-		struct entity* tar = aa[1]->pchip;
-		if(0 == tar)return 0;
+	struct halfrel* aa[2];
+	int ret = relationsearch(ent, _tar_, &aa[0], &aa[1]);
+	if(ret <= 0)return 0;
 
-		struct entity* wnd = stack[sp-6].pchip;
-		if(0 == wnd)return 0;
+	struct entity* tar = aa[1]->pchip;
+	if(0 == tar)return 0;
 
-		axis3d_draw_gl41(tar, wnd);
-	}
+	struct entity* wnd = stack[sp-6].pchip;
+	if(0 == wnd)return 0;
+
+	axis3d_draw_gl41(tar, wnd);
 	return 0;
 }
 

@@ -4,12 +4,12 @@ int ray_plane(vec3 ray[], vec3 rect[], vec3 out);
 
 
 
-static int px, py, turn;
-
-
-
-
-static u8 data[19][19];
+struct perweiqi{
+	u8 data[19][19];
+	int px;
+	int py;
+	int turn;
+};
 int weiqi_import(char* file, u8* buf)
 {
 	int x,y,j;
@@ -47,6 +47,8 @@ static void weiqi_draw_pixel(
 {
 	u32 c;
 	int x, y, cx, cy, ww, hh;
+	struct perweiqi* per = act->buf0;
+
 	if(sty)
 	{
 		cx = sty->fs.vc[0];
@@ -94,8 +96,8 @@ static void weiqi_draw_pixel(
 	{
 		for(x=-9;x<=9;x++)
 		{
-			if(data[y+9][x+9] == 'b')c = 0x444444;
-			else if(data[y+9][x+9] == 'w')c = 0xffffff;
+			if(per->data[y+9][x+9] == 'b')c = 0x444444;
+			else if(per->data[y+9][x+9] == 'w')c = 0xffffff;
 			else continue;
 
 			drawsolid_circle(
@@ -120,15 +122,15 @@ static void weiqi_draw_gl41(
 	float* vf = geom->fs.vf;
 	float* vt = geom->fs.vt;
 	for(j=0;j<3;j++){
-		tu[j] = vt[j]/16;
-		tc[j] = vc[j] - tu[j];
+		tu[j] = vt[j]/2;
+		tc[j] = vc[j] - tu[j];	//bottom half is chessboard
 	}
 	gl41solid_prism4(ctx, 0xf9d65b, tc, vr, vf, tu);
 
 	for(y=-9;y<10;y++)
 	{
 		for(j=0;j<3;j++){
-			tc[j] = vc[j] - vr[j]*(18.0/19.0) + vf[j]*(y*2.0/19.0) + vt[j]/100.0;
+			tc[j] = vc[j] - vr[j]*(18.0/19.0) + vf[j]*(y*2.0/19.0) + vt[j]/10.0;
 			tr[j] = tc[j] + vr[j]*36.0/19.0;
 		}
 		gl41line(ctx, 0x222222, tc, tr);
@@ -136,7 +138,7 @@ static void weiqi_draw_gl41(
 	for(x=-9;x<10;x++)
 	{
 		for(j=0;j<3;j++){
-			tc[j] = vc[j] + vr[j]*(x*2.0/19.0) - vf[j]*(18.0/19.0) + vt[j]/100.0;
+			tc[j] = vc[j] + vr[j]*(x*2.0/19.0) - vf[j]*(18.0/19.0) + vt[j]/10.0;
 			tr[j] = tc[j] + vf[j]*36.0/19.0;
 		}
 		gl41line(ctx, 0x222222, tc, tr);
@@ -148,7 +150,7 @@ static void weiqi_draw_gl41(
 	}
 	for(y=-6;y<=6;y+=6){
 		for(x=-6;x<=6;x+=6){
-			for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*x*2/19 + vf[j]*y*2/19+vt[j]/100.0;
+			for(j=0;j<3;j++)tc[j] = vc[j] + vr[j]*x*2/19 + vf[j]*y*2/19+vt[j]/10.0;
 			gl41solid_circle(ctx,0, tc,tr,tf);
 		}
 	}
@@ -156,9 +158,10 @@ static void weiqi_draw_gl41(
 	u8* data = act->buf0;
 	k = 0;
 	for(j=0;j<3;j++){
+		tc[j] = vc[j] + vt[j]/2;
 		tr[j] = vr[j]/19;
 		tf[j] = vf[j]/19;
-		tu[j] = vt[j]/19/2;
+		tu[j] = vt[j]/2;
 	}
 	for(y=-9;y<10;y++)
 	{
@@ -189,6 +192,7 @@ static void weiqi_draw_html(
 	struct entity* win, struct style* sty)
 {
 	int x,y;
+	struct perweiqi* per = win->buf0;
 
 	//<head>
 	htmlprintf(win, 1,
@@ -204,7 +208,7 @@ static void weiqi_draw_html(
 		{
 			htmlprintf(win, 2,
 				"<div class=\"wqfg\">%d</div>\n",
-				data[y][x]
+				per->data[y][x]
 			);
 		}//forx
 	}//fory
@@ -217,7 +221,8 @@ static void weiqi_draw_tui(
 	int x,y,j,k,ret,color;
 	int width = win->width;
 	int height = win->height;
-	u8* p = (u8*)(win->buf0);
+	struct perweiqi* per = win->buf0;
+	u8* p = win->buf0;
 
 	for(y=0;y<19;y++)
 	{
@@ -228,9 +233,9 @@ static void weiqi_draw_tui(
 			ret <<= 2;
 
 			//color
-			if( (px == x) && (py == y) )color = 7;
-			else if(data[y][x] == 'b')color = 4;
-			else if(data[y][x] == 'w')color = 1;
+			if( (per->px == x) && (per->py == y) )color = 7;
+			else if(per->data[y][x] == 'b')color = 4;
+			else if(per->data[y][x] == 'w')color = 1;
 			else continue;
 
 			//
@@ -294,7 +299,7 @@ int weiqi_forbid(int x, int y, u8 c)
 */
 	return 0;
 }
-void weiqi_putone(vec3 v)
+void weiqi_putone(struct perweiqi* per, vec3 v)
 {
 	int x = 19*v[0];
 	int y = 19*(1.0-v[1]);
@@ -305,16 +310,16 @@ void weiqi_putone(vec3 v)
 	if(y<0)return;
 	if(y>18)return;
 
-	if(0 != data[y][x])return;
-	if(turn&1){
+	if(0 != per->data[y][x])return;
+	if(per->turn&1){
 		if(weiqi_forbid(x,y,'w'))return;
-		data[y][x] = 'w';
-		turn++;
+		per->data[y][x] = 'w';
+		per->turn++;
 	}
 	else{
 		if(weiqi_forbid(x,y,'b'))return;
-		data[y][x] = 'b';
-		turn++;
+		per->data[y][x] = 'b';
+		per->turn++;
 	}
 }
 void weiqi_intersect(float* out, vec3 ray[], struct fstyle* sty)
@@ -348,24 +353,22 @@ void weiqi_intersect(float* out, vec3 ray[], struct fstyle* sty)
 
 
 
-static void weiqi_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void weiqi_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		weiqi_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
+	if(0 == stack)return;
+
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	weiqi_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
 static void weiqi_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wor;struct style* geom;
-	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	struct entity* caller;struct style* geom;
+	caller = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 
-	switch(wor->type){
+	switch(caller->type){
 	case _scene3d_:
 	case _reality_:{
 		vec3* ray = buf;
@@ -375,7 +378,7 @@ static void weiqi_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int
 */
 		float out[3];
 		weiqi_intersect(out, ray, &geom->fs);
-		weiqi_putone(out);
+		weiqi_putone(ent->buf0, out);
 		break;
 	}
 	}
@@ -385,8 +388,6 @@ static void weiqi_discon(struct halfrel* self, struct halfrel* peer)
 }
 static void weiqi_linkup(struct halfrel* self, struct halfrel* peer)
 {
-	turn = 0;
-	px = py = 0;
 }
 
 
@@ -405,23 +406,23 @@ static void weiqi_delete(struct entity* act)
 }
 static void weiqi_create(struct entity* act, void* str)
 {
-	int ret;
-	u8* buf;
 	if(0 == act)return;
 
-	if(_orig_ == act->type)buf = (void*)data;
-	if(_copy_ == act->type)buf = memorycreate(19*19, 0);
+	u8* buf = memorycreate(sizeof(struct perweiqi), 0);
+	act->buf0 = buf;
+	if(0 == buf)return;
+
+	struct perweiqi* per = act->buf0;
+	per->px = per->py = 0;
+	per->turn = 0;
 
 	//read
-	ret = 0;
+	int ret = 0;
 	if(str)ret = weiqi_import(str, buf);
 	if((0==str)|(ret<=0)){for(ret=0;ret<19*19;ret++)buf[ret] = 0;}
 
 	//print
 	for(ret=0;ret<19*19;ret+=19)printmemory(buf+ret, 19);
-
-	//success
-	act->buf0 = buf;
 }
 
 
