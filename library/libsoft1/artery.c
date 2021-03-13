@@ -16,18 +16,22 @@
 #define _Nema0183_ hex64('N','e','m','a','0','1','8','3')
 //
 #define _control_ hex64('c','o','n','t','r','o','l', 0)
+#define _crawler_ hex64('c','r','a','w','l','e','r', 0)
 #define _search_ hex64('s','e','a','r','c','h', 0, 0)
 #define _vt100_ hex64('v','t','1','0','0', 0, 0, 0)
 //
 #define _fftpcm_ hex64('f','f','t','p','c','m',0,0)
 #define _fftrgb_ hex64('f','f','t','r','g','b',0,0)
+//
+#define _img2pbr_ hex64('i','m','g','2','p','b','r',0)
 #define _rotate_ hex64('r','o','t','a','t','e',0,0)
+//
+#define _pump_ hex32('p','u','m','p')
+#define _stor_ hex32('s','t','o','r')
 //
 #define _easymux_ hex64('e','a','s','y','m','u','x',0)
 #define _mediamux_ hex64('m','e','d','i','a','m','u','x')
 #define _echo_ hex32('e','c','h','o')
-#define _pump_ hex32('p','u','m','p')
-#define _stor_ hex32('s','t','o','r')
 #define _goslow_ hex64('g','o','s','l','o','w',0,0)
 #define _dbgf32_ hex64('d','b','g','f','3','2',0,0)
 #define _dbghex_ hex64('d','b','g','h','e','x',0,0)
@@ -38,7 +42,6 @@
 //
 #define _qu2eu_ hex64('q','u','2','e','u',0,0,0)
 #define _str2vec_ hex64('s','t','r','2','v','e','c',0)
-#define _img2pbr_ hex64('i','m','g','2','p','b','r',0)
 //
 #define _easyag_  hex64('e','a','s','y','a','g', 0 , 0 )
 #define _mahony_  hex64('m','a','h','o','n','y', 0 , 0 )
@@ -82,6 +85,7 @@ int fileauto_linkup(struct halfrel* self, struct halfrel* peer);
 int fileauto_discon(struct halfrel* self, struct halfrel* peer);
 int fileauto_take(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int fileauto_give(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+//
 int mbrclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int mbrclient_delete(struct artery* ele, void* url);
 int mbrclient_linkup(struct halfrel* self, struct halfrel* peer);
@@ -126,6 +130,12 @@ int control_linkup(struct halfrel* self, struct halfrel* peer);
 int control_discon(struct halfrel* self, struct halfrel* peer);
 int control_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int control_read( _art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int crawler_create(struct artery* ele, void* url, int argc, u8** argv);
+int crawler_delete(struct artery* ele, void* url);
+int crawler_linkup(struct halfrel* self, struct halfrel* peer);
+int crawler_discon(struct halfrel* self, struct halfrel* peer);
+int crawler_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+int crawler_read( _art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int search_create(struct artery* ele, void* url, int argc, u8** argv);
 int search_delete(struct artery* ele, void* url);
 int search_linkup(struct halfrel* self, struct halfrel* peer);
@@ -314,6 +324,7 @@ int proxymaster_linkup(struct halfrel* self, struct halfrel* peer);
 int proxymaster_discon(struct halfrel* self, struct halfrel* peer);
 int proxymaster_write(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
 int proxymaster_read( _art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len);
+//
 int socksclient_create(struct artery* ele, void* url, int argc, u8** argv);
 int socksclient_delete(struct artery* ele, void* url);
 int socksclient_linkup(struct halfrel* self, struct halfrel* peer);
@@ -693,6 +704,7 @@ int artery_take(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 	//case _cnn_:cnn_read(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _control_:control_read(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _crawler_:crawler_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _search_:search_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _vt100_:vt100_read(art,foot, stack,sp, arg,idx, buf,len);break;
 
@@ -710,6 +722,8 @@ int artery_take(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 
 	case _fftpcm_:fftpcm_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _fftrgb_:fftrgb_read(art,foot, stack,sp, arg,idx, buf,len);break;
+
+	case _img2pbr_:img2pbr_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _rotate_:rotate_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	//case _scale_: scale_read(art,foot, stack,sp, arg,idx, buf,len);break;
 
@@ -719,7 +733,6 @@ int artery_take(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 
 	case _qu2eu_:qu2eu_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _str2vec_:str2vec_read(art,foot, stack,sp, arg,idx, buf,len);break;
-	case _img2pbr_:img2pbr_read(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _easyag_:easyag_read(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _mahony_:mahony_read(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -807,6 +820,7 @@ int artery_give(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 	//case _cnn_:return cnn_write(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _control_:return control_write(art,foot, stack,sp, arg,idx, buf,len);break;
+	case _crawler_:return crawler_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _search_:return search_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _vt100_:return vt100_write(art,foot, stack,sp, arg,idx, buf,len);break;
 
@@ -824,6 +838,8 @@ int artery_give(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 
 	case _fftpcm_:return fftpcm_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _fftrgb_:return fftrgb_write(art,foot, stack,sp, arg,idx, buf,len);break;
+
+	case _img2pbr_:return img2pbr_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _rotate_:return rotate_write(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _recut_:return recut_write(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -832,7 +848,6 @@ int artery_give(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, vo
 
 	case _qu2eu_:return qu2eu_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _str2vec_:return str2vec_write(art,foot, stack,sp, arg,idx, buf,len);break;
-	case _img2pbr_:return img2pbr_write(art,foot, stack,sp, arg,idx, buf,len);break;
 
 	case _easyag_:return easyag_write(art,foot, stack,sp, arg,idx, buf,len);break;
 	case _mahony_:return mahony_write(art,foot, stack,sp, arg,idx, buf,len);break;
@@ -1094,6 +1109,15 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		control_create(e, url, argc, argv);
 		return e;
 	}
+	if(_crawler_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _crawler_;
+		crawler_create(e, url, argc, argv);
+		return e;
+	}
 	if(_search_ == type)
 	{
 		e = allocartery();
@@ -1160,6 +1184,8 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		fileauto_create(e, url, argc, argv);
 		return e;
 	}
+
+	//part table
 	if(_mbr_ == type)
 	{
 		e = allocartery();
@@ -1294,6 +1320,17 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 		fftrgb_create(e, url, argc, argv);
 		return e;
 	}
+
+	//image
+	if(_img2pbr_ == type)
+	{
+		e = allocartery();
+		if(0 == e)return 0;
+
+		e->type = _img2pbr_;
+		img2pbr_create(e, url, argc, argv);
+		return e;
+	}
 	if(_rotate_ == type)
 	{
 		e = allocartery();
@@ -1350,15 +1387,6 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 
 		e->type = _str2vec_;
 		str2vec_create(e, url, argc, argv);
-		return e;
-	}
-	if(_img2pbr_ == type)
-	{
-		e = allocartery();
-		if(0 == e)return 0;
-
-		e->type = _img2pbr_;
-		img2pbr_create(e, url, argc, argv);
 		return e;
 	}
 
