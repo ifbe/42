@@ -215,18 +215,15 @@ static void fslist_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 
 
 
-static void fslist_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void fslist_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//struct entity* ent = stack[sp-1].pchip;
-	struct style* slot = stack[sp-1].pfoot;
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41full_:{
-		if('v' != key)break;
-		fslist_read_bywnd(ent,slot, wnd,area);break;
-	}
+	case _gl41full_:
+		fslist_read_bywnd(ent,slot, wnd,area);
+		break;
 	}
 }
 static void fslist_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
@@ -237,7 +234,9 @@ static void fslist_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,in
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41full_:fslist_write_bywnd(ent,slot, wnd,area, buf);break;
+	case _gl41full_:
+		fslist_write_bywnd(ent,slot, wnd,area, buf);
+		break;
 	}
 }
 static void fslist_discon(struct halfrel* self, struct halfrel* peer)

@@ -378,15 +378,12 @@ void video_event(
 
 
 
-static void video_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void video_read_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if( 0 == stack)return;
-	if('v'!= key)return;
+	if(0 == stack)return;
 
-	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
@@ -396,13 +393,16 @@ static void video_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg
 }
 static void video_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
-	struct style* sty = stack[sp-2].pfoot;
-	if(_rgba_ == wnd->fmt){
-		video_draw_pixel(ent,0, wnd, sty);
-	}
-	else{
-		video_read_bycam(ent,foot, stack,sp, arg,key);
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+	if(0 == stack)return;
+
+	switch(caller->fmt){
+	case _rgba_:
+		video_draw_pixel(ent,0, caller, area);
+		break;
+	default:
+		video_read_bycam(ent,foot, stack,sp);
 	}
 }
 static void video_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

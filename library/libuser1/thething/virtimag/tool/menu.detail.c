@@ -187,16 +187,43 @@ int detail_draw_pixel(
 
 
 
-static void detail_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void detail_take_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		detail_draw_gl41(ent,slot, wor,geom, wnd,area);
+	if(0 == stack)return;
+
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	detail_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+
+
+
+
+static void detail_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+	if(0 == stack)return;
+
+	switch(caller->fmt){
+	case _tui_:
+		break;
+	case _rgba_:
+		break;
+	case _htmlroot_:
+		break;
+	case _gl41full_:
+		break;
+	case _dx11full_:
+	case _mt20full_:
+	case _vk12full_:
+		say("caller@%p\n", caller);
+		break;
+	default:
+		detail_take_bycam(ent,slot, stack,sp);
+		break;
 	}
 }
 static int detail_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

@@ -216,17 +216,15 @@ static void calculator_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struc
 
 
 
-static void calculator_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void calculator_read_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		calculator_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
+	if(0 == stack)return;
+
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	calculator_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
 static void calculator_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
@@ -245,21 +243,18 @@ static void calculator_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct
 
 
 
-static int calculator_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int calculator_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//struct entity* ent = stack[sp-1].pchip;
-	struct style* slot = stack[sp-1].pfoot;
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41full_:{
-		if('v' != key)break;
-		calculator_read_bywnd(ent,slot, wnd,area);break;
-	}
-	default:{
-		calculator_read_bycam(ent,foot, stack,sp, arg,key);break;
-	}
+	case _gl41full_:
+		calculator_read_bywnd(ent,slot, wnd,area);
+		break;
+	default:
+		calculator_read_bycam(ent,slot, stack,sp);
+		break;
 	}
 	return 0;
 }

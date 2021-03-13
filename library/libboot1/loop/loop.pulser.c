@@ -28,4 +28,5 @@ void pulser_delete(struct item* wrk, u8* arg)
 }
 void pulser_create(struct item* wrk, u8* arg, int argc, u8** argv)
 {
+	say("@pulser_create\n");
 }

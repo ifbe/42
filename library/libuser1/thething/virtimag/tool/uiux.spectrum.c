@@ -83,7 +83,7 @@ static void spectrum_draw_cli(
 
 
 
-void spectrum_data(struct entity* act, int type, void* buf, int len)
+void spectrum_data(struct entity* act, void* type, void* buf, int len)
 {
 	int j,idx;
 	void** tab;
@@ -101,22 +101,36 @@ void spectrum_data(struct entity* act, int type, void* buf, int len)
 
 
 
-static void spectrum_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void spectrum_take_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		spectrum_draw_gl41(ent,slot, wor,geom, wnd,area);
+	if(0 == stack)return;
+
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	spectrum_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+static void spectrum_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+	if(0 == stack)return;
+
+	switch(wnd->fmt){
+	case _gl41full_:
+		break;
+	default:
+		spectrum_take_bycam(ent,slot, stack,sp);
+		break;
 	}
 }
-static void spectrum_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void spectrum_giving(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(_pcm_ == stack[sp-1].flag){
-		spectrum_data(ent, 0, buf, len);
+	switch(stack[sp-1].flag){
+	case _pcm_:
+		spectrum_data(ent,slot, buf,len);
+		break;
 	}
 }
 static void spectrum_discon(struct halfrel* self, struct halfrel* peer)

@@ -1242,19 +1242,18 @@ static void overview_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct 
 
 
 
-static int overview_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int overview_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//struct entity* ent = stack[sp-1].pchip;
-	struct style* slot = stack[sp-1].pfoot;
-	struct entity* wnd = stack[sp-2].pchip;
+	struct entity* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
-	case _gl41full_:{
-		if('v' != key)break;
-		overview_read_bywnd(ent,slot, wnd,area);break;
-	}
-	default:overview_read_bycam(ent,foot, stack,sp, arg,key);break;
+	switch(caller->fmt){
+	case _gl41full_:
+		overview_read_bywnd(ent,slot, caller,area);
+		break;
+	default:
+		overview_read_bycam(ent,slot, stack,sp, arg,key);
+		break;
 	}
 	return 0;
 }
@@ -1266,7 +1265,9 @@ static int overview_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,i
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41full_:overview_write_bywnd(ent,slot, wnd,area, buf);break;
+	case _gl41full_:
+		overview_write_bywnd(ent,slot, wnd,area, buf);
+		break;
 	}
 	return 0;
 }

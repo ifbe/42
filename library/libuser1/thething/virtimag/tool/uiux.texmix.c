@@ -202,17 +202,15 @@ static void texmix_draw_cli(
 
 
 
-static void texmix_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void texmix_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		texmix_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
+	if(0 == stack)return;
+
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	texmix_draw_gl41(ent,slot, wor,geom, wnd,area);
 //say("@freecam_read_byeye.end\n");
 }
 static void texmix_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
@@ -230,20 +228,19 @@ static void texmix_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct sty
 
 
 
-static int texmix_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int texmix_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//struct entity* ent = stack[sp-1].pchip;
-	struct style* slot = stack[sp-1].pfoot;
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
+	if(0 == stack)return 0;
+
 	switch(wnd->fmt){
-	case _gl41full_:{
-		if('v' != key)break;
-		texmix_read_bywnd(ent,slot, wnd,area);break;
-	}
-	default:{
-		texmix_read_bycam(ent,foot, stack,sp, arg,key);break;
-	}
+	case _gl41full_:
+		texmix_read_bywnd(ent,slot, wnd,area);
+		break;
+	default:
+		texmix_read_bycam(ent,slot, stack,sp, arg,key);
+		break;
 	}
 	return 0;
 }

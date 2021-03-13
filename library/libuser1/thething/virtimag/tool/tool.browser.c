@@ -180,8 +180,17 @@ static void browser_data(
 
 
 
-static void browser_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void browser_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(wnd->fmt){
+	case _gl41full_:
+		break;
+	default:
+		break;
+	}
 }
 static void browser_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

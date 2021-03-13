@@ -93,8 +93,26 @@ static void pwmtool_draw_cli(
 
 
 
-static void pwmtool_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pwmtool_take_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 {
+}
+
+
+
+
+static void pwmtool_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(wnd->fmt){
+	case _gl41full_:
+		pwmtool_draw_gl41(ent,slot, wnd,area);
+		break;
+	default:
+		pwmtool_take_bycam(ent,slot, stack,sp);
+		break;
+	}
 }
 static void pwmtool_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

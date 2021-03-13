@@ -44,11 +44,11 @@ url:/dev/i2c-1
 </device>
 
 
-<worker>
+<bootup>
 pulser{
 fmt:pulser
 }
-</worker>
+</bootup>
 
 
 <relation>

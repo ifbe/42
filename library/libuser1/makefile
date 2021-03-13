@@ -362,7 +362,6 @@ thething/virtimag/tool/tool.calculator.c \
 thething/virtimag/tool/tool.browser.c \
 thething/virtimag/tool/menu.detail.c \
 thething/virtimag/tool/tool.sketchpad.c \
-thething/virtimag/tool/tool.editor.c \
 thething/virtimag/tool/uiux.voxel.c \
 thething/virtimag/tool/uiux.texmix.c \
 thething/virtimag/tool/tool.pwmtool.c \

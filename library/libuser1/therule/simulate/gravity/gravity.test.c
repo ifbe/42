@@ -278,7 +278,7 @@ int gravtest_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key,
 }
 int gravtest_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
 {
-	//say("@gravtest_write:%.4s\n",&foot);
+	say("@gravtest_write:%.4s\n",&foot);
 	if(_clk_ == stack[sp-1].flag)gravtest_foreach(ent);
 	if(_ioby_ == stack[sp-1].flag){
 		switch(buf[0]){

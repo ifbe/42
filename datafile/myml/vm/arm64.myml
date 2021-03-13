@@ -19,11 +19,11 @@ fmt:std
 </supply>
 
 
-<worker>
+<bootup>
 pulser{
 fmt:pulser
 }
-</worker>
+</bootup>
 
 
 <relation>
