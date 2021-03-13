@@ -6,11 +6,6 @@ void left2048(void*);
 void right2048(void*);
 void up2048(void*);
 void down2048(void*);
-void gl41data_before(struct entity* wnd);
-void gl41data_after(struct entity* wnd);
-void gl41data_nocam(struct entity* wnd);
-void gl41data_01cam(struct entity* wnd);
-void dx11solid_rect(struct entity* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 
 
 

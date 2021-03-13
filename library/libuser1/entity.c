@@ -181,18 +181,18 @@ int portspace_giving(void*,void*, void*,int, void*,int, void*,int);
 int portspace_taking(void*,void*, void*,int, void*,int, void*,int);
 
 //gl41 helper
-int gl41data_create(void*, void*, int, u8**);
-int gl41data_delete(void*);
+int gl41data_create(_ent*, void*, int, u8**);
+int gl41data_delete(_ent*);
 int gl41data_linkup(void*, void*);
 int gl41data_discon(void*, void*);
-int gl41data_taking(void*,void*, void*,int, void*,int, void*,int);
-int gl41data_giving(void*,void*, void*,int, void*,int, void*,int);
-int gl41coop_create(void*, void*, int, u8**);
-int gl41coop_delete(void*);
+int gl41data_taking(_ent*,void*, _syn*,int, void*,int, void*,int);
+int gl41data_giving(_ent*,void*, _syn*,int, void*,int, void*,int);
+int gl41coop_create(_ent*, void*, int, u8**);
+int gl41coop_delete(_ent*);
 int gl41coop_linkup(void*, void*);
 int gl41coop_discon(void*, void*);
-int gl41coop_taking(void*,void*, void*,int, void*,int, void*,int);
-int gl41coop_giving(void*,void*, void*,int, void*,int, void*,int);
+int gl41coop_taking(_ent*,void*, void*,int, void*,int, void*,int);
+int gl41coop_giving(_ent*,void*, void*,int, void*,int, void*,int);
 
 //event
 int cam1rd_create(void*, void*, int, u8**);

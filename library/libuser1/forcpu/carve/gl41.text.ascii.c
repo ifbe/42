@@ -600,19 +600,20 @@ void gl41text(struct entity* win, u32 rgb,
 
 	k = 0;
 	cnt = 0;
-	for(j=0;j<len;j++){
-		if('\n' > buf[j])break;
-		if('\n' == buf[j]){
+	for(j=0;j<=len;j++){
+		if((j==len) | ('\n' == buf[j])){
 			//say("%.*s\n", j-k, buf+k);
 			gl41string(win, rgb, tc, tr, tf, buf+k, j-k);
 			tc[0] -= tf[0];
 			tc[1] -= tf[1];
 			tc[2] -= tf[2];
+			if(j>=len)break;
 
 			k = j+1;
 			cnt += 1;
 			if(cnt > 64)break;
 		}
+		if('\n' > buf[j])break;
 	}
 }
 void gl41text_reverse(struct entity* win, u32 rgb,

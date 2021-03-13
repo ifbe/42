@@ -1,5 +1,5 @@
 #include "libuser.h"
-#define _soul_ hex32('s','o','u','l')
+#define _mind_ hex32('s','o','u','l')
 #define _sync_ hex32('s','y','n','c')
 #define PICKx ix0
 #define PICKy iy0
@@ -10,8 +10,13 @@ void xiangqi_move(char (*data)[9], int* turn, int px, int py, int x, int y);
 
 
 
-static char data[10][9];
-static int px, py, qx, qy;
+struct perxiangqi{
+	char data[10][9];
+	int px;
+	int py;
+	int qx;
+	int qy;
+};
 int xiangqi_import(u8* buf, u8* str)
 {
 	int x,y,j;
@@ -47,26 +52,26 @@ void xiangqi_copydata(u8* dst, u8* src)
 	int j;
 	for(j=0;j<90;j++)dst[j] = src[j];
 }
-int xiangqi_pickup(int x, int y, int turn)
+int xiangqi_pickup(struct perxiangqi* xq, int x, int y, int turn)
 {
-	if( (x==px) && (y==py) )
+	if( (x==xq->px) && (y==xq->py) )
 	{
-		px = py = -1;
+		xq->px = xq->py = -1;
 		return 1;
 	}
 
 	//chess choosing
-	if( (px<0) | (py<0) | (data[py][px] == 0) )
+	if( (xq->px<0) | (xq->py<0) | (xq->data[xq->py][xq->px] == 0) )
 	{
-		if( (data[y][x]>='a') && (data[y][x]<='z') && ((turn&1) == 0) )
+		if( (xq->data[y][x]>='a') && (xq->data[y][x]<='z') && ((turn&1) == 0) )
 		{
-			px = x;
-			py = y;
+			xq->px = x;
+			xq->py = y;
 		}
-		if( (data[y][x]>='A') && (data[y][x]<='Z') && ((turn&1) == 1) )
+		if( (xq->data[y][x]>='A') && (xq->data[y][x]<='Z') && ((turn&1) == 1) )
 		{
-			px = x;
-			py = y;
+			xq->px = x;
+			xq->py = y;
 		}
 		return 2;
 	}
@@ -82,29 +87,30 @@ void xiangqi_event(
 	u64 key = ev->why;
 	u64 what = ev->what;
 
+	struct perxiangqi* xq = act->buf0;
 	if(what == _kbd_)
 	{
 		if(key == 0x48)	//up
 		{
-			if(qy<1)return;
-			qy--;
+			if(xq->qy<1)return;
+			xq->qy--;
 		}
 		else if(key == 0x4b)	//left
 		{
-			if(qx<1)return;
-			qx--;
+			if(xq->qx<1)return;
+			xq->qx--;
 		}
 		else if(key == 0x4d)	//right
 		{
-			if(qx<0)return;
-			if(qx>=8)return;
-			qx++;
+			if(xq->qx<0)return;
+			if(xq->qx>=8)return;
+			xq->qx++;
 		}
 		else if(key == 0x50)	//down
 		{
-			if(qy<0)return;
-			if(qy>=9)return;
-			qy++;
+			if(xq->qy<0)return;
+			if(xq->qy>=9)return;
+			xq->qy++;
 		}
 	}
 
@@ -112,33 +118,33 @@ void xiangqi_event(
 	{
 		if(key == 0x20)
 		{
-			ret = xiangqi_pickup(qx, qy, act->TURN);
+			ret = xiangqi_pickup(xq, xq->qx, xq->qy, act->TURN);
 			if(ret > 0)return;
 
 			//move?
-			xiangqi_move(data, &act->TURN, px, py, qx, qy);
+			xiangqi_move(xq->data, &act->TURN, xq->px, xq->py, xq->qx, xq->qy);
 		}
 		else if(key == 0x415b1b)
 		{
-			if(qy<1)return;	//up
-			qy--;
+			if(xq->qy<1)return;	//up
+			xq->qy--;
 		}
 		else if(key == 0x425b1b)	//down
 		{
-			if(qy<0)return;
-			if(qy>=9)return;
-			qy++;
+			if(xq->qy<0)return;
+			if(xq->qy>=9)return;
+			xq->qy++;
 		}
 		else if(key == 0x435b1b)	//right
 		{
-			if(qx<0)return;
-			if(qx>=8)return;
-			qx++;
+			if(xq->qx<0)return;
+			if(xq->qx>=8)return;
+			xq->qx++;
 		}
 		else if(key == 0x445b1b)	//left
 		{
-			if(qx<1)return;
-			qx--;
+			if(xq->qx<1)return;
+			xq->qx--;
 		}
 	}
 
@@ -161,12 +167,12 @@ void xiangqi_event(
 		if(y > 9)return;
 
 		//pick?
-		ret = xiangqi_pickup(x, y, act->TURN);
+		ret = xiangqi_pickup(xq, x, y, act->TURN);
 		if(ret > 0)return;
 
 		//move?
-		xiangqi_move(data, &act->TURN, px, py, x, y);
-		px = py = -1;
+		xiangqi_move(xq->data, &act->TURN, xq->px, xq->py, x, y);
+		xq->px = xq->py = -1;
 	}
 }
 
@@ -283,13 +289,15 @@ void xiangqi_draw_pixel(
 		cy + hh*5/10
 	);
 
+	struct perxiangqi* xq = act->buf0;
+
 	//chess
 	for(y=0;y<10;y++)
 	{
 		for(x=0;x<9;x++)
 		{
-			if(*(u8*)pin == 'r')temp = data[y][x];
-			else temp = data[9-y][8-x];
+			if(*(u8*)pin == 'r')temp = xq->data[y][x];
+			else temp = xq->data[9-y][8-x];
 
 			//empty
 			if(temp < 'A')continue;
@@ -300,7 +308,7 @@ void xiangqi_draw_pixel(
 			//>0x61
 			else if(temp <= 'z')fontcolor = red;
 
-			if( (px == x)&&(py == y) )chesscolor = 0xabcdef;
+			if( (xq->px == x)&&(xq->py == y) )chesscolor = 0xabcdef;
 			else chesscolor = brown;
 
 			drawsolid_circle(
@@ -416,6 +424,21 @@ static void xiangqi_dx11draw(
 		}
 	}
 }*/
+static void xiangqi_draw_gl41_nocam(
+	struct entity* act, struct style* part,
+	struct entity* wnd, struct style* area)
+{
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
+
+	gl41data_before(wnd);
+	gl41data_01cam(wnd);
+	gl41solid_rect(wnd, 0x00ff00, fs.vc, fs.vr, fs.vf);
+	gl41data_after(wnd);
+}
 static void xiangqi_gl41draw(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -430,6 +453,7 @@ static void xiangqi_gl41draw(
 	float* vu = geom->fs.vt;
 	gl41solid_rect(ctx, 0x8d6f25, vc, vr, vf);
 
+	struct perxiangqi* xq = act->buf0;
 	for(y=-5;y<5;y++)
 	{
 		f[0] = 8.0/9;
@@ -473,13 +497,13 @@ static void xiangqi_gl41draw(
 		for(x=0;x<9;x++)
 		{
 			//empty
-			if(data[y][x] < 'A')continue;
+			if(xq->data[y][x] < 'A')continue;
 
 			//>0x41
-			else if(data[y][x] <= 'Z')fontcolor = 0;
+			else if(xq->data[y][x] <= 'Z')fontcolor = 0;
 
 			//>0x61
-			else if(data[y][x] <= 'z')fontcolor = 0xff0000;
+			else if(xq->data[y][x] <= 'z')fontcolor = 0xff0000;
 
 			f[0] = (x+x-8)/9.0;
 			f[1] = (y+y-9)/10.0;
@@ -508,20 +532,29 @@ static void xiangqi_gl41draw(
 			tf[0] = vf[0] / 8;
 			tf[1] = vf[1] / 8;
 			tf[2] = vf[2] / 8;
-			gl41utf8_center(ctx, fontcolor, tc, tr, tf, (u8*)char2hanzi(data[y][x]), 0);
+			gl41utf8_center(ctx, fontcolor, tc, tr, tf, (u8*)char2hanzi(xq->data[y][x]), 0);
 		}
 	}
 }
+
+
+
+
 static void xiangqi_draw_json(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 }
+
+
+
+
 static void xiangqi_draw_html(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
 {
 	int x,y;
+	struct perxiangqi* xq = act->buf0;
 
 	//<head>
 	htmlprintf(win, 1,
@@ -537,12 +570,16 @@ static void xiangqi_draw_html(
 		{
 			htmlprintf(win, 2,
 				"<div class=\"xqfg\">%s</div>\n",
-				char2hanzi(data[y][x])
+				char2hanzi(xq->data[y][x])
 			);
 		}//forx
 	}//fory
 	htmlprintf(win, 2, "</div>\n");
 }
+
+
+
+
 static void xiangqi_draw_tui(
 	struct entity* act, struct style* pin,
 	struct entity* win, struct style* sty)
@@ -553,26 +590,27 @@ static void xiangqi_draw_tui(
 	u8* buf = win->textbuf;
 	u8* q;
 
+	struct perxiangqi* xq = act->buf0;
 	for(y=0;y<10;y++)
 	{
 		for(x=0;x<9;x++)
 		{
-			q = char2hanzi(data[y][x]);
+			q = char2hanzi(xq->data[y][x]);
 			if(q == 0)
 			{
-				if(x != qx)continue;
-				if(y != qy)continue;
+				if(x != xq->qx)continue;
+				if(y != xq->qy)continue;
 			}
 
 			//color
-			if( (px==x)&& (py==y) )color = 5;
-			else if( (qx==x)&& (qy==y) )color = 2;
-			else if(data[y][x] >= 'a')color = 1;
+			if( (xq->px==x)&& (xq->py==y) )color = 5;
+			else if( (xq->qx==x)&& (xq->qy==y) )color = 2;
+			else if(xq->data[y][x] >= 'a')color = 1;
 			else color = 4;
 			gentui_rect(win, color, x*6, y*3, x*6+5, y*3+2);
 
 			//character
-			gentui_utf8(win, 0, x*6+2, y*3+1, char2hanzi(data[y][x]), 0);
+			gentui_utf8(win, 0, x*6+2, y*3+1, char2hanzi(xq->data[y][x]), 0);
 		}
 	}
 }
@@ -585,11 +623,11 @@ static void xiangqi_draw_cli(
 
 
 
-static void xiangqi_taking_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void xiangqi_taking_bycam(_ent* ent,void* foot, _syn* stack,int sp)
 {
+	if(0 == stack)return;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -602,17 +640,34 @@ static void xiangqi_taking_bycam(_ent* ent,void* foot, _syn* stack,int sp, void*
 		break;
 	}
 }
-static void xiangqi_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void xiangqi_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	xiangqi_taking_bycam(ent,foot, stack,sp, arg,key);
+	if(0 == stack)return;
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _gl41full_:
+		xiangqi_draw_gl41_nocam(ent,slot, caller,area);
+		break;
+	default:
+		xiangqi_taking_bycam(ent,slot, stack,sp);
+		break;
+	}
 }
 static void xiangqi_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	say("@xiangqi_giving: %p\n", foot);
-	if(_soul_ == stack[sp-1].flag){xiangqi_copydata(ent->buf0, buf);return;}
+	struct perxiangqi* xq = ent->buf0;
 
-	give_data_into_peer(ent,_soul_, stack,sp, 0,0, buf, 16);
-	give_data_into_peer(ent,_sync_, stack,sp, 0,0, ent->buf0, 9*10);
+	switch(stack[sp-1].flag){
+	case _mind_:
+		xiangqi_copydata((u8*)xq->data, buf);
+		return;
+	}
+
+	give_data_into_peer(ent,_mind_, stack,sp, 0,0, buf, 16);	//on event
+	give_data_into_peer(ent,_sync_, stack,sp, 0,0, xq->data, 9*10);	//on change
 }
 static void xiangqi_discon(struct halfrel* self, struct halfrel* peer)
 {
@@ -633,8 +688,7 @@ static void xiangqi_modify(struct entity* act, u8* buf)
 static void xiangqi_delete(struct entity* act, u8* buf)
 {
 	if(0 == act)return;
-	if(0 != act->buf0)
-	{
+	if(act->buf0){
 		memorydelete(act->buf0);
 		act->buf0 = 0;
 	}
@@ -646,8 +700,7 @@ static void xiangqi_create(struct entity* act, void* str)
 	if(0 == act)return;
 say("@xiangqi_create:%llx\n",str);
 
-	if(_orig_ == act->type)buf = data;
-	else if(_copy_ == act->type)buf = memorycreate(10*9, 0);
+	buf = memorycreate(sizeof(struct perxiangqi), 0);
 	act->buf0 = buf;
 
 	if(str)ret = xiangqi_import(buf, str);

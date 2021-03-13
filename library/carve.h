@@ -1,5 +1,14 @@
 #include "struct.h"
 
+
+
+
+//directx
+void dx11data_before(struct entity* wnd);
+void dx11data_after(struct entity* wnd);
+int dx11data_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+
+void dx11solid_rect(struct entity* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 /*
 void dx11point(              struct entity* ctx, u32 rgb, vec3 vc);
 
@@ -28,6 +37,22 @@ void dx11hexadecimal(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec
 */
 
 
+
+
+//metal
+void mt20data_before(struct entity* wnd);
+void mt20data_after(struct entity* wnd);
+int mt20data_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
+
+
+
+
+//opengl
+void gl41data_before(struct entity* wnd);
+void gl41data_after(struct entity* wnd);
+void gl41data_nocam(struct entity* wnd);
+void gl41data_01cam(struct entity* wnd);
+int gl41data_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 
 void gl41point(              struct entity* ctx, u32 rgb, vec3 vc);
 void gl41point_bezier(       struct entity* ctx, u32 rgb, vec3 va, vec3 vb, vec3 vt);

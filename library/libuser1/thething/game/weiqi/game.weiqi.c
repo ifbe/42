@@ -109,6 +109,25 @@ static void weiqi_draw_pixel(
 		}
 	}
 }
+
+
+
+
+static void weiqi_draw_gl41_nocam(
+	struct entity* act, struct style* part,
+	struct entity* wnd, struct style* area)
+{
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
+
+	gl41data_before(wnd);
+	gl41data_01cam(wnd);
+	gl41solid_rect(wnd, 0x00ff00, fs.vc, fs.vr, fs.vf);
+	gl41data_after(wnd);
+}
 static void weiqi_draw_gl41(
 	struct entity* act, struct style* part,
 	struct entity* win, struct style* geom,
@@ -353,15 +372,37 @@ void weiqi_intersect(float* out, vec3 ray[], struct fstyle* sty)
 
 
 
-static void weiqi_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void weiqi_taking_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 {
+	if(0 == stack)return;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(0 == stack)return;
 
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	weiqi_draw_gl41(ent,slot, wor,geom, wnd,area);
+	switch(wnd->fmt){
+	case _dx11full_:
+	case _mt20full_:
+	case _gl41full_:
+	case _vk12full_:
+		weiqi_draw_gl41(ent,slot, wor,geom, wnd,area);
+		break;
+	}
+}
+static void weiqi_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == stack)return;
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _gl41full_:
+		weiqi_draw_gl41_nocam(ent,slot, caller,area);
+		break;
+	default:
+		weiqi_taking_bycam(ent,slot, stack,sp);
+		break;
+	}
 }
 static void weiqi_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

@@ -5,10 +5,6 @@
 #define EVSEND 666666
 void world2clip_orthz0z1_transpose(mat4 mat, struct fstyle* frus);
 void world2clip_orthznzp_transpose(mat4 mat, struct fstyle* frus);
-//
-void gl41data_before(void*);
-void gl41data_after(void*);
-int gl41data_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 
 
 

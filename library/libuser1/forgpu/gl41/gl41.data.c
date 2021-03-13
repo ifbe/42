@@ -71,7 +71,7 @@ void gl41data_01cam(struct entity* wnd)
 	wnd->glfull_camera[0] = data;
 }
 void gl41data_whcam(struct entity* wnd, struct fstyle* area)
-{
+{//left,bot: (-w,-h), right,top: (w,h)
 	int x,y;
 	void* trick = wnd->glfull_camera;
 	struct gl41data* data = trick + 0x400;

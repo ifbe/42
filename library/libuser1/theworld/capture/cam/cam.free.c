@@ -17,18 +17,6 @@ int gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, v
 //cpurender
 void pixel_clearcolor(void*);
 void pixel_cleardepth(void*);
-//directx
-void dx11data_before(void*);
-void dx11data_after(void*);
-int dx11data_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-//opengl
-void gl41data_before(void*);
-void gl41data_after(void*);
-int gl41data_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
-//metal
-void mt20data_before(void*);
-void mt20data_after(void*);
-int mt20data_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 
 
 

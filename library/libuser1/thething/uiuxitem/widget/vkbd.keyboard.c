@@ -1,14 +1,6 @@
 #include "libuser.h"
 void dx11solid_rect(struct entity* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);
 void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, vec3 v);
-//
-void dx11data_before(void*);
-void dx11data_after(void*);
-void dx11data_01cam(void*);
-//
-void gl41data_before(void*);
-void gl41data_after(void*);
-void gl41data_01cam(void*);
 
 
 

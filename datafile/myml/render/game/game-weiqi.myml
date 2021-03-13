@@ -16,7 +16,7 @@ virtual{
 fmt:virtual
 }
 
-event{
+mouse{
 fmt:clickray
 }
 </entity>
@@ -56,9 +56,9 @@ freemodl{
 }
 freegeom{
 c: 0.0, -1000.0, 1200.0
-r: 1000.0, 0.0, 0.0
-f: 0.0, 500.0,-866.0
-t: 0.0, 866.0, 500.0
+r: 100.0, 0.0, 0.0
+f: 0.0, 50.0,-86.6
+t: 0.0, 86.6, 50.0
 L: 0.0, 0.0, 0.0, -1.0
 R: 0.0, 0.0, 0.0, 1.0
 B: 0.0, 0.0, 0.0, -1.0
@@ -83,6 +83,6 @@ q:1.0, 1.0
 #window
 (opengl, freerect, mvp) -> (freecam, 0, 0)
 #click
-(event, 0, cam) -> (freecam, 0, evto)
-(event, 0, tar) -> (scene, 0, ray)
+(mouse, 0, cam) -> (freecam, 0, evto)
+(mouse, 0, tar) -> (scene, 0, ray)
 </relation>

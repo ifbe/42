@@ -1,4 +1,24 @@
 #include "libuser.h"
+void gl41data_before(struct entity* wnd);
+void gl41data_after(struct entity* wnd);
+void gl41data_nocam(struct entity* wnd);
+void gl41data_01cam(struct entity* wnd);
+void gl41data_whcam(struct entity* wnd, struct style* area);
+
+
+
+
+struct httpparsed{
+	u8* GET;
+	u8* POST;
+	u8* Host;
+	u8* Connection;
+	u8* Upgrade;
+	u8* Content_Length;
+	u8* Content_Type;
+	u8* Content;
+	u8* End;
+};
 
 
 
@@ -62,7 +82,7 @@ void foreground_html(struct entity* win)
 
 
 
-int htmlroot_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+int htmlroot_taketext(_ent* ent,void* foot, _syn* stack,int sp)
 {
 	say("@htmlroot_read\n");
 
@@ -82,20 +102,122 @@ int htmlroot_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key,
 		rel = samesrcnextdst(rel);
 	}
 	foreground_html(ent);
-
+	return 0;
+}
+int htmlroot_sendtext(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+{
 	int j;
 	struct str** ctx = ent->htmlctx;
-	for(j=0;j<4;j++)buf[j] = ctx[j];
+
+	struct httpparsed head;
+	head.Content_Length = 0;
+	head.Content_Type = (u8*)"text/html";
+	for(j=0;j<4;j++)head.Content_Length += ctx[j]->len;
+
+	for(j=0;j<4;j++){
+		give_data_into_peer(ent,_src_, stack,sp, &head,j, ctx[j]->buf,ctx[j]->len);
+	}
+	return 0;
+}
+
+
+
+
+int htmlroot_draw_gl41_nocam(
+	struct entity* ent, struct style* part,
+	struct entity* wnd, struct style* area)
+{
+	struct str** ctx = ent->htmlctx;
+
+	float x0 = area->fs.vc[0]*2-1.0;
+	float y0 = area->fs.vc[1]*2-1.0;
+	float xn = area->fs.vq[0]*2-1.0;
+	float yn = area->fs.vq[1]*2-1.0;
+	//say("%f,%f,%f,%f\n",x0,y0,xn,yn);
+
+	struct fstyle fs;
+
+	gl41data_before(wnd);
+	gl41data_whcam(wnd, area);
+
+	fs.vc[0] = wnd->fbwidth*(x0+xn)/2;fs.vc[1] = wnd->fbheight*(y0+yn)/2;fs.vc[2] = 0.0;
+	fs.vr[0] = wnd->fbwidth*(xn-x0)/4;fs.vr[1] = 0.0;                    fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;                   fs.vf[1] = wnd->fbheight*(yn-y0)/4;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;                   fs.vt[1] = 0.0;                    fs.vt[2] = 1.0;
+
+	fs.vf[1] = wnd->fbheight*(yn-y0)/16;
+	fs.vc[1] = wnd->fbheight*(y0+yn)/2 + fs.vf[1]*3;
+	gl41line_rect(wnd, 0x0000ff, fs.vc, fs.vr, fs.vf);
+	gl41text(wnd, 0x00ff00, fs.vc, fs.vr, fs.vf, ctx[0]->buf, ctx[0]->len);
+
+	fs.vf[1] = wnd->fbheight*(yn-y0)/16;
+	fs.vc[1] = wnd->fbheight*(y0+yn)/2 + fs.vf[1]*1;
+	gl41line_rect(wnd, 0x00ff00, fs.vc, fs.vr, fs.vf);
+	gl41text(wnd, 0x00ff00, fs.vc, fs.vr, fs.vf, ctx[1]->buf, ctx[1]->len);
+
+	fs.vf[1] = wnd->fbheight*(yn-y0)/16;
+	fs.vc[1] = wnd->fbheight*(y0+yn)/2 - fs.vf[1]*1;
+	gl41line_rect(wnd, 0xff0000, fs.vc, fs.vr, fs.vf);
+	gl41text(wnd, 0x00ff00, fs.vc, fs.vr, fs.vf, ctx[2]->buf, ctx[2]->len);
+
+	fs.vf[1] = wnd->fbheight*(yn-y0)/16;
+	fs.vc[1] = wnd->fbheight*(y0+yn)/2 - fs.vf[1]*3;
+	gl41line_rect(wnd, 0x00ffff, fs.vc, fs.vr, fs.vf);
+	gl41text(wnd, 0x00ff00, fs.vc, fs.vr, fs.vf, ctx[3]->buf, ctx[3]->len);
+
+	gl41data_after(wnd);
+	return 0;
+}
+
+
+
+
+int htmlroot_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void** buf,int len)
+{
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+	say("caller:type=%.4s,fmt=%.4s\n", &caller->type, &caller->fmt);
+
+	//slot type known: do work based on slot type
+	//switch(stack[sp-1].flag){
+	//}
+
+	//slot type unknown: do work based on caller fmt
+	switch(caller->fmt){
+	case _gl41full_:
+		htmlroot_taketext(ent,slot, stack,sp);
+		htmlroot_draw_gl41_nocam(ent,slot, caller,area);
+		break;
+	case _http_:
+		say("byhttp\n");
+		break;
+	}
 	return 0;
 }
 int htmlroot_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	say("@htmlroot_write: %.4s\n", &foot);
-	if('s' == stack[sp-1].flag){	//from server, change myself
+	//say("@htmlroot_write: %.4s\n", &foot);
+	struct entity* caller = stack[sp-2].pchip;
+	say("caller:type=%.4s,fmt=%.4s\n", &caller->type, &caller->fmt);
+
+	//slot type known: do work based on slot type
+	switch(stack[sp-1].flag){
+	case 's':	//from server, change myself
 		htmlroot_parse(buf,len);
-	}
-	if('c' == stack[sp-1].flag){	//from client, replyto thisguy
+		return 0;
+	case 'c':	//from client, replyto thisguy
 		printmemory(buf,len);
+		return 0;
+	}
+
+	//slot type unknown: do work based on caller fmt
+	switch(caller->type){
+	case _HTTP_:
+		htmlroot_taketext(ent,foot, stack,sp);
+		htmlroot_sendtext(ent,foot, stack,sp, arg,key, buf,len);
+		break;
+	case _http_:
+		break;
 	}
 	return 0;
 }
