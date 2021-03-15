@@ -266,23 +266,6 @@ static void piano_draw_gl41(
 		gl41solid_rect(wnd, 0x202020, tc, tr, tf);
 	}
 }
-static void piano_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
-{
-//wnd.area -> cam.gl41, cam.slot -> world.geom
-	struct entity* wnd;struct style* area;
-	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-
-	struct fstyle fs;
-	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
-	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
-
-	gl41data_before(wnd);
-	piano_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_01cam(wnd);
-	gl41data_after(wnd);
-}
 
 
 
@@ -351,14 +334,57 @@ static void piano_draw_cli(
 
 
 
+static void piano_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+{
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	piano_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+static void piano_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+{
+//wnd.area -> cam.gl41, cam.slot -> world.geom
+	struct entity* wnd;struct style* area;
+	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
+
+	gl41data_before(wnd);
+	piano_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+	gl41data_01cam(wnd);
+	gl41data_after(wnd);
+}
+
+
+
+
 static void piano_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct supply* sup = stack[sp-2].pchip;
-	switch(sup->fmt){
-	case _gl41full_:{
-		if('v' != key)break;
-		piano_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
 	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		piano_wnd(ent,foot, stack,sp);
+		break;
+	default:
+		piano_wrl_cam_wnd(ent,foot, stack,sp);
+		break;
 	}
 }
 static void piano_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

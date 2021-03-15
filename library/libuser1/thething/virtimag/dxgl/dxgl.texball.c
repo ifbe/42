@@ -279,15 +279,11 @@ static void texball_event(
 
 
 
-static void texball_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texball_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if( 0 == stack)return;
-	if('v'!= key)return;
 
-	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
@@ -295,25 +291,37 @@ static void texball_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* a
 	case _gl41full_:texball_gl41draw(ent,slot, wor,geom, wnd,area);break;
 	}
 }
-static void texball_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texball_wrl_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+{
+}
+static void texball_wnd(_ent* ent,void* slot, _ent* wnd,void* area)
 {
 }
 
 
 
 
-static void texball_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void texball_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct supply* sup = stack[sp-2].pchip;
-	switch(sup->fmt){
-	case _gl41fbog_:
-	case _gl41full_:{
-		if('v' != key)break;
-		texball_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
 	}
-	default:{
-		texball_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
-	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		texball_wnd(ent,slot, caller,area);
+		break;
+	default:
+		texball_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
 	}
 }
 static void texball_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

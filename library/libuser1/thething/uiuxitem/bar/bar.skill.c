@@ -185,16 +185,29 @@ static void skillbar_draw_cli(
 
 
 
-static void skillbar_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skillbar_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		skillbar_draw_gl41(ent,slot, wor,geom, wnd,area);
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	skillbar_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+
+
+
+
+static void skillbar_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	struct entity* wnd = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(wnd->fmt){
+	case _gl41full_:
+		break;
+	default:
+		skillbar_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
 	}
 }
 static void skillbar_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

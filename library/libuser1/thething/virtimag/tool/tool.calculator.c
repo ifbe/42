@@ -216,7 +216,7 @@ static void calculator_write_bywnd(_ent* ent,struct style* slot, _ent* wnd,struc
 
 
 
-static void calculator_read_bycam(_ent* ent,void* slot, _syn* stack,int sp)
+static void calculator_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
@@ -226,7 +226,7 @@ static void calculator_read_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	calculator_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void calculator_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void calculator_wnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
@@ -243,20 +243,28 @@ static void calculator_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct
 
 
 
-static int calculator_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void calculator_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
-	struct style* area = stack[sp-2].pfoot;
+	if(0 == stack)return;
 
-	switch(wnd->fmt){
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
 	case _gl41full_:
-		calculator_read_bywnd(ent,slot, wnd,area);
+		calculator_wnd(ent,slot, caller,area);
 		break;
 	default:
-		calculator_read_bycam(ent,slot, stack,sp);
+		calculator_wrl_cam_wnd(ent,slot, stack,sp);
 		break;
 	}
-	return 0;
 }
 static void calculator_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

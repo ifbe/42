@@ -174,16 +174,39 @@ void robodog_write_int(struct entity* act, int* src, int len)
 
 
 
+static void robodog_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+{
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	robodog_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+
+
+
+
 static void robodog_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct style* slot;
-	struct entity* scn;struct style* geom;
-	struct entity* wnd;struct style* area;
-	if(stack&&('v' == key)){
-		slot = stack[sp-1].pfoot;
-		scn = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		robodog_draw_gl41(ent,slot, scn,geom, wnd,area);
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		robodog_wrl_cam_wnd(ent,foot, stack,sp);
+		break;
 	}
 }
 static void robodog_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

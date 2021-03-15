@@ -157,15 +157,10 @@ static void field_draw_cli(
 
 
 
-static void field_taking_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void field_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(0 == stack)return;
-	if('v' != key)return;
-
-	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
@@ -177,9 +172,31 @@ static void field_taking_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* a
 		break;
 	}
 }
-static void field_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+
+
+
+
+static void field_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	field_taking_bycam(ent,foot, stack,sp, arg,key);
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		field_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
+	}
 }
 static void field_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

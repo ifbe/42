@@ -138,8 +138,9 @@ static void bintree_draw_pixel(
 	printnode(win, right, cx, 1, cx, cy, ww, hh);
 }
 static void bintree_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* wrl, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 }
 static void bintree_draw_json(
@@ -211,8 +212,40 @@ static void bintree_event(
 
 
 
+static void bintree_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+{
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	bintree_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+
+
+
+
 static void bintree_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		bintree_wrl_cam_wnd(ent,foot, stack,sp);
+		break;
+	}
 }
 static void bintree_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

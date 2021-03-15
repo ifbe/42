@@ -156,6 +156,7 @@ void mt20data_insert(struct entity* ctx, int type, struct mt20data* src, int cnt
 
 
 
+//be the world, get all data
 //[-4,-3]: ogl,area -> cam,togl
 //[-2,-1]: cam,towr -> wor,geom
 int mt20data_taking(_ent* world,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

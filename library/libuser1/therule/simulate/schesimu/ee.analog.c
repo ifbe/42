@@ -166,17 +166,15 @@ static void analog_draw_gl41(
 		gl41float(wnd, rgb, tc,tr,tf, sts[k].volt);
 	}
 }
-void analog_read_board(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+void analog_read_board(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		analog_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
+	if(0 == stack)return;
+
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	analog_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
 int analog_read_child(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
@@ -198,10 +196,25 @@ int analog_read_child(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int ke
 }
 int analog_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(stack && ('v' == key)){
-		analog_read_child(ent,foot, stack,sp, arg,key, buf,len);
-		analog_read_board(ent,foot, stack,sp, arg,key, buf,len);
+	if(0 == stack)return 0;
+
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
 	}
+
+	//caller defined behavior
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	}
+
+	analog_read_child(ent,foot, stack,sp, arg,key, buf,len);
+	analog_read_board(ent,foot, stack,sp, arg,key, buf,len);
 	return 0;
 }
 int analog_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

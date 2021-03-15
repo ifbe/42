@@ -452,26 +452,26 @@ static int freecam_draw_gl41(
 	gl41line(ctx, 0, geom->frus.vc, &act->fx0);
 	return 0;
 }
-static int freecam_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int freecam_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 //[-6,-5]: wnd,area -> cam,togl
 //[-4,-3]: cam,gl41 -> wor,geom		//the camera taking photo
 //[-2,-1]: wor,geom -> ent,gl41		//the entity being taken
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 
-	if(_tui_ == wnd->fmt)return 0;
-	if(_rgba_ == wnd->fmt)return 0;
-	if(_gl41full_ == wnd->fmt){
-		if(stack&&('v' == key))freecam_draw_gl41(ent,slot, wor,geom, wnd,area);
+	switch(wnd->fmt){
+	case _tui_:
+	case _rgba_:
+		return 0;
+	case _gl41full_:
+		 freecam_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 	return 0;
 }
-static int freecam_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int freecam_read_bywnd(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct privdata* own = ent->OWNBUF;
 	struct halfrel* self = own->self;
@@ -486,10 +486,8 @@ static int freecam_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 //[+0,+1]: cam,towr -> wor,geom
 //[-2,-1]: wnd,area -> cam,togl
 	struct entity* wor;struct style* geom;
-	struct style* slot;
 	struct entity* wnd;struct style* area;
 	wor = stack[sp+1].pchip;geom = stack[sp+1].pfoot;
-	slot = stack[sp-1].pfoot;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	switch(wnd->fmt){
 
@@ -579,16 +577,18 @@ static int freecam_write_bywnd(_ent* ent,struct event* ev)
 static int freecam_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@freecam_read\n");
-	if(sp < 2)return 0;
+	if(0 == stack)return 0;
 	take_data_from_peer(ent,_mind_, stack,sp, 0,0, 0,0);
 
-	struct entity* sup = stack[sp-2].pchip;
-	if(0 == sup)return 0;
+	struct entity* caller = stack[sp-2].pchip;
+	if(0 == caller)return 0;
 
-	switch(sup->type){
+	switch(caller->type){
 	case _wnd_:
-	case _fbo_:return freecam_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
-	default:return freecam_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
+	case _fbo_:
+		return freecam_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
+	default:
+		return freecam_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 	}
 	return 0;
 }

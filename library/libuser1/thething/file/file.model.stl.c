@@ -536,14 +536,12 @@ static void stl3d_draw_cli(
 //[-6,-5]: wnd -> cam
 //[-4,-3]: cam -> world
 //[-2,-1]: world -> stl3d
-static void stl3d_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void stl3d_world_camera_window(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct style* slot;
 	struct entity* scn;struct style* geom;
 	struct entity* wrd;struct style* camg;
 	struct entity* wnd;struct style* area;
 
-	slot = stack[sp-1].pfoot;
 	scn = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wrd = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
@@ -559,16 +557,31 @@ static void stl3d_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg
 		return;
 	}
 
-	if( 0 == stack)return;
-	if('v'!= key)return;
 	switch(wnd->fmt){
 	case _dx11full_:stl3d_dx11draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
 	case _gl41full_:stl3d_gl41draw(ent,slot, scn,geom, wrd,camg, wnd,area);break;
 	}
 }
-static void stl3d_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void stl3d_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	stl3d_read_bycam(ent,foot, stack,sp, arg,key);
+	if(0 == stack)return;
+
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		stl3d_world_camera_window(ent,slot, stack,sp, arg,key);
+	}
 }
 static void stl3d_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

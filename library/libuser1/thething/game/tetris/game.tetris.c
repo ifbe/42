@@ -88,15 +88,16 @@ static void tetris_draw_pixel(
 */
 }
 static void tetris_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* wrl, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	int x,y;
 	vec3 tc, tr, tf, tu, f;
-	float* vc = sty->fs.vc;
-	float* vr = sty->fs.vr;
-	float* vf = sty->fs.vf;
-	float* vu = sty->fs.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 	for(y=0;y<HEIGHT;y++)
 	{
 		for(x=0;x<WIDTH;x++)
@@ -116,7 +117,7 @@ static void tetris_draw_gl41(
 			tu[0] = vu[0] * f[2];
 			tu[1] = vu[1] * f[2];
 			tu[2] = vu[2] * f[2];
-			gl41solid_prism4(win, 0xffffff, tc, tr, tf ,tu);
+			gl41solid_prism4(wnd, 0xffffff, tc, tr, tf ,tu);
 		}
 	}
 }
@@ -238,8 +239,40 @@ static void tetris_event(
 
 
 
+static void tetris_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+{
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	tetris_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+
+
+
+
 static void tetris_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		tetris_wrl_cam_wnd(ent,foot, stack,sp);
+		break;
+	}
 }
 static void tetris_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

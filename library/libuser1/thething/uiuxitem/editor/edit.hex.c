@@ -246,7 +246,7 @@ static void hexedit_event(
 
 
 
-static void hexedit_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void hexedit_read_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 {
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
@@ -256,7 +256,7 @@ static void hexedit_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* a
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	hexedit_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void hexedit_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void hexedit_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp)
 {
 	struct entity* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
@@ -274,29 +274,32 @@ static void hexedit_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* a
 
 
 
-static int hexedit_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int hexedit_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(sp < 2)return 0;
-	struct entity* sup = stack[sp-2].pchip;
+	if(0 == stack)return 0;
 
-	switch(sup->fmt){
+	struct entity* caller = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
 	case _gl41full_:
-		hexedit_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
+		hexedit_read_bywnd(ent,slot, stack,sp);break;
 	default:
-		hexedit_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
+		hexedit_read_bycam(ent,slot, stack,sp);break;
 	}
 	return 0;
 }
-static int hexedit_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int hexedit_giving(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(sp < 2)return 0;
-	struct supply* wnd = stack[sp-2].pchip;
+	if(0 == stack)return 0;
+
+	struct supply* caller = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
-	case _gl41full_:{
-		hexedit_event(ent,0, wnd,area, buf);break;
-	}
+	switch(caller->fmt){
+	case _gl41full_:
+	default:
+		hexedit_event(ent,slot, caller,area, buf);break;
 	}
 	return 0;
 }

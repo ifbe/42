@@ -16,6 +16,35 @@ struct sunbuf{
 
 
 
+static void pointlight_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void pointlight_draw_json(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void pointlight_draw_html(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void pointlight_draw_tui(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void pointlight_draw_cli(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+
+
+
+
 static void pointlight_light(
 	struct entity* act, struct style* slot,
 	struct entity* win, struct style* geom,
@@ -56,65 +85,45 @@ static void pointlight_draw_gl41(
 
 
 
-static void pointlight_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pointlight_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct style* slot;
+	if(0 == ent->ONOFF)return;
+
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(0 == stack)return;
 
-	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	if(_gl41full_ == wnd->fmt){
-		if('v' == key){
-			pointlight_light(ent,slot, wor,geom, wnd,area);
-			pointlight_draw_gl41(ent,slot, wor,geom, wnd,area);
-		}
-		if('?' == key){
-			//search for myown fbo
-
-			//update matrix for fbo
-
-			//wnd.data -> fbo.texture
-
-			//fbo.texture -> my.data -> wnd.data
-		}
+		pointlight_light(ent,slot, wor,geom, wnd,area);
+		pointlight_draw_gl41(ent,slot, wor,geom, wnd,area);
 	}
 }
-static void pointlight_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void pointlight_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void pointlight_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void pointlight_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void pointlight_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
 
 
 
 
-static void pointlight_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void pointlight_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(0 == ent->ONOFF)return;
-	pointlight_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		pointlight_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
+	}
 }
 static void pointlight_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

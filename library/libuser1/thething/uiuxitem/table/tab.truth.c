@@ -166,28 +166,22 @@ static int truth_write_bykarnaugh(struct entity* ent, u8* i)
 
 
 
-static int truth_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int truth_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//struct entity* ent = stack[sp-1].pchip;
-	struct style* slot = stack[sp-1].pfoot;
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 	switch(wnd->fmt){
-	case _gl41full_:{
-		if('v' != key)break;
+	case _gl41full_:
 		truth_read_bywnd(ent,slot, wnd,area);break;
-	}
 	}
 	return 0;
 }
-static int truth_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int truth_giving(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	if(_karnaugh_ == stack[sp-1].flag){
 		return truth_write_bykarnaugh(ent, buf);
 	}
 
-	//struct entity* ent = stack[sp-1].pchip;
-	struct style* slot = stack[sp-1].pfoot;
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 	switch(wnd->fmt){

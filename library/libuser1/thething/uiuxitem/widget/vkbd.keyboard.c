@@ -306,9 +306,8 @@ static int vkbd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int k
 
 	switch(wnd->fmt){
 	case _dx11full_:
-	case _gl41full_:{
+	case _gl41full_:
 		vkbd_read_bygl41(ent,foot, wnd,area);break;
-	}
 	}
 	return 0;
 }
@@ -317,9 +316,8 @@ static int vkbd_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	struct entity* wnd = stack[sp-2].pchip;
 	switch(wnd->fmt){
 	case _dx11full_:
-	case _gl41full_:{
+	case _gl41full_:
 		vkbd_write_bywnd(ent,foot, stack,sp, buf,len);break;
-	}
 	}
 	return 0;
 }

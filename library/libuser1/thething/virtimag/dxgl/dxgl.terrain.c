@@ -487,22 +487,45 @@ void terrain_modify_matter(struct entity* act, int* src, int len)
 }
 
 
-static void terrain_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+
+
+static void terrain_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* dup;struct style* camg;
 	struct entity* wnd;struct style* area;
-	if( 0 == stack)return;
-	if('v'!= key)return;
-
-	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
 	case _dx11full_:terrain_dx11draw(ent,slot, wor,geom, dup,camg, wnd,area);break;
 	case _gl41full_:terrain_gl41draw(ent,slot, wor,geom, dup,camg, wnd,area);break;
+	}
+}
+
+
+
+
+static void terrain_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		terrain_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
 	}
 }
 static void terrain_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

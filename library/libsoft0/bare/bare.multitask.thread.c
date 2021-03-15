@@ -137,7 +137,7 @@ int threadsearch(void* buf, int len)
 {
 	int j,k;
 	volatile struct threadstate* tasktable;
-	say("@tasksearch\n");
+	say("@threadsearch\n");
 	say("%p,%p,%d\n", percputasktable, percputaskcount,cpucount);
 
 	for(j=0;j<cpucount;j++){

@@ -47,15 +47,16 @@ static void pegged_draw_pixel(
 	}
 }
 static void pegged_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* wrl, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	int x,y;
 	vec3 tc, tr, tf, tu, f;
-	float* vc = sty->fs.vc;
-	float* vr = sty->fs.vr;
-	float* vf = sty->fs.vf;
-	float* vu = sty->fs.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 
 	for(y=0;y<7;y++)
 	{
@@ -76,7 +77,7 @@ static void pegged_draw_gl41(
 			tf[0] = vf[0] / 7;
 			tf[1] = vf[1] / 7;
 			tf[2] = vf[2] / 7;
-			gl41line_rect(win, 0x808080, tc, tr, tf);
+			gl41line_rect(wnd, 0x808080, tc, tr, tf);
 
 			tr[0] = vr[0] / 14;
 			tr[1] = vr[1] / 14;
@@ -87,7 +88,7 @@ static void pegged_draw_gl41(
 			tu[0] = vu[0] / 14;
 			tu[1] = vu[1] / 14;
 			tu[2] = vu[2] / 14;
-			gl41solid_sphere(win, 0xffffff, tc, tr, tf, tu);
+			gl41solid_sphere(wnd, 0xffffff, tc, tr, tf, tu);
 		}
 	}
 }
@@ -136,8 +137,40 @@ static void pegged_draw_cli(
 
 
 
+static void pegged_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+{
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	pegged_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+
+
+
+
 static void pegged_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		pegged_wrl_cam_wnd(ent,foot, stack,sp);
+		break;
+	}
 }
 static void pegged_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

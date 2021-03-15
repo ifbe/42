@@ -41,6 +41,35 @@ GLSL_VERSION
 
 
 
+static void glass_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void glass_draw_json(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void glass_draw_html(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void glass_draw_tui(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void glass_draw_cli(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+
+
+
+
 //for framebuffer
 void glass_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 {
@@ -283,72 +312,59 @@ void glass_forwnd_prepare(struct gl41data* data)
 
 
 
-static void glass_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void glass_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	if(0 == stack)return;
-
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* dup;struct style* camg;
 	struct entity* wnd;struct style* area;
-	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	dup = stack[sp-3].pchip;camg = stack[sp-3].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-	if('v' == key){
-		glass_draw_gl41(ent,slot, wor,geom, wnd,area);
+
+	//search for myown fbo
+	int ret;
+	struct halfrel* rel[2];
+	ret = relationsearch(ent, _fbo_, &rel[0], &rel[1]);
+	if(ret <= 0)return;
+
+	//update matrix for fbo
+	struct supply* fbo = rel[1]->pchip;
+	struct style* rect = rel[1]->pfoot;
+	glass_forfbo_update(ent,slot, wor,geom, dup,camg, fbo,rect);
+
+	//wnd.data -> fbo.texture
+	give_data_into_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
+
+	//fbo.texture -> my.data -> wnd.data
+	glass_forwnd_update(ent,slot, fbo,rect);
+
+	glass_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+
+
+
+
+static void glass_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
 	}
-	if('?' == key){
-		//search for myown fbo
-		int ret;
-		struct halfrel* rel[2];
-		ret = relationsearch(ent, _fbo_, &rel[0], &rel[1]);
-		if(ret <= 0)return;
 
-		//update matrix for fbo
-		struct supply* fbo = rel[1]->pchip;
-		struct style* rect = rel[1]->pfoot;
-		glass_forfbo_update(ent,slot, wor,geom, dup,camg, fbo,rect);
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-		//wnd.data -> fbo.texture
-		give_data_into_peer(ent,_fbo_, stack,sp, 0,0, 0,0);
-
-		//fbo.texture -> my.data -> wnd.data
-		glass_forwnd_update(ent,slot, fbo,rect);
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		glass_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
 	}
-}
-static void glass_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void glass_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void glass_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void glass_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void glass_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-
-
-
-
-static void glass_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
-{
-	glass_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 }
 static void glass_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

@@ -43,6 +43,35 @@ GLSL_VERSION
 
 
 
+static void dirlight_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void dirlight_draw_json(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void dirlight_draw_html(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void dirlight_draw_tui(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void dirlight_draw_cli(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+
+
+
+
 static void dirlight_frustum(struct fstyle* d, struct fstyle* s)
 {
 	float x,y,z,n;
@@ -276,7 +305,7 @@ static void dirlight_mesh_prep(struct mysrc* src)
 
 
 
-static void dirlight_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dirlight_wrl_cam_wnd(_ent* ent,void* foot, _syn* stack,int sp)
 {
 	if(0 == stack)return;
 
@@ -296,38 +325,31 @@ static void dirlight_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* 
 	dirlight_lit_update(ent,foot, wor,geom, wnd,area);
 	dirlight_mesh_update(ent,foot, wor,geom, wnd,area);
 }
-static void dirlight_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void dirlight_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void dirlight_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void dirlight_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void dirlight_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
 
 
 
 
-static void dirlight_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void dirlight_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	dirlight_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		dirlight_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
+	}
 }
 static void dirlight_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

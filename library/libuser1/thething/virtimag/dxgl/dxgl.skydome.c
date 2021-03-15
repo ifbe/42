@@ -123,8 +123,46 @@ static void skydome_draw_cli(
 
 
 
-static void skydome_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skydome_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+}
+static void skydome_wrl_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+{
+}
+static void skydome_wnd(_ent* ent,void* slot, _ent* wnd,void* area)
+{
+}
+
+
+
+
+static void skydome_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		skydome_wnd(ent,slot, caller,area);
+		break;
+	default:
+		skydome_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
+	}
 }
 static void skydome_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

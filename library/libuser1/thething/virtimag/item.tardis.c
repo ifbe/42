@@ -56,23 +56,11 @@ static void tardis_draw_gl41(
 	if(time>255)time = 511-time;
 	gl41opaque_prism4(wnd, 0x0000ff|(time<<24), tc, tr, tf, tt);
 }
-static void tardis_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
-{
-	struct style* slot;
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		tardis_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
-}
 
 
 
 
-void tardis_pcm(struct entity* ent, struct supply* sup)
+void tardis_pcm(struct entity* ent,void* slot, struct entity* sup,void* area)
 {
 	int j;
 	struct pcmdata* pcm;
@@ -89,14 +77,41 @@ void tardis_pcm(struct entity* ent, struct supply* sup)
 
 
 
-static void tardis_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void tardis_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct supply* wnd = stack[sp-2].pchip;
-//say("fmt=%.8s\n", &sup->fmt);
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	tardis_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
 
-	switch(wnd->fmt){
-		case _pcm_:tardis_pcm(ent, wnd);break;
-		default:tardis_read_bycam(ent,foot, stack,sp, arg,key);
+
+
+
+static void tardis_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _pcm_:
+		tardis_pcm(ent,slot, caller,area);
+		break;
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		tardis_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
 	}
 }
 static void tardis_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

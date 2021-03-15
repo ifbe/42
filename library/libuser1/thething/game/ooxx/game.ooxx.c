@@ -64,14 +64,15 @@ static void ooxx_draw_pixel(
 	}//fory
 }
 static void ooxx_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* wrl, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
-	float* vc = sty->fs.vc;
-	float* vr = sty->fs.vr;
-	float* vf = sty->fs.vf;
-	float* vu = sty->fs.vt;
-	gl41solid_rect(win, 0x444444, vc, vr, vf);
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
+	gl41solid_rect(wnd, 0x444444, vc, vr, vf);
 }
 static void ooxx_draw_json(
 	struct entity* act, struct style* pin,
@@ -171,8 +172,40 @@ say("%d,%d\n",x,y);
 
 
 
+static void ooxx_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+{
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	ooxx_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+
+
+
+
 static void ooxx_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		ooxx_wrl_cam_wnd(ent,foot, stack,sp);
+		break;
+	}
 }
 static void ooxx_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

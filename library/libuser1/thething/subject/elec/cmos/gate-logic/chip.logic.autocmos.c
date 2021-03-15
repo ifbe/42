@@ -113,7 +113,23 @@ static void autocmos_draw_gl41(
 		}
 	}
 }
-static void autocmos_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+
+
+
+
+static void autocmos_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+{
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	autocmos_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+static void autocmos_wrl_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+{
+}
+static void autocmos_wnd(_ent* ent,void* foot, _syn* stack,int sp)
 {
 	struct entity* wnd;struct style* area;
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
@@ -123,40 +139,37 @@ static void autocmos_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* 
 	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
+
 	gl41data_before(wnd);
 	autocmos_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
 	gl41data_01cam(wnd);
 	gl41data_after(wnd);
 }
-static void autocmos_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+
+
+
+
+static void autocmos_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct style* slot;
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
-	if(stack&&('v' == key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		autocmos_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
-}
+	if(0 == stack)return;
 
-
-
-
-static int autocmos_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
-{
-	struct entity* sup = stack[sp-2].pchip;
-	switch(sup->fmt){
-	case _gl41full_:{
-		if('v' != key)break;
-		autocmos_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
+	//foot defined behavior
+	switch(stack[sp-1].flag){
 	}
-	default:{
-		autocmos_read_bycam(ent,foot, stack,sp, stack,sp, buf,len);break;
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		autocmos_wnd(ent,foot, stack,sp);break;
+	default:
+		autocmos_wrl_cam_wnd(ent,foot, stack,sp);break;
+		break;
 	}
-	}
-	return 0;
 }
 static void autocmos_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

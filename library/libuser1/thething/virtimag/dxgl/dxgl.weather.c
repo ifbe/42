@@ -47,15 +47,16 @@ static void weather_ctxforwnd(struct mysrc* src)
 
 
 static void weather_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* wrl, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	int x,y,z;
 	vec3 tc;
-	float* vc = sty->fs.vc;
-	float* vr = sty->fs.vr;
-	float* vf = sty->fs.vf;
-	float* vu = sty->fs.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 
 	for(z=-16;z<=16;z++)
 	{
@@ -66,7 +67,7 @@ static void weather_draw_gl41(
 				tc[0] = vc[0] + vr[0]*x/16 + vf[0]*y/16 + vu[0]*z/16;
 				tc[1] = vc[1] + vr[1]*x/16 + vf[1]*y/16 + vu[1]*z/16;
 				tc[2] = vc[2] + vr[2]*x/16 + vf[2]*y/16 + vu[2]*z/16;
-				gl41point(win, 0xffffff, tc);
+				gl41point(wnd, 0xffffff, tc);
 			}
 		}
 	}
@@ -101,8 +102,47 @@ static void weather_draw_cli(
 
 
 
-static void weather_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void weather_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	weather_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+static void weather_wrl_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+{
+}
+static void weather_wnd(_ent* ent,void* slot, _ent* wnd,void* area)
+{
+}
+
+
+
+
+static void weather_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		weather_wnd(ent,slot, caller,area);
+		break;
+	default:
+		weather_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
+	}
 }
 static void weather_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

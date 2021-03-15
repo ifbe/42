@@ -234,9 +234,8 @@ static int vjoy_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-	case _gl41full_:{
+	case _gl41full_:
 		vjoy_read_bywnd(ent,foot, wnd,area);break;
-	}
 	}
 	return 0;
 }
@@ -244,9 +243,8 @@ static int vjoy_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int k
 {
 	struct supply* wnd = stack[sp-2].pchip;
 	switch(wnd->fmt){
-	case _gl41full_:{
+	case _gl41full_:
 		vjoy_write_bywnd(ent,foot, stack,sp, buf,len);break;
-	}
 	}
 	return 0;
 }

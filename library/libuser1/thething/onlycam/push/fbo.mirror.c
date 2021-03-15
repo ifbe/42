@@ -39,6 +39,35 @@ GLSL_VERSION
 
 
 
+static void mirror_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void mirror_draw_json(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void mirror_draw_html(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void mirror_draw_tui(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void mirror_draw_cli(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+
+
+
+
 static void mirror_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 {
 	float x,y,z,t;
@@ -270,7 +299,7 @@ void mirror_gl41geom_prepare(struct mysrc* src)
 //[-6,-5]: wnd,area -> cam,togl
 //[-4,-3]: cam,gl41 -> wor,camg		//the camera taking photo
 //[-2,-1]: wor,geom -> ent,gl41		//the entity being taken
-static void mirror_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mirror_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
 	if(0 == stack)return;
 	struct entity* wor;struct style* geom;
@@ -289,43 +318,36 @@ static void mirror_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 	else world2clip_projz0z1_transpose(mirr->wvp, &geom->frus);
 
 	//create or update fbo
-	mirror_gl41fbo_update(ent,foot, wor,geom, dup,camg, (void*)wnd,area);
+	mirror_gl41fbo_update(ent,slot, wor,geom, dup,camg, (void*)wnd,area);
 
 	//geom
-	mirror_gl41geom_update(ent,foot, wor,geom, wnd,area);
-}
-static void mirror_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void mirror_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void mirror_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void mirror_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void mirror_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
+	mirror_gl41geom_update(ent,slot, wor,geom, wnd,area);
 }
 
 
 
 
-static void mirror_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mirror_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	mirror_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		mirror_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
+	}
 }
 static void mirror_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

@@ -60,16 +60,17 @@ void doodle_draw_pixel(
 	drawline_bezier(win, 0xffffff, x0, y0, x1, y1, px, py);
 }
 static void doodle_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* wrl, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	float a,c,s;
 	vec3 tc, tr, tf, tu, f;
-	float* vc = sty->fs.vc;
-	float* vr = sty->fs.vr;
-	float* vf = sty->fs.vf;
-	float* vu = sty->fs.vt;
-	gl41solid_circle(win, 0x00ffff, vc, vr, vf);
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
+	gl41solid_circle(wnd, 0x00ffff, vc, vr, vf);
 
 	tr[0] = vr[0]/2;
 	tr[1] = vr[1]/2;
@@ -81,12 +82,12 @@ static void doodle_draw_gl41(
 	tc[0] = vc[0]-vr[0]/2+vu[0]/8;
 	tc[1] = vc[1]-vr[1]/2+vu[1]/8;
 	tc[2] = vc[2]-vr[2]/2+vu[2]/8,
-	gl41solid_circle(win, 0x404040, tc, tr, tf);
+	gl41solid_circle(wnd, 0x404040, tc, tr, tf);
 
 	tc[0] = vc[0]+vr[0]/2+vu[0]/8;
 	tc[1] = vc[1]+vr[1]/2+vu[1]/8;
 	tc[2] = vc[2]+vr[2]/2+vu[2]/8;
-	gl41solid_circle(win, 0x404040, tc, tr, tf);
+	gl41solid_circle(wnd, 0x404040, tc, tr, tf);
 
 	tr[0] = vr[0]/4;
 	tr[1] = vr[1]/4;
@@ -101,12 +102,12 @@ static void doodle_draw_gl41(
 	tc[0] = vc[0]-vr[0]/2+(vr[0]*c+vf[0]*s)/4+vu[0]/4;
 	tc[1] = vc[1]-vr[1]/2+(vr[1]*c+vf[1]*s)/4+vu[1]/4;
 	tc[2] = vc[2]-vr[2]/2+(vr[2]*c+vf[2]*s)/4+vu[2]/4;
-	gl41solid_circle(win, 0xff0000, tc, tr, tf);
+	gl41solid_circle(wnd, 0xff0000, tc, tr, tf);
 
 	tu[0] = px;
 	tu[1] = py;
 	tu[2] = 0.0;
-	gl41line(win, 0xffffff, tc, tu);
+	gl41line(wnd, 0xffffff, tc, tu);
 
 	a = arctanyx(py-vc[1]-vr[0], px-vc[0]-vr[1]);
 	c = getcos(a);
@@ -114,12 +115,12 @@ static void doodle_draw_gl41(
 	tc[0] = vc[0]+vr[0]/2+(vr[0]*c+vf[0]*s)/4+vu[0]/4;
 	tc[1] = vc[1]+vr[1]/2+(vr[1]*c+vf[1]*s)/4+vu[1]/4;
 	tc[2] = vc[2]+vr[2]/2+(vr[2]*c+vf[2]*s)/4+vu[2]/4;
-	gl41solid_circle(win, 0xff0000, tc, tr, tf);
+	gl41solid_circle(wnd, 0xff0000, tc, tr, tf);
 
 	tu[0] = px;
 	tu[1] = py;
 	tu[2] = 0.0;
-	gl41line(win, 0xffffff, tc, tu);
+	gl41line(wnd, 0xffffff, tc, tu);
 }
 static void doodle_draw_json(
 	struct entity* act, struct style* pin,

@@ -8,7 +8,7 @@
 
 
 
-int tasksearch(void* buf, int len)
+int threadsearch(void* buf, int len)
 {
 	HANDLE snap;
 	snap = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, _getpid());

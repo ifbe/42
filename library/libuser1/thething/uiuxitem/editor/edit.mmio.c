@@ -133,20 +133,35 @@ static void mmioedit_draw_cli(
 
 
 
-static int mmioedit_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mmioedit_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	if(sp < 2)return 0;
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	mmioedit_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
 
+
+
+
+static void mmioedit_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
+
 	switch(wnd->fmt){
 	case _rgba_:
-		mmioedit_draw_pixel(ent,foot, wnd,area);
+		mmioedit_draw_pixel(ent,slot, wnd,area);
+		break;
+	case _gl41full_:
+		break;
+	default:
+		mmioedit_wrl_cam_wnd(ent,slot, stack,sp);
 		break;
 	}
-	return 0;
 }
-static int mmioedit_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int mmioedit_giving(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	return 0;
 }

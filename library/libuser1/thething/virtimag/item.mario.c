@@ -78,15 +78,16 @@ static void mario_draw_pixel(
 	}
 }
 static void mario_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* wrl, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	int x,t;
-	float* vc = sty->fs.vc;
-	float* vr = sty->fs.vr;
-	float* vf = sty->fs.vf;
-	float* vu = sty->fs.vt;
-	gl41line_rect(win, 0xffffff, vc, vr, vf);
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
+	gl41line_rect(wnd, 0xffffff, vc, vr, vf);
 
 	struct mysrc* src = act->buf0;
 	if(0 == src)return;
@@ -347,8 +348,39 @@ static void mario_draw_cli(
 
 
 
-static void mario_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mario_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	mario_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+
+
+
+
+static void mario_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		mario_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
+	}
 }
 static void mario_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

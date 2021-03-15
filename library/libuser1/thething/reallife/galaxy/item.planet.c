@@ -64,17 +64,18 @@ static void planet_draw_pixel(
 	}
 }
 static void planet_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* wrl, struct style* geom,
+	struct entity* wnd, struct style* area)
 {
 	int j;
 	float l, r;
 	float a, c, s;
 	vec3 tc, tr, tf, tu, f;
-	float* vc = sty->fs.vc;
-	float* vr = sty->fs.vr;
-	float* vf = sty->fs.vf;
-	float* vu = sty->fs.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 	u64 t = timeread() / 10000;
 
 	for(j=0;j<9;j++)
@@ -86,7 +87,7 @@ static void planet_draw_gl41(
 		tf[0] = vf[0]*l;
 		tf[1] = vf[1]*l;
 		tf[2] = vf[2]*l;
-		gl41line_circle(win, 0x404040, vc, tr, tf);
+		gl41line_circle(wnd, 0x404040, vc, tr, tf);
 
 		r = data[j].diameter/data[8].distance/2;
 		//if(j>0)r *= 1024;
@@ -106,7 +107,7 @@ static void planet_draw_gl41(
 		tc[0] = vc[0] + (vr[0]*c + vf[0]*s)*l;
 		tc[1] = vc[1] + (vr[1]*c + vf[1]*s)*l;
 		tc[2] = vc[2] + (vr[2]*c + vf[2]*s)*l;
-		gl41solid_sphere(win, data[j].color, tc, tr, tf, tu);
+		gl41solid_sphere(wnd, data[j].color, tc, tr, tf, tu);
 	}
 }
 static void planet_draw_json(
@@ -133,8 +134,40 @@ static void planet_draw_cli(
 
 
 
+static void planet_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+{
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	planet_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+
+
+
+
 static void planet_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		planet_wrl_cam_wnd(ent,foot, stack,sp);
+		break;
+	}
 }
 static void planet_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

@@ -303,14 +303,24 @@ static int vrglass_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 
 static int vrglass_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(sp < 2)return 0;
-	struct entity* sup = stack[sp-2].pchip;
-	if(0 == sup)return 0;
+	if(0 == stack)return 0;
 
-	switch(sup->fmt){
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	switch(caller->fmt){
+	case _rgba_:
+		break;
 	case _gl41fbog_:
-	case _gl41full_:return vrglass_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
-	default:return vrglass_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
+	case _gl41full_:
+		return vrglass_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
+	default:
+		return vrglass_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 	}
 	return 0;
 }

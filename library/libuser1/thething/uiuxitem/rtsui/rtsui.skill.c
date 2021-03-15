@@ -43,24 +43,18 @@ static void skill_draw_cli(
 
 
 
-static void skill_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void skill_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		skill_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	skill_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void skill_read_byuiux(_ent* ent,void* foot, _syn* stack,int sp)
+static void skill_read_byuiux(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct style* slot;
 	struct entity* uuu;struct style* area;
 	struct entity* wnd;struct style* rect;
-	slot = stack[sp-1].pfoot;
 	uuu = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	wnd = stack[sp-4].pchip;rect = stack[sp-4].pfoot;
 
@@ -87,31 +81,25 @@ static void skill_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct styl
 
 
 
-static void skill_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skill_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	//struct entity* ent = stack[sp-1].pchip;
-	struct style* slot = stack[sp-1].pfoot;
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 //say("fmt=%.8s\n", &sup->fmt);
 
 	switch(wnd->fmt){
-	case _gl41full_:{
-		if('v' != key)break;
+	case _gl41full_:
 		skill_read_bywnd(ent,slot, wnd,area);
 		break;
-	}
-	case _virtual_:{
-		skill_read_byuiux(ent,foot, stack,sp);
+	case _virtual_:
+		skill_read_byuiux(ent,slot, stack,sp);
 		break;
-	}
-	default:{
-		skill_read_bycam(ent,foot, stack,sp, arg,key);
+	default:
+		skill_read_bycam(ent,slot, stack,sp, arg,key);
 		break;
-	}
 	}
 }
-static void skill_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void skill_giving(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 }
 static void skill_discon(struct halfrel* self, struct halfrel* peer)

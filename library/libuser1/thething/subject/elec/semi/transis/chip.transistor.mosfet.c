@@ -45,36 +45,45 @@ static void mosfet_draw_gl41(
 	float* vt = geom->fs.vt;
 	gl41line_rect(wnd, 0xffffff, vc,vr,vf);
 }
-static void mosfet_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mosfet_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack&&('v' == key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		mosfet_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
+
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	mosfet_draw_gl41(ent, slot, wor,geom, wnd,area);
 }
-static void mosfet_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mosfet_wrl_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+{
+}
+static void mosfet_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
 }
 
 
 
 
-static void mosfet_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mosfet_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct supply* sup = stack[sp-2].pchip;
-	switch(sup->fmt){
-	case _gl41full_:{
-		if('v' != key)break;
-		mosfet_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
+	if(0 == stack)return;
+
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
 	}
-	default:{
-		mosfet_read_bycam(ent,foot, stack,sp, arg,key, buf,len);break;
-	}
+
+	//caller defined behavior
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		mosfet_wnd(ent,slot, stack,sp);break;
+		break;
+	default:
+		mosfet_wrl_cam_wnd(ent,slot, stack,sp);
 	}
 }
 static void mosfet_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

@@ -175,14 +175,28 @@ void force_read_inner(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int ke
 }
 int force_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(stack && ('v' == key)){
-		struct joint* jo = ent->buf0;
+	struct joint* jo = ent->buf0;
+	if(0 == stack)return 0;
+
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	//slot type known: do work based on slot type
+	//switch(stack[sp-1].flag){
+	//}
+
+	//slot type unknown: do work based on caller fmt
+	switch(caller->fmt){
+	case _gl41full_:
+		break;
+	default:
 		if(jo[0].exist){
 			force_decent_spring(ent,jo, stack,sp);
 			force_decent_stick(ent,jo, stack,sp);
 		}
 		force_read_board(ent,foot, stack,sp, arg,key);
 		force_read_inner(ent,foot, stack,sp, arg,key);
+		break;
 	}
 	return 0;
 }

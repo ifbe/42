@@ -3,7 +3,7 @@
 
 
 
-int rgbanode_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int rgbanode_draw(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//pixel_clearcolor(wnd);
 
@@ -24,6 +24,28 @@ next:
 		rel = samesrcnextdst(rel);
 	}
 
+	return 0;
+}
+int rgbanode_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == stack)return 0;
+	rgbanode_draw(wnd,foot, stack,sp, arg,key, buf,len);
+/*
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	//slot type known: do work based on slot type
+	//switch(stack[sp-1].flag){
+	//}
+
+	//slot type unknown: do work based on caller fmt
+	switch(caller->fmt){
+	case _gl41full_:
+		break;
+	default:
+		break;
+	}
+*/
 	return 0;
 }
 int rgbanode_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

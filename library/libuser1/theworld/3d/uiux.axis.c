@@ -59,8 +59,6 @@ void axis3d_draw_gl41(struct entity* scene, struct entity* wnd)
 }
 int axis3d_read_bycam(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key)
 {
-	if(0 == stack)return 0;
-
 	struct halfrel* aa[2];
 	int ret = relationsearch(ent, _tar_, &aa[0], &aa[1]);
 	if(ret <= 0)return 0;
@@ -80,6 +78,23 @@ int axis3d_read_bycam(struct entity* ent,void* foot, struct halfrel* stack,int s
 
 int axis3d_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(0 == stack)return 0;
+
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	}
+
 	return axis3d_read_bycam(ent,foot, stack,sp, arg,key);
 }
 int axis3d_giving(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)

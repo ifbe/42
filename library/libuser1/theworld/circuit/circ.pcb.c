@@ -93,15 +93,12 @@ static void printboard_gl41draw(
 
 
 
-static void printboard_camread(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void printboard_world_camera_window(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
 	if(0 == stack)return;
-	if('v' != key)return;
 
-	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
@@ -113,14 +110,19 @@ static void printboard_camread(_ent* ent,void* foot, _syn* stack,int sp, void* a
 		break;
 	}
 }
-int printboard_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int printboard_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct style* slot = stack[sp-1].pfoot;
-	struct entity* wnd;struct style* area;
-	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
-	switch(wnd->fmt){
-	default:printboard_camread(ent,foot, stack,sp, arg,key);break;
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		printboard_world_camera_window(ent,slot, stack,sp, arg,key);
+		break;
 	}
 	return 0;
 }

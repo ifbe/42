@@ -239,17 +239,15 @@ static void digital_draw_gl41(
 		}
 	}
 }
-void digital_read_board(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+void digital_read_board(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		digital_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
+	if(0 == stack)return;
+
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	digital_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
 
 
@@ -257,6 +255,23 @@ void digital_read_board(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int 
 
 int digital_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(0 == stack)return 0;
+
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	}
+
 	digital_read_board(ent,foot, stack,sp, arg,key);
 	return 0;
 }

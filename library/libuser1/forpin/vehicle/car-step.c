@@ -71,7 +71,7 @@ static void stepcar_status(int EN)
 
 
 
-int stepcar_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+int stepcar_print(struct entity* ent,void* foot, struct halfrel* stack,int sp, u8* buf, int len)
 {
 	int j;
 	int ret = 0;
@@ -83,6 +83,24 @@ int stepcar_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, 
 		);
 	}
 	return ret;
+}
+
+
+
+
+int stepcar_taking(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
+{
+	if(0 == stack)return 0;
+
+	struct entity* caller = stack[sp-2].pchip;
+	struct style* area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	default:
+		return stepcar_print(ent,foot, stack,sp, buf,len);
+	}
+
+	return 0;
 }
 int stepcar_giving(struct entity* ent,void* foot, struct halfrel* stack,int sp, void* arg,int key, u8* buf,int len)
 {

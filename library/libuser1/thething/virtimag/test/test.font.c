@@ -192,15 +192,11 @@ static void font_event(
 
 
 
-static void font_byworld_bycam_bywnd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void font_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct style* slot;
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if( 0 == stack)return;
-	if('v'!= key)return;
 
-	slot = stack[sp-1].pfoot;
 	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	switch(wnd->fmt){
@@ -212,21 +208,37 @@ static void font_byworld_bycam_bywnd_taking(_ent* ent,void* foot, _syn* stack,in
 		break;
 	}
 }
-static void font_byworld_bywnd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void font_wrl_wnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 }
-static void font_bywnd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
+static void font_wnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key)
 {
 }
-static void font_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+
+
+
+
+static void font_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
-	struct style* sty = stack[sp-2].pfoot;
-	if(_rgba_ == wnd->fmt){
-		font_draw_pixel(ent,0, wnd, sty);
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
 	}
-	else{
-		font_byworld_bycam_bywnd_taking(ent,foot, stack,sp, arg,key);
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		font_draw_pixel(ent,slot, caller,area);
+		break;
+	case _gl41full_:
+		break;
+	default:
+		font_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
 	}
 }
 static void font_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

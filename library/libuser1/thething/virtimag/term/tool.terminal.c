@@ -268,17 +268,22 @@ static void terminal_draw_gl41(
 		gl41_vt100(wnd,term,vc,vr,vf);
 	}
 }
-static void terminal_read_bycam(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key)
+
+
+
+
+static void terminal_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-	if(stack && ('v'==key)){
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		terminal_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	terminal_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
-static void terminal_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void terminal_wrl_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+{
+}
+static void terminal_wnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
 	int j;
 	struct fstyle fs;
@@ -296,27 +301,35 @@ static void terminal_read_bywnd(_ent* ent,struct style* slot, _ent* wnd,struct s
 
 
 
-static void terminal_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void terminal_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(0 == stack)return;
+
+	//foot defined behavior
 	switch(stack[sp-1].flag){
-	case 'c':break;
-	case 's':break;
+	case 'c':
+		return;
+	case 's':
+		return;
 	}
 
-	struct entity* wnd = stack[sp-2].pchip;
-	struct style* area = stack[sp-2].pfoot;
-	switch(wnd->fmt){
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
 	case _rgba_:
-		terminal_draw_pixel(ent,foot, wnd,area);
+		terminal_draw_pixel(ent,slot, caller,area);
 		break;
 	case _dx11full_:
 	case _mt20full_:
 	case _gl41full_:
 	case _vk12full_:
-		terminal_read_bywnd(ent,foot, wnd,area);
+		terminal_wnd(ent,slot, caller,area);
 		break;
 	default:
-		terminal_read_bycam(ent,foot, stack,sp, arg,key);
+		terminal_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
 	}
 }
 static void terminal_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

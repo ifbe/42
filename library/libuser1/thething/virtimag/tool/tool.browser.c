@@ -47,16 +47,17 @@ static void browser_draw_pixel(
 	drawtext(win, 0x000000, x0, y0, x1, y1, dat->buf, dat->len);
 }
 static void browser_draw_gl41(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* act, struct style* slot,
+	struct entity* win, struct style* geom,
+	struct entity* ctx, struct style* area)
 {
 	vec3 tc,tr,tf,tu;
 	struct str* str = act->STRBUF;
 	struct str* dat = act->DATBUF;
-	float* vc = sty->fs.vc;
-	float* vr = sty->fs.vr;
-	float* vf = sty->fs.vf;
-	float* vu = sty->fs.vt;
+	float* vc = geom->fs.vc;
+	float* vr = geom->fs.vr;
+	float* vf = geom->fs.vf;
+	float* vu = geom->fs.vt;
 	gl41solid_rect(win, 0xffffff, vc, vr, vf);
 
 	//address
@@ -180,15 +181,37 @@ static void browser_data(
 
 
 
+static void browser_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
+{
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	browser_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+
+
+
+
 static void browser_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	struct entity* wnd = stack[sp-2].pchip;
-	struct style* area = stack[sp-2].pfoot;
+	if(0 == stack)return;
 
-	switch(wnd->fmt){
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
 	case _gl41full_:
 		break;
 	default:
+		browser_wrl_cam_wnd(ent,slot, stack,sp);
 		break;
 	}
 }

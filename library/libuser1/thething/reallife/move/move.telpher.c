@@ -43,18 +43,14 @@ static void telpher_draw_gl41(
 	float* vt = geom->fs.vt;
 	gl41line_prism4(wnd, 0xffffff, vc, vr, vf, vt);
 }
-static void telpher_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void telpher_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct style* slot;
-	struct entity* scn;struct style* geom;
+	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
-
-	if(stack && ('v'==key)){
-		slot = stack[sp-1].pfoot;
-		scn = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		telpher_draw_gl41(ent,slot, scn,geom, wnd,area);
-	}
+	
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	telpher_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
 
 
@@ -62,7 +58,25 @@ static void telpher_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* a
 
 static void telpher_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	telpher_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		telpher_wrl_cam_wnd(ent,foot, stack,sp);
+		break;
+	}
 }
 static void telpher_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

@@ -251,13 +251,16 @@ static int orthcam_write_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* a
 
 static int orthcam_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	if(sp < 2)return 0;
-	struct entity* sup = stack[sp-2].pchip;
-	if(0 == sup)return 0;
+	if(0 == stack)return 0;
 
-	switch(sup->fmt){
-	case _gl41full_:return orthcam_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
-	default:return orthcam_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
+	struct entity* caller = stack[sp-2].pchip;
+	if(0 == caller)return 0;
+
+	switch(caller->fmt){
+	case _gl41full_:
+		return orthcam_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);
+	default:
+		return orthcam_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
 	}
 	return 0;
 }

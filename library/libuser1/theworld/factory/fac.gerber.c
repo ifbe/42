@@ -225,17 +225,38 @@ static void gerber_draw_gl41(
 
 
 
-static void gerber_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void gerber_world_camera_window(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct style* slot;
 	struct entity* scn;struct style* geom;
 	struct entity* wnd;struct style* area;
 
-	if(stack&&('v'==key)){
-		slot = stack[sp-1].pfoot;
-		scn = stack[sp-2].pchip;geom = stack[sp-2].pfoot;;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		gerber_draw_gl41(ent,slot, scn,geom, wnd,area);
+	scn = stack[sp-2].pchip;geom = stack[sp-2].pfoot;;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	gerber_draw_gl41(ent,slot, scn,geom, wnd,area);
+}
+
+
+
+
+static void gerber_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == stack)return;
+
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	switch(caller->fmt){
+	case _rgba_:
+	        break;
+	case _gl41full_:
+	        break;
+	default:
+		gerber_world_camera_window(ent,slot, stack,sp);
 	}
 }
 static void gerber_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

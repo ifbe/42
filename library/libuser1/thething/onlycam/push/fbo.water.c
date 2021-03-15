@@ -17,6 +17,35 @@ struct waterbuf{
 
 
 
+static void water_draw_pixel(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void water_draw_json(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void water_draw_html(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void water_draw_tui(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+static void water_draw_cli(
+	struct entity* act, struct style* pin,
+	struct entity* win, struct style* sty)
+{
+}
+
+
+
+
 void water_frustum(struct fstyle* frus, struct fstyle* obb, vec3 cam)
 {
 	float x,y,z,t;
@@ -269,7 +298,7 @@ void water_gl41geom_prepare(struct gl41data* data, struct waterbuf* water, char*
 
 
 
-static void water_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void water_wrl_cam_wnd(_ent* ent,void* foot, _syn* stack,int sp)
 {
 	if(0 == stack)return;
 
@@ -286,6 +315,7 @@ static void water_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg
 	//mvp from frus
 	struct waterbuf* water = ent->CTXBUF;
 	if(0 == water)return;
+
 	if(_gl41full_ == wnd->fmt)world2clip_projznzp_transpose(water->wvp, &geom->frus);
 	else world2clip_projz0z1_transpose(water->wvp, &geom->frus);
 
@@ -295,38 +325,31 @@ static void water_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg
 	//geom
 	water_gl41geom_update(ent,foot, wor,geom, wnd,area);
 }
-static void water_draw_pixel(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void water_draw_json(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void water_draw_html(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void water_draw_tui(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
-static void water_draw_cli(
-	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
-{
-}
 
 
 
 
-static void water_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void water_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
-	water_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		water_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
+	}
 }
 static void water_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

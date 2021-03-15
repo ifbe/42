@@ -11,13 +11,13 @@ int threaddelete(u64 h)
 {
 	return 0;
 }
-int tasksearch(void* buf, int len)
+int threadsearch(void* buf, int len)
 {
-	say("@tasksearch\n");
+	say("@threadsearch\n");
 
 	return 0;
 }
-int taskmodify(void* buf, int len)
+int threadmodify(void* buf, int len)
 {
 	return 0;
 }

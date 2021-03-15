@@ -14,7 +14,7 @@ void scene3d_selected(struct entity* wnd, struct fstyle* sty)
 //[-6,-5]: wnd,area -> cam,togl
 //[-4,-3]: cam, xxxx -> world,camgeom
 //[-2,-1]: world,0 -> scene,0
-int scene3d_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int scene3d_world_camera_window(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct fstyle* sty;
 	struct relation* rel = ent->orel0;
@@ -34,6 +34,28 @@ int scene3d_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 		}
 		rel = samesrcnextdst(rel);
 	}
+	return 0;
+}
+int scene3d_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == stack)return 0;
+
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
+	}
+
+	//caller defined behavior
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	}
+
+	scene3d_world_camera_window(ent,foot, stack,sp, arg,key, buf,len);
 	return 0;
 }
 int scene3d_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

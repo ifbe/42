@@ -128,18 +128,6 @@ static void nmos_draw_gl41(
 	}
 	gl41line(wnd, gcolor, tc, tr);
 }
-static void nmos_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
-{
-	struct style* slot;
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
-	if(stack&&('v' == key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		nmos_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
-}
 
 
 
@@ -245,14 +233,62 @@ static void nmos_write_G(struct entity* mos,int key, struct halfrel* stack,int s
 
 
 
-static void nmos_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void nmos_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	nmos_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+static void nmos_wrl_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+{
+}
+static void nmos_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+{
+	struct entity* wnd;struct style* area;
+	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
+
+	gl41data_before(wnd);
+	nmos_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+	gl41data_01cam(wnd);
+	gl41data_after(wnd);
+}
+
+
+
+
+static void nmos_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == stack)return;
+
+	//foot defined behavior
 	switch(stack[sp-1].flag){
-		case 'D':nmos_read_D(ent,key, stack,sp, buf,len);return;
-		case 'S':nmos_read_S(ent,key, stack,sp, buf,len);return;
-		//case 'B':nmos_read_B(ent,key, stack,sp, buf,len);return;
-		case 'G':nmos_read_G(ent,key, stack,sp, buf,len);return;
-		default: nmos_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
+	case 'D':nmos_read_D(ent,key, stack,sp, buf,len);return;
+	case 'S':nmos_read_S(ent,key, stack,sp, buf,len);return;
+	//case 'B':nmos_read_B(ent,key, stack,sp, buf,len);return;
+	case 'G':nmos_read_G(ent,key, stack,sp, buf,len);return;
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		nmos_wnd(ent,foot, stack,sp);break;
+	default:
+		nmos_wrl_cam_wnd(ent,foot, stack,sp);break;
+		break;
 	}
 }
 static void nmos_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)

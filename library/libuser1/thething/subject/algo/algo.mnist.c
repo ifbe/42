@@ -208,22 +208,6 @@ void mnist_draw_cli(struct entity* win, struct style* sty)
 
 
 
-static void mnist_read_bywnd(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
-{
-//wnd.area -> cam.gl41, cam.slot -> world.geom
-	struct entity* wnd;struct style* area;
-	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-
-	struct fstyle fs;
-	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
-	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
-	gl41data_before(wnd);
-	mnist_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_01cam(wnd);
-	gl41data_after(wnd);
-}
 static void mnist_write_bywnd(struct entity* ent, struct event* ev)
 {
 //say("%x,%x\n",ev->what,ev->why);
@@ -240,16 +224,60 @@ say("%d\n", ent->iz0);
 
 
 
-static int mnist_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void mnist_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct entity* xxx = stack[sp-2].pchip;
-	switch(xxx->fmt){
-	case _gl41full_:{
-		if('v' != key)break;
-		mnist_read_bywnd(ent,foot, stack,sp, arg,key, buf,len);break;
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	mnist_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+static void mnist_wrl_ywnd(_ent* ent,void* foot, _syn* stack,int sp)
+{
+}
+static void mnist_wnd(_ent* ent,void* foot, _syn* stack,int sp)
+{
+//wnd.area -> cam.gl41, cam.slot -> world.geom
+	struct entity* wnd;struct style* area;
+	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	struct fstyle fs;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
+	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
+	gl41data_before(wnd);
+	mnist_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+	gl41data_01cam(wnd);
+	gl41data_after(wnd);
+}
+
+
+
+
+static void mnist_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
 	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		mnist_wnd(ent,foot, stack,sp);
+		break;
+	default:
+		mnist_wrl_cam_wnd(ent,foot, stack,sp);
+		break;
 	}
-	return 0;
 }
 static int mnist_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

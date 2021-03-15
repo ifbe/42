@@ -143,14 +143,22 @@ static void qrcode_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* ar
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	qrcode_draw_gl41(ent,foot, wor,geom, wnd,area);
 }
+
+
+
+
 static void qrcode_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	struct entity* wnd = stack[sp-2].pchip;
 	struct style* area = stack[sp-2].pfoot;
 
 	switch(wnd->fmt){
-		case _rgba_:qrcode_draw_pixel(ent, foot, wnd, area);break;
-		default:qrcode_read_bycam(ent,foot, stack,sp, arg,key);
+	case _rgba_:
+		qrcode_draw_pixel(ent, foot, wnd, area);
+		break;
+	default:
+		qrcode_read_bycam(ent,foot, stack,sp, arg,key);
+		break;
 	}
 }
 static void qrcode_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)

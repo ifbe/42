@@ -128,18 +128,6 @@ static void pmos_draw_gl41(
 	}
 	gl41line(wnd, gcolor, tc, tr);
 }
-static void pmos_read_bycam(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
-{
-	struct style* slot;
-	struct entity* wor;struct style* geom;
-	struct entity* wnd;struct style* area;
-	if(stack&&('v' == key)){
-		slot = stack[sp-1].pfoot;
-		wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
-		wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
-		pmos_draw_gl41(ent,slot, wor,geom, wnd,area);
-	}
-}
 
 
 
@@ -244,14 +232,43 @@ static void pmos_write_G(struct entity* mos,int key, struct halfrel* stack,int s
 
 
 
-static void pmos_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)
+static void pmos_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+	pmos_draw_gl41(ent,slot, wor,geom, wnd,area);
+}
+
+
+
+
+static void pmos_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == stack)return;
+
+	//foot defined behavior
 	switch(stack[sp-1].flag){
-		case 'D':pmos_read_D(ent,key, stack,sp, buf,len);return;
-		case 'S':pmos_read_S(ent,key, stack,sp, buf,len);return;
-		//case 'B':pmos_read_B(ent,key, stack,sp, buf,len);return;
-		case 'G':pmos_read_G(ent,key, stack,sp, buf,len);return;
-		default: pmos_read_bycam(ent,foot, stack,sp, arg,key, buf,len);
+	case 'D':pmos_read_D(ent,key, stack,sp, buf,len);return;
+	case 'S':pmos_read_S(ent,key, stack,sp, buf,len);return;
+	//case 'B':pmos_read_B(ent,key, stack,sp, buf,len);return;
+	case 'G':pmos_read_G(ent,key, stack,sp, buf,len);return;
+	}
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		break;
+	case _gl41full_:
+		break;
+	default:
+		pmos_wrl_cam_wnd(ent,foot, stack,sp);
+		break;
 	}
 }
 static void pmos_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, u8* buf,int len)

@@ -82,7 +82,7 @@ void test_prepgl(struct gl41data* data)
 	data->src.vbuf_enq = 1;
 	data->src.ibuf_enq = 1;
 }
-void test_tickgl(struct entity* ent, struct supply* sup)
+void test_tickgl(struct entity* ent,void* slot, struct entity* wnd,void* area)
 {
 	float a = 2*PI*(timeread()%5000000)/5000000.0;
 	float c = getcos(a);
@@ -116,7 +116,7 @@ void test_tickgl(struct entity* ent, struct supply* sup)
 	world2clip_projznzp(cammvp, &sty);
 	mat4_transpose(cammvp);
 
-	sup->gleasy_solid = ent->buf0;
+	wnd->gleasy_solid = ent->buf0;
 }
 
 
@@ -134,7 +134,7 @@ void test_preppcm(struct pcmdata* pcm)
 	buf = pcm->buf;
 	for(j=0;j<44100;j++)buf[j] = (short)(4096.0*getsin(j*tau/100));
 }
-void test_tickpcm(struct entity* ent, struct supply* sup)
+void test_tickpcm(struct entity* ent,void* slot, struct entity* sup,void* geom)
 {
 	sup->pcmeasy_data = ent->buf1;
 }
@@ -143,14 +143,43 @@ void test_tickpcm(struct entity* ent, struct supply* sup)
 
 
 
-int test_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static void test_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
-	struct supply* wnd = stack[sp-2].pchip;
-	switch(wnd->fmt){
-	case _gl41easy_:test_tickgl(ent,wnd);break;
-	case _pcm_:test_tickpcm(ent,wnd);break;
+	struct entity* wor;struct style* geom;
+	struct entity* wnd;struct style* area;
+	
+	wor = stack[sp-2].pchip;geom = stack[sp-2].pfoot;
+	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
+}
+
+
+
+
+void test_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	if(0 == stack)return;
+
+	//foot defined behavior
+	switch(stack[sp-1].flag){
 	}
-	return 0;
+
+	//caller defined behavior
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _pcm_:
+		test_tickpcm(ent,slot, caller,area);
+	case _rgba_:
+		break;
+	case _gl41easy_:
+		test_tickgl(ent,slot, caller,area);
+	case _gl41full_:
+		break;
+	default:
+		test_wrl_cam_wnd(ent,slot, stack,sp);
+		break;
+	}
 }
 int test_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {

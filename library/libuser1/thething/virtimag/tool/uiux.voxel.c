@@ -112,7 +112,7 @@ void voxel_data(struct entity* act, int type, void* buf, int len)
 
 
 
-static void voxel_take_bycam(_ent* ent,void* slot, _syn* stack,int sp)
+static void voxel_wrl_cam_wnd(_ent* ent,void* slot, _syn* stack,int sp)
 {
 	struct entity* wor;struct style* geom;
 	struct entity* wnd;struct style* area;
@@ -122,11 +122,16 @@ static void voxel_take_bycam(_ent* ent,void* slot, _syn* stack,int sp)
 	wnd = stack[sp-6].pchip;area = stack[sp-6].pfoot;
 	voxel_draw_gl41(ent,slot, wor,geom, wnd,area);
 }
+
+
+
+
 static void voxel_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	if(0 == stack)return;
+
 	struct entity* caller;struct style* area;
 	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
-	if(0 == stack)return;
 
 	switch(caller->fmt){
 	case _tui_:
@@ -143,7 +148,7 @@ static void voxel_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int
 		say("caller@%p\n", caller);
 		break;
 	default:
-		voxel_take_bycam(ent,slot, stack,sp);
+		voxel_wrl_cam_wnd(ent,slot, stack,sp);
 		break;
 	}
 }
