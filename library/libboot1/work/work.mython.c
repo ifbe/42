@@ -3,7 +3,7 @@ void poweroff();
 //
 void* filesearch(void*, int);
 //
-void* tasksearch(void*, int);
+void* threadsearch(void*, int);
 //
 int processsearch(void* buf, int len);
 int processcreate(void* file, void* args);
@@ -159,11 +159,11 @@ void term_file(int argc, u8** argv)
 {
 	if(argc <= 1)filesearch(0, 0);
 }
-void term_task(int argc, u8** argv)
+void term_thread(int argc, u8** argv)
 {
-	if(argc <= 1)tasksearch(0, 0);
+	if(argc <= 1)threadsearch(0, 0);
 }
-void term_proc(int argc, u8** argv)
+void term_process(int argc, u8** argv)
 {
 	if(argc <= 1)processsearch(0, 0);
 	else processcreate(argv[1], 0);
@@ -193,8 +193,8 @@ int termwrite(u8* buf, int len)
 	else if(0 == ncmp(buf, "mmio", 4))term_mmio(j, argv);
 	else if(0 == ncmp(buf, "memory", 5))term_memory(j, argv);
 	else if(0 == ncmp(buf, "file", 4))term_file(j, argv);
-	else if(0 == ncmp(buf, "task", 4))term_task(j, argv);
-	else if(0 == ncmp(buf, "proc", 4))term_proc(j, argv);
+	else if(0 == ncmp(buf, "thread", 6))term_thread(j, argv);
+	else if(0 == ncmp(buf, "process", 7))term_process(j, argv);
 	else if(0 == ncmp(buf, "window", 6))term_window(j, argv);
 	else if(0 == ncmp(buf, "origin", 6))originmodify(j, argv);
 	else if(0 == ncmp(buf, "bootup", 6))bootupmodify(j, argv);

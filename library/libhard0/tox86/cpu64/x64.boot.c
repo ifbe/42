@@ -20,7 +20,8 @@ void initidt_ap(int coreid);
 void localapic_init();
 void apictimer_init();
 //
-void threadmanager_registersupplier(int);
+void process_registersupplier(int);
+void thread_registersupplier(int);
 //acpi
 u64 getknowncores();
 //
@@ -74,7 +75,8 @@ void initcpu_bsp(struct item* p)
 	int coreid = localapic_coreid();
 	say("coreid = %d\n", coreid);
 
-	threadmanager_registersupplier(coreid);
+	process_registersupplier(coreid);
+	thread_registersupplier(coreid);
 
 	initidt_bsp();
 	apictimer_init();
@@ -120,7 +122,7 @@ void initcpu_other()
 	int coreid = localapic_coreid();
 	say("coreid=%d\n", coreid);
 
-	threadmanager_registersupplier(coreid);
+	thread_registersupplier(coreid);
 
 	initidt_ap(coreid);
 	apictimer_init();

@@ -133,7 +133,7 @@ int threaddelete(u64 id)
 {
 	return 0;
 }
-int tasksearch(void* buf, int len)
+int threadsearch(void* buf, int len)
 {
 	int j,k;
 	volatile struct threadstate* tasktable;
@@ -149,7 +149,7 @@ int tasksearch(void* buf, int len)
 	}
 	return 0;
 }
-int taskmodify(void* buf, int len)
+int threadmodify(void* buf, int len)
 {
 	return 0;
 }
@@ -217,7 +217,7 @@ void schedulethread_loadnext(volatile struct threadstate* pnext, u64* cputmp, in
 	u64 fpubuf = (u64)&pnext->fpureg;
 	fpu_fxrstor((fpubuf+0x40) - (fpubuf&0x3f));
 }
-void schedulethread(struct saved_cpureg* cpureg)
+void thread_schedule(struct saved_cpureg* cpureg)
 {
 	//if(first 1008/1024 of one sec)dont change
 	//u64 time = timeread() >> 10;
@@ -252,7 +252,7 @@ void schedulethread(struct saved_cpureg* cpureg)
 fuckshit:
 	return;
 }
-void threadmanager_registersupplier(int coreid)
+void thread_registersupplier(int coreid)
 {
 	say("incoming thread: from coreid=%d\n", coreid);
 
