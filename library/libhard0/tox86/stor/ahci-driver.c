@@ -320,7 +320,7 @@ void maketable(struct HBA_CMD_HEADER* cmdheader, u64 from, u8* buf, u64 count)
 	//ahci_print("ptdtl",(u64)cmdheader->prdtl);
 
 	struct HBA_CMD_TBL* cmdtable = (struct HBA_CMD_TBL*)(u64)cmdheader->ctba;
-	ahci_print("cmdtable=%p\n", cmdtable);
+	//ahci_print("cmdtable=%p\n", cmdtable);
 	char* p=(char*)cmdtable;
 	int i=sizeof(struct HBA_CMD_TBL)+(cmdheader->prdtl-1)*sizeof(struct HBA_PRDT_ENTRY);
 	for(;i>0;i--){p[i]=0;}
@@ -377,8 +377,8 @@ int ahci_readblock(struct HBA_PORT* port, u64 from, u8* buf, u64 count)
 		return -1;
 	}
 
-	ahci_print("cmdslot=%x\n", cmdslot);
-	ahci_print("cmdheader=%p\n", cmdheader);
+	//ahci_print("cmdslot=%x\n", cmdslot);
+	//ahci_print("cmdheader=%p\n", cmdheader);
 	cmdheader += cmdslot;
 	maketable(cmdheader, from, buf, count);
 
@@ -399,7 +399,7 @@ int ahci_readblock(struct HBA_PORT* port, u64 from, u8* buf, u64 count)
 
 		break;
 	}
-	ahci_print("is=%x\n", port->is);
+	//ahci_print("is=%x\n", port->is);
 	//unsigned int* pointer=(unsigned int*)(u64)(port->fb);
 
 	//issue
@@ -538,12 +538,12 @@ static int ahci_readdata(struct item* ahci,void* foot,struct halfrel* stack,int 
 	struct perahci* my = (void*)(ahci->priv_data);
 	struct HBA_MEM* abar = my->abar;
 	struct HBA_PORT* port = foot;
-	ahci_print("@ahci_ontake: node=%p,abar=%p,port=%p, off=%x,len=%x\n", my,abar,port, off,len);
+	//ahci_print("@ahci_ontake: node=%p,abar=%p,port=%p, off=%x,len=%x\n", my,abar,port, off,len);
 
 	int ret = ahci_readblock(port, off>>9, buf, len>>9);
 	if(ret < 0)return 0;
 
-	ahci_print("ret=%d\n",ret);
+	//ahci_print("ret=%d\n",ret);
 	return len;
 }
 static int ahci_readinfo(struct item* ahci,void* foot,struct halfrel* stack,int sp, void* arg,int off, void* buf,int len)
@@ -568,7 +568,7 @@ takedata:
 }
 static int ahci_ongive(struct item* ahci,void* foot,struct halfrel* stack,int sp, u8* arg,int off, void* buf,int len)
 {
-	ahci_print("@ahci_ongive: %p,%p\n",ahci,foot);
+	//ahci_print("@ahci_ongive: %p,%p\n",ahci,foot);
 	return 0;
 }
 

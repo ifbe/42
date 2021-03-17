@@ -173,7 +173,7 @@ int gptclient_ontake(_art* art,void* foot, _syn* stack,int sp, u8* arg,int idx, 
 {
 	int ret;
 	u64 offs;
-	say("@gptclient_take\n");
+	//say("@gptclient_take\n");
 
 	if(arg){
 		//info

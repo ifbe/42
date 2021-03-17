@@ -1,16 +1,35 @@
 #include "libsoft.h"
 int parse_pe(void* pe, int len);
+void pagetable_use(void* cr3);
+void pagetable_makeuser(void* buf, int len, u64 pa, int plen, u64 va, int vlen);
 
 
 
 
 struct procstate{
-	volatile u64* cr3;
-	volatile void* code;
+	volatile void* cr3;		//physical address, page table
+	volatile void* code;	//physical address, 2m align
 	volatile void* path;
 }__attribute__((packed));
 static struct procstate table[8];
 static int proccount;
+
+
+
+
+void process_malloc(u64* twomega, u64* onemega)
+{
+	u8* mem = memorycreate(0x300000, 0);
+	u64 tmp = (u64)mem;
+	if(tmp&0x1fffff){
+		*twomega = tmp+0x100000;
+		*onemega = tmp;
+	}
+	else{
+		*twomega = tmp;
+		*onemega = tmp+0x200000;
+	}
+}
 
 
 
@@ -30,9 +49,18 @@ int processmodify()
 u64 processcreate(void* file, void* args)
 {
 	say("file=%s\n",file);
-
+	u64 cr,pa,va;
 	int now = 1;
-	if(0 == table[now].code)table[now].code = memorycreate(0x100000, 0);
+	if(0 == table[now].code){
+		process_malloc(&pa, &cr);
+		table[now].cr3 = (void*)cr;
+		table[now].code = (void*)pa;
+
+		va = 0xffffffffffe00000;
+		pagetable_makeuser((void*)cr, 0x100000, pa, 0x200000, va, 0x200000);
+		pagetable_use((void*)cr);
+		printmemory((void*)va, 0x200);
+	}
 
 	void* p = (void*)table[now].code;
 	int ret = readfile(file,0, 0,0, p,0x10000);

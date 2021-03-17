@@ -96,25 +96,31 @@ void pagetable_makekern(u8* buf, int len)
 	u64* pml4 = (u64*)(buf+PML4OFFS);
 	pml4[0] = (u64)pdpt | Writable | Present;
 }
-void pagetable_makeuser(u8* buf, int len, u64 va, int vlen, u64 pa, int plen)
+void pagetable_makeuser(u8* buf, int len, u64 pa, int plen, u64 va, int vlen)
 {
 	pagetable_makekern(buf, 0x40000);
 
 	//copy kern
 	//whereis va, *where = pa | Allowuser | Writable | Present;
+	//u64 bit47_63 = (va>>47)&0x1ffff;		//must 0 or 0x1ffff
+	u64 bit39_47 = (va>>39)&0x1ff;
+	u64 bit30_38 = (va>>30)&0x1ff;
+	u64 bit21_29 = (va>>21)&0x1ff;
+	u64 bit12_20 = (va>>12)&0x1ff;
+	say("pml4:%d, pml3:%d, pml2:%d, pml1:%d\n",bit39_47, bit30_38, bit21_29, bit12_20);
 
 	u64* pdir = (u64*)(buf+PDIRUSER);
-	pdir[511] = 0 | Isleaf | Allowuser | Writable | Present;
+	pdir[bit21_29] = pa | Isleaf | Allowuser | Writable | Present;
 
 	//page directory pointer: waste 0x1000 B, actually 62*8 B
 	//pdiraddr8B_per_item, 512item_per_table, 1table_cant_less
 	u64* pdpt = (u64*)(buf+PDPTUSER);
-	pdpt[511] = (u64)pdir | Allowuser | Writable | Present;
+	pdpt[bit30_38] = (u64)pdir | Allowuser | Writable | Present;
 
 	//page map level 4: waste 0x1000 B, actually 8B
 	//pdptaddr8B_per_item, 512item_per_table, 1table_cant_less
 	u64* pml4 = (u64*)(buf+PML4OFFS);
-	pml4[511] = (u64)pdpt | Writable | Present;
+	pml4[bit39_47] = (u64)pdpt | Writable | Present;
 }
 
 
