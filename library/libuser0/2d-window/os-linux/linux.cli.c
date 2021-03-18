@@ -3,24 +3,16 @@
 
 
 
-void windowread(struct supply* win)
+void window_take(struct supply* win)
 {
 }
-void windowwrite()
+void window_give()
 {
 }
-void windowchange()
-{
-}
-void windowlist()
-{
-}
-void windowstop()
-{
-}
-void windowstart()
-{
-}
+
+
+
+
 void windowdelete(struct supply* w)
 {
 }

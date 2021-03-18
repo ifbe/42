@@ -41,7 +41,8 @@ exe:
 	$(library)/libhard0/*.o $(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o $(library)/libuser1/*.o \
-	-lglfw3 -lglew32 -lglu32 -lole32 -lopengl32 -lstrmiids -lxinput -lwinmm -lws2_32
+	-lglfw3 -lglew32 -lglu32 -lopengl32 \
+	-lole32 -lstrmiids -lxinput -lwinmm -lws2_32
 clean:
 	rm -f *.o *.a
 	make -C $(library) clean
