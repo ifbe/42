@@ -20,7 +20,7 @@ void gl41data_convert(struct entity* wnd, struct style* area, struct event* ev, 
 
 
 void gl41data_nocam(struct entity* wnd)
-{
+{//left,bot: (-1,-1), right,top: (+1,+1)
 	int x,y;
 	void* trick = wnd->glfull_camera;
 	struct gl41data* data = trick + 0x400;
@@ -46,7 +46,7 @@ void gl41data_nocam(struct entity* wnd)
 	wnd->glfull_camera[0] = data;
 }
 void gl41data_01cam(struct entity* wnd)
-{
+{//left,bot: (0,0), right,top: (1,1)
 	int x,y;
 	void* trick = wnd->glfull_camera;
 	struct gl41data* data = trick + 0x400;
@@ -56,11 +56,13 @@ void gl41data_01cam(struct entity* wnd)
 		for(x=0;x<4;x++)m[y][x] = 0.0;
 		v[y] = 0.0;
 	}
-	m[0][0] = 1.0;
-	m[1][1] = 1.0;
-	m[2][2] =-0.5;
-	m[2][3] = 0.5;
+	m[0][0] = 2.0;
+	m[0][3] =-1.0;
+	m[1][1] = 2.0;
+	m[1][3] =-1.0;
+	m[2][2] = 1.0;
 	m[3][3] = 1.0;
+	mat4_transpose(m);
 
 	data->dst.arg[0].fmt = 'm';
 	data->dst.arg[0].name = "cammvp";

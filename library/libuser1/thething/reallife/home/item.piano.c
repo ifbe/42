@@ -350,14 +350,14 @@ static void piano_wnd(_ent* ent,void* foot, _syn* stack,int sp)
 	wnd = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 
 	struct fstyle fs;
-	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.5;
 	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
 
 	gl41data_before(wnd);
 	piano_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_01cam(wnd);
+	gl41data_nocam(wnd);
 	gl41data_after(wnd);
 }
 

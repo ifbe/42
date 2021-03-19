@@ -257,14 +257,14 @@ static void vkbd_read_bydx11(_ent* ent,struct style* slot, _ent* wnd,struct styl
 static void vkbd_read_bygl41(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
 	struct fstyle fs;
-	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.0;
+	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.5;
 	fs.vr[0] = 1.0;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
+	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
 
 	gl41data_before(wnd);
 	vkbd_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_01cam(wnd);
+	gl41data_nocam(wnd);
 	gl41data_after(wnd);
 }
 static void vkbd_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, struct event* ev,int len)

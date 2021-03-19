@@ -13,15 +13,21 @@ url:datafile/stl/bunny-lowpoly.stl
 freecam{
 fmt:freecam
 }
-virtual{
+gameroot{
 fmt:virtual
 }
 
 minimap{
 fmt:minimap
 }
+status{
+fmt:status
+}
+skill{
+fmt:skill
+}
 uiuxroot{
-fmt:uiuxroot
+fmt:virtual
 }
 
 camrts{
@@ -84,6 +90,18 @@ N: 0.0, 0.0, 0.0, 1.0
 F: 0.0, 0.0, 0.0, 1000000000.0
 }
 
+minirect{
+c:0.0, 0.0
+q:0.3, 0.3
+}
+statrect{
+c:0.3, 0.0
+q:0.4, 0.25
+}
+userrect{
+c:0.7, 0.0
+q:0.3, 0.3
+}
 fullrect{
 c:0.0, 0.0
 q:1.0, 1.0
@@ -96,14 +114,16 @@ q:1.0, 1.0
 
 
 <relation>
-#virtual depends on
-(virtual, gndgeom, 0) -> (ground, gndslot, 0)
-(virtual, treegeom, 0) -> (tree, treeslot, 0)
-(virtual, rabgeom, 0) -> (rabbit, rabslot, 0)
-(virtual, freegeom, 0) -> (freecam, freeslot, in)
+#gameroot depends on
+(gameroot, gndgeom, 0) -> (ground, gndslot, 0)
+(gameroot, treegeom, 0) -> (tree, treeslot, 0)
+(gameroot, rabgeom, 0) -> (rabbit, rabslot, 0)
+(gameroot, freegeom, 0) -> (freecam, freeslot, in)
 
 #uiuxroot depends on
-(uiuxroot, 0, 0) -> (minimap, 0, 0)
+(uiuxroot, minirect, 0) -> (minimap, 0, 0)
+(uiuxroot, statrect, 0) -> (status, 0, 0)
+(uiuxroot, userrect, 0) -> (skill, 0, 0)
 
 #glwnd depends on
 (opengl, fullrect, 0) -> (freecam, 0, 0)

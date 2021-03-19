@@ -25,6 +25,25 @@ void dx11data_convert(struct entity* wnd, struct style* area, struct event* ev, 
 
 void dx11data_nocam(struct entity* wnd)
 {
+	void* trick = wnd->dxfull_camera;
+	struct dx11data* data = trick + 0x400;
+	struct unidata* uni = trick + 0x800;
+	data->src.uni[0].buf = uni;
+	data->src.uni[0].len = sizeof(struct unidata);
+
+	int x,y;
+	float (*m)[4] = uni->mat;
+	float* v = uni->vec;
+	for(y=0;y<4;y++){
+		for(x=0;x<4;x++)m[y][x] = 0.0;
+		v[y] = 0.0;
+	}
+	m[0][0] = 1.0;
+	m[1][1] = 1.0;
+	m[2][2] = 1.0;
+	m[3][3] = 1.0;
+
+	wnd->dxfull_camera[0] = data;
 }
 void dx11data_01cam(struct entity* wnd)
 {
@@ -41,10 +60,11 @@ void dx11data_01cam(struct entity* wnd)
 		for(x=0;x<4;x++)m[y][x] = 0.0;
 		v[y] = 0.0;
 	}
-	m[0][0] = 1.0;
-	m[1][1] = 1.0;
-	m[2][2] =-0.5;
-	m[3][2] = 0.5;
+	m[0][0] = 2.0;
+	m[0][3] =-1.0;
+	m[1][1] = 2.0;
+	m[1][3] =-1.0;
+	m[2][2] = 1.0;
 	m[3][3] = 1.0;
 
 	wnd->dxfull_camera[0] = data;

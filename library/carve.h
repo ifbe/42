@@ -6,6 +6,8 @@
 //directx
 void dx11data_before(struct entity* wnd);
 void dx11data_after(struct entity* wnd);
+void dx11data_nocam(struct entity* wnd);
+void dx11data_01cam(struct entity* wnd);
 int dx11data_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int idx, void* buf,int len);
 
 void dx11solid_rect(struct entity* win, u32 rgb, vec3 vc, vec3 vr, vec3 vf);

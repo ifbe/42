@@ -39,10 +39,12 @@ int virtual_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, 
 	case _fbo_:
 		gl41data_before(wnd);
 		gl41data_01cam(wnd);
-		virtual_traverse(ent,foot, stack,sp, arg,key);break;
+		virtual_traverse(ent,foot, stack,sp, arg,key);
 		gl41data_after(wnd);
+		break;
 	default:
-		virtual_traverse(ent,foot, stack,sp, arg,key);break;
+		virtual_traverse(ent,foot, stack,sp, arg,key);
+		break;
 	}//switch
 	return 0;
 }

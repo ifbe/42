@@ -58,19 +58,18 @@ static void status_read_byuiux(_ent* ent,void* slot, _syn* stack,int sp)
 	uuu = stack[sp-2].pchip;area = stack[sp-2].pfoot;
 	wnd = stack[sp-4].pchip;rect = stack[sp-4].pfoot;
 
-	//0,1 -> -1,1
-	float x0,y0,dx,dy;
-	x0 = area->fs.vc[0]*2-1;
-	y0 = area->fs.vc[1]*2-1;
-	dx = area->fs.vq[0];
-	dy = area->fs.vq[1];
+	float x0,y0,xn,yn;
+	x0 = area->fs.vc[0];
+	y0 = area->fs.vc[1];
+	xn = area->fs.vc[0]+area->fs.vq[0];
+	yn = area->fs.vc[1]+area->fs.vq[1];
 	//say("%f,%f,%f,%f\n",x0,y0,dx,dy);
 
 	struct fstyle fs;
-	fs.vc[0] = x0+dx;fs.vc[1] = y0+dy;fs.vc[2] = 0.0;
-	fs.vr[0] = dx;fs.vr[1] = 0.0;fs.vr[2] = 0.0;
-	fs.vf[0] = 0.0;fs.vf[1] = dy;fs.vf[2] = 0.0;
-	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] = 1.0;
+	fs.vc[0] = (x0+xn)/2;fs.vc[1] = (y0+yn)/2;fs.vc[2] = 0.5;
+	fs.vr[0] = (xn-x0)/2;fs.vr[1] =       0.0;fs.vr[2] = 0.0;
+	fs.vf[0] =       0.0;fs.vf[1] = (yn-y0)/2;fs.vf[2] = 0.0;
+	fs.vt[0] =       0.0;fs.vt[1] =       0.0;fs.vt[2] =-0.5;
 
 	status_draw_gl41(ent,slot, 0,(void*)&fs, wnd,rect);
 }
