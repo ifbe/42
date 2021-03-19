@@ -15,6 +15,7 @@ target:
 	$(CC) $(CF) std/stdev.c
 	$(CC) $(CF) std/stdin.c
 	$(CC) $(CF) std/stdout.c
-	$(CC) $(CF) std/stdrel.c
+	$(CC) $(CF) mgr/mgrnode.c
+	$(CC) $(CF) mgr/mgrwire.c
 clean:
 	rm -f *.o *.a *.so
