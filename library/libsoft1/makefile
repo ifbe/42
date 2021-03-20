@@ -1,5 +1,6 @@
 CC:=gcc
-CF:=-c -O2 -fPIC -I.
+CF:="-c -O2 -fPIC -I.."
+DIR:=$(shell pwd)
 SRC= \
 libalgo/liblang/assembly/asm.x64.c \
 libalgo/liblang/assembly/asm.arm.c \
@@ -218,8 +219,9 @@ artery.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 target: $(OBJ)
+
 %.o: %.c
-	$(CC) $(CF) $<
+	$(CC) $(CF) -o $(DIR)/$(notdir $@) $<
 
 clean:
 	rm -f *.o *.a

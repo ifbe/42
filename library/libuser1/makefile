@@ -1,5 +1,6 @@
 CC:=gcc
-CF:=-c -O2 -fPIC -I.
+CF:="-c -O2 -fPIC -I.."
+DIR:=$(shell pwd)
 SRC= \
 forcpu/carve/carve.point.c \
 forcpu/carve/carve.line.c \
@@ -385,8 +386,9 @@ entity.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 
 target: $(OBJ)
+
 %.o: %.c
-	$(CC) $(CF) $<
+	$(CC) $(CF) -o $(DIR)/$(notdir $@) $<
 
 clean:
 	rm -f *.o *.a

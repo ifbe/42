@@ -1,21 +1,28 @@
 CC:=gcc
-CF:=-c -O2 -fPIC
+CF:="-c -O2 -fPIC -I.."
+DIR:=$(shell pwd)
+SRC= \
+work/work.compile.c \
+work/work.kernel.c \
+work/work.myml.c \
+work/work.mython.c \
+loop/loop.exiter.c \
+loop/loop.poller.c \
+loop/loop.pulser.c \
+loop/loop.realer.c \
+loop/loop.waiter.c \
+std/stdev.c \
+std/stdin.c \
+std/stdout.c \
+mgr/mgrnode.c \
+mgr/mgrwire.c \
+bootup.c
+OBJ = $(patsubst %.c,%.o,$(SRC))
 
-target:
-	$(CC) $(CF) bootup.c
-	$(CC) $(CF) work/work.compile.c
-	$(CC) $(CF) work/work.kernel.c
-	$(CC) $(CF) work/work.myml.c
-	$(CC) $(CF) work/work.mython.c
-	$(CC) $(CF) loop/loop.exiter.c
-	$(CC) $(CF) loop/loop.poller.c
-	$(CC) $(CF) loop/loop.pulser.c
-	$(CC) $(CF) loop/loop.realer.c
-	$(CC) $(CF) loop/loop.waiter.c
-	$(CC) $(CF) std/stdev.c
-	$(CC) $(CF) std/stdin.c
-	$(CC) $(CF) std/stdout.c
-	$(CC) $(CF) mgr/mgrnode.c
-	$(CC) $(CF) mgr/mgrwire.c
+target: $(OBJ)
+
+%.o: %.c
+	$(CC) $(CF) -o $(DIR)/$(notdir $@) $<
+
 clean:
 	rm -f *.o *.a *.so

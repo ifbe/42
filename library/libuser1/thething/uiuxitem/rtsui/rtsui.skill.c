@@ -8,11 +8,24 @@ static void skill_draw_gl41(
 	struct entity* win, struct style* geom,
 	struct entity* ctx, struct style* area)
 {
+	vec4 tc,tr,tf;
 	float* vc = geom->fshape.vc;
 	float* vr = geom->fshape.vr;
 	float* vf = geom->fshape.vf;
 	float* vt = geom->fshape.vt;
-	gl41solid_rect(ctx,0x00ffff, vc,vr,vf);
+	int x,y,j;
+	int w = 4;
+	int h = 3;
+	for(y=0;y<h;y++){
+		for(x=0;x<w;x++){
+			for(j=0;j<3;j++){
+				tr[j] = 0.9*vr[j] / w;
+				tf[j] = 0.9*vf[j] / h;
+				tc[j] = vc[j] + (2*x-w+1)*vr[j]/w + (2*y-h+1)*vf[j]/h;
+				gl41solid_rect(ctx,0x00ffff, tc,tr,tf);
+			}
+		}
+	}
 }
 static void skill_draw_pixel(
 	struct entity* act, struct style* pin,
