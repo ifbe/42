@@ -57,7 +57,9 @@ exe:
 	$(library)/libhard0/*.o libhard1/*.o \
 	$(library)/libsoft0/*.o libsoft1/*.o \
 	$(library)/libuser0/*.o libuser1/*.o \
-	-lGLEW -lglfw -lm -framework OpenGL -framework AudioToolbox
+	-lGLEW -lglfw -framework OpenGL \
+	-framework AVFoundation -framework Foundation \
+	-framework AudioToolbox -lm
 clean:
 	rm -f */*.o
 	rm -f *.exe *.out *.o *.a *.dylib

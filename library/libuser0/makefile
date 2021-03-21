@@ -136,7 +136,7 @@ macos:
 	$(CC) $(CF) systray/mac/mac.tray.c
 	$(CC) $(CF) sound-micphone/os-mac/mac.aqin.c
 	$(CC) $(CF) sound-speaker/os-mac/mac.aqout.c
-	$(CC) $(CF) 2d-camera/os-mac/mac.cam.c
+	$(CC) $(CF) 2d-camera/os-mac/mac.avfoundation.m
 
 .PHONY:maccli
 maccli:target macos

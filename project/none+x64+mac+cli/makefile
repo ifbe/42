@@ -45,6 +45,7 @@ lib:
 	$(library)/libhard0/*.o libhard1/*.o \
 	$(library)/libsoft0/*.o libsoft1/*.o \
 	$(library)/libuser0/*.o libuser1/*.o 2>/dev/null
+bug:
 	libtool -dynamic -macosx_version_min 10.15 \
 	-o 42.dylib \
 	$(library)/libboot0/*.o libboot1/*.o \
@@ -58,6 +59,7 @@ exe:
 	$(library)/libhard0/*.o libhard1/*.o \
 	$(library)/libsoft0/*.o libsoft1/*.o \
 	$(library)/libuser0/*.o libuser1/*.o \
+	-framework AVFoundation -framework Foundation \
 	-framework AudioToolbox
 clean:
 	rm -f *.exe *.out *.o *.a *.dylib

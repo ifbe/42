@@ -59,7 +59,9 @@ exe:
 	$(library)/libhard0/*.o libhard1/*.o \
 	$(library)/libsoft0/*.o libsoft1/*.o \
 	$(library)/libuser0/*.o libuser1/*.o \
-	-framework Foundation -framework Cocoa -framework Metal -framework MetalKit -framework AudioToolbox
+	-framework Metal -framework MetalKit -framework Cocoa \
+	-framework AVFoundation -framework Foundation \
+	-framework AudioToolbox
 clean:
 	rm -f *.o *.a *.dylib
 	make -C $(library) clean
