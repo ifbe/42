@@ -9,6 +9,25 @@ struct unidata{
 
 void mt20data_nocam(struct entity* wnd)
 {
+	void* trick = wnd->mtfull_camera;
+	struct mt20data* data = trick + 0x400;
+	struct unidata* uni = trick + 0x800;
+	data->src.uni[0].buf = uni;
+	data->src.uni[0].len = sizeof(struct unidata);
+
+	int x,y;
+	float (*m)[4] = uni->mat;
+	float* v = uni->vec;
+	for(y=0;y<4;y++){
+		for(x=0;x<4;x++)m[y][x] = 0.0;
+		v[y] = 0.0;
+	}
+	m[0][0] = 1.0;
+	m[1][1] = 1.0;
+	m[2][2] = 1.0;
+	m[3][3] = 1.0;
+
+	wnd->mtfull_camera[0] = data;
 }
 void mt20data_01cam(struct entity* wnd)
 {

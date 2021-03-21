@@ -847,6 +847,7 @@ struct supply
 		void* sdlwnd;	//2d.sdl
 		void*  glwnd;	//3d.glfw
 		u32      fbo;	//3d.fbo
+		void* mtkwnd;	//3d.metal
 	};
 	union{
 		u64 padd1;
@@ -855,6 +856,7 @@ struct supply
 		void*    hdc;	//2d.winapi
 		void* sdlren;	//2d.sdl
 		u64   gltime;	//3d.glfw
+		void* mtkview;	//3d.metal
 	};
 	union{
 		u64 padd2;
@@ -1064,6 +1066,7 @@ struct entity
 		u64 dc;
 		u64 gc;
 		void* er;
+		void* mtkview;
 		int ilen;
 	};
 	union{

@@ -186,17 +186,17 @@ NSLog(@"mywindow.keyUp");
 	//global
 	id<MTLDevice> device;
 	id<MTLCommandQueue> _commandQueue;
-
-	//example
 	id<MTLDepthStencilState> _depthState;
+
+	//todo: bad design
+	id <MTLCommandBuffer> commandBuffer;
+/*
+	//example
 	id<MTLRenderPipelineState> _pipelineState;
 	id<MTLLibrary> _shader;
 	id<MTLTexture> _texture;
 	id<MTLBuffer> _vertexBuffer;
-	id<MTLBuffer> _uniformBuffer;
-
-	id<MTLBuffer> _vertexBuffer2;
-	id<MTLBuffer> _uniformBuffer2;
+	id<MTLBuffer> _uniformBuffer;*/
 }
 - (id)initWithFrame:(CGRect)inFrame {
 NSLog(@"initWithFrame");
@@ -224,6 +224,10 @@ NSLog(@"setup");
 	depthDesc.depthWriteEnabled = YES;
 	_depthState = [self.device newDepthStencilStateWithDescriptor:depthDesc];
 
+	//[self testprep];
+}/*
+- (void)testprep
+{
 	// Load shaders.
 	NSError* error = nil;
 	_shader = [self.device newLibraryWithSource:source options:nil error:&error];
@@ -274,7 +278,7 @@ NSLog(@"setup");
 	for(y=0;y<1024;y++){
 		for(x=0;x<1024;x++){
 			if(((x&0xff) > 0x7f) && ((y&0xff) > 0x7f))image[y*1024+x] = 0xffffffff;
-			else image[y*1024+x] = 0xff000000;
+			else image[y*1024+x] = x | (y<<10);
 		}
 	}
 
@@ -303,24 +307,8 @@ NSLog(@"setup");
 		newBufferWithLength:sizeof(64)
 		options:MTLResourceCPUCacheModeWriteCombined
 	];
-
-	//vertex2
-	struct Vertex vert2[] = {
-		{{-2000,-2000, 0}, {255, 0, 0, 255}},
-		{{-2000, 2000, 0}, {0, 255, 0, 255}},
-		{{ 2000,-2000, 0}, {0, 0, 255, 255}}
-	};
-	_vertexBuffer2 = [self.device
-		newBufferWithBytes:vert2
-		length:sizeof(vert2)
-		options:MTLResourceStorageModeShared
-	];
-	_uniformBuffer2 = [self.device
-		newBufferWithLength:sizeof(64)
-		options:MTLResourceCPUCacheModeWriteCombined
-	];
 }
-- (void)draw000:(id <MTLCommandBuffer>)commandBuffer
+- (void)testshow:(id <MTLCommandBuffer>)cmdbuf
 {
 	//viewport
 	MTLViewport vp = {
@@ -343,11 +331,11 @@ NSLog(@"setup");
 	MTLRenderPassDescriptor* passdesc = self.currentRenderPassDescriptor;
 	passdesc.depthAttachment.loadAction = MTLLoadActionClear;
 	passdesc.depthAttachment.clearDepth = 1.0;
-	passdesc.colorAttachments[0].loadAction = MTLLoadActionClear;
-	passdesc.colorAttachments[0].clearColor = MTLClearColorMake(0.5, 0.5, 0.5, 1.0);
-/*
+	passdesc.colorAttachments[0].loadAction = MTLLoadActionLoad;
+	//passdesc.colorAttachments[0].clearColor = MTLClearColorMake(0.5, 0.5, 0.5, 1.0);
+
 	// Encode render command.
-	id <MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:passdesc];
+	id <MTLRenderCommandEncoder> encoder = [cmdbuf renderCommandEncoderWithDescriptor:passdesc];
 	[encoder setViewport:vp];
 	[encoder setDepthStencilState:_depthState];
 	[encoder setRenderPipelineState:_pipelineState];
@@ -356,12 +344,21 @@ NSLog(@"setup");
 	[encoder setVertexBuffer:_uniformBuffer offset:0 atIndex:FrameUniformBuffer];
 	[encoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
 	[encoder endEncoding];
-*/
+}*/
+- (void)draw000:(id <MTLCommandBuffer>)cmdbuf
+{
+	// clear color
+	MTLRenderPassDescriptor* passdesc = self.currentRenderPassDescriptor;
+	passdesc.depthAttachment.loadAction = MTLLoadActionClear;
+	passdesc.depthAttachment.clearDepth = 1.0;
+	passdesc.colorAttachments[0].loadAction = MTLLoadActionClear;
+	passdesc.colorAttachments[0].clearColor = MTLClearColorMake(0.1, 0.1, 0.1, 1.0);
+
 	//clear color
-	id <MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:passdesc];
+	id <MTLRenderCommandEncoder> encoder = [cmdbuf renderCommandEncoderWithDescriptor:passdesc];
 	[encoder endEncoding];
 }
-- (void)drawone:(id <MTLCommandBuffer>)commandBuffer data:(struct mt20data*)mt
+- (void)drawone:(id <MTLCommandBuffer>)cmdbuf data:(struct mt20data*)mt
 {
 	if(mt->dst.shader_deq != mt->src.shader_enq){
 		if(mt->dst.shader){
@@ -381,18 +378,33 @@ NSLog(@"setup");
 
 			// Create vertex descriptor.
 			MTLVertexDescriptor* vertDesc = [MTLVertexDescriptor new];
-			vertDesc.attributes[0].format = MTLVertexFormatFloat3;
-			vertDesc.attributes[0].offset = 0;
-			vertDesc.attributes[0].bufferIndex = 0;
-			vertDesc.attributes[1].format = MTLVertexFormatFloat3;
-			vertDesc.attributes[1].offset = 4*3;
-			vertDesc.attributes[1].bufferIndex = 0;
-			vertDesc.attributes[2].format = MTLVertexFormatFloat3;
-			vertDesc.attributes[2].offset = 4*6;
-			vertDesc.attributes[2].bufferIndex = 0;
-			vertDesc.layouts[0].stride = 4*9;
-			vertDesc.layouts[0].stepRate = 1;
-			vertDesc.layouts[0].stepFunction = MTLVertexStepFunctionPerVertex;
+			switch(mt->src.vtx[0].vbuf_fmt){
+			case vbuffmt_333:
+				vertDesc.attributes[0].format = MTLVertexFormatFloat3;
+				vertDesc.attributes[0].offset = 0;
+				vertDesc.attributes[0].bufferIndex = 0;
+				vertDesc.attributes[1].format = MTLVertexFormatFloat3;
+				vertDesc.attributes[1].offset = 4*3;
+				vertDesc.attributes[1].bufferIndex = 0;
+				vertDesc.attributes[2].format = MTLVertexFormatFloat3;
+				vertDesc.attributes[2].offset = 4*6;
+				vertDesc.attributes[2].bufferIndex = 0;
+				vertDesc.layouts[0].stride = 4*9;
+				vertDesc.layouts[0].stepRate = 1;
+				vertDesc.layouts[0].stepFunction = MTLVertexStepFunctionPerVertex;
+				break;
+			case vbuffmt_33:
+				vertDesc.attributes[0].format = MTLVertexFormatFloat3;
+				vertDesc.attributes[0].offset = 0;
+				vertDesc.attributes[0].bufferIndex = 0;
+				vertDesc.attributes[1].format = MTLVertexFormatFloat3;
+				vertDesc.attributes[1].offset = 4*3;
+				vertDesc.attributes[1].bufferIndex = 0;
+				vertDesc.layouts[0].stride = 4*6;
+				vertDesc.layouts[0].stepRate = 1;
+				vertDesc.layouts[0].stepFunction = MTLVertexStepFunctionPerVertex;
+				break;
+			}
 
 			// Create pipeline state.
 			MTLRenderPipelineDescriptor* pipelineDesc = [MTLRenderPipelineDescriptor new];
@@ -420,6 +432,7 @@ NSLog(@"setup");
 	}
 
 	struct vertex* vtx = &mt->src.vtx[0];
+	if(0 == vtx->vbuf_h)return;
 	if(mt->dst.vbo_deq != mt->src.vbuf_enq){
 		if(vtx->vbuf){
 			if(0 == mt->dst.vbuf){
@@ -464,10 +477,9 @@ NSLog(@"setup");
 	}
 	id<MTLBuffer> uniform = mt->dst.uniform;
 
+	int x,y;
 	float (*tmp)[4] = (float (*)[4])[uniform contents];
 	float (*cam)[4] = thewnd->mtfull_camera[0]->src.uni[0].buf;
-
-	int x,y;
 	for(y=0;y<4;y++){
 		for(x=0;x<4;x++)tmp[y][x] = cam[y][x];
 	}
@@ -493,34 +505,36 @@ NSLog(@"setup");
 	//passdesc.colorAttachments[0].clearColor = MTLClearColorMake(0.5, 0.5, 0.5, 1.0);
 
 	// Encode render command.
-	id <MTLRenderCommandEncoder> encoder = [commandBuffer renderCommandEncoderWithDescriptor:passdesc];
+	id <MTLRenderCommandEncoder> encoder = [cmdbuf renderCommandEncoderWithDescriptor:passdesc];
 	[encoder setViewport:vp];
 	[encoder setDepthStencilState:_depthState];
 	[encoder setRenderPipelineState:mt->dst.pipeline];
 	[encoder setVertexBuffer:mt->dst.vbuf offset:0 atIndex:0];
 	[encoder setVertexBuffer:mt->dst.uniform offset:0 atIndex:1];
-	[encoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle 
-                indexCount:vtx->ibuf_h*3
-                 indexType:MTLIndexTypeUInt16
-               indexBuffer:mt->dst.ibuf
-         indexBufferOffset:0
-	];
-	//[encoder setRenderPipelineState:_pipelineState];
-	//[encoder setFragmentTexture:_texture atIndex:0];
-	//[encoder setVertexBuffer:_vertexBuffer2 offset:0 atIndex:0];
-	//[encoder setVertexBuffer:mt->dst.uniform offset:0 atIndex:1];
-	//[encoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:3];
+	switch(mt->src.vtx[0].geometry){
+	case 2:
+		[encoder drawIndexedPrimitives:MTLPrimitiveTypeLine
+			indexCount:vtx->ibuf_h*2
+			indexType:MTLIndexTypeUInt16
+			indexBuffer:mt->dst.ibuf
+			indexBufferOffset:0
+		];
+		break;
+	case 3:
+		[encoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle 
+			indexCount:vtx->ibuf_h*3
+			indexType:MTLIndexTypeUInt16
+			indexBuffer:mt->dst.ibuf
+			indexBufferOffset:0
+		];
+		break;
+	}
 
 	[encoder endEncoding];
 }
-- (void)drawRect:(CGRect)rect
+- (void)draweach
 {
-//NSLog(@"drawRect");
-	// Create a command buffer.
-	id <MTLCommandBuffer> commandBuffer = [_commandQueue commandBuffer];
-
-	[self draw000:commandBuffer];
-
+	//foreach mesh
 	int j;
 	struct mt20data* mt;
 	for(j=0;j<64;j++){
@@ -530,14 +544,45 @@ NSLog(@"setup");
 		//NSLog(@"%d, %p", j, mt);
 		[self drawone:commandBuffer data:mt];
 	}
+}
+- (void)drawprep
+{
+	//create commandbuffer.
+	commandBuffer = [_commandQueue commandBuffer];
 
+	//clear color
+	[self draw000:commandBuffer];
+}
+- (void)drawdone
+{
+	//debug
+	//[self testshow:commandBuffer];
+
+	//call gpu
 	[commandBuffer presentDrawable:self.currentDrawable];
 	[commandBuffer commit];
-
+}
+- (void)drawRect:(CGRect)rect
+{
+//NSLog(@"drawRect");
+	//[self drawall];
 	[super drawRect:rect];
 }
 -(void)mouseDown:(NSEvent *)event{
 NSLog(@"mouseDown");
+NSPoint location_in_window = [event locationInWindow];
+NSLog(@"window:%lf,%lf", location_in_window.x, location_in_window.y);
+NSPoint location_in_myview = [self convertPoint:location_in_window fromView:nil];
+NSLog(@"myview:%lf,%lf", location_in_myview.x, location_in_myview.y);
+}
+-(void)mouseUp:(NSEvent *)event{
+NSLog(@"mouseUp");
+}
+-(void)mouseMoved:(NSEvent *)event{
+NSLog(@"mouseMoved");
+}
+-(void)mouseDragged:(NSEvent *)event{
+NSLog(@"mouseDragged");
 }
 @end
 
@@ -546,6 +591,9 @@ NSLog(@"mouseDown");
 
 int fullwindow_taking(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	MyView* view = thewnd->mtkview;
+	[view drawprep];
+
 	//take
 	struct relation* rel = (struct relation*)wnd->orel0;
 	while(1){
@@ -565,15 +613,13 @@ int fullwindow_taking(struct supply* wnd,void* foot, struct halfrel* stack,int s
 			entity_take((struct entity*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
 		}
 
-		//give
-		//Upload_all(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque);
-
-		//draw
-		//Render_all(wnd->dxfull_camera, wnd->dxfull_light, wnd->dxfull_solid, wnd->dxfull_opaque, wnd, area);
+		[view draweach];
 
 		//next
 		rel = (struct relation*)samesrcnextdst(rel);
 	}
+
+	[view drawdone];
 	return 0;
 }
 int fullwindow_giving(struct supply* wnd,void* foot, struct halfrel* stack,int sp, void* arg,int key, void* buf,int len)
@@ -680,6 +726,9 @@ void windowcreate(struct supply* wnd)
 	//view
 	MyView* myview = [[[MyView alloc] initWithFrame:windowRect] autorelease];
 	[window setContentView:myview];
+
+	wnd->mtkwnd = windowdelegate;
+	wnd->mtkview = myview;
 }
 
 

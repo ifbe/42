@@ -254,7 +254,7 @@ static void vkbd_read_bydx11(_ent* ent,struct style* slot, _ent* wnd,struct styl
 	dx11data_01cam(wnd);
 	dx11data_after(wnd);
 }*/
-static void vkbd_read_bygl41(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
+static void vkbd_wnd(_ent* ent,struct style* slot, _ent* wnd,struct style* area)
 {
 	struct fstyle fs;
 	fs.vc[0] = 0.0;fs.vc[1] = 0.0;fs.vc[2] = 0.5;
@@ -262,10 +262,26 @@ static void vkbd_read_bygl41(_ent* ent,struct style* slot, _ent* wnd,struct styl
 	fs.vf[0] = 0.0;fs.vf[1] = 1.0;fs.vf[2] = 0.0;
 	fs.vt[0] = 0.0;fs.vt[1] = 0.0;fs.vt[2] =-0.5;
 
-	gl41data_before(wnd);
-	vkbd_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
-	gl41data_nocam(wnd);
-	gl41data_after(wnd);
+	switch(wnd->fmt){
+	case _dx11full_:
+		dx11data_before(wnd);
+		vkbd_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		dx11data_nocam(wnd);
+		dx11data_after(wnd);
+		break;
+	case _gl41full_:
+		gl41data_before(wnd);
+		vkbd_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		gl41data_nocam(wnd);
+		gl41data_after(wnd);
+		break;
+	case _mt20full_:
+		mt20data_before(wnd);
+		vkbd_draw_gl41(ent, 0, 0,(void*)&fs, wnd,area);
+		mt20data_nocam(wnd);
+		mt20data_after(wnd);
+		break;
+	}
 }
 static void vkbd_write_bywnd(_ent* ent,void* foot, _syn* stack,int sp, struct event* ev,int len)
 {
@@ -307,7 +323,8 @@ static int vkbd_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int k
 	switch(wnd->fmt){
 	case _dx11full_:
 	case _gl41full_:
-		vkbd_read_bygl41(ent,foot, wnd,area);break;
+	case _mt20full_:
+		vkbd_wnd(ent,foot, wnd,area);break;
 	}
 	return 0;
 }

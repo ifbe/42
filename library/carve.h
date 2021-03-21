@@ -139,4 +139,8 @@ void gl41boundingvolume(      struct entity* ctx, u32 rgb, struct fstyle* sty, u
 
 
 
+void mt20data_before(struct entity* wnd);
+void mt20data_after(struct entity* wnd);
+void mt20data_nocam(struct entity* wnd);
+void mt20data_01cam(struct entity* wnd);
 //void mt20solid_rect(         struct entity* ctx, u32 rgb, vec3 vc, vec3 vr, vec3 vf);

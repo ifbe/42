@@ -10,6 +10,38 @@ void carvelineindex_circle(  float* vbuf, int vlen, u16* ibuf, int ilen, vec3 vc
 
 
 
+static char* shadersource =
+"#include <metal_matrix>\n"
+"using namespace metal;\n"
+
+"struct Uniform {\n"
+"	metal::float4x4 wvp;\n"
+"};\n"
+"struct VertexInput {\n"
+"	float3 v [[ attribute(0) ]];\n"
+"	float3 c [[ attribute(1) ]];\n"
+"};\n"
+"struct VertOutFragIn {\n"
+"	float4 v [[ position ]];\n"
+"	float3 c;\n"
+"};\n"
+
+"vertex VertOutFragIn vert(\n"
+"	VertexInput in [[ stage_in ]],\n"
+"	constant Uniform& uni [[ buffer(1) ]] )\n"
+"{\n"
+"	VertOutFragIn out;\n"
+"	out.v = uni.wvp * float4(in.v, 1.0);\n"
+"	out.c = in.c;\n"
+"	return out;\n"
+"}\n"
+"fragment float4 frag(VertOutFragIn in [[stage_in]]){\n"
+"	return float4(in.c, 1.0);\n"
+"}\n";
+
+
+
+
 static char dx11solidline_vert[] =
 "cbuffer VSConstantBuffer : register(b0){\n"
 	"matrix matmvp;\n"
@@ -73,6 +105,9 @@ static int line3d_fill(struct entity* win, struct mysrc* src)
 		case _dx11full_:
 			src->vs = dx11solidline_vert;
 			src->fs = dx11solidline_frag;
+			break;
+		case _mt20full_:
+			src->vs = shadersource;
 			break;
 		default:return -3;
 		}
