@@ -58,7 +58,7 @@ exe:
 	$(library)/libsoft0/*.o libsoft1/*.o \
 	$(library)/libuser0/*.o libuser1/*.o \
 	-lGLEW -lglfw -framework OpenGL \
-	-framework AVFoundation -framework Foundation \
+	-framework AVFoundation -framework Foundation -framework CoreVideo -framework CoreMedia \
 	-framework AudioToolbox -lm
 clean:
 	rm -f */*.o

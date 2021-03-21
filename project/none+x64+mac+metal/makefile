@@ -60,7 +60,7 @@ exe:
 	$(library)/libsoft0/*.o libsoft1/*.o \
 	$(library)/libuser0/*.o libuser1/*.o \
 	-framework Metal -framework MetalKit -framework Cocoa \
-	-framework AVFoundation -framework Foundation \
+	-framework AVFoundation -framework Foundation -framework CoreVideo -framework CoreMedia \
 	-framework AudioToolbox
 clean:
 	rm -f *.o *.a *.dylib

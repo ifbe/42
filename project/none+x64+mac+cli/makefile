@@ -59,7 +59,7 @@ exe:
 	$(library)/libhard0/*.o libhard1/*.o \
 	$(library)/libsoft0/*.o libsoft1/*.o \
 	$(library)/libuser0/*.o libuser1/*.o \
-	-framework AVFoundation -framework Foundation \
+	-framework AVFoundation -framework Foundation -framework CoreVideo -framework CoreMedia \
 	-framework AudioToolbox
 clean:
 	rm -f *.exe *.out *.o *.a *.dylib
