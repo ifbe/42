@@ -1,218 +1,255 @@
+DIR:=$(shell pwd)
 CC:=gcc
-CF:=-c -O2 -fPIC
+CF:=-c -O2 -fPIC -I..
 
 
 
 
 #---------------------arm32-------------------------
-.PHONY:arm
-arm:
-	$(CC) $(CF) toarm/cpu32/arm.fp.c
-	$(CC) $(CF) device.c
+arm_c = \
+toarm/cpu32/arm.fp.c \
+device.c
+arm_o = $(patsubst %.c, %.o, $(arm_c))
 
-linuxarm:arm
-	$(CC) $(CF) inlinux/hardware.c
-	$(CC) $(CF) inlinux/linux.wire.bt.c
-	$(CC) $(CF) inlinux/linux.wire.i2c.c
-	$(CC) $(CF) inlinux/linux.wire.gpio.c
-	$(CC) $(CF) inlinux/linux.wire.pci.c
-	$(CC) $(CF) inlinux/linux.wire.spi.c
-	$(CC) $(CF) inlinux/linux.wire.usb.c
-	$(CC) $(CF) inlinux/linux.wire.wifi.c
+linuxarm_c = \
+inlinux/linux.wire.bt.c \
+inlinux/linux.wire.i2c.c \
+inlinux/linux.wire.gpio.c \
+inlinux/linux.wire.pci.c \
+inlinux/linux.wire.spi.c \
+inlinux/linux.wire.usb.c \
+inlinux/linux.wire.wifi.c \
+inlinux/hardware.c
+linuxarm_o = $(patsubst %.c, %.o, $(linuxarm_c))
 
-linuxpi32:arm
-	$(CC) $(CF) inlinux/hardware.c
-	$(CC) $(CF) toarm/lib/rpi.wiringpi.c
-	$(CC) $(CF) inlinux/linux.wire.bt.c
-	$(CC) $(CF) inlinux/linux.wire.i2c.c
-	$(CC) $(CF) inlinux/linux.wire.pci.c
-	$(CC) $(CF) inlinux/linux.wire.spi.c
-	$(CC) $(CF) inlinux/linux.wire.usb.c
-	$(CC) $(CF) inlinux/linux.wire.wifi.c
+linuxpi32_c = \
+toarm/lib/rpi.wiringpi.c \
+inlinux/linux.wire.bt.c \
+inlinux/linux.wire.i2c.c \
+inlinux/linux.wire.pci.c \
+inlinux/linux.wire.spi.c \
+inlinux/linux.wire.usb.c \
+inlinux/linux.wire.wifi.c \
+inlinux/hardware.c
+linuxpi32_o = $(patsubst %.c, %.o, $(linuxpi32_c))
+
+linuxarm:$(arm64_o) $(linuxarm_o)
+
+linuxpi32:$(arm64_o) $(linuxpi32_o)
 
 
 
 
 #---------------------arm64-------------------------
-.PHONY:arm64
-arm64:
-	$(CC) $(CF) toarm/cpu64/arm64.fp.c
-	$(CC) $(CF) toarm/cpu64/arm64.asm.c
-	$(CC) $(CF) toarm/cpu64/arm64.boot.c
-	$(CC) $(CF) device.c
+arm64_c = \
+toarm/cpu64/arm64.fp.c \
+toarm/cpu64/arm64.asm.c \
+toarm/cpu64/arm64.boot.c \
+device.c
+arm64_o = $(patsubst %.c, %.o, $(arm64_c))
 
-barepi64:arm64
-	$(CC) $(CF) toarm/pi34.c
-	$(CC) $(CF) toarm/rpi/rpi.mbox.c
-	$(CC) $(CF) toarm/rpi/rpi.pmic.c
-	$(CC) $(CF) toarm/rpi/rpi.systmr.c
-	$(CC) $(CF) toarm/rpi/rpi.sd.c
-	$(CC) $(CF) toarm/rpi/rpi.gpio.c
-	$(CC) $(CF) toarm/rpi/rpi.uart.c
-	$(CC) $(CF) toarm/rpi/rpi.i2c.c
-	$(CC) $(CF) toarm/rpi/rpi.spi.c
+barepi64_c = \
+toarm/rpi/rpi.mbox.c \
+toarm/rpi/rpi.pmic.c \
+toarm/rpi/rpi.systmr.c \
+toarm/rpi/rpi.sd.c \
+toarm/rpi/rpi.gpio.c \
+toarm/rpi/rpi.uart.c \
+toarm/rpi/rpi.i2c.c \
+toarm/rpi/rpi.spi.c \
+toarm/pi34.c
+barepi64_o = $(patsubst %.c, %.o, $(barepi64_c))
 
-linuxarm64:arm64
-	$(CC) $(CF) inlinux/hardware.c
-	$(CC) $(CF) inlinux/linux.wire.bt.c
-	$(CC) $(CF) inlinux/linux.wire.gpio.c
-	$(CC) $(CF) inlinux/linux.wire.i2c.c
-	$(CC) $(CF) inlinux/linux.wire.pci.c
-	$(CC) $(CF) inlinux/linux.wire.spi.c
-	$(CC) $(CF) inlinux/linux.wire.usb.c
-	$(CC) $(CF) inlinux/linux.wire.wifi.c
+linuxarm64_c = \
+inlinux/linux.wire.bt.c \
+inlinux/linux.wire.gpio.c \
+inlinux/linux.wire.i2c.c \
+inlinux/linux.wire.pci.c \
+inlinux/linux.wire.spi.c \
+inlinux/linux.wire.usb.c \
+inlinux/linux.wire.wifi.c \
+inlinux/hardware.c
+linuxarm64_o = $(patsubst %.c, %.o, $(linuxarm64_c))
 
-linuxpi64:arm64
-	$(CC) $(CF) inlinux/hardware.c
-	$(CC) $(CF) inlinux/linux.wire.bt.c
-	$(CC) $(CF) inlinux/linux.wire.gpio.c
-	$(CC) $(CF) inlinux/linux.wire.i2c.c
-	$(CC) $(CF) inlinux/linux.wire.pci.c
-	$(CC) $(CF) inlinux/linux.wire.spi.c
-	$(CC) $(CF) inlinux/linux.wire.usb.c
-	$(CC) $(CF) inlinux/linux.wire.wifi.c
+linuxpi64_c = \
+inlinux/linux.wire.bt.c \
+inlinux/linux.wire.gpio.c \
+inlinux/linux.wire.i2c.c \
+inlinux/linux.wire.pci.c \
+inlinux/linux.wire.spi.c \
+inlinux/linux.wire.usb.c \
+inlinux/linux.wire.wifi.c \
+inlinux/hardware.c
+linuxpi64_o = $(patsubst %.c, %.o, $(linuxpi64_c))
+
+barepi64:$(arm64_o) $(barepi64_o)
+
+linuxarm64:$(arm64_o) $(linuxarm64_o)
+
+linuxpi64:$(arm64_o) $(linuxpi64_o)
 
 
 
 
 #---------------------mips32-------------------------
-.PHONY:mips
-mips:
-	$(CC) $(CF) tomips/cpu32/mips.fp.c
-	$(CC) $(CF) device.c
+mips_c = \
+tomips/cpu32/mips.fp.c \
+device.c
+mips_o = $(patsubst %.c, %.o, $(mips_c))
 
 
 
 
 #---------------------mips64-------------------------
-.PHONY:mips64
-mips64:
-	$(CC) $(CF) tomips/cpu64/mips64.fp.c
-	$(CC) $(CF) device.c
+mips64_c = \
+tomips/cpu64/mips64.fp.c \
+device.c
+mips64_o = $(patsubst %.c, %.o, $(mips64_c))
 
 
 
 
 #---------------------x86-------------------------
-.PHONY:x86
-x86:
-	$(CC) $(CF) tox86/cpu32/x86.endian.c
-	$(CC) $(CF) tox86/cpu32/x86.fp.c
-	$(CC) $(CF) tox86/cpu32/x86.port.c
-	$(CC) $(CF) device.c
+x86_c = \
+tox86/cpu32/x86.endian.c \
+tox86/cpu32/x86.fp.c \
+tox86/cpu32/x86.port.c \
+device.c
+x86_o = $(patsubst %.c, %.o, $(x86_c))
+
+winx86_c = \
+tox86/cpu32/x86.endian.c \
+tox86/cpu32/x86.fp.c \
+tox86/cpu32/x86.port.c \
+device.c
+winx86_o = $(patsubst %.c, %.o, $(winx86_c))
 
 .PHONY:linuxx86
-linuxx86:x86
+linuxx86:$(x86_o)
 
 .PHONY:macx86
-macx86:x86
+macx86:$(x86_o)
 
 .PHONY:winx86
-winx86:x86
-	$(CC) $(CF) tox86/cpu32/x86.endian.c
-	$(CC) $(CF) tox86/cpu32/x86.fp.c
-	$(CC) $(CF) tox86/cpu32/x86.port.c
-	$(CC) $(CF) device.c
+winx86:$(x86_o) $(winx86_o)
 
 
 
 
 #---------------------x64-------------------------
-.PHONY:x64
-x64:
-	$(CC) $(CF) tox86/cpu64/x64.endian.c
-	$(CC) $(CF) tox86/cpu64/x64.fp.c
-	$(CC) $(CF) tox86/cpu64/x64.port.c
-	$(CC) $(CF) device.c
+x64_c = \
+tox86/cpu64/x64.endian.c \
+tox86/cpu64/x64.fp.c \
+tox86/cpu64/x64.port.c \
+device.c
+x64_o = $(patsubst %.c, %.o, $(x64_c))
+
+barex64_c = \
+tox86/cpu64/x64.paging.c \
+tox86/cpu64/x64.vt.amd.c \
+tox86/cpu64/x64.vt.intel.c \
+tox86/bus/input/8042.c \
+tox86/bus/pci/pci-port.c \
+tox86/bus/pci/pci-mmio.c \
+tox86/irq/irq.c \
+tox86/irq/8259/8259.c \
+tox86/irq/apic/apic.io.c \
+tox86/irq/apic/apic.local.c \
+tox86/irq/apic/apic.timer.c \
+tox86/pmic/power.c \
+tox86/usbhost/ehci-driver.c \
+tox86/usbhost/xhci-driver.c \
+tox86/usbcore/usbany-driver.c \
+tox86/usbcore/usbhub-driver.c \
+tox86/usbcore/usbds4-driver.c \
+tox86/usbcore/usbxbox-driver.c \
+tox86/usbfunc/usbhid-driver.c \
+tox86/usbfunc/usbstor-driver.c \
+tox86/stor/ide-driver.c \
+tox86/stor/ahci-driver.c \
+tox86/stor/nvme-driver.c \
+tox86/timer/825x.c \
+tox86/timer/rtc.c \
+tox86/wire/bare.wire.bt.c \
+tox86/wire/bare.wire.gpio.c \
+tox86/wire/bare.wire.i2c.c \
+tox86/wire/bare.wire.spi.c \
+tox86/wire/bare.wire.uart.c \
+tox86/wire/bare.wire.wifi.c \
+tox86/oldhw.c
+barex64_o = $(patsubst %.c, %.o, $(barex64_c))
+
+efix64_c = \
+inefi/efi.wire.bt.c \
+inefi/efi.wire.gpio.c \
+inefi/efi.wire.i2c.c \
+inefi/efi.wire.spi.c \
+inefi/efi.wire.uart.c \
+inefi/efi.wire.usb.c \
+inefi/efi.wire.wifi.c \
+inefi/hardware.c
+efix64_o = $(patsubst %.c, %.o, $(efix64_c))
+
+linuxx64_c = \
+inlinux/linux.wire.bt.c \
+inlinux/linux.wire.i2c.c \
+inlinux/linux.wire.gpio.c \
+inlinux/linux.wire.pci.c \
+inlinux/linux.wire.spi.c \
+inlinux/linux.wire.usb.c \
+inlinux/linux.wire.wifi.c \
+inlinux/hardware.c
+linuxx64_o = $(patsubst %.c, %.o, $(linuxx64_c))
+
+macx64_c = \
+inmac/mac.wire.bt.c \
+inmac/mac.wire.i2c.c \
+inmac/mac.wire.gpio.c \
+inmac/mac.wire.pci.c \
+inmac/mac.wire.spi.c \
+inmac/mac.wire.usb.c \
+inmac/mac.wire.wifi.c \
+inmac/hardware.c
+macx64_o = $(patsubst %.c, %.o, $(macx64_c))
+
+winx64_c = \
+inwin/win.wire.bt.c \
+inwin/win.wire.i2c.c \
+inwin/win.wire.gpio.c \
+inwin/win.wire.pci.c \
+inwin/win.wire.spi.c \
+inwin/win.wire.usb.c \
+inwin/win.wire.wifi.c \
+inwin/hardware.c
+winx64_o = $(patsubst %.c, %.o, $(winx64_c))
 
 .PHONY:barex64
-barex64:x64
-	$(CC) $(CF) tox86/oldhw.c
-	$(CC) $(CF) tox86/cpu64/x64.asm.c
-	yasm -a x86 -m amd64 -f elf64 -o x64.asmhelp.o tox86/cpu64/x64.asmhelp.asm
-	$(CC) $(CF) tox86/cpu64/x64.boot.c
-	yasm -a x86 -m amd64 -f elf64 -o x64.boothelp.o tox86/cpu64/x64.boothelp.asm
-	$(CC) $(CF) tox86/cpu64/x64.gdt.c
-	yasm -a x86 -m amd64 -f elf64 -o x64.gdthelp.o tox86/cpu64/x64.gdthelp.asm
-	$(CC) $(CF) -mgeneral-regs-only tox86/cpu64/x64.idt.c
-	yasm -a x86 -m amd64 -f elf64 -o x64.idthelp.o tox86/cpu64/x64.idthelp.asm
-	$(CC) $(CF) -mgeneral-regs-only tox86/cpu64/x64.syscall.c
-	yasm -a x86 -m amd64 -f elf64 -o x64.syscallhelp.o tox86/cpu64/x64.syscallhelp.asm
-	$(CC) $(CF) tox86/cpu64/x64.paging.c
-	$(CC) $(CF) tox86/cpu64/x64.vt.amd.c
-	$(CC) $(CF) tox86/cpu64/x64.vt.intel.c
-	$(CC) $(CF) tox86/bus/input/8042.c
-	$(CC) $(CF) tox86/bus/pci/pci-port.c
-	$(CC) $(CF) tox86/bus/pci/pci-mmio.c
-	$(CC) $(CF) tox86/irq/irq.c
-	$(CC) $(CF) tox86/irq/8259/8259.c
-	$(CC) $(CF) tox86/irq/apic/apic.io.c
-	$(CC) $(CF) tox86/irq/apic/apic.local.c
-	$(CC) $(CF) tox86/irq/apic/apic.timer.c
-	$(CC) $(CF) tox86/pmic/power.c
-	$(CC) $(CF) tox86/usbhost/ehci-driver.c
-	$(CC) $(CF) tox86/usbhost/xhci-driver.c
-	$(CC) $(CF) tox86/usbcore/usbany-driver.c
-	$(CC) $(CF) tox86/usbcore/usbhub-driver.c
-	$(CC) $(CF) tox86/usbcore/usbds4-driver.c
-	$(CC) $(CF) tox86/usbcore/usbxbox-driver.c
-	$(CC) $(CF) tox86/usbfunc/usbhid-driver.c
-	$(CC) $(CF) tox86/usbfunc/usbstor-driver.c
-	$(CC) $(CF) tox86/stor/ide-driver.c
-	$(CC) $(CF) tox86/stor/ahci-driver.c
-	$(CC) $(CF) tox86/stor/nvme-driver.c
-	$(CC) $(CF) tox86/timer/825x.c
-	$(CC) $(CF) tox86/timer/rtc.c
-	$(CC) $(CF) tox86/wire/bare.wire.bt.c
-	$(CC) $(CF) tox86/wire/bare.wire.gpio.c
-	$(CC) $(CF) tox86/wire/bare.wire.i2c.c
-	$(CC) $(CF) tox86/wire/bare.wire.spi.c
-	$(CC) $(CF) tox86/wire/bare.wire.uart.c
-	$(CC) $(CF) tox86/wire/bare.wire.wifi.c
+barex64:$(x64_o) $(barex64_o)
+	$(CC) $(CF) tox86/cpu64/x64.asm.c                             -o $(DIR)/x64.asm.o
+	yasm -a x86 -m amd64 -f elf64 tox86/cpu64/x64.asmhelp.asm     -o $(DIR)/x64.asmhelp.o
+	$(CC) $(CF) tox86/cpu64/x64.boot.c                            -o $(DIR)/x64.boot.o
+	yasm -a x86 -m amd64 -f elf64 tox86/cpu64/x64.boothelp.asm    -o $(DIR)/x64.boothelp.o
+	$(CC) $(CF) tox86/cpu64/x64.gdt.c                             -o $(DIR)/x64.gdt.o
+	yasm -a x86 -m amd64 -f elf64 tox86/cpu64/x64.gdthelp.asm     -o $(DIR)/x64.gdthelp.o
+	$(CC) $(CF) -mgeneral-regs-only tox86/cpu64/x64.idt.c         -o $(DIR)/x64.idt.o
+	yasm -a x86 -m amd64 -f elf64 tox86/cpu64/x64.idthelp.asm     -o $(DIR)/x64.idthelp.o
+	$(CC) $(CF) -mgeneral-regs-only tox86/cpu64/x64.syscall.c     -o $(DIR)/x64.syscall.o
+	yasm -a x86 -m amd64 -f elf64 tox86/cpu64/x64.syscallhelp.asm -o $(DIR)/x64.syscallhelp.o
 
 .PHONY:efix64
-efix64:x64
-	$(CC) $(CF) inefi/efi.wire.bt.c
-	$(CC) $(CF) inefi/efi.wire.gpio.c
-	$(CC) $(CF) inefi/efi.wire.i2c.c
-	$(CC) $(CF) inefi/efi.wire.spi.c
-	$(CC) $(CF) inefi/efi.wire.uart.c
-	$(CC) $(CF) inefi/efi.wire.usb.c
-	$(CC) $(CF) inefi/efi.wire.wifi.c
-	$(CC) $(CF) inefi/hardware.c
+efix64:$(x64_o) $(efix64_o)
 
 .PHONY:linuxx64
-linuxx64:x64
-	$(CC) $(CF) inlinux/hardware.c
-	$(CC) $(CF) inlinux/linux.wire.bt.c
-	$(CC) $(CF) inlinux/linux.wire.i2c.c
-	$(CC) $(CF) inlinux/linux.wire.gpio.c
-	$(CC) $(CF) inlinux/linux.wire.pci.c
-	$(CC) $(CF) inlinux/linux.wire.spi.c
-	$(CC) $(CF) inlinux/linux.wire.usb.c
-	$(CC) $(CF) inlinux/linux.wire.wifi.c
+linuxx64:$(x64_o) $(linuxx64_o)
 
 .PHONY:macx64
-macx64:x64
-	$(CC) $(CF) inmac/hardware.c
-	$(CC) $(CF) inmac/mac.wire.bt.c
-	$(CC) $(CF) inmac/mac.wire.i2c.c
-	$(CC) $(CF) inmac/mac.wire.gpio.c
-	$(CC) $(CF) inmac/mac.wire.pci.c
-	$(CC) $(CF) inmac/mac.wire.spi.c
-	$(CC) $(CF) inmac/mac.wire.usb.c
-	$(CC) $(CF) inmac/mac.wire.wifi.c
+macx64:$(x64_o) $(macx64_o)
 
 .PHONY:winx64
-winx64:x64
-	$(CC) $(CF) inwin/hardware.c
-	$(CC) $(CF) inwin/win.wire.bt.c
-	$(CC) $(CF) inwin/win.wire.i2c.c
-	$(CC) $(CF) inwin/win.wire.gpio.c
-	$(CC) $(CF) inwin/win.wire.pci.c
-	$(CC) $(CF) inwin/win.wire.spi.c
-	$(CC) $(CF) inwin/win.wire.usb.c
-	$(CC) $(CF) inwin/win.wire.wifi.c
+winx64:$(x64_o) $(winx64_o)
+
+%.o: %.c
+	$(CC) $(CF) -o $(DIR)/$(notdir $@) $<
 
 clean:
 	rm -f *.o *.a

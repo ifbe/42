@@ -33,7 +33,9 @@ struct supply* thewin = 0;
     // Get the pixel buffer width and height
     size_t width = CVPixelBufferGetWidth(imageBuffer);
     size_t height = CVPixelBufferGetHeight(imageBuffer);
-    
+
+	OSType pixelFormat = CVPixelBufferGetPixelFormatType(imageBuffer);
+	NSLog(@"fmt=%.4s", (char*)&pixelFormat);
     NSLog(@"w=%zu, h=%zu, bytesPerRow=%zu, bytesTotal=%zu", width, height, bytesPerRow, bytesTotal);
 
 /*
@@ -71,6 +73,7 @@ struct supply* thewin = 0;
     CGImageRelease(quartzImage);
 */
 
+	//be careful: mac's yuv2 = actually uyvy
 	struct halfrel stack[0x80];
 	if(thewin)give_data_into_peer(thewin,_dst_, stack,0, 0,0, baseAddress,bytesTotal);
     CVPixelBufferUnlockBaseAddress(imageBuffer,0);

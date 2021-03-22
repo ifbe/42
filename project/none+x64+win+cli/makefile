@@ -6,6 +6,7 @@ CF="-c -O2 -I.."
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	make -s exe
 	make -s lib
+	make -s dll
 	cp a.exe ../..
 .PHONY:libboot0
 libboot0:
@@ -40,24 +41,25 @@ libuser1:
 	mkdir -p $@
 	make -s -C $(library)/$@ DIR=$(project)/$@ CF=$(CF)
 lib:
-	rm -f $(library)/libboot0/entry.o
+	rm -f libboot0/entry.o
 	ar crs 42.a \
-	$(library)/libboot0/*.o libboot1/*.o \
-	$(library)/libhard0/*.o libhard1/*.o \
-	$(library)/libsoft0/*.o libsoft1/*.o \
-	$(library)/libuser0/*.o libuser1/*.o
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o
+dll:
 	g++ -shared -o 42.dll \
-	$(library)/libboot0/*.o libboot1/*.o \
-	$(library)/libhard0/*.o libhard1/*.o \
-	$(library)/libsoft0/*.o libsoft1/*.o \
-	$(library)/libuser0/*.o libuser1/*.o \
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o \
 	-lole32 -lstrmiids -lxinput -lwinmm -lws2_32
 exe:
 	g++ \
-	$(library)/libboot0/*.o libboot1/*.o \
-	$(library)/libhard0/*.o libhard1/*.o \
-	$(library)/libsoft0/*.o libsoft1/*.o \
-	$(library)/libuser0/*.o libuser1/*.o \
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o \
 	-lole32 -lstrmiids -lxinput -lwinmm -lws2_32
 clean:
 	rm -f *.o *.a *.so

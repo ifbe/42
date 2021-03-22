@@ -21,24 +21,25 @@ libuser0:
 libuser1:
 	make -s -C $(library)/libuser1 CC="clang" CF=$(CF)
 lib:
-	rm -f $(library)/libboot0/entry.o
+	rm -f libboot0/entry.o
 	ar crs 42.a \
-	$(library)/libboot0/*.o $(library)/libboot1/*.o \
-	$(library)/libhard0/*.o $(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o $(library)/libuser1/*.o 2>/dev/null
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o 2>/dev/null
+dylib:
 	libtool -dynamic -macosx_version_min 10.15 -o 42.dylib \
-	$(library)/libboot0/*.o $(library)/libboot1/*.o \
-	$(library)/libhard0/*.o $(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o $(library)/libuser1/*.o \
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o \
 	-lSDL2 -framework AudioToolbox -lm -lc
 exe:
 	gcc \
-	$(library)/libboot0/*.o $(library)/libboot1/*.o \
-	$(library)/libhard0/*.o $(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o $(library)/libuser1/*.o \
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o \
 	-lSDL2 -framework AudioToolbox -lm
 clean:
 	rm -f *.exe *.out *.o *.a *.dylib

@@ -358,8 +358,11 @@ NSLog(@"setup");
 	id <MTLRenderCommandEncoder> encoder = [cmdbuf renderCommandEncoderWithDescriptor:passdesc];
 	[encoder endEncoding];
 }
-- (void)drawone:(id <MTLCommandBuffer>)cmdbuf data:(struct mt20data*)mt
+- (void)drawone:(id <MTLCommandBuffer>)cmdbuf
+           data:(struct mt20data*)mt
+           view:(MTLViewport)vp
 {
+//--------shader--------
 	if(mt->dst.shader_deq != mt->src.shader_enq){
 		if(mt->dst.shader){
 			//free shader
@@ -431,6 +434,8 @@ NSLog(@"setup");
 		mt->dst.shader_deq = mt->src.shader_enq;
 	}
 
+
+//--------vertex--------
 	struct vertex* vtx = &mt->src.vtx[0];
 	if(0 == vtx->vbuf_h)return;
 	if(mt->dst.vbo_deq != mt->src.vbuf_enq){
@@ -469,6 +474,8 @@ NSLog(@"setup");
 		mt->dst.ibo_deq = mt->src.ibuf_enq;
 	}
 
+
+//--------uniform--------
 	if(0 == mt->dst.uniform){
 		mt->dst.uniform = [self.device
 			newBufferWithLength:sizeof(64)
@@ -485,18 +492,7 @@ NSLog(@"setup");
 	}
 
 
-
-
-	//viewport
-	MTLViewport vp = {
-	.originX = 0.0,
-	.originY = 0.0,
-	.width = self.drawableSize.width,
-	.height= self.drawableSize.height,
-	.znear= 0.0,
-	.zfar = 1.0
-	};
-
+//--------drawcall--------
 	// clear color
 	MTLRenderPassDescriptor* passdesc = self.currentRenderPassDescriptor;
 	passdesc.depthAttachment.loadAction = MTLLoadActionClear;
@@ -532,8 +528,22 @@ NSLog(@"setup");
 
 	[encoder endEncoding];
 }
-- (void)draweach
+- (void)draweach:(struct fstyle*)area
 {
+	//viewport: lefttop = (0,0), rightbot = (1.0,1.0)
+	float x0 = self.drawableSize.width * area->vc[0];
+	float y0 = self.drawableSize.height* (1.0 - area->vc[1] - area->vq[1]);
+	float ww = self.drawableSize.width * area->vq[0];
+	float hh = self.drawableSize.height* area->vq[1];
+	MTLViewport vp = {
+	.originX = x0,
+	.originY = y0,
+	.width = ww,
+	.height= hh,
+	.znear= 0.0,
+	.zfar = 1.0
+	};
+
 	//foreach mesh
 	int j;
 	struct mt20data* mt;
@@ -542,7 +552,7 @@ NSLog(@"setup");
 		if(0 == mt)continue;
 
 		//NSLog(@"%d, %p", j, mt);
-		[self drawone:commandBuffer data:mt];
+		[self drawone:commandBuffer data:mt view:vp];
 	}
 }
 - (void)drawprep
@@ -613,7 +623,7 @@ int fullwindow_taking(struct supply* wnd,void* foot, struct halfrel* stack,int s
 			entity_take((struct entity*)rel->pdstchip, rel->pdstfoot, stack,sp+2, 0,'v', 0, 0);
 		}
 
-		[view draweach];
+		[view draweach:area];
 
 		//next
 		rel = (struct relation*)samesrcnextdst(rel);

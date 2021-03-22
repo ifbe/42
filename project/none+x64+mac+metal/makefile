@@ -39,26 +39,26 @@ libuser1:
 	mkdir -p $@
 	make -s -C $(library)/$@ DIR=$(project)/$@ CC=$(CC) CF=$(CF)
 lib:
-	rm -f $(library)/libboot0/entry.o
+	rm -f libboot0/entry.o
 	libtool -static -o 42.a \
-	$(library)/libboot0/*.o libboot1/*.o \
-	$(library)/libhard0/*.o libhard1/*.o \
-	$(library)/libsoft0/*.o libsoft1/*.o \
-	$(library)/libuser0/*.o libuser1/*.o 2>/dev/null
-lib-bugtofix:
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o 2>/dev/null
+dylib:
 	libtool -dynamic -macosx_version_min 11.0 \
 	-o 42.dylib \
-	$(library)/libboot0/*.o libboot1/*.o \
-	$(library)/libhard0/*.o libhard1/*.o \
-	$(library)/libsoft0/*.o libsoft1/*.o \
-	$(library)/libuser0/*.o libuser1/*.o \
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o \
 	-lc -framework Cocoa -framework Metal -framework MetalKit -framework AudioToolbox
 exe:
 	clang \
-	$(library)/libboot0/*.o libboot1/*.o \
-	$(library)/libhard0/*.o libhard1/*.o \
-	$(library)/libsoft0/*.o libsoft1/*.o \
-	$(library)/libuser0/*.o libuser1/*.o \
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o \
 	-framework Metal -framework MetalKit -framework Cocoa \
 	-framework AVFoundation -framework Foundation -framework CoreVideo -framework CoreMedia \
 	-framework AudioToolbox

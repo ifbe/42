@@ -2,6 +2,7 @@ library?=../../library
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	+make -s exe
 	+make -s lib
+	+make -s so
 	cp a.out ../..
 libboot0:
 	+make -s -C $(library)/libboot0 none \
@@ -28,23 +29,24 @@ libuser1:
 	+make -s -C $(library)/libuser1 \
 	CF="-c -O2 -fPIC -I.."
 lib:
-	rm -f $(library)/libboot0/entry.o
+	rm -f libboot0/entry.o
 	ar crs 42.a \
-	$(library)/libboot0/*.o $(library)/libboot1/*.o \
-	$(library)/libhard0/*.o $(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o $(library)/libuser1/*.o
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o
+so:
 	gcc -shared -o 42.so \
-	$(library)/libboot0/*.o $(library)/libboot1/*.o \
-	$(library)/libhard0/*.o $(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o $(library)/libuser1/*.o
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o
 exe:
 	gcc -o a.out \
-	$(library)/libboot0/*.o $(library)/libboot1/*.o \
-	$(library)/libhard0/*.o $(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o $(library)/libuser1/*.o \
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o \
 	-lpulse -lpulse-simple -lpthread -lSDL2 -lm
 clean:
 	rm -f *.o *.a *.so

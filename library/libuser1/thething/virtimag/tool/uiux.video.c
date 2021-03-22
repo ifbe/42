@@ -27,17 +27,18 @@ void video_update(
 	u8* dstbuf, int dstlen,
 	u8* srcbuf, int srclen)
 {
+	if(0 == srcbuf)return;
+	if(0 == dstbuf)return;
+	printmemory(srcbuf, 0x10);
+
 	int x,y;
 	u8* dst;
 	u8* src;
-	if(0 == srcbuf)return;
-	if(0 == dstbuf)return;
-
 	for(y=0;y<480;y++)
 	{
 		dst = dstbuf + (y*640*4);
 		src = srcbuf + (y*640*2);
-		for(x=0;x<640;x+=2)
+		for(x=0;x<640;x+=2)		//if(macos)yuyv, else uyvy
 		{
 			dst[4*x + 0] = src[2*x + 0];
 			dst[4*x + 1] = src[2*x + 1];

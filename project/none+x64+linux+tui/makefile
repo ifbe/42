@@ -2,6 +2,7 @@ library?=../../library
 all:libboot0 libboot1 libhard0 libhard1 libsoft0 libsoft1 libuser0 libuser1
 	+make -s exe
 	+make -s lib
+	+make -s so
 	cp a.out ../..
 libboot0:
 	+make -s -C $(library)/libboot0 none \
@@ -34,6 +35,7 @@ lib:
 	$(library)/libhard0/*.o $(library)/libhard1/*.o \
 	$(library)/libsoft0/*.o $(library)/libsoft1/*.o \
 	$(library)/libuser0/*.o $(library)/libuser1/*.o
+so:
 	gcc -shared -o 42.so \
 	$(library)/libboot0/*.o $(library)/libboot1/*.o \
 	$(library)/libhard0/*.o $(library)/libhard1/*.o \

@@ -48,10 +48,10 @@ gnuefi:
 	$(library)/gnu-efi/lib/data.c
 link:
 	$(LD) $(LF) \
-	$(library)/libboot0/*.o libboot1/*.o \
-	$(library)/libhard0/*.o libhard1/*.o \
-	$(library)/libsoft0/*.o libsoft1/*.o \
-	$(library)/libuser0/*.o libuser1/*.o \
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o \
 	data.o -lgcc -o BOOTX64.EFI
 clean:
 	rm -rf lib*/*.o

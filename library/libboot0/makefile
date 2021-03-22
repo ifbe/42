@@ -1,67 +1,84 @@
+DIR:=$(shell pwd)
 CC:=gcc
 CF:=-c -O2 -fPIC
 
+
+rpi_c = \
+bare/initer.c \
+bare/memory.c \
+bare/rpi/main.c \
+bare/rpi/runenv.c \
+bare/rpi/serial.c \
+origin.c
+rpi_o = $(patsubst %.c, %.o, $(rpi_c))
+
+bare_c = \
+bare/initer.c \
+bare/memory.c \
+bare/barex64/entry.c \
+bare/barex64/keyboard.c \
+bare/barex64/runenv.c \
+bare/barex64/serial.c \
+origin.c
+bare_o = $(patsubst %.c, %.o, $(bare_c))
+
+efios_c = \
+bare/initer.c \
+bare/memory.c \
+bare/efi/entry.c \
+bare/efi/keyboard.c \
+bare/efi/runenv.c \
+bare/efi/serial.c \
+origin.c
+efios_o = $(patsubst %.c, %.o, $(efios_c))
+
+efiapp_c = \
+bare/initer.c \
+bare/memory.c \
+app/efi/entry.c \
+app/efi/runenv.c \
+origin.c
+efiapp_o = $(patsubst %.c, %.o, $(efiapp_c))
+
+none_c = \
+app/initer.c \
+app/memory.c \
+app/none/entry.c \
+app/none/runenv.c \
+app/none/serial.c \
+origin.c
+none_o = $(patsubst %.c, %.o, $(none_c))
+
+wincmd_c = \
+app/initer.c \
+app/memory.c \
+app/win/entry.c \
+app/win/runenv.c \
+app/win/serial.c \
+origin.c
+wincmd_o = $(patsubst %.c, %.o, $(wincmd_c))
+
 .PHONY:rpi
-rpi:
-	rm -f *.o
-	$(CC) $(CF) origin.c
-	$(CC) $(CF) bare/initer.c
-	$(CC) $(CF) bare/memory.c
-	$(AS) -c bare/rpi/entry.s -o entry.o
-	$(CC) $(CF) bare/rpi/main.c
-	$(CC) $(CF) bare/rpi/runenv.c
-	$(CC) $(CF) bare/rpi/serial.c
+rpi:$(rpi_o)
+	$(AS) -c bare/rpi/entry.s -o $(DIR)/entry.o
 
 .PHONY:bare
-bare:
-	rm -f *.o
-	$(CC) $(CF) origin.c
-	$(CC) $(CF) bare/initer.c
-	$(CC) $(CF) bare/memory.c
-	$(CC) $(CF) bare/barex64/entry.c
-	$(CC) $(CF) bare/barex64/keyboard.c
-	$(CC) $(CF) bare/barex64/runenv.c
-	$(CC) $(CF) bare/barex64/serial.c
+bare:$(bare_o)
 
 .PHONY:efios
-efios:
-	rm -f *.o
-	$(CC) $(CF) origin.c
-	$(CC) $(CF) bare/initer.c
-	$(CC) $(CF) bare/memory.c
-	$(CC) $(CF) bare/efi/entry.c
-	$(CC) $(CF) bare/efi/keyboard.c
-	$(CC) $(CF) bare/efi/runenv.c
-	$(CC) $(CF) bare/efi/serial.c
+efios:$(efios_o)
 
 .PHONY:efiapp
-efiapp:
-	rm -f *.o
-	$(CC) $(CF) origin.c
-	$(CC) $(CF) bare/initer.c
-	$(CC) $(CF) bare/memory.c
-	$(CC) $(CF) app/efi/entry.c
-	$(CC) $(CF) app/efi/runenv.c
+efiapp:$(efiapp_o)
 
 .PHONY:none
-none:
-	rm -f *.o
-	$(CC) $(CF) origin.c
-	$(CC) $(CF) app/initer.c
-	$(CC) $(CF) app/memory.c
-	$(CC) $(CF) app/none/entry.c
-	$(CC) $(CF) app/none/runenv.c
-	$(CC) $(CF) app/none/serial.c
+none:$(none_o)
 
 .PHONY:wincmd
-wincmd:
-	rm -f *.o
-	$(CC) $(CF) origin.c
-	$(CC) $(CF) app/initer.c
-	$(CC) $(CF) app/memory.c
-	$(CC) $(CF) app/win/entry.c
-	$(CC) $(CF) app/win/runenv.c
-	$(CC) $(CF) app/win/serial.c
+wincmd:$(wincmd_o)
+
+%.o: %.c
+	$(CC) $(CF) -o $(DIR)/$(notdir $@) $<
 
 clean:
 	rm -f *.o

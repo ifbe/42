@@ -23,35 +23,24 @@ libuser1:
 	make -s -C $(library)/libuser1 CC="clang" CF=$(CF)
 a:
 	libtool -static -o 42.a \
-	$(library)/libboot0/*.o \
-	$(library)/libboot1/*.o \
-	$(library)/libhard0/*.o \
-	$(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o \
-	$(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o \
-	$(library)/libuser1/*.o
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o
 dylib:
 	libtool -dynamic -macosx_version_min 10.14 \
 	-o 42.dylib \
-	$(library)/libboot0/*.o \
-	$(library)/libboot1/*.o \
-	$(library)/libhard0/*.o \
-	$(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o \
-	$(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o \
-	$(library)/libuser1/*.o \
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o \
 	-lm -lc
 program:
 	clang \
-	$(library)/libboot0/*.o \
-	$(library)/libboot1/*.o \
-	$(library)/libhard0/*.o \
-	$(library)/libhard1/*.o \
-	$(library)/libsoft0/*.o \
-	$(library)/libsoft1/*.o \
-	$(library)/libuser0/*.o \
-	$(library)/libuser1/*.o
+	libboot0/*.o libboot1/*.o \
+	libhard0/*.o libhard1/*.o \
+	libsoft0/*.o libsoft1/*.o \
+	libuser0/*.o libuser1/*.o \
+	-lm
 clean:
 	rm -f *.o *.a *.dylib
