@@ -9,15 +9,13 @@
 #define Isleaf 0x80
 #define Globalpage 0x100
 #define Noexecute (1<<63)
-//[0x40000, 0x80000)
-#define PAGEHOME 0x40000
-#define GIGACOUNT (64-2)
 //
 #define PML4OFFS 0x00000
 #define PDPTOFFS 0x01000
 #define PDIROFFS 0x02000
 #define PDPTUSER 0x40000
 #define PDIRUSER 0x41000
+#define GIGACOUNT (64-2)
 
 
 
@@ -120,7 +118,7 @@ void pagetable_makeuser(u8* buf, int len, u64 pa, int plen, u64 va, int vlen)
 	//page map level 4: waste 0x1000 B, actually 8B
 	//pdptaddr8B_per_item, 512item_per_table, 1table_cant_less
 	u64* pml4 = (u64*)(buf+PML4OFFS);
-	pml4[bit39_47] = (u64)pdpt | Writable | Present;
+	pml4[bit39_47] = (u64)pdpt | Allowuser | Writable | Present;
 }
 
 
@@ -136,14 +134,14 @@ void pagetable_use(u8* cr3)
 		:"m"(cr3)
 	);
 }
-void initpaging()
+void initpaging(u8* pagehome)
 {
 	say("@initpaging\n");
 
-	pagetable_makekern((u8*)PAGEHOME, 0x40000);
-	//pagetable_makeuser((u8*)PAGEHOME, 0x42000, 0,0, 0,0);
+	pagetable_makekern(pagehome, 0x40000);
+	//pagetable_makeuser(pagehome, 0x42000, 0,0, 0,0);
 
-	pagetable_use((u8*)PAGEHOME);
+	pagetable_use(pagehome);
 
 	//printmemory((u8*)0xffffffffffe00000, 0x100);
 }

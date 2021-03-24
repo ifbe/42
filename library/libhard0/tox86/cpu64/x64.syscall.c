@@ -4,6 +4,15 @@
 #define _exit_ hex32('e','x','i','t')
 #define _take_ hex32('t','a','k','e')
 #define _give_ hex32('g','i','v','e')
+int percpu_coreid();
+int percpu_process();
+//
+int percpu_tqueue();
+int percpu_thread();
+//
+int thread_disable(int qid, int tid);
+
+
 
 
 struct saved_cpureg{
@@ -34,6 +43,8 @@ struct saved_cpureg{
 }__attribute__((packed));
 
 
+
+
 void syscall_version()
 {
 	say("ver: date=%s,time=%s\n", __DATE__, __TIME__);
@@ -43,7 +54,12 @@ void syscall_sleep()
 }
 void syscall_exit()
 {
-	//thread or process: want exit
+	int core = percpu_coreid();
+	int pid = percpu_process();
+	int qid = percpu_tqueue();
+	int tid = percpu_thread();
+	say("@syscall_exit: coreid=%d,pid=%d, qid=%d,tid=%d\n", core,pid, qid,tid);
+	thread_disable(qid, tid);
 }
 void syscall_read()
 {

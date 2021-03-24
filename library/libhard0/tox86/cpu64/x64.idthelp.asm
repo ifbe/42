@@ -2,7 +2,7 @@
 extern isr_rtc
 extern isr_825x
 extern endofextirq
-extern thread_schedule
+extern percpu_schedule
 
 
 section .text
@@ -95,7 +95,7 @@ isr40_apictimer:
 	mov rdi, rsp	;for abi: di,si,dx,cx,r8,r9
 	mov rcx, rdi	;for abi: cx,dx,r8,r9
 	sub rsp, 0x100	;mingw bug!!!: it breaks stack [rsp,rsp+?]
-	call thread_schedule
+	call percpu_schedule
 
 	call endofextirq
 

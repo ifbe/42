@@ -22,6 +22,8 @@ static void mmioedit_create(struct entity* act, void* arg, int argc, u8** argv)
 {
 	if(0 == act)return;
 	act->buf0 = (void*)0x0;
+	act->ix0 = 4;
+	act->iy0 = 2;
 }
 
 
@@ -69,8 +71,11 @@ static void mmioedit_draw_pixel(
 	//say("hh=%x,lpr=%x\n",hh,lineperrect);
 //say("bpl=%x,lpr=%x\n", byteperline, lineperrect);
 
-	int x,y,rgb;
 	u32* addr;
+	int x,y,rgb;
+	int selx = act->ix0;
+	int sely = act->iy0;
+
 	for(y=0;y<lineperrect;y++){
 		addr = (u32*)(act->buf0 + y*byteperline);
 		for(x=0;x<byteperline;x+=4){
@@ -82,7 +87,7 @@ static void mmioedit_draw_pixel(
 				cx+((x+4-byteperline/2)<<4), cy+((y+1-lineperrect/2)<<4)
 			);
 			//sel
-			if((4==x)&&(2==y)){
+			if((selx == x)&&(sely == y)){
 			drawline_rect(
 				wnd, rgb,
 				cx+((x+0-byteperline/2)<<4), cy+((y+0-lineperrect/2)<<4),
@@ -163,6 +168,17 @@ static void mmioedit_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,
 }
 static int mmioedit_giving(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	//say("@mmioedit_give\n");
+
+	struct event* ev = buf;
+	if(_kbd_ == ev->what){
+		switch(ev->why){
+		case 0x4b:ent->ix0 -= 1;break;
+		case 0x4d:ent->ix0 += 1;break;
+		case 0x50:ent->iy0 += 1;break;
+		case 0x48:ent->iy0 -= 1;break;
+		}
+	}
 	return 0;
 }
 static void mmioedit_discon(struct halfrel* self, struct halfrel* peer)

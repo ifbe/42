@@ -6,38 +6,251 @@
 #define ApToBsp_message 0xfff0
 #define BspToAp_command 0xfff8
 //
+#define APPCPU 0x20000		//[20000,2ffff]
+#define APPCPU_GDT (APPCPU+0x000)
+#define APPCPU_TSS (APPCPU+0x1000)
+#define APPCPU_IDT (APPCPU+0x2000)
+#define APPCPU_RSP (APPCPU+0x10000)
+//
+#define BSPCPU 0x30000		//[30000,3ffff]
+#define BSPCPU_GDT (BSPCPU+0x000)
+#define BSPCPU_TSS (BSPCPU+0x1000)
+#define BSPCPU_IDT (BSPCPU+0x2000)
+#define BSPCPU_RSP (BSPCPU+0x10000)
+//
+#define CR3BUF 0x40000
+#define CR3END 0x80000
+
+
+
+
+//acpi
+u64 getknowncores();
 void cpuid(u32*);
+//
 int enable_fpu();
 int enable_sse();
 int enable_xsave();
+void fpu_fxsave(u64 addr);
+void fpu_fxrstor(u64 addr);
+void fpu_xsave(u64 addr);
+void fpu_rstor(u64 addr);
 //
-void initpaging();
-void initgdt();
+void initpaging(void*);
+//
+void initgdt(void*);
+void initgdt_ap(void*);
 //
 void initidt_bsp();
 void initidt_ap(int coreid);
-//
-void localapic_init();
-void apictimer_init();
-//
-void process_registersupplier(int);
-void thread_registersupplier(int);
-//acpi
-u64 getknowncores();
-//
-void sleep_us();
-//for fun
-void enterring3();
 //for multicore
+void localapic_init();
 int localapic_isenabled();
 int localapic_coreid();
 void localapic_sendinit(u32 apic_id);
 void localapic_sendstart(u32 apic_id, u32 vector);
 //
+void apictimer_init();
+void sleep_us();
+//
 void* get_trampoline16_start();
 void* get_trampoline16_end();
 void* get_trampoline64_start();
 void* get_trampoline64_end();
+//
+void process_registersupplier(int core);
+void process_switchto(int curr, int next);
+//
+int thread_registerprocessor(int core, int proc);
+int thread_findnext(int queueid,int curr);
+int thread_findproc(int queueid,int curr);
+int thread_switchto(int queueid,int curr, int queueid2,int next, int coreid,void* cpureg);
+
+
+
+
+//
+struct saved_cpureg{
+	//[0,3f]
+	u64 r8;
+	u64 r9;
+	u64 r10;
+	u64 r11;
+	u64 r12;
+	u64 r13;
+	u64 r14;
+	u64 r15;
+	//[40,77]
+	u64 rax;
+	u64 rbx;
+	u64 rcx;
+	u64 rdx;
+	u64 rsi;
+	u64 rdi;
+	u64 rbp;
+	//[78,9f]
+	u64 ip;
+	u64 cs;
+	u64 flag;
+	u64 sp;
+	u64 ss;
+	//[a0,??]
+}__attribute__((packed));
+
+struct percpu{
+	u64 gdt;
+	u64 tss;
+	u64 idt;
+	u64 ring0stack;
+
+	u32 irqcnt;
+	u32 slpcnt;
+
+	int coreid;
+
+	int procid;	//this core current process
+
+	int thread;	//this core current thread
+	int queueid;
+};
+static struct percpu cpubuf[8];
+static int cpucnt = 0;
+
+
+
+
+#define KERNCODE 0x10
+#define KERNDATA 0x18
+#define USERCODE 0x20
+#define USERDATA 0x28
+void percpu_makeuser(struct saved_cpureg* cpu, u64 ip, u64 sp)
+{
+	cpu->ip = ip;
+	cpu->cs = USERCODE | 3;
+	cpu->flag = 0x202;
+	cpu->sp = sp;
+	cpu->ss = USERDATA | 3;
+}
+void percpu_makekern(struct saved_cpureg* cpu, u64 ip, u64 sp)
+{
+	cpu->ip = ip;
+	cpu->cs = KERNCODE;
+	cpu->flag = 0x202;
+	cpu->sp = sp;
+	cpu->ss = KERNDATA;
+}
+void percpu_makearg(struct saved_cpureg* cpu, u64 arg)
+{
+	cpu->rdi = (u64)arg;	//di,si,dx,cx,r8,r9
+	cpu->rcx = (u64)arg;	//cx,dx,r8,r9
+}
+
+
+
+
+void percpu_savecpu(u64* saveaddr, u64* workaddr)
+{
+	int j;
+	for(j=0;j<sizeof(struct saved_cpureg)/8;j++)saveaddr[j] = workaddr[j];
+}
+void percpu_loadcpu(u64* saveaddr, u64* workaddr)
+{
+	int j;
+	for(j=0;j<sizeof(struct saved_cpureg)/8;j++)workaddr[j] = saveaddr[j];
+}
+void percpu_savefpu(u64 addr)
+{
+	fpu_fxsave(addr);
+}
+void percpu_loadfpu(u64 addr)
+{
+	fpu_fxrstor(addr);
+}
+
+
+
+
+int percpu_coreid()
+{
+	return localapic_coreid();
+}
+void* percpu_finddatabyid(coreid)
+{
+	int j;
+	for(j=0;j<cpucnt;j++){
+		if(coreid == cpubuf[j].coreid)return &cpubuf[j];
+	}
+	return 0;
+}
+int percpu_process()
+{
+	int coreid = localapic_coreid();
+
+	struct percpu* per = percpu_finddatabyid(coreid);
+
+	return per->procid;
+}
+int percpu_tqueue()
+{
+	int coreid = localapic_coreid();
+
+	struct percpu* per = percpu_finddatabyid(coreid);
+
+	return per->queueid;
+}
+int percpu_thread()
+{
+	int coreid = localapic_coreid();
+
+	struct percpu* per = percpu_finddatabyid(coreid);
+
+	return per->thread;
+}
+int percpu_schedule(struct saved_cpureg* cpureg)
+{
+	//percpu coreid
+	int coreid = localapic_coreid();
+	//if(wierd)return 0;
+
+	//percpu data
+	struct percpu* per = percpu_finddatabyid(coreid);
+	if(0 == per)return 0;
+
+	//thread_schedule(cpureg);
+	//return 0;
+
+	//check thread
+	int tcurr;
+	int tnext;
+	tcurr = per->thread;
+
+	per->irqcnt += 1;
+	if(0 == (per->irqcnt&0xf)){
+		tnext = 0;
+	}
+	else{
+		tnext = thread_findnext(per->queueid, tcurr);
+	}
+	//*(int*)(coreid*16 + 0) = tcurr;
+	//*(int*)(coreid*16 + 4) = tnext;
+	if(tcurr == tnext)return 0;
+
+	//check process
+	int pcurr = per->procid;
+	int pnext = thread_findproc(per->queueid,tnext);
+
+	//switch process
+	if(pcurr != pnext){
+		process_switchto(pcurr, pnext);
+		per->procid = pnext;
+	}
+
+	//switch thread
+	thread_switchto(per->queueid,tcurr, per->queueid, tnext, coreid, cpureg);
+	per->thread = tnext;
+
+	return 0;
+}
 
 
 
@@ -50,8 +263,8 @@ void initcpu_bsp(struct item* p)
 
 
 //----------------prep descs----------------
-	initpaging();
-	initgdt();
+	initpaging((void*)CR3BUF);
+	initgdt((void*)BSPCPU_GDT);
 
 
 	if(!enable_fpu())say("fail@enable_fpu\n");
@@ -76,13 +289,25 @@ void initcpu_bsp(struct item* p)
 	say("coreid = %d\n", coreid);
 
 	process_registersupplier(coreid);
-	thread_registersupplier(coreid);
+	int queueid = thread_registerprocessor(coreid, 0);
 
 	initidt_bsp();
+
+
+//----------------percpu data---------------
+	cpubuf[0].gdt = BSPCPU_GDT;
+	cpubuf[0].tss = BSPCPU_TSS;
+	cpubuf[0].ring0stack = BSPCPU_RSP;
+	cpubuf[0].idt = BSPCPU_IDT;
+	cpubuf[0].coreid = coreid;
+	cpubuf[0].procid = 0;
+	cpubuf[0].thread = 0;
+	cpubuf[0].queueid = queueid;
+	cpucnt = 1;
+
 	apictimer_init();
 
-
-	//ok
+//----------------bspcpu inited------------------
 	say("@initcpu_bsp.end\n\n");
 	asm("sti");
 }
@@ -97,8 +322,8 @@ void initcpu_other()
 
 
 //----------------prep descs----------------
-	//initpaging();		//currently same as bsp
-	//initgdt();
+	//initpaging((void*)CR3BUF);	//already there
+	initgdt_ap((void*)APPCPU_GDT);
 
 
 	if(!enable_fpu())say("fail@enable_fpu\n");
@@ -122,13 +347,26 @@ void initcpu_other()
 	int coreid = localapic_coreid();
 	say("coreid=%d\n", coreid);
 
-	thread_registersupplier(coreid);
+	int queueid = thread_registerprocessor(coreid, 0);
 
 	initidt_ap(coreid);
+
+
+//----------------percpu data---------------
+	int n = cpucnt;
+	cpubuf[n].gdt = APPCPU_GDT;
+	cpubuf[n].tss = APPCPU_TSS;
+	cpubuf[n].ring0stack = APPCPU_RSP;
+	cpubuf[n].idt = APPCPU_IDT;
+	cpubuf[n].coreid = coreid;
+	cpubuf[n].procid = 0;
+	cpubuf[n].thread = 0;
+	cpubuf[n].queueid = queueid;
+	cpucnt = n+1;
+
 	apictimer_init();
 
-
-	//ok
+//----------------appcpu inited------------------
 	say("@initcpu_other.end\n\n", coreid);
 	asm("sti");
 }
@@ -258,12 +496,4 @@ void initcpu_ap()
 		initcpu_onecore(j);
 		break;
 	}
-}
-
-
-
-
-int percpucoreid()
-{
-	return localapic_coreid();
 }

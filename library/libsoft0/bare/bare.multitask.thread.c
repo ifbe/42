@@ -1,98 +1,50 @@
 #include "libsoft.h"
-int percpucoreid();
-void haltwaitforint();
+int percpu_coreid();
+int percpu_savefpu(void* buf);
+int percpu_loadfpu(void* buf);
 //
-void fpu_fxsave(u64 addr);
-void fpu_fxrstor(u64 addr);
-void fpu_xsave(u64 addr);
-void fpu_rstor(u64 addr);
+int percpu_savecpu(void* buf, void* saved);
+int percpu_loadcpu(void* buf, void* saved);
+int percpu_makeuser(void* buf, void* ip, void* ss);
+int percpu_makekern(void* buf, void* ip, void* ss);
+int percpu_makearg(void* buf, void* arg);
 
 
 
 
-struct saved_cpureg{
-	//[0,3f]
-	u64 r8;
-	u64 r9;
-	u64 r10;
-	u64 r11;
-	u64 r12;
-	u64 r13;
-	u64 r14;
-	u64 r15;
-	//[40,77]
-	u64 rax;
-	u64 rbx;
-	u64 rcx;
-	u64 rdx;
-	u64 rsi;
-	u64 rdi;
-	u64 rbp;
-	//[78,9f]
-	u64 ip;
-	u64 cs;
-	u64 flag;
-	u64 sp;
-	u64 ss;
-	//[a0,??]
-}__attribute__((packed));
-
-struct saved_fpureg{
-	u8 xsavearea[1024+0x40];
-}__attribute__((packed));
-
-struct saved_pagetable{
-}__attribute__((packed));
-
-struct saved_vmcb{
+struct saved_status{
+	u32            type;
+	u32           state;	//0 = disable, n = normal
+	int    BindToCoreId;	//-1 = any, 0 to n = processor id
+	int CoreRunThisTask;	//-1 = none, 0 to n = processor id
+	int procid;
+	int vmcbid;
 }__attribute__((packed));
 
 struct threadstate{
-	volatile u32           count;
-	volatile u32           state;	//0 = disable, n = normal
-	volatile int    BindToCoreId;	//-1 = any, 0 to n = processor id
-	volatile int CoreRunThisTask;	//-1 = none, 0 to n = processor id
-	volatile struct saved_cpureg cpureg;
-	volatile struct saved_fpureg fpureg;
-	volatile struct saved_pagetable* pt;
-	volatile struct saved_vmcb* vmcb;
+	//xsaveopt: use=1024byte, align=64byte
+	u8 fpu[1024];
+
+	u8 cpu[512];
+
+	struct saved_status info;
+
+	u8 padding[2048 - 1024 - 512 - sizeof(struct saved_status)];
 }__attribute__((packed));
 
 
 
 
-static volatile void* cpubuffer = 0;
-static volatile int cpucount = 0;
+static void* cpubuffer = 0;
+static int cpucount = 0;
 //
-static volatile struct threadstate* percputasktable[8];
-static volatile int percputaskcount[8];
-
-
-
-/*
-static void test1()
-{
-	u64 time;
-	while(1){
-		time = timeread();
-		say("core=%d, task=%d, time=%llx\n", percpucoreid(), 1, time);
-		haltwaitforint();
-	}
-}
-static void test2()
-{
-	u64 time;
-	while(1){
-		time = timeread();
-		say("core=%d, task=%d, time=%llx\n", percpucoreid(), 2, time);
-		haltwaitforint();
-	}
-}*/
+static struct threadstate* percputasktable[8];
+static int percputaskcount[8];
 
 
 
 
-u64 threadcreate(void* code, void* arg)
+u64 thread_forthisprocess(void* ip, void* arg, int procid)
 {
 	int j;
 	int that = -2;
@@ -106,25 +58,84 @@ u64 threadcreate(void* code, void* arg)
 	if(that < 0)return 0;
 
 	int taskcount = percputaskcount[that];
-	volatile struct threadstate* tasktable = percputasktable[that];
-	volatile struct threadstate* task = &tasktable[taskcount];
+	struct threadstate* tasktable = percputasktable[that];
+	struct threadstate* task = &tasktable[taskcount];
 
-	task->cpureg.ip = (u64)code;
-	task->cpureg.cs = 0x10;
-	task->cpureg.flag = 0x202;
-	task->cpureg.sp = (u64)memorycreate(0x100000, 0) + 0xffff0;
-	task->cpureg.ss = 0x18;
+	void* sp = (void*)0xfffffffffffffff8;
+	percpu_makearg(&task->cpu, arg);
+	percpu_makeuser(&task->cpu, ip, sp);
+	percpu_savefpu(&task->fpu);
 
-	task->cpureg.rdi = (u64)arg;	//di,si,dx,cx,r8,r9
-	task->cpureg.rcx = (u64)arg;	//cx,dx,r8,r9
+	task->info.BindToCoreId = -1;	//percpu_coreid();
+	task->info.CoreRunThisTask = -1;
+	task->info.procid = procid;
+	task->info.vmcbid = 0;
+	task->info.type = 3;
+	task->info.state = 1;
 
-	u64 fpubuf = (u64)&task->fpureg;
-	fpu_fxsave((fpubuf+0x40) - (fpubuf&0x3f));
+	percputaskcount[that] += 1;		//must after all above
+	return 0;
+}
+int thread_registerprocessor(int coreid, int procid)
+{
+	say("incoming thread: from coreid=%d\n", coreid);
 
-	task->count = 0;
-	task->state = 1;
-	task->BindToCoreId = -1;	//percpucoreid();
-	task->CoreRunThisTask = -1;
+	int queueid = cpucount;
+
+	struct threadstate* tasktable = cpubuffer + 0x10000*queueid;
+
+	struct threadstate* task = &tasktable[0];
+
+	void* ip = (void*)0x5a5a5a5a;
+	void* sp = (void*)0xfedcba98;
+	percpu_makekern(&task->cpu, ip, sp);
+	percpu_savefpu(&task->fpu);
+
+	task->info.BindToCoreId = coreid;
+	task->info.CoreRunThisTask = coreid;
+	task->info.procid = procid;
+	task->info.vmcbid = 0;
+	task->info.type = 0;
+	task->info.state = 1;
+
+	percputasktable[queueid] = tasktable;
+	percputaskcount[queueid] = 1;
+
+	cpucount += 1;
+	return queueid;
+}
+
+
+
+
+u64 threadcreate(void* ip, void* arg)
+{
+	int j;
+	int that = -2;
+	int least = 9999;
+	for(j=0;j<cpucount;j++){
+		if(least > percputaskcount[j]){
+			that = j;
+			least = percputaskcount[j];
+		}
+	}
+	if(that < 0)return 0;
+
+	int taskcount = percputaskcount[that];
+	struct threadstate* tasktable = percputasktable[that];
+	struct threadstate* task = &tasktable[taskcount];
+
+	void* sp = memorycreate(0x100000, 0) + 0xffff0;
+	percpu_makearg(&task->cpu, arg);
+	percpu_makekern(&task->cpu, ip, sp);
+	percpu_savefpu(&task->fpu);
+
+	task->info.BindToCoreId = -1;	//percpu_coreid();
+	task->info.CoreRunThisTask = -1;
+	task->info.procid = 0;
+	task->info.vmcbid = 0;
+	task->info.type = 0;
+	task->info.state = 1;
 
 	percputaskcount[that] += 1;		//must after all above
 	return 0;
@@ -136,15 +147,29 @@ int threaddelete(u64 id)
 int threadsearch(void* buf, int len)
 {
 	int j,k;
-	volatile struct threadstate* tasktable;
+	struct threadstate* tasktable;
+	struct threadstate* task;
 	say("@threadsearch\n");
-	say("%p,%p,%d\n", percputasktable, percputaskcount,cpucount);
+	say("%p,%p,%d\n", percputasktable, percputaskcount, cpucount);
 
 	for(j=0;j<cpucount;j++){
 		say("cpu[%d]:\n", j);
 		tasktable = percputasktable[j];
 		for(k=0;k<percputaskcount[j];k++){
-			say("%d: ip=%llx,sp=%llx\n", k, tasktable[k].cpureg.ip, tasktable[k].cpureg.sp);
+			task = &tasktable[k];
+/*			say("%d@%p: want=%d,core=%d, proc=%d,vmcb=%d, cs=%x,ip=%llx, ss=%x,sp=%llx\n",
+				k, task,
+				task->info.BindToCoreId, task->info.CoreRunThisTask,
+				task->info.procid, task->info.vmcbid,
+				task->cpu.cs, task->cpu.ip,
+				task->cpu.ss, task->cpu.sp
+			);*/
+			say("%d@%p: type=%d,stat=%d, want=%d,core=%d, proc=%d,vmcb=%d\n",
+				k, task,
+				task->info.type, task->info.state,
+				task->info.BindToCoreId, task->info.CoreRunThisTask,
+				task->info.procid, task->info.vmcbid
+			);
 		}
 	}
 	return 0;
@@ -157,124 +182,110 @@ int threadmodify(void* buf, int len)
 
 
 
-int schedulethread_findtable(int coreid)
+int thread_findtableforcore(int coreid)
 {
 	int j;
 	for(j=0;j<cpucount;j++){
-		if(coreid == percputasktable[j]->BindToCoreId)return j;
+		if(coreid == percputasktable[j]->info.BindToCoreId)return j;
 	}
 	return -1;
 }
-int schedulethread_findcurr(volatile struct threadstate* tasktable, int taskcount, int coreid)
+int thread_findcurrintable(struct threadstate* tasktable, int taskcount, int coreid)
 {
 	int j=0;
 	for(j=0;j<taskcount;j++){
-		if(coreid == tasktable[j].CoreRunThisTask){
+		if(coreid == tasktable[j].info.CoreRunThisTask){
 			return j;
 		}
 	}
 	return -1;
 }
-int schedulethread_findnext(volatile struct threadstate* tasktable, int taskcount, int icurr)
+int thread_findnextintable(struct threadstate* tasktable, int taskcount, int icurr)
 {
-	//0: next = 0
-	if(0 == (tasktable[0].count&0xff))return 0;
-
 	//[1,255]: next = all except the 0
 	int j,inext=0;
 	for(j=icurr+1;j<taskcount;j++){
-		if(-1 == tasktable[j].CoreRunThisTask){
-		if(1 == tasktable[j].state){
+		if(-1 == tasktable[j].info.CoreRunThisTask){
+		if(1 == tasktable[j].info.state){
 			return j;
 		}	//this task is alive
 		}	//no one running this
 	}
 	for(j=1;j<icurr;j++){
-		if(-1 == tasktable[j].CoreRunThisTask){
-		if(1 == tasktable[j].state){
+		if(-1 == tasktable[j].info.CoreRunThisTask){
+		if(1 == tasktable[j].info.state){
 			return j;
 		}	//this task is alive
 		}	//no one running this
 	}
-	return -1;
+	return icurr;
 }
-void schedulethread_savecurr(volatile struct threadstate* pcurr, u64* cputmp, int coreid)
+void thread_switchbuffer(struct threadstate* curr, struct threadstate* next, void* cpureg, int coreid)
 {
-	int j;
-	u64* cpubuf = (void*)&pcurr->cpureg;
-	for(j=0;j<sizeof(struct saved_cpureg)/8;j++)cpubuf[j] = cputmp[j];
+	percpu_savecpu(curr->cpu, cpureg);
+	percpu_savefpu(curr->fpu);
 
-	u64 fpubuf = (u64)&pcurr->fpureg;
-	fpu_fxsave((fpubuf+0x40) - (fpubuf&0x3f));
-}
-void schedulethread_loadnext(volatile struct threadstate* pnext, u64* cputmp, int coreid)
-{
-	int j;
+	percpu_loadcpu(next->cpu, cpureg);
+	percpu_loadfpu(curr->fpu);
 
-	u64* cpubuf = (void*)&pnext->cpureg;
-	for(j=0;j<sizeof(struct saved_cpureg)/8;j++)cputmp[j] = cpubuf[j];
-
-	u64 fpubuf = (u64)&pnext->fpureg;
-	fpu_fxrstor((fpubuf+0x40) - (fpubuf&0x3f));
-}
-void thread_schedule(struct saved_cpureg* cpureg)
+	curr->info.CoreRunThisTask = -1;			//no cpu @ this task
+	next->info.CoreRunThisTask = coreid;		//this cpu @ this task
+}/*
+void thread_schedule(void* cpureg)
 {
 	//if(first 1008/1024 of one sec)dont change
 	//u64 time = timeread() >> 10;
 	//if((time&0x3ff) < 0x3f0)return;
 
 	//0.which core want change, and his own table
-	int coreid = percpucoreid();
+	int coreid = percpu_coreid();
 
-	int itable = schedulethread_findtable(coreid);
+	int itable = thread_findtableforcore(coreid);
 	if(itable < 0)return;
 
-	volatile struct threadstate* tasktable = percputasktable[itable];
+	struct threadstate* tasktable = percputasktable[itable];
 	int taskcount = percputaskcount[itable];
 
-	tasktable[0].count += 1;
-
-	int icurr = schedulethread_findcurr(tasktable, taskcount, coreid);
+	int icurr = thread_findcurrintable(tasktable, taskcount, coreid);
 	if(icurr < 0)goto fuckshit;
 
-	int inext = schedulethread_findnext(tasktable, taskcount, icurr);
+	int inext = thread_findnextintable(tasktable, taskcount, icurr);
 	if(inext < 0)goto fuckshit;
 
 	if(icurr == inext)goto fuckshit;
-
-	schedulethread_savecurr(&tasktable[icurr], (u64*)cpureg, coreid);
-
-	schedulethread_loadnext(&tasktable[inext], (u64*)cpureg, coreid);
-
-	tasktable[icurr].CoreRunThisTask = -1;			//no cpu @ this task
-	tasktable[inext].CoreRunThisTask = coreid;		//this cpu @ this task
+	thread_switchbuffer(&tasktable[icurr], &tasktable[inext], cpureg, coreid);
 
 fuckshit:
 	return;
-}
-void thread_registersupplier(int coreid)
+}*/
+
+
+
+
+int thread_disable(int queueid, int curr)
 {
-	say("incoming thread: from coreid=%d\n", coreid);
+	struct threadstate* tasktable = percputasktable[queueid];
+	tasktable[curr].info.state = 0;
+	return 0;
+}
+int thread_findnext(int queueid, int curr)
+{
+	struct threadstate* tasktable = percputasktable[queueid];
+	int taskcount = percputaskcount[queueid];
 
-	volatile struct threadstate* tasktable = cpubuffer + 0x10000*cpucount;
+	return thread_findnextintable(tasktable, taskcount, curr);
+}
+int thread_findproc(int queueid, int curr)
+{
+	struct threadstate* tasktable = percputasktable[queueid];
+	return tasktable[curr].info.procid;
+}
+void thread_switchto(int queueid, int curr, int queueid2, int next, int coreid, void* cpureg)
+{
+	struct threadstate* tasktable = percputasktable[queueid];
+	int taskcount = percputaskcount[queueid];
 
-	volatile struct threadstate* task = &tasktable[0];
-
-	task->cpureg.ip = 0x5a5a5a5a;
-	task->cpureg.cs = 0x10;
-	task->cpureg.flag = 0x202;
-	task->cpureg.sp = 0xfedcba98;
-	task->cpureg.ss = 0x18;
-
-	task->count = 0;
-	task->state = 1;
-	task->BindToCoreId = coreid;
-	task->CoreRunThisTask = coreid;
-
-	percputasktable[cpucount] = tasktable;
-	percputaskcount[cpucount] = 1;
-
-	cpucount += 1;
+	thread_switchbuffer(&tasktable[curr], &tasktable[next], cpureg, coreid);
 }
 
 

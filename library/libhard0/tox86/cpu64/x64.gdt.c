@@ -6,23 +6,13 @@
 #define KERNDATA 0x18
 #define USERCODE 0x20
 #define USERDATA 0x28
-//
-#define APPCPU 0x20000		//[20000,2ffff]
-#define APPCPU_GDT (APPCPU+0x000)
-#define APPCPU_TSS (APPCPU+0x1000)
-#define APPCPU_IDT (APPCPU+0x2000)
-#define APPCPU_RSP (APPCPU+0x10000)
-//
-#define BSPCPU 0x30000		//[30000,3ffff]
-#define GDTBUF (BSPCPU+0x000)
-#define TSSBUF (BSPCPU+0x1000)
-#define IDTBUF (BSPCPU+0x2000)
-#define STKBUF (BSPCPU+0x10000)
 void getgdt(void*);
 void loadgdt();
+void loadgdt_ap();
 //
 u16 gettss();
 void loadtss();
+void loadtss_ap();
 //
 void printmemory(void*, int);
 void say(void*, ...);
@@ -101,13 +91,15 @@ struct tss{
 
 
 
+#define OFFS_TSS 0x1000
+#define OFFS_RSP 0x10000
 void fillgdt(u8* buf)
 {
 	int j;
 	for(j=0;j<0x10000;j++)buf[j] = 0;
 
-	struct tss* tss = (void*)(TSSBUF);
-	tss->rsp0 = STKBUF;
+	struct tss* tss = (void*)(buf+OFFS_TSS);
+	tss->rsp0 = (u64)buf + OFFS_RSP;
 	tss->iopb = 0x68;
 	say("tss:\n");
 	printmemory(tss, 0x68);
@@ -130,7 +122,7 @@ void fillgdt(u8* buf)
 	gt->base_24_31  = (((u64)tss)>>24)&0xff;
 	gt->base_32_63  = ((u64)tss)>>32;
 }
-void initgdt()
+void initgdt(u8* newgdt)
 {
 	say("@initgdt\n");
 
@@ -143,14 +135,28 @@ void initgdt()
 	printmemory(*(u8**)(map+2), *(u16*)map + 1);
 
 	//set
-	u8* buf = (u8*)GDTBUF;
-	fillgdt(buf);
+	fillgdt(newgdt);
 
 	//new
-	say("newgdt:\n");
-	printmemory(buf, 0x40);
+	say("bspgdt:\n");
+	printmemory(newgdt, 0x40);
 
 	//run
 	loadgdt();
 	loadtss();
+}
+void initgdt_ap(u8* newgdt)
+{
+	say("@initgdt_ap\n");
+
+	//set
+	fillgdt(newgdt);
+
+	//new
+	say("appgdt:\n");
+	printmemory(newgdt, 0x40);
+
+	//run
+	loadgdt_ap();
+	loadtss_ap();
 }
