@@ -534,8 +534,7 @@ int fatclient_ontake(_art* art,void* foot, _syn* stack,int sp, void* arg, int id
 		return 0;
 	}
 
-	fat32_read(art,0, clus,0, buf,len);
-	return 0;
+	return fat32_read(art,0, clus,0, buf,len);
 }
 int fatclient_ongive(_art* art,void* foot, _syn* stack,int sp, void* arg, int idx, u8* buf, int len)
 {

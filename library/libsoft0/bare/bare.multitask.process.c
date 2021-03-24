@@ -88,27 +88,49 @@ u64 processcreate(void* file, void* args)
 
 	//prepare memory for reading
 	u64 cr,pa;
-	process_malloc(&pa, &cr);
-
-
-	//copy code to pa
-	int j;
 	int now = proccount;
+	if(0 == table[now].cr3){
+		process_malloc(&pa, &cr);
+		table[now].cr3 = (void*)cr;
+		table[now].code = (void*)pa;
+	}
+	else{
+		cr = (u64)table[now].cr3;
+		pa = (u64)table[now].code;
+	}
+
+
+/*	//test0: copy code to pa
+	int j;
 	u8* tmp = (void*)pa;
 	u8* p = (void*)proctest_entry;
 	u8* q = (void*)proctest_end;
 	for(j=0;j<q-p;j++)tmp[j] = p[j];
 	printmemory(tmp, 0x200);
+*/
+
+	//test1: read file to pa
+	int ret = readfile(file,0, 0,0, (void*)pa,0x200000);
+	if(ret <= 0){
+		say("@processcreate: readfile notfound\n");
+		return 0;
+	}
 
 /*
-	//read file to pa
-	void* p = (void*)table[now].code;
-	int ret = readfile(file,0, 0,0, p,0x10000);
-
-	printmemory(p, 0x100);
-	parse_pe(p, 0x10000);
-
-	//pagetable_makeuser(cr3, 0x100000, 0xffffffff00000000, len, p, len);
+	//final: read file to tmp, parse it
+	switch(type){
+	case _pe_:
+		parse_pe(p, 0x10000);
+		break;
+	case _elf_:
+		parse_elf(p, 0x10000);
+		break;
+	case _mach_:
+		parse_macho(p, 0x10000);
+		break;
+	default:
+		//it is raw code
+	}
 */
 
 	//map va to pa
@@ -118,8 +140,6 @@ u64 processcreate(void* file, void* args)
 
 
 	//here it almost done
-	table[now].cr3 = (void*)cr;
-	table[now].code = (void*)pa;
 	table[now].path = 0;
 	table[now].stat = 1;
 	thread_forthisprocess((void*)va, 0, now);

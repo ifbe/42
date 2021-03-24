@@ -109,8 +109,7 @@ int readfile(void* obj, int fd, void* arg, int off, u8* buf, int len)
 	if(0 == p->ontaking)return 0;
 
 	//q = fsysfoot[0];
-	p->ontaking((void*)p,obj, 0,0, 0,0, buf,len);
-	return 0;
+	return p->ontaking((void*)p,obj, 0,0, 0,0, buf,len);
 }
 int writefile(void* obj, int fd, void* arg, int off, u8* buf, int len)
 {
