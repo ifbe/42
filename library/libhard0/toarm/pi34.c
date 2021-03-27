@@ -2,6 +2,9 @@
 void* getdtb();
 void parsedevmap_dtb();
 //
+void initcpu_bsp();
+void initcpu_ap();
+//
 void initsystmr(void*);
 void initsdcard(void*);
 
@@ -35,6 +38,8 @@ void inithardware()
 
 	//cpu
 	p = devicecreate(_cpu_, 0, 0, 0);
+	initcpu_bsp(p);
+	initcpu_ap(p);
 
 	//timer
 	p = devicecreate(_tmr_, 0, 0, 0);

@@ -161,11 +161,11 @@ void process_switchto(int curr, int next)
 	//load next
 	pagetable_use(table[next].cr3);
 }
-void process_registersupplier(int coreid)
+void process_registersupplier(int coreid, void* cr3)
 {
 	say("incoming process: from coreid=%d\n", coreid);
 
-	table[0].cr3 = (void*)0x40000;
+	table[0].cr3 = cr3;
 	table[0].path = 0;
 	table[0].code = 0;
 	table[0].stat = 1;

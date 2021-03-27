@@ -45,6 +45,8 @@ arm64_c = \
 toarm/cpu64/arm64.fp.c \
 toarm/cpu64/arm64.asm.c \
 toarm/cpu64/arm64.boot.c \
+toarm/cpu64/arm64.paging.c \
+toarm/cpu64/arm64.exc.c \
 device.c
 arm64_o = $(patsubst %.c, %.o, $(arm64_c))
 
@@ -83,6 +85,8 @@ inlinux/hardware.c
 linuxpi64_o = $(patsubst %.c, %.o, $(linuxpi64_c))
 
 barepi64:$(arm64_o) $(barepi64_o)
+	$(AS) -c toarm/cpu64/arm64.boothelp.s -o $(DIR)/arm64.boothelp.o
+	$(AS) -c toarm/cpu64/arm64.exchelp.s -o $(DIR)/arm64.exchelp.o
 
 linuxarm64:$(arm64_o) $(linuxarm64_o)
 

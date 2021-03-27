@@ -1,14 +1,15 @@
 #include "libhard.h"
 #define _ver_ hex32('v','e','r',0)
 #define _slp_ hex32('s','l','p',0)
+#define _yield_ hex32('y','i','e','l')
 #define _exit_ hex32('e','x','i','t')
 #define _take_ hex32('t','a','k','e')
 #define _give_ hex32('g','i','v','e')
 int percpu_coreid();
 int percpu_process();
-//
 int percpu_tqueue();
 int percpu_thread();
+int percpu_schedule(void* cpureg);
 //
 int thread_disable(int qid, int tid);
 
@@ -52,7 +53,7 @@ void syscall_version()
 void syscall_sleep()
 {
 }
-void syscall_exit()
+void syscall_exit(void* cpureg)
 {
 	int core = percpu_coreid();
 	int pid = percpu_process();
@@ -60,6 +61,16 @@ void syscall_exit()
 	int tid = percpu_thread();
 	say("@syscall_exit: coreid=%d,pid=%d, qid=%d,tid=%d\n", core,pid, qid,tid);
 	thread_disable(qid, tid);
+	percpu_schedule(cpureg);
+}
+void syscall_yield(void* cpureg)
+{
+	int core = percpu_coreid();
+	int pid = percpu_process();
+	int qid = percpu_tqueue();
+	int tid = percpu_thread();
+	say("@syscall_yield: coreid=%d,pid=%d, qid=%d,tid=%d\n", core,pid, qid,tid);
+	percpu_schedule(cpureg);
 }
 void syscall_read()
 {
@@ -77,7 +88,8 @@ void syscall_handler(struct saved_cpureg* cpureg)
 	switch(cpureg->rax){
 	case _ver_:syscall_version();break;
 	case _slp_:syscall_sleep();break;
-	case _exit_:syscall_exit();break;
+	case _yield_:syscall_yield(cpureg);break;
+	case _exit_:syscall_exit(cpureg);break;
 	case _take_:syscall_read();break;
 	case _give_:syscall_write();break;
 	}

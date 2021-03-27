@@ -58,7 +58,7 @@ void* get_trampoline16_end();
 void* get_trampoline64_start();
 void* get_trampoline64_end();
 //
-void process_registersupplier(int core);
+void process_registersupplier(int core, void* pt);
 void process_switchto(int curr, int next);
 //
 int thread_registerprocessor(int core, int proc);
@@ -266,7 +266,6 @@ void initcpu_bsp(struct item* p)
 	initpaging((void*)CR3BUF);
 	initgdt((void*)BSPCPU_GDT);
 
-
 	if(!enable_fpu())say("fail@enable_fpu\n");
 	if(!enable_sse())say("fail@enable_sse\n");
 	if(!enable_xsave())say("fail@enable_xsave\n");
@@ -288,7 +287,7 @@ void initcpu_bsp(struct item* p)
 	int coreid = localapic_coreid();
 	say("coreid = %d\n", coreid);
 
-	process_registersupplier(coreid);
+	process_registersupplier(coreid, (void*)CR3BUF);
 	int queueid = thread_registerprocessor(coreid, 0);
 
 	initidt_bsp();
@@ -324,7 +323,6 @@ void initcpu_other()
 //----------------prep descs----------------
 	//initpaging((void*)CR3BUF);	//already there
 	initgdt_ap((void*)APPCPU_GDT);
-
 
 	if(!enable_fpu())say("fail@enable_fpu\n");
 	if(!enable_sse())say("fail@enable_sse\n");

@@ -169,7 +169,7 @@ int sd_cmd(unsigned int code, unsigned int arg)
 		sd_err = SD_TIMEOUT;
 		return 0;
 	}
-	say("EMMC: Sending command %x,%x\n",code, arg);
+	//say("EMMC: Sending command %x,%x\n",code, arg);
 
 	*EMMC_INTERRUPT = *EMMC_INTERRUPT;
 	*EMMC_ARG1 = arg;

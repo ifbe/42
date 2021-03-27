@@ -28,9 +28,10 @@ float arctanyx(float y, float x)
 
 
 
-float squareroot(float x)
+double squareroot(double x)
 {
-	return 0.0;
+	__asm__ ("fsqrt %d0, %d1" : "=w"(x) : "w"(x));
+	return x;
 }
 float cuberoot(float x)
 {
