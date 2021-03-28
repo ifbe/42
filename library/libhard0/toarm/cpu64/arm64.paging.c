@@ -24,69 +24,53 @@
 //
 #define TTBR_ENABLE 1
 //
-#define PML4OFFS 0x00000
-#define PML3OFFS 0x01000
-#define PML2OFFS 0x02000
-#define PML1OFFS 0x04000
+#define POSITIVE_PML3 0x00000
+#define POSITIVE_PML2 0x01000
+#define POSITIVE_LAST 0x40000
+//
+#define NEGATIVE_PML3 0x40000
+#define NEGATIVE_PML2 0x41000
+#define NEGATIVE_LAST 0x42000
+//
+#define GIGACOUNT 8		//map 8GB
 
 
 
 
 void pagetable_makekern(u8* buf, int len)
 {
-	u64* pml2 = (u64*)(buf+PML4OFFS);
-	pml2[0] = 0;
+	u64 j;
+	for(j=0;j<len;j++)buf[j] = 0;
 
-	u64* pml3 = (u64*)(buf+PML4OFFS);
-	pml3[0] = (u64)pml2 |
-		PT_PAGE |     // it has the "Present" flag, which must be set, and we have area in it mapped by pages
-		PT_AF |       // accessed flag. Without this we're going to have a Data Abort exception
-		PT_USER |     // non-privileged
-		PT_ISH |      // inner shareable
-		PT_MEM;       // normal memory
+	u64* pml2 = (u64*)(buf+POSITIVE_PML2);
+	for(j=0;j<512*GIGACOUNT;j++){
+		pml2[j] = ((j<<21) + 0) | PT_BLOCK | PT_AF | PT_KERNEL;
+		if(j < 512)pml2[j] |= PT_ISH | PT_MEM;
+		else pml2[j] |= PT_OSH | PT_DEV;
+	}
 
-	u64* pml4 = (u64*)(buf+PML4OFFS);
-	pml4[0] = (u64)pml3 |
-		PT_PAGE |     // it has the "Present" flag, which must be set, and we have area in it mapped by pages
-		PT_AF |       // accessed flag. Without this we're going to have a Data Abort exception
-		PT_USER |     // non-privileged
-		PT_ISH |      // inner shareable
-		PT_MEM;       // normal memory
+	u64* pml3 = (u64*)(buf+POSITIVE_PML3);
+	for(j=0;j<GIGACOUNT;j++)pml3[j] = ((j<<12) + (u64)pml2) | PT_PAGE | PT_AF | PT_KERNEL | PT_ISH | PT_MEM;
 }
-void pagetable_makeuser()
+void pagetable_makeuser(u8* buf, int len)
 {
+	pagetable_makekern(buf, 0x40000);
+
+	u64 j;
+	for(j=NEGATIVE_PML3;j<NEGATIVE_LAST;j++)buf[j] = 0;
+
+	u64* pml2 = (u64*)(buf+NEGATIVE_PML2);
+	pml2[511] = 0 | PT_BLOCK | PT_AF | PT_KERNEL | PT_ISH | PT_MEM;
+
+	u64* pml3 = (u64*)(buf+NEGATIVE_PML3);
+	pml3[511] = (u64)pml2 | PT_PAGE | PT_AF | PT_KERNEL | PT_ISH | PT_MEM;
 }
 
 
-void pagetable_setsctlr()
-{
-	u64 sctlr;
-	asm("dsb ish; isb; mrs %0, sctlr_el1" : "=r"(sctlr) );
-	sctlr |= 0xC00800;     // set mandatory reserved bits
-	sctlr &= ~((1<<25) |   // clear EE, little endian translation tables
-		 (1<<24) |   // clear E0E
-		 (1<<19) |   // clear WXN
-		 (1<<12) |   // clear I, no instruction cache
-		 (1<<4) |    // clear SA0
-		 (1<<3) |    // clear SA
-		 (1<<2) |    // clear C, no cache at all
-		 (1<<1));    // clear A, no aligment check
-	sctlr |=  (1<<0);     // set M, enable MMU
-	asm("msr sctlr_el1, %0; isb" : : "r" (sctlr));
-}
-u64 pagetable_getsctlr()
-{
-	u64 addr;
-	asm("dsb ish; isb; mrs %0, sctlr_el1" : "=r"(addr) );
-	return addr;
-}
+
+
 void pagetable_use(u64 p0, u64 p1)
 {
-	//user
-	asm("msr ttbr0_el1, %0" : : "r"(p0));
-
-	//kern
-	asm("msr ttbr1_el1, %0" : : "r"(p1));
 }
 u64 pagetable_get()
 {
@@ -94,17 +78,12 @@ u64 pagetable_get()
 	asm("mrs %0, ttbr1_el1" : "=r"(addr) );
 	return addr;
 }
-void initpaging(void* addr)
+void pagetable_enable(u64 p0, u64 p1)
 {
-	say("@initpaging: new@%p\n", addr);
+    unsigned long r, b;
 
-	u64 ttbr1_el1 = pagetable_get();
-	u64 sctlr_el1 = pagetable_getsctlr();
-	say("ttbr1_el1=%llx, sctlr_el1=%llx\n", ttbr1_el1, sctlr_el1);
-
-/*
-	u64 r,b;
-	asm volatile ("mrs %0, id_aa64mmfr0_el1" : "=r" (r));
+    // check for 4k granule and at least 36 bits physical address bus
+    asm volatile ("mrs %0, id_aa64mmfr0_el1" : "=r" (r));
     b=r&0xF;
     if(r&(0xF<<28) || b<1) {
         say("ERROR: 4k granule or 36 bit address space not supported\n");
@@ -117,7 +96,7 @@ void initpaging(void* addr)
         (0x44 <<16);     // AttrIdx=2: non cacheable
     asm volatile ("msr mair_el1, %0" : : "r" (r));
 
-	// next, specify mapping characteristics in translate control register
+    // next, specify mapping characteristics in translate control register
     r=  (0b00LL << 37) | // TBI=0, no tagging
         (b << 32) |      // IPS=autodetected
         (0b10LL << 30) | // TG1=4k
@@ -133,11 +112,39 @@ void initpaging(void* addr)
         (0b0LL  << 7) |  // EPD0 enable lower half
         (25LL   << 0);   // T0SZ=25, 3 levels (512G)
     asm volatile ("msr tcr_el1, %0; isb" : : "r" (r));
-*/
 
-	pagetable_makekern(addr, 0x4000);
+    // tell the MMU where our translation tables are. TTBR_CNP bit not documented, but required
+    // lower half, user space
+    asm volatile ("msr ttbr0_el1, %0" : : "r" (p0 | 1));
+    // upper half, kernel space
+    asm volatile ("msr ttbr1_el1, %0" : : "r" (p1 | 1));
+
+	u64 sctlr;
+    asm volatile ("dsb ish; isb; mrs %0, sctlr_el1" : "=r" (sctlr));
+    sctlr |= 0xC00800;     // set mandatory reserved bits
+    sctlr &= ~((1<<25) |   // clear EE, little endian translation tables
+         (1<<24) |   // clear E0E
+         (1<<19) |   // clear WXN
+         (1<<12) |   // clear I, no instruction cache
+         (1<<4) |    // clear SA0
+         (1<<3) |    // clear SA
+         (1<<2) |    // clear C, no cache at all
+         (1<<1));    // clear A, no aligment check
+    sctlr |=  (1<<0);     // set M, enable MMU
+    asm volatile ("msr sctlr_el1, %0; isb" : : "r" (sctlr));
+}
+void pagetable_disable()
+{
+}
+void initpaging(void* addr)
+{
+	say("@initpaging: new@%p\n", addr);
 
 
-	//pagetable_use(addr, addr);
-	//pagetable_setsctlr();
+	//pagetable_makekern(addr, POSITIVE_LAST);
+	pagetable_makeuser(addr, NEGATIVE_LAST);
+
+
+	pagetable_use((u64)addr, (u64)addr+NEGATIVE_PML3);
+	pagetable_enable((u64)addr, (u64)addr+NEGATIVE_PML3);
 }

@@ -92,8 +92,8 @@ void initcpu_bsp()
 	say("@initcpu_bsp=%x\n", coreid);
 
 	void* tmp = memorycreate(0x100000, 0);
-	initpaging(tmp);
 	initexception(tmp+0x100000);
+	initpaging(tmp);
 
 	int pid = process_registersupplier(coreid, 0);
 
@@ -118,8 +118,8 @@ void initcpu_other()
 	say("@initcpu_other=%x\n",coreid);
 
 	void* tmp = memorycreate(0x100000, 0);
-	initpaging(tmp);
-	initexception(tmp+0x100000);
+	//initpaging(tmp);
+	//initexception(tmp+0x100000);
 
 	int qid = thread_registerprocessor(coreid, 0);
 	int tid = 0;
