@@ -1,10 +1,14 @@
 #include "libhard.h"
 void out16(u16,u16);
-void getportanddata(u16*,u16*);
+void acpi_getportanddata(u16*,u16*);
+
+
+
+
 void poweroff()
 {
     u16 port,data;
-    getportanddata(&port,&data);
+    acpi_getportanddata(&port,&data);
     if(0 == port){
         say("badport@poweroff:%x\n",port);
         return;

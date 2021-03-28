@@ -109,7 +109,7 @@ struct MCFG{
 
 static u16 power_port;
 static u16 power_data;
-void getportanddata(u16* p, u16* d)
+void acpi_getportanddata(u16* p, u16* d)
 {
 	*p = power_port;
 	*d = power_data;
@@ -117,39 +117,45 @@ void getportanddata(u16* p, u16* d)
 
 
 static u64 knowncores = 0;
-u64 getknowncores()
+u64 acpi_getknowncores()
 {
 	return knowncores;
 }
 
 
+static void* pcieaddr = 0;
+void* acpi_getpcieaddr()
+{
+	return pcieaddr;
+}
+
+
+static int have8259 = 0;
+int acpi_getdual8259()
+{
+	return have8259;
+}
+
+
 static void* addr_localapic = 0;
-void* getlocalapic()
+void* acpi_getlocalapic()
 {
 	return addr_localapic;
 }
 
 
-static void* addr_extioaddr = 0;
+static void* addr_irqioaddr = 0;
 static u8 isa2gsi[32] = {
 	0x0,0x1,0x2,0x3, 0x4,0x5,0x6,0x7,
 	0x8,0x9,0xa,0xb, 0xc,0xd,0xe,0xf
 };
-void* getextioapic()
+void* acpi_getirqioapic()
 {
-	return addr_extioaddr;
+	return addr_irqioaddr;
 }
-void* getredirtbl()
+void* acpi_getredirtbl()
 {
 	return isa2gsi;
-}
-
-
-
-static int have8259 = 0;
-int getdual8259()
-{
-	return have8259;
 }
 
 
@@ -220,7 +226,7 @@ void acpi_MADT(void* p)
 		case 1:
 			t1 = (void*)(madt->entry+j);
 			say("%x: ioapicid=%x,ioapicaddr=%x,gsib=%x\n", j, t1->ioapicID,t1->ioapicaddr,t1->GlobalSystemInterruptBase);
-			if(0 == t1->GlobalSystemInterruptBase)addr_extioaddr = (void*)(u64)(t1->ioapicaddr);
+			if(0 == t1->GlobalSystemInterruptBase)addr_irqioaddr = (void*)(u64)(t1->ioapicaddr);
 			break;
 		case 2:
 			t2 = (void*)(madt->entry+j);
@@ -251,6 +257,8 @@ void acpi_MCFG(void* p)
 	for(j=0;j<1;j++){
 		say("%02x: basebase=%llx,group=%x,start=%x,end=%x\n", j,
 		c[j].BaseAddr, c[j].GroupNum, c[j].BusNum_start, c[j].BusNum_end);
+
+		pcieaddr = (void*)c[j].BaseAddr;
 	}
 }
 void acpitable(void* p)

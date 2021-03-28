@@ -25,7 +25,7 @@
 
 
 //acpi
-u64 getknowncores();
+u64 acpi_getknowncores();
 void cpuid(u32*);
 //
 int enable_fpu();
@@ -482,7 +482,7 @@ allgood:
 
 void initcpu_ap()
 {
-	u64 all = getknowncores();
+	u64 all = acpi_getknowncores();
 	int bsp = localapic_coreid();
 	say("knowncores=%llx, bsp=%x\n", all, bsp);
 

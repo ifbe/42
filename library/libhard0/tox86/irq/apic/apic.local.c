@@ -57,9 +57,9 @@
 // Destination Field
 #define ICR_DESTINATION_SHIFT           24
 //
-void* getlocalapic();
-void* getextioapic();
-void* getredirtbl();
+void* acpi_getlocalapic();
+void* acpi_getirqioapic();
+void* acpi_getredirtbl();
 //
 void printmmio(void*, int);
 void printmemory(void*, int);
@@ -69,12 +69,12 @@ void say(void*, ...);
 
 
 static volatile u8* addr_localapic = 0;
-static volatile u8* addr_extioapic = 0;
+static volatile u8* addr_irqioapic = 0;
 void apicwhere()
 {
 	say("@apicwhere\n");
 
-	u8* addr = getlocalapic();
+	u8* addr = acpi_getlocalapic();
 	if(LAPIC_BASE != (u64)addr)return;
 
 	addr_localapic = (void*)addr;
@@ -247,7 +247,7 @@ void ioapic_write(u8 reg, u32 val)
 void ioapic_enableirq(u32 irq)
 {
 	//redirect table
-	u8* redirtbl = getredirtbl();
+	u8* redirtbl = acpi_getredirtbl();
 	u8 gsi = redirtbl[irq];
 	say("redirtbl: isa %d -> gsi %d\n", irq, gsi);
 

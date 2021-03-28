@@ -1,7 +1,7 @@
 #include "libhard.h"
 //
-int getdual8259();
-void* getextioapic();
+int acpi_getdual8259();
+void* acpi_getirqioapic();
 //
 void dual8259_init();
 void dual8259_endofirq(int);
@@ -46,12 +46,12 @@ void endofextirq(int irq)
 }
 void initirq(struct item* dev)
 {
-	if(0 != getextioapic()){
+	if(0 != acpi_getirqioapic()){
 		ioapic_init();
 		chosen = 0;
 		say("irqchip=apic\n");
 	}
-	else if(1 == getdual8259()){
+	else if(1 == acpi_getdual8259()){
 		dual8259_init();
 		chosen = 8259;
 		say("irqchip=8259\n");
