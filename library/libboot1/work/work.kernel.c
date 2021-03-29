@@ -225,7 +225,7 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 
 	//still fail after 10s
 	if(haha > 10){
-		say("bspcpu: run into stupid mode\n");
+		say("bspcpu: run into 1cpu_0irq mode\n");
 		kernel_failloop(wrk);
 	}
 

@@ -144,10 +144,11 @@ void initcpu_other()
 
 void initcpu_ap()
 {
-	say("@initcpu_ap\n");
+	//say("@initcpu_ap\n");
 
 	*(u64*)0xe0 = (u64)trampoline64;
+	asm volatile ("sev");
 	//todo: wait for this core finish init
 
-	say("@initcpu_ap.end\n\n");
+	//say("@initcpu_ap.end\n\n");
 }

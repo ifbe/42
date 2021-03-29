@@ -39,6 +39,9 @@ void* mmiobase();
 #define AUX_MU_CNTL     ((volatile unsigned int*)(mmio+0x00215060))
 #define AUX_MU_STAT     ((volatile unsigned int*)(mmio+0x00215064))
 #define AUX_MU_BAUD     ((volatile unsigned int*)(mmio+0x00215068))
+//
+#define COREFREQ (250*1000*1000)
+#define CALC_BAUD(baud) ((COREFREQ/(baud*8))-1)
 
 
 
@@ -98,7 +101,7 @@ void initserial()
 	*AUX_MU_MCR = 0;
 	*AUX_MU_IER = 0;
 	*AUX_MU_IIR = 0xc6;    // disable interrupts
-	*AUX_MU_BAUD = 270;    // 115200 baud
+	*AUX_MU_BAUD = CALC_BAUD(115200);    // 115200 baud
 
 	/* map UART1 to GPIO pins */
 	r = *GPFSEL1;
