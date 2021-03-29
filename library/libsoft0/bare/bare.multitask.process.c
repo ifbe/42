@@ -13,7 +13,8 @@ struct procstate{
 	void* code;	//physical address, 2m align
 	void* path;	//current folder
 	int stat;
-}__attribute__((packed));
+};
+//}__attribute__((packed));		//arm64 compiler generates wrong code if packed...
 static struct procstate table[8];
 static int proccount;
 

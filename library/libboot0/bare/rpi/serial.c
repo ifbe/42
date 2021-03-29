@@ -86,6 +86,8 @@ void freeserial()
 }
 void initserial()
 {
+	//must do 1: echo "enable_uart=1" >> /your_rpi4/boot/config.txt
+	//must do 1: echo "core_freq=250" >> /your_rpi4/boot/config.txt
 	register unsigned int r;
 	mmio = mmiobase();
 
@@ -109,4 +111,6 @@ void initserial()
 	r=150; while(r--) { asm volatile("nop"); }
 	*GPPUDCLK0 = 0;        // flush GPIO setup
 	*AUX_MU_CNTL = 3;      // enable Tx, Rx
+
+	lowlevel_output((u8*)"@miniuart inited\n", 17);
 }

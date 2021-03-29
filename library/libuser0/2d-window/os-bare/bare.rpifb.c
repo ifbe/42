@@ -23,7 +23,7 @@ int mbox_call(unsigned char ch);
 #define MBOX_TAG_SETCLKRATE     0x38002
 #define MBOX_TAG_LAST           0
 
-volatile unsigned int mbox[36];
+extern unsigned int mbox[36];
 
 
 
@@ -93,6 +93,12 @@ void freewindow()
 }
 void initwindow()
 {
+	//must do: add these to config.txt
+	//hdmi_mode:1=16
+	//hdmi_group:1=1
+	//hdmi_mode:0=16
+	//hdmi_group:0=1
+
 	mbox[0] = 35*4;
 	mbox[1] = MBOX_REQUEST;
 
