@@ -32,6 +32,7 @@ void exception_spsel1_sync(u64 esr, u64 elr, u64 spsr, u64 far)
 {
     say("@exception_spsel1_sync\n");
     say("esr=%llx,elr=%llx,spsr=%llx,far=%llx\n", esr, elr, spsr, far);
+    for(;;);
 }
 void exception_spsel1_irq(u64 esr, u64 elr, u64 spsr, u64 far)
 {
@@ -113,5 +114,5 @@ void initexception(void* sp)
     void* vec = vectors;
     asm("ldr x0, %0; msr vbar_el1, x0" : : "m"(vec));
 
-    asm("svc #0");
+    //asm("svc #0");
 }

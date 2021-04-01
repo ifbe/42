@@ -54,7 +54,9 @@ barepi64_c = \
 toarm/rpi/rpi.mbox.c \
 toarm/rpi/rpi.pmic.c \
 toarm/rpi/rpi.systmr.c \
-toarm/rpi/rpi.sd.c \
+toarm/rpi/rpi.sdhci.c \
+toarm/rpi/rpi.sdhost.c \
+toarm/rpi/rpi.sdhci.emmc2.c \
 toarm/rpi/rpi.gpio.c \
 toarm/rpi/rpi.uart.c \
 toarm/rpi/rpi.i2c.c \

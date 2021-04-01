@@ -6,7 +6,9 @@ void initcpu_bsp();
 void initcpu_ap();
 //
 void initsystmr(void*);
-void initsdcard(void*);
+//
+void initsdhci(void*);
+void initsdhost(void*);
 
 
 
@@ -45,7 +47,11 @@ void inithardware()
 	p = devicecreate(_tmr_, 0, 0, 0);
 	initsystmr(p);
 
-	//sdcard
+	//sdhci
 	p = devicecreate(_mmc_, 0, 0, 0);
-	initsdcard(p);
+	initsdhci(p);
+
+	//sdhost
+	p = devicecreate(_mmc_, 0, 0, 0);
+	initsdhost(p);
 }
