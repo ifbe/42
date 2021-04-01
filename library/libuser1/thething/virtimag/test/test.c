@@ -223,7 +223,7 @@ int test_create(struct entity* act)
 
 
 
-void test_free()
+void test_exit()
 {
 }
 void test_init(void* addr)

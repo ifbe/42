@@ -217,7 +217,7 @@ void vmddr_register(void*);
 
 
 //
-void thing_free()
+void thing_exit()
 {
 }
 void thing_init(void* addr)

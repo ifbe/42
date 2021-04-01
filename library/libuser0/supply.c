@@ -63,7 +63,7 @@ static struct supply* supply = 0;
 static int winlen = 0;
 static struct style* pinid = 0;
 static int pinlen = 0;
-void* allocsupply()
+void* supply_alloc()
 {
 	int j;
 	struct supply* win;
@@ -78,7 +78,12 @@ void* allocsupply()
 	win->orel0 = win->oreln = 0;
 	return win;
 }
-void* allocpinid()
+void supply_recycle()
+{
+}
+
+
+void* pinid_alloc()
 {
 #define maxlen 0x200
 	int j;
@@ -89,6 +94,9 @@ void* allocpinid()
 
 	pinlen += maxlen;
 	return buf;
+}
+void pinid_recycle()
+{
 }
 
 
@@ -175,7 +183,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 //-------------------tobe delete--------------
 	case _ahrs_:
 	{
-		win = allocsupply();
+		win = supply_alloc();
 		if(0 == win)return 0;
 
 		win->type = _sensor_;
@@ -185,7 +193,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	case _slam_:
 	{
-		win = allocsupply();
+		win = supply_alloc();
 		if(0 == win)return 0;
 
 		win->type = _sensor_;
@@ -197,7 +205,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 //---------------------gadget-----------------
 	case _joy_:
 	{
-		win = allocsupply();
+		win = supply_alloc();
 		if(0 == win)return 0;
 
 		win->type = _joy_;
@@ -207,7 +215,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	case _std_:
 	{
-		win = allocsupply();
+		win = supply_alloc();
 		if(0 == win)return 0;
 
 		win->type = _std_;
@@ -217,7 +225,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	case _tray_:
 	{
-		win = allocsupply();
+		win = supply_alloc();
 		if(0 == win)return 0;
 
 		win->type = _tray_;
@@ -229,7 +237,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 //--------------------micphone------------------
 	case _mic_:
 	{
-		win = allocsupply();
+		win = supply_alloc();
 		if(0 == win)return 0;
 
 		win->type = _mic_;
@@ -241,7 +249,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 //--------------------speaker--------------------
 	case _spk_:
 	{
-		win = allocsupply();
+		win = supply_alloc();
 		if(0 == win)return 0;
 
 		win->type = _spk_;
@@ -253,7 +261,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 //---------------------video-------------------
 	case _cam_:
 	{
-		win = allocsupply();
+		win = supply_alloc();
 		if(0 == win)return 0;
 
 		win->type = _cam_;
@@ -263,7 +271,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	case _cap_:
 	{
-		win = allocsupply();
+		win = supply_alloc();
 		if(0 == win)return 0;
 
 		win->type = _cam_;
@@ -275,7 +283,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 //---------------------window----------------
 	case _wnd_:
 	{
-		win = allocsupply();
+		win = supply_alloc();
 		if(0 == win)return 0;
 
 		win->type = _wnd_;
@@ -284,7 +292,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	case _gl41none_:
 	{
-		win = allocsupply();
+		win = supply_alloc();
 		if(0 == win)return 0;
 
 		win->type = _wnd_;
@@ -294,7 +302,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	case _gl41easy_:
 	{
-		win = allocsupply();
+		win = supply_alloc();
 		if(0 == win)return 0;
 
 		win->type = _wnd_;
@@ -304,7 +312,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	case _gl41full_:
 	{
-		win = allocsupply();
+		win = supply_alloc();
 		if(0 == win)return 0;
 
 		win->type = _wnd_;
@@ -314,7 +322,7 @@ void* supplycreate(u64 type, void* arg, int argc, u8** argv)
 	}
 	case _gl41coop_:
 	{
-		win = allocsupply();
+		win = supply_alloc();
 		if(0 == win)return 0;
 
 		win->type = _wnd_;
@@ -390,18 +398,18 @@ void* supplysearch(u8* buf, int len)
 
 
 
-void freesupply()
+void supply_exit()
 {
-	say("[c,e):supply freeing\n");
+	say("[c,e):supply exiting\n");
 
 	freewindow();
 	freetray();
 	freestd();
 	freejoy();
 
-	say("[c,e):supply freeed\n");
+	say("[c,e):supply exited\n");
 }
-void initsupply(u8* addr)
+void supply_init(u8* addr)
 {
 	say("[c,e):supply initing\n");
 

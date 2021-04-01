@@ -23,11 +23,14 @@ static struct item* dri;
 static int drilen = 0;
 static void* bbb;
 static int bbblen = 0;
-void* allocdriver()
+void* driver_alloc()
 {
 	void* addr = &dri[drilen];
 	drilen += 1;
 	return addr;
+}
+void driver_recycle()
+{
 }
 
 
@@ -85,7 +88,7 @@ void* drivercreate(u64 type, void* url, int argc, u8** argv)
 
 	if(_mpu9250_ == type)
 	{
-		dr = allocdriver();
+		dr = driver_alloc();
 		if(0 == dr)return 0;
 
 		dr->type = _mpu9250_;
@@ -94,7 +97,7 @@ void* drivercreate(u64 type, void* url, int argc, u8** argv)
 	}
 	if(_lsm9ds1_ == type)
 	{
-		dr = allocdriver();
+		dr = driver_alloc();
 		if(0 == dr)return 0;
 
 		dr->type = _lsm9ds1_;
@@ -140,13 +143,13 @@ int driversearch(u8* buf, int len)
 
 
 
-void freedriver()
+void driver_exit()
 {
-	say("[6,8):driver freeing\n");
+	say("[6,8):driver exiting\n");
 
-	say("[6,8):driver freeed\n");
+	say("[6,8):driver exited\n");
 }
-void initdriver(u8* addr)
+void driver_init(u8* addr)
 {
 	say("[6,8):driver initing\n");
 

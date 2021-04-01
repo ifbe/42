@@ -667,12 +667,17 @@ static struct artery* ele = 0;
 static void* qqq = 0;
 static int elelen = 0;
 static int qqqlen = 0;
-void* allocartery()
+void* artery_alloc()
 {
 	void* addr = &ele[elelen];
 	elelen += 1;
 	return addr;
 }
+void artery_recycle()
+{
+}
+
+
 int parsetypefromurl(u8* url, u8* type)
 {
 	int j,k;
@@ -1102,7 +1107,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//
 	if(_control_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _control_;
@@ -1111,7 +1116,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_crawler_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _crawler_;
@@ -1120,7 +1125,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_search_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _search_;
@@ -1129,7 +1134,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_vt100_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _vt100_;
@@ -1139,7 +1144,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 
 	if(_ann_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _ann_;
@@ -1150,7 +1155,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//
 	if(_pump_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _pump_;
@@ -1159,7 +1164,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_stor_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _stor_;
@@ -1168,7 +1173,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_filetype_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _filetype_;
@@ -1177,7 +1182,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_fileauto_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _fileauto_;
@@ -1188,7 +1193,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//part table
 	if(_mbr_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _mbr_;
@@ -1197,7 +1202,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_gpt_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _gpt_;
@@ -1208,7 +1213,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//file system
 	if(_fat_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _fat_;
@@ -1217,7 +1222,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_ntfs_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _ntfs_;
@@ -1226,7 +1231,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_hfs_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _hfs_;
@@ -1235,7 +1240,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_ext_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _ext_;
@@ -1246,7 +1251,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//mux
 	if(_easymux_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _easymux_;
@@ -1255,7 +1260,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_mediamux_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _mediamux_;
@@ -1266,7 +1271,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//test
 	if(_echo_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _echo_;
@@ -1275,7 +1280,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_dbgf32_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _dbgf32_;
@@ -1284,7 +1289,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_dbghex_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _dbghex_;
@@ -1293,7 +1298,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_goslow_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _goslow_;
@@ -1304,7 +1309,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//
 	if(_fftpcm_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _fftpcm_;
@@ -1313,7 +1318,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_fftrgb_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _fftrgb_;
@@ -1324,7 +1329,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//image
 	if(_img2pbr_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _img2pbr_;
@@ -1333,7 +1338,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_rotate_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _rotate_;
@@ -1344,7 +1349,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//
 	if(_recut_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _recut_;
@@ -1353,7 +1358,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_reline_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _reline_;
@@ -1362,7 +1367,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_reorder_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _reorder_;
@@ -1373,7 +1378,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//
 	if(_qu2eu_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _qu2eu_;
@@ -1382,7 +1387,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_str2vec_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _str2vec_;
@@ -1393,7 +1398,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//ahrs
 	if(_easyag_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _easyag_;
@@ -1402,7 +1407,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_mahony_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _mahony_;
@@ -1411,7 +1416,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_madgwick_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _madgwick_;
@@ -1422,7 +1427,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//
 	if(_gcode_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _gcode_;
@@ -1431,7 +1436,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Gcode_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Gcode_;
@@ -1440,7 +1445,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_mavlink_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _mavlink_;
@@ -1449,7 +1454,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Mavlink_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Mavlink_;
@@ -1458,7 +1463,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_nema0183_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _nema0183_;
@@ -1467,7 +1472,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Nema0183_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Nema0183_;
@@ -1478,7 +1483,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//boop
 	if(_BOOTP_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _BOOTP_;
@@ -1487,7 +1492,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_bootp_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _bootp_;
@@ -1498,7 +1503,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//dhcp
 	if(_DHCP_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _DHCP_;
@@ -1507,7 +1512,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_dhcp_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _dhcp_;
@@ -1518,7 +1523,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//dns
 	if(_DNS_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _DNS_;
@@ -1527,7 +1532,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_dns_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _dns_;
@@ -1538,7 +1543,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//ntp
 	if(_NTP_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _NTP_;
@@ -1547,7 +1552,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_ntp_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _ntp_;
@@ -1558,7 +1563,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//tftp: client,server
 	if(_tftp_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _tftp_;
@@ -1567,7 +1572,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Tftp_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Tftp_;
@@ -1578,7 +1583,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//quic: master,server,client
 	if(_QUIC_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _QUIC_;
@@ -1587,7 +1592,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Quic_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Quic_;
@@ -1596,7 +1601,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_quic_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _quic_;
@@ -1607,7 +1612,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//udptrav: master,server,client
 	if(_UDPTRAV_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _UDPTRAV_;
@@ -1616,7 +1621,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Udptrav_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Udptrav_;
@@ -1625,7 +1630,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_udptrav_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _udptrav_;
@@ -1636,7 +1641,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//tcptrav: master,server,client
 	if(_TCPTRAV_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _TCPTRAV_;
@@ -1645,7 +1650,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Tcptrav_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Tcptrav_;
@@ -1654,7 +1659,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_tcptrav_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _tcptrav_;
@@ -1665,7 +1670,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//
 	if(_PROXY_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _PROXY_;
@@ -1674,7 +1679,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Proxy_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Proxy_;
@@ -1683,7 +1688,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_proxy_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _proxy_;
@@ -1692,7 +1697,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_SOCKS_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _SOCKS_;
@@ -1701,7 +1706,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Socks_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Socks_;
@@ -1710,7 +1715,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_socks_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _socks_;
@@ -1721,7 +1726,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//ssh: master,server,client
 	if(_SSH_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _SSH_;
@@ -1731,7 +1736,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Ssh_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Ssh_;
@@ -1741,7 +1746,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_ssh_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _ssh_;
@@ -1753,7 +1758,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//telnet: master,server,client
 	if(_TELNET_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _TELNET_;
@@ -1763,7 +1768,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Telnet_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Telnet_;
@@ -1773,7 +1778,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_telnet_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _telnet_;
@@ -1785,7 +1790,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//rdp: master,server,client
 	if(_RDP_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _RDP_;
@@ -1795,7 +1800,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Rdp_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Rdp_;
@@ -1805,7 +1810,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_rdp_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _rdp_;
@@ -1817,7 +1822,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//vnc: master,server,client
 	if(_VNC_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _VNC_;
@@ -1827,7 +1832,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Vnc_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Vnc_;
@@ -1837,7 +1842,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_vnc_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _vnc_;
@@ -1849,7 +1854,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//http: master,server,client
 	if(_HTTP_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _HTTP_;
@@ -1858,7 +1863,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Http_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Http_;
@@ -1867,7 +1872,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_http_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _http_;
@@ -1879,7 +1884,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//ws: master,server,client
 	if(_WS_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _WS_;
@@ -1889,7 +1894,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Ws_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Ws_;
@@ -1899,7 +1904,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_ws_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _ws_;
@@ -1911,7 +1916,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//tls: master,server,client
 	if(_TLS1_2_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _TLS1_2_;
@@ -1921,7 +1926,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Tls1_2_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Tls1_2_;
@@ -1931,7 +1936,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_tls1_2_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _tls1_2_;
@@ -1941,7 +1946,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_TLS1_3_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _TLS1_3_;
@@ -1951,7 +1956,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Tls1_3_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Tls1_3_;
@@ -1961,7 +1966,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_tls1_3_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _tls1_3_;
@@ -1973,7 +1978,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//fuckgfw: master,server,client
 	if(_FUCKGFW_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _FUCKGFW_;
@@ -1983,7 +1988,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Fuckgfw_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Fuckgfw_;
@@ -1993,7 +1998,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_fuckgfw_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _fuckgfw_;
@@ -2005,7 +2010,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	//serve: master,server,client
 	if(_PARTY_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _PARTY_;
@@ -2015,7 +2020,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_Party_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _Party_;
@@ -2025,7 +2030,7 @@ void* arterycreate(u64 type, void* argstr, int argc, u8** argv)
 	}
 	if(_party_ == type)
 	{
-		e = allocartery();
+		e = artery_alloc();
 		if(0 == e)return 0;
 
 		e->type = _party_;
@@ -2076,16 +2081,16 @@ void* arterysearch(u8* buf, int len)
 
 
 
-void freeartery()
+void artery_exit()
 {
-	say("[a,c):artery freeing\n");
+	say("[a,c):artery exiting\n");
 
 	qqq = 0;
 	ele = 0;
 
-	say("[a,c):artery freeed\n");
+	say("[a,c):artery exited\n");
 }
-void initartery(u8* addr)
+void artery_init(u8* addr)
 {
 	say("[a,c):artery initing\n");
 

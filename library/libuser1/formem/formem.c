@@ -54,7 +54,7 @@ void asset_delete()
 
 
 
-void formem_free()
+void formem_exit()
 {
 }
 void formem_init(void* addr)

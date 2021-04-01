@@ -1,18 +1,18 @@
 #include "libuser.h"
 //
 void forcpu_init();
-void forcpu_free();
+void forcpu_exit();
 void formem_init();
-void formem_free();
+void formem_exit();
 
 //
-void thing_free();
+void thing_exit();
 void thing_init(void*);
-void world_free();
+void world_exit();
 void world_init(void*);
-void mind_free();
+void mind_exit();
 void mind_init(void*);
-void rule_free();
+void rule_exit();
 void rule_init(void*);
 
 //
@@ -251,7 +251,7 @@ static struct entity* entity = 0;
 static int actlen = 0;
 static struct style* style = 0;
 static int stylen = 0;
-void* allocentity()
+void* entity_alloc()
 {
 	int j,max;
 	struct entity* act;
@@ -263,7 +263,14 @@ void* allocentity()
 	}
 	return 0;
 }
-void* allocstyle()
+void entity_recycle()
+{
+}
+
+
+
+
+void* style_alloc()
 {
 #define maxlen (sizeof(struct style))
 	int j;
@@ -275,6 +282,13 @@ void* allocstyle()
 	stylen += maxlen;
 	return buf;
 }
+void style_recycle()
+{
+}
+
+
+
+
 void* entitycreate_clone(u64 fmt, u8* arg, int argc, u8** argv)
 {
 	int j;
@@ -290,7 +304,7 @@ void* entitycreate_clone(u64 fmt, u8* arg, int argc, u8** argv)
 	return 0;
 
 found:
-	ent = allocentity();
+	ent = entity_alloc();
 	dst = (void*)ent;
 	for(j=0;j<sizeof(struct entity);j++)dst[j] = 0;
 
@@ -608,42 +622,42 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 //----------------world----------------
 	case _reality_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _reality_;
 		reality_create(act, buf, argc, argv);
 		return act;
 	}
 	case _virtual_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _virtual_;
 		virtual_create(act, buf, argc, argv);
 		return act;
 	}
 	case _htmlroot_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _htmlroot_;
 		htmlroot_create(act, buf, argc, argv);
 		return act;
 	}
 	case _xamlroot_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _xamlroot_;
 		xamlroot_create(act, buf, argc, argv);
 		return act;
 	}
 	case _mmio_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _mmio_;
 		mmiospace_create(act, buf, argc, argv);
 		return act;
 	}
 	case _port_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _port_;
 		portspace_create(act, buf, argc, argv);
 		return act;
@@ -652,28 +666,28 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	//circuit
 	case _sch_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _sch_;
 		schematic_create(act, buf, argc, argv);
 		return act;
 	}
 	case _pcb_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _pcb_;
 		printboard_create(act, buf, argc, argv);
 		return act;
 	}
 	case _analog_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _analog_;
 		analog_create(act, buf, argc, argv);
 		return act;
 	}
 	case _digital_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _digital_;
 		digital_create(act, buf, argc, argv);
 		return act;
@@ -681,35 +695,35 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 
 	case _axis3d_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _axis3d_;
 		axis3d_create(act, buf, argc, argv);
 		return act;
 	}
 	case _guide3d_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _guide3d_;
 		guide3d_create(act, buf, argc, argv);
 		return act;
 	}
 	case _border2d_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _border2d_;
 		border2d_create(act, buf, argc, argv);
 		return act;
 	}
 	case _border3d_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _border3d_;
 		border3d_create(act, buf, argc, argv);
 		return act;
 	}
 	case _scene3d_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _scene3d_;
 		scene3d_create(act, buf, argc, argv);
 		return act;
@@ -718,14 +732,14 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 //----------------mind----------------
  	case _baby_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _baby_;
 		baby_create(act, buf, argc, argv);
 		return act;
 	}
 	case _test_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _test_;
 		test_create(act, buf, argc, argv);
 		return act;
@@ -734,21 +748,21 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	//event
 	case _cam1rd_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _cam1rd_;
 		cam1rd_create(act, buf, argc, argv);
 		return act;
 	}
 	case _cam3rd_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _cam3rd_;
 		cam3rd_create(act, buf, argc, argv);
 		return act;
 	}
 	case _camrts_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _camrts_;
 		camrts_create(act, buf, argc, argv);
 		return act;
@@ -756,35 +770,35 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 
 	case _follow_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _follow_;
 		follow_create(act, buf, argc, argv);
 		return act;
 	}
 	case _lookat_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _lookat_;
 		lookat_create(act, buf, argc, argv);
 		return act;
 	}
 	case _wander_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _wander_;
 		wander_create(act, buf, argc, argv);
 		return act;
 	}
 	case _touchobj_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _touchobj_;
 		touchobj_create(act, buf, argc, argv);
 		return act;
 	}
 	case _clickray_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _clickray_;
 		clickray_create(act, buf, argc, argv);
 		return act;
@@ -793,21 +807,21 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 //---------------robot----------------
 	case _virtimu_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _virtimu_;
 		virtimu_create(act, buf, argc, argv);
 		return act;
 	}
 	case _carcon_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _carcon_;
 		carcon_create(act, buf, argc, argv);
 		return act;
 	}
 	case _flycon_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _flycon_;
 		flycon_create(act, buf, argc, argv);
 		return act;
@@ -818,21 +832,21 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 	//physic
 	case _force_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _force_;
 		force_create(act, buf, argc, argv);
 		return act;
 	}
 	case _graveasy_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _graveasy_;
 		graveasy_create(act, buf, argc, argv);
 		return act;
 	}
 	case _gravtest_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _gravtest_;
 		gravtest_create(act, buf, argc, argv);
 		return act;
@@ -841,14 +855,14 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 //----------------other----------------
 	case _bdc_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _bdc_;
 		toycar_create(act, buf, argc, argv);
 		return act;
 	}
 	case _step_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _step_;
 		stepcar_create(act, buf, argc, argv);
 		return act;
@@ -856,14 +870,14 @@ void* entitycreate(u64 type, void* buf, int argc, u8** argv)
 
 	case _gl41data_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _gl41data_;
 		gl41data_create(act, buf, argc, argv);
 		return act;
 	}
 	case _gl41coop_:
 	{
-		act = allocentity();
+		act = entity_alloc();
 		act->fmt = act->type = _gl41coop_;
 		gl41coop_create(act, buf, argc, argv);
 		return act;
@@ -929,24 +943,24 @@ void* entitysearch(u8* buf, int len)
 
 
 
-void freeentity()
+void entity_exit()
 {
-	say("[e,f):entity freeing\n");
+	say("[e,f):entity exiting\n");
 
-	mind_free();
-	rule_free();
-	thing_free();
-	world_free();
+	mind_exit();
+	rule_exit();
+	thing_exit();
+	world_exit();
 
-	forcpu_free();
-	formem_free();
+	forcpu_exit();
+	formem_exit();
 
 	style = 0;
 	entity = 0;
 
-	say("[e,f):entity freeed\n");
+	say("[e,f):entity exited\n");
 }
-void initentity(u8* addr)
+void entity_init(u8* addr)
 {
 	say("[e,f):entity initing\n");
 

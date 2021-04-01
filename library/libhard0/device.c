@@ -20,11 +20,14 @@ static struct item* dev;
 static int devlen = 0;
 static void* aaa;
 static int aaalen = 0;
-void* allocdevice()
+void* device_alloc()
 {
 	void* addr = &dev[devlen];
 	devlen += 1;
 	return addr;
+}
+void device_recycle()
+{
 }
 
 
@@ -80,52 +83,52 @@ int devicedelete(void* this)
 void* devicecreate(u64 type, void* name, int argc, u8** argv)
 {
 	if(0 == type){
-		return allocdevice();
+		return device_alloc();
 	}
 	if(_cpu_ == type){
-		struct item* p = allocdevice();
+		struct item* p = device_alloc();
 		p->type = _cpu_;
 		p->hfmt = _cpu_;
 		return p;
 	}
 	if(_irq_ == type){
-		struct item* p = allocdevice();
+		struct item* p = device_alloc();
 		p->type = _irq_;
 		p->hfmt = _irq_;
 		return p;
 	}
 	if(_tmr_ == type){
-		struct item* p = allocdevice();
+		struct item* p = device_alloc();
 		p->type = _tmr_;
 		p->hfmt = _tmr_;
 		return p;
 	}
 	if(_pci_ == type){
-		struct item* p = allocdevice();
+		struct item* p = device_alloc();
 		p->type = _bus_;
 		p->hfmt = _pci_;
 		return p;
 	}
 	if(_ahci_ == type){
-		struct item* p = allocdevice();
+		struct item* p = device_alloc();
 		p->type = _ahci_;
 		p->hfmt = _ahci_;
 		return p;
 	}
 	if(_xhci_ == type){
-		struct item* p = allocdevice();
+		struct item* p = device_alloc();
 		p->type = _xhci_;
 		p->hfmt = _xhci_;
 		return p;
 	}
 	if(_usb_ == type){
-		struct item* p = allocdevice();
+		struct item* p = device_alloc();
 		p->type = _usb_;
 		p->hfmt = _usb_;
 		return p;
 	}
 	if(_mmc_ == type){
-		struct item* p = allocdevice();
+		struct item* p = device_alloc();
 		p->type = _mmc_;
 		p->hfmt = _mmc_;
 		return p;
@@ -189,15 +192,15 @@ int devicesearch(u8* buf, int len)
 
 
 
-void freedevice()
+void device_exit()
 {
-	say("[4,6):device freeing\n");
+	say("[4,6):device exiting\n");
 
 	freehardware();
 
-	say("[4,6):device freeed\n");
+	say("[4,6):device exited\n");
 }
-void initdevice(u8* addr)
+void device_init(u8* addr)
 {
 	say("[4,6):device initing\n");
 

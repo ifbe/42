@@ -1,6 +1,6 @@
 #include "libuser.h"
-void* allocentity();
-void* allocstyle();
+void* entity_alloc();
+void* style_alloc();
 
 
 
@@ -601,8 +601,8 @@ static int corner_delete(struct entity* win)
 }
 static int corner_create(struct entity* act, u8* str)
 {
-	struct entity* ac = allocentity();
-	struct style* sty = allocstyle();
+	struct entity* ac = entity_alloc();
+	struct style* sty = style_alloc();
 
 	ac->type = hex32('?','?','?', 0);
 	ac->fmt = hex32('?','?','?', 0);

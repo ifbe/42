@@ -3,7 +3,8 @@
 #define _term_ hex32('t','e','r','m')
 #define _clock_ hex64('c','l','o','c','k', 0, 0, 0)
 #define _mmioedit_ hex64('m','m','i','o','e','d','i','t')
-void* allocstyle();
+void* style_alloc();
+void* style_recycle();
 void inithardware();
 void haltwaitforint();
 
@@ -23,7 +24,7 @@ volatile static u64 heartbeat_poll = 0;
 static void kernel_wndctx(struct supply* wnd)
 {
 	//wnd-> = ;
-	struct style* toterm = allocstyle();
+	struct style* toterm = style_alloc();
 	toterm->fshape.vc[0] = wnd->width/2;
 	toterm->fshape.vc[1] = wnd->height/2;
 	toterm->fshape.vc[2] = 0;
@@ -32,7 +33,7 @@ static void kernel_wndctx(struct supply* wnd)
 	toterm->fshape.vr[1] = 0;
 	toterm->fshape.vf[0] = 0;
 	toterm->fshape.vf[1] = wnd->height/2;
-	struct style* togame = allocstyle();
+	struct style* togame = style_alloc();
 	togame->fshape.vc[0] = wnd->width*3/4;
 	togame->fshape.vc[1] = wnd->height/4;
 	togame->fshape.vc[2] = 0;
@@ -41,7 +42,7 @@ static void kernel_wndctx(struct supply* wnd)
 	togame->fshape.vr[1] = 0;
 	togame->fshape.vf[0] = 0;
 	togame->fshape.vf[1] = wnd->height/5;
-	struct style* toedit = allocstyle();
+	struct style* toedit = style_alloc();
 	toedit->fshape.vc[0] = wnd->width*3/4;
 	toedit->fshape.vc[1] = wnd->height*3/4;
 	toedit->fshape.vc[2] = 0;
@@ -54,13 +55,13 @@ static void kernel_wndctx(struct supply* wnd)
 
 	//things
 	struct entity* termnode = entitycreate(_term_,0, 0, 0);
-	struct style* termfoot = allocstyle();
+	struct style* termfoot = style_alloc();
 
 	struct entity* gamenode = entitycreate(_clock_,0, 0, 0);
-	struct style* gamefoot = allocstyle();
+	struct style* gamefoot = style_alloc();
 
 	struct entity* editnode = entitycreate(_mmioedit_,0, 0, 0);
-	struct style* editfoot = allocstyle();
+	struct style* editfoot = style_alloc();
 
 
 	//relation

@@ -1,4 +1,4 @@
-void rule_free()
+void rule_exit()
 {
 }
 void rule_init()

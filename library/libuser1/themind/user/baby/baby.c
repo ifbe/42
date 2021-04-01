@@ -51,9 +51,9 @@ int baby_create(struct entity* act)
 
 
 
-void baby_free()
+void baby_exit()
 {
-	//say("@baby_free: crying\n");
+	//say("@baby_exit: crying\n");
 }
 void baby_init(void* addr)
 {

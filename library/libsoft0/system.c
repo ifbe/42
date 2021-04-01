@@ -331,9 +331,9 @@ void* systemsearch(u8* buf, int len)
 
 
 
-void freesystem()
+void system_exit()
 {
-	say("[8,a):system freeing\n");
+	say("[8,a):system exiting\n");
 
 	freesocket();
 	freeuart();
@@ -342,9 +342,9 @@ void freesystem()
 	freesignal();
 	freerandom();
 
-	say("[8,a):system freeed\n");
+	say("[8,a):system exited\n");
 }
-void initsystem(u8* addr)
+void system_init(u8* addr)
 {
 	say("[8,a):system initing\n");
 

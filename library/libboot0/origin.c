@@ -19,15 +19,18 @@ int openwriteclose(void*, int, void*, int);
 
 static struct item* ori;
 static int orilen = 0;
-void* allocorigin()
+void* origin_alloc()
 {
 	void* addr = &ori[orilen];
 	orilen += 1;
 	return addr;
 }
-void freeorigin()
+void origin_recycle()
 {
-	say("[0,2):origin freeing\n");
+}
+void origin_exit()
+{
+	say("[0,2):origin exiting\n");
 
 	freerunenv();
 	freeserial();
@@ -35,7 +38,7 @@ void freeorigin()
 	freestdin();
 	freestdout();
 }
-void initorigin(u8* addr)
+void origin_init(u8* addr)
 {
 	int j;
 	ori = (void*)(addr+0x000000);

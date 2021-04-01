@@ -25,6 +25,9 @@ void* arterymodify(int argc, void* argv);
 void* supplymodify(int argc, void* argv);
 void* entitymodify(int argc, void* argv);
 //
+void* style_alloc();
+void style_recycle();
+//
 void exiter(void*);
 void pulser(void*);
 void poller(void*);
@@ -47,7 +50,6 @@ int cmp(void*, void*);
 
 #define _2048_ hex32('2','0','4','8')
 #define _vkbd_ hex32('v','k','b','d')
-void* allocstyle();
 u64 u64fromstr(u8* buf)
 {
 	int j;
@@ -70,7 +72,7 @@ void term_window(int argc, u8** argv)
 	struct entity* ent = entitycreate(type, 0, 0, 0);
 	if(0 == ent)return;
 
-	struct style* toterm = allocstyle();
+	struct style* toterm = style_alloc();
 	if(_gl41full_ == wnd->fmt){
 		toterm->fshape.vc[0] = 0.0;
 		toterm->fshape.vc[1] = 0.0;
@@ -90,7 +92,7 @@ void term_window(int argc, u8** argv)
 		toterm->fshape.vf[2] = 0.0;
 	}
 
-	struct style* termfoot = allocstyle();
+	struct style* termfoot = style_alloc();
 
 	struct relation* rel = relationcreate(ent,termfoot, _ent_,0, wnd,toterm, _sup_,0);
 	relationlinkup((void*)&rel->srcchip, (void*)&rel->dstchip);

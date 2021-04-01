@@ -39,11 +39,14 @@ void mython_create(struct item*, u8*, int, u8**);
 
 static struct item* wrk;
 static int wrklen = 0;
-void* allocbootup()
+void* bootup_alloc()
 {
 	void* addr = &wrk[wrklen];
 	wrklen += 1;
 	return addr;
+}
+void bootup_recycle()
+{
 }
 
 
@@ -87,28 +90,28 @@ void* bootupcreate(u64 type, void* url, int argc, u8** argv)
 	//
 	if(_compiler_ == type){
 		//self @ 0
-		tmp = allocbootup();
+		tmp = bootup_alloc();
 		tmp->type = _compiler_;
 		compiler_create(tmp, url, argc, argv);
 		return tmp;
 	}
 	if(_kernel_ == type){
 		//self @ 0
-		tmp = allocbootup();
+		tmp = bootup_alloc();
 		tmp->type = _kernel_;
 		kernel_create(tmp, url, argc, argv);
 		return tmp;
 	}
 	if(_myml_ == type){
 		//self @ 0
-		tmp = allocbootup();
+		tmp = bootup_alloc();
 		tmp->type = _myml_;
 		myml_create(tmp, url, argc, argv);
 		return tmp;
 	}
 	if(_mython_ == type){
 		//self @ 0
-		tmp = allocbootup();
+		tmp = bootup_alloc();
 		tmp->type = _mython_;
 		mython_create(tmp, url, argc, argv);
 		return tmp;
@@ -117,7 +120,7 @@ void* bootupcreate(u64 type, void* url, int argc, u8** argv)
 	//
 	if(_exiter_ == type)
 	{
-		tmp = allocbootup();
+		tmp = bootup_alloc();
 		tmp->type = _exiter_;
 
 		exiter_create(tmp, url, argc, argv);
@@ -126,7 +129,7 @@ void* bootupcreate(u64 type, void* url, int argc, u8** argv)
 	}
 	if(_pulser_ == type)
 	{
-		tmp = allocbootup();
+		tmp = bootup_alloc();
 		tmp->type = _pulser_;
 
 		pulser_create(tmp, url, argc, argv);
@@ -134,7 +137,7 @@ void* bootupcreate(u64 type, void* url, int argc, u8** argv)
 		return tmp;
 	}
 	if(_poller_ == type){
-		tmp = allocbootup();
+		tmp = bootup_alloc();
 		tmp->type = _poller_;
 
 		poller_create(tmp, url, argc, argv);
@@ -143,7 +146,7 @@ void* bootupcreate(u64 type, void* url, int argc, u8** argv)
 	}
 	if(_realer_ == type)
 	{
-		tmp = allocbootup();
+		tmp = bootup_alloc();
 		tmp->type = _realer_;
 
 		realer_create(tmp, url, argc, argv);
@@ -152,7 +155,7 @@ void* bootupcreate(u64 type, void* url, int argc, u8** argv)
 	}
 	if(_waiter_ == type)
 	{
-		tmp = allocbootup();
+		tmp = bootup_alloc();
 		tmp->type = _waiter_;
 
 		waiter_create(tmp, url, argc, argv);
@@ -198,16 +201,16 @@ int bootupsearch(u8* buf, int len)
 
 
 
-void freebootup()
+void bootup_exit()
 {
-	say("[2,4):bootup freeing\n");
+	say("[2,4):bootup exiting\n");
 
 	freestdev();
 	freestdrel();
 
-	say("[2,4):bootup freeed\n");
+	say("[2,4):bootup exited\n");
 }
-void initbootup(u8* addr)
+void bootup_init(u8* addr)
 {
 	say("[2,4):bootup initing\n");
 

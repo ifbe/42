@@ -1,5 +1,6 @@
 #include "libuser.h"
-void* allocstyle();
+void* style_alloc();
+void* style_recycle();
 //
 int copypath(u8* path, u8* data);
 int parsefv(float* fbuf, int flen, u8* sbuf, int slen);
@@ -386,7 +387,7 @@ int role_test_style(struct footlist foot[], int flen, u8* buf, int len)
 
 			parsefmt((void*)&hash, buf+nodename);
 
-			sty = allocstyle();
+			sty = style_alloc();
 		}
 		if('}' == k) {
 			if(nodename >= 0){
