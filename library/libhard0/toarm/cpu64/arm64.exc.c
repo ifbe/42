@@ -32,6 +32,9 @@ void exception_spsel1_sync(u64 esr, u64 elr, u64 spsr, u64 far)
 {
     say("@exception_spsel1_sync\n");
     say("esr=%llx,elr=%llx,spsr=%llx,far=%llx\n", esr, elr, spsr, far);
+    switch(esr>>26){
+    case 0x15:say("svc #0x%x\n", esr&0xffff);return;
+    }
     for(;;);
 }
 void exception_spsel1_irq(u64 esr, u64 elr, u64 spsr, u64 far)

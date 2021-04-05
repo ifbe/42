@@ -25,6 +25,16 @@ void wait_cycles(int);
 #define GPPUD           (*(volatile unsigned int*)(gpio+0x94))
 #define GPPUDCLK0       (*(volatile unsigned int*)(gpio+0x98))
 #define GPPUDCLK1       (*(volatile unsigned int*)(gpio+0x9C))
+#if RASPPI <= 3
+#define ARM_GPIO_GPPUD		(GPIO_OFFS + 0x94)
+#define ARM_GPIO_GPPUDCLK0	(GPIO_OFFS + 0x98)
+#else
+#define ARM_GPIO_GPPINMUXSD	(GPIO_OFFS + 0xD0)
+#define ARM_GPIO_GPPUPPDN0	(GPIO_OFFS + 0xE4)
+#define ARM_GPIO_GPPUPPDN1	(GPIO_OFFS + 0xE8)
+#define ARM_GPIO_GPPUPPDN2	(GPIO_OFFS + 0xEC)
+#define ARM_GPIO_GPPUPPDN3	(GPIO_OFFS + 0xF0)
+#endif
 
 
 

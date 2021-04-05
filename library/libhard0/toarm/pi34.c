@@ -29,6 +29,13 @@ void initdevmap()
 
 void freehardware()
 {
+	//turnoff peripheral
+
+	//turnoff timer
+
+	//turnoff gic
+
+	//set cpu: no paging, no irq
 }
 void inithardware()
 {

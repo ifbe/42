@@ -1,9 +1,12 @@
 #include "libhard.h"
 void* mmiobase();
+int raspi_version();
+//
+int mbox_poweron();
+int mbox_poweroff();
+u32 mbox_getbaseclock();
 //
 void gpio_prepsdhci();
-//
-u32 mbox_getbaseclock();
 //
 void wait_msec(int);
 void wait_cycles(int);
@@ -14,32 +17,33 @@ void filemanager_registersupplier(void*,void*);
 
 
 
+#define SDHCI_OFFS_OLD 0x00300000
+#define SDHCI_OFFS_NEW 0x00340000		//pi4
 #define COREFREQ (250*1000*1000)
 //
-#define SD_CLOCK_ID         400000
-#define SD_CLOCK_NORMAL     25000000
-#define SD_CLOCK_HIGH       50000000
-#define SD_CLOCK_100        100000000
-#define SD_CLOCK_208        208000000
-//300000=Arasan sdhost, 340000=rpi4 sdmmc2
-#define EMMC_OFFS           0x00300000
-#define EMMC_ARG2           ((volatile unsigned int*)(sdhci+0x00))
-#define EMMC_BLKSIZECNT     ((volatile unsigned int*)(sdhci+0x04))
-#define EMMC_ARG1           ((volatile unsigned int*)(sdhci+0x08))
-#define EMMC_CMDTM          ((volatile unsigned int*)(sdhci+0x0C))
-#define EMMC_RESP0          ((volatile unsigned int*)(sdhci+0x10))
-#define EMMC_RESP1          ((volatile unsigned int*)(sdhci+0x14))
-#define EMMC_RESP2          ((volatile unsigned int*)(sdhci+0x18))
-#define EMMC_RESP3          ((volatile unsigned int*)(sdhci+0x1C))
-#define EMMC_DATA           ((volatile unsigned int*)(sdhci+0x20))
-#define EMMC_STATUS         ((volatile unsigned int*)(sdhci+0x24))
-#define EMMC_CONTROL0       ((volatile unsigned int*)(sdhci+0x28))
-#define EMMC_CONTROL1       ((volatile unsigned int*)(sdhci+0x2C))
-#define EMMC_INTERRUPT      ((volatile unsigned int*)(sdhci+0x30))
-#define EMMC_INT_MASK       ((volatile unsigned int*)(sdhci+0x34))
-#define EMMC_INT_EN         ((volatile unsigned int*)(sdhci+0x38))
-#define EMMC_CONTROL2       ((volatile unsigned int*)(sdhci+0x3C))
-#define EMMC_SLOTISR_VER    ((volatile unsigned int*)(sdhci+0xFC))
+#define SD_CLOCK_400K    400000
+#define SD_CLOCK_25M   25000000
+#define SD_CLOCK_50M   50000000
+#define SD_CLOCK_100M 100000000
+#define SD_CLOCK_208M 208000000
+//
+#define EMMC_ARG2           (*(volatile unsigned int*)(sdhci+0x00))
+#define EMMC_BLKSIZECNT     (*(volatile unsigned int*)(sdhci+0x04))
+#define EMMC_ARG1           (*(volatile unsigned int*)(sdhci+0x08))
+#define EMMC_CMDTM          (*(volatile unsigned int*)(sdhci+0x0C))
+#define EMMC_RESP0          (*(volatile unsigned int*)(sdhci+0x10))
+#define EMMC_RESP1          (*(volatile unsigned int*)(sdhci+0x14))
+#define EMMC_RESP2          (*(volatile unsigned int*)(sdhci+0x18))
+#define EMMC_RESP3          (*(volatile unsigned int*)(sdhci+0x1C))
+#define EMMC_DATA           (*(volatile unsigned int*)(sdhci+0x20))
+#define EMMC_STATUS         (*(volatile unsigned int*)(sdhci+0x24))
+#define EMMC_CONTROL0       (*(volatile unsigned int*)(sdhci+0x28))
+#define EMMC_CONTROL1       (*(volatile unsigned int*)(sdhci+0x2C))
+#define EMMC_INTERRUPT      (*(volatile unsigned int*)(sdhci+0x30))
+#define EMMC_INT_MASK       (*(volatile unsigned int*)(sdhci+0x34))
+#define EMMC_INT_EN         (*(volatile unsigned int*)(sdhci+0x38))
+#define EMMC_CONTROL2       (*(volatile unsigned int*)(sdhci+0x3C))
+#define EMMC_SLOTISR_VER    (*(volatile unsigned int*)(sdhci+0xFC))
 //
 #define GO_IDLE_STATE           0
 #define ALL_SEND_CID            2
@@ -142,10 +146,13 @@ void filemanager_registersupplier(void*,void*);
 
 
 struct persdhci{
+	unsigned long vendor;
+	unsigned long hciver;
+	unsigned long status;
+
 	unsigned long sd_scr[2];
 	unsigned long sd_rca;
 	unsigned long sd_err;
-	unsigned long sd_hv;
 	void* sdhci;
 };
 
@@ -159,8 +166,8 @@ int sd_status(struct persdhci* per, unsigned int mask)
 {
 	void* sdhci = per->sdhci;
 	int cnt = 500000;
-	while((*EMMC_STATUS & mask) && !(*EMMC_INTERRUPT & INT_ERROR_MASK) && cnt--) wait_msec(1);
-	return (cnt <= 0 || (*EMMC_INTERRUPT & INT_ERROR_MASK)) ? SD_ERROR : SD_OK;
+	while((EMMC_STATUS & mask) && !(EMMC_INTERRUPT & INT_ERROR_MASK) && cnt--) wait_msec(1);
+	return (cnt <= 0 || (EMMC_INTERRUPT & INT_ERROR_MASK)) ? SD_ERROR : SD_OK;
 }
 
 /**
@@ -171,30 +178,60 @@ int sd_int(struct persdhci* per, unsigned int mask)
 	void* sdhci = per->sdhci;
 
 	unsigned int r, m=mask | INT_ERROR_MASK;
-	int cnt = 1000000; while(!(*EMMC_INTERRUPT & m) && cnt--) wait_msec(1);
-	r=*EMMC_INTERRUPT;
+	int cnt = 1000000;
+	while(!(EMMC_INTERRUPT & m) && cnt--) wait_msec(1);
+
+	r = EMMC_INTERRUPT;
 	if(cnt<=0 || (r & INT_CMD_TIMEOUT) || (r & INT_DATA_TIMEOUT) ) {
-		*EMMC_INTERRUPT=r;
+		EMMC_INTERRUPT=r;
 		return SD_TIMEOUT;
 	}
 	else if(r & INT_ERROR_MASK) {
-		*EMMC_INTERRUPT=r;
+		EMMC_INTERRUPT=r;
 		return SD_ERROR;
 	}
-	*EMMC_INTERRUPT = mask;
+	EMMC_INTERRUPT = mask;
 	return 0;
 }
 
-/**
- * Send a command
- */
+
+int sd_appcmd(struct persdhci* per)
+{
+	void* sdhci = per->sdhci;
+	int ret = 0;
+	per->sd_err = SD_OK;
+
+	if(sd_status(per, SR_CMD_INHIBIT)) {
+		say("ERROR: EMMC busy 1\n");
+		per->sd_err = SD_TIMEOUT;
+		return 0;
+	}
+
+	u32 code = CMD_APP_CMD | (per->sd_rca?CMD_RSPNS_48:0);
+	u32 arg = per->sd_rca;
+	say("EMMC: Sending appcmd %x,%x\n",code, arg);
+
+	EMMC_INTERRUPT = EMMC_INTERRUPT;
+	EMMC_ARG1 = arg;
+	EMMC_CMDTM = code;
+
+	if((ret = sd_int(per, INT_CMD_DONE))) {
+		say("error@send app cmd\n");
+		per->sd_err = ret;
+		return 0;
+	}
+
+	if(0 == per->sd_rca)return 0;
+	return EMMC_RESP0 & SR_APP_CMD;
+}
 int sd_cmd(struct persdhci* per, unsigned int code, unsigned int arg)
 {
 	void* sdhci = per->sdhci;
 	int ret = 0;
 	per->sd_err = SD_OK;
+
 	if(code&CMD_NEED_APP) {
-		ret = sd_cmd(per, CMD_APP_CMD|(per->sd_rca?CMD_RSPNS_48:0), per->sd_rca);
+		ret = sd_appcmd(per);
 		if(per->sd_rca && !ret) {
 			say("ERROR: failed to send SD APP command\n");
 			per->sd_err=SD_ERROR;
@@ -203,43 +240,44 @@ int sd_cmd(struct persdhci* per, unsigned int code, unsigned int arg)
 		code &= ~CMD_NEED_APP;
 	}
 	if(sd_status(per, SR_CMD_INHIBIT)) {
-		say("ERROR: EMMC busy\n");
+		say("ERROR: EMMC busy 2\n");
 		per->sd_err = SD_TIMEOUT;
 		return 0;
 	}
-	//say("EMMC: Sending command %x,%x\n",code, arg);
 
-	*EMMC_INTERRUPT = *EMMC_INTERRUPT;
-	*EMMC_ARG1 = arg;
-	*EMMC_CMDTM = code;
+	say("EMMC: Sending mmccmd %x,%x\n",code, arg);
+	EMMC_INTERRUPT = EMMC_INTERRUPT;
+	EMMC_ARG1 = arg;
+	EMMC_CMDTM = code;
+
 	if(code==CMD_SEND_OP_COND) wait_msec(1000);
-	else if(code==CMD_SEND_IF_COND || code==CMD_APP_CMD) wait_msec(100);
+	else if(code==CMD_SEND_IF_COND) wait_msec(300);
 
 	if((ret = sd_int(per, INT_CMD_DONE))) {
-		say("error@send EMMC command: code=%x,arg=%x\n",code,arg);
+		say("error@send mmc cmd: code=%x,arg=%x\n",code,arg);
 		per->sd_err = ret;
 		return 0;
 	}
-	ret = *EMMC_RESP0;
 
-	if(code==CMD_GO_IDLE || code==CMD_APP_CMD) return 0;
-	else if(code==(CMD_APP_CMD|CMD_RSPNS_48)) return ret&SR_APP_CMD;
-	else if(code==CMD_SEND_OP_COND) return ret;
-	else if(code==CMD_SEND_IF_COND) return ret==arg? SD_OK : SD_ERROR;
-	else if(code==CMD_ALL_SEND_CID) {
-		ret |= *EMMC_RESP3;
-		ret |= *EMMC_RESP2;
-		ret |= *EMMC_RESP1;
+	ret = EMMC_RESP0;
+	switch(code){
+	case CMD_GO_IDLE:
+		return 0;
+	case CMD_SEND_OP_COND:
 		return ret;
-	}
-	else if(code==CMD_SEND_REL_ADDR) {
+	case CMD_SEND_IF_COND:
+		return ret==arg? SD_OK : SD_ERROR;
+	case CMD_ALL_SEND_CID:
+		return ret | EMMC_RESP3| EMMC_RESP2| EMMC_RESP1;
+	case CMD_SEND_REL_ADDR:
 		per->sd_err=(((ret&0x1fff))|((ret&0x2000)<<6)|((ret&0x4000)<<8)|((ret&0x8000)<<8))&CMD_ERRORS_MASK;
 		return ret&CMD_RCA_MASK;
 	}
+
 	return ret&CMD_ERRORS_MASK;
-	// make gcc happy
-	return 0;
 }
+
+
 
 
 /**
@@ -251,13 +289,13 @@ int sd_clk(struct persdhci* per, unsigned int f)
 
 	unsigned int d,c=41666666/f,x,s=32,h=0;
 	int cnt = 100000;
-	while((*EMMC_STATUS & (SR_CMD_INHIBIT|SR_DAT_INHIBIT)) && cnt--) wait_msec(1);
+	while((EMMC_STATUS & (SR_CMD_INHIBIT|SR_DAT_INHIBIT)) && cnt--) wait_msec(1);
 	if(cnt <= 0) {
 		say("ERROR: timeout waiting for inhibit flag\n");
 		return SD_ERROR;
 	}
 
-	*EMMC_CONTROL1 &= ~C1_CLK_EN;
+	EMMC_CONTROL1 &= ~C1_CLK_EN;
 	wait_msec(10);
 
 	x=c-1;
@@ -272,26 +310,74 @@ int sd_clk(struct persdhci* per, unsigned int f)
 		if(s>7) s=7;
 	}
 
-	if(per->sd_hv>HOST_SPEC_V2) d=c;
+	if(per->hciver > HOST_SPEC_V2) d=c;
 	else d=(1<<s);
 
 	if(d<=2) {d=2;s=0;}
 	say("EMMC: sd_clk divisor %x, shift %x\n", d, s);
 
-	if(per->sd_hv>HOST_SPEC_V2) h=(d&0x300)>>2;
-	d=(((d&0x0ff)<<8)|h);
-	*EMMC_CONTROL1=(*EMMC_CONTROL1&0xffff003f)|d;
+	if(per->hciver > HOST_SPEC_V2) h=(d&0x300)>>2;
+	d=(((d&0x0ff) << 8) | h);
+	EMMC_CONTROL1 = (EMMC_CONTROL1&0xffff003f)|d;
 	wait_msec(10);
-	*EMMC_CONTROL1 |= C1_CLK_EN;
+	EMMC_CONTROL1 |= C1_CLK_EN;
 	wait_msec(10);
 
 	cnt=10000;
-	while(!(*EMMC_CONTROL1 & C1_CLK_STABLE) && cnt--) wait_msec(10);
-	if(cnt<=0) {
+	while(!(EMMC_CONTROL1 & C1_CLK_STABLE) && cnt--) wait_msec(10);
+	if(cnt <= 0) {
 		say("ERROR: failed to get stable clock\n");
 		return SD_ERROR;
 	}
 	return SD_OK;
+}
+static u32 sd_get_clock_divider(u32 base_clock, u32 target_rate)
+{
+    // TODO: implement use of preset value registers
+    u32 targetted_divisor = 0;
+    if(target_rate > base_clock)targetted_divisor = 1;
+    else
+    {
+        targetted_divisor = base_clock / target_rate;
+        u32 mod = base_clock % target_rate;
+        if(mod)targetted_divisor--;
+    }
+
+	// Find the first bit set
+	int divisor = -1;
+	for(int first_bit = 31; first_bit >= 0; first_bit--)
+	{
+		u32 bit_test = (1 << first_bit);
+		if(targetted_divisor & bit_test)
+		{
+			divisor = first_bit;
+			targetted_divisor &= ~bit_test;
+			if(targetted_divisor)
+			{
+				// The divisor is not a power-of-two, increase it
+				divisor++;
+			}
+			break;
+		}
+	}
+
+	if(divisor == -1)divisor = 31;
+	if(divisor >= 32)divisor = 31;
+	if(divisor != 0)divisor = (1 << (divisor - 1));
+	if(divisor >= 0x400)divisor = 0x3ff;
+
+	u32 freq_select = divisor & 0xff;
+	u32 upper_bits = (divisor >> 8) & 0x3;
+	u32 ret = (freq_select << 8) | (upper_bits << 6) | (0 << 5);
+
+	int denominator = 1;
+	if(divisor != 0)denominator = divisor * 2;
+	int actual_clock = base_clock / denominator;
+	say("EMMC: base_clock: %d, target_rate: %d, divisor: %08x, "
+			"actual_clock: %d, ret: %08x\n", base_clock, target_rate,
+			divisor, actual_clock, ret);
+
+	return ret;
 }
 
 
@@ -317,11 +403,11 @@ int sd_readblock(struct persdhci* per, unsigned int lba, unsigned char *buf, int
 			sd_cmd(per, CMD_SET_BLOCKCNT,num);
 			if(per->sd_err) return 0;
 		}
-		*EMMC_BLKSIZECNT = (num << 16) | 512;
+		EMMC_BLKSIZECNT = (num << 16) | 512;
 		sd_cmd(per, num == 1 ? CMD_READ_SINGLE : CMD_READ_MULTI, lba);
 		if(per->sd_err) return 0;
 	} else {
-		*EMMC_BLKSIZECNT = (1 << 16) | 512;
+		EMMC_BLKSIZECNT = (1 << 16) | 512;
 	}
 
 	while( c < num ) {
@@ -334,13 +420,15 @@ int sd_readblock(struct persdhci* per, unsigned int lba, unsigned char *buf, int
 			per->sd_err = r;
 			return 0;
 		}
-		for(d=0;d<128;d++)tmp[d] = *EMMC_DATA;
+		for(d=0;d<128;d++)tmp[d] = EMMC_DATA;
 		c++;
 		tmp += 128;
 	}
 	if( num > 1 && !(per->sd_scr[0] & SCR_SUPP_SET_BLKCNT) && (per->sd_scr[0] & SCR_SUPP_CCS)) sd_cmd(per, CMD_STOP_TRANS, 0);
 	return per->sd_err!=SD_OK || c!=num? 0 : num*512;
 }
+
+
 
 
 static int sdhci_ontake(struct item* dev, void* foot, void* stack, int sp, void* arg, int idx, void* buf, int len)
@@ -367,53 +455,192 @@ int initsdhci(struct item* dev)
 
 	//get addr
 	struct persdhci* per = (void*)dev->priv_data;
-	void* sdhci = mmiobase() + EMMC_OFFS;
+	void* sdhci = mmiobase();
+
+	if(4 == raspi_version())sdhci += SDHCI_OFFS_NEW;
+	else sdhci += SDHCI_OFFS_OLD;
+
 	per->sdhci = sdhci;
 	printmmio(sdhci, 0x40);
 
+
 	//prep gpio
+	say("EMMC: GPIO ??\n");
 	gpio_prepsdhci();
-	say("EMMC: GPIO set up\n");
+	say("EMMC: GPIO ok\n");
 
-	//get clock
-	u32 baseclock = mbox_getbaseclock();
-	say("baseclock_frommbox=%d\n",baseclock);
 
-	per->sd_hv = (*EMMC_SLOTISR_VER & HOST_SPEC_NUM) >> HOST_SPEC_NUM_SHIFT;
-	say("sd_hv=%x\n", per->sd_hv);
+	//power off and on
+	say("EMMC: power ??\n");
+	mbox_poweroff();
+	wait_msec(2);
+	mbox_poweron();
+	wait_msec(200);
+	say("EMMC: power ok\n");
 
-	// Reset the card.
-	*EMMC_CONTROL0 = 0;
-	*EMMC_CONTROL1 |= C1_SRST_HC;
-	cnt = 10000;
-	do{wait_msec(10);} while( (*EMMC_CONTROL1 & C1_SRST_HC) && cnt-- );
+
+	//read information
+	u32 tmp = EMMC_SLOTISR_VER;
+	per->vendor = tmp >> 24;
+	per->hciver =(tmp >> 16) & 0xff;
+	per->status = tmp & 0xff;
+	say("EMMC: vendor=%x, hciver=%x, status %x\n", per->vendor, per->hciver, per->status);
+
+
+	// Reset the controller
+	say("EMMC: reset hc\n");
+	u32 control1 = EMMC_CONTROL1;
+	control1 |= (1 << 24);
+	control1 &= ~(1 << 2);
+	control1 &= ~(1 << 0);
+	EMMC_CONTROL1 = control1;
+
+	cnt = 1000000;
+	while(cnt--){
+		if(0 == (EMMC_CONTROL1 & (0x7 << 24)))break;
+		wait_msec(1);
+	}
 	if(cnt <= 0) {
 		say("ERROR: failed to reset EMMC\n");
 		return SD_ERROR;
 	}
-	say("EMMC: reset OK\n");
-	*EMMC_CONTROL1 |= C1_CLK_INTLEN | C1_TOUNIT_MAX;
-	wait_msec(10);
+	say("ctl0: %08x, ctl1: %08x, ctl2: %08x\n", EMMC_CONTROL0, EMMC_CONTROL1, EMMC_CONTROL2);
+	say("EMMC: reset ok\n");
 
-	// Set clock to setup frequency.
-	if((r=sd_clk(per, 400000))) return r;
 
-	*EMMC_INT_EN   = 0xffffffff;
-	*EMMC_INT_MASK = 0xffffffff;
-	per->sd_scr[0] = per->sd_scr[1] = per->sd_rca = per->sd_err = 0;
+	// Enable SD Bus Power VDD1 at 3.3V
+	if(raspi_version() >= 4){
+		say("EMMC: vdd = 3.3v\n");
+		u32 control0 = EMMC_CONTROL0;
+		control0 |= (0x0F << 8);
+		EMMC_CONTROL0 = control0;
+		wait_msec(2);
+		say("EMMC: vdd ok\n");
+	}
 
+/*
+	// Read the capabilities registers
+	u32 capabilities_0 = *EMMC_CAPABILITIES_0;
+	u32 capabilities_1 = *EMMC_CAPABILITIES_1;
+	say("EMMC: capabilities: %08x%08x\n", capabilities_1, capabilities_0);
+*/
+
+	// Check for a valid card
+	say("EMMC: checking for an inserted card\n");
+	cnt = 1000000;
+	while(cnt--){
+		if(0 != (EMMC_STATUS & (1 << 16)))break;
+		wait_msec(1);
+	}
+	if(cnt <= 0){
+		say("no card inserted\n");
+	}
+	say("EMMC: status: %08x\n", EMMC_STATUS);
+
+
+	// Clear control2
+	EMMC_CONTROL2 = 0;
+
+	// Get the base clock rate
+	u32 baseclock = mbox_getbaseclock();
+	say("baseclock_frommbox=%d\n",baseclock);
+
+	// Set clock rate to something slow
+	control1 = EMMC_CONTROL1;
+	control1 |= 1;			// enable clock
+
+	// Set to identification frequency (400 kHz)
+	u32 f_id = sd_get_clock_divider(baseclock, SD_CLOCK_400K);
+	if(f_id == 0xffffffff){
+		say("EMMC: unable to get a valid clock divider for ID frequency\n");
+		return -1;
+	}
+	control1 |= f_id;
+
+	control1 &= ~(0xF << 16);
+	control1 |= (11 << 16);         // data timeout = TMCLK * 2^24
+	EMMC_CONTROL1 = control1;
+
+	cnt = 1000000;
+	while(cnt--){
+		if(0 != (EMMC_CONTROL1 & 0x2))break;
+		wait_msec(1);
+	}
+	if(cnt <= 0){
+		say("EMMC: controller's clock did not stabilise within 1 second\n");
+		//return -1;
+	}
+	say("EMMC: ctl0: %08x, ctl1: %08x\n", EMMC_CONTROL0, EMMC_CONTROL1);
+
+
+	// Enable the SD clock
+	say("EMMC: SD clock en\n");
+	wait_msec(2);
+	control1 = EMMC_CONTROL1;
+	control1 |= 4;
+	EMMC_CONTROL1 = control1;
+	wait_msec(2);
+	say("EMMC: SD clock ok\n");
+
+/*
+	// Mask off sending interrupts to the ARM
+	*EMMC_INT_EN = 0;
+	// Reset interrupts
+	mmio_write(emmc_base + EMMC_INTERRUPT, 0xffffffff);
+	// Have all interrupts sent to the INTERRUPT register
+	u32 irpt_mask = 0xffffffff & (~SD_CARD_INTERRUPT);
+    irpt_mask |= SD_CARD_INTERRUPT;
+	mmio_write(emmc_base + EMMC_IRPT_MASK, irpt_mask);
+
+	say("EMMC: interrupts disabled\n");
+*/
+	EMMC_INT_EN   = 0xffffffff;
+	EMMC_INT_MASK = 0xffffffff;
+	wait_msec(2);
+
+
+	per->sd_scr[0] = 0;
+	per->sd_scr[1] = 0;
+	per->sd_rca = 0;
+	per->sd_err = 0;
+
+	//CMD0: reset to idle state
+	say("CMD0 ??\n");
 	sd_cmd(per, CMD_GO_IDLE, 0);
 	if(per->sd_err) return per->sd_err;
+	say("CMD0 ok\n");
 
-	sd_cmd(per, CMD_SEND_IF_COND,0x000001AA);
+	//CMD8: check if it is SD V2
+	say("CMD8 ??\n");
+	sd_cmd(per, CMD_SEND_IF_COND, 0x000001AA);
 	if(per->sd_err) return per->sd_err;
+	say("CMD8 ok: rsp0=%x\n", EMMC_RESP0);
 
+	//CMD5: check if it is sdio device
+
+	//ACMD41
+	say("APPCMD41 inquery ??\n");
+	r = sd_cmd(per, 0x29000000|CMD_NEED_APP, 0);
+	say("APPCMD41 inquery ok\n");
+
+	cnt = 6;
+	while(cnt--){
+		r = sd_cmd(per, CMD_SEND_OP_COND, ACMD41_ARG_HC);
+		say("EMMC: CMD_SEND_OP_COND ret=%x,err=%x\n", r, per->sd_err);
+
+		if(r&ACMD41_CMD_CCS) ccs = SCR_SUPP_CCS;
+		if(r&ACMD41_CMD_COMPLETE)break;
+		if(cnt <= 0)break;
+	}
+/*
 	cnt = 6;
 	r=0;
 	while(!(r&ACMD41_CMD_COMPLETE) && cnt--) {
 		wait_cycles(400);
+
 		r = sd_cmd(per, CMD_SEND_OP_COND, ACMD41_ARG_HC);
-		say("EMMC: CMD_SEND_OP_COND returned ");
+		say("EMMC: CMD_SEND_OP_COND ret=%x,err=%x\n", r, per->sd_err);
+
 		if(r&ACMD41_CMD_COMPLETE)say("COMPLETE ");
 		if(r&ACMD41_VOLTAGE)say("VOLTAGE ");
 		if(r&ACMD41_CMD_CCS)say("CCS %08x,%08x", r>>32, r);
@@ -427,12 +654,17 @@ int initsdhci(struct item* dev)
 	if(!(r&ACMD41_CMD_COMPLETE) || !cnt ) return SD_TIMEOUT;
 	if(!(r&ACMD41_VOLTAGE)) return SD_ERROR;
 	if(r&ACMD41_CMD_CCS) ccs = SCR_SUPP_CCS;
+*/
 
+	say("CMD_ALL_SEND_CID ??\n");
 	sd_cmd(per, CMD_ALL_SEND_CID,0);
+	say("CMD_ALL_SEND_CID ok\n");
+
 
 	per->sd_rca = sd_cmd(per, CMD_SEND_REL_ADDR,0);
 	say("EMMC: CMD_SEND_REL_ADDR returned %08x,%08x\n", per->sd_rca>>32, per->sd_rca);
 	if(per->sd_err) return per->sd_err;
+
 
 	if((r=sd_clk(per, 25000000))) return r;
 
@@ -440,7 +672,7 @@ int initsdhci(struct item* dev)
 	if(per->sd_err) return per->sd_err;
 
 	if(sd_status(per, SR_DAT_INHIBIT)) return SD_TIMEOUT;
-	*EMMC_BLKSIZECNT = (1<<16) | 8;
+	EMMC_BLKSIZECNT = (1<<16) | 8;
 	sd_cmd(per, CMD_SEND_SCR, 0);
 	if(per->sd_err) return per->sd_err;
 	if(sd_int(per, INT_READ_RDY)) return SD_TIMEOUT;
@@ -448,14 +680,14 @@ int initsdhci(struct item* dev)
 	r = 0;
 	cnt = 100000;
 	while(r<2 && cnt) {
-		if( *EMMC_STATUS & SR_READ_AVAILABLE )per->sd_scr[r++] = *EMMC_DATA;
+		if(EMMC_STATUS & SR_READ_AVAILABLE )per->sd_scr[r++] = EMMC_DATA;
 		else wait_msec(1);
 	}
 	if(r!=2) return SD_TIMEOUT;
 	if(per->sd_scr[0] & SCR_SD_BUS_WIDTH_4) {
 		sd_cmd(per, CMD_SET_BUS_WIDTH, per->sd_rca|2);
 		if(per->sd_err) return per->sd_err;
-		*EMMC_CONTROL0 |= C0_HCTL_DWITDH;
+		EMMC_CONTROL0 |= C0_HCTL_DWITDH;
 	}
 	// add software flag
 	say("EMMC: supports ");

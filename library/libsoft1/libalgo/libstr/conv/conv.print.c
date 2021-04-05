@@ -14,6 +14,17 @@ int double2decstr(double data, void* str);
 
 
 
+//this func can handle \b and \t
+//pre = line head addr
+//buf = curr pos addr
+int termprintf(u8* pre, int cnt, u8* buf, int len, u8* fmt, __builtin_va_list arg)
+{
+	return 0;
+}
+
+
+
+
 int myvsnprintf(u8* buf, int len, u8* fmt, __builtin_va_list arg)
 {
 	int j, k;
@@ -226,6 +237,10 @@ retlen:
 	buf[len] = 0;
 	return len;
 }
+
+
+
+
 int mysnprintf(u8* buf, int len, u8* fmt, ...)
 {
 	int ret;
