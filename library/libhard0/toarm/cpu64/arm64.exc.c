@@ -1,6 +1,6 @@
 #include "libhard.h"
 extern void vectors();
-void gic4_isr();
+void gic4_isr(void* regs);
 
 
 
@@ -37,10 +37,10 @@ void exception_spsel1_sync(u64 esr, u64 elr, u64 spsr, u64 far)
 	}
 	for(;;);
 }
-void exception_spsel1_irq(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_spsel1_irq(void* regs)
 {
-	say("@exception_spsel1_irq: esr=%llx,elr=%llx,spsr=%llx,far=%llx\n", esr, elr, spsr, far);
-	gic4_isr();
+	//say("@exception_spsel1_irq: esr=%llx,elr=%llx,spsr=%llx,far=%llx\n", esr, elr, spsr, far);
+	gic4_isr(regs);
 }
 void exception_spsel1_fiq(u64 esr, u64 elr, u64 spsr, u64 far)
 {

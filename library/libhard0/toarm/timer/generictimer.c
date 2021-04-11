@@ -1,5 +1,6 @@
 #include "libhard.h"
 void gic4_inittimer();
+void percpu_schedule(void* regs);
 
 
 
@@ -17,29 +18,33 @@ void wait_msec(unsigned int n)
 	// read the current counter
 	asm volatile ("mrs %0, cntpct_el0" : "=r"(t));
 	// calculate expire value for counter
-	t+=((f/1000)*n)/1000;
+	t += ((f/1000)*n)/1000;
 	do{asm volatile ("mrs %0, cntpct_el0" : "=r"(r));}while(r<t);
 }
 
 
 
 
-void percputimer_isr()
+void percputimer_tval(int ns)
 {
 	/*定时器使用细节可查看ARMv8体系结构手册*/
 	unsigned long freq, cnt, cmp;
-	unsigned long timeout_ms = 100;
 
 	//freq	
 	asm volatile("mrs %0, CNTFRQ_EL0" : "=r" (freq));
 
 	//1 freq = one second later
-	asm volatile("msr CNTP_TVAL_EL0, %0" :  :"r" (freq));
-/*
+	//asm volatile("msr CNTP_TVAL_EL0, %0" :  :"r" (freq));
+
 	//10ms later
 	asm volatile("mrs %0, CNTPCT_EL0" : "=r" (cnt));
-	cmp = cnt + (freq/1000)*timeout_ms;
-	asm volatile("msr CNTP_CVAL_EL0, %0" :  :"r" (cmp));*/
+	cmp = cnt + (freq/1000)*ns/1000;
+	asm volatile("msr CNTP_CVAL_EL0, %0" :  :"r" (cmp));
+}
+void percputimer_isr(void* regs)
+{
+	percpu_schedule(regs);
+	percputimer_tval(10*1000);
 }
 
 
@@ -65,7 +70,8 @@ void percputimer_init()
 	ctl = 0;
 	asm volatile("msr CNTP_CTL_EL0, %0" : : "r" (ctl));
 
-	percputimer_isr();
+	//100us
+	percputimer_tval(10*1000);
 
 	//start
 	ctl = 1;

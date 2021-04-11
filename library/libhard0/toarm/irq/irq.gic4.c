@@ -1,5 +1,5 @@
 #include "libhard.h"
-void percputimer_isr();
+void percputimer_isr(void* regs);
 
 
 #define GIC4ADDR  0xff840000
@@ -68,12 +68,12 @@ void writel(u64 addr, u32 val)
 
 
 
-void gic4_isr()
+void gic4_isr(void* regs)
 {
 	u32 irq = readl(GICC_IAR);
 
 	if((irq & 0x3ff) == 30) {
-		percputimer_isr();
+		percputimer_isr(regs);
 	}
 
 	writel(GICC_EOIR, irq);

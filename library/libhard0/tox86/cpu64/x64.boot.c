@@ -62,9 +62,9 @@ void process_registersupplier(int core, void* pt);
 void process_switchto(int curr, int next);
 //
 int thread_registerprocessor(int core, int proc);
+int thread_switchto(int queueid,int curr, int queueid2,int next, int coreid,void* cpureg);
 int thread_findnext(int queueid,int curr);
 int thread_findproc(int queueid,int curr);
-int thread_switchto(int queueid,int curr, int queueid2,int next, int coreid,void* cpureg);
 
 
 
@@ -246,7 +246,7 @@ int percpu_schedule(struct saved_cpureg* cpureg)
 	}
 
 	//switch thread
-	thread_switchto(per->queueid,tcurr, per->queueid, tnext, coreid, cpureg);
+	thread_switchto(per->queueid,tcurr, per->queueid,tnext, coreid,cpureg);
 	per->thread = tnext;
 
 	return 0;
@@ -298,6 +298,10 @@ void initcpu_bsp(struct item* p)
 	cpubuf[0].tss = BSPCPU_TSS;
 	cpubuf[0].ring0stack = BSPCPU_RSP;
 	cpubuf[0].idt = BSPCPU_IDT;
+
+	cpubuf[0].irqcnt = 0;
+	cpubuf[0].slpcnt = 0;
+
 	cpubuf[0].coreid = coreid;
 	cpubuf[0].procid = 0;
 	cpubuf[0].thread = 0;
@@ -356,6 +360,10 @@ void initcpu_other()
 	cpubuf[n].tss = APPCPU_TSS;
 	cpubuf[n].ring0stack = APPCPU_RSP;
 	cpubuf[n].idt = APPCPU_IDT;
+
+	cpubuf[0].irqcnt = 0;
+	cpubuf[0].slpcnt = 0;
+
 	cpubuf[n].coreid = coreid;
 	cpubuf[n].procid = 0;
 	cpubuf[n].thread = 0;

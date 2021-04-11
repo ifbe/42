@@ -11,22 +11,74 @@ void initpaging(void*);
 void initexception(void*);
 //
 int process_registersupplier(int coreid, void* cr3);
+void process_switchto(int curr, int next);
+//
 int thread_registerprocessor(int core, int proc);
+int thread_switchto(int queueid,int curr, int queueid2,int next, int coreid,void* cpureg);
+int thread_findnext(int queueid,int curr);
+int thread_findproc(int queueid,int curr);
 
 
 
 
+struct savereg{
+	u64 x0;
+	u64 x1;
+	u64 x2;
+	u64 x3;
+	u64 x4;
+	u64 x5;
+	u64 x6;
+	u64 x7;
+
+	u64 x8;
+	u64 x9;
+	u64 x10;
+	u64 x11;
+	u64 x12;
+	u64 x13;
+	u64 x14;
+	u64 x15;
+
+	u64 x16;
+	u64 x17;
+	u64 x18;
+	u64 x19;
+	u64 x20;
+	u64 x21;
+	u64 x22;
+	u64 x23;
+
+	u64 x24;
+	u64 x25;
+	u64 x26;
+	u64 x27;
+	u64 x28;
+	u64 x29;
+	u64 x30;
+	u64 x31;
+};
 struct percpu{
 	void* pagetable;
-	void* exception;
+	void* isrstack;
 
+	//count
+	u32 irqcnt;
+	u32 slpcnt;
+
+	//cpucore
 	int coreid;
+
+	//process
 	int pid;
+
+	//thread
 	int qid;
 	int tid;
 };
 static struct percpu cpubuf[8];
 static int cpucnt = 0;
+
 
 
 
@@ -51,11 +103,21 @@ int percpu_coreid()
 }
 int percpu_process()
 {
-	return 0;
+	int coreid = percpu_coreid();
+	struct percpu* per = &cpubuf[coreid];
+	return per->pid;
+}
+int percpu_tqueue()
+{
+	int coreid = percpu_coreid();
+	struct percpu* per = &cpubuf[coreid];
+	return per->qid;
 }
 int percpu_thread()
 {
-	return 0;
+	int coreid = percpu_coreid();
+	struct percpu* per = &cpubuf[coreid];
+	return per->tid;
 }
 
 
@@ -69,32 +131,67 @@ int percpu_makeuser()
 {
 	return 0;
 }
-int percpu_makearg()
+int percpu_makearg(struct savereg* reg, u64 arg)
 {
-	return 0;
+	reg->x0 = (u64)arg;
 }
 
 
 
 
-int percpu_savecpu()
+void percpu_savecpu(u64* saveaddr, u64* workaddr)
 {
-	return 0;
+	int j;
+	for(j=0;j<32;j++)saveaddr[j] = workaddr[j];
 }
-int percpu_loadcpu()
+void percpu_loadcpu(u64* saveaddr, u64* workaddr)
 {
-	return 0;
+	int j;
+	for(j=0;j<32;j++)workaddr[j] = saveaddr[j];
 }
-int percpu_savefpu()
+
+
+
+
+int percpu_schedule(struct savereg* regs)
 {
+	int coreid = percpu_coreid();
+
+	struct percpu* per = &cpubuf[coreid];
+	//say("coreid=%x, percpu@%p\n", coreid, per);
+	//say("x0=%llx,x1=%llx,x2=%llx,x3=%llx, x29=%llx,x30=%llx\n",regs->x0,regs->x1,regs->x2,regs->x3, regs->x29,regs->x30);
+
+	//check thread
+	int tcurr;
+	int tnext;
+	tcurr = per->tid;
+
+	per->irqcnt += 1;
+	if(0 == (per->irqcnt&0xf)){
+		tnext = 0;
+	}
+	else{
+		tnext = thread_findnext(per->qid, tcurr);
+	}
+	//*(int*)(coreid*16 + 0) = tcurr;
+	//*(int*)(coreid*16 + 4) = tnext;
+	if(tcurr == tnext)return 0;
+/*
+	//check process
+	int pcurr = per->pid;
+	int pnext = thread_findproc(per->qid,tnext);
+
+	//switch process
+	if(pcurr != pnext){
+		process_switchto(pcurr, pnext);
+		per->pid = pnext;
+	}
+*/
 	return 0;
-}
-int percpu_loadfpu()
-{
-	return 0;
-}
-int percpu_schedule()
-{
+	//switch thread
+	thread_switchto(per->qid,tcurr, per->qid,tnext, coreid,regs);
+	per->tid = tnext;
+
 	return 0;
 }
 
@@ -105,6 +202,8 @@ void initcpu_bsp()
 {
 	percpu_disableint();
 
+
+//----------------haha----------------
 	int coreid = percpu_coreid();
 	say("@initcpu_bsp=%x\n", coreid);
 
@@ -117,14 +216,21 @@ void initcpu_bsp()
 	int qid = thread_registerprocessor(coreid, 0);
 	int tid = 0;
 
+//----------------percpu data---------------
 	cpubuf[0].pagetable = tmp;
-	cpubuf[0].exception = tmp+0x100000;
+	cpubuf[0].isrstack = tmp+0x100000;
+
+	cpubuf[0].irqcnt = 0;
+	cpubuf[0].slpcnt = 0;
+
 	cpubuf[0].coreid = coreid;
 	cpubuf[0].pid = 0;
 	cpubuf[0].qid = qid;
 	cpubuf[0].tid = tid;
 	cpucnt = 1;
 
+
+//----------------haha----------------
 	if(4 == raspi_version()){
 		gic4_init();
 		percputimer_init();
@@ -135,6 +241,10 @@ void initcpu_bsp()
 }
 void initcpu_other()
 {
+	percpu_disableint();
+
+
+//----------------haha----------------
 	int coreid = percpu_coreid();
 	say("@initcpu_other=%x\n",coreid);
 
@@ -145,15 +255,23 @@ void initcpu_other()
 	int qid = thread_registerprocessor(coreid, 0);
 	int tid = 0;
 
+
+//----------------percpu data---------------
 	int n = cpucnt;
 	cpubuf[n].pagetable = tmp;
-	cpubuf[n].exception = tmp+0x100000;
-	cpubuf[n].coreid = coreid;
-	cpubuf[n].pid = 0;
-	cpubuf[n].qid = qid;
-	cpubuf[n].tid = tid;
+	cpubuf[n].isrstack = tmp+0x100000;
+
+	cpubuf[0].irqcnt = 0;
+	cpubuf[0].slpcnt = 0;
+
+	cpubuf[0].coreid = coreid;
+	cpubuf[0].pid = 0;
+	cpubuf[0].qid = qid;
+	cpubuf[0].tid = tid;
 	cpucnt = n+1;
 
+
+//----------------haha----------------
 	//percputimer_init();
 	//percpu_enableint();
 
@@ -162,7 +280,7 @@ void initcpu_other()
 	volatile u64* ptr = (void*)0xd8;
 	ptr[1] = 0;
 
-	for(;;)asm("wfi");
+	for(;;)asm("wfe");
 }
 
 
