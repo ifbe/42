@@ -53,6 +53,8 @@ void syscall_version()
 void syscall_sleep()
 {
 }
+
+
 void syscall_exit(void* cpureg)
 {
 	int core = percpu_coreid();
@@ -72,10 +74,25 @@ void syscall_yield(void* cpureg)
 	say("@syscall_yield: coreid=%d,pid=%d, qid=%d,tid=%d\n", core,pid, qid,tid);
 	percpu_schedule(cpureg);
 }
-void syscall_read()
+
+
+//open, close, read, write, ioctl, seek
+void syscall_open()
 {
 }
-void syscall_write()
+void syscall_done()
+{
+}
+void syscall_take()
+{
+}
+void syscall_give()
+{
+}
+void syscall_ioctl()
+{
+}
+void syscall_seek()
 {
 }
 
@@ -90,8 +107,8 @@ void syscall_handler(struct saved_cpureg* cpureg)
 	case _slp_:syscall_sleep();break;
 	case _yield_:syscall_yield(cpureg);break;
 	case _exit_:syscall_exit(cpureg);break;
-	case _take_:syscall_read();break;
-	case _give_:syscall_write();break;
+	case _take_:syscall_take();break;
+	case _give_:syscall_give();break;
 	}
 }
 void syscall_caller(u64 a, u64 b, u64 c, u64 d)

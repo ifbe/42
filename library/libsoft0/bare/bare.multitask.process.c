@@ -9,13 +9,16 @@ void pagetable_makeuser(void* buf, int len, u64 pa, int plen, u64 va, int vlen);
 
 
 struct procstate{
-	void* cr3;		//physical address, page table
-	void* code;	//physical address, 2m align
-	void* path;	//current folder
-	int stat;
+	void*     cr3;	//physical address of page table, 1m align
+	void*    code;	//physical address of code binary, 2m align
+	u8*      path;	//current folder
+	u64*  fdtable;	//fd0=stdin, fd1=stdout
+	u64* memtable;
+	int      stat;
+	int      type;
 };
 //}__attribute__((packed));		//arm64 compiler generates wrong code if packed...
-static struct procstate table[8];
+static struct procstate perproc[8];
 static int proccount;
 
 
@@ -74,7 +77,9 @@ int processsearch(void* buf, int len)
 {
 	int j;
 	for(j=0;j<8;j++){
-		say("%d:cr3=%p,code=%p,path=%p\n", j, table[j].cr3, table[j].code, table[j].path);
+		say("%d:cr3=%p,code=%p,path=%p,fdtbl=%p\n", j,
+			perproc[j].cr3, perproc[j].code, perproc[j].path, perproc[j].fdtable
+		);
 	}
 	return 0;
 }
@@ -90,14 +95,14 @@ u64 processcreate(void* file, void* args)
 	//prepare memory for reading
 	u64 cr,pa;
 	int now = proccount;
-	if(0 == table[now].cr3){
+	if(0 == perproc[now].cr3){
 		process_malloc(&pa, &cr);
-		table[now].cr3 = (void*)cr;
-		table[now].code = (void*)pa;
+		perproc[now].cr3 = (void*)cr;
+		perproc[now].code = (void*)pa;
 	}
 	else{
-		cr = (u64)table[now].cr3;
-		pa = (u64)table[now].code;
+		cr = (u64)perproc[now].cr3;
+		pa = (u64)perproc[now].code;
 	}
 
 
@@ -141,8 +146,8 @@ u64 processcreate(void* file, void* args)
 
 
 	//here it almost done
-	table[now].path = 0;
-	table[now].stat = 1;
+	perproc[now].path = 0;
+	perproc[now].stat = 1;
 	thread_forthisprocess((void*)va, 0, now);
 
 	proccount = now+1;
@@ -160,16 +165,16 @@ void process_switchto(int curr, int next)
 	//save curr
 
 	//load next
-	pagetable_use(table[next].cr3);
+	pagetable_use(perproc[next].cr3);
 }
 void process_registersupplier(int coreid, void* cr3)
 {
 	say("incoming process: from coreid=%d\n", coreid);
 
-	table[0].cr3 = cr3;
-	table[0].path = 0;
-	table[0].code = 0;
-	table[0].stat = 1;
+	perproc[0].cr3 = cr3;
+	perproc[0].path = 0;
+	perproc[0].code = 0;
+	perproc[0].stat = 1;
 	proccount = 1;
 }
 
@@ -180,10 +185,10 @@ void initprocess()
 {
 	int j;
 	for(j=0;j<8;j++){
-		table[j].cr3 = 0;
-		table[j].code = 0;
-		table[j].path = 0;
-		table[j].stat = 0;
+		perproc[j].cr3 = 0;
+		perproc[j].code = 0;
+		perproc[j].path = 0;
+		perproc[j].stat = 0;
 	}
 	proccount = 0;
 }

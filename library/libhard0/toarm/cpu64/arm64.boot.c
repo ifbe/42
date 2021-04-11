@@ -1,5 +1,11 @@
 #include "libhard.h"
 extern void trampoline64();
+int raspi_version();
+void CleanDataCache (void);
+void wait_msec(int);
+//
+void gic4_init();
+void percputimer_init();
 //
 void initpaging(void*);
 void initexception(void*);
@@ -24,7 +30,16 @@ static int cpucnt = 0;
 
 
 
-
+void percpu_enableint(void)
+{
+    //开启IRQ
+    asm volatile("msr daifclr, #2");
+}
+void percpu_disableint(void)
+{
+    //关闭IRQ
+    asm volatile("msr daifset, #2");
+}
 int percpu_coreid()
 {
 	u64 id;
@@ -88,6 +103,8 @@ int percpu_schedule()
 
 void initcpu_bsp()
 {
+	percpu_disableint();
+
 	int coreid = percpu_coreid();
 	say("@initcpu_bsp=%x\n", coreid);
 
@@ -108,7 +125,11 @@ void initcpu_bsp()
 	cpubuf[0].tid = tid;
 	cpucnt = 1;
 
-	//percpu_inittimer();
+	if(4 == raspi_version()){
+		gic4_init();
+		percputimer_init();
+		percpu_enableint();
+	}
 
 	say("@initcpu_bsp.end\n\n");
 }
@@ -133,10 +154,15 @@ void initcpu_other()
 	cpubuf[n].tid = tid;
 	cpucnt = n+1;
 
-	//percpu_inittimer();
+	//percputimer_init();
+	//percpu_enableint();
 
 	say("@initcpu_other.end\n\n");
-	for(;;);
+
+	volatile u64* ptr = (void*)0xd8;
+	ptr[1] = 0;
+
+	for(;;)asm("wfi");
 }
 
 
@@ -145,10 +171,29 @@ void initcpu_other()
 void initcpu_ap()
 {
 	//say("@initcpu_ap\n");
+	volatile u64* ptr = (void*)0xd8;
 
-	*(u64*)0xe0 = (u64)trampoline64;
+	//check
+	if(ptr[1]){
+		say("error@multicore: [%p] = %llx\n", &ptr[1], ptr[1]);
+		return;
+	}
+
+	//write memory
+	ptr[1] = (u64)trampoline64;
+
+	//ensure above write memory
+	CleanDataCache();
+
+	//send event
 	asm volatile ("sev");
+
 	//todo: wait for this core finish init
+	int timeout = 1000*1000;
+	while(timeout--){
+		if(0 == ptr[1])break;
+		wait_msec(1);
+	}
 
 	//say("@initcpu_ap.end\n\n");
 }

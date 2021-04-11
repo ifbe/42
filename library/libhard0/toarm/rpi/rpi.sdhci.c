@@ -245,7 +245,9 @@ int sd_cmd(struct persdhci* per, unsigned int code, unsigned int arg)
 		return 0;
 	}
 
-	say("EMMC: Sending mmccmd %x,%x\n",code, arg);
+	wait_msec(1000);	//must delay, but why?
+	//say("EMMC: Sending mmccmd %x,%x\n",code, arg);
+
 	EMMC_INTERRUPT = EMMC_INTERRUPT;
 	EMMC_ARG1 = arg;
 	EMMC_CMDTM = code;
@@ -394,7 +396,7 @@ int sd_readblock(struct persdhci* per, unsigned int lba, unsigned char *buf, int
 	int r,c=0,d;
 	if(num<1) num=1;
 
-	say("EMMC: sd_readblock lba %x,%x\n", lba, num);
+	//say("EMMC: sd_readblock lba %x,%x\n", lba, num);
 	if(sd_status(per, SR_DAT_INHIBIT)) {per->sd_err=SD_TIMEOUT; return 0;}
 
 	unsigned int* tmp = (unsigned int*)buf;

@@ -45,14 +45,14 @@ void inithardware()
 	initmemmap();
 	initdevmap();
 
+	//timer
+	p = devicecreate(_tmr_, 0, 0, 0);
+	initsystmr(p);
+
 	//cpu
 	p = devicecreate(_cpu_, 0, 0, 0);
 	initcpu_bsp(p);
 	initcpu_ap(p);
-
-	//timer
-	p = devicecreate(_tmr_, 0, 0, 0);
-	initsystmr(p);
 
 	//sdhci
 	p = devicecreate(_mmc_, 0, 0, 0);

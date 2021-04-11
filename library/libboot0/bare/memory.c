@@ -34,7 +34,7 @@ int memory_ensure(int j, int cnt)
 
 
 
-void* memorycreate(int size, int cmd)
+void* memorycreate(int size, int align)
 {
 	u64 j,k;
 	u8* buf;
