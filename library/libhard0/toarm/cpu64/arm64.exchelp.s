@@ -61,7 +61,7 @@ vectors:
 	mrs x1, elr_el1
 	mrs x2, spsr_el1
 	mrs x3, far_el1
-	bl exception_spsel1_sync		//use bl, not b
+	bl exception_spsel1_sync		//b=jump, bl=call
 	b 1f
 
 	.align 7			//5
@@ -83,7 +83,8 @@ vectors:
 	stp x2, x3, [sp,#-16]!
 	stp x0, x1, [sp,#-16]!
 	mov x0, sp
-	bl exception_spsel1_irq		//use bl, not b
+	bl exception_spsel1_irq		//b=jump, bl=call
+	//mov sp, x0		//return newsp
 	b 1f
 
 	.align 7			//6

@@ -27,9 +27,11 @@ struct threadstate{
 
 	u8 cpu[512];
 
+	u8 sys[256];
+
 	struct saved_status info;
 
-	u8 padding[2048 - 1024 - 512 - sizeof(struct saved_status)];
+	u8 padding[2048 - 1024 - 512 - 256 - sizeof(struct saved_status)];
 }__attribute__((packed));
 
 

@@ -139,6 +139,24 @@ int percpu_makearg(struct savereg* reg, u64 arg)
 
 
 
+//special register, common register, floatpoint register
+void percpu_savesys(u64* saveaddr)
+{
+	asm(
+		"mrs %0, spsr_el3\n"
+		"mrs %0, elr_el3\n"
+		:"=r"(saveaddr[0]), "=r"(saveaddr[1])
+	);
+}
+void percpu_loadsys(u64* saveaddr)
+{
+	asm(
+		"msr spsr_el3, %0\n"
+		"msr elr_el3, %1\n"
+		:
+		:"r"(saveaddr[0]), "r"(saveaddr[1])
+	);
+}
 void percpu_savecpu(u64* saveaddr, u64* workaddr)
 {
 	int j;
@@ -148,7 +166,13 @@ void percpu_loadcpu(u64* saveaddr, u64* workaddr)
 {
 	int j;
 	for(j=0;j<32;j++)workaddr[j] = saveaddr[j];
+}/*
+void percpu_savefpu(u64 addr)
+{
 }
+void percpu_savefpu(u64 addr)
+{
+}*/
 
 
 

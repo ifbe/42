@@ -101,25 +101,34 @@ void syscall_seek()
 
 void syscall_handler(struct saved_cpureg* cpureg)
 {
-    say("@syscall: rax=%llx,rbx=%llx,rcx=%llx,rdx=%llx\n", cpureg->rax, cpureg->rbx, cpureg->rcx, cpureg->rdx);
-	switch(cpureg->rax){
+	switch(cpureg->rdx){
 	case _ver_:syscall_version();break;
 	case _slp_:syscall_sleep();break;
 	case _yield_:syscall_yield(cpureg);break;
 	case _exit_:syscall_exit(cpureg);break;
 	case _take_:syscall_take();break;
 	case _give_:syscall_give();break;
+	default:say("unknown@syscall: %llx\n", cpureg->rdx);
 	}
 }
-void syscall_caller(u64 a, u64 b, u64 c, u64 d)
+void syscall_caller(u64 req, u64* arg)
 {
-	asm("movq %0, %%rax\n"
-		"movq %1, %%rbx\n"
-		"movq %2, %%rcx\n"
-		"movq %3, %%rdx\n"
+	//req: rdx
+	//arg: rax, rbx, rsi, rdi, r8, r9, r14, r15
+	asm(
+		"movq %0, %%rax\n"		//arg0
+		"movq %1, %%rbx\n"		//arg1
+		"movq %2, %%rsi\n"		//arg2
+		"movq %3, %%rdi\n"		//arg3
+		"movq %4, %%r8\n"		//arg4
+		"movq %5, %%r9\n"		//arg5
+		"movq %6, %%r14\n"		//arg6
+		"movq %7, %%r15\n"		//arg7
+		"movq %8, %%rdx\n"		//this is call id
 		"int $0x80\n"
 		:
-		:"r"(a),"r"(b),"r"(c),"r"(d)
+		: "r"(arg[0]),"r"(arg[1]),"r"(arg[2]),"r"(arg[3]),
+		  "r"(arg[4]),"r"(arg[5]),"r"(arg[6]),"r"(arg[7]),"r"(req)
 	);
 }
 

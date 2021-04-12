@@ -148,6 +148,13 @@ void percpu_makearg(struct saved_cpureg* cpu, u64 arg)
 
 
 
+//special register, common register, floatpoint register
+void percpu_savesys(u64* saveaddr)
+{
+}
+void percpu_loadsys(u64* saveaddr)
+{
+}
 void percpu_savecpu(u64* saveaddr, u64* workaddr)
 {
 	int j;
