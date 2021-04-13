@@ -6,6 +6,27 @@ CF:=-c -O2 -fPIC -I..
 
 
 #---------------------arm32-------------------------
+anyelse_c = \
+anyusb/usbhost/ehci-driver.c \
+anyusb/usbhost/xhci-driver.c \
+anyusb/usbperi/usbany-driver.c \
+anyusb/usbperi/usbhub-driver.c \
+anyusb/usbperi/usbds4-driver.c \
+anyusb/usbperi/usbxbox-driver.c \
+anyusb/usbfunc/usbhid-driver.c \
+anyusb/usbfunc/usbstor-driver.c
+anyelse_o = $(patsubst %.c, %.o, $(anyelse_c))
+
+mmc_c = \
+anymmc/usbhost/sdhci.c \
+anymmc/usbperi/sdcard.c
+mmc_o = $(patsubst %.c, %.o, $(mmc_c))
+
+
+
+
+
+#---------------------arm32-------------------------
 arm_c = \
 toarm/cpu32/arm.fp.c \
 device.c
@@ -166,14 +187,6 @@ tox86/irq/apic/apic.io.c \
 tox86/irq/apic/apic.local.c \
 tox86/irq/apic/apic.timer.c \
 tox86/pmic/power.c \
-tox86/usbhost/ehci-driver.c \
-tox86/usbhost/xhci-driver.c \
-tox86/usbcore/usbany-driver.c \
-tox86/usbcore/usbhub-driver.c \
-tox86/usbcore/usbds4-driver.c \
-tox86/usbcore/usbxbox-driver.c \
-tox86/usbfunc/usbhid-driver.c \
-tox86/usbfunc/usbstor-driver.c \
 tox86/stor/ide-driver.c \
 tox86/stor/ahci-driver.c \
 tox86/stor/nvme-driver.c \
@@ -233,7 +246,7 @@ inwin/hardware.c
 winx64_o = $(patsubst %.c, %.o, $(winx64_c))
 
 .PHONY:barex64
-barex64:$(x64_o) $(barex64_o)
+barex64:$(x64_o) $(barex64_o) $(anyelse_o)
 	$(CC) $(CF) tox86/cpu64/x64.asm.c                             -o $(DIR)/x64.asm.o
 	yasm -a x86 -m amd64 -f elf64 tox86/cpu64/x64.asmhelp.asm     -o $(DIR)/x64.asmhelp.o
 	$(CC) $(CF) tox86/cpu64/x64.boot.c                            -o $(DIR)/x64.boot.o

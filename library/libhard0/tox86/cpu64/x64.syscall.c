@@ -3,8 +3,6 @@
 #define _slp_ hex32('s','l','p',0)
 #define _yield_ hex32('y','i','e','l')
 #define _exit_ hex32('e','x','i','t')
-#define _take_ hex32('t','a','k','e')
-#define _give_ hex32('g','i','v','e')
 int percpu_coreid();
 int percpu_process();
 int percpu_tqueue();
@@ -12,6 +10,7 @@ int percpu_thread();
 int percpu_schedule(void* cpureg);
 //
 int thread_disable(int qid, int tid);
+int system_syscall(u64 req, u64* arg);
 
 
 
@@ -76,40 +75,21 @@ void syscall_yield(void* cpureg)
 }
 
 
-//open, close, read, write, ioctl, seek
-void syscall_open()
-{
-}
-void syscall_done()
-{
-}
-void syscall_take()
-{
-}
-void syscall_give()
-{
-}
-void syscall_ioctl()
-{
-}
-void syscall_seek()
-{
-}
-
-
 
 
 void syscall_handler(struct saved_cpureg* cpureg)
 {
+	//do what i can
 	switch(cpureg->rdx){
-	case _ver_:syscall_version();break;
-	case _slp_:syscall_sleep();break;
-	case _yield_:syscall_yield(cpureg);break;
-	case _exit_:syscall_exit(cpureg);break;
-	case _take_:syscall_take();break;
-	case _give_:syscall_give();break;
-	default:say("unknown@syscall: %llx\n", cpureg->rdx);
+	case _ver_:syscall_version();return;
+	case _slp_:syscall_sleep();return;
+	case _yield_:syscall_yield(cpureg);return;
+	case _exit_:syscall_exit(cpureg);return;
+	//default:say("unknown@syscall: %llx\n", cpureg->rdx);
 	}
+
+	//let system do rest
+	system_syscall(cpureg->rdx, 0);
 }
 void syscall_caller(u64 req, u64* arg)
 {

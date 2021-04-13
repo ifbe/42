@@ -6,14 +6,17 @@ CF:=-c -O2 -fPIC -I..
 baresrc = \
 bare/bare.flow.socket.c \
 bare/bare.flow.watcher.c \
+bare/bare.lock.semaphore.c \
+bare/bare.lock.mutex.c \
 bare/bare.memory.file.c \
 bare/bare.memory.folder.c \
 bare/bare.memory.portio.c \
-bare/bare.system.power.c \
 bare/bare.multitask.coroutine.c \
 bare/bare.multitask.thread.c \
 bare/bare.multitask.process.c \
 bare/bare.multitask.virtualize.c \
+bare/bare.syscall.c \
+bare/bare.system.power.c \
 bare/bare.system.random.c \
 bare/bare.system.signal.c \
 bare/bare.system.shell.c \

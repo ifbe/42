@@ -3,8 +3,11 @@
 #define _slp_ hex32('s','l','p',0)
 #define _yield_ hex32('y','i','e','l')
 #define _exit_ hex32('e','x','i','t')
-#define _take_ hex32('t','a','k','e')
-#define _give_ hex32('g','i','v','e')
+int system_syscall(u64 req, u64* arg);
+
+
+
+
 struct saved_cpureg{
     u64 x0;
     u64 x1;
@@ -23,15 +26,17 @@ struct saved_cpureg{
 
 void syscall_handler(struct saved_cpureg* cpureg)
 {
+	//do what i can
 	switch(cpureg->x8){
-	case _ver_:syscall_version();break;
-	case _slp_:syscall_sleep();break;
-	case _yield_:syscall_yield(cpureg);break;
-	case _exit_:syscall_exit(cpureg);break;
-	case _take_:syscall_take();break;
-	case _give_:syscall_give();break;
-	default:say("unknown@syscall: %llx\n", cpureg->x8);
+	case _ver_:syscall_version();return;
+	case _slp_:syscall_sleep();return;
+	case _yield_:syscall_yield(cpureg);return;
+	case _exit_:syscall_exit(cpureg);return;
+	//default:say("unknown@syscall: %llx\n", cpureg->x8);
 	}
+
+	//let system do rest
+	system_syscall(cpureg->x8, 0);
 }
 void syscall_caller(u64 req, u64* arg)
 {
