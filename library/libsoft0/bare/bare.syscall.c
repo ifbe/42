@@ -32,7 +32,8 @@ void syscall_seek()
 
 
 
-void system_syscall(u64 req, u64* arg)
+//core want a handler
+void system_handler(u64 req, u64* arg)
 {
     switch(req){
 	case _want_:syscall_want();return;
@@ -41,4 +42,15 @@ void system_syscall(u64 req, u64* arg)
 	case _give_:syscall_give();return;
 	default:say("unknown@syscall: %llx\n", req);
     }
+}
+
+
+
+
+//user want a syscall
+void system_usercall(u64 req, u64* arg)
+{
+	//same level: do directly
+
+	//no priviledge: call syscall
 }

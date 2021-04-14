@@ -176,8 +176,8 @@ x64_o = $(patsubst %.c, %.o, $(x64_c))
 
 barex64_c = \
 tox86/cpu64/x64.paging.c \
-tox86/cpu64/x64.vt.amd.c \
-tox86/cpu64/x64.vt.intel.c \
+tox86/cpu64vt/x64.vt.c \
+tox86/cpu64svm/x64.svm.c \
 tox86/bus/input/8042.c \
 tox86/bus/pci/pci-port.c \
 tox86/bus/pci/pci-mmio.c \

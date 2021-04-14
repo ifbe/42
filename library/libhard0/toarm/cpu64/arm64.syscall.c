@@ -3,7 +3,7 @@
 #define _slp_ hex32('s','l','p',0)
 #define _yield_ hex32('y','i','e','l')
 #define _exit_ hex32('e','x','i','t')
-int system_syscall(u64 req, u64* arg);
+int system_handler(u64 req, u64* arg);
 
 
 
@@ -36,7 +36,7 @@ void syscall_handler(struct saved_cpureg* cpureg)
 	}
 
 	//let system do rest
-	system_syscall(cpureg->x8, 0);
+	system_handler(cpureg->x8, 0);
 }
 void syscall_caller(u64 req, u64* arg)
 {

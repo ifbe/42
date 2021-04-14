@@ -10,7 +10,7 @@ int percpu_thread();
 int percpu_schedule(void* cpureg);
 //
 int thread_disable(int qid, int tid);
-int system_syscall(u64 req, u64* arg);
+int system_handler(u64 req, u64* arg);
 
 
 
@@ -89,7 +89,7 @@ void syscall_handler(struct saved_cpureg* cpureg)
 	}
 
 	//let system do rest
-	system_syscall(cpureg->rdx, 0);
+	system_handler(cpureg->rdx, 0);
 }
 void syscall_caller(u64 req, u64* arg)
 {
