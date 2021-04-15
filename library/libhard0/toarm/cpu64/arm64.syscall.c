@@ -3,6 +3,13 @@
 #define _slp_ hex32('s','l','p',0)
 #define _yield_ hex32('y','i','e','l')
 #define _exit_ hex32('e','x','i','t')
+int percpu_coreid();
+int percpu_process();
+int percpu_tqueue();
+int percpu_thread();
+int percpu_schedule(void* cpureg);
+//
+int thread_disable(int qid, int tid);
 int system_handler(u64 req, u64* arg);
 
 
@@ -24,6 +31,38 @@ struct saved_cpureg{
 
 
 
+void syscall_version()
+{
+	say("ver: date=%s,time=%s\n", __DATE__, __TIME__);
+}
+void syscall_sleep()
+{
+}
+
+
+void syscall_exit(void* cpureg)
+{
+	int core = percpu_coreid();
+	int pid = percpu_process();
+	int qid = percpu_tqueue();
+	int tid = percpu_thread();
+	say("@syscall_exit: coreid=%d,pid=%d, qid=%d,tid=%d\n", core,pid, qid,tid);
+	thread_disable(qid, tid);
+	percpu_schedule(cpureg);
+}
+void syscall_yield(void* cpureg)
+{
+	int core = percpu_coreid();
+	int pid = percpu_process();
+	int qid = percpu_tqueue();
+	int tid = percpu_thread();
+	say("@syscall_yield: coreid=%d,pid=%d, qid=%d,tid=%d\n", core,pid, qid,tid);
+	percpu_schedule(cpureg);
+}
+
+
+
+
 void syscall_handler(struct saved_cpureg* cpureg)
 {
 	//do what i can
@@ -36,23 +75,23 @@ void syscall_handler(struct saved_cpureg* cpureg)
 	}
 
 	//let system do rest
-	system_handler(cpureg->x8, 0);
+	system_handler(cpureg->x8, (u64*)cpureg);
 }
 void syscall_caller(u64 req, u64* arg)
 {
 	//req: x8
 	//arg: x0, x1, x2, x3, x4, x5, x6, x7
 	asm(
-		"mov %0, %%x0\n"		//arg0
-		"mov %1, %%x1\n"		//arg1
-		"mov %2, %%x2\n"		//arg2
-		"mov %3, %%x3\n"		//arg3
-		"mov %4, %%x4\n"		//arg4
-		"mov %5, %%x5\n"		//arg5
-		"mov %6, %%x6\n"		//arg6
-		"mov %7, %%x7\n"		//arg7
-		"mov %8, %%x8\n"		//this is call id
-		"int $0x80\n"
+		"mov %0, x0\n"		//arg0
+		"mov %1, x1\n"		//arg1
+		"mov %2, x2\n"		//arg2
+		"mov %3, x3\n"		//arg3
+		"mov %4, x4\n"		//arg4
+		"mov %5, x5\n"		//arg5
+		"mov %6, x6\n"		//arg6
+		"mov %7, x7\n"		//arg7
+		"mov %8, x8\n"		//this is call id
+		"svc #0\n"
 		:
 		: "r"(arg[0]),"r"(arg[1]),"r"(arg[2]),"r"(arg[3]),
 		  "r"(arg[4]),"r"(arg[5]),"r"(arg[6]),"r"(arg[7]),"r"(req)

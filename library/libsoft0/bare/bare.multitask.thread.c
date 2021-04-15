@@ -63,7 +63,7 @@ u64 thread_forthisprocess(void* ip, void* arg, int procid)
 	struct threadstate* tasktable = percputasktable[that];
 	struct threadstate* task = &tasktable[taskcount];
 
-	void* sp = (void*)0xfffffffffffffff8;
+	void* sp = (void*)0xfffffffffffffe00;		//max-512
 	percpu_makearg(&task->cpu, arg);
 	percpu_makeuser(&task->cpu, ip, sp);
 	percpu_savefpu(&task->fpu);
@@ -90,7 +90,6 @@ int thread_registerprocessor(int coreid, int procid)
 
 	void* ip = (void*)0x5a5a5a5a;
 	void* sp = (void*)0xfedcba98;
-	percpu_makekern(&task->cpu, ip, sp);
 	percpu_savefpu(&task->fpu);
 
 	task->info.BindToCoreId = coreid;
@@ -127,7 +126,7 @@ u64 threadcreate(void* ip, void* arg)
 	struct threadstate* tasktable = percputasktable[that];
 	struct threadstate* task = &tasktable[taskcount];
 
-	void* sp = memorycreate(0x100000, 0) + 0xffff0;
+	void* sp = memorycreate(0x100000, 0) + 0xffe00;
 	percpu_makearg(&task->cpu, arg);
 	percpu_makekern(&task->cpu, ip, sp);
 	percpu_savefpu(&task->fpu);

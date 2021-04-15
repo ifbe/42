@@ -69,6 +69,7 @@ toarm/cpu64/arm64.boot.c \
 toarm/cpu64/arm64.paging.c \
 toarm/cpu64/arm64.exc.c \
 toarm/cpu64/arm64.cache.c \
+toarm/cpu64/arm64.syscall.c \
 device.c
 arm64_o = $(patsubst %.c, %.o, $(arm64_c))
 
@@ -77,6 +78,7 @@ toarm/irq/irq.gic4.c \
 toarm/timer/generictimer.c \
 toarm/rpi/rpi.mbox.c \
 toarm/rpi/rpi.pmic.c \
+toarm/rpi/rpi.watchdog.c \
 toarm/rpi/rpi.systmr.c \
 toarm/rpi/rpi.sdhci.c \
 toarm/rpi/rpi.sdhost.c \

@@ -1,6 +1,3 @@
-#warning "this havn't been done"
-
-
 #define COREFREQ (250*1000*1000)
 #define SPICLK(speed) (COREFREQ/2/(speed+1))
 //

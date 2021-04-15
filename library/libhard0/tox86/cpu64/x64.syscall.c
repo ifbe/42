@@ -81,15 +81,34 @@ void syscall_handler(struct saved_cpureg* cpureg)
 {
 	//do what i can
 	switch(cpureg->rdx){
-	case _ver_:syscall_version();return;
-	case _slp_:syscall_sleep();return;
 	case _yield_:syscall_yield(cpureg);return;
 	case _exit_:syscall_exit(cpureg);return;
+	case _ver_:syscall_version();goto byebye;
+	case _slp_:syscall_sleep();goto byebye;
 	//default:say("unknown@syscall: %llx\n", cpureg->rdx);
 	}
 
 	//let system do rest
-	system_handler(cpureg->rdx, 0);
+	u64 arg[8];
+	arg[0] = cpureg->rax;
+	arg[1] = cpureg->rbx;
+	arg[2] = cpureg->rsi;
+	arg[3] = cpureg->rdi;
+	arg[4] = cpureg->r8;
+	arg[5] = cpureg->r9;
+	arg[6] = cpureg->r14;
+	arg[7] = cpureg->r15;
+	system_handler(cpureg->rdx, arg);
+
+byebye:
+	cpureg->rax = arg[0];
+	cpureg->rbx = arg[1];
+	cpureg->rsi = arg[2];
+	cpureg->rdi = arg[3];
+	cpureg->r8  = arg[4];
+	cpureg->r9  = arg[5];
+	cpureg->r14 = arg[6];
+	cpureg->r15 = arg[7];
 }
 void syscall_caller(u64 req, u64* arg)
 {

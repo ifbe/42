@@ -1,6 +1,3 @@
-#warning "this havn't been done"
-
-
 #define BSC0 0x205000
 #define BSC1 0x804000
 #define BSC3 0x205600

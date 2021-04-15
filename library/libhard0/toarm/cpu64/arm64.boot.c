@@ -55,8 +55,11 @@ struct savereg{
 	u64 x27;
 	u64 x28;
 	u64 x29;
-	u64 x30;
-	u64 x31;
+	u64 x30;		//lr
+	u64 sp;
+
+	u64 elr;
+	u64 spsr;
 };
 struct percpu{
 	void* pagetable;
@@ -123,12 +126,26 @@ int percpu_thread()
 
 
 
-int percpu_makekern()
+int percpu_makekern(struct savereg* reg, u64 ip, u64 sp)
 {
+	struct savereg* run = (void*)sp;
+	run->x30 = 0;
+	run->sp = sp;
+	run->elr = ip;
+	asm("mrs x0, spsr_el1; str x0, %0" : "=m"(run->spsr) : : "x0");
+
+	reg->sp = sp;
 	return 0;
 }
-int percpu_makeuser()
+int percpu_makeuser(struct savereg* reg, u64 ip, u64 sp)
 {
+	struct savereg* run = (void*)sp;	//virt2phys(sp);
+	run->x30 = 0;
+	run->sp = sp;
+	run->elr = ip;
+	asm("mrs x0, spsr_el1; str x0, %0" : "=m"(run->spsr) : : "x0");
+
+	reg->sp = sp;
 	return 0;
 }
 int percpu_makearg(struct savereg* reg, u64 arg)
@@ -139,34 +156,20 @@ int percpu_makearg(struct savereg* reg, u64 arg)
 
 
 
-//special register, common register, floatpoint register
-void percpu_savesys(u64* saveaddr)
+//cpu register
+void percpu_savecpu(struct savereg* save, struct savereg* curr)
 {
-	asm(
-		"mrs %0, spsr_el3\n"
-		"mrs %0, elr_el3\n"
-		:"=r"(saveaddr[0]), "=r"(saveaddr[1])
-	);
+	save->sp = curr->sp;
 }
-void percpu_loadsys(u64* saveaddr)
+void percpu_loadcpu(struct savereg* save, struct savereg* curr)
 {
-	asm(
-		"msr spsr_el3, %0\n"
-		"msr elr_el3, %1\n"
-		:
-		:"r"(saveaddr[0]), "r"(saveaddr[1])
-	);
+	curr->sp = save->sp;
 }
-void percpu_savecpu(u64* saveaddr, u64* workaddr)
-{
-	int j;
-	for(j=0;j<32;j++)saveaddr[j] = workaddr[j];
-}
-void percpu_loadcpu(u64* saveaddr, u64* workaddr)
-{
-	int j;
-	for(j=0;j<32;j++)workaddr[j] = saveaddr[j];
-}/*
+
+
+
+/*
+//fpu register
 void percpu_savefpu(u64 addr)
 {
 }

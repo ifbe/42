@@ -1,26 +1,27 @@
 #include "libhard.h"
 extern void vectors();
 void gic4_isr(void* regs);
+void syscall_handler(void* regs);
 
 
 
 
-void exception_spsel0_sync(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_spsel0_sync(void* regs)
 {
 	say("@exception_spsel0_sync\n");
 	for(;;);
 }
-void exception_spsel0_irq(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_spsel0_irq(void* regs)
 {
 	say("@exception_spsel0_irq\n");
 	for(;;);
 }
-void exception_spsel0_fiq(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_spsel0_fiq(void* regs)
 {
 	say("@exception_spsel0_fiq\n");
 	for(;;);
 }
-void exception_spsel0_serr(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_spsel0_serr(void* regs)
 {
 	say("@exception_spsel0_serr\n");
 	for(;;);
@@ -29,25 +30,29 @@ void exception_spsel0_serr(u64 esr, u64 elr, u64 spsr, u64 far)
 
 
 
-void exception_spsel1_sync(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_spsel1_sync(void* regs)
 {
-	say("@exception_spsel1_sync: esr=%llx,elr=%llx,spsr=%llx,far=%llx\n", esr, elr, spsr, far);
+	u64 esr,far;
+	asm("mrs %0, esr_el1" : "=r"(esr));
+	asm("mrs %0, far_el1" : "=r"(far));
+	say("@exception_spsel1_sync: esr=%llx,far=%llx\n", esr, far);
+
 	switch(esr>>26){
-	case 0x15:say("svc #0x%x\n", esr&0xffff);return;
+	case 0x15:syscall_handler(regs);return;
 	}
 	for(;;);
 }
 void exception_spsel1_irq(void* regs)
 {
-	//say("@exception_spsel1_irq: esr=%llx,elr=%llx,spsr=%llx,far=%llx\n", esr, elr, spsr, far);
+	//say("@exception_spsel1_irq: esr=%llx,far=%llx\n", esr, elr, spsr, far);
 	gic4_isr(regs);
 }
-void exception_spsel1_fiq(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_spsel1_fiq(void* regs)
 {
 	say("@exception_spsel1_fiq\n");
 	for(;;);
 }
-void exception_spsel1_serr(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_spsel1_serr(void* regs)
 {
 	say("@exception_spsel1_serr\n");
 	for(;;);
@@ -56,22 +61,22 @@ void exception_spsel1_serr(u64 esr, u64 elr, u64 spsr, u64 far)
 
 
 
-void exception_lowel64_sync(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_lowel64_sync(void* regs)
 {
 	say("@exception_lowel64_sync\n");
 	for(;;);
 }
-void exception_lowel64_irq(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_lowel64_irq(void* regs)
 {
 	say("@exception_lowel64_irq\n");
 	for(;;);
 }
-void exception_lowel64_fiq(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_lowel64_fiq(void* regs)
 {
 	say("@exception_lowel64_fiq\n");
 	for(;;);
 }
-void exception_lowel64_serr(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_lowel64_serr(void* regs)
 {
 	say("@exception_lowel64_serr\n");
 	for(;;);
@@ -80,22 +85,22 @@ void exception_lowel64_serr(u64 esr, u64 elr, u64 spsr, u64 far)
 
 
 
-void exception_lowel32_sync(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_lowel32_sync(void* regs)
 {
 	say("@exception_lowel32_sync\n");
 	for(;;);
 }
-void exception_lowel32_irq(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_lowel32_irq(void* regs)
 {
 	say("@exception_lowel32_irq\n");
 	for(;;);
 }
-void exception_lowel32_fiq(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_lowel32_fiq(void* regs)
 {
 	say("@exception_lowel32_fiq\n");
 	for(;;);
 }
-void exception_lowel32_serr(u64 esr, u64 elr, u64 spsr, u64 far)
+void exception_lowel32_serr(void* regs)
 {
 	say("@exception_lowel32_serr\n");
 	for(;;);

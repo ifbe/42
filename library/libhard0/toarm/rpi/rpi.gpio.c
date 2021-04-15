@@ -1,4 +1,3 @@
-#warning "this havn't been done"
 void* mmiobase();
 //
 void wait_msec(int);

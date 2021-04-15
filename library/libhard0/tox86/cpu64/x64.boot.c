@@ -148,13 +148,7 @@ void percpu_makearg(struct saved_cpureg* cpu, u64 arg)
 
 
 
-//special register, common register, floatpoint register
-void percpu_savesys(u64* saveaddr)
-{
-}
-void percpu_loadsys(u64* saveaddr)
-{
-}
+//cpu register
 void percpu_savecpu(u64* saveaddr, u64* workaddr)
 {
 	int j;
@@ -165,6 +159,11 @@ void percpu_loadcpu(u64* saveaddr, u64* workaddr)
 	int j;
 	for(j=0;j<sizeof(struct saved_cpureg)/8;j++)workaddr[j] = saveaddr[j];
 }
+
+
+
+
+//fpu register
 void percpu_savefpu(u64 addr)
 {
 	fpu_fxsave(addr);

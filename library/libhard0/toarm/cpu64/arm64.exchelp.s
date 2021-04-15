@@ -18,26 +18,18 @@ vectors:
 	ldp x6, x7, [sp], #16
 	eret
 
+
 	.align 7			//1
-	mrs x0, esr_el1
-	mrs x1, elr_el1
-	mrs x2, spsr_el1
-	mrs x3, far_el1
 	b exception_spsel0_irq
 
+
 	.align 7			//2
-	mrs x0, esr_el1
-	mrs x1, elr_el1
-	mrs x2, spsr_el1
-	mrs x3, far_el1
 	b exception_spsel0_fiq
 
+
 	.align 7			//3
-	mrs x0, esr_el1
-	mrs x1, elr_el1
-	mrs x2, spsr_el1
-	mrs x3, far_el1
 	b exception_spsel0_serr
+
 
 	.align 7			//4
 	sub sp, sp, #128
@@ -57,12 +49,23 @@ vectors:
 	stp x4, x5, [sp,#-16]!
 	stp x2, x3, [sp,#-16]!
 	stp x0, x1, [sp,#-16]!
-	mrs x0, esr_el1
-	mrs x1, elr_el1
-	mrs x2, spsr_el1
-	mrs x3, far_el1
+
+	mrs x0, elr_el1
+	mrs x1, spsr_el1
+	stp x0, x1, [sp,#256]	//save elr,spsr
+	mov x0, sp
+	str x0, [sp,#256-8]		//save sp
+
+	mov x0, sp					//set arg0
 	bl exception_spsel1_sync		//b=jump, bl=call
+
+	ldr x0, [sp,#256-8]		//load sp
+	mov sp, x0
+	ldp x0, x1, [sp,#256]	//load elr+spsr
+	msr elr_el1, x0
+	msr spsr_el1, x1
 	b 1f
+
 
 	.align 7			//5
 	sub sp, sp, #128
@@ -82,82 +85,65 @@ vectors:
 	stp x4, x5, [sp,#-16]!
 	stp x2, x3, [sp,#-16]!
 	stp x0, x1, [sp,#-16]!
+
+	mrs x0, elr_el1
+	mrs x1, spsr_el1
+	stp x0, x1, [sp,#256]	//save elr,spsr
 	mov x0, sp
+	str x0, [sp,#256-8]		//save sp
+
+	mov x0, sp					//set arg0
 	bl exception_spsel1_irq		//b=jump, bl=call
-	//mov sp, x0		//return newsp
+
+	ldr x0, [sp,#256-8]		//load sp
+	mov sp, x0
+	ldp x0, x1, [sp,#256]	//load elr+spsr
+	msr elr_el1, x0
+	msr spsr_el1, x1
 	b 1f
 
+
 	.align 7			//6
-	mrs x0, esr_el1
-	mrs x1, elr_el1
-	mrs x2, spsr_el1
-	mrs x3, far_el1
 	b exception_spsel1_fiq
 
+
 	.align 7			//7
-	mrs x0, esr_el1
-	mrs x1, elr_el1
-	mrs x2, spsr_el1
-	mrs x3, far_el1
 	b exception_spsel1_serr
 
+
 	.align 7			//8
-	mrs x0, esr_el1
-	mrs x1, elr_el1
-	mrs x2, spsr_el1
-	mrs x3, far_el1
 	b exception_lowel64_sync
 
+
 	.align 7			//9
-	mrs x0, esr_el1
-	mrs x1, elr_el1
-	mrs x2, spsr_el1
-	mrs x3, far_el1
 	b exception_lowel64_irq
 
+
 	.align 7			//10
-	mrs x0, esr_el1
-	mrs x1, elr_el1
-	mrs x2, spsr_el1
-	mrs x3, far_el1
 	b exception_lowel64_fiq
 
+
 	.align 7			//11
-	mrs x0, esr_el1
-	mrs x1, elr_el1
-	mrs x2, spsr_el1
-	mrs x3, far_el1
 	b exception_lowel64_serr
 
+
 	.align 7			//12
-	mrs x0, esr_el1
-	mrs x1, elr_el1
-	mrs x2, spsr_el1
-	mrs x3, far_el1
 	b exception_lowel32_sync
 
+
 	.align 7			//13
-	mrs x0, esr_el1
-	mrs x1, elr_el1
-	mrs x2, spsr_el1
-	mrs x3, far_el1
 	b exception_lowel32_irq
 
+
 	.align 7			//14
-	mrs x0, esr_el1
-	mrs x1, elr_el1
-	mrs x2, spsr_el1
-	mrs x3, far_el1
 	b exception_lowel32_fiq
 
+
 	.align 7			//15
-	mrs x0, esr_el1
-	mrs x1, elr_el1
-	mrs x2, spsr_el1
-	mrs x3, far_el1
 	b exception_lowel32_serr
 
-	.align 7			//padding 128b
+
+	.align 7			//align 128b
 1:	ldp x0, x1, [sp], #16
 	ldp x2, x3, [sp], #16
 	ldp x4, x5, [sp], #16
