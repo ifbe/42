@@ -25,7 +25,7 @@ void wait_msec(unsigned int n)
 
 
 
-void percputimer_tval(int ns)
+void percputimer_tval(int us)
 {
 	/*定时器使用细节可查看ARMv8体系结构手册*/
 	unsigned long freq, cnt, cmp;
@@ -38,7 +38,7 @@ void percputimer_tval(int ns)
 
 	//10ms later
 	asm volatile("mrs %0, CNTPCT_EL0" : "=r" (cnt));
-	cmp = cnt + (freq/1000)*ns/1000;
+	cmp = cnt + (freq/1000)*us/1000;
 	asm volatile("msr CNTP_CVAL_EL0, %0" :  :"r" (cmp));
 }
 void percputimer_isr(void* regs)

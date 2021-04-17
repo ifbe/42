@@ -63,7 +63,6 @@ struct savereg{
 };
 struct percpu{
 	void* pagetable;
-	void* isrstack;
 
 	//count
 	u32 irqcnt;
@@ -126,9 +125,11 @@ int percpu_thread()
 
 
 
-int percpu_makekern(struct savereg* reg, u64 ip, u64 sp)
+int percpu_makekern(struct savereg* reg, u64* arg, u64 ip, u64 sp)
 {
 	struct savereg* run = (void*)sp;
+	run->x0 = arg[0];
+
 	run->x30 = 0;
 	run->sp = sp;
 	run->elr = ip;
@@ -137,9 +138,11 @@ int percpu_makekern(struct savereg* reg, u64 ip, u64 sp)
 	reg->sp = sp;
 	return 0;
 }
-int percpu_makeuser(struct savereg* reg, u64 ip, u64 sp)
+int percpu_makeuser(struct savereg* reg, u64* arg, u64 ip, u64 sp)
 {
 	struct savereg* run = (void*)sp;	//virt2phys(sp);
+	run->x0 = arg[0];
+
 	run->x30 = 0;
 	run->sp = sp;
 	run->elr = ip;
@@ -147,10 +150,6 @@ int percpu_makeuser(struct savereg* reg, u64 ip, u64 sp)
 
 	reg->sp = sp;
 	return 0;
-}
-int percpu_makearg(struct savereg* reg, u64 arg)
-{
-	reg->x0 = (u64)arg;
 }
 
 
@@ -214,7 +213,9 @@ int percpu_schedule(struct savereg* regs)
 		per->pid = pnext;
 	}
 */
-	return 0;
+	//say("tcurr=%d,tnext=%d\n",tcurr,tnext);
+	//return 0;
+
 	//switch thread
 	thread_switchto(per->qid,tcurr, per->qid,tnext, coreid,regs);
 	per->tid = tnext;
@@ -245,7 +246,6 @@ void initcpu_bsp()
 
 //----------------percpu data---------------
 	cpubuf[0].pagetable = tmp;
-	cpubuf[0].isrstack = tmp+0x100000;
 
 	cpubuf[0].irqcnt = 0;
 	cpubuf[0].slpcnt = 0;
@@ -279,28 +279,29 @@ void initcpu_other()
 	//initpaging(tmp);
 	//initexception(tmp+0x100000);
 
-	int qid = thread_registerprocessor(coreid, 0);
+	int qid = 0;//thread_registerprocessor(coreid, 0);
 	int tid = 0;
 
 
 //----------------percpu data---------------
 	int n = cpucnt;
 	cpubuf[n].pagetable = tmp;
-	cpubuf[n].isrstack = tmp+0x100000;
 
-	cpubuf[0].irqcnt = 0;
-	cpubuf[0].slpcnt = 0;
+	cpubuf[n].irqcnt = 0;
+	cpubuf[n].slpcnt = 0;
 
-	cpubuf[0].coreid = coreid;
-	cpubuf[0].pid = 0;
-	cpubuf[0].qid = qid;
-	cpubuf[0].tid = tid;
+	cpubuf[n].coreid = coreid;
+	cpubuf[n].pid = 0;
+	cpubuf[n].qid = qid;
+	cpubuf[n].tid = tid;
 	cpucnt = n+1;
 
 
 //----------------haha----------------
-	//percputimer_init();
-	//percpu_enableint();
+/*	if(4 == raspi_version()){
+		percputimer_init();
+		percpu_enableint();
+	}*/
 
 	say("@initcpu_other.end\n\n");
 

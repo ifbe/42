@@ -123,26 +123,27 @@ static int cpucnt = 0;
 #define KERNDATA 0x18
 #define USERCODE 0x20
 #define USERDATA 0x28
-void percpu_makeuser(struct saved_cpureg* cpu, u64 ip, u64 sp)
+void percpu_makeuser(struct saved_cpureg* cpu, u64* arg, u64 ip, u64 sp)
 {
+	cpu->rdi = arg[0];	//di,si,dx,cx,r8,r9
+	cpu->rcx = arg[0];	//cx,dx,r8,r9
+
 	cpu->ip = ip;
 	cpu->cs = USERCODE | 3;
 	cpu->flag = 0x202;
 	cpu->sp = sp;
 	cpu->ss = USERDATA | 3;
 }
-void percpu_makekern(struct saved_cpureg* cpu, u64 ip, u64 sp)
+void percpu_makekern(struct saved_cpureg* cpu, u64* arg, u64 ip, u64 sp)
 {
+	cpu->rdi = arg[0];	//di,si,dx,cx,r8,r9
+	cpu->rcx = arg[0];	//cx,dx,r8,r9
+
 	cpu->ip = ip;
 	cpu->cs = KERNCODE;
 	cpu->flag = 0x202;
 	cpu->sp = sp;
 	cpu->ss = KERNDATA;
-}
-void percpu_makearg(struct saved_cpureg* cpu, u64 arg)
-{
-	cpu->rdi = (u64)arg;	//di,si,dx,cx,r8,r9
-	cpu->rcx = (u64)arg;	//cx,dx,r8,r9
 }
 
 

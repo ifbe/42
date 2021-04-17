@@ -5,9 +5,8 @@ int percpu_loadfpu(void* buf);
 //
 int percpu_savecpu(void* buf, void* saved);
 int percpu_loadcpu(void* buf, void* saved);
-int percpu_makeuser(void* buf, void* ip, void* ss);
-int percpu_makekern(void* buf, void* ip, void* ss);
-int percpu_makearg(void* buf, void* arg);
+int percpu_makeuser(void* buf, void* arg, void* ip, void* ss);
+int percpu_makekern(void* buf, void* arg, void* ip, void* ss);
 
 
 
@@ -64,8 +63,7 @@ u64 thread_forthisprocess(void* ip, void* arg, int procid)
 	struct threadstate* task = &tasktable[taskcount];
 
 	void* sp = (void*)0xfffffffffffffe00;		//max-512
-	percpu_makearg(&task->cpu, arg);
-	percpu_makeuser(&task->cpu, ip, sp);
+	percpu_makeuser(&task->cpu, &arg, ip, sp);
 	percpu_savefpu(&task->fpu);
 
 	task->info.BindToCoreId = -1;	//percpu_coreid();
@@ -127,8 +125,7 @@ u64 threadcreate(void* ip, void* arg)
 	struct threadstate* task = &tasktable[taskcount];
 
 	void* sp = memorycreate(0x100000, 0) + 0xffe00;
-	percpu_makearg(&task->cpu, arg);
-	percpu_makekern(&task->cpu, ip, sp);
+	percpu_makekern(&task->cpu, &arg, ip, sp);
 	percpu_savefpu(&task->fpu);
 
 	task->info.BindToCoreId = -1;	//percpu_coreid();

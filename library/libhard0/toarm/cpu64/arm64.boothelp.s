@@ -9,15 +9,6 @@ trampoline64:
     bl initcpu_other
 
 
-.global percpu_inittimer
-percpu_inittimer:
-    mrs x1, CNTFRQ_EL0
-    msr CNTP_TVAL_EL0, x1
-    mov x0, 1
-    msr CNTP_CTL_EL0, x0
-    ret
-
-
 .global percpu_savefpu
 percpu_savefpu:
 	stp	q0, q1, [x0], #32
