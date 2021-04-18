@@ -2,10 +2,10 @@ CC:=gcc
 CF:="-c -O2 -fPIC -I.."
 DIR:=$(shell pwd)
 SRC= \
-work/work.compile.c \
-work/work.kernel.c \
-work/work.myml.c \
-work/work.mython.c \
+data/bignode.c \
+data/relation.c \
+data/linklist.c \
+data/rbtree.c \
 loop/loop.exiter.c \
 loop/loop.poller.c \
 loop/loop.pulser.c \
@@ -14,8 +14,10 @@ loop/loop.waiter.c \
 std/stdev.c \
 std/stdin.c \
 std/stdout.c \
-mgr/mgrnode.c \
-mgr/mgrwire.c \
+work/work.compile.c \
+work/work.kernel.c \
+work/work.myml.c \
+work/work.mython.c \
 bootup.c
 OBJ = $(patsubst %.c,%.o,$(SRC))
 

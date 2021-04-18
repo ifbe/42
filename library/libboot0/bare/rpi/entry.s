@@ -4,52 +4,45 @@
 .globl _start
 _start:
 	//if(0 != id)goto sleep
-0:	mrs     x1, mpidr_el1
+00:	mrs     x1, mpidr_el1
 	and     x1, x1, #3
-	cbnz    x1, 9f
-
-	//if(el3)goto el3_to_el2
-1:	mrs     x1, CurrentEL
-	and     x1, x1, #12		// x1 &= 0xc
-	cmp     x1, #12			// 12 means EL3
-	b.eq    7f
-
-	//if(el2)goto el2_to_el1
-2:	mrs     x1, CurrentEL
-	and     x1, x1, #12		// x1 &= 0xc
-	cmp     x1, #8			// 8 means EL2
-	b.eq    8f
+	cbnz    x1, 80f
 
 	// set stack before _start
-3:	ldr     x1, =_start
+10:	ldr     x1, =_start
 	mov     sp, x1
- 
+
 	// clear bss
 	ldr     x1, =__bss_start
 	ldr     w2, =__bss_size
-4:	cbz     w2, 5f
+20:	cbz     w2, 30f
 	str     xzr, [x1], #8
 	sub     w2, w2, #1
-	cbnz    w2, 4b
- 
-	// jump to C code, should not return
-5:	bl      main
-	// for failsafe, halt this core too
-	b 9f
+	cbnz    w2, 20b
 
+	//if(el3)
+30:	mrs     x1, CurrentEL
+	and     x1, x1, #12		// x1 &= 0xc
+	cmp     x1, #12			// 12 means EL3
+	b.ne    50f
 
-	// at el3, to el2
-7:	mov     x1, #0x5b1
+	//el3_to_el2
+40:	mov     x1, #0x5b1
 	msr     scr_el3, x1
 	mov     x1, #0x3c9
 	msr     spsr_el3, x1
-	adr     x1, 2b
+	adr     x1, 50f
 	msr     elr_el3, x1
 	eret
 
+	//if(el2)
+50:	mrs     x1, CurrentEL
+	and     x1, x1, #12		// x1 &= 0xc
+	cmp     x1, #8			// 8 means EL2
+	b.ne    70f
 
-	// at el2, to el1
-8:	/* Initialize Generic Timers */
+	//el2_to_el1
+60:	/* Initialize Generic Timers */
 	mrs x1, cnthctl_el2
 	orr x1, x1, #0x3 /* Enable EL2 access to timers */
 	msr cnthctl_el2, x1
@@ -90,11 +83,13 @@ _start:
 	msr vbar_el1, x1 /* Migrate VBAR */
 	mov x1, #0x3c5
 	msr spsr_el2, x1 /* EL1_SP1 | D | A | I | F */
-	adr x1, 3b
+	adr x1, 70f
 	msr elr_el2, x1
 	eret
 
+	// jump to C code, should not return
+70:	bl main
 
 	// sleep forever
-9:	wfe
-	b       9b
+80:	wfe
+	b 80b

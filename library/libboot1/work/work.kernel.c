@@ -82,17 +82,20 @@ static void kernel_wndctx(struct supply* wnd)
 static int kernel_pollloop(struct item* wrk)
 {
 	int j;
+	u64 t0,t1;
 	struct event* ev;
 	struct item* dev;
-	struct supply* wnd;
 	struct halfrel stack[0x80];
 
-	wnd = wrk->priv_ptr;
+	struct supply* wnd = wrk->priv_ptr;
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
 	say("pollloop: stack@%p,window@%p\n", stack, wnd);
 
+	t0 = timeread();
 	while(1){
+		heartbeat_poll = t0+1;
+
 		for(j=0;j<10;j++){
 			dev = &device[j];
 			if(_xhci_ == dev->type){
@@ -108,7 +111,9 @@ static int kernel_pollloop(struct item* wrk)
 			supply_give(wnd,0, stack,2, 0,0, ev,0);
 		}
 
-		heartbeat_poll = timeread();
+		t1 = timeread();
+		//say("dt=%d\n",t1-t0);
+		t0 = t1;
 	}
 	return 0;
 }
@@ -116,10 +121,9 @@ static int kernel_drawloop(struct item* wrk)
 {
 	int j;
 	u64 t0,t1;
-	struct supply* wnd;
 	struct halfrel stack[0x80];
 
-	wnd = wrk->priv_ptr;
+	struct supply* wnd = wrk->priv_ptr;
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
 	say("drawloop: stack@%p,window@%p\n", stack, wnd);
@@ -127,21 +131,26 @@ static int kernel_drawloop(struct item* wrk)
 	//loop
 	t0 = timeread();
 	while(1){
+		heartbeat_draw = t0+1;
+
 		if(stack[0].pchip != wrk){
 			say("what fuck???\n\n\n");
 			for(j=0;j<4;j++)say("%d: %p,%p,%x,%x\n", j, stack[j].pchip, stack[j].pfoot, stack[j].type, stack[j].flag);
 		}
+
 		//draw frame
 		supply_take(wnd,0, stack,2, 0,0, 0,0);
 
 		t1 = timeread();
 		//say("dt=%d\n",t1-t0);
 		t0 = t1;
-
-		heartbeat_draw = t0;
 	}
 	return 0;
 }
+
+
+
+
 static int kernel_failloop(struct item* wrk)
 {
 	int j;
@@ -151,29 +160,63 @@ static int kernel_failloop(struct item* wrk)
 	struct halfrel stack[0x80];
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
+	say("failloop: wait until drawloop&pollloop\n");
+
+	struct event* ev;
+	u64 curr;
+	u64 time = timeread();
+	//sleep_us(1000*1000);
 
 	//loop
-	struct event* ev;
 	while(1){
-		//draw frame
-		supply_take(wnd,0, stack,2, 0,0, 0,0);
+		if((0 != heartbeat_draw)&&(0 != heartbeat_poll))break;
 
-		//poll all
-		for(j=0;j<10;j++){
-			dev = &device[j];
-			if(_xhci_ == dev->type){
-				if(dev->ontaking)dev->ontaking(dev,0, 0,0, 0,0, 0,0);
+		curr = timeread();
+
+		//drawloop fail, i have to draw
+		if(0 == heartbeat_draw){
+			say("drawloop fail after %d sec\n", (curr-time)/1000/1000);
+			supply_take(wnd,0, stack,2, 0,0, 0,0);
+		}
+
+		//pollloop fail, i have to poll
+		if(0 == heartbeat_poll){
+			say("pollloop fail after %d sec\n", (curr-time)/1000/1000);
+
+			//poll all
+			for(j=0;j<10;j++){
+				dev = &device[j];
+				if(_xhci_ == dev->type){
+					if(dev->ontaking)dev->ontaking(dev,0, 0,0, 0,0, 0,0);
+				}
+			}
+
+			//cleanup events
+			while(1){
+				ev = eventread();
+				if(0 == ev)break;
+				if(0 == ev->what)return 0;
+
+				supply_give(wnd,0, stack,2, 0,0, ev,0);
 			}
 		}
+	}
+	return 0;
+}
+static int kernel_idleloop(struct item* wrk)
+{
+	u64 time;
+	say("idleloop(core=0), sleep wait for int\n");
 
-		//cleanup events
-		while(1){
-			ev = eventread();
-			if(0 == ev)break;
-			if(0 == ev->what)return 0;
-
-			supply_give(wnd,0, stack,2, 0,0, ev,0);
+	while(1){
+		time = timeread();
+		if(time > heartbeat_draw + 1000*1000*10){
+			say("drawloop: stall >10s\n");
 		}
+		if(time > heartbeat_poll + 1000*1000*10){
+			say("pollloop: stall >10s\n");
+		}
+		haltwaitforint();
 	}
 	return 0;
 }
@@ -200,48 +243,10 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 	threadcreate(kernel_pollloop, wrk);
 
 	//check if thread ok, wait at most 10s
-	u64 haha = 1;
-	u64 curr;
-	u64 time = timeread();
-	while(1){
-		if((0 != heartbeat_draw)&&(0 != heartbeat_poll))break;
-
-		curr = timeread();
-		if(0 == curr){
-			haha = 100;
-			break;
-		}
-
-		if(curr > time + haha*1000*1000){
-			if(0 == heartbeat_draw){
-				say("drawloop: thread fail(%ds/10s)\n", haha);
-			}
-			if(0 == heartbeat_poll){
-				say("pollloop: thread fail(%ds/10s)\n", haha);
-			}
-
-			haha += 1;
-		}
-	}
-
-	//still fail after 10s
-	if(haha > 10){
-		say("bspcpu: run into 1cpu_0irq mode\n");
-		kernel_failloop(wrk);
-	}
+	kernel_failloop(wrk);
 
 	//everything ok
-	say("haltloop(core=0), sleep wait for int\n");
-	while(1){
-		time = timeread();
-		if(time > heartbeat_draw + 1000*1000*10){
-			say("drawloop: stall >10s\n");
-		}
-		if(time > heartbeat_poll + 1000*1000*10){
-			say("pollloop: stall >10s\n");
-		}
-		haltwaitforint();
-	}
+	kernel_idleloop(wrk);
 }
 
 
