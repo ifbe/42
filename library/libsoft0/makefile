@@ -15,7 +15,8 @@ bare/bare.multitask.coroutine.c \
 bare/bare.multitask.thread.c \
 bare/bare.multitask.process.c \
 bare/bare.multitask.virtualize.c \
-bare/bare.syscall.c \
+bare/bare.syscall.42.c \
+bare/bare.syscall.unix.c \
 bare/bare.system.power.c \
 bare/bare.system.random.c \
 bare/bare.system.signal.c \

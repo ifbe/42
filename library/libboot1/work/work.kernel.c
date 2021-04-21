@@ -160,7 +160,7 @@ static int kernel_failloop(struct item* wrk)
 	struct halfrel stack[0x80];
 	stack[0].pchip = wrk;
 	stack[1].pchip = wnd;
-	say("failloop: wait until drawloop&pollloop\n");
+	say("failloop: waiting for drawloop&pollloop\n");
 
 	struct event* ev;
 	u64 curr;
@@ -172,16 +172,17 @@ static int kernel_failloop(struct item* wrk)
 		if((0 != heartbeat_draw)&&(0 != heartbeat_poll))break;
 
 		curr = timeread();
+		curr = (curr-time)/1000/1000;
 
 		//drawloop fail, i have to draw
 		if(0 == heartbeat_draw){
-			say("drawloop fail after %d sec\n", (curr-time)/1000/1000);
+			if(curr <= 10)say("drawloop fail after %d sec\n", curr);
 			supply_take(wnd,0, stack,2, 0,0, 0,0);
 		}
 
 		//pollloop fail, i have to poll
 		if(0 == heartbeat_poll){
-			say("pollloop fail after %d sec\n", (curr-time)/1000/1000);
+			if(curr <= 10)say("pollloop fail after %d sec\n", curr);
 
 			//poll all
 			for(j=0;j<10;j++){
@@ -238,12 +239,18 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 	//kernel_ttyctx(tty);
 	kernel_wndctx(wnd);
 
-	//kernel thread
-	threadcreate(kernel_drawloop, wrk);
-	threadcreate(kernel_pollloop, wrk);
+	if(1){
+		//kernel thread
+		threadcreate(kernel_drawloop, wrk);
+		threadcreate(kernel_pollloop, wrk);
 
-	//check if thread ok, wait at most 10s
-	kernel_failloop(wrk);
+		//check if thread ok, wait at most 10s
+		sleep_us(100*1000);
+		kernel_failloop(wrk);
+	}
+	else{
+		//processcreate("/init");
+	}
 
 	//everything ok
 	kernel_idleloop(wrk);

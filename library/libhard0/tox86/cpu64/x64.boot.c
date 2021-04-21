@@ -108,10 +108,18 @@ struct percpu{
 
 	int coreid;
 
-	int procid;	//this core current process
-
-	int thread;	//this core current thread
+	//this core current thread
+	int thread;
 	int queueid;
+
+	//this core current process
+	int procid;
+
+	//virtual machine
+	int vmid;
+
+	//manage mode
+	int smid;
 };
 static struct percpu cpubuf[8];
 static int cpucnt = 0;

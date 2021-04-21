@@ -7,6 +7,10 @@
 #define hex64(a,b,c,d,e,f,g,h) (hex32(a,b,c,d) | (((u64)hex32(e,f,g,h))<<32))
 #define __date__ hex32('d','a','t','e')
 #define __time__ hex32('t','i','m','e')
+u64 archtimer_ms();
+u64 archtimer_us();
+u64 archtimer_ns();
+//
 void eventwrite(u64,u64,u64,u64);
 void say(void*, ...);
 
@@ -36,22 +40,31 @@ u64 dateread()
 
 
 
-void sleep_ns(int t)
-{
-}
-void sleep_us(int t)
-{
-	u64 that = time + t;
-	while(time < that);
-}
-void sleep_ms(int t)
-{
-}
 void timewrite(u64 t)
 {
 	time = t;
+	//archtimer_write(t);
 }
 u64 timeread()
 {
-	return time;
+	return archtimer_us();
+}
+
+
+
+
+void sleep_ns(int t)
+{
+	u64 deadline = archtimer_ns() + t;
+	while(archtimer_ns() < deadline);
+}
+void sleep_us(int t)
+{
+	u64 deadline = archtimer_us() + t;
+	while(archtimer_us() < deadline);
+}
+void sleep_ms(int t)
+{
+	u64 deadline = archtimer_ms() + t;
+	while(archtimer_ms() < deadline);
 }

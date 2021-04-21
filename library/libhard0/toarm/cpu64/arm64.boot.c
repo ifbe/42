@@ -22,6 +22,7 @@ int thread_findproc(int queueid,int curr);
 
 
 struct savereg{
+	//[0x00,0x3f]
 	u64 x0;
 	u64 x1;
 	u64 x2;
@@ -30,7 +31,7 @@ struct savereg{
 	u64 x5;
 	u64 x6;
 	u64 x7;
-
+	//[0x40,0x7f]
 	u64 x8;
 	u64 x9;
 	u64 x10;
@@ -39,7 +40,7 @@ struct savereg{
 	u64 x13;
 	u64 x14;
 	u64 x15;
-
+	//[0x80,0xbf]
 	u64 x16;
 	u64 x17;
 	u64 x18;
@@ -48,18 +49,25 @@ struct savereg{
 	u64 x21;
 	u64 x22;
 	u64 x23;
-
+	//[0xc0,0xff]
 	u64 x24;
 	u64 x25;
 	u64 x26;
 	u64 x27;
 	u64 x28;
 	u64 x29;
-	u64 x30;		//lr
-	u64 sp;
-
+	u64 x30;	//lr
+	u64 x31;	//xzr
+	//[0x100,0x10f]
 	u64 elr;
 	u64 spsr;
+	//[0x110,0x11f]
+	u64 sp0;
+	u64 sp1;
+};
+struct savearea{
+	u64 sp0;
+	u64 sp1;
 };
 struct percpu{
 	void* pagetable;
@@ -71,12 +79,18 @@ struct percpu{
 	//cpucore
 	int coreid;
 
-	//process
-	int pid;
-
 	//thread
 	int qid;
 	int tid;
+
+	//process
+	int pid;
+
+	//virtual
+	int vmid;
+
+	//smm
+	int smid;
 };
 static struct percpu cpubuf[8];
 static int cpucnt = 0;
@@ -125,30 +139,29 @@ int percpu_thread()
 
 
 
-int percpu_makekern(struct savereg* reg, u64* arg, u64 ip, u64 sp)
+int percpu_makekern(struct savearea* save, u64* arg, u64 ip, u64 sp)
 {
 	struct savereg* run = (void*)sp;
 	run->x0 = arg[0];
-
 	run->x30 = 0;
-	run->sp = sp;
 	run->elr = ip;
 	asm("mrs x0, spsr_el1; str x0, %0" : "=m"(run->spsr) : : "x0");
 
-	reg->sp = sp;
+	save->sp0 = sp-0x10000;
+	save->sp1 = sp;
 	return 0;
 }
-int percpu_makeuser(struct savereg* reg, u64* arg, u64 ip, u64 sp)
+int percpu_makeuser(struct savearea* save, u64* arg, u64 ip, u64 sp)
 {
 	struct savereg* run = (void*)sp;	//virt2phys(sp);
 	run->x0 = arg[0];
-
 	run->x30 = 0;
-	run->sp = sp;
 	run->elr = ip;
 	asm("mrs x0, spsr_el1; str x0, %0" : "=m"(run->spsr) : : "x0");
+	//run->spsr &= 0xfffffffffffffff0;
 
-	reg->sp = sp;
+	save->sp0 = sp-0x10000;
+	save->sp1 = sp;
 	return 0;
 }
 
@@ -156,13 +169,15 @@ int percpu_makeuser(struct savereg* reg, u64* arg, u64 ip, u64 sp)
 
 
 //cpu register
-void percpu_savecpu(struct savereg* save, struct savereg* curr)
+void percpu_savecpu(struct savearea* save, struct savereg* curr)
 {
-	save->sp = curr->sp;
+	save->sp0 = curr->sp0;
+	save->sp1 = curr->sp1;
 }
-void percpu_loadcpu(struct savereg* save, struct savereg* curr)
+void percpu_loadcpu(struct savearea* save, struct savereg* curr)
 {
-	curr->sp = save->sp;
+	curr->sp0 = save->sp0;
+	curr->sp1 = save->sp1;
 }
 
 

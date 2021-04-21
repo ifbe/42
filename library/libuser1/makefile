@@ -127,6 +127,7 @@ themind/user/yoda/yoda.c \
 themind/mind.c \
 theworld/2d/wndtest.naked.c \
 theworld/2d/wndtest.titled.c \
+theworld/2d/wndtest.edge.c \
 theworld/3d/scene.c \
 theworld/3d/uiux.axis.c \
 theworld/3d/uiux.guide.c \
@@ -319,7 +320,6 @@ thething/uiuxitem/bar/bar.tab.c \
 thething/uiuxitem/bar/bar.nav.c \
 thething/uiuxitem/bar/bar.list.c \
 thething/uiuxitem/debug/uiux.layouter.c \
-thething/uiuxitem/debug/uiux.corner.c \
 thething/uiuxitem/debug/uiux.cameraer.c \
 thething/uiuxitem/debug/uiux.pointer.c \
 thething/uiuxitem/editor/edit.hex.c \

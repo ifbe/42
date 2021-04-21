@@ -50,6 +50,31 @@ void percputimer_isr(void* regs)
 
 
 
+u64 archtimer_ms()
+{
+	u64 freq,pcnt;
+	asm volatile("mrs %0, CNTFRQ_EL0" : "=r" (freq));
+	asm volatile("mrs %0, CNTPCT_EL0" : "=r" (pcnt));
+	return (1000*pcnt) / freq;
+}
+u64 archtimer_us()
+{
+	u64 freq,pcnt;
+	asm volatile("mrs %0, CNTFRQ_EL0" : "=r" (freq));
+	asm volatile("mrs %0, CNTPCT_EL0" : "=r" (pcnt));
+	return (1000*1000*pcnt) / freq;
+}
+u64 archtimer_ns()
+{
+	u64 freq,pcnt;
+	asm volatile("mrs %0, CNTFRQ_EL0" : "=r" (freq));
+	asm volatile("mrs %0, CNTPCT_EL0" : "=r" (pcnt));
+	return (1000*1000*pcnt) / (freq/1000);
+}
+
+
+
+
 void percputimer_exit()
 {
 	unsigned long ctl = 0;
