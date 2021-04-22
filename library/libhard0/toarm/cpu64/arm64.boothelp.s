@@ -8,79 +8,91 @@ trampoline64:
 10:	ldr     x1, =0x4000
 	mov     sp, x1
 
-	//if(el3)goto el3_to_el2
-30:	mrs     x1, CurrentEL
-	and     x1, x1, #12		// x1 &= 0xc
-	cmp     x1, #12			// 12 means EL3
-	b.ne    50f
-
-	// at el3, to el2
-40:	mov     x1, #0x5b1
-	msr     scr_el3, x1
-	mov     x1, #0x3c9
-	msr     spsr_el3, x1
-	adr     x1, 50f
-	msr     elr_el3, x1
-	eret
-
-	//if(el2)goto el2_to_el1
-50:	mrs     x1, CurrentEL
-	and     x1, x1, #12		// x1 &= 0xc
-	cmp     x1, #8			// 8 means EL2
-	b.ne    70f
-
-	// at el2, to el1
-60:	/* Initialize Generic Timers */
-	mrs x1, cnthctl_el2
-	orr x1, x1, #0x3 /* Enable EL2 access to timers */
-	msr cnthctl_el2, x1
-
-	mrs x1, cntkctl_el1
-	orr x1, x1, #0x3 /* Enable EL1 access to timers */
-	msr cntkctl_el1, x1
-
-	/* Initilize MPID/MPIDR registers */
-	mrs x1, midr_el1
-	msr vpidr_el2, x1
-	mrs x1, mpidr_el1
-	msr vmpidr_el2, x1
-
-	/* Disable coprocessor traps */
-	mov x1, #0x33ff
-	msr cptr_el2, x1 /* Disable coprocessor traps to EL2 */
-	msr hstr_el2, xzr /* Disable Hyp System Trap */
-
-	mrs x1, cpacr_el1
-	mov x1, #3 << 20
-	msr cpacr_el1, x1 /* Enable FP/SIMD at EL1 */
-
-	/* Initialize HCR_EL2 */
-	mov x1, #(1 << 31) /* 64bit EL1 */
-	orr x1, x1, #(1 << 29) /* Disable HVC */
-	msr hcr_el2, x1
-
-	/* SCTLR_EL1 initialization */
-	mov x1, #0x0800
-	movk x1, #0x30d0, lsl #16
-	msr sctlr_el1, x1
-
-	/* Return to the EL1_SP1 mode from EL2 */
-	mov x1, sp
-	msr sp_el1, x1 /* Migrate SP */
-	mrs x1, vbar_el2
-	msr vbar_el1, x1 /* Migrate VBAR */
-	mov x1, #0x3c5
-	msr spsr_el2, x1 /* EL1_SP1 | D | A | I | F */
-	adr x1, 70f
-	msr elr_el2, x1
-	eret
-
 	// jump to C code, should not return
 70:	bl initcpu_other
 
 	// sleep forever
 80:	wfe
 	b 80b
+
+
+
+
+.global if_el3_go_el2
+if_el3_go_el2:
+	//if(el3)
+	mrs     x0, CurrentEL
+	and     x0, x0, #12		// x0 &= 0xc
+	cmp     x0, #12			// 12 means EL3
+	b.eq    22f
+	ret						//just ret to lr
+
+	//el3_to_el2
+22:	mov     x0, #0x5b1
+	msr     scr_el3, x0
+	mov     x0, #0x3c9
+	msr     spsr_el3, x0
+	mov     x0, lr			//lr is ret addr
+	msr     elr_el3, x0
+	eret
+
+
+
+
+.global if_el2_go_el1
+if_el2_go_el1:
+	//if(el2)
+	mrs     x0, CurrentEL
+	and     x0, x0, #12		// x0 &= 0xc
+	cmp     x0, #8			// 8 means EL2
+	b.eq    11f
+	ret						//just ret to lr
+
+	//el2_to_el1
+	/* Initialize Generic Timers */
+11:	mrs x0, cnthctl_el2
+	orr x0, x0, #0x3 /* Enable EL2 access to timers */
+	msr cnthctl_el2, x0
+
+	mrs x0, cntkctl_el1
+	orr x0, x0, #0x3 /* Enable EL1 access to timers */
+	msr cntkctl_el1, x0
+
+	/* Initilize MPID/MPIDR registers */
+	mrs x0, midr_el1
+	msr vpidr_el2, x0
+	mrs x0, mpidr_el1
+	msr vmpidr_el2, x0
+
+	/* Disable coprocessor traps */
+	mov x0, #0x33ff
+	msr cptr_el2, x0 /* Disable coprocessor traps to EL2 */
+	msr hstr_el2, xzr /* Disable Hyp System Trap */
+
+	mrs x0, cpacr_el1
+	mov x0, #3 << 20
+	msr cpacr_el1, x0 /* Enable FP/SIMD at EL1 */
+
+	/* Initialize HCR_EL2 */
+	mov x0, #(1 << 31) /* 64bit EL1 */
+	orr x0, x0, #(1 << 29) /* Disable HVC */
+	msr hcr_el2, x0
+
+	/* SCTLR_EL1 initialization */
+	mov x0, #0x0800
+	movk x0, #0x30d0, lsl #16
+	msr sctlr_el1, x0
+
+	/* Return to the EL1_SP1 mode from EL2 */
+	mov x0, sp
+	msr sp_el1, x0			//Migrate SP, its wrong
+	mrs x0, vbar_el2
+	msr vbar_el1, x0		//Migrate VBAR
+	mov x0, #0x3c5
+	msr spsr_el2, x0		//EL1_SP1 | D | A | I | F
+	mov x0, lr
+	msr elr_el2, x0			//lr is ret addr
+	eret
 
 
 

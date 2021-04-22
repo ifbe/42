@@ -32,7 +32,7 @@
 #define NEGATIVE_PML2 0x41000
 #define NEGATIVE_LAST 0x42000
 //
-#define GIGACOUNT 8		//map 8GB
+#define GIGACOUNT 32		//map 32GB
 
 
 
@@ -71,14 +71,22 @@ void pagetable_makeuser(u8* buf, int len)
 
 void pagetable_use(u64 p0, u64 p1)
 {
+    // tell the MMU where our translation tables are. TTBR_CNP bit not documented, but required
+    // lower half
+    asm volatile ("msr ttbr0_el1, %0" : : "r" (p0 | 1));
+    // upper half
+    asm volatile ("msr ttbr1_el1, %0" : : "r" (p1 | 1));
 }
-u64 pagetable_get()
+void pagetable_get(u64* ttbr0, u64* ttbr1)
 {
-	u64 addr;
-	asm("mrs %0, ttbr1_el1" : "=r"(addr) );
-	return addr;
+	asm volatile("mrs %0, ttbr0_el1" : "=r"(*ttbr0) );
+	asm volatile("mrs %0, ttbr1_el1" : "=r"(*ttbr1) );
 }
-void pagetable_enable(u64 p0, u64 p1)
+
+
+
+
+void pagetable_enable()
 {
     unsigned long r, b;
 
@@ -113,12 +121,6 @@ void pagetable_enable(u64 p0, u64 p1)
         (25LL   << 0);   // T0SZ=25, 3 levels (512G)
     asm volatile ("msr tcr_el1, %0; isb" : : "r" (r));
 
-    // tell the MMU where our translation tables are. TTBR_CNP bit not documented, but required
-    // lower half, user space
-    asm volatile ("msr ttbr0_el1, %0" : : "r" (p0 | 1));
-    // upper half, kernel space
-    asm volatile ("msr ttbr1_el1, %0" : : "r" (p1 | 1));
-
 	u64 sctlr;
     asm volatile ("dsb ish; isb; mrs %0, sctlr_el1" : "=r" (sctlr));
     sctlr |= 0xC00800;     // set mandatory reserved bits
@@ -136,15 +138,17 @@ void pagetable_enable(u64 p0, u64 p1)
 void pagetable_disable()
 {
 }
+
+
+
+
 void initpaging(void* addr)
 {
-	say("@initpaging: new@%p\n", addr);
-
-
-	//pagetable_makekern(addr, POSITIVE_LAST);
-	pagetable_makeuser(addr, NEGATIVE_LAST);
-
+	say("@initpaging: table@%p\n", addr);
 
 	pagetable_use((u64)addr, (u64)addr+NEGATIVE_PML3);
-	pagetable_enable((u64)addr, (u64)addr+NEGATIVE_PML3);
+	pagetable_enable();
+}
+void exitpaging()
+{
 }

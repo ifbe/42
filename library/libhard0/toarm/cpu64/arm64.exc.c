@@ -1,5 +1,4 @@
 #include "libhard.h"
-extern void vectors();
 void gic4_isr(void* regs);
 void syscall_handler(void* regs);
 
@@ -109,18 +108,11 @@ void exception_lowel32_serr(void* regs)
 
 
 
-void initexception(void* sp)
+void initexception(void* vec)
 {
-	say("@initexception\n");
+	say("@initexception: vector@%p\n", vec);
 
-	u64 el;
-	asm("mrs %0, CurrentEL" :"=r"(el));
-	say("CurrentEL=%x\n", (el>>2)&3);
+	asm volatile("ldr x0, %0; msr vbar_el1, x0" : : "m"(vec));
 
-	//asm("ldr x0, %0; msr sp_el1, x0" : : "m"(sp));
-
-	void* vec = vectors;
-	asm("ldr x0, %0; msr vbar_el1, x0" : : "m"(vec));
-
-	asm("svc #0");
+	asm volatile("mov x0, #0; svc #0");
 }

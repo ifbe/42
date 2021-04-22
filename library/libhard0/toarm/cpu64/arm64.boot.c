@@ -1,4 +1,5 @@
 #include "libhard.h"
+extern void vectors();
 extern void trampoline64();
 int raspi_version();
 void CleanDataCache (void);
@@ -7,7 +8,13 @@ void wait_msec(int);
 void gic4_init();
 void percputimer_init();
 //
+void if_el3_go_el2();
+void if_el2_go_el1();
+//
+void pagetable_makekern(void*, int);
+void pagetable_makeuser(void*, int);
 void initpaging(void*);
+//
 void initexception(void*);
 //
 int process_registersupplier(int coreid, void* cr3);
@@ -117,6 +124,12 @@ int percpu_coreid()
 	id &= 0xf;
 	return id;
 }
+int percpu_currentel()
+{
+	u64 el;
+	asm volatile("mrs %0, CurrentEL" :"=r"(el));
+	return (el>>2)&3;
+}
 int percpu_process()
 {
 	int coreid = percpu_coreid();
@@ -158,7 +171,7 @@ int percpu_makeuser(struct savearea* save, u64* arg, u64 ip, u64 sp)
 	run->x30 = 0;
 	run->elr = ip;
 	asm("mrs x0, spsr_el1; str x0, %0" : "=m"(run->spsr) : : "x0");
-	//run->spsr &= 0xfffffffffffffff0;
+	run->spsr &= 0xffffffffffffffe0;
 
 	save->sp0 = sp-0x10000;
 	save->sp1 = sp;
@@ -245,22 +258,34 @@ void initcpu_bsp()
 {
 	percpu_disableint();
 
-
-//----------------haha----------------
+//----------------coreid----------------
 	int coreid = percpu_coreid();
 	say("@initcpu_bsp=%x\n", coreid);
 
-	void* tmp = memorycreate(0x100000, 0);
-	initexception(tmp+0x100000);
-	initpaging(tmp);
+//----------------el----------------
+	say("old CurrentEL=%x\n", percpu_currentel());
+	if_el3_go_el2();
+	if_el2_go_el1();
+	say("new CurrentEL=%x\n", percpu_currentel());
 
-	int pid = process_registersupplier(coreid, 0);
+//----------------exception----------------
+	initexception(vectors);
 
+//----------------pagetable----------------
+	void* pt = memorycreate(0x100000, 0x100000);
+	pagetable_makekern(pt, 0x100000);
+	initpaging(pt);
+	//printmemory((void*)0xffffffffffe00000, 16);
+
+//----------------process----------------
+	int pid = process_registersupplier(coreid, pt);
+
+//----------------thread----------------
 	int qid = thread_registerprocessor(coreid, 0);
 	int tid = 0;
 
-//----------------percpu data---------------
-	cpubuf[0].pagetable = tmp;
+//----------------percpu---------------
+	cpubuf[0].pagetable = pt;
 
 	cpubuf[0].irqcnt = 0;
 	cpubuf[0].slpcnt = 0;
@@ -270,7 +295,6 @@ void initcpu_bsp()
 	cpubuf[0].qid = qid;
 	cpubuf[0].tid = tid;
 	cpucnt = 1;
-
 
 //----------------haha----------------
 	if(4 == raspi_version()){
@@ -285,22 +309,31 @@ void initcpu_other()
 {
 	percpu_disableint();
 
-
-//----------------haha----------------
+//----------------coreid----------------
 	int coreid = percpu_coreid();
 	say("@initcpu_other=%x\n",coreid);
 
-	void* tmp = memorycreate(0x100000, 0);
-	initexception(tmp+0x100000);
-	//initpaging(tmp);
+//----------------el----------------
+	say("old CurrentEL=%x\n", percpu_currentel());
+	if_el3_go_el2();
+	if_el2_go_el1();
+	say("new CurrentEL=%x\n", percpu_currentel());
 
+//----------------exception----------------
+	initexception(vectors);
+
+//----------------pagetable----------------
+	void* pt = cpubuf[0].pagetable;
+	initpaging(pt);
+	//printmemory((void*)0xffffffffffe00000, 16);
+
+//----------------thread----------------
 	int qid = thread_registerprocessor(coreid, 0);
 	int tid = 0;
 
-
-//----------------percpu data---------------
+//----------------percpu---------------
 	int n = cpucnt;
-	cpubuf[n].pagetable = tmp;
+	cpubuf[n].pagetable = pt;
 
 	cpubuf[n].irqcnt = 0;
 	cpubuf[n].slpcnt = 0;
@@ -310,7 +343,6 @@ void initcpu_other()
 	cpubuf[n].qid = qid;
 	cpubuf[n].tid = tid;
 	cpucnt = n+1;
-
 
 //----------------haha----------------
 	if(4 == raspi_version()){

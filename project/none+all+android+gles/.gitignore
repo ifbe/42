@@ -1,8 +1,1 @@
-bin
-gen
-obj
-libs
-build.xml
-local.properties
-proguard-project.txt
-project.properties
+gradle/app
