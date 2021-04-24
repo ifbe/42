@@ -37,6 +37,43 @@
 
 
 
+u64 pagetable_virt2phys(u64 tb, u64 va)
+{
+	u64* root;
+    if(0 == (va>>63))root = (void*)tb;
+    else root = (void*)(tb+NEGATIVE_PML3);
+
+	u64 bit30_38 = (va>>30)&0x1ff;
+	u64 val3 = root[bit30_38];
+	if(0 == val3){
+		return 0;
+	}
+	if(PT_BLOCK == (val3 & 3)){
+		return (val3&0x7fffffffc0000000) + (va&0x3fffffff);
+	}
+
+	u64* pd = (u64*)(val3 & 0x7ffffffffffff000);
+	u64 bit21_29 = (va>>21)&0x1ff;
+	u64 val2 = pd[bit21_29];
+	if(0 == val2){
+		return 0;
+	}
+	if(PT_BLOCK == (val2 & 3)){
+		return (val2&0x7fffffffffe00000) + (va&0x1fffff);
+	}
+
+	u64* pt = (u64*)(val2 & 0x7ffffffffffff000);
+	u64 bit12_20 = (va>>12)&0x1ff;
+	u64 val1 = pt[bit12_20];
+	if(0 == val1){
+		return 0;
+	}
+	return (val1&0x7ffffffffffff000) + (va&0xfff);
+}
+
+
+
+
 void pagetable_makekern(u8* buf, int len)
 {
 	u64 j;
@@ -52,7 +89,7 @@ void pagetable_makekern(u8* buf, int len)
 	u64* pml3 = (u64*)(buf+POSITIVE_PML3);
 	for(j=0;j<GIGACOUNT;j++)pml3[j] = ((j<<12) + (u64)pml2) | PT_PAGE | PT_AF | PT_KERNEL | PT_ISH | PT_MEM;
 }
-void pagetable_makeuser(u8* buf, int len)
+void pagetable_makeuser(u8* buf, int len, u64 pa, int plen, u64 va, int vlen)
 {
 	pagetable_makekern(buf, 0x40000);
 
@@ -60,22 +97,25 @@ void pagetable_makeuser(u8* buf, int len)
 	for(j=NEGATIVE_PML3;j<NEGATIVE_LAST;j++)buf[j] = 0;
 
 	u64* pml2 = (u64*)(buf+NEGATIVE_PML2);
-	pml2[511] = 0 | PT_BLOCK | PT_AF | PT_KERNEL | PT_ISH | PT_MEM;
+	pml2[511] = pa | PT_BLOCK | PT_AF | PT_USER | PT_ISH | PT_MEM;
 
 	u64* pml3 = (u64*)(buf+NEGATIVE_PML3);
-	pml3[511] = (u64)pml2 | PT_PAGE | PT_AF | PT_KERNEL | PT_ISH | PT_MEM;
+	pml3[511] = (u64)pml2 | PT_PAGE | PT_AF | PT_USER | PT_ISH | PT_MEM;
 }
 
 
 
 
-void pagetable_use(u64 p0, u64 p1)
+void pagetable_use(void* addr)
 {
     // tell the MMU where our translation tables are. TTBR_CNP bit not documented, but required
+    u64 ttbr0 = (u64)addr;
+    u64 ttbr1 = (u64)addr+NEGATIVE_PML3;
+
     // lower half
-    asm volatile ("msr ttbr0_el1, %0" : : "r" (p0 | 1));
+    asm volatile ("msr ttbr0_el1, %0" : : "r" (ttbr0 | 1));
     // upper half
-    asm volatile ("msr ttbr1_el1, %0" : : "r" (p1 | 1));
+    asm volatile ("msr ttbr1_el1, %0" : : "r" (ttbr1 | 1));
 }
 void pagetable_get(u64* ttbr0, u64* ttbr1)
 {
@@ -146,7 +186,7 @@ void initpaging(void* addr)
 {
 	say("@initpaging: table@%p\n", addr);
 
-	pagetable_use((u64)addr, (u64)addr+NEGATIVE_PML3);
+	pagetable_use(addr);
 	pagetable_enable();
 }
 void exitpaging()

@@ -5,8 +5,8 @@ int percpu_loadfpu(void* buf);
 //
 int percpu_savecpu(void* buf, void* saved);
 int percpu_loadcpu(void* buf, void* saved);
-int percpu_makeuser(void* buf, void* arg, void* ip, void* ss);
 int percpu_makekern(void* buf, void* arg, void* ip, void* ss);
+int percpu_makeuser(void* buf, void* arg, u64 ip, u64 sp, u64 ip_pa, u64 sp_pa);
 
 
 
@@ -45,7 +45,7 @@ static int percputaskcount[8];
 
 
 
-u64 thread_forthisprocess(void* ip, void* arg, int procid)
+u64 thread_forthisprocess(int core, int proc, u64 pa, u64 va)
 {
 	int j;
 	int that = -2;
@@ -62,13 +62,17 @@ u64 thread_forthisprocess(void* ip, void* arg, int procid)
 	struct threadstate* tasktable = percputasktable[that];
 	struct threadstate* task = &tasktable[taskcount];
 
-	void* sp = (void*)0xfffffffffffffe00;		//max-512
-	percpu_makeuser(&task->cpu, &arg, ip, sp);
+	u64 arg[2];
+	u64 ip_pa = pa;
+	u64 sp_pa = pa + 0x1ffe00;	//va + 2m - 512b
+	u64 ip_va = va;
+	u64 sp_va = va + 0x1ffe00;	//va + 2m - 512b
+	percpu_makeuser(&task->cpu, arg, ip_va, sp_va, ip_pa, sp_pa);
 	percpu_savefpu(&task->fpu);
 
 	task->info.BindToCoreId = -1;	//percpu_coreid();
 	task->info.CoreRunThisTask = -1;
-	task->info.procid = procid;
+	task->info.procid = proc;
 	task->info.vmcbid = 0;
 	task->info.type = 3;
 	task->info.state = 1;

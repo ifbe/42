@@ -19,6 +19,7 @@
 
 
 
+
 u64 pagetable_virt2phys(u64 cr3, u64 va)
 {
 	//bit48to63 must be signed extension of bit47

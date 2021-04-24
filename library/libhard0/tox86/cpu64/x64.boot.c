@@ -131,7 +131,7 @@ static int cpucnt = 0;
 #define KERNDATA 0x18
 #define USERCODE 0x20
 #define USERDATA 0x28
-void percpu_makeuser(struct saved_cpureg* cpu, u64* arg, u64 ip, u64 sp)
+void percpu_makeuser(struct saved_cpureg* cpu, u64* arg, u64 ip, u64 sp, u64 ip_pa, u64 sp_pa)
 {
 	cpu->rdi = arg[0];	//di,si,dx,cx,r8,r9
 	cpu->rcx = arg[0];	//cx,dx,r8,r9

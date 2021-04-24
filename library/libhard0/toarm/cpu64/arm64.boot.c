@@ -164,17 +164,17 @@ int percpu_makekern(struct savearea* save, u64* arg, u64 ip, u64 sp)
 	save->sp1 = sp;
 	return 0;
 }
-int percpu_makeuser(struct savearea* save, u64* arg, u64 ip, u64 sp)
+int percpu_makeuser(struct savearea* save, u64* arg, u64 ip_va, u64 sp_va, u64 ip_pa, u64 sp_pa)
 {
-	struct savereg* run = (void*)sp;	//virt2phys(sp);
+	struct savereg* run = (void*)sp_pa;
 	run->x0 = arg[0];
 	run->x30 = 0;
-	run->elr = ip;
+	run->elr = ip_va;
 	asm("mrs x0, spsr_el1; str x0, %0" : "=m"(run->spsr) : : "x0");
 	run->spsr &= 0xffffffffffffffe0;
 
-	save->sp0 = sp-0x10000;
-	save->sp1 = sp;
+	save->sp0 = sp_va-0x10000;
+	save->sp1 = sp_pa;
 	return 0;
 }
 
@@ -230,7 +230,7 @@ int percpu_schedule(struct savereg* regs)
 	//*(int*)(coreid*16 + 0) = tcurr;
 	//*(int*)(coreid*16 + 4) = tnext;
 	if(tcurr == tnext)return 0;
-/*
+
 	//check process
 	int pcurr = per->pid;
 	int pnext = thread_findproc(per->qid,tnext);
@@ -240,7 +240,7 @@ int percpu_schedule(struct savereg* regs)
 		process_switchto(pcurr, pnext);
 		per->pid = pnext;
 	}
-*/
+
 	//say("tcurr=%d,tnext=%d\n",tcurr,tnext);
 	//return 0;
 

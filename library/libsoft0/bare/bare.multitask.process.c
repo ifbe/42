@@ -1,15 +1,20 @@
 #include "libsoft.h"
 int parse_pe(void* pe, int len);
-u64 thread_forthisprocess(void* code, void* arg, int procid);
 //
-void pagetable_use(void* cr3);
+int percpu_process();
+//
+u64 thread_forthisprocess(int core, int proc, u64 pa, u64 va);
+//
+u64 pagetable_virt2phys(u64 tb, u64 va);
+u64 pagetable_phys2virt(u64 tb, u64 pa);
+void pagetable_use(void* ptbl);
 void pagetable_makeuser(void* buf, int len, u64 pa, int plen, u64 va, int vlen);
 
 
 
 
 struct procstate{
-	void*     cr3;	//physical address of page table, 1m align
+	void*    ptbl;	//physical address of page table, 1m align
 	void*    code;	//physical address of code binary, 2m align
 	u8*      path;	//current folder
 	u64*  fdtable;	//fd0=stdin, fd1=stdout
@@ -64,6 +69,50 @@ static void proctest_end()
 
 
 
+/*
+//must set "-fno-toplevel-reorder"
+#define _ver_ hex32('v','e','r',0)
+#define _exit_ hex32('e','x','i','t')
+static __attribute__((noinline)) void proctest_main();
+static __attribute__((noinline)) void proctest_entry()
+{
+	proctest_main();
+}
+static __attribute__((noinline)) void proctest_syscall(u64 req, u64* arg)
+{
+	//req: x8
+	//arg: x0, x1, x2, x3, x4, x5, x6, x7
+	asm volatile(
+		"mov x0, %0\n"		//arg0
+		"mov x1, %1\n"		//arg1
+		"mov x2, %2\n"		//arg2
+		"mov x3, %3\n"		//arg3
+		"mov x4, %4\n"		//arg4
+		"mov x5, %5\n"		//arg5
+		"mov x6, %6\n"		//arg6
+		"mov x7, %7\n"		//arg7
+		"mov x8, %8\n"		//this is call id
+		"svc #0\n"
+		:
+		: "r"(arg[0]),"r"(arg[1]),"r"(arg[2]),"r"(arg[3]),
+		  "r"(arg[4]),"r"(arg[5]),"r"(arg[6]),"r"(arg[7]),"r"(req)
+		: "x0","x1","x2","x3","x4","x5","x6","x7","x8"
+	);
+}
+static  __attribute__((noinline)) void proctest_main()
+{
+	u64 arg[8];
+	proctest_syscall(_ver_, arg);
+	proctest_syscall(_exit_, arg);
+
+	for(;;);
+}
+static __attribute__((noinline)) void proctest_end()
+{
+}*/
+
+
+
 
 static void process_malloc(u64* twomega, u64* onemega)
 {
@@ -78,6 +127,11 @@ static void process_malloc(u64* twomega, u64* onemega)
 		*onemega = tmp+0x200000;
 	}
 }
+u64 process_virt2phys(u64 va)
+{
+	int pid = percpu_process();
+	return pagetable_virt2phys((u64)perproc[pid].ptbl, va);
+}
 
 
 
@@ -86,8 +140,8 @@ int processsearch(void* buf, int len)
 {
 	int j;
 	for(j=0;j<8;j++){
-		say("%d:cr3=%p,code=%p,path=%p,fdtbl=%p\n", j,
-			perproc[j].cr3, perproc[j].code, perproc[j].path, perproc[j].fdtable
+		say("%d:ptbl=%p,code=%p,path=%p,fdtbl=%p\n", j,
+			perproc[j].ptbl, perproc[j].code, perproc[j].path, perproc[j].fdtable
 		);
 	}
 	return 0;
@@ -104,18 +158,18 @@ u64 processcreate(void* file, void* args)
 	//prepare memory for reading
 	u64 cr,pa;
 	int now = proccount;
-	if(0 == perproc[now].cr3){
+	if(0 == perproc[now].ptbl){
 		process_malloc(&pa, &cr);
-		perproc[now].cr3 = (void*)cr;
+		perproc[now].ptbl = (void*)cr;
 		perproc[now].code = (void*)pa;
 	}
 	else{
-		cr = (u64)perproc[now].cr3;
+		cr = (u64)perproc[now].ptbl;
 		pa = (u64)perproc[now].code;
 	}
 
-
-/*	//test0: copy code to pa
+/*
+	//test0: copy code to pa
 	int j;
 	u8* tmp = (void*)pa;
 	u8* p = (void*)proctest_entry;
@@ -152,12 +206,12 @@ u64 processcreate(void* file, void* args)
 	u64 va = 0xffffffffffe00000;
 	pagetable_makeuser((void*)cr, 0x100000, pa, 0x200000, va, 0x200000);
 	//printmemory((void*)va, 0x200);
-
+	//say("virt2phys:%llx\n",pagetable_virt2phys(cr, va));
 
 	//here it almost done
 	perproc[now].path = 0;
 	perproc[now].stat = 1;
-	thread_forthisprocess((void*)va, 0, now);
+	thread_forthisprocess(0, now, pa, va);
 
 	proccount = now+1;
 	return 0;
@@ -174,13 +228,13 @@ void process_switchto(int curr, int next)
 	//save curr
 
 	//load next
-	pagetable_use(perproc[next].cr3);
+	pagetable_use(perproc[next].ptbl);
 }
-void process_registersupplier(int coreid, void* cr3)
+void process_registersupplier(int coreid, void* ptbl)
 {
 	say("incoming process: from coreid=%d\n", coreid);
 
-	perproc[0].cr3 = cr3;
+	perproc[0].ptbl = ptbl;
 	perproc[0].path = 0;
 	perproc[0].code = 0;
 	perproc[0].stat = 1;
@@ -194,7 +248,7 @@ void initprocess()
 {
 	int j;
 	for(j=0;j<8;j++){
-		perproc[j].cr3 = 0;
+		perproc[j].ptbl = 0;
 		perproc[j].code = 0;
 		perproc[j].path = 0;
 		perproc[j].stat = 0;

@@ -253,7 +253,7 @@ int kernel_create(struct item* wrk, void* url, int argc, u8** argv)
 	}
 
 	//everything ok
-	kernel_idleloop(wrk);
+	return kernel_idleloop(wrk);
 }
 
 

@@ -4,6 +4,7 @@
 #define _take_ hex32('t','a','k','e')
 #define _give_ hex32('g','i','v','e')
 void syscall_caller(u64 req, u64* arg);
+u64 process_virt2phys(u64 va);
 
 
 
@@ -11,8 +12,12 @@ void syscall_caller(u64 req, u64* arg);
 
 
 //open, close, read, write, ioctl, seek
-void syscall_want()
+void syscall_want(u64 va, int flag)
 {
+	u64 pa = process_virt2phys(va);
+	say("@want: va=%llx, pa=%llx\n", va, pa);
+
+	if(pa)say("    %s\n", pa);
 }
 void syscall_done()
 {
@@ -37,7 +42,7 @@ void syscall_seek()
 void system_handler(u64 req, u64* arg)
 {
     switch(req){
-	case _want_:syscall_want();return;
+	case _want_:syscall_want(arg[0], arg[1]);return;
 	case _done_:syscall_done();return;
 	case _take_:syscall_take();return;
 	case _give_:syscall_give();return;

@@ -1,6 +1,5 @@
 #include "libuser.h"
-void* entity_alloc();
-void* style_alloc();
+void gl41data_whcam(struct entity* wnd, struct style* area);
 
 
 
@@ -321,15 +320,20 @@ void corner_gl41_popup(
 
 
 
-void corner_draw_gl41(
+void corner_draw_gl41_nocam(
 	struct entity* act, struct style* pin,
-	struct entity* win, struct style* sty)
+	struct entity* wnd, struct style* sty)
 {
-	corver_gl41_hover(act, pin, win, sty);
+	gl41data_before(wnd);
+	gl41data_whcam(wnd, sty);
 
-	corner_gl41_drag(act, pin, win, sty);
+	corver_gl41_hover(act, pin, wnd, sty);
 
-	corner_gl41_popup(act, pin, win, sty);
+	corner_gl41_drag(act, pin, wnd, sty);
+
+	corner_gl41_popup(act, pin, wnd, sty);
+
+	gl41data_after(wnd);
 }
 void corner_draw_pixel(
 	struct entity* act, struct style* pin,
@@ -567,8 +571,20 @@ static int corner_event(
 
 
 
-static int corner_taking(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+static int corner_taking(_ent* ent,void* slot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
+	//say("@corner_read\n");
+	struct entity* caller;struct style* area;
+	caller = stack[sp-2].pchip;area = stack[sp-2].pfoot;
+
+	switch(caller->fmt){
+	case _rgba_:
+		corner_draw_pixel(ent,slot, caller,area);
+		break;
+	case _gl41full_:
+		corner_draw_gl41_nocam(ent,slot, caller,area);
+		break;
+	}
 	return 0;
 }
 static int corner_giving(_ent* ent,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
@@ -601,14 +617,6 @@ static int corner_delete(struct entity* win)
 }
 static int corner_create(struct entity* act, u8* str)
 {
-	struct entity* ac = entity_alloc();
-	struct style* sty = style_alloc();
-
-	ac->type = hex32('?','?','?', 0);
-	ac->fmt = hex32('?','?','?', 0);
-
-	sty->is.uc[3] = 0;
-	relationcreate(ac, 0, _ent_, 0, act, sty, _ent_, 0);
 	return 0;
 }
 

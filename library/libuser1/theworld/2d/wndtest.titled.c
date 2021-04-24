@@ -109,7 +109,7 @@ void* wndmgr_find_close(struct supply* wnd, int x, int y)
 
 
 
-int wndmgr_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_rgba_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//pixel_clearcolor(wnd);
 	int x = wnd->ix0;
@@ -181,7 +181,7 @@ next:
 	drawline((void*)wnd, 0xffff00, x, y-16, x, y+16);
 	return 0;
 }
-int wndmgr_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+int wndmgr_rgba_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
 {
 	//say("@rgbanode_write:%p,%x\n", wnd,foot);
 	//printmemory(buf,16);
@@ -243,4 +243,16 @@ int wndmgr_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, voi
 	drawline((void*)wnd, 0xffff00, x-16, y, x+16, y);
 	drawline((void*)wnd, 0xffff00, x, y-16, x, y+16);
 	return 0;
+}
+
+
+
+
+int wndmgr_take(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	return wndmgr_rgba_take(wnd,foot, stack,sp, arg,key, buf,len);
+}
+int wndmgr_give(_sup* wnd,void* foot, _syn* stack,int sp, void* arg,int key, void* buf,int len)
+{
+	return wndmgr_rgba_give(wnd,foot, stack,sp, arg,key, buf,len);
 }
