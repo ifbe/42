@@ -1,6 +1,5 @@
 #include "libhard.h"
 #include "usb.h"
-int xhci_giveorderwaitevent(void* hc,int id, u32,u32, void* sendbuf,int sendlen, void* recvbuf, int recvlen);
 //device driver
 int usbds4_driver(struct item* usb, int xxx, struct item* xhci, int slot);
 int usbxbox_driver(struct item* usb, int xxx, struct item* xhci, int slot);
@@ -406,12 +405,12 @@ int usb_ReadAndHandleConfigure(struct item* usb, int xxx, struct item* xhci, int
 
 	//GET_DESCRIPTOR confdesc 8B
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x200+value, 0, 8);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
+	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
 	if(8 != ret)return -4;
 
 	//GET_DESCRIPTOR confdesc all
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x200+value, 0, *(u16*)(tmp+2));
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
+	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
 	if(req.wLength != ret)return -5;
 
 	//parse Configure Descriptor
@@ -502,11 +501,11 @@ int usb_ReadAndHandleString(struct item* usb, int xxx, struct item* xhci, int sl
 	say("[usbcore]readstr: lang=%x,id=%x\n", lang, id);
 
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300 + id, lang, 4);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
+	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
 	if(4 != ret)return -7;
 
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300 + id, lang, tmp[0]);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
+	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
 	if(req.wLength != ret)return -8;
 
 	perusb->my.desclen += req.wLength;
@@ -561,7 +560,7 @@ int usb_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 	if(1){	//if(xhci)
 		//int slot = xhci_giveorderwaitevent(xhci,slot, 'h',TRB_command_EnableSlot, 0,0, 0,0);
 
-		int ret = xhci_giveorderwaitevent(xhci,slot, 'h',TRB_command_AddressDevice, 0,0, 0,0);
+		int ret = xhci->ongiving(xhci,slot, 'h',TRB_command_AddressDevice, 0,0, 0,0);
 		if(ret < 0)return -1;
 	}
 
@@ -575,18 +574,18 @@ int usb_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 	if(1){
 		//GET_DESCRIPTOR devdesc[0,7]
 		DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x100, 0, 8);
-		ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
+		ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
 		if(8 != ret)return -2;
 
 		//tell xhci bMaxPacketSize0 changed
 		if(1){
-			xhci_giveorderwaitevent(xhci,slot, 'h',TRB_command_EvaluateContext, tmp,8, 0,0);
+			xhci->ongiving(xhci,slot, 'h',TRB_command_EvaluateContext, tmp,8, 0,0);
 		}
 	}
 
 	//GET_DESCRIPTOR devdesc all
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x100, 0, 0x12);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
+	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
 	if(0x12 != ret)return -3;
 	perusb->my.desclen += 0x12;
 
@@ -609,12 +608,12 @@ int usb_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 
 	//GET_DESCRIPTOR stringdesc 4B
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300, 0, 4);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
+	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
 	if(4 != ret)return -6;
 
 	//GET_DESCRIPTOR stringdesc all
 	DEVICE_REQUEST_GET_DESCRIPTOR(&req, 0x300, 0, tmp[0]);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
+	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, tmp,req.wLength);
 	if(req.wLength != ret)return -7;
 	perusb->my.desclen += req.wLength;
 

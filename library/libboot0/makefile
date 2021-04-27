@@ -7,8 +7,9 @@ rpi_c = \
 bare/initer.c \
 bare/memory.c \
 bare/rpi/main.c \
-bare/rpi/runenv.c \
-bare/rpi/serial.c \
+bare/rpi/helpenv.c \
+bare/rpi/helpgpio.c \
+bare/rpi/helpuart.c \
 origin.c
 rpi_o = $(patsubst %.c, %.o, $(rpi_c))
 
@@ -16,9 +17,9 @@ bare_c = \
 bare/initer.c \
 bare/memory.c \
 bare/barex64/entry.c \
-bare/barex64/keyboard.c \
-bare/barex64/runenv.c \
-bare/barex64/serial.c \
+bare/barex64/helpenv.c \
+bare/barex64/helpkbd.c \
+bare/barex64/helpuart.c \
 origin.c
 bare_o = $(patsubst %.c, %.o, $(bare_c))
 
@@ -26,9 +27,9 @@ efios_c = \
 bare/initer.c \
 bare/memory.c \
 bare/efi/entry.c \
-bare/efi/keyboard.c \
-bare/efi/runenv.c \
-bare/efi/serial.c \
+bare/efi/helpenv.c \
+bare/efi/helpkbd.c \
+bare/efi/helpuart.c \
 origin.c
 efios_o = $(patsubst %.c, %.o, $(efios_c))
 
@@ -36,7 +37,8 @@ efiapp_c = \
 bare/initer.c \
 bare/memory.c \
 app/efi/entry.c \
-app/efi/runenv.c \
+app/efi/helpenv.c \
+app/efi/helpuart.c \
 origin.c
 efiapp_o = $(patsubst %.c, %.o, $(efiapp_c))
 
@@ -44,8 +46,8 @@ none_c = \
 app/initer.c \
 app/memory.c \
 app/none/entry.c \
-app/none/runenv.c \
-app/none/serial.c \
+app/none/helpenv.c \
+app/none/helpuart.c \
 origin.c
 none_o = $(patsubst %.c, %.o, $(none_c))
 
@@ -53,8 +55,8 @@ wincmd_c = \
 app/initer.c \
 app/memory.c \
 app/win/entry.c \
-app/win/runenv.c \
-app/win/serial.c \
+app/win/helpenv.c \
+app/win/helpuart.c \
 origin.c
 wincmd_o = $(patsubst %.c, %.o, $(wincmd_c))
 

@@ -1,5 +1,17 @@
 #include "libboot.h"
 u8 in8(u16);
+void out8(u16, u8);
+
+
+
+
+int kbdled(u8 on)
+{
+	//bit0=scrolllock, bit1=numlock, bit2=capslock
+	out8(0x60, 0xed);
+	out8(0x60, on ? 7 : 0);
+	return 0;
+}
 
 
 

@@ -7,14 +7,8 @@ CF:=-c -O2 -fPIC -I..
 
 #---------------------arm32-------------------------
 anyelse_c = \
-anyusb/usbhost/ehci-driver.c \
-anyusb/usbhost/xhci-driver.c \
-anyusb/usbperi/usbany-driver.c \
-anyusb/usbperi/usbhub-driver.c \
-anyusb/usbperi/usbds4-driver.c \
-anyusb/usbperi/usbxbox-driver.c \
-anyusb/usbfunc/usbhid-driver.c \
-anyusb/usbfunc/usbstor-driver.c
+anyusb/ehci/ehci-driver.c \
+anyusb/xhci/xhci-driver.c
 anyelse_o = $(patsubst %.c, %.o, $(anyelse_c))
 
 mmc_c = \

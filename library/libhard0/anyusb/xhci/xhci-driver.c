@@ -1306,7 +1306,24 @@ int xhci_InterruptTransferIn(struct item* xhci, int slotendp, void* sendbuf, int
 	printmemory(recvbuf, recvlen);*/
 	return recvlen;
 }
-int xhci_giveorderwaitevent(
+
+
+
+
+static int xhci_ontake(struct item* xhci, void* foot, void* stack, int sp, void* sbuf, int slen, void* rbuf, void* rlen)
+{
+	if(0 == xhci)return 0;
+
+	void* ev;
+	while(1){
+		ev = xhci_takeevent(xhci);
+		if(0 == ev)break;
+
+		xhci_parseevent(xhci, ev);
+	}
+	return 0;
+}
+static int xhci_ongive(
 	struct item* xhci, int SlotEndp,
 	u32 whom, u32 what,
 	void* sendbuf, int sendlen,
@@ -1345,27 +1362,6 @@ int xhci_giveorderwaitevent(
 		}
 	}//to device
 
-	return 0;
-}
-
-
-
-
-static int xhci_ontake(struct item* xhci, void* foot, void* stack, int sp, void* sbuf, int slen, void* rbuf, void* rlen)
-{
-	if(0 == xhci)return 0;
-
-	void* ev;
-	while(1){
-		ev = xhci_takeevent(xhci);
-		if(0 == ev)break;
-
-		xhci_parseevent(xhci, ev);
-	}
-	return 0;
-}
-static int xhci_ongive(struct item* xhci, void* foot, void* stack, int sp, void* sbuf, int slen, void* rbuf, void* rlen)
-{
 	return 0;
 }
 
@@ -1453,7 +1449,7 @@ void xhci_listall(struct item* xhci, int count)
 		//probedevice(xhci, speed, j+1, 0);
 
 		//alloc slot
-		int slot = xhci_giveorderwaitevent(xhci,0, 'h',TRB_command_EnableSlot, 0,0, 0,0);
+		int slot = xhci_EnableSlot(xhci);
 		if(slot <= 0 | slot >= 16)continue;
 
 		struct perxhci* xhcidata = (void*)(xhci->priv_data);
@@ -1795,12 +1791,11 @@ int xhci_mmioinit(struct item* dev, u8* xhciaddr)
 			break;
 		}
 	}
-	xhci_listall(dev, capreg->HCSPARAMS1>>24);
-
 
 	//callback functions
 	dev->ontaking = (void*)xhci_ontake;
 	dev->ongiving = (void*)xhci_ongive;
+	xhci_listall(dev, capreg->HCSPARAMS1>>24);
 	return 0;
 }
 

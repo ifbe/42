@@ -4,7 +4,6 @@ void eventwrite(u64,u64,u64,u64);
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 void INTERFACE_REQUEST_GET_REPORT_DESC(void* req, u16 intf, u16 typeindex, u16 len);
 void INTERFACE_REQUEST_SET_IDLE(struct UsbRequest* req, u16 intf, u16 val);
-int xhci_giveorderwaitevent(void* hc,int id, u32,u32, void* sendbuf,int sendlen, void* recvbuf, int recvlen);
 struct ds4report{
 	u8 ReportID;	//0
 
@@ -145,7 +144,7 @@ int ds4hid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 				//if(ret < 0)return -9;
 
 				//inform the xHC of the endpoint
-				ret = xhci_giveorderwaitevent(xhci,slot, 'h',TRB_command_ConfigureEndpoint, endpdesc,sizeof(struct EndpointDescriptor), 0,0);
+				ret = xhci->ongiving(xhci,slot, 'h',TRB_command_ConfigureEndpoint, endpdesc,sizeof(struct EndpointDescriptor), 0,0);
 				if(ret < 0)return -9;
 			}
 			break;
@@ -162,7 +161,7 @@ int ds4hid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 				intfdesc->bInterfaceNumber,
 				0 | (hiddesc->bReportDescType<<8),
 				hiddesc->wReportDescLength);
-			ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, perusb->desc + perusb->my.desclen,hiddesc->wReportDescLength);
+			ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, perusb->desc + perusb->my.desclen,hiddesc->wReportDescLength);
 			if(ret >= 0)printmemory(perusb->desc + perusb->my.desclen,hiddesc->wReportDescLength);
 
 			break;
@@ -179,7 +178,7 @@ int ds4hid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 //------------------------device side------------------------
 	say("[ds4hid]set_config\n");
 	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, 0,0);
+	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, 0,0);
 	if(ret < 0)return -10;
 /*
 	INTERFACE_REQUEST_SET_INTERFACE(&req, my->intf, 0);
@@ -188,7 +187,7 @@ int ds4hid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 */
 	say("[ds4hid]set_idle\n");
 	INTERFACE_REQUEST_SET_IDLE(&req, intfdesc->bInterfaceNumber, 0);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, 0,0);
+	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, 0,0);
 
 
 //------------------------transfer ring------------------------
@@ -196,7 +195,7 @@ int ds4hid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	usb->ongiving = (void*)ds4hid_ongive;
 
 	if(pktlen > 0x40)pktlen = 0x40;
-	ret = xhci_giveorderwaitevent(xhci,slot|(inaddr<<8), 'd',0, perusb->freebuf,pktlen, usb,0);
+	ret = xhci->ongiving(xhci,slot|(inaddr<<8), 'd',0, perusb->freebuf,pktlen, usb,0);
 	return 0;
 }
 int usbds4_driver(struct item* usb, int xxx, struct item* xhci, int slot)

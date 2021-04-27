@@ -2,7 +2,6 @@
 #include "usb.h"
 void eventwrite(u64,u64,u64,u64);
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
-int xhci_giveorderwaitevent(void* hc,int id, u32,u32, void* sendbuf,int sendlen, void* recvbuf, int recvlen);
 //
 #define desctype_HID 0x21
 #define desctype_report 0x22
@@ -379,11 +378,11 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 			);
 			if(1){
 				//inform the xHC of the value of the Max Exit Latency parameter
-				//ret = xhci_giveorderwaitevent(xhci,slot, 'h',TRB_command_EvaluateContext, buf,8, 0,0);
+				//ret = xhci->ongiving(xhci,slot, 'h',TRB_command_EvaluateContext, buf,8, 0,0);
 				//if(ret < 0)return -9;
 
 				//inform the xHC of the endpoint
-				ret = xhci_giveorderwaitevent(xhci,slot, 'h',TRB_command_ConfigureEndpoint, endpdesc,sizeof(struct EndpointDescriptor), 0,0);
+				ret = xhci->ongiving(xhci,slot, 'h',TRB_command_ConfigureEndpoint, endpdesc,sizeof(struct EndpointDescriptor), 0,0);
 				if(ret < 0)return -9;
 			}
 			break;
@@ -409,18 +408,18 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 //------------------------device side------------------------
 	if(2 == intfdesc->bInterfaceProtocol){		//mouse must set protocol
 	INTERFACE_REQUEST_SET_PROTOCOL(&req, 0, 0);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, 0,0);
+	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, 0,0);
 	if(ret < 0)return -11;
 	}
 /*
 	say("[usbhid]set_interface\n");
 	INTERFACE_REQUEST_SET_INTERFACE(&req, my->intf, 0);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, buf,req.wLength);
+	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, buf,req.wLength);
 	if(4 != ret)return -11;
 */
 	say("[usbhid]set_config\n");
 	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, 0,0);
+	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, 0,0);
 	if(ret < 0)return -10;
 
 //------------------------transfer ring------------------------
@@ -428,6 +427,6 @@ int usbhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct d
 	usb->ongiving = (void*)usbhid_ongive;
 
 	if(pktlen > 0x40)pktlen = 0x40;
-	ret = xhci_giveorderwaitevent(xhci,slot|(inaddr<<8), 'd',0, perusb->freebuf,pktlen, usb,0);
+	ret = xhci->ongiving(xhci,slot|(inaddr<<8), 'd',0, perusb->freebuf,pktlen, usb,0);
 	return 0;
 }

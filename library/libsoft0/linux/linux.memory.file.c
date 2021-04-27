@@ -194,6 +194,9 @@ void createfile()
 
 
 
+void filemanager_registersupplier()
+{
+}
 void initfilemgr()
 {
 }

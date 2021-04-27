@@ -4,7 +4,6 @@ void eventwrite(u64,u64,u64,u64);
 void DEVICE_REQUEST_SET_CONFIGURATION(void* req, u16 conf);
 void INTERFACE_REQUEST_GET_REPORT_DESC(void* req, u16 intf, u16 typeindex, u16 len);
 void INTERFACE_REQUEST_SET_IDLE(struct UsbRequest* req, u16 intf, u16 val);
-int xhci_giveorderwaitevent(void* hc,int id, u32,u32, void* sendbuf,int sendlen, void* recvbuf, int recvlen);
 struct xbox360report{
 	u8 msgtype;	//0: 0x00
 	u8 msglen;	//1: 0x14
@@ -193,7 +192,7 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 				//if(ret < 0)return -9;
 
 				//inform the xHC of the endpoint
-				ret = xhci_giveorderwaitevent(xhci,slot, 'h',TRB_command_ConfigureEndpoint, endpdesc,sizeof(struct EndpointDescriptor), 0,0);
+				ret = xhci->ongiving(xhci,slot, 'h',TRB_command_ConfigureEndpoint, endpdesc,sizeof(struct EndpointDescriptor), 0,0);
 				if(ret < 0)return -9;
 			}
 			break;
@@ -210,7 +209,7 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 //------------------------device side------------------------
 	say("[xboxhid]set_config\n");
 	DEVICE_REQUEST_SET_CONFIGURATION(&req, confdesc->bConfigurationValue);
-	ret = xhci_giveorderwaitevent(xhci,slot, 'd',0, &req,8, 0,0);
+	ret = xhci->ongiving(xhci,slot, 'd',0, &req,8, 0,0);
 	if(ret < 0)return -10;
 
 
@@ -222,7 +221,7 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	tmp[2] = 0x00;
 	tmp[3] = 0x01;
 	tmp[4] = 0x00;
-	ret = xhci_giveorderwaitevent(xhci,slot|(outaddr<<8), 'd',0, tmp,5, 0,0);
+	ret = xhci->ongiving(xhci,slot|(outaddr<<8), 'd',0, tmp,5, 0,0);
 
 
 //------------------------transfer ring------------------------
@@ -230,7 +229,7 @@ int xboxhid_driver(struct item* usb,int xxx, struct item* xhci,int slot, struct 
 	usb->ongiving = (void*)xboxhid_ongive;
 
 	if(pktlen > 0x40)pktlen = 0x40;
-	ret = xhci_giveorderwaitevent(xhci,slot|(inaddr<<8), 'd',0, perusb->freebuf,pktlen, usb,0);
+	ret = xhci->ongiving(xhci,slot|(inaddr<<8), 'd',0, perusb->freebuf,pktlen, usb,0);
 	return 0;
 }
 int usbxbox_driver(struct item* usb, int xxx, struct item* xhci, int slot)
