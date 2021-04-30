@@ -259,7 +259,7 @@ void explaineverydesc(u8* buf, int len)
 
 
 
-void usb_handledevdesc(struct item* usb, int xxx, struct item* xhci, int slot, struct DeviceDescriptor* desc, int len)
+void usbany_handledevdesc(struct item* usb, int xxx, struct item* xhci, int slot, struct DeviceDescriptor* desc, int len)
 {
 	explaindevdesc(desc);
 	if( (0xef == desc->bDeviceClass) && (2 == desc->bDeviceSubClass) && (1 == desc->bDeviceProtocol) ){
@@ -287,7 +287,7 @@ void usb_handledevdesc(struct item* usb, int xxx, struct item* xhci, int slot, s
 
 
 
-void usb_handleconfdesc(struct item* usb, int xxx, struct item* xhci, int slot, u8* buf, int len)
+void usbany_handleconfdesc(struct item* usb, int xxx, struct item* xhci, int slot, u8* buf, int len)
 {
 	explaineverydesc(buf, len);
 
@@ -396,7 +396,7 @@ void usb_handleconfdesc(struct item* usb, int xxx, struct item* xhci, int slot, 
 		j += buf[j];
 	}
 }
-int usb_ReadAndHandleConfigure(struct item* usb, int xxx, struct item* xhci, int slot, u16 value)
+int usbany_ReadAndHandleConfigure(struct item* usb, int xxx, struct item* xhci, int slot, u16 value)
 {
 	int ret;
 	struct UsbRequest req;
@@ -414,13 +414,13 @@ int usb_ReadAndHandleConfigure(struct item* usb, int xxx, struct item* xhci, int
 	if(req.wLength != ret)return -5;
 
 	//parse Configure Descriptor
-	usb_handleconfdesc(usb,xxx, xhci,slot, tmp,ret);
+	usbany_handleconfdesc(usb,xxx, xhci,slot, tmp,ret);
 
 	perusb->my.desclen += req.wLength;
 	tmp = perusb->desc + perusb->my.desclen;
 	return 0;
 }
-int usb_FirstConfig(struct item* usb, int xxx, struct item* xhci, int slot)
+int usbany_FirstConfig(struct item* usb, int xxx, struct item* xhci, int slot)
 {
 	struct perusb* perusb = usb->priv_ptr;
 	printmemory(perusb->node, perusb->my.nodelen*sizeof(struct descnode));
@@ -491,7 +491,7 @@ int usb_FirstConfig(struct item* usb, int xxx, struct item* xhci, int slot)
 
 
 
-int usb_ReadAndHandleString(struct item* usb, int xxx, struct item* xhci, int slot, u16 lang, u16 id)
+int usbany_ReadAndHandleString(struct item* usb, int xxx, struct item* xhci, int slot, u16 lang, u16 id)
 {
 	int j,ret;
 	struct UsbRequest req;
@@ -519,7 +519,7 @@ int usb_ReadAndHandleString(struct item* usb, int xxx, struct item* xhci, int sl
 
 	return 0;
 }
-int usb_ReadAndHandleLang(struct item* usb, int xxx, struct item* xhci, int slot, u16 lang)
+int usbany_ReadAndHandleLang(struct item* usb, int xxx, struct item* xhci, int slot, u16 lang)
 {
 	say("[usbcore]wLANGID=%04x\n", lang);
 	int ret;
@@ -527,22 +527,22 @@ int usb_ReadAndHandleLang(struct item* usb, int xxx, struct item* xhci, int slot
 	struct perusb* perusb = usb->priv_ptr;
 	u8* tmp = perusb->desc + perusb->my.desclen;
 
-	if(perusb->my.iManufac)  usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->my.iManufac);
-	if(perusb->my.iProduct)  usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->my.iProduct);
-	if(perusb->my.iSerial)   usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->my.iSerial);
-	//if(my->iConfigure)usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iConfigure);
-	//if(my->iInterface)usb_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iInterface);
+	if(perusb->my.iManufac)  usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->my.iManufac);
+	if(perusb->my.iProduct)  usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->my.iProduct);
+	if(perusb->my.iSerial)   usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,perusb->my.iSerial);
+	//if(my->iConfigure)usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iConfigure);
+	//if(my->iInterface)usbany_ReadAndHandleString(usb,xxx, xhci,slot, lang,my->iInterface);
 	return 0;
 }
 
 
 
 
-int usb_discon()
+int usbany_discon()
 {
 	return 0;
 }
-int usb_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
+int usbany_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 {
 	say("[usbcore]@usblinkup: %p,%x,%p,%x\n",usb,xxx,xhci,slot);
 
@@ -590,7 +590,7 @@ int usb_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 	perusb->my.desclen += 0x12;
 
 	//parse Device Descriptor
-	usb_handledevdesc(usb,xxx, xhci,slot, (void*)tmp,ret);
+	usbany_handledevdesc(usb,xxx, xhci,slot, (void*)tmp,ret);
 
 
 //---------------------configure descriptor--------------------
@@ -598,7 +598,7 @@ int usb_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 	//foreach value, read configure descriptor
 	num = tmp[0x11];		//bNumConfigurations
 	for(j=0;j<num;j++){
-		usb_ReadAndHandleConfigure(usb,xxx, xhci,slot, j);
+		usbany_ReadAndHandleConfigure(usb,xxx, xhci,slot, j);
 	}
 
 
@@ -620,7 +620,7 @@ int usb_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 	//foreach lang, read string descriptor
 	num = req.wLength;
 	for(j=2;j<num;j+=2){
-		usb_ReadAndHandleLang(usb,xxx, xhci,slot, *(u16*)(tmp+j));
+		usbany_ReadAndHandleLang(usb,xxx, xhci,slot, *(u16*)(tmp+j));
 	}
 
 
@@ -650,14 +650,14 @@ int usb_linkup(struct item* usb, int xxx, struct item* xhci, int slot)
 		}
 	}
 
-	usb_FirstConfig(usb,xxx, xhci,slot);
+	usbany_FirstConfig(usb,xxx, xhci,slot);
 	return 0;
 }
-int usb_delete()
+int usbany_delete()
 {
 	return 0;
 }
-int usb_create()
+int usbany_create()
 {
 	return 0;
 }

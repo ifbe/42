@@ -48,9 +48,9 @@ inlinux/linux.wire.wifi.c \
 inlinux/hardware.c
 linuxpi32_o = $(patsubst %.c, %.o, $(linuxpi32_c))
 
-linuxarm:$(arm64_o) $(linuxarm_o)
+linuxarm:$(arm_o) $(linuxarm_o)
 
-linuxpi32:$(arm64_o) $(linuxpi32_o)
+linuxpi32:$(arm_o) $(linuxpi32_o)
 
 
 

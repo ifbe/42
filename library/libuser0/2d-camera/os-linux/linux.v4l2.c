@@ -238,22 +238,25 @@ int videocreate(struct supply* win, void* arg, int argc, u8** argv)
 		V4L2_PIX_FMT_YUYV;
 
 	for(j=1;j<argc;j++){
-		arg = argv[j];
-		//say("%d->%.16s\n",j,arg;
-		if(0 == ncmp(arg, "format:", 7)){
-			arg = argv[j]+7;
-			//say("format=%.5s\n",arg);
-			if(0 == ncmp(arg, "mjpeg", 5))win->FORMAT = V4L2_PIX_FMT_MJPEG;
-		}
-		if(0 == ncmp(arg, "width:", 6)){
-			arg = argv[j]+6;
-			decstr2u32(arg, &win->STRIDE);
-		}
-		if(0 == ncmp(arg, "height:", 7)){
-			arg = argv[j]+7;
-			decstr2u32(arg, &win->HEIGHT);
-		}
+	arg = argv[j];
+	if(0 == arg)break;
+	//say("%d->%.16s\n",j,arg;
+	if(0 == ncmp(arg, "format:", 7)){
+		arg = argv[j]+7;
+		//say("format=%.5s\n",arg);
+		if(0)return 0;
+		else if(0 == ncmp(arg, "mjpeg", 5))win->FORMAT = V4L2_PIX_FMT_MJPEG;
+		else if(0 == ncmp(arg, "h264", 4))win->FORMAT = V4L2_PIX_FMT_H264;
 	}
+	if(0 == ncmp(arg, "width:", 6)){
+		arg = argv[j]+6;
+		decstr2u32(arg, &win->STRIDE);
+	}
+	if(0 == ncmp(arg, "height:", 7)){
+		arg = argv[j]+7;
+		decstr2u32(arg, &win->HEIGHT);
+	}
+	}//for
 
 	alive = 1;
 	threadcreate(visionlistener, win);

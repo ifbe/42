@@ -95,7 +95,7 @@ u32 in32(u16 port);
 void out32(u16 port, u32 data);
 void explaindevdesc(void*);
 void explaineverydesc(void*, int);
-int usb_linkup(void*,int,void*,int);
+int usbany_linkup(void*,int,void*,int);
 
 
 
@@ -1460,7 +1460,7 @@ void xhci_listall(struct item* xhci, int count)
 
 		//let usb do rest
 		struct item* usb = devicecreate(_usb_, 0, 0, 0);
-		if(usb)usb_linkup(usb, 0, xhci, slot);
+		if(usb)usbany_linkup(usb, 0, xhci, slot);
 	}
 }
 
